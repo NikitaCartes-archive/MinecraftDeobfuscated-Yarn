@@ -61,10 +61,10 @@ public class CopyNameLootFunction extends ConditionalLootFunction {
 	}
 
 	public static enum Source {
-		field_1022("this", LootContextParameters.field_1226),
-		field_1019("killer", LootContextParameters.field_1230),
-		field_1020("killer_player", LootContextParameters.field_1233),
-		field_1023("block_entity", LootContextParameters.field_1228);
+		THIS("this", LootContextParameters.THIS_ENTITY),
+		KILLER("killer", LootContextParameters.KILLER_ENTITY),
+		KILLER_PLAYER("killer_player", LootContextParameters.LAST_DAMAGE_PLAYER),
+		BLOCK_ENTITY("block_entity", LootContextParameters.BLOCK_ENTITY);
 
 		public final String name;
 		public final LootContextParameter<?> parameter;

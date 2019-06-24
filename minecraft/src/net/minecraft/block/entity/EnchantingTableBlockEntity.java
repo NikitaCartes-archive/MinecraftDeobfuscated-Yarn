@@ -25,7 +25,7 @@ public class EnchantingTableBlockEntity extends BlockEntity implements Nameable,
 	private Text customName;
 
 	public EnchantingTableBlockEntity() {
-		super(BlockEntityType.field_11912);
+		super(BlockEntityType.ENCHANTING_TABLE);
 	}
 
 	@Override

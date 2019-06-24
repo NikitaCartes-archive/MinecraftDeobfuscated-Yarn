@@ -97,7 +97,7 @@ public abstract class RaiderEntity extends PatrolEntity {
 					}
 				} else {
 					LivingEntity livingEntity = this.getTarget();
-					if (livingEntity != null && (livingEntity.getType() == EntityType.field_6097 || livingEntity.getType() == EntityType.field_6147)) {
+					if (livingEntity != null && (livingEntity.getType() == EntityType.PLAYER || livingEntity.getType() == EntityType.IRON_GOLEM)) {
 						this.despawnCounter = 0;
 					}
 				}
@@ -122,7 +122,7 @@ public abstract class RaiderEntity extends PatrolEntity {
 					raid.removeLeader(this.getWave());
 				}
 
-				if (entity != null && entity.getType() == EntityType.field_6097) {
+				if (entity != null && entity.getType() == EntityType.PLAYER) {
 					raid.addHero(entity);
 				}
 
@@ -130,7 +130,7 @@ public abstract class RaiderEntity extends PatrolEntity {
 			}
 
 			if (this.isPatrolLeader() && raid == null && ((ServerWorld)this.world).getRaidAt(new BlockPos(this)) == null) {
-				ItemStack itemStack = this.getEquippedStack(EquipmentSlot.field_6169);
+				ItemStack itemStack = this.getEquippedStack(EquipmentSlot.HEAD);
 				PlayerEntity playerEntity = null;
 				if (entity instanceof PlayerEntity) {
 					playerEntity = (PlayerEntity)entity;
@@ -143,17 +143,17 @@ public abstract class RaiderEntity extends PatrolEntity {
 				}
 
 				if (!itemStack.isEmpty() && ItemStack.areEqualIgnoreDamage(itemStack, Raid.getOminousBanner()) && playerEntity != null) {
-					StatusEffectInstance statusEffectInstance = playerEntity.getStatusEffect(StatusEffects.field_16595);
+					StatusEffectInstance statusEffectInstance = playerEntity.getStatusEffect(StatusEffects.BAD_OMEN);
 					int i = 1;
 					if (statusEffectInstance != null) {
 						i += statusEffectInstance.getAmplifier();
-						playerEntity.removePotionEffect(StatusEffects.field_16595);
+						playerEntity.removePotionEffect(StatusEffects.BAD_OMEN);
 					} else {
 						i--;
 					}
 
 					i = MathHelper.clamp(i, 0, 5);
-					StatusEffectInstance statusEffectInstance2 = new StatusEffectInstance(StatusEffects.field_16595, 120000, i, false, false, true);
+					StatusEffectInstance statusEffectInstance2 = new StatusEffectInstance(StatusEffects.BAD_OMEN, 120000, i, false, false, true);
 					playerEntity.addPotionEffect(statusEffectInstance2);
 				}
 			}
@@ -231,7 +231,7 @@ public abstract class RaiderEntity extends PatrolEntity {
 		ItemStack itemStack = itemEntity.getStack();
 		boolean bl = this.hasActiveRaid() && this.getRaid().getCaptain(this.getWave()) != null;
 		if (this.hasActiveRaid() && !bl && ItemStack.areEqualIgnoreDamage(itemStack, Raid.getOminousBanner())) {
-			EquipmentSlot equipmentSlot = EquipmentSlot.field_6169;
+			EquipmentSlot equipmentSlot = EquipmentSlot.HEAD;
 			ItemStack itemStack2 = this.getEquippedStack(equipmentSlot);
 			double d = (double)this.getDropChance(equipmentSlot);
 			if (!itemStack2.isEmpty() && (double)(this.random.nextFloat() - 0.1F) < d) {
@@ -280,7 +280,7 @@ public abstract class RaiderEntity extends PatrolEntity {
 	public EntityData initialize(
 		IWorld iWorld, LocalDifficulty localDifficulty, SpawnType spawnType, @Nullable EntityData entityData, @Nullable CompoundTag compoundTag
 	) {
-		this.setAbleToJoinRaid(this.getType() != EntityType.field_6145 || spawnType != SpawnType.field_16459);
+		this.setAbleToJoinRaid(this.getType() != EntityType.WITCH || spawnType != SpawnType.NATURAL);
 		return super.initialize(iWorld, localDifficulty, spawnType, entityData, compoundTag);
 	}
 
@@ -298,7 +298,7 @@ public abstract class RaiderEntity extends PatrolEntity {
 			this.raider = raiderEntity;
 			this.speed = d;
 			this.distance = i;
-			this.setControls(EnumSet.of(Goal.Control.field_18405));
+			this.setControls(EnumSet.of(Goal.Control.MOVE));
 		}
 
 		@Override
@@ -316,9 +316,9 @@ public abstract class RaiderEntity extends PatrolEntity {
 			BlockPos blockPos = new BlockPos(this.raider);
 			Optional<BlockPos> optional = serverWorld.getPointOfInterestStorage()
 				.getPosition(
-					pointOfInterestType -> pointOfInterestType == PointOfInterestType.field_18517,
+					pointOfInterestType -> pointOfInterestType == PointOfInterestType.HOME,
 					this::canLootHome,
-					PointOfInterestStorage.OccupationStatus.field_18489,
+					PointOfInterestStorage.OccupationStatus.ANY,
 					blockPos,
 					48,
 					this.raider.random
@@ -397,7 +397,7 @@ public abstract class RaiderEntity extends PatrolEntity {
 
 		CelebrateGoal(RaiderEntity raiderEntity2) {
 			this.raider = raiderEntity2;
-			this.setControls(EnumSet.of(Goal.Control.field_18405));
+			this.setControls(EnumSet.of(Goal.Control.MOVE));
 		}
 
 		@Override
@@ -446,7 +446,7 @@ public abstract class RaiderEntity extends PatrolEntity {
 		public PatrolApproachGoal(IllagerEntity illagerEntity, float f) {
 			this.raider = illagerEntity;
 			this.squaredDistance = f * f;
-			this.setControls(EnumSet.of(Goal.Control.field_18405, Goal.Control.field_18406));
+			this.setControls(EnumSet.of(Goal.Control.MOVE, Goal.Control.LOOK));
 		}
 
 		@Override
@@ -456,7 +456,7 @@ public abstract class RaiderEntity extends PatrolEntity {
 				&& this.raider.isRaidCenterSet()
 				&& this.raider.getTarget() != null
 				&& !this.raider.isAttacking()
-				&& (livingEntity == null || livingEntity.getType() != EntityType.field_6097);
+				&& (livingEntity == null || livingEntity.getType() != EntityType.PLAYER);
 		}
 
 		@Override
@@ -510,7 +510,7 @@ public abstract class RaiderEntity extends PatrolEntity {
 
 		public PickupBannerAsLeaderGoal(T raiderEntity2) {
 			this.actor = raiderEntity2;
-			this.setControls(EnumSet.of(Goal.Control.field_18405));
+			this.setControls(EnumSet.of(Goal.Control.MOVE));
 		}
 
 		@Override
@@ -519,7 +519,7 @@ public abstract class RaiderEntity extends PatrolEntity {
 			if (this.actor.hasActiveRaid()
 				&& !this.actor.getRaid().isFinished()
 				&& this.actor.canLead()
-				&& !ItemStack.areEqualIgnoreDamage(this.actor.getEquippedStack(EquipmentSlot.field_6169), Raid.getOminousBanner())) {
+				&& !ItemStack.areEqualIgnoreDamage(this.actor.getEquippedStack(EquipmentSlot.HEAD), Raid.getOminousBanner())) {
 				RaiderEntity raiderEntity = raid.getCaptain(this.actor.getWave());
 				if (raiderEntity == null || !raiderEntity.isAlive()) {
 					List<ItemEntity> list = this.actor

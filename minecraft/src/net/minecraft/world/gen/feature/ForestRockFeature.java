@@ -21,7 +21,7 @@ public class ForestRockFeature extends Feature<BoulderFeatureConfig> {
 		while (blockPos.getY() > 3) {
 			if (!iWorld.isAir(blockPos.down())) {
 				Block block = iWorld.getBlockState(blockPos.down()).getBlock();
-				if (block == Blocks.field_10219 || Block.isNaturalDirt(block) || Block.isNaturalStone(block)) {
+				if (block == Blocks.GRASS_BLOCK || Block.isNaturalDirt(block) || Block.isNaturalStone(block)) {
 					break;
 				}
 			}

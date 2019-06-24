@@ -19,12 +19,12 @@ public class NearestBedSensor extends Sensor<MobEntity> {
 
 	@Override
 	public Set<MemoryModuleType<?>> getOutputMemoryModules() {
-		return ImmutableSet.of(MemoryModuleType.field_19007);
+		return ImmutableSet.of(MemoryModuleType.NEAREST_BED);
 	}
 
 	protected void method_19998(ServerWorld serverWorld, MobEntity mobEntity) {
 		if (mobEntity.isBaby()) {
-			mobEntity.getBrain().setMemory(MemoryModuleType.field_19007, this.findNearestBed(serverWorld, mobEntity));
+			mobEntity.getBrain().setMemory(MemoryModuleType.NEAREST_BED, this.findNearestBed(serverWorld, mobEntity));
 		}
 	}
 
@@ -39,7 +39,7 @@ public class NearestBedSensor extends Sensor<MobEntity> {
 			}
 		};
 		return pointOfInterestStorage.getNearestPosition(
-			PointOfInterestType.field_18517.getCompletionCondition(), predicate, new BlockPos(mobEntity), 16, PointOfInterestStorage.OccupationStatus.field_18489
+			PointOfInterestType.HOME.getCompletionCondition(), predicate, new BlockPos(mobEntity), 16, PointOfInterestStorage.OccupationStatus.ANY
 		);
 	}
 }

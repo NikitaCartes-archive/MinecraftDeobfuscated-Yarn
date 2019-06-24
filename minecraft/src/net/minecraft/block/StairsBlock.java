@@ -92,9 +92,9 @@ public class StairsBlock extends Block implements Waterloggable {
 		this.setDefaultState(
 			this.stateFactory
 				.getDefaultState()
-				.with(FACING, Direction.field_11043)
-				.with(HALF, BlockHalf.field_12617)
-				.with(SHAPE, StairShape.field_12710)
+				.with(FACING, Direction.NORTH)
+				.with(HALF, BlockHalf.BOTTOM)
+				.with(SHAPE, StairShape.STRAIGHT)
 				.with(WATERLOGGED, Boolean.valueOf(false))
 		);
 		this.baseBlock = blockState.getBlock();
@@ -108,7 +108,7 @@ public class StairsBlock extends Block implements Waterloggable {
 
 	@Override
 	public VoxelShape getOutlineShape(BlockState blockState, BlockView blockView, BlockPos blockPos, EntityContext entityContext) {
-		return (blockState.get(HALF) == BlockHalf.field_12619 ? TOP_SHAPES : BOTTOM_SHAPES)[SHAPE_INDICES[this.getShapeIndexIndex(blockState)]];
+		return (blockState.get(HALF) == BlockHalf.TOP ? TOP_SHAPES : BOTTOM_SHAPES)[SHAPE_INDICES[this.getShapeIndexIndex(blockState)]];
 	}
 
 	private int getShapeIndexIndex(BlockState blockState) {
@@ -149,7 +149,7 @@ public class StairsBlock extends Block implements Waterloggable {
 	@Override
 	public void onBlockAdded(BlockState blockState, World world, BlockPos blockPos, BlockState blockState2, boolean bl) {
 		if (blockState.getBlock() != blockState.getBlock()) {
-			this.baseBlockState.neighborUpdate(world, blockPos, Blocks.field_10124, blockPos, false);
+			this.baseBlockState.neighborUpdate(world, blockPos, Blocks.AIR, blockPos, false);
 			this.baseBlock.onBlockAdded(this.baseBlockState, world, blockPos, blockState2, false);
 		}
 	}
@@ -190,9 +190,9 @@ public class StairsBlock extends Block implements Waterloggable {
 			.with(FACING, itemPlacementContext.getPlayerFacing())
 			.with(
 				HALF,
-				direction != Direction.field_11033 && (direction == Direction.field_11036 || !(itemPlacementContext.getHitPos().y - (double)blockPos.getY() > 0.5))
-					? BlockHalf.field_12617
-					: BlockHalf.field_12619
+				direction != Direction.DOWN && (direction == Direction.UP || !(itemPlacementContext.getHitPos().y - (double)blockPos.getY() > 0.5))
+					? BlockHalf.BOTTOM
+					: BlockHalf.TOP
 			)
 			.with(WATERLOGGED, Boolean.valueOf(fluidState.getFluid() == Fluids.WATER));
 		return blockState.with(SHAPE, method_10675(blockState, itemPlacementContext.getWorld(), blockPos));
@@ -218,10 +218,10 @@ public class StairsBlock extends Block implements Waterloggable {
 			Direction direction2 = blockState2.get(FACING);
 			if (direction2.getAxis() != ((Direction)blockState.get(FACING)).getAxis() && method_10678(blockState, blockView, blockPos, direction2.getOpposite())) {
 				if (direction2 == direction.rotateYCounterclockwise()) {
-					return StairShape.field_12708;
+					return StairShape.OUTER_LEFT;
 				}
 
-				return StairShape.field_12709;
+				return StairShape.OUTER_RIGHT;
 			}
 		}
 
@@ -230,14 +230,14 @@ public class StairsBlock extends Block implements Waterloggable {
 			Direction direction3 = blockState3.get(FACING);
 			if (direction3.getAxis() != ((Direction)blockState.get(FACING)).getAxis() && method_10678(blockState, blockView, blockPos, direction3)) {
 				if (direction3 == direction.rotateYCounterclockwise()) {
-					return StairShape.field_12712;
+					return StairShape.INNER_LEFT;
 				}
 
-				return StairShape.field_12713;
+				return StairShape.INNER_RIGHT;
 			}
 		}
 
-		return StairShape.field_12710;
+		return StairShape.STRAIGHT;
 	}
 
 	private static boolean method_10678(BlockState blockState, BlockView blockView, BlockPos blockPos, Direction direction) {
@@ -259,35 +259,35 @@ public class StairsBlock extends Block implements Waterloggable {
 		Direction direction = blockState.get(FACING);
 		StairShape stairShape = blockState.get(SHAPE);
 		switch (blockMirror) {
-			case field_11300:
+			case LEFT_RIGHT:
 				if (direction.getAxis() == Direction.Axis.Z) {
 					switch (stairShape) {
-						case field_12712:
-							return blockState.rotate(BlockRotation.field_11464).with(SHAPE, StairShape.field_12713);
-						case field_12713:
-							return blockState.rotate(BlockRotation.field_11464).with(SHAPE, StairShape.field_12712);
-						case field_12708:
-							return blockState.rotate(BlockRotation.field_11464).with(SHAPE, StairShape.field_12709);
-						case field_12709:
-							return blockState.rotate(BlockRotation.field_11464).with(SHAPE, StairShape.field_12708);
+						case INNER_LEFT:
+							return blockState.rotate(BlockRotation.CLOCKWISE_180).with(SHAPE, StairShape.INNER_RIGHT);
+						case INNER_RIGHT:
+							return blockState.rotate(BlockRotation.CLOCKWISE_180).with(SHAPE, StairShape.INNER_LEFT);
+						case OUTER_LEFT:
+							return blockState.rotate(BlockRotation.CLOCKWISE_180).with(SHAPE, StairShape.OUTER_RIGHT);
+						case OUTER_RIGHT:
+							return blockState.rotate(BlockRotation.CLOCKWISE_180).with(SHAPE, StairShape.OUTER_LEFT);
 						default:
-							return blockState.rotate(BlockRotation.field_11464);
+							return blockState.rotate(BlockRotation.CLOCKWISE_180);
 					}
 				}
 				break;
-			case field_11301:
+			case FRONT_BACK:
 				if (direction.getAxis() == Direction.Axis.X) {
 					switch (stairShape) {
-						case field_12712:
-							return blockState.rotate(BlockRotation.field_11464).with(SHAPE, StairShape.field_12712);
-						case field_12713:
-							return blockState.rotate(BlockRotation.field_11464).with(SHAPE, StairShape.field_12713);
-						case field_12708:
-							return blockState.rotate(BlockRotation.field_11464).with(SHAPE, StairShape.field_12709);
-						case field_12709:
-							return blockState.rotate(BlockRotation.field_11464).with(SHAPE, StairShape.field_12708);
-						case field_12710:
-							return blockState.rotate(BlockRotation.field_11464);
+						case INNER_LEFT:
+							return blockState.rotate(BlockRotation.CLOCKWISE_180).with(SHAPE, StairShape.INNER_LEFT);
+						case INNER_RIGHT:
+							return blockState.rotate(BlockRotation.CLOCKWISE_180).with(SHAPE, StairShape.INNER_RIGHT);
+						case OUTER_LEFT:
+							return blockState.rotate(BlockRotation.CLOCKWISE_180).with(SHAPE, StairShape.OUTER_RIGHT);
+						case OUTER_RIGHT:
+							return blockState.rotate(BlockRotation.CLOCKWISE_180).with(SHAPE, StairShape.OUTER_LEFT);
+						case STRAIGHT:
+							return blockState.rotate(BlockRotation.CLOCKWISE_180);
 					}
 				}
 		}

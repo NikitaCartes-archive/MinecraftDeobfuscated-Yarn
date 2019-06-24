@@ -94,7 +94,7 @@ public class TextureFont implements Font {
 
 				TextureFont var28;
 				try {
-					NativeImage nativeImage = NativeImage.fromInputStream(NativeImage.Format.field_4997, resource.getInputStream());
+					NativeImage nativeImage = NativeImage.fromInputStream(NativeImage.Format.RGBA, resource.getInputStream());
 					int i = nativeImage.getWidth();
 					int j = nativeImage.getHeight();
 					int k = i / ((String)this.chars.get(0)).length();

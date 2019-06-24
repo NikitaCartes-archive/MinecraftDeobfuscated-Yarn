@@ -1,7 +1,7 @@
 package net.minecraft.world.biome.layer;
 
 public enum AddColdClimatesLayer implements SouthEastSamplingLayer {
-	field_16059;
+	INSTANCE;
 
 	@Override
 	public int sample(LayerRandomnessSource layerRandomnessSource, int i) {

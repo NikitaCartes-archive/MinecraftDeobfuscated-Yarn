@@ -30,7 +30,7 @@ public class HeadFeatureRenderer<T extends LivingEntity, M extends EntityModel<T
 	}
 
 	public void method_17159(T livingEntity, float f, float g, float h, float i, float j, float k, float l) {
-		ItemStack itemStack = livingEntity.getEquippedStack(EquipmentSlot.field_6169);
+		ItemStack itemStack = livingEntity.getEquippedStack(EquipmentSlot.HEAD);
 		if (!itemStack.isEmpty()) {
 			Item item = itemStack.getItem();
 			GlStateManager.pushMatrix();
@@ -72,7 +72,7 @@ public class HeadFeatureRenderer<T extends LivingEntity, M extends EntityModel<T
 
 				SkullBlockEntityRenderer.INSTANCE
 					.render(-0.5F, 0.0F, -0.5F, null, 180.0F, ((AbstractSkullBlock)((BlockItem)item).getBlock()).getSkullType(), gameProfile, -1, f);
-			} else if (!(item instanceof ArmorItem) || ((ArmorItem)item).getSlotType() != EquipmentSlot.field_6169) {
+			} else if (!(item instanceof ArmorItem) || ((ArmorItem)item).getSlotType() != EquipmentSlot.HEAD) {
 				float mx = 0.625F;
 				GlStateManager.translatef(0.0F, -0.25F, 0.0F);
 				GlStateManager.rotatef(180.0F, 0.0F, 1.0F, 0.0F);
@@ -81,7 +81,7 @@ public class HeadFeatureRenderer<T extends LivingEntity, M extends EntityModel<T
 					GlStateManager.translatef(0.0F, 0.1875F, 0.0F);
 				}
 
-				MinecraftClient.getInstance().getFirstPersonRenderer().renderItem(livingEntity, itemStack, ModelTransformation.Type.field_4316);
+				MinecraftClient.getInstance().getFirstPersonRenderer().renderItem(livingEntity, itemStack, ModelTransformation.Type.HEAD);
 			}
 
 			GlStateManager.popMatrix();

@@ -17,7 +17,7 @@ import net.minecraft.util.math.Vec3d;
 
 public class RingBellTask extends Task<LivingEntity> {
 	public RingBellTask() {
-		super(ImmutableMap.of(MemoryModuleType.field_18440, MemoryModuleState.field_18456));
+		super(ImmutableMap.of(MemoryModuleType.MEETING_POINT, MemoryModuleState.VALUE_PRESENT));
 	}
 
 	@Override
@@ -28,13 +28,13 @@ public class RingBellTask extends Task<LivingEntity> {
 	@Override
 	protected void run(ServerWorld serverWorld, LivingEntity livingEntity, long l) {
 		Brain<?> brain = livingEntity.getBrain();
-		BlockPos blockPos = ((GlobalPos)brain.getOptionalMemory(MemoryModuleType.field_18440).get()).getPos();
+		BlockPos blockPos = ((GlobalPos)brain.getOptionalMemory(MemoryModuleType.MEETING_POINT).get()).getPos();
 		if (blockPos.isWithinDistance(new BlockPos(livingEntity), 3.0)) {
 			BlockState blockState = serverWorld.getBlockState(blockPos);
-			if (blockState.getBlock() == Blocks.field_16332) {
+			if (blockState.getBlock() == Blocks.BELL) {
 				BellBlock bellBlock = (BellBlock)blockState.getBlock();
 
-				for (Direction direction : Direction.Type.field_11062) {
+				for (Direction direction : Direction.Type.HORIZONTAL) {
 					if (bellBlock.ring(
 						serverWorld, blockState, serverWorld.getBlockEntity(blockPos), new BlockHitResult(new Vec3d(0.5, 0.5, 0.5), direction, blockPos, false), null, false
 					)) {

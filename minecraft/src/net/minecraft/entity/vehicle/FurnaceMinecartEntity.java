@@ -27,19 +27,19 @@ public class FurnaceMinecartEntity extends AbstractMinecartEntity {
 	private int fuel;
 	public double pushX;
 	public double pushZ;
-	private static final Ingredient ACCEPTABLE_FUEL = Ingredient.ofItems(Items.field_8713, Items.field_8665);
+	private static final Ingredient ACCEPTABLE_FUEL = Ingredient.ofItems(Items.COAL, Items.CHARCOAL);
 
 	public FurnaceMinecartEntity(EntityType<? extends FurnaceMinecartEntity> entityType, World world) {
 		super(entityType, world);
 	}
 
 	public FurnaceMinecartEntity(World world, double d, double e, double f) {
-		super(EntityType.field_6080, world, d, e, f);
+		super(EntityType.FURNACE_MINECART, world, d, e, f);
 	}
 
 	@Override
 	public AbstractMinecartEntity.Type getMinecartType() {
-		return AbstractMinecartEntity.Type.field_7679;
+		return AbstractMinecartEntity.Type.FURNACE;
 	}
 
 	@Override
@@ -62,7 +62,7 @@ public class FurnaceMinecartEntity extends AbstractMinecartEntity {
 
 		this.setLit(this.fuel > 0);
 		if (this.isLit() && this.random.nextInt(4) == 0) {
-			this.world.addParticle(ParticleTypes.field_11237, this.x, this.y + 0.8, this.z, 0.0, 0.0, 0.0);
+			this.world.addParticle(ParticleTypes.LARGE_SMOKE, this.x, this.y + 0.8, this.z, 0.0, 0.0, 0.0);
 		}
 	}
 
@@ -74,8 +74,8 @@ public class FurnaceMinecartEntity extends AbstractMinecartEntity {
 	@Override
 	public void dropItems(DamageSource damageSource) {
 		super.dropItems(damageSource);
-		if (!damageSource.isExplosive() && this.world.getGameRules().getBoolean(GameRules.field_19393)) {
-			this.dropItem(Blocks.field_10181);
+		if (!damageSource.isExplosive() && this.world.getGameRules().getBoolean(GameRules.DO_ENTITY_DROPS)) {
+			this.dropItem(Blocks.FURNACE);
 		}
 	}
 
@@ -156,6 +156,6 @@ public class FurnaceMinecartEntity extends AbstractMinecartEntity {
 
 	@Override
 	public BlockState getDefaultContainedBlock() {
-		return Blocks.field_10181.getDefaultState().with(FurnaceBlock.FACING, Direction.field_11043).with(FurnaceBlock.LIT, Boolean.valueOf(this.isLit()));
+		return Blocks.FURNACE.getDefaultState().with(FurnaceBlock.FACING, Direction.NORTH).with(FurnaceBlock.LIT, Boolean.valueOf(this.isLit()));
 	}
 }

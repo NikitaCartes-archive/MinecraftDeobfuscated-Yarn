@@ -79,7 +79,7 @@ public class LeavesBlock extends Block {
 	}
 
 	private static int getDistanceFromLog(BlockState blockState) {
-		if (BlockTags.field_15475.contains(blockState.getBlock())) {
+		if (BlockTags.LOGS.contains(blockState.getBlock())) {
 			return 0;
 		} else {
 			return blockState.getBlock() instanceof LeavesBlock ? (Integer)blockState.get(DISTANCE) : 7;
@@ -93,11 +93,11 @@ public class LeavesBlock extends Block {
 			if (random.nextInt(15) == 1) {
 				BlockPos blockPos2 = blockPos.down();
 				BlockState blockState2 = world.getBlockState(blockPos2);
-				if (!blockState2.isOpaque() || !Block.isSolidFullSquare(blockState2, world, blockPos2, Direction.field_11036)) {
+				if (!blockState2.isOpaque() || !Block.isSolidFullSquare(blockState2, world, blockPos2, Direction.UP)) {
 					double d = (double)((float)blockPos.getX() + random.nextFloat());
 					double e = (double)blockPos.getY() - 0.05;
 					double f = (double)((float)blockPos.getZ() + random.nextFloat());
-					world.addParticle(ParticleTypes.field_11232, d, e, f, 0.0, 0.0, 0.0);
+					world.addParticle(ParticleTypes.DRIPPING_WATER, d, e, f, 0.0, 0.0, 0.0);
 				}
 			}
 		}
@@ -115,7 +115,7 @@ public class LeavesBlock extends Block {
 
 	@Override
 	public BlockRenderLayer getRenderLayer() {
-		return fancy ? BlockRenderLayer.CUTOUT_MIPPED : BlockRenderLayer.field_9178;
+		return fancy ? BlockRenderLayer.CUTOUT_MIPPED : BlockRenderLayer.SOLID;
 	}
 
 	@Override
@@ -125,7 +125,7 @@ public class LeavesBlock extends Block {
 
 	@Override
 	public boolean allowsSpawning(BlockState blockState, BlockView blockView, BlockPos blockPos, EntityType<?> entityType) {
-		return entityType == EntityType.field_6081 || entityType == EntityType.field_6104;
+		return entityType == EntityType.OCELOT || entityType == EntityType.PARROT;
 	}
 
 	@Override

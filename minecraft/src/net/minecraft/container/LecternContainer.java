@@ -16,7 +16,7 @@ public class LecternContainer extends Container {
 	}
 
 	public LecternContainer(int i, Inventory inventory, PropertyDelegate propertyDelegate) {
-		super(ContainerType.field_17338, i);
+		super(ContainerType.LECTERN, i);
 		checkContainerSize(inventory, 1);
 		checkContainerDataCount(propertyDelegate, 1);
 		this.inventory = inventory;

@@ -38,7 +38,7 @@ public class EnchantCommand {
 				.then(
 					CommandManager.argument("targets", EntityArgumentType.entities())
 						.then(
-							CommandManager.argument("enchantment", ItemEnchantmentArgumentType.create())
+							CommandManager.argument("enchantment", ItemEnchantmentArgumentType.itemEnchantment())
 								.executes(
 									commandContext -> execute(
 											commandContext.getSource(),

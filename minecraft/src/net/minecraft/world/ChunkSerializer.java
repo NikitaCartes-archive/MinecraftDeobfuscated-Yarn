@@ -87,7 +87,7 @@ public class ChunkSerializer {
 			block -> block == null || block.getDefaultState().isAir(), chunkPos, compoundTag2.getList("ToBeTicked", 9)
 		);
 		ChunkTickScheduler<Fluid> chunkTickScheduler2 = new ChunkTickScheduler<>(
-			fluid -> fluid == null || fluid == Fluids.field_15906, chunkPos, compoundTag2.getList("LiquidsToBeTicked", 9)
+			fluid -> fluid == null || fluid == Fluids.EMPTY, chunkPos, compoundTag2.getList("LiquidsToBeTicked", 9)
 		);
 		boolean bl = compoundTag2.getBoolean("isLightOn");
 		ListTag listTag = compoundTag2.getList("Sections", 10);
@@ -116,11 +116,11 @@ public class ChunkSerializer {
 
 			if (bl) {
 				if (compoundTag3.containsKey("BlockLight", 7)) {
-					lightingProvider.queueData(LightType.field_9282, ChunkSectionPos.from(chunkPos, m), new ChunkNibbleArray(compoundTag3.getByteArray("BlockLight")));
+					lightingProvider.queueData(LightType.BLOCK, ChunkSectionPos.from(chunkPos, m), new ChunkNibbleArray(compoundTag3.getByteArray("BlockLight")));
 				}
 
 				if (bl2 && compoundTag3.containsKey("SkyLight", 7)) {
-					lightingProvider.queueData(LightType.field_9284, ChunkSectionPos.from(chunkPos, m), new ChunkNibbleArray(compoundTag3.getByteArray("SkyLight")));
+					lightingProvider.queueData(LightType.SKY, ChunkSectionPos.from(chunkPos, m), new ChunkNibbleArray(compoundTag3.getByteArray("SkyLight")));
 				}
 			}
 		}
@@ -128,17 +128,17 @@ public class ChunkSerializer {
 		long n = compoundTag2.getLong("InhabitedTime");
 		ChunkStatus.ChunkType chunkType = getChunkType(compoundTag);
 		Chunk chunk;
-		if (chunkType == ChunkStatus.ChunkType.field_12807) {
+		if (chunkType == ChunkStatus.ChunkType.LEVELCHUNK) {
 			TickScheduler<Block> tickScheduler;
 			if (compoundTag2.containsKey("TileTicks", 9)) {
-				tickScheduler = SimpleTickScheduler.method_20512(compoundTag2.getList("TileTicks", 10), Registry.BLOCK::getId, Registry.BLOCK::get);
+				tickScheduler = SimpleTickScheduler.fromNbt(compoundTag2.getList("TileTicks", 10), Registry.BLOCK::getId, Registry.BLOCK::get);
 			} else {
 				tickScheduler = chunkTickScheduler;
 			}
 
 			TickScheduler<Fluid> tickScheduler2;
 			if (compoundTag2.containsKey("LiquidTicks", 9)) {
-				tickScheduler2 = SimpleTickScheduler.method_20512(compoundTag2.getList("LiquidTicks", 10), Registry.FLUID::getId, Registry.FLUID::get);
+				tickScheduler2 = SimpleTickScheduler.fromNbt(compoundTag2.getList("LiquidTicks", 10), Registry.FLUID::getId, Registry.FLUID::get);
 			} else {
 				tickScheduler2 = chunkTickScheduler2;
 			}
@@ -160,11 +160,11 @@ public class ChunkSerializer {
 			protoChunk.setBiomeArray(biomes);
 			protoChunk.setInhabitedTime(n);
 			protoChunk.setStatus(ChunkStatus.get(compoundTag2.getString("Status")));
-			if (protoChunk.getStatus().isAtLeast(ChunkStatus.field_12795)) {
+			if (protoChunk.getStatus().isAtLeast(ChunkStatus.FEATURES)) {
 				protoChunk.setLightingProvider(lightingProvider);
 			}
 
-			if (!bl && protoChunk.getStatus().isAtLeast(ChunkStatus.field_12805)) {
+			if (!bl && protoChunk.getStatus().isAtLeast(ChunkStatus.LIGHT)) {
 				for (BlockPos blockPos : BlockPos.iterate(chunkPos.getStartX(), 0, chunkPos.getStartZ(), chunkPos.getEndX(), 255, chunkPos.getEndZ())) {
 					if (chunk.getBlockState(blockPos).getLuminance() != 0) {
 						protoChunk.addLightSource(blockPos);
@@ -204,7 +204,7 @@ public class ChunkSerializer {
 			}
 		}
 
-		if (chunkType == ChunkStatus.ChunkType.field_12807) {
+		if (chunkType == ChunkStatus.ChunkType.LEVELCHUNK) {
 			return new ReadOnlyChunk((WorldChunk)chunk);
 		} else {
 			ProtoChunk protoChunk2 = (ProtoChunk)chunk;
@@ -269,8 +269,8 @@ public class ChunkSerializer {
 				.filter(chunkSectionx -> chunkSectionx != null && chunkSectionx.getYOffset() >> 4 == j)
 				.findFirst()
 				.orElse(WorldChunk.EMPTY_SECTION);
-			ChunkNibbleArray chunkNibbleArray = lightingProvider.get(LightType.field_9282).getChunkLightArray(ChunkSectionPos.from(chunkPos, j));
-			ChunkNibbleArray chunkNibbleArray2 = lightingProvider.get(LightType.field_9284).getChunkLightArray(ChunkSectionPos.from(chunkPos, j));
+			ChunkNibbleArray chunkNibbleArray = lightingProvider.get(LightType.BLOCK).getChunkLightArray(ChunkSectionPos.from(chunkPos, j));
+			ChunkNibbleArray chunkNibbleArray2 = lightingProvider.get(LightType.SKY).getChunkLightArray(ChunkSectionPos.from(chunkPos, j));
 			if (chunkSection != WorldChunk.EMPTY_SECTION || chunkNibbleArray != null || chunkNibbleArray2 != null) {
 				CompoundTag compoundTag3 = new CompoundTag();
 				compoundTag3.putByte("Y", (byte)(j & 0xFF));
@@ -315,15 +315,15 @@ public class ChunkSerializer {
 
 		compoundTag2.put("TileEntities", listTag2);
 		ListTag listTag3 = new ListTag();
-		if (chunk.getStatus().getChunkType() == ChunkStatus.ChunkType.field_12807) {
+		if (chunk.getStatus().getChunkType() == ChunkStatus.ChunkType.LEVELCHUNK) {
 			WorldChunk worldChunk = (WorldChunk)chunk;
-			worldChunk.method_12232(false);
+			worldChunk.setUnsaved(false);
 
 			for (int l = 0; l < worldChunk.getEntitySectionArray().length; l++) {
 				for (Entity entity : worldChunk.getEntitySectionArray()[l]) {
 					CompoundTag compoundTag4 = new CompoundTag();
 					if (entity.saveToTag(compoundTag4)) {
-						worldChunk.method_12232(true);
+						worldChunk.setUnsaved(true);
 						listTag3.add(compoundTag4);
 					}
 				}
@@ -346,7 +346,7 @@ public class ChunkSerializer {
 		if (tickScheduler instanceof ChunkTickScheduler) {
 			compoundTag2.put("ToBeTicked", ((ChunkTickScheduler)tickScheduler).toNbt());
 		} else if (tickScheduler instanceof SimpleTickScheduler) {
-			compoundTag2.put("TileTicks", ((SimpleTickScheduler)tickScheduler).toTag(serverWorld.getTime()));
+			compoundTag2.put("TileTicks", ((SimpleTickScheduler)tickScheduler).toNbt(serverWorld.getTime()));
 		} else {
 			compoundTag2.put("TileTicks", serverWorld.method_14196().toTag(chunkPos));
 		}
@@ -355,7 +355,7 @@ public class ChunkSerializer {
 		if (tickScheduler2 instanceof ChunkTickScheduler) {
 			compoundTag2.put("LiquidsToBeTicked", ((ChunkTickScheduler)tickScheduler2).toNbt());
 		} else if (tickScheduler2 instanceof SimpleTickScheduler) {
-			compoundTag2.put("LiquidTicks", ((SimpleTickScheduler)tickScheduler2).toTag(serverWorld.getTime()));
+			compoundTag2.put("LiquidTicks", ((SimpleTickScheduler)tickScheduler2).toNbt(serverWorld.getTime()));
 		} else {
 			compoundTag2.put("LiquidTicks", serverWorld.method_14179().toTag(chunkPos));
 		}
@@ -382,7 +382,7 @@ public class ChunkSerializer {
 			}
 		}
 
-		return ChunkStatus.ChunkType.field_12808;
+		return ChunkStatus.ChunkType.PROTOCHUNK;
 	}
 
 	private static void writeEntities(CompoundTag compoundTag, WorldChunk worldChunk) {
@@ -395,7 +395,7 @@ public class ChunkSerializer {
 				worldChunk.addEntity(entity);
 				return entity;
 			});
-			worldChunk.method_12232(true);
+			worldChunk.setUnsaved(true);
 		}
 
 		ListTag listTag2 = compoundTag.getList("TileEntities", 10);

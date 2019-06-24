@@ -76,7 +76,7 @@ public class Sound implements SoundContainer<Sound> {
 
 	@Environment(EnvType.CLIENT)
 	public static enum RegistrationType {
-		field_5474("file"),
+		FILE("file"),
 		SOUND_EVENT("event");
 
 		private final String name;

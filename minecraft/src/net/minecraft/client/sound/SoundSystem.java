@@ -75,7 +75,7 @@ public class SoundSystem {
 			try {
 				this.soundEngine.init();
 				this.listener.init();
-				this.listener.setVolume(this.settings.getSoundVolume(SoundCategory.field_15250));
+				this.listener.setVolume(this.settings.getSoundVolume(SoundCategory.MASTER));
 				this.soundLoader.loadStatic(this.preloadedSounds).thenRun(this.preloadedSounds::clear);
 				this.started = true;
 				LOGGER.info(MARKER, "Sound engine started");
@@ -86,12 +86,12 @@ public class SoundSystem {
 	}
 
 	private float getSoundVolume(SoundCategory soundCategory) {
-		return soundCategory != null && soundCategory != SoundCategory.field_15250 ? this.settings.getSoundVolume(soundCategory) : 1.0F;
+		return soundCategory != null && soundCategory != SoundCategory.MASTER ? this.settings.getSoundVolume(soundCategory) : 1.0F;
 	}
 
 	public void updateSoundVolume(SoundCategory soundCategory, float f) {
 		if (this.started) {
-			if (soundCategory == SoundCategory.field_15250) {
+			if (soundCategory == SoundCategory.MASTER) {
 				this.listener.setVolume(f);
 			} else {
 				this.sources.forEach((soundInstance, sourceManager) -> {
@@ -271,7 +271,7 @@ public class SoundSystem {
 						} else {
 							boolean bl2 = soundInstance.isRepeatable() && soundInstance.getRepeatDelay() == 0;
 							Vec3d vec3d = new Vec3d((double)soundInstance.getX(), (double)soundInstance.getY(), (double)soundInstance.getZ());
-							Channel.SourceManager sourceManager = this.channel.createSource(sound.isStreamed() ? SoundEngine.RunMode.field_18353 : SoundEngine.RunMode.field_18352);
+							Channel.SourceManager sourceManager = this.channel.createSource(sound.isStreamed() ? SoundEngine.RunMode.STREAMING : SoundEngine.RunMode.STATIC);
 							LOGGER.debug(MARKER, "Playing sound {} for event {}", sound.getIdentifier(), identifier);
 							this.soundEndTicks.put(soundInstance, this.ticks + 20);
 							this.sources.put(soundInstance, sourceManager);
@@ -279,7 +279,7 @@ public class SoundSystem {
 							sourceManager.run(source -> {
 								source.setPitch(i);
 								source.setVolume(h);
-								if (attenuationType == SoundInstance.AttenuationType.field_5476) {
+								if (attenuationType == SoundInstance.AttenuationType.LINEAR) {
 									source.setAttenuation(g);
 								} else {
 									source.disableAttenuation();

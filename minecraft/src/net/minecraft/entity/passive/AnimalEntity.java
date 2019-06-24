@@ -53,7 +53,7 @@ public abstract class AnimalEntity extends PassiveEntity {
 				double f = this.random.nextGaussian() * 0.02;
 				this.world
 					.addParticle(
-						ParticleTypes.field_11201,
+						ParticleTypes.HEART,
 						this.x + (double)(this.random.nextFloat() * this.getWidth() * 2.0F) - (double)this.getWidth(),
 						this.y + 0.5 + (double)(this.random.nextFloat() * this.getHeight()),
 						this.z + (double)(this.random.nextFloat() * this.getWidth() * 2.0F) - (double)this.getWidth(),
@@ -77,7 +77,7 @@ public abstract class AnimalEntity extends PassiveEntity {
 
 	@Override
 	public float getPathfindingFavor(BlockPos blockPos, ViewableWorld viewableWorld) {
-		return viewableWorld.getBlockState(blockPos.down()).getBlock() == Blocks.field_10219 ? 10.0F : viewableWorld.getBrightness(blockPos) - 0.5F;
+		return viewableWorld.getBlockState(blockPos.down()).getBlock() == Blocks.GRASS_BLOCK ? 10.0F : viewableWorld.getBrightness(blockPos) - 0.5F;
 	}
 
 	@Override
@@ -102,7 +102,7 @@ public abstract class AnimalEntity extends PassiveEntity {
 	}
 
 	public static boolean method_20663(EntityType<? extends AnimalEntity> entityType, IWorld iWorld, SpawnType spawnType, BlockPos blockPos, Random random) {
-		return iWorld.getBlockState(blockPos.down()).getBlock() == Blocks.field_10219 && iWorld.getLightLevel(blockPos, 0) > 8;
+		return iWorld.getBlockState(blockPos.down()).getBlock() == Blocks.GRASS_BLOCK && iWorld.getLightLevel(blockPos, 0) > 8;
 	}
 
 	@Override
@@ -121,7 +121,7 @@ public abstract class AnimalEntity extends PassiveEntity {
 	}
 
 	public boolean isBreedingItem(ItemStack itemStack) {
-		return itemStack.getItem() == Items.field_8861;
+		return itemStack.getItem() == Items.WHEAT;
 	}
 
 	@Override
@@ -203,7 +203,7 @@ public abstract class AnimalEntity extends PassiveEntity {
 				double f = this.random.nextGaussian() * 0.02;
 				this.world
 					.addParticle(
-						ParticleTypes.field_11201,
+						ParticleTypes.HEART,
 						this.x + (double)(this.random.nextFloat() * this.getWidth() * 2.0F) - (double)this.getWidth(),
 						this.y + 0.5 + (double)(this.random.nextFloat() * this.getHeight()),
 						this.z + (double)(this.random.nextFloat() * this.getWidth() * 2.0F) - (double)this.getWidth(),

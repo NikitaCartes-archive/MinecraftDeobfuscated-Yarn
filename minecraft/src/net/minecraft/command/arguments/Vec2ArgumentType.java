@@ -27,7 +27,7 @@ public class Vec2ArgumentType implements ArgumentType<PosArgument> {
 		this.centerIntegers = bl;
 	}
 
-	public static Vec2ArgumentType create() {
+	public static Vec2ArgumentType vec2() {
 		return new Vec2ArgumentType(true);
 	}
 

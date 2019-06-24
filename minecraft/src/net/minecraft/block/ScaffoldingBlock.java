@@ -56,7 +56,7 @@ public class ScaffoldingBlock extends Block implements Waterloggable {
 
 	@Override
 	public BlockRenderLayer getRenderLayer() {
-		return BlockRenderLayer.field_9174;
+		return BlockRenderLayer.CUTOUT;
 	}
 
 	@Override
@@ -142,18 +142,18 @@ public class ScaffoldingBlock extends Block implements Waterloggable {
 	}
 
 	public static int calculateDistance(BlockView blockView, BlockPos blockPos) {
-		BlockPos.Mutable mutable = new BlockPos.Mutable(blockPos).setOffset(Direction.field_11033);
+		BlockPos.Mutable mutable = new BlockPos.Mutable(blockPos).setOffset(Direction.DOWN);
 		BlockState blockState = blockView.getBlockState(mutable);
 		int i = 7;
-		if (blockState.getBlock() == Blocks.field_16492) {
+		if (blockState.getBlock() == Blocks.SCAFFOLDING) {
 			i = (Integer)blockState.get(DISTANCE);
-		} else if (Block.isSolidFullSquare(blockState, blockView, mutable, Direction.field_11036)) {
+		} else if (Block.isSolidFullSquare(blockState, blockView, mutable, Direction.UP)) {
 			return 0;
 		}
 
-		for (Direction direction : Direction.Type.field_11062) {
+		for (Direction direction : Direction.Type.HORIZONTAL) {
 			BlockState blockState2 = blockView.getBlockState(mutable.set(blockPos).setOffset(direction));
-			if (blockState2.getBlock() == Blocks.field_16492) {
+			if (blockState2.getBlock() == Blocks.SCAFFOLDING) {
 				i = Math.min(i, (Integer)blockState2.get(DISTANCE) + 1);
 				if (i == 1) {
 					break;

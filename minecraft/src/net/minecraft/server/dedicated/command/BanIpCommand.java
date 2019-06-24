@@ -35,7 +35,7 @@ public class BanIpCommand {
 					CommandManager.argument("target", StringArgumentType.word())
 						.executes(commandContext -> checkIp(commandContext.getSource(), StringArgumentType.getString(commandContext, "target"), null))
 						.then(
-							CommandManager.argument("reason", MessageArgumentType.create())
+							CommandManager.argument("reason", MessageArgumentType.message())
 								.executes(
 									commandContext -> checkIp(
 											commandContext.getSource(), StringArgumentType.getString(commandContext, "target"), MessageArgumentType.getMessage(commandContext, "reason")

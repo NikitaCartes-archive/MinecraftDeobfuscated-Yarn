@@ -29,7 +29,7 @@ public class JigsawReplacementStructureProcessor extends StructureProcessor {
 		StructurePlacementData structurePlacementData
 	) {
 		Block block = structureBlockInfo2.state.getBlock();
-		if (block != Blocks.field_16540) {
+		if (block != Blocks.JIGSAW) {
 			return structureBlockInfo2;
 		} else {
 			String string = structureBlockInfo2.tag.getString("final_state");
@@ -41,7 +41,7 @@ public class JigsawReplacementStructureProcessor extends StructureProcessor {
 				throw new RuntimeException(var10);
 			}
 
-			return blockArgumentParser.getBlockState().getBlock() == Blocks.field_10369
+			return blockArgumentParser.getBlockState().getBlock() == Blocks.STRUCTURE_VOID
 				? null
 				: new Structure.StructureBlockInfo(structureBlockInfo2.pos, blockArgumentParser.getBlockState(), null);
 		}
@@ -49,7 +49,7 @@ public class JigsawReplacementStructureProcessor extends StructureProcessor {
 
 	@Override
 	protected StructureProcessorType getType() {
-		return StructureProcessorType.field_16991;
+		return StructureProcessorType.JIGSAW_REPLACEMENT;
 	}
 
 	@Override

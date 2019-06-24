@@ -20,18 +20,18 @@ public class SnowyBlock extends Block {
 	public BlockState getStateForNeighborUpdate(
 		BlockState blockState, Direction direction, BlockState blockState2, IWorld iWorld, BlockPos blockPos, BlockPos blockPos2
 	) {
-		if (direction != Direction.field_11036) {
+		if (direction != Direction.UP) {
 			return super.getStateForNeighborUpdate(blockState, direction, blockState2, iWorld, blockPos, blockPos2);
 		} else {
 			Block block = blockState2.getBlock();
-			return blockState.with(SNOWY, Boolean.valueOf(block == Blocks.field_10491 || block == Blocks.field_10477));
+			return blockState.with(SNOWY, Boolean.valueOf(block == Blocks.SNOW_BLOCK || block == Blocks.SNOW));
 		}
 	}
 
 	@Override
 	public BlockState getPlacementState(ItemPlacementContext itemPlacementContext) {
 		Block block = itemPlacementContext.getWorld().getBlockState(itemPlacementContext.getBlockPos().up()).getBlock();
-		return this.getDefaultState().with(SNOWY, Boolean.valueOf(block == Blocks.field_10491 || block == Blocks.field_10477));
+		return this.getDefaultState().with(SNOWY, Boolean.valueOf(block == Blocks.SNOW_BLOCK || block == Blocks.SNOW));
 	}
 
 	@Override

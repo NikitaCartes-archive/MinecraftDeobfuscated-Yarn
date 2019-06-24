@@ -41,11 +41,25 @@ public class FishingRodItem extends Item {
 
 			playerEntity.swingHand(hand);
 			world.playSound(
-				null, playerEntity.x, playerEntity.y, playerEntity.z, SoundEvents.field_15093, SoundCategory.field_15254, 1.0F, 0.4F / (RANDOM.nextFloat() * 0.4F + 0.8F)
+				null,
+				playerEntity.x,
+				playerEntity.y,
+				playerEntity.z,
+				SoundEvents.ENTITY_FISHING_BOBBER_RETRIEVE,
+				SoundCategory.NEUTRAL,
+				1.0F,
+				0.4F / (RANDOM.nextFloat() * 0.4F + 0.8F)
 			);
 		} else {
 			world.playSound(
-				null, playerEntity.x, playerEntity.y, playerEntity.z, SoundEvents.field_14596, SoundCategory.field_15254, 0.5F, 0.4F / (RANDOM.nextFloat() * 0.4F + 0.8F)
+				null,
+				playerEntity.x,
+				playerEntity.y,
+				playerEntity.z,
+				SoundEvents.ENTITY_FISHING_BOBBER_THROW,
+				SoundCategory.NEUTRAL,
+				0.5F,
+				0.4F / (RANDOM.nextFloat() * 0.4F + 0.8F)
 			);
 			if (!world.isClient) {
 				int i = EnchantmentHelper.getLure(itemStack);
@@ -54,10 +68,10 @@ public class FishingRodItem extends Item {
 			}
 
 			playerEntity.swingHand(hand);
-			playerEntity.incrementStat(Stats.field_15372.getOrCreateStat(this));
+			playerEntity.incrementStat(Stats.USED.getOrCreateStat(this));
 		}
 
-		return new TypedActionResult<>(ActionResult.field_5812, itemStack);
+		return new TypedActionResult<>(ActionResult.SUCCESS, itemStack);
 	}
 
 	@Override

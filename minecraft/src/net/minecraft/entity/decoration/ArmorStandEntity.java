@@ -32,50 +32,42 @@ import net.minecraft.particle.ParticleTypes;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
-import net.minecraft.util.AbsoluteHand;
 import net.minecraft.util.ActionResult;
+import net.minecraft.util.Arm;
 import net.minecraft.util.DefaultedList;
 import net.minecraft.util.Hand;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.EulerRotation;
+import net.minecraft.util.math.EulerAngle;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 
 public class ArmorStandEntity extends LivingEntity {
-	private static final EulerRotation DEFAULT_HEAD_ROTATION = new EulerRotation(0.0F, 0.0F, 0.0F);
-	private static final EulerRotation DEFAULT_BODY_ROTATION = new EulerRotation(0.0F, 0.0F, 0.0F);
-	private static final EulerRotation DEFAULT_LEFT_ARM_ROTATION = new EulerRotation(-10.0F, 0.0F, -10.0F);
-	private static final EulerRotation DEFAULT_RIGHT_ARM_ROTATION = new EulerRotation(-15.0F, 0.0F, 10.0F);
-	private static final EulerRotation DEFAULT_LEFT_LEG_ROTATION = new EulerRotation(-1.0F, 0.0F, -1.0F);
-	private static final EulerRotation DEFAULT_RIGHT_LEG_ROTATION = new EulerRotation(1.0F, 0.0F, 1.0F);
+	private static final EulerAngle DEFAULT_HEAD_ROTATION = new EulerAngle(0.0F, 0.0F, 0.0F);
+	private static final EulerAngle DEFAULT_BODY_ROTATION = new EulerAngle(0.0F, 0.0F, 0.0F);
+	private static final EulerAngle DEFAULT_LEFT_ARM_ROTATION = new EulerAngle(-10.0F, 0.0F, -10.0F);
+	private static final EulerAngle DEFAULT_RIGHT_ARM_ROTATION = new EulerAngle(-15.0F, 0.0F, 10.0F);
+	private static final EulerAngle DEFAULT_LEFT_LEG_ROTATION = new EulerAngle(-1.0F, 0.0F, -1.0F);
+	private static final EulerAngle DEFAULT_RIGHT_LEG_ROTATION = new EulerAngle(1.0F, 0.0F, 1.0F);
 	public static final TrackedData<Byte> ARMOR_STAND_FLAGS = DataTracker.registerData(ArmorStandEntity.class, TrackedDataHandlerRegistry.BYTE);
-	public static final TrackedData<EulerRotation> TRACKER_HEAD_ROTATION = DataTracker.registerData(ArmorStandEntity.class, TrackedDataHandlerRegistry.ROTATION);
-	public static final TrackedData<EulerRotation> TRACKER_BODY_ROTATION = DataTracker.registerData(ArmorStandEntity.class, TrackedDataHandlerRegistry.ROTATION);
-	public static final TrackedData<EulerRotation> TRACKER_LEFT_ARM_ROTATION = DataTracker.registerData(
-		ArmorStandEntity.class, TrackedDataHandlerRegistry.ROTATION
-	);
-	public static final TrackedData<EulerRotation> TRACKER_RIGHT_ARM_ROTATION = DataTracker.registerData(
-		ArmorStandEntity.class, TrackedDataHandlerRegistry.ROTATION
-	);
-	public static final TrackedData<EulerRotation> TRACKER_LEFT_LEG_ROTATION = DataTracker.registerData(
-		ArmorStandEntity.class, TrackedDataHandlerRegistry.ROTATION
-	);
-	public static final TrackedData<EulerRotation> TRACKER_RIGHT_LEG_ROTATION = DataTracker.registerData(
-		ArmorStandEntity.class, TrackedDataHandlerRegistry.ROTATION
-	);
+	public static final TrackedData<EulerAngle> TRACKER_HEAD_ROTATION = DataTracker.registerData(ArmorStandEntity.class, TrackedDataHandlerRegistry.ROTATION);
+	public static final TrackedData<EulerAngle> TRACKER_BODY_ROTATION = DataTracker.registerData(ArmorStandEntity.class, TrackedDataHandlerRegistry.ROTATION);
+	public static final TrackedData<EulerAngle> TRACKER_LEFT_ARM_ROTATION = DataTracker.registerData(ArmorStandEntity.class, TrackedDataHandlerRegistry.ROTATION);
+	public static final TrackedData<EulerAngle> TRACKER_RIGHT_ARM_ROTATION = DataTracker.registerData(ArmorStandEntity.class, TrackedDataHandlerRegistry.ROTATION);
+	public static final TrackedData<EulerAngle> TRACKER_LEFT_LEG_ROTATION = DataTracker.registerData(ArmorStandEntity.class, TrackedDataHandlerRegistry.ROTATION);
+	public static final TrackedData<EulerAngle> TRACKER_RIGHT_LEG_ROTATION = DataTracker.registerData(ArmorStandEntity.class, TrackedDataHandlerRegistry.ROTATION);
 	private static final Predicate<Entity> RIDEABLE_MINECART_PREDICATE = entity -> entity instanceof AbstractMinecartEntity
-			&& ((AbstractMinecartEntity)entity).getMinecartType() == AbstractMinecartEntity.Type.field_7674;
-	private final DefaultedList<ItemStack> heldItems = DefaultedList.create(2, ItemStack.EMPTY);
-	private final DefaultedList<ItemStack> armorItems = DefaultedList.create(4, ItemStack.EMPTY);
+			&& ((AbstractMinecartEntity)entity).getMinecartType() == AbstractMinecartEntity.Type.RIDEABLE;
+	private final DefaultedList<ItemStack> heldItems = DefaultedList.ofSize(2, ItemStack.EMPTY);
+	private final DefaultedList<ItemStack> armorItems = DefaultedList.ofSize(4, ItemStack.EMPTY);
 	private boolean field_7111;
 	public long field_7112;
 	private int disabledSlots;
-	private EulerRotation headRotation = DEFAULT_HEAD_ROTATION;
-	private EulerRotation bodyRotation = DEFAULT_BODY_ROTATION;
-	private EulerRotation leftArmRotation = DEFAULT_LEFT_ARM_ROTATION;
-	private EulerRotation rightArmRotation = DEFAULT_RIGHT_ARM_ROTATION;
-	private EulerRotation leftLegRotation = DEFAULT_LEFT_LEG_ROTATION;
-	private EulerRotation rightLegRotation = DEFAULT_RIGHT_LEG_ROTATION;
+	private EulerAngle headRotation = DEFAULT_HEAD_ROTATION;
+	private EulerAngle bodyRotation = DEFAULT_BODY_ROTATION;
+	private EulerAngle leftArmRotation = DEFAULT_LEFT_ARM_ROTATION;
+	private EulerAngle rightArmRotation = DEFAULT_RIGHT_ARM_ROTATION;
+	private EulerAngle leftLegRotation = DEFAULT_LEFT_LEG_ROTATION;
+	private EulerAngle rightLegRotation = DEFAULT_RIGHT_LEG_ROTATION;
 
 	public ArmorStandEntity(EntityType<? extends ArmorStandEntity> entityType, World world) {
 		super(entityType, world);
@@ -83,7 +75,7 @@ public class ArmorStandEntity extends LivingEntity {
 	}
 
 	public ArmorStandEntity(World world, double d, double e, double f) {
-		this(EntityType.field_6131, world);
+		this(EntityType.ARMOR_STAND, world);
 		this.setPosition(d, e, f);
 	}
 
@@ -130,9 +122,9 @@ public class ArmorStandEntity extends LivingEntity {
 	@Override
 	public ItemStack getEquippedStack(EquipmentSlot equipmentSlot) {
 		switch (equipmentSlot.getType()) {
-			case field_6177:
+			case HAND:
 				return this.heldItems.get(equipmentSlot.getEntitySlotId());
-			case field_6178:
+			case ARMOR:
 				return this.armorItems.get(equipmentSlot.getEntitySlotId());
 			default:
 				return ItemStack.EMPTY;
@@ -142,11 +134,11 @@ public class ArmorStandEntity extends LivingEntity {
 	@Override
 	public void setEquippedStack(EquipmentSlot equipmentSlot, ItemStack itemStack) {
 		switch (equipmentSlot.getType()) {
-			case field_6177:
+			case HAND:
 				this.onEquipStack(itemStack);
 				this.heldItems.set(equipmentSlot.getEntitySlotId(), itemStack);
 				break;
-			case field_6178:
+			case ARMOR:
 				this.onEquipStack(itemStack);
 				this.armorItems.set(equipmentSlot.getEntitySlotId(), itemStack);
 		}
@@ -156,24 +148,24 @@ public class ArmorStandEntity extends LivingEntity {
 	public boolean equip(int i, ItemStack itemStack) {
 		EquipmentSlot equipmentSlot;
 		if (i == 98) {
-			equipmentSlot = EquipmentSlot.field_6173;
+			equipmentSlot = EquipmentSlot.MAINHAND;
 		} else if (i == 99) {
-			equipmentSlot = EquipmentSlot.field_6171;
-		} else if (i == 100 + EquipmentSlot.field_6169.getEntitySlotId()) {
-			equipmentSlot = EquipmentSlot.field_6169;
-		} else if (i == 100 + EquipmentSlot.field_6174.getEntitySlotId()) {
-			equipmentSlot = EquipmentSlot.field_6174;
-		} else if (i == 100 + EquipmentSlot.field_6172.getEntitySlotId()) {
-			equipmentSlot = EquipmentSlot.field_6172;
+			equipmentSlot = EquipmentSlot.OFFHAND;
+		} else if (i == 100 + EquipmentSlot.HEAD.getEntitySlotId()) {
+			equipmentSlot = EquipmentSlot.HEAD;
+		} else if (i == 100 + EquipmentSlot.CHEST.getEntitySlotId()) {
+			equipmentSlot = EquipmentSlot.CHEST;
+		} else if (i == 100 + EquipmentSlot.LEGS.getEntitySlotId()) {
+			equipmentSlot = EquipmentSlot.LEGS;
 		} else {
-			if (i != 100 + EquipmentSlot.field_6166.getEntitySlotId()) {
+			if (i != 100 + EquipmentSlot.FEET.getEntitySlotId()) {
 				return false;
 			}
 
-			equipmentSlot = EquipmentSlot.field_6166;
+			equipmentSlot = EquipmentSlot.FEET;
 		}
 
-		if (!itemStack.isEmpty() && !MobEntity.canEquipmentSlotContain(equipmentSlot, itemStack) && equipmentSlot != EquipmentSlot.field_6169) {
+		if (!itemStack.isEmpty() && !MobEntity.canEquipmentSlotContain(equipmentSlot, itemStack) && equipmentSlot != EquipmentSlot.HEAD) {
 			return false;
 		} else {
 			this.setEquippedStack(equipmentSlot, itemStack);
@@ -258,17 +250,17 @@ public class ArmorStandEntity extends LivingEntity {
 
 	private void deserializePose(CompoundTag compoundTag) {
 		ListTag listTag = compoundTag.getList("Head", 5);
-		this.setHeadRotation(listTag.isEmpty() ? DEFAULT_HEAD_ROTATION : new EulerRotation(listTag));
+		this.setHeadRotation(listTag.isEmpty() ? DEFAULT_HEAD_ROTATION : new EulerAngle(listTag));
 		ListTag listTag2 = compoundTag.getList("Body", 5);
-		this.setBodyRotation(listTag2.isEmpty() ? DEFAULT_BODY_ROTATION : new EulerRotation(listTag2));
+		this.setBodyRotation(listTag2.isEmpty() ? DEFAULT_BODY_ROTATION : new EulerAngle(listTag2));
 		ListTag listTag3 = compoundTag.getList("LeftArm", 5);
-		this.setLeftArmRotation(listTag3.isEmpty() ? DEFAULT_LEFT_ARM_ROTATION : new EulerRotation(listTag3));
+		this.setLeftArmRotation(listTag3.isEmpty() ? DEFAULT_LEFT_ARM_ROTATION : new EulerAngle(listTag3));
 		ListTag listTag4 = compoundTag.getList("RightArm", 5);
-		this.setRightArmRotation(listTag4.isEmpty() ? DEFAULT_RIGHT_ARM_ROTATION : new EulerRotation(listTag4));
+		this.setRightArmRotation(listTag4.isEmpty() ? DEFAULT_RIGHT_ARM_ROTATION : new EulerAngle(listTag4));
 		ListTag listTag5 = compoundTag.getList("LeftLeg", 5);
-		this.setLeftLegRotation(listTag5.isEmpty() ? DEFAULT_LEFT_LEG_ROTATION : new EulerRotation(listTag5));
+		this.setLeftLegRotation(listTag5.isEmpty() ? DEFAULT_LEFT_LEG_ROTATION : new EulerAngle(listTag5));
 		ListTag listTag6 = compoundTag.getList("RightLeg", 5);
-		this.setRightLegRotation(listTag6.isEmpty() ? DEFAULT_RIGHT_LEG_ROTATION : new EulerRotation(listTag6));
+		this.setRightLegRotation(listTag6.isEmpty() ? DEFAULT_RIGHT_LEG_ROTATION : new EulerAngle(listTag6));
 	}
 
 	private CompoundTag serializePose() {
@@ -324,8 +316,8 @@ public class ArmorStandEntity extends LivingEntity {
 	@Override
 	public ActionResult interactAt(PlayerEntity playerEntity, Vec3d vec3d, Hand hand) {
 		ItemStack itemStack = playerEntity.getStackInHand(hand);
-		if (this.isMarker() || itemStack.getItem() == Items.field_8448) {
-			return ActionResult.field_5811;
+		if (this.isMarker() || itemStack.getItem() == Items.NAME_TAG) {
+			return ActionResult.PASS;
 		} else if (!this.world.isClient && !playerEntity.isSpectator()) {
 			EquipmentSlot equipmentSlot = MobEntity.getPreferredEquipmentSlot(itemStack);
 			if (itemStack.isEmpty()) {
@@ -336,45 +328,44 @@ public class ArmorStandEntity extends LivingEntity {
 				}
 			} else {
 				if (this.method_6915(equipmentSlot)) {
-					return ActionResult.field_5814;
+					return ActionResult.FAIL;
 				}
 
-				if (equipmentSlot.getType() == EquipmentSlot.Type.field_6177 && !this.shouldShowArms()) {
-					return ActionResult.field_5814;
+				if (equipmentSlot.getType() == EquipmentSlot.Type.HAND && !this.shouldShowArms()) {
+					return ActionResult.FAIL;
 				}
 
 				this.method_6904(playerEntity, equipmentSlot, itemStack, hand);
 			}
 
-			return ActionResult.field_5812;
+			return ActionResult.SUCCESS;
 		} else {
-			return ActionResult.field_5812;
+			return ActionResult.SUCCESS;
 		}
 	}
 
 	protected EquipmentSlot method_6916(Vec3d vec3d) {
-		EquipmentSlot equipmentSlot = EquipmentSlot.field_6173;
+		EquipmentSlot equipmentSlot = EquipmentSlot.MAINHAND;
 		boolean bl = this.isSmall();
 		double d = bl ? vec3d.y * 2.0 : vec3d.y;
-		EquipmentSlot equipmentSlot2 = EquipmentSlot.field_6166;
+		EquipmentSlot equipmentSlot2 = EquipmentSlot.FEET;
 		if (d >= 0.1 && d < 0.1 + (bl ? 0.8 : 0.45) && this.isEquippedStackValid(equipmentSlot2)) {
-			equipmentSlot = EquipmentSlot.field_6166;
-		} else if (d >= 0.9 + (bl ? 0.3 : 0.0) && d < 0.9 + (bl ? 1.0 : 0.7) && this.isEquippedStackValid(EquipmentSlot.field_6174)) {
-			equipmentSlot = EquipmentSlot.field_6174;
-		} else if (d >= 0.4 && d < 0.4 + (bl ? 1.0 : 0.8) && this.isEquippedStackValid(EquipmentSlot.field_6172)) {
-			equipmentSlot = EquipmentSlot.field_6172;
-		} else if (d >= 1.6 && this.isEquippedStackValid(EquipmentSlot.field_6169)) {
-			equipmentSlot = EquipmentSlot.field_6169;
-		} else if (!this.isEquippedStackValid(EquipmentSlot.field_6173) && this.isEquippedStackValid(EquipmentSlot.field_6171)) {
-			equipmentSlot = EquipmentSlot.field_6171;
+			equipmentSlot = EquipmentSlot.FEET;
+		} else if (d >= 0.9 + (bl ? 0.3 : 0.0) && d < 0.9 + (bl ? 1.0 : 0.7) && this.isEquippedStackValid(EquipmentSlot.CHEST)) {
+			equipmentSlot = EquipmentSlot.CHEST;
+		} else if (d >= 0.4 && d < 0.4 + (bl ? 1.0 : 0.8) && this.isEquippedStackValid(EquipmentSlot.LEGS)) {
+			equipmentSlot = EquipmentSlot.LEGS;
+		} else if (d >= 1.6 && this.isEquippedStackValid(EquipmentSlot.HEAD)) {
+			equipmentSlot = EquipmentSlot.HEAD;
+		} else if (!this.isEquippedStackValid(EquipmentSlot.MAINHAND) && this.isEquippedStackValid(EquipmentSlot.OFFHAND)) {
+			equipmentSlot = EquipmentSlot.OFFHAND;
 		}
 
 		return equipmentSlot;
 	}
 
 	public boolean method_6915(EquipmentSlot equipmentSlot) {
-		return (this.disabledSlots & 1 << equipmentSlot.getArmorStandSlotId()) != 0
-			|| equipmentSlot.getType() == EquipmentSlot.Type.field_6177 && !this.shouldShowArms();
+		return (this.disabledSlots & 1 << equipmentSlot.getArmorStandSlotId()) != 0 || equipmentSlot.getType() == EquipmentSlot.Type.HAND && !this.shouldShowArms();
 	}
 
 	private void method_6904(PlayerEntity playerEntity, EquipmentSlot equipmentSlot, ItemStack itemStack, Hand hand) {
@@ -456,7 +447,7 @@ public class ArmorStandEntity extends LivingEntity {
 	public void handleStatus(byte b) {
 		if (b == 32) {
 			if (this.world.isClient) {
-				this.world.playSound(this.x, this.y, this.z, SoundEvents.field_14897, this.getSoundCategory(), 0.3F, 1.0F, false);
+				this.world.playSound(this.x, this.y, this.z, SoundEvents.ENTITY_ARMOR_STAND_HIT, this.getSoundCategory(), 0.3F, 1.0F, false);
 				this.field_7112 = this.world.getTime();
 			}
 		} else {
@@ -480,7 +471,7 @@ public class ArmorStandEntity extends LivingEntity {
 		if (this.world instanceof ServerWorld) {
 			((ServerWorld)this.world)
 				.spawnParticles(
-					new BlockStateParticleEffect(ParticleTypes.field_11217, Blocks.field_10161.getDefaultState()),
+					new BlockStateParticleEffect(ParticleTypes.BLOCK, Blocks.OAK_PLANKS.getDefaultState()),
 					this.x,
 					this.y + (double)this.getHeight() / 1.5,
 					this.z,
@@ -505,7 +496,7 @@ public class ArmorStandEntity extends LivingEntity {
 	}
 
 	private void method_6924(DamageSource damageSource) {
-		Block.dropStack(this.world, new BlockPos(this), new ItemStack(Items.field_8694));
+		Block.dropStack(this.world, new BlockPos(this), new ItemStack(Items.ARMOR_STAND));
 		this.method_6908(damageSource);
 	}
 
@@ -531,7 +522,7 @@ public class ArmorStandEntity extends LivingEntity {
 	}
 
 	private void method_6920() {
-		this.world.playSound(null, this.x, this.y, this.z, SoundEvents.field_15118, this.getSoundCategory(), 1.0F, 1.0F);
+		this.world.playSound(null, this.x, this.y, this.z, SoundEvents.ENTITY_ARMOR_STAND_BREAK, this.getSoundCategory(), 1.0F, 1.0F);
 	}
 
 	@Override
@@ -573,34 +564,34 @@ public class ArmorStandEntity extends LivingEntity {
 	@Override
 	public void tick() {
 		super.tick();
-		EulerRotation eulerRotation = this.dataTracker.get(TRACKER_HEAD_ROTATION);
-		if (!this.headRotation.equals(eulerRotation)) {
-			this.setHeadRotation(eulerRotation);
+		EulerAngle eulerAngle = this.dataTracker.get(TRACKER_HEAD_ROTATION);
+		if (!this.headRotation.equals(eulerAngle)) {
+			this.setHeadRotation(eulerAngle);
 		}
 
-		EulerRotation eulerRotation2 = this.dataTracker.get(TRACKER_BODY_ROTATION);
-		if (!this.bodyRotation.equals(eulerRotation2)) {
-			this.setBodyRotation(eulerRotation2);
+		EulerAngle eulerAngle2 = this.dataTracker.get(TRACKER_BODY_ROTATION);
+		if (!this.bodyRotation.equals(eulerAngle2)) {
+			this.setBodyRotation(eulerAngle2);
 		}
 
-		EulerRotation eulerRotation3 = this.dataTracker.get(TRACKER_LEFT_ARM_ROTATION);
-		if (!this.leftArmRotation.equals(eulerRotation3)) {
-			this.setLeftArmRotation(eulerRotation3);
+		EulerAngle eulerAngle3 = this.dataTracker.get(TRACKER_LEFT_ARM_ROTATION);
+		if (!this.leftArmRotation.equals(eulerAngle3)) {
+			this.setLeftArmRotation(eulerAngle3);
 		}
 
-		EulerRotation eulerRotation4 = this.dataTracker.get(TRACKER_RIGHT_ARM_ROTATION);
-		if (!this.rightArmRotation.equals(eulerRotation4)) {
-			this.setRightArmRotation(eulerRotation4);
+		EulerAngle eulerAngle4 = this.dataTracker.get(TRACKER_RIGHT_ARM_ROTATION);
+		if (!this.rightArmRotation.equals(eulerAngle4)) {
+			this.setRightArmRotation(eulerAngle4);
 		}
 
-		EulerRotation eulerRotation5 = this.dataTracker.get(TRACKER_LEFT_LEG_ROTATION);
-		if (!this.leftLegRotation.equals(eulerRotation5)) {
-			this.setLeftLegRotation(eulerRotation5);
+		EulerAngle eulerAngle5 = this.dataTracker.get(TRACKER_LEFT_LEG_ROTATION);
+		if (!this.leftLegRotation.equals(eulerAngle5)) {
+			this.setLeftLegRotation(eulerAngle5);
 		}
 
-		EulerRotation eulerRotation6 = this.dataTracker.get(TRACKER_RIGHT_LEG_ROTATION);
-		if (!this.rightLegRotation.equals(eulerRotation6)) {
-			this.setRightLegRotation(eulerRotation6);
+		EulerAngle eulerAngle6 = this.dataTracker.get(TRACKER_RIGHT_LEG_ROTATION);
+		if (!this.rightLegRotation.equals(eulerAngle6)) {
+			this.setRightLegRotation(eulerAngle6);
 		}
 	}
 
@@ -632,7 +623,7 @@ public class ArmorStandEntity extends LivingEntity {
 
 	@Override
 	public PistonBehavior getPistonBehavior() {
-		return this.isMarker() ? PistonBehavior.field_15975 : super.getPistonBehavior();
+		return this.isMarker() ? PistonBehavior.IGNORE : super.getPistonBehavior();
 	}
 
 	private void setSmall(boolean bl) {
@@ -677,61 +668,61 @@ public class ArmorStandEntity extends LivingEntity {
 		return b;
 	}
 
-	public void setHeadRotation(EulerRotation eulerRotation) {
-		this.headRotation = eulerRotation;
-		this.dataTracker.set(TRACKER_HEAD_ROTATION, eulerRotation);
+	public void setHeadRotation(EulerAngle eulerAngle) {
+		this.headRotation = eulerAngle;
+		this.dataTracker.set(TRACKER_HEAD_ROTATION, eulerAngle);
 	}
 
-	public void setBodyRotation(EulerRotation eulerRotation) {
-		this.bodyRotation = eulerRotation;
-		this.dataTracker.set(TRACKER_BODY_ROTATION, eulerRotation);
+	public void setBodyRotation(EulerAngle eulerAngle) {
+		this.bodyRotation = eulerAngle;
+		this.dataTracker.set(TRACKER_BODY_ROTATION, eulerAngle);
 	}
 
-	public void setLeftArmRotation(EulerRotation eulerRotation) {
-		this.leftArmRotation = eulerRotation;
-		this.dataTracker.set(TRACKER_LEFT_ARM_ROTATION, eulerRotation);
+	public void setLeftArmRotation(EulerAngle eulerAngle) {
+		this.leftArmRotation = eulerAngle;
+		this.dataTracker.set(TRACKER_LEFT_ARM_ROTATION, eulerAngle);
 	}
 
-	public void setRightArmRotation(EulerRotation eulerRotation) {
-		this.rightArmRotation = eulerRotation;
-		this.dataTracker.set(TRACKER_RIGHT_ARM_ROTATION, eulerRotation);
+	public void setRightArmRotation(EulerAngle eulerAngle) {
+		this.rightArmRotation = eulerAngle;
+		this.dataTracker.set(TRACKER_RIGHT_ARM_ROTATION, eulerAngle);
 	}
 
-	public void setLeftLegRotation(EulerRotation eulerRotation) {
-		this.leftLegRotation = eulerRotation;
-		this.dataTracker.set(TRACKER_LEFT_LEG_ROTATION, eulerRotation);
+	public void setLeftLegRotation(EulerAngle eulerAngle) {
+		this.leftLegRotation = eulerAngle;
+		this.dataTracker.set(TRACKER_LEFT_LEG_ROTATION, eulerAngle);
 	}
 
-	public void setRightLegRotation(EulerRotation eulerRotation) {
-		this.rightLegRotation = eulerRotation;
-		this.dataTracker.set(TRACKER_RIGHT_LEG_ROTATION, eulerRotation);
+	public void setRightLegRotation(EulerAngle eulerAngle) {
+		this.rightLegRotation = eulerAngle;
+		this.dataTracker.set(TRACKER_RIGHT_LEG_ROTATION, eulerAngle);
 	}
 
-	public EulerRotation getHeadRotation() {
+	public EulerAngle getHeadRotation() {
 		return this.headRotation;
 	}
 
-	public EulerRotation getBodyRotation() {
+	public EulerAngle getBodyRotation() {
 		return this.bodyRotation;
 	}
 
 	@Environment(EnvType.CLIENT)
-	public EulerRotation getLeftArmRotation() {
+	public EulerAngle getLeftArmRotation() {
 		return this.leftArmRotation;
 	}
 
 	@Environment(EnvType.CLIENT)
-	public EulerRotation getRightArmRotation() {
+	public EulerAngle getRightArmRotation() {
 		return this.rightArmRotation;
 	}
 
 	@Environment(EnvType.CLIENT)
-	public EulerRotation getLeftLegRotation() {
+	public EulerAngle getLeftLegRotation() {
 		return this.leftLegRotation;
 	}
 
 	@Environment(EnvType.CLIENT)
-	public EulerRotation getRightLegRotation() {
+	public EulerAngle getRightLegRotation() {
 		return this.rightLegRotation;
 	}
 
@@ -741,25 +732,25 @@ public class ArmorStandEntity extends LivingEntity {
 	}
 
 	@Override
-	public AbsoluteHand getMainHand() {
-		return AbsoluteHand.field_6183;
+	public Arm getMainArm() {
+		return Arm.RIGHT;
 	}
 
 	@Override
 	protected SoundEvent getFallSound(int i) {
-		return SoundEvents.field_15186;
+		return SoundEvents.ENTITY_ARMOR_STAND_FALL;
 	}
 
 	@Nullable
 	@Override
 	protected SoundEvent getHurtSound(DamageSource damageSource) {
-		return SoundEvents.field_14897;
+		return SoundEvents.ENTITY_ARMOR_STAND_HIT;
 	}
 
 	@Nullable
 	@Override
 	protected SoundEvent getDeathSound() {
-		return SoundEvents.field_15118;
+		return SoundEvents.ENTITY_ARMOR_STAND_BREAK;
 	}
 
 	@Override
@@ -775,7 +766,7 @@ public class ArmorStandEntity extends LivingEntity {
 	public void onTrackedDataSet(TrackedData<?> trackedData) {
 		if (ARMOR_STAND_FLAGS.equals(trackedData)) {
 			this.calculateDimensions();
-			this.field_6033 = !this.isMarker();
+			this.inanimate = !this.isMarker();
 		}
 
 		super.onTrackedDataSet(trackedData);

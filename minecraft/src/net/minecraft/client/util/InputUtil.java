@@ -20,7 +20,7 @@ public class InputUtil {
 	public static final InputUtil.KeyCode UNKNOWN_KEYCODE = InputUtil.Type.KEYSYM.createFromCode(-1);
 
 	public static InputUtil.KeyCode getKeyCode(int i, int j) {
-		return i == -1 ? InputUtil.Type.field_1671.createFromCode(j) : InputUtil.Type.KEYSYM.createFromCode(i);
+		return i == -1 ? InputUtil.Type.SCANCODE.createFromCode(j) : InputUtil.Type.KEYSYM.createFromCode(i);
 	}
 
 	public static InputUtil.KeyCode fromName(String string) {
@@ -119,7 +119,7 @@ public class InputUtil {
 	@Environment(EnvType.CLIENT)
 	public static enum Type {
 		KEYSYM("key.keyboard"),
-		field_1671("scancode"),
+		SCANCODE("scancode"),
 		MOUSE("key.mouse");
 
 		private static final String[] mouseButtons = new String[]{"left", "middle", "right"};

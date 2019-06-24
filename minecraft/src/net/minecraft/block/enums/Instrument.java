@@ -10,22 +10,22 @@ import net.minecraft.tag.BlockTags;
 import net.minecraft.util.StringIdentifiable;
 
 public enum Instrument implements StringIdentifiable {
-	field_12648("harp", SoundEvents.field_15114),
-	field_12653("basedrum", SoundEvents.field_15047),
-	field_12643("snare", SoundEvents.field_14708),
-	field_12645("hat", SoundEvents.field_15204),
-	field_12651("bass", SoundEvents.field_14624),
-	field_12650("flute", SoundEvents.field_14989),
-	field_12644("bell", SoundEvents.field_14793),
-	field_12654("guitar", SoundEvents.field_14903),
-	field_12647("chime", SoundEvents.field_14725),
-	field_12655("xylophone", SoundEvents.field_14776),
-	field_18284("iron_xylophone", SoundEvents.field_18308),
-	field_18285("cow_bell", SoundEvents.field_18309),
-	field_18286("didgeridoo", SoundEvents.field_18310),
-	field_18287("bit", SoundEvents.field_18311),
-	field_18288("banjo", SoundEvents.field_18312),
-	field_18289("pling", SoundEvents.field_14622);
+	HARP("harp", SoundEvents.BLOCK_NOTE_BLOCK_HARP),
+	BASEDRUM("basedrum", SoundEvents.BLOCK_NOTE_BLOCK_BASEDRUM),
+	SNARE("snare", SoundEvents.BLOCK_NOTE_BLOCK_SNARE),
+	HAT("hat", SoundEvents.BLOCK_NOTE_BLOCK_HAT),
+	BASS("bass", SoundEvents.BLOCK_NOTE_BLOCK_BASS),
+	FLUTE("flute", SoundEvents.BLOCK_NOTE_BLOCK_FLUTE),
+	BELL("bell", SoundEvents.BLOCK_NOTE_BLOCK_BELL),
+	GUITAR("guitar", SoundEvents.BLOCK_NOTE_BLOCK_GUITAR),
+	CHIME("chime", SoundEvents.BLOCK_NOTE_BLOCK_CHIME),
+	XYLOPHONE("xylophone", SoundEvents.BLOCK_NOTE_BLOCK_XYLOPHONE),
+	IRON_XYLOPHONE("iron_xylophone", SoundEvents.BLOCK_NOTE_BLOCK_IRON_XYLOPHONE),
+	COW_BELL("cow_bell", SoundEvents.BLOCK_NOTE_BLOCK_COW_BELL),
+	DIDGERIDOO("didgeridoo", SoundEvents.BLOCK_NOTE_BLOCK_DIDGERIDOO),
+	BIT("bit", SoundEvents.BLOCK_NOTE_BLOCK_BIT),
+	BANJO("banjo", SoundEvents.BLOCK_NOTE_BLOCK_BANJO),
+	PLING("pling", SoundEvents.BLOCK_NOTE_BLOCK_PLING);
 
 	private final String name;
 	private final SoundEvent sound;
@@ -46,38 +46,38 @@ public enum Instrument implements StringIdentifiable {
 
 	public static Instrument fromBlockState(BlockState blockState) {
 		Block block = blockState.getBlock();
-		if (block == Blocks.field_10460) {
-			return field_12650;
-		} else if (block == Blocks.field_10205) {
-			return field_12644;
-		} else if (block.matches(BlockTags.field_15481)) {
-			return field_12654;
-		} else if (block == Blocks.field_10225) {
-			return field_12647;
-		} else if (block == Blocks.field_10166) {
-			return field_12655;
-		} else if (block == Blocks.field_10085) {
-			return field_18284;
-		} else if (block == Blocks.field_10114) {
-			return field_18285;
-		} else if (block == Blocks.field_10261) {
-			return field_18286;
-		} else if (block == Blocks.field_10234) {
-			return field_18287;
-		} else if (block == Blocks.field_10359) {
-			return field_18288;
-		} else if (block == Blocks.field_10171) {
-			return field_18289;
+		if (block == Blocks.CLAY) {
+			return FLUTE;
+		} else if (block == Blocks.GOLD_BLOCK) {
+			return BELL;
+		} else if (block.matches(BlockTags.WOOL)) {
+			return GUITAR;
+		} else if (block == Blocks.PACKED_ICE) {
+			return CHIME;
+		} else if (block == Blocks.BONE_BLOCK) {
+			return XYLOPHONE;
+		} else if (block == Blocks.IRON_BLOCK) {
+			return IRON_XYLOPHONE;
+		} else if (block == Blocks.SOUL_SAND) {
+			return COW_BELL;
+		} else if (block == Blocks.PUMPKIN) {
+			return DIDGERIDOO;
+		} else if (block == Blocks.EMERALD_BLOCK) {
+			return BIT;
+		} else if (block == Blocks.HAY_BLOCK) {
+			return BANJO;
+		} else if (block == Blocks.GLOWSTONE) {
+			return PLING;
 		} else {
 			Material material = blockState.getMaterial();
 			if (material == Material.STONE) {
-				return field_12653;
+				return BASEDRUM;
 			} else if (material == Material.SAND) {
-				return field_12643;
+				return SNARE;
 			} else if (material == Material.GLASS) {
-				return field_12645;
+				return HAT;
 			} else {
-				return material == Material.WOOD ? field_12651 : field_12648;
+				return material == Material.WOOD ? BASS : HARP;
 			}
 		}
 	}

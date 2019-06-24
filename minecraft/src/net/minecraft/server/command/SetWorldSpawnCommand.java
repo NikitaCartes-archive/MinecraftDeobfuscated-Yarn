@@ -13,7 +13,7 @@ public class SetWorldSpawnCommand {
 				.requires(serverCommandSource -> serverCommandSource.hasPermissionLevel(2))
 				.executes(commandContext -> execute(commandContext.getSource(), new BlockPos(commandContext.getSource().getPosition())))
 				.then(
-					CommandManager.argument("pos", BlockPosArgumentType.create())
+					CommandManager.argument("pos", BlockPosArgumentType.blockPos())
 						.executes(commandContext -> execute(commandContext.getSource(), BlockPosArgumentType.getBlockPos(commandContext, "pos")))
 				)
 		);

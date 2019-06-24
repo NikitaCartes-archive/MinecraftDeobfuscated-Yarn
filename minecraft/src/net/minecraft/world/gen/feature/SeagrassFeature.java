@@ -26,16 +26,16 @@ public class SeagrassFeature extends Feature<SeagrassFeatureConfig> {
 		for (int j = 0; j < seagrassFeatureConfig.count; j++) {
 			int k = random.nextInt(8) - random.nextInt(8);
 			int l = random.nextInt(8) - random.nextInt(8);
-			int m = iWorld.getTop(Heightmap.Type.field_13200, blockPos.getX() + k, blockPos.getZ() + l);
+			int m = iWorld.getTop(Heightmap.Type.OCEAN_FLOOR, blockPos.getX() + k, blockPos.getZ() + l);
 			BlockPos blockPos2 = new BlockPos(blockPos.getX() + k, m, blockPos.getZ() + l);
-			if (iWorld.getBlockState(blockPos2).getBlock() == Blocks.field_10382) {
+			if (iWorld.getBlockState(blockPos2).getBlock() == Blocks.WATER) {
 				boolean bl = random.nextDouble() < seagrassFeatureConfig.tallSeagrassProbability;
-				BlockState blockState = bl ? Blocks.field_10238.getDefaultState() : Blocks.field_10376.getDefaultState();
+				BlockState blockState = bl ? Blocks.TALL_SEAGRASS.getDefaultState() : Blocks.SEAGRASS.getDefaultState();
 				if (blockState.canPlaceAt(iWorld, blockPos2)) {
 					if (bl) {
-						BlockState blockState2 = blockState.with(TallSeagrassBlock.HALF, DoubleBlockHalf.field_12609);
+						BlockState blockState2 = blockState.with(TallSeagrassBlock.HALF, DoubleBlockHalf.UPPER);
 						BlockPos blockPos3 = blockPos2.up();
-						if (iWorld.getBlockState(blockPos3).getBlock() == Blocks.field_10382) {
+						if (iWorld.getBlockState(blockPos3).getBlock() == Blocks.WATER) {
 							iWorld.setBlockState(blockPos2, blockState, 2);
 							iWorld.setBlockState(blockPos3, blockState2, 2);
 						}

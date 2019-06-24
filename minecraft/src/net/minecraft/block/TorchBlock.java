@@ -29,14 +29,14 @@ public class TorchBlock extends Block {
 	public BlockState getStateForNeighborUpdate(
 		BlockState blockState, Direction direction, BlockState blockState2, IWorld iWorld, BlockPos blockPos, BlockPos blockPos2
 	) {
-		return direction == Direction.field_11033 && !this.canPlaceAt(blockState, iWorld, blockPos)
-			? Blocks.field_10124.getDefaultState()
+		return direction == Direction.DOWN && !this.canPlaceAt(blockState, iWorld, blockPos)
+			? Blocks.AIR.getDefaultState()
 			: super.getStateForNeighborUpdate(blockState, direction, blockState2, iWorld, blockPos, blockPos2);
 	}
 
 	@Override
 	public boolean canPlaceAt(BlockState blockState, ViewableWorld viewableWorld, BlockPos blockPos) {
-		return isSolidSmallSquare(viewableWorld, blockPos.down(), Direction.field_11036);
+		return isSolidSmallSquare(viewableWorld, blockPos.down(), Direction.UP);
 	}
 
 	@Environment(EnvType.CLIENT)
@@ -45,12 +45,12 @@ public class TorchBlock extends Block {
 		double d = (double)blockPos.getX() + 0.5;
 		double e = (double)blockPos.getY() + 0.7;
 		double f = (double)blockPos.getZ() + 0.5;
-		world.addParticle(ParticleTypes.field_11251, d, e, f, 0.0, 0.0, 0.0);
-		world.addParticle(ParticleTypes.field_11240, d, e, f, 0.0, 0.0, 0.0);
+		world.addParticle(ParticleTypes.SMOKE, d, e, f, 0.0, 0.0, 0.0);
+		world.addParticle(ParticleTypes.FLAME, d, e, f, 0.0, 0.0, 0.0);
 	}
 
 	@Override
 	public BlockRenderLayer getRenderLayer() {
-		return BlockRenderLayer.field_9174;
+		return BlockRenderLayer.CUTOUT;
 	}
 }

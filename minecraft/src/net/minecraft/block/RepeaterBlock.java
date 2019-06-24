@@ -27,7 +27,7 @@ public class RepeaterBlock extends AbstractRedstoneGateBlock {
 		this.setDefaultState(
 			this.stateFactory
 				.getDefaultState()
-				.with(FACING, Direction.field_11043)
+				.with(FACING, Direction.NORTH)
 				.with(DELAY, Integer.valueOf(1))
 				.with(LOCKED, Boolean.valueOf(false))
 				.with(POWERED, Boolean.valueOf(false))

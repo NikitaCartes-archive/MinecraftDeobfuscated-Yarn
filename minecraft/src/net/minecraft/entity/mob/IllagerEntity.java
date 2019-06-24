@@ -24,7 +24,7 @@ public abstract class IllagerEntity extends RaiderEntity {
 
 	@Environment(EnvType.CLIENT)
 	public IllagerEntity.State getState() {
-		return IllagerEntity.State.field_7207;
+		return IllagerEntity.State.CROSSED;
 	}
 
 	public class LongDoorInteractGoal extends net.minecraft.entity.ai.goal.LongDoorInteractGoal {
@@ -40,12 +40,12 @@ public abstract class IllagerEntity extends RaiderEntity {
 
 	@Environment(EnvType.CLIENT)
 	public static enum State {
-		field_7207,
-		field_7211,
-		field_7212,
-		field_7208,
-		field_7213,
-		field_7210,
-		field_19012;
+		CROSSED,
+		ATTACKING,
+		SPELLCASTING,
+		BOW_AND_ARROW,
+		CROSSBOW_HOLD,
+		CROSSBOW_CHARGE,
+		CELEBRATING;
 	}
 }

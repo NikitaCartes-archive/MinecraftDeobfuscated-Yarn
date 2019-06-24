@@ -59,7 +59,7 @@ public class DrownedEntity extends ZombieEntity implements RangedAttackMob {
 		super(entityType, world);
 		this.stepHeight = 1.0F;
 		this.moveControl = new DrownedEntity.DrownedMoveControl(this);
-		this.setPathNodeTypeWeight(PathNodeType.field_18, 0.0F);
+		this.setPathNodeTypeWeight(PathNodeType.WATER, 0.0F);
 		this.waterNavigation = new SwimNavigation(this, world);
 		this.landNavigation = new MobNavigation(this, world);
 	}
@@ -84,9 +84,9 @@ public class DrownedEntity extends ZombieEntity implements RangedAttackMob {
 		IWorld iWorld, LocalDifficulty localDifficulty, SpawnType spawnType, @Nullable EntityData entityData, @Nullable CompoundTag compoundTag
 	) {
 		entityData = super.initialize(iWorld, localDifficulty, spawnType, entityData, compoundTag);
-		if (this.getEquippedStack(EquipmentSlot.field_6171).isEmpty() && this.random.nextFloat() < 0.03F) {
-			this.setEquippedStack(EquipmentSlot.field_6171, new ItemStack(Items.field_8864));
-			this.handDropChances[EquipmentSlot.field_6171.getEntitySlotId()] = 2.0F;
+		if (this.getEquippedStack(EquipmentSlot.OFFHAND).isEmpty() && this.random.nextFloat() < 0.03F) {
+			this.setEquippedStack(EquipmentSlot.OFFHAND, new ItemStack(Items.NAUTILUS_SHELL));
+			this.handDropChances[EquipmentSlot.OFFHAND.getEntitySlotId()] = 2.0F;
 		}
 
 		return entityData;
@@ -94,10 +94,10 @@ public class DrownedEntity extends ZombieEntity implements RangedAttackMob {
 
 	public static boolean method_20673(EntityType<DrownedEntity> entityType, IWorld iWorld, SpawnType spawnType, BlockPos blockPos, Random random) {
 		Biome biome = iWorld.getBiome(blockPos);
-		boolean bl = iWorld.getDifficulty() != Difficulty.field_5801
+		boolean bl = iWorld.getDifficulty() != Difficulty.PEACEFUL
 			&& method_20679(iWorld, blockPos, random)
-			&& (spawnType == SpawnType.field_16469 || iWorld.getFluidState(blockPos).matches(FluidTags.field_15517));
-		return biome != Biomes.field_9438 && biome != Biomes.field_9463
+			&& (spawnType == SpawnType.SPAWNER || iWorld.getFluidState(blockPos).matches(FluidTags.WATER));
+		return biome != Biomes.RIVER && biome != Biomes.FROZEN_RIVER
 			? random.nextInt(40) == 0 && method_20672(iWorld, blockPos) && bl
 			: random.nextInt(15) == 0 && bl;
 	}
@@ -113,27 +113,27 @@ public class DrownedEntity extends ZombieEntity implements RangedAttackMob {
 
 	@Override
 	protected SoundEvent getAmbientSound() {
-		return this.isInsideWater() ? SoundEvents.field_14980 : SoundEvents.field_15030;
+		return this.isInsideWater() ? SoundEvents.ENTITY_DROWNED_AMBIENT_WATER : SoundEvents.ENTITY_DROWNED_AMBIENT;
 	}
 
 	@Override
 	protected SoundEvent getHurtSound(DamageSource damageSource) {
-		return this.isInsideWater() ? SoundEvents.field_14651 : SoundEvents.field_14571;
+		return this.isInsideWater() ? SoundEvents.ENTITY_DROWNED_HURT_WATER : SoundEvents.ENTITY_DROWNED_HURT;
 	}
 
 	@Override
 	protected SoundEvent getDeathSound() {
-		return this.isInsideWater() ? SoundEvents.field_15162 : SoundEvents.field_15066;
+		return this.isInsideWater() ? SoundEvents.ENTITY_DROWNED_DEATH_WATER : SoundEvents.ENTITY_DROWNED_DEATH;
 	}
 
 	@Override
 	protected SoundEvent getStepSound() {
-		return SoundEvents.field_14835;
+		return SoundEvents.ENTITY_DROWNED_STEP;
 	}
 
 	@Override
 	protected SoundEvent getSwimSound() {
-		return SoundEvents.field_14913;
+		return SoundEvents.ENTITY_DROWNED_SWIM;
 	}
 
 	@Override
@@ -146,21 +146,21 @@ public class DrownedEntity extends ZombieEntity implements RangedAttackMob {
 		if ((double)this.random.nextFloat() > 0.9) {
 			int i = this.random.nextInt(16);
 			if (i < 10) {
-				this.setEquippedStack(EquipmentSlot.field_6173, new ItemStack(Items.field_8547));
+				this.setEquippedStack(EquipmentSlot.MAINHAND, new ItemStack(Items.TRIDENT));
 			} else {
-				this.setEquippedStack(EquipmentSlot.field_6173, new ItemStack(Items.field_8378));
+				this.setEquippedStack(EquipmentSlot.MAINHAND, new ItemStack(Items.FISHING_ROD));
 			}
 		}
 	}
 
 	@Override
 	protected boolean isBetterItemFor(ItemStack itemStack, ItemStack itemStack2, EquipmentSlot equipmentSlot) {
-		if (itemStack2.getItem() == Items.field_8864) {
+		if (itemStack2.getItem() == Items.NAUTILUS_SHELL) {
 			return false;
-		} else if (itemStack2.getItem() == Items.field_8547) {
-			return itemStack.getItem() == Items.field_8547 ? itemStack.getDamage() < itemStack2.getDamage() : false;
+		} else if (itemStack2.getItem() == Items.TRIDENT) {
+			return itemStack.getItem() == Items.TRIDENT ? itemStack.getDamage() < itemStack2.getDamage() : false;
 		} else {
-			return itemStack.getItem() == Items.field_8547 ? true : super.isBetterItemFor(itemStack, itemStack2, equipmentSlot);
+			return itemStack.getItem() == Items.TRIDENT ? true : super.isBetterItemFor(itemStack, itemStack2, equipmentSlot);
 		}
 	}
 
@@ -196,7 +196,7 @@ public class DrownedEntity extends ZombieEntity implements RangedAttackMob {
 	public void travel(Vec3d vec3d) {
 		if (this.canMoveVoluntarily() && this.isInsideWater() && this.isTargetingUnderwater()) {
 			this.updateVelocity(0.01F, vec3d);
-			this.move(MovementType.field_6308, this.getVelocity());
+			this.move(MovementType.SELF, this.getVelocity());
 			this.setVelocity(this.getVelocity().multiply(0.9));
 		} else {
 			super.travel(vec3d);
@@ -233,13 +233,13 @@ public class DrownedEntity extends ZombieEntity implements RangedAttackMob {
 
 	@Override
 	public void attack(LivingEntity livingEntity, float f) {
-		TridentEntity tridentEntity = new TridentEntity(this.world, this, new ItemStack(Items.field_8547));
+		TridentEntity tridentEntity = new TridentEntity(this.world, this, new ItemStack(Items.TRIDENT));
 		double d = livingEntity.x - this.x;
 		double e = livingEntity.getBoundingBox().minY + (double)(livingEntity.getHeight() / 3.0F) - tridentEntity.y;
 		double g = livingEntity.z - this.z;
 		double h = (double)MathHelper.sqrt(d * d + g * g);
 		tridentEntity.setVelocity(d, e + h * 0.2F, g, 1.6F, (float)(14 - this.world.getDifficulty().getId() * 4));
-		this.playSound(SoundEvents.field_14753, 1.0F, 1.0F / (this.getRand().nextFloat() * 0.4F + 0.8F));
+		this.playSound(SoundEvents.ENTITY_DROWNED_SHOOT, 1.0F, 1.0F / (this.getRand().nextFloat() * 0.4F + 0.8F));
 		this.world.spawnEntity(tridentEntity);
 	}
 
@@ -282,7 +282,7 @@ public class DrownedEntity extends ZombieEntity implements RangedAttackMob {
 					this.drowned.setVelocity(this.drowned.getVelocity().add(0.0, 0.002, 0.0));
 				}
 
-				if (this.state != MoveControl.State.field_6378 || this.drowned.getNavigation().isIdle()) {
+				if (this.state != MoveControl.State.MOVE_TO || this.drowned.getNavigation().isIdle()) {
 					this.drowned.setMovementSpeed(0.0F);
 					return;
 				}
@@ -361,14 +361,14 @@ public class DrownedEntity extends ZombieEntity implements RangedAttackMob {
 
 		@Override
 		public boolean canStart() {
-			return super.canStart() && this.drowned.getMainHandStack().getItem() == Items.field_8547;
+			return super.canStart() && this.drowned.getMainHandStack().getItem() == Items.TRIDENT;
 		}
 
 		@Override
 		public void start() {
 			super.start();
 			this.drowned.setAttacking(true);
-			this.drowned.setCurrentHand(Hand.field_5808);
+			this.drowned.setCurrentHand(Hand.MAIN_HAND);
 		}
 
 		@Override
@@ -391,7 +391,7 @@ public class DrownedEntity extends ZombieEntity implements RangedAttackMob {
 			this.mob = mobEntityWithAi;
 			this.speed = d;
 			this.world = mobEntityWithAi.world;
-			this.setControls(EnumSet.of(Goal.Control.field_18405));
+			this.setControls(EnumSet.of(Goal.Control.MOVE));
 		}
 
 		@Override
@@ -430,7 +430,7 @@ public class DrownedEntity extends ZombieEntity implements RangedAttackMob {
 
 			for (int i = 0; i < 10; i++) {
 				BlockPos blockPos2 = blockPos.add(random.nextInt(20) - 10, 2 - random.nextInt(8), random.nextInt(20) - 10);
-				if (this.world.getBlockState(blockPos2).getBlock() == Blocks.field_10382) {
+				if (this.world.getBlockState(blockPos2).getBlock() == Blocks.WATER) {
 					return new Vec3d((double)blockPos2.getX(), (double)blockPos2.getY(), (double)blockPos2.getZ());
 				}
 			}

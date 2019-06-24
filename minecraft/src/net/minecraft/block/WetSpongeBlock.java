@@ -17,14 +17,14 @@ public class WetSpongeBlock extends Block {
 	@Override
 	public void randomDisplayTick(BlockState blockState, World world, BlockPos blockPos, Random random) {
 		Direction direction = Direction.random(random);
-		if (direction != Direction.field_11036) {
+		if (direction != Direction.UP) {
 			BlockPos blockPos2 = blockPos.offset(direction);
 			BlockState blockState2 = world.getBlockState(blockPos2);
 			if (!blockState.isOpaque() || !Block.isSolidFullSquare(blockState2, world, blockPos2, direction.getOpposite())) {
 				double d = (double)blockPos.getX();
 				double e = (double)blockPos.getY();
 				double f = (double)blockPos.getZ();
-				if (direction == Direction.field_11033) {
+				if (direction == Direction.DOWN) {
 					e -= 0.05;
 					d += random.nextDouble();
 					f += random.nextDouble();
@@ -32,14 +32,14 @@ public class WetSpongeBlock extends Block {
 					e += random.nextDouble() * 0.8;
 					if (direction.getAxis() == Direction.Axis.X) {
 						f += random.nextDouble();
-						if (direction == Direction.field_11034) {
+						if (direction == Direction.EAST) {
 							d++;
 						} else {
 							d += 0.05;
 						}
 					} else {
 						d += random.nextDouble();
-						if (direction == Direction.field_11035) {
+						if (direction == Direction.SOUTH) {
 							f++;
 						} else {
 							f += 0.05;
@@ -47,7 +47,7 @@ public class WetSpongeBlock extends Block {
 					}
 				}
 
-				world.addParticle(ParticleTypes.field_11232, d, e, f, 0.0, 0.0, 0.0);
+				world.addParticle(ParticleTypes.DRIPPING_WATER, d, e, f, 0.0, 0.0, 0.0);
 			}
 		}
 	}

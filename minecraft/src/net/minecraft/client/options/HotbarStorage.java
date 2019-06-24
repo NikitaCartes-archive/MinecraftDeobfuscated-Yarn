@@ -40,7 +40,7 @@ public class HotbarStorage {
 				compoundTag.putInt("DataVersion", 1343);
 			}
 
-			compoundTag = TagHelper.update(this.dataFixer, DataFixTypes.field_19215, compoundTag, compoundTag.getInt("DataVersion"));
+			compoundTag = TagHelper.update(this.dataFixer, DataFixTypes.HOTBAR, compoundTag, compoundTag.getInt("DataVersion"));
 
 			for (int i = 0; i < 9; i++) {
 				this.entries[i].fromListTag(compoundTag.getList(String.valueOf(i), 10));

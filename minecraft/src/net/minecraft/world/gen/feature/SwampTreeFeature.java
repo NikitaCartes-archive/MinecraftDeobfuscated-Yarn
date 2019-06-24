@@ -14,8 +14,8 @@ import net.minecraft.world.Heightmap;
 import net.minecraft.world.ModifiableTestableWorld;
 
 public class SwampTreeFeature extends AbstractTreeFeature<DefaultFeatureConfig> {
-	private static final BlockState LOG = Blocks.field_10431.getDefaultState();
-	private static final BlockState LEAVES = Blocks.field_10503.getDefaultState();
+	private static final BlockState LOG = Blocks.OAK_LOG.getDefaultState();
+	private static final BlockState LEAVES = Blocks.OAK_LEAVES.getDefaultState();
 
 	public SwampTreeFeature(Function<Dynamic<?>, ? extends DefaultFeatureConfig> function) {
 		super(function, false);
@@ -26,7 +26,7 @@ public class SwampTreeFeature extends AbstractTreeFeature<DefaultFeatureConfig> 
 		Set<BlockPos> set, ModifiableTestableWorld modifiableTestableWorld, Random random, BlockPos blockPos, MutableIntBoundingBox mutableIntBoundingBox
 	) {
 		int i = random.nextInt(4) + 5;
-		blockPos = modifiableTestableWorld.getTopPosition(Heightmap.Type.field_13200, blockPos);
+		blockPos = modifiableTestableWorld.getTopPosition(Heightmap.Type.OCEAN_FLOOR, blockPos);
 		boolean bl = true;
 		if (blockPos.getY() >= 1 && blockPos.getY() + i + 1 <= 256) {
 			for (int j = blockPos.getY(); j <= blockPos.getY() + 1 + i; j++) {
@@ -135,7 +135,7 @@ public class SwampTreeFeature extends AbstractTreeFeature<DefaultFeatureConfig> 
 	}
 
 	private void makeVines(ModifiableTestableWorld modifiableTestableWorld, BlockPos blockPos, BooleanProperty booleanProperty) {
-		BlockState blockState = Blocks.field_10597.getDefaultState().with(booleanProperty, Boolean.valueOf(true));
+		BlockState blockState = Blocks.VINE.getDefaultState().with(booleanProperty, Boolean.valueOf(true));
 		this.setBlockState(modifiableTestableWorld, blockPos, blockState);
 		int i = 4;
 

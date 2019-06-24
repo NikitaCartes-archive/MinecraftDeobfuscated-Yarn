@@ -35,14 +35,14 @@ public class LeverBlock extends WallMountedBlock {
 	protected LeverBlock(Block.Settings settings) {
 		super(settings);
 		this.setDefaultState(
-			this.stateFactory.getDefaultState().with(FACING, Direction.field_11043).with(POWERED, Boolean.valueOf(false)).with(FACE, WallMountLocation.field_12471)
+			this.stateFactory.getDefaultState().with(FACING, Direction.NORTH).with(POWERED, Boolean.valueOf(false)).with(FACE, WallMountLocation.WALL)
 		);
 	}
 
 	@Override
 	public VoxelShape getOutlineShape(BlockState blockState, BlockView blockView, BlockPos blockPos, EntityContext entityContext) {
 		switch ((WallMountLocation)blockState.get(FACE)) {
-			case field_12475:
+			case FLOOR:
 				switch (((Direction)blockState.get(FACING)).getAxis()) {
 					case X:
 						return FLOOR_X_AXIS_SHAPE;
@@ -50,19 +50,19 @@ public class LeverBlock extends WallMountedBlock {
 					default:
 						return FLOOR_Z_AXIS_SHAPE;
 				}
-			case field_12471:
+			case WALL:
 				switch ((Direction)blockState.get(FACING)) {
-					case field_11034:
+					case EAST:
 						return EAST_WALL_SHAPE;
-					case field_11039:
+					case WEST:
 						return WEST_WALL_SHAPE;
-					case field_11035:
+					case SOUTH:
 						return SOUTH_WALL_SHAPE;
-					case field_11043:
+					case NORTH:
 					default:
 						return NORTH_WALL_SHAPE;
 				}
-			case field_12473:
+			case CEILING:
 			default:
 				switch (((Direction)blockState.get(FACING)).getAxis()) {
 					case X:
@@ -87,7 +87,7 @@ public class LeverBlock extends WallMountedBlock {
 		} else {
 			world.setBlockState(blockPos, blockState, 3);
 			float f = bl ? 0.6F : 0.5F;
-			world.playSound(null, blockPos, SoundEvents.field_14962, SoundCategory.field_15245, 0.3F, f);
+			world.playSound(null, blockPos, SoundEvents.BLOCK_LEVER_CLICK, SoundCategory.BLOCKS, 0.3F, f);
 			this.updateNeighbors(blockState, world, blockPos);
 			return true;
 		}

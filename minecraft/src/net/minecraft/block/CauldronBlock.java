@@ -81,40 +81,40 @@ public class CauldronBlock extends Block {
 		} else {
 			int i = (Integer)blockState.get(LEVEL);
 			Item item = itemStack.getItem();
-			if (item == Items.field_8705) {
+			if (item == Items.WATER_BUCKET) {
 				if (i < 3 && !world.isClient) {
 					if (!playerEntity.abilities.creativeMode) {
-						playerEntity.setStackInHand(hand, new ItemStack(Items.field_8550));
+						playerEntity.setStackInHand(hand, new ItemStack(Items.BUCKET));
 					}
 
-					playerEntity.incrementStat(Stats.field_15430);
+					playerEntity.incrementStat(Stats.FILL_CAULDRON);
 					this.setLevel(world, blockPos, blockState, 3);
-					world.playSound(null, blockPos, SoundEvents.field_14834, SoundCategory.field_15245, 1.0F, 1.0F);
+					world.playSound(null, blockPos, SoundEvents.ITEM_BUCKET_EMPTY, SoundCategory.BLOCKS, 1.0F, 1.0F);
 				}
 
 				return true;
-			} else if (item == Items.field_8550) {
+			} else if (item == Items.BUCKET) {
 				if (i == 3 && !world.isClient) {
 					if (!playerEntity.abilities.creativeMode) {
 						itemStack.decrement(1);
 						if (itemStack.isEmpty()) {
-							playerEntity.setStackInHand(hand, new ItemStack(Items.field_8705));
-						} else if (!playerEntity.inventory.insertStack(new ItemStack(Items.field_8705))) {
-							playerEntity.dropItem(new ItemStack(Items.field_8705), false);
+							playerEntity.setStackInHand(hand, new ItemStack(Items.WATER_BUCKET));
+						} else if (!playerEntity.inventory.insertStack(new ItemStack(Items.WATER_BUCKET))) {
+							playerEntity.dropItem(new ItemStack(Items.WATER_BUCKET), false);
 						}
 					}
 
-					playerEntity.incrementStat(Stats.field_15373);
+					playerEntity.incrementStat(Stats.USE_CAULDRON);
 					this.setLevel(world, blockPos, blockState, 0);
-					world.playSound(null, blockPos, SoundEvents.field_15126, SoundCategory.field_15245, 1.0F, 1.0F);
+					world.playSound(null, blockPos, SoundEvents.ITEM_BUCKET_FILL, SoundCategory.BLOCKS, 1.0F, 1.0F);
 				}
 
 				return true;
-			} else if (item == Items.field_8469) {
+			} else if (item == Items.GLASS_BOTTLE) {
 				if (i > 0 && !world.isClient) {
 					if (!playerEntity.abilities.creativeMode) {
-						ItemStack itemStack2 = PotionUtil.setPotion(new ItemStack(Items.field_8574), Potions.field_8991);
-						playerEntity.incrementStat(Stats.field_15373);
+						ItemStack itemStack2 = PotionUtil.setPotion(new ItemStack(Items.POTION), Potions.WATER);
+						playerEntity.incrementStat(Stats.USE_CAULDRON);
 						itemStack.decrement(1);
 						if (itemStack.isEmpty()) {
 							playerEntity.setStackInHand(hand, itemStack2);
@@ -125,23 +125,23 @@ public class CauldronBlock extends Block {
 						}
 					}
 
-					world.playSound(null, blockPos, SoundEvents.field_14779, SoundCategory.field_15245, 1.0F, 1.0F);
+					world.playSound(null, blockPos, SoundEvents.ITEM_BOTTLE_FILL, SoundCategory.BLOCKS, 1.0F, 1.0F);
 					this.setLevel(world, blockPos, blockState, i - 1);
 				}
 
 				return true;
-			} else if (item == Items.field_8574 && PotionUtil.getPotion(itemStack) == Potions.field_8991) {
+			} else if (item == Items.POTION && PotionUtil.getPotion(itemStack) == Potions.WATER) {
 				if (i < 3 && !world.isClient) {
 					if (!playerEntity.abilities.creativeMode) {
-						ItemStack itemStack2 = new ItemStack(Items.field_8469);
-						playerEntity.incrementStat(Stats.field_15373);
+						ItemStack itemStack2 = new ItemStack(Items.GLASS_BOTTLE);
+						playerEntity.incrementStat(Stats.USE_CAULDRON);
 						playerEntity.setStackInHand(hand, itemStack2);
 						if (playerEntity instanceof ServerPlayerEntity) {
 							((ServerPlayerEntity)playerEntity).openContainer(playerEntity.playerContainer);
 						}
 					}
 
-					world.playSound(null, blockPos, SoundEvents.field_14826, SoundCategory.field_15245, 1.0F, 1.0F);
+					world.playSound(null, blockPos, SoundEvents.ITEM_BOTTLE_EMPTY, SoundCategory.BLOCKS, 1.0F, 1.0F);
 					this.setLevel(world, blockPos, blockState, i + 1);
 				}
 
@@ -152,7 +152,7 @@ public class CauldronBlock extends Block {
 					if (dyeableItem.hasColor(itemStack) && !world.isClient) {
 						dyeableItem.removeColor(itemStack);
 						this.setLevel(world, blockPos, blockState, i - 1);
-						playerEntity.incrementStat(Stats.field_15382);
+						playerEntity.incrementStat(Stats.CLEAN_ARMOR);
 						return true;
 					}
 				}
@@ -162,7 +162,7 @@ public class CauldronBlock extends Block {
 						ItemStack itemStack2 = itemStack.copy();
 						itemStack2.setCount(1);
 						BannerBlockEntity.loadFromItemStack(itemStack2);
-						playerEntity.incrementStat(Stats.field_15390);
+						playerEntity.incrementStat(Stats.CLEAN_BANNER);
 						if (!playerEntity.abilities.creativeMode) {
 							itemStack.decrement(1);
 							this.setLevel(world, blockPos, blockState, i - 1);
@@ -181,14 +181,14 @@ public class CauldronBlock extends Block {
 				} else if (i > 0 && item instanceof BlockItem) {
 					Block block = ((BlockItem)item).getBlock();
 					if (block instanceof ShulkerBoxBlock && !world.isClient()) {
-						ItemStack itemStack3 = new ItemStack(Blocks.field_10603, 1);
+						ItemStack itemStack3 = new ItemStack(Blocks.SHULKER_BOX, 1);
 						if (itemStack.hasTag()) {
 							itemStack3.setTag(itemStack.getTag().method_10553());
 						}
 
 						playerEntity.setStackInHand(hand, itemStack3);
 						this.setLevel(world, blockPos, blockState, i - 1);
-						playerEntity.incrementStat(Stats.field_15398);
+						playerEntity.incrementStat(Stats.CLEAN_SHULKER_BOX);
 					}
 
 					return true;

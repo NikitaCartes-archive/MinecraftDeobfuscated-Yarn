@@ -19,9 +19,9 @@ public class TeamS2CPacket implements Packet<ClientPlayPacketListener> {
 	private Text displayName = new LiteralText("");
 	private Text prefix = new LiteralText("");
 	private Text suffix = new LiteralText("");
-	private String nameTagVisibilityRule = AbstractTeam.VisibilityRule.field_1442.name;
-	private String collisionRule = AbstractTeam.CollisionRule.field_1437.name;
-	private Formatting color = Formatting.field_1070;
+	private String nameTagVisibilityRule = AbstractTeam.VisibilityRule.ALWAYS.name;
+	private String collisionRule = AbstractTeam.CollisionRule.ALWAYS.name;
+	private Formatting color = Formatting.RESET;
 	private final Collection<String> playerList = Lists.<String>newArrayList();
 	private int mode;
 	private int flags;

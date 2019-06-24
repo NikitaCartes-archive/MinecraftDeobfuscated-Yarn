@@ -17,7 +17,7 @@ public class JungleGrassFeature extends Feature<DefaultFeatureConfig> {
 	}
 
 	public BlockState getGrass(Random random) {
-		return random.nextInt(4) == 0 ? Blocks.field_10112.getDefaultState() : Blocks.field_10479.getDefaultState();
+		return random.nextInt(4) == 0 ? Blocks.FERN.getDefaultState() : Blocks.GRASS.getDefaultState();
 	}
 
 	public boolean method_13459(
@@ -26,7 +26,7 @@ public class JungleGrassFeature extends Feature<DefaultFeatureConfig> {
 		BlockState blockState = this.getGrass(random);
 
 		for (BlockState blockState2 = iWorld.getBlockState(blockPos);
-			(blockState2.isAir() || blockState2.matches(BlockTags.field_15503)) && blockPos.getY() > 0;
+			(blockState2.isAir() || blockState2.matches(BlockTags.LEAVES)) && blockPos.getY() > 0;
 			blockState2 = iWorld.getBlockState(blockPos)
 		) {
 			blockPos = blockPos.down();
@@ -36,7 +36,7 @@ public class JungleGrassFeature extends Feature<DefaultFeatureConfig> {
 
 		for (int j = 0; j < 128; j++) {
 			BlockPos blockPos2 = blockPos.add(random.nextInt(8) - random.nextInt(8), random.nextInt(4) - random.nextInt(4), random.nextInt(8) - random.nextInt(8));
-			if (iWorld.isAir(blockPos2) && iWorld.getBlockState(blockPos2.down()).getBlock() != Blocks.field_10520 && blockState.canPlaceAt(iWorld, blockPos2)) {
+			if (iWorld.isAir(blockPos2) && iWorld.getBlockState(blockPos2.down()).getBlock() != Blocks.PODZOL && blockState.canPlaceAt(iWorld, blockPos2)) {
 				iWorld.setBlockState(blockPos2, blockState, 2);
 				i++;
 			}

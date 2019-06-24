@@ -75,9 +75,9 @@ public class LightmapTextureManager implements AutoCloseable {
 				float h = g * 0.95F + 0.05F;
 				float i = this.client.player.method_3140();
 				float j;
-				if (this.client.player.hasStatusEffect(StatusEffects.field_5925)) {
+				if (this.client.player.hasStatusEffect(StatusEffects.NIGHT_VISION)) {
 					j = this.worldRenderer.getNightVisionStrength(this.client.player, f);
-				} else if (i > 0.0F && this.client.player.hasStatusEffect(StatusEffects.field_5927)) {
+				} else if (i > 0.0F && this.client.player.hasStatusEffect(StatusEffects.CONDUIT_POWER)) {
 					j = i;
 				} else {
 					j = 0.0F;
@@ -108,7 +108,7 @@ public class LightmapTextureManager implements AutoCloseable {
 							w = w * (1.0F - x) + w * 0.6F * x;
 						}
 
-						if (world.dimension.getType() == DimensionType.field_13078) {
+						if (world.dimension.getType() == DimensionType.THE_END) {
 							u = 0.22F + n * 0.75F;
 							v = 0.28F + s * 0.75F;
 							w = 0.25F + t * 0.75F;

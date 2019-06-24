@@ -72,11 +72,11 @@ public class FlatChunkGenerator extends ChunkGenerator<FlatChunkGeneratorConfig>
 			}
 		}
 
-		boolean bl = (!this.config.hasNoTerrain() || biome == Biomes.field_9473) && map.containsKey("decoration");
+		boolean bl = (!this.config.hasNoTerrain() || biome == Biomes.THE_VOID) && map.containsKey("decoration");
 		if (bl) {
 			List<GenerationStep.Feature> list = Lists.<GenerationStep.Feature>newArrayList();
-			list.add(GenerationStep.Feature.field_13172);
-			list.add(GenerationStep.Feature.field_13173);
+			list.add(GenerationStep.Feature.UNDERGROUND_STRUCTURES);
+			list.add(GenerationStep.Feature.SURFACE_STRUCTURES);
 
 			for (GenerationStep.Feature feature : GenerationStep.Feature.values()) {
 				if (!list.contains(feature)) {
@@ -91,11 +91,11 @@ public class FlatChunkGenerator extends ChunkGenerator<FlatChunkGeneratorConfig>
 
 		for (int i = 0; i < blockStates.length; i++) {
 			BlockState blockState = blockStates[i];
-			if (blockState != null && !Heightmap.Type.field_13197.getBlockPredicate().test(blockState)) {
+			if (blockState != null && !Heightmap.Type.MOTION_BLOCKING.getBlockPredicate().test(blockState)) {
 				this.config.method_20314(i);
 				flatChunkGeneratorBiome.addFeature(
-					GenerationStep.Feature.field_13179,
-					Biome.configureFeature(Feature.field_19201, new FillLayerFeatureConfig(i, blockState), Decorator.field_14250, DecoratorConfig.DEFAULT)
+					GenerationStep.Feature.TOP_LAYER_MODIFICATION,
+					Biome.configureFeature(Feature.FILL_LAYER, new FillLayerFeatureConfig(i, blockState), Decorator.NOPE, DecoratorConfig.DEFAULT)
 				);
 			}
 		}
@@ -110,7 +110,7 @@ public class FlatChunkGenerator extends ChunkGenerator<FlatChunkGeneratorConfig>
 	@Override
 	public int getSpawnHeight() {
 		Chunk chunk = this.world.getChunk(0, 0);
-		return chunk.sampleHeightmap(Heightmap.Type.field_13197, 8, 8);
+		return chunk.sampleHeightmap(Heightmap.Type.MOTION_BLOCKING, 8, 8);
 	}
 
 	@Override
@@ -127,8 +127,8 @@ public class FlatChunkGenerator extends ChunkGenerator<FlatChunkGeneratorConfig>
 	public void populateNoise(IWorld iWorld, Chunk chunk) {
 		BlockState[] blockStates = this.config.getLayerBlocks();
 		BlockPos.Mutable mutable = new BlockPos.Mutable();
-		Heightmap heightmap = chunk.getHeightmap(Heightmap.Type.field_13195);
-		Heightmap heightmap2 = chunk.getHeightmap(Heightmap.Type.field_13194);
+		Heightmap heightmap = chunk.getHeightmap(Heightmap.Type.OCEAN_FLOOR_WG);
+		Heightmap heightmap2 = chunk.getHeightmap(Heightmap.Type.WORLD_SURFACE_WG);
 
 		for (int i = 0; i < blockStates.length; i++) {
 			BlockState blockState = blockStates[i];

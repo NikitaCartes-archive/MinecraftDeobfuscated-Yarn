@@ -41,7 +41,7 @@ public class CocoaBlock extends HorizontalFacingBlock implements Fertilizable {
 
 	public CocoaBlock(Block.Settings settings) {
 		super(settings);
-		this.setDefaultState(this.stateFactory.getDefaultState().with(FACING, Direction.field_11043).with(AGE, Integer.valueOf(0)));
+		this.setDefaultState(this.stateFactory.getDefaultState().with(FACING, Direction.NORTH).with(AGE, Integer.valueOf(0)));
 	}
 
 	@Override
@@ -57,21 +57,21 @@ public class CocoaBlock extends HorizontalFacingBlock implements Fertilizable {
 	@Override
 	public boolean canPlaceAt(BlockState blockState, ViewableWorld viewableWorld, BlockPos blockPos) {
 		Block block = viewableWorld.getBlockState(blockPos.offset(blockState.get(FACING))).getBlock();
-		return block.matches(BlockTags.field_15474);
+		return block.matches(BlockTags.JUNGLE_LOGS);
 	}
 
 	@Override
 	public VoxelShape getOutlineShape(BlockState blockState, BlockView blockView, BlockPos blockPos, EntityContext entityContext) {
 		int i = (Integer)blockState.get(AGE);
 		switch ((Direction)blockState.get(FACING)) {
-			case field_11035:
+			case SOUTH:
 				return AGE_TO_SOUTH_SHAPE[i];
-			case field_11043:
+			case NORTH:
 			default:
 				return AGE_TO_NORTH_SHAPE[i];
-			case field_11039:
+			case WEST:
 				return AGE_TO_WEST_SHAPE[i];
-			case field_11034:
+			case EAST:
 				return AGE_TO_EAST_SHAPE[i];
 		}
 	}
@@ -100,7 +100,7 @@ public class CocoaBlock extends HorizontalFacingBlock implements Fertilizable {
 		BlockState blockState, Direction direction, BlockState blockState2, IWorld iWorld, BlockPos blockPos, BlockPos blockPos2
 	) {
 		return direction == blockState.get(FACING) && !blockState.canPlaceAt(iWorld, blockPos)
-			? Blocks.field_10124.getDefaultState()
+			? Blocks.AIR.getDefaultState()
 			: super.getStateForNeighborUpdate(blockState, direction, blockState2, iWorld, blockPos, blockPos2);
 	}
 
@@ -121,7 +121,7 @@ public class CocoaBlock extends HorizontalFacingBlock implements Fertilizable {
 
 	@Override
 	public BlockRenderLayer getRenderLayer() {
-		return BlockRenderLayer.field_9174;
+		return BlockRenderLayer.CUTOUT;
 	}
 
 	@Override

@@ -45,7 +45,7 @@ import net.minecraft.world.ViewableWorld;
 import net.minecraft.world.World;
 
 public class OcelotEntity extends AnimalEntity {
-	private static final Ingredient TAMING_INGREDIENT = Ingredient.ofItems(Items.field_8429, Items.field_8209);
+	private static final Ingredient TAMING_INGREDIENT = Ingredient.ofItems(Items.COD, Items.SALMON);
 	private static final TrackedData<Boolean> TRUSTING = DataTracker.registerData(OcelotEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
 	private OcelotEntity.FleeGoal<PlayerEntity> fleeGoal;
 	private OcelotEntity.OcelotTemptGoal temptGoal;
@@ -135,7 +135,7 @@ public class OcelotEntity extends AnimalEntity {
 	@Nullable
 	@Override
 	protected SoundEvent getAmbientSound() {
-		return SoundEvents.field_16437;
+		return SoundEvents.ENTITY_OCELOT_AMBIENT;
 	}
 
 	@Override
@@ -145,12 +145,12 @@ public class OcelotEntity extends AnimalEntity {
 
 	@Override
 	protected SoundEvent getHurtSound(DamageSource damageSource) {
-		return SoundEvents.field_16441;
+		return SoundEvents.ENTITY_OCELOT_HURT;
 	}
 
 	@Override
 	protected SoundEvent getDeathSound() {
-		return SoundEvents.field_16442;
+		return SoundEvents.ENTITY_OCELOT_DEATH;
 	}
 
 	@Override
@@ -201,9 +201,9 @@ public class OcelotEntity extends AnimalEntity {
 	}
 
 	private void showEmoteParticle(boolean bl) {
-		ParticleEffect particleEffect = ParticleTypes.field_11201;
+		ParticleEffect particleEffect = ParticleTypes.HEART;
 		if (!bl) {
-			particleEffect = ParticleTypes.field_11251;
+			particleEffect = ParticleTypes.SMOKE;
 		}
 
 		for (int i = 0; i < 7; i++) {
@@ -235,7 +235,7 @@ public class OcelotEntity extends AnimalEntity {
 	}
 
 	public OcelotEntity method_16104(PassiveEntity passiveEntity) {
-		return EntityType.field_6081.create(this.world);
+		return EntityType.OCELOT.create(this.world);
 	}
 
 	@Override
@@ -257,7 +257,7 @@ public class OcelotEntity extends AnimalEntity {
 
 			BlockState blockState = viewableWorld.getBlockState(blockPos.down());
 			Block block = blockState.getBlock();
-			if (block == Blocks.field_10219 || blockState.matches(BlockTags.field_15503)) {
+			if (block == Blocks.GRASS_BLOCK || blockState.matches(BlockTags.LEAVES)) {
 				return true;
 			}
 		}
@@ -267,7 +267,7 @@ public class OcelotEntity extends AnimalEntity {
 
 	protected void spawnKittens() {
 		for (int i = 0; i < 2; i++) {
-			OcelotEntity ocelotEntity = EntityType.field_6081.create(this.world);
+			OcelotEntity ocelotEntity = EntityType.OCELOT.create(this.world);
 			ocelotEntity.setPositionAndAngles(this.x, this.y, this.z, this.yaw, 0.0F);
 			ocelotEntity.setBreedingAge(-24000);
 			this.world.spawnEntity(ocelotEntity);

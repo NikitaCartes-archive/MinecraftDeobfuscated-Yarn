@@ -12,18 +12,18 @@ import net.minecraft.world.biome.Biome;
 
 public class ForestFlowerFeature extends FlowerFeature {
 	private static final Block[] FLOWERS = new Block[]{
-		Blocks.field_10182,
-		Blocks.field_10449,
-		Blocks.field_10086,
-		Blocks.field_10226,
-		Blocks.field_10573,
-		Blocks.field_10270,
-		Blocks.field_10048,
-		Blocks.field_10156,
-		Blocks.field_10315,
-		Blocks.field_10554,
-		Blocks.field_9995,
-		Blocks.field_10548
+		Blocks.DANDELION,
+		Blocks.POPPY,
+		Blocks.BLUE_ORCHID,
+		Blocks.ALLIUM,
+		Blocks.AZURE_BLUET,
+		Blocks.RED_TULIP,
+		Blocks.ORANGE_TULIP,
+		Blocks.WHITE_TULIP,
+		Blocks.PINK_TULIP,
+		Blocks.OXEYE_DAISY,
+		Blocks.CORNFLOWER,
+		Blocks.LILY_OF_THE_VALLEY
 	};
 
 	public ForestFlowerFeature(Function<Dynamic<?>, ? extends DefaultFeatureConfig> function) {
@@ -34,6 +34,6 @@ public class ForestFlowerFeature extends FlowerFeature {
 	public BlockState getFlowerToPlace(Random random, BlockPos blockPos) {
 		double d = MathHelper.clamp((1.0 + Biome.FOLIAGE_NOISE.sample((double)blockPos.getX() / 48.0, (double)blockPos.getZ() / 48.0)) / 2.0, 0.0, 0.9999);
 		Block block = FLOWERS[(int)(d * (double)FLOWERS.length)];
-		return block == Blocks.field_10086 ? Blocks.field_10449.getDefaultState() : block.getDefaultState();
+		return block == Blocks.BLUE_ORCHID ? Blocks.POPPY.getDefaultState() : block.getDefaultState();
 	}
 }

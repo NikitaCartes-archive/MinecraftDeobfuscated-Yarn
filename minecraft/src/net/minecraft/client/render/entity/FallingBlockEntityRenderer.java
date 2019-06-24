@@ -26,9 +26,9 @@ public class FallingBlockEntityRenderer extends EntityRenderer<FallingBlockEntit
 
 	public void method_3965(FallingBlockEntity fallingBlockEntity, double d, double e, double f, float g, float h) {
 		BlockState blockState = fallingBlockEntity.getBlockState();
-		if (blockState.getRenderType() == BlockRenderType.field_11458) {
+		if (blockState.getRenderType() == BlockRenderType.MODEL) {
 			World world = fallingBlockEntity.getWorldClient();
-			if (blockState != world.getBlockState(new BlockPos(fallingBlockEntity)) && blockState.getRenderType() != BlockRenderType.field_11455) {
+			if (blockState != world.getBlockState(new BlockPos(fallingBlockEntity)) && blockState.getRenderType() != BlockRenderType.INVISIBLE) {
 				this.bindTexture(SpriteAtlasTexture.BLOCK_ATLAS_TEX);
 				GlStateManager.pushMatrix();
 				GlStateManager.disableLighting();

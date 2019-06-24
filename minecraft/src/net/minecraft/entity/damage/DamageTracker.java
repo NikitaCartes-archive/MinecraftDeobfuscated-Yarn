@@ -31,9 +31,9 @@ public class DamageTracker {
 		this.clearFallDeathSuffix();
 		if (this.entity.isClimbing()) {
 			Block block = this.entity.world.getBlockState(new BlockPos(this.entity.x, this.entity.getBoundingBox().minY, this.entity.z)).getBlock();
-			if (block == Blocks.field_9983) {
+			if (block == Blocks.LADDER) {
 				this.fallDeathSuffix = "ladder";
-			} else if (block == Blocks.field_10597) {
+			} else if (block == Blocks.VINE) {
 				this.fallDeathSuffix = "vines";
 			}
 		} else if (this.entity.isInsideWater()) {

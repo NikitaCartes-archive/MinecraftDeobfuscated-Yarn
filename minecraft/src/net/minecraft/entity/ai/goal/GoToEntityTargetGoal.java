@@ -19,7 +19,7 @@ public class GoToEntityTargetGoal extends Goal {
 		this.mob = mobEntityWithAi;
 		this.speed = d;
 		this.maxDistance = f;
-		this.setControls(EnumSet.of(Goal.Control.field_18405));
+		this.setControls(EnumSet.of(Goal.Control.MOVE));
 	}
 
 	@Override

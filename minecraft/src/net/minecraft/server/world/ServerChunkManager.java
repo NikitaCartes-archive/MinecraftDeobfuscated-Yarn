@@ -179,7 +179,7 @@ public class ServerChunkManager extends ChunkManager {
 		int k = 33 + ChunkStatus.getTargetGenerationRadius(chunkStatus);
 		ChunkHolder chunkHolder = this.getChunkHolder(l);
 		if (bl) {
-			this.ticketManager.addTicketWithLevel(ChunkTicketType.field_14032, chunkPos, k, chunkPos);
+			this.ticketManager.addTicketWithLevel(ChunkTicketType.UNKNOWN, chunkPos, k, chunkPos);
 			if (this.isMissingForLevel(chunkHolder, k)) {
 				Profiler profiler = this.world.getProfiler();
 				profiler.push("chunkLoad");
@@ -202,7 +202,7 @@ public class ServerChunkManager extends ChunkManager {
 	@Override
 	public boolean isChunkLoaded(int i, int j) {
 		ChunkHolder chunkHolder = this.getChunkHolder(new ChunkPos(i, j).toLong());
-		int k = 33 + ChunkStatus.getTargetGenerationRadius(ChunkStatus.field_12803);
+		int k = 33 + ChunkStatus.getTargetGenerationRadius(ChunkStatus.FULL);
 		return !this.isMissingForLevel(chunkHolder, k);
 	}
 
@@ -222,7 +222,7 @@ public class ServerChunkManager extends ChunkManager {
 					return (BlockView)optional.get();
 				}
 
-				if (chunkStatus == ChunkStatus.field_12805.getPrevious()) {
+				if (chunkStatus == ChunkStatus.LIGHT.getPrevious()) {
 					return null;
 				}
 
@@ -314,10 +314,10 @@ public class ServerChunkManager extends ChunkManager {
 		this.lastMobSpawningTime = l;
 		LevelProperties levelProperties = this.world.getLevelProperties();
 		boolean bl = levelProperties.getGeneratorType() == LevelGeneratorType.DEBUG_ALL_BLOCK_STATES;
-		boolean bl2 = this.world.getGameRules().getBoolean(GameRules.field_19390);
+		boolean bl2 = this.world.getGameRules().getBoolean(GameRules.DO_MOB_SPAWNING);
 		if (!bl) {
 			this.world.getProfiler().push("pollingChunks");
-			int i = this.world.getGameRules().getInt(GameRules.field_19399);
+			int i = this.world.getGameRules().getInt(GameRules.RANDOM_TICK_SPEED);
 			BlockPos blockPos = this.world.getSpawnPos();
 			boolean bl3 = levelProperties.getTime() % 400L == 0L;
 			this.world.getProfiler().push("naturalSpawnCount");
@@ -342,7 +342,7 @@ public class ServerChunkManager extends ChunkManager {
 									this.world.getProfiler().push("spawner");
 
 									for (EntityCategory entityCategory : entityCategorys) {
-										if (entityCategory != EntityCategory.field_17715
+										if (entityCategory != EntityCategory.MISC
 											&& (!entityCategory.isPeaceful() || this.spawnAnimals)
 											&& (entityCategory.isPeaceful() || this.spawnMonsters)
 											&& (!entityCategory.isAnimal() || bl3)) {
@@ -464,7 +464,7 @@ public class ServerChunkManager extends ChunkManager {
 
 	final class MainThreadExecutor extends ThreadExecutor<Runnable> {
 		private MainThreadExecutor(World world) {
-			super("Chunk source main thread executor for " + Registry.DIMENSION.getId(world.getDimension().getType()));
+			super("Chunk source main thread executor for " + Registry.DIMENSION_TYPE.getId(world.getDimension().getType()));
 		}
 
 		@Override

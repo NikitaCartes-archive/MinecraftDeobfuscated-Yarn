@@ -107,7 +107,7 @@ public class ModelLoader {
 	public static final JsonUnbakedModel BLOCK_ENTITY_MARKER = SystemUtil.consume(
 		JsonUnbakedModel.deserialize("{}"), jsonUnbakedModel -> jsonUnbakedModel.id = "block entity marker"
 	);
-	private static final StateFactory<Block, BlockState> ITEM_FRAME_STATE_FACTORY = new StateFactory.Builder<Block, BlockState>(Blocks.field_10124)
+	private static final StateFactory<Block, BlockState> ITEM_FRAME_STATE_FACTORY = new StateFactory.Builder<Block, BlockState>(Blocks.AIR)
 		.add(BooleanProperty.of("map"))
 		.build(BlockState::new);
 	private static final ItemModelGenerator ITEM_MODEL_GENERATOR = new ItemModelGenerator();
@@ -177,7 +177,7 @@ public class ModelLoader {
 			BakedModel bakedModel = null;
 
 			try {
-				bakedModel = this.bake(identifier, ModelRotation.field_5350);
+				bakedModel = this.bake(identifier, ModelRotation.X0_Y0);
 			} catch (Exception var4) {
 				LOGGER.warn("Unable to bake model: '{}': {}", identifier, var4);
 			}

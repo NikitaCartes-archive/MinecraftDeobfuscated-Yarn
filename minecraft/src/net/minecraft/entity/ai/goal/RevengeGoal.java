@@ -20,7 +20,7 @@ public class RevengeGoal extends TrackTargetGoal {
 	public RevengeGoal(MobEntityWithAi mobEntityWithAi, Class<?>... classs) {
 		super(mobEntityWithAi, true);
 		this.noRevengeTypes = classs;
-		this.setControls(EnumSet.of(Goal.Control.field_18408));
+		this.setControls(EnumSet.of(Goal.Control.TARGET));
 	}
 
 	@Override

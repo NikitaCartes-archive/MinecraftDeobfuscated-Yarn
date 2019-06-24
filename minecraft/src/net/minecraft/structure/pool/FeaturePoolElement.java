@@ -27,7 +27,7 @@ public class FeaturePoolElement extends StructurePoolElement {
 
 	@Deprecated
 	public FeaturePoolElement(ConfiguredFeature<?> configuredFeature) {
-		this(configuredFeature, StructurePool.Projection.field_16687);
+		this(configuredFeature, StructurePool.Projection.RIGID);
 	}
 
 	public FeaturePoolElement(ConfiguredFeature<?> configuredFeature, StructurePool.Projection projection) {
@@ -59,7 +59,7 @@ public class FeaturePoolElement extends StructurePoolElement {
 		StructureManager structureManager, BlockPos blockPos, BlockRotation blockRotation, Random random
 	) {
 		List<Structure.StructureBlockInfo> list = Lists.<Structure.StructureBlockInfo>newArrayList();
-		list.add(new Structure.StructureBlockInfo(blockPos, Blocks.field_16540.getDefaultState().with(JigsawBlock.FACING, Direction.field_11033), this.tag));
+		list.add(new Structure.StructureBlockInfo(blockPos, Blocks.JIGSAW.getDefaultState().with(JigsawBlock.FACING, Direction.DOWN), this.tag));
 		return list;
 	}
 
@@ -91,7 +91,7 @@ public class FeaturePoolElement extends StructurePoolElement {
 
 	@Override
 	public StructurePoolElementType getType() {
-		return StructurePoolElementType.field_16971;
+		return StructurePoolElementType.FEATURE_POOL_ELEMENT;
 	}
 
 	public String toString() {

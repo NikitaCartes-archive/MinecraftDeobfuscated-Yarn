@@ -20,7 +20,7 @@ public class OpCommand {
 			CommandManager.literal("op")
 				.requires(serverCommandSource -> serverCommandSource.hasPermissionLevel(3))
 				.then(
-					CommandManager.argument("targets", GameProfileArgumentType.create())
+					CommandManager.argument("targets", GameProfileArgumentType.gameProfile())
 						.suggests(
 							(commandContext, suggestionsBuilder) -> {
 								PlayerManager playerManager = commandContext.getSource().getMinecraftServer().getPlayerManager();

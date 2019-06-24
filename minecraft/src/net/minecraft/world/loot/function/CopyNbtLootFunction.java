@@ -217,10 +217,10 @@ public class CopyNbtLootFunction extends ConditionalLootFunction {
 	}
 
 	public static enum Source {
-		field_17024("this", LootContextParameters.field_1226, CopyNbtLootFunction.ENTITY_TAG_GETTER),
-		field_17025("killer", LootContextParameters.field_1230, CopyNbtLootFunction.ENTITY_TAG_GETTER),
-		field_17026("killer_player", LootContextParameters.field_1233, CopyNbtLootFunction.ENTITY_TAG_GETTER),
-		field_17027("block_entity", LootContextParameters.field_1228, CopyNbtLootFunction.BLOCK_ENTITY_TAG_GETTER);
+		THIS("this", LootContextParameters.THIS_ENTITY, CopyNbtLootFunction.ENTITY_TAG_GETTER),
+		KILLER("killer", LootContextParameters.KILLER_ENTITY, CopyNbtLootFunction.ENTITY_TAG_GETTER),
+		KILLER_PLAYER("killer_player", LootContextParameters.LAST_DAMAGE_PLAYER, CopyNbtLootFunction.ENTITY_TAG_GETTER),
+		BLOCK_ENTITY("block_entity", LootContextParameters.BLOCK_ENTITY, CopyNbtLootFunction.BLOCK_ENTITY_TAG_GETTER);
 
 		public final String name;
 		public final LootContextParameter<?> parameter;

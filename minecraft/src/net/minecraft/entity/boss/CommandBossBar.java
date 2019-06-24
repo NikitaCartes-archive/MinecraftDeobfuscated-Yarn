@@ -22,7 +22,7 @@ public class CommandBossBar extends ServerBossBar {
 	private int maxValue = 100;
 
 	public CommandBossBar(Identifier identifier, Text text) {
-		super(text, BossBar.Color.field_5786, BossBar.Style.field_5795);
+		super(text, BossBar.Color.WHITE, BossBar.Style.PROGRESS);
 		this.id = identifier;
 		this.setPercent(0.0F);
 	}
@@ -75,7 +75,7 @@ public class CommandBossBar extends ServerBossBar {
 		return Texts.bracketed(this.getName())
 			.styled(
 				style -> style.setColor(this.getColor().getTextFormat())
-						.setHoverEvent(new HoverEvent(HoverEvent.Action.field_11762, new LiteralText(this.getId().toString())))
+						.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new LiteralText(this.getId().toString())))
 						.setInsertion(this.getId().toString())
 			);
 	}

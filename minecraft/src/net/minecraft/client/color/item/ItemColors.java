@@ -27,13 +27,13 @@ public class ItemColors {
 		ItemColors itemColors = new ItemColors();
 		itemColors.register(
 			(itemStack, i) -> i > 0 ? -1 : ((DyeableItem)itemStack.getItem()).getColor(itemStack),
-			Items.field_8267,
-			Items.field_8577,
-			Items.field_8570,
-			Items.field_8370,
-			Items.field_18138
+			Items.LEATHER_HELMET,
+			Items.LEATHER_CHESTPLATE,
+			Items.LEATHER_LEGGINGS,
+			Items.LEATHER_BOOTS,
+			Items.LEATHER_HORSE_ARMOR
 		);
-		itemColors.register((itemStack, i) -> GrassColors.getColor(0.5, 1.0), Blocks.field_10214, Blocks.field_10313);
+		itemColors.register((itemStack, i) -> GrassColors.getColor(0.5, 1.0), Blocks.TALL_GRASS, Blocks.LARGE_FERN);
 		itemColors.register((itemStack, i) -> {
 			if (i != 1) {
 				return -1;
@@ -61,8 +61,8 @@ public class ItemColors {
 					return j << 16 | k << 8 | l;
 				}
 			}
-		}, Items.field_8450);
-		itemColors.register((itemStack, i) -> i > 0 ? -1 : PotionUtil.getColor(itemStack), Items.field_8574, Items.field_8436, Items.field_8150);
+		}, Items.FIREWORK_STAR);
+		itemColors.register((itemStack, i) -> i > 0 ? -1 : PotionUtil.getColor(itemStack), Items.POTION, Items.SPLASH_POTION, Items.LINGERING_POTION);
 
 		for (SpawnEggItem spawnEggItem : SpawnEggItem.getAll()) {
 			itemColors.register((itemStack, i) -> spawnEggItem.getColor(i), spawnEggItem);
@@ -73,20 +73,20 @@ public class ItemColors {
 				BlockState blockState = ((BlockItem)itemStack.getItem()).getBlock().getDefaultState();
 				return blockColors.getColorMultiplier(blockState, null, null, i);
 			},
-			Blocks.field_10219,
-			Blocks.field_10479,
-			Blocks.field_10112,
-			Blocks.field_10597,
-			Blocks.field_10503,
-			Blocks.field_9988,
-			Blocks.field_10539,
-			Blocks.field_10335,
-			Blocks.field_10098,
-			Blocks.field_10035,
-			Blocks.field_10588
+			Blocks.GRASS_BLOCK,
+			Blocks.GRASS,
+			Blocks.FERN,
+			Blocks.VINE,
+			Blocks.OAK_LEAVES,
+			Blocks.SPRUCE_LEAVES,
+			Blocks.BIRCH_LEAVES,
+			Blocks.JUNGLE_LEAVES,
+			Blocks.ACACIA_LEAVES,
+			Blocks.DARK_OAK_LEAVES,
+			Blocks.LILY_PAD
 		);
-		itemColors.register((itemStack, i) -> i == 0 ? PotionUtil.getColor(itemStack) : -1, Items.field_8087);
-		itemColors.register((itemStack, i) -> i == 0 ? -1 : FilledMapItem.getMapColor(itemStack), Items.field_8204);
+		itemColors.register((itemStack, i) -> i == 0 ? PotionUtil.getColor(itemStack) : -1, Items.TIPPED_ARROW);
+		itemColors.register((itemStack, i) -> i == 0 ? -1 : FilledMapItem.getMapColor(itemStack), Items.FILLED_MAP);
 		return itemColors;
 	}
 

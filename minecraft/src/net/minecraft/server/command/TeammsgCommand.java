@@ -23,7 +23,7 @@ public class TeammsgCommand {
 		LiteralCommandNode<ServerCommandSource> literalCommandNode = commandDispatcher.register(
 			CommandManager.literal("teammsg")
 				.then(
-					CommandManager.argument("message", MessageArgumentType.create())
+					CommandManager.argument("message", MessageArgumentType.message())
 						.executes(commandContext -> execute(commandContext.getSource(), MessageArgumentType.getMessage(commandContext, "message")))
 				)
 		);
@@ -36,8 +36,8 @@ public class TeammsgCommand {
 		if (team == null) {
 			throw NO_TEAM_EXCEPTION.create();
 		} else {
-			Consumer<Style> consumer = style -> style.setHoverEvent(new HoverEvent(HoverEvent.Action.field_11762, new TranslatableText("chat.type.team.hover")))
-					.setClickEvent(new ClickEvent(ClickEvent.Action.field_11745, "/teammsg "));
+			Consumer<Style> consumer = style -> style.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new TranslatableText("chat.type.team.hover")))
+					.setClickEvent(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND, "/teammsg "));
 			Text text2 = team.getFormattedName().styled(consumer);
 
 			for (Text text3 : text2.getSiblings()) {

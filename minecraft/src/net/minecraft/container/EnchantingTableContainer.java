@@ -44,7 +44,7 @@ public class EnchantingTableContainer extends Container {
 	}
 
 	public EnchantingTableContainer(int i, PlayerInventory playerInventory, BlockContext blockContext) {
-		super(ContainerType.field_17334, i);
+		super(ContainerType.ENCHANTMENT, i);
 		this.context = blockContext;
 		this.addSlot(new Slot(this.inventory, 0, 15, 47) {
 			@Override
@@ -60,7 +60,7 @@ public class EnchantingTableContainer extends Container {
 		this.addSlot(new Slot(this.inventory, 1, 35, 47) {
 			@Override
 			public boolean canInsert(ItemStack itemStack) {
-				return itemStack.getItem() == Items.field_8759;
+				return itemStack.getItem() == Items.LAPIS_LAZULI;
 			}
 		});
 
@@ -97,28 +97,28 @@ public class EnchantingTableContainer extends Container {
 					for (int j = -1; j <= 1; j++) {
 						for (int k = -1; k <= 1; k++) {
 							if ((j != 0 || k != 0) && world.isAir(blockPos.add(k, 0, j)) && world.isAir(blockPos.add(k, 1, j))) {
-								if (world.getBlockState(blockPos.add(k * 2, 0, j * 2)).getBlock() == Blocks.field_10504) {
+								if (world.getBlockState(blockPos.add(k * 2, 0, j * 2)).getBlock() == Blocks.BOOKSHELF) {
 									ix++;
 								}
 
-								if (world.getBlockState(blockPos.add(k * 2, 1, j * 2)).getBlock() == Blocks.field_10504) {
+								if (world.getBlockState(blockPos.add(k * 2, 1, j * 2)).getBlock() == Blocks.BOOKSHELF) {
 									ix++;
 								}
 
 								if (k != 0 && j != 0) {
-									if (world.getBlockState(blockPos.add(k * 2, 0, j)).getBlock() == Blocks.field_10504) {
+									if (world.getBlockState(blockPos.add(k * 2, 0, j)).getBlock() == Blocks.BOOKSHELF) {
 										ix++;
 									}
 
-									if (world.getBlockState(blockPos.add(k * 2, 1, j)).getBlock() == Blocks.field_10504) {
+									if (world.getBlockState(blockPos.add(k * 2, 1, j)).getBlock() == Blocks.BOOKSHELF) {
 										ix++;
 									}
 
-									if (world.getBlockState(blockPos.add(k, 0, j * 2)).getBlock() == Blocks.field_10504) {
+									if (world.getBlockState(blockPos.add(k, 0, j * 2)).getBlock() == Blocks.BOOKSHELF) {
 										ix++;
 									}
 
-									if (world.getBlockState(blockPos.add(k, 1, j * 2)).getBlock() == Blocks.field_10504) {
+									if (world.getBlockState(blockPos.add(k, 1, j * 2)).getBlock() == Blocks.BOOKSHELF) {
 										ix++;
 									}
 								}
@@ -177,9 +177,9 @@ public class EnchantingTableContainer extends Container {
 				List<InfoEnchantment> list = this.getRandomEnchantments(itemStack, i, this.enchantmentPower[i]);
 				if (!list.isEmpty()) {
 					playerEntity.applyEnchantmentCosts(itemStack, j);
-					boolean bl = itemStack.getItem() == Items.field_8529;
+					boolean bl = itemStack.getItem() == Items.BOOK;
 					if (bl) {
-						itemStack3 = new ItemStack(Items.field_8598);
+						itemStack3 = new ItemStack(Items.ENCHANTED_BOOK);
 						this.inventory.setInvStack(0, itemStack3);
 					}
 
@@ -199,7 +199,7 @@ public class EnchantingTableContainer extends Container {
 						}
 					}
 
-					playerEntity.incrementStat(Stats.field_15420);
+					playerEntity.incrementStat(Stats.ENCHANT_ITEM);
 					if (playerEntity instanceof ServerPlayerEntity) {
 						Criterions.ENCHANTED_ITEM.handle((ServerPlayerEntity)playerEntity, itemStack3, j);
 					}
@@ -207,7 +207,7 @@ public class EnchantingTableContainer extends Container {
 					this.inventory.markDirty();
 					this.seed.set(playerEntity.getEnchantmentTableSeed());
 					this.onContentChanged(this.inventory);
-					world.playSound(null, blockPos, SoundEvents.field_15119, SoundCategory.field_15245, 1.0F, world.random.nextFloat() * 0.1F + 0.9F);
+					world.playSound(null, blockPos, SoundEvents.BLOCK_ENCHANTMENT_TABLE_USE, SoundCategory.BLOCKS, 1.0F, world.random.nextFloat() * 0.1F + 0.9F);
 				}
 			}));
 			return true;
@@ -217,7 +217,7 @@ public class EnchantingTableContainer extends Container {
 	private List<InfoEnchantment> getRandomEnchantments(ItemStack itemStack, int i, int j) {
 		this.random.setSeed((long)(this.seed.get() + i));
 		List<InfoEnchantment> list = EnchantmentHelper.getEnchantments(this.random, itemStack, j, false);
-		if (itemStack.getItem() == Items.field_8529 && list.size() > 1) {
+		if (itemStack.getItem() == Items.BOOK && list.size() > 1) {
 			list.remove(this.random.nextInt(list.size()));
 		}
 
@@ -243,7 +243,7 @@ public class EnchantingTableContainer extends Container {
 
 	@Override
 	public boolean canUse(PlayerEntity playerEntity) {
-		return canUse(this.context, playerEntity, Blocks.field_10485);
+		return canUse(this.context, playerEntity, Blocks.ENCHANTING_TABLE);
 	}
 
 	@Override
@@ -261,7 +261,7 @@ public class EnchantingTableContainer extends Container {
 				if (!this.insertItem(itemStack2, 2, 38, true)) {
 					return ItemStack.EMPTY;
 				}
-			} else if (itemStack2.getItem() == Items.field_8759) {
+			} else if (itemStack2.getItem() == Items.LAPIS_LAZULI) {
 				if (!this.insertItem(itemStack2, 1, 2, true)) {
 					return ItemStack.EMPTY;
 				}

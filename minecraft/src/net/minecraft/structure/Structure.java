@@ -191,7 +191,7 @@ public class Structure {
 						if (structureBlockInfo.tag != null) {
 							BlockEntity blockEntity = iWorld.getBlockEntity(blockPos2);
 							Clearable.clear(blockEntity);
-							iWorld.setBlockState(blockPos2, Blocks.field_10499.getDefaultState(), 20);
+							iWorld.setBlockState(blockPos2, Blocks.BARRIER.getDefaultState(), 20);
 						}
 
 						if (iWorld.setBlockState(blockPos2, blockState, i)) {
@@ -225,7 +225,7 @@ public class Structure {
 				}
 
 				boolean bl = true;
-				Direction[] directions = new Direction[]{Direction.field_11036, Direction.field_11043, Direction.field_11034, Direction.field_11035, Direction.field_11039};
+				Direction[] directions = new Direction[]{Direction.UP, Direction.NORTH, Direction.EAST, Direction.SOUTH, Direction.WEST};
 
 				while (bl && !list2.isEmpty()) {
 					bl = false;
@@ -387,8 +387,8 @@ public class Structure {
 
 	public BlockPos method_15166(BlockRotation blockRotation) {
 		switch (blockRotation) {
-			case field_11465:
-			case field_11463:
+			case COUNTERCLOCKWISE_90:
+			case CLOCKWISE_90:
 				return new BlockPos(this.size.getZ(), this.size.getY(), this.size.getX());
 			default:
 				return this.size;
@@ -401,10 +401,10 @@ public class Structure {
 		int k = blockPos.getZ();
 		boolean bl = true;
 		switch (blockMirror) {
-			case field_11300:
+			case LEFT_RIGHT:
 				k = -k;
 				break;
-			case field_11301:
+			case FRONT_BACK:
 				i = -i;
 				break;
 			default:
@@ -414,11 +414,11 @@ public class Structure {
 		int l = blockPos2.getX();
 		int m = blockPos2.getZ();
 		switch (blockRotation) {
-			case field_11465:
+			case COUNTERCLOCKWISE_90:
 				return new BlockPos(l - m + k, j, l + m - i);
-			case field_11463:
+			case CLOCKWISE_90:
 				return new BlockPos(l + m - k, j, m - l + i);
-			case field_11464:
+			case CLOCKWISE_180:
 				return new BlockPos(l + l - i, j, m + m - k);
 			default:
 				return bl ? new BlockPos(i, j, k) : blockPos;
@@ -431,10 +431,10 @@ public class Structure {
 		double f = vec3d.z;
 		boolean bl = true;
 		switch (blockMirror) {
-			case field_11300:
+			case LEFT_RIGHT:
 				f = 1.0 - f;
 				break;
-			case field_11301:
+			case FRONT_BACK:
 				d = 1.0 - d;
 				break;
 			default:
@@ -444,11 +444,11 @@ public class Structure {
 		int i = blockPos.getX();
 		int j = blockPos.getZ();
 		switch (blockRotation) {
-			case field_11465:
+			case COUNTERCLOCKWISE_90:
 				return new Vec3d((double)(i - j) + f, e, (double)(i + j + 1) - d);
-			case field_11463:
+			case CLOCKWISE_90:
 				return new Vec3d((double)(i + j + 1) - f, e, (double)(j - i) + d);
-			case field_11464:
+			case CLOCKWISE_180:
 				return new Vec3d((double)(i + i + 1) - d, e, (double)(j + j + 1) - f);
 			default:
 				return bl ? new Vec3d(d, e, f) : vec3d;
@@ -462,20 +462,20 @@ public class Structure {
 	public static BlockPos method_15162(BlockPos blockPos, BlockMirror blockMirror, BlockRotation blockRotation, int i, int j) {
 		i--;
 		j--;
-		int k = blockMirror == BlockMirror.field_11301 ? i : 0;
-		int l = blockMirror == BlockMirror.field_11300 ? j : 0;
+		int k = blockMirror == BlockMirror.FRONT_BACK ? i : 0;
+		int l = blockMirror == BlockMirror.LEFT_RIGHT ? j : 0;
 		BlockPos blockPos2 = blockPos;
 		switch (blockRotation) {
-			case field_11465:
+			case COUNTERCLOCKWISE_90:
 				blockPos2 = blockPos.add(l, 0, i - k);
 				break;
-			case field_11463:
+			case CLOCKWISE_90:
 				blockPos2 = blockPos.add(j - l, 0, k);
 				break;
-			case field_11464:
+			case CLOCKWISE_180:
 				blockPos2 = blockPos.add(i - k, 0, j - l);
 				break;
-			case field_11467:
+			case NONE:
 				blockPos2 = blockPos.add(k, 0, l);
 		}
 
@@ -494,26 +494,26 @@ public class Structure {
 		int m = blockPos3.getZ() - 1;
 		MutableIntBoundingBox mutableIntBoundingBox = new MutableIntBoundingBox(0, 0, 0, 0, 0, 0);
 		switch (blockRotation) {
-			case field_11465:
+			case COUNTERCLOCKWISE_90:
 				mutableIntBoundingBox = new MutableIntBoundingBox(i - j, 0, i + j - m, i - j + k, l, i + j);
 				break;
-			case field_11463:
+			case CLOCKWISE_90:
 				mutableIntBoundingBox = new MutableIntBoundingBox(i + j - k, 0, j - i, i + j, l, j - i + m);
 				break;
-			case field_11464:
+			case CLOCKWISE_180:
 				mutableIntBoundingBox = new MutableIntBoundingBox(i + i - k, 0, j + j - m, i + i, l, j + j);
 				break;
-			case field_11467:
+			case NONE:
 				mutableIntBoundingBox = new MutableIntBoundingBox(0, 0, 0, k, l, m);
 		}
 
 		switch (blockMirror) {
-			case field_11300:
-				this.method_16186(blockRotation, m, k, mutableIntBoundingBox, Direction.field_11043, Direction.field_11035);
+			case LEFT_RIGHT:
+				this.method_16186(blockRotation, m, k, mutableIntBoundingBox, Direction.NORTH, Direction.SOUTH);
 				break;
-			case field_11301:
-				this.method_16186(blockRotation, k, m, mutableIntBoundingBox, Direction.field_11039, Direction.field_11034);
-			case field_11302:
+			case FRONT_BACK:
+				this.method_16186(blockRotation, k, m, mutableIntBoundingBox, Direction.WEST, Direction.EAST);
+			case NONE:
 		}
 
 		mutableIntBoundingBox.translate(blockPos.getX(), blockPos.getY(), blockPos.getZ());
@@ -522,9 +522,9 @@ public class Structure {
 
 	private void method_16186(BlockRotation blockRotation, int i, int j, MutableIntBoundingBox mutableIntBoundingBox, Direction direction, Direction direction2) {
 		BlockPos blockPos = BlockPos.ORIGIN;
-		if (blockRotation == BlockRotation.field_11463 || blockRotation == BlockRotation.field_11465) {
+		if (blockRotation == BlockRotation.CLOCKWISE_90 || blockRotation == BlockRotation.COUNTERCLOCKWISE_90) {
 			blockPos = blockPos.offset(blockRotation.rotate(direction), j);
-		} else if (blockRotation == BlockRotation.field_11464) {
+		} else if (blockRotation == BlockRotation.CLOCKWISE_180) {
 			blockPos = blockPos.offset(direction2, i);
 		} else {
 			blockPos = blockPos.offset(direction, i);
@@ -721,7 +721,7 @@ public class Structure {
 	}
 
 	static class class_3500 implements Iterable<BlockState> {
-		public static final BlockState field_15590 = Blocks.field_10124.getDefaultState();
+		public static final BlockState field_15590 = Blocks.AIR.getDefaultState();
 		private final IdList<BlockState> field_15591 = new IdList<>(16);
 		private int field_15592;
 

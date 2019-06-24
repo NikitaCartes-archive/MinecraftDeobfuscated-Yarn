@@ -45,7 +45,7 @@ public class AnvilContainer extends Container {
 	}
 
 	public AnvilContainer(int i, PlayerInventory playerInventory, BlockContext blockContext) {
-		super(ContainerType.field_17329, i);
+		super(ContainerType.ANVIL, i);
 		this.context = blockContext;
 		this.player = playerInventory.player;
 		this.addProperty(this.levelCost);
@@ -87,7 +87,7 @@ public class AnvilContainer extends Container {
 					AnvilContainer.this.levelCost.set(0);
 					blockContext.run((BiConsumer<World, BlockPos>)((world, blockPos) -> {
 						BlockState blockState = world.getBlockState(blockPos);
-						if (!playerEntity.abilities.creativeMode && blockState.matches(BlockTags.field_15486) && playerEntity.getRand().nextFloat() < 0.12F) {
+						if (!playerEntity.abilities.creativeMode && blockState.matches(BlockTags.ANVIL) && playerEntity.getRand().nextFloat() < 0.12F) {
 							BlockState blockState2 = AnvilBlock.getLandingState(blockState);
 							if (blockState2 == null) {
 								world.clearBlockState(blockPos, false);
@@ -140,7 +140,7 @@ public class AnvilContainer extends Container {
 			j += itemStack.getRepairCost() + (itemStack3.isEmpty() ? 0 : itemStack3.getRepairCost());
 			this.field_7776 = 0;
 			if (!itemStack3.isEmpty()) {
-				boolean bl = itemStack3.getItem() == Items.field_8598 && !EnchantedBookItem.getEnchantmentTag(itemStack3).isEmpty();
+				boolean bl = itemStack3.getItem() == Items.ENCHANTED_BOOK && !EnchantedBookItem.getEnchantmentTag(itemStack3).isEmpty();
 				if (itemStack2.isDamageable() && itemStack2.getItem().canRepair(itemStack, itemStack3)) {
 					int l = Math.min(itemStack2.getDamage(), itemStack2.getMaxDamage() / 4);
 					if (l <= 0) {
@@ -191,7 +191,7 @@ public class AnvilContainer extends Container {
 							int r = (Integer)map2.get(enchantment);
 							r = q == r ? r + 1 : Math.max(r, q);
 							boolean bl4 = enchantment.isAcceptableItem(itemStack);
-							if (this.player.abilities.creativeMode || itemStack.getItem() == Items.field_8598) {
+							if (this.player.abilities.creativeMode || itemStack.getItem() == Items.ENCHANTED_BOOK) {
 								bl4 = true;
 							}
 
@@ -213,16 +213,16 @@ public class AnvilContainer extends Container {
 								map.put(enchantment, r);
 								int s = 0;
 								switch (enchantment.getWeight()) {
-									case field_9087:
+									case COMMON:
 										s = 1;
 										break;
-									case field_9090:
+									case UNCOMMON:
 										s = 2;
 										break;
-									case field_9088:
+									case RARE:
 										s = 4;
 										break;
-									case field_9091:
+									case VERY_RARE:
 										s = 8;
 								}
 
@@ -304,7 +304,7 @@ public class AnvilContainer extends Container {
 	public boolean canUse(PlayerEntity playerEntity) {
 		return this.context
 			.run(
-				(world, blockPos) -> !world.getBlockState(blockPos).matches(BlockTags.field_15486)
+				(world, blockPos) -> !world.getBlockState(blockPos).matches(BlockTags.ANVIL)
 						? false
 						: playerEntity.squaredDistanceTo((double)blockPos.getX() + 0.5, (double)blockPos.getY() + 0.5, (double)blockPos.getZ() + 0.5) <= 64.0,
 				true

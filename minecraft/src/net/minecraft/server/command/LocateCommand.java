@@ -46,9 +46,9 @@ public class LocateCommand {
 			int i = MathHelper.floor(getDistance(blockPos.getX(), blockPos.getZ(), blockPos2.getX(), blockPos2.getZ()));
 			Text text = Texts.bracketed(new TranslatableText("chat.coordinates", blockPos2.getX(), "~", blockPos2.getZ()))
 				.styled(
-					style -> style.setColor(Formatting.field_1060)
-							.setClickEvent(new ClickEvent(ClickEvent.Action.field_11745, "/tp @s " + blockPos2.getX() + " ~ " + blockPos2.getZ()))
-							.setHoverEvent(new HoverEvent(HoverEvent.Action.field_11762, new TranslatableText("chat.coordinates.tooltip")))
+					style -> style.setColor(Formatting.GREEN)
+							.setClickEvent(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND, "/tp @s " + blockPos2.getX() + " ~ " + blockPos2.getZ()))
+							.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new TranslatableText("chat.coordinates.tooltip")))
 				);
 			serverCommandSource.sendFeedback(new TranslatableText("commands.locate.success", string, text, i), false);
 			return i;

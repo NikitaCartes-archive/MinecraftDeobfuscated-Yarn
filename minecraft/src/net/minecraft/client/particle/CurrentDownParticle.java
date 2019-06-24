@@ -43,7 +43,7 @@ public class CurrentDownParticle extends SpriteBillboardParticle {
 			this.velocityX *= 0.07;
 			this.velocityZ *= 0.07;
 			this.move(this.velocityX, this.velocityY, this.velocityZ);
-			if (!this.world.getFluidState(new BlockPos(this.x, this.y, this.z)).matches(FluidTags.field_15517) || this.onGround) {
+			if (!this.world.getFluidState(new BlockPos(this.x, this.y, this.z)).matches(FluidTags.WATER) || this.onGround) {
 				this.markDead();
 			}
 

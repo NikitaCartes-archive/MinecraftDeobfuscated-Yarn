@@ -95,10 +95,10 @@ public class ServerNetworkIo {
 										.addLast("timeout", new ReadTimeoutHandler(30))
 										.addLast("legacy_query", new LegacyQueryHandler(ServerNetworkIo.this))
 										.addLast("splitter", new SplitterHandler())
-										.addLast("decoder", new DecoderHandler(NetworkSide.field_11941))
+										.addLast("decoder", new DecoderHandler(NetworkSide.SERVERBOUND))
 										.addLast("prepender", new SizePrepender())
-										.addLast("encoder", new PacketEncoder(NetworkSide.field_11942));
-									ClientConnection clientConnection = new ClientConnection(NetworkSide.field_11941);
+										.addLast("encoder", new PacketEncoder(NetworkSide.CLIENTBOUND));
+									ClientConnection clientConnection = new ClientConnection(NetworkSide.SERVERBOUND);
 									ServerNetworkIo.this.connections.add(clientConnection);
 									channel.pipeline().addLast("packet_handler", clientConnection);
 									clientConnection.setPacketListener(new ServerHandshakeNetworkHandler(ServerNetworkIo.this.server, clientConnection));
@@ -120,7 +120,7 @@ public class ServerNetworkIo {
 			channelFuture = new ServerBootstrap().channel(LocalServerChannel.class).childHandler(new ChannelInitializer<Channel>() {
 				@Override
 				protected void initChannel(Channel channel) throws Exception {
-					ClientConnection clientConnection = new ClientConnection(NetworkSide.field_11941);
+					ClientConnection clientConnection = new ClientConnection(NetworkSide.SERVERBOUND);
 					clientConnection.setPacketListener(new IntegratedServerHandshakeNetworkHandler(ServerNetworkIo.this.server, clientConnection));
 					ServerNetworkIo.this.connections.add(clientConnection);
 					channel.pipeline().addLast("packet_handler", clientConnection);

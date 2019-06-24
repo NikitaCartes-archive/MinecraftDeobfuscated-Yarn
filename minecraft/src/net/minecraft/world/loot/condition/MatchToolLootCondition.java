@@ -21,11 +21,11 @@ public class MatchToolLootCondition implements LootCondition {
 
 	@Override
 	public Set<LootContextParameter<?>> getRequiredParameters() {
-		return ImmutableSet.of(LootContextParameters.field_1229);
+		return ImmutableSet.of(LootContextParameters.TOOL);
 	}
 
 	public boolean method_946(LootContext lootContext) {
-		ItemStack itemStack = lootContext.get(LootContextParameters.field_1229);
+		ItemStack itemStack = lootContext.get(LootContextParameters.TOOL);
 		return itemStack != null && this.predicate.test(itemStack);
 	}
 

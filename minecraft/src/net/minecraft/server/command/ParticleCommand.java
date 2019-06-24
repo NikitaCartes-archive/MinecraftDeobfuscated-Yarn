@@ -24,7 +24,7 @@ public class ParticleCommand {
 			CommandManager.literal("particle")
 				.requires(serverCommandSource -> serverCommandSource.hasPermissionLevel(2))
 				.then(
-					CommandManager.argument("name", ParticleArgumentType.create())
+					CommandManager.argument("name", ParticleArgumentType.particle())
 						.executes(
 							commandContext -> execute(
 									commandContext.getSource(),
@@ -38,7 +38,7 @@ public class ParticleCommand {
 								)
 						)
 						.then(
-							CommandManager.argument("pos", Vec3ArgumentType.create())
+							CommandManager.argument("pos", Vec3ArgumentType.vec3())
 								.executes(
 									commandContext -> execute(
 											commandContext.getSource(),
@@ -52,7 +52,7 @@ public class ParticleCommand {
 										)
 								)
 								.then(
-									CommandManager.argument("delta", Vec3ArgumentType.create(false))
+									CommandManager.argument("delta", Vec3ArgumentType.vec3(false))
 										.then(
 											CommandManager.argument("speed", FloatArgumentType.floatArg(0.0F))
 												.then(

@@ -19,7 +19,7 @@ public abstract class StructurePieceWithDimensions extends StructurePiece {
 		this.width = l;
 		this.height = m;
 		this.depth = n;
-		this.setOrientation(Direction.Type.field_11062.random(random));
+		this.setOrientation(Direction.Type.HORIZONTAL.random(random));
 		if (this.getFacing().getAxis() == Direction.Axis.Z) {
 			this.boundingBox = new MutableIntBoundingBox(i, j, k, i + l - 1, j + m - 1, k + n - 1);
 		} else {
@@ -55,7 +55,7 @@ public abstract class StructurePieceWithDimensions extends StructurePiece {
 				for (int m = this.boundingBox.minX; m <= this.boundingBox.maxX; m++) {
 					mutable.set(m, 64, l);
 					if (mutableIntBoundingBox.contains(mutable)) {
-						j += iWorld.getTopPosition(Heightmap.Type.field_13203, mutable).getY();
+						j += iWorld.getTopPosition(Heightmap.Type.MOTION_BLOCKING_NO_LEAVES, mutable).getY();
 						k++;
 					}
 				}

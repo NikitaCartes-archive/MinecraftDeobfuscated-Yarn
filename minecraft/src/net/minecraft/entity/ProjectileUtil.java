@@ -62,9 +62,9 @@ public final class ProjectileUtil {
 			return new BlockHitResult(vec3d2, Direction.getFacing(vec3d.x, vec3d.y, vec3d.z), new BlockPos(entity), false);
 		} else {
 			Vec3d vec3d3 = vec3d2.add(vec3d);
-			HitResult hitResult = world.rayTrace(new RayTraceContext(vec3d2, vec3d3, shapeType, RayTraceContext.FluidHandling.field_1348, entity));
+			HitResult hitResult = world.rayTrace(new RayTraceContext(vec3d2, vec3d3, shapeType, RayTraceContext.FluidHandling.NONE, entity));
 			if (bl) {
-				if (hitResult.getType() != HitResult.Type.field_1333) {
+				if (hitResult.getType() != HitResult.Type.MISS) {
 					vec3d3 = hitResult.getPos();
 				}
 
@@ -87,7 +87,7 @@ public final class ProjectileUtil {
 		Vec3d vec3d3 = null;
 
 		for (Entity entity3 : world.getEntities(entity, box, predicate)) {
-			Box box2 = entity3.getBoundingBox().expand((double)entity3.getBoundingBoxMarginForTargeting());
+			Box box2 = entity3.getBoundingBox().expand((double)entity3.getTargetingMargin());
 			Optional<Vec3d> optional = box2.rayTrace(vec3d, vec3d2);
 			if (box2.contains(vec3d)) {
 				if (e >= 0.0) {
@@ -99,7 +99,7 @@ public final class ProjectileUtil {
 				Vec3d vec3d4 = (Vec3d)optional.get();
 				double f = vec3d.squaredDistanceTo(vec3d4);
 				if (f < e || e == 0.0) {
-					if (entity3.getTopmostVehicle() == entity.getTopmostVehicle()) {
+					if (entity3.getRootVehicle() == entity.getRootVehicle()) {
 						if (e == 0.0) {
 							entity2 = entity3;
 							vec3d3 = vec3d4;
@@ -168,14 +168,14 @@ public final class ProjectileUtil {
 	}
 
 	public static Hand getHandPossiblyHolding(LivingEntity livingEntity, Item item) {
-		return livingEntity.getMainHandStack().getItem() == item ? Hand.field_5808 : Hand.field_5810;
+		return livingEntity.getMainHandStack().getItem() == item ? Hand.MAIN_HAND : Hand.OFF_HAND;
 	}
 
 	public static ProjectileEntity createArrowProjectile(LivingEntity livingEntity, ItemStack itemStack, float f) {
-		ArrowItem arrowItem = (ArrowItem)(itemStack.getItem() instanceof ArrowItem ? itemStack.getItem() : Items.field_8107);
+		ArrowItem arrowItem = (ArrowItem)(itemStack.getItem() instanceof ArrowItem ? itemStack.getItem() : Items.ARROW);
 		ProjectileEntity projectileEntity = arrowItem.createArrow(livingEntity.world, itemStack, livingEntity);
 		projectileEntity.method_7435(livingEntity, f);
-		if (itemStack.getItem() == Items.field_8087 && projectileEntity instanceof ArrowEntity) {
+		if (itemStack.getItem() == Items.TIPPED_ARROW && projectileEntity instanceof ArrowEntity) {
 			((ArrowEntity)projectileEntity).initFromStack(itemStack);
 		}
 

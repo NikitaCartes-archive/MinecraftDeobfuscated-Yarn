@@ -52,7 +52,7 @@ public class ShulkerBoxBlock extends BlockWithEntity {
 	public ShulkerBoxBlock(@Nullable DyeColor dyeColor, Block.Settings settings) {
 		super(settings);
 		this.color = dyeColor;
-		this.setDefaultState(this.stateFactory.getDefaultState().with(FACING, Direction.field_11036));
+		this.setDefaultState(this.stateFactory.getDefaultState().with(FACING, Direction.UP));
 	}
 
 	@Override
@@ -73,7 +73,7 @@ public class ShulkerBoxBlock extends BlockWithEntity {
 
 	@Override
 	public BlockRenderType getRenderType(BlockState blockState) {
-		return BlockRenderType.field_11456;
+		return BlockRenderType.ENTITYBLOCK_ANIMATED;
 	}
 
 	@Override
@@ -88,7 +88,7 @@ public class ShulkerBoxBlock extends BlockWithEntity {
 				Direction direction = blockState.get(FACING);
 				ShulkerBoxBlockEntity shulkerBoxBlockEntity = (ShulkerBoxBlockEntity)blockEntity;
 				boolean bl;
-				if (shulkerBoxBlockEntity.getAnimationStage() == ShulkerBoxBlockEntity.AnimationStage.field_12065) {
+				if (shulkerBoxBlockEntity.getAnimationStage() == ShulkerBoxBlockEntity.AnimationStage.CLOSED) {
 					Box box = VoxelShapes.fullCube()
 						.getBoundingBox()
 						.stretch((double)(0.5F * (float)direction.getOffsetX()), (double)(0.5F * (float)direction.getOffsetY()), (double)(0.5F * (float)direction.getOffsetZ()))
@@ -100,7 +100,7 @@ public class ShulkerBoxBlock extends BlockWithEntity {
 
 				if (bl) {
 					playerEntity.openContainer(shulkerBoxBlockEntity);
-					playerEntity.incrementStat(Stats.field_15418);
+					playerEntity.incrementStat(Stats.OPEN_SHULKER_BOX);
 				}
 
 				return true;
@@ -149,7 +149,7 @@ public class ShulkerBoxBlock extends BlockWithEntity {
 
 	@Override
 	public List<ItemStack> getDroppedStacks(BlockState blockState, LootContext.Builder builder) {
-		BlockEntity blockEntity = builder.getNullable(LootContextParameters.field_1228);
+		BlockEntity blockEntity = builder.getNullable(LootContextParameters.BLOCK_ENTITY);
 		if (blockEntity instanceof ShulkerBoxBlockEntity) {
 			ShulkerBoxBlockEntity shulkerBoxBlockEntity = (ShulkerBoxBlockEntity)blockEntity;
 			builder = builder.putDrop(CONTENTS, (lootContext, consumer) -> {
@@ -195,7 +195,7 @@ public class ShulkerBoxBlock extends BlockWithEntity {
 			}
 
 			if (compoundTag.containsKey("Items", 9)) {
-				DefaultedList<ItemStack> defaultedList = DefaultedList.create(27, ItemStack.EMPTY);
+				DefaultedList<ItemStack> defaultedList = DefaultedList.ofSize(27, ItemStack.EMPTY);
 				Inventories.fromTag(compoundTag, defaultedList);
 				int i = 0;
 				int j = 0;
@@ -213,7 +213,7 @@ public class ShulkerBoxBlock extends BlockWithEntity {
 				}
 
 				if (j - i > 0) {
-					list.add(new TranslatableText("container.shulkerBox.more", j - i).formatted(Formatting.field_1056));
+					list.add(new TranslatableText("container.shulkerBox.more", j - i).formatted(Formatting.ITALIC));
 				}
 			}
 		}
@@ -221,7 +221,7 @@ public class ShulkerBoxBlock extends BlockWithEntity {
 
 	@Override
 	public PistonBehavior getPistonBehavior(BlockState blockState) {
-		return PistonBehavior.field_15971;
+		return PistonBehavior.DESTROY;
 	}
 
 	@Override
@@ -274,42 +274,42 @@ public class ShulkerBoxBlock extends BlockWithEntity {
 
 	public static Block get(@Nullable DyeColor dyeColor) {
 		if (dyeColor == null) {
-			return Blocks.field_10603;
+			return Blocks.SHULKER_BOX;
 		} else {
 			switch (dyeColor) {
-				case field_7952:
-					return Blocks.field_10199;
-				case field_7946:
-					return Blocks.field_10407;
-				case field_7958:
-					return Blocks.field_10063;
-				case field_7951:
-					return Blocks.field_10203;
-				case field_7947:
-					return Blocks.field_10600;
-				case field_7961:
-					return Blocks.field_10275;
-				case field_7954:
-					return Blocks.field_10051;
-				case field_7944:
-					return Blocks.field_10140;
-				case field_7967:
-					return Blocks.field_10320;
-				case field_7955:
-					return Blocks.field_10532;
-				case field_7945:
+				case WHITE:
+					return Blocks.WHITE_SHULKER_BOX;
+				case ORANGE:
+					return Blocks.ORANGE_SHULKER_BOX;
+				case MAGENTA:
+					return Blocks.MAGENTA_SHULKER_BOX;
+				case LIGHT_BLUE:
+					return Blocks.LIGHT_BLUE_SHULKER_BOX;
+				case YELLOW:
+					return Blocks.YELLOW_SHULKER_BOX;
+				case LIME:
+					return Blocks.LIME_SHULKER_BOX;
+				case PINK:
+					return Blocks.PINK_SHULKER_BOX;
+				case GRAY:
+					return Blocks.GRAY_SHULKER_BOX;
+				case LIGHT_GRAY:
+					return Blocks.LIGHT_GRAY_SHULKER_BOX;
+				case CYAN:
+					return Blocks.CYAN_SHULKER_BOX;
+				case PURPLE:
 				default:
-					return Blocks.field_10268;
-				case field_7966:
-					return Blocks.field_10605;
-				case field_7957:
-					return Blocks.field_10373;
-				case field_7942:
-					return Blocks.field_10055;
-				case field_7964:
-					return Blocks.field_10068;
-				case field_7963:
-					return Blocks.field_10371;
+					return Blocks.PURPLE_SHULKER_BOX;
+				case BLUE:
+					return Blocks.BLUE_SHULKER_BOX;
+				case BROWN:
+					return Blocks.BROWN_SHULKER_BOX;
+				case GREEN:
+					return Blocks.GREEN_SHULKER_BOX;
+				case RED:
+					return Blocks.RED_SHULKER_BOX;
+				case BLACK:
+					return Blocks.BLACK_SHULKER_BOX;
 			}
 		}
 	}

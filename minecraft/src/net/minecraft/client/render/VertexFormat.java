@@ -47,13 +47,13 @@ public class VertexFormat {
 			this.elements.add(vertexFormatElement);
 			this.offsets.add(this.size);
 			switch (vertexFormatElement.getType()) {
-				case field_1635:
+				case NORMAL:
 					this.offsetNormal = this.size;
 					break;
 				case COLOR:
 					this.offsetColor = this.size;
 					break;
-				case field_1636:
+				case UV:
 					this.offsetsUv.add(vertexFormatElement.getIndex(), this.size);
 			}
 

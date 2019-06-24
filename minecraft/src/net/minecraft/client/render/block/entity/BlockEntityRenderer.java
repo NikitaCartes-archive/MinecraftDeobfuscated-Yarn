@@ -36,7 +36,7 @@ public abstract class BlockEntityRenderer<T extends BlockEntity> {
 		HitResult hitResult = this.renderManager.hitResult;
 		if (blockEntity instanceof Nameable
 			&& hitResult != null
-			&& hitResult.getType() == HitResult.Type.field_1332
+			&& hitResult.getType() == HitResult.Type.BLOCK
 			&& blockEntity.getPos().equals(((BlockHitResult)hitResult).getBlockPos())) {
 			this.disableLightmap(true);
 			this.renderName(blockEntity, ((Nameable)blockEntity).getDisplayName().asFormattedString(), d, e, f, 12);

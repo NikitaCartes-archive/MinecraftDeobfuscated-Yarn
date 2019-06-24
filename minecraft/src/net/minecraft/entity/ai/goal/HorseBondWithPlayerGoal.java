@@ -17,7 +17,7 @@ public class HorseBondWithPlayerGoal extends Goal {
 	public HorseBondWithPlayerGoal(HorseBaseEntity horseBaseEntity, double d) {
 		this.horse = horseBaseEntity;
 		this.speed = d;
-		this.setControls(EnumSet.of(Goal.Control.field_18405));
+		this.setControls(EnumSet.of(Goal.Control.MOVE));
 	}
 
 	@Override

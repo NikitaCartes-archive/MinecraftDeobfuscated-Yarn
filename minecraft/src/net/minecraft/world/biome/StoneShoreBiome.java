@@ -12,9 +12,9 @@ public final class StoneShoreBiome extends Biome {
 	public StoneShoreBiome() {
 		super(
 			new Biome.Settings()
-				.configureSurfaceBuilder(SurfaceBuilder.field_15701, SurfaceBuilder.STONE_CONFIG)
+				.configureSurfaceBuilder(SurfaceBuilder.DEFAULT, SurfaceBuilder.STONE_CONFIG)
 				.precipitation(Biome.Precipitation.RAIN)
-				.category(Biome.Category.field_9371)
+				.category(Biome.Category.NONE)
 				.depth(0.1F)
 				.scale(0.8F)
 				.temperature(0.2F)
@@ -23,7 +23,7 @@ public final class StoneShoreBiome extends Biome {
 				.waterFogColor(329011)
 				.parent(null)
 		);
-		this.addStructureFeature(Feature.MINESHAFT, new MineshaftFeatureConfig(0.004, MineshaftFeature.Type.field_13692));
+		this.addStructureFeature(Feature.MINESHAFT, new MineshaftFeatureConfig(0.004, MineshaftFeature.Type.NORMAL));
 		this.addStructureFeature(Feature.STRONGHOLD, FeatureConfig.DEFAULT);
 		DefaultBiomeFeatures.addLandCarvers(this);
 		DefaultBiomeFeatures.addDefaultStructures(this);
@@ -38,14 +38,14 @@ public final class StoneShoreBiome extends Biome {
 		DefaultBiomeFeatures.addDefaultVegetation(this);
 		DefaultBiomeFeatures.addSprings(this);
 		DefaultBiomeFeatures.addFrozenTopLayer(this);
-		this.addSpawn(EntityCategory.field_6303, new Biome.SpawnEntry(EntityType.field_6108, 10, 8, 8));
-		this.addSpawn(EntityCategory.field_6302, new Biome.SpawnEntry(EntityType.field_6079, 100, 4, 4));
-		this.addSpawn(EntityCategory.field_6302, new Biome.SpawnEntry(EntityType.field_6051, 95, 4, 4));
-		this.addSpawn(EntityCategory.field_6302, new Biome.SpawnEntry(EntityType.field_6054, 5, 1, 1));
-		this.addSpawn(EntityCategory.field_6302, new Biome.SpawnEntry(EntityType.field_6137, 100, 4, 4));
-		this.addSpawn(EntityCategory.field_6302, new Biome.SpawnEntry(EntityType.field_6046, 100, 4, 4));
-		this.addSpawn(EntityCategory.field_6302, new Biome.SpawnEntry(EntityType.field_6069, 100, 4, 4));
-		this.addSpawn(EntityCategory.field_6302, new Biome.SpawnEntry(EntityType.field_6091, 10, 1, 4));
-		this.addSpawn(EntityCategory.field_6302, new Biome.SpawnEntry(EntityType.field_6145, 5, 1, 1));
+		this.addSpawn(EntityCategory.AMBIENT, new Biome.SpawnEntry(EntityType.BAT, 10, 8, 8));
+		this.addSpawn(EntityCategory.MONSTER, new Biome.SpawnEntry(EntityType.SPIDER, 100, 4, 4));
+		this.addSpawn(EntityCategory.MONSTER, new Biome.SpawnEntry(EntityType.ZOMBIE, 95, 4, 4));
+		this.addSpawn(EntityCategory.MONSTER, new Biome.SpawnEntry(EntityType.ZOMBIE_VILLAGER, 5, 1, 1));
+		this.addSpawn(EntityCategory.MONSTER, new Biome.SpawnEntry(EntityType.SKELETON, 100, 4, 4));
+		this.addSpawn(EntityCategory.MONSTER, new Biome.SpawnEntry(EntityType.CREEPER, 100, 4, 4));
+		this.addSpawn(EntityCategory.MONSTER, new Biome.SpawnEntry(EntityType.SLIME, 100, 4, 4));
+		this.addSpawn(EntityCategory.MONSTER, new Biome.SpawnEntry(EntityType.ENDERMAN, 10, 1, 4));
+		this.addSpawn(EntityCategory.MONSTER, new Biome.SpawnEntry(EntityType.WITCH, 5, 1, 1));
 	}
 }

@@ -80,29 +80,29 @@ public class ShulkerEntityRenderer extends MobEntityRenderer<ShulkerEntity, Shul
 	protected void method_4114(ShulkerEntity shulkerEntity, float f, float g, float h) {
 		super.setupTransforms(shulkerEntity, f, g, h);
 		switch (shulkerEntity.getAttachedFace()) {
-			case field_11033:
+			case DOWN:
 			default:
 				break;
-			case field_11034:
+			case EAST:
 				GlStateManager.translatef(0.5F, 0.5F, 0.0F);
 				GlStateManager.rotatef(90.0F, 1.0F, 0.0F, 0.0F);
 				GlStateManager.rotatef(90.0F, 0.0F, 0.0F, 1.0F);
 				break;
-			case field_11039:
+			case WEST:
 				GlStateManager.translatef(-0.5F, 0.5F, 0.0F);
 				GlStateManager.rotatef(90.0F, 1.0F, 0.0F, 0.0F);
 				GlStateManager.rotatef(-90.0F, 0.0F, 0.0F, 1.0F);
 				break;
-			case field_11043:
+			case NORTH:
 				GlStateManager.translatef(0.0F, 0.5F, -0.5F);
 				GlStateManager.rotatef(90.0F, 1.0F, 0.0F, 0.0F);
 				break;
-			case field_11035:
+			case SOUTH:
 				GlStateManager.translatef(0.0F, 0.5F, 0.5F);
 				GlStateManager.rotatef(90.0F, 1.0F, 0.0F, 0.0F);
 				GlStateManager.rotatef(180.0F, 0.0F, 0.0F, 1.0F);
 				break;
-			case field_11036:
+			case UP:
 				GlStateManager.translatef(0.0F, 1.0F, 0.0F);
 				GlStateManager.rotatef(180.0F, 1.0F, 0.0F, 0.0F);
 		}

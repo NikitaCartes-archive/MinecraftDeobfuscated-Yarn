@@ -26,8 +26,8 @@ import net.minecraft.util.math.MathHelper;
 public class LoomScreen extends AbstractContainerScreen<LoomContainer> {
 	private static final Identifier TEXTURE = new Identifier("textures/gui/container/loom.png");
 	private static final int PATTERN_BUTTON_ROW_COUNT = (BannerPattern.COUNT - 5 - 1 + 4 - 1) / 4;
-	private static final DyeColor PATTERN_BUTTON_BACKGROUND_COLOR = DyeColor.field_7944;
-	private static final DyeColor PATTERN_BUTTON_FOREGROUND_COLOR = DyeColor.field_7952;
+	private static final DyeColor PATTERN_BUTTON_BACKGROUND_COLOR = DyeColor.GRAY;
+	private static final DyeColor PATTERN_BUTTON_FOREGROUND_COLOR = DyeColor.WHITE;
 	private static final List<DyeColor> PATTERN_BUTTON_COLORS = Lists.<DyeColor>newArrayList(PATTERN_BUTTON_BACKGROUND_COLOR, PATTERN_BUTTON_FOREGROUND_COLOR);
 	private Identifier output;
 	private ItemStack banner = ItemStack.EMPTY;
@@ -154,7 +154,7 @@ public class LoomScreen extends AbstractContainerScreen<LoomContainer> {
 				double f = d - (double)(j + n % 4 * 14);
 				double g = e - (double)(k + n / 4 * 14);
 				if (f >= 0.0 && g >= 0.0 && f < 14.0 && g < 14.0 && this.container.onButtonClick(this.minecraft.player, m)) {
-					MinecraftClient.getInstance().getSoundManager().play(PositionedSoundInstance.master(SoundEvents.field_14920, 1.0F));
+					MinecraftClient.getInstance().getSoundManager().play(PositionedSoundInstance.master(SoundEvents.UI_LOOM_SELECT_PATTERN, 1.0F));
 					this.minecraft.interactionManager.clickButton(this.container.syncId, m);
 					return true;
 				}

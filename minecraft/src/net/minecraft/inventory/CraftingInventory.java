@@ -14,7 +14,7 @@ public class CraftingInventory implements Inventory, RecipeInputProvider {
 	private final Container container;
 
 	public CraftingInventory(Container container, int i, int j) {
-		this.stacks = DefaultedList.create(i * j, ItemStack.EMPTY);
+		this.stacks = DefaultedList.ofSize(i * j, ItemStack.EMPTY);
 		this.container = container;
 		this.width = i;
 		this.height = j;

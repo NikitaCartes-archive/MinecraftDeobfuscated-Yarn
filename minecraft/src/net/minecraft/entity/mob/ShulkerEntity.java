@@ -53,7 +53,7 @@ import net.minecraft.world.World;
 public class ShulkerEntity extends GolemEntity implements Monster {
 	private static final UUID ATTR_COVERED_ARMOR_BONUS_UUID = UUID.fromString("7E0292F2-9434-48D5-A29F-9583AF7DF27F");
 	private static final EntityAttributeModifier ATTR_COVERED_ARMOR_BONUS = new EntityAttributeModifier(
-			ATTR_COVERED_ARMOR_BONUS_UUID, "Covered armor bonus", 20.0, EntityAttributeModifier.Operation.field_6328
+			ATTR_COVERED_ARMOR_BONUS_UUID, "Covered armor bonus", 20.0, EntityAttributeModifier.Operation.ADDITION
 		)
 		.setSerialize(false);
 	protected static final TrackedData<Direction> ATTACHED_FACE = DataTracker.registerData(ShulkerEntity.class, TrackedDataHandlerRegistry.FACING);
@@ -107,12 +107,12 @@ public class ShulkerEntity extends GolemEntity implements Monster {
 
 	@Override
 	public SoundCategory getSoundCategory() {
-		return SoundCategory.field_15251;
+		return SoundCategory.HOSTILE;
 	}
 
 	@Override
 	protected SoundEvent getAmbientSound() {
-		return SoundEvents.field_14690;
+		return SoundEvents.ENTITY_SHULKER_AMBIENT;
 	}
 
 	@Override
@@ -124,18 +124,18 @@ public class ShulkerEntity extends GolemEntity implements Monster {
 
 	@Override
 	protected SoundEvent getDeathSound() {
-		return SoundEvents.field_15160;
+		return SoundEvents.ENTITY_SHULKER_DEATH;
 	}
 
 	@Override
 	protected SoundEvent getHurtSound(DamageSource damageSource) {
-		return this.method_7124() ? SoundEvents.field_15135 : SoundEvents.field_15229;
+		return this.method_7124() ? SoundEvents.ENTITY_SHULKER_HURT_CLOSED : SoundEvents.ENTITY_SHULKER_HURT;
 	}
 
 	@Override
 	protected void initDataTracker() {
 		super.initDataTracker();
-		this.dataTracker.startTracking(ATTACHED_FACE, Direction.field_11033);
+		this.dataTracker.startTracking(ATTACHED_FACE, Direction.DOWN);
 		this.dataTracker.startTracking(ATTACHED_BLOCK, Optional.empty());
 		this.dataTracker.startTracking(PEEK_AMOUNT, (byte)0);
 		this.dataTracker.startTracking(COLOR, (byte)16);
@@ -201,7 +201,7 @@ public class ShulkerEntity extends GolemEntity implements Monster {
 		} else if (!this.world.isClient) {
 			BlockState blockState = this.world.getBlockState(blockPos);
 			if (!blockState.isAir()) {
-				if (blockState.getBlock() == Blocks.field_10008) {
+				if (blockState.getBlock() == Blocks.MOVING_PISTON) {
 					Direction direction = blockState.get(PistonBlock.FACING);
 					if (this.world.isAir(blockPos.offset(direction))) {
 						blockPos = blockPos.offset(direction);
@@ -209,7 +209,7 @@ public class ShulkerEntity extends GolemEntity implements Monster {
 					} else {
 						this.method_7127();
 					}
-				} else if (blockState.getBlock() == Blocks.field_10379) {
+				} else if (blockState.getBlock() == Blocks.PISTON_HEAD) {
 					Direction direction = blockState.get(PistonHeadBlock.FACING);
 					if (this.world.isAir(blockPos.offset(direction))) {
 						blockPos = blockPos.offset(direction);
@@ -286,7 +286,7 @@ public class ShulkerEntity extends GolemEntity implements Monster {
 					for (Entity entity : list) {
 						if (!(entity instanceof ShulkerEntity) && !entity.noClip) {
 							entity.move(
-								MovementType.field_6309, new Vec3d(g * (double)direction3.getOffsetX(), g * (double)direction3.getOffsetY(), g * (double)direction3.getOffsetZ())
+								MovementType.SHULKER, new Vec3d(g * (double)direction3.getOffsetX(), g * (double)direction3.getOffsetY(), g * (double)direction3.getOffsetZ())
 							);
 						}
 					}
@@ -297,7 +297,7 @@ public class ShulkerEntity extends GolemEntity implements Monster {
 
 	@Override
 	public void move(MovementType movementType, Vec3d vec3d) {
-		if (movementType == MovementType.field_6306) {
+		if (movementType == MovementType.SHULKER_BOX) {
 			this.method_7127();
 		} else {
 			super.move(movementType, vec3d);
@@ -339,7 +339,7 @@ public class ShulkerEntity extends GolemEntity implements Monster {
 					}
 
 					if (bl) {
-						this.playSound(SoundEvents.field_14915, 1.0F, 1.0F);
+						this.playSound(SoundEvents.ENTITY_SHULKER_TELEPORT, 1.0F, 1.0F);
 						this.dataTracker.set(ATTACHED_BLOCK, Optional.of(blockPos2));
 						this.dataTracker.set(PEEK_AMOUNT, (byte)0);
 						this.setTarget(null);
@@ -391,7 +391,7 @@ public class ShulkerEntity extends GolemEntity implements Monster {
 
 	@Environment(EnvType.CLIENT)
 	@Override
-	public void setPositionAndRotations(double d, double e, double f, float g, float h, int i, boolean bl) {
+	public void updateTrackedPositionAndAngles(double d, double e, double f, float g, float h, int i, boolean bl) {
 		this.field_6210 = 0;
 	}
 
@@ -447,9 +447,9 @@ public class ShulkerEntity extends GolemEntity implements Monster {
 			this.getAttributeInstance(EntityAttributes.ARMOR).removeModifier(ATTR_COVERED_ARMOR_BONUS);
 			if (i == 0) {
 				this.getAttributeInstance(EntityAttributes.ARMOR).addModifier(ATTR_COVERED_ARMOR_BONUS);
-				this.playSound(SoundEvents.field_15050, 1.0F, 1.0F);
+				this.playSound(SoundEvents.ENTITY_SHULKER_CLOSE, 1.0F, 1.0F);
 			} else {
-				this.playSound(SoundEvents.field_15017, 1.0F, 1.0F);
+				this.playSound(SoundEvents.ENTITY_SHULKER_OPEN, 1.0F, 1.0F);
 			}
 		}
 
@@ -491,7 +491,7 @@ public class ShulkerEntity extends GolemEntity implements Monster {
 	}
 
 	@Override
-	public float getBoundingBoxMarginForTargeting() {
+	public float getTargetingMargin() {
 		return 0.0F;
 	}
 
@@ -549,7 +549,7 @@ public class ShulkerEntity extends GolemEntity implements Monster {
 
 		@Override
 		public boolean canStart() {
-			return ShulkerEntity.this.world.getDifficulty() == Difficulty.field_5801 ? false : super.canStart();
+			return ShulkerEntity.this.world.getDifficulty() == Difficulty.PEACEFUL ? false : super.canStart();
 		}
 
 		@Override
@@ -588,13 +588,13 @@ public class ShulkerEntity extends GolemEntity implements Monster {
 		private int counter;
 
 		public ShootBulletGoal() {
-			this.setControls(EnumSet.of(Goal.Control.field_18405, Goal.Control.field_18406));
+			this.setControls(EnumSet.of(Goal.Control.MOVE, Goal.Control.LOOK));
 		}
 
 		@Override
 		public boolean canStart() {
 			LivingEntity livingEntity = ShulkerEntity.this.getTarget();
-			return livingEntity != null && livingEntity.isAlive() ? ShulkerEntity.this.world.getDifficulty() != Difficulty.field_5801 : false;
+			return livingEntity != null && livingEntity.isAlive() ? ShulkerEntity.this.world.getDifficulty() != Difficulty.PEACEFUL : false;
 		}
 
 		@Override
@@ -610,7 +610,7 @@ public class ShulkerEntity extends GolemEntity implements Monster {
 
 		@Override
 		public void tick() {
-			if (ShulkerEntity.this.world.getDifficulty() != Difficulty.field_5801) {
+			if (ShulkerEntity.this.world.getDifficulty() != Difficulty.PEACEFUL) {
 				this.counter--;
 				LivingEntity livingEntity = ShulkerEntity.this.getTarget();
 				ShulkerEntity.this.getLookControl().lookAt(livingEntity, 180.0F, 180.0F);
@@ -620,7 +620,9 @@ public class ShulkerEntity extends GolemEntity implements Monster {
 						this.counter = 20 + ShulkerEntity.this.random.nextInt(10) * 20 / 2;
 						ShulkerEntity.this.world
 							.spawnEntity(new ShulkerBulletEntity(ShulkerEntity.this.world, ShulkerEntity.this, livingEntity, ShulkerEntity.this.getAttachedFace().getAxis()));
-						ShulkerEntity.this.playSound(SoundEvents.field_15000, 2.0F, (ShulkerEntity.this.random.nextFloat() - ShulkerEntity.this.random.nextFloat()) * 0.2F + 1.0F);
+						ShulkerEntity.this.playSound(
+							SoundEvents.ENTITY_SHULKER_SHOOT, 2.0F, (ShulkerEntity.this.random.nextFloat() - ShulkerEntity.this.random.nextFloat()) * 0.2F + 1.0F
+						);
 					}
 				} else {
 					ShulkerEntity.this.setTarget(null);

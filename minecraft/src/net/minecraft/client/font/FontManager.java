@@ -78,7 +78,7 @@ public class FontManager implements AutoCloseable {
 										try {
 											String string2 = JsonHelper.getString(jsonObject, "type");
 											FontType fontType = FontType.byId(string2);
-											if (!FontManager.this.forceUnicodeFont || fontType == FontType.field_2313 || !identifier2.equals(MinecraftClient.DEFAULT_TEXT_RENDERER_ID)) {
+											if (!FontManager.this.forceUnicodeFont || fontType == FontType.LEGACY_UNICODE || !identifier2.equals(MinecraftClient.DEFAULT_TEXT_RENDERER_ID)) {
 												profiler.push(string2);
 												list.add(fontType.createLoader(jsonObject).load(resourceManager));
 												profiler.pop();

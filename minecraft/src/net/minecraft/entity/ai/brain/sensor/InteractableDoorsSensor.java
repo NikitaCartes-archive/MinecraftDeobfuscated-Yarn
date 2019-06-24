@@ -24,7 +24,7 @@ public class InteractableDoorsSensor extends Sensor<LivingEntity> {
 			for (int j = -1; j <= 1; j++) {
 				for (int k = -1; k <= 1; k++) {
 					BlockPos blockPos2 = blockPos.add(i, j, k);
-					if (serverWorld.getBlockState(blockPos2).matches(BlockTags.field_15494)) {
+					if (serverWorld.getBlockState(blockPos2).matches(BlockTags.WOODEN_DOORS)) {
 						list.add(GlobalPos.create(dimensionType, blockPos2));
 					}
 				}
@@ -33,14 +33,14 @@ public class InteractableDoorsSensor extends Sensor<LivingEntity> {
 
 		Brain<?> brain = livingEntity.getBrain();
 		if (!list.isEmpty()) {
-			brain.putMemory(MemoryModuleType.field_18450, list);
+			brain.putMemory(MemoryModuleType.INTERACTABLE_DOORS, list);
 		} else {
-			brain.forget(MemoryModuleType.field_18450);
+			brain.forget(MemoryModuleType.INTERACTABLE_DOORS);
 		}
 	}
 
 	@Override
 	public Set<MemoryModuleType<?>> getOutputMemoryModules() {
-		return ImmutableSet.of(MemoryModuleType.field_18450);
+		return ImmutableSet.of(MemoryModuleType.INTERACTABLE_DOORS);
 	}
 }

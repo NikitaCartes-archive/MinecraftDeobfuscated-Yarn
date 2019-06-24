@@ -72,7 +72,7 @@ public class EnchantedBookItem extends Item {
 	}
 
 	public static ItemStack forEnchantment(InfoEnchantment infoEnchantment) {
-		ItemStack itemStack = new ItemStack(Items.field_8598);
+		ItemStack itemStack = new ItemStack(Items.ENCHANTED_BOOK);
 		addEnchantment(itemStack, infoEnchantment);
 		return itemStack;
 	}

@@ -21,8 +21,8 @@ public class DebugChunkGenerator extends ChunkGenerator<DebugChunkGeneratorConfi
 		.collect(Collectors.toList());
 	private static final int X_SIDE_LENGTH = MathHelper.ceil(MathHelper.sqrt((float)BLOCK_STATES.size()));
 	private static final int Z_SIDE_LENGTH = MathHelper.ceil((float)BLOCK_STATES.size() / (float)X_SIDE_LENGTH);
-	protected static final BlockState AIR = Blocks.field_10124.getDefaultState();
-	protected static final BlockState BARRIER = Blocks.field_10499.getDefaultState();
+	protected static final BlockState AIR = Blocks.AIR.getDefaultState();
+	protected static final BlockState BARRIER = Blocks.BARRIER.getDefaultState();
 
 	public DebugChunkGenerator(IWorld iWorld, BiomeSource biomeSource, DebugChunkGeneratorConfig debugChunkGeneratorConfig) {
 		super(iWorld, biomeSource, debugChunkGeneratorConfig);

@@ -44,7 +44,7 @@ public abstract class AbstractRedstoneGateBlock extends HorizontalFacingBlock {
 			} else if (!bl) {
 				world.setBlockState(blockPos, blockState.with(POWERED, Boolean.valueOf(true)), 2);
 				if (!bl2) {
-					world.getBlockTickScheduler().schedule(blockPos, this, this.getUpdateDelayInternal(blockState), TaskPriority.field_9310);
+					world.getBlockTickScheduler().schedule(blockPos, this, this.getUpdateDelayInternal(blockState), TaskPriority.HIGH);
 				}
 			}
 		}
@@ -84,11 +84,11 @@ public abstract class AbstractRedstoneGateBlock extends HorizontalFacingBlock {
 			boolean bl = (Boolean)blockState.get(POWERED);
 			boolean bl2 = this.hasPower(world, blockPos, blockState);
 			if (bl != bl2 && !world.getBlockTickScheduler().isTicking(blockPos, this)) {
-				TaskPriority taskPriority = TaskPriority.field_9310;
+				TaskPriority taskPriority = TaskPriority.HIGH;
 				if (this.isTargetNotAligned(world, blockPos, blockState)) {
-					taskPriority = TaskPriority.field_9315;
+					taskPriority = TaskPriority.EXTREMELY_HIGH;
 				} else if (bl) {
-					taskPriority = TaskPriority.field_9313;
+					taskPriority = TaskPriority.VERY_HIGH;
 				}
 
 				world.getBlockTickScheduler().schedule(blockPos, this, this.getUpdateDelayInternal(blockState), taskPriority);
@@ -112,7 +112,7 @@ public abstract class AbstractRedstoneGateBlock extends HorizontalFacingBlock {
 			return i;
 		} else {
 			BlockState blockState2 = world.getBlockState(blockPos2);
-			return Math.max(i, blockState2.getBlock() == Blocks.field_10091 ? (Integer)blockState2.get(RedstoneWireBlock.POWER) : 0);
+			return Math.max(i, blockState2.getBlock() == Blocks.REDSTONE_WIRE ? (Integer)blockState2.get(RedstoneWireBlock.POWER) : 0);
 		}
 	}
 
@@ -129,10 +129,10 @@ public abstract class AbstractRedstoneGateBlock extends HorizontalFacingBlock {
 		BlockState blockState = viewableWorld.getBlockState(blockPos);
 		Block block = blockState.getBlock();
 		if (this.isValidInput(blockState)) {
-			if (block == Blocks.field_10002) {
+			if (block == Blocks.REDSTONE_BLOCK) {
 				return 15;
 			} else {
-				return block == Blocks.field_10091 ? (Integer)blockState.get(RedstoneWireBlock.POWER) : viewableWorld.getEmittedStrongRedstonePower(blockPos, direction);
+				return block == Blocks.REDSTONE_WIRE ? (Integer)blockState.get(RedstoneWireBlock.POWER) : viewableWorld.getEmittedStrongRedstonePower(blockPos, direction);
 			}
 		} else {
 			return 0;
@@ -198,7 +198,7 @@ public abstract class AbstractRedstoneGateBlock extends HorizontalFacingBlock {
 
 	@Override
 	public BlockRenderLayer getRenderLayer() {
-		return BlockRenderLayer.field_9174;
+		return BlockRenderLayer.CUTOUT;
 	}
 
 	@Override

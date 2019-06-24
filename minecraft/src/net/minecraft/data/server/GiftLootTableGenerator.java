@@ -18,178 +18,168 @@ import net.minecraft.world.loot.function.SetNbtLootFunction;
 public class GiftLootTableGenerator implements Consumer<BiConsumer<Identifier, LootSupplier.Builder>> {
 	public void method_20187(BiConsumer<Identifier, LootSupplier.Builder> biConsumer) {
 		biConsumer.accept(
-			LootTables.field_16216,
+			LootTables.CAT_MORNING_GIFT_GAMEPLAY,
 			LootSupplier.builder()
 				.withPool(
 					LootPool.builder()
 						.withRolls(ConstantLootTableRange.create(1))
-						.withEntry(ItemEntry.builder(Items.field_8245).setWeight(10))
-						.withEntry(ItemEntry.builder(Items.field_8073).setWeight(10))
-						.withEntry(ItemEntry.builder(Items.field_8726).setWeight(10))
-						.withEntry(ItemEntry.builder(Items.field_8153).setWeight(10))
-						.withEntry(ItemEntry.builder(Items.field_8511).setWeight(10))
-						.withEntry(ItemEntry.builder(Items.field_8276).setWeight(10))
-						.withEntry(ItemEntry.builder(Items.field_8614).setWeight(2))
+						.withEntry(ItemEntry.builder(Items.RABBIT_HIDE).setWeight(10))
+						.withEntry(ItemEntry.builder(Items.RABBIT_FOOT).setWeight(10))
+						.withEntry(ItemEntry.builder(Items.CHICKEN).setWeight(10))
+						.withEntry(ItemEntry.builder(Items.FEATHER).setWeight(10))
+						.withEntry(ItemEntry.builder(Items.ROTTEN_FLESH).setWeight(10))
+						.withEntry(ItemEntry.builder(Items.STRING).setWeight(10))
+						.withEntry(ItemEntry.builder(Items.PHANTOM_MEMBRANE).setWeight(2))
 				)
 		);
 		biConsumer.accept(
-			LootTables.field_19062,
+			LootTables.HERO_OF_THE_VILLAGE_ARMORER_GIFT_GAMEPLAY,
 			LootSupplier.builder()
 				.withPool(
 					LootPool.builder()
 						.withRolls(ConstantLootTableRange.create(1))
-						.withEntry(ItemEntry.builder(Items.field_8283))
-						.withEntry(ItemEntry.builder(Items.field_8873))
-						.withEntry(ItemEntry.builder(Items.field_8218))
-						.withEntry(ItemEntry.builder(Items.field_8313))
+						.withEntry(ItemEntry.builder(Items.CHAINMAIL_HELMET))
+						.withEntry(ItemEntry.builder(Items.CHAINMAIL_CHESTPLATE))
+						.withEntry(ItemEntry.builder(Items.CHAINMAIL_LEGGINGS))
+						.withEntry(ItemEntry.builder(Items.CHAINMAIL_BOOTS))
 				)
 		);
 		biConsumer.accept(
-			LootTables.field_19063,
+			LootTables.HERO_OF_THE_VILLAGE_BUTCHER_GIFT_GAMEPLAY,
 			LootSupplier.builder()
 				.withPool(
 					LootPool.builder()
 						.withRolls(ConstantLootTableRange.create(1))
-						.withEntry(ItemEntry.builder(Items.field_8752))
-						.withEntry(ItemEntry.builder(Items.field_8544))
-						.withEntry(ItemEntry.builder(Items.field_8261))
-						.withEntry(ItemEntry.builder(Items.field_8176))
-						.withEntry(ItemEntry.builder(Items.field_8347))
+						.withEntry(ItemEntry.builder(Items.COOKED_RABBIT))
+						.withEntry(ItemEntry.builder(Items.COOKED_CHICKEN))
+						.withEntry(ItemEntry.builder(Items.COOKED_PORKCHOP))
+						.withEntry(ItemEntry.builder(Items.COOKED_BEEF))
+						.withEntry(ItemEntry.builder(Items.COOKED_MUTTON))
 				)
 		);
 		biConsumer.accept(
-			LootTables.field_19064,
+			LootTables.HERO_OF_THE_VILLAGE_CARTOGRAPHER_GIFT_GAMEPLAY,
+			LootSupplier.builder()
+				.withPool(LootPool.builder().withRolls(ConstantLootTableRange.create(1)).withEntry(ItemEntry.builder(Items.MAP)).withEntry(ItemEntry.builder(Items.PAPER)))
+		);
+		biConsumer.accept(
+			LootTables.HERO_OF_THE_VILLAGE_CLERIC_GIFT_GAMEPLAY,
 			LootSupplier.builder()
 				.withPool(
 					LootPool.builder()
 						.withRolls(ConstantLootTableRange.create(1))
-						.withEntry(ItemEntry.builder(Items.field_8895))
-						.withEntry(ItemEntry.builder(Items.field_8407))
+						.withEntry(ItemEntry.builder(Items.REDSTONE))
+						.withEntry(ItemEntry.builder(Items.LAPIS_LAZULI))
 				)
 		);
 		biConsumer.accept(
-			LootTables.field_19065,
+			LootTables.HERO_OF_THE_VILLAGE_FARMER_GIFT_GAMEPLAY,
 			LootSupplier.builder()
 				.withPool(
 					LootPool.builder()
 						.withRolls(ConstantLootTableRange.create(1))
-						.withEntry(ItemEntry.builder(Items.field_8725))
-						.withEntry(ItemEntry.builder(Items.field_8759))
+						.withEntry(ItemEntry.builder(Items.BREAD))
+						.withEntry(ItemEntry.builder(Items.PUMPKIN_PIE))
+						.withEntry(ItemEntry.builder(Items.COOKIE))
 				)
 		);
 		biConsumer.accept(
-			LootTables.field_19066,
+			LootTables.HERO_OF_THE_VILLAGE_FISHERMAN_GIFT_GAMEPLAY,
 			LootSupplier.builder()
-				.withPool(
-					LootPool.builder()
-						.withRolls(ConstantLootTableRange.create(1))
-						.withEntry(ItemEntry.builder(Items.field_8229))
-						.withEntry(ItemEntry.builder(Items.field_8741))
-						.withEntry(ItemEntry.builder(Items.field_8423))
-				)
+				.withPool(LootPool.builder().withRolls(ConstantLootTableRange.create(1)).withEntry(ItemEntry.builder(Items.COD)).withEntry(ItemEntry.builder(Items.SALMON)))
 		);
 		biConsumer.accept(
-			LootTables.field_19067,
+			LootTables.HERO_OF_THE_VILLAGE_FLETCHER_GIFT_GAMEPLAY,
 			LootSupplier.builder()
 				.withPool(
 					LootPool.builder()
 						.withRolls(ConstantLootTableRange.create(1))
-						.withEntry(ItemEntry.builder(Items.field_8429))
-						.withEntry(ItemEntry.builder(Items.field_8209))
-				)
-		);
-		biConsumer.accept(
-			LootTables.field_19068,
-			LootSupplier.builder()
-				.withPool(
-					LootPool.builder()
-						.withRolls(ConstantLootTableRange.create(1))
-						.withEntry(ItemEntry.builder(Items.field_8107).setWeight(26))
+						.withEntry(ItemEntry.builder(Items.ARROW).setWeight(26))
 						.withEntry(
-							ItemEntry.builder(Items.field_8087)
+							ItemEntry.builder(Items.TIPPED_ARROW)
 								.method_438(SetCountLootFunction.builder(UniformLootTableRange.between(0.0F, 1.0F)))
 								.method_438(SetNbtLootFunction.builder(SystemUtil.consume(new CompoundTag(), compoundTag -> compoundTag.putString("Potion", "minecraft:swiftness"))))
 						)
 						.withEntry(
-							ItemEntry.builder(Items.field_8087)
+							ItemEntry.builder(Items.TIPPED_ARROW)
 								.method_438(SetCountLootFunction.builder(UniformLootTableRange.between(0.0F, 1.0F)))
 								.method_438(SetNbtLootFunction.builder(SystemUtil.consume(new CompoundTag(), compoundTag -> compoundTag.putString("Potion", "minecraft:slowness"))))
 						)
 						.withEntry(
-							ItemEntry.builder(Items.field_8087)
+							ItemEntry.builder(Items.TIPPED_ARROW)
 								.method_438(SetCountLootFunction.builder(UniformLootTableRange.between(0.0F, 1.0F)))
 								.method_438(SetNbtLootFunction.builder(SystemUtil.consume(new CompoundTag(), compoundTag -> compoundTag.putString("Potion", "minecraft:strength"))))
 						)
 						.withEntry(
-							ItemEntry.builder(Items.field_8087)
+							ItemEntry.builder(Items.TIPPED_ARROW)
 								.method_438(SetCountLootFunction.builder(UniformLootTableRange.between(0.0F, 1.0F)))
 								.method_438(SetNbtLootFunction.builder(SystemUtil.consume(new CompoundTag(), compoundTag -> compoundTag.putString("Potion", "minecraft:healing"))))
 						)
 						.withEntry(
-							ItemEntry.builder(Items.field_8087)
+							ItemEntry.builder(Items.TIPPED_ARROW)
 								.method_438(SetCountLootFunction.builder(UniformLootTableRange.between(0.0F, 1.0F)))
 								.method_438(SetNbtLootFunction.builder(SystemUtil.consume(new CompoundTag(), compoundTag -> compoundTag.putString("Potion", "minecraft:harming"))))
 						)
 						.withEntry(
-							ItemEntry.builder(Items.field_8087)
+							ItemEntry.builder(Items.TIPPED_ARROW)
 								.method_438(SetCountLootFunction.builder(UniformLootTableRange.between(0.0F, 1.0F)))
 								.method_438(SetNbtLootFunction.builder(SystemUtil.consume(new CompoundTag(), compoundTag -> compoundTag.putString("Potion", "minecraft:leaping"))))
 						)
 						.withEntry(
-							ItemEntry.builder(Items.field_8087)
+							ItemEntry.builder(Items.TIPPED_ARROW)
 								.method_438(SetCountLootFunction.builder(UniformLootTableRange.between(0.0F, 1.0F)))
 								.method_438(SetNbtLootFunction.builder(SystemUtil.consume(new CompoundTag(), compoundTag -> compoundTag.putString("Potion", "minecraft:regeneration"))))
 						)
 						.withEntry(
-							ItemEntry.builder(Items.field_8087)
+							ItemEntry.builder(Items.TIPPED_ARROW)
 								.method_438(SetCountLootFunction.builder(UniformLootTableRange.between(0.0F, 1.0F)))
 								.method_438(
 									SetNbtLootFunction.builder(SystemUtil.consume(new CompoundTag(), compoundTag -> compoundTag.putString("Potion", "minecraft:fire_resistance")))
 								)
 						)
 						.withEntry(
-							ItemEntry.builder(Items.field_8087)
+							ItemEntry.builder(Items.TIPPED_ARROW)
 								.method_438(SetCountLootFunction.builder(UniformLootTableRange.between(0.0F, 1.0F)))
 								.method_438(
 									SetNbtLootFunction.builder(SystemUtil.consume(new CompoundTag(), compoundTag -> compoundTag.putString("Potion", "minecraft:water_breathing")))
 								)
 						)
 						.withEntry(
-							ItemEntry.builder(Items.field_8087)
+							ItemEntry.builder(Items.TIPPED_ARROW)
 								.method_438(SetCountLootFunction.builder(UniformLootTableRange.between(0.0F, 1.0F)))
 								.method_438(SetNbtLootFunction.builder(SystemUtil.consume(new CompoundTag(), compoundTag -> compoundTag.putString("Potion", "minecraft:invisibility"))))
 						)
 						.withEntry(
-							ItemEntry.builder(Items.field_8087)
+							ItemEntry.builder(Items.TIPPED_ARROW)
 								.method_438(SetCountLootFunction.builder(UniformLootTableRange.between(0.0F, 1.0F)))
 								.method_438(SetNbtLootFunction.builder(SystemUtil.consume(new CompoundTag(), compoundTag -> compoundTag.putString("Potion", "minecraft:night_vision"))))
 						)
 						.withEntry(
-							ItemEntry.builder(Items.field_8087)
+							ItemEntry.builder(Items.TIPPED_ARROW)
 								.method_438(SetCountLootFunction.builder(UniformLootTableRange.between(0.0F, 1.0F)))
 								.method_438(SetNbtLootFunction.builder(SystemUtil.consume(new CompoundTag(), compoundTag -> compoundTag.putString("Potion", "minecraft:weakness"))))
 						)
 						.withEntry(
-							ItemEntry.builder(Items.field_8087)
+							ItemEntry.builder(Items.TIPPED_ARROW)
 								.method_438(SetCountLootFunction.builder(UniformLootTableRange.between(0.0F, 1.0F)))
 								.method_438(SetNbtLootFunction.builder(SystemUtil.consume(new CompoundTag(), compoundTag -> compoundTag.putString("Potion", "minecraft:poison"))))
 						)
 				)
 		);
 		biConsumer.accept(
-			LootTables.field_19069,
-			LootSupplier.builder().withPool(LootPool.builder().withRolls(ConstantLootTableRange.create(1)).withEntry(ItemEntry.builder(Items.field_8745)))
+			LootTables.HERO_OF_THE_VILLAGE_LEATHERWORKER_GIFT_GAMEPLAY,
+			LootSupplier.builder().withPool(LootPool.builder().withRolls(ConstantLootTableRange.create(1)).withEntry(ItemEntry.builder(Items.LEATHER)))
 		);
 		biConsumer.accept(
-			LootTables.field_19070,
-			LootSupplier.builder().withPool(LootPool.builder().withRolls(ConstantLootTableRange.create(1)).withEntry(ItemEntry.builder(Items.field_8529)))
+			LootTables.HERO_OF_THE_VILLAGE_LIBRARIAN_GIFT_GAMEPLAY,
+			LootSupplier.builder().withPool(LootPool.builder().withRolls(ConstantLootTableRange.create(1)).withEntry(ItemEntry.builder(Items.BOOK)))
 		);
 		biConsumer.accept(
-			LootTables.field_19071,
+			LootTables.HERO_OF_THE_VILLAGE_MASON_GIFT_GAMEPLAY,
 			LootSupplier.builder().withPool(LootPool.builder().withRolls(ConstantLootTableRange.create(1)).withEntry(ItemEntry.builder(Items.CLAY)))
 		);
 		biConsumer.accept(
-			LootTables.field_19072,
+			LootTables.HERO_OF_THE_VILLAGE_SHEPHERD_GIFT_GAMEPLAY,
 			LootSupplier.builder()
 				.withPool(
 					LootPool.builder()
@@ -213,26 +203,26 @@ public class GiftLootTableGenerator implements Consumer<BiConsumer<Identifier, L
 				)
 		);
 		biConsumer.accept(
-			LootTables.field_19073,
+			LootTables.HERO_OF_THE_VILLAGE_TOOLSMITH_GIFT_GAMEPLAY,
 			LootSupplier.builder()
 				.withPool(
 					LootPool.builder()
 						.withRolls(ConstantLootTableRange.create(1))
-						.withEntry(ItemEntry.builder(Items.field_8387))
-						.withEntry(ItemEntry.builder(Items.field_8062))
-						.withEntry(ItemEntry.builder(Items.field_8431))
-						.withEntry(ItemEntry.builder(Items.field_8776))
+						.withEntry(ItemEntry.builder(Items.STONE_PICKAXE))
+						.withEntry(ItemEntry.builder(Items.STONE_AXE))
+						.withEntry(ItemEntry.builder(Items.STONE_HOE))
+						.withEntry(ItemEntry.builder(Items.STONE_SHOVEL))
 				)
 		);
 		biConsumer.accept(
-			LootTables.field_19074,
+			LootTables.HERO_OF_THE_VILLAGE_WEAPONSMITH_GIFT_GAMEPLAY,
 			LootSupplier.builder()
 				.withPool(
 					LootPool.builder()
 						.withRolls(ConstantLootTableRange.create(1))
-						.withEntry(ItemEntry.builder(Items.field_8062))
-						.withEntry(ItemEntry.builder(Items.field_8825))
-						.withEntry(ItemEntry.builder(Items.field_8475))
+						.withEntry(ItemEntry.builder(Items.STONE_AXE))
+						.withEntry(ItemEntry.builder(Items.GOLDEN_AXE))
+						.withEntry(ItemEntry.builder(Items.IRON_AXE))
 				)
 		);
 	}

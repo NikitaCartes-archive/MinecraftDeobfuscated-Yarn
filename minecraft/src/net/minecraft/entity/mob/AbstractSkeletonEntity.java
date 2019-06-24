@@ -100,13 +100,13 @@ public abstract class AbstractSkeletonEntity extends HostileEntity implements Ra
 	public void tickMovement() {
 		boolean bl = this.isInDaylight();
 		if (bl) {
-			ItemStack itemStack = this.getEquippedStack(EquipmentSlot.field_6169);
+			ItemStack itemStack = this.getEquippedStack(EquipmentSlot.HEAD);
 			if (!itemStack.isEmpty()) {
 				if (itemStack.isDamageable()) {
 					itemStack.setDamage(itemStack.getDamage() + this.random.nextInt(2));
 					if (itemStack.getDamage() >= itemStack.getMaxDamage()) {
-						this.sendEquipmentBreakStatus(EquipmentSlot.field_6169);
-						this.setEquippedStack(EquipmentSlot.field_6169, ItemStack.EMPTY);
+						this.sendEquipmentBreakStatus(EquipmentSlot.HEAD);
+						this.setEquippedStack(EquipmentSlot.HEAD, ItemStack.EMPTY);
 					}
 				}
 
@@ -133,7 +133,7 @@ public abstract class AbstractSkeletonEntity extends HostileEntity implements Ra
 	@Override
 	protected void initEquipment(LocalDifficulty localDifficulty) {
 		super.initEquipment(localDifficulty);
-		this.setEquippedStack(EquipmentSlot.field_6173, new ItemStack(Items.field_8102));
+		this.setEquippedStack(EquipmentSlot.MAINHAND, new ItemStack(Items.BOW));
 	}
 
 	@Nullable
@@ -146,13 +146,13 @@ public abstract class AbstractSkeletonEntity extends HostileEntity implements Ra
 		this.updateEnchantments(localDifficulty);
 		this.updateAttackType();
 		this.setCanPickUpLoot(this.random.nextFloat() < 0.55F * localDifficulty.getClampedLocalDifficulty());
-		if (this.getEquippedStack(EquipmentSlot.field_6169).isEmpty()) {
+		if (this.getEquippedStack(EquipmentSlot.HEAD).isEmpty()) {
 			LocalDate localDate = LocalDate.now();
 			int i = localDate.get(ChronoField.DAY_OF_MONTH);
 			int j = localDate.get(ChronoField.MONTH_OF_YEAR);
 			if (j == 10 && i == 31 && this.random.nextFloat() < 0.25F) {
-				this.setEquippedStack(EquipmentSlot.field_6169, new ItemStack(this.random.nextFloat() < 0.1F ? Blocks.field_10009 : Blocks.field_10147));
-				this.armorDropChances[EquipmentSlot.field_6169.getEntitySlotId()] = 0.0F;
+				this.setEquippedStack(EquipmentSlot.HEAD, new ItemStack(this.random.nextFloat() < 0.1F ? Blocks.JACK_O_LANTERN : Blocks.CARVED_PUMPKIN));
+				this.armorDropChances[EquipmentSlot.HEAD.getEntitySlotId()] = 0.0F;
 			}
 		}
 
@@ -163,10 +163,10 @@ public abstract class AbstractSkeletonEntity extends HostileEntity implements Ra
 		if (this.world != null && !this.world.isClient) {
 			this.goalSelector.remove(this.meleeAttackGoal);
 			this.goalSelector.remove(this.bowAttackGoal);
-			ItemStack itemStack = this.getStackInHand(ProjectileUtil.getHandPossiblyHolding(this, Items.field_8102));
-			if (itemStack.getItem() == Items.field_8102) {
+			ItemStack itemStack = this.getStackInHand(ProjectileUtil.getHandPossiblyHolding(this, Items.BOW));
+			if (itemStack.getItem() == Items.BOW) {
 				int i = 20;
-				if (this.world.getDifficulty() != Difficulty.field_5807) {
+				if (this.world.getDifficulty() != Difficulty.HARD) {
 					i = 40;
 				}
 
@@ -180,14 +180,14 @@ public abstract class AbstractSkeletonEntity extends HostileEntity implements Ra
 
 	@Override
 	public void attack(LivingEntity livingEntity, float f) {
-		ItemStack itemStack = this.getArrowType(this.getStackInHand(ProjectileUtil.getHandPossiblyHolding(this, Items.field_8102)));
+		ItemStack itemStack = this.getArrowType(this.getStackInHand(ProjectileUtil.getHandPossiblyHolding(this, Items.BOW)));
 		ProjectileEntity projectileEntity = this.createArrowProjectile(itemStack, f);
 		double d = livingEntity.x - this.x;
 		double e = livingEntity.getBoundingBox().minY + (double)(livingEntity.getHeight() / 3.0F) - projectileEntity.y;
 		double g = livingEntity.z - this.z;
 		double h = (double)MathHelper.sqrt(d * d + g * g);
 		projectileEntity.setVelocity(d, e + h * 0.2F, g, 1.6F, (float)(14 - this.world.getDifficulty().getId() * 4));
-		this.playSound(SoundEvents.field_14633, 1.0F, 1.0F / (this.getRand().nextFloat() * 0.4F + 0.8F));
+		this.playSound(SoundEvents.ENTITY_SKELETON_SHOOT, 1.0F, 1.0F / (this.getRand().nextFloat() * 0.4F + 0.8F));
 		this.world.spawnEntity(projectileEntity);
 	}
 

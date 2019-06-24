@@ -17,7 +17,7 @@ public class VillagerWorkTask extends Task<VillagerEntity> {
 	private boolean field_18403;
 
 	public VillagerWorkTask() {
-		super(ImmutableMap.of(MemoryModuleType.field_18439, MemoryModuleState.field_18456, MemoryModuleType.field_18446, MemoryModuleState.field_18458));
+		super(ImmutableMap.of(MemoryModuleType.JOB_SITE, MemoryModuleState.VALUE_PRESENT, MemoryModuleType.LOOK_TARGET, MemoryModuleState.REGISTERED));
 	}
 
 	protected boolean method_19037(ServerWorld serverWorld, VillagerEntity villagerEntity) {
@@ -27,25 +27,25 @@ public class VillagerWorkTask extends Task<VillagerEntity> {
 	protected void method_19614(ServerWorld serverWorld, VillagerEntity villagerEntity, long l) {
 		this.field_18403 = false;
 		this.ticks = 0;
-		villagerEntity.getBrain().forget(MemoryModuleType.field_18446);
+		villagerEntity.getBrain().forget(MemoryModuleType.LOOK_TARGET);
 	}
 
 	protected void method_19039(ServerWorld serverWorld, VillagerEntity villagerEntity, long l) {
 		Brain<VillagerEntity> brain = villagerEntity.getBrain();
-		brain.putMemory(MemoryModuleType.field_19386, Timestamp.of(l));
+		brain.putMemory(MemoryModuleType.LAST_WORKED_AT_POI, Timestamp.of(l));
 		if (!this.field_18403) {
 			villagerEntity.restock();
 			this.field_18403 = true;
 			villagerEntity.playWorkSound();
-			brain.getOptionalMemory(MemoryModuleType.field_18439)
-				.ifPresent(globalPos -> brain.putMemory(MemoryModuleType.field_18446, new BlockPosLookTarget(globalPos.getPos())));
+			brain.getOptionalMemory(MemoryModuleType.JOB_SITE)
+				.ifPresent(globalPos -> brain.putMemory(MemoryModuleType.LOOK_TARGET, new BlockPosLookTarget(globalPos.getPos())));
 		}
 
 		this.ticks++;
 	}
 
 	protected boolean method_19040(ServerWorld serverWorld, VillagerEntity villagerEntity, long l) {
-		Optional<GlobalPos> optional = villagerEntity.getBrain().getOptionalMemory(MemoryModuleType.field_18439);
+		Optional<GlobalPos> optional = villagerEntity.getBrain().getOptionalMemory(MemoryModuleType.JOB_SITE);
 		if (!optional.isPresent()) {
 			return false;
 		} else {

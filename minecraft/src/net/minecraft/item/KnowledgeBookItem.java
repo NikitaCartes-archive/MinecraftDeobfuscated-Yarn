@@ -43,20 +43,20 @@ public class KnowledgeBookItem extends Item {
 					Optional<? extends Recipe<?>> optional = recipeManager.get(new Identifier(string));
 					if (!optional.isPresent()) {
 						LOGGER.error("Invalid recipe: {}", string);
-						return new TypedActionResult<>(ActionResult.field_5814, itemStack);
+						return new TypedActionResult<>(ActionResult.FAIL, itemStack);
 					}
 
 					list.add(optional.get());
 				}
 
 				playerEntity.unlockRecipes(list);
-				playerEntity.incrementStat(Stats.field_15372.getOrCreateStat(this));
+				playerEntity.incrementStat(Stats.USED.getOrCreateStat(this));
 			}
 
-			return new TypedActionResult<>(ActionResult.field_5812, itemStack);
+			return new TypedActionResult<>(ActionResult.SUCCESS, itemStack);
 		} else {
 			LOGGER.error("Tag not valid: {}", compoundTag);
-			return new TypedActionResult<>(ActionResult.field_5814, itemStack);
+			return new TypedActionResult<>(ActionResult.FAIL, itemStack);
 		}
 	}
 }

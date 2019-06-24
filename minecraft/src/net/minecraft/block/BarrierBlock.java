@@ -18,7 +18,7 @@ public class BarrierBlock extends Block {
 
 	@Override
 	public BlockRenderType getRenderType(BlockState blockState) {
-		return BlockRenderType.field_11455;
+		return BlockRenderType.INVISIBLE;
 	}
 
 	@Override

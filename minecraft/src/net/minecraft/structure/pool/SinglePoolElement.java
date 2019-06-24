@@ -31,7 +31,7 @@ public class SinglePoolElement extends StructurePoolElement {
 
 	@Deprecated
 	public SinglePoolElement(String string, List<StructureProcessor> list) {
-		this(string, list, StructurePool.Projection.field_16687);
+		this(string, list, StructurePool.Projection.RIGID);
 	}
 
 	public SinglePoolElement(String string, List<StructureProcessor> list, StructurePool.Projection projection) {
@@ -56,13 +56,15 @@ public class SinglePoolElement extends StructurePoolElement {
 
 	public List<Structure.StructureBlockInfo> method_16614(StructureManager structureManager, BlockPos blockPos, BlockRotation blockRotation, boolean bl) {
 		Structure structure = structureManager.getStructureOrBlank(this.location);
-		List<Structure.StructureBlockInfo> list = structure.method_15165(blockPos, new StructurePlacementData().setRotation(blockRotation), Blocks.field_10465, bl);
+		List<Structure.StructureBlockInfo> list = structure.method_15165(
+			blockPos, new StructurePlacementData().setRotation(blockRotation), Blocks.STRUCTURE_BLOCK, bl
+		);
 		List<Structure.StructureBlockInfo> list2 = Lists.<Structure.StructureBlockInfo>newArrayList();
 
 		for (Structure.StructureBlockInfo structureBlockInfo : list) {
 			if (structureBlockInfo.tag != null) {
 				StructureBlockMode structureBlockMode = StructureBlockMode.valueOf(structureBlockInfo.tag.getString("mode"));
-				if (structureBlockMode == StructureBlockMode.field_12696) {
+				if (structureBlockMode == StructureBlockMode.DATA) {
 					list2.add(structureBlockInfo);
 				}
 			}
@@ -76,7 +78,7 @@ public class SinglePoolElement extends StructurePoolElement {
 		StructureManager structureManager, BlockPos blockPos, BlockRotation blockRotation, Random random
 	) {
 		Structure structure = structureManager.getStructureOrBlank(this.location);
-		List<Structure.StructureBlockInfo> list = structure.method_15165(blockPos, new StructurePlacementData().setRotation(blockRotation), Blocks.field_16540, true);
+		List<Structure.StructureBlockInfo> list = structure.method_15165(blockPos, new StructurePlacementData().setRotation(blockRotation), Blocks.JIGSAW, true);
 		Collections.shuffle(list, random);
 		return list;
 	}
@@ -121,7 +123,7 @@ public class SinglePoolElement extends StructurePoolElement {
 
 	@Override
 	public StructurePoolElementType getType() {
-		return StructurePoolElementType.field_16973;
+		return StructurePoolElementType.SINGLE_POOL_ELEMENT;
 	}
 
 	@Override

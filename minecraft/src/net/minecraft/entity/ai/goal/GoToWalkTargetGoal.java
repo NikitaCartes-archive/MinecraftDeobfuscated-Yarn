@@ -16,7 +16,7 @@ public class GoToWalkTargetGoal extends Goal {
 	public GoToWalkTargetGoal(MobEntityWithAi mobEntityWithAi, double d) {
 		this.mob = mobEntityWithAi;
 		this.speed = d;
-		this.setControls(EnumSet.of(Goal.Control.field_18405));
+		this.setControls(EnumSet.of(Goal.Control.MOVE));
 	}
 
 	@Override

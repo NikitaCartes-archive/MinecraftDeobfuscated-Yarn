@@ -131,7 +131,7 @@ public class BlockPos extends Vec3i implements DynamicSerializable {
 	}
 
 	public BlockPos up(int i) {
-		return this.offset(Direction.field_11036, i);
+		return this.offset(Direction.UP, i);
 	}
 
 	public BlockPos down() {
@@ -139,7 +139,7 @@ public class BlockPos extends Vec3i implements DynamicSerializable {
 	}
 
 	public BlockPos down(int i) {
-		return this.offset(Direction.field_11033, i);
+		return this.offset(Direction.DOWN, i);
 	}
 
 	public BlockPos north() {
@@ -147,7 +147,7 @@ public class BlockPos extends Vec3i implements DynamicSerializable {
 	}
 
 	public BlockPos north(int i) {
-		return this.offset(Direction.field_11043, i);
+		return this.offset(Direction.NORTH, i);
 	}
 
 	public BlockPos south() {
@@ -155,7 +155,7 @@ public class BlockPos extends Vec3i implements DynamicSerializable {
 	}
 
 	public BlockPos south(int i) {
-		return this.offset(Direction.field_11035, i);
+		return this.offset(Direction.SOUTH, i);
 	}
 
 	public BlockPos west() {
@@ -163,7 +163,7 @@ public class BlockPos extends Vec3i implements DynamicSerializable {
 	}
 
 	public BlockPos west(int i) {
-		return this.offset(Direction.field_11039, i);
+		return this.offset(Direction.WEST, i);
 	}
 
 	public BlockPos east() {
@@ -171,7 +171,7 @@ public class BlockPos extends Vec3i implements DynamicSerializable {
 	}
 
 	public BlockPos east(int i) {
-		return this.offset(Direction.field_11034, i);
+		return this.offset(Direction.EAST, i);
 	}
 
 	public BlockPos offset(Direction direction) {
@@ -186,14 +186,14 @@ public class BlockPos extends Vec3i implements DynamicSerializable {
 
 	public BlockPos rotate(BlockRotation blockRotation) {
 		switch (blockRotation) {
-			case field_11467:
+			case NONE:
 			default:
 				return this;
-			case field_11463:
+			case CLOCKWISE_90:
 				return new BlockPos(-this.getZ(), this.getY(), this.getX());
-			case field_11464:
+			case CLOCKWISE_180:
 				return new BlockPos(-this.getX(), this.getY(), -this.getZ());
-			case field_11465:
+			case COUNTERCLOCKWISE_90:
 				return new BlockPos(this.getZ(), this.getY(), -this.getX());
 		}
 	}

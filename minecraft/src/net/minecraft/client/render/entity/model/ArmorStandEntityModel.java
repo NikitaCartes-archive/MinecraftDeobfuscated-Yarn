@@ -5,7 +5,7 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.model.Cuboid;
 import net.minecraft.entity.decoration.ArmorStandEntity;
-import net.minecraft.util.AbsoluteHand;
+import net.minecraft.util.Arm;
 
 @Environment(EnvType.CLIENT)
 public class ArmorStandEntityModel extends ArmorStandArmorEntityModel {
@@ -64,15 +64,15 @@ public class ArmorStandEntityModel extends ArmorStandArmorEntityModel {
 		this.field_3312.visible = !armorStandEntity.shouldHideBasePlate();
 		this.leftLeg.setRotationPoint(1.9F, 12.0F, 0.0F);
 		this.rightLeg.setRotationPoint(-1.9F, 12.0F, 0.0F);
-		this.field_3314.pitch = (float) (Math.PI / 180.0) * armorStandEntity.getBodyRotation().getX();
-		this.field_3314.yaw = (float) (Math.PI / 180.0) * armorStandEntity.getBodyRotation().getY();
-		this.field_3314.roll = (float) (Math.PI / 180.0) * armorStandEntity.getBodyRotation().getZ();
-		this.field_3315.pitch = (float) (Math.PI / 180.0) * armorStandEntity.getBodyRotation().getX();
-		this.field_3315.yaw = (float) (Math.PI / 180.0) * armorStandEntity.getBodyRotation().getY();
-		this.field_3315.roll = (float) (Math.PI / 180.0) * armorStandEntity.getBodyRotation().getZ();
-		this.field_3313.pitch = (float) (Math.PI / 180.0) * armorStandEntity.getBodyRotation().getX();
-		this.field_3313.yaw = (float) (Math.PI / 180.0) * armorStandEntity.getBodyRotation().getY();
-		this.field_3313.roll = (float) (Math.PI / 180.0) * armorStandEntity.getBodyRotation().getZ();
+		this.field_3314.pitch = (float) (Math.PI / 180.0) * armorStandEntity.getBodyRotation().getPitch();
+		this.field_3314.yaw = (float) (Math.PI / 180.0) * armorStandEntity.getBodyRotation().getYaw();
+		this.field_3314.roll = (float) (Math.PI / 180.0) * armorStandEntity.getBodyRotation().getRoll();
+		this.field_3315.pitch = (float) (Math.PI / 180.0) * armorStandEntity.getBodyRotation().getPitch();
+		this.field_3315.yaw = (float) (Math.PI / 180.0) * armorStandEntity.getBodyRotation().getYaw();
+		this.field_3315.roll = (float) (Math.PI / 180.0) * armorStandEntity.getBodyRotation().getRoll();
+		this.field_3313.pitch = (float) (Math.PI / 180.0) * armorStandEntity.getBodyRotation().getPitch();
+		this.field_3313.yaw = (float) (Math.PI / 180.0) * armorStandEntity.getBodyRotation().getYaw();
+		this.field_3313.roll = (float) (Math.PI / 180.0) * armorStandEntity.getBodyRotation().getRoll();
 		this.field_3312.pitch = 0.0F;
 		this.field_3312.yaw = (float) (Math.PI / 180.0) * -armorStandEntity.yaw;
 		this.field_3312.roll = 0.0F;
@@ -104,11 +104,11 @@ public class ArmorStandEntityModel extends ArmorStandArmorEntityModel {
 	}
 
 	@Override
-	public void setArmAngle(float f, AbsoluteHand absoluteHand) {
-		Cuboid cuboid = this.getArm(absoluteHand);
+	public void setArmAngle(float f, Arm arm) {
+		Cuboid cuboid = this.getArm(arm);
 		boolean bl = cuboid.visible;
 		cuboid.visible = true;
-		super.setArmAngle(f, absoluteHand);
+		super.setArmAngle(f, arm);
 		cuboid.visible = bl;
 	}
 }

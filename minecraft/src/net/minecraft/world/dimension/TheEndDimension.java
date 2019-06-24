@@ -24,17 +24,17 @@ public class TheEndDimension extends Dimension {
 
 	public TheEndDimension(World world, DimensionType dimensionType) {
 		super(world, dimensionType);
-		CompoundTag compoundTag = world.getLevelProperties().getWorldData(DimensionType.field_13078);
+		CompoundTag compoundTag = world.getLevelProperties().getWorldData(DimensionType.THE_END);
 		this.enderDragonFight = world instanceof ServerWorld ? new EnderDragonFight((ServerWorld)world, compoundTag.getCompound("DragonFight")) : null;
 	}
 
 	@Override
 	public ChunkGenerator<?> createChunkGenerator() {
-		FloatingIslandsChunkGeneratorConfig floatingIslandsChunkGeneratorConfig = ChunkGeneratorType.field_12770.createSettings();
-		floatingIslandsChunkGeneratorConfig.setDefaultBlock(Blocks.field_10471.getDefaultState());
-		floatingIslandsChunkGeneratorConfig.setDefaultFluid(Blocks.field_10124.getDefaultState());
+		FloatingIslandsChunkGeneratorConfig floatingIslandsChunkGeneratorConfig = ChunkGeneratorType.FLOATING_ISLANDS.createSettings();
+		floatingIslandsChunkGeneratorConfig.setDefaultBlock(Blocks.END_STONE.getDefaultState());
+		floatingIslandsChunkGeneratorConfig.setDefaultFluid(Blocks.AIR.getDefaultState());
 		floatingIslandsChunkGeneratorConfig.withCenter(this.getForcedSpawnPoint());
-		return ChunkGeneratorType.field_12770
+		return ChunkGeneratorType.FLOATING_ISLANDS
 			.create(
 				this.world, BiomeSourceType.THE_END.applyConfig(BiomeSourceType.THE_END.getConfig().method_9205(this.world.getSeed())), floatingIslandsChunkGeneratorConfig
 			);
@@ -116,7 +116,7 @@ public class TheEndDimension extends Dimension {
 
 	@Override
 	public DimensionType getType() {
-		return DimensionType.field_13078;
+		return DimensionType.THE_END;
 	}
 
 	@Override
@@ -126,7 +126,7 @@ public class TheEndDimension extends Dimension {
 			compoundTag.put("DragonFight", this.enderDragonFight.toTag());
 		}
 
-		this.world.getLevelProperties().setWorldData(DimensionType.field_13078, compoundTag);
+		this.world.getLevelProperties().setWorldData(DimensionType.THE_END, compoundTag);
 	}
 
 	@Override

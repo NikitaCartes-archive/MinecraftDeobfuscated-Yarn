@@ -252,23 +252,23 @@ public class Style {
 			}
 
 			if (this.isBold()) {
-				stringBuilder.append(Formatting.field_1067);
+				stringBuilder.append(Formatting.BOLD);
 			}
 
 			if (this.isItalic()) {
-				stringBuilder.append(Formatting.field_1056);
+				stringBuilder.append(Formatting.ITALIC);
 			}
 
 			if (this.isUnderlined()) {
-				stringBuilder.append(Formatting.field_1073);
+				stringBuilder.append(Formatting.UNDERLINE);
 			}
 
 			if (this.isObfuscated()) {
-				stringBuilder.append(Formatting.field_1051);
+				stringBuilder.append(Formatting.OBFUSCATED);
 			}
 
 			if (this.isStrikethrough()) {
-				stringBuilder.append(Formatting.field_1055);
+				stringBuilder.append(Formatting.STRIKETHROUGH);
 			}
 
 			return stringBuilder.toString();

@@ -63,7 +63,7 @@ public class FireworkEntity extends Entity implements FlyingItemEntity, Projecti
 	}
 
 	public FireworkEntity(World world, double d, double e, double f, ItemStack itemStack) {
-		super(EntityType.field_6133, world);
+		super(EntityType.FIREWORK_ROCKET, world);
 		this.life = 0;
 		this.setPosition(d, e, f);
 		int i = 1;
@@ -138,7 +138,7 @@ public class FireworkEntity extends Entity implements FlyingItemEntity, Projecti
 				this.setVelocity(this.getVelocity().multiply(1.15, 1.0, 1.15).add(0.0, 0.04, 0.0));
 			}
 
-			this.move(MovementType.field_6308, this.getVelocity());
+			this.move(MovementType.SELF, this.getVelocity());
 		}
 
 		Vec3d vec3d = this.getVelocity();
@@ -146,7 +146,7 @@ public class FireworkEntity extends Entity implements FlyingItemEntity, Projecti
 			this,
 			this.getBoundingBox().stretch(vec3d).expand(1.0),
 			entity -> !entity.isSpectator() && entity.isAlive() && entity.collides(),
-			RayTraceContext.ShapeType.field_17558,
+			RayTraceContext.ShapeType.COLLIDER,
 			true
 		);
 		if (!this.noClip) {
@@ -177,14 +177,14 @@ public class FireworkEntity extends Entity implements FlyingItemEntity, Projecti
 		this.pitch = MathHelper.lerp(0.2F, this.prevPitch, this.pitch);
 		this.yaw = MathHelper.lerp(0.2F, this.prevYaw, this.yaw);
 		if (this.life == 0 && !this.isSilent()) {
-			this.world.playSound(null, this.x, this.y, this.z, SoundEvents.field_14702, SoundCategory.field_15256, 3.0F, 1.0F);
+			this.world.playSound(null, this.x, this.y, this.z, SoundEvents.ENTITY_FIREWORK_ROCKET_LAUNCH, SoundCategory.AMBIENT, 3.0F, 1.0F);
 		}
 
 		this.life++;
 		if (this.world.isClient && this.life % 2 < 2) {
 			this.world
 				.addParticle(
-					ParticleTypes.field_11248, this.x, this.y - 0.3, this.z, this.random.nextGaussian() * 0.05, -this.getVelocity().y * 0.5, this.random.nextGaussian() * 0.05
+					ParticleTypes.FIREWORK, this.x, this.y - 0.3, this.z, this.random.nextGaussian() * 0.05, -this.getVelocity().y * 0.5, this.random.nextGaussian() * 0.05
 				);
 		}
 
@@ -200,11 +200,11 @@ public class FireworkEntity extends Entity implements FlyingItemEntity, Projecti
 	}
 
 	protected void handleCollision(HitResult hitResult) {
-		if (hitResult.getType() == HitResult.Type.field_1331 && !this.world.isClient) {
+		if (hitResult.getType() == HitResult.Type.ENTITY && !this.world.isClient) {
 			this.explodeAndRemove();
 		} else if (this.collided) {
 			BlockPos blockPos;
-			if (hitResult.getType() == HitResult.Type.field_1332) {
+			if (hitResult.getType() == HitResult.Type.BLOCK) {
 				blockPos = new BlockPos(((BlockHitResult)hitResult).getBlockPos());
 			} else {
 				blockPos = new BlockPos(this);
@@ -248,8 +248,8 @@ public class FireworkEntity extends Entity implements FlyingItemEntity, Projecti
 					for (int i = 0; i < 2; i++) {
 						Vec3d vec3d2 = new Vec3d(livingEntity.x, livingEntity.y + (double)livingEntity.getHeight() * 0.5 * (double)i, livingEntity.z);
 						HitResult hitResult = this.world
-							.rayTrace(new RayTraceContext(vec3d, vec3d2, RayTraceContext.ShapeType.field_17558, RayTraceContext.FluidHandling.field_1348, this));
-						if (hitResult.getType() == HitResult.Type.field_1333) {
+							.rayTrace(new RayTraceContext(vec3d, vec3d2, RayTraceContext.ShapeType.COLLIDER, RayTraceContext.FluidHandling.NONE, this));
+						if (hitResult.getType() == HitResult.Type.MISS) {
 							bl = true;
 							break;
 						}
@@ -278,7 +278,7 @@ public class FireworkEntity extends Entity implements FlyingItemEntity, Projecti
 		if (b == 17 && this.world.isClient) {
 			if (!this.hasExplosionEffects()) {
 				for (int i = 0; i < this.random.nextInt(3) + 2; i++) {
-					this.world.addParticle(ParticleTypes.field_11203, this.x, this.y, this.z, this.random.nextGaussian() * 0.05, 0.005, this.random.nextGaussian() * 0.05);
+					this.world.addParticle(ParticleTypes.POOF, this.x, this.y, this.z, this.random.nextGaussian() * 0.05, 0.005, this.random.nextGaussian() * 0.05);
 				}
 			} else {
 				ItemStack itemStack = this.dataTracker.get(ITEM);
@@ -321,11 +321,11 @@ public class FireworkEntity extends Entity implements FlyingItemEntity, Projecti
 	@Override
 	public ItemStack getStack() {
 		ItemStack itemStack = this.dataTracker.get(ITEM);
-		return itemStack.isEmpty() ? new ItemStack(Items.field_8639) : itemStack;
+		return itemStack.isEmpty() ? new ItemStack(Items.FIREWORK_ROCKET) : itemStack;
 	}
 
 	@Override
-	public boolean canPlayerAttack() {
+	public boolean isAttackable() {
 		return false;
 	}
 

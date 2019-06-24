@@ -19,7 +19,7 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.World;
 
 public abstract class Container {
-	private final DefaultedList<ItemStack> stackList = DefaultedList.create();
+	private final DefaultedList<ItemStack> stackList = DefaultedList.of();
 	public final List<Slot> slotList = Lists.<Slot>newArrayList();
 	private final List<Property> properties = Lists.<Property>newArrayList();
 	@Nullable
@@ -101,7 +101,7 @@ public abstract class Container {
 	}
 
 	public DefaultedList<ItemStack> getStacks() {
-		DefaultedList<ItemStack> defaultedList = DefaultedList.create();
+		DefaultedList<ItemStack> defaultedList = DefaultedList.of();
 
 		for (int i = 0; i < this.slotList.size(); i++) {
 			defaultedList.add(((Slot)this.slotList.get(i)).getStack());
@@ -150,7 +150,7 @@ public abstract class Container {
 	public ItemStack onSlotClick(int i, int j, SlotActionType slotActionType, PlayerEntity playerEntity) {
 		ItemStack itemStack = ItemStack.EMPTY;
 		PlayerInventory playerInventory = playerEntity.inventory;
-		if (slotActionType == SlotActionType.field_7789) {
+		if (slotActionType == SlotActionType.QUICK_CRAFT) {
 			int k = this.quickCraftButton;
 			this.quickCraftButton = unpackButtonId(j);
 			if ((k != 1 || this.quickCraftButton != 2) && k != this.quickCraftButton) {
@@ -210,7 +210,7 @@ public abstract class Container {
 			}
 		} else if (this.quickCraftButton != 0) {
 			this.endQuickCraft();
-		} else if ((slotActionType == SlotActionType.field_7790 || slotActionType == SlotActionType.field_7794) && (j == 0 || j == 1)) {
+		} else if ((slotActionType == SlotActionType.PICKUP || slotActionType == SlotActionType.QUICK_MOVE) && (j == 0 || j == 1)) {
 			if (i == -999) {
 				if (!playerInventory.getCursorStack().isEmpty()) {
 					if (j == 0) {
@@ -222,7 +222,7 @@ public abstract class Container {
 						playerEntity.dropItem(playerInventory.getCursorStack().split(1), true);
 					}
 				}
-			} else if (slotActionType == SlotActionType.field_7794) {
+			} else if (slotActionType == SlotActionType.QUICK_MOVE) {
 				if (i < 0) {
 					return ItemStack.EMPTY;
 				}
@@ -308,7 +308,7 @@ public abstract class Container {
 					slot3.markDirty();
 				}
 			}
-		} else if (slotActionType == SlotActionType.field_7791 && j >= 0 && j < 9) {
+		} else if (slotActionType == SlotActionType.SWAP && j >= 0 && j < 9) {
 			Slot slot3 = (Slot)this.slotList.get(i);
 			ItemStack itemStack3x = playerInventory.getInvStack(j);
 			ItemStack itemStack2x = slot3.getStack();
@@ -345,21 +345,21 @@ public abstract class Container {
 					}
 				}
 			}
-		} else if (slotActionType == SlotActionType.field_7796 && playerEntity.abilities.creativeMode && playerInventory.getCursorStack().isEmpty() && i >= 0) {
+		} else if (slotActionType == SlotActionType.CLONE && playerEntity.abilities.creativeMode && playerInventory.getCursorStack().isEmpty() && i >= 0) {
 			Slot slot3 = (Slot)this.slotList.get(i);
 			if (slot3 != null && slot3.hasStack()) {
 				ItemStack itemStack3x = slot3.getStack().copy();
 				itemStack3x.setCount(itemStack3x.getMaxCount());
 				playerInventory.setCursorStack(itemStack3x);
 			}
-		} else if (slotActionType == SlotActionType.field_7795 && playerInventory.getCursorStack().isEmpty() && i >= 0) {
+		} else if (slotActionType == SlotActionType.THROW && playerInventory.getCursorStack().isEmpty() && i >= 0) {
 			Slot slot3 = (Slot)this.slotList.get(i);
 			if (slot3 != null && slot3.hasStack() && slot3.canTakeItems(playerEntity)) {
 				ItemStack itemStack3x = slot3.takeStack(j == 0 ? 1 : slot3.getStack().getCount());
 				slot3.onTakeItem(playerEntity, itemStack3x);
 				playerEntity.dropItem(itemStack3x, true);
 			}
-		} else if (slotActionType == SlotActionType.field_7793 && i >= 0) {
+		} else if (slotActionType == SlotActionType.PICKUP_ALL && i >= 0) {
 			Slot slot3 = (Slot)this.slotList.get(i);
 			ItemStack itemStack3x = playerInventory.getCursorStack();
 			if (!itemStack3x.isEmpty() && (slot3 == null || !slot3.hasStack() || !slot3.canTakeItems(playerEntity))) {

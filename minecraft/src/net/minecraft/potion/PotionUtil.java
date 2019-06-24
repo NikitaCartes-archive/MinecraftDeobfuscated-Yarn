@@ -72,12 +72,12 @@ public class PotionUtil {
 		if (compoundTag != null && compoundTag.containsKey("CustomPotionColor", 99)) {
 			return compoundTag.getInt("CustomPotionColor");
 		} else {
-			return getPotion(itemStack) == Potions.field_8984 ? 16253176 : getColor(getPotionEffects(itemStack));
+			return getPotion(itemStack) == Potions.EMPTY ? 16253176 : getColor(getPotionEffects(itemStack));
 		}
 	}
 
 	public static int getColor(Potion potion) {
-		return potion == Potions.field_8984 ? 16253176 : getColor(potion.getEffects());
+		return potion == Potions.EMPTY ? 16253176 : getColor(potion.getEffects());
 	}
 
 	public static int getColor(Collection<StatusEffectInstance> collection) {
@@ -117,12 +117,12 @@ public class PotionUtil {
 	}
 
 	public static Potion getPotion(@Nullable CompoundTag compoundTag) {
-		return compoundTag == null ? Potions.field_8984 : Potion.byId(compoundTag.getString("Potion"));
+		return compoundTag == null ? Potions.EMPTY : Potion.byId(compoundTag.getString("Potion"));
 	}
 
 	public static ItemStack setPotion(ItemStack itemStack, Potion potion) {
 		Identifier identifier = Registry.POTION.getId(potion);
-		if (potion == Potions.field_8984) {
+		if (potion == Potions.EMPTY) {
 			itemStack.removeSubTag("Potion");
 		} else {
 			itemStack.getOrCreateTag().putString("Potion", identifier.toString());
@@ -152,7 +152,7 @@ public class PotionUtil {
 		List<StatusEffectInstance> list2 = getPotionEffects(itemStack);
 		List<Pair<String, EntityAttributeModifier>> list3 = Lists.<Pair<String, EntityAttributeModifier>>newArrayList();
 		if (list2.isEmpty()) {
-			list.add(new TranslatableText("effect.none").formatted(Formatting.field_1080));
+			list.add(new TranslatableText("effect.none").formatted(Formatting.GRAY));
 		} else {
 			for (StatusEffectInstance statusEffectInstance : list2) {
 				Text text = new TranslatableText(statusEffectInstance.getTranslationKey());
@@ -184,14 +184,14 @@ public class PotionUtil {
 
 		if (!list3.isEmpty()) {
 			list.add(new LiteralText(""));
-			list.add(new TranslatableText("potion.whenDrank").formatted(Formatting.field_1064));
+			list.add(new TranslatableText("potion.whenDrank").formatted(Formatting.DARK_PURPLE));
 
 			for (Pair<String, EntityAttributeModifier> pair : list3) {
 				EntityAttributeModifier entityAttributeModifier3 = pair.getRight();
 				double d = entityAttributeModifier3.getAmount();
 				double e;
-				if (entityAttributeModifier3.getOperation() != EntityAttributeModifier.Operation.field_6330
-					&& entityAttributeModifier3.getOperation() != EntityAttributeModifier.Operation.field_6331) {
+				if (entityAttributeModifier3.getOperation() != EntityAttributeModifier.Operation.MULTIPLY_BASE
+					&& entityAttributeModifier3.getOperation() != EntityAttributeModifier.Operation.MULTIPLY_TOTAL) {
 					e = entityAttributeModifier3.getAmount();
 				} else {
 					e = entityAttributeModifier3.getAmount() * 100.0;
@@ -204,7 +204,7 @@ public class PotionUtil {
 								ItemStack.MODIFIER_FORMAT.format(e),
 								new TranslatableText("attribute.name." + pair.getLeft())
 							)
-							.formatted(Formatting.field_1078)
+							.formatted(Formatting.BLUE)
 					);
 				} else if (d < 0.0) {
 					e *= -1.0;
@@ -214,7 +214,7 @@ public class PotionUtil {
 								ItemStack.MODIFIER_FORMAT.format(e),
 								new TranslatableText("attribute.name." + pair.getLeft())
 							)
-							.formatted(Formatting.field_1061)
+							.formatted(Formatting.RED)
 					);
 				}
 			}

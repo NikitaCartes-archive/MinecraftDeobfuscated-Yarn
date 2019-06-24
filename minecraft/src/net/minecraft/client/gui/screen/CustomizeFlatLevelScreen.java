@@ -199,10 +199,10 @@ public class CustomizeFlatLevelScreen extends Screen {
 				Block block = blockState.getBlock();
 				Item item = block.asItem();
 				if (item == Items.AIR) {
-					if (block == Blocks.field_10382) {
-						item = Items.field_8705;
-					} else if (block == Blocks.field_10164) {
-						item = Items.field_8187;
+					if (block == Blocks.WATER) {
+						item = Items.WATER_BUCKET;
+					} else if (block == Blocks.LAVA) {
+						item = Items.LAVA_BUCKET;
 					}
 				}
 

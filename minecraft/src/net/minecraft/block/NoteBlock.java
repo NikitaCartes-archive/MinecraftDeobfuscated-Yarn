@@ -26,7 +26,7 @@ public class NoteBlock extends Block {
 	public NoteBlock(Block.Settings settings) {
 		super(settings);
 		this.setDefaultState(
-			this.stateFactory.getDefaultState().with(INSTRUMENT, Instrument.field_12648).with(NOTE, Integer.valueOf(0)).with(POWERED, Boolean.valueOf(false))
+			this.stateFactory.getDefaultState().with(INSTRUMENT, Instrument.HARP).with(NOTE, Integer.valueOf(0)).with(POWERED, Boolean.valueOf(false))
 		);
 	}
 
@@ -40,7 +40,7 @@ public class NoteBlock extends Block {
 	public BlockState getStateForNeighborUpdate(
 		BlockState blockState, Direction direction, BlockState blockState2, IWorld iWorld, BlockPos blockPos, BlockPos blockPos2
 	) {
-		return direction == Direction.field_11033
+		return direction == Direction.DOWN
 			? blockState.with(INSTRUMENT, Instrument.fromBlockState(blockState2))
 			: super.getStateForNeighborUpdate(blockState, direction, blockState2, iWorld, blockPos, blockPos2);
 	}
@@ -71,7 +71,7 @@ public class NoteBlock extends Block {
 			blockState = blockState.cycle(NOTE);
 			world.setBlockState(blockPos, blockState, 3);
 			this.playNote(world, blockPos);
-			playerEntity.incrementStat(Stats.field_15393);
+			playerEntity.incrementStat(Stats.TUNE_NOTEBLOCK);
 			return true;
 		}
 	}
@@ -80,7 +80,7 @@ public class NoteBlock extends Block {
 	public void onBlockBreakStart(BlockState blockState, World world, BlockPos blockPos, PlayerEntity playerEntity) {
 		if (!world.isClient) {
 			this.playNote(world, blockPos);
-			playerEntity.incrementStat(Stats.field_15385);
+			playerEntity.incrementStat(Stats.PLAY_NOTEBLOCK);
 		}
 	}
 
@@ -88,10 +88,8 @@ public class NoteBlock extends Block {
 	public boolean onBlockAction(BlockState blockState, World world, BlockPos blockPos, int i, int j) {
 		int k = (Integer)blockState.get(NOTE);
 		float f = (float)Math.pow(2.0, (double)(k - 12) / 12.0);
-		world.playSound(null, blockPos, ((Instrument)blockState.get(INSTRUMENT)).getSound(), SoundCategory.field_15247, 3.0F, f);
-		world.addParticle(
-			ParticleTypes.field_11224, (double)blockPos.getX() + 0.5, (double)blockPos.getY() + 1.2, (double)blockPos.getZ() + 0.5, (double)k / 24.0, 0.0, 0.0
-		);
+		world.playSound(null, blockPos, ((Instrument)blockState.get(INSTRUMENT)).getSound(), SoundCategory.RECORDS, 3.0F, f);
+		world.addParticle(ParticleTypes.NOTE, (double)blockPos.getX() + 0.5, (double)blockPos.getY() + 1.2, (double)blockPos.getZ() + 0.5, (double)k / 24.0, 0.0, 0.0);
 		return true;
 	}
 

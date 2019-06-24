@@ -72,12 +72,12 @@ public class FossilFeature extends Feature<DefaultFeatureConfig> {
 
 		for (int m = 0; m < blockPos2.getX(); m++) {
 			for (int n = 0; n < blockPos2.getZ(); n++) {
-				l = Math.min(l, iWorld.getTop(Heightmap.Type.field_13195, blockPos.getX() + m + j, blockPos.getZ() + n + k));
+				l = Math.min(l, iWorld.getTop(Heightmap.Type.OCEAN_FLOOR_WG, blockPos.getX() + m + j, blockPos.getZ() + n + k));
 			}
 		}
 
 		int m = Math.max(l - 15 - random2.nextInt(10), 10);
-		BlockPos blockPos3 = structure.method_15167(blockPos.add(j, m, k), BlockMirror.field_11302, blockRotation);
+		BlockPos blockPos3 = structure.method_15167(blockPos.add(j, m, k), BlockMirror.NONE, blockRotation);
 		BlockRotStructureProcessor blockRotStructureProcessor = new BlockRotStructureProcessor(0.9F);
 		structurePlacementData.clearProcessors().addProcessor(blockRotStructureProcessor);
 		structure.method_15172(iWorld, blockPos3, structurePlacementData, 4);

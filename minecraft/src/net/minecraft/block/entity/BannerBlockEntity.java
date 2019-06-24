@@ -20,7 +20,7 @@ import net.minecraft.util.Nameable;
 
 public class BannerBlockEntity extends BlockEntity implements Nameable {
 	private Text customName;
-	private DyeColor baseColor = DyeColor.field_7952;
+	private DyeColor baseColor = DyeColor.WHITE;
 	private ListTag patternListTag;
 	private boolean patternListTagRead;
 	private List<BannerPattern> patterns;
@@ -28,7 +28,7 @@ public class BannerBlockEntity extends BlockEntity implements Nameable {
 	private String patternCacheKey;
 
 	public BannerBlockEntity() {
-		super(BlockEntityType.field_11905);
+		super(BlockEntityType.BANNER);
 	}
 
 	public BannerBlockEntity(DyeColor dyeColor) {

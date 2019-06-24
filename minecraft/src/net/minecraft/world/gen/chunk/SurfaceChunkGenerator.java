@@ -41,7 +41,7 @@ public abstract class SurfaceChunkGenerator<T extends ChunkGeneratorConfig> exte
 			}
 		}
 	});
-	private static final BlockState AIR = Blocks.field_10124.getDefaultState();
+	private static final BlockState AIR = Blocks.AIR.getDefaultState();
 	private final int verticalNoiseResolution;
 	private final int horizontalNoiseResolution;
 	private final int noiseSizeX;
@@ -209,7 +209,7 @@ public abstract class SurfaceChunkGenerator<T extends ChunkGeneratorConfig> exte
 			for (int n = 0; n < 16; n++) {
 				int o = k + m;
 				int p = l + n;
-				int q = chunk.sampleHeightmap(Heightmap.Type.field_13194, m, n) + 1;
+				int q = chunk.sampleHeightmap(Heightmap.Type.WORLD_SURFACE_WG, m, n) + 1;
 				double e = this.surfaceDepthNoise.sample((double)o * 0.0625, (double)p * 0.0625, 0.0625, (double)m * 0.0625);
 				biomes[n * 16 + m]
 					.buildSurface(
@@ -233,7 +233,7 @@ public abstract class SurfaceChunkGenerator<T extends ChunkGeneratorConfig> exte
 			if (l > 0) {
 				for (int m = l; m >= l - 4; m--) {
 					if (m >= l - random.nextInt(5)) {
-						chunk.setBlockState(mutable.set(blockPos.getX(), m, blockPos.getZ()), Blocks.field_9987.getDefaultState(), false);
+						chunk.setBlockState(mutable.set(blockPos.getX(), m, blockPos.getZ()), Blocks.BEDROCK.getDefaultState(), false);
 					}
 				}
 			}
@@ -241,7 +241,7 @@ public abstract class SurfaceChunkGenerator<T extends ChunkGeneratorConfig> exte
 			if (k < 256) {
 				for (int mx = k + 4; mx >= k; mx--) {
 					if (mx <= k + random.nextInt(5)) {
-						chunk.setBlockState(mutable.set(blockPos.getX(), mx, blockPos.getZ()), Blocks.field_9987.getDefaultState(), false);
+						chunk.setBlockState(mutable.set(blockPos.getX(), mx, blockPos.getZ()), Blocks.BEDROCK.getDefaultState(), false);
 					}
 				}
 			}
@@ -273,7 +273,7 @@ public abstract class SurfaceChunkGenerator<T extends ChunkGeneratorConfig> exte
 						if (structurePiece.method_16654(chunkPos, 12) && structurePiece instanceof PoolStructurePiece) {
 							PoolStructurePiece poolStructurePiece = (PoolStructurePiece)structurePiece;
 							StructurePool.Projection projection = poolStructurePiece.getPoolElement().getProjection();
-							if (projection == StructurePool.Projection.field_16687) {
+							if (projection == StructurePool.Projection.RIGID) {
 								objectList.add(poolStructurePiece);
 							}
 
@@ -299,8 +299,8 @@ public abstract class SurfaceChunkGenerator<T extends ChunkGeneratorConfig> exte
 		}
 
 		ProtoChunk protoChunk = (ProtoChunk)chunk;
-		Heightmap heightmap = protoChunk.getHeightmap(Heightmap.Type.field_13195);
-		Heightmap heightmap2 = protoChunk.getHeightmap(Heightmap.Type.field_13194);
+		Heightmap heightmap = protoChunk.getHeightmap(Heightmap.Type.OCEAN_FLOOR_WG);
+		Heightmap heightmap2 = protoChunk.getHeightmap(Heightmap.Type.WORLD_SURFACE_WG);
 		BlockPos.Mutable mutable = new BlockPos.Mutable();
 		ObjectListIterator<PoolStructurePiece> objectListIterator = objectList.iterator();
 		ObjectListIterator<JigsawJunction> objectListIterator2 = objectList2.iterator();

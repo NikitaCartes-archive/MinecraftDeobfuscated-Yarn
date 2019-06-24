@@ -38,17 +38,17 @@ public class ClientBossBar extends BossBar {
 
 	public void handlePacket(BossBarS2CPacket bossBarS2CPacket) {
 		switch (bossBarS2CPacket.getType()) {
-			case field_12084:
+			case UPDATE_NAME:
 				this.setName(bossBarS2CPacket.getName());
 				break;
-			case field_12080:
+			case UPDATE_PCT:
 				this.setPercent(bossBarS2CPacket.getPercent());
 				break;
-			case field_12081:
+			case UPDATE_STYLE:
 				this.setColor(bossBarS2CPacket.getColor());
 				this.setOverlay(bossBarS2CPacket.getOverlay());
 				break;
-			case field_12083:
+			case UPDATE_PROPERTIES:
 				this.setDarkenSky(bossBarS2CPacket.shouldDarkenSky());
 				this.setDragonMusic(bossBarS2CPacket.hasDragonMusic());
 		}

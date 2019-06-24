@@ -226,7 +226,7 @@ public abstract class AbstractCommandBlockScreen extends Screen {
 		this.field_2757 = 0;
 		this.field_2756 = this.width;
 		if (this.exceptions.isEmpty()) {
-			this.method_2356(Formatting.field_1080);
+			this.method_2356(Formatting.GRAY);
 		}
 
 		this.suggestionWindow = null;

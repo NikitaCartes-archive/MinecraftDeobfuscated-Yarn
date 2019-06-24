@@ -17,18 +17,18 @@ public class ShearsItem extends Item {
 	@Override
 	public boolean postMine(ItemStack itemStack, World world, BlockState blockState, BlockPos blockPos, LivingEntity livingEntity) {
 		if (!world.isClient) {
-			itemStack.damage(1, livingEntity, livingEntityx -> livingEntityx.sendEquipmentBreakStatus(EquipmentSlot.field_6173));
+			itemStack.damage(1, livingEntity, livingEntityx -> livingEntityx.sendEquipmentBreakStatus(EquipmentSlot.MAINHAND));
 		}
 
 		Block block = blockState.getBlock();
-		return !blockState.matches(BlockTags.field_15503)
-				&& block != Blocks.field_10343
-				&& block != Blocks.field_10479
-				&& block != Blocks.field_10112
-				&& block != Blocks.field_10428
-				&& block != Blocks.field_10597
-				&& block != Blocks.field_10589
-				&& !block.matches(BlockTags.field_15481)
+		return !blockState.matches(BlockTags.LEAVES)
+				&& block != Blocks.COBWEB
+				&& block != Blocks.GRASS
+				&& block != Blocks.FERN
+				&& block != Blocks.DEAD_BUSH
+				&& block != Blocks.VINE
+				&& block != Blocks.TRIPWIRE
+				&& !block.matches(BlockTags.WOOL)
 			? super.postMine(itemStack, world, blockState, blockPos, livingEntity)
 			: true;
 	}
@@ -36,16 +36,16 @@ public class ShearsItem extends Item {
 	@Override
 	public boolean isEffectiveOn(BlockState blockState) {
 		Block block = blockState.getBlock();
-		return block == Blocks.field_10343 || block == Blocks.field_10091 || block == Blocks.field_10589;
+		return block == Blocks.COBWEB || block == Blocks.REDSTONE_WIRE || block == Blocks.TRIPWIRE;
 	}
 
 	@Override
 	public float getMiningSpeed(ItemStack itemStack, BlockState blockState) {
 		Block block = blockState.getBlock();
-		if (block == Blocks.field_10343 || blockState.matches(BlockTags.field_15503)) {
+		if (block == Blocks.COBWEB || blockState.matches(BlockTags.LEAVES)) {
 			return 15.0F;
 		} else {
-			return block.matches(BlockTags.field_15481) ? 5.0F : super.getMiningSpeed(itemStack, blockState);
+			return block.matches(BlockTags.WOOL) ? 5.0F : super.getMiningSpeed(itemStack, blockState);
 		}
 	}
 }

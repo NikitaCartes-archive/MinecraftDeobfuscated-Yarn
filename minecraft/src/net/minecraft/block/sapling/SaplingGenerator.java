@@ -21,7 +21,7 @@ public abstract class SaplingGenerator {
 		if (abstractTreeFeature == null) {
 			return false;
 		} else {
-			iWorld.setBlockState(blockPos, Blocks.field_10124.getDefaultState(), 4);
+			iWorld.setBlockState(blockPos, Blocks.AIR.getDefaultState(), 4);
 			if (abstractTreeFeature.generate(
 				iWorld, (ChunkGenerator<? extends ChunkGeneratorConfig>)iWorld.getChunkManager().getChunkGenerator(), random, blockPos, FeatureConfig.DEFAULT
 			)) {

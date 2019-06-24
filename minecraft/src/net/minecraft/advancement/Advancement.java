@@ -62,7 +62,7 @@ public class Advancement {
 			Text text = advancementDisplay.getTitle();
 			Formatting formatting = advancementDisplay.getFrame().getTitleFormat();
 			Text text2 = text.deepCopy().formatted(formatting).append("\n").append(advancementDisplay.getDescription());
-			Text text3 = text.deepCopy().styled(style -> style.setHoverEvent(new HoverEvent(HoverEvent.Action.field_11762, text2)));
+			Text text3 = text.deepCopy().styled(style -> style.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, text2)));
 			this.text = new LiteralText("[").append(text3).append("]").formatted(formatting);
 		}
 	}

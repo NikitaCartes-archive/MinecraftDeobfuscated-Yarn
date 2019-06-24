@@ -170,13 +170,13 @@ public class BlockPattern {
 			double f = (double)(this.getFrontTopLeft().getY() + 1) - d * (double)this.getHeight();
 			double g;
 			double h;
-			if (direction3 == Direction.field_11043) {
+			if (direction3 == Direction.NORTH) {
 				g = (double)blockPos.getX() + 0.5;
 				h = (double)(this.getFrontTopLeft().getZ() + 1) - (1.0 - e) * (double)this.getWidth();
-			} else if (direction3 == Direction.field_11035) {
+			} else if (direction3 == Direction.SOUTH) {
 				g = (double)blockPos.getX() + 0.5;
 				h = (double)this.getFrontTopLeft().getZ() + (1.0 - e) * (double)this.getWidth();
-			} else if (direction3 == Direction.field_11039) {
+			} else if (direction3 == Direction.WEST) {
 				g = (double)(this.getFrontTopLeft().getX() + 1) - (1.0 - e) * (double)this.getWidth();
 				h = (double)blockPos.getZ() + 0.5;
 			} else {

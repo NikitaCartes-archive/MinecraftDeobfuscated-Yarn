@@ -14,18 +14,18 @@ public class HurtBySensor extends Sensor<LivingEntity> {
 	protected void sense(ServerWorld serverWorld, LivingEntity livingEntity) {
 		Brain<?> brain = livingEntity.getBrain();
 		if (livingEntity.getRecentDamageSource() != null) {
-			brain.putMemory(MemoryModuleType.field_18451, livingEntity.getRecentDamageSource());
-			Entity entity = ((DamageSource)brain.getOptionalMemory(MemoryModuleType.field_18451).get()).getAttacker();
+			brain.putMemory(MemoryModuleType.HURT_BY, livingEntity.getRecentDamageSource());
+			Entity entity = ((DamageSource)brain.getOptionalMemory(MemoryModuleType.HURT_BY).get()).getAttacker();
 			if (entity instanceof LivingEntity) {
-				brain.putMemory(MemoryModuleType.field_18452, (LivingEntity)entity);
+				brain.putMemory(MemoryModuleType.HURT_BY_ENTITY, (LivingEntity)entity);
 			}
 		} else {
-			brain.forget(MemoryModuleType.field_18451);
+			brain.forget(MemoryModuleType.HURT_BY);
 		}
 	}
 
 	@Override
 	public Set<MemoryModuleType<?>> getOutputMemoryModules() {
-		return ImmutableSet.of(MemoryModuleType.field_18451, MemoryModuleType.field_18452);
+		return ImmutableSet.of(MemoryModuleType.HURT_BY, MemoryModuleType.HURT_BY_ENTITY);
 	}
 }

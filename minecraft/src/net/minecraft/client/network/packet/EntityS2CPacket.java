@@ -21,11 +21,11 @@ public class EntityS2CPacket implements Packet<ClientPlayPacketListener> {
 	protected boolean onGround;
 	protected boolean rotate;
 
-	public static long method_18047(double d) {
+	public static long encodePacketCoordinate(double d) {
 		return MathHelper.lfloor(d * 4096.0);
 	}
 
-	public static Vec3d method_18695(long l, long m, long n) {
+	public static Vec3d decodePacketCoordinates(long l, long m, long n) {
 		return new Vec3d((double)l, (double)m, (double)n).multiply(2.4414062E-4F);
 	}
 

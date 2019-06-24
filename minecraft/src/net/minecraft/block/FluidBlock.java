@@ -58,7 +58,7 @@ public class FluidBlock extends Block implements FluidDrainable {
 
 	@Override
 	public boolean canPlaceAtSide(BlockState blockState, BlockView blockView, BlockPos blockPos, BlockPlacementEnvironment blockPlacementEnvironment) {
-		return !this.fluid.matches(FluidTags.field_15518);
+		return !this.fluid.matches(FluidTags.LAVA);
 	}
 
 	@Override
@@ -75,7 +75,7 @@ public class FluidBlock extends Block implements FluidDrainable {
 
 	@Override
 	public BlockRenderType getRenderType(BlockState blockState) {
-		return BlockRenderType.field_11455;
+		return BlockRenderType.INVISIBLE;
 	}
 
 	@Override
@@ -119,11 +119,11 @@ public class FluidBlock extends Block implements FluidDrainable {
 	}
 
 	public boolean receiveNeighborFluids(World world, BlockPos blockPos, BlockState blockState) {
-		if (this.fluid.matches(FluidTags.field_15518)) {
+		if (this.fluid.matches(FluidTags.LAVA)) {
 			boolean bl = false;
 
 			for (Direction direction : Direction.values()) {
-				if (direction != Direction.field_11033 && world.getFluidState(blockPos.offset(direction)).matches(FluidTags.field_15517)) {
+				if (direction != Direction.DOWN && world.getFluidState(blockPos.offset(direction)).matches(FluidTags.WATER)) {
 					bl = true;
 					break;
 				}
@@ -132,13 +132,13 @@ public class FluidBlock extends Block implements FluidDrainable {
 			if (bl) {
 				FluidState fluidState = world.getFluidState(blockPos);
 				if (fluidState.isStill()) {
-					world.setBlockState(blockPos, Blocks.field_10540.getDefaultState());
+					world.setBlockState(blockPos, Blocks.OBSIDIAN.getDefaultState());
 					this.playExtinguishSound(world, blockPos);
 					return false;
 				}
 
 				if (fluidState.getHeight(world, blockPos) >= 0.44444445F) {
-					world.setBlockState(blockPos, Blocks.field_10445.getDefaultState());
+					world.setBlockState(blockPos, Blocks.COBBLESTONE.getDefaultState());
 					this.playExtinguishSound(world, blockPos);
 					return false;
 				}
@@ -160,16 +160,16 @@ public class FluidBlock extends Block implements FluidDrainable {
 	@Override
 	public Fluid tryDrainFluid(IWorld iWorld, BlockPos blockPos, BlockState blockState) {
 		if ((Integer)blockState.get(LEVEL) == 0) {
-			iWorld.setBlockState(blockPos, Blocks.field_10124.getDefaultState(), 11);
+			iWorld.setBlockState(blockPos, Blocks.AIR.getDefaultState(), 11);
 			return this.fluid;
 		} else {
-			return Fluids.field_15906;
+			return Fluids.EMPTY;
 		}
 	}
 
 	@Override
 	public void onEntityCollision(BlockState blockState, World world, BlockPos blockPos, Entity entity) {
-		if (this.fluid.matches(FluidTags.field_15518)) {
+		if (this.fluid.matches(FluidTags.LAVA)) {
 			entity.setInLava();
 		}
 	}

@@ -29,22 +29,22 @@ public class LilyPadItem extends BlockItem {
 
 	@Override
 	public ActionResult useOnBlock(ItemUsageContext itemUsageContext) {
-		return ActionResult.field_5811;
+		return ActionResult.PASS;
 	}
 
 	@Override
 	public TypedActionResult<ItemStack> use(World world, PlayerEntity playerEntity, Hand hand) {
 		ItemStack itemStack = playerEntity.getStackInHand(hand);
-		HitResult hitResult = rayTrace(world, playerEntity, RayTraceContext.FluidHandling.field_1345);
-		if (hitResult.getType() == HitResult.Type.field_1333) {
-			return new TypedActionResult<>(ActionResult.field_5811, itemStack);
+		HitResult hitResult = rayTrace(world, playerEntity, RayTraceContext.FluidHandling.SOURCE_ONLY);
+		if (hitResult.getType() == HitResult.Type.MISS) {
+			return new TypedActionResult<>(ActionResult.PASS, itemStack);
 		} else {
-			if (hitResult.getType() == HitResult.Type.field_1332) {
+			if (hitResult.getType() == HitResult.Type.BLOCK) {
 				BlockHitResult blockHitResult = (BlockHitResult)hitResult;
 				BlockPos blockPos = blockHitResult.getBlockPos();
 				Direction direction = blockHitResult.getSide();
 				if (!world.canPlayerModifyAt(playerEntity, blockPos) || !playerEntity.canPlaceOn(blockPos.offset(direction), direction, itemStack)) {
-					return new TypedActionResult<>(ActionResult.field_5814, itemStack);
+					return new TypedActionResult<>(ActionResult.FAIL, itemStack);
 				}
 
 				BlockPos blockPos2 = blockPos.up();
@@ -52,7 +52,7 @@ public class LilyPadItem extends BlockItem {
 				Material material = blockState.getMaterial();
 				FluidState fluidState = world.getFluidState(blockPos);
 				if ((fluidState.getFluid() == Fluids.WATER || material == Material.ICE) && world.isAir(blockPos2)) {
-					world.setBlockState(blockPos2, Blocks.field_10588.getDefaultState(), 11);
+					world.setBlockState(blockPos2, Blocks.LILY_PAD.getDefaultState(), 11);
 					if (playerEntity instanceof ServerPlayerEntity) {
 						Criterions.PLACED_BLOCK.handle((ServerPlayerEntity)playerEntity, blockPos2, itemStack);
 					}
@@ -61,13 +61,13 @@ public class LilyPadItem extends BlockItem {
 						itemStack.decrement(1);
 					}
 
-					playerEntity.incrementStat(Stats.field_15372.getOrCreateStat(this));
-					world.playSound(playerEntity, blockPos, SoundEvents.field_15173, SoundCategory.field_15245, 1.0F, 1.0F);
-					return new TypedActionResult<>(ActionResult.field_5812, itemStack);
+					playerEntity.incrementStat(Stats.USED.getOrCreateStat(this));
+					world.playSound(playerEntity, blockPos, SoundEvents.BLOCK_LILY_PAD_PLACE, SoundCategory.BLOCKS, 1.0F, 1.0F);
+					return new TypedActionResult<>(ActionResult.SUCCESS, itemStack);
 				}
 			}
 
-			return new TypedActionResult<>(ActionResult.field_5814, itemStack);
+			return new TypedActionResult<>(ActionResult.FAIL, itemStack);
 		}
 	}
 }

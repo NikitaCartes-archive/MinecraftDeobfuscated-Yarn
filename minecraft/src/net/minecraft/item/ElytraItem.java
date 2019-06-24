@@ -23,7 +23,7 @@ public class ElytraItem extends Item {
 
 	@Override
 	public boolean canRepair(ItemStack itemStack, ItemStack itemStack2) {
-		return itemStack2.getItem() == Items.field_8614;
+		return itemStack2.getItem() == Items.PHANTOM_MEMBRANE;
 	}
 
 	@Override
@@ -34,9 +34,9 @@ public class ElytraItem extends Item {
 		if (itemStack2.isEmpty()) {
 			playerEntity.setEquippedStack(equipmentSlot, itemStack.copy());
 			itemStack.setCount(0);
-			return new TypedActionResult<>(ActionResult.field_5812, itemStack);
+			return new TypedActionResult<>(ActionResult.SUCCESS, itemStack);
 		} else {
-			return new TypedActionResult<>(ActionResult.field_5814, itemStack);
+			return new TypedActionResult<>(ActionResult.FAIL, itemStack);
 		}
 	}
 }

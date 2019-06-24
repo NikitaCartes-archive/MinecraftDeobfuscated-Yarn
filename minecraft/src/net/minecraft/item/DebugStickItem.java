@@ -36,7 +36,7 @@ public class DebugStickItem extends Item {
 	@Override
 	public boolean canMine(BlockState blockState, World world, BlockPos blockPos, PlayerEntity playerEntity) {
 		if (!world.isClient) {
-			this.use(playerEntity, blockState, world, blockPos, false, playerEntity.getStackInHand(Hand.field_5808));
+			this.use(playerEntity, blockState, world, blockPos, false, playerEntity.getStackInHand(Hand.MAIN_HAND));
 		}
 
 		return false;
@@ -51,7 +51,7 @@ public class DebugStickItem extends Item {
 			this.use(playerEntity, world.getBlockState(blockPos), world, blockPos, true, itemUsageContext.getStack());
 		}
 
-		return ActionResult.field_5812;
+		return ActionResult.SUCCESS;
 	}
 
 	private void use(PlayerEntity playerEntity, BlockState blockState, IWorld iWorld, BlockPos blockPos, boolean bl, ItemStack itemStack) {
@@ -93,7 +93,7 @@ public class DebugStickItem extends Item {
 	}
 
 	private static void sendMessage(PlayerEntity playerEntity, Text text) {
-		((ServerPlayerEntity)playerEntity).sendChatMessage(text, MessageType.field_11733);
+		((ServerPlayerEntity)playerEntity).sendChatMessage(text, MessageType.GAME_INFO);
 	}
 
 	private static <T extends Comparable<T>> String getValueString(BlockState blockState, Property<T> property) {

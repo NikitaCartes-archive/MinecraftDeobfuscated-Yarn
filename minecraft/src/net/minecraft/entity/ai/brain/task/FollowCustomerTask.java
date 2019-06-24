@@ -15,7 +15,7 @@ public class FollowCustomerTask extends Task<VillagerEntity> {
 
 	public FollowCustomerTask(float f) {
 		super(
-			ImmutableMap.of(MemoryModuleType.field_18445, MemoryModuleState.field_18458, MemoryModuleType.field_18446, MemoryModuleState.field_18458), Integer.MAX_VALUE
+			ImmutableMap.of(MemoryModuleType.WALK_TARGET, MemoryModuleState.REGISTERED, MemoryModuleType.LOOK_TARGET, MemoryModuleState.REGISTERED), Integer.MAX_VALUE
 		);
 		this.speed = f;
 	}
@@ -40,8 +40,8 @@ public class FollowCustomerTask extends Task<VillagerEntity> {
 
 	protected void method_18957(ServerWorld serverWorld, VillagerEntity villagerEntity, long l) {
 		Brain<?> brain = villagerEntity.getBrain();
-		brain.forget(MemoryModuleType.field_18445);
-		brain.forget(MemoryModuleType.field_18446);
+		brain.forget(MemoryModuleType.WALK_TARGET);
+		brain.forget(MemoryModuleType.LOOK_TARGET);
 	}
 
 	protected void method_18958(ServerWorld serverWorld, VillagerEntity villagerEntity, long l) {
@@ -56,7 +56,7 @@ public class FollowCustomerTask extends Task<VillagerEntity> {
 	private void update(VillagerEntity villagerEntity) {
 		EntityPosWrapper entityPosWrapper = new EntityPosWrapper(villagerEntity.getCurrentCustomer());
 		Brain<?> brain = villagerEntity.getBrain();
-		brain.putMemory(MemoryModuleType.field_18445, new WalkTarget(entityPosWrapper, this.speed, 2));
-		brain.putMemory(MemoryModuleType.field_18446, entityPosWrapper);
+		brain.putMemory(MemoryModuleType.WALK_TARGET, new WalkTarget(entityPosWrapper, this.speed, 2));
+		brain.putMemory(MemoryModuleType.LOOK_TARGET, entityPosWrapper);
 	}
 }

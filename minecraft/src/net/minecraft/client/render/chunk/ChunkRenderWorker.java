@@ -52,7 +52,7 @@ public class ChunkRenderWorker implements Runnable {
 		chunkRenderTask.getLock().lock();
 
 		try {
-			if (!method_20719(chunkRenderTask, ChunkRenderTask.Stage.field_4422)) {
+			if (!method_20719(chunkRenderTask, ChunkRenderTask.Stage.PENDING)) {
 				return;
 			}
 
@@ -61,7 +61,7 @@ public class ChunkRenderWorker implements Runnable {
 				return;
 			}
 
-			chunkRenderTask.setStage(ChunkRenderTask.Stage.field_4424);
+			chunkRenderTask.setStage(ChunkRenderTask.Stage.COMPILING);
 		} finally {
 			chunkRenderTask.getLock().unlock();
 		}
@@ -70,7 +70,7 @@ public class ChunkRenderWorker implements Runnable {
 		chunkRenderTask.getLock().lock();
 
 		try {
-			if (!method_20719(chunkRenderTask, ChunkRenderTask.Stage.field_4424)) {
+			if (!method_20719(chunkRenderTask, ChunkRenderTask.Stage.COMPILING)) {
 				this.freeRenderTask(blockLayeredBufferBuilder);
 				return;
 			}
@@ -84,28 +84,28 @@ public class ChunkRenderWorker implements Runnable {
 		float g = (float)vec3d.y;
 		float h = (float)vec3d.z;
 		ChunkRenderTask.Mode mode = chunkRenderTask.getMode();
-		if (mode == ChunkRenderTask.Mode.field_4426) {
+		if (mode == ChunkRenderTask.Mode.REBUILD_CHUNK) {
 			chunkRenderTask.getChunkRenderer().rebuildChunk(f, g, h, chunkRenderTask);
-		} else if (mode == ChunkRenderTask.Mode.field_4427) {
+		} else if (mode == ChunkRenderTask.Mode.RESORT_TRANSPARENCY) {
 			chunkRenderTask.getChunkRenderer().resortTransparency(f, g, h, chunkRenderTask);
 		}
 
 		chunkRenderTask.getLock().lock();
 
 		try {
-			if (!method_20719(chunkRenderTask, ChunkRenderTask.Stage.field_4424)) {
+			if (!method_20719(chunkRenderTask, ChunkRenderTask.Stage.COMPILING)) {
 				this.freeRenderTask(blockLayeredBufferBuilder);
 				return;
 			}
 
-			chunkRenderTask.setStage(ChunkRenderTask.Stage.field_4421);
+			chunkRenderTask.setStage(ChunkRenderTask.Stage.UPLOADING);
 		} finally {
 			chunkRenderTask.getLock().unlock();
 		}
 
 		final ChunkRenderData chunkRenderData = chunkRenderTask.getRenderData();
 		ArrayList list = Lists.newArrayList();
-		if (mode == ChunkRenderTask.Mode.field_4426) {
+		if (mode == ChunkRenderTask.Mode.REBUILD_CHUNK) {
 			for (BlockRenderLayer blockRenderLayer : BlockRenderLayer.values()) {
 				if (chunkRenderData.isBufferInitialized(blockRenderLayer)) {
 					list.add(
@@ -120,12 +120,12 @@ public class ChunkRenderWorker implements Runnable {
 					);
 				}
 			}
-		} else if (mode == ChunkRenderTask.Mode.field_4427) {
+		} else if (mode == ChunkRenderTask.Mode.RESORT_TRANSPARENCY) {
 			list.add(
 				this.batcher
 					.upload(
-						BlockRenderLayer.field_9179,
-						chunkRenderTask.getBufferBuilders().get(BlockRenderLayer.field_9179),
+						BlockRenderLayer.TRANSLUCENT,
+						chunkRenderTask.getBufferBuilders().get(BlockRenderLayer.TRANSLUCENT),
 						chunkRenderTask.getChunkRenderer(),
 						chunkRenderData,
 						chunkRenderTask.getSquaredCameraDistance()
@@ -142,8 +142,8 @@ public class ChunkRenderWorker implements Runnable {
 
 				label32: {
 					try {
-						if (ChunkRenderWorker.method_20719(chunkRenderTask, ChunkRenderTask.Stage.field_4421)) {
-							chunkRenderTask.setStage(ChunkRenderTask.Stage.field_4423);
+						if (ChunkRenderWorker.method_20719(chunkRenderTask, ChunkRenderTask.Stage.UPLOADING)) {
+							chunkRenderTask.setStage(ChunkRenderTask.Stage.DONE);
 							break label32;
 						}
 					} finally {

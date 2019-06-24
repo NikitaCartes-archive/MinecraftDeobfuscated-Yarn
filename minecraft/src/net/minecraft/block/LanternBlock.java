@@ -34,7 +34,7 @@ public class LanternBlock extends Block {
 	public BlockState getPlacementState(ItemPlacementContext itemPlacementContext) {
 		for (Direction direction : itemPlacementContext.getPlacementDirections()) {
 			if (direction.getAxis() == Direction.Axis.Y) {
-				BlockState blockState = this.getDefaultState().with(HANGING, Boolean.valueOf(direction == Direction.field_11036));
+				BlockState blockState = this.getDefaultState().with(HANGING, Boolean.valueOf(direction == Direction.UP));
 				if (blockState.canPlaceAt(itemPlacementContext.getWorld(), itemPlacementContext.getBlockPos())) {
 					return blockState;
 				}
@@ -56,7 +56,7 @@ public class LanternBlock extends Block {
 
 	@Override
 	public BlockRenderLayer getRenderLayer() {
-		return BlockRenderLayer.field_9174;
+		return BlockRenderLayer.CUTOUT;
 	}
 
 	@Override
@@ -66,12 +66,12 @@ public class LanternBlock extends Block {
 	}
 
 	protected static Direction attachedDirection(BlockState blockState) {
-		return blockState.get(HANGING) ? Direction.field_11033 : Direction.field_11036;
+		return blockState.get(HANGING) ? Direction.DOWN : Direction.UP;
 	}
 
 	@Override
 	public PistonBehavior getPistonBehavior(BlockState blockState) {
-		return PistonBehavior.field_15971;
+		return PistonBehavior.DESTROY;
 	}
 
 	@Override
@@ -79,7 +79,7 @@ public class LanternBlock extends Block {
 		BlockState blockState, Direction direction, BlockState blockState2, IWorld iWorld, BlockPos blockPos, BlockPos blockPos2
 	) {
 		return attachedDirection(blockState).getOpposite() == direction && !blockState.canPlaceAt(iWorld, blockPos)
-			? Blocks.field_10124.getDefaultState()
+			? Blocks.AIR.getDefaultState()
 			: super.getStateForNeighborUpdate(blockState, direction, blockState2, iWorld, blockPos, blockPos2);
 	}
 

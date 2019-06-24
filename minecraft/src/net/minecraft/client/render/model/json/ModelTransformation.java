@@ -9,7 +9,7 @@ import com.mojang.blaze3d.platform.GlStateManager;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.util.math.Matrix4f;
-import net.minecraft.client.util.math.Quaternion;
+import net.minecraft.util.math.Quaternion;
 
 @Environment(EnvType.CLIENT)
 public class ModelTransformation {
@@ -105,21 +105,21 @@ public class ModelTransformation {
 
 	public Transformation getTransformation(ModelTransformation.Type type) {
 		switch (type) {
-			case field_4323:
+			case THIRD_PERSON_LEFT_HAND:
 				return this.thirdPersonLeftHand;
-			case field_4320:
+			case THIRD_PERSON_RIGHT_HAND:
 				return this.thirdPersonRightHand;
-			case field_4321:
+			case FIRST_PERSON_LEFT_HAND:
 				return this.firstPersonLeftHand;
-			case field_4322:
+			case FIRST_PERSON_RIGHT_HAND:
 				return this.firstPersonRightHand;
-			case field_4316:
+			case HEAD:
 				return this.head;
-			case field_4317:
+			case GUI:
 				return this.gui;
-			case field_4318:
+			case GROUND:
 				return this.ground;
-			case field_4319:
+			case FIXED:
 				return this.fixed;
 			default:
 				return Transformation.NONE;
@@ -165,14 +165,14 @@ public class ModelTransformation {
 
 	@Environment(EnvType.CLIENT)
 	public static enum Type {
-		field_4315,
-		field_4323,
-		field_4320,
-		field_4321,
-		field_4322,
-		field_4316,
-		field_4317,
-		field_4318,
-		field_4319;
+		NONE,
+		THIRD_PERSON_LEFT_HAND,
+		THIRD_PERSON_RIGHT_HAND,
+		FIRST_PERSON_LEFT_HAND,
+		FIRST_PERSON_RIGHT_HAND,
+		HEAD,
+		GUI,
+		GROUND,
+		FIXED;
 	}
 }

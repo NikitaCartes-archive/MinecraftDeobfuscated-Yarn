@@ -28,7 +28,7 @@ public class NopStructureProcessor extends StructureProcessor {
 
 	@Override
 	protected StructureProcessorType getType() {
-		return StructureProcessorType.field_16987;
+		return StructureProcessorType.NOP;
 	}
 
 	@Override

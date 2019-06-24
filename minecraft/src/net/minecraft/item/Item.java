@@ -22,8 +22,8 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.tag.Tag;
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
-import net.minecraft.util.AbsoluteHand;
 import net.minecraft.util.ActionResult;
+import net.minecraft.util.Arm;
 import net.minecraft.util.DefaultedList;
 import net.minecraft.util.Hand;
 import net.minecraft.util.Identifier;
@@ -46,7 +46,7 @@ public class Item implements ItemConvertible {
 			(float)itemStack.getDamage() / (float)itemStack.getMaxDamage(), 0.0F, 1.0F
 		);
 	private static final ItemPropertyGetter LEFTHANDED_PROPERTY_GETTER = (itemStack, world, livingEntity) -> livingEntity != null
-				&& livingEntity.getMainHand() != AbsoluteHand.field_6183
+				&& livingEntity.getMainArm() != Arm.RIGHT
 			? 1.0F
 			: 0.0F;
 	private static final ItemPropertyGetter COOLDOWN_PROPERTY_GETTER = (itemStack, world, livingEntity) -> livingEntity instanceof PlayerEntity
@@ -130,7 +130,7 @@ public class Item implements ItemConvertible {
 	}
 
 	public ActionResult useOnBlock(ItemUsageContext itemUsageContext) {
-		return ActionResult.field_5811;
+		return ActionResult.PASS;
 	}
 
 	public float getMiningSpeed(ItemStack itemStack, BlockState blockState) {
@@ -142,12 +142,12 @@ public class Item implements ItemConvertible {
 			ItemStack itemStack = playerEntity.getStackInHand(hand);
 			if (playerEntity.canConsume(this.getFoodComponent().isAlwaysEdible())) {
 				playerEntity.setCurrentHand(hand);
-				return new TypedActionResult<>(ActionResult.field_5812, itemStack);
+				return new TypedActionResult<>(ActionResult.SUCCESS, itemStack);
 			} else {
-				return new TypedActionResult<>(ActionResult.field_5814, itemStack);
+				return new TypedActionResult<>(ActionResult.FAIL, itemStack);
 			}
 		} else {
-			return new TypedActionResult<>(ActionResult.field_5811, playerEntity.getStackInHand(hand));
+			return new TypedActionResult<>(ActionResult.PASS, playerEntity.getStackInHand(hand));
 		}
 	}
 
@@ -232,7 +232,7 @@ public class Item implements ItemConvertible {
 	}
 
 	public UseAction getUseAction(ItemStack itemStack) {
-		return itemStack.getItem().isFood() ? UseAction.field_8950 : UseAction.field_8952;
+		return itemStack.getItem().isFood() ? UseAction.EAT : UseAction.NONE;
 	}
 
 	public int getMaxUseTime(ItemStack itemStack) {
@@ -264,12 +264,12 @@ public class Item implements ItemConvertible {
 			return this.rarity;
 		} else {
 			switch (this.rarity) {
-				case field_8906:
-				case field_8907:
-					return Rarity.field_8903;
-				case field_8903:
-					return Rarity.field_8904;
-				case field_8904:
+				case COMMON:
+				case UNCOMMON:
+					return Rarity.RARE;
+				case RARE:
+					return Rarity.EPIC;
+				case EPIC:
 				default:
 					return this.rarity;
 			}
@@ -292,7 +292,7 @@ public class Item implements ItemConvertible {
 		float n = h * j;
 		double d = 5.0;
 		Vec3d vec3d2 = vec3d.add((double)l * 5.0, (double)k * 5.0, (double)n * 5.0);
-		return world.rayTrace(new RayTraceContext(vec3d, vec3d2, RayTraceContext.ShapeType.field_17559, fluidHandling, playerEntity));
+		return world.rayTrace(new RayTraceContext(vec3d, vec3d2, RayTraceContext.ShapeType.OUTLINE, fluidHandling, playerEntity));
 	}
 
 	public int getEnchantability() {
@@ -324,7 +324,7 @@ public class Item implements ItemConvertible {
 	}
 
 	public boolean isUsedOnRelease(ItemStack itemStack) {
-		return itemStack.getItem() == Items.field_8399;
+		return itemStack.getItem() == Items.CROSSBOW;
 	}
 
 	@Environment(EnvType.CLIENT)
@@ -350,7 +350,7 @@ public class Item implements ItemConvertible {
 		private int maxDamage;
 		private Item recipeRemainder;
 		private ItemGroup group;
-		private Rarity rarity = Rarity.field_8906;
+		private Rarity rarity = Rarity.COMMON;
 		private FoodComponent foodComponent;
 
 		public Item.Settings food(FoodComponent foodComponent) {

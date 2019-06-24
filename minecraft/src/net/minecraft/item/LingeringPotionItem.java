@@ -33,7 +33,14 @@ public class LingeringPotionItem extends PotionItem {
 		ItemStack itemStack = playerEntity.getStackInHand(hand);
 		ItemStack itemStack2 = playerEntity.abilities.creativeMode ? itemStack.copy() : itemStack.split(1);
 		world.playSound(
-			null, playerEntity.x, playerEntity.y, playerEntity.z, SoundEvents.field_14767, SoundCategory.field_15254, 0.5F, 0.4F / (RANDOM.nextFloat() * 0.4F + 0.8F)
+			null,
+			playerEntity.x,
+			playerEntity.y,
+			playerEntity.z,
+			SoundEvents.ENTITY_LINGERING_POTION_THROW,
+			SoundCategory.NEUTRAL,
+			0.5F,
+			0.4F / (RANDOM.nextFloat() * 0.4F + 0.8F)
 		);
 		if (!world.isClient) {
 			ThrownPotionEntity thrownPotionEntity = new ThrownPotionEntity(world, playerEntity);
@@ -42,7 +49,7 @@ public class LingeringPotionItem extends PotionItem {
 			world.spawnEntity(thrownPotionEntity);
 		}
 
-		playerEntity.incrementStat(Stats.field_15372.getOrCreateStat(this));
-		return new TypedActionResult<>(ActionResult.field_5812, itemStack);
+		playerEntity.incrementStat(Stats.USED.getOrCreateStat(this));
+		return new TypedActionResult<>(ActionResult.SUCCESS, itemStack);
 	}
 }

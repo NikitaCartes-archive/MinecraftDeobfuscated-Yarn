@@ -26,7 +26,7 @@ public class MeleeAttackGoal extends Goal {
 		this.mob = mobEntityWithAi;
 		this.speed = d;
 		this.field_6502 = bl;
-		this.setControls(EnumSet.of(Goal.Control.field_18405, Goal.Control.field_18406));
+		this.setControls(EnumSet.of(Goal.Control.MOVE, Goal.Control.LOOK));
 	}
 
 	@Override
@@ -120,7 +120,7 @@ public class MeleeAttackGoal extends Goal {
 		double e = this.getSquaredMaxAttackDistance(livingEntity);
 		if (d <= e && this.ticksUntilAttack <= 0) {
 			this.ticksUntilAttack = 20;
-			this.mob.swingHand(Hand.field_5808);
+			this.mob.swingHand(Hand.MAIN_HAND);
 			this.mob.tryAttack(livingEntity);
 		}
 	}

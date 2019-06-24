@@ -22,7 +22,7 @@ public class LandingApproachPhase extends AbstractPhase {
 
 	@Override
 	public PhaseType<LandingApproachPhase> getType() {
-		return PhaseType.field_7071;
+		return PhaseType.LANDING_APPROACH;
 	}
 
 	@Override
@@ -48,7 +48,7 @@ public class LandingApproachPhase extends AbstractPhase {
 	private void method_6844() {
 		if (this.field_7047 == null || this.field_7047.isFinished()) {
 			int i = this.dragon.method_6818();
-			BlockPos blockPos = this.dragon.world.getTopPosition(Heightmap.Type.field_13203, EndPortalFeature.ORIGIN);
+			BlockPos blockPos = this.dragon.world.getTopPosition(Heightmap.Type.MOTION_BLOCKING_NO_LEAVES, EndPortalFeature.ORIGIN);
 			PlayerEntity playerEntity = this.dragon
 				.world
 				.getClosestPlayer(PLAYERS_IN_RANGE_PREDICATE, (double)blockPos.getX(), (double)blockPos.getY(), (double)blockPos.getZ());
@@ -69,7 +69,7 @@ public class LandingApproachPhase extends AbstractPhase {
 
 		this.method_6845();
 		if (this.field_7047 != null && this.field_7047.isFinished()) {
-			this.dragon.getPhaseManager().setPhase(PhaseType.field_7067);
+			this.dragon.getPhaseManager().setPhase(PhaseType.LANDING);
 		}
 	}
 

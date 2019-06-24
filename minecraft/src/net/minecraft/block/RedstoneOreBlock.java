@@ -65,7 +65,7 @@ public class RedstoneOreBlock extends Block {
 	@Override
 	public void onStacksDropped(BlockState blockState, World world, BlockPos blockPos, ItemStack itemStack) {
 		super.onStacksDropped(blockState, world, blockPos, itemStack);
-		if (EnchantmentHelper.getLevel(Enchantments.field_9099, itemStack) == 0) {
+		if (EnchantmentHelper.getLevel(Enchantments.SILK_TOUCH, itemStack) == 0) {
 			int i = 1 + world.random.nextInt(5);
 			this.dropExperience(world, blockPos, i);
 		}

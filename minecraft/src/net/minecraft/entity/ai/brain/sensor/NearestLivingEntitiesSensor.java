@@ -25,9 +25,9 @@ public class NearestLivingEntitiesSensor extends Sensor<LivingEntity> {
 		);
 		list.sort(Comparator.comparingDouble(livingEntity::squaredDistanceTo));
 		Brain<?> brain = livingEntity.getBrain();
-		brain.putMemory(MemoryModuleType.field_18441, list);
+		brain.putMemory(MemoryModuleType.MOBS, list);
 		brain.putMemory(
-			MemoryModuleType.field_18442,
+			MemoryModuleType.VISIBLE_MOBS,
 			(List<LivingEntity>)list.stream()
 				.filter(livingEntity2 -> CLOSE_ENTITY_PREDICATE.test(livingEntity, livingEntity2))
 				.filter(livingEntity::canSee)
@@ -37,6 +37,6 @@ public class NearestLivingEntitiesSensor extends Sensor<LivingEntity> {
 
 	@Override
 	public Set<MemoryModuleType<?>> getOutputMemoryModules() {
-		return ImmutableSet.of(MemoryModuleType.field_18441, MemoryModuleType.field_18442);
+		return ImmutableSet.of(MemoryModuleType.MOBS, MemoryModuleType.VISIBLE_MOBS);
 	}
 }

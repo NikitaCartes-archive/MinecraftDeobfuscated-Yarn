@@ -21,7 +21,7 @@ public class CoralClawFeature extends CoralFeature {
 		if (!this.spawnCoralPiece(iWorld, random, blockPos, blockState)) {
 			return false;
 		} else {
-			Direction direction = Direction.Type.field_11062.random(random);
+			Direction direction = Direction.Type.HORIZONTAL.random(random);
 			int i = random.nextInt(2) + 2;
 			List<Direction> list = Lists.<Direction>newArrayList(direction, direction.rotateYClockwise(), direction.rotateYCounterclockwise());
 			Collections.shuffle(list, random);
@@ -36,8 +36,8 @@ public class CoralClawFeature extends CoralFeature {
 					direction3 = direction;
 					k = random.nextInt(3) + 2;
 				} else {
-					mutable.setOffset(Direction.field_11036);
-					Direction[] directions = new Direction[]{direction2, Direction.field_11036};
+					mutable.setOffset(Direction.UP);
+					Direction[] directions = new Direction[]{direction2, Direction.UP};
 					direction3 = directions[random.nextInt(directions.length)];
 					k = random.nextInt(3) + 3;
 				}
@@ -47,7 +47,7 @@ public class CoralClawFeature extends CoralFeature {
 				}
 
 				mutable.setOffset(direction3.getOpposite());
-				mutable.setOffset(Direction.field_11036);
+				mutable.setOffset(Direction.UP);
 
 				for (int l = 0; l < k; l++) {
 					mutable.setOffset(direction);
@@ -56,7 +56,7 @@ public class CoralClawFeature extends CoralFeature {
 					}
 
 					if (random.nextFloat() < 0.25F) {
-						mutable.setOffset(Direction.field_11036);
+						mutable.setOffset(Direction.UP);
 					}
 				}
 			}

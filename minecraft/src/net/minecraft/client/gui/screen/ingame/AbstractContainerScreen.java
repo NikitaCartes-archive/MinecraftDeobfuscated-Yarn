@@ -126,7 +126,7 @@ public abstract class AbstractContainerScreen<T extends Container> extends Scree
 				itemStack = itemStack.copy();
 				itemStack.setCount(this.draggedStackRemainder);
 				if (itemStack.isEmpty()) {
-					string = "" + Formatting.field_1054 + "0";
+					string = "" + Formatting.YELLOW + "0";
 				}
 			}
 
@@ -196,7 +196,7 @@ public abstract class AbstractContainerScreen<T extends Container> extends Scree
 				Container.calculateStackSize(this.cursorDragSlots, this.heldButtonType, itemStack, slot.getStack().isEmpty() ? 0 : slot.getStack().getCount());
 				int k = Math.min(itemStack.getMaxCount(), slot.getMaxStackAmount(itemStack));
 				if (itemStack.getCount() > k) {
-					string = Formatting.field_1054.toString() + k;
+					string = Formatting.YELLOW.toString() + k;
 					itemStack.setCount(k);
 				}
 			} else {
@@ -308,19 +308,19 @@ public abstract class AbstractContainerScreen<T extends Container> extends Scree
 					} else if (!this.isCursorDragging) {
 						if (this.minecraft.player.inventory.getCursorStack().isEmpty()) {
 							if (this.minecraft.options.keyPickItem.matchesMouse(i)) {
-								this.onMouseClick(slot, m, i, SlotActionType.field_7796);
+								this.onMouseClick(slot, m, i, SlotActionType.CLONE);
 							} else {
 								boolean bl3 = m != -999
 									&& (
 										InputUtil.isKeyPressed(MinecraftClient.getInstance().window.getHandle(), 340)
 											|| InputUtil.isKeyPressed(MinecraftClient.getInstance().window.getHandle(), 344)
 									);
-								SlotActionType slotActionType = SlotActionType.field_7790;
+								SlotActionType slotActionType = SlotActionType.PICKUP;
 								if (bl3) {
 									this.quickMovingStack = slot != null && slot.hasStack() ? slot.getStack().copy() : ItemStack.EMPTY;
-									slotActionType = SlotActionType.field_7794;
+									slotActionType = SlotActionType.QUICK_MOVE;
 								} else if (m == -999) {
-									slotActionType = SlotActionType.field_7795;
+									slotActionType = SlotActionType.THROW;
 								}
 
 								this.onMouseClick(slot, m, i, slotActionType);
@@ -368,9 +368,9 @@ public abstract class AbstractContainerScreen<T extends Container> extends Scree
 					long l = SystemUtil.getMeasuringTimeMs();
 					if (this.touchHoveredSlot == slot) {
 						if (l - this.touchDropTimer > 500L) {
-							this.onMouseClick(this.touchDragSlotStart, this.touchDragSlotStart.id, 0, SlotActionType.field_7790);
-							this.onMouseClick(slot, slot.id, 1, SlotActionType.field_7790);
-							this.onMouseClick(this.touchDragSlotStart, this.touchDragSlotStart.id, 0, SlotActionType.field_7790);
+							this.onMouseClick(this.touchDragSlotStart, this.touchDragSlotStart.id, 0, SlotActionType.PICKUP);
+							this.onMouseClick(slot, slot.id, 1, SlotActionType.PICKUP);
+							this.onMouseClick(this.touchDragSlotStart, this.touchDragSlotStart.id, 0, SlotActionType.PICKUP);
 							this.touchDropTimer = l + 750L;
 							this.touchDragStack.decrement(1);
 						}
@@ -418,12 +418,12 @@ public abstract class AbstractContainerScreen<T extends Container> extends Scree
 							&& slot2.hasStack()
 							&& slot2.inventory == slot.inventory
 							&& Container.canInsertItemIntoSlot(slot2, this.quickMovingStack, true)) {
-							this.onMouseClick(slot2, slot2.id, i, SlotActionType.field_7794);
+							this.onMouseClick(slot2, slot2.id, i, SlotActionType.QUICK_MOVE);
 						}
 					}
 				}
 			} else {
-				this.onMouseClick(slot, l, i, SlotActionType.field_7793);
+				this.onMouseClick(slot, l, i, SlotActionType.PICKUP_ALL);
 			}
 
 			this.isDoubleClicking = false;
@@ -449,12 +449,12 @@ public abstract class AbstractContainerScreen<T extends Container> extends Scree
 
 					boolean bl2 = Container.canInsertItemIntoSlot(slot, this.touchDragStack, false);
 					if (l != -1 && !this.touchDragStack.isEmpty() && bl2) {
-						this.onMouseClick(this.touchDragSlotStart, this.touchDragSlotStart.id, i, SlotActionType.field_7790);
-						this.onMouseClick(slot, l, 0, SlotActionType.field_7790);
+						this.onMouseClick(this.touchDragSlotStart, this.touchDragSlotStart.id, i, SlotActionType.PICKUP);
+						this.onMouseClick(slot, l, 0, SlotActionType.PICKUP);
 						if (this.minecraft.player.inventory.getCursorStack().isEmpty()) {
 							this.touchDropReturningStack = ItemStack.EMPTY;
 						} else {
-							this.onMouseClick(this.touchDragSlotStart, this.touchDragSlotStart.id, i, SlotActionType.field_7790);
+							this.onMouseClick(this.touchDragSlotStart, this.touchDragSlotStart.id, i, SlotActionType.PICKUP);
 							this.touchDropX = MathHelper.floor(d - (double)j);
 							this.touchDropY = MathHelper.floor(e - (double)k);
 							this.touchDropOriginSlot = this.touchDragSlotStart;
@@ -473,16 +473,16 @@ public abstract class AbstractContainerScreen<T extends Container> extends Scree
 					this.touchDragSlotStart = null;
 				}
 			} else if (this.isCursorDragging && !this.cursorDragSlots.isEmpty()) {
-				this.onMouseClick(null, -999, Container.packClickData(0, this.heldButtonType), SlotActionType.field_7789);
+				this.onMouseClick(null, -999, Container.packClickData(0, this.heldButtonType), SlotActionType.QUICK_CRAFT);
 
 				for (Slot slot2x : this.cursorDragSlots) {
-					this.onMouseClick(slot2x, slot2x.id, Container.packClickData(1, this.heldButtonType), SlotActionType.field_7789);
+					this.onMouseClick(slot2x, slot2x.id, Container.packClickData(1, this.heldButtonType), SlotActionType.QUICK_CRAFT);
 				}
 
-				this.onMouseClick(null, -999, Container.packClickData(2, this.heldButtonType), SlotActionType.field_7789);
+				this.onMouseClick(null, -999, Container.packClickData(2, this.heldButtonType), SlotActionType.QUICK_CRAFT);
 			} else if (!this.minecraft.player.inventory.getCursorStack().isEmpty()) {
 				if (this.minecraft.options.keyPickItem.matchesMouse(i)) {
-					this.onMouseClick(slot, l, i, SlotActionType.field_7796);
+					this.onMouseClick(slot, l, i, SlotActionType.CLONE);
 				} else {
 					boolean bl2 = l != -999
 						&& (
@@ -493,7 +493,7 @@ public abstract class AbstractContainerScreen<T extends Container> extends Scree
 						this.quickMovingStack = slot != null && slot.hasStack() ? slot.getStack().copy() : ItemStack.EMPTY;
 					}
 
-					this.onMouseClick(slot, l, i, bl2 ? SlotActionType.field_7794 : SlotActionType.field_7790);
+					this.onMouseClick(slot, l, i, bl2 ? SlotActionType.QUICK_MOVE : SlotActionType.PICKUP);
 				}
 			}
 		}
@@ -543,9 +543,9 @@ public abstract class AbstractContainerScreen<T extends Container> extends Scree
 			this.handleHotbarKeyPressed(i, j);
 			if (this.focusedSlot != null && this.focusedSlot.hasStack()) {
 				if (this.minecraft.options.keyPickItem.matchesKey(i, j)) {
-					this.onMouseClick(this.focusedSlot, this.focusedSlot.id, 0, SlotActionType.field_7796);
+					this.onMouseClick(this.focusedSlot, this.focusedSlot.id, 0, SlotActionType.CLONE);
 				} else if (this.minecraft.options.keyDrop.matchesKey(i, j)) {
-					this.onMouseClick(this.focusedSlot, this.focusedSlot.id, hasControlDown() ? 1 : 0, SlotActionType.field_7795);
+					this.onMouseClick(this.focusedSlot, this.focusedSlot.id, hasControlDown() ? 1 : 0, SlotActionType.THROW);
 				}
 			}
 
@@ -557,7 +557,7 @@ public abstract class AbstractContainerScreen<T extends Container> extends Scree
 		if (this.minecraft.player.inventory.getCursorStack().isEmpty() && this.focusedSlot != null) {
 			for (int k = 0; k < 9; k++) {
 				if (this.minecraft.options.keysHotbar[k].matchesKey(i, j)) {
-					this.onMouseClick(this.focusedSlot, this.focusedSlot.id, k, SlotActionType.field_7791);
+					this.onMouseClick(this.focusedSlot, this.focusedSlot.id, k, SlotActionType.SWAP);
 					return true;
 				}
 			}

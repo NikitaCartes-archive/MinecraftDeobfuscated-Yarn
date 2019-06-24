@@ -33,43 +33,43 @@ public class RailPlacementHelper {
 	private void computeNeighbors(RailShape railShape) {
 		this.neighbors.clear();
 		switch (railShape) {
-			case field_12665:
+			case NORTH_SOUTH:
 				this.neighbors.add(this.pos.north());
 				this.neighbors.add(this.pos.south());
 				break;
-			case field_12674:
+			case EAST_WEST:
 				this.neighbors.add(this.pos.west());
 				this.neighbors.add(this.pos.east());
 				break;
-			case field_12667:
+			case ASCENDING_EAST:
 				this.neighbors.add(this.pos.west());
 				this.neighbors.add(this.pos.east().up());
 				break;
-			case field_12666:
+			case ASCENDING_WEST:
 				this.neighbors.add(this.pos.west().up());
 				this.neighbors.add(this.pos.east());
 				break;
-			case field_12670:
+			case ASCENDING_NORTH:
 				this.neighbors.add(this.pos.north().up());
 				this.neighbors.add(this.pos.south());
 				break;
-			case field_12668:
+			case ASCENDING_SOUTH:
 				this.neighbors.add(this.pos.north());
 				this.neighbors.add(this.pos.south().up());
 				break;
-			case field_12664:
+			case SOUTH_EAST:
 				this.neighbors.add(this.pos.east());
 				this.neighbors.add(this.pos.south());
 				break;
-			case field_12671:
+			case SOUTH_WEST:
 				this.neighbors.add(this.pos.west());
 				this.neighbors.add(this.pos.south());
 				break;
-			case field_12672:
+			case NORTH_WEST:
 				this.neighbors.add(this.pos.west());
 				this.neighbors.add(this.pos.north());
 				break;
-			case field_12663:
+			case NORTH_EAST:
 				this.neighbors.add(this.pos.east());
 				this.neighbors.add(this.pos.north());
 		}
@@ -128,7 +128,7 @@ public class RailPlacementHelper {
 	protected int method_10460() {
 		int i = 0;
 
-		for (Direction direction : Direction.Type.field_11062) {
+		for (Direction direction : Direction.Type.HORIZONTAL) {
 			if (this.isVerticallyNearRail(this.pos.offset(direction))) {
 				i++;
 			}
@@ -153,53 +153,53 @@ public class RailPlacementHelper {
 		boolean bl4 = this.isNeighbor(blockPos4);
 		RailShape railShape = null;
 		if (bl || bl2) {
-			railShape = RailShape.field_12665;
+			railShape = RailShape.NORTH_SOUTH;
 		}
 
 		if (bl3 || bl4) {
-			railShape = RailShape.field_12674;
+			railShape = RailShape.EAST_WEST;
 		}
 
 		if (!this.allowCurves) {
 			if (bl2 && bl4 && !bl && !bl3) {
-				railShape = RailShape.field_12664;
+				railShape = RailShape.SOUTH_EAST;
 			}
 
 			if (bl2 && bl3 && !bl && !bl4) {
-				railShape = RailShape.field_12671;
+				railShape = RailShape.SOUTH_WEST;
 			}
 
 			if (bl && bl3 && !bl2 && !bl4) {
-				railShape = RailShape.field_12672;
+				railShape = RailShape.NORTH_WEST;
 			}
 
 			if (bl && bl4 && !bl2 && !bl3) {
-				railShape = RailShape.field_12663;
+				railShape = RailShape.NORTH_EAST;
 			}
 		}
 
-		if (railShape == RailShape.field_12665) {
+		if (railShape == RailShape.NORTH_SOUTH) {
 			if (AbstractRailBlock.isRail(this.world, blockPos.up())) {
-				railShape = RailShape.field_12670;
+				railShape = RailShape.ASCENDING_NORTH;
 			}
 
 			if (AbstractRailBlock.isRail(this.world, blockPos2.up())) {
-				railShape = RailShape.field_12668;
+				railShape = RailShape.ASCENDING_SOUTH;
 			}
 		}
 
-		if (railShape == RailShape.field_12674) {
+		if (railShape == RailShape.EAST_WEST) {
 			if (AbstractRailBlock.isRail(this.world, blockPos4.up())) {
-				railShape = RailShape.field_12667;
+				railShape = RailShape.ASCENDING_EAST;
 			}
 
 			if (AbstractRailBlock.isRail(this.world, blockPos3.up())) {
-				railShape = RailShape.field_12666;
+				railShape = RailShape.ASCENDING_WEST;
 			}
 		}
 
 		if (railShape == null) {
-			railShape = RailShape.field_12665;
+			railShape = RailShape.NORTH_SOUTH;
 		}
 
 		this.state = this.state.with(this.block.getShapeProperty(), railShape);
@@ -227,99 +227,99 @@ public class RailPlacementHelper {
 		boolean bl6 = this.method_10465(blockPos4);
 		RailShape railShape = null;
 		if ((bl3 || bl4) && !bl5 && !bl6) {
-			railShape = RailShape.field_12665;
+			railShape = RailShape.NORTH_SOUTH;
 		}
 
 		if ((bl5 || bl6) && !bl3 && !bl4) {
-			railShape = RailShape.field_12674;
+			railShape = RailShape.EAST_WEST;
 		}
 
 		if (!this.allowCurves) {
 			if (bl4 && bl6 && !bl3 && !bl5) {
-				railShape = RailShape.field_12664;
+				railShape = RailShape.SOUTH_EAST;
 			}
 
 			if (bl4 && bl5 && !bl3 && !bl6) {
-				railShape = RailShape.field_12671;
+				railShape = RailShape.SOUTH_WEST;
 			}
 
 			if (bl3 && bl5 && !bl4 && !bl6) {
-				railShape = RailShape.field_12672;
+				railShape = RailShape.NORTH_WEST;
 			}
 
 			if (bl3 && bl6 && !bl4 && !bl5) {
-				railShape = RailShape.field_12663;
+				railShape = RailShape.NORTH_EAST;
 			}
 		}
 
 		if (railShape == null) {
 			if (bl3 || bl4) {
-				railShape = RailShape.field_12665;
+				railShape = RailShape.NORTH_SOUTH;
 			}
 
 			if (bl5 || bl6) {
-				railShape = RailShape.field_12674;
+				railShape = RailShape.EAST_WEST;
 			}
 
 			if (!this.allowCurves) {
 				if (bl) {
 					if (bl4 && bl6) {
-						railShape = RailShape.field_12664;
+						railShape = RailShape.SOUTH_EAST;
 					}
 
 					if (bl5 && bl4) {
-						railShape = RailShape.field_12671;
+						railShape = RailShape.SOUTH_WEST;
 					}
 
 					if (bl6 && bl3) {
-						railShape = RailShape.field_12663;
+						railShape = RailShape.NORTH_EAST;
 					}
 
 					if (bl3 && bl5) {
-						railShape = RailShape.field_12672;
+						railShape = RailShape.NORTH_WEST;
 					}
 				} else {
 					if (bl3 && bl5) {
-						railShape = RailShape.field_12672;
+						railShape = RailShape.NORTH_WEST;
 					}
 
 					if (bl6 && bl3) {
-						railShape = RailShape.field_12663;
+						railShape = RailShape.NORTH_EAST;
 					}
 
 					if (bl5 && bl4) {
-						railShape = RailShape.field_12671;
+						railShape = RailShape.SOUTH_WEST;
 					}
 
 					if (bl4 && bl6) {
-						railShape = RailShape.field_12664;
+						railShape = RailShape.SOUTH_EAST;
 					}
 				}
 			}
 		}
 
-		if (railShape == RailShape.field_12665) {
+		if (railShape == RailShape.NORTH_SOUTH) {
 			if (AbstractRailBlock.isRail(this.world, blockPos.up())) {
-				railShape = RailShape.field_12670;
+				railShape = RailShape.ASCENDING_NORTH;
 			}
 
 			if (AbstractRailBlock.isRail(this.world, blockPos2.up())) {
-				railShape = RailShape.field_12668;
+				railShape = RailShape.ASCENDING_SOUTH;
 			}
 		}
 
-		if (railShape == RailShape.field_12674) {
+		if (railShape == RailShape.EAST_WEST) {
 			if (AbstractRailBlock.isRail(this.world, blockPos4.up())) {
-				railShape = RailShape.field_12667;
+				railShape = RailShape.ASCENDING_EAST;
 			}
 
 			if (AbstractRailBlock.isRail(this.world, blockPos3.up())) {
-				railShape = RailShape.field_12666;
+				railShape = RailShape.ASCENDING_WEST;
 			}
 		}
 
 		if (railShape == null) {
-			railShape = RailShape.field_12665;
+			railShape = RailShape.NORTH_SOUTH;
 		}
 
 		this.computeNeighbors(railShape);

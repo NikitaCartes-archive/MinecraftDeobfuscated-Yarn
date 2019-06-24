@@ -173,11 +173,11 @@ public class LlamaEntity extends AbstractDonkeyEntity implements RangedAttackMob
 		float f = 0.0F;
 		boolean bl = false;
 		Item item = itemStack.getItem();
-		if (item == Items.field_8861) {
+		if (item == Items.WHEAT) {
 			i = 10;
 			j = 3;
 			f = 2.0F;
-		} else if (item == Blocks.field_10359.asItem()) {
+		} else if (item == Blocks.HAY_BLOCK.asItem()) {
 			i = 90;
 			j = 6;
 			f = 10.0F;
@@ -195,7 +195,7 @@ public class LlamaEntity extends AbstractDonkeyEntity implements RangedAttackMob
 		if (this.isBaby() && i > 0) {
 			this.world
 				.addParticle(
-					ParticleTypes.field_11211,
+					ParticleTypes.HAPPY_VILLAGER,
 					this.x + (double)(this.random.nextFloat() * this.getWidth() * 2.0F) - (double)this.getWidth(),
 					this.y + 0.5 + (double)(this.random.nextFloat() * this.getHeight()),
 					this.z + (double)(this.random.nextFloat() * this.getWidth() * 2.0F) - (double)this.getWidth(),
@@ -220,7 +220,14 @@ public class LlamaEntity extends AbstractDonkeyEntity implements RangedAttackMob
 		if (bl && !this.isSilent()) {
 			this.world
 				.playSound(
-					null, this.x, this.y, this.z, SoundEvents.field_14884, this.getSoundCategory(), 1.0F, 1.0F + (this.random.nextFloat() - this.random.nextFloat()) * 0.2F
+					null,
+					this.x,
+					this.y,
+					this.z,
+					SoundEvents.ENTITY_LLAMA_EAT,
+					this.getSoundCategory(),
+					1.0F,
+					1.0F + (this.random.nextFloat() - this.random.nextFloat()) * 0.2F
 				);
 		}
 
@@ -253,32 +260,32 @@ public class LlamaEntity extends AbstractDonkeyEntity implements RangedAttackMob
 
 	@Override
 	protected SoundEvent getAngrySound() {
-		return SoundEvents.field_14586;
+		return SoundEvents.ENTITY_LLAMA_ANGRY;
 	}
 
 	@Override
 	protected SoundEvent getAmbientSound() {
-		return SoundEvents.field_14682;
+		return SoundEvents.ENTITY_LLAMA_AMBIENT;
 	}
 
 	@Override
 	protected SoundEvent getHurtSound(DamageSource damageSource) {
-		return SoundEvents.field_15031;
+		return SoundEvents.ENTITY_LLAMA_HURT;
 	}
 
 	@Override
 	protected SoundEvent getDeathSound() {
-		return SoundEvents.field_15189;
+		return SoundEvents.ENTITY_LLAMA_DEATH;
 	}
 
 	@Override
 	protected void playStepSound(BlockPos blockPos, BlockState blockState) {
-		this.playSound(SoundEvents.field_14795, 0.15F, 1.0F);
+		this.playSound(SoundEvents.ENTITY_LLAMA_STEP, 0.15F, 1.0F);
 	}
 
 	@Override
 	protected void playAddChestSound() {
-		this.playSound(SoundEvents.field_15097, 1.0F, (this.random.nextFloat() - this.random.nextFloat()) * 0.2F + 1.0F);
+		this.playSound(SoundEvents.ENTITY_LLAMA_CHEST, 1.0F, (this.random.nextFloat() - this.random.nextFloat()) * 0.2F + 1.0F);
 	}
 
 	@Override
@@ -302,7 +309,7 @@ public class LlamaEntity extends AbstractDonkeyEntity implements RangedAttackMob
 	@Override
 	public boolean canEquip(ItemStack itemStack) {
 		Item item = itemStack.getItem();
-		return ItemTags.field_15542.contains(item);
+		return ItemTags.CARPETS.contains(item);
 	}
 
 	@Override
@@ -316,7 +323,7 @@ public class LlamaEntity extends AbstractDonkeyEntity implements RangedAttackMob
 		super.onInvChange(inventory);
 		DyeColor dyeColor2 = this.getCarpetColor();
 		if (this.age > 20 && dyeColor2 != null && dyeColor2 != dyeColor) {
-			this.playSound(SoundEvents.field_14554, 0.5F, 1.0F);
+			this.playSound(SoundEvents.ENTITY_LLAMA_SWAG, 0.5F, 1.0F);
 		}
 	}
 
@@ -369,7 +376,7 @@ public class LlamaEntity extends AbstractDonkeyEntity implements RangedAttackMob
 	}
 
 	protected LlamaEntity createChild() {
-		return EntityType.field_6074.create(this.world);
+		return EntityType.LLAMA.create(this.world);
 	}
 
 	private void spitAt(LivingEntity livingEntity) {
@@ -381,7 +388,14 @@ public class LlamaEntity extends AbstractDonkeyEntity implements RangedAttackMob
 		llamaSpitEntity.setVelocity(d, e + (double)g, f, 1.5F, 10.0F);
 		this.world
 			.playSound(
-				null, this.x, this.y, this.z, SoundEvents.field_14789, this.getSoundCategory(), 1.0F, 1.0F + (this.random.nextFloat() - this.random.nextFloat()) * 0.2F
+				null,
+				this.x,
+				this.y,
+				this.z,
+				SoundEvents.ENTITY_LLAMA_SPIT,
+				this.getSoundCategory(),
+				1.0F,
+				1.0F + (this.random.nextFloat() - this.random.nextFloat()) * 0.2F
 			);
 		this.world.spawnEntity(llamaSpitEntity);
 		this.field_6999 = true;

@@ -43,39 +43,39 @@ public class SkeletonHorseEntity extends HorseBaseEntity {
 	@Override
 	protected SoundEvent getAmbientSound() {
 		super.getAmbientSound();
-		return this.isInFluid(FluidTags.field_15517) ? SoundEvents.field_14686 : SoundEvents.field_14984;
+		return this.isInFluid(FluidTags.WATER) ? SoundEvents.ENTITY_SKELETON_HORSE_AMBIENT_WATER : SoundEvents.ENTITY_SKELETON_HORSE_AMBIENT;
 	}
 
 	@Override
 	protected SoundEvent getDeathSound() {
 		super.getDeathSound();
-		return SoundEvents.field_14721;
+		return SoundEvents.ENTITY_SKELETON_HORSE_DEATH;
 	}
 
 	@Override
 	protected SoundEvent getHurtSound(DamageSource damageSource) {
 		super.getHurtSound(damageSource);
-		return SoundEvents.field_14855;
+		return SoundEvents.ENTITY_SKELETON_HORSE_HURT;
 	}
 
 	@Override
 	protected SoundEvent getSwimSound() {
 		if (this.onGround) {
 			if (!this.hasPassengers()) {
-				return SoundEvents.field_15182;
+				return SoundEvents.ENTITY_SKELETON_HORSE_STEP_WATER;
 			}
 
 			this.soundTicks++;
 			if (this.soundTicks > 5 && this.soundTicks % 3 == 0) {
-				return SoundEvents.field_15108;
+				return SoundEvents.ENTITY_SKELETON_HORSE_GALLOP_WATER;
 			}
 
 			if (this.soundTicks <= 5) {
-				return SoundEvents.field_15182;
+				return SoundEvents.ENTITY_SKELETON_HORSE_STEP_WATER;
 			}
 		}
 
-		return SoundEvents.field_14617;
+		return SoundEvents.ENTITY_SKELETON_HORSE_SWIM;
 	}
 
 	@Override
@@ -90,7 +90,7 @@ public class SkeletonHorseEntity extends HorseBaseEntity {
 	@Override
 	protected void playJumpSound() {
 		if (this.isInsideWater()) {
-			this.playSound(SoundEvents.field_14901, 0.4F, 1.0F);
+			this.playSound(SoundEvents.ENTITY_SKELETON_HORSE_JUMP_WATER, 0.4F, 1.0F);
 		} else {
 			super.playJumpSound();
 		}
@@ -156,7 +156,7 @@ public class SkeletonHorseEntity extends HorseBaseEntity {
 	@Nullable
 	@Override
 	public PassiveEntity createChild(PassiveEntity passiveEntity) {
-		return EntityType.field_6075.create(this.world);
+		return EntityType.SKELETON_HORSE.create(this.world);
 	}
 
 	@Override
@@ -175,7 +175,7 @@ public class SkeletonHorseEntity extends HorseBaseEntity {
 			return super.interactMob(playerEntity, hand);
 		} else {
 			if (!itemStack.isEmpty()) {
-				if (itemStack.getItem() == Items.field_8175 && !this.isSaddled()) {
+				if (itemStack.getItem() == Items.SADDLE && !this.isSaddled()) {
 					this.openInventory(playerEntity);
 					return true;
 				}

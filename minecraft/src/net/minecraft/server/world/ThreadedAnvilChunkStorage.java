@@ -270,7 +270,7 @@ public class ThreadedAnvilChunkStorage extends VersionedChunkStorage implements 
 	}
 
 	public CompletableFuture<Either<WorldChunk, ChunkHolder.Unloaded>> createEntityTickingChunkFuture(ChunkPos chunkPos) {
-		return this.createChunkRegionFuture(chunkPos, 2, i -> ChunkStatus.field_12803)
+		return this.createChunkRegionFuture(chunkPos, 2, i -> ChunkStatus.FULL)
 			.thenApplyAsync(either -> either.mapLeft(list -> (WorldChunk)list.get(list.size() / 2)), this.mainThreadExecutor);
 	}
 
@@ -424,7 +424,7 @@ public class ThreadedAnvilChunkStorage extends VersionedChunkStorage implements 
 
 	public CompletableFuture<Either<Chunk, ChunkHolder.Unloaded>> createChunkFuture(ChunkHolder chunkHolder, ChunkStatus chunkStatus) {
 		ChunkPos chunkPos = chunkHolder.getPos();
-		if (chunkStatus == ChunkStatus.field_12798) {
+		if (chunkStatus == ChunkStatus.EMPTY) {
 			return this.method_20619(chunkPos);
 		} else {
 			CompletableFuture<Either<Chunk, ChunkHolder.Unloaded>> completableFuture = chunkHolder.createFuture(chunkStatus.getPrevious(), this);
@@ -434,15 +434,14 @@ public class ThreadedAnvilChunkStorage extends VersionedChunkStorage implements 
 					if (!optional.isPresent()) {
 						return CompletableFuture.completedFuture(either);
 					} else {
-						if (chunkStatus == ChunkStatus.field_12805) {
-							this.ticketManager
-								.addTicketWithLevel(ChunkTicketType.field_19270, chunkPos, 33 + ChunkStatus.getTargetGenerationRadius(ChunkStatus.field_12795), chunkPos);
+						if (chunkStatus == ChunkStatus.LIGHT) {
+							this.ticketManager.addTicketWithLevel(ChunkTicketType.LIGHT, chunkPos, 33 + ChunkStatus.getTargetGenerationRadius(ChunkStatus.FEATURES), chunkPos);
 						}
 
 						Chunk chunk = (Chunk)optional.get();
 						if (chunk.getStatus().isAtLeast(chunkStatus)) {
 							CompletableFuture<Either<Chunk, ChunkHolder.Unloaded>> completableFuturex;
-							if (chunkStatus == ChunkStatus.field_12805) {
+							if (chunkStatus == ChunkStatus.LIGHT) {
 								completableFuturex = this.method_20617(chunkHolder, chunkStatus);
 							} else {
 								completableFuturex = chunkStatus.method_20612(
@@ -528,7 +527,7 @@ public class ThreadedAnvilChunkStorage extends VersionedChunkStorage implements 
 			.method_18858(
 				SystemUtil.debugRunnable(
 					() -> this.ticketManager
-							.removeTicketWithLevel(ChunkTicketType.field_19270, chunkPos, 33 + ChunkStatus.getTargetGenerationRadius(ChunkStatus.field_12795), chunkPos),
+							.removeTicketWithLevel(ChunkTicketType.LIGHT, chunkPos, 33 + ChunkStatus.getTargetGenerationRadius(ChunkStatus.FEATURES), chunkPos),
 					() -> "release light ticket " + chunkPos
 				)
 			);
@@ -546,10 +545,10 @@ public class ThreadedAnvilChunkStorage extends VersionedChunkStorage implements 
 	}
 
 	private CompletableFuture<Either<Chunk, ChunkHolder.Unloaded>> convertToFullChunk(ChunkHolder chunkHolder) {
-		CompletableFuture<Either<Chunk, ChunkHolder.Unloaded>> completableFuture = chunkHolder.getFuture(ChunkStatus.field_12803.getPrevious());
+		CompletableFuture<Either<Chunk, ChunkHolder.Unloaded>> completableFuture = chunkHolder.getFuture(ChunkStatus.FULL.getPrevious());
 		return completableFuture.thenApplyAsync(either -> {
 			ChunkStatus chunkStatus = ChunkHolder.getTargetGenerationStatus(chunkHolder.getLevel());
-			return !chunkStatus.isAtLeast(ChunkStatus.field_12803) ? ChunkHolder.UNLOADED_CHUNK : either.mapLeft(chunk -> {
+			return !chunkStatus.isAtLeast(ChunkStatus.FULL) ? ChunkHolder.UNLOADED_CHUNK : either.mapLeft(chunk -> {
 				ChunkPos chunkPos = chunkHolder.getPos();
 				WorldChunk worldChunk;
 				if (chunk instanceof ReadOnlyChunk) {
@@ -592,7 +591,7 @@ public class ThreadedAnvilChunkStorage extends VersionedChunkStorage implements 
 
 	public CompletableFuture<Either<WorldChunk, ChunkHolder.Unloaded>> createTickingFuture(ChunkHolder chunkHolder) {
 		ChunkPos chunkPos = chunkHolder.getPos();
-		CompletableFuture<Either<List<Chunk>, ChunkHolder.Unloaded>> completableFuture = this.createChunkRegionFuture(chunkPos, 1, i -> ChunkStatus.field_12803);
+		CompletableFuture<Either<List<Chunk>, ChunkHolder.Unloaded>> completableFuture = this.createChunkRegionFuture(chunkPos, 1, i -> ChunkStatus.FULL);
 		CompletableFuture<Either<WorldChunk, ChunkHolder.Unloaded>> completableFuture2 = completableFuture.thenApplyAsync(either -> either.flatMap(list -> {
 				WorldChunk worldChunk = (WorldChunk)list.get(list.size() / 2);
 				worldChunk.runPostProcessing();
@@ -608,7 +607,7 @@ public class ThreadedAnvilChunkStorage extends VersionedChunkStorage implements 
 	}
 
 	public CompletableFuture<Either<WorldChunk, ChunkHolder.Unloaded>> createBorderFuture(ChunkHolder chunkHolder) {
-		return chunkHolder.createFuture(ChunkStatus.field_12803, this).thenApplyAsync(either -> either.mapLeft(chunk -> {
+		return chunkHolder.createFuture(ChunkStatus.FULL, this).thenApplyAsync(either -> either.mapLeft(chunk -> {
 				WorldChunk worldChunk = (WorldChunk)chunk;
 				worldChunk.method_20530();
 				return worldChunk;
@@ -637,13 +636,13 @@ public class ThreadedAnvilChunkStorage extends VersionedChunkStorage implements 
 
 			try {
 				ChunkStatus chunkStatus = chunk.getStatus();
-				if (chunkStatus.getChunkType() != ChunkStatus.ChunkType.field_12807) {
+				if (chunkStatus.getChunkType() != ChunkStatus.ChunkType.LEVELCHUNK) {
 					CompoundTag compoundTag = this.getUpdatedChunkTag(chunkPos);
-					if (compoundTag != null && ChunkSerializer.getChunkType(compoundTag) == ChunkStatus.ChunkType.field_12807) {
+					if (compoundTag != null && ChunkSerializer.getChunkType(compoundTag) == ChunkStatus.ChunkType.LEVELCHUNK) {
 						return false;
 					}
 
-					if (chunkStatus == ChunkStatus.field_12798 && chunk.getStructureStarts().values().stream().noneMatch(StructureStart::hasChildren)) {
+					if (chunkStatus == ChunkStatus.EMPTY && chunk.getStructureStarts().values().stream().noneMatch(StructureStart::hasChildren)) {
 						return false;
 					}
 				}
@@ -726,7 +725,7 @@ public class ThreadedAnvilChunkStorage extends VersionedChunkStorage implements 
 	}
 
 	private boolean doesNotGenerateChunks(ServerPlayerEntity serverPlayerEntity) {
-		return serverPlayerEntity.isSpectator() && !this.world.getGameRules().getBoolean(GameRules.field_19402);
+		return serverPlayerEntity.isSpectator() && !this.world.getGameRules().getBoolean(GameRules.SPECTATORS_GENERATE_CHUNKS);
 	}
 
 	void handlePlayerAddedOrRemoved(ServerPlayerEntity serverPlayerEntity, boolean bl) {

@@ -24,7 +24,7 @@ public class TitleS2CPacket implements Packet<ClientPlayPacketListener> {
 	}
 
 	public TitleS2CPacket(int i, int j, int k) {
-		this(TitleS2CPacket.Action.field_12629, null, i, j, k);
+		this(TitleS2CPacket.Action.TIMES, null, i, j, k);
 	}
 
 	public TitleS2CPacket(TitleS2CPacket.Action action, @Nullable Text text, int i, int j, int k) {
@@ -38,11 +38,11 @@ public class TitleS2CPacket implements Packet<ClientPlayPacketListener> {
 	@Override
 	public void read(PacketByteBuf packetByteBuf) throws IOException {
 		this.action = packetByteBuf.readEnumConstant(TitleS2CPacket.Action.class);
-		if (this.action == TitleS2CPacket.Action.field_12630 || this.action == TitleS2CPacket.Action.field_12632 || this.action == TitleS2CPacket.Action.field_12627) {
+		if (this.action == TitleS2CPacket.Action.TITLE || this.action == TitleS2CPacket.Action.SUBTITLE || this.action == TitleS2CPacket.Action.ACTIONBAR) {
 			this.text = packetByteBuf.readText();
 		}
 
-		if (this.action == TitleS2CPacket.Action.field_12629) {
+		if (this.action == TitleS2CPacket.Action.TIMES) {
 			this.fadeInTicks = packetByteBuf.readInt();
 			this.stayTicks = packetByteBuf.readInt();
 			this.fadeOutTicks = packetByteBuf.readInt();
@@ -52,11 +52,11 @@ public class TitleS2CPacket implements Packet<ClientPlayPacketListener> {
 	@Override
 	public void write(PacketByteBuf packetByteBuf) throws IOException {
 		packetByteBuf.writeEnumConstant(this.action);
-		if (this.action == TitleS2CPacket.Action.field_12630 || this.action == TitleS2CPacket.Action.field_12632 || this.action == TitleS2CPacket.Action.field_12627) {
+		if (this.action == TitleS2CPacket.Action.TITLE || this.action == TitleS2CPacket.Action.SUBTITLE || this.action == TitleS2CPacket.Action.ACTIONBAR) {
 			packetByteBuf.writeText(this.text);
 		}
 
-		if (this.action == TitleS2CPacket.Action.field_12629) {
+		if (this.action == TitleS2CPacket.Action.TIMES) {
 			packetByteBuf.writeInt(this.fadeInTicks);
 			packetByteBuf.writeInt(this.stayTicks);
 			packetByteBuf.writeInt(this.fadeOutTicks);
@@ -93,11 +93,11 @@ public class TitleS2CPacket implements Packet<ClientPlayPacketListener> {
 	}
 
 	public static enum Action {
-		field_12630,
-		field_12632,
-		field_12627,
-		field_12629,
-		field_12633,
-		field_12628;
+		TITLE,
+		SUBTITLE,
+		ACTIONBAR,
+		TIMES,
+		CLEAR,
+		RESET;
 	}
 }

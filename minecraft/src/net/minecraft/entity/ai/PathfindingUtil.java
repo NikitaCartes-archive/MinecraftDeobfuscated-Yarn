@@ -152,6 +152,6 @@ public class PathfindingUtil {
 	}
 
 	private static boolean isWater(BlockPos blockPos, MobEntityWithAi mobEntityWithAi) {
-		return mobEntityWithAi.world.getFluidState(blockPos).matches(FluidTags.field_15517);
+		return mobEntityWithAi.world.getFluidState(blockPos).matches(FluidTags.WATER);
 	}
 }

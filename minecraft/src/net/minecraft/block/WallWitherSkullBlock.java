@@ -8,11 +8,11 @@ import net.minecraft.world.World;
 
 public class WallWitherSkullBlock extends WallSkullBlock {
 	protected WallWitherSkullBlock(Block.Settings settings) {
-		super(SkullBlock.Type.field_11513, settings);
+		super(SkullBlock.Type.WITHER_SKELETON, settings);
 	}
 
 	@Override
 	public void onPlaced(World world, BlockPos blockPos, BlockState blockState, @Nullable LivingEntity livingEntity, ItemStack itemStack) {
-		Blocks.field_10177.onPlaced(world, blockPos, blockState, livingEntity, itemStack);
+		Blocks.WITHER_SKELETON_SKULL.onPlaced(world, blockPos, blockState, livingEntity, itemStack);
 	}
 }

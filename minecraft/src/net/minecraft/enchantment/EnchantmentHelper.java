@@ -51,7 +51,7 @@ public class EnchantmentHelper {
 
 	public static Map<Enchantment, Integer> getEnchantments(ItemStack itemStack) {
 		Map<Enchantment, Integer> map = Maps.<Enchantment, Integer>newLinkedHashMap();
-		ListTag listTag = itemStack.getItem() == Items.field_8598 ? EnchantedBookItem.getEnchantmentTag(itemStack) : itemStack.getEnchantments();
+		ListTag listTag = itemStack.getItem() == Items.ENCHANTED_BOOK ? EnchantedBookItem.getEnchantmentTag(itemStack) : itemStack.getEnchantments();
 
 		for (int i = 0; i < listTag.size(); i++) {
 			CompoundTag compoundTag = listTag.getCompoundTag(i);
@@ -74,7 +74,7 @@ public class EnchantmentHelper {
 				compoundTag.putString("id", String.valueOf(Registry.ENCHANTMENT.getId(enchantment)));
 				compoundTag.putShort("lvl", (short)i);
 				listTag.add(compoundTag);
-				if (itemStack.getItem() == Items.field_8598) {
+				if (itemStack.getItem() == Items.ENCHANTED_BOOK) {
 					EnchantedBookItem.addEnchantment(itemStack, new InfoEnchantment(enchantment, i));
 				}
 			}
@@ -82,7 +82,7 @@ public class EnchantmentHelper {
 
 		if (listTag.isEmpty()) {
 			itemStack.removeSubTag("Enchantments");
-		} else if (itemStack.getItem() != Items.field_8598) {
+		} else if (itemStack.getItem() != Items.ENCHANTED_BOOK) {
 			itemStack.putSubTag("Enchantments", listTag);
 		}
 	}
@@ -118,7 +118,7 @@ public class EnchantmentHelper {
 	}
 
 	public static float getSweepingMultiplier(LivingEntity livingEntity) {
-		int i = getEquipmentLevel(Enchantments.field_9115, livingEntity);
+		int i = getEquipmentLevel(Enchantments.SWEEPING, livingEntity);
 		return i > 0 ? SweepingEnchantment.getMultiplier(i) : 0.0F;
 	}
 
@@ -163,63 +163,63 @@ public class EnchantmentHelper {
 	}
 
 	public static int getKnockback(LivingEntity livingEntity) {
-		return getEquipmentLevel(Enchantments.field_9121, livingEntity);
+		return getEquipmentLevel(Enchantments.KNOCKBACK, livingEntity);
 	}
 
 	public static int getFireAspect(LivingEntity livingEntity) {
-		return getEquipmentLevel(Enchantments.field_9124, livingEntity);
+		return getEquipmentLevel(Enchantments.FIRE_ASPECT, livingEntity);
 	}
 
 	public static int getRespiration(LivingEntity livingEntity) {
-		return getEquipmentLevel(Enchantments.field_9127, livingEntity);
+		return getEquipmentLevel(Enchantments.RESPIRATION, livingEntity);
 	}
 
 	public static int getDepthStrider(LivingEntity livingEntity) {
-		return getEquipmentLevel(Enchantments.field_9128, livingEntity);
+		return getEquipmentLevel(Enchantments.DEPTH_STRIDER, livingEntity);
 	}
 
 	public static int getEfficiency(LivingEntity livingEntity) {
-		return getEquipmentLevel(Enchantments.field_9131, livingEntity);
+		return getEquipmentLevel(Enchantments.EFFICIENCY, livingEntity);
 	}
 
 	public static int getLuckOfTheSea(ItemStack itemStack) {
-		return getLevel(Enchantments.field_9114, itemStack);
+		return getLevel(Enchantments.LUCK_OF_THE_SEA, itemStack);
 	}
 
 	public static int getLure(ItemStack itemStack) {
-		return getLevel(Enchantments.field_9100, itemStack);
+		return getLevel(Enchantments.LURE, itemStack);
 	}
 
 	public static int getLooting(LivingEntity livingEntity) {
-		return getEquipmentLevel(Enchantments.field_9110, livingEntity);
+		return getEquipmentLevel(Enchantments.LOOTING, livingEntity);
 	}
 
 	public static boolean hasAquaAffinity(LivingEntity livingEntity) {
-		return getEquipmentLevel(Enchantments.field_9105, livingEntity) > 0;
+		return getEquipmentLevel(Enchantments.AQUA_AFFINITY, livingEntity) > 0;
 	}
 
 	public static boolean hasFrostWalker(LivingEntity livingEntity) {
-		return getEquipmentLevel(Enchantments.field_9122, livingEntity) > 0;
+		return getEquipmentLevel(Enchantments.FROST_WALKER, livingEntity) > 0;
 	}
 
 	public static boolean hasBindingCurse(ItemStack itemStack) {
-		return getLevel(Enchantments.field_9113, itemStack) > 0;
+		return getLevel(Enchantments.BINDING_CURSE, itemStack) > 0;
 	}
 
 	public static boolean hasVanishingCurse(ItemStack itemStack) {
-		return getLevel(Enchantments.field_9109, itemStack) > 0;
+		return getLevel(Enchantments.VANISHING_CURSE, itemStack) > 0;
 	}
 
 	public static int getLoyalty(ItemStack itemStack) {
-		return getLevel(Enchantments.field_9120, itemStack);
+		return getLevel(Enchantments.LOYALTY, itemStack);
 	}
 
 	public static int getRiptide(ItemStack itemStack) {
-		return getLevel(Enchantments.field_9104, itemStack);
+		return getLevel(Enchantments.RIPTIDE, itemStack);
 	}
 
 	public static boolean hasChanneling(ItemStack itemStack) {
-		return getLevel(Enchantments.field_9117, itemStack) > 0;
+		return getLevel(Enchantments.CHANNELING, itemStack) > 0;
 	}
 
 	@Nullable
@@ -262,9 +262,9 @@ public class EnchantmentHelper {
 
 	public static ItemStack enchant(Random random, ItemStack itemStack, int i, boolean bl) {
 		List<InfoEnchantment> list = getEnchantments(random, itemStack, i, bl);
-		boolean bl2 = itemStack.getItem() == Items.field_8529;
+		boolean bl2 = itemStack.getItem() == Items.BOOK;
 		if (bl2) {
-			itemStack = new ItemStack(Items.field_8598);
+			itemStack = new ItemStack(Items.ENCHANTED_BOOK);
 		}
 
 		for (InfoEnchantment infoEnchantment : list) {
@@ -330,7 +330,7 @@ public class EnchantmentHelper {
 	public static List<InfoEnchantment> getHighestApplicableEnchantmentsAtPower(int i, ItemStack itemStack, boolean bl) {
 		List<InfoEnchantment> list = Lists.<InfoEnchantment>newArrayList();
 		Item item = itemStack.getItem();
-		boolean bl2 = itemStack.getItem() == Items.field_8529;
+		boolean bl2 = itemStack.getItem() == Items.BOOK;
 
 		for (Enchantment enchantment : Registry.ENCHANTMENT) {
 			if ((!enchantment.isTreasure() || bl) && (enchantment.type.isAcceptableItem(item) || bl2)) {

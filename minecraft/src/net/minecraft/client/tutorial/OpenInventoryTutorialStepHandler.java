@@ -22,11 +22,11 @@ public class OpenInventoryTutorialStepHandler implements TutorialStepHandler {
 	@Override
 	public void tick() {
 		this.ticks++;
-		if (this.manager.getGameMode() != GameMode.field_9215) {
-			this.manager.setStep(TutorialStep.field_5653);
+		if (this.manager.getGameMode() != GameMode.SURVIVAL) {
+			this.manager.setStep(TutorialStep.NONE);
 		} else {
 			if (this.ticks >= 600 && this.field_5642 == null) {
-				this.field_5642 = new TutorialToast(TutorialToast.Type.field_2233, TITLE, DESCRIPTION, false);
+				this.field_5642 = new TutorialToast(TutorialToast.Type.RECIPE_BOOK, TITLE, DESCRIPTION, false);
 				this.manager.getClient().getToastManager().add(this.field_5642);
 			}
 		}
@@ -42,6 +42,6 @@ public class OpenInventoryTutorialStepHandler implements TutorialStepHandler {
 
 	@Override
 	public void onInventoryOpened() {
-		this.manager.setStep(TutorialStep.field_5655);
+		this.manager.setStep(TutorialStep.CRAFT_PLANKS);
 	}
 }

@@ -151,12 +151,12 @@ public class DragonEntityModel extends EntityModel<EnderDragonEntity> {
 			this.rearLeg.render(k);
 			GlStateManager.scalef(-1.0F, 1.0F, 1.0F);
 			if (w == 0) {
-				GlStateManager.cullFace(GlStateManager.FaceSides.field_5068);
+				GlStateManager.cullFace(GlStateManager.FaceSides.FRONT);
 			}
 		}
 
 		GlStateManager.popMatrix();
-		GlStateManager.cullFace(GlStateManager.FaceSides.field_5070);
+		GlStateManager.cullFace(GlStateManager.FaceSides.BACK);
 		GlStateManager.disableCull();
 		float x = -((float)Math.sin((double)(l * (float) (Math.PI * 2)))) * 0.0F;
 		t = l * (float) (Math.PI * 2);

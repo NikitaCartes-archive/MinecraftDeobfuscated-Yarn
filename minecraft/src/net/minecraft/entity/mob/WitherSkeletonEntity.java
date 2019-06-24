@@ -27,27 +27,27 @@ import net.minecraft.world.World;
 public class WitherSkeletonEntity extends AbstractSkeletonEntity {
 	public WitherSkeletonEntity(EntityType<? extends WitherSkeletonEntity> entityType, World world) {
 		super(entityType, world);
-		this.setPathNodeTypeWeight(PathNodeType.field_14, 8.0F);
+		this.setPathNodeTypeWeight(PathNodeType.LAVA, 8.0F);
 	}
 
 	@Override
 	protected SoundEvent getAmbientSound() {
-		return SoundEvents.field_15214;
+		return SoundEvents.ENTITY_WITHER_SKELETON_AMBIENT;
 	}
 
 	@Override
 	protected SoundEvent getHurtSound(DamageSource damageSource) {
-		return SoundEvents.field_15027;
+		return SoundEvents.ENTITY_WITHER_SKELETON_HURT;
 	}
 
 	@Override
 	protected SoundEvent getDeathSound() {
-		return SoundEvents.field_15122;
+		return SoundEvents.ENTITY_WITHER_SKELETON_DEATH;
 	}
 
 	@Override
 	SoundEvent getStepSound() {
-		return SoundEvents.field_14955;
+		return SoundEvents.ENTITY_WITHER_SKELETON_STEP;
 	}
 
 	@Override
@@ -65,7 +65,7 @@ public class WitherSkeletonEntity extends AbstractSkeletonEntity {
 
 	@Override
 	protected void initEquipment(LocalDifficulty localDifficulty) {
-		this.setEquippedStack(EquipmentSlot.field_6173, new ItemStack(Items.field_8528));
+		this.setEquippedStack(EquipmentSlot.MAINHAND, new ItemStack(Items.STONE_SWORD));
 	}
 
 	@Override
@@ -94,7 +94,7 @@ public class WitherSkeletonEntity extends AbstractSkeletonEntity {
 			return false;
 		} else {
 			if (entity instanceof LivingEntity) {
-				((LivingEntity)entity).addPotionEffect(new StatusEffectInstance(StatusEffects.field_5920, 200));
+				((LivingEntity)entity).addPotionEffect(new StatusEffectInstance(StatusEffects.WITHER, 200));
 			}
 
 			return true;
@@ -110,6 +110,6 @@ public class WitherSkeletonEntity extends AbstractSkeletonEntity {
 
 	@Override
 	public boolean isPotionEffective(StatusEffectInstance statusEffectInstance) {
-		return statusEffectInstance.getEffectType() == StatusEffects.field_5920 ? false : super.isPotionEffective(statusEffectInstance);
+		return statusEffectInstance.getEffectType() == StatusEffects.WITHER ? false : super.isPotionEffective(statusEffectInstance);
 	}
 }

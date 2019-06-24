@@ -10,16 +10,16 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
 
 public class LootContextParameters {
-	public static final LootContextParameter<Entity> field_1226 = register("this_entity");
-	public static final LootContextParameter<PlayerEntity> field_1233 = register("last_damage_player");
-	public static final LootContextParameter<DamageSource> field_1231 = register("damage_source");
-	public static final LootContextParameter<Entity> field_1230 = register("killer_entity");
-	public static final LootContextParameter<Entity> field_1227 = register("direct_killer_entity");
-	public static final LootContextParameter<BlockPos> field_1232 = register("position");
-	public static final LootContextParameter<BlockState> field_1224 = register("block_state");
-	public static final LootContextParameter<BlockEntity> field_1228 = register("block_entity");
-	public static final LootContextParameter<ItemStack> field_1229 = register("tool");
-	public static final LootContextParameter<Float> field_1225 = register("explosion_radius");
+	public static final LootContextParameter<Entity> THIS_ENTITY = register("this_entity");
+	public static final LootContextParameter<PlayerEntity> LAST_DAMAGE_PLAYER = register("last_damage_player");
+	public static final LootContextParameter<DamageSource> DAMAGE_SOURCE = register("damage_source");
+	public static final LootContextParameter<Entity> KILLER_ENTITY = register("killer_entity");
+	public static final LootContextParameter<Entity> DIRECT_KILLER_ENTITY = register("direct_killer_entity");
+	public static final LootContextParameter<BlockPos> POSITION = register("position");
+	public static final LootContextParameter<BlockState> BLOCK_STATE = register("block_state");
+	public static final LootContextParameter<BlockEntity> BLOCK_ENTITY = register("block_entity");
+	public static final LootContextParameter<ItemStack> TOOL = register("tool");
+	public static final LootContextParameter<Float> EXPLOSION_RADIUS = register("explosion_radius");
 
 	private static <T> LootContextParameter<T> register(String string) {
 		return new LootContextParameter<>(new Identifier(string));

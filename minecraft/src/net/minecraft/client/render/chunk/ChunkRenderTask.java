@@ -19,7 +19,7 @@ public class ChunkRenderTask implements Comparable<ChunkRenderTask> {
 	private ChunkRendererRegion region;
 	private BlockLayeredBufferBuilder bufferBuilder;
 	private ChunkRenderData renderData;
-	private ChunkRenderTask.Stage stage = ChunkRenderTask.Stage.field_4422;
+	private ChunkRenderTask.Stage stage = ChunkRenderTask.Stage.PENDING;
 	private boolean cancelled;
 
 	public ChunkRenderTask(ChunkRenderer chunkRenderer, ChunkRenderTask.Mode mode, double d, @Nullable ChunkRendererRegion chunkRendererRegion) {
@@ -75,12 +75,12 @@ public class ChunkRenderTask implements Comparable<ChunkRenderTask> {
 
 		try {
 			this.region = null;
-			if (this.mode == ChunkRenderTask.Mode.field_4426 && this.stage != ChunkRenderTask.Stage.field_4423) {
+			if (this.mode == ChunkRenderTask.Mode.REBUILD_CHUNK && this.stage != ChunkRenderTask.Stage.DONE) {
 				this.chunkRenderer.scheduleRebuild(false);
 			}
 
 			this.cancelled = true;
-			this.stage = ChunkRenderTask.Stage.field_4423;
+			this.stage = ChunkRenderTask.Stage.DONE;
 
 			for (Runnable runnable : this.completionActions) {
 				runnable.run();
@@ -125,15 +125,15 @@ public class ChunkRenderTask implements Comparable<ChunkRenderTask> {
 
 	@Environment(EnvType.CLIENT)
 	public static enum Mode {
-		field_4426,
-		field_4427;
+		REBUILD_CHUNK,
+		RESORT_TRANSPARENCY;
 	}
 
 	@Environment(EnvType.CLIENT)
 	public static enum Stage {
-		field_4422,
-		field_4424,
-		field_4421,
-		field_4423;
+		PENDING,
+		COMPILING,
+		UPLOADING,
+		DONE;
 	}
 }

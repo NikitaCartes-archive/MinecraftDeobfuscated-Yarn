@@ -22,7 +22,7 @@ import org.apache.logging.log4j.Logger;
 public class ResourcePackContainer implements AutoCloseable {
 	private static final Logger LOGGER = LogManager.getLogger();
 	private static final PackResourceMetadata BROKEN_PACK_META = new PackResourceMetadata(
-		new TranslatableText("resourcePack.broken_assets").formatted(new Formatting[]{Formatting.field_1061, Formatting.field_1056}),
+		new TranslatableText("resourcePack.broken_assets").formatted(new Formatting[]{Formatting.RED, Formatting.ITALIC}),
 		SharedConstants.getGameVersion().getPackVersion()
 	);
 	private final String name;
@@ -139,9 +139,9 @@ public class ResourcePackContainer implements AutoCloseable {
 	public Text getInformationText(boolean bl) {
 		return Texts.bracketed(new LiteralText(this.name))
 			.styled(
-				style -> style.setColor(bl ? Formatting.field_1060 : Formatting.field_1061)
+				style -> style.setColor(bl ? Formatting.GREEN : Formatting.RED)
 						.setInsertion(StringArgumentType.escapeIfRequired(this.name))
-						.setHoverEvent(new HoverEvent(HoverEvent.Action.field_11762, new LiteralText("").append(this.displayName).append("\n").append(this.description)))
+						.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new LiteralText("").append(this.displayName).append("\n").append(this.description)))
 			);
 	}
 
@@ -201,12 +201,12 @@ public class ResourcePackContainer implements AutoCloseable {
 	}
 
 	public static enum InsertionPosition {
-		field_14280,
-		field_14281;
+		TOP,
+		BOTTOM;
 
 		public <T, P extends ResourcePackContainer> int insert(List<T> list, T object, Function<T, P> function, boolean bl) {
 			ResourcePackContainer.InsertionPosition insertionPosition = bl ? this.inverse() : this;
-			if (insertionPosition == field_14281) {
+			if (insertionPosition == BOTTOM) {
 				int i;
 				for (i = 0; i < list.size(); i++) {
 					P resourcePackContainer = (P)function.apply(list.get(i));
@@ -232,7 +232,7 @@ public class ResourcePackContainer implements AutoCloseable {
 		}
 
 		public ResourcePackContainer.InsertionPosition inverse() {
-			return this == field_14280 ? field_14281 : field_14280;
+			return this == TOP ? BOTTOM : TOP;
 		}
 	}
 }

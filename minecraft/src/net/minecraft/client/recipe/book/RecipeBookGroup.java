@@ -10,22 +10,22 @@ import net.minecraft.item.Items;
 
 @Environment(EnvType.CLIENT)
 public enum RecipeBookGroup {
-	field_1809(new ItemStack(Items.field_8251)),
-	field_1806(new ItemStack(Blocks.field_10104)),
-	field_1803(new ItemStack(Items.field_8725)),
-	field_1813(new ItemStack(Items.field_8475), new ItemStack(Items.field_8845)),
-	field_1810(new ItemStack(Items.field_8187), new ItemStack(Items.field_8279)),
-	field_1804(new ItemStack(Items.field_8251)),
-	field_1808(new ItemStack(Items.field_8389)),
-	field_1811(new ItemStack(Blocks.field_10340)),
-	field_1812(new ItemStack(Items.field_8187), new ItemStack(Items.field_8687)),
-	field_17110(new ItemStack(Items.field_8251)),
-	field_17111(new ItemStack(Blocks.field_10080)),
-	field_17112(new ItemStack(Items.field_8699), new ItemStack(Items.field_8416)),
-	field_17113(new ItemStack(Items.field_8251)),
-	field_17114(new ItemStack(Items.field_8389)),
-	field_17764(new ItemStack(Items.CHISELED_STONE_BRICKS)),
-	field_17765(new ItemStack(Items.field_8389));
+	SEARCH(new ItemStack(Items.COMPASS)),
+	BUILDING_BLOCKS(new ItemStack(Blocks.BRICKS)),
+	REDSTONE(new ItemStack(Items.REDSTONE)),
+	EQUIPMENT(new ItemStack(Items.IRON_AXE), new ItemStack(Items.GOLDEN_SWORD)),
+	MISC(new ItemStack(Items.LAVA_BUCKET), new ItemStack(Items.APPLE)),
+	FURNACE_SEARCH(new ItemStack(Items.COMPASS)),
+	FURNACE_FOOD(new ItemStack(Items.PORKCHOP)),
+	FURNACE_BLOCKS(new ItemStack(Blocks.STONE)),
+	FURNACE_MISC(new ItemStack(Items.LAVA_BUCKET), new ItemStack(Items.EMERALD)),
+	BLAST_FURNACE_SEARCH(new ItemStack(Items.COMPASS)),
+	BLAST_FURNACE_BLOCKS(new ItemStack(Blocks.REDSTONE_ORE)),
+	BLAST_FURNACE_MISC(new ItemStack(Items.IRON_SHOVEL), new ItemStack(Items.GOLDEN_LEGGINGS)),
+	SMOKER_SEARCH(new ItemStack(Items.COMPASS)),
+	SMOKER_FOOD(new ItemStack(Items.PORKCHOP)),
+	STONECUTTER(new ItemStack(Items.CHISELED_STONE_BRICKS)),
+	CAMPFIRE(new ItemStack(Items.PORKCHOP));
 
 	private final List<ItemStack> icons;
 

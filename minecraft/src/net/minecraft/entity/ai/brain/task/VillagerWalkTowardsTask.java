@@ -21,12 +21,12 @@ public class VillagerWalkTowardsTask extends Task<VillagerEntity> {
 	public VillagerWalkTowardsTask(MemoryModuleType<GlobalPos> memoryModuleType, float f, int i, int j, int k) {
 		super(
 			ImmutableMap.of(
-				MemoryModuleType.field_19293,
-				MemoryModuleState.field_18458,
-				MemoryModuleType.field_18445,
-				MemoryModuleState.field_18457,
+				MemoryModuleType.CANT_REACH_WALK_TARGET_SINCE,
+				MemoryModuleState.REGISTERED,
+				MemoryModuleType.WALK_TARGET,
+				MemoryModuleState.VALUE_ABSENT,
 				memoryModuleType,
-				MemoryModuleState.field_18456
+				MemoryModuleState.VALUE_PRESENT
 			)
 		);
 		this.destination = memoryModuleType;
@@ -42,15 +42,15 @@ public class VillagerWalkTowardsTask extends Task<VillagerEntity> {
 			if (this.method_19597(serverWorld, villagerEntity, globalPos) || this.shouldGiveUp(serverWorld, villagerEntity)) {
 				villagerEntity.releaseTicketFor(this.destination);
 				brain.forget(this.destination);
-				brain.putMemory(MemoryModuleType.field_19293, l);
+				brain.putMemory(MemoryModuleType.CANT_REACH_WALK_TARGET_SINCE, l);
 			} else if (!this.reachedDestination(serverWorld, villagerEntity, globalPos)) {
-				brain.putMemory(MemoryModuleType.field_18445, new WalkTarget(globalPos.getPos(), this.speed, this.completionRange));
+				brain.putMemory(MemoryModuleType.WALK_TARGET, new WalkTarget(globalPos.getPos(), this.speed, this.completionRange));
 			}
 		});
 	}
 
 	private boolean shouldGiveUp(ServerWorld serverWorld, VillagerEntity villagerEntity) {
-		Optional<Long> optional = villagerEntity.getBrain().getOptionalMemory(MemoryModuleType.field_19293);
+		Optional<Long> optional = villagerEntity.getBrain().getOptionalMemory(MemoryModuleType.CANT_REACH_WALK_TARGET_SINCE);
 		return optional.isPresent() ? serverWorld.getTime() - (Long)optional.get() > (long)this.maxRunTime : false;
 	}
 

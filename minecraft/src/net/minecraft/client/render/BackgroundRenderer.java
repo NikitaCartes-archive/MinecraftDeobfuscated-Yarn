@@ -45,9 +45,9 @@ public class BackgroundRenderer {
 	public void renderBackground(Camera camera, float f) {
 		World world = this.client.world;
 		FluidState fluidState = camera.getSubmergedFluidState();
-		if (fluidState.matches(FluidTags.field_15517)) {
+		if (fluidState.matches(FluidTags.WATER)) {
 			this.updateColorInWater(camera, world);
-		} else if (fluidState.matches(FluidTags.field_15518)) {
+		} else if (fluidState.matches(FluidTags.LAVA)) {
 			this.red = 0.6F;
 			this.green = 0.1F;
 			this.blue = 0.0F;
@@ -58,8 +58,8 @@ public class BackgroundRenderer {
 		}
 
 		double d = camera.getPos().y * world.dimension.getHorizonShadingRatio();
-		if (camera.getFocusedEntity() instanceof LivingEntity && ((LivingEntity)camera.getFocusedEntity()).hasStatusEffect(StatusEffects.field_5919)) {
-			int i = ((LivingEntity)camera.getFocusedEntity()).getStatusEffect(StatusEffects.field_5919).getDuration();
+		if (camera.getFocusedEntity() instanceof LivingEntity && ((LivingEntity)camera.getFocusedEntity()).hasStatusEffect(StatusEffects.BLINDNESS)) {
+			int i = ((LivingEntity)camera.getFocusedEntity()).getStatusEffect(StatusEffects.BLINDNESS).getDuration();
 			if (i < 20) {
 				d *= (double)(1.0F - (float)i / 20.0F);
 			} else {
@@ -85,7 +85,7 @@ public class BackgroundRenderer {
 			this.blue = this.blue * (1.0F - g) + this.blue * 0.6F * g;
 		}
 
-		if (fluidState.matches(FluidTags.field_15517)) {
+		if (fluidState.matches(FluidTags.WATER)) {
 			float g = 0.0F;
 			if (camera.getFocusedEntity() instanceof ClientPlayerEntity) {
 				ClientPlayerEntity clientPlayerEntity = (ClientPlayerEntity)camera.getFocusedEntity();
@@ -104,7 +104,7 @@ public class BackgroundRenderer {
 			this.red = this.red * (1.0F - g) + this.red * h * g;
 			this.green = this.green * (1.0F - g) + this.green * h * g;
 			this.blue = this.blue * (1.0F - g) + this.blue * h * g;
-		} else if (camera.getFocusedEntity() instanceof LivingEntity && ((LivingEntity)camera.getFocusedEntity()).hasStatusEffect(StatusEffects.field_5925)) {
+		} else if (camera.getFocusedEntity() instanceof LivingEntity && ((LivingEntity)camera.getFocusedEntity()).hasStatusEffect(StatusEffects.NIGHT_VISION)) {
 			float gx = this.gameRenderer.getNightVisionStrength((LivingEntity)camera.getFocusedEntity(), f);
 			float hx = 1.0F / this.red;
 			if (hx > 1.0F / this.green) {
@@ -208,14 +208,14 @@ public class BackgroundRenderer {
 		GlStateManager.normal3f(0.0F, -1.0F, 0.0F);
 		GlStateManager.color4f(1.0F, 1.0F, 1.0F, 1.0F);
 		FluidState fluidState = camera.getSubmergedFluidState();
-		if (camera.getFocusedEntity() instanceof LivingEntity && ((LivingEntity)camera.getFocusedEntity()).hasStatusEffect(StatusEffects.field_5919)) {
+		if (camera.getFocusedEntity() instanceof LivingEntity && ((LivingEntity)camera.getFocusedEntity()).hasStatusEffect(StatusEffects.BLINDNESS)) {
 			float f = 5.0F;
-			int j = ((LivingEntity)camera.getFocusedEntity()).getStatusEffect(StatusEffects.field_5919).getDuration();
+			int j = ((LivingEntity)camera.getFocusedEntity()).getStatusEffect(StatusEffects.BLINDNESS).getDuration();
 			if (j < 20) {
 				f = MathHelper.lerp(1.0F - (float)j / 20.0F, 5.0F, this.gameRenderer.getViewDistance());
 			}
 
-			GlStateManager.fogMode(GlStateManager.FogMode.field_5095);
+			GlStateManager.fogMode(GlStateManager.FogMode.LINEAR);
 			if (i == -1) {
 				GlStateManager.fogStart(0.0F);
 				GlStateManager.fogEnd(f * 0.8F);
@@ -225,14 +225,14 @@ public class BackgroundRenderer {
 			}
 
 			GLX.setupNvFogDistance();
-		} else if (fluidState.matches(FluidTags.field_15517)) {
-			GlStateManager.fogMode(GlStateManager.FogMode.field_5097);
+		} else if (fluidState.matches(FluidTags.WATER)) {
+			GlStateManager.fogMode(GlStateManager.FogMode.EXP2);
 			if (camera.getFocusedEntity() instanceof LivingEntity) {
 				if (camera.getFocusedEntity() instanceof ClientPlayerEntity) {
 					ClientPlayerEntity clientPlayerEntity = (ClientPlayerEntity)camera.getFocusedEntity();
 					float g = 0.05F - clientPlayerEntity.method_3140() * clientPlayerEntity.method_3140() * 0.03F;
 					Biome biome = clientPlayerEntity.world.getBiome(new BlockPos(clientPlayerEntity));
-					if (biome == Biomes.field_9471 || biome == Biomes.field_9479) {
+					if (biome == Biomes.SWAMP || biome == Biomes.SWAMP_HILLS) {
 						g += 0.005F;
 					}
 
@@ -243,12 +243,12 @@ public class BackgroundRenderer {
 			} else {
 				GlStateManager.fogDensity(0.1F);
 			}
-		} else if (fluidState.matches(FluidTags.field_15518)) {
-			GlStateManager.fogMode(GlStateManager.FogMode.field_5096);
+		} else if (fluidState.matches(FluidTags.LAVA)) {
+			GlStateManager.fogMode(GlStateManager.FogMode.EXP);
 			GlStateManager.fogDensity(2.0F);
 		} else {
 			float fx = this.gameRenderer.getViewDistance();
-			GlStateManager.fogMode(GlStateManager.FogMode.field_5095);
+			GlStateManager.fogMode(GlStateManager.FogMode.LINEAR);
 			if (i == -1) {
 				GlStateManager.fogStart(0.0F);
 				GlStateManager.fogEnd(fx);

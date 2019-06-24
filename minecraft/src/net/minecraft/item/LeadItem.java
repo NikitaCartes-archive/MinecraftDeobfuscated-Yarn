@@ -20,15 +20,15 @@ public class LeadItem extends Item {
 		World world = itemUsageContext.getWorld();
 		BlockPos blockPos = itemUsageContext.getBlockPos();
 		Block block = world.getBlockState(blockPos).getBlock();
-		if (block.matches(BlockTags.field_16584)) {
+		if (block.matches(BlockTags.FENCES)) {
 			PlayerEntity playerEntity = itemUsageContext.getPlayer();
 			if (!world.isClient && playerEntity != null) {
 				attachHeldMobsToBlock(playerEntity, world, blockPos);
 			}
 
-			return ActionResult.field_5812;
+			return ActionResult.SUCCESS;
 		} else {
-			return ActionResult.field_5811;
+			return ActionResult.PASS;
 		}
 	}
 

@@ -36,13 +36,13 @@ public abstract class AbstractClientPlayerEntity extends PlayerEntity {
 	@Override
 	public boolean isSpectator() {
 		PlayerListEntry playerListEntry = MinecraftClient.getInstance().getNetworkHandler().getPlayerListEntry(this.getGameProfile().getId());
-		return playerListEntry != null && playerListEntry.getGameMode() == GameMode.field_9219;
+		return playerListEntry != null && playerListEntry.getGameMode() == GameMode.SPECTATOR;
 	}
 
 	@Override
 	public boolean isCreative() {
 		PlayerListEntry playerListEntry = MinecraftClient.getInstance().getNetworkHandler().getPlayerListEntry(this.getGameProfile().getId());
-		return playerListEntry != null && playerListEntry.getGameMode() == GameMode.field_9220;
+		return playerListEntry != null && playerListEntry.getGameMode() == GameMode.CREATIVE;
 	}
 
 	public boolean canRenderCapeTexture() {
@@ -121,7 +121,7 @@ public abstract class AbstractClientPlayerEntity extends PlayerEntity {
 			f = 1.0F;
 		}
 
-		if (this.isUsingItem() && this.getActiveItem().getItem() == Items.field_8102) {
+		if (this.isUsingItem() && this.getActiveItem().getItem() == Items.BOW) {
 			int i = this.getItemUseTime();
 			float g = (float)i / 20.0F;
 			if (g > 1.0F) {

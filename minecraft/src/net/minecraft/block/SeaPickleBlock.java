@@ -46,7 +46,7 @@ public class SeaPickleBlock extends PlantBlock implements Fertilizable, Waterlog
 			return blockState.with(PICKLES, Integer.valueOf(Math.min(4, (Integer)blockState.get(PICKLES) + 1)));
 		} else {
 			FluidState fluidState = itemPlacementContext.getWorld().getFluidState(itemPlacementContext.getBlockPos());
-			boolean bl = fluidState.matches(FluidTags.field_15517) && fluidState.getLevel() == 8;
+			boolean bl = fluidState.matches(FluidTags.WATER) && fluidState.getLevel() == 8;
 			return super.getPlacementState(itemPlacementContext).with(WATERLOGGED, Boolean.valueOf(bl));
 		}
 	}
@@ -57,7 +57,7 @@ public class SeaPickleBlock extends PlantBlock implements Fertilizable, Waterlog
 
 	@Override
 	protected boolean canPlantOnTop(BlockState blockState, BlockView blockView, BlockPos blockPos) {
-		return !blockState.getCollisionShape(blockView, blockPos).getFace(Direction.field_11036).isEmpty();
+		return !blockState.getCollisionShape(blockView, blockPos).getFace(Direction.UP).isEmpty();
 	}
 
 	@Override
@@ -71,7 +71,7 @@ public class SeaPickleBlock extends PlantBlock implements Fertilizable, Waterlog
 		BlockState blockState, Direction direction, BlockState blockState2, IWorld iWorld, BlockPos blockPos, BlockPos blockPos2
 	) {
 		if (!blockState.canPlaceAt(iWorld, blockPos)) {
-			return Blocks.field_10124.getDefaultState();
+			return Blocks.AIR.getDefaultState();
 		} else {
 			if ((Boolean)blockState.get(WATERLOGGED)) {
 				iWorld.getFluidTickScheduler().schedule(blockPos, Fluids.WATER, Fluids.WATER.getTickRate(iWorld));
@@ -123,7 +123,7 @@ public class SeaPickleBlock extends PlantBlock implements Fertilizable, Waterlog
 
 	@Override
 	public void grow(World world, Random random, BlockPos blockPos, BlockState blockState) {
-		if (!this.isDry(blockState) && world.getBlockState(blockPos.down()).matches(BlockTags.field_15461)) {
+		if (!this.isDry(blockState) && world.getBlockState(blockPos.down()).matches(BlockTags.CORAL_BLOCKS)) {
 			int i = 5;
 			int j = 1;
 			int k = 2;
@@ -137,10 +137,10 @@ public class SeaPickleBlock extends PlantBlock implements Fertilizable, Waterlog
 
 					for (int r = q - 2; r < q; r++) {
 						BlockPos blockPos2 = new BlockPos(m + o, r, blockPos.getZ() - n + p);
-						if (blockPos2 != blockPos && random.nextInt(6) == 0 && world.getBlockState(blockPos2).getBlock() == Blocks.field_10382) {
+						if (blockPos2 != blockPos && random.nextInt(6) == 0 && world.getBlockState(blockPos2).getBlock() == Blocks.WATER) {
 							BlockState blockState2 = world.getBlockState(blockPos2.down());
-							if (blockState2.matches(BlockTags.field_15461)) {
-								world.setBlockState(blockPos2, Blocks.field_10476.getDefaultState().with(PICKLES, Integer.valueOf(random.nextInt(4) + 1)), 3);
+							if (blockState2.matches(BlockTags.CORAL_BLOCKS)) {
+								world.setBlockState(blockPos2, Blocks.SEA_PICKLE.getDefaultState().with(PICKLES, Integer.valueOf(random.nextInt(4) + 1)), 3);
 							}
 						}
 					}

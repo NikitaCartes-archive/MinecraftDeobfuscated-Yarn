@@ -20,7 +20,7 @@ public class ShulkerBoxBlockEntityRenderer extends BlockEntityRenderer<ShulkerBo
 	}
 
 	public void method_3574(ShulkerBoxBlockEntity shulkerBoxBlockEntity, double d, double e, double f, float g, int i) {
-		Direction direction = Direction.field_11036;
+		Direction direction = Direction.UP;
 		if (shulkerBoxBlockEntity.hasWorld()) {
 			BlockState blockState = this.getWorld().getBlockState(shulkerBoxBlockEntity.getPos());
 			if (blockState.getBlock() instanceof ShulkerBoxBlock) {
@@ -61,27 +61,27 @@ public class ShulkerBoxBlockEntityRenderer extends BlockEntityRenderer<ShulkerBo
 		GlStateManager.scalef(0.9995F, 0.9995F, 0.9995F);
 		GlStateManager.translatef(0.0F, -1.0F, 0.0F);
 		switch (direction) {
-			case field_11033:
+			case DOWN:
 				GlStateManager.translatef(0.0F, 2.0F, 0.0F);
 				GlStateManager.rotatef(180.0F, 1.0F, 0.0F, 0.0F);
-			case field_11036:
+			case UP:
 			default:
 				break;
-			case field_11043:
+			case NORTH:
 				GlStateManager.translatef(0.0F, 1.0F, 1.0F);
 				GlStateManager.rotatef(90.0F, 1.0F, 0.0F, 0.0F);
 				GlStateManager.rotatef(180.0F, 0.0F, 0.0F, 1.0F);
 				break;
-			case field_11035:
+			case SOUTH:
 				GlStateManager.translatef(0.0F, 1.0F, -1.0F);
 				GlStateManager.rotatef(90.0F, 1.0F, 0.0F, 0.0F);
 				break;
-			case field_11039:
+			case WEST:
 				GlStateManager.translatef(-1.0F, 1.0F, 0.0F);
 				GlStateManager.rotatef(90.0F, 1.0F, 0.0F, 0.0F);
 				GlStateManager.rotatef(-90.0F, 0.0F, 0.0F, 1.0F);
 				break;
-			case field_11034:
+			case EAST:
 				GlStateManager.translatef(1.0F, 1.0F, 0.0F);
 				GlStateManager.rotatef(90.0F, 1.0F, 0.0F, 0.0F);
 				GlStateManager.rotatef(90.0F, 0.0F, 0.0F, 1.0F);

@@ -30,7 +30,7 @@ public class DifficultyCommand {
 
 	public static int execute(ServerCommandSource serverCommandSource, Difficulty difficulty) throws CommandSyntaxException {
 		MinecraftServer minecraftServer = serverCommandSource.getMinecraftServer();
-		if (minecraftServer.getWorld(DimensionType.field_13072).getDifficulty() == difficulty) {
+		if (minecraftServer.getWorld(DimensionType.OVERWORLD).getDifficulty() == difficulty) {
 			throw FAILURE_EXCEPTION.create(difficulty.getName());
 		} else {
 			minecraftServer.setDifficulty(difficulty, true);

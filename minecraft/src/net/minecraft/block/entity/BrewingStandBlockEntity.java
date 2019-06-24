@@ -28,7 +28,7 @@ public class BrewingStandBlockEntity extends LockableContainerBlockEntity implem
 	private static final int[] TOP_SLOTS = new int[]{3};
 	private static final int[] BOTTOM_SLOTS = new int[]{0, 1, 2, 3};
 	private static final int[] SIDE_SLOTS = new int[]{0, 1, 2, 4};
-	private DefaultedList<ItemStack> inventory = DefaultedList.create(5, ItemStack.EMPTY);
+	private DefaultedList<ItemStack> inventory = DefaultedList.ofSize(5, ItemStack.EMPTY);
 	private int brewTime;
 	private boolean[] slotsEmptyLastTick;
 	private Item itemBrewing;
@@ -64,7 +64,7 @@ public class BrewingStandBlockEntity extends LockableContainerBlockEntity implem
 	};
 
 	public BrewingStandBlockEntity() {
-		super(BlockEntityType.field_11894);
+		super(BlockEntityType.BREWING_STAND);
 	}
 
 	@Override
@@ -91,7 +91,7 @@ public class BrewingStandBlockEntity extends LockableContainerBlockEntity implem
 	@Override
 	public void tick() {
 		ItemStack itemStack = this.inventory.get(4);
-		if (this.fuel <= 0 && itemStack.getItem() == Items.field_8183) {
+		if (this.fuel <= 0 && itemStack.getItem() == Items.BLAZE_POWDER) {
 			this.fuel = 20;
 			itemStack.decrement(1);
 			this.markDirty();
@@ -193,7 +193,7 @@ public class BrewingStandBlockEntity extends LockableContainerBlockEntity implem
 	@Override
 	public void fromTag(CompoundTag compoundTag) {
 		super.fromTag(compoundTag);
-		this.inventory = DefaultedList.create(this.getInvSize(), ItemStack.EMPTY);
+		this.inventory = DefaultedList.ofSize(this.getInvSize(), ItemStack.EMPTY);
 		Inventories.fromTag(compoundTag, this.inventory);
 		this.brewTime = compoundTag.getShort("BrewTime");
 		this.fuel = compoundTag.getByte("Fuel");
@@ -244,17 +244,17 @@ public class BrewingStandBlockEntity extends LockableContainerBlockEntity implem
 		} else {
 			Item item = itemStack.getItem();
 			return i == 4
-				? item == Items.field_8183
-				: (item == Items.field_8574 || item == Items.field_8436 || item == Items.field_8150 || item == Items.field_8469) && this.getInvStack(i).isEmpty();
+				? item == Items.BLAZE_POWDER
+				: (item == Items.POTION || item == Items.SPLASH_POTION || item == Items.LINGERING_POTION || item == Items.GLASS_BOTTLE) && this.getInvStack(i).isEmpty();
 		}
 	}
 
 	@Override
 	public int[] getInvAvailableSlots(Direction direction) {
-		if (direction == Direction.field_11036) {
+		if (direction == Direction.UP) {
 			return TOP_SLOTS;
 		} else {
-			return direction == Direction.field_11033 ? BOTTOM_SLOTS : SIDE_SLOTS;
+			return direction == Direction.DOWN ? BOTTOM_SLOTS : SIDE_SLOTS;
 		}
 	}
 
@@ -265,7 +265,7 @@ public class BrewingStandBlockEntity extends LockableContainerBlockEntity implem
 
 	@Override
 	public boolean canExtractInvStack(int i, ItemStack itemStack, Direction direction) {
-		return i == 3 ? itemStack.getItem() == Items.field_8469 : true;
+		return i == 3 ? itemStack.getItem() == Items.GLASS_BOTTLE : true;
 	}
 
 	@Override

@@ -55,7 +55,7 @@ public class CampfireBlock extends BlockWithEntity implements Waterloggable {
 				.with(LIT, Boolean.valueOf(true))
 				.with(SIGNAL_FIRE, Boolean.valueOf(false))
 				.with(WATERLOGGED, Boolean.valueOf(false))
-				.with(FACING, Direction.field_11043)
+				.with(FACING, Direction.NORTH)
 		);
 	}
 
@@ -72,7 +72,7 @@ public class CampfireBlock extends BlockWithEntity implements Waterloggable {
 						&& campfireBlockEntity.addItem(playerEntity.abilities.creativeMode ? itemStack.copy() : itemStack, ((CampfireCookingRecipe)optional.get()).getCookTime())
 						)
 					 {
-						playerEntity.incrementStat(Stats.field_17486);
+						playerEntity.incrementStat(Stats.INTERACT_WITH_CAMPFIRE);
 					}
 
 					return true;
@@ -125,13 +125,13 @@ public class CampfireBlock extends BlockWithEntity implements Waterloggable {
 			iWorld.getFluidTickScheduler().schedule(blockPos, Fluids.WATER, Fluids.WATER.getTickRate(iWorld));
 		}
 
-		return direction == Direction.field_11033
+		return direction == Direction.DOWN
 			? blockState.with(SIGNAL_FIRE, Boolean.valueOf(this.doesBlockCauseSignalFire(blockState2)))
 			: super.getStateForNeighborUpdate(blockState, direction, blockState2, iWorld, blockPos, blockPos2);
 	}
 
 	private boolean doesBlockCauseSignalFire(BlockState blockState) {
-		return blockState.getBlock() == Blocks.field_10359;
+		return blockState.getBlock() == Blocks.HAY_BLOCK;
 	}
 
 	@Override
@@ -146,12 +146,12 @@ public class CampfireBlock extends BlockWithEntity implements Waterloggable {
 
 	@Override
 	public BlockRenderType getRenderType(BlockState blockState) {
-		return BlockRenderType.field_11458;
+		return BlockRenderType.MODEL;
 	}
 
 	@Override
 	public BlockRenderLayer getRenderLayer() {
-		return BlockRenderLayer.field_9174;
+		return BlockRenderLayer.CUTOUT;
 	}
 
 	@Environment(EnvType.CLIENT)
@@ -163,8 +163,8 @@ public class CampfireBlock extends BlockWithEntity implements Waterloggable {
 					(double)((float)blockPos.getX() + 0.5F),
 					(double)((float)blockPos.getY() + 0.5F),
 					(double)((float)blockPos.getZ() + 0.5F),
-					SoundEvents.field_17483,
-					SoundCategory.field_15245,
+					SoundEvents.BLOCK_CAMPFIRE_CRACKLE,
+					SoundCategory.BLOCKS,
 					0.5F + random.nextFloat(),
 					random.nextFloat() * 0.7F + 0.6F,
 					false
@@ -174,7 +174,7 @@ public class CampfireBlock extends BlockWithEntity implements Waterloggable {
 			if (random.nextInt(5) == 0) {
 				for (int i = 0; i < random.nextInt(1) + 1; i++) {
 					world.addParticle(
-						ParticleTypes.field_11239,
+						ParticleTypes.LAVA,
 						(double)((float)blockPos.getX() + 0.5F),
 						(double)((float)blockPos.getY() + 0.5F),
 						(double)((float)blockPos.getZ() + 0.5F),
@@ -197,7 +197,7 @@ public class CampfireBlock extends BlockWithEntity implements Waterloggable {
 						spawnSmokeParticle(iWorld.getWorld(), blockPos, (Boolean)blockState.get(SIGNAL_FIRE), true);
 					}
 				} else {
-					iWorld.playSound(null, blockPos, SoundEvents.field_15222, SoundCategory.field_15245, 1.0F, 1.0F);
+					iWorld.playSound(null, blockPos, SoundEvents.ENTITY_GENERIC_EXTINGUISH_FIRE, SoundCategory.BLOCKS, 1.0F, 1.0F);
 				}
 
 				BlockEntity blockEntity = iWorld.getBlockEntity(blockPos);
@@ -227,7 +227,7 @@ public class CampfireBlock extends BlockWithEntity implements Waterloggable {
 
 	public static void spawnSmokeParticle(World world, BlockPos blockPos, boolean bl, boolean bl2) {
 		Random random = world.getRandom();
-		DefaultParticleType defaultParticleType = bl ? ParticleTypes.field_17431 : ParticleTypes.field_17430;
+		DefaultParticleType defaultParticleType = bl ? ParticleTypes.CAMPFIRE_SIGNAL_SMOKE : ParticleTypes.CAMPFIRE_COSY_SMOKE;
 		world.addImportantParticle(
 			defaultParticleType,
 			true,
@@ -240,7 +240,7 @@ public class CampfireBlock extends BlockWithEntity implements Waterloggable {
 		);
 		if (bl2) {
 			world.addParticle(
-				ParticleTypes.field_11251,
+				ParticleTypes.SMOKE,
 				(double)blockPos.getX() + 0.25 + random.nextDouble() / 2.0 * (double)(random.nextBoolean() ? 1 : -1),
 				(double)blockPos.getY() + 0.4,
 				(double)blockPos.getZ() + 0.25 + random.nextDouble() / 2.0 * (double)(random.nextBoolean() ? 1 : -1),

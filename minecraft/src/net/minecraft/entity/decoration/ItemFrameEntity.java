@@ -44,7 +44,7 @@ public class ItemFrameEntity extends AbstractDecorationEntity {
 	}
 
 	public ItemFrameEntity(World world, BlockPos blockPos, Direction direction) {
-		super(EntityType.field_6043, world, blockPos);
+		super(EntityType.ITEM_FRAME, world, blockPos);
 		this.setFacing(direction);
 	}
 
@@ -118,7 +118,7 @@ public class ItemFrameEntity extends AbstractDecorationEntity {
 	}
 
 	@Override
-	public float getBoundingBoxMarginForTargeting() {
+	public float getTargetingMargin() {
 		return 0.0F;
 	}
 
@@ -135,7 +135,7 @@ public class ItemFrameEntity extends AbstractDecorationEntity {
 		} else if (!damageSource.isExplosive() && !this.getHeldItemStack().isEmpty()) {
 			if (!this.world.isClient) {
 				this.method_6936(damageSource.getAttacker(), false);
-				this.playSound(SoundEvents.field_14770, 1.0F, 1.0F);
+				this.playSound(SoundEvents.ENTITY_ITEM_FRAME_REMOVE_ITEM, 1.0F, 1.0F);
 			}
 
 			return true;
@@ -164,17 +164,17 @@ public class ItemFrameEntity extends AbstractDecorationEntity {
 
 	@Override
 	public void onBreak(@Nullable Entity entity) {
-		this.playSound(SoundEvents.field_14585, 1.0F, 1.0F);
+		this.playSound(SoundEvents.ENTITY_ITEM_FRAME_BREAK, 1.0F, 1.0F);
 		this.method_6936(entity, true);
 	}
 
 	@Override
 	public void onPlace() {
-		this.playSound(SoundEvents.field_14844, 1.0F, 1.0F);
+		this.playSound(SoundEvents.ENTITY_ITEM_FRAME_PLACE, 1.0F, 1.0F);
 	}
 
 	private void method_6936(@Nullable Entity entity, boolean bl) {
-		if (!this.world.getGameRules().getBoolean(GameRules.field_19393)) {
+		if (!this.world.getGameRules().getBoolean(GameRules.DO_ENTITY_DROPS)) {
 			if (entity == null) {
 				this.removeFromFrame(this.getHeldItemStack());
 			}
@@ -190,7 +190,7 @@ public class ItemFrameEntity extends AbstractDecorationEntity {
 			}
 
 			if (bl) {
-				this.dropItem(Items.field_8143);
+				this.dropItem(Items.ITEM_FRAME);
 			}
 
 			if (!itemStack.isEmpty()) {
@@ -204,7 +204,7 @@ public class ItemFrameEntity extends AbstractDecorationEntity {
 	}
 
 	private void removeFromFrame(ItemStack itemStack) {
-		if (itemStack.getItem() == Items.field_8204) {
+		if (itemStack.getItem() == Items.FILLED_MAP) {
 			MapState mapState = FilledMapItem.getOrCreateMapState(itemStack, this.world);
 			mapState.removeFrame(this.blockPos, this.getEntityId());
 			mapState.setDirty(true);
@@ -230,11 +230,11 @@ public class ItemFrameEntity extends AbstractDecorationEntity {
 
 		this.getDataTracker().set(ITEM_STACK, itemStack);
 		if (!itemStack.isEmpty()) {
-			this.playSound(SoundEvents.field_14667, 1.0F, 1.0F);
+			this.playSound(SoundEvents.ENTITY_ITEM_FRAME_ADD_ITEM, 1.0F, 1.0F);
 		}
 
 		if (bl && this.blockPos != null) {
-			this.world.updateHorizontalAdjacent(this.blockPos, Blocks.field_10124);
+			this.world.updateHorizontalAdjacent(this.blockPos, Blocks.AIR);
 		}
 	}
 
@@ -269,7 +269,7 @@ public class ItemFrameEntity extends AbstractDecorationEntity {
 	private void setRotation(int i, boolean bl) {
 		this.getDataTracker().set(ROTATION, i % 8);
 		if (bl && this.blockPos != null) {
-			this.world.updateHorizontalAdjacent(this.blockPos, Blocks.field_10124);
+			this.world.updateHorizontalAdjacent(this.blockPos, Blocks.AIR);
 		}
 	}
 
@@ -322,7 +322,7 @@ public class ItemFrameEntity extends AbstractDecorationEntity {
 					}
 				}
 			} else {
-				this.playSound(SoundEvents.field_15038, 1.0F, 1.0F);
+				this.playSound(SoundEvents.ENTITY_ITEM_FRAME_ROTATE_ITEM, 1.0F, 1.0F);
 				this.setRotation(this.getRotation() + 1);
 			}
 		}

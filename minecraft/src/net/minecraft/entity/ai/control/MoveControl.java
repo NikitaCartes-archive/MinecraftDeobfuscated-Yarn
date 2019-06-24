@@ -19,14 +19,14 @@ public class MoveControl {
 	protected double speed;
 	protected float field_6368;
 	protected float field_6373;
-	protected MoveControl.State state = MoveControl.State.field_6377;
+	protected MoveControl.State state = MoveControl.State.WAIT;
 
 	public MoveControl(MobEntity mobEntity) {
 		this.entity = mobEntity;
 	}
 
 	public boolean isMoving() {
-		return this.state == MoveControl.State.field_6378;
+		return this.state == MoveControl.State.MOVE_TO;
 	}
 
 	public double getSpeed() {
@@ -38,20 +38,20 @@ public class MoveControl {
 		this.targetY = e;
 		this.targetZ = f;
 		this.speed = g;
-		if (this.state != MoveControl.State.field_6379) {
-			this.state = MoveControl.State.field_6378;
+		if (this.state != MoveControl.State.JUMPING) {
+			this.state = MoveControl.State.MOVE_TO;
 		}
 	}
 
 	public void method_6243(float f, float g) {
-		this.state = MoveControl.State.field_6376;
+		this.state = MoveControl.State.STRAFE;
 		this.field_6368 = f;
 		this.field_6373 = g;
 		this.speed = 0.25;
 	}
 
 	public void tick() {
-		if (this.state == MoveControl.State.field_6376) {
+		if (this.state == MoveControl.State.STRAFE) {
 			float f = (float)this.entity.getAttributeInstance(EntityAttributes.MOVEMENT_SPEED).getValue();
 			float g = (float)this.speed * f;
 			float h = this.field_6368;
@@ -75,7 +75,7 @@ public class MoveControl {
 					&& pathNodeMaker.getPathNodeType(
 							this.entity.world, MathHelper.floor(this.entity.x + (double)m), MathHelper.floor(this.entity.y), MathHelper.floor(this.entity.z + (double)n)
 						)
-						!= PathNodeType.field_12) {
+						!= PathNodeType.WALKABLE) {
 					this.field_6368 = 1.0F;
 					this.field_6373 = 0.0F;
 					g = f;
@@ -85,9 +85,9 @@ public class MoveControl {
 			this.entity.setMovementSpeed(g);
 			this.entity.setForwardSpeed(this.field_6368);
 			this.entity.setSidewaysSpeed(this.field_6373);
-			this.state = MoveControl.State.field_6377;
-		} else if (this.state == MoveControl.State.field_6378) {
-			this.state = MoveControl.State.field_6377;
+			this.state = MoveControl.State.WAIT;
+		} else if (this.state == MoveControl.State.MOVE_TO) {
+			this.state = MoveControl.State.WAIT;
 			double d = this.targetX - this.entity.x;
 			double e = this.targetZ - this.entity.z;
 			double o = this.targetY - this.entity.y;
@@ -106,12 +106,12 @@ public class MoveControl {
 			if (o > (double)this.entity.stepHeight && d * d + e * e < (double)Math.max(1.0F, this.entity.getWidth())
 				|| !voxelShape.isEmpty() && this.entity.y < voxelShape.getMaximum(Direction.Axis.Y) + (double)blockPos.getY()) {
 				this.entity.getJumpControl().setActive();
-				this.state = MoveControl.State.field_6379;
+				this.state = MoveControl.State.JUMPING;
 			}
-		} else if (this.state == MoveControl.State.field_6379) {
+		} else if (this.state == MoveControl.State.JUMPING) {
 			this.entity.setMovementSpeed((float)(this.speed * this.entity.getAttributeInstance(EntityAttributes.MOVEMENT_SPEED).getValue()));
 			if (this.entity.onGround) {
-				this.state = MoveControl.State.field_6377;
+				this.state = MoveControl.State.WAIT;
 			}
 		} else {
 			this.entity.setForwardSpeed(0.0F);
@@ -151,9 +151,9 @@ public class MoveControl {
 	}
 
 	public static enum State {
-		field_6377,
-		field_6378,
-		field_6376,
-		field_6379;
+		WAIT,
+		MOVE_TO,
+		STRAFE,
+		JUMPING;
 	}
 }

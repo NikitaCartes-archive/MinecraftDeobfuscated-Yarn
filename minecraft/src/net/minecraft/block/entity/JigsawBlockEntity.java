@@ -17,7 +17,7 @@ public class JigsawBlockEntity extends BlockEntity {
 	}
 
 	public JigsawBlockEntity() {
-		this(BlockEntityType.field_16549);
+		this(BlockEntityType.JIGSAW);
 	}
 
 	@Environment(EnvType.CLIENT)

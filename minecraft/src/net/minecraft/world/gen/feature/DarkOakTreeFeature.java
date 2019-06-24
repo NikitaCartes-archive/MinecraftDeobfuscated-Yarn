@@ -13,8 +13,8 @@ import net.minecraft.world.ModifiableTestableWorld;
 import net.minecraft.world.TestableWorld;
 
 public class DarkOakTreeFeature extends AbstractTreeFeature<DefaultFeatureConfig> {
-	private static final BlockState LOG = Blocks.field_10010.getDefaultState();
-	private static final BlockState LEAVES = Blocks.field_10035.getDefaultState();
+	private static final BlockState LOG = Blocks.DARK_OAK_LOG.getDefaultState();
+	private static final BlockState LEAVES = Blocks.DARK_OAK_LEAVES.getDefaultState();
 
 	public DarkOakTreeFeature(Function<Dynamic<?>, ? extends DefaultFeatureConfig> function, boolean bl) {
 		super(function, bl);
@@ -39,7 +39,7 @@ public class DarkOakTreeFeature extends AbstractTreeFeature<DefaultFeatureConfig
 				this.setToDirt(modifiableTestableWorld, blockPos2.east());
 				this.setToDirt(modifiableTestableWorld, blockPos2.south());
 				this.setToDirt(modifiableTestableWorld, blockPos2.south().east());
-				Direction direction = Direction.Type.field_11062.random(random);
+				Direction direction = Direction.Type.HORIZONTAL.random(random);
 				int m = i - random.nextInt(4);
 				int n = 2 - random.nextInt(3);
 				int o = j;

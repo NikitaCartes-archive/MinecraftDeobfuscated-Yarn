@@ -139,7 +139,7 @@ public class PlayerAdvancementTracker {
 
 					dynamic = this.server
 						.getDataFixer()
-						.update(DataFixTypes.field_19220.getTypeReference(), dynamic, dynamic.get("DataVersion").asInt(0), SharedConstants.getGameVersion().getWorldVersion());
+						.update(DataFixTypes.ADVANCEMENTS.getTypeReference(), dynamic, dynamic.get("DataVersion").asInt(0), SharedConstants.getGameVersion().getWorldVersion());
 					dynamic = dynamic.remove("DataVersion");
 					Map<Identifier, AdvancementProgress> map = GSON.getAdapter(JSON_TYPE).fromJsonTree(dynamic.getValue());
 					if (map == null) {
@@ -260,7 +260,7 @@ public class PlayerAdvancementTracker {
 				advancement.getRewards().apply(this.owner);
 				if (advancement.getDisplay() != null
 					&& advancement.getDisplay().shouldAnnounceToChat()
-					&& this.owner.world.getGameRules().getBoolean(GameRules.field_19409)) {
+					&& this.owner.world.getGameRules().getBoolean(GameRules.ANNOUNCE_ADVANCEMENTS)) {
 					this.server
 						.getPlayerManager()
 						.sendToAll(

@@ -59,7 +59,7 @@ public class Keyboard {
 			.getChatHud()
 			.addMessage(
 				new LiteralText("")
-					.append(new TranslatableText("debug.prefix").formatted(new Formatting[]{Formatting.field_1054, Formatting.field_1067}))
+					.append(new TranslatableText("debug.prefix").formatted(new Formatting[]{Formatting.YELLOW, Formatting.BOLD}))
 					.append(" ")
 					.append(new TranslatableText(string, objects))
 			);
@@ -71,7 +71,7 @@ public class Keyboard {
 			.getChatHud()
 			.addMessage(
 				new LiteralText("")
-					.append(new TranslatableText("debug.prefix").formatted(new Formatting[]{Formatting.field_1061, Formatting.field_1067}))
+					.append(new TranslatableText("debug.prefix").formatted(new Formatting[]{Formatting.RED, Formatting.BOLD}))
 					.append(" ")
 					.append(new TranslatableText(string, objects))
 			);
@@ -195,7 +195,7 @@ public class Keyboard {
 		HitResult hitResult = this.client.hitResult;
 		if (hitResult != null) {
 			switch (hitResult.getType()) {
-				case field_1332:
+				case BLOCK:
 					BlockPos blockPos = ((BlockHitResult)hitResult).getBlockPos();
 					BlockState blockState = this.client.player.world.getBlockState(blockPos);
 					if (bl) {
@@ -215,7 +215,7 @@ public class Keyboard {
 						this.debugWarn("debug.inspect.client.block");
 					}
 					break;
-				case field_1331:
+				case ENTITY:
 					Entity entity = ((EntityHitResult)hitResult).getEntity();
 					Identifier identifier = Registry.ENTITY_TYPE.getId(entity.getType());
 					Vec3d vec3d = new Vec3d(entity.x, entity.y, entity.z);

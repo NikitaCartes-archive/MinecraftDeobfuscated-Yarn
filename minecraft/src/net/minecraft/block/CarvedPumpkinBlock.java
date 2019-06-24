@@ -31,11 +31,11 @@ public class CarvedPumpkinBlock extends HorizontalFacingBlock {
 	@Nullable
 	private BlockPattern ironGolemPattern;
 	private static final Predicate<BlockState> IS_PUMPKIN_PREDICATE = blockState -> blockState != null
-			&& (blockState.getBlock() == Blocks.field_10147 || blockState.getBlock() == Blocks.field_10009);
+			&& (blockState.getBlock() == Blocks.CARVED_PUMPKIN || blockState.getBlock() == Blocks.JACK_O_LANTERN);
 
 	protected CarvedPumpkinBlock(Block.Settings settings) {
 		super(settings);
-		this.setDefaultState(this.stateFactory.getDefaultState().with(FACING, Direction.field_11043));
+		this.setDefaultState(this.stateFactory.getDefaultState().with(FACING, Direction.NORTH));
 	}
 
 	@Override
@@ -55,11 +55,11 @@ public class CarvedPumpkinBlock extends HorizontalFacingBlock {
 		if (result != null) {
 			for (int i = 0; i < this.getSnowGolemPattern().getHeight(); i++) {
 				CachedBlockPosition cachedBlockPosition = result.translate(0, i, 0);
-				world.setBlockState(cachedBlockPosition.getBlockPos(), Blocks.field_10124.getDefaultState(), 2);
+				world.setBlockState(cachedBlockPosition.getBlockPos(), Blocks.AIR.getDefaultState(), 2);
 				world.playLevelEvent(2001, cachedBlockPosition.getBlockPos(), Block.getRawIdFromState(cachedBlockPosition.getBlockState()));
 			}
 
-			SnowGolemEntity snowGolemEntity = EntityType.field_6047.create(world);
+			SnowGolemEntity snowGolemEntity = EntityType.SNOW_GOLEM.create(world);
 			BlockPos blockPos2 = result.translate(0, 2, 0).getBlockPos();
 			snowGolemEntity.setPositionAndAngles((double)blockPos2.getX() + 0.5, (double)blockPos2.getY() + 0.05, (double)blockPos2.getZ() + 0.5, 0.0F, 0.0F);
 			world.spawnEntity(snowGolemEntity);
@@ -70,7 +70,7 @@ public class CarvedPumpkinBlock extends HorizontalFacingBlock {
 
 			for (int j = 0; j < this.getSnowGolemPattern().getHeight(); j++) {
 				CachedBlockPosition cachedBlockPosition2 = result.translate(0, j, 0);
-				world.updateNeighbors(cachedBlockPosition2.getBlockPos(), Blocks.field_10124);
+				world.updateNeighbors(cachedBlockPosition2.getBlockPos(), Blocks.AIR);
 			}
 		} else {
 			result = this.getIronGolemPattern().searchAround(world, blockPos);
@@ -78,13 +78,13 @@ public class CarvedPumpkinBlock extends HorizontalFacingBlock {
 				for (int i = 0; i < this.getIronGolemPattern().getWidth(); i++) {
 					for (int k = 0; k < this.getIronGolemPattern().getHeight(); k++) {
 						CachedBlockPosition cachedBlockPosition3 = result.translate(i, k, 0);
-						world.setBlockState(cachedBlockPosition3.getBlockPos(), Blocks.field_10124.getDefaultState(), 2);
+						world.setBlockState(cachedBlockPosition3.getBlockPos(), Blocks.AIR.getDefaultState(), 2);
 						world.playLevelEvent(2001, cachedBlockPosition3.getBlockPos(), Block.getRawIdFromState(cachedBlockPosition3.getBlockState()));
 					}
 				}
 
 				BlockPos blockPos3 = result.translate(1, 2, 0).getBlockPos();
-				IronGolemEntity ironGolemEntity = EntityType.field_6147.create(world);
+				IronGolemEntity ironGolemEntity = EntityType.IRON_GOLEM.create(world);
 				ironGolemEntity.setPlayerCreated(true);
 				ironGolemEntity.setPositionAndAngles((double)blockPos3.getX() + 0.5, (double)blockPos3.getY() + 0.05, (double)blockPos3.getZ() + 0.5, 0.0F, 0.0F);
 				world.spawnEntity(ironGolemEntity);
@@ -96,7 +96,7 @@ public class CarvedPumpkinBlock extends HorizontalFacingBlock {
 				for (int j = 0; j < this.getIronGolemPattern().getWidth(); j++) {
 					for (int l = 0; l < this.getIronGolemPattern().getHeight(); l++) {
 						CachedBlockPosition cachedBlockPosition4 = result.translate(j, l, 0);
-						world.updateNeighbors(cachedBlockPosition4.getBlockPos(), Blocks.field_10124);
+						world.updateNeighbors(cachedBlockPosition4.getBlockPos(), Blocks.AIR);
 					}
 				}
 			}
@@ -117,7 +117,7 @@ public class CarvedPumpkinBlock extends HorizontalFacingBlock {
 		if (this.snowGolemDispenserPattern == null) {
 			this.snowGolemDispenserPattern = BlockPatternBuilder.start()
 				.aisle(" ", "#", "#")
-				.where('#', CachedBlockPosition.matchesBlockState(BlockStatePredicate.forBlock(Blocks.field_10491)))
+				.where('#', CachedBlockPosition.matchesBlockState(BlockStatePredicate.forBlock(Blocks.SNOW_BLOCK)))
 				.build();
 		}
 
@@ -129,7 +129,7 @@ public class CarvedPumpkinBlock extends HorizontalFacingBlock {
 			this.snowGolemPattern = BlockPatternBuilder.start()
 				.aisle("^", "#", "#")
 				.where('^', CachedBlockPosition.matchesBlockState(IS_PUMPKIN_PREDICATE))
-				.where('#', CachedBlockPosition.matchesBlockState(BlockStatePredicate.forBlock(Blocks.field_10491)))
+				.where('#', CachedBlockPosition.matchesBlockState(BlockStatePredicate.forBlock(Blocks.SNOW_BLOCK)))
 				.build();
 		}
 
@@ -140,7 +140,7 @@ public class CarvedPumpkinBlock extends HorizontalFacingBlock {
 		if (this.ironGolemDispenserPattern == null) {
 			this.ironGolemDispenserPattern = BlockPatternBuilder.start()
 				.aisle("~ ~", "###", "~#~")
-				.where('#', CachedBlockPosition.matchesBlockState(BlockStatePredicate.forBlock(Blocks.field_10085)))
+				.where('#', CachedBlockPosition.matchesBlockState(BlockStatePredicate.forBlock(Blocks.IRON_BLOCK)))
 				.where('~', CachedBlockPosition.matchesBlockState(MaterialPredicate.create(Material.AIR)))
 				.build();
 		}
@@ -153,7 +153,7 @@ public class CarvedPumpkinBlock extends HorizontalFacingBlock {
 			this.ironGolemPattern = BlockPatternBuilder.start()
 				.aisle("~^~", "###", "~#~")
 				.where('^', CachedBlockPosition.matchesBlockState(IS_PUMPKIN_PREDICATE))
-				.where('#', CachedBlockPosition.matchesBlockState(BlockStatePredicate.forBlock(Blocks.field_10085)))
+				.where('#', CachedBlockPosition.matchesBlockState(BlockStatePredicate.forBlock(Blocks.IRON_BLOCK)))
 				.where('~', CachedBlockPosition.matchesBlockState(MaterialPredicate.create(Material.AIR)))
 				.build();
 		}

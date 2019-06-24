@@ -34,13 +34,13 @@ public class TallSeagrassBlock extends ReplaceableTallPlantBlock implements Flui
 
 	@Override
 	protected boolean canPlantOnTop(BlockState blockState, BlockView blockView, BlockPos blockPos) {
-		return Block.isSolidFullSquare(blockState, blockView, blockPos, Direction.field_11036) && blockState.getBlock() != Blocks.field_10092;
+		return Block.isSolidFullSquare(blockState, blockView, blockPos, Direction.UP) && blockState.getBlock() != Blocks.MAGMA_BLOCK;
 	}
 
 	@Environment(EnvType.CLIENT)
 	@Override
 	public ItemStack getPickStack(BlockView blockView, BlockPos blockPos, BlockState blockState) {
-		return new ItemStack(Blocks.field_10376);
+		return new ItemStack(Blocks.SEAGRASS);
 	}
 
 	@Nullable
@@ -49,7 +49,7 @@ public class TallSeagrassBlock extends ReplaceableTallPlantBlock implements Flui
 		BlockState blockState = super.getPlacementState(itemPlacementContext);
 		if (blockState != null) {
 			FluidState fluidState = itemPlacementContext.getWorld().getFluidState(itemPlacementContext.getBlockPos().up());
-			if (fluidState.matches(FluidTags.field_15517) && fluidState.getLevel() == 8) {
+			if (fluidState.matches(FluidTags.WATER) && fluidState.getLevel() == 8) {
 				return blockState;
 			}
 		}
@@ -59,12 +59,12 @@ public class TallSeagrassBlock extends ReplaceableTallPlantBlock implements Flui
 
 	@Override
 	public boolean canPlaceAt(BlockState blockState, ViewableWorld viewableWorld, BlockPos blockPos) {
-		if (blockState.get(HALF) == DoubleBlockHalf.field_12609) {
+		if (blockState.get(HALF) == DoubleBlockHalf.UPPER) {
 			BlockState blockState2 = viewableWorld.getBlockState(blockPos.down());
-			return blockState2.getBlock() == this && blockState2.get(HALF) == DoubleBlockHalf.field_12607;
+			return blockState2.getBlock() == this && blockState2.get(HALF) == DoubleBlockHalf.LOWER;
 		} else {
 			FluidState fluidState = viewableWorld.getFluidState(blockPos);
-			return super.canPlaceAt(blockState, viewableWorld, blockPos) && fluidState.matches(FluidTags.field_15517) && fluidState.getLevel() == 8;
+			return super.canPlaceAt(blockState, viewableWorld, blockPos) && fluidState.matches(FluidTags.WATER) && fluidState.getLevel() == 8;
 		}
 	}
 

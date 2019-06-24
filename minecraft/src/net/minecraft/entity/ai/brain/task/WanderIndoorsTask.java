@@ -16,7 +16,7 @@ public class WanderIndoorsTask extends Task<MobEntityWithAi> {
 	private final float speed;
 
 	public WanderIndoorsTask(float f) {
-		super(ImmutableMap.of(MemoryModuleType.field_18445, MemoryModuleState.field_18457));
+		super(ImmutableMap.of(MemoryModuleType.WALK_TARGET, MemoryModuleState.VALUE_ABSENT));
 		this.speed = f;
 	}
 
@@ -35,6 +35,6 @@ public class WanderIndoorsTask extends Task<MobEntityWithAi> {
 			.filter(blockPosx -> serverWorld.doesBlockHaveSolidTopSurface(blockPosx, mobEntityWithAi))
 			.filter(blockPosx -> serverWorld.doesNotCollide(mobEntityWithAi))
 			.findFirst();
-		optional.ifPresent(blockPosx -> mobEntityWithAi.getBrain().putMemory(MemoryModuleType.field_18445, new WalkTarget(blockPosx, this.speed, 0)));
+		optional.ifPresent(blockPosx -> mobEntityWithAi.getBrain().putMemory(MemoryModuleType.WALK_TARGET, new WalkTarget(blockPosx, this.speed, 0)));
 	}
 }

@@ -30,7 +30,7 @@ public class MerchantContainer extends Container {
 	}
 
 	public MerchantContainer(int i, PlayerInventory playerInventory, Trader trader) {
-		super(ContainerType.field_17340, i);
+		super(ContainerType.MERCHANT, i);
 		this.trader = trader;
 		this.traderInventory = new TraderInventory(trader);
 		this.addSlot(new Slot(this.traderInventory, 0, 136, 37));
@@ -153,7 +153,7 @@ public class MerchantContainer extends Container {
 	private void method_20595() {
 		if (!this.trader.getTraderWorld().isClient) {
 			Entity entity = (Entity)this.trader;
-			this.trader.getTraderWorld().playSound(entity.x, entity.y, entity.z, this.trader.method_18010(), SoundCategory.field_15254, 1.0F, 1.0F, false);
+			this.trader.getTraderWorld().playSound(entity.x, entity.y, entity.z, this.trader.method_18010(), SoundCategory.NEUTRAL, 1.0F, 1.0F, false);
 		}
 	}
 

@@ -227,10 +227,10 @@ public class MultiplayerServerListWidget extends AlwaysSelectedEntryListWidget<M
 						this.screen.method_2538().method_3003(this.server);
 					} catch (UnknownHostException var2) {
 						this.server.ping = -1L;
-						this.server.label = Formatting.field_1079 + I18n.translate("multiplayer.status.cannot_resolve");
+						this.server.label = Formatting.DARK_RED + I18n.translate("multiplayer.status.cannot_resolve");
 					} catch (Exception var3) {
 						this.server.ping = -1L;
-						this.server.label = Formatting.field_1079 + I18n.translate("multiplayer.status.cannot_connect");
+						this.server.label = Formatting.DARK_RED + I18n.translate("multiplayer.status.cannot_connect");
 					}
 				});
 			}
@@ -245,7 +245,7 @@ public class MultiplayerServerListWidget extends AlwaysSelectedEntryListWidget<M
 				this.client.textRenderer.draw((String)list.get(p), (float)(k + 32 + 3), (float)(j + 12 + 9 * p), 8421504);
 			}
 
-			String string = bl4 ? Formatting.field_1079 + this.server.version : this.server.playerCountLabel;
+			String string = bl4 ? Formatting.DARK_RED + this.server.version : this.server.playerCountLabel;
 			int q = this.client.textRenderer.getStringWidth(string);
 			this.client.textRenderer.draw(string, (float)(k + l - q - 15 - 2), (float)(j + 1), 8421504);
 			int r = 0;

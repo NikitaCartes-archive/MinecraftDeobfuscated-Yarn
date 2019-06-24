@@ -37,7 +37,7 @@ public class ItemEntityRenderer extends EntityRenderer<ItemEntity> {
 			int i = this.getRenderedAmount(itemStack);
 			float h = 0.25F;
 			float j = MathHelper.sin(((float)itemEntity.getAge() + g) / 10.0F + itemEntity.hoverHeight) * 0.1F + 0.1F;
-			float k = bakedModel.getTransformation().getTransformation(ModelTransformation.Type.field_4318).scale.y();
+			float k = bakedModel.getTransformation().getTransformation(ModelTransformation.Type.GROUND).scale.y();
 			GlStateManager.translatef((float)d, (float)e + j + 0.25F * k, (float)f);
 			if (bl || this.renderManager.gameOptions != null) {
 				float l = (((float)itemEntity.getAge() + g) / 20.0F + itemEntity.hoverHeight) * (180.0F / (float)Math.PI);
@@ -110,7 +110,7 @@ public class ItemEntityRenderer extends EntityRenderer<ItemEntity> {
 					GlStateManager.translatef(o, p, r);
 				}
 
-				bakedModel.getTransformation().applyGl(ModelTransformation.Type.field_4318);
+				bakedModel.getTransformation().applyGl(ModelTransformation.Type.GROUND);
 				this.itemRenderer.renderItemAndGlow(itemStack, bakedModel);
 				GlStateManager.popMatrix();
 			} else {
@@ -121,7 +121,7 @@ public class ItemEntityRenderer extends EntityRenderer<ItemEntity> {
 					GlStateManager.translatef(o, p, 0.0F);
 				}
 
-				bakedModel.getTransformation().applyGl(ModelTransformation.Type.field_4318);
+				bakedModel.getTransformation().applyGl(ModelTransformation.Type.GROUND);
 				this.itemRenderer.renderItemAndGlow(itemStack, bakedModel);
 				GlStateManager.popMatrix();
 				GlStateManager.translatef(0.0F * k, 0.0F * l, 0.09375F * m);

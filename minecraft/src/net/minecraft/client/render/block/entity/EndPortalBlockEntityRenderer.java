@@ -57,15 +57,15 @@ public class EndPortalBlockEntityRenderer extends BlockEntityRenderer<EndPortalB
 				GlStateManager.blendFunc(GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ONE);
 			}
 
-			GlStateManager.texGenMode(GlStateManager.TexCoord.field_5154, 9216);
-			GlStateManager.texGenMode(GlStateManager.TexCoord.field_5155, 9216);
-			GlStateManager.texGenMode(GlStateManager.TexCoord.field_5156, 9216);
-			GlStateManager.texGenParam(GlStateManager.TexCoord.field_5154, 9474, this.method_3593(1.0F, 0.0F, 0.0F, 0.0F));
-			GlStateManager.texGenParam(GlStateManager.TexCoord.field_5155, 9474, this.method_3593(0.0F, 1.0F, 0.0F, 0.0F));
-			GlStateManager.texGenParam(GlStateManager.TexCoord.field_5156, 9474, this.method_3593(0.0F, 0.0F, 1.0F, 0.0F));
-			GlStateManager.enableTexGen(GlStateManager.TexCoord.field_5154);
-			GlStateManager.enableTexGen(GlStateManager.TexCoord.field_5155);
-			GlStateManager.enableTexGen(GlStateManager.TexCoord.field_5156);
+			GlStateManager.texGenMode(GlStateManager.TexCoord.S, 9216);
+			GlStateManager.texGenMode(GlStateManager.TexCoord.T, 9216);
+			GlStateManager.texGenMode(GlStateManager.TexCoord.R, 9216);
+			GlStateManager.texGenParam(GlStateManager.TexCoord.S, 9474, this.method_3593(1.0F, 0.0F, 0.0F, 0.0F));
+			GlStateManager.texGenParam(GlStateManager.TexCoord.T, 9474, this.method_3593(0.0F, 1.0F, 0.0F, 0.0F));
+			GlStateManager.texGenParam(GlStateManager.TexCoord.R, 9474, this.method_3593(0.0F, 0.0F, 1.0F, 0.0F));
+			GlStateManager.enableTexGen(GlStateManager.TexCoord.S);
+			GlStateManager.enableTexGen(GlStateManager.TexCoord.T);
+			GlStateManager.enableTexGen(GlStateManager.TexCoord.R);
 			GlStateManager.popMatrix();
 			GlStateManager.matrixMode(5890);
 			GlStateManager.pushMatrix();
@@ -84,42 +84,42 @@ public class EndPortalBlockEntityRenderer extends BlockEntityRenderer<EndPortalB
 			float o = (RANDOM.nextFloat() * 0.5F + 0.1F) * m;
 			float p = (RANDOM.nextFloat() * 0.5F + 0.4F) * m;
 			float q = (RANDOM.nextFloat() * 0.5F + 0.5F) * m;
-			if (endPortalBlockEntity.shouldDrawSide(Direction.field_11035)) {
+			if (endPortalBlockEntity.shouldDrawSide(Direction.SOUTH)) {
 				bufferBuilder.vertex(d, e, f + 1.0).color(o, p, q, 1.0F).next();
 				bufferBuilder.vertex(d + 1.0, e, f + 1.0).color(o, p, q, 1.0F).next();
 				bufferBuilder.vertex(d + 1.0, e + 1.0, f + 1.0).color(o, p, q, 1.0F).next();
 				bufferBuilder.vertex(d, e + 1.0, f + 1.0).color(o, p, q, 1.0F).next();
 			}
 
-			if (endPortalBlockEntity.shouldDrawSide(Direction.field_11043)) {
+			if (endPortalBlockEntity.shouldDrawSide(Direction.NORTH)) {
 				bufferBuilder.vertex(d, e + 1.0, f).color(o, p, q, 1.0F).next();
 				bufferBuilder.vertex(d + 1.0, e + 1.0, f).color(o, p, q, 1.0F).next();
 				bufferBuilder.vertex(d + 1.0, e, f).color(o, p, q, 1.0F).next();
 				bufferBuilder.vertex(d, e, f).color(o, p, q, 1.0F).next();
 			}
 
-			if (endPortalBlockEntity.shouldDrawSide(Direction.field_11034)) {
+			if (endPortalBlockEntity.shouldDrawSide(Direction.EAST)) {
 				bufferBuilder.vertex(d + 1.0, e + 1.0, f).color(o, p, q, 1.0F).next();
 				bufferBuilder.vertex(d + 1.0, e + 1.0, f + 1.0).color(o, p, q, 1.0F).next();
 				bufferBuilder.vertex(d + 1.0, e, f + 1.0).color(o, p, q, 1.0F).next();
 				bufferBuilder.vertex(d + 1.0, e, f).color(o, p, q, 1.0F).next();
 			}
 
-			if (endPortalBlockEntity.shouldDrawSide(Direction.field_11039)) {
+			if (endPortalBlockEntity.shouldDrawSide(Direction.WEST)) {
 				bufferBuilder.vertex(d, e, f).color(o, p, q, 1.0F).next();
 				bufferBuilder.vertex(d, e, f + 1.0).color(o, p, q, 1.0F).next();
 				bufferBuilder.vertex(d, e + 1.0, f + 1.0).color(o, p, q, 1.0F).next();
 				bufferBuilder.vertex(d, e + 1.0, f).color(o, p, q, 1.0F).next();
 			}
 
-			if (endPortalBlockEntity.shouldDrawSide(Direction.field_11033)) {
+			if (endPortalBlockEntity.shouldDrawSide(Direction.DOWN)) {
 				bufferBuilder.vertex(d, e, f).color(o, p, q, 1.0F).next();
 				bufferBuilder.vertex(d + 1.0, e, f).color(o, p, q, 1.0F).next();
 				bufferBuilder.vertex(d + 1.0, e, f + 1.0).color(o, p, q, 1.0F).next();
 				bufferBuilder.vertex(d, e, f + 1.0).color(o, p, q, 1.0F).next();
 			}
 
-			if (endPortalBlockEntity.shouldDrawSide(Direction.field_11036)) {
+			if (endPortalBlockEntity.shouldDrawSide(Direction.UP)) {
 				bufferBuilder.vertex(d, e + (double)k, f + 1.0).color(o, p, q, 1.0F).next();
 				bufferBuilder.vertex(d + 1.0, e + (double)k, f + 1.0).color(o, p, q, 1.0F).next();
 				bufferBuilder.vertex(d + 1.0, e + (double)k, f).color(o, p, q, 1.0F).next();
@@ -133,9 +133,9 @@ public class EndPortalBlockEntityRenderer extends BlockEntityRenderer<EndPortalB
 		}
 
 		GlStateManager.disableBlend();
-		GlStateManager.disableTexGen(GlStateManager.TexCoord.field_5154);
-		GlStateManager.disableTexGen(GlStateManager.TexCoord.field_5155);
-		GlStateManager.disableTexGen(GlStateManager.TexCoord.field_5156);
+		GlStateManager.disableTexGen(GlStateManager.TexCoord.S);
+		GlStateManager.disableTexGen(GlStateManager.TexCoord.T);
+		GlStateManager.disableTexGen(GlStateManager.TexCoord.R);
 		GlStateManager.enableLighting();
 		if (bl) {
 			gameRenderer.setFogBlack(false);

@@ -12,10 +12,10 @@ import net.minecraft.world.chunk.Chunk;
 import net.minecraft.world.gen.ChunkRandom;
 
 public class NetherSurfaceBuilder extends SurfaceBuilder<TernarySurfaceConfig> {
-	private static final BlockState CAVE_AIR = Blocks.field_10543.getDefaultState();
-	private static final BlockState NETHERRACK = Blocks.field_10515.getDefaultState();
-	private static final BlockState GRAVEL = Blocks.field_10255.getDefaultState();
-	private static final BlockState GLOWSTONE = Blocks.field_10114.getDefaultState();
+	private static final BlockState CAVE_AIR = Blocks.CAVE_AIR.getDefaultState();
+	private static final BlockState NETHERRACK = Blocks.NETHERRACK.getDefaultState();
+	private static final BlockState GRAVEL = Blocks.GRAVEL.getDefaultState();
+	private static final BlockState GLOWSTONE = Blocks.SOUL_SAND.getDefaultState();
 	protected long seed;
 	protected OctavePerlinNoiseSampler noise;
 

@@ -46,8 +46,8 @@ import net.minecraft.world.LocalDifficulty;
 import net.minecraft.world.World;
 
 public class VindicatorEntity extends IllagerEntity {
-	private static final Predicate<Difficulty> DIFFICULTY_ALLOWS_DOOR_BREAKING_PREDICATE = difficulty -> difficulty == Difficulty.field_5802
-			|| difficulty == Difficulty.field_5807;
+	private static final Predicate<Difficulty> DIFFICULTY_ALLOWS_DOOR_BREAKING_PREDICATE = difficulty -> difficulty == Difficulty.NORMAL
+			|| difficulty == Difficulty.HARD;
 	private boolean isJohnny;
 
 	public VindicatorEntity(EntityType<? extends VindicatorEntity> entityType, World world) {
@@ -106,9 +106,9 @@ public class VindicatorEntity extends IllagerEntity {
 	@Override
 	public IllagerEntity.State getState() {
 		if (this.isAttacking()) {
-			return IllagerEntity.State.field_7211;
+			return IllagerEntity.State.ATTACKING;
 		} else {
-			return this.isCelebrating() ? IllagerEntity.State.field_19012 : IllagerEntity.State.field_7207;
+			return this.isCelebrating() ? IllagerEntity.State.CELEBRATING : IllagerEntity.State.CROSSED;
 		}
 	}
 
@@ -122,7 +122,7 @@ public class VindicatorEntity extends IllagerEntity {
 
 	@Override
 	public SoundEvent getCelebratingSound() {
-		return SoundEvents.field_19151;
+		return SoundEvents.ENTITY_VINDICATOR_CELEBRATE;
 	}
 
 	@Nullable
@@ -140,7 +140,7 @@ public class VindicatorEntity extends IllagerEntity {
 	@Override
 	protected void initEquipment(LocalDifficulty localDifficulty) {
 		if (this.getRaid() == null) {
-			this.setEquippedStack(EquipmentSlot.field_6173, new ItemStack(Items.field_8475));
+			this.setEquippedStack(EquipmentSlot.MAINHAND, new ItemStack(Items.IRON_AXE));
 		}
 	}
 
@@ -165,36 +165,36 @@ public class VindicatorEntity extends IllagerEntity {
 
 	@Override
 	protected SoundEvent getAmbientSound() {
-		return SoundEvents.field_14735;
+		return SoundEvents.ENTITY_VINDICATOR_AMBIENT;
 	}
 
 	@Override
 	protected SoundEvent getDeathSound() {
-		return SoundEvents.field_14642;
+		return SoundEvents.ENTITY_VINDICATOR_DEATH;
 	}
 
 	@Override
 	protected SoundEvent getHurtSound(DamageSource damageSource) {
-		return SoundEvents.field_14558;
+		return SoundEvents.ENTITY_VINDICATOR_HURT;
 	}
 
 	@Override
 	public void addBonusForWave(int i, boolean bl) {
-		ItemStack itemStack = new ItemStack(Items.field_8475);
+		ItemStack itemStack = new ItemStack(Items.IRON_AXE);
 		Raid raid = this.getRaid();
 		int j = 1;
-		if (i > raid.getMaxWaves(Difficulty.field_5802)) {
+		if (i > raid.getMaxWaves(Difficulty.NORMAL)) {
 			j = 2;
 		}
 
 		boolean bl2 = this.random.nextFloat() <= raid.getEnchantmentChance();
 		if (bl2) {
 			Map<Enchantment, Integer> map = Maps.<Enchantment, Integer>newHashMap();
-			map.put(Enchantments.field_9118, j);
+			map.put(Enchantments.SHARPNESS, j);
 			EnchantmentHelper.set(map, itemStack);
 		}
 
-		this.setEquippedStack(EquipmentSlot.field_6173, itemStack);
+		this.setEquippedStack(EquipmentSlot.MAINHAND, itemStack);
 	}
 
 	class AttackGoal extends MeleeAttackGoal {
@@ -216,7 +216,7 @@ public class VindicatorEntity extends IllagerEntity {
 	static class BreakDoorGoal extends net.minecraft.entity.ai.goal.BreakDoorGoal {
 		public BreakDoorGoal(MobEntity mobEntity) {
 			super(mobEntity, 6, VindicatorEntity.DIFFICULTY_ALLOWS_DOOR_BREAKING_PREDICATE);
-			this.setControls(EnumSet.of(Goal.Control.field_18405));
+			this.setControls(EnumSet.of(Goal.Control.MOVE));
 		}
 
 		@Override

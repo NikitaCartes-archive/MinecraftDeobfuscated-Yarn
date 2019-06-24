@@ -185,7 +185,7 @@ public abstract class EntityRenderer<T extends Entity> {
 		for (BlockPos blockPos : BlockPos.iterate(new BlockPos(m, o, q), new BlockPos(n, p, r))) {
 			BlockPos blockPos2 = blockPos.down();
 			BlockState blockState = viewableWorld.getBlockState(blockPos2);
-			if (blockState.getRenderType() != BlockRenderType.field_11455 && viewableWorld.getLightLevel(blockPos) > 3) {
+			if (blockState.getRenderType() != BlockRenderType.INVISIBLE && viewableWorld.getLightLevel(blockPos) > 3) {
 				this.projectShadow(blockState, viewableWorld, blockPos2, d, e, f, blockPos, g, i, s, t, u);
 			}
 		}

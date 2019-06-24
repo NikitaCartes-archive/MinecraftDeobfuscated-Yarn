@@ -29,24 +29,24 @@ public class MinecartItem extends Item {
 			BlockState blockState = world.getBlockState(blockPos);
 			RailShape railShape = blockState.getBlock() instanceof AbstractRailBlock
 				? blockState.get(((AbstractRailBlock)blockState.getBlock()).getShapeProperty())
-				: RailShape.field_12665;
+				: RailShape.NORTH_SOUTH;
 			double g;
-			if (blockState.matches(BlockTags.field_15463)) {
+			if (blockState.matches(BlockTags.RAILS)) {
 				if (railShape.isAscending()) {
 					g = 0.6;
 				} else {
 					g = 0.1;
 				}
 			} else {
-				if (!blockState.isAir() || !world.getBlockState(blockPos.down()).matches(BlockTags.field_15463)) {
+				if (!blockState.isAir() || !world.getBlockState(blockPos.down()).matches(BlockTags.RAILS)) {
 					return this.field_8898.dispense(blockPointer, itemStack);
 				}
 
 				BlockState blockState2 = world.getBlockState(blockPos.down());
 				RailShape railShape2 = blockState2.getBlock() instanceof AbstractRailBlock
 					? blockState2.get(((AbstractRailBlock)blockState2.getBlock()).getShapeProperty())
-					: RailShape.field_12665;
-				if (direction != Direction.field_11033 && railShape2.isAscending()) {
+					: RailShape.NORTH_SOUTH;
+				if (direction != Direction.DOWN && railShape2.isAscending()) {
 					g = -0.4;
 				} else {
 					g = -0.9;
@@ -81,14 +81,14 @@ public class MinecartItem extends Item {
 		World world = itemUsageContext.getWorld();
 		BlockPos blockPos = itemUsageContext.getBlockPos();
 		BlockState blockState = world.getBlockState(blockPos);
-		if (!blockState.matches(BlockTags.field_15463)) {
-			return ActionResult.field_5814;
+		if (!blockState.matches(BlockTags.RAILS)) {
+			return ActionResult.FAIL;
 		} else {
 			ItemStack itemStack = itemUsageContext.getStack();
 			if (!world.isClient) {
 				RailShape railShape = blockState.getBlock() instanceof AbstractRailBlock
 					? blockState.get(((AbstractRailBlock)blockState.getBlock()).getShapeProperty())
-					: RailShape.field_12665;
+					: RailShape.NORTH_SOUTH;
 				double d = 0.0;
 				if (railShape.isAscending()) {
 					d = 0.5;
@@ -105,7 +105,7 @@ public class MinecartItem extends Item {
 			}
 
 			itemStack.decrement(1);
-			return ActionResult.field_5812;
+			return ActionResult.SUCCESS;
 		}
 	}
 }

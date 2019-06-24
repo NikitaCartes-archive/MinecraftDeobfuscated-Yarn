@@ -90,11 +90,11 @@ public class FenceGateBlock extends HorizontalFacingBlock {
 	@Override
 	public boolean canPlaceAtSide(BlockState blockState, BlockView blockView, BlockPos blockPos, BlockPlacementEnvironment blockPlacementEnvironment) {
 		switch (blockPlacementEnvironment) {
-			case field_50:
+			case LAND:
 				return (Boolean)blockState.get(OPEN);
-			case field_48:
+			case WATER:
 				return false;
-			case field_51:
+			case AIR:
 				return (Boolean)blockState.get(OPEN);
 			default:
 				return false;
@@ -114,7 +114,7 @@ public class FenceGateBlock extends HorizontalFacingBlock {
 	}
 
 	private boolean isWall(BlockState blockState) {
-		return blockState.getBlock().matches(BlockTags.field_15504);
+		return blockState.getBlock().matches(BlockTags.WALLS);
 	}
 
 	@Override

@@ -31,7 +31,7 @@ public class StepAndDestroyBlockGoal extends MoveToTargetPosGoal {
 
 	@Override
 	public boolean canStart() {
-		if (!this.stepAndDestroyMob.world.getGameRules().getBoolean(GameRules.field_19388)) {
+		if (!this.stepAndDestroyMob.world.getGameRules().getBoolean(GameRules.MOB_GRIEFING)) {
 			return false;
 		} else if (this.cooldown > 0) {
 			this.cooldown--;
@@ -84,7 +84,7 @@ public class StepAndDestroyBlockGoal extends MoveToTargetPosGoal {
 					double d = 0.08;
 					((ServerWorld)world)
 						.spawnParticles(
-							new ItemStackParticleEffect(ParticleTypes.field_11218, new ItemStack(Items.field_8803)),
+							new ItemStackParticleEffect(ParticleTypes.ITEM, new ItemStack(Items.EGG)),
 							(double)blockPos2.getX() + 0.5,
 							(double)blockPos2.getY() + 0.7,
 							(double)blockPos2.getZ() + 0.5,
@@ -113,7 +113,7 @@ public class StepAndDestroyBlockGoal extends MoveToTargetPosGoal {
 						double e = random.nextGaussian() * 0.02;
 						double f = random.nextGaussian() * 0.02;
 						((ServerWorld)world)
-							.spawnParticles(ParticleTypes.field_11203, (double)blockPos2.getX() + 0.5, (double)blockPos2.getY(), (double)blockPos2.getZ() + 0.5, 1, d, e, f, 0.15F);
+							.spawnParticles(ParticleTypes.POOF, (double)blockPos2.getX() + 0.5, (double)blockPos2.getY(), (double)blockPos2.getZ() + 0.5, 1, d, e, f, 0.15F);
 					}
 
 					this.onDestroyBlock(world, blockPos2);

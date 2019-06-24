@@ -23,20 +23,20 @@ public class PlayerInteractEntityC2SPacket implements Packet<ServerPlayPacketLis
 
 	public PlayerInteractEntityC2SPacket(Entity entity) {
 		this.entityId = entity.getEntityId();
-		this.type = PlayerInteractEntityC2SPacket.InteractionType.field_12875;
+		this.type = PlayerInteractEntityC2SPacket.InteractionType.ATTACK;
 	}
 
 	@Environment(EnvType.CLIENT)
 	public PlayerInteractEntityC2SPacket(Entity entity, Hand hand) {
 		this.entityId = entity.getEntityId();
-		this.type = PlayerInteractEntityC2SPacket.InteractionType.field_12876;
+		this.type = PlayerInteractEntityC2SPacket.InteractionType.INTERACT;
 		this.hand = hand;
 	}
 
 	@Environment(EnvType.CLIENT)
 	public PlayerInteractEntityC2SPacket(Entity entity, Hand hand, Vec3d vec3d) {
 		this.entityId = entity.getEntityId();
-		this.type = PlayerInteractEntityC2SPacket.InteractionType.field_12873;
+		this.type = PlayerInteractEntityC2SPacket.InteractionType.INTERACT_AT;
 		this.hand = hand;
 		this.hitPos = vec3d;
 	}
@@ -45,11 +45,11 @@ public class PlayerInteractEntityC2SPacket implements Packet<ServerPlayPacketLis
 	public void read(PacketByteBuf packetByteBuf) throws IOException {
 		this.entityId = packetByteBuf.readVarInt();
 		this.type = packetByteBuf.readEnumConstant(PlayerInteractEntityC2SPacket.InteractionType.class);
-		if (this.type == PlayerInteractEntityC2SPacket.InteractionType.field_12873) {
+		if (this.type == PlayerInteractEntityC2SPacket.InteractionType.INTERACT_AT) {
 			this.hitPos = new Vec3d((double)packetByteBuf.readFloat(), (double)packetByteBuf.readFloat(), (double)packetByteBuf.readFloat());
 		}
 
-		if (this.type == PlayerInteractEntityC2SPacket.InteractionType.field_12876 || this.type == PlayerInteractEntityC2SPacket.InteractionType.field_12873) {
+		if (this.type == PlayerInteractEntityC2SPacket.InteractionType.INTERACT || this.type == PlayerInteractEntityC2SPacket.InteractionType.INTERACT_AT) {
 			this.hand = packetByteBuf.readEnumConstant(Hand.class);
 		}
 	}
@@ -58,13 +58,13 @@ public class PlayerInteractEntityC2SPacket implements Packet<ServerPlayPacketLis
 	public void write(PacketByteBuf packetByteBuf) throws IOException {
 		packetByteBuf.writeVarInt(this.entityId);
 		packetByteBuf.writeEnumConstant(this.type);
-		if (this.type == PlayerInteractEntityC2SPacket.InteractionType.field_12873) {
+		if (this.type == PlayerInteractEntityC2SPacket.InteractionType.INTERACT_AT) {
 			packetByteBuf.writeFloat((float)this.hitPos.x);
 			packetByteBuf.writeFloat((float)this.hitPos.y);
 			packetByteBuf.writeFloat((float)this.hitPos.z);
 		}
 
-		if (this.type == PlayerInteractEntityC2SPacket.InteractionType.field_12876 || this.type == PlayerInteractEntityC2SPacket.InteractionType.field_12873) {
+		if (this.type == PlayerInteractEntityC2SPacket.InteractionType.INTERACT || this.type == PlayerInteractEntityC2SPacket.InteractionType.INTERACT_AT) {
 			packetByteBuf.writeEnumConstant(this.hand);
 		}
 	}
@@ -91,8 +91,8 @@ public class PlayerInteractEntityC2SPacket implements Packet<ServerPlayPacketLis
 	}
 
 	public static enum InteractionType {
-		field_12876,
-		field_12875,
-		field_12873;
+		INTERACT,
+		ATTACK,
+		INTERACT_AT;
 	}
 }

@@ -50,7 +50,7 @@ public class FontStorage implements AutoCloseable {
 		this.glyphRendererCache.clear();
 		this.glyphCache.clear();
 		this.charactersByWidth.clear();
-		this.blankGlyphRenderer = this.getGlyphRenderer(BlankGlyph.field_2283);
+		this.blankGlyphRenderer = this.getGlyphRenderer(BlankGlyph.INSTANCE);
 		Set<Font> set = Sets.<Font>newHashSet();
 
 		for (char c = 0; c < '\uffff'; c++) {
@@ -58,7 +58,7 @@ public class FontStorage implements AutoCloseable {
 				Glyph glyph = (Glyph)(c == ' ' ? SPACE : font2.getGlyph(c));
 				if (glyph != null) {
 					set.add(font2);
-					if (glyph != BlankGlyph.field_2283) {
+					if (glyph != BlankGlyph.INSTANCE) {
 						this.charactersByWidth.computeIfAbsent(MathHelper.ceil(glyph.getAdvance(false)), i -> new CharArrayList()).add(c);
 					}
 					break;
@@ -91,7 +91,7 @@ public class FontStorage implements AutoCloseable {
 			}
 		}
 
-		return BlankGlyph.field_2283;
+		return BlankGlyph.INSTANCE;
 	}
 
 	public GlyphRenderer getGlyphRenderer(char c) {

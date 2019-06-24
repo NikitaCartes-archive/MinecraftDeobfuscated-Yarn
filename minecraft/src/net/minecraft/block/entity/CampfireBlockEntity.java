@@ -23,12 +23,12 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.World;
 
 public class CampfireBlockEntity extends BlockEntity implements Clearable, Tickable {
-	private final DefaultedList<ItemStack> itemsBeingCooked = DefaultedList.create(4, ItemStack.EMPTY);
+	private final DefaultedList<ItemStack> itemsBeingCooked = DefaultedList.ofSize(4, ItemStack.EMPTY);
 	private final int[] cookingTimes = new int[4];
 	private final int[] cookingTotalTimes = new int[4];
 
 	public CampfireBlockEntity() {
-		super(BlockEntityType.field_17380);
+		super(BlockEntityType.CAMPFIRE);
 	}
 
 	@Override
@@ -101,7 +101,7 @@ public class CampfireBlockEntity extends BlockEntity implements Clearable, Ticka
 						+ (double)((float)direction.rotateYClockwise().getOffsetZ() * 0.3125F);
 
 					for (int k = 0; k < 4; k++) {
-						world.addParticle(ParticleTypes.field_11251, d, e, g, 0.0, 5.0E-4, 0.0);
+						world.addParticle(ParticleTypes.SMOKE, d, e, g, 0.0, 5.0E-4, 0.0);
 					}
 				}
 			}

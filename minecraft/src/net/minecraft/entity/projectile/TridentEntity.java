@@ -27,7 +27,7 @@ import net.minecraft.world.World;
 
 public class TridentEntity extends ProjectileEntity {
 	private static final TrackedData<Byte> LOYALTY = DataTracker.registerData(TridentEntity.class, TrackedDataHandlerRegistry.BYTE);
-	private ItemStack tridentStack = new ItemStack(Items.field_8547);
+	private ItemStack tridentStack = new ItemStack(Items.TRIDENT);
 	private boolean dealtDamage;
 	public int field_7649;
 
@@ -36,14 +36,14 @@ public class TridentEntity extends ProjectileEntity {
 	}
 
 	public TridentEntity(World world, LivingEntity livingEntity, ItemStack itemStack) {
-		super(EntityType.field_6127, livingEntity, world);
+		super(EntityType.TRIDENT, livingEntity, world);
 		this.tridentStack = itemStack.copy();
 		this.dataTracker.set(LOYALTY, (byte)EnchantmentHelper.getLoyalty(itemStack));
 	}
 
 	@Environment(EnvType.CLIENT)
 	public TridentEntity(World world, double d, double e, double f) {
-		super(EntityType.field_6127, d, e, f, world);
+		super(EntityType.TRIDENT, d, e, f, world);
 	}
 
 	@Override
@@ -62,7 +62,7 @@ public class TridentEntity extends ProjectileEntity {
 		if ((this.dealtDamage || this.isNoClip()) && entity != null) {
 			int i = this.dataTracker.get(LOYALTY);
 			if (i > 0 && !this.isOwnerAlive()) {
-				if (!this.world.isClient && this.pickupType == ProjectileEntity.PickupPermission.field_7593) {
+				if (!this.world.isClient && this.pickupType == ProjectileEntity.PickupPermission.ALLOWED) {
 					this.dropStack(this.asItemStack(), 0.1F);
 				}
 
@@ -78,7 +78,7 @@ public class TridentEntity extends ProjectileEntity {
 				double d = 0.05 * (double)i;
 				this.setVelocity(this.getVelocity().multiply(0.95).add(vec3d.normalize().multiply(d)));
 				if (this.field_7649 == 0) {
-					this.playSound(SoundEvents.field_14698, 10.0F, 1.0F);
+					this.playSound(SoundEvents.ITEM_TRIDENT_RETURN, 10.0F, 1.0F);
 				}
 
 				this.field_7649++;
@@ -116,7 +116,7 @@ public class TridentEntity extends ProjectileEntity {
 		Entity entity2 = this.getOwner();
 		DamageSource damageSource = DamageSource.trident(this, (Entity)(entity2 == null ? this : entity2));
 		this.dealtDamage = true;
-		SoundEvent soundEvent = SoundEvents.field_15213;
+		SoundEvent soundEvent = SoundEvents.ITEM_TRIDENT_HIT;
 		if (entity.damage(damageSource, f) && entity instanceof LivingEntity) {
 			LivingEntity livingEntity2 = (LivingEntity)entity;
 			if (entity2 instanceof LivingEntity) {
@@ -137,7 +137,7 @@ public class TridentEntity extends ProjectileEntity {
 				);
 				lightningEntity.setChanneller(entity2 instanceof ServerPlayerEntity ? (ServerPlayerEntity)entity2 : null);
 				((ServerWorld)this.world).addLightning(lightningEntity);
-				soundEvent = SoundEvents.field_14896;
+				soundEvent = SoundEvents.ITEM_TRIDENT_THUNDER;
 				g = 5.0F;
 			}
 		}
@@ -147,7 +147,7 @@ public class TridentEntity extends ProjectileEntity {
 
 	@Override
 	protected SoundEvent getSound() {
-		return SoundEvents.field_15104;
+		return SoundEvents.ITEM_TRIDENT_HIT_GROUND;
 	}
 
 	@Override
@@ -179,7 +179,7 @@ public class TridentEntity extends ProjectileEntity {
 	@Override
 	protected void age() {
 		int i = this.dataTracker.get(LOYALTY);
-		if (this.pickupType != ProjectileEntity.PickupPermission.field_7593 || i <= 0) {
+		if (this.pickupType != ProjectileEntity.PickupPermission.ALLOWED || i <= 0) {
 			super.age();
 		}
 	}

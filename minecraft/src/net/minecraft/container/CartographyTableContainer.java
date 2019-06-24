@@ -41,19 +41,19 @@ public class CartographyTableContainer extends Container {
 	}
 
 	public CartographyTableContainer(int i, PlayerInventory playerInventory, BlockContext blockContext) {
-		super(ContainerType.field_17343, i);
+		super(ContainerType.CARTOGRAPHY, i);
 		this.context = blockContext;
 		this.addSlot(new Slot(this.inventory, 0, 15, 15) {
 			@Override
 			public boolean canInsert(ItemStack itemStack) {
-				return itemStack.getItem() == Items.field_8204;
+				return itemStack.getItem() == Items.FILLED_MAP;
 			}
 		});
 		this.addSlot(new Slot(this.inventory, 1, 15, 52) {
 			@Override
 			public boolean canInsert(ItemStack itemStack) {
 				Item item = itemStack.getItem();
-				return item == Items.field_8407 || item == Items.field_8895 || item == Items.GLASS_PANE;
+				return item == Items.PAPER || item == Items.MAP || item == Items.GLASS_PANE;
 			}
 		});
 		this.addSlot(
@@ -92,7 +92,9 @@ public class CartographyTableContainer extends Container {
 				public ItemStack onTakeItem(PlayerEntity playerEntity, ItemStack itemStack) {
 					itemStack.getItem().onCraft(itemStack, playerEntity.world, playerEntity);
 					blockContext.run(
-						(BiConsumer<World, BlockPos>)((world, blockPos) -> world.playSound(null, blockPos, SoundEvents.field_17484, SoundCategory.field_15245, 1.0F, 1.0F))
+						(BiConsumer<World, BlockPos>)((world, blockPos) -> world.playSound(
+								null, blockPos, SoundEvents.UI_CARTOGRAPHY_TABLE_TAKE_RESULT, SoundCategory.BLOCKS, 1.0F, 1.0F
+							))
 					);
 					return super.onTakeItem(playerEntity, itemStack);
 				}
@@ -112,7 +114,7 @@ public class CartographyTableContainer extends Container {
 
 	@Override
 	public boolean canUse(PlayerEntity playerEntity) {
-		return canUse(this.context, playerEntity, Blocks.field_16336);
+		return canUse(this.context, playerEntity, Blocks.CARTOGRAPHY_TABLE);
 	}
 
 	@Override
@@ -135,7 +137,7 @@ public class CartographyTableContainer extends Container {
 			MapState mapState = FilledMapItem.getMapState(itemStack, world);
 			if (mapState != null) {
 				ItemStack itemStack4;
-				if (item == Items.field_8407 && !mapState.locked && mapState.scale < 4) {
+				if (item == Items.PAPER && !mapState.locked && mapState.scale < 4) {
 					itemStack4 = itemStack.copy();
 					itemStack4.setCount(1);
 					itemStack4.getOrCreateTag().putInt("map_scale_direction", 1);
@@ -145,7 +147,7 @@ public class CartographyTableContainer extends Container {
 					itemStack4.setCount(1);
 					this.sendContentUpdates();
 				} else {
-					if (item != Items.field_8895) {
+					if (item != Items.MAP) {
 						this.resultSlot.removeInvStack(2);
 						this.sendContentUpdates();
 						return;
@@ -198,11 +200,11 @@ public class CartographyTableContainer extends Container {
 
 				slot.onStackChanged(itemStack3, itemStack);
 			} else if (i != 1 && i != 0) {
-				if (item == Items.field_8204) {
+				if (item == Items.FILLED_MAP) {
 					if (!this.insertItem(itemStack2, 0, 1, false)) {
 						return ItemStack.EMPTY;
 					}
-				} else if (item != Items.field_8407 && item != Items.field_8895 && item != Items.GLASS_PANE) {
+				} else if (item != Items.PAPER && item != Items.MAP && item != Items.GLASS_PANE) {
 					if (i >= 3 && i < 30) {
 						if (!this.insertItem(itemStack2, 30, 39, false)) {
 							return ItemStack.EMPTY;

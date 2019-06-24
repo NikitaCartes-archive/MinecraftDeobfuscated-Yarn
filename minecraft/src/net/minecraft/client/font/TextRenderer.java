@@ -121,15 +121,15 @@ public class TextRenderer implements AutoCloseable {
 						m = (float)(r >> 16 & 0xFF) / 255.0F * h;
 						n = (float)(r >> 8 & 0xFF) / 255.0F * h;
 						o = (float)(r & 0xFF) / 255.0F * h;
-					} else if (formatting == Formatting.field_1051) {
+					} else if (formatting == Formatting.OBFUSCATED) {
 						bl2 = true;
-					} else if (formatting == Formatting.field_1067) {
+					} else if (formatting == Formatting.BOLD) {
 						bl3 = true;
-					} else if (formatting == Formatting.field_1055) {
+					} else if (formatting == Formatting.STRIKETHROUGH) {
 						bl6 = true;
-					} else if (formatting == Formatting.field_1073) {
+					} else if (formatting == Formatting.UNDERLINE) {
 						bl5 = true;
-					} else if (formatting == Formatting.field_1056) {
+					} else if (formatting == Formatting.ITALIC) {
 						bl4 = true;
 					}
 				}
@@ -202,7 +202,7 @@ public class TextRenderer implements AutoCloseable {
 				char c = string.charAt(i);
 				if (c == 167 && i < string.length() - 1) {
 					Formatting formatting = Formatting.byCode(string.charAt(++i));
-					if (formatting == Formatting.field_1067) {
+					if (formatting == Formatting.BOLD) {
 						bl = true;
 					} else if (formatting != null && formatting.affectsGlyphWidth()) {
 						bl = false;
@@ -237,7 +237,7 @@ public class TextRenderer implements AutoCloseable {
 			if (bl2) {
 				bl2 = false;
 				Formatting formatting = Formatting.byCode(c);
-				if (formatting == Formatting.field_1067) {
+				if (formatting == Formatting.BOLD) {
 					bl3 = true;
 				} else if (formatting != null && formatting.affectsGlyphWidth()) {
 					bl3 = false;
@@ -351,7 +351,7 @@ public class TextRenderer implements AutoCloseable {
 				case '§':
 					if (l < k - 1) {
 						Formatting formatting = Formatting.byCode(string.charAt(++l));
-						if (formatting == Formatting.field_1067) {
+						if (formatting == Formatting.BOLD) {
 							bl = true;
 						} else if (formatting != null && formatting.affectsGlyphWidth()) {
 							bl = false;

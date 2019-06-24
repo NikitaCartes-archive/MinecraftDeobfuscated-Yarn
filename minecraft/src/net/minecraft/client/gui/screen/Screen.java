@@ -116,7 +116,7 @@ public abstract class Screen extends AbstractParentElement implements Drawable {
 
 	public List<String> getTooltipFromItem(ItemStack itemStack) {
 		List<Text> list = itemStack.getTooltip(
-			this.minecraft.player, this.minecraft.options.advancedItemTooltips ? TooltipContext.Default.field_8935 : TooltipContext.Default.field_8934
+			this.minecraft.player, this.minecraft.options.advancedItemTooltips ? TooltipContext.Default.ADVANCED : TooltipContext.Default.NORMAL
 		);
 		List<String> list2 = Lists.<String>newArrayList();
 
@@ -198,7 +198,7 @@ public abstract class Screen extends AbstractParentElement implements Drawable {
 	protected void renderComponentHoverEffect(Text text, int i, int j) {
 		if (text != null && text.getStyle().getHoverEvent() != null) {
 			HoverEvent hoverEvent = text.getStyle().getHoverEvent();
-			if (hoverEvent.getAction() == HoverEvent.Action.field_11757) {
+			if (hoverEvent.getAction() == HoverEvent.Action.SHOW_ITEM) {
 				ItemStack itemStack = ItemStack.EMPTY;
 
 				try {
@@ -210,11 +210,11 @@ public abstract class Screen extends AbstractParentElement implements Drawable {
 				}
 
 				if (itemStack.isEmpty()) {
-					this.renderTooltip(Formatting.field_1061 + "Invalid Item!", i, j);
+					this.renderTooltip(Formatting.RED + "Invalid Item!", i, j);
 				} else {
 					this.renderTooltip(itemStack, i, j);
 				}
-			} else if (hoverEvent.getAction() == HoverEvent.Action.field_11761) {
+			} else if (hoverEvent.getAction() == HoverEvent.Action.SHOW_ENTITY) {
 				if (this.minecraft.options.advancedItemTooltips) {
 					try {
 						CompoundTag compoundTag = StringNbtReader.parse(hoverEvent.getValue().getString());
@@ -232,10 +232,10 @@ public abstract class Screen extends AbstractParentElement implements Drawable {
 						list.add(compoundTag.getString("id"));
 						this.renderTooltip(list, i, j);
 					} catch (CommandSyntaxException | JsonSyntaxException var9) {
-						this.renderTooltip(Formatting.field_1061 + "Invalid Entity!", i, j);
+						this.renderTooltip(Formatting.RED + "Invalid Entity!", i, j);
 					}
 				}
-			} else if (hoverEvent.getAction() == HoverEvent.Action.field_11762) {
+			} else if (hoverEvent.getAction() == HoverEvent.Action.SHOW_TEXT) {
 				this.renderTooltip(this.minecraft.textRenderer.wrapStringToWidthAsList(hoverEvent.getValue().asFormattedString(), Math.max(this.width / 2, 200)), i, j);
 			}
 
@@ -256,7 +256,7 @@ public abstract class Screen extends AbstractParentElement implements Drawable {
 					this.insertText(text.getStyle().getInsertion(), false);
 				}
 			} else if (clickEvent != null) {
-				if (clickEvent.getAction() == ClickEvent.Action.field_11749) {
+				if (clickEvent.getAction() == ClickEvent.Action.OPEN_URL) {
 					if (!this.minecraft.options.chatLinks) {
 						return false;
 					}
@@ -281,12 +281,12 @@ public abstract class Screen extends AbstractParentElement implements Drawable {
 					} catch (URISyntaxException var5) {
 						LOGGER.error("Can't open url for {}", clickEvent, var5);
 					}
-				} else if (clickEvent.getAction() == ClickEvent.Action.field_11746) {
+				} else if (clickEvent.getAction() == ClickEvent.Action.OPEN_FILE) {
 					URI uRIx = new File(clickEvent.getValue()).toURI();
 					this.openLink(uRIx);
-				} else if (clickEvent.getAction() == ClickEvent.Action.field_11745) {
+				} else if (clickEvent.getAction() == ClickEvent.Action.SUGGEST_COMMAND) {
 					this.insertText(clickEvent.getValue(), true);
-				} else if (clickEvent.getAction() == ClickEvent.Action.field_11750) {
+				} else if (clickEvent.getAction() == ClickEvent.Action.RUN_COMMAND) {
 					this.sendMessage(clickEvent.getValue(), false);
 				} else {
 					LOGGER.error("Don't know how to handle {}", clickEvent);

@@ -1,13 +1,13 @@
 package net.minecraft.util;
 
 public enum TaskPriority {
-	field_9315(-3),
-	field_9313(-2),
-	field_9310(-1),
-	field_9314(0),
-	field_9316(1),
-	field_9309(2),
-	field_9311(3);
+	EXTREMELY_HIGH(-3),
+	VERY_HIGH(-2),
+	HIGH(-1),
+	NORMAL(0),
+	LOW(1),
+	VERY_LOW(2),
+	EXTREMELY_LOW(3);
 
 	private final int priorityIndex;
 
@@ -22,7 +22,7 @@ public enum TaskPriority {
 			}
 		}
 
-		return i < field_9315.priorityIndex ? field_9315 : field_9311;
+		return i < EXTREMELY_HIGH.priorityIndex ? EXTREMELY_HIGH : EXTREMELY_LOW;
 	}
 
 	public int getPriorityIndex() {

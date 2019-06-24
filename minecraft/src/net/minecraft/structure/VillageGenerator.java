@@ -39,11 +39,11 @@ public class VillageGenerator {
 			BlockRotation blockRotation,
 			MutableIntBoundingBox mutableIntBoundingBox
 		) {
-			super(StructurePieceType.VILLAGE, structureManager, structurePoolElement, blockPos, i, blockRotation, mutableIntBoundingBox);
+			super(StructurePieceType.NVI, structureManager, structurePoolElement, blockPos, i, blockRotation, mutableIntBoundingBox);
 		}
 
 		public Piece(StructureManager structureManager, CompoundTag compoundTag) {
-			super(structureManager, compoundTag, StructurePieceType.VILLAGE);
+			super(structureManager, compoundTag, StructurePieceType.NVI);
 		}
 	}
 }

@@ -51,7 +51,7 @@ public class LoomContainer extends Container {
 	}
 
 	public LoomContainer(int i, PlayerInventory playerInventory, BlockContext blockContext) {
-		super(ContainerType.field_17339, i);
+		super(ContainerType.LOOM, i);
 		this.context = blockContext;
 		this.bannerSlot = this.addSlot(new Slot(this.inputInventory, 0, 13, 26) {
 			@Override
@@ -87,7 +87,7 @@ public class LoomContainer extends Container {
 					}
 
 					blockContext.run(
-						(BiConsumer<World, BlockPos>)((world, blockPos) -> world.playSound(null, blockPos, SoundEvents.field_15096, SoundCategory.field_15245, 1.0F, 1.0F))
+						(BiConsumer<World, BlockPos>)((world, blockPos) -> world.playSound(null, blockPos, SoundEvents.UI_LOOM_TAKE_RESULT, SoundCategory.BLOCKS, 1.0F, 1.0F))
 					);
 					return super.onTakeItem(playerEntity, itemStack);
 				}
@@ -114,7 +114,7 @@ public class LoomContainer extends Container {
 
 	@Override
 	public boolean canUse(PlayerEntity playerEntity) {
-		return canUse(this.context, playerEntity, Blocks.field_10083);
+		return canUse(this.context, playerEntity, Blocks.LOOM);
 	}
 
 	@Override

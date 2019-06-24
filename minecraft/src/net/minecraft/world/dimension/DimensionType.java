@@ -11,9 +11,9 @@ import net.minecraft.util.registry.Registry;
 import net.minecraft.world.World;
 
 public class DimensionType implements DynamicSerializable {
-	public static final DimensionType field_13072 = register("overworld", new DimensionType(1, "", "", OverworldDimension::new, true));
-	public static final DimensionType field_13076 = register("the_nether", new DimensionType(0, "_nether", "DIM-1", TheNetherDimension::new, false));
-	public static final DimensionType field_13078 = register("the_end", new DimensionType(2, "_end", "DIM1", TheEndDimension::new, false));
+	public static final DimensionType OVERWORLD = register("overworld", new DimensionType(1, "", "", OverworldDimension::new, true));
+	public static final DimensionType THE_NETHER = register("the_nether", new DimensionType(0, "_nether", "DIM-1", TheNetherDimension::new, false));
+	public static final DimensionType THE_END = register("the_end", new DimensionType(2, "_end", "DIM1", TheEndDimension::new, false));
 	private final int id;
 	private final String suffix;
 	private final String saveDir;
@@ -21,7 +21,7 @@ public class DimensionType implements DynamicSerializable {
 	private final boolean hasSkyLight;
 
 	private static DimensionType register(String string, DimensionType dimensionType) {
-		return Registry.register(Registry.DIMENSION, dimensionType.id, string, dimensionType);
+		return Registry.register(Registry.DIMENSION_TYPE, dimensionType.id, string, dimensionType);
 	}
 
 	protected DimensionType(int i, String string, String string2, BiFunction<World, DimensionType, ? extends Dimension> biFunction, boolean bl) {
@@ -33,11 +33,11 @@ public class DimensionType implements DynamicSerializable {
 	}
 
 	public static DimensionType deserialize(Dynamic<?> dynamic) {
-		return Registry.DIMENSION.get(new Identifier(dynamic.asString("")));
+		return Registry.DIMENSION_TYPE.get(new Identifier(dynamic.asString("")));
 	}
 
 	public static Iterable<DimensionType> getAll() {
-		return Registry.DIMENSION;
+		return Registry.DIMENSION_TYPE;
 	}
 
 	public int getRawId() {
@@ -62,17 +62,17 @@ public class DimensionType implements DynamicSerializable {
 
 	@Nullable
 	public static DimensionType byRawId(int i) {
-		return Registry.DIMENSION.get(i - -1);
+		return Registry.DIMENSION_TYPE.get(i - -1);
 	}
 
 	@Nullable
 	public static DimensionType byId(Identifier identifier) {
-		return Registry.DIMENSION.get(identifier);
+		return Registry.DIMENSION_TYPE.get(identifier);
 	}
 
 	@Nullable
 	public static Identifier getId(DimensionType dimensionType) {
-		return Registry.DIMENSION.getId(dimensionType);
+		return Registry.DIMENSION_TYPE.getId(dimensionType);
 	}
 
 	public boolean hasSkyLight() {
@@ -81,6 +81,6 @@ public class DimensionType implements DynamicSerializable {
 
 	@Override
 	public <T> T serialize(DynamicOps<T> dynamicOps) {
-		return dynamicOps.createString(Registry.DIMENSION.getId(this).toString());
+		return dynamicOps.createString(Registry.DIMENSION_TYPE.getId(this).toString());
 	}
 }

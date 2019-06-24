@@ -15,17 +15,17 @@ import net.minecraft.world.gen.chunk.ChunkGenerator;
 public abstract class ChunkManager implements ChunkProvider, AutoCloseable {
 	@Nullable
 	public WorldChunk getWorldChunk(int i, int j, boolean bl) {
-		return (WorldChunk)this.getChunk(i, j, ChunkStatus.field_12803, bl);
+		return (WorldChunk)this.getChunk(i, j, ChunkStatus.FULL, bl);
 	}
 
 	@Nullable
 	@Override
 	public BlockView getChunk(int i, int j) {
-		return this.getChunk(i, j, ChunkStatus.field_12798, false);
+		return this.getChunk(i, j, ChunkStatus.EMPTY, false);
 	}
 
 	public boolean isChunkLoaded(int i, int j) {
-		return this.getChunk(i, j, ChunkStatus.field_12803, false) != null;
+		return this.getChunk(i, j, ChunkStatus.FULL, false) != null;
 	}
 
 	@Nullable

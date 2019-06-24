@@ -34,7 +34,7 @@ public class EffectCommand {
 							CommandManager.argument("targets", EntityArgumentType.entities())
 								.executes(commandContext -> executeClear(commandContext.getSource(), EntityArgumentType.getEntities(commandContext, "targets")))
 								.then(
-									CommandManager.argument("effect", MobEffectArgumentType.create())
+									CommandManager.argument("effect", MobEffectArgumentType.mobEffect())
 										.executes(
 											commandContext -> executeClear(
 													commandContext.getSource(),
@@ -50,7 +50,7 @@ public class EffectCommand {
 						.then(
 							CommandManager.argument("targets", EntityArgumentType.entities())
 								.then(
-									CommandManager.argument("effect", MobEffectArgumentType.create())
+									CommandManager.argument("effect", MobEffectArgumentType.mobEffect())
 										.executes(
 											commandContext -> executeGive(
 													commandContext.getSource(),

@@ -13,7 +13,7 @@ public class TutorialToast implements Toast {
 	private final TutorialToast.Type type;
 	private final String title;
 	private final String description;
-	private Toast.Visibility visibility = Toast.Visibility.field_2210;
+	private Toast.Visibility visibility = Toast.Visibility.SHOW;
 	private long lastTime;
 	private float lastProgress;
 	private float progress;
@@ -58,7 +58,7 @@ public class TutorialToast implements Toast {
 	}
 
 	public void hide() {
-		this.visibility = Toast.Visibility.field_2209;
+		this.visibility = Toast.Visibility.HIDE;
 	}
 
 	public void setProgress(float f) {
@@ -67,11 +67,11 @@ public class TutorialToast implements Toast {
 
 	@Environment(EnvType.CLIENT)
 	public static enum Type {
-		field_2230(0, 0),
-		field_2237(1, 0),
-		field_2235(2, 0),
-		field_2233(0, 1),
-		field_2236(1, 1);
+		MOVEMENT_KEYS(0, 0),
+		MOUSE(1, 0),
+		TREE(2, 0),
+		RECIPE_BOOK(0, 1),
+		WOODEN_PLANKS(1, 1);
 
 		private final int textureSlotX;
 		private final int textureSlotY;

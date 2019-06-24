@@ -29,7 +29,7 @@ class RepeatedNarrator {
 			);
 		if (lv.field_19211.tryAcquire(1)) {
 			NarratorManager narratorManager = NarratorManager.INSTANCE;
-			narratorManager.onChatMessage(MessageType.field_11735, new LiteralText(string));
+			narratorManager.onChatMessage(MessageType.SYSTEM, new LiteralText(string));
 		}
 	}
 

@@ -12,7 +12,7 @@ import net.minecraft.util.Formatting;
 
 @Environment(EnvType.CLIENT)
 public class TextComponentUtil {
-	public static String method_1849(String string, boolean bl) {
+	public static String getRenderChatMessage(String string, boolean bl) {
 		return !bl && !MinecraftClient.getInstance().options.chatColors ? Formatting.strip(string) : string;
 	}
 
@@ -35,7 +35,7 @@ public class TextComponentUtil {
 				bl3 = true;
 			}
 
-			String string3 = method_1849(text3.getStyle().asString() + string, bl2);
+			String string3 = getRenderChatMessage(text3.getStyle().asString() + string, bl2);
 			String string2 = string3.endsWith("\n") ? string3.substring(0, string3.length() - 1) : string3;
 			int m = textRenderer.getStringWidth(string2);
 			Text text5 = new LiteralText(string2).setStyle(text3.getStyle().deepCopy());

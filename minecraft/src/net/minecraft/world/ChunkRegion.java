@@ -83,7 +83,7 @@ public class ChunkRegion implements IWorld {
 
 	@Override
 	public Chunk getChunk(int i, int j) {
-		return this.getChunk(i, j, ChunkStatus.field_12798);
+		return this.getChunk(i, j, ChunkStatus.EMPTY);
 	}
 
 	@Nullable
@@ -176,7 +176,7 @@ public class ChunkRegion implements IWorld {
 				Block.dropStacks(blockState, this.world, blockPos, blockEntity);
 			}
 
-			return this.setBlockState(blockPos, Blocks.field_10124.getDefaultState(), 3);
+			return this.setBlockState(blockPos, Blocks.AIR.getDefaultState(), 3);
 		}
 	}
 
@@ -225,7 +225,7 @@ public class ChunkRegion implements IWorld {
 
 		Block block = blockState.getBlock();
 		if (block.hasBlockEntity()) {
-			if (chunk.getStatus().getChunkType() == ChunkStatus.ChunkType.field_12807) {
+			if (chunk.getStatus().getChunkType() == ChunkStatus.ChunkType.LEVELCHUNK) {
 				chunk.setBlockEntity(blockPos, ((BlockEntityProvider)block).createBlockEntity(this));
 			} else {
 				CompoundTag compoundTag = new CompoundTag();
@@ -260,7 +260,7 @@ public class ChunkRegion implements IWorld {
 
 	@Override
 	public boolean clearBlockState(BlockPos blockPos, boolean bl) {
-		return this.setBlockState(blockPos, Blocks.field_10124.getDefaultState(), 3);
+		return this.setBlockState(blockPos, Blocks.AIR.getDefaultState(), 3);
 	}
 
 	@Override

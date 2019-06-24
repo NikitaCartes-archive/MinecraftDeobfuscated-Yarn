@@ -53,7 +53,7 @@ public class CakeBlock extends Block {
 		if (!playerEntity.canConsume(false)) {
 			return false;
 		} else {
-			playerEntity.incrementStat(Stats.field_15369);
+			playerEntity.incrementStat(Stats.EAT_CAKE_SLICE);
 			playerEntity.getHungerManager().add(2, 0.1F);
 			int i = (Integer)blockState.get(BITES);
 			if (i < 6) {
@@ -70,8 +70,8 @@ public class CakeBlock extends Block {
 	public BlockState getStateForNeighborUpdate(
 		BlockState blockState, Direction direction, BlockState blockState2, IWorld iWorld, BlockPos blockPos, BlockPos blockPos2
 	) {
-		return direction == Direction.field_11033 && !blockState.canPlaceAt(iWorld, blockPos)
-			? Blocks.field_10124.getDefaultState()
+		return direction == Direction.DOWN && !blockState.canPlaceAt(iWorld, blockPos)
+			? Blocks.AIR.getDefaultState()
 			: super.getStateForNeighborUpdate(blockState, direction, blockState2, iWorld, blockPos, blockPos2);
 	}
 

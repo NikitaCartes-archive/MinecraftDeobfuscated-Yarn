@@ -17,7 +17,7 @@ public class TaigaGrassFeature extends Feature<DefaultFeatureConfig> {
 	}
 
 	public BlockState getGrass(Random random) {
-		return random.nextInt(5) > 0 ? Blocks.field_10112.getDefaultState() : Blocks.field_10479.getDefaultState();
+		return random.nextInt(5) > 0 ? Blocks.FERN.getDefaultState() : Blocks.GRASS.getDefaultState();
 	}
 
 	public boolean method_14061(
@@ -26,7 +26,7 @@ public class TaigaGrassFeature extends Feature<DefaultFeatureConfig> {
 		BlockState blockState = this.getGrass(random);
 
 		for (BlockState blockState2 = iWorld.getBlockState(blockPos);
-			(blockState2.isAir() || blockState2.matches(BlockTags.field_15503)) && blockPos.getY() > 0;
+			(blockState2.isAir() || blockState2.matches(BlockTags.LEAVES)) && blockPos.getY() > 0;
 			blockState2 = iWorld.getBlockState(blockPos)
 		) {
 			blockPos = blockPos.down();

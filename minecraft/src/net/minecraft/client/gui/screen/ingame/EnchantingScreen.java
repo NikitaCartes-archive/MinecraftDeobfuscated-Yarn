@@ -190,11 +190,11 @@ public class EnchantingScreen extends AbstractContainerScreen<EnchantingTableCon
 			int o = l + 1;
 			if (this.isPointWithinBounds(60, 14 + 19 * l, 108, 17, (double)i, (double)j) && m > 0 && n >= 0 && enchantment != null) {
 				List<String> list = Lists.<String>newArrayList();
-				list.add("" + Formatting.field_1068 + Formatting.field_1056 + I18n.translate("container.enchant.clue", enchantment.getName(n).asFormattedString()));
+				list.add("" + Formatting.WHITE + Formatting.ITALIC + I18n.translate("container.enchant.clue", enchantment.getName(n).asFormattedString()));
 				if (!bl) {
 					list.add("");
 					if (this.minecraft.player.experienceLevel < m) {
-						list.add(Formatting.field_1061 + I18n.translate("container.enchant.level.requirement", this.container.enchantmentPower[l]));
+						list.add(Formatting.RED + I18n.translate("container.enchant.level.requirement", this.container.enchantmentPower[l]));
 					} else {
 						String string;
 						if (o == 1) {
@@ -203,7 +203,7 @@ public class EnchantingScreen extends AbstractContainerScreen<EnchantingTableCon
 							string = I18n.translate("container.enchant.lapis.many", o);
 						}
 
-						Formatting formatting = k >= o ? Formatting.field_1080 : Formatting.field_1061;
+						Formatting formatting = k >= o ? Formatting.GRAY : Formatting.RED;
 						list.add(formatting + "" + string);
 						if (o == 1) {
 							string = I18n.translate("container.enchant.level.one");
@@ -211,7 +211,7 @@ public class EnchantingScreen extends AbstractContainerScreen<EnchantingTableCon
 							string = I18n.translate("container.enchant.level.many", o);
 						}
 
-						list.add(Formatting.field_1080 + "" + string);
+						list.add(Formatting.GRAY + "" + string);
 					}
 				}
 

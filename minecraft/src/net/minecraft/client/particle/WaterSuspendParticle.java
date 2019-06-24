@@ -33,7 +33,7 @@ public class WaterSuspendParticle extends SpriteBillboardParticle {
 			this.markDead();
 		} else {
 			this.move(this.velocityX, this.velocityY, this.velocityZ);
-			if (!this.world.getFluidState(new BlockPos(this.x, this.y, this.z)).matches(FluidTags.field_15517)) {
+			if (!this.world.getFluidState(new BlockPos(this.x, this.y, this.z)).matches(FluidTags.WATER)) {
 				this.markDead();
 			}
 		}

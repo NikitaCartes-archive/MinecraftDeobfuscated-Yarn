@@ -33,7 +33,7 @@ public class ShapelessRecipe implements CraftingRecipe {
 
 	@Override
 	public RecipeSerializer<?> getSerializer() {
-		return RecipeSerializer.SHAPELESS;
+		return RecipeSerializer.CRAFTING_SHAPELESS;
 	}
 
 	@Environment(EnvType.CLIENT)
@@ -92,7 +92,7 @@ public class ShapelessRecipe implements CraftingRecipe {
 		}
 
 		private static DefaultedList<Ingredient> getIngredients(JsonArray jsonArray) {
-			DefaultedList<Ingredient> defaultedList = DefaultedList.create();
+			DefaultedList<Ingredient> defaultedList = DefaultedList.of();
 
 			for (int i = 0; i < jsonArray.size(); i++) {
 				Ingredient ingredient = Ingredient.fromJson(jsonArray.get(i));
@@ -107,7 +107,7 @@ public class ShapelessRecipe implements CraftingRecipe {
 		public ShapelessRecipe method_8141(Identifier identifier, PacketByteBuf packetByteBuf) {
 			String string = packetByteBuf.readString(32767);
 			int i = packetByteBuf.readVarInt();
-			DefaultedList<Ingredient> defaultedList = DefaultedList.create(i, Ingredient.EMPTY);
+			DefaultedList<Ingredient> defaultedList = DefaultedList.ofSize(i, Ingredient.EMPTY);
 
 			for (int j = 0; j < defaultedList.size(); j++) {
 				defaultedList.set(j, Ingredient.fromPacket(packetByteBuf));

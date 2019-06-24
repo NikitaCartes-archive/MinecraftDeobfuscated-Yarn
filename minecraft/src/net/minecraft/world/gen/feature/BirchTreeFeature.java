@@ -11,8 +11,8 @@ import net.minecraft.util.math.MutableIntBoundingBox;
 import net.minecraft.world.ModifiableTestableWorld;
 
 public class BirchTreeFeature extends AbstractTreeFeature<DefaultFeatureConfig> {
-	private static final BlockState LOG = Blocks.field_10511.getDefaultState();
-	private static final BlockState LEAVES = Blocks.field_10539.getDefaultState();
+	private static final BlockState LOG = Blocks.BIRCH_LOG.getDefaultState();
+	private static final BlockState LEAVES = Blocks.BIRCH_LEAVES.getDefaultState();
 	private final boolean alwaysTall;
 
 	public BirchTreeFeature(Function<Dynamic<?>, ? extends DefaultFeatureConfig> function, boolean bl, boolean bl2) {

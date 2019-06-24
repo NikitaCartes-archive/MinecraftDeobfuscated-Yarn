@@ -221,7 +221,9 @@ public final class VoxelShapes {
 		return d;
 	}
 
-	public static double method_17945(Direction.Axis axis, Box box, ViewableWorld viewableWorld, double d, EntityContext entityContext, Stream<VoxelShape> stream) {
+	public static double calculateSoftOffset(
+		Direction.Axis axis, Box box, ViewableWorld viewableWorld, double d, EntityContext entityContext, Stream<VoxelShape> stream
+	) {
 		return method_17944(box, viewableWorld, d, entityContext, AxisCycleDirection.between(axis, Direction.Axis.Z), stream);
 	}
 
@@ -268,7 +270,7 @@ public final class VoxelShapes {
 						if (s < 3) {
 							mutable.method_17965(axisCycleDirection2, q, r, p);
 							BlockState blockState = viewableWorld.getBlockState(mutable);
-							if ((s != 1 || blockState.method_17900()) && (s != 2 || blockState.getBlock() == Blocks.field_10008)) {
+							if ((s != 1 || blockState.method_17900()) && (s != 2 || blockState.getBlock() == Blocks.MOVING_PISTON)) {
 								d = blockState.getCollisionShape(viewableWorld, mutable, entityContext)
 									.method_1108(axis3, box.offset((double)(-mutable.getX()), (double)(-mutable.getY()), (double)(-mutable.getZ())), d);
 								if (Math.abs(d) < 1.0E-7) {

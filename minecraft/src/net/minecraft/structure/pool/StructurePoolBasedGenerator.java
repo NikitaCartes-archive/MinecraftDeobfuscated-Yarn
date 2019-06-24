@@ -113,7 +113,7 @@ public class StructurePoolBasedGenerator {
 			MutableIntBoundingBox mutableIntBoundingBox = poolStructurePiece.getBoundingBox();
 			int j = (mutableIntBoundingBox.maxX + mutableIntBoundingBox.minX) / 2;
 			int k = (mutableIntBoundingBox.maxZ + mutableIntBoundingBox.minZ) / 2;
-			int l = chunkGenerator.method_20402(j, k, Heightmap.Type.field_13194);
+			int l = chunkGenerator.method_20402(j, k, Heightmap.Type.WORLD_SURFACE_WG);
 			poolStructurePiece.translate(0, l - (mutableIntBoundingBox.minY + poolStructurePiece.getGroundLevelDelta()), 0);
 			list.add(poolStructurePiece);
 			if (i > 0) {
@@ -143,7 +143,7 @@ public class StructurePoolBasedGenerator {
 			BlockPos blockPos = poolStructurePiece.getPos();
 			BlockRotation blockRotation = poolStructurePiece.getRotation();
 			StructurePool.Projection projection = structurePoolElement.getProjection();
-			boolean bl = projection == StructurePool.Projection.field_16687;
+			boolean bl = projection == StructurePool.Projection.RIGID;
 			AtomicReference<VoxelShape> atomicReference2 = new AtomicReference();
 			MutableIntBoundingBox mutableIntBoundingBox = poolStructurePiece.getBoundingBox();
 			int k = mutableIntBoundingBox.minY;
@@ -214,7 +214,7 @@ public class StructurePoolBasedGenerator {
 									MutableIntBoundingBox mutableIntBoundingBox3 = structurePoolElement2.getBoundingBox(this.field_18703, blockPos5, blockRotation2);
 									int p = mutableIntBoundingBox3.minY;
 									StructurePool.Projection projection2 = structurePoolElement2.getProjection();
-									boolean bl3 = projection2 == StructurePool.Projection.field_16687;
+									boolean bl3 = projection2 == StructurePool.Projection.RIGID;
 									int q = blockPos4.getY();
 									int r = l - q + ((Direction)structureBlockInfo.state.get(JigsawBlock.FACING)).getOffsetY();
 									int s;
@@ -222,7 +222,7 @@ public class StructurePoolBasedGenerator {
 										s = k + r;
 									} else {
 										if (m == -1) {
-											m = this.field_18702.method_20402(blockPos2.getX(), blockPos2.getZ(), Heightmap.Type.field_13194);
+											m = this.field_18702.method_20402(blockPos2.getX(), blockPos2.getZ(), Heightmap.Type.WORLD_SURFACE_WG);
 										}
 
 										s = m - q;
@@ -259,7 +259,7 @@ public class StructurePoolBasedGenerator {
 											w = s + q;
 										} else {
 											if (m == -1) {
-												m = this.field_18702.method_20402(blockPos2.getX(), blockPos2.getZ(), Heightmap.Type.field_13194);
+												m = this.field_18702.method_20402(blockPos2.getX(), blockPos2.getZ(), Heightmap.Type.WORLD_SURFACE_WG);
 											}
 
 											w = m + r / 2;

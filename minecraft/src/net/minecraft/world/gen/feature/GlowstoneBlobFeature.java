@@ -20,10 +20,10 @@ public class GlowstoneBlobFeature extends Feature<DefaultFeatureConfig> {
 	) {
 		if (!iWorld.isAir(blockPos)) {
 			return false;
-		} else if (iWorld.getBlockState(blockPos.up()).getBlock() != Blocks.field_10515) {
+		} else if (iWorld.getBlockState(blockPos.up()).getBlock() != Blocks.NETHERRACK) {
 			return false;
 		} else {
-			iWorld.setBlockState(blockPos, Blocks.field_10171.getDefaultState(), 2);
+			iWorld.setBlockState(blockPos, Blocks.GLOWSTONE.getDefaultState(), 2);
 
 			for (int i = 0; i < 1500; i++) {
 				BlockPos blockPos2 = blockPos.add(random.nextInt(8) - random.nextInt(8), -random.nextInt(12), random.nextInt(8) - random.nextInt(8));
@@ -31,7 +31,7 @@ public class GlowstoneBlobFeature extends Feature<DefaultFeatureConfig> {
 					int j = 0;
 
 					for (Direction direction : Direction.values()) {
-						if (iWorld.getBlockState(blockPos2.offset(direction)).getBlock() == Blocks.field_10171) {
+						if (iWorld.getBlockState(blockPos2.offset(direction)).getBlock() == Blocks.GLOWSTONE) {
 							j++;
 						}
 
@@ -41,7 +41,7 @@ public class GlowstoneBlobFeature extends Feature<DefaultFeatureConfig> {
 					}
 
 					if (j == 1) {
-						iWorld.setBlockState(blockPos2, Blocks.field_10171.getDefaultState(), 2);
+						iWorld.setBlockState(blockPos2, Blocks.GLOWSTONE.getDefaultState(), 2);
 					}
 				}
 			}

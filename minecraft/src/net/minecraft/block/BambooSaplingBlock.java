@@ -28,7 +28,7 @@ public class BambooSaplingBlock extends Block implements Fertilizable {
 
 	@Override
 	public Block.OffsetType getOffsetType() {
-		return Block.OffsetType.field_10657;
+		return Block.OffsetType.XZ;
 	}
 
 	@Override
@@ -46,7 +46,7 @@ public class BambooSaplingBlock extends Block implements Fertilizable {
 
 	@Override
 	public boolean canPlaceAt(BlockState blockState, ViewableWorld viewableWorld, BlockPos blockPos) {
-		return viewableWorld.getBlockState(blockPos.down()).matches(BlockTags.field_15497);
+		return viewableWorld.getBlockState(blockPos.down()).matches(BlockTags.BAMBOO_PLANTABLE_ON);
 	}
 
 	@Override
@@ -54,10 +54,10 @@ public class BambooSaplingBlock extends Block implements Fertilizable {
 		BlockState blockState, Direction direction, BlockState blockState2, IWorld iWorld, BlockPos blockPos, BlockPos blockPos2
 	) {
 		if (!blockState.canPlaceAt(iWorld, blockPos)) {
-			return Blocks.field_10124.getDefaultState();
+			return Blocks.AIR.getDefaultState();
 		} else {
-			if (direction == Direction.field_11036 && blockState2.getBlock() == Blocks.field_10211) {
-				iWorld.setBlockState(blockPos, Blocks.field_10211.getDefaultState(), 2);
+			if (direction == Direction.UP && blockState2.getBlock() == Blocks.BAMBOO) {
+				iWorld.setBlockState(blockPos, Blocks.BAMBOO.getDefaultState(), 2);
 			}
 
 			return super.getStateForNeighborUpdate(blockState, direction, blockState2, iWorld, blockPos, blockPos2);
@@ -92,10 +92,10 @@ public class BambooSaplingBlock extends Block implements Fertilizable {
 
 	@Override
 	public BlockRenderLayer getRenderLayer() {
-		return BlockRenderLayer.field_9174;
+		return BlockRenderLayer.CUTOUT;
 	}
 
 	protected void grow(World world, BlockPos blockPos) {
-		world.setBlockState(blockPos.up(), Blocks.field_10211.getDefaultState().with(BambooBlock.LEAVES, BambooLeaves.field_12466), 3);
+		world.setBlockState(blockPos.up(), Blocks.BAMBOO.getDefaultState().with(BambooBlock.LEAVES, BambooLeaves.SMALL), 3);
 	}
 }

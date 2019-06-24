@@ -35,8 +35,8 @@ public class CoralBlock extends CoralParentBlock {
 	public BlockState getStateForNeighborUpdate(
 		BlockState blockState, Direction direction, BlockState blockState2, IWorld iWorld, BlockPos blockPos, BlockPos blockPos2
 	) {
-		if (direction == Direction.field_11033 && !blockState.canPlaceAt(iWorld, blockPos)) {
-			return Blocks.field_10124.getDefaultState();
+		if (direction == Direction.DOWN && !blockState.canPlaceAt(iWorld, blockPos)) {
+			return Blocks.AIR.getDefaultState();
 		} else {
 			this.checkLivingConditions(blockState, iWorld, blockPos);
 			if ((Boolean)blockState.get(WATERLOGGED)) {

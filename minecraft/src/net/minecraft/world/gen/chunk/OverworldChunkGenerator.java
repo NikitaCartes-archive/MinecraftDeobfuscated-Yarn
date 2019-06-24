@@ -135,14 +135,14 @@ public class OverworldChunkGenerator extends SurfaceChunkGenerator<OverworldChun
 	@Override
 	public List<Biome.SpawnEntry> getEntitySpawnList(EntityCategory entityCategory, BlockPos blockPos) {
 		if (Feature.SWAMP_HUT.method_14029(this.world, blockPos)) {
-			if (entityCategory == EntityCategory.field_6302) {
+			if (entityCategory == EntityCategory.MONSTER) {
 				return Feature.SWAMP_HUT.getMonsterSpawns();
 			}
 
-			if (entityCategory == EntityCategory.field_6294) {
+			if (entityCategory == EntityCategory.CREATURE) {
 				return Feature.SWAMP_HUT.getCreatureSpawns();
 			}
-		} else if (entityCategory == EntityCategory.field_6302) {
+		} else if (entityCategory == EntityCategory.MONSTER) {
 			if (Feature.PILLAGER_OUTPOST.isApproximatelyInsideStructure(this.world, blockPos)) {
 				return Feature.PILLAGER_OUTPOST.getMonsterSpawns();
 			}

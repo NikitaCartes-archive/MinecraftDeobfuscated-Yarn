@@ -55,7 +55,7 @@ public class WallBlock extends HorizontalConnectedBlock {
 
 	private boolean shouldConnectTo(BlockState blockState, boolean bl, Direction direction) {
 		Block block = blockState.getBlock();
-		boolean bl2 = block.matches(BlockTags.field_15504) || block instanceof FenceGateBlock && FenceGateBlock.canWallConnect(blockState, direction);
+		boolean bl2 = block.matches(BlockTags.WALLS) || block instanceof FenceGateBlock && FenceGateBlock.canWallConnect(blockState, direction);
 		return !canConnect(block) && bl || bl2;
 	}
 
@@ -72,10 +72,10 @@ public class WallBlock extends HorizontalConnectedBlock {
 		BlockState blockState2 = viewableWorld.getBlockState(blockPos3);
 		BlockState blockState3 = viewableWorld.getBlockState(blockPos4);
 		BlockState blockState4 = viewableWorld.getBlockState(blockPos5);
-		boolean bl = this.shouldConnectTo(blockState, Block.isSolidFullSquare(blockState, viewableWorld, blockPos2, Direction.field_11035), Direction.field_11035);
-		boolean bl2 = this.shouldConnectTo(blockState2, Block.isSolidFullSquare(blockState2, viewableWorld, blockPos3, Direction.field_11039), Direction.field_11039);
-		boolean bl3 = this.shouldConnectTo(blockState3, Block.isSolidFullSquare(blockState3, viewableWorld, blockPos4, Direction.field_11043), Direction.field_11043);
-		boolean bl4 = this.shouldConnectTo(blockState4, Block.isSolidFullSquare(blockState4, viewableWorld, blockPos5, Direction.field_11034), Direction.field_11034);
+		boolean bl = this.shouldConnectTo(blockState, Block.isSolidFullSquare(blockState, viewableWorld, blockPos2, Direction.SOUTH), Direction.SOUTH);
+		boolean bl2 = this.shouldConnectTo(blockState2, Block.isSolidFullSquare(blockState2, viewableWorld, blockPos3, Direction.WEST), Direction.WEST);
+		boolean bl3 = this.shouldConnectTo(blockState3, Block.isSolidFullSquare(blockState3, viewableWorld, blockPos4, Direction.NORTH), Direction.NORTH);
+		boolean bl4 = this.shouldConnectTo(blockState4, Block.isSolidFullSquare(blockState4, viewableWorld, blockPos5, Direction.EAST), Direction.EAST);
 		boolean bl5 = (!bl || bl2 || !bl3 || bl4) && (bl || !bl2 || bl3 || !bl4);
 		return this.getDefaultState()
 			.with(UP, Boolean.valueOf(bl5 || !viewableWorld.isAir(blockPos.up())))
@@ -94,20 +94,20 @@ public class WallBlock extends HorizontalConnectedBlock {
 			iWorld.getFluidTickScheduler().schedule(blockPos, Fluids.WATER, Fluids.WATER.getTickRate(iWorld));
 		}
 
-		if (direction == Direction.field_11033) {
+		if (direction == Direction.DOWN) {
 			return super.getStateForNeighborUpdate(blockState, direction, blockState2, iWorld, blockPos, blockPos2);
 		} else {
 			Direction direction2 = direction.getOpposite();
-			boolean bl = direction == Direction.field_11043
+			boolean bl = direction == Direction.NORTH
 				? this.shouldConnectTo(blockState2, Block.isSolidFullSquare(blockState2, iWorld, blockPos2, direction2), direction2)
 				: (Boolean)blockState.get(NORTH);
-			boolean bl2 = direction == Direction.field_11034
+			boolean bl2 = direction == Direction.EAST
 				? this.shouldConnectTo(blockState2, Block.isSolidFullSquare(blockState2, iWorld, blockPos2, direction2), direction2)
 				: (Boolean)blockState.get(EAST);
-			boolean bl3 = direction == Direction.field_11035
+			boolean bl3 = direction == Direction.SOUTH
 				? this.shouldConnectTo(blockState2, Block.isSolidFullSquare(blockState2, iWorld, blockPos2, direction2), direction2)
 				: (Boolean)blockState.get(SOUTH);
-			boolean bl4 = direction == Direction.field_11039
+			boolean bl4 = direction == Direction.WEST
 				? this.shouldConnectTo(blockState2, Block.isSolidFullSquare(blockState2, iWorld, blockPos2, direction2), direction2)
 				: (Boolean)blockState.get(WEST);
 			boolean bl5 = (!bl || bl2 || !bl3 || bl4) && (bl || !bl2 || bl3 || !bl4);

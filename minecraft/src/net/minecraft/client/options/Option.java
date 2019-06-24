@@ -209,8 +209,8 @@ public abstract class Option {
 	);
 	public static final CyclingOption MAIN_HAND = new CyclingOption(
 		"options.mainHand",
-		(gameOptions, integer) -> gameOptions.mainHand = gameOptions.mainHand.getOpposite(),
-		(gameOptions, cyclingOption) -> cyclingOption.getDisplayPrefix() + gameOptions.mainHand
+		(gameOptions, integer) -> gameOptions.mainArm = gameOptions.mainArm.getOpposite(),
+		(gameOptions, cyclingOption) -> cyclingOption.getDisplayPrefix() + gameOptions.mainArm
 	);
 	public static final CyclingOption NARRATOR = new CyclingOption(
 		"options.narrator",

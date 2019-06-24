@@ -36,11 +36,11 @@ public class CloneCommand {
 			CommandManager.literal("clone")
 				.requires(serverCommandSource -> serverCommandSource.hasPermissionLevel(2))
 				.then(
-					CommandManager.argument("begin", BlockPosArgumentType.create())
+					CommandManager.argument("begin", BlockPosArgumentType.blockPos())
 						.then(
-							CommandManager.argument("end", BlockPosArgumentType.create())
+							CommandManager.argument("end", BlockPosArgumentType.blockPos())
 								.then(
-									CommandManager.argument("destination", BlockPosArgumentType.create())
+									CommandManager.argument("destination", BlockPosArgumentType.blockPos())
 										.executes(
 											commandContext -> execute(
 													commandContext.getSource(),
@@ -48,7 +48,7 @@ public class CloneCommand {
 													BlockPosArgumentType.getLoadedBlockPos(commandContext, "end"),
 													BlockPosArgumentType.getLoadedBlockPos(commandContext, "destination"),
 													cachedBlockPosition -> true,
-													CloneCommand.Mode.field_13499
+													CloneCommand.Mode.NORMAL
 												)
 										)
 										.then(
@@ -60,7 +60,7 @@ public class CloneCommand {
 															BlockPosArgumentType.getLoadedBlockPos(commandContext, "end"),
 															BlockPosArgumentType.getLoadedBlockPos(commandContext, "destination"),
 															cachedBlockPosition -> true,
-															CloneCommand.Mode.field_13499
+															CloneCommand.Mode.NORMAL
 														)
 												)
 												.then(
@@ -72,7 +72,7 @@ public class CloneCommand {
 																	BlockPosArgumentType.getLoadedBlockPos(commandContext, "end"),
 																	BlockPosArgumentType.getLoadedBlockPos(commandContext, "destination"),
 																	cachedBlockPosition -> true,
-																	CloneCommand.Mode.field_13497
+																	CloneCommand.Mode.FORCE
 																)
 														)
 												)
@@ -85,7 +85,7 @@ public class CloneCommand {
 																	BlockPosArgumentType.getLoadedBlockPos(commandContext, "end"),
 																	BlockPosArgumentType.getLoadedBlockPos(commandContext, "destination"),
 																	cachedBlockPosition -> true,
-																	CloneCommand.Mode.field_13500
+																	CloneCommand.Mode.MOVE
 																)
 														)
 												)
@@ -98,7 +98,7 @@ public class CloneCommand {
 																	BlockPosArgumentType.getLoadedBlockPos(commandContext, "end"),
 																	BlockPosArgumentType.getLoadedBlockPos(commandContext, "destination"),
 																	cachedBlockPosition -> true,
-																	CloneCommand.Mode.field_13499
+																	CloneCommand.Mode.NORMAL
 																)
 														)
 												)
@@ -112,7 +112,7 @@ public class CloneCommand {
 															BlockPosArgumentType.getLoadedBlockPos(commandContext, "end"),
 															BlockPosArgumentType.getLoadedBlockPos(commandContext, "destination"),
 															IS_AIR_PREDICATE,
-															CloneCommand.Mode.field_13499
+															CloneCommand.Mode.NORMAL
 														)
 												)
 												.then(
@@ -124,7 +124,7 @@ public class CloneCommand {
 																	BlockPosArgumentType.getLoadedBlockPos(commandContext, "end"),
 																	BlockPosArgumentType.getLoadedBlockPos(commandContext, "destination"),
 																	IS_AIR_PREDICATE,
-																	CloneCommand.Mode.field_13497
+																	CloneCommand.Mode.FORCE
 																)
 														)
 												)
@@ -137,7 +137,7 @@ public class CloneCommand {
 																	BlockPosArgumentType.getLoadedBlockPos(commandContext, "end"),
 																	BlockPosArgumentType.getLoadedBlockPos(commandContext, "destination"),
 																	IS_AIR_PREDICATE,
-																	CloneCommand.Mode.field_13500
+																	CloneCommand.Mode.MOVE
 																)
 														)
 												)
@@ -150,7 +150,7 @@ public class CloneCommand {
 																	BlockPosArgumentType.getLoadedBlockPos(commandContext, "end"),
 																	BlockPosArgumentType.getLoadedBlockPos(commandContext, "destination"),
 																	IS_AIR_PREDICATE,
-																	CloneCommand.Mode.field_13499
+																	CloneCommand.Mode.NORMAL
 																)
 														)
 												)
@@ -158,7 +158,7 @@ public class CloneCommand {
 										.then(
 											CommandManager.literal("filtered")
 												.then(
-													CommandManager.argument("filter", BlockPredicateArgumentType.create())
+													CommandManager.argument("filter", BlockPredicateArgumentType.blockPredicate())
 														.executes(
 															commandContext -> execute(
 																	commandContext.getSource(),
@@ -166,7 +166,7 @@ public class CloneCommand {
 																	BlockPosArgumentType.getLoadedBlockPos(commandContext, "end"),
 																	BlockPosArgumentType.getLoadedBlockPos(commandContext, "destination"),
 																	BlockPredicateArgumentType.getBlockPredicate(commandContext, "filter"),
-																	CloneCommand.Mode.field_13499
+																	CloneCommand.Mode.NORMAL
 																)
 														)
 														.then(
@@ -178,7 +178,7 @@ public class CloneCommand {
 																			BlockPosArgumentType.getLoadedBlockPos(commandContext, "end"),
 																			BlockPosArgumentType.getLoadedBlockPos(commandContext, "destination"),
 																			BlockPredicateArgumentType.getBlockPredicate(commandContext, "filter"),
-																			CloneCommand.Mode.field_13497
+																			CloneCommand.Mode.FORCE
 																		)
 																)
 														)
@@ -191,7 +191,7 @@ public class CloneCommand {
 																			BlockPosArgumentType.getLoadedBlockPos(commandContext, "end"),
 																			BlockPosArgumentType.getLoadedBlockPos(commandContext, "destination"),
 																			BlockPredicateArgumentType.getBlockPredicate(commandContext, "filter"),
-																			CloneCommand.Mode.field_13500
+																			CloneCommand.Mode.MOVE
 																		)
 																)
 														)
@@ -204,7 +204,7 @@ public class CloneCommand {
 																			BlockPosArgumentType.getLoadedBlockPos(commandContext, "end"),
 																			BlockPosArgumentType.getLoadedBlockPos(commandContext, "destination"),
 																			BlockPredicateArgumentType.getBlockPredicate(commandContext, "filter"),
-																			CloneCommand.Mode.field_13499
+																			CloneCommand.Mode.NORMAL
 																		)
 																)
 														)
@@ -271,15 +271,15 @@ public class CloneCommand {
 						}
 					}
 
-					if (mode == CloneCommand.Mode.field_13500) {
+					if (mode == CloneCommand.Mode.MOVE) {
 						for (BlockPos blockPos8 : deque) {
 							BlockEntity blockEntity2 = serverWorld.getBlockEntity(blockPos8);
 							Clearable.clear(blockEntity2);
-							serverWorld.setBlockState(blockPos8, Blocks.field_10499.getDefaultState(), 2);
+							serverWorld.setBlockState(blockPos8, Blocks.BARRIER.getDefaultState(), 2);
 						}
 
 						for (BlockPos blockPos8 : deque) {
-							serverWorld.setBlockState(blockPos8, Blocks.field_10124.getDefaultState(), 3);
+							serverWorld.setBlockState(blockPos8, Blocks.AIR.getDefaultState(), 3);
 						}
 					}
 
@@ -292,7 +292,7 @@ public class CloneCommand {
 					for (CloneCommand.BlockInfo blockInfo : list5) {
 						BlockEntity blockEntity3 = serverWorld.getBlockEntity(blockInfo.pos);
 						Clearable.clear(blockEntity3);
-						serverWorld.setBlockState(blockInfo.pos, Blocks.field_10499.getDefaultState(), 2);
+						serverWorld.setBlockState(blockInfo.pos, Blocks.BARRIER.getDefaultState(), 2);
 					}
 
 					int lx = 0;
@@ -348,9 +348,9 @@ public class CloneCommand {
 	}
 
 	static enum Mode {
-		field_13497(true),
-		field_13500(true),
-		field_13499(false);
+		FORCE(true),
+		MOVE(true),
+		NORMAL(false);
 
 		private final boolean allowsOverlap;
 

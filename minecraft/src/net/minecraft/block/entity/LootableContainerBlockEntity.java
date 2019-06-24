@@ -62,13 +62,13 @@ public abstract class LootableContainerBlockEntity extends LockableContainerBloc
 			LootSupplier lootSupplier = this.world.getServer().getLootManager().getSupplier(this.lootTableId);
 			this.lootTableId = null;
 			LootContext.Builder builder = new LootContext.Builder((ServerWorld)this.world)
-				.put(LootContextParameters.field_1232, new BlockPos(this.pos))
+				.put(LootContextParameters.POSITION, new BlockPos(this.pos))
 				.setRandom(this.lootTableSeed);
 			if (playerEntity != null) {
-				builder.setLuck(playerEntity.getLuck()).put(LootContextParameters.field_1226, playerEntity);
+				builder.setLuck(playerEntity.getLuck()).put(LootContextParameters.THIS_ENTITY, playerEntity);
 			}
 
-			lootSupplier.supplyInventory(this, builder.build(LootContextTypes.field_1179));
+			lootSupplier.supplyInventory(this, builder.build(LootContextTypes.CHEST));
 		}
 	}
 

@@ -25,13 +25,13 @@ public class RecipeBookDataC2SPacket implements Packet<ServerPlayPacketListener>
 	}
 
 	public RecipeBookDataC2SPacket(Recipe<?> recipe) {
-		this.mode = RecipeBookDataC2SPacket.Mode.field_13011;
+		this.mode = RecipeBookDataC2SPacket.Mode.SHOWN;
 		this.recipeId = recipe.getId();
 	}
 
 	@Environment(EnvType.CLIENT)
 	public RecipeBookDataC2SPacket(boolean bl, boolean bl2, boolean bl3, boolean bl4, boolean bl5, boolean bl6) {
-		this.mode = RecipeBookDataC2SPacket.Mode.field_13010;
+		this.mode = RecipeBookDataC2SPacket.Mode.SETTINGS;
 		this.guiOpen = bl;
 		this.filteringCraftable = bl2;
 		this.furnaceGuiOpen = bl3;
@@ -45,9 +45,9 @@ public class RecipeBookDataC2SPacket implements Packet<ServerPlayPacketListener>
 	@Override
 	public void read(PacketByteBuf packetByteBuf) throws IOException {
 		this.mode = packetByteBuf.readEnumConstant(RecipeBookDataC2SPacket.Mode.class);
-		if (this.mode == RecipeBookDataC2SPacket.Mode.field_13011) {
+		if (this.mode == RecipeBookDataC2SPacket.Mode.SHOWN) {
 			this.recipeId = packetByteBuf.readIdentifier();
-		} else if (this.mode == RecipeBookDataC2SPacket.Mode.field_13010) {
+		} else if (this.mode == RecipeBookDataC2SPacket.Mode.SETTINGS) {
 			this.guiOpen = packetByteBuf.readBoolean();
 			this.filteringCraftable = packetByteBuf.readBoolean();
 			this.furnaceGuiOpen = packetByteBuf.readBoolean();
@@ -62,9 +62,9 @@ public class RecipeBookDataC2SPacket implements Packet<ServerPlayPacketListener>
 	@Override
 	public void write(PacketByteBuf packetByteBuf) throws IOException {
 		packetByteBuf.writeEnumConstant(this.mode);
-		if (this.mode == RecipeBookDataC2SPacket.Mode.field_13011) {
+		if (this.mode == RecipeBookDataC2SPacket.Mode.SHOWN) {
 			packetByteBuf.writeIdentifier(this.recipeId);
-		} else if (this.mode == RecipeBookDataC2SPacket.Mode.field_13010) {
+		} else if (this.mode == RecipeBookDataC2SPacket.Mode.SETTINGS) {
 			packetByteBuf.writeBoolean(this.guiOpen);
 			packetByteBuf.writeBoolean(this.filteringCraftable);
 			packetByteBuf.writeBoolean(this.furnaceGuiOpen);
@@ -121,7 +121,7 @@ public class RecipeBookDataC2SPacket implements Packet<ServerPlayPacketListener>
 	}
 
 	public static enum Mode {
-		field_13011,
-		field_13010;
+		SHOWN,
+		SETTINGS;
 	}
 }

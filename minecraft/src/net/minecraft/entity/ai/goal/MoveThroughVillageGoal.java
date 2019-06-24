@@ -33,7 +33,7 @@ public class MoveThroughVillageGoal extends Goal {
 		this.requiresNighttime = bl;
 		this.field_18414 = i;
 		this.field_18415 = booleanSupplier;
-		this.setControls(EnumSet.of(Goal.Control.field_18405));
+		this.setControls(EnumSet.of(Goal.Control.MOVE));
 		if (!(mobEntityWithAi.getNavigation() instanceof MobNavigation)) {
 			throw new IllegalArgumentException("Unsupported mob for MoveThroughVillageGoal");
 		}
@@ -59,7 +59,7 @@ public class MoveThroughVillageGoal extends Goal {
 							return Double.NEGATIVE_INFINITY;
 						} else {
 							Optional<BlockPos> optionalx = serverWorld.getPointOfInterestStorage()
-								.getPosition(PointOfInterestType.ALWAYS_TRUE, this::method_19052, blockPos2x, 10, PointOfInterestStorage.OccupationStatus.field_18488);
+								.getPosition(PointOfInterestType.ALWAYS_TRUE, this::method_19052, blockPos2x, 10, PointOfInterestStorage.OccupationStatus.IS_OCCUPIED);
 							return !optionalx.isPresent() ? Double.NEGATIVE_INFINITY : -((BlockPos)optionalx.get()).getSquaredDistance(blockPos);
 						}
 					}
@@ -68,7 +68,7 @@ public class MoveThroughVillageGoal extends Goal {
 					return false;
 				} else {
 					Optional<BlockPos> optional = serverWorld.getPointOfInterestStorage()
-						.getPosition(PointOfInterestType.ALWAYS_TRUE, this::method_19052, new BlockPos(vec3d), 10, PointOfInterestStorage.OccupationStatus.field_18488);
+						.getPosition(PointOfInterestType.ALWAYS_TRUE, this::method_19052, new BlockPos(vec3d), 10, PointOfInterestStorage.OccupationStatus.IS_OCCUPIED);
 					if (!optional.isPresent()) {
 						return false;
 					} else {

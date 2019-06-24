@@ -27,7 +27,7 @@ public class LoomBlock extends HorizontalFacingBlock {
 			return true;
 		} else {
 			playerEntity.openContainer(blockState.createContainerProvider(world, blockPos));
-			playerEntity.incrementStat(Stats.field_19253);
+			playerEntity.incrementStat(Stats.INTERACT_WITH_LOOM);
 			return true;
 		}
 	}

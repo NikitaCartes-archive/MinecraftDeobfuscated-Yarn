@@ -26,7 +26,7 @@ public class DefaultClientResourcePack extends DefaultResourcePack {
 	@Nullable
 	@Override
 	protected InputStream findInputStream(ResourceType resourceType, Identifier identifier) {
-		if (resourceType == ResourceType.field_14188) {
+		if (resourceType == ResourceType.CLIENT_RESOURCES) {
 			File file = this.index.getResource(identifier);
 			if (file != null && file.exists()) {
 				try {
@@ -41,7 +41,7 @@ public class DefaultClientResourcePack extends DefaultResourcePack {
 
 	@Override
 	public boolean contains(ResourceType resourceType, Identifier identifier) {
-		if (resourceType == ResourceType.field_14188) {
+		if (resourceType == ResourceType.CLIENT_RESOURCES) {
 			File file = this.index.getResource(identifier);
 			if (file != null && file.exists()) {
 				return true;

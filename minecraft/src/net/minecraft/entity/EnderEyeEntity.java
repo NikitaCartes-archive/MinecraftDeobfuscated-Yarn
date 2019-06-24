@@ -37,13 +37,13 @@ public class EnderEyeEntity extends Entity implements FlyingItemEntity {
 	}
 
 	public EnderEyeEntity(World world, double d, double e, double f) {
-		this(EntityType.field_6061, world);
+		this(EntityType.EYE_OF_ENDER, world);
 		this.useCount = 0;
 		this.setPosition(d, e, f);
 	}
 
 	public void setItem(ItemStack itemStack) {
-		if (itemStack.getItem() != Items.field_8449 || itemStack.hasTag()) {
+		if (itemStack.getItem() != Items.ENDER_EYE || itemStack.hasTag()) {
 			this.getDataTracker().set(ITEM, SystemUtil.consume(itemStack.copy(), itemStackx -> itemStackx.setCount(1)));
 		}
 	}
@@ -55,7 +55,7 @@ public class EnderEyeEntity extends Entity implements FlyingItemEntity {
 	@Override
 	public ItemStack getStack() {
 		ItemStack itemStack = this.getTrackedItem();
-		return itemStack.isEmpty() ? new ItemStack(Items.field_8449) : itemStack;
+		return itemStack.isEmpty() ? new ItemStack(Items.ENDER_EYE) : itemStack;
 	}
 
 	@Override
@@ -161,12 +161,12 @@ public class EnderEyeEntity extends Entity implements FlyingItemEntity {
 		float l = 0.25F;
 		if (this.isInsideWater()) {
 			for (int m = 0; m < 4; m++) {
-				this.world.addParticle(ParticleTypes.field_11247, this.x - vec3d.x * 0.25, this.y - vec3d.y * 0.25, this.z - vec3d.z * 0.25, vec3d.x, vec3d.y, vec3d.z);
+				this.world.addParticle(ParticleTypes.BUBBLE, this.x - vec3d.x * 0.25, this.y - vec3d.y * 0.25, this.z - vec3d.z * 0.25, vec3d.x, vec3d.y, vec3d.z);
 			}
 		} else {
 			this.world
 				.addParticle(
-					ParticleTypes.field_11214,
+					ParticleTypes.PORTAL,
 					this.x - vec3d.x * 0.25 + this.random.nextDouble() * 0.6 - 0.3,
 					this.y - vec3d.y * 0.25 - 0.5,
 					this.z - vec3d.z * 0.25 + this.random.nextDouble() * 0.6 - 0.3,
@@ -180,7 +180,7 @@ public class EnderEyeEntity extends Entity implements FlyingItemEntity {
 			this.setPosition(this.x, this.y, this.z);
 			this.useCount++;
 			if (this.useCount > 80 && !this.world.isClient) {
-				this.playSound(SoundEvents.field_15210, 1.0F, 1.0F);
+				this.playSound(SoundEvents.ENTITY_ENDER_EYE_DEATH, 1.0F, 1.0F);
 				this.remove();
 				if (this.dropsItem) {
 					this.world.spawnEntity(new ItemEntity(this.world, this.x, this.y, this.z, this.getStack()));
@@ -217,7 +217,7 @@ public class EnderEyeEntity extends Entity implements FlyingItemEntity {
 	}
 
 	@Override
-	public boolean canPlayerAttack() {
+	public boolean isAttackable() {
 		return false;
 	}
 

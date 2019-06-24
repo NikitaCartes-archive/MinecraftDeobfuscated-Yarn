@@ -27,7 +27,7 @@ public class SpawnPointCommand {
 								)
 						)
 						.then(
-							CommandManager.argument("pos", BlockPosArgumentType.create())
+							CommandManager.argument("pos", BlockPosArgumentType.blockPos())
 								.executes(
 									commandContext -> execute(
 											commandContext.getSource(), EntityArgumentType.getPlayers(commandContext, "targets"), BlockPosArgumentType.getBlockPos(commandContext, "pos")

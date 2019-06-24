@@ -38,7 +38,7 @@ public class FireworkItem extends Item {
 			itemStack.decrement(1);
 		}
 
-		return ActionResult.field_5812;
+		return ActionResult.SUCCESS;
 	}
 
 	@Override
@@ -52,9 +52,9 @@ public class FireworkItem extends Item {
 				}
 			}
 
-			return new TypedActionResult<>(ActionResult.field_5812, playerEntity.getStackInHand(hand));
+			return new TypedActionResult<>(ActionResult.SUCCESS, playerEntity.getStackInHand(hand));
 		} else {
-			return new TypedActionResult<>(ActionResult.field_5811, playerEntity.getStackInHand(hand));
+			return new TypedActionResult<>(ActionResult.PASS, playerEntity.getStackInHand(hand));
 		}
 	}
 
@@ -65,10 +65,7 @@ public class FireworkItem extends Item {
 		if (compoundTag != null) {
 			if (compoundTag.containsKey("Flight", 99)) {
 				list.add(
-					new TranslatableText("item.minecraft.firework_rocket.flight")
-						.append(" ")
-						.append(String.valueOf(compoundTag.getByte("Flight")))
-						.formatted(Formatting.field_1080)
+					new TranslatableText("item.minecraft.firework_rocket.flight").append(" ").append(String.valueOf(compoundTag.getByte("Flight"))).formatted(Formatting.GRAY)
 				);
 			}
 
@@ -80,7 +77,7 @@ public class FireworkItem extends Item {
 					FireworkChargeItem.appendFireworkTooltip(compoundTag2, list2);
 					if (!list2.isEmpty()) {
 						for (int j = 1; j < list2.size(); j++) {
-							list2.set(j, new LiteralText("  ").append((Text)list2.get(j)).formatted(Formatting.field_1080));
+							list2.set(j, new LiteralText("  ").append((Text)list2.get(j)).formatted(Formatting.GRAY));
 						}
 
 						list.addAll(list2);
@@ -91,11 +88,11 @@ public class FireworkItem extends Item {
 	}
 
 	public static enum Type {
-		field_7976(0, "small_ball"),
-		field_7977(1, "large_ball"),
-		field_7973(2, "star"),
-		field_7974(3, "creeper"),
-		field_7970(4, "burst");
+		SMALL_BALL(0, "small_ball"),
+		LARGE_BALL(1, "large_ball"),
+		STAR(2, "star"),
+		CREEPER(3, "creeper"),
+		BURST(4, "burst");
 
 		private static final FireworkItem.Type[] TYPES = (FireworkItem.Type[])Arrays.stream(values())
 			.sorted(Comparator.comparingInt(type -> type.id))
@@ -119,7 +116,7 @@ public class FireworkItem extends Item {
 
 		@Environment(EnvType.CLIENT)
 		public static FireworkItem.Type byId(int i) {
-			return i >= 0 && i < TYPES.length ? TYPES[i] : field_7976;
+			return i >= 0 && i < TYPES.length ? TYPES[i] : SMALL_BALL;
 		}
 	}
 }

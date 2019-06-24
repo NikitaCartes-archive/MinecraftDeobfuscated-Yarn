@@ -20,30 +20,30 @@ public class PlainFlowerFeature extends FlowerFeature {
 			int i = random.nextInt(4);
 			switch (i) {
 				case 0:
-					return Blocks.field_10048.getDefaultState();
+					return Blocks.ORANGE_TULIP.getDefaultState();
 				case 1:
-					return Blocks.field_10270.getDefaultState();
+					return Blocks.RED_TULIP.getDefaultState();
 				case 2:
-					return Blocks.field_10315.getDefaultState();
+					return Blocks.PINK_TULIP.getDefaultState();
 				case 3:
 				default:
-					return Blocks.field_10156.getDefaultState();
+					return Blocks.WHITE_TULIP.getDefaultState();
 			}
 		} else if (random.nextInt(3) > 0) {
 			int i = random.nextInt(4);
 			switch (i) {
 				case 0:
-					return Blocks.field_10449.getDefaultState();
+					return Blocks.POPPY.getDefaultState();
 				case 1:
-					return Blocks.field_10573.getDefaultState();
+					return Blocks.AZURE_BLUET.getDefaultState();
 				case 2:
-					return Blocks.field_10554.getDefaultState();
+					return Blocks.OXEYE_DAISY.getDefaultState();
 				case 3:
 				default:
-					return Blocks.field_9995.getDefaultState();
+					return Blocks.CORNFLOWER.getDefaultState();
 			}
 		} else {
-			return Blocks.field_10182.getDefaultState();
+			return Blocks.DANDELION.getDefaultState();
 		}
 	}
 }

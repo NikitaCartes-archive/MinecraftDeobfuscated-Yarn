@@ -39,8 +39,8 @@ public class AnvilLevelStorage {
 		List<File> list2 = Lists.<File>newArrayList();
 		List<File> list3 = Lists.<File>newArrayList();
 		File file = new File(path.toFile(), string);
-		File file2 = DimensionType.field_13076.getFile(file);
-		File file3 = DimensionType.field_13078.getFile(file);
+		File file2 = DimensionType.THE_NETHER.getFile(file);
+		File file3 = DimensionType.THE_END.getFile(file);
 		LOGGER.info("Scanning folders...");
 		addRegionFiles(file, list);
 		if (file2.exists()) {
@@ -58,21 +58,21 @@ public class AnvilLevelStorage {
 		BiomeSourceType<VanillaLayeredBiomeSourceConfig, VanillaLayeredBiomeSource> biomeSourceType2 = BiomeSourceType.VANILLA_LAYERED;
 		BiomeSource biomeSource;
 		if (levelProperties != null && levelProperties.getGeneratorType() == LevelGeneratorType.FLAT) {
-			biomeSource = biomeSourceType.applyConfig(biomeSourceType.getConfig().setBiome(Biomes.field_9451));
+			biomeSource = biomeSourceType.applyConfig(biomeSourceType.getConfig().setBiome(Biomes.PLAINS));
 		} else {
 			biomeSource = biomeSourceType2.applyConfig(
-				biomeSourceType2.getConfig().setLevelProperties(levelProperties).setGeneratorSettings(ChunkGeneratorType.field_12769.createSettings())
+				biomeSourceType2.getConfig().setLevelProperties(levelProperties).setGeneratorSettings(ChunkGeneratorType.SURFACE.createSettings())
 			);
 		}
 
 		convertRegions(new File(file, "region"), list, biomeSource, 0, i, progressListener);
 		convertRegions(
-			new File(file2, "region"), list2, biomeSourceType.applyConfig(biomeSourceType.getConfig().setBiome(Biomes.field_9461)), list.size(), i, progressListener
+			new File(file2, "region"), list2, biomeSourceType.applyConfig(biomeSourceType.getConfig().setBiome(Biomes.NETHER)), list.size(), i, progressListener
 		);
 		convertRegions(
 			new File(file3, "region"),
 			list3,
-			biomeSourceType.applyConfig(biomeSourceType.getConfig().setBiome(Biomes.field_9411)),
+			biomeSourceType.applyConfig(biomeSourceType.getConfig().setBiome(Biomes.THE_END)),
 			list.size() + list2.size(),
 			i,
 			progressListener

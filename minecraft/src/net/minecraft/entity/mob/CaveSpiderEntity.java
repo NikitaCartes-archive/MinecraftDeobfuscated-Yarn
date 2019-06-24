@@ -33,14 +33,14 @@ public class CaveSpiderEntity extends SpiderEntity {
 		if (super.tryAttack(entity)) {
 			if (entity instanceof LivingEntity) {
 				int i = 0;
-				if (this.world.getDifficulty() == Difficulty.field_5802) {
+				if (this.world.getDifficulty() == Difficulty.NORMAL) {
 					i = 7;
-				} else if (this.world.getDifficulty() == Difficulty.field_5807) {
+				} else if (this.world.getDifficulty() == Difficulty.HARD) {
 					i = 15;
 				}
 
 				if (i > 0) {
-					((LivingEntity)entity).addPotionEffect(new StatusEffectInstance(StatusEffects.field_5899, i * 20, 0));
+					((LivingEntity)entity).addPotionEffect(new StatusEffectInstance(StatusEffects.POISON, i * 20, 0));
 				}
 			}
 

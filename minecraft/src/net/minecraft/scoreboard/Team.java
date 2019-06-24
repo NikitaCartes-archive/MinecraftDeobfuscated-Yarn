@@ -21,10 +21,10 @@ public class Team extends AbstractTeam {
 	private Text suffix = new LiteralText("");
 	private boolean friendlyFire = true;
 	private boolean showFriendlyInvisibles = true;
-	private AbstractTeam.VisibilityRule nameTagVisibilityRule = AbstractTeam.VisibilityRule.field_1442;
-	private AbstractTeam.VisibilityRule deathMessageVisibilityRule = AbstractTeam.VisibilityRule.field_1442;
-	private Formatting color = Formatting.field_1070;
-	private AbstractTeam.CollisionRule collisionRule = AbstractTeam.CollisionRule.field_1437;
+	private AbstractTeam.VisibilityRule nameTagVisibilityRule = AbstractTeam.VisibilityRule.ALWAYS;
+	private AbstractTeam.VisibilityRule deathMessageVisibilityRule = AbstractTeam.VisibilityRule.ALWAYS;
+	private Formatting color = Formatting.RESET;
+	private AbstractTeam.CollisionRule collisionRule = AbstractTeam.CollisionRule.ALWAYS;
 
 	public Team(Scoreboard scoreboard, String string) {
 		this.scoreboard = scoreboard;
@@ -45,10 +45,10 @@ public class Team extends AbstractTeam {
 		Text text = Texts.bracketed(
 			this.displayName
 				.deepCopy()
-				.styled(style -> style.setInsertion(this.name).setHoverEvent(new HoverEvent(HoverEvent.Action.field_11762, new LiteralText(this.name))))
+				.styled(style -> style.setInsertion(this.name).setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new LiteralText(this.name))))
 		);
 		Formatting formatting = this.getColor();
-		if (formatting != Formatting.field_1070) {
+		if (formatting != Formatting.RESET) {
 			text.formatted(formatting);
 		}
 
@@ -91,7 +91,7 @@ public class Team extends AbstractTeam {
 	public Text modifyText(Text text) {
 		Text text2 = new LiteralText("").append(this.prefix).append(text).append(this.suffix);
 		Formatting formatting = this.getColor();
-		if (formatting != Formatting.field_1070) {
+		if (formatting != Formatting.RESET) {
 			text2.formatted(formatting);
 		}
 

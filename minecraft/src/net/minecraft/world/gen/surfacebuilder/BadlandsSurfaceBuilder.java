@@ -14,13 +14,13 @@ import net.minecraft.world.chunk.Chunk;
 import net.minecraft.world.gen.ChunkRandom;
 
 public class BadlandsSurfaceBuilder extends SurfaceBuilder<TernarySurfaceConfig> {
-	private static final BlockState WHITE_TERACOTTA = Blocks.field_10611.getDefaultState();
-	private static final BlockState ORANGE_TERRACOTTA = Blocks.field_10184.getDefaultState();
-	private static final BlockState TERACOTTA = Blocks.field_10415.getDefaultState();
-	private static final BlockState YELLOW_TERACOTTA = Blocks.field_10143.getDefaultState();
-	private static final BlockState BROWN_TERACOTTA = Blocks.field_10123.getDefaultState();
-	private static final BlockState RED_TERACOTTA = Blocks.field_10328.getDefaultState();
-	private static final BlockState LIGHT_GRAY_TERACOTTA = Blocks.field_10590.getDefaultState();
+	private static final BlockState WHITE_TERACOTTA = Blocks.WHITE_TERRACOTTA.getDefaultState();
+	private static final BlockState ORANGE_TERRACOTTA = Blocks.ORANGE_TERRACOTTA.getDefaultState();
+	private static final BlockState TERACOTTA = Blocks.TERRACOTTA.getDefaultState();
+	private static final BlockState YELLOW_TERACOTTA = Blocks.YELLOW_TERRACOTTA.getDefaultState();
+	private static final BlockState BROWN_TERACOTTA = Blocks.BROWN_TERRACOTTA.getDefaultState();
+	private static final BlockState RED_TERACOTTA = Blocks.RED_TERRACOTTA.getDefaultState();
+	private static final BlockState LIGHT_GRAY_TERACOTTA = Blocks.LIGHT_GRAY_TERRACOTTA.getDefaultState();
 	protected BlockState[] layerBlocks;
 	protected long seed;
 	protected OctaveSimplexNoiseSampler field_15623;
@@ -66,7 +66,7 @@ public class BadlandsSurfaceBuilder extends SurfaceBuilder<TernarySurfaceConfig>
 					if (q == -1) {
 						bl2 = false;
 						if (p <= 0) {
-							blockState3 = Blocks.field_10124.getDefaultState();
+							blockState3 = Blocks.AIR.getDefaultState();
 							blockState4 = blockState;
 						} else if (s >= l - 4 && s <= l + 1) {
 							blockState3 = WHITE_TERACOTTA;
@@ -97,22 +97,22 @@ public class BadlandsSurfaceBuilder extends SurfaceBuilder<TernarySurfaceConfig>
 						} else {
 							chunk.setBlockState(mutable, blockState4, false);
 							Block block = blockState4.getBlock();
-							if (block == Blocks.field_10611
-								|| block == Blocks.field_10184
-								|| block == Blocks.field_10015
-								|| block == Blocks.field_10325
-								|| block == Blocks.field_10143
-								|| block == Blocks.field_10014
-								|| block == Blocks.field_10444
-								|| block == Blocks.field_10349
-								|| block == Blocks.field_10590
-								|| block == Blocks.field_10235
-								|| block == Blocks.field_10570
-								|| block == Blocks.field_10409
-								|| block == Blocks.field_10123
-								|| block == Blocks.field_10526
-								|| block == Blocks.field_10328
-								|| block == Blocks.field_10626) {
+							if (block == Blocks.WHITE_TERRACOTTA
+								|| block == Blocks.ORANGE_TERRACOTTA
+								|| block == Blocks.MAGENTA_TERRACOTTA
+								|| block == Blocks.LIGHT_BLUE_TERRACOTTA
+								|| block == Blocks.YELLOW_TERRACOTTA
+								|| block == Blocks.LIME_TERRACOTTA
+								|| block == Blocks.PINK_TERRACOTTA
+								|| block == Blocks.GRAY_TERRACOTTA
+								|| block == Blocks.LIGHT_GRAY_TERRACOTTA
+								|| block == Blocks.CYAN_TERRACOTTA
+								|| block == Blocks.PURPLE_TERRACOTTA
+								|| block == Blocks.BLUE_TERRACOTTA
+								|| block == Blocks.BROWN_TERRACOTTA
+								|| block == Blocks.GREEN_TERRACOTTA
+								|| block == Blocks.RED_TERRACOTTA
+								|| block == Blocks.BLACK_TERRACOTTA) {
 								chunk.setBlockState(mutable, ORANGE_TERRACOTTA, false);
 							}
 						}

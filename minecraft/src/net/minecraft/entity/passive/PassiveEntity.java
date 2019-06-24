@@ -138,7 +138,7 @@ public abstract class PassiveEntity extends MobEntityWithAi {
 				if (this.happyTicksRemaining % 4 == 0) {
 					this.world
 						.addParticle(
-							ParticleTypes.field_11211,
+							ParticleTypes.HAPPY_VILLAGER,
 							this.x + (double)(this.random.nextFloat() * this.getWidth() * 2.0F) - (double)this.getWidth(),
 							this.y + 0.5 + (double)(this.random.nextFloat() * this.getHeight()),
 							this.z + (double)(this.random.nextFloat() * this.getWidth() * 2.0F) - (double)this.getWidth(),

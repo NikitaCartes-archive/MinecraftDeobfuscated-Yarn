@@ -22,7 +22,7 @@ public class FindWalkTargetTask extends Task<MobEntityWithAi> {
 	}
 
 	public FindWalkTargetTask(float f, int i, int j) {
-		super(ImmutableMap.of(MemoryModuleType.field_18445, MemoryModuleState.field_18457));
+		super(ImmutableMap.of(MemoryModuleType.WALK_TARGET, MemoryModuleState.VALUE_ABSENT));
 		this.walkSpeed = f;
 		this.field_19352 = i;
 		this.field_19353 = j;
@@ -50,11 +50,11 @@ public class FindWalkTargetTask extends Task<MobEntityWithAi> {
 				mobEntityWithAi, this.field_19352, this.field_19353, new Vec3d((double)blockPos.getX(), (double)blockPos.getY(), (double)blockPos.getZ())
 			)
 		);
-		mobEntityWithAi.getBrain().setMemory(MemoryModuleType.field_18445, optional.map(vec3d -> new WalkTarget(vec3d, this.walkSpeed, 0)));
+		mobEntityWithAi.getBrain().setMemory(MemoryModuleType.WALK_TARGET, optional.map(vec3d -> new WalkTarget(vec3d, this.walkSpeed, 0)));
 	}
 
 	private void method_20429(MobEntityWithAi mobEntityWithAi) {
 		Optional<Vec3d> optional = Optional.ofNullable(PathfindingUtil.findTargetStraight(mobEntityWithAi, this.field_19352, this.field_19353));
-		mobEntityWithAi.getBrain().setMemory(MemoryModuleType.field_18445, optional.map(vec3d -> new WalkTarget(vec3d, this.walkSpeed, 0)));
+		mobEntityWithAi.getBrain().setMemory(MemoryModuleType.WALK_TARGET, optional.map(vec3d -> new WalkTarget(vec3d, this.walkSpeed, 0)));
 	}
 }

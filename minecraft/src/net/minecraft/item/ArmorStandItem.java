@@ -11,7 +11,7 @@ import net.minecraft.util.ActionResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Direction;
-import net.minecraft.util.math.EulerRotation;
+import net.minecraft.util.math.EulerAngle;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.World;
 
@@ -23,8 +23,8 @@ public class ArmorStandItem extends Item {
 	@Override
 	public ActionResult useOnBlock(ItemUsageContext itemUsageContext) {
 		Direction direction = itemUsageContext.getSide();
-		if (direction == Direction.field_11033) {
-			return ActionResult.field_5814;
+		if (direction == Direction.DOWN) {
+			return ActionResult.FAIL;
 		} else {
 			World world = itemUsageContext.getWorld();
 			ItemPlacementContext itemPlacementContext = new ItemPlacementContext(itemUsageContext);
@@ -36,7 +36,7 @@ public class ArmorStandItem extends Item {
 				double f = (double)blockPos.getZ();
 				List<Entity> list = world.getEntities(null, new Box(d, e, f, d + 1.0, e + 2.0, f + 1.0));
 				if (!list.isEmpty()) {
-					return ActionResult.field_5814;
+					return ActionResult.FAIL;
 				} else {
 					ItemStack itemStack = itemUsageContext.getStack();
 					if (!world.isClient) {
@@ -48,27 +48,27 @@ public class ArmorStandItem extends Item {
 						this.setRotations(armorStandEntity, world.random);
 						EntityType.loadFromEntityTag(world, itemUsageContext.getPlayer(), armorStandEntity, itemStack.getTag());
 						world.spawnEntity(armorStandEntity);
-						world.playSound(null, armorStandEntity.x, armorStandEntity.y, armorStandEntity.z, SoundEvents.field_14969, SoundCategory.field_15245, 0.75F, 0.8F);
+						world.playSound(null, armorStandEntity.x, armorStandEntity.y, armorStandEntity.z, SoundEvents.ENTITY_ARMOR_STAND_PLACE, SoundCategory.BLOCKS, 0.75F, 0.8F);
 					}
 
 					itemStack.decrement(1);
-					return ActionResult.field_5812;
+					return ActionResult.SUCCESS;
 				}
 			} else {
-				return ActionResult.field_5814;
+				return ActionResult.FAIL;
 			}
 		}
 	}
 
 	private void setRotations(ArmorStandEntity armorStandEntity, Random random) {
-		EulerRotation eulerRotation = armorStandEntity.getHeadRotation();
+		EulerAngle eulerAngle = armorStandEntity.getHeadRotation();
 		float f = random.nextFloat() * 5.0F;
 		float g = random.nextFloat() * 20.0F - 10.0F;
-		EulerRotation eulerRotation2 = new EulerRotation(eulerRotation.getX() + f, eulerRotation.getY() + g, eulerRotation.getZ());
-		armorStandEntity.setHeadRotation(eulerRotation2);
-		eulerRotation = armorStandEntity.getBodyRotation();
+		EulerAngle eulerAngle2 = new EulerAngle(eulerAngle.getPitch() + f, eulerAngle.getYaw() + g, eulerAngle.getRoll());
+		armorStandEntity.setHeadRotation(eulerAngle2);
+		eulerAngle = armorStandEntity.getBodyRotation();
 		f = random.nextFloat() * 10.0F - 5.0F;
-		eulerRotation2 = new EulerRotation(eulerRotation.getX(), eulerRotation.getY() + f, eulerRotation.getZ());
-		armorStandEntity.setBodyRotation(eulerRotation2);
+		eulerAngle2 = new EulerAngle(eulerAngle.getPitch(), eulerAngle.getYaw() + f, eulerAngle.getRoll());
+		armorStandEntity.setBodyRotation(eulerAngle2);
 	}
 }

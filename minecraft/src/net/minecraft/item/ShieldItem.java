@@ -40,7 +40,7 @@ public class ShieldItem extends Item {
 
 	@Override
 	public UseAction getUseAction(ItemStack itemStack) {
-		return UseAction.field_8949;
+		return UseAction.BLOCK;
 	}
 
 	@Override
@@ -52,12 +52,12 @@ public class ShieldItem extends Item {
 	public TypedActionResult<ItemStack> use(World world, PlayerEntity playerEntity, Hand hand) {
 		ItemStack itemStack = playerEntity.getStackInHand(hand);
 		playerEntity.setCurrentHand(hand);
-		return new TypedActionResult<>(ActionResult.field_5812, itemStack);
+		return new TypedActionResult<>(ActionResult.SUCCESS, itemStack);
 	}
 
 	@Override
 	public boolean canRepair(ItemStack itemStack, ItemStack itemStack2) {
-		return ItemTags.field_15537.contains(itemStack2.getItem()) || super.canRepair(itemStack, itemStack2);
+		return ItemTags.PLANKS.contains(itemStack2.getItem()) || super.canRepair(itemStack, itemStack2);
 	}
 
 	public static DyeColor getColor(ItemStack itemStack) {

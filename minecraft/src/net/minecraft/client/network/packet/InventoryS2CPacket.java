@@ -19,7 +19,7 @@ public class InventoryS2CPacket implements Packet<ClientPlayPacketListener> {
 
 	public InventoryS2CPacket(int i, DefaultedList<ItemStack> defaultedList) {
 		this.guiId = i;
-		this.slotStackList = DefaultedList.<ItemStack>create(defaultedList.size(), ItemStack.EMPTY);
+		this.slotStackList = DefaultedList.<ItemStack>ofSize(defaultedList.size(), ItemStack.EMPTY);
 
 		for (int j = 0; j < this.slotStackList.size(); j++) {
 			this.slotStackList.set(j, defaultedList.get(j).copy());
@@ -30,7 +30,7 @@ public class InventoryS2CPacket implements Packet<ClientPlayPacketListener> {
 	public void read(PacketByteBuf packetByteBuf) throws IOException {
 		this.guiId = packetByteBuf.readUnsignedByte();
 		int i = packetByteBuf.readShort();
-		this.slotStackList = DefaultedList.<ItemStack>create(i, ItemStack.EMPTY);
+		this.slotStackList = DefaultedList.<ItemStack>ofSize(i, ItemStack.EMPTY);
 
 		for (int j = 0; j < i; j++) {
 			this.slotStackList.set(j, packetByteBuf.readItemStack());

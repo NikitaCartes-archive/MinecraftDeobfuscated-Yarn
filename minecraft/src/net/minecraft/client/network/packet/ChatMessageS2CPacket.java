@@ -17,7 +17,7 @@ public class ChatMessageS2CPacket implements Packet<ClientPlayPacketListener> {
 	}
 
 	public ChatMessageS2CPacket(Text text) {
-		this(text, MessageType.field_11735);
+		this(text, MessageType.SYSTEM);
 	}
 
 	public ChatMessageS2CPacket(Text text, MessageType messageType) {
@@ -47,7 +47,7 @@ public class ChatMessageS2CPacket implements Packet<ClientPlayPacketListener> {
 	}
 
 	public boolean isNonChat() {
-		return this.location == MessageType.field_11735 || this.location == MessageType.field_11733;
+		return this.location == MessageType.SYSTEM || this.location == MessageType.GAME_INFO;
 	}
 
 	public MessageType getLocation() {

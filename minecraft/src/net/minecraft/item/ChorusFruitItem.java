@@ -29,8 +29,8 @@ public class ChorusFruitItem extends Item {
 				}
 
 				if (livingEntity.teleport(g, h, j, true)) {
-					world.playSound(null, d, e, f, SoundEvents.field_14890, SoundCategory.PLAYERS, 1.0F, 1.0F);
-					livingEntity.playSound(SoundEvents.field_14890, 1.0F, 1.0F);
+					world.playSound(null, d, e, f, SoundEvents.ITEM_CHORUS_FRUIT_TELEPORT, SoundCategory.PLAYERS, 1.0F, 1.0F);
+					livingEntity.playSound(SoundEvents.ITEM_CHORUS_FRUIT_TELEPORT, 1.0F, 1.0F);
 					break;
 				}
 			}

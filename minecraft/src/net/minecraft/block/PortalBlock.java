@@ -50,13 +50,13 @@ public class PortalBlock extends Block {
 
 	@Override
 	public void onScheduledTick(BlockState blockState, World world, BlockPos blockPos, Random random) {
-		if (world.dimension.hasVisibleSky() && world.getGameRules().getBoolean(GameRules.field_19390) && random.nextInt(2000) < world.getDifficulty().getId()) {
+		if (world.dimension.hasVisibleSky() && world.getGameRules().getBoolean(GameRules.DO_MOB_SPAWNING) && random.nextInt(2000) < world.getDifficulty().getId()) {
 			while (world.getBlockState(blockPos).getBlock() == this) {
 				blockPos = blockPos.down();
 			}
 
-			if (world.getBlockState(blockPos).allowsSpawning(world, blockPos, EntityType.field_6050)) {
-				Entity entity = EntityType.field_6050.spawn(world, null, null, null, blockPos.up(), SpawnType.field_16474, false, false);
+			if (world.getBlockState(blockPos).allowsSpawning(world, blockPos, EntityType.ZOMBIE_PIGMAN)) {
+				Entity entity = EntityType.ZOMBIE_PIGMAN.spawn(world, null, null, null, blockPos.up(), SpawnType.STRUCTURE, false, false);
 				if (entity != null) {
 					entity.portalCooldown = entity.getDefaultPortalCooldown();
 				}
@@ -93,13 +93,13 @@ public class PortalBlock extends Block {
 		Direction.Axis axis2 = blockState.get(AXIS);
 		boolean bl = axis2 != axis && axis.isHorizontal();
 		return !bl && blockState2.getBlock() != this && !new PortalBlock.AreaHelper(iWorld, blockPos, axis2).wasAlreadyValid()
-			? Blocks.field_10124.getDefaultState()
+			? Blocks.AIR.getDefaultState()
 			: super.getStateForNeighborUpdate(blockState, direction, blockState2, iWorld, blockPos, blockPos2);
 	}
 
 	@Override
 	public BlockRenderLayer getRenderLayer() {
-		return BlockRenderLayer.field_9179;
+		return BlockRenderLayer.TRANSLUCENT;
 	}
 
 	@Override
@@ -117,8 +117,8 @@ public class PortalBlock extends Block {
 				(double)blockPos.getX() + 0.5,
 				(double)blockPos.getY() + 0.5,
 				(double)blockPos.getZ() + 0.5,
-				SoundEvents.field_14802,
-				SoundCategory.field_15245,
+				SoundEvents.BLOCK_PORTAL_AMBIENT,
+				SoundCategory.BLOCKS,
 				0.5F,
 				random.nextFloat() * 0.4F + 0.8F,
 				false
@@ -141,7 +141,7 @@ public class PortalBlock extends Block {
 				j = (double)(random.nextFloat() * 2.0F * (float)k);
 			}
 
-			world.addParticle(ParticleTypes.field_11214, d, e, f, g, h, j);
+			world.addParticle(ParticleTypes.PORTAL, d, e, f, g, h, j);
 		}
 	}
 
@@ -154,8 +154,8 @@ public class PortalBlock extends Block {
 	@Override
 	public BlockState rotate(BlockState blockState, BlockRotation blockRotation) {
 		switch (blockRotation) {
-			case field_11465:
-			case field_11463:
+			case COUNTERCLOCKWISE_90:
+			case CLOCKWISE_90:
 				switch ((Direction.Axis)blockState.get(AXIS)) {
 					case Z:
 						return blockState.with(AXIS, Direction.Axis.X);
@@ -184,7 +184,7 @@ public class PortalBlock extends Block {
 		}
 
 		if (!areaHelper.isValid()) {
-			return new BlockPattern.Result(blockPos, Direction.field_11043, Direction.field_11036, loadingCache, 1, 1, 1);
+			return new BlockPattern.Result(blockPos, Direction.NORTH, Direction.UP, loadingCache, 1, 1, 1);
 		} else {
 			int[] is = new int[Direction.AxisDirection.values().length];
 			Direction direction = areaHelper.negativeDir.rotateYCounterclockwise();
@@ -194,7 +194,7 @@ public class PortalBlock extends Block {
 				BlockPattern.Result result = new BlockPattern.Result(
 					direction.getDirection() == axisDirection ? blockPos2 : blockPos2.offset(areaHelper.negativeDir, areaHelper.getWidth() - 1),
 					Direction.get(axisDirection, axis),
-					Direction.field_11036,
+					Direction.UP,
 					loadingCache,
 					areaHelper.getWidth(),
 					areaHelper.getHeight(),
@@ -222,7 +222,7 @@ public class PortalBlock extends Block {
 			return new BlockPattern.Result(
 				direction.getDirection() == axisDirection2 ? blockPos2 : blockPos2.offset(areaHelper.negativeDir, areaHelper.getWidth() - 1),
 				Direction.get(axisDirection2, axis),
-				Direction.field_11036,
+				Direction.UP,
 				loadingCache,
 				areaHelper.getWidth(),
 				areaHelper.getHeight(),
@@ -246,11 +246,11 @@ public class PortalBlock extends Block {
 			this.world = iWorld;
 			this.axis = axis;
 			if (axis == Direction.Axis.X) {
-				this.positiveDir = Direction.field_11034;
-				this.negativeDir = Direction.field_11039;
+				this.positiveDir = Direction.EAST;
+				this.negativeDir = Direction.WEST;
 			} else {
-				this.positiveDir = Direction.field_11043;
-				this.negativeDir = Direction.field_11035;
+				this.positiveDir = Direction.NORTH;
+				this.negativeDir = Direction.SOUTH;
 			}
 
 			BlockPos blockPos2 = blockPos;
@@ -278,13 +278,13 @@ public class PortalBlock extends Block {
 			int i;
 			for (i = 0; i < 22; i++) {
 				BlockPos blockPos2 = blockPos.offset(direction, i);
-				if (!this.validStateInsidePortal(this.world.getBlockState(blockPos2)) || this.world.getBlockState(blockPos2.down()).getBlock() != Blocks.field_10540) {
+				if (!this.validStateInsidePortal(this.world.getBlockState(blockPos2)) || this.world.getBlockState(blockPos2.down()).getBlock() != Blocks.OBSIDIAN) {
 					break;
 				}
 			}
 
 			Block block = this.world.getBlockState(blockPos.offset(direction, i)).getBlock();
-			return block == Blocks.field_10540 ? i : 0;
+			return block == Blocks.OBSIDIAN ? i : 0;
 		}
 
 		public int getHeight() {
@@ -306,18 +306,18 @@ public class PortalBlock extends Block {
 					}
 
 					Block block = blockState.getBlock();
-					if (block == Blocks.field_10316) {
+					if (block == Blocks.NETHER_PORTAL) {
 						this.foundPortalBlocks++;
 					}
 
 					if (i == 0) {
 						block = this.world.getBlockState(blockPos.offset(this.positiveDir)).getBlock();
-						if (block != Blocks.field_10540) {
+						if (block != Blocks.OBSIDIAN) {
 							break label56;
 						}
 					} else if (i == this.width - 1) {
 						block = this.world.getBlockState(blockPos.offset(this.negativeDir)).getBlock();
-						if (block != Blocks.field_10540) {
+						if (block != Blocks.OBSIDIAN) {
 							break label56;
 						}
 					}
@@ -325,7 +325,7 @@ public class PortalBlock extends Block {
 			}
 
 			for (int i = 0; i < this.width; i++) {
-				if (this.world.getBlockState(this.lowerCorner.offset(this.negativeDir, i).up(this.height)).getBlock() != Blocks.field_10540) {
+				if (this.world.getBlockState(this.lowerCorner.offset(this.negativeDir, i).up(this.height)).getBlock() != Blocks.OBSIDIAN) {
 					this.height = 0;
 					break;
 				}
@@ -343,7 +343,7 @@ public class PortalBlock extends Block {
 
 		protected boolean validStateInsidePortal(BlockState blockState) {
 			Block block = blockState.getBlock();
-			return blockState.isAir() || block == Blocks.field_10036 || block == Blocks.field_10316;
+			return blockState.isAir() || block == Blocks.FIRE || block == Blocks.NETHER_PORTAL;
 		}
 
 		public boolean isValid() {
@@ -355,7 +355,7 @@ public class PortalBlock extends Block {
 				BlockPos blockPos = this.lowerCorner.offset(this.negativeDir, i);
 
 				for (int j = 0; j < this.height; j++) {
-					this.world.setBlockState(blockPos.up(j), Blocks.field_10316.getDefaultState().with(PortalBlock.AXIS, this.axis), 18);
+					this.world.setBlockState(blockPos.up(j), Blocks.NETHER_PORTAL.getDefaultState().with(PortalBlock.AXIS, this.axis), 18);
 				}
 			}
 		}

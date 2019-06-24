@@ -10,7 +10,7 @@ import net.minecraft.world.World;
 
 public class StonecuttingRecipe extends CuttingRecipe {
 	public StonecuttingRecipe(Identifier identifier, String string, Ingredient ingredient, ItemStack itemStack) {
-		super(RecipeType.field_17641, RecipeSerializer.field_17640, identifier, string, ingredient, itemStack);
+		super(RecipeType.STONECUTTING, RecipeSerializer.STONECUTTING, identifier, string, ingredient, itemStack);
 	}
 
 	@Override
@@ -21,6 +21,6 @@ public class StonecuttingRecipe extends CuttingRecipe {
 	@Environment(EnvType.CLIENT)
 	@Override
 	public ItemStack getRecipeKindIcon() {
-		return new ItemStack(Blocks.field_16335);
+		return new ItemStack(Blocks.STONECUTTER);
 	}
 }

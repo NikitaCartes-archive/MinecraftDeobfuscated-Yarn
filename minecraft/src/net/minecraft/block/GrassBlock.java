@@ -27,7 +27,7 @@ public class GrassBlock extends SpreadableBlock implements Fertilizable {
 	@Override
 	public void grow(World world, Random random, BlockPos blockPos, BlockState blockState) {
 		BlockPos blockPos2 = blockPos.up();
-		BlockState blockState2 = Blocks.field_10479.getDefaultState();
+		BlockState blockState2 = Blocks.GRASS.getDefaultState();
 
 		label48:
 		for (int i = 0; i < 128; i++) {

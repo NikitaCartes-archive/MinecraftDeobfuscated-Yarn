@@ -57,9 +57,9 @@ public class TeamTeleportSpectatorMenu implements SpectatorMenuCommandGroup, Spe
 	}
 
 	@Override
-	public boolean enabled() {
+	public boolean isEnabled() {
 		for (SpectatorMenuCommand spectatorMenuCommand : this.commands) {
-			if (spectatorMenuCommand.enabled()) {
+			if (spectatorMenuCommand.isEnabled()) {
 				return true;
 			}
 		}
@@ -120,7 +120,7 @@ public class TeamTeleportSpectatorMenu implements SpectatorMenuCommandGroup, Spe
 		}
 
 		@Override
-		public boolean enabled() {
+		public boolean isEnabled() {
 			return !this.scoreboardEntries.isEmpty();
 		}
 	}

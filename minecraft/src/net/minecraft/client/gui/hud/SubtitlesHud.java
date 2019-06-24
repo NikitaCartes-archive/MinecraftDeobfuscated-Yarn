@@ -25,7 +25,7 @@ public class SubtitlesHud extends DrawableHelper implements ListenerSoundInstanc
 		this.client = minecraftClient;
 	}
 
-	public void draw() {
+	public void render() {
 		if (!this.enabled && this.client.options.showSubtitles) {
 			this.client.getSoundManager().registerListener(this);
 			this.enabled = true;

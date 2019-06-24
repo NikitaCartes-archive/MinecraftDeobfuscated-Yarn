@@ -16,8 +16,8 @@ import net.minecraft.world.ModifiableTestableWorld;
 import net.minecraft.world.ModifiableWorld;
 
 public class OakTreeFeature extends AbstractTreeFeature<DefaultFeatureConfig> {
-	private static final BlockState LOG = Blocks.field_10431.getDefaultState();
-	private static final BlockState LEAVES = Blocks.field_10503.getDefaultState();
+	private static final BlockState LOG = Blocks.OAK_LOG.getDefaultState();
+	private static final BlockState LEAVES = Blocks.OAK_LEAVES.getDefaultState();
 	protected final int height;
 	private final boolean hasVinesAndCocoa;
 	private final BlockState log;
@@ -152,7 +152,7 @@ public class OakTreeFeature extends AbstractTreeFeature<DefaultFeatureConfig> {
 
 					if (random.nextInt(5) == 0 && i > 5) {
 						for (int nx = 0; nx < 2; nx++) {
-							for (Direction direction : Direction.Type.field_11062) {
+							for (Direction direction : Direction.Type.HORIZONTAL) {
 								if (random.nextInt(4 - nx) == 0) {
 									Direction direction2 = direction.getOpposite();
 									this.makeCocoa(modifiableTestableWorld, random.nextInt(3), blockPos.add(direction2.getOffsetX(), i - 5 + nx, direction2.getOffsetZ()), direction);
@@ -176,13 +176,11 @@ public class OakTreeFeature extends AbstractTreeFeature<DefaultFeatureConfig> {
 	}
 
 	private void makeCocoa(ModifiableWorld modifiableWorld, int i, BlockPos blockPos, Direction direction) {
-		this.setBlockState(
-			modifiableWorld, blockPos, Blocks.field_10302.getDefaultState().with(CocoaBlock.AGE, Integer.valueOf(i)).with(CocoaBlock.FACING, direction)
-		);
+		this.setBlockState(modifiableWorld, blockPos, Blocks.COCOA.getDefaultState().with(CocoaBlock.AGE, Integer.valueOf(i)).with(CocoaBlock.FACING, direction));
 	}
 
 	private void makeVine(ModifiableWorld modifiableWorld, BlockPos blockPos, BooleanProperty booleanProperty) {
-		this.setBlockState(modifiableWorld, blockPos, Blocks.field_10597.getDefaultState().with(booleanProperty, Boolean.valueOf(true)));
+		this.setBlockState(modifiableWorld, blockPos, Blocks.VINE.getDefaultState().with(booleanProperty, Boolean.valueOf(true)));
 	}
 
 	private void makeVineColumn(ModifiableTestableWorld modifiableTestableWorld, BlockPos blockPos, BooleanProperty booleanProperty) {

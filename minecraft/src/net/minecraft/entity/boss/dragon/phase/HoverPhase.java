@@ -41,6 +41,6 @@ public class HoverPhase extends AbstractPhase {
 
 	@Override
 	public PhaseType<HoverPhase> getType() {
-		return PhaseType.field_7075;
+		return PhaseType.HOVER;
 	}
 }

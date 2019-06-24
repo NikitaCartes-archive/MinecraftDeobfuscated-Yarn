@@ -27,7 +27,7 @@ public abstract class AbstractDecorationEntity extends Entity {
 	protected static final Predicate<Entity> PREDICATE = entity -> entity instanceof AbstractDecorationEntity;
 	private int field_7097;
 	protected BlockPos blockPos;
-	protected Direction facing = Direction.field_11035;
+	protected Direction facing = Direction.SOUTH;
 
 	protected AbstractDecorationEntity(EntityType<? extends AbstractDecorationEntity> entityType, World world) {
 		super(entityType, world);
@@ -116,7 +116,7 @@ public abstract class AbstractDecorationEntity extends Entity {
 				for (int l = 0; l < j; l++) {
 					int m = (i - 1) / -2;
 					int n = (j - 1) / -2;
-					mutable.set(blockPos).setOffset(direction, k + m).setOffset(Direction.field_11036, l + n);
+					mutable.set(blockPos).setOffset(direction, k + m).setOffset(Direction.UP, l + n);
 					BlockState blockState = this.world.getBlockState(mutable);
 					if (!blockState.getMaterial().isSolid() && !AbstractRedstoneGateBlock.isRedstoneGate(blockState)) {
 						return false;
@@ -134,7 +134,7 @@ public abstract class AbstractDecorationEntity extends Entity {
 	}
 
 	@Override
-	public boolean handlePlayerAttack(Entity entity) {
+	public boolean handleAttack(Entity entity) {
 		return entity instanceof PlayerEntity ? this.damage(DamageSource.player((PlayerEntity)entity), 0.0F) : false;
 	}
 
@@ -231,24 +231,24 @@ public abstract class AbstractDecorationEntity extends Entity {
 	public float applyRotation(BlockRotation blockRotation) {
 		if (this.facing.getAxis() != Direction.Axis.Y) {
 			switch (blockRotation) {
-				case field_11464:
+				case CLOCKWISE_180:
 					this.facing = this.facing.getOpposite();
 					break;
-				case field_11465:
+				case COUNTERCLOCKWISE_90:
 					this.facing = this.facing.rotateYCounterclockwise();
 					break;
-				case field_11463:
+				case CLOCKWISE_90:
 					this.facing = this.facing.rotateYClockwise();
 			}
 		}
 
 		float f = MathHelper.wrapDegrees(this.yaw);
 		switch (blockRotation) {
-			case field_11464:
+			case CLOCKWISE_180:
 				return f + 180.0F;
-			case field_11465:
+			case COUNTERCLOCKWISE_90:
 				return f + 90.0F;
-			case field_11463:
+			case CLOCKWISE_90:
 				return f + 270.0F;
 			default:
 				return f;

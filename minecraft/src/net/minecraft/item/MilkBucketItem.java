@@ -21,7 +21,7 @@ public class MilkBucketItem extends Item {
 		if (livingEntity instanceof ServerPlayerEntity) {
 			ServerPlayerEntity serverPlayerEntity = (ServerPlayerEntity)livingEntity;
 			Criterions.CONSUME_ITEM.handle(serverPlayerEntity, itemStack);
-			serverPlayerEntity.incrementStat(Stats.field_15372.getOrCreateStat(this));
+			serverPlayerEntity.incrementStat(Stats.USED.getOrCreateStat(this));
 		}
 
 		if (livingEntity instanceof PlayerEntity && !((PlayerEntity)livingEntity).abilities.creativeMode) {
@@ -32,7 +32,7 @@ public class MilkBucketItem extends Item {
 			livingEntity.clearPotionEffects();
 		}
 
-		return itemStack.isEmpty() ? new ItemStack(Items.field_8550) : itemStack;
+		return itemStack.isEmpty() ? new ItemStack(Items.BUCKET) : itemStack;
 	}
 
 	@Override
@@ -42,12 +42,12 @@ public class MilkBucketItem extends Item {
 
 	@Override
 	public UseAction getUseAction(ItemStack itemStack) {
-		return UseAction.field_8946;
+		return UseAction.DRINK;
 	}
 
 	@Override
 	public TypedActionResult<ItemStack> use(World world, PlayerEntity playerEntity, Hand hand) {
 		playerEntity.setCurrentHand(hand);
-		return new TypedActionResult<>(ActionResult.field_5812, playerEntity.getStackInHand(hand));
+		return new TypedActionResult<>(ActionResult.SUCCESS, playerEntity.getStackInHand(hand));
 	}
 }

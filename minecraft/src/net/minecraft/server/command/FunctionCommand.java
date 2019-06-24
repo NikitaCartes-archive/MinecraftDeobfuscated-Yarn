@@ -20,7 +20,7 @@ public class FunctionCommand {
 			CommandManager.literal("function")
 				.requires(serverCommandSource -> serverCommandSource.hasPermissionLevel(2))
 				.then(
-					CommandManager.argument("name", FunctionArgumentType.create())
+					CommandManager.argument("name", FunctionArgumentType.function())
 						.suggests(SUGGESTION_PROVIDER)
 						.executes(commandContext -> execute(commandContext.getSource(), FunctionArgumentType.getFunctions(commandContext, "name")))
 				)

@@ -34,7 +34,7 @@ public class TraderLlamaEntity extends LlamaEntity {
 
 	@Override
 	protected LlamaEntity createChild() {
-		return EntityType.field_17714.create(this.world);
+		return EntityType.TRADER_LLAMA.create(this.world);
 	}
 
 	@Override
@@ -85,7 +85,7 @@ public class TraderLlamaEntity extends LlamaEntity {
 	}
 
 	private boolean method_20502() {
-		return !this.isTame() && !this.leashedByPlayer() && !this.method_5817();
+		return !this.isTame() && !this.leashedByPlayer() && !this.hasPlayerRider();
 	}
 
 	private boolean heldByTrader() {
@@ -102,7 +102,7 @@ public class TraderLlamaEntity extends LlamaEntity {
 		IWorld iWorld, LocalDifficulty localDifficulty, SpawnType spawnType, @Nullable EntityData entityData, @Nullable CompoundTag compoundTag
 	) {
 		EntityData entityData2 = super.initialize(iWorld, localDifficulty, spawnType, entityData, compoundTag);
-		if (spawnType == SpawnType.field_16467) {
+		if (spawnType == SpawnType.EVENT) {
 			this.setBreedingAge(0);
 		}
 
@@ -117,7 +117,7 @@ public class TraderLlamaEntity extends LlamaEntity {
 		public DefendTraderGoal(LlamaEntity llamaEntity) {
 			super(llamaEntity, false);
 			this.llama = llamaEntity;
-			this.setControls(EnumSet.of(Goal.Control.field_18408));
+			this.setControls(EnumSet.of(Goal.Control.TARGET));
 		}
 
 		@Override

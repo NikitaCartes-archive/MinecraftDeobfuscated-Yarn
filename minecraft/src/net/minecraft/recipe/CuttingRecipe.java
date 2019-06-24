@@ -58,7 +58,7 @@ public abstract class CuttingRecipe implements Recipe<Inventory> {
 
 	@Override
 	public DefaultedList<Ingredient> getPreviewInputs() {
-		DefaultedList<Ingredient> defaultedList = DefaultedList.create();
+		DefaultedList<Ingredient> defaultedList = DefaultedList.of();
 		defaultedList.add(this.ingredient);
 		return defaultedList;
 	}

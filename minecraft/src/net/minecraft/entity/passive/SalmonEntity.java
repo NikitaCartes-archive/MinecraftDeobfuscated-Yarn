@@ -20,26 +20,26 @@ public class SalmonEntity extends SchoolingFishEntity {
 
 	@Override
 	protected ItemStack getFishBucketItem() {
-		return new ItemStack(Items.field_8714);
+		return new ItemStack(Items.SALMON_BUCKET);
 	}
 
 	@Override
 	protected SoundEvent getAmbientSound() {
-		return SoundEvents.field_15033;
+		return SoundEvents.ENTITY_SALMON_AMBIENT;
 	}
 
 	@Override
 	protected SoundEvent getDeathSound() {
-		return SoundEvents.field_15123;
+		return SoundEvents.ENTITY_SALMON_DEATH;
 	}
 
 	@Override
 	protected SoundEvent getHurtSound(DamageSource damageSource) {
-		return SoundEvents.field_14638;
+		return SoundEvents.ENTITY_SALMON_HURT;
 	}
 
 	@Override
 	protected SoundEvent getFlopSound() {
-		return SoundEvents.field_14563;
+		return SoundEvents.ENTITY_SALMON_FLOP;
 	}
 }

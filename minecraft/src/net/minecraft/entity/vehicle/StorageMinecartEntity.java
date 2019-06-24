@@ -27,7 +27,7 @@ import net.minecraft.world.loot.context.LootContextParameters;
 import net.minecraft.world.loot.context.LootContextTypes;
 
 public abstract class StorageMinecartEntity extends AbstractMinecartEntity implements Inventory, NameableContainerProvider {
-	private DefaultedList<ItemStack> inventory = DefaultedList.create(36, ItemStack.EMPTY);
+	private DefaultedList<ItemStack> inventory = DefaultedList.ofSize(36, ItemStack.EMPTY);
 	private boolean field_7733 = true;
 	@Nullable
 	private Identifier lootTableId;
@@ -44,7 +44,7 @@ public abstract class StorageMinecartEntity extends AbstractMinecartEntity imple
 	@Override
 	public void dropItems(DamageSource damageSource) {
 		super.dropItems(damageSource);
-		if (this.world.getGameRules().getBoolean(GameRules.field_19393)) {
+		if (this.world.getGameRules().getBoolean(GameRules.DO_ENTITY_DROPS)) {
 			ItemScatterer.spawn(this.world, this, this);
 		}
 	}
@@ -144,7 +144,7 @@ public abstract class StorageMinecartEntity extends AbstractMinecartEntity imple
 	@Override
 	protected void readCustomDataFromTag(CompoundTag compoundTag) {
 		super.readCustomDataFromTag(compoundTag);
-		this.inventory = DefaultedList.create(this.getInvSize(), ItemStack.EMPTY);
+		this.inventory = DefaultedList.ofSize(this.getInvSize(), ItemStack.EMPTY);
 		if (compoundTag.containsKey("LootTable", 8)) {
 			this.lootTableId = new Identifier(compoundTag.getString("LootTable"));
 			this.lootSeed = compoundTag.getLong("LootTableSeed");
@@ -175,13 +175,13 @@ public abstract class StorageMinecartEntity extends AbstractMinecartEntity imple
 			LootSupplier lootSupplier = this.world.getServer().getLootManager().getSupplier(this.lootTableId);
 			this.lootTableId = null;
 			LootContext.Builder builder = new LootContext.Builder((ServerWorld)this.world)
-				.put(LootContextParameters.field_1232, new BlockPos(this))
+				.put(LootContextParameters.POSITION, new BlockPos(this))
 				.setRandom(this.lootSeed);
 			if (playerEntity != null) {
-				builder.setLuck(playerEntity.getLuck()).put(LootContextParameters.field_1226, playerEntity);
+				builder.setLuck(playerEntity.getLuck()).put(LootContextParameters.THIS_ENTITY, playerEntity);
 			}
 
-			lootSupplier.supplyInventory(this, builder.build(LootContextTypes.field_1179));
+			lootSupplier.supplyInventory(this, builder.build(LootContextTypes.CHEST));
 		}
 	}
 

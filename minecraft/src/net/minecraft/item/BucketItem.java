@@ -39,34 +39,34 @@ public class BucketItem extends Item {
 	public TypedActionResult<ItemStack> use(World world, PlayerEntity playerEntity, Hand hand) {
 		ItemStack itemStack = playerEntity.getStackInHand(hand);
 		HitResult hitResult = rayTrace(
-			world, playerEntity, this.fluid == Fluids.field_15906 ? RayTraceContext.FluidHandling.field_1345 : RayTraceContext.FluidHandling.field_1348
+			world, playerEntity, this.fluid == Fluids.EMPTY ? RayTraceContext.FluidHandling.SOURCE_ONLY : RayTraceContext.FluidHandling.NONE
 		);
-		if (hitResult.getType() == HitResult.Type.field_1333) {
-			return new TypedActionResult<>(ActionResult.field_5811, itemStack);
-		} else if (hitResult.getType() != HitResult.Type.field_1332) {
-			return new TypedActionResult<>(ActionResult.field_5811, itemStack);
+		if (hitResult.getType() == HitResult.Type.MISS) {
+			return new TypedActionResult<>(ActionResult.PASS, itemStack);
+		} else if (hitResult.getType() != HitResult.Type.BLOCK) {
+			return new TypedActionResult<>(ActionResult.PASS, itemStack);
 		} else {
 			BlockHitResult blockHitResult = (BlockHitResult)hitResult;
 			BlockPos blockPos = blockHitResult.getBlockPos();
 			if (!world.canPlayerModifyAt(playerEntity, blockPos) || !playerEntity.canPlaceOn(blockPos, blockHitResult.getSide(), itemStack)) {
-				return new TypedActionResult<>(ActionResult.field_5814, itemStack);
-			} else if (this.fluid == Fluids.field_15906) {
+				return new TypedActionResult<>(ActionResult.FAIL, itemStack);
+			} else if (this.fluid == Fluids.EMPTY) {
 				BlockState blockState = world.getBlockState(blockPos);
 				if (blockState.getBlock() instanceof FluidDrainable) {
 					Fluid fluid = ((FluidDrainable)blockState.getBlock()).tryDrainFluid(world, blockPos, blockState);
-					if (fluid != Fluids.field_15906) {
-						playerEntity.incrementStat(Stats.field_15372.getOrCreateStat(this));
-						playerEntity.playSound(fluid.matches(FluidTags.field_15518) ? SoundEvents.field_15202 : SoundEvents.field_15126, 1.0F, 1.0F);
+					if (fluid != Fluids.EMPTY) {
+						playerEntity.incrementStat(Stats.USED.getOrCreateStat(this));
+						playerEntity.playSound(fluid.matches(FluidTags.LAVA) ? SoundEvents.ITEM_BUCKET_FILL_LAVA : SoundEvents.ITEM_BUCKET_FILL, 1.0F, 1.0F);
 						ItemStack itemStack2 = this.getFilledStack(itemStack, playerEntity, fluid.getBucketItem());
 						if (!world.isClient) {
 							Criterions.FILLED_BUCKET.handle((ServerPlayerEntity)playerEntity, new ItemStack(fluid.getBucketItem()));
 						}
 
-						return new TypedActionResult<>(ActionResult.field_5812, itemStack2);
+						return new TypedActionResult<>(ActionResult.SUCCESS, itemStack2);
 					}
 				}
 
-				return new TypedActionResult<>(ActionResult.field_5814, itemStack);
+				return new TypedActionResult<>(ActionResult.FAIL, itemStack);
 			} else {
 				BlockState blockState = world.getBlockState(blockPos);
 				BlockPos blockPos2 = blockState.getBlock() instanceof FluidFillable && this.fluid == Fluids.WATER
@@ -78,17 +78,17 @@ public class BucketItem extends Item {
 						Criterions.PLACED_BLOCK.handle((ServerPlayerEntity)playerEntity, blockPos2, itemStack);
 					}
 
-					playerEntity.incrementStat(Stats.field_15372.getOrCreateStat(this));
-					return new TypedActionResult<>(ActionResult.field_5812, this.getEmptiedStack(itemStack, playerEntity));
+					playerEntity.incrementStat(Stats.USED.getOrCreateStat(this));
+					return new TypedActionResult<>(ActionResult.SUCCESS, this.getEmptiedStack(itemStack, playerEntity));
 				} else {
-					return new TypedActionResult<>(ActionResult.field_5814, itemStack);
+					return new TypedActionResult<>(ActionResult.FAIL, itemStack);
 				}
 			}
 		}
 	}
 
 	protected ItemStack getEmptiedStack(ItemStack itemStack, PlayerEntity playerEntity) {
-		return !playerEntity.abilities.creativeMode ? new ItemStack(Items.field_8550) : itemStack;
+		return !playerEntity.abilities.creativeMode ? new ItemStack(Items.BUCKET) : itemStack;
 	}
 
 	public void onEmptied(World world, ItemStack itemStack, BlockPos blockPos) {
@@ -123,16 +123,21 @@ public class BucketItem extends Item {
 				|| bl
 				|| bl2
 				|| blockState.getBlock() instanceof FluidFillable && ((FluidFillable)blockState.getBlock()).canFillWithFluid(world, blockPos, blockState, this.fluid)) {
-				if (world.dimension.doesWaterVaporize() && this.fluid.matches(FluidTags.field_15517)) {
+				if (world.dimension.doesWaterVaporize() && this.fluid.matches(FluidTags.WATER)) {
 					int i = blockPos.getX();
 					int j = blockPos.getY();
 					int k = blockPos.getZ();
 					world.playSound(
-						playerEntity, blockPos, SoundEvents.field_15102, SoundCategory.field_15245, 0.5F, 2.6F + (world.random.nextFloat() - world.random.nextFloat()) * 0.8F
+						playerEntity,
+						blockPos,
+						SoundEvents.BLOCK_FIRE_EXTINGUISH,
+						SoundCategory.BLOCKS,
+						0.5F,
+						2.6F + (world.random.nextFloat() - world.random.nextFloat()) * 0.8F
 					);
 
 					for (int l = 0; l < 8; l++) {
-						world.addParticle(ParticleTypes.field_11237, (double)i + Math.random(), (double)j + Math.random(), (double)k + Math.random(), 0.0, 0.0, 0.0);
+						world.addParticle(ParticleTypes.LARGE_SMOKE, (double)i + Math.random(), (double)j + Math.random(), (double)k + Math.random(), 0.0, 0.0, 0.0);
 					}
 				} else if (blockState.getBlock() instanceof FluidFillable && this.fluid == Fluids.WATER) {
 					if (((FluidFillable)blockState.getBlock()).tryFillWithFluid(world, blockPos, blockState, ((BaseFluid)this.fluid).getStill(false))) {
@@ -155,7 +160,7 @@ public class BucketItem extends Item {
 	}
 
 	protected void playEmptyingSound(@Nullable PlayerEntity playerEntity, IWorld iWorld, BlockPos blockPos) {
-		SoundEvent soundEvent = this.fluid.matches(FluidTags.field_15518) ? SoundEvents.field_15010 : SoundEvents.field_14834;
-		iWorld.playSound(playerEntity, blockPos, soundEvent, SoundCategory.field_15245, 1.0F, 1.0F);
+		SoundEvent soundEvent = this.fluid.matches(FluidTags.LAVA) ? SoundEvents.ITEM_BUCKET_EMPTY_LAVA : SoundEvents.ITEM_BUCKET_EMPTY;
+		iWorld.playSound(playerEntity, blockPos, soundEvent, SoundCategory.BLOCKS, 1.0F, 1.0F);
 	}
 }

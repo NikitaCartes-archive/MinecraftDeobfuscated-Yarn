@@ -1,7 +1,7 @@
 package net.minecraft.world.biome.layer;
 
 public enum CellScaleLayer implements ParentedLayer {
-	field_16200;
+	INSTANCE;
 
 	@Override
 	public int sample(LayerSampleContext<?> layerSampleContext, LayerSampler layerSampler, int i, int j) {

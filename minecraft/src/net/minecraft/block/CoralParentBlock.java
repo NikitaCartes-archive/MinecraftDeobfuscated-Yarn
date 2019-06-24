@@ -36,7 +36,7 @@ public class CoralParentBlock extends Block implements Waterloggable {
 			return true;
 		} else {
 			for (Direction direction : Direction.values()) {
-				if (blockView.getFluidState(blockPos.offset(direction)).matches(FluidTags.field_15517)) {
+				if (blockView.getFluidState(blockPos.offset(direction)).matches(FluidTags.WATER)) {
 					return true;
 				}
 			}
@@ -49,7 +49,7 @@ public class CoralParentBlock extends Block implements Waterloggable {
 	@Override
 	public BlockState getPlacementState(ItemPlacementContext itemPlacementContext) {
 		FluidState fluidState = itemPlacementContext.getWorld().getFluidState(itemPlacementContext.getBlockPos());
-		return this.getDefaultState().with(WATERLOGGED, Boolean.valueOf(fluidState.matches(FluidTags.field_15517) && fluidState.getLevel() == 8));
+		return this.getDefaultState().with(WATERLOGGED, Boolean.valueOf(fluidState.matches(FluidTags.WATER) && fluidState.getLevel() == 8));
 	}
 
 	@Override
@@ -59,7 +59,7 @@ public class CoralParentBlock extends Block implements Waterloggable {
 
 	@Override
 	public BlockRenderLayer getRenderLayer() {
-		return BlockRenderLayer.field_9174;
+		return BlockRenderLayer.CUTOUT;
 	}
 
 	@Override
@@ -70,15 +70,15 @@ public class CoralParentBlock extends Block implements Waterloggable {
 			iWorld.getFluidTickScheduler().schedule(blockPos, Fluids.WATER, Fluids.WATER.getTickRate(iWorld));
 		}
 
-		return direction == Direction.field_11033 && !this.canPlaceAt(blockState, iWorld, blockPos)
-			? Blocks.field_10124.getDefaultState()
+		return direction == Direction.DOWN && !this.canPlaceAt(blockState, iWorld, blockPos)
+			? Blocks.AIR.getDefaultState()
 			: super.getStateForNeighborUpdate(blockState, direction, blockState2, iWorld, blockPos, blockPos2);
 	}
 
 	@Override
 	public boolean canPlaceAt(BlockState blockState, ViewableWorld viewableWorld, BlockPos blockPos) {
 		BlockPos blockPos2 = blockPos.down();
-		return Block.isSolidFullSquare(viewableWorld.getBlockState(blockPos2), viewableWorld, blockPos2, Direction.field_11036);
+		return Block.isSolidFullSquare(viewableWorld.getBlockState(blockPos2), viewableWorld, blockPos2, Direction.UP);
 	}
 
 	@Override

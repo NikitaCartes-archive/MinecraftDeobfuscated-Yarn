@@ -69,18 +69,18 @@ public class SugarCaneBlock extends Block {
 		if (block == this) {
 			return true;
 		} else {
-			if (block == Blocks.field_10219
-				|| block == Blocks.field_10566
-				|| block == Blocks.field_10253
-				|| block == Blocks.field_10520
-				|| block == Blocks.field_10102
-				|| block == Blocks.field_10534) {
+			if (block == Blocks.GRASS_BLOCK
+				|| block == Blocks.DIRT
+				|| block == Blocks.COARSE_DIRT
+				|| block == Blocks.PODZOL
+				|| block == Blocks.SAND
+				|| block == Blocks.RED_SAND) {
 				BlockPos blockPos2 = blockPos.down();
 
-				for (Direction direction : Direction.Type.field_11062) {
+				for (Direction direction : Direction.Type.HORIZONTAL) {
 					BlockState blockState2 = viewableWorld.getBlockState(blockPos2.offset(direction));
 					FluidState fluidState = viewableWorld.getFluidState(blockPos2.offset(direction));
-					if (fluidState.matches(FluidTags.field_15517) || blockState2.getBlock() == Blocks.field_10110) {
+					if (fluidState.matches(FluidTags.WATER) || blockState2.getBlock() == Blocks.FROSTED_ICE) {
 						return true;
 					}
 				}
@@ -92,7 +92,7 @@ public class SugarCaneBlock extends Block {
 
 	@Override
 	public BlockRenderLayer getRenderLayer() {
-		return BlockRenderLayer.field_9174;
+		return BlockRenderLayer.CUTOUT;
 	}
 
 	@Override

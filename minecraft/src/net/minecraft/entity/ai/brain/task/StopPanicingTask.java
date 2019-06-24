@@ -13,15 +13,15 @@ public class StopPanicingTask extends Task<VillagerEntity> {
 	protected void method_20645(ServerWorld serverWorld, VillagerEntity villagerEntity, long l) {
 		boolean bl = PanicTask.wasHurt(villagerEntity) || PanicTask.isHostileNearby(villagerEntity) || wasHurtByNearbyEntity(villagerEntity);
 		if (!bl) {
-			villagerEntity.getBrain().forget(MemoryModuleType.field_18451);
-			villagerEntity.getBrain().forget(MemoryModuleType.field_18452);
+			villagerEntity.getBrain().forget(MemoryModuleType.HURT_BY);
+			villagerEntity.getBrain().forget(MemoryModuleType.HURT_BY_ENTITY);
 			villagerEntity.getBrain().refreshActivities(serverWorld.getTimeOfDay(), serverWorld.getTime());
 		}
 	}
 
 	private static boolean wasHurtByNearbyEntity(VillagerEntity villagerEntity) {
 		return villagerEntity.getBrain()
-			.getOptionalMemory(MemoryModuleType.field_18452)
+			.getOptionalMemory(MemoryModuleType.HURT_BY_ENTITY)
 			.filter(livingEntity -> livingEntity.squaredDistanceTo(villagerEntity) <= 36.0)
 			.isPresent();
 	}

@@ -172,7 +172,9 @@ public abstract class Particle {
 		double h = e;
 		double i = f;
 		if (this.collidesWithWorld && (d != 0.0 || e != 0.0 || f != 0.0)) {
-			Vec3d vec3d = Entity.method_20736(null, new Vec3d(d, e, f), this.getBoundingBox(), this.world, EntityContext.absent(), new ReusableStream<>(Stream.empty()));
+			Vec3d vec3d = Entity.calculateMotionVector(
+				null, new Vec3d(d, e, f), this.getBoundingBox(), this.world, EntityContext.absent(), new ReusableStream<>(Stream.empty())
+			);
 			d = vec3d.x;
 			e = vec3d.y;
 			f = vec3d.z;

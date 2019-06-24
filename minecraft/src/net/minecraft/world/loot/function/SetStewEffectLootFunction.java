@@ -34,7 +34,7 @@ public class SetStewEffectLootFunction extends ConditionalLootFunction {
 
 	@Override
 	public ItemStack process(ItemStack itemStack, LootContext lootContext) {
-		if (itemStack.getItem() == Items.field_8766 && !this.effects.isEmpty()) {
+		if (itemStack.getItem() == Items.SUSPICIOUS_STEW && !this.effects.isEmpty()) {
 			Random random = lootContext.getRandom();
 			int i = random.nextInt(this.effects.size());
 			Entry<StatusEffect, UniformLootTableRange> entry = Iterables.get(this.effects.entrySet(), i);
@@ -85,7 +85,7 @@ public class SetStewEffectLootFunction extends ConditionalLootFunction {
 
 				for (StatusEffect statusEffect : setStewEffectLootFunction.effects.keySet()) {
 					JsonObject jsonObject2 = new JsonObject();
-					Identifier identifier = Registry.STATUS_EFFECT.getId(statusEffect);
+					Identifier identifier = Registry.MOB_EFFECT.getId(statusEffect);
 					if (identifier == null) {
 						throw new IllegalArgumentException("Don't know how to serialize mob effect " + statusEffect);
 					}
@@ -104,7 +104,7 @@ public class SetStewEffectLootFunction extends ConditionalLootFunction {
 			if (jsonObject.has("effects")) {
 				for (JsonElement jsonElement : JsonHelper.getArray(jsonObject, "effects")) {
 					String string = JsonHelper.getString(jsonElement.getAsJsonObject(), "type");
-					StatusEffect statusEffect = (StatusEffect)Registry.STATUS_EFFECT
+					StatusEffect statusEffect = (StatusEffect)Registry.MOB_EFFECT
 						.getOrEmpty(new Identifier(string))
 						.orElseThrow(() -> new JsonSyntaxException("Unknown mob effect '" + string + "'"));
 					UniformLootTableRange uniformLootTableRange = JsonHelper.deserialize(

@@ -22,20 +22,20 @@ public class DeadCoralWallFanBlock extends DeadCoralFanBlock {
 	public static final DirectionProperty FACING = HorizontalFacingBlock.FACING;
 	private static final Map<Direction, VoxelShape> FACING_TO_SHAPE = Maps.newEnumMap(
 		ImmutableMap.of(
-			Direction.field_11043,
+			Direction.NORTH,
 			Block.createCuboidShape(0.0, 4.0, 5.0, 16.0, 12.0, 16.0),
-			Direction.field_11035,
+			Direction.SOUTH,
 			Block.createCuboidShape(0.0, 4.0, 0.0, 16.0, 12.0, 11.0),
-			Direction.field_11039,
+			Direction.WEST,
 			Block.createCuboidShape(5.0, 4.0, 0.0, 16.0, 12.0, 16.0),
-			Direction.field_11034,
+			Direction.EAST,
 			Block.createCuboidShape(0.0, 4.0, 0.0, 11.0, 12.0, 16.0)
 		)
 	);
 
 	protected DeadCoralWallFanBlock(Block.Settings settings) {
 		super(settings);
-		this.setDefaultState(this.stateFactory.getDefaultState().with(FACING, Direction.field_11043).with(WATERLOGGED, Boolean.valueOf(true)));
+		this.setDefaultState(this.stateFactory.getDefaultState().with(FACING, Direction.NORTH).with(WATERLOGGED, Boolean.valueOf(true)));
 	}
 
 	@Override
@@ -66,7 +66,7 @@ public class DeadCoralWallFanBlock extends DeadCoralFanBlock {
 			iWorld.getFluidTickScheduler().schedule(blockPos, Fluids.WATER, Fluids.WATER.getTickRate(iWorld));
 		}
 
-		return direction.getOpposite() == blockState.get(FACING) && !blockState.canPlaceAt(iWorld, blockPos) ? Blocks.field_10124.getDefaultState() : blockState;
+		return direction.getOpposite() == blockState.get(FACING) && !blockState.canPlaceAt(iWorld, blockPos) ? Blocks.AIR.getDefaultState() : blockState;
 	}
 
 	@Override

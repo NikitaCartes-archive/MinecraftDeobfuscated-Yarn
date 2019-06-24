@@ -30,7 +30,7 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 
 public class ConduitBlockEntity extends BlockEntity implements Tickable {
-	private static final Block[] ACTIVATING_BLOCKS = new Block[]{Blocks.field_10135, Blocks.field_10006, Blocks.field_10174, Blocks.field_10297};
+	private static final Block[] ACTIVATING_BLOCKS = new Block[]{Blocks.PRISMARINE, Blocks.PRISMARINE_BRICKS, Blocks.SEA_LANTERN, Blocks.DARK_PRISMARINE};
 	public int ticks;
 	private float ticksActive;
 	private boolean active;
@@ -43,7 +43,7 @@ public class ConduitBlockEntity extends BlockEntity implements Tickable {
 	private long nextAmbientSoundTime;
 
 	public ConduitBlockEntity() {
-		this(BlockEntityType.field_11902);
+		this(BlockEntityType.CONDUIT);
 	}
 
 	public ConduitBlockEntity(BlockEntityType<?> blockEntityType) {
@@ -94,12 +94,12 @@ public class ConduitBlockEntity extends BlockEntity implements Tickable {
 		}
 
 		if (l % 80L == 0L && this.isActive()) {
-			this.playSound(SoundEvents.field_14632);
+			this.playSound(SoundEvents.BLOCK_CONDUIT_AMBIENT);
 		}
 
 		if (l > this.nextAmbientSoundTime && this.isActive()) {
 			this.nextAmbientSoundTime = l + 60L + (long)this.world.getRandom().nextInt(40);
-			this.playSound(SoundEvents.field_15071);
+			this.playSound(SoundEvents.BLOCK_CONDUIT_AMBIENT_SHORT);
 		}
 
 		if (this.world.isClient) {
@@ -162,7 +162,7 @@ public class ConduitBlockEntity extends BlockEntity implements Tickable {
 		if (!list.isEmpty()) {
 			for (PlayerEntity playerEntity : list) {
 				if (this.pos.isWithinDistance(new BlockPos(playerEntity), (double)j) && playerEntity.isInsideWaterOrRain()) {
-					playerEntity.addPotionEffect(new StatusEffectInstance(StatusEffects.field_5927, 260, 0, true, true));
+					playerEntity.addPotionEffect(new StatusEffectInstance(StatusEffects.CONDUIT_POWER, 260, 0, true, true));
 				}
 			}
 		}
@@ -187,7 +187,8 @@ public class ConduitBlockEntity extends BlockEntity implements Tickable {
 		}
 
 		if (this.targetEntity != null) {
-			this.world.playSound(null, this.targetEntity.x, this.targetEntity.y, this.targetEntity.z, SoundEvents.field_15177, SoundCategory.field_15245, 1.0F, 1.0F);
+			this.world
+				.playSound(null, this.targetEntity.x, this.targetEntity.y, this.targetEntity.z, SoundEvents.BLOCK_CONDUIT_ATTACK_TARGET, SoundCategory.BLOCKS, 1.0F, 1.0F);
 			this.targetEntity.damage(DamageSource.MAGIC, 4.0F);
 		}
 
@@ -234,7 +235,7 @@ public class ConduitBlockEntity extends BlockEntity implements Tickable {
 				float i = -0.5F + random.nextFloat();
 				BlockPos blockPos2 = blockPos.subtract(this.pos);
 				Vec3d vec3d2 = new Vec3d((double)g, (double)h, (double)i).add((double)blockPos2.getX(), (double)blockPos2.getY(), (double)blockPos2.getZ());
-				this.world.addParticle(ParticleTypes.field_11229, vec3d.x, vec3d.y, vec3d.z, vec3d2.x, vec3d2.y, vec3d2.z);
+				this.world.addParticle(ParticleTypes.NAUTILUS, vec3d.x, vec3d.y, vec3d.z, vec3d2.x, vec3d2.y, vec3d2.z);
 			}
 		}
 
@@ -244,7 +245,7 @@ public class ConduitBlockEntity extends BlockEntity implements Tickable {
 			float g = -1.0F + random.nextFloat() * this.targetEntity.getHeight();
 			float h = (-0.5F + random.nextFloat()) * (3.0F + this.targetEntity.getWidth());
 			Vec3d vec3d4 = new Vec3d((double)j, (double)g, (double)h);
-			this.world.addParticle(ParticleTypes.field_11229, vec3d3.x, vec3d3.y, vec3d3.z, vec3d4.x, vec3d4.y, vec3d4.z);
+			this.world.addParticle(ParticleTypes.NAUTILUS, vec3d3.x, vec3d3.y, vec3d3.z, vec3d4.x, vec3d4.y, vec3d4.z);
 		}
 	}
 
@@ -259,7 +260,7 @@ public class ConduitBlockEntity extends BlockEntity implements Tickable {
 
 	private void setActive(boolean bl) {
 		if (bl != this.active) {
-			this.playSound(bl ? SoundEvents.field_14700 : SoundEvents.field_14979);
+			this.playSound(bl ? SoundEvents.BLOCK_CONDUIT_ACTIVATE : SoundEvents.BLOCK_CONDUIT_DEACTIVATE);
 		}
 
 		this.active = bl;
@@ -275,6 +276,6 @@ public class ConduitBlockEntity extends BlockEntity implements Tickable {
 	}
 
 	public void playSound(SoundEvent soundEvent) {
-		this.world.playSound(null, this.pos, soundEvent, SoundCategory.field_15245, 1.0F, 1.0F);
+		this.world.playSound(null, this.pos, soundEvent, SoundCategory.BLOCKS, 1.0F, 1.0F);
 	}
 }

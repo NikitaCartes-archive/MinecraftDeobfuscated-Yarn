@@ -51,16 +51,16 @@ public class ItemSlotArgumentType implements ArgumentType<Integer> {
 		hashMap.put("weapon", 98);
 		hashMap.put("weapon.mainhand", 98);
 		hashMap.put("weapon.offhand", 99);
-		hashMap.put("armor.head", 100 + EquipmentSlot.field_6169.getEntitySlotId());
-		hashMap.put("armor.chest", 100 + EquipmentSlot.field_6174.getEntitySlotId());
-		hashMap.put("armor.legs", 100 + EquipmentSlot.field_6172.getEntitySlotId());
-		hashMap.put("armor.feet", 100 + EquipmentSlot.field_6166.getEntitySlotId());
+		hashMap.put("armor.head", 100 + EquipmentSlot.HEAD.getEntitySlotId());
+		hashMap.put("armor.chest", 100 + EquipmentSlot.CHEST.getEntitySlotId());
+		hashMap.put("armor.legs", 100 + EquipmentSlot.LEGS.getEntitySlotId());
+		hashMap.put("armor.feet", 100 + EquipmentSlot.FEET.getEntitySlotId());
 		hashMap.put("horse.saddle", 400);
 		hashMap.put("horse.armor", 401);
 		hashMap.put("horse.chest", 499);
 	});
 
-	public static ItemSlotArgumentType create() {
+	public static ItemSlotArgumentType itemSlot() {
 		return new ItemSlotArgumentType();
 	}
 

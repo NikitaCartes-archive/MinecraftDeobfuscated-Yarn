@@ -34,7 +34,7 @@ public class PistonExtensionBlock extends BlockWithEntity {
 
 	public PistonExtensionBlock(Block.Settings settings) {
 		super(settings);
-		this.setDefaultState(this.stateFactory.getDefaultState().with(FACING, Direction.field_11043).with(TYPE, PistonType.field_12637));
+		this.setDefaultState(this.stateFactory.getDefaultState().with(FACING, Direction.NORTH).with(TYPE, PistonType.DEFAULT));
 	}
 
 	@Nullable
@@ -93,7 +93,7 @@ public class PistonExtensionBlock extends BlockWithEntity {
 
 	@Override
 	public List<ItemStack> getDroppedStacks(BlockState blockState, LootContext.Builder builder) {
-		PistonBlockEntity pistonBlockEntity = this.getPistonBlockEntity(builder.getWorld(), builder.get(LootContextParameters.field_1232));
+		PistonBlockEntity pistonBlockEntity = this.getPistonBlockEntity(builder.getWorld(), builder.get(LootContextParameters.POSITION));
 		return pistonBlockEntity == null ? Collections.emptyList() : pistonBlockEntity.getPushedBlock().getDroppedStacks(builder);
 	}
 

@@ -28,19 +28,19 @@ public class LadderBlock extends Block implements Waterloggable {
 
 	protected LadderBlock(Block.Settings settings) {
 		super(settings);
-		this.setDefaultState(this.stateFactory.getDefaultState().with(FACING, Direction.field_11043).with(WATERLOGGED, Boolean.valueOf(false)));
+		this.setDefaultState(this.stateFactory.getDefaultState().with(FACING, Direction.NORTH).with(WATERLOGGED, Boolean.valueOf(false)));
 	}
 
 	@Override
 	public VoxelShape getOutlineShape(BlockState blockState, BlockView blockView, BlockPos blockPos, EntityContext entityContext) {
 		switch ((Direction)blockState.get(FACING)) {
-			case field_11043:
+			case NORTH:
 				return NORTH_SHAPE;
-			case field_11035:
+			case SOUTH:
 				return SOUTH_SHAPE;
-			case field_11039:
+			case WEST:
 				return WEST_SHAPE;
-			case field_11034:
+			case EAST:
 			default:
 				return EAST_SHAPE;
 		}
@@ -62,7 +62,7 @@ public class LadderBlock extends Block implements Waterloggable {
 		BlockState blockState, Direction direction, BlockState blockState2, IWorld iWorld, BlockPos blockPos, BlockPos blockPos2
 	) {
 		if (direction.getOpposite() == blockState.get(FACING) && !blockState.canPlaceAt(iWorld, blockPos)) {
-			return Blocks.field_10124.getDefaultState();
+			return Blocks.AIR.getDefaultState();
 		} else {
 			if ((Boolean)blockState.get(WATERLOGGED)) {
 				iWorld.getFluidTickScheduler().schedule(blockPos, Fluids.WATER, Fluids.WATER.getTickRate(iWorld));
@@ -102,7 +102,7 @@ public class LadderBlock extends Block implements Waterloggable {
 
 	@Override
 	public BlockRenderLayer getRenderLayer() {
-		return BlockRenderLayer.field_9174;
+		return BlockRenderLayer.CUTOUT;
 	}
 
 	@Override

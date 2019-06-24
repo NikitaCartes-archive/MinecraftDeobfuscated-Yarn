@@ -195,7 +195,7 @@ public class RecipeBookWidget extends DrawableHelper implements Drawable, Elemen
 
 		for (RecipeGroupButtonWidget recipeGroupButtonWidget : this.tabButtons) {
 			RecipeBookGroup recipeBookGroup = recipeGroupButtonWidget.getCategory();
-			if (recipeBookGroup == RecipeBookGroup.field_1809 || recipeBookGroup == RecipeBookGroup.field_1804) {
+			if (recipeBookGroup == RecipeBookGroup.SEARCH || recipeBookGroup == RecipeBookGroup.FURNACE_SEARCH) {
 				recipeGroupButtonWidget.visible = true;
 				recipeGroupButtonWidget.setPos(i, j + 27 * l++);
 			} else if (recipeGroupButtonWidget.hasKnownRecipes(this.recipeBook)) {

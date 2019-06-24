@@ -40,7 +40,7 @@ public class CoralBlockBlock extends Block {
 	protected boolean isInWater(BlockView blockView, BlockPos blockPos) {
 		for (Direction direction : Direction.values()) {
 			FluidState fluidState = blockView.getFluidState(blockPos.offset(direction));
-			if (fluidState.matches(FluidTags.field_15517)) {
+			if (fluidState.matches(FluidTags.WATER)) {
 				return true;
 			}
 		}

@@ -28,7 +28,7 @@ public class TeleportSpectatorMenu implements SpectatorMenuCommandGroup, Spectat
 
 	public TeleportSpectatorMenu(Collection<PlayerListEntry> collection) {
 		for (PlayerListEntry playerListEntry : ORDERING.sortedCopy(collection)) {
-			if (playerListEntry.getGameMode() != GameMode.field_9219) {
+			if (playerListEntry.getGameMode() != GameMode.SPECTATOR) {
 				this.elements.add(new TeleportToSpecificPlayerSpectatorCommand(playerListEntry.getProfile()));
 			}
 		}
@@ -61,7 +61,7 @@ public class TeleportSpectatorMenu implements SpectatorMenuCommandGroup, Spectat
 	}
 
 	@Override
-	public boolean enabled() {
+	public boolean isEnabled() {
 		return !this.elements.isEmpty();
 	}
 }

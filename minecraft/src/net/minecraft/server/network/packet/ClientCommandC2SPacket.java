@@ -55,14 +55,14 @@ public class ClientCommandC2SPacket implements Packet<ServerPlayPacketListener> 
 	}
 
 	public static enum Mode {
-		field_12979,
-		field_12984,
-		field_12986,
-		field_12981,
-		field_12985,
-		field_12987,
-		field_12980,
-		field_12988,
-		field_12982;
+		START_SNEAKING,
+		STOP_SNEAKING,
+		STOP_SLEEPING,
+		START_SPRINTING,
+		STOP_SPRINTING,
+		START_RIDING_JUMP,
+		STOP_RIDING_JUMP,
+		OPEN_INVENTORY,
+		START_FALL_FLYING;
 	}
 }

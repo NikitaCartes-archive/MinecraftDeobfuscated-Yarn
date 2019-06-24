@@ -39,12 +39,12 @@ public class ChorusPlantBlock extends ConnectedPlantBlock {
 		Block block5 = blockView.getBlockState(blockPos.south()).getBlock();
 		Block block6 = blockView.getBlockState(blockPos.west()).getBlock();
 		return this.getDefaultState()
-			.with(DOWN, Boolean.valueOf(block == this || block == Blocks.field_10528 || block == Blocks.field_10471))
-			.with(UP, Boolean.valueOf(block2 == this || block2 == Blocks.field_10528))
-			.with(NORTH, Boolean.valueOf(block3 == this || block3 == Blocks.field_10528))
-			.with(EAST, Boolean.valueOf(block4 == this || block4 == Blocks.field_10528))
-			.with(SOUTH, Boolean.valueOf(block5 == this || block5 == Blocks.field_10528))
-			.with(WEST, Boolean.valueOf(block6 == this || block6 == Blocks.field_10528));
+			.with(DOWN, Boolean.valueOf(block == this || block == Blocks.CHORUS_FLOWER || block == Blocks.END_STONE))
+			.with(UP, Boolean.valueOf(block2 == this || block2 == Blocks.CHORUS_FLOWER))
+			.with(NORTH, Boolean.valueOf(block3 == this || block3 == Blocks.CHORUS_FLOWER))
+			.with(EAST, Boolean.valueOf(block4 == this || block4 == Blocks.CHORUS_FLOWER))
+			.with(SOUTH, Boolean.valueOf(block5 == this || block5 == Blocks.CHORUS_FLOWER))
+			.with(WEST, Boolean.valueOf(block6 == this || block6 == Blocks.CHORUS_FLOWER));
 	}
 
 	@Override
@@ -56,7 +56,7 @@ public class ChorusPlantBlock extends ConnectedPlantBlock {
 			return super.getStateForNeighborUpdate(blockState, direction, blockState2, iWorld, blockPos, blockPos2);
 		} else {
 			Block block = blockState2.getBlock();
-			boolean bl = block == this || block == Blocks.field_10528 || direction == Direction.field_11033 && block == Blocks.field_10471;
+			boolean bl = block == this || block == Blocks.CHORUS_FLOWER || direction == Direction.DOWN && block == Blocks.END_STONE;
 			return blockState.with((Property)FACING_PROPERTIES.get(direction), Boolean.valueOf(bl));
 		}
 	}
@@ -73,7 +73,7 @@ public class ChorusPlantBlock extends ConnectedPlantBlock {
 		BlockState blockState2 = viewableWorld.getBlockState(blockPos.down());
 		boolean bl = !viewableWorld.getBlockState(blockPos.up()).isAir() && !blockState2.isAir();
 
-		for (Direction direction : Direction.Type.field_11062) {
+		for (Direction direction : Direction.Type.HORIZONTAL) {
 			BlockPos blockPos2 = blockPos.offset(direction);
 			Block block = viewableWorld.getBlockState(blockPos2).getBlock();
 			if (block == this) {
@@ -82,19 +82,19 @@ public class ChorusPlantBlock extends ConnectedPlantBlock {
 				}
 
 				Block block2 = viewableWorld.getBlockState(blockPos2.down()).getBlock();
-				if (block2 == this || block2 == Blocks.field_10471) {
+				if (block2 == this || block2 == Blocks.END_STONE) {
 					return true;
 				}
 			}
 		}
 
 		Block block3 = blockState2.getBlock();
-		return block3 == this || block3 == Blocks.field_10471;
+		return block3 == this || block3 == Blocks.END_STONE;
 	}
 
 	@Override
 	public BlockRenderLayer getRenderLayer() {
-		return BlockRenderLayer.field_9174;
+		return BlockRenderLayer.CUTOUT;
 	}
 
 	@Override

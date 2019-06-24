@@ -26,6 +26,6 @@ public class EfficiencyEnchantment extends Enchantment {
 
 	@Override
 	public boolean isAcceptableItem(ItemStack itemStack) {
-		return itemStack.getItem() == Items.field_8868 ? true : super.isAcceptableItem(itemStack);
+		return itemStack.getItem() == Items.SHEARS ? true : super.isAcceptableItem(itemStack);
 	}
 }

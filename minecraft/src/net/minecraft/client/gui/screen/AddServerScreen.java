@@ -21,7 +21,7 @@ public class AddServerScreen extends Screen {
 	private TextFieldWidget addressField;
 	private TextFieldWidget serverNameField;
 	private ButtonWidget resourcePackOptionButton;
-	private final Predicate<String> field_2475 = string -> {
+	private final Predicate<String> addressTextFilter = string -> {
 		if (ChatUtil.isEmpty(string)) {
 			return true;
 		} else {
@@ -62,7 +62,7 @@ public class AddServerScreen extends Screen {
 		this.addressField = new TextFieldWidget(this.font, this.width / 2 - 100, 106, 200, 20, I18n.translate("addServer.enterIp"));
 		this.addressField.setMaxLength(128);
 		this.addressField.setText(this.serverEntry.address);
-		this.addressField.setTextPredicate(this.field_2475);
+		this.addressField.setTextPredicate(this.addressTextFilter);
 		this.addressField.setChangedListener(this::onClose);
 		this.children.add(this.addressField);
 		this.resourcePackOptionButton = this.addButton(

@@ -48,7 +48,7 @@ public class RaidManager extends PersistentState {
 
 		while (iterator.hasNext()) {
 			Raid raid = (Raid)iterator.next();
-			if (this.world.getGameRules().getBoolean(GameRules.field_19422)) {
+			if (this.world.getGameRules().getBoolean(GameRules.DISABLE_RAIDS)) {
 				raid.invalidate();
 			}
 
@@ -80,17 +80,17 @@ public class RaidManager extends PersistentState {
 	public Raid startRaid(ServerPlayerEntity serverPlayerEntity) {
 		if (serverPlayerEntity.isSpectator()) {
 			return null;
-		} else if (this.world.getGameRules().getBoolean(GameRules.field_19422)) {
+		} else if (this.world.getGameRules().getBoolean(GameRules.DISABLE_RAIDS)) {
 			return null;
 		} else {
 			DimensionType dimensionType = serverPlayerEntity.world.getDimension().getType();
-			if (dimensionType == DimensionType.field_13076) {
+			if (dimensionType == DimensionType.THE_NETHER) {
 				return null;
 			} else {
 				BlockPos blockPos = new BlockPos(serverPlayerEntity);
 				List<PointOfInterest> list = (List<PointOfInterest>)this.world
 					.getPointOfInterestStorage()
-					.get(PointOfInterestType.ALWAYS_TRUE, blockPos, 64, PointOfInterestStorage.OccupationStatus.field_18488)
+					.get(PointOfInterestType.ALWAYS_TRUE, blockPos, 64, PointOfInterestStorage.OccupationStatus.IS_OCCUPIED)
 					.collect(Collectors.toList());
 				int i = 0;
 				Vec3d vec3d = new Vec3d(0.0, 0.0, 0.0);
@@ -120,7 +120,7 @@ public class RaidManager extends PersistentState {
 				} else if (raid.getBadOmenLevel() < raid.getMaxAcceptableBadOmenLevel()) {
 					bl = true;
 				} else {
-					serverPlayerEntity.removeStatusEffect(StatusEffects.field_16595);
+					serverPlayerEntity.removeStatusEffect(StatusEffects.BAD_OMEN);
 					serverPlayerEntity.networkHandler.sendPacket(new EntityStatusS2CPacket(serverPlayerEntity, (byte)43));
 				}
 
@@ -128,7 +128,7 @@ public class RaidManager extends PersistentState {
 					raid.start(serverPlayerEntity);
 					serverPlayerEntity.networkHandler.sendPacket(new EntityStatusS2CPacket(serverPlayerEntity, (byte)43));
 					if (!raid.hasSpawned()) {
-						serverPlayerEntity.incrementStat(Stats.field_19256);
+						serverPlayerEntity.incrementStat(Stats.RAID_TRIGGER);
 						Criterions.VOLUNTARY_EXILE.handle(serverPlayerEntity);
 					}
 				}

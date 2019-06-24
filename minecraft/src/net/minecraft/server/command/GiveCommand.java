@@ -22,7 +22,7 @@ public class GiveCommand {
 				.then(
 					CommandManager.argument("targets", EntityArgumentType.players())
 						.then(
-							CommandManager.argument("item", ItemStackArgumentType.create())
+							CommandManager.argument("item", ItemStackArgumentType.itemStack())
 								.executes(
 									commandContext -> execute(
 											commandContext.getSource(),
@@ -69,7 +69,7 @@ public class GiveCommand {
 							serverPlayerEntity.x,
 							serverPlayerEntity.y,
 							serverPlayerEntity.z,
-							SoundEvents.field_15197,
+							SoundEvents.ENTITY_ITEM_PICKUP,
 							SoundCategory.PLAYERS,
 							0.2F,
 							((serverPlayerEntity.getRand().nextFloat() - serverPlayerEntity.getRand().nextFloat()) * 0.7F + 1.0F) * 2.0F

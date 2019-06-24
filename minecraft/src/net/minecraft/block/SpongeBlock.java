@@ -31,8 +31,8 @@ public class SpongeBlock extends Block {
 
 	protected void update(World world, BlockPos blockPos) {
 		if (this.absorbWater(world, blockPos)) {
-			world.setBlockState(blockPos, Blocks.field_10562.getDefaultState(), 2);
-			world.playLevelEvent(2001, blockPos, Block.getRawIdFromState(Blocks.field_10382.getDefaultState()));
+			world.setBlockState(blockPos, Blocks.WET_SPONGE.getDefaultState(), 2);
+			world.playLevelEvent(2001, blockPos, Block.getRawIdFromState(Blocks.WATER.getDefaultState()));
 		}
 	}
 
@@ -51,15 +51,16 @@ public class SpongeBlock extends Block {
 				BlockState blockState = world.getBlockState(blockPos3);
 				FluidState fluidState = world.getFluidState(blockPos3);
 				Material material = blockState.getMaterial();
-				if (fluidState.matches(FluidTags.field_15517)) {
-					if (blockState.getBlock() instanceof FluidDrainable
-						&& ((FluidDrainable)blockState.getBlock()).tryDrainFluid(world, blockPos3, blockState) != Fluids.field_15906) {
+				if (fluidState.matches(FluidTags.WATER)) {
+					if (blockState.getBlock() instanceof FluidDrainable && ((FluidDrainable)blockState.getBlock()).tryDrainFluid(world, blockPos3, blockState) != Fluids.EMPTY
+						)
+					 {
 						i++;
 						if (j < 6) {
 							queue.add(new Pair<>(blockPos3, j + 1));
 						}
 					} else if (blockState.getBlock() instanceof FluidBlock) {
-						world.setBlockState(blockPos3, Blocks.field_10124.getDefaultState(), 3);
+						world.setBlockState(blockPos3, Blocks.AIR.getDefaultState(), 3);
 						i++;
 						if (j < 6) {
 							queue.add(new Pair<>(blockPos3, j + 1));
@@ -67,7 +68,7 @@ public class SpongeBlock extends Block {
 					} else if (material == Material.UNDERWATER_PLANT || material == Material.SEAGRASS) {
 						BlockEntity blockEntity = blockState.getBlock().hasBlockEntity() ? world.getBlockEntity(blockPos3) : null;
 						dropStacks(blockState, world, blockPos3, blockEntity);
-						world.setBlockState(blockPos3, Blocks.field_10124.getDefaultState(), 3);
+						world.setBlockState(blockPos3, Blocks.AIR.getDefaultState(), 3);
 						i++;
 						if (j < 6) {
 							queue.add(new Pair<>(blockPos3, j + 1));

@@ -263,7 +263,7 @@ public class ClientConnection extends SimpleChannelInboundHandler<Packet<?>> {
 
 	@Environment(EnvType.CLIENT)
 	public static ClientConnection connect(InetAddress inetAddress, int i, boolean bl) {
-		final ClientConnection clientConnection = new ClientConnection(NetworkSide.field_11942);
+		final ClientConnection clientConnection = new ClientConnection(NetworkSide.CLIENTBOUND);
 		Class<? extends SocketChannel> class_;
 		Lazy<? extends EventLoopGroup> lazy;
 		if (Epoll.isAvailable() && bl) {
@@ -288,9 +288,9 @@ public class ClientConnection extends SimpleChannelInboundHandler<Packet<?>> {
 						channel.pipeline()
 							.addLast("timeout", new ReadTimeoutHandler(30))
 							.addLast("splitter", new SplitterHandler())
-							.addLast("decoder", new DecoderHandler(NetworkSide.field_11942))
+							.addLast("decoder", new DecoderHandler(NetworkSide.CLIENTBOUND))
 							.addLast("prepender", new SizePrepender())
-							.addLast("encoder", new PacketEncoder(NetworkSide.field_11941))
+							.addLast("encoder", new PacketEncoder(NetworkSide.SERVERBOUND))
 							.addLast("packet_handler", clientConnection);
 					}
 				}
@@ -303,7 +303,7 @@ public class ClientConnection extends SimpleChannelInboundHandler<Packet<?>> {
 
 	@Environment(EnvType.CLIENT)
 	public static ClientConnection connect(SocketAddress socketAddress) {
-		final ClientConnection clientConnection = new ClientConnection(NetworkSide.field_11942);
+		final ClientConnection clientConnection = new ClientConnection(NetworkSide.CLIENTBOUND);
 		new Bootstrap().group(CLIENT_IO_GROUP_LOCAL.get()).handler(new ChannelInitializer<Channel>() {
 			@Override
 			protected void initChannel(Channel channel) throws Exception {

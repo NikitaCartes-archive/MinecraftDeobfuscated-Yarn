@@ -22,12 +22,12 @@ public class NearestPlayersSensor extends Sensor<LivingEntity> {
 			.sorted(Comparator.comparingDouble(livingEntity::squaredDistanceTo))
 			.collect(Collectors.toList());
 		Brain<?> brain = livingEntity.getBrain();
-		brain.putMemory(MemoryModuleType.field_18443, list);
-		brain.setMemory(MemoryModuleType.field_18444, list.stream().filter(livingEntity::canSee).findFirst());
+		brain.putMemory(MemoryModuleType.NEAREST_PLAYERS, list);
+		brain.setMemory(MemoryModuleType.NEAREST_VISIBLE_PLAYER, list.stream().filter(livingEntity::canSee).findFirst());
 	}
 
 	@Override
 	public Set<MemoryModuleType<?>> getOutputMemoryModules() {
-		return ImmutableSet.of(MemoryModuleType.field_18443, MemoryModuleType.field_18444);
+		return ImmutableSet.of(MemoryModuleType.NEAREST_PLAYERS, MemoryModuleType.NEAREST_VISIBLE_PLAYER);
 	}
 }

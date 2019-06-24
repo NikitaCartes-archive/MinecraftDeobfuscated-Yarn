@@ -58,11 +58,11 @@ public class BlockStatePropertyLootCondition implements LootCondition {
 
 	@Override
 	public Set<LootContextParameter<?>> getRequiredParameters() {
-		return ImmutableSet.of(LootContextParameters.field_1224);
+		return ImmutableSet.of(LootContextParameters.BLOCK_STATE);
 	}
 
 	public boolean method_899(LootContext lootContext) {
-		BlockState blockState = lootContext.get(LootContextParameters.field_1224);
+		BlockState blockState = lootContext.get(LootContextParameters.BLOCK_STATE);
 		return blockState != null && this.predicate.test(blockState);
 	}
 

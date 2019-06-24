@@ -70,10 +70,10 @@ public class EndCityGenerator {
 		}
 	};
 	private static final List<Pair<BlockRotation, BlockPos>> SMALL_TOWER_BRIDGE_ATTACHMENTS = Lists.<Pair<BlockRotation, BlockPos>>newArrayList(
-		new Pair<>(BlockRotation.field_11467, new BlockPos(1, -1, 0)),
-		new Pair<>(BlockRotation.field_11463, new BlockPos(6, -1, 1)),
-		new Pair<>(BlockRotation.field_11465, new BlockPos(0, -1, 5)),
-		new Pair<>(BlockRotation.field_11464, new BlockPos(5, -1, 6))
+		new Pair<>(BlockRotation.NONE, new BlockPos(1, -1, 0)),
+		new Pair<>(BlockRotation.CLOCKWISE_90, new BlockPos(6, -1, 1)),
+		new Pair<>(BlockRotation.COUNTERCLOCKWISE_90, new BlockPos(0, -1, 5)),
+		new Pair<>(BlockRotation.CLOCKWISE_180, new BlockPos(5, -1, 6))
 	);
 	private static final EndCityGenerator.Part SMALL_TOWER = new EndCityGenerator.Part() {
 		@Override
@@ -170,17 +170,17 @@ public class EndCityGenerator {
 			}
 
 			piece2 = EndCityGenerator.addPiece(
-				list, EndCityGenerator.createPiece(structureManager, piece2, new BlockPos(4, k, 0), "bridge_end", blockRotation.rotate(BlockRotation.field_11464), true)
+				list, EndCityGenerator.createPiece(structureManager, piece2, new BlockPos(4, k, 0), "bridge_end", blockRotation.rotate(BlockRotation.CLOCKWISE_180), true)
 			);
 			piece2.field_15316 = -1;
 			return true;
 		}
 	};
 	private static final List<Pair<BlockRotation, BlockPos>> FAT_TOWER_BRIDGE_ATTACHMENTS = Lists.<Pair<BlockRotation, BlockPos>>newArrayList(
-		new Pair<>(BlockRotation.field_11467, new BlockPos(4, -1, 0)),
-		new Pair<>(BlockRotation.field_11463, new BlockPos(12, -1, 4)),
-		new Pair<>(BlockRotation.field_11465, new BlockPos(0, -1, 8)),
-		new Pair<>(BlockRotation.field_11464, new BlockPos(8, -1, 12))
+		new Pair<>(BlockRotation.NONE, new BlockPos(4, -1, 0)),
+		new Pair<>(BlockRotation.CLOCKWISE_90, new BlockPos(12, -1, 4)),
+		new Pair<>(BlockRotation.COUNTERCLOCKWISE_90, new BlockPos(0, -1, 8)),
+		new Pair<>(BlockRotation.CLOCKWISE_180, new BlockPos(8, -1, 12))
 	);
 	private static final EndCityGenerator.Part FAT_TOWER = new EndCityGenerator.Part() {
 		@Override
@@ -293,7 +293,7 @@ public class EndCityGenerator {
 		private final boolean ignoreAir;
 
 		public Piece(StructureManager structureManager, String string, BlockPos blockPos, BlockRotation blockRotation, boolean bl) {
-			super(StructurePieceType.END_CITY, 0);
+			super(StructurePieceType.ECP, 0);
 			this.template = string;
 			this.pos = blockPos;
 			this.rotation = blockRotation;
@@ -302,7 +302,7 @@ public class EndCityGenerator {
 		}
 
 		public Piece(StructureManager structureManager, CompoundTag compoundTag) {
-			super(StructurePieceType.END_CITY, compoundTag);
+			super(StructurePieceType.ECP, compoundTag);
 			this.template = compoundTag.getString("Template");
 			this.rotation = BlockRotation.valueOf(compoundTag.getString("Rot"));
 			this.ignoreAir = compoundTag.getBoolean("OW");
@@ -330,16 +330,16 @@ public class EndCityGenerator {
 			if (string.startsWith("Chest")) {
 				BlockPos blockPos2 = blockPos.down();
 				if (mutableIntBoundingBox.contains(blockPos2)) {
-					LootableContainerBlockEntity.setLootTable(iWorld, random, blockPos2, LootTables.field_274);
+					LootableContainerBlockEntity.setLootTable(iWorld, random, blockPos2, LootTables.END_CITY_TREASURE_CHEST);
 				}
 			} else if (string.startsWith("Sentry")) {
-				ShulkerEntity shulkerEntity = EntityType.field_6109.create(iWorld.getWorld());
+				ShulkerEntity shulkerEntity = EntityType.SHULKER.create(iWorld.getWorld());
 				shulkerEntity.setPosition((double)blockPos.getX() + 0.5, (double)blockPos.getY() + 0.5, (double)blockPos.getZ() + 0.5);
 				shulkerEntity.setAttachedBlock(blockPos);
 				iWorld.spawnEntity(shulkerEntity);
 			} else if (string.startsWith("Elytra")) {
-				ItemFrameEntity itemFrameEntity = new ItemFrameEntity(iWorld.getWorld(), blockPos, this.rotation.rotate(Direction.field_11035));
-				itemFrameEntity.setHeldItemStack(new ItemStack(Items.field_8833), false);
+				ItemFrameEntity itemFrameEntity = new ItemFrameEntity(iWorld.getWorld(), blockPos, this.rotation.rotate(Direction.SOUTH));
+				itemFrameEntity.setHeldItemStack(new ItemStack(Items.ELYTRA), false);
 				iWorld.spawnEntity(itemFrameEntity);
 			}
 		}

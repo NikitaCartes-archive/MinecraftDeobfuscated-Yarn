@@ -27,8 +27,8 @@ public class FlintAndSteelItem extends Item {
 		BlockPos blockPos = itemUsageContext.getBlockPos();
 		BlockPos blockPos2 = blockPos.offset(itemUsageContext.getSide());
 		if (canIgnite(iWorld.getBlockState(blockPos2), iWorld, blockPos2)) {
-			iWorld.playSound(playerEntity, blockPos2, SoundEvents.field_15145, SoundCategory.field_15245, 1.0F, RANDOM.nextFloat() * 0.4F + 0.8F);
-			BlockState blockState = ((FireBlock)Blocks.field_10036).getStateForPosition(iWorld, blockPos2);
+			iWorld.playSound(playerEntity, blockPos2, SoundEvents.ITEM_FLINTANDSTEEL_USE, SoundCategory.BLOCKS, 1.0F, RANDOM.nextFloat() * 0.4F + 0.8F);
+			BlockState blockState = ((FireBlock)Blocks.FIRE).getStateForPosition(iWorld, blockPos2);
 			iWorld.setBlockState(blockPos2, blockState, 11);
 			ItemStack itemStack = itemUsageContext.getStack();
 			if (playerEntity instanceof ServerPlayerEntity) {
@@ -36,34 +36,34 @@ public class FlintAndSteelItem extends Item {
 				itemStack.damage(1, playerEntity, playerEntityx -> playerEntityx.sendToolBreakStatus(itemUsageContext.getHand()));
 			}
 
-			return ActionResult.field_5812;
+			return ActionResult.SUCCESS;
 		} else {
 			BlockState blockState = iWorld.getBlockState(blockPos);
 			if (isIgnitable(blockState)) {
-				iWorld.playSound(playerEntity, blockPos, SoundEvents.field_15145, SoundCategory.field_15245, 1.0F, RANDOM.nextFloat() * 0.4F + 0.8F);
+				iWorld.playSound(playerEntity, blockPos, SoundEvents.ITEM_FLINTANDSTEEL_USE, SoundCategory.BLOCKS, 1.0F, RANDOM.nextFloat() * 0.4F + 0.8F);
 				iWorld.setBlockState(blockPos, blockState.with(Properties.LIT, Boolean.valueOf(true)), 11);
 				if (playerEntity != null) {
 					itemUsageContext.getStack().damage(1, playerEntity, playerEntityx -> playerEntityx.sendToolBreakStatus(itemUsageContext.getHand()));
 				}
 
-				return ActionResult.field_5812;
+				return ActionResult.SUCCESS;
 			} else {
-				return ActionResult.field_5814;
+				return ActionResult.FAIL;
 			}
 		}
 	}
 
 	public static boolean isIgnitable(BlockState blockState) {
-		return blockState.getBlock() == Blocks.field_17350 && !(Boolean)blockState.get(Properties.WATERLOGGED) && !(Boolean)blockState.get(Properties.LIT);
+		return blockState.getBlock() == Blocks.CAMPFIRE && !(Boolean)blockState.get(Properties.WATERLOGGED) && !(Boolean)blockState.get(Properties.LIT);
 	}
 
 	public static boolean canIgnite(BlockState blockState, IWorld iWorld, BlockPos blockPos) {
-		BlockState blockState2 = ((FireBlock)Blocks.field_10036).getStateForPosition(iWorld, blockPos);
+		BlockState blockState2 = ((FireBlock)Blocks.FIRE).getStateForPosition(iWorld, blockPos);
 		boolean bl = false;
 
-		for (Direction direction : Direction.Type.field_11062) {
-			if (iWorld.getBlockState(blockPos.offset(direction)).getBlock() == Blocks.field_10540
-				&& ((PortalBlock)Blocks.field_10316).createAreaHelper(iWorld, blockPos) != null) {
+		for (Direction direction : Direction.Type.HORIZONTAL) {
+			if (iWorld.getBlockState(blockPos.offset(direction)).getBlock() == Blocks.OBSIDIAN
+				&& ((PortalBlock)Blocks.NETHER_PORTAL).createAreaHelper(iWorld, blockPos) != null) {
 				bl = true;
 			}
 		}

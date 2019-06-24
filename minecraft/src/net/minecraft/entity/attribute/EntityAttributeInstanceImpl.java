@@ -147,17 +147,17 @@ public class EntityAttributeInstanceImpl implements EntityAttributeInstance {
 	private double computeValue() {
 		double d = this.getBaseValue();
 
-		for (EntityAttributeModifier entityAttributeModifier : this.getAllModifiers(EntityAttributeModifier.Operation.field_6328)) {
+		for (EntityAttributeModifier entityAttributeModifier : this.getAllModifiers(EntityAttributeModifier.Operation.ADDITION)) {
 			d += entityAttributeModifier.getAmount();
 		}
 
 		double e = d;
 
-		for (EntityAttributeModifier entityAttributeModifier2 : this.getAllModifiers(EntityAttributeModifier.Operation.field_6330)) {
+		for (EntityAttributeModifier entityAttributeModifier2 : this.getAllModifiers(EntityAttributeModifier.Operation.MULTIPLY_BASE)) {
 			e += d * entityAttributeModifier2.getAmount();
 		}
 
-		for (EntityAttributeModifier entityAttributeModifier2 : this.getAllModifiers(EntityAttributeModifier.Operation.field_6331)) {
+		for (EntityAttributeModifier entityAttributeModifier2 : this.getAllModifiers(EntityAttributeModifier.Operation.MULTIPLY_TOTAL)) {
 			e *= 1.0 + entityAttributeModifier2.getAmount();
 		}
 

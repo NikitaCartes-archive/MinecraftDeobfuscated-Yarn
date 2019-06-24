@@ -17,43 +17,43 @@ public class UnderwaterCaveCarver extends CaveCarver {
 	public UnderwaterCaveCarver(Function<Dynamic<?>, ? extends ProbabilityConfig> function) {
 		super(function, 256);
 		this.alwaysCarvableBlocks = ImmutableSet.of(
-			Blocks.field_10340,
-			Blocks.field_10474,
-			Blocks.field_10508,
-			Blocks.field_10115,
-			Blocks.field_10566,
-			Blocks.field_10253,
-			Blocks.field_10520,
-			Blocks.field_10219,
-			Blocks.field_10415,
-			Blocks.field_10611,
-			Blocks.field_10184,
-			Blocks.field_10015,
-			Blocks.field_10325,
-			Blocks.field_10143,
-			Blocks.field_10014,
-			Blocks.field_10444,
-			Blocks.field_10349,
-			Blocks.field_10590,
-			Blocks.field_10235,
-			Blocks.field_10570,
-			Blocks.field_10409,
-			Blocks.field_10123,
-			Blocks.field_10526,
-			Blocks.field_10328,
-			Blocks.field_10626,
-			Blocks.field_9979,
-			Blocks.field_10344,
-			Blocks.field_10402,
-			Blocks.field_10477,
-			Blocks.field_10102,
-			Blocks.field_10255,
-			Blocks.field_10382,
-			Blocks.field_10164,
-			Blocks.field_10540,
-			Blocks.field_10124,
-			Blocks.field_10543,
-			Blocks.field_10225
+			Blocks.STONE,
+			Blocks.GRANITE,
+			Blocks.DIORITE,
+			Blocks.ANDESITE,
+			Blocks.DIRT,
+			Blocks.COARSE_DIRT,
+			Blocks.PODZOL,
+			Blocks.GRASS_BLOCK,
+			Blocks.TERRACOTTA,
+			Blocks.WHITE_TERRACOTTA,
+			Blocks.ORANGE_TERRACOTTA,
+			Blocks.MAGENTA_TERRACOTTA,
+			Blocks.LIGHT_BLUE_TERRACOTTA,
+			Blocks.YELLOW_TERRACOTTA,
+			Blocks.LIME_TERRACOTTA,
+			Blocks.PINK_TERRACOTTA,
+			Blocks.GRAY_TERRACOTTA,
+			Blocks.LIGHT_GRAY_TERRACOTTA,
+			Blocks.CYAN_TERRACOTTA,
+			Blocks.PURPLE_TERRACOTTA,
+			Blocks.BLUE_TERRACOTTA,
+			Blocks.BROWN_TERRACOTTA,
+			Blocks.GREEN_TERRACOTTA,
+			Blocks.RED_TERRACOTTA,
+			Blocks.BLACK_TERRACOTTA,
+			Blocks.SANDSTONE,
+			Blocks.RED_SANDSTONE,
+			Blocks.MYCELIUM,
+			Blocks.SNOW,
+			Blocks.SAND,
+			Blocks.GRAVEL,
+			Blocks.WATER,
+			Blocks.LAVA,
+			Blocks.OBSIDIAN,
+			Blocks.AIR,
+			Blocks.CAVE_AIR,
+			Blocks.PACKED_ICE
 		);
 	}
 
@@ -101,20 +101,20 @@ public class UnderwaterCaveCarver extends CaveCarver {
 				} else if (o == 10) {
 					float f = random.nextFloat();
 					if ((double)f < 0.25) {
-						chunk.setBlockState(mutable, Blocks.field_10092.getDefaultState(), false);
-						chunk.getBlockTickScheduler().schedule(mutable, Blocks.field_10092, 0);
+						chunk.setBlockState(mutable, Blocks.MAGMA_BLOCK.getDefaultState(), false);
+						chunk.getBlockTickScheduler().schedule(mutable, Blocks.MAGMA_BLOCK, 0);
 					} else {
-						chunk.setBlockState(mutable, Blocks.field_10540.getDefaultState(), false);
+						chunk.setBlockState(mutable, Blocks.OBSIDIAN.getDefaultState(), false);
 					}
 
 					return true;
 				} else if (o < 10) {
-					chunk.setBlockState(mutable, Blocks.field_10164.getDefaultState(), false);
+					chunk.setBlockState(mutable, Blocks.LAVA.getDefaultState(), false);
 					return false;
 				} else {
 					boolean bl = false;
 
-					for (Direction direction : Direction.Type.field_11062) {
+					for (Direction direction : Direction.Type.HORIZONTAL) {
 						int r = l + direction.getOffsetX();
 						int s = m + direction.getOffsetZ();
 						if (r >> 4 != j || s >> 4 != k || chunk.getBlockState(mutable.set(r, o, s)).isAir()) {

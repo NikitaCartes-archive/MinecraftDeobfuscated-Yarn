@@ -81,7 +81,7 @@ public class MinecartEntityRenderer<T extends AbstractMinecartEntity> extends En
 		}
 
 		BlockState blockState = abstractMinecartEntity.getContainedBlock();
-		if (blockState.getRenderType() != BlockRenderType.field_11455) {
+		if (blockState.getRenderType() != BlockRenderType.INVISIBLE) {
 			GlStateManager.pushMatrix();
 			this.bindTexture(SpriteAtlasTexture.BLOCK_ATLAS_TEX);
 			float u = 0.75F;

@@ -26,7 +26,7 @@ import net.minecraft.world.World;
 public class ServerPlayerInteractionManager {
 	public ServerWorld world;
 	public ServerPlayerEntity player;
-	private GameMode gameMode = GameMode.field_9218;
+	private GameMode gameMode = GameMode.NOT_SET;
 	private boolean field_14003;
 	private int field_14002;
 	private BlockPos field_14006 = BlockPos.ORIGIN;
@@ -44,7 +44,7 @@ public class ServerPlayerInteractionManager {
 		this.gameMode = gameMode;
 		gameMode.setAbilitites(this.player.abilities);
 		this.player.sendAbilitiesUpdate();
-		this.player.server.getPlayerManager().sendToAll(new PlayerListS2CPacket(PlayerListS2CPacket.Action.field_12375, this.player));
+		this.player.server.getPlayerManager().sendToAll(new PlayerListS2CPacket(PlayerListS2CPacket.Action.UPDATE_GAME_MODE, this.player));
 		this.world.updatePlayersSleeping();
 	}
 
@@ -61,7 +61,7 @@ public class ServerPlayerInteractionManager {
 	}
 
 	public void setGameModeIfNotPresent(GameMode gameMode) {
-		if (this.gameMode == GameMode.field_9218) {
+		if (this.gameMode == GameMode.NOT_SET) {
 			this.gameMode = gameMode;
 		}
 
@@ -113,7 +113,7 @@ public class ServerPlayerInteractionManager {
 			}
 		} else {
 			if (this.gameMode.shouldLimitWorldModification()) {
-				if (this.gameMode == GameMode.field_9219) {
+				if (this.gameMode == GameMode.SPECTATOR) {
 					return;
 				}
 
@@ -200,7 +200,7 @@ public class ServerPlayerInteractionManager {
 				return false;
 			} else {
 				if (this.gameMode.shouldLimitWorldModification()) {
-					if (this.gameMode == GameMode.field_9219) {
+					if (this.gameMode == GameMode.SPECTATOR) {
 						return false;
 					}
 
@@ -234,10 +234,10 @@ public class ServerPlayerInteractionManager {
 	}
 
 	public ActionResult interactItem(PlayerEntity playerEntity, World world, ItemStack itemStack, Hand hand) {
-		if (this.gameMode == GameMode.field_9219) {
-			return ActionResult.field_5811;
+		if (this.gameMode == GameMode.SPECTATOR) {
+			return ActionResult.PASS;
 		} else if (playerEntity.getItemCooldownManager().isCoolingDown(itemStack.getItem())) {
-			return ActionResult.field_5811;
+			return ActionResult.PASS;
 		} else {
 			int i = itemStack.getCount();
 			int j = itemStack.getDamage();
@@ -245,7 +245,7 @@ public class ServerPlayerInteractionManager {
 			ItemStack itemStack2 = typedActionResult.getValue();
 			if (itemStack2 == itemStack && itemStack2.getCount() == i && itemStack2.getMaxUseTime() <= 0 && itemStack2.getDamage() == j) {
 				return typedActionResult.getResult();
-			} else if (typedActionResult.getResult() == ActionResult.field_5814 && itemStack2.getMaxUseTime() > 0 && !playerEntity.isUsingItem()) {
+			} else if (typedActionResult.getResult() == ActionResult.FAIL && itemStack2.getMaxUseTime() > 0 && !playerEntity.isUsingItem()) {
 				return typedActionResult.getResult();
 			} else {
 				playerEntity.setStackInHand(hand, itemStack2);
@@ -272,19 +272,19 @@ public class ServerPlayerInteractionManager {
 	public ActionResult interactBlock(PlayerEntity playerEntity, World world, ItemStack itemStack, Hand hand, BlockHitResult blockHitResult) {
 		BlockPos blockPos = blockHitResult.getBlockPos();
 		BlockState blockState = world.getBlockState(blockPos);
-		if (this.gameMode == GameMode.field_9219) {
+		if (this.gameMode == GameMode.SPECTATOR) {
 			NameableContainerProvider nameableContainerProvider = blockState.createContainerProvider(world, blockPos);
 			if (nameableContainerProvider != null) {
 				playerEntity.openContainer(nameableContainerProvider);
-				return ActionResult.field_5812;
+				return ActionResult.SUCCESS;
 			} else {
-				return ActionResult.field_5811;
+				return ActionResult.PASS;
 			}
 		} else {
 			boolean bl = !playerEntity.getMainHandStack().isEmpty() || !playerEntity.getOffHandStack().isEmpty();
 			boolean bl2 = playerEntity.isSneaking() && bl;
 			if (!bl2 && blockState.activate(world, playerEntity, hand, blockHitResult)) {
-				return ActionResult.field_5812;
+				return ActionResult.SUCCESS;
 			} else if (!itemStack.isEmpty() && !playerEntity.getItemCooldownManager().isCoolingDown(itemStack.getItem())) {
 				ItemUsageContext itemUsageContext = new ItemUsageContext(playerEntity, hand, blockHitResult);
 				if (this.isCreative()) {
@@ -296,7 +296,7 @@ public class ServerPlayerInteractionManager {
 					return itemStack.useOnBlock(itemUsageContext);
 				}
 			} else {
-				return ActionResult.field_5811;
+				return ActionResult.PASS;
 			}
 		}
 	}

@@ -28,8 +28,8 @@ public class NarratorManager implements ClientChatListener {
 		NarratorOption narratorOption = method_20602();
 		if (narratorOption != NarratorOption.OFF && this.narrator.active()) {
 			if (narratorOption == NarratorOption.ALL
-				|| narratorOption == NarratorOption.CHAT && messageType == MessageType.field_11737
-				|| narratorOption == NarratorOption.SYSTEM && messageType == MessageType.field_11735) {
+				|| narratorOption == NarratorOption.CHAT && messageType == MessageType.CHAT
+				|| narratorOption == NarratorOption.SYSTEM && messageType == MessageType.SYSTEM) {
 				Text text2;
 				if (text instanceof TranslatableText && "chat.type.text".equals(((TranslatableText)text).getKey())) {
 					text2 = new TranslatableText("chat.type.text.narrate", ((TranslatableText)text).getArgs());
@@ -68,15 +68,15 @@ public class NarratorManager implements ClientChatListener {
 		ToastManager toastManager = MinecraftClient.getInstance().getToastManager();
 		if (this.narrator.active()) {
 			if (narratorOption == NarratorOption.OFF) {
-				SystemToast.show(toastManager, SystemToast.Type.field_2219, new TranslatableText("narrator.toast.disabled"), null);
+				SystemToast.show(toastManager, SystemToast.Type.NARRATOR_TOGGLE, new TranslatableText("narrator.toast.disabled"), null);
 			} else {
 				SystemToast.show(
-					toastManager, SystemToast.Type.field_2219, new TranslatableText("narrator.toast.enabled"), new TranslatableText(narratorOption.getTranslationKey())
+					toastManager, SystemToast.Type.NARRATOR_TOGGLE, new TranslatableText("narrator.toast.enabled"), new TranslatableText(narratorOption.getTranslationKey())
 				);
 			}
 		} else {
 			SystemToast.show(
-				toastManager, SystemToast.Type.field_2219, new TranslatableText("narrator.toast.disabled"), new TranslatableText("options.narrator.notavailable")
+				toastManager, SystemToast.Type.NARRATOR_TOGGLE, new TranslatableText("narrator.toast.disabled"), new TranslatableText("options.narrator.notavailable")
 			);
 		}
 	}

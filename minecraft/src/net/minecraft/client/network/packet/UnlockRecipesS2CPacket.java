@@ -60,7 +60,7 @@ public class UnlockRecipesS2CPacket implements Packet<ClientPlayPacketListener> 
 			this.recipeIdsToChange.add(packetByteBuf.readIdentifier());
 		}
 
-		if (this.action == UnlockRecipesS2CPacket.Action.field_12416) {
+		if (this.action == UnlockRecipesS2CPacket.Action.INIT) {
 			i = packetByteBuf.readVarInt();
 			this.recipeIdsToInit = Lists.<Identifier>newArrayList();
 
@@ -83,7 +83,7 @@ public class UnlockRecipesS2CPacket implements Packet<ClientPlayPacketListener> 
 			packetByteBuf.writeIdentifier(identifier);
 		}
 
-		if (this.action == UnlockRecipesS2CPacket.Action.field_12416) {
+		if (this.action == UnlockRecipesS2CPacket.Action.INIT) {
 			packetByteBuf.writeVarInt(this.recipeIdsToInit.size());
 
 			for (Identifier identifier : this.recipeIdsToInit) {
@@ -128,8 +128,8 @@ public class UnlockRecipesS2CPacket implements Packet<ClientPlayPacketListener> 
 	}
 
 	public static enum Action {
-		field_12416,
-		field_12415,
-		field_12417;
+		INIT,
+		ADD,
+		REMOVE;
 	}
 }

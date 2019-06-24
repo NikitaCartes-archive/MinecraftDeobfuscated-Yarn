@@ -221,7 +221,14 @@ public abstract class HorseBaseEntity extends AnimalEntity implements InventoryL
 		if (!this.isSilent()) {
 			this.world
 				.playSound(
-					null, this.x, this.y, this.z, SoundEvents.field_15099, this.getSoundCategory(), 1.0F, 1.0F + (this.random.nextFloat() - this.random.nextFloat()) * 0.2F
+					null,
+					this.x,
+					this.y,
+					this.z,
+					SoundEvents.ENTITY_HORSE_EAT,
+					this.getSoundCategory(),
+					1.0F,
+					1.0F + (this.random.nextFloat() - this.random.nextFloat()) * 0.2F
 				);
 		}
 	}
@@ -229,7 +236,7 @@ public abstract class HorseBaseEntity extends AnimalEntity implements InventoryL
 	@Override
 	public void handleFallDamage(float f, float g) {
 		if (f > 1.0F) {
-			this.playSound(SoundEvents.field_14783, 0.4F, 1.0F);
+			this.playSound(SoundEvents.ENTITY_HORSE_LAND, 0.4F, 1.0F);
 		}
 
 		int i = MathHelper.ceil((f * 0.5F - 3.0F) * g);
@@ -293,7 +300,7 @@ public abstract class HorseBaseEntity extends AnimalEntity implements InventoryL
 		boolean bl = this.isSaddled();
 		this.updateSaddle();
 		if (this.age > 20 && !bl && this.isSaddled()) {
-			this.playSound(SoundEvents.field_14704, 0.5F, 1.0F);
+			this.playSound(SoundEvents.ENTITY_HORSE_SADDLE, 0.5F, 1.0F);
 		}
 	}
 
@@ -346,7 +353,7 @@ public abstract class HorseBaseEntity extends AnimalEntity implements InventoryL
 		if (!blockState.getMaterial().isLiquid()) {
 			BlockState blockState2 = this.world.getBlockState(blockPos.up());
 			BlockSoundGroup blockSoundGroup = blockState.getSoundGroup();
-			if (blockState2.getBlock() == Blocks.field_10477) {
+			if (blockState2.getBlock() == Blocks.SNOW) {
 				blockSoundGroup = blockState2.getSoundGroup();
 			}
 
@@ -355,18 +362,18 @@ public abstract class HorseBaseEntity extends AnimalEntity implements InventoryL
 				if (this.soundTicks > 5 && this.soundTicks % 3 == 0) {
 					this.playWalkSound(blockSoundGroup);
 				} else if (this.soundTicks <= 5) {
-					this.playSound(SoundEvents.field_15061, blockSoundGroup.getVolume() * 0.15F, blockSoundGroup.getPitch());
+					this.playSound(SoundEvents.ENTITY_HORSE_STEP_WOOD, blockSoundGroup.getVolume() * 0.15F, blockSoundGroup.getPitch());
 				}
 			} else if (blockSoundGroup == BlockSoundGroup.WOOD) {
-				this.playSound(SoundEvents.field_15061, blockSoundGroup.getVolume() * 0.15F, blockSoundGroup.getPitch());
+				this.playSound(SoundEvents.ENTITY_HORSE_STEP_WOOD, blockSoundGroup.getVolume() * 0.15F, blockSoundGroup.getPitch());
 			} else {
-				this.playSound(SoundEvents.field_14613, blockSoundGroup.getVolume() * 0.15F, blockSoundGroup.getPitch());
+				this.playSound(SoundEvents.ENTITY_HORSE_STEP, blockSoundGroup.getVolume() * 0.15F, blockSoundGroup.getPitch());
 			}
 		}
 	}
 
 	protected void playWalkSound(BlockSoundGroup blockSoundGroup) {
-		this.playSound(SoundEvents.field_14987, blockSoundGroup.getVolume() * 0.15F, blockSoundGroup.getPitch());
+		this.playSound(SoundEvents.ENTITY_HORSE_GALLOP, blockSoundGroup.getVolume() * 0.15F, blockSoundGroup.getPitch());
 	}
 
 	@Override
@@ -408,22 +415,22 @@ public abstract class HorseBaseEntity extends AnimalEntity implements InventoryL
 		int i = 0;
 		int j = 0;
 		Item item = itemStack.getItem();
-		if (item == Items.field_8861) {
+		if (item == Items.WHEAT) {
 			f = 2.0F;
 			i = 20;
 			j = 3;
-		} else if (item == Items.field_8479) {
+		} else if (item == Items.SUGAR) {
 			f = 1.0F;
 			i = 30;
 			j = 3;
-		} else if (item == Blocks.field_10359.asItem()) {
+		} else if (item == Blocks.HAY_BLOCK.asItem()) {
 			f = 20.0F;
 			i = 180;
-		} else if (item == Items.field_8279) {
+		} else if (item == Items.APPLE) {
 			f = 3.0F;
 			i = 60;
 			j = 3;
-		} else if (item == Items.field_8071) {
+		} else if (item == Items.GOLDEN_CARROT) {
 			f = 4.0F;
 			i = 60;
 			j = 5;
@@ -431,7 +438,7 @@ public abstract class HorseBaseEntity extends AnimalEntity implements InventoryL
 				bl = true;
 				this.lovePlayer(playerEntity);
 			}
-		} else if (item == Items.field_8463 || item == Items.field_8367) {
+		} else if (item == Items.GOLDEN_APPLE || item == Items.ENCHANTED_GOLDEN_APPLE) {
 			f = 10.0F;
 			i = 240;
 			j = 10;
@@ -449,7 +456,7 @@ public abstract class HorseBaseEntity extends AnimalEntity implements InventoryL
 		if (this.isBaby() && i > 0) {
 			this.world
 				.addParticle(
-					ParticleTypes.field_11211,
+					ParticleTypes.HAPPY_VILLAGER,
 					this.x + (double)(this.random.nextFloat() * this.getWidth() * 2.0F) - (double)this.getWidth(),
 					this.y + 0.5 + (double)(this.random.nextFloat() * this.getHeight()),
 					this.z + (double)(this.random.nextFloat() * this.getWidth() * 2.0F) - (double)this.getWidth(),
@@ -531,7 +538,7 @@ public abstract class HorseBaseEntity extends AnimalEntity implements InventoryL
 				if (!this.isEatingGrass()
 					&& !this.hasPassengers()
 					&& this.random.nextInt(300) == 0
-					&& this.world.getBlockState(new BlockPos(this).down()).getBlock() == Blocks.field_10219) {
+					&& this.world.getBlockState(new BlockPos(this).down()).getBlock() == Blocks.GRASS_BLOCK) {
 					this.setEatingGrass(true);
 				}
 
@@ -698,8 +705,8 @@ public abstract class HorseBaseEntity extends AnimalEntity implements InventoryL
 				if (this.jumpStrength > 0.0F && !this.isInAir() && this.onGround) {
 					double d = this.getJumpStrength() * (double)this.jumpStrength;
 					double e;
-					if (this.hasStatusEffect(StatusEffects.field_5913)) {
-						e = d + (double)((float)(this.getStatusEffect(StatusEffects.field_5913).getAmplifier() + 1) * 0.1F);
+					if (this.hasStatusEffect(StatusEffects.JUMP_BOOST)) {
+						e = d + (double)((float)(this.getStatusEffect(StatusEffects.JUMP_BOOST).getAmplifier() + 1) * 0.1F);
 					} else {
 						e = d;
 					}
@@ -749,7 +756,7 @@ public abstract class HorseBaseEntity extends AnimalEntity implements InventoryL
 	}
 
 	protected void playJumpSound() {
-		this.playSound(SoundEvents.field_14831, 0.4F, 1.0F);
+		this.playSound(SoundEvents.ENTITY_HORSE_JUMP, 0.4F, 1.0F);
 	}
 
 	@Override
@@ -794,7 +801,7 @@ public abstract class HorseBaseEntity extends AnimalEntity implements InventoryL
 
 		if (compoundTag.containsKey("SaddleItem", 10)) {
 			ItemStack itemStack = ItemStack.fromTag(compoundTag.getCompound("SaddleItem"));
-			if (itemStack.getItem() == Items.field_8175) {
+			if (itemStack.getItem() == Items.SADDLE) {
 				this.items.setInvStack(0, itemStack);
 			}
 		}
@@ -888,7 +895,7 @@ public abstract class HorseBaseEntity extends AnimalEntity implements InventoryL
 
 	@Environment(EnvType.CLIENT)
 	protected void spawnPlayerReactionParticles(boolean bl) {
-		ParticleEffect particleEffect = bl ? ParticleTypes.field_11201 : ParticleTypes.field_11251;
+		ParticleEffect particleEffect = bl ? ParticleTypes.HEART : ParticleTypes.SMOKE;
 
 		for (int i = 0; i < 7; i++) {
 			double d = this.random.nextGaussian() * 0.02;
@@ -973,7 +980,7 @@ public abstract class HorseBaseEntity extends AnimalEntity implements InventoryL
 	public boolean equip(int i, ItemStack itemStack) {
 		int j = i - 400;
 		if (j >= 0 && j < 2 && j < this.items.getInvSize()) {
-			if (j == 0 && itemStack.getItem() != Items.field_8175) {
+			if (j == 0 && itemStack.getItem() != Items.SADDLE) {
 				return false;
 			} else if (j != 1 || this.canEquip() && this.canEquip(itemStack)) {
 				this.items.setInvStack(j, itemStack);

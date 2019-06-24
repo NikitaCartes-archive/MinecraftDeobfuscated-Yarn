@@ -19,9 +19,9 @@ import net.minecraft.world.World;
 
 public class FireworkStarRecipe extends SpecialCraftingRecipe {
 	private static final Ingredient field_9011 = Ingredient.ofItems(
-		Items.field_8814,
-		Items.field_8153,
-		Items.field_8397,
+		Items.FIRE_CHARGE,
+		Items.FEATHER,
+		Items.GOLD_NUGGET,
 		Items.SKELETON_SKULL,
 		Items.WITHER_SKELETON_SKULL,
 		Items.CREEPER_HEAD,
@@ -29,20 +29,20 @@ public class FireworkStarRecipe extends SpecialCraftingRecipe {
 		Items.DRAGON_HEAD,
 		Items.ZOMBIE_HEAD
 	);
-	private static final Ingredient field_9010 = Ingredient.ofItems(Items.field_8477);
-	private static final Ingredient field_9014 = Ingredient.ofItems(Items.field_8601);
+	private static final Ingredient field_9010 = Ingredient.ofItems(Items.DIAMOND);
+	private static final Ingredient field_9014 = Ingredient.ofItems(Items.GLOWSTONE_DUST);
 	private static final Map<Item, FireworkItem.Type> field_9013 = SystemUtil.consume(Maps.<Item, FireworkItem.Type>newHashMap(), hashMap -> {
-		hashMap.put(Items.field_8814, FireworkItem.Type.field_7977);
-		hashMap.put(Items.field_8153, FireworkItem.Type.field_7970);
-		hashMap.put(Items.field_8397, FireworkItem.Type.field_7973);
-		hashMap.put(Items.SKELETON_SKULL, FireworkItem.Type.field_7974);
-		hashMap.put(Items.WITHER_SKELETON_SKULL, FireworkItem.Type.field_7974);
-		hashMap.put(Items.CREEPER_HEAD, FireworkItem.Type.field_7974);
-		hashMap.put(Items.PLAYER_HEAD, FireworkItem.Type.field_7974);
-		hashMap.put(Items.DRAGON_HEAD, FireworkItem.Type.field_7974);
-		hashMap.put(Items.ZOMBIE_HEAD, FireworkItem.Type.field_7974);
+		hashMap.put(Items.FIRE_CHARGE, FireworkItem.Type.LARGE_BALL);
+		hashMap.put(Items.FEATHER, FireworkItem.Type.BURST);
+		hashMap.put(Items.GOLD_NUGGET, FireworkItem.Type.STAR);
+		hashMap.put(Items.SKELETON_SKULL, FireworkItem.Type.CREEPER);
+		hashMap.put(Items.WITHER_SKELETON_SKULL, FireworkItem.Type.CREEPER);
+		hashMap.put(Items.CREEPER_HEAD, FireworkItem.Type.CREEPER);
+		hashMap.put(Items.PLAYER_HEAD, FireworkItem.Type.CREEPER);
+		hashMap.put(Items.DRAGON_HEAD, FireworkItem.Type.CREEPER);
+		hashMap.put(Items.ZOMBIE_HEAD, FireworkItem.Type.CREEPER);
 	});
-	private static final Ingredient field_9012 = Ingredient.ofItems(Items.field_8054);
+	private static final Ingredient field_9012 = Ingredient.ofItems(Items.GUNPOWDER);
 
 	public FireworkStarRecipe(Identifier identifier) {
 		super(identifier);
@@ -96,9 +96,9 @@ public class FireworkStarRecipe extends SpecialCraftingRecipe {
 	}
 
 	public ItemStack method_17712(CraftingInventory craftingInventory) {
-		ItemStack itemStack = new ItemStack(Items.field_8450);
+		ItemStack itemStack = new ItemStack(Items.FIREWORK_STAR);
 		CompoundTag compoundTag = itemStack.getOrCreateSubTag("Explosion");
-		FireworkItem.Type type = FireworkItem.Type.field_7976;
+		FireworkItem.Type type = FireworkItem.Type.SMALL_BALL;
 		List<Integer> list = Lists.<Integer>newArrayList();
 
 		for (int i = 0; i < craftingInventory.getInvSize(); i++) {
@@ -129,7 +129,7 @@ public class FireworkStarRecipe extends SpecialCraftingRecipe {
 
 	@Override
 	public ItemStack getOutput() {
-		return new ItemStack(Items.field_8450);
+		return new ItemStack(Items.FIREWORK_STAR);
 	}
 
 	@Override

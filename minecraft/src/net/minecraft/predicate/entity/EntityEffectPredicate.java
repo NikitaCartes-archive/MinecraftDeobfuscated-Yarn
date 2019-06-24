@@ -69,7 +69,7 @@ public class EntityEffectPredicate {
 
 			for (Entry<String, JsonElement> entry : jsonObject.entrySet()) {
 				Identifier identifier = new Identifier((String)entry.getKey());
-				StatusEffect statusEffect = (StatusEffect)Registry.STATUS_EFFECT
+				StatusEffect statusEffect = (StatusEffect)Registry.MOB_EFFECT
 					.getOrEmpty(identifier)
 					.orElseThrow(() -> new JsonSyntaxException("Unknown effect '" + identifier + "'"));
 				EntityEffectPredicate.EffectData effectData = EntityEffectPredicate.EffectData.deserialize(
@@ -91,7 +91,7 @@ public class EntityEffectPredicate {
 			JsonObject jsonObject = new JsonObject();
 
 			for (Entry<StatusEffect, EntityEffectPredicate.EffectData> entry : this.effects.entrySet()) {
-				jsonObject.add(Registry.STATUS_EFFECT.getId((StatusEffect)entry.getKey()).toString(), ((EntityEffectPredicate.EffectData)entry.getValue()).serialize());
+				jsonObject.add(Registry.MOB_EFFECT.getId((StatusEffect)entry.getKey()).toString(), ((EntityEffectPredicate.EffectData)entry.getValue()).serialize());
 			}
 
 			return jsonObject;

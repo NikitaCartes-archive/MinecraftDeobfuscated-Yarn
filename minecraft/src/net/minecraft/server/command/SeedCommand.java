@@ -19,8 +19,8 @@ public class SeedCommand {
 						Text text = Texts.bracketed(
 							new LiteralText(String.valueOf(l))
 								.styled(
-									style -> style.setColor(Formatting.field_1060)
-											.setClickEvent(new ClickEvent(ClickEvent.Action.field_11745, String.valueOf(l)))
+									style -> style.setColor(Formatting.GREEN)
+											.setClickEvent(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND, String.valueOf(l)))
 											.setInsertion(String.valueOf(l))
 								)
 						);

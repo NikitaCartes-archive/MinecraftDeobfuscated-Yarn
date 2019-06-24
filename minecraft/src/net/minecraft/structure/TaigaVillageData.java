@@ -32,39 +32,35 @@ public class TaigaVillageData {
 		ImmutableList<StructureProcessor> immutableList = ImmutableList.of(
 			new RuleStructureProcessor(
 				ImmutableList.of(
-					new StructureProcessorRule(new RandomBlockMatchRuleTest(Blocks.field_10445, 0.8F), AlwaysTrueRuleTest.INSTANCE, Blocks.field_9989.getDefaultState()),
-					new StructureProcessorRule(new TagMatchRuleTest(BlockTags.field_15495), AlwaysTrueRuleTest.INSTANCE, Blocks.field_10124.getDefaultState()),
-					new StructureProcessorRule(new BlockMatchRuleTest(Blocks.field_10336), AlwaysTrueRuleTest.INSTANCE, Blocks.field_10124.getDefaultState()),
-					new StructureProcessorRule(new BlockMatchRuleTest(Blocks.field_10099), AlwaysTrueRuleTest.INSTANCE, Blocks.field_10124.getDefaultState()),
+					new StructureProcessorRule(new RandomBlockMatchRuleTest(Blocks.COBBLESTONE, 0.8F), AlwaysTrueRuleTest.INSTANCE, Blocks.MOSSY_COBBLESTONE.getDefaultState()),
+					new StructureProcessorRule(new TagMatchRuleTest(BlockTags.DOORS), AlwaysTrueRuleTest.INSTANCE, Blocks.AIR.getDefaultState()),
+					new StructureProcessorRule(new BlockMatchRuleTest(Blocks.TORCH), AlwaysTrueRuleTest.INSTANCE, Blocks.AIR.getDefaultState()),
+					new StructureProcessorRule(new BlockMatchRuleTest(Blocks.WALL_TORCH), AlwaysTrueRuleTest.INSTANCE, Blocks.AIR.getDefaultState()),
 					new StructureProcessorRule(
-						new BlockMatchRuleTest(Blocks.field_17350),
-						AlwaysTrueRuleTest.INSTANCE,
-						Blocks.field_17350.getDefaultState().with(CampfireBlock.LIT, Boolean.valueOf(false))
+						new BlockMatchRuleTest(Blocks.CAMPFIRE), AlwaysTrueRuleTest.INSTANCE, Blocks.CAMPFIRE.getDefaultState().with(CampfireBlock.LIT, Boolean.valueOf(false))
 					),
-					new StructureProcessorRule(new RandomBlockMatchRuleTest(Blocks.field_10445, 0.08F), AlwaysTrueRuleTest.INSTANCE, Blocks.field_10343.getDefaultState()),
-					new StructureProcessorRule(new RandomBlockMatchRuleTest(Blocks.field_10037, 0.08F), AlwaysTrueRuleTest.INSTANCE, Blocks.field_10343.getDefaultState()),
-					new StructureProcessorRule(new RandomBlockMatchRuleTest(Blocks.field_10285, 0.5F), AlwaysTrueRuleTest.INSTANCE, Blocks.field_10343.getDefaultState()),
+					new StructureProcessorRule(new RandomBlockMatchRuleTest(Blocks.COBBLESTONE, 0.08F), AlwaysTrueRuleTest.INSTANCE, Blocks.COBWEB.getDefaultState()),
+					new StructureProcessorRule(new RandomBlockMatchRuleTest(Blocks.SPRUCE_LOG, 0.08F), AlwaysTrueRuleTest.INSTANCE, Blocks.COBWEB.getDefaultState()),
+					new StructureProcessorRule(new RandomBlockMatchRuleTest(Blocks.GLASS_PANE, 0.5F), AlwaysTrueRuleTest.INSTANCE, Blocks.COBWEB.getDefaultState()),
 					new StructureProcessorRule(
-						new BlockStateMatchRuleTest(
-							Blocks.field_10285.getDefaultState().with(PaneBlock.NORTH, Boolean.valueOf(true)).with(PaneBlock.SOUTH, Boolean.valueOf(true))
-						),
+						new BlockStateMatchRuleTest(Blocks.GLASS_PANE.getDefaultState().with(PaneBlock.NORTH, Boolean.valueOf(true)).with(PaneBlock.SOUTH, Boolean.valueOf(true))),
 						AlwaysTrueRuleTest.INSTANCE,
-						Blocks.field_10163.getDefaultState().with(PaneBlock.NORTH, Boolean.valueOf(true)).with(PaneBlock.SOUTH, Boolean.valueOf(true))
+						Blocks.BROWN_STAINED_GLASS_PANE.getDefaultState().with(PaneBlock.NORTH, Boolean.valueOf(true)).with(PaneBlock.SOUTH, Boolean.valueOf(true))
 					),
 					new StructureProcessorRule(
-						new BlockStateMatchRuleTest(Blocks.field_10285.getDefaultState().with(PaneBlock.EAST, Boolean.valueOf(true)).with(PaneBlock.WEST, Boolean.valueOf(true))),
+						new BlockStateMatchRuleTest(Blocks.GLASS_PANE.getDefaultState().with(PaneBlock.EAST, Boolean.valueOf(true)).with(PaneBlock.WEST, Boolean.valueOf(true))),
 						AlwaysTrueRuleTest.INSTANCE,
-						Blocks.field_10163.getDefaultState().with(PaneBlock.EAST, Boolean.valueOf(true)).with(PaneBlock.WEST, Boolean.valueOf(true))
+						Blocks.BROWN_STAINED_GLASS_PANE.getDefaultState().with(PaneBlock.EAST, Boolean.valueOf(true)).with(PaneBlock.WEST, Boolean.valueOf(true))
 					),
-					new StructureProcessorRule(new RandomBlockMatchRuleTest(Blocks.field_10293, 0.3F), AlwaysTrueRuleTest.INSTANCE, Blocks.field_9984.getDefaultState()),
-					new StructureProcessorRule(new RandomBlockMatchRuleTest(Blocks.field_10293, 0.2F), AlwaysTrueRuleTest.INSTANCE, Blocks.field_10247.getDefaultState())
+					new StructureProcessorRule(new RandomBlockMatchRuleTest(Blocks.WHEAT, 0.3F), AlwaysTrueRuleTest.INSTANCE, Blocks.PUMPKIN_STEM.getDefaultState()),
+					new StructureProcessorRule(new RandomBlockMatchRuleTest(Blocks.WHEAT, 0.2F), AlwaysTrueRuleTest.INSTANCE, Blocks.POTATOES.getDefaultState())
 				)
 			)
 		);
 		ImmutableList<StructureProcessor> immutableList2 = ImmutableList.of(
 			new RuleStructureProcessor(
 				ImmutableList.of(
-					new StructureProcessorRule(new RandomBlockMatchRuleTest(Blocks.field_10445, 0.1F), AlwaysTrueRuleTest.INSTANCE, Blocks.field_9989.getDefaultState())
+					new StructureProcessorRule(new RandomBlockMatchRuleTest(Blocks.COBBLESTONE, 0.1F), AlwaysTrueRuleTest.INSTANCE, Blocks.MOSSY_COBBLESTONE.getDefaultState())
 				)
 			)
 		);
@@ -79,16 +75,16 @@ public class TaigaVillageData {
 						new Pair<>(new SinglePoolElement("village/taiga/zombie/town_centers/taiga_meeting_point_1", immutableList), 1),
 						new Pair<>(new SinglePoolElement("village/taiga/zombie/town_centers/taiga_meeting_point_2", immutableList), 1)
 					),
-					StructurePool.Projection.field_16687
+					StructurePool.Projection.RIGID
 				)
 			);
 		ImmutableList<StructureProcessor> immutableList3 = ImmutableList.of(
 			new RuleStructureProcessor(
 				ImmutableList.of(
-					new StructureProcessorRule(new BlockMatchRuleTest(Blocks.field_10194), new BlockMatchRuleTest(Blocks.field_10382), Blocks.field_9975.getDefaultState()),
-					new StructureProcessorRule(new RandomBlockMatchRuleTest(Blocks.field_10194, 0.2F), AlwaysTrueRuleTest.INSTANCE, Blocks.field_10219.getDefaultState()),
-					new StructureProcessorRule(new BlockMatchRuleTest(Blocks.field_10219), new BlockMatchRuleTest(Blocks.field_10382), Blocks.field_10382.getDefaultState()),
-					new StructureProcessorRule(new BlockMatchRuleTest(Blocks.field_10566), new BlockMatchRuleTest(Blocks.field_10382), Blocks.field_10382.getDefaultState())
+					new StructureProcessorRule(new BlockMatchRuleTest(Blocks.GRASS_PATH), new BlockMatchRuleTest(Blocks.WATER), Blocks.SPRUCE_PLANKS.getDefaultState()),
+					new StructureProcessorRule(new RandomBlockMatchRuleTest(Blocks.GRASS_PATH, 0.2F), AlwaysTrueRuleTest.INSTANCE, Blocks.GRASS_BLOCK.getDefaultState()),
+					new StructureProcessorRule(new BlockMatchRuleTest(Blocks.GRASS_BLOCK), new BlockMatchRuleTest(Blocks.WATER), Blocks.WATER.getDefaultState()),
+					new StructureProcessorRule(new BlockMatchRuleTest(Blocks.DIRT), new BlockMatchRuleTest(Blocks.WATER), Blocks.WATER.getDefaultState())
 				)
 			)
 		);
@@ -115,7 +111,7 @@ public class TaigaVillageData {
 						new Pair<>(new SinglePoolElement("village/taiga/streets/crossroad_06", immutableList3), 2),
 						new Pair<>(new SinglePoolElement("village/taiga/streets/turn_01", immutableList3), 3)
 					),
-					StructurePool.Projection.field_16686
+					StructurePool.Projection.TERRAIN_MATCHING
 				)
 			);
 		StructurePoolBasedGenerator.REGISTRY
@@ -141,14 +137,14 @@ public class TaigaVillageData {
 						new Pair<>(new SinglePoolElement("village/taiga/zombie/streets/crossroad_06", immutableList3), 2),
 						new Pair<>(new SinglePoolElement("village/taiga/zombie/streets/turn_01", immutableList3), 3)
 					),
-					StructurePool.Projection.field_16686
+					StructurePool.Projection.TERRAIN_MATCHING
 				)
 			);
 		ImmutableList<StructureProcessor> immutableList4 = ImmutableList.of(
 			new RuleStructureProcessor(
 				ImmutableList.of(
-					new StructureProcessorRule(new RandomBlockMatchRuleTest(Blocks.field_10293, 0.3F), AlwaysTrueRuleTest.INSTANCE, Blocks.field_9984.getDefaultState()),
-					new StructureProcessorRule(new RandomBlockMatchRuleTest(Blocks.field_10293, 0.2F), AlwaysTrueRuleTest.INSTANCE, Blocks.field_10247.getDefaultState())
+					new StructureProcessorRule(new RandomBlockMatchRuleTest(Blocks.WHEAT, 0.3F), AlwaysTrueRuleTest.INSTANCE, Blocks.PUMPKIN_STEM.getDefaultState()),
+					new StructureProcessorRule(new RandomBlockMatchRuleTest(Blocks.WHEAT, 0.2F), AlwaysTrueRuleTest.INSTANCE, Blocks.POTATOES.getDefaultState())
 				)
 			)
 		);
@@ -187,7 +183,7 @@ public class TaigaVillageData {
 						new Pair<>(new SinglePoolElement("village/taiga/houses/taiga_animal_pen_1", immutableList2), 2),
 						Pair.of(EmptyPoolElement.INSTANCE, 6)
 					),
-					StructurePool.Projection.field_16687
+					StructurePool.Projection.RIGID
 				)
 			);
 		StructurePoolBasedGenerator.REGISTRY
@@ -224,7 +220,7 @@ public class TaigaVillageData {
 						new Pair<>(new SinglePoolElement("village/taiga/houses/taiga_animal_pen_1", immutableList), 2),
 						Pair.of(EmptyPoolElement.INSTANCE, 6)
 					),
-					StructurePool.Projection.field_16687
+					StructurePool.Projection.RIGID
 				)
 			);
 		StructurePoolBasedGenerator.REGISTRY
@@ -238,7 +234,7 @@ public class TaigaVillageData {
 						new Pair<>(new SinglePoolElement("village/plains/terminators/terminator_03", immutableList3), 1),
 						new Pair<>(new SinglePoolElement("village/plains/terminators/terminator_04", immutableList3), 1)
 					),
-					StructurePool.Projection.field_16686
+					StructurePool.Projection.TERRAIN_MATCHING
 				)
 			);
 		StructurePoolBasedGenerator.REGISTRY
@@ -254,14 +250,14 @@ public class TaigaVillageData {
 						new Pair<>(new SinglePoolElement("village/taiga/taiga_decoration_4"), 1),
 						new Pair<>(new SinglePoolElement("village/taiga/taiga_decoration_5"), 2),
 						new Pair<>(new SinglePoolElement("village/taiga/taiga_decoration_6"), 1),
-						new Pair<>(new FeaturePoolElement(new ConfiguredFeature<>(Feature.field_13577, FeatureConfig.DEFAULT)), 4),
-						new Pair<>(new FeaturePoolElement(new ConfiguredFeature<>(Feature.field_13581, FeatureConfig.DEFAULT)), 4),
-						new Pair<>(new FeaturePoolElement(new ConfiguredFeature<>(Feature.field_17106, FeatureConfig.DEFAULT)), 2),
-						new Pair<>(new FeaturePoolElement(new ConfiguredFeature<>(Feature.field_13521, FeatureConfig.DEFAULT)), 4),
-						new Pair<>(new FeaturePoolElement(new ConfiguredFeature<>(Feature.field_17004, FeatureConfig.DEFAULT)), 1),
+						new Pair<>(new FeaturePoolElement(new ConfiguredFeature<>(Feature.SPRUCE_TREE, FeatureConfig.DEFAULT)), 4),
+						new Pair<>(new FeaturePoolElement(new ConfiguredFeature<>(Feature.PINE_TREE, FeatureConfig.DEFAULT)), 4),
+						new Pair<>(new FeaturePoolElement(new ConfiguredFeature<>(Feature.PUMPKIN_PILE, FeatureConfig.DEFAULT)), 2),
+						new Pair<>(new FeaturePoolElement(new ConfiguredFeature<>(Feature.TAIGA_GRASS, FeatureConfig.DEFAULT)), 4),
+						new Pair<>(new FeaturePoolElement(new ConfiguredFeature<>(Feature.SWEET_BERRY_BUSH, FeatureConfig.DEFAULT)), 1),
 						Pair.of(EmptyPoolElement.INSTANCE, 4)
 					),
-					StructurePool.Projection.field_16687
+					StructurePool.Projection.RIGID
 				)
 			);
 		StructurePoolBasedGenerator.REGISTRY
@@ -274,14 +270,14 @@ public class TaigaVillageData {
 						new Pair<>(new SinglePoolElement("village/taiga/taiga_decoration_2"), 1),
 						new Pair<>(new SinglePoolElement("village/taiga/taiga_decoration_3"), 1),
 						new Pair<>(new SinglePoolElement("village/taiga/taiga_decoration_4"), 1),
-						new Pair<>(new FeaturePoolElement(new ConfiguredFeature<>(Feature.field_13577, FeatureConfig.DEFAULT)), 4),
-						new Pair<>(new FeaturePoolElement(new ConfiguredFeature<>(Feature.field_13581, FeatureConfig.DEFAULT)), 4),
-						new Pair<>(new FeaturePoolElement(new ConfiguredFeature<>(Feature.field_17106, FeatureConfig.DEFAULT)), 2),
-						new Pair<>(new FeaturePoolElement(new ConfiguredFeature<>(Feature.field_13521, FeatureConfig.DEFAULT)), 4),
-						new Pair<>(new FeaturePoolElement(new ConfiguredFeature<>(Feature.field_17004, FeatureConfig.DEFAULT)), 1),
+						new Pair<>(new FeaturePoolElement(new ConfiguredFeature<>(Feature.SPRUCE_TREE, FeatureConfig.DEFAULT)), 4),
+						new Pair<>(new FeaturePoolElement(new ConfiguredFeature<>(Feature.PINE_TREE, FeatureConfig.DEFAULT)), 4),
+						new Pair<>(new FeaturePoolElement(new ConfiguredFeature<>(Feature.PUMPKIN_PILE, FeatureConfig.DEFAULT)), 2),
+						new Pair<>(new FeaturePoolElement(new ConfiguredFeature<>(Feature.TAIGA_GRASS, FeatureConfig.DEFAULT)), 4),
+						new Pair<>(new FeaturePoolElement(new ConfiguredFeature<>(Feature.SWEET_BERRY_BUSH, FeatureConfig.DEFAULT)), 1),
 						Pair.of(EmptyPoolElement.INSTANCE, 4)
 					),
-					StructurePool.Projection.field_16687
+					StructurePool.Projection.RIGID
 				)
 			);
 		StructurePoolBasedGenerator.REGISTRY
@@ -294,7 +290,7 @@ public class TaigaVillageData {
 						new Pair<>(new SinglePoolElement("village/taiga/villagers/baby"), 1),
 						new Pair<>(new SinglePoolElement("village/taiga/villagers/unemployed"), 10)
 					),
-					StructurePool.Projection.field_16687
+					StructurePool.Projection.RIGID
 				)
 			);
 		StructurePoolBasedGenerator.REGISTRY
@@ -306,7 +302,7 @@ public class TaigaVillageData {
 						new Pair<>(new SinglePoolElement("village/taiga/zombie/villagers/nitwit"), 1),
 						new Pair<>(new SinglePoolElement("village/taiga/zombie/villagers/unemployed"), 10)
 					),
-					StructurePool.Projection.field_16687
+					StructurePool.Projection.RIGID
 				)
 			);
 	}

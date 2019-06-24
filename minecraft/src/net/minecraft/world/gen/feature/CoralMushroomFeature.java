@@ -25,7 +25,7 @@ public class CoralMushroomFeature extends CoralFeature {
 			for (int n = 0; n <= i; n++) {
 				for (int o = 0; o <= k; o++) {
 					mutable.set(m + blockPos.getX(), n + blockPos.getY(), o + blockPos.getZ());
-					mutable.setOffset(Direction.field_11033, l);
+					mutable.setOffset(Direction.DOWN, l);
 					if ((m != 0 && m != j || n != 0 && n != i)
 						&& (o != 0 && o != k || n != 0 && n != i)
 						&& (m != 0 && m != j || o != 0 && o != k)

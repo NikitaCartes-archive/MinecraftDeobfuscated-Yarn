@@ -23,7 +23,14 @@ public class SnowballItem extends Item {
 		}
 
 		world.playSound(
-			null, playerEntity.x, playerEntity.y, playerEntity.z, SoundEvents.field_14873, SoundCategory.field_15254, 0.5F, 0.4F / (RANDOM.nextFloat() * 0.4F + 0.8F)
+			null,
+			playerEntity.x,
+			playerEntity.y,
+			playerEntity.z,
+			SoundEvents.ENTITY_SNOWBALL_THROW,
+			SoundCategory.NEUTRAL,
+			0.5F,
+			0.4F / (RANDOM.nextFloat() * 0.4F + 0.8F)
 		);
 		if (!world.isClient) {
 			SnowballEntity snowballEntity = new SnowballEntity(world, playerEntity);
@@ -32,7 +39,7 @@ public class SnowballItem extends Item {
 			world.spawnEntity(snowballEntity);
 		}
 
-		playerEntity.incrementStat(Stats.field_15372.getOrCreateStat(this));
-		return new TypedActionResult<>(ActionResult.field_5812, itemStack);
+		playerEntity.incrementStat(Stats.USED.getOrCreateStat(this));
+		return new TypedActionResult<>(ActionResult.SUCCESS, itemStack);
 	}
 }

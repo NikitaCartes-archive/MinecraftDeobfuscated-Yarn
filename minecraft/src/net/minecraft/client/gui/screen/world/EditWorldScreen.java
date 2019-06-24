@@ -145,7 +145,7 @@ public class EditWorldScreen extends Screen {
 			text2 = new TranslatableText("selectWorld.edit.backupSize", MathHelper.ceil((double)l / 1048576.0));
 		}
 
-		toastManager.add(new SystemToast(SystemToast.Type.field_2220, text, text2));
+		toastManager.add(new SystemToast(SystemToast.Type.WORLD_BACKUP, text, text2));
 	}
 
 	@Override

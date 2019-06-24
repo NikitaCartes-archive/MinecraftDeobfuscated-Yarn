@@ -41,7 +41,7 @@ public class PlayerListHud extends DrawableHelper {
 		this.inGameHud = inGameHud;
 	}
 
-	public Text method_1918(PlayerListEntry playerListEntry) {
+	public Text getPlayerName(PlayerListEntry playerListEntry) {
 		return playerListEntry.getDisplayName() != null
 			? playerListEntry.getDisplayName()
 			: Team.modifyText(playerListEntry.getScoreboardTeam(), new LiteralText(playerListEntry.getProfile().getName()));
@@ -55,16 +55,16 @@ public class PlayerListHud extends DrawableHelper {
 		this.visible = bl;
 	}
 
-	public void draw(int i, Scoreboard scoreboard, @Nullable ScoreboardObjective scoreboardObjective) {
+	public void render(int i, Scoreboard scoreboard, @Nullable ScoreboardObjective scoreboardObjective) {
 		ClientPlayNetworkHandler clientPlayNetworkHandler = this.client.player.networkHandler;
 		List<PlayerListEntry> list = ENTRY_ORDERING.sortedCopy(clientPlayNetworkHandler.getPlayerList());
 		int j = 0;
 		int k = 0;
 
 		for (PlayerListEntry playerListEntry : list) {
-			int l = this.client.textRenderer.getStringWidth(this.method_1918(playerListEntry).asFormattedString());
+			int l = this.client.textRenderer.getStringWidth(this.getPlayerName(playerListEntry).asFormattedString());
 			j = Math.max(j, l);
-			if (scoreboardObjective != null && scoreboardObjective.getRenderType() != ScoreboardCriterion.RenderType.field_1471) {
+			if (scoreboardObjective != null && scoreboardObjective.getRenderType() != ScoreboardCriterion.RenderType.HEARTS) {
 				l = this.client.textRenderer.getStringWidth(" " + scoreboard.getPlayerScore(playerListEntry.getProfile().getName(), scoreboardObjective).getScore());
 				k = Math.max(k, l);
 			}
@@ -82,7 +82,7 @@ public class PlayerListHud extends DrawableHelper {
 		boolean bl = this.client.isInSingleplayer() || this.client.getNetworkHandler().getClientConnection().isEncrypted();
 		int o;
 		if (scoreboardObjective != null) {
-			if (scoreboardObjective.getRenderType() == ScoreboardCriterion.RenderType.field_1471) {
+			if (scoreboardObjective.getRenderType() == ScoreboardCriterion.RenderType.HEARTS) {
 				o = 90;
 			} else {
 				o = k;
@@ -146,13 +146,13 @@ public class PlayerListHud extends DrawableHelper {
 				if (bl) {
 					PlayerEntity playerEntity = this.client.world.getPlayerByUuid(gameProfile.getId());
 					boolean bl2 = playerEntity != null
-						&& playerEntity.isSkinOverlayVisible(PlayerModelPart.field_7559)
+						&& playerEntity.isSkinOverlayVisible(PlayerModelPart.CAPE)
 						&& ("Dinnerbone".equals(gameProfile.getName()) || "Grumm".equals(gameProfile.getName()));
 					this.client.getTextureManager().bindTexture(playerListEntry2.getSkinTexture());
 					int z = 8 + (bl2 ? 8 : 0);
 					int aa = 8 * (bl2 ? -1 : 1);
 					DrawableHelper.blit(x, y, 8, 8, 8.0F, (float)z, 8, aa, 64, 64);
-					if (playerEntity != null && playerEntity.isSkinOverlayVisible(PlayerModelPart.field_7563)) {
+					if (playerEntity != null && playerEntity.isSkinOverlayVisible(PlayerModelPart.HAT)) {
 						int ab = 8 + (bl2 ? 8 : 0);
 						int ac = 8 * (bl2 ? -1 : 1);
 						DrawableHelper.blit(x, y, 8, 8, 40.0F, (float)ab, 8, ac, 64, 64);
@@ -161,22 +161,22 @@ public class PlayerListHud extends DrawableHelper {
 					x += 9;
 				}
 
-				String string3 = this.method_1918(playerListEntry2).asFormattedString();
-				if (playerListEntry2.getGameMode() == GameMode.field_9219) {
-					this.client.textRenderer.drawWithShadow(Formatting.field_1056 + string3, (float)x, (float)y, -1862270977);
+				String string3 = this.getPlayerName(playerListEntry2).asFormattedString();
+				if (playerListEntry2.getGameMode() == GameMode.SPECTATOR) {
+					this.client.textRenderer.drawWithShadow(Formatting.ITALIC + string3, (float)x, (float)y, -1862270977);
 				} else {
 					this.client.textRenderer.drawWithShadow(string3, (float)x, (float)y, -1);
 				}
 
-				if (scoreboardObjective != null && playerListEntry2.getGameMode() != GameMode.field_9219) {
+				if (scoreboardObjective != null && playerListEntry2.getGameMode() != GameMode.SPECTATOR) {
 					int ad = x + j + 1;
 					int z = ad + o;
 					if (z - ad > 5) {
-						this.method_1922(scoreboardObjective, y, gameProfile.getName(), ad, z, playerListEntry2);
+						this.renderScoreboardObjective(scoreboardObjective, y, gameProfile.getName(), ad, z, playerListEntry2);
 					}
 				}
 
-				this.method_1923(p, x - (bl ? 9 : 0), y, playerListEntry2);
+				this.renderLatencyIcon(p, x - (bl ? 9 : 0), y, playerListEntry2);
 			}
 		}
 
@@ -192,7 +192,7 @@ public class PlayerListHud extends DrawableHelper {
 		}
 	}
 
-	protected void method_1923(int i, int j, int k, PlayerListEntry playerListEntry) {
+	protected void renderLatencyIcon(int i, int j, int k, PlayerListEntry playerListEntry) {
 		GlStateManager.color4f(1.0F, 1.0F, 1.0F, 1.0F);
 		this.client.getTextureManager().bindTexture(GUI_ICONS_LOCATION);
 		int l = 0;
@@ -216,9 +216,9 @@ public class PlayerListHud extends DrawableHelper {
 		this.blitOffset -= 100;
 	}
 
-	private void method_1922(ScoreboardObjective scoreboardObjective, int i, String string, int j, int k, PlayerListEntry playerListEntry) {
+	private void renderScoreboardObjective(ScoreboardObjective scoreboardObjective, int i, String string, int j, int k, PlayerListEntry playerListEntry) {
 		int l = scoreboardObjective.getScoreboard().getPlayerScore(string, scoreboardObjective).getScore();
-		if (scoreboardObjective.getRenderType() == ScoreboardCriterion.RenderType.field_1471) {
+		if (scoreboardObjective.getRenderType() == ScoreboardCriterion.RenderType.HEARTS) {
 			this.client.getTextureManager().bindTexture(GUI_ICONS_LOCATION);
 			long m = SystemUtil.getMeasuringTimeMs();
 			if (this.showTime == playerListEntry.method_2976()) {
@@ -282,7 +282,7 @@ public class PlayerListHud extends DrawableHelper {
 				}
 			}
 		} else {
-			String string3 = Formatting.field_1054 + "" + l;
+			String string3 = Formatting.YELLOW + "" + l;
 			this.client.textRenderer.drawWithShadow(string3, (float)(k - this.client.textRenderer.getStringWidth(string3)), (float)i, 16777215);
 		}
 	}
@@ -309,7 +309,7 @@ public class PlayerListHud extends DrawableHelper {
 			Team team = playerListEntry.getScoreboardTeam();
 			Team team2 = playerListEntry2.getScoreboardTeam();
 			return ComparisonChain.start()
-				.compareTrueFirst(playerListEntry.getGameMode() != GameMode.field_9219, playerListEntry2.getGameMode() != GameMode.field_9219)
+				.compareTrueFirst(playerListEntry.getGameMode() != GameMode.SPECTATOR, playerListEntry2.getGameMode() != GameMode.SPECTATOR)
 				.compare(team != null ? team.getName() : "", team2 != null ? team2.getName() : "")
 				.compare(playerListEntry.getProfile().getName(), playerListEntry2.getProfile().getName(), String::compareToIgnoreCase)
 				.result();

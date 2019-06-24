@@ -43,6 +43,6 @@ public class SuspiciousStewItem extends Item {
 			}
 		}
 
-		return new ItemStack(Items.field_8428);
+		return new ItemStack(Items.BOWL);
 	}
 }

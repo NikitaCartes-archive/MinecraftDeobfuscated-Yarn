@@ -30,7 +30,7 @@ public class HugeRedMushroomFeature extends Feature<PlantedFeatureConfig> {
 		int j = blockPos.getY();
 		if (j >= 1 && j + i + 1 < 256) {
 			Block block = iWorld.getBlockState(blockPos.down()).getBlock();
-			if (!Block.isNaturalDirt(block) && block != Blocks.field_10219 && block != Blocks.field_10402) {
+			if (!Block.isNaturalDirt(block) && block != Blocks.GRASS_BLOCK && block != Blocks.MYCELIUM) {
 				return false;
 			} else {
 				BlockPos.Mutable mutable = new BlockPos.Mutable();
@@ -46,14 +46,14 @@ public class HugeRedMushroomFeature extends Feature<PlantedFeatureConfig> {
 					for (int m = -l; m <= l; m++) {
 						for (int n = -l; n <= l; n++) {
 							BlockState blockState = iWorld.getBlockState(mutable.set(blockPos).setOffset(m, k, n));
-							if (!blockState.isAir() && !blockState.matches(BlockTags.field_15503)) {
+							if (!blockState.isAir() && !blockState.matches(BlockTags.LEAVES)) {
 								return false;
 							}
 						}
 					}
 				}
 
-				BlockState blockState2 = Blocks.field_10240.getDefaultState().with(MushroomBlock.DOWN, Boolean.valueOf(false));
+				BlockState blockState2 = Blocks.RED_MUSHROOM_BLOCK.getDefaultState().with(MushroomBlock.DOWN, Boolean.valueOf(false));
 
 				for (int l = i - 3; l <= i; l++) {
 					int m = l < i ? 2 : 1;
@@ -85,13 +85,13 @@ public class HugeRedMushroomFeature extends Feature<PlantedFeatureConfig> {
 					}
 				}
 
-				BlockState blockState3 = Blocks.field_10556
+				BlockState blockState3 = Blocks.MUSHROOM_STEM
 					.getDefaultState()
 					.with(MushroomBlock.UP, Boolean.valueOf(false))
 					.with(MushroomBlock.DOWN, Boolean.valueOf(false));
 
 				for (int m = 0; m < i; m++) {
-					mutable.set(blockPos).setOffset(Direction.field_11036, m);
+					mutable.set(blockPos).setOffset(Direction.UP, m);
 					if (!iWorld.getBlockState(mutable).isFullOpaque(iWorld, mutable)) {
 						if (plantedFeatureConfig.planted) {
 							iWorld.setBlockState(mutable, blockState3, 3);

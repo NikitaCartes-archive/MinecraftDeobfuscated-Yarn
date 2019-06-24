@@ -24,59 +24,59 @@ import net.minecraft.world.loot.function.SetDamageLootFunction;
 import net.minecraft.world.loot.function.SetNbtLootFunction;
 
 public class FishingLootTableGenerator implements Consumer<BiConsumer<Identifier, LootSupplier.Builder>> {
-	public static final LootCondition.Builder field_11346 = LocationCheckLootCondition.builder(new LocationPredicate.Builder().biome(Biomes.field_9417));
-	public static final LootCondition.Builder field_11347 = LocationCheckLootCondition.builder(new LocationPredicate.Builder().biome(Biomes.field_9432));
-	public static final LootCondition.Builder field_11350 = LocationCheckLootCondition.builder(new LocationPredicate.Builder().biome(Biomes.field_9474));
-	public static final LootCondition.Builder field_11349 = LocationCheckLootCondition.builder(new LocationPredicate.Builder().biome(Biomes.field_9440));
-	public static final LootCondition.Builder field_11348 = LocationCheckLootCondition.builder(new LocationPredicate.Builder().biome(Biomes.field_9426));
-	public static final LootCondition.Builder field_11351 = LocationCheckLootCondition.builder(new LocationPredicate.Builder().biome(Biomes.field_9405));
-	public static final LootCondition.Builder field_11352 = LocationCheckLootCondition.builder(new LocationPredicate.Builder().biome(Biomes.field_9468));
+	public static final LootCondition.Builder field_11346 = LocationCheckLootCondition.builder(new LocationPredicate.Builder().biome(Biomes.JUNGLE));
+	public static final LootCondition.Builder field_11347 = LocationCheckLootCondition.builder(new LocationPredicate.Builder().biome(Biomes.JUNGLE_HILLS));
+	public static final LootCondition.Builder field_11350 = LocationCheckLootCondition.builder(new LocationPredicate.Builder().biome(Biomes.JUNGLE_EDGE));
+	public static final LootCondition.Builder field_11349 = LocationCheckLootCondition.builder(new LocationPredicate.Builder().biome(Biomes.BAMBOO_JUNGLE));
+	public static final LootCondition.Builder field_11348 = LocationCheckLootCondition.builder(new LocationPredicate.Builder().biome(Biomes.MODIFIED_JUNGLE));
+	public static final LootCondition.Builder field_11351 = LocationCheckLootCondition.builder(new LocationPredicate.Builder().biome(Biomes.MODIFIED_JUNGLE_EDGE));
+	public static final LootCondition.Builder field_11352 = LocationCheckLootCondition.builder(new LocationPredicate.Builder().biome(Biomes.BAMBOO_JUNGLE_HILLS));
 
 	public void method_10405(BiConsumer<Identifier, LootSupplier.Builder> biConsumer) {
 		biConsumer.accept(
-			LootTables.field_353,
+			LootTables.FISHING_GAMEPLAY,
 			LootSupplier.builder()
 				.withPool(
 					LootPool.builder()
 						.withRolls(ConstantLootTableRange.create(1))
-						.withEntry(LootTableEntry.builder(LootTables.field_266).setWeight(10).setQuality(-2))
-						.withEntry(LootTableEntry.builder(LootTables.field_854).setWeight(5).setQuality(2))
-						.withEntry(LootTableEntry.builder(LootTables.field_795).setWeight(85).setQuality(-1))
+						.withEntry(LootTableEntry.builder(LootTables.FISHING_JUNK_GAMEPLAY).setWeight(10).setQuality(-2))
+						.withEntry(LootTableEntry.builder(LootTables.FISHING_TREASURE_GAMEPLAY).setWeight(5).setQuality(2))
+						.withEntry(LootTableEntry.builder(LootTables.FISHING_FISH_GAMEPLAY).setWeight(85).setQuality(-1))
 				)
 		);
 		biConsumer.accept(
-			LootTables.field_795,
+			LootTables.FISHING_FISH_GAMEPLAY,
 			LootSupplier.builder()
 				.withPool(
 					LootPool.builder()
-						.withEntry(ItemEntry.builder(Items.field_8429).setWeight(60))
-						.withEntry(ItemEntry.builder(Items.field_8209).setWeight(25))
-						.withEntry(ItemEntry.builder(Items.field_8846).setWeight(2))
-						.withEntry(ItemEntry.builder(Items.field_8323).setWeight(13))
+						.withEntry(ItemEntry.builder(Items.COD).setWeight(60))
+						.withEntry(ItemEntry.builder(Items.SALMON).setWeight(25))
+						.withEntry(ItemEntry.builder(Items.TROPICAL_FISH).setWeight(2))
+						.withEntry(ItemEntry.builder(Items.PUFFERFISH).setWeight(13))
 				)
 		);
 		biConsumer.accept(
-			LootTables.field_266,
+			LootTables.FISHING_JUNK_GAMEPLAY,
 			LootSupplier.builder()
 				.withPool(
 					LootPool.builder()
-						.withEntry(ItemEntry.builder(Items.field_8370).setWeight(10).method_438(SetDamageLootFunction.builder(UniformLootTableRange.between(0.0F, 0.9F))))
-						.withEntry(ItemEntry.builder(Items.field_8745).setWeight(10))
-						.withEntry(ItemEntry.builder(Items.field_8606).setWeight(10))
+						.withEntry(ItemEntry.builder(Items.LEATHER_BOOTS).setWeight(10).method_438(SetDamageLootFunction.builder(UniformLootTableRange.between(0.0F, 0.9F))))
+						.withEntry(ItemEntry.builder(Items.LEATHER).setWeight(10))
+						.withEntry(ItemEntry.builder(Items.BONE).setWeight(10))
 						.withEntry(
-							ItemEntry.builder(Items.field_8574)
+							ItemEntry.builder(Items.POTION)
 								.setWeight(10)
 								.method_438(SetNbtLootFunction.builder(SystemUtil.consume(new CompoundTag(), compoundTag -> compoundTag.putString("Potion", "minecraft:water"))))
 						)
-						.withEntry(ItemEntry.builder(Items.field_8276).setWeight(5))
-						.withEntry(ItemEntry.builder(Items.field_8378).setWeight(2).method_438(SetDamageLootFunction.builder(UniformLootTableRange.between(0.0F, 0.9F))))
-						.withEntry(ItemEntry.builder(Items.field_8428).setWeight(10))
-						.withEntry(ItemEntry.builder(Items.field_8600).setWeight(5))
-						.withEntry(ItemEntry.builder(Items.field_8794).setWeight(1).method_438(SetCountLootFunction.builder(ConstantLootTableRange.create(10))))
-						.withEntry(ItemEntry.builder(Blocks.field_10348).setWeight(10))
-						.withEntry(ItemEntry.builder(Items.field_8511).setWeight(10))
+						.withEntry(ItemEntry.builder(Items.STRING).setWeight(5))
+						.withEntry(ItemEntry.builder(Items.FISHING_ROD).setWeight(2).method_438(SetDamageLootFunction.builder(UniformLootTableRange.between(0.0F, 0.9F))))
+						.withEntry(ItemEntry.builder(Items.BOWL).setWeight(10))
+						.withEntry(ItemEntry.builder(Items.STICK).setWeight(5))
+						.withEntry(ItemEntry.builder(Items.INK_SAC).setWeight(1).method_438(SetCountLootFunction.builder(ConstantLootTableRange.create(10))))
+						.withEntry(ItemEntry.builder(Blocks.TRIPWIRE_HOOK).setWeight(10))
+						.withEntry(ItemEntry.builder(Items.ROTTEN_FLESH).setWeight(10))
 						.withEntry(
-							ItemEntry.builder(Blocks.field_10211)
+							ItemEntry.builder(Blocks.BAMBOO)
 								.method_421(
 									field_11346.withCondition(field_11347)
 										.withCondition(field_11350)
@@ -90,27 +90,25 @@ public class FishingLootTableGenerator implements Consumer<BiConsumer<Identifier
 				)
 		);
 		biConsumer.accept(
-			LootTables.field_854,
+			LootTables.FISHING_TREASURE_GAMEPLAY,
 			LootSupplier.builder()
 				.withPool(
 					LootPool.builder()
-						.withEntry(ItemEntry.builder(Blocks.field_10588))
-						.withEntry(ItemEntry.builder(Items.field_8448))
-						.withEntry(ItemEntry.builder(Items.field_8175))
+						.withEntry(ItemEntry.builder(Blocks.LILY_PAD))
+						.withEntry(ItemEntry.builder(Items.NAME_TAG))
+						.withEntry(ItemEntry.builder(Items.SADDLE))
 						.withEntry(
-							ItemEntry.builder(Items.field_8102)
+							ItemEntry.builder(Items.BOW)
 								.method_438(SetDamageLootFunction.builder(UniformLootTableRange.between(0.0F, 0.25F)))
 								.method_438(EnchantWithLevelsLootFunction.builder(ConstantLootTableRange.create(30)).allowTreasureEnchantments())
 						)
 						.withEntry(
-							ItemEntry.builder(Items.field_8378)
+							ItemEntry.builder(Items.FISHING_ROD)
 								.method_438(SetDamageLootFunction.builder(UniformLootTableRange.between(0.0F, 0.25F)))
 								.method_438(EnchantWithLevelsLootFunction.builder(ConstantLootTableRange.create(30)).allowTreasureEnchantments())
 						)
-						.withEntry(
-							ItemEntry.builder(Items.field_8529).method_438(EnchantWithLevelsLootFunction.builder(ConstantLootTableRange.create(30)).allowTreasureEnchantments())
-						)
-						.withEntry(ItemEntry.builder(Items.field_8864))
+						.withEntry(ItemEntry.builder(Items.BOOK).method_438(EnchantWithLevelsLootFunction.builder(ConstantLootTableRange.create(30)).allowTreasureEnchantments()))
+						.withEntry(ItemEntry.builder(Items.NAUTILUS_SHELL))
 				)
 		);
 	}

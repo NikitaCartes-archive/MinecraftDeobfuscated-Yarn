@@ -22,7 +22,7 @@ public class WalkHomeTask extends Task<LivingEntity> {
 	private long lastRunTime;
 
 	public WalkHomeTask(float f) {
-		super(ImmutableMap.of(MemoryModuleType.field_18445, MemoryModuleState.field_18457, MemoryModuleType.field_18438, MemoryModuleState.field_18457));
+		super(ImmutableMap.of(MemoryModuleType.WALK_TARGET, MemoryModuleState.VALUE_ABSENT, MemoryModuleType.HOME, MemoryModuleState.VALUE_ABSENT));
 		this.speed = f;
 	}
 
@@ -34,11 +34,7 @@ public class WalkHomeTask extends Task<LivingEntity> {
 			MobEntityWithAi mobEntityWithAi = (MobEntityWithAi)livingEntity;
 			PointOfInterestStorage pointOfInterestStorage = serverWorld.getPointOfInterestStorage();
 			Optional<BlockPos> optional = pointOfInterestStorage.getNearestPosition(
-				PointOfInterestType.field_18517.getCompletionCondition(),
-				blockPos -> true,
-				new BlockPos(livingEntity),
-				48,
-				PointOfInterestStorage.OccupationStatus.field_18489
+				PointOfInterestType.HOME.getCompletionCondition(), blockPos -> true, new BlockPos(livingEntity), 48, PointOfInterestStorage.OccupationStatus.ANY
 			);
 			return optional.isPresent() && !(((BlockPos)optional.get()).getSquaredDistance(new Vec3i(mobEntityWithAi.x, mobEntityWithAi.y, mobEntityWithAi.z)) <= 4.0);
 		}
@@ -52,21 +48,21 @@ public class WalkHomeTask extends Task<LivingEntity> {
 		Predicate<BlockPos> predicate = blockPos -> {
 			BlockPos.Mutable mutable = new BlockPos.Mutable(blockPos);
 			if (serverWorld.getBlockState(blockPos.down()).isAir()) {
-				mutable.setOffset(Direction.field_11033);
+				mutable.setOffset(Direction.DOWN);
 			}
 
 			while (serverWorld.getBlockState(mutable).isAir() && mutable.getY() >= 0) {
-				mutable.setOffset(Direction.field_11033);
+				mutable.setOffset(Direction.DOWN);
 			}
 
 			Path path = mobEntityWithAi.getNavigation().findPathTo(mutable);
 			return path != null && path.method_19313(mutable);
 		};
 		pointOfInterestStorage.getNearestPosition(
-				PointOfInterestType.field_18517.getCompletionCondition(), predicate, new BlockPos(livingEntity), 48, PointOfInterestStorage.OccupationStatus.field_18489
+				PointOfInterestType.HOME.getCompletionCondition(), predicate, new BlockPos(livingEntity), 48, PointOfInterestStorage.OccupationStatus.ANY
 			)
 			.ifPresent(blockPos -> {
-				livingEntity.getBrain().putMemory(MemoryModuleType.field_18445, new WalkTarget(blockPos, this.speed, 1));
+				livingEntity.getBrain().putMemory(MemoryModuleType.WALK_TARGET, new WalkTarget(blockPos, this.speed, 1));
 				DebugRendererInfoManager.sendPointOfInterest(serverWorld, blockPos);
 			});
 	}

@@ -69,10 +69,10 @@ public enum EnderDragonSpawnState {
 							(double)spike.getHeight(),
 							(double)((float)spike.getCenterZ() + 0.5F),
 							5.0F,
-							Explosion.DestructionType.field_18687
+							Explosion.DestructionType.DESTROY
 						);
 						EndSpikeFeatureConfig endSpikeFeatureConfig = new EndSpikeFeatureConfig(true, ImmutableList.of(spike), new BlockPos(0, 128, 0));
-						Feature.field_13522
+						Feature.END_SPIKE
 							.generate(
 								serverWorld,
 								(ChunkGenerator<? extends ChunkGeneratorConfig>)serverWorld.method_14178().getChunkGenerator(),
@@ -82,12 +82,12 @@ public enum EnderDragonSpawnState {
 							);
 					}
 				} else if (bl) {
-					enderDragonFight.setSpawnState(SUMMONING_DRAGOM);
+					enderDragonFight.setSpawnState(SUMMONING_DRAGON);
 				}
 			}
 		}
 	},
-	SUMMONING_DRAGOM {
+	SUMMONING_DRAGON {
 		@Override
 		public void run(ServerWorld serverWorld, EnderDragonFight enderDragonFight, List<EnderCrystalEntity> list, int i, BlockPos blockPos) {
 			if (i >= 100) {
@@ -96,9 +96,7 @@ public enum EnderDragonSpawnState {
 
 				for (EnderCrystalEntity enderCrystalEntity : list) {
 					enderCrystalEntity.setBeamTarget(null);
-					serverWorld.createExplosion(
-						enderCrystalEntity, enderCrystalEntity.x, enderCrystalEntity.y, enderCrystalEntity.z, 6.0F, Explosion.DestructionType.field_18685
-					);
+					serverWorld.createExplosion(enderCrystalEntity, enderCrystalEntity.x, enderCrystalEntity.y, enderCrystalEntity.z, 6.0F, Explosion.DestructionType.NONE);
 					enderCrystalEntity.remove();
 				}
 			} else if (i >= 80) {

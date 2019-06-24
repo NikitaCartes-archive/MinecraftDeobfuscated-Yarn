@@ -74,10 +74,10 @@ public class ChunkRenderer {
 			return true;
 		} else {
 			World world = this.getWorld();
-			return isChunkNonEmpty(this.neighborPositions[Direction.field_11039.ordinal()], world)
-				&& isChunkNonEmpty(this.neighborPositions[Direction.field_11043.ordinal()], world)
-				&& isChunkNonEmpty(this.neighborPositions[Direction.field_11034.ordinal()], world)
-				&& isChunkNonEmpty(this.neighborPositions[Direction.field_11035.ordinal()], world);
+			return isChunkNonEmpty(this.neighborPositions[Direction.WEST.ordinal()], world)
+				&& isChunkNonEmpty(this.neighborPositions[Direction.NORTH.ordinal()], world)
+				&& isChunkNonEmpty(this.neighborPositions[Direction.EAST.ordinal()], world)
+				&& isChunkNonEmpty(this.neighborPositions[Direction.SOUTH.ordinal()], world);
 		}
 	}
 
@@ -108,10 +108,10 @@ public class ChunkRenderer {
 
 	public void resortTransparency(float f, float g, float h, ChunkRenderTask chunkRenderTask) {
 		ChunkRenderData chunkRenderData = chunkRenderTask.getRenderData();
-		if (chunkRenderData.getBufferState() != null && !chunkRenderData.isEmpty(BlockRenderLayer.field_9179)) {
-			this.beginBufferBuilding(chunkRenderTask.getBufferBuilders().get(BlockRenderLayer.field_9179), this.origin);
-			chunkRenderTask.getBufferBuilders().get(BlockRenderLayer.field_9179).restoreState(chunkRenderData.getBufferState());
-			this.endBufferBuilding(BlockRenderLayer.field_9179, f, g, h, chunkRenderTask.getBufferBuilders().get(BlockRenderLayer.field_9179), chunkRenderData);
+		if (chunkRenderData.getBufferState() != null && !chunkRenderData.isEmpty(BlockRenderLayer.TRANSLUCENT)) {
+			this.beginBufferBuilding(chunkRenderTask.getBufferBuilders().get(BlockRenderLayer.TRANSLUCENT), this.origin);
+			chunkRenderTask.getBufferBuilders().get(BlockRenderLayer.TRANSLUCENT).restoreState(chunkRenderData.getBufferState());
+			this.endBufferBuilding(BlockRenderLayer.TRANSLUCENT, f, g, h, chunkRenderTask.getBufferBuilders().get(BlockRenderLayer.TRANSLUCENT), chunkRenderData);
 		}
 	}
 
@@ -125,7 +125,7 @@ public class ChunkRenderer {
 			chunkRenderTask.getLock().lock();
 
 			try {
-				if (chunkRenderTask.getStage() != ChunkRenderTask.Stage.field_4424) {
+				if (chunkRenderTask.getStage() != ChunkRenderTask.Stage.COMPILING) {
 					return;
 				}
 
@@ -152,7 +152,7 @@ public class ChunkRenderer {
 					}
 
 					if (block.hasBlockEntity()) {
-						BlockEntity blockEntity = chunkRendererRegion.getBlockEntity(blockPos3, WorldChunk.CreationType.field_12859);
+						BlockEntity blockEntity = chunkRendererRegion.getBlockEntity(blockPos3, WorldChunk.CreationType.CHECK);
 						if (blockEntity != null) {
 							BlockEntityRenderer<BlockEntity> blockEntityRenderer = BlockEntityRenderDispatcher.INSTANCE.get(blockEntity);
 							if (blockEntityRenderer != null) {
@@ -177,7 +177,7 @@ public class ChunkRenderer {
 						bls[j] |= blockRenderManager.tesselateFluid(blockPos3, chunkRendererRegion, bufferBuilder, fluidState);
 					}
 
-					if (blockState.getRenderType() != BlockRenderType.field_11455) {
+					if (blockState.getRenderType() != BlockRenderType.INVISIBLE) {
 						BlockRenderLayer blockRenderLayer = block.getRenderLayer();
 						int j = blockRenderLayer.ordinal();
 						BufferBuilder bufferBuilder = chunkRenderTask.getBufferBuilders().get(j);
@@ -224,7 +224,7 @@ public class ChunkRenderer {
 		this.lock.lock();
 
 		try {
-			if (this.task != null && this.task.getStage() != ChunkRenderTask.Stage.field_4423) {
+			if (this.task != null && this.task.getStage() != ChunkRenderTask.Stage.DONE) {
 				this.task.cancel();
 				this.task = null;
 			}
@@ -246,7 +246,7 @@ public class ChunkRenderer {
 			BlockPos blockPos = this.origin.toImmutable();
 			int i = 1;
 			ChunkRendererRegion chunkRendererRegion = ChunkRendererRegion.create(this.world, blockPos.add(-1, -1, -1), blockPos.add(16, 16, 16), 1);
-			this.task = new ChunkRenderTask(this, ChunkRenderTask.Mode.field_4426, this.getSquaredCameraDistance(), chunkRendererRegion);
+			this.task = new ChunkRenderTask(this, ChunkRenderTask.Mode.REBUILD_CHUNK, this.getSquaredCameraDistance(), chunkRendererRegion);
 			var4 = this.task;
 		} finally {
 			this.lock.unlock();
@@ -261,13 +261,13 @@ public class ChunkRenderer {
 
 		Object var1;
 		try {
-			if (this.task == null || this.task.getStage() != ChunkRenderTask.Stage.field_4422) {
-				if (this.task != null && this.task.getStage() != ChunkRenderTask.Stage.field_4423) {
+			if (this.task == null || this.task.getStage() != ChunkRenderTask.Stage.PENDING) {
+				if (this.task != null && this.task.getStage() != ChunkRenderTask.Stage.DONE) {
 					this.task.cancel();
 					this.task = null;
 				}
 
-				this.task = new ChunkRenderTask(this, ChunkRenderTask.Mode.field_4427, this.getSquaredCameraDistance(), null);
+				this.task = new ChunkRenderTask(this, ChunkRenderTask.Mode.RESORT_TRANSPARENCY, this.getSquaredCameraDistance(), null);
 				this.task.setRenderData(this.data);
 				return this.task;
 			}
@@ -294,7 +294,7 @@ public class ChunkRenderer {
 	}
 
 	private void endBufferBuilding(BlockRenderLayer blockRenderLayer, float f, float g, float h, BufferBuilder bufferBuilder, ChunkRenderData chunkRenderData) {
-		if (blockRenderLayer == BlockRenderLayer.field_9179 && !chunkRenderData.isEmpty(blockRenderLayer)) {
+		if (blockRenderLayer == BlockRenderLayer.TRANSLUCENT && !chunkRenderData.isEmpty(blockRenderLayer)) {
 			bufferBuilder.sortQuads(f, g, h);
 			chunkRenderData.setBufferState(bufferBuilder.toBufferState());
 		}

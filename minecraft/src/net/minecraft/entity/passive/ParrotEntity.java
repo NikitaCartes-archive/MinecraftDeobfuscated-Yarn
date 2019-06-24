@@ -66,43 +66,43 @@ public class ParrotEntity extends TameableShoulderEntity implements Bird {
 			return mobEntity != null && ParrotEntity.MOB_SOUNDS.containsKey(mobEntity.getType());
 		}
 	};
-	private static final Item COOKIE = Items.field_8423;
-	private static final Set<Item> TAMING_INGREDIENTS = Sets.<Item>newHashSet(Items.field_8317, Items.field_8188, Items.field_8706, Items.field_8309);
+	private static final Item COOKIE = Items.COOKIE;
+	private static final Set<Item> TAMING_INGREDIENTS = Sets.<Item>newHashSet(Items.WHEAT_SEEDS, Items.MELON_SEEDS, Items.PUMPKIN_SEEDS, Items.BEETROOT_SEEDS);
 	private static final Map<EntityType<?>, SoundEvent> MOB_SOUNDS = SystemUtil.consume(Maps.<EntityType<?>, SoundEvent>newHashMap(), hashMap -> {
-		hashMap.put(EntityType.field_6099, SoundEvents.field_15199);
-		hashMap.put(EntityType.field_6084, SoundEvents.field_15190);
-		hashMap.put(EntityType.field_6046, SoundEvents.field_14547);
-		hashMap.put(EntityType.field_6123, SoundEvents.field_14647);
-		hashMap.put(EntityType.field_6086, SoundEvents.field_14777);
-		hashMap.put(EntityType.field_6116, SoundEvents.field_14854);
-		hashMap.put(EntityType.field_6091, SoundEvents.field_14950);
-		hashMap.put(EntityType.field_6128, SoundEvents.field_15022);
-		hashMap.put(EntityType.field_6090, SoundEvents.field_15113);
-		hashMap.put(EntityType.field_6107, SoundEvents.field_14577);
-		hashMap.put(EntityType.field_6118, SoundEvents.field_18813);
-		hashMap.put(EntityType.field_6071, SoundEvents.field_15185);
-		hashMap.put(EntityType.field_6065, SoundEvents.field_15064);
-		hashMap.put(EntityType.field_6102, SoundEvents.field_14963);
-		hashMap.put(EntityType.field_6050, SoundEvents.field_15143);
-		hashMap.put(EntityType.field_6146, SoundEvents.field_18814);
-		hashMap.put(EntityType.field_6078, SoundEvents.field_14957);
-		hashMap.put(EntityType.field_6105, SoundEvents.field_18815);
-		hashMap.put(EntityType.field_6042, SoundEvents.field_14866);
-		hashMap.put(EntityType.field_6134, SoundEvents.field_18816);
-		hashMap.put(EntityType.field_6109, SoundEvents.field_14768);
-		hashMap.put(EntityType.field_6125, SoundEvents.field_14683);
-		hashMap.put(EntityType.field_6137, SoundEvents.field_14587);
-		hashMap.put(EntityType.field_6069, SoundEvents.field_15098);
-		hashMap.put(EntityType.field_6079, SoundEvents.field_15190);
-		hashMap.put(EntityType.field_6098, SoundEvents.field_14885);
-		hashMap.put(EntityType.field_6059, SoundEvents.field_15032);
-		hashMap.put(EntityType.field_6117, SoundEvents.field_14790);
-		hashMap.put(EntityType.field_6145, SoundEvents.field_14796);
-		hashMap.put(EntityType.field_6119, SoundEvents.field_14555);
-		hashMap.put(EntityType.field_6076, SoundEvents.field_15073);
-		hashMap.put(EntityType.field_6055, SoundEvents.field_14942);
-		hashMap.put(EntityType.field_6051, SoundEvents.field_15220);
-		hashMap.put(EntityType.field_6054, SoundEvents.field_14676);
+		hashMap.put(EntityType.BLAZE, SoundEvents.ENTITY_PARROT_IMITATE_BLAZE);
+		hashMap.put(EntityType.CAVE_SPIDER, SoundEvents.ENTITY_PARROT_IMITATE_SPIDER);
+		hashMap.put(EntityType.CREEPER, SoundEvents.ENTITY_PARROT_IMITATE_CREEPER);
+		hashMap.put(EntityType.DROWNED, SoundEvents.ENTITY_PARROT_IMITATE_DROWNED);
+		hashMap.put(EntityType.ELDER_GUARDIAN, SoundEvents.ENTITY_PARROT_IMITATE_ELDER_GUARDIAN);
+		hashMap.put(EntityType.ENDER_DRAGON, SoundEvents.ENTITY_PARROT_IMITATE_ENDER_DRAGON);
+		hashMap.put(EntityType.ENDERMAN, SoundEvents.ENTITY_PARROT_IMITATE_ENDERMAN);
+		hashMap.put(EntityType.ENDERMITE, SoundEvents.ENTITY_PARROT_IMITATE_ENDERMITE);
+		hashMap.put(EntityType.EVOKER, SoundEvents.ENTITY_PARROT_IMITATE_EVOKER);
+		hashMap.put(EntityType.GHAST, SoundEvents.ENTITY_PARROT_IMITATE_GHAST);
+		hashMap.put(EntityType.GUARDIAN, SoundEvents.ENTITY_PARROT_IMITATE_GUARDIAN);
+		hashMap.put(EntityType.HUSK, SoundEvents.ENTITY_PARROT_IMITATE_HUSK);
+		hashMap.put(EntityType.ILLUSIONER, SoundEvents.ENTITY_PARROT_IMITATE_ILLUSIONER);
+		hashMap.put(EntityType.MAGMA_CUBE, SoundEvents.ENTITY_PARROT_IMITATE_MAGMA_CUBE);
+		hashMap.put(EntityType.ZOMBIE_PIGMAN, SoundEvents.ENTITY_PARROT_IMITATE_ZOMBIE_PIGMAN);
+		hashMap.put(EntityType.PANDA, SoundEvents.ENTITY_PARROT_IMITATE_PANDA);
+		hashMap.put(EntityType.PHANTOM, SoundEvents.ENTITY_PARROT_IMITATE_PHANTOM);
+		hashMap.put(EntityType.PILLAGER, SoundEvents.ENTITY_PARROT_IMITATE_PILLAGER);
+		hashMap.put(EntityType.POLAR_BEAR, SoundEvents.ENTITY_PARROT_IMITATE_POLAR_BEAR);
+		hashMap.put(EntityType.RAVAGER, SoundEvents.ENTITY_PARROT_IMITATE_RAVAGER);
+		hashMap.put(EntityType.SHULKER, SoundEvents.ENTITY_PARROT_IMITATE_SHULKER);
+		hashMap.put(EntityType.SILVERFISH, SoundEvents.ENTITY_PARROT_IMITATE_SILVERFISH);
+		hashMap.put(EntityType.SKELETON, SoundEvents.ENTITY_PARROT_IMITATE_SKELETON);
+		hashMap.put(EntityType.SLIME, SoundEvents.ENTITY_PARROT_IMITATE_SLIME);
+		hashMap.put(EntityType.SPIDER, SoundEvents.ENTITY_PARROT_IMITATE_SPIDER);
+		hashMap.put(EntityType.STRAY, SoundEvents.ENTITY_PARROT_IMITATE_STRAY);
+		hashMap.put(EntityType.VEX, SoundEvents.ENTITY_PARROT_IMITATE_VEX);
+		hashMap.put(EntityType.VINDICATOR, SoundEvents.ENTITY_PARROT_IMITATE_VINDICATOR);
+		hashMap.put(EntityType.WITCH, SoundEvents.ENTITY_PARROT_IMITATE_WITCH);
+		hashMap.put(EntityType.WITHER, SoundEvents.ENTITY_PARROT_IMITATE_WITHER);
+		hashMap.put(EntityType.WITHER_SKELETON, SoundEvents.ENTITY_PARROT_IMITATE_WITHER_SKELETON);
+		hashMap.put(EntityType.WOLF, SoundEvents.ENTITY_PARROT_IMITATE_WOLF);
+		hashMap.put(EntityType.ZOMBIE, SoundEvents.ENTITY_PARROT_IMITATE_ZOMBIE);
+		hashMap.put(EntityType.ZOMBIE_VILLAGER, SoundEvents.ENTITY_PARROT_IMITATE_ZOMBIE_VILLAGER);
 	});
 	public float field_6818;
 	public float field_6819;
@@ -167,7 +167,7 @@ public class ParrotEntity extends TameableShoulderEntity implements Bird {
 		imitateNearbyMob(this.world, this);
 		if (this.songSource == null
 			|| !this.songSource.isWithinDistance(this.getPos(), 3.46)
-			|| this.world.getBlockState(this.songSource).getBlock() != Blocks.field_10223) {
+			|| this.world.getBlockState(this.songSource).getBlock() != Blocks.JUKEBOX) {
 			this.songPlaying = false;
 			this.songSource = null;
 		}
@@ -235,7 +235,14 @@ public class ParrotEntity extends TameableShoulderEntity implements Bird {
 			if (!this.isSilent()) {
 				this.world
 					.playSound(
-						null, this.x, this.y, this.z, SoundEvents.field_14960, this.getSoundCategory(), 1.0F, 1.0F + (this.random.nextFloat() - this.random.nextFloat()) * 0.2F
+						null,
+						this.x,
+						this.y,
+						this.z,
+						SoundEvents.ENTITY_PARROT_EAT,
+						this.getSoundCategory(),
+						1.0F,
+						1.0F + (this.random.nextFloat() - this.random.nextFloat()) * 0.2F
 					);
 			}
 
@@ -256,7 +263,7 @@ public class ParrotEntity extends TameableShoulderEntity implements Bird {
 				itemStack.decrement(1);
 			}
 
-			this.addPotionEffect(new StatusEffectInstance(StatusEffects.field_5899, 900));
+			this.addPotionEffect(new StatusEffectInstance(StatusEffects.POISON, 900));
 			if (playerEntity.isCreative() || !this.isInvulnerable()) {
 				this.damage(DamageSource.player(playerEntity), Float.MAX_VALUE);
 			}
@@ -278,7 +285,7 @@ public class ParrotEntity extends TameableShoulderEntity implements Bird {
 
 	public static boolean method_20667(EntityType<ParrotEntity> entityType, IWorld iWorld, SpawnType spawnType, BlockPos blockPos, Random random) {
 		Block block = iWorld.getBlockState(blockPos.down()).getBlock();
-		return (block.matches(BlockTags.field_15503) || block == Blocks.field_10219 || block instanceof LogBlock || block == Blocks.field_10124)
+		return (block.matches(BlockTags.LEAVES) || block == Blocks.GRASS_BLOCK || block instanceof LogBlock || block == Blocks.AIR)
 			&& iWorld.getLightLevel(blockPos, 0) > 8;
 	}
 
@@ -323,32 +330,32 @@ public class ParrotEntity extends TameableShoulderEntity implements Bird {
 			List<EntityType<?>> list = Lists.<EntityType<?>>newArrayList(MOB_SOUNDS.keySet());
 			return getSound((EntityType<?>)list.get(random.nextInt(list.size())));
 		} else {
-			return SoundEvents.field_15132;
+			return SoundEvents.ENTITY_PARROT_AMBIENT;
 		}
 	}
 
 	public static SoundEvent getSound(EntityType<?> entityType) {
-		return (SoundEvent)MOB_SOUNDS.getOrDefault(entityType, SoundEvents.field_15132);
+		return (SoundEvent)MOB_SOUNDS.getOrDefault(entityType, SoundEvents.ENTITY_PARROT_AMBIENT);
 	}
 
 	@Override
 	protected SoundEvent getHurtSound(DamageSource damageSource) {
-		return SoundEvents.field_15077;
+		return SoundEvents.ENTITY_PARROT_HURT;
 	}
 
 	@Override
 	protected SoundEvent getDeathSound() {
-		return SoundEvents.field_15234;
+		return SoundEvents.ENTITY_PARROT_DEATH;
 	}
 
 	@Override
 	protected void playStepSound(BlockPos blockPos, BlockState blockState) {
-		this.playSound(SoundEvents.field_14602, 0.15F, 1.0F);
+		this.playSound(SoundEvents.ENTITY_PARROT_STEP, 0.15F, 1.0F);
 	}
 
 	@Override
-	protected float method_5801(float f) {
-		this.playSound(SoundEvents.field_14925, 0.15F, 1.0F);
+	protected float calculateAerialStepDelta(float f) {
+		this.playSound(SoundEvents.ENTITY_PARROT_FLY, 0.15F, 1.0F);
 		return f + this.field_6819 / 2.0F;
 	}
 
@@ -368,7 +375,7 @@ public class ParrotEntity extends TameableShoulderEntity implements Bird {
 
 	@Override
 	public SoundCategory getSoundCategory() {
-		return SoundCategory.field_15254;
+		return SoundCategory.NEUTRAL;
 	}
 
 	@Override

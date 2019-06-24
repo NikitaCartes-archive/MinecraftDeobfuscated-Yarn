@@ -40,7 +40,7 @@ public class FlyingItemEntityRenderer<T extends Entity & FlyingItemEntity> exten
 			GlStateManager.setupSolidRenderingTextureCombine(this.getOutlineColor(entity));
 		}
 
-		this.item.renderItem(entity.getStack(), ModelTransformation.Type.field_4318);
+		this.item.renderItem(entity.getStack(), ModelTransformation.Type.GROUND);
 		if (this.renderOutlines) {
 			GlStateManager.tearDownSolidRenderingTextureCombine();
 			GlStateManager.disableColorMaterial();

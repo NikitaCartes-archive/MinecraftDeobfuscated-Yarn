@@ -128,7 +128,7 @@ public class LecternBlockEntity extends BlockEntity implements Clearable, Nameab
 	private int pageCount;
 
 	public LecternBlockEntity() {
-		super(BlockEntityType.field_16412);
+		super(BlockEntityType.LECTERN);
 	}
 
 	public ItemStack getBook() {
@@ -137,7 +137,7 @@ public class LecternBlockEntity extends BlockEntity implements Clearable, Nameab
 
 	public boolean hasBook() {
 		Item item = this.book.getItem();
-		return item == Items.field_8674 || item == Items.field_8360;
+		return item == Items.WRITABLE_BOOK || item == Items.WRITTEN_BOOK;
 	}
 
 	public void setBook(ItemStack itemStack) {
@@ -176,7 +176,7 @@ public class LecternBlockEntity extends BlockEntity implements Clearable, Nameab
 	}
 
 	private ItemStack resolveBook(ItemStack itemStack, @Nullable PlayerEntity playerEntity) {
-		if (this.world instanceof ServerWorld && itemStack.getItem() == Items.field_8360) {
+		if (this.world instanceof ServerWorld && itemStack.getItem() == Items.WRITTEN_BOOK) {
 			WrittenBookItem.resolve(itemStack, this.getCommandSource(playerEntity), playerEntity);
 		}
 

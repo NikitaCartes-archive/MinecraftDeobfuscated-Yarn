@@ -82,17 +82,16 @@ public class CactusBlock extends Block {
 
 	@Override
 	public boolean canPlaceAt(BlockState blockState, ViewableWorld viewableWorld, BlockPos blockPos) {
-		for (Direction direction : Direction.Type.field_11062) {
+		for (Direction direction : Direction.Type.HORIZONTAL) {
 			BlockState blockState2 = viewableWorld.getBlockState(blockPos.offset(direction));
 			Material material = blockState2.getMaterial();
-			if (material.isSolid() || viewableWorld.getFluidState(blockPos.offset(direction)).matches(FluidTags.field_15518)) {
+			if (material.isSolid() || viewableWorld.getFluidState(blockPos.offset(direction)).matches(FluidTags.LAVA)) {
 				return false;
 			}
 		}
 
 		Block block = viewableWorld.getBlockState(blockPos.down()).getBlock();
-		return (block == Blocks.field_10029 || block == Blocks.field_10102 || block == Blocks.field_10534)
-			&& !viewableWorld.getBlockState(blockPos.up()).getMaterial().isLiquid();
+		return (block == Blocks.CACTUS || block == Blocks.SAND || block == Blocks.RED_SAND) && !viewableWorld.getBlockState(blockPos.up()).getMaterial().isLiquid();
 	}
 
 	@Override
@@ -102,7 +101,7 @@ public class CactusBlock extends Block {
 
 	@Override
 	public BlockRenderLayer getRenderLayer() {
-		return BlockRenderLayer.field_9174;
+		return BlockRenderLayer.CUTOUT;
 	}
 
 	@Override

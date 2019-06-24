@@ -31,7 +31,7 @@ public class PointOfInterestStorage extends SerializingRegionBasedStorage<PointO
 	);
 
 	public PointOfInterestStorage(File file, DataFixer dataFixer) {
-		super(file, PointOfInterestSet::new, PointOfInterestSet::new, dataFixer, DataFixTypes.field_19221);
+		super(file, PointOfInterestSet::new, PointOfInterestSet::new, dataFixer, DataFixTypes.POI_CHUNK);
 	}
 
 	public void add(BlockPos blockPos, PointOfInterestType pointOfInterestType) {
@@ -81,7 +81,7 @@ public class PointOfInterestStorage extends SerializingRegionBasedStorage<PointO
 	}
 
 	public Optional<BlockPos> getPosition(Predicate<PointOfInterestType> predicate, Predicate<BlockPos> predicate2, BlockPos blockPos, int i) {
-		return this.get(predicate, blockPos, i, PointOfInterestStorage.OccupationStatus.field_18487)
+		return this.get(predicate, blockPos, i, PointOfInterestStorage.OccupationStatus.HAS_SPACE)
 			.filter(pointOfInterest -> predicate2.test(pointOfInterest.getPos()))
 			.findFirst()
 			.map(pointOfInterest -> {
@@ -91,7 +91,7 @@ public class PointOfInterestStorage extends SerializingRegionBasedStorage<PointO
 	}
 
 	public Optional<BlockPos> getNearestPosition(Predicate<PointOfInterestType> predicate, Predicate<BlockPos> predicate2, BlockPos blockPos, int i) {
-		return this.get(predicate, blockPos, i, PointOfInterestStorage.OccupationStatus.field_18487)
+		return this.get(predicate, blockPos, i, PointOfInterestStorage.OccupationStatus.HAS_SPACE)
 			.sorted(Comparator.comparingDouble(pointOfInterest -> pointOfInterest.getPos().getSquaredDistance(blockPos)))
 			.filter(pointOfInterest -> predicate2.test(pointOfInterest.getPos()))
 			.findFirst()
@@ -137,7 +137,7 @@ public class PointOfInterestStorage extends SerializingRegionBasedStorage<PointO
 		return optional == null
 			? false
 			: (Boolean)optional.map(
-					pointOfInterestSet -> pointOfInterestSet.get(PointOfInterestType.ALWAYS_TRUE, PointOfInterestStorage.OccupationStatus.field_18488).count() > 0L
+					pointOfInterestSet -> pointOfInterestSet.get(PointOfInterestType.ALWAYS_TRUE, PointOfInterestStorage.OccupationStatus.IS_OCCUPIED).count() > 0L
 				)
 				.orElse(false);
 	}
@@ -190,9 +190,9 @@ public class PointOfInterestStorage extends SerializingRegionBasedStorage<PointO
 	}
 
 	public static enum OccupationStatus {
-		field_18487(PointOfInterest::hasSpace),
-		field_18488(PointOfInterest::isOccupied),
-		field_18489(pointOfInterest -> true);
+		HAS_SPACE(PointOfInterest::hasSpace),
+		IS_OCCUPIED(PointOfInterest::isOccupied),
+		ANY(pointOfInterest -> true);
 
 		private final Predicate<? super PointOfInterest> predicate;
 

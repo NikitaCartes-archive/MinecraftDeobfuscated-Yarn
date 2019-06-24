@@ -21,7 +21,7 @@ public class CatSpawner {
 	private int ticksUntilNextSpawn;
 
 	public int spawn(ServerWorld serverWorld, boolean bl, boolean bl2) {
-		if (bl2 && serverWorld.getGameRules().getBoolean(GameRules.field_19390)) {
+		if (bl2 && serverWorld.getGameRules().getBoolean(GameRules.DO_MOB_SPAWNING)) {
 			this.ticksUntilNextSpawn--;
 			if (this.ticksUntilNextSpawn > 0) {
 				return 0;
@@ -40,7 +40,7 @@ public class CatSpawner {
 					)) {
 						return 0;
 					} else {
-						if (SpawnHelper.canSpawn(SpawnRestriction.Location.field_6317, serverWorld, blockPos, EntityType.field_16281)) {
+						if (SpawnHelper.canSpawn(SpawnRestriction.Location.ON_GROUND, serverWorld, blockPos, EntityType.CAT)) {
 							if (serverWorld.isNearOccupiedPointOfInterest(blockPos, 2)) {
 								return this.spawnInHouse(serverWorld, blockPos);
 							}
@@ -62,7 +62,7 @@ public class CatSpawner {
 	private int spawnInHouse(ServerWorld serverWorld, BlockPos blockPos) {
 		int i = 48;
 		if (serverWorld.getPointOfInterestStorage()
-				.count(PointOfInterestType.field_18517.getCompletionCondition(), blockPos, 48, PointOfInterestStorage.OccupationStatus.field_18488)
+				.count(PointOfInterestType.HOME.getCompletionCondition(), blockPos, 48, PointOfInterestStorage.OccupationStatus.IS_OCCUPIED)
 			> 4L) {
 			List<CatEntity> list = serverWorld.getEntities(CatEntity.class, new Box(blockPos).expand(48.0, 8.0, 48.0));
 			if (list.size() < 5) {
@@ -80,11 +80,11 @@ public class CatSpawner {
 	}
 
 	private int spawn(BlockPos blockPos, World world) {
-		CatEntity catEntity = EntityType.field_16281.create(world);
+		CatEntity catEntity = EntityType.CAT.create(world);
 		if (catEntity == null) {
 			return 0;
 		} else {
-			catEntity.initialize(world, world.getLocalDifficulty(blockPos), SpawnType.field_16459, null, null);
+			catEntity.initialize(world, world.getLocalDifficulty(blockPos), SpawnType.NATURAL, null, null);
 			catEntity.setPositionAndAngles(blockPos, 0.0F, 0.0F);
 			world.spawnEntity(catEntity);
 			return 1;

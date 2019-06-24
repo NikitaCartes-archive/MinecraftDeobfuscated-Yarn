@@ -24,14 +24,14 @@ public class PlayWithVillagerBabiesTask extends Task<MobEntityWithAi> {
 	public PlayWithVillagerBabiesTask() {
 		super(
 			ImmutableMap.of(
-				MemoryModuleType.field_19006,
-				MemoryModuleState.field_18456,
-				MemoryModuleType.field_18445,
-				MemoryModuleState.field_18457,
-				MemoryModuleType.field_18446,
-				MemoryModuleState.field_18458,
-				MemoryModuleType.field_18447,
-				MemoryModuleState.field_18458
+				MemoryModuleType.VISIBLE_VILLAGER_BABIES,
+				MemoryModuleState.VALUE_PRESENT,
+				MemoryModuleType.WALK_TARGET,
+				MemoryModuleState.VALUE_ABSENT,
+				MemoryModuleType.LOOK_TARGET,
+				MemoryModuleState.REGISTERED,
+				MemoryModuleType.INTERACTION_TARGET,
+				MemoryModuleState.REGISTERED
 			)
 		);
 	}
@@ -58,7 +58,7 @@ public class PlayWithVillagerBabiesTask extends Task<MobEntityWithAi> {
 		for (int i = 0; i < 10; i++) {
 			Vec3d vec3d = PathfindingUtil.findTargetStraight(mobEntityWithAi, 20, 8);
 			if (vec3d != null && serverWorld.isNearOccupiedPointOfInterest(new BlockPos(vec3d))) {
-				mobEntityWithAi.getBrain().putMemory(MemoryModuleType.field_18445, new WalkTarget(vec3d, 0.6F, 0));
+				mobEntityWithAi.getBrain().putMemory(MemoryModuleType.WALK_TARGET, new WalkTarget(vec3d, 0.6F, 0));
 				return;
 			}
 		}
@@ -66,9 +66,9 @@ public class PlayWithVillagerBabiesTask extends Task<MobEntityWithAi> {
 
 	private static void method_19580(MobEntityWithAi mobEntityWithAi, LivingEntity livingEntity) {
 		Brain<?> brain = mobEntityWithAi.getBrain();
-		brain.putMemory(MemoryModuleType.field_18447, livingEntity);
-		brain.putMemory(MemoryModuleType.field_18446, new EntityPosWrapper(livingEntity));
-		brain.putMemory(MemoryModuleType.field_18445, new WalkTarget(new EntityPosWrapper(livingEntity), 0.6F, 1));
+		brain.putMemory(MemoryModuleType.INTERACTION_TARGET, livingEntity);
+		brain.putMemory(MemoryModuleType.LOOK_TARGET, new EntityPosWrapper(livingEntity));
+		brain.putMemory(MemoryModuleType.WALK_TARGET, new WalkTarget(new EntityPosWrapper(livingEntity), 0.6F, 1));
 	}
 
 	private Optional<LivingEntity> getVisibleMob(MobEntityWithAi mobEntityWithAi) {
@@ -94,16 +94,16 @@ public class PlayWithVillagerBabiesTask extends Task<MobEntityWithAi> {
 	}
 
 	private List<LivingEntity> getVisibleVillagerBabies(MobEntityWithAi mobEntityWithAi) {
-		return (List<LivingEntity>)mobEntityWithAi.getBrain().getOptionalMemory(MemoryModuleType.field_19006).get();
+		return (List<LivingEntity>)mobEntityWithAi.getBrain().getOptionalMemory(MemoryModuleType.VISIBLE_VILLAGER_BABIES).get();
 	}
 
 	private LivingEntity getInteractionTarget(LivingEntity livingEntity) {
-		return (LivingEntity)livingEntity.getBrain().getOptionalMemory(MemoryModuleType.field_18447).get();
+		return (LivingEntity)livingEntity.getBrain().getOptionalMemory(MemoryModuleType.INTERACTION_TARGET).get();
 	}
 
 	@Nullable
 	private LivingEntity findVisibleVillagerBaby(LivingEntity livingEntity) {
-		return (LivingEntity)((List)livingEntity.getBrain().getOptionalMemory(MemoryModuleType.field_19006).get())
+		return (LivingEntity)((List)livingEntity.getBrain().getOptionalMemory(MemoryModuleType.VISIBLE_VILLAGER_BABIES).get())
 			.stream()
 			.filter(livingEntity2 -> this.isInteractionTargetOf(livingEntity, livingEntity2))
 			.findAny()
@@ -111,14 +111,14 @@ public class PlayWithVillagerBabiesTask extends Task<MobEntityWithAi> {
 	}
 
 	private boolean hasInteractionTarget(LivingEntity livingEntity) {
-		return livingEntity.getBrain().getOptionalMemory(MemoryModuleType.field_18447).isPresent();
+		return livingEntity.getBrain().getOptionalMemory(MemoryModuleType.INTERACTION_TARGET).isPresent();
 	}
 
 	private boolean isInteractionTargetOf(LivingEntity livingEntity, LivingEntity livingEntity2) {
-		return livingEntity2.getBrain().getOptionalMemory(MemoryModuleType.field_18447).filter(livingEntity2x -> livingEntity2x == livingEntity).isPresent();
+		return livingEntity2.getBrain().getOptionalMemory(MemoryModuleType.INTERACTION_TARGET).filter(livingEntity2x -> livingEntity2x == livingEntity).isPresent();
 	}
 
 	private boolean hasVisibleVillagerBabies(MobEntityWithAi mobEntityWithAi) {
-		return mobEntityWithAi.getBrain().hasMemoryModule(MemoryModuleType.field_19006);
+		return mobEntityWithAi.getBrain().hasMemoryModule(MemoryModuleType.VISIBLE_VILLAGER_BABIES);
 	}
 }

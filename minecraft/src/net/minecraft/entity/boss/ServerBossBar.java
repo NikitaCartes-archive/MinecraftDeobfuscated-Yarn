@@ -24,7 +24,7 @@ public class ServerBossBar extends BossBar {
 	public void setPercent(float f) {
 		if (f != this.percent) {
 			super.setPercent(f);
-			this.sendPacket(BossBarS2CPacket.Type.field_12080);
+			this.sendPacket(BossBarS2CPacket.Type.UPDATE_PCT);
 		}
 	}
 
@@ -32,7 +32,7 @@ public class ServerBossBar extends BossBar {
 	public void setColor(BossBar.Color color) {
 		if (color != this.color) {
 			super.setColor(color);
-			this.sendPacket(BossBarS2CPacket.Type.field_12081);
+			this.sendPacket(BossBarS2CPacket.Type.UPDATE_STYLE);
 		}
 	}
 
@@ -40,7 +40,7 @@ public class ServerBossBar extends BossBar {
 	public void setOverlay(BossBar.Style style) {
 		if (style != this.style) {
 			super.setOverlay(style);
-			this.sendPacket(BossBarS2CPacket.Type.field_12081);
+			this.sendPacket(BossBarS2CPacket.Type.UPDATE_STYLE);
 		}
 	}
 
@@ -48,7 +48,7 @@ public class ServerBossBar extends BossBar {
 	public BossBar setDarkenSky(boolean bl) {
 		if (bl != this.darkenSky) {
 			super.setDarkenSky(bl);
-			this.sendPacket(BossBarS2CPacket.Type.field_12083);
+			this.sendPacket(BossBarS2CPacket.Type.UPDATE_PROPERTIES);
 		}
 
 		return this;
@@ -58,7 +58,7 @@ public class ServerBossBar extends BossBar {
 	public BossBar setDragonMusic(boolean bl) {
 		if (bl != this.dragonMusic) {
 			super.setDragonMusic(bl);
-			this.sendPacket(BossBarS2CPacket.Type.field_12083);
+			this.sendPacket(BossBarS2CPacket.Type.UPDATE_PROPERTIES);
 		}
 
 		return this;
@@ -68,7 +68,7 @@ public class ServerBossBar extends BossBar {
 	public BossBar setThickenFog(boolean bl) {
 		if (bl != this.thickenFog) {
 			super.setThickenFog(bl);
-			this.sendPacket(BossBarS2CPacket.Type.field_12083);
+			this.sendPacket(BossBarS2CPacket.Type.UPDATE_PROPERTIES);
 		}
 
 		return this;
@@ -78,7 +78,7 @@ public class ServerBossBar extends BossBar {
 	public void setName(Text text) {
 		if (!Objects.equal(text, this.name)) {
 			super.setName(text);
-			this.sendPacket(BossBarS2CPacket.Type.field_12084);
+			this.sendPacket(BossBarS2CPacket.Type.UPDATE_NAME);
 		}
 	}
 
@@ -94,13 +94,13 @@ public class ServerBossBar extends BossBar {
 
 	public void addPlayer(ServerPlayerEntity serverPlayerEntity) {
 		if (this.players.add(serverPlayerEntity) && this.visible) {
-			serverPlayerEntity.networkHandler.sendPacket(new BossBarS2CPacket(BossBarS2CPacket.Type.field_12078, this));
+			serverPlayerEntity.networkHandler.sendPacket(new BossBarS2CPacket(BossBarS2CPacket.Type.ADD, this));
 		}
 	}
 
 	public void removePlayer(ServerPlayerEntity serverPlayerEntity) {
 		if (this.players.remove(serverPlayerEntity) && this.visible) {
-			serverPlayerEntity.networkHandler.sendPacket(new BossBarS2CPacket(BossBarS2CPacket.Type.field_12082, this));
+			serverPlayerEntity.networkHandler.sendPacket(new BossBarS2CPacket(BossBarS2CPacket.Type.REMOVE, this));
 		}
 	}
 
@@ -121,7 +121,7 @@ public class ServerBossBar extends BossBar {
 			this.visible = bl;
 
 			for (ServerPlayerEntity serverPlayerEntity : this.players) {
-				serverPlayerEntity.networkHandler.sendPacket(new BossBarS2CPacket(bl ? BossBarS2CPacket.Type.field_12078 : BossBarS2CPacket.Type.field_12082, this));
+				serverPlayerEntity.networkHandler.sendPacket(new BossBarS2CPacket(bl ? BossBarS2CPacket.Type.ADD : BossBarS2CPacket.Type.REMOVE, this));
 			}
 		}
 	}

@@ -35,12 +35,12 @@ public class WeightedPressurePlateBlock extends AbstractPressurePlateBlock {
 
 	@Override
 	protected void playPressSound(IWorld iWorld, BlockPos blockPos) {
-		iWorld.playSound(null, blockPos, SoundEvents.field_14988, SoundCategory.field_15245, 0.3F, 0.90000004F);
+		iWorld.playSound(null, blockPos, SoundEvents.BLOCK_METAL_PRESSURE_PLATE_CLICK_ON, SoundCategory.BLOCKS, 0.3F, 0.90000004F);
 	}
 
 	@Override
 	protected void playDepressSound(IWorld iWorld, BlockPos blockPos) {
-		iWorld.playSound(null, blockPos, SoundEvents.field_15100, SoundCategory.field_15245, 0.3F, 0.75F);
+		iWorld.playSound(null, blockPos, SoundEvents.BLOCK_METAL_PRESSURE_PLATE_CLICK_OFF, SoundCategory.BLOCKS, 0.3F, 0.75F);
 	}
 
 	@Override

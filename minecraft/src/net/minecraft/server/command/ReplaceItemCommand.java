@@ -39,11 +39,11 @@ public class ReplaceItemCommand {
 				.then(
 					CommandManager.literal("block")
 						.then(
-							CommandManager.argument("pos", BlockPosArgumentType.create())
+							CommandManager.argument("pos", BlockPosArgumentType.blockPos())
 								.then(
-									CommandManager.argument("slot", ItemSlotArgumentType.create())
+									CommandManager.argument("slot", ItemSlotArgumentType.itemSlot())
 										.then(
-											CommandManager.argument("item", ItemStackArgumentType.create())
+											CommandManager.argument("item", ItemStackArgumentType.itemStack())
 												.executes(
 													commandContext -> executeBlock(
 															commandContext.getSource(),
@@ -72,9 +72,9 @@ public class ReplaceItemCommand {
 						.then(
 							CommandManager.argument("targets", EntityArgumentType.entities())
 								.then(
-									CommandManager.argument("slot", ItemSlotArgumentType.create())
+									CommandManager.argument("slot", ItemSlotArgumentType.itemSlot())
 										.then(
-											CommandManager.argument("item", ItemStackArgumentType.create())
+											CommandManager.argument("item", ItemStackArgumentType.itemStack())
 												.executes(
 													commandContext -> executeEntity(
 															commandContext.getSource(),

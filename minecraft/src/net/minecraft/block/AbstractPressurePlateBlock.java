@@ -41,15 +41,15 @@ public abstract class AbstractPressurePlateBlock extends Block {
 	public BlockState getStateForNeighborUpdate(
 		BlockState blockState, Direction direction, BlockState blockState2, IWorld iWorld, BlockPos blockPos, BlockPos blockPos2
 	) {
-		return direction == Direction.field_11033 && !blockState.canPlaceAt(iWorld, blockPos)
-			? Blocks.field_10124.getDefaultState()
+		return direction == Direction.DOWN && !blockState.canPlaceAt(iWorld, blockPos)
+			? Blocks.AIR.getDefaultState()
 			: super.getStateForNeighborUpdate(blockState, direction, blockState2, iWorld, blockPos, blockPos2);
 	}
 
 	@Override
 	public boolean canPlaceAt(BlockState blockState, ViewableWorld viewableWorld, BlockPos blockPos) {
 		BlockPos blockPos2 = blockPos.down();
-		return isSolidMediumSquare(viewableWorld, blockPos2) || isSolidSmallSquare(viewableWorld, blockPos2, Direction.field_11036);
+		return isSolidMediumSquare(viewableWorld, blockPos2) || isSolidSmallSquare(viewableWorld, blockPos2, Direction.UP);
 	}
 
 	@Override
@@ -121,7 +121,7 @@ public abstract class AbstractPressurePlateBlock extends Block {
 
 	@Override
 	public int getStrongRedstonePower(BlockState blockState, BlockView blockView, BlockPos blockPos, Direction direction) {
-		return direction == Direction.field_11036 ? this.getRedstoneOutput(blockState) : 0;
+		return direction == Direction.UP ? this.getRedstoneOutput(blockState) : 0;
 	}
 
 	@Override
@@ -131,7 +131,7 @@ public abstract class AbstractPressurePlateBlock extends Block {
 
 	@Override
 	public PistonBehavior getPistonBehavior(BlockState blockState) {
-		return PistonBehavior.field_15971;
+		return PistonBehavior.DESTROY;
 	}
 
 	protected abstract int getRedstoneOutput(World world, BlockPos blockPos);

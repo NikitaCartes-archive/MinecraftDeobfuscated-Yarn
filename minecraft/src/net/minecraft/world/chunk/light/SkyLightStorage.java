@@ -16,9 +16,7 @@ import net.minecraft.world.chunk.ColumnChunkNibbleArray;
 import net.minecraft.world.chunk.WorldNibbleStorage;
 
 public class SkyLightStorage extends LightStorage<SkyLightStorage.Data> {
-	private static final Direction[] DIRECTIONS_SKYLIGHT = new Direction[]{
-		Direction.field_11043, Direction.field_11035, Direction.field_11039, Direction.field_11034
-	};
+	private static final Direction[] DIRECTIONS_SKYLIGHT = new Direction[]{Direction.NORTH, Direction.SOUTH, Direction.WEST, Direction.EAST};
 	private final LongSet field_15820 = new LongOpenHashSet();
 	private final LongSet field_15815 = new LongOpenHashSet();
 	private final LongSet field_15816 = new LongOpenHashSet();
@@ -26,7 +24,7 @@ public class SkyLightStorage extends LightStorage<SkyLightStorage.Data> {
 	private volatile boolean hasSkyLightUpdates;
 
 	protected SkyLightStorage(ChunkProvider chunkProvider) {
-		super(LightType.field_9284, chunkProvider, new SkyLightStorage.Data(new Long2ObjectOpenHashMap<>(), new Long2IntOpenHashMap(), Integer.MAX_VALUE));
+		super(LightType.SKY, chunkProvider, new SkyLightStorage.Data(new Long2ObjectOpenHashMap<>(), new Long2IntOpenHashMap(), Integer.MAX_VALUE));
 	}
 
 	@Override
@@ -39,7 +37,7 @@ public class SkyLightStorage extends LightStorage<SkyLightStorage.Data> {
 			ChunkNibbleArray chunkNibbleArray = this.getDataForChunk(data, m);
 			if (chunkNibbleArray == null) {
 				for (l = BlockPos.removeChunkSectionLocalY(l); chunkNibbleArray == null; chunkNibbleArray = this.getDataForChunk(data, m)) {
-					m = ChunkSectionPos.offsetPacked(m, Direction.field_11036);
+					m = ChunkSectionPos.offsetPacked(m, Direction.UP);
 					if (++i >= j) {
 						return 15;
 					}
@@ -107,7 +105,7 @@ public class SkyLightStorage extends LightStorage<SkyLightStorage.Data> {
 		int i = ChunkSectionPos.unpackLongY(l);
 		if (this.dataStorage.heightMap.get(m) == i + 1) {
 			long n;
-			for (n = l; !this.hasChunk(n) && this.isAboveMinimumHeight(i); n = ChunkSectionPos.offsetPacked(n, Direction.field_11033)) {
+			for (n = l; !this.hasChunk(n) && this.isAboveMinimumHeight(i); n = ChunkSectionPos.offsetPacked(n, Direction.DOWN)) {
 				i--;
 			}
 
@@ -151,12 +149,12 @@ public class SkyLightStorage extends LightStorage<SkyLightStorage.Data> {
 		if (chunkNibbleArray != null) {
 			return chunkNibbleArray;
 		} else {
-			long m = ChunkSectionPos.offsetPacked(l, Direction.field_11036);
+			long m = ChunkSectionPos.offsetPacked(l, Direction.UP);
 			int i = this.dataStorage.heightMap.get(ChunkSectionPos.toLightStorageIndex(l));
 			if (i != this.dataStorage.defaultHeight && ChunkSectionPos.unpackLongY(m) < i) {
 				ChunkNibbleArray chunkNibbleArray2;
 				while ((chunkNibbleArray2 = this.getDataForChunk(m, true)) == null) {
-					m = ChunkSectionPos.offsetPacked(m, Direction.field_11036);
+					m = ChunkSectionPos.offsetPacked(m, Direction.UP);
 				}
 
 				return new ChunkNibbleArray(new ColumnChunkNibbleArray(chunkNibbleArray2, 0).asByteArray());
@@ -196,15 +194,15 @@ public class SkyLightStorage extends LightStorage<SkyLightStorage.Data> {
 											long q;
 											long r;
 											switch (direction) {
-												case field_11043:
+												case NORTH:
 													q = BlockPos.asLong(j + o, k + p, m);
 													r = BlockPos.asLong(j + o, k + p, m - 1);
 													break;
-												case field_11035:
+												case SOUTH:
 													q = BlockPos.asLong(j + o, k + p, m + 16 - 1);
 													r = BlockPos.asLong(j + o, k + p, m + 16);
 													break;
-												case field_11039:
+												case WEST:
 													q = BlockPos.asLong(j, k + o, m + p);
 													r = BlockPos.asLong(j - 1, k + o, m + p);
 													break;

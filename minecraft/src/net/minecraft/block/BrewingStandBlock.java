@@ -43,7 +43,7 @@ public class BrewingStandBlock extends BlockWithEntity {
 
 	@Override
 	public BlockRenderType getRenderType(BlockState blockState) {
-		return BlockRenderType.field_11458;
+		return BlockRenderType.MODEL;
 	}
 
 	@Override
@@ -64,7 +64,7 @@ public class BrewingStandBlock extends BlockWithEntity {
 			BlockEntity blockEntity = world.getBlockEntity(blockPos);
 			if (blockEntity instanceof BrewingStandBlockEntity) {
 				playerEntity.openContainer((BrewingStandBlockEntity)blockEntity);
-				playerEntity.incrementStat(Stats.field_15407);
+				playerEntity.incrementStat(Stats.INTERACT_WITH_BREWINGSTAND);
 			}
 
 			return true;
@@ -87,7 +87,7 @@ public class BrewingStandBlock extends BlockWithEntity {
 		double d = (double)((float)blockPos.getX() + 0.4F + random.nextFloat() * 0.2F);
 		double e = (double)((float)blockPos.getY() + 0.7F + random.nextFloat() * 0.3F);
 		double f = (double)((float)blockPos.getZ() + 0.4F + random.nextFloat() * 0.2F);
-		world.addParticle(ParticleTypes.field_11251, d, e, f, 0.0, 0.0, 0.0);
+		world.addParticle(ParticleTypes.SMOKE, d, e, f, 0.0, 0.0, 0.0);
 	}
 
 	@Override
@@ -114,7 +114,7 @@ public class BrewingStandBlock extends BlockWithEntity {
 
 	@Override
 	public BlockRenderLayer getRenderLayer() {
-		return BlockRenderLayer.field_9174;
+		return BlockRenderLayer.CUTOUT;
 	}
 
 	@Override

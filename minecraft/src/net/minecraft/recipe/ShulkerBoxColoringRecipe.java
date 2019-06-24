@@ -45,7 +45,7 @@ public class ShulkerBoxColoringRecipe extends SpecialCraftingRecipe {
 
 	public ItemStack method_17733(CraftingInventory craftingInventory) {
 		ItemStack itemStack = ItemStack.EMPTY;
-		DyeItem dyeItem = (DyeItem)Items.field_8446;
+		DyeItem dyeItem = (DyeItem)Items.WHITE_DYE;
 
 		for (int i = 0; i < craftingInventory.getInvSize(); i++) {
 			ItemStack itemStack2 = craftingInventory.getInvStack(i);

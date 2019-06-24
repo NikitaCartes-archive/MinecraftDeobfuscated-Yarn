@@ -21,7 +21,7 @@ import net.minecraft.world.biome.Biomes;
 import net.minecraft.world.chunk.light.LightingProvider;
 
 public class EmptyChunk extends WorldChunk {
-	private static final Biome[] BIOMES = SystemUtil.consume(new Biome[256], biomes -> Arrays.fill(biomes, Biomes.field_9451));
+	private static final Biome[] BIOMES = SystemUtil.consume(new Biome[256], biomes -> Arrays.fill(biomes, Biomes.PLAINS));
 
 	public EmptyChunk(World world, ChunkPos chunkPos) {
 		super(world, chunkPos, BIOMES);
@@ -29,7 +29,7 @@ public class EmptyChunk extends WorldChunk {
 
 	@Override
 	public BlockState getBlockState(BlockPos blockPos) {
-		return Blocks.field_10243.getDefaultState();
+		return Blocks.VOID_AIR.getDefaultState();
 	}
 
 	@Nullable
@@ -40,7 +40,7 @@ public class EmptyChunk extends WorldChunk {
 
 	@Override
 	public FluidState getFluidState(BlockPos blockPos) {
-		return Fluids.field_15906.getDefaultState();
+		return Fluids.EMPTY.getDefaultState();
 	}
 
 	@Nullable
@@ -108,6 +108,6 @@ public class EmptyChunk extends WorldChunk {
 
 	@Override
 	public ChunkHolder.LevelType getLevelType() {
-		return ChunkHolder.LevelType.field_13876;
+		return ChunkHolder.LevelType.BORDER;
 	}
 }

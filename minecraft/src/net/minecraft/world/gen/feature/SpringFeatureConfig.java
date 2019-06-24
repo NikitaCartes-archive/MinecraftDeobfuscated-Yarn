@@ -21,7 +21,7 @@ public class SpringFeatureConfig implements FeatureConfig {
 	}
 
 	public static <T> SpringFeatureConfig deserialize(Dynamic<T> dynamic) {
-		FluidState fluidState = (FluidState)dynamic.get("state").map(FluidState::deserialize).orElse(Fluids.field_15906.getDefaultState());
+		FluidState fluidState = (FluidState)dynamic.get("state").map(FluidState::deserialize).orElse(Fluids.EMPTY.getDefaultState());
 		return new SpringFeatureConfig(fluidState);
 	}
 }

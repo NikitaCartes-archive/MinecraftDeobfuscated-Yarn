@@ -29,11 +29,11 @@ public class StatusEffect {
 
 	@Nullable
 	public static StatusEffect byRawId(int i) {
-		return Registry.STATUS_EFFECT.get(i);
+		return Registry.MOB_EFFECT.get(i);
 	}
 
 	public static int getRawId(StatusEffect statusEffect) {
-		return Registry.STATUS_EFFECT.getRawId(statusEffect);
+		return Registry.MOB_EFFECT.getRawId(statusEffect);
 	}
 
 	protected StatusEffect(StatusEffectType statusEffectType, int i) {
@@ -42,24 +42,24 @@ public class StatusEffect {
 	}
 
 	public void applyUpdateEffect(LivingEntity livingEntity, int i) {
-		if (this == StatusEffects.field_5924) {
+		if (this == StatusEffects.REGENERATION) {
 			if (livingEntity.getHealth() < livingEntity.getHealthMaximum()) {
 				livingEntity.heal(1.0F);
 			}
-		} else if (this == StatusEffects.field_5899) {
+		} else if (this == StatusEffects.POISON) {
 			if (livingEntity.getHealth() > 1.0F) {
 				livingEntity.damage(DamageSource.MAGIC, 1.0F);
 			}
-		} else if (this == StatusEffects.field_5920) {
+		} else if (this == StatusEffects.WITHER) {
 			livingEntity.damage(DamageSource.WITHER, 1.0F);
-		} else if (this == StatusEffects.field_5903 && livingEntity instanceof PlayerEntity) {
+		} else if (this == StatusEffects.HUNGER && livingEntity instanceof PlayerEntity) {
 			((PlayerEntity)livingEntity).addExhaustion(0.005F * (float)(i + 1));
-		} else if (this == StatusEffects.field_5922 && livingEntity instanceof PlayerEntity) {
+		} else if (this == StatusEffects.SATURATION && livingEntity instanceof PlayerEntity) {
 			if (!livingEntity.world.isClient) {
 				((PlayerEntity)livingEntity).getHungerManager().add(i + 1, 1.0F);
 			}
-		} else if ((this != StatusEffects.field_5915 || livingEntity.isUndead()) && (this != StatusEffects.field_5921 || !livingEntity.isUndead())) {
-			if (this == StatusEffects.field_5921 && !livingEntity.isUndead() || this == StatusEffects.field_5915 && livingEntity.isUndead()) {
+		} else if ((this != StatusEffects.INSTANT_HEALTH || livingEntity.isUndead()) && (this != StatusEffects.INSTANT_DAMAGE || !livingEntity.isUndead())) {
+			if (this == StatusEffects.INSTANT_DAMAGE && !livingEntity.isUndead() || this == StatusEffects.INSTANT_HEALTH && livingEntity.isUndead()) {
 				livingEntity.damage(DamageSource.MAGIC, (float)(6 << i));
 			}
 		} else {
@@ -68,8 +68,8 @@ public class StatusEffect {
 	}
 
 	public void applyInstantEffect(@Nullable Entity entity, @Nullable Entity entity2, LivingEntity livingEntity, int i, double d) {
-		if ((this != StatusEffects.field_5915 || livingEntity.isUndead()) && (this != StatusEffects.field_5921 || !livingEntity.isUndead())) {
-			if (this == StatusEffects.field_5921 && !livingEntity.isUndead() || this == StatusEffects.field_5915 && livingEntity.isUndead()) {
+		if ((this != StatusEffects.INSTANT_HEALTH || livingEntity.isUndead()) && (this != StatusEffects.INSTANT_DAMAGE || !livingEntity.isUndead())) {
+			if (this == StatusEffects.INSTANT_DAMAGE && !livingEntity.isUndead() || this == StatusEffects.INSTANT_HEALTH && livingEntity.isUndead()) {
 				int j = (int)(d * (double)(6 << i) + 0.5);
 				if (entity == null) {
 					livingEntity.damage(DamageSource.MAGIC, (float)j);
@@ -86,17 +86,17 @@ public class StatusEffect {
 	}
 
 	public boolean canApplyUpdateEffect(int i, int j) {
-		if (this == StatusEffects.field_5924) {
+		if (this == StatusEffects.REGENERATION) {
 			int k = 50 >> j;
 			return k > 0 ? i % k == 0 : true;
-		} else if (this == StatusEffects.field_5899) {
+		} else if (this == StatusEffects.POISON) {
 			int k = 25 >> j;
 			return k > 0 ? i % k == 0 : true;
-		} else if (this == StatusEffects.field_5920) {
+		} else if (this == StatusEffects.WITHER) {
 			int k = 40 >> j;
 			return k > 0 ? i % k == 0 : true;
 		} else {
-			return this == StatusEffects.field_5903;
+			return this == StatusEffects.HUNGER;
 		}
 	}
 
@@ -106,7 +106,7 @@ public class StatusEffect {
 
 	protected String method_5559() {
 		if (this.translationKey == null) {
-			this.translationKey = SystemUtil.createTranslationKey("effect", Registry.STATUS_EFFECT.getId(this));
+			this.translationKey = SystemUtil.createTranslationKey("effect", Registry.MOB_EFFECT.getId(this));
 		}
 
 		return this.translationKey;
@@ -170,6 +170,6 @@ public class StatusEffect {
 
 	@Environment(EnvType.CLIENT)
 	public boolean method_5573() {
-		return this.type == StatusEffectType.field_18271;
+		return this.type == StatusEffectType.BENEFICIAL;
 	}
 }

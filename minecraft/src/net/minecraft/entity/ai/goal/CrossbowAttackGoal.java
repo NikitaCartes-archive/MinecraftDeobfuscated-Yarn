@@ -12,7 +12,7 @@ import net.minecraft.item.Items;
 
 public class CrossbowAttackGoal<T extends HostileEntity & RangedAttackMob & CrossbowUser> extends Goal {
 	private final T actor;
-	private CrossbowAttackGoal.Stage stage = CrossbowAttackGoal.Stage.field_16534;
+	private CrossbowAttackGoal.Stage stage = CrossbowAttackGoal.Stage.UNCHARGED;
 	private final double speed;
 	private final float squaredRange;
 	private int field_6592;
@@ -22,7 +22,7 @@ public class CrossbowAttackGoal<T extends HostileEntity & RangedAttackMob & Cros
 		this.actor = hostileEntity;
 		this.speed = d;
 		this.squaredRange = f * f;
-		this.setControls(EnumSet.of(Goal.Control.field_18405, Goal.Control.field_18406));
+		this.setControls(EnumSet.of(Goal.Control.MOVE, Goal.Control.LOOK));
 	}
 
 	@Override
@@ -31,7 +31,7 @@ public class CrossbowAttackGoal<T extends HostileEntity & RangedAttackMob & Cros
 	}
 
 	private boolean isEntityHoldingCrossbow() {
-		return this.actor.isHolding(Items.field_8399);
+		return this.actor.isHolding(Items.CROSSBOW);
 	}
 
 	@Override
@@ -81,47 +81,47 @@ public class CrossbowAttackGoal<T extends HostileEntity & RangedAttackMob & Cros
 			}
 
 			this.actor.getLookControl().lookAt(livingEntity, 30.0F, 30.0F);
-			if (this.stage == CrossbowAttackGoal.Stage.field_16534) {
+			if (this.stage == CrossbowAttackGoal.Stage.UNCHARGED) {
 				if (!bl3) {
-					this.actor.setCurrentHand(ProjectileUtil.getHandPossiblyHolding(this.actor, Items.field_8399));
-					this.stage = CrossbowAttackGoal.Stage.field_16530;
+					this.actor.setCurrentHand(ProjectileUtil.getHandPossiblyHolding(this.actor, Items.CROSSBOW));
+					this.stage = CrossbowAttackGoal.Stage.CHARGING;
 					this.actor.setCharging(true);
 				}
-			} else if (this.stage == CrossbowAttackGoal.Stage.field_16530) {
+			} else if (this.stage == CrossbowAttackGoal.Stage.CHARGING) {
 				if (!this.actor.isUsingItem()) {
-					this.stage = CrossbowAttackGoal.Stage.field_16534;
+					this.stage = CrossbowAttackGoal.Stage.UNCHARGED;
 				}
 
 				int i = this.actor.getItemUseTime();
 				ItemStack itemStack = this.actor.getActiveItem();
 				if (i >= CrossbowItem.getPullTime(itemStack)) {
 					this.actor.stopUsingItem();
-					this.stage = CrossbowAttackGoal.Stage.field_16532;
+					this.stage = CrossbowAttackGoal.Stage.CHARGED;
 					this.field_16529 = 20 + this.actor.getRand().nextInt(20);
 					this.actor.setCharging(false);
 				}
-			} else if (this.stage == CrossbowAttackGoal.Stage.field_16532) {
+			} else if (this.stage == CrossbowAttackGoal.Stage.CHARGED) {
 				this.field_16529--;
 				if (this.field_16529 == 0) {
-					this.stage = CrossbowAttackGoal.Stage.field_16533;
+					this.stage = CrossbowAttackGoal.Stage.READY_TO_ATTACK;
 				}
-			} else if (this.stage == CrossbowAttackGoal.Stage.field_16533 && bl) {
+			} else if (this.stage == CrossbowAttackGoal.Stage.READY_TO_ATTACK && bl) {
 				this.actor.attack(livingEntity, 1.0F);
-				ItemStack itemStack2 = this.actor.getStackInHand(ProjectileUtil.getHandPossiblyHolding(this.actor, Items.field_8399));
+				ItemStack itemStack2 = this.actor.getStackInHand(ProjectileUtil.getHandPossiblyHolding(this.actor, Items.CROSSBOW));
 				CrossbowItem.setCharged(itemStack2, false);
-				this.stage = CrossbowAttackGoal.Stage.field_16534;
+				this.stage = CrossbowAttackGoal.Stage.UNCHARGED;
 			}
 		}
 	}
 
 	private boolean isUncharged() {
-		return this.stage == CrossbowAttackGoal.Stage.field_16534;
+		return this.stage == CrossbowAttackGoal.Stage.UNCHARGED;
 	}
 
 	static enum Stage {
-		field_16534,
-		field_16530,
-		field_16532,
-		field_16533;
+		UNCHARGED,
+		CHARGING,
+		CHARGED,
+		READY_TO_ATTACK;
 	}
 }

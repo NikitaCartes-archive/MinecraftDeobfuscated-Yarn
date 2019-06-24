@@ -17,7 +17,7 @@ public class MessageCommand {
 				.then(
 					CommandManager.argument("targets", EntityArgumentType.players())
 						.then(
-							CommandManager.argument("message", MessageArgumentType.create())
+							CommandManager.argument("message", MessageArgumentType.message())
 								.executes(
 									commandContext -> execute(
 											commandContext.getSource(), EntityArgumentType.getPlayers(commandContext, "targets"), MessageArgumentType.getMessage(commandContext, "message")
@@ -34,11 +34,11 @@ public class MessageCommand {
 		for (ServerPlayerEntity serverPlayerEntity : collection) {
 			serverPlayerEntity.sendMessage(
 				new TranslatableText("commands.message.display.incoming", serverCommandSource.getDisplayName(), text.deepCopy())
-					.formatted(new Formatting[]{Formatting.field_1080, Formatting.field_1056})
+					.formatted(new Formatting[]{Formatting.GRAY, Formatting.ITALIC})
 			);
 			serverCommandSource.sendFeedback(
 				new TranslatableText("commands.message.display.outgoing", serverPlayerEntity.getDisplayName(), text.deepCopy())
-					.formatted(new Formatting[]{Formatting.field_1080, Formatting.field_1056}),
+					.formatted(new Formatting[]{Formatting.GRAY, Formatting.ITALIC}),
 				false
 			);
 		}

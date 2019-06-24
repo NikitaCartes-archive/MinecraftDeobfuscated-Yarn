@@ -79,7 +79,7 @@ public class StonecutterContainer extends Container {
 	}
 
 	public StonecutterContainer(int i, PlayerInventory playerInventory, BlockContext blockContext) {
-		super(ContainerType.field_17625, i);
+		super(ContainerType.STONECUTTER, i);
 		this.context = blockContext;
 		this.world = playerInventory.player.world;
 		this.inputSlot = this.addSlot(new Slot(this.inventory, 0, 20, 33));
@@ -100,7 +100,7 @@ public class StonecutterContainer extends Container {
 				blockContext.run((BiConsumer<World, BlockPos>)((world, blockPos) -> {
 					long l = world.getTime();
 					if (StonecutterContainer.this.lastTakeTime != l) {
-						world.playSound(null, blockPos, SoundEvents.field_17710, SoundCategory.field_15245, 1.0F, 1.0F);
+						world.playSound(null, blockPos, SoundEvents.UI_STONECUTTER_TAKE_RESULT, SoundCategory.BLOCKS, 1.0F, 1.0F);
 						StonecutterContainer.this.lastTakeTime = l;
 					}
 				}));
@@ -143,7 +143,7 @@ public class StonecutterContainer extends Container {
 
 	@Override
 	public boolean canUse(PlayerEntity playerEntity) {
-		return canUse(this.context, playerEntity, Blocks.field_16335);
+		return canUse(this.context, playerEntity, Blocks.STONECUTTER);
 	}
 
 	@Override
@@ -170,7 +170,7 @@ public class StonecutterContainer extends Container {
 		this.selectedRecipe.set(-1);
 		this.outputSlot.setStack(ItemStack.EMPTY);
 		if (!itemStack.isEmpty()) {
-			this.availableRecipes = this.world.getRecipeManager().getAllMatches(RecipeType.field_17641, inventory, this.world);
+			this.availableRecipes = this.world.getRecipeManager().getAllMatches(RecipeType.STONECUTTING, inventory, this.world);
 		}
 	}
 
@@ -187,7 +187,7 @@ public class StonecutterContainer extends Container {
 
 	@Override
 	public ContainerType<?> getType() {
-		return ContainerType.field_17625;
+		return ContainerType.STONECUTTER;
 	}
 
 	@Environment(EnvType.CLIENT)

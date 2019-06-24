@@ -79,11 +79,11 @@ public class BoatEntity extends Entity {
 
 	public BoatEntity(EntityType<? extends BoatEntity> entityType, World world) {
 		super(entityType, world);
-		this.field_6033 = true;
+		this.inanimate = true;
 	}
 
 	public BoatEntity(World world, double d, double e, double f) {
-		this(EntityType.field_6121, world);
+		this(EntityType.BOAT, world);
 		this.setPosition(d, e, f);
 		this.setVelocity(Vec3d.ZERO);
 		this.prevX = d;
@@ -101,7 +101,7 @@ public class BoatEntity extends Entity {
 		this.dataTracker.startTracking(DAMAGE_WOBBLE_TICKS, 0);
 		this.dataTracker.startTracking(DAMAGE_WOBBLE_SIDE, 1);
 		this.dataTracker.startTracking(DAMAGE_WOBBLE_STRENGTH, 0.0F);
-		this.dataTracker.startTracking(BOAT_TYPE, BoatEntity.Type.field_7727.ordinal());
+		this.dataTracker.startTracking(BOAT_TYPE, BoatEntity.Type.OAK.ordinal());
 		this.dataTracker.startTracking(LEFT_PADDLE_MOVING, false);
 		this.dataTracker.startTracking(RIGHT_PADDLE_MOVING, false);
 		this.dataTracker.startTracking(BUBBLE_WOBBLE_TICKS, 0);
@@ -109,7 +109,7 @@ public class BoatEntity extends Entity {
 
 	@Nullable
 	@Override
-	public Box method_5708(Entity entity) {
+	public Box getHardCollisionBox(Entity entity) {
 		return entity.isPushable() ? entity.getBoundingBox() : null;
 	}
 
@@ -144,7 +144,7 @@ public class BoatEntity extends Entity {
 			this.scheduleVelocityUpdate();
 			boolean bl = damageSource.getAttacker() instanceof PlayerEntity && ((PlayerEntity)damageSource.getAttacker()).abilities.creativeMode;
 			if (bl || this.getDamageWobbleStrength() > 40.0F) {
-				if (!bl && this.world.getGameRules().getBoolean(GameRules.field_19393)) {
+				if (!bl && this.world.getGameRules().getBoolean(GameRules.DO_ENTITY_DROPS)) {
 					this.dropItem(this.asItem());
 				}
 
@@ -165,8 +165,7 @@ public class BoatEntity extends Entity {
 			}
 		}
 
-		this.world
-			.addParticle(ParticleTypes.field_11202, this.x + (double)this.random.nextFloat(), this.y + 0.7, this.z + (double)this.random.nextFloat(), 0.0, 0.0, 0.0);
+		this.world.addParticle(ParticleTypes.SPLASH, this.x + (double)this.random.nextFloat(), this.y + 0.7, this.z + (double)this.random.nextFloat(), 0.0, 0.0, 0.0);
 		if (this.random.nextInt(20) == 0) {
 			this.world.playSound(this.x, this.y, this.z, this.getSplashSound(), this.getSoundCategory(), 1.0F, 0.8F + 0.4F * this.random.nextFloat(), false);
 		}
@@ -185,19 +184,19 @@ public class BoatEntity extends Entity {
 
 	public Item asItem() {
 		switch (this.getBoatType()) {
-			case field_7727:
+			case OAK:
 			default:
-				return Items.field_8533;
-			case field_7728:
-				return Items.field_8486;
-			case field_7729:
-				return Items.field_8442;
-			case field_7730:
-				return Items.field_8730;
-			case field_7725:
-				return Items.field_8094;
-			case field_7723:
-				return Items.field_8138;
+				return Items.OAK_BOAT;
+			case SPRUCE:
+				return Items.SPRUCE_BOAT;
+			case BIRCH:
+				return Items.BIRCH_BOAT;
+			case JUNGLE:
+				return Items.JUNGLE_BOAT;
+			case ACACIA:
+				return Items.ACACIA_BOAT;
+			case DARK_OAK:
+				return Items.DARK_OAK_BOAT;
 		}
 	}
 
@@ -216,7 +215,7 @@ public class BoatEntity extends Entity {
 
 	@Environment(EnvType.CLIENT)
 	@Override
-	public void setPositionAndRotations(double d, double e, double f, float g, float h, int i, boolean bl) {
+	public void updateTrackedPositionAndAngles(double d, double e, double f, float g, float h, int i, boolean bl) {
 		this.field_7686 = d;
 		this.field_7700 = e;
 		this.field_7685 = f;
@@ -234,7 +233,7 @@ public class BoatEntity extends Entity {
 	public void tick() {
 		this.lastLocation = this.location;
 		this.location = this.checkLocation();
-		if (this.location != BoatEntity.Location.field_7717 && this.location != BoatEntity.Location.field_7716) {
+		if (this.location != BoatEntity.Location.UNDER_WATER && this.location != BoatEntity.Location.UNDER_FLOWING_WATER) {
 			this.ticksUnderwater = 0.0F;
 		} else {
 			this.ticksUnderwater++;
@@ -268,7 +267,7 @@ public class BoatEntity extends Entity {
 				this.world.sendPacket(new BoatPaddleStateC2SPacket(this.isPaddleMoving(0), this.isPaddleMoving(1)));
 			}
 
-			this.move(MovementType.field_6308, this.getVelocity());
+			this.move(MovementType.SELF, this.getVelocity());
 		} else {
 			this.setVelocity(Vec3d.ZERO);
 		}
@@ -359,13 +358,13 @@ public class BoatEntity extends Entity {
 	@Nullable
 	protected SoundEvent getPaddleSoundEvent() {
 		switch (this.checkLocation()) {
-			case field_7718:
-			case field_7717:
-			case field_7716:
-				return SoundEvents.field_15171;
-			case field_7719:
-				return SoundEvents.field_14886;
-			case field_7720:
+			case IN_WATER:
+			case UNDER_WATER:
+			case UNDER_FLOWING_WATER:
+				return SoundEvents.ENTITY_BOAT_PADDLE_WATER;
+			case ON_LAND:
+				return SoundEvents.ENTITY_BOAT_PADDLE_LAND;
+			case IN_AIR:
 			default:
 				return null;
 		}
@@ -403,14 +402,14 @@ public class BoatEntity extends Entity {
 			this.waterLevel = this.getBoundingBox().maxY;
 			return location;
 		} else if (this.checKBoatInWater()) {
-			return BoatEntity.Location.field_7718;
+			return BoatEntity.Location.IN_WATER;
 		} else {
 			float f = this.method_7548();
 			if (f > 0.0F) {
 				this.field_7714 = f;
-				return BoatEntity.Location.field_7719;
+				return BoatEntity.Location.ON_LAND;
 			} else {
-				return BoatEntity.Location.field_7720;
+				return BoatEntity.Location.IN_AIR;
 			}
 		}
 	}
@@ -435,7 +434,7 @@ public class BoatEntity extends Entity {
 						for (int q = m; q < n; q++) {
 							pooledMutable.method_10113(p, o, q);
 							FluidState fluidState = this.world.getFluidState(pooledMutable);
-							if (fluidState.matches(FluidTags.field_15517)) {
+							if (fluidState.matches(FluidTags.WATER)) {
 								f = Math.max(f, fluidState.getHeight(this.world, pooledMutable));
 							}
 
@@ -514,7 +513,7 @@ public class BoatEntity extends Entity {
 					for (int q = m; q < n; q++) {
 						pooledMutable.method_10113(o, p, q);
 						FluidState fluidState = this.world.getFluidState(pooledMutable);
-						if (fluidState.matches(FluidTags.field_15517)) {
+						if (fluidState.matches(FluidTags.WATER)) {
 							float f = (float)p + fluidState.getHeight(this.world, pooledMutable);
 							this.waterLevel = Math.max((double)f, this.waterLevel);
 							bl |= box.minY < (double)f;
@@ -545,9 +544,9 @@ public class BoatEntity extends Entity {
 					for (int q = m; q < n; q++) {
 						pooledMutable.method_10113(o, p, q);
 						FluidState fluidState = this.world.getFluidState(pooledMutable);
-						if (fluidState.matches(FluidTags.field_15517) && d < (double)((float)pooledMutable.getY() + fluidState.getHeight(this.world, pooledMutable))) {
+						if (fluidState.matches(FluidTags.WATER) && d < (double)((float)pooledMutable.getY() + fluidState.getHeight(this.world, pooledMutable))) {
 							if (!fluidState.isStill()) {
-								return BoatEntity.Location.field_7716;
+								return BoatEntity.Location.UNDER_FLOWING_WATER;
 							}
 
 							bl = true;
@@ -557,7 +556,7 @@ public class BoatEntity extends Entity {
 			}
 		}
 
-		return bl ? BoatEntity.Location.field_7717 : null;
+		return bl ? BoatEntity.Location.UNDER_WATER : null;
 	}
 
 	private void updateVelocity() {
@@ -565,27 +564,25 @@ public class BoatEntity extends Entity {
 		double e = this.hasNoGravity() ? 0.0 : -0.04F;
 		double f = 0.0;
 		this.velocityDecay = 0.05F;
-		if (this.lastLocation == BoatEntity.Location.field_7720 && this.location != BoatEntity.Location.field_7720 && this.location != BoatEntity.Location.field_7719
-			)
-		 {
+		if (this.lastLocation == BoatEntity.Location.IN_AIR && this.location != BoatEntity.Location.IN_AIR && this.location != BoatEntity.Location.ON_LAND) {
 			this.waterLevel = this.getBoundingBox().minY + (double)this.getHeight();
 			this.setPosition(this.x, (double)(this.method_7544() - this.getHeight()) + 0.101, this.z);
 			this.setVelocity(this.getVelocity().multiply(1.0, 0.0, 1.0));
 			this.fallVelocity = 0.0;
-			this.location = BoatEntity.Location.field_7718;
+			this.location = BoatEntity.Location.IN_WATER;
 		} else {
-			if (this.location == BoatEntity.Location.field_7718) {
+			if (this.location == BoatEntity.Location.IN_WATER) {
 				f = (this.waterLevel - this.getBoundingBox().minY) / (double)this.getHeight();
 				this.velocityDecay = 0.9F;
-			} else if (this.location == BoatEntity.Location.field_7716) {
+			} else if (this.location == BoatEntity.Location.UNDER_FLOWING_WATER) {
 				e = -7.0E-4;
 				this.velocityDecay = 0.9F;
-			} else if (this.location == BoatEntity.Location.field_7717) {
+			} else if (this.location == BoatEntity.Location.UNDER_WATER) {
 				f = 0.01F;
 				this.velocityDecay = 0.45F;
-			} else if (this.location == BoatEntity.Location.field_7720) {
+			} else if (this.location == BoatEntity.Location.IN_AIR) {
 				this.velocityDecay = 0.9F;
-			} else if (this.location == BoatEntity.Location.field_7719) {
+			} else if (this.location == BoatEntity.Location.ON_LAND) {
 				this.velocityDecay = this.field_7714;
 				if (this.getPrimaryPassenger() instanceof PlayerEntity) {
 					this.field_7714 /= 2.0F;
@@ -711,7 +708,7 @@ public class BoatEntity extends Entity {
 		if (!this.hasVehicle()) {
 			if (bl) {
 				if (this.fallDistance > 3.0F) {
-					if (this.location != BoatEntity.Location.field_7719) {
+					if (this.location != BoatEntity.Location.ON_LAND) {
 						this.fallDistance = 0.0F;
 						return;
 					}
@@ -719,20 +716,20 @@ public class BoatEntity extends Entity {
 					this.handleFallDamage(this.fallDistance, 1.0F);
 					if (!this.world.isClient && !this.removed) {
 						this.remove();
-						if (this.world.getGameRules().getBoolean(GameRules.field_19393)) {
+						if (this.world.getGameRules().getBoolean(GameRules.DO_ENTITY_DROPS)) {
 							for (int i = 0; i < 3; i++) {
 								this.dropItem(this.getBoatType().getBaseBlock());
 							}
 
 							for (int i = 0; i < 2; i++) {
-								this.dropItem(Items.field_8600);
+								this.dropItem(Items.STICK);
 							}
 						}
 					}
 				}
 
 				this.fallDistance = 0.0F;
-			} else if (!this.world.getFluidState(new BlockPos(this).down()).matches(FluidTags.field_15517) && d < 0.0) {
+			} else if (!this.world.getFluidState(new BlockPos(this).down()).matches(FluidTags.WATER) && d < 0.0) {
 				this.fallDistance = (float)((double)this.fallDistance - d);
 			}
 		}
@@ -789,7 +786,7 @@ public class BoatEntity extends Entity {
 
 	@Override
 	protected boolean canAddPassenger(Entity entity) {
-		return this.getPassengerList().size() < 2 && !this.isInFluid(FluidTags.field_15517);
+		return this.getPassengerList().size() < 2 && !this.isInFluid(FluidTags.WATER);
 	}
 
 	@Nullable
@@ -813,20 +810,20 @@ public class BoatEntity extends Entity {
 	}
 
 	public static enum Location {
-		field_7718,
-		field_7717,
-		field_7716,
-		field_7719,
-		field_7720;
+		IN_WATER,
+		UNDER_WATER,
+		UNDER_FLOWING_WATER,
+		ON_LAND,
+		IN_AIR;
 	}
 
 	public static enum Type {
-		field_7727(Blocks.field_10161, "oak"),
-		field_7728(Blocks.field_9975, "spruce"),
-		field_7729(Blocks.field_10148, "birch"),
-		field_7730(Blocks.field_10334, "jungle"),
-		field_7725(Blocks.field_10218, "acacia"),
-		field_7723(Blocks.field_10075, "dark_oak");
+		OAK(Blocks.OAK_PLANKS, "oak"),
+		SPRUCE(Blocks.SPRUCE_PLANKS, "spruce"),
+		BIRCH(Blocks.BIRCH_PLANKS, "birch"),
+		JUNGLE(Blocks.JUNGLE_PLANKS, "jungle"),
+		ACACIA(Blocks.ACACIA_PLANKS, "acacia"),
+		DARK_OAK(Blocks.DARK_OAK_PLANKS, "dark_oak");
 
 		private final String name;
 		private final Block baseBlock;

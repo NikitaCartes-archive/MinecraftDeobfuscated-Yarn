@@ -58,7 +58,7 @@ public class ClientResourcePackCreator implements ResourcePackCreator {
 
 	@Override
 	public <T extends ResourcePackContainer> void registerContainer(Map<String, T> map, ResourcePackContainer.Factory<T> factory) {
-		T resourcePackContainer = ResourcePackContainer.of("vanilla", true, () -> this.pack, factory, ResourcePackContainer.InsertionPosition.field_14281);
+		T resourcePackContainer = ResourcePackContainer.of("vanilla", true, () -> this.pack, factory, ResourcePackContainer.InsertionPosition.BOTTOM);
 		if (resourcePackContainer != null) {
 			map.put("vanilla", resourcePackContainer);
 		}
@@ -74,7 +74,7 @@ public class ClientResourcePackCreator implements ResourcePackCreator {
 					public String getName() {
 						return "Programmer Art";
 					}
-				}, factory, ResourcePackContainer.InsertionPosition.field_14280);
+				}, factory, ResourcePackContainer.InsertionPosition.TOP);
 			if (resourcePackContainer2 != null) {
 				map.put("programer_art", resourcePackContainer2);
 			}
@@ -289,7 +289,7 @@ public class ClientResourcePackCreator implements ResourcePackCreator {
 				new TranslatableText("resourcePack.server.name"),
 				packResourceMetadata.getDescription(),
 				ResourcePackCompatibility.from(packResourceMetadata.getPackFormat()),
-				ResourcePackContainer.InsertionPosition.field_14280,
+				ResourcePackContainer.InsertionPosition.TOP,
 				true,
 				nativeImage
 			);

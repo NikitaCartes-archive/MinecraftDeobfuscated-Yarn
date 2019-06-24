@@ -147,7 +147,7 @@ public class SoundEngine {
 
 	@Nullable
 	public Source createSource(SoundEngine.RunMode runMode) {
-		return (runMode == SoundEngine.RunMode.field_18353 ? this.staticSources : this.streamingSources).createSource();
+		return (runMode == SoundEngine.RunMode.STREAMING ? this.staticSources : this.streamingSources).createSource();
 	}
 
 	public void release(Source source) {
@@ -168,8 +168,8 @@ public class SoundEngine {
 
 	@Environment(EnvType.CLIENT)
 	public static enum RunMode {
-		field_18352,
-		field_18353;
+		STATIC,
+		STREAMING;
 	}
 
 	@Environment(EnvType.CLIENT)

@@ -21,7 +21,7 @@ public interface Recipe<C extends Inventory> {
 	ItemStack getOutput();
 
 	default DefaultedList<ItemStack> getRemainingStacks(C inventory) {
-		DefaultedList<ItemStack> defaultedList = DefaultedList.create(inventory.getInvSize(), ItemStack.EMPTY);
+		DefaultedList<ItemStack> defaultedList = DefaultedList.ofSize(inventory.getInvSize(), ItemStack.EMPTY);
 
 		for (int i = 0; i < defaultedList.size(); i++) {
 			Item item = inventory.getInvStack(i).getItem();
@@ -34,7 +34,7 @@ public interface Recipe<C extends Inventory> {
 	}
 
 	default DefaultedList<Ingredient> getPreviewInputs() {
-		return DefaultedList.create();
+		return DefaultedList.of();
 	}
 
 	default boolean isIgnoredInRecipeBook() {
@@ -48,7 +48,7 @@ public interface Recipe<C extends Inventory> {
 
 	@Environment(EnvType.CLIENT)
 	default ItemStack getRecipeKindIcon() {
-		return new ItemStack(Blocks.field_9980);
+		return new ItemStack(Blocks.CRAFTING_TABLE);
 	}
 
 	Identifier getId();

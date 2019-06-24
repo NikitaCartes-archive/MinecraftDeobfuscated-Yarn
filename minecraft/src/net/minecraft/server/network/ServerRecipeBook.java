@@ -42,7 +42,7 @@ public class ServerRecipeBook extends RecipeBook {
 			}
 		}
 
-		this.sendUnlockRecipesPacket(UnlockRecipesS2CPacket.Action.field_12415, serverPlayerEntity, list);
+		this.sendUnlockRecipesPacket(UnlockRecipesS2CPacket.Action.ADD, serverPlayerEntity, list);
 		return i;
 	}
 
@@ -59,7 +59,7 @@ public class ServerRecipeBook extends RecipeBook {
 			}
 		}
 
-		this.sendUnlockRecipesPacket(UnlockRecipesS2CPacket.Action.field_12417, serverPlayerEntity, list);
+		this.sendUnlockRecipesPacket(UnlockRecipesS2CPacket.Action.REMOVE, serverPlayerEntity, list);
 		return i;
 	}
 
@@ -128,7 +128,7 @@ public class ServerRecipeBook extends RecipeBook {
 		serverPlayerEntity.networkHandler
 			.sendPacket(
 				new UnlockRecipesS2CPacket(
-					UnlockRecipesS2CPacket.Action.field_12416,
+					UnlockRecipesS2CPacket.Action.INIT,
 					this.recipes,
 					this.toBeDisplayed,
 					this.guiOpen,

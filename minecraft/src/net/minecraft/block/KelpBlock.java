@@ -37,7 +37,7 @@ public class KelpBlock extends Block implements FluidFillable {
 	@Override
 	public BlockState getPlacementState(ItemPlacementContext itemPlacementContext) {
 		FluidState fluidState = itemPlacementContext.getWorld().getFluidState(itemPlacementContext.getBlockPos());
-		return fluidState.matches(FluidTags.field_15517) && fluidState.getLevel() == 8 ? this.getPlacementState(itemPlacementContext.getWorld()) : null;
+		return fluidState.matches(FluidTags.WATER) && fluidState.getLevel() == 8 ? this.getPlacementState(itemPlacementContext.getWorld()) : null;
 	}
 
 	public BlockState getPlacementState(IWorld iWorld) {
@@ -46,7 +46,7 @@ public class KelpBlock extends Block implements FluidFillable {
 
 	@Override
 	public BlockRenderLayer getRenderLayer() {
-		return BlockRenderLayer.field_9174;
+		return BlockRenderLayer.CUTOUT;
 	}
 
 	@Override
@@ -61,7 +61,7 @@ public class KelpBlock extends Block implements FluidFillable {
 		} else {
 			BlockPos blockPos2 = blockPos.up();
 			BlockState blockState2 = world.getBlockState(blockPos2);
-			if (blockState2.getBlock() == Blocks.field_10382 && (Integer)blockState.get(AGE) < 25 && random.nextDouble() < 0.14) {
+			if (blockState2.getBlock() == Blocks.WATER && (Integer)blockState.get(AGE) < 25 && random.nextDouble() < 0.14) {
 				world.setBlockState(blockPos2, blockState.cycle(AGE));
 			}
 		}
@@ -72,9 +72,9 @@ public class KelpBlock extends Block implements FluidFillable {
 		BlockPos blockPos2 = blockPos.down();
 		BlockState blockState2 = viewableWorld.getBlockState(blockPos2);
 		Block block = blockState2.getBlock();
-		return block == Blocks.field_10092
+		return block == Blocks.MAGMA_BLOCK
 			? false
-			: block == this || block == Blocks.field_10463 || Block.isSolidFullSquare(blockState2, viewableWorld, blockPos2, Direction.field_11036);
+			: block == this || block == Blocks.KELP_PLANT || Block.isSolidFullSquare(blockState2, viewableWorld, blockPos2, Direction.UP);
 	}
 
 	@Override
@@ -82,15 +82,15 @@ public class KelpBlock extends Block implements FluidFillable {
 		BlockState blockState, Direction direction, BlockState blockState2, IWorld iWorld, BlockPos blockPos, BlockPos blockPos2
 	) {
 		if (!blockState.canPlaceAt(iWorld, blockPos)) {
-			if (direction == Direction.field_11033) {
-				return Blocks.field_10124.getDefaultState();
+			if (direction == Direction.DOWN) {
+				return Blocks.AIR.getDefaultState();
 			}
 
 			iWorld.getBlockTickScheduler().schedule(blockPos, this, 1);
 		}
 
-		if (direction == Direction.field_11036 && blockState2.getBlock() == this) {
-			return Blocks.field_10463.getDefaultState();
+		if (direction == Direction.UP && blockState2.getBlock() == this) {
+			return Blocks.KELP_PLANT.getDefaultState();
 		} else {
 			iWorld.getFluidTickScheduler().schedule(blockPos, Fluids.WATER, Fluids.WATER.getTickRate(iWorld));
 			return super.getStateForNeighborUpdate(blockState, direction, blockState2, iWorld, blockPos, blockPos2);

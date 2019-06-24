@@ -43,13 +43,13 @@ public class CartographyTableScreen extends AbstractContainerScreen<CartographyT
 		int l = this.top;
 		this.blit(k, l, 0, 0, this.containerWidth, this.containerHeight);
 		Item item = this.container.getSlot(1).getStack().getItem();
-		boolean bl = item == Items.field_8895;
-		boolean bl2 = item == Items.field_8407;
+		boolean bl = item == Items.MAP;
+		boolean bl2 = item == Items.PAPER;
 		boolean bl3 = item == Items.GLASS_PANE;
 		ItemStack itemStack = this.container.getSlot(0).getStack();
 		boolean bl4 = false;
 		MapState mapState;
-		if (itemStack.getItem() == Items.field_8204) {
+		if (itemStack.getItem() == Items.FILLED_MAP) {
 			mapState = FilledMapItem.getMapState(itemStack, this.minecraft.world);
 			if (mapState != null) {
 				if (mapState.locked) {

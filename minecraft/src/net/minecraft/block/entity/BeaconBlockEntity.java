@@ -40,10 +40,7 @@ import net.minecraft.world.Heightmap;
 
 public class BeaconBlockEntity extends BlockEntity implements NameableContainerProvider, Tickable {
 	public static final StatusEffect[][] EFFECTS_BY_LEVEL = new StatusEffect[][]{
-		{StatusEffects.field_5904, StatusEffects.field_5917},
-		{StatusEffects.field_5907, StatusEffects.field_5913},
-		{StatusEffects.field_5910},
-		{StatusEffects.field_5924}
+		{StatusEffects.SPEED, StatusEffects.HASTE}, {StatusEffects.RESISTANCE, StatusEffects.JUMP_BOOST}, {StatusEffects.STRENGTH}, {StatusEffects.REGENERATION}
 	};
 	private static final Set<StatusEffect> EFFECTS = (Set<StatusEffect>)Arrays.stream(EFFECTS_BY_LEVEL).flatMap(Arrays::stream).collect(Collectors.toSet());
 	private List<BeaconBlockEntity.BeamSegment> beamSegments = Lists.<BeaconBlockEntity.BeamSegment>newArrayList();
@@ -80,7 +77,7 @@ public class BeaconBlockEntity extends BlockEntity implements NameableContainerP
 					break;
 				case 1:
 					if (!BeaconBlockEntity.this.world.isClient && !BeaconBlockEntity.this.beamSegments.isEmpty()) {
-						BeaconBlockEntity.this.playSound(SoundEvents.field_14891);
+						BeaconBlockEntity.this.playSound(SoundEvents.BLOCK_BEACON_POWER_SELECT);
 					}
 
 					BeaconBlockEntity.this.primary = BeaconBlockEntity.getPotionEffectById(j);
@@ -97,7 +94,7 @@ public class BeaconBlockEntity extends BlockEntity implements NameableContainerP
 	};
 
 	public BeaconBlockEntity() {
-		super(BlockEntityType.field_11890);
+		super(BlockEntityType.BEACON);
 	}
 
 	@Override
@@ -117,7 +114,7 @@ public class BeaconBlockEntity extends BlockEntity implements NameableContainerP
 		BeaconBlockEntity.BeamSegment beamSegment = this.field_19178.isEmpty()
 			? null
 			: (BeaconBlockEntity.BeamSegment)this.field_19178.get(this.field_19178.size() - 1);
-		int l = this.world.getTop(Heightmap.Type.field_13202, i, k);
+		int l = this.world.getTop(Heightmap.Type.WORLD_SURFACE, i, k);
 
 		for (int m = 0; m < 10 && blockPos.getY() <= l; m++) {
 			BlockState blockState = this.world.getBlockState(blockPos);
@@ -138,7 +135,7 @@ public class BeaconBlockEntity extends BlockEntity implements NameableContainerP
 					}
 				}
 			} else {
-				if (beamSegment == null || blockState.getLightSubtracted(this.world, blockPos) >= 15 && block != Blocks.field_9987) {
+				if (beamSegment == null || blockState.getLightSubtracted(this.world, blockPos) >= 15 && block != Blocks.BEDROCK) {
 					this.field_19178.clear();
 					this.field_19179 = l;
 					break;
@@ -159,7 +156,7 @@ public class BeaconBlockEntity extends BlockEntity implements NameableContainerP
 
 			if (this.level > 0 && !this.beamSegments.isEmpty()) {
 				this.applyPlayerEffects();
-				this.playSound(SoundEvents.field_15045);
+				this.playSound(SoundEvents.BLOCK_BEACON_AMBIENT);
 			}
 		}
 
@@ -170,7 +167,7 @@ public class BeaconBlockEntity extends BlockEntity implements NameableContainerP
 			if (!this.world.isClient) {
 				boolean bl2 = this.level > 0;
 				if (!bl && bl2) {
-					this.playSound(SoundEvents.field_14703);
+					this.playSound(SoundEvents.BLOCK_BEACON_ACTIVATE);
 
 					for (ServerPlayerEntity serverPlayerEntity : this.world
 						.getEntities(ServerPlayerEntity.class, new Box((double)i, (double)j, (double)k, (double)i, (double)(j - 4), (double)k).expand(10.0, 5.0, 10.0))) {
@@ -195,7 +192,7 @@ public class BeaconBlockEntity extends BlockEntity implements NameableContainerP
 			for (int n = i - l; n <= i + l && bl; n++) {
 				for (int o = k - l; o <= k + l; o++) {
 					Block block = this.world.getBlockState(new BlockPos(n, m, o)).getBlock();
-					if (block != Blocks.field_10234 && block != Blocks.field_10205 && block != Blocks.field_10201 && block != Blocks.field_10085) {
+					if (block != Blocks.EMERALD_BLOCK && block != Blocks.GOLD_BLOCK && block != Blocks.DIAMOND_BLOCK && block != Blocks.IRON_BLOCK) {
 						bl = false;
 						break;
 					}
@@ -210,7 +207,7 @@ public class BeaconBlockEntity extends BlockEntity implements NameableContainerP
 
 	@Override
 	public void invalidate() {
-		this.playSound(SoundEvents.field_19344);
+		this.playSound(SoundEvents.BLOCK_BEACON_DEACTIVATE);
 		super.invalidate();
 	}
 
@@ -239,7 +236,7 @@ public class BeaconBlockEntity extends BlockEntity implements NameableContainerP
 	}
 
 	public void playSound(SoundEvent soundEvent) {
-		this.world.playSound(null, this.pos, soundEvent, SoundCategory.field_15245, 1.0F, 1.0F);
+		this.world.playSound(null, this.pos, soundEvent, SoundCategory.BLOCKS, 1.0F, 1.0F);
 	}
 
 	@Environment(EnvType.CLIENT)

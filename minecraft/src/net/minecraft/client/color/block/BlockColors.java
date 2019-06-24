@@ -28,54 +28,54 @@ public class BlockColors {
 		BlockColors blockColors = new BlockColors();
 		blockColors.register(
 			(blockState, extendedBlockView, blockPos, i) -> extendedBlockView != null && blockPos != null
-					? BiomeColors.getGrassColor(extendedBlockView, blockState.get(ReplaceableTallPlantBlock.HALF) == DoubleBlockHalf.field_12609 ? blockPos.down() : blockPos)
+					? BiomeColors.getGrassColor(extendedBlockView, blockState.get(ReplaceableTallPlantBlock.HALF) == DoubleBlockHalf.UPPER ? blockPos.down() : blockPos)
 					: -1,
-			Blocks.field_10313,
-			Blocks.field_10214
+			Blocks.LARGE_FERN,
+			Blocks.TALL_GRASS
 		);
 		blockColors.register(
 			(blockState, extendedBlockView, blockPos, i) -> extendedBlockView != null && blockPos != null
 					? BiomeColors.getGrassColor(extendedBlockView, blockPos)
 					: GrassColors.getColor(0.5, 1.0),
-			Blocks.field_10219,
-			Blocks.field_10112,
-			Blocks.field_10479,
-			Blocks.field_10128
+			Blocks.GRASS_BLOCK,
+			Blocks.FERN,
+			Blocks.GRASS,
+			Blocks.POTTED_FERN
 		);
-		blockColors.register((blockState, extendedBlockView, blockPos, i) -> FoliageColors.getSpruceColor(), Blocks.field_9988);
-		blockColors.register((blockState, extendedBlockView, blockPos, i) -> FoliageColors.getBirchColor(), Blocks.field_10539);
+		blockColors.register((blockState, extendedBlockView, blockPos, i) -> FoliageColors.getSpruceColor(), Blocks.SPRUCE_LEAVES);
+		blockColors.register((blockState, extendedBlockView, blockPos, i) -> FoliageColors.getBirchColor(), Blocks.BIRCH_LEAVES);
 		blockColors.register(
 			(blockState, extendedBlockView, blockPos, i) -> extendedBlockView != null && blockPos != null
 					? BiomeColors.getFoliageColor(extendedBlockView, blockPos)
 					: FoliageColors.getDefaultColor(),
-			Blocks.field_10503,
-			Blocks.field_10335,
-			Blocks.field_10098,
-			Blocks.field_10035,
-			Blocks.field_10597
+			Blocks.OAK_LEAVES,
+			Blocks.JUNGLE_LEAVES,
+			Blocks.ACACIA_LEAVES,
+			Blocks.DARK_OAK_LEAVES,
+			Blocks.VINE
 		);
 		blockColors.register(
 			(blockState, extendedBlockView, blockPos, i) -> extendedBlockView != null && blockPos != null ? BiomeColors.getWaterColor(extendedBlockView, blockPos) : -1,
-			Blocks.field_10382,
-			Blocks.field_10422,
-			Blocks.field_10593
+			Blocks.WATER,
+			Blocks.BUBBLE_COLUMN,
+			Blocks.CAULDRON
 		);
 		blockColors.register(
-			(blockState, extendedBlockView, blockPos, i) -> RedstoneWireBlock.getWireColor((Integer)blockState.get(RedstoneWireBlock.POWER)), Blocks.field_10091
+			(blockState, extendedBlockView, blockPos, i) -> RedstoneWireBlock.getWireColor((Integer)blockState.get(RedstoneWireBlock.POWER)), Blocks.REDSTONE_WIRE
 		);
 		blockColors.register(
 			(blockState, extendedBlockView, blockPos, i) -> extendedBlockView != null && blockPos != null ? BiomeColors.getGrassColor(extendedBlockView, blockPos) : -1,
-			Blocks.field_10424
+			Blocks.SUGAR_CANE
 		);
-		blockColors.register((blockState, extendedBlockView, blockPos, i) -> 14731036, Blocks.field_10150, Blocks.field_10331);
+		blockColors.register((blockState, extendedBlockView, blockPos, i) -> 14731036, Blocks.ATTACHED_MELON_STEM, Blocks.ATTACHED_PUMPKIN_STEM);
 		blockColors.register((blockState, extendedBlockView, blockPos, i) -> {
 			int j = (Integer)blockState.get(StemBlock.AGE);
 			int k = j * 32;
 			int l = 255 - j * 8;
 			int m = j * 4;
 			return k << 16 | l << 8 | m;
-		}, Blocks.field_10168, Blocks.field_9984);
-		blockColors.register((blockState, extendedBlockView, blockPos, i) -> extendedBlockView != null && blockPos != null ? 2129968 : 7455580, Blocks.field_10588);
+		}, Blocks.MELON_STEM, Blocks.PUMPKIN_STEM);
+		blockColors.register((blockState, extendedBlockView, blockPos, i) -> extendedBlockView != null && blockPos != null ? 2129968 : 7455580, Blocks.LILY_PAD);
 		return blockColors;
 	}
 

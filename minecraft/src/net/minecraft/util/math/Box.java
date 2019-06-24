@@ -298,21 +298,21 @@ public class Box {
 	@Nullable
 	private static Direction method_1007(Box box, Vec3d vec3d, double[] ds, @Nullable Direction direction, double d, double e, double f) {
 		if (d > 1.0E-7) {
-			direction = method_998(ds, direction, d, e, f, box.minX, box.minY, box.maxY, box.minZ, box.maxZ, Direction.field_11039, vec3d.x, vec3d.y, vec3d.z);
+			direction = method_998(ds, direction, d, e, f, box.minX, box.minY, box.maxY, box.minZ, box.maxZ, Direction.WEST, vec3d.x, vec3d.y, vec3d.z);
 		} else if (d < -1.0E-7) {
-			direction = method_998(ds, direction, d, e, f, box.maxX, box.minY, box.maxY, box.minZ, box.maxZ, Direction.field_11034, vec3d.x, vec3d.y, vec3d.z);
+			direction = method_998(ds, direction, d, e, f, box.maxX, box.minY, box.maxY, box.minZ, box.maxZ, Direction.EAST, vec3d.x, vec3d.y, vec3d.z);
 		}
 
 		if (e > 1.0E-7) {
-			direction = method_998(ds, direction, e, f, d, box.minY, box.minZ, box.maxZ, box.minX, box.maxX, Direction.field_11033, vec3d.y, vec3d.z, vec3d.x);
+			direction = method_998(ds, direction, e, f, d, box.minY, box.minZ, box.maxZ, box.minX, box.maxX, Direction.DOWN, vec3d.y, vec3d.z, vec3d.x);
 		} else if (e < -1.0E-7) {
-			direction = method_998(ds, direction, e, f, d, box.maxY, box.minZ, box.maxZ, box.minX, box.maxX, Direction.field_11036, vec3d.y, vec3d.z, vec3d.x);
+			direction = method_998(ds, direction, e, f, d, box.maxY, box.minZ, box.maxZ, box.minX, box.maxX, Direction.UP, vec3d.y, vec3d.z, vec3d.x);
 		}
 
 		if (f > 1.0E-7) {
-			direction = method_998(ds, direction, f, d, e, box.minZ, box.minX, box.maxX, box.minY, box.maxY, Direction.field_11043, vec3d.z, vec3d.x, vec3d.y);
+			direction = method_998(ds, direction, f, d, e, box.minZ, box.minX, box.maxX, box.minY, box.maxY, Direction.NORTH, vec3d.z, vec3d.x, vec3d.y);
 		} else if (f < -1.0E-7) {
-			direction = method_998(ds, direction, f, d, e, box.maxZ, box.minX, box.maxX, box.minY, box.maxY, Direction.field_11035, vec3d.z, vec3d.x, vec3d.y);
+			direction = method_998(ds, direction, f, d, e, box.maxZ, box.minX, box.maxX, box.minY, box.maxY, Direction.SOUTH, vec3d.z, vec3d.x, vec3d.y);
 		}
 
 		return direction;

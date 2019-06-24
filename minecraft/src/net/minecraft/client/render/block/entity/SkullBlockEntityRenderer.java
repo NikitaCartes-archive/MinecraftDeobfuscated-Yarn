@@ -32,21 +32,21 @@ public class SkullBlockEntityRenderer extends BlockEntityRenderer<SkullBlockEnti
 			SkullEntityModel skullEntityModel = new SkullEntityModel(0, 0, 64, 32);
 			SkullEntityModel skullEntityModel2 = new SkullOverlayEntityModel();
 			DragonHeadEntityModel dragonHeadEntityModel = new DragonHeadEntityModel(0.0F);
-			hashMap.put(SkullBlock.Type.field_11512, skullEntityModel);
-			hashMap.put(SkullBlock.Type.field_11513, skullEntityModel);
-			hashMap.put(SkullBlock.Type.field_11510, skullEntityModel2);
-			hashMap.put(SkullBlock.Type.field_11508, skullEntityModel2);
-			hashMap.put(SkullBlock.Type.field_11507, skullEntityModel);
-			hashMap.put(SkullBlock.Type.field_11511, dragonHeadEntityModel);
+			hashMap.put(SkullBlock.Type.SKELETON, skullEntityModel);
+			hashMap.put(SkullBlock.Type.WITHER_SKELETON, skullEntityModel);
+			hashMap.put(SkullBlock.Type.PLAYER, skullEntityModel2);
+			hashMap.put(SkullBlock.Type.ZOMBIE, skullEntityModel2);
+			hashMap.put(SkullBlock.Type.CREEPER, skullEntityModel);
+			hashMap.put(SkullBlock.Type.DRAGON, dragonHeadEntityModel);
 		}
 	);
 	private static final Map<SkullBlock.SkullType, Identifier> TEXTURES = SystemUtil.consume(Maps.<SkullBlock.SkullType, Identifier>newHashMap(), hashMap -> {
-		hashMap.put(SkullBlock.Type.field_11512, new Identifier("textures/entity/skeleton/skeleton.png"));
-		hashMap.put(SkullBlock.Type.field_11513, new Identifier("textures/entity/skeleton/wither_skeleton.png"));
-		hashMap.put(SkullBlock.Type.field_11508, new Identifier("textures/entity/zombie/zombie.png"));
-		hashMap.put(SkullBlock.Type.field_11507, new Identifier("textures/entity/creeper/creeper.png"));
-		hashMap.put(SkullBlock.Type.field_11511, new Identifier("textures/entity/enderdragon/dragon.png"));
-		hashMap.put(SkullBlock.Type.field_11510, DefaultSkinHelper.getTexture());
+		hashMap.put(SkullBlock.Type.SKELETON, new Identifier("textures/entity/skeleton/skeleton.png"));
+		hashMap.put(SkullBlock.Type.WITHER_SKELETON, new Identifier("textures/entity/skeleton/wither_skeleton.png"));
+		hashMap.put(SkullBlock.Type.ZOMBIE, new Identifier("textures/entity/zombie/zombie.png"));
+		hashMap.put(SkullBlock.Type.CREEPER, new Identifier("textures/entity/creeper/creeper.png"));
+		hashMap.put(SkullBlock.Type.DRAGON, new Identifier("textures/entity/enderdragon/dragon.png"));
+		hashMap.put(SkullBlock.Type.PLAYER, DefaultSkinHelper.getTexture());
 	});
 
 	public void method_3577(SkullBlockEntity skullBlockEntity, double d, double e, double f, float g, int i) {
@@ -85,16 +85,16 @@ public class SkullBlockEntityRenderer extends BlockEntityRenderer<SkullBlockEnti
 			GlStateManager.translatef(f + 0.5F, g, h + 0.5F);
 		} else {
 			switch (direction) {
-				case field_11043:
+				case NORTH:
 					GlStateManager.translatef(f + 0.5F, g + 0.25F, h + 0.74F);
 					break;
-				case field_11035:
+				case SOUTH:
 					GlStateManager.translatef(f + 0.5F, g + 0.25F, h + 0.26F);
 					break;
-				case field_11039:
+				case WEST:
 					GlStateManager.translatef(f + 0.74F, g + 0.25F, h + 0.5F);
 					break;
-				case field_11034:
+				case EAST:
 				default:
 					GlStateManager.translatef(f + 0.26F, g + 0.25F, h + 0.5F);
 			}
@@ -103,7 +103,7 @@ public class SkullBlockEntityRenderer extends BlockEntityRenderer<SkullBlockEnti
 		GlStateManager.enableRescaleNormal();
 		GlStateManager.scalef(-1.0F, -1.0F, 1.0F);
 		GlStateManager.enableAlphaTest();
-		if (skullType == SkullBlock.Type.field_11510) {
+		if (skullType == SkullBlock.Type.PLAYER) {
 			GlStateManager.setProfile(GlStateManager.RenderMode.PLAYER_SKIN);
 		}
 
@@ -118,7 +118,7 @@ public class SkullBlockEntityRenderer extends BlockEntityRenderer<SkullBlockEnti
 
 	private Identifier method_3578(SkullBlock.SkullType skullType, @Nullable GameProfile gameProfile) {
 		Identifier identifier = (Identifier)TEXTURES.get(skullType);
-		if (skullType == SkullBlock.Type.field_11510 && gameProfile != null) {
+		if (skullType == SkullBlock.Type.PLAYER && gameProfile != null) {
 			MinecraftClient minecraftClient = MinecraftClient.getInstance();
 			Map<Type, MinecraftProfileTexture> map = minecraftClient.getSkinProvider().getTextures(gameProfile);
 			if (map.containsKey(Type.SKIN)) {

@@ -13,7 +13,7 @@ import net.minecraft.world.gen.chunk.ChunkGenerator;
 import net.minecraft.world.gen.chunk.ChunkGeneratorConfig;
 
 public class DeadBushFeature extends Feature<DefaultFeatureConfig> {
-	private static final DeadBushBlock DEAD_BUSH = (DeadBushBlock)Blocks.field_10428;
+	private static final DeadBushBlock DEAD_BUSH = (DeadBushBlock)Blocks.DEAD_BUSH;
 
 	public DeadBushFeature(Function<Dynamic<?>, ? extends DefaultFeatureConfig> function) {
 		super(function);
@@ -23,7 +23,7 @@ public class DeadBushFeature extends Feature<DefaultFeatureConfig> {
 		IWorld iWorld, ChunkGenerator<? extends ChunkGeneratorConfig> chunkGenerator, Random random, BlockPos blockPos, DefaultFeatureConfig defaultFeatureConfig
 	) {
 		for (BlockState blockState = iWorld.getBlockState(blockPos);
-			(blockState.isAir() || blockState.matches(BlockTags.field_15503)) && blockPos.getY() > 0;
+			(blockState.isAir() || blockState.matches(BlockTags.LEAVES)) && blockPos.getY() > 0;
 			blockState = iWorld.getBlockState(blockPos)
 		) {
 			blockPos = blockPos.down();

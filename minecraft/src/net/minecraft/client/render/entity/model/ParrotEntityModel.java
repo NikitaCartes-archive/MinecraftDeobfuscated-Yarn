@@ -75,8 +75,8 @@ public class ParrotEntityModel extends EntityModel<ParrotEntity> {
 	}
 
 	public void method_17106(float f, float g, float h, float i, float j, int k) {
-		this.method_17110(ParrotEntityModel.Pose.field_3464);
-		this.method_17111(ParrotEntityModel.Pose.field_3464, k, f, g, 0.0F, h, i);
+		this.method_17110(ParrotEntityModel.Pose.ON_SHOULDER);
+		this.method_17111(ParrotEntityModel.Pose.ON_SHOULDER, k, f, g, 0.0F, h, i);
 		this.method_17105(j);
 	}
 
@@ -100,9 +100,9 @@ public class ParrotEntityModel extends EntityModel<ParrotEntity> {
 		this.field_3455.rotationPointX = -1.5F;
 		this.field_3459.rotationPointX = 1.5F;
 		switch (pose) {
-			case field_3466:
+			case SITTING:
 				break;
-			case field_3463:
+			case PARTY:
 				float l = MathHelper.cos((float)i);
 				float m = MathHelper.sin((float)i);
 				this.field_3452.rotationPointX = l;
@@ -121,11 +121,11 @@ public class ParrotEntityModel extends EntityModel<ParrotEntity> {
 				this.field_3460.rotationPointX = l;
 				this.field_3460.rotationPointY = 21.07F + m;
 				break;
-			case field_3465:
+			case STANDING:
 				this.field_3450.pitch = this.field_3450.pitch + MathHelper.cos(f * 0.6662F) * 1.4F * g;
 				this.field_3457.pitch = this.field_3457.pitch + MathHelper.cos(f * 0.6662F + (float) Math.PI) * 1.4F * g;
-			case field_3462:
-			case field_3464:
+			case FLYING:
+			case ON_SHOULDER:
 			default:
 				float n = h * 0.3F;
 				this.field_3452.rotationPointY = 15.69F + n;
@@ -155,7 +155,7 @@ public class ParrotEntityModel extends EntityModel<ParrotEntity> {
 		this.field_3450.roll = 0.0F;
 		this.field_3457.roll = 0.0F;
 		switch (pose) {
-			case field_3466:
+			case SITTING:
 				float f = 1.9F;
 				this.field_3452.rotationPointY = 17.59F;
 				this.field_3460.pitch = 1.5388988F;
@@ -170,14 +170,14 @@ public class ParrotEntityModel extends EntityModel<ParrotEntity> {
 				this.field_3450.pitch++;
 				this.field_3457.pitch++;
 				break;
-			case field_3463:
+			case PARTY:
 				this.field_3450.roll = (float) (-Math.PI / 9);
 				this.field_3457.roll = (float) (Math.PI / 9);
-			case field_3465:
-			case field_3464:
+			case STANDING:
+			case ON_SHOULDER:
 			default:
 				break;
-			case field_3462:
+			case FLYING:
 				this.field_3450.pitch += (float) (Math.PI * 2.0 / 9.0);
 				this.field_3457.pitch += (float) (Math.PI * 2.0 / 9.0);
 		}
@@ -185,20 +185,20 @@ public class ParrotEntityModel extends EntityModel<ParrotEntity> {
 
 	private static ParrotEntityModel.Pose method_17107(ParrotEntity parrotEntity) {
 		if (parrotEntity.getSongPlaying()) {
-			return ParrotEntityModel.Pose.field_3463;
+			return ParrotEntityModel.Pose.PARTY;
 		} else if (parrotEntity.isSitting()) {
-			return ParrotEntityModel.Pose.field_3466;
+			return ParrotEntityModel.Pose.SITTING;
 		} else {
-			return parrotEntity.isInAir() ? ParrotEntityModel.Pose.field_3462 : ParrotEntityModel.Pose.field_3465;
+			return parrotEntity.isInAir() ? ParrotEntityModel.Pose.FLYING : ParrotEntityModel.Pose.STANDING;
 		}
 	}
 
 	@Environment(EnvType.CLIENT)
 	public static enum Pose {
-		field_3462,
-		field_3465,
-		field_3466,
-		field_3463,
-		field_3464;
+		FLYING,
+		STANDING,
+		SITTING,
+		PARTY,
+		ON_SHOULDER;
 	}
 }

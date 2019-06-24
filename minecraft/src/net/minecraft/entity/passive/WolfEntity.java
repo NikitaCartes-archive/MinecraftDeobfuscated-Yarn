@@ -58,7 +58,7 @@ public class WolfEntity extends TameableEntity {
 	private static final TrackedData<Integer> COLLAR_COLOR = DataTracker.registerData(WolfEntity.class, TrackedDataHandlerRegistry.INTEGER);
 	public static final Predicate<LivingEntity> FOLLOW_TAMED_PREDICATE = livingEntity -> {
 		EntityType<?> entityType = livingEntity.getType();
-		return entityType == EntityType.field_6115 || entityType == EntityType.field_6140 || entityType == EntityType.field_17943;
+		return entityType == EntityType.SHEEP || entityType == EntityType.RABBIT || entityType == EntityType.FOX;
 	};
 	private float begAnimationProgress;
 	private float lastBegAnimationProgress;
@@ -127,12 +127,12 @@ public class WolfEntity extends TameableEntity {
 		super.initDataTracker();
 		this.dataTracker.startTracking(WOLF_HEALTH, this.getHealth());
 		this.dataTracker.startTracking(BEGGING, false);
-		this.dataTracker.startTracking(COLLAR_COLOR, DyeColor.field_7964.getId());
+		this.dataTracker.startTracking(COLLAR_COLOR, DyeColor.RED.getId());
 	}
 
 	@Override
 	protected void playStepSound(BlockPos blockPos, BlockState blockState) {
-		this.playSound(SoundEvents.field_14772, 0.15F, 1.0F);
+		this.playSound(SoundEvents.ENTITY_WOLF_STEP, 0.15F, 1.0F);
 	}
 
 	@Override
@@ -154,22 +154,22 @@ public class WolfEntity extends TameableEntity {
 	@Override
 	protected SoundEvent getAmbientSound() {
 		if (this.isAngry()) {
-			return SoundEvents.field_14575;
+			return SoundEvents.ENTITY_WOLF_GROWL;
 		} else if (this.random.nextInt(3) == 0) {
-			return this.isTamed() && this.dataTracker.get(WOLF_HEALTH) < 10.0F ? SoundEvents.field_14807 : SoundEvents.field_14922;
+			return this.isTamed() && this.dataTracker.get(WOLF_HEALTH) < 10.0F ? SoundEvents.ENTITY_WOLF_WHINE : SoundEvents.ENTITY_WOLF_PANT;
 		} else {
-			return SoundEvents.field_14724;
+			return SoundEvents.ENTITY_WOLF_AMBIENT;
 		}
 	}
 
 	@Override
 	protected SoundEvent getHurtSound(DamageSource damageSource) {
-		return SoundEvents.field_15218;
+		return SoundEvents.ENTITY_WOLF_HURT;
 	}
 
 	@Override
 	protected SoundEvent getDeathSound() {
-		return SoundEvents.field_14659;
+		return SoundEvents.ENTITY_WOLF_DEATH;
 	}
 
 	@Override
@@ -210,7 +210,7 @@ public class WolfEntity extends TameableEntity {
 				this.lastShakeProgress = 0.0F;
 			} else if ((this.wet || this.canShakeWaterOff) && this.canShakeWaterOff) {
 				if (this.shakeProgress == 0.0F) {
-					this.playSound(SoundEvents.field_15042, this.getSoundVolume(), (this.random.nextFloat() - this.random.nextFloat()) * 0.2F + 1.0F);
+					this.playSound(SoundEvents.ENTITY_WOLF_SHAKE, this.getSoundVolume(), (this.random.nextFloat() - this.random.nextFloat()) * 0.2F + 1.0F);
 				}
 
 				this.lastShakeProgress = this.shakeProgress;
@@ -230,7 +230,7 @@ public class WolfEntity extends TameableEntity {
 					for (int j = 0; j < i; j++) {
 						float g = (this.random.nextFloat() * 2.0F - 1.0F) * this.getWidth() * 0.5F;
 						float h = (this.random.nextFloat() * 2.0F - 1.0F) * this.getWidth() * 0.5F;
-						this.world.addParticle(ParticleTypes.field_11202, this.x + (double)g, (double)(f + 0.8F), this.z + (double)h, vec3d.x, vec3d.y, vec3d.z);
+						this.world.addParticle(ParticleTypes.SPLASH, this.x + (double)g, (double)(f + 0.8F), this.z + (double)h, vec3d.x, vec3d.y, vec3d.z);
 					}
 				}
 			}
@@ -357,7 +357,7 @@ public class WolfEntity extends TameableEntity {
 				this.navigation.stop();
 				this.setTarget(null);
 			}
-		} else if (item == Items.field_8606 && !this.isAngry()) {
+		} else if (item == Items.BONE && !this.isAngry()) {
 			if (!playerEntity.abilities.creativeMode) {
 				itemStack.decrement(1);
 			}
@@ -437,7 +437,7 @@ public class WolfEntity extends TameableEntity {
 	}
 
 	public WolfEntity method_6717(PassiveEntity passiveEntity) {
-		WolfEntity wolfEntity = EntityType.field_6055.create(this.world);
+		WolfEntity wolfEntity = EntityType.WOLF.create(this.world);
 		UUID uUID = this.getOwnerUuid();
 		if (uUID != null) {
 			wolfEntity.setOwnerUuid(uUID);

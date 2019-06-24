@@ -16,12 +16,12 @@ public class BirdPathNodeMaker extends LandPathNodeMaker {
 	@Override
 	public void init(ViewableWorld viewableWorld, MobEntity mobEntity) {
 		super.init(viewableWorld, mobEntity);
-		this.waterPathNodeTypeWeight = mobEntity.getPathNodeTypeWeight(PathNodeType.field_18);
+		this.waterPathNodeTypeWeight = mobEntity.getPathNodeTypeWeight(PathNodeType.WATER);
 	}
 
 	@Override
 	public void clear() {
-		this.entity.setPathNodeTypeWeight(PathNodeType.field_18, this.waterPathNodeTypeWeight);
+		this.entity.setPathNodeTypeWeight(PathNodeType.WATER, this.waterPathNodeTypeWeight);
 		super.clear();
 	}
 
@@ -32,7 +32,7 @@ public class BirdPathNodeMaker extends LandPathNodeMaker {
 			i = MathHelper.floor(this.entity.getBoundingBox().minY);
 			BlockPos.Mutable mutable = new BlockPos.Mutable(this.entity.x, (double)i, this.entity.z);
 
-			for (Block block = this.blockView.getBlockState(mutable).getBlock(); block == Blocks.field_10382; block = this.blockView.getBlockState(mutable).getBlock()) {
+			for (Block block = this.blockView.getBlockState(mutable).getBlock(); block == Blocks.WATER; block = this.blockView.getBlockState(mutable).getBlock()) {
 				mutable.set(this.entity.x, (double)(++i), this.entity.z);
 			}
 		} else {
@@ -200,24 +200,24 @@ public class BirdPathNodeMaker extends LandPathNodeMaker {
 			pathNode = super.getPathNode(i, j, k);
 			pathNode.type = pathNodeType;
 			pathNode.field_43 = Math.max(pathNode.field_43, f);
-			if (pathNodeType == PathNodeType.field_12) {
+			if (pathNodeType == PathNodeType.WALKABLE) {
 				pathNode.field_43++;
 			}
 		}
 
-		return pathNodeType != PathNodeType.field_7 && pathNodeType != PathNodeType.field_12 ? pathNode : pathNode;
+		return pathNodeType != PathNodeType.OPEN && pathNodeType != PathNodeType.WALKABLE ? pathNode : pathNode;
 	}
 
 	@Override
 	public PathNodeType getPathNodeType(BlockView blockView, int i, int j, int k, MobEntity mobEntity, int l, int m, int n, boolean bl, boolean bl2) {
 		EnumSet<PathNodeType> enumSet = EnumSet.noneOf(PathNodeType.class);
-		PathNodeType pathNodeType = PathNodeType.field_22;
+		PathNodeType pathNodeType = PathNodeType.BLOCKED;
 		BlockPos blockPos = new BlockPos(mobEntity);
 		pathNodeType = this.method_64(blockView, i, j, k, l, m, n, bl, bl2, enumSet, pathNodeType, blockPos);
-		if (enumSet.contains(PathNodeType.field_10)) {
-			return PathNodeType.field_10;
+		if (enumSet.contains(PathNodeType.FENCE)) {
+			return PathNodeType.FENCE;
 		} else {
-			PathNodeType pathNodeType2 = PathNodeType.field_22;
+			PathNodeType pathNodeType2 = PathNodeType.BLOCKED;
 
 			for (PathNodeType pathNodeType3 : enumSet) {
 				if (mobEntity.getPathNodeTypeWeight(pathNodeType3) < 0.0F) {
@@ -229,26 +229,26 @@ public class BirdPathNodeMaker extends LandPathNodeMaker {
 				}
 			}
 
-			return pathNodeType == PathNodeType.field_7 && mobEntity.getPathNodeTypeWeight(pathNodeType2) == 0.0F ? PathNodeType.field_7 : pathNodeType2;
+			return pathNodeType == PathNodeType.OPEN && mobEntity.getPathNodeTypeWeight(pathNodeType2) == 0.0F ? PathNodeType.OPEN : pathNodeType2;
 		}
 	}
 
 	@Override
 	public PathNodeType getPathNodeType(BlockView blockView, int i, int j, int k) {
 		PathNodeType pathNodeType = this.getBasicPathNodeType(blockView, i, j, k);
-		if (pathNodeType == PathNodeType.field_7 && j >= 1) {
+		if (pathNodeType == PathNodeType.OPEN && j >= 1) {
 			Block block = blockView.getBlockState(new BlockPos(i, j - 1, k)).getBlock();
 			PathNodeType pathNodeType2 = this.getBasicPathNodeType(blockView, i, j - 1, k);
-			if (pathNodeType2 == PathNodeType.field_3 || block == Blocks.field_10092 || pathNodeType2 == PathNodeType.field_14 || block == Blocks.field_17350) {
-				pathNodeType = PathNodeType.field_3;
-			} else if (pathNodeType2 == PathNodeType.field_11) {
-				pathNodeType = PathNodeType.field_11;
-			} else if (pathNodeType2 == PathNodeType.field_17) {
-				pathNodeType = PathNodeType.field_17;
+			if (pathNodeType2 == PathNodeType.DAMAGE_FIRE || block == Blocks.MAGMA_BLOCK || pathNodeType2 == PathNodeType.LAVA || block == Blocks.CAMPFIRE) {
+				pathNodeType = PathNodeType.DAMAGE_FIRE;
+			} else if (pathNodeType2 == PathNodeType.DAMAGE_CACTUS) {
+				pathNodeType = PathNodeType.DAMAGE_CACTUS;
+			} else if (pathNodeType2 == PathNodeType.DAMAGE_OTHER) {
+				pathNodeType = PathNodeType.DAMAGE_OTHER;
 			} else {
-				pathNodeType = pathNodeType2 != PathNodeType.field_12 && pathNodeType2 != PathNodeType.field_7 && pathNodeType2 != PathNodeType.field_18
-					? PathNodeType.field_12
-					: PathNodeType.field_7;
+				pathNodeType = pathNodeType2 != PathNodeType.WALKABLE && pathNodeType2 != PathNodeType.OPEN && pathNodeType2 != PathNodeType.WATER
+					? PathNodeType.WALKABLE
+					: PathNodeType.OPEN;
 			}
 		}
 

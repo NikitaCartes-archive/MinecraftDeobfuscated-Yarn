@@ -27,7 +27,7 @@ public class CampfireBlockEntityRenderer extends BlockEntityRenderer<CampfireBlo
 				GlStateManager.rotatef(90.0F, 1.0F, 0.0F, 0.0F);
 				GlStateManager.translatef(-0.3125F, -0.3125F, 0.0F);
 				GlStateManager.scalef(0.375F, 0.375F, 0.375F);
-				MinecraftClient.getInstance().getItemRenderer().renderItem(itemStack, ModelTransformation.Type.field_4319);
+				MinecraftClient.getInstance().getItemRenderer().renderItem(itemStack, ModelTransformation.Type.FIXED);
 				GlStateManager.popMatrix();
 			}
 		}

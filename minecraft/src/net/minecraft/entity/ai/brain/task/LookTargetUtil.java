@@ -22,7 +22,7 @@ public class LookTargetUtil {
 	}
 
 	public static boolean canSee(Brain<?> brain, LivingEntity livingEntity) {
-		return brain.getOptionalMemory(MemoryModuleType.field_18442).filter(list -> list.contains(livingEntity)).isPresent();
+		return brain.getOptionalMemory(MemoryModuleType.VISIBLE_MOBS).filter(list -> list.contains(livingEntity)).isPresent();
 	}
 
 	public static boolean canSee(Brain<?> brain, MemoryModuleType<? extends LivingEntity> memoryModuleType, EntityType<?> entityType) {
@@ -39,7 +39,7 @@ public class LookTargetUtil {
 	}
 
 	public static void lookAt(LivingEntity livingEntity, LivingEntity livingEntity2) {
-		livingEntity.getBrain().putMemory(MemoryModuleType.field_18446, new EntityPosWrapper(livingEntity2));
+		livingEntity.getBrain().putMemory(MemoryModuleType.LOOK_TARGET, new EntityPosWrapper(livingEntity2));
 	}
 
 	public static void walkTowardsEachOther(LivingEntity livingEntity, LivingEntity livingEntity2) {
@@ -52,8 +52,8 @@ public class LookTargetUtil {
 		float f = (float)livingEntity.getAttributeInstance(EntityAttributes.MOVEMENT_SPEED).getValue();
 		EntityPosWrapper entityPosWrapper = new EntityPosWrapper(livingEntity2);
 		WalkTarget walkTarget = new WalkTarget(entityPosWrapper, f, i);
-		livingEntity.getBrain().putMemory(MemoryModuleType.field_18446, entityPosWrapper);
-		livingEntity.getBrain().putMemory(MemoryModuleType.field_18445, walkTarget);
+		livingEntity.getBrain().putMemory(MemoryModuleType.LOOK_TARGET, entityPosWrapper);
+		livingEntity.getBrain().putMemory(MemoryModuleType.WALK_TARGET, walkTarget);
 	}
 
 	public static void give(LivingEntity livingEntity, ItemStack itemStack, LivingEntity livingEntity2) {

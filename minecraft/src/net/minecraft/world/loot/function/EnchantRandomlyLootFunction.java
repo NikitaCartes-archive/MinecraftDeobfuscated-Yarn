@@ -43,7 +43,7 @@ public class EnchantRandomlyLootFunction extends ConditionalLootFunction {
 			List<Enchantment> list = Lists.<Enchantment>newArrayList();
 
 			for (Enchantment enchantment : Registry.ENCHANTMENT) {
-				if (itemStack.getItem() == Items.field_8529 || enchantment.isAcceptableItem(itemStack)) {
+				if (itemStack.getItem() == Items.BOOK || enchantment.isAcceptableItem(itemStack)) {
 					list.add(enchantment);
 				}
 			}
@@ -59,8 +59,8 @@ public class EnchantRandomlyLootFunction extends ConditionalLootFunction {
 		}
 
 		int i = MathHelper.nextInt(random, enchantment2.getMinimumLevel(), enchantment2.getMaximumLevel());
-		if (itemStack.getItem() == Items.field_8529) {
-			itemStack = new ItemStack(Items.field_8598);
+		if (itemStack.getItem() == Items.BOOK) {
+			itemStack = new ItemStack(Items.ENCHANTED_BOOK);
 			EnchantedBookItem.addEnchantment(itemStack, new InfoEnchantment(enchantment2, i));
 		} else {
 			itemStack.addEnchantment(enchantment2, i);

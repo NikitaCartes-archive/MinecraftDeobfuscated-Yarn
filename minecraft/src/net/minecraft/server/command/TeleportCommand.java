@@ -35,7 +35,7 @@ public class TeleportCommand {
 				.then(
 					CommandManager.argument("targets", EntityArgumentType.entities())
 						.then(
-							CommandManager.argument("location", Vec3ArgumentType.create())
+							CommandManager.argument("location", Vec3ArgumentType.vec3())
 								.executes(
 									commandContext -> execute(
 											commandContext.getSource(),
@@ -47,7 +47,7 @@ public class TeleportCommand {
 										)
 								)
 								.then(
-									CommandManager.argument("rotation", RotationArgumentType.create())
+									CommandManager.argument("rotation", RotationArgumentType.rotation())
 										.executes(
 											commandContext -> execute(
 													commandContext.getSource(),
@@ -72,11 +72,11 @@ public class TeleportCommand {
 																	commandContext.getSource().getWorld(),
 																	Vec3ArgumentType.getPosArgument(commandContext, "location"),
 																	null,
-																	new TeleportCommand.LookTarget(EntityArgumentType.getEntity(commandContext, "facingEntity"), EntityAnchorArgumentType.EntityAnchor.field_9853)
+																	new TeleportCommand.LookTarget(EntityArgumentType.getEntity(commandContext, "facingEntity"), EntityAnchorArgumentType.EntityAnchor.FEET)
 																)
 														)
 														.then(
-															CommandManager.argument("facingAnchor", EntityAnchorArgumentType.create())
+															CommandManager.argument("facingAnchor", EntityAnchorArgumentType.entityAnchor())
 																.executes(
 																	commandContext -> execute(
 																			commandContext.getSource(),
@@ -93,7 +93,7 @@ public class TeleportCommand {
 												)
 										)
 										.then(
-											CommandManager.argument("facingLocation", Vec3ArgumentType.create())
+											CommandManager.argument("facingLocation", Vec3ArgumentType.vec3())
 												.executes(
 													commandContext -> execute(
 															commandContext.getSource(),
@@ -117,7 +117,7 @@ public class TeleportCommand {
 						)
 				)
 				.then(
-					CommandManager.argument("location", Vec3ArgumentType.create())
+					CommandManager.argument("location", Vec3ArgumentType.vec3())
 						.executes(
 							commandContext -> execute(
 									commandContext.getSource(),
@@ -184,27 +184,27 @@ public class TeleportCommand {
 		Vec2f vec2f = posArgument2 == null ? null : posArgument2.toAbsoluteRotation(serverCommandSource);
 		Set<PlayerPositionLookS2CPacket.Flag> set = EnumSet.noneOf(PlayerPositionLookS2CPacket.Flag.class);
 		if (posArgument.isXRelative()) {
-			set.add(PlayerPositionLookS2CPacket.Flag.field_12400);
+			set.add(PlayerPositionLookS2CPacket.Flag.X);
 		}
 
 		if (posArgument.isYRelative()) {
-			set.add(PlayerPositionLookS2CPacket.Flag.field_12398);
+			set.add(PlayerPositionLookS2CPacket.Flag.Y);
 		}
 
 		if (posArgument.isZRelative()) {
-			set.add(PlayerPositionLookS2CPacket.Flag.field_12403);
+			set.add(PlayerPositionLookS2CPacket.Flag.Z);
 		}
 
 		if (posArgument2 == null) {
-			set.add(PlayerPositionLookS2CPacket.Flag.field_12397);
-			set.add(PlayerPositionLookS2CPacket.Flag.field_12401);
+			set.add(PlayerPositionLookS2CPacket.Flag.X_ROT);
+			set.add(PlayerPositionLookS2CPacket.Flag.Y_ROT);
 		} else {
 			if (posArgument2.isXRelative()) {
-				set.add(PlayerPositionLookS2CPacket.Flag.field_12397);
+				set.add(PlayerPositionLookS2CPacket.Flag.X_ROT);
 			}
 
 			if (posArgument2.isYRelative()) {
-				set.add(PlayerPositionLookS2CPacket.Flag.field_12401);
+				set.add(PlayerPositionLookS2CPacket.Flag.Y_ROT);
 			}
 		}
 
@@ -241,7 +241,7 @@ public class TeleportCommand {
 	) {
 		if (entity instanceof ServerPlayerEntity) {
 			ChunkPos chunkPos = new ChunkPos(new BlockPos(d, e, f));
-			serverWorld.method_14178().addTicket(ChunkTicketType.field_19347, chunkPos, 1, entity.getEntityId());
+			serverWorld.method_14178().addTicket(ChunkTicketType.POST_TELEPORT, chunkPos, 1, entity.getEntityId());
 			entity.stopRiding();
 			if (((ServerPlayerEntity)entity).isSleeping()) {
 				((ServerPlayerEntity)entity).wakeUp(true, true, false);
@@ -270,7 +270,7 @@ public class TeleportCommand {
 					return;
 				}
 
-				entity.method_5878(entity2);
+				entity.copyFrom(entity2);
 				entity.setPositionAndAngles(d, e, f, i, j);
 				entity.setHeadYaw(i);
 				serverWorld.method_18769(entity);

@@ -28,7 +28,7 @@ public class ComparatorBlock extends AbstractRedstoneGateBlock implements BlockE
 	public ComparatorBlock(Block.Settings settings) {
 		super(settings);
 		this.setDefaultState(
-			this.stateFactory.getDefaultState().with(FACING, Direction.field_11043).with(POWERED, Boolean.valueOf(false)).with(MODE, ComparatorMode.field_12576)
+			this.stateFactory.getDefaultState().with(FACING, Direction.NORTH).with(POWERED, Boolean.valueOf(false)).with(MODE, ComparatorMode.COMPARE)
 		);
 	}
 
@@ -44,7 +44,7 @@ public class ComparatorBlock extends AbstractRedstoneGateBlock implements BlockE
 	}
 
 	private int calculateOutputSignal(World world, BlockPos blockPos, BlockState blockState) {
-		return blockState.get(MODE) == ComparatorMode.field_12578
+		return blockState.get(MODE) == ComparatorMode.SUBTRACT
 			? Math.max(this.getPower(world, blockPos, blockState) - this.getMaxInputLevelSides(world, blockPos, blockState), 0)
 			: this.getPower(world, blockPos, blockState);
 	}
@@ -106,8 +106,8 @@ public class ComparatorBlock extends AbstractRedstoneGateBlock implements BlockE
 			return false;
 		} else {
 			blockState = blockState.cycle(MODE);
-			float f = blockState.get(MODE) == ComparatorMode.field_12578 ? 0.55F : 0.5F;
-			world.playSound(playerEntity, blockPos, SoundEvents.field_14762, SoundCategory.field_15245, 0.3F, f);
+			float f = blockState.get(MODE) == ComparatorMode.SUBTRACT ? 0.55F : 0.5F;
+			world.playSound(playerEntity, blockPos, SoundEvents.BLOCK_COMPARATOR_CLICK, SoundCategory.BLOCKS, 0.3F, f);
 			world.setBlockState(blockPos, blockState, 2);
 			this.update(world, blockPos, blockState);
 			return true;
@@ -121,7 +121,7 @@ public class ComparatorBlock extends AbstractRedstoneGateBlock implements BlockE
 			BlockEntity blockEntity = world.getBlockEntity(blockPos);
 			int j = blockEntity instanceof ComparatorBlockEntity ? ((ComparatorBlockEntity)blockEntity).getOutputSignal() : 0;
 			if (i != j || (Boolean)blockState.get(POWERED) != this.hasPower(world, blockPos, blockState)) {
-				TaskPriority taskPriority = this.isTargetNotAligned(world, blockPos, blockState) ? TaskPriority.field_9310 : TaskPriority.field_9314;
+				TaskPriority taskPriority = this.isTargetNotAligned(world, blockPos, blockState) ? TaskPriority.HIGH : TaskPriority.NORMAL;
 				world.getBlockTickScheduler().schedule(blockPos, this, 2, taskPriority);
 			}
 		}
@@ -137,7 +137,7 @@ public class ComparatorBlock extends AbstractRedstoneGateBlock implements BlockE
 			comparatorBlockEntity.setOutputSignal(i);
 		}
 
-		if (j != i || blockState.get(MODE) == ComparatorMode.field_12576) {
+		if (j != i || blockState.get(MODE) == ComparatorMode.COMPARE) {
 			boolean bl = this.hasPower(world, blockPos, blockState);
 			boolean bl2 = (Boolean)blockState.get(POWERED);
 			if (bl2 && !bl) {

@@ -349,13 +349,13 @@ public class GlStateManager {
 
 	private static GlStateManager.TexGenCoordState getTexGen(GlStateManager.TexCoord texCoord) {
 		switch (texCoord) {
-			case field_5154:
+			case S:
 				return TEX_GEN.s;
-			case field_5155:
+			case T:
 				return TEX_GEN.t;
-			case field_5156:
+			case R:
 				return TEX_GEN.r;
-			case field_5157:
+			case Q:
 				return TEX_GEN.q;
 			default:
 				return TEX_GEN.s;
@@ -462,10 +462,10 @@ public class GlStateManager {
 	}
 
 	public static void viewport(int i, int j, int k, int l) {
-		GlStateManager.Viewport.field_5169.x = i;
-		GlStateManager.Viewport.field_5169.y = j;
-		GlStateManager.Viewport.field_5169.width = k;
-		GlStateManager.Viewport.field_5169.height = l;
+		GlStateManager.Viewport.INSTANCE.x = i;
+		GlStateManager.Viewport.INSTANCE.y = j;
+		GlStateManager.Viewport.INSTANCE.width = k;
+		GlStateManager.Viewport.INSTANCE.height = l;
 		GL11.glViewport(i, j, k, l);
 	}
 
@@ -893,9 +893,9 @@ public class GlStateManager {
 
 	@Environment(EnvType.CLIENT)
 	public static enum FaceSides {
-		field_5068(1028),
-		field_5070(1029),
-		field_5071(1032);
+		FRONT(1028),
+		BACK(1029),
+		FRONT_AND_BACK(1032);
 
 		public final int glValue;
 
@@ -906,9 +906,9 @@ public class GlStateManager {
 
 	@Environment(EnvType.CLIENT)
 	public static enum FogMode {
-		field_5095(9729),
-		field_5096(2048),
-		field_5097(2049);
+		LINEAR(9729),
+		EXP(2048),
+		EXP2(2049);
 
 		public final int glValue;
 
@@ -931,22 +931,22 @@ public class GlStateManager {
 
 	@Environment(EnvType.CLIENT)
 	public static enum LogicOp {
-		field_5120(5377),
-		field_5112(5380),
-		field_5117(5378),
-		field_5103(5376),
-		field_5118(5379),
-		field_5113(5388),
-		field_5119(5385),
-		field_5109(5386),
-		field_5114(5390),
-		field_5115(5381),
-		field_5104(5384),
-		field_5105(5383),
-		field_5116(5389),
-		field_5110(5387),
-		field_5107(5391),
-		field_5111(5382);
+		AND(5377),
+		AND_INVERTED(5380),
+		AND_REVERSE(5378),
+		CLEAR(5376),
+		COPY(5379),
+		COPY_INVERTED(5388),
+		EQUIV(5385),
+		INVERT(5386),
+		NAND(5390),
+		NOOP(5381),
+		NOR(5384),
+		OR(5383),
+		OR_INVERTED(5389),
+		OR_REVERSE(5387),
+		SET(5391),
+		XOR(5382);
 
 		public final int glValue;
 
@@ -1022,22 +1022,22 @@ public class GlStateManager {
 				GlStateManager.polygonOffset(0.0F, 0.0F);
 				GlStateManager.disableColorLogicOp();
 				GlStateManager.logicOp(5379);
-				GlStateManager.disableTexGen(GlStateManager.TexCoord.field_5154);
-				GlStateManager.texGenMode(GlStateManager.TexCoord.field_5154, 9216);
-				GlStateManager.texGenParam(GlStateManager.TexCoord.field_5154, 9474, GuiLighting.singletonBuffer(1.0F, 0.0F, 0.0F, 0.0F));
-				GlStateManager.texGenParam(GlStateManager.TexCoord.field_5154, 9217, GuiLighting.singletonBuffer(1.0F, 0.0F, 0.0F, 0.0F));
-				GlStateManager.disableTexGen(GlStateManager.TexCoord.field_5155);
-				GlStateManager.texGenMode(GlStateManager.TexCoord.field_5155, 9216);
-				GlStateManager.texGenParam(GlStateManager.TexCoord.field_5155, 9474, GuiLighting.singletonBuffer(0.0F, 1.0F, 0.0F, 0.0F));
-				GlStateManager.texGenParam(GlStateManager.TexCoord.field_5155, 9217, GuiLighting.singletonBuffer(0.0F, 1.0F, 0.0F, 0.0F));
-				GlStateManager.disableTexGen(GlStateManager.TexCoord.field_5156);
-				GlStateManager.texGenMode(GlStateManager.TexCoord.field_5156, 9216);
-				GlStateManager.texGenParam(GlStateManager.TexCoord.field_5156, 9474, GuiLighting.singletonBuffer(0.0F, 0.0F, 0.0F, 0.0F));
-				GlStateManager.texGenParam(GlStateManager.TexCoord.field_5156, 9217, GuiLighting.singletonBuffer(0.0F, 0.0F, 0.0F, 0.0F));
-				GlStateManager.disableTexGen(GlStateManager.TexCoord.field_5157);
-				GlStateManager.texGenMode(GlStateManager.TexCoord.field_5157, 9216);
-				GlStateManager.texGenParam(GlStateManager.TexCoord.field_5157, 9474, GuiLighting.singletonBuffer(0.0F, 0.0F, 0.0F, 0.0F));
-				GlStateManager.texGenParam(GlStateManager.TexCoord.field_5157, 9217, GuiLighting.singletonBuffer(0.0F, 0.0F, 0.0F, 0.0F));
+				GlStateManager.disableTexGen(GlStateManager.TexCoord.S);
+				GlStateManager.texGenMode(GlStateManager.TexCoord.S, 9216);
+				GlStateManager.texGenParam(GlStateManager.TexCoord.S, 9474, GuiLighting.singletonBuffer(1.0F, 0.0F, 0.0F, 0.0F));
+				GlStateManager.texGenParam(GlStateManager.TexCoord.S, 9217, GuiLighting.singletonBuffer(1.0F, 0.0F, 0.0F, 0.0F));
+				GlStateManager.disableTexGen(GlStateManager.TexCoord.T);
+				GlStateManager.texGenMode(GlStateManager.TexCoord.T, 9216);
+				GlStateManager.texGenParam(GlStateManager.TexCoord.T, 9474, GuiLighting.singletonBuffer(0.0F, 1.0F, 0.0F, 0.0F));
+				GlStateManager.texGenParam(GlStateManager.TexCoord.T, 9217, GuiLighting.singletonBuffer(0.0F, 1.0F, 0.0F, 0.0F));
+				GlStateManager.disableTexGen(GlStateManager.TexCoord.R);
+				GlStateManager.texGenMode(GlStateManager.TexCoord.R, 9216);
+				GlStateManager.texGenParam(GlStateManager.TexCoord.R, 9474, GuiLighting.singletonBuffer(0.0F, 0.0F, 0.0F, 0.0F));
+				GlStateManager.texGenParam(GlStateManager.TexCoord.R, 9217, GuiLighting.singletonBuffer(0.0F, 0.0F, 0.0F, 0.0F));
+				GlStateManager.disableTexGen(GlStateManager.TexCoord.Q);
+				GlStateManager.texGenMode(GlStateManager.TexCoord.Q, 9216);
+				GlStateManager.texGenParam(GlStateManager.TexCoord.Q, 9474, GuiLighting.singletonBuffer(0.0F, 0.0F, 0.0F, 0.0F));
+				GlStateManager.texGenParam(GlStateManager.TexCoord.Q, 9217, GuiLighting.singletonBuffer(0.0F, 0.0F, 0.0F, 0.0F));
 				GlStateManager.activeTexture(0);
 				GlStateManager.texParameter(3553, 10240, 9729);
 				GlStateManager.texParameter(3553, 10241, 9986);
@@ -1167,10 +1167,10 @@ public class GlStateManager {
 
 	@Environment(EnvType.CLIENT)
 	public static enum TexCoord {
-		field_5154,
-		field_5155,
-		field_5156,
-		field_5157;
+		S,
+		T,
+		R,
+		Q;
 	}
 
 	@Environment(EnvType.CLIENT)
@@ -1207,7 +1207,7 @@ public class GlStateManager {
 
 	@Environment(EnvType.CLIENT)
 	public static enum Viewport {
-		field_5169;
+		INSTANCE;
 
 		protected int x;
 		protected int y;

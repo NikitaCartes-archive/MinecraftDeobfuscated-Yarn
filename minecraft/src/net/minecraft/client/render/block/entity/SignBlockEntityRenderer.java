@@ -113,18 +113,18 @@ public class SignBlockEntityRenderer extends BlockEntityRenderer<SignBlockEntity
 	}
 
 	private Identifier getModelTexture(Block block) {
-		if (block == Blocks.field_10121 || block == Blocks.field_10187) {
+		if (block == Blocks.OAK_SIGN || block == Blocks.OAK_WALL_SIGN) {
 			return OAK_TEX;
-		} else if (block == Blocks.field_10411 || block == Blocks.field_10088) {
+		} else if (block == Blocks.SPRUCE_SIGN || block == Blocks.SPRUCE_WALL_SIGN) {
 			return SPRUCE_TEX;
-		} else if (block == Blocks.field_10231 || block == Blocks.field_10391) {
+		} else if (block == Blocks.BIRCH_SIGN || block == Blocks.BIRCH_WALL_SIGN) {
 			return BIRCH_TEX;
-		} else if (block == Blocks.field_10284 || block == Blocks.field_10401) {
+		} else if (block == Blocks.ACACIA_SIGN || block == Blocks.ACACIA_WALL_SIGN) {
 			return ACACIA_TEX;
-		} else if (block == Blocks.field_10544 || block == Blocks.field_10587) {
+		} else if (block == Blocks.JUNGLE_SIGN || block == Blocks.JUNGLE_WALL_SIGN) {
 			return JUNGLE_TEX;
 		} else {
-			return block != Blocks.field_10330 && block != Blocks.field_10265 ? OAK_TEX : DARK_OAK_TEX;
+			return block != Blocks.DARK_OAK_SIGN && block != Blocks.DARK_OAK_WALL_SIGN ? OAK_TEX : DARK_OAK_TEX;
 		}
 	}
 
@@ -134,7 +134,7 @@ public class SignBlockEntityRenderer extends BlockEntityRenderer<SignBlockEntity
 		GlStateManager.color4f(0.0F, 0.0F, 255.0F, 255.0F);
 		GlStateManager.disableTexture();
 		GlStateManager.enableColorLogicOp();
-		GlStateManager.logicOp(GlStateManager.LogicOp.field_5110);
+		GlStateManager.logicOp(GlStateManager.LogicOp.OR_REVERSE);
 		bufferBuilder.begin(7, VertexFormats.POSITION);
 		bufferBuilder.vertex((double)i, (double)l, 0.0).next();
 		bufferBuilder.vertex((double)k, (double)l, 0.0).next();

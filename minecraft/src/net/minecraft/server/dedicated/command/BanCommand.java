@@ -28,10 +28,10 @@ public class BanCommand {
 							&& serverCommandSource.hasPermissionLevel(3)
 				)
 				.then(
-					CommandManager.argument("targets", GameProfileArgumentType.create())
+					CommandManager.argument("targets", GameProfileArgumentType.gameProfile())
 						.executes(commandContext -> ban(commandContext.getSource(), GameProfileArgumentType.getProfileArgument(commandContext, "targets"), null))
 						.then(
-							CommandManager.argument("reason", MessageArgumentType.create())
+							CommandManager.argument("reason", MessageArgumentType.message())
 								.executes(
 									commandContext -> ban(
 											commandContext.getSource(),

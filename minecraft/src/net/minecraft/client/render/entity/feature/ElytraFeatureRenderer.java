@@ -23,8 +23,8 @@ public class ElytraFeatureRenderer<T extends LivingEntity, M extends EntityModel
 	}
 
 	public void method_17161(T livingEntity, float f, float g, float h, float i, float j, float k, float l) {
-		ItemStack itemStack = livingEntity.getEquippedStack(EquipmentSlot.field_6174);
-		if (itemStack.getItem() == Items.field_8833) {
+		ItemStack itemStack = livingEntity.getEquippedStack(EquipmentSlot.CHEST);
+		if (itemStack.getItem() == Items.ELYTRA) {
 			GlStateManager.color4f(1.0F, 1.0F, 1.0F, 1.0F);
 			GlStateManager.enableBlend();
 			GlStateManager.blendFunc(GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO);
@@ -34,7 +34,7 @@ public class ElytraFeatureRenderer<T extends LivingEntity, M extends EntityModel
 					this.bindTexture(abstractClientPlayerEntity.getElytraTexture());
 				} else if (abstractClientPlayerEntity.canRenderCapeTexture()
 					&& abstractClientPlayerEntity.getCapeTexture() != null
-					&& abstractClientPlayerEntity.isSkinOverlayVisible(PlayerModelPart.field_7559)) {
+					&& abstractClientPlayerEntity.isSkinOverlayVisible(PlayerModelPart.CAPE)) {
 					this.bindTexture(abstractClientPlayerEntity.getCapeTexture());
 				} else {
 					this.bindTexture(SKIN);

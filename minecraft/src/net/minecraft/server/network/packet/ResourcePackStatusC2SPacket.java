@@ -30,9 +30,9 @@ public class ResourcePackStatusC2SPacket implements Packet<ServerPlayPacketListe
 	}
 
 	public static enum Status {
-		field_13017,
-		field_13018,
-		field_13015,
-		field_13016;
+		SUCCESSFULLY_LOADED,
+		DECLINED,
+		FAILED_DOWNLOAD,
+		ACCEPTED;
 	}
 }

@@ -75,9 +75,7 @@ import org.apache.logging.log4j.Logger;
 public class Block implements ItemConvertible {
 	protected static final Logger LOGGER = LogManager.getLogger();
 	public static final IdList<BlockState> STATE_IDS = new IdList<>();
-	private static final Direction[] FACINGS = new Direction[]{
-		Direction.field_11039, Direction.field_11034, Direction.field_11043, Direction.field_11035, Direction.field_11033, Direction.field_11036
-	};
+	private static final Direction[] FACINGS = new Direction[]{Direction.WEST, Direction.EAST, Direction.NORTH, Direction.SOUTH, Direction.DOWN, Direction.UP};
 	private static final LoadingCache<VoxelShape, Boolean> FULL_CUBE_SHAPE_CACHE = CacheBuilder.newBuilder()
 		.maximumSize(512L)
 		.weakKeys()
@@ -129,11 +127,11 @@ public class Block implements ItemConvertible {
 
 	public static BlockState getStateFromRawId(int i) {
 		BlockState blockState = STATE_IDS.get(i);
-		return blockState == null ? Blocks.field_10124.getDefaultState() : blockState;
+		return blockState == null ? Blocks.AIR.getDefaultState() : blockState;
 	}
 
 	public static Block getBlockFromItem(@Nullable Item item) {
-		return item instanceof BlockItem ? ((BlockItem)item).getBlock() : Blocks.field_10124;
+		return item instanceof BlockItem ? ((BlockItem)item).getBlock() : Blocks.AIR;
 	}
 
 	public static BlockState pushEntitiesUpBeforeBlockChange(BlockState blockState, BlockState blockState2, World world, BlockPos blockPos) {
@@ -156,7 +154,7 @@ public class Block implements ItemConvertible {
 
 	@Deprecated
 	public boolean allowsSpawning(BlockState blockState, BlockView blockView, BlockPos blockPos, EntityType<?> entityType) {
-		return isSolidFullSquare(blockState, blockView, blockPos, Direction.field_11036) && this.lightLevel < 14;
+		return isSolidFullSquare(blockState, blockView, blockPos, Direction.UP) && this.lightLevel < 14;
 	}
 
 	@Deprecated
@@ -260,11 +258,11 @@ public class Block implements ItemConvertible {
 
 	public static boolean canConnect(Block block) {
 		return block instanceof LeavesBlock
-			|| block == Blocks.field_10499
-			|| block == Blocks.field_10147
-			|| block == Blocks.field_10009
-			|| block == Blocks.field_10545
-			|| block == Blocks.field_10261;
+			|| block == Blocks.BARRIER
+			|| block == Blocks.CARVED_PUMPKIN
+			|| block == Blocks.JACK_O_LANTERN
+			|| block == Blocks.MELON
+			|| block == Blocks.PUMPKIN;
 	}
 
 	@Deprecated
@@ -286,11 +284,11 @@ public class Block implements ItemConvertible {
 	@Deprecated
 	public boolean canPlaceAtSide(BlockState blockState, BlockView blockView, BlockPos blockPos, BlockPlacementEnvironment blockPlacementEnvironment) {
 		switch (blockPlacementEnvironment) {
-			case field_50:
+			case LAND:
 				return !isShapeFullCube(blockState.getCollisionShape(blockView, blockPos));
-			case field_48:
-				return blockView.getFluidState(blockPos).matches(FluidTags.field_15517);
-			case field_51:
+			case WATER:
+				return blockView.getFluidState(blockPos).matches(FluidTags.WATER);
+			case AIR:
 				return !isShapeFullCube(blockState.getCollisionShape(blockView, blockPos));
 			default:
 				return false;
@@ -299,7 +297,7 @@ public class Block implements ItemConvertible {
 
 	@Deprecated
 	public BlockRenderType getRenderType(BlockState blockState) {
-		return BlockRenderType.field_11458;
+		return BlockRenderType.MODEL;
 	}
 
 	@Deprecated
@@ -361,7 +359,7 @@ public class Block implements ItemConvertible {
 
 	@Deprecated
 	public boolean isOpaque(BlockState blockState) {
-		return this.collidable && this.getRenderLayer() == BlockRenderLayer.field_9178;
+		return this.collidable && this.getRenderLayer() == BlockRenderLayer.SOLID;
 	}
 
 	@Deprecated
@@ -392,22 +390,22 @@ public class Block implements ItemConvertible {
 
 	public static boolean isSolidMediumSquare(BlockView blockView, BlockPos blockPos) {
 		BlockState blockState = blockView.getBlockState(blockPos);
-		return !blockState.matches(BlockTags.field_15503)
+		return !blockState.matches(BlockTags.LEAVES)
 			&& !VoxelShapes.matchesAnywhere(
-				blockState.getCollisionShape(blockView, blockPos).getFace(Direction.field_11036), SOLID_MEDIUM_SQUARE_SHAPE, BooleanBiFunction.ONLY_SECOND
+				blockState.getCollisionShape(blockView, blockPos).getFace(Direction.UP), SOLID_MEDIUM_SQUARE_SHAPE, BooleanBiFunction.ONLY_SECOND
 			);
 	}
 
 	public static boolean isSolidSmallSquare(ViewableWorld viewableWorld, BlockPos blockPos, Direction direction) {
 		BlockState blockState = viewableWorld.getBlockState(blockPos);
-		return !blockState.matches(BlockTags.field_15503)
+		return !blockState.matches(BlockTags.LEAVES)
 			&& !VoxelShapes.matchesAnywhere(
 				blockState.getCollisionShape(viewableWorld, blockPos).getFace(direction), SOLID_SMALL_SQUARE_SHAPE, BooleanBiFunction.ONLY_SECOND
 			);
 	}
 
 	public static boolean isSolidFullSquare(BlockState blockState, BlockView blockView, BlockPos blockPos, Direction direction) {
-		return !blockState.matches(BlockTags.field_15503) && isFaceFullSquare(blockState.getCollisionShape(blockView, blockPos), direction);
+		return !blockState.matches(BlockTags.LEAVES) && isFaceFullSquare(blockState.getCollisionShape(blockView, blockPos), direction);
 	}
 
 	public static boolean isFaceFullSquare(VoxelShape voxelShape, Direction direction) {
@@ -514,7 +512,7 @@ public class Block implements ItemConvertible {
 		if (identifier == LootTables.EMPTY) {
 			return Collections.emptyList();
 		} else {
-			LootContext lootContext = builder.put(LootContextParameters.field_1224, blockState).build(LootContextTypes.field_1172);
+			LootContext lootContext = builder.put(LootContextParameters.BLOCK_STATE, blockState).build(LootContextTypes.BLOCK);
 			ServerWorld serverWorld = lootContext.getWorld();
 			LootSupplier lootSupplier = serverWorld.getServer().getLootManager().getSupplier(identifier);
 			return lootSupplier.getDrops(lootContext);
@@ -524,9 +522,9 @@ public class Block implements ItemConvertible {
 	public static List<ItemStack> getDroppedStacks(BlockState blockState, ServerWorld serverWorld, BlockPos blockPos, @Nullable BlockEntity blockEntity) {
 		LootContext.Builder builder = new LootContext.Builder(serverWorld)
 			.setRandom(serverWorld.random)
-			.put(LootContextParameters.field_1232, blockPos)
-			.put(LootContextParameters.field_1229, ItemStack.EMPTY)
-			.putNullable(LootContextParameters.field_1228, blockEntity);
+			.put(LootContextParameters.POSITION, blockPos)
+			.put(LootContextParameters.TOOL, ItemStack.EMPTY)
+			.putNullable(LootContextParameters.BLOCK_ENTITY, blockEntity);
 		return blockState.getDroppedStacks(builder);
 	}
 
@@ -535,16 +533,16 @@ public class Block implements ItemConvertible {
 	) {
 		LootContext.Builder builder = new LootContext.Builder(serverWorld)
 			.setRandom(serverWorld.random)
-			.put(LootContextParameters.field_1232, blockPos)
-			.put(LootContextParameters.field_1229, itemStack)
-			.put(LootContextParameters.field_1226, entity)
-			.putNullable(LootContextParameters.field_1228, blockEntity);
+			.put(LootContextParameters.POSITION, blockPos)
+			.put(LootContextParameters.TOOL, itemStack)
+			.put(LootContextParameters.THIS_ENTITY, entity)
+			.putNullable(LootContextParameters.BLOCK_ENTITY, blockEntity);
 		return blockState.getDroppedStacks(builder);
 	}
 
 	public static void dropStacks(BlockState blockState, LootContext.Builder builder) {
 		ServerWorld serverWorld = builder.getWorld();
-		BlockPos blockPos = builder.get(LootContextParameters.field_1232);
+		BlockPos blockPos = builder.get(LootContextParameters.POSITION);
 		blockState.getDroppedStacks(builder).forEach(itemStack -> dropStack(serverWorld, blockPos, itemStack));
 		blockState.onStacksDropped(serverWorld, blockPos, ItemStack.EMPTY);
 	}
@@ -574,7 +572,7 @@ public class Block implements ItemConvertible {
 	}
 
 	public static void dropStack(World world, BlockPos blockPos, ItemStack itemStack) {
-		if (!world.isClient && !itemStack.isEmpty() && world.getGameRules().getBoolean(GameRules.field_19392)) {
+		if (!world.isClient && !itemStack.isEmpty() && world.getGameRules().getBoolean(GameRules.DO_TILE_DROPS)) {
 			float f = 0.5F;
 			double d = (double)(world.random.nextFloat() * 0.5F) + 0.25;
 			double e = (double)(world.random.nextFloat() * 0.5F) + 0.25;
@@ -586,7 +584,7 @@ public class Block implements ItemConvertible {
 	}
 
 	protected void dropExperience(World world, BlockPos blockPos, int i) {
-		if (!world.isClient && world.getGameRules().getBoolean(GameRules.field_19392)) {
+		if (!world.isClient && world.getGameRules().getBoolean(GameRules.DO_TILE_DROPS)) {
 			while (i > 0) {
 				int j = ExperienceOrbEntity.roundToOrbSize(i);
 				i -= j;
@@ -603,7 +601,7 @@ public class Block implements ItemConvertible {
 	}
 
 	public BlockRenderLayer getRenderLayer() {
-		return BlockRenderLayer.field_9178;
+		return BlockRenderLayer.SOLID;
 	}
 
 	@Deprecated
@@ -650,7 +648,7 @@ public class Block implements ItemConvertible {
 	public void afterBreak(
 		World world, PlayerEntity playerEntity, BlockPos blockPos, BlockState blockState, @Nullable BlockEntity blockEntity, ItemStack itemStack
 	) {
-		playerEntity.incrementStat(Stats.field_15427.getOrCreateStat(this));
+		playerEntity.incrementStat(Stats.MINED.getOrCreateStat(this));
 		playerEntity.addExhaustion(0.005F);
 		dropStacks(blockState, world, blockPos, blockEntity, playerEntity, itemStack);
 	}
@@ -710,7 +708,7 @@ public class Block implements ItemConvertible {
 
 	@Deprecated
 	public FluidState getFluidState(BlockState blockState) {
-		return Fluids.field_15906.getDefaultState();
+		return Fluids.EMPTY.getDefaultState();
 	}
 
 	public float getSlipperiness() {
@@ -763,19 +761,19 @@ public class Block implements ItemConvertible {
 	}
 
 	public Block.OffsetType getOffsetType() {
-		return Block.OffsetType.field_10656;
+		return Block.OffsetType.NONE;
 	}
 
 	@Deprecated
 	public Vec3d getOffsetPos(BlockState blockState, BlockView blockView, BlockPos blockPos) {
 		Block.OffsetType offsetType = this.getOffsetType();
-		if (offsetType == Block.OffsetType.field_10656) {
+		if (offsetType == Block.OffsetType.NONE) {
 			return Vec3d.ZERO;
 		} else {
 			long l = MathHelper.hashCode(blockPos.getX(), 0, blockPos.getZ());
 			return new Vec3d(
 				((double)((float)(l & 15L) / 15.0F) - 0.5) * 0.5,
-				offsetType == Block.OffsetType.field_10655 ? ((double)((float)(l >> 4 & 15L) / 15.0F) - 1.0) * 0.2 : 0.0,
+				offsetType == Block.OffsetType.XYZ ? ((double)((float)(l >> 4 & 15L) / 15.0F) - 1.0) * 0.2 : 0.0,
 				((double)((float)(l >> 8 & 15L) / 15.0F) - 0.5) * 0.5
 			);
 		}
@@ -807,11 +805,11 @@ public class Block implements ItemConvertible {
 	}
 
 	public static boolean isNaturalStone(Block block) {
-		return block == Blocks.field_10340 || block == Blocks.field_10474 || block == Blocks.field_10508 || block == Blocks.field_10115;
+		return block == Blocks.STONE || block == Blocks.GRANITE || block == Blocks.DIORITE || block == Blocks.ANDESITE;
 	}
 
 	public static boolean isNaturalDirt(Block block) {
-		return block == Blocks.field_10566 || block == Blocks.field_10253 || block == Blocks.field_10520;
+		return block == Blocks.DIRT || block == Blocks.COARSE_DIRT || block == Blocks.PODZOL;
 	}
 
 	public static final class NeighborGroup {
@@ -844,9 +842,9 @@ public class Block implements ItemConvertible {
 	}
 
 	public static enum OffsetType {
-		field_10656,
-		field_10657,
-		field_10655;
+		NONE,
+		XZ,
+		XYZ;
 	}
 
 	public static class Settings {

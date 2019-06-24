@@ -13,8 +13,8 @@ import net.minecraft.world.ModifiableTestableWorld;
 import net.minecraft.world.ModifiableWorld;
 
 public class SavannaTreeFeature extends AbstractTreeFeature<DefaultFeatureConfig> {
-	private static final BlockState LOG = Blocks.field_10533.getDefaultState();
-	private static final BlockState LEAVES = Blocks.field_10098.getDefaultState();
+	private static final BlockState LOG = Blocks.ACACIA_LOG.getDefaultState();
+	private static final BlockState LEAVES = Blocks.ACACIA_LEAVES.getDefaultState();
 
 	public SavannaTreeFeature(Function<Dynamic<?>, ? extends DefaultFeatureConfig> function, boolean bl) {
 		super(function, bl);
@@ -54,7 +54,7 @@ public class SavannaTreeFeature extends AbstractTreeFeature<DefaultFeatureConfig
 				return false;
 			} else if (isNaturalDirtOrGrass(modifiableTestableWorld, blockPos.down()) && blockPos.getY() < 256 - i - 1) {
 				this.setToDirt(modifiableTestableWorld, blockPos.down());
-				Direction direction = Direction.Type.field_11062.random(random);
+				Direction direction = Direction.Type.HORIZONTAL.random(random);
 				int kx = i - random.nextInt(4) - 1;
 				int n = 3 - random.nextInt(3);
 				int l = blockPos.getX();
@@ -100,7 +100,7 @@ public class SavannaTreeFeature extends AbstractTreeFeature<DefaultFeatureConfig
 				this.addLeaves(set, modifiableTestableWorld, blockPos3.north(2), mutableIntBoundingBox);
 				l = blockPos.getX();
 				mx = blockPos.getZ();
-				Direction direction2 = Direction.Type.field_11062.random(random);
+				Direction direction2 = Direction.Type.HORIZONTAL.random(random);
 				if (direction2 != direction) {
 					int qx = kx - random.nextInt(2) - 1;
 					int rx = 1 + random.nextInt(3);

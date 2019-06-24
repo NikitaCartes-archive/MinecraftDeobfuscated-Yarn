@@ -35,7 +35,7 @@ public abstract class ResourcePackListWidget extends AlwaysSelectedEntryListWidg
 
 	@Override
 	protected void renderHeader(int i, int j, Tessellator tessellator) {
-		Text text = new LiteralText("").append(this.title).formatted(Formatting.field_1073, Formatting.field_1067);
+		Text text = new LiteralText("").append(this.title).formatted(Formatting.UNDERLINE, Formatting.BOLD);
 		this.client
 			.textRenderer
 			.draw(

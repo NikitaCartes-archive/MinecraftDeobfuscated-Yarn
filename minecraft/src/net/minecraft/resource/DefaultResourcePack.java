@@ -103,7 +103,7 @@ public class DefaultResourcePack implements ResourcePack {
 			} catch (IOException var14) {
 			}
 
-			if (resourceType == ResourceType.field_14188) {
+			if (resourceType == ResourceType.CLIENT_RESOURCES) {
 				Enumeration<URL> enumeration = null;
 
 				try {

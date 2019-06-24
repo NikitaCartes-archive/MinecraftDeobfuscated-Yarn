@@ -14,8 +14,8 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.MutableIntBoundingBox;
 
 public class StructurePlacementData {
-	private BlockMirror mirror = BlockMirror.field_11302;
-	private BlockRotation rotation = BlockRotation.field_11467;
+	private BlockMirror mirror = BlockMirror.NONE;
+	private BlockRotation rotation = BlockRotation.NONE;
 	private BlockPos position = BlockPos.ORIGIN;
 	private boolean ignoreEntities;
 	@Nullable

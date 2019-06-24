@@ -34,7 +34,7 @@ public class BlockPredicateArgumentType implements ArgumentType<BlockPredicateAr
 		object -> new TranslatableText("arguments.block.tag.unknown", object)
 	);
 
-	public static BlockPredicateArgumentType create() {
+	public static BlockPredicateArgumentType blockPredicate() {
 		return new BlockPredicateArgumentType();
 	}
 

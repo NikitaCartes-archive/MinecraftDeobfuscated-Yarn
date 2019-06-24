@@ -360,7 +360,7 @@ public class BookEditScreen extends Screen {
 	private void applyDownArrowKey(String string) {
 		if (!string.isEmpty()) {
 			BookEditScreen.Position position = this.getCursorPositionForIndex(string, this.cursorIndex);
-			int i = this.font.getStringBoundedHeight(string + "" + Formatting.field_1074 + "_", 114);
+			int i = this.font.getStringBoundedHeight(string + "" + Formatting.BLACK + "_", 114);
 			if (position.y + 9 == i) {
 				this.cursorIndex = string.length();
 				if (!Screen.hasShiftDown()) {
@@ -451,7 +451,7 @@ public class BookEditScreen extends Screen {
 		String string2 = this.getCurrentPageContent();
 		this.cursorIndex = MathHelper.clamp(this.cursorIndex, 0, string2.length());
 		String string3 = new StringBuilder(string2).insert(this.cursorIndex, string).toString();
-		int i = this.font.getStringBoundedHeight(string3 + "" + Formatting.field_1074 + "_", 114);
+		int i = this.font.getStringBoundedHeight(string3 + "" + Formatting.BLACK + "_", 114);
 		if (i <= 128 && string3.length() < 1024) {
 			this.setPageContent(string3);
 			this.highlightTo = this.cursorIndex = Math.min(this.getCurrentPageContent().length(), this.cursorIndex + string.length());
@@ -470,9 +470,9 @@ public class BookEditScreen extends Screen {
 		if (this.signing) {
 			String string = this.title;
 			if (this.tickCounter / 6 % 2 == 0) {
-				string = string + "" + Formatting.field_1074 + "_";
+				string = string + "" + Formatting.BLACK + "_";
 			} else {
-				string = string + "" + Formatting.field_1080 + "_";
+				string = string + "" + Formatting.GRAY + "_";
 			}
 
 			String string2 = I18n.translate("book.editTitle");
@@ -482,7 +482,7 @@ public class BookEditScreen extends Screen {
 			this.font.draw(string, (float)(k + 36 + (114 - n) / 2), 50.0F, 0);
 			String string3 = I18n.translate("book.byAuthor", this.player.getName().getString());
 			int o = this.getStringWidth(string3);
-			this.font.draw(Formatting.field_1063 + string3, (float)(k + 36 + (114 - o) / 2), 60.0F, 0);
+			this.font.draw(Formatting.DARK_GRAY + string3, (float)(k + 36 + (114 - o) / 2), 60.0F, 0);
 			String string4 = I18n.translate("book.finalizeWarning");
 			this.font.drawStringBounded(string4, k + 36, 82, 114, 0);
 		} else {
@@ -577,7 +577,7 @@ public class BookEditScreen extends Screen {
 		GlStateManager.color4f(0.0F, 0.0F, 255.0F, 255.0F);
 		GlStateManager.disableTexture();
 		GlStateManager.enableColorLogicOp();
-		GlStateManager.logicOp(GlStateManager.LogicOp.field_5110);
+		GlStateManager.logicOp(GlStateManager.LogicOp.OR_REVERSE);
 		bufferBuilder.begin(7, VertexFormats.POSITION);
 		bufferBuilder.vertex((double)position3.x, (double)position4.y, 0.0).next();
 		bufferBuilder.vertex((double)position4.x, (double)position4.y, 0.0).next();

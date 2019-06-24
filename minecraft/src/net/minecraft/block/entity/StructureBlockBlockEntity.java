@@ -38,9 +38,9 @@ public class StructureBlockBlockEntity extends BlockEntity {
 	private String metadata = "";
 	private BlockPos offset = new BlockPos(0, 1, 0);
 	private BlockPos size = BlockPos.ORIGIN;
-	private BlockMirror mirror = BlockMirror.field_11302;
-	private BlockRotation rotation = BlockRotation.field_11467;
-	private StructureBlockMode mode = StructureBlockMode.field_12696;
+	private BlockMirror mirror = BlockMirror.NONE;
+	private BlockRotation rotation = BlockRotation.NONE;
+	private StructureBlockMode mode = StructureBlockMode.DATA;
 	private boolean ignoreEntities = true;
 	private boolean powered;
 	private boolean showAir;
@@ -49,7 +49,7 @@ public class StructureBlockBlockEntity extends BlockEntity {
 	private long seed;
 
 	public StructureBlockBlockEntity() {
-		super(BlockEntityType.field_11895);
+		super(BlockEntityType.STRUCTURE_BLOCK);
 	}
 
 	@Override
@@ -94,19 +94,19 @@ public class StructureBlockBlockEntity extends BlockEntity {
 		try {
 			this.rotation = BlockRotation.valueOf(compoundTag.getString("rotation"));
 		} catch (IllegalArgumentException var11) {
-			this.rotation = BlockRotation.field_11467;
+			this.rotation = BlockRotation.NONE;
 		}
 
 		try {
 			this.mirror = BlockMirror.valueOf(compoundTag.getString("mirror"));
 		} catch (IllegalArgumentException var10) {
-			this.mirror = BlockMirror.field_11302;
+			this.mirror = BlockMirror.NONE;
 		}
 
 		try {
 			this.mode = StructureBlockMode.valueOf(compoundTag.getString("mode"));
 		} catch (IllegalArgumentException var9) {
-			this.mode = StructureBlockMode.field_12696;
+			this.mode = StructureBlockMode.DATA;
 		}
 
 		this.ignoreEntities = compoundTag.getBoolean("ignoreEntities");
@@ -127,7 +127,7 @@ public class StructureBlockBlockEntity extends BlockEntity {
 		if (this.world != null) {
 			BlockPos blockPos = this.getPos();
 			BlockState blockState = this.world.getBlockState(blockPos);
-			if (blockState.getBlock() == Blocks.field_10465) {
+			if (blockState.getBlock() == Blocks.STRUCTURE_BLOCK) {
 				this.world.setBlockState(blockPos, blockState.with(StructureBlock.MODE, this.mode), 2);
 			}
 		}
@@ -228,7 +228,7 @@ public class StructureBlockBlockEntity extends BlockEntity {
 	public void setMode(StructureBlockMode structureBlockMode) {
 		this.mode = structureBlockMode;
 		BlockState blockState = this.world.getBlockState(this.getPos());
-		if (blockState.getBlock() == Blocks.field_10465) {
+		if (blockState.getBlock() == Blocks.STRUCTURE_BLOCK) {
 			this.world.setBlockState(this.getPos(), blockState.with(StructureBlock.MODE, structureBlockMode), 2);
 		}
 	}
@@ -236,17 +236,17 @@ public class StructureBlockBlockEntity extends BlockEntity {
 	@Environment(EnvType.CLIENT)
 	public void cycleMode() {
 		switch (this.getMode()) {
-			case field_12695:
-				this.setMode(StructureBlockMode.field_12697);
+			case SAVE:
+				this.setMode(StructureBlockMode.LOAD);
 				break;
-			case field_12697:
-				this.setMode(StructureBlockMode.field_12699);
+			case LOAD:
+				this.setMode(StructureBlockMode.CORNER);
 				break;
-			case field_12699:
-				this.setMode(StructureBlockMode.field_12696);
+			case CORNER:
+				this.setMode(StructureBlockMode.DATA);
 				break;
-			case field_12696:
-				this.setMode(StructureBlockMode.field_12695);
+			case DATA:
+				this.setMode(StructureBlockMode.SAVE);
 		}
 	}
 
@@ -278,7 +278,7 @@ public class StructureBlockBlockEntity extends BlockEntity {
 	}
 
 	public boolean detectStructureSize() {
-		if (this.mode != StructureBlockMode.field_12695) {
+		if (this.mode != StructureBlockMode.SAVE) {
 			return false;
 		} else {
 			BlockPos blockPos = this.getPos();
@@ -314,7 +314,7 @@ public class StructureBlockBlockEntity extends BlockEntity {
 	}
 
 	private List<StructureBlockBlockEntity> findCorners(List<StructureBlockBlockEntity> list) {
-		Predicate<StructureBlockBlockEntity> predicate = structureBlockBlockEntity -> structureBlockBlockEntity.mode == StructureBlockMode.field_12699
+		Predicate<StructureBlockBlockEntity> predicate = structureBlockBlockEntity -> structureBlockBlockEntity.mode == StructureBlockMode.CORNER
 				&& Objects.equals(this.structureName, structureBlockBlockEntity.structureName);
 		return (List<StructureBlockBlockEntity>)list.stream().filter(predicate).collect(Collectors.toList());
 	}
@@ -324,7 +324,7 @@ public class StructureBlockBlockEntity extends BlockEntity {
 
 		for (BlockPos blockPos3 : BlockPos.iterate(blockPos, blockPos2)) {
 			BlockState blockState = this.world.getBlockState(blockPos3);
-			if (blockState.getBlock() == Blocks.field_10465) {
+			if (blockState.getBlock() == Blocks.STRUCTURE_BLOCK) {
 				BlockEntity blockEntity = this.world.getBlockEntity(blockPos3);
 				if (blockEntity != null && blockEntity instanceof StructureBlockBlockEntity) {
 					list.add((StructureBlockBlockEntity)blockEntity);
@@ -373,7 +373,7 @@ public class StructureBlockBlockEntity extends BlockEntity {
 	}
 
 	public boolean saveStructure(boolean bl) {
-		if (this.mode == StructureBlockMode.field_12695 && !this.world.isClient && this.structureName != null) {
+		if (this.mode == StructureBlockMode.SAVE && !this.world.isClient && this.structureName != null) {
 			BlockPos blockPos = this.getPos().add(this.offset);
 			ServerWorld serverWorld = (ServerWorld)this.world;
 			StructureManager structureManager = serverWorld.getStructureManager();
@@ -385,7 +385,7 @@ public class StructureBlockBlockEntity extends BlockEntity {
 				return false;
 			}
 
-			structure.method_15174(this.world, blockPos, this.size, !this.ignoreEntities, Blocks.field_10369);
+			structure.method_15174(this.world, blockPos, this.size, !this.ignoreEntities, Blocks.STRUCTURE_VOID);
 			structure.setAuthor(this.author);
 			if (bl) {
 				try {
@@ -410,7 +410,7 @@ public class StructureBlockBlockEntity extends BlockEntity {
 	}
 
 	public boolean loadStructure(boolean bl) {
-		if (this.mode == StructureBlockMode.field_12697 && !this.world.isClient && this.structureName != null) {
+		if (this.mode == StructureBlockMode.LOAD && !this.world.isClient && this.structureName != null) {
 			BlockPos blockPos = this.getPos();
 			BlockPos blockPos2 = blockPos.add(this.offset);
 			ServerWorld serverWorld = (ServerWorld)this.world;
@@ -471,7 +471,7 @@ public class StructureBlockBlockEntity extends BlockEntity {
 	}
 
 	public boolean isStructureAvailable() {
-		if (this.mode == StructureBlockMode.field_12697 && !this.world.isClient && this.structureName != null) {
+		if (this.mode == StructureBlockMode.LOAD && !this.world.isClient && this.structureName != null) {
 			ServerWorld serverWorld = (ServerWorld)this.world;
 			StructureManager structureManager = serverWorld.getStructureManager();
 
@@ -512,9 +512,9 @@ public class StructureBlockBlockEntity extends BlockEntity {
 	}
 
 	public static enum Action {
-		field_12108,
-		field_12110,
-		field_12109,
-		field_12106;
+		UPDATE_DATA,
+		SAVE_AREA,
+		LOAD_AREA,
+		SCAN_AREA;
 	}
 }

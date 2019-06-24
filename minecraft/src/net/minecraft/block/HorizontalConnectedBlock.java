@@ -99,19 +99,19 @@ public class HorizontalConnectedBlock extends Block implements Waterloggable {
 		return this.SHAPE_INDEX_CACHE.computeIntIfAbsent(blockState, blockStatex -> {
 			int i = 0;
 			if ((Boolean)blockStatex.get(NORTH)) {
-				i |= getDirectionMask(Direction.field_11043);
+				i |= getDirectionMask(Direction.NORTH);
 			}
 
 			if ((Boolean)blockStatex.get(EAST)) {
-				i |= getDirectionMask(Direction.field_11034);
+				i |= getDirectionMask(Direction.EAST);
 			}
 
 			if ((Boolean)blockStatex.get(SOUTH)) {
-				i |= getDirectionMask(Direction.field_11035);
+				i |= getDirectionMask(Direction.SOUTH);
 			}
 
 			if ((Boolean)blockStatex.get(WEST)) {
-				i |= getDirectionMask(Direction.field_11039);
+				i |= getDirectionMask(Direction.WEST);
 			}
 
 			return i;
@@ -131,11 +131,11 @@ public class HorizontalConnectedBlock extends Block implements Waterloggable {
 	@Override
 	public BlockState rotate(BlockState blockState, BlockRotation blockRotation) {
 		switch (blockRotation) {
-			case field_11464:
+			case CLOCKWISE_180:
 				return blockState.with(NORTH, blockState.get(SOUTH)).with(EAST, blockState.get(WEST)).with(SOUTH, blockState.get(NORTH)).with(WEST, blockState.get(EAST));
-			case field_11465:
+			case COUNTERCLOCKWISE_90:
 				return blockState.with(NORTH, blockState.get(EAST)).with(EAST, blockState.get(SOUTH)).with(SOUTH, blockState.get(WEST)).with(WEST, blockState.get(NORTH));
-			case field_11463:
+			case CLOCKWISE_90:
 				return blockState.with(NORTH, blockState.get(WEST)).with(EAST, blockState.get(NORTH)).with(SOUTH, blockState.get(EAST)).with(WEST, blockState.get(SOUTH));
 			default:
 				return blockState;
@@ -145,9 +145,9 @@ public class HorizontalConnectedBlock extends Block implements Waterloggable {
 	@Override
 	public BlockState mirror(BlockState blockState, BlockMirror blockMirror) {
 		switch (blockMirror) {
-			case field_11300:
+			case LEFT_RIGHT:
 				return blockState.with(NORTH, blockState.get(SOUTH)).with(SOUTH, blockState.get(NORTH));
-			case field_11301:
+			case FRONT_BACK:
 				return blockState.with(EAST, blockState.get(WEST)).with(WEST, blockState.get(EAST));
 			default:
 				return super.mirror(blockState, blockMirror);

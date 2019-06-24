@@ -31,7 +31,7 @@ public class PlayerListS2CPacket implements Packet<ClientPlayPacketListener> {
 				.add(
 					new PlayerListS2CPacket.Entry(
 						serverPlayerEntity.getGameProfile(),
-						serverPlayerEntity.field_13967,
+						serverPlayerEntity.pingMilliseconds,
 						serverPlayerEntity.interactionManager.getGameMode(),
 						serverPlayerEntity.method_14206()
 					)
@@ -47,7 +47,7 @@ public class PlayerListS2CPacket implements Packet<ClientPlayPacketListener> {
 				.add(
 					new PlayerListS2CPacket.Entry(
 						serverPlayerEntity.getGameProfile(),
-						serverPlayerEntity.field_13967,
+						serverPlayerEntity.pingMilliseconds,
 						serverPlayerEntity.interactionManager.getGameMode(),
 						serverPlayerEntity.method_14206()
 					)
@@ -66,7 +66,7 @@ public class PlayerListS2CPacket implements Packet<ClientPlayPacketListener> {
 			GameMode gameMode = null;
 			Text text = null;
 			switch (this.action) {
-				case field_12372:
+				case ADD_PLAYER:
 					gameProfile = new GameProfile(packetByteBuf.readUuid(), packetByteBuf.readString(16));
 					int l = packetByteBuf.readVarInt();
 					int m = 0;
@@ -87,21 +87,21 @@ public class PlayerListS2CPacket implements Packet<ClientPlayPacketListener> {
 						text = packetByteBuf.readText();
 					}
 					break;
-				case field_12375:
+				case UPDATE_GAME_MODE:
 					gameProfile = new GameProfile(packetByteBuf.readUuid(), null);
 					gameMode = GameMode.byId(packetByteBuf.readVarInt());
 					break;
-				case field_12371:
+				case UPDATE_LATENCY:
 					gameProfile = new GameProfile(packetByteBuf.readUuid(), null);
 					k = packetByteBuf.readVarInt();
 					break;
-				case field_12374:
+				case UPDATE_DISPLAY_NAME:
 					gameProfile = new GameProfile(packetByteBuf.readUuid(), null);
 					if (packetByteBuf.readBoolean()) {
 						text = packetByteBuf.readText();
 					}
 					break;
-				case field_12376:
+				case REMOVE_PLAYER:
 					gameProfile = new GameProfile(packetByteBuf.readUuid(), null);
 			}
 
@@ -116,7 +116,7 @@ public class PlayerListS2CPacket implements Packet<ClientPlayPacketListener> {
 
 		for (PlayerListS2CPacket.Entry entry : this.entries) {
 			switch (this.action) {
-				case field_12372:
+				case ADD_PLAYER:
 					packetByteBuf.writeUuid(entry.getProfile().getId());
 					packetByteBuf.writeString(entry.getProfile().getName());
 					packetByteBuf.writeVarInt(entry.getProfile().getProperties().size());
@@ -141,15 +141,15 @@ public class PlayerListS2CPacket implements Packet<ClientPlayPacketListener> {
 						packetByteBuf.writeText(entry.getDisplayName());
 					}
 					break;
-				case field_12375:
+				case UPDATE_GAME_MODE:
 					packetByteBuf.writeUuid(entry.getProfile().getId());
 					packetByteBuf.writeVarInt(entry.getGameMode().getId());
 					break;
-				case field_12371:
+				case UPDATE_LATENCY:
 					packetByteBuf.writeUuid(entry.getProfile().getId());
 					packetByteBuf.writeVarInt(entry.getLatency());
 					break;
-				case field_12374:
+				case UPDATE_DISPLAY_NAME:
 					packetByteBuf.writeUuid(entry.getProfile().getId());
 					if (entry.getDisplayName() == null) {
 						packetByteBuf.writeBoolean(false);
@@ -158,7 +158,7 @@ public class PlayerListS2CPacket implements Packet<ClientPlayPacketListener> {
 						packetByteBuf.writeText(entry.getDisplayName());
 					}
 					break;
-				case field_12376:
+				case REMOVE_PLAYER:
 					packetByteBuf.writeUuid(entry.getProfile().getId());
 			}
 		}
@@ -183,11 +183,11 @@ public class PlayerListS2CPacket implements Packet<ClientPlayPacketListener> {
 	}
 
 	public static enum Action {
-		field_12372,
-		field_12375,
-		field_12371,
-		field_12374,
-		field_12376;
+		ADD_PLAYER,
+		UPDATE_GAME_MODE,
+		UPDATE_LATENCY,
+		UPDATE_DISPLAY_NAME,
+		REMOVE_PLAYER;
 	}
 
 	public class Entry {

@@ -31,7 +31,7 @@ public class FollowOwnerGoal extends Goal {
 		this.navigation = tameableEntity.getNavigation();
 		this.minDistance = f;
 		this.maxDistance = g;
-		this.setControls(EnumSet.of(Goal.Control.field_18405, Goal.Control.field_18406));
+		this.setControls(EnumSet.of(Goal.Control.MOVE, Goal.Control.LOOK));
 		if (!(tameableEntity.getNavigation() instanceof MobNavigation) && !(tameableEntity.getNavigation() instanceof BirdNavigation)) {
 			throw new IllegalArgumentException("Unsupported mob type for FollowOwnerGoal");
 		}
@@ -62,15 +62,15 @@ public class FollowOwnerGoal extends Goal {
 	@Override
 	public void start() {
 		this.field_6443 = 0;
-		this.field_6447 = this.tameable.getPathNodeTypeWeight(PathNodeType.field_18);
-		this.tameable.setPathNodeTypeWeight(PathNodeType.field_18, 0.0F);
+		this.field_6447 = this.tameable.getPathNodeTypeWeight(PathNodeType.WATER);
+		this.tameable.setPathNodeTypeWeight(PathNodeType.WATER, 0.0F);
 	}
 
 	@Override
 	public void stop() {
 		this.owner = null;
 		this.navigation.stop();
-		this.tameable.setPathNodeTypeWeight(PathNodeType.field_18, this.field_6447);
+		this.tameable.setPathNodeTypeWeight(PathNodeType.WATER, this.field_6447);
 	}
 
 	@Override

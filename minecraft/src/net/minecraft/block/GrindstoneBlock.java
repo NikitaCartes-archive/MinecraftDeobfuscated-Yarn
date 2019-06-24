@@ -90,37 +90,37 @@ public class GrindstoneBlock extends WallMountedBlock {
 
 	protected GrindstoneBlock(Block.Settings settings) {
 		super(settings);
-		this.setDefaultState(this.stateFactory.getDefaultState().with(FACING, Direction.field_11043).with(FACE, WallMountLocation.field_12471));
+		this.setDefaultState(this.stateFactory.getDefaultState().with(FACING, Direction.NORTH).with(FACE, WallMountLocation.WALL));
 	}
 
 	@Override
 	public BlockRenderType getRenderType(BlockState blockState) {
-		return BlockRenderType.field_11458;
+		return BlockRenderType.MODEL;
 	}
 
 	private VoxelShape getShape(BlockState blockState) {
 		Direction direction = blockState.get(FACING);
 		switch ((WallMountLocation)blockState.get(FACE)) {
-			case field_12475:
-				if (direction != Direction.field_11043 && direction != Direction.field_11035) {
+			case FLOOR:
+				if (direction != Direction.NORTH && direction != Direction.SOUTH) {
 					return EAST_WEST_SHAPE;
 				}
 
 				return NORTH_SOUTH_SHAPE;
-			case field_12471:
-				if (direction == Direction.field_11043) {
+			case WALL:
+				if (direction == Direction.NORTH) {
 					return NORTH_WALL_SHAPE;
-				} else if (direction == Direction.field_11035) {
+				} else if (direction == Direction.SOUTH) {
 					return SOUTH_WALL_SHAPE;
 				} else {
-					if (direction == Direction.field_11034) {
+					if (direction == Direction.EAST) {
 						return EAST_WALL_SHAPE;
 					}
 
 					return WEST_WALL_SHAPE;
 				}
-			case field_12473:
-				if (direction != Direction.field_11043 && direction != Direction.field_11035) {
+			case CEILING:
+				if (direction != Direction.NORTH && direction != Direction.SOUTH) {
 					return EAST_WEST_HANGING_SHAPE;
 				}
 

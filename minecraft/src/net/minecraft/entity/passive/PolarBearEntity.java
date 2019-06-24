@@ -53,7 +53,7 @@ public class PolarBearEntity extends AnimalEntity {
 
 	@Override
 	public PassiveEntity createChild(PassiveEntity passiveEntity) {
-		return EntityType.field_6042.create(this.world);
+		return EntityType.POLAR_BEAR.create(this.world);
 	}
 
 	@Override
@@ -88,34 +88,34 @@ public class PolarBearEntity extends AnimalEntity {
 
 	public static boolean method_20668(EntityType<PolarBearEntity> entityType, IWorld iWorld, SpawnType spawnType, BlockPos blockPos, Random random) {
 		Biome biome = iWorld.getBiome(blockPos);
-		return biome != Biomes.field_9435 && biome != Biomes.field_9418
+		return biome != Biomes.FROZEN_OCEAN && biome != Biomes.DEEP_FROZEN_OCEAN
 			? method_20663(entityType, iWorld, spawnType, blockPos, random)
-			: iWorld.getLightLevel(blockPos, 0) > 8 && iWorld.getBlockState(blockPos.down()).getBlock() == Blocks.field_10295;
+			: iWorld.getLightLevel(blockPos, 0) > 8 && iWorld.getBlockState(blockPos.down()).getBlock() == Blocks.ICE;
 	}
 
 	@Override
 	protected SoundEvent getAmbientSound() {
-		return this.isBaby() ? SoundEvents.field_14605 : SoundEvents.field_15078;
+		return this.isBaby() ? SoundEvents.ENTITY_POLAR_BEAR_AMBIENT_BABY : SoundEvents.ENTITY_POLAR_BEAR_AMBIENT;
 	}
 
 	@Override
 	protected SoundEvent getHurtSound(DamageSource damageSource) {
-		return SoundEvents.field_15107;
+		return SoundEvents.ENTITY_POLAR_BEAR_HURT;
 	}
 
 	@Override
 	protected SoundEvent getDeathSound() {
-		return SoundEvents.field_15209;
+		return SoundEvents.ENTITY_POLAR_BEAR_DEATH;
 	}
 
 	@Override
 	protected void playStepSound(BlockPos blockPos, BlockState blockState) {
-		this.playSound(SoundEvents.field_15036, 0.15F, 1.0F);
+		this.playSound(SoundEvents.ENTITY_POLAR_BEAR_STEP, 0.15F, 1.0F);
 	}
 
 	protected void playWarningSound() {
 		if (this.warningSoundCooldown <= 0) {
-			this.playSound(SoundEvents.field_14937, 1.0F, this.getSoundPitch());
+			this.playSound(SoundEvents.ENTITY_POLAR_BEAR_WARNING, 1.0F, this.getSoundPitch());
 			this.warningSoundCooldown = 40;
 		}
 	}

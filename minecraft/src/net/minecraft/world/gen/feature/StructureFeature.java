@@ -100,7 +100,7 @@ public abstract class StructureFeature<C extends FeatureConfig> extends Feature<
 						boolean bl3 = n == -l || n == l;
 						if (bl2 || bl3) {
 							ChunkPos chunkPos = this.getStart(chunkGenerator, chunkRandom, j, k, m, n);
-							StructureStart structureStart = world.getChunk(chunkPos.x, chunkPos.z, ChunkStatus.field_16423).getStructureStart(this.getName());
+							StructureStart structureStart = world.getChunk(chunkPos.x, chunkPos.z, ChunkStatus.STRUCTURE_STARTS).getStructureStart(this.getName());
 							if (structureStart != null && structureStart.hasChildren()) {
 								if (bl && structureStart.isInExistingChunk()) {
 									structureStart.incrementReferences();
@@ -130,12 +130,12 @@ public abstract class StructureFeature<C extends FeatureConfig> extends Feature<
 
 	private List<StructureStart> getStructureStarts(IWorld iWorld, int i, int j) {
 		List<StructureStart> list = Lists.<StructureStart>newArrayList();
-		Chunk chunk = iWorld.getChunk(i, j, ChunkStatus.field_16422);
+		Chunk chunk = iWorld.getChunk(i, j, ChunkStatus.STRUCTURE_REFERENCES);
 		LongIterator longIterator = chunk.getStructureReferences(this.getName()).iterator();
 
 		while (longIterator.hasNext()) {
 			long l = longIterator.nextLong();
-			BlockViewWithStructures blockViewWithStructures = iWorld.getChunk(ChunkPos.getPackedX(l), ChunkPos.getPackedZ(l), ChunkStatus.field_16423);
+			BlockViewWithStructures blockViewWithStructures = iWorld.getChunk(ChunkPos.getPackedX(l), ChunkPos.getPackedZ(l), ChunkStatus.STRUCTURE_STARTS);
 			StructureStart structureStart = blockViewWithStructures.getStructureStart(this.getName());
 			if (structureStart != null) {
 				list.add(structureStart);

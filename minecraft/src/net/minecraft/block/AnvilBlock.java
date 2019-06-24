@@ -37,7 +37,7 @@ public class AnvilBlock extends FallingBlock {
 
 	public AnvilBlock(Block.Settings settings) {
 		super(settings);
-		this.setDefaultState(this.stateFactory.getDefaultState().with(FACING, Direction.field_11043));
+		this.setDefaultState(this.stateFactory.getDefaultState().with(FACING, Direction.NORTH));
 	}
 
 	@Override
@@ -83,10 +83,10 @@ public class AnvilBlock extends FallingBlock {
 	@Nullable
 	public static BlockState getLandingState(BlockState blockState) {
 		Block block = blockState.getBlock();
-		if (block == Blocks.field_10535) {
-			return Blocks.field_10105.getDefaultState().with(FACING, blockState.get(FACING));
+		if (block == Blocks.ANVIL) {
+			return Blocks.CHIPPED_ANVIL.getDefaultState().with(FACING, blockState.get(FACING));
 		} else {
-			return block == Blocks.field_10105 ? Blocks.field_10414.getDefaultState().with(FACING, blockState.get(FACING)) : null;
+			return block == Blocks.CHIPPED_ANVIL ? Blocks.DAMAGED_ANVIL.getDefaultState().with(FACING, blockState.get(FACING)) : null;
 		}
 	}
 

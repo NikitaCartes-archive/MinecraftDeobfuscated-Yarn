@@ -71,7 +71,7 @@ public abstract class LockableContainerBlockEntity extends BlockEntity implement
 	public static boolean checkUnlocked(PlayerEntity playerEntity, ContainerLock containerLock, Text text) {
 		if (!playerEntity.isSpectator() && !containerLock.isEmpty(playerEntity.getMainHandStack())) {
 			playerEntity.addChatMessage(new TranslatableText("container.isLocked", text), true);
-			playerEntity.playSound(SoundEvents.field_14731, SoundCategory.field_15245, 1.0F, 1.0F);
+			playerEntity.playSound(SoundEvents.BLOCK_CHEST_LOCKED, SoundCategory.BLOCKS, 1.0F, 1.0F);
 			return false;
 		} else {
 			return true;

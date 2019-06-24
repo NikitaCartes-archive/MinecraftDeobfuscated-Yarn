@@ -7,7 +7,6 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
-import net.minecraft.client.util.math.Quaternion;
 import net.minecraft.client.util.math.Vector3f;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.enchantment.EnchantmentHelper;
@@ -53,6 +52,7 @@ import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.Hand;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.math.Quaternion;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.Difficulty;
 import net.minecraft.world.IWorld;
@@ -127,11 +127,11 @@ public class PillagerEntity extends IllagerEntity implements CrossbowUser, Range
 	@Override
 	public IllagerEntity.State getState() {
 		if (this.isCharging()) {
-			return IllagerEntity.State.field_7210;
-		} else if (this.isHolding(Items.field_8399)) {
-			return IllagerEntity.State.field_7213;
+			return IllagerEntity.State.CROSSBOW_CHARGE;
+		} else if (this.isHolding(Items.CROSSBOW)) {
+			return IllagerEntity.State.CROSSBOW_HOLD;
 		} else {
-			return this.isAttacking() ? IllagerEntity.State.field_7211 : IllagerEntity.State.field_7207;
+			return this.isAttacking() ? IllagerEntity.State.ATTACKING : IllagerEntity.State.CROSSED;
 		}
 	}
 
@@ -153,7 +153,7 @@ public class PillagerEntity extends IllagerEntity implements CrossbowUser, Range
 	@Override
 	public float getPathfindingFavor(BlockPos blockPos, ViewableWorld viewableWorld) {
 		Block block = viewableWorld.getBlockState(blockPos.down()).getBlock();
-		return block != Blocks.field_10219 && block != Blocks.field_10102 ? 0.5F - viewableWorld.getBrightness(blockPos) : 10.0F;
+		return block != Blocks.GRASS_BLOCK && block != Blocks.SAND ? 0.5F - viewableWorld.getBrightness(blockPos) : 10.0F;
 	}
 
 	@Override
@@ -173,14 +173,14 @@ public class PillagerEntity extends IllagerEntity implements CrossbowUser, Range
 
 	@Override
 	protected void initEquipment(LocalDifficulty localDifficulty) {
-		ItemStack itemStack = new ItemStack(Items.field_8399);
+		ItemStack itemStack = new ItemStack(Items.CROSSBOW);
 		if (this.random.nextInt(300) == 0) {
 			Map<Enchantment, Integer> map = Maps.<Enchantment, Integer>newHashMap();
-			map.put(Enchantments.field_9132, 1);
+			map.put(Enchantments.PIERCING, 1);
 			EnchantmentHelper.set(map, itemStack);
 		}
 
-		this.setEquippedStack(EquipmentSlot.field_6173, itemStack);
+		this.setEquippedStack(EquipmentSlot.MAINHAND, itemStack);
 	}
 
 	@Override
@@ -196,24 +196,24 @@ public class PillagerEntity extends IllagerEntity implements CrossbowUser, Range
 
 	@Override
 	protected SoundEvent getAmbientSound() {
-		return SoundEvents.field_14976;
+		return SoundEvents.ENTITY_PILLAGER_AMBIENT;
 	}
 
 	@Override
 	protected SoundEvent getDeathSound() {
-		return SoundEvents.field_15049;
+		return SoundEvents.ENTITY_PILLAGER_DEATH;
 	}
 
 	@Override
 	protected SoundEvent getHurtSound(DamageSource damageSource) {
-		return SoundEvents.field_15159;
+		return SoundEvents.ENTITY_PILLAGER_HURT;
 	}
 
 	@Override
 	public void attack(LivingEntity livingEntity, float f) {
-		Hand hand = ProjectileUtil.getHandPossiblyHolding(this, Items.field_8399);
+		Hand hand = ProjectileUtil.getHandPossiblyHolding(this, Items.CROSSBOW);
 		ItemStack itemStack = this.getStackInHand(hand);
-		if (this.isHolding(Items.field_8399)) {
+		if (this.isHolding(Items.CROSSBOW)) {
 			CrossbowItem.shootAll(this.world, this, hand, itemStack, 1.6F, (float)(14 - this.world.getDifficulty().getId() * 4));
 		}
 
@@ -229,7 +229,7 @@ public class PillagerEntity extends IllagerEntity implements CrossbowUser, Range
 		double h = livingEntity.getBoundingBox().minY + (double)(livingEntity.getHeight() / 3.0F) - entity.y + g * 0.2F;
 		Vector3f vector3f = this.getProjectileVelocity(new Vec3d(d, h, e), f);
 		projectile.setVelocity((double)vector3f.x(), (double)vector3f.y(), (double)vector3f.z(), 1.6F, (float)(14 - this.world.getDifficulty().getId() * 4));
-		this.playSound(SoundEvents.field_15187, 1.0F, 1.0F / (this.getRand().nextFloat() * 0.4F + 0.8F));
+		this.playSound(SoundEvents.ITEM_CROSSBOW_SHOOT, 1.0F, 1.0F / (this.getRand().nextFloat() * 0.4F + 0.8F));
 	}
 
 	private Vector3f getProjectileVelocity(Vec3d vec3d, float f) {
@@ -271,7 +271,7 @@ public class PillagerEntity extends IllagerEntity implements CrossbowUser, Range
 	}
 
 	private boolean method_7111(Item item) {
-		return this.hasActiveRaid() && item == Items.field_8539;
+		return this.hasActiveRaid() && item == Items.WHITE_BANNER;
 	}
 
 	@Override
@@ -294,17 +294,17 @@ public class PillagerEntity extends IllagerEntity implements CrossbowUser, Range
 		Raid raid = this.getRaid();
 		boolean bl2 = this.random.nextFloat() <= raid.getEnchantmentChance();
 		if (bl2) {
-			ItemStack itemStack = new ItemStack(Items.field_8399);
+			ItemStack itemStack = new ItemStack(Items.CROSSBOW);
 			Map<Enchantment, Integer> map = Maps.<Enchantment, Integer>newHashMap();
-			if (i > raid.getMaxWaves(Difficulty.field_5802)) {
-				map.put(Enchantments.field_9098, 2);
-			} else if (i > raid.getMaxWaves(Difficulty.field_5805)) {
-				map.put(Enchantments.field_9098, 1);
+			if (i > raid.getMaxWaves(Difficulty.NORMAL)) {
+				map.put(Enchantments.QUICK_CHARGE, 2);
+			} else if (i > raid.getMaxWaves(Difficulty.EASY)) {
+				map.put(Enchantments.QUICK_CHARGE, 1);
 			}
 
-			map.put(Enchantments.field_9108, 1);
+			map.put(Enchantments.MULTISHOT, 1);
 			EnchantmentHelper.set(map, itemStack);
-			this.setEquippedStack(EquipmentSlot.field_6173, itemStack);
+			this.setEquippedStack(EquipmentSlot.MAINHAND, itemStack);
 		}
 	}
 
@@ -315,7 +315,7 @@ public class PillagerEntity extends IllagerEntity implements CrossbowUser, Range
 
 	@Override
 	public SoundEvent getCelebratingSound() {
-		return SoundEvents.field_19150;
+		return SoundEvents.ENTITY_PILLAGER_CELEBRATE;
 	}
 
 	@Override

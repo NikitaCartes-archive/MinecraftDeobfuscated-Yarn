@@ -26,14 +26,14 @@ public class FindEntityTask<E extends LivingEntity, T extends LivingEntity> exte
 	) {
 		super(
 			ImmutableMap.of(
-				MemoryModuleType.field_18446,
-				MemoryModuleState.field_18458,
-				MemoryModuleType.field_18445,
-				MemoryModuleState.field_18457,
+				MemoryModuleType.LOOK_TARGET,
+				MemoryModuleState.REGISTERED,
+				MemoryModuleType.WALK_TARGET,
+				MemoryModuleState.VALUE_ABSENT,
 				memoryModuleType,
-				MemoryModuleState.field_18457,
-				MemoryModuleType.field_18442,
-				MemoryModuleState.field_18456
+				MemoryModuleState.VALUE_ABSENT,
+				MemoryModuleType.VISIBLE_MOBS,
+				MemoryModuleState.VALUE_PRESENT
 			)
 		);
 		this.entityType = entityType;
@@ -54,7 +54,7 @@ public class FindEntityTask<E extends LivingEntity, T extends LivingEntity> exte
 	@Override
 	protected boolean shouldRun(ServerWorld serverWorld, E livingEntity) {
 		return this.shouldRunPredicate.test(livingEntity)
-			&& ((List)livingEntity.getBrain().getOptionalMemory(MemoryModuleType.field_18442).get())
+			&& ((List)livingEntity.getBrain().getOptionalMemory(MemoryModuleType.VISIBLE_MOBS).get())
 				.stream()
 				.anyMatch(livingEntityx -> this.entityType.equals(livingEntityx.getType()) && this.predicate.test(livingEntityx));
 	}
@@ -62,7 +62,7 @@ public class FindEntityTask<E extends LivingEntity, T extends LivingEntity> exte
 	@Override
 	protected void run(ServerWorld serverWorld, E livingEntity, long l) {
 		Brain<?> brain = livingEntity.getBrain();
-		brain.getOptionalMemory(MemoryModuleType.field_18442)
+		brain.getOptionalMemory(MemoryModuleType.VISIBLE_MOBS)
 			.ifPresent(
 				list -> list.stream()
 						.filter(livingEntityxx -> this.entityType.equals(livingEntityxx.getType()))
@@ -72,8 +72,8 @@ public class FindEntityTask<E extends LivingEntity, T extends LivingEntity> exte
 						.findFirst()
 						.ifPresent(livingEntityxx -> {
 							brain.putMemory(this.targetModule, (T)livingEntityxx);
-							brain.putMemory(MemoryModuleType.field_18446, new EntityPosWrapper(livingEntityxx));
-							brain.putMemory(MemoryModuleType.field_18445, new WalkTarget(new EntityPosWrapper(livingEntityxx), this.speed, this.completionRange));
+							brain.putMemory(MemoryModuleType.LOOK_TARGET, new EntityPosWrapper(livingEntityxx));
+							brain.putMemory(MemoryModuleType.WALK_TARGET, new WalkTarget(new EntityPosWrapper(livingEntityxx), this.speed, this.completionRange));
 						})
 			);
 	}

@@ -28,7 +28,7 @@ public class LightningEntity extends Entity {
 	private ServerPlayerEntity channeller;
 
 	public LightningEntity(World world, double d, double e, double f, boolean bl) {
-		super(EntityType.field_6112, world);
+		super(EntityType.LIGHTNING_BOLT, world);
 		this.ignoreCameraFrustum = true;
 		this.setPositionAndAngles(d, e, f, 0.0F, 0.0F);
 		this.ambientTick = 2;
@@ -36,14 +36,14 @@ public class LightningEntity extends Entity {
 		this.remainingActions = this.random.nextInt(3) + 1;
 		this.cosmetic = bl;
 		Difficulty difficulty = world.getDifficulty();
-		if (difficulty == Difficulty.field_5802 || difficulty == Difficulty.field_5807) {
+		if (difficulty == Difficulty.NORMAL || difficulty == Difficulty.HARD) {
 			this.spawnFire(4);
 		}
 	}
 
 	@Override
 	public SoundCategory getSoundCategory() {
-		return SoundCategory.field_15252;
+		return SoundCategory.WEATHER;
 	}
 
 	public void setChanneller(@Nullable ServerPlayerEntity serverPlayerEntity) {
@@ -54,8 +54,10 @@ public class LightningEntity extends Entity {
 	public void tick() {
 		super.tick();
 		if (this.ambientTick == 2) {
-			this.world.playSound(null, this.x, this.y, this.z, SoundEvents.field_14865, SoundCategory.field_15252, 10000.0F, 0.8F + this.random.nextFloat() * 0.2F);
-			this.world.playSound(null, this.x, this.y, this.z, SoundEvents.field_14956, SoundCategory.field_15252, 2.0F, 0.5F + this.random.nextFloat() * 0.2F);
+			this.world
+				.playSound(null, this.x, this.y, this.z, SoundEvents.ENTITY_LIGHTNING_BOLT_THUNDER, SoundCategory.WEATHER, 10000.0F, 0.8F + this.random.nextFloat() * 0.2F);
+			this.world
+				.playSound(null, this.x, this.y, this.z, SoundEvents.ENTITY_LIGHTNING_BOLT_IMPACT, SoundCategory.WEATHER, 2.0F, 0.5F + this.random.nextFloat() * 0.2F);
 		}
 
 		this.ambientTick--;
@@ -90,8 +92,8 @@ public class LightningEntity extends Entity {
 	}
 
 	private void spawnFire(int i) {
-		if (!this.cosmetic && !this.world.isClient && this.world.getGameRules().getBoolean(GameRules.field_19387)) {
-			BlockState blockState = Blocks.field_10036.getDefaultState();
+		if (!this.cosmetic && !this.world.isClient && this.world.getGameRules().getBoolean(GameRules.DO_FIRE_TICK)) {
+			BlockState blockState = Blocks.FIRE.getDefaultState();
 			BlockPos blockPos = new BlockPos(this);
 			if (this.world.getBlockState(blockPos).isAir() && blockState.canPlaceAt(this.world, blockPos)) {
 				this.world.setBlockState(blockPos, blockState);

@@ -77,7 +77,7 @@ public interface Text extends Message, Iterable<Text> {
 				String string3 = text.getStyle().asString();
 				if (!string3.equals(string)) {
 					if (!string.isEmpty()) {
-						stringBuilder.append(Formatting.field_1070);
+						stringBuilder.append(Formatting.RESET);
 					}
 
 					stringBuilder.append(string3);
@@ -89,7 +89,7 @@ public interface Text extends Message, Iterable<Text> {
 		}
 
 		if (!string.isEmpty()) {
-			stringBuilder.append(Formatting.field_1070);
+			stringBuilder.append(Formatting.RESET);
 		}
 
 		return stringBuilder.toString();
@@ -141,19 +141,19 @@ public interface Text extends Message, Iterable<Text> {
 
 		if (formatting.isModifier()) {
 			switch (formatting) {
-				case field_1051:
+				case OBFUSCATED:
 					style.setObfuscated(true);
 					break;
-				case field_1067:
+				case BOLD:
 					style.setBold(true);
 					break;
-				case field_1055:
+				case STRIKETHROUGH:
 					style.setStrikethrough(true);
 					break;
-				case field_1073:
+				case UNDERLINE:
 					style.setUnderline(true);
 					break;
-				case field_1056:
+				case ITALIC:
 					style.setItalic(true);
 			}
 		}

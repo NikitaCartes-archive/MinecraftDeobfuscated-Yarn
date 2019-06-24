@@ -86,7 +86,7 @@ public interface ViewableWorld extends ExtendedBlockView {
 	}
 
 	default Chunk getChunk(int i, int j) {
-		return this.getChunk(i, j, ChunkStatus.field_12803, true);
+		return this.getChunk(i, j, ChunkStatus.FULL, true);
 	}
 
 	default Chunk getChunk(int i, int j, ChunkStatus chunkStatus) {
@@ -94,7 +94,7 @@ public interface ViewableWorld extends ExtendedBlockView {
 	}
 
 	default ChunkStatus getLeastChunkStatusForCollisionCalculation() {
-		return ChunkStatus.field_12798;
+		return ChunkStatus.EMPTY;
 	}
 
 	default boolean canPlace(BlockState blockState, BlockPos blockPos, EntityContext entityContext) {
@@ -168,7 +168,7 @@ public interface ViewableWorld extends ExtendedBlockView {
 						if (chunk != null) {
 							mutable.set(i, j, k);
 							BlockState blockState = chunk.getBlockState(mutable);
-							if ((l != 1 || blockState.method_17900()) && (l != 2 || blockState.getBlock() == Blocks.field_10008)) {
+							if ((l != 1 || blockState.method_17900()) && (l != 2 || blockState.getBlock() == Blocks.MOVING_PISTON)) {
 								VoxelShape voxelShape2 = blockState.getCollisionShape(ViewableWorld.this, mutable, entityContext);
 								VoxelShape voxelShape3 = voxelShape2.offset((double)i, (double)j, (double)k);
 								if (VoxelShapes.matchesAnywhere(voxelShape, voxelShape3, BooleanBiFunction.AND)) {
@@ -186,7 +186,7 @@ public interface ViewableWorld extends ExtendedBlockView {
 	}
 
 	default boolean isWaterAt(BlockPos blockPos) {
-		return this.getFluidState(blockPos).matches(FluidTags.field_15517);
+		return this.getFluidState(blockPos).matches(FluidTags.WATER);
 	}
 
 	default boolean intersectsFluid(Box box) {

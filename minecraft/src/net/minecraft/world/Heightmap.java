@@ -45,7 +45,7 @@ public class Heightmap {
 					for (int m = j - 1; m >= 0; m--) {
 						pooledMutable.method_10113(k, m, l);
 						BlockState blockState = chunk.getBlockState(pooledMutable);
-						if (blockState.getBlock() != Blocks.field_10124) {
+						if (blockState.getBlock() != Blocks.AIR) {
 							while (objectListIterator.hasNext()) {
 								Heightmap heightmap = (Heightmap)objectListIterator.next();
 								if (heightmap.blockPredicate.test(blockState)) {
@@ -120,22 +120,20 @@ public class Heightmap {
 	}
 
 	public static enum Purpose {
-		field_13207,
-		field_13206,
-		field_16424;
+		WORLDGEN,
+		LIVE_WORLD,
+		CLIENT;
 	}
 
 	public static enum Type {
-		field_13194("WORLD_SURFACE_WG", Heightmap.Purpose.field_13207, Heightmap.ALWAYS_TRUE),
-		field_13202("WORLD_SURFACE", Heightmap.Purpose.field_16424, Heightmap.ALWAYS_TRUE),
-		field_13195("OCEAN_FLOOR_WG", Heightmap.Purpose.field_13207, Heightmap.SUFFOCATES),
-		field_13200("OCEAN_FLOOR", Heightmap.Purpose.field_13206, Heightmap.SUFFOCATES),
-		field_13197(
-			"MOTION_BLOCKING", Heightmap.Purpose.field_16424, blockState -> blockState.getMaterial().blocksMovement() || !blockState.getFluidState().isEmpty()
-		),
-		field_13203(
+		WORLD_SURFACE_WG("WORLD_SURFACE_WG", Heightmap.Purpose.WORLDGEN, Heightmap.ALWAYS_TRUE),
+		WORLD_SURFACE("WORLD_SURFACE", Heightmap.Purpose.CLIENT, Heightmap.ALWAYS_TRUE),
+		OCEAN_FLOOR_WG("OCEAN_FLOOR_WG", Heightmap.Purpose.WORLDGEN, Heightmap.SUFFOCATES),
+		OCEAN_FLOOR("OCEAN_FLOOR", Heightmap.Purpose.LIVE_WORLD, Heightmap.SUFFOCATES),
+		MOTION_BLOCKING("MOTION_BLOCKING", Heightmap.Purpose.CLIENT, blockState -> blockState.getMaterial().blocksMovement() || !blockState.getFluidState().isEmpty()),
+		MOTION_BLOCKING_NO_LEAVES(
 			"MOTION_BLOCKING_NO_LEAVES",
-			Heightmap.Purpose.field_13206,
+			Heightmap.Purpose.LIVE_WORLD,
 			blockState -> (blockState.getMaterial().blocksMovement() || !blockState.getFluidState().isEmpty()) && !(blockState.getBlock() instanceof LeavesBlock)
 		);
 
@@ -159,12 +157,12 @@ public class Heightmap {
 		}
 
 		public boolean shouldSendToClient() {
-			return this.purpose == Heightmap.Purpose.field_16424;
+			return this.purpose == Heightmap.Purpose.CLIENT;
 		}
 
 		@Environment(EnvType.CLIENT)
 		public boolean isStoredServerSide() {
-			return this.purpose != Heightmap.Purpose.field_13207;
+			return this.purpose != Heightmap.Purpose.WORLDGEN;
 		}
 
 		public static Heightmap.Type byName(String string) {

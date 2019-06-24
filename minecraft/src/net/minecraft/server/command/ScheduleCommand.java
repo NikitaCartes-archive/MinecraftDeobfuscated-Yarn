@@ -24,10 +24,10 @@ public class ScheduleCommand {
 				.then(
 					CommandManager.literal("function")
 						.then(
-							CommandManager.argument("function", FunctionArgumentType.create())
+							CommandManager.argument("function", FunctionArgumentType.function())
 								.suggests(FunctionCommand.SUGGESTION_PROVIDER)
 								.then(
-									CommandManager.argument("time", TimeArgumentType.create())
+									CommandManager.argument("time", TimeArgumentType.time())
 										.executes(
 											commandContext -> execute(
 													commandContext.getSource(),

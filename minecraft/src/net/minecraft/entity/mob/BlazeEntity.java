@@ -35,10 +35,10 @@ public class BlazeEntity extends HostileEntity {
 
 	public BlazeEntity(EntityType<? extends BlazeEntity> entityType, World world) {
 		super(entityType, world);
-		this.setPathNodeTypeWeight(PathNodeType.field_18, -1.0F);
-		this.setPathNodeTypeWeight(PathNodeType.field_14, 8.0F);
-		this.setPathNodeTypeWeight(PathNodeType.field_9, 0.0F);
-		this.setPathNodeTypeWeight(PathNodeType.field_3, 0.0F);
+		this.setPathNodeTypeWeight(PathNodeType.WATER, -1.0F);
+		this.setPathNodeTypeWeight(PathNodeType.LAVA, 8.0F);
+		this.setPathNodeTypeWeight(PathNodeType.DANGER_FIRE, 0.0F);
+		this.setPathNodeTypeWeight(PathNodeType.DAMAGE_FIRE, 0.0F);
 		this.experiencePoints = 10;
 	}
 
@@ -69,17 +69,17 @@ public class BlazeEntity extends HostileEntity {
 
 	@Override
 	protected SoundEvent getAmbientSound() {
-		return SoundEvents.field_14991;
+		return SoundEvents.ENTITY_BLAZE_AMBIENT;
 	}
 
 	@Override
 	protected SoundEvent getHurtSound(DamageSource damageSource) {
-		return SoundEvents.field_14842;
+		return SoundEvents.ENTITY_BLAZE_HURT;
 	}
 
 	@Override
 	protected SoundEvent getDeathSound() {
-		return SoundEvents.field_14580;
+		return SoundEvents.ENTITY_BLAZE_DEATH;
 	}
 
 	@Environment(EnvType.CLIENT)
@@ -106,7 +106,7 @@ public class BlazeEntity extends HostileEntity {
 						this.x + 0.5,
 						this.y + 0.5,
 						this.z + 0.5,
-						SoundEvents.field_14734,
+						SoundEvents.ENTITY_BLAZE_BURN,
 						this.getSoundCategory(),
 						1.0F + this.random.nextFloat(),
 						this.random.nextFloat() * 0.7F + 0.3F,
@@ -117,7 +117,7 @@ public class BlazeEntity extends HostileEntity {
 			for (int i = 0; i < 2; i++) {
 				this.world
 					.addParticle(
-						ParticleTypes.field_11237,
+						ParticleTypes.LARGE_SMOKE,
 						this.x + (this.random.nextDouble() - 0.5) * (double)this.getWidth(),
 						this.y + this.random.nextDouble() * (double)this.getHeight(),
 						this.z + (this.random.nextDouble() - 0.5) * (double)this.getWidth(),
@@ -187,7 +187,7 @@ public class BlazeEntity extends HostileEntity {
 
 		public ShootFireballGoal(BlazeEntity blazeEntity) {
 			this.blaze = blazeEntity;
-			this.setControls(EnumSet.of(Goal.Control.field_18405, Goal.Control.field_18406));
+			this.setControls(EnumSet.of(Goal.Control.MOVE, Goal.Control.LOOK));
 		}
 
 		@Override

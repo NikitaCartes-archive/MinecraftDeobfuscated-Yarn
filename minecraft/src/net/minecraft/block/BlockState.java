@@ -212,7 +212,7 @@ public class BlockState extends AbstractPropertyContainer<Block, BlockState> imp
 	}
 
 	public final boolean hasSolidTopSurface(BlockView blockView, BlockPos blockPos, Entity entity) {
-		return Block.isFaceFullSquare(this.getCollisionShape(blockView, blockPos, EntityContext.of(entity)), Direction.field_11036);
+		return Block.isFaceFullSquare(this.getCollisionShape(blockView, blockPos, EntityContext.of(entity)), Direction.UP);
 	}
 
 	public Vec3d getOffsetPos(BlockView blockView, BlockPos blockPos) {
@@ -386,21 +386,21 @@ public class BlockState extends AbstractPropertyContainer<Block, BlockState> imp
 		private ShapeCache(BlockState blockState) {
 			Block block = blockState.getBlock();
 			this.opaque = block.isOpaque(blockState);
-			this.fullOpaque = block.isFullOpaque(blockState, EmptyBlockView.field_12294, BlockPos.ORIGIN);
-			this.translucent = block.isTranslucent(blockState, EmptyBlockView.field_12294, BlockPos.ORIGIN);
-			this.lightSubtracted = block.getLightSubtracted(blockState, EmptyBlockView.field_12294, BlockPos.ORIGIN);
+			this.fullOpaque = block.isFullOpaque(blockState, EmptyBlockView.INSTANCE, BlockPos.ORIGIN);
+			this.translucent = block.isTranslucent(blockState, EmptyBlockView.INSTANCE, BlockPos.ORIGIN);
+			this.lightSubtracted = block.getLightSubtracted(blockState, EmptyBlockView.INSTANCE, BlockPos.ORIGIN);
 			if (!blockState.isOpaque()) {
 				this.shapes = null;
 			} else {
 				this.shapes = new VoxelShape[DIRECTIONS.length];
-				VoxelShape voxelShape = block.method_9571(blockState, EmptyBlockView.field_12294, BlockPos.ORIGIN);
+				VoxelShape voxelShape = block.method_9571(blockState, EmptyBlockView.INSTANCE, BlockPos.ORIGIN);
 
 				for (Direction direction : DIRECTIONS) {
 					this.shapes[direction.ordinal()] = VoxelShapes.method_16344(voxelShape, direction);
 				}
 			}
 
-			this.field_19360 = block.getCollisionShape(blockState, EmptyBlockView.field_12294, BlockPos.ORIGIN, EntityContext.absent());
+			this.field_19360 = block.getCollisionShape(blockState, EmptyBlockView.INSTANCE, BlockPos.ORIGIN, EntityContext.absent());
 			this.field_17651 = Arrays.stream(Direction.Axis.values())
 				.anyMatch(axis -> this.field_19360.getMinimum(axis) < 0.0 || this.field_19360.getMaximum(axis) > 1.0);
 		}

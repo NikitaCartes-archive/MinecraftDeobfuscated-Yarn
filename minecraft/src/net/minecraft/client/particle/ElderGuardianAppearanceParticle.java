@@ -34,7 +34,7 @@ public class ElderGuardianAppearanceParticle extends Particle {
 	public void tick() {
 		super.tick();
 		if (this.guardian == null) {
-			ElderGuardianEntity elderGuardianEntity = EntityType.field_6086.create(this.world);
+			ElderGuardianEntity elderGuardianEntity = EntityType.ELDER_GUARDIAN.create(this.world);
 			elderGuardianEntity.straightenTail();
 			this.guardian = elderGuardianEntity;
 		}

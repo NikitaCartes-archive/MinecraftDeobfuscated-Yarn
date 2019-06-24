@@ -66,7 +66,7 @@ public class TeamCommand {
 					CommandManager.literal("list")
 						.executes(commandContext -> executeListTeams(commandContext.getSource()))
 						.then(
-							CommandManager.argument("team", TeamArgumentType.create())
+							CommandManager.argument("team", TeamArgumentType.team())
 								.executes(commandContext -> executeListMembers(commandContext.getSource(), TeamArgumentType.getTeam(commandContext, "team")))
 						)
 				)
@@ -76,7 +76,7 @@ public class TeamCommand {
 							CommandManager.argument("team", StringArgumentType.word())
 								.executes(commandContext -> executeAdd(commandContext.getSource(), StringArgumentType.getString(commandContext, "team")))
 								.then(
-									CommandManager.argument("displayName", TextArgumentType.create())
+									CommandManager.argument("displayName", TextArgumentType.text())
 										.executes(
 											commandContext -> executeAdd(
 													commandContext.getSource(), StringArgumentType.getString(commandContext, "team"), TextArgumentType.getTextArgument(commandContext, "displayName")
@@ -88,21 +88,21 @@ public class TeamCommand {
 				.then(
 					CommandManager.literal("remove")
 						.then(
-							CommandManager.argument("team", TeamArgumentType.create())
+							CommandManager.argument("team", TeamArgumentType.team())
 								.executes(commandContext -> executeRemove(commandContext.getSource(), TeamArgumentType.getTeam(commandContext, "team")))
 						)
 				)
 				.then(
 					CommandManager.literal("empty")
 						.then(
-							CommandManager.argument("team", TeamArgumentType.create())
+							CommandManager.argument("team", TeamArgumentType.team())
 								.executes(commandContext -> executeEmpty(commandContext.getSource(), TeamArgumentType.getTeam(commandContext, "team")))
 						)
 				)
 				.then(
 					CommandManager.literal("join")
 						.then(
-							CommandManager.argument("team", TeamArgumentType.create())
+							CommandManager.argument("team", TeamArgumentType.team())
 								.executes(
 									commandContext -> executeJoin(
 											commandContext.getSource(),
@@ -134,11 +134,11 @@ public class TeamCommand {
 				.then(
 					CommandManager.literal("modify")
 						.then(
-							CommandManager.argument("team", TeamArgumentType.create())
+							CommandManager.argument("team", TeamArgumentType.team())
 								.then(
 									CommandManager.literal("displayName")
 										.then(
-											CommandManager.argument("displayName", TextArgumentType.create())
+											CommandManager.argument("displayName", TextArgumentType.text())
 												.executes(
 													commandContext -> executeModifyDisplayName(
 															commandContext.getSource(), TeamArgumentType.getTeam(commandContext, "team"), TextArgumentType.getTextArgument(commandContext, "displayName")
@@ -149,7 +149,7 @@ public class TeamCommand {
 								.then(
 									CommandManager.literal("color")
 										.then(
-											CommandManager.argument("value", ColorArgumentType.create())
+											CommandManager.argument("value", ColorArgumentType.color())
 												.executes(
 													commandContext -> executeModifyColor(
 															commandContext.getSource(), TeamArgumentType.getTeam(commandContext, "team"), ColorArgumentType.getColor(commandContext, "value")
@@ -185,7 +185,7 @@ public class TeamCommand {
 											CommandManager.literal("never")
 												.executes(
 													commandContext -> executeModifyNametagVisibility(
-															commandContext.getSource(), TeamArgumentType.getTeam(commandContext, "team"), AbstractTeam.VisibilityRule.field_1443
+															commandContext.getSource(), TeamArgumentType.getTeam(commandContext, "team"), AbstractTeam.VisibilityRule.NEVER
 														)
 												)
 										)
@@ -193,7 +193,7 @@ public class TeamCommand {
 											CommandManager.literal("hideForOtherTeams")
 												.executes(
 													commandContext -> executeModifyNametagVisibility(
-															commandContext.getSource(), TeamArgumentType.getTeam(commandContext, "team"), AbstractTeam.VisibilityRule.field_1444
+															commandContext.getSource(), TeamArgumentType.getTeam(commandContext, "team"), AbstractTeam.VisibilityRule.HIDE_FOR_OTHER_TEAMS
 														)
 												)
 										)
@@ -201,7 +201,7 @@ public class TeamCommand {
 											CommandManager.literal("hideForOwnTeam")
 												.executes(
 													commandContext -> executeModifyNametagVisibility(
-															commandContext.getSource(), TeamArgumentType.getTeam(commandContext, "team"), AbstractTeam.VisibilityRule.field_1446
+															commandContext.getSource(), TeamArgumentType.getTeam(commandContext, "team"), AbstractTeam.VisibilityRule.HIDE_FOR_OWN_TEAM
 														)
 												)
 										)
@@ -209,7 +209,7 @@ public class TeamCommand {
 											CommandManager.literal("always")
 												.executes(
 													commandContext -> executeModifyNametagVisibility(
-															commandContext.getSource(), TeamArgumentType.getTeam(commandContext, "team"), AbstractTeam.VisibilityRule.field_1442
+															commandContext.getSource(), TeamArgumentType.getTeam(commandContext, "team"), AbstractTeam.VisibilityRule.ALWAYS
 														)
 												)
 										)
@@ -220,7 +220,7 @@ public class TeamCommand {
 											CommandManager.literal("never")
 												.executes(
 													commandContext -> executeModifyDeathMessageVisibility(
-															commandContext.getSource(), TeamArgumentType.getTeam(commandContext, "team"), AbstractTeam.VisibilityRule.field_1443
+															commandContext.getSource(), TeamArgumentType.getTeam(commandContext, "team"), AbstractTeam.VisibilityRule.NEVER
 														)
 												)
 										)
@@ -228,7 +228,7 @@ public class TeamCommand {
 											CommandManager.literal("hideForOtherTeams")
 												.executes(
 													commandContext -> executeModifyDeathMessageVisibility(
-															commandContext.getSource(), TeamArgumentType.getTeam(commandContext, "team"), AbstractTeam.VisibilityRule.field_1444
+															commandContext.getSource(), TeamArgumentType.getTeam(commandContext, "team"), AbstractTeam.VisibilityRule.HIDE_FOR_OTHER_TEAMS
 														)
 												)
 										)
@@ -236,7 +236,7 @@ public class TeamCommand {
 											CommandManager.literal("hideForOwnTeam")
 												.executes(
 													commandContext -> executeModifyDeathMessageVisibility(
-															commandContext.getSource(), TeamArgumentType.getTeam(commandContext, "team"), AbstractTeam.VisibilityRule.field_1446
+															commandContext.getSource(), TeamArgumentType.getTeam(commandContext, "team"), AbstractTeam.VisibilityRule.HIDE_FOR_OWN_TEAM
 														)
 												)
 										)
@@ -244,7 +244,7 @@ public class TeamCommand {
 											CommandManager.literal("always")
 												.executes(
 													commandContext -> executeModifyDeathMessageVisibility(
-															commandContext.getSource(), TeamArgumentType.getTeam(commandContext, "team"), AbstractTeam.VisibilityRule.field_1442
+															commandContext.getSource(), TeamArgumentType.getTeam(commandContext, "team"), AbstractTeam.VisibilityRule.ALWAYS
 														)
 												)
 										)
@@ -255,7 +255,7 @@ public class TeamCommand {
 											CommandManager.literal("never")
 												.executes(
 													commandContext -> executeModifyCollisionRule(
-															commandContext.getSource(), TeamArgumentType.getTeam(commandContext, "team"), AbstractTeam.CollisionRule.field_1435
+															commandContext.getSource(), TeamArgumentType.getTeam(commandContext, "team"), AbstractTeam.CollisionRule.NEVER
 														)
 												)
 										)
@@ -263,7 +263,7 @@ public class TeamCommand {
 											CommandManager.literal("pushOwnTeam")
 												.executes(
 													commandContext -> executeModifyCollisionRule(
-															commandContext.getSource(), TeamArgumentType.getTeam(commandContext, "team"), AbstractTeam.CollisionRule.field_1440
+															commandContext.getSource(), TeamArgumentType.getTeam(commandContext, "team"), AbstractTeam.CollisionRule.PUSH_OWN_TEAM
 														)
 												)
 										)
@@ -271,7 +271,7 @@ public class TeamCommand {
 											CommandManager.literal("pushOtherTeams")
 												.executes(
 													commandContext -> executeModifyCollisionRule(
-															commandContext.getSource(), TeamArgumentType.getTeam(commandContext, "team"), AbstractTeam.CollisionRule.field_1434
+															commandContext.getSource(), TeamArgumentType.getTeam(commandContext, "team"), AbstractTeam.CollisionRule.PUSH_OTHER_TEAMS
 														)
 												)
 										)
@@ -279,7 +279,7 @@ public class TeamCommand {
 											CommandManager.literal("always")
 												.executes(
 													commandContext -> executeModifyCollisionRule(
-															commandContext.getSource(), TeamArgumentType.getTeam(commandContext, "team"), AbstractTeam.CollisionRule.field_1437
+															commandContext.getSource(), TeamArgumentType.getTeam(commandContext, "team"), AbstractTeam.CollisionRule.ALWAYS
 														)
 												)
 										)
@@ -287,7 +287,7 @@ public class TeamCommand {
 								.then(
 									CommandManager.literal("prefix")
 										.then(
-											CommandManager.argument("prefix", TextArgumentType.create())
+											CommandManager.argument("prefix", TextArgumentType.text())
 												.executes(
 													commandContext -> executeModifyPrefix(
 															commandContext.getSource(), TeamArgumentType.getTeam(commandContext, "team"), TextArgumentType.getTextArgument(commandContext, "prefix")
@@ -298,7 +298,7 @@ public class TeamCommand {
 								.then(
 									CommandManager.literal("suffix")
 										.then(
-											CommandManager.argument("suffix", TextArgumentType.create())
+											CommandManager.argument("suffix", TextArgumentType.text())
 												.executes(
 													commandContext -> executeModifySuffix(
 															commandContext.getSource(), TeamArgumentType.getTeam(commandContext, "team"), TextArgumentType.getTextArgument(commandContext, "suffix")

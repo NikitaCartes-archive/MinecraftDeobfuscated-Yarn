@@ -4,7 +4,7 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.model.Cuboid;
 import net.minecraft.entity.mob.IllagerEntity;
-import net.minecraft.util.AbsoluteHand;
+import net.minecraft.util.Arm;
 import net.minecraft.util.math.MathHelper;
 
 @Environment(EnvType.CLIENT)
@@ -66,7 +66,7 @@ public class EvilVillagerEntityModel<T extends IllagerEntity> extends EntityMode
 		this.field_3425.render(k);
 		this.field_3420.render(k);
 		this.field_3418.render(k);
-		if (illagerEntity.getState() == IllagerEntity.State.field_7207) {
+		if (illagerEntity.getState() == IllagerEntity.State.CROSSED) {
 			this.field_3423.render(k);
 		} else {
 			this.field_3426.render(k);
@@ -109,14 +109,14 @@ public class EvilVillagerEntityModel<T extends IllagerEntity> extends EntityMode
 		}
 
 		IllagerEntity.State state = illagerEntity.getState();
-		if (state == IllagerEntity.State.field_7211) {
+		if (state == IllagerEntity.State.ATTACKING) {
 			float l = MathHelper.sin(this.handSwingProgress * (float) Math.PI);
 			float m = MathHelper.sin((1.0F - (1.0F - this.handSwingProgress) * (1.0F - this.handSwingProgress)) * (float) Math.PI);
 			this.field_3426.roll = 0.0F;
 			this.field_3417.roll = 0.0F;
 			this.field_3426.yaw = (float) (Math.PI / 20);
 			this.field_3417.yaw = (float) (-Math.PI / 20);
-			if (illagerEntity.getMainHand() == AbsoluteHand.field_6183) {
+			if (illagerEntity.getMainArm() == Arm.RIGHT) {
 				this.field_3426.pitch = -1.8849558F + MathHelper.cos(h * 0.09F) * 0.15F;
 				this.field_3417.pitch = -0.0F + MathHelper.cos(h * 0.19F) * 0.5F;
 				this.field_3426.pitch += l * 2.2F - m * 0.4F;
@@ -132,7 +132,7 @@ public class EvilVillagerEntityModel<T extends IllagerEntity> extends EntityMode
 			this.field_3417.roll = this.field_3417.roll - (MathHelper.cos(h * 0.09F) * 0.05F + 0.05F);
 			this.field_3426.pitch = this.field_3426.pitch + MathHelper.sin(h * 0.067F) * 0.05F;
 			this.field_3417.pitch = this.field_3417.pitch - MathHelper.sin(h * 0.067F) * 0.05F;
-		} else if (state == IllagerEntity.State.field_7212) {
+		} else if (state == IllagerEntity.State.SPELLCASTING) {
 			this.field_3426.rotationPointZ = 0.0F;
 			this.field_3426.rotationPointX = -5.0F;
 			this.field_3417.rotationPointZ = 0.0F;
@@ -143,25 +143,25 @@ public class EvilVillagerEntityModel<T extends IllagerEntity> extends EntityMode
 			this.field_3417.roll = (float) (-Math.PI * 3.0 / 4.0);
 			this.field_3426.yaw = 0.0F;
 			this.field_3417.yaw = 0.0F;
-		} else if (state == IllagerEntity.State.field_7208) {
+		} else if (state == IllagerEntity.State.BOW_AND_ARROW) {
 			this.field_3426.yaw = -0.1F + this.field_3422.yaw;
 			this.field_3426.pitch = (float) (-Math.PI / 2) + this.field_3422.pitch;
 			this.field_3417.pitch = -0.9424779F + this.field_3422.pitch;
 			this.field_3417.yaw = this.field_3422.yaw - 0.4F;
 			this.field_3417.roll = (float) (Math.PI / 2);
-		} else if (state == IllagerEntity.State.field_7213) {
+		} else if (state == IllagerEntity.State.CROSSBOW_HOLD) {
 			this.field_3426.yaw = -0.3F + this.field_3422.yaw;
 			this.field_3417.yaw = 0.6F + this.field_3422.yaw;
 			this.field_3426.pitch = (float) (-Math.PI / 2) + this.field_3422.pitch + 0.1F;
 			this.field_3417.pitch = -1.5F + this.field_3422.pitch;
-		} else if (state == IllagerEntity.State.field_7210) {
+		} else if (state == IllagerEntity.State.CROSSBOW_CHARGE) {
 			this.field_3426.yaw = -0.8F;
 			this.field_3426.pitch = -0.97079635F;
 			this.field_3417.pitch = -0.97079635F;
 			float l = MathHelper.clamp(this.field_3424, 0.0F, 25.0F);
 			this.field_3417.yaw = MathHelper.lerp(l / 25.0F, 0.4F, 0.85F);
 			this.field_3417.pitch = MathHelper.lerp(l / 25.0F, this.field_3417.pitch, (float) (-Math.PI / 2));
-		} else if (state == IllagerEntity.State.field_19012) {
+		} else if (state == IllagerEntity.State.CELEBRATING) {
 			this.field_3426.rotationPointZ = 0.0F;
 			this.field_3426.rotationPointX = -5.0F;
 			this.field_3426.pitch = MathHelper.cos(h * 0.6662F) * 0.05F;
@@ -180,8 +180,8 @@ public class EvilVillagerEntityModel<T extends IllagerEntity> extends EntityMode
 		super.animateModel(illagerEntity, f, g, h);
 	}
 
-	private Cuboid method_2813(AbsoluteHand absoluteHand) {
-		return absoluteHand == AbsoluteHand.field_6182 ? this.field_3417 : this.field_3426;
+	private Cuboid method_2813(Arm arm) {
+		return arm == Arm.LEFT ? this.field_3417 : this.field_3426;
 	}
 
 	public Cuboid method_2812() {
@@ -194,7 +194,7 @@ public class EvilVillagerEntityModel<T extends IllagerEntity> extends EntityMode
 	}
 
 	@Override
-	public void setArmAngle(float f, AbsoluteHand absoluteHand) {
-		this.method_2813(absoluteHand).applyTransform(0.0625F);
+	public void setArmAngle(float f, Arm arm) {
+		this.method_2813(arm).applyTransform(0.0625F);
 	}
 }

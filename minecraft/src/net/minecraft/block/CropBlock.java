@@ -45,7 +45,7 @@ public class CropBlock extends PlantBlock implements Fertilizable {
 
 	@Override
 	protected boolean canPlantOnTop(BlockState blockState, BlockView blockView, BlockPos blockPos) {
-		return blockState.getBlock() == Blocks.field_10362;
+		return blockState.getBlock() == Blocks.FARMLAND;
 	}
 
 	public IntProperty getAgeProperty() {
@@ -104,7 +104,7 @@ public class CropBlock extends PlantBlock implements Fertilizable {
 			for (int j = -1; j <= 1; j++) {
 				float g = 0.0F;
 				BlockState blockState = blockView.getBlockState(blockPos2.add(i, 0, j));
-				if (blockState.getBlock() == Blocks.field_10362) {
+				if (blockState.getBlock() == Blocks.FARMLAND) {
 					g = 1.0F;
 					if ((Integer)blockState.get(FarmlandBlock.MOISTURE) > 0) {
 						g = 3.0F;
@@ -147,7 +147,7 @@ public class CropBlock extends PlantBlock implements Fertilizable {
 
 	@Override
 	public void onEntityCollision(BlockState blockState, World world, BlockPos blockPos, Entity entity) {
-		if (entity instanceof RavagerEntity && world.getGameRules().getBoolean(GameRules.field_19388)) {
+		if (entity instanceof RavagerEntity && world.getGameRules().getBoolean(GameRules.MOB_GRIEFING)) {
 			world.breakBlock(blockPos, true);
 		}
 
@@ -156,7 +156,7 @@ public class CropBlock extends PlantBlock implements Fertilizable {
 
 	@Environment(EnvType.CLIENT)
 	protected ItemConvertible getSeedsItem() {
-		return Items.field_8317;
+		return Items.WHEAT_SEEDS;
 	}
 
 	@Environment(EnvType.CLIENT)

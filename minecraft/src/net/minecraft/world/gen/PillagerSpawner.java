@@ -51,7 +51,7 @@ public class PillagerSpawner {
 							} else {
 								Biome biome = serverWorld.getBiome(mutable);
 								Biome.Category category = biome.getCategory();
-								if (category == Biome.Category.field_9365) {
+								if (category == Biome.Category.MUSHROOM) {
 									return 0;
 								} else {
 									int m = 0;
@@ -59,7 +59,7 @@ public class PillagerSpawner {
 
 									for (int o = 0; o < n; o++) {
 										m++;
-										mutable.setY(serverWorld.getTopPosition(Heightmap.Type.field_13203, mutable).getY());
+										mutable.setY(serverWorld.getTopPosition(Heightmap.Type.MOTION_BLOCKING_NO_LEAVES, mutable).getY());
 										if (o == 0) {
 											if (!this.spawnOneEntity(serverWorld, mutable, random, true)) {
 												break;
@@ -83,10 +83,10 @@ public class PillagerSpawner {
 	}
 
 	private boolean spawnOneEntity(World world, BlockPos blockPos, Random random, boolean bl) {
-		if (!PatrolEntity.method_20739(EntityType.field_6105, world, SpawnType.field_16527, blockPos, random)) {
+		if (!PatrolEntity.method_20739(EntityType.PILLAGER, world, SpawnType.PATROL, blockPos, random)) {
 			return false;
 		} else {
-			PatrolEntity patrolEntity = EntityType.field_6105.create(world);
+			PatrolEntity patrolEntity = EntityType.PILLAGER.create(world);
 			if (patrolEntity != null) {
 				if (bl) {
 					patrolEntity.setPatrolLeader(true);
@@ -94,7 +94,7 @@ public class PillagerSpawner {
 				}
 
 				patrolEntity.setPosition((double)blockPos.getX(), (double)blockPos.getY(), (double)blockPos.getZ());
-				patrolEntity.initialize(world, world.getLocalDifficulty(blockPos), SpawnType.field_16527, null, null);
+				patrolEntity.initialize(world, world.getLocalDifficulty(blockPos), SpawnType.PATROL, null, null);
 				world.spawnEntity(patrolEntity);
 				return true;
 			} else {

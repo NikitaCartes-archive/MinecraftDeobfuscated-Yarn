@@ -42,7 +42,7 @@ public class ItemEntity extends Entity {
 	}
 
 	public ItemEntity(World world, double d, double e, double f) {
-		this(EntityType.field_6052, world);
+		this(EntityType.ITEM, world);
 		this.setPosition(d, e, f);
 		this.yaw = this.random.nextFloat() * 360.0F;
 		this.setVelocity(this.random.nextDouble() * 0.2 - 0.1, 0.2, this.random.nextDouble() * 0.2 - 0.1);
@@ -77,7 +77,7 @@ public class ItemEntity extends Entity {
 			this.prevY = this.y;
 			this.prevZ = this.z;
 			Vec3d vec3d = this.getVelocity();
-			if (this.isInFluid(FluidTags.field_15517)) {
+			if (this.isInFluid(FluidTags.WATER)) {
 				this.method_6974();
 			} else if (!this.hasNoGravity()) {
 				this.setVelocity(this.getVelocity().add(0.0, -0.04, 0.0));
@@ -93,7 +93,7 @@ public class ItemEntity extends Entity {
 			}
 
 			if (!this.onGround || squaredHorizontalLength(this.getVelocity()) > 1.0E-5F || (this.age + this.getEntityId()) % 4 == 0) {
-				this.move(MovementType.field_6308, this.getVelocity());
+				this.move(MovementType.SELF, this.getVelocity());
 				float f = 0.98F;
 				if (this.onGround) {
 					f = this.world.getBlockState(new BlockPos(this.x, this.getBoundingBox().minY - 1.0, this.z)).getBlock().getSlipperiness() * 0.98F;
@@ -110,11 +110,11 @@ public class ItemEntity extends Entity {
 				|| MathHelper.floor(this.prevZ) != MathHelper.floor(this.z);
 			int i = bl ? 2 : 40;
 			if (this.age % i == 0) {
-				if (this.world.getFluidState(new BlockPos(this)).matches(FluidTags.field_15518)) {
+				if (this.world.getFluidState(new BlockPos(this)).matches(FluidTags.LAVA)) {
 					this.setVelocity(
 						(double)((this.random.nextFloat() - this.random.nextFloat()) * 0.2F), 0.2F, (double)((this.random.nextFloat() - this.random.nextFloat()) * 0.2F)
 					);
-					this.playSound(SoundEvents.field_14821, 0.4F, 2.0F + this.random.nextFloat() * 0.4F);
+					this.playSound(SoundEvents.ENTITY_GENERIC_BURN, 0.4F, 2.0F + this.random.nextFloat() * 0.4F);
 				}
 
 				if (!this.world.isClient && this.method_20397()) {
@@ -126,7 +126,7 @@ public class ItemEntity extends Entity {
 				this.age++;
 			}
 
-			this.velocityDirty = this.velocityDirty | this.method_5713();
+			this.velocityDirty = this.velocityDirty | this.checkWaterState();
 			if (!this.world.isClient) {
 				double d = this.getVelocity().subtract(vec3d).lengthSquared();
 				if (d > 0.01) {
@@ -209,7 +209,7 @@ public class ItemEntity extends Entity {
 	public boolean damage(DamageSource damageSource, float f) {
 		if (this.isInvulnerableTo(damageSource)) {
 			return false;
-		} else if (!this.getStack().isEmpty() && this.getStack().getItem() == Items.field_8137 && damageSource.isExplosive()) {
+		} else if (!this.getStack().isEmpty() && this.getStack().getItem() == Items.NETHER_STAR && damageSource.isExplosive()) {
 			return false;
 		} else {
 			this.scheduleVelocityUpdate();
@@ -278,7 +278,7 @@ public class ItemEntity extends Entity {
 					itemStack.setCount(i);
 				}
 
-				playerEntity.increaseStat(Stats.field_15392.getOrCreateStat(item), i);
+				playerEntity.increaseStat(Stats.PICKED_UP.getOrCreateStat(item), i);
 			}
 		}
 	}
@@ -290,7 +290,7 @@ public class ItemEntity extends Entity {
 	}
 
 	@Override
-	public boolean canPlayerAttack() {
+	public boolean isAttackable() {
 		return false;
 	}
 

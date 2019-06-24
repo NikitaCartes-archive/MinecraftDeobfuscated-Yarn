@@ -18,58 +18,58 @@ import net.minecraft.world.World;
 
 public class AxeItem extends MiningToolItem {
 	private static final Set<Block> EFFECTIVE_BLOCKS = Sets.<Block>newHashSet(
-		Blocks.field_10161,
-		Blocks.field_9975,
-		Blocks.field_10148,
-		Blocks.field_10334,
-		Blocks.field_10218,
-		Blocks.field_10075,
-		Blocks.field_10504,
-		Blocks.field_10126,
-		Blocks.field_10155,
-		Blocks.field_10307,
-		Blocks.field_10303,
-		Blocks.field_9999,
-		Blocks.field_10178,
-		Blocks.field_10431,
-		Blocks.field_10037,
-		Blocks.field_10511,
-		Blocks.field_10306,
-		Blocks.field_10533,
-		Blocks.field_10010,
-		Blocks.field_10034,
-		Blocks.field_10261,
-		Blocks.field_10147,
-		Blocks.field_10009,
-		Blocks.field_10545,
-		Blocks.field_9983,
-		Blocks.field_16492,
-		Blocks.field_10057,
-		Blocks.field_10066,
-		Blocks.field_10417,
-		Blocks.field_10553,
-		Blocks.field_10493,
-		Blocks.field_10278,
-		Blocks.field_10484,
-		Blocks.field_10332,
-		Blocks.field_10592,
-		Blocks.field_10026,
-		Blocks.field_10470,
-		Blocks.field_10397
+		Blocks.OAK_PLANKS,
+		Blocks.SPRUCE_PLANKS,
+		Blocks.BIRCH_PLANKS,
+		Blocks.JUNGLE_PLANKS,
+		Blocks.ACACIA_PLANKS,
+		Blocks.DARK_OAK_PLANKS,
+		Blocks.BOOKSHELF,
+		Blocks.OAK_WOOD,
+		Blocks.SPRUCE_WOOD,
+		Blocks.BIRCH_WOOD,
+		Blocks.JUNGLE_WOOD,
+		Blocks.ACACIA_WOOD,
+		Blocks.DARK_OAK_WOOD,
+		Blocks.OAK_LOG,
+		Blocks.SPRUCE_LOG,
+		Blocks.BIRCH_LOG,
+		Blocks.JUNGLE_LOG,
+		Blocks.ACACIA_LOG,
+		Blocks.DARK_OAK_LOG,
+		Blocks.CHEST,
+		Blocks.PUMPKIN,
+		Blocks.CARVED_PUMPKIN,
+		Blocks.JACK_O_LANTERN,
+		Blocks.MELON,
+		Blocks.LADDER,
+		Blocks.SCAFFOLDING,
+		Blocks.OAK_BUTTON,
+		Blocks.SPRUCE_BUTTON,
+		Blocks.BIRCH_BUTTON,
+		Blocks.JUNGLE_BUTTON,
+		Blocks.DARK_OAK_BUTTON,
+		Blocks.ACACIA_BUTTON,
+		Blocks.OAK_PRESSURE_PLATE,
+		Blocks.SPRUCE_PRESSURE_PLATE,
+		Blocks.BIRCH_PRESSURE_PLATE,
+		Blocks.JUNGLE_PRESSURE_PLATE,
+		Blocks.DARK_OAK_PRESSURE_PLATE,
+		Blocks.ACACIA_PRESSURE_PLATE
 	);
 	protected static final Map<Block, Block> STRIPPED_BLOCKS = new Builder<Block, Block>()
-		.put(Blocks.field_10126, Blocks.field_10250)
-		.put(Blocks.field_10431, Blocks.field_10519)
-		.put(Blocks.field_10178, Blocks.field_10374)
-		.put(Blocks.field_10010, Blocks.field_10244)
-		.put(Blocks.field_9999, Blocks.field_10103)
-		.put(Blocks.field_10533, Blocks.field_10622)
-		.put(Blocks.field_10307, Blocks.field_10204)
-		.put(Blocks.field_10511, Blocks.field_10366)
-		.put(Blocks.field_10303, Blocks.field_10084)
-		.put(Blocks.field_10306, Blocks.field_10254)
-		.put(Blocks.field_10155, Blocks.field_10558)
-		.put(Blocks.field_10037, Blocks.field_10436)
+		.put(Blocks.OAK_WOOD, Blocks.STRIPPED_OAK_WOOD)
+		.put(Blocks.OAK_LOG, Blocks.STRIPPED_OAK_LOG)
+		.put(Blocks.DARK_OAK_WOOD, Blocks.STRIPPED_DARK_OAK_WOOD)
+		.put(Blocks.DARK_OAK_LOG, Blocks.STRIPPED_DARK_OAK_LOG)
+		.put(Blocks.ACACIA_WOOD, Blocks.STRIPPED_ACACIA_WOOD)
+		.put(Blocks.ACACIA_LOG, Blocks.STRIPPED_ACACIA_LOG)
+		.put(Blocks.BIRCH_WOOD, Blocks.STRIPPED_BIRCH_WOOD)
+		.put(Blocks.BIRCH_LOG, Blocks.STRIPPED_BIRCH_LOG)
+		.put(Blocks.JUNGLE_WOOD, Blocks.STRIPPED_JUNGLE_WOOD)
+		.put(Blocks.JUNGLE_LOG, Blocks.STRIPPED_JUNGLE_LOG)
+		.put(Blocks.SPRUCE_WOOD, Blocks.STRIPPED_SPRUCE_WOOD)
+		.put(Blocks.SPRUCE_LOG, Blocks.STRIPPED_SPRUCE_LOG)
 		.build();
 
 	protected AxeItem(ToolMaterial toolMaterial, float f, float g, Item.Settings settings) {
@@ -92,7 +92,7 @@ public class AxeItem extends MiningToolItem {
 		Block block = (Block)STRIPPED_BLOCKS.get(blockState.getBlock());
 		if (block != null) {
 			PlayerEntity playerEntity = itemUsageContext.getPlayer();
-			world.playSound(playerEntity, blockPos, SoundEvents.field_14675, SoundCategory.field_15245, 1.0F, 1.0F);
+			world.playSound(playerEntity, blockPos, SoundEvents.ITEM_AXE_STRIP, SoundCategory.BLOCKS, 1.0F, 1.0F);
 			if (!world.isClient) {
 				world.setBlockState(blockPos, block.getDefaultState().with(PillarBlock.AXIS, blockState.get(PillarBlock.AXIS)), 11);
 				if (playerEntity != null) {
@@ -100,9 +100,9 @@ public class AxeItem extends MiningToolItem {
 				}
 			}
 
-			return ActionResult.field_5812;
+			return ActionResult.SUCCESS;
 		} else {
-			return ActionResult.field_5811;
+			return ActionResult.PASS;
 		}
 	}
 }

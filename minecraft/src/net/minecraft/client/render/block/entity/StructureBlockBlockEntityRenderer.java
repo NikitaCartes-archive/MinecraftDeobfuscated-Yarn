@@ -23,7 +23,7 @@ public class StructureBlockBlockEntityRenderer extends BlockEntityRenderer<Struc
 			BlockPos blockPos = structureBlockBlockEntity.getOffset();
 			BlockPos blockPos2 = structureBlockBlockEntity.getSize();
 			if (blockPos2.getX() >= 1 && blockPos2.getY() >= 1 && blockPos2.getZ() >= 1) {
-				if (structureBlockBlockEntity.getMode() == StructureBlockMode.field_12695 || structureBlockBlockEntity.getMode() == StructureBlockMode.field_12697) {
+				if (structureBlockBlockEntity.getMode() == StructureBlockMode.SAVE || structureBlockBlockEntity.getMode() == StructureBlockMode.LOAD) {
 					double h = 0.01;
 					double j = (double)blockPos.getX();
 					double k = (double)blockPos.getZ();
@@ -32,11 +32,11 @@ public class StructureBlockBlockEntityRenderer extends BlockEntityRenderer<Struc
 					double n;
 					double o;
 					switch (structureBlockBlockEntity.getMirror()) {
-						case field_11300:
+						case LEFT_RIGHT:
 							n = (double)blockPos2.getX() + 0.02;
 							o = -((double)blockPos2.getZ() + 0.02);
 							break;
-						case field_11301:
+						case FRONT_BACK:
 							n = -((double)blockPos2.getX() + 0.02);
 							o = (double)blockPos2.getZ() + 0.02;
 							break;
@@ -50,19 +50,19 @@ public class StructureBlockBlockEntityRenderer extends BlockEntityRenderer<Struc
 					double r;
 					double s;
 					switch (structureBlockBlockEntity.getRotation()) {
-						case field_11463:
+						case CLOCKWISE_90:
 							p = d + (o < 0.0 ? j - 0.01 : j + 1.0 + 0.01);
 							q = f + (n < 0.0 ? k + 1.0 + 0.01 : k - 0.01);
 							r = p - o;
 							s = q + n;
 							break;
-						case field_11464:
+						case CLOCKWISE_180:
 							p = d + (n < 0.0 ? j - 0.01 : j + 1.0 + 0.01);
 							q = f + (o < 0.0 ? k - 0.01 : k + 1.0 + 0.01);
 							r = p - n;
 							s = q - o;
 							break;
-						case field_11465:
+						case COUNTERCLOCKWISE_90:
 							p = d + (o < 0.0 ? j + 1.0 + 0.01 : j - 0.01);
 							q = f + (n < 0.0 ? k - 0.01 : k + 1.0 + 0.01);
 							r = p + o;
@@ -88,11 +88,11 @@ public class StructureBlockBlockEntityRenderer extends BlockEntityRenderer<Struc
 						GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO
 					);
 					this.disableLightmap(true);
-					if (structureBlockBlockEntity.getMode() == StructureBlockMode.field_12695 || structureBlockBlockEntity.shouldShowBoundingBox()) {
+					if (structureBlockBlockEntity.getMode() == StructureBlockMode.SAVE || structureBlockBlockEntity.shouldShowBoundingBox()) {
 						this.method_3586(tessellator, bufferBuilder, p, l, q, r, m, s, 255, 223, 127);
 					}
 
-					if (structureBlockBlockEntity.getMode() == StructureBlockMode.field_12695 && structureBlockBlockEntity.shouldShowAir()) {
+					if (structureBlockBlockEntity.getMode() == StructureBlockMode.SAVE && structureBlockBlockEntity.shouldShowAir()) {
 						this.method_3585(structureBlockBlockEntity, d, e, f, blockPos, tessellator, bufferBuilder, true);
 						this.method_3585(structureBlockBlockEntity, d, e, f, blockPos, tessellator, bufferBuilder, false);
 					}
@@ -128,7 +128,7 @@ public class StructureBlockBlockEntityRenderer extends BlockEntityRenderer<Struc
 		for (BlockPos blockPos4 : BlockPos.iterate(blockPos3, blockPos3.add(structureBlockBlockEntity.getSize()).add(-1, -1, -1))) {
 			BlockState blockState = blockView.getBlockState(blockPos4);
 			boolean bl2 = blockState.isAir();
-			boolean bl3 = blockState.getBlock() == Blocks.field_10369;
+			boolean bl3 = blockState.getBlock() == Blocks.STRUCTURE_VOID;
 			if (bl2 || bl3) {
 				float g = bl2 ? 0.05F : 0.0F;
 				double h = (double)((float)(blockPos4.getX() - blockPos2.getX()) + 0.45F) + d - (double)g;

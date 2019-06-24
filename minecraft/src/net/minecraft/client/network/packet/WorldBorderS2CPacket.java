@@ -38,25 +38,25 @@ public class WorldBorderS2CPacket implements Packet<ClientPlayPacketListener> {
 	public void read(PacketByteBuf packetByteBuf) throws IOException {
 		this.type = packetByteBuf.readEnumConstant(WorldBorderS2CPacket.Type.class);
 		switch (this.type) {
-			case field_12456:
+			case SET_SIZE:
 				this.size = packetByteBuf.readDouble();
 				break;
-			case field_12452:
+			case LERP_SIZE:
 				this.oldSize = packetByteBuf.readDouble();
 				this.size = packetByteBuf.readDouble();
 				this.interpolationDuration = packetByteBuf.readVarLong();
 				break;
-			case field_12450:
+			case SET_CENTER:
 				this.centerX = packetByteBuf.readDouble();
 				this.centerZ = packetByteBuf.readDouble();
 				break;
-			case field_12451:
+			case SET_WARNING_BLOCKS:
 				this.warningBlocks = packetByteBuf.readVarInt();
 				break;
-			case field_12455:
+			case SET_WARNING_TIME:
 				this.warningTime = packetByteBuf.readVarInt();
 				break;
-			case field_12454:
+			case INITIALIZE:
 				this.centerX = packetByteBuf.readDouble();
 				this.centerZ = packetByteBuf.readDouble();
 				this.oldSize = packetByteBuf.readDouble();
@@ -72,25 +72,25 @@ public class WorldBorderS2CPacket implements Packet<ClientPlayPacketListener> {
 	public void write(PacketByteBuf packetByteBuf) throws IOException {
 		packetByteBuf.writeEnumConstant(this.type);
 		switch (this.type) {
-			case field_12456:
+			case SET_SIZE:
 				packetByteBuf.writeDouble(this.size);
 				break;
-			case field_12452:
+			case LERP_SIZE:
 				packetByteBuf.writeDouble(this.oldSize);
 				packetByteBuf.writeDouble(this.size);
 				packetByteBuf.writeVarLong(this.interpolationDuration);
 				break;
-			case field_12450:
+			case SET_CENTER:
 				packetByteBuf.writeDouble(this.centerX);
 				packetByteBuf.writeDouble(this.centerZ);
 				break;
-			case field_12451:
+			case SET_WARNING_BLOCKS:
 				packetByteBuf.writeVarInt(this.warningBlocks);
 				break;
-			case field_12455:
+			case SET_WARNING_TIME:
 				packetByteBuf.writeVarInt(this.warningTime);
 				break;
-			case field_12454:
+			case INITIALIZE:
 				packetByteBuf.writeDouble(this.centerX);
 				packetByteBuf.writeDouble(this.centerZ);
 				packetByteBuf.writeDouble(this.oldSize);
@@ -109,22 +109,22 @@ public class WorldBorderS2CPacket implements Packet<ClientPlayPacketListener> {
 	@Environment(EnvType.CLIENT)
 	public void apply(WorldBorder worldBorder) {
 		switch (this.type) {
-			case field_12456:
+			case SET_SIZE:
 				worldBorder.setSize(this.size);
 				break;
-			case field_12452:
+			case LERP_SIZE:
 				worldBorder.interpolateSize(this.oldSize, this.size, this.interpolationDuration);
 				break;
-			case field_12450:
+			case SET_CENTER:
 				worldBorder.setCenter(this.centerX, this.centerZ);
 				break;
-			case field_12451:
+			case SET_WARNING_BLOCKS:
 				worldBorder.setWarningBlocks(this.warningBlocks);
 				break;
-			case field_12455:
+			case SET_WARNING_TIME:
 				worldBorder.setWarningTime(this.warningTime);
 				break;
-			case field_12454:
+			case INITIALIZE:
 				worldBorder.setCenter(this.centerX, this.centerZ);
 				if (this.interpolationDuration > 0L) {
 					worldBorder.interpolateSize(this.oldSize, this.size, this.interpolationDuration);
@@ -139,11 +139,11 @@ public class WorldBorderS2CPacket implements Packet<ClientPlayPacketListener> {
 	}
 
 	public static enum Type {
-		field_12456,
-		field_12452,
-		field_12450,
-		field_12454,
-		field_12455,
-		field_12451;
+		SET_SIZE,
+		LERP_SIZE,
+		SET_CENTER,
+		INITIALIZE,
+		SET_WARNING_TIME,
+		SET_WARNING_BLOCKS;
 	}
 }

@@ -24,7 +24,7 @@ public class KelpPlantBlock extends Block implements FluidFillable {
 
 	@Override
 	public BlockRenderLayer getRenderLayer() {
-		return BlockRenderLayer.field_9174;
+		return BlockRenderLayer.CUTOUT;
 	}
 
 	@Override
@@ -45,11 +45,11 @@ public class KelpPlantBlock extends Block implements FluidFillable {
 	public BlockState getStateForNeighborUpdate(
 		BlockState blockState, Direction direction, BlockState blockState2, IWorld iWorld, BlockPos blockPos, BlockPos blockPos2
 	) {
-		if (direction == Direction.field_11033 && !blockState.canPlaceAt(iWorld, blockPos)) {
+		if (direction == Direction.DOWN && !blockState.canPlaceAt(iWorld, blockPos)) {
 			iWorld.getBlockTickScheduler().schedule(blockPos, this, 1);
 		}
 
-		if (direction == Direction.field_11036) {
+		if (direction == Direction.UP) {
 			Block block = blockState2.getBlock();
 			if (block != this && block != this.kelpBlock) {
 				return this.kelpBlock.getPlacementState(iWorld);
@@ -65,13 +65,13 @@ public class KelpPlantBlock extends Block implements FluidFillable {
 		BlockPos blockPos2 = blockPos.down();
 		BlockState blockState2 = viewableWorld.getBlockState(blockPos2);
 		Block block = blockState2.getBlock();
-		return block != Blocks.field_10092 && (block == this || Block.isSolidFullSquare(blockState2, viewableWorld, blockPos2, Direction.field_11036));
+		return block != Blocks.MAGMA_BLOCK && (block == this || Block.isSolidFullSquare(blockState2, viewableWorld, blockPos2, Direction.UP));
 	}
 
 	@Environment(EnvType.CLIENT)
 	@Override
 	public ItemStack getPickStack(BlockView blockView, BlockPos blockPos, BlockState blockState) {
-		return new ItemStack(Blocks.field_9993);
+		return new ItemStack(Blocks.KELP);
 	}
 
 	@Override

@@ -66,9 +66,9 @@ public class EndSpikeFeature extends Feature<EndSpikeFeatureConfig> {
 			new BlockPos(spike.getCenterX() - i, 0, spike.getCenterZ() - i), new BlockPos(spike.getCenterX() + i, spike.getHeight() + 10, spike.getCenterZ() + i)
 		)) {
 			if (blockPos.isWithinDistance(new BlockPos(spike.getCenterX(), blockPos.getY(), spike.getCenterZ()), (double)i) && blockPos.getY() < spike.getHeight()) {
-				this.setBlockState(iWorld, blockPos, Blocks.field_10540.getDefaultState());
+				this.setBlockState(iWorld, blockPos, Blocks.OBSIDIAN.getDefaultState());
 			} else if (blockPos.getY() > 65) {
-				this.setBlockState(iWorld, blockPos, Blocks.field_10124.getDefaultState());
+				this.setBlockState(iWorld, blockPos, Blocks.AIR.getDefaultState());
 			}
 		}
 
@@ -87,7 +87,7 @@ public class EndSpikeFeature extends Feature<EndSpikeFeatureConfig> {
 						if (bl || bl2 || bl3) {
 							boolean bl4 = m == -2 || m == 2 || bl3;
 							boolean bl5 = n == -2 || n == 2 || bl3;
-							BlockState blockState = Blocks.field_10576
+							BlockState blockState = Blocks.IRON_BARS
 								.getDefaultState()
 								.with(PaneBlock.NORTH, Boolean.valueOf(bl4 && n != -2))
 								.with(PaneBlock.SOUTH, Boolean.valueOf(bl4 && n != 2))
@@ -100,14 +100,14 @@ public class EndSpikeFeature extends Feature<EndSpikeFeatureConfig> {
 			}
 		}
 
-		EnderCrystalEntity enderCrystalEntity = EntityType.field_6110.create(iWorld.getWorld());
+		EnderCrystalEntity enderCrystalEntity = EntityType.END_CRYSTAL.create(iWorld.getWorld());
 		enderCrystalEntity.setBeamTarget(endSpikeFeatureConfig.getPos());
 		enderCrystalEntity.setInvulnerable(endSpikeFeatureConfig.isCrystalInvulerable());
 		enderCrystalEntity.setPositionAndAngles(
 			(double)((float)spike.getCenterX() + 0.5F), (double)(spike.getHeight() + 1), (double)((float)spike.getCenterZ() + 0.5F), random.nextFloat() * 360.0F, 0.0F
 		);
 		iWorld.spawnEntity(enderCrystalEntity);
-		this.setBlockState(iWorld, new BlockPos(spike.getCenterX(), spike.getHeight(), spike.getCenterZ()), Blocks.field_9987.getDefaultState());
+		this.setBlockState(iWorld, new BlockPos(spike.getCenterX(), spike.getHeight(), spike.getCenterZ()), Blocks.BEDROCK.getDefaultState());
 	}
 
 	public static class Spike {

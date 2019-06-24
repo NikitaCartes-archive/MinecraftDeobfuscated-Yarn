@@ -16,10 +16,10 @@ public class BeaconContainer extends Container {
 	private final Inventory paymentInv = new BasicInventory(1) {
 		@Override
 		public boolean isValidInvStack(int i, ItemStack itemStack) {
-			return itemStack.getItem() == Items.field_8687
-				|| itemStack.getItem() == Items.field_8477
-				|| itemStack.getItem() == Items.field_8695
-				|| itemStack.getItem() == Items.field_8620;
+			return itemStack.getItem() == Items.EMERALD
+				|| itemStack.getItem() == Items.DIAMOND
+				|| itemStack.getItem() == Items.GOLD_INGOT
+				|| itemStack.getItem() == Items.IRON_INGOT;
 		}
 
 		@Override
@@ -36,7 +36,7 @@ public class BeaconContainer extends Container {
 	}
 
 	public BeaconContainer(int i, Inventory inventory, PropertyDelegate propertyDelegate, BlockContext blockContext) {
-		super(ContainerType.field_17330, i);
+		super(ContainerType.BEACON, i);
 		checkContainerDataCount(propertyDelegate, 3);
 		this.propertyDelegate = propertyDelegate;
 		this.context = blockContext;
@@ -70,7 +70,7 @@ public class BeaconContainer extends Container {
 
 	@Override
 	public boolean canUse(PlayerEntity playerEntity) {
-		return canUse(this.context, playerEntity, Blocks.field_10327);
+		return canUse(this.context, playerEntity, Blocks.BEACON);
 	}
 
 	@Override
@@ -162,7 +162,7 @@ public class BeaconContainer extends Container {
 		@Override
 		public boolean canInsert(ItemStack itemStack) {
 			Item item = itemStack.getItem();
-			return item == Items.field_8687 || item == Items.field_8477 || item == Items.field_8695 || item == Items.field_8620;
+			return item == Items.EMERALD || item == Items.DIAMOND || item == Items.GOLD_INGOT || item == Items.IRON_INGOT;
 		}
 
 		@Override

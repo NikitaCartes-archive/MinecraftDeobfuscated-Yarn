@@ -159,7 +159,7 @@ public class ChunkHolder {
 		WorldChunk worldChunk = this.getWorldChunk();
 		if (worldChunk != null) {
 			worldChunk.setShouldSave(true);
-			if (lightType == LightType.field_9284) {
+			if (lightType == LightType.SKY) {
 				this.skyLightUpdateBits |= 1 << i - -1;
 			} else {
 				this.blockLightUpdateBits |= 1 << i - -1;
@@ -314,8 +314,8 @@ public class ChunkHolder {
 			}
 		}
 
-		boolean bl3 = levelType.isAfter(ChunkHolder.LevelType.field_13876);
-		boolean bl4 = levelType2.isAfter(ChunkHolder.LevelType.field_13876);
+		boolean bl3 = levelType.isAfter(ChunkHolder.LevelType.BORDER);
+		boolean bl4 = levelType2.isAfter(ChunkHolder.LevelType.BORDER);
 		this.field_19238 |= bl4;
 		if (!bl3 && bl4) {
 			this.borderFuture = threadedAnvilChunkStorage.createBorderFuture(this);
@@ -328,8 +328,8 @@ public class ChunkHolder {
 			this.updateFuture(completableFuture.thenApply(either -> either.ifLeft(threadedAnvilChunkStorage::method_20576)));
 		}
 
-		boolean bl5 = levelType.isAfter(ChunkHolder.LevelType.field_13875);
-		boolean bl6 = levelType2.isAfter(ChunkHolder.LevelType.field_13875);
+		boolean bl5 = levelType.isAfter(ChunkHolder.LevelType.TICKING);
+		boolean bl6 = levelType2.isAfter(ChunkHolder.LevelType.TICKING);
 		if (!bl5 && bl6) {
 			this.tickingFuture = threadedAnvilChunkStorage.createTickingFuture(this);
 			this.updateFuture(this.tickingFuture);
@@ -340,8 +340,8 @@ public class ChunkHolder {
 			this.tickingFuture = UNLOADED_WORLD_CHUNK_FUTURE;
 		}
 
-		boolean bl7 = levelType.isAfter(ChunkHolder.LevelType.field_13877);
-		boolean bl8 = levelType2.isAfter(ChunkHolder.LevelType.field_13877);
+		boolean bl7 = levelType.isAfter(ChunkHolder.LevelType.ENTITY_TICKING);
+		boolean bl8 = levelType2.isAfter(ChunkHolder.LevelType.ENTITY_TICKING);
 		if (!bl7 && bl8) {
 			if (this.entityTickingFuture != UNLOADED_WORLD_CHUNK_FUTURE) {
 				throw new IllegalStateException();
@@ -361,7 +361,7 @@ public class ChunkHolder {
 	}
 
 	public static ChunkStatus getTargetGenerationStatus(int i) {
-		return i < 33 ? ChunkStatus.field_12803 : ChunkStatus.getTargetGenerationStatus(i - 33);
+		return i < 33 ? ChunkStatus.FULL : ChunkStatus.getTargetGenerationStatus(i - 33);
 	}
 
 	public static ChunkHolder.LevelType getLevelType(int i) {
@@ -373,7 +373,7 @@ public class ChunkHolder {
 	}
 
 	public void method_20385() {
-		this.field_19238 = getLevelType(this.level).isAfter(ChunkHolder.LevelType.field_13876);
+		this.field_19238 = getLevelType(this.level).isAfter(ChunkHolder.LevelType.BORDER);
 	}
 
 	public void method_20456(ReadOnlyChunk readOnlyChunk) {
@@ -392,10 +392,10 @@ public class ChunkHolder {
 	}
 
 	public static enum LevelType {
-		field_19334,
-		field_13876,
-		field_13875,
-		field_13877;
+		INACCESSIBLE,
+		BORDER,
+		TICKING,
+		ENTITY_TICKING;
 
 		public boolean isAfter(ChunkHolder.LevelType levelType) {
 			return this.ordinal() >= levelType.ordinal();

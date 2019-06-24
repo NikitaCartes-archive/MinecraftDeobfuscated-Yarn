@@ -84,11 +84,11 @@ public class EntityAttributeModifier {
 	}
 
 	public static enum Operation {
-		field_6328(0),
-		field_6330(1),
-		field_6331(2);
+		ADDITION(0),
+		MULTIPLY_BASE(1),
+		MULTIPLY_TOTAL(2);
 
-		private static final EntityAttributeModifier.Operation[] VALUES = new EntityAttributeModifier.Operation[]{field_6328, field_6330, field_6331};
+		private static final EntityAttributeModifier.Operation[] VALUES = new EntityAttributeModifier.Operation[]{ADDITION, MULTIPLY_BASE, MULTIPLY_TOTAL};
 		private final int id;
 
 		private Operation(int j) {

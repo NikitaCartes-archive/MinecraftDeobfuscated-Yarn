@@ -42,8 +42,7 @@ public class DolphinJumpGoal extends DiveJumpingGoal {
 
 	private boolean isWater(BlockPos blockPos, int i, int j, int k) {
 		BlockPos blockPos2 = blockPos.add(i * k, 0, j * k);
-		return this.dolphin.world.getFluidState(blockPos2).matches(FluidTags.field_15517)
-			&& !this.dolphin.world.getBlockState(blockPos2).getMaterial().blocksMovement();
+		return this.dolphin.world.getFluidState(blockPos2).matches(FluidTags.WATER) && !this.dolphin.world.getBlockState(blockPos2).getMaterial().blocksMovement();
 	}
 
 	private boolean isAir(BlockPos blockPos, int i, int j, int k) {
@@ -78,11 +77,11 @@ public class DolphinJumpGoal extends DiveJumpingGoal {
 		boolean bl = this.field_6473;
 		if (!bl) {
 			FluidState fluidState = this.dolphin.world.getFluidState(new BlockPos(this.dolphin));
-			this.field_6473 = fluidState.matches(FluidTags.field_15517);
+			this.field_6473 = fluidState.matches(FluidTags.WATER);
 		}
 
 		if (this.field_6473 && !bl) {
-			this.dolphin.playSound(SoundEvents.field_14707, 1.0F, 1.0F);
+			this.dolphin.playSound(SoundEvents.ENTITY_DOLPHIN_JUMP, 1.0F, 1.0F);
 		}
 
 		Vec3d vec3d = this.dolphin.getVelocity();

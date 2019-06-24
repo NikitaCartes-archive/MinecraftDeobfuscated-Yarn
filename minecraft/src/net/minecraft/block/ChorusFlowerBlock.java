@@ -37,7 +37,7 @@ public class ChorusFlowerBlock extends Block {
 					boolean bl2 = false;
 					BlockState blockState2 = world.getBlockState(blockPos.down());
 					Block block = blockState2.getBlock();
-					if (block == Blocks.field_10471) {
+					if (block == Blocks.END_STONE) {
 						bl = true;
 					} else if (block == this.plantBlock) {
 						int j = 1;
@@ -45,7 +45,7 @@ public class ChorusFlowerBlock extends Block {
 						for (int k = 0; k < 4; k++) {
 							Block block2 = world.getBlockState(blockPos.down(j + 1)).getBlock();
 							if (block2 != this.plantBlock) {
-								if (block2 == Blocks.field_10471) {
+								if (block2 == Blocks.END_STONE) {
 									bl2 = true;
 								}
 								break;
@@ -73,7 +73,7 @@ public class ChorusFlowerBlock extends Block {
 						boolean bl3 = false;
 
 						for (int l = 0; l < j; l++) {
-							Direction direction = Direction.Type.field_11062.random(random);
+							Direction direction = Direction.Type.HORIZONTAL.random(random);
 							BlockPos blockPos3 = blockPos.offset(direction);
 							if (world.isAir(blockPos3) && world.isAir(blockPos3.down()) && isSurroundedByAir(world, blockPos3, direction.getOpposite())) {
 								this.grow(world, blockPos3, i + 1);
@@ -105,7 +105,7 @@ public class ChorusFlowerBlock extends Block {
 	}
 
 	private static boolean isSurroundedByAir(ViewableWorld viewableWorld, BlockPos blockPos, @Nullable Direction direction) {
-		for (Direction direction2 : Direction.Type.field_11062) {
+		for (Direction direction2 : Direction.Type.HORIZONTAL) {
 			if (direction2 != direction && !viewableWorld.isAir(blockPos.offset(direction2))) {
 				return false;
 			}
@@ -118,7 +118,7 @@ public class ChorusFlowerBlock extends Block {
 	public BlockState getStateForNeighborUpdate(
 		BlockState blockState, Direction direction, BlockState blockState2, IWorld iWorld, BlockPos blockPos, BlockPos blockPos2
 	) {
-		if (direction != Direction.field_11036 && !blockState.canPlaceAt(iWorld, blockPos)) {
+		if (direction != Direction.UP && !blockState.canPlaceAt(iWorld, blockPos)) {
 			iWorld.getBlockTickScheduler().schedule(blockPos, this, 1);
 		}
 
@@ -129,13 +129,13 @@ public class ChorusFlowerBlock extends Block {
 	public boolean canPlaceAt(BlockState blockState, ViewableWorld viewableWorld, BlockPos blockPos) {
 		BlockState blockState2 = viewableWorld.getBlockState(blockPos.down());
 		Block block = blockState2.getBlock();
-		if (block != this.plantBlock && block != Blocks.field_10471) {
+		if (block != this.plantBlock && block != Blocks.END_STONE) {
 			if (!blockState2.isAir()) {
 				return false;
 			} else {
 				boolean bl = false;
 
-				for (Direction direction : Direction.Type.field_11062) {
+				for (Direction direction : Direction.Type.HORIZONTAL) {
 					BlockState blockState3 = viewableWorld.getBlockState(blockPos.offset(direction));
 					if (blockState3.getBlock() == this.plantBlock) {
 						if (bl) {
@@ -157,7 +157,7 @@ public class ChorusFlowerBlock extends Block {
 
 	@Override
 	public BlockRenderLayer getRenderLayer() {
-		return BlockRenderLayer.field_9174;
+		return BlockRenderLayer.CUTOUT;
 	}
 
 	@Override
@@ -166,12 +166,12 @@ public class ChorusFlowerBlock extends Block {
 	}
 
 	public static void generate(IWorld iWorld, BlockPos blockPos, Random random, int i) {
-		iWorld.setBlockState(blockPos, ((ChorusPlantBlock)Blocks.field_10021).withConnectionProperties(iWorld, blockPos), 2);
+		iWorld.setBlockState(blockPos, ((ChorusPlantBlock)Blocks.CHORUS_PLANT).withConnectionProperties(iWorld, blockPos), 2);
 		generate(iWorld, blockPos, random, blockPos, i, 0);
 	}
 
 	private static void generate(IWorld iWorld, BlockPos blockPos, Random random, BlockPos blockPos2, int i, int j) {
-		ChorusPlantBlock chorusPlantBlock = (ChorusPlantBlock)Blocks.field_10021;
+		ChorusPlantBlock chorusPlantBlock = (ChorusPlantBlock)Blocks.CHORUS_PLANT;
 		int k = random.nextInt(4) + 1;
 		if (j == 0) {
 			k++;
@@ -195,7 +195,7 @@ public class ChorusFlowerBlock extends Block {
 			}
 
 			for (int n = 0; n < m; n++) {
-				Direction direction = Direction.Type.field_11062.random(random);
+				Direction direction = Direction.Type.HORIZONTAL.random(random);
 				BlockPos blockPos4 = blockPos.up(k).offset(direction);
 				if (Math.abs(blockPos4.getX() - blockPos2.getX()) < i
 					&& Math.abs(blockPos4.getZ() - blockPos2.getZ()) < i
@@ -213,7 +213,7 @@ public class ChorusFlowerBlock extends Block {
 		}
 
 		if (!bl) {
-			iWorld.setBlockState(blockPos.up(k), Blocks.field_10528.getDefaultState().with(AGE, Integer.valueOf(5)), 2);
+			iWorld.setBlockState(blockPos.up(k), Blocks.CHORUS_FLOWER.getDefaultState().with(AGE, Integer.valueOf(5)), 2);
 		}
 	}
 

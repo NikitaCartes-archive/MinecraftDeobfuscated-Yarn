@@ -7,7 +7,7 @@ import net.minecraft.entity.ai.RangedAttackMob;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
-import net.minecraft.util.AbsoluteHand;
+import net.minecraft.util.Arm;
 import net.minecraft.util.Hand;
 import net.minecraft.util.math.MathHelper;
 
@@ -38,14 +38,14 @@ public class StrayEntityModel<T extends MobEntity & RangedAttackMob> extends Bip
 	}
 
 	public void method_19689(T mobEntity, float f, float g, float h) {
-		this.rightArmPose = BipedEntityModel.ArmPose.field_3409;
-		this.leftArmPose = BipedEntityModel.ArmPose.field_3409;
-		ItemStack itemStack = mobEntity.getStackInHand(Hand.field_5808);
-		if (itemStack.getItem() == Items.field_8102 && mobEntity.isAttacking()) {
-			if (mobEntity.getMainHand() == AbsoluteHand.field_6183) {
-				this.rightArmPose = BipedEntityModel.ArmPose.field_3403;
+		this.rightArmPose = BipedEntityModel.ArmPose.EMPTY;
+		this.leftArmPose = BipedEntityModel.ArmPose.EMPTY;
+		ItemStack itemStack = mobEntity.getStackInHand(Hand.MAIN_HAND);
+		if (itemStack.getItem() == Items.BOW && mobEntity.isAttacking()) {
+			if (mobEntity.getMainArm() == Arm.RIGHT) {
+				this.rightArmPose = BipedEntityModel.ArmPose.BOW_AND_ARROW;
 			} else {
-				this.leftArmPose = BipedEntityModel.ArmPose.field_3403;
+				this.leftArmPose = BipedEntityModel.ArmPose.BOW_AND_ARROW;
 			}
 		}
 
@@ -55,7 +55,7 @@ public class StrayEntityModel<T extends MobEntity & RangedAttackMob> extends Bip
 	public void method_19690(T mobEntity, float f, float g, float h, float i, float j, float k) {
 		super.method_17087(mobEntity, f, g, h, i, j, k);
 		ItemStack itemStack = mobEntity.getMainHandStack();
-		if (mobEntity.isAttacking() && (itemStack.isEmpty() || itemStack.getItem() != Items.field_8102)) {
+		if (mobEntity.isAttacking() && (itemStack.isEmpty() || itemStack.getItem() != Items.BOW)) {
 			float l = MathHelper.sin(this.handSwingProgress * (float) Math.PI);
 			float m = MathHelper.sin((1.0F - (1.0F - this.handSwingProgress) * (1.0F - this.handSwingProgress)) * (float) Math.PI);
 			this.rightArm.roll = 0.0F;
@@ -74,9 +74,9 @@ public class StrayEntityModel<T extends MobEntity & RangedAttackMob> extends Bip
 	}
 
 	@Override
-	public void setArmAngle(float f, AbsoluteHand absoluteHand) {
-		float g = absoluteHand == AbsoluteHand.field_6183 ? 1.0F : -1.0F;
-		Cuboid cuboid = this.getArm(absoluteHand);
+	public void setArmAngle(float f, Arm arm) {
+		float g = arm == Arm.RIGHT ? 1.0F : -1.0F;
+		Cuboid cuboid = this.getArm(arm);
 		cuboid.rotationPointX += g;
 		cuboid.applyTransform(f);
 		cuboid.rotationPointX -= g;

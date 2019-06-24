@@ -28,7 +28,7 @@ public class ExperienceOrbEntity extends Entity {
 	private int field_6160;
 
 	public ExperienceOrbEntity(World world, double d, double e, double f, int i) {
-		this(EntityType.field_6044, world);
+		this(EntityType.EXPERIENCE_ORB, world);
 		this.setPosition(d, e, f);
 		this.yaw = (float)(this.random.nextDouble() * 360.0);
 		this.setVelocity((this.random.nextDouble() * 0.2F - 0.1F) * 2.0, this.random.nextDouble() * 0.2 * 2.0, (this.random.nextDouble() * 0.2F - 0.1F) * 2.0);
@@ -74,17 +74,17 @@ public class ExperienceOrbEntity extends Entity {
 		this.prevX = this.x;
 		this.prevY = this.y;
 		this.prevZ = this.z;
-		if (this.isInFluid(FluidTags.field_15517)) {
+		if (this.isInFluid(FluidTags.WATER)) {
 			this.applyWaterMovement();
 		} else if (!this.hasNoGravity()) {
 			this.setVelocity(this.getVelocity().add(0.0, -0.03, 0.0));
 		}
 
-		if (this.world.getFluidState(new BlockPos(this)).matches(FluidTags.field_15518)) {
+		if (this.world.getFluidState(new BlockPos(this)).matches(FluidTags.LAVA)) {
 			this.setVelocity(
 				(double)((this.random.nextFloat() - this.random.nextFloat()) * 0.2F), 0.2F, (double)((this.random.nextFloat() - this.random.nextFloat()) * 0.2F)
 			);
-			this.playSound(SoundEvents.field_14821, 0.4F, 2.0F + this.random.nextFloat() * 0.4F);
+			this.playSound(SoundEvents.ENTITY_GENERIC_BURN, 0.4F, 2.0F + this.random.nextFloat() * 0.4F);
 		}
 
 		if (!this.world.doesNotCollide(this.getBoundingBox())) {
@@ -113,7 +113,7 @@ public class ExperienceOrbEntity extends Entity {
 			}
 		}
 
-		this.move(MovementType.field_6308, this.getVelocity());
+		this.move(MovementType.SELF, this.getVelocity());
 		float g = 0.98F;
 		if (this.onGround) {
 			g = this.world.getBlockState(new BlockPos(this.x, this.getBoundingBox().minY - 1.0, this.z)).getBlock().getSlipperiness() * 0.98F;
@@ -180,7 +180,7 @@ public class ExperienceOrbEntity extends Entity {
 			if (this.pickupDelay == 0 && playerEntity.experiencePickUpDelay == 0) {
 				playerEntity.experiencePickUpDelay = 2;
 				playerEntity.sendPickup(this, 1);
-				Entry<EquipmentSlot, ItemStack> entry = EnchantmentHelper.getRandomEnchantedEquipment(Enchantments.field_9101, playerEntity);
+				Entry<EquipmentSlot, ItemStack> entry = EnchantmentHelper.getRandomEnchantedEquipment(Enchantments.MENDING, playerEntity);
 				if (entry != null) {
 					ItemStack itemStack = (ItemStack)entry.getValue();
 					if (!itemStack.isEmpty() && itemStack.isDamaged()) {
@@ -261,7 +261,7 @@ public class ExperienceOrbEntity extends Entity {
 	}
 
 	@Override
-	public boolean canPlayerAttack() {
+	public boolean isAttackable() {
 		return false;
 	}
 

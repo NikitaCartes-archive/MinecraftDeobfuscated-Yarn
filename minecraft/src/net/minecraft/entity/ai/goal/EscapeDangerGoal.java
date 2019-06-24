@@ -20,7 +20,7 @@ public class EscapeDangerGoal extends Goal {
 	public EscapeDangerGoal(MobEntityWithAi mobEntityWithAi, double d) {
 		this.mob = mobEntityWithAi;
 		this.speed = d;
-		this.setControls(EnumSet.of(Goal.Control.field_18405));
+		this.setControls(EnumSet.of(Goal.Control.MOVE));
 	}
 
 	@Override
@@ -78,7 +78,7 @@ public class EscapeDangerGoal extends Goal {
 			for (int o = l - j; o <= l + j; o++) {
 				for (int p = m - i; p <= m + i; p++) {
 					mutable.set(n, o, p);
-					if (blockView.getFluidState(mutable).matches(FluidTags.field_15517)) {
+					if (blockView.getFluidState(mutable).matches(FluidTags.WATER)) {
 						float g = (float)((n - k) * (n - k) + (o - l) * (o - l) + (p - m) * (p - m));
 						if (g < f) {
 							f = g;

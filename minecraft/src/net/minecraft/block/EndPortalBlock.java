@@ -45,7 +45,7 @@ public class EndPortalBlock extends BlockWithEntity {
 				blockState.getOutlineShape(world, blockPos),
 				BooleanBiFunction.AND
 			)) {
-			entity.changeDimension(world.dimension.getType() == DimensionType.field_13078 ? DimensionType.field_13072 : DimensionType.field_13078);
+			entity.changeDimension(world.dimension.getType() == DimensionType.THE_END ? DimensionType.OVERWORLD : DimensionType.THE_END);
 		}
 	}
 
@@ -58,7 +58,7 @@ public class EndPortalBlock extends BlockWithEntity {
 		double g = 0.0;
 		double h = 0.0;
 		double i = 0.0;
-		world.addParticle(ParticleTypes.field_11251, d, e, f, 0.0, 0.0, 0.0);
+		world.addParticle(ParticleTypes.SMOKE, d, e, f, 0.0, 0.0, 0.0);
 	}
 
 	@Environment(EnvType.CLIENT)

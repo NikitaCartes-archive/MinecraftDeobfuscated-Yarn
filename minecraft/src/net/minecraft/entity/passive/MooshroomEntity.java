@@ -44,44 +44,44 @@ public class MooshroomEntity extends CowEntity {
 
 	@Override
 	public float getPathfindingFavor(BlockPos blockPos, ViewableWorld viewableWorld) {
-		return viewableWorld.getBlockState(blockPos.down()).getBlock() == Blocks.field_10402 ? 10.0F : viewableWorld.getBrightness(blockPos) - 0.5F;
+		return viewableWorld.getBlockState(blockPos.down()).getBlock() == Blocks.MYCELIUM ? 10.0F : viewableWorld.getBrightness(blockPos) - 0.5F;
 	}
 
 	public static boolean method_20665(EntityType<MooshroomEntity> entityType, IWorld iWorld, SpawnType spawnType, BlockPos blockPos, Random random) {
-		return iWorld.getBlockState(blockPos.down()).getBlock() == Blocks.field_10402 && iWorld.getLightLevel(blockPos, 0) > 8;
+		return iWorld.getBlockState(blockPos.down()).getBlock() == Blocks.MYCELIUM && iWorld.getLightLevel(blockPos, 0) > 8;
 	}
 
 	@Override
 	public void onStruckByLightning(LightningEntity lightningEntity) {
 		UUID uUID = lightningEntity.getUuid();
 		if (!uUID.equals(this.lightningId)) {
-			this.setType(this.getMooshroomType() == MooshroomEntity.Type.field_18109 ? MooshroomEntity.Type.field_18110 : MooshroomEntity.Type.field_18109);
+			this.setType(this.getMooshroomType() == MooshroomEntity.Type.RED ? MooshroomEntity.Type.BROWN : MooshroomEntity.Type.RED);
 			this.lightningId = uUID;
-			this.playSound(SoundEvents.field_18266, 2.0F, 1.0F);
+			this.playSound(SoundEvents.ENTITY_MOOSHROOM_CONVERT, 2.0F, 1.0F);
 		}
 	}
 
 	@Override
 	protected void initDataTracker() {
 		super.initDataTracker();
-		this.dataTracker.startTracking(TYPE, MooshroomEntity.Type.field_18109.name);
+		this.dataTracker.startTracking(TYPE, MooshroomEntity.Type.RED.name);
 	}
 
 	@Override
 	public boolean interactMob(PlayerEntity playerEntity, Hand hand) {
 		ItemStack itemStack = playerEntity.getStackInHand(hand);
-		if (itemStack.getItem() == Items.field_8428 && this.getBreedingAge() >= 0 && !playerEntity.abilities.creativeMode) {
+		if (itemStack.getItem() == Items.BOWL && this.getBreedingAge() >= 0 && !playerEntity.abilities.creativeMode) {
 			itemStack.decrement(1);
 			boolean bl = false;
 			ItemStack itemStack2;
 			if (this.stewEffect != null) {
 				bl = true;
-				itemStack2 = new ItemStack(Items.field_8766);
+				itemStack2 = new ItemStack(Items.SUSPICIOUS_STEW);
 				SuspiciousStewItem.addEffectToStew(itemStack2, this.stewEffect, this.stewEffectDuration);
 				this.stewEffect = null;
 				this.stewEffectDuration = 0;
 			} else {
-				itemStack2 = new ItemStack(Items.field_8208);
+				itemStack2 = new ItemStack(Items.MUSHROOM_STEW);
 			}
 
 			if (itemStack.isEmpty()) {
@@ -92,18 +92,18 @@ public class MooshroomEntity extends CowEntity {
 
 			SoundEvent soundEvent;
 			if (bl) {
-				soundEvent = SoundEvents.field_18269;
+				soundEvent = SoundEvents.ENTITY_MOOSHROOM_SUSPICIOUS_MILK;
 			} else {
-				soundEvent = SoundEvents.field_18268;
+				soundEvent = SoundEvents.ENTITY_MOOSHROOM_MILK;
 			}
 
 			this.playSound(soundEvent, 1.0F, 1.0F);
 			return true;
-		} else if (itemStack.getItem() == Items.field_8868 && this.getBreedingAge() >= 0) {
-			this.world.addParticle(ParticleTypes.field_11236, this.x, this.y + (double)(this.getHeight() / 2.0F), this.z, 0.0, 0.0, 0.0);
+		} else if (itemStack.getItem() == Items.SHEARS && this.getBreedingAge() >= 0) {
+			this.world.addParticle(ParticleTypes.EXPLOSION, this.x, this.y + (double)(this.getHeight() / 2.0F), this.z, 0.0, 0.0, 0.0);
 			if (!this.world.isClient) {
 				this.remove();
-				CowEntity cowEntity = EntityType.field_6085.create(this.world);
+				CowEntity cowEntity = EntityType.COW.create(this.world);
 				cowEntity.setPositionAndAngles(this.x, this.y, this.z, this.yaw, this.pitch);
 				cowEntity.setHealth(this.getHealth());
 				cowEntity.field_6283 = this.field_6283;
@@ -119,17 +119,17 @@ public class MooshroomEntity extends CowEntity {
 				}
 
 				itemStack.damage(1, playerEntity, playerEntityx -> playerEntityx.sendToolBreakStatus(hand));
-				this.playSound(SoundEvents.field_14705, 1.0F, 1.0F);
+				this.playSound(SoundEvents.ENTITY_MOOSHROOM_SHEAR, 1.0F, 1.0F);
 			}
 
 			return true;
 		} else {
-			if (this.getMooshroomType() == MooshroomEntity.Type.field_18110 && itemStack.getItem().isIn(ItemTags.field_15543)) {
+			if (this.getMooshroomType() == MooshroomEntity.Type.BROWN && itemStack.getItem().isIn(ItemTags.SMALL_FLOWERS)) {
 				if (this.stewEffect != null) {
 					for (int j = 0; j < 2; j++) {
 						this.world
 							.addParticle(
-								ParticleTypes.field_11251,
+								ParticleTypes.SMOKE,
 								this.x + (double)(this.random.nextFloat() / 2.0F),
 								this.y + (double)(this.getHeight() / 2.0F),
 								this.z + (double)(this.random.nextFloat() / 2.0F),
@@ -147,7 +147,7 @@ public class MooshroomEntity extends CowEntity {
 					for (int i = 0; i < 4; i++) {
 						this.world
 							.addParticle(
-								ParticleTypes.field_11245,
+								ParticleTypes.EFFECT,
 								this.x + (double)(this.random.nextFloat() / 2.0F),
 								this.y + (double)(this.getHeight() / 2.0F),
 								this.z + (double)(this.random.nextFloat() / 2.0F),
@@ -159,7 +159,7 @@ public class MooshroomEntity extends CowEntity {
 
 					this.stewEffect = pair.getLeft();
 					this.stewEffectDuration = pair.getRight();
-					this.playSound(SoundEvents.field_18267, 2.0F, 1.0F);
+					this.playSound(SoundEvents.ENTITY_MOOSHROOM_EAT, 2.0F, 1.0F);
 				}
 			}
 
@@ -204,7 +204,7 @@ public class MooshroomEntity extends CowEntity {
 	}
 
 	public MooshroomEntity method_6495(PassiveEntity passiveEntity) {
-		MooshroomEntity mooshroomEntity = EntityType.field_6143.create(this.world);
+		MooshroomEntity mooshroomEntity = EntityType.MOOSHROOM.create(this.world);
 		mooshroomEntity.setType(this.chooseBabyType((MooshroomEntity)passiveEntity));
 		return mooshroomEntity;
 	}
@@ -214,7 +214,7 @@ public class MooshroomEntity extends CowEntity {
 		MooshroomEntity.Type type2 = mooshroomEntity.getMooshroomType();
 		MooshroomEntity.Type type3;
 		if (type == type2 && this.random.nextInt(1024) == 0) {
-			type3 = type == MooshroomEntity.Type.field_18110 ? MooshroomEntity.Type.field_18109 : MooshroomEntity.Type.field_18110;
+			type3 = type == MooshroomEntity.Type.BROWN ? MooshroomEntity.Type.RED : MooshroomEntity.Type.BROWN;
 		} else {
 			type3 = this.random.nextBoolean() ? type : type2;
 		}
@@ -223,8 +223,8 @@ public class MooshroomEntity extends CowEntity {
 	}
 
 	public static enum Type {
-		field_18109("red", Blocks.field_10559.getDefaultState()),
-		field_18110("brown", Blocks.field_10251.getDefaultState());
+		RED("red", Blocks.RED_MUSHROOM.getDefaultState()),
+		BROWN("brown", Blocks.BROWN_MUSHROOM.getDefaultState());
 
 		private final String name;
 		private final BlockState mushroom;
@@ -246,7 +246,7 @@ public class MooshroomEntity extends CowEntity {
 				}
 			}
 
-			return field_18109;
+			return RED;
 		}
 	}
 }

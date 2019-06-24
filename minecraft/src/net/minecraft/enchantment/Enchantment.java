@@ -101,9 +101,9 @@ public abstract class Enchantment {
 	public Text getName(int i) {
 		Text text = new TranslatableText(this.getTranslationKey());
 		if (this.isCursed()) {
-			text.formatted(Formatting.field_1061);
+			text.formatted(Formatting.RED);
 		} else {
-			text.formatted(Formatting.field_1080);
+			text.formatted(Formatting.GRAY);
 		}
 
 		if (i != 1 || this.getMaximumLevel() != 1) {
@@ -132,10 +132,10 @@ public abstract class Enchantment {
 	}
 
 	public static enum Weight {
-		field_9087(10),
-		field_9090(5),
-		field_9088(2),
-		field_9091(1);
+		COMMON(10),
+		UNCOMMON(5),
+		RARE(2),
+		VERY_RARE(1);
 
 		private final int weight;
 

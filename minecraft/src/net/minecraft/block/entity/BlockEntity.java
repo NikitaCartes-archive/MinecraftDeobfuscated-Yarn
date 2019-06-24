@@ -69,7 +69,7 @@ public abstract class BlockEntity {
 	@Nullable
 	public static BlockEntity createFromTag(CompoundTag compoundTag) {
 		String string = compoundTag.getString("id");
-		return (BlockEntity)Registry.BLOCK_ENTITY.getOrEmpty(new Identifier(string)).map(blockEntityType -> {
+		return (BlockEntity)Registry.BLOCK_ENTITY_TYPE.getOrEmpty(new Identifier(string)).map(blockEntityType -> {
 			try {
 				return blockEntityType.instantiate();
 			} catch (Throwable var3) {
@@ -155,7 +155,7 @@ public abstract class BlockEntity {
 	}
 
 	public void populateCrashReport(CrashReportSection crashReportSection) {
-		crashReportSection.add("Name", (CrashCallable<String>)(() -> Registry.BLOCK_ENTITY.getId(this.getType()) + " // " + this.getClass().getCanonicalName()));
+		crashReportSection.add("Name", (CrashCallable<String>)(() -> Registry.BLOCK_ENTITY_TYPE.getId(this.getType()) + " // " + this.getClass().getCanonicalName()));
 		if (this.world != null) {
 			CrashReportSection.addBlockInfo(crashReportSection, this.pos, this.getCachedState());
 			CrashReportSection.addBlockInfo(crashReportSection, this.pos, this.world.getBlockState(this.pos));
@@ -183,7 +183,7 @@ public abstract class BlockEntity {
 	public void method_20525() {
 		if (!this.field_19314) {
 			this.field_19314 = true;
-			LOGGER.warn("Block entity invalid: {} @ {}", () -> Registry.BLOCK_ENTITY.getId(this.getType()), this::getPos);
+			LOGGER.warn("Block entity invalid: {} @ {}", () -> Registry.BLOCK_ENTITY_TYPE.getId(this.getType()), this::getPos);
 		}
 	}
 }

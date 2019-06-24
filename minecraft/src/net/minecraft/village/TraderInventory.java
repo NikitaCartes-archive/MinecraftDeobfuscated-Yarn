@@ -11,7 +11,7 @@ import net.minecraft.util.DefaultedList;
 
 public class TraderInventory implements Inventory {
 	private final Trader trader;
-	private final DefaultedList<ItemStack> inventory = DefaultedList.create(3, ItemStack.EMPTY);
+	private final DefaultedList<ItemStack> inventory = DefaultedList.ofSize(3, ItemStack.EMPTY);
 	@Nullable
 	private TradeOffer traderRecipe;
 	private int recipeIndex;

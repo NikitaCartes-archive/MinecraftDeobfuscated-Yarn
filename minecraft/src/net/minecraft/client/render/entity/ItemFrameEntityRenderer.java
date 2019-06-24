@@ -45,7 +45,7 @@ public class ItemFrameEntityRenderer extends EntityRenderer<ItemFrameEntity> {
 		this.renderManager.textureManager.bindTexture(SpriteAtlasTexture.BLOCK_ATLAS_TEX);
 		BlockRenderManager blockRenderManager = this.client.getBlockRenderManager();
 		BakedModelManager bakedModelManager = blockRenderManager.getModels().getModelManager();
-		ModelIdentifier modelIdentifier = itemFrameEntity.getHeldItemStack().getItem() == Items.field_8204 ? MAP_FRAME : NORMAL_FRAME;
+		ModelIdentifier modelIdentifier = itemFrameEntity.getHeldItemStack().getItem() == Items.FILLED_MAP ? MAP_FRAME : NORMAL_FRAME;
 		GlStateManager.pushMatrix();
 		GlStateManager.translatef(-0.5F, -0.5F, -0.5F);
 		if (this.renderOutlines) {
@@ -61,14 +61,14 @@ public class ItemFrameEntityRenderer extends EntityRenderer<ItemFrameEntity> {
 
 		GlStateManager.popMatrix();
 		GlStateManager.enableLighting();
-		if (itemFrameEntity.getHeldItemStack().getItem() == Items.field_8204) {
+		if (itemFrameEntity.getHeldItemStack().getItem() == Items.FILLED_MAP) {
 			GlStateManager.pushLightingAttributes();
 			GuiLighting.enable();
 		}
 
 		GlStateManager.translatef(0.0F, 0.0F, 0.4375F);
 		this.renderItem(itemFrameEntity);
-		if (itemFrameEntity.getHeldItemStack().getItem() == Items.field_8204) {
+		if (itemFrameEntity.getHeldItemStack().getItem() == Items.FILLED_MAP) {
 			GuiLighting.disable();
 			GlStateManager.popAttributes();
 		}
@@ -92,7 +92,7 @@ public class ItemFrameEntityRenderer extends EntityRenderer<ItemFrameEntity> {
 		ItemStack itemStack = itemFrameEntity.getHeldItemStack();
 		if (!itemStack.isEmpty()) {
 			GlStateManager.pushMatrix();
-			boolean bl = itemStack.getItem() == Items.field_8204;
+			boolean bl = itemStack.getItem() == Items.FILLED_MAP;
 			int i = bl ? itemFrameEntity.getRotation() % 4 * 2 : itemFrameEntity.getRotation();
 			GlStateManager.rotatef((float)i * 360.0F / 8.0F, 0.0F, 0.0F, 1.0F);
 			if (bl) {
@@ -109,7 +109,7 @@ public class ItemFrameEntityRenderer extends EntityRenderer<ItemFrameEntity> {
 				}
 			} else {
 				GlStateManager.scalef(0.5F, 0.5F, 0.5F);
-				this.itemRenderer.renderItem(itemStack, ModelTransformation.Type.field_4319);
+				this.itemRenderer.renderItem(itemStack, ModelTransformation.Type.FIXED);
 			}
 
 			GlStateManager.popMatrix();

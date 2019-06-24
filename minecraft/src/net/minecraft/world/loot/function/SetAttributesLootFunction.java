@@ -141,11 +141,11 @@ public class SetAttributesLootFunction extends ConditionalLootFunction {
 
 		private static String getName(EntityAttributeModifier.Operation operation) {
 			switch (operation) {
-				case field_6328:
+				case ADDITION:
 					return "addition";
-				case field_6330:
+				case MULTIPLY_BASE:
 					return "multiply_base";
-				case field_6331:
+				case MULTIPLY_TOTAL:
 					return "multiply_total";
 				default:
 					throw new IllegalArgumentException("Unknown operation " + operation);
@@ -155,11 +155,11 @@ public class SetAttributesLootFunction extends ConditionalLootFunction {
 		private static EntityAttributeModifier.Operation fromName(String string) {
 			switch (string) {
 				case "addition":
-					return EntityAttributeModifier.Operation.field_6328;
+					return EntityAttributeModifier.Operation.ADDITION;
 				case "multiply_base":
-					return EntityAttributeModifier.Operation.field_6330;
+					return EntityAttributeModifier.Operation.MULTIPLY_BASE;
 				case "multiply_total":
-					return EntityAttributeModifier.Operation.field_6331;
+					return EntityAttributeModifier.Operation.MULTIPLY_TOTAL;
 				default:
 					throw new JsonSyntaxException("Unknown attribute modifier operation " + string);
 			}

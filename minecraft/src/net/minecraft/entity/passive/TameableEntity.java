@@ -86,9 +86,9 @@ public abstract class TameableEntity extends AnimalEntity {
 	}
 
 	protected void showEmoteParticle(boolean bl) {
-		ParticleEffect particleEffect = ParticleTypes.field_11201;
+		ParticleEffect particleEffect = ParticleTypes.HEART;
 		if (!bl) {
-			particleEffect = ParticleTypes.field_11251;
+			particleEffect = ParticleTypes.SMOKE;
 		}
 
 		for (int i = 0; i < 7; i++) {
@@ -225,7 +225,7 @@ public abstract class TameableEntity extends AnimalEntity {
 
 	@Override
 	public void onDeath(DamageSource damageSource) {
-		if (!this.world.isClient && this.world.getGameRules().getBoolean(GameRules.field_19398) && this.getOwner() instanceof ServerPlayerEntity) {
+		if (!this.world.isClient && this.world.getGameRules().getBoolean(GameRules.SHOW_DEATH_MESSAGES) && this.getOwner() instanceof ServerPlayerEntity) {
 			this.getOwner().sendMessage(this.getDamageTracker().getDeathMessage());
 		}
 

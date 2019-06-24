@@ -15,7 +15,7 @@ public interface SynchronousResourceReloadListener extends ResourceReloadListene
 		Executor executor,
 		Executor executor2
 	) {
-		return synchronizer.whenPrepared(Unit.field_17274).thenRunAsync(() -> this.apply(resourceManager), executor2);
+		return synchronizer.whenPrepared(Unit.INSTANCE).thenRunAsync(() -> this.apply(resourceManager), executor2);
 	}
 
 	void apply(ResourceManager resourceManager);

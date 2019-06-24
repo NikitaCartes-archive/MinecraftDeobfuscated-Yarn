@@ -6,7 +6,7 @@ import net.fabricmc.api.Environment;
 @Environment(EnvType.CLIENT)
 public interface ModelBakeSettings {
 	default ModelRotation getRotation() {
-		return ModelRotation.field_5350;
+		return ModelRotation.X0_Y0;
 	}
 
 	default boolean isUvLocked() {

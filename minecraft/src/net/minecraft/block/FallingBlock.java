@@ -60,7 +60,7 @@ public class FallingBlock extends Block {
 	public static boolean canFallThrough(BlockState blockState) {
 		Block block = blockState.getBlock();
 		Material material = blockState.getMaterial();
-		return blockState.isAir() || block == Blocks.field_10036 || material.isLiquid() || material.isReplaceable();
+		return blockState.isAir() || block == Blocks.FIRE || material.isLiquid() || material.isReplaceable();
 	}
 
 	public void onLanding(World world, BlockPos blockPos, BlockState blockState, BlockState blockState2) {
@@ -78,7 +78,7 @@ public class FallingBlock extends Block {
 				double d = (double)((float)blockPos.getX() + random.nextFloat());
 				double e = (double)blockPos.getY() - 0.05;
 				double f = (double)((float)blockPos.getZ() + random.nextFloat());
-				world.addParticle(new BlockStateParticleEffect(ParticleTypes.field_11206, blockState), d, e, f, 0.0, 0.0, 0.0);
+				world.addParticle(new BlockStateParticleEffect(ParticleTypes.FALLING_DUST, blockState), d, e, f, 0.0, 0.0, 0.0);
 			}
 		}
 	}

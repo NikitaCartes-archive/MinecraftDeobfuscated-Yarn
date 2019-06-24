@@ -44,7 +44,7 @@ public class EndGatewayBlock extends BlockWithEntity {
 					g = (double)(random.nextFloat() * 2.0F * (float)l);
 				}
 
-				world.addParticle(ParticleTypes.field_11214, d, e, f, g, h, k);
+				world.addParticle(ParticleTypes.PORTAL, d, e, f, g, h, k);
 			}
 		}
 	}

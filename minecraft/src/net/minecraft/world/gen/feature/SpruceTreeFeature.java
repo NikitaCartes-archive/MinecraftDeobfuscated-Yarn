@@ -11,8 +11,8 @@ import net.minecraft.util.math.MutableIntBoundingBox;
 import net.minecraft.world.ModifiableTestableWorld;
 
 public class SpruceTreeFeature extends AbstractTreeFeature<DefaultFeatureConfig> {
-	private static final BlockState LOG = Blocks.field_10037.getDefaultState();
-	private static final BlockState LEAVES = Blocks.field_9988.getDefaultState();
+	private static final BlockState LOG = Blocks.SPRUCE_LOG.getDefaultState();
+	private static final BlockState LEAVES = Blocks.SPRUCE_LEAVES.getDefaultState();
 
 	public SpruceTreeFeature(Function<Dynamic<?>, ? extends DefaultFeatureConfig> function, boolean bl) {
 		super(function, bl);

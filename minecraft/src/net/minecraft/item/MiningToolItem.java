@@ -32,14 +32,14 @@ public class MiningToolItem extends ToolItem {
 
 	@Override
 	public boolean postHit(ItemStack itemStack, LivingEntity livingEntity, LivingEntity livingEntity2) {
-		itemStack.damage(2, livingEntity2, livingEntityx -> livingEntityx.sendEquipmentBreakStatus(EquipmentSlot.field_6173));
+		itemStack.damage(2, livingEntity2, livingEntityx -> livingEntityx.sendEquipmentBreakStatus(EquipmentSlot.MAINHAND));
 		return true;
 	}
 
 	@Override
 	public boolean postMine(ItemStack itemStack, World world, BlockState blockState, BlockPos blockPos, LivingEntity livingEntity) {
 		if (!world.isClient && blockState.getHardness(world, blockPos) != 0.0F) {
-			itemStack.damage(1, livingEntity, livingEntityx -> livingEntityx.sendEquipmentBreakStatus(EquipmentSlot.field_6173));
+			itemStack.damage(1, livingEntity, livingEntityx -> livingEntityx.sendEquipmentBreakStatus(EquipmentSlot.MAINHAND));
 		}
 
 		return true;
@@ -48,14 +48,14 @@ public class MiningToolItem extends ToolItem {
 	@Override
 	public Multimap<String, EntityAttributeModifier> getModifiers(EquipmentSlot equipmentSlot) {
 		Multimap<String, EntityAttributeModifier> multimap = super.getModifiers(equipmentSlot);
-		if (equipmentSlot == EquipmentSlot.field_6173) {
+		if (equipmentSlot == EquipmentSlot.MAINHAND) {
 			multimap.put(
 				EntityAttributes.ATTACK_DAMAGE.getId(),
-				new EntityAttributeModifier(ATTACK_DAMAGE_MODIFIER_UUID, "Tool modifier", (double)this.attackDamage, EntityAttributeModifier.Operation.field_6328)
+				new EntityAttributeModifier(ATTACK_DAMAGE_MODIFIER_UUID, "Tool modifier", (double)this.attackDamage, EntityAttributeModifier.Operation.ADDITION)
 			);
 			multimap.put(
 				EntityAttributes.ATTACK_SPEED.getId(),
-				new EntityAttributeModifier(ATTACK_SPEED_MODIFIER_UUID, "Tool modifier", (double)this.attackSpeed, EntityAttributeModifier.Operation.field_6328)
+				new EntityAttributeModifier(ATTACK_SPEED_MODIFIER_UUID, "Tool modifier", (double)this.attackSpeed, EntityAttributeModifier.Operation.ADDITION)
 			);
 		}
 

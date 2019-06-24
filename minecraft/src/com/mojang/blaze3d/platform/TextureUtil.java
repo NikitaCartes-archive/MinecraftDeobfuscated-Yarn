@@ -32,7 +32,7 @@ public class TextureUtil {
 	}
 
 	public static void prepareImage(int i, int j, int k) {
-		prepareImage(NativeImage.class_1013.field_5012, i, 0, j, k);
+		prepareImage(NativeImage.class_1013.RGBA, i, 0, j, k);
 	}
 
 	public static void prepareImage(NativeImage.class_1013 arg, int i, int j, int k) {
@@ -40,7 +40,7 @@ public class TextureUtil {
 	}
 
 	public static void prepareImage(int i, int j, int k, int l) {
-		prepareImage(NativeImage.class_1013.field_5012, i, j, k, l);
+		prepareImage(NativeImage.class_1013.RGBA, i, j, k, l);
 	}
 
 	public static void prepareImage(NativeImage.class_1013 arg, int i, int j, int k, int l) {

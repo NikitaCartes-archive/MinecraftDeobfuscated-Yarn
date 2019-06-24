@@ -27,19 +27,19 @@ import net.minecraft.world.loot.context.LootContextTypes;
 
 public class GiveGiftsToHeroTask extends Task<VillagerEntity> {
 	private static final Map<VillagerProfession, Identifier> GIFTS = SystemUtil.consume(Maps.<VillagerProfession, Identifier>newHashMap(), hashMap -> {
-		hashMap.put(VillagerProfession.field_17052, LootTables.field_19062);
-		hashMap.put(VillagerProfession.field_17053, LootTables.field_19063);
-		hashMap.put(VillagerProfession.field_17054, LootTables.field_19064);
-		hashMap.put(VillagerProfession.field_17055, LootTables.field_19065);
-		hashMap.put(VillagerProfession.field_17056, LootTables.field_19066);
-		hashMap.put(VillagerProfession.field_17057, LootTables.field_19067);
-		hashMap.put(VillagerProfession.field_17058, LootTables.field_19068);
-		hashMap.put(VillagerProfession.field_17059, LootTables.field_19069);
-		hashMap.put(VillagerProfession.field_17060, LootTables.field_19070);
-		hashMap.put(VillagerProfession.field_17061, LootTables.field_19071);
-		hashMap.put(VillagerProfession.field_17063, LootTables.field_19072);
-		hashMap.put(VillagerProfession.field_17064, LootTables.field_19073);
-		hashMap.put(VillagerProfession.field_17065, LootTables.field_19074);
+		hashMap.put(VillagerProfession.ARMORER, LootTables.HERO_OF_THE_VILLAGE_ARMORER_GIFT_GAMEPLAY);
+		hashMap.put(VillagerProfession.BUTCHER, LootTables.HERO_OF_THE_VILLAGE_BUTCHER_GIFT_GAMEPLAY);
+		hashMap.put(VillagerProfession.CARTOGRAPHER, LootTables.HERO_OF_THE_VILLAGE_CARTOGRAPHER_GIFT_GAMEPLAY);
+		hashMap.put(VillagerProfession.CLERIC, LootTables.HERO_OF_THE_VILLAGE_CLERIC_GIFT_GAMEPLAY);
+		hashMap.put(VillagerProfession.FARMER, LootTables.HERO_OF_THE_VILLAGE_FARMER_GIFT_GAMEPLAY);
+		hashMap.put(VillagerProfession.FISHERMAN, LootTables.HERO_OF_THE_VILLAGE_FISHERMAN_GIFT_GAMEPLAY);
+		hashMap.put(VillagerProfession.FLETCHER, LootTables.HERO_OF_THE_VILLAGE_FLETCHER_GIFT_GAMEPLAY);
+		hashMap.put(VillagerProfession.LEATHERWORKER, LootTables.HERO_OF_THE_VILLAGE_LEATHERWORKER_GIFT_GAMEPLAY);
+		hashMap.put(VillagerProfession.LIBRARIAN, LootTables.HERO_OF_THE_VILLAGE_LIBRARIAN_GIFT_GAMEPLAY);
+		hashMap.put(VillagerProfession.MASON, LootTables.HERO_OF_THE_VILLAGE_MASON_GIFT_GAMEPLAY);
+		hashMap.put(VillagerProfession.SHEPHERD, LootTables.HERO_OF_THE_VILLAGE_SHEPHERD_GIFT_GAMEPLAY);
+		hashMap.put(VillagerProfession.TOOLSMITH, LootTables.HERO_OF_THE_VILLAGE_TOOLSMITH_GIFT_GAMEPLAY);
+		hashMap.put(VillagerProfession.WEAPONSMITH, LootTables.HERO_OF_THE_VILLAGE_WEAPONSMITH_GIFT_GAMEPLAY);
 	});
 	private int ticksLeft = 600;
 	private boolean done;
@@ -48,14 +48,14 @@ public class GiveGiftsToHeroTask extends Task<VillagerEntity> {
 	public GiveGiftsToHeroTask(int i) {
 		super(
 			ImmutableMap.of(
-				MemoryModuleType.field_18445,
-				MemoryModuleState.field_18458,
-				MemoryModuleType.field_18446,
-				MemoryModuleState.field_18458,
-				MemoryModuleType.field_18447,
-				MemoryModuleState.field_18458,
-				MemoryModuleType.field_18444,
-				MemoryModuleState.field_18456
+				MemoryModuleType.WALK_TARGET,
+				MemoryModuleState.REGISTERED,
+				MemoryModuleType.LOOK_TARGET,
+				MemoryModuleState.REGISTERED,
+				MemoryModuleType.INTERACTION_TARGET,
+				MemoryModuleState.REGISTERED,
+				MemoryModuleType.NEAREST_VISIBLE_PLAYER,
+				MemoryModuleState.VALUE_PRESENT
 			),
 			i
 		);
@@ -76,7 +76,7 @@ public class GiveGiftsToHeroTask extends Task<VillagerEntity> {
 		this.done = false;
 		this.startTime = l;
 		PlayerEntity playerEntity = (PlayerEntity)this.getNearestPlayerIfHero(villagerEntity).get();
-		villagerEntity.getBrain().putMemory(MemoryModuleType.field_18447, playerEntity);
+		villagerEntity.getBrain().putMemory(MemoryModuleType.INTERACTION_TARGET, playerEntity);
 		LookTargetUtil.lookAt(villagerEntity, playerEntity);
 	}
 
@@ -99,9 +99,9 @@ public class GiveGiftsToHeroTask extends Task<VillagerEntity> {
 
 	protected void method_19968(ServerWorld serverWorld, VillagerEntity villagerEntity, long l) {
 		this.ticksLeft = getNextGiftDelay(serverWorld);
-		villagerEntity.getBrain().forget(MemoryModuleType.field_18447);
-		villagerEntity.getBrain().forget(MemoryModuleType.field_18445);
-		villagerEntity.getBrain().forget(MemoryModuleType.field_18446);
+		villagerEntity.getBrain().forget(MemoryModuleType.INTERACTION_TARGET);
+		villagerEntity.getBrain().forget(MemoryModuleType.WALK_TARGET);
+		villagerEntity.getBrain().forget(MemoryModuleType.LOOK_TARGET);
 	}
 
 	private void giveGifts(VillagerEntity villagerEntity, LivingEntity livingEntity) {
@@ -118,12 +118,12 @@ public class GiveGiftsToHeroTask extends Task<VillagerEntity> {
 			if (GIFTS.containsKey(villagerProfession)) {
 				LootSupplier lootSupplier = villagerEntity.world.getServer().getLootManager().getSupplier((Identifier)GIFTS.get(villagerProfession));
 				LootContext.Builder builder = new LootContext.Builder((ServerWorld)villagerEntity.world)
-					.put(LootContextParameters.field_1232, new BlockPos(villagerEntity))
-					.put(LootContextParameters.field_1226, villagerEntity)
+					.put(LootContextParameters.POSITION, new BlockPos(villagerEntity))
+					.put(LootContextParameters.THIS_ENTITY, villagerEntity)
 					.setRandom(villagerEntity.getRand());
-				return lootSupplier.getDrops(builder.build(LootContextTypes.field_16235));
+				return lootSupplier.getDrops(builder.build(LootContextTypes.GIFT));
 			} else {
-				return ImmutableList.of(new ItemStack(Items.field_8317));
+				return ImmutableList.of(new ItemStack(Items.WHEAT_SEEDS));
 			}
 		}
 	}
@@ -133,11 +133,11 @@ public class GiveGiftsToHeroTask extends Task<VillagerEntity> {
 	}
 
 	private Optional<PlayerEntity> getNearestPlayerIfHero(VillagerEntity villagerEntity) {
-		return villagerEntity.getBrain().getOptionalMemory(MemoryModuleType.field_18444).filter(this::isHero);
+		return villagerEntity.getBrain().getOptionalMemory(MemoryModuleType.NEAREST_VISIBLE_PLAYER).filter(this::isHero);
 	}
 
 	private boolean isHero(PlayerEntity playerEntity) {
-		return playerEntity.hasStatusEffect(StatusEffects.field_18980);
+		return playerEntity.hasStatusEffect(StatusEffects.HERO_OF_THE_VILLAGE);
 	}
 
 	private boolean isCloseEnough(VillagerEntity villagerEntity, PlayerEntity playerEntity) {

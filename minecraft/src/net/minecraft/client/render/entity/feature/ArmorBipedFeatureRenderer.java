@@ -17,21 +17,21 @@ public class ArmorBipedFeatureRenderer<T extends LivingEntity, M extends BipedEn
 	protected void method_4170(A bipedEntityModel, EquipmentSlot equipmentSlot) {
 		this.method_4190(bipedEntityModel);
 		switch (equipmentSlot) {
-			case field_6169:
+			case HEAD:
 				bipedEntityModel.head.visible = true;
 				bipedEntityModel.headwear.visible = true;
 				break;
-			case field_6174:
+			case CHEST:
 				bipedEntityModel.body.visible = true;
 				bipedEntityModel.rightArm.visible = true;
 				bipedEntityModel.leftArm.visible = true;
 				break;
-			case field_6172:
+			case LEGS:
 				bipedEntityModel.body.visible = true;
 				bipedEntityModel.rightLeg.visible = true;
 				bipedEntityModel.leftLeg.visible = true;
 				break;
-			case field_6166:
+			case FEET:
 				bipedEntityModel.rightLeg.visible = true;
 				bipedEntityModel.leftLeg.visible = true;
 		}

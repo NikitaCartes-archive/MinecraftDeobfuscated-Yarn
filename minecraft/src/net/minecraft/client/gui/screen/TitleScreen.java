@@ -63,8 +63,8 @@ public class TitleScreen extends Screen {
 		this.field_17776 = (double)new Random().nextFloat() < 1.0E-4;
 		if (!GLX.supportsOpenGL2() && !GLX.isNextGen()) {
 			this.warning = new TitleScreen.Warning(
-				new TranslatableText("title.oldgl.eol.line1").formatted(Formatting.field_1061).formatted(Formatting.field_1067),
-				new TranslatableText("title.oldgl.eol.line2").formatted(Formatting.field_1061).formatted(Formatting.field_1067),
+				new TranslatableText("title.oldgl.eol.line1").formatted(Formatting.RED).formatted(Formatting.BOLD),
+				new TranslatableText("title.oldgl.eol.line2").formatted(Formatting.RED).formatted(Formatting.BOLD),
 				"https://help.mojang.com/customer/portal/articles/325948?ref=game"
 			);
 		}
@@ -197,7 +197,7 @@ public class TitleScreen extends Screen {
 				200,
 				20,
 				I18n.translate("menu.playdemo"),
-				buttonWidget -> this.minecraft.startIntegratedServer("Demo_World", "Demo_World", MinecraftServer.WORLD_INFO)
+				buttonWidget -> this.minecraft.startIntegratedServer("Demo_World", "Demo_World", MinecraftServer.DEMO_LEVEL_INFO)
 			)
 		);
 		this.buttonResetDemo = this.addButton(

@@ -27,11 +27,11 @@ public class CombatEventS2CPacket implements Packet<ClientPlayPacketListener> {
 		this.type = type;
 		LivingEntity livingEntity = damageTracker.getBiggestAttacker();
 		switch (type) {
-			case field_12353:
+			case END_COMBAT:
 				this.timeSinceLastAttack = damageTracker.getTimeSinceLastAttack();
 				this.attackerEntityId = livingEntity == null ? -1 : livingEntity.getEntityId();
 				break;
-			case field_12350:
+			case ENTITY_DIED:
 				this.entityId = damageTracker.getEntity().getEntityId();
 				this.attackerEntityId = livingEntity == null ? -1 : livingEntity.getEntityId();
 				this.deathMessage = text;
@@ -41,10 +41,10 @@ public class CombatEventS2CPacket implements Packet<ClientPlayPacketListener> {
 	@Override
 	public void read(PacketByteBuf packetByteBuf) throws IOException {
 		this.type = packetByteBuf.readEnumConstant(CombatEventS2CPacket.Type.class);
-		if (this.type == CombatEventS2CPacket.Type.field_12353) {
+		if (this.type == CombatEventS2CPacket.Type.END_COMBAT) {
 			this.timeSinceLastAttack = packetByteBuf.readVarInt();
 			this.attackerEntityId = packetByteBuf.readInt();
-		} else if (this.type == CombatEventS2CPacket.Type.field_12350) {
+		} else if (this.type == CombatEventS2CPacket.Type.ENTITY_DIED) {
 			this.entityId = packetByteBuf.readVarInt();
 			this.attackerEntityId = packetByteBuf.readInt();
 			this.deathMessage = packetByteBuf.readText();
@@ -54,10 +54,10 @@ public class CombatEventS2CPacket implements Packet<ClientPlayPacketListener> {
 	@Override
 	public void write(PacketByteBuf packetByteBuf) throws IOException {
 		packetByteBuf.writeEnumConstant(this.type);
-		if (this.type == CombatEventS2CPacket.Type.field_12353) {
+		if (this.type == CombatEventS2CPacket.Type.END_COMBAT) {
 			packetByteBuf.writeVarInt(this.timeSinceLastAttack);
 			packetByteBuf.writeInt(this.attackerEntityId);
-		} else if (this.type == CombatEventS2CPacket.Type.field_12350) {
+		} else if (this.type == CombatEventS2CPacket.Type.ENTITY_DIED) {
 			packetByteBuf.writeVarInt(this.entityId);
 			packetByteBuf.writeInt(this.attackerEntityId);
 			packetByteBuf.writeText(this.deathMessage);
@@ -70,12 +70,12 @@ public class CombatEventS2CPacket implements Packet<ClientPlayPacketListener> {
 
 	@Override
 	public boolean isErrorFatal() {
-		return this.type == CombatEventS2CPacket.Type.field_12350;
+		return this.type == CombatEventS2CPacket.Type.ENTITY_DIED;
 	}
 
 	public static enum Type {
-		field_12352,
-		field_12353,
-		field_12350;
+		ENTER_COMBAT,
+		END_COMBAT,
+		ENTITY_DIED;
 	}
 }

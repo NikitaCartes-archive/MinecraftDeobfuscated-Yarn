@@ -37,7 +37,7 @@ public class SweetBerryBushBlock extends PlantBlock implements Fertilizable {
 	@Environment(EnvType.CLIENT)
 	@Override
 	public ItemStack getPickStack(BlockView blockView, BlockPos blockPos, BlockState blockState) {
-		return new ItemStack(Items.field_16998);
+		return new ItemStack(Items.SWEET_BERRIES);
 	}
 
 	@Override
@@ -60,7 +60,7 @@ public class SweetBerryBushBlock extends PlantBlock implements Fertilizable {
 
 	@Override
 	public void onEntityCollision(BlockState blockState, World world, BlockPos blockPos, Entity entity) {
-		if (entity instanceof LivingEntity && entity.getType() != EntityType.field_17943) {
+		if (entity instanceof LivingEntity && entity.getType() != EntityType.FOX) {
 			entity.slowMovement(blockState, new Vec3d(0.8F, 0.75, 0.8F));
 			if (!world.isClient && (Integer)blockState.get(AGE) > 0 && (entity.prevRenderX != entity.x || entity.prevRenderZ != entity.z)) {
 				double d = Math.abs(entity.x - entity.prevRenderX);
@@ -76,12 +76,12 @@ public class SweetBerryBushBlock extends PlantBlock implements Fertilizable {
 	public boolean activate(BlockState blockState, World world, BlockPos blockPos, PlayerEntity playerEntity, Hand hand, BlockHitResult blockHitResult) {
 		int i = (Integer)blockState.get(AGE);
 		boolean bl = i == 3;
-		if (!bl && playerEntity.getStackInHand(hand).getItem() == Items.field_8324) {
+		if (!bl && playerEntity.getStackInHand(hand).getItem() == Items.BONE_MEAL) {
 			return false;
 		} else if (i > 1) {
 			int j = 1 + world.random.nextInt(2);
-			dropStack(world, blockPos, new ItemStack(Items.field_16998, j + (bl ? 1 : 0)));
-			world.playSound(null, blockPos, SoundEvents.field_17617, SoundCategory.field_15245, 1.0F, 0.8F + world.random.nextFloat() * 0.4F);
+			dropStack(world, blockPos, new ItemStack(Items.SWEET_BERRIES, j + (bl ? 1 : 0)));
+			world.playSound(null, blockPos, SoundEvents.ITEM_SWEET_BERRIES_PICK_FROM_BUSH, SoundCategory.BLOCKS, 1.0F, 0.8F + world.random.nextFloat() * 0.4F);
 			world.setBlockState(blockPos, blockState.with(AGE, Integer.valueOf(1)), 2);
 			return true;
 		} else {

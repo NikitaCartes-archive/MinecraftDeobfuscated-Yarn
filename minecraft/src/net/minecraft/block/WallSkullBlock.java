@@ -18,20 +18,20 @@ public class WallSkullBlock extends AbstractSkullBlock {
 	public static final DirectionProperty FACING = HorizontalFacingBlock.FACING;
 	private static final Map<Direction, VoxelShape> FACING_TO_SHAPE = Maps.newEnumMap(
 		ImmutableMap.of(
-			Direction.field_11043,
+			Direction.NORTH,
 			Block.createCuboidShape(4.0, 4.0, 8.0, 12.0, 12.0, 16.0),
-			Direction.field_11035,
+			Direction.SOUTH,
 			Block.createCuboidShape(4.0, 4.0, 0.0, 12.0, 12.0, 8.0),
-			Direction.field_11034,
+			Direction.EAST,
 			Block.createCuboidShape(0.0, 4.0, 4.0, 8.0, 12.0, 12.0),
-			Direction.field_11039,
+			Direction.WEST,
 			Block.createCuboidShape(8.0, 4.0, 4.0, 16.0, 12.0, 12.0)
 		)
 	);
 
 	protected WallSkullBlock(SkullBlock.SkullType skullType, Block.Settings settings) {
 		super(skullType, settings);
-		this.setDefaultState(this.stateFactory.getDefaultState().with(FACING, Direction.field_11043));
+		this.setDefaultState(this.stateFactory.getDefaultState().with(FACING, Direction.NORTH));
 	}
 
 	@Override

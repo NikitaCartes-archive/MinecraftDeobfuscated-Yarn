@@ -21,7 +21,7 @@ public class StopSoundCommand {
 			.then(
 				CommandManager.literal("*")
 					.then(
-						CommandManager.argument("sound", IdentifierArgumentType.create())
+						CommandManager.argument("sound", IdentifierArgumentType.identifier())
 							.suggests(SuggestionProviders.AVAILABLE_SOUNDS)
 							.executes(
 								commandContext -> execute(
@@ -39,7 +39,7 @@ public class StopSoundCommand {
 				CommandManager.literal(soundCategory.getName())
 					.executes(commandContext -> execute(commandContext.getSource(), EntityArgumentType.getPlayers(commandContext, "targets"), soundCategory, null))
 					.then(
-						CommandManager.argument("sound", IdentifierArgumentType.create())
+						CommandManager.argument("sound", IdentifierArgumentType.identifier())
 							.suggests(SuggestionProviders.AVAILABLE_SOUNDS)
 							.executes(
 								commandContext -> execute(

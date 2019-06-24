@@ -55,7 +55,7 @@ import net.minecraft.world.World;
 public class EndermanEntity extends HostileEntity {
 	private static final UUID ATTACKING_SPEED_BOOST_UUID = UUID.fromString("020E0DFB-87AE-4653-9556-831010E291A0");
 	private static final EntityAttributeModifier ATTACKING_SPEED_BOOST = new EntityAttributeModifier(
-			ATTACKING_SPEED_BOOST_UUID, "Attacking speed boost", 0.15F, EntityAttributeModifier.Operation.field_6328
+			ATTACKING_SPEED_BOOST_UUID, "Attacking speed boost", 0.15F, EntityAttributeModifier.Operation.ADDITION
 		)
 		.setSerialize(false);
 	private static final TrackedData<Optional<BlockState>> CARRIED_BLOCK = DataTracker.registerData(
@@ -70,7 +70,7 @@ public class EndermanEntity extends HostileEntity {
 	public EndermanEntity(EntityType<? extends EndermanEntity> entityType, World world) {
 		super(entityType, world);
 		this.stepHeight = 1.0F;
-		this.setPathNodeTypeWeight(PathNodeType.field_18, -1.0F);
+		this.setPathNodeTypeWeight(PathNodeType.WATER, -1.0F);
 	}
 
 	@Override
@@ -125,7 +125,8 @@ public class EndermanEntity extends HostileEntity {
 		if (this.age >= this.lastAngrySoundAge + 400) {
 			this.lastAngrySoundAge = this.age;
 			if (!this.isSilent()) {
-				this.world.playSound(this.x, this.y + (double)this.getStandingEyeHeight(), this.z, SoundEvents.field_14967, this.getSoundCategory(), 2.5F, 1.0F, false);
+				this.world
+					.playSound(this.x, this.y + (double)this.getStandingEyeHeight(), this.z, SoundEvents.ENTITY_ENDERMAN_STARE, this.getSoundCategory(), 2.5F, 1.0F, false);
 			}
 		}
 	}
@@ -164,7 +165,7 @@ public class EndermanEntity extends HostileEntity {
 
 	private boolean isPlayerStaring(PlayerEntity playerEntity) {
 		ItemStack itemStack = playerEntity.inventory.armor.get(3);
-		if (itemStack.getItem() == Blocks.field_10147.asItem()) {
+		if (itemStack.getItem() == Blocks.CARVED_PUMPKIN.asItem()) {
 			return false;
 		} else {
 			Vec3d vec3d = playerEntity.getRotationVec(1.0F).normalize();
@@ -191,7 +192,7 @@ public class EndermanEntity extends HostileEntity {
 			for (int i = 0; i < 2; i++) {
 				this.world
 					.addParticle(
-						ParticleTypes.field_11214,
+						ParticleTypes.PORTAL,
 						this.x + (this.random.nextDouble() - 0.5) * (double)this.getWidth(),
 						this.y + this.random.nextDouble() * (double)this.getHeight() - 0.25,
 						this.z + (this.random.nextDouble() - 0.5) * (double)this.getWidth(),
@@ -246,7 +247,7 @@ public class EndermanEntity extends HostileEntity {
 		BlockPos.Mutable mutable = new BlockPos.Mutable(d, e, f);
 
 		while (mutable.getY() > 0 && !this.world.getBlockState(mutable).getMaterial().blocksMovement()) {
-			mutable.setOffset(Direction.field_11033);
+			mutable.setOffset(Direction.DOWN);
 		}
 
 		if (!this.world.getBlockState(mutable).getMaterial().blocksMovement()) {
@@ -254,8 +255,8 @@ public class EndermanEntity extends HostileEntity {
 		} else {
 			boolean bl = this.teleport(d, e, f, true);
 			if (bl) {
-				this.world.playSound(null, this.prevX, this.prevY, this.prevZ, SoundEvents.field_14879, this.getSoundCategory(), 1.0F, 1.0F);
-				this.playSound(SoundEvents.field_14879, 1.0F, 1.0F);
+				this.world.playSound(null, this.prevX, this.prevY, this.prevZ, SoundEvents.ENTITY_ENDERMAN_TELEPORT, this.getSoundCategory(), 1.0F, 1.0F);
+				this.playSound(SoundEvents.ENTITY_ENDERMAN_TELEPORT, 1.0F, 1.0F);
 			}
 
 			return bl;
@@ -264,17 +265,17 @@ public class EndermanEntity extends HostileEntity {
 
 	@Override
 	protected SoundEvent getAmbientSound() {
-		return this.isAngry() ? SoundEvents.field_14713 : SoundEvents.field_14696;
+		return this.isAngry() ? SoundEvents.ENTITY_ENDERMAN_SCREAM : SoundEvents.ENTITY_ENDERMAN_AMBIENT;
 	}
 
 	@Override
 	protected SoundEvent getHurtSound(DamageSource damageSource) {
-		return SoundEvents.field_14797;
+		return SoundEvents.ENTITY_ENDERMAN_HURT;
 	}
 
 	@Override
 	protected SoundEvent getDeathSound() {
-		return SoundEvents.field_14608;
+		return SoundEvents.ENTITY_ENDERMAN_DEATH;
 	}
 
 	@Override
@@ -326,7 +327,7 @@ public class EndermanEntity extends HostileEntity {
 
 		public ChasePlayerGoal(EndermanEntity endermanEntity) {
 			this.enderman = endermanEntity;
-			this.setControls(EnumSet.of(Goal.Control.field_18407, Goal.Control.field_18405));
+			this.setControls(EnumSet.of(Goal.Control.JUMP, Goal.Control.MOVE));
 		}
 
 		@Override
@@ -358,7 +359,7 @@ public class EndermanEntity extends HostileEntity {
 			if (this.enderman.getCarriedBlock() != null) {
 				return false;
 			} else {
-				return !this.enderman.world.getGameRules().getBoolean(GameRules.field_19388) ? false : this.enderman.getRand().nextInt(20) == 0;
+				return !this.enderman.world.getGameRules().getBoolean(GameRules.MOB_GRIEFING) ? false : this.enderman.getRand().nextInt(20) == 0;
 			}
 		}
 
@@ -375,10 +376,10 @@ public class EndermanEntity extends HostileEntity {
 			Vec3d vec3d = new Vec3d((double)MathHelper.floor(this.enderman.x) + 0.5, (double)j + 0.5, (double)MathHelper.floor(this.enderman.z) + 0.5);
 			Vec3d vec3d2 = new Vec3d((double)i + 0.5, (double)j + 0.5, (double)k + 0.5);
 			BlockHitResult blockHitResult = world.rayTrace(
-				new RayTraceContext(vec3d, vec3d2, RayTraceContext.ShapeType.field_17558, RayTraceContext.FluidHandling.field_1348, this.enderman)
+				new RayTraceContext(vec3d, vec3d2, RayTraceContext.ShapeType.COLLIDER, RayTraceContext.FluidHandling.NONE, this.enderman)
 			);
-			boolean bl = blockHitResult.getType() != HitResult.Type.field_1333 && blockHitResult.getBlockPos().equals(blockPos);
-			if (block.matches(BlockTags.field_15460) && bl) {
+			boolean bl = blockHitResult.getType() != HitResult.Type.MISS && blockHitResult.getBlockPos().equals(blockPos);
+			if (block.matches(BlockTags.ENDERMAN_HOLDABLE) && bl) {
 				this.enderman.setCarriedBlock(blockState);
 				world.clearBlockState(blockPos, false);
 			}
@@ -397,7 +398,7 @@ public class EndermanEntity extends HostileEntity {
 			if (this.enderman.getCarriedBlock() == null) {
 				return false;
 			} else {
-				return !this.enderman.world.getGameRules().getBoolean(GameRules.field_19388) ? false : this.enderman.getRand().nextInt(2000) == 0;
+				return !this.enderman.world.getGameRules().getBoolean(GameRules.MOB_GRIEFING) ? false : this.enderman.getRand().nextInt(2000) == 0;
 			}
 		}
 

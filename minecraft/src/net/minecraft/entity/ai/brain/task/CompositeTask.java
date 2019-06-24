@@ -34,7 +34,7 @@ public class CompositeTask<E extends LivingEntity> extends Task<E> {
 
 	@Override
 	protected boolean shouldKeepRunning(ServerWorld serverWorld, E livingEntity, long l) {
-		return this.tasks.stream().filter(task -> task.getStatus() == Task.Status.field_18338).anyMatch(task -> task.shouldKeepRunning(serverWorld, livingEntity, l));
+		return this.tasks.stream().filter(task -> task.getStatus() == Task.Status.RUNNING).anyMatch(task -> task.shouldKeepRunning(serverWorld, livingEntity, l));
 	}
 
 	@Override
@@ -50,12 +50,12 @@ public class CompositeTask<E extends LivingEntity> extends Task<E> {
 
 	@Override
 	protected void keepRunning(ServerWorld serverWorld, E livingEntity, long l) {
-		this.tasks.stream().filter(task -> task.getStatus() == Task.Status.field_18338).forEach(task -> task.tick(serverWorld, livingEntity, l));
+		this.tasks.stream().filter(task -> task.getStatus() == Task.Status.RUNNING).forEach(task -> task.tick(serverWorld, livingEntity, l));
 	}
 
 	@Override
 	protected void finishRunning(ServerWorld serverWorld, E livingEntity, long l) {
-		this.tasks.stream().filter(task -> task.getStatus() == Task.Status.field_18338).forEach(task -> task.stop(serverWorld, livingEntity, l));
+		this.tasks.stream().filter(task -> task.getStatus() == Task.Status.RUNNING).forEach(task -> task.stop(serverWorld, livingEntity, l));
 		this.memoriesToForgetWhenStopped.forEach(livingEntity.getBrain()::forget);
 	}
 
@@ -63,15 +63,15 @@ public class CompositeTask<E extends LivingEntity> extends Task<E> {
 	public String toString() {
 		Set<? extends Task<? super E>> set = (Set<? extends Task<? super E>>)this.tasks
 			.stream()
-			.filter(task -> task.getStatus() == Task.Status.field_18338)
+			.filter(task -> task.getStatus() == Task.Status.RUNNING)
 			.collect(Collectors.toSet());
 		return "(" + this.getClass().getSimpleName() + "): " + set;
 	}
 
 	static enum Order {
-		field_18348(weightedList -> {
+		ORDERED(weightedList -> {
 		}),
-		field_18349(WeightedList::shuffle);
+		SHUFFLED(WeightedList::shuffle);
 
 		private final Consumer<WeightedList<?>> consumer;
 
@@ -85,19 +85,16 @@ public class CompositeTask<E extends LivingEntity> extends Task<E> {
 	}
 
 	static enum RunMode {
-		RUN_ALL {
+		RUN_ONE {
 			@Override
 			public <E extends LivingEntity> void method_19559(WeightedList<Task<? super E>> weightedList, ServerWorld serverWorld, E livingEntity, long l) {
-				weightedList.stream()
-					.filter(task -> task.getStatus() == Task.Status.field_18337)
-					.filter(task -> task.tryStarting(serverWorld, livingEntity, l))
-					.findFirst();
+				weightedList.stream().filter(task -> task.getStatus() == Task.Status.STOPPED).filter(task -> task.tryStarting(serverWorld, livingEntity, l)).findFirst();
 			}
 		},
 		TRY_ALL {
 			@Override
 			public <E extends LivingEntity> void method_19559(WeightedList<Task<? super E>> weightedList, ServerWorld serverWorld, E livingEntity, long l) {
-				weightedList.stream().filter(task -> task.getStatus() == Task.Status.field_18337).forEach(task -> task.tryStarting(serverWorld, livingEntity, l));
+				weightedList.stream().filter(task -> task.getStatus() == Task.Status.STOPPED).forEach(task -> task.tryStarting(serverWorld, livingEntity, l));
 			}
 		};
 

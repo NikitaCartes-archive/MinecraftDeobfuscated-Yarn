@@ -18,14 +18,14 @@ public class TimeCommand {
 						.then(CommandManager.literal("night").executes(commandContext -> executeSet(commandContext.getSource(), 13000)))
 						.then(CommandManager.literal("midnight").executes(commandContext -> executeSet(commandContext.getSource(), 18000)))
 						.then(
-							CommandManager.argument("time", TimeArgumentType.create())
+							CommandManager.argument("time", TimeArgumentType.time())
 								.executes(commandContext -> executeSet(commandContext.getSource(), IntegerArgumentType.getInteger(commandContext, "time")))
 						)
 				)
 				.then(
 					CommandManager.literal("add")
 						.then(
-							CommandManager.argument("time", TimeArgumentType.create())
+							CommandManager.argument("time", TimeArgumentType.time())
 								.executes(commandContext -> executeAdd(commandContext.getSource(), IntegerArgumentType.getInteger(commandContext, "time")))
 						)
 				)

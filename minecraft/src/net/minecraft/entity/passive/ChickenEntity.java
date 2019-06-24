@@ -30,7 +30,7 @@ import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 
 public class ChickenEntity extends AnimalEntity {
-	private static final Ingredient BREEDING_INGREDIENT = Ingredient.ofItems(Items.field_8317, Items.field_8188, Items.field_8706, Items.field_8309);
+	private static final Ingredient BREEDING_INGREDIENT = Ingredient.ofItems(Items.WHEAT_SEEDS, Items.MELON_SEEDS, Items.PUMPKIN_SEEDS, Items.BEETROOT_SEEDS);
 	public float field_6741;
 	public float field_6743;
 	public float field_6738;
@@ -41,7 +41,7 @@ public class ChickenEntity extends AnimalEntity {
 
 	public ChickenEntity(EntityType<? extends ChickenEntity> entityType, World world) {
 		super(entityType, world);
-		this.setPathNodeTypeWeight(PathNodeType.field_18, 0.0F);
+		this.setPathNodeTypeWeight(PathNodeType.WATER, 0.0F);
 	}
 
 	@Override
@@ -87,8 +87,8 @@ public class ChickenEntity extends AnimalEntity {
 
 		this.field_6741 = this.field_6741 + this.field_6737 * 2.0F;
 		if (!this.world.isClient && this.isAlive() && !this.isBaby() && !this.hasJockey() && --this.eggLayTime <= 0) {
-			this.playSound(SoundEvents.field_15219, 1.0F, (this.random.nextFloat() - this.random.nextFloat()) * 0.2F + 1.0F);
-			this.dropItem(Items.field_8803);
+			this.playSound(SoundEvents.ENTITY_CHICKEN_EGG, 1.0F, (this.random.nextFloat() - this.random.nextFloat()) * 0.2F + 1.0F);
+			this.dropItem(Items.EGG);
 			this.eggLayTime = this.random.nextInt(6000) + 6000;
 		}
 	}
@@ -99,26 +99,26 @@ public class ChickenEntity extends AnimalEntity {
 
 	@Override
 	protected SoundEvent getAmbientSound() {
-		return SoundEvents.field_14871;
+		return SoundEvents.ENTITY_CHICKEN_AMBIENT;
 	}
 
 	@Override
 	protected SoundEvent getHurtSound(DamageSource damageSource) {
-		return SoundEvents.field_14601;
+		return SoundEvents.ENTITY_CHICKEN_HURT;
 	}
 
 	@Override
 	protected SoundEvent getDeathSound() {
-		return SoundEvents.field_15140;
+		return SoundEvents.ENTITY_CHICKEN_DEATH;
 	}
 
 	@Override
 	protected void playStepSound(BlockPos blockPos, BlockState blockState) {
-		this.playSound(SoundEvents.field_14685, 0.15F, 1.0F);
+		this.playSound(SoundEvents.ENTITY_CHICKEN_STEP, 0.15F, 1.0F);
 	}
 
 	public ChickenEntity method_6471(PassiveEntity passiveEntity) {
-		return EntityType.field_6132.create(this.world);
+		return EntityType.CHICKEN.create(this.world);
 	}
 
 	@Override

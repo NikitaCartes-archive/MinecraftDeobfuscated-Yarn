@@ -46,10 +46,10 @@ public class LanguageOptionsScreen extends Screen {
 			)
 		);
 		this.doneButton = this.addButton(new ButtonWidget(this.width / 2 - 155 + 160, this.height - 38, 150, 20, I18n.translate("gui.done"), buttonWidget -> {
-			LanguageOptionsScreen.LanguageSelectionListWidget.LanguageItem languageItem = this.languageSelectionList.getSelected();
-			if (languageItem != null && !languageItem.languageDefinition.getCode().equals(this.languageManager.getLanguage().getCode())) {
-				this.languageManager.setLanguage(languageItem.languageDefinition);
-				this.options.language = languageItem.languageDefinition.getCode();
+			LanguageOptionsScreen.LanguageSelectionListWidget.LanguageEntry languageEntry = this.languageSelectionList.getSelected();
+			if (languageEntry != null && !languageEntry.languageDefinition.getCode().equals(this.languageManager.getLanguage().getCode())) {
+				this.languageManager.setLanguage(languageEntry.languageDefinition);
+				this.options.language = languageEntry.languageDefinition.getCode();
 				this.minecraft.reloadResources();
 				this.font.setRightToLeft(this.languageManager.isRightToLeft());
 				this.doneButton.setMessage(I18n.translate("gui.done"));
@@ -71,17 +71,17 @@ public class LanguageOptionsScreen extends Screen {
 	}
 
 	@Environment(EnvType.CLIENT)
-	class LanguageSelectionListWidget extends AlwaysSelectedEntryListWidget<LanguageOptionsScreen.LanguageSelectionListWidget.LanguageItem> {
+	class LanguageSelectionListWidget extends AlwaysSelectedEntryListWidget<LanguageOptionsScreen.LanguageSelectionListWidget.LanguageEntry> {
 		public LanguageSelectionListWidget(MinecraftClient minecraftClient) {
 			super(minecraftClient, LanguageOptionsScreen.this.width, LanguageOptionsScreen.this.height, 32, LanguageOptionsScreen.this.height - 65 + 4, 18);
 
 			for (LanguageDefinition languageDefinition : LanguageOptionsScreen.this.languageManager.getAllLanguages()) {
-				LanguageOptionsScreen.LanguageSelectionListWidget.LanguageItem languageItem = new LanguageOptionsScreen.LanguageSelectionListWidget.LanguageItem(
+				LanguageOptionsScreen.LanguageSelectionListWidget.LanguageEntry languageEntry = new LanguageOptionsScreen.LanguageSelectionListWidget.LanguageEntry(
 					languageDefinition
 				);
-				this.addEntry(languageItem);
+				this.addEntry(languageEntry);
 				if (LanguageOptionsScreen.this.languageManager.getLanguage().getCode().equals(languageDefinition.getCode())) {
-					this.method_20100(languageItem);
+					this.method_20100(languageEntry);
 				}
 			}
 
@@ -100,10 +100,10 @@ public class LanguageOptionsScreen extends Screen {
 			return super.getRowWidth() + 50;
 		}
 
-		public void method_20100(@Nullable LanguageOptionsScreen.LanguageSelectionListWidget.LanguageItem languageItem) {
-			super.setSelected(languageItem);
-			if (languageItem != null) {
-				NarratorManager.INSTANCE.narrate(new TranslatableText("narrator.select", languageItem.languageDefinition).getString());
+		public void method_20100(@Nullable LanguageOptionsScreen.LanguageSelectionListWidget.LanguageEntry languageEntry) {
+			super.setSelected(languageEntry);
+			if (languageEntry != null) {
+				NarratorManager.INSTANCE.narrate(new TranslatableText("narrator.select", languageEntry.languageDefinition).getString());
 			}
 		}
 
@@ -118,10 +118,10 @@ public class LanguageOptionsScreen extends Screen {
 		}
 
 		@Environment(EnvType.CLIENT)
-		public class LanguageItem extends AlwaysSelectedEntryListWidget.Entry<LanguageOptionsScreen.LanguageSelectionListWidget.LanguageItem> {
+		public class LanguageEntry extends AlwaysSelectedEntryListWidget.Entry<LanguageOptionsScreen.LanguageSelectionListWidget.LanguageEntry> {
 			private final LanguageDefinition languageDefinition;
 
-			public LanguageItem(LanguageDefinition languageDefinition) {
+			public LanguageEntry(LanguageDefinition languageDefinition) {
 				this.languageDefinition = languageDefinition;
 			}
 

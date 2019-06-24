@@ -39,7 +39,7 @@ public class FleeEntityGoal<T extends LivingEntity> extends Goal {
 		this.fastSpeed = e;
 		this.field_6388 = predicate2;
 		this.fleeingEntityNavigation = mobEntityWithAi.getNavigation();
-		this.setControls(EnumSet.of(Goal.Control.field_18405));
+		this.setControls(EnumSet.of(Goal.Control.MOVE));
 		this.withinRangePredicate = new TargetPredicate().setBaseMaxDistance((double)f).setPredicate(predicate2.and(predicate));
 	}
 

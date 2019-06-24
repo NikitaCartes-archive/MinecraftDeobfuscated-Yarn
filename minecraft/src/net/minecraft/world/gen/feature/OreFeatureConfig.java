@@ -43,20 +43,20 @@ public class OreFeatureConfig implements FeatureConfig {
 	public static OreFeatureConfig deserialize(Dynamic<?> dynamic) {
 		int i = dynamic.get("size").asInt(0);
 		OreFeatureConfig.Target target = OreFeatureConfig.Target.byName(dynamic.get("target").asString(""));
-		BlockState blockState = (BlockState)dynamic.get("state").map(BlockState::deserialize).orElse(Blocks.field_10124.getDefaultState());
+		BlockState blockState = (BlockState)dynamic.get("state").map(BlockState::deserialize).orElse(Blocks.AIR.getDefaultState());
 		return new OreFeatureConfig(target, blockState, i);
 	}
 
 	public static enum Target {
-		field_13730("natural_stone", blockState -> {
+		NATURAL_STONE("natural_stone", blockState -> {
 			if (blockState == null) {
 				return false;
 			} else {
 				Block block = blockState.getBlock();
-				return block == Blocks.field_10340 || block == Blocks.field_10474 || block == Blocks.field_10508 || block == Blocks.field_10115;
+				return block == Blocks.STONE || block == Blocks.GRANITE || block == Blocks.DIORITE || block == Blocks.ANDESITE;
 			}
 		}),
-		field_13727("netherrack", new BlockPredicate(Blocks.field_10515));
+		NETHERRACK("netherrack", new BlockPredicate(Blocks.NETHERRACK));
 
 		private static final Map<String, OreFeatureConfig.Target> nameMap = (Map<String, OreFeatureConfig.Target>)Arrays.stream(values())
 			.collect(Collectors.toMap(OreFeatureConfig.Target::getName, target -> target));

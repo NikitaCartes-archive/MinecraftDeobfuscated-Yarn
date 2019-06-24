@@ -21,7 +21,7 @@ public class IceBlock extends TransparentBlock {
 
 	@Override
 	public BlockRenderLayer getRenderLayer() {
-		return BlockRenderLayer.field_9179;
+		return BlockRenderLayer.TRANSLUCENT;
 	}
 
 	@Override
@@ -29,7 +29,7 @@ public class IceBlock extends TransparentBlock {
 		World world, PlayerEntity playerEntity, BlockPos blockPos, BlockState blockState, @Nullable BlockEntity blockEntity, ItemStack itemStack
 	) {
 		super.afterBreak(world, playerEntity, blockPos, blockState, blockEntity, itemStack);
-		if (EnchantmentHelper.getLevel(Enchantments.field_9099, itemStack) == 0) {
+		if (EnchantmentHelper.getLevel(Enchantments.SILK_TOUCH, itemStack) == 0) {
 			if (world.dimension.doesWaterVaporize()) {
 				world.clearBlockState(blockPos, false);
 				return;
@@ -37,14 +37,14 @@ public class IceBlock extends TransparentBlock {
 
 			Material material = world.getBlockState(blockPos.down()).getMaterial();
 			if (material.blocksMovement() || material.isLiquid()) {
-				world.setBlockState(blockPos, Blocks.field_10382.getDefaultState());
+				world.setBlockState(blockPos, Blocks.WATER.getDefaultState());
 			}
 		}
 	}
 
 	@Override
 	public void onScheduledTick(BlockState blockState, World world, BlockPos blockPos, Random random) {
-		if (world.getLightLevel(LightType.field_9282, blockPos) > 11 - blockState.getLightSubtracted(world, blockPos)) {
+		if (world.getLightLevel(LightType.BLOCK, blockPos) > 11 - blockState.getLightSubtracted(world, blockPos)) {
 			this.melt(blockState, world, blockPos);
 		}
 	}
@@ -53,18 +53,18 @@ public class IceBlock extends TransparentBlock {
 		if (world.dimension.doesWaterVaporize()) {
 			world.clearBlockState(blockPos, false);
 		} else {
-			world.setBlockState(blockPos, Blocks.field_10382.getDefaultState());
-			world.updateNeighbor(blockPos, Blocks.field_10382, blockPos);
+			world.setBlockState(blockPos, Blocks.WATER.getDefaultState());
+			world.updateNeighbor(blockPos, Blocks.WATER, blockPos);
 		}
 	}
 
 	@Override
 	public PistonBehavior getPistonBehavior(BlockState blockState) {
-		return PistonBehavior.field_15974;
+		return PistonBehavior.NORMAL;
 	}
 
 	@Override
 	public boolean allowsSpawning(BlockState blockState, BlockView blockView, BlockPos blockPos, EntityType<?> entityType) {
-		return entityType == EntityType.field_6042;
+		return entityType == EntityType.POLAR_BEAR;
 	}
 }

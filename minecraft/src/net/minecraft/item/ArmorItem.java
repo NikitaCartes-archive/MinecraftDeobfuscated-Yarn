@@ -95,9 +95,9 @@ public class ArmorItem extends Item {
 		if (itemStack2.isEmpty()) {
 			playerEntity.setEquippedStack(equipmentSlot, itemStack.copy());
 			itemStack.setCount(0);
-			return new TypedActionResult<>(ActionResult.field_5812, itemStack);
+			return new TypedActionResult<>(ActionResult.SUCCESS, itemStack);
 		} else {
-			return new TypedActionResult<>(ActionResult.field_5814, itemStack);
+			return new TypedActionResult<>(ActionResult.FAIL, itemStack);
 		}
 	}
 
@@ -108,13 +108,13 @@ public class ArmorItem extends Item {
 			multimap.put(
 				EntityAttributes.ARMOR.getId(),
 				new EntityAttributeModifier(
-					MODIFIERS[equipmentSlot.getEntitySlotId()], "Armor modifier", (double)this.protection, EntityAttributeModifier.Operation.field_6328
+					MODIFIERS[equipmentSlot.getEntitySlotId()], "Armor modifier", (double)this.protection, EntityAttributeModifier.Operation.ADDITION
 				)
 			);
 			multimap.put(
 				EntityAttributes.ARMOR_TOUGHNESS.getId(),
 				new EntityAttributeModifier(
-					MODIFIERS[equipmentSlot.getEntitySlotId()], "Armor toughness", (double)this.toughness, EntityAttributeModifier.Operation.field_6328
+					MODIFIERS[equipmentSlot.getEntitySlotId()], "Armor toughness", (double)this.toughness, EntityAttributeModifier.Operation.ADDITION
 				)
 			);
 		}

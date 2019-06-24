@@ -44,7 +44,7 @@ public class ContainerScreenRegistry {
 		} else {
 			ContainerScreenRegistry.GuiFactory<T, ?> guiFactory = getFactory(containerType);
 			if (guiFactory == null) {
-				LOGGER.warn("Failed to create screen for menu type: {}", Registry.CONTAINER.getId(containerType));
+				LOGGER.warn("Failed to create screen for menu type: {}", Registry.MENU.getId(containerType));
 			} else {
 				guiFactory.openScreen(text, containerType, minecraftClient, i);
 			}
@@ -61,16 +61,16 @@ public class ContainerScreenRegistry {
 	) {
 		ContainerScreenRegistry.GuiFactory<?, ?> guiFactory2 = (ContainerScreenRegistry.GuiFactory<?, ?>)GUI_FACTORIES.put(containerType, guiFactory);
 		if (guiFactory2 != null) {
-			throw new IllegalStateException("Duplicate registration for " + Registry.CONTAINER.getId(containerType));
+			throw new IllegalStateException("Duplicate registration for " + Registry.MENU.getId(containerType));
 		}
 	}
 
 	public static boolean checkData() {
 		boolean bl = false;
 
-		for (ContainerType<?> containerType : Registry.CONTAINER) {
+		for (ContainerType<?> containerType : Registry.MENU) {
 			if (!GUI_FACTORIES.containsKey(containerType)) {
-				LOGGER.debug("Menu {} has no matching screen", Registry.CONTAINER.getId(containerType));
+				LOGGER.debug("Menu {} has no matching screen", Registry.MENU.getId(containerType));
 				bl = true;
 			}
 		}
@@ -79,29 +79,29 @@ public class ContainerScreenRegistry {
 	}
 
 	static {
-		registerGui(ContainerType.field_18664, ContainerScreen54::new);
-		registerGui(ContainerType.field_18665, ContainerScreen54::new);
-		registerGui(ContainerType.field_17326, ContainerScreen54::new);
-		registerGui(ContainerType.field_18666, ContainerScreen54::new);
-		registerGui(ContainerType.field_18667, ContainerScreen54::new);
-		registerGui(ContainerType.field_17327, ContainerScreen54::new);
-		registerGui(ContainerType.field_17328, ContainerScreen9::new);
-		registerGui(ContainerType.field_17329, AnvilScreen::new);
-		registerGui(ContainerType.field_17330, BeaconScreen::new);
-		registerGui(ContainerType.field_17331, BlastFurnaceScreen::new);
-		registerGui(ContainerType.field_17332, BrewingStandScreen::new);
-		registerGui(ContainerType.field_17333, CraftingTableScreen::new);
-		registerGui(ContainerType.field_17334, EnchantingScreen::new);
-		registerGui(ContainerType.field_17335, FurnaceScreen::new);
-		registerGui(ContainerType.field_17336, GrindstoneScreen::new);
-		registerGui(ContainerType.field_17337, HopperScreen::new);
-		registerGui(ContainerType.field_17338, LecternScreen::new);
-		registerGui(ContainerType.field_17339, LoomScreen::new);
-		registerGui(ContainerType.field_17340, MerchantScreen::new);
-		registerGui(ContainerType.field_17341, ShulkerBoxScreen::new);
-		registerGui(ContainerType.field_17342, SmokerScreen::new);
-		registerGui(ContainerType.field_17343, CartographyTableScreen::new);
-		registerGui(ContainerType.field_17625, StonecutterScreen::new);
+		registerGui(ContainerType.GENERIC_9X1, ContainerScreen54::new);
+		registerGui(ContainerType.GENERIC_9X2, ContainerScreen54::new);
+		registerGui(ContainerType.GENERIC_9X3, ContainerScreen54::new);
+		registerGui(ContainerType.GENERIC_9X4, ContainerScreen54::new);
+		registerGui(ContainerType.GENERIC_9X5, ContainerScreen54::new);
+		registerGui(ContainerType.GENERIC_9X6, ContainerScreen54::new);
+		registerGui(ContainerType.GENERIC_3X3, ContainerScreen9::new);
+		registerGui(ContainerType.ANVIL, AnvilScreen::new);
+		registerGui(ContainerType.BEACON, BeaconScreen::new);
+		registerGui(ContainerType.BLAST_FURNACE, BlastFurnaceScreen::new);
+		registerGui(ContainerType.BREWING_STAND, BrewingStandScreen::new);
+		registerGui(ContainerType.CRAFTING, CraftingTableScreen::new);
+		registerGui(ContainerType.ENCHANTMENT, EnchantingScreen::new);
+		registerGui(ContainerType.FURNACE, FurnaceScreen::new);
+		registerGui(ContainerType.GRINDSTONE, GrindstoneScreen::new);
+		registerGui(ContainerType.HOPPER, HopperScreen::new);
+		registerGui(ContainerType.LECTERN, LecternScreen::new);
+		registerGui(ContainerType.LOOM, LoomScreen::new);
+		registerGui(ContainerType.MERCHANT, MerchantScreen::new);
+		registerGui(ContainerType.SHULKER_BOX, ShulkerBoxScreen::new);
+		registerGui(ContainerType.SMOKER, SmokerScreen::new);
+		registerGui(ContainerType.CARTOGRAPHY, CartographyTableScreen::new);
+		registerGui(ContainerType.STONECUTTER, StonecutterScreen::new);
 	}
 
 	@Environment(EnvType.CLIENT)

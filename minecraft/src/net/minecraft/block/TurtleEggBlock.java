@@ -60,7 +60,7 @@ public class TurtleEggBlock extends Block {
 	}
 
 	private void breakEgg(World world, BlockPos blockPos, BlockState blockState) {
-		world.playSound(null, blockPos, SoundEvents.field_14687, SoundCategory.field_15245, 0.7F, 0.9F + world.random.nextFloat() * 0.2F);
+		world.playSound(null, blockPos, SoundEvents.ENTITY_TURTLE_EGG_BREAK, SoundCategory.BLOCKS, 0.7F, 0.9F + world.random.nextFloat() * 0.2F);
 		int i = (Integer)blockState.get(EGGS);
 		if (i <= 1) {
 			world.breakBlock(blockPos, false);
@@ -75,15 +75,15 @@ public class TurtleEggBlock extends Block {
 		if (this.shouldHatchProgress(world) && this.isSand(world, blockPos)) {
 			int i = (Integer)blockState.get(HATCH);
 			if (i < 2) {
-				world.playSound(null, blockPos, SoundEvents.field_15109, SoundCategory.field_15245, 0.7F, 0.9F + random.nextFloat() * 0.2F);
+				world.playSound(null, blockPos, SoundEvents.ENTITY_TURTLE_EGG_CRACK, SoundCategory.BLOCKS, 0.7F, 0.9F + random.nextFloat() * 0.2F);
 				world.setBlockState(blockPos, blockState.with(HATCH, Integer.valueOf(i + 1)), 2);
 			} else {
-				world.playSound(null, blockPos, SoundEvents.field_14902, SoundCategory.field_15245, 0.7F, 0.9F + random.nextFloat() * 0.2F);
+				world.playSound(null, blockPos, SoundEvents.ENTITY_TURTLE_EGG_HATCH, SoundCategory.BLOCKS, 0.7F, 0.9F + random.nextFloat() * 0.2F);
 				world.clearBlockState(blockPos, false);
 				if (!world.isClient) {
 					for (int j = 0; j < blockState.get(EGGS); j++) {
 						world.playLevelEvent(2001, blockPos, Block.getRawIdFromState(blockState));
-						TurtleEntity turtleEntity = EntityType.field_6113.create(world);
+						TurtleEntity turtleEntity = EntityType.TURTLE.create(world);
 						turtleEntity.setBreedingAge(-24000);
 						turtleEntity.setHomePos(blockPos);
 						turtleEntity.setPositionAndAngles((double)blockPos.getX() + 0.3 + (double)j * 0.2, (double)blockPos.getY(), (double)blockPos.getZ() + 0.3, 0.0F, 0.0F);
@@ -95,7 +95,7 @@ public class TurtleEggBlock extends Block {
 	}
 
 	private boolean isSand(BlockView blockView, BlockPos blockPos) {
-		return blockView.getBlockState(blockPos.down()).getBlock() == Blocks.field_10102;
+		return blockView.getBlockState(blockPos.down()).getBlock() == Blocks.SAND;
 	}
 
 	@Override
@@ -134,7 +134,7 @@ public class TurtleEggBlock extends Block {
 
 	@Override
 	public BlockRenderLayer getRenderLayer() {
-		return BlockRenderLayer.field_9174;
+		return BlockRenderLayer.CUTOUT;
 	}
 
 	@Override
@@ -151,7 +151,7 @@ public class TurtleEggBlock extends Block {
 		if (entity instanceof TurtleEntity) {
 			return false;
 		} else {
-			return entity instanceof LivingEntity && !(entity instanceof PlayerEntity) ? world.getGameRules().getBoolean(GameRules.field_19388) : true;
+			return entity instanceof LivingEntity && !(entity instanceof PlayerEntity) ? world.getGameRules().getBoolean(GameRules.MOB_GRIEFING) : true;
 		}
 	}
 }

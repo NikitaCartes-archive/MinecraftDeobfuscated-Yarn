@@ -43,12 +43,10 @@ public class ChestBlockEntityRenderer<T extends BlockEntity & ChestAnimationProg
 		GlStateManager.enableDepthTest();
 		GlStateManager.depthFunc(515);
 		GlStateManager.depthMask(true);
-		BlockState blockState = blockEntity.hasWorld()
-			? blockEntity.getCachedState()
-			: Blocks.field_10034.getDefaultState().with(ChestBlock.FACING, Direction.field_11035);
-		ChestType chestType = blockState.contains((Property<T>)ChestBlock.CHEST_TYPE) ? blockState.get(ChestBlock.CHEST_TYPE) : ChestType.field_12569;
-		if (chestType != ChestType.field_12574) {
-			boolean bl = chestType != ChestType.field_12569;
+		BlockState blockState = blockEntity.hasWorld() ? blockEntity.getCachedState() : Blocks.CHEST.getDefaultState().with(ChestBlock.FACING, Direction.SOUTH);
+		ChestType chestType = blockState.contains((Property<T>)ChestBlock.CHEST_TYPE) ? blockState.get(ChestBlock.CHEST_TYPE) : ChestType.SINGLE;
+		if (chestType != ChestType.LEFT) {
+			boolean bl = chestType != ChestType.SINGLE;
 			ChestEntityModel chestEntityModel = this.method_3562(blockEntity, i, bl);
 			if (i >= 0) {
 				GlStateManager.matrixMode(5890);

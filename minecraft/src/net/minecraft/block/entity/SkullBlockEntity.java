@@ -24,7 +24,7 @@ public class SkullBlockEntity extends BlockEntity implements Tickable {
 	private static MinecraftSessionService sessionService;
 
 	public SkullBlockEntity() {
-		super(BlockEntityType.field_11913);
+		super(BlockEntityType.SKULL);
 	}
 
 	public static void setUserCache(UserCache userCache) {
@@ -63,7 +63,7 @@ public class SkullBlockEntity extends BlockEntity implements Tickable {
 	@Override
 	public void tick() {
 		Block block = this.getCachedState().getBlock();
-		if (block == Blocks.field_10337 || block == Blocks.field_10472) {
+		if (block == Blocks.DRAGON_HEAD || block == Blocks.DRAGON_WALL_HEAD) {
 			if (this.world.isReceivingRedstonePower(this.pos)) {
 				this.isPowered = true;
 				this.ticksPowered++;

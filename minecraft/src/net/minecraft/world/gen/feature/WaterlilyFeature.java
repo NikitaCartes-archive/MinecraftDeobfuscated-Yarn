@@ -31,7 +31,7 @@ public class WaterlilyFeature extends Feature<DefaultFeatureConfig> {
 
 		for (int i = 0; i < 10; i++) {
 			BlockPos blockPos4 = blockPos.add(random.nextInt(8) - random.nextInt(8), random.nextInt(4) - random.nextInt(4), random.nextInt(8) - random.nextInt(8));
-			BlockState blockState = Blocks.field_10588.getDefaultState();
+			BlockState blockState = Blocks.LILY_PAD.getDefaultState();
 			if (iWorld.isAir(blockPos4) && blockState.canPlaceAt(iWorld, blockPos4)) {
 				iWorld.setBlockState(blockPos4, blockState, 2);
 			}

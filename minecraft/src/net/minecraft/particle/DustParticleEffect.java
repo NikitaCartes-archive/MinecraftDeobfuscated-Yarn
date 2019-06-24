@@ -55,7 +55,7 @@ public class DustParticleEffect implements ParticleEffect {
 
 	@Override
 	public ParticleType<DustParticleEffect> getType() {
-		return ParticleTypes.field_11212;
+		return ParticleTypes.DUST;
 	}
 
 	@Environment(EnvType.CLIENT)

@@ -26,7 +26,7 @@ import org.apache.logging.log4j.Logger;
 
 public class ExplorationMapLootFunction extends ConditionalLootFunction {
 	private static final Logger LOGGER = LogManager.getLogger();
-	public static final MapIcon.Type DEFAULT_DECORATION = MapIcon.Type.field_88;
+	public static final MapIcon.Type DEFAULT_DECORATION = MapIcon.Type.MANSION;
 	private final String destination;
 	private final MapIcon.Type decoration;
 	private final byte zoom;
@@ -44,15 +44,15 @@ public class ExplorationMapLootFunction extends ConditionalLootFunction {
 
 	@Override
 	public Set<LootContextParameter<?>> getRequiredParameters() {
-		return ImmutableSet.of(LootContextParameters.field_1232);
+		return ImmutableSet.of(LootContextParameters.POSITION);
 	}
 
 	@Override
 	public ItemStack process(ItemStack itemStack, LootContext lootContext) {
-		if (itemStack.getItem() != Items.field_8895) {
+		if (itemStack.getItem() != Items.MAP) {
 			return itemStack;
 		} else {
-			BlockPos blockPos = lootContext.get(LootContextParameters.field_1232);
+			BlockPos blockPos = lootContext.get(LootContextParameters.POSITION);
 			if (blockPos != null) {
 				ServerWorld serverWorld = lootContext.getWorld();
 				BlockPos blockPos2 = serverWorld.locateStructure(this.destination, blockPos, this.searchRadius, this.skipExistingChunks);

@@ -12,7 +12,7 @@ public class WakeUpTask extends Task<LivingEntity> {
 
 	@Override
 	protected boolean shouldRun(ServerWorld serverWorld, LivingEntity livingEntity) {
-		return !livingEntity.getBrain().hasActivity(Activity.field_18597) && livingEntity.isSleeping();
+		return !livingEntity.getBrain().hasActivity(Activity.REST) && livingEntity.isSleeping();
 	}
 
 	@Override

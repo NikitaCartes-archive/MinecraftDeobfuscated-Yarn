@@ -65,9 +65,9 @@ public class BossBarCommand {
 				.then(
 					CommandManager.literal("add")
 						.then(
-							CommandManager.argument("id", IdentifierArgumentType.create())
+							CommandManager.argument("id", IdentifierArgumentType.identifier())
 								.then(
-									CommandManager.argument("name", TextArgumentType.create())
+									CommandManager.argument("name", TextArgumentType.text())
 										.executes(
 											commandContext -> addBossBar(
 													commandContext.getSource(), IdentifierArgumentType.getIdentifier(commandContext, "id"), TextArgumentType.getTextArgument(commandContext, "name")
@@ -79,7 +79,7 @@ public class BossBarCommand {
 				.then(
 					CommandManager.literal("remove")
 						.then(
-							CommandManager.argument("id", IdentifierArgumentType.create())
+							CommandManager.argument("id", IdentifierArgumentType.identifier())
 								.suggests(suggestionProvider)
 								.executes(commandContext -> removeBossBar(commandContext.getSource(), createBossBar(commandContext)))
 						)
@@ -88,12 +88,12 @@ public class BossBarCommand {
 				.then(
 					CommandManager.literal("set")
 						.then(
-							CommandManager.argument("id", IdentifierArgumentType.create())
+							CommandManager.argument("id", IdentifierArgumentType.identifier())
 								.suggests(suggestionProvider)
 								.then(
 									CommandManager.literal("name")
 										.then(
-											CommandManager.argument("name", TextArgumentType.create())
+											CommandManager.argument("name", TextArgumentType.text())
 												.executes(
 													commandContext -> setName(commandContext.getSource(), createBossBar(commandContext), TextArgumentType.getTextArgument(commandContext, "name"))
 												)
@@ -102,55 +102,50 @@ public class BossBarCommand {
 								.then(
 									CommandManager.literal("color")
 										.then(
-											CommandManager.literal("pink")
-												.executes(commandContext -> setColor(commandContext.getSource(), createBossBar(commandContext), BossBar.Color.field_5788))
+											CommandManager.literal("pink").executes(commandContext -> setColor(commandContext.getSource(), createBossBar(commandContext), BossBar.Color.PINK))
 										)
 										.then(
-											CommandManager.literal("blue")
-												.executes(commandContext -> setColor(commandContext.getSource(), createBossBar(commandContext), BossBar.Color.field_5780))
+											CommandManager.literal("blue").executes(commandContext -> setColor(commandContext.getSource(), createBossBar(commandContext), BossBar.Color.BLUE))
 										)
 										.then(
-											CommandManager.literal("red")
-												.executes(commandContext -> setColor(commandContext.getSource(), createBossBar(commandContext), BossBar.Color.field_5784))
+											CommandManager.literal("red").executes(commandContext -> setColor(commandContext.getSource(), createBossBar(commandContext), BossBar.Color.RED))
 										)
 										.then(
-											CommandManager.literal("green")
-												.executes(commandContext -> setColor(commandContext.getSource(), createBossBar(commandContext), BossBar.Color.field_5785))
+											CommandManager.literal("green").executes(commandContext -> setColor(commandContext.getSource(), createBossBar(commandContext), BossBar.Color.GREEN))
 										)
 										.then(
 											CommandManager.literal("yellow")
-												.executes(commandContext -> setColor(commandContext.getSource(), createBossBar(commandContext), BossBar.Color.field_5782))
+												.executes(commandContext -> setColor(commandContext.getSource(), createBossBar(commandContext), BossBar.Color.YELLOW))
 										)
 										.then(
 											CommandManager.literal("purple")
-												.executes(commandContext -> setColor(commandContext.getSource(), createBossBar(commandContext), BossBar.Color.field_5783))
+												.executes(commandContext -> setColor(commandContext.getSource(), createBossBar(commandContext), BossBar.Color.PURPLE))
 										)
 										.then(
-											CommandManager.literal("white")
-												.executes(commandContext -> setColor(commandContext.getSource(), createBossBar(commandContext), BossBar.Color.field_5786))
+											CommandManager.literal("white").executes(commandContext -> setColor(commandContext.getSource(), createBossBar(commandContext), BossBar.Color.WHITE))
 										)
 								)
 								.then(
 									CommandManager.literal("style")
 										.then(
 											CommandManager.literal("progress")
-												.executes(commandContext -> setStyle(commandContext.getSource(), createBossBar(commandContext), BossBar.Style.field_5795))
+												.executes(commandContext -> setStyle(commandContext.getSource(), createBossBar(commandContext), BossBar.Style.PROGRESS))
 										)
 										.then(
 											CommandManager.literal("notched_6")
-												.executes(commandContext -> setStyle(commandContext.getSource(), createBossBar(commandContext), BossBar.Style.field_5796))
+												.executes(commandContext -> setStyle(commandContext.getSource(), createBossBar(commandContext), BossBar.Style.NOTCHED_6))
 										)
 										.then(
 											CommandManager.literal("notched_10")
-												.executes(commandContext -> setStyle(commandContext.getSource(), createBossBar(commandContext), BossBar.Style.field_5791))
+												.executes(commandContext -> setStyle(commandContext.getSource(), createBossBar(commandContext), BossBar.Style.NOTCHED_10))
 										)
 										.then(
 											CommandManager.literal("notched_12")
-												.executes(commandContext -> setStyle(commandContext.getSource(), createBossBar(commandContext), BossBar.Style.field_5793))
+												.executes(commandContext -> setStyle(commandContext.getSource(), createBossBar(commandContext), BossBar.Style.NOTCHED_12))
 										)
 										.then(
 											CommandManager.literal("notched_20")
-												.executes(commandContext -> setStyle(commandContext.getSource(), createBossBar(commandContext), BossBar.Style.field_5790))
+												.executes(commandContext -> setStyle(commandContext.getSource(), createBossBar(commandContext), BossBar.Style.NOTCHED_20))
 										)
 								)
 								.then(
@@ -197,7 +192,7 @@ public class BossBarCommand {
 				.then(
 					CommandManager.literal("get")
 						.then(
-							CommandManager.argument("id", IdentifierArgumentType.create())
+							CommandManager.argument("id", IdentifierArgumentType.identifier())
 								.suggests(suggestionProvider)
 								.then(CommandManager.literal("value").executes(commandContext -> getValue(commandContext.getSource(), createBossBar(commandContext))))
 								.then(CommandManager.literal("max").executes(commandContext -> getMaxValue(commandContext.getSource(), createBossBar(commandContext))))

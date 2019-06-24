@@ -195,16 +195,16 @@ public class FeatureUpdater {
 	}
 
 	public static FeatureUpdater create(DimensionType dimensionType, @Nullable PersistentStateManager persistentStateManager) {
-		if (dimensionType == DimensionType.field_13072) {
+		if (dimensionType == DimensionType.OVERWORLD) {
 			return new FeatureUpdater(
 				persistentStateManager,
 				ImmutableList.of("Monument", "Stronghold", "Village", "Mineshaft", "Temple", "Mansion"),
 				ImmutableList.of("Village", "Mineshaft", "Mansion", "Igloo", "Desert_Pyramid", "Jungle_Pyramid", "Swamp_Hut", "Stronghold", "Monument")
 			);
-		} else if (dimensionType == DimensionType.field_13076) {
+		} else if (dimensionType == DimensionType.THE_NETHER) {
 			List<String> list = ImmutableList.of("Fortress");
 			return new FeatureUpdater(persistentStateManager, list, list);
-		} else if (dimensionType == DimensionType.field_13078) {
+		} else if (dimensionType == DimensionType.THE_END) {
 			List<String> list = ImmutableList.of("EndCity");
 			return new FeatureUpdater(persistentStateManager, list, list);
 		} else {

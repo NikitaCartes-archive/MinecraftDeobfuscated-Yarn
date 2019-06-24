@@ -57,22 +57,22 @@ import net.minecraft.world.loot.LootTables;
 public class SheepEntity extends AnimalEntity {
 	private static final TrackedData<Byte> COLOR = DataTracker.registerData(SheepEntity.class, TrackedDataHandlerRegistry.BYTE);
 	private static final Map<DyeColor, ItemConvertible> DROPS = SystemUtil.consume(Maps.newEnumMap(DyeColor.class), enumMap -> {
-		enumMap.put(DyeColor.field_7952, Blocks.field_10446);
-		enumMap.put(DyeColor.field_7946, Blocks.field_10095);
-		enumMap.put(DyeColor.field_7958, Blocks.field_10215);
-		enumMap.put(DyeColor.field_7951, Blocks.field_10294);
-		enumMap.put(DyeColor.field_7947, Blocks.field_10490);
-		enumMap.put(DyeColor.field_7961, Blocks.field_10028);
-		enumMap.put(DyeColor.field_7954, Blocks.field_10459);
-		enumMap.put(DyeColor.field_7944, Blocks.field_10423);
-		enumMap.put(DyeColor.field_7967, Blocks.field_10222);
-		enumMap.put(DyeColor.field_7955, Blocks.field_10619);
-		enumMap.put(DyeColor.field_7945, Blocks.field_10259);
-		enumMap.put(DyeColor.field_7966, Blocks.field_10514);
-		enumMap.put(DyeColor.field_7957, Blocks.field_10113);
-		enumMap.put(DyeColor.field_7942, Blocks.field_10170);
-		enumMap.put(DyeColor.field_7964, Blocks.field_10314);
-		enumMap.put(DyeColor.field_7963, Blocks.field_10146);
+		enumMap.put(DyeColor.WHITE, Blocks.WHITE_WOOL);
+		enumMap.put(DyeColor.ORANGE, Blocks.ORANGE_WOOL);
+		enumMap.put(DyeColor.MAGENTA, Blocks.MAGENTA_WOOL);
+		enumMap.put(DyeColor.LIGHT_BLUE, Blocks.LIGHT_BLUE_WOOL);
+		enumMap.put(DyeColor.YELLOW, Blocks.YELLOW_WOOL);
+		enumMap.put(DyeColor.LIME, Blocks.LIME_WOOL);
+		enumMap.put(DyeColor.PINK, Blocks.PINK_WOOL);
+		enumMap.put(DyeColor.GRAY, Blocks.GRAY_WOOL);
+		enumMap.put(DyeColor.LIGHT_GRAY, Blocks.LIGHT_GRAY_WOOL);
+		enumMap.put(DyeColor.CYAN, Blocks.CYAN_WOOL);
+		enumMap.put(DyeColor.PURPLE, Blocks.PURPLE_WOOL);
+		enumMap.put(DyeColor.BLUE, Blocks.BLUE_WOOL);
+		enumMap.put(DyeColor.BROWN, Blocks.BROWN_WOOL);
+		enumMap.put(DyeColor.GREEN, Blocks.GREEN_WOOL);
+		enumMap.put(DyeColor.RED, Blocks.RED_WOOL);
+		enumMap.put(DyeColor.BLACK, Blocks.BLACK_WOOL);
 	});
 	private static final Map<DyeColor, float[]> COLORS = Maps.newEnumMap(
 		(Map)Arrays.stream(DyeColor.values()).collect(Collectors.toMap(dyeColor -> dyeColor, SheepEntity::getDyedColor))
@@ -81,7 +81,7 @@ public class SheepEntity extends AnimalEntity {
 	private EatGrassGoal eatGrassGoal;
 
 	private static float[] getDyedColor(DyeColor dyeColor) {
-		if (dyeColor == DyeColor.field_7952) {
+		if (dyeColor == DyeColor.WHITE) {
 			return new float[]{0.9019608F, 0.9019608F, 0.9019608F};
 		} else {
 			float[] fs = dyeColor.getColorComponents();
@@ -105,7 +105,7 @@ public class SheepEntity extends AnimalEntity {
 		this.goalSelector.add(0, new SwimGoal(this));
 		this.goalSelector.add(1, new EscapeDangerGoal(this, 1.25));
 		this.goalSelector.add(2, new AnimalMateGoal(this, 1.0));
-		this.goalSelector.add(3, new TemptGoal(this, 1.1, Ingredient.ofItems(Items.field_8861), false));
+		this.goalSelector.add(3, new TemptGoal(this, 1.1, Ingredient.ofItems(Items.WHEAT), false));
 		this.goalSelector.add(4, new FollowParentGoal(this, 1.1));
 		this.goalSelector.add(5, this.eatGrassGoal);
 		this.goalSelector.add(6, new WanderAroundFarGoal(this, 1.0));
@@ -147,39 +147,39 @@ public class SheepEntity extends AnimalEntity {
 			return this.getType().getLootTableId();
 		} else {
 			switch (this.getColor()) {
-				case field_7952:
+				case WHITE:
 				default:
-					return LootTables.WHITE_SHEEP_ENTITY;
-				case field_7946:
-					return LootTables.ORANGE_SHEEP_ENTITY;
-				case field_7958:
-					return LootTables.MAGENTA_SHEEP_ENTITY;
-				case field_7951:
-					return LootTables.LIGHT_BLUE_SHEEP_ENTITY;
-				case field_7947:
-					return LootTables.YELLOW_SHEEP_ENTITY;
-				case field_7961:
-					return LootTables.LIME_SHEEP_ENTITY;
-				case field_7954:
-					return LootTables.PINK_SHEEP_ENTITY;
-				case field_7944:
-					return LootTables.GRAY_SHEEP_ENTITY;
-				case field_7967:
-					return LootTables.LIGHT_GRAY_SHEEP_ENTITY;
-				case field_7955:
-					return LootTables.CYAN_SHEEP_ENTITY;
-				case field_7945:
-					return LootTables.PURPLE_SHEEP_ENTITY;
-				case field_7966:
-					return LootTables.BLUE_SHEEP_ENTITY;
-				case field_7957:
-					return LootTables.BROWN_SHEEP_ENTITY;
-				case field_7942:
-					return LootTables.GREEN_SHEEP_ENTITY;
-				case field_7964:
-					return LootTables.RED_SHEEP_ENTITY;
-				case field_7963:
-					return LootTables.BLACK_SHEEP_ENTITY;
+					return LootTables.SHEEP_WHITE_ENTITIE;
+				case ORANGE:
+					return LootTables.SHEEP_ORANGE_ENTITIE;
+				case MAGENTA:
+					return LootTables.SHEEP_MAGENTA_ENTITIE;
+				case LIGHT_BLUE:
+					return LootTables.SHEEP_LIGHT_BLUE_ENTITIE;
+				case YELLOW:
+					return LootTables.SHEEP_YELLOW_ENTITIE;
+				case LIME:
+					return LootTables.SHEEP_LIME_ENTITIE;
+				case PINK:
+					return LootTables.SHEEP_PINK_ENTITIE;
+				case GRAY:
+					return LootTables.SHEEP_GRAY_ENTITIE;
+				case LIGHT_GRAY:
+					return LootTables.SHEEP_LIGHT_GRAY_ENTITIE;
+				case CYAN:
+					return LootTables.SHEEP_CYAN_ENTITIE;
+				case PURPLE:
+					return LootTables.SHEEP_PURPLE_ENTITIE;
+				case BLUE:
+					return LootTables.SHEEP_BLUE_ENTITIE;
+				case BROWN:
+					return LootTables.SHEEP_BROWN_ENTITIE;
+				case GREEN:
+					return LootTables.SHEEP_GREEN_ENTITIE;
+				case RED:
+					return LootTables.SHEEP_RED_ENTITIE;
+				case BLACK:
+					return LootTables.SHEEP_BLACK_ENTITIE;
 			}
 		}
 	}
@@ -218,7 +218,7 @@ public class SheepEntity extends AnimalEntity {
 	@Override
 	public boolean interactMob(PlayerEntity playerEntity, Hand hand) {
 		ItemStack itemStack = playerEntity.getStackInHand(hand);
-		if (itemStack.getItem() == Items.field_8868 && !this.isSheared() && !this.isBaby()) {
+		if (itemStack.getItem() == Items.SHEARS && !this.isSheared() && !this.isBaby()) {
 			this.dropItems();
 			if (!this.world.isClient) {
 				itemStack.damage(1, playerEntity, playerEntityx -> playerEntityx.sendToolBreakStatus(hand));
@@ -248,7 +248,7 @@ public class SheepEntity extends AnimalEntity {
 			}
 		}
 
-		this.playSound(SoundEvents.field_14975, 1.0F, 1.0F);
+		this.playSound(SoundEvents.ENTITY_SHEEP_SHEAR, 1.0F, 1.0F);
 	}
 
 	@Override
@@ -267,22 +267,22 @@ public class SheepEntity extends AnimalEntity {
 
 	@Override
 	protected SoundEvent getAmbientSound() {
-		return SoundEvents.field_14603;
+		return SoundEvents.ENTITY_SHEEP_AMBIENT;
 	}
 
 	@Override
 	protected SoundEvent getHurtSound(DamageSource damageSource) {
-		return SoundEvents.field_14730;
+		return SoundEvents.ENTITY_SHEEP_HURT;
 	}
 
 	@Override
 	protected SoundEvent getDeathSound() {
-		return SoundEvents.field_14814;
+		return SoundEvents.ENTITY_SHEEP_DEATH;
 	}
 
 	@Override
 	protected void playStepSound(BlockPos blockPos, BlockState blockState) {
-		this.playSound(SoundEvents.field_14870, 0.15F, 1.0F);
+		this.playSound(SoundEvents.ENTITY_SHEEP_STEP, 0.15F, 1.0F);
 	}
 
 	public DyeColor getColor() {
@@ -310,21 +310,21 @@ public class SheepEntity extends AnimalEntity {
 	public static DyeColor generateDefaultColor(Random random) {
 		int i = random.nextInt(100);
 		if (i < 5) {
-			return DyeColor.field_7963;
+			return DyeColor.BLACK;
 		} else if (i < 10) {
-			return DyeColor.field_7944;
+			return DyeColor.GRAY;
 		} else if (i < 15) {
-			return DyeColor.field_7967;
+			return DyeColor.LIGHT_GRAY;
 		} else if (i < 18) {
-			return DyeColor.field_7957;
+			return DyeColor.BROWN;
 		} else {
-			return random.nextInt(500) == 0 ? DyeColor.field_7954 : DyeColor.field_7952;
+			return random.nextInt(500) == 0 ? DyeColor.PINK : DyeColor.WHITE;
 		}
 	}
 
 	public SheepEntity method_6640(PassiveEntity passiveEntity) {
 		SheepEntity sheepEntity = (SheepEntity)passiveEntity;
-		SheepEntity sheepEntity2 = EntityType.field_6115.create(this.world);
+		SheepEntity sheepEntity2 = EntityType.SHEEP.create(this.world);
 		sheepEntity2.setColor(this.getChildColor(this, sheepEntity));
 		return sheepEntity2;
 	}

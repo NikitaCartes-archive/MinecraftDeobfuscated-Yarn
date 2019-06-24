@@ -15,6 +15,6 @@ public class RandomTask<E extends LivingEntity> extends CompositeTask<E> {
 	}
 
 	public RandomTask(Map<MemoryModuleType<?>, MemoryModuleState> map, List<Pair<Task<? super E>, Integer>> list) {
-		super(map, ImmutableSet.of(), CompositeTask.Order.field_18349, CompositeTask.RunMode.RUN_ALL, list);
+		super(map, ImmutableSet.of(), CompositeTask.Order.SHUFFLED, CompositeTask.RunMode.RUN_ONE, list);
 	}
 }

@@ -36,7 +36,7 @@ public class ChunkCache implements ViewableWorld {
 
 		for (int k = this.minX; k <= i; k++) {
 			for (int l = this.minZ; l <= j; l++) {
-				this.chunks[k - this.minX][l - this.minZ] = world.getChunk(k, l, ChunkStatus.field_12803, false);
+				this.chunks[k - this.minX][l - this.minZ] = world.getChunk(k, l, ChunkStatus.FULL, false);
 			}
 		}
 
@@ -126,7 +126,7 @@ public class ChunkCache implements ViewableWorld {
 	@Override
 	public BlockState getBlockState(BlockPos blockPos) {
 		if (World.isHeightInvalid(blockPos)) {
-			return Blocks.field_10124.getDefaultState();
+			return Blocks.AIR.getDefaultState();
 		} else {
 			Chunk chunk = this.getChunk(blockPos);
 			return chunk.getBlockState(blockPos);
@@ -136,7 +136,7 @@ public class ChunkCache implements ViewableWorld {
 	@Override
 	public FluidState getFluidState(BlockPos blockPos) {
 		if (World.isHeightInvalid(blockPos)) {
-			return Fluids.field_15906.getDefaultState();
+			return Fluids.EMPTY.getDefaultState();
 		} else {
 			Chunk chunk = this.getChunk(blockPos);
 			return chunk.getFluidState(blockPos);

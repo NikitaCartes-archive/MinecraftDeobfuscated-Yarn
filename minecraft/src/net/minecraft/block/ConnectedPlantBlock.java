@@ -22,12 +22,12 @@ public class ConnectedPlantBlock extends Block {
 	public static final BooleanProperty UP = Properties.UP;
 	public static final BooleanProperty DOWN = Properties.DOWN;
 	public static final Map<Direction, BooleanProperty> FACING_PROPERTIES = SystemUtil.consume(Maps.newEnumMap(Direction.class), enumMap -> {
-		enumMap.put(Direction.field_11043, NORTH);
-		enumMap.put(Direction.field_11034, EAST);
-		enumMap.put(Direction.field_11035, SOUTH);
-		enumMap.put(Direction.field_11039, WEST);
-		enumMap.put(Direction.field_11036, UP);
-		enumMap.put(Direction.field_11033, DOWN);
+		enumMap.put(Direction.NORTH, NORTH);
+		enumMap.put(Direction.EAST, EAST);
+		enumMap.put(Direction.SOUTH, SOUTH);
+		enumMap.put(Direction.WEST, WEST);
+		enumMap.put(Direction.UP, UP);
+		enumMap.put(Direction.DOWN, DOWN);
 	});
 	protected final VoxelShape[] CONNECTIONS_TO_SHAPE;
 

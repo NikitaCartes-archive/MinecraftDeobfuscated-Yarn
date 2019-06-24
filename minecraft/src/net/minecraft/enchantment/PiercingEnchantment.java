@@ -24,6 +24,6 @@ public class PiercingEnchantment extends Enchantment {
 
 	@Override
 	public boolean differs(Enchantment enchantment) {
-		return super.differs(enchantment) && enchantment != Enchantments.field_9108;
+		return super.differs(enchantment) && enchantment != Enchantments.MULTISHOT;
 	}
 }

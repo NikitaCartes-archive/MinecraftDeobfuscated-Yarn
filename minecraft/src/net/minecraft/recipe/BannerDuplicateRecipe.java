@@ -74,7 +74,7 @@ public class BannerDuplicateRecipe extends SpecialCraftingRecipe {
 	}
 
 	public DefaultedList<ItemStack> method_17704(CraftingInventory craftingInventory) {
-		DefaultedList<ItemStack> defaultedList = DefaultedList.create(craftingInventory.getInvSize(), ItemStack.EMPTY);
+		DefaultedList<ItemStack> defaultedList = DefaultedList.ofSize(craftingInventory.getInvSize(), ItemStack.EMPTY);
 
 		for (int i = 0; i < defaultedList.size(); i++) {
 			ItemStack itemStack = craftingInventory.getInvStack(i);

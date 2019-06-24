@@ -39,7 +39,7 @@ public class SpreadPlayersCommand {
 			CommandManager.literal("spreadplayers")
 				.requires(serverCommandSource -> serverCommandSource.hasPermissionLevel(2))
 				.then(
-					CommandManager.argument("center", Vec2ArgumentType.create())
+					CommandManager.argument("center", Vec2ArgumentType.vec2())
 						.then(
 							CommandManager.argument("spreadDistance", FloatArgumentType.floatArg(0.0F))
 								.then(
@@ -185,7 +185,7 @@ public class SpreadPlayersCommand {
 				pile = piles[i++];
 			}
 
-			entity.method_20620((double)((float)MathHelper.floor(pile.x) + 0.5F), (double)pile.getY(serverWorld), (double)MathHelper.floor(pile.z) + 0.5);
+			entity.teleport((double)((float)MathHelper.floor(pile.x) + 0.5F), (double)pile.getY(serverWorld), (double)MathHelper.floor(pile.z) + 0.5);
 			double e = Double.MAX_VALUE;
 
 			for (SpreadPlayersCommand.Pile pile2 : piles) {

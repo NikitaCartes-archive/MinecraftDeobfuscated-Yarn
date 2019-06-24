@@ -23,8 +23,8 @@ public class CactusFeature extends Feature<DefaultFeatureConfig> {
 				int j = 1 + random.nextInt(random.nextInt(3) + 1);
 
 				for (int k = 0; k < j; k++) {
-					if (Blocks.field_10029.getDefaultState().canPlaceAt(iWorld, blockPos2)) {
-						iWorld.setBlockState(blockPos2.up(k), Blocks.field_10029.getDefaultState(), 2);
+					if (Blocks.CACTUS.getDefaultState().canPlaceAt(iWorld, blockPos2)) {
+						iWorld.setBlockState(blockPos2.up(k), Blocks.CACTUS.getDefaultState(), 2);
 					}
 				}
 			}

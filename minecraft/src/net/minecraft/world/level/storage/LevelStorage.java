@@ -158,7 +158,7 @@ public class LevelStorage {
 			CompoundTag compoundTag3 = compoundTag2.containsKey("Player", 10) ? compoundTag2.getCompound("Player") : null;
 			compoundTag2.remove("Player");
 			int i = compoundTag2.containsKey("DataVersion", 99) ? compoundTag2.getInt("DataVersion") : -1;
-			return new LevelProperties(TagHelper.update(dataFixer, DataFixTypes.field_19212, compoundTag2, i), dataFixer, i, compoundTag3);
+			return new LevelProperties(TagHelper.update(dataFixer, DataFixTypes.LEVEL, compoundTag2, i), dataFixer, i, compoundTag3);
 		} catch (Exception var6) {
 			LOGGER.error("Exception reading {}", file, var6);
 			return null;

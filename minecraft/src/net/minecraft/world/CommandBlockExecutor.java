@@ -190,7 +190,7 @@ public abstract class CommandBlockExecutor implements CommandOutput {
 
 	@Override
 	public boolean sendCommandFeedback() {
-		return this.getWorld().getGameRules().getBoolean(GameRules.field_19400) && this.trackOutput;
+		return this.getWorld().getGameRules().getBoolean(GameRules.SEND_COMMAND_FEEDBACK) && this.trackOutput;
 	}
 
 	@Override
@@ -200,6 +200,6 @@ public abstract class CommandBlockExecutor implements CommandOutput {
 
 	@Override
 	public boolean shouldBroadcastConsoleToOps() {
-		return this.getWorld().getGameRules().getBoolean(GameRules.field_19394);
+		return this.getWorld().getGameRules().getBoolean(GameRules.COMMAND_BLOCK_OUTPUT);
 	}
 }

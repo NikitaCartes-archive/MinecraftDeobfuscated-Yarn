@@ -24,7 +24,7 @@ public class IceSpikeFeature extends Feature<DefaultFeatureConfig> {
 			blockPos = blockPos.down();
 		}
 
-		if (iWorld.getBlockState(blockPos).getBlock() != Blocks.field_10491) {
+		if (iWorld.getBlockState(blockPos).getBlock() != Blocks.SNOW_BLOCK) {
 			return false;
 		} else {
 			blockPos = blockPos.up(random.nextInt(4));
@@ -46,15 +46,15 @@ public class IceSpikeFeature extends Feature<DefaultFeatureConfig> {
 						if ((m == 0 && n == 0 || !(g * g + h * h > f * f)) && (m != -l && m != l && n != -l && n != l || !(random.nextFloat() > 0.75F))) {
 							BlockState blockState = iWorld.getBlockState(blockPos.add(m, k, n));
 							Block block = blockState.getBlock();
-							if (blockState.isAir() || Block.isNaturalDirt(block) || block == Blocks.field_10491 || block == Blocks.field_10295) {
-								this.setBlockState(iWorld, blockPos.add(m, k, n), Blocks.field_10225.getDefaultState());
+							if (blockState.isAir() || Block.isNaturalDirt(block) || block == Blocks.SNOW_BLOCK || block == Blocks.ICE) {
+								this.setBlockState(iWorld, blockPos.add(m, k, n), Blocks.PACKED_ICE.getDefaultState());
 							}
 
 							if (k != 0 && l > 1) {
 								blockState = iWorld.getBlockState(blockPos.add(m, -k, n));
 								block = blockState.getBlock();
-								if (blockState.isAir() || Block.isNaturalDirt(block) || block == Blocks.field_10491 || block == Blocks.field_10295) {
-									this.setBlockState(iWorld, blockPos.add(m, -k, n), Blocks.field_10225.getDefaultState());
+								if (blockState.isAir() || Block.isNaturalDirt(block) || block == Blocks.SNOW_BLOCK || block == Blocks.ICE) {
+									this.setBlockState(iWorld, blockPos.add(m, -k, n), Blocks.PACKED_ICE.getDefaultState());
 								}
 							}
 						}
@@ -80,11 +80,11 @@ public class IceSpikeFeature extends Feature<DefaultFeatureConfig> {
 					while (blockPos2.getY() > 50) {
 						BlockState blockState2 = iWorld.getBlockState(blockPos2);
 						Block block2 = blockState2.getBlock();
-						if (!blockState2.isAir() && !Block.isNaturalDirt(block2) && block2 != Blocks.field_10491 && block2 != Blocks.field_10295 && block2 != Blocks.field_10225) {
+						if (!blockState2.isAir() && !Block.isNaturalDirt(block2) && block2 != Blocks.SNOW_BLOCK && block2 != Blocks.ICE && block2 != Blocks.PACKED_ICE) {
 							break;
 						}
 
-						this.setBlockState(iWorld, blockPos2, Blocks.field_10225.getDefaultState());
+						this.setBlockState(iWorld, blockPos2, Blocks.PACKED_ICE.getDefaultState());
 						blockPos2 = blockPos2.down();
 						if (--p <= 0) {
 							blockPos2 = blockPos2.down(random.nextInt(5) + 1);

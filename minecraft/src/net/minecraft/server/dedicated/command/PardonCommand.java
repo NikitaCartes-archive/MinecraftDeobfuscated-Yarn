@@ -23,7 +23,7 @@ public class PardonCommand {
 					serverCommandSource -> serverCommandSource.getMinecraftServer().getPlayerManager().getIpBanList().isEnabled() && serverCommandSource.hasPermissionLevel(3)
 				)
 				.then(
-					CommandManager.argument("targets", GameProfileArgumentType.create())
+					CommandManager.argument("targets", GameProfileArgumentType.gameProfile())
 						.suggests(
 							(commandContext, suggestionsBuilder) -> CommandSource.suggestMatching(
 									commandContext.getSource().getMinecraftServer().getPlayerManager().getUserBanList().getNames(), suggestionsBuilder

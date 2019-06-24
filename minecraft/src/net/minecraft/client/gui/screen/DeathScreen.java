@@ -107,7 +107,7 @@ public class DeathScreen extends Screen {
 		}
 
 		this.drawCenteredString(
-			this.font, I18n.translate("deathScreen.score") + ": " + Formatting.field_1054 + this.minecraft.player.getScore(), this.width / 2, 100, 16777215
+			this.font, I18n.translate("deathScreen.score") + ": " + Formatting.YELLOW + this.minecraft.player.getScore(), this.width / 2, 100, 16777215
 		);
 		if (this.message != null && j > 85 && j < 85 + 9) {
 			Text text = this.method_2164(i);
@@ -130,7 +130,7 @@ public class DeathScreen extends Screen {
 			int m = k;
 			if (i >= k && i <= l) {
 				for (Text text : this.message) {
-					m += this.minecraft.textRenderer.getStringWidth(TextComponentUtil.method_1849(text.asString(), false));
+					m += this.minecraft.textRenderer.getStringWidth(TextComponentUtil.getRenderChatMessage(text.asString(), false));
 					if (m > i) {
 						return text;
 					}
@@ -147,7 +147,7 @@ public class DeathScreen extends Screen {
 	public boolean mouseClicked(double d, double e, int i) {
 		if (this.message != null && e > 85.0 && e < (double)(85 + 9)) {
 			Text text = this.method_2164((int)d);
-			if (text != null && text.getStyle().getClickEvent() != null && text.getStyle().getClickEvent().getAction() == ClickEvent.Action.field_11749) {
+			if (text != null && text.getStyle().getClickEvent() != null && text.getStyle().getClickEvent().getAction() == ClickEvent.Action.OPEN_URL) {
 				this.handleComponentClicked(text);
 				return false;
 			}

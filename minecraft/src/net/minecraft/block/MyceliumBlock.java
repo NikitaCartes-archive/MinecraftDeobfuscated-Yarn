@@ -18,7 +18,7 @@ public class MyceliumBlock extends SpreadableBlock {
 		super.randomDisplayTick(blockState, world, blockPos, random);
 		if (random.nextInt(10) == 0) {
 			world.addParticle(
-				ParticleTypes.field_11219,
+				ParticleTypes.MYCELIUM,
 				(double)((float)blockPos.getX() + random.nextFloat()),
 				(double)((float)blockPos.getY() + 1.1F),
 				(double)((float)blockPos.getZ() + random.nextFloat()),

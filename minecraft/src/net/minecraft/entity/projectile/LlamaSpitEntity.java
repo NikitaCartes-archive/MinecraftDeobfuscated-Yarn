@@ -29,7 +29,7 @@ public class LlamaSpitEntity extends Entity implements Projectile {
 	}
 
 	public LlamaSpitEntity(World world, LlamaEntity llamaEntity) {
-		this(EntityType.field_6124, world);
+		this(EntityType.LLAMA_SPIT, world);
 		this.owner = llamaEntity;
 		this.setPosition(
 			llamaEntity.x - (double)(llamaEntity.getWidth() + 1.0F) * 0.5 * (double)MathHelper.sin(llamaEntity.field_6283 * (float) (Math.PI / 180.0)),
@@ -40,12 +40,12 @@ public class LlamaSpitEntity extends Entity implements Projectile {
 
 	@Environment(EnvType.CLIENT)
 	public LlamaSpitEntity(World world, double d, double e, double f, double g, double h, double i) {
-		this(EntityType.field_6124, world);
+		this(EntityType.LLAMA_SPIT, world);
 		this.setPosition(d, e, f);
 
 		for (int j = 0; j < 7; j++) {
 			double k = 0.4 + 0.1 * (double)j;
-			world.addParticle(ParticleTypes.field_11228, d, e, f, g * k, h, i * k);
+			world.addParticle(ParticleTypes.SPIT, d, e, f, g * k, h, i * k);
 		}
 
 		this.setVelocity(g, h, i);
@@ -60,7 +60,7 @@ public class LlamaSpitEntity extends Entity implements Projectile {
 
 		Vec3d vec3d = this.getVelocity();
 		HitResult hitResult = ProjectileUtil.getCollision(
-			this, this.getBoundingBox().stretch(vec3d).expand(1.0), entity -> !entity.isSpectator() && entity != this.owner, RayTraceContext.ShapeType.field_17559, true
+			this, this.getBoundingBox().stretch(vec3d).expand(1.0), entity -> !entity.isSpectator() && entity != this.owner, RayTraceContext.ShapeType.OUTLINE, true
 		);
 		if (hitResult != null) {
 			this.method_7481(hitResult);
@@ -137,9 +137,9 @@ public class LlamaSpitEntity extends Entity implements Projectile {
 
 	public void method_7481(HitResult hitResult) {
 		HitResult.Type type = hitResult.getType();
-		if (type == HitResult.Type.field_1331 && this.owner != null) {
+		if (type == HitResult.Type.ENTITY && this.owner != null) {
 			((EntityHitResult)hitResult).getEntity().damage(DamageSource.mobProjectile(this, this.owner).setProjectile(), 1.0F);
-		} else if (type == HitResult.Type.field_1332 && !this.world.isClient) {
+		} else if (type == HitResult.Type.BLOCK && !this.world.isClient) {
 			this.remove();
 		}
 	}

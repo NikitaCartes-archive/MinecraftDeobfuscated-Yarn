@@ -65,13 +65,13 @@ public class LecternBlock extends BlockWithEntity {
 	protected LecternBlock(Block.Settings settings) {
 		super(settings);
 		this.setDefaultState(
-			this.stateFactory.getDefaultState().with(FACING, Direction.field_11043).with(POWERED, Boolean.valueOf(false)).with(HAS_BOOK, Boolean.valueOf(false))
+			this.stateFactory.getDefaultState().with(FACING, Direction.NORTH).with(POWERED, Boolean.valueOf(false)).with(HAS_BOOK, Boolean.valueOf(false))
 		);
 	}
 
 	@Override
 	public BlockRenderType getRenderType(BlockState blockState) {
-		return BlockRenderType.field_11458;
+		return BlockRenderType.MODEL;
 	}
 
 	@Override
@@ -97,13 +97,13 @@ public class LecternBlock extends BlockWithEntity {
 	@Override
 	public VoxelShape getOutlineShape(BlockState blockState, BlockView blockView, BlockPos blockPos, EntityContext entityContext) {
 		switch ((Direction)blockState.get(FACING)) {
-			case field_11043:
+			case NORTH:
 				return NORTH_SHAPE;
-			case field_11035:
+			case SOUTH:
 				return SOUTH_SHAPE;
-			case field_11034:
+			case EAST:
 				return EAST_SHAPE;
-			case field_11039:
+			case WEST:
 				return WEST_SHAPE;
 			default:
 				return BASE_SHAPE;
@@ -149,7 +149,7 @@ public class LecternBlock extends BlockWithEntity {
 			LecternBlockEntity lecternBlockEntity = (LecternBlockEntity)blockEntity;
 			lecternBlockEntity.setBook(itemStack.split(1));
 			setHasBook(world, blockPos, blockState, true);
-			world.playSound(null, blockPos, SoundEvents.field_17482, SoundCategory.field_15245, 1.0F, 1.0F);
+			world.playSound(null, blockPos, SoundEvents.ITEM_BOOK_PUT, SoundCategory.BLOCKS, 1.0F, 1.0F);
 		}
 	}
 
@@ -224,7 +224,7 @@ public class LecternBlock extends BlockWithEntity {
 
 	@Override
 	public int getStrongRedstonePower(BlockState blockState, BlockView blockView, BlockPos blockPos, Direction direction) {
-		return direction == Direction.field_11036 && blockState.get(POWERED) ? 15 : 0;
+		return direction == Direction.UP && blockState.get(POWERED) ? 15 : 0;
 	}
 
 	@Override
@@ -267,7 +267,7 @@ public class LecternBlock extends BlockWithEntity {
 		BlockEntity blockEntity = world.getBlockEntity(blockPos);
 		if (blockEntity instanceof LecternBlockEntity) {
 			playerEntity.openContainer((LecternBlockEntity)blockEntity);
-			playerEntity.incrementStat(Stats.field_17485);
+			playerEntity.incrementStat(Stats.INTERACT_WITH_LECTERN);
 		}
 	}
 

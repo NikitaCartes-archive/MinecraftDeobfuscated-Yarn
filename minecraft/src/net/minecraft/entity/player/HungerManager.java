@@ -40,12 +40,12 @@ public class HungerManager {
 			this.exhaustion -= 4.0F;
 			if (this.foodSaturationLevel > 0.0F) {
 				this.foodSaturationLevel = Math.max(this.foodSaturationLevel - 1.0F, 0.0F);
-			} else if (difficulty != Difficulty.field_5801) {
+			} else if (difficulty != Difficulty.PEACEFUL) {
 				this.foodLevel = Math.max(this.foodLevel - 1, 0);
 			}
 		}
 
-		boolean bl = playerEntity.world.getGameRules().getBoolean(GameRules.field_19395);
+		boolean bl = playerEntity.world.getGameRules().getBoolean(GameRules.NATURAL_REGENERATION);
 		if (bl && this.foodSaturationLevel > 0.0F && playerEntity.canFoodHeal() && this.foodLevel >= 20) {
 			this.foodStarvationTimer++;
 			if (this.foodStarvationTimer >= 10) {
@@ -64,7 +64,7 @@ public class HungerManager {
 		} else if (this.foodLevel <= 0) {
 			this.foodStarvationTimer++;
 			if (this.foodStarvationTimer >= 80) {
-				if (playerEntity.getHealth() > 10.0F || difficulty == Difficulty.field_5807 || playerEntity.getHealth() > 1.0F && difficulty == Difficulty.field_5802) {
+				if (playerEntity.getHealth() > 10.0F || difficulty == Difficulty.HARD || playerEntity.getHealth() > 1.0F && difficulty == Difficulty.NORMAL) {
 					playerEntity.damage(DamageSource.STARVE, 1.0F);
 				}
 

@@ -102,7 +102,7 @@ public class ShipwreckGenerator {
 			Structure structure = structureManager.getStructureOrBlank(this.template);
 			StructurePlacementData structurePlacementData = new StructurePlacementData()
 				.setRotation(this.rotation)
-				.setMirrored(BlockMirror.field_11302)
+				.setMirrored(BlockMirror.NONE)
 				.setPosition(ShipwreckGenerator.field_14536)
 				.addProcessor(BlockIgnoreStructureProcessor.IGNORE_AIR_AND_STRUCTURE_BLOCKS);
 			this.setStructureData(structure, this.pos, structurePlacementData);
@@ -111,11 +111,11 @@ public class ShipwreckGenerator {
 		@Override
 		protected void handleMetadata(String string, BlockPos blockPos, IWorld iWorld, Random random, MutableIntBoundingBox mutableIntBoundingBox) {
 			if ("map_chest".equals(string)) {
-				LootableContainerBlockEntity.setLootTable(iWorld, random, blockPos.down(), LootTables.field_841);
+				LootableContainerBlockEntity.setLootTable(iWorld, random, blockPos.down(), LootTables.SHIPWRECK_MAP_CHEST);
 			} else if ("treasure_chest".equals(string)) {
-				LootableContainerBlockEntity.setLootTable(iWorld, random, blockPos.down(), LootTables.field_665);
+				LootableContainerBlockEntity.setLootTable(iWorld, random, blockPos.down(), LootTables.SHIPWRECK_TREASURE_CHEST);
 			} else if ("supply_chest".equals(string)) {
-				LootableContainerBlockEntity.setLootTable(iWorld, random, blockPos.down(), LootTables.field_880);
+				LootableContainerBlockEntity.setLootTable(iWorld, random, blockPos.down(), LootTables.SHIPWRECK_SUPPLY_CHEST);
 			}
 		}
 
@@ -126,7 +126,7 @@ public class ShipwreckGenerator {
 			BlockPos blockPos = this.pos.add(this.structure.getSize().getX() - 1, 0, this.structure.getSize().getZ() - 1);
 
 			for (BlockPos blockPos2 : BlockPos.iterate(this.pos, blockPos)) {
-				int k = iWorld.getTop(this.grounded ? Heightmap.Type.field_13194 : Heightmap.Type.field_13195, blockPos2.getX(), blockPos2.getZ());
+				int k = iWorld.getTop(this.grounded ? Heightmap.Type.WORLD_SURFACE_WG : Heightmap.Type.OCEAN_FLOOR_WG, blockPos2.getX(), blockPos2.getZ());
 				j += k;
 				i = Math.min(i, k);
 			}

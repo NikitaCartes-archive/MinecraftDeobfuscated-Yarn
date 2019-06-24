@@ -22,7 +22,7 @@ public abstract class CoralFeature extends Feature<DefaultFeatureConfig> {
 	public boolean method_12865(
 		IWorld iWorld, ChunkGenerator<? extends ChunkGeneratorConfig> chunkGenerator, Random random, BlockPos blockPos, DefaultFeatureConfig defaultFeatureConfig
 	) {
-		BlockState blockState = BlockTags.field_15461.getRandom(random).getDefaultState();
+		BlockState blockState = BlockTags.CORAL_BLOCKS.getRandom(random).getDefaultState();
 		return this.spawnCoral(iWorld, random, blockPos, blockState);
 	}
 
@@ -31,20 +31,19 @@ public abstract class CoralFeature extends Feature<DefaultFeatureConfig> {
 	protected boolean spawnCoralPiece(IWorld iWorld, Random random, BlockPos blockPos, BlockState blockState) {
 		BlockPos blockPos2 = blockPos.up();
 		BlockState blockState2 = iWorld.getBlockState(blockPos);
-		if ((blockState2.getBlock() == Blocks.field_10382 || blockState2.matches(BlockTags.field_15488))
-			&& iWorld.getBlockState(blockPos2).getBlock() == Blocks.field_10382) {
+		if ((blockState2.getBlock() == Blocks.WATER || blockState2.matches(BlockTags.CORALS)) && iWorld.getBlockState(blockPos2).getBlock() == Blocks.WATER) {
 			iWorld.setBlockState(blockPos, blockState, 3);
 			if (random.nextFloat() < 0.25F) {
-				iWorld.setBlockState(blockPos2, BlockTags.field_15488.getRandom(random).getDefaultState(), 2);
+				iWorld.setBlockState(blockPos2, BlockTags.CORALS.getRandom(random).getDefaultState(), 2);
 			} else if (random.nextFloat() < 0.05F) {
-				iWorld.setBlockState(blockPos2, Blocks.field_10476.getDefaultState().with(SeaPickleBlock.PICKLES, Integer.valueOf(random.nextInt(4) + 1)), 2);
+				iWorld.setBlockState(blockPos2, Blocks.SEA_PICKLE.getDefaultState().with(SeaPickleBlock.PICKLES, Integer.valueOf(random.nextInt(4) + 1)), 2);
 			}
 
-			for (Direction direction : Direction.Type.field_11062) {
+			for (Direction direction : Direction.Type.HORIZONTAL) {
 				if (random.nextFloat() < 0.2F) {
 					BlockPos blockPos3 = blockPos.offset(direction);
-					if (iWorld.getBlockState(blockPos3).getBlock() == Blocks.field_10382) {
-						BlockState blockState3 = BlockTags.field_15476.getRandom(random).getDefaultState().with(DeadCoralWallFanBlock.FACING, direction);
+					if (iWorld.getBlockState(blockPos3).getBlock() == Blocks.WATER) {
+						BlockState blockState3 = BlockTags.WALL_CORALS.getRandom(random).getDefaultState().with(DeadCoralWallFanBlock.FACING, direction);
 						iWorld.setBlockState(blockPos3, blockState3, 2);
 					}
 				}

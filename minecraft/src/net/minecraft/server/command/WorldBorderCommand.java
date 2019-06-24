@@ -86,7 +86,7 @@ public class WorldBorderCommand {
 				.then(
 					CommandManager.literal("center")
 						.then(
-							CommandManager.argument("pos", Vec2ArgumentType.create())
+							CommandManager.argument("pos", Vec2ArgumentType.vec2())
 								.executes(commandContext -> executeCenter(commandContext.getSource(), Vec2ArgumentType.getVec2(commandContext, "pos")))
 						)
 				)

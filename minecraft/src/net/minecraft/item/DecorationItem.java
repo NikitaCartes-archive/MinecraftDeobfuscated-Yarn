@@ -27,15 +27,15 @@ public class DecorationItem extends Item {
 		PlayerEntity playerEntity = itemUsageContext.getPlayer();
 		ItemStack itemStack = itemUsageContext.getStack();
 		if (playerEntity != null && !this.canPlaceOn(playerEntity, direction, itemStack, blockPos2)) {
-			return ActionResult.field_5814;
+			return ActionResult.FAIL;
 		} else {
 			World world = itemUsageContext.getWorld();
 			AbstractDecorationEntity abstractDecorationEntity;
-			if (this.entityType == EntityType.field_6120) {
+			if (this.entityType == EntityType.PAINTING) {
 				abstractDecorationEntity = new PaintingEntity(world, blockPos2, direction);
 			} else {
-				if (this.entityType != EntityType.field_6043) {
-					return ActionResult.field_5812;
+				if (this.entityType != EntityType.ITEM_FRAME) {
+					return ActionResult.SUCCESS;
 				}
 
 				abstractDecorationEntity = new ItemFrameEntity(world, blockPos2, direction);
@@ -55,7 +55,7 @@ public class DecorationItem extends Item {
 				itemStack.decrement(1);
 			}
 
-			return ActionResult.field_5812;
+			return ActionResult.SUCCESS;
 		}
 	}
 

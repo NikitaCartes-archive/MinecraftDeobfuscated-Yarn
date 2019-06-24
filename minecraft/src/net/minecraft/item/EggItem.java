@@ -23,7 +23,7 @@ public class EggItem extends Item {
 		}
 
 		world.playSound(
-			null, playerEntity.x, playerEntity.y, playerEntity.z, SoundEvents.field_15012, SoundCategory.PLAYERS, 0.5F, 0.4F / (RANDOM.nextFloat() * 0.4F + 0.8F)
+			null, playerEntity.x, playerEntity.y, playerEntity.z, SoundEvents.ENTITY_EGG_THROW, SoundCategory.PLAYERS, 0.5F, 0.4F / (RANDOM.nextFloat() * 0.4F + 0.8F)
 		);
 		if (!world.isClient) {
 			ThrownEggEntity thrownEggEntity = new ThrownEggEntity(world, playerEntity);
@@ -32,7 +32,7 @@ public class EggItem extends Item {
 			world.spawnEntity(thrownEggEntity);
 		}
 
-		playerEntity.incrementStat(Stats.field_15372.getOrCreateStat(this));
-		return new TypedActionResult<>(ActionResult.field_5812, itemStack);
+		playerEntity.incrementStat(Stats.USED.getOrCreateStat(this));
+		return new TypedActionResult<>(ActionResult.SUCCESS, itemStack);
 	}
 }

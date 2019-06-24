@@ -42,7 +42,7 @@ public final class NativeImage implements AutoCloseable {
 	private final int sizeBytes;
 
 	public NativeImage(int i, int j, boolean bl) {
-		this(NativeImage.Format.field_4997, i, j, bl);
+		this(NativeImage.Format.RGBA, i, j, bl);
 	}
 
 	public NativeImage(NativeImage.Format format, int i, int j, boolean bl) {
@@ -72,7 +72,7 @@ public final class NativeImage implements AutoCloseable {
 	}
 
 	public static NativeImage fromInputStream(InputStream inputStream) throws IOException {
-		return fromInputStream(NativeImage.Format.field_4997, inputStream);
+		return fromInputStream(NativeImage.Format.RGBA, inputStream);
 	}
 
 	public static NativeImage fromInputStream(@Nullable NativeImage.Format format, InputStream inputStream) throws IOException {
@@ -92,7 +92,7 @@ public final class NativeImage implements AutoCloseable {
 	}
 
 	public static NativeImage fromByteBuffer(ByteBuffer byteBuffer) throws IOException {
-		return fromByteBuffer(NativeImage.Format.field_4997, byteBuffer);
+		return fromByteBuffer(NativeImage.Format.RGBA, byteBuffer);
 	}
 
 	public static NativeImage fromByteBuffer(@Nullable NativeImage.Format format, ByteBuffer byteBuffer) throws IOException {
@@ -171,7 +171,7 @@ public final class NativeImage implements AutoCloseable {
 	}
 
 	public int getPixelRGBA(int i, int j) {
-		if (this.format != NativeImage.Format.field_4997) {
+		if (this.format != NativeImage.Format.RGBA) {
 			throw new IllegalArgumentException(String.format("getPixelRGBA only works on RGBA images; have %s", this.format));
 		} else if (i <= this.width && j <= this.height) {
 			this.checkAllocated();
@@ -182,7 +182,7 @@ public final class NativeImage implements AutoCloseable {
 	}
 
 	public void setPixelRGBA(int i, int j, int k) {
-		if (this.format != NativeImage.Format.field_4997) {
+		if (this.format != NativeImage.Format.RGBA) {
 			throw new IllegalArgumentException(String.format("getPixelRGBA only works on RGBA images; have %s", this.format));
 		} else if (i <= this.width && j <= this.height) {
 			this.checkAllocated();
@@ -203,7 +203,7 @@ public final class NativeImage implements AutoCloseable {
 	}
 
 	public void blendPixel(int i, int j, int k) {
-		if (this.format != NativeImage.Format.field_4997) {
+		if (this.format != NativeImage.Format.RGBA) {
 			throw new UnsupportedOperationException("Can only call blendPixel with RGBA format");
 		} else {
 			int l = this.getPixelRGBA(i, j);
@@ -246,7 +246,7 @@ public final class NativeImage implements AutoCloseable {
 
 	@Deprecated
 	public int[] makePixelArray() {
-		if (this.format != NativeImage.Format.field_4997) {
+		if (this.format != NativeImage.Format.RGBA) {
 			throw new UnsupportedOperationException("can only call makePixelArray for RGBA images.");
 		} else {
 			this.checkAllocated();
@@ -470,10 +470,10 @@ public final class NativeImage implements AutoCloseable {
 
 	@Environment(EnvType.CLIENT)
 	public static enum Format {
-		field_4997(4, 6408, true, true, true, false, true, 0, 8, 16, 255, 24, true),
-		field_5001(3, 6407, true, true, true, false, false, 0, 8, 16, 255, 255, true),
-		field_5002(2, 6410, false, false, false, true, true, 255, 255, 255, 0, 8, true),
-		field_4998(1, 6409, false, false, false, true, false, 0, 0, 0, 0, 255, true);
+		RGBA(4, 6408, true, true, true, false, true, 0, 8, 16, 255, 24, true),
+		RGB(3, 6407, true, true, true, false, false, 0, 8, 16, 255, 255, true),
+		LUMINANCE_ALPHA(2, 6410, false, false, false, true, true, 255, 255, 255, 0, 8, true),
+		LUMINANCE(1, 6409, false, false, false, true, false, 0, 0, 0, 0, 255, true);
 
 		private final int bytesPerPixel;
 		private final int pixelDataFormat;
@@ -544,14 +544,14 @@ public final class NativeImage implements AutoCloseable {
 		private static NativeImage.Format method_4336(int i) {
 			switch (i) {
 				case 1:
-					return field_4998;
+					return LUMINANCE;
 				case 2:
-					return field_5002;
+					return LUMINANCE_ALPHA;
 				case 3:
-					return field_5001;
+					return RGB;
 				case 4:
 				default:
-					return field_4997;
+					return RGBA;
 			}
 		}
 	}
@@ -585,11 +585,11 @@ public final class NativeImage implements AutoCloseable {
 
 	@Environment(EnvType.CLIENT)
 	public static enum class_1013 {
-		field_5012(6408),
-		field_5011(6407),
-		field_5013(6410),
-		field_5017(6409),
-		field_5016(32841);
+		RGBA(6408),
+		RGB(6407),
+		LUMINANCE_ALPHA(6410),
+		LUMINANCE(6409),
+		INTENSITY(32841);
 
 		private final int field_5015;
 

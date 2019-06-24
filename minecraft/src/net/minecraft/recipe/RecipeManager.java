@@ -87,7 +87,7 @@ public class RecipeManager extends JsonDataLoader {
 		if (optional.isPresent()) {
 			return ((Recipe)optional.get()).getRemainingStacks(inventory);
 		} else {
-			DefaultedList<ItemStack> defaultedList = DefaultedList.create(inventory.getInvSize(), ItemStack.EMPTY);
+			DefaultedList<ItemStack> defaultedList = DefaultedList.ofSize(inventory.getInvSize(), ItemStack.EMPTY);
 
 			for (int i = 0; i < defaultedList.size(); i++) {
 				defaultedList.set(i, inventory.getInvStack(i));

@@ -51,8 +51,8 @@ public class BannerBlock extends AbstractBannerBlock {
 	public BlockState getStateForNeighborUpdate(
 		BlockState blockState, Direction direction, BlockState blockState2, IWorld iWorld, BlockPos blockPos, BlockPos blockPos2
 	) {
-		return direction == Direction.field_11033 && !blockState.canPlaceAt(iWorld, blockPos)
-			? Blocks.field_10124.getDefaultState()
+		return direction == Direction.DOWN && !blockState.canPlaceAt(iWorld, blockPos)
+			? Blocks.AIR.getDefaultState()
 			: super.getStateForNeighborUpdate(blockState, direction, blockState2, iWorld, blockPos, blockPos2);
 	}
 
@@ -73,6 +73,6 @@ public class BannerBlock extends AbstractBannerBlock {
 
 	@Environment(EnvType.CLIENT)
 	public static Block getForColor(DyeColor dyeColor) {
-		return (Block)COLORED_BANNERS.getOrDefault(dyeColor, Blocks.field_10154);
+		return (Block)COLORED_BANNERS.getOrDefault(dyeColor, Blocks.WHITE_BANNER);
 	}
 }

@@ -35,21 +35,21 @@ public class TripwireHookBlock extends Block {
 	public TripwireHookBlock(Block.Settings settings) {
 		super(settings);
 		this.setDefaultState(
-			this.stateFactory.getDefaultState().with(FACING, Direction.field_11043).with(POWERED, Boolean.valueOf(false)).with(ATTACHED, Boolean.valueOf(false))
+			this.stateFactory.getDefaultState().with(FACING, Direction.NORTH).with(POWERED, Boolean.valueOf(false)).with(ATTACHED, Boolean.valueOf(false))
 		);
 	}
 
 	@Override
 	public VoxelShape getOutlineShape(BlockState blockState, BlockView blockView, BlockPos blockPos, EntityContext entityContext) {
 		switch ((Direction)blockState.get(FACING)) {
-			case field_11034:
+			case EAST:
 			default:
 				return WEST_SHAPE;
-			case field_11039:
+			case WEST:
 				return EAST_SHAPE;
-			case field_11035:
+			case SOUTH:
 				return NORTH_SHAPE;
-			case field_11043:
+			case NORTH:
 				return SOUTH_SHAPE;
 		}
 	}
@@ -67,7 +67,7 @@ public class TripwireHookBlock extends Block {
 		BlockState blockState, Direction direction, BlockState blockState2, IWorld iWorld, BlockPos blockPos, BlockPos blockPos2
 	) {
 		return direction.getOpposite() == blockState.get(FACING) && !blockState.canPlaceAt(iWorld, blockPos)
-			? Blocks.field_10124.getDefaultState()
+			? Blocks.AIR.getDefaultState()
 			: super.getStateForNeighborUpdate(blockState, direction, blockState2, iWorld, blockPos, blockPos2);
 	}
 
@@ -109,14 +109,14 @@ public class TripwireHookBlock extends Block {
 		for (int k = 1; k < 42; k++) {
 			BlockPos blockPos2 = blockPos.offset(direction, k);
 			BlockState blockState3 = world.getBlockState(blockPos2);
-			if (blockState3.getBlock() == Blocks.field_10348) {
+			if (blockState3.getBlock() == Blocks.TRIPWIRE_HOOK) {
 				if (blockState3.get(FACING) == direction.getOpposite()) {
 					j = k;
 				}
 				break;
 			}
 
-			if (blockState3.getBlock() != Blocks.field_10589 && k != i) {
+			if (blockState3.getBlock() != Blocks.TRIPWIRE && k != i) {
 				blockStates[k] = null;
 				bl5 = false;
 			} else {
@@ -174,13 +174,13 @@ public class TripwireHookBlock extends Block {
 
 	private void playSound(World world, BlockPos blockPos, boolean bl, boolean bl2, boolean bl3, boolean bl4) {
 		if (bl2 && !bl4) {
-			world.playSound(null, blockPos, SoundEvents.field_14674, SoundCategory.field_15245, 0.4F, 0.6F);
+			world.playSound(null, blockPos, SoundEvents.BLOCK_TRIPWIRE_CLICK_ON, SoundCategory.BLOCKS, 0.4F, 0.6F);
 		} else if (!bl2 && bl4) {
-			world.playSound(null, blockPos, SoundEvents.field_14787, SoundCategory.field_15245, 0.4F, 0.5F);
+			world.playSound(null, blockPos, SoundEvents.BLOCK_TRIPWIRE_CLICK_OFF, SoundCategory.BLOCKS, 0.4F, 0.5F);
 		} else if (bl && !bl3) {
-			world.playSound(null, blockPos, SoundEvents.field_14859, SoundCategory.field_15245, 0.4F, 0.7F);
+			world.playSound(null, blockPos, SoundEvents.BLOCK_TRIPWIRE_ATTACH, SoundCategory.BLOCKS, 0.4F, 0.7F);
 		} else if (!bl && bl3) {
-			world.playSound(null, blockPos, SoundEvents.field_14595, SoundCategory.field_15245, 0.4F, 1.2F / (world.random.nextFloat() * 0.2F + 0.9F));
+			world.playSound(null, blockPos, SoundEvents.BLOCK_TRIPWIRE_DETACH, SoundCategory.BLOCKS, 0.4F, 1.2F / (world.random.nextFloat() * 0.2F + 0.9F));
 		}
 	}
 

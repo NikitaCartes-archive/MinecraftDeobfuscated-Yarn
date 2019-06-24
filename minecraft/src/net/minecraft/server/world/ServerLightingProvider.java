@@ -64,19 +64,19 @@ public class ServerLightingProvider extends LightingProvider implements AutoClos
 		this.enqueue(
 			blockPos.getX() >> 4,
 			blockPos.getZ() >> 4,
-			ServerLightingProvider.class_3901.field_17262,
+			ServerLightingProvider.class_3901.POST_UPDATE,
 			SystemUtil.debugRunnable(() -> super.enqueueLightUpdate(blockPos2), () -> "checkBlock " + blockPos2)
 		);
 	}
 
 	protected void method_20386(ChunkPos chunkPos) {
-		this.enqueue(chunkPos.x, chunkPos.z, () -> 0, ServerLightingProvider.class_3901.field_17261, SystemUtil.debugRunnable(() -> {
+		this.enqueue(chunkPos.x, chunkPos.z, () -> 0, ServerLightingProvider.class_3901.PRE_UPDATE, SystemUtil.debugRunnable(() -> {
 			super.method_20601(chunkPos, false);
 			super.suppressLight(chunkPos, false);
 
 			for (int i = -1; i < 17; i++) {
-				super.queueData(LightType.field_9282, ChunkSectionPos.from(chunkPos, i), null);
-				super.queueData(LightType.field_9284, ChunkSectionPos.from(chunkPos, i), null);
+				super.queueData(LightType.BLOCK, ChunkSectionPos.from(chunkPos, i), null);
+				super.queueData(LightType.SKY, ChunkSectionPos.from(chunkPos, i), null);
 			}
 
 			for (int i = 0; i < 16; i++) {
@@ -91,7 +91,7 @@ public class ServerLightingProvider extends LightingProvider implements AutoClos
 			chunkSectionPos.getChunkX(),
 			chunkSectionPos.getChunkZ(),
 			() -> 0,
-			ServerLightingProvider.class_3901.field_17261,
+			ServerLightingProvider.class_3901.PRE_UPDATE,
 			SystemUtil.debugRunnable(() -> super.updateSectionStatus(chunkSectionPos, bl), () -> "updateSectionStatus " + chunkSectionPos + " " + bl)
 		);
 	}
@@ -101,7 +101,7 @@ public class ServerLightingProvider extends LightingProvider implements AutoClos
 		this.enqueue(
 			chunkPos.x,
 			chunkPos.z,
-			ServerLightingProvider.class_3901.field_17261,
+			ServerLightingProvider.class_3901.PRE_UPDATE,
 			SystemUtil.debugRunnable(() -> super.suppressLight(chunkPos, bl), () -> "enableLight " + chunkPos + " " + bl)
 		);
 	}
@@ -112,7 +112,7 @@ public class ServerLightingProvider extends LightingProvider implements AutoClos
 			chunkSectionPos.getChunkX(),
 			chunkSectionPos.getChunkZ(),
 			() -> 0,
-			ServerLightingProvider.class_3901.field_17261,
+			ServerLightingProvider.class_3901.PRE_UPDATE,
 			SystemUtil.debugRunnable(() -> super.queueData(lightType, chunkSectionPos, chunkNibbleArray), () -> "queueData " + chunkSectionPos)
 		);
 	}
@@ -136,7 +136,7 @@ public class ServerLightingProvider extends LightingProvider implements AutoClos
 			chunkPos.x,
 			chunkPos.z,
 			() -> 0,
-			ServerLightingProvider.class_3901.field_17261,
+			ServerLightingProvider.class_3901.PRE_UPDATE,
 			SystemUtil.debugRunnable(() -> super.method_20601(chunkPos, bl), () -> "retainData " + chunkPos)
 		);
 	}
@@ -144,7 +144,7 @@ public class ServerLightingProvider extends LightingProvider implements AutoClos
 	public CompletableFuture<Chunk> light(Chunk chunk, boolean bl) {
 		ChunkPos chunkPos = chunk.getPos();
 		chunk.setLightOn(false);
-		this.enqueue(chunkPos.x, chunkPos.z, ServerLightingProvider.class_3901.field_17261, SystemUtil.debugRunnable(() -> {
+		this.enqueue(chunkPos.x, chunkPos.z, ServerLightingProvider.class_3901.PRE_UPDATE, SystemUtil.debugRunnable(() -> {
 			ChunkSection[] chunkSections = chunk.getSectionArray();
 
 			for (int i = 0; i < 16; i++) {
@@ -165,7 +165,7 @@ public class ServerLightingProvider extends LightingProvider implements AutoClos
 			chunk.setLightOn(true);
 			super.method_20601(chunkPos, false);
 			return chunk;
-		}, runnable -> this.enqueue(chunkPos.x, chunkPos.z, ServerLightingProvider.class_3901.field_17262, runnable));
+		}, runnable -> this.enqueue(chunkPos.x, chunkPos.z, ServerLightingProvider.class_3901.POST_UPDATE, runnable));
 	}
 
 	public void tick() {
@@ -184,7 +184,7 @@ public class ServerLightingProvider extends LightingProvider implements AutoClos
 		int j;
 		for (j = 0; objectListIterator.hasNext() && j < i; j++) {
 			Pair<ServerLightingProvider.class_3901, Runnable> pair = (Pair<ServerLightingProvider.class_3901, Runnable>)objectListIterator.next();
-			if (pair.getFirst() == ServerLightingProvider.class_3901.field_17261) {
+			if (pair.getFirst() == ServerLightingProvider.class_3901.PRE_UPDATE) {
 				pair.getSecond().run();
 			}
 		}
@@ -194,7 +194,7 @@ public class ServerLightingProvider extends LightingProvider implements AutoClos
 
 		for (int var5 = 0; objectListIterator.hasNext() && var5 < i; var5++) {
 			Pair<ServerLightingProvider.class_3901, Runnable> pair = (Pair<ServerLightingProvider.class_3901, Runnable>)objectListIterator.next();
-			if (pair.getFirst() == ServerLightingProvider.class_3901.field_17262) {
+			if (pair.getFirst() == ServerLightingProvider.class_3901.POST_UPDATE) {
 				pair.getSecond().run();
 			}
 
@@ -207,7 +207,7 @@ public class ServerLightingProvider extends LightingProvider implements AutoClos
 	}
 
 	static enum class_3901 {
-		field_17261,
-		field_17262;
+		PRE_UPDATE,
+		POST_UPDATE;
 	}
 }

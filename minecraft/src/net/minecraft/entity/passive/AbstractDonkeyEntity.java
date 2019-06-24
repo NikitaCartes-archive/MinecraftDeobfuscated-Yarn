@@ -60,7 +60,7 @@ public abstract class AbstractDonkeyEntity extends HorseBaseEntity {
 	@Override
 	protected SoundEvent getAngrySound() {
 		super.getAngrySound();
-		return SoundEvents.field_14661;
+		return SoundEvents.ENTITY_DONKEY_ANGRY;
 	}
 
 	@Override
@@ -68,7 +68,7 @@ public abstract class AbstractDonkeyEntity extends HorseBaseEntity {
 		super.dropInventory();
 		if (this.hasChest()) {
 			if (!this.world.isClient) {
-				this.dropItem(Blocks.field_10034);
+				this.dropItem(Blocks.CHEST);
 			}
 
 			this.setHasChest(false);
@@ -125,7 +125,7 @@ public abstract class AbstractDonkeyEntity extends HorseBaseEntity {
 				return true;
 			}
 
-			if (!this.hasChest() && itemStack.getItem() == Blocks.field_10034.asItem()) {
+			if (!this.hasChest() && itemStack.getItem() == Blocks.CHEST.asItem()) {
 				this.setHasChest(true);
 				this.method_6721();
 				return true;
@@ -155,7 +155,7 @@ public abstract class AbstractDonkeyEntity extends HorseBaseEntity {
 			if (!itemStack.isEmpty()) {
 				boolean bl = this.receiveFood(playerEntity, itemStack);
 				if (!bl) {
-					if (!this.isTame() || itemStack.getItem() == Items.field_8448) {
+					if (!this.isTame() || itemStack.getItem() == Items.NAME_TAG) {
 						if (itemStack.useOnEntity(playerEntity, this, hand)) {
 							return true;
 						} else {
@@ -164,14 +164,14 @@ public abstract class AbstractDonkeyEntity extends HorseBaseEntity {
 						}
 					}
 
-					if (!this.hasChest() && itemStack.getItem() == Blocks.field_10034.asItem()) {
+					if (!this.hasChest() && itemStack.getItem() == Blocks.CHEST.asItem()) {
 						this.setHasChest(true);
 						this.playAddChestSound();
 						bl = true;
 						this.method_6721();
 					}
 
-					if (!this.isBaby() && !this.isSaddled() && itemStack.getItem() == Items.field_8175) {
+					if (!this.isBaby() && !this.isSaddled() && itemStack.getItem() == Items.SADDLE) {
 						this.openInventory(playerEntity);
 						return true;
 					}
@@ -196,7 +196,7 @@ public abstract class AbstractDonkeyEntity extends HorseBaseEntity {
 	}
 
 	protected void playAddChestSound() {
-		this.playSound(SoundEvents.field_14598, 1.0F, (this.random.nextFloat() - this.random.nextFloat()) * 0.2F + 1.0F);
+		this.playSound(SoundEvents.ENTITY_DONKEY_CHEST, 1.0F, (this.random.nextFloat() - this.random.nextFloat()) * 0.2F + 1.0F);
 	}
 
 	public int method_6702() {

@@ -36,7 +36,7 @@ public class FireworkEntityRenderer extends EntityRenderer<FireworkEntity> {
 			GlStateManager.setupSolidRenderingTextureCombine(this.getOutlineColor(fireworkEntity));
 		}
 
-		this.itemRenderer.renderItem(fireworkEntity.getStack(), ModelTransformation.Type.field_4318);
+		this.itemRenderer.renderItem(fireworkEntity.getStack(), ModelTransformation.Type.GROUND);
 		if (this.renderOutlines) {
 			GlStateManager.tearDownSolidRenderingTextureCombine();
 			GlStateManager.disableColorMaterial();

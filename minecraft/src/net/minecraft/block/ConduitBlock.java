@@ -42,7 +42,7 @@ public class ConduitBlock extends BlockWithEntity implements Waterloggable {
 
 	@Override
 	public BlockRenderType getRenderType(BlockState blockState) {
-		return BlockRenderType.field_11456;
+		return BlockRenderType.ENTITYBLOCK_ANIMATED;
 	}
 
 	@Override
@@ -80,12 +80,12 @@ public class ConduitBlock extends BlockWithEntity implements Waterloggable {
 	@Override
 	public BlockState getPlacementState(ItemPlacementContext itemPlacementContext) {
 		FluidState fluidState = itemPlacementContext.getWorld().getFluidState(itemPlacementContext.getBlockPos());
-		return this.getDefaultState().with(WATERLOGGED, Boolean.valueOf(fluidState.matches(FluidTags.field_15517) && fluidState.getLevel() == 8));
+		return this.getDefaultState().with(WATERLOGGED, Boolean.valueOf(fluidState.matches(FluidTags.WATER) && fluidState.getLevel() == 8));
 	}
 
 	@Override
 	public BlockRenderLayer getRenderLayer() {
-		return BlockRenderLayer.field_9174;
+		return BlockRenderLayer.CUTOUT;
 	}
 
 	@Override

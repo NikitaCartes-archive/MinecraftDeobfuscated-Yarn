@@ -54,7 +54,7 @@ public class StatsScreen extends Screen implements StatsListener {
 	@Override
 	protected void init() {
 		this.field_2645 = true;
-		this.minecraft.getNetworkHandler().sendPacket(new ClientStatusC2SPacket(ClientStatusC2SPacket.Mode.field_12775));
+		this.minecraft.getNetworkHandler().sendPacket(new ClientStatusC2SPacket(ClientStatusC2SPacket.Mode.REQUEST_STATS));
 	}
 
 	public void method_2270() {
@@ -160,7 +160,7 @@ public class StatsScreen extends Screen implements StatsListener {
 		public CustomStatsListWidget(MinecraftClient minecraftClient) {
 			super(minecraftClient, StatsScreen.this.width, StatsScreen.this.height, 32, StatsScreen.this.height - 64, 10);
 
-			for (Stat<Identifier> stat : Stats.field_15419) {
+			for (Stat<Identifier> stat : Stats.CUSTOM) {
 				this.addEntry(new StatsScreen.CustomStatsListWidget.CustomStatItem(stat));
 			}
 		}
@@ -180,7 +180,7 @@ public class StatsScreen extends Screen implements StatsListener {
 
 			@Override
 			public void render(int i, int j, int k, int l, int m, int n, int o, boolean bl, float f) {
-				Text text = new TranslatableText("stat." + this.field_18749.getValue().toString().replace(':', '.')).formatted(Formatting.field_1080);
+				Text text = new TranslatableText("stat." + this.field_18749.getValue().toString().replace(':', '.')).formatted(Formatting.GRAY);
 				CustomStatsListWidget.this.drawString(StatsScreen.this.font, text.getString(), k + 2, j + 1, i % 2 == 0 ? 16777215 : 9474192);
 				String string = this.field_18749.format(StatsScreen.this.statHandler.getStat(this.field_18749));
 				CustomStatsListWidget.this.drawString(
@@ -196,8 +196,8 @@ public class StatsScreen extends Screen implements StatsListener {
 			super(minecraftClient, StatsScreen.this.width, StatsScreen.this.height, 32, StatsScreen.this.height - 64, 9 * 4);
 
 			for (EntityType<?> entityType : Registry.ENTITY_TYPE) {
-				if (StatsScreen.this.statHandler.getStat(Stats.field_15403.getOrCreateStat(entityType)) > 0
-					|| StatsScreen.this.statHandler.getStat(Stats.field_15411.getOrCreateStat(entityType)) > 0) {
+				if (StatsScreen.this.statHandler.getStat(Stats.KILLED.getOrCreateStat(entityType)) > 0
+					|| StatsScreen.this.statHandler.getStat(Stats.KILLED_BY.getOrCreateStat(entityType)) > 0) {
 					this.addEntry(new StatsScreen.EntityStatsListWidget.EntityStatItem(entityType));
 				}
 			}
@@ -219,20 +219,20 @@ public class StatsScreen extends Screen implements StatsListener {
 			@Override
 			public void render(int i, int j, int k, int l, int m, int n, int o, boolean bl, float f) {
 				String string = I18n.translate(SystemUtil.createTranslationKey("entity", EntityType.getId(this.field_18762)));
-				int p = StatsScreen.this.statHandler.getStat(Stats.field_15403.getOrCreateStat(this.field_18762));
-				int q = StatsScreen.this.statHandler.getStat(Stats.field_15411.getOrCreateStat(this.field_18762));
+				int p = StatsScreen.this.statHandler.getStat(Stats.KILLED.getOrCreateStat(this.field_18762));
+				int q = StatsScreen.this.statHandler.getStat(Stats.KILLED_BY.getOrCreateStat(this.field_18762));
 				EntityStatsListWidget.this.drawString(StatsScreen.this.font, string, k + 2, j + 1, 16777215);
 				EntityStatsListWidget.this.drawString(StatsScreen.this.font, this.method_19411(string, p), k + 2 + 10, j + 1 + 9, p == 0 ? 6316128 : 9474192);
 				EntityStatsListWidget.this.drawString(StatsScreen.this.font, this.method_19412(string, q), k + 2 + 10, j + 1 + 9 * 2, q == 0 ? 6316128 : 9474192);
 			}
 
 			private String method_19411(String string, int i) {
-				String string2 = Stats.field_15403.getTranslationKey();
+				String string2 = Stats.KILLED.getTranslationKey();
 				return i == 0 ? I18n.translate(string2 + ".none", string) : I18n.translate(string2, i, string);
 			}
 
 			private String method_19412(String string, int i) {
-				String string2 = Stats.field_15411.getTranslationKey();
+				String string2 = Stats.KILLED_BY.getTranslationKey();
 				return i == 0 ? I18n.translate(string2 + ".none", string) : I18n.translate(string2, string, i);
 			}
 		}
@@ -253,8 +253,8 @@ public class StatsScreen extends Screen implements StatsListener {
 		public ItemStatsListWidget(MinecraftClient minecraftClient) {
 			super(minecraftClient, StatsScreen.this.width, StatsScreen.this.height, 32, StatsScreen.this.height - 64, 20);
 			this.field_18754 = Lists.<StatType<Block>>newArrayList();
-			this.field_18754.add(Stats.field_15427);
-			this.field_18755 = Lists.<StatType<Item>>newArrayList(Stats.field_15383, Stats.field_15370, Stats.field_15372, Stats.field_15392, Stats.field_15405);
+			this.field_18754.add(Stats.MINED);
+			this.field_18755 = Lists.<StatType<Item>>newArrayList(Stats.BROKEN, Stats.CRAFTED, Stats.USED, Stats.PICKED_UP, Stats.DROPPED);
 			this.setRenderHeader(true, 20);
 			Set<Item> set = Sets.newIdentityHashSet();
 
@@ -345,7 +345,7 @@ public class StatsScreen extends Screen implements StatsListener {
 
 			if (this.field_18756 >= 0) {
 				this.method_19408(this.method_19410(this.field_18756));
-				this.minecraft.getSoundManager().play(PositionedSoundInstance.master(SoundEvents.field_15015, 1.0F));
+				this.minecraft.getSoundManager().play(PositionedSoundInstance.master(SoundEvents.UI_BUTTON_CLICK, 1.0F));
 			}
 		}
 

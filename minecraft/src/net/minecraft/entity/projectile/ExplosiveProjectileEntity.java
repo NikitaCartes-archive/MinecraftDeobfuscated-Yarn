@@ -86,8 +86,8 @@ public abstract class ExplosiveProjectileEntity extends Entity {
 			}
 
 			this.ticks++;
-			HitResult hitResult = ProjectileUtil.getCollision(this, true, this.ticks >= 25, this.owner, RayTraceContext.ShapeType.field_17558);
-			if (hitResult.getType() != HitResult.Type.field_1333) {
+			HitResult hitResult = ProjectileUtil.getCollision(this, true, this.ticks >= 25, this.owner, RayTraceContext.ShapeType.COLLIDER);
+			if (hitResult.getType() != HitResult.Type.MISS) {
 				this.onCollision(hitResult);
 			}
 
@@ -100,7 +100,7 @@ public abstract class ExplosiveProjectileEntity extends Entity {
 			if (this.isInsideWater()) {
 				for (int i = 0; i < 4; i++) {
 					float g = 0.25F;
-					this.world.addParticle(ParticleTypes.field_11247, this.x - vec3d.x * 0.25, this.y - vec3d.y * 0.25, this.z - vec3d.z * 0.25, vec3d.x, vec3d.y, vec3d.z);
+					this.world.addParticle(ParticleTypes.BUBBLE, this.x - vec3d.x * 0.25, this.y - vec3d.y * 0.25, this.z - vec3d.z * 0.25, vec3d.x, vec3d.y, vec3d.z);
 				}
 
 				f = 0.8F;
@@ -119,7 +119,7 @@ public abstract class ExplosiveProjectileEntity extends Entity {
 	}
 
 	protected ParticleEffect getParticleType() {
-		return ParticleTypes.field_11251;
+		return ParticleTypes.SMOKE;
 	}
 
 	protected float getDrag() {
@@ -162,7 +162,7 @@ public abstract class ExplosiveProjectileEntity extends Entity {
 	}
 
 	@Override
-	public float getBoundingBoxMarginForTargeting() {
+	public float getTargetingMargin() {
 		return 1.0F;
 	}
 

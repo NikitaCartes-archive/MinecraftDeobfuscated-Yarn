@@ -8,8 +8,8 @@ import net.minecraft.util.Identifier;
 public class EntityTypeTags {
 	private static TagContainer<EntityType<?>> container = new TagContainer<>(identifier -> Optional.empty(), "", false, "");
 	private static int latestVersion;
-	public static final Tag<EntityType<?>> field_15507 = register("skeletons");
-	public static final Tag<EntityType<?>> field_19168 = register("raiders");
+	public static final Tag<EntityType<?>> SKELETONS = register("skeletons");
+	public static final Tag<EntityType<?>> RAIDERS = register("raiders");
 
 	public static void setContainer(TagContainer<EntityType<?>> tagContainer) {
 		container = tagContainer;

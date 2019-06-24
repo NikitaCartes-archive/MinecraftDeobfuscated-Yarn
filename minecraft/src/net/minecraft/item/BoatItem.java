@@ -28,9 +28,9 @@ public class BoatItem extends Item {
 	@Override
 	public TypedActionResult<ItemStack> use(World world, PlayerEntity playerEntity, Hand hand) {
 		ItemStack itemStack = playerEntity.getStackInHand(hand);
-		HitResult hitResult = rayTrace(world, playerEntity, RayTraceContext.FluidHandling.field_1347);
-		if (hitResult.getType() == HitResult.Type.field_1333) {
-			return new TypedActionResult<>(ActionResult.field_5811, itemStack);
+		HitResult hitResult = rayTrace(world, playerEntity, RayTraceContext.FluidHandling.ANY);
+		if (hitResult.getType() == HitResult.Type.MISS) {
+			return new TypedActionResult<>(ActionResult.PASS, itemStack);
 		} else {
 			Vec3d vec3d = playerEntity.getRotationVec(1.0F);
 			double d = 5.0;
@@ -39,19 +39,19 @@ public class BoatItem extends Item {
 				Vec3d vec3d2 = playerEntity.getCameraPosVec(1.0F);
 
 				for (Entity entity : list) {
-					Box box = entity.getBoundingBox().expand((double)entity.getBoundingBoxMarginForTargeting());
+					Box box = entity.getBoundingBox().expand((double)entity.getTargetingMargin());
 					if (box.contains(vec3d2)) {
-						return new TypedActionResult<>(ActionResult.field_5811, itemStack);
+						return new TypedActionResult<>(ActionResult.PASS, itemStack);
 					}
 				}
 			}
 
-			if (hitResult.getType() == HitResult.Type.field_1332) {
+			if (hitResult.getType() == HitResult.Type.BLOCK) {
 				BoatEntity boatEntity = new BoatEntity(world, hitResult.getPos().x, hitResult.getPos().y, hitResult.getPos().z);
 				boatEntity.setBoatType(this.type);
 				boatEntity.yaw = playerEntity.yaw;
 				if (!world.doesNotCollide(boatEntity, boatEntity.getBoundingBox().expand(-0.1))) {
-					return new TypedActionResult<>(ActionResult.field_5814, itemStack);
+					return new TypedActionResult<>(ActionResult.FAIL, itemStack);
 				} else {
 					if (!world.isClient) {
 						world.spawnEntity(boatEntity);
@@ -61,11 +61,11 @@ public class BoatItem extends Item {
 						itemStack.decrement(1);
 					}
 
-					playerEntity.incrementStat(Stats.field_15372.getOrCreateStat(this));
-					return new TypedActionResult<>(ActionResult.field_5812, itemStack);
+					playerEntity.incrementStat(Stats.USED.getOrCreateStat(this));
+					return new TypedActionResult<>(ActionResult.SUCCESS, itemStack);
 				}
 			} else {
-				return new TypedActionResult<>(ActionResult.field_5811, itemStack);
+				return new TypedActionResult<>(ActionResult.PASS, itemStack);
 			}
 		}
 	}

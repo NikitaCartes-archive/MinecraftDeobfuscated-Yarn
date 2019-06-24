@@ -131,16 +131,14 @@ public abstract class ThrownEntity extends Entity implements Projectile {
 		}
 
 		HitResult hitResult = ProjectileUtil.getCollision(
-			this, box, entity -> !entity.isSpectator() && entity.collides() && entity != this.field_7637, RayTraceContext.ShapeType.field_17559, true
+			this, box, entity -> !entity.isSpectator() && entity.collides() && entity != this.field_7637, RayTraceContext.ShapeType.OUTLINE, true
 		);
 		if (this.field_7637 != null && this.field_7638-- <= 0) {
 			this.field_7637 = null;
 		}
 
-		if (hitResult.getType() != HitResult.Type.field_1333) {
-			if (hitResult.getType() == HitResult.Type.field_1332 && this.world.getBlockState(((BlockHitResult)hitResult).getBlockPos()).getBlock() == Blocks.field_10316
-				)
-			 {
+		if (hitResult.getType() != HitResult.Type.MISS) {
+			if (hitResult.getType() == HitResult.Type.BLOCK && this.world.getBlockState(((BlockHitResult)hitResult).getBlockPos()).getBlock() == Blocks.NETHER_PORTAL) {
 				this.setInPortal(((BlockHitResult)hitResult).getBlockPos());
 			} else {
 				this.onCollision(hitResult);
@@ -177,7 +175,7 @@ public abstract class ThrownEntity extends Entity implements Projectile {
 		if (this.isInsideWater()) {
 			for (int i = 0; i < 4; i++) {
 				float g = 0.25F;
-				this.world.addParticle(ParticleTypes.field_11247, this.x - vec3d.x * 0.25, this.y - vec3d.y * 0.25, this.z - vec3d.z * 0.25, vec3d.x, vec3d.y, vec3d.z);
+				this.world.addParticle(ParticleTypes.BUBBLE, this.x - vec3d.x * 0.25, this.y - vec3d.y * 0.25, this.z - vec3d.z * 0.25, vec3d.x, vec3d.y, vec3d.z);
 			}
 
 			h = 0.8F;

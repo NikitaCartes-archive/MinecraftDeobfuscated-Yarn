@@ -47,7 +47,7 @@ public class ClientCommandSource implements CommandSource {
 
 	@Override
 	public Collection<String> getEntitySuggestions() {
-		return (Collection<String>)(this.client.hitResult != null && this.client.hitResult.getType() == HitResult.Type.field_1331
+		return (Collection<String>)(this.client.hitResult != null && this.client.hitResult.getType() == HitResult.Type.ENTITY
 			? Collections.singleton(((EntityHitResult)this.client.hitResult).getEntity().getUuidAsString())
 			: Collections.emptyList());
 	}
@@ -96,7 +96,7 @@ public class ClientCommandSource implements CommandSource {
 	@Override
 	public Collection<CommandSource.RelativePosition> getBlockPositionSuggestions() {
 		HitResult hitResult = this.client.hitResult;
-		if (hitResult != null && hitResult.getType() == HitResult.Type.field_1332) {
+		if (hitResult != null && hitResult.getType() == HitResult.Type.BLOCK) {
 			BlockPos blockPos = ((BlockHitResult)hitResult).getBlockPos();
 			return Collections.singleton(new CommandSource.RelativePosition(formatInt(blockPos.getX()), formatInt(blockPos.getY()), formatInt(blockPos.getZ())));
 		} else {
@@ -107,7 +107,7 @@ public class ClientCommandSource implements CommandSource {
 	@Override
 	public Collection<CommandSource.RelativePosition> getPositionSuggestions() {
 		HitResult hitResult = this.client.hitResult;
-		if (hitResult != null && hitResult.getType() == HitResult.Type.field_1332) {
+		if (hitResult != null && hitResult.getType() == HitResult.Type.BLOCK) {
 			Vec3d vec3d = hitResult.getPos();
 			return Collections.singleton(new CommandSource.RelativePosition(formatDouble(vec3d.x), formatDouble(vec3d.y), formatDouble(vec3d.z)));
 		} else {

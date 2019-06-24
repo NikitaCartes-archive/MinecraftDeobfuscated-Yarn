@@ -57,7 +57,7 @@ public class ServerCommandSource implements CommandSource {
 		@Nullable Entity entity
 	) {
 		this(commandOutput, vec3d, vec2f, serverWorld, i, string, text, minecraftServer, entity, false, (commandContext, bl, ix) -> {
-		}, EntityAnchorArgumentType.EntityAnchor.field_9853);
+		}, EntityAnchorArgumentType.EntityAnchor.FEET);
 	}
 
 	protected ServerCommandSource(
@@ -346,8 +346,8 @@ public class ServerCommandSource implements CommandSource {
 	}
 
 	private void sendToOps(Text text) {
-		Text text2 = new TranslatableText("chat.type.admin", this.getDisplayName(), text).formatted(new Formatting[]{Formatting.field_1080, Formatting.field_1056});
-		if (this.minecraftServer.getGameRules().getBoolean(GameRules.field_19400)) {
+		Text text2 = new TranslatableText("chat.type.admin", this.getDisplayName(), text).formatted(new Formatting[]{Formatting.GRAY, Formatting.ITALIC});
+		if (this.minecraftServer.getGameRules().getBoolean(GameRules.SEND_COMMAND_FEEDBACK)) {
 			for (ServerPlayerEntity serverPlayerEntity : this.minecraftServer.getPlayerManager().getPlayerList()) {
 				if (serverPlayerEntity != this.output && this.minecraftServer.getPlayerManager().isOperator(serverPlayerEntity.getGameProfile())) {
 					serverPlayerEntity.sendMessage(text2);
@@ -355,14 +355,14 @@ public class ServerCommandSource implements CommandSource {
 			}
 		}
 
-		if (this.output != this.minecraftServer && this.minecraftServer.getGameRules().getBoolean(GameRules.field_19397)) {
+		if (this.output != this.minecraftServer && this.minecraftServer.getGameRules().getBoolean(GameRules.LOG_ADMIN_COMMANDS)) {
 			this.minecraftServer.sendMessage(text2);
 		}
 	}
 
 	public void sendError(Text text) {
 		if (this.output.shouldTrackOutput() && !this.silent) {
-			this.output.sendMessage(new LiteralText("").append(text).formatted(Formatting.field_1061));
+			this.output.sendMessage(new LiteralText("").append(text).formatted(Formatting.RED));
 		}
 	}
 

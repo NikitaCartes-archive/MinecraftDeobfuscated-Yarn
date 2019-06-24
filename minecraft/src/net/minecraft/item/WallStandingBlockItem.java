@@ -26,8 +26,8 @@ public class WallStandingBlockItem extends BlockItem {
 		BlockPos blockPos = itemPlacementContext.getBlockPos();
 
 		for (Direction direction : itemPlacementContext.getPlacementDirections()) {
-			if (direction != Direction.field_11036) {
-				BlockState blockState3 = direction == Direction.field_11033 ? this.getBlock().getPlacementState(itemPlacementContext) : blockState;
+			if (direction != Direction.UP) {
+				BlockState blockState3 = direction == Direction.DOWN ? this.getBlock().getPlacementState(itemPlacementContext) : blockState;
 				if (blockState3 != null && blockState3.canPlaceAt(viewableWorld, blockPos)) {
 					blockState2 = blockState3;
 					break;

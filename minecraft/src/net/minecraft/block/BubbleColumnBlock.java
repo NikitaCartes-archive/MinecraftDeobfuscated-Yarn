@@ -42,7 +42,7 @@ public class BubbleColumnBlock extends Block implements FluidDrainable {
 
 				for (int i = 0; i < 2; i++) {
 					serverWorld.spawnParticles(
-						ParticleTypes.field_11202,
+						ParticleTypes.SPLASH,
 						(double)((float)blockPos.getX() + world.random.nextFloat()),
 						(double)(blockPos.getY() + 1),
 						(double)((float)blockPos.getZ() + world.random.nextFloat()),
@@ -53,7 +53,7 @@ public class BubbleColumnBlock extends Block implements FluidDrainable {
 						1.0
 					);
 					serverWorld.spawnParticles(
-						ParticleTypes.field_11247,
+						ParticleTypes.BUBBLE,
 						(double)((float)blockPos.getX() + world.random.nextFloat()),
 						(double)(blockPos.getY() + 1),
 						(double)((float)blockPos.getZ() + world.random.nextFloat()),
@@ -87,19 +87,19 @@ public class BubbleColumnBlock extends Block implements FluidDrainable {
 
 	public static void update(IWorld iWorld, BlockPos blockPos, boolean bl) {
 		if (isStillWater(iWorld, blockPos)) {
-			iWorld.setBlockState(blockPos, Blocks.field_10422.getDefaultState().with(DRAG, Boolean.valueOf(bl)), 2);
+			iWorld.setBlockState(blockPos, Blocks.BUBBLE_COLUMN.getDefaultState().with(DRAG, Boolean.valueOf(bl)), 2);
 		}
 	}
 
 	public static boolean isStillWater(IWorld iWorld, BlockPos blockPos) {
 		FluidState fluidState = iWorld.getFluidState(blockPos);
-		return iWorld.getBlockState(blockPos).getBlock() == Blocks.field_10382 && fluidState.getLevel() >= 8 && fluidState.isStill();
+		return iWorld.getBlockState(blockPos).getBlock() == Blocks.WATER && fluidState.getLevel() >= 8 && fluidState.isStill();
 	}
 
 	private static boolean calculateDrag(BlockView blockView, BlockPos blockPos) {
 		BlockState blockState = blockView.getBlockState(blockPos);
 		Block block = blockState.getBlock();
-		return block == Blocks.field_10422 ? (Boolean)blockState.get(DRAG) : block != Blocks.field_10114;
+		return block == Blocks.BUBBLE_COLUMN ? (Boolean)blockState.get(DRAG) : block != Blocks.SOUL_SAND;
 	}
 
 	@Override
@@ -114,17 +114,28 @@ public class BubbleColumnBlock extends Block implements FluidDrainable {
 		double e = (double)blockPos.getY();
 		double f = (double)blockPos.getZ();
 		if ((Boolean)blockState.get(DRAG)) {
-			world.addImportantParticle(ParticleTypes.field_11243, d + 0.5, e + 0.8, f, 0.0, 0.0, 0.0);
+			world.addImportantParticle(ParticleTypes.CURRENT_DOWN, d + 0.5, e + 0.8, f, 0.0, 0.0, 0.0);
 			if (random.nextInt(200) == 0) {
-				world.playSound(d, e, f, SoundEvents.field_14650, SoundCategory.field_15245, 0.2F + random.nextFloat() * 0.2F, 0.9F + random.nextFloat() * 0.15F, false);
+				world.playSound(
+					d,
+					e,
+					f,
+					SoundEvents.BLOCK_BUBBLE_COLUMN_WHIRLPOOL_AMBIENT,
+					SoundCategory.BLOCKS,
+					0.2F + random.nextFloat() * 0.2F,
+					0.9F + random.nextFloat() * 0.15F,
+					false
+				);
 			}
 		} else {
-			world.addImportantParticle(ParticleTypes.field_11238, d + 0.5, e, f + 0.5, 0.0, 0.04, 0.0);
+			world.addImportantParticle(ParticleTypes.BUBBLE_COLUMN_UP, d + 0.5, e, f + 0.5, 0.0, 0.04, 0.0);
 			world.addImportantParticle(
-				ParticleTypes.field_11238, d + (double)random.nextFloat(), e + (double)random.nextFloat(), f + (double)random.nextFloat(), 0.0, 0.04, 0.0
+				ParticleTypes.BUBBLE_COLUMN_UP, d + (double)random.nextFloat(), e + (double)random.nextFloat(), f + (double)random.nextFloat(), 0.0, 0.04, 0.0
 			);
 			if (random.nextInt(200) == 0) {
-				world.playSound(d, e, f, SoundEvents.field_15161, SoundCategory.field_15245, 0.2F + random.nextFloat() * 0.2F, 0.9F + random.nextFloat() * 0.15F, false);
+				world.playSound(
+					d, e, f, SoundEvents.BLOCK_BUBBLE_COLUMN_UPWARDS_AMBIENT, SoundCategory.BLOCKS, 0.2F + random.nextFloat() * 0.2F, 0.9F + random.nextFloat() * 0.15F, false
+				);
 			}
 		}
 	}
@@ -134,11 +145,11 @@ public class BubbleColumnBlock extends Block implements FluidDrainable {
 		BlockState blockState, Direction direction, BlockState blockState2, IWorld iWorld, BlockPos blockPos, BlockPos blockPos2
 	) {
 		if (!blockState.canPlaceAt(iWorld, blockPos)) {
-			return Blocks.field_10382.getDefaultState();
+			return Blocks.WATER.getDefaultState();
 		} else {
-			if (direction == Direction.field_11033) {
-				iWorld.setBlockState(blockPos, Blocks.field_10422.getDefaultState().with(DRAG, Boolean.valueOf(calculateDrag(iWorld, blockPos2))), 2);
-			} else if (direction == Direction.field_11036 && blockState2.getBlock() != Blocks.field_10422 && isStillWater(iWorld, blockPos2)) {
+			if (direction == Direction.DOWN) {
+				iWorld.setBlockState(blockPos, Blocks.BUBBLE_COLUMN.getDefaultState().with(DRAG, Boolean.valueOf(calculateDrag(iWorld, blockPos2))), 2);
+			} else if (direction == Direction.UP && blockState2.getBlock() != Blocks.BUBBLE_COLUMN && isStillWater(iWorld, blockPos2)) {
 				iWorld.getBlockTickScheduler().schedule(blockPos, this, this.getTickRate(iWorld));
 			}
 
@@ -150,7 +161,7 @@ public class BubbleColumnBlock extends Block implements FluidDrainable {
 	@Override
 	public boolean canPlaceAt(BlockState blockState, ViewableWorld viewableWorld, BlockPos blockPos) {
 		Block block = viewableWorld.getBlockState(blockPos.down()).getBlock();
-		return block == Blocks.field_10422 || block == Blocks.field_10092 || block == Blocks.field_10114;
+		return block == Blocks.BUBBLE_COLUMN || block == Blocks.MAGMA_BLOCK || block == Blocks.SOUL_SAND;
 	}
 
 	@Override
@@ -160,12 +171,12 @@ public class BubbleColumnBlock extends Block implements FluidDrainable {
 
 	@Override
 	public BlockRenderLayer getRenderLayer() {
-		return BlockRenderLayer.field_9179;
+		return BlockRenderLayer.TRANSLUCENT;
 	}
 
 	@Override
 	public BlockRenderType getRenderType(BlockState blockState) {
-		return BlockRenderType.field_11455;
+		return BlockRenderType.INVISIBLE;
 	}
 
 	@Override
@@ -175,7 +186,7 @@ public class BubbleColumnBlock extends Block implements FluidDrainable {
 
 	@Override
 	public Fluid tryDrainFluid(IWorld iWorld, BlockPos blockPos, BlockState blockState) {
-		iWorld.setBlockState(blockPos, Blocks.field_10124.getDefaultState(), 11);
+		iWorld.setBlockState(blockPos, Blocks.AIR.getDefaultState(), 11);
 		return Fluids.WATER;
 	}
 }

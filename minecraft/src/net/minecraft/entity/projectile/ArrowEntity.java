@@ -24,7 +24,7 @@ import net.minecraft.world.World;
 
 public class ArrowEntity extends ProjectileEntity {
 	private static final TrackedData<Integer> COLOR = DataTracker.registerData(ArrowEntity.class, TrackedDataHandlerRegistry.INTEGER);
-	private Potion potion = Potions.field_8984;
+	private Potion potion = Potions.EMPTY;
 	private final Set<StatusEffectInstance> effects = Sets.<StatusEffectInstance>newHashSet();
 	private boolean colorSet;
 
@@ -33,15 +33,15 @@ public class ArrowEntity extends ProjectileEntity {
 	}
 
 	public ArrowEntity(World world, double d, double e, double f) {
-		super(EntityType.field_6122, d, e, f, world);
+		super(EntityType.ARROW, d, e, f, world);
 	}
 
 	public ArrowEntity(World world, LivingEntity livingEntity) {
-		super(EntityType.field_6122, livingEntity, world);
+		super(EntityType.ARROW, livingEntity, world);
 	}
 
 	public void initFromStack(ItemStack itemStack) {
-		if (itemStack.getItem() == Items.field_8087) {
+		if (itemStack.getItem() == Items.TIPPED_ARROW) {
 			this.potion = PotionUtil.getPotion(itemStack);
 			Collection<StatusEffectInstance> collection = PotionUtil.getCustomPotionEffects(itemStack);
 			if (!collection.isEmpty()) {
@@ -56,8 +56,8 @@ public class ArrowEntity extends ProjectileEntity {
 			} else {
 				this.setColor(i);
 			}
-		} else if (itemStack.getItem() == Items.field_8107) {
-			this.potion = Potions.field_8984;
+		} else if (itemStack.getItem() == Items.ARROW) {
+			this.potion = Potions.EMPTY;
 			this.effects.clear();
 			this.dataTracker.set(COLOR, -1);
 		}
@@ -97,7 +97,7 @@ public class ArrowEntity extends ProjectileEntity {
 			}
 		} else if (this.inGround && this.inGroundTime != 0 && !this.effects.isEmpty() && this.inGroundTime >= 600) {
 			this.world.sendEntityStatus(this, (byte)0);
-			this.potion = Potions.field_8984;
+			this.potion = Potions.EMPTY;
 			this.effects.clear();
 			this.dataTracker.set(COLOR, -1);
 		}
@@ -113,7 +113,7 @@ public class ArrowEntity extends ProjectileEntity {
 			for (int k = 0; k < i; k++) {
 				this.world
 					.addParticle(
-						ParticleTypes.field_11226,
+						ParticleTypes.ENTITY_EFFECT,
 						this.x + (this.random.nextDouble() - 0.5) * (double)this.getWidth(),
 						this.y + this.random.nextDouble() * (double)this.getHeight(),
 						this.z + (this.random.nextDouble() - 0.5) * (double)this.getWidth(),
@@ -137,7 +137,7 @@ public class ArrowEntity extends ProjectileEntity {
 	@Override
 	public void writeCustomDataToTag(CompoundTag compoundTag) {
 		super.writeCustomDataToTag(compoundTag);
-		if (this.potion != Potions.field_8984 && this.potion != null) {
+		if (this.potion != Potions.EMPTY && this.potion != null) {
 			compoundTag.putString("Potion", Registry.POTION.getId(this.potion).toString());
 		}
 
@@ -199,10 +199,10 @@ public class ArrowEntity extends ProjectileEntity {
 
 	@Override
 	protected ItemStack asItemStack() {
-		if (this.effects.isEmpty() && this.potion == Potions.field_8984) {
-			return new ItemStack(Items.field_8107);
+		if (this.effects.isEmpty() && this.potion == Potions.EMPTY) {
+			return new ItemStack(Items.ARROW);
 		} else {
-			ItemStack itemStack = new ItemStack(Items.field_8087);
+			ItemStack itemStack = new ItemStack(Items.TIPPED_ARROW);
 			PotionUtil.setPotion(itemStack, this.potion);
 			PotionUtil.setCustomPotionEffects(itemStack, this.effects);
 			if (this.colorSet) {
@@ -226,7 +226,7 @@ public class ArrowEntity extends ProjectileEntity {
 				for (int j = 0; j < 20; j++) {
 					this.world
 						.addParticle(
-							ParticleTypes.field_11226,
+							ParticleTypes.ENTITY_EFFECT,
 							this.x + (this.random.nextDouble() - 0.5) * (double)this.getWidth(),
 							this.y + this.random.nextDouble() * (double)this.getHeight(),
 							this.z + (this.random.nextDouble() - 0.5) * (double)this.getWidth(),

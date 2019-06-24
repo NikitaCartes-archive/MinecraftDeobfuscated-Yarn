@@ -18,7 +18,7 @@ public class VertexFormatElement {
 			this.type = type;
 		} else {
 			LOGGER.warn("Multiple vertex elements of the same type other than UVs are not supported. Forcing type to UV.");
-			this.type = VertexFormatElement.Type.field_1636;
+			this.type = VertexFormatElement.Type.UV;
 		}
 
 		this.format = format;
@@ -27,7 +27,7 @@ public class VertexFormatElement {
 	}
 
 	private final boolean isValidType(int i, VertexFormatElement.Type type) {
-		return i == 0 || type == VertexFormatElement.Type.field_1636;
+		return i == 0 || type == VertexFormatElement.Type.UV;
 	}
 
 	public final VertexFormatElement.Format getFormat() {
@@ -55,7 +55,7 @@ public class VertexFormatElement {
 	}
 
 	public final boolean isPosition() {
-		return this.type == VertexFormatElement.Type.field_1633;
+		return this.type == VertexFormatElement.Type.POSITION;
 	}
 
 	public boolean equals(Object object) {
@@ -84,13 +84,13 @@ public class VertexFormatElement {
 
 	@Environment(EnvType.CLIENT)
 	public static enum Format {
-		field_1623(4, "Float", 5126),
+		FLOAT(4, "Float", 5126),
 		UBYTE(1, "Unsigned Byte", 5121),
-		field_1621(1, "Byte", 5120),
+		BYTE(1, "Byte", 5120),
 		USHORT(2, "Unsigned Short", 5123),
-		field_1625(2, "Short", 5122),
+		SHORT(2, "Short", 5122),
 		UINT(4, "Unsigned Int", 5125),
-		field_1617(4, "Int", 5124);
+		INT(4, "Int", 5124);
 
 		private final int size;
 		private final String name;
@@ -117,13 +117,13 @@ public class VertexFormatElement {
 
 	@Environment(EnvType.CLIENT)
 	public static enum Type {
-		field_1633("Position"),
-		field_1635("Normal"),
+		POSITION("Position"),
+		NORMAL("Normal"),
 		COLOR("Vertex Color"),
-		field_1636("UV"),
+		UV("UV"),
 		MATRIX("Bone Matrix"),
-		field_1628("Blend Weight"),
-		field_1629("Padding");
+		BLEND_WEIGHT("Blend Weight"),
+		PADDING("Padding");
 
 		private final String name;
 

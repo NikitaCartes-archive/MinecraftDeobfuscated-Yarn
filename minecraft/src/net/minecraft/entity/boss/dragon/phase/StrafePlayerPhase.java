@@ -28,7 +28,7 @@ public class StrafePlayerPhase extends AbstractPhase {
 	public void serverTick() {
 		if (this.field_7062 == null) {
 			LOGGER.warn("Skipping player strafe phase because no player was found");
-			this.dragon.getPhaseManager().setPhase(PhaseType.field_7069);
+			this.dragon.getPhaseManager().setPhase(PhaseType.HOLDING_PATTERN);
 		} else {
 			if (this.field_7059 != null && this.field_7059.isFinished()) {
 				double d = this.field_7062.x;
@@ -77,7 +77,7 @@ public class StrafePlayerPhase extends AbstractPhase {
 							}
 						}
 
-						this.dragon.getPhaseManager().setPhase(PhaseType.field_7069);
+						this.dragon.getPhaseManager().setPhase(PhaseType.HOLDING_PATTERN);
 					}
 				} else if (this.field_7060 > 0) {
 					this.field_7060--;
@@ -174,6 +174,6 @@ public class StrafePlayerPhase extends AbstractPhase {
 
 	@Override
 	public PhaseType<StrafePlayerPhase> getType() {
-		return PhaseType.field_7076;
+		return PhaseType.STRAFE_PLAYER;
 	}
 }

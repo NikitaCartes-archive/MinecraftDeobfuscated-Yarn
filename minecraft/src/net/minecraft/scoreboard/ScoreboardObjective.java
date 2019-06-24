@@ -41,7 +41,7 @@ public class ScoreboardObjective {
 
 	public Text toHoverableText() {
 		return Texts.bracketed(
-			this.displayName.deepCopy().styled(style -> style.setHoverEvent(new HoverEvent(HoverEvent.Action.field_11762, new LiteralText(this.getName()))))
+			this.displayName.deepCopy().styled(style -> style.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new LiteralText(this.getName()))))
 		);
 	}
 

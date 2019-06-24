@@ -16,7 +16,7 @@ import net.minecraft.world.gen.feature.StructureFeature;
 
 public abstract class BiomeSource {
 	private static final List<Biome> SPAWN_BIOMES = Lists.<Biome>newArrayList(
-		Biomes.field_9409, Biomes.field_9451, Biomes.field_9420, Biomes.field_9428, Biomes.field_9459, Biomes.field_9417, Biomes.field_9432
+		Biomes.FOREST, Biomes.PLAINS, Biomes.TAIGA, Biomes.TAIGA_HILLS, Biomes.WOODED_HILLS, Biomes.JUNGLE, Biomes.JUNGLE_HILLS
 	);
 	protected final Map<StructureFeature<?>, Boolean> structureFeatures = Maps.<StructureFeature<?>, Boolean>newHashMap();
 	protected final Set<BlockState> topMaterials = Sets.<BlockState>newHashSet();

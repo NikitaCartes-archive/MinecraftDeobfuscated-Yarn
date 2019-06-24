@@ -71,7 +71,7 @@ public class EndCreditsScreen extends Screen {
 			Resource resource = null;
 
 			try {
-				String string = "" + Formatting.field_1068 + Formatting.field_1051 + Formatting.field_1060 + Formatting.field_1075;
+				String string = "" + Formatting.WHITE + Formatting.OBFUSCATED + Formatting.GREEN + Formatting.AQUA;
 				int i = 274;
 				if (this.inGame) {
 					resource = this.minecraft.getResourceManager().getResource(new Identifier("texts/end.txt"));
@@ -87,7 +87,7 @@ public class EndCreditsScreen extends Screen {
 							int j = string2.indexOf(string);
 							String string3 = string2.substring(0, j);
 							String string4 = string2.substring(j + string.length());
-							string2 = string3 + Formatting.field_1068 + Formatting.field_1051 + "XXXXXXXX".substring(0, random.nextInt(4) + 3) + string4;
+							string2 = string3 + Formatting.WHITE + Formatting.OBFUSCATED + "XXXXXXXX".substring(0, random.nextInt(4) + 3) + string4;
 						}
 
 						this.field_2634.addAll(this.minecraft.textRenderer.wrapStringToWidthAsList(string2, 274));

@@ -31,7 +31,7 @@ public class BarrelBlock extends BlockWithEntity {
 
 	public BarrelBlock(Block.Settings settings) {
 		super(settings);
-		this.setDefaultState(this.stateFactory.getDefaultState().with(FACING, Direction.field_11043).with(OPEN, Boolean.valueOf(false)));
+		this.setDefaultState(this.stateFactory.getDefaultState().with(FACING, Direction.NORTH).with(OPEN, Boolean.valueOf(false)));
 	}
 
 	@Override
@@ -42,7 +42,7 @@ public class BarrelBlock extends BlockWithEntity {
 			BlockEntity blockEntity = world.getBlockEntity(blockPos);
 			if (blockEntity instanceof BarrelBlockEntity) {
 				playerEntity.openContainer((BarrelBlockEntity)blockEntity);
-				playerEntity.incrementStat(Stats.field_17271);
+				playerEntity.incrementStat(Stats.OPEN_BARREL);
 			}
 
 			return true;
@@ -78,7 +78,7 @@ public class BarrelBlock extends BlockWithEntity {
 
 	@Override
 	public BlockRenderType getRenderType(BlockState blockState) {
-		return BlockRenderType.field_11458;
+		return BlockRenderType.MODEL;
 	}
 
 	@Override

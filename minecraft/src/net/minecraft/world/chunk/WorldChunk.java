@@ -76,7 +76,7 @@ public class WorldChunk implements Chunk {
 	private final ShortList[] postProcessingLists = new ShortList[16];
 	private TickScheduler<Block> blockTickScheduler;
 	private TickScheduler<Fluid> fluidTickScheduler;
-	private boolean field_12837;
+	private boolean unsaved;
 	private long lastSaveTime;
 	private volatile boolean shouldSave;
 	private long inhabitedTime;
@@ -108,7 +108,7 @@ public class WorldChunk implements Chunk {
 		this.upgradeData = upgradeData;
 
 		for (Heightmap.Type type : Heightmap.Type.values()) {
-			if (ChunkStatus.field_12803.isSurfaceGenerated().contains(type)) {
+			if (ChunkStatus.FULL.isSurfaceGenerated().contains(type)) {
 				this.heightmaps.put(type, new Heightmap(this, type));
 			}
 		}
@@ -165,7 +165,7 @@ public class WorldChunk implements Chunk {
 		this.setStructureReferences(protoChunk.getStructureReferences());
 
 		for (Entry<Heightmap.Type, Heightmap> entry : protoChunk.getHeightmaps()) {
-			if (ChunkStatus.field_12803.isSurfaceGenerated().contains(entry.getKey())) {
+			if (ChunkStatus.FULL.isSurfaceGenerated().contains(entry.getKey())) {
 				this.getHeightmap((Heightmap.Type)entry.getKey()).setTo(((Heightmap)entry.getValue()).asLongArray());
 			}
 		}
@@ -199,14 +199,14 @@ public class WorldChunk implements Chunk {
 		if (this.world.getGeneratorType() == LevelGeneratorType.DEBUG_ALL_BLOCK_STATES) {
 			BlockState blockState = null;
 			if (j == 60) {
-				blockState = Blocks.field_10499.getDefaultState();
+				blockState = Blocks.BARRIER.getDefaultState();
 			}
 
 			if (j == 70) {
 				blockState = DebugChunkGenerator.getBlockState(i, k);
 			}
 
-			return blockState == null ? Blocks.field_10124.getDefaultState() : blockState;
+			return blockState == null ? Blocks.AIR.getDefaultState() : blockState;
 		} else {
 			try {
 				if (j >= 0 && j >> 4 < this.sections.length) {
@@ -216,7 +216,7 @@ public class WorldChunk implements Chunk {
 					}
 				}
 
-				return Blocks.field_10124.getDefaultState();
+				return Blocks.AIR.getDefaultState();
 			} catch (Throwable var8) {
 				CrashReport crashReport = CrashReport.create(var8, "Getting block state");
 				CrashReportSection crashReportSection = crashReport.addElement("Block being got");
@@ -240,7 +240,7 @@ public class WorldChunk implements Chunk {
 				}
 			}
 
-			return Fluids.field_15906.getDefaultState();
+			return Fluids.EMPTY.getDefaultState();
 		} catch (Throwable var7) {
 			CrashReport crashReport = CrashReport.create(var7, "Getting fluid state");
 			CrashReportSection crashReportSection = crashReport.addElement("Block being got");
@@ -272,10 +272,10 @@ public class WorldChunk implements Chunk {
 		} else {
 			Block block = blockState.getBlock();
 			Block block2 = blockState2.getBlock();
-			((Heightmap)this.heightmaps.get(Heightmap.Type.field_13197)).trackUpdate(i, j, k, blockState);
-			((Heightmap)this.heightmaps.get(Heightmap.Type.field_13203)).trackUpdate(i, j, k, blockState);
-			((Heightmap)this.heightmaps.get(Heightmap.Type.field_13200)).trackUpdate(i, j, k, blockState);
-			((Heightmap)this.heightmaps.get(Heightmap.Type.field_13202)).trackUpdate(i, j, k, blockState);
+			((Heightmap)this.heightmaps.get(Heightmap.Type.MOTION_BLOCKING)).trackUpdate(i, j, k, blockState);
+			((Heightmap)this.heightmaps.get(Heightmap.Type.MOTION_BLOCKING_NO_LEAVES)).trackUpdate(i, j, k, blockState);
+			((Heightmap)this.heightmaps.get(Heightmap.Type.OCEAN_FLOOR)).trackUpdate(i, j, k, blockState);
+			((Heightmap)this.heightmaps.get(Heightmap.Type.WORLD_SURFACE)).trackUpdate(i, j, k, blockState);
 			boolean bl3 = chunkSection.isEmpty();
 			if (bl2 != bl3) {
 				this.world.getChunkManager().getLightingProvider().updateSectionStatus(blockPos, bl3);
@@ -291,7 +291,7 @@ public class WorldChunk implements Chunk {
 				return null;
 			} else {
 				if (block2 instanceof BlockEntityProvider) {
-					BlockEntity blockEntity = this.getBlockEntity(blockPos, WorldChunk.CreationType.field_12859);
+					BlockEntity blockEntity = this.getBlockEntity(blockPos, WorldChunk.CreationType.CHECK);
 					if (blockEntity != null) {
 						blockEntity.resetBlock();
 					}
@@ -302,7 +302,7 @@ public class WorldChunk implements Chunk {
 				}
 
 				if (block instanceof BlockEntityProvider) {
-					BlockEntity blockEntity = this.getBlockEntity(blockPos, WorldChunk.CreationType.field_12859);
+					BlockEntity blockEntity = this.getBlockEntity(blockPos, WorldChunk.CreationType.CHECK);
 					if (blockEntity == null) {
 						blockEntity = ((BlockEntityProvider)block).createBlockEntity(this.world);
 						this.world.setBlockEntity(blockPos, blockEntity);
@@ -329,7 +329,7 @@ public class WorldChunk implements Chunk {
 
 	@Override
 	public void addEntity(Entity entity) {
-		this.field_12837 = true;
+		this.unsaved = true;
 		int i = MathHelper.floor(entity.x / 16.0);
 		int j = MathHelper.floor(entity.z / 16.0);
 		if (i != this.pos.x || j != this.pos.z) {
@@ -346,7 +346,7 @@ public class WorldChunk implements Chunk {
 			k = this.entitySections.length - 1;
 		}
 
-		entity.field_6016 = true;
+		entity.updateNeeded = true;
 		entity.chunkX = this.pos.x;
 		entity.chunkY = k;
 		entity.chunkZ = this.pos.z;
@@ -389,7 +389,7 @@ public class WorldChunk implements Chunk {
 	@Nullable
 	@Override
 	public BlockEntity getBlockEntity(BlockPos blockPos) {
-		return this.getBlockEntity(blockPos, WorldChunk.CreationType.field_12859);
+		return this.getBlockEntity(blockPos, WorldChunk.CreationType.CHECK);
 	}
 
 	@Nullable
@@ -406,7 +406,7 @@ public class WorldChunk implements Chunk {
 		}
 
 		if (blockEntity == null) {
-			if (creationType == WorldChunk.CreationType.field_12860) {
+			if (creationType == WorldChunk.CreationType.IMMEDIATE) {
 				blockEntity = this.createBlockEntity(blockPos);
 				this.world.setBlockEntity(blockPos, blockEntity);
 			}
@@ -642,11 +642,11 @@ public class WorldChunk implements Chunk {
 
 	@Override
 	public boolean needsSaving() {
-		return this.shouldSave || this.field_12837 && this.world.getTime() != this.lastSaveTime;
+		return this.shouldSave || this.unsaved && this.world.getTime() != this.lastSaveTime;
 	}
 
-	public void method_12232(boolean bl) {
-		this.field_12837 = bl;
+	public void setUnsaved(boolean bl) {
+		this.unsaved = bl;
 	}
 
 	@Override
@@ -773,7 +773,7 @@ public class WorldChunk implements Chunk {
 			((ChunkTickScheduler)this.blockTickScheduler).tick(this.world.getBlockTickScheduler(), blockPos -> this.getBlockState(blockPos).getBlock());
 			this.blockTickScheduler = DummyClientTickScheduler.get();
 		} else if (this.blockTickScheduler instanceof SimpleTickScheduler) {
-			this.world.getBlockTickScheduler().method_20470(((SimpleTickScheduler)this.blockTickScheduler).stream());
+			this.world.getBlockTickScheduler().scheduleAll(((SimpleTickScheduler)this.blockTickScheduler).stream());
 			this.blockTickScheduler = DummyClientTickScheduler.get();
 		}
 
@@ -781,7 +781,7 @@ public class WorldChunk implements Chunk {
 			((ChunkTickScheduler)this.fluidTickScheduler).tick(this.world.getFluidTickScheduler(), blockPos -> this.getFluidState(blockPos).getFluid());
 			this.fluidTickScheduler = DummyClientTickScheduler.get();
 		} else if (this.fluidTickScheduler instanceof SimpleTickScheduler) {
-			this.world.getFluidTickScheduler().method_20470(((SimpleTickScheduler)this.fluidTickScheduler).stream());
+			this.world.getFluidTickScheduler().scheduleAll(((SimpleTickScheduler)this.fluidTickScheduler).stream());
 			this.fluidTickScheduler = DummyClientTickScheduler.get();
 		}
 	}
@@ -800,11 +800,11 @@ public class WorldChunk implements Chunk {
 
 	@Override
 	public ChunkStatus getStatus() {
-		return ChunkStatus.field_12803;
+		return ChunkStatus.FULL;
 	}
 
 	public ChunkHolder.LevelType getLevelType() {
-		return this.levelTypeProvider == null ? ChunkHolder.LevelType.field_13876 : (ChunkHolder.LevelType)this.levelTypeProvider.get();
+		return this.levelTypeProvider == null ? ChunkHolder.LevelType.BORDER : (ChunkHolder.LevelType)this.levelTypeProvider.get();
 	}
 
 	public void setLevelTypeProvider(Supplier<ChunkHolder.LevelType> supplier) {
@@ -827,8 +827,8 @@ public class WorldChunk implements Chunk {
 	}
 
 	public static enum CreationType {
-		field_12860,
-		field_12861,
-		field_12859;
+		IMMEDIATE,
+		QUEUED,
+		CHECK;
 	}
 }

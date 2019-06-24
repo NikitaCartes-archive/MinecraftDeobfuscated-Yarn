@@ -21,7 +21,7 @@ public abstract class AbstractRailBlock extends Block {
 	}
 
 	public static boolean isRail(BlockState blockState) {
-		return blockState.matches(BlockTags.field_15463);
+		return blockState.matches(BlockTags.RAILS);
 	}
 
 	protected AbstractRailBlock(boolean bl, Block.Settings settings) {
@@ -67,19 +67,19 @@ public abstract class AbstractRailBlock extends Block {
 			}
 
 			BlockPos blockPos4 = blockPos.east();
-			if (railShape == RailShape.field_12667 && !isSolidMediumSquare(world, blockPos4)) {
+			if (railShape == RailShape.ASCENDING_EAST && !isSolidMediumSquare(world, blockPos4)) {
 				bl2 = true;
 			} else {
 				BlockPos blockPos5 = blockPos.west();
-				if (railShape == RailShape.field_12666 && !isSolidMediumSquare(world, blockPos5)) {
+				if (railShape == RailShape.ASCENDING_WEST && !isSolidMediumSquare(world, blockPos5)) {
 					bl2 = true;
 				} else {
 					BlockPos blockPos6 = blockPos.north();
-					if (railShape == RailShape.field_12670 && !isSolidMediumSquare(world, blockPos6)) {
+					if (railShape == RailShape.ASCENDING_NORTH && !isSolidMediumSquare(world, blockPos6)) {
 						bl2 = true;
 					} else {
 						BlockPos blockPos7 = blockPos.south();
-						if (railShape == RailShape.field_12668 && !isSolidMediumSquare(world, blockPos7)) {
+						if (railShape == RailShape.ASCENDING_SOUTH && !isSolidMediumSquare(world, blockPos7)) {
 							bl2 = true;
 						}
 					}
@@ -109,12 +109,12 @@ public abstract class AbstractRailBlock extends Block {
 
 	@Override
 	public PistonBehavior getPistonBehavior(BlockState blockState) {
-		return PistonBehavior.field_15974;
+		return PistonBehavior.NORMAL;
 	}
 
 	@Override
 	public BlockRenderLayer getRenderLayer() {
-		return BlockRenderLayer.field_9174;
+		return BlockRenderLayer.CUTOUT;
 	}
 
 	@Override

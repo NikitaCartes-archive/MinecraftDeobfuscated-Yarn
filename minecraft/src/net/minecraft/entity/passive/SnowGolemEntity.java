@@ -91,11 +91,11 @@ public class SnowGolemEntity extends GolemEntity implements RangedAttackMob {
 				this.damage(DamageSource.ON_FIRE, 1.0F);
 			}
 
-			if (!this.world.getGameRules().getBoolean(GameRules.field_19388)) {
+			if (!this.world.getGameRules().getBoolean(GameRules.MOB_GRIEFING)) {
 				return;
 			}
 
-			BlockState blockState = Blocks.field_10477.getDefaultState();
+			BlockState blockState = Blocks.SNOW.getDefaultState();
 
 			for (int l = 0; l < 4; l++) {
 				i = MathHelper.floor(this.x + (double)((float)(l % 2 * 2 - 1) * 0.25F));
@@ -120,7 +120,7 @@ public class SnowGolemEntity extends GolemEntity implements RangedAttackMob {
 		double h = livingEntity.z - this.z;
 		float i = MathHelper.sqrt(e * e + h * h) * 0.2F;
 		snowballEntity.setVelocity(e, g + (double)i, h, 1.6F, 12.0F);
-		this.playSound(SoundEvents.field_14745, 1.0F, 1.0F / (this.getRand().nextFloat() * 0.4F + 0.8F));
+		this.playSound(SoundEvents.ENTITY_SNOW_GOLEM_SHOOT, 1.0F, 1.0F / (this.getRand().nextFloat() * 0.4F + 0.8F));
 		this.world.spawnEntity(snowballEntity);
 	}
 
@@ -132,7 +132,7 @@ public class SnowGolemEntity extends GolemEntity implements RangedAttackMob {
 	@Override
 	protected boolean interactMob(PlayerEntity playerEntity, Hand hand) {
 		ItemStack itemStack = playerEntity.getStackInHand(hand);
-		if (itemStack.getItem() == Items.field_8868 && this.hasPumpkin() && !this.world.isClient) {
+		if (itemStack.getItem() == Items.SHEARS && this.hasPumpkin() && !this.world.isClient) {
 			this.setHasPumpkin(false);
 			itemStack.damage(1, playerEntity, playerEntityx -> playerEntityx.sendToolBreakStatus(hand));
 		}
@@ -156,18 +156,18 @@ public class SnowGolemEntity extends GolemEntity implements RangedAttackMob {
 	@Nullable
 	@Override
 	protected SoundEvent getAmbientSound() {
-		return SoundEvents.field_14655;
+		return SoundEvents.ENTITY_SNOW_GOLEM_AMBIENT;
 	}
 
 	@Nullable
 	@Override
 	protected SoundEvent getHurtSound(DamageSource damageSource) {
-		return SoundEvents.field_14830;
+		return SoundEvents.ENTITY_SNOW_GOLEM_HURT;
 	}
 
 	@Nullable
 	@Override
 	protected SoundEvent getDeathSound() {
-		return SoundEvents.field_14594;
+		return SoundEvents.ENTITY_SNOW_GOLEM_DEATH;
 	}
 }

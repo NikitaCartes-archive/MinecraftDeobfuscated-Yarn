@@ -31,7 +31,7 @@ public class ServerScoreboard extends Scoreboard {
 				.getPlayerManager()
 				.sendToAll(
 					new ScoreboardPlayerUpdateS2CPacket(
-						ServerScoreboard.UpdateMode.field_13431,
+						ServerScoreboard.UpdateMode.CHANGE,
 						scoreboardPlayerScore.getObjective().getName(),
 						scoreboardPlayerScore.getPlayerName(),
 						scoreboardPlayerScore.getScore()
@@ -45,7 +45,7 @@ public class ServerScoreboard extends Scoreboard {
 	@Override
 	public void updatePlayerScore(String string) {
 		super.updatePlayerScore(string);
-		this.server.getPlayerManager().sendToAll(new ScoreboardPlayerUpdateS2CPacket(ServerScoreboard.UpdateMode.field_13430, null, string, 0));
+		this.server.getPlayerManager().sendToAll(new ScoreboardPlayerUpdateS2CPacket(ServerScoreboard.UpdateMode.REMOVE, null, string, 0));
 		this.runUpdateListeners();
 	}
 
@@ -53,9 +53,7 @@ public class ServerScoreboard extends Scoreboard {
 	public void updatePlayerScore(String string, ScoreboardObjective scoreboardObjective) {
 		super.updatePlayerScore(string, scoreboardObjective);
 		if (this.objectives.contains(scoreboardObjective)) {
-			this.server
-				.getPlayerManager()
-				.sendToAll(new ScoreboardPlayerUpdateS2CPacket(ServerScoreboard.UpdateMode.field_13430, scoreboardObjective.getName(), string, 0));
+			this.server.getPlayerManager().sendToAll(new ScoreboardPlayerUpdateS2CPacket(ServerScoreboard.UpdateMode.REMOVE, scoreboardObjective.getName(), string, 0));
 		}
 
 		this.runUpdateListeners();
@@ -173,7 +171,7 @@ public class ServerScoreboard extends Scoreboard {
 		for (ScoreboardPlayerScore scoreboardPlayerScore : this.getAllPlayerScores(scoreboardObjective)) {
 			list.add(
 				new ScoreboardPlayerUpdateS2CPacket(
-					ServerScoreboard.UpdateMode.field_13431,
+					ServerScoreboard.UpdateMode.CHANGE,
 					scoreboardPlayerScore.getObjective().getName(),
 					scoreboardPlayerScore.getPlayerName(),
 					scoreboardPlayerScore.getScore()
@@ -234,7 +232,7 @@ public class ServerScoreboard extends Scoreboard {
 	}
 
 	public static enum UpdateMode {
-		field_13431,
-		field_13430;
+		CHANGE,
+		REMOVE;
 	}
 }

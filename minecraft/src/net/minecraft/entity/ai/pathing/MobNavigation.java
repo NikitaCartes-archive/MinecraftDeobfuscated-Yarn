@@ -78,7 +78,7 @@ public class MobNavigation extends EntityNavigation {
 			Block block = this.world.getBlockState(new BlockPos(this.entity.x, (double)i, this.entity.z)).getBlock();
 			int j = 0;
 
-			while (block == Blocks.field_10382) {
+			while (block == Blocks.WATER) {
 				block = this.world.getBlockState(new BlockPos(this.entity.x, (double)(++i), this.entity.z)).getBlock();
 				if (++j > 16) {
 					return MathHelper.floor(this.entity.getBoundingBox().minY);
@@ -183,15 +183,15 @@ public class MobNavigation extends EntityNavigation {
 					double g = (double)r + 0.5 - vec3d.z;
 					if (!(f * d + g * e < 0.0)) {
 						PathNodeType pathNodeType = this.nodeMaker.getPathNodeType(this.world, q, j - 1, r, this.entity, l, m, n, true, true);
-						if (pathNodeType == PathNodeType.field_18) {
+						if (pathNodeType == PathNodeType.WATER) {
 							return false;
 						}
 
-						if (pathNodeType == PathNodeType.field_14) {
+						if (pathNodeType == PathNodeType.LAVA) {
 							return false;
 						}
 
-						if (pathNodeType == PathNodeType.field_7) {
+						if (pathNodeType == PathNodeType.OPEN) {
 							return false;
 						}
 
@@ -201,7 +201,7 @@ public class MobNavigation extends EntityNavigation {
 							return false;
 						}
 
-						if (pathNodeType == PathNodeType.field_3 || pathNodeType == PathNodeType.field_9 || pathNodeType == PathNodeType.field_17) {
+						if (pathNodeType == PathNodeType.DAMAGE_FIRE || pathNodeType == PathNodeType.DANGER_FIRE || pathNodeType == PathNodeType.DAMAGE_OTHER) {
 							return false;
 						}
 					}
@@ -216,7 +216,7 @@ public class MobNavigation extends EntityNavigation {
 		for (BlockPos blockPos : BlockPos.iterate(new BlockPos(i, j, k), new BlockPos(i + l - 1, j + m - 1, k + n - 1))) {
 			double f = (double)blockPos.getX() + 0.5 - vec3d.x;
 			double g = (double)blockPos.getZ() + 0.5 - vec3d.z;
-			if (!(f * d + g * e < 0.0) && !this.world.getBlockState(blockPos).canPlaceAtSide(this.world, blockPos, BlockPlacementEnvironment.field_50)) {
+			if (!(f * d + g * e < 0.0) && !this.world.getBlockState(blockPos).canPlaceAtSide(this.world, blockPos, BlockPlacementEnvironment.LAND)) {
 				return false;
 			}
 		}

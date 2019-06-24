@@ -66,7 +66,7 @@ public class ChunkTickScheduler<T> implements TickScheduler<T> {
 	}
 
 	@Override
-	public void method_20470(Stream<ScheduledTick<T>> stream) {
+	public void scheduleAll(Stream<ScheduledTick<T>> stream) {
 		stream.forEach(scheduledTick -> this.schedule(scheduledTick.pos, (T)scheduledTick.getObject(), 0, scheduledTick.priority));
 	}
 }

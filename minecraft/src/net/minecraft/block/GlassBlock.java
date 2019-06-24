@@ -7,6 +7,6 @@ public class GlassBlock extends AbstractGlassBlock {
 
 	@Override
 	public BlockRenderLayer getRenderLayer() {
-		return BlockRenderLayer.field_9174;
+		return BlockRenderLayer.CUTOUT;
 	}
 }

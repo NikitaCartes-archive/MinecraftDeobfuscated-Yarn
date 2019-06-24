@@ -32,7 +32,7 @@ public class FarmlandBlock extends Block {
 	public BlockState getStateForNeighborUpdate(
 		BlockState blockState, Direction direction, BlockState blockState2, IWorld iWorld, BlockPos blockPos, BlockPos blockPos2
 	) {
-		if (direction == Direction.field_11036 && !blockState.canPlaceAt(iWorld, blockPos)) {
+		if (direction == Direction.UP && !blockState.canPlaceAt(iWorld, blockPos)) {
 			iWorld.getBlockTickScheduler().schedule(blockPos, this, 1);
 		}
 
@@ -48,7 +48,7 @@ public class FarmlandBlock extends Block {
 	@Override
 	public BlockState getPlacementState(ItemPlacementContext itemPlacementContext) {
 		return !this.getDefaultState().canPlaceAt(itemPlacementContext.getWorld(), itemPlacementContext.getBlockPos())
-			? Blocks.field_10566.getDefaultState()
+			? Blocks.DIRT.getDefaultState()
 			: super.getPlacementState(itemPlacementContext);
 	}
 
@@ -85,7 +85,7 @@ public class FarmlandBlock extends Block {
 		if (!world.isClient
 			&& world.random.nextFloat() < f - 0.5F
 			&& entity instanceof LivingEntity
-			&& (entity instanceof PlayerEntity || world.getGameRules().getBoolean(GameRules.field_19388))
+			&& (entity instanceof PlayerEntity || world.getGameRules().getBoolean(GameRules.MOB_GRIEFING))
 			&& entity.getWidth() * entity.getWidth() * entity.getHeight() > 0.512F) {
 			setToDirt(world.getBlockState(blockPos), world, blockPos);
 		}
@@ -94,7 +94,7 @@ public class FarmlandBlock extends Block {
 	}
 
 	public static void setToDirt(BlockState blockState, World world, BlockPos blockPos) {
-		world.setBlockState(blockPos, pushEntitiesUpBeforeBlockChange(blockState, Blocks.field_10566.getDefaultState(), world, blockPos));
+		world.setBlockState(blockPos, pushEntitiesUpBeforeBlockChange(blockState, Blocks.DIRT.getDefaultState(), world, blockPos));
 	}
 
 	private static boolean hasCrop(BlockView blockView, BlockPos blockPos) {
@@ -104,7 +104,7 @@ public class FarmlandBlock extends Block {
 
 	private static boolean isWaterNearby(ViewableWorld viewableWorld, BlockPos blockPos) {
 		for (BlockPos blockPos2 : BlockPos.iterate(blockPos.add(-4, 0, -4), blockPos.add(4, 1, 4))) {
-			if (viewableWorld.getFluidState(blockPos2).matches(FluidTags.field_15517)) {
+			if (viewableWorld.getFluidState(blockPos2).matches(FluidTags.WATER)) {
 				return true;
 			}
 		}

@@ -145,7 +145,7 @@ public class TrueTypeFont implements Font {
 
 		@Override
 		public void upload(int i, int j) {
-			try (NativeImage nativeImage = new NativeImage(NativeImage.Format.field_4998, this.width, this.height, false)) {
+			try (NativeImage nativeImage = new NativeImage(NativeImage.Format.LUMINANCE, this.width, this.height, false)) {
 				nativeImage.makeGlyphBitmapSubpixel(
 					TrueTypeFont.this.info,
 					this.glyphIndex,

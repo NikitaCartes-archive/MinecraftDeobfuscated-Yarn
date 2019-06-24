@@ -36,7 +36,7 @@ public class Bootstrap {
 			} else {
 				FireBlock.registerDefaultFlammables();
 				ComposterBlock.registerDefaultCompostableItems();
-				if (EntityType.getId(EntityType.field_6097) == null) {
+				if (EntityType.getId(EntityType.PLAYER) == null) {
 					throw new IllegalStateException("Failed loading EntityTypes");
 				} else {
 					BrewingRecipeRegistry.registerDefaults();
@@ -62,7 +62,7 @@ public class Bootstrap {
 	public static Set<String> getMissingTranslations() {
 		Set<String> set = new TreeSet();
 		collectMissingTranslations(Registry.ENTITY_TYPE, EntityType::getTranslationKey, set);
-		collectMissingTranslations(Registry.STATUS_EFFECT, StatusEffect::getTranslationKey, set);
+		collectMissingTranslations(Registry.MOB_EFFECT, StatusEffect::getTranslationKey, set);
 		collectMissingTranslations(Registry.ITEM, Item::getTranslationKey, set);
 		collectMissingTranslations(Registry.ENCHANTMENT, Enchantment::getTranslationKey, set);
 		collectMissingTranslations(Registry.BIOME, Biome::getTranslationKey, set);

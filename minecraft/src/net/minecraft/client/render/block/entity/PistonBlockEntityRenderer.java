@@ -50,12 +50,12 @@ public class PistonBlockEntityRenderer extends BlockEntityRenderer<PistonBlockEn
 				f - (double)blockPos.getZ() + (double)pistonBlockEntity.getRenderOffsetZ(g)
 			);
 			World world = this.getWorld();
-			if (blockState.getBlock() == Blocks.field_10379 && pistonBlockEntity.getProgress(g) <= 4.0F) {
+			if (blockState.getBlock() == Blocks.PISTON_HEAD && pistonBlockEntity.getProgress(g) <= 4.0F) {
 				blockState = blockState.with(PistonHeadBlock.SHORT, Boolean.valueOf(true));
 				this.method_3575(blockPos, blockState, bufferBuilder, world, false);
 			} else if (pistonBlockEntity.isSource() && !pistonBlockEntity.isExtending()) {
-				PistonType pistonType = blockState.getBlock() == Blocks.field_10615 ? PistonType.field_12634 : PistonType.field_12637;
-				BlockState blockState2 = Blocks.field_10379
+				PistonType pistonType = blockState.getBlock() == Blocks.STICKY_PISTON ? PistonType.STICKY : PistonType.DEFAULT;
+				BlockState blockState2 = Blocks.PISTON_HEAD
 					.getDefaultState()
 					.with(PistonHeadBlock.TYPE, pistonType)
 					.with(PistonHeadBlock.FACING, blockState.get(PistonBlock.FACING));

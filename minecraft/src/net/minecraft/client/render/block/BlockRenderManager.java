@@ -39,7 +39,7 @@ public class BlockRenderManager implements SynchronousResourceReloadListener {
 	}
 
 	public void tesselateDamage(BlockState blockState, BlockPos blockPos, Sprite sprite, ExtendedBlockView extendedBlockView) {
-		if (blockState.getRenderType() == BlockRenderType.field_11458) {
+		if (blockState.getRenderType() == BlockRenderType.MODEL) {
 			BakedModel bakedModel = this.models.getModel(blockState);
 			long l = blockState.getRenderingSeed(blockPos);
 			BakedModel bakedModel2 = new BasicBakedModel.Builder(blockState, bakedModel, sprite, this.random, l).build();
@@ -50,14 +50,14 @@ public class BlockRenderManager implements SynchronousResourceReloadListener {
 	public boolean tesselateBlock(BlockState blockState, BlockPos blockPos, ExtendedBlockView extendedBlockView, BufferBuilder bufferBuilder, Random random) {
 		try {
 			BlockRenderType blockRenderType = blockState.getRenderType();
-			if (blockRenderType == BlockRenderType.field_11455) {
+			if (blockRenderType == BlockRenderType.INVISIBLE) {
 				return false;
 			} else {
 				switch (blockRenderType) {
-					case field_11458:
+					case MODEL:
 						return this.renderer
 							.tesselate(extendedBlockView, this.getModel(blockState), blockState, blockPos, bufferBuilder, true, random, blockState.getRenderingSeed(blockPos));
-					case field_11456:
+					case ENTITYBLOCK_ANIMATED:
 						return false;
 					default:
 						return false;
@@ -92,13 +92,13 @@ public class BlockRenderManager implements SynchronousResourceReloadListener {
 
 	public void renderDynamic(BlockState blockState, float f) {
 		BlockRenderType blockRenderType = blockState.getRenderType();
-		if (blockRenderType != BlockRenderType.field_11455) {
+		if (blockRenderType != BlockRenderType.INVISIBLE) {
 			switch (blockRenderType) {
-				case field_11458:
+				case MODEL:
 					BakedModel bakedModel = this.getModel(blockState);
 					this.renderer.render(bakedModel, blockState, f, true);
 					break;
-				case field_11456:
+				case ENTITYBLOCK_ANIMATED:
 					this.dynamicRenderer.render(blockState.getBlock(), f);
 			}
 		}

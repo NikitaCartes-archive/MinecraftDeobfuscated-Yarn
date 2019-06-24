@@ -14,19 +14,19 @@ public class DonkeyEntity extends AbstractDonkeyEntity {
 	@Override
 	protected SoundEvent getAmbientSound() {
 		super.getAmbientSound();
-		return SoundEvents.field_15094;
+		return SoundEvents.ENTITY_DONKEY_AMBIENT;
 	}
 
 	@Override
 	protected SoundEvent getDeathSound() {
 		super.getDeathSound();
-		return SoundEvents.field_14827;
+		return SoundEvents.ENTITY_DONKEY_DEATH;
 	}
 
 	@Override
 	protected SoundEvent getHurtSound(DamageSource damageSource) {
 		super.getHurtSound(damageSource);
-		return SoundEvents.field_14781;
+		return SoundEvents.ENTITY_DONKEY_HURT;
 	}
 
 	@Override
@@ -42,7 +42,7 @@ public class DonkeyEntity extends AbstractDonkeyEntity {
 
 	@Override
 	public PassiveEntity createChild(PassiveEntity passiveEntity) {
-		EntityType<? extends HorseBaseEntity> entityType = passiveEntity instanceof HorseEntity ? EntityType.field_6057 : EntityType.field_6067;
+		EntityType<? extends HorseBaseEntity> entityType = passiveEntity instanceof HorseEntity ? EntityType.MULE : EntityType.DONKEY;
 		HorseBaseEntity horseBaseEntity = entityType.create(this.world);
 		this.setChildAttributes(passiveEntity, horseBaseEntity);
 		return horseBaseEntity;

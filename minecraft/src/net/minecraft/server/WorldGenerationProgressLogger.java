@@ -29,7 +29,7 @@ public class WorldGenerationProgressLogger implements WorldGenerationProgressLis
 
 	@Override
 	public void setChunkStatus(ChunkPos chunkPos, @Nullable ChunkStatus chunkStatus) {
-		if (chunkStatus == ChunkStatus.field_12803) {
+		if (chunkStatus == ChunkStatus.FULL) {
 			this.generatedCount++;
 		}
 

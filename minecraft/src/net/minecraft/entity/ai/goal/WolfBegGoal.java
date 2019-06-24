@@ -22,7 +22,7 @@ public class WolfBegGoal extends Goal {
 		this.world = wolfEntity.world;
 		this.begDistance = f;
 		this.validPlayerPredicate = new TargetPredicate().setBaseMaxDistance((double)f).includeInvulnerable().includeTeammates().ignoreEntityTargetRules();
-		this.setControls(EnumSet.of(Goal.Control.field_18406));
+		this.setControls(EnumSet.of(Goal.Control.LOOK));
 	}
 
 	@Override
@@ -63,7 +63,7 @@ public class WolfBegGoal extends Goal {
 	private boolean isAttractive(PlayerEntity playerEntity) {
 		for (Hand hand : Hand.values()) {
 			ItemStack itemStack = playerEntity.getStackInHand(hand);
-			if (this.wolf.isTamed() && itemStack.getItem() == Items.field_8606) {
+			if (this.wolf.isTamed() && itemStack.getItem() == Items.BONE) {
 				return true;
 			}
 

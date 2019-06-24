@@ -93,22 +93,22 @@ public class SpiderEntity extends HostileEntity {
 
 	@Override
 	protected SoundEvent getAmbientSound() {
-		return SoundEvents.field_15170;
+		return SoundEvents.ENTITY_SPIDER_AMBIENT;
 	}
 
 	@Override
 	protected SoundEvent getHurtSound(DamageSource damageSource) {
-		return SoundEvents.field_14657;
+		return SoundEvents.ENTITY_SPIDER_HURT;
 	}
 
 	@Override
 	protected SoundEvent getDeathSound() {
-		return SoundEvents.field_14579;
+		return SoundEvents.ENTITY_SPIDER_DEATH;
 	}
 
 	@Override
 	protected void playStepSound(BlockPos blockPos, BlockState blockState) {
-		this.playSound(SoundEvents.field_14760, 0.15F, 1.0F);
+		this.playSound(SoundEvents.ENTITY_SPIDER_STEP, 0.15F, 1.0F);
 	}
 
 	@Override
@@ -118,7 +118,7 @@ public class SpiderEntity extends HostileEntity {
 
 	@Override
 	public void slowMovement(BlockState blockState, Vec3d vec3d) {
-		if (blockState.getBlock() != Blocks.field_10343) {
+		if (blockState.getBlock() != Blocks.COBWEB) {
 			super.slowMovement(blockState, vec3d);
 		}
 	}
@@ -130,7 +130,7 @@ public class SpiderEntity extends HostileEntity {
 
 	@Override
 	public boolean isPotionEffective(StatusEffectInstance statusEffectInstance) {
-		return statusEffectInstance.getEffectType() == StatusEffects.field_5899 ? false : super.isPotionEffective(statusEffectInstance);
+		return statusEffectInstance.getEffectType() == StatusEffects.POISON ? false : super.isPotionEffective(statusEffectInstance);
 	}
 
 	public boolean getCanClimb() {
@@ -155,7 +155,7 @@ public class SpiderEntity extends HostileEntity {
 	) {
 		entityData = super.initialize(iWorld, localDifficulty, spawnType, entityData, compoundTag);
 		if (iWorld.getRandom().nextInt(100) == 0) {
-			SkeletonEntity skeletonEntity = EntityType.field_6137.create(this.world);
+			SkeletonEntity skeletonEntity = EntityType.SKELETON.create(this.world);
 			skeletonEntity.setPositionAndAngles(this.x, this.y, this.z, this.yaw, 0.0F);
 			skeletonEntity.initialize(iWorld, localDifficulty, spawnType, null, null);
 			iWorld.spawnEntity(skeletonEntity);
@@ -164,7 +164,7 @@ public class SpiderEntity extends HostileEntity {
 
 		if (entityData == null) {
 			entityData = new SpiderEntity.SpawnEffectData();
-			if (iWorld.getDifficulty() == Difficulty.field_5807 && iWorld.getRandom().nextFloat() < 0.1F * localDifficulty.getClampedLocalDifficulty()) {
+			if (iWorld.getDifficulty() == Difficulty.HARD && iWorld.getRandom().nextFloat() < 0.1F * localDifficulty.getClampedLocalDifficulty()) {
 				((SpiderEntity.SpawnEffectData)entityData).setEffect(iWorld.getRandom());
 			}
 		}
@@ -229,13 +229,13 @@ public class SpiderEntity extends HostileEntity {
 		public void setEffect(Random random) {
 			int i = random.nextInt(5);
 			if (i <= 1) {
-				this.effect = StatusEffects.field_5904;
+				this.effect = StatusEffects.SPEED;
 			} else if (i <= 2) {
-				this.effect = StatusEffects.field_5910;
+				this.effect = StatusEffects.STRENGTH;
 			} else if (i <= 3) {
-				this.effect = StatusEffects.field_5924;
+				this.effect = StatusEffects.REGENERATION;
 			} else if (i <= 4) {
-				this.effect = StatusEffects.field_5905;
+				this.effect = StatusEffects.INVISIBILITY;
 			}
 		}
 	}

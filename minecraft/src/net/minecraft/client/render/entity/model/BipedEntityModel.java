@@ -6,7 +6,7 @@ import net.fabricmc.api.Environment;
 import net.minecraft.client.model.Cuboid;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.item.CrossbowItem;
-import net.minecraft.util.AbsoluteHand;
+import net.minecraft.util.Arm;
 import net.minecraft.util.Hand;
 import net.minecraft.util.math.MathHelper;
 
@@ -19,8 +19,8 @@ public class BipedEntityModel<T extends LivingEntity> extends EntityModel<T> imp
 	public Cuboid leftArm;
 	public Cuboid rightLeg;
 	public Cuboid leftLeg;
-	public BipedEntityModel.ArmPose leftArmPose = BipedEntityModel.ArmPose.field_3409;
-	public BipedEntityModel.ArmPose rightArmPose = BipedEntityModel.ArmPose.field_3409;
+	public BipedEntityModel.ArmPose leftArmPose = BipedEntityModel.ArmPose.EMPTY;
+	public BipedEntityModel.ArmPose rightArmPose = BipedEntityModel.ArmPose.EMPTY;
 	public boolean isSneaking;
 	public float field_3396;
 	private float field_3393;
@@ -158,49 +158,49 @@ public class BipedEntityModel<T extends LivingEntity> extends EntityModel<T> imp
 		this.rightArm.yaw = 0.0F;
 		this.rightArm.roll = 0.0F;
 		switch (this.leftArmPose) {
-			case field_3409:
+			case EMPTY:
 				this.leftArm.yaw = 0.0F;
 				break;
-			case field_3406:
+			case BLOCK:
 				this.leftArm.pitch = this.leftArm.pitch * 0.5F - 0.9424779F;
 				this.leftArm.yaw = (float) (Math.PI / 6);
 				break;
-			case field_3410:
+			case ITEM:
 				this.leftArm.pitch = this.leftArm.pitch * 0.5F - (float) (Math.PI / 10);
 				this.leftArm.yaw = 0.0F;
 		}
 
 		switch (this.rightArmPose) {
-			case field_3409:
+			case EMPTY:
 				this.rightArm.yaw = 0.0F;
 				break;
-			case field_3406:
+			case BLOCK:
 				this.rightArm.pitch = this.rightArm.pitch * 0.5F - 0.9424779F;
 				this.rightArm.yaw = (float) (-Math.PI / 6);
 				break;
-			case field_3410:
+			case ITEM:
 				this.rightArm.pitch = this.rightArm.pitch * 0.5F - (float) (Math.PI / 10);
 				this.rightArm.yaw = 0.0F;
 				break;
-			case field_3407:
+			case THROW_SPEAR:
 				this.rightArm.pitch = this.rightArm.pitch * 0.5F - (float) Math.PI;
 				this.rightArm.yaw = 0.0F;
 		}
 
-		if (this.leftArmPose == BipedEntityModel.ArmPose.field_3407
-			&& this.rightArmPose != BipedEntityModel.ArmPose.field_3406
-			&& this.rightArmPose != BipedEntityModel.ArmPose.field_3407
-			&& this.rightArmPose != BipedEntityModel.ArmPose.field_3403) {
+		if (this.leftArmPose == BipedEntityModel.ArmPose.THROW_SPEAR
+			&& this.rightArmPose != BipedEntityModel.ArmPose.BLOCK
+			&& this.rightArmPose != BipedEntityModel.ArmPose.THROW_SPEAR
+			&& this.rightArmPose != BipedEntityModel.ArmPose.BOW_AND_ARROW) {
 			this.leftArm.pitch = this.leftArm.pitch * 0.5F - (float) Math.PI;
 			this.leftArm.yaw = 0.0F;
 		}
 
 		if (this.handSwingProgress > 0.0F) {
-			AbsoluteHand absoluteHand = this.getPreferedHand(livingEntity);
-			Cuboid cuboid = this.getArm(absoluteHand);
+			Arm arm = this.getPreferredArm(livingEntity);
+			Cuboid cuboid = this.getArm(arm);
 			float m = this.handSwingProgress;
 			this.body.yaw = MathHelper.sin(MathHelper.sqrt(m) * (float) (Math.PI * 2)) * 0.2F;
-			if (absoluteHand == AbsoluteHand.field_6182) {
+			if (arm == Arm.LEFT) {
 				this.body.yaw *= -1.0F;
 			}
 
@@ -244,14 +244,14 @@ public class BipedEntityModel<T extends LivingEntity> extends EntityModel<T> imp
 		this.leftArm.roll = this.leftArm.roll - (MathHelper.cos(h * 0.09F) * 0.05F + 0.05F);
 		this.rightArm.pitch = this.rightArm.pitch + MathHelper.sin(h * 0.067F) * 0.05F;
 		this.leftArm.pitch = this.leftArm.pitch - MathHelper.sin(h * 0.067F) * 0.05F;
-		if (this.rightArmPose == BipedEntityModel.ArmPose.field_3403) {
+		if (this.rightArmPose == BipedEntityModel.ArmPose.BOW_AND_ARROW) {
 			this.rightArm.yaw = -0.1F + this.head.yaw;
 			this.leftArm.yaw = 0.1F + this.head.yaw + 0.4F;
 			this.rightArm.pitch = (float) (-Math.PI / 2) + this.head.pitch;
 			this.leftArm.pitch = (float) (-Math.PI / 2) + this.head.pitch;
-		} else if (this.leftArmPose == BipedEntityModel.ArmPose.field_3403
-			&& this.rightArmPose != BipedEntityModel.ArmPose.field_3407
-			&& this.rightArmPose != BipedEntityModel.ArmPose.field_3406) {
+		} else if (this.leftArmPose == BipedEntityModel.ArmPose.BOW_AND_ARROW
+			&& this.rightArmPose != BipedEntityModel.ArmPose.THROW_SPEAR
+			&& this.rightArmPose != BipedEntityModel.ArmPose.BLOCK) {
 			this.rightArm.yaw = -0.1F + this.head.yaw - 0.4F;
 			this.leftArm.yaw = 0.1F + this.head.yaw;
 			this.rightArm.pitch = (float) (-Math.PI / 2) + this.head.pitch;
@@ -259,14 +259,14 @@ public class BipedEntityModel<T extends LivingEntity> extends EntityModel<T> imp
 		}
 
 		float p = (float)CrossbowItem.getPullTime(livingEntity.getActiveItem());
-		if (this.rightArmPose == BipedEntityModel.ArmPose.field_3405) {
+		if (this.rightArmPose == BipedEntityModel.ArmPose.CROSSBOW_CHARGE) {
 			this.rightArm.yaw = -0.8F;
 			this.rightArm.pitch = -0.97079635F;
 			this.leftArm.pitch = -0.97079635F;
 			float q = MathHelper.clamp(this.field_3393, 0.0F, p);
 			this.leftArm.yaw = MathHelper.lerp(q / p, 0.4F, 0.85F);
 			this.leftArm.pitch = MathHelper.lerp(q / p, this.leftArm.pitch, (float) (-Math.PI / 2));
-		} else if (this.leftArmPose == BipedEntityModel.ArmPose.field_3405) {
+		} else if (this.leftArmPose == BipedEntityModel.ArmPose.CROSSBOW_CHARGE) {
 			this.leftArm.yaw = 0.8F;
 			this.rightArm.pitch = -0.97079635F;
 			this.leftArm.pitch = -0.97079635F;
@@ -275,12 +275,12 @@ public class BipedEntityModel<T extends LivingEntity> extends EntityModel<T> imp
 			this.rightArm.pitch = MathHelper.lerp(q / p, this.rightArm.pitch, (float) (-Math.PI / 2));
 		}
 
-		if (this.rightArmPose == BipedEntityModel.ArmPose.field_3408 && this.handSwingProgress <= 0.0F) {
+		if (this.rightArmPose == BipedEntityModel.ArmPose.CROSSBOW_HOLD && this.handSwingProgress <= 0.0F) {
 			this.rightArm.yaw = -0.3F + this.head.yaw;
 			this.leftArm.yaw = 0.6F + this.head.yaw;
 			this.rightArm.pitch = (float) (-Math.PI / 2) + this.head.pitch + 0.1F;
 			this.leftArm.pitch = -1.5F + this.head.pitch;
-		} else if (this.leftArmPose == BipedEntityModel.ArmPose.field_3408) {
+		} else if (this.leftArmPose == BipedEntityModel.ArmPose.CROSSBOW_HOLD) {
 			this.rightArm.yaw = -0.6F + this.head.yaw;
 			this.leftArm.yaw = 0.3F + this.head.yaw;
 			this.rightArm.pitch = -1.5F + this.head.pitch;
@@ -359,12 +359,12 @@ public class BipedEntityModel<T extends LivingEntity> extends EntityModel<T> imp
 	}
 
 	@Override
-	public void setArmAngle(float f, AbsoluteHand absoluteHand) {
-		this.getArm(absoluteHand).applyTransform(f);
+	public void setArmAngle(float f, Arm arm) {
+		this.getArm(arm).applyTransform(f);
 	}
 
-	protected Cuboid getArm(AbsoluteHand absoluteHand) {
-		return absoluteHand == AbsoluteHand.field_6182 ? this.leftArm : this.rightArm;
+	protected Cuboid getArm(Arm arm) {
+		return arm == Arm.LEFT ? this.leftArm : this.rightArm;
 	}
 
 	@Override
@@ -372,19 +372,19 @@ public class BipedEntityModel<T extends LivingEntity> extends EntityModel<T> imp
 		return this.head;
 	}
 
-	protected AbsoluteHand getPreferedHand(T livingEntity) {
-		AbsoluteHand absoluteHand = livingEntity.getMainHand();
-		return livingEntity.preferredHand == Hand.field_5808 ? absoluteHand : absoluteHand.getOpposite();
+	protected Arm getPreferredArm(T livingEntity) {
+		Arm arm = livingEntity.getMainArm();
+		return livingEntity.preferredHand == Hand.MAIN_HAND ? arm : arm.getOpposite();
 	}
 
 	@Environment(EnvType.CLIENT)
 	public static enum ArmPose {
-		field_3409,
-		field_3410,
-		field_3406,
-		field_3403,
-		field_3407,
-		field_3405,
-		field_3408;
+		EMPTY,
+		ITEM,
+		BLOCK,
+		BOW_AND_ARROW,
+		THROW_SPEAR,
+		CROSSBOW_CHARGE,
+		CROSSBOW_HOLD;
 	}
 }

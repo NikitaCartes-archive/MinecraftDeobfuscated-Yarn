@@ -13,10 +13,10 @@ import net.minecraft.world.gen.chunk.ChunkGenerator;
 import net.minecraft.world.gen.chunk.ChunkGeneratorConfig;
 
 public class DesertWellFeature extends Feature<DefaultFeatureConfig> {
-	private static final BlockStatePredicate CAN_GENERATE = BlockStatePredicate.forBlock(Blocks.field_10102);
-	private final BlockState slab = Blocks.field_10007.getDefaultState();
-	private final BlockState wall = Blocks.field_9979.getDefaultState();
-	private final BlockState fluidInside = Blocks.field_10382.getDefaultState();
+	private static final BlockStatePredicate CAN_GENERATE = BlockStatePredicate.forBlock(Blocks.SAND);
+	private final BlockState slab = Blocks.SANDSTONE_SLAB.getDefaultState();
+	private final BlockState wall = Blocks.SANDSTONE.getDefaultState();
+	private final BlockState fluidInside = Blocks.WATER.getDefaultState();
 
 	public DesertWellFeature(Function<Dynamic<?>, ? extends DefaultFeatureConfig> function) {
 		super(function);
@@ -52,7 +52,7 @@ public class DesertWellFeature extends Feature<DefaultFeatureConfig> {
 
 			iWorld.setBlockState(blockPos, this.fluidInside, 2);
 
-			for (Direction direction : Direction.Type.field_11062) {
+			for (Direction direction : Direction.Type.HORIZONTAL) {
 				iWorld.setBlockState(blockPos.offset(direction), this.fluidInside, 2);
 			}
 

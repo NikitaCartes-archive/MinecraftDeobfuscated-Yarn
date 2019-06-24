@@ -39,7 +39,7 @@ public class PistonHandler {
 		this.brokenBlocks.clear();
 		BlockState blockState = this.world.getBlockState(this.posTo);
 		if (!PistonBlock.isMovable(blockState, this.world, this.posTo, this.direction, false, this.field_12248)) {
-			if (this.field_12247 && blockState.getPistonBehavior() == PistonBehavior.field_15971) {
+			if (this.field_12247 && blockState.getPistonBehavior() == PistonBehavior.DESTROY) {
 				this.brokenBlocks.add(this.posTo);
 				return true;
 			} else {
@@ -50,7 +50,7 @@ public class PistonHandler {
 		} else {
 			for (int i = 0; i < this.movedBlocks.size(); i++) {
 				BlockPos blockPos = (BlockPos)this.movedBlocks.get(i);
-				if (this.world.getBlockState(blockPos).getBlock() == Blocks.field_10030 && !this.method_11538(blockPos)) {
+				if (this.world.getBlockState(blockPos).getBlock() == Blocks.SLIME_BLOCK && !this.method_11538(blockPos)) {
 					return false;
 				}
 			}
@@ -75,7 +75,7 @@ public class PistonHandler {
 			if (i + this.movedBlocks.size() > 12) {
 				return false;
 			} else {
-				while (block == Blocks.field_10030) {
+				while (block == Blocks.SLIME_BLOCK) {
 					BlockPos blockPos2 = blockPos.offset(this.direction.getOpposite(), i);
 					blockState = this.world.getBlockState(blockPos2);
 					block = blockState.getBlock();
@@ -107,7 +107,7 @@ public class PistonHandler {
 
 						for (int m = 0; m <= l + j; m++) {
 							BlockPos blockPos4 = (BlockPos)this.movedBlocks.get(m);
-							if (this.world.getBlockState(blockPos4).getBlock() == Blocks.field_10030 && !this.method_11538(blockPos4)) {
+							if (this.world.getBlockState(blockPos4).getBlock() == Blocks.SLIME_BLOCK && !this.method_11538(blockPos4)) {
 								return false;
 							}
 						}
@@ -124,7 +124,7 @@ public class PistonHandler {
 						return false;
 					}
 
-					if (blockState.getPistonBehavior() == PistonBehavior.field_15971) {
+					if (blockState.getPistonBehavior() == PistonBehavior.DESTROY) {
 						this.brokenBlocks.add(blockPos3);
 						return true;
 					}

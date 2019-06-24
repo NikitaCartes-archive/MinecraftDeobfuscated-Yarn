@@ -56,13 +56,13 @@ public class ShulkerBulletEntity extends Entity {
 
 	@Environment(EnvType.CLIENT)
 	public ShulkerBulletEntity(World world, double d, double e, double f, double g, double h, double i) {
-		this(EntityType.field_6100, world);
+		this(EntityType.SHULKER_BULLET, world);
 		this.setPositionAndAngles(d, e, f, this.yaw, this.pitch);
 		this.setVelocity(g, h, i);
 	}
 
 	public ShulkerBulletEntity(World world, LivingEntity livingEntity, Entity entity, Direction.Axis axis) {
-		this(EntityType.field_6100, world);
+		this(EntityType.SHULKER_BULLET, world);
 		this.owner = livingEntity;
 		BlockPos blockPos = new BlockPos(livingEntity);
 		double d = (double)blockPos.getX() + 0.5;
@@ -70,13 +70,13 @@ public class ShulkerBulletEntity extends Entity {
 		double f = (double)blockPos.getZ() + 0.5;
 		this.setPositionAndAngles(d, e, f, this.yaw, this.pitch);
 		this.target = entity;
-		this.direction = Direction.field_11036;
+		this.direction = Direction.UP;
 		this.method_7486(axis);
 	}
 
 	@Override
 	public SoundCategory getSoundCategory() {
-		return SoundCategory.field_15251;
+		return SoundCategory.HOSTILE;
 	}
 
 	@Override
@@ -159,25 +159,25 @@ public class ShulkerBulletEntity extends Entity {
 			List<Direction> list = Lists.<Direction>newArrayList();
 			if (axis != Direction.Axis.X) {
 				if (blockPos2.getX() < blockPos.getX() && this.world.isAir(blockPos2.east())) {
-					list.add(Direction.field_11034);
+					list.add(Direction.EAST);
 				} else if (blockPos2.getX() > blockPos.getX() && this.world.isAir(blockPos2.west())) {
-					list.add(Direction.field_11039);
+					list.add(Direction.WEST);
 				}
 			}
 
 			if (axis != Direction.Axis.Y) {
 				if (blockPos2.getY() < blockPos.getY() && this.world.isAir(blockPos2.up())) {
-					list.add(Direction.field_11036);
+					list.add(Direction.UP);
 				} else if (blockPos2.getY() > blockPos.getY() && this.world.isAir(blockPos2.down())) {
-					list.add(Direction.field_11033);
+					list.add(Direction.DOWN);
 				}
 			}
 
 			if (axis != Direction.Axis.Z) {
 				if (blockPos2.getZ() < blockPos.getZ() && this.world.isAir(blockPos2.south())) {
-					list.add(Direction.field_11035);
+					list.add(Direction.SOUTH);
 				} else if (blockPos2.getZ() > blockPos.getZ() && this.world.isAir(blockPos2.north())) {
-					list.add(Direction.field_11043);
+					list.add(Direction.NORTH);
 				}
 			}
 
@@ -216,7 +216,7 @@ public class ShulkerBulletEntity extends Entity {
 
 	@Override
 	public void tick() {
-		if (!this.world.isClient && this.world.getDifficulty() == Difficulty.field_5801) {
+		if (!this.world.isClient && this.world.getDifficulty() == Difficulty.PEACEFUL) {
 			this.remove();
 		} else {
 			super.tick();
@@ -255,8 +255,8 @@ public class ShulkerBulletEntity extends Entity {
 					this.setVelocity(vec3d.add((this.field_7635 - vec3d.x) * 0.2, (this.field_7633 - vec3d.y) * 0.2, (this.field_7625 - vec3d.z) * 0.2));
 				}
 
-				HitResult hitResult = ProjectileUtil.getCollision(this, true, false, this.owner, RayTraceContext.ShapeType.field_17558);
-				if (hitResult.getType() != HitResult.Type.field_1333) {
+				HitResult hitResult = ProjectileUtil.getCollision(this, true, false, this.owner, RayTraceContext.ShapeType.COLLIDER);
+				if (hitResult.getType() != HitResult.Type.MISS) {
 					this.onHit(hitResult);
 				}
 			}
@@ -265,7 +265,7 @@ public class ShulkerBulletEntity extends Entity {
 			this.setPosition(this.x + vec3d.x, this.y + vec3d.y, this.z + vec3d.z);
 			ProjectileUtil.method_7484(this, 0.5F);
 			if (this.world.isClient) {
-				this.world.addParticle(ParticleTypes.field_11207, this.x - vec3d.x, this.y - vec3d.y + 0.15, this.z - vec3d.z, 0.0, 0.0, 0.0);
+				this.world.addParticle(ParticleTypes.END_ROD, this.x - vec3d.x, this.y - vec3d.y + 0.15, this.z - vec3d.z, 0.0, 0.0, 0.0);
 			} else if (this.target != null && !this.target.removed) {
 				if (this.field_7627 > 0) {
 					this.field_7627--;
@@ -315,18 +315,18 @@ public class ShulkerBulletEntity extends Entity {
 	}
 
 	protected void onHit(HitResult hitResult) {
-		if (hitResult.getType() == HitResult.Type.field_1331) {
+		if (hitResult.getType() == HitResult.Type.ENTITY) {
 			Entity entity = ((EntityHitResult)hitResult).getEntity();
 			boolean bl = entity.damage(DamageSource.mobProjectile(this, this.owner).setProjectile(), 4.0F);
 			if (bl) {
 				this.dealDamage(this.owner, entity);
 				if (entity instanceof LivingEntity) {
-					((LivingEntity)entity).addPotionEffect(new StatusEffectInstance(StatusEffects.field_5902, 200));
+					((LivingEntity)entity).addPotionEffect(new StatusEffectInstance(StatusEffects.LEVITATION, 200));
 				}
 			}
 		} else {
-			((ServerWorld)this.world).spawnParticles(ParticleTypes.field_11236, this.x, this.y, this.z, 2, 0.2, 0.2, 0.2, 0.0);
-			this.playSound(SoundEvents.field_14895, 1.0F, 1.0F);
+			((ServerWorld)this.world).spawnParticles(ParticleTypes.EXPLOSION, this.x, this.y, this.z, 2, 0.2, 0.2, 0.2, 0.0);
+			this.playSound(SoundEvents.ENTITY_SHULKER_BULLET_HIT, 1.0F, 1.0F);
 		}
 
 		this.remove();
@@ -340,8 +340,8 @@ public class ShulkerBulletEntity extends Entity {
 	@Override
 	public boolean damage(DamageSource damageSource, float f) {
 		if (!this.world.isClient) {
-			this.playSound(SoundEvents.field_14977, 1.0F, 1.0F);
-			((ServerWorld)this.world).spawnParticles(ParticleTypes.field_11205, this.x, this.y, this.z, 15, 0.2, 0.2, 0.2, 0.0);
+			this.playSound(SoundEvents.ENTITY_SHULKER_BULLET_HURT, 1.0F, 1.0F);
+			((ServerWorld)this.world).spawnParticles(ParticleTypes.CRIT, this.x, this.y, this.z, 15, 0.2, 0.2, 0.2, 0.0);
 			this.remove();
 		}
 

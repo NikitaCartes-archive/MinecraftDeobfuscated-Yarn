@@ -49,11 +49,11 @@ public class RedstoneTorchBlock extends TorchBlock {
 
 	@Override
 	public int getWeakRedstonePower(BlockState blockState, BlockView blockView, BlockPos blockPos, Direction direction) {
-		return blockState.get(LIT) && Direction.field_11036 != direction ? 15 : 0;
+		return blockState.get(LIT) && Direction.UP != direction ? 15 : 0;
 	}
 
 	protected boolean shouldUnpower(World world, BlockPos blockPos, BlockState blockState) {
-		return world.isEmittingRedstonePower(blockPos.down(), Direction.field_11033);
+		return world.isEmittingRedstonePower(blockPos.down(), Direction.DOWN);
 	}
 
 	@Override
@@ -90,7 +90,7 @@ public class RedstoneTorchBlock extends TorchBlock {
 
 	@Override
 	public int getStrongRedstonePower(BlockState blockState, BlockView blockView, BlockPos blockPos, Direction direction) {
-		return direction == Direction.field_11033 ? blockState.getWeakRedstonePower(blockView, blockPos, direction) : 0;
+		return direction == Direction.DOWN ? blockState.getWeakRedstonePower(blockView, blockPos, direction) : 0;
 	}
 
 	@Override

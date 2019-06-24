@@ -17,7 +17,7 @@ public final class ChunkBlockLightProvider extends ChunkLightProvider<BlockLight
 	private final BlockPos.Mutable mutablePos = new BlockPos.Mutable();
 
 	public ChunkBlockLightProvider(ChunkProvider chunkProvider) {
-		super(chunkProvider, LightType.field_9282, new BlockLightStorage(chunkProvider));
+		super(chunkProvider, LightType.BLOCK, new BlockLightStorage(chunkProvider));
 	}
 
 	private int getLightSourceLuminance(long l) {

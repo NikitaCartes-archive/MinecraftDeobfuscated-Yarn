@@ -47,7 +47,7 @@ public class ShapedRecipe implements CraftingRecipe {
 
 	@Override
 	public RecipeSerializer<?> getSerializer() {
-		return RecipeSerializer.SHAPED;
+		return RecipeSerializer.CRAFTING_SHAPED;
 	}
 
 	@Environment(EnvType.CLIENT)
@@ -124,7 +124,7 @@ public class ShapedRecipe implements CraftingRecipe {
 	}
 
 	private static DefaultedList<Ingredient> getIngredients(String[] strings, Map<String, Ingredient> map, int i, int j) {
-		DefaultedList<Ingredient> defaultedList = DefaultedList.create(i * j, Ingredient.EMPTY);
+		DefaultedList<Ingredient> defaultedList = DefaultedList.ofSize(i * j, Ingredient.EMPTY);
 		Set<String> set = Sets.<String>newHashSet(map.keySet());
 		set.remove(" ");
 
@@ -274,7 +274,7 @@ public class ShapedRecipe implements CraftingRecipe {
 			int i = packetByteBuf.readVarInt();
 			int j = packetByteBuf.readVarInt();
 			String string = packetByteBuf.readString(32767);
-			DefaultedList<Ingredient> defaultedList = DefaultedList.create(i * j, Ingredient.EMPTY);
+			DefaultedList<Ingredient> defaultedList = DefaultedList.ofSize(i * j, Ingredient.EMPTY);
 
 			for (int k = 0; k < defaultedList.size(); k++) {
 				defaultedList.set(k, Ingredient.fromPacket(packetByteBuf));

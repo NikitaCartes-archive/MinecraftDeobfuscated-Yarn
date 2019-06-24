@@ -63,7 +63,7 @@ public class ResourceReloader<S> implements ResourceReloadMonitor {
 					executor2.execute(() -> {
 						ResourceReloader.this.waitingListeners.remove(resourceReloadListener);
 						if (ResourceReloader.this.waitingListeners.isEmpty()) {
-							ResourceReloader.this.prepareStageFuture.complete(Unit.field_17274);
+							ResourceReloader.this.prepareStageFuture.complete(Unit.INSTANCE);
 						}
 					});
 					return ResourceReloader.this.prepareStageFuture.thenCombine(completableFuture3, (unit, object2) -> object);
@@ -90,7 +90,7 @@ public class ResourceReloader<S> implements ResourceReloadMonitor {
 
 	@Override
 	public CompletableFuture<Unit> whenComplete() {
-		return this.applyStageFuture.thenApply(list -> Unit.field_17274);
+		return this.applyStageFuture.thenApply(list -> Unit.INSTANCE);
 	}
 
 	@Environment(EnvType.CLIENT)

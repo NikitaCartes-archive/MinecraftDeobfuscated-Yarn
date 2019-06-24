@@ -37,21 +37,21 @@ public class MusicDiscItem extends Item {
 		World world = itemUsageContext.getWorld();
 		BlockPos blockPos = itemUsageContext.getBlockPos();
 		BlockState blockState = world.getBlockState(blockPos);
-		if (blockState.getBlock() == Blocks.field_10223 && !(Boolean)blockState.get(JukeboxBlock.HAS_RECORD)) {
+		if (blockState.getBlock() == Blocks.JUKEBOX && !(Boolean)blockState.get(JukeboxBlock.HAS_RECORD)) {
 			ItemStack itemStack = itemUsageContext.getStack();
 			if (!world.isClient) {
-				((JukeboxBlock)Blocks.field_10223).setRecord(world, blockPos, blockState, itemStack);
+				((JukeboxBlock)Blocks.JUKEBOX).setRecord(world, blockPos, blockState, itemStack);
 				world.playLevelEvent(null, 1010, blockPos, Item.getRawId(this));
 				itemStack.decrement(1);
 				PlayerEntity playerEntity = itemUsageContext.getPlayer();
 				if (playerEntity != null) {
-					playerEntity.incrementStat(Stats.field_15375);
+					playerEntity.incrementStat(Stats.PLAY_RECORD);
 				}
 			}
 
-			return ActionResult.field_5812;
+			return ActionResult.SUCCESS;
 		} else {
-			return ActionResult.field_5811;
+			return ActionResult.PASS;
 		}
 	}
 
@@ -62,7 +62,7 @@ public class MusicDiscItem extends Item {
 	@Environment(EnvType.CLIENT)
 	@Override
 	public void appendTooltip(ItemStack itemStack, @Nullable World world, List<Text> list, TooltipContext tooltipContext) {
-		list.add(this.getDescription().formatted(Formatting.field_1080));
+		list.add(this.getDescription().formatted(Formatting.GRAY));
 	}
 
 	@Environment(EnvType.CLIENT)

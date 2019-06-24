@@ -42,9 +42,9 @@ import net.minecraft.util.math.Vec2f;
 public class ChatScreen extends Screen {
 	private static final Pattern WHITESPACE_PATTERN = Pattern.compile("(\\s+)");
 	private String field_2389 = "";
-	private int field_2387 = -1;
+	private int messageHistorySize = -1;
 	protected TextFieldWidget chatField;
-	private String field_18973 = "";
+	private String originalChatText = "";
 	protected final List<String> commandExceptions = Lists.<String>newArrayList();
 	protected int commandExceptionsX;
 	protected int commandExceptionsWidth;
@@ -56,17 +56,17 @@ public class ChatScreen extends Screen {
 
 	public ChatScreen(String string) {
 		super(NarratorManager.EMPTY);
-		this.field_18973 = string;
+		this.originalChatText = string;
 	}
 
 	@Override
 	protected void init() {
 		this.minecraft.keyboard.enableRepeatEvents(true);
-		this.field_2387 = this.minecraft.inGameHud.getChatHud().getMessageHistory().size();
+		this.messageHistorySize = this.minecraft.inGameHud.getChatHud().getMessageHistory().size();
 		this.chatField = new TextFieldWidget(this.font, 4, this.height - 12, this.width - 4, 12, I18n.translate("chat.editBox"));
 		this.chatField.setMaxLength(256);
 		this.chatField.setHasBorder(false);
-		this.chatField.setText(this.field_18973);
+		this.chatField.setText(this.originalChatText);
 		this.chatField.setRenderTextProvider(this::getRenderText);
 		this.chatField.setChangedListener(this::onChatFieldChanged);
 		this.children.add(this.chatField);
@@ -95,7 +95,7 @@ public class ChatScreen extends Screen {
 
 	private void onChatFieldChanged(String string) {
 		String string2 = this.chatField.getText();
-		this.field_2380 = !string2.equals(this.field_18973);
+		this.field_2380 = !string2.equals(this.originalChatText);
 		this.updateCommand();
 	}
 
@@ -123,16 +123,16 @@ public class ChatScreen extends Screen {
 				this.minecraft.openScreen(null);
 				return true;
 			} else if (i == 265) {
-				this.method_2114(-1);
+				this.setChatFromHistory(-1);
 				return true;
 			} else if (i == 264) {
-				this.method_2114(1);
+				this.setChatFromHistory(1);
 				return true;
 			} else if (i == 266) {
-				this.minecraft.inGameHud.getChatHud().method_1802((double)(this.minecraft.inGameHud.getChatHud().getVisibleLineCount() - 1));
+				this.minecraft.inGameHud.getChatHud().scroll((double)(this.minecraft.inGameHud.getChatHud().getVisibleLineCount() - 1));
 				return true;
 			} else if (i == 267) {
-				this.minecraft.inGameHud.getChatHud().method_1802((double)(-this.minecraft.inGameHud.getChatHud().getVisibleLineCount() + 1));
+				this.minecraft.inGameHud.getChatHud().scroll((double)(-this.minecraft.inGameHud.getChatHud().getVisibleLineCount() + 1));
 				return true;
 			} else {
 				return false;
@@ -229,7 +229,7 @@ public class ChatScreen extends Screen {
 		this.commandExceptionsX = 0;
 		this.commandExceptionsWidth = this.width;
 		if (this.commandExceptions.isEmpty()) {
-			this.method_2107(Formatting.field_1080);
+			this.method_2107(Formatting.GRAY);
 		}
 
 		this.suggestionsWindow = null;
@@ -243,10 +243,8 @@ public class ChatScreen extends Screen {
 	}
 
 	public static String getRenderText(ParseResults<CommandSource> parseResults, String string, int i) {
-		Formatting[] formattings = new Formatting[]{
-			Formatting.field_1075, Formatting.field_1054, Formatting.field_1060, Formatting.field_1076, Formatting.field_1065
-		};
-		String string2 = Formatting.field_1080.toString();
+		Formatting[] formattings = new Formatting[]{Formatting.AQUA, Formatting.YELLOW, Formatting.GREEN, Formatting.LIGHT_PURPLE, Formatting.GOLD};
+		String string2 = Formatting.GRAY.toString();
 		StringBuilder stringBuilder = new StringBuilder(string2);
 		int j = 0;
 		int k = -1;
@@ -277,7 +275,7 @@ public class ChatScreen extends Screen {
 			if (n < string.length()) {
 				int o = Math.min(n + parseResults.getReader().getRemainingLength(), string.length());
 				stringBuilder.append(string, j, n);
-				stringBuilder.append(Formatting.field_1061);
+				stringBuilder.append(Formatting.RED);
 				stringBuilder.append(string, n, o);
 				j = o;
 			}
@@ -304,7 +302,7 @@ public class ChatScreen extends Screen {
 				f *= 7.0;
 			}
 
-			this.minecraft.inGameHud.getChatHud().method_1802(f);
+			this.minecraft.inGameHud.getChatHud().scroll(f);
 			return true;
 		}
 	}
@@ -334,22 +332,22 @@ public class ChatScreen extends Screen {
 		}
 	}
 
-	public void method_2114(int i) {
-		int j = this.field_2387 + i;
+	public void setChatFromHistory(int i) {
+		int j = this.messageHistorySize + i;
 		int k = this.minecraft.inGameHud.getChatHud().getMessageHistory().size();
 		j = MathHelper.clamp(j, 0, k);
-		if (j != this.field_2387) {
+		if (j != this.messageHistorySize) {
 			if (j == k) {
-				this.field_2387 = k;
+				this.messageHistorySize = k;
 				this.chatField.setText(this.field_2389);
 			} else {
-				if (this.field_2387 == k) {
+				if (this.messageHistorySize == k) {
 					this.field_2389 = this.chatField.getText();
 				}
 
 				this.chatField.setText((String)this.minecraft.inGameHud.getChatHud().getMessageHistory().get(j));
 				this.suggestionsWindow = null;
-				this.field_2387 = j;
+				this.messageHistorySize = j;
 				this.field_2380 = false;
 			}
 		}

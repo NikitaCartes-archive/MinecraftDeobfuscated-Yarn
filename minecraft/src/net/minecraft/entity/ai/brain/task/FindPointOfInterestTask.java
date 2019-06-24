@@ -28,7 +28,7 @@ public class FindPointOfInterestTask extends Task<LivingEntity> {
 	private int field_19290;
 
 	public FindPointOfInterestTask(PointOfInterestType pointOfInterestType, MemoryModuleType<GlobalPos> memoryModuleType, boolean bl) {
-		super(ImmutableMap.of(memoryModuleType, MemoryModuleState.field_18457));
+		super(ImmutableMap.of(memoryModuleType, MemoryModuleState.VALUE_ABSENT));
 		this.poiType = pointOfInterestType;
 		this.targetMemoryModule = memoryModuleType;
 		this.onlyRunIfChild = bl;
@@ -53,10 +53,10 @@ public class FindPointOfInterestTask extends Task<LivingEntity> {
 				return false;
 			} else {
 				BlockPos blockPos2;
-				if (this.poiType == PointOfInterestType.field_18518) {
+				if (this.poiType == PointOfInterestType.MEETING) {
 					BlockPos.Mutable mutable = new BlockPos.Mutable(blockPosx);
 					this.method_20496(serverWorld, mutable);
-					mutable.setOffset(Direction.field_11036);
+					mutable.setOffset(Direction.UP);
 					blockPos2 = mutable;
 				} else {
 					blockPos2 = blockPosx;
@@ -87,7 +87,7 @@ public class FindPointOfInterestTask extends Task<LivingEntity> {
 
 	private void method_20496(ServerWorld serverWorld, BlockPos.Mutable mutable) {
 		do {
-			mutable.setOffset(Direction.field_11033);
+			mutable.setOffset(Direction.DOWN);
 		} while (serverWorld.getBlockState(mutable).getCollisionShape(serverWorld, mutable).isEmpty() && mutable.getY() > 0);
 	}
 }

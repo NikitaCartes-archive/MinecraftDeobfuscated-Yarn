@@ -18,19 +18,19 @@ public class LevelLoadingScreen extends Screen {
 	private long field_19101 = -1L;
 	private static final Object2IntMap<ChunkStatus> STATUS_TO_COLOR = SystemUtil.consume(new Object2IntOpenHashMap<>(), object2IntOpenHashMap -> {
 		object2IntOpenHashMap.defaultReturnValue(0);
-		object2IntOpenHashMap.put(ChunkStatus.field_12798, 5526612);
-		object2IntOpenHashMap.put(ChunkStatus.field_16423, 10066329);
-		object2IntOpenHashMap.put(ChunkStatus.field_16422, 6250897);
-		object2IntOpenHashMap.put(ChunkStatus.field_12794, 8434258);
-		object2IntOpenHashMap.put(ChunkStatus.field_12804, 13750737);
-		object2IntOpenHashMap.put(ChunkStatus.field_12796, 7497737);
-		object2IntOpenHashMap.put(ChunkStatus.field_12801, 7169628);
-		object2IntOpenHashMap.put(ChunkStatus.field_12790, 3159410);
-		object2IntOpenHashMap.put(ChunkStatus.field_12795, 2213376);
-		object2IntOpenHashMap.put(ChunkStatus.field_12805, 13421772);
-		object2IntOpenHashMap.put(ChunkStatus.field_12786, 15884384);
-		object2IntOpenHashMap.put(ChunkStatus.field_12800, 15658734);
-		object2IntOpenHashMap.put(ChunkStatus.field_12803, 16777215);
+		object2IntOpenHashMap.put(ChunkStatus.EMPTY, 5526612);
+		object2IntOpenHashMap.put(ChunkStatus.STRUCTURE_STARTS, 10066329);
+		object2IntOpenHashMap.put(ChunkStatus.STRUCTURE_REFERENCES, 6250897);
+		object2IntOpenHashMap.put(ChunkStatus.BIOMES, 8434258);
+		object2IntOpenHashMap.put(ChunkStatus.NOISE, 13750737);
+		object2IntOpenHashMap.put(ChunkStatus.SURFACE, 7497737);
+		object2IntOpenHashMap.put(ChunkStatus.CARVERS, 7169628);
+		object2IntOpenHashMap.put(ChunkStatus.LIQUID_CARVERS, 3159410);
+		object2IntOpenHashMap.put(ChunkStatus.FEATURES, 2213376);
+		object2IntOpenHashMap.put(ChunkStatus.LIGHT, 13421772);
+		object2IntOpenHashMap.put(ChunkStatus.SPAWN, 15884384);
+		object2IntOpenHashMap.put(ChunkStatus.HEIGHTMAPS, 15658734);
+		object2IntOpenHashMap.put(ChunkStatus.FULL, 16777215);
 	});
 
 	public LevelLoadingScreen(WorldGenerationProgressTracker worldGenerationProgressTracker) {

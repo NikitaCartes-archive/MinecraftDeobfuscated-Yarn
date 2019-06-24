@@ -52,7 +52,7 @@ public class Explosion {
 
 	@Environment(EnvType.CLIENT)
 	public Explosion(World world, @Nullable Entity entity, double d, double e, double f, float g, List<BlockPos> list) {
-		this(world, entity, d, e, f, g, false, Explosion.DestructionType.field_18687, list);
+		this(world, entity, d, e, f, g, false, Explosion.DestructionType.DESTROY, list);
 	}
 
 	@Environment(EnvType.CLIENT)
@@ -93,10 +93,8 @@ public class Explosion {
 						double o = MathHelper.lerp((double)l, box.minY, box.maxY);
 						double p = MathHelper.lerp((double)m, box.minZ, box.maxZ);
 						Vec3d vec3d2 = new Vec3d(n + g, o, p + h);
-						if (entity.world
-								.rayTrace(new RayTraceContext(vec3d2, vec3d, RayTraceContext.ShapeType.field_17559, RayTraceContext.FluidHandling.field_1348, entity))
-								.getType()
-							== HitResult.Type.field_1333) {
+						if (entity.world.rayTrace(new RayTraceContext(vec3d2, vec3d, RayTraceContext.ShapeType.OUTLINE, RayTraceContext.FluidHandling.NONE, entity)).getType()
+							== HitResult.Type.MISS) {
 							i++;
 						}
 
@@ -209,16 +207,16 @@ public class Explosion {
 				this.x,
 				this.y,
 				this.z,
-				SoundEvents.field_15152,
-				SoundCategory.field_15245,
+				SoundEvents.ENTITY_GENERIC_EXPLODE,
+				SoundCategory.BLOCKS,
 				4.0F,
 				(1.0F + (this.world.random.nextFloat() - this.world.random.nextFloat()) * 0.2F) * 0.7F
 			);
-		boolean bl2 = this.blockDestructionType != Explosion.DestructionType.field_18685;
+		boolean bl2 = this.blockDestructionType != Explosion.DestructionType.NONE;
 		if (!(this.power < 2.0F) && bl2) {
-			this.world.addParticle(ParticleTypes.field_11221, this.x, this.y, this.z, 1.0, 0.0, 0.0);
+			this.world.addParticle(ParticleTypes.EXPLOSION_EMITTER, this.x, this.y, this.z, 1.0, 0.0, 0.0);
 		} else {
-			this.world.addParticle(ParticleTypes.field_11236, this.x, this.y, this.z, 1.0, 0.0, 0.0);
+			this.world.addParticle(ParticleTypes.EXPLOSION, this.x, this.y, this.z, 1.0, 0.0, 0.0);
 		}
 
 		if (bl2) {
@@ -241,8 +239,8 @@ public class Explosion {
 					g *= k;
 					h *= k;
 					i *= k;
-					this.world.addParticle(ParticleTypes.field_11203, (d + this.x) / 2.0, (e + this.y) / 2.0, (f + this.z) / 2.0, g, h, i);
-					this.world.addParticle(ParticleTypes.field_11251, d, e, f, g, h, i);
+					this.world.addParticle(ParticleTypes.POOF, (d + this.x) / 2.0, (e + this.y) / 2.0, (f + this.z) / 2.0, g, h, i);
+					this.world.addParticle(ParticleTypes.SMOKE, d, e, f, g, h, i);
 				}
 
 				if (!blockState.isAir()) {
@@ -250,17 +248,17 @@ public class Explosion {
 						BlockEntity blockEntity = block.hasBlockEntity() ? this.world.getBlockEntity(blockPos) : null;
 						LootContext.Builder builder = new LootContext.Builder((ServerWorld)this.world)
 							.setRandom(this.world.random)
-							.put(LootContextParameters.field_1232, blockPos)
-							.put(LootContextParameters.field_1229, ItemStack.EMPTY)
-							.putNullable(LootContextParameters.field_1228, blockEntity);
-						if (this.blockDestructionType == Explosion.DestructionType.field_18687) {
-							builder.put(LootContextParameters.field_1225, this.power);
+							.put(LootContextParameters.POSITION, blockPos)
+							.put(LootContextParameters.TOOL, ItemStack.EMPTY)
+							.putNullable(LootContextParameters.BLOCK_ENTITY, blockEntity);
+						if (this.blockDestructionType == Explosion.DestructionType.DESTROY) {
+							builder.put(LootContextParameters.EXPLOSION_RADIUS, this.power);
 						}
 
 						Block.dropStacks(blockState, builder);
 					}
 
-					this.world.setBlockState(blockPos, Blocks.field_10124.getDefaultState(), 3);
+					this.world.setBlockState(blockPos, Blocks.AIR.getDefaultState(), 3);
 					block.onDestroyedByExplosion(this.world, blockPos, this);
 				}
 			}
@@ -271,7 +269,7 @@ public class Explosion {
 				if (this.world.getBlockState(blockPos).isAir()
 					&& this.world.getBlockState(blockPos.down()).isFullOpaque(this.world, blockPos.down())
 					&& this.random.nextInt(3) == 0) {
-					this.world.setBlockState(blockPos, Blocks.field_10036.getDefaultState());
+					this.world.setBlockState(blockPos, Blocks.FIRE.getDefaultState());
 				}
 			}
 		}
@@ -309,8 +307,8 @@ public class Explosion {
 	}
 
 	public static enum DestructionType {
-		field_18685,
-		field_18686,
-		field_18687;
+		NONE,
+		BREAK,
+		DESTROY;
 	}
 }

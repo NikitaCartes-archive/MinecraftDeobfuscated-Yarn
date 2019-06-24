@@ -18,12 +18,12 @@ import net.minecraft.entity.Entity;
 import net.minecraft.util.StringIdentifiable;
 
 public enum Direction implements StringIdentifiable {
-	field_11033(0, 1, -1, "down", Direction.AxisDirection.NEGATIVE, Direction.Axis.Y, new Vec3i(0, -1, 0)),
-	field_11036(1, 0, -1, "up", Direction.AxisDirection.POSITIVE, Direction.Axis.Y, new Vec3i(0, 1, 0)),
-	field_11043(2, 3, 2, "north", Direction.AxisDirection.NEGATIVE, Direction.Axis.Z, new Vec3i(0, 0, -1)),
-	field_11035(3, 2, 0, "south", Direction.AxisDirection.POSITIVE, Direction.Axis.Z, new Vec3i(0, 0, 1)),
-	field_11039(4, 5, 1, "west", Direction.AxisDirection.NEGATIVE, Direction.Axis.X, new Vec3i(-1, 0, 0)),
-	field_11034(5, 4, 3, "east", Direction.AxisDirection.POSITIVE, Direction.Axis.X, new Vec3i(1, 0, 0));
+	DOWN(0, 1, -1, "down", Direction.AxisDirection.NEGATIVE, Direction.Axis.Y, new Vec3i(0, -1, 0)),
+	UP(1, 0, -1, "up", Direction.AxisDirection.POSITIVE, Direction.Axis.Y, new Vec3i(0, 1, 0)),
+	NORTH(2, 3, 2, "north", Direction.AxisDirection.NEGATIVE, Direction.Axis.Z, new Vec3i(0, 0, -1)),
+	SOUTH(3, 2, 0, "south", Direction.AxisDirection.POSITIVE, Direction.Axis.Z, new Vec3i(0, 0, 1)),
+	WEST(4, 5, 1, "west", Direction.AxisDirection.NEGATIVE, Direction.Axis.X, new Vec3i(-1, 0, 0)),
+	EAST(5, 4, 3, "east", Direction.AxisDirection.POSITIVE, Direction.Axis.X, new Vec3i(1, 0, 0));
 
 	private final int id;
 	private final int idOpposite;
@@ -72,9 +72,9 @@ public enum Direction implements StringIdentifiable {
 		float n = bl3 ? k : -k;
 		float o = l * i;
 		float p = n * i;
-		Direction direction = bl ? field_11034 : field_11039;
-		Direction direction2 = bl2 ? field_11036 : field_11033;
-		Direction direction3 = bl3 ? field_11035 : field_11043;
+		Direction direction = bl ? EAST : WEST;
+		Direction direction2 = bl2 ? UP : DOWN;
+		Direction direction3 = bl3 ? SOUTH : NORTH;
 		if (l > n) {
 			if (m > o) {
 				return method_10145(direction2, direction, direction3);
@@ -112,19 +112,19 @@ public enum Direction implements StringIdentifiable {
 	public Direction rotateClockwise(Direction.Axis axis) {
 		switch (axis) {
 			case X:
-				if (this != field_11039 && this != field_11034) {
+				if (this != WEST && this != EAST) {
 					return this.rotateXClockwise();
 				}
 
 				return this;
 			case Y:
-				if (this != field_11036 && this != field_11033) {
+				if (this != UP && this != DOWN) {
 					return this.rotateYClockwise();
 				}
 
 				return this;
 			case Z:
-				if (this != field_11043 && this != field_11035) {
+				if (this != NORTH && this != SOUTH) {
 					return this.rotateZClockwise();
 				}
 
@@ -136,14 +136,14 @@ public enum Direction implements StringIdentifiable {
 
 	public Direction rotateYClockwise() {
 		switch (this) {
-			case field_11043:
-				return field_11034;
-			case field_11034:
-				return field_11035;
-			case field_11035:
-				return field_11039;
-			case field_11039:
-				return field_11043;
+			case NORTH:
+				return EAST;
+			case EAST:
+				return SOUTH;
+			case SOUTH:
+				return WEST;
+			case WEST:
+				return NORTH;
 			default:
 				throw new IllegalStateException("Unable to get Y-rotated facing of " + this);
 		}
@@ -152,48 +152,48 @@ public enum Direction implements StringIdentifiable {
 	@Environment(EnvType.CLIENT)
 	private Direction rotateXClockwise() {
 		switch (this) {
-			case field_11043:
-				return field_11033;
-			case field_11034:
-			case field_11039:
+			case NORTH:
+				return DOWN;
+			case EAST:
+			case WEST:
 			default:
 				throw new IllegalStateException("Unable to get X-rotated facing of " + this);
-			case field_11035:
-				return field_11036;
-			case field_11036:
-				return field_11043;
-			case field_11033:
-				return field_11035;
+			case SOUTH:
+				return UP;
+			case UP:
+				return NORTH;
+			case DOWN:
+				return SOUTH;
 		}
 	}
 
 	@Environment(EnvType.CLIENT)
 	private Direction rotateZClockwise() {
 		switch (this) {
-			case field_11034:
-				return field_11033;
-			case field_11035:
+			case EAST:
+				return DOWN;
+			case SOUTH:
 			default:
 				throw new IllegalStateException("Unable to get Z-rotated facing of " + this);
-			case field_11039:
-				return field_11036;
-			case field_11036:
-				return field_11034;
-			case field_11033:
-				return field_11039;
+			case WEST:
+				return UP;
+			case UP:
+				return EAST;
+			case DOWN:
+				return WEST;
 		}
 	}
 
 	public Direction rotateYCounterclockwise() {
 		switch (this) {
-			case field_11043:
-				return field_11039;
-			case field_11034:
-				return field_11043;
-			case field_11035:
-				return field_11034;
-			case field_11039:
-				return field_11035;
+			case NORTH:
+				return WEST;
+			case EAST:
+				return NORTH;
+			case SOUTH:
+				return EAST;
+			case WEST:
+				return SOUTH;
 			default:
 				throw new IllegalStateException("Unable to get CCW facing of " + this);
 		}
@@ -245,12 +245,12 @@ public enum Direction implements StringIdentifiable {
 	public static Direction from(Direction.Axis axis, Direction.AxisDirection axisDirection) {
 		switch (axis) {
 			case X:
-				return axisDirection == Direction.AxisDirection.POSITIVE ? field_11034 : field_11039;
+				return axisDirection == Direction.AxisDirection.POSITIVE ? EAST : WEST;
 			case Y:
-				return axisDirection == Direction.AxisDirection.POSITIVE ? field_11036 : field_11033;
+				return axisDirection == Direction.AxisDirection.POSITIVE ? UP : DOWN;
 			case Z:
 			default:
-				return axisDirection == Direction.AxisDirection.POSITIVE ? field_11035 : field_11043;
+				return axisDirection == Direction.AxisDirection.POSITIVE ? SOUTH : NORTH;
 		}
 	}
 
@@ -267,7 +267,7 @@ public enum Direction implements StringIdentifiable {
 	}
 
 	public static Direction getFacing(float f, float g, float h) {
-		Direction direction = field_11043;
+		Direction direction = NORTH;
 		float i = Float.MIN_VALUE;
 
 		for (Direction direction2 : ALL) {
@@ -381,9 +381,9 @@ public enum Direction implements StringIdentifiable {
 			switch (this) {
 				case X:
 				case Z:
-					return Direction.Type.field_11062;
+					return Direction.Type.HORIZONTAL;
 				case Y:
-					return Direction.Type.field_11064;
+					return Direction.Type.VERTICAL;
 				default:
 					throw new Error("Someone's been tampering with the universe!");
 			}
@@ -421,11 +421,8 @@ public enum Direction implements StringIdentifiable {
 	}
 
 	public static enum Type implements Iterable<Direction>, Predicate<Direction> {
-		field_11062(
-			new Direction[]{Direction.field_11043, Direction.field_11034, Direction.field_11035, Direction.field_11039},
-			new Direction.Axis[]{Direction.Axis.X, Direction.Axis.Z}
-		),
-		field_11064(new Direction[]{Direction.field_11036, Direction.field_11033}, new Direction.Axis[]{Direction.Axis.Y});
+		HORIZONTAL(new Direction[]{Direction.NORTH, Direction.EAST, Direction.SOUTH, Direction.WEST}, new Direction.Axis[]{Direction.Axis.X, Direction.Axis.Z}),
+		VERTICAL(new Direction[]{Direction.UP, Direction.DOWN}, new Direction.Axis[]{Direction.Axis.Y});
 
 		private final Direction[] facingArray;
 		private final Direction.Axis[] axisArray;

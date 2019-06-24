@@ -15,12 +15,12 @@ import net.minecraft.world.loot.LootTables;
 public class BuriedTreasureGenerator {
 	public static class Piece extends StructurePiece {
 		public Piece(BlockPos blockPos) {
-			super(StructurePieceType.BURIED_TREASURE, 0);
+			super(StructurePieceType.BTP, 0);
 			this.boundingBox = new MutableIntBoundingBox(blockPos.getX(), blockPos.getY(), blockPos.getZ(), blockPos.getX(), blockPos.getY(), blockPos.getZ());
 		}
 
 		public Piece(StructureManager structureManager, CompoundTag compoundTag) {
-			super(StructurePieceType.BURIED_TREASURE, compoundTag);
+			super(StructurePieceType.BTP, compoundTag);
 		}
 
 		@Override
@@ -29,18 +29,18 @@ public class BuriedTreasureGenerator {
 
 		@Override
 		public boolean generate(IWorld iWorld, Random random, MutableIntBoundingBox mutableIntBoundingBox, ChunkPos chunkPos) {
-			int i = iWorld.getTop(Heightmap.Type.field_13195, this.boundingBox.minX, this.boundingBox.minZ);
+			int i = iWorld.getTop(Heightmap.Type.OCEAN_FLOOR_WG, this.boundingBox.minX, this.boundingBox.minZ);
 			BlockPos.Mutable mutable = new BlockPos.Mutable(this.boundingBox.minX, i, this.boundingBox.minZ);
 
 			while (mutable.getY() > 0) {
 				BlockState blockState = iWorld.getBlockState(mutable);
 				BlockState blockState2 = iWorld.getBlockState(mutable.down());
-				if (blockState2 == Blocks.field_9979.getDefaultState()
-					|| blockState2 == Blocks.field_10340.getDefaultState()
-					|| blockState2 == Blocks.field_10115.getDefaultState()
-					|| blockState2 == Blocks.field_10474.getDefaultState()
-					|| blockState2 == Blocks.field_10508.getDefaultState()) {
-					BlockState blockState3 = !blockState.isAir() && !this.isLiquid(blockState) ? blockState : Blocks.field_10102.getDefaultState();
+				if (blockState2 == Blocks.SANDSTONE.getDefaultState()
+					|| blockState2 == Blocks.STONE.getDefaultState()
+					|| blockState2 == Blocks.ANDESITE.getDefaultState()
+					|| blockState2 == Blocks.GRANITE.getDefaultState()
+					|| blockState2 == Blocks.DIORITE.getDefaultState()) {
+					BlockState blockState3 = !blockState.isAir() && !this.isLiquid(blockState) ? blockState : Blocks.SAND.getDefaultState();
 
 					for (Direction direction : Direction.values()) {
 						BlockPos blockPos = mutable.offset(direction);
@@ -48,7 +48,7 @@ public class BuriedTreasureGenerator {
 						if (blockState4.isAir() || this.isLiquid(blockState4)) {
 							BlockPos blockPos2 = blockPos.down();
 							BlockState blockState5 = iWorld.getBlockState(blockPos2);
-							if ((blockState5.isAir() || this.isLiquid(blockState5)) && direction != Direction.field_11036) {
+							if ((blockState5.isAir() || this.isLiquid(blockState5)) && direction != Direction.UP) {
 								iWorld.setBlockState(blockPos, blockState2, 3);
 							} else {
 								iWorld.setBlockState(blockPos, blockState3, 3);
@@ -57,7 +57,7 @@ public class BuriedTreasureGenerator {
 					}
 
 					this.boundingBox = new MutableIntBoundingBox(mutable.getX(), mutable.getY(), mutable.getZ(), mutable.getX(), mutable.getY(), mutable.getZ());
-					return this.addChest(iWorld, mutableIntBoundingBox, random, mutable, LootTables.field_251, null);
+					return this.addChest(iWorld, mutableIntBoundingBox, random, mutable, LootTables.BURIED_TREASURE_CHEST, null);
 				}
 
 				mutable.setOffset(0, -1, 0);
@@ -67,7 +67,7 @@ public class BuriedTreasureGenerator {
 		}
 
 		private boolean isLiquid(BlockState blockState) {
-			return blockState == Blocks.field_10382.getDefaultState() || blockState == Blocks.field_10164.getDefaultState();
+			return blockState == Blocks.WATER.getDefaultState() || blockState == Blocks.LAVA.getDefaultState();
 		}
 	}
 }

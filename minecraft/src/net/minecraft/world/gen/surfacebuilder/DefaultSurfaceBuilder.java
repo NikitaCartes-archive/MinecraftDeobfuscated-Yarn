@@ -76,7 +76,7 @@ public class DefaultSurfaceBuilder extends SurfaceBuilder<TernarySurfaceConfig> 
 			} else if (blockState8.getBlock() == blockState.getBlock()) {
 				if (m == -1) {
 					if (n <= 0) {
-						blockState6 = Blocks.field_10124.getDefaultState();
+						blockState6 = Blocks.AIR.getDefaultState();
 						blockState7 = blockState;
 					} else if (q >= l - 4 && q <= l + 1) {
 						blockState6 = blockState3;
@@ -85,7 +85,7 @@ public class DefaultSurfaceBuilder extends SurfaceBuilder<TernarySurfaceConfig> 
 
 					if (q < l && (blockState6 == null || blockState6.isAir())) {
 						if (biome.getTemperature(mutable.set(i, q, j)) < 0.15F) {
-							blockState6 = Blocks.field_10295.getDefaultState();
+							blockState6 = Blocks.ICE.getDefaultState();
 						} else {
 							blockState6 = blockState2;
 						}
@@ -97,7 +97,7 @@ public class DefaultSurfaceBuilder extends SurfaceBuilder<TernarySurfaceConfig> 
 					if (q >= l - 1) {
 						chunk.setBlockState(mutable, blockState6, false);
 					} else if (q < l - 7 - n) {
-						blockState6 = Blocks.field_10124.getDefaultState();
+						blockState6 = Blocks.AIR.getDefaultState();
 						blockState7 = blockState;
 						chunk.setBlockState(mutable, blockState5, false);
 					} else {
@@ -106,9 +106,9 @@ public class DefaultSurfaceBuilder extends SurfaceBuilder<TernarySurfaceConfig> 
 				} else if (m > 0) {
 					m--;
 					chunk.setBlockState(mutable, blockState7, false);
-					if (m == 0 && blockState7.getBlock() == Blocks.field_10102 && n > 1) {
+					if (m == 0 && blockState7.getBlock() == Blocks.SAND && n > 1) {
 						m = random.nextInt(4) + Math.max(0, q - 63);
-						blockState7 = blockState7.getBlock() == Blocks.field_10534 ? Blocks.field_10344.getDefaultState() : Blocks.field_9979.getDefaultState();
+						blockState7 = blockState7.getBlock() == Blocks.RED_SAND ? Blocks.RED_SANDSTONE.getDefaultState() : Blocks.SANDSTONE.getDefaultState();
 					}
 				}
 			}

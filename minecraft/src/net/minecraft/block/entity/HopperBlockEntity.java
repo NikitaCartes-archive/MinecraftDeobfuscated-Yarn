@@ -33,18 +33,18 @@ import net.minecraft.util.shape.VoxelShapes;
 import net.minecraft.world.World;
 
 public class HopperBlockEntity extends LootableContainerBlockEntity implements Hopper, Tickable {
-	private DefaultedList<ItemStack> inventory = DefaultedList.create(5, ItemStack.EMPTY);
+	private DefaultedList<ItemStack> inventory = DefaultedList.ofSize(5, ItemStack.EMPTY);
 	private int transferCooldown = -1;
 	private long lastTickTime;
 
 	public HopperBlockEntity() {
-		super(BlockEntityType.field_11888);
+		super(BlockEntityType.HOPPER);
 	}
 
 	@Override
 	public void fromTag(CompoundTag compoundTag) {
 		super.fromTag(compoundTag);
-		this.inventory = DefaultedList.create(this.getInvSize(), ItemStack.EMPTY);
+		this.inventory = DefaultedList.ofSize(this.getInvSize(), ItemStack.EMPTY);
 		if (!this.deserializeLootTable(compoundTag)) {
 			Inventories.fromTag(compoundTag, this.inventory);
 		}
@@ -197,7 +197,7 @@ public class HopperBlockEntity extends LootableContainerBlockEntity implements H
 	public static boolean extract(Hopper hopper) {
 		Inventory inventory = getInputInventory(hopper);
 		if (inventory != null) {
-			Direction direction = Direction.field_11033;
+			Direction direction = Direction.DOWN;
 			return isInventoryEmpty(inventory, direction) ? false : getAvailableSlots(inventory, direction).anyMatch(i -> extract(hopper, inventory, i, direction));
 		} else {
 			for (ItemEntity itemEntity : getInputItemEntities(hopper)) {

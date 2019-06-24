@@ -36,7 +36,7 @@ public class LevelProperties {
 	private String versionName;
 	private int versionId;
 	private boolean versionSnapshot;
-	public static final Difficulty DEFAULT_DIFFICULTY = Difficulty.field_5802;
+	public static final Difficulty DEFAULT_DIFFICULTY = Difficulty.NORMAL;
 	private long randomSeed;
 	private LevelGeneratorType generatorType = LevelGeneratorType.DEFAULT;
 	private CompoundTag generatorOptions = new CompoundTag();
@@ -162,7 +162,7 @@ public class LevelProperties {
 		if (compoundTag.containsKey("allowCommands", 99)) {
 			this.commandsAllowed = compoundTag.getBoolean("allowCommands");
 		} else {
-			this.commandsAllowed = this.gameMode == GameMode.field_9220;
+			this.commandsAllowed = this.gameMode == GameMode.CREATIVE;
 		}
 
 		this.playerWorldId = i;
@@ -414,7 +414,7 @@ public class LevelProperties {
 					throw new NullPointerException("Fixer Upper not set inside LevelData, and the player tag is not upgraded.");
 				}
 
-				this.playerData = TagHelper.update(this.dataFixer, DataFixTypes.field_19213, this.playerData, this.playerWorldId);
+				this.playerData = TagHelper.update(this.dataFixer, DataFixTypes.PLAYER, this.playerData, this.playerWorldId);
 			}
 
 			this.playerDataLoaded = true;

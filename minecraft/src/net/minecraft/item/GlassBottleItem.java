@@ -35,35 +35,33 @@ public class GlassBottleItem extends Item {
 		if (!list.isEmpty()) {
 			AreaEffectCloudEntity areaEffectCloudEntity = (AreaEffectCloudEntity)list.get(0);
 			areaEffectCloudEntity.setRadius(areaEffectCloudEntity.getRadius() - 0.5F);
-			world.playSound(null, playerEntity.x, playerEntity.y, playerEntity.z, SoundEvents.field_15029, SoundCategory.field_15254, 1.0F, 1.0F);
-			return new TypedActionResult<>(ActionResult.field_5812, this.fill(itemStack, playerEntity, new ItemStack(Items.field_8613)));
+			world.playSound(null, playerEntity.x, playerEntity.y, playerEntity.z, SoundEvents.ITEM_BOTTLE_FILL_DRAGONBREATH, SoundCategory.NEUTRAL, 1.0F, 1.0F);
+			return new TypedActionResult<>(ActionResult.SUCCESS, this.fill(itemStack, playerEntity, new ItemStack(Items.DRAGON_BREATH)));
 		} else {
-			HitResult hitResult = rayTrace(world, playerEntity, RayTraceContext.FluidHandling.field_1345);
-			if (hitResult.getType() == HitResult.Type.field_1333) {
-				return new TypedActionResult<>(ActionResult.field_5811, itemStack);
+			HitResult hitResult = rayTrace(world, playerEntity, RayTraceContext.FluidHandling.SOURCE_ONLY);
+			if (hitResult.getType() == HitResult.Type.MISS) {
+				return new TypedActionResult<>(ActionResult.PASS, itemStack);
 			} else {
-				if (hitResult.getType() == HitResult.Type.field_1332) {
+				if (hitResult.getType() == HitResult.Type.BLOCK) {
 					BlockPos blockPos = ((BlockHitResult)hitResult).getBlockPos();
 					if (!world.canPlayerModifyAt(playerEntity, blockPos)) {
-						return new TypedActionResult<>(ActionResult.field_5811, itemStack);
+						return new TypedActionResult<>(ActionResult.PASS, itemStack);
 					}
 
-					if (world.getFluidState(blockPos).matches(FluidTags.field_15517)) {
-						world.playSound(playerEntity, playerEntity.x, playerEntity.y, playerEntity.z, SoundEvents.field_14779, SoundCategory.field_15254, 1.0F, 1.0F);
-						return new TypedActionResult<>(
-							ActionResult.field_5812, this.fill(itemStack, playerEntity, PotionUtil.setPotion(new ItemStack(Items.field_8574), Potions.field_8991))
-						);
+					if (world.getFluidState(blockPos).matches(FluidTags.WATER)) {
+						world.playSound(playerEntity, playerEntity.x, playerEntity.y, playerEntity.z, SoundEvents.ITEM_BOTTLE_FILL, SoundCategory.NEUTRAL, 1.0F, 1.0F);
+						return new TypedActionResult<>(ActionResult.SUCCESS, this.fill(itemStack, playerEntity, PotionUtil.setPotion(new ItemStack(Items.POTION), Potions.WATER)));
 					}
 				}
 
-				return new TypedActionResult<>(ActionResult.field_5811, itemStack);
+				return new TypedActionResult<>(ActionResult.PASS, itemStack);
 			}
 		}
 	}
 
 	protected ItemStack fill(ItemStack itemStack, PlayerEntity playerEntity, ItemStack itemStack2) {
 		itemStack.decrement(1);
-		playerEntity.incrementStat(Stats.field_15372.getOrCreateStat(this));
+		playerEntity.incrementStat(Stats.USED.getOrCreateStat(this));
 		if (itemStack.isEmpty()) {
 			return itemStack2;
 		} else {

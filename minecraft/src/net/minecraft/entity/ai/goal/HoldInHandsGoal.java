@@ -33,13 +33,13 @@ public class HoldInHandsGoal<T extends MobEntity> extends Goal {
 
 	@Override
 	public void start() {
-		this.actor.setEquippedStack(EquipmentSlot.field_6173, this.item.copy());
-		this.actor.setCurrentHand(Hand.field_5808);
+		this.actor.setEquippedStack(EquipmentSlot.MAINHAND, this.item.copy());
+		this.actor.setCurrentHand(Hand.MAIN_HAND);
 	}
 
 	@Override
 	public void stop() {
-		this.actor.setEquippedStack(EquipmentSlot.field_6173, ItemStack.EMPTY);
+		this.actor.setEquippedStack(EquipmentSlot.MAINHAND, ItemStack.EMPTY);
 		if (this.sound != null) {
 			this.actor.playSound(this.sound, 1.0F, this.actor.getRand().nextFloat() * 0.2F + 0.9F);
 		}

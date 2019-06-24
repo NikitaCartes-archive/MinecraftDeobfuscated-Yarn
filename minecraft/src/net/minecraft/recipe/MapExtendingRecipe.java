@@ -17,19 +17,19 @@ public class MapExtendingRecipe extends ShapedRecipe {
 			"",
 			3,
 			3,
-			DefaultedList.create(
+			DefaultedList.copyOf(
 				Ingredient.EMPTY,
-				Ingredient.ofItems(Items.field_8407),
-				Ingredient.ofItems(Items.field_8407),
-				Ingredient.ofItems(Items.field_8407),
-				Ingredient.ofItems(Items.field_8407),
-				Ingredient.ofItems(Items.field_8204),
-				Ingredient.ofItems(Items.field_8407),
-				Ingredient.ofItems(Items.field_8407),
-				Ingredient.ofItems(Items.field_8407),
-				Ingredient.ofItems(Items.field_8407)
+				Ingredient.ofItems(Items.PAPER),
+				Ingredient.ofItems(Items.PAPER),
+				Ingredient.ofItems(Items.PAPER),
+				Ingredient.ofItems(Items.PAPER),
+				Ingredient.ofItems(Items.FILLED_MAP),
+				Ingredient.ofItems(Items.PAPER),
+				Ingredient.ofItems(Items.PAPER),
+				Ingredient.ofItems(Items.PAPER),
+				Ingredient.ofItems(Items.PAPER)
 			),
-			new ItemStack(Items.field_8895)
+			new ItemStack(Items.MAP)
 		);
 	}
 
@@ -42,7 +42,7 @@ public class MapExtendingRecipe extends ShapedRecipe {
 
 			for (int i = 0; i < craftingInventory.getInvSize() && itemStack.isEmpty(); i++) {
 				ItemStack itemStack2 = craftingInventory.getInvStack(i);
-				if (itemStack2.getItem() == Items.field_8204) {
+				if (itemStack2.getItem() == Items.FILLED_MAP) {
 					itemStack = itemStack2;
 				}
 			}
@@ -63,7 +63,7 @@ public class MapExtendingRecipe extends ShapedRecipe {
 	private boolean matches(MapState mapState) {
 		if (mapState.icons != null) {
 			for (MapIcon mapIcon : mapState.icons.values()) {
-				if (mapIcon.getType() == MapIcon.Type.field_88 || mapIcon.getType() == MapIcon.Type.field_98) {
+				if (mapIcon.getType() == MapIcon.Type.MANSION || mapIcon.getType() == MapIcon.Type.MONUMENT) {
 					return true;
 				}
 			}
@@ -78,7 +78,7 @@ public class MapExtendingRecipe extends ShapedRecipe {
 
 		for (int i = 0; i < craftingInventory.getInvSize() && itemStack.isEmpty(); i++) {
 			ItemStack itemStack2 = craftingInventory.getInvStack(i);
-			if (itemStack2.getItem() == Items.field_8204) {
+			if (itemStack2.getItem() == Items.FILLED_MAP) {
 				itemStack = itemStack2;
 			}
 		}

@@ -36,7 +36,7 @@ public abstract class AbstractFurnaceBlockEntity extends LockableContainerBlockE
 	private static final int[] TOP_SLOTS = new int[]{0};
 	private static final int[] BOTTOM_SLOTS = new int[]{2, 1};
 	private static final int[] SIDE_SLOTS = new int[]{1};
-	protected DefaultedList<ItemStack> inventory = DefaultedList.create(3, ItemStack.EMPTY);
+	protected DefaultedList<ItemStack> inventory = DefaultedList.ofSize(3, ItemStack.EMPTY);
 	private int burnTime;
 	private int fuelTime;
 	private int cookTime;
@@ -90,66 +90,66 @@ public abstract class AbstractFurnaceBlockEntity extends LockableContainerBlockE
 
 	public static Map<Item, Integer> createFuelTimeMap() {
 		Map<Item, Integer> map = Maps.<Item, Integer>newLinkedHashMap();
-		addFuel(map, Items.field_8187, 20000);
-		addFuel(map, Blocks.field_10381, 16000);
-		addFuel(map, Items.field_8894, 2400);
-		addFuel(map, Items.field_8713, 1600);
-		addFuel(map, Items.field_8665, 1600);
-		addFuel(map, ItemTags.field_15539, 300);
-		addFuel(map, ItemTags.field_15537, 300);
-		addFuel(map, ItemTags.field_15557, 300);
-		addFuel(map, ItemTags.field_15534, 150);
-		addFuel(map, ItemTags.field_15550, 300);
-		addFuel(map, ItemTags.field_15540, 300);
-		addFuel(map, Blocks.field_10620, 300);
-		addFuel(map, Blocks.field_10299, 300);
-		addFuel(map, Blocks.field_10020, 300);
-		addFuel(map, Blocks.field_10319, 300);
-		addFuel(map, Blocks.field_10132, 300);
-		addFuel(map, Blocks.field_10144, 300);
-		addFuel(map, Blocks.field_10188, 300);
-		addFuel(map, Blocks.field_10513, 300);
-		addFuel(map, Blocks.field_10291, 300);
-		addFuel(map, Blocks.field_10041, 300);
-		addFuel(map, Blocks.field_10196, 300);
-		addFuel(map, Blocks.field_10457, 300);
-		addFuel(map, Blocks.field_10179, 300);
-		addFuel(map, Blocks.field_10504, 300);
-		addFuel(map, Blocks.field_16330, 300);
-		addFuel(map, Blocks.field_10223, 300);
-		addFuel(map, Blocks.field_10034, 300);
-		addFuel(map, Blocks.field_10380, 300);
-		addFuel(map, Blocks.field_9980, 300);
-		addFuel(map, Blocks.field_10429, 300);
-		addFuel(map, ItemTags.field_15556, 300);
-		addFuel(map, Items.field_8102, 300);
-		addFuel(map, Items.field_8378, 300);
-		addFuel(map, Blocks.field_9983, 300);
-		addFuel(map, ItemTags.field_15533, 200);
-		addFuel(map, Items.field_8876, 200);
-		addFuel(map, Items.field_8091, 200);
-		addFuel(map, Items.field_8167, 200);
-		addFuel(map, Items.field_8406, 200);
-		addFuel(map, Items.field_8647, 200);
-		addFuel(map, ItemTags.field_15552, 200);
-		addFuel(map, ItemTags.field_15536, 200);
-		addFuel(map, ItemTags.field_15544, 100);
-		addFuel(map, ItemTags.field_15555, 100);
-		addFuel(map, Items.field_8600, 100);
-		addFuel(map, ItemTags.field_15528, 100);
-		addFuel(map, Items.field_8428, 100);
-		addFuel(map, ItemTags.field_15542, 67);
-		addFuel(map, Blocks.field_10342, 4001);
-		addFuel(map, Items.field_8399, 300);
-		addFuel(map, Blocks.field_10211, 50);
-		addFuel(map, Blocks.field_10428, 100);
-		addFuel(map, Blocks.field_16492, 50);
-		addFuel(map, Blocks.field_10083, 300);
-		addFuel(map, Blocks.field_16328, 300);
-		addFuel(map, Blocks.field_16336, 300);
-		addFuel(map, Blocks.field_16331, 300);
-		addFuel(map, Blocks.field_16329, 300);
-		addFuel(map, Blocks.field_17563, 300);
+		addFuel(map, Items.LAVA_BUCKET, 20000);
+		addFuel(map, Blocks.COAL_BLOCK, 16000);
+		addFuel(map, Items.BLAZE_ROD, 2400);
+		addFuel(map, Items.COAL, 1600);
+		addFuel(map, Items.CHARCOAL, 1600);
+		addFuel(map, ItemTags.LOGS, 300);
+		addFuel(map, ItemTags.PLANKS, 300);
+		addFuel(map, ItemTags.WOODEN_STAIRS, 300);
+		addFuel(map, ItemTags.WOODEN_SLABS, 150);
+		addFuel(map, ItemTags.WOODEN_TRAPDOORS, 300);
+		addFuel(map, ItemTags.WOODEN_PRESSURE_PLATES, 300);
+		addFuel(map, Blocks.OAK_FENCE, 300);
+		addFuel(map, Blocks.BIRCH_FENCE, 300);
+		addFuel(map, Blocks.SPRUCE_FENCE, 300);
+		addFuel(map, Blocks.JUNGLE_FENCE, 300);
+		addFuel(map, Blocks.DARK_OAK_FENCE, 300);
+		addFuel(map, Blocks.ACACIA_FENCE, 300);
+		addFuel(map, Blocks.OAK_FENCE_GATE, 300);
+		addFuel(map, Blocks.BIRCH_FENCE_GATE, 300);
+		addFuel(map, Blocks.SPRUCE_FENCE_GATE, 300);
+		addFuel(map, Blocks.JUNGLE_FENCE_GATE, 300);
+		addFuel(map, Blocks.DARK_OAK_FENCE_GATE, 300);
+		addFuel(map, Blocks.ACACIA_FENCE_GATE, 300);
+		addFuel(map, Blocks.NOTE_BLOCK, 300);
+		addFuel(map, Blocks.BOOKSHELF, 300);
+		addFuel(map, Blocks.LECTERN, 300);
+		addFuel(map, Blocks.JUKEBOX, 300);
+		addFuel(map, Blocks.CHEST, 300);
+		addFuel(map, Blocks.TRAPPED_CHEST, 300);
+		addFuel(map, Blocks.CRAFTING_TABLE, 300);
+		addFuel(map, Blocks.DAYLIGHT_DETECTOR, 300);
+		addFuel(map, ItemTags.BANNERS, 300);
+		addFuel(map, Items.BOW, 300);
+		addFuel(map, Items.FISHING_ROD, 300);
+		addFuel(map, Blocks.LADDER, 300);
+		addFuel(map, ItemTags.SIGNS, 200);
+		addFuel(map, Items.WOODEN_SHOVEL, 200);
+		addFuel(map, Items.WOODEN_SWORD, 200);
+		addFuel(map, Items.WOODEN_HOE, 200);
+		addFuel(map, Items.WOODEN_AXE, 200);
+		addFuel(map, Items.WOODEN_PICKAXE, 200);
+		addFuel(map, ItemTags.WOODEN_DOORS, 200);
+		addFuel(map, ItemTags.BOATS, 200);
+		addFuel(map, ItemTags.WOOL, 100);
+		addFuel(map, ItemTags.WOODEN_BUTTONS, 100);
+		addFuel(map, Items.STICK, 100);
+		addFuel(map, ItemTags.SAPLINGS, 100);
+		addFuel(map, Items.BOWL, 100);
+		addFuel(map, ItemTags.CARPETS, 67);
+		addFuel(map, Blocks.DRIED_KELP_BLOCK, 4001);
+		addFuel(map, Items.CROSSBOW, 300);
+		addFuel(map, Blocks.BAMBOO, 50);
+		addFuel(map, Blocks.DEAD_BUSH, 100);
+		addFuel(map, Blocks.SCAFFOLDING, 50);
+		addFuel(map, Blocks.LOOM, 300);
+		addFuel(map, Blocks.BARREL, 300);
+		addFuel(map, Blocks.CARTOGRAPHY_TABLE, 300);
+		addFuel(map, Blocks.FLETCHING_TABLE, 300);
+		addFuel(map, Blocks.SMITHING_TABLE, 300);
+		addFuel(map, Blocks.COMPOSTER, 300);
 		return map;
 	}
 
@@ -170,7 +170,7 @@ public abstract class AbstractFurnaceBlockEntity extends LockableContainerBlockE
 	@Override
 	public void fromTag(CompoundTag compoundTag) {
 		super.fromTag(compoundTag);
-		this.inventory = DefaultedList.create(this.getInvSize(), ItemStack.EMPTY);
+		this.inventory = DefaultedList.ofSize(this.getInvSize(), ItemStack.EMPTY);
 		Inventories.fromTag(compoundTag, this.inventory);
 		this.burnTime = compoundTag.getShort("BurnTime");
 		this.cookTime = compoundTag.getShort("CookTime");
@@ -295,8 +295,8 @@ public abstract class AbstractFurnaceBlockEntity extends LockableContainerBlockE
 				this.setLastRecipe(recipe);
 			}
 
-			if (itemStack.getItem() == Blocks.field_10562.asItem() && !this.inventory.get(1).isEmpty() && this.inventory.get(1).getItem() == Items.field_8550) {
-				this.inventory.set(1, new ItemStack(Items.field_8705));
+			if (itemStack.getItem() == Blocks.WET_SPONGE.asItem() && !this.inventory.get(1).isEmpty() && this.inventory.get(1).getItem() == Items.BUCKET) {
+				this.inventory.set(1, new ItemStack(Items.WATER_BUCKET));
 			}
 
 			itemStack.decrement(1);
@@ -322,10 +322,10 @@ public abstract class AbstractFurnaceBlockEntity extends LockableContainerBlockE
 
 	@Override
 	public int[] getInvAvailableSlots(Direction direction) {
-		if (direction == Direction.field_11033) {
+		if (direction == Direction.DOWN) {
 			return BOTTOM_SLOTS;
 		} else {
-			return direction == Direction.field_11036 ? TOP_SLOTS : SIDE_SLOTS;
+			return direction == Direction.UP ? TOP_SLOTS : SIDE_SLOTS;
 		}
 	}
 
@@ -336,9 +336,9 @@ public abstract class AbstractFurnaceBlockEntity extends LockableContainerBlockE
 
 	@Override
 	public boolean canExtractInvStack(int i, ItemStack itemStack, Direction direction) {
-		if (direction == Direction.field_11033 && i == 1) {
+		if (direction == Direction.DOWN && i == 1) {
 			Item item = itemStack.getItem();
-			if (item != Items.field_8705 && item != Items.field_8550) {
+			if (item != Items.WATER_BUCKET && item != Items.BUCKET) {
 				return false;
 			}
 		}
@@ -408,7 +408,7 @@ public abstract class AbstractFurnaceBlockEntity extends LockableContainerBlockE
 			return true;
 		} else {
 			ItemStack itemStack2 = this.inventory.get(1);
-			return canUseAsFuel(itemStack) || itemStack.getItem() == Items.field_8550 && itemStack2.getItem() != Items.field_8550;
+			return canUseAsFuel(itemStack) || itemStack.getItem() == Items.BUCKET && itemStack2.getItem() != Items.BUCKET;
 		}
 	}
 

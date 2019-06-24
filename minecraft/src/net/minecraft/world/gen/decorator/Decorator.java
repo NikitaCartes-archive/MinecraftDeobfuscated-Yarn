@@ -14,82 +14,92 @@ import net.minecraft.world.gen.feature.ConfiguredFeature;
 import net.minecraft.world.gen.feature.FeatureConfig;
 
 public abstract class Decorator<DC extends DecoratorConfig> {
-	public static final Decorator<CountDecoratorConfig> field_14238 = register("count_heightmap", new CountHeightmapDecorator(CountDecoratorConfig::deserialize));
-	public static final Decorator<CountDecoratorConfig> field_14245 = register("count_top_solid", new CountTopSolidDecorator(CountDecoratorConfig::deserialize));
-	public static final Decorator<CountDecoratorConfig> field_14253 = register(
+	public static final Decorator<CountDecoratorConfig> COUNT_HEIGHTMAP = register(
+		"count_heightmap", new CountHeightmapDecorator(CountDecoratorConfig::deserialize)
+	);
+	public static final Decorator<CountDecoratorConfig> COUNT_TOP_SOLID = register(
+		"count_top_solid", new CountTopSolidDecorator(CountDecoratorConfig::deserialize)
+	);
+	public static final Decorator<CountDecoratorConfig> COUNT_HEIGHTMAP_32 = register(
 		"count_heightmap_32", new CountHeightmap32Decorator(CountDecoratorConfig::deserialize)
 	);
-	public static final Decorator<CountDecoratorConfig> field_14240 = register(
+	public static final Decorator<CountDecoratorConfig> COUNT_HEIGHTMAP_DOUBLE = register(
 		"count_heightmap_double", new CountHeightmapDoubleDecorator(CountDecoratorConfig::deserialize)
 	);
-	public static final Decorator<CountDecoratorConfig> field_14249 = register("count_height_64", new CountHeight64Decorator(CountDecoratorConfig::deserialize));
-	public static final Decorator<NoiseHeightmapDecoratorConfig> field_14254 = register(
+	public static final Decorator<CountDecoratorConfig> COUNT_HEIGHT_64 = register(
+		"count_height_64", new CountHeight64Decorator(CountDecoratorConfig::deserialize)
+	);
+	public static final Decorator<NoiseHeightmapDecoratorConfig> NOISE_HEIGHTMAP_32 = register(
 		"noise_heightmap_32", new NoiseHeightmap32Decorator(NoiseHeightmapDecoratorConfig::deserialize)
 	);
-	public static final Decorator<NoiseHeightmapDecoratorConfig> field_14236 = register(
+	public static final Decorator<NoiseHeightmapDecoratorConfig> NOISE_HEIGHTMAP_DOUBLE = register(
 		"noise_heightmap_double", new NoiseHeightmapDoubleDecorator(NoiseHeightmapDecoratorConfig::deserialize)
 	);
-	public static final Decorator<NopeDecoratorConfig> field_14250 = register("nope", new NopeDecorator(NopeDecoratorConfig::deserialize));
-	public static final Decorator<ChanceDecoratorConfig> field_14259 = register(
+	public static final Decorator<NopeDecoratorConfig> NOPE = register("nope", new NopeDecorator(NopeDecoratorConfig::deserialize));
+	public static final Decorator<ChanceDecoratorConfig> CHANCE_HEIGHTMAP = register(
 		"chance_heightmap", new ChanceHeightmapDecorator(ChanceDecoratorConfig::deserialize)
 	);
-	public static final Decorator<ChanceDecoratorConfig> field_14263 = register(
+	public static final Decorator<ChanceDecoratorConfig> CHANCE_HEIGHTMAP_DOUBLE = register(
 		"chance_heightmap_double", new ChanceHeightmapDoubleDecorator(ChanceDecoratorConfig::deserialize)
 	);
-	public static final Decorator<ChanceDecoratorConfig> field_14246 = register(
+	public static final Decorator<ChanceDecoratorConfig> CHANCE_PASSTHROUGH = register(
 		"chance_passthrough", new ChancePassthroughDecorator(ChanceDecoratorConfig::deserialize)
 	);
-	public static final Decorator<ChanceDecoratorConfig> field_14258 = register(
+	public static final Decorator<ChanceDecoratorConfig> CHANCE_TOP_SOLID_HEIGHTMAP = register(
 		"chance_top_solid_heightmap", new ChanceTopSolidHeightmapDecorator(ChanceDecoratorConfig::deserialize)
 	);
-	public static final Decorator<CountExtraChanceDecoratorConfig> field_14267 = register(
+	public static final Decorator<CountExtraChanceDecoratorConfig> COUNT_EXTRA_HEIGHTMAP = register(
 		"count_extra_heightmap", new CountExtraHeightmapDecorator(CountExtraChanceDecoratorConfig::deserialize)
 	);
-	public static final Decorator<RangeDecoratorConfig> field_14241 = register("count_range", new CountRangeDecorator(RangeDecoratorConfig::deserialize));
-	public static final Decorator<RangeDecoratorConfig> field_14255 = register(
+	public static final Decorator<RangeDecoratorConfig> COUNT_RANGE = register("count_range", new CountRangeDecorator(RangeDecoratorConfig::deserialize));
+	public static final Decorator<RangeDecoratorConfig> COUNT_BIASED_RANGE = register(
 		"count_biased_range", new CountBiasedRangeDecorator(RangeDecoratorConfig::deserialize)
 	);
-	public static final Decorator<RangeDecoratorConfig> field_14266 = register(
+	public static final Decorator<RangeDecoratorConfig> COUNT_VERY_BIASED_RANGE = register(
 		"count_very_biased_range", new CountVeryBiasedRangeDecorator(RangeDecoratorConfig::deserialize)
 	);
-	public static final Decorator<RangeDecoratorConfig> field_14260 = register(
+	public static final Decorator<RangeDecoratorConfig> RANDOM_COUNT_RANGE = register(
 		"random_count_range", new RandomCountRangeDecorator(RangeDecoratorConfig::deserialize)
 	);
-	public static final Decorator<ChanceRangeDecoratorConfig> field_14248 = register(
+	public static final Decorator<ChanceRangeDecoratorConfig> CHANCE_RANGE = register(
 		"chance_range", new ChanceRangeDecorator(ChanceRangeDecoratorConfig::deserialize)
 	);
-	public static final Decorator<CountChanceDecoratorConfig> field_14234 = register(
+	public static final Decorator<CountChanceDecoratorConfig> COUNT_CHANCE_HEIGHTMAP = register(
 		"count_chance_heightmap", new CountChanceHeightmapDecorator(CountChanceDecoratorConfig::deserialize)
 	);
-	public static final Decorator<CountChanceDecoratorConfig> field_14261 = register(
+	public static final Decorator<CountChanceDecoratorConfig> COUNT_CHANCE_HEIGHTMAP_DOUBLE = register(
 		"count_chance_heightmap_double", new CountChanceHeightmapDoubleDecorator(CountChanceDecoratorConfig::deserialize)
 	);
-	public static final Decorator<CountDepthDecoratorConfig> field_14252 = register(
+	public static final Decorator<CountDepthDecoratorConfig> COUNT_DEPTH_AVERAGE = register(
 		"count_depth_average", new CountDepthAverageDecorator(CountDepthDecoratorConfig::deserialize)
 	);
-	public static final Decorator<NopeDecoratorConfig> field_14231 = register("top_solid_heightmap", new HeightmapDecorator(NopeDecoratorConfig::deserialize));
-	public static final Decorator<HeightmapRangeDecoratorConfig> field_14262 = register(
+	public static final Decorator<NopeDecoratorConfig> TOP_SOLID_HEIGHTMAP = register(
+		"top_solid_heightmap", new HeightmapDecorator(NopeDecoratorConfig::deserialize)
+	);
+	public static final Decorator<HeightmapRangeDecoratorConfig> TOP_SOLID_HEIGHTMAP_RANGE = register(
 		"top_solid_heightmap_range", new HeightmapRangeDecorator(HeightmapRangeDecoratorConfig::deserialize)
 	);
-	public static final Decorator<TopSolidHeightmapNoiseBiasedDecoratorConfig> field_14247 = register(
+	public static final Decorator<TopSolidHeightmapNoiseBiasedDecoratorConfig> TOP_SOLID_HEIGHTMAP_NOISE_BIASED = register(
 		"top_solid_heightmap_noise_biased", new HeightmapNoiseBiasedDecorator(TopSolidHeightmapNoiseBiasedDecoratorConfig::deserialize)
 	);
-	public static final Decorator<CarvingMaskDecoratorConfig> field_14229 = register(
+	public static final Decorator<CarvingMaskDecoratorConfig> CARVING_MASK = register(
 		"carving_mask", new CarvingMaskDecorator(CarvingMaskDecoratorConfig::deserialize)
 	);
-	public static final Decorator<CountDecoratorConfig> field_14264 = register("forest_rock", new ForestRockDecorator(CountDecoratorConfig::deserialize));
-	public static final Decorator<CountDecoratorConfig> field_14235 = register("hell_fire", new HellFireDecorator(CountDecoratorConfig::deserialize));
-	public static final Decorator<CountDecoratorConfig> field_14244 = register("magma", new MagmaDecorator(CountDecoratorConfig::deserialize));
-	public static final Decorator<NopeDecoratorConfig> field_14268 = register("emerald_ore", new EmeraldOreDecorator(NopeDecoratorConfig::deserialize));
-	public static final Decorator<LakeDecoratorConfig> field_14237 = register("lava_lake", new LakeLakeDecorator(LakeDecoratorConfig::deserialize));
-	public static final Decorator<LakeDecoratorConfig> field_14242 = register("water_lake", new WaterLakeDecorator(LakeDecoratorConfig::deserialize));
-	public static final Decorator<DungeonDecoratorConfig> field_14265 = register("dungeons", new DungeonsDecorator(DungeonDecoratorConfig::deserialize));
-	public static final Decorator<NopeDecoratorConfig> field_14239 = register("dark_oak_tree", new DarkOakTreeDecorator(NopeDecoratorConfig::deserialize));
-	public static final Decorator<ChanceDecoratorConfig> field_14243 = register("iceberg", new IcebergDecorator(ChanceDecoratorConfig::deserialize));
-	public static final Decorator<CountDecoratorConfig> field_14256 = register("light_gem_chance", new LightGemChanceDecorator(CountDecoratorConfig::deserialize));
-	public static final Decorator<NopeDecoratorConfig> field_14251 = register("end_island", new EndIslandDecorator(NopeDecoratorConfig::deserialize));
-	public static final Decorator<NopeDecoratorConfig> field_14257 = register("chorus_plant", new ChorusPlantDecorator(NopeDecoratorConfig::deserialize));
-	public static final Decorator<NopeDecoratorConfig> field_14230 = register("end_gateway", new EndGatewayDecorator(NopeDecoratorConfig::deserialize));
+	public static final Decorator<CountDecoratorConfig> FOREST_ROCK = register("forest_rock", new ForestRockDecorator(CountDecoratorConfig::deserialize));
+	public static final Decorator<CountDecoratorConfig> HELL_FIRE = register("hell_fire", new HellFireDecorator(CountDecoratorConfig::deserialize));
+	public static final Decorator<CountDecoratorConfig> MAGMA = register("magma", new MagmaDecorator(CountDecoratorConfig::deserialize));
+	public static final Decorator<NopeDecoratorConfig> EMERALD_ORE = register("emerald_ore", new EmeraldOreDecorator(NopeDecoratorConfig::deserialize));
+	public static final Decorator<LakeDecoratorConfig> LAVA_LAKE = register("lava_lake", new LakeLakeDecorator(LakeDecoratorConfig::deserialize));
+	public static final Decorator<LakeDecoratorConfig> WATER_LAKE = register("water_lake", new WaterLakeDecorator(LakeDecoratorConfig::deserialize));
+	public static final Decorator<DungeonDecoratorConfig> DUNGEONS = register("dungeons", new DungeonsDecorator(DungeonDecoratorConfig::deserialize));
+	public static final Decorator<NopeDecoratorConfig> DARK_OAK_TREE = register("dark_oak_tree", new DarkOakTreeDecorator(NopeDecoratorConfig::deserialize));
+	public static final Decorator<ChanceDecoratorConfig> ICEBERG = register("iceberg", new IcebergDecorator(ChanceDecoratorConfig::deserialize));
+	public static final Decorator<CountDecoratorConfig> LIGHT_GEM_CHANCE = register(
+		"light_gem_chance", new LightGemChanceDecorator(CountDecoratorConfig::deserialize)
+	);
+	public static final Decorator<NopeDecoratorConfig> END_ISLAND = register("end_island", new EndIslandDecorator(NopeDecoratorConfig::deserialize));
+	public static final Decorator<NopeDecoratorConfig> CHORUS_PLANT = register("chorus_plant", new ChorusPlantDecorator(NopeDecoratorConfig::deserialize));
+	public static final Decorator<NopeDecoratorConfig> END_GATEWAY = register("end_gateway", new EndGatewayDecorator(NopeDecoratorConfig::deserialize));
 	private final Function<Dynamic<?>, ? extends DC> configDeserializer;
 
 	private static <T extends DecoratorConfig, G extends Decorator<T>> G register(String string, G decorator) {

@@ -40,7 +40,7 @@ public class PageTurnWidget extends ButtonWidget {
 	@Override
 	public void playDownSound(SoundManager soundManager) {
 		if (this.playPageTurnSound) {
-			soundManager.play(PositionedSoundInstance.master(SoundEvents.field_17481, 1.0F));
+			soundManager.play(PositionedSoundInstance.master(SoundEvents.ITEM_BOOK_PAGE_TURN, 1.0F));
 		}
 	}
 }

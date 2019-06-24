@@ -34,7 +34,7 @@ import org.apache.logging.log4j.Logger;
 
 @Environment(EnvType.CLIENT)
 public class SoundManager extends SinglePreparationResourceReloadListener<SoundManager.SoundList> {
-	public static final Sound MISSING_SOUND = new Sound("meta:missing_sound", 1.0F, 1.0F, 1, Sound.RegistrationType.field_5474, false, false, 16);
+	public static final Sound MISSING_SOUND = new Sound("meta:missing_sound", 1.0F, 1.0F, 1, Sound.RegistrationType.FILE, false, false, 16);
 	private static final Logger LOGGER = LogManager.getLogger();
 	private static final Gson GSON = new GsonBuilder()
 		.registerTypeHierarchyAdapter(Text.class, new Text.Serializer())
@@ -185,7 +185,7 @@ public class SoundManager extends SinglePreparationResourceReloadListener<SoundM
 	}
 
 	public void updateSoundVolume(SoundCategory soundCategory, float f) {
-		if (soundCategory == SoundCategory.field_15250 && f <= 0.0F) {
+		if (soundCategory == SoundCategory.MASTER && f <= 0.0F) {
 			this.stopAll();
 		}
 
@@ -239,7 +239,7 @@ public class SoundManager extends SinglePreparationResourceReloadListener<SoundM
 				final Identifier identifier2 = sound.getIdentifier();
 				SoundContainer<Sound> soundContainer;
 				switch (sound.getRegistrationType()) {
-					case field_5474:
+					case FILE:
 						if (!SoundManager.isSoundResourcePresent(sound, identifier, resourceManager)) {
 							continue;
 						}
@@ -265,7 +265,7 @@ public class SoundManager extends SinglePreparationResourceReloadListener<SoundM
 										sound.getVolume() * sound.getVolume(),
 										sound.getPitch() * sound.getPitch(),
 										sound.getWeight(),
-										Sound.RegistrationType.field_5474,
+										Sound.RegistrationType.FILE,
 										sound.isStreamed() || sound.isStreamed(),
 										sound.isPreloaded(),
 										sound.getAttenuation()

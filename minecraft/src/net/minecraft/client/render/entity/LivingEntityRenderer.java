@@ -320,10 +320,10 @@ public abstract class LivingEntityRenderer<T extends LivingEntity, M extends Ent
 	}
 
 	protected void method_4048(T livingEntity, double d, double e, double f) {
-		if (livingEntity.getPose() == EntityPose.field_18078) {
+		if (livingEntity.getPose() == EntityPose.SLEEPING) {
 			Direction direction = livingEntity.getSleepingDirection();
 			if (direction != null) {
-				float g = livingEntity.getEyeHeight(EntityPose.field_18076) - 0.1F;
+				float g = livingEntity.getEyeHeight(EntityPose.STANDING) - 0.1F;
 				GlStateManager.translatef((float)d - (float)direction.getOffsetX() * g, (float)e, (float)f - (float)direction.getOffsetZ() * g);
 				return;
 			}
@@ -334,13 +334,13 @@ public abstract class LivingEntityRenderer<T extends LivingEntity, M extends Ent
 
 	private static float method_18656(Direction direction) {
 		switch (direction) {
-			case field_11035:
+			case SOUTH:
 				return 90.0F;
-			case field_11039:
+			case WEST:
 				return 0.0F;
-			case field_11043:
+			case NORTH:
 				return 270.0F;
-			case field_11034:
+			case EAST:
 				return 180.0F;
 			default:
 				return 0.0F;
@@ -349,7 +349,7 @@ public abstract class LivingEntityRenderer<T extends LivingEntity, M extends Ent
 
 	protected void setupTransforms(T livingEntity, float f, float g, float h) {
 		EntityPose entityPose = livingEntity.getPose();
-		if (entityPose != EntityPose.field_18078) {
+		if (entityPose != EntityPose.SLEEPING) {
 			GlStateManager.rotatef(180.0F - g, 0.0F, 1.0F, 0.0F);
 		}
 
@@ -364,7 +364,7 @@ public abstract class LivingEntityRenderer<T extends LivingEntity, M extends Ent
 		} else if (livingEntity.isUsingRiptide()) {
 			GlStateManager.rotatef(-90.0F - livingEntity.pitch, 1.0F, 0.0F, 0.0F);
 			GlStateManager.rotatef(((float)livingEntity.age + h) * -75.0F, 0.0F, 1.0F, 0.0F);
-		} else if (entityPose == EntityPose.field_18078) {
+		} else if (entityPose == EntityPose.SLEEPING) {
 			Direction direction = livingEntity.getSleepingDirection();
 			GlStateManager.rotatef(direction != null ? method_18656(direction) : g, 0.0F, 1.0F, 0.0F);
 			GlStateManager.rotatef(this.getLyingAngle(livingEntity), 0.0F, 0.0F, 1.0F);
@@ -373,7 +373,7 @@ public abstract class LivingEntityRenderer<T extends LivingEntity, M extends Ent
 			String string = Formatting.strip(livingEntity.getName().getString());
 			if (string != null
 				&& ("Dinnerbone".equals(string) || "Grumm".equals(string))
-				&& (!(livingEntity instanceof PlayerEntity) || ((PlayerEntity)livingEntity).isSkinOverlayVisible(PlayerModelPart.field_7559))) {
+				&& (!(livingEntity instanceof PlayerEntity) || ((PlayerEntity)livingEntity).isSkinOverlayVisible(PlayerModelPart.CAPE))) {
 				GlStateManager.translatef(0.0F, livingEntity.getHeight() + 0.1F, 0.0F);
 				GlStateManager.rotatef(180.0F, 0.0F, 0.0F, 1.0F);
 			}
@@ -430,13 +430,13 @@ public abstract class LivingEntityRenderer<T extends LivingEntity, M extends Ent
 			if (abstractTeam != null) {
 				AbstractTeam.VisibilityRule visibilityRule = abstractTeam.getNameTagVisibilityRule();
 				switch (visibilityRule) {
-					case field_1442:
+					case ALWAYS:
 						return bl;
-					case field_1443:
+					case NEVER:
 						return false;
-					case field_1444:
+					case HIDE_FOR_OTHER_TEAMS:
 						return abstractTeam2 == null ? bl : abstractTeam.isEqual(abstractTeam2) && (abstractTeam.shouldShowFriendlyInvisibles() || bl);
-					case field_1446:
+					case HIDE_FOR_OWN_TEAM:
 						return abstractTeam2 == null ? bl : !abstractTeam.isEqual(abstractTeam2) && bl;
 					default:
 						return true;

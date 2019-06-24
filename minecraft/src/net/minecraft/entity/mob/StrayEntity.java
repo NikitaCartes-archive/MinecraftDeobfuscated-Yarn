@@ -21,34 +21,34 @@ public class StrayEntity extends AbstractSkeletonEntity {
 	}
 
 	public static boolean method_20686(EntityType<StrayEntity> entityType, IWorld iWorld, SpawnType spawnType, BlockPos blockPos, Random random) {
-		return method_20680(entityType, iWorld, spawnType, blockPos, random) && (spawnType == SpawnType.field_16469 || iWorld.isSkyVisible(blockPos));
+		return method_20680(entityType, iWorld, spawnType, blockPos, random) && (spawnType == SpawnType.SPAWNER || iWorld.isSkyVisible(blockPos));
 	}
 
 	@Override
 	protected SoundEvent getAmbientSound() {
-		return SoundEvents.field_15041;
+		return SoundEvents.ENTITY_STRAY_AMBIENT;
 	}
 
 	@Override
 	protected SoundEvent getHurtSound(DamageSource damageSource) {
-		return SoundEvents.field_14805;
+		return SoundEvents.ENTITY_STRAY_HURT;
 	}
 
 	@Override
 	protected SoundEvent getDeathSound() {
-		return SoundEvents.field_14771;
+		return SoundEvents.ENTITY_STRAY_DEATH;
 	}
 
 	@Override
 	SoundEvent getStepSound() {
-		return SoundEvents.field_14540;
+		return SoundEvents.ENTITY_STRAY_STEP;
 	}
 
 	@Override
 	protected ProjectileEntity createArrowProjectile(ItemStack itemStack, float f) {
 		ProjectileEntity projectileEntity = super.createArrowProjectile(itemStack, f);
 		if (projectileEntity instanceof ArrowEntity) {
-			((ArrowEntity)projectileEntity).addEffect(new StatusEffectInstance(StatusEffects.field_5909, 600));
+			((ArrowEntity)projectileEntity).addEffect(new StatusEffectInstance(StatusEffects.SLOWNESS, 600));
 		}
 
 		return projectileEntity;

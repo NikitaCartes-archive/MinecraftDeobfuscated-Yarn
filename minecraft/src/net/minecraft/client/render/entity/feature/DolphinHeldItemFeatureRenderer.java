@@ -13,7 +13,7 @@ import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.passive.DolphinEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.AbsoluteHand;
+import net.minecraft.util.Arm;
 import net.minecraft.util.math.MathHelper;
 
 @Environment(EnvType.CLIENT)
@@ -25,7 +25,7 @@ public class DolphinHeldItemFeatureRenderer extends FeatureRenderer<DolphinEntit
 	}
 
 	public void method_17160(DolphinEntity dolphinEntity, float f, float g, float h, float i, float j, float k, float l) {
-		boolean bl = dolphinEntity.getMainHand() == AbsoluteHand.field_6183;
+		boolean bl = dolphinEntity.getMainArm() == Arm.RIGHT;
 		ItemStack itemStack = bl ? dolphinEntity.getOffHandStack() : dolphinEntity.getMainHandStack();
 		ItemStack itemStack2 = bl ? dolphinEntity.getMainHandStack() : dolphinEntity.getOffHandStack();
 		if (!itemStack.isEmpty() || !itemStack2.isEmpty()) {
@@ -38,7 +38,7 @@ public class DolphinHeldItemFeatureRenderer extends FeatureRenderer<DolphinEntit
 			Item item = itemStack.getItem();
 			Block block = Block.getBlockFromItem(item);
 			GlStateManager.pushMatrix();
-			boolean bl = this.field_4847.hasDepthInGui(itemStack) && block.getRenderLayer() == BlockRenderLayer.field_9179;
+			boolean bl = this.field_4847.hasDepthInGui(itemStack) && block.getRenderLayer() == BlockRenderLayer.TRANSLUCENT;
 			if (bl) {
 				GlStateManager.depthMask(false);
 			}
@@ -52,7 +52,7 @@ public class DolphinHeldItemFeatureRenderer extends FeatureRenderer<DolphinEntit
 				GlStateManager.translatef(0.0F, 1.0F + h * 0.8F, -1.0F + h * 0.2F);
 			}
 
-			this.field_4847.renderHeldItem(itemStack, livingEntity, ModelTransformation.Type.field_4318, false);
+			this.field_4847.renderHeldItem(itemStack, livingEntity, ModelTransformation.Type.GROUND, false);
 			if (bl) {
 				GlStateManager.depthMask(true);
 			}

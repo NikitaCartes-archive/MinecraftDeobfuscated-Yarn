@@ -85,13 +85,13 @@ public class ServerEntryNetworkPart {
 						}
 
 						if (serverMetadata.getPlayers() != null) {
-							serverEntry.playerCountLabel = Formatting.field_1080
+							serverEntry.playerCountLabel = Formatting.GRAY
 								+ ""
 								+ serverMetadata.getPlayers().getOnlinePlayerCount()
 								+ ""
-								+ Formatting.field_1063
+								+ Formatting.DARK_GRAY
 								+ "/"
-								+ Formatting.field_1080
+								+ Formatting.GRAY
 								+ serverMetadata.getPlayers().getPlayerLimit();
 							if (ArrayUtils.isNotEmpty(serverMetadata.getPlayers().getSample())) {
 								StringBuilder stringBuilder = new StringBuilder();
@@ -117,7 +117,7 @@ public class ServerEntryNetworkPart {
 								serverEntry.playerListSummary = stringBuilder.toString();
 							}
 						} else {
-							serverEntry.playerCountLabel = Formatting.field_1063 + I18n.translate("multiplayer.status.unknown");
+							serverEntry.playerCountLabel = Formatting.DARK_GRAY + I18n.translate("multiplayer.status.unknown");
 						}
 
 						if (serverMetadata.getFavicon() != null) {
@@ -149,7 +149,7 @@ public class ServerEntryNetworkPart {
 				public void onDisconnected(Text text) {
 					if (!this.field_3775) {
 						ServerEntryNetworkPart.LOGGER.error("Can't ping {}: {}", serverEntry.address, text.getString());
-						serverEntry.label = Formatting.field_1079 + I18n.translate("multiplayer.status.cannot_connect");
+						serverEntry.label = Formatting.DARK_RED + I18n.translate("multiplayer.status.cannot_connect");
 						serverEntry.playerCountLabel = "";
 						ServerEntryNetworkPart.this.ping(serverEntry);
 					}
@@ -222,7 +222,7 @@ public class ServerEntryNetworkPart {
 								serverEntry.protocolVersion = -1;
 								serverEntry.version = string2;
 								serverEntry.label = string3;
-								serverEntry.playerCountLabel = Formatting.field_1080 + "" + j + "" + Formatting.field_1063 + "/" + Formatting.field_1080 + k;
+								serverEntry.playerCountLabel = Formatting.GRAY + "" + j + "" + Formatting.DARK_GRAY + "/" + Formatting.GRAY + k;
 							}
 						}
 

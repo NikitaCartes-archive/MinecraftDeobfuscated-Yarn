@@ -18,11 +18,11 @@ public class KilledByPlayerLootCondition implements LootCondition {
 
 	@Override
 	public Set<LootContextParameter<?>> getRequiredParameters() {
-		return ImmutableSet.of(LootContextParameters.field_1233);
+		return ImmutableSet.of(LootContextParameters.LAST_DAMAGE_PLAYER);
 	}
 
 	public boolean method_938(LootContext lootContext) {
-		return lootContext.hasParameter(LootContextParameters.field_1233);
+		return lootContext.hasParameter(LootContextParameters.LAST_DAMAGE_PLAYER);
 	}
 
 	public static LootCondition.Builder builder() {

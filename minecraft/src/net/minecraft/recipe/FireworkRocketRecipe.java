@@ -11,9 +11,9 @@ import net.minecraft.util.Identifier;
 import net.minecraft.world.World;
 
 public class FireworkRocketRecipe extends SpecialCraftingRecipe {
-	private static final Ingredient field_9007 = Ingredient.ofItems(Items.field_8407);
-	private static final Ingredient field_9006 = Ingredient.ofItems(Items.field_8054);
-	private static final Ingredient field_9008 = Ingredient.ofItems(Items.field_8450);
+	private static final Ingredient field_9007 = Ingredient.ofItems(Items.PAPER);
+	private static final Ingredient field_9006 = Ingredient.ofItems(Items.GUNPOWDER);
+	private static final Ingredient field_9008 = Ingredient.ofItems(Items.FIREWORK_STAR);
 
 	public FireworkRocketRecipe(Identifier identifier) {
 		super(identifier);
@@ -46,7 +46,7 @@ public class FireworkRocketRecipe extends SpecialCraftingRecipe {
 	}
 
 	public ItemStack method_17708(CraftingInventory craftingInventory) {
-		ItemStack itemStack = new ItemStack(Items.field_8639, 3);
+		ItemStack itemStack = new ItemStack(Items.FIREWORK_ROCKET, 3);
 		CompoundTag compoundTag = itemStack.getOrCreateSubTag("Fireworks");
 		ListTag listTag = new ListTag();
 		int i = 0;
@@ -81,7 +81,7 @@ public class FireworkRocketRecipe extends SpecialCraftingRecipe {
 
 	@Override
 	public ItemStack getOutput() {
-		return new ItemStack(Items.field_8639);
+		return new ItemStack(Items.FIREWORK_ROCKET);
 	}
 
 	@Override

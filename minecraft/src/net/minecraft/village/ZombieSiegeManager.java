@@ -16,7 +16,7 @@ import net.minecraft.world.SpawnHelper;
 public class ZombieSiegeManager {
 	private final ServerWorld world;
 	private boolean spawned;
-	private ZombieSiegeManager.State state = ZombieSiegeManager.State.field_18482;
+	private ZombieSiegeManager.State state = ZombieSiegeManager.State.SIEGE_DONE;
 	private int remaining;
 	private int countdown;
 	private int startX;
@@ -29,15 +29,15 @@ public class ZombieSiegeManager {
 
 	public void tick() {
 		if (this.world.isDaylight()) {
-			this.state = ZombieSiegeManager.State.field_18482;
+			this.state = ZombieSiegeManager.State.SIEGE_DONE;
 			this.spawned = false;
 		} else {
 			float f = this.world.getSkyAngle(0.0F);
 			if ((double)f == 0.5) {
-				this.state = this.world.random.nextInt(10) == 0 ? ZombieSiegeManager.State.field_18481 : ZombieSiegeManager.State.field_18482;
+				this.state = this.world.random.nextInt(10) == 0 ? ZombieSiegeManager.State.SIEGE_TONIGHT : ZombieSiegeManager.State.SIEGE_DONE;
 			}
 
-			if (this.state != ZombieSiegeManager.State.field_18482) {
+			if (this.state != ZombieSiegeManager.State.SIEGE_DONE) {
 				if (!this.spawned) {
 					if (!this.spawn()) {
 						return;
@@ -54,7 +54,7 @@ public class ZombieSiegeManager {
 						this.trySpawnZombie();
 						this.remaining--;
 					} else {
-						this.state = ZombieSiegeManager.State.field_18482;
+						this.state = ZombieSiegeManager.State.SIEGE_DONE;
 					}
 				}
 			}
@@ -92,7 +92,7 @@ public class ZombieSiegeManager {
 			ZombieEntity zombieEntity;
 			try {
 				zombieEntity = new ZombieEntity(this.world);
-				zombieEntity.initialize(this.world, this.world.getLocalDifficulty(new BlockPos(zombieEntity)), SpawnType.field_16467, null, null);
+				zombieEntity.initialize(this.world, this.world.getLocalDifficulty(new BlockPos(zombieEntity)), SpawnType.EVENT, null, null);
 			} catch (Exception var4) {
 				var4.printStackTrace();
 				return;
@@ -108,10 +108,10 @@ public class ZombieSiegeManager {
 		for (int i = 0; i < 10; i++) {
 			int j = blockPos.getX() + this.world.random.nextInt(16) - 8;
 			int k = blockPos.getZ() + this.world.random.nextInt(16) - 8;
-			int l = this.world.getTop(Heightmap.Type.field_13202, j, k);
+			int l = this.world.getTop(Heightmap.Type.WORLD_SURFACE, j, k);
 			BlockPos blockPos2 = new BlockPos(j, l, k);
 			if (this.world.isNearOccupiedPointOfInterest(blockPos2)
-				&& SpawnHelper.canSpawn(SpawnRestriction.Location.field_6317, this.world, blockPos2, EntityType.field_6051)) {
+				&& SpawnHelper.canSpawn(SpawnRestriction.Location.ON_GROUND, this.world, blockPos2, EntityType.ZOMBIE)) {
 				return new Vec3d((double)blockPos2.getX(), (double)blockPos2.getY(), (double)blockPos2.getZ());
 			}
 		}
@@ -120,8 +120,8 @@ public class ZombieSiegeManager {
 	}
 
 	static enum State {
-		field_18480,
-		field_18481,
-		field_18482;
+		SIEGE_CAN_ACTIVATE,
+		SIEGE_TONIGHT,
+		SIEGE_DONE;
 	}
 }

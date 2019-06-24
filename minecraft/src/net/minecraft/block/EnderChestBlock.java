@@ -39,7 +39,7 @@ public class EnderChestBlock extends BlockWithEntity implements Waterloggable {
 
 	protected EnderChestBlock(Block.Settings settings) {
 		super(settings);
-		this.setDefaultState(this.stateFactory.getDefaultState().with(FACING, Direction.field_11043).with(WATERLOGGED, Boolean.valueOf(false)));
+		this.setDefaultState(this.stateFactory.getDefaultState().with(FACING, Direction.NORTH).with(WATERLOGGED, Boolean.valueOf(false)));
 	}
 
 	@Override
@@ -55,7 +55,7 @@ public class EnderChestBlock extends BlockWithEntity implements Waterloggable {
 
 	@Override
 	public BlockRenderType getRenderType(BlockState blockState) {
-		return BlockRenderType.field_11456;
+		return BlockRenderType.ENTITYBLOCK_ANIMATED;
 	}
 
 	@Override
@@ -84,7 +84,7 @@ public class EnderChestBlock extends BlockWithEntity implements Waterloggable {
 						(i, playerInventory, playerEntityx) -> GenericContainer.createGeneric9x3(i, playerInventory, enderChestInventory), CONTAINER_NAME
 					)
 				);
-				playerEntity.incrementStat(Stats.field_15424);
+				playerEntity.incrementStat(Stats.OPEN_ENDERCHEST);
 				return true;
 			}
 		} else {
@@ -109,7 +109,7 @@ public class EnderChestBlock extends BlockWithEntity implements Waterloggable {
 			double g = (double)(random.nextFloat() * (float)j);
 			double h = ((double)random.nextFloat() - 0.5) * 0.125;
 			double l = (double)(random.nextFloat() * (float)k);
-			world.addParticle(ParticleTypes.field_11214, d, e, f, g, h, l);
+			world.addParticle(ParticleTypes.PORTAL, d, e, f, g, h, l);
 		}
 	}
 

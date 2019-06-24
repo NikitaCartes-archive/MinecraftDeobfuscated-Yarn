@@ -30,26 +30,26 @@ public class PunchTreeTutorialStepHandler implements TutorialStepHandler {
 	@Override
 	public void tick() {
 		this.ticks++;
-		if (this.manager.getGameMode() != GameMode.field_9215) {
-			this.manager.setStep(TutorialStep.field_5653);
+		if (this.manager.getGameMode() != GameMode.SURVIVAL) {
+			this.manager.setStep(TutorialStep.NONE);
 		} else {
 			if (this.ticks == 1) {
 				ClientPlayerEntity clientPlayerEntity = this.manager.getClient().player;
 				if (clientPlayerEntity != null) {
-					if (clientPlayerEntity.inventory.contains(ItemTags.field_15539)) {
-						this.manager.setStep(TutorialStep.field_5655);
+					if (clientPlayerEntity.inventory.contains(ItemTags.LOGS)) {
+						this.manager.setStep(TutorialStep.CRAFT_PLANKS);
 						return;
 					}
 
 					if (FindTreeTutorialStepHandler.method_4896(clientPlayerEntity)) {
-						this.manager.setStep(TutorialStep.field_5655);
+						this.manager.setStep(TutorialStep.CRAFT_PLANKS);
 						return;
 					}
 				}
 			}
 
 			if ((this.ticks >= 600 || this.field_5635 > 3) && this.field_5637 == null) {
-				this.field_5637 = new TutorialToast(TutorialToast.Type.field_2235, TITLE, DESCRIPTION, true);
+				this.field_5637 = new TutorialToast(TutorialToast.Type.TREE, TITLE, DESCRIPTION, true);
 				this.manager.getClient().getToastManager().add(this.field_5637);
 			}
 		}
@@ -65,14 +65,14 @@ public class PunchTreeTutorialStepHandler implements TutorialStepHandler {
 
 	@Override
 	public void onBlockAttacked(ClientWorld clientWorld, BlockPos blockPos, BlockState blockState, float f) {
-		boolean bl = blockState.matches(BlockTags.field_15475);
+		boolean bl = blockState.matches(BlockTags.LOGS);
 		if (bl && f > 0.0F) {
 			if (this.field_5637 != null) {
 				this.field_5637.setProgress(f);
 			}
 
 			if (f >= 1.0F) {
-				this.manager.setStep(TutorialStep.field_5652);
+				this.manager.setStep(TutorialStep.OPEN_INVENTORY);
 			}
 		} else if (this.field_5637 != null) {
 			this.field_5637.setProgress(0.0F);
@@ -83,8 +83,8 @@ public class PunchTreeTutorialStepHandler implements TutorialStepHandler {
 
 	@Override
 	public void onSlotUpdate(ItemStack itemStack) {
-		if (ItemTags.field_15539.contains(itemStack.getItem())) {
-			this.manager.setStep(TutorialStep.field_5655);
+		if (ItemTags.LOGS.contains(itemStack.getItem())) {
+			this.manager.setStep(TutorialStep.CRAFT_PLANKS);
 		}
 	}
 }

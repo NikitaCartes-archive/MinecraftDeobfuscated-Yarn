@@ -24,6 +24,6 @@ public class SilkTouchEnchantment extends Enchantment {
 
 	@Override
 	public boolean differs(Enchantment enchantment) {
-		return super.differs(enchantment) && enchantment != Enchantments.field_9130;
+		return super.differs(enchantment) && enchantment != Enchantments.FORTUNE;
 	}
 }

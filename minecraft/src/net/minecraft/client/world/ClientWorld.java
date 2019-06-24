@@ -152,7 +152,7 @@ public class ClientWorld extends World {
 			entity.prevRenderZ = entity.z;
 			entity.prevYaw = entity.yaw;
 			entity.prevPitch = entity.pitch;
-			if (entity.field_6016 || entity.isSpectator()) {
+			if (entity.updateNeeded || entity.isSpectator()) {
 				entity.age++;
 				this.getProfiler().push((Supplier<String>)(() -> Registry.ENTITY_TYPE.getId(entity.getType()).toString()));
 				entity.tick();
@@ -160,7 +160,7 @@ public class ClientWorld extends World {
 			}
 
 			this.checkChunk(entity);
-			if (entity.field_6016) {
+			if (entity.updateNeeded) {
 				for (Entity entity2 : entity.getPassengerList()) {
 					this.tickPassenger(entity, entity2);
 				}
@@ -177,13 +177,13 @@ public class ClientWorld extends World {
 			entity2.prevRenderZ = entity2.z;
 			entity2.prevYaw = entity2.yaw;
 			entity2.prevPitch = entity2.pitch;
-			if (entity2.field_6016) {
+			if (entity2.updateNeeded) {
 				entity2.age++;
 				entity2.tickRiding();
 			}
 
 			this.checkChunk(entity2);
-			if (entity2.field_6016) {
+			if (entity2.updateNeeded) {
 				for (Entity entity3 : entity2.getPassengerList()) {
 					this.tickPassenger(entity2, entity3);
 				}
@@ -196,13 +196,13 @@ public class ClientWorld extends World {
 		int i = MathHelper.floor(entity.x / 16.0);
 		int j = MathHelper.floor(entity.y / 16.0);
 		int k = MathHelper.floor(entity.z / 16.0);
-		if (!entity.field_6016 || entity.chunkX != i || entity.chunkY != j || entity.chunkZ != k) {
-			if (entity.field_6016 && this.isChunkLoaded(entity.chunkX, entity.chunkZ)) {
+		if (!entity.updateNeeded || entity.chunkX != i || entity.chunkY != j || entity.chunkZ != k) {
+			if (entity.updateNeeded && this.isChunkLoaded(entity.chunkX, entity.chunkZ)) {
 				this.method_8497(entity.chunkX, entity.chunkZ).remove(entity, entity.chunkY);
 			}
 
-			if (!entity.method_5754() && !this.isChunkLoaded(i, k)) {
-				entity.field_6016 = false;
+			if (!entity.teleportRequested() && !this.isChunkLoaded(i, k)) {
+				entity.updateNeeded = false;
 			} else {
 				this.method_8497(i, k).addEntity(entity);
 			}
@@ -231,13 +231,13 @@ public class ClientWorld extends World {
 				double d = blockPos.getSquaredDistance(blockPos2);
 				if (d >= 4.0 && d <= 256.0) {
 					BlockState blockState = this.getBlockState(blockPos2);
-					if (blockState.isAir() && this.getLightLevel(blockPos2, 0) <= this.random.nextInt(8) && this.getLightLevel(LightType.field_9284, blockPos2) <= 0) {
+					if (blockState.isAir() && this.getLightLevel(blockPos2, 0) <= this.random.nextInt(8) && this.getLightLevel(LightType.SKY, blockPos2) <= 0) {
 						this.playSound(
 							(double)blockPos2.getX() + 0.5,
 							(double)blockPos2.getY() + 0.5,
 							(double)blockPos2.getZ() + 0.5,
-							SoundEvents.field_14564,
-							SoundCategory.field_15256,
+							SoundEvents.AMBIENT_CAVE,
+							SoundCategory.AMBIENT,
 							0.7F,
 							0.8F + this.random.nextFloat() * 0.2F,
 							false
@@ -269,7 +269,7 @@ public class ClientWorld extends World {
 	private void addEntityPrivate(int i, Entity entity) {
 		this.removeEntity(i);
 		this.regularEntities.put(i, entity);
-		this.method_2935().method_2857(MathHelper.floor(entity.x / 16.0), MathHelper.floor(entity.z / 16.0), ChunkStatus.field_12803, true).addEntity(entity);
+		this.method_2935().method_2857(MathHelper.floor(entity.x / 16.0), MathHelper.floor(entity.z / 16.0), ChunkStatus.FULL, true).addEntity(entity);
 	}
 
 	public void removeEntity(int i) {
@@ -282,7 +282,7 @@ public class ClientWorld extends World {
 
 	private void finishRemovingEntity(Entity entity) {
 		entity.detach();
-		if (entity.field_6016) {
+		if (entity.updateNeeded) {
 			this.method_8497(entity.chunkX, entity.chunkZ).remove(entity);
 		}
 
@@ -319,9 +319,9 @@ public class ClientWorld extends World {
 		int l = 32;
 		Random random = new Random();
 		ItemStack itemStack = this.client.player.getMainHandStack();
-		boolean bl = this.client.interactionManager.getCurrentGameMode() == GameMode.field_9220
+		boolean bl = this.client.interactionManager.getCurrentGameMode() == GameMode.CREATIVE
 			&& !itemStack.isEmpty()
-			&& itemStack.getItem() == Blocks.field_10499.asItem();
+			&& itemStack.getItem() == Blocks.BARRIER.asItem();
 		BlockPos.Mutable mutable = new BlockPos.Mutable();
 
 		for (int m = 0; m < 667; m++) {
@@ -342,14 +342,14 @@ public class ClientWorld extends World {
 			fluidState.randomDisplayTick(this, mutable, random);
 			ParticleEffect particleEffect = fluidState.getParticle();
 			if (particleEffect != null && this.random.nextInt(10) == 0) {
-				boolean bl2 = Block.isSolidFullSquare(blockState, this, mutable, Direction.field_11033);
+				boolean bl2 = Block.isSolidFullSquare(blockState, this, mutable, Direction.DOWN);
 				BlockPos blockPos = mutable.down();
 				this.addParticle(blockPos, this.getBlockState(blockPos), particleEffect, bl2);
 			}
 		}
 
-		if (bl && blockState.getBlock() == Blocks.field_10499) {
-			this.addParticle(ParticleTypes.field_11235, (double)((float)m + 0.5F), (double)((float)n + 0.5F), (double)((float)o + 0.5F), 0.0, 0.0, 0.0);
+		if (bl && blockState.getBlock() == Blocks.BARRIER) {
+			this.addParticle(ParticleTypes.BARRIER, (double)((float)m + 0.5F), (double)((float)n + 0.5F), (double)((float)o + 0.5F), 0.0, 0.0, 0.0);
 		}
 	}
 
@@ -368,7 +368,7 @@ public class ClientWorld extends World {
 						particleEffect
 					);
 				}
-			} else if (!blockState.matches(BlockTags.field_15490)) {
+			} else if (!blockState.matches(BlockTags.IMPERMEABLE)) {
 				double e = voxelShape.getMinimum(Direction.Axis.Y);
 				if (e > 0.0) {
 					this.addParticle(blockPos, particleEffect, voxelShape, (double)blockPos.getY() + e - 0.05);
@@ -476,9 +476,9 @@ public class ClientWorld extends World {
 	public void setTimeOfDay(long l) {
 		if (l < 0L) {
 			l = -l;
-			this.getGameRules().get(GameRules.field_19396).set(false, null);
+			this.getGameRules().get(GameRules.DO_DAYLIGHT_CYCLE).set(false, null);
 		} else {
-			this.getGameRules().get(GameRules.field_19396).set(true, null);
+			this.getGameRules().get(GameRules.DO_DAYLIGHT_CYCLE).set(true, null);
 		}
 
 		super.setTimeOfDay(l);

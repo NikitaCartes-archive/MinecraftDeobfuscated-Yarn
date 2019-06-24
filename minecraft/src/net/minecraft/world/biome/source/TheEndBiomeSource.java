@@ -20,7 +20,7 @@ import net.minecraft.world.gen.feature.StructureFeature;
 public class TheEndBiomeSource extends BiomeSource {
 	private final SimplexNoiseSampler noise;
 	private final ChunkRandom random;
-	private final Biome[] biomes = new Biome[]{Biomes.field_9411, Biomes.field_9442, Biomes.field_9447, Biomes.field_9457, Biomes.field_9465};
+	private final Biome[] biomes = new Biome[]{Biomes.THE_END, Biomes.END_HIGHLANDS, Biomes.END_MIDLANDS, Biomes.SMALL_END_ISLANDS, Biomes.END_BARRENS};
 
 	public TheEndBiomeSource(TheEndBiomeSourceConfig theEndBiomeSourceConfig) {
 		this.random = new ChunkRandom(theEndBiomeSourceConfig.method_9204());
@@ -33,15 +33,15 @@ public class TheEndBiomeSource extends BiomeSource {
 		int k = i >> 4;
 		int l = j >> 4;
 		if ((long)k * (long)k + (long)l * (long)l <= 4096L) {
-			return Biomes.field_9411;
+			return Biomes.THE_END;
 		} else {
 			float f = this.method_8757(k * 2 + 1, l * 2 + 1);
 			if (f > 40.0F) {
-				return Biomes.field_9442;
+				return Biomes.END_HIGHLANDS;
 			} else if (f >= 0.0F) {
-				return Biomes.field_9447;
+				return Biomes.END_MIDLANDS;
 			} else {
-				return f < -20.0F ? Biomes.field_9457 : Biomes.field_9465;
+				return f < -20.0F ? Biomes.SMALL_END_ISLANDS : Biomes.END_BARRENS;
 			}
 		}
 	}

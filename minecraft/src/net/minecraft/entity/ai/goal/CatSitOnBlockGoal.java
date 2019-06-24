@@ -55,12 +55,10 @@ public class CatSitOnBlockGoal extends MoveToTargetPosGoal {
 		} else {
 			BlockState blockState = viewableWorld.getBlockState(blockPos);
 			Block block = blockState.getBlock();
-			if (block == Blocks.field_10034) {
+			if (block == Blocks.CHEST) {
 				return ChestBlockEntity.getPlayersLookingInChestCount(viewableWorld, blockPos) < 1;
 			} else {
-				return block == Blocks.field_10181 && blockState.get(FurnaceBlock.LIT)
-					? true
-					: block.matches(BlockTags.field_16443) && blockState.get(BedBlock.PART) != BedPart.field_12560;
+				return block == Blocks.FURNACE && blockState.get(FurnaceBlock.LIT) ? true : block.matches(BlockTags.BEDS) && blockState.get(BedBlock.PART) != BedPart.HEAD;
 			}
 		}
 	}

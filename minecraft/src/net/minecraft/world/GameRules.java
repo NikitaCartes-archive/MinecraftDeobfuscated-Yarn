@@ -26,21 +26,21 @@ import org.apache.logging.log4j.Logger;
 public class GameRules {
 	private static final Logger LOGGER = LogManager.getLogger();
 	private static final Map<GameRules.RuleKey<?>, GameRules.RuleType<?>> RULES = Maps.newTreeMap(Comparator.comparing(ruleKey -> ruleKey.name));
-	public static final GameRules.RuleKey<GameRules.BooleanRule> field_19387 = register("doFireTick", GameRules.BooleanRule.of(true));
-	public static final GameRules.RuleKey<GameRules.BooleanRule> field_19388 = register("mobGriefing", GameRules.BooleanRule.of(true));
-	public static final GameRules.RuleKey<GameRules.BooleanRule> field_19389 = register("keepInventory", GameRules.BooleanRule.of(false));
-	public static final GameRules.RuleKey<GameRules.BooleanRule> field_19390 = register("doMobSpawning", GameRules.BooleanRule.of(true));
-	public static final GameRules.RuleKey<GameRules.BooleanRule> field_19391 = register("doMobLoot", GameRules.BooleanRule.of(true));
-	public static final GameRules.RuleKey<GameRules.BooleanRule> field_19392 = register("doTileDrops", GameRules.BooleanRule.of(true));
-	public static final GameRules.RuleKey<GameRules.BooleanRule> field_19393 = register("doEntityDrops", GameRules.BooleanRule.of(true));
-	public static final GameRules.RuleKey<GameRules.BooleanRule> field_19394 = register("commandBlockOutput", GameRules.BooleanRule.of(true));
-	public static final GameRules.RuleKey<GameRules.BooleanRule> field_19395 = register("naturalRegeneration", GameRules.BooleanRule.of(true));
-	public static final GameRules.RuleKey<GameRules.BooleanRule> field_19396 = register("doDaylightCycle", GameRules.BooleanRule.of(true));
-	public static final GameRules.RuleKey<GameRules.BooleanRule> field_19397 = register("logAdminCommands", GameRules.BooleanRule.of(true));
-	public static final GameRules.RuleKey<GameRules.BooleanRule> field_19398 = register("showDeathMessages", GameRules.BooleanRule.of(true));
-	public static final GameRules.RuleKey<GameRules.IntRule> field_19399 = register("randomTickSpeed", GameRules.IntRule.of(3));
-	public static final GameRules.RuleKey<GameRules.BooleanRule> field_19400 = register("sendCommandFeedback", GameRules.BooleanRule.of(true));
-	public static final GameRules.RuleKey<GameRules.BooleanRule> field_19401 = register(
+	public static final GameRules.RuleKey<GameRules.BooleanRule> DO_FIRE_TICK = register("doFireTick", GameRules.BooleanRule.of(true));
+	public static final GameRules.RuleKey<GameRules.BooleanRule> MOB_GRIEFING = register("mobGriefing", GameRules.BooleanRule.of(true));
+	public static final GameRules.RuleKey<GameRules.BooleanRule> KEEP_INVENTORY = register("keepInventory", GameRules.BooleanRule.of(false));
+	public static final GameRules.RuleKey<GameRules.BooleanRule> DO_MOB_SPAWNING = register("doMobSpawning", GameRules.BooleanRule.of(true));
+	public static final GameRules.RuleKey<GameRules.BooleanRule> DO_MOB_LOOT = register("doMobLoot", GameRules.BooleanRule.of(true));
+	public static final GameRules.RuleKey<GameRules.BooleanRule> DO_TILE_DROPS = register("doTileDrops", GameRules.BooleanRule.of(true));
+	public static final GameRules.RuleKey<GameRules.BooleanRule> DO_ENTITY_DROPS = register("doEntityDrops", GameRules.BooleanRule.of(true));
+	public static final GameRules.RuleKey<GameRules.BooleanRule> COMMAND_BLOCK_OUTPUT = register("commandBlockOutput", GameRules.BooleanRule.of(true));
+	public static final GameRules.RuleKey<GameRules.BooleanRule> NATURAL_REGENERATION = register("naturalRegeneration", GameRules.BooleanRule.of(true));
+	public static final GameRules.RuleKey<GameRules.BooleanRule> DO_DAYLIGHT_CYCLE = register("doDaylightCycle", GameRules.BooleanRule.of(true));
+	public static final GameRules.RuleKey<GameRules.BooleanRule> LOG_ADMIN_COMMANDS = register("logAdminCommands", GameRules.BooleanRule.of(true));
+	public static final GameRules.RuleKey<GameRules.BooleanRule> SHOW_DEATH_MESSAGES = register("showDeathMessages", GameRules.BooleanRule.of(true));
+	public static final GameRules.RuleKey<GameRules.IntRule> RANDOM_TICK_SPEED = register("randomTickSpeed", GameRules.IntRule.of(3));
+	public static final GameRules.RuleKey<GameRules.BooleanRule> SEND_COMMAND_FEEDBACK = register("sendCommandFeedback", GameRules.BooleanRule.of(true));
+	public static final GameRules.RuleKey<GameRules.BooleanRule> REDUCED_DEBUG_INFO = register(
 		"reducedDebugInfo", GameRules.BooleanRule.of(false, (minecraftServer, booleanRule) -> {
 			byte b = (byte)(booleanRule.get() ? 22 : 23);
 
@@ -49,15 +49,17 @@ public class GameRules {
 			}
 		})
 	);
-	public static final GameRules.RuleKey<GameRules.BooleanRule> field_19402 = register("spectatorsGenerateChunks", GameRules.BooleanRule.of(true));
-	public static final GameRules.RuleKey<GameRules.IntRule> field_19403 = register("spawnRadius", GameRules.IntRule.of(10));
-	public static final GameRules.RuleKey<GameRules.BooleanRule> field_19404 = register("disableElytraMovementCheck", GameRules.BooleanRule.of(false));
-	public static final GameRules.RuleKey<GameRules.IntRule> field_19405 = register("maxEntityCramming", GameRules.IntRule.of(24));
-	public static final GameRules.RuleKey<GameRules.BooleanRule> field_19406 = register("doWeatherCycle", GameRules.BooleanRule.of(true));
-	public static final GameRules.RuleKey<GameRules.BooleanRule> field_19407 = register("doLimitedCrafting", GameRules.BooleanRule.of(false));
-	public static final GameRules.RuleKey<GameRules.IntRule> field_19408 = register("maxCommandChainLength", GameRules.IntRule.of(65536));
-	public static final GameRules.RuleKey<GameRules.BooleanRule> field_19409 = register("announceAdvancements", GameRules.BooleanRule.of(true));
-	public static final GameRules.RuleKey<GameRules.BooleanRule> field_19422 = register("disableRaids", GameRules.BooleanRule.of(false));
+	public static final GameRules.RuleKey<GameRules.BooleanRule> SPECTATORS_GENERATE_CHUNKS = register("spectatorsGenerateChunks", GameRules.BooleanRule.of(true));
+	public static final GameRules.RuleKey<GameRules.IntRule> SPAWN_RADIUS = register("spawnRadius", GameRules.IntRule.of(10));
+	public static final GameRules.RuleKey<GameRules.BooleanRule> DISABLE_ELYTRA_MOVEMENT_CHECK = register(
+		"disableElytraMovementCheck", GameRules.BooleanRule.of(false)
+	);
+	public static final GameRules.RuleKey<GameRules.IntRule> MAX_ENTITY_CRAMMING = register("maxEntityCramming", GameRules.IntRule.of(24));
+	public static final GameRules.RuleKey<GameRules.BooleanRule> DO_WEATHER_CYCLE = register("doWeatherCycle", GameRules.BooleanRule.of(true));
+	public static final GameRules.RuleKey<GameRules.BooleanRule> DO_LIMITED_CRAFTING = register("doLimitedCrafting", GameRules.BooleanRule.of(false));
+	public static final GameRules.RuleKey<GameRules.IntRule> MAX_COMMAND_CHAIN_LENGTH = register("maxCommandChainLength", GameRules.IntRule.of(65536));
+	public static final GameRules.RuleKey<GameRules.BooleanRule> ANNOUNCE_ADVANCEMENTS = register("announceAdvancements", GameRules.BooleanRule.of(true));
+	public static final GameRules.RuleKey<GameRules.BooleanRule> DISABLE_RAIDS = register("disableRaids", GameRules.BooleanRule.of(false));
 	private final Map<GameRules.RuleKey<?>, GameRules.Rule<?>> rules = (Map<GameRules.RuleKey<?>, GameRules.Rule<?>>)RULES.entrySet()
 		.stream()
 		.collect(ImmutableMap.toImmutableMap(Entry::getKey, entry -> ((GameRules.RuleType)entry.getValue()).newRule()));

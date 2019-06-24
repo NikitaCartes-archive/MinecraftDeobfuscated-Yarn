@@ -184,7 +184,7 @@ public class WorldRenderer implements AutoCloseable, SynchronousResourceReloadLi
 		}
 
 		this.field_4100 = new VertexFormat();
-		this.field_4100.add(new VertexFormatElement(0, VertexFormatElement.Format.field_1623, VertexFormatElement.Type.field_1633, 3));
+		this.field_4100.add(new VertexFormatElement(0, VertexFormatElement.Format.FLOAT, VertexFormatElement.Type.POSITION, 3));
 		this.renderStars();
 		this.method_3277();
 		this.method_3265();
@@ -611,7 +611,7 @@ public class WorldRenderer implements AutoCloseable, SynchronousResourceReloadLi
 				BlockState blockState = this.world.getBlockState(blockPos);
 				if (blockState.getBlock().hasBlockEntity()) {
 					BlockEntity blockEntity = this.world.getBlockEntity(blockPos);
-					if (blockEntity instanceof ChestBlockEntity && blockState.get(ChestBlock.CHEST_TYPE) == ChestType.field_12574) {
+					if (blockEntity instanceof ChestBlockEntity && blockState.get(ChestBlock.CHEST_TYPE) == ChestType.LEFT) {
 						blockPos = blockPos.offset(((Direction)blockState.get(ChestBlock.FACING)).rotateYClockwise());
 						blockEntity = this.world.getBlockEntity(blockPos);
 					}
@@ -844,7 +844,7 @@ public class WorldRenderer implements AutoCloseable, SynchronousResourceReloadLi
 
 	public int renderLayer(BlockRenderLayer blockRenderLayer, Camera camera) {
 		GuiLighting.disable();
-		if (blockRenderLayer == BlockRenderLayer.field_9179) {
+		if (blockRenderLayer == BlockRenderLayer.TRANSLUCENT) {
 			this.client.getProfiler().push("translucent_sort");
 			double d = camera.getPos().x - this.lastTranslucentSortX;
 			double e = camera.getPos().y - this.lastTranslucentSortY;
@@ -867,7 +867,7 @@ public class WorldRenderer implements AutoCloseable, SynchronousResourceReloadLi
 
 		this.client.getProfiler().push("filterempty");
 		int j = 0;
-		boolean bl = blockRenderLayer == BlockRenderLayer.field_9179;
+		boolean bl = blockRenderLayer == BlockRenderLayer.TRANSLUCENT;
 		int k = bl ? this.chunkInfos.size() - 1 : 0;
 		int l = bl ? -1 : this.chunkInfos.size();
 		int m = bl ? -1 : 1;
@@ -904,10 +904,10 @@ public class WorldRenderer implements AutoCloseable, SynchronousResourceReloadLi
 				VertexFormatElement.Type type = vertexFormatElement.getType();
 				int i = vertexFormatElement.getIndex();
 				switch (type) {
-					case field_1633:
+					case POSITION:
 						GlStateManager.disableClientState(32884);
 						break;
-					case field_1636:
+					case UV:
 						GLX.glClientActiveTexture(GLX.GL_TEXTURE0 + i);
 						GlStateManager.disableClientState(32888);
 						GLX.glClientActiveTexture(GLX.GL_TEXTURE0);
@@ -990,7 +990,7 @@ public class WorldRenderer implements AutoCloseable, SynchronousResourceReloadLi
 	}
 
 	public void renderSky(float f) {
-		if (this.client.world.dimension.getType() == DimensionType.field_13078) {
+		if (this.client.world.dimension.getType() == DimensionType.THE_END) {
 			this.renderEndSky();
 		} else if (this.client.world.dimension.hasVisibleSky()) {
 			GlStateManager.disableTexture();
@@ -1664,7 +1664,7 @@ public class WorldRenderer implements AutoCloseable, SynchronousResourceReloadLi
 	}
 
 	public void drawHighlightedBlockOutline(Camera camera, HitResult hitResult, int i) {
-		if (i == 0 && hitResult.getType() == HitResult.Type.field_1332) {
+		if (i == 0 && hitResult.getType() == HitResult.Type.BLOCK) {
 			BlockPos blockPos = ((BlockHitResult)hitResult).getBlockPos();
 			BlockState blockState = this.world.getBlockState(blockPos);
 			if (!blockState.isAir() && this.world.getWorldBorder().contains(blockPos)) {
@@ -1941,11 +1941,11 @@ public class WorldRenderer implements AutoCloseable, SynchronousResourceReloadLi
 					}
 
 					if (i == 1023) {
-						this.world.playSound(h, k, l, SoundEvents.field_14792, SoundCategory.field_15251, 1.0F, 1.0F, false);
+						this.world.playSound(h, k, l, SoundEvents.ENTITY_WITHER_SPAWN, SoundCategory.HOSTILE, 1.0F, 1.0F, false);
 					} else if (i == 1038) {
-						this.world.playSound(h, k, l, SoundEvents.field_14981, SoundCategory.field_15251, 1.0F, 1.0F, false);
+						this.world.playSound(h, k, l, SoundEvents.BLOCK_END_PORTAL_SPAWN, SoundCategory.HOSTILE, 1.0F, 1.0F, false);
 					} else {
-						this.world.playSound(h, k, l, SoundEvents.field_14773, SoundCategory.field_15251, 5.0F, 1.0F, false);
+						this.world.playSound(h, k, l, SoundEvents.ENTITY_ENDER_DRAGON_DEATH, SoundCategory.HOSTILE, 5.0F, 1.0F, false);
 					}
 				}
 		}
@@ -1955,34 +1955,35 @@ public class WorldRenderer implements AutoCloseable, SynchronousResourceReloadLi
 		Random random = this.world.random;
 		switch (i) {
 			case 1000:
-				this.world.playSound(blockPos, SoundEvents.field_14611, SoundCategory.field_15245, 1.0F, 1.0F, false);
+				this.world.playSound(blockPos, SoundEvents.BLOCK_DISPENSER_DISPENSE, SoundCategory.BLOCKS, 1.0F, 1.0F, false);
 				break;
 			case 1001:
-				this.world.playSound(blockPos, SoundEvents.field_14701, SoundCategory.field_15245, 1.0F, 1.2F, false);
+				this.world.playSound(blockPos, SoundEvents.BLOCK_DISPENSER_FAIL, SoundCategory.BLOCKS, 1.0F, 1.2F, false);
 				break;
 			case 1002:
-				this.world.playSound(blockPos, SoundEvents.field_14711, SoundCategory.field_15245, 1.0F, 1.2F, false);
+				this.world.playSound(blockPos, SoundEvents.BLOCK_DISPENSER_LAUNCH, SoundCategory.BLOCKS, 1.0F, 1.2F, false);
 				break;
 			case 1003:
-				this.world.playSound(blockPos, SoundEvents.field_15155, SoundCategory.field_15254, 1.0F, 1.2F, false);
+				this.world.playSound(blockPos, SoundEvents.ENTITY_ENDER_EYE_LAUNCH, SoundCategory.NEUTRAL, 1.0F, 1.2F, false);
 				break;
 			case 1004:
-				this.world.playSound(blockPos, SoundEvents.field_14712, SoundCategory.field_15254, 1.0F, 1.2F, false);
+				this.world.playSound(blockPos, SoundEvents.ENTITY_FIREWORK_ROCKET_SHOOT, SoundCategory.NEUTRAL, 1.0F, 1.2F, false);
 				break;
 			case 1005:
-				this.world.playSound(blockPos, SoundEvents.field_14567, SoundCategory.field_15245, 1.0F, this.world.random.nextFloat() * 0.1F + 0.9F, false);
+				this.world.playSound(blockPos, SoundEvents.BLOCK_IRON_DOOR_OPEN, SoundCategory.BLOCKS, 1.0F, this.world.random.nextFloat() * 0.1F + 0.9F, false);
 				break;
 			case 1006:
-				this.world.playSound(blockPos, SoundEvents.field_14664, SoundCategory.field_15245, 1.0F, this.world.random.nextFloat() * 0.1F + 0.9F, false);
+				this.world.playSound(blockPos, SoundEvents.BLOCK_WOODEN_DOOR_OPEN, SoundCategory.BLOCKS, 1.0F, this.world.random.nextFloat() * 0.1F + 0.9F, false);
 				break;
 			case 1007:
-				this.world.playSound(blockPos, SoundEvents.field_14932, SoundCategory.field_15245, 1.0F, this.world.random.nextFloat() * 0.1F + 0.9F, false);
+				this.world.playSound(blockPos, SoundEvents.BLOCK_WOODEN_TRAPDOOR_OPEN, SoundCategory.BLOCKS, 1.0F, this.world.random.nextFloat() * 0.1F + 0.9F, false);
 				break;
 			case 1008:
-				this.world.playSound(blockPos, SoundEvents.field_14766, SoundCategory.field_15245, 1.0F, this.world.random.nextFloat() * 0.1F + 0.9F, false);
+				this.world.playSound(blockPos, SoundEvents.BLOCK_FENCE_GATE_OPEN, SoundCategory.BLOCKS, 1.0F, this.world.random.nextFloat() * 0.1F + 0.9F, false);
 				break;
 			case 1009:
-				this.world.playSound(blockPos, SoundEvents.field_15102, SoundCategory.field_15245, 0.5F, 2.6F + (random.nextFloat() - random.nextFloat()) * 0.8F, false);
+				this.world
+					.playSound(blockPos, SoundEvents.BLOCK_FIRE_EXTINGUISH, SoundCategory.BLOCKS, 0.5F, 2.6F + (random.nextFloat() - random.nextFloat()) * 0.8F, false);
 				break;
 			case 1010:
 				if (Item.byRawId(j) instanceof MusicDiscItem) {
@@ -1992,94 +1993,118 @@ public class WorldRenderer implements AutoCloseable, SynchronousResourceReloadLi
 				}
 				break;
 			case 1011:
-				this.world.playSound(blockPos, SoundEvents.field_14819, SoundCategory.field_15245, 1.0F, this.world.random.nextFloat() * 0.1F + 0.9F, false);
+				this.world.playSound(blockPos, SoundEvents.BLOCK_IRON_DOOR_CLOSE, SoundCategory.BLOCKS, 1.0F, this.world.random.nextFloat() * 0.1F + 0.9F, false);
 				break;
 			case 1012:
-				this.world.playSound(blockPos, SoundEvents.field_14541, SoundCategory.field_15245, 1.0F, this.world.random.nextFloat() * 0.1F + 0.9F, false);
+				this.world.playSound(blockPos, SoundEvents.BLOCK_WOODEN_DOOR_CLOSE, SoundCategory.BLOCKS, 1.0F, this.world.random.nextFloat() * 0.1F + 0.9F, false);
 				break;
 			case 1013:
-				this.world.playSound(blockPos, SoundEvents.field_15080, SoundCategory.field_15245, 1.0F, this.world.random.nextFloat() * 0.1F + 0.9F, false);
+				this.world.playSound(blockPos, SoundEvents.BLOCK_WOODEN_TRAPDOOR_CLOSE, SoundCategory.BLOCKS, 1.0F, this.world.random.nextFloat() * 0.1F + 0.9F, false);
 				break;
 			case 1014:
-				this.world.playSound(blockPos, SoundEvents.field_14861, SoundCategory.field_15245, 1.0F, this.world.random.nextFloat() * 0.1F + 0.9F, false);
+				this.world.playSound(blockPos, SoundEvents.BLOCK_FENCE_GATE_CLOSE, SoundCategory.BLOCKS, 1.0F, this.world.random.nextFloat() * 0.1F + 0.9F, false);
 				break;
 			case 1015:
-				this.world.playSound(blockPos, SoundEvents.field_15130, SoundCategory.field_15251, 10.0F, (random.nextFloat() - random.nextFloat()) * 0.2F + 1.0F, false);
+				this.world.playSound(blockPos, SoundEvents.ENTITY_GHAST_WARN, SoundCategory.HOSTILE, 10.0F, (random.nextFloat() - random.nextFloat()) * 0.2F + 1.0F, false);
 				break;
 			case 1016:
-				this.world.playSound(blockPos, SoundEvents.field_15231, SoundCategory.field_15251, 10.0F, (random.nextFloat() - random.nextFloat()) * 0.2F + 1.0F, false);
+				this.world
+					.playSound(blockPos, SoundEvents.ENTITY_GHAST_SHOOT, SoundCategory.HOSTILE, 10.0F, (random.nextFloat() - random.nextFloat()) * 0.2F + 1.0F, false);
 				break;
 			case 1017:
-				this.world.playSound(blockPos, SoundEvents.field_14934, SoundCategory.field_15251, 10.0F, (random.nextFloat() - random.nextFloat()) * 0.2F + 1.0F, false);
+				this.world
+					.playSound(blockPos, SoundEvents.ENTITY_ENDER_DRAGON_SHOOT, SoundCategory.HOSTILE, 10.0F, (random.nextFloat() - random.nextFloat()) * 0.2F + 1.0F, false);
 				break;
 			case 1018:
-				this.world.playSound(blockPos, SoundEvents.field_14970, SoundCategory.field_15251, 2.0F, (random.nextFloat() - random.nextFloat()) * 0.2F + 1.0F, false);
+				this.world.playSound(blockPos, SoundEvents.ENTITY_BLAZE_SHOOT, SoundCategory.HOSTILE, 2.0F, (random.nextFloat() - random.nextFloat()) * 0.2F + 1.0F, false);
 				break;
 			case 1019:
-				this.world.playSound(blockPos, SoundEvents.field_14562, SoundCategory.field_15251, 2.0F, (random.nextFloat() - random.nextFloat()) * 0.2F + 1.0F, false);
+				this.world
+					.playSound(
+						blockPos, SoundEvents.ENTITY_ZOMBIE_ATTACK_WOODEN_DOOR, SoundCategory.HOSTILE, 2.0F, (random.nextFloat() - random.nextFloat()) * 0.2F + 1.0F, false
+					);
 				break;
 			case 1020:
-				this.world.playSound(blockPos, SoundEvents.field_14670, SoundCategory.field_15251, 2.0F, (random.nextFloat() - random.nextFloat()) * 0.2F + 1.0F, false);
+				this.world
+					.playSound(
+						blockPos, SoundEvents.ENTITY_ZOMBIE_ATTACK_IRON_DOOR, SoundCategory.HOSTILE, 2.0F, (random.nextFloat() - random.nextFloat()) * 0.2F + 1.0F, false
+					);
 				break;
 			case 1021:
-				this.world.playSound(blockPos, SoundEvents.field_14742, SoundCategory.field_15251, 2.0F, (random.nextFloat() - random.nextFloat()) * 0.2F + 1.0F, false);
+				this.world
+					.playSound(
+						blockPos, SoundEvents.ENTITY_ZOMBIE_BREAK_WOODEN_DOOR, SoundCategory.HOSTILE, 2.0F, (random.nextFloat() - random.nextFloat()) * 0.2F + 1.0F, false
+					);
 				break;
 			case 1022:
-				this.world.playSound(blockPos, SoundEvents.field_15236, SoundCategory.field_15251, 2.0F, (random.nextFloat() - random.nextFloat()) * 0.2F + 1.0F, false);
+				this.world
+					.playSound(blockPos, SoundEvents.ENTITY_WITHER_BREAK_BLOCK, SoundCategory.HOSTILE, 2.0F, (random.nextFloat() - random.nextFloat()) * 0.2F + 1.0F, false);
 				break;
 			case 1024:
-				this.world.playSound(blockPos, SoundEvents.field_14588, SoundCategory.field_15251, 2.0F, (random.nextFloat() - random.nextFloat()) * 0.2F + 1.0F, false);
+				this.world
+					.playSound(blockPos, SoundEvents.ENTITY_WITHER_SHOOT, SoundCategory.HOSTILE, 2.0F, (random.nextFloat() - random.nextFloat()) * 0.2F + 1.0F, false);
 				break;
 			case 1025:
-				this.world.playSound(blockPos, SoundEvents.field_14610, SoundCategory.field_15254, 0.05F, (random.nextFloat() - random.nextFloat()) * 0.2F + 1.0F, false);
+				this.world
+					.playSound(blockPos, SoundEvents.ENTITY_BAT_TAKEOFF, SoundCategory.NEUTRAL, 0.05F, (random.nextFloat() - random.nextFloat()) * 0.2F + 1.0F, false);
 				break;
 			case 1026:
-				this.world.playSound(blockPos, SoundEvents.field_14986, SoundCategory.field_15251, 2.0F, (random.nextFloat() - random.nextFloat()) * 0.2F + 1.0F, false);
+				this.world
+					.playSound(blockPos, SoundEvents.ENTITY_ZOMBIE_INFECT, SoundCategory.HOSTILE, 2.0F, (random.nextFloat() - random.nextFloat()) * 0.2F + 1.0F, false);
 				break;
 			case 1027:
-				this.world.playSound(blockPos, SoundEvents.field_15168, SoundCategory.field_15254, 2.0F, (random.nextFloat() - random.nextFloat()) * 0.2F + 1.0F, false);
+				this.world
+					.playSound(
+						blockPos, SoundEvents.ENTITY_ZOMBIE_VILLAGER_CONVERTED, SoundCategory.NEUTRAL, 2.0F, (random.nextFloat() - random.nextFloat()) * 0.2F + 1.0F, false
+					);
 				break;
 			case 1029:
-				this.world.playSound(blockPos, SoundEvents.field_14665, SoundCategory.field_15245, 1.0F, this.world.random.nextFloat() * 0.1F + 0.9F, false);
+				this.world.playSound(blockPos, SoundEvents.BLOCK_ANVIL_DESTROY, SoundCategory.BLOCKS, 1.0F, this.world.random.nextFloat() * 0.1F + 0.9F, false);
 				break;
 			case 1030:
-				this.world.playSound(blockPos, SoundEvents.field_14559, SoundCategory.field_15245, 1.0F, this.world.random.nextFloat() * 0.1F + 0.9F, false);
+				this.world.playSound(blockPos, SoundEvents.BLOCK_ANVIL_USE, SoundCategory.BLOCKS, 1.0F, this.world.random.nextFloat() * 0.1F + 0.9F, false);
 				break;
 			case 1031:
-				this.world.playSound(blockPos, SoundEvents.field_14833, SoundCategory.field_15245, 0.3F, this.world.random.nextFloat() * 0.1F + 0.9F, false);
+				this.world.playSound(blockPos, SoundEvents.BLOCK_ANVIL_LAND, SoundCategory.BLOCKS, 0.3F, this.world.random.nextFloat() * 0.1F + 0.9F, false);
 				break;
 			case 1032:
-				this.client.getSoundManager().play(PositionedSoundInstance.master(SoundEvents.field_14716, random.nextFloat() * 0.4F + 0.8F));
+				this.client.getSoundManager().play(PositionedSoundInstance.master(SoundEvents.BLOCK_PORTAL_TRAVEL, random.nextFloat() * 0.4F + 0.8F));
 				break;
 			case 1033:
-				this.world.playSound(blockPos, SoundEvents.field_14817, SoundCategory.field_15245, 1.0F, 1.0F, false);
+				this.world.playSound(blockPos, SoundEvents.BLOCK_CHORUS_FLOWER_GROW, SoundCategory.BLOCKS, 1.0F, 1.0F, false);
 				break;
 			case 1034:
-				this.world.playSound(blockPos, SoundEvents.field_14739, SoundCategory.field_15245, 1.0F, 1.0F, false);
+				this.world.playSound(blockPos, SoundEvents.BLOCK_CHORUS_FLOWER_DEATH, SoundCategory.BLOCKS, 1.0F, 1.0F, false);
 				break;
 			case 1035:
-				this.world.playSound(blockPos, SoundEvents.field_14978, SoundCategory.field_15245, 1.0F, 1.0F, false);
+				this.world.playSound(blockPos, SoundEvents.BLOCK_BREWING_STAND_BREW, SoundCategory.BLOCKS, 1.0F, 1.0F, false);
 				break;
 			case 1036:
-				this.world.playSound(blockPos, SoundEvents.field_15131, SoundCategory.field_15245, 1.0F, this.world.random.nextFloat() * 0.1F + 0.9F, false);
+				this.world.playSound(blockPos, SoundEvents.BLOCK_IRON_TRAPDOOR_CLOSE, SoundCategory.BLOCKS, 1.0F, this.world.random.nextFloat() * 0.1F + 0.9F, false);
 				break;
 			case 1037:
-				this.world.playSound(blockPos, SoundEvents.field_15082, SoundCategory.field_15245, 1.0F, this.world.random.nextFloat() * 0.1F + 0.9F, false);
+				this.world.playSound(blockPos, SoundEvents.BLOCK_IRON_TRAPDOOR_OPEN, SoundCategory.BLOCKS, 1.0F, this.world.random.nextFloat() * 0.1F + 0.9F, false);
 				break;
 			case 1039:
-				this.world.playSound(blockPos, SoundEvents.field_14729, SoundCategory.field_15251, 0.3F, this.world.random.nextFloat() * 0.1F + 0.9F, false);
+				this.world.playSound(blockPos, SoundEvents.ENTITY_PHANTOM_BITE, SoundCategory.HOSTILE, 0.3F, this.world.random.nextFloat() * 0.1F + 0.9F, false);
 				break;
 			case 1040:
-				this.world.playSound(blockPos, SoundEvents.field_14850, SoundCategory.field_15254, 2.0F, (random.nextFloat() - random.nextFloat()) * 0.2F + 1.0F, false);
+				this.world
+					.playSound(
+						blockPos, SoundEvents.ENTITY_ZOMBIE_CONVERTED_TO_DROWNED, SoundCategory.NEUTRAL, 2.0F, (random.nextFloat() - random.nextFloat()) * 0.2F + 1.0F, false
+					);
 				break;
 			case 1041:
-				this.world.playSound(blockPos, SoundEvents.field_15128, SoundCategory.field_15254, 2.0F, (random.nextFloat() - random.nextFloat()) * 0.2F + 1.0F, false);
+				this.world
+					.playSound(
+						blockPos, SoundEvents.ENTITY_HUSK_CONVERTED_TO_ZOMBIE, SoundCategory.NEUTRAL, 2.0F, (random.nextFloat() - random.nextFloat()) * 0.2F + 1.0F, false
+					);
 				break;
 			case 1042:
-				this.world.playSound(blockPos, SoundEvents.field_16865, SoundCategory.field_15245, 1.0F, this.world.random.nextFloat() * 0.1F + 0.9F, false);
+				this.world.playSound(blockPos, SoundEvents.BLOCK_GRINDSTONE_USE, SoundCategory.BLOCKS, 1.0F, this.world.random.nextFloat() * 0.1F + 0.9F, false);
 				break;
 			case 1043:
-				this.world.playSound(blockPos, SoundEvents.field_17481, SoundCategory.field_15245, 1.0F, this.world.random.nextFloat() * 0.1F + 0.9F, false);
+				this.world.playSound(blockPos, SoundEvents.ITEM_BOOK_PAGE_TURN, SoundCategory.BLOCKS, 1.0F, this.world.random.nextFloat() * 0.1F + 0.9F, false);
 				break;
 			case 1500:
 				ComposterBlock.playEffects(this.world, blockPos, j > 0);
@@ -2088,8 +2113,8 @@ public class WorldRenderer implements AutoCloseable, SynchronousResourceReloadLi
 				this.world
 					.playSound(
 						blockPos,
-						SoundEvents.field_19198,
-						SoundCategory.field_15245,
+						SoundEvents.BLOCK_LAVA_EXTINGUISH,
+						SoundCategory.BLOCKS,
 						0.5F,
 						2.6F + (this.world.getRandom().nextFloat() - this.world.getRandom().nextFloat()) * 0.8F,
 						false
@@ -2098,7 +2123,7 @@ public class WorldRenderer implements AutoCloseable, SynchronousResourceReloadLi
 				for (int kx = 0; kx < 8; kx++) {
 					this.world
 						.addParticle(
-							ParticleTypes.field_11237,
+							ParticleTypes.LARGE_SMOKE,
 							(double)blockPos.getX() + Math.random(),
 							(double)blockPos.getY() + 1.2,
 							(double)blockPos.getZ() + Math.random(),
@@ -2111,18 +2136,23 @@ public class WorldRenderer implements AutoCloseable, SynchronousResourceReloadLi
 			case 1502:
 				this.world
 					.playSound(
-						blockPos, SoundEvents.field_19199, SoundCategory.field_15245, 0.5F, 2.6F + (this.world.random.nextFloat() - this.world.random.nextFloat()) * 0.8F, false
+						blockPos,
+						SoundEvents.BLOCK_REDSTONE_TORCH_BURNOUT,
+						SoundCategory.BLOCKS,
+						0.5F,
+						2.6F + (this.world.random.nextFloat() - this.world.random.nextFloat()) * 0.8F,
+						false
 					);
 
 				for (int kx = 0; kx < 5; kx++) {
 					double u = (double)blockPos.getX() + random.nextDouble() * 0.6 + 0.2;
 					double d = (double)blockPos.getY() + random.nextDouble() * 0.6 + 0.2;
 					double e = (double)blockPos.getZ() + random.nextDouble() * 0.6 + 0.2;
-					this.world.addParticle(ParticleTypes.field_11251, u, d, e, 0.0, 0.0, 0.0);
+					this.world.addParticle(ParticleTypes.SMOKE, u, d, e, 0.0, 0.0, 0.0);
 				}
 				break;
 			case 1503:
-				this.world.playSound(blockPos, SoundEvents.field_19197, SoundCategory.field_15245, 1.0F, 1.0F, false);
+				this.world.playSound(blockPos, SoundEvents.BLOCK_END_PORTAL_FRAME_FILL, SoundCategory.BLOCKS, 1.0F, 1.0F, false);
 
 				for (int kx = 0; kx < 16; kx++) {
 					double u = (double)((float)blockPos.getX() + (5.0F + random.nextFloat() * 6.0F) / 16.0F);
@@ -2131,7 +2161,7 @@ public class WorldRenderer implements AutoCloseable, SynchronousResourceReloadLi
 					double f = 0.0;
 					double aa = 0.0;
 					double ab = 0.0;
-					this.world.addParticle(ParticleTypes.field_11251, u, d, e, 0.0, 0.0, 0.0);
+					this.world.addParticle(ParticleTypes.SMOKE, u, d, e, 0.0, 0.0, 0.0);
 				}
 				break;
 			case 2000:
@@ -2151,7 +2181,7 @@ public class WorldRenderer implements AutoCloseable, SynchronousResourceReloadLi
 					double q = (double)kx * g + random.nextGaussian() * 0.01;
 					double r = (double)l * g + random.nextGaussian() * 0.01;
 					double s = (double)m * g + random.nextGaussian() * 0.01;
-					this.addParticle(ParticleTypes.field_11251, h, o, p, q, r, s);
+					this.addParticle(ParticleTypes.SMOKE, h, o, p, q, r, s);
 				}
 				break;
 			case 2001:
@@ -2160,12 +2190,7 @@ public class WorldRenderer implements AutoCloseable, SynchronousResourceReloadLi
 					BlockSoundGroup blockSoundGroup = blockState.getSoundGroup();
 					this.world
 						.playSound(
-							blockPos,
-							blockSoundGroup.getBreakSound(),
-							SoundCategory.field_15245,
-							(blockSoundGroup.getVolume() + 1.0F) / 2.0F,
-							blockSoundGroup.getPitch() * 0.8F,
-							false
+							blockPos, blockSoundGroup.getBreakSound(), SoundCategory.BLOCKS, (blockSoundGroup.getVolume() + 1.0F) / 2.0F, blockSoundGroup.getPitch() * 0.8F, false
 						);
 				}
 
@@ -2179,7 +2204,7 @@ public class WorldRenderer implements AutoCloseable, SynchronousResourceReloadLi
 
 				for (int v = 0; v < 8; v++) {
 					this.addParticle(
-						new ItemStackParticleEffect(ParticleTypes.field_11218, new ItemStack(Items.field_8436)),
+						new ItemStackParticleEffect(ParticleTypes.ITEM, new ItemStack(Items.SPLASH_POTION)),
 						t,
 						u,
 						d,
@@ -2192,7 +2217,7 @@ public class WorldRenderer implements AutoCloseable, SynchronousResourceReloadLi
 				float w = (float)(j >> 16 & 0xFF) / 255.0F;
 				float x = (float)(j >> 8 & 0xFF) / 255.0F;
 				float y = (float)(j >> 0 & 0xFF) / 255.0F;
-				ParticleEffect particleEffect = i == 2007 ? ParticleTypes.field_11213 : ParticleTypes.field_11245;
+				ParticleEffect particleEffect = i == 2007 ? ParticleTypes.INSTANT_EFFECT : ParticleTypes.EFFECT;
 
 				for (int n = 0; n < 100; n++) {
 					double g = random.nextDouble() * 4.0;
@@ -2208,7 +2233,7 @@ public class WorldRenderer implements AutoCloseable, SynchronousResourceReloadLi
 					}
 				}
 
-				this.world.playSound(blockPos, SoundEvents.field_14839, SoundCategory.field_15254, 1.0F, this.world.random.nextFloat() * 0.1F + 0.9F, false);
+				this.world.playSound(blockPos, SoundEvents.ENTITY_SPLASH_POTION_BREAK, SoundCategory.NEUTRAL, 1.0F, this.world.random.nextFloat() * 0.1F + 0.9F, false);
 				break;
 			case 2003:
 				double t = (double)blockPos.getX() + 0.5;
@@ -2217,7 +2242,7 @@ public class WorldRenderer implements AutoCloseable, SynchronousResourceReloadLi
 
 				for (int v = 0; v < 8; v++) {
 					this.addParticle(
-						new ItemStackParticleEffect(ParticleTypes.field_11218, new ItemStack(Items.field_8449)),
+						new ItemStackParticleEffect(ParticleTypes.ITEM, new ItemStack(Items.ENDER_EYE)),
 						t,
 						u,
 						d,
@@ -2228,8 +2253,8 @@ public class WorldRenderer implements AutoCloseable, SynchronousResourceReloadLi
 				}
 
 				for (double e = 0.0; e < Math.PI * 2; e += Math.PI / 20) {
-					this.addParticle(ParticleTypes.field_11214, t + Math.cos(e) * 5.0, u - 0.4, d + Math.sin(e) * 5.0, Math.cos(e) * -5.0, 0.0, Math.sin(e) * -5.0);
-					this.addParticle(ParticleTypes.field_11214, t + Math.cos(e) * 5.0, u - 0.4, d + Math.sin(e) * 5.0, Math.cos(e) * -7.0, 0.0, Math.sin(e) * -7.0);
+					this.addParticle(ParticleTypes.PORTAL, t + Math.cos(e) * 5.0, u - 0.4, d + Math.sin(e) * 5.0, Math.cos(e) * -5.0, 0.0, Math.sin(e) * -5.0);
+					this.addParticle(ParticleTypes.PORTAL, t + Math.cos(e) * 5.0, u - 0.4, d + Math.sin(e) * 5.0, Math.cos(e) * -7.0, 0.0, Math.sin(e) * -7.0);
 				}
 				break;
 			case 2004:
@@ -2237,8 +2262,8 @@ public class WorldRenderer implements AutoCloseable, SynchronousResourceReloadLi
 					double u = (double)blockPos.getX() + 0.5 + ((double)this.world.random.nextFloat() - 0.5) * 2.0;
 					double d = (double)blockPos.getY() + 0.5 + ((double)this.world.random.nextFloat() - 0.5) * 2.0;
 					double e = (double)blockPos.getZ() + 0.5 + ((double)this.world.random.nextFloat() - 0.5) * 2.0;
-					this.world.addParticle(ParticleTypes.field_11251, u, d, e, 0.0, 0.0, 0.0);
-					this.world.addParticle(ParticleTypes.field_11240, u, d, e, 0.0, 0.0, 0.0);
+					this.world.addParticle(ParticleTypes.SMOKE, u, d, e, 0.0, 0.0, 0.0);
+					this.world.addParticle(ParticleTypes.FLAME, u, d, e, 0.0, 0.0, 0.0);
 				}
 				break;
 			case 2005:
@@ -2252,34 +2277,35 @@ public class WorldRenderer implements AutoCloseable, SynchronousResourceReloadLi
 					double e = 0.01 + random.nextDouble() * 0.5;
 					double f = (double)(MathHelper.sin(ad) * ac);
 					Particle particle2 = this.spawnParticle(
-						ParticleTypes.field_11216, false, (double)blockPos.getX() + d * 0.1, (double)blockPos.getY() + 0.3, (double)blockPos.getZ() + f * 0.1, d, e, f
+						ParticleTypes.DRAGON_BREATH, false, (double)blockPos.getX() + d * 0.1, (double)blockPos.getY() + 0.3, (double)blockPos.getZ() + f * 0.1, d, e, f
 					);
 					if (particle2 != null) {
 						particle2.move(ac);
 					}
 				}
 
-				this.world.playSound(blockPos, SoundEvents.field_14803, SoundCategory.field_15251, 1.0F, this.world.random.nextFloat() * 0.1F + 0.9F, false);
+				this.world.playSound(blockPos, SoundEvents.ENTITY_DRAGON_FIREBALL_EXPLODE, SoundCategory.HOSTILE, 1.0F, this.world.random.nextFloat() * 0.1F + 0.9F, false);
 				break;
 			case 2008:
-				this.world
-					.addParticle(ParticleTypes.field_11236, (double)blockPos.getX() + 0.5, (double)blockPos.getY() + 0.5, (double)blockPos.getZ() + 0.5, 0.0, 0.0, 0.0);
+				this.world.addParticle(ParticleTypes.EXPLOSION, (double)blockPos.getX() + 0.5, (double)blockPos.getY() + 0.5, (double)blockPos.getZ() + 0.5, 0.0, 0.0, 0.0);
 				break;
 			case 3000:
 				this.world
-					.addParticle(ParticleTypes.field_11221, true, (double)blockPos.getX() + 0.5, (double)blockPos.getY() + 0.5, (double)blockPos.getZ() + 0.5, 0.0, 0.0, 0.0);
+					.addParticle(
+						ParticleTypes.EXPLOSION_EMITTER, true, (double)blockPos.getX() + 0.5, (double)blockPos.getY() + 0.5, (double)blockPos.getZ() + 0.5, 0.0, 0.0, 0.0
+					);
 				this.world
 					.playSound(
 						blockPos,
-						SoundEvents.field_14816,
-						SoundCategory.field_15245,
+						SoundEvents.BLOCK_END_GATEWAY_SPAWN,
+						SoundCategory.BLOCKS,
 						10.0F,
 						(1.0F + (this.world.random.nextFloat() - this.world.random.nextFloat()) * 0.2F) * 0.7F,
 						false
 					);
 				break;
 			case 3001:
-				this.world.playSound(blockPos, SoundEvents.field_14671, SoundCategory.field_15251, 64.0F, 0.8F + this.world.random.nextFloat() * 0.3F, false);
+				this.world.playSound(blockPos, SoundEvents.ENTITY_ENDER_DRAGON_GROWL, SoundCategory.HOSTILE, 64.0F, 0.8F + this.world.random.nextFloat() * 0.3F, false);
 		}
 	}
 

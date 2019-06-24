@@ -42,7 +42,7 @@ public class SimpleTickScheduler<T> implements TickScheduler<T> {
 	}
 
 	@Override
-	public void method_20470(Stream<ScheduledTick<T>> stream) {
+	public void scheduleAll(Stream<ScheduledTick<T>> stream) {
 		stream.forEach(this.scheduledTicks::add);
 	}
 
@@ -50,11 +50,11 @@ public class SimpleTickScheduler<T> implements TickScheduler<T> {
 		return this.scheduledTicks.stream();
 	}
 
-	public ListTag toTag(long l) {
+	public ListTag toNbt(long l) {
 		return ServerTickScheduler.serializeScheduledTicks(this.identifierProvider, this.scheduledTicks, l);
 	}
 
-	public static <T> SimpleTickScheduler<T> method_20512(ListTag listTag, Function<T, Identifier> function, Function<Identifier, T> function2) {
+	public static <T> SimpleTickScheduler<T> fromNbt(ListTag listTag, Function<T, Identifier> function, Function<Identifier, T> function2) {
 		Set<ScheduledTick<T>> set = Sets.<ScheduledTick<T>>newHashSet();
 
 		for (int i = 0; i < listTag.size(); i++) {

@@ -24,6 +24,6 @@ public class DepthStriderEnchantment extends Enchantment {
 
 	@Override
 	public boolean differs(Enchantment enchantment) {
-		return super.differs(enchantment) && enchantment != Enchantments.field_9122;
+		return super.differs(enchantment) && enchantment != Enchantments.FROST_WALKER;
 	}
 }

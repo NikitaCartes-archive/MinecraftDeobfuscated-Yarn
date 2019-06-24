@@ -45,7 +45,7 @@ public class Texts {
 	}
 
 	public static Text joinOrdered(Collection<String> collection) {
-		return joinOrdered(collection, string -> new LiteralText(string).formatted(Formatting.field_1060));
+		return joinOrdered(collection, string -> new LiteralText(string).formatted(Formatting.GREEN));
 	}
 
 	public static <T extends Comparable<T>> Text joinOrdered(Collection<T> collection, Function<T, Text> function) {
@@ -71,7 +71,7 @@ public class Texts {
 
 			for (T object : collection) {
 				if (!bl) {
-					text.append(new LiteralText(", ").formatted(Formatting.field_1080));
+					text.append(new LiteralText(", ").formatted(Formatting.GRAY));
 				}
 
 				text.append((Text)function.apply(object));

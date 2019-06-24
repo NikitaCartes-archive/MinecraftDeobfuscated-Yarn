@@ -125,19 +125,19 @@ public class PaintingEntityRenderer extends EntityRenderer<PaintingEntity> {
 		int j = MathHelper.floor(paintingEntity.y + (double)(g / 16.0F));
 		int k = MathHelper.floor(paintingEntity.z);
 		Direction direction = paintingEntity.getHorizontalFacing();
-		if (direction == Direction.field_11043) {
+		if (direction == Direction.NORTH) {
 			i = MathHelper.floor(paintingEntity.x + (double)(f / 16.0F));
 		}
 
-		if (direction == Direction.field_11039) {
+		if (direction == Direction.WEST) {
 			k = MathHelper.floor(paintingEntity.z - (double)(f / 16.0F));
 		}
 
-		if (direction == Direction.field_11035) {
+		if (direction == Direction.SOUTH) {
 			i = MathHelper.floor(paintingEntity.x - (double)(f / 16.0F));
 		}
 
-		if (direction == Direction.field_11034) {
+		if (direction == Direction.EAST) {
 			k = MathHelper.floor(paintingEntity.z + (double)(f / 16.0F));
 		}
 

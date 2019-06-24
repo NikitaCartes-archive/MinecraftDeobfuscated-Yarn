@@ -39,7 +39,7 @@ public class EndGatewayBlockEntity extends EndPortalBlockEntity implements Ticka
 	private boolean exactTeleport;
 
 	public EndGatewayBlockEntity() {
-		super(BlockEntityType.field_11906);
+		super(BlockEntityType.END_GATEWAY);
 	}
 
 	@Override
@@ -153,7 +153,7 @@ public class EndGatewayBlockEntity extends EndPortalBlockEntity implements Ticka
 
 			if (this.exitPortalPos != null) {
 				BlockPos blockPos = this.exactTeleport ? this.exitPortalPos : this.findBestPortalExitPos();
-				entity.method_20620((double)blockPos.getX() + 0.5, (double)blockPos.getY() + 0.5, (double)blockPos.getZ() + 0.5);
+				entity.teleport((double)blockPos.getX() + 0.5, (double)blockPos.getY() + 0.5, (double)blockPos.getZ() + 0.5);
 			}
 
 			this.startTeleportCooldown();
@@ -184,7 +184,7 @@ public class EndGatewayBlockEntity extends EndPortalBlockEntity implements Ticka
 		if (this.exitPortalPos == null) {
 			this.exitPortalPos = new BlockPos(vec3d2.x + 0.5, 75.0, vec3d2.z + 0.5);
 			LOGGER.debug("Failed to find suitable block, settling on {}", this.exitPortalPos);
-			Feature.field_13574
+			Feature.END_ISLAND
 				.generate(
 					this.world,
 					(ChunkGenerator<? extends ChunkGeneratorConfig>)this.world.getChunkManager().getChunkGenerator(),
@@ -212,7 +212,7 @@ public class EndGatewayBlockEntity extends EndPortalBlockEntity implements Ticka
 					for (int l = 255; l > (blockPos2 == null ? 0 : blockPos2.getY()); l--) {
 						BlockPos blockPos3 = new BlockPos(blockPos.getX() + j, l, blockPos.getZ() + k);
 						BlockState blockState = blockView.getBlockState(blockPos3);
-						if (Block.isShapeFullCube(blockState.getCollisionShape(blockView, blockPos3)) && (bl || blockState.getBlock() != Blocks.field_9987)) {
+						if (Block.isShapeFullCube(blockState.getCollisionShape(blockView, blockPos3)) && (bl || blockState.getBlock() != Blocks.BEDROCK)) {
 							blockPos2 = blockPos3;
 							break;
 						}
@@ -241,7 +241,7 @@ public class EndGatewayBlockEntity extends EndPortalBlockEntity implements Ticka
 			BlockState blockState = worldChunk.getBlockState(blockPos4);
 			BlockPos blockPos5 = blockPos4.up();
 			BlockPos blockPos6 = blockPos4.up(2);
-			if (blockState.getBlock() == Blocks.field_10471
+			if (blockState.getBlock() == Blocks.END_STONE
 				&& !Block.isShapeFullCube(worldChunk.getBlockState(blockPos5).getCollisionShape(worldChunk, blockPos5))
 				&& !Block.isShapeFullCube(worldChunk.getBlockState(blockPos6).getCollisionShape(worldChunk, blockPos6))) {
 				double e = blockPos4.getSquaredDistance(0.0, 0.0, 0.0, true);
@@ -256,7 +256,7 @@ public class EndGatewayBlockEntity extends EndPortalBlockEntity implements Ticka
 	}
 
 	private void createPortal(BlockPos blockPos) {
-		Feature.field_13564
+		Feature.END_GATEWAY
 			.generate(
 				this.world,
 				(ChunkGenerator<? extends ChunkGeneratorConfig>)this.world.getChunkManager().getChunkGenerator(),

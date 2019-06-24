@@ -21,7 +21,7 @@ public class KickCommand {
 								)
 						)
 						.then(
-							CommandManager.argument("reason", MessageArgumentType.create())
+							CommandManager.argument("reason", MessageArgumentType.message())
 								.executes(
 									commandContext -> execute(
 											commandContext.getSource(), EntityArgumentType.getPlayers(commandContext, "targets"), MessageArgumentType.getMessage(commandContext, "reason")

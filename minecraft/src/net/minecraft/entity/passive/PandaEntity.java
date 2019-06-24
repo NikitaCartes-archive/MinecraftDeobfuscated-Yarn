@@ -78,7 +78,7 @@ public class PandaEntity extends AnimalEntity {
 	private float lastRollOverAnimationProgress;
 	private static final Predicate<ItemEntity> IS_FOOD = itemEntity -> {
 		Item item = itemEntity.getStack().getItem();
-		return (item == Blocks.field_10211.asItem() || item == Blocks.field_10183.asItem()) && itemEntity.isAlive() && !itemEntity.cannotPickup();
+		return (item == Blocks.BAMBOO.asItem() || item == Blocks.CAKE.asItem()) && itemEntity.isAlive() && !itemEntity.cannotPickup();
 	};
 
 	public PandaEntity(EntityType<? extends PandaEntity> entityType, World world) {
@@ -92,7 +92,7 @@ public class PandaEntity extends AnimalEntity {
 	@Override
 	public boolean canPickUp(ItemStack itemStack) {
 		EquipmentSlot equipmentSlot = MobEntity.getPreferredEquipmentSlot(itemStack);
-		return !this.getEquippedStack(equipmentSlot).isEmpty() ? false : equipmentSlot == EquipmentSlot.field_6173 && super.canPickUp(itemStack);
+		return !this.getEquippedStack(equipmentSlot).isEmpty() ? false : equipmentSlot == EquipmentSlot.MAINHAND && super.canPickUp(itemStack);
 	}
 
 	public int getAskForBambooTicks() {
@@ -227,7 +227,7 @@ public class PandaEntity extends AnimalEntity {
 	@Nullable
 	@Override
 	public PassiveEntity createChild(PassiveEntity passiveEntity) {
-		PandaEntity pandaEntity = EntityType.field_6146.create(this.world);
+		PandaEntity pandaEntity = EntityType.PANDA.create(this.world);
 		if (passiveEntity instanceof PandaEntity) {
 			pandaEntity.initGenes(this, (PandaEntity)passiveEntity);
 		}
@@ -242,7 +242,7 @@ public class PandaEntity extends AnimalEntity {
 		this.goalSelector.add(2, new PandaEntity.ExtinguishFireGoal(this, 2.0));
 		this.goalSelector.add(2, new PandaEntity.PandaMateGoal(this, 1.0));
 		this.goalSelector.add(3, new PandaEntity.AttackGoal(this, 1.2F, true));
-		this.goalSelector.add(4, new TemptGoal(this, 1.0, Ingredient.ofItems(Blocks.field_10211.asItem()), false));
+		this.goalSelector.add(4, new TemptGoal(this, 1.0, Ingredient.ofItems(Blocks.BAMBOO.asItem()), false));
 		this.goalSelector.add(6, new PandaEntity.PandaFleeGoal(this, PlayerEntity.class, 8.0F, 2.0, 2.0));
 		this.goalSelector.add(6, new PandaEntity.PandaFleeGoal(this, HostileEntity.class, 4.0F, 2.0, 2.0));
 		this.goalSelector.add(7, new PandaEntity.PickUpFoodGoal());
@@ -268,24 +268,24 @@ public class PandaEntity extends AnimalEntity {
 	}
 
 	public boolean isLazy() {
-		return this.getProductGene() == PandaEntity.Gene.field_6794;
+		return this.getProductGene() == PandaEntity.Gene.LAZY;
 	}
 
 	public boolean isWorried() {
-		return this.getProductGene() == PandaEntity.Gene.field_6795;
+		return this.getProductGene() == PandaEntity.Gene.WORRIED;
 	}
 
 	public boolean isPlayful() {
-		return this.getProductGene() == PandaEntity.Gene.field_6791;
+		return this.getProductGene() == PandaEntity.Gene.PLAYFUL;
 	}
 
 	public boolean isWeak() {
-		return this.getProductGene() == PandaEntity.Gene.field_6793;
+		return this.getProductGene() == PandaEntity.Gene.WEAK;
 	}
 
 	@Override
 	public boolean isAttacking() {
-		return this.getProductGene() == PandaEntity.Gene.field_6789;
+		return this.getProductGene() == PandaEntity.Gene.AGGRESSIVE;
 	}
 
 	@Override
@@ -295,7 +295,7 @@ public class PandaEntity extends AnimalEntity {
 
 	@Override
 	public boolean tryAttack(Entity entity) {
-		this.playSound(SoundEvents.field_14552, 1.0F, 1.0F);
+		this.playSound(SoundEvents.ENTITY_PANDA_BITE, 1.0F, 1.0F);
 		if (!this.isAttacking()) {
 			this.shouldAttack = true;
 		}
@@ -326,7 +326,7 @@ public class PandaEntity extends AnimalEntity {
 			}
 
 			if (this.getAskForBambooTicks() == 29 || this.getAskForBambooTicks() == 14) {
-				this.playSound(SoundEvents.field_14936, 1.0F, 1.0F);
+				this.playSound(SoundEvents.ENTITY_PANDA_CANT_BREED, 1.0F, 1.0F);
 			}
 
 			this.setAskForBambooTicks(this.getAskForBambooTicks() - 1);
@@ -338,7 +338,7 @@ public class PandaEntity extends AnimalEntity {
 				this.setSneezing(false);
 				this.sneeze();
 			} else if (this.getSneezeProgress() == 1) {
-				this.playSound(SoundEvents.field_14997, 1.0F, 1.0F);
+				this.playSound(SoundEvents.ENTITY_PANDA_PRE_SNEEZE, 1.0F, 1.0F);
 			}
 		}
 
@@ -363,18 +363,18 @@ public class PandaEntity extends AnimalEntity {
 	}
 
 	private void updateEatingAnimation() {
-		if (!this.isEating() && this.isScared() && !this.method_6524() && !this.getEquippedStack(EquipmentSlot.field_6173).isEmpty() && this.random.nextInt(80) == 1) {
+		if (!this.isEating() && this.isScared() && !this.method_6524() && !this.getEquippedStack(EquipmentSlot.MAINHAND).isEmpty() && this.random.nextInt(80) == 1) {
 			this.setEating(true);
-		} else if (this.getEquippedStack(EquipmentSlot.field_6173).isEmpty() || !this.isScared()) {
+		} else if (this.getEquippedStack(EquipmentSlot.MAINHAND).isEmpty() || !this.isScared()) {
 			this.setEating(false);
 		}
 
 		if (this.isEating()) {
 			this.playEatingAnimation();
 			if (!this.world.isClient && this.getEatingTicks() > 80 && this.random.nextInt(20) == 1) {
-				if (this.getEatingTicks() > 100 && this.canEat(this.getEquippedStack(EquipmentSlot.field_6173))) {
+				if (this.getEatingTicks() > 100 && this.canEat(this.getEquippedStack(EquipmentSlot.MAINHAND))) {
 					if (!this.world.isClient) {
-						this.setEquippedStack(EquipmentSlot.field_6173, ItemStack.EMPTY);
+						this.setEquippedStack(EquipmentSlot.MAINHAND, ItemStack.EMPTY);
 					}
 
 					this.setScared(false);
@@ -390,7 +390,7 @@ public class PandaEntity extends AnimalEntity {
 
 	private void playEatingAnimation() {
 		if (this.getEatingTicks() % 5 == 0) {
-			this.playSound(SoundEvents.field_15106, 0.5F + 0.5F * (float)this.random.nextInt(2), (this.random.nextFloat() - this.random.nextFloat()) * 0.2F + 1.0F);
+			this.playSound(SoundEvents.ENTITY_PANDA_EAT, 0.5F + 0.5F * (float)this.random.nextInt(2), (this.random.nextFloat() - this.random.nextFloat()) * 0.2F + 1.0F);
 
 			for (int i = 0; i < 6; i++) {
 				Vec3d vec3d = new Vec3d(((double)this.random.nextFloat() - 0.5) * 0.1, Math.random() * 0.1 + 0.1, ((double)this.random.nextFloat() - 0.5) * 0.1);
@@ -402,7 +402,7 @@ public class PandaEntity extends AnimalEntity {
 				vec3d2 = vec3d2.add(this.x, this.y + (double)this.getStandingEyeHeight() + 1.0, this.z);
 				this.world
 					.addParticle(
-						new ItemStackParticleEffect(ParticleTypes.field_11218, this.getEquippedStack(EquipmentSlot.field_6173)),
+						new ItemStackParticleEffect(ParticleTypes.ITEM, this.getEquippedStack(EquipmentSlot.MAINHAND)),
 						vec3d2.x,
 						vec3d2.y,
 						vec3d2.z,
@@ -481,7 +481,7 @@ public class PandaEntity extends AnimalEntity {
 		Vec3d vec3d = this.getVelocity();
 		this.world
 			.addParticle(
-				ParticleTypes.field_11234,
+				ParticleTypes.SNEEZE,
 				this.x - (double)(this.getWidth() + 1.0F) * 0.5 * (double)MathHelper.sin(this.field_6283 * (float) (Math.PI / 180.0)),
 				this.y + (double)this.getStandingEyeHeight() - 0.1F,
 				this.z + (double)(this.getWidth() + 1.0F) * 0.5 * (double)MathHelper.cos(this.field_6283 * (float) (Math.PI / 180.0)),
@@ -489,7 +489,7 @@ public class PandaEntity extends AnimalEntity {
 				0.0,
 				vec3d.z
 			);
-		this.playSound(SoundEvents.field_15076, 1.0F, 1.0F);
+		this.playSound(SoundEvents.ENTITY_PANDA_SNEEZE, 1.0F, 1.0F);
 
 		for (PandaEntity pandaEntity : this.world.getEntities(PandaEntity.class, this.getBoundingBox().expand(10.0))) {
 			if (!pandaEntity.isBaby() && pandaEntity.onGround && !pandaEntity.isInsideWater() && pandaEntity.method_18442()) {
@@ -497,17 +497,17 @@ public class PandaEntity extends AnimalEntity {
 			}
 		}
 
-		if (!this.world.isClient() && this.random.nextInt(700) == 0 && this.world.getGameRules().getBoolean(GameRules.field_19391)) {
-			this.dropItem(Items.field_8777);
+		if (!this.world.isClient() && this.random.nextInt(700) == 0 && this.world.getGameRules().getBoolean(GameRules.DO_MOB_LOOT)) {
+			this.dropItem(Items.SLIME_BALL);
 		}
 	}
 
 	@Override
 	protected void loot(ItemEntity itemEntity) {
-		if (this.getEquippedStack(EquipmentSlot.field_6173).isEmpty() && IS_FOOD.test(itemEntity)) {
+		if (this.getEquippedStack(EquipmentSlot.MAINHAND).isEmpty() && IS_FOOD.test(itemEntity)) {
 			ItemStack itemStack = itemEntity.getStack();
-			this.setEquippedStack(EquipmentSlot.field_6173, itemStack);
-			this.handDropChances[EquipmentSlot.field_6173.getEntitySlotId()] = 2.0F;
+			this.setEquippedStack(EquipmentSlot.MAINHAND, itemStack);
+			this.handDropChances[EquipmentSlot.MAINHAND.getEntitySlotId()] = 2.0F;
 			this.sendPickup(itemEntity, itemStack.getCount());
 			itemEntity.remove();
 		}
@@ -615,12 +615,12 @@ public class PandaEntity extends AnimalEntity {
 
 				this.stop();
 				this.setEating(true);
-				ItemStack itemStack2 = this.getEquippedStack(EquipmentSlot.field_6173);
+				ItemStack itemStack2 = this.getEquippedStack(EquipmentSlot.MAINHAND);
 				if (!itemStack2.isEmpty() && !playerEntity.abilities.creativeMode) {
 					this.dropStack(itemStack2);
 				}
 
-				this.setEquippedStack(EquipmentSlot.field_6173, new ItemStack(itemStack.getItem(), 1));
+				this.setEquippedStack(EquipmentSlot.MAINHAND, new ItemStack(itemStack.getItem(), 1));
 				this.eat(playerEntity, itemStack);
 			}
 
@@ -634,36 +634,36 @@ public class PandaEntity extends AnimalEntity {
 	@Override
 	protected SoundEvent getAmbientSound() {
 		if (this.isAttacking()) {
-			return SoundEvents.field_14801;
+			return SoundEvents.ENTITY_PANDA_AGGRESSIVE_AMBIENT;
 		} else {
-			return this.isWorried() ? SoundEvents.field_14715 : SoundEvents.field_14604;
+			return this.isWorried() ? SoundEvents.ENTITY_PANDA_WORRIED_AMBIENT : SoundEvents.ENTITY_PANDA_AMBIENT;
 		}
 	}
 
 	@Override
 	protected void playStepSound(BlockPos blockPos, BlockState blockState) {
-		this.playSound(SoundEvents.field_15035, 0.15F, 1.0F);
+		this.playSound(SoundEvents.ENTITY_PANDA_STEP, 0.15F, 1.0F);
 	}
 
 	@Override
 	public boolean isBreedingItem(ItemStack itemStack) {
-		return itemStack.getItem() == Blocks.field_10211.asItem();
+		return itemStack.getItem() == Blocks.BAMBOO.asItem();
 	}
 
 	private boolean canEat(ItemStack itemStack) {
-		return this.isBreedingItem(itemStack) || itemStack.getItem() == Blocks.field_10183.asItem();
+		return this.isBreedingItem(itemStack) || itemStack.getItem() == Blocks.CAKE.asItem();
 	}
 
 	@Nullable
 	@Override
 	protected SoundEvent getDeathSound() {
-		return SoundEvents.field_15208;
+		return SoundEvents.ENTITY_PANDA_DEATH;
 	}
 
 	@Nullable
 	@Override
 	protected SoundEvent getHurtSound(DamageSource damageSource) {
-		return SoundEvents.field_14668;
+		return SoundEvents.ENTITY_PANDA_HURT;
 	}
 
 	public boolean method_18442() {
@@ -721,13 +721,13 @@ public class PandaEntity extends AnimalEntity {
 	}
 
 	public static enum Gene {
-		field_6788(0, "normal", false),
-		field_6794(1, "lazy", false),
-		field_6795(2, "worried", false),
-		field_6791(3, "playful", false),
-		field_6792(4, "brown", true),
-		field_6793(5, "weak", true),
-		field_6789(6, "aggressive", false);
+		NORMAL(0, "normal", false),
+		LAZY(1, "lazy", false),
+		WORRIED(2, "worried", false),
+		PLAYFUL(3, "playful", false),
+		BROWN(4, "brown", true),
+		WEAK(5, "weak", true),
+		AGGRESSIVE(6, "aggressive", false);
 
 		private static final PandaEntity.Gene[] VALUES = (PandaEntity.Gene[])Arrays.stream(values())
 			.sorted(Comparator.comparingInt(PandaEntity.Gene::getId))
@@ -756,7 +756,7 @@ public class PandaEntity extends AnimalEntity {
 
 		private static PandaEntity.Gene getProductGene(PandaEntity.Gene gene, PandaEntity.Gene gene2) {
 			if (gene.isRecessive()) {
-				return gene == gene2 ? gene : field_6788;
+				return gene == gene2 ? gene : NORMAL;
 			} else {
 				return gene;
 			}
@@ -777,23 +777,23 @@ public class PandaEntity extends AnimalEntity {
 				}
 			}
 
-			return field_6788;
+			return NORMAL;
 		}
 
 		public static PandaEntity.Gene createRandom(Random random) {
 			int i = random.nextInt(16);
 			if (i == 0) {
-				return field_6794;
+				return LAZY;
 			} else if (i == 1) {
-				return field_6795;
+				return WORRIED;
 			} else if (i == 2) {
-				return field_6791;
+				return PLAYFUL;
 			} else if (i == 4) {
-				return field_6789;
+				return AGGRESSIVE;
 			} else if (i < 9) {
-				return field_6793;
+				return WEAK;
 			} else {
-				return i < 11 ? field_6792 : field_6788;
+				return i < 11 ? BROWN : NORMAL;
 			}
 		}
 	}
@@ -896,7 +896,7 @@ public class PandaEntity extends AnimalEntity {
 					for (int k = 0; k <= j; k = k > 0 ? -k : 1 - k) {
 						for (int l = k < j && k > -j ? j : 0; l <= j; l = l > 0 ? -l : 1 - l) {
 							mutable.set(blockPos).setOffset(k, i, l);
-							if (this.world.getBlockState(mutable).getBlock() == Blocks.field_10211) {
+							if (this.world.getBlockState(mutable).getBlock() == Blocks.BAMBOO) {
 								return true;
 							}
 						}
@@ -954,7 +954,7 @@ public class PandaEntity extends AnimalEntity {
 		private int startAge;
 
 		public PickUpFoodGoal() {
-			this.setControls(EnumSet.of(Goal.Control.field_18405));
+			this.setControls(EnumSet.of(Goal.Control.MOVE));
 		}
 
 		@Override
@@ -965,7 +965,7 @@ public class PandaEntity extends AnimalEntity {
 				&& PandaEntity.this.method_18442()
 				&& PandaEntity.this.getAskForBambooTicks() <= 0) {
 				List<ItemEntity> list = PandaEntity.this.world.getEntities(ItemEntity.class, PandaEntity.this.getBoundingBox().expand(6.0, 6.0, 6.0), PandaEntity.IS_FOOD);
-				return !list.isEmpty() || !PandaEntity.this.getEquippedStack(EquipmentSlot.field_6173).isEmpty();
+				return !list.isEmpty() || !PandaEntity.this.getEquippedStack(EquipmentSlot.MAINHAND).isEmpty();
 			} else {
 				return false;
 			}
@@ -980,7 +980,7 @@ public class PandaEntity extends AnimalEntity {
 
 		@Override
 		public void tick() {
-			if (!PandaEntity.this.isScared() && !PandaEntity.this.getEquippedStack(EquipmentSlot.field_6173).isEmpty()) {
+			if (!PandaEntity.this.isScared() && !PandaEntity.this.getEquippedStack(EquipmentSlot.MAINHAND).isEmpty()) {
 				PandaEntity.this.stop();
 			}
 		}
@@ -988,9 +988,9 @@ public class PandaEntity extends AnimalEntity {
 		@Override
 		public void start() {
 			List<ItemEntity> list = PandaEntity.this.world.getEntities(ItemEntity.class, PandaEntity.this.getBoundingBox().expand(8.0, 8.0, 8.0), PandaEntity.IS_FOOD);
-			if (!list.isEmpty() && PandaEntity.this.getEquippedStack(EquipmentSlot.field_6173).isEmpty()) {
+			if (!list.isEmpty() && PandaEntity.this.getEquippedStack(EquipmentSlot.MAINHAND).isEmpty()) {
 				PandaEntity.this.getNavigation().startMovingTo((Entity)list.get(0), 1.2F);
-			} else if (!PandaEntity.this.getEquippedStack(EquipmentSlot.field_6173).isEmpty()) {
+			} else if (!PandaEntity.this.getEquippedStack(EquipmentSlot.MAINHAND).isEmpty()) {
 				PandaEntity.this.stop();
 			}
 
@@ -999,10 +999,10 @@ public class PandaEntity extends AnimalEntity {
 
 		@Override
 		public void stop() {
-			ItemStack itemStack = PandaEntity.this.getEquippedStack(EquipmentSlot.field_6173);
+			ItemStack itemStack = PandaEntity.this.getEquippedStack(EquipmentSlot.MAINHAND);
 			if (!itemStack.isEmpty()) {
 				PandaEntity.this.dropStack(itemStack);
-				PandaEntity.this.setEquippedStack(EquipmentSlot.field_6173, ItemStack.EMPTY);
+				PandaEntity.this.setEquippedStack(EquipmentSlot.MAINHAND, ItemStack.EMPTY);
 				int i = PandaEntity.this.isLazy() ? PandaEntity.this.random.nextInt(50) + 10 : PandaEntity.this.random.nextInt(150) + 10;
 				this.startAge = PandaEntity.this.age + i * 20;
 			}
@@ -1016,7 +1016,7 @@ public class PandaEntity extends AnimalEntity {
 
 		public PlayGoal(PandaEntity pandaEntity) {
 			this.panda = pandaEntity;
-			this.setControls(EnumSet.of(Goal.Control.field_18405, Goal.Control.field_18406, Goal.Control.field_18407));
+			this.setControls(EnumSet.of(Goal.Control.MOVE, Goal.Control.LOOK, Goal.Control.JUMP));
 		}
 
 		@Override
