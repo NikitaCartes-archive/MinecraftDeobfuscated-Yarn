@@ -12,9 +12,9 @@ public final class MushroomFieldsBiome extends Biome {
 	public MushroomFieldsBiome() {
 		super(
 			new Biome.Settings()
-				.configureSurfaceBuilder(SurfaceBuilder.field_15701, SurfaceBuilder.MYCELIUM_CONFIG)
+				.configureSurfaceBuilder(SurfaceBuilder.DEFAULT, SurfaceBuilder.MYCELIUM_CONFIG)
 				.precipitation(Biome.Precipitation.RAIN)
-				.category(Biome.Category.field_9365)
+				.category(Biome.Category.MUSHROOM)
 				.depth(0.2F)
 				.scale(0.3F)
 				.temperature(0.9F)
@@ -23,7 +23,7 @@ public final class MushroomFieldsBiome extends Biome {
 				.waterFogColor(329011)
 				.parent(null)
 		);
-		this.addStructureFeature(Feature.MINESHAFT, new MineshaftFeatureConfig(0.004, MineshaftFeature.Type.field_13692));
+		this.addStructureFeature(Feature.MINESHAFT, new MineshaftFeatureConfig(0.004, MineshaftFeature.Type.NORMAL));
 		this.addStructureFeature(Feature.STRONGHOLD, FeatureConfig.DEFAULT);
 		DefaultBiomeFeatures.addLandCarvers(this);
 		DefaultBiomeFeatures.addDefaultStructures(this);
@@ -37,7 +37,7 @@ public final class MushroomFieldsBiome extends Biome {
 		DefaultBiomeFeatures.addDefaultVegetation(this);
 		DefaultBiomeFeatures.addSprings(this);
 		DefaultBiomeFeatures.addFrozenTopLayer(this);
-		this.addSpawn(EntityCategory.field_6294, new Biome.SpawnEntry(EntityType.field_6143, 8, 4, 8));
-		this.addSpawn(EntityCategory.field_6303, new Biome.SpawnEntry(EntityType.field_6108, 10, 8, 8));
+		this.addSpawn(EntityCategory.CREATURE, new Biome.SpawnEntry(EntityType.MOOSHROOM, 8, 4, 8));
+		this.addSpawn(EntityCategory.AMBIENT, new Biome.SpawnEntry(EntityType.BAT, 10, 8, 8));
 	}
 }

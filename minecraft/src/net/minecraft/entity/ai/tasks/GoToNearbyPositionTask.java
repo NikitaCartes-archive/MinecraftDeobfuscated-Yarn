@@ -19,7 +19,7 @@ public class GoToNearbyPositionTask extends Task<MobEntityWithAi> {
 	private long nextRunTime;
 
 	public GoToNearbyPositionTask(MemoryModuleType<GlobalPos> memoryModuleType, int i, int j) {
-		super(ImmutableMap.of(MemoryModuleType.field_18445, MemoryModuleState.field_18458, memoryModuleType, MemoryModuleState.field_18456));
+		super(ImmutableMap.of(MemoryModuleType.WALK_TARGET, MemoryModuleState.REGISTERED, memoryModuleType, MemoryModuleState.VALUE_PRESENT));
 		this.memoryModuleType = memoryModuleType;
 		this.field_18863 = i;
 		this.maxDistance = j;
@@ -36,7 +36,7 @@ public class GoToNearbyPositionTask extends Task<MobEntityWithAi> {
 		if (l > this.nextRunTime) {
 			Brain<?> brain = mobEntityWithAi.getBrain();
 			Optional<GlobalPos> optional = brain.getOptionalMemory(this.memoryModuleType);
-			optional.ifPresent(globalPos -> brain.putMemory(MemoryModuleType.field_18445, new WalkTarget(globalPos.getPos(), 0.4F, this.field_18863)));
+			optional.ifPresent(globalPos -> brain.putMemory(MemoryModuleType.WALK_TARGET, new WalkTarget(globalPos.getPos(), 0.4F, this.field_18863)));
 			this.nextRunTime = l + 80L;
 		}
 	}

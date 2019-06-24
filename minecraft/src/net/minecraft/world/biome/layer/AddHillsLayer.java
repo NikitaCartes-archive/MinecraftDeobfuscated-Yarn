@@ -7,35 +7,35 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 public enum AddHillsLayer implements MergingLayer, NorthWestCoordinateTransformer {
-	field_16134;
+	INSTANCE;
 
 	private static final Logger LOGGER = LogManager.getLogger();
-	private static final int BIRCH_FOREST_ID = Registry.BIOME.getRawId(Biomes.field_9412);
-	private static final int BIRCH_FOREST_HILLS_ID = Registry.BIOME.getRawId(Biomes.field_9421);
-	private static final int DESERT_ID = Registry.BIOME.getRawId(Biomes.field_9424);
-	private static final int DESERT_HILLS_ID = Registry.BIOME.getRawId(Biomes.field_9466);
-	private static final int MOUNTAINS_ID = Registry.BIOME.getRawId(Biomes.field_9472);
-	private static final int WOODED_MOUNTAINS_ID = Registry.BIOME.getRawId(Biomes.field_9460);
-	private static final int FOREST_ID = Registry.BIOME.getRawId(Biomes.field_9409);
-	private static final int WOODED_HILLS_ID = Registry.BIOME.getRawId(Biomes.field_9459);
-	private static final int SNOWY_TUNDRA_ID = Registry.BIOME.getRawId(Biomes.field_9452);
-	private static final int SNOWY_MOUNTAINS_ID = Registry.BIOME.getRawId(Biomes.field_9444);
-	private static final int JUNGLE_ID = Registry.BIOME.getRawId(Biomes.field_9417);
-	private static final int JUNGLE_HILLS_ID = Registry.BIOME.getRawId(Biomes.field_9432);
-	private static final int BAMBOO_JUNGLE_ID = Registry.BIOME.getRawId(Biomes.field_9440);
-	private static final int BAMBOO_JUNGLE_HILLS_ID = Registry.BIOME.getRawId(Biomes.field_9468);
-	private static final int BADLANDS_ID = Registry.BIOME.getRawId(Biomes.field_9415);
-	private static final int WOODED_BADLANDS_PLATEAU_ID = Registry.BIOME.getRawId(Biomes.field_9410);
-	private static final int PLAINS_ID = Registry.BIOME.getRawId(Biomes.field_9451);
-	private static final int GIANT_TREE_TAIGA_ID = Registry.BIOME.getRawId(Biomes.field_9477);
-	private static final int GIANT_TREE_TAIGA_HILLS_ID = Registry.BIOME.getRawId(Biomes.field_9429);
-	private static final int DARK_FOREST_ID = Registry.BIOME.getRawId(Biomes.field_9475);
-	private static final int SAVANNA_ID = Registry.BIOME.getRawId(Biomes.field_9449);
-	private static final int SAVANNA_PLATEAU_ID = Registry.BIOME.getRawId(Biomes.field_9430);
-	private static final int TAIGA_ID = Registry.BIOME.getRawId(Biomes.field_9420);
-	private static final int SNOWY_TAIGA_ID = Registry.BIOME.getRawId(Biomes.field_9454);
-	private static final int SNOWY_TAIGA_HILLS_ID = Registry.BIOME.getRawId(Biomes.field_9425);
-	private static final int TAIGA_HILLS_ID = Registry.BIOME.getRawId(Biomes.field_9428);
+	private static final int BIRCH_FOREST_ID = Registry.BIOME.getRawId(Biomes.BIRCH_FOREST);
+	private static final int BIRCH_FOREST_HILLS_ID = Registry.BIOME.getRawId(Biomes.BIRCH_FOREST_HILLS);
+	private static final int DESERT_ID = Registry.BIOME.getRawId(Biomes.DESERT);
+	private static final int DESERT_HILLS_ID = Registry.BIOME.getRawId(Biomes.DESERT_HILLS);
+	private static final int MOUNTAINS_ID = Registry.BIOME.getRawId(Biomes.MOUNTAINS);
+	private static final int WOODED_MOUNTAINS_ID = Registry.BIOME.getRawId(Biomes.WOODED_MOUNTAINS);
+	private static final int FOREST_ID = Registry.BIOME.getRawId(Biomes.FOREST);
+	private static final int WOODED_HILLS_ID = Registry.BIOME.getRawId(Biomes.WOODED_HILLS);
+	private static final int SNOWY_TUNDRA_ID = Registry.BIOME.getRawId(Biomes.SNOWY_TUNDRA);
+	private static final int SNOWY_MOUNTAINS_ID = Registry.BIOME.getRawId(Biomes.SNOWY_MOUNTAINS);
+	private static final int JUNGLE_ID = Registry.BIOME.getRawId(Biomes.JUNGLE);
+	private static final int JUNGLE_HILLS_ID = Registry.BIOME.getRawId(Biomes.JUNGLE_HILLS);
+	private static final int BAMBOO_JUNGLE_ID = Registry.BIOME.getRawId(Biomes.BAMBOO_JUNGLE);
+	private static final int BAMBOO_JUNGLE_HILLS_ID = Registry.BIOME.getRawId(Biomes.BAMBOO_JUNGLE_HILLS);
+	private static final int BADLANDS_ID = Registry.BIOME.getRawId(Biomes.BADLANDS);
+	private static final int WOODED_BADLANDS_PLATEAU_ID = Registry.BIOME.getRawId(Biomes.WOODED_BADLANDS_PLATEAU);
+	private static final int PLAINS_ID = Registry.BIOME.getRawId(Biomes.PLAINS);
+	private static final int GIANT_TREE_TAIGA_ID = Registry.BIOME.getRawId(Biomes.GIANT_TREE_TAIGA);
+	private static final int GIANT_TREE_TAIGA_HILLS_ID = Registry.BIOME.getRawId(Biomes.GIANT_TREE_TAIGA_HILLS);
+	private static final int DARK_FOREST_ID = Registry.BIOME.getRawId(Biomes.DARK_FOREST);
+	private static final int SAVANNA_ID = Registry.BIOME.getRawId(Biomes.SAVANNA);
+	private static final int SAVANNA_PLATEAU_ID = Registry.BIOME.getRawId(Biomes.SAVANNA_PLATEAU);
+	private static final int TAIGA_ID = Registry.BIOME.getRawId(Biomes.TAIGA);
+	private static final int SNOWY_TAIGA_ID = Registry.BIOME.getRawId(Biomes.SNOWY_TAIGA);
+	private static final int SNOWY_TAIGA_HILLS_ID = Registry.BIOME.getRawId(Biomes.SNOWY_TAIGA_HILLS);
+	private static final int TAIGA_HILLS_ID = Registry.BIOME.getRawId(Biomes.TAIGA_HILLS);
 
 	@Override
 	public int sample(LayerRandomnessSource layerRandomnessSource, LayerSampler layerSampler, LayerSampler layerSampler2, int i, int j) {

@@ -35,7 +35,7 @@ public class MagmaCubeEntity extends SlimeEntity {
 	}
 
 	public static boolean method_20678(EntityType<MagmaCubeEntity> entityType, IWorld iWorld, SpawnType spawnType, BlockPos blockPos, Random random) {
-		return iWorld.getDifficulty() != Difficulty.field_5801;
+		return iWorld.getDifficulty() != Difficulty.PEACEFUL;
 	}
 
 	@Override
@@ -62,7 +62,7 @@ public class MagmaCubeEntity extends SlimeEntity {
 
 	@Override
 	protected ParticleEffect getParticles() {
-		return ParticleTypes.field_11240;
+		return ParticleTypes.FLAME;
 	}
 
 	@Override
@@ -94,7 +94,7 @@ public class MagmaCubeEntity extends SlimeEntity {
 
 	@Override
 	protected void swimUpward(Tag<Fluid> tag) {
-		if (tag == FluidTags.field_15518) {
+		if (tag == FluidTags.LAVA) {
 			Vec3d vec3d = this.getVelocity();
 			this.setVelocity(vec3d.x, (double)(0.22F + (float)this.getSize() * 0.05F), vec3d.z);
 			this.velocityDirty = true;
@@ -119,21 +119,21 @@ public class MagmaCubeEntity extends SlimeEntity {
 
 	@Override
 	protected SoundEvent getHurtSound(DamageSource damageSource) {
-		return this.isSmall() ? SoundEvents.field_15005 : SoundEvents.field_14747;
+		return this.isSmall() ? SoundEvents.ENTITY_MAGMA_CUBE_HURT_SMALL : SoundEvents.ENTITY_MAGMA_CUBE_HURT;
 	}
 
 	@Override
 	protected SoundEvent getDeathSound() {
-		return this.isSmall() ? SoundEvents.field_14889 : SoundEvents.field_14662;
+		return this.isSmall() ? SoundEvents.ENTITY_MAGMA_CUBE_DEATH_SMALL : SoundEvents.ENTITY_MAGMA_CUBE_DEATH;
 	}
 
 	@Override
 	protected SoundEvent getSquishSound() {
-		return this.isSmall() ? SoundEvents.field_14749 : SoundEvents.field_14949;
+		return this.isSmall() ? SoundEvents.ENTITY_MAGMA_CUBE_SQUISH_SMALL : SoundEvents.ENTITY_MAGMA_CUBE_SQUISH;
 	}
 
 	@Override
 	protected SoundEvent getJumpSound() {
-		return SoundEvents.field_14847;
+		return SoundEvents.ENTITY_MAGMA_CUBE_JUMP;
 	}
 }

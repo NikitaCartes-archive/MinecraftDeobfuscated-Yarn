@@ -71,10 +71,10 @@ public class WrittenBookItem extends Item {
 			CompoundTag compoundTag = itemStack.getTag();
 			String string = compoundTag.getString("author");
 			if (!ChatUtil.isEmpty(string)) {
-				list.add(new TranslatableText("book.byAuthor", string).formatted(Formatting.field_1080));
+				list.add(new TranslatableText("book.byAuthor", string).formatted(Formatting.GRAY));
 			}
 
-			list.add(new TranslatableText("book.generation." + compoundTag.getInt("generation")).formatted(Formatting.field_1080));
+			list.add(new TranslatableText("book.generation." + compoundTag.getInt("generation")).formatted(Formatting.GRAY));
 		}
 	}
 
@@ -83,10 +83,10 @@ public class WrittenBookItem extends Item {
 		World world = itemUsageContext.getWorld();
 		BlockPos blockPos = itemUsageContext.getBlockPos();
 		BlockState blockState = world.getBlockState(blockPos);
-		if (blockState.getBlock() == Blocks.field_16330) {
-			return LecternBlock.putBookIfAbsent(world, blockPos, blockState, itemUsageContext.getStack()) ? ActionResult.field_5812 : ActionResult.field_5811;
+		if (blockState.getBlock() == Blocks.LECTERN) {
+			return LecternBlock.putBookIfAbsent(world, blockPos, blockState, itemUsageContext.getStack()) ? ActionResult.SUCCESS : ActionResult.PASS;
 		} else {
-			return ActionResult.field_5811;
+			return ActionResult.PASS;
 		}
 	}
 
@@ -94,8 +94,8 @@ public class WrittenBookItem extends Item {
 	public TypedActionResult<ItemStack> use(World world, PlayerEntity playerEntity, Hand hand) {
 		ItemStack itemStack = playerEntity.getStackInHand(hand);
 		playerEntity.openEditBookScreen(itemStack, hand);
-		playerEntity.incrementStat(Stats.field_15372.getOrCreateStat(this));
-		return new TypedActionResult<>(ActionResult.field_5812, itemStack);
+		playerEntity.incrementStat(Stats.USED.getOrCreateStat(this));
+		return new TypedActionResult<>(ActionResult.SUCCESS, itemStack);
 	}
 
 	public static boolean resolve(ItemStack itemStack, @Nullable ServerCommandSource serverCommandSource, @Nullable PlayerEntity playerEntity) {

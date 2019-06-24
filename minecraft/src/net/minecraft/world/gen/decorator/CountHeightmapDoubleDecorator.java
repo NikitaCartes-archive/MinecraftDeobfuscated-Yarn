@@ -23,7 +23,7 @@ public class CountHeightmapDoubleDecorator extends Decorator<CountDecoratorConfi
 		return IntStream.range(0, countDecoratorConfig.count).mapToObj(i -> {
 			int j = random.nextInt(16);
 			int k = random.nextInt(16);
-			int l = iWorld.getTopPosition(Heightmap.Type.field_13197, blockPos.add(j, 0, k)).getY() * 2;
+			int l = iWorld.getTopPosition(Heightmap.Type.MOTION_BLOCKING, blockPos.add(j, 0, k)).getY() * 2;
 			if (l <= 0) {
 				return null;
 			} else {

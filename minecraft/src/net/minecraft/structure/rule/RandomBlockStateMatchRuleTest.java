@@ -26,7 +26,7 @@ public class RandomBlockStateMatchRuleTest extends AbstractRuleTest {
 
 	@Override
 	protected RuleTest getRuleTest() {
-		return RuleTest.field_16984;
+		return RuleTest.RANDOM_BLOCKSTATE_MATCH;
 	}
 
 	@Override

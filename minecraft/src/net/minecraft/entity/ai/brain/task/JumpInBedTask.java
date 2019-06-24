@@ -20,7 +20,7 @@ public class JumpInBedTask extends Task<MobEntity> {
 	private int ticksToNextJump;
 
 	public JumpInBedTask(float f) {
-		super(ImmutableMap.of(MemoryModuleType.field_19007, MemoryModuleState.field_18456, MemoryModuleType.field_18445, MemoryModuleState.field_18457));
+		super(ImmutableMap.of(MemoryModuleType.NEAREST_BED, MemoryModuleState.VALUE_PRESENT, MemoryModuleType.WALK_TARGET, MemoryModuleState.VALUE_ABSENT));
 		this.walkSpeed = f;
 	}
 
@@ -75,7 +75,7 @@ public class JumpInBedTask extends Task<MobEntity> {
 	}
 
 	private void setWalkTarget(MobEntity mobEntity, BlockPos blockPos) {
-		mobEntity.getBrain().putMemory(MemoryModuleType.field_18445, new WalkTarget(blockPos, this.walkSpeed, 0));
+		mobEntity.getBrain().putMemory(MemoryModuleType.WALK_TARGET, new WalkTarget(blockPos, this.walkSpeed, 0));
 	}
 
 	private boolean shouldStartJumping(ServerWorld serverWorld, MobEntity mobEntity) {
@@ -93,11 +93,11 @@ public class JumpInBedTask extends Task<MobEntity> {
 	}
 
 	private boolean isBedAt(ServerWorld serverWorld, BlockPos blockPos) {
-		return serverWorld.getBlockState(blockPos).matches(BlockTags.field_16443);
+		return serverWorld.getBlockState(blockPos).matches(BlockTags.BEDS);
 	}
 
 	private Optional<BlockPos> getNearestBed(MobEntity mobEntity) {
-		return mobEntity.getBrain().getOptionalMemory(MemoryModuleType.field_19007);
+		return mobEntity.getBrain().getOptionalMemory(MemoryModuleType.NEAREST_BED);
 	}
 
 	private boolean isBedGoneTooLong(ServerWorld serverWorld, MobEntity mobEntity) {

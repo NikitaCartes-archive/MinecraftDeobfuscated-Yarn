@@ -23,7 +23,7 @@ public class BlockPosArgumentType implements ArgumentType<PosArgument> {
 	public static final SimpleCommandExceptionType UNLOADED_EXCEPTION = new SimpleCommandExceptionType(new TranslatableText("argument.pos.unloaded"));
 	public static final SimpleCommandExceptionType OUT_OF_WORLD_EXCEPTION = new SimpleCommandExceptionType(new TranslatableText("argument.pos.outofworld"));
 
-	public static BlockPosArgumentType create() {
+	public static BlockPosArgumentType blockPos() {
 		return new BlockPosArgumentType();
 	}
 

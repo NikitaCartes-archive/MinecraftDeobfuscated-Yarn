@@ -31,12 +31,12 @@ public class EnderCrystalEntity extends Entity {
 
 	public EnderCrystalEntity(EntityType<? extends EnderCrystalEntity> entityType, World world) {
 		super(entityType, world);
-		this.field_6033 = true;
+		this.inanimate = true;
 		this.field_7034 = this.random.nextInt(100000);
 	}
 
 	public EnderCrystalEntity(World world, double d, double e, double f) {
-		this(EntityType.field_6110, world);
+		this(EntityType.END_CRYSTAL, world);
 		this.setPosition(d, e, f);
 	}
 
@@ -60,7 +60,7 @@ public class EnderCrystalEntity extends Entity {
 		if (!this.world.isClient) {
 			BlockPos blockPos = new BlockPos(this);
 			if (this.world.dimension instanceof TheEndDimension && this.world.getBlockState(blockPos).isAir()) {
-				this.world.setBlockState(blockPos, Blocks.field_10036.getDefaultState());
+				this.world.setBlockState(blockPos, Blocks.FIRE.getDefaultState());
 			}
 		}
 	}
@@ -100,7 +100,7 @@ public class EnderCrystalEntity extends Entity {
 			if (!this.removed && !this.world.isClient) {
 				this.remove();
 				if (!damageSource.isExplosive()) {
-					this.world.createExplosion(null, this.x, this.y, this.z, 6.0F, Explosion.DestructionType.field_18687);
+					this.world.createExplosion(null, this.x, this.y, this.z, 6.0F, Explosion.DestructionType.DESTROY);
 				}
 
 				this.crystalDestroyed(damageSource);

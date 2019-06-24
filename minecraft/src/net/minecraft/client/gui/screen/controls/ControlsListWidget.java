@@ -138,9 +138,9 @@ public class ControlsListWidget extends ElementListWidget<ControlsListWidget.Ent
 			}
 
 			if (bl2) {
-				this.editButton.setMessage(Formatting.field_1068 + "> " + Formatting.field_1054 + this.editButton.getMessage() + Formatting.field_1068 + " <");
+				this.editButton.setMessage(Formatting.WHITE + "> " + Formatting.YELLOW + this.editButton.getMessage() + Formatting.WHITE + " <");
 			} else if (bl3) {
-				this.editButton.setMessage(Formatting.field_1061 + this.editButton.getMessage());
+				this.editButton.setMessage(Formatting.RED + this.editButton.getMessage());
 			}
 
 			this.editButton.render(n, o, f);

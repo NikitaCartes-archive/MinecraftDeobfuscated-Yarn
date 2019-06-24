@@ -19,7 +19,7 @@ public class EmptyFluid extends Fluid {
 	@Environment(EnvType.CLIENT)
 	@Override
 	public BlockRenderLayer getRenderLayer() {
-		return BlockRenderLayer.field_9178;
+		return BlockRenderLayer.SOLID;
 	}
 
 	@Override
@@ -64,7 +64,7 @@ public class EmptyFluid extends Fluid {
 
 	@Override
 	protected BlockState toBlockState(FluidState fluidState) {
-		return Blocks.field_10124.getDefaultState();
+		return Blocks.AIR.getDefaultState();
 	}
 
 	@Override

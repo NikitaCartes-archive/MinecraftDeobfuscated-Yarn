@@ -63,7 +63,7 @@ public class WitherEntity extends HostileEntity implements RangedAttackMob {
 	private final int[] field_7091 = new int[2];
 	private final int[] field_7092 = new int[2];
 	private int field_7082;
-	private final ServerBossBar bossBar = (ServerBossBar)new ServerBossBar(this.getDisplayName(), BossBar.Color.field_5783, BossBar.Style.field_5795)
+	private final ServerBossBar bossBar = (ServerBossBar)new ServerBossBar(this.getDisplayName(), BossBar.Color.PURPLE, BossBar.Style.PROGRESS)
 		.setDarkenSky(true);
 	private static final Predicate<LivingEntity> CAN_ATTACK_PREDICATE = livingEntity -> livingEntity.getGroup() != EntityGroup.UNDEAD
 			&& livingEntity.method_6102();
@@ -119,17 +119,17 @@ public class WitherEntity extends HostileEntity implements RangedAttackMob {
 
 	@Override
 	protected SoundEvent getAmbientSound() {
-		return SoundEvents.field_15163;
+		return SoundEvents.ENTITY_WITHER_AMBIENT;
 	}
 
 	@Override
 	protected SoundEvent getHurtSound(DamageSource damageSource) {
-		return SoundEvents.field_14688;
+		return SoundEvents.ENTITY_WITHER_HURT;
 	}
 
 	@Override
 	protected SoundEvent getDeathSound() {
-		return SoundEvents.field_15136;
+		return SoundEvents.ENTITY_WITHER_DEATH;
 	}
 
 	@Override
@@ -197,18 +197,12 @@ public class WitherEntity extends HostileEntity implements RangedAttackMob {
 			double r = this.getHeadZ(j);
 			this.world
 				.addParticle(
-					ParticleTypes.field_11251,
-					p + this.random.nextGaussian() * 0.3F,
-					q + this.random.nextGaussian() * 0.3F,
-					r + this.random.nextGaussian() * 0.3F,
-					0.0,
-					0.0,
-					0.0
+					ParticleTypes.SMOKE, p + this.random.nextGaussian() * 0.3F, q + this.random.nextGaussian() * 0.3F, r + this.random.nextGaussian() * 0.3F, 0.0, 0.0, 0.0
 				);
 			if (bl && this.world.random.nextInt(4) == 0) {
 				this.world
 					.addParticle(
-						ParticleTypes.field_11226,
+						ParticleTypes.ENTITY_EFFECT,
 						p + this.random.nextGaussian() * 0.3F,
 						q + this.random.nextGaussian() * 0.3F,
 						r + this.random.nextGaussian() * 0.3F,
@@ -223,7 +217,7 @@ public class WitherEntity extends HostileEntity implements RangedAttackMob {
 			for(int j = 0; j < 3; ++j) {
 				this.world
 					.addParticle(
-						ParticleTypes.field_11226,
+						ParticleTypes.ENTITY_EFFECT,
 						this.x + this.random.nextGaussian(),
 						this.y + (double)(this.random.nextFloat() * 3.3F),
 						this.z + this.random.nextGaussian(),
@@ -240,9 +234,9 @@ public class WitherEntity extends HostileEntity implements RangedAttackMob {
 		if (this.getInvulTimer() > 0) {
 			int i = this.getInvulTimer() - 1;
 			if (i <= 0) {
-				Explosion.DestructionType destructionType = this.world.getGameRules().getBoolean(GameRules.field_19388)
-					? Explosion.DestructionType.field_18687
-					: Explosion.DestructionType.field_18685;
+				Explosion.DestructionType destructionType = this.world.getGameRules().getBoolean(GameRules.MOB_GRIEFING)
+					? Explosion.DestructionType.DESTROY
+					: Explosion.DestructionType.NONE;
 				this.world.createExplosion(this, this.x, this.y + (double)this.getStandingEyeHeight(), this.z, 7.0F, false, destructionType);
 				this.world.playGlobalEvent(1023, new BlockPos(this), 0);
 			}
@@ -257,7 +251,7 @@ public class WitherEntity extends HostileEntity implements RangedAttackMob {
 			for(int i = 1; i < 3; ++i) {
 				if (this.age >= this.field_7091[i - 1]) {
 					this.field_7091[i - 1] = this.age + 10 + this.random.nextInt(10);
-					if ((this.world.getDifficulty() == Difficulty.field_5802 || this.world.getDifficulty() == Difficulty.field_5807) && this.field_7092[i - 1]++ > 15) {
+					if ((this.world.getDifficulty() == Difficulty.NORMAL || this.world.getDifficulty() == Difficulty.HARD) && this.field_7092[i - 1]++ > 15) {
 						float f = 10.0F;
 						float g = 5.0F;
 						double d = MathHelper.nextDouble(this.random, this.x - 10.0, this.x + 10.0);
@@ -309,7 +303,7 @@ public class WitherEntity extends HostileEntity implements RangedAttackMob {
 
 			if (this.field_7082 > 0) {
 				--this.field_7082;
-				if (this.field_7082 == 0 && this.world.getGameRules().getBoolean(GameRules.field_19388)) {
+				if (this.field_7082 == 0 && this.world.getGameRules().getBoolean(GameRules.MOB_GRIEFING)) {
 					int i = MathHelper.floor(this.y);
 					int j = MathHelper.floor(this.x);
 					int l = MathHelper.floor(this.z);
@@ -345,7 +339,7 @@ public class WitherEntity extends HostileEntity implements RangedAttackMob {
 	}
 
 	public static boolean canDestroy(BlockState blockState) {
-		return !blockState.isAir() && !BlockTags.field_17754.contains(blockState.getBlock());
+		return !blockState.isAir() && !BlockTags.WITHER_IMMUNE.contains(blockState.getBlock());
 	}
 
 	public void method_6885() {
@@ -472,7 +466,7 @@ public class WitherEntity extends HostileEntity implements RangedAttackMob {
 	@Override
 	protected void dropEquipment(DamageSource damageSource, int i, boolean bl) {
 		super.dropEquipment(damageSource, i, bl);
-		ItemEntity itemEntity = this.dropItem(Items.field_8137);
+		ItemEntity itemEntity = this.dropItem(Items.NETHER_STAR);
 		if (itemEntity != null) {
 			itemEntity.method_6976();
 		}
@@ -554,12 +548,12 @@ public class WitherEntity extends HostileEntity implements RangedAttackMob {
 
 	@Override
 	public boolean isPotionEffective(StatusEffectInstance statusEffectInstance) {
-		return statusEffectInstance.getEffectType() == StatusEffects.field_5920 ? false : super.isPotionEffective(statusEffectInstance);
+		return statusEffectInstance.getEffectType() == StatusEffects.WITHER ? false : super.isPotionEffective(statusEffectInstance);
 	}
 
 	class class_1529 extends Goal {
 		public class_1529() {
-			this.setControls(EnumSet.of(Goal.Control.field_18405, Goal.Control.field_18407, Goal.Control.field_18406));
+			this.setControls(EnumSet.of(Goal.Control.MOVE, Goal.Control.JUMP, Goal.Control.LOOK));
 		}
 
 		@Override

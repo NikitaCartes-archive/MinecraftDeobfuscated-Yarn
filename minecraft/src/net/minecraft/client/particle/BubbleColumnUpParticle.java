@@ -32,7 +32,7 @@ public class BubbleColumnUpParticle extends SpriteBillboardParticle {
 			this.velocityX *= 0.85F;
 			this.velocityY *= 0.85F;
 			this.velocityZ *= 0.85F;
-			if (!this.world.getFluidState(new BlockPos(this.x, this.y, this.z)).matches(FluidTags.field_15517)) {
+			if (!this.world.getFluidState(new BlockPos(this.x, this.y, this.z)).matches(FluidTags.WATER)) {
 				this.markDead();
 			}
 		}

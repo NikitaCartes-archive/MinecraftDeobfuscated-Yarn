@@ -38,7 +38,7 @@ public class Brain<E extends LivingEntity> implements DynamicSerializable {
 	private final Map<Activity, Set<Pair<MemoryModuleType<?>, MemoryModuleState>>> requiredActivityMemories = Maps.newHashMap();
 	private Set<Activity> coreActivities = Sets.<Activity>newHashSet();
 	private final Set<Activity> possibleActivities = Sets.<Activity>newHashSet();
-	private Activity defaultActivity = Activity.field_18595;
+	private Activity defaultActivity = Activity.IDLE;
 	private long activityStartTime = -9999L;
 
 	public <T> Brain(Collection<MemoryModuleType<?>> collection, Collection<SensorType<? extends Sensor<? super E>>> collection2, Dynamic<T> dynamic) {
@@ -58,7 +58,7 @@ public class Brain<E extends LivingEntity> implements DynamicSerializable {
 	}
 
 	public boolean hasMemoryModule(MemoryModuleType<?> memoryModuleType) {
-		return this.isMemoryInState(memoryModuleType, MemoryModuleState.field_18456);
+		return this.isMemoryInState(memoryModuleType, MemoryModuleState.VALUE_PRESENT);
 	}
 
 	private <T, U> void readMemory(MemoryModuleType<U> memoryModuleType, Dynamic<T> dynamic) {
@@ -92,9 +92,9 @@ public class Brain<E extends LivingEntity> implements DynamicSerializable {
 		if (optional == null) {
 			return false;
 		} else {
-			return memoryModuleState == MemoryModuleState.field_18458
-				|| memoryModuleState == MemoryModuleState.field_18456 && optional.isPresent()
-				|| memoryModuleState == MemoryModuleState.field_18457 && !optional.isPresent();
+			return memoryModuleState == MemoryModuleState.REGISTERED
+				|| memoryModuleState == MemoryModuleState.VALUE_PRESENT && optional.isPresent()
+				|| memoryModuleState == MemoryModuleState.VALUE_ABSENT && !optional.isPresent();
 		}
 	}
 
@@ -117,7 +117,7 @@ public class Brain<E extends LivingEntity> implements DynamicSerializable {
 			.stream()
 			.flatMap(map -> map.values().stream())
 			.flatMap(Collection::stream)
-			.filter(task -> task.getStatus() == Task.Status.field_18338);
+			.filter(task -> task.getStatus() == Task.Status.RUNNING);
 	}
 
 	public void resetPossibleActivities(Activity activity) {
@@ -209,7 +209,7 @@ public class Brain<E extends LivingEntity> implements DynamicSerializable {
 			.filter(entry -> this.possibleActivities.contains(entry.getKey()))
 			.map(Entry::getValue)
 			.flatMap(Collection::stream)
-			.filter(task -> task.getStatus() == Task.Status.field_18337)
+			.filter(task -> task.getStatus() == Task.Status.STOPPED)
 			.forEach(task -> task.tryStarting(serverWorld, livingEntity, l));
 	}
 

@@ -13,6 +13,6 @@ public class MelonPileFeature extends AbstractPileFeature {
 
 	@Override
 	protected BlockState getPileBlockState(IWorld iWorld) {
-		return Blocks.field_10545.getDefaultState();
+		return Blocks.MELON.getDefaultState();
 	}
 }

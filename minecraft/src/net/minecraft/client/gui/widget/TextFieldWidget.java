@@ -455,7 +455,7 @@ public class TextFieldWidget extends AbstractButtonWidget implements Drawable, E
 		GlStateManager.color4f(0.0F, 0.0F, 255.0F, 255.0F);
 		GlStateManager.disableTexture();
 		GlStateManager.enableColorLogicOp();
-		GlStateManager.logicOp(GlStateManager.LogicOp.field_5110);
+		GlStateManager.logicOp(GlStateManager.LogicOp.OR_REVERSE);
 		bufferBuilder.begin(7, VertexFormats.POSITION);
 		bufferBuilder.vertex((double)i, (double)l, 0.0).next();
 		bufferBuilder.vertex((double)k, (double)l, 0.0).next();

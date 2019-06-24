@@ -22,27 +22,25 @@ public class FireballEntity extends AbstractFireballEntity {
 
 	@Environment(EnvType.CLIENT)
 	public FireballEntity(World world, double d, double e, double f, double g, double h, double i) {
-		super(EntityType.field_6066, d, e, f, g, h, i, world);
+		super(EntityType.FIREBALL, d, e, f, g, h, i, world);
 	}
 
 	public FireballEntity(World world, LivingEntity livingEntity, double d, double e, double f) {
-		super(EntityType.field_6066, livingEntity, d, e, f, world);
+		super(EntityType.FIREBALL, livingEntity, d, e, f, world);
 	}
 
 	@Override
 	protected void onCollision(HitResult hitResult) {
 		if (!this.world.isClient) {
-			if (hitResult.getType() == HitResult.Type.field_1331) {
+			if (hitResult.getType() == HitResult.Type.ENTITY) {
 				Entity entity = ((EntityHitResult)hitResult).getEntity();
 				entity.damage(DamageSource.explosiveProjectile(this, this.owner), 6.0F);
 				this.dealDamage(this.owner, entity);
 			}
 
-			boolean bl = this.world.getGameRules().getBoolean(GameRules.field_19388);
+			boolean bl = this.world.getGameRules().getBoolean(GameRules.MOB_GRIEFING);
 			this.world
-				.createExplosion(
-					null, this.x, this.y, this.z, (float)this.explosionPower, bl, bl ? Explosion.DestructionType.field_18687 : Explosion.DestructionType.field_18685
-				);
+				.createExplosion(null, this.x, this.y, this.z, (float)this.explosionPower, bl, bl ? Explosion.DestructionType.DESTROY : Explosion.DestructionType.NONE);
 			this.remove();
 		}
 	}

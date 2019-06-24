@@ -9,7 +9,7 @@ import net.minecraft.server.world.ServerWorld;
 
 public abstract class Task<E extends LivingEntity> {
 	private final Map<MemoryModuleType<?>, MemoryModuleState> requiredMemoryState;
-	private Task.Status status = Task.Status.field_18337;
+	private Task.Status status = Task.Status.STOPPED;
 	private long endTime;
 	private final int minRunTime;
 	private final int maxRunTime;
@@ -34,7 +34,7 @@ public abstract class Task<E extends LivingEntity> {
 
 	public final boolean tryStarting(ServerWorld serverWorld, E livingEntity, long l) {
 		if (this.hasRequiredMemoryState(livingEntity) && this.shouldRun(serverWorld, livingEntity)) {
-			this.status = Task.Status.field_18338;
+			this.status = Task.Status.RUNNING;
 			int i = this.minRunTime + serverWorld.getRandom().nextInt(this.maxRunTime + 1 - this.minRunTime);
 			this.endTime = l + (long)i;
 			this.run(serverWorld, livingEntity, l);
@@ -59,7 +59,7 @@ public abstract class Task<E extends LivingEntity> {
 	}
 
 	public final void stop(ServerWorld serverWorld, E livingEntity, long l) {
-		this.status = Task.Status.field_18337;
+		this.status = Task.Status.STOPPED;
 		this.finishRunning(serverWorld, livingEntity, l);
 	}
 
@@ -91,7 +91,7 @@ public abstract class Task<E extends LivingEntity> {
 	}
 
 	public static enum Status {
-		field_18337,
-		field_18338;
+		STOPPED,
+		RUNNING;
 	}
 }

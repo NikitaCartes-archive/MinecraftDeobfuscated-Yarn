@@ -12,9 +12,9 @@ import net.minecraft.util.math.MutableIntBoundingBox;
 import net.minecraft.world.ModifiableTestableWorld;
 
 public class MegaPineTreeFeature extends MegaTreeFeature<DefaultFeatureConfig> {
-	private static final BlockState LOG = Blocks.field_10037.getDefaultState();
-	private static final BlockState LEAVES = Blocks.field_9988.getDefaultState();
-	private static final BlockState PODZOL = Blocks.field_10520.getDefaultState();
+	private static final BlockState LOG = Blocks.SPRUCE_LOG.getDefaultState();
+	private static final BlockState LEAVES = Blocks.SPRUCE_LEAVES.getDefaultState();
+	private static final BlockState PODZOL = Blocks.PODZOL.getDefaultState();
 	private final boolean field_13677;
 
 	public MegaPineTreeFeature(Function<Dynamic<?>, ? extends DefaultFeatureConfig> function, boolean bl, boolean bl2) {

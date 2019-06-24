@@ -12,10 +12,10 @@ import net.minecraft.text.TranslatableText;
 import net.minecraft.util.SystemUtil;
 
 @Environment(EnvType.CLIENT)
-public class PauseScreen extends Screen {
+public class GameMenuScreen extends Screen {
 	private final boolean field_19319;
 
-	public PauseScreen(boolean bl) {
+	public GameMenuScreen(boolean bl) {
 		super(bl ? new TranslatableText("menu.game") : new TranslatableText("menu.paused"));
 		this.field_19319 = bl;
 	}
@@ -23,11 +23,11 @@ public class PauseScreen extends Screen {
 	@Override
 	protected void init() {
 		if (this.field_19319) {
-			this.method_20543();
+			this.initWidgets();
 		}
 	}
 
-	private void method_20543() {
+	private void initWidgets() {
 		int i = -16;
 		int j = 98;
 		this.addButton(new ButtonWidget(this.width / 2 - 102, this.height / 4 + 24 + -16, 204, 20, I18n.translate("menu.returnToGame"), buttonWidgetx -> {

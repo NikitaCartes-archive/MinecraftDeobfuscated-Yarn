@@ -41,7 +41,7 @@ public interface SoundInstance {
 
 	@Environment(EnvType.CLIENT)
 	public static enum AttenuationType {
-		field_5478,
-		field_5476;
+		NONE,
+		LINEAR;
 	}
 }

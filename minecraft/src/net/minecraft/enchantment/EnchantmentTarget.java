@@ -36,25 +36,25 @@ public enum EnchantmentTarget {
 	ARMOR_FEET {
 		@Override
 		public boolean isAcceptableItem(Item item) {
-			return item instanceof ArmorItem && ((ArmorItem)item).getSlotType() == EquipmentSlot.field_6166;
+			return item instanceof ArmorItem && ((ArmorItem)item).getSlotType() == EquipmentSlot.FEET;
 		}
 	},
 	ARMOR_LEGS {
 		@Override
 		public boolean isAcceptableItem(Item item) {
-			return item instanceof ArmorItem && ((ArmorItem)item).getSlotType() == EquipmentSlot.field_6172;
+			return item instanceof ArmorItem && ((ArmorItem)item).getSlotType() == EquipmentSlot.LEGS;
 		}
 	},
 	ARMOR_CHEST {
 		@Override
 		public boolean isAcceptableItem(Item item) {
-			return item instanceof ArmorItem && ((ArmorItem)item).getSlotType() == EquipmentSlot.field_6174;
+			return item instanceof ArmorItem && ((ArmorItem)item).getSlotType() == EquipmentSlot.CHEST;
 		}
 	},
 	ARMOR_HEAD {
 		@Override
 		public boolean isAcceptableItem(Item item) {
-			return item instanceof ArmorItem && ((ArmorItem)item).getSlotType() == EquipmentSlot.field_6169;
+			return item instanceof ArmorItem && ((ArmorItem)item).getSlotType() == EquipmentSlot.HEAD;
 		}
 	},
 	WEAPON {

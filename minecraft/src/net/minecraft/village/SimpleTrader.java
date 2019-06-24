@@ -72,6 +72,6 @@ public class SimpleTrader implements Trader {
 
 	@Override
 	public SoundEvent method_18010() {
-		return SoundEvents.field_14815;
+		return SoundEvents.ENTITY_VILLAGER_YES;
 	}
 }

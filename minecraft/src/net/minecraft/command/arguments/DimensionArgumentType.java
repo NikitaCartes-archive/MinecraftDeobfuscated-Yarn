@@ -20,7 +20,7 @@ import net.minecraft.util.registry.Registry;
 import net.minecraft.world.dimension.DimensionType;
 
 public class DimensionArgumentType implements ArgumentType<DimensionType> {
-	private static final Collection<String> EXAMPLES = (Collection<String>)Stream.of(DimensionType.field_13072, DimensionType.field_13076)
+	private static final Collection<String> EXAMPLES = (Collection<String>)Stream.of(DimensionType.OVERWORLD, DimensionType.THE_NETHER)
 		.map(dimensionType -> DimensionType.getId(dimensionType).toString())
 		.collect(Collectors.toList());
 	public static final DynamicCommandExceptionType INVALID_DIMENSION_EXCEPTION = new DynamicCommandExceptionType(
@@ -29,7 +29,7 @@ public class DimensionArgumentType implements ArgumentType<DimensionType> {
 
 	public DimensionType method_9287(StringReader stringReader) throws CommandSyntaxException {
 		Identifier identifier = Identifier.fromCommandInput(stringReader);
-		return (DimensionType)Registry.DIMENSION.getOrEmpty(identifier).orElseThrow(() -> INVALID_DIMENSION_EXCEPTION.create(identifier));
+		return (DimensionType)Registry.DIMENSION_TYPE.getOrEmpty(identifier).orElseThrow(() -> INVALID_DIMENSION_EXCEPTION.create(identifier));
 	}
 
 	@Override
@@ -42,7 +42,7 @@ public class DimensionArgumentType implements ArgumentType<DimensionType> {
 		return EXAMPLES;
 	}
 
-	public static DimensionArgumentType create() {
+	public static DimensionArgumentType dimension() {
 		return new DimensionArgumentType();
 	}
 

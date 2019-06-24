@@ -68,14 +68,14 @@ public class CrackParticle extends SpriteBillboardParticle {
 	@Environment(EnvType.CLIENT)
 	public static class SlimeballFactory implements ParticleFactory<DefaultParticleType> {
 		public Particle method_3008(DefaultParticleType defaultParticleType, World world, double d, double e, double f, double g, double h, double i) {
-			return new CrackParticle(world, d, e, f, new ItemStack(Items.field_8777));
+			return new CrackParticle(world, d, e, f, new ItemStack(Items.SLIME_BALL));
 		}
 	}
 
 	@Environment(EnvType.CLIENT)
 	public static class SnowballFactory implements ParticleFactory<DefaultParticleType> {
 		public Particle method_3009(DefaultParticleType defaultParticleType, World world, double d, double e, double f, double g, double h, double i) {
-			return new CrackParticle(world, d, e, f, new ItemStack(Items.field_8543));
+			return new CrackParticle(world, d, e, f, new ItemStack(Items.SNOWBALL));
 		}
 	}
 }

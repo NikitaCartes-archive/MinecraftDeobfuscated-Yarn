@@ -22,14 +22,14 @@ public class EmptyMapItem extends NetworkSyncedItem {
 		}
 
 		if (itemStack2.isEmpty()) {
-			return new TypedActionResult<>(ActionResult.field_5812, itemStack);
+			return new TypedActionResult<>(ActionResult.SUCCESS, itemStack);
 		} else {
 			if (!playerEntity.inventory.insertStack(itemStack.copy())) {
 				playerEntity.dropItem(itemStack, false);
 			}
 
-			playerEntity.incrementStat(Stats.field_15372.getOrCreateStat(this));
-			return new TypedActionResult<>(ActionResult.field_5812, itemStack2);
+			playerEntity.incrementStat(Stats.USED.getOrCreateStat(this));
+			return new TypedActionResult<>(ActionResult.SUCCESS, itemStack2);
 		}
 	}
 }

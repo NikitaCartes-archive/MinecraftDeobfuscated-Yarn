@@ -46,10 +46,10 @@ public class SkeletonHorseTrapTriggerGoal extends Goal {
 	}
 
 	private HorseBaseEntity getHorse(LocalDifficulty localDifficulty) {
-		SkeletonHorseEntity skeletonHorseEntity = EntityType.field_6075.create(this.skeletonHorse.world);
-		skeletonHorseEntity.initialize(this.skeletonHorse.world, localDifficulty, SpawnType.field_16461, null, null);
+		SkeletonHorseEntity skeletonHorseEntity = EntityType.SKELETON_HORSE.create(this.skeletonHorse.world);
+		skeletonHorseEntity.initialize(this.skeletonHorse.world, localDifficulty, SpawnType.TRIGGERED, null, null);
 		skeletonHorseEntity.setPosition(this.skeletonHorse.x, this.skeletonHorse.y, this.skeletonHorse.z);
-		skeletonHorseEntity.field_6008 = 60;
+		skeletonHorseEntity.timeUntilRegen = 60;
 		skeletonHorseEntity.setPersistent();
 		skeletonHorseEntity.setTame(true);
 		skeletonHorseEntity.setBreedingAge(0);
@@ -58,17 +58,17 @@ public class SkeletonHorseTrapTriggerGoal extends Goal {
 	}
 
 	private SkeletonEntity getSkeleton(LocalDifficulty localDifficulty, HorseBaseEntity horseBaseEntity) {
-		SkeletonEntity skeletonEntity = EntityType.field_6137.create(horseBaseEntity.world);
-		skeletonEntity.initialize(horseBaseEntity.world, localDifficulty, SpawnType.field_16461, null, null);
+		SkeletonEntity skeletonEntity = EntityType.SKELETON.create(horseBaseEntity.world);
+		skeletonEntity.initialize(horseBaseEntity.world, localDifficulty, SpawnType.TRIGGERED, null, null);
 		skeletonEntity.setPosition(horseBaseEntity.x, horseBaseEntity.y, horseBaseEntity.z);
-		skeletonEntity.field_6008 = 60;
+		skeletonEntity.timeUntilRegen = 60;
 		skeletonEntity.setPersistent();
-		if (skeletonEntity.getEquippedStack(EquipmentSlot.field_6169).isEmpty()) {
-			skeletonEntity.setEquippedStack(EquipmentSlot.field_6169, new ItemStack(Items.field_8743));
+		if (skeletonEntity.getEquippedStack(EquipmentSlot.HEAD).isEmpty()) {
+			skeletonEntity.setEquippedStack(EquipmentSlot.HEAD, new ItemStack(Items.IRON_HELMET));
 		}
 
 		skeletonEntity.setEquippedStack(
-			EquipmentSlot.field_6173,
+			EquipmentSlot.MAINHAND,
 			EnchantmentHelper.enchant(
 				skeletonEntity.getRand(),
 				skeletonEntity.getMainHandStack(),
@@ -77,10 +77,10 @@ public class SkeletonHorseTrapTriggerGoal extends Goal {
 			)
 		);
 		skeletonEntity.setEquippedStack(
-			EquipmentSlot.field_6169,
+			EquipmentSlot.HEAD,
 			EnchantmentHelper.enchant(
 				skeletonEntity.getRand(),
-				skeletonEntity.getEquippedStack(EquipmentSlot.field_6169),
+				skeletonEntity.getEquippedStack(EquipmentSlot.HEAD),
 				(int)(5.0F + localDifficulty.getClampedLocalDifficulty() * (float)skeletonEntity.getRand().nextInt(18)),
 				false
 			)

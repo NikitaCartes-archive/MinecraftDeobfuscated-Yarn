@@ -92,7 +92,7 @@ public abstract class Biome {
 	public static <F extends FeatureConfig, D extends DecoratorConfig> ConfiguredFeature<?> configureFeature(
 		Feature<F> feature, F featureConfig, Decorator<D> decorator, D decoratorConfig
 	) {
-		Feature<DecoratedFeatureConfig> feature2 = feature instanceof FlowerFeature ? Feature.field_13561 : Feature.field_13572;
+		Feature<DecoratedFeatureConfig> feature2 = feature instanceof FlowerFeature ? Feature.DECORATED_FLOWER : Feature.DECORATED;
 		return new ConfiguredFeature<>(feature2, new DecoratedFeatureConfig(feature, featureConfig, decorator, decoratorConfig));
 	}
 
@@ -177,7 +177,7 @@ public abstract class Biome {
 		if (this.getTemperature(blockPos) >= 0.15F) {
 			return false;
 		} else {
-			if (blockPos.getY() >= 0 && blockPos.getY() < 256 && viewableWorld.getLightLevel(LightType.field_9282, blockPos) < 10) {
+			if (blockPos.getY() >= 0 && blockPos.getY() < 256 && viewableWorld.getLightLevel(LightType.BLOCK, blockPos) < 10) {
 				BlockState blockState = viewableWorld.getBlockState(blockPos);
 				FluidState fluidState = viewableWorld.getFluidState(blockPos);
 				if (fluidState.getFluid() == Fluids.WATER && blockState.getBlock() instanceof FluidBlock) {
@@ -203,9 +203,9 @@ public abstract class Biome {
 		if (this.getTemperature(blockPos) >= 0.15F) {
 			return false;
 		} else {
-			if (blockPos.getY() >= 0 && blockPos.getY() < 256 && viewableWorld.getLightLevel(LightType.field_9282, blockPos) < 10) {
+			if (blockPos.getY() >= 0 && blockPos.getY() < 256 && viewableWorld.getLightLevel(LightType.BLOCK, blockPos) < 10) {
 				BlockState blockState = viewableWorld.getBlockState(blockPos);
-				if (blockState.isAir() && Blocks.field_10477.getDefaultState().canPlaceAt(viewableWorld, blockPos)) {
+				if (blockState.isAir() && Blocks.SNOW.getDefaultState().canPlaceAt(viewableWorld, blockPos)) {
 					return true;
 				}
 			}
@@ -215,7 +215,7 @@ public abstract class Biome {
 	}
 
 	public void addFeature(GenerationStep.Feature feature, ConfiguredFeature<?> configuredFeature) {
-		if (configuredFeature.feature == Feature.field_13561) {
+		if (configuredFeature.feature == Feature.DECORATED_FLOWER) {
 			this.flowerFeatures.add(configuredFeature);
 		}
 
@@ -288,12 +288,12 @@ public abstract class Biome {
 	}
 
 	public Biome.TemperatureGroup getTemperatureGroup() {
-		if (this.category == Biome.Category.field_9367) {
-			return Biome.TemperatureGroup.field_9379;
+		if (this.category == Biome.Category.OCEAN) {
+			return Biome.TemperatureGroup.OCEAN;
 		} else if ((double)this.getTemperature() < 0.2) {
-			return Biome.TemperatureGroup.field_9377;
+			return Biome.TemperatureGroup.COLD;
 		} else {
-			return (double)this.getTemperature() < 1.0 ? Biome.TemperatureGroup.field_9375 : Biome.TemperatureGroup.field_9378;
+			return (double)this.getTemperature() < 1.0 ? Biome.TemperatureGroup.MEDIUM : Biome.TemperatureGroup.WARM;
 		}
 	}
 
@@ -352,23 +352,23 @@ public abstract class Biome {
 	}
 
 	public static enum Category {
-		field_9371("none"),
-		field_9361("taiga"),
-		field_9357("extreme_hills"),
-		field_9358("jungle"),
-		field_9354("mesa"),
-		field_9355("plains"),
-		field_9356("savanna"),
-		field_9362("icy"),
+		NONE("none"),
+		TAIGA("taiga"),
+		EXTREME_HILLS("extreme_hills"),
+		JUNGLE("jungle"),
+		MESA("mesa"),
+		PLAINS("plains"),
+		SAVANNA("savanna"),
+		ICY("icy"),
 		THEEND("the_end"),
-		field_9363("beach"),
-		field_9370("forest"),
-		field_9367("ocean"),
-		field_9368("desert"),
-		field_9369("river"),
-		field_9364("swamp"),
-		field_9365("mushroom"),
-		field_9366("nether");
+		BEACH("beach"),
+		FOREST("forest"),
+		OCEAN("ocean"),
+		DESERT("desert"),
+		RIVER("river"),
+		SWAMP("swamp"),
+		MUSHROOM("mushroom"),
+		NETHER("nether");
 
 		private static final Map<String, Biome.Category> NAME_MAP = (Map<String, Biome.Category>)Arrays.stream(values())
 			.collect(Collectors.toMap(Biome.Category::getName, category -> category));
@@ -523,10 +523,10 @@ public abstract class Biome {
 	}
 
 	public static enum TemperatureGroup {
-		field_9379("ocean"),
-		field_9377("cold"),
-		field_9375("medium"),
-		field_9378("warm");
+		OCEAN("ocean"),
+		COLD("cold"),
+		MEDIUM("medium"),
+		WARM("warm");
 
 		private static final Map<String, Biome.TemperatureGroup> NAME_MAP = (Map<String, Biome.TemperatureGroup>)Arrays.stream(values())
 			.collect(Collectors.toMap(Biome.TemperatureGroup::getName, temperatureGroup -> temperatureGroup));

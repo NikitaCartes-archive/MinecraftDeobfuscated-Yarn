@@ -63,7 +63,7 @@ public class MushroomPlantBlock extends PlantBlock implements Fertilizable {
 		BlockPos blockPos2 = blockPos.down();
 		BlockState blockState2 = viewableWorld.getBlockState(blockPos2);
 		Block block = blockState2.getBlock();
-		if (block != Blocks.field_10402 && block != Blocks.field_10520) {
+		if (block != Blocks.MYCELIUM && block != Blocks.PODZOL) {
 			return viewableWorld.getLightLevel(blockPos, 0) < 13 && this.canPlantOnTop(blockState2, viewableWorld, blockPos2);
 		} else {
 			return true;
@@ -73,10 +73,10 @@ public class MushroomPlantBlock extends PlantBlock implements Fertilizable {
 	public boolean trySpawningBigMushroom(IWorld iWorld, BlockPos blockPos, BlockState blockState, Random random) {
 		iWorld.clearBlockState(blockPos, false);
 		Feature<PlantedFeatureConfig> feature = null;
-		if (this == Blocks.field_10251) {
-			feature = Feature.field_13531;
-		} else if (this == Blocks.field_10559) {
-			feature = Feature.field_13571;
+		if (this == Blocks.BROWN_MUSHROOM) {
+			feature = Feature.HUGE_BROWN_MUSHROOM;
+		} else if (this == Blocks.RED_MUSHROOM) {
+			feature = Feature.HUGE_RED_MUSHROOM;
 		}
 
 		if (feature != null && feature.generate(iWorld, iWorld.getChunkManager().getChunkGenerator(), random, blockPos, new PlantedFeatureConfig(true))) {

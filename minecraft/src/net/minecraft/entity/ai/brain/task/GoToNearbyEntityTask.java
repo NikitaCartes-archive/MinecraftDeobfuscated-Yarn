@@ -15,7 +15,7 @@ public class GoToNearbyEntityTask extends Task<MobEntityWithAi> {
 	private final float field_18381;
 
 	public GoToNearbyEntityTask(MemoryModuleType<? extends Entity> memoryModuleType, float f) {
-		super(ImmutableMap.of(MemoryModuleType.field_18445, MemoryModuleState.field_18457, memoryModuleType, MemoryModuleState.field_18456));
+		super(ImmutableMap.of(MemoryModuleType.WALK_TARGET, MemoryModuleState.VALUE_ABSENT, memoryModuleType, MemoryModuleState.VALUE_PRESENT));
 		this.entityMemory = memoryModuleType;
 		this.field_18381 = f;
 	}
@@ -35,7 +35,7 @@ public class GoToNearbyEntityTask extends Task<MobEntityWithAi> {
 			Vec3d vec3d = new Vec3d(entity.x, entity.y, entity.z);
 			Vec3d vec3d2 = PathfindingUtil.method_20658(mobEntityWithAi, 16, 7, vec3d);
 			if (vec3d2 != null) {
-				mobEntityWithAi.getBrain().putMemory(MemoryModuleType.field_18445, new WalkTarget(vec3d2, f, 0));
+				mobEntityWithAi.getBrain().putMemory(MemoryModuleType.WALK_TARGET, new WalkTarget(vec3d2, f, 0));
 				return;
 			}
 		}

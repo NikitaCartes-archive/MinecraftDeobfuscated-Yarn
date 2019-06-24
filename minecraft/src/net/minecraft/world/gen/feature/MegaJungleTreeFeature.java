@@ -96,7 +96,7 @@ public class MegaJungleTreeFeature extends MegaTreeFeature<DefaultFeatureConfig>
 
 	private void tryMakingVine(ModifiableTestableWorld modifiableTestableWorld, Random random, BlockPos blockPos, BooleanProperty booleanProperty) {
 		if (random.nextInt(3) > 0 && isAir(modifiableTestableWorld, blockPos)) {
-			this.setBlockState(modifiableTestableWorld, blockPos, Blocks.field_10597.getDefaultState().with(booleanProperty, Boolean.valueOf(true)));
+			this.setBlockState(modifiableTestableWorld, blockPos, Blocks.VINE.getDefaultState().with(booleanProperty, Boolean.valueOf(true)));
 		}
 	}
 

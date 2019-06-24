@@ -28,7 +28,7 @@ public class LeadKnotEntity extends AbstractDecorationEntity {
 	}
 
 	public LeadKnotEntity(World world, BlockPos blockPos) {
-		super(EntityType.field_6138, world, blockPos);
+		super(EntityType.LEASH_KNOT, world, blockPos);
 		this.setPosition((double)blockPos.getX() + 0.5, (double)blockPos.getY() + 0.5, (double)blockPos.getZ() + 0.5);
 		float f = 0.125F;
 		float g = 0.1875F;
@@ -76,7 +76,7 @@ public class LeadKnotEntity extends AbstractDecorationEntity {
 
 	@Override
 	public void onBreak(@Nullable Entity entity) {
-		this.playSound(SoundEvents.field_15184, 1.0F, 1.0F);
+		this.playSound(SoundEvents.ENTITY_LEASH_KNOT_BREAK, 1.0F, 1.0F);
 	}
 
 	@Override
@@ -120,7 +120,7 @@ public class LeadKnotEntity extends AbstractDecorationEntity {
 
 	@Override
 	public boolean method_6888() {
-		return this.world.getBlockState(this.blockPos).getBlock().matches(BlockTags.field_16584);
+		return this.world.getBlockState(this.blockPos).getBlock().matches(BlockTags.FENCES);
 	}
 
 	public static LeadKnotEntity getOrCreate(World world, BlockPos blockPos) {
@@ -144,7 +144,7 @@ public class LeadKnotEntity extends AbstractDecorationEntity {
 
 	@Override
 	public void onPlace() {
-		this.playSound(SoundEvents.field_15062, 1.0F, 1.0F);
+		this.playSound(SoundEvents.ENTITY_LEASH_KNOT_PLACE, 1.0F, 1.0F);
 	}
 
 	@Override

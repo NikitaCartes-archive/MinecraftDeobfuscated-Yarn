@@ -190,7 +190,7 @@ public class WorldListWidget extends AlwaysSelectedEntryListWidget<WorldListWidg
 			} else {
 				string3 = I18n.translate("gameMode." + this.level.getGameMode().getName());
 				if (this.level.isHardcore()) {
-					string3 = Formatting.field_1079 + I18n.translate("gameMode.hardcore") + Formatting.field_1070;
+					string3 = Formatting.DARK_RED + I18n.translate("gameMode.hardcore") + Formatting.RESET;
 				}
 
 				if (this.level.hasCheats()) {
@@ -200,9 +200,9 @@ public class WorldListWidget extends AlwaysSelectedEntryListWidget<WorldListWidg
 				String string4 = this.level.getVersion().asFormattedString();
 				if (this.level.isDifferentVersion()) {
 					if (this.level.isFutureLevel()) {
-						string3 = string3 + ", " + I18n.translate("selectWorld.version") + " " + Formatting.field_1061 + string4 + Formatting.field_1070;
+						string3 = string3 + ", " + I18n.translate("selectWorld.version") + " " + Formatting.RED + string4 + Formatting.RESET;
 					} else {
-						string3 = string3 + ", " + I18n.translate("selectWorld.version") + " " + Formatting.field_1056 + string4 + Formatting.field_1070;
+						string3 = string3 + ", " + I18n.translate("selectWorld.version") + " " + Formatting.ITALIC + string4 + Formatting.RESET;
 					}
 				} else {
 					string3 = string3 + ", " + I18n.translate("selectWorld.version") + " " + string4;
@@ -228,7 +228,7 @@ public class WorldListWidget extends AlwaysSelectedEntryListWidget<WorldListWidg
 					if (this.level.isLegacyCustomizedWorld()) {
 						DrawableHelper.blit(k, j, 96.0F, (float)q, 32, 32, 256, 256);
 						if (p < 32) {
-							Text text = new TranslatableText("selectWorld.tooltip.unsupported", this.level.getVersion()).formatted(Formatting.field_1061);
+							Text text = new TranslatableText("selectWorld.tooltip.unsupported", this.level.getVersion()).formatted(Formatting.RED);
 							this.screen.setTooltip(this.client.textRenderer.wrapStringToWidth(text.asFormattedString(), 175));
 						}
 					} else if (this.level.isFutureLevel()) {
@@ -236,10 +236,10 @@ public class WorldListWidget extends AlwaysSelectedEntryListWidget<WorldListWidg
 						if (p < 32) {
 							this.screen
 								.setTooltip(
-									Formatting.field_1061
+									Formatting.RED
 										+ I18n.translate("selectWorld.tooltip.fromNewerVersion1")
 										+ "\n"
-										+ Formatting.field_1061
+										+ Formatting.RED
 										+ I18n.translate("selectWorld.tooltip.fromNewerVersion2")
 								);
 						}
@@ -248,11 +248,7 @@ public class WorldListWidget extends AlwaysSelectedEntryListWidget<WorldListWidg
 						if (p < 32) {
 							this.screen
 								.setTooltip(
-									Formatting.field_1065
-										+ I18n.translate("selectWorld.tooltip.snapshot1")
-										+ "\n"
-										+ Formatting.field_1065
-										+ I18n.translate("selectWorld.tooltip.snapshot2")
+									Formatting.GOLD + I18n.translate("selectWorld.tooltip.snapshot1") + "\n" + Formatting.GOLD + I18n.translate("selectWorld.tooltip.snapshot2")
 								);
 						}
 					}
@@ -398,7 +394,7 @@ public class WorldListWidget extends AlwaysSelectedEntryListWidget<WorldListWidg
 		}
 
 		private void start() {
-			this.client.getSoundManager().play(PositionedSoundInstance.master(SoundEvents.field_15015, 1.0F));
+			this.client.getSoundManager().play(PositionedSoundInstance.master(SoundEvents.UI_BUTTON_CLICK, 1.0F));
 			if (this.client.getLevelStorage().levelExists(this.level.getName())) {
 				this.client.startIntegratedServer(this.level.getName(), this.level.getDisplayName(), null);
 			}

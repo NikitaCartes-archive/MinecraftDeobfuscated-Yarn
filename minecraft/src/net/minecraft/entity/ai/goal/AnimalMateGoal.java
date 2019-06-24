@@ -35,7 +35,7 @@ public class AnimalMateGoal extends Goal {
 		this.world = animalEntity.world;
 		this.entityClass = class_;
 		this.chance = d;
-		this.setControls(EnumSet.of(Goal.Control.field_18405, Goal.Control.field_18406));
+		this.setControls(EnumSet.of(Goal.Control.MOVE, Goal.Control.LOOK));
 	}
 
 	@Override
@@ -94,7 +94,7 @@ public class AnimalMateGoal extends Goal {
 			}
 
 			if (serverPlayerEntity != null) {
-				serverPlayerEntity.incrementStat(Stats.field_15410);
+				serverPlayerEntity.incrementStat(Stats.ANIMALS_BRED);
 				Criterions.BRED_ANIMALS.handle(serverPlayerEntity, this.animal, this.mate, passiveEntity);
 			}
 
@@ -106,7 +106,7 @@ public class AnimalMateGoal extends Goal {
 			passiveEntity.setPositionAndAngles(this.animal.x, this.animal.y, this.animal.z, 0.0F, 0.0F);
 			this.world.spawnEntity(passiveEntity);
 			this.world.sendEntityStatus(this.animal, (byte)18);
-			if (this.world.getGameRules().getBoolean(GameRules.field_19391)) {
+			if (this.world.getGameRules().getBoolean(GameRules.DO_MOB_LOOT)) {
 				this.world.spawnEntity(new ExperienceOrbEntity(this.world, this.animal.x, this.animal.y, this.animal.z, this.animal.getRand().nextInt(7) + 1));
 			}
 		}

@@ -8,19 +8,19 @@ import net.minecraft.world.World;
 import net.minecraft.world.biome.source.BiomeSource;
 
 public class ChunkGeneratorType<C extends ChunkGeneratorConfig, T extends ChunkGenerator<C>> implements ChunkGeneratorFactory<C, T> {
-	public static final ChunkGeneratorType<OverworldChunkGeneratorConfig, OverworldChunkGenerator> field_12769 = register(
+	public static final ChunkGeneratorType<OverworldChunkGeneratorConfig, OverworldChunkGenerator> SURFACE = register(
 		"surface", OverworldChunkGenerator::new, OverworldChunkGeneratorConfig::new, true
 	);
-	public static final ChunkGeneratorType<CavesChunkGeneratorConfig, CavesChunkGenerator> field_12765 = register(
+	public static final ChunkGeneratorType<CavesChunkGeneratorConfig, CavesChunkGenerator> CAVES = register(
 		"caves", CavesChunkGenerator::new, CavesChunkGeneratorConfig::new, true
 	);
-	public static final ChunkGeneratorType<FloatingIslandsChunkGeneratorConfig, FloatingIslandsChunkGenerator> field_12770 = register(
+	public static final ChunkGeneratorType<FloatingIslandsChunkGeneratorConfig, FloatingIslandsChunkGenerator> FLOATING_ISLANDS = register(
 		"floating_islands", FloatingIslandsChunkGenerator::new, FloatingIslandsChunkGeneratorConfig::new, true
 	);
-	public static final ChunkGeneratorType<DebugChunkGeneratorConfig, DebugChunkGenerator> field_12768 = register(
+	public static final ChunkGeneratorType<DebugChunkGeneratorConfig, DebugChunkGenerator> DEBUG = register(
 		"debug", DebugChunkGenerator::new, DebugChunkGeneratorConfig::new, false
 	);
-	public static final ChunkGeneratorType<FlatChunkGeneratorConfig, FlatChunkGenerator> field_12766 = register(
+	public static final ChunkGeneratorType<FlatChunkGeneratorConfig, FlatChunkGenerator> FLAT = register(
 		"flat", FlatChunkGenerator::new, FlatChunkGeneratorConfig::new, false
 	);
 	private final ChunkGeneratorFactory<C, T> factory;

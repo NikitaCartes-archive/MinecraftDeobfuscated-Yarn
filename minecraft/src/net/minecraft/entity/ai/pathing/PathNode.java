@@ -18,7 +18,7 @@ public class PathNode {
 	public boolean field_42;
 	public float field_46;
 	public float field_43;
-	public PathNodeType type = PathNodeType.field_22;
+	public PathNodeType type = PathNodeType.BLOCKED;
 
 	public PathNode(int i, int j, int k) {
 		this.x = i;

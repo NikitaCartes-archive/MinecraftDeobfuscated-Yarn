@@ -24,10 +24,10 @@ public class WritableBookItem extends Item {
 		World world = itemUsageContext.getWorld();
 		BlockPos blockPos = itemUsageContext.getBlockPos();
 		BlockState blockState = world.getBlockState(blockPos);
-		if (blockState.getBlock() == Blocks.field_16330) {
-			return LecternBlock.putBookIfAbsent(world, blockPos, blockState, itemUsageContext.getStack()) ? ActionResult.field_5812 : ActionResult.field_5811;
+		if (blockState.getBlock() == Blocks.LECTERN) {
+			return LecternBlock.putBookIfAbsent(world, blockPos, blockState, itemUsageContext.getStack()) ? ActionResult.SUCCESS : ActionResult.PASS;
 		} else {
-			return ActionResult.field_5811;
+			return ActionResult.PASS;
 		}
 	}
 
@@ -35,8 +35,8 @@ public class WritableBookItem extends Item {
 	public TypedActionResult<ItemStack> use(World world, PlayerEntity playerEntity, Hand hand) {
 		ItemStack itemStack = playerEntity.getStackInHand(hand);
 		playerEntity.openEditBookScreen(itemStack, hand);
-		playerEntity.incrementStat(Stats.field_15372.getOrCreateStat(this));
-		return new TypedActionResult<>(ActionResult.field_5812, itemStack);
+		playerEntity.incrementStat(Stats.USED.getOrCreateStat(this));
+		return new TypedActionResult<>(ActionResult.SUCCESS, itemStack);
 	}
 
 	public static boolean isValid(@Nullable CompoundTag compoundTag) {

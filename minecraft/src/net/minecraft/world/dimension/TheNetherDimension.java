@@ -40,11 +40,11 @@ public class TheNetherDimension extends Dimension {
 
 	@Override
 	public ChunkGenerator<?> createChunkGenerator() {
-		CavesChunkGeneratorConfig cavesChunkGeneratorConfig = ChunkGeneratorType.field_12765.createSettings();
-		cavesChunkGeneratorConfig.setDefaultBlock(Blocks.field_10515.getDefaultState());
-		cavesChunkGeneratorConfig.setDefaultFluid(Blocks.field_10164.getDefaultState());
-		return ChunkGeneratorType.field_12765
-			.create(this.world, BiomeSourceType.FIXED.applyConfig(BiomeSourceType.FIXED.getConfig().setBiome(Biomes.field_9461)), cavesChunkGeneratorConfig);
+		CavesChunkGeneratorConfig cavesChunkGeneratorConfig = ChunkGeneratorType.CAVES.createSettings();
+		cavesChunkGeneratorConfig.setDefaultBlock(Blocks.NETHERRACK.getDefaultState());
+		cavesChunkGeneratorConfig.setDefaultFluid(Blocks.LAVA.getDefaultState());
+		return ChunkGeneratorType.CAVES
+			.create(this.world, BiomeSourceType.FIXED.applyConfig(BiomeSourceType.FIXED.getConfig().setBiome(Biomes.NETHER)), cavesChunkGeneratorConfig);
 	}
 
 	@Override
@@ -97,6 +97,6 @@ public class TheNetherDimension extends Dimension {
 
 	@Override
 	public DimensionType getType() {
-		return DimensionType.field_13076;
+		return DimensionType.THE_NETHER;
 	}
 }

@@ -17,7 +17,7 @@ public class StructureVoidBlock extends Block {
 
 	@Override
 	public BlockRenderType getRenderType(BlockState blockState) {
-		return BlockRenderType.field_11455;
+		return BlockRenderType.INVISIBLE;
 	}
 
 	@Override
@@ -33,6 +33,6 @@ public class StructureVoidBlock extends Block {
 
 	@Override
 	public PistonBehavior getPistonBehavior(BlockState blockState) {
-		return PistonBehavior.field_15971;
+		return PistonBehavior.DESTROY;
 	}
 }

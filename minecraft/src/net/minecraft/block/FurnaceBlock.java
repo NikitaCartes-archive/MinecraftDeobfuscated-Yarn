@@ -31,7 +31,7 @@ public class FurnaceBlock extends AbstractFurnaceBlock {
 		BlockEntity blockEntity = world.getBlockEntity(blockPos);
 		if (blockEntity instanceof FurnaceBlockEntity) {
 			playerEntity.openContainer((NameableContainerProvider)blockEntity);
-			playerEntity.incrementStat(Stats.field_15379);
+			playerEntity.incrementStat(Stats.INTERACT_WITH_FURNACE);
 		}
 	}
 
@@ -43,7 +43,7 @@ public class FurnaceBlock extends AbstractFurnaceBlock {
 			double e = (double)blockPos.getY();
 			double f = (double)blockPos.getZ() + 0.5;
 			if (random.nextDouble() < 0.1) {
-				world.playSound(d, e, f, SoundEvents.field_15006, SoundCategory.field_15245, 1.0F, 1.0F, false);
+				world.playSound(d, e, f, SoundEvents.BLOCK_FURNACE_FIRE_CRACKLE, SoundCategory.BLOCKS, 1.0F, 1.0F, false);
 			}
 
 			Direction direction = blockState.get(FACING);
@@ -53,8 +53,8 @@ public class FurnaceBlock extends AbstractFurnaceBlock {
 			double i = axis == Direction.Axis.X ? (double)direction.getOffsetX() * 0.52 : h;
 			double j = random.nextDouble() * 6.0 / 16.0;
 			double k = axis == Direction.Axis.Z ? (double)direction.getOffsetZ() * 0.52 : h;
-			world.addParticle(ParticleTypes.field_11251, d + i, e + j, f + k, 0.0, 0.0, 0.0);
-			world.addParticle(ParticleTypes.field_11240, d + i, e + j, f + k, 0.0, 0.0, 0.0);
+			world.addParticle(ParticleTypes.SMOKE, d + i, e + j, f + k, 0.0, 0.0, 0.0);
+			world.addParticle(ParticleTypes.FLAME, d + i, e + j, f + k, 0.0, 0.0, 0.0);
 		}
 	}
 }

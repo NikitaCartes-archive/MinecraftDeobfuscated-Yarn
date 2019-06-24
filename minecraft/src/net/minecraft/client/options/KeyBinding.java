@@ -140,7 +140,7 @@ public class KeyBinding implements Comparable<KeyBinding> {
 
 	public boolean matchesKey(int i, int j) {
 		if (i == InputUtil.UNKNOWN_KEYCODE.getKeyCode()) {
-			return this.keyCode.getCategory() == InputUtil.Type.field_1671 && this.keyCode.getKeyCode() == j;
+			return this.keyCode.getCategory() == InputUtil.Type.SCANCODE && this.keyCode.getKeyCode() == j;
 		} else {
 			return this.keyCode.getCategory() == InputUtil.Type.KEYSYM && this.keyCode.getKeyCode() == i;
 		}
@@ -158,7 +158,7 @@ public class KeyBinding implements Comparable<KeyBinding> {
 			case KEYSYM:
 				string2 = InputUtil.getKeycodeName(i);
 				break;
-			case field_1671:
+			case SCANCODE:
 				string2 = InputUtil.getScancodeName(i);
 				break;
 			case MOUSE:

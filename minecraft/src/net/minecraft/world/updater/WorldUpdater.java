@@ -61,7 +61,7 @@ public class WorldUpdater {
 		this.worldSaveHandler = levelStorage.createSaveHandler(string, null);
 		this.worldSaveHandler.saveWorld(levelProperties);
 		this.persistentStateManager = new PersistentStateManager(
-			new File(DimensionType.field_13072.getFile(this.worldSaveHandler.getWorldDir()), "data"), this.worldSaveHandler.getDataFixer()
+			new File(DimensionType.OVERWORLD.getFile(this.worldSaveHandler.getWorldDir()), "data"), this.worldSaveHandler.getDataFixer()
 		);
 		this.worldDirectory = this.worldSaveHandler.getWorldDir();
 		this.updateThread = UPDATE_THREAD_FACTORY.newThread(this::updateWorld);

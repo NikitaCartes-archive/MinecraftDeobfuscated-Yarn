@@ -71,7 +71,7 @@ public class CommandBlockBlockEntity extends BlockEntity {
 	};
 
 	public CommandBlockBlockEntity() {
-		super(BlockEntityType.field_11904);
+		super(BlockEntityType.COMMAND_BLOCK);
 	}
 
 	@Override
@@ -129,7 +129,7 @@ public class CommandBlockBlockEntity extends BlockEntity {
 	public void setAuto(boolean bl) {
 		boolean bl2 = this.auto;
 		this.auto = bl;
-		if (!bl2 && bl && !this.powered && this.world != null && this.getType() != CommandBlockBlockEntity.Type.field_11922) {
+		if (!bl2 && bl && !this.powered && this.world != null && this.getType() != CommandBlockBlockEntity.Type.SEQUENCE) {
 			Block block = this.getCachedState().getBlock();
 			if (block instanceof CommandBlock) {
 				this.updateConditionMet();
@@ -167,12 +167,12 @@ public class CommandBlockBlockEntity extends BlockEntity {
 
 	public CommandBlockBlockEntity.Type getType() {
 		Block block = this.getCachedState().getBlock();
-		if (block == Blocks.field_10525) {
-			return CommandBlockBlockEntity.Type.field_11924;
-		} else if (block == Blocks.field_10263) {
-			return CommandBlockBlockEntity.Type.field_11923;
+		if (block == Blocks.COMMAND_BLOCK) {
+			return CommandBlockBlockEntity.Type.REDSTONE;
+		} else if (block == Blocks.REPEATING_COMMAND_BLOCK) {
+			return CommandBlockBlockEntity.Type.AUTO;
 		} else {
-			return block == Blocks.field_10395 ? CommandBlockBlockEntity.Type.field_11922 : CommandBlockBlockEntity.Type.field_11924;
+			return block == Blocks.CHAIN_COMMAND_BLOCK ? CommandBlockBlockEntity.Type.SEQUENCE : CommandBlockBlockEntity.Type.REDSTONE;
 		}
 	}
 
@@ -188,8 +188,8 @@ public class CommandBlockBlockEntity extends BlockEntity {
 	}
 
 	public static enum Type {
-		field_11922,
-		field_11923,
-		field_11924;
+		SEQUENCE,
+		AUTO,
+		REDSTONE;
 	}
 }

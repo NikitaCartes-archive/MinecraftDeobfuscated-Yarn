@@ -38,7 +38,7 @@ public class BlockCrackParticle extends SpriteBillboardParticle {
 
 	public BlockCrackParticle setBlockPos(BlockPos blockPos) {
 		this.blockPos = blockPos;
-		if (this.block.getBlock() == Blocks.field_10219) {
+		if (this.block.getBlock() == Blocks.GRASS_BLOCK) {
 			return this;
 		} else {
 			this.updateColor(blockPos);
@@ -49,7 +49,7 @@ public class BlockCrackParticle extends SpriteBillboardParticle {
 	public BlockCrackParticle setBlockPosFromPosition() {
 		this.blockPos = new BlockPos(this.x, this.y, this.z);
 		Block block = this.block.getBlock();
-		if (block == Blocks.field_10219) {
+		if (block == Blocks.GRASS_BLOCK) {
 			return this;
 		} else {
 			this.updateColor(this.blockPos);
@@ -99,7 +99,7 @@ public class BlockCrackParticle extends SpriteBillboardParticle {
 	public static class Factory implements ParticleFactory<BlockStateParticleEffect> {
 		public Particle method_3109(BlockStateParticleEffect blockStateParticleEffect, World world, double d, double e, double f, double g, double h, double i) {
 			BlockState blockState = blockStateParticleEffect.getBlockState();
-			return !blockState.isAir() && blockState.getBlock() != Blocks.field_10008
+			return !blockState.isAir() && blockState.getBlock() != Blocks.MOVING_PISTON
 				? new BlockCrackParticle(world, d, e, f, g, h, i, blockState).setBlockPosFromPosition()
 				: null;
 		}

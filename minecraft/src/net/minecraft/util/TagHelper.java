@@ -184,7 +184,7 @@ public final class TagHelper {
 
 	public static BlockState deserializeBlockState(CompoundTag compoundTag) {
 		if (!compoundTag.containsKey("Name", 8)) {
-			return Blocks.field_10124.getDefaultState();
+			return Blocks.AIR.getDefaultState();
 		} else {
 			Block block = Registry.BLOCK.get(new Identifier(compoundTag.getString("Name")));
 			BlockState blockState = block.getDefaultState();

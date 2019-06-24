@@ -21,7 +21,7 @@ public class GrassFeatureConfig implements FeatureConfig {
 	}
 
 	public static <T> GrassFeatureConfig deserialize(Dynamic<T> dynamic) {
-		BlockState blockState = (BlockState)dynamic.get("state").map(BlockState::deserialize).orElse(Blocks.field_10124.getDefaultState());
+		BlockState blockState = (BlockState)dynamic.get("state").map(BlockState::deserialize).orElse(Blocks.AIR.getDefaultState());
 		return new GrassFeatureConfig(blockState);
 	}
 }

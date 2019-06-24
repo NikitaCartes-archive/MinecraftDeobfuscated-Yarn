@@ -21,7 +21,7 @@ public class EscapeSunlightGoal extends Goal {
 		this.mob = mobEntityWithAi;
 		this.speed = d;
 		this.world = mobEntityWithAi.world;
-		this.setControls(EnumSet.of(Goal.Control.field_18405));
+		this.setControls(EnumSet.of(Goal.Control.MOVE));
 	}
 
 	@Override
@@ -35,7 +35,7 @@ public class EscapeSunlightGoal extends Goal {
 		} else if (!this.world.isSkyVisible(new BlockPos(this.mob.x, this.mob.getBoundingBox().minY, this.mob.z))) {
 			return false;
 		} else {
-			return !this.mob.getEquippedStack(EquipmentSlot.field_6169).isEmpty() ? false : this.method_18250();
+			return !this.mob.getEquippedStack(EquipmentSlot.HEAD).isEmpty() ? false : this.method_18250();
 		}
 	}
 

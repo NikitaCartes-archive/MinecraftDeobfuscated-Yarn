@@ -14,10 +14,10 @@ public class StatusEffectSpriteManager extends SpriteAtlasHolder {
 
 	@Override
 	protected Iterable<Identifier> getSprites() {
-		return Registry.STATUS_EFFECT.getIds();
+		return Registry.MOB_EFFECT.getIds();
 	}
 
 	public Sprite getSprite(StatusEffect statusEffect) {
-		return this.getSprite(Registry.STATUS_EFFECT.getId(statusEffect));
+		return this.getSprite(Registry.MOB_EFFECT.getId(statusEffect));
 	}
 }

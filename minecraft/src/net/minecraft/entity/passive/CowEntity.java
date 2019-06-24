@@ -34,7 +34,7 @@ public class CowEntity extends AnimalEntity {
 		this.goalSelector.add(0, new SwimGoal(this));
 		this.goalSelector.add(1, new EscapeDangerGoal(this, 2.0));
 		this.goalSelector.add(2, new AnimalMateGoal(this, 1.0));
-		this.goalSelector.add(3, new TemptGoal(this, 1.25, Ingredient.ofItems(Items.field_8861), false));
+		this.goalSelector.add(3, new TemptGoal(this, 1.25, Ingredient.ofItems(Items.WHEAT), false));
 		this.goalSelector.add(4, new FollowParentGoal(this, 1.25));
 		this.goalSelector.add(5, new WanderAroundFarGoal(this, 1.0));
 		this.goalSelector.add(6, new LookAtEntityGoal(this, PlayerEntity.class, 6.0F));
@@ -50,22 +50,22 @@ public class CowEntity extends AnimalEntity {
 
 	@Override
 	protected SoundEvent getAmbientSound() {
-		return SoundEvents.field_14780;
+		return SoundEvents.ENTITY_COW_AMBIENT;
 	}
 
 	@Override
 	protected SoundEvent getHurtSound(DamageSource damageSource) {
-		return SoundEvents.field_14597;
+		return SoundEvents.ENTITY_COW_HURT;
 	}
 
 	@Override
 	protected SoundEvent getDeathSound() {
-		return SoundEvents.field_14857;
+		return SoundEvents.ENTITY_COW_DEATH;
 	}
 
 	@Override
 	protected void playStepSound(BlockPos blockPos, BlockState blockState) {
-		this.playSound(SoundEvents.field_15110, 0.15F, 1.0F);
+		this.playSound(SoundEvents.ENTITY_COW_STEP, 0.15F, 1.0F);
 	}
 
 	@Override
@@ -76,13 +76,13 @@ public class CowEntity extends AnimalEntity {
 	@Override
 	public boolean interactMob(PlayerEntity playerEntity, Hand hand) {
 		ItemStack itemStack = playerEntity.getStackInHand(hand);
-		if (itemStack.getItem() == Items.field_8550 && !playerEntity.abilities.creativeMode && !this.isBaby()) {
-			playerEntity.playSound(SoundEvents.field_14691, 1.0F, 1.0F);
+		if (itemStack.getItem() == Items.BUCKET && !playerEntity.abilities.creativeMode && !this.isBaby()) {
+			playerEntity.playSound(SoundEvents.ENTITY_COW_MILK, 1.0F, 1.0F);
 			itemStack.decrement(1);
 			if (itemStack.isEmpty()) {
-				playerEntity.setStackInHand(hand, new ItemStack(Items.field_8103));
-			} else if (!playerEntity.inventory.insertStack(new ItemStack(Items.field_8103))) {
-				playerEntity.dropItem(new ItemStack(Items.field_8103), false);
+				playerEntity.setStackInHand(hand, new ItemStack(Items.MILK_BUCKET));
+			} else if (!playerEntity.inventory.insertStack(new ItemStack(Items.MILK_BUCKET))) {
+				playerEntity.dropItem(new ItemStack(Items.MILK_BUCKET), false);
 			}
 
 			return true;
@@ -92,7 +92,7 @@ public class CowEntity extends AnimalEntity {
 	}
 
 	public CowEntity method_6483(PassiveEntity passiveEntity) {
-		return EntityType.field_6085.create(this.world);
+		return EntityType.COW.create(this.world);
 	}
 
 	@Override

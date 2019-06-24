@@ -21,8 +21,8 @@ public interface Toast {
 
 	@Environment(EnvType.CLIENT)
 	public static enum Visibility {
-		field_2210(SoundEvents.field_14561),
-		field_2209(SoundEvents.field_14641);
+		SHOW(SoundEvents.UI_TOAST_IN),
+		HIDE(SoundEvents.UI_TOAST_OUT);
 
 		private final SoundEvent sound;
 

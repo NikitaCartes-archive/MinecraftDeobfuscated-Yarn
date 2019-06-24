@@ -24,7 +24,7 @@ public class DarkOakTreeDecorator extends Decorator<NopeDecoratorConfig> {
 			int k = i % 4;
 			int l = j * 4 + 1 + random.nextInt(3);
 			int m = k * 4 + 1 + random.nextInt(3);
-			return iWorld.getTopPosition(Heightmap.Type.field_13197, blockPos.add(l, 0, m));
+			return iWorld.getTopPosition(Heightmap.Type.MOTION_BLOCKING, blockPos.add(l, 0, m));
 		});
 	}
 }

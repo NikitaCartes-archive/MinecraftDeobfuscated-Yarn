@@ -24,7 +24,7 @@ public class BowAttackGoal<T extends HostileEntity & RangedAttackMob> extends Go
 		this.speed = d;
 		this.attackInterval = i;
 		this.squaredRange = f * f;
-		this.setControls(EnumSet.of(Goal.Control.field_18405, Goal.Control.field_18406));
+		this.setControls(EnumSet.of(Goal.Control.MOVE, Goal.Control.LOOK));
 	}
 
 	public void setAttackInterval(int i) {
@@ -37,7 +37,7 @@ public class BowAttackGoal<T extends HostileEntity & RangedAttackMob> extends Go
 	}
 
 	protected boolean isHoldingBow() {
-		return this.actor.isHolding(Items.field_8102);
+		return this.actor.isHolding(Items.BOW);
 	}
 
 	@Override
@@ -122,7 +122,7 @@ public class BowAttackGoal<T extends HostileEntity & RangedAttackMob> extends Go
 					}
 				}
 			} else if (--this.cooldown <= 0 && this.field_6572 >= -60) {
-				this.actor.setCurrentHand(ProjectileUtil.getHandPossiblyHolding(this.actor, Items.field_8102));
+				this.actor.setCurrentHand(ProjectileUtil.getHandPossiblyHolding(this.actor, Items.BOW));
 			}
 		}
 	}

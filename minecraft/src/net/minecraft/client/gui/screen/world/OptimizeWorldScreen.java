@@ -19,9 +19,9 @@ import net.minecraft.world.updater.WorldUpdater;
 public class OptimizeWorldScreen extends Screen {
 	private static final Object2IntMap<DimensionType> field_3232 = SystemUtil.consume(
 		new Object2IntOpenCustomHashMap<>(SystemUtil.identityHashStrategy()), object2IntOpenCustomHashMap -> {
-			object2IntOpenCustomHashMap.put(DimensionType.field_13072, -13408734);
-			object2IntOpenCustomHashMap.put(DimensionType.field_13076, -10075085);
-			object2IntOpenCustomHashMap.put(DimensionType.field_13078, -8943531);
+			object2IntOpenCustomHashMap.put(DimensionType.OVERWORLD, -13408734);
+			object2IntOpenCustomHashMap.put(DimensionType.THE_NETHER, -10075085);
+			object2IntOpenCustomHashMap.put(DimensionType.THE_END, -8943531);
 			object2IntOpenCustomHashMap.defaultReturnValue(-2236963);
 		}
 	);

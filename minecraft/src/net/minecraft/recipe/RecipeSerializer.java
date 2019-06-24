@@ -6,8 +6,8 @@ import net.minecraft.util.PacketByteBuf;
 import net.minecraft.util.registry.Registry;
 
 public interface RecipeSerializer<T extends Recipe<?>> {
-	RecipeSerializer<ShapedRecipe> SHAPED = register("crafting_shaped", new ShapedRecipe.Serializer());
-	RecipeSerializer<ShapelessRecipe> SHAPELESS = register("crafting_shapeless", new ShapelessRecipe.Serializer());
+	RecipeSerializer<ShapedRecipe> CRAFTING_SHAPED = register("crafting_shaped", new ShapedRecipe.Serializer());
+	RecipeSerializer<ShapelessRecipe> CRAFTING_SHAPELESS = register("crafting_shapeless", new ShapelessRecipe.Serializer());
 	SpecialRecipeSerializer<ArmorDyeRecipe> ARMOR_DYE = register("crafting_special_armordye", new SpecialRecipeSerializer<>(ArmorDyeRecipe::new));
 	SpecialRecipeSerializer<BookCloningRecipe> BOOK_CLONING = register("crafting_special_bookcloning", new SpecialRecipeSerializer<>(BookCloningRecipe::new));
 	SpecialRecipeSerializer<MapCloningRecipe> MAP_CLONING = register("crafting_special_mapcloning", new SpecialRecipeSerializer<>(MapCloningRecipe::new));
@@ -37,7 +37,7 @@ public interface RecipeSerializer<T extends Recipe<?>> {
 	CookingRecipeSerializer<BlastingRecipe> BLASTING = register("blasting", new CookingRecipeSerializer<>(BlastingRecipe::new, 100));
 	CookingRecipeSerializer<SmokingRecipe> SMOKING = register("smoking", new CookingRecipeSerializer<>(SmokingRecipe::new, 100));
 	CookingRecipeSerializer<CampfireCookingRecipe> CAMPFIRE_COOKING = register("campfire_cooking", new CookingRecipeSerializer<>(CampfireCookingRecipe::new, 100));
-	RecipeSerializer<StonecuttingRecipe> field_17640 = register("stonecutting", new CuttingRecipe.Serializer<>(StonecuttingRecipe::new));
+	RecipeSerializer<StonecuttingRecipe> STONECUTTING = register("stonecutting", new CuttingRecipe.Serializer<>(StonecuttingRecipe::new));
 
 	T read(Identifier identifier, JsonObject jsonObject);
 

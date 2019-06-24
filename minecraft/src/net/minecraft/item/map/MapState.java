@@ -99,7 +99,7 @@ public class MapState extends PersistentState {
 				MapFrameMarker mapFrameMarker = MapFrameMarker.fromTag(listTag2.getCompoundTag(k));
 				this.frames.put(mapFrameMarker.getKey(), mapFrameMarker);
 				this.addIcon(
-					MapIcon.Type.field_95,
+					MapIcon.Type.FRAME,
 					null,
 					"frame-" + mapFrameMarker.getEntityId(),
 					(double)mapFrameMarker.getPos().getX(),
@@ -165,7 +165,7 @@ public class MapState extends PersistentState {
 			if (!playerUpdateTracker2.player.removed && (playerUpdateTracker2.player.inventory.contains(itemStack) || itemStack.isInFrame())) {
 				if (!itemStack.isInFrame() && playerUpdateTracker2.player.dimension == this.dimension && this.showIcons) {
 					this.addIcon(
-						MapIcon.Type.field_91,
+						MapIcon.Type.PLAYER,
 						playerUpdateTracker2.player.world,
 						string,
 						playerUpdateTracker2.player.x,
@@ -191,7 +191,7 @@ public class MapState extends PersistentState {
 
 			MapFrameMarker mapFrameMarker2 = new MapFrameMarker(blockPos, itemFrameEntity.getHorizontalFacing().getHorizontal() * 90, itemFrameEntity.getEntityId());
 			this.addIcon(
-				MapIcon.Type.field_95,
+				MapIcon.Type.FRAME,
 				playerEntity.world,
 				"frame-" + itemFrameEntity.getEntityId(),
 				(double)blockPos.getX(),
@@ -256,26 +256,26 @@ public class MapState extends PersistentState {
 		if (g >= -63.0F && h >= -63.0F && g <= 63.0F && h <= 63.0F) {
 			f += f < 0.0 ? -8.0 : 8.0;
 			k = (byte)((int)(f * 16.0 / 360.0));
-			if (this.dimension == DimensionType.field_13076 && iWorld != null) {
+			if (this.dimension == DimensionType.THE_NETHER && iWorld != null) {
 				int l = (int)(iWorld.getLevelProperties().getTimeOfDay() / 10L);
 				k = (byte)(l * l * 34187121 + l * 121 >> 15 & 15);
 			}
 		} else {
-			if (type != MapIcon.Type.field_91) {
+			if (type != MapIcon.Type.PLAYER) {
 				this.icons.remove(string);
 				return;
 			}
 
 			int l = 320;
 			if (Math.abs(g) < 320.0F && Math.abs(h) < 320.0F) {
-				type = MapIcon.Type.field_86;
+				type = MapIcon.Type.PLAYER_OFF_MAP;
 			} else {
 				if (!this.unlimitedTracking) {
 					this.icons.remove(string);
 					return;
 				}
 
-				type = MapIcon.Type.field_87;
+				type = MapIcon.Type.PLAYER_OFF_LIMITS;
 			}
 
 			k = 0;

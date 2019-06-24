@@ -18,21 +18,21 @@ import org.apache.logging.log4j.Logger;
 
 public class StructureFeatures {
 	private static final Logger LOGGER = LogManager.getLogger();
-	public static final StructureFeature<?> field_16709 = register("Mineshaft", Feature.MINESHAFT);
-	public static final StructureFeature<?> field_16706 = register("Pillager_Outpost", Feature.PILLAGER_OUTPOST);
-	public static final StructureFeature<?> field_16707 = register("Fortress", Feature.NETHER_BRIDGE);
-	public static final StructureFeature<?> field_16697 = register("Stronghold", Feature.STRONGHOLD);
-	public static final StructureFeature<?> field_16710 = register("Jungle_Pyramid", Feature.JUNGLE_TEMPLE);
-	public static final StructureFeature<?> field_16705 = register("Ocean_Ruin", Feature.OCEAN_RUIN);
-	public static final StructureFeature<?> field_16700 = register("Desert_Pyramid", Feature.DESERT_PYRAMID);
-	public static final StructureFeature<?> field_16708 = register("Igloo", Feature.IGLOO);
-	public static final StructureFeature<?> field_16703 = register("Swamp_Hut", Feature.SWAMP_HUT);
-	public static final StructureFeature<?> field_16699 = register("Monument", Feature.OCEAN_MONUMENT);
-	public static final StructureFeature<?> field_16701 = register("EndCity", Feature.END_CITY);
-	public static final StructureFeature<?> field_16704 = register("Mansion", Feature.WOODLAND_MANSION);
-	public static final StructureFeature<?> field_16711 = register("Buried_Treasure", Feature.BURIED_TREASURE);
-	public static final StructureFeature<?> field_16702 = register("Shipwreck", Feature.SHIPWRECK);
-	public static final StructureFeature<?> field_16698 = register("Village", Feature.VILLAGE);
+	public static final StructureFeature<?> MINESHAFT = register("Mineshaft", Feature.MINESHAFT);
+	public static final StructureFeature<?> PILLAGER_OUTPOST = register("Pillager_Outpost", Feature.PILLAGER_OUTPOST);
+	public static final StructureFeature<?> FORTRESS = register("Fortress", Feature.NETHER_BRIDGE);
+	public static final StructureFeature<?> STRONGHOLD = register("Stronghold", Feature.STRONGHOLD);
+	public static final StructureFeature<?> JUNGLE_PYRAMID = register("Jungle_Pyramid", Feature.JUNGLE_TEMPLE);
+	public static final StructureFeature<?> OCEAN_RUIN = register("Ocean_Ruin", Feature.OCEAN_RUIN);
+	public static final StructureFeature<?> DESERT_PYRAMID = register("Desert_Pyramid", Feature.DESERT_PYRAMID);
+	public static final StructureFeature<?> IGLOO = register("Igloo", Feature.IGLOO);
+	public static final StructureFeature<?> SWAMP_HUT = register("Swamp_Hut", Feature.SWAMP_HUT);
+	public static final StructureFeature<?> MONUMENT = register("Monument", Feature.OCEAN_MONUMENT);
+	public static final StructureFeature<?> END_CITY = register("EndCity", Feature.END_CITY);
+	public static final StructureFeature<?> MANSION = register("Mansion", Feature.WOODLAND_MANSION);
+	public static final StructureFeature<?> BURIED_TREASURE = register("Buried_Treasure", Feature.BURIED_TREASURE);
+	public static final StructureFeature<?> SHIPWRECK = register("Shipwreck", Feature.SHIPWRECK);
+	public static final StructureFeature<?> VILLAGE = register("Village", Feature.VILLAGE);
 
 	private static StructureFeature<?> register(String string, StructureFeature<?> structureFeature) {
 		return Registry.register(Registry.STRUCTURE_FEATURE, string.toLowerCase(Locale.ROOT), structureFeature);

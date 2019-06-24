@@ -24,6 +24,6 @@ public class MultishotEnchantment extends Enchantment {
 
 	@Override
 	public boolean differs(Enchantment enchantment) {
-		return super.differs(enchantment) && enchantment != Enchantments.field_9132;
+		return super.differs(enchantment) && enchantment != Enchantments.PIERCING;
 	}
 }

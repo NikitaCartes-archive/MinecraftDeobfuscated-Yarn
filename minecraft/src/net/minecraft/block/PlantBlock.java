@@ -13,11 +13,7 @@ public class PlantBlock extends Block {
 
 	protected boolean canPlantOnTop(BlockState blockState, BlockView blockView, BlockPos blockPos) {
 		Block block = blockState.getBlock();
-		return block == Blocks.field_10219
-			|| block == Blocks.field_10566
-			|| block == Blocks.field_10253
-			|| block == Blocks.field_10520
-			|| block == Blocks.field_10362;
+		return block == Blocks.GRASS_BLOCK || block == Blocks.DIRT || block == Blocks.COARSE_DIRT || block == Blocks.PODZOL || block == Blocks.FARMLAND;
 	}
 
 	@Override
@@ -25,7 +21,7 @@ public class PlantBlock extends Block {
 		BlockState blockState, Direction direction, BlockState blockState2, IWorld iWorld, BlockPos blockPos, BlockPos blockPos2
 	) {
 		return !blockState.canPlaceAt(iWorld, blockPos)
-			? Blocks.field_10124.getDefaultState()
+			? Blocks.AIR.getDefaultState()
 			: super.getStateForNeighborUpdate(blockState, direction, blockState2, iWorld, blockPos, blockPos2);
 	}
 
@@ -37,7 +33,7 @@ public class PlantBlock extends Block {
 
 	@Override
 	public BlockRenderLayer getRenderLayer() {
-		return BlockRenderLayer.field_9174;
+		return BlockRenderLayer.CUTOUT;
 	}
 
 	@Override

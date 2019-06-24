@@ -163,7 +163,7 @@ public class WorldSaveHandler implements PlayerSaveHandler {
 
 		if (compoundTag != null) {
 			int i = compoundTag.containsKey("DataVersion", 3) ? compoundTag.getInt("DataVersion") : -1;
-			playerEntity.fromTag(TagHelper.update(this.dataFixer, DataFixTypes.field_19213, compoundTag, i));
+			playerEntity.fromTag(TagHelper.update(this.dataFixer, DataFixTypes.PLAYER, compoundTag, i));
 		}
 
 		return compoundTag;

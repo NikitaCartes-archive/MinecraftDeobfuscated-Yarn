@@ -16,7 +16,7 @@ public class BreatheAirGoal extends Goal {
 
 	public BreatheAirGoal(MobEntityWithAi mobEntityWithAi) {
 		this.mob = mobEntityWithAi;
-		this.setControls(EnumSet.of(Goal.Control.field_18405, Goal.Control.field_18406));
+		this.setControls(EnumSet.of(Goal.Control.MOVE, Goal.Control.LOOK));
 	}
 
 	@Override
@@ -68,12 +68,12 @@ public class BreatheAirGoal extends Goal {
 	public void tick() {
 		this.moveToAir();
 		this.mob.updateVelocity(0.02F, new Vec3d((double)this.mob.sidewaysSpeed, (double)this.mob.upwardSpeed, (double)this.mob.forwardSpeed));
-		this.mob.move(MovementType.field_6308, this.mob.getVelocity());
+		this.mob.move(MovementType.SELF, this.mob.getVelocity());
 	}
 
 	private boolean isAirPos(ViewableWorld viewableWorld, BlockPos blockPos) {
 		BlockState blockState = viewableWorld.getBlockState(blockPos);
-		return (viewableWorld.getFluidState(blockPos).isEmpty() || blockState.getBlock() == Blocks.field_10422)
-			&& blockState.canPlaceAtSide(viewableWorld, blockPos, BlockPlacementEnvironment.field_50);
+		return (viewableWorld.getFluidState(blockPos).isEmpty() || blockState.getBlock() == Blocks.BUBBLE_COLUMN)
+			&& blockState.canPlaceAtSide(viewableWorld, blockPos, BlockPlacementEnvironment.LAND);
 	}
 }

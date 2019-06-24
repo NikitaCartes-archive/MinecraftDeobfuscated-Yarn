@@ -11,8 +11,8 @@ public class ParrotMoveControl extends MoveControl {
 
 	@Override
 	public void tick() {
-		if (this.state == MoveControl.State.field_6378) {
-			this.state = MoveControl.State.field_6377;
+		if (this.state == MoveControl.State.MOVE_TO) {
+			this.state = MoveControl.State.WAIT;
 			this.entity.setNoGravity(true);
 			double d = this.targetX - this.entity.x;
 			double e = this.targetY - this.entity.y;

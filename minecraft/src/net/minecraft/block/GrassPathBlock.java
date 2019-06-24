@@ -27,7 +27,7 @@ public class GrassPathBlock extends Block {
 	public BlockState getPlacementState(ItemPlacementContext itemPlacementContext) {
 		return !this.getDefaultState().canPlaceAt(itemPlacementContext.getWorld(), itemPlacementContext.getBlockPos())
 			? Block.pushEntitiesUpBeforeBlockChange(
-				this.getDefaultState(), Blocks.field_10566.getDefaultState(), itemPlacementContext.getWorld(), itemPlacementContext.getBlockPos()
+				this.getDefaultState(), Blocks.DIRT.getDefaultState(), itemPlacementContext.getWorld(), itemPlacementContext.getBlockPos()
 			)
 			: super.getPlacementState(itemPlacementContext);
 	}
@@ -36,7 +36,7 @@ public class GrassPathBlock extends Block {
 	public BlockState getStateForNeighborUpdate(
 		BlockState blockState, Direction direction, BlockState blockState2, IWorld iWorld, BlockPos blockPos, BlockPos blockPos2
 	) {
-		if (direction == Direction.field_11036 && !blockState.canPlaceAt(iWorld, blockPos)) {
+		if (direction == Direction.UP && !blockState.canPlaceAt(iWorld, blockPos)) {
 			iWorld.getBlockTickScheduler().schedule(blockPos, this, 1);
 		}
 

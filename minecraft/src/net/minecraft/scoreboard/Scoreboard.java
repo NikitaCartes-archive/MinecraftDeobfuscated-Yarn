@@ -282,7 +282,7 @@ public class Scoreboard {
 			default:
 				if (i >= 3 && i <= 18) {
 					Formatting formatting = Formatting.byColorIndex(i - 3);
-					if (formatting != null && formatting != Formatting.field_1070) {
+					if (formatting != null && formatting != Formatting.RESET) {
 						return "sidebar.team." + formatting.getName();
 					}
 				}

@@ -17,7 +17,9 @@ public class VillagerBreedTask extends Task<VillagerEntity> {
 	private long field_18368;
 
 	public VillagerBreedTask() {
-		super(ImmutableMap.of(MemoryModuleType.field_18448, MemoryModuleState.field_18456, MemoryModuleType.field_18442, MemoryModuleState.field_18456), 350, 350);
+		super(
+			ImmutableMap.of(MemoryModuleType.BREED_TARGET, MemoryModuleState.VALUE_PRESENT, MemoryModuleType.VISIBLE_MOBS, MemoryModuleState.VALUE_PRESENT), 350, 350
+		);
 	}
 
 	protected boolean method_19571(ServerWorld serverWorld, VillagerEntity villagerEntity) {
@@ -68,20 +70,20 @@ public class VillagerBreedTask extends Task<VillagerEntity> {
 	}
 
 	protected void method_18976(ServerWorld serverWorld, VillagerEntity villagerEntity, long l) {
-		villagerEntity.getBrain().forget(MemoryModuleType.field_18448);
+		villagerEntity.getBrain().forget(MemoryModuleType.BREED_TARGET);
 	}
 
 	private VillagerEntity method_19570(VillagerEntity villagerEntity) {
-		return (VillagerEntity)villagerEntity.getBrain().getOptionalMemory(MemoryModuleType.field_18448).get();
+		return (VillagerEntity)villagerEntity.getBrain().getOptionalMemory(MemoryModuleType.BREED_TARGET).get();
 	}
 
 	private boolean method_18972(VillagerEntity villagerEntity) {
 		Brain<VillagerEntity> brain = villagerEntity.getBrain();
-		if (!brain.getOptionalMemory(MemoryModuleType.field_18448).isPresent()) {
+		if (!brain.getOptionalMemory(MemoryModuleType.BREED_TARGET).isPresent()) {
 			return false;
 		} else {
 			VillagerEntity villagerEntity2 = this.method_19570(villagerEntity);
-			return LookTargetUtil.canSee(brain, MemoryModuleType.field_18448, EntityType.field_6077)
+			return LookTargetUtil.canSee(brain, MemoryModuleType.BREED_TARGET, EntityType.VILLAGER)
 				&& villagerEntity.isReadyToBreed()
 				&& villagerEntity2.isReadyToBreed();
 		}
@@ -89,9 +91,7 @@ public class VillagerBreedTask extends Task<VillagerEntity> {
 
 	private Optional<BlockPos> method_19573(ServerWorld serverWorld, VillagerEntity villagerEntity) {
 		return serverWorld.getPointOfInterestStorage()
-			.getPosition(
-				PointOfInterestType.field_18517.getCompletionCondition(), blockPos -> this.method_20642(villagerEntity, blockPos), new BlockPos(villagerEntity), 48
-			);
+			.getPosition(PointOfInterestType.HOME.getCompletionCondition(), blockPos -> this.method_20642(villagerEntity, blockPos), new BlockPos(villagerEntity), 48);
 	}
 
 	private boolean method_20642(VillagerEntity villagerEntity, BlockPos blockPos) {
@@ -116,6 +116,6 @@ public class VillagerBreedTask extends Task<VillagerEntity> {
 
 	private void method_19572(ServerWorld serverWorld, VillagerEntity villagerEntity, BlockPos blockPos) {
 		GlobalPos globalPos = GlobalPos.create(serverWorld.getDimension().getType(), blockPos);
-		villagerEntity.getBrain().putMemory(MemoryModuleType.field_18438, globalPos);
+		villagerEntity.getBrain().putMemory(MemoryModuleType.HOME, globalPos);
 	}
 }

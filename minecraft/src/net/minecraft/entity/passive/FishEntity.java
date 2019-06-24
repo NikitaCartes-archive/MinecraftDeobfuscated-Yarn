@@ -60,7 +60,7 @@ public abstract class FishEntity extends WaterCreatureEntity {
 	}
 
 	public static boolean method_20662(EntityType<? extends FishEntity> entityType, IWorld iWorld, SpawnType spawnType, BlockPos blockPos, Random random) {
-		return iWorld.getBlockState(blockPos).getBlock() == Blocks.field_10382 && iWorld.getBlockState(blockPos.up()).getBlock() == Blocks.field_10382;
+		return iWorld.getBlockState(blockPos).getBlock() == Blocks.WATER && iWorld.getBlockState(blockPos.up()).getBlock() == Blocks.WATER;
 	}
 
 	@Override
@@ -116,7 +116,7 @@ public abstract class FishEntity extends WaterCreatureEntity {
 	public void travel(Vec3d vec3d) {
 		if (this.canMoveVoluntarily() && this.isInsideWater()) {
 			this.updateVelocity(0.01F, vec3d);
-			this.move(MovementType.field_6308, this.getVelocity());
+			this.move(MovementType.SELF, this.getVelocity());
 			this.setVelocity(this.getVelocity().multiply(0.9));
 			if (this.getTarget() == null) {
 				this.setVelocity(this.getVelocity().add(0.0, -0.005, 0.0));
@@ -143,8 +143,8 @@ public abstract class FishEntity extends WaterCreatureEntity {
 	@Override
 	protected boolean interactMob(PlayerEntity playerEntity, Hand hand) {
 		ItemStack itemStack = playerEntity.getStackInHand(hand);
-		if (itemStack.getItem() == Items.field_8705 && this.isAlive()) {
-			this.playSound(SoundEvents.field_14568, 1.0F, 1.0F);
+		if (itemStack.getItem() == Items.WATER_BUCKET && this.isAlive()) {
+			this.playSound(SoundEvents.ITEM_BUCKET_FILL_FISH, 1.0F, 1.0F);
 			itemStack.decrement(1);
 			ItemStack itemStack2 = this.getFishBucketItem();
 			this.copyDataToStack(itemStack2);
@@ -181,7 +181,7 @@ public abstract class FishEntity extends WaterCreatureEntity {
 
 	@Override
 	protected SoundEvent getSwimSound() {
-		return SoundEvents.field_14591;
+		return SoundEvents.ENTITY_FISH_SWIM;
 	}
 
 	static class FishMoveControl extends MoveControl {
@@ -194,11 +194,11 @@ public abstract class FishEntity extends WaterCreatureEntity {
 
 		@Override
 		public void tick() {
-			if (this.fish.isInFluid(FluidTags.field_15517)) {
+			if (this.fish.isInFluid(FluidTags.WATER)) {
 				this.fish.setVelocity(this.fish.getVelocity().add(0.0, 0.005, 0.0));
 			}
 
-			if (this.state == MoveControl.State.field_6378 && !this.fish.getNavigation().isIdle()) {
+			if (this.state == MoveControl.State.MOVE_TO && !this.fish.getNavigation().isIdle()) {
 				double d = this.targetX - this.fish.x;
 				double e = this.targetY - this.fish.y;
 				double f = this.targetZ - this.fish.z;

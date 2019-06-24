@@ -37,7 +37,7 @@ public class ExperienceCommand {
 															(ServerCommandSource)commandContext.getSource(),
 															EntityArgumentType.getPlayers(commandContext, "targets"),
 															IntegerArgumentType.getInteger(commandContext, "amount"),
-															ExperienceCommand.Component.field_13644
+															ExperienceCommand.Component.POINTS
 														)
 												))
 											.then(
@@ -47,7 +47,7 @@ public class ExperienceCommand {
 																commandContext.getSource(),
 																EntityArgumentType.getPlayers(commandContext, "targets"),
 																IntegerArgumentType.getInteger(commandContext, "amount"),
-																ExperienceCommand.Component.field_13644
+																ExperienceCommand.Component.POINTS
 															)
 													)
 											))
@@ -58,7 +58,7 @@ public class ExperienceCommand {
 															commandContext.getSource(),
 															EntityArgumentType.getPlayers(commandContext, "targets"),
 															IntegerArgumentType.getInteger(commandContext, "amount"),
-															ExperienceCommand.Component.field_13641
+															ExperienceCommand.Component.LEVELS
 														)
 												)
 										)
@@ -76,7 +76,7 @@ public class ExperienceCommand {
 															(ServerCommandSource)commandContext.getSource(),
 															EntityArgumentType.getPlayers(commandContext, "targets"),
 															IntegerArgumentType.getInteger(commandContext, "amount"),
-															ExperienceCommand.Component.field_13644
+															ExperienceCommand.Component.POINTS
 														)
 												))
 											.then(
@@ -86,7 +86,7 @@ public class ExperienceCommand {
 																commandContext.getSource(),
 																EntityArgumentType.getPlayers(commandContext, "targets"),
 																IntegerArgumentType.getInteger(commandContext, "amount"),
-																ExperienceCommand.Component.field_13644
+																ExperienceCommand.Component.POINTS
 															)
 													)
 											))
@@ -97,7 +97,7 @@ public class ExperienceCommand {
 															commandContext.getSource(),
 															EntityArgumentType.getPlayers(commandContext, "targets"),
 															IntegerArgumentType.getInteger(commandContext, "amount"),
-															ExperienceCommand.Component.field_13641
+															ExperienceCommand.Component.LEVELS
 														)
 												)
 										)
@@ -112,7 +112,7 @@ public class ExperienceCommand {
 									CommandManager.literal("points")
 										.executes(
 											commandContext -> executeQuery(
-													commandContext.getSource(), EntityArgumentType.getPlayer(commandContext, "targets"), ExperienceCommand.Component.field_13644
+													commandContext.getSource(), EntityArgumentType.getPlayer(commandContext, "targets"), ExperienceCommand.Component.POINTS
 												)
 										)
 								)
@@ -120,7 +120,7 @@ public class ExperienceCommand {
 									CommandManager.literal("levels")
 										.executes(
 											commandContext -> executeQuery(
-													commandContext.getSource(), EntityArgumentType.getPlayer(commandContext, "targets"), ExperienceCommand.Component.field_13641
+													commandContext.getSource(), EntityArgumentType.getPlayer(commandContext, "targets"), ExperienceCommand.Component.LEVELS
 												)
 										)
 								)
@@ -189,7 +189,7 @@ public class ExperienceCommand {
 	}
 
 	static enum Component {
-		field_13644("points", PlayerEntity::addExperience, (serverPlayerEntity, integer) -> {
+		POINTS("points", PlayerEntity::addExperience, (serverPlayerEntity, integer) -> {
 			if (integer >= serverPlayerEntity.getNextLevelExperience()) {
 				return false;
 			} else {
@@ -197,7 +197,7 @@ public class ExperienceCommand {
 				return true;
 			}
 		}, serverPlayerEntity -> MathHelper.floor(serverPlayerEntity.experienceProgress * (float)serverPlayerEntity.getNextLevelExperience())),
-		field_13641("levels", ServerPlayerEntity::addExperienceLevels, (serverPlayerEntity, integer) -> {
+		LEVELS("levels", ServerPlayerEntity::addExperienceLevels, (serverPlayerEntity, integer) -> {
 			serverPlayerEntity.setExperienceLevel(integer);
 			return true;
 		}, serverPlayerEntity -> serverPlayerEntity.experienceLevel);

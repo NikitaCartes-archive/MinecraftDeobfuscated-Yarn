@@ -23,22 +23,22 @@ public class SnowballEntity extends ThrownItemEntity {
 	}
 
 	public SnowballEntity(World world, LivingEntity livingEntity) {
-		super(EntityType.field_6068, livingEntity, world);
+		super(EntityType.SNOWBALL, livingEntity, world);
 	}
 
 	public SnowballEntity(World world, double d, double e, double f) {
-		super(EntityType.field_6068, d, e, f, world);
+		super(EntityType.SNOWBALL, d, e, f, world);
 	}
 
 	@Override
 	protected Item getDefaultItem() {
-		return Items.field_8543;
+		return Items.SNOWBALL;
 	}
 
 	@Environment(EnvType.CLIENT)
 	private ParticleEffect getParticleParameters() {
 		ItemStack itemStack = this.getItem();
-		return (ParticleEffect)(itemStack.isEmpty() ? ParticleTypes.field_11230 : new ItemStackParticleEffect(ParticleTypes.field_11218, itemStack));
+		return (ParticleEffect)(itemStack.isEmpty() ? ParticleTypes.ITEM_SNOWBALL : new ItemStackParticleEffect(ParticleTypes.ITEM, itemStack));
 	}
 
 	@Environment(EnvType.CLIENT)
@@ -55,7 +55,7 @@ public class SnowballEntity extends ThrownItemEntity {
 
 	@Override
 	protected void onCollision(HitResult hitResult) {
-		if (hitResult.getType() == HitResult.Type.field_1331) {
+		if (hitResult.getType() == HitResult.Type.ENTITY) {
 			Entity entity = ((EntityHitResult)hitResult).getEntity();
 			int i = entity instanceof BlazeEntity ? 3 : 0;
 			entity.damage(DamageSource.thrownProjectile(this, this.getOwner()), (float)i);

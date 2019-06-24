@@ -17,7 +17,7 @@ public class EntityEquipmentPredicate {
 		ItemPredicate.ANY, ItemPredicate.ANY, ItemPredicate.ANY, ItemPredicate.ANY, ItemPredicate.ANY, ItemPredicate.ANY
 	);
 	public static final EntityEquipmentPredicate field_19240 = new EntityEquipmentPredicate(
-		ItemPredicate.Builder.create().item(Items.field_8539).nbt(Raid.getOminousBanner().getTag()).build(),
+		ItemPredicate.Builder.create().item(Items.WHITE_BANNER).nbt(Raid.getOminousBanner().getTag()).build(),
 		ItemPredicate.ANY,
 		ItemPredicate.ANY,
 		ItemPredicate.ANY,
@@ -54,18 +54,18 @@ public class EntityEquipmentPredicate {
 			return false;
 		} else {
 			LivingEntity livingEntity = (LivingEntity)entity;
-			if (!this.head.test(livingEntity.getEquippedStack(EquipmentSlot.field_6169))) {
+			if (!this.head.test(livingEntity.getEquippedStack(EquipmentSlot.HEAD))) {
 				return false;
-			} else if (!this.chest.test(livingEntity.getEquippedStack(EquipmentSlot.field_6174))) {
+			} else if (!this.chest.test(livingEntity.getEquippedStack(EquipmentSlot.CHEST))) {
 				return false;
-			} else if (!this.legs.test(livingEntity.getEquippedStack(EquipmentSlot.field_6172))) {
+			} else if (!this.legs.test(livingEntity.getEquippedStack(EquipmentSlot.LEGS))) {
 				return false;
-			} else if (!this.feet.test(livingEntity.getEquippedStack(EquipmentSlot.field_6166))) {
+			} else if (!this.feet.test(livingEntity.getEquippedStack(EquipmentSlot.FEET))) {
 				return false;
-			} else if (!this.mainhand.test(livingEntity.getEquippedStack(EquipmentSlot.field_6173))) {
+			} else if (!this.mainhand.test(livingEntity.getEquippedStack(EquipmentSlot.MAINHAND))) {
 				return false;
 			} else {
-				return this.offhand.test(livingEntity.getEquippedStack(EquipmentSlot.field_6171));
+				return this.offhand.test(livingEntity.getEquippedStack(EquipmentSlot.OFFHAND));
 			}
 		}
 	}

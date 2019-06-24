@@ -131,7 +131,7 @@ public class CreeperEntity extends HostileEntity {
 
 			int i = this.getFuseSpeed();
 			if (i > 0 && this.currentFuseTime == 0) {
-				this.playSound(SoundEvents.field_15057, 1.0F, 0.5F);
+				this.playSound(SoundEvents.ENTITY_CREEPER_PRIMED, 1.0F, 0.5F);
 			}
 
 			this.currentFuseTime += i;
@@ -150,12 +150,12 @@ public class CreeperEntity extends HostileEntity {
 
 	@Override
 	protected SoundEvent getHurtSound(DamageSource damageSource) {
-		return SoundEvents.field_15192;
+		return SoundEvents.ENTITY_CREEPER_HURT;
 	}
 
 	@Override
 	protected SoundEvent getDeathSound() {
-		return SoundEvents.field_14907;
+		return SoundEvents.ENTITY_CREEPER_DEATH;
 	}
 
 	@Override
@@ -202,8 +202,9 @@ public class CreeperEntity extends HostileEntity {
 	@Override
 	protected boolean interactMob(PlayerEntity playerEntity, Hand hand) {
 		ItemStack itemStack = playerEntity.getStackInHand(hand);
-		if (itemStack.getItem() == Items.field_8884) {
-			this.world.playSound(playerEntity, this.x, this.y, this.z, SoundEvents.field_15145, this.getSoundCategory(), 1.0F, this.random.nextFloat() * 0.4F + 0.8F);
+		if (itemStack.getItem() == Items.FLINT_AND_STEEL) {
+			this.world
+				.playSound(playerEntity, this.x, this.y, this.z, SoundEvents.ITEM_FLINTANDSTEEL_USE, this.getSoundCategory(), 1.0F, this.random.nextFloat() * 0.4F + 0.8F);
 			playerEntity.swingHand(hand);
 			if (!this.world.isClient) {
 				this.setIgnited();
@@ -217,9 +218,9 @@ public class CreeperEntity extends HostileEntity {
 
 	private void explode() {
 		if (!this.world.isClient) {
-			Explosion.DestructionType destructionType = this.world.getGameRules().getBoolean(GameRules.field_19388)
-				? Explosion.DestructionType.field_18687
-				: Explosion.DestructionType.field_18685;
+			Explosion.DestructionType destructionType = this.world.getGameRules().getBoolean(GameRules.MOB_GRIEFING)
+				? Explosion.DestructionType.DESTROY
+				: Explosion.DestructionType.NONE;
 			float f = this.isCharged() ? 2.0F : 1.0F;
 			this.dead = true;
 			this.world.createExplosion(this, this.x, this.y, this.z, (float)this.explosionRadius * f, destructionType);

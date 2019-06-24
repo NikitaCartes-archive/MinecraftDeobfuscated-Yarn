@@ -1,7 +1,7 @@
 package net.minecraft.world.biome.layer;
 
 public enum ApplyOceanTemperatureLayer implements MergingLayer, IdentityCoordinateTransformer {
-	field_16121;
+	INSTANCE;
 
 	@Override
 	public int sample(LayerRandomnessSource layerRandomnessSource, LayerSampler layerSampler, LayerSampler layerSampler2, int i, int j) {

@@ -33,7 +33,7 @@ public class SpectatorMenu {
 		}
 
 		@Override
-		public boolean enabled() {
+		public boolean isEnabled() {
 			return false;
 		}
 	};
@@ -84,7 +84,7 @@ public class SpectatorMenu {
 	public void setSelectedSlot(int i) {
 		SpectatorMenuCommand spectatorMenuCommand = this.getCommand(i);
 		if (spectatorMenuCommand != BLANK_COMMAND) {
-			if (this.selectedSlot == i && spectatorMenuCommand.enabled()) {
+			if (this.selectedSlot == i && spectatorMenuCommand.isEnabled()) {
 				spectatorMenuCommand.use(this);
 			} else {
 				this.selectedSlot = i;
@@ -142,7 +142,7 @@ public class SpectatorMenu {
 		}
 
 		@Override
-		public boolean enabled() {
+		public boolean isEnabled() {
 			return this.enabled;
 		}
 	}
@@ -169,7 +169,7 @@ public class SpectatorMenu {
 		}
 
 		@Override
-		public boolean enabled() {
+		public boolean isEnabled() {
 			return true;
 		}
 	}

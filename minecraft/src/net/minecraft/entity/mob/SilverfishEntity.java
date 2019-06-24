@@ -74,22 +74,22 @@ public class SilverfishEntity extends HostileEntity {
 
 	@Override
 	protected SoundEvent getAmbientSound() {
-		return SoundEvents.field_14786;
+		return SoundEvents.ENTITY_SILVERFISH_AMBIENT;
 	}
 
 	@Override
 	protected SoundEvent getHurtSound(DamageSource damageSource) {
-		return SoundEvents.field_14593;
+		return SoundEvents.ENTITY_SILVERFISH_HURT;
 	}
 
 	@Override
 	protected SoundEvent getDeathSound() {
-		return SoundEvents.field_14673;
+		return SoundEvents.ENTITY_SILVERFISH_DEATH;
 	}
 
 	@Override
 	protected void playStepSound(BlockPos blockPos, BlockState blockState) {
-		this.playSound(SoundEvents.field_15084, 0.15F, 1.0F);
+		this.playSound(SoundEvents.ENTITY_SILVERFISH_STEP, 0.15F, 1.0F);
 	}
 
 	@Override
@@ -172,7 +172,7 @@ public class SilverfishEntity extends HostileEntity {
 							BlockState blockState = world.getBlockState(blockPos2);
 							Block block = blockState.getBlock();
 							if (block instanceof InfestedBlock) {
-								if (world.getGameRules().getBoolean(GameRules.field_19388)) {
+								if (world.getGameRules().getBoolean(GameRules.MOB_GRIEFING)) {
 									world.breakBlock(blockPos2, true);
 								} else {
 									world.setBlockState(blockPos2, ((InfestedBlock)block).getRegularBlock().getDefaultState(), 3);
@@ -195,7 +195,7 @@ public class SilverfishEntity extends HostileEntity {
 
 		public WanderAndInfestGoal(SilverfishEntity silverfishEntity) {
 			super(silverfishEntity, 1.0, 10);
-			this.setControls(EnumSet.of(Goal.Control.field_18405));
+			this.setControls(EnumSet.of(Goal.Control.MOVE));
 		}
 
 		@Override
@@ -206,7 +206,7 @@ public class SilverfishEntity extends HostileEntity {
 				return false;
 			} else {
 				Random random = this.mob.getRand();
-				if (this.mob.world.getGameRules().getBoolean(GameRules.field_19388) && random.nextInt(10) == 0) {
+				if (this.mob.world.getGameRules().getBoolean(GameRules.MOB_GRIEFING) && random.nextInt(10) == 0) {
 					this.direction = Direction.random(random);
 					BlockPos blockPos = new BlockPos(this.mob.x, this.mob.y + 0.5, this.mob.z).offset(this.direction);
 					BlockState blockState = this.mob.world.getBlockState(blockPos);

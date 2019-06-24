@@ -18,30 +18,30 @@ public class SpectralArrowEntity extends ProjectileEntity {
 	}
 
 	public SpectralArrowEntity(World world, LivingEntity livingEntity) {
-		super(EntityType.field_6135, livingEntity, world);
+		super(EntityType.SPECTRAL_ARROW, livingEntity, world);
 	}
 
 	public SpectralArrowEntity(World world, double d, double e, double f) {
-		super(EntityType.field_6135, d, e, f, world);
+		super(EntityType.SPECTRAL_ARROW, d, e, f, world);
 	}
 
 	@Override
 	public void tick() {
 		super.tick();
 		if (this.world.isClient && !this.inGround) {
-			this.world.addParticle(ParticleTypes.field_11213, this.x, this.y, this.z, 0.0, 0.0, 0.0);
+			this.world.addParticle(ParticleTypes.INSTANT_EFFECT, this.x, this.y, this.z, 0.0, 0.0, 0.0);
 		}
 	}
 
 	@Override
 	protected ItemStack asItemStack() {
-		return new ItemStack(Items.field_8236);
+		return new ItemStack(Items.SPECTRAL_ARROW);
 	}
 
 	@Override
 	protected void onHit(LivingEntity livingEntity) {
 		super.onHit(livingEntity);
-		StatusEffectInstance statusEffectInstance = new StatusEffectInstance(StatusEffects.field_5912, this.duration, 0);
+		StatusEffectInstance statusEffectInstance = new StatusEffectInstance(StatusEffects.GLOWING, this.duration, 0);
 		livingEntity.addPotionEffect(statusEffectInstance);
 	}
 

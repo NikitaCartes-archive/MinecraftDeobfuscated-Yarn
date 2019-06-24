@@ -13,7 +13,7 @@ import net.minecraft.util.Identifier;
 import net.minecraft.world.World;
 
 public class FireworkStarFadeRecipe extends SpecialCraftingRecipe {
-	private static final Ingredient field_9015 = Ingredient.ofItems(Items.field_8450);
+	private static final Ingredient field_9015 = Ingredient.ofItems(Items.FIREWORK_STAR);
 
 	public FireworkStarFadeRecipe(Identifier identifier) {
 		super(identifier);

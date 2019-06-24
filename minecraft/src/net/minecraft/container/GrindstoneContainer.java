@@ -35,18 +35,18 @@ public class GrindstoneContainer extends Container {
 	}
 
 	public GrindstoneContainer(int i, PlayerInventory playerInventory, BlockContext blockContext) {
-		super(ContainerType.field_17336, i);
+		super(ContainerType.GRINDSTONE, i);
 		this.context = blockContext;
 		this.addSlot(new Slot(this.craftingInventory, 0, 49, 19) {
 			@Override
 			public boolean canInsert(ItemStack itemStack) {
-				return itemStack.isDamageable() || itemStack.getItem() == Items.field_8598 || itemStack.hasEnchantments();
+				return itemStack.isDamageable() || itemStack.getItem() == Items.ENCHANTED_BOOK || itemStack.hasEnchantments();
 			}
 		});
 		this.addSlot(new Slot(this.craftingInventory, 1, 49, 40) {
 			@Override
 			public boolean canInsert(ItemStack itemStack) {
-				return itemStack.isDamageable() || itemStack.getItem() == Items.field_8598 || itemStack.hasEnchantments();
+				return itemStack.isDamageable() || itemStack.getItem() == Items.ENCHANTED_BOOK || itemStack.hasEnchantments();
 			}
 		});
 		this.addSlot(new Slot(this.resultInventory, 2, 129, 34) {
@@ -128,8 +128,8 @@ public class GrindstoneContainer extends Container {
 		if (!bl) {
 			this.resultInventory.setInvStack(0, ItemStack.EMPTY);
 		} else {
-			boolean bl3 = !itemStack.isEmpty() && itemStack.getItem() != Items.field_8598 && !itemStack.hasEnchantments()
-				|| !itemStack2.isEmpty() && itemStack2.getItem() != Items.field_8598 && !itemStack2.hasEnchantments();
+			boolean bl3 = !itemStack.isEmpty() && itemStack.getItem() != Items.ENCHANTED_BOOK && !itemStack.hasEnchantments()
+				|| !itemStack2.isEmpty() && itemStack2.getItem() != Items.ENCHANTED_BOOK && !itemStack2.hasEnchantments();
 			if (itemStack.getCount() > 1 || itemStack2.getCount() > 1 || !bl2 && bl3) {
 				this.resultInventory.setInvStack(0, ItemStack.EMPTY);
 				this.sendContentUpdates();
@@ -205,8 +205,8 @@ public class GrindstoneContainer extends Container {
 			.collect(Collectors.toMap(Entry::getKey, Entry::getValue));
 		EnchantmentHelper.set(map, itemStack2);
 		itemStack2.setRepairCost(0);
-		if (itemStack2.getItem() == Items.field_8598 && map.size() == 0) {
-			itemStack2 = new ItemStack(Items.field_8529);
+		if (itemStack2.getItem() == Items.ENCHANTED_BOOK && map.size() == 0) {
+			itemStack2 = new ItemStack(Items.BOOK);
 			if (itemStack.hasCustomName()) {
 				itemStack2.setCustomName(itemStack.getName());
 			}
@@ -227,7 +227,7 @@ public class GrindstoneContainer extends Container {
 
 	@Override
 	public boolean canUse(PlayerEntity playerEntity) {
-		return canUse(this.context, playerEntity, Blocks.field_16337);
+		return canUse(this.context, playerEntity, Blocks.GRINDSTONE);
 	}
 
 	@Override

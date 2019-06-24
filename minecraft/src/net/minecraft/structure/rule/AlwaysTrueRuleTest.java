@@ -18,7 +18,7 @@ public class AlwaysTrueRuleTest extends AbstractRuleTest {
 
 	@Override
 	protected RuleTest getRuleTest() {
-		return RuleTest.field_16982;
+		return RuleTest.ALWAYS_TRUE;
 	}
 
 	@Override

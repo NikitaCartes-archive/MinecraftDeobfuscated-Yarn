@@ -1,7 +1,7 @@
 package net.minecraft.world.biome.layer;
 
 public enum ScaleLayer implements ParentedLayer {
-	field_16196,
+	NORMAL,
 	FUZZY {
 		@Override
 		protected int method_15853(LayerSampleContext<?> layerSampleContext, int i, int j, int k, int l) {

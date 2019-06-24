@@ -21,7 +21,7 @@ public class GoToVillageGoal extends Goal {
 	public GoToVillageGoal(MobEntityWithAi mobEntityWithAi, int i) {
 		this.mob = mobEntityWithAi;
 		this.searchRange = i;
-		this.setControls(EnumSet.of(Goal.Control.field_18405));
+		this.setControls(EnumSet.of(Goal.Control.MOVE));
 	}
 
 	@Override
@@ -63,7 +63,7 @@ public class GoToVillageGoal extends Goal {
 				vec3d = vec3d3.multiply(0.4).add(vec3d);
 				Vec3d vec3d4 = vec3d.subtract(vec3d2).normalize().multiply(10.0).add(vec3d2);
 				BlockPos blockPos = new BlockPos(vec3d4);
-				blockPos = this.mob.world.getTopPosition(Heightmap.Type.field_13203, blockPos);
+				blockPos = this.mob.world.getTopPosition(Heightmap.Type.MOTION_BLOCKING_NO_LEAVES, blockPos);
 				if (!entityNavigation.startMovingTo((double)blockPos.getX(), (double)blockPos.getY(), (double)blockPos.getZ(), 1.0)) {
 					this.findOtherWaypoint();
 				}
@@ -75,7 +75,7 @@ public class GoToVillageGoal extends Goal {
 		Random random = this.mob.getRand();
 		BlockPos blockPos = this.mob
 			.world
-			.getTopPosition(Heightmap.Type.field_13203, new BlockPos(this.mob).add(-8 + random.nextInt(16), 0, -8 + random.nextInt(16)));
+			.getTopPosition(Heightmap.Type.MOTION_BLOCKING_NO_LEAVES, new BlockPos(this.mob).add(-8 + random.nextInt(16), 0, -8 + random.nextInt(16)));
 		this.mob.getNavigation().startMovingTo((double)blockPos.getX(), (double)blockPos.getY(), (double)blockPos.getZ(), 1.0);
 	}
 }

@@ -5,11 +5,11 @@ import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
 
 public enum GameMode {
-	field_9218(-1, ""),
-	field_9215(0, "survival"),
-	field_9220(1, "creative"),
-	field_9216(2, "adventure"),
-	field_9219(3, "spectator");
+	NOT_SET(-1, ""),
+	SURVIVAL(0, "survival"),
+	CREATIVE(1, "creative"),
+	ADVENTURE(2, "adventure"),
+	SPECTATOR(3, "spectator");
 
 	private final int id;
 	private final String name;
@@ -32,11 +32,11 @@ public enum GameMode {
 	}
 
 	public void setAbilitites(PlayerAbilities playerAbilities) {
-		if (this == field_9220) {
+		if (this == CREATIVE) {
 			playerAbilities.allowFlying = true;
 			playerAbilities.creativeMode = true;
 			playerAbilities.invulnerable = true;
-		} else if (this == field_9219) {
+		} else if (this == SPECTATOR) {
 			playerAbilities.allowFlying = true;
 			playerAbilities.creativeMode = false;
 			playerAbilities.invulnerable = true;
@@ -52,19 +52,19 @@ public enum GameMode {
 	}
 
 	public boolean shouldLimitWorldModification() {
-		return this == field_9216 || this == field_9219;
+		return this == ADVENTURE || this == SPECTATOR;
 	}
 
 	public boolean isCreative() {
-		return this == field_9220;
+		return this == CREATIVE;
 	}
 
 	public boolean isSurvivalLike() {
-		return this == field_9215 || this == field_9216;
+		return this == SURVIVAL || this == ADVENTURE;
 	}
 
 	public static GameMode byId(int i) {
-		return byId(i, field_9215);
+		return byId(i, SURVIVAL);
 	}
 
 	public static GameMode byId(int i, GameMode gameMode) {
@@ -78,7 +78,7 @@ public enum GameMode {
 	}
 
 	public static GameMode byName(String string) {
-		return byName(string, field_9215);
+		return byName(string, SURVIVAL);
 	}
 
 	public static GameMode byName(String string, GameMode gameMode) {

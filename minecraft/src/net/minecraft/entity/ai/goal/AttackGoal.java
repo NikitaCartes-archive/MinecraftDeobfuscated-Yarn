@@ -14,7 +14,7 @@ public class AttackGoal extends Goal {
 	public AttackGoal(MobEntity mobEntity) {
 		this.mob = mobEntity;
 		this.world = mobEntity.world;
-		this.setControls(EnumSet.of(Goal.Control.field_18405, Goal.Control.field_18406));
+		this.setControls(EnumSet.of(Goal.Control.MOVE, Goal.Control.LOOK));
 	}
 
 	@Override

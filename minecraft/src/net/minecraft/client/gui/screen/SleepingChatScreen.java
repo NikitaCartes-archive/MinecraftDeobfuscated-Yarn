@@ -46,6 +46,6 @@ public class SleepingChatScreen extends ChatScreen {
 
 	private void stopSleeping() {
 		ClientPlayNetworkHandler clientPlayNetworkHandler = this.minecraft.player.networkHandler;
-		clientPlayNetworkHandler.sendPacket(new ClientCommandC2SPacket(this.minecraft.player, ClientCommandC2SPacket.Mode.field_12986));
+		clientPlayNetworkHandler.sendPacket(new ClientCommandC2SPacket(this.minecraft.player, ClientCommandC2SPacket.Mode.STOP_SLEEPING));
 	}
 }

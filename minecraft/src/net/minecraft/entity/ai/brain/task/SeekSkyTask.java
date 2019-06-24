@@ -17,7 +17,7 @@ public class SeekSkyTask extends Task<LivingEntity> {
 	private final float speed;
 
 	public SeekSkyTask(float f) {
-		super(ImmutableMap.of(MemoryModuleType.field_18445, MemoryModuleState.field_18457));
+		super(ImmutableMap.of(MemoryModuleType.WALK_TARGET, MemoryModuleState.VALUE_ABSENT));
 		this.speed = f;
 	}
 
@@ -25,7 +25,7 @@ public class SeekSkyTask extends Task<LivingEntity> {
 	protected void run(ServerWorld serverWorld, LivingEntity livingEntity, long l) {
 		Optional<Vec3d> optional = Optional.ofNullable(this.findNearbySky(serverWorld, livingEntity));
 		if (optional.isPresent()) {
-			livingEntity.getBrain().setMemory(MemoryModuleType.field_18445, optional.map(vec3d -> new WalkTarget(vec3d, this.speed, 0)));
+			livingEntity.getBrain().setMemory(MemoryModuleType.WALK_TARGET, optional.map(vec3d -> new WalkTarget(vec3d, this.speed, 0)));
 		}
 	}
 
@@ -51,6 +51,6 @@ public class SeekSkyTask extends Task<LivingEntity> {
 
 	public static boolean isSkyVisible(ServerWorld serverWorld, LivingEntity livingEntity) {
 		return serverWorld.isSkyVisible(new BlockPos(livingEntity))
-			&& (double)serverWorld.getTopPosition(Heightmap.Type.field_13197, new BlockPos(livingEntity)).getY() <= livingEntity.y;
+			&& (double)serverWorld.getTopPosition(Heightmap.Type.MOTION_BLOCKING, new BlockPos(livingEntity)).getY() <= livingEntity.y;
 	}
 }

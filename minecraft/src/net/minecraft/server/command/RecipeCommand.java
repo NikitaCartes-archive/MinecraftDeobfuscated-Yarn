@@ -26,7 +26,7 @@ public class RecipeCommand {
 						.then(
 							CommandManager.argument("targets", EntityArgumentType.players())
 								.then(
-									CommandManager.argument("recipe", IdentifierArgumentType.create())
+									CommandManager.argument("recipe", IdentifierArgumentType.identifier())
 										.suggests(SuggestionProviders.ALL_RECIPES)
 										.executes(
 											commandContext -> executeGive(
@@ -53,7 +53,7 @@ public class RecipeCommand {
 						.then(
 							CommandManager.argument("targets", EntityArgumentType.players())
 								.then(
-									CommandManager.argument("recipe", IdentifierArgumentType.create())
+									CommandManager.argument("recipe", IdentifierArgumentType.identifier())
 										.suggests(SuggestionProviders.ALL_RECIPES)
 										.executes(
 											commandContext -> executeTake(

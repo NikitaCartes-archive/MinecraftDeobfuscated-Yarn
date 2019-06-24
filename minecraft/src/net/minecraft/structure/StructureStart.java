@@ -19,7 +19,7 @@ import net.minecraft.world.gen.feature.Feature;
 import net.minecraft.world.gen.feature.StructureFeature;
 
 public abstract class StructureStart {
-	public static final StructureStart DEFAULT = new StructureStart(Feature.MINESHAFT, 0, 0, Biomes.field_9451, MutableIntBoundingBox.empty(), 0, 0L) {
+	public static final StructureStart DEFAULT = new StructureStart(Feature.MINESHAFT, 0, 0, Biomes.PLAINS, MutableIntBoundingBox.empty(), 0, 0L) {
 		@Override
 		public void initialize(ChunkGenerator<?> chunkGenerator, StructureManager structureManager, int i, int j, Biome biome) {
 		}

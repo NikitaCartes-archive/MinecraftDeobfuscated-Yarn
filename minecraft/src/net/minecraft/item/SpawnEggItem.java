@@ -47,14 +47,14 @@ public class SpawnEggItem extends Item {
 	public ActionResult useOnBlock(ItemUsageContext itemUsageContext) {
 		World world = itemUsageContext.getWorld();
 		if (world.isClient) {
-			return ActionResult.field_5812;
+			return ActionResult.SUCCESS;
 		} else {
 			ItemStack itemStack = itemUsageContext.getStack();
 			BlockPos blockPos = itemUsageContext.getBlockPos();
 			Direction direction = itemUsageContext.getSide();
 			BlockState blockState = world.getBlockState(blockPos);
 			Block block = blockState.getBlock();
-			if (block == Blocks.field_10260) {
+			if (block == Blocks.SPAWNER) {
 				BlockEntity blockEntity = world.getBlockEntity(blockPos);
 				if (blockEntity instanceof MobSpawnerBlockEntity) {
 					MobSpawnerLogic mobSpawnerLogic = ((MobSpawnerBlockEntity)blockEntity).getLogic();
@@ -63,7 +63,7 @@ public class SpawnEggItem extends Item {
 					blockEntity.markDirty();
 					world.updateListeners(blockPos, blockState, blockState, 3);
 					itemStack.decrement(1);
-					return ActionResult.field_5812;
+					return ActionResult.SUCCESS;
 				}
 			}
 
@@ -76,19 +76,13 @@ public class SpawnEggItem extends Item {
 
 			EntityType<?> entityType2 = this.getEntityType(itemStack.getTag());
 			if (entityType2.spawnFromItemStack(
-					world,
-					itemStack,
-					itemUsageContext.getPlayer(),
-					blockPos2,
-					SpawnType.field_16465,
-					true,
-					!Objects.equals(blockPos, blockPos2) && direction == Direction.field_11036
+					world, itemStack, itemUsageContext.getPlayer(), blockPos2, SpawnType.SPAWN_EGG, true, !Objects.equals(blockPos, blockPos2) && direction == Direction.UP
 				)
 				!= null) {
 				itemStack.decrement(1);
 			}
 
-			return ActionResult.field_5812;
+			return ActionResult.SUCCESS;
 		}
 	}
 
@@ -96,30 +90,30 @@ public class SpawnEggItem extends Item {
 	public TypedActionResult<ItemStack> use(World world, PlayerEntity playerEntity, Hand hand) {
 		ItemStack itemStack = playerEntity.getStackInHand(hand);
 		if (world.isClient) {
-			return new TypedActionResult<>(ActionResult.field_5811, itemStack);
+			return new TypedActionResult<>(ActionResult.PASS, itemStack);
 		} else {
-			HitResult hitResult = rayTrace(world, playerEntity, RayTraceContext.FluidHandling.field_1345);
-			if (hitResult.getType() != HitResult.Type.field_1332) {
-				return new TypedActionResult<>(ActionResult.field_5811, itemStack);
+			HitResult hitResult = rayTrace(world, playerEntity, RayTraceContext.FluidHandling.SOURCE_ONLY);
+			if (hitResult.getType() != HitResult.Type.BLOCK) {
+				return new TypedActionResult<>(ActionResult.PASS, itemStack);
 			} else {
 				BlockHitResult blockHitResult = (BlockHitResult)hitResult;
 				BlockPos blockPos = blockHitResult.getBlockPos();
 				if (!(world.getBlockState(blockPos).getBlock() instanceof FluidBlock)) {
-					return new TypedActionResult<>(ActionResult.field_5811, itemStack);
+					return new TypedActionResult<>(ActionResult.PASS, itemStack);
 				} else if (world.canPlayerModifyAt(playerEntity, blockPos) && playerEntity.canPlaceOn(blockPos, blockHitResult.getSide(), itemStack)) {
 					EntityType<?> entityType = this.getEntityType(itemStack.getTag());
-					if (entityType.spawnFromItemStack(world, itemStack, playerEntity, blockPos, SpawnType.field_16465, false, false) == null) {
-						return new TypedActionResult<>(ActionResult.field_5811, itemStack);
+					if (entityType.spawnFromItemStack(world, itemStack, playerEntity, blockPos, SpawnType.SPAWN_EGG, false, false) == null) {
+						return new TypedActionResult<>(ActionResult.PASS, itemStack);
 					} else {
 						if (!playerEntity.abilities.creativeMode) {
 							itemStack.decrement(1);
 						}
 
-						playerEntity.incrementStat(Stats.field_15372.getOrCreateStat(this));
-						return new TypedActionResult<>(ActionResult.field_5812, itemStack);
+						playerEntity.incrementStat(Stats.USED.getOrCreateStat(this));
+						return new TypedActionResult<>(ActionResult.SUCCESS, itemStack);
 					}
 				} else {
-					return new TypedActionResult<>(ActionResult.field_5814, itemStack);
+					return new TypedActionResult<>(ActionResult.FAIL, itemStack);
 				}
 			}
 		}

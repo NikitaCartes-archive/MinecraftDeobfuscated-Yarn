@@ -30,7 +30,7 @@ public class BlockLeakParticle extends SpriteBillboardParticle {
 
 	@Override
 	public int getColorMultiplier(float f) {
-		return this.fluid.matches(FluidTags.field_15518) ? 240 : super.getColorMultiplier(f);
+		return this.fluid.matches(FluidTags.LAVA) ? 240 : super.getColorMultiplier(f);
 	}
 
 	@Override
@@ -75,7 +75,7 @@ public class BlockLeakParticle extends SpriteBillboardParticle {
 
 		public Particle method_3017(DefaultParticleType defaultParticleType, World world, double d, double e, double f, double g, double h, double i) {
 			BlockLeakParticle.DrippingLavaParticle drippingLavaParticle = new BlockLeakParticle.DrippingLavaParticle(
-				world, d, e, f, Fluids.LAVA, ParticleTypes.field_18304
+				world, d, e, f, Fluids.LAVA, ParticleTypes.FALLING_LAVA
 			);
 			drippingLavaParticle.setSprite(this.spriteProvider);
 			return drippingLavaParticle;
@@ -133,7 +133,7 @@ public class BlockLeakParticle extends SpriteBillboardParticle {
 		}
 
 		public Particle method_18825(DefaultParticleType defaultParticleType, World world, double d, double e, double f, double g, double h, double i) {
-			BlockLeakParticle blockLeakParticle = new BlockLeakParticle.DrippingParticle(world, d, e, f, Fluids.WATER, ParticleTypes.field_18306);
+			BlockLeakParticle blockLeakParticle = new BlockLeakParticle.DrippingParticle(world, d, e, f, Fluids.WATER, ParticleTypes.FALLING_WATER);
 			blockLeakParticle.setColor(0.2F, 0.3F, 1.0F);
 			blockLeakParticle.setSprite(this.spriteProvider);
 			return blockLeakParticle;
@@ -149,7 +149,7 @@ public class BlockLeakParticle extends SpriteBillboardParticle {
 		}
 
 		public Particle method_18823(DefaultParticleType defaultParticleType, World world, double d, double e, double f, double g, double h, double i) {
-			BlockLeakParticle blockLeakParticle = new BlockLeakParticle.FallingParticle(world, d, e, f, Fluids.LAVA, ParticleTypes.field_18305);
+			BlockLeakParticle blockLeakParticle = new BlockLeakParticle.FallingParticle(world, d, e, f, Fluids.LAVA, ParticleTypes.LANDING_LAVA);
 			blockLeakParticle.setColor(1.0F, 0.2857143F, 0.083333336F);
 			blockLeakParticle.setSprite(this.spriteProvider);
 			return blockLeakParticle;
@@ -184,7 +184,7 @@ public class BlockLeakParticle extends SpriteBillboardParticle {
 		}
 
 		public Particle method_3018(DefaultParticleType defaultParticleType, World world, double d, double e, double f, double g, double h, double i) {
-			BlockLeakParticle blockLeakParticle = new BlockLeakParticle.FallingParticle(world, d, e, f, Fluids.WATER, ParticleTypes.field_11202);
+			BlockLeakParticle blockLeakParticle = new BlockLeakParticle.FallingParticle(world, d, e, f, Fluids.WATER, ParticleTypes.SPLASH);
 			blockLeakParticle.setColor(0.2F, 0.3F, 1.0F);
 			blockLeakParticle.setSprite(this.spriteProvider);
 			return blockLeakParticle;

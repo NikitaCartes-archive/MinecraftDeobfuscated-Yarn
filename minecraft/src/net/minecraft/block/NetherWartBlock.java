@@ -35,7 +35,7 @@ public class NetherWartBlock extends PlantBlock {
 
 	@Override
 	protected boolean canPlantOnTop(BlockState blockState, BlockView blockView, BlockPos blockPos) {
-		return blockState.getBlock() == Blocks.field_10114;
+		return blockState.getBlock() == Blocks.SOUL_SAND;
 	}
 
 	@Override
@@ -52,7 +52,7 @@ public class NetherWartBlock extends PlantBlock {
 	@Environment(EnvType.CLIENT)
 	@Override
 	public ItemStack getPickStack(BlockView blockView, BlockPos blockPos, BlockState blockState) {
-		return new ItemStack(Items.field_8790);
+		return new ItemStack(Items.NETHER_WART);
 	}
 
 	@Override

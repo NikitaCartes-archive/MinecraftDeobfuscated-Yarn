@@ -45,7 +45,7 @@ public class ProtoChunk implements Chunk {
 	@Nullable
 	private volatile LightingProvider lightingProvider;
 	private final Map<Heightmap.Type, Heightmap> heightmaps = Maps.newEnumMap(Heightmap.Type.class);
-	private volatile ChunkStatus status = ChunkStatus.field_12798;
+	private volatile ChunkStatus status = ChunkStatus.EMPTY;
 	private final Map<BlockPos, BlockEntity> blockEntities = Maps.<BlockPos, BlockEntity>newHashMap();
 	private final Map<BlockPos, CompoundTag> blockEntityTags = Maps.<BlockPos, CompoundTag>newHashMap();
 	private final ChunkSection[] sections = new ChunkSection[16];
@@ -67,7 +67,7 @@ public class ProtoChunk implements Chunk {
 			upgradeData,
 			null,
 			new ChunkTickScheduler<>(block -> block == null || block.getDefaultState().isAir(), chunkPos),
-			new ChunkTickScheduler<>(fluid -> fluid == null || fluid == Fluids.field_15906, chunkPos)
+			new ChunkTickScheduler<>(fluid -> fluid == null || fluid == Fluids.EMPTY, chunkPos)
 		);
 	}
 
@@ -95,12 +95,10 @@ public class ProtoChunk implements Chunk {
 	public BlockState getBlockState(BlockPos blockPos) {
 		int i = blockPos.getY();
 		if (World.isHeightInvalid(i)) {
-			return Blocks.field_10243.getDefaultState();
+			return Blocks.VOID_AIR.getDefaultState();
 		} else {
 			ChunkSection chunkSection = this.getSectionArray()[i >> 4];
-			return ChunkSection.isEmpty(chunkSection)
-				? Blocks.field_10124.getDefaultState()
-				: chunkSection.getBlockState(blockPos.getX() & 15, i & 15, blockPos.getZ() & 15);
+			return ChunkSection.isEmpty(chunkSection) ? Blocks.AIR.getDefaultState() : chunkSection.getBlockState(blockPos.getX() & 15, i & 15, blockPos.getZ() & 15);
 		}
 	}
 
@@ -108,12 +106,10 @@ public class ProtoChunk implements Chunk {
 	public FluidState getFluidState(BlockPos blockPos) {
 		int i = blockPos.getY();
 		if (World.isHeightInvalid(i)) {
-			return Fluids.field_15906.getDefaultState();
+			return Fluids.EMPTY.getDefaultState();
 		} else {
 			ChunkSection chunkSection = this.getSectionArray()[i >> 4];
-			return ChunkSection.isEmpty(chunkSection)
-				? Fluids.field_15906.getDefaultState()
-				: chunkSection.getFluidState(blockPos.getX() & 15, i & 15, blockPos.getZ() & 15);
+			return ChunkSection.isEmpty(chunkSection) ? Fluids.EMPTY.getDefaultState() : chunkSection.getFluidState(blockPos.getX() & 15, i & 15, blockPos.getZ() & 15);
 		}
 	}
 
@@ -147,7 +143,7 @@ public class ProtoChunk implements Chunk {
 		int j = blockPos.getY();
 		int k = blockPos.getZ();
 		if (j >= 0 && j < 256) {
-			if (this.sections[j >> 4] == WorldChunk.EMPTY_SECTION && blockState.getBlock() == Blocks.field_10124) {
+			if (this.sections[j >> 4] == WorldChunk.EMPTY_SECTION && blockState.getBlock() == Blocks.AIR) {
 				return blockState;
 			} else {
 				if (blockState.getLuminance() > 0) {
@@ -156,7 +152,7 @@ public class ProtoChunk implements Chunk {
 
 				ChunkSection chunkSection = this.getSection(j >> 4);
 				BlockState blockState2 = chunkSection.setBlockState(i & 15, j & 15, k & 15, blockState);
-				if (this.status.isAtLeast(ChunkStatus.field_12795)
+				if (this.status.isAtLeast(ChunkStatus.FEATURES)
 					&& blockState != blockState2
 					&& (
 						blockState.getLightSubtracted(this, blockPos) != blockState2.getLightSubtracted(this, blockPos)
@@ -193,7 +189,7 @@ public class ProtoChunk implements Chunk {
 				return blockState2;
 			}
 		} else {
-			return Blocks.field_10243.getDefaultState();
+			return Blocks.VOID_AIR.getDefaultState();
 		}
 	}
 

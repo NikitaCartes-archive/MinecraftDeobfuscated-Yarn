@@ -26,7 +26,7 @@ public class LookAtEntityGoal extends Goal {
 		this.targetType = class_;
 		this.range = f;
 		this.chance = g;
-		this.setControls(EnumSet.of(Goal.Control.field_18406));
+		this.setControls(EnumSet.of(Goal.Control.LOOK));
 		if (class_ == PlayerEntity.class) {
 			this.targetPredicate = new TargetPredicate()
 				.setBaseMaxDistance((double)f)

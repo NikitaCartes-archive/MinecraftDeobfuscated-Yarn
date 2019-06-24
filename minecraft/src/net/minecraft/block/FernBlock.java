@@ -31,7 +31,7 @@ public class FernBlock extends PlantBlock implements Fertilizable {
 
 	@Override
 	public void grow(World world, Random random, BlockPos blockPos, BlockState blockState) {
-		TallPlantBlock tallPlantBlock = (TallPlantBlock)(this == Blocks.field_10112 ? Blocks.field_10313 : Blocks.field_10214);
+		TallPlantBlock tallPlantBlock = (TallPlantBlock)(this == Blocks.FERN ? Blocks.LARGE_FERN : Blocks.TALL_GRASS);
 		if (tallPlantBlock.getDefaultState().canPlaceAt(world, blockPos) && world.isAir(blockPos.up())) {
 			tallPlantBlock.placeAt(world, blockPos, 2);
 		}
@@ -39,6 +39,6 @@ public class FernBlock extends PlantBlock implements Fertilizable {
 
 	@Override
 	public Block.OffsetType getOffsetType() {
-		return Block.OffsetType.field_10655;
+		return Block.OffsetType.XYZ;
 	}
 }

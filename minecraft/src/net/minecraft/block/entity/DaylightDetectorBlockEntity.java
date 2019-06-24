@@ -7,7 +7,7 @@ import net.minecraft.util.Tickable;
 
 public class DaylightDetectorBlockEntity extends BlockEntity implements Tickable {
 	public DaylightDetectorBlockEntity() {
-		super(BlockEntityType.field_11900);
+		super(BlockEntityType.DAYLIGHT_DETECTOR);
 	}
 
 	@Override

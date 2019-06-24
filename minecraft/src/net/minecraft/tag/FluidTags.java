@@ -8,8 +8,8 @@ import net.minecraft.util.Identifier;
 public class FluidTags {
 	private static TagContainer<Fluid> container = new TagContainer<>(identifier -> Optional.empty(), "", false, "");
 	private static int latestVersion;
-	public static final Tag<Fluid> field_15517 = register("water");
-	public static final Tag<Fluid> field_15518 = register("lava");
+	public static final Tag<Fluid> WATER = register("water");
+	public static final Tag<Fluid> LAVA = register("lava");
 
 	public static void setContainer(TagContainer<Fluid> tagContainer) {
 		container = tagContainer;

@@ -36,20 +36,20 @@ public class FarmerVillagerTask extends Task<VillagerEntity> {
 	public FarmerVillagerTask() {
 		super(
 			ImmutableMap.of(
-				MemoryModuleType.field_18446,
-				MemoryModuleState.field_18457,
-				MemoryModuleType.field_18445,
-				MemoryModuleState.field_18457,
-				MemoryModuleType.field_18873,
-				MemoryModuleState.field_18456
+				MemoryModuleType.LOOK_TARGET,
+				MemoryModuleState.VALUE_ABSENT,
+				MemoryModuleType.WALK_TARGET,
+				MemoryModuleState.VALUE_ABSENT,
+				MemoryModuleType.SECONDARY_JOB_SITE,
+				MemoryModuleState.VALUE_PRESENT
 			)
 		);
 	}
 
 	protected boolean method_19564(ServerWorld serverWorld, VillagerEntity villagerEntity) {
-		if (!serverWorld.getGameRules().getBoolean(GameRules.field_19388)) {
+		if (!serverWorld.getGameRules().getBoolean(GameRules.MOB_GRIEFING)) {
 			return false;
-		} else if (villagerEntity.getVillagerData().getProfession() != VillagerProfession.field_17056) {
+		} else if (villagerEntity.getVillagerData().getProfession() != VillagerProfession.FARMER) {
 			return false;
 		} else {
 			this.field_18859 = villagerEntity.hasSeedToPlant();
@@ -98,14 +98,14 @@ public class FarmerVillagerTask extends Task<VillagerEntity> {
 
 	protected void method_20392(ServerWorld serverWorld, VillagerEntity villagerEntity, long l) {
 		if (l > this.field_18861 && this.field_18858 != null) {
-			villagerEntity.getBrain().putMemory(MemoryModuleType.field_18446, new BlockPosLookTarget(this.field_18858));
-			villagerEntity.getBrain().putMemory(MemoryModuleType.field_18445, new WalkTarget(new BlockPosLookTarget(this.field_18858), 0.5F, 1));
+			villagerEntity.getBrain().putMemory(MemoryModuleType.LOOK_TARGET, new BlockPosLookTarget(this.field_18858));
+			villagerEntity.getBrain().putMemory(MemoryModuleType.WALK_TARGET, new WalkTarget(new BlockPosLookTarget(this.field_18858), 0.5F, 1));
 		}
 	}
 
 	protected void method_19566(ServerWorld serverWorld, VillagerEntity villagerEntity, long l) {
-		villagerEntity.getBrain().forget(MemoryModuleType.field_18446);
-		villagerEntity.getBrain().forget(MemoryModuleType.field_18445);
+		villagerEntity.getBrain().forget(MemoryModuleType.LOOK_TARGET);
+		villagerEntity.getBrain().forget(MemoryModuleType.WALK_TARGET);
 		this.field_19239 = 0;
 		this.field_18861 = l + 40L;
 	}
@@ -126,17 +126,17 @@ public class FarmerVillagerTask extends Task<VillagerEntity> {
 					ItemStack itemStack = basicInventory.getInvStack(i);
 					boolean bl = false;
 					if (!itemStack.isEmpty()) {
-						if (itemStack.getItem() == Items.field_8317) {
-							serverWorld.setBlockState(this.field_18858, Blocks.field_10293.getDefaultState(), 3);
+						if (itemStack.getItem() == Items.WHEAT_SEEDS) {
+							serverWorld.setBlockState(this.field_18858, Blocks.WHEAT.getDefaultState(), 3);
 							bl = true;
-						} else if (itemStack.getItem() == Items.field_8567) {
-							serverWorld.setBlockState(this.field_18858, Blocks.field_10247.getDefaultState(), 3);
+						} else if (itemStack.getItem() == Items.POTATO) {
+							serverWorld.setBlockState(this.field_18858, Blocks.POTATOES.getDefaultState(), 3);
 							bl = true;
-						} else if (itemStack.getItem() == Items.field_8179) {
-							serverWorld.setBlockState(this.field_18858, Blocks.field_10609.getDefaultState(), 3);
+						} else if (itemStack.getItem() == Items.CARROT) {
+							serverWorld.setBlockState(this.field_18858, Blocks.CARROTS.getDefaultState(), 3);
 							bl = true;
-						} else if (itemStack.getItem() == Items.field_8309) {
-							serverWorld.setBlockState(this.field_18858, Blocks.field_10341.getDefaultState(), 3);
+						} else if (itemStack.getItem() == Items.BEETROOT_SEEDS) {
+							serverWorld.setBlockState(this.field_18858, Blocks.BEETROOTS.getDefaultState(), 3);
 							bl = true;
 						}
 					}
@@ -147,8 +147,8 @@ public class FarmerVillagerTask extends Task<VillagerEntity> {
 							(double)this.field_18858.getX(),
 							(double)this.field_18858.getY(),
 							(double)this.field_18858.getZ(),
-							SoundEvents.field_17611,
-							SoundCategory.field_15245,
+							SoundEvents.ITEM_CROP_PLANT,
+							SoundCategory.BLOCKS,
 							1.0F,
 							1.0F
 						);
@@ -166,8 +166,8 @@ public class FarmerVillagerTask extends Task<VillagerEntity> {
 				this.field_18858 = this.method_20641(serverWorld);
 				if (this.field_18858 != null) {
 					this.field_18861 = l + 20L;
-					villagerEntity.getBrain().putMemory(MemoryModuleType.field_18445, new WalkTarget(new BlockPosLookTarget(this.field_18858), 0.5F, 1));
-					villagerEntity.getBrain().putMemory(MemoryModuleType.field_18446, new BlockPosLookTarget(this.field_18858));
+					villagerEntity.getBrain().putMemory(MemoryModuleType.WALK_TARGET, new WalkTarget(new BlockPosLookTarget(this.field_18858), 0.5F, 1));
+					villagerEntity.getBrain().putMemory(MemoryModuleType.LOOK_TARGET, new BlockPosLookTarget(this.field_18858));
 				}
 			}
 		}

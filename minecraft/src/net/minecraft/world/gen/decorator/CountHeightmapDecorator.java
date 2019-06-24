@@ -22,7 +22,7 @@ public class CountHeightmapDecorator extends Decorator<CountDecoratorConfig> {
 		return IntStream.range(0, countDecoratorConfig.count).mapToObj(i -> {
 			int j = random.nextInt(16);
 			int k = random.nextInt(16);
-			return iWorld.getTopPosition(Heightmap.Type.field_13197, blockPos.add(j, 0, k));
+			return iWorld.getTopPosition(Heightmap.Type.MOTION_BLOCKING, blockPos.add(j, 0, k));
 		});
 	}
 }

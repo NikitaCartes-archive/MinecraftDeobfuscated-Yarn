@@ -30,7 +30,7 @@ public class StonecutterBlock extends Block {
 
 	public StonecutterBlock(Block.Settings settings) {
 		super(settings);
-		this.setDefaultState(this.stateFactory.getDefaultState().with(FACING, Direction.field_11043));
+		this.setDefaultState(this.stateFactory.getDefaultState().with(FACING, Direction.NORTH));
 	}
 
 	@Override
@@ -41,7 +41,7 @@ public class StonecutterBlock extends Block {
 	@Override
 	public boolean activate(BlockState blockState, World world, BlockPos blockPos, PlayerEntity playerEntity, Hand hand, BlockHitResult blockHitResult) {
 		playerEntity.openContainer(blockState.createContainerProvider(world, blockPos));
-		playerEntity.incrementStat(Stats.field_19254);
+		playerEntity.incrementStat(Stats.INTERACT_WITH_STONECUTTER);
 		return true;
 	}
 
@@ -70,12 +70,12 @@ public class StonecutterBlock extends Block {
 
 	@Override
 	public BlockRenderType getRenderType(BlockState blockState) {
-		return BlockRenderType.field_11458;
+		return BlockRenderType.MODEL;
 	}
 
 	@Override
 	public BlockRenderLayer getRenderLayer() {
-		return BlockRenderLayer.field_9174;
+		return BlockRenderLayer.CUTOUT;
 	}
 
 	@Override

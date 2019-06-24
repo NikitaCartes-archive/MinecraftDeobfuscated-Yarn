@@ -2,7 +2,7 @@ package net.minecraft.block.entity;
 
 public class TrappedChestBlockEntity extends ChestBlockEntity {
 	public TrappedChestBlockEntity() {
-		super(BlockEntityType.field_11891);
+		super(BlockEntityType.TRAPPED_CHEST);
 	}
 
 	@Override

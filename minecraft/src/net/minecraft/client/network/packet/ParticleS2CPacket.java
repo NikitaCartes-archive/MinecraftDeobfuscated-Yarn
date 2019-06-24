@@ -43,7 +43,7 @@ public class ParticleS2CPacket implements Packet<ClientPlayPacketListener> {
 	public void read(PacketByteBuf packetByteBuf) throws IOException {
 		ParticleType<?> particleType = Registry.PARTICLE_TYPE.get(packetByteBuf.readInt());
 		if (particleType == null) {
-			particleType = ParticleTypes.field_11235;
+			particleType = ParticleTypes.BARRIER;
 		}
 
 		this.longDistance = packetByteBuf.readBoolean();

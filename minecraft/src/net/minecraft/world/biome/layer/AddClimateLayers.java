@@ -2,7 +2,7 @@ package net.minecraft.world.biome.layer;
 
 public class AddClimateLayers {
 	public static enum AddCoolBiomesLayer implements CrossSamplingLayer {
-		field_17401;
+		INSTANCE;
 
 		@Override
 		public int sample(LayerRandomnessSource layerRandomnessSource, int i, int j, int k, int l, int m) {
@@ -11,7 +11,7 @@ public class AddClimateLayers {
 	}
 
 	public static enum AddSpecialBiomesLayer implements IdentitySamplingLayer {
-		field_16051;
+		INSTANCE;
 
 		@Override
 		public int sample(LayerRandomnessSource layerRandomnessSource, int i) {
@@ -24,7 +24,7 @@ public class AddClimateLayers {
 	}
 
 	public static enum AddTemperateBiomesLayer implements CrossSamplingLayer {
-		field_17399;
+		INSTANCE;
 
 		@Override
 		public int sample(LayerRandomnessSource layerRandomnessSource, int i, int j, int k, int l, int m) {

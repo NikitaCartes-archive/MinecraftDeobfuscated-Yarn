@@ -31,7 +31,7 @@ public class ClearCommand {
 					CommandManager.argument("targets", EntityArgumentType.players())
 						.executes(commandContext -> execute(commandContext.getSource(), EntityArgumentType.getPlayers(commandContext, "targets"), itemStack -> true, -1))
 						.then(
-							CommandManager.argument("item", ItemPredicateArgumentType.create())
+							CommandManager.argument("item", ItemPredicateArgumentType.itemPredicate())
 								.executes(
 									commandContext -> execute(
 											commandContext.getSource(),

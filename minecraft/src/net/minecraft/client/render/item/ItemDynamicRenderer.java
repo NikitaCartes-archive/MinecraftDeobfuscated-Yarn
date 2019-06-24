@@ -62,7 +62,7 @@ public class ItemDynamicRenderer {
 		} else if (item instanceof BlockItem && ((BlockItem)item).getBlock() instanceof BedBlock) {
 			this.renderBed.setColor(((BedBlock)((BlockItem)item).getBlock()).getColor());
 			BlockEntityRenderDispatcher.INSTANCE.renderEntity(this.renderBed);
-		} else if (item == Items.field_8255) {
+		} else if (item == Items.SHIELD) {
 			if (itemStack.getSubTag("BlockEntityTag") != null) {
 				this.renderBanner.deserialize(itemStack, ShieldItem.getColor(itemStack));
 				MinecraftClient.getInstance()
@@ -102,7 +102,7 @@ public class ItemDynamicRenderer {
 				GlStateManager.enableCull();
 				GlStateManager.popMatrix();
 			}
-		} else if (item == Items.field_8547) {
+		} else if (item == Items.TRIDENT) {
 			MinecraftClient.getInstance().getTextureManager().bindTexture(TridentEntityModel.TEXTURE);
 			GlStateManager.pushMatrix();
 			GlStateManager.scalef(1.0F, -1.0F, -1.0F);
@@ -112,11 +112,11 @@ public class ItemDynamicRenderer {
 			}
 
 			GlStateManager.popMatrix();
-		} else if (item instanceof BlockItem && ((BlockItem)item).getBlock() == Blocks.field_10502) {
+		} else if (item instanceof BlockItem && ((BlockItem)item).getBlock() == Blocks.CONDUIT) {
 			BlockEntityRenderDispatcher.INSTANCE.renderEntity(this.renderConduit);
-		} else if (item == Blocks.field_10443.asItem()) {
+		} else if (item == Blocks.ENDER_CHEST.asItem()) {
 			BlockEntityRenderDispatcher.INSTANCE.renderEntity(this.renderChestEnder);
-		} else if (item == Blocks.field_10380.asItem()) {
+		} else if (item == Blocks.TRAPPED_CHEST.asItem()) {
 			BlockEntityRenderDispatcher.INSTANCE.renderEntity(this.renderChestTrapped);
 		} else if (Block.getBlockFromItem(item) instanceof ShulkerBoxBlock) {
 			DyeColor dyeColor = ShulkerBoxBlock.getColor(item);

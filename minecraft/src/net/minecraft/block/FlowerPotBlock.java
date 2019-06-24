@@ -37,20 +37,20 @@ public class FlowerPotBlock extends Block {
 
 	@Override
 	public BlockRenderType getRenderType(BlockState blockState) {
-		return BlockRenderType.field_11458;
+		return BlockRenderType.MODEL;
 	}
 
 	@Override
 	public boolean activate(BlockState blockState, World world, BlockPos blockPos, PlayerEntity playerEntity, Hand hand, BlockHitResult blockHitResult) {
 		ItemStack itemStack = playerEntity.getStackInHand(hand);
 		Item item = itemStack.getItem();
-		Block block = item instanceof BlockItem ? (Block)CONTENT_TO_POTTED.getOrDefault(((BlockItem)item).getBlock(), Blocks.field_10124) : Blocks.field_10124;
-		boolean bl = block == Blocks.field_10124;
-		boolean bl2 = this.content == Blocks.field_10124;
+		Block block = item instanceof BlockItem ? (Block)CONTENT_TO_POTTED.getOrDefault(((BlockItem)item).getBlock(), Blocks.AIR) : Blocks.AIR;
+		boolean bl = block == Blocks.AIR;
+		boolean bl2 = this.content == Blocks.AIR;
 		if (bl != bl2) {
 			if (bl2) {
 				world.setBlockState(blockPos, block.getDefaultState(), 3);
-				playerEntity.incrementStat(Stats.field_15412);
+				playerEntity.incrementStat(Stats.POT_FLOWER);
 				if (!playerEntity.abilities.creativeMode) {
 					itemStack.decrement(1);
 				}
@@ -62,7 +62,7 @@ public class FlowerPotBlock extends Block {
 					playerEntity.dropItem(itemStack2, false);
 				}
 
-				world.setBlockState(blockPos, Blocks.field_10495.getDefaultState(), 3);
+				world.setBlockState(blockPos, Blocks.FLOWER_POT.getDefaultState(), 3);
 			}
 		}
 
@@ -72,21 +72,21 @@ public class FlowerPotBlock extends Block {
 	@Environment(EnvType.CLIENT)
 	@Override
 	public ItemStack getPickStack(BlockView blockView, BlockPos blockPos, BlockState blockState) {
-		return this.content == Blocks.field_10124 ? super.getPickStack(blockView, blockPos, blockState) : new ItemStack(this.content);
+		return this.content == Blocks.AIR ? super.getPickStack(blockView, blockPos, blockState) : new ItemStack(this.content);
 	}
 
 	@Override
 	public BlockState getStateForNeighborUpdate(
 		BlockState blockState, Direction direction, BlockState blockState2, IWorld iWorld, BlockPos blockPos, BlockPos blockPos2
 	) {
-		return direction == Direction.field_11033 && !blockState.canPlaceAt(iWorld, blockPos)
-			? Blocks.field_10124.getDefaultState()
+		return direction == Direction.DOWN && !blockState.canPlaceAt(iWorld, blockPos)
+			? Blocks.AIR.getDefaultState()
 			: super.getStateForNeighborUpdate(blockState, direction, blockState2, iWorld, blockPos, blockPos2);
 	}
 
 	@Override
 	public BlockRenderLayer getRenderLayer() {
-		return BlockRenderLayer.field_9174;
+		return BlockRenderLayer.CUTOUT;
 	}
 
 	public Block getContent() {

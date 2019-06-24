@@ -13,7 +13,7 @@ public class ScheduledTick<T> {
 	private final long id;
 
 	public ScheduledTick(BlockPos blockPos, T object) {
-		this(blockPos, object, 0L, TaskPriority.field_9314);
+		this(blockPos, object, 0L, TaskPriority.NORMAL);
 	}
 
 	public ScheduledTick(BlockPos blockPos, T object, long l, TaskPriority taskPriority) {
@@ -37,7 +37,7 @@ public class ScheduledTick<T> {
 		return this.pos.hashCode();
 	}
 
-	public static <T> Comparator<ScheduledTick<T>> method_20597() {
+	public static <T> Comparator<ScheduledTick<T>> getComparator() {
 		return (scheduledTick, scheduledTick2) -> {
 			int i = Long.compare(scheduledTick.time, scheduledTick2.time);
 			if (i != 0) {

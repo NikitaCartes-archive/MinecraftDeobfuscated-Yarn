@@ -24,7 +24,7 @@ public class JungleGroundBushFeature extends AbstractTreeFeature<DefaultFeatureC
 	public boolean generate(
 		Set<BlockPos> set, ModifiableTestableWorld modifiableTestableWorld, Random random, BlockPos blockPos, MutableIntBoundingBox mutableIntBoundingBox
 	) {
-		blockPos = modifiableTestableWorld.getTopPosition(Heightmap.Type.field_13203, blockPos).down();
+		blockPos = modifiableTestableWorld.getTopPosition(Heightmap.Type.MOTION_BLOCKING_NO_LEAVES, blockPos).down();
 		if (isNaturalDirtOrGrass(modifiableTestableWorld, blockPos)) {
 			blockPos = blockPos.up();
 			this.setBlockState(set, modifiableTestableWorld, blockPos, this.log, mutableIntBoundingBox);

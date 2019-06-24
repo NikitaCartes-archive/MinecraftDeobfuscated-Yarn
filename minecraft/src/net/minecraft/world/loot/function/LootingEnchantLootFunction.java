@@ -29,7 +29,7 @@ public class LootingEnchantLootFunction extends ConditionalLootFunction {
 
 	@Override
 	public Set<LootContextParameter<?>> getRequiredParameters() {
-		return ImmutableSet.of(LootContextParameters.field_1230);
+		return ImmutableSet.of(LootContextParameters.KILLER_ENTITY);
 	}
 
 	private boolean hasLimit() {
@@ -38,7 +38,7 @@ public class LootingEnchantLootFunction extends ConditionalLootFunction {
 
 	@Override
 	public ItemStack process(ItemStack itemStack, LootContext lootContext) {
-		Entity entity = lootContext.get(LootContextParameters.field_1230);
+		Entity entity = lootContext.get(LootContextParameters.KILLER_ENTITY);
 		if (entity instanceof LivingEntity) {
 			int i = EnchantmentHelper.getLooting((LivingEntity)entity);
 			if (i == 0) {

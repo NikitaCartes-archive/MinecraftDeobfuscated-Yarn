@@ -26,16 +26,16 @@ public class GolemLastSeenSensor extends Sensor<LivingEntity> {
 
 	@Override
 	public Set<MemoryModuleType<?>> getOutputMemoryModules() {
-		return ImmutableSet.of(MemoryModuleType.field_18441);
+		return ImmutableSet.of(MemoryModuleType.MOBS);
 	}
 
 	public static void senseIronGolem(long l, LivingEntity livingEntity) {
 		Brain<?> brain = livingEntity.getBrain();
-		Optional<List<LivingEntity>> optional = brain.getOptionalMemory(MemoryModuleType.field_18441);
+		Optional<List<LivingEntity>> optional = brain.getOptionalMemory(MemoryModuleType.MOBS);
 		if (optional.isPresent()) {
-			boolean bl = ((List)optional.get()).stream().anyMatch(livingEntityx -> livingEntityx.getType().equals(EntityType.field_6147));
+			boolean bl = ((List)optional.get()).stream().anyMatch(livingEntityx -> livingEntityx.getType().equals(EntityType.IRON_GOLEM));
 			if (bl) {
-				brain.putMemory(MemoryModuleType.field_19355, l);
+				brain.putMemory(MemoryModuleType.GOLEM_LAST_SEEN_TIME, l);
 			}
 		}
 	}

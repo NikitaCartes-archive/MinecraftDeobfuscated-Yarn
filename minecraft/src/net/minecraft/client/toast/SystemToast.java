@@ -37,7 +37,7 @@ public class SystemToast implements Toast {
 			toastManager.getGame().textRenderer.draw(this.field_2217, 18.0F, 18.0F, -1);
 		}
 
-		return l - this.startTime < 5000L ? Toast.Visibility.field_2210 : Toast.Visibility.field_2209;
+		return l - this.startTime < 5000L ? Toast.Visibility.SHOW : Toast.Visibility.HIDE;
 	}
 
 	public void setContent(Text text, @Nullable Text text2) {
@@ -61,8 +61,8 @@ public class SystemToast implements Toast {
 
 	@Environment(EnvType.CLIENT)
 	public static enum Type {
-		field_2218,
-		field_2219,
-		field_2220;
+		TUTORIAL_HINT,
+		NARRATOR_TOGGLE,
+		WORLD_BACKUP;
 	}
 }

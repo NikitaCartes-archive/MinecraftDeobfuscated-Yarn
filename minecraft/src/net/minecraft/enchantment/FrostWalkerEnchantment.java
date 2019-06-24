@@ -38,7 +38,7 @@ public class FrostWalkerEnchantment extends Enchantment {
 
 	public static void freezeWater(LivingEntity livingEntity, World world, BlockPos blockPos, int i) {
 		if (livingEntity.onGround) {
-			BlockState blockState = Blocks.field_10110.getDefaultState();
+			BlockState blockState = Blocks.FROSTED_ICE.getDefaultState();
 			float f = (float)Math.min(16, 2 + i);
 			BlockPos.Mutable mutable = new BlockPos.Mutable();
 
@@ -53,7 +53,7 @@ public class FrostWalkerEnchantment extends Enchantment {
 							&& blockState.canPlaceAt(world, blockPos2)
 							&& world.canPlace(blockState, blockPos2, EntityContext.absent())) {
 							world.setBlockState(blockPos2, blockState);
-							world.getBlockTickScheduler().schedule(blockPos2, Blocks.field_10110, MathHelper.nextInt(livingEntity.getRand(), 60, 120));
+							world.getBlockTickScheduler().schedule(blockPos2, Blocks.FROSTED_ICE, MathHelper.nextInt(livingEntity.getRand(), 60, 120));
 						}
 					}
 				}
@@ -63,6 +63,6 @@ public class FrostWalkerEnchantment extends Enchantment {
 
 	@Override
 	public boolean differs(Enchantment enchantment) {
-		return super.differs(enchantment) && enchantment != Enchantments.field_9128;
+		return super.differs(enchantment) && enchantment != Enchantments.DEPTH_STRIDER;
 	}
 }

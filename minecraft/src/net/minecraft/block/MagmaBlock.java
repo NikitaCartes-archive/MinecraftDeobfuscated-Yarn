@@ -50,7 +50,7 @@ public class MagmaBlock extends Block {
 	public BlockState getStateForNeighborUpdate(
 		BlockState blockState, Direction direction, BlockState blockState2, IWorld iWorld, BlockPos blockPos, BlockPos blockPos2
 	) {
-		if (direction == Direction.field_11036 && blockState2.getBlock() == Blocks.field_10382) {
+		if (direction == Direction.UP && blockState2.getBlock() == Blocks.WATER) {
 			iWorld.getBlockTickScheduler().schedule(blockPos, this, this.getTickRate(iWorld));
 		}
 
@@ -60,14 +60,14 @@ public class MagmaBlock extends Block {
 	@Override
 	public void onRandomTick(BlockState blockState, World world, BlockPos blockPos, Random random) {
 		BlockPos blockPos2 = blockPos.up();
-		if (world.getFluidState(blockPos).matches(FluidTags.field_15517)) {
+		if (world.getFluidState(blockPos).matches(FluidTags.WATER)) {
 			world.playSound(
-				null, blockPos, SoundEvents.field_15102, SoundCategory.field_15245, 0.5F, 2.6F + (world.random.nextFloat() - world.random.nextFloat()) * 0.8F
+				null, blockPos, SoundEvents.BLOCK_FIRE_EXTINGUISH, SoundCategory.BLOCKS, 0.5F, 2.6F + (world.random.nextFloat() - world.random.nextFloat()) * 0.8F
 			);
 			if (world instanceof ServerWorld) {
 				((ServerWorld)world)
 					.spawnParticles(
-						ParticleTypes.field_11237, (double)blockPos2.getX() + 0.5, (double)blockPos2.getY() + 0.25, (double)blockPos2.getZ() + 0.5, 8, 0.5, 0.25, 0.5, 0.0
+						ParticleTypes.LARGE_SMOKE, (double)blockPos2.getX() + 0.5, (double)blockPos2.getY() + 0.25, (double)blockPos2.getZ() + 0.5, 8, 0.5, 0.25, 0.5, 0.0
 					);
 			}
 		}

@@ -18,7 +18,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
 public class ElderGuardianEntity extends GuardianEntity {
-	public static final float field_17492 = EntityType.field_6086.getWidth() / EntityType.field_6118.getWidth();
+	public static final float field_17492 = EntityType.ELDER_GUARDIAN.getWidth() / EntityType.GUARDIAN.getWidth();
 
 	public ElderGuardianEntity(EntityType<? extends ElderGuardianEntity> entityType, World world) {
 		super(entityType, world);
@@ -49,22 +49,22 @@ public class ElderGuardianEntity extends GuardianEntity {
 
 	@Override
 	protected SoundEvent getAmbientSound() {
-		return this.isInsideWaterOrBubbleColumn() ? SoundEvents.field_15127 : SoundEvents.field_14569;
+		return this.isInsideWaterOrBubbleColumn() ? SoundEvents.ENTITY_ELDER_GUARDIAN_AMBIENT : SoundEvents.ENTITY_ELDER_GUARDIAN_AMBIENT_LAND;
 	}
 
 	@Override
 	protected SoundEvent getHurtSound(DamageSource damageSource) {
-		return this.isInsideWaterOrBubbleColumn() ? SoundEvents.field_14868 : SoundEvents.field_14652;
+		return this.isInsideWaterOrBubbleColumn() ? SoundEvents.ENTITY_ELDER_GUARDIAN_HURT : SoundEvents.ENTITY_ELDER_GUARDIAN_HURT_LAND;
 	}
 
 	@Override
 	protected SoundEvent getDeathSound() {
-		return this.isInsideWaterOrBubbleColumn() ? SoundEvents.field_15052 : SoundEvents.field_14973;
+		return this.isInsideWaterOrBubbleColumn() ? SoundEvents.ENTITY_ELDER_GUARDIAN_DEATH : SoundEvents.ENTITY_ELDER_GUARDIAN_DEATH_LAND;
 	}
 
 	@Override
 	protected SoundEvent getFlopSound() {
-		return SoundEvents.field_14939;
+		return SoundEvents.ENTITY_ELDER_GUARDIAN_FLOP;
 	}
 
 	@Override
@@ -72,7 +72,7 @@ public class ElderGuardianEntity extends GuardianEntity {
 		super.mobTick();
 		int i = 1200;
 		if ((this.age + this.getEntityId()) % 1200 == 0) {
-			StatusEffect statusEffect = StatusEffects.field_5901;
+			StatusEffect statusEffect = StatusEffects.MINING_FATIGUE;
 			List<ServerPlayerEntity> list = ((ServerWorld)this.world)
 				.getPlayers(serverPlayerEntityx -> this.squaredDistanceTo(serverPlayerEntityx) < 2500.0 && serverPlayerEntityx.interactionManager.isSurvivalLike());
 			int j = 2;

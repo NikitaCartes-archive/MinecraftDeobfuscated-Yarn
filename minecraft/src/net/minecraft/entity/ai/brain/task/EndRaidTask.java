@@ -23,7 +23,7 @@ public class EndRaidTask extends Task<LivingEntity> {
 		Brain<?> brain = livingEntity.getBrain();
 		Raid raid = serverWorld.getRaidAt(new BlockPos(livingEntity));
 		if (raid == null || raid.hasStopped() || raid.hasLost()) {
-			brain.setDefaultActivity(Activity.field_18595);
+			brain.setDefaultActivity(Activity.IDLE);
 			brain.refreshActivities(serverWorld.getTimeOfDay(), serverWorld.getTime());
 		}
 	}

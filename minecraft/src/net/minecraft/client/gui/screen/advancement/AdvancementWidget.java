@@ -134,9 +134,9 @@ public class AdvancementWidget extends DrawableHelper {
 			float f = this.field_2714 == null ? 0.0F : this.field_2714.getProgressBarPercentage();
 			AdvancementObtainedStatus advancementObtainedStatus;
 			if (f >= 1.0F) {
-				advancementObtainedStatus = AdvancementObtainedStatus.field_2701;
+				advancementObtainedStatus = AdvancementObtainedStatus.OBTAINED;
 			} else {
-				advancementObtainedStatus = AdvancementObtainedStatus.field_2699;
+				advancementObtainedStatus = AdvancementObtainedStatus.UNOBTAINED;
 			}
 
 			this.client.getTextureManager().bindTexture(WIDGETS_TEX);
@@ -172,23 +172,23 @@ public class AdvancementWidget extends DrawableHelper {
 		AdvancementObtainedStatus advancementObtainedStatus3;
 		if (g >= 1.0F) {
 			n = this.field_2715 / 2;
-			advancementObtainedStatus = AdvancementObtainedStatus.field_2701;
-			advancementObtainedStatus2 = AdvancementObtainedStatus.field_2701;
-			advancementObtainedStatus3 = AdvancementObtainedStatus.field_2701;
+			advancementObtainedStatus = AdvancementObtainedStatus.OBTAINED;
+			advancementObtainedStatus2 = AdvancementObtainedStatus.OBTAINED;
+			advancementObtainedStatus3 = AdvancementObtainedStatus.OBTAINED;
 		} else if (n < 2) {
 			n = this.field_2715 / 2;
-			advancementObtainedStatus = AdvancementObtainedStatus.field_2699;
-			advancementObtainedStatus2 = AdvancementObtainedStatus.field_2699;
-			advancementObtainedStatus3 = AdvancementObtainedStatus.field_2699;
+			advancementObtainedStatus = AdvancementObtainedStatus.UNOBTAINED;
+			advancementObtainedStatus2 = AdvancementObtainedStatus.UNOBTAINED;
+			advancementObtainedStatus3 = AdvancementObtainedStatus.UNOBTAINED;
 		} else if (n > this.field_2715 - 2) {
 			n = this.field_2715 / 2;
-			advancementObtainedStatus = AdvancementObtainedStatus.field_2701;
-			advancementObtainedStatus2 = AdvancementObtainedStatus.field_2701;
-			advancementObtainedStatus3 = AdvancementObtainedStatus.field_2699;
+			advancementObtainedStatus = AdvancementObtainedStatus.OBTAINED;
+			advancementObtainedStatus2 = AdvancementObtainedStatus.OBTAINED;
+			advancementObtainedStatus3 = AdvancementObtainedStatus.UNOBTAINED;
 		} else {
-			advancementObtainedStatus = AdvancementObtainedStatus.field_2701;
-			advancementObtainedStatus2 = AdvancementObtainedStatus.field_2699;
-			advancementObtainedStatus3 = AdvancementObtainedStatus.field_2699;
+			advancementObtainedStatus = AdvancementObtainedStatus.OBTAINED;
+			advancementObtainedStatus2 = AdvancementObtainedStatus.UNOBTAINED;
+			advancementObtainedStatus3 = AdvancementObtainedStatus.UNOBTAINED;
 		}
 
 		int o = this.field_2715 - n;

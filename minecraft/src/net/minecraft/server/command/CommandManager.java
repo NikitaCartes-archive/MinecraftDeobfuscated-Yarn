@@ -145,19 +145,19 @@ public class CommandManager {
 				if (var14.getInput() != null && var14.getCursor() >= 0) {
 					i = Math.min(var14.getInput().length(), var14.getCursor());
 					Text text = new LiteralText("")
-						.formatted(Formatting.field_1080)
-						.styled(style -> style.setClickEvent(new ClickEvent(ClickEvent.Action.field_11745, string)));
+						.formatted(Formatting.GRAY)
+						.styled(style -> style.setClickEvent(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND, string)));
 					if (i > 10) {
 						text.append("...");
 					}
 
 					text.append(var14.getInput().substring(Math.max(0, i - 10), i));
 					if (i < var14.getInput().length()) {
-						Text text2 = new LiteralText(var14.getInput().substring(i)).formatted(new Formatting[]{Formatting.field_1061, Formatting.field_1073});
+						Text text2 = new LiteralText(var14.getInput().substring(i)).formatted(new Formatting[]{Formatting.RED, Formatting.UNDERLINE});
 						text.append(text2);
 					}
 
-					text.append(new TranslatableText("command.context.here").formatted(new Formatting[]{Formatting.field_1061, Formatting.field_1056}));
+					text.append(new TranslatableText("command.context.here").formatted(new Formatting[]{Formatting.RED, Formatting.ITALIC}));
 					serverCommandSource.sendError(text);
 				}
 			} catch (Exception var15) {
@@ -176,7 +176,7 @@ public class CommandManager {
 				}
 
 				serverCommandSource.sendError(
-					new TranslatableText("command.failed").styled(style -> style.setHoverEvent(new HoverEvent(HoverEvent.Action.field_11762, text3)))
+					new TranslatableText("command.failed").styled(style -> style.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, text3)))
 				);
 				return 0;
 			}

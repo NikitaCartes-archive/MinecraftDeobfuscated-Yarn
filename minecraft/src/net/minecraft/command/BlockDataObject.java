@@ -40,7 +40,7 @@ public class BlockDataObject implements DataCommandObject {
 			) {
 				return argumentBuilder.then(
 					CommandManager.literal("block")
-						.then((ArgumentBuilder<ServerCommandSource, ?>)function.apply(CommandManager.argument(string + "Pos", BlockPosArgumentType.create())))
+						.then((ArgumentBuilder<ServerCommandSource, ?>)function.apply(CommandManager.argument(string + "Pos", BlockPosArgumentType.blockPos())))
 				);
 			}
 		};

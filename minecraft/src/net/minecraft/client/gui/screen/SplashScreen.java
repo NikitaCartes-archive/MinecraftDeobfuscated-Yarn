@@ -130,7 +130,7 @@ public class SplashScreen extends Overlay {
 			DefaultResourcePack defaultResourcePack = minecraftClient.getResourcePackDownloader().getPack();
 
 			try {
-				InputStream inputStream = defaultResourcePack.open(ResourceType.field_14188, SplashScreen.LOGO);
+				InputStream inputStream = defaultResourcePack.open(ResourceType.CLIENT_RESOURCES, SplashScreen.LOGO);
 				Throwable var5 = null;
 
 				ResourceTexture.TextureData var6;

@@ -20,12 +20,12 @@ public class FindInteractionTargetTask extends Task<LivingEntity> {
 	public FindInteractionTargetTask(EntityType<?> entityType, int i, Predicate<LivingEntity> predicate, Predicate<LivingEntity> predicate2) {
 		super(
 			ImmutableMap.of(
-				MemoryModuleType.field_18446,
-				MemoryModuleState.field_18458,
-				MemoryModuleType.field_18447,
-				MemoryModuleState.field_18457,
-				MemoryModuleType.field_18442,
-				MemoryModuleState.field_18456
+				MemoryModuleType.LOOK_TARGET,
+				MemoryModuleState.REGISTERED,
+				MemoryModuleType.INTERACTION_TARGET,
+				MemoryModuleState.VALUE_ABSENT,
+				MemoryModuleType.VISIBLE_MOBS,
+				MemoryModuleState.VALUE_PRESENT
 			)
 		);
 		this.entityType = entityType;
@@ -47,15 +47,15 @@ public class FindInteractionTargetTask extends Task<LivingEntity> {
 	public void run(ServerWorld serverWorld, LivingEntity livingEntity, long l) {
 		super.run(serverWorld, livingEntity, l);
 		Brain<?> brain = livingEntity.getBrain();
-		brain.getOptionalMemory(MemoryModuleType.field_18442)
+		brain.getOptionalMemory(MemoryModuleType.VISIBLE_MOBS)
 			.ifPresent(
 				list -> list.stream()
 						.filter(livingEntity2 -> livingEntity2.squaredDistanceTo(livingEntity) <= (double)this.maxSquaredDistance)
 						.filter(this::test)
 						.findFirst()
 						.ifPresent(livingEntityxx -> {
-							brain.putMemory(MemoryModuleType.field_18447, livingEntityxx);
-							brain.putMemory(MemoryModuleType.field_18446, new EntityPosWrapper(livingEntityxx));
+							brain.putMemory(MemoryModuleType.INTERACTION_TARGET, livingEntityxx);
+							brain.putMemory(MemoryModuleType.LOOK_TARGET, new EntityPosWrapper(livingEntityxx));
 						})
 			);
 	}
@@ -65,6 +65,6 @@ public class FindInteractionTargetTask extends Task<LivingEntity> {
 	}
 
 	private List<LivingEntity> getVisibleMobs(LivingEntity livingEntity) {
-		return (List<LivingEntity>)livingEntity.getBrain().getOptionalMemory(MemoryModuleType.field_18442).get();
+		return (List<LivingEntity>)livingEntity.getBrain().getOptionalMemory(MemoryModuleType.VISIBLE_MOBS).get();
 	}
 }

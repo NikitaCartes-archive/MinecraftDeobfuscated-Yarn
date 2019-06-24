@@ -102,7 +102,7 @@ public abstract class NbtText extends BaseText implements ParsableText {
 		@Nullable
 		private PosArgument parsePos(String string) {
 			try {
-				return BlockPosArgumentType.create().method_9699(new StringReader(string));
+				return BlockPosArgumentType.blockPos().method_9699(new StringReader(string));
 			} catch (CommandSyntaxException var3) {
 				return null;
 			}

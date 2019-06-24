@@ -48,8 +48,8 @@ public class ScreenshotUtils {
 					try {
 						nativeImage.writeFile(file3);
 						Text text = new LiteralText(file3.getName())
-							.formatted(Formatting.field_1073)
-							.styled(style -> style.setClickEvent(new ClickEvent(ClickEvent.Action.field_11746, file3.getAbsolutePath())));
+							.formatted(Formatting.UNDERLINE)
+							.styled(style -> style.setClickEvent(new ClickEvent(ClickEvent.Action.OPEN_FILE, file3.getAbsolutePath())));
 						consumer.accept(new TranslatableText("screenshot.success", text));
 					} catch (Exception var7xx) {
 						LOGGER.warn("Couldn't save screenshot", var7xx);

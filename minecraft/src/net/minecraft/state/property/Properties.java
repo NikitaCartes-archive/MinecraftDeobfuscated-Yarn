@@ -58,10 +58,10 @@ public class Properties {
 	public static final BooleanProperty SOUTH = BooleanProperty.of("south");
 	public static final BooleanProperty WEST = BooleanProperty.of("west");
 	public static final DirectionProperty FACING = DirectionProperty.of(
-		"facing", Direction.field_11043, Direction.field_11034, Direction.field_11035, Direction.field_11039, Direction.field_11036, Direction.field_11033
+		"facing", Direction.NORTH, Direction.EAST, Direction.SOUTH, Direction.WEST, Direction.UP, Direction.DOWN
 	);
-	public static final DirectionProperty HOPPER_FACING = DirectionProperty.of("facing", (Predicate<Direction>)(direction -> direction != Direction.field_11036));
-	public static final DirectionProperty HORIZONTAL_FACING = DirectionProperty.of("facing", Direction.Type.field_11062);
+	public static final DirectionProperty HOPPER_FACING = DirectionProperty.of("facing", (Predicate<Direction>)(direction -> direction != Direction.UP));
+	public static final DirectionProperty HORIZONTAL_FACING = DirectionProperty.of("facing", Direction.Type.HORIZONTAL);
 	public static final EnumProperty<WallMountLocation> WALL_MOUNT_LOCATION = EnumProperty.of("face", WallMountLocation.class);
 	public static final EnumProperty<Attachment> ATTACHMENT = EnumProperty.of("attachment", Attachment.class);
 	public static final EnumProperty<WireConnection> EAST_WIRE_CONNECTION = EnumProperty.of("east", WireConnection.class);
@@ -74,10 +74,10 @@ public class Properties {
 	public static final EnumProperty<RailShape> STRAIGHT_RAIL_SHAPE = EnumProperty.of(
 		"shape",
 		RailShape.class,
-		(Predicate)(railShape -> railShape != RailShape.field_12663
-				&& railShape != RailShape.field_12672
-				&& railShape != RailShape.field_12664
-				&& railShape != RailShape.field_12671)
+		(Predicate)(railShape -> railShape != RailShape.NORTH_EAST
+				&& railShape != RailShape.NORTH_WEST
+				&& railShape != RailShape.SOUTH_EAST
+				&& railShape != RailShape.SOUTH_WEST)
 	);
 	public static final IntProperty AGE_1 = IntProperty.of("age", 0, 1);
 	public static final IntProperty AGE_2 = IntProperty.of("age", 0, 2);

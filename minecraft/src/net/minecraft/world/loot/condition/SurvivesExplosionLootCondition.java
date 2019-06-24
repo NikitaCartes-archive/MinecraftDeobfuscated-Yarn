@@ -19,11 +19,11 @@ public class SurvivesExplosionLootCondition implements LootCondition {
 
 	@Override
 	public Set<LootContextParameter<?>> getRequiredParameters() {
-		return ImmutableSet.of(LootContextParameters.field_1225);
+		return ImmutableSet.of(LootContextParameters.EXPLOSION_RADIUS);
 	}
 
 	public boolean method_869(LootContext lootContext) {
-		Float float_ = lootContext.get(LootContextParameters.field_1225);
+		Float float_ = lootContext.get(LootContextParameters.EXPLOSION_RADIUS);
 		if (float_ != null) {
 			Random random = lootContext.getRandom();
 			float f = 1.0F / float_;

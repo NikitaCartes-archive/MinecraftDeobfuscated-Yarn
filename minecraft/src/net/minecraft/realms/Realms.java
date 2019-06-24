@@ -92,19 +92,19 @@ public class Realms {
 	}
 
 	public static int survivalId() {
-		return GameMode.field_9215.getId();
+		return GameMode.SURVIVAL.getId();
 	}
 
 	public static int creativeId() {
-		return GameMode.field_9220.getId();
+		return GameMode.CREATIVE.getId();
 	}
 
 	public static int adventureId() {
-		return GameMode.field_9216.getId();
+		return GameMode.ADVENTURE.getId();
 	}
 
 	public static int spectatorId() {
-		return GameMode.field_9219.getId();
+		return GameMode.SPECTATOR.getId();
 	}
 
 	public static void setConnectedToRealms(boolean bl) {
@@ -168,7 +168,7 @@ public class Realms {
 	public static void narrateNow(String string) {
 		NarratorManager narratorManager = NarratorManager.INSTANCE;
 		narratorManager.clear();
-		narratorManager.onChatMessage(MessageType.field_11735, new LiteralText(fixNarrationNewlines(string)));
+		narratorManager.onChatMessage(MessageType.SYSTEM, new LiteralText(fixNarrationNewlines(string)));
 	}
 
 	private static String fixNarrationNewlines(String string) {

@@ -20,10 +20,10 @@ public class CapeFeatureRenderer extends FeatureRenderer<AbstractClientPlayerEnt
 	public void method_4177(AbstractClientPlayerEntity abstractClientPlayerEntity, float f, float g, float h, float i, float j, float k, float l) {
 		if (abstractClientPlayerEntity.canRenderCapeTexture()
 			&& !abstractClientPlayerEntity.isInvisible()
-			&& abstractClientPlayerEntity.isSkinOverlayVisible(PlayerModelPart.field_7559)
+			&& abstractClientPlayerEntity.isSkinOverlayVisible(PlayerModelPart.CAPE)
 			&& abstractClientPlayerEntity.getCapeTexture() != null) {
-			ItemStack itemStack = abstractClientPlayerEntity.getEquippedStack(EquipmentSlot.field_6174);
-			if (itemStack.getItem() != Items.field_8833) {
+			ItemStack itemStack = abstractClientPlayerEntity.getEquippedStack(EquipmentSlot.CHEST);
+			if (itemStack.getItem() != Items.ELYTRA) {
 				GlStateManager.color4f(1.0F, 1.0F, 1.0F, 1.0F);
 				this.bindTexture(abstractClientPlayerEntity.getCapeTexture());
 				GlStateManager.pushMatrix();
@@ -48,7 +48,7 @@ public class CapeFeatureRenderer extends FeatureRenderer<AbstractClientPlayerEnt
 				}
 
 				float t = MathHelper.lerp(h, abstractClientPlayerEntity.field_7505, abstractClientPlayerEntity.field_7483);
-				q += MathHelper.sin(MathHelper.lerp(h, abstractClientPlayerEntity.field_6039, abstractClientPlayerEntity.field_5973) * 6.0F) * 32.0F * t;
+				q += MathHelper.sin(MathHelper.lerp(h, abstractClientPlayerEntity.prevHorizontalSpeed, abstractClientPlayerEntity.horizontalSpeed) * 6.0F) * 32.0F * t;
 				if (abstractClientPlayerEntity.isInSneakingPose()) {
 					q += 25.0F;
 				}

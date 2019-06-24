@@ -25,12 +25,12 @@ public class GoToSecondaryPositionTask extends Task<VillagerEntity> {
 	public GoToSecondaryPositionTask(MemoryModuleType<List<GlobalPos>> memoryModuleType, float f, int i, int j, MemoryModuleType<GlobalPos> memoryModuleType2) {
 		super(
 			ImmutableMap.of(
-				MemoryModuleType.field_18445,
-				MemoryModuleState.field_18458,
+				MemoryModuleType.WALK_TARGET,
+				MemoryModuleState.REGISTERED,
 				memoryModuleType,
-				MemoryModuleState.field_18456,
+				MemoryModuleState.VALUE_PRESENT,
 				memoryModuleType2,
-				MemoryModuleState.field_18456
+				MemoryModuleState.VALUE_PRESENT
 			)
 		);
 		this.secondaryPositions = memoryModuleType;
@@ -58,7 +58,7 @@ public class GoToSecondaryPositionTask extends Task<VillagerEntity> {
 
 	protected void method_19610(ServerWorld serverWorld, VillagerEntity villagerEntity, long l) {
 		if (l > this.nextRunTime && this.chosenPosition != null) {
-			villagerEntity.getBrain().putMemory(MemoryModuleType.field_18445, new WalkTarget(this.chosenPosition.getPos(), this.speed, this.completionRange));
+			villagerEntity.getBrain().putMemory(MemoryModuleType.WALK_TARGET, new WalkTarget(this.chosenPosition.getPos(), this.speed, this.completionRange));
 			this.nextRunTime = l + 100L;
 		}
 	}

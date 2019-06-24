@@ -36,14 +36,14 @@ public class SecondaryPointsOfInterestSensor extends Sensor<VillagerEntity> {
 
 		Brain<?> brain = villagerEntity.getBrain();
 		if (!list.isEmpty()) {
-			brain.putMemory(MemoryModuleType.field_18873, list);
+			brain.putMemory(MemoryModuleType.SECONDARY_JOB_SITE, list);
 		} else {
-			brain.forget(MemoryModuleType.field_18873);
+			brain.forget(MemoryModuleType.SECONDARY_JOB_SITE);
 		}
 	}
 
 	@Override
 	public Set<MemoryModuleType<?>> getOutputMemoryModules() {
-		return ImmutableSet.of(MemoryModuleType.field_18873);
+		return ImmutableSet.of(MemoryModuleType.SECONDARY_JOB_SITE);
 	}
 }

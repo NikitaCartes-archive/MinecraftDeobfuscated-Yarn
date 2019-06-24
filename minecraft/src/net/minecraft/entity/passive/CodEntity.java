@@ -15,26 +15,26 @@ public class CodEntity extends SchoolingFishEntity {
 
 	@Override
 	protected ItemStack getFishBucketItem() {
-		return new ItemStack(Items.field_8666);
+		return new ItemStack(Items.COD_BUCKET);
 	}
 
 	@Override
 	protected SoundEvent getAmbientSound() {
-		return SoundEvents.field_15083;
+		return SoundEvents.ENTITY_COD_AMBIENT;
 	}
 
 	@Override
 	protected SoundEvent getDeathSound() {
-		return SoundEvents.field_15003;
+		return SoundEvents.ENTITY_COD_DEATH;
 	}
 
 	@Override
 	protected SoundEvent getHurtSound(DamageSource damageSource) {
-		return SoundEvents.field_14851;
+		return SoundEvents.ENTITY_COD_HURT;
 	}
 
 	@Override
 	protected SoundEvent getFlopSound() {
-		return SoundEvents.field_14918;
+		return SoundEvents.ENTITY_COD_FLOP;
 	}
 }

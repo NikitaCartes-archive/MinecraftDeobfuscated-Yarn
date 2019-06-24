@@ -3,7 +3,7 @@ package net.minecraft.world.biome.layer;
 import net.minecraft.util.math.noise.PerlinNoiseSampler;
 
 public enum OceanTemperatureLayer implements InitLayer {
-	field_16105;
+	INSTANCE;
 
 	@Override
 	public int sample(LayerRandomnessSource layerRandomnessSource, int i, int j) {

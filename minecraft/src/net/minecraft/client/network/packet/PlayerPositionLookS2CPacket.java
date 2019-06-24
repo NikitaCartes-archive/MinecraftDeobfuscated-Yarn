@@ -93,11 +93,11 @@ public class PlayerPositionLookS2CPacket implements Packet<ClientPlayPacketListe
 	}
 
 	public static enum Flag {
-		field_12400(0),
-		field_12398(1),
-		field_12403(2),
-		field_12401(3),
-		field_12397(4);
+		X(0),
+		Y(1),
+		Z(2),
+		Y_ROT(3),
+		X_ROT(4);
 
 		private final int shift;
 

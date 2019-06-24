@@ -17,11 +17,11 @@ import net.minecraft.world.gen.chunk.ChunkGenerator;
 
 public class NetherFortressFeature extends StructureFeature<DefaultFeatureConfig> {
 	private static final List<Biome.SpawnEntry> MONSTER_SPAWNS = Lists.<Biome.SpawnEntry>newArrayList(
-		new Biome.SpawnEntry(EntityType.field_6099, 10, 2, 3),
-		new Biome.SpawnEntry(EntityType.field_6050, 5, 4, 4),
-		new Biome.SpawnEntry(EntityType.field_6076, 8, 5, 5),
-		new Biome.SpawnEntry(EntityType.field_6137, 2, 5, 5),
-		new Biome.SpawnEntry(EntityType.field_6102, 3, 4, 4)
+		new Biome.SpawnEntry(EntityType.BLAZE, 10, 2, 3),
+		new Biome.SpawnEntry(EntityType.ZOMBIE_PIGMAN, 5, 4, 4),
+		new Biome.SpawnEntry(EntityType.WITHER_SKELETON, 8, 5, 5),
+		new Biome.SpawnEntry(EntityType.SKELETON, 2, 5, 5),
+		new Biome.SpawnEntry(EntityType.MAGMA_CUBE, 3, 4, 4)
 	);
 
 	public NetherFortressFeature(Function<Dynamic<?>, ? extends DefaultFeatureConfig> function) {

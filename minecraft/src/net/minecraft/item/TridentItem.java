@@ -43,7 +43,7 @@ public class TridentItem extends Item {
 
 	@Override
 	public UseAction getUseAction(ItemStack itemStack) {
-		return UseAction.field_8951;
+		return UseAction.SPEAR;
 	}
 
 	@Override
@@ -71,18 +71,18 @@ public class TridentItem extends Item {
 							TridentEntity tridentEntity = new TridentEntity(world, playerEntity, itemStack);
 							tridentEntity.method_7474(playerEntity, playerEntity.pitch, playerEntity.yaw, 0.0F, 2.5F + (float)k * 0.5F, 1.0F);
 							if (playerEntity.abilities.creativeMode) {
-								tridentEntity.pickupType = ProjectileEntity.PickupPermission.field_7594;
+								tridentEntity.pickupType = ProjectileEntity.PickupPermission.CREATIVE_ONLY;
 							}
 
 							world.spawnEntity(tridentEntity);
-							world.playSoundFromEntity(null, tridentEntity, SoundEvents.field_15001, SoundCategory.PLAYERS, 1.0F, 1.0F);
+							world.playSoundFromEntity(null, tridentEntity, SoundEvents.ITEM_TRIDENT_THROW, SoundCategory.PLAYERS, 1.0F, 1.0F);
 							if (!playerEntity.abilities.creativeMode) {
 								playerEntity.inventory.removeOne(itemStack);
 							}
 						}
 					}
 
-					playerEntity.incrementStat(Stats.field_15372.getOrCreateStat(this));
+					playerEntity.incrementStat(Stats.USED.getOrCreateStat(this));
 					if (k > 0) {
 						float f = playerEntity.yaw;
 						float g = playerEntity.pitch;
@@ -98,16 +98,16 @@ public class TridentItem extends Item {
 						playerEntity.method_6018(20);
 						if (playerEntity.onGround) {
 							float p = 1.1999999F;
-							playerEntity.move(MovementType.field_6308, new Vec3d(0.0, 1.1999999F, 0.0));
+							playerEntity.move(MovementType.SELF, new Vec3d(0.0, 1.1999999F, 0.0));
 						}
 
 						SoundEvent soundEvent;
 						if (k >= 3) {
-							soundEvent = SoundEvents.field_14717;
+							soundEvent = SoundEvents.ITEM_TRIDENT_RIPTIDE_3;
 						} else if (k == 2) {
-							soundEvent = SoundEvents.field_14806;
+							soundEvent = SoundEvents.ITEM_TRIDENT_RIPTIDE_2;
 						} else {
-							soundEvent = SoundEvents.field_14606;
+							soundEvent = SoundEvents.ITEM_TRIDENT_RIPTIDE_1;
 						}
 
 						world.playSoundFromEntity(null, playerEntity, soundEvent, SoundCategory.PLAYERS, 1.0F, 1.0F);
@@ -121,25 +121,25 @@ public class TridentItem extends Item {
 	public TypedActionResult<ItemStack> use(World world, PlayerEntity playerEntity, Hand hand) {
 		ItemStack itemStack = playerEntity.getStackInHand(hand);
 		if (itemStack.getDamage() >= itemStack.getMaxDamage()) {
-			return new TypedActionResult<>(ActionResult.field_5814, itemStack);
+			return new TypedActionResult<>(ActionResult.FAIL, itemStack);
 		} else if (EnchantmentHelper.getRiptide(itemStack) > 0 && !playerEntity.isInsideWaterOrRain()) {
-			return new TypedActionResult<>(ActionResult.field_5814, itemStack);
+			return new TypedActionResult<>(ActionResult.FAIL, itemStack);
 		} else {
 			playerEntity.setCurrentHand(hand);
-			return new TypedActionResult<>(ActionResult.field_5812, itemStack);
+			return new TypedActionResult<>(ActionResult.SUCCESS, itemStack);
 		}
 	}
 
 	@Override
 	public boolean postHit(ItemStack itemStack, LivingEntity livingEntity, LivingEntity livingEntity2) {
-		itemStack.damage(1, livingEntity2, livingEntityx -> livingEntityx.sendEquipmentBreakStatus(EquipmentSlot.field_6173));
+		itemStack.damage(1, livingEntity2, livingEntityx -> livingEntityx.sendEquipmentBreakStatus(EquipmentSlot.MAINHAND));
 		return true;
 	}
 
 	@Override
 	public boolean postMine(ItemStack itemStack, World world, BlockState blockState, BlockPos blockPos, LivingEntity livingEntity) {
 		if ((double)blockState.getHardness(world, blockPos) != 0.0) {
-			itemStack.damage(2, livingEntity, livingEntityx -> livingEntityx.sendEquipmentBreakStatus(EquipmentSlot.field_6173));
+			itemStack.damage(2, livingEntity, livingEntityx -> livingEntityx.sendEquipmentBreakStatus(EquipmentSlot.MAINHAND));
 		}
 
 		return true;
@@ -148,14 +148,14 @@ public class TridentItem extends Item {
 	@Override
 	public Multimap<String, EntityAttributeModifier> getModifiers(EquipmentSlot equipmentSlot) {
 		Multimap<String, EntityAttributeModifier> multimap = super.getModifiers(equipmentSlot);
-		if (equipmentSlot == EquipmentSlot.field_6173) {
+		if (equipmentSlot == EquipmentSlot.MAINHAND) {
 			multimap.put(
 				EntityAttributes.ATTACK_DAMAGE.getId(),
-				new EntityAttributeModifier(ATTACK_DAMAGE_MODIFIER_UUID, "Tool modifier", 8.0, EntityAttributeModifier.Operation.field_6328)
+				new EntityAttributeModifier(ATTACK_DAMAGE_MODIFIER_UUID, "Tool modifier", 8.0, EntityAttributeModifier.Operation.ADDITION)
 			);
 			multimap.put(
 				EntityAttributes.ATTACK_SPEED.getId(),
-				new EntityAttributeModifier(ATTACK_SPEED_MODIFIER_UUID, "Tool modifier", -2.9F, EntityAttributeModifier.Operation.field_6328)
+				new EntityAttributeModifier(ATTACK_SPEED_MODIFIER_UUID, "Tool modifier", -2.9F, EntityAttributeModifier.Operation.ADDITION)
 			);
 		}
 

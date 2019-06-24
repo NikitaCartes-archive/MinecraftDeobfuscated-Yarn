@@ -27,11 +27,11 @@ public class TableBonusLootCondition implements LootCondition {
 
 	@Override
 	public Set<LootContextParameter<?>> getRequiredParameters() {
-		return ImmutableSet.of(LootContextParameters.field_1229);
+		return ImmutableSet.of(LootContextParameters.TOOL);
 	}
 
 	public boolean method_799(LootContext lootContext) {
-		ItemStack itemStack = lootContext.get(LootContextParameters.field_1229);
+		ItemStack itemStack = lootContext.get(LootContextParameters.TOOL);
 		int i = itemStack != null ? EnchantmentHelper.getLevel(this.enchantment, itemStack) : 0;
 		float f = this.chances[Math.min(i, this.chances.length - 1)];
 		return lootContext.getRandom().nextFloat() < f;

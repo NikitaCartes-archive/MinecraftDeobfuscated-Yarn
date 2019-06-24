@@ -34,7 +34,7 @@ import net.minecraft.world.World;
 public class ZombiePigmanEntity extends ZombieEntity {
 	private static final UUID ATTACKING_SPEED_BOOST_UUID = UUID.fromString("49455A49-7EC5-45BA-B886-3B90B23A1718");
 	private static final EntityAttributeModifier ATTACKING_SPEED_BOOST = new EntityAttributeModifier(
-			ATTACKING_SPEED_BOOST_UUID, "Attacking speed boost", 0.05, EntityAttributeModifier.Operation.field_6328
+			ATTACKING_SPEED_BOOST_UUID, "Attacking speed boost", 0.05, EntityAttributeModifier.Operation.ADDITION
 		)
 		.setSerialize(false);
 	private int anger;
@@ -43,7 +43,7 @@ public class ZombiePigmanEntity extends ZombieEntity {
 
 	public ZombiePigmanEntity(EntityType<? extends ZombiePigmanEntity> entityType, World world) {
 		super(entityType, world);
-		this.setPathNodeTypeWeight(PathNodeType.field_14, 8.0F);
+		this.setPathNodeTypeWeight(PathNodeType.LAVA, 8.0F);
 	}
 
 	@Override
@@ -99,7 +99,9 @@ public class ZombiePigmanEntity extends ZombieEntity {
 		}
 
 		if (this.angrySoundDelay > 0 && --this.angrySoundDelay == 0) {
-			this.playSound(SoundEvents.field_14852, this.getSoundVolume() * 2.0F, ((this.random.nextFloat() - this.random.nextFloat()) * 0.2F + 1.0F) * 1.8F);
+			this.playSound(
+				SoundEvents.ENTITY_ZOMBIE_PIGMAN_ANGRY, this.getSoundVolume() * 2.0F, ((this.random.nextFloat() - this.random.nextFloat()) * 0.2F + 1.0F) * 1.8F
+			);
 		}
 
 		if (this.isAngry() && this.angerTarget != null && livingEntity == null) {
@@ -113,7 +115,7 @@ public class ZombiePigmanEntity extends ZombieEntity {
 	}
 
 	public static boolean method_20682(EntityType<ZombiePigmanEntity> entityType, IWorld iWorld, SpawnType spawnType, BlockPos blockPos, Random random) {
-		return iWorld.getDifficulty() != Difficulty.field_5801;
+		return iWorld.getDifficulty() != Difficulty.PEACEFUL;
 	}
 
 	@Override
@@ -182,17 +184,17 @@ public class ZombiePigmanEntity extends ZombieEntity {
 
 	@Override
 	protected SoundEvent getAmbientSound() {
-		return SoundEvents.field_14926;
+		return SoundEvents.ENTITY_ZOMBIE_PIGMAN_AMBIENT;
 	}
 
 	@Override
 	protected SoundEvent getHurtSound(DamageSource damageSource) {
-		return SoundEvents.field_14710;
+		return SoundEvents.ENTITY_ZOMBIE_PIGMAN_HURT;
 	}
 
 	@Override
 	protected SoundEvent getDeathSound() {
-		return SoundEvents.field_14743;
+		return SoundEvents.ENTITY_ZOMBIE_PIGMAN_DEATH;
 	}
 
 	@Override
@@ -202,7 +204,7 @@ public class ZombiePigmanEntity extends ZombieEntity {
 
 	@Override
 	protected void initEquipment(LocalDifficulty localDifficulty) {
-		this.setEquippedStack(EquipmentSlot.field_6173, new ItemStack(Items.field_8845));
+		this.setEquippedStack(EquipmentSlot.MAINHAND, new ItemStack(Items.GOLDEN_SWORD));
 	}
 
 	@Override

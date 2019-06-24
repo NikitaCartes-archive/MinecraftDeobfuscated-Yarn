@@ -17,8 +17,8 @@ import net.minecraft.util.math.MutableIntBoundingBox;
 import net.minecraft.world.ModifiableTestableWorld;
 
 public class LargeOakTreeFeature extends AbstractTreeFeature<DefaultFeatureConfig> {
-	private static final BlockState LOG = Blocks.field_10431.getDefaultState();
-	private static final BlockState LEAVES = Blocks.field_10503.getDefaultState();
+	private static final BlockState LOG = Blocks.OAK_LOG.getDefaultState();
+	private static final BlockState LEAVES = Blocks.OAK_LEAVES.getDefaultState();
 
 	public LargeOakTreeFeature(Function<Dynamic<?>, ? extends DefaultFeatureConfig> function, boolean bl) {
 		super(function, bl);

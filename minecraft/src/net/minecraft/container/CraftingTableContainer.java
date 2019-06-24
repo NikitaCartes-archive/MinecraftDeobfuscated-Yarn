@@ -31,7 +31,7 @@ public class CraftingTableContainer extends CraftingContainer<CraftingInventory>
 	}
 
 	public CraftingTableContainer(int i, PlayerInventory playerInventory, BlockContext blockContext) {
-		super(ContainerType.field_17333, i);
+		super(ContainerType.CRAFTING, i);
 		this.context = blockContext;
 		this.player = playerInventory.player;
 		this.addSlot(new CraftingResultSlot(playerInventory.player, this.craftingInv, this.resultInv, 0, 124, 35));
@@ -101,7 +101,7 @@ public class CraftingTableContainer extends CraftingContainer<CraftingInventory>
 
 	@Override
 	public boolean canUse(PlayerEntity playerEntity) {
-		return canUse(this.context, playerEntity, Blocks.field_9980);
+		return canUse(this.context, playerEntity, Blocks.CRAFTING_TABLE);
 	}
 
 	@Override

@@ -25,11 +25,11 @@ public class RandomChanceWithLootingLootCondition implements LootCondition {
 
 	@Override
 	public Set<LootContextParameter<?>> getRequiredParameters() {
-		return ImmutableSet.of(LootContextParameters.field_1230);
+		return ImmutableSet.of(LootContextParameters.KILLER_ENTITY);
 	}
 
 	public boolean method_950(LootContext lootContext) {
-		Entity entity = lootContext.get(LootContextParameters.field_1230);
+		Entity entity = lootContext.get(LootContextParameters.KILLER_ENTITY);
 		int i = 0;
 		if (entity instanceof LivingEntity) {
 			i = EnchantmentHelper.getLooting((LivingEntity)entity);

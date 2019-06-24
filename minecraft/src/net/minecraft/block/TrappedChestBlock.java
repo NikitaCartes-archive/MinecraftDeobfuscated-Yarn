@@ -23,7 +23,7 @@ public class TrappedChestBlock extends ChestBlock {
 
 	@Override
 	protected Stat<Identifier> getOpenStat() {
-		return Stats.field_15419.getOrCreateStat(Stats.field_15402);
+		return Stats.CUSTOM.getOrCreateStat(Stats.TRIGGER_TRAPPED_CHEST);
 	}
 
 	@Override
@@ -38,6 +38,6 @@ public class TrappedChestBlock extends ChestBlock {
 
 	@Override
 	public int getStrongRedstonePower(BlockState blockState, BlockView blockView, BlockPos blockPos, Direction direction) {
-		return direction == Direction.field_11036 ? blockState.getWeakRedstonePower(blockView, blockPos, direction) : 0;
+		return direction == Direction.UP ? blockState.getWeakRedstonePower(blockView, blockPos, direction) : 0;
 	}
 }

@@ -23,7 +23,14 @@ public class EnderPearlItem extends Item {
 		}
 
 		world.playSound(
-			null, playerEntity.x, playerEntity.y, playerEntity.z, SoundEvents.field_14757, SoundCategory.field_15254, 0.5F, 0.4F / (RANDOM.nextFloat() * 0.4F + 0.8F)
+			null,
+			playerEntity.x,
+			playerEntity.y,
+			playerEntity.z,
+			SoundEvents.ENTITY_ENDER_PEARL_THROW,
+			SoundCategory.NEUTRAL,
+			0.5F,
+			0.4F / (RANDOM.nextFloat() * 0.4F + 0.8F)
 		);
 		playerEntity.getItemCooldownManager().set(this, 20);
 		if (!world.isClient) {
@@ -33,7 +40,7 @@ public class EnderPearlItem extends Item {
 			world.spawnEntity(thrownEnderpearlEntity);
 		}
 
-		playerEntity.incrementStat(Stats.field_15372.getOrCreateStat(this));
-		return new TypedActionResult<>(ActionResult.field_5812, itemStack);
+		playerEntity.incrementStat(Stats.USED.getOrCreateStat(this));
+		return new TypedActionResult<>(ActionResult.SUCCESS, itemStack);
 	}
 }

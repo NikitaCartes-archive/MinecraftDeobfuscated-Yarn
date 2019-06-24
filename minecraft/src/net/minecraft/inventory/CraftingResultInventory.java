@@ -8,7 +8,7 @@ import net.minecraft.recipe.RecipeUnlocker;
 import net.minecraft.util.DefaultedList;
 
 public class CraftingResultInventory implements Inventory, RecipeUnlocker {
-	private final DefaultedList<ItemStack> stack = DefaultedList.create(1, ItemStack.EMPTY);
+	private final DefaultedList<ItemStack> stack = DefaultedList.ofSize(1, ItemStack.EMPTY);
 	private Recipe<?> lastRecipe;
 
 	@Override

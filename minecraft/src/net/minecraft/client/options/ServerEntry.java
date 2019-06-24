@@ -19,7 +19,7 @@ public class ServerEntry {
 	public String version = SharedConstants.getGameVersion().getName();
 	public boolean online;
 	public String playerListSummary;
-	private ServerEntry.ResourcePackState resourcePackState = ServerEntry.ResourcePackState.field_3767;
+	private ServerEntry.ResourcePackState resourcePackState = ServerEntry.ResourcePackState.PROMPT;
 	private String icon;
 	private boolean local;
 
@@ -37,9 +37,9 @@ public class ServerEntry {
 			compoundTag.putString("icon", this.icon);
 		}
 
-		if (this.resourcePackState == ServerEntry.ResourcePackState.field_3768) {
+		if (this.resourcePackState == ServerEntry.ResourcePackState.ENABLED) {
 			compoundTag.putBoolean("acceptTextures", true);
-		} else if (this.resourcePackState == ServerEntry.ResourcePackState.field_3764) {
+		} else if (this.resourcePackState == ServerEntry.ResourcePackState.DISABLED) {
 			compoundTag.putBoolean("acceptTextures", false);
 		}
 
@@ -62,12 +62,12 @@ public class ServerEntry {
 
 		if (compoundTag.containsKey("acceptTextures", 1)) {
 			if (compoundTag.getBoolean("acceptTextures")) {
-				serverEntry.setResourcePackState(ServerEntry.ResourcePackState.field_3768);
+				serverEntry.setResourcePackState(ServerEntry.ResourcePackState.ENABLED);
 			} else {
-				serverEntry.setResourcePackState(ServerEntry.ResourcePackState.field_3764);
+				serverEntry.setResourcePackState(ServerEntry.ResourcePackState.DISABLED);
 			}
 		} else {
-			serverEntry.setResourcePackState(ServerEntry.ResourcePackState.field_3767);
+			serverEntry.setResourcePackState(ServerEntry.ResourcePackState.PROMPT);
 		}
 
 		return serverEntry;
@@ -96,9 +96,9 @@ public class ServerEntry {
 
 	@Environment(EnvType.CLIENT)
 	public static enum ResourcePackState {
-		field_3768("enabled"),
-		field_3764("disabled"),
-		field_3767("prompt");
+		ENABLED("enabled"),
+		DISABLED("disabled"),
+		PROMPT("prompt");
 
 		private final Text name;
 

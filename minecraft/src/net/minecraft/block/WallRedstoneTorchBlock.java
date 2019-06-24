@@ -26,7 +26,7 @@ public class WallRedstoneTorchBlock extends RedstoneTorchBlock {
 
 	protected WallRedstoneTorchBlock(Block.Settings settings) {
 		super(settings);
-		this.setDefaultState(this.stateFactory.getDefaultState().with(FACING, Direction.field_11043).with(LIT_2, Boolean.valueOf(true)));
+		this.setDefaultState(this.stateFactory.getDefaultState().with(FACING, Direction.NORTH).with(LIT_2, Boolean.valueOf(true)));
 	}
 
 	@Override
@@ -41,20 +41,20 @@ public class WallRedstoneTorchBlock extends RedstoneTorchBlock {
 
 	@Override
 	public boolean canPlaceAt(BlockState blockState, ViewableWorld viewableWorld, BlockPos blockPos) {
-		return Blocks.field_10099.canPlaceAt(blockState, viewableWorld, blockPos);
+		return Blocks.WALL_TORCH.canPlaceAt(blockState, viewableWorld, blockPos);
 	}
 
 	@Override
 	public BlockState getStateForNeighborUpdate(
 		BlockState blockState, Direction direction, BlockState blockState2, IWorld iWorld, BlockPos blockPos, BlockPos blockPos2
 	) {
-		return Blocks.field_10099.getStateForNeighborUpdate(blockState, direction, blockState2, iWorld, blockPos, blockPos2);
+		return Blocks.WALL_TORCH.getStateForNeighborUpdate(blockState, direction, blockState2, iWorld, blockPos, blockPos2);
 	}
 
 	@Nullable
 	@Override
 	public BlockState getPlacementState(ItemPlacementContext itemPlacementContext) {
-		BlockState blockState = Blocks.field_10099.getPlacementState(itemPlacementContext);
+		BlockState blockState = Blocks.WALL_TORCH.getPlacementState(itemPlacementContext);
 		return blockState == null ? null : this.getDefaultState().with(FACING, blockState.get(FACING));
 	}
 
@@ -84,12 +84,12 @@ public class WallRedstoneTorchBlock extends RedstoneTorchBlock {
 
 	@Override
 	public BlockState rotate(BlockState blockState, BlockRotation blockRotation) {
-		return Blocks.field_10099.rotate(blockState, blockRotation);
+		return Blocks.WALL_TORCH.rotate(blockState, blockRotation);
 	}
 
 	@Override
 	public BlockState mirror(BlockState blockState, BlockMirror blockMirror) {
-		return Blocks.field_10099.mirror(blockState, blockMirror);
+		return Blocks.WALL_TORCH.mirror(blockState, blockMirror);
 	}
 
 	@Override

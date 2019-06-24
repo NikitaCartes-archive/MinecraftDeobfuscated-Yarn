@@ -18,7 +18,7 @@ public class DiskFeature extends Feature<DiskFeatureConfig> {
 	public boolean method_13005(
 		IWorld iWorld, ChunkGenerator<? extends ChunkGeneratorConfig> chunkGenerator, Random random, BlockPos blockPos, DiskFeatureConfig diskFeatureConfig
 	) {
-		if (!iWorld.getFluidState(blockPos).matches(FluidTags.field_15517)) {
+		if (!iWorld.getFluidState(blockPos).matches(FluidTags.WATER)) {
 			return false;
 		} else {
 			int i = 0;

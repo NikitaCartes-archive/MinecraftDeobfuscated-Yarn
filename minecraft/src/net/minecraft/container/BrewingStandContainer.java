@@ -25,7 +25,7 @@ public class BrewingStandContainer extends Container {
 	}
 
 	public BrewingStandContainer(int i, PlayerInventory playerInventory, Inventory inventory, PropertyDelegate propertyDelegate) {
-		super(ContainerType.field_17332, i);
+		super(ContainerType.BREWING_STAND, i);
 		checkContainerSize(inventory, 5);
 		checkContainerDataCount(propertyDelegate, 2);
 		this.inventory = inventory;
@@ -129,7 +129,7 @@ public class BrewingStandContainer extends Container {
 		}
 
 		public static boolean matches(ItemStack itemStack) {
-			return itemStack.getItem() == Items.field_8183;
+			return itemStack.getItem() == Items.BLAZE_POWDER;
 		}
 
 		@Override
@@ -182,7 +182,7 @@ public class BrewingStandContainer extends Container {
 
 		public static boolean matches(ItemStack itemStack) {
 			Item item = itemStack.getItem();
-			return item == Items.field_8574 || item == Items.field_8436 || item == Items.field_8150 || item == Items.field_8469;
+			return item == Items.POTION || item == Items.SPLASH_POTION || item == Items.LINGERING_POTION || item == Items.GLASS_BOTTLE;
 		}
 	}
 }

@@ -114,7 +114,7 @@ public class IronGolemEntity extends GolemEntity {
 			if (!blockState.isAir()) {
 				this.world
 					.addParticle(
-						new BlockStateParticleEffect(ParticleTypes.field_11217, blockState),
+						new BlockStateParticleEffect(ParticleTypes.BLOCK, blockState),
 						this.x + ((double)this.random.nextFloat() - 0.5) * (double)this.getWidth(),
 						this.getBoundingBox().minY + 0.1,
 						this.z + ((double)this.random.nextFloat() - 0.5) * (double)this.getWidth(),
@@ -128,10 +128,10 @@ public class IronGolemEntity extends GolemEntity {
 
 	@Override
 	public boolean canTarget(EntityType<?> entityType) {
-		if (this.isPlayerCreated() && entityType == EntityType.field_6097) {
+		if (this.isPlayerCreated() && entityType == EntityType.PLAYER) {
 			return false;
 		} else {
-			return entityType == EntityType.field_6046 ? false : super.canTarget(entityType);
+			return entityType == EntityType.CREEPER ? false : super.canTarget(entityType);
 		}
 	}
 
@@ -157,7 +157,7 @@ public class IronGolemEntity extends GolemEntity {
 			this.dealDamage(this, entity);
 		}
 
-		this.playSound(SoundEvents.field_14649, 1.0F, 1.0F);
+		this.playSound(SoundEvents.ENTITY_IRON_GOLEM_ATTACK, 1.0F, 1.0F);
 		return bl;
 	}
 
@@ -166,7 +166,7 @@ public class IronGolemEntity extends GolemEntity {
 	public void handleStatus(byte b) {
 		if (b == 4) {
 			this.field_6762 = 10;
-			this.playSound(SoundEvents.field_14649, 1.0F, 1.0F);
+			this.playSound(SoundEvents.ENTITY_IRON_GOLEM_ATTACK, 1.0F, 1.0F);
 		} else if (b == 11) {
 			this.field_6759 = 400;
 		} else if (b == 34) {
@@ -193,17 +193,17 @@ public class IronGolemEntity extends GolemEntity {
 
 	@Override
 	protected SoundEvent getHurtSound(DamageSource damageSource) {
-		return SoundEvents.field_14959;
+		return SoundEvents.ENTITY_IRON_GOLEM_HURT;
 	}
 
 	@Override
 	protected SoundEvent getDeathSound() {
-		return SoundEvents.field_15055;
+		return SoundEvents.ENTITY_IRON_GOLEM_DEATH;
 	}
 
 	@Override
 	protected void playStepSound(BlockPos blockPos, BlockState blockState) {
-		this.playSound(SoundEvents.field_15233, 1.0F, 1.0F);
+		this.playSound(SoundEvents.ENTITY_IRON_GOLEM_STEP, 1.0F, 1.0F);
 	}
 
 	@Environment(EnvType.CLIENT)
@@ -245,7 +245,7 @@ public class IronGolemEntity extends GolemEntity {
 				}
 			}
 
-			return SpawnHelper.isClearForSpawn(viewableWorld, blockPos, viewableWorld.getBlockState(blockPos), Fluids.field_15906.getDefaultState())
+			return SpawnHelper.isClearForSpawn(viewableWorld, blockPos, viewableWorld.getBlockState(blockPos), Fluids.EMPTY.getDefaultState())
 				&& viewableWorld.intersectsEntities(this);
 		}
 	}

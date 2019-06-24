@@ -14,7 +14,7 @@ public class SlimeBlock extends TransparentBlock {
 
 	@Override
 	public BlockRenderLayer getRenderLayer() {
-		return BlockRenderLayer.field_9179;
+		return BlockRenderLayer.TRANSLUCENT;
 	}
 
 	@Override

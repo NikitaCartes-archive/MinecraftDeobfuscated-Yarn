@@ -18,23 +18,19 @@ public class PositionedSoundInstance extends AbstractSoundInstance {
 	}
 
 	public static PositionedSoundInstance master(SoundEvent soundEvent, float f, float g) {
-		return new PositionedSoundInstance(
-			soundEvent.getId(), SoundCategory.field_15250, g, f, false, 0, SoundInstance.AttenuationType.field_5478, 0.0F, 0.0F, 0.0F, true
-		);
+		return new PositionedSoundInstance(soundEvent.getId(), SoundCategory.MASTER, g, f, false, 0, SoundInstance.AttenuationType.NONE, 0.0F, 0.0F, 0.0F, true);
 	}
 
 	public static PositionedSoundInstance music(SoundEvent soundEvent) {
-		return new PositionedSoundInstance(
-			soundEvent.getId(), SoundCategory.field_15253, 1.0F, 1.0F, false, 0, SoundInstance.AttenuationType.field_5478, 0.0F, 0.0F, 0.0F, true
-		);
+		return new PositionedSoundInstance(soundEvent.getId(), SoundCategory.MUSIC, 1.0F, 1.0F, false, 0, SoundInstance.AttenuationType.NONE, 0.0F, 0.0F, 0.0F, true);
 	}
 
 	public static PositionedSoundInstance record(SoundEvent soundEvent, float f, float g, float h) {
-		return new PositionedSoundInstance(soundEvent, SoundCategory.field_15247, 4.0F, 1.0F, false, 0, SoundInstance.AttenuationType.field_5476, f, g, h);
+		return new PositionedSoundInstance(soundEvent, SoundCategory.RECORDS, 4.0F, 1.0F, false, 0, SoundInstance.AttenuationType.LINEAR, f, g, h);
 	}
 
 	public PositionedSoundInstance(SoundEvent soundEvent, SoundCategory soundCategory, float f, float g, float h, float i, float j) {
-		this(soundEvent, soundCategory, f, g, false, 0, SoundInstance.AttenuationType.field_5476, h, i, j);
+		this(soundEvent, soundCategory, f, g, false, 0, SoundInstance.AttenuationType.LINEAR, h, i, j);
 	}
 
 	private PositionedSoundInstance(

@@ -73,12 +73,12 @@ public class HorseEntity extends HorseBaseEntity {
 	}
 
 	public ItemStack getArmorType() {
-		return this.getEquippedStack(EquipmentSlot.field_6174);
+		return this.getEquippedStack(EquipmentSlot.CHEST);
 	}
 
 	private void equipArmor(ItemStack itemStack) {
-		this.setEquippedStack(EquipmentSlot.field_6174, itemStack);
-		this.setEquipmentDropChance(EquipmentSlot.field_6174, 0.0F);
+		this.setEquippedStack(EquipmentSlot.CHEST, itemStack);
+		this.setEquipmentDropChance(EquipmentSlot.CHEST, 0.0F);
 	}
 
 	@Override
@@ -151,7 +151,7 @@ public class HorseEntity extends HorseBaseEntity {
 				if (i != 0) {
 					this.getAttributeInstance(EntityAttributes.ARMOR)
 						.addModifier(
-							new EntityAttributeModifier(HORSE_ARMOR_BONUS_UUID, "Horse armor bonus", (double)i, EntityAttributeModifier.Operation.field_6328).setSerialize(false)
+							new EntityAttributeModifier(HORSE_ARMOR_BONUS_UUID, "Horse armor bonus", (double)i, EntityAttributeModifier.Operation.ADDITION).setSerialize(false)
 						);
 				}
 			}
@@ -164,7 +164,7 @@ public class HorseEntity extends HorseBaseEntity {
 		super.onInvChange(inventory);
 		ItemStack itemStack2 = this.getArmorType();
 		if (this.age > 20 && this.canEquip(itemStack2) && itemStack != itemStack2) {
-			this.playSound(SoundEvents.field_15141, 0.5F, 1.0F);
+			this.playSound(SoundEvents.ENTITY_HORSE_ARMOR, 0.5F, 1.0F);
 		}
 	}
 
@@ -172,7 +172,7 @@ public class HorseEntity extends HorseBaseEntity {
 	protected void playWalkSound(BlockSoundGroup blockSoundGroup) {
 		super.playWalkSound(blockSoundGroup);
 		if (this.random.nextInt(10) == 0) {
-			this.playSound(SoundEvents.field_14556, blockSoundGroup.getVolume() * 0.6F, blockSoundGroup.getPitch());
+			this.playSound(SoundEvents.ENTITY_HORSE_BREATHE, blockSoundGroup.getVolume() * 0.6F, blockSoundGroup.getPitch());
 		}
 	}
 
@@ -196,25 +196,25 @@ public class HorseEntity extends HorseBaseEntity {
 	@Override
 	protected SoundEvent getAmbientSound() {
 		super.getAmbientSound();
-		return SoundEvents.field_14947;
+		return SoundEvents.ENTITY_HORSE_AMBIENT;
 	}
 
 	@Override
 	protected SoundEvent getDeathSound() {
 		super.getDeathSound();
-		return SoundEvents.field_15166;
+		return SoundEvents.ENTITY_HORSE_DEATH;
 	}
 
 	@Override
 	protected SoundEvent getHurtSound(DamageSource damageSource) {
 		super.getHurtSound(damageSource);
-		return SoundEvents.field_14923;
+		return SoundEvents.ENTITY_HORSE_HURT;
 	}
 
 	@Override
 	protected SoundEvent getAngrySound() {
 		super.getAngrySound();
-		return SoundEvents.field_15043;
+		return SoundEvents.ENTITY_HORSE_ANGRY;
 	}
 
 	@Override
@@ -253,7 +253,7 @@ public class HorseEntity extends HorseBaseEntity {
 					return true;
 				}
 
-				boolean bl2 = !this.isBaby() && !this.isSaddled() && itemStack.getItem() == Items.field_8175;
+				boolean bl2 = !this.isBaby() && !this.isSaddled() && itemStack.getItem() == Items.SADDLE;
 				if (this.canEquip(itemStack) || bl2) {
 					this.openInventory(playerEntity);
 					return true;
@@ -284,10 +284,10 @@ public class HorseEntity extends HorseBaseEntity {
 	public PassiveEntity createChild(PassiveEntity passiveEntity) {
 		HorseBaseEntity horseBaseEntity;
 		if (passiveEntity instanceof DonkeyEntity) {
-			horseBaseEntity = EntityType.field_6057.create(this.world);
+			horseBaseEntity = EntityType.MULE.create(this.world);
 		} else {
 			HorseEntity horseEntity = (HorseEntity)passiveEntity;
-			horseBaseEntity = EntityType.field_6139.create(this.world);
+			horseBaseEntity = EntityType.HORSE.create(this.world);
 			int i = this.random.nextInt(9);
 			int j;
 			if (i < 4) {

@@ -27,7 +27,7 @@ public class BlockMatchRuleTest extends AbstractRuleTest {
 
 	@Override
 	protected RuleTest getRuleTest() {
-		return RuleTest.field_16981;
+		return RuleTest.BLOCK_MATCH;
 	}
 
 	@Override

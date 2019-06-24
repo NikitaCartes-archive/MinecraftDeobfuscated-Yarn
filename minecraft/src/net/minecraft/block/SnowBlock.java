@@ -39,11 +39,11 @@ public class SnowBlock extends Block {
 	@Override
 	public boolean canPlaceAtSide(BlockState blockState, BlockView blockView, BlockPos blockPos, BlockPlacementEnvironment blockPlacementEnvironment) {
 		switch(blockPlacementEnvironment) {
-			case field_50:
+			case LAND:
 				return blockState.get(LAYERS) < 5;
-			case field_48:
+			case WATER:
 				return false;
-			case field_51:
+			case AIR:
 				return false;
 			default:
 				return false;
@@ -69,9 +69,8 @@ public class SnowBlock extends Block {
 	public boolean canPlaceAt(BlockState blockState, ViewableWorld viewableWorld, BlockPos blockPos) {
 		BlockState blockState2 = viewableWorld.getBlockState(blockPos.down());
 		Block block = blockState2.getBlock();
-		if (block != Blocks.field_10295 && block != Blocks.field_10225 && block != Blocks.field_10499) {
-			return Block.isFaceFullSquare(blockState2.getCollisionShape(viewableWorld, blockPos.down()), Direction.field_11036)
-				|| block == this && blockState2.get(LAYERS) == 8;
+		if (block != Blocks.ICE && block != Blocks.PACKED_ICE && block != Blocks.BARRIER) {
+			return Block.isFaceFullSquare(blockState2.getCollisionShape(viewableWorld, blockPos.down()), Direction.UP) || block == this && blockState2.get(LAYERS) == 8;
 		} else {
 			return false;
 		}
@@ -82,13 +81,13 @@ public class SnowBlock extends Block {
 		BlockState blockState, Direction direction, BlockState blockState2, IWorld iWorld, BlockPos blockPos, BlockPos blockPos2
 	) {
 		return !blockState.canPlaceAt(iWorld, blockPos)
-			? Blocks.field_10124.getDefaultState()
+			? Blocks.AIR.getDefaultState()
 			: super.getStateForNeighborUpdate(blockState, direction, blockState2, iWorld, blockPos, blockPos2);
 	}
 
 	@Override
 	public void onScheduledTick(BlockState blockState, World world, BlockPos blockPos, Random random) {
-		if (world.getLightLevel(LightType.field_9282, blockPos) > 11) {
+		if (world.getLightLevel(LightType.BLOCK, blockPos) > 11) {
 			dropStacks(blockState, world, blockPos);
 			world.clearBlockState(blockPos, false);
 		}
@@ -100,7 +99,7 @@ public class SnowBlock extends Block {
 		if (itemPlacementContext.getStack().getItem() != this.asItem() || i >= 8) {
 			return i == 1;
 		} else if (itemPlacementContext.canReplaceExisting()) {
-			return itemPlacementContext.getSide() == Direction.field_11036;
+			return itemPlacementContext.getSide() == Direction.UP;
 		} else {
 			return true;
 		}

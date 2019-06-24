@@ -110,7 +110,7 @@ public class ExecuteCommand {
 				.then(
 					CommandManager.literal("positioned")
 						.then(
-							CommandManager.argument("pos", Vec3ArgumentType.create())
+							CommandManager.argument("pos", Vec3ArgumentType.vec3())
 								.redirect(literalCommandNode, commandContext -> commandContext.getSource().withPosition(Vec3ArgumentType.getVec3(commandContext, "pos")))
 						)
 						.then(CommandManager.literal("as").then(CommandManager.argument("targets", EntityArgumentType.entities()).fork(literalCommandNode, commandContext -> {
@@ -126,7 +126,7 @@ public class ExecuteCommand {
 				.then(
 					CommandManager.literal("rotated")
 						.then(
-							CommandManager.argument("rot", RotationArgumentType.create())
+							CommandManager.argument("rot", RotationArgumentType.rotation())
 								.redirect(
 									literalCommandNode,
 									commandContext -> commandContext.getSource()
@@ -149,7 +149,7 @@ public class ExecuteCommand {
 							CommandManager.literal("entity")
 								.then(
 									CommandManager.argument("targets", EntityArgumentType.entities())
-										.then(CommandManager.argument("anchor", EntityAnchorArgumentType.create()).fork(literalCommandNode, commandContext -> {
+										.then(CommandManager.argument("anchor", EntityAnchorArgumentType.entityAnchor()).fork(literalCommandNode, commandContext -> {
 											List<ServerCommandSource> list = Lists.<ServerCommandSource>newArrayList();
 											EntityAnchorArgumentType.EntityAnchor entityAnchor = EntityAnchorArgumentType.getEntityAnchor(commandContext, "anchor");
 								
@@ -162,14 +162,14 @@ public class ExecuteCommand {
 								)
 						)
 						.then(
-							CommandManager.argument("pos", Vec3ArgumentType.create())
+							CommandManager.argument("pos", Vec3ArgumentType.vec3())
 								.redirect(literalCommandNode, commandContext -> commandContext.getSource().withLookingAt(Vec3ArgumentType.getVec3(commandContext, "pos")))
 						)
 				)
 				.then(
 					CommandManager.literal("align")
 						.then(
-							CommandManager.argument("axes", SwizzleArgumentType.create())
+							CommandManager.argument("axes", SwizzleArgumentType.swizzle())
 								.redirect(
 									literalCommandNode,
 									commandContext -> commandContext.getSource()
@@ -180,7 +180,7 @@ public class ExecuteCommand {
 				.then(
 					CommandManager.literal("anchored")
 						.then(
-							CommandManager.argument("anchor", EntityAnchorArgumentType.create())
+							CommandManager.argument("anchor", EntityAnchorArgumentType.entityAnchor())
 								.redirect(
 									literalCommandNode, commandContext -> commandContext.getSource().withEntityAnchor(EntityAnchorArgumentType.getEntityAnchor(commandContext, "anchor"))
 								)
@@ -189,7 +189,7 @@ public class ExecuteCommand {
 				.then(
 					CommandManager.literal("in")
 						.then(
-							CommandManager.argument("dimension", DimensionArgumentType.create())
+							CommandManager.argument("dimension", DimensionArgumentType.dimension())
 								.redirect(
 									literalCommandNode,
 									commandContext -> commandContext.getSource()
@@ -209,7 +209,7 @@ public class ExecuteCommand {
 					CommandManager.argument("targets", ScoreHolderArgumentType.scoreHolders())
 						.suggests(ScoreHolderArgumentType.SUGGESTION_PROVIDER)
 						.then(
-							CommandManager.argument("objective", ObjectiveArgumentType.create())
+							CommandManager.argument("objective", ObjectiveArgumentType.objective())
 								.redirect(
 									literalCommandNode,
 									commandContext -> executeStoreScore(
@@ -225,7 +225,7 @@ public class ExecuteCommand {
 		literalArgumentBuilder.then(
 			CommandManager.literal("bossbar")
 				.then(
-					CommandManager.argument("id", IdentifierArgumentType.create())
+					CommandManager.argument("id", IdentifierArgumentType.identifier())
 						.suggests(BossBarCommand.suggestionProvider)
 						.then(
 							CommandManager.literal("value")
@@ -246,7 +246,7 @@ public class ExecuteCommand {
 			objectType.addArgumentsToBuilder(
 				literalArgumentBuilder,
 				argumentBuilder -> argumentBuilder.then(
-						CommandManager.argument("path", NbtPathArgumentType.create())
+						CommandManager.argument("path", NbtPathArgumentType.nbtPath())
 							.then(
 								CommandManager.literal("int")
 									.then(
@@ -394,11 +394,11 @@ public class ExecuteCommand {
 		literalArgumentBuilder.then(
 				CommandManager.literal("block")
 					.then(
-						CommandManager.argument("pos", BlockPosArgumentType.create())
+						CommandManager.argument("pos", BlockPosArgumentType.blockPos())
 							.then(
 								addConditionLogic(
 									commandNode,
-									CommandManager.argument("block", BlockPredicateArgumentType.create()),
+									CommandManager.argument("block", BlockPredicateArgumentType.blockPredicate()),
 									bl,
 									commandContext -> BlockPredicateArgumentType.getBlockPredicate(commandContext, "block")
 											.test(new CachedBlockPosition(commandContext.getSource().getWorld(), BlockPosArgumentType.getLoadedBlockPos(commandContext, "pos"), true))
@@ -413,7 +413,7 @@ public class ExecuteCommand {
 							.suggests(ScoreHolderArgumentType.SUGGESTION_PROVIDER)
 							.then(
 								((RequiredArgumentBuilder)((RequiredArgumentBuilder)((RequiredArgumentBuilder)((RequiredArgumentBuilder)((RequiredArgumentBuilder)CommandManager.argument(
-															"targetObjective", ObjectiveArgumentType.create()
+															"targetObjective", ObjectiveArgumentType.objective()
 														)
 														.then(
 															CommandManager.literal("=")
@@ -423,7 +423,7 @@ public class ExecuteCommand {
 																		.then(
 																			addConditionLogic(
 																				commandNode,
-																				CommandManager.argument("sourceObjective", ObjectiveArgumentType.create()),
+																				CommandManager.argument("sourceObjective", ObjectiveArgumentType.objective()),
 																				bl,
 																				commandContext -> testScoreCondition(commandContext, Integer::equals)
 																			)
@@ -438,7 +438,7 @@ public class ExecuteCommand {
 																	.then(
 																		addConditionLogic(
 																			commandNode,
-																			CommandManager.argument("sourceObjective", ObjectiveArgumentType.create()),
+																			CommandManager.argument("sourceObjective", ObjectiveArgumentType.objective()),
 																			bl,
 																			commandContext -> testScoreCondition(commandContext, (integer, integer2) -> integer < integer2)
 																		)
@@ -453,7 +453,7 @@ public class ExecuteCommand {
 																.then(
 																	addConditionLogic(
 																		commandNode,
-																		CommandManager.argument("sourceObjective", ObjectiveArgumentType.create()),
+																		CommandManager.argument("sourceObjective", ObjectiveArgumentType.objective()),
 																		bl,
 																		commandContext -> testScoreCondition(commandContext, (integer, integer2) -> integer <= integer2)
 																	)
@@ -468,7 +468,7 @@ public class ExecuteCommand {
 															.then(
 																addConditionLogic(
 																	commandNode,
-																	CommandManager.argument("sourceObjective", ObjectiveArgumentType.create()),
+																	CommandManager.argument("sourceObjective", ObjectiveArgumentType.objective()),
 																	bl,
 																	commandContext -> testScoreCondition(commandContext, (integer, integer2) -> integer > integer2)
 																)
@@ -483,7 +483,7 @@ public class ExecuteCommand {
 														.then(
 															addConditionLogic(
 																commandNode,
-																CommandManager.argument("sourceObjective", ObjectiveArgumentType.create()),
+																CommandManager.argument("sourceObjective", ObjectiveArgumentType.objective()),
 																bl,
 																commandContext -> testScoreCondition(commandContext, (integer, integer2) -> integer >= integer2)
 															)
@@ -495,7 +495,7 @@ public class ExecuteCommand {
 											.then(
 												addConditionLogic(
 													commandNode,
-													CommandManager.argument("range", NumberRangeArgumentType.create()),
+													CommandManager.argument("range", NumberRangeArgumentType.numberRange()),
 													bl,
 													commandContext -> testScoreMatch(commandContext, NumberRangeArgumentType.IntRangeArgumentType.getRangeArgument(commandContext, "range"))
 												)
@@ -507,11 +507,11 @@ public class ExecuteCommand {
 			.then(
 				CommandManager.literal("blocks")
 					.then(
-						CommandManager.argument("start", BlockPosArgumentType.create())
+						CommandManager.argument("start", BlockPosArgumentType.blockPos())
 							.then(
-								CommandManager.argument("end", BlockPosArgumentType.create())
+								CommandManager.argument("end", BlockPosArgumentType.blockPos())
 									.then(
-										CommandManager.argument("destination", BlockPosArgumentType.create())
+										CommandManager.argument("destination", BlockPosArgumentType.blockPos())
 											.then(addBlocksConditionLogic(commandNode, CommandManager.literal("all"), bl, false))
 											.then(addBlocksConditionLogic(commandNode, CommandManager.literal("masked"), bl, true))
 									)
@@ -535,7 +535,7 @@ public class ExecuteCommand {
 				objectType.addArgumentsToBuilder(
 					CommandManager.literal("data"),
 					argumentBuilder -> argumentBuilder.then(
-							CommandManager.argument("path", NbtPathArgumentType.create())
+							CommandManager.argument("path", NbtPathArgumentType.nbtPath())
 								.fork(
 									commandNode,
 									commandContext -> getSourceOrEmptyForConditionFork(
@@ -680,7 +680,7 @@ public class ExecuteCommand {
 						BlockPos blockPos5 = new BlockPos(m, l, k);
 						BlockPos blockPos6 = blockPos5.add(blockPos4);
 						BlockState blockState = serverWorld.getBlockState(blockPos5);
-						if (!bl || blockState.getBlock() != Blocks.field_10124) {
+						if (!bl || blockState.getBlock() != Blocks.AIR) {
 							if (blockState != serverWorld.getBlockState(blockPos6)) {
 								return OptionalInt.empty();
 							}

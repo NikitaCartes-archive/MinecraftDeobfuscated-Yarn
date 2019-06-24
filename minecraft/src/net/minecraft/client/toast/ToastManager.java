@@ -75,7 +75,7 @@ public class ToastManager extends DrawableHelper {
 		private final T instance;
 		private long field_2243 = -1L;
 		private long field_2242 = -1L;
-		private Toast.Visibility field_2244 = Toast.Visibility.field_2210;
+		private Toast.Visibility field_2244 = Toast.Visibility.SHOW;
 
 		private Entry(T toast) {
 			this.instance = toast;
@@ -88,7 +88,7 @@ public class ToastManager extends DrawableHelper {
 		private float getDissapearProgress(long l) {
 			float f = MathHelper.clamp((float)(l - this.field_2243) / 600.0F, 0.0F, 1.0F);
 			f *= f;
-			return this.field_2244 == Toast.Visibility.field_2209 ? 1.0F - f : f;
+			return this.field_2244 == Toast.Visibility.HIDE ? 1.0F - f : f;
 		}
 
 		public boolean draw(int i, int j) {
@@ -98,7 +98,7 @@ public class ToastManager extends DrawableHelper {
 				this.field_2244.play(ToastManager.this.client.getSoundManager());
 			}
 
-			if (this.field_2244 == Toast.Visibility.field_2210 && l - this.field_2243 <= 600L) {
+			if (this.field_2244 == Toast.Visibility.SHOW && l - this.field_2243 <= 600L) {
 				this.field_2242 = l;
 			}
 
@@ -112,7 +112,7 @@ public class ToastManager extends DrawableHelper {
 				this.field_2244.play(ToastManager.this.client.getSoundManager());
 			}
 
-			return this.field_2244 == Toast.Visibility.field_2209 && l - this.field_2243 > 600L;
+			return this.field_2244 == Toast.Visibility.HIDE && l - this.field_2243 > 600L;
 		}
 	}
 }

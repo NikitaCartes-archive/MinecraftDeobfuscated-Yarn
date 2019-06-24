@@ -3,8 +3,8 @@ package net.minecraft.block.enums;
 import net.minecraft.util.StringIdentifiable;
 
 public enum BedPart implements StringIdentifiable {
-	field_12560("head"),
-	field_12557("foot");
+	HEAD("head"),
+	FOOT("foot");
 
 	private final String name;
 

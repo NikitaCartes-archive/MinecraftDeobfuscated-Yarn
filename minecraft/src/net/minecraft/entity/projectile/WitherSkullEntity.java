@@ -31,12 +31,12 @@ public class WitherSkullEntity extends ExplosiveProjectileEntity {
 	}
 
 	public WitherSkullEntity(World world, LivingEntity livingEntity, double d, double e, double f) {
-		super(EntityType.field_6130, livingEntity, d, e, f, world);
+		super(EntityType.WITHER_SKULL, livingEntity, d, e, f, world);
 	}
 
 	@Environment(EnvType.CLIENT)
 	public WitherSkullEntity(World world, double d, double e, double f, double g, double h, double i) {
-		super(EntityType.field_6130, d, e, f, g, h, i, world);
+		super(EntityType.WITHER_SKULL, d, e, f, g, h, i, world);
 	}
 
 	@Override
@@ -59,7 +59,7 @@ public class WitherSkullEntity extends ExplosiveProjectileEntity {
 	@Override
 	protected void onCollision(HitResult hitResult) {
 		if (!this.world.isClient) {
-			if (hitResult.getType() == HitResult.Type.field_1331) {
+			if (hitResult.getType() == HitResult.Type.ENTITY) {
 				Entity entity = ((EntityHitResult)hitResult).getEntity();
 				if (this.owner != null) {
 					if (entity.damage(DamageSource.mob(this.owner), 8.0F)) {
@@ -75,21 +75,21 @@ public class WitherSkullEntity extends ExplosiveProjectileEntity {
 
 				if (entity instanceof LivingEntity) {
 					int i = 0;
-					if (this.world.getDifficulty() == Difficulty.field_5802) {
+					if (this.world.getDifficulty() == Difficulty.NORMAL) {
 						i = 10;
-					} else if (this.world.getDifficulty() == Difficulty.field_5807) {
+					} else if (this.world.getDifficulty() == Difficulty.HARD) {
 						i = 40;
 					}
 
 					if (i > 0) {
-						((LivingEntity)entity).addPotionEffect(new StatusEffectInstance(StatusEffects.field_5920, 20 * i, 1));
+						((LivingEntity)entity).addPotionEffect(new StatusEffectInstance(StatusEffects.WITHER, 20 * i, 1));
 					}
 				}
 			}
 
-			Explosion.DestructionType destructionType = this.world.getGameRules().getBoolean(GameRules.field_19388)
-				? Explosion.DestructionType.field_18687
-				: Explosion.DestructionType.field_18685;
+			Explosion.DestructionType destructionType = this.world.getGameRules().getBoolean(GameRules.MOB_GRIEFING)
+				? Explosion.DestructionType.DESTROY
+				: Explosion.DestructionType.NONE;
 			this.world.createExplosion(this, this.x, this.y, this.z, 1.0F, false, destructionType);
 			this.remove();
 		}

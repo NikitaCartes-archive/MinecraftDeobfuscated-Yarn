@@ -27,7 +27,7 @@ public abstract class MoveToTargetPosGoal extends Goal {
 		this.range = i;
 		this.lowestY = 0;
 		this.maxYDifference = j;
-		this.setControls(EnumSet.of(Goal.Control.field_18405, Goal.Control.field_18407));
+		this.setControls(EnumSet.of(Goal.Control.MOVE, Goal.Control.JUMP));
 	}
 
 	@Override

@@ -38,24 +38,24 @@ public class BlockItem extends Item {
 	@Override
 	public ActionResult useOnBlock(ItemUsageContext itemUsageContext) {
 		ActionResult actionResult = this.place(new ItemPlacementContext(itemUsageContext));
-		return actionResult != ActionResult.field_5812 && this.isFood()
+		return actionResult != ActionResult.SUCCESS && this.isFood()
 			? this.use(itemUsageContext.world, itemUsageContext.player, itemUsageContext.hand).getResult()
 			: actionResult;
 	}
 
 	public ActionResult place(ItemPlacementContext itemPlacementContext) {
 		if (!itemPlacementContext.canPlace()) {
-			return ActionResult.field_5814;
+			return ActionResult.FAIL;
 		} else {
 			ItemPlacementContext itemPlacementContext2 = this.getPlacementContext(itemPlacementContext);
 			if (itemPlacementContext2 == null) {
-				return ActionResult.field_5814;
+				return ActionResult.FAIL;
 			} else {
 				BlockState blockState = this.getPlacementState(itemPlacementContext2);
 				if (blockState == null) {
-					return ActionResult.field_5814;
+					return ActionResult.FAIL;
 				} else if (!this.place(itemPlacementContext2, blockState)) {
-					return ActionResult.field_5814;
+					return ActionResult.FAIL;
 				} else {
 					BlockPos blockPos = itemPlacementContext2.getBlockPos();
 					World world = itemPlacementContext2.getWorld();
@@ -77,12 +77,12 @@ public class BlockItem extends Item {
 						playerEntity,
 						blockPos,
 						this.getPlaceSound(blockState2),
-						SoundCategory.field_15245,
+						SoundCategory.BLOCKS,
 						(blockSoundGroup.getVolume() + 1.0F) / 2.0F,
 						blockSoundGroup.getPitch() * 0.8F
 					);
 					itemStack.decrement(1);
-					return ActionResult.field_5812;
+					return ActionResult.SUCCESS;
 				}
 			}
 		}

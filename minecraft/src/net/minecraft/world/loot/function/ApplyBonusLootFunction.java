@@ -33,12 +33,12 @@ public class ApplyBonusLootFunction extends ConditionalLootFunction {
 
 	@Override
 	public Set<LootContextParameter<?>> getRequiredParameters() {
-		return ImmutableSet.of(LootContextParameters.field_1229);
+		return ImmutableSet.of(LootContextParameters.TOOL);
 	}
 
 	@Override
 	public ItemStack process(ItemStack itemStack, LootContext lootContext) {
-		ItemStack itemStack2 = lootContext.get(LootContextParameters.field_1229);
+		ItemStack itemStack2 = lootContext.get(LootContextParameters.TOOL);
 		if (itemStack2 != null) {
 			int i = EnchantmentHelper.getLevel(this.enchantment, itemStack2);
 			int j = this.formula.getValue(lootContext.getRandom(), itemStack.getCount(), i);

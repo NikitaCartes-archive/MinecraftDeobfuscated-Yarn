@@ -23,13 +23,13 @@ public class BellBlockEntityRenderer extends BlockEntityRenderer<BellBlockEntity
 		float k = 0.0F;
 		if (bellBlockEntity.isRinging) {
 			float l = MathHelper.sin(h / (float) Math.PI) / (4.0F + h / 3.0F);
-			if (bellBlockEntity.lastSideHit == Direction.field_11043) {
+			if (bellBlockEntity.lastSideHit == Direction.NORTH) {
 				j = -l;
-			} else if (bellBlockEntity.lastSideHit == Direction.field_11035) {
+			} else if (bellBlockEntity.lastSideHit == Direction.SOUTH) {
 				j = l;
-			} else if (bellBlockEntity.lastSideHit == Direction.field_11034) {
+			} else if (bellBlockEntity.lastSideHit == Direction.EAST) {
 				k = -l;
-			} else if (bellBlockEntity.lastSideHit == Direction.field_11039) {
+			} else if (bellBlockEntity.lastSideHit == Direction.WEST) {
 				k = l;
 			}
 		}

@@ -25,18 +25,18 @@ public class AdvancementTabC2SPacket implements Packet<ServerPlayPacketListener>
 
 	@Environment(EnvType.CLIENT)
 	public static AdvancementTabC2SPacket open(Advancement advancement) {
-		return new AdvancementTabC2SPacket(AdvancementTabC2SPacket.Action.field_13024, advancement.getId());
+		return new AdvancementTabC2SPacket(AdvancementTabC2SPacket.Action.OPENED_TAB, advancement.getId());
 	}
 
 	@Environment(EnvType.CLIENT)
 	public static AdvancementTabC2SPacket close() {
-		return new AdvancementTabC2SPacket(AdvancementTabC2SPacket.Action.field_13023, null);
+		return new AdvancementTabC2SPacket(AdvancementTabC2SPacket.Action.CLOSED_SCREEN, null);
 	}
 
 	@Override
 	public void read(PacketByteBuf packetByteBuf) throws IOException {
 		this.action = packetByteBuf.readEnumConstant(AdvancementTabC2SPacket.Action.class);
-		if (this.action == AdvancementTabC2SPacket.Action.field_13024) {
+		if (this.action == AdvancementTabC2SPacket.Action.OPENED_TAB) {
 			this.tabToOpen = packetByteBuf.readIdentifier();
 		}
 	}
@@ -44,7 +44,7 @@ public class AdvancementTabC2SPacket implements Packet<ServerPlayPacketListener>
 	@Override
 	public void write(PacketByteBuf packetByteBuf) throws IOException {
 		packetByteBuf.writeEnumConstant(this.action);
-		if (this.action == AdvancementTabC2SPacket.Action.field_13024) {
+		if (this.action == AdvancementTabC2SPacket.Action.OPENED_TAB) {
 			packetByteBuf.writeIdentifier(this.tabToOpen);
 		}
 	}
@@ -62,7 +62,7 @@ public class AdvancementTabC2SPacket implements Packet<ServerPlayPacketListener>
 	}
 
 	public static enum Action {
-		field_13024,
-		field_13023;
+		OPENED_TAB,
+		CLOSED_SCREEN;
 	}
 }

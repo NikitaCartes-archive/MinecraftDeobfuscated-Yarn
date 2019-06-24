@@ -30,7 +30,7 @@ public class AdvancementToast implements Toast {
 		toastManager.blit(0, 0, 0, 0, 160, 32);
 		if (advancementDisplay != null) {
 			List<String> list = toastManager.getGame().textRenderer.wrapStringToWidthAsList(advancementDisplay.getTitle().asFormattedString(), 125);
-			int i = advancementDisplay.getFrame() == AdvancementFrame.field_1250 ? 16746751 : 16776960;
+			int i = advancementDisplay.getFrame() == AdvancementFrame.CHALLENGE ? 16746751 : 16776960;
 			if (list.size() == 1) {
 				toastManager.getGame().textRenderer.draw(I18n.translate("advancements.toast." + advancementDisplay.getFrame().getId()), 30.0F, 7.0F, i | 0xFF000000);
 				toastManager.getGame().textRenderer.draw(advancementDisplay.getTitle().asFormattedString(), 30.0F, 18.0F, -1);
@@ -53,16 +53,16 @@ public class AdvancementToast implements Toast {
 
 			if (!this.field_2206 && l > 0L) {
 				this.field_2206 = true;
-				if (advancementDisplay.getFrame() == AdvancementFrame.field_1250) {
-					toastManager.getGame().getSoundManager().play(PositionedSoundInstance.master(SoundEvents.field_15195, 1.0F, 1.0F));
+				if (advancementDisplay.getFrame() == AdvancementFrame.CHALLENGE) {
+					toastManager.getGame().getSoundManager().play(PositionedSoundInstance.master(SoundEvents.UI_TOAST_CHALLENGE_COMPLETE, 1.0F, 1.0F));
 				}
 			}
 
 			GuiLighting.enableForItems();
 			toastManager.getGame().getItemRenderer().renderGuiItem(null, advancementDisplay.getIcon(), 8, 8);
-			return l >= 5000L ? Toast.Visibility.field_2209 : Toast.Visibility.field_2210;
+			return l >= 5000L ? Toast.Visibility.HIDE : Toast.Visibility.SHOW;
 		} else {
-			return Toast.Visibility.field_2209;
+			return Toast.Visibility.HIDE;
 		}
 	}
 }

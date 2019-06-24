@@ -79,7 +79,7 @@ public abstract class ChunkLightProvider<M extends WorldNibbleStorage<M>, S exte
 				atomicInteger.set(0);
 			}
 
-			return Blocks.field_10124.getDefaultState();
+			return Blocks.AIR.getDefaultState();
 		} else {
 			int i = ChunkSectionPos.toChunkCoord(BlockPos.unpackLongX(l));
 			int j = ChunkSectionPos.toChunkCoord(BlockPos.unpackLongZ(l));
@@ -89,7 +89,7 @@ public abstract class ChunkLightProvider<M extends WorldNibbleStorage<M>, S exte
 					atomicInteger.set(16);
 				}
 
-				return Blocks.field_9987.getDefaultState();
+				return Blocks.BEDROCK.getDefaultState();
 			} else {
 				this.field_19284.setFromLong(l);
 				BlockState blockState = blockView.getBlockState(this.field_19284);
@@ -98,7 +98,7 @@ public abstract class ChunkLightProvider<M extends WorldNibbleStorage<M>, S exte
 					atomicInteger.set(blockState.getLightSubtracted(this.chunkProvider.getWorld(), this.field_19284));
 				}
 
-				return bl ? blockState : Blocks.field_10124.getDefaultState();
+				return bl ? blockState : Blocks.AIR.getDefaultState();
 			}
 		}
 	}

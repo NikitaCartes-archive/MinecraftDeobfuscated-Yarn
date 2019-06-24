@@ -18,14 +18,14 @@ public class ChestMinecartEntity extends StorageMinecartEntity {
 	}
 
 	public ChestMinecartEntity(World world, double d, double e, double f) {
-		super(EntityType.field_6126, d, e, f, world);
+		super(EntityType.CHEST_MINECART, d, e, f, world);
 	}
 
 	@Override
 	public void dropItems(DamageSource damageSource) {
 		super.dropItems(damageSource);
-		if (this.world.getGameRules().getBoolean(GameRules.field_19393)) {
-			this.dropItem(Blocks.field_10034);
+		if (this.world.getGameRules().getBoolean(GameRules.DO_ENTITY_DROPS)) {
+			this.dropItem(Blocks.CHEST);
 		}
 	}
 
@@ -36,12 +36,12 @@ public class ChestMinecartEntity extends StorageMinecartEntity {
 
 	@Override
 	public AbstractMinecartEntity.Type getMinecartType() {
-		return AbstractMinecartEntity.Type.field_7678;
+		return AbstractMinecartEntity.Type.CHEST;
 	}
 
 	@Override
 	public BlockState getDefaultContainedBlock() {
-		return Blocks.field_10034.getDefaultState().with(ChestBlock.FACING, Direction.field_11043);
+		return Blocks.CHEST.getDefaultState().with(ChestBlock.FACING, Direction.NORTH);
 	}
 
 	@Override

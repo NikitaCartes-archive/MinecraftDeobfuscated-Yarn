@@ -38,7 +38,7 @@ public abstract class AbstractFireballEntity extends ExplosiveProjectileEntity i
 	}
 
 	public void setItem(ItemStack itemStack) {
-		if (itemStack.getItem() != Items.field_8814 || itemStack.hasTag()) {
+		if (itemStack.getItem() != Items.FIRE_CHARGE || itemStack.hasTag()) {
 			this.getDataTracker().set(ITEM, SystemUtil.consume(itemStack.copy(), itemStackx -> itemStackx.setCount(1)));
 		}
 	}
@@ -51,7 +51,7 @@ public abstract class AbstractFireballEntity extends ExplosiveProjectileEntity i
 	@Override
 	public ItemStack getStack() {
 		ItemStack itemStack = this.getItem();
-		return itemStack.isEmpty() ? new ItemStack(Items.field_8814) : itemStack;
+		return itemStack.isEmpty() ? new ItemStack(Items.FIRE_CHARGE) : itemStack;
 	}
 
 	@Override

@@ -12,7 +12,7 @@ public class SayCommand {
 			CommandManager.literal("say")
 				.requires(serverCommandSource -> serverCommandSource.hasPermissionLevel(2))
 				.then(
-					CommandManager.argument("message", MessageArgumentType.create())
+					CommandManager.argument("message", MessageArgumentType.message())
 						.executes(
 							commandContext -> {
 								Text text = MessageArgumentType.getMessage(commandContext, "message");

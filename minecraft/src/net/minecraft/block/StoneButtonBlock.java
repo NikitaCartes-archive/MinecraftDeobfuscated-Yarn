@@ -10,6 +10,6 @@ public class StoneButtonBlock extends AbstractButtonBlock {
 
 	@Override
 	protected SoundEvent getClickSound(boolean bl) {
-		return bl ? SoundEvents.field_14791 : SoundEvents.field_14954;
+		return bl ? SoundEvents.BLOCK_STONE_BUTTON_CLICK_ON : SoundEvents.BLOCK_STONE_BUTTON_CLICK_OFF;
 	}
 }

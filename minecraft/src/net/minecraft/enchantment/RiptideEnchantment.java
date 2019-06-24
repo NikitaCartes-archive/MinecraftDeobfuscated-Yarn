@@ -24,6 +24,6 @@ public class RiptideEnchantment extends Enchantment {
 
 	@Override
 	public boolean differs(Enchantment enchantment) {
-		return super.differs(enchantment) && enchantment != Enchantments.field_9120 && enchantment != Enchantments.field_9117;
+		return super.differs(enchantment) && enchantment != Enchantments.LOYALTY && enchantment != Enchantments.CHANNELING;
 	}
 }

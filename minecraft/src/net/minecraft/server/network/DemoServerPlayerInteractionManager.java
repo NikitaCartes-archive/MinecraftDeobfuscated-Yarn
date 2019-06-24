@@ -91,7 +91,7 @@ public class DemoServerPlayerInteractionManager extends ServerPlayerInteractionM
 	public ActionResult interactItem(PlayerEntity playerEntity, World world, ItemStack itemStack, Hand hand) {
 		if (this.demoEnded) {
 			this.sendDemoReminder();
-			return ActionResult.field_5811;
+			return ActionResult.PASS;
 		} else {
 			return super.interactItem(playerEntity, world, itemStack, hand);
 		}
@@ -101,7 +101,7 @@ public class DemoServerPlayerInteractionManager extends ServerPlayerInteractionM
 	public ActionResult interactBlock(PlayerEntity playerEntity, World world, ItemStack itemStack, Hand hand, BlockHitResult blockHitResult) {
 		if (this.demoEnded) {
 			this.sendDemoReminder();
-			return ActionResult.field_5811;
+			return ActionResult.PASS;
 		} else {
 			return super.interactBlock(playerEntity, world, itemStack, hand, blockHitResult);
 		}

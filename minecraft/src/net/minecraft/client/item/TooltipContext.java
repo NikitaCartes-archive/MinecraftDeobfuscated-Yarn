@@ -9,8 +9,8 @@ public interface TooltipContext {
 
 	@Environment(EnvType.CLIENT)
 	public static enum Default implements TooltipContext {
-		field_8934(false),
-		field_8935(true);
+		NORMAL(false),
+		ADVANCED(true);
 
 		private final boolean advanced;
 

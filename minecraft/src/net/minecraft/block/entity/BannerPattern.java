@@ -45,15 +45,15 @@ public enum BannerPattern {
 	HALF_VERTICAL_MIRROR("half_vertical_right", "vhr", " ##", " ##", " ##"),
 	HALF_HORIZONTAL_MIRROR("half_horizontal_bottom", "hhb", "   ", "###", "###"),
 	BORDER("border", "bo", "###", "# #", "###"),
-	CURLY_BORDER("curly_border", "cbo", new ItemStack(Blocks.field_10597)),
+	CURLY_BORDER("curly_border", "cbo", new ItemStack(Blocks.VINE)),
 	GRADIENT("gradient", "gra", "# #", " # ", " # "),
 	GRADIENT_UP("gradient_up", "gru", " # ", " # ", "# #"),
-	BRICKS("bricks", "bri", new ItemStack(Blocks.field_10104)),
+	BRICKS("bricks", "bri", new ItemStack(Blocks.BRICKS)),
 	GLOBE("globe", "glb"),
 	CREEPER("creeper", "cre", new ItemStack(Items.CREEPER_HEAD)),
 	SKULL("skull", "sku", new ItemStack(Items.WITHER_SKELETON_SKULL)),
-	FLOWER("flower", "flo", new ItemStack(Blocks.field_10554)),
-	MOJANG("mojang", "moj", new ItemStack(Items.field_8367));
+	FLOWER("flower", "flo", new ItemStack(Blocks.OXEYE_DAISY)),
+	MOJANG("mojang", "moj", new ItemStack(Items.ENCHANTED_GOLDEN_APPLE));
 
 	public static final int COUNT = values().length;
 	public static final int field_18283 = COUNT - 5 - 1;

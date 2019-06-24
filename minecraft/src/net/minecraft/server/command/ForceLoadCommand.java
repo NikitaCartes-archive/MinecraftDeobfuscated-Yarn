@@ -37,7 +37,7 @@ public class ForceLoadCommand {
 					CommandManager.literal("add")
 						.requires(serverCommandSource -> serverCommandSource.hasPermissionLevel(4))
 						.then(
-							CommandManager.argument("from", ColumnPosArgumentType.create())
+							CommandManager.argument("from", ColumnPosArgumentType.columnPos())
 								.executes(
 									commandContext -> executeChange(
 											commandContext.getSource(),
@@ -47,7 +47,7 @@ public class ForceLoadCommand {
 										)
 								)
 								.then(
-									CommandManager.argument("to", ColumnPosArgumentType.create())
+									CommandManager.argument("to", ColumnPosArgumentType.columnPos())
 										.executes(
 											commandContext -> executeChange(
 													commandContext.getSource(),
@@ -63,7 +63,7 @@ public class ForceLoadCommand {
 					CommandManager.literal("remove")
 						.requires(serverCommandSource -> serverCommandSource.hasPermissionLevel(4))
 						.then(
-							CommandManager.argument("from", ColumnPosArgumentType.create())
+							CommandManager.argument("from", ColumnPosArgumentType.columnPos())
 								.executes(
 									commandContext -> executeChange(
 											commandContext.getSource(),
@@ -73,7 +73,7 @@ public class ForceLoadCommand {
 										)
 								)
 								.then(
-									CommandManager.argument("to", ColumnPosArgumentType.create())
+									CommandManager.argument("to", ColumnPosArgumentType.columnPos())
 										.executes(
 											commandContext -> executeChange(
 													commandContext.getSource(),
@@ -90,7 +90,7 @@ public class ForceLoadCommand {
 					CommandManager.literal("query")
 						.executes(commandContext -> executeQuery(commandContext.getSource()))
 						.then(
-							CommandManager.argument("pos", ColumnPosArgumentType.create())
+							CommandManager.argument("pos", ColumnPosArgumentType.columnPos())
 								.executes(commandContext -> executeQuery(commandContext.getSource(), ColumnPosArgumentType.getColumnPos(commandContext, "pos")))
 						)
 				)

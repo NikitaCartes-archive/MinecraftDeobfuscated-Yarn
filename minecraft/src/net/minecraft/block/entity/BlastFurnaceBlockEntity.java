@@ -10,7 +10,7 @@ import net.minecraft.text.TranslatableText;
 
 public class BlastFurnaceBlockEntity extends AbstractFurnaceBlockEntity {
 	public BlastFurnaceBlockEntity() {
-		super(BlockEntityType.field_16415, RecipeType.BLASTING);
+		super(BlockEntityType.BLAST_FURNACE, RecipeType.BLASTING);
 	}
 
 	@Override

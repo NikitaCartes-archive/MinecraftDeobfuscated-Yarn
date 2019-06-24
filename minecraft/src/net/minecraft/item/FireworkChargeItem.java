@@ -30,23 +30,23 @@ public class FireworkChargeItem extends Item {
 	@Environment(EnvType.CLIENT)
 	public static void appendFireworkTooltip(CompoundTag compoundTag, List<Text> list) {
 		FireworkItem.Type type = FireworkItem.Type.byId(compoundTag.getByte("Type"));
-		list.add(new TranslatableText("item.minecraft.firework_star.shape." + type.getName()).formatted(Formatting.field_1080));
+		list.add(new TranslatableText("item.minecraft.firework_star.shape." + type.getName()).formatted(Formatting.GRAY));
 		int[] is = compoundTag.getIntArray("Colors");
 		if (is.length > 0) {
-			list.add(appendColors(new LiteralText("").formatted(Formatting.field_1080), is));
+			list.add(appendColors(new LiteralText("").formatted(Formatting.GRAY), is));
 		}
 
 		int[] js = compoundTag.getIntArray("FadeColors");
 		if (js.length > 0) {
-			list.add(appendColors(new TranslatableText("item.minecraft.firework_star.fade_to").append(" ").formatted(Formatting.field_1080), js));
+			list.add(appendColors(new TranslatableText("item.minecraft.firework_star.fade_to").append(" ").formatted(Formatting.GRAY), js));
 		}
 
 		if (compoundTag.getBoolean("Trail")) {
-			list.add(new TranslatableText("item.minecraft.firework_star.trail").formatted(Formatting.field_1080));
+			list.add(new TranslatableText("item.minecraft.firework_star.trail").formatted(Formatting.GRAY));
 		}
 
 		if (compoundTag.getBoolean("Flicker")) {
-			list.add(new TranslatableText("item.minecraft.firework_star.flicker").formatted(Formatting.field_1080));
+			list.add(new TranslatableText("item.minecraft.firework_star.flicker").formatted(Formatting.GRAY));
 		}
 	}
 

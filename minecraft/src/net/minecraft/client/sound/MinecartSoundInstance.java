@@ -15,10 +15,10 @@ public class MinecartSoundInstance extends MovingSoundInstance {
 	private final AbstractMinecartEntity minecart;
 
 	public MinecartSoundInstance(PlayerEntity playerEntity, AbstractMinecartEntity abstractMinecartEntity) {
-		super(SoundEvents.field_14832, SoundCategory.field_15254);
+		super(SoundEvents.ENTITY_MINECART_INSIDE, SoundCategory.NEUTRAL);
 		this.player = playerEntity;
 		this.minecart = abstractMinecartEntity;
-		this.attenuationType = SoundInstance.AttenuationType.field_5478;
+		this.attenuationType = SoundInstance.AttenuationType.NONE;
 		this.repeat = true;
 		this.repeatDelay = 0;
 		this.volume = 0.0F;

@@ -77,7 +77,7 @@ public class IntegratedServer extends MinecraftServer {
 		this.setWorldHeight(256);
 		this.setPlayerManager(new IntegratedPlayerManager(this));
 		this.client = minecraftClient;
-		this.levelInfo = this.isDemo() ? MinecraftServer.WORLD_INFO : levelInfo;
+		this.levelInfo = this.isDemo() ? MinecraftServer.DEMO_LEVEL_INFO : levelInfo;
 	}
 
 	@Override
@@ -95,7 +95,7 @@ public class IntegratedServer extends MinecraftServer {
 		this.loadWorldDataPacks(worldSaveHandler.getWorldDir(), levelProperties);
 		WorldGenerationProgressListener worldGenerationProgressListener = this.worldGenerationProgressListenerFactory.create(11);
 		this.createWorlds(worldSaveHandler, levelProperties, this.levelInfo, worldGenerationProgressListener);
-		if (this.getWorld(DimensionType.field_13072).getLevelProperties().getDifficulty() == null) {
+		if (this.getWorld(DimensionType.OVERWORLD).getLevelProperties().getDifficulty() == null) {
 			this.setDifficulty(this.client.options.difficulty, true);
 		}
 
@@ -113,7 +113,7 @@ public class IntegratedServer extends MinecraftServer {
 		LOGGER.info("Generating keypair");
 		this.setKeyPair(NetworkEncryptionUtils.generateServerKeyPair());
 		this.loadWorld(this.getLevelName(), this.getServerName(), this.levelInfo.getSeed(), this.levelInfo.getGeneratorType(), this.levelInfo.getGeneratorOptions());
-		this.setMotd(this.getUserName() + " - " + this.getWorld(DimensionType.field_13072).getLevelProperties().getLevelName());
+		this.setMotd(this.getUserName() + " - " + this.getWorld(DimensionType.OVERWORLD).getLevelProperties().getLevelName());
 		return true;
 	}
 

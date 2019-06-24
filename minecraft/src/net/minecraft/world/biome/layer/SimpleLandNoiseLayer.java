@@ -1,7 +1,7 @@
 package net.minecraft.world.biome.layer;
 
 public enum SimpleLandNoiseLayer implements IdentitySamplingLayer {
-	field_16157;
+	INSTANCE;
 
 	@Override
 	public int sample(LayerRandomnessSource layerRandomnessSource, int i) {

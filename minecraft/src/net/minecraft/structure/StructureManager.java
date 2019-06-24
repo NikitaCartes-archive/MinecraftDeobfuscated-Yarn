@@ -151,7 +151,7 @@ public class StructureManager implements SynchronousResourceReloadListener {
 		}
 
 		Structure structure = new Structure();
-		structure.fromTag(TagHelper.update(this.dataFixer, DataFixTypes.field_19217, compoundTag, compoundTag.getInt("DataVersion")));
+		structure.fromTag(TagHelper.update(this.dataFixer, DataFixTypes.STRUCTURE, compoundTag, compoundTag.getInt("DataVersion")));
 		return structure;
 	}
 

@@ -37,12 +37,12 @@ public abstract class AbstractTreeFeature<T extends FeatureConfig> extends Featu
 			blockState -> {
 				Block block = blockState.getBlock();
 				return blockState.isAir()
-					|| blockState.matches(BlockTags.field_15503)
-					|| block == Blocks.field_10219
+					|| blockState.matches(BlockTags.LEAVES)
+					|| block == Blocks.GRASS_BLOCK
 					|| Block.isNaturalDirt(block)
-					|| block.matches(BlockTags.field_15475)
-					|| block.matches(BlockTags.field_15462)
-					|| block == Blocks.field_10597;
+					|| block.matches(BlockTags.LOGS)
+					|| block.matches(BlockTags.SAPLINGS)
+					|| block == Blocks.VINE;
 			}
 		);
 	}
@@ -56,28 +56,28 @@ public abstract class AbstractTreeFeature<T extends FeatureConfig> extends Featu
 	}
 
 	protected static boolean isWater(TestableWorld testableWorld, BlockPos blockPos) {
-		return testableWorld.testBlockState(blockPos, blockState -> blockState.getBlock() == Blocks.field_10382);
+		return testableWorld.testBlockState(blockPos, blockState -> blockState.getBlock() == Blocks.WATER);
 	}
 
 	protected static boolean isLeaves(TestableWorld testableWorld, BlockPos blockPos) {
-		return testableWorld.testBlockState(blockPos, blockState -> blockState.matches(BlockTags.field_15503));
+		return testableWorld.testBlockState(blockPos, blockState -> blockState.matches(BlockTags.LEAVES));
 	}
 
 	protected static boolean isAirOrLeaves(TestableWorld testableWorld, BlockPos blockPos) {
-		return testableWorld.testBlockState(blockPos, blockState -> blockState.isAir() || blockState.matches(BlockTags.field_15503));
+		return testableWorld.testBlockState(blockPos, blockState -> blockState.isAir() || blockState.matches(BlockTags.LEAVES));
 	}
 
 	protected static boolean isNaturalDirtOrGrass(TestableWorld testableWorld, BlockPos blockPos) {
 		return testableWorld.testBlockState(blockPos, blockState -> {
 			Block block = blockState.getBlock();
-			return Block.isNaturalDirt(block) || block == Blocks.field_10219;
+			return Block.isNaturalDirt(block) || block == Blocks.GRASS_BLOCK;
 		});
 	}
 
 	protected static boolean isDirtOrGrass(TestableWorld testableWorld, BlockPos blockPos) {
 		return testableWorld.testBlockState(blockPos, blockState -> {
 			Block block = blockState.getBlock();
-			return Block.isNaturalDirt(block) || block == Blocks.field_10219 || block == Blocks.field_10362;
+			return Block.isNaturalDirt(block) || block == Blocks.GRASS_BLOCK || block == Blocks.FARMLAND;
 		});
 	}
 
@@ -90,7 +90,7 @@ public abstract class AbstractTreeFeature<T extends FeatureConfig> extends Featu
 
 	protected void setToDirt(ModifiableTestableWorld modifiableTestableWorld, BlockPos blockPos) {
 		if (!isNaturalDirt(modifiableTestableWorld, blockPos)) {
-			this.setBlockState(modifiableTestableWorld, blockPos, Blocks.field_10566.getDefaultState());
+			this.setBlockState(modifiableTestableWorld, blockPos, Blocks.DIRT.getDefaultState());
 		}
 	}
 
@@ -104,7 +104,7 @@ public abstract class AbstractTreeFeature<T extends FeatureConfig> extends Featu
 	) {
 		this.setBlockStateWithoutUpdatingNeighbors(modifiableWorld, blockPos, blockState);
 		mutableIntBoundingBox.setFrom(new MutableIntBoundingBox(blockPos, blockPos));
-		if (BlockTags.field_15475.contains(blockState.getBlock())) {
+		if (BlockTags.LOGS.contains(blockState.getBlock())) {
 			set.add(blockPos.toImmutable());
 		}
 	}

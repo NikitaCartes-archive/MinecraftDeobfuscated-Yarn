@@ -1,7 +1,7 @@
 package net.minecraft.world.biome.layer;
 
 public enum SmoothenShorelineLayer implements CrossSamplingLayer {
-	field_16171;
+	INSTANCE;
 
 	@Override
 	public int sample(LayerRandomnessSource layerRandomnessSource, int i, int j, int k, int l, int m) {

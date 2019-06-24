@@ -128,15 +128,15 @@ public abstract class AbstractTraderEntity extends PassiveEntity implements Npc,
 
 	@Override
 	public SoundEvent method_18010() {
-		return SoundEvents.field_14815;
+		return SoundEvents.ENTITY_VILLAGER_YES;
 	}
 
 	protected SoundEvent getTradingSound(boolean bl) {
-		return bl ? SoundEvents.field_14815 : SoundEvents.field_15008;
+		return bl ? SoundEvents.ENTITY_VILLAGER_YES : SoundEvents.ENTITY_VILLAGER_NO;
 	}
 
 	public void playCelebrateSound() {
-		this.playSound(SoundEvents.field_19152, this.getSoundVolume(), this.getSoundPitch());
+		this.playSound(SoundEvents.ENTITY_VILLAGER_CELEBRATE, this.getSoundVolume(), this.getSoundPitch());
 	}
 
 	@Override

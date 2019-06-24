@@ -119,7 +119,7 @@ public class ChunkRendererRegion implements ExtendedBlockView {
 	@Nullable
 	@Override
 	public BlockEntity getBlockEntity(BlockPos blockPos) {
-		return this.getBlockEntity(blockPos, WorldChunk.CreationType.field_12860);
+		return this.getBlockEntity(blockPos, WorldChunk.CreationType.IMMEDIATE);
 	}
 
 	@Nullable

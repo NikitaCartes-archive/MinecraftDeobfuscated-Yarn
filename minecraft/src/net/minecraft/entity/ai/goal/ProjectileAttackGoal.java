@@ -33,7 +33,7 @@ public class ProjectileAttackGoal extends Goal {
 			this.field_6577 = j;
 			this.maxShootRange = f;
 			this.squaredMaxShootRange = f * f;
-			this.setControls(EnumSet.of(Goal.Control.field_18405, Goal.Control.field_18406));
+			this.setControls(EnumSet.of(Goal.Control.MOVE, Goal.Control.LOOK));
 		}
 	}
 

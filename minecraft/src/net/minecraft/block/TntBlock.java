@@ -76,7 +76,7 @@ public class TntBlock extends Block {
 				world, (double)((float)blockPos.getX() + 0.5F), (double)blockPos.getY(), (double)((float)blockPos.getZ() + 0.5F), livingEntity
 			);
 			world.spawnEntity(tntEntity);
-			world.playSound(null, tntEntity.x, tntEntity.y, tntEntity.z, SoundEvents.field_15079, SoundCategory.field_15245, 1.0F, 1.0F);
+			world.playSound(null, tntEntity.x, tntEntity.y, tntEntity.z, SoundEvents.ENTITY_TNT_PRIMED, SoundCategory.BLOCKS, 1.0F, 1.0F);
 		}
 	}
 
@@ -84,12 +84,12 @@ public class TntBlock extends Block {
 	public boolean activate(BlockState blockState, World world, BlockPos blockPos, PlayerEntity playerEntity, Hand hand, BlockHitResult blockHitResult) {
 		ItemStack itemStack = playerEntity.getStackInHand(hand);
 		Item item = itemStack.getItem();
-		if (item != Items.field_8884 && item != Items.field_8814) {
+		if (item != Items.FLINT_AND_STEEL && item != Items.FIRE_CHARGE) {
 			return super.activate(blockState, world, blockPos, playerEntity, hand, blockHitResult);
 		} else {
 			primeTnt(world, blockPos, playerEntity);
-			world.setBlockState(blockPos, Blocks.field_10124.getDefaultState(), 11);
-			if (item == Items.field_8884) {
+			world.setBlockState(blockPos, Blocks.AIR.getDefaultState(), 11);
+			if (item == Items.FLINT_AND_STEEL) {
 				itemStack.damage(1, playerEntity, playerEntityx -> playerEntityx.sendToolBreakStatus(hand));
 			} else {
 				itemStack.decrement(1);

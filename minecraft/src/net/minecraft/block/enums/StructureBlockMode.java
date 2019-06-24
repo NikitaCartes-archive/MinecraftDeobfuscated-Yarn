@@ -3,10 +3,10 @@ package net.minecraft.block.enums;
 import net.minecraft.util.StringIdentifiable;
 
 public enum StructureBlockMode implements StringIdentifiable {
-	field_12695("save"),
-	field_12697("load"),
-	field_12699("corner"),
-	field_12696("data");
+	SAVE("save"),
+	LOAD("load"),
+	CORNER("corner"),
+	DATA("data");
 
 	private final String name;
 

@@ -21,7 +21,7 @@ public class MooshroomMushroomFeatureRenderer<T extends MooshroomEntity> extends
 			BlockState blockState = mooshroomEntity.getMooshroomType().getMushroomState();
 			this.bindTexture(SpriteAtlasTexture.BLOCK_ATLAS_TEX);
 			GlStateManager.enableCull();
-			GlStateManager.cullFace(GlStateManager.FaceSides.field_5068);
+			GlStateManager.cullFace(GlStateManager.FaceSides.FRONT);
 			GlStateManager.pushMatrix();
 			GlStateManager.scalef(1.0F, -1.0F, 1.0F);
 			GlStateManager.translatef(0.2F, 0.35F, 0.5F);
@@ -46,7 +46,7 @@ public class MooshroomMushroomFeatureRenderer<T extends MooshroomEntity> extends
 			GlStateManager.translatef(-0.5F, -0.5F, 0.5F);
 			blockRenderManager.renderDynamic(blockState, 1.0F);
 			GlStateManager.popMatrix();
-			GlStateManager.cullFace(GlStateManager.FaceSides.field_5070);
+			GlStateManager.cullFace(GlStateManager.FaceSides.BACK);
 			GlStateManager.disableCull();
 		}
 	}

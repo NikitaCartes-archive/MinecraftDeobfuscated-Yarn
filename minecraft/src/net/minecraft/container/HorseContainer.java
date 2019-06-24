@@ -24,7 +24,7 @@ public class HorseContainer extends Container {
 		this.addSlot(new Slot(inventory, 0, 8, 18) {
 			@Override
 			public boolean canInsert(ItemStack itemStack) {
-				return itemStack.getItem() == Items.field_8175 && !this.hasStack() && horseBaseEntity.canBeSaddled();
+				return itemStack.getItem() == Items.SADDLE && !this.hasStack() && horseBaseEntity.canBeSaddled();
 			}
 
 			@Environment(EnvType.CLIENT)

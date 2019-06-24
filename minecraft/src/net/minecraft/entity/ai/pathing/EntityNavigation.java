@@ -253,7 +253,7 @@ public abstract class EntityNavigation {
 				PathNode pathNode2 = i + 1 < this.currentPath.getLength() ? this.currentPath.getNode(i + 1) : null;
 				BlockState blockState = this.world.getBlockState(new BlockPos(pathNode.x, pathNode.y, pathNode.z));
 				Block block = blockState.getBlock();
-				if (block == Blocks.field_10593) {
+				if (block == Blocks.CAULDRON) {
 					this.currentPath.setNode(i, pathNode.copyWithNewPosition(pathNode.x, pathNode.y + 1, pathNode.z));
 					if (pathNode2 != null && pathNode.y >= pathNode2.y) {
 						this.currentPath.setNode(i + 1, pathNode2.copyWithNewPosition(pathNode2.x, pathNode.y + 1, pathNode2.z));

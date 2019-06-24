@@ -21,7 +21,7 @@ public class BeaconBlock extends BlockWithEntity implements ColoredBlock {
 
 	@Override
 	public DyeColor getColor() {
-		return DyeColor.field_7952;
+		return DyeColor.WHITE;
 	}
 
 	@Override
@@ -37,7 +37,7 @@ public class BeaconBlock extends BlockWithEntity implements ColoredBlock {
 			BlockEntity blockEntity = world.getBlockEntity(blockPos);
 			if (blockEntity instanceof BeaconBlockEntity) {
 				playerEntity.openContainer((BeaconBlockEntity)blockEntity);
-				playerEntity.incrementStat(Stats.field_15416);
+				playerEntity.incrementStat(Stats.INTERACT_WITH_BEACON);
 			}
 
 			return true;
@@ -51,7 +51,7 @@ public class BeaconBlock extends BlockWithEntity implements ColoredBlock {
 
 	@Override
 	public BlockRenderType getRenderType(BlockState blockState) {
-		return BlockRenderType.field_11458;
+		return BlockRenderType.MODEL;
 	}
 
 	@Override
@@ -66,6 +66,6 @@ public class BeaconBlock extends BlockWithEntity implements ColoredBlock {
 
 	@Override
 	public BlockRenderLayer getRenderLayer() {
-		return BlockRenderLayer.field_9174;
+		return BlockRenderLayer.CUTOUT;
 	}
 }

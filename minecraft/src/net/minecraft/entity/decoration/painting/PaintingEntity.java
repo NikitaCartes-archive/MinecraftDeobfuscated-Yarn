@@ -30,7 +30,7 @@ public class PaintingEntity extends AbstractDecorationEntity {
 	}
 
 	public PaintingEntity(World world, BlockPos blockPos, Direction direction) {
-		super(EntityType.field_6120, world, blockPos);
+		super(EntityType.PAINTING, world, blockPos);
 		List<PaintingMotive> list = Lists.<PaintingMotive>newArrayList();
 		int i = 0;
 
@@ -93,8 +93,8 @@ public class PaintingEntity extends AbstractDecorationEntity {
 
 	@Override
 	public void onBreak(@Nullable Entity entity) {
-		if (this.world.getGameRules().getBoolean(GameRules.field_19393)) {
-			this.playSound(SoundEvents.field_14809, 1.0F, 1.0F);
+		if (this.world.getGameRules().getBoolean(GameRules.DO_ENTITY_DROPS)) {
+			this.playSound(SoundEvents.ENTITY_PAINTING_BREAK, 1.0F, 1.0F);
 			if (entity instanceof PlayerEntity) {
 				PlayerEntity playerEntity = (PlayerEntity)entity;
 				if (playerEntity.abilities.creativeMode) {
@@ -102,13 +102,13 @@ public class PaintingEntity extends AbstractDecorationEntity {
 				}
 			}
 
-			this.dropItem(Items.field_8892);
+			this.dropItem(Items.PAINTING);
 		}
 	}
 
 	@Override
 	public void onPlace() {
-		this.playSound(SoundEvents.field_14875, 1.0F, 1.0F);
+		this.playSound(SoundEvents.ENTITY_PAINTING_PLACE, 1.0F, 1.0F);
 	}
 
 	@Override
@@ -118,7 +118,7 @@ public class PaintingEntity extends AbstractDecorationEntity {
 
 	@Environment(EnvType.CLIENT)
 	@Override
-	public void setPositionAndRotations(double d, double e, double f, float g, float h, int i, boolean bl) {
+	public void updateTrackedPositionAndAngles(double d, double e, double f, float g, float h, int i, boolean bl) {
 		BlockPos blockPos = this.blockPos.add(d - this.x, e - this.y, f - this.z);
 		this.setPosition((double)blockPos.getX(), (double)blockPos.getY(), (double)blockPos.getZ());
 	}

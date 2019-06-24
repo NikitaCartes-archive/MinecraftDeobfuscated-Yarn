@@ -5,11 +5,11 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 public enum EntityCategory {
-	field_6302("monster", 70, false, false),
-	field_6294("creature", 10, true, true),
-	field_6303("ambient", 15, true, false),
-	field_6300("water_creature", 15, true, false),
-	field_17715("misc", 15, true, false);
+	MONSTER("monster", 70, false, false),
+	CREATURE("creature", 10, true, true),
+	AMBIENT("ambient", 15, true, false),
+	WATER_CREATURE("water_creature", 15, true, false),
+	MISC("misc", 15, true, false);
 
 	private static final Map<String, EntityCategory> BY_NAME = (Map<String, EntityCategory>)Arrays.stream(values())
 		.collect(Collectors.toMap(EntityCategory::getName, entityCategory -> entityCategory));

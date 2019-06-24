@@ -30,7 +30,7 @@ public class EndGatewayFeature extends Feature<EndGatewayFeatureConfig> {
 			boolean bl4 = Math.abs(blockPos2.getY() - blockPos.getY()) == 2;
 			if (bl && bl2 && bl3) {
 				BlockPos blockPos3 = blockPos2.toImmutable();
-				this.setBlockState(iWorld, blockPos3, Blocks.field_10613.getDefaultState());
+				this.setBlockState(iWorld, blockPos3, Blocks.END_GATEWAY.getDefaultState());
 				endGatewayFeatureConfig.getExitPos().ifPresent(blockPos2x -> {
 					BlockEntity blockEntity = iWorld.getBlockEntity(blockPos3);
 					if (blockEntity instanceof EndGatewayBlockEntity) {
@@ -40,13 +40,13 @@ public class EndGatewayFeature extends Feature<EndGatewayFeatureConfig> {
 					}
 				});
 			} else if (bl2) {
-				this.setBlockState(iWorld, blockPos2, Blocks.field_10124.getDefaultState());
+				this.setBlockState(iWorld, blockPos2, Blocks.AIR.getDefaultState());
 			} else if (bl4 && bl && bl3) {
-				this.setBlockState(iWorld, blockPos2, Blocks.field_9987.getDefaultState());
+				this.setBlockState(iWorld, blockPos2, Blocks.BEDROCK.getDefaultState());
 			} else if ((bl || bl3) && !bl4) {
-				this.setBlockState(iWorld, blockPos2, Blocks.field_9987.getDefaultState());
+				this.setBlockState(iWorld, blockPos2, Blocks.BEDROCK.getDefaultState());
 			} else {
-				this.setBlockState(iWorld, blockPos2, Blocks.field_10124.getDefaultState());
+				this.setBlockState(iWorld, blockPos2, Blocks.AIR.getDefaultState());
 			}
 		}
 

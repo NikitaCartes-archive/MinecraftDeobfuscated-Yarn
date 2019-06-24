@@ -138,15 +138,15 @@ public class SystemUtil {
 		if (string.contains("win")) {
 			return SystemUtil.OperatingSystem.WINDOWS;
 		} else if (string.contains("mac")) {
-			return SystemUtil.OperatingSystem.MAC;
+			return SystemUtil.OperatingSystem.OSX;
 		} else if (string.contains("solaris")) {
-			return SystemUtil.OperatingSystem.field_1134;
+			return SystemUtil.OperatingSystem.SOLARIS;
 		} else if (string.contains("sunos")) {
-			return SystemUtil.OperatingSystem.field_1134;
+			return SystemUtil.OperatingSystem.SOLARIS;
 		} else if (string.contains("linux")) {
-			return SystemUtil.OperatingSystem.field_1135;
+			return SystemUtil.OperatingSystem.LINUX;
 		} else {
-			return string.contains("unix") ? SystemUtil.OperatingSystem.field_1135 : SystemUtil.OperatingSystem.field_1132;
+			return string.contains("unix") ? SystemUtil.OperatingSystem.LINUX : SystemUtil.OperatingSystem.UNKNOWN;
 		}
 	}
 
@@ -207,7 +207,7 @@ public class SystemUtil {
 	}
 
 	public static <K> Strategy<K> identityHashStrategy() {
-		return SystemUtil.IdentityHashStrategy.field_1130;
+		return SystemUtil.IdentityHashStrategy.INSTANCE;
 	}
 
 	public static <V> CompletableFuture<List<V>> thenCombine(List<? extends CompletableFuture<? extends V>> list) {
@@ -258,7 +258,7 @@ public class SystemUtil {
 	}
 
 	static enum IdentityHashStrategy implements Strategy<Object> {
-		field_1130;
+		INSTANCE;
 
 		@Override
 		public int hashCode(Object object) {
@@ -272,8 +272,8 @@ public class SystemUtil {
 	}
 
 	public static enum OperatingSystem {
-		field_1135,
-		field_1134,
+		LINUX,
+		SOLARIS,
 		WINDOWS {
 			@Environment(EnvType.CLIENT)
 			@Override
@@ -281,14 +281,14 @@ public class SystemUtil {
 				return new String[]{"rundll32", "url.dll,FileProtocolHandler", uRL.toString()};
 			}
 		},
-		MAC {
+		OSX {
 			@Environment(EnvType.CLIENT)
 			@Override
 			protected String[] getURLOpenCommand(URL uRL) {
 				return new String[]{"open", uRL.toString()};
 			}
 		},
-		field_1132;
+		UNKNOWN;
 
 		private OperatingSystem() {
 		}

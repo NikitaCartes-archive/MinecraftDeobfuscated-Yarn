@@ -18,7 +18,7 @@ public class MoveToRaidCenterGoal<T extends RaiderEntity> extends Goal {
 
 	public MoveToRaidCenterGoal(T raiderEntity) {
 		this.actor = raiderEntity;
-		this.setControls(EnumSet.of(Goal.Control.field_18405));
+		this.setControls(EnumSet.of(Goal.Control.MOVE));
 	}
 
 	@Override
@@ -53,7 +53,7 @@ public class MoveToRaidCenterGoal<T extends RaiderEntity> extends Goal {
 				vec3d = vec3d3.multiply(0.4).add(vec3d);
 				Vec3d vec3d4 = vec3d.subtract(vec3d2).normalize().multiply(10.0).add(vec3d2);
 				BlockPos blockPos = new BlockPos(vec3d4);
-				blockPos = this.actor.world.getTopPosition(Heightmap.Type.field_13203, blockPos);
+				blockPos = this.actor.world.getTopPosition(Heightmap.Type.MOTION_BLOCKING_NO_LEAVES, blockPos);
 				if (!this.actor.getNavigation().startMovingTo((double)blockPos.getX(), (double)blockPos.getY(), (double)blockPos.getZ(), 1.0)) {
 					this.moveToAlternativePosition();
 				}
@@ -83,7 +83,7 @@ public class MoveToRaidCenterGoal<T extends RaiderEntity> extends Goal {
 		Random random = this.actor.getRand();
 		BlockPos blockPos = this.actor
 			.world
-			.getTopPosition(Heightmap.Type.field_13203, new BlockPos(this.actor).add(-8 + random.nextInt(16), 0, -8 + random.nextInt(16)));
+			.getTopPosition(Heightmap.Type.MOTION_BLOCKING_NO_LEAVES, new BlockPos(this.actor).add(-8 + random.nextInt(16), 0, -8 + random.nextInt(16)));
 		this.actor.getNavigation().startMovingTo((double)blockPos.getX(), (double)blockPos.getY(), (double)blockPos.getZ(), 1.0);
 	}
 }

@@ -188,7 +188,7 @@ public class ItemRenderer implements SynchronousResourceReloadListener {
 	public BakedModel getHeldItemModel(ItemStack itemStack, World world, LivingEntity livingEntity) {
 		Item item = itemStack.getItem();
 		BakedModel bakedModel;
-		if (item == Items.field_8547) {
+		if (item == Items.TRIDENT) {
 			bakedModel = this.models.getModelManager().getModel(new ModelIdentifier("minecraft:trident_in_hand#inventory"));
 		} else {
 			bakedModel = this.models.getModel(itemStack);
@@ -228,11 +228,11 @@ public class ItemRenderer implements SynchronousResourceReloadListener {
 			ModelTransformation modelTransformation = bakedModel.getTransformation();
 			ModelTransformation.applyGl(modelTransformation.getTransformation(type), bl);
 			if (this.areFacesFlippedBy(modelTransformation.getTransformation(type))) {
-				GlStateManager.cullFace(GlStateManager.FaceSides.field_5068);
+				GlStateManager.cullFace(GlStateManager.FaceSides.FRONT);
 			}
 
 			this.renderItemAndGlow(itemStack, bakedModel);
-			GlStateManager.cullFace(GlStateManager.FaceSides.field_5070);
+			GlStateManager.cullFace(GlStateManager.FaceSides.BACK);
 			GlStateManager.popMatrix();
 			GlStateManager.disableRescaleNormal();
 			GlStateManager.disableBlend();
@@ -260,7 +260,7 @@ public class ItemRenderer implements SynchronousResourceReloadListener {
 		GlStateManager.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA);
 		GlStateManager.color4f(1.0F, 1.0F, 1.0F, 1.0F);
 		this.prepareGuiItemRender(i, j, bakedModel.hasDepthInGui());
-		bakedModel.getTransformation().applyGl(ModelTransformation.Type.field_4317);
+		bakedModel.getTransformation().applyGl(ModelTransformation.Type.GUI);
 		this.renderItemAndGlow(itemStack, bakedModel);
 		GlStateManager.disableAlphaTest();
 		GlStateManager.disableRescaleNormal();

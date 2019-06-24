@@ -19,10 +19,10 @@ import net.minecraft.world.Heightmap;
 
 public class StructurePool {
 	public static final StructurePool EMPTY = new StructurePool(
-		new Identifier("empty"), new Identifier("empty"), ImmutableList.of(), StructurePool.Projection.field_16687
+		new Identifier("empty"), new Identifier("empty"), ImmutableList.of(), StructurePool.Projection.RIGID
 	);
 	public static final StructurePool INVALID = new StructurePool(
-		new Identifier("invalid"), new Identifier("invalid"), ImmutableList.of(), StructurePool.Projection.field_16687
+		new Identifier("invalid"), new Identifier("invalid"), ImmutableList.of(), StructurePool.Projection.RIGID
 	);
 	private final Identifier id;
 	private final ImmutableList<Pair<StructurePoolElement, Integer>> elementCounts;
@@ -50,7 +50,7 @@ public class StructurePool {
 		if (this.field_18707 == Integer.MIN_VALUE) {
 			this.field_18707 = this.elements
 				.stream()
-				.mapToInt(structurePoolElement -> structurePoolElement.getBoundingBox(structureManager, BlockPos.ORIGIN, BlockRotation.field_11467).getBlockCountY())
+				.mapToInt(structurePoolElement -> structurePoolElement.getBoundingBox(structureManager, BlockPos.ORIGIN, BlockRotation.NONE).getBlockCountY())
 				.max()
 				.orElse(0);
 		}
@@ -79,8 +79,8 @@ public class StructurePool {
 	}
 
 	public static enum Projection {
-		field_16686("terrain_matching", ImmutableList.of(new GravityStructureProcessor(Heightmap.Type.field_13194, -1))),
-		field_16687("rigid", ImmutableList.of());
+		TERRAIN_MATCHING("terrain_matching", ImmutableList.of(new GravityStructureProcessor(Heightmap.Type.WORLD_SURFACE_WG, -1))),
+		RIGID("rigid", ImmutableList.of());
 
 		private static final Map<String, StructurePool.Projection> PROJECTIONS_BY_ID = (Map<String, StructurePool.Projection>)Arrays.stream(values())
 			.collect(Collectors.toMap(StructurePool.Projection::getId, projection -> projection));

@@ -5,24 +5,24 @@ import net.minecraft.world.biome.Biome;
 import net.minecraft.world.biome.Biomes;
 
 public enum EaseBiomeEdgeLayer implements CrossSamplingLayer {
-	field_16091;
+	INSTANCE;
 
-	private static final int DESERT_ID = Registry.BIOME.getRawId(Biomes.field_9424);
-	private static final int MOUNTAINS_ID = Registry.BIOME.getRawId(Biomes.field_9472);
-	private static final int WOODED_MOUNTAINS_ID = Registry.BIOME.getRawId(Biomes.field_9460);
-	private static final int SNOWY_TUNDRA_ID = Registry.BIOME.getRawId(Biomes.field_9452);
-	private static final int JUNGLE_ID = Registry.BIOME.getRawId(Biomes.field_9417);
-	private static final int BAMBOO_JUNGLE_ID = Registry.BIOME.getRawId(Biomes.field_9440);
-	private static final int JUNGLE_EDGE_ID = Registry.BIOME.getRawId(Biomes.field_9474);
-	private static final int BALDANDS_ID = Registry.BIOME.getRawId(Biomes.field_9415);
-	private static final int BADLANDS_PLATEAU_ID = Registry.BIOME.getRawId(Biomes.field_9433);
-	private static final int WOODED_BADLANDS_PLATEAU_ID = Registry.BIOME.getRawId(Biomes.field_9410);
-	private static final int PLAINS_ID = Registry.BIOME.getRawId(Biomes.field_9451);
-	private static final int GIANT_TREE_TAIGA_ID = Registry.BIOME.getRawId(Biomes.field_9477);
-	private static final int MOUNTAIN_EDGE_ID = Registry.BIOME.getRawId(Biomes.field_9464);
-	private static final int SWAMP_ID = Registry.BIOME.getRawId(Biomes.field_9471);
-	private static final int TAIGA_ID = Registry.BIOME.getRawId(Biomes.field_9420);
-	private static final int SNOWY_TAIGA_ID = Registry.BIOME.getRawId(Biomes.field_9454);
+	private static final int DESERT_ID = Registry.BIOME.getRawId(Biomes.DESERT);
+	private static final int MOUNTAINS_ID = Registry.BIOME.getRawId(Biomes.MOUNTAINS);
+	private static final int WOODED_MOUNTAINS_ID = Registry.BIOME.getRawId(Biomes.WOODED_MOUNTAINS);
+	private static final int SNOWY_TUNDRA_ID = Registry.BIOME.getRawId(Biomes.SNOWY_TUNDRA);
+	private static final int JUNGLE_ID = Registry.BIOME.getRawId(Biomes.JUNGLE);
+	private static final int BAMBOO_JUNGLE_ID = Registry.BIOME.getRawId(Biomes.BAMBOO_JUNGLE);
+	private static final int JUNGLE_EDGE_ID = Registry.BIOME.getRawId(Biomes.JUNGLE_EDGE);
+	private static final int BALDANDS_ID = Registry.BIOME.getRawId(Biomes.BADLANDS);
+	private static final int BADLANDS_PLATEAU_ID = Registry.BIOME.getRawId(Biomes.BADLANDS_PLATEAU);
+	private static final int WOODED_BADLANDS_PLATEAU_ID = Registry.BIOME.getRawId(Biomes.WOODED_BADLANDS_PLATEAU);
+	private static final int PLAINS_ID = Registry.BIOME.getRawId(Biomes.PLAINS);
+	private static final int GIANT_TREE_TAIGA_ID = Registry.BIOME.getRawId(Biomes.GIANT_TREE_TAIGA);
+	private static final int MOUNTAIN_EDGE_ID = Registry.BIOME.getRawId(Biomes.MOUNTAIN_EDGE);
+	private static final int SWAMP_ID = Registry.BIOME.getRawId(Biomes.SWAMP);
+	private static final int TAIGA_ID = Registry.BIOME.getRawId(Biomes.TAIGA);
+	private static final int SNOWY_TAIGA_ID = Registry.BIOME.getRawId(Biomes.SNOWY_TAIGA);
 
 	@Override
 	public int sample(LayerRandomnessSource layerRandomnessSource, int i, int j, int k, int l, int m) {
@@ -106,9 +106,7 @@ public enum EaseBiomeEdgeLayer implements CrossSamplingLayer {
 			if (biome != null && biome2 != null) {
 				Biome.TemperatureGroup temperatureGroup = biome.getTemperatureGroup();
 				Biome.TemperatureGroup temperatureGroup2 = biome2.getTemperatureGroup();
-				return temperatureGroup == temperatureGroup2
-					|| temperatureGroup == Biome.TemperatureGroup.field_9375
-					|| temperatureGroup2 == Biome.TemperatureGroup.field_9375;
+				return temperatureGroup == temperatureGroup2 || temperatureGroup == Biome.TemperatureGroup.MEDIUM || temperatureGroup2 == Biome.TemperatureGroup.MEDIUM;
 			} else {
 				return false;
 			}

@@ -42,9 +42,9 @@ public class RayTraceContext {
 	}
 
 	public static enum FluidHandling {
-		field_1348(fluidState -> false),
-		field_1345(FluidState::isStill),
-		field_1347(fluidState -> !fluidState.isEmpty());
+		NONE(fluidState -> false),
+		SOURCE_ONLY(FluidState::isStill),
+		ANY(fluidState -> !fluidState.isEmpty());
 
 		private final Predicate<FluidState> predicate;
 
@@ -62,8 +62,8 @@ public class RayTraceContext {
 	}
 
 	public static enum ShapeType implements RayTraceContext.ShapeProvider {
-		field_17558(BlockState::getCollisionShape),
-		field_17559(BlockState::getOutlineShape);
+		COLLIDER(BlockState::getCollisionShape),
+		OUTLINE(BlockState::getOutlineShape);
 
 		private final RayTraceContext.ShapeProvider provider;
 

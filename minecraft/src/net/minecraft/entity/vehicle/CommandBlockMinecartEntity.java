@@ -30,7 +30,7 @@ public class CommandBlockMinecartEntity extends AbstractMinecartEntity {
 	}
 
 	public CommandBlockMinecartEntity(World world, double d, double e, double f) {
-		super(EntityType.field_6136, world, d, e, f);
+		super(EntityType.COMMAND_BLOCK_MINECART, world, d, e, f);
 	}
 
 	@Override
@@ -56,12 +56,12 @@ public class CommandBlockMinecartEntity extends AbstractMinecartEntity {
 
 	@Override
 	public AbstractMinecartEntity.Type getMinecartType() {
-		return AbstractMinecartEntity.Type.field_7681;
+		return AbstractMinecartEntity.Type.COMMAND_BLOCK;
 	}
 
 	@Override
 	public BlockState getDefaultContainedBlock() {
-		return Blocks.field_10525.getDefaultState();
+		return Blocks.COMMAND_BLOCK.getDefaultState();
 	}
 
 	public CommandBlockExecutor getCommandExecutor() {

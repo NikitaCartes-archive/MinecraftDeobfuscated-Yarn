@@ -9,7 +9,7 @@ import net.minecraft.text.TranslatableText;
 public enum ResourcePackCompatibility {
 	TOO_OLD("old"),
 	TOO_NEW("new"),
-	field_14224("compatible");
+	COMPATIBLE("compatible");
 
 	private final Text notification;
 	private final Text confirmMessage;
@@ -20,14 +20,14 @@ public enum ResourcePackCompatibility {
 	}
 
 	public boolean isCompatible() {
-		return this == field_14224;
+		return this == COMPATIBLE;
 	}
 
 	public static ResourcePackCompatibility from(int i) {
 		if (i < SharedConstants.getGameVersion().getPackVersion()) {
 			return TOO_OLD;
 		} else {
-			return i > SharedConstants.getGameVersion().getPackVersion() ? TOO_NEW : field_14224;
+			return i > SharedConstants.getGameVersion().getPackVersion() ? TOO_NEW : COMPATIBLE;
 		}
 	}
 

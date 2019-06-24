@@ -37,25 +37,25 @@ public class ZombieHorseEntity extends HorseBaseEntity {
 	@Override
 	protected SoundEvent getAmbientSound() {
 		super.getAmbientSound();
-		return SoundEvents.field_15154;
+		return SoundEvents.ENTITY_ZOMBIE_HORSE_AMBIENT;
 	}
 
 	@Override
 	protected SoundEvent getDeathSound() {
 		super.getDeathSound();
-		return SoundEvents.field_14543;
+		return SoundEvents.ENTITY_ZOMBIE_HORSE_DEATH;
 	}
 
 	@Override
 	protected SoundEvent getHurtSound(DamageSource damageSource) {
 		super.getHurtSound(damageSource);
-		return SoundEvents.field_15179;
+		return SoundEvents.ENTITY_ZOMBIE_HORSE_HURT;
 	}
 
 	@Nullable
 	@Override
 	public PassiveEntity createChild(PassiveEntity passiveEntity) {
-		return EntityType.field_6048.create(this.world);
+		return EntityType.ZOMBIE_HORSE.create(this.world);
 	}
 
 	@Override
@@ -74,7 +74,7 @@ public class ZombieHorseEntity extends HorseBaseEntity {
 			return super.interactMob(playerEntity, hand);
 		} else {
 			if (!itemStack.isEmpty()) {
-				if (!this.isSaddled() && itemStack.getItem() == Items.field_8175) {
+				if (!this.isSaddled() && itemStack.getItem() == Items.SADDLE) {
 					this.openInventory(playerEntity);
 					return true;
 				}

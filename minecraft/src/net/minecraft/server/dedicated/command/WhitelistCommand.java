@@ -36,7 +36,7 @@ public class WhitelistCommand {
 				.then(
 					CommandManager.literal("add")
 						.then(
-							CommandManager.argument("targets", GameProfileArgumentType.create())
+							CommandManager.argument("targets", GameProfileArgumentType.gameProfile())
 								.suggests(
 									(commandContext, suggestionsBuilder) -> {
 										PlayerManager playerManager = commandContext.getSource().getMinecraftServer().getPlayerManager();
@@ -55,7 +55,7 @@ public class WhitelistCommand {
 				.then(
 					CommandManager.literal("remove")
 						.then(
-							CommandManager.argument("targets", GameProfileArgumentType.create())
+							CommandManager.argument("targets", GameProfileArgumentType.gameProfile())
 								.suggests(
 									(commandContext, suggestionsBuilder) -> CommandSource.suggestMatching(
 											commandContext.getSource().getMinecraftServer().getPlayerManager().getWhitelistedNames(), suggestionsBuilder

@@ -22,7 +22,7 @@ import net.minecraft.item.Items;
 import net.minecraft.scoreboard.Scoreboard;
 import net.minecraft.scoreboard.ScoreboardObjective;
 import net.minecraft.scoreboard.ScoreboardPlayerScore;
-import net.minecraft.util.AbsoluteHand;
+import net.minecraft.util.Arm;
 import net.minecraft.util.Hand;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.UseAction;
@@ -73,16 +73,16 @@ public class PlayerEntityRenderer extends LivingEntityRenderer<AbstractClientPla
 			ItemStack itemStack = abstractClientPlayerEntity.getMainHandStack();
 			ItemStack itemStack2 = abstractClientPlayerEntity.getOffHandStack();
 			playerEntityModel.setVisible(true);
-			playerEntityModel.headwear.visible = abstractClientPlayerEntity.isSkinOverlayVisible(PlayerModelPart.field_7563);
-			playerEntityModel.bodyOverlay.visible = abstractClientPlayerEntity.isSkinOverlayVisible(PlayerModelPart.field_7564);
-			playerEntityModel.leftLegOverlay.visible = abstractClientPlayerEntity.isSkinOverlayVisible(PlayerModelPart.field_7566);
-			playerEntityModel.rightLegOverlay.visible = abstractClientPlayerEntity.isSkinOverlayVisible(PlayerModelPart.field_7565);
-			playerEntityModel.leftArmOverlay.visible = abstractClientPlayerEntity.isSkinOverlayVisible(PlayerModelPart.field_7568);
-			playerEntityModel.rightArmOverlay.visible = abstractClientPlayerEntity.isSkinOverlayVisible(PlayerModelPart.field_7570);
+			playerEntityModel.headwear.visible = abstractClientPlayerEntity.isSkinOverlayVisible(PlayerModelPart.HAT);
+			playerEntityModel.bodyOverlay.visible = abstractClientPlayerEntity.isSkinOverlayVisible(PlayerModelPart.JACKET);
+			playerEntityModel.leftLegOverlay.visible = abstractClientPlayerEntity.isSkinOverlayVisible(PlayerModelPart.LEFT_PANTS_LEG);
+			playerEntityModel.rightLegOverlay.visible = abstractClientPlayerEntity.isSkinOverlayVisible(PlayerModelPart.RIGHT_PANTS_LEG);
+			playerEntityModel.leftArmOverlay.visible = abstractClientPlayerEntity.isSkinOverlayVisible(PlayerModelPart.LEFT_SLEEVE);
+			playerEntityModel.rightArmOverlay.visible = abstractClientPlayerEntity.isSkinOverlayVisible(PlayerModelPart.RIGHT_SLEEVE);
 			playerEntityModel.isSneaking = abstractClientPlayerEntity.isInSneakingPose();
-			BipedEntityModel.ArmPose armPose = this.method_4210(abstractClientPlayerEntity, itemStack, itemStack2, Hand.field_5808);
-			BipedEntityModel.ArmPose armPose2 = this.method_4210(abstractClientPlayerEntity, itemStack, itemStack2, Hand.field_5810);
-			if (abstractClientPlayerEntity.getMainHand() == AbsoluteHand.field_6183) {
+			BipedEntityModel.ArmPose armPose = this.method_4210(abstractClientPlayerEntity, itemStack, itemStack2, Hand.MAIN_HAND);
+			BipedEntityModel.ArmPose armPose2 = this.method_4210(abstractClientPlayerEntity, itemStack, itemStack2, Hand.OFF_HAND);
+			if (abstractClientPlayerEntity.getMainArm() == Arm.RIGHT) {
 				playerEntityModel.rightArmPose = armPose;
 				playerEntityModel.leftArmPose = armPose2;
 			} else {
@@ -93,32 +93,32 @@ public class PlayerEntityRenderer extends LivingEntityRenderer<AbstractClientPla
 	}
 
 	private BipedEntityModel.ArmPose method_4210(AbstractClientPlayerEntity abstractClientPlayerEntity, ItemStack itemStack, ItemStack itemStack2, Hand hand) {
-		BipedEntityModel.ArmPose armPose = BipedEntityModel.ArmPose.field_3409;
-		ItemStack itemStack3 = hand == Hand.field_5808 ? itemStack : itemStack2;
+		BipedEntityModel.ArmPose armPose = BipedEntityModel.ArmPose.EMPTY;
+		ItemStack itemStack3 = hand == Hand.MAIN_HAND ? itemStack : itemStack2;
 		if (!itemStack3.isEmpty()) {
-			armPose = BipedEntityModel.ArmPose.field_3410;
+			armPose = BipedEntityModel.ArmPose.ITEM;
 			if (abstractClientPlayerEntity.getItemUseTimeLeft() > 0) {
 				UseAction useAction = itemStack3.getUseAction();
-				if (useAction == UseAction.field_8949) {
-					armPose = BipedEntityModel.ArmPose.field_3406;
-				} else if (useAction == UseAction.field_8953) {
-					armPose = BipedEntityModel.ArmPose.field_3403;
-				} else if (useAction == UseAction.field_8951) {
-					armPose = BipedEntityModel.ArmPose.field_3407;
-				} else if (useAction == UseAction.field_8947 && hand == abstractClientPlayerEntity.getActiveHand()) {
-					armPose = BipedEntityModel.ArmPose.field_3405;
+				if (useAction == UseAction.BLOCK) {
+					armPose = BipedEntityModel.ArmPose.BLOCK;
+				} else if (useAction == UseAction.BOW) {
+					armPose = BipedEntityModel.ArmPose.BOW_AND_ARROW;
+				} else if (useAction == UseAction.SPEAR) {
+					armPose = BipedEntityModel.ArmPose.THROW_SPEAR;
+				} else if (useAction == UseAction.CROSSBOW && hand == abstractClientPlayerEntity.getActiveHand()) {
+					armPose = BipedEntityModel.ArmPose.CROSSBOW_CHARGE;
 				}
 			} else {
-				boolean bl = itemStack.getItem() == Items.field_8399;
+				boolean bl = itemStack.getItem() == Items.CROSSBOW;
 				boolean bl2 = CrossbowItem.isCharged(itemStack);
-				boolean bl3 = itemStack2.getItem() == Items.field_8399;
+				boolean bl3 = itemStack2.getItem() == Items.CROSSBOW;
 				boolean bl4 = CrossbowItem.isCharged(itemStack2);
 				if (bl && bl2) {
-					armPose = BipedEntityModel.ArmPose.field_3408;
+					armPose = BipedEntityModel.ArmPose.CROSSBOW_HOLD;
 				}
 
-				if (bl3 && bl4 && itemStack.getItem().getUseAction(itemStack) == UseAction.field_8952) {
-					armPose = BipedEntityModel.ArmPose.field_3408;
+				if (bl3 && bl4 && itemStack.getItem().getUseAction(itemStack) == UseAction.NONE) {
+					armPose = BipedEntityModel.ArmPose.CROSSBOW_HOLD;
 				}
 			}
 		}

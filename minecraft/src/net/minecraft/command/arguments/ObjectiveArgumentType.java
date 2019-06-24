@@ -28,7 +28,7 @@ public class ObjectiveArgumentType implements ArgumentType<String> {
 		object -> new TranslatableText("commands.scoreboard.objectives.add.longName", object)
 	);
 
-	public static ObjectiveArgumentType create() {
+	public static ObjectiveArgumentType objective() {
 		return new ObjectiveArgumentType();
 	}
 

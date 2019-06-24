@@ -32,7 +32,7 @@ public class EntityAnchorArgumentType implements ArgumentType<EntityAnchorArgume
 		return commandContext.getArgument(string, EntityAnchorArgumentType.EntityAnchor.class);
 	}
 
-	public static EntityAnchorArgumentType create() {
+	public static EntityAnchorArgumentType entityAnchor() {
 		return new EntityAnchorArgumentType();
 	}
 
@@ -59,8 +59,8 @@ public class EntityAnchorArgumentType implements ArgumentType<EntityAnchorArgume
 	}
 
 	public static enum EntityAnchor {
-		field_9853("feet", (vec3d, entity) -> vec3d),
-		field_9851("eyes", (vec3d, entity) -> new Vec3d(vec3d.x, vec3d.y + (double)entity.getStandingEyeHeight(), vec3d.z));
+		FEET("feet", (vec3d, entity) -> vec3d),
+		EYES("eyes", (vec3d, entity) -> new Vec3d(vec3d.x, vec3d.y + (double)entity.getStandingEyeHeight(), vec3d.z));
 
 		private static final Map<String, EntityAnchorArgumentType.EntityAnchor> anchors = SystemUtil.consume(Maps.newHashMap(), hashMap -> {
 			for(EntityAnchorArgumentType.EntityAnchor entityAnchor : values()) {

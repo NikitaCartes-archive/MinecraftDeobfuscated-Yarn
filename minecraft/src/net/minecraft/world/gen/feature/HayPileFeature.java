@@ -16,6 +16,6 @@ public class HayPileFeature extends AbstractPileFeature {
 	@Override
 	protected BlockState getPileBlockState(IWorld iWorld) {
 		Direction.Axis axis = Direction.Axis.method_16699(iWorld.getRandom());
-		return Blocks.field_10359.getDefaultState().with(PillarBlock.AXIS, axis);
+		return Blocks.HAY_BLOCK.getDefaultState().with(PillarBlock.AXIS, axis);
 	}
 }

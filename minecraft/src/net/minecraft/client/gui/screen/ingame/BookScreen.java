@@ -200,7 +200,7 @@ public class BookScreen extends Screen {
 		ClickEvent clickEvent = text.getStyle().getClickEvent();
 		if (clickEvent == null) {
 			return false;
-		} else if (clickEvent.getAction() == ClickEvent.Action.field_11748) {
+		} else if (clickEvent.getAction() == ClickEvent.Action.CHANGE_PAGE) {
 			String string = clickEvent.getValue();
 
 			try {
@@ -211,7 +211,7 @@ public class BookScreen extends Screen {
 			}
 		} else {
 			boolean bl = super.handleComponentClicked(text);
-			if (bl && clickEvent.getAction() == ClickEvent.Action.field_11750) {
+			if (bl && clickEvent.getAction() == ClickEvent.Action.RUN_COMMAND) {
 				this.minecraft.openScreen(null);
 			}
 
@@ -277,10 +277,10 @@ public class BookScreen extends Screen {
 
 		static BookScreen.Contents create(ItemStack itemStack) {
 			Item item = itemStack.getItem();
-			if (item == Items.field_8360) {
+			if (item == Items.WRITTEN_BOOK) {
 				return new BookScreen.WrittenBookContents(itemStack);
 			} else {
-				return (BookScreen.Contents)(item == Items.field_8674 ? new BookScreen.WritableBookContents(itemStack) : BookScreen.EMPTY_PROVIDER);
+				return (BookScreen.Contents)(item == Items.WRITABLE_BOOK ? new BookScreen.WritableBookContents(itemStack) : BookScreen.EMPTY_PROVIDER);
 			}
 		}
 	}
@@ -321,7 +321,7 @@ public class BookScreen extends Screen {
 			CompoundTag compoundTag = itemStack.getTag();
 			return (List<String>)(compoundTag != null && WrittenBookItem.isValid(compoundTag)
 				? BookScreen.getLines(compoundTag)
-				: ImmutableList.of(new TranslatableText("book.invalid.tag").formatted(Formatting.field_1079).asFormattedString()));
+				: ImmutableList.of(new TranslatableText("book.invalid.tag").formatted(Formatting.DARK_RED).asFormattedString()));
 		}
 
 		@Override

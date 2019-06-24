@@ -33,14 +33,14 @@ public class AdvancementCommand {
 								.then(
 									CommandManager.literal("only")
 										.then(
-											CommandManager.argument("advancement", IdentifierArgumentType.create())
+											CommandManager.argument("advancement", IdentifierArgumentType.identifier())
 												.suggests(SUGGESTION_PROVIDER)
 												.executes(
 													commandContext -> executeAdvancement(
 															commandContext.getSource(),
 															EntityArgumentType.getPlayers(commandContext, "targets"),
 															AdvancementCommand.Operation.GRANT,
-															select(IdentifierArgumentType.getAdvancementArgument(commandContext, "advancement"), AdvancementCommand.Selection.field_13464)
+															select(IdentifierArgumentType.getAdvancementArgument(commandContext, "advancement"), AdvancementCommand.Selection.ONLY)
 														)
 												)
 												.then(
@@ -65,14 +65,14 @@ public class AdvancementCommand {
 								.then(
 									CommandManager.literal("from")
 										.then(
-											CommandManager.argument("advancement", IdentifierArgumentType.create())
+											CommandManager.argument("advancement", IdentifierArgumentType.identifier())
 												.suggests(SUGGESTION_PROVIDER)
 												.executes(
 													commandContext -> executeAdvancement(
 															commandContext.getSource(),
 															EntityArgumentType.getPlayers(commandContext, "targets"),
 															AdvancementCommand.Operation.GRANT,
-															select(IdentifierArgumentType.getAdvancementArgument(commandContext, "advancement"), AdvancementCommand.Selection.field_13458)
+															select(IdentifierArgumentType.getAdvancementArgument(commandContext, "advancement"), AdvancementCommand.Selection.FROM)
 														)
 												)
 										)
@@ -80,14 +80,14 @@ public class AdvancementCommand {
 								.then(
 									CommandManager.literal("until")
 										.then(
-											CommandManager.argument("advancement", IdentifierArgumentType.create())
+											CommandManager.argument("advancement", IdentifierArgumentType.identifier())
 												.suggests(SUGGESTION_PROVIDER)
 												.executes(
 													commandContext -> executeAdvancement(
 															commandContext.getSource(),
 															EntityArgumentType.getPlayers(commandContext, "targets"),
 															AdvancementCommand.Operation.GRANT,
-															select(IdentifierArgumentType.getAdvancementArgument(commandContext, "advancement"), AdvancementCommand.Selection.field_13465)
+															select(IdentifierArgumentType.getAdvancementArgument(commandContext, "advancement"), AdvancementCommand.Selection.UNTIL)
 														)
 												)
 										)
@@ -95,14 +95,14 @@ public class AdvancementCommand {
 								.then(
 									CommandManager.literal("through")
 										.then(
-											CommandManager.argument("advancement", IdentifierArgumentType.create())
+											CommandManager.argument("advancement", IdentifierArgumentType.identifier())
 												.suggests(SUGGESTION_PROVIDER)
 												.executes(
 													commandContext -> executeAdvancement(
 															commandContext.getSource(),
 															EntityArgumentType.getPlayers(commandContext, "targets"),
 															AdvancementCommand.Operation.GRANT,
-															select(IdentifierArgumentType.getAdvancementArgument(commandContext, "advancement"), AdvancementCommand.Selection.field_13462)
+															select(IdentifierArgumentType.getAdvancementArgument(commandContext, "advancement"), AdvancementCommand.Selection.THROUGH)
 														)
 												)
 										)
@@ -127,14 +127,14 @@ public class AdvancementCommand {
 								.then(
 									CommandManager.literal("only")
 										.then(
-											CommandManager.argument("advancement", IdentifierArgumentType.create())
+											CommandManager.argument("advancement", IdentifierArgumentType.identifier())
 												.suggests(SUGGESTION_PROVIDER)
 												.executes(
 													commandContext -> executeAdvancement(
 															commandContext.getSource(),
 															EntityArgumentType.getPlayers(commandContext, "targets"),
 															AdvancementCommand.Operation.REVOKE,
-															select(IdentifierArgumentType.getAdvancementArgument(commandContext, "advancement"), AdvancementCommand.Selection.field_13464)
+															select(IdentifierArgumentType.getAdvancementArgument(commandContext, "advancement"), AdvancementCommand.Selection.ONLY)
 														)
 												)
 												.then(
@@ -159,14 +159,14 @@ public class AdvancementCommand {
 								.then(
 									CommandManager.literal("from")
 										.then(
-											CommandManager.argument("advancement", IdentifierArgumentType.create())
+											CommandManager.argument("advancement", IdentifierArgumentType.identifier())
 												.suggests(SUGGESTION_PROVIDER)
 												.executes(
 													commandContext -> executeAdvancement(
 															commandContext.getSource(),
 															EntityArgumentType.getPlayers(commandContext, "targets"),
 															AdvancementCommand.Operation.REVOKE,
-															select(IdentifierArgumentType.getAdvancementArgument(commandContext, "advancement"), AdvancementCommand.Selection.field_13458)
+															select(IdentifierArgumentType.getAdvancementArgument(commandContext, "advancement"), AdvancementCommand.Selection.FROM)
 														)
 												)
 										)
@@ -174,14 +174,14 @@ public class AdvancementCommand {
 								.then(
 									CommandManager.literal("until")
 										.then(
-											CommandManager.argument("advancement", IdentifierArgumentType.create())
+											CommandManager.argument("advancement", IdentifierArgumentType.identifier())
 												.suggests(SUGGESTION_PROVIDER)
 												.executes(
 													commandContext -> executeAdvancement(
 															commandContext.getSource(),
 															EntityArgumentType.getPlayers(commandContext, "targets"),
 															AdvancementCommand.Operation.REVOKE,
-															select(IdentifierArgumentType.getAdvancementArgument(commandContext, "advancement"), AdvancementCommand.Selection.field_13465)
+															select(IdentifierArgumentType.getAdvancementArgument(commandContext, "advancement"), AdvancementCommand.Selection.UNTIL)
 														)
 												)
 										)
@@ -189,14 +189,14 @@ public class AdvancementCommand {
 								.then(
 									CommandManager.literal("through")
 										.then(
-											CommandManager.argument("advancement", IdentifierArgumentType.create())
+											CommandManager.argument("advancement", IdentifierArgumentType.identifier())
 												.suggests(SUGGESTION_PROVIDER)
 												.executes(
 													commandContext -> executeAdvancement(
 															commandContext.getSource(),
 															EntityArgumentType.getPlayers(commandContext, "targets"),
 															AdvancementCommand.Operation.REVOKE,
-															select(IdentifierArgumentType.getAdvancementArgument(commandContext, "advancement"), AdvancementCommand.Selection.field_13462)
+															select(IdentifierArgumentType.getAdvancementArgument(commandContext, "advancement"), AdvancementCommand.Selection.THROUGH)
 														)
 												)
 										)
@@ -436,11 +436,11 @@ public class AdvancementCommand {
 	}
 
 	static enum Selection {
-		field_13464(false, false),
-		field_13462(true, true),
-		field_13458(false, true),
-		field_13465(true, false),
-		field_13461(true, true);
+		ONLY(false, false),
+		THROUGH(true, true),
+		FROM(false, true),
+		UNTIL(true, false),
+		EVERYTHING(true, true);
 
 		private final boolean before;
 		private final boolean after;

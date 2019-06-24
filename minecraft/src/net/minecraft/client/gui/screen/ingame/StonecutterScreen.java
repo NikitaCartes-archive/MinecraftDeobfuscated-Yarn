@@ -102,7 +102,7 @@ public class StonecutterScreen extends AbstractContainerScreen<StonecutterContai
 				double f = d - (double)(j + n % 4 * 16);
 				double g = e - (double)(k + n / 4 * 18);
 				if (f >= 0.0 && g >= 0.0 && f < 16.0 && g < 18.0 && this.container.onButtonClick(this.minecraft.player, m)) {
-					MinecraftClient.getInstance().getSoundManager().play(PositionedSoundInstance.master(SoundEvents.field_17711, 1.0F));
+					MinecraftClient.getInstance().getSoundManager().play(PositionedSoundInstance.master(SoundEvents.UI_STONECUTTER_SELECT_RECIPE, 1.0F));
 					this.minecraft.interactionManager.clickButton(this.container.syncId, m);
 					return true;
 				}

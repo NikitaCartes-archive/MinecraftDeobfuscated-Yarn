@@ -20,14 +20,14 @@ import net.minecraft.util.math.BlockPos;
 
 public class OpenDoorsTask extends Task<LivingEntity> {
 	public OpenDoorsTask() {
-		super(ImmutableMap.of(MemoryModuleType.field_18449, MemoryModuleState.field_18456, MemoryModuleType.field_18450, MemoryModuleState.field_18456));
+		super(ImmutableMap.of(MemoryModuleType.PATH, MemoryModuleState.VALUE_PRESENT, MemoryModuleType.INTERACTABLE_DOORS, MemoryModuleState.VALUE_PRESENT));
 	}
 
 	@Override
 	protected void run(ServerWorld serverWorld, LivingEntity livingEntity, long l) {
 		Brain<?> brain = livingEntity.getBrain();
-		Path path = (Path)brain.getOptionalMemory(MemoryModuleType.field_18449).get();
-		List<GlobalPos> list = (List)brain.getOptionalMemory(MemoryModuleType.field_18450).get();
+		Path path = (Path)brain.getOptionalMemory(MemoryModuleType.PATH).get();
+		List<GlobalPos> list = (List)brain.getOptionalMemory(MemoryModuleType.INTERACTABLE_DOORS).get();
 		List<BlockPos> list2 = (List)path.getNodes().stream().map(pathNode -> new BlockPos(pathNode.x, pathNode.y, pathNode.z)).collect(Collectors.toList());
 		Set<BlockPos> set = this.getDoorsOnPath(serverWorld, list, list2);
 		int i = path.getCurrentNodeIndex() - 1;
@@ -47,7 +47,7 @@ public class OpenDoorsTask extends Task<LivingEntity> {
 			int j = list.indexOf(blockPos);
 			BlockState blockState = serverWorld.getBlockState(blockPos);
 			Block block = blockState.getBlock();
-			if (BlockTags.field_15494.contains(block) && block instanceof DoorBlock) {
+			if (BlockTags.WOODEN_DOORS.contains(block) && block instanceof DoorBlock) {
 				((DoorBlock)block).setOpen(serverWorld, blockPos, j >= i);
 			}
 		});

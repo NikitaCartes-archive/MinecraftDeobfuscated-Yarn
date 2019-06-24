@@ -146,10 +146,10 @@ public class BeaconScreen extends AbstractContainerScreen<BeaconContainer> {
 		int l = (this.height - this.containerHeight) / 2;
 		this.blit(k, l, 0, 0, this.containerWidth, this.containerHeight);
 		this.itemRenderer.zOffset = 100.0F;
-		this.itemRenderer.renderGuiItem(new ItemStack(Items.field_8687), k + 42, l + 109);
-		this.itemRenderer.renderGuiItem(new ItemStack(Items.field_8477), k + 42 + 22, l + 109);
-		this.itemRenderer.renderGuiItem(new ItemStack(Items.field_8695), k + 42 + 44, l + 109);
-		this.itemRenderer.renderGuiItem(new ItemStack(Items.field_8620), k + 42 + 66, l + 109);
+		this.itemRenderer.renderGuiItem(new ItemStack(Items.EMERALD), k + 42, l + 109);
+		this.itemRenderer.renderGuiItem(new ItemStack(Items.DIAMOND), k + 42 + 22, l + 109);
+		this.itemRenderer.renderGuiItem(new ItemStack(Items.GOLD_INGOT), k + 42 + 44, l + 109);
+		this.itemRenderer.renderGuiItem(new ItemStack(Items.IRON_INGOT), k + 42 + 66, l + 109);
 		this.itemRenderer.zOffset = 0.0F;
 	}
 
@@ -268,7 +268,7 @@ public class BeaconScreen extends AbstractContainerScreen<BeaconContainer> {
 		@Override
 		public void renderToolTip(int i, int j) {
 			String string = I18n.translate(this.effect.getTranslationKey());
-			if (!this.primary && this.effect != StatusEffects.field_5924) {
+			if (!this.primary && this.effect != StatusEffects.REGENERATION) {
 				string = string + " II";
 			}
 

@@ -19,11 +19,11 @@ public class GatherItemsVillagerTask extends Task<VillagerEntity> {
 	private Set<Item> items = ImmutableSet.of();
 
 	public GatherItemsVillagerTask() {
-		super(ImmutableMap.of(MemoryModuleType.field_18447, MemoryModuleState.field_18456, MemoryModuleType.field_18442, MemoryModuleState.field_18456));
+		super(ImmutableMap.of(MemoryModuleType.INTERACTION_TARGET, MemoryModuleState.VALUE_PRESENT, MemoryModuleType.VISIBLE_MOBS, MemoryModuleState.VALUE_PRESENT));
 	}
 
 	protected boolean method_19015(ServerWorld serverWorld, VillagerEntity villagerEntity) {
-		return LookTargetUtil.canSee(villagerEntity.getBrain(), MemoryModuleType.field_18447, EntityType.field_6077);
+		return LookTargetUtil.canSee(villagerEntity.getBrain(), MemoryModuleType.INTERACTION_TARGET, EntityType.VILLAGER);
 	}
 
 	protected boolean method_19016(ServerWorld serverWorld, VillagerEntity villagerEntity, long l) {
@@ -31,18 +31,17 @@ public class GatherItemsVillagerTask extends Task<VillagerEntity> {
 	}
 
 	protected void method_19017(ServerWorld serverWorld, VillagerEntity villagerEntity, long l) {
-		VillagerEntity villagerEntity2 = (VillagerEntity)villagerEntity.getBrain().getOptionalMemory(MemoryModuleType.field_18447).get();
+		VillagerEntity villagerEntity2 = (VillagerEntity)villagerEntity.getBrain().getOptionalMemory(MemoryModuleType.INTERACTION_TARGET).get();
 		LookTargetUtil.lookAtAndWalkTowardsEachOther(villagerEntity, villagerEntity2);
 		this.items = getGatherableItems(villagerEntity, villagerEntity2);
 	}
 
 	protected void method_19018(ServerWorld serverWorld, VillagerEntity villagerEntity, long l) {
-		VillagerEntity villagerEntity2 = (VillagerEntity)villagerEntity.getBrain().getOptionalMemory(MemoryModuleType.field_18447).get();
+		VillagerEntity villagerEntity2 = (VillagerEntity)villagerEntity.getBrain().getOptionalMemory(MemoryModuleType.INTERACTION_TARGET).get();
 		if (!(villagerEntity.squaredDistanceTo(villagerEntity2) > 5.0)) {
 			LookTargetUtil.lookAtAndWalkTowardsEachOther(villagerEntity, villagerEntity2);
 			villagerEntity.talkWithVillager(villagerEntity2, l);
-			if (villagerEntity.wantsToStartBreeding()
-				&& (villagerEntity.getVillagerData().getProfession() == VillagerProfession.field_17056 || villagerEntity2.canBreed())) {
+			if (villagerEntity.wantsToStartBreeding() && (villagerEntity.getVillagerData().getProfession() == VillagerProfession.FARMER || villagerEntity2.canBreed())) {
 				giveHalfOfStack(villagerEntity, VillagerEntity.ITEM_FOOD_VALUES.keySet(), villagerEntity2);
 			}
 
@@ -53,7 +52,7 @@ public class GatherItemsVillagerTask extends Task<VillagerEntity> {
 	}
 
 	protected void method_19019(ServerWorld serverWorld, VillagerEntity villagerEntity, long l) {
-		villagerEntity.getBrain().forget(MemoryModuleType.field_18447);
+		villagerEntity.getBrain().forget(MemoryModuleType.INTERACTION_TARGET);
 	}
 
 	private static Set<Item> getGatherableItems(VillagerEntity villagerEntity, VillagerEntity villagerEntity2) {

@@ -36,7 +36,7 @@ import net.minecraft.world.World;
 public class PigEntity extends AnimalEntity {
 	private static final TrackedData<Boolean> SADDLED = DataTracker.registerData(PigEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
 	private static final TrackedData<Integer> field_6815 = DataTracker.registerData(PigEntity.class, TrackedDataHandlerRegistry.INTEGER);
-	private static final Ingredient BREEDING_INGREDIENT = Ingredient.ofItems(Items.field_8179, Items.field_8567, Items.field_8186);
+	private static final Ingredient BREEDING_INGREDIENT = Ingredient.ofItems(Items.CARROT, Items.POTATO, Items.BEETROOT);
 	private boolean field_6814;
 	private int field_6812;
 	private int field_6813;
@@ -50,7 +50,7 @@ public class PigEntity extends AnimalEntity {
 		this.goalSelector.add(0, new SwimGoal(this));
 		this.goalSelector.add(1, new EscapeDangerGoal(this, 1.25));
 		this.goalSelector.add(3, new AnimalMateGoal(this, 1.0));
-		this.goalSelector.add(4, new TemptGoal(this, 1.2, Ingredient.ofItems(Items.field_8184), false));
+		this.goalSelector.add(4, new TemptGoal(this, 1.2, Ingredient.ofItems(Items.CARROT_ON_A_STICK), false));
 		this.goalSelector.add(4, new TemptGoal(this, 1.2, false, BREEDING_INGREDIENT));
 		this.goalSelector.add(5, new FollowParentGoal(this, 1.1));
 		this.goalSelector.add(6, new WanderAroundFarGoal(this, 1.0));
@@ -78,7 +78,7 @@ public class PigEntity extends AnimalEntity {
 			return false;
 		} else {
 			PlayerEntity playerEntity = (PlayerEntity)entity;
-			return playerEntity.getMainHandStack().getItem() == Items.field_8184 || playerEntity.getOffHandStack().getItem() == Items.field_8184;
+			return playerEntity.getMainHandStack().getItem() == Items.CARROT_ON_A_STICK || playerEntity.getOffHandStack().getItem() == Items.CARROT_ON_A_STICK;
 		}
 	}
 
@@ -114,29 +114,29 @@ public class PigEntity extends AnimalEntity {
 
 	@Override
 	protected SoundEvent getAmbientSound() {
-		return SoundEvents.field_14615;
+		return SoundEvents.ENTITY_PIG_AMBIENT;
 	}
 
 	@Override
 	protected SoundEvent getHurtSound(DamageSource damageSource) {
-		return SoundEvents.field_14750;
+		return SoundEvents.ENTITY_PIG_HURT;
 	}
 
 	@Override
 	protected SoundEvent getDeathSound() {
-		return SoundEvents.field_14689;
+		return SoundEvents.ENTITY_PIG_DEATH;
 	}
 
 	@Override
 	protected void playStepSound(BlockPos blockPos, BlockState blockState) {
-		this.playSound(SoundEvents.field_14894, 0.15F, 1.0F);
+		this.playSound(SoundEvents.ENTITY_PIG_STEP, 0.15F, 1.0F);
 	}
 
 	@Override
 	public boolean interactMob(PlayerEntity playerEntity, Hand hand) {
 		if (!super.interactMob(playerEntity, hand)) {
 			ItemStack itemStack = playerEntity.getStackInHand(hand);
-			if (itemStack.getItem() == Items.field_8448) {
+			if (itemStack.getItem() == Items.NAME_TAG) {
 				itemStack.useOnEntity(playerEntity, this, hand);
 				return true;
 			} else if (this.isSaddled() && !this.hasPassengers()) {
@@ -145,7 +145,7 @@ public class PigEntity extends AnimalEntity {
 				}
 
 				return true;
-			} else if (itemStack.getItem() == Items.field_8175) {
+			} else if (itemStack.getItem() == Items.SADDLE) {
 				itemStack.useOnEntity(playerEntity, this, hand);
 				return true;
 			} else {
@@ -160,7 +160,7 @@ public class PigEntity extends AnimalEntity {
 	protected void dropInventory() {
 		super.dropInventory();
 		if (this.isSaddled()) {
-			this.dropItem(Items.field_8175);
+			this.dropItem(Items.SADDLE);
 		}
 	}
 
@@ -178,8 +178,8 @@ public class PigEntity extends AnimalEntity {
 
 	@Override
 	public void onStruckByLightning(LightningEntity lightningEntity) {
-		ZombiePigmanEntity zombiePigmanEntity = EntityType.field_6050.create(this.world);
-		zombiePigmanEntity.setEquippedStack(EquipmentSlot.field_6173, new ItemStack(Items.field_8845));
+		ZombiePigmanEntity zombiePigmanEntity = EntityType.ZOMBIE_PIGMAN.create(this.world);
+		zombiePigmanEntity.setEquippedStack(EquipmentSlot.MAINHAND, new ItemStack(Items.GOLDEN_SWORD));
 		zombiePigmanEntity.setPositionAndAngles(this.x, this.y, this.z, this.yaw, this.pitch);
 		zombiePigmanEntity.setAiDisabled(this.isAiDisabled());
 		if (this.hasCustomName()) {
@@ -251,7 +251,7 @@ public class PigEntity extends AnimalEntity {
 	}
 
 	public PigEntity method_6574(PassiveEntity passiveEntity) {
-		return EntityType.field_6093.create(this.world);
+		return EntityType.PIG.create(this.world);
 	}
 
 	@Override
