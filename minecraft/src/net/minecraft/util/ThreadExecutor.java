@@ -111,12 +111,16 @@ public abstract class ThreadExecutor<R extends Runnable> implements Actor<R>, Ex
 		try {
 			while (!booleanSupplier.getAsBoolean()) {
 				if (!this.executeQueuedTask()) {
-					LockSupport.parkNanos("waiting for tasks", 1000L);
+					this.method_20813();
 				}
 			}
 		} finally {
 			this.waitCount--;
 		}
+	}
+
+	protected void method_20813() {
+		LockSupport.parkNanos("waiting for tasks", 1000L);
 	}
 
 	protected void runSafely(R runnable) {

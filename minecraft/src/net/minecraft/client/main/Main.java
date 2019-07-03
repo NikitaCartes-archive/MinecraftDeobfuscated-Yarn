@@ -11,7 +11,8 @@ import java.net.PasswordAuthentication;
 import java.net.Proxy;
 import java.net.Proxy.Type;
 import java.util.List;
-import java.util.Optional;
+import java.util.OptionalInt;
+import javax.annotation.Nullable;
 import joptsimple.ArgumentAcceptingOptionSpec;
 import joptsimple.OptionParser;
 import joptsimple.OptionSet;
@@ -90,8 +91,8 @@ public class Main {
 
 		int i = getOption(optionSet, optionSpec14);
 		int j = getOption(optionSet, optionSpec15);
-		Optional<Integer> optional = Optional.ofNullable(getOption(optionSet, optionSpec16));
-		Optional<Integer> optional2 = Optional.ofNullable(getOption(optionSet, optionSpec17));
+		OptionalInt optionalInt = method_21612(getOption(optionSet, optionSpec16));
+		OptionalInt optionalInt2 = method_21612(getOption(optionSet, optionSpec17));
 		boolean bl = optionSet.has("fullscreen");
 		boolean bl2 = optionSet.has("demo");
 		String string4 = getOption(optionSet, optionSpec13);
@@ -109,7 +110,7 @@ public class Main {
 		Session session = new Session(optionSpec10.value(optionSet), string6, optionSpec12.value(optionSet), optionSpec21.value(optionSet));
 		RunArgs runArgs = new RunArgs(
 			new RunArgs.Network(session, propertyMap, propertyMap2, proxy),
-			new WindowSettings(i, j, optional, optional2, bl),
+			new WindowSettings(i, j, optionalInt, optionalInt2, bl),
 			new RunArgs.Directories(file, file3, file2, string7),
 			new RunArgs.Game(bl2, string4, string5),
 			new RunArgs.AutoConnect(string8, integer)
@@ -129,6 +130,10 @@ public class Main {
 		Runtime.getRuntime().addShutdownHook(thread);
 		Thread.currentThread().setName("Client thread");
 		new MinecraftClient(runArgs).start();
+	}
+
+	private static OptionalInt method_21612(@Nullable Integer integer) {
+		return integer != null ? OptionalInt.of(integer) : OptionalInt.empty();
 	}
 
 	private static <T> T getOption(OptionSet optionSet, OptionSpec<T> optionSpec) {

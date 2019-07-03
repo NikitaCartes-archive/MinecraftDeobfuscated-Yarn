@@ -2436,9 +2436,9 @@ public abstract class LivingEntity extends Entity {
 		return (this.dataTracker.get(LIVING_FLAGS) & 2) > 0 ? Hand.OFF_HAND : Hand.MAIN_HAND;
 	}
 
-	protected void method_6076() {
+	private void method_6076() {
 		if (this.isUsingItem()) {
-			if (this.getStackInHand(this.getActiveHand()) == this.activeItemStack) {
+			if (ItemStack.areItemsEqual(this.getStackInHand(this.getActiveHand()), this.activeItemStack)) {
 				this.activeItemStack.usageTick(this.world, this, this.getItemUseTimeLeft());
 				if (this.getItemUseTimeLeft() <= 25 && this.getItemUseTimeLeft() % 4 == 0) {
 					this.spawnConsumptionEffects(this.activeItemStack, 5);

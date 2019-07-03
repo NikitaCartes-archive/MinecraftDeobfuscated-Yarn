@@ -248,6 +248,7 @@ public class GameRules {
 		protected abstract T getThis();
 	}
 
+	@FunctionalInterface
 	public interface RuleConsumer {
 		<T extends GameRules.Rule<T>> void accept(GameRules.RuleKey<T> ruleKey, GameRules.RuleType<T> ruleType);
 	}

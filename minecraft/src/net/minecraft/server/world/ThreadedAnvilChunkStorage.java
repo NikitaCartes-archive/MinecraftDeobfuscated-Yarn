@@ -13,8 +13,10 @@ import it.unimi.dsi.fastutil.longs.Long2ObjectLinkedOpenHashMap;
 import it.unimi.dsi.fastutil.longs.LongIterator;
 import it.unimi.dsi.fastutil.longs.LongOpenHashSet;
 import it.unimi.dsi.fastutil.longs.LongSet;
+import it.unimi.dsi.fastutil.longs.Long2ObjectMap.Entry;
 import java.io.File;
 import java.io.IOException;
+import java.io.Writer;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -32,6 +34,7 @@ import java.util.stream.Stream;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.class_4456;
 import net.minecraft.client.network.DebugRendererInfoManager;
 import net.minecraft.client.network.packet.ChunkDataS2CPacket;
 import net.minecraft.client.network.packet.ChunkRenderDistanceCenterS2CPacket;
@@ -707,6 +710,40 @@ public class ThreadedAnvilChunkStorage extends VersionedChunkStorage implements 
 
 	protected Iterable<ChunkHolder> entryIterator() {
 		return Iterables.unmodifiableIterable(this.chunkHolders.values());
+	}
+
+	void method_21619(Writer writer) throws IOException {
+		class_4456 lv = class_4456.method_21627()
+			.method_21632("x")
+			.method_21632("z")
+			.method_21632("level")
+			.method_21632("in_memory")
+			.method_21632("status")
+			.method_21632("full_status")
+			.method_21632("ticket")
+			.method_21632("spawning")
+			.method_21632("entity_count")
+			.method_21632("block_entity_count")
+			.method_21631(writer);
+
+		for (Entry<ChunkHolder> entry : this.chunkHolders.long2ObjectEntrySet()) {
+			ChunkPos chunkPos = new ChunkPos(entry.getLongKey());
+			ChunkHolder chunkHolder = (ChunkHolder)entry.getValue();
+			Optional<Chunk> optional = Optional.ofNullable(chunkHolder.getCompletedChunk());
+			Optional<WorldChunk> optional2 = optional.flatMap(chunk -> chunk instanceof WorldChunk ? Optional.of((WorldChunk)chunk) : Optional.empty());
+			lv.method_21630(
+				chunkPos.x,
+				chunkPos.z,
+				chunkHolder.getLevel(),
+				optional.isPresent(),
+				optional.map(Chunk::getStatus).orElse(null),
+				optional2.map(WorldChunk::getLevelType).orElse(null),
+				this.ticketManager.method_21623(entry.getLongKey()),
+				!this.isTooFarFromPlayersToSpawnMobs(chunkPos),
+				optional2.map(worldChunk -> Stream.of(worldChunk.getEntitySectionArray()).mapToInt(TypeFilterableList::size).sum()).orElse(0),
+				optional2.map(worldChunk -> worldChunk.getBlockEntities().size()).orElse(0)
+			);
+		}
 	}
 
 	@Nullable

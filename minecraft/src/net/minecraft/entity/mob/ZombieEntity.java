@@ -259,8 +259,9 @@ public class ZombieEntity extends HostileEntity {
 			for (EquipmentSlot equipmentSlot : EquipmentSlot.values()) {
 				ItemStack itemStack = this.getEquippedStack(equipmentSlot);
 				if (!itemStack.isEmpty()) {
-					zombieEntity.setEquippedStack(equipmentSlot, itemStack);
+					zombieEntity.setEquippedStack(equipmentSlot, itemStack.copy());
 					zombieEntity.setEquipmentDropChance(equipmentSlot, this.getDropChance(equipmentSlot));
+					itemStack.setCount(0);
 				}
 			}
 

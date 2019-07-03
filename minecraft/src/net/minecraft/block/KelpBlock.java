@@ -72,9 +72,7 @@ public class KelpBlock extends Block implements FluidFillable {
 		BlockPos blockPos2 = blockPos.down();
 		BlockState blockState2 = viewableWorld.getBlockState(blockPos2);
 		Block block = blockState2.getBlock();
-		return block == Blocks.MAGMA_BLOCK
-			? false
-			: block == this || block == Blocks.KELP_PLANT || Block.isSolidFullSquare(blockState2, viewableWorld, blockPos2, Direction.UP);
+		return block == Blocks.MAGMA_BLOCK ? false : block == this || block == Blocks.KELP_PLANT || blockState2.method_20827(viewableWorld, blockPos2, Direction.UP);
 	}
 
 	@Override

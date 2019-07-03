@@ -198,7 +198,7 @@ public abstract class World implements ExtendedBlockView, IWorld, AutoCloseable 
 
 				if (blockState3 == blockState) {
 					if (blockState2 != blockState3) {
-						this.scheduleBlockRender(blockPos);
+						this.scheduleBlockRender(blockPos, blockState2, blockState3);
 					}
 
 					if ((i & 2) != 0
@@ -268,7 +268,7 @@ public abstract class World implements ExtendedBlockView, IWorld, AutoCloseable 
 		}
 	}
 
-	public void scheduleBlockRender(BlockPos blockPos) {
+	public void scheduleBlockRender(BlockPos blockPos, BlockState blockState, BlockState blockState2) {
 	}
 
 	public void updateNeighborsAlways(BlockPos blockPos, Block block) {

@@ -1040,4 +1040,10 @@ public class DefaultBiomeFeatures {
 			Biome.configureFeature(Feature.FREEZE_TOP_LAYER, FeatureConfig.DEFAULT, Decorator.NOPE, DecoratorConfig.DEFAULT)
 		);
 	}
+
+	public static void method_20826(Biome biome) {
+		biome.addFeature(
+			GenerationStep.Feature.SURFACE_STRUCTURES, Biome.configureFeature(Feature.END_CITY, FeatureConfig.DEFAULT, Decorator.NOPE, DecoratorConfig.DEFAULT)
+		);
+	}
 }

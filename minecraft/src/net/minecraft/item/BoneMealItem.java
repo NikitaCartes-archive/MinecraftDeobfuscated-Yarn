@@ -36,7 +36,7 @@ public class BoneMealItem extends Item {
 			return ActionResult.SUCCESS;
 		} else {
 			BlockState blockState = world.getBlockState(blockPos);
-			boolean bl = Block.isSolidFullSquare(blockState, world, blockPos, itemUsageContext.getSide());
+			boolean bl = blockState.method_20827(world, blockPos, itemUsageContext.getSide());
 			if (bl && useOnGround(itemUsageContext.getStack(), world, blockPos2, itemUsageContext.getSide())) {
 				if (!world.isClient) {
 					world.playLevelEvent(2005, blockPos2, 0);

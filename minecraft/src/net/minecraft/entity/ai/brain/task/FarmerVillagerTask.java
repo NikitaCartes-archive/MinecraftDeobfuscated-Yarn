@@ -31,7 +31,7 @@ public class FarmerVillagerTask extends Task<VillagerEntity> {
 	private boolean field_18860;
 	private long field_18861;
 	private int field_19239;
-	private List<BlockPos> field_19351 = Lists.<BlockPos>newArrayList();
+	private final List<BlockPos> field_19351 = Lists.<BlockPos>newArrayList();
 
 	public FarmerVillagerTask() {
 		super(
@@ -58,7 +58,13 @@ public class FarmerVillagerTask extends Task<VillagerEntity> {
 			int i = basicInventory.getInvSize();
 
 			for (int j = 0; j < i; j++) {
-				if (basicInventory.getInvStack(j).isEmpty()) {
+				ItemStack itemStack = basicInventory.getInvStack(j);
+				if (itemStack.isEmpty()) {
+					this.field_18860 = true;
+					break;
+				}
+
+				if (itemStack.getItem() == Items.WHEAT_SEEDS || itemStack.getItem() == Items.BEETROOT_SEEDS) {
 					this.field_18860 = true;
 					break;
 				}

@@ -334,7 +334,7 @@ public class Blocks {
 		"dandelion", new FlowerBlock(StatusEffects.SATURATION, 7, Block.Settings.of(Material.PLANT).noCollision().breakInstantly().sounds(BlockSoundGroup.GRASS))
 	);
 	public static final Block POPPY = register(
-		"poppy", new FlowerBlock(StatusEffects.SPEED, 6, Block.Settings.of(Material.PLANT).noCollision().breakInstantly().sounds(BlockSoundGroup.GRASS))
+		"poppy", new FlowerBlock(StatusEffects.NIGHT_VISION, 5, Block.Settings.of(Material.PLANT).noCollision().breakInstantly().sounds(BlockSoundGroup.GRASS))
 	);
 	public static final Block BLUE_ORCHID = register(
 		"blue_orchid", new FlowerBlock(StatusEffects.SATURATION, 7, Block.Settings.of(Material.PLANT).noCollision().breakInstantly().sounds(BlockSoundGroup.GRASS))
@@ -453,19 +453,26 @@ public class Blocks {
 		"oak_wall_sign", new WallSignBlock(Block.Settings.of(Material.WOOD).noCollision().strength(1.0F).sounds(BlockSoundGroup.WOOD).dropsLike(OAK_SIGN))
 	);
 	public static final Block SPRUCE_WALL_SIGN = register(
-		"spruce_wall_sign", new WallSignBlock(Block.Settings.of(Material.WOOD).noCollision().strength(1.0F).sounds(BlockSoundGroup.WOOD).dropsLike(SPRUCE_SIGN))
+		"spruce_wall_sign",
+		new WallSignBlock(Block.Settings.of(Material.WOOD, SPRUCE_LOG.materialColor).noCollision().strength(1.0F).sounds(BlockSoundGroup.WOOD).dropsLike(SPRUCE_SIGN))
 	);
 	public static final Block BIRCH_WALL_SIGN = register(
-		"birch_wall_sign", new WallSignBlock(Block.Settings.of(Material.WOOD).noCollision().strength(1.0F).sounds(BlockSoundGroup.WOOD).dropsLike(BIRCH_SIGN))
+		"birch_wall_sign",
+		new WallSignBlock(Block.Settings.of(Material.WOOD, MaterialColor.SAND).noCollision().strength(1.0F).sounds(BlockSoundGroup.WOOD).dropsLike(BIRCH_SIGN))
 	);
 	public static final Block ACACIA_WALL_SIGN = register(
-		"acacia_wall_sign", new WallSignBlock(Block.Settings.of(Material.WOOD).noCollision().strength(1.0F).sounds(BlockSoundGroup.WOOD).dropsLike(ACACIA_SIGN))
+		"acacia_wall_sign",
+		new WallSignBlock(Block.Settings.of(Material.WOOD, MaterialColor.ORANGE).noCollision().strength(1.0F).sounds(BlockSoundGroup.WOOD).dropsLike(ACACIA_SIGN))
 	);
 	public static final Block JUNGLE_WALL_SIGN = register(
-		"jungle_wall_sign", new WallSignBlock(Block.Settings.of(Material.WOOD).noCollision().strength(1.0F).sounds(BlockSoundGroup.WOOD).dropsLike(JUNGLE_SIGN))
+		"jungle_wall_sign",
+		new WallSignBlock(Block.Settings.of(Material.WOOD, JUNGLE_LOG.materialColor).noCollision().strength(1.0F).sounds(BlockSoundGroup.WOOD).dropsLike(JUNGLE_SIGN))
 	);
 	public static final Block DARK_OAK_WALL_SIGN = register(
-		"dark_oak_wall_sign", new WallSignBlock(Block.Settings.of(Material.WOOD).noCollision().strength(1.0F).sounds(BlockSoundGroup.WOOD).dropsLike(DARK_OAK_SIGN))
+		"dark_oak_wall_sign",
+		new WallSignBlock(
+			Block.Settings.of(Material.WOOD, DARK_OAK_LOG.materialColor).noCollision().strength(1.0F).sounds(BlockSoundGroup.WOOD).dropsLike(DARK_OAK_SIGN)
+		)
 	);
 	public static final Block LEVER = register("lever", new LeverBlock(Block.Settings.of(Material.PART).noCollision().strength(0.5F).sounds(BlockSoundGroup.WOOD)));
 	public static final Block STONE_PRESSURE_PLATE = register(

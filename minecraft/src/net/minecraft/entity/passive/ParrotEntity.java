@@ -191,7 +191,7 @@ public class ParrotEntity extends TameableShoulderEntity implements Bird {
 	private void method_6578() {
 		this.field_6829 = this.field_6818;
 		this.field_6827 = this.field_6819;
-		this.field_6819 = (float)((double)this.field_6819 + (double)(this.onGround ? -1 : 4) * 0.3);
+		this.field_6819 = (float)((double)this.field_6819 + (double)(!this.onGround && !this.hasVehicle() ? 4 : -1) * 0.3);
 		this.field_6819 = MathHelper.clamp(this.field_6819, 0.0F, 1.0F);
 		if (!this.onGround && this.field_6824 < 1.0F) {
 			this.field_6824 = 1.0F;

@@ -14,7 +14,6 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.WindowEventHandler;
 import net.minecraft.client.WindowSettings;
-import net.minecraft.client.options.Option;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.lwjgl.PointerBuffer;
@@ -34,7 +33,6 @@ public final class Window implements AutoCloseable {
 	private final GLFWErrorCallback errorCallback = GLFWErrorCallback.create(this::logGlError);
 	private final WindowEventHandler windowEventHandler;
 	private final MonitorTracker monitorTracker;
-	private Monitor monitor;
 	private final long handle;
 	private int field_5175;
 	private int field_5185;
@@ -67,21 +65,29 @@ public final class Window implements AutoCloseable {
 		if (optional.isPresent()) {
 			this.videoMode = optional;
 		} else if (windowSettings.fullscreenWidth.isPresent() && windowSettings.fullscreenHeight.isPresent()) {
-			this.videoMode = Optional.of(new VideoMode((Integer)windowSettings.fullscreenWidth.get(), (Integer)windowSettings.fullscreenHeight.get(), 8, 8, 8, 60));
+			this.videoMode = Optional.of(new VideoMode(windowSettings.fullscreenWidth.getAsInt(), windowSettings.fullscreenHeight.getAsInt(), 8, 8, 8, 60));
 		} else {
 			this.videoMode = Optional.empty();
 		}
 
 		this.field_5177 = this.fullscreen = windowSettings.fullscreen;
-		this.monitor = monitorTracker.getMonitor(GLFW.glfwGetPrimaryMonitor());
-		VideoMode videoMode = this.monitor.findClosestVideoMode(this.fullscreen ? this.videoMode : Optional.empty());
+		Monitor monitor = monitorTracker.getMonitor(GLFW.glfwGetPrimaryMonitor());
 		this.field_5174 = this.width = windowSettings.width > 0 ? windowSettings.width : 1;
 		this.field_5184 = this.height = windowSettings.height > 0 ? windowSettings.height : 1;
-		this.field_5175 = this.positionX = this.monitor.getViewportX() + videoMode.getWidth() / 2 - this.width / 2;
-		this.field_5185 = this.positionY = this.monitor.getViewportY() + videoMode.getHeight() / 2 - this.height / 2;
 		GLFW.glfwDefaultWindowHints();
-		this.handle = GLFW.glfwCreateWindow(this.width, this.height, string2, this.fullscreen ? this.monitor.getHandle() : 0L, 0L);
-		this.updateMonitor();
+		this.handle = GLFW.glfwCreateWindow(this.width, this.height, string2, this.fullscreen && monitor != null ? monitor.getHandle() : 0L, 0L);
+		if (monitor != null) {
+			VideoMode videoMode = monitor.findClosestVideoMode(this.fullscreen ? this.videoMode : Optional.empty());
+			this.field_5175 = this.positionX = monitor.getViewportX() + videoMode.getWidth() / 2 - this.width / 2;
+			this.field_5185 = this.positionY = monitor.getViewportY() + videoMode.getHeight() / 2 - this.height / 2;
+		} else {
+			int[] is = new int[1];
+			int[] js = new int[1];
+			GLFW.glfwGetWindowPos(this.handle, is, js);
+			this.field_5175 = this.positionX = is[0];
+			this.field_5185 = this.positionY = js[0];
+		}
+
 		GLFW.glfwMakeContextCurrent(this.handle);
 		GL.createCapabilities();
 		this.method_4479();
@@ -210,16 +216,9 @@ public final class Window implements AutoCloseable {
 		GLFW.glfwTerminate();
 	}
 
-	private void updateMonitor() {
-		Monitor monitor = this.monitor;
-		this.monitor = this.monitorTracker.getMonitor(this);
-		Option.FULLSCREEN_RESOLUTION.setMax((float)this.monitor.getVideoModeCount());
-	}
-
 	private void onWindowPosChanged(long l, int i, int j) {
 		this.positionX = i;
 		this.positionY = j;
-		this.updateMonitor();
 	}
 
 	private void onFramebufferSizeChanged(long l, int i, int j) {
@@ -247,7 +246,6 @@ public final class Window implements AutoCloseable {
 	private void onWindowSizeChanged(long l, int i, int j) {
 		this.width = i;
 		this.height = j;
-		this.updateMonitor();
 	}
 
 	private void onWindowFocusChanged(long l, boolean bl) {
@@ -288,27 +286,10 @@ public final class Window implements AutoCloseable {
 		return this.videoMode;
 	}
 
-	public int method_4508() {
-		return this.videoMode.isPresent() ? this.monitor.findClosestVideoModeIndex(this.videoMode) + 1 : 0;
-	}
-
-	public String method_4487(int i) {
-		if (this.monitor.getVideoModeCount() <= i) {
-			i = this.monitor.getVideoModeCount() - 1;
-		}
-
-		return this.monitor.getVideoMode(i).toString();
-	}
-
-	public void method_4505(int i) {
-		Optional<VideoMode> optional = this.videoMode;
-		if (i == 0) {
-			this.videoMode = Optional.empty();
-		} else {
-			this.videoMode = Optional.of(this.monitor.getVideoMode(i - 1));
-		}
-
-		if (!this.videoMode.equals(optional)) {
+	public void method_4505(Optional<VideoMode> optional) {
+		boolean bl = !optional.equals(this.videoMode);
+		this.videoMode = optional;
+		if (bl) {
 			this.field_5186 = true;
 		}
 	}
@@ -324,21 +305,26 @@ public final class Window implements AutoCloseable {
 	private void method_4479() {
 		boolean bl = GLFW.glfwGetWindowMonitor(this.handle) != 0L;
 		if (this.fullscreen) {
-			VideoMode videoMode = this.monitor.findClosestVideoMode(this.videoMode);
-			if (!bl) {
-				this.field_5175 = this.positionX;
-				this.field_5185 = this.positionY;
-				this.field_5174 = this.width;
-				this.field_5184 = this.height;
-			}
+			Monitor monitor = this.monitorTracker.getMonitor(this);
+			if (monitor == null) {
+				LOGGER.warn("Failed to find suitable monitor for fullscreen mode");
+				this.fullscreen = false;
+			} else {
+				VideoMode videoMode = monitor.findClosestVideoMode(this.videoMode);
+				if (!bl) {
+					this.field_5175 = this.positionX;
+					this.field_5185 = this.positionY;
+					this.field_5174 = this.width;
+					this.field_5184 = this.height;
+				}
 
-			this.positionX = 0;
-			this.positionY = 0;
-			this.width = videoMode.getWidth();
-			this.height = videoMode.getHeight();
-			GLFW.glfwSetWindowMonitor(this.handle, this.monitor.getHandle(), this.positionX, this.positionY, this.width, this.height, videoMode.getRefreshRate());
+				this.positionX = 0;
+				this.positionY = 0;
+				this.width = videoMode.getWidth();
+				this.height = videoMode.getHeight();
+				GLFW.glfwSetWindowMonitor(this.handle, monitor.getHandle(), this.positionX, this.positionY, this.width, this.height, videoMode.getRefreshRate());
+			}
 		} else {
-			VideoMode videoMode = this.monitor.getCurrentVideoMode();
 			this.positionX = this.field_5175;
 			this.positionY = this.field_5185;
 			this.width = this.field_5174;
@@ -420,15 +406,20 @@ public final class Window implements AutoCloseable {
 		return this.scaledHeight;
 	}
 
-	public int getPositionX() {
+	public int getPositionY() {
 		return this.positionX;
 	}
 
-	public int getPositionY() {
+	public int getPositionX() {
 		return this.positionY;
 	}
 
 	public double getScaleFactor() {
 		return this.scaleFactor;
+	}
+
+	@Nullable
+	public Monitor method_20831() {
+		return this.monitorTracker.getMonitor(this);
 	}
 }

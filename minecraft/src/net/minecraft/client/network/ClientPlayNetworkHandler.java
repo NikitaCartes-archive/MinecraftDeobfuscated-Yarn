@@ -41,13 +41,13 @@ import net.minecraft.client.ClientBrandRetriever;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.MapRenderer;
 import net.minecraft.client.gui.screen.ConfirmScreen;
-import net.minecraft.client.gui.screen.ContainerScreenRegistry;
 import net.minecraft.client.gui.screen.DeathScreen;
 import net.minecraft.client.gui.screen.DemoScreen;
 import net.minecraft.client.gui.screen.DisconnectedScreen;
 import net.minecraft.client.gui.screen.DownloadingTerrainScreen;
 import net.minecraft.client.gui.screen.EndCreditsScreen;
 import net.minecraft.client.gui.screen.Screen;
+import net.minecraft.client.gui.screen.Screens;
 import net.minecraft.client.gui.screen.StatsListener;
 import net.minecraft.client.gui.screen.TitleScreen;
 import net.minecraft.client.gui.screen.ingame.BookScreen;
@@ -1092,7 +1092,7 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 	@Override
 	public void onOpenContainer(OpenContainerPacket openContainerPacket) {
 		NetworkThreadUtils.forceMainThread(openContainerPacket, this, this.client);
-		ContainerScreenRegistry.openScreen(openContainerPacket.getContainerType(), this.client, openContainerPacket.getSyncId(), openContainerPacket.getName());
+		Screens.open(openContainerPacket.getContainerType(), this.client, openContainerPacket.getSyncId(), openContainerPacket.getName());
 	}
 
 	@Override

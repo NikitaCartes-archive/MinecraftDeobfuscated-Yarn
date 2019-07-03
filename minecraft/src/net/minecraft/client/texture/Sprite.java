@@ -39,7 +39,6 @@ public class Sprite {
 	private float vMax;
 	protected int frameIndex;
 	protected int frameTicks;
-	private static final int[] blendedPixelCache = new int[4];
 	private static final float[] srgbLinearMap = SystemUtil.consume(new float[256], fs -> {
 		for (int i = 0; i < fs.length; i++) {
 			fs[i] = (float)Math.pow((double)((float)i / 255.0F), 2.2);
@@ -143,37 +142,51 @@ public class Sprite {
 
 	private static int blendPixels(int i, int j, int k, int l, boolean bl) {
 		if (bl) {
-			blendedPixelCache[0] = i;
-			blendedPixelCache[1] = j;
-			blendedPixelCache[2] = k;
-			blendedPixelCache[3] = l;
 			float f = 0.0F;
 			float g = 0.0F;
 			float h = 0.0F;
 			float m = 0.0F;
+			if (i >> 24 != 0) {
+				f += srgbToLinear(i >> 24);
+				g += srgbToLinear(i >> 16);
+				h += srgbToLinear(i >> 8);
+				m += srgbToLinear(i >> 0);
+			}
 
-			for (int n = 0; n < 4; n++) {
-				if (blendedPixelCache[n] >> 24 != 0) {
-					f += srgbToLinear(blendedPixelCache[n] >> 24);
-					g += srgbToLinear(blendedPixelCache[n] >> 16);
-					h += srgbToLinear(blendedPixelCache[n] >> 8);
-					m += srgbToLinear(blendedPixelCache[n] >> 0);
-				}
+			if (j >> 24 != 0) {
+				f += srgbToLinear(j >> 24);
+				g += srgbToLinear(j >> 16);
+				h += srgbToLinear(j >> 8);
+				m += srgbToLinear(j >> 0);
+			}
+
+			if (k >> 24 != 0) {
+				f += srgbToLinear(k >> 24);
+				g += srgbToLinear(k >> 16);
+				h += srgbToLinear(k >> 8);
+				m += srgbToLinear(k >> 0);
+			}
+
+			if (l >> 24 != 0) {
+				f += srgbToLinear(l >> 24);
+				g += srgbToLinear(l >> 16);
+				h += srgbToLinear(l >> 8);
+				m += srgbToLinear(l >> 0);
 			}
 
 			f /= 4.0F;
 			g /= 4.0F;
 			h /= 4.0F;
 			m /= 4.0F;
-			int nx = (int)(Math.pow((double)f, 0.45454545454545453) * 255.0);
+			int n = (int)(Math.pow((double)f, 0.45454545454545453) * 255.0);
 			int o = (int)(Math.pow((double)g, 0.45454545454545453) * 255.0);
 			int p = (int)(Math.pow((double)h, 0.45454545454545453) * 255.0);
 			int q = (int)(Math.pow((double)m, 0.45454545454545453) * 255.0);
-			if (nx < 96) {
-				nx = 0;
+			if (n < 96) {
+				n = 0;
 			}
 
-			return nx << 24 | o << 16 | p << 8 | q;
+			return n << 24 | o << 16 | p << 8 | q;
 		} else {
 			int r = blendPixelsComponent(i, j, k, l, 24);
 			int s = blendPixelsComponent(i, j, k, l, 16);

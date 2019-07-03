@@ -236,9 +236,7 @@ public class DoorBlock extends Block {
 	public boolean canPlaceAt(BlockState blockState, ViewableWorld viewableWorld, BlockPos blockPos) {
 		BlockPos blockPos2 = blockPos.down();
 		BlockState blockState2 = viewableWorld.getBlockState(blockPos2);
-		return blockState.get(HALF) == DoubleBlockHalf.LOWER
-			? Block.isSolidFullSquare(blockState2, viewableWorld, blockPos2, Direction.UP)
-			: blockState2.getBlock() == this;
+		return blockState.get(HALF) == DoubleBlockHalf.LOWER ? blockState2.method_20827(viewableWorld, blockPos2, Direction.UP) : blockState2.getBlock() == this;
 	}
 
 	private void playOpenCloseSound(World world, BlockPos blockPos, boolean bl) {

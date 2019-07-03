@@ -103,7 +103,7 @@ public class JigsawBlockScreen extends Screen {
 	public boolean keyPressed(int i, int j, int k) {
 		if (super.keyPressed(i, j, k)) {
 			return true;
-		} else if (i != 257 && i != 335) {
+		} else if (!this.field_19103.active || i != 257 && i != 335) {
 			return false;
 		} else {
 			this.onDone();

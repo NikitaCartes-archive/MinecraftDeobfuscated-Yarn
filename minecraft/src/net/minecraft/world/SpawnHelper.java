@@ -57,8 +57,8 @@ public final class SpawnHelper {
 					int s = 0;
 
 					while (true) {
-						label109: {
-							label108:
+						label115: {
+							label114:
 							if (s < q) {
 								n += world.random.nextInt(6) - world.random.nextInt(6);
 								o += world.random.nextInt(6) - world.random.nextInt(6);
@@ -66,40 +66,43 @@ public final class SpawnHelper {
 								float f = (float)n + 0.5F;
 								float g = (float)o + 0.5F;
 								PlayerEntity playerEntity = world.getClosestPlayer((double)f, (double)g, -1.0);
-								if (playerEntity == null
-									|| playerEntity.squaredDistanceTo((double)f, (double)k, (double)g) <= 576.0
-									|| blockPos.isWithinDistance(new Vec3d((double)f, (double)k, (double)g), 24.0)) {
-									break label109;
+								if (playerEntity == null) {
+									break label115;
+								}
+
+								double d = playerEntity.squaredDistanceTo((double)f, (double)k, (double)g);
+								if (d <= 576.0 || blockPos.isWithinDistance(new Vec3d((double)f, (double)k, (double)g), 24.0)) {
+									break label115;
 								}
 
 								ChunkPos chunkPos = new ChunkPos(mutable);
 								if (!Objects.equals(chunkPos, worldChunk.getPos()) && !world.getChunkManager().shouldTickChunk(chunkPos)) {
-									break label109;
+									break label115;
 								}
 
 								if (spawnEntry == null) {
 									spawnEntry = method_8664(chunkGenerator, entityCategory, world.random, mutable);
 									if (spawnEntry == null) {
-										break label108;
+										break label114;
 									}
 
 									q = spawnEntry.minGroupSize + world.random.nextInt(1 + spawnEntry.maxGroupSize - spawnEntry.minGroupSize);
 								}
 
-								if (spawnEntry.type.getCategory() == EntityCategory.MISC) {
-									break label109;
+								if (spawnEntry.type.getCategory() == EntityCategory.MISC || !spawnEntry.type.method_20814() && d > 16384.0) {
+									break label115;
 								}
 
 								EntityType<?> entityType = spawnEntry.type;
 								if (!entityType.isSummonable() || !method_8659(chunkGenerator, entityCategory, spawnEntry, mutable)) {
-									break label109;
+									break label115;
 								}
 
 								SpawnRestriction.Location location = SpawnRestriction.getLocation(entityType);
 								if (!canSpawn(location, world, mutable, entityType)
 									|| !SpawnRestriction.method_20638(entityType, world, SpawnType.NATURAL, mutable, world.random)
 									|| !world.doesNotCollide(entityType.createSimpleBoundingBox((double)f, (double)k, (double)g))) {
-									break label109;
+									break label115;
 								}
 
 								MobEntity mobEntity;
@@ -110,17 +113,14 @@ public final class SpawnHelper {
 									}
 
 									mobEntity = (MobEntity)entity;
-								} catch (Exception var29) {
-									LOGGER.warn("Failed to create mob", (Throwable)var29);
+								} catch (Exception var31) {
+									LOGGER.warn("Failed to create mob", (Throwable)var31);
 									return;
 								}
 
 								mobEntity.setPositionAndAngles((double)f, (double)k, (double)g, world.random.nextFloat() * 360.0F, 0.0F);
-								if (playerEntity.squaredDistanceTo((double)f, (double)k, (double)g) > 16384.0
-										&& mobEntity.canImmediatelyDespawn(playerEntity.squaredDistanceTo((double)f, (double)k, (double)g))
-									|| !mobEntity.canSpawn(world, SpawnType.NATURAL)
-									|| !mobEntity.canSpawn(world)) {
-									break label109;
+								if (d > 16384.0 && mobEntity.canImmediatelyDespawn(d) || !mobEntity.canSpawn(world, SpawnType.NATURAL) || !mobEntity.canSpawn(world)) {
+									break label115;
 								}
 
 								entityData = mobEntity.initialize(world, world.getLocalDifficulty(new BlockPos(mobEntity)), SpawnType.NATURAL, entityData, null);
@@ -132,7 +132,7 @@ public final class SpawnHelper {
 								}
 
 								if (!mobEntity.spawnsTooManyForEachTry(r)) {
-									break label109;
+									break label115;
 								}
 							}
 

@@ -689,6 +689,7 @@ public class GameRenderer implements AutoCloseable, SynchronousResourceReloadLis
 			f
 		);
 		Frustum frustum = GlMatrixFrustum.get();
+		worldRenderer.method_21595(camera);
 		this.client.getProfiler().swap("clear");
 		GlStateManager.viewport(0, 0, this.client.window.getFramebufferWidth(), this.client.window.getFramebufferHeight());
 		this.backgroundRenderer.renderBackground(camera, f);

@@ -20,7 +20,7 @@ public class WetSpongeBlock extends Block {
 		if (direction != Direction.UP) {
 			BlockPos blockPos2 = blockPos.offset(direction);
 			BlockState blockState2 = world.getBlockState(blockPos2);
-			if (!blockState.isOpaque() || !Block.isSolidFullSquare(blockState2, world, blockPos2, direction.getOpposite())) {
+			if (!blockState.isOpaque() || !blockState2.method_20827(world, blockPos2, direction.getOpposite())) {
 				double d = (double)blockPos.getX();
 				double e = (double)blockPos.getY();
 				double f = (double)blockPos.getZ();

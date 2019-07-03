@@ -120,7 +120,7 @@ public class ChunkSection {
 			for (int j = 0; j < 16; j++) {
 				for (int k = 0; k < 16; k++) {
 					BlockState blockState = this.getBlockState(i, j, k);
-					FluidState fluidState = this.getFluidState(i, j, k);
+					FluidState fluidState = blockState.getFluidState();
 					if (!blockState.isAir()) {
 						this.nonEmptyBlockCount++;
 						if (blockState.hasRandomTicks()) {

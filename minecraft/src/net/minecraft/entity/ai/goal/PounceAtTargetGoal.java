@@ -48,6 +48,6 @@ public class PounceAtTargetGoal extends Goal {
 			vec3d2 = vec3d2.normalize().multiply(0.4).add(vec3d.multiply(0.2));
 		}
 
-		this.mob.setVelocity(vec3d2.x, (double)this.velocity, vec3d2.y);
+		this.mob.setVelocity(vec3d2.x, (double)this.velocity, vec3d2.z);
 	}
 }

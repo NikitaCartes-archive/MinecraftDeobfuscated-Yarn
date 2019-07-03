@@ -1,6 +1,6 @@
 package net.minecraft.client;
 
-import java.util.Optional;
+import java.util.OptionalInt;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 
@@ -8,15 +8,15 @@ import net.fabricmc.api.Environment;
 public class WindowSettings {
 	public final int width;
 	public final int height;
-	public final Optional<Integer> fullscreenWidth;
-	public final Optional<Integer> fullscreenHeight;
+	public final OptionalInt fullscreenWidth;
+	public final OptionalInt fullscreenHeight;
 	public final boolean fullscreen;
 
-	public WindowSettings(int i, int j, Optional<Integer> optional, Optional<Integer> optional2, boolean bl) {
+	public WindowSettings(int i, int j, OptionalInt optionalInt, OptionalInt optionalInt2, boolean bl) {
 		this.width = i;
 		this.height = j;
-		this.fullscreenWidth = optional;
-		this.fullscreenHeight = optional2;
+		this.fullscreenWidth = optionalInt;
+		this.fullscreenHeight = optionalInt2;
 		this.fullscreen = bl;
 	}
 }

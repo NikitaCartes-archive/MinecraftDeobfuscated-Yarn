@@ -64,24 +64,36 @@ public class GatherItemsVillagerTask extends Task<VillagerEntity> {
 	private static void giveHalfOfStack(VillagerEntity villagerEntity, Set<Item> set, LivingEntity livingEntity) {
 		BasicInventory basicInventory = villagerEntity.getInventory();
 		ItemStack itemStack = ItemStack.EMPTY;
+		int i = 0;
 
-		for (int i = 0; i < basicInventory.getInvSize(); i++) {
-			ItemStack itemStack2 = basicInventory.getInvStack(i);
-			if (!itemStack2.isEmpty()) {
-				Item item = itemStack2.getItem();
-				if (set.contains(item)) {
-					int j;
-					if (itemStack2.getCount() > itemStack2.getMaxCount() / 2) {
-						j = itemStack2.getCount() / 2;
-					} else {
-						j = itemStack2.getCount();
+		while (i < basicInventory.getInvSize()) {
+			ItemStack itemStack2;
+			Item item;
+			int j;
+			label28: {
+				itemStack2 = basicInventory.getInvStack(i);
+				if (!itemStack2.isEmpty()) {
+					item = itemStack2.getItem();
+					if (set.contains(item)) {
+						if (itemStack2.getCount() > itemStack2.getMaxCount() / 2) {
+							j = itemStack2.getCount() / 2;
+							break label28;
+						}
+
+						if (itemStack2.getCount() > 24) {
+							j = itemStack2.getCount() - 24;
+							break label28;
+						}
 					}
-
-					itemStack2.decrement(j);
-					itemStack = new ItemStack(item, j);
-					break;
 				}
+
+				i++;
+				continue;
 			}
+
+			itemStack2.decrement(j);
+			itemStack = new ItemStack(item, j);
+			break;
 		}
 
 		if (!itemStack.isEmpty()) {

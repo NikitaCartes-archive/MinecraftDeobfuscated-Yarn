@@ -3,15 +3,14 @@ package net.minecraft.entity.ai.goal;
 import com.google.common.collect.Sets;
 import java.util.EnumSet;
 import java.util.List;
-import java.util.Random;
 import java.util.Set;
+import net.minecraft.entity.ai.PathfindingUtil;
 import net.minecraft.entity.raid.Raid;
 import net.minecraft.entity.raid.RaidManager;
 import net.minecraft.entity.raid.RaiderEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
-import net.minecraft.world.Heightmap;
 
 public class MoveToRaidCenterGoal<T extends RaiderEntity> extends Goal {
 	private final T actor;
@@ -47,15 +46,9 @@ public class MoveToRaidCenterGoal<T extends RaiderEntity> extends Goal {
 			}
 
 			if (!this.actor.isNavigating()) {
-				Vec3d vec3d = new Vec3d(raid.getCenter());
-				Vec3d vec3d2 = new Vec3d(this.actor.x, this.actor.y, this.actor.z);
-				Vec3d vec3d3 = vec3d2.subtract(vec3d);
-				vec3d = vec3d3.multiply(0.4).add(vec3d);
-				Vec3d vec3d4 = vec3d.subtract(vec3d2).normalize().multiply(10.0).add(vec3d2);
-				BlockPos blockPos = new BlockPos(vec3d4);
-				blockPos = this.actor.world.getTopPosition(Heightmap.Type.MOTION_BLOCKING_NO_LEAVES, blockPos);
-				if (!this.actor.getNavigation().startMovingTo((double)blockPos.getX(), (double)blockPos.getY(), (double)blockPos.getZ(), 1.0)) {
-					this.moveToAlternativePosition();
+				Vec3d vec3d = PathfindingUtil.method_6373(this.actor, 15, 4, new Vec3d(raid.getCenter()));
+				if (vec3d != null) {
+					this.actor.getNavigation().startMovingTo(vec3d.x, vec3d.y, vec3d.z, 1.0);
 				}
 			}
 		}
@@ -77,13 +70,5 @@ public class MoveToRaidCenterGoal<T extends RaiderEntity> extends Goal {
 				raid.addRaider(raid.getGroupsSpawned(), raiderEntity, null, true);
 			}
 		}
-	}
-
-	private void moveToAlternativePosition() {
-		Random random = this.actor.getRand();
-		BlockPos blockPos = this.actor
-			.world
-			.getTopPosition(Heightmap.Type.MOTION_BLOCKING_NO_LEAVES, new BlockPos(this.actor).add(-8 + random.nextInt(16), 0, -8 + random.nextInt(16)));
-		this.actor.getNavigation().startMovingTo((double)blockPos.getX(), (double)blockPos.getY(), (double)blockPos.getZ(), 1.0);
 	}
 }

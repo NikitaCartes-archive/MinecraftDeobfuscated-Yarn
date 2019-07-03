@@ -77,10 +77,10 @@ public class FenceBlock extends HorizontalConnectedBlock {
 		BlockState blockState3 = blockView.getBlockState(blockPos4);
 		BlockState blockState4 = blockView.getBlockState(blockPos5);
 		return super.getPlacementState(itemPlacementContext)
-			.with(NORTH, Boolean.valueOf(this.canConnect(blockState, Block.isSolidFullSquare(blockState, blockView, blockPos2, Direction.SOUTH), Direction.SOUTH)))
-			.with(EAST, Boolean.valueOf(this.canConnect(blockState2, Block.isSolidFullSquare(blockState2, blockView, blockPos3, Direction.WEST), Direction.WEST)))
-			.with(SOUTH, Boolean.valueOf(this.canConnect(blockState3, Block.isSolidFullSquare(blockState3, blockView, blockPos4, Direction.NORTH), Direction.NORTH)))
-			.with(WEST, Boolean.valueOf(this.canConnect(blockState4, Block.isSolidFullSquare(blockState4, blockView, blockPos5, Direction.EAST), Direction.EAST)))
+			.with(NORTH, Boolean.valueOf(this.canConnect(blockState, blockState.method_20827(blockView, blockPos2, Direction.SOUTH), Direction.SOUTH)))
+			.with(EAST, Boolean.valueOf(this.canConnect(blockState2, blockState2.method_20827(blockView, blockPos3, Direction.WEST), Direction.WEST)))
+			.with(SOUTH, Boolean.valueOf(this.canConnect(blockState3, blockState3.method_20827(blockView, blockPos4, Direction.NORTH), Direction.NORTH)))
+			.with(WEST, Boolean.valueOf(this.canConnect(blockState4, blockState4.method_20827(blockView, blockPos5, Direction.EAST), Direction.EAST)))
 			.with(WATERLOGGED, Boolean.valueOf(fluidState.getFluid() == Fluids.WATER));
 	}
 
@@ -95,7 +95,7 @@ public class FenceBlock extends HorizontalConnectedBlock {
 		return direction.getAxis().getType() == Direction.Type.HORIZONTAL
 			? blockState.with(
 				(Property)FACING_PROPERTIES.get(direction),
-				Boolean.valueOf(this.canConnect(blockState2, Block.isSolidFullSquare(blockState2, iWorld, blockPos2, direction.getOpposite()), direction.getOpposite()))
+				Boolean.valueOf(this.canConnect(blockState2, blockState2.method_20827(iWorld, blockPos2, direction.getOpposite()), direction.getOpposite()))
 			)
 			: super.getStateForNeighborUpdate(blockState, direction, blockState2, iWorld, blockPos, blockPos2);
 	}

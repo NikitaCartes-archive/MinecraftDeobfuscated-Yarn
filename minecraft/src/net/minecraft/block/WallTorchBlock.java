@@ -61,7 +61,7 @@ public class WallTorchBlock extends TorchBlock {
 		Direction direction = blockState.get(FACING);
 		BlockPos blockPos2 = blockPos.offset(direction.getOpposite());
 		BlockState blockState2 = viewableWorld.getBlockState(blockPos2);
-		return Block.isSolidFullSquare(blockState2, viewableWorld, blockPos2, direction);
+		return blockState2.method_20827(viewableWorld, blockPos2, direction);
 	}
 
 	@Nullable

@@ -325,6 +325,10 @@ public class BlockState extends AbstractPropertyContainer<Block, BlockState> imp
 		this.getBlock().onProjectileHit(world, blockState, blockHitResult, entity);
 	}
 
+	public boolean method_20827(BlockView blockView, BlockPos blockPos, Direction direction) {
+		return this.shapeCache != null ? this.shapeCache.field_19429[direction.ordinal()] : Block.isSolidFullSquare(this, blockView, blockPos, direction);
+	}
+
 	public static <T> Dynamic<T> serialize(DynamicOps<T> dynamicOps, BlockState blockState) {
 		ImmutableMap<Property<?>, Comparable<?>> immutableMap = blockState.getEntries();
 		T object;
@@ -382,6 +386,7 @@ public class BlockState extends AbstractPropertyContainer<Block, BlockState> imp
 		private final VoxelShape[] shapes;
 		private final VoxelShape field_19360;
 		private final boolean field_17651;
+		private final boolean[] field_19429;
 
 		private ShapeCache(BlockState blockState) {
 			Block block = blockState.getBlock();
@@ -403,6 +408,11 @@ public class BlockState extends AbstractPropertyContainer<Block, BlockState> imp
 			this.field_19360 = block.getCollisionShape(blockState, EmptyBlockView.INSTANCE, BlockPos.ORIGIN, EntityContext.absent());
 			this.field_17651 = Arrays.stream(Direction.Axis.values())
 				.anyMatch(axis -> this.field_19360.getMinimum(axis) < 0.0 || this.field_19360.getMaximum(axis) > 1.0);
+			this.field_19429 = new boolean[6];
+
+			for (Direction direction2 : DIRECTIONS) {
+				this.field_19429[direction2.ordinal()] = Block.isSolidFullSquare(blockState, EmptyBlockView.INSTANCE, BlockPos.ORIGIN, direction2);
+			}
 		}
 	}
 }

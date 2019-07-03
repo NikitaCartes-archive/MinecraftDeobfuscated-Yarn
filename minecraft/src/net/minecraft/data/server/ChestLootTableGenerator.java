@@ -345,7 +345,7 @@ public class ChestLootTableGenerator implements Consumer<BiConsumer<Identifier, 
 								.setWeight(10)
 								.method_438(
 									SetStewEffectLootFunction.builder()
-										.withEffect(StatusEffects.SPEED, UniformLootTableRange.between(7.0F, 10.0F))
+										.withEffect(StatusEffects.NIGHT_VISION, UniformLootTableRange.between(7.0F, 10.0F))
 										.withEffect(StatusEffects.JUMP_BOOST, UniformLootTableRange.between(7.0F, 10.0F))
 										.withEffect(StatusEffects.WEAKNESS, UniformLootTableRange.between(6.0F, 8.0F))
 										.withEffect(StatusEffects.BLINDNESS, UniformLootTableRange.between(5.0F, 7.0F))

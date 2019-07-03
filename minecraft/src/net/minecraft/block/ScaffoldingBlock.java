@@ -147,7 +147,7 @@ public class ScaffoldingBlock extends Block implements Waterloggable {
 		int i = 7;
 		if (blockState.getBlock() == Blocks.SCAFFOLDING) {
 			i = (Integer)blockState.get(DISTANCE);
-		} else if (Block.isSolidFullSquare(blockState, blockView, mutable, Direction.UP)) {
+		} else if (blockState.method_20827(blockView, mutable, Direction.UP)) {
 			return 0;
 		}
 

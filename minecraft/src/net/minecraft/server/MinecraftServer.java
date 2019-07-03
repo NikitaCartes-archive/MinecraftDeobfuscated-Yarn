@@ -1,5 +1,6 @@
 package net.minecraft.server;
 
+import com.google.common.base.Splitter;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.gson.JsonElement;
@@ -17,10 +18,12 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.io.Writer;
 import java.net.Proxy;
 import java.net.URLEncoder;
 import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.security.KeyPair;
@@ -34,6 +37,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Random;
 import java.util.UUID;
+import java.util.Map.Entry;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
 import java.util.function.BooleanSupplier;
@@ -80,6 +84,7 @@ import net.minecraft.tag.RegistryTagManager;
 import net.minecraft.text.LiteralText;
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
+import net.minecraft.util.Identifier;
 import net.minecraft.util.MetricsData;
 import net.minecraft.util.NonBlockingThreadExecutor;
 import net.minecraft.util.ProgressListener;
@@ -121,6 +126,7 @@ import org.apache.logging.log4j.Logger;
 public abstract class MinecraftServer extends NonBlockingThreadExecutor<ServerTask> implements SnooperListener, CommandOutput, AutoCloseable, Runnable {
 	private static final Logger LOGGER = LogManager.getLogger();
 	public static final File USER_CACHE_FILE = new File("usercache.json");
+	private static final CompletableFuture<Unit> field_20279 = CompletableFuture.completedFuture(Unit.INSTANCE);
 	public static final LevelInfo DEMO_LEVEL_INFO = new LevelInfo((long)"North Carolina".hashCode(), GameMode.SURVIVAL, true, false, LevelGeneratorType.DEFAULT)
 		.setBonusChest();
 	private final LevelStorage levelStorage;
@@ -1410,7 +1416,7 @@ public abstract class MinecraftServer extends NonBlockingThreadExecutor<ServerTa
 		this.dataPackContainerManager.setEnabled(list);
 		List<ResourcePack> list2 = Lists.<ResourcePack>newArrayList();
 		this.dataPackContainerManager.getEnabledContainers().forEach(resourcePackContainerx -> list2.add(resourcePackContainerx.createResourcePack()));
-		CompletableFuture<Unit> completableFuture = this.dataManager.beginReload(this.workerExecutor, this, list2, CompletableFuture.completedFuture(Unit.INSTANCE));
+		CompletableFuture<Unit> completableFuture = this.dataManager.beginReload(this.workerExecutor, this, list2, field_20279);
 		this.waitFor(completableFuture::isDone);
 
 		try {
@@ -1549,4 +1555,110 @@ public abstract class MinecraftServer extends NonBlockingThreadExecutor<ServerTa
 	}
 
 	public abstract boolean isOwner(GameProfile gameProfile);
+
+	public void method_21613(Path path) throws IOException {
+		Path path2 = path.resolve("levels");
+
+		for (Entry<DimensionType, ServerWorld> entry : this.worlds.entrySet()) {
+			Identifier identifier = DimensionType.getId((DimensionType)entry.getKey());
+			Path path3 = path2.resolve(identifier.getNamespace()).resolve(identifier.getPath());
+			Files.createDirectories(path3);
+			((ServerWorld)entry.getValue()).method_21625(path3);
+		}
+
+		this.method_21615(path.resolve("gamerules.txt"));
+		this.method_21616(path.resolve("classpath.txt"));
+		this.method_21614(path.resolve("example_crash.txt"));
+	}
+
+	private void method_21614(Path path) throws IOException {
+		CrashReport crashReport = new CrashReport("Server dump", new Exception("dummy"));
+		this.populateCrashReport(crashReport);
+		Writer writer = Files.newBufferedWriter(path);
+		Throwable var4 = null;
+
+		try {
+			writer.write(crashReport.asString());
+		} catch (Throwable var13) {
+			var4 = var13;
+			throw var13;
+		} finally {
+			if (writer != null) {
+				if (var4 != null) {
+					try {
+						writer.close();
+					} catch (Throwable var12) {
+						var4.addSuppressed(var12);
+					}
+				} else {
+					writer.close();
+				}
+			}
+		}
+	}
+
+	private void method_21615(Path path) throws IOException {
+		Writer writer = Files.newBufferedWriter(path);
+		Throwable var3 = null;
+
+		try {
+			final List<String> list = Lists.<String>newArrayList();
+			final GameRules gameRules = this.getGameRules();
+			GameRules.forEach(new GameRules.RuleConsumer() {
+				@Override
+				public <T extends GameRules.Rule<T>> void accept(GameRules.RuleKey<T> ruleKey, GameRules.RuleType<T> ruleType) {
+					list.add(String.format("%s=%s\n", ruleKey.getName(), gameRules.<T>get(ruleKey).toString()));
+				}
+			});
+
+			for (String string : list) {
+				writer.write(string);
+			}
+		} catch (Throwable var15) {
+			var3 = var15;
+			throw var15;
+		} finally {
+			if (writer != null) {
+				if (var3 != null) {
+					try {
+						writer.close();
+					} catch (Throwable var14) {
+						var3.addSuppressed(var14);
+					}
+				} else {
+					writer.close();
+				}
+			}
+		}
+	}
+
+	private void method_21616(Path path) throws IOException {
+		Writer writer = Files.newBufferedWriter(path);
+		Throwable var3 = null;
+
+		try {
+			String string = System.getProperty("java.class.path");
+			String string2 = System.getProperty("path.separator");
+
+			for (String string3 : Splitter.on(string2).split(string)) {
+				writer.write(string3);
+				writer.write("\n");
+			}
+		} catch (Throwable var15) {
+			var3 = var15;
+			throw var15;
+		} finally {
+			if (writer != null) {
+				if (var3 != null) {
+					try {
+						writer.close();
+					} catch (Throwable var14) {
+						var3.addSuppressed(var14);
+					}
+				} else {
+					writer.close();
+				}
+			}
+		}
+	}
 }

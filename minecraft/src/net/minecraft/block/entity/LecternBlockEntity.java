@@ -199,6 +199,11 @@ public class LecternBlockEntity extends BlockEntity implements Clearable, Nameab
 	}
 
 	@Override
+	public boolean shouldNotCopyTagFromItem() {
+		return true;
+	}
+
+	@Override
 	public void fromTag(CompoundTag compoundTag) {
 		super.fromTag(compoundTag);
 		if (compoundTag.containsKey("Book", 10)) {

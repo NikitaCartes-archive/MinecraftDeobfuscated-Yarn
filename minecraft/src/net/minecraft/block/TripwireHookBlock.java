@@ -59,7 +59,7 @@ public class TripwireHookBlock extends Block {
 		Direction direction = blockState.get(FACING);
 		BlockPos blockPos2 = blockPos.offset(direction.getOpposite());
 		BlockState blockState2 = viewableWorld.getBlockState(blockPos2);
-		return direction.getAxis().isHorizontal() && Block.isSolidFullSquare(blockState2, viewableWorld, blockPos2, direction) && !blockState2.emitsRedstonePower();
+		return direction.getAxis().isHorizontal() && blockState2.method_20827(viewableWorld, blockPos2, direction) && !blockState2.emitsRedstonePower();
 	}
 
 	@Override

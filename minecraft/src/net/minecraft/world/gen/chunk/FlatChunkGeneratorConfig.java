@@ -258,20 +258,23 @@ public class FlatChunkGeneratorConfig extends ChunkGeneratorConfig {
 		int j;
 		if (strings.length == 2) {
 			try {
-				j = MathHelper.clamp(Integer.parseInt(strings[0]), 0, 256 - i);
-			} catch (NumberFormatException var7) {
-				LOGGER.error("Error while parsing flat world string => {}", var7.getMessage());
+				j = Math.max(Integer.parseInt(strings[0]), 0);
+			} catch (NumberFormatException var9) {
+				LOGGER.error("Error while parsing flat world string => {}", var9.getMessage());
 				return null;
 			}
 		} else {
 			j = 1;
 		}
 
+		int k = Math.min(i + j, 256);
+		int l = k - i;
+
 		Block block;
 		try {
 			block = parseBlock(strings[strings.length - 1]);
-		} catch (Exception var6) {
-			LOGGER.error("Error while parsing flat world string => {}", var6.getMessage());
+		} catch (Exception var8) {
+			LOGGER.error("Error while parsing flat world string => {}", var8.getMessage());
 			return null;
 		}
 
@@ -279,7 +282,7 @@ public class FlatChunkGeneratorConfig extends ChunkGeneratorConfig {
 			LOGGER.error("Error while parsing flat world string => Unknown block, {}", strings[strings.length - 1]);
 			return null;
 		} else {
-			FlatChunkGeneratorLayer flatChunkGeneratorLayer = new FlatChunkGeneratorLayer(j, block);
+			FlatChunkGeneratorLayer flatChunkGeneratorLayer = new FlatChunkGeneratorLayer(l, block);
 			flatChunkGeneratorLayer.setStartY(i);
 			return flatChunkGeneratorLayer;
 		}

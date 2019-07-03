@@ -505,6 +505,11 @@ public class WorldRenderer implements AutoCloseable, SynchronousResourceReloadLi
 		}
 	}
 
+	public void method_21595(Camera camera) {
+		BlockEntityRenderDispatcher.INSTANCE.configure(this.world, this.client.getTextureManager(), this.client.textRenderer, camera, this.client.hitResult);
+		this.entityRenderDispatcher.configure(this.world, this.client.textRenderer, camera, this.client.targetedEntity, this.client.options);
+	}
+
 	public void renderEntities(Camera camera, VisibleRegion visibleRegion, float f) {
 		if (this.field_4076 > 0) {
 			this.field_4076--;
@@ -513,8 +518,6 @@ public class WorldRenderer implements AutoCloseable, SynchronousResourceReloadLi
 			double e = camera.getPos().y;
 			double g = camera.getPos().z;
 			this.world.getProfiler().push("prepare");
-			BlockEntityRenderDispatcher.INSTANCE.configure(this.world, this.client.getTextureManager(), this.client.textRenderer, camera, this.client.hitResult);
-			this.entityRenderDispatcher.configure(this.world, this.client.textRenderer, camera, this.client.targetedEntity, this.client.options);
 			this.regularEntityCount = 0;
 			this.blockEntityCount = 0;
 			double h = camera.getPos().x;
@@ -1813,6 +1816,12 @@ public class WorldRenderer implements AutoCloseable, SynchronousResourceReloadLi
 					this.scheduleBlockRender(p >> 4, q >> 4, o >> 4);
 				}
 			}
+		}
+	}
+
+	public void method_21596(BlockPos blockPos, BlockState blockState, BlockState blockState2) {
+		if (this.client.getBakedModelManager().method_21611(blockState, blockState2)) {
+			this.scheduleBlockRenders(blockPos.getX(), blockPos.getY(), blockPos.getZ(), blockPos.getX(), blockPos.getY(), blockPos.getZ());
 		}
 	}
 

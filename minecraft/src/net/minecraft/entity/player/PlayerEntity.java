@@ -124,6 +124,7 @@ public abstract class PlayerEntity extends LivingEntity {
 	protected static final TrackedData<Byte> MAIN_ARM = DataTracker.registerData(PlayerEntity.class, TrackedDataHandlerRegistry.BYTE);
 	protected static final TrackedData<CompoundTag> LEFT_SHOULDER_ENTITY = DataTracker.registerData(PlayerEntity.class, TrackedDataHandlerRegistry.TAG_COMPOUND);
 	protected static final TrackedData<CompoundTag> RIGHT_SHOULDER_ENTITY = DataTracker.registerData(PlayerEntity.class, TrackedDataHandlerRegistry.TAG_COMPOUND);
+	private long field_19428;
 	public final PlayerInventory inventory = new PlayerInventory(this);
 	protected EnderChestInventory enderChestInventory = new EnderChestInventory();
 	public final PlayerContainer playerContainer;
@@ -534,7 +535,7 @@ public abstract class PlayerEntity extends LivingEntity {
 
 		this.updateShoulderEntity(this.getShoulderEntityLeft());
 		this.updateShoulderEntity(this.getShoulderEntityRight());
-		if (!this.world.isClient && (this.fallDistance > 0.5F || this.isInsideWater() || this.hasVehicle()) || this.abilities.flying) {
+		if (!this.world.isClient && (this.fallDistance > 0.5F || this.isInsideWater() || this.hasVehicle()) || this.abilities.flying || this.isSleeping()) {
 			this.dropShoulderEntities();
 		}
 	}
@@ -1245,7 +1246,6 @@ public abstract class PlayerEntity extends LivingEntity {
 	@Override
 	public void sleep(BlockPos blockPos) {
 		this.resetStat(Stats.CUSTOM.getOrCreateStat(Stats.TIME_SINCE_REST));
-		this.dropShoulderEntities();
 		super.sleep(blockPos);
 	}
 
@@ -1701,9 +1701,11 @@ public abstract class PlayerEntity extends LivingEntity {
 			return false;
 		} else if (this.getShoulderEntityLeft().isEmpty()) {
 			this.setShoulderEntityLeft(compoundTag);
+			this.field_19428 = this.world.getTime();
 			return true;
 		} else if (this.getShoulderEntityRight().isEmpty()) {
 			this.setShoulderEntityRight(compoundTag);
+			this.field_19428 = this.world.getTime();
 			return true;
 		} else {
 			return false;
@@ -1711,13 +1713,15 @@ public abstract class PlayerEntity extends LivingEntity {
 	}
 
 	protected void dropShoulderEntities() {
-		this.method_7296(this.getShoulderEntityLeft());
-		this.setShoulderEntityLeft(new CompoundTag());
-		this.method_7296(this.getShoulderEntityRight());
-		this.setShoulderEntityRight(new CompoundTag());
+		if (this.field_19428 + 20L < this.world.getTime()) {
+			this.method_7296(this.getShoulderEntityLeft());
+			this.setShoulderEntityLeft(new CompoundTag());
+			this.method_7296(this.getShoulderEntityRight());
+			this.setShoulderEntityRight(new CompoundTag());
+		}
 	}
 
-	private void method_7296(@Nullable CompoundTag compoundTag) {
+	private void method_7296(CompoundTag compoundTag) {
 		if (!this.world.isClient && !compoundTag.isEmpty()) {
 			EntityType.getEntityFromTag(compoundTag, this.world).ifPresent(entity -> {
 				if (entity instanceof TameableEntity) {

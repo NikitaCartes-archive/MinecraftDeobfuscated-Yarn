@@ -1,7 +1,8 @@
 package net.minecraft.client.util;
 
-import com.google.common.collect.Maps;
-import java.util.Map;
+import it.unimi.dsi.fastutil.longs.Long2ObjectMap;
+import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap;
+import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import org.lwjgl.PointerBuffer;
@@ -10,19 +11,18 @@ import org.lwjgl.glfw.GLFWMonitorCallback;
 
 @Environment(EnvType.CLIENT)
 public class MonitorTracker {
-	private final Map<Long, Monitor> pointerToMonitorMap = Maps.<Long, Monitor>newHashMap();
-	private final Map<Long, Window> pointerToWindowMap = Maps.<Long, Window>newHashMap();
-	private final Map<Window, Monitor> windowToMonitorMap = Maps.<Window, Monitor>newHashMap();
+	private final Long2ObjectMap<Monitor> pointerToMonitorMap = new Long2ObjectOpenHashMap<>();
 	private final MonitorFactory monitorFactory;
 
 	public MonitorTracker(MonitorFactory monitorFactory) {
 		this.monitorFactory = monitorFactory;
 		GLFW.glfwSetMonitorCallback(this::handleMonitorEvent);
 		PointerBuffer pointerBuffer = GLFW.glfwGetMonitors();
-
-		for (int i = 0; i < pointerBuffer.limit(); i++) {
-			long l = pointerBuffer.get(i);
-			this.pointerToMonitorMap.put(l, monitorFactory.createMonitor(l));
+		if (pointerBuffer != null) {
+			for (int i = 0; i < pointerBuffer.limit(); i++) {
+				long l = pointerBuffer.get(i);
+				this.pointerToMonitorMap.put(l, monitorFactory.createMonitor(l));
+			}
 		}
 	}
 
@@ -34,42 +34,40 @@ public class MonitorTracker {
 		}
 	}
 
+	@Nullable
 	public Monitor getMonitor(long l) {
-		return (Monitor)this.pointerToMonitorMap.get(l);
+		return this.pointerToMonitorMap.get(l);
 	}
 
+	@Nullable
 	public Monitor getMonitor(Window window) {
 		long l = GLFW.glfwGetWindowMonitor(window.getHandle());
 		if (l != 0L) {
 			return this.getMonitor(l);
 		} else {
-			Monitor monitor = (Monitor)this.pointerToMonitorMap.values().iterator().next();
-			int i = -1;
-			int j = window.getPositionX();
-			int k = j + window.getWidth();
-			int m = window.getPositionY();
-			int n = m + window.getHeight();
+			int i = window.getPositionY();
+			int j = i + window.getWidth();
+			int k = window.getPositionX();
+			int m = k + window.getHeight();
+			int n = -1;
+			Monitor monitor = null;
 
 			for (Monitor monitor2 : this.pointerToMonitorMap.values()) {
 				int o = monitor2.getViewportX();
 				int p = o + monitor2.getCurrentVideoMode().getWidth();
 				int q = monitor2.getViewportY();
 				int r = q + monitor2.getCurrentVideoMode().getHeight();
-				int s = clamp(j, o, p);
-				int t = clamp(k, o, p);
-				int u = clamp(m, q, r);
-				int v = clamp(n, q, r);
+				int s = clamp(i, o, p);
+				int t = clamp(j, o, p);
+				int u = clamp(k, q, r);
+				int v = clamp(m, q, r);
 				int w = Math.max(0, t - s);
 				int x = Math.max(0, v - u);
 				int y = w * x;
-				if (y > i) {
+				if (y > n) {
 					monitor = monitor2;
-					i = y;
+					n = y;
 				}
-			}
-
-			if (monitor != this.windowToMonitorMap.get(window)) {
-				this.windowToMonitorMap.put(window, monitor);
 			}
 
 			return monitor;

@@ -207,6 +207,18 @@ public abstract class ChunkTicketManager {
 		}
 	}
 
+	protected String method_21623(long l) {
+		ObjectSortedSet<ChunkTicket<?>> objectSortedSet = this.ticketsByPosition.get(l);
+		String string;
+		if (objectSortedSet != null && !objectSortedSet.isEmpty()) {
+			string = ((ChunkTicket)objectSortedSet.first()).toString();
+		} else {
+			string = "no_ticket";
+		}
+
+		return string;
+	}
+
 	protected void setWatchDistance(int i) {
 		this.nearbyChunkTicketUpdater.setWatchDistance(i);
 	}

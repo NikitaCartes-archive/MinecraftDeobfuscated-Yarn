@@ -100,6 +100,7 @@ public class VillagerEntity extends AbstractTraderEntity implements InteractionO
 	private long lastGossipDecay;
 	private int experience;
 	private long lastRestock;
+	private int field_19427;
 	private static final ImmutableList<MemoryModuleType<?>> MEMORY_MODULES = ImmutableList.of(
 		MemoryModuleType.HOME,
 		MemoryModuleType.JOB_SITE,
@@ -257,7 +258,7 @@ public class VillagerEntity extends AbstractTraderEntity implements InteractionO
 			}
 		}
 
-		if (!this.brain.getOptionalMemory(MemoryModuleType.JOB_SITE).isPresent() && this.hasCustomer()) {
+		if (this.getVillagerData().getProfession() == VillagerProfession.NONE && this.hasCustomer()) {
 			this.resetCustomer();
 		}
 
@@ -357,7 +358,30 @@ public class VillagerEntity extends AbstractTraderEntity implements InteractionO
 			this.craftBread();
 		}
 
-		this.lastRestock = this.world.getTimeOfDay() % 24000L;
+		this.lastRestock = this.world.getTime();
+		this.field_19427++;
+	}
+
+	private boolean method_20823() {
+		for (TradeOffer tradeOffer : this.getOffers()) {
+			if (tradeOffer.isDisabled()) {
+				return true;
+			}
+		}
+
+		return false;
+	}
+
+	private boolean method_20824() {
+		return this.field_19427 < 2 && this.world.getTime() > this.lastRestock + 2400L;
+	}
+
+	public boolean method_20822() {
+		if (this.world.getTime() > this.lastRestock + 12000L) {
+			this.method_20821();
+		}
+
+		return this.method_20824() && this.method_20823();
 	}
 
 	private void prepareRecipesFor(PlayerEntity playerEntity) {
@@ -395,6 +419,7 @@ public class VillagerEntity extends AbstractTraderEntity implements InteractionO
 		compoundTag.putInt("Xp", this.experience);
 		compoundTag.putLong("LastRestock", this.lastRestock);
 		compoundTag.putLong("LastGossipDecay", this.lastGossipDecay);
+		compoundTag.putInt("RestocksToday", this.field_19427);
 	}
 
 	@Override
@@ -422,6 +447,7 @@ public class VillagerEntity extends AbstractTraderEntity implements InteractionO
 		this.lastGossipDecay = compoundTag.getLong("LastGossipDecay");
 		this.setCanPickUpLoot(true);
 		this.reinitializeBrain((ServerWorld)this.world);
+		this.field_19427 = compoundTag.getInt("RestocksToday");
 	}
 
 	@Override
@@ -548,7 +574,7 @@ public class VillagerEntity extends AbstractTraderEntity implements InteractionO
 		return this.foodLevel < 12;
 	}
 
-	public void consumeAvailableFood() {
+	private void consumeAvailableFood() {
 		if (this.lacksFood() && this.getAvailableFood() != 0) {
 			for (int i = 0; i < this.getInventory().getInvSize(); i++) {
 				ItemStack itemStack = this.getInventory().getInvStack(i);
@@ -682,16 +708,29 @@ public class VillagerEntity extends AbstractTraderEntity implements InteractionO
 	protected void loot(ItemEntity itemEntity) {
 		ItemStack itemStack = itemEntity.getStack();
 		Item item = itemStack.getItem();
-		VillagerProfession villagerProfession = this.getVillagerData().getProfession();
-		if (GATHERABLE_ITEMS.contains(item) || villagerProfession.getGatherableItems().contains(item)) {
+		if (this.method_20820(item)) {
 			BasicInventory basicInventory = this.getInventory();
-			int i = basicInventory.countInInv(item);
-			if (i == 256) {
+			boolean bl = false;
+
+			for (int i = 0; i < basicInventory.getInvSize(); i++) {
+				ItemStack itemStack2 = basicInventory.getInvStack(i);
+				if (itemStack2.isEmpty() || itemStack2.getItem() == item && itemStack2.getCount() < itemStack2.getMaxCount()) {
+					bl = true;
+					break;
+				}
+			}
+
+			if (!bl) {
 				return;
 			}
 
-			if (i > 256) {
-				basicInventory.poll(item, i - 256);
+			int ix = basicInventory.countInInv(item);
+			if (ix == 256) {
+				return;
+			}
+
+			if (ix > 256) {
+				basicInventory.poll(item, ix - 256);
 				return;
 			}
 
@@ -703,6 +742,10 @@ public class VillagerEntity extends AbstractTraderEntity implements InteractionO
 				itemStack.setCount(itemStack2.getCount());
 			}
 		}
+	}
+
+	public boolean method_20820(Item item) {
+		return GATHERABLE_ITEMS.contains(item) || this.getVillagerData().getProfession().getGatherableItems().contains(item);
 	}
 
 	public boolean wantsToStartBreeding() {
@@ -846,7 +889,8 @@ public class VillagerEntity extends AbstractTraderEntity implements InteractionO
 	@Override
 	public void onInteractionWith(EntityInteraction entityInteraction, Entity entity) {
 		if (entityInteraction == EntityInteraction.ZOMBIE_VILLAGER_CURED) {
-			this.gossip.startGossip(entity.getUuid(), VillageGossipType.MAJOR_POSITIVE, 25);
+			this.gossip.startGossip(entity.getUuid(), VillageGossipType.MAJOR_POSITIVE, 20);
+			this.gossip.startGossip(entity.getUuid(), VillageGossipType.MINOR_POSITIVE, 25);
 		} else if (entityInteraction == EntityInteraction.TRADE) {
 			this.gossip.startGossip(entity.getUuid(), VillageGossipType.TRADING, 2);
 		} else if (entityInteraction == EntityInteraction.VILLAGER_HURT) {
@@ -865,8 +909,8 @@ public class VillagerEntity extends AbstractTraderEntity implements InteractionO
 		this.experience = i;
 	}
 
-	public long getLastRestock() {
-		return this.lastRestock;
+	private void method_20821() {
+		this.field_19427 = 0;
 	}
 
 	@Override

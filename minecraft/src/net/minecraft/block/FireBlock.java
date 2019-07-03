@@ -81,7 +81,7 @@ public class FireBlock extends Block {
 	public BlockState getStateForPosition(BlockView blockView, BlockPos blockPos) {
 		BlockPos blockPos2 = blockPos.down();
 		BlockState blockState = blockView.getBlockState(blockPos2);
-		if (!this.isFlammable(blockState) && !Block.isSolidFullSquare(blockState, blockView, blockPos2, Direction.UP)) {
+		if (!this.isFlammable(blockState) && !blockState.method_20827(blockView, blockPos2, Direction.UP)) {
 			BlockState blockState2 = this.getDefaultState();
 
 			for (Direction direction : Direction.values()) {
@@ -100,8 +100,7 @@ public class FireBlock extends Block {
 	@Override
 	public boolean canPlaceAt(BlockState blockState, ViewableWorld viewableWorld, BlockPos blockPos) {
 		BlockPos blockPos2 = blockPos.down();
-		return Block.isSolidFullSquare(viewableWorld.getBlockState(blockPos2), viewableWorld, blockPos2, Direction.UP)
-			|| this.areBlocksAroundFlammable(viewableWorld, blockPos);
+		return viewableWorld.getBlockState(blockPos2).method_20827(viewableWorld, blockPos2, Direction.UP) || this.areBlocksAroundFlammable(viewableWorld, blockPos);
 	}
 
 	@Override
@@ -132,7 +131,7 @@ public class FireBlock extends Block {
 					world.getBlockTickScheduler().schedule(blockPos, this, this.getTickRate(world) + random.nextInt(10));
 					if (!this.areBlocksAroundFlammable(world, blockPos)) {
 						BlockPos blockPos2 = blockPos.down();
-						if (!Block.isSolidFullSquare(world.getBlockState(blockPos2), world, blockPos2, Direction.UP) || i > 3) {
+						if (!world.getBlockState(blockPos2).method_20827(world, blockPos2, Direction.UP) || i > 3) {
 							world.clearBlockState(blockPos, false);
 						}
 
@@ -280,7 +279,7 @@ public class FireBlock extends Block {
 
 		BlockPos blockPos2 = blockPos.down();
 		BlockState blockState2 = world.getBlockState(blockPos2);
-		if (!this.isFlammable(blockState2) && !Block.isSolidFullSquare(blockState2, world, blockPos2, Direction.UP)) {
+		if (!this.isFlammable(blockState2) && !blockState2.method_20827(world, blockPos2, Direction.UP)) {
 			if (this.isFlammable(world.getBlockState(blockPos.west()))) {
 				for (int i = 0; i < 2; i++) {
 					double d = (double)blockPos.getX() + random.nextDouble() * 0.1F;

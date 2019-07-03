@@ -166,7 +166,7 @@ public class RedstoneWireBlock extends Block {
 		BlockPos blockPos3 = blockPos.up();
 		BlockState blockState2 = blockView.getBlockState(blockPos3);
 		if (!blockState2.isSimpleFullBlock(blockView, blockPos3)) {
-			boolean bl = Block.isSolidFullSquare(blockState, blockView, blockPos2, Direction.UP) || blockState.getBlock() == Blocks.HOPPER;
+			boolean bl = blockState.method_20827(blockView, blockPos2, Direction.UP) || blockState.getBlock() == Blocks.HOPPER;
 			if (bl && connectsTo(blockView.getBlockState(blockPos2.up()))) {
 				if (isShapeFullCube(blockState.getCollisionShape(blockView, blockPos2))) {
 					return WireConnection.UP;
@@ -185,7 +185,7 @@ public class RedstoneWireBlock extends Block {
 	public boolean canPlaceAt(BlockState blockState, ViewableWorld viewableWorld, BlockPos blockPos) {
 		BlockPos blockPos2 = blockPos.down();
 		BlockState blockState2 = viewableWorld.getBlockState(blockPos2);
-		return Block.isSolidFullSquare(blockState2, viewableWorld, blockPos2, Direction.UP) || blockState2.getBlock() == Blocks.HOPPER;
+		return blockState2.method_20827(viewableWorld, blockPos2, Direction.UP) || blockState2.getBlock() == Blocks.HOPPER;
 	}
 
 	private BlockState update(World world, BlockPos blockPos, BlockState blockState) {

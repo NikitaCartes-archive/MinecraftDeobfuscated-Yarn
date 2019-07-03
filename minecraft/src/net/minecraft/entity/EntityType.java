@@ -1,7 +1,6 @@
 package net.minecraft.entity;
 
 import com.mojang.datafixers.DataFixUtils;
-import com.mojang.datafixers.types.Type;
 import java.util.Collections;
 import java.util.Optional;
 import java.util.UUID;
@@ -310,7 +309,7 @@ public class EntityType<T extends Entity> {
 		"sheep", EntityType.Builder.create(SheepEntity::new, EntityCategory.CREATURE).setDimensions(0.9F, 1.3F)
 	);
 	public static final EntityType<ShulkerEntity> SHULKER = register(
-		"shulker", EntityType.Builder.create(ShulkerEntity::new, EntityCategory.MONSTER).makeFireImmune().setDimensions(1.0F, 1.0F)
+		"shulker", EntityType.Builder.create(ShulkerEntity::new, EntityCategory.MONSTER).makeFireImmune().method_20815().setDimensions(1.0F, 1.0F)
 	);
 	public static final EntityType<ShulkerBulletEntity> SHULKER_BULLET = register(
 		"shulker_bullet", EntityType.Builder.<ShulkerBulletEntity>create(ShulkerBulletEntity::new, EntityCategory.MISC).setDimensions(0.3125F, 0.3125F)
@@ -386,7 +385,7 @@ public class EntityType<T extends Entity> {
 		"vindicator", EntityType.Builder.create(VindicatorEntity::new, EntityCategory.MONSTER).setDimensions(0.6F, 1.95F)
 	);
 	public static final EntityType<PillagerEntity> PILLAGER = register(
-		"pillager", EntityType.Builder.create(PillagerEntity::new, EntityCategory.MONSTER).setDimensions(0.6F, 1.95F)
+		"pillager", EntityType.Builder.create(PillagerEntity::new, EntityCategory.MONSTER).method_20815().setDimensions(0.6F, 1.95F)
 	);
 	public static final EntityType<WanderingTraderEntity> WANDERING_TRADER = register(
 		"wandering_trader", EntityType.Builder.create(WanderingTraderEntity::new, EntityCategory.CREATURE).setDimensions(0.6F, 1.95F)
@@ -435,14 +434,13 @@ public class EntityType<T extends Entity> {
 	private final boolean saveable;
 	private final boolean summonable;
 	private final boolean fireImmune;
+	private final boolean field_19423;
 	@Nullable
 	private String translationKey;
 	@Nullable
 	private Text name;
 	@Nullable
 	private Identifier lootTableId;
-	@Nullable
-	private final Type<?> dataFixerType;
 	private final EntityDimensions dimensions;
 
 	private static <T extends Entity> EntityType<T> register(String string, EntityType.Builder<T> builder) {
@@ -463,15 +461,15 @@ public class EntityType<T extends Entity> {
 		boolean bl,
 		boolean bl2,
 		boolean bl3,
-		@Nullable Type<?> type,
+		boolean bl4,
 		EntityDimensions entityDimensions
 	) {
 		this.factory = entityFactory;
 		this.category = entityCategory;
+		this.field_19423 = bl4;
 		this.saveable = bl;
 		this.summonable = bl2;
 		this.fireImmune = bl3;
-		this.dataFixerType = type;
 		this.dimensions = entityDimensions;
 	}
 
@@ -587,6 +585,10 @@ public class EntityType<T extends Entity> {
 
 	public boolean isFireImmune() {
 		return this.fireImmune;
+	}
+
+	public boolean method_20814() {
+		return this.field_19423;
 	}
 
 	public EntityCategory getCategory() {
@@ -779,11 +781,13 @@ public class EntityType<T extends Entity> {
 		private boolean saveable = true;
 		private boolean summonable = true;
 		private boolean fireImmune;
+		private boolean field_19424;
 		private EntityDimensions size = EntityDimensions.changing(0.6F, 1.8F);
 
 		private Builder(EntityType.EntityFactory<T> entityFactory, EntityCategory entityCategory) {
 			this.factory = entityFactory;
 			this.category = entityCategory;
+			this.field_19424 = entityCategory == EntityCategory.CREATURE || entityCategory == EntityCategory.MISC;
 		}
 
 		public static <T extends Entity> EntityType.Builder<T> create(EntityType.EntityFactory<T> entityFactory, EntityCategory entityCategory) {
@@ -814,23 +818,25 @@ public class EntityType<T extends Entity> {
 			return this;
 		}
 
+		public EntityType.Builder<T> method_20815() {
+			this.field_19424 = true;
+			return this;
+		}
+
 		public EntityType<T> build(String string) {
-			Type<?> type = null;
 			if (this.saveable) {
 				try {
-					type = Schemas.getFixer()
-						.getSchema(DataFixUtils.makeKey(SharedConstants.getGameVersion().getWorldVersion()))
-						.getChoiceType(TypeReferences.ENTITY_TREE, string);
-				} catch (IllegalStateException var4) {
+					Schemas.getFixer().getSchema(DataFixUtils.makeKey(SharedConstants.getGameVersion().getWorldVersion())).getChoiceType(TypeReferences.ENTITY_TREE, string);
+				} catch (IllegalStateException var3) {
 					if (SharedConstants.isDevelopment) {
-						throw var4;
+						throw var3;
 					}
 
 					EntityType.LOGGER.warn("No data fixer registered for entity {}", string);
 				}
 			}
 
-			return new EntityType<>(this.factory, this.category, this.saveable, this.summonable, this.fireImmune, type, this.size);
+			return new EntityType<>(this.factory, this.category, this.saveable, this.summonable, this.fireImmune, this.field_19424, this.size);
 		}
 	}
 

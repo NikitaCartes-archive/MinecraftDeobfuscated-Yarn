@@ -29,7 +29,6 @@ import io.netty.util.concurrent.GenericFutureListener;
 import java.net.InetAddress;
 import java.net.SocketAddress;
 import java.util.Queue;
-import java.util.concurrent.locks.ReentrantReadWriteLock;
 import javax.annotation.Nullable;
 import javax.crypto.SecretKey;
 import net.fabricmc.api.EnvType;
@@ -65,7 +64,6 @@ public class ClientConnection extends SimpleChannelInboundHandler<Packet<?>> {
 	);
 	private final NetworkSide side;
 	private final Queue<ClientConnection.PacketWrapper> packetQueue = Queues.<ClientConnection.PacketWrapper>newConcurrentLinkedQueue();
-	private final ReentrantReadWriteLock lock = new ReentrantReadWriteLock();
 	private Channel channel;
 	private SocketAddress address;
 	private PacketListener packetListener;
@@ -163,13 +161,7 @@ public class ClientConnection extends SimpleChannelInboundHandler<Packet<?>> {
 			this.sendQueuedPackets();
 			this.sendImmediately(packet, genericFutureListener);
 		} else {
-			this.lock.writeLock().lock();
-
-			try {
-				this.packetQueue.add(new ClientConnection.PacketWrapper(packet, genericFutureListener));
-			} finally {
-				this.lock.writeLock().unlock();
-			}
+			this.packetQueue.add(new ClientConnection.PacketWrapper(packet, genericFutureListener));
 		}
 	}
 
@@ -211,15 +203,11 @@ public class ClientConnection extends SimpleChannelInboundHandler<Packet<?>> {
 
 	private void sendQueuedPackets() {
 		if (this.channel != null && this.channel.isOpen()) {
-			this.lock.readLock().lock();
-
-			try {
-				while (!this.packetQueue.isEmpty()) {
-					ClientConnection.PacketWrapper packetWrapper = (ClientConnection.PacketWrapper)this.packetQueue.poll();
+			synchronized (this.packetQueue) {
+				ClientConnection.PacketWrapper packetWrapper;
+				while ((packetWrapper = (ClientConnection.PacketWrapper)this.packetQueue.poll()) != null) {
 					this.sendImmediately(packetWrapper.packet, packetWrapper.listener);
 				}
-			} finally {
-				this.lock.readLock().unlock();
 			}
 		}
 	}

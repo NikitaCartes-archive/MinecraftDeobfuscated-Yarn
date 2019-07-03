@@ -11,25 +11,23 @@ import org.lwjgl.glfw.GLFWVidMode.Buffer;
 
 @Environment(EnvType.CLIENT)
 public final class Monitor {
-	private final MonitorTracker monitorTracker;
 	private final long handle;
 	private final List<VideoMode> videoModes;
 	private VideoMode currentVideoMode;
 	private int x;
 	private int y;
 
-	public Monitor(MonitorTracker monitorTracker, long l) {
-		this.monitorTracker = monitorTracker;
+	public Monitor(long l) {
 		this.handle = l;
 		this.videoModes = Lists.<VideoMode>newArrayList();
 		this.populateVideoModes();
 	}
 
-	public void populateVideoModes() {
+	private void populateVideoModes() {
 		this.videoModes.clear();
 		Buffer buffer = GLFW.glfwGetVideoModes(this.handle);
 
-		for (int i = 0; i < buffer.limit(); i++) {
+		for (int i = buffer.limit() - 1; i >= 0; i--) {
 			buffer.position(i);
 			VideoMode videoMode = new VideoMode(buffer);
 			if (videoMode.getRedBits() >= 8 && videoMode.getGreenBits() >= 8 && videoMode.getBlueBits() >= 8) {
@@ -50,7 +48,7 @@ public final class Monitor {
 		if (optional.isPresent()) {
 			VideoMode videoMode = (VideoMode)optional.get();
 
-			for (VideoMode videoMode2 : Lists.reverse(this.videoModes)) {
+			for (VideoMode videoMode2 : this.videoModes) {
 				if (videoMode2.equals(videoMode)) {
 					return videoMode2;
 				}
@@ -60,18 +58,8 @@ public final class Monitor {
 		return this.getCurrentVideoMode();
 	}
 
-	public int findClosestVideoModeIndex(Optional<VideoMode> optional) {
-		if (optional.isPresent()) {
-			VideoMode videoMode = (VideoMode)optional.get();
-
-			for (int i = this.videoModes.size() - 1; i >= 0; i--) {
-				if (videoMode.equals(this.videoModes.get(i))) {
-					return i;
-				}
-			}
-		}
-
-		return this.videoModes.indexOf(this.getCurrentVideoMode());
+	public int findClosestVideoModeIndex(VideoMode videoMode) {
+		return this.videoModes.indexOf(videoMode);
 	}
 
 	public VideoMode getCurrentVideoMode() {
