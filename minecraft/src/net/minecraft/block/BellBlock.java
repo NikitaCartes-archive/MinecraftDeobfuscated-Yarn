@@ -155,17 +155,17 @@ public class BellBlock extends BlockWithEntity {
 			}
 		} else {
 			boolean bl = axis == Direction.Axis.X
-					&& isSolidFullSquare(world.getBlockState(blockPos.west()), world, blockPos.west(), Direction.EAST)
-					&& isSolidFullSquare(world.getBlockState(blockPos.east()), world, blockPos.east(), Direction.WEST)
+					&& world.getBlockState(blockPos.west()).method_20827(world, blockPos.west(), Direction.EAST)
+					&& world.getBlockState(blockPos.east()).method_20827(world, blockPos.east(), Direction.WEST)
 				|| axis == Direction.Axis.Z
-					&& isSolidFullSquare(world.getBlockState(blockPos.north()), world, blockPos.north(), Direction.SOUTH)
-					&& isSolidFullSquare(world.getBlockState(blockPos.south()), world, blockPos.south(), Direction.NORTH);
+					&& world.getBlockState(blockPos.north()).method_20827(world, blockPos.north(), Direction.SOUTH)
+					&& world.getBlockState(blockPos.south()).method_20827(world, blockPos.south(), Direction.NORTH);
 			BlockState blockState = this.getDefaultState().with(FACING, direction.getOpposite()).with(ATTACHMENT, bl ? Attachment.DOUBLE_WALL : Attachment.SINGLE_WALL);
 			if (blockState.canPlaceAt(itemPlacementContext.getWorld(), itemPlacementContext.getBlockPos())) {
 				return blockState;
 			}
 
-			boolean bl2 = isSolidFullSquare(world.getBlockState(blockPos.down()), world, blockPos.down(), Direction.UP);
+			boolean bl2 = world.getBlockState(blockPos.down()).method_20827(world, blockPos.down(), Direction.UP);
 			blockState = blockState.with(ATTACHMENT, bl2 ? Attachment.FLOOR : Attachment.CEILING);
 			if (blockState.canPlaceAt(itemPlacementContext.getWorld(), itemPlacementContext.getBlockPos())) {
 				return blockState;
@@ -185,13 +185,11 @@ public class BellBlock extends BlockWithEntity {
 			return Blocks.AIR.getDefaultState();
 		} else {
 			if (direction.getAxis() == ((Direction)blockState.get(FACING)).getAxis()) {
-				if (attachment == Attachment.DOUBLE_WALL && !isSolidFullSquare(blockState2, iWorld, blockPos2, direction)) {
+				if (attachment == Attachment.DOUBLE_WALL && !blockState2.method_20827(iWorld, blockPos2, direction)) {
 					return blockState.with(ATTACHMENT, Attachment.SINGLE_WALL).with(FACING, direction.getOpposite());
 				}
 
-				if (attachment == Attachment.SINGLE_WALL
-					&& direction2.getOpposite() == direction
-					&& isSolidFullSquare(blockState2, iWorld, blockPos2, blockState.get(FACING))) {
+				if (attachment == Attachment.SINGLE_WALL && direction2.getOpposite() == direction && blockState2.method_20827(iWorld, blockPos2, blockState.get(FACING))) {
 					return blockState.with(ATTACHMENT, Attachment.DOUBLE_WALL);
 				}
 			}

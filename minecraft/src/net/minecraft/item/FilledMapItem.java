@@ -8,7 +8,6 @@ import java.util.List;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.MaterialColor;
@@ -208,7 +207,7 @@ public class FilledMapItem extends NetworkSyncedItem {
 
 	private BlockState getFluidStateIfVisible(World world, BlockState blockState, BlockPos blockPos) {
 		FluidState fluidState = blockState.getFluidState();
-		return !fluidState.isEmpty() && !Block.isSolidFullSquare(blockState, world, blockPos, Direction.UP) ? fluidState.getBlockState() : blockState;
+		return !fluidState.isEmpty() && !blockState.method_20827(world, blockPos, Direction.UP) ? fluidState.getBlockState() : blockState;
 	}
 
 	private static boolean hasPositiveDepth(Biome[] biomes, int i, int j, int k) {

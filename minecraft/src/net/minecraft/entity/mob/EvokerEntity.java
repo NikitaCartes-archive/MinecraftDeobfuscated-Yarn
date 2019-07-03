@@ -2,7 +2,6 @@ package net.minecraft.entity.mob;
 
 import java.util.List;
 import javax.annotation.Nullable;
-import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityGroup;
@@ -195,7 +194,7 @@ public class EvokerEntity extends SpellcastingIllagerEntity {
 			do {
 				BlockPos blockPos2 = blockPos.down();
 				BlockState blockState = EvokerEntity.this.world.getBlockState(blockPos2);
-				if (Block.isSolidFullSquare(blockState, EvokerEntity.this.world, blockPos2, Direction.UP)) {
+				if (blockState.method_20827(EvokerEntity.this.world, blockPos2, Direction.UP)) {
 					if (!EvokerEntity.this.world.isAir(blockPos)) {
 						BlockState blockState2 = EvokerEntity.this.world.getBlockState(blockPos);
 						VoxelShape voxelShape = blockState2.getCollisionShape(EvokerEntity.this.world, blockPos);

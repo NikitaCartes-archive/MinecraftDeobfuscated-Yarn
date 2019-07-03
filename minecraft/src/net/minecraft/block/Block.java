@@ -154,7 +154,7 @@ public class Block implements ItemConvertible {
 
 	@Deprecated
 	public boolean allowsSpawning(BlockState blockState, BlockView blockView, BlockPos blockPos, EntityType<?> entityType) {
-		return isSolidFullSquare(blockState, blockView, blockPos, Direction.UP) && this.lightLevel < 14;
+		return blockState.method_20827(blockView, blockPos, Direction.UP) && this.lightLevel < 14;
 	}
 
 	@Deprecated

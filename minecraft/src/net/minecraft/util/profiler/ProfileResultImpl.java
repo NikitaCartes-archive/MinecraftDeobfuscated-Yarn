@@ -12,6 +12,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
+import net.minecraft.SharedConstants;
 import net.minecraft.util.SystemUtil;
 import org.apache.commons.io.IOUtils;
 import org.apache.logging.log4j.LogManager;
@@ -138,6 +139,7 @@ public class ProfileResultImpl implements ProfileResult {
 		stringBuilder.append("// ");
 		stringBuilder.append(generateWittyComment());
 		stringBuilder.append("\n\n");
+		stringBuilder.append("Version: ").append(SharedConstants.getGameVersion().getName()).append('\n');
 		stringBuilder.append("Time span: ").append(l / 1000000L).append(" ms\n");
 		stringBuilder.append("Tick span: ").append(i).append(" ticks\n");
 		stringBuilder.append("// This is approximately ")

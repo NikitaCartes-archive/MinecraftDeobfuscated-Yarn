@@ -7,6 +7,7 @@ import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.state.StateFactory;
 
+@FunctionalInterface
 @Environment(EnvType.CLIENT)
 public interface MultipartModelSelector {
 	MultipartModelSelector TRUE = stateFactory -> blockState -> true;

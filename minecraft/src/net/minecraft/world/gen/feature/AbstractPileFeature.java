@@ -3,7 +3,6 @@ package net.minecraft.world.gen.feature;
 import com.mojang.datafixers.Dynamic;
 import java.util.Random;
 import java.util.function.Function;
-import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.util.math.BlockPos;
@@ -43,7 +42,7 @@ public abstract class AbstractPileFeature extends Feature<DefaultFeatureConfig> 
 	private boolean canPlacePileBlock(IWorld iWorld, BlockPos blockPos, Random random) {
 		BlockPos blockPos2 = blockPos.down();
 		BlockState blockState = iWorld.getBlockState(blockPos2);
-		return blockState.getBlock() == Blocks.GRASS_PATH ? random.nextBoolean() : Block.isSolidFullSquare(blockState, iWorld, blockPos2, Direction.UP);
+		return blockState.getBlock() == Blocks.GRASS_PATH ? random.nextBoolean() : blockState.method_20827(iWorld, blockPos2, Direction.UP);
 	}
 
 	private void addPileBlock(IWorld iWorld, BlockPos blockPos, Random random) {

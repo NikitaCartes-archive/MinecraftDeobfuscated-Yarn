@@ -1,6 +1,5 @@
 package net.minecraft.world.chunk;
 
-import java.util.Arrays;
 import java.util.function.Function;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
@@ -9,6 +8,7 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.util.IdList;
 import net.minecraft.util.PacketByteBuf;
+import org.apache.commons.lang3.ArrayUtils;
 
 public class ArrayPalette<T> implements Palette<T> {
 	private final IdList<T> idList;
@@ -46,7 +46,7 @@ public class ArrayPalette<T> implements Palette<T> {
 
 	@Override
 	public boolean accepts(T object) {
-		return Arrays.stream(this.array).anyMatch(object2 -> object2 == object);
+		return ArrayUtils.contains(this.array, object);
 	}
 
 	@Nullable

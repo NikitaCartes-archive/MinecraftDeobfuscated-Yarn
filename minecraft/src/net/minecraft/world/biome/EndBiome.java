@@ -31,6 +31,7 @@ public final class EndBiome extends Biome {
 			GenerationStep.Feature.SURFACE_STRUCTURES,
 			configureFeature(Feature.END_SPIKE, new EndSpikeFeatureConfig(false, ImmutableList.of(), null), Decorator.NOPE, DecoratorConfig.DEFAULT)
 		);
+		DefaultBiomeFeatures.method_20826(this);
 		this.addSpawn(EntityCategory.MONSTER, new Biome.SpawnEntry(EntityType.ENDERMAN, 10, 4, 4));
 	}
 

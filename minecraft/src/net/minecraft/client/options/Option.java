@@ -94,19 +94,6 @@ public abstract class Option {
 			return d == doubleOption.getMax() ? string + I18n.translate("options.framerateLimit.max") : string + I18n.translate("options.framerate", (int)d);
 		}
 	);
-	public static final DoubleOption FULLSCREEN_RESOLUTION = new DoubleOption(
-		"options.fullscreen.resolution",
-		0.0,
-		0.0,
-		1.0F,
-		gameOptions -> (double)MinecraftClient.getInstance().window.method_4508(),
-		(gameOptions, double_) -> MinecraftClient.getInstance().window.method_4505((int)double_.doubleValue()),
-		(gameOptions, doubleOption) -> {
-			double d = doubleOption.get(gameOptions);
-			String string = doubleOption.getDisplayPrefix();
-			return d == 0.0 ? string + I18n.translate("options.fullscreen.current") : string + MinecraftClient.getInstance().window.method_4487((int)d - 1);
-		}
-	);
 	public static final DoubleOption GAMMA = new DoubleOption(
 		"options.gamma", 0.0, 1.0, 0.0F, gameOptions -> gameOptions.gamma, (gameOptions, double_) -> gameOptions.gamma = double_, (gameOptions, doubleOption) -> {
 			double d = doubleOption.method_18611(doubleOption.get(gameOptions));

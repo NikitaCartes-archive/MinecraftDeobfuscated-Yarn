@@ -58,6 +58,11 @@ public class BambooBlock extends Block implements Fertilizable {
 	}
 
 	@Override
+	public boolean canPlaceAtSide(BlockState blockState, BlockView blockView, BlockPos blockPos, BlockPlacementEnvironment blockPlacementEnvironment) {
+		return false;
+	}
+
+	@Override
 	public VoxelShape getCollisionShape(BlockState blockState, BlockView blockView, BlockPos blockPos, EntityContext entityContext) {
 		Vec3d vec3d = blockState.getOffsetPos(blockView, blockPos);
 		return NO_LEAVES_SHAPE.offset(vec3d.x, vec3d.y, vec3d.z);

@@ -34,7 +34,7 @@ public class TallSeagrassBlock extends ReplaceableTallPlantBlock implements Flui
 
 	@Override
 	protected boolean canPlantOnTop(BlockState blockState, BlockView blockView, BlockPos blockPos) {
-		return Block.isSolidFullSquare(blockState, blockView, blockPos, Direction.UP) && blockState.getBlock() != Blocks.MAGMA_BLOCK;
+		return blockState.method_20827(blockView, blockPos, Direction.UP) && blockState.getBlock() != Blocks.MAGMA_BLOCK;
 	}
 
 	@Environment(EnvType.CLIENT)

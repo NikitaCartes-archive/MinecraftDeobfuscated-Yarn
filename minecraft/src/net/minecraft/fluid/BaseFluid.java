@@ -113,7 +113,7 @@ public abstract class BaseFluid extends Fluid {
 		} else if (direction == Direction.UP) {
 			return true;
 		} else {
-			return blockState.getMaterial() == Material.ICE ? false : Block.isSolidFullSquare(blockState, blockView, blockPos, direction);
+			return blockState.getMaterial() == Material.ICE ? false : blockState.method_20827(blockView, blockPos, direction);
 		}
 	}
 

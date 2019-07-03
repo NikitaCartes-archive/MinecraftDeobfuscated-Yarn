@@ -32,11 +32,6 @@ public abstract class WaterCreatureEntity extends MobEntityWithAi {
 	}
 
 	@Override
-	public boolean canImmediatelyDespawn(double d) {
-		return true;
-	}
-
-	@Override
 	protected int getCurrentExperience(PlayerEntity playerEntity) {
 		return 1 + this.world.random.nextInt(3);
 	}

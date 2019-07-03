@@ -39,6 +39,7 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.village.PointOfInterestStorage;
 import net.minecraft.village.PointOfInterestType;
+import net.minecraft.world.GameRules;
 import net.minecraft.world.IWorld;
 import net.minecraft.world.LocalDifficulty;
 import net.minecraft.world.World;
@@ -154,7 +155,9 @@ public abstract class RaiderEntity extends PatrolEntity {
 
 					i = MathHelper.clamp(i, 0, 5);
 					StatusEffectInstance statusEffectInstance2 = new StatusEffectInstance(StatusEffects.BAD_OMEN, 120000, i, false, false, true);
-					playerEntity.addPotionEffect(statusEffectInstance2);
+					if (!this.world.getGameRules().getBoolean(GameRules.DISABLE_RAIDS)) {
+						playerEntity.addPotionEffect(statusEffectInstance2);
+					}
 				}
 			}
 		}

@@ -40,10 +40,10 @@ public class PaneBlock extends HorizontalConnectedBlock {
 		BlockState blockState3 = blockView.getBlockState(blockPos4);
 		BlockState blockState4 = blockView.getBlockState(blockPos5);
 		return this.getDefaultState()
-			.with(NORTH, Boolean.valueOf(this.connectsTo(blockState, Block.isSolidFullSquare(blockState, blockView, blockPos2, Direction.SOUTH))))
-			.with(SOUTH, Boolean.valueOf(this.connectsTo(blockState2, Block.isSolidFullSquare(blockState2, blockView, blockPos3, Direction.NORTH))))
-			.with(WEST, Boolean.valueOf(this.connectsTo(blockState3, Block.isSolidFullSquare(blockState3, blockView, blockPos4, Direction.EAST))))
-			.with(EAST, Boolean.valueOf(this.connectsTo(blockState4, Block.isSolidFullSquare(blockState4, blockView, blockPos5, Direction.WEST))))
+			.with(NORTH, Boolean.valueOf(this.connectsTo(blockState, blockState.method_20827(blockView, blockPos2, Direction.SOUTH))))
+			.with(SOUTH, Boolean.valueOf(this.connectsTo(blockState2, blockState2.method_20827(blockView, blockPos3, Direction.NORTH))))
+			.with(WEST, Boolean.valueOf(this.connectsTo(blockState3, blockState3.method_20827(blockView, blockPos4, Direction.EAST))))
+			.with(EAST, Boolean.valueOf(this.connectsTo(blockState4, blockState4.method_20827(blockView, blockPos5, Direction.WEST))))
 			.with(WATERLOGGED, Boolean.valueOf(fluidState.getFluid() == Fluids.WATER));
 	}
 
@@ -58,7 +58,7 @@ public class PaneBlock extends HorizontalConnectedBlock {
 		return direction.getAxis().isHorizontal()
 			? blockState.with(
 				(Property)FACING_PROPERTIES.get(direction),
-				Boolean.valueOf(this.connectsTo(blockState2, Block.isSolidFullSquare(blockState2, iWorld, blockPos2, direction.getOpposite())))
+				Boolean.valueOf(this.connectsTo(blockState2, blockState2.method_20827(iWorld, blockPos2, direction.getOpposite())))
 			)
 			: super.getStateForNeighborUpdate(blockState, direction, blockState2, iWorld, blockPos, blockPos2);
 	}

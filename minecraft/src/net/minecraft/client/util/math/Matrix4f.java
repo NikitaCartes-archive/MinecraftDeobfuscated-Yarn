@@ -4,7 +4,6 @@ import java.nio.FloatBuffer;
 import java.util.Arrays;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.util.math.Quaternion;
 
 @Environment(EnvType.CLIENT)
 public final class Matrix4f {
@@ -15,10 +14,10 @@ public final class Matrix4f {
 
 	public Matrix4f(Quaternion quaternion) {
 		this();
-		float f = quaternion.getX();
-		float g = quaternion.getY();
-		float h = quaternion.getZ();
-		float i = quaternion.getW();
+		float f = quaternion.method_4921();
+		float g = quaternion.method_4922();
+		float h = quaternion.method_4923();
+		float i = quaternion.method_4924();
 		float j = 2.0F * f * f;
 		float k = 2.0F * g * g;
 		float l = 2.0F * h * h;

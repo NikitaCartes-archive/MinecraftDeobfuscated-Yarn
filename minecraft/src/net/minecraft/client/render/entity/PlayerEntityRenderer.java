@@ -49,8 +49,7 @@ public class PlayerEntityRenderer extends LivingEntityRenderer<AbstractClientPla
 	}
 
 	public void method_4215(AbstractClientPlayerEntity abstractClientPlayerEntity, double d, double e, double f, float g, float h) {
-		if (!abstractClientPlayerEntity.isMainPlayer()
-			|| this.renderManager.camera != null && this.renderManager.camera.getFocusedEntity() == abstractClientPlayerEntity) {
+		if (!abstractClientPlayerEntity.isMainPlayer() || this.renderManager.camera.getFocusedEntity() == abstractClientPlayerEntity) {
 			double i = e;
 			if (abstractClientPlayerEntity.isInSneakingPose()) {
 				i = e - 0.125;

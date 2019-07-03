@@ -142,7 +142,7 @@ public class ZombieVillagerEntity extends ZombieEntity implements VillagerDataCo
 		return this.getDataTracker().get(CONVERTING);
 	}
 
-	protected void setConverting(@Nullable UUID uUID, int i) {
+	private void setConverting(@Nullable UUID uUID, int i) {
 		this.converter = uUID;
 		this.conversionTimer = i;
 		this.getDataTracker().set(CONVERTING, true);
@@ -173,7 +173,7 @@ public class ZombieVillagerEntity extends ZombieEntity implements VillagerDataCo
 		}
 	}
 
-	protected void finishConversion(ServerWorld serverWorld) {
+	private void finishConversion(ServerWorld serverWorld) {
 		VillagerEntity villagerEntity = EntityType.VILLAGER.create(serverWorld);
 		villagerEntity.copyPositionAndRotation(this);
 		villagerEntity.setVillagerData(this.getVillagerData());
@@ -207,7 +207,7 @@ public class ZombieVillagerEntity extends ZombieEntity implements VillagerDataCo
 		serverWorld.playLevelEvent(null, 1027, new BlockPos(this), 0);
 	}
 
-	protected int getConversionRate() {
+	private int getConversionRate() {
 		int i = 1;
 		if (this.random.nextFloat() < 0.01F) {
 			int j = 0;
