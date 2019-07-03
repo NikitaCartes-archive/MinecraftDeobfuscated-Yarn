@@ -32,7 +32,6 @@ import io.netty.util.concurrent.GenericFutureListener;
 import java.net.InetAddress;
 import java.net.SocketAddress;
 import java.util.Queue;
-import java.util.concurrent.locks.ReentrantReadWriteLock;
 import javax.crypto.SecretKey;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
@@ -75,7 +74,6 @@ extends SimpleChannelInboundHandler<Packet<?>> {
     public static final Lazy<DefaultEventLoopGroup> CLIENT_IO_GROUP_LOCAL = new Lazy<DefaultEventLoopGroup>(() -> new DefaultEventLoopGroup(0, new ThreadFactoryBuilder().setNameFormat("Netty Local Client IO #%d").setDaemon(true).build()));
     private final NetworkSide side;
     private final Queue<PacketWrapper> packetQueue = Queues.newConcurrentLinkedQueue();
-    private final ReentrantReadWriteLock lock = new ReentrantReadWriteLock();
     private Channel channel;
     private SocketAddress address;
     private PacketListener packetListener;
@@ -173,12 +171,7 @@ extends SimpleChannelInboundHandler<Packet<?>> {
             this.sendQueuedPackets();
             this.sendImmediately(packet, genericFutureListener);
         } else {
-            this.lock.writeLock().lock();
-            try {
-                this.packetQueue.add(new PacketWrapper(packet, genericFutureListener));
-            } finally {
-                this.lock.writeLock().unlock();
-            }
+            this.packetQueue.add(new PacketWrapper(packet, genericFutureListener));
         }
     }
 
@@ -213,18 +206,19 @@ extends SimpleChannelInboundHandler<Packet<?>> {
         }
     }
 
+    /*
+     * WARNING - Removed try catching itself - possible behaviour change.
+     */
     private void sendQueuedPackets() {
         if (this.channel == null || !this.channel.isOpen()) {
             return;
         }
-        this.lock.readLock().lock();
-        try {
-            while (!this.packetQueue.isEmpty()) {
-                PacketWrapper packetWrapper = this.packetQueue.poll();
+        Queue<PacketWrapper> queue = this.packetQueue;
+        synchronized (queue) {
+            PacketWrapper packetWrapper;
+            while ((packetWrapper = this.packetQueue.poll()) != null) {
                 this.sendImmediately(packetWrapper.packet, packetWrapper.listener);
             }
-        } finally {
-            this.lock.readLock().unlock();
         }
     }
 

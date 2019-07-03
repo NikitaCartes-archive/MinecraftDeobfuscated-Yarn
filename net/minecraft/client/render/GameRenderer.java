@@ -608,6 +608,7 @@ SynchronousResourceReloadListener {
         Camera camera = this.camera;
         camera.update(this.client.world, this.client.getCameraEntity() == null ? this.client.player : this.client.getCameraEntity(), this.client.options.perspective > 0, this.client.options.perspective == 2, f);
         Frustum frustum = GlMatrixFrustum.get();
+        worldRenderer.method_21595(camera);
         this.client.getProfiler().swap("clear");
         GlStateManager.viewport(0, 0, this.client.window.getFramebufferWidth(), this.client.window.getFramebufferHeight());
         this.backgroundRenderer.renderBackground(camera, f);

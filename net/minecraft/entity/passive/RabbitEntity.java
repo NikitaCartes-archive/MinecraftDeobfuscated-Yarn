@@ -367,10 +367,7 @@ extends AnimalEntity {
 
     public static boolean method_20669(EntityType<RabbitEntity> entityType, IWorld iWorld, SpawnType spawnType, BlockPos blockPos, Random random) {
         Block block = iWorld.getBlockState(blockPos.down()).getBlock();
-        if (block == Blocks.GRASS_BLOCK || block == Blocks.SNOW || block == Blocks.SAND) {
-            return true;
-        }
-        return iWorld.getLightLevel(blockPos, 0) > 8;
+        return (block == Blocks.GRASS_BLOCK || block == Blocks.SNOW || block == Blocks.SAND) && iWorld.getLightLevel(blockPos, 0) > 8;
     }
 
     private boolean wantsCarrots() {

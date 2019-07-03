@@ -37,7 +37,7 @@ extends Task<VillagerEntity> {
     private boolean field_18860;
     private long field_18861;
     private int field_19239;
-    private List<BlockPos> field_19351 = Lists.newArrayList();
+    private final List<BlockPos> field_19351 = Lists.newArrayList();
 
     public FarmerVillagerTask() {
         super(ImmutableMap.of(MemoryModuleType.LOOK_TARGET, MemoryModuleState.VALUE_ABSENT, MemoryModuleType.WALK_TARGET, MemoryModuleState.VALUE_ABSENT, MemoryModuleType.SECONDARY_JOB_SITE, MemoryModuleState.VALUE_PRESENT));
@@ -55,7 +55,12 @@ extends Task<VillagerEntity> {
         BasicInventory basicInventory = villagerEntity.getInventory();
         int i = basicInventory.getInvSize();
         for (int j = 0; j < i; ++j) {
-            if (!basicInventory.getInvStack(j).isEmpty()) continue;
+            ItemStack itemStack = basicInventory.getInvStack(j);
+            if (itemStack.isEmpty()) {
+                this.field_18860 = true;
+                break;
+            }
+            if (itemStack.getItem() != Items.WHEAT_SEEDS && itemStack.getItem() != Items.BEETROOT_SEEDS) continue;
             this.field_18860 = true;
             break;
         }

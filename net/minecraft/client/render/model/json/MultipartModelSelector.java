@@ -10,6 +10,7 @@ import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.state.StateFactory;
 
+@FunctionalInterface
 @Environment(value=EnvType.CLIENT)
 public interface MultipartModelSelector {
     public static final MultipartModelSelector TRUE = stateFactory -> blockState -> true;

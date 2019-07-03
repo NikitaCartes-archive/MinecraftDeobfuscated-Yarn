@@ -52,7 +52,7 @@ extends Goal {
         if (vec3d2.lengthSquared() > 1.0E-7) {
             vec3d2 = vec3d2.normalize().multiply(0.4).add(vec3d.multiply(0.2));
         }
-        this.mob.setVelocity(vec3d2.x, this.velocity, vec3d2.y);
+        this.mob.setVelocity(vec3d2.x, this.velocity, vec3d2.z);
     }
 }
 

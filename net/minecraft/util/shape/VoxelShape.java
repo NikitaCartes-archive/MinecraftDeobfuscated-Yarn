@@ -88,7 +88,10 @@ public abstract class VoxelShape {
     }
 
     public void forEachBox(VoxelShapes.BoxConsumer boxConsumer) {
-        this.voxels.forEachBox((i, j, k, l, m, n) -> boxConsumer.consume(this.getPointPosition(Direction.Axis.X, i), this.getPointPosition(Direction.Axis.Y, j), this.getPointPosition(Direction.Axis.Z, k), this.getPointPosition(Direction.Axis.X, l), this.getPointPosition(Direction.Axis.Y, m), this.getPointPosition(Direction.Axis.Z, n)), true);
+        DoubleList doubleList = this.getPointPositions(Direction.Axis.X);
+        DoubleList doubleList2 = this.getPointPositions(Direction.Axis.Y);
+        DoubleList doubleList3 = this.getPointPositions(Direction.Axis.Z);
+        this.voxels.forEachBox((i, j, k, l, m, n) -> boxConsumer.consume(doubleList.getDouble(i), doubleList2.getDouble(j), doubleList3.getDouble(k), doubleList.getDouble(l), doubleList2.getDouble(m), doubleList3.getDouble(n)), true);
     }
 
     public List<Box> getBoundingBoxes() {

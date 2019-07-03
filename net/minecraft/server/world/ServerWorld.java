@@ -14,6 +14,12 @@ import it.unimi.dsi.fastutil.longs.LongSets;
 import it.unimi.dsi.fastutil.objects.Object2IntMap;
 import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
 import it.unimi.dsi.fastutil.objects.ObjectLinkedOpenHashSet;
+import java.io.BufferedWriter;
+import java.io.IOException;
+import java.io.Writer;
+import java.nio.file.Files;
+import java.nio.file.OpenOption;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -32,6 +38,8 @@ import net.fabricmc.api.Environment;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
+import net.minecraft.block.entity.BlockEntity;
+import net.minecraft.class_4456;
 import net.minecraft.client.network.DebugRendererInfoManager;
 import net.minecraft.client.network.packet.BlockActionS2CPacket;
 import net.minecraft.client.network.packet.BlockBreakingProgressS2CPacket;
@@ -78,16 +86,19 @@ import net.minecraft.server.world.BlockAction;
 import net.minecraft.server.world.ChunkTicketType;
 import net.minecraft.server.world.ServerChunkManager;
 import net.minecraft.server.world.ServerTickScheduler;
+import net.minecraft.server.world.ThreadedAnvilChunkStorage;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.structure.StructureManager;
 import net.minecraft.tag.BlockTags;
 import net.minecraft.tag.RegistryTagManager;
+import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.BooleanBiFunction;
 import net.minecraft.util.ProgressListener;
 import net.minecraft.util.TypeFilterableList;
 import net.minecraft.util.Unit;
+import net.minecraft.util.crash.CrashReport;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
 import net.minecraft.util.math.ChunkPos;
@@ -100,7 +111,6 @@ import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.util.shape.VoxelShapes;
 import net.minecraft.village.PointOfInterestStorage;
 import net.minecraft.village.PointOfInterestType;
-import net.minecraft.village.ZombieSiegeManager;
 import net.minecraft.world.Difficulty;
 import net.minecraft.world.ForcedChunkState;
 import net.minecraft.world.GameRules;
@@ -154,7 +164,6 @@ extends World {
     private final ServerTickScheduler<Fluid> fluidTickScheduler = new ServerTickScheduler<Fluid>(this, fluid -> fluid == null || fluid == Fluids.EMPTY, Registry.FLUID::getId, Registry.FLUID::get, this::tickFluid);
     private final Set<EntityNavigation> entityNavigations = Sets.newHashSet();
     protected final RaidManager raidManager;
-    protected final ZombieSiegeManager siegeManager = new ZombieSiegeManager(this);
     private final ObjectLinkedOpenHashSet<BlockAction> pendingBlockActions = new ObjectLinkedOpenHashSet();
     private boolean insideTick;
     @Nullable
@@ -264,8 +273,6 @@ extends World {
             this.blockTickScheduler.tick();
             this.fluidTickScheduler.tick();
         }
-        profiler.swap("village");
-        this.siegeManager.tick();
         profiler.swap("portalForcer");
         this.portalForcer.tick(this.getTime());
         profiler.swap("raid");
@@ -1141,6 +1148,74 @@ extends World {
 
     public void handleInteraction(EntityInteraction entityInteraction, Entity entity, InteractionObserver interactionObserver) {
         interactionObserver.onInteractionWith(entityInteraction, entity);
+    }
+
+    public void method_21625(Path path) throws IOException {
+        ThreadedAnvilChunkStorage threadedAnvilChunkStorage = this.method_14178().threadedAnvilChunkStorage;
+        try (BufferedWriter writer = Files.newBufferedWriter(path.resolve("stats.txt"), new OpenOption[0]);){
+            writer.write(String.format("spawning_chunks: %d\n", threadedAnvilChunkStorage.getTicketManager().getLevelCount()));
+            for (Object2IntMap.Entry entry : this.getMobCountsByCategory().object2IntEntrySet()) {
+                writer.write(String.format("spawn_count.%s: %d\n", ((EntityCategory)((Object)entry.getKey())).getName(), entry.getIntValue()));
+            }
+            writer.write(String.format("entities: %d\n", this.entitiesById.size()));
+            writer.write(String.format("block_entities: %d\n", this.blockEntities.size()));
+            writer.write(String.format("block_ticks: %d\n", this.method_14196().method_20825()));
+            writer.write(String.format("fluid_ticks: %d\n", this.method_14179().method_20825()));
+        }
+        CrashReport crashReport = new CrashReport("Level dump", new Exception("dummy"));
+        this.addDetailsToCrashReport(crashReport);
+        BufferedWriter writer2 = Files.newBufferedWriter(path.resolve("example_crash.txt"), new OpenOption[0]);
+        Object object = null;
+        try {
+            writer2.write(crashReport.asString());
+        } catch (Throwable throwable) {
+            object = throwable;
+            throw throwable;
+        } finally {
+            if (writer2 != null) {
+                if (object != null) {
+                    try {
+                        ((Writer)writer2).close();
+                    } catch (Throwable throwable) {
+                        ((Throwable)object).addSuppressed(throwable);
+                    }
+                } else {
+                    ((Writer)writer2).close();
+                }
+            }
+        }
+        Path path2 = path.resolve("chunks.csv");
+        Throwable throwable = null;
+        try (BufferedWriter writer3 = Files.newBufferedWriter(path2, new OpenOption[0]);){
+            threadedAnvilChunkStorage.method_21619(writer3);
+        } catch (Throwable throwable2) {
+            Throwable throwable3 = throwable2;
+            throw throwable2;
+        }
+        Path path3 = path.resolve("entities.csv");
+        try (BufferedWriter bufferedWriter = Files.newBufferedWriter(path3, new OpenOption[0]);){
+            this.method_21624(bufferedWriter);
+        }
+        Path path4 = path.resolve("block_entities.csv");
+        try (BufferedWriter writer5 = Files.newBufferedWriter(path4, new OpenOption[0]);){
+            this.method_21626(writer5);
+        }
+    }
+
+    private void method_21624(Writer writer) throws IOException {
+        class_4456 lv = class_4456.method_21627().method_21632("x").method_21632("y").method_21632("z").method_21632("uuid").method_21632("type").method_21632("alive").method_21632("custom_name").method_21631(writer);
+        for (Entity entity : this.entitiesById.values()) {
+            Text text = entity.getCustomName();
+            lv.method_21630(entity.x, entity.y, entity.z, entity.getUuid(), Registry.ENTITY_TYPE.getId(entity.getType()), entity.isAlive(), text != null ? text.getString() : null);
+        }
+    }
+
+    private void method_21626(Writer writer) throws IOException {
+        class_4456 lv = class_4456.method_21627().method_21632("x").method_21632("y").method_21632("z").method_21632("type").method_21631(writer);
+        for (BlockEntity blockEntity : this.blockEntities) {
+            BlockPos blockPos = blockEntity.getPos();
+            lv.method_21630(blockPos.getX(), blockPos.getY(), blockPos.getZ(), Registry.BLOCK_ENTITY.getId(blockEntity.getType()));
+        }
     }
 
     @Override

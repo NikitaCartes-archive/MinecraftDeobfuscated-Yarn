@@ -8,7 +8,6 @@ import net.fabricmc.api.Environment;
 import net.minecraft.client.gui.widget.SliderWidget;
 import net.minecraft.client.options.DoubleOption;
 import net.minecraft.client.options.GameOptions;
-import net.minecraft.client.options.Option;
 
 @Environment(value=EnvType.CLIENT)
 public class GameOptionSliderWidget
@@ -19,14 +18,6 @@ extends SliderWidget {
         super(gameOptions, i, j, k, l, (float)doubleOption.method_18611(doubleOption.get(gameOptions)));
         this.option = doubleOption;
         this.updateMessage();
-    }
-
-    @Override
-    public void renderButton(int i, int j, float f) {
-        if (this.option == Option.FULLSCREEN_RESOLUTION) {
-            this.updateMessage();
-        }
-        super.renderButton(i, j, f);
     }
 
     @Override

@@ -1,7 +1,7 @@
 /*
  * Decompiled with CFR 0.2.0 (FabricMC d28b102d).
  */
-package net.minecraft.util.math;
+package net.minecraft.client.util.math;
 
 import java.util.Arrays;
 import net.fabricmc.api.EnvType;
@@ -28,12 +28,12 @@ public final class Quaternion {
         if (bl) {
             f *= (float)Math.PI / 180;
         }
-        float g = Quaternion.sin(f / 2.0f);
+        float g = Quaternion.method_16002(f / 2.0f);
         this.components = new float[4];
         this.components[0] = vector3f.x() * g;
         this.components[1] = vector3f.y() * g;
         this.components[2] = vector3f.z() * g;
-        this.components[3] = Quaternion.cos(f / 2.0f);
+        this.components[3] = Quaternion.method_16003(f / 2.0f);
     }
 
     @Environment(value=EnvType.CLIENT)
@@ -43,12 +43,12 @@ public final class Quaternion {
             g *= (float)Math.PI / 180;
             h *= (float)Math.PI / 180;
         }
-        float i = Quaternion.sin(0.5f * f);
-        float j = Quaternion.cos(0.5f * f);
-        float k = Quaternion.sin(0.5f * g);
-        float l = Quaternion.cos(0.5f * g);
-        float m = Quaternion.sin(0.5f * h);
-        float n = Quaternion.cos(0.5f * h);
+        float i = Quaternion.method_16002(0.5f * f);
+        float j = Quaternion.method_16003(0.5f * f);
+        float k = Quaternion.method_16002(0.5f * g);
+        float l = Quaternion.method_16003(0.5f * g);
+        float m = Quaternion.method_16002(0.5f * h);
+        float n = Quaternion.method_16003(0.5f * h);
         this.components = new float[4];
         this.components[0] = i * l * n + j * k * m;
         this.components[1] = j * k * n - i * l * m;
@@ -77,55 +77,55 @@ public final class Quaternion {
 
     public String toString() {
         StringBuilder stringBuilder = new StringBuilder();
-        stringBuilder.append("Quaternion[").append(this.getW()).append(" + ");
-        stringBuilder.append(this.getX()).append("i + ");
-        stringBuilder.append(this.getY()).append("j + ");
-        stringBuilder.append(this.getZ()).append("k]");
+        stringBuilder.append("Quaternion[").append(this.method_4924()).append(" + ");
+        stringBuilder.append(this.method_4921()).append("i + ");
+        stringBuilder.append(this.method_4922()).append("j + ");
+        stringBuilder.append(this.method_4923()).append("k]");
         return stringBuilder.toString();
     }
 
-    public float getX() {
+    public float method_4921() {
         return this.components[0];
     }
 
-    public float getY() {
+    public float method_4922() {
         return this.components[1];
     }
 
-    public float getZ() {
+    public float method_4923() {
         return this.components[2];
     }
 
-    public float getW() {
+    public float method_4924() {
         return this.components[3];
     }
 
-    public void copyFrom(Quaternion quaternion) {
-        float f = this.getX();
-        float g = this.getY();
-        float h = this.getZ();
-        float i = this.getW();
-        float j = quaternion.getX();
-        float k = quaternion.getY();
-        float l = quaternion.getZ();
-        float m = quaternion.getW();
+    public void method_4925(Quaternion quaternion) {
+        float f = this.method_4921();
+        float g = this.method_4922();
+        float h = this.method_4923();
+        float i = this.method_4924();
+        float j = quaternion.method_4921();
+        float k = quaternion.method_4922();
+        float l = quaternion.method_4923();
+        float m = quaternion.method_4924();
         this.components[0] = i * j + f * m + g * l - h * k;
         this.components[1] = i * k - f * l + g * m + h * j;
         this.components[2] = i * l + f * k - g * j + h * m;
         this.components[3] = i * m - f * j - g * k - h * l;
     }
 
-    public void reverse() {
+    public void method_4926() {
         this.components[0] = -this.components[0];
         this.components[1] = -this.components[1];
         this.components[2] = -this.components[2];
     }
 
-    private static float cos(float f) {
+    private static float method_16003(float f) {
         return (float)Math.cos(f);
     }
 
-    private static float sin(float f) {
+    private static float method_16002(float f) {
         return (float)Math.sin(f);
     }
 }

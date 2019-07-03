@@ -58,7 +58,6 @@ import net.minecraft.client.gui.WorldGenerationProgressTracker;
 import net.minecraft.client.gui.hud.InGameHud;
 import net.minecraft.client.gui.screen.ChatScreen;
 import net.minecraft.client.gui.screen.ConnectScreen;
-import net.minecraft.client.gui.screen.ContainerScreenRegistry;
 import net.minecraft.client.gui.screen.DeathScreen;
 import net.minecraft.client.gui.screen.EndCreditsScreen;
 import net.minecraft.client.gui.screen.GameMenuScreen;
@@ -68,6 +67,7 @@ import net.minecraft.client.gui.screen.Overlay;
 import net.minecraft.client.gui.screen.ProgressScreen;
 import net.minecraft.client.gui.screen.SaveLevelScreen;
 import net.minecraft.client.gui.screen.Screen;
+import net.minecraft.client.gui.screen.Screens;
 import net.minecraft.client.gui.screen.SleepingChatScreen;
 import net.minecraft.client.gui.screen.SplashScreen;
 import net.minecraft.client.gui.screen.TitleScreen;
@@ -219,7 +219,7 @@ AutoCloseable {
     public static final boolean IS_SYSTEM_MAC = SystemUtil.getOperatingSystem() == SystemUtil.OperatingSystem.OSX;
     public static final Identifier DEFAULT_TEXT_RENDERER_ID = new Identifier("default");
     public static final Identifier ALT_TEXT_RENDERER_ID = new Identifier("alt");
-    public static CompletableFuture<Unit> voidFuture = CompletableFuture.completedFuture(Unit.INSTANCE);
+    private static final CompletableFuture<Unit> voidFuture = CompletableFuture.completedFuture(Unit.INSTANCE);
     public static byte[] memoryReservedForCrash = new byte[0xA00000];
     private static int cachedMaxTextureSize = -1;
     private final File resourcePackDir;
@@ -480,10 +480,10 @@ AutoCloseable {
         this.textureManager.registerTextureUpdateable(SpriteAtlasTexture.BLOCK_ATLAS_TEX, this.spriteAtlas);
         this.textureManager.bindTexture(SpriteAtlasTexture.BLOCK_ATLAS_TEX);
         this.spriteAtlas.setFilter(false, this.options.mipmapLevels > 0);
-        this.bakedModelManager = new BakedModelManager(this.spriteAtlas);
-        this.resourceManager.registerListener(this.bakedModelManager);
         this.blockColorMap = BlockColors.create();
         this.itemColorMap = ItemColors.create(this.blockColorMap);
+        this.bakedModelManager = new BakedModelManager(this.spriteAtlas, this.blockColorMap);
+        this.resourceManager.registerListener(this.bakedModelManager);
         this.itemRenderer = new ItemRenderer(this.textureManager, this.bakedModelManager, this.itemColorMap);
         this.entityRenderManager = new EntityRenderDispatcher(this.textureManager, this.itemRenderer, this.resourceManager);
         this.firstPersonRenderer = new FirstPersonRenderer(this);
@@ -518,7 +518,7 @@ AutoCloseable {
             this.openScreen(new TitleScreen(true));
         }
         SplashScreen.method_18819(this);
-        this.setOverlay(new SplashScreen(this, this.resourceManager.beginInitialMonitoredReload(SystemUtil.getServerWorkerExecutor(), this, CompletableFuture.completedFuture(Unit.INSTANCE)), () -> {
+        this.setOverlay(new SplashScreen(this, this.resourceManager.beginInitialMonitoredReload(SystemUtil.getServerWorkerExecutor(), this, voidFuture), () -> {
             if (SharedConstants.isDevelopment) {
                 this.checkGameData();
             }
@@ -664,7 +664,7 @@ AutoCloseable {
                 LOGGER.debug("Missing translation for: {} {} {}", (Object)itemStack, (Object)string, (Object)itemStack.getItem());
             }
         }
-        if (bl |= ContainerScreenRegistry.checkData()) {
+        if (bl |= Screens.validateScreens()) {
             throw new IllegalStateException("Your game data is foobar, fix the errors above!");
         }
     }

@@ -126,29 +126,29 @@ Tickable {
         BeamSegment beamSegment = this.field_19178.isEmpty() ? null : this.field_19178.get(this.field_19178.size() - 1);
         int l = this.world.getTop(Heightmap.Type.WORLD_SURFACE, i, k);
         for (m = 0; m < 10 && blockPos.getY() <= l; ++m) {
-            block16: {
+            block18: {
                 Block block;
                 BlockState blockState;
-                block14: {
+                block16: {
                     float[] fs;
-                    block15: {
+                    block17: {
                         blockState = this.world.getBlockState(blockPos);
                         block = blockState.getBlock();
-                        if (!(block instanceof ColoredBlock)) break block14;
+                        if (!(block instanceof ColoredBlock)) break block16;
                         fs = ((ColoredBlock)((Object)block)).getColor().getColorComponents();
-                        if (this.field_19178.size() > 1) break block15;
+                        if (this.field_19178.size() > 1) break block17;
                         beamSegment = new BeamSegment(fs);
                         this.field_19178.add(beamSegment);
-                        break block16;
+                        break block18;
                     }
-                    if (beamSegment == null) break block16;
+                    if (beamSegment == null) break block18;
                     if (Arrays.equals(fs, beamSegment.color)) {
                         beamSegment.increaseHeight();
                     } else {
                         beamSegment = new BeamSegment(new float[]{(beamSegment.color[0] + fs[0]) / 2.0f, (beamSegment.color[1] + fs[1]) / 2.0f, (beamSegment.color[2] + fs[2]) / 2.0f});
                         this.field_19178.add(beamSegment);
                     }
-                    break block16;
+                    break block18;
                 }
                 if (beamSegment != null && (blockState.getLightSubtracted(this.world, blockPos) < 15 || block == Blocks.BEDROCK)) {
                     beamSegment.increaseHeight();
@@ -183,6 +183,8 @@ Tickable {
                     for (ServerPlayerEntity serverPlayerEntity : this.world.getEntities(ServerPlayerEntity.class, new Box(i, j, k, i, j - 4, k).expand(10.0, 5.0, 10.0))) {
                         Criterions.CONSTRUCT_BEACON.handle(serverPlayerEntity, this);
                     }
+                } else if (bl && !bl2) {
+                    this.playSound(SoundEvents.BLOCK_BEACON_DEACTIVATE);
                 }
             }
         }

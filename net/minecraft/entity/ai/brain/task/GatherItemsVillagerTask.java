@@ -71,10 +71,16 @@ extends Task<VillagerEntity> {
         BasicInventory basicInventory = villagerEntity.getInventory();
         ItemStack itemStack = ItemStack.EMPTY;
         for (int i = 0; i < basicInventory.getInvSize(); ++i) {
+            int j;
             Item item;
             ItemStack itemStack2 = basicInventory.getInvStack(i);
             if (itemStack2.isEmpty() || !set.contains(item = itemStack2.getItem())) continue;
-            int j = itemStack2.getCount() > itemStack2.getMaxCount() / 2 ? itemStack2.getCount() / 2 : itemStack2.getCount();
+            if (itemStack2.getCount() > itemStack2.getMaxCount() / 2) {
+                j = itemStack2.getCount() / 2;
+            } else {
+                if (itemStack2.getCount() <= 24) continue;
+                j = itemStack2.getCount() - 24;
+            }
             itemStack2.decrement(j);
             itemStack = new ItemStack(item, j);
             break;

@@ -85,6 +85,7 @@ extends AbstractRailBlock {
     }
 
     private void updatePoweredStatus(World world, BlockPos blockPos, BlockState blockState) {
+        BlockState blockState2;
         boolean bl = blockState.get(POWERED);
         boolean bl2 = false;
         List<AbstractMinecartEntity> list = this.getCarts(world, blockPos, AbstractMinecartEntity.class, null);
@@ -92,18 +93,20 @@ extends AbstractRailBlock {
             bl2 = true;
         }
         if (bl2 && !bl) {
-            world.setBlockState(blockPos, (BlockState)blockState.with(POWERED, true), 3);
-            this.updateNearbyRails(world, blockPos, blockState, true);
+            blockState2 = (BlockState)blockState.with(POWERED, true);
+            world.setBlockState(blockPos, blockState2, 3);
+            this.updateNearbyRails(world, blockPos, blockState2, true);
             world.updateNeighborsAlways(blockPos, this);
             world.updateNeighborsAlways(blockPos.down(), this);
-            world.scheduleBlockRender(blockPos);
+            world.scheduleBlockRender(blockPos, blockState, blockState2);
         }
         if (!bl2 && bl) {
-            world.setBlockState(blockPos, (BlockState)blockState.with(POWERED, false), 3);
-            this.updateNearbyRails(world, blockPos, blockState, false);
+            blockState2 = (BlockState)blockState.with(POWERED, false);
+            world.setBlockState(blockPos, blockState2, 3);
+            this.updateNearbyRails(world, blockPos, blockState2, false);
             world.updateNeighborsAlways(blockPos, this);
             world.updateNeighborsAlways(blockPos.down(), this);
-            world.scheduleBlockRender(blockPos);
+            world.scheduleBlockRender(blockPos, blockState, blockState2);
         }
         if (bl2) {
             world.getBlockTickScheduler().schedule(blockPos, this, this.getTickRate(world));

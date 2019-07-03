@@ -321,7 +321,7 @@ extends World {
             fluidState.randomDisplayTick(this, mutable, random);
             ParticleEffect particleEffect = fluidState.getParticle();
             if (particleEffect != null && this.random.nextInt(10) == 0) {
-                boolean bl2 = Block.isSolidFullSquare(blockState, this, mutable, Direction.DOWN);
+                boolean bl2 = blockState.method_20827(this, mutable, Direction.DOWN);
                 BlockPos blockPos = mutable.down();
                 this.addParticle(blockPos, this.getBlockState(blockPos), particleEffect, bl2);
             }
@@ -490,8 +490,8 @@ extends World {
     }
 
     @Override
-    public void scheduleBlockRender(BlockPos blockPos) {
-        this.worldRenderer.scheduleBlockRenders(blockPos.getX(), blockPos.getY(), blockPos.getZ(), blockPos.getX(), blockPos.getY(), blockPos.getZ());
+    public void scheduleBlockRender(BlockPos blockPos, BlockState blockState, BlockState blockState2) {
+        this.worldRenderer.method_21596(blockPos, blockState, blockState2);
     }
 
     public void scheduleBlockRenders(int i, int j, int k) {

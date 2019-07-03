@@ -88,7 +88,7 @@ implements FluidFillable {
         if (block == Blocks.MAGMA_BLOCK) {
             return false;
         }
-        return block == this || block == Blocks.KELP_PLANT || Block.isSolidFullSquare(blockState2, viewableWorld, blockPos2, Direction.UP);
+        return block == this || block == Blocks.KELP_PLANT || blockState2.method_20827(viewableWorld, blockPos2, Direction.UP);
     }
 
     @Override

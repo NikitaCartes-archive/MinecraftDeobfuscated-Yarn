@@ -5,10 +5,10 @@ package net.minecraft.entity.raid;
 
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
-import java.util.Collection;
 import java.util.Comparator;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
@@ -166,22 +166,15 @@ public class Raid {
     }
 
     private void updateBarToPlayers() {
-        Collection<ServerPlayerEntity> collection = this.bar.getPlayers();
-        HashSet<ServerPlayerEntity> set = Sets.newHashSet(collection);
-        for (ServerPlayerEntity serverPlayerEntity : collection) {
-            BlockPos blockPos = new BlockPos(serverPlayerEntity);
-            if (this.world.getRaidAt(blockPos) == this) continue;
-            set.remove(serverPlayerEntity);
+        HashSet<ServerPlayerEntity> set = Sets.newHashSet(this.bar.getPlayers());
+        List<ServerPlayerEntity> list = this.world.getPlayers(this.isInRaidDistance());
+        for (ServerPlayerEntity serverPlayerEntity : list) {
+            if (set.contains(serverPlayerEntity)) continue;
+            this.bar.addPlayer(serverPlayerEntity);
+        }
+        for (ServerPlayerEntity serverPlayerEntity : set) {
+            if (list.contains(serverPlayerEntity)) continue;
             this.bar.removePlayer(serverPlayerEntity);
-        }
-        HashSet<ServerPlayerEntity> set2 = Sets.newHashSet();
-        for (ServerPlayerEntity serverPlayerEntity2 : this.world.getPlayers(this.isInRaidDistance())) {
-            this.bar.addPlayer(serverPlayerEntity2);
-            set2.add(serverPlayerEntity2);
-        }
-        set.removeAll(set2);
-        for (ServerPlayerEntity serverPlayerEntity2 : set) {
-            this.bar.removePlayer(serverPlayerEntity2);
         }
     }
 

@@ -28,7 +28,7 @@ extends Block {
         }
         BlockPos blockPos2 = blockPos.offset(direction);
         BlockState blockState2 = world.getBlockState(blockPos2);
-        if (blockState.isOpaque() && Block.isSolidFullSquare(blockState2, world, blockPos2, direction.getOpposite())) {
+        if (blockState.isOpaque() && blockState2.method_20827(world, blockPos2, direction.getOpposite())) {
             return;
         }
         double d = blockPos.getX();

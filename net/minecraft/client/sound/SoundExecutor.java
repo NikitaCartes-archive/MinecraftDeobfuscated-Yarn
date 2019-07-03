@@ -3,6 +3,7 @@
  */
 package net.minecraft.client.sound;
 
+import java.util.concurrent.locks.LockSupport;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.util.ThreadExecutor;
@@ -44,6 +45,11 @@ extends ThreadExecutor<Runnable> {
         while (!this.stopped) {
             this.waitFor(() -> this.stopped);
         }
+    }
+
+    @Override
+    protected void method_20813() {
+        LockSupport.park("waiting for tasks");
     }
 
     public void restart() {

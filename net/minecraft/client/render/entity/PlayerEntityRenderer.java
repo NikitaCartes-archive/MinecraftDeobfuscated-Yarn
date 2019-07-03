@@ -56,7 +56,7 @@ extends LivingEntityRenderer<AbstractClientPlayerEntity, PlayerEntityModel<Abstr
     }
 
     public void method_4215(AbstractClientPlayerEntity abstractClientPlayerEntity, double d, double e, double f, float g, float h) {
-        if (abstractClientPlayerEntity.isMainPlayer() && (this.renderManager.camera == null || this.renderManager.camera.getFocusedEntity() != abstractClientPlayerEntity)) {
+        if (abstractClientPlayerEntity.isMainPlayer() && this.renderManager.camera.getFocusedEntity() != abstractClientPlayerEntity) {
             return;
         }
         double i = e;

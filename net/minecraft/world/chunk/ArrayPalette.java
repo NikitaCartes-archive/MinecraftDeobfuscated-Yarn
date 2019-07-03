@@ -3,7 +3,6 @@
  */
 package net.minecraft.world.chunk;
 
-import java.util.Arrays;
 import java.util.function.Function;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
@@ -13,6 +12,7 @@ import net.minecraft.util.IdList;
 import net.minecraft.util.PacketByteBuf;
 import net.minecraft.world.chunk.Palette;
 import net.minecraft.world.chunk.PaletteResizeListener;
+import org.apache.commons.lang3.ArrayUtils;
 import org.jetbrains.annotations.Nullable;
 
 public class ArrayPalette<T>
@@ -48,7 +48,7 @@ implements Palette<T> {
 
     @Override
     public boolean accepts(T object) {
-        return Arrays.stream(this.array).anyMatch(object2 -> object2 == object);
+        return ArrayUtils.contains(this.array, object);
     }
 
     @Override

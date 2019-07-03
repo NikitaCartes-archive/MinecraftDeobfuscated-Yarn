@@ -102,7 +102,7 @@ extends Screen {
         if (super.keyPressed(i, j, k)) {
             return true;
         }
-        if (i == 257 || i == 335) {
+        if (this.field_19103.active && (i == 257 || i == 335)) {
             this.onDone();
             return true;
         }

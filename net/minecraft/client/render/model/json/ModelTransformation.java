@@ -13,7 +13,7 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.render.model.json.Transformation;
 import net.minecraft.client.util.math.Matrix4f;
-import net.minecraft.util.math.Quaternion;
+import net.minecraft.client.util.math.Quaternion;
 
 @Environment(value=EnvType.CLIENT)
 public class ModelTransformation {

@@ -20,6 +20,7 @@ import net.minecraft.util.Timestamp;
 public class VillagerWorkTask
 extends Task<VillagerEntity> {
     private int ticks;
+    private long field_19426;
     private boolean field_18403;
 
     public VillagerWorkTask() {
@@ -27,7 +28,11 @@ extends Task<VillagerEntity> {
     }
 
     protected boolean method_19037(ServerWorld serverWorld, VillagerEntity villagerEntity) {
-        return this.method_19036(serverWorld.getTimeOfDay() % 24000L, villagerEntity.getLastRestock());
+        if (serverWorld.getTime() - this.field_19426 < 40L) {
+            return false;
+        }
+        this.field_19426 = serverWorld.getTime();
+        return villagerEntity.method_20822();
     }
 
     protected void method_19614(ServerWorld serverWorld, VillagerEntity villagerEntity, long l) {
@@ -55,10 +60,6 @@ extends Task<VillagerEntity> {
         }
         GlobalPos globalPos = optional.get();
         return this.ticks < 100 && Objects.equals(globalPos.getDimension(), serverWorld.getDimension().getType()) && globalPos.getPos().isWithinDistance(villagerEntity.getPos(), 1.73);
-    }
-
-    private boolean method_19036(long l, long m) {
-        return m == 0L || l < m || l > m + 3500L;
     }
 
     @Override

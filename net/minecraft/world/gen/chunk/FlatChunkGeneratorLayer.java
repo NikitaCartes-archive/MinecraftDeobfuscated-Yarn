@@ -34,7 +34,7 @@ public class FlatChunkGeneratorLayer {
     }
 
     public String toString() {
-        return (this.thickness > 1 ? this.thickness + "*" : "") + Registry.BLOCK.getId(this.blockState.getBlock());
+        return (this.thickness != 1 ? this.thickness + "*" : "") + Registry.BLOCK.getId(this.blockState.getBlock());
     }
 }
 

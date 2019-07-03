@@ -10,6 +10,8 @@ import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import com.mojang.datafixers.util.Pair;
+import it.unimi.dsi.fastutil.objects.Object2IntMap;
+import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
 import java.io.Closeable;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -18,21 +20,26 @@ import java.io.InputStreamReader;
 import java.io.Reader;
 import java.io.StringReader;
 import java.nio.charset.StandardCharsets;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.IdentityHashMap;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.function.Predicate;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.block.Block;
+import net.minecraft.block.BlockRenderType;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
+import net.minecraft.client.color.block.BlockColors;
 import net.minecraft.client.render.block.BlockModels;
 import net.minecraft.client.render.model.BakedModel;
 import net.minecraft.client.render.model.ModelBakeSettings;
@@ -42,6 +49,8 @@ import net.minecraft.client.render.model.UnbakedModel;
 import net.minecraft.client.render.model.json.ItemModelGenerator;
 import net.minecraft.client.render.model.json.JsonUnbakedModel;
 import net.minecraft.client.render.model.json.ModelVariantMap;
+import net.minecraft.client.render.model.json.MultipartModelComponent;
+import net.minecraft.client.render.model.json.WeightedUnbakedModel;
 import net.minecraft.client.texture.MissingSprite;
 import net.minecraft.client.texture.SpriteAtlasTexture;
 import net.minecraft.client.util.ModelIdentifier;
@@ -96,6 +105,7 @@ public class ModelLoader {
     private static final Map<Identifier, StateFactory<Block, BlockState>> STATIC_DEFINITIONS = ImmutableMap.of(new Identifier("item_frame"), ITEM_FRAME_STATE_FACTORY);
     private final ResourceManager resourceManager;
     private final SpriteAtlasTexture spriteAtlas;
+    private final BlockColors field_20272;
     private final Set<Identifier> modelsToLoad = Sets.newHashSet();
     private final ModelVariantMap.DeserializationContext variantMapDeserializationContext = new ModelVariantMap.DeserializationContext();
     private final Map<Identifier, UnbakedModel> unbakedModels = Maps.newHashMap();
@@ -103,10 +113,13 @@ public class ModelLoader {
     private final Map<Identifier, UnbakedModel> modelsToBake = Maps.newHashMap();
     private final Map<Identifier, BakedModel> bakedModels = Maps.newHashMap();
     private final SpriteAtlasTexture.Data spriteAtlasData;
+    private int field_20273 = 1;
+    private final Object2IntMap<BlockState> field_20274 = SystemUtil.consume(new Object2IntOpenHashMap(), object2IntOpenHashMap -> object2IntOpenHashMap.defaultReturnValue(-1));
 
-    public ModelLoader(ResourceManager resourceManager, SpriteAtlasTexture spriteAtlasTexture, Profiler profiler) {
+    public ModelLoader(ResourceManager resourceManager, SpriteAtlasTexture spriteAtlasTexture, BlockColors blockColors, Profiler profiler) {
         this.resourceManager = resourceManager;
         this.spriteAtlas = spriteAtlasTexture;
+        this.field_20272 = blockColors;
         profiler.push("missing_model");
         try {
             this.unbakedModels.put(MISSING, this.loadModelFromJson(MISSING));
@@ -222,117 +235,130 @@ public class ModelLoader {
         return this.unbakedModels.getOrDefault(identifier, unbakedModel);
     }
 
-    /*
-     * WARNING - Removed back jump from a try to a catch block - possible behaviour change.
-     * Loose catch block
-     * Enabled aggressive block sorting
-     * Enabled unnecessary exception pruning
-     * Enabled aggressive exception aggregation
-     */
     private void loadModel(Identifier identifier) throws Exception {
-        Object list;
         if (!(identifier instanceof ModelIdentifier)) {
             this.putModel(identifier, this.loadModelFromJson(identifier));
             return;
         }
-        ModelIdentifier modelIdentifier = (ModelIdentifier)identifier;
-        if (Objects.equals(modelIdentifier.getVariant(), "inventory")) {
+        ModelIdentifier modelIdentifier2 = (ModelIdentifier)identifier;
+        if (Objects.equals(modelIdentifier2.getVariant(), "inventory")) {
             Identifier identifier2 = new Identifier(identifier.getNamespace(), "item/" + identifier.getPath());
             JsonUnbakedModel jsonUnbakedModel = this.loadModelFromJson(identifier2);
-            this.putModel(modelIdentifier, jsonUnbakedModel);
+            this.putModel(modelIdentifier2, jsonUnbakedModel);
             this.unbakedModels.put(identifier2, jsonUnbakedModel);
-            return;
-        }
-        Identifier identifier2 = new Identifier(identifier.getNamespace(), identifier.getPath());
-        StateFactory stateFactory = Optional.ofNullable(STATIC_DEFINITIONS.get(identifier2)).orElseGet(() -> Registry.BLOCK.get(identifier2).getStateFactory());
-        this.variantMapDeserializationContext.setStateFactory(stateFactory);
-        ImmutableList immutableList = stateFactory.getStates();
-        HashMap map = Maps.newHashMap();
-        immutableList.forEach(blockState -> map.put(BlockModels.getModelId(identifier2, blockState), blockState));
-        HashMap map2 = Maps.newHashMap();
-        Identifier identifier3 = new Identifier(identifier.getNamespace(), "blockstates/" + identifier.getPath() + ".json");
-        try {
+        } else {
+            Identifier identifier2 = new Identifier(identifier.getNamespace(), identifier.getPath());
+            StateFactory stateFactory = Optional.ofNullable(STATIC_DEFINITIONS.get(identifier2)).orElseGet(() -> Registry.BLOCK.get(identifier2).getStateFactory());
+            this.variantMapDeserializationContext.setStateFactory(stateFactory);
+            ImmutableList<Property<?>> list = ImmutableList.copyOf(this.field_20272.method_21592((Block)stateFactory.getBaseObject()));
+            ImmutableList immutableList = stateFactory.getStates();
+            HashMap<ModelIdentifier, BlockState> map = Maps.newHashMap();
+            immutableList.forEach(blockState -> map.put(BlockModels.getModelId(identifier2, blockState), (BlockState)blockState));
+            HashMap map2 = Maps.newHashMap();
+            Identifier identifier3 = new Identifier(identifier.getNamespace(), "blockstates/" + identifier.getPath() + ".json");
+            UnbakedModel unbakedModel = this.unbakedModels.get(MISSING);
+            class_4455 lv = new class_4455(ImmutableList.of(unbakedModel), ImmutableList.of());
+            Pair<UnbakedModel, Supplier<class_4455>> pair = Pair.of(unbakedModel, () -> lv);
             try {
-                list = this.resourceManager.getAllResources(identifier3).stream().map(resource -> {
-                    try (InputStream inputStream = resource.getInputStream();){
-                        Pair<String, ModelVariantMap> pair = Pair.of(resource.getResourcePackName(), ModelVariantMap.deserialize(this.variantMapDeserializationContext, new InputStreamReader(inputStream, StandardCharsets.UTF_8)));
-                        return pair;
-                    } catch (Exception exception) {
-                        throw new ModelLoaderException(String.format("Exception loading blockstate definition: '%s' in resourcepack: '%s': %s", resource.getId(), resource.getResourcePackName(), exception.getMessage()));
-                    }
-                }).collect(Collectors.toList());
-            } catch (IOException iOException) {
-                LOGGER.warn("Exception loading blockstate definition: {}: {}", (Object)identifier3, (Object)iOException);
-                Iterator iterator = map.entrySet().iterator();
-                while (iterator.hasNext()) {
-                    Map.Entry entry = iterator.next();
-                    UnbakedModel unbakedModel = (UnbakedModel)map2.get(entry.getValue());
-                    if (unbakedModel == null) {
-                        LOGGER.warn("Exception loading blockstate definition: '{}' missing model for variant: '{}'", (Object)identifier3, entry.getKey());
-                        unbakedModel = this.unbakedModels.get(MISSING);
-                    }
-                    this.putModel((Identifier)entry.getKey(), unbakedModel);
+                List list2;
+                try {
+                    list2 = this.resourceManager.getAllResources(identifier3).stream().map(resource -> {
+                        try (InputStream inputStream = resource.getInputStream();){
+                            Pair<String, ModelVariantMap> pair = Pair.of(resource.getResourcePackName(), ModelVariantMap.deserialize(this.variantMapDeserializationContext, new InputStreamReader(inputStream, StandardCharsets.UTF_8)));
+                            return pair;
+                        } catch (Exception exception) {
+                            throw new ModelLoaderException(String.format("Exception loading blockstate definition: '%s' in resourcepack: '%s': %s", resource.getId(), resource.getResourcePackName(), exception.getMessage()));
+                        }
+                    }).collect(Collectors.toList());
+                } catch (IOException iOException) {
+                    LOGGER.warn("Exception loading blockstate definition: {}: {}", (Object)identifier3, (Object)iOException);
+                    HashMap<class_4455, Set> map3 = Maps.newHashMap();
+                    map.forEach((modelIdentifier, blockState) -> {
+                        Pair pair2 = (Pair)map2.get(blockState);
+                        if (pair2 == null) {
+                            LOGGER.warn("Exception loading blockstate definition: '{}' missing model for variant: '{}'", (Object)identifier3, modelIdentifier);
+                            pair2 = pair;
+                        }
+                        this.putModel((Identifier)modelIdentifier, (UnbakedModel)pair2.getFirst());
+                        try {
+                            class_4455 lv = (class_4455)((Supplier)pair2.getSecond()).get();
+                            map3.computeIfAbsent(lv, arg -> Sets.newIdentityHashSet()).add(blockState);
+                        } catch (Exception exception) {
+                            LOGGER.warn("Exception evaluating model definition: '{}'", modelIdentifier, (Object)exception);
+                        }
+                    });
+                    map3.forEach((arg, set) -> {
+                        Iterator iterator = set.iterator();
+                        while (iterator.hasNext()) {
+                            BlockState blockState = (BlockState)iterator.next();
+                            if (blockState.getRenderType() == BlockRenderType.MODEL) continue;
+                            iterator.remove();
+                            this.field_20274.put(blockState, 0);
+                        }
+                        if (set.size() > 1) {
+                            this.method_21603((Iterable<BlockState>)set);
+                        }
+                    });
+                    return;
                 }
-                return;
-            }
-        } catch (ModelLoaderException modelLoaderException) {
-            try {
+                for (Pair pair2 : list2) {
+                    MultipartUnbakedModel multipartUnbakedModel;
+                    ModelVariantMap modelVariantMap = (ModelVariantMap)pair2.getSecond();
+                    IdentityHashMap map4 = Maps.newIdentityHashMap();
+                    if (modelVariantMap.hasMultipartModel()) {
+                        multipartUnbakedModel = modelVariantMap.getMultipartModel();
+                        immutableList.forEach(blockState -> map4.put(blockState, Pair.of(multipartUnbakedModel, () -> class_4455.method_21607(blockState, multipartUnbakedModel, list))));
+                    } else {
+                        multipartUnbakedModel = null;
+                    }
+                    modelVariantMap.getVariantMap().forEach((string, weightedUnbakedModel) -> {
+                        try {
+                            immutableList.stream().filter(ModelLoader.stateKeyToPredicate(stateFactory, string)).forEach(blockState -> {
+                                Pair<WeightedUnbakedModel, Supplier<class_4455>> pair2 = map4.put(blockState, Pair.of(weightedUnbakedModel, () -> class_4455.method_21608(blockState, weightedUnbakedModel, list)));
+                                if (pair2 != null && pair2.getFirst() != multipartUnbakedModel) {
+                                    map4.put(blockState, pair);
+                                    throw new RuntimeException("Overlapping definition with: " + (String)modelVariantMap.getVariantMap().entrySet().stream().filter(entry -> entry.getValue() == pair2.getFirst()).findFirst().get().getKey());
+                                }
+                            });
+                        } catch (Exception exception) {
+                            LOGGER.warn("Exception loading blockstate definition: '{}' in resourcepack: '{}' for variant: '{}': {}", (Object)identifier3, pair2.getFirst(), string, (Object)exception.getMessage());
+                        }
+                    });
+                    map2.putAll(map4);
+                }
+            } catch (ModelLoaderException modelLoaderException) {
                 throw modelLoaderException;
-                catch (Exception exception) {
-                    throw new ModelLoaderException(String.format("Exception loading blockstate definition: '%s': %s", identifier3, exception));
-                }
-            } catch (Throwable throwable) {
-                Iterator iterator = map.entrySet().iterator();
-                while (iterator.hasNext()) {
-                    Map.Entry entry3 = iterator.next();
-                    UnbakedModel unbakedModel4 = (UnbakedModel)map2.get(entry3.getValue());
-                    if (unbakedModel4 == null) {
-                        LOGGER.warn("Exception loading blockstate definition: '{}' missing model for variant: '{}'", (Object)identifier3, entry3.getKey());
-                        unbakedModel4 = this.unbakedModels.get(MISSING);
+            } catch (Exception exception) {
+                throw new ModelLoaderException(String.format("Exception loading blockstate definition: '%s': %s", identifier3, exception));
+            } finally {
+                HashMap<class_4455, Set> map6 = Maps.newHashMap();
+                map.forEach((modelIdentifier, blockState) -> {
+                    Pair pair2 = (Pair)map2.get(blockState);
+                    if (pair2 == null) {
+                        LOGGER.warn("Exception loading blockstate definition: '{}' missing model for variant: '{}'", (Object)identifier3, modelIdentifier);
+                        pair2 = pair;
                     }
-                    this.putModel((Identifier)entry3.getKey(), unbakedModel4);
-                }
-                throw throwable;
-            }
-        }
-        {
-            Iterator iterator = list.iterator();
-            while (iterator.hasNext()) {
-                MultipartUnbakedModel unbakedModel2;
-                Pair pair = (Pair)iterator.next();
-                ModelVariantMap modelVariantMap = (ModelVariantMap)pair.getSecond();
-                IdentityHashMap map3 = Maps.newIdentityHashMap();
-                if (modelVariantMap.hasMultipartModel()) {
-                    unbakedModel2 = modelVariantMap.getMultipartModel();
-                    immutableList.forEach(blockState -> map3.put(blockState, unbakedModel2));
-                } else {
-                    unbakedModel2 = null;
-                }
-                modelVariantMap.getVariantMap().forEach((string, weightedUnbakedModel) -> {
+                    this.putModel((Identifier)modelIdentifier, (UnbakedModel)pair2.getFirst());
                     try {
-                        immutableList.stream().filter(ModelLoader.stateKeyToPredicate(stateFactory, string)).forEach(blockState -> {
-                            UnbakedModel unbakedModel2 = map3.put(blockState, weightedUnbakedModel);
-                            if (unbakedModel2 != null && unbakedModel2 != unbakedModel2) {
-                                map3.put(blockState, this.unbakedModels.get(MISSING));
-                                throw new RuntimeException("Overlapping definition with: " + (String)modelVariantMap.getVariantMap().entrySet().stream().filter(entry -> entry.getValue() == unbakedModel2).findFirst().get().getKey());
-                            }
-                        });
+                        class_4455 lv = (class_4455)((Supplier)pair2.getSecond()).get();
+                        map3.computeIfAbsent(lv, arg -> Sets.newIdentityHashSet()).add(blockState);
                     } catch (Exception exception) {
-                        LOGGER.warn("Exception loading blockstate definition: '{}' in resourcepack: '{}' for variant: '{}': {}", (Object)identifier3, pair.getFirst(), string, (Object)exception.getMessage());
+                        LOGGER.warn("Exception evaluating model definition: '{}'", modelIdentifier, (Object)exception);
                     }
                 });
-                map2.putAll(map3);
+                map6.forEach((arg, set) -> {
+                    Iterator iterator = set.iterator();
+                    while (iterator.hasNext()) {
+                        BlockState blockState = (BlockState)iterator.next();
+                        if (blockState.getRenderType() == BlockRenderType.MODEL) continue;
+                        iterator.remove();
+                        this.field_20274.put(blockState, 0);
+                    }
+                    if (set.size() > 1) {
+                        this.method_21603((Iterable<BlockState>)set);
+                    }
+                });
             }
-        }
-        list = map.entrySet().iterator();
-        while (list.hasNext()) {
-            Map.Entry entry = (Map.Entry)list.next();
-            UnbakedModel unbakedModel3 = (UnbakedModel)map2.get(entry.getValue());
-            if (unbakedModel3 == null) {
-                LOGGER.warn("Exception loading blockstate definition: '{}' missing model for variant: '{}'", (Object)identifier3, entry.getKey());
-                unbakedModel3 = this.unbakedModels.get(MISSING);
-            }
-            this.putModel((Identifier)entry.getKey(), unbakedModel3);
         }
     }
 
@@ -345,6 +371,11 @@ public class ModelLoader {
         UnbakedModel unbakedModel = this.getOrLoadModel(modelIdentifier);
         this.unbakedModels.put(modelIdentifier, unbakedModel);
         this.modelsToBake.put(modelIdentifier, unbakedModel);
+    }
+
+    private void method_21603(Iterable<BlockState> iterable) {
+        int i = this.field_20273++;
+        iterable.forEach(blockState -> this.field_20274.put((BlockState)blockState, i));
     }
 
     @Nullable
@@ -415,6 +446,52 @@ public class ModelLoader {
 
     public Map<Identifier, BakedModel> getBakedModelMap() {
         return this.bakedModels;
+    }
+
+    public Object2IntMap<BlockState> method_21605() {
+        return this.field_20274;
+    }
+
+    @Environment(value=EnvType.CLIENT)
+    static class class_4455 {
+        private final List<UnbakedModel> field_20275;
+        private final List<Object> field_20276;
+
+        public class_4455(List<UnbakedModel> list, List<Object> list2) {
+            this.field_20275 = list;
+            this.field_20276 = list2;
+        }
+
+        public boolean equals(Object object) {
+            if (this == object) {
+                return true;
+            }
+            if (object instanceof class_4455) {
+                class_4455 lv = (class_4455)object;
+                return Objects.equals(this.field_20275, lv.field_20275) && Objects.equals(this.field_20276, lv.field_20276);
+            }
+            return false;
+        }
+
+        public int hashCode() {
+            return 31 * this.field_20275.hashCode() + this.field_20276.hashCode();
+        }
+
+        public static class_4455 method_21607(BlockState blockState, MultipartUnbakedModel multipartUnbakedModel, Collection<Property<?>> collection) {
+            StateFactory<Block, BlockState> stateFactory = blockState.getBlock().getStateFactory();
+            List list = multipartUnbakedModel.getComponents().stream().filter(multipartModelComponent -> multipartModelComponent.getPredicate(stateFactory).test(blockState)).map(MultipartModelComponent::getModel).collect(ImmutableList.toImmutableList());
+            List<Object> list2 = class_4455.method_21609(blockState, collection);
+            return new class_4455(list, list2);
+        }
+
+        public static class_4455 method_21608(BlockState blockState, UnbakedModel unbakedModel, Collection<Property<?>> collection) {
+            List<Object> list = class_4455.method_21609(blockState, collection);
+            return new class_4455(ImmutableList.of(unbakedModel), list);
+        }
+
+        private static List<Object> method_21609(BlockState blockState, Collection<Property<?>> collection) {
+            return collection.stream().map(blockState::get).collect(ImmutableList.toImmutableList());
+        }
     }
 
     @Environment(value=EnvType.CLIENT)

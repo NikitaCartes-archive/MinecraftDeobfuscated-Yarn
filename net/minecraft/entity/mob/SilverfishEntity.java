@@ -13,7 +13,6 @@ import net.minecraft.entity.EntityGroup;
 import net.minecraft.entity.EntityPose;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.SpawnType;
-import net.minecraft.entity.ai.TargetPredicate;
 import net.minecraft.entity.ai.goal.FollowTargetGoal;
 import net.minecraft.entity.ai.goal.Goal;
 import net.minecraft.entity.ai.goal.MeleeAttackGoal;
@@ -37,7 +36,6 @@ import net.minecraft.world.World;
 
 public class SilverfishEntity
 extends HostileEntity {
-    private static final TargetPredicate CLOSE_PLAYER_PREDICATE = new TargetPredicate().setBaseMaxDistance(5.0).ignoreDistanceScalingFactor();
     private CallForHelpGoal callForHelpGoal;
 
     public SilverfishEntity(EntityType<? extends SilverfishEntity> entityType, World world) {
@@ -131,7 +129,7 @@ extends HostileEntity {
 
     public static boolean method_20684(EntityType<SilverfishEntity> entityType, IWorld iWorld, SpawnType spawnType, BlockPos blockPos, Random random) {
         if (SilverfishEntity.method_20681(entityType, iWorld, spawnType, blockPos, random)) {
-            PlayerEntity playerEntity = iWorld.getClosestPlayer(CLOSE_PLAYER_PREDICATE, (double)blockPos.getX() + 0.5, (double)blockPos.getY() + 0.5, (double)blockPos.getZ() + 0.5);
+            PlayerEntity playerEntity = iWorld.getClosestPlayer((double)blockPos.getX() + 0.5, (double)blockPos.getY() + 0.5, (double)blockPos.getZ() + 0.5, 5.0, true);
             return playerEntity == null;
         }
         return false;

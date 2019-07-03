@@ -201,6 +201,11 @@ NameableContainerProvider {
     }
 
     @Override
+    public boolean shouldNotCopyTagFromItem() {
+        return true;
+    }
+
+    @Override
     public void fromTag(CompoundTag compoundTag) {
         super.fromTag(compoundTag);
         this.book = compoundTag.containsKey("Book", 10) ? this.resolveBook(ItemStack.fromTag(compoundTag.getCompound("Book")), null) : ItemStack.EMPTY;

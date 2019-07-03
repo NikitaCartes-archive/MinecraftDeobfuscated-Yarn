@@ -39,7 +39,7 @@ extends HorizontalConnectedBlock {
         BlockState blockState2 = blockView.getBlockState(blockPos3);
         BlockState blockState3 = blockView.getBlockState(blockPos4);
         BlockState blockState4 = blockView.getBlockState(blockPos5);
-        return (BlockState)((BlockState)((BlockState)((BlockState)((BlockState)this.getDefaultState().with(NORTH, this.connectsTo(blockState, Block.isSolidFullSquare(blockState, blockView, blockPos2, Direction.SOUTH)))).with(SOUTH, this.connectsTo(blockState2, Block.isSolidFullSquare(blockState2, blockView, blockPos3, Direction.NORTH)))).with(WEST, this.connectsTo(blockState3, Block.isSolidFullSquare(blockState3, blockView, blockPos4, Direction.EAST)))).with(EAST, this.connectsTo(blockState4, Block.isSolidFullSquare(blockState4, blockView, blockPos5, Direction.WEST)))).with(WATERLOGGED, fluidState.getFluid() == Fluids.WATER);
+        return (BlockState)((BlockState)((BlockState)((BlockState)((BlockState)this.getDefaultState().with(NORTH, this.connectsTo(blockState, blockState.method_20827(blockView, blockPos2, Direction.SOUTH)))).with(SOUTH, this.connectsTo(blockState2, blockState2.method_20827(blockView, blockPos3, Direction.NORTH)))).with(WEST, this.connectsTo(blockState3, blockState3.method_20827(blockView, blockPos4, Direction.EAST)))).with(EAST, this.connectsTo(blockState4, blockState4.method_20827(blockView, blockPos5, Direction.WEST)))).with(WATERLOGGED, fluidState.getFluid() == Fluids.WATER);
     }
 
     @Override
@@ -48,7 +48,7 @@ extends HorizontalConnectedBlock {
             iWorld.getFluidTickScheduler().schedule(blockPos, Fluids.WATER, Fluids.WATER.getTickRate(iWorld));
         }
         if (direction.getAxis().isHorizontal()) {
-            return (BlockState)blockState.with((Property)FACING_PROPERTIES.get(direction), this.connectsTo(blockState2, Block.isSolidFullSquare(blockState2, iWorld, blockPos2, direction.getOpposite())));
+            return (BlockState)blockState.with((Property)FACING_PROPERTIES.get(direction), this.connectsTo(blockState2, blockState2.method_20827(iWorld, blockPos2, direction.getOpposite())));
         }
         return super.getStateForNeighborUpdate(blockState, direction, blockState2, iWorld, blockPos, blockPos2);
     }

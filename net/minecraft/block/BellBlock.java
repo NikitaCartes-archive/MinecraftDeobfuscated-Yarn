@@ -174,12 +174,12 @@ extends BlockWithEntity {
                 return blockState;
             }
         } else {
-            boolean bl = axis == Direction.Axis.X && BellBlock.isSolidFullSquare(world.getBlockState(blockPos.west()), world, blockPos.west(), Direction.EAST) && BellBlock.isSolidFullSquare(world.getBlockState(blockPos.east()), world, blockPos.east(), Direction.WEST) || axis == Direction.Axis.Z && BellBlock.isSolidFullSquare(world.getBlockState(blockPos.north()), world, blockPos.north(), Direction.SOUTH) && BellBlock.isSolidFullSquare(world.getBlockState(blockPos.south()), world, blockPos.south(), Direction.NORTH);
+            boolean bl = axis == Direction.Axis.X && world.getBlockState(blockPos.west()).method_20827(world, blockPos.west(), Direction.EAST) && world.getBlockState(blockPos.east()).method_20827(world, blockPos.east(), Direction.WEST) || axis == Direction.Axis.Z && world.getBlockState(blockPos.north()).method_20827(world, blockPos.north(), Direction.SOUTH) && world.getBlockState(blockPos.south()).method_20827(world, blockPos.south(), Direction.NORTH);
             BlockState blockState = (BlockState)((BlockState)this.getDefaultState().with(FACING, direction.getOpposite())).with(ATTACHMENT, bl ? Attachment.DOUBLE_WALL : Attachment.SINGLE_WALL);
             if (blockState.canPlaceAt(itemPlacementContext.getWorld(), itemPlacementContext.getBlockPos())) {
                 return blockState;
             }
-            boolean bl2 = BellBlock.isSolidFullSquare(world.getBlockState(blockPos.down()), world, blockPos.down(), Direction.UP);
+            boolean bl2 = world.getBlockState(blockPos.down()).method_20827(world, blockPos.down(), Direction.UP);
             if ((blockState = (BlockState)blockState.with(ATTACHMENT, bl2 ? Attachment.FLOOR : Attachment.CEILING)).canPlaceAt(itemPlacementContext.getWorld(), itemPlacementContext.getBlockPos())) {
                 return blockState;
             }
@@ -195,10 +195,10 @@ extends BlockWithEntity {
             return Blocks.AIR.getDefaultState();
         }
         if (direction.getAxis() == blockState.get(FACING).getAxis()) {
-            if (attachment == Attachment.DOUBLE_WALL && !BellBlock.isSolidFullSquare(blockState2, iWorld, blockPos2, direction)) {
+            if (attachment == Attachment.DOUBLE_WALL && !blockState2.method_20827(iWorld, blockPos2, direction)) {
                 return (BlockState)((BlockState)blockState.with(ATTACHMENT, Attachment.SINGLE_WALL)).with(FACING, direction.getOpposite());
             }
-            if (attachment == Attachment.SINGLE_WALL && direction2.getOpposite() == direction && BellBlock.isSolidFullSquare(blockState2, iWorld, blockPos2, blockState.get(FACING))) {
+            if (attachment == Attachment.SINGLE_WALL && direction2.getOpposite() == direction && blockState2.method_20827(iWorld, blockPos2, blockState.get(FACING))) {
                 return (BlockState)blockState.with(ATTACHMENT, Attachment.DOUBLE_WALL);
             }
         }

@@ -5,6 +5,7 @@ package net.minecraft.block;
 
 import java.util.Random;
 import net.minecraft.block.Block;
+import net.minecraft.block.BlockPlacementEnvironment;
 import net.minecraft.block.BlockRenderLayer;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
@@ -65,6 +66,11 @@ implements Fertilizable {
         VoxelShape voxelShape = blockState.get(LEAVES) == BambooLeaves.LARGE ? LARGE_LEAVES_SHAPE : SMALL_LEAVES_SHAPE;
         Vec3d vec3d = blockState.getOffsetPos(blockView, blockPos);
         return voxelShape.offset(vec3d.x, vec3d.y, vec3d.z);
+    }
+
+    @Override
+    public boolean canPlaceAtSide(BlockState blockState, BlockView blockView, BlockPos blockPos, BlockPlacementEnvironment blockPlacementEnvironment) {
+        return false;
     }
 
     @Override

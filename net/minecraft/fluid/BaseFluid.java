@@ -111,7 +111,7 @@ extends Fluid {
         if (blockState.getMaterial() == Material.ICE) {
             return false;
         }
-        return Block.isSolidFullSquare(blockState, blockView, blockPos, direction);
+        return blockState.method_20827(blockView, blockPos, direction);
     }
 
     protected void method_15725(IWorld iWorld, BlockPos blockPos, FluidState fluidState) {

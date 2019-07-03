@@ -6,7 +6,6 @@ package net.minecraft.client.render.debug;
 import com.mojang.blaze3d.platform.GlStateManager;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.client.MinecraftClient;
@@ -61,7 +60,7 @@ implements DebugRenderer.Renderer {
                 float o = 0.0f;
                 float p = 0.0f;
                 float q = 0.5f;
-                if (Block.isSolidFullSquare(blockState, blockView, blockPos2, Direction.WEST)) {
+                if (blockState.method_20827(blockView, blockPos2, Direction.WEST)) {
                     tessellator = Tessellator.getInstance();
                     bufferBuilder = tessellator.getBufferBuilder();
                     bufferBuilder.begin(5, VertexFormats.POSITION_COLOR);
@@ -71,7 +70,7 @@ implements DebugRenderer.Renderer {
                     bufferBuilder.vertex(g, k, m).color(1.0f, 0.0f, 0.0f, 0.5f).next();
                     tessellator.draw();
                 }
-                if (Block.isSolidFullSquare(blockState, blockView, blockPos2, Direction.SOUTH)) {
+                if (blockState.method_20827(blockView, blockPos2, Direction.SOUTH)) {
                     tessellator = Tessellator.getInstance();
                     bufferBuilder = tessellator.getBufferBuilder();
                     bufferBuilder.begin(5, VertexFormats.POSITION_COLOR);
@@ -81,7 +80,7 @@ implements DebugRenderer.Renderer {
                     bufferBuilder.vertex(j, h, m).color(1.0f, 0.0f, 0.0f, 0.5f).next();
                     tessellator.draw();
                 }
-                if (Block.isSolidFullSquare(blockState, blockView, blockPos2, Direction.EAST)) {
+                if (blockState.method_20827(blockView, blockPos2, Direction.EAST)) {
                     tessellator = Tessellator.getInstance();
                     bufferBuilder = tessellator.getBufferBuilder();
                     bufferBuilder.begin(5, VertexFormats.POSITION_COLOR);
@@ -91,7 +90,7 @@ implements DebugRenderer.Renderer {
                     bufferBuilder.vertex(j, k, i).color(1.0f, 0.0f, 0.0f, 0.5f).next();
                     tessellator.draw();
                 }
-                if (Block.isSolidFullSquare(blockState, blockView, blockPos2, Direction.NORTH)) {
+                if (blockState.method_20827(blockView, blockPos2, Direction.NORTH)) {
                     tessellator = Tessellator.getInstance();
                     bufferBuilder = tessellator.getBufferBuilder();
                     bufferBuilder.begin(5, VertexFormats.POSITION_COLOR);
@@ -101,7 +100,7 @@ implements DebugRenderer.Renderer {
                     bufferBuilder.vertex(g, h, i).color(1.0f, 0.0f, 0.0f, 0.5f).next();
                     tessellator.draw();
                 }
-                if (Block.isSolidFullSquare(blockState, blockView, blockPos2, Direction.DOWN)) {
+                if (blockState.method_20827(blockView, blockPos2, Direction.DOWN)) {
                     tessellator = Tessellator.getInstance();
                     bufferBuilder = tessellator.getBufferBuilder();
                     bufferBuilder.begin(5, VertexFormats.POSITION_COLOR);
@@ -111,7 +110,7 @@ implements DebugRenderer.Renderer {
                     bufferBuilder.vertex(j, h, m).color(1.0f, 0.0f, 0.0f, 0.5f).next();
                     tessellator.draw();
                 }
-                if (!Block.isSolidFullSquare(blockState, blockView, blockPos2, Direction.UP)) continue;
+                if (!blockState.method_20827(blockView, blockPos2, Direction.UP)) continue;
                 tessellator = Tessellator.getInstance();
                 bufferBuilder = tessellator.getBufferBuilder();
                 bufferBuilder.begin(5, VertexFormats.POSITION_COLOR);

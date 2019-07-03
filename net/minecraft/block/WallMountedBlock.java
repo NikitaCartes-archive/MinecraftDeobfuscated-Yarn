@@ -32,7 +32,7 @@ extends HorizontalFacingBlock {
 
     public static boolean canPlaceAt(ViewableWorld viewableWorld, BlockPos blockPos, Direction direction) {
         BlockPos blockPos2 = blockPos.offset(direction);
-        return Block.isSolidFullSquare(viewableWorld.getBlockState(blockPos2), viewableWorld, blockPos2, direction.getOpposite());
+        return viewableWorld.getBlockState(blockPos2).method_20827(viewableWorld, blockPos2, direction.getOpposite());
     }
 
     @Override

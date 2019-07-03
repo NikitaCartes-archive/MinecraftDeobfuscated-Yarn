@@ -86,10 +86,10 @@ extends Block {
         boolean bl = i > 0;
         boolean bl3 = bl2 = j > 0;
         if (i != j) {
-            blockState = this.setRedstoneOutput(blockState, j);
-            world.setBlockState(blockPos, blockState, 2);
+            BlockState blockState2 = this.setRedstoneOutput(blockState, j);
+            world.setBlockState(blockPos, blockState2, 2);
             this.updateNeighbors(world, blockPos);
-            world.scheduleBlockRender(blockPos);
+            world.scheduleBlockRender(blockPos, blockState, blockState2);
         }
         if (!bl2 && bl) {
             this.playDepressSound(world, blockPos);

@@ -58,6 +58,7 @@ public class CrashReport {
             long q = n / 1024L / 1024L;
             return n + " bytes (" + q + " MB) / " + m + " bytes (" + p + " MB) up to " + l + " bytes (" + o + " MB)";
         });
+        this.systemDetailsSection.add("CPUs", Runtime.getRuntime().availableProcessors());
         this.systemDetailsSection.add("JVM Flags", () -> {
             List list = SystemUtil.getJVMFlags().collect(Collectors.toList());
             return String.format("%d total; %s", list.size(), list.stream().collect(Collectors.joining(" ")));

@@ -3,6 +3,7 @@
  */
 package net.minecraft.server;
 
+import com.google.common.base.Splitter;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.gson.JsonElement;
@@ -18,6 +19,7 @@ import it.unimi.dsi.fastutil.longs.LongIterator;
 import java.awt.GraphicsEnvironment;
 import java.awt.image.BufferedImage;
 import java.awt.image.RenderedImage;
+import java.io.BufferedWriter;
 import java.io.File;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
@@ -25,8 +27,11 @@ import java.net.Proxy;
 import java.net.URLEncoder;
 import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.OpenOption;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.nio.file.attribute.FileAttribute;
 import java.security.KeyPair;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -96,6 +101,7 @@ import net.minecraft.tag.RegistryTagManager;
 import net.minecraft.text.LiteralText;
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
+import net.minecraft.util.Identifier;
 import net.minecraft.util.MetricsData;
 import net.minecraft.util.NonBlockingThreadExecutor;
 import net.minecraft.util.ProgressListener;
@@ -143,6 +149,7 @@ AutoCloseable,
 Runnable {
     private static final Logger LOGGER = LogManager.getLogger();
     public static final File USER_CACHE_FILE = new File("usercache.json");
+    private static final CompletableFuture<Unit> field_20279 = CompletableFuture.completedFuture(Unit.INSTANCE);
     public static final LevelInfo DEMO_LEVEL_INFO = new LevelInfo("North Carolina".hashCode(), GameMode.SURVIVAL, true, false, LevelGeneratorType.DEFAULT).setBonusChest();
     private final LevelStorage levelStorage;
     private final Snooper snooper = new Snooper("server", this, SystemUtil.getMeasuringTimeMs());
@@ -1318,7 +1325,7 @@ Runnable {
         this.dataPackContainerManager.setEnabled(list);
         ArrayList<ResourcePack> list2 = Lists.newArrayList();
         this.dataPackContainerManager.getEnabledContainers().forEach(resourcePackContainer -> list2.add(resourcePackContainer.createResourcePack()));
-        CompletableFuture<Unit> completableFuture = this.dataManager.beginReload(this.workerExecutor, this, list2, CompletableFuture.completedFuture(Unit.INSTANCE));
+        CompletableFuture<Unit> completableFuture = this.dataManager.beginReload(this.workerExecutor, this, list2, field_20279);
         this.waitFor(completableFuture::isDone);
         try {
             completableFuture.get();
@@ -1445,6 +1452,55 @@ Runnable {
     }
 
     public abstract boolean isOwner(GameProfile var1);
+
+    public void method_21613(Path path) throws IOException {
+        Path path2 = path.resolve("levels");
+        for (Map.Entry<DimensionType, ServerWorld> entry : this.worlds.entrySet()) {
+            Identifier identifier = DimensionType.getId(entry.getKey());
+            Path path3 = path2.resolve(identifier.getNamespace()).resolve(identifier.getPath());
+            Files.createDirectories(path3, new FileAttribute[0]);
+            entry.getValue().method_21625(path3);
+        }
+        this.method_21615(path.resolve("gamerules.txt"));
+        this.method_21616(path.resolve("classpath.txt"));
+        this.method_21614(path.resolve("example_crash.txt"));
+    }
+
+    private void method_21614(Path path) throws IOException {
+        CrashReport crashReport = new CrashReport("Server dump", new Exception("dummy"));
+        this.populateCrashReport(crashReport);
+        try (BufferedWriter writer = Files.newBufferedWriter(path, new OpenOption[0]);){
+            writer.write(crashReport.asString());
+        }
+    }
+
+    private void method_21615(Path path) throws IOException {
+        try (BufferedWriter writer = Files.newBufferedWriter(path, new OpenOption[0]);){
+            final ArrayList<String> list = Lists.newArrayList();
+            final GameRules gameRules = this.getGameRules();
+            GameRules.forEach(new GameRules.RuleConsumer(){
+
+                @Override
+                public <T extends GameRules.Rule<T>> void accept(GameRules.RuleKey<T> ruleKey, GameRules.RuleType<T> ruleType) {
+                    list.add(String.format("%s=%s\n", ruleKey.getName(), ((GameRules.Rule)gameRules.get(ruleKey)).toString()));
+                }
+            });
+            for (String string : list) {
+                writer.write(string);
+            }
+        }
+    }
+
+    private void method_21616(Path path) throws IOException {
+        try (BufferedWriter writer = Files.newBufferedWriter(path, new OpenOption[0]);){
+            String string = System.getProperty("java.class.path");
+            String string2 = System.getProperty("path.separator");
+            for (String string3 : Splitter.on(string2).split(string)) {
+                writer.write(string3);
+                writer.write("\n");
+            }
+        }
+    }
 
     @Override
     public /* synthetic */ boolean canRun(Runnable runnable) {

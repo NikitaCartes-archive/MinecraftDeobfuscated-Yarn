@@ -3,6 +3,10 @@
  */
 package net.minecraft.client.color.block;
 
+import com.google.common.collect.ImmutableSet;
+import com.google.common.collect.Maps;
+import java.util.Map;
+import java.util.Set;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.block.Block;
@@ -17,6 +21,7 @@ import net.minecraft.client.color.block.BlockColorProvider;
 import net.minecraft.client.color.world.BiomeColors;
 import net.minecraft.client.color.world.FoliageColors;
 import net.minecraft.client.color.world.GrassColors;
+import net.minecraft.state.property.Property;
 import net.minecraft.util.IdList;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.registry.Registry;
@@ -27,6 +32,7 @@ import org.jetbrains.annotations.Nullable;
 @Environment(value=EnvType.CLIENT)
 public class BlockColors {
     private final IdList<BlockColorProvider> providers = new IdList(32);
+    private final Map<Block, Set<Property<?>>> field_20271 = Maps.newHashMap();
 
     public static BlockColors create() {
         BlockColors blockColors = new BlockColors();
@@ -36,6 +42,7 @@ public class BlockColors {
             }
             return BiomeColors.getGrassColor(extendedBlockView, blockState.get(ReplaceableTallPlantBlock.HALF) == DoubleBlockHalf.UPPER ? blockPos.down() : blockPos);
         }, Blocks.LARGE_FERN, Blocks.TALL_GRASS);
+        blockColors.method_21593(ReplaceableTallPlantBlock.HALF, Blocks.LARGE_FERN, Blocks.TALL_GRASS);
         blockColors.register((blockState, extendedBlockView, blockPos, i) -> {
             if (extendedBlockView == null || blockPos == null) {
                 return GrassColors.getColor(0.5, 1.0);
@@ -57,6 +64,7 @@ public class BlockColors {
             return BiomeColors.getWaterColor(extendedBlockView, blockPos);
         }, Blocks.WATER, Blocks.BUBBLE_COLUMN, Blocks.CAULDRON);
         blockColors.register((blockState, extendedBlockView, blockPos, i) -> RedstoneWireBlock.getWireColor(blockState.get(RedstoneWireBlock.POWER)), Blocks.REDSTONE_WIRE);
+        blockColors.method_21593(RedstoneWireBlock.POWER, Blocks.REDSTONE_WIRE);
         blockColors.register((blockState, extendedBlockView, blockPos, i) -> {
             if (extendedBlockView == null || blockPos == null) {
                 return -1;
@@ -71,6 +79,7 @@ public class BlockColors {
             int m = j * 4;
             return k << 16 | l << 8 | m;
         }, Blocks.MELON_STEM, Blocks.PUMPKIN_STEM);
+        blockColors.method_21593(StemBlock.AGE, Blocks.MELON_STEM, Blocks.PUMPKIN_STEM);
         blockColors.register((blockState, extendedBlockView, blockPos, i) -> {
             if (extendedBlockView == null || blockPos == null) {
                 return 7455580;
@@ -98,6 +107,20 @@ public class BlockColors {
         for (Block block : blocks) {
             this.providers.set(blockColorProvider, Registry.BLOCK.getRawId(block));
         }
+    }
+
+    private void method_21594(Set<Property<?>> set, Block ... blocks) {
+        for (Block block : blocks) {
+            this.field_20271.put(block, set);
+        }
+    }
+
+    private void method_21593(Property<?> property, Block ... blocks) {
+        this.method_21594(ImmutableSet.of(property), blocks);
+    }
+
+    public Set<Property<?>> method_21592(Block block) {
+        return this.field_20271.getOrDefault(block, ImmutableSet.of());
     }
 }
 

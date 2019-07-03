@@ -191,5 +191,9 @@ implements TickScheduler<T> {
             this.scheduledTickActionsInOrder.add(scheduledTick);
         }
     }
+
+    public int method_20825() {
+        return this.scheduledTickActions.size();
+    }
 }
 

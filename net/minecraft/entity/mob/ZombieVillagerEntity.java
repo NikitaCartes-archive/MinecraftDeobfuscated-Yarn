@@ -140,7 +140,7 @@ implements VillagerDataContainer {
         return this.getDataTracker().get(CONVERTING);
     }
 
-    protected void setConverting(@Nullable UUID uUID, int i) {
+    private void setConverting(@Nullable UUID uUID, int i) {
         this.converter = uUID;
         this.conversionTimer = i;
         this.getDataTracker().set(CONVERTING, true);
@@ -161,7 +161,7 @@ implements VillagerDataContainer {
         super.handleStatus(b);
     }
 
-    protected void finishConversion(ServerWorld serverWorld) {
+    private void finishConversion(ServerWorld serverWorld) {
         PlayerEntity playerEntity;
         VillagerEntity villagerEntity = EntityType.VILLAGER.create(serverWorld);
         villagerEntity.copyPositionAndRotation(this);
@@ -189,7 +189,7 @@ implements VillagerDataContainer {
         serverWorld.playLevelEvent(null, 1027, new BlockPos(this), 0);
     }
 
-    protected int getConversionRate() {
+    private int getConversionRate() {
         int i = 1;
         if (this.random.nextFloat() < 0.01f) {
             int j = 0;

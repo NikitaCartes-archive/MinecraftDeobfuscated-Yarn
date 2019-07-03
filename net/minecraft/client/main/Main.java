@@ -13,7 +13,7 @@ import java.net.InetSocketAddress;
 import java.net.PasswordAuthentication;
 import java.net.Proxy;
 import java.util.List;
-import java.util.Optional;
+import java.util.OptionalInt;
 import joptsimple.ArgumentAcceptingOptionSpec;
 import joptsimple.NonOptionArgumentSpec;
 import joptsimple.OptionParser;
@@ -32,6 +32,7 @@ import net.minecraft.util.SystemUtil;
 import net.minecraft.util.UncaughtExceptionLogger;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.jetbrains.annotations.Nullable;
 
 @Environment(value=EnvType.CLIENT)
 public class Main {
@@ -93,8 +94,8 @@ public class Main {
         }
         int i = Main.getOption(optionSet, optionSpec14);
         int j = Main.getOption(optionSet, optionSpec15);
-        Optional<Integer> optional = Optional.ofNullable(Main.getOption(optionSet, optionSpec16));
-        Optional<Integer> optional2 = Optional.ofNullable(Main.getOption(optionSet, optionSpec17));
+        OptionalInt optionalInt = Main.method_21612(Main.getOption(optionSet, optionSpec16));
+        OptionalInt optionalInt2 = Main.method_21612(Main.getOption(optionSet, optionSpec17));
         boolean bl = optionSet.has("fullscreen");
         boolean bl2 = optionSet.has("demo");
         String string4 = Main.getOption(optionSet, optionSpec13);
@@ -110,7 +111,7 @@ public class Main {
         String string8 = Main.getOption(optionSet, optionSpec);
         Integer integer = Main.getOption(optionSet, optionSpec2);
         Session session = new Session((String)optionSpec10.value(optionSet), string6, (String)optionSpec12.value(optionSet), (String)optionSpec21.value(optionSet));
-        RunArgs runArgs = new RunArgs(new RunArgs.Network(session, propertyMap, propertyMap2, proxy), new WindowSettings(i, j, optional, optional2, bl), new RunArgs.Directories(file, file3, file2, string7), new RunArgs.Game(bl2, string4, string5), new RunArgs.AutoConnect(string8, integer));
+        RunArgs runArgs = new RunArgs(new RunArgs.Network(session, propertyMap, propertyMap2, proxy), new WindowSettings(i, j, optionalInt, optionalInt2, bl), new RunArgs.Directories(file, file3, file2, string7), new RunArgs.Game(bl2, string4, string5), new RunArgs.AutoConnect(string8, integer));
         Thread thread = new Thread("Client Shutdown Thread"){
 
             @Override
@@ -129,6 +130,10 @@ public class Main {
         Runtime.getRuntime().addShutdownHook(thread);
         Thread.currentThread().setName("Client thread");
         new MinecraftClient(runArgs).start();
+    }
+
+    private static OptionalInt method_21612(@Nullable Integer integer) {
+        return integer != null ? OptionalInt.of(integer) : OptionalInt.empty();
     }
 
     private static <T> T getOption(OptionSet optionSet, OptionSpec<T> optionSpec) {

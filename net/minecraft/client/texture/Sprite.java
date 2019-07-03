@@ -42,7 +42,6 @@ public class Sprite {
     private float vMax;
     protected int frameIndex;
     protected int frameTicks;
-    private static final int[] blendedPixelCache = new int[4];
     private static final float[] srgbLinearMap = SystemUtil.consume(new float[256], fs -> {
         for (int i = 0; i < ((float[])fs).length; ++i) {
             fs[i] = (float)Math.pow((float)i / 255.0f, 2.2);
@@ -128,23 +127,35 @@ public class Sprite {
 
     private static int blendPixels(int i, int j, int k, int l, boolean bl) {
         if (bl) {
-            int n;
-            Sprite.blendedPixelCache[0] = i;
-            Sprite.blendedPixelCache[1] = j;
-            Sprite.blendedPixelCache[2] = k;
-            Sprite.blendedPixelCache[3] = l;
             float f = 0.0f;
             float g = 0.0f;
             float h = 0.0f;
             float m = 0.0f;
-            for (n = 0; n < 4; ++n) {
-                if (blendedPixelCache[n] >> 24 == 0) continue;
-                f += Sprite.srgbToLinear(blendedPixelCache[n] >> 24);
-                g += Sprite.srgbToLinear(blendedPixelCache[n] >> 16);
-                h += Sprite.srgbToLinear(blendedPixelCache[n] >> 8);
-                m += Sprite.srgbToLinear(blendedPixelCache[n] >> 0);
+            if (i >> 24 != 0) {
+                f += Sprite.srgbToLinear(i >> 24);
+                g += Sprite.srgbToLinear(i >> 16);
+                h += Sprite.srgbToLinear(i >> 8);
+                m += Sprite.srgbToLinear(i >> 0);
             }
-            n = (int)(Math.pow(f /= 4.0f, 0.45454545454545453) * 255.0);
+            if (j >> 24 != 0) {
+                f += Sprite.srgbToLinear(j >> 24);
+                g += Sprite.srgbToLinear(j >> 16);
+                h += Sprite.srgbToLinear(j >> 8);
+                m += Sprite.srgbToLinear(j >> 0);
+            }
+            if (k >> 24 != 0) {
+                f += Sprite.srgbToLinear(k >> 24);
+                g += Sprite.srgbToLinear(k >> 16);
+                h += Sprite.srgbToLinear(k >> 8);
+                m += Sprite.srgbToLinear(k >> 0);
+            }
+            if (l >> 24 != 0) {
+                f += Sprite.srgbToLinear(l >> 24);
+                g += Sprite.srgbToLinear(l >> 16);
+                h += Sprite.srgbToLinear(l >> 8);
+                m += Sprite.srgbToLinear(l >> 0);
+            }
+            int n = (int)(Math.pow(f /= 4.0f, 0.45454545454545453) * 255.0);
             int o = (int)(Math.pow(g /= 4.0f, 0.45454545454545453) * 255.0);
             int p = (int)(Math.pow(h /= 4.0f, 0.45454545454545453) * 255.0);
             int q = (int)(Math.pow(m /= 4.0f, 0.45454545454545453) * 255.0);

@@ -226,7 +226,7 @@ extends Block {
         BlockPos blockPos2 = blockPos.down();
         BlockState blockState2 = viewableWorld.getBlockState(blockPos2);
         if (blockState.get(HALF) == DoubleBlockHalf.LOWER) {
-            return Block.isSolidFullSquare(blockState2, viewableWorld, blockPos2, Direction.UP);
+            return blockState2.method_20827(viewableWorld, blockPos2, Direction.UP);
         }
         return blockState2.getBlock() == this;
     }

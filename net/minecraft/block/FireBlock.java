@@ -78,7 +78,7 @@ extends Block {
     public BlockState getStateForPosition(BlockView blockView, BlockPos blockPos) {
         BlockPos blockPos2 = blockPos.down();
         BlockState blockState = blockView.getBlockState(blockPos2);
-        if (this.isFlammable(blockState) || Block.isSolidFullSquare(blockState, blockView, blockPos2, Direction.UP)) {
+        if (this.isFlammable(blockState) || blockState.method_20827(blockView, blockPos2, Direction.UP)) {
             return this.getDefaultState();
         }
         BlockState blockState2 = this.getDefaultState();
@@ -93,7 +93,7 @@ extends Block {
     @Override
     public boolean canPlaceAt(BlockState blockState, ViewableWorld viewableWorld, BlockPos blockPos) {
         BlockPos blockPos2 = blockPos.down();
-        return Block.isSolidFullSquare(viewableWorld.getBlockState(blockPos2), viewableWorld, blockPos2, Direction.UP) || this.areBlocksAroundFlammable(viewableWorld, blockPos);
+        return viewableWorld.getBlockState(blockPos2).method_20827(viewableWorld, blockPos2, Direction.UP) || this.areBlocksAroundFlammable(viewableWorld, blockPos);
     }
 
     @Override
@@ -126,7 +126,7 @@ extends Block {
             world.getBlockTickScheduler().schedule(blockPos, this, this.getTickRate(world) + random.nextInt(10));
             if (!this.areBlocksAroundFlammable(world, blockPos)) {
                 BlockPos blockPos2 = blockPos.down();
-                if (!Block.isSolidFullSquare(world.getBlockState(blockPos2), world, blockPos2, Direction.UP) || i > 3) {
+                if (!world.getBlockState(blockPos2).method_20827(world, blockPos2, Direction.UP) || i > 3) {
                     world.clearBlockState(blockPos, false);
                 }
                 return;
@@ -256,7 +256,7 @@ extends Block {
                 if (random.nextInt(24) == 0) {
                     world.playSound((float)blockPos.getX() + 0.5f, (double)((float)blockPos.getY() + 0.5f), (double)((float)blockPos.getZ() + 0.5f), SoundEvents.BLOCK_FIRE_AMBIENT, SoundCategory.BLOCKS, 1.0f + random.nextFloat(), random.nextFloat() * 0.7f + 0.3f, false);
                 }
-                if (!this.isFlammable(blockState2 = world.getBlockState(blockPos2 = blockPos.down())) && !Block.isSolidFullSquare(blockState2, world, blockPos2, Direction.UP)) break block11;
+                if (!this.isFlammable(blockState2 = world.getBlockState(blockPos2 = blockPos.down())) && !blockState2.method_20827(world, blockPos2, Direction.UP)) break block11;
                 for (int i2 = 0; i2 < 3; ++i2) {
                     double d2 = (double)blockPos.getX() + random.nextDouble();
                     double e2 = (double)blockPos.getY() + random.nextDouble() * 0.5 + 0.5;

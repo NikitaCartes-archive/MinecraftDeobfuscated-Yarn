@@ -9,7 +9,6 @@ import com.google.common.collect.Multisets;
 import java.util.List;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.MaterialColor;
@@ -193,7 +192,7 @@ extends NetworkSyncedItem {
 
     private BlockState getFluidStateIfVisible(World world, BlockState blockState, BlockPos blockPos) {
         FluidState fluidState = blockState.getFluidState();
-        if (!fluidState.isEmpty() && !Block.isSolidFullSquare(blockState, world, blockPos, Direction.UP)) {
+        if (!fluidState.isEmpty() && !blockState.method_20827(world, blockPos, Direction.UP)) {
             return fluidState.getBlockState();
         }
         return blockState;

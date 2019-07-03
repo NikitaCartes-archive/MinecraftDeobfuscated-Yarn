@@ -6,7 +6,6 @@ package net.minecraft.world.gen.feature;
 import com.mojang.datafixers.Dynamic;
 import java.util.Random;
 import java.util.function.Function;
-import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.util.math.BlockPos;
@@ -48,7 +47,7 @@ extends Feature<DefaultFeatureConfig> {
         if (blockState.getBlock() == Blocks.GRASS_PATH) {
             return random.nextBoolean();
         }
-        return Block.isSolidFullSquare(blockState, iWorld, blockPos2, Direction.UP);
+        return blockState.method_20827(iWorld, blockPos2, Direction.UP);
     }
 
     private void addPileBlock(IWorld iWorld, BlockPos blockPos, Random random) {

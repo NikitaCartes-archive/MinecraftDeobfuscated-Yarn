@@ -83,7 +83,7 @@ implements Waterloggable {
     @Override
     public boolean canPlaceAt(BlockState blockState, ViewableWorld viewableWorld, BlockPos blockPos) {
         BlockPos blockPos2 = blockPos.down();
-        return Block.isSolidFullSquare(viewableWorld.getBlockState(blockPos2), viewableWorld, blockPos2, Direction.UP);
+        return viewableWorld.getBlockState(blockPos2).method_20827(viewableWorld, blockPos2, Direction.UP);
     }
 
     @Override

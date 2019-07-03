@@ -221,7 +221,7 @@ extends ChunkGeneratorConfig {
         String[] strings = string.split("\\*", 2);
         if (strings.length == 2) {
             try {
-                j = MathHelper.clamp(Integer.parseInt(strings[0]), 0, 256 - i);
+                j = Math.max(Integer.parseInt(strings[0]), 0);
             } catch (NumberFormatException numberFormatException) {
                 LOGGER.error("Error while parsing flat world string => {}", (Object)numberFormatException.getMessage());
                 return null;
@@ -229,6 +229,8 @@ extends ChunkGeneratorConfig {
         } else {
             j = 1;
         }
+        int k = Math.min(i + j, 256);
+        int l = k - i;
         try {
             block = FlatChunkGeneratorConfig.parseBlock(strings[strings.length - 1]);
         } catch (Exception exception) {
@@ -239,7 +241,7 @@ extends ChunkGeneratorConfig {
             LOGGER.error("Error while parsing flat world string => Unknown block, {}", (Object)strings[strings.length - 1]);
             return null;
         }
-        FlatChunkGeneratorLayer flatChunkGeneratorLayer = new FlatChunkGeneratorLayer(j, block);
+        FlatChunkGeneratorLayer flatChunkGeneratorLayer = new FlatChunkGeneratorLayer(l, block);
         flatChunkGeneratorLayer.setStartY(i);
         return flatChunkGeneratorLayer;
     }

@@ -9,7 +9,6 @@ import it.unimi.dsi.fastutil.longs.Long2LongOpenHashMap;
 import java.util.Optional;
 import java.util.function.Predicate;
 import net.minecraft.client.network.DebugRendererInfoManager;
-import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.ai.brain.MemoryModuleState;
 import net.minecraft.entity.ai.brain.MemoryModuleType;
 import net.minecraft.entity.ai.brain.task.Task;
@@ -19,12 +18,11 @@ import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.GlobalPos;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
-import net.minecraft.util.math.Vec3d;
 import net.minecraft.village.PointOfInterestStorage;
 import net.minecraft.village.PointOfInterestType;
 
 public class FindPointOfInterestTask
-extends Task<LivingEntity> {
+extends Task<MobEntityWithAi> {
     private final PointOfInterestType poiType;
     private final MemoryModuleType<GlobalPos> targetMemoryModule;
     private final boolean onlyRunIfChild;
@@ -39,22 +37,20 @@ extends Task<LivingEntity> {
         this.onlyRunIfChild = bl;
     }
 
-    @Override
-    protected boolean shouldRun(ServerWorld serverWorld, LivingEntity livingEntity) {
-        if (this.onlyRunIfChild && livingEntity.isBaby()) {
+    protected boolean method_20816(ServerWorld serverWorld, MobEntityWithAi mobEntityWithAi) {
+        if (this.onlyRunIfChild && mobEntityWithAi.isBaby()) {
             return false;
         }
         return serverWorld.getTime() - this.lastRunTime >= 20L;
     }
 
-    @Override
-    protected void run(ServerWorld serverWorld, LivingEntity livingEntity, long l) {
+    protected void method_20817(ServerWorld serverWorld, MobEntityWithAi mobEntityWithAi, long l) {
         this.field_19290 = 0;
         this.lastRunTime = serverWorld.getTime() + (long)serverWorld.getRandom().nextInt(20);
-        MobEntityWithAi mobEntityWithAi = (MobEntityWithAi)livingEntity;
         PointOfInterestStorage pointOfInterestStorage = serverWorld.getPointOfInterestStorage();
         Predicate<BlockPos> predicate = blockPos -> {
             boolean bl;
+            BlockPos[] blockPoss;
             BlockPos blockPos2;
             long l = blockPos.asLong();
             if (this.field_19289.containsKey(l)) {
@@ -71,7 +67,9 @@ extends Task<LivingEntity> {
             } else {
                 blockPos2 = blockPos;
             }
-            if (mobEntityWithAi.getBoundingBox().expand(2.0).contains(new Vec3d(blockPos2))) {
+            BlockPos blockPos3 = new BlockPos(mobEntityWithAi);
+            for (BlockPos blockPos4 : blockPoss = new BlockPos[]{blockPos3.north(), blockPos3.south(), blockPos3.west(), blockPos3.east(), blockPos3.up().north(), blockPos3.up().south(), blockPos3.up().west(), blockPos3.up().east(), blockPos3.down(), blockPos3.up(2)}) {
+                if (!blockPos4.equals(blockPos2)) continue;
                 return true;
             }
             Path path = mobEntityWithAi.getNavigation().findPathTo(blockPos2);
@@ -81,10 +79,10 @@ extends Task<LivingEntity> {
             }
             return bl;
         };
-        Optional<BlockPos> optional = pointOfInterestStorage.getNearestPosition(this.poiType.getCompletionCondition(), predicate, new BlockPos(livingEntity), 48);
+        Optional<BlockPos> optional = pointOfInterestStorage.getNearestPosition(this.poiType.getCompletionCondition(), predicate, new BlockPos(mobEntityWithAi), 48);
         if (optional.isPresent()) {
             BlockPos blockPos2 = optional.get();
-            livingEntity.getBrain().putMemory(this.targetMemoryModule, GlobalPos.create(serverWorld.getDimension().getType(), blockPos2));
+            mobEntityWithAi.getBrain().putMemory(this.targetMemoryModule, GlobalPos.create(serverWorld.getDimension().getType(), blockPos2));
             DebugRendererInfoManager.sendPointOfInterest(serverWorld, blockPos2);
         } else if (this.field_19290 < 5) {
             this.field_19289.long2LongEntrySet().removeIf(entry -> entry.getLongValue() < this.lastRunTime);

@@ -10,6 +10,7 @@ import net.minecraft.util.SystemUtil;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.noise.OctavePerlinNoiseSampler;
+import net.minecraft.village.ZombieSiegeManager;
 import net.minecraft.world.ChunkRegion;
 import net.minecraft.world.IWorld;
 import net.minecraft.world.SpawnHelper;
@@ -39,6 +40,7 @@ extends SurfaceChunkGenerator<OverworldChunkGeneratorConfig> {
     private final PhantomSpawner phantomSpawner = new PhantomSpawner();
     private final PillagerSpawner pillagerSpawner = new PillagerSpawner();
     private final CatSpawner field_19181 = new CatSpawner();
+    private final ZombieSiegeManager field_19430 = new ZombieSiegeManager();
 
     public OverworldChunkGenerator(IWorld iWorld, BiomeSource biomeSource, OverworldChunkGeneratorConfig overworldChunkGeneratorConfig) {
         super(iWorld, biomeSource, 4, 8, 256, overworldChunkGeneratorConfig, true);
@@ -154,6 +156,7 @@ extends SurfaceChunkGenerator<OverworldChunkGeneratorConfig> {
         this.phantomSpawner.spawn(serverWorld, bl, bl2);
         this.pillagerSpawner.spawn(serverWorld, bl, bl2);
         this.field_19181.spawn(serverWorld, bl, bl2);
+        this.field_19430.tick(serverWorld, bl, bl2);
     }
 
     @Override

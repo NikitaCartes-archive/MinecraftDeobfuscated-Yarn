@@ -76,7 +76,7 @@ extends HorizontalConnectedBlock {
         BlockState blockState2 = blockView.getBlockState(blockPos3);
         BlockState blockState3 = blockView.getBlockState(blockPos4);
         BlockState blockState4 = blockView.getBlockState(blockPos5);
-        return (BlockState)((BlockState)((BlockState)((BlockState)((BlockState)super.getPlacementState(itemPlacementContext).with(NORTH, this.canConnect(blockState, Block.isSolidFullSquare(blockState, blockView, blockPos2, Direction.SOUTH), Direction.SOUTH))).with(EAST, this.canConnect(blockState2, Block.isSolidFullSquare(blockState2, blockView, blockPos3, Direction.WEST), Direction.WEST))).with(SOUTH, this.canConnect(blockState3, Block.isSolidFullSquare(blockState3, blockView, blockPos4, Direction.NORTH), Direction.NORTH))).with(WEST, this.canConnect(blockState4, Block.isSolidFullSquare(blockState4, blockView, blockPos5, Direction.EAST), Direction.EAST))).with(WATERLOGGED, fluidState.getFluid() == Fluids.WATER);
+        return (BlockState)((BlockState)((BlockState)((BlockState)((BlockState)super.getPlacementState(itemPlacementContext).with(NORTH, this.canConnect(blockState, blockState.method_20827(blockView, blockPos2, Direction.SOUTH), Direction.SOUTH))).with(EAST, this.canConnect(blockState2, blockState2.method_20827(blockView, blockPos3, Direction.WEST), Direction.WEST))).with(SOUTH, this.canConnect(blockState3, blockState3.method_20827(blockView, blockPos4, Direction.NORTH), Direction.NORTH))).with(WEST, this.canConnect(blockState4, blockState4.method_20827(blockView, blockPos5, Direction.EAST), Direction.EAST))).with(WATERLOGGED, fluidState.getFluid() == Fluids.WATER);
     }
 
     @Override
@@ -85,7 +85,7 @@ extends HorizontalConnectedBlock {
             iWorld.getFluidTickScheduler().schedule(blockPos, Fluids.WATER, Fluids.WATER.getTickRate(iWorld));
         }
         if (direction.getAxis().getType() == Direction.Type.HORIZONTAL) {
-            return (BlockState)blockState.with((Property)FACING_PROPERTIES.get(direction), this.canConnect(blockState2, Block.isSolidFullSquare(blockState2, iWorld, blockPos2, direction.getOpposite()), direction.getOpposite()));
+            return (BlockState)blockState.with((Property)FACING_PROPERTIES.get(direction), this.canConnect(blockState2, blockState2.method_20827(iWorld, blockPos2, direction.getOpposite()), direction.getOpposite()));
         }
         return super.getStateForNeighborUpdate(blockState, direction, blockState2, iWorld, blockPos, blockPos2);
     }

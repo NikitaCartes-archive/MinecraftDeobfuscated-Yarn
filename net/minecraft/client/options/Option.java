@@ -101,14 +101,6 @@ public abstract class Option {
         }
         return string + I18n.translate("options.framerate", (int)d);
     });
-    public static final DoubleOption FULLSCREEN_RESOLUTION = new DoubleOption("options.fullscreen.resolution", 0.0, 0.0, 1.0f, gameOptions -> MinecraftClient.getInstance().window.method_4508(), (gameOptions, double_) -> MinecraftClient.getInstance().window.method_4505((int)double_.doubleValue()), (gameOptions, doubleOption) -> {
-        double d = doubleOption.get((GameOptions)gameOptions);
-        String string = doubleOption.getDisplayPrefix();
-        if (d == 0.0) {
-            return string + I18n.translate("options.fullscreen.current", new Object[0]);
-        }
-        return string + MinecraftClient.getInstance().window.method_4487((int)d - 1);
-    });
     public static final DoubleOption GAMMA = new DoubleOption("options.gamma", 0.0, 1.0, 0.0f, gameOptions -> gameOptions.gamma, (gameOptions, double_) -> {
         gameOptions.gamma = double_;
     }, (gameOptions, doubleOption) -> {

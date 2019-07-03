@@ -119,11 +119,15 @@ Executor {
         try {
             while (!booleanSupplier.getAsBoolean()) {
                 if (this.executeQueuedTask()) continue;
-                LockSupport.parkNanos("waiting for tasks", 1000L);
+                this.method_20813();
             }
         } finally {
             --this.waitCount;
         }
+    }
+
+    protected void method_20813() {
+        LockSupport.parkNanos("waiting for tasks", 1000L);
     }
 
     protected void runSafely(R runnable) {

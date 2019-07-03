@@ -112,7 +112,6 @@ public class ChunkHolder {
     }
 
     @Nullable
-    @Environment(value=EnvType.CLIENT)
     public Chunk getCompletedChunk() {
         for (int i = CHUNK_STATUSES.size() - 1; i >= 0; --i) {
             Optional<Chunk> optional;

@@ -310,6 +310,7 @@ public class GameRules {
         }
     }
 
+    @FunctionalInterface
     public static interface RuleConsumer {
         public <T extends Rule<T>> void accept(RuleKey<T> var1, RuleType<T> var2);
     }

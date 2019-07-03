@@ -4,7 +4,6 @@
 package net.minecraft.entity.mob;
 
 import java.util.List;
-import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityGroup;
@@ -339,7 +338,7 @@ extends SpellcastingIllagerEntity {
                 VoxelShape voxelShape;
                 BlockPos blockPos2;
                 BlockState blockState;
-                if (!Block.isSolidFullSquare(blockState = EvokerEntity.this.world.getBlockState(blockPos2 = blockPos.down()), EvokerEntity.this.world, blockPos2, Direction.UP)) continue;
+                if (!(blockState = EvokerEntity.this.world.getBlockState(blockPos2 = blockPos.down())).method_20827(EvokerEntity.this.world, blockPos2, Direction.UP)) continue;
                 if (!EvokerEntity.this.world.isAir(blockPos) && !(voxelShape = (blockState2 = EvokerEntity.this.world.getBlockState(blockPos)).getCollisionShape(EvokerEntity.this.world, blockPos)).isEmpty()) {
                     j = voxelShape.getMaximum(Direction.Axis.Y);
                 }

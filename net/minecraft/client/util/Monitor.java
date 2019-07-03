@@ -8,31 +8,28 @@ import java.util.List;
 import java.util.Optional;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.client.util.MonitorTracker;
 import net.minecraft.client.util.VideoMode;
 import org.lwjgl.glfw.GLFW;
 import org.lwjgl.glfw.GLFWVidMode;
 
 @Environment(value=EnvType.CLIENT)
 public final class Monitor {
-    private final MonitorTracker monitorTracker;
     private final long handle;
     private final List<VideoMode> videoModes;
     private VideoMode currentVideoMode;
     private int x;
     private int y;
 
-    public Monitor(MonitorTracker monitorTracker, long l) {
-        this.monitorTracker = monitorTracker;
+    public Monitor(long l) {
         this.handle = l;
         this.videoModes = Lists.newArrayList();
         this.populateVideoModes();
     }
 
-    public void populateVideoModes() {
+    private void populateVideoModes() {
         this.videoModes.clear();
         GLFWVidMode.Buffer buffer = GLFW.glfwGetVideoModes(this.handle);
-        for (int i = 0; i < buffer.limit(); ++i) {
+        for (int i = buffer.limit() - 1; i >= 0; --i) {
             buffer.position(i);
             VideoMode videoMode = new VideoMode(buffer);
             if (videoMode.getRedBits() < 8 || videoMode.getGreenBits() < 8 || videoMode.getBlueBits() < 8) continue;
@@ -50,7 +47,7 @@ public final class Monitor {
     public VideoMode findClosestVideoMode(Optional<VideoMode> optional) {
         if (optional.isPresent()) {
             VideoMode videoMode = optional.get();
-            for (VideoMode videoMode2 : Lists.reverse(this.videoModes)) {
+            for (VideoMode videoMode2 : this.videoModes) {
                 if (!videoMode2.equals(videoMode)) continue;
                 return videoMode2;
             }
@@ -58,15 +55,8 @@ public final class Monitor {
         return this.getCurrentVideoMode();
     }
 
-    public int findClosestVideoModeIndex(Optional<VideoMode> optional) {
-        if (optional.isPresent()) {
-            VideoMode videoMode = optional.get();
-            for (int i = this.videoModes.size() - 1; i >= 0; --i) {
-                if (!videoMode.equals(this.videoModes.get(i))) continue;
-                return i;
-            }
-        }
-        return this.videoModes.indexOf(this.getCurrentVideoMode());
+    public int findClosestVideoModeIndex(VideoMode videoMode) {
+        return this.videoModes.indexOf(videoMode);
     }
 
     public VideoMode getCurrentVideoMode() {
