@@ -2,6 +2,7 @@ package net.minecraft.entity.ai.brain.task;
 
 import com.google.common.collect.ImmutableMap;
 import java.util.Optional;
+import net.minecraft.entity.ai.PathfindingUtil;
 import net.minecraft.entity.ai.brain.Brain;
 import net.minecraft.entity.ai.brain.MemoryModuleState;
 import net.minecraft.entity.ai.brain.MemoryModuleType;
@@ -10,6 +11,7 @@ import net.minecraft.entity.passive.VillagerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.GlobalPos;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Vec3d;
 
 public class VillagerWalkTowardsTask extends Task<VillagerEntity> {
 	private final MemoryModuleType<GlobalPos> destination;
@@ -39,10 +41,18 @@ public class VillagerWalkTowardsTask extends Task<VillagerEntity> {
 	protected void method_19509(ServerWorld serverWorld, VillagerEntity villagerEntity, long l) {
 		Brain<?> brain = villagerEntity.getBrain();
 		brain.getOptionalMemory(this.destination).ifPresent(globalPos -> {
-			if (this.method_19597(serverWorld, villagerEntity, globalPos) || this.shouldGiveUp(serverWorld, villagerEntity)) {
+			if (this.shouldGiveUp(serverWorld, villagerEntity)) {
 				villagerEntity.releaseTicketFor(this.destination);
 				brain.forget(this.destination);
 				brain.putMemory(MemoryModuleType.CANT_REACH_WALK_TARGET_SINCE, l);
+			} else if (this.method_19597(serverWorld, villagerEntity, globalPos)) {
+				Vec3d vec3d = null;
+
+				while (vec3d == null || this.method_19597(serverWorld, villagerEntity, GlobalPos.create(villagerEntity.dimension, new BlockPos(vec3d)))) {
+					vec3d = PathfindingUtil.method_6373(villagerEntity, 15, 7, new Vec3d(globalPos.getPos()));
+				}
+
+				brain.putMemory(MemoryModuleType.WALK_TARGET, new WalkTarget(vec3d, this.speed, this.completionRange));
 			} else if (!this.reachedDestination(serverWorld, villagerEntity, globalPos)) {
 				brain.putMemory(MemoryModuleType.WALK_TARGET, new WalkTarget(globalPos.getPos(), this.speed, this.completionRange));
 			}

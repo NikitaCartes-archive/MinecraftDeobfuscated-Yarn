@@ -95,8 +95,8 @@ public class VillagerBreedTask extends Task<VillagerEntity> {
 	}
 
 	private boolean method_20642(VillagerEntity villagerEntity, BlockPos blockPos) {
-		Path path = villagerEntity.getNavigation().findPathTo(blockPos);
-		return path != null && path.method_19313(blockPos);
+		Path path = villagerEntity.getNavigation().findPathTo(blockPos, PointOfInterestType.HOME.method_21648());
+		return path != null && path.method_21655();
 	}
 
 	private Optional<VillagerEntity> method_18970(VillagerEntity villagerEntity, VillagerEntity villagerEntity2) {

@@ -42,7 +42,7 @@ public class MeleeAttackGoal extends Goal {
 			} else if (!livingEntity.isAlive()) {
 				return false;
 			} else {
-				this.field_6509 = this.mob.getNavigation().findPathTo(livingEntity);
+				this.field_6509 = this.mob.getNavigation().findPathTo(livingEntity, 0);
 				return this.field_6509 != null
 					? true
 					: this.getSquaredMaxAttackDistance(livingEntity) >= this.mob.squaredDistanceTo(livingEntity.x, livingEntity.getBoundingBox().minY, livingEntity.z);

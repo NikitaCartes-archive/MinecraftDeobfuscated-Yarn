@@ -1,11 +1,14 @@
 package net.minecraft.client.gui.screen;
 
+import java.util.Arrays;
+import java.util.stream.Stream;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.gui.widget.ButtonListWidget;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.options.Option;
 import net.minecraft.client.resource.language.I18n;
+import net.minecraft.client.util.InputUtil;
 import net.minecraft.text.TranslatableText;
 
 @Environment(EnvType.CLIENT)
@@ -24,7 +27,12 @@ public class MouseOptionsScreen extends Screen {
 	@Override
 	protected void init() {
 		this.buttonList = new ButtonListWidget(this.minecraft, this.width, this.height, 32, this.height - 32, 25);
-		this.buttonList.addAll(OPTIONS);
+		if (InputUtil.method_21667()) {
+			this.buttonList.addAll((Option[])Stream.concat(Arrays.stream(OPTIONS), Stream.of(Option.field_20307)).toArray(Option[]::new));
+		} else {
+			this.buttonList.addAll(OPTIONS);
+		}
+
 		this.children.add(this.buttonList);
 		this.addButton(new ButtonWidget(this.width / 2 - 100, this.height - 27, 200, 20, I18n.translate("gui.done"), buttonWidget -> {
 			this.minecraft.options.write();

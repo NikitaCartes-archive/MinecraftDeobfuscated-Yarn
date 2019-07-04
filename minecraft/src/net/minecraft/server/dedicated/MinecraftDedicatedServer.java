@@ -357,8 +357,8 @@ public class MinecraftDedicatedServer extends MinecraftServer implements Dedicat
 
 	@Override
 	public void addSnooperInfo(Snooper snooper) {
-		snooper.addInfo("whitelist_enabled", this.getDedicatedPlayerManager().isWhitelistEnabled());
-		snooper.addInfo("whitelist_count", this.getDedicatedPlayerManager().getWhitelistedNames().length);
+		snooper.addInfo("whitelist_enabled", this.method_13949().isWhitelistEnabled());
+		snooper.addInfo("whitelist_count", this.method_13949().getWhitelistedNames().length);
 		super.addSnooperInfo(snooper);
 	}
 
@@ -383,7 +383,7 @@ public class MinecraftDedicatedServer extends MinecraftServer implements Dedicat
 		return this.getProperties().useNativeTransport;
 	}
 
-	public DedicatedPlayerManager getDedicatedPlayerManager() {
+	public DedicatedPlayerManager method_13949() {
 		return (DedicatedPlayerManager)super.getPlayerManager();
 	}
 
@@ -437,9 +437,9 @@ public class MinecraftDedicatedServer extends MinecraftServer implements Dedicat
 	public boolean isSpawnProtected(World world, BlockPos blockPos, PlayerEntity playerEntity) {
 		if (world.dimension.getType() != DimensionType.OVERWORLD) {
 			return false;
-		} else if (this.getDedicatedPlayerManager().getOpList().isEmpty()) {
+		} else if (this.method_13949().getOpList().isEmpty()) {
 			return false;
-		} else if (this.getDedicatedPlayerManager().isOperator(playerEntity.getGameProfile())) {
+		} else if (this.method_13949().isOperator(playerEntity.getGameProfile())) {
 			return false;
 		} else if (this.getSpawnProtectionRadius() <= 0) {
 			return false;

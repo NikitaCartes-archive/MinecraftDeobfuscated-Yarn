@@ -1,9 +1,12 @@
 package net.minecraft.entity.ai.brain.sensor;
 
 import com.google.common.collect.ImmutableSet;
+import it.unimi.dsi.fastutil.longs.Long2LongMap;
+import it.unimi.dsi.fastutil.longs.Long2LongOpenHashMap;
 import java.util.Optional;
 import java.util.Set;
 import java.util.function.Predicate;
+import java.util.stream.Stream;
 import net.minecraft.entity.ai.brain.MemoryModuleType;
 import net.minecraft.entity.ai.pathing.Path;
 import net.minecraft.entity.mob.MobEntity;
@@ -13,8 +16,12 @@ import net.minecraft.village.PointOfInterestStorage;
 import net.minecraft.village.PointOfInterestType;
 
 public class NearestBedSensor extends Sensor<MobEntity> {
+	private final Long2LongMap field_20295 = new Long2LongOpenHashMap();
+	private int field_20296;
+	private long field_20297;
+
 	public NearestBedSensor() {
-		super(200);
+		super(20);
 	}
 
 	@Override
@@ -22,24 +29,35 @@ public class NearestBedSensor extends Sensor<MobEntity> {
 		return ImmutableSet.of(MemoryModuleType.NEAREST_BED);
 	}
 
-	protected void method_19998(ServerWorld serverWorld, MobEntity mobEntity) {
+	protected void method_21646(ServerWorld serverWorld, MobEntity mobEntity) {
 		if (mobEntity.isBaby()) {
-			mobEntity.getBrain().setMemory(MemoryModuleType.NEAREST_BED, this.findNearestBed(serverWorld, mobEntity));
-		}
-	}
-
-	private Optional<BlockPos> findNearestBed(ServerWorld serverWorld, MobEntity mobEntity) {
-		PointOfInterestStorage pointOfInterestStorage = serverWorld.getPointOfInterestStorage();
-		Predicate<BlockPos> predicate = blockPos -> {
-			if (blockPos.equals(new BlockPos(mobEntity))) {
-				return true;
-			} else {
-				Path path = mobEntity.getNavigation().findPathTo(blockPos);
-				return path != null && path.method_19313(blockPos);
+			this.field_20296 = 0;
+			this.field_20297 = serverWorld.getTime() + (long)serverWorld.getRandom().nextInt(20);
+			PointOfInterestStorage pointOfInterestStorage = serverWorld.getPointOfInterestStorage();
+			Predicate<BlockPos> predicate = blockPosx -> {
+				long l = blockPosx.asLong();
+				if (this.field_20295.containsKey(l)) {
+					return false;
+				} else if (++this.field_20296 >= 5) {
+					return false;
+				} else {
+					this.field_20295.put(l, this.field_20297 + 40L);
+					return true;
+				}
+			};
+			Stream<BlockPos> stream = pointOfInterestStorage.method_21647(
+				PointOfInterestType.HOME.getCompletionCondition(), predicate, new BlockPos(mobEntity), 48, PointOfInterestStorage.OccupationStatus.ANY
+			);
+			Path path = mobEntity.getNavigation().method_21643(stream, PointOfInterestType.HOME.method_21648());
+			if (path != null && path.method_21655()) {
+				BlockPos blockPos = path.method_48();
+				Optional<PointOfInterestType> optional = pointOfInterestStorage.getType(blockPos);
+				if (optional.isPresent()) {
+					mobEntity.getBrain().putMemory(MemoryModuleType.NEAREST_BED, blockPos);
+				}
+			} else if (this.field_20296 < 5) {
+				this.field_20295.long2LongEntrySet().removeIf(entry -> entry.getLongValue() < this.field_20297);
 			}
-		};
-		return pointOfInterestStorage.getNearestPosition(
-			PointOfInterestType.HOME.getCompletionCondition(), predicate, new BlockPos(mobEntity), 16, PointOfInterestStorage.OccupationStatus.ANY
-		);
+		}
 	}
 }

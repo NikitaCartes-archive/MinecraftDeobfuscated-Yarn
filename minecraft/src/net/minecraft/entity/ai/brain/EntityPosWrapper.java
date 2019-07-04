@@ -2,15 +2,16 @@ package net.minecraft.entity.ai.brain;
 
 import java.util.List;
 import java.util.Optional;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 
 public class EntityPosWrapper implements LookTarget {
-	private final LivingEntity entity;
+	private final Entity entity;
 
-	public EntityPosWrapper(LivingEntity livingEntity) {
-		this.entity = livingEntity;
+	public EntityPosWrapper(Entity entity) {
+		this.entity = entity;
 	}
 
 	@Override

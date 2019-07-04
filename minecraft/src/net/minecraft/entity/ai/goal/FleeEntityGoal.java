@@ -69,7 +69,7 @@ public class FleeEntityGoal<T extends LivingEntity> extends Goal {
 			} else if (this.targetEntity.squaredDistanceTo(vec3d.x, vec3d.y, vec3d.z) < this.targetEntity.squaredDistanceTo(this.mob)) {
 				return false;
 			} else {
-				this.fleePath = this.fleeingEntityNavigation.findPathTo(vec3d.x, vec3d.y, vec3d.z);
+				this.fleePath = this.fleeingEntityNavigation.findPathTo(vec3d.x, vec3d.y, vec3d.z, 0);
 				return this.fleePath != null;
 			}
 		}

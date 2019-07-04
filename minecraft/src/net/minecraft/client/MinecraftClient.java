@@ -529,6 +529,7 @@ public class MinecraftClient extends NonBlockingThreadExecutor<Runnable> impleme
 		}
 
 		this.window.setVsync(this.options.enableVsync);
+		this.window.method_21668(this.options.field_20308);
 		this.window.logOnGlError();
 		if (this.autoConnectServerIp != null) {
 			this.openScreen(new ConnectScreen(new TitleScreen(), this, this.autoConnectServerIp, this.autoConnectServerPort));

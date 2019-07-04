@@ -60,6 +60,10 @@ public class InputUtil {
 		GLFW.glfwSetInputMode(l, 208897, i);
 	}
 
+	public static boolean method_21667() {
+		return GLFW.glfwRawMouseMotionSupported();
+	}
+
 	@Nullable
 	public static String getKeycodeName(int i) {
 		return GLFW.glfwGetKeyName(i, -1);

@@ -35,7 +35,7 @@ public class MobNavigation extends EntityNavigation {
 	}
 
 	@Override
-	public Path findPathTo(BlockPos blockPos) {
+	public Path findPathTo(BlockPos blockPos, int i) {
 		if (this.world.getBlockState(blockPos).isAir()) {
 			BlockPos blockPos2 = blockPos.down();
 
@@ -44,7 +44,7 @@ public class MobNavigation extends EntityNavigation {
 			}
 
 			if (blockPos2.getY() > 0) {
-				return super.findPathTo(blockPos2.up());
+				return super.findPathTo(blockPos2.up(), i);
 			}
 
 			while (blockPos2.getY() < this.world.getHeight() && this.world.getBlockState(blockPos2).isAir()) {
@@ -55,7 +55,7 @@ public class MobNavigation extends EntityNavigation {
 		}
 
 		if (!this.world.getBlockState(blockPos).getMaterial().isSolid()) {
-			return super.findPathTo(blockPos);
+			return super.findPathTo(blockPos, i);
 		} else {
 			BlockPos blockPos2 = blockPos.up();
 
@@ -63,13 +63,13 @@ public class MobNavigation extends EntityNavigation {
 				blockPos2 = blockPos2.up();
 			}
 
-			return super.findPathTo(blockPos2);
+			return super.findPathTo(blockPos2, i);
 		}
 	}
 
 	@Override
-	public Path findPathTo(Entity entity) {
-		return this.findPathTo(new BlockPos(entity));
+	public Path findPathTo(Entity entity, int i) {
+		return this.findPathTo(new BlockPos(entity), i);
 	}
 
 	private int method_6362() {

@@ -92,6 +92,7 @@ public class GameOptions {
 	public TutorialStep tutorialStep = TutorialStep.MOVEMENT;
 	public int biomeBlendRadius = 2;
 	public double mouseWheelSensitivity = 1.0;
+	public boolean field_20308 = true;
 	public int glDebugVerbosity = 1;
 	public boolean autoJump = true;
 	public boolean autoSuggestions = true;
@@ -488,6 +489,10 @@ public class GameOptions {
 						this.mouseWheelSensitivity = (double)parseFloat(string2);
 					}
 
+					if ("rawMouseInput".equals(string)) {
+						this.field_20308 = "true".equals(string2);
+					}
+
 					if ("glDebugVerbosity".equals(string)) {
 						this.glDebugVerbosity = Integer.parseInt(string2);
 					}
@@ -614,6 +619,7 @@ public class GameOptions {
 				printWriter.println("narrator:" + this.narrator.getId());
 				printWriter.println("tutorialStep:" + this.tutorialStep.getName());
 				printWriter.println("mouseWheelSensitivity:" + this.mouseWheelSensitivity);
+				printWriter.println("rawMouseInput:" + Option.field_20307.get(this));
 				printWriter.println("glDebugVerbosity:" + this.glDebugVerbosity);
 
 				for (KeyBinding keyBinding : this.keysAll) {

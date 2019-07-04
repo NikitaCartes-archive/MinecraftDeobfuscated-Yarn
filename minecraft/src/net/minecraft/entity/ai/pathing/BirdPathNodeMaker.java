@@ -4,6 +4,7 @@ import com.google.common.collect.Sets;
 import java.util.EnumSet;
 import java.util.Set;
 import javax.annotation.Nullable;
+import net.minecraft.class_4459;
 import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
 import net.minecraft.entity.mob.MobEntity;
@@ -60,8 +61,8 @@ public class BirdPathNodeMaker extends LandPathNodeMaker {
 	}
 
 	@Override
-	public PathNode getPathNode(double d, double e, double f) {
-		return super.getPathNode(MathHelper.floor(d), MathHelper.floor(e), MathHelper.floor(f));
+	public class_4459 getPathNode(double d, double e, double f) {
+		return new class_4459(super.getPathNode(MathHelper.floor(d), MathHelper.floor(e), MathHelper.floor(f)));
 	}
 
 	@Override

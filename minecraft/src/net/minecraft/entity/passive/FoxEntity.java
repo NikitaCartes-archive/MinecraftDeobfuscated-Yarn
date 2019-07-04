@@ -1086,7 +1086,7 @@ public class FoxEntity extends AnimalEntity {
 					} else {
 						boolean bl = FoxEntity.canJumpChase(FoxEntity.this, livingEntity);
 						if (!bl) {
-							FoxEntity.this.getNavigation().findPathTo(livingEntity);
+							FoxEntity.this.getNavigation().findPathTo(livingEntity, 0);
 							FoxEntity.this.setCrouching(false);
 							FoxEntity.this.setRollingHead(false);
 						}

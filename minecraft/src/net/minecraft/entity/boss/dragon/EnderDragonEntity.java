@@ -723,7 +723,7 @@ public class EnderDragonEntity extends MobEntity implements Monster {
 			list.add(0, pathNode3);
 		}
 
-		return new Path(list);
+		return new Path(list, new BlockPos(pathNode2.x, pathNode2.y, pathNode2.z), true);
 	}
 
 	@Override

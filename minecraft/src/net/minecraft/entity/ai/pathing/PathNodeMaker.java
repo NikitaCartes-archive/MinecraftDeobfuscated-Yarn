@@ -2,6 +2,7 @@ package net.minecraft.entity.ai.pathing;
 
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
+import net.minecraft.class_4459;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.BlockView;
@@ -38,7 +39,7 @@ public abstract class PathNodeMaker {
 
 	public abstract PathNode getStart();
 
-	public abstract PathNode getPathNode(double d, double e, double f);
+	public abstract class_4459 getPathNode(double d, double e, double f);
 
 	public abstract int getPathNodes(PathNode[] pathNodes, PathNode pathNode);
 

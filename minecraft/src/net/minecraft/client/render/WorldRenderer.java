@@ -161,7 +161,7 @@ public class WorldRenderer implements AutoCloseable, SynchronousResourceReloadLi
 	private boolean field_4066;
 	private Frustum forcedFrustum;
 	private final Vector4f[] field_4065 = new Vector4f[8];
-	private final Vec3d forcedFrustumPosition = new Vec3d();
+	private final Vec3d forcedFrustumPosition = new Vec3d(0.0, 0.0, 0.0);
 	private boolean vertexBufferObjectsEnabled;
 	private ChunkRendererFactory chunkRendererFactory;
 	private double lastTranslucentSortX;

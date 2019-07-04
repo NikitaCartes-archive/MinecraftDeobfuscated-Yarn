@@ -1,5 +1,6 @@
 package net.minecraft.server.world;
 
+import com.google.common.annotations.VisibleForTesting;
 import com.google.common.collect.Sets;
 import com.mojang.datafixers.util.Either;
 import java.util.List;
@@ -143,6 +144,24 @@ public class ChunkTaskPrioritySystem implements AutoCloseable, ChunkHolder.Level
 		} else {
 			return (LevelPrioritizedQueue<Function<Actor<Unit>, T>>)levelPrioritizedQueue;
 		}
+	}
+
+	@VisibleForTesting
+	public String method_21680() {
+		return (String)this.queues
+			.entrySet()
+			.stream()
+			.map(
+				entry -> ((Actor)entry.getKey()).getName()
+						+ "=["
+						+ (String)((LevelPrioritizedQueue)entry.getValue())
+							.method_21679()
+							.stream()
+							.map(long_ -> long_ + ":" + new ChunkPos(long_))
+							.collect(Collectors.joining(","))
+						+ "]"
+			)
+			.collect(Collectors.joining(","));
 	}
 
 	public void close() {

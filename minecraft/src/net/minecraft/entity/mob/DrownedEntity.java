@@ -22,7 +22,6 @@ import net.minecraft.entity.ai.goal.WanderAroundGoal;
 import net.minecraft.entity.ai.goal.ZombieAttackGoal;
 import net.minecraft.entity.ai.pathing.MobNavigation;
 import net.minecraft.entity.ai.pathing.Path;
-import net.minecraft.entity.ai.pathing.PathNode;
 import net.minecraft.entity.ai.pathing.PathNodeType;
 import net.minecraft.entity.ai.pathing.SwimNavigation;
 import net.minecraft.entity.attribute.EntityAttributes;
@@ -219,9 +218,9 @@ public class DrownedEntity extends ZombieEntity implements RangedAttackMob {
 	protected boolean method_7016() {
 		Path path = this.getNavigation().getCurrentPath();
 		if (path != null) {
-			PathNode pathNode = path.method_48();
-			if (pathNode != null) {
-				double d = this.squaredDistanceTo((double)pathNode.x, (double)pathNode.y, (double)pathNode.z);
+			BlockPos blockPos = path.method_48();
+			if (blockPos != null) {
+				double d = this.squaredDistanceTo((double)blockPos.getX(), (double)blockPos.getY(), (double)blockPos.getZ());
 				if (d < 4.0) {
 					return true;
 				}

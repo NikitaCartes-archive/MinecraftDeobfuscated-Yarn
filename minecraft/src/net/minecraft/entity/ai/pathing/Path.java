@@ -1,25 +1,34 @@
 package net.minecraft.entity.ai.pathing;
 
 import com.google.common.collect.Lists;
+import com.google.common.collect.Sets;
 import java.util.List;
+import java.util.Set;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.class_4459;
 import net.minecraft.entity.Entity;
 import net.minecraft.util.PacketByteBuf;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
-import net.minecraft.util.math.Vec3i;
 
 public class Path {
 	private final List<PathNode> nodes;
 	private PathNode[] field_57 = new PathNode[0];
 	private PathNode[] field_55 = new PathNode[0];
-	private PathNode field_56;
+	@Environment(EnvType.CLIENT)
+	private Set<class_4459> field_20300;
 	private int currentNodeIndex;
+	private final BlockPos field_20301;
+	private final float field_20302;
+	private final boolean field_20303;
 
-	public Path(List<PathNode> list) {
+	public Path(List<PathNode> list, BlockPos blockPos, boolean bl) {
 		this.nodes = list;
+		this.field_20301 = blockPos;
+		this.field_20302 = list.isEmpty() ? Float.MAX_VALUE : ((PathNode)this.nodes.get(this.nodes.size() - 1)).method_21654(this.field_20301);
+		this.field_20303 = bl;
 	}
 
 	public void next() {
@@ -100,9 +109,8 @@ public class Path {
 		}
 	}
 
-	public boolean method_19313(BlockPos blockPos) {
-		PathNode pathNode = this.getEnd();
-		return pathNode == null ? false : blockPos.isWithinDistance(new Vec3i(pathNode.x, pathNode.y, pathNode.z), 2.0);
+	public boolean method_21655() {
+		return this.field_20303;
 	}
 
 	@Environment(EnvType.CLIENT)
@@ -115,43 +123,54 @@ public class Path {
 		return this.field_55;
 	}
 
-	@Nullable
-	public PathNode method_48() {
-		return this.field_56;
-	}
-
 	@Environment(EnvType.CLIENT)
 	public static Path fromBuffer(PacketByteBuf packetByteBuf) {
+		boolean bl = packetByteBuf.readBoolean();
 		int i = packetByteBuf.readInt();
-		PathNode pathNode = PathNode.fromBuffer(packetByteBuf);
-		List<PathNode> list = Lists.<PathNode>newArrayList();
 		int j = packetByteBuf.readInt();
+		Set<class_4459> set = Sets.<class_4459>newHashSet();
 
 		for (int k = 0; k < j; k++) {
+			set.add(class_4459.method_21663(packetByteBuf));
+		}
+
+		BlockPos blockPos = new BlockPos(packetByteBuf.readInt(), packetByteBuf.readInt(), packetByteBuf.readInt());
+		List<PathNode> list = Lists.<PathNode>newArrayList();
+		int l = packetByteBuf.readInt();
+
+		for (int m = 0; m < l; m++) {
 			list.add(PathNode.fromBuffer(packetByteBuf));
 		}
 
 		PathNode[] pathNodes = new PathNode[packetByteBuf.readInt()];
 
-		for (int l = 0; l < pathNodes.length; l++) {
-			pathNodes[l] = PathNode.fromBuffer(packetByteBuf);
+		for (int n = 0; n < pathNodes.length; n++) {
+			pathNodes[n] = PathNode.fromBuffer(packetByteBuf);
 		}
 
 		PathNode[] pathNodes2 = new PathNode[packetByteBuf.readInt()];
 
-		for (int m = 0; m < pathNodes2.length; m++) {
-			pathNodes2[m] = PathNode.fromBuffer(packetByteBuf);
+		for (int o = 0; o < pathNodes2.length; o++) {
+			pathNodes2[o] = PathNode.fromBuffer(packetByteBuf);
 		}
 
-		Path path = new Path(list);
+		Path path = new Path(list, blockPos, bl);
 		path.field_57 = pathNodes;
 		path.field_55 = pathNodes2;
-		path.field_56 = pathNode;
+		path.field_20300 = set;
 		path.currentNodeIndex = i;
 		return path;
 	}
 
 	public String toString() {
 		return "Path(length=" + this.nodes.size() + ")";
+	}
+
+	public BlockPos method_48() {
+		return this.field_20301;
+	}
+
+	public float method_21656() {
+		return this.field_20302;
 	}
 }

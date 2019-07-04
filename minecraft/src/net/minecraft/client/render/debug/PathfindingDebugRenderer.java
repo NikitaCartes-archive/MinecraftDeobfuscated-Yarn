@@ -14,6 +14,7 @@ import net.minecraft.client.render.VertexFormats;
 import net.minecraft.entity.ai.pathing.Path;
 import net.minecraft.entity.ai.pathing.PathNode;
 import net.minecraft.util.SystemUtil;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
 import net.minecraft.util.math.MathHelper;
 
@@ -74,16 +75,16 @@ public class PathfindingDebugRenderer implements DebugRenderer.Renderer {
 		double d = camera.getPos().x;
 		double e = camera.getPos().y;
 		double g = camera.getPos().z;
-		PathNode pathNode = path.method_48();
-		if (method_20554(camera, pathNode) <= 40.0F) {
+		BlockPos blockPos = path.method_48();
+		if (method_20554(camera, blockPos) <= 40.0F) {
 			DebugRenderer.method_19695(
 				new Box(
-						(double)((float)pathNode.x + 0.25F),
-						(double)((float)pathNode.y + 0.25F),
-						(double)pathNode.z + 0.25,
-						(double)((float)pathNode.x + 0.75F),
-						(double)((float)pathNode.y + 0.75F),
-						(double)((float)pathNode.z + 0.75F)
+						(double)((float)blockPos.getX() + 0.25F),
+						(double)((float)blockPos.getY() + 0.25F),
+						(double)blockPos.getZ() + 0.25,
+						(double)((float)blockPos.getX() + 0.75F),
+						(double)((float)blockPos.getY() + 0.75F),
+						(double)((float)blockPos.getZ() + 0.75F)
 					)
 					.offset(-d, -e, -g),
 				0.0F,
@@ -93,18 +94,18 @@ public class PathfindingDebugRenderer implements DebugRenderer.Renderer {
 			);
 
 			for (int i = 0; i < path.getLength(); i++) {
-				PathNode pathNode2 = path.getNode(i);
-				if (method_20554(camera, pathNode2) <= 40.0F) {
+				PathNode pathNode = path.getNode(i);
+				if (method_20554(camera, pathNode.method_21652()) <= 40.0F) {
 					float h = i == path.getCurrentNodeIndex() ? 1.0F : 0.0F;
 					float j = i == path.getCurrentNodeIndex() ? 0.0F : 1.0F;
 					DebugRenderer.method_19695(
 						new Box(
-								(double)((float)pathNode2.x + 0.5F - f),
-								(double)((float)pathNode2.y + 0.01F * (float)i),
-								(double)((float)pathNode2.z + 0.5F - f),
-								(double)((float)pathNode2.x + 0.5F + f),
-								(double)((float)pathNode2.y + 0.25F + 0.01F * (float)i),
-								(double)((float)pathNode2.z + 0.5F + f)
+								(double)((float)pathNode.x + 0.5F - f),
+								(double)((float)pathNode.y + 0.01F * (float)i),
+								(double)((float)pathNode.z + 0.5F - f),
+								(double)((float)pathNode.x + 0.5F + f),
+								(double)((float)pathNode.y + 0.25F + 0.01F * (float)i),
+								(double)((float)pathNode.z + 0.5F + f)
 							)
 							.offset(-d, -e, -g),
 						h,
@@ -117,22 +118,22 @@ public class PathfindingDebugRenderer implements DebugRenderer.Renderer {
 		}
 
 		if (bl) {
-			for (PathNode pathNode3 : path.method_37()) {
-				if (method_20554(camera, pathNode3) <= 40.0F) {
-					DebugRenderer.method_3714(String.format("%s", pathNode3.type), (double)pathNode3.x + 0.5, (double)pathNode3.y + 0.75, (double)pathNode3.z + 0.5, -65536);
+			for (PathNode pathNode2 : path.method_37()) {
+				if (method_20554(camera, pathNode2.method_21652()) <= 40.0F) {
+					DebugRenderer.method_3714(String.format("%s", pathNode2.type), (double)pathNode2.x + 0.5, (double)pathNode2.y + 0.75, (double)pathNode2.z + 0.5, -65536);
 					DebugRenderer.method_3714(
-						String.format(Locale.ROOT, "%.2f", pathNode3.field_43), (double)pathNode3.x + 0.5, (double)pathNode3.y + 0.25, (double)pathNode3.z + 0.5, -65536
+						String.format(Locale.ROOT, "%.2f", pathNode2.field_43), (double)pathNode2.x + 0.5, (double)pathNode2.y + 0.25, (double)pathNode2.z + 0.5, -65536
 					);
 				}
 			}
 
-			for (PathNode pathNode3x : path.method_43()) {
-				if (method_20554(camera, pathNode3x) <= 40.0F) {
+			for (PathNode pathNode2x : path.method_43()) {
+				if (method_20554(camera, pathNode2x.method_21652()) <= 40.0F) {
 					DebugRenderer.method_3714(
-						String.format("%s", pathNode3x.type), (double)pathNode3x.x + 0.5, (double)pathNode3x.y + 0.75, (double)pathNode3x.z + 0.5, -16776961
+						String.format("%s", pathNode2x.type), (double)pathNode2x.x + 0.5, (double)pathNode2x.y + 0.75, (double)pathNode2x.z + 0.5, -16776961
 					);
 					DebugRenderer.method_3714(
-						String.format(Locale.ROOT, "%.2f", pathNode3x.field_43), (double)pathNode3x.x + 0.5, (double)pathNode3x.y + 0.25, (double)pathNode3x.z + 0.5, -16776961
+						String.format(Locale.ROOT, "%.2f", pathNode2x.field_43), (double)pathNode2x.x + 0.5, (double)pathNode2x.y + 0.25, (double)pathNode2x.z + 0.5, -16776961
 					);
 				}
 			}
@@ -140,11 +141,11 @@ public class PathfindingDebugRenderer implements DebugRenderer.Renderer {
 
 		if (bl2) {
 			for (int ix = 0; ix < path.getLength(); ix++) {
-				PathNode pathNode2 = path.getNode(ix);
-				if (method_20554(camera, pathNode2) <= 40.0F) {
-					DebugRenderer.method_3714(String.format("%s", pathNode2.type), (double)pathNode2.x + 0.5, (double)pathNode2.y + 0.75, (double)pathNode2.z + 0.5, -1);
+				PathNode pathNode = path.getNode(ix);
+				if (method_20554(camera, pathNode.method_21652()) <= 40.0F) {
+					DebugRenderer.method_3714(String.format("%s", pathNode.type), (double)pathNode.x + 0.5, (double)pathNode.y + 0.75, (double)pathNode.z + 0.5, -1);
 					DebugRenderer.method_3714(
-						String.format(Locale.ROOT, "%.2f", pathNode2.field_43), (double)pathNode2.x + 0.5, (double)pathNode2.y + 0.25, (double)pathNode2.z + 0.5, -1
+						String.format(Locale.ROOT, "%.2f", pathNode.field_43), (double)pathNode.x + 0.5, (double)pathNode.y + 0.25, (double)pathNode.z + 0.5, -1
 					);
 				}
 			}
@@ -161,7 +162,7 @@ public class PathfindingDebugRenderer implements DebugRenderer.Renderer {
 
 		for (int i = 0; i < path.getLength(); i++) {
 			PathNode pathNode = path.getNode(i);
-			if (!(method_20554(camera, pathNode) > 40.0F)) {
+			if (!(method_20554(camera, pathNode.method_21652()) > 40.0F)) {
 				float g = (float)i / (float)path.getLength() * 0.33F;
 				int j = i == 0 ? 0 : MathHelper.hsvToRgb(g, 0.9F, 0.9F);
 				int k = j >> 16 & 0xFF;
@@ -174,9 +175,11 @@ public class PathfindingDebugRenderer implements DebugRenderer.Renderer {
 		tessellator.draw();
 	}
 
-	private static float method_20554(Camera camera, PathNode pathNode) {
+	private static float method_20554(Camera camera, BlockPos blockPos) {
 		return (float)(
-			Math.abs((double)pathNode.x - camera.getPos().x) + Math.abs((double)pathNode.y - camera.getPos().y) + Math.abs((double)pathNode.z - camera.getPos().z)
+			Math.abs((double)blockPos.getX() - camera.getPos().x)
+				+ Math.abs((double)blockPos.getY() - camera.getPos().y)
+				+ Math.abs((double)blockPos.getZ() - camera.getPos().z)
 		);
 	}
 

@@ -1,5 +1,6 @@
 package net.minecraft.server.world;
 
+import com.google.common.annotations.VisibleForTesting;
 import com.google.common.collect.Lists;
 import com.mojang.datafixers.util.Either;
 import it.unimi.dsi.fastutil.longs.Long2ObjectLinkedOpenHashMap;
@@ -103,5 +104,10 @@ public class LevelPrioritizedQueue<T> {
 
 	public String toString() {
 		return this.name + " " + this.firstNonEmptyLevel + "...";
+	}
+
+	@VisibleForTesting
+	LongSet method_21679() {
+		return new LongOpenHashSet(this.chunkPositions);
 	}
 }

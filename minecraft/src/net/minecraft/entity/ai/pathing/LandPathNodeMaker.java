@@ -4,6 +4,7 @@ import com.google.common.collect.Sets;
 import java.util.EnumSet;
 import java.util.Set;
 import javax.annotation.Nullable;
+import net.minecraft.class_4459;
 import net.minecraft.block.AbstractRailBlock;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockPlacementEnvironment;
@@ -15,6 +16,7 @@ import net.minecraft.block.LeavesBlock;
 import net.minecraft.block.Material;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.fluid.FluidState;
+import net.minecraft.fluid.Fluids;
 import net.minecraft.tag.BlockTags;
 import net.minecraft.tag.FluidTags;
 import net.minecraft.util.math.BlockPos;
@@ -47,7 +49,10 @@ public class LandPathNodeMaker extends PathNodeMaker {
 			i = MathHelper.floor(this.entity.getBoundingBox().minY);
 			BlockPos.Mutable mutable = new BlockPos.Mutable(this.entity.x, (double)i, this.entity.z);
 
-			for (Block block = this.blockView.getBlockState(mutable).getBlock(); block == Blocks.WATER; block = this.blockView.getBlockState(mutable).getBlock()) {
+			for (BlockState blockState = this.blockView.getBlockState(mutable);
+				blockState.getBlock() == Blocks.WATER || blockState.getFluidState() == Fluids.WATER.getStill(false);
+				blockState = this.blockView.getBlockState(mutable)
+			) {
 				mutable.set(this.entity.x, (double)(++i), this.entity.z);
 			}
 
@@ -91,8 +96,8 @@ public class LandPathNodeMaker extends PathNodeMaker {
 	}
 
 	@Override
-	public PathNode getPathNode(double d, double e, double f) {
-		return this.getPathNode(MathHelper.floor(d), MathHelper.floor(e), MathHelper.floor(f));
+	public class_4459 getPathNode(double d, double e, double f) {
+		return new class_4459(this.getPathNode(MathHelper.floor(d), MathHelper.floor(e), MathHelper.floor(f)));
 	}
 
 	@Override
@@ -149,14 +154,15 @@ public class LandPathNodeMaker extends PathNodeMaker {
 	}
 
 	private boolean method_20536(PathNode pathNode, @Nullable PathNode pathNode2, @Nullable PathNode pathNode3, @Nullable PathNode pathNode4) {
-		return pathNode4 != null
-			&& !pathNode4.field_42
-			&& pathNode3 != null
-			&& pathNode3.field_43 >= 0.0F
-			&& pathNode3.y <= pathNode.y
-			&& pathNode2 != null
-			&& pathNode2.field_43 >= 0.0F
-			&& pathNode2.y <= pathNode.y;
+		if (pathNode4 == null || pathNode3 == null || pathNode2 == null) {
+			return false;
+		} else if (pathNode4.field_42) {
+			return false;
+		} else {
+			return pathNode3.y <= pathNode.y && pathNode2.y <= pathNode.y
+				? pathNode4.field_43 >= 0.0F && (pathNode3.y < pathNode.y || pathNode3.field_43 >= 0.0F) && (pathNode2.y < pathNode.y || pathNode2.field_43 >= 0.0F)
+				: false;
+		}
 	}
 
 	public static double method_60(BlockView blockView, BlockPos blockPos) {

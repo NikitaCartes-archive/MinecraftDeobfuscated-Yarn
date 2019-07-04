@@ -52,6 +52,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
+import net.minecraft.nbt.Tag;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.scoreboard.AbstractTeam;
 import net.minecraft.scoreboard.Team;
@@ -911,6 +912,14 @@ public class VillagerEntity extends AbstractTraderEntity implements InteractionO
 
 	private void method_20821() {
 		this.field_19427 = 0;
+	}
+
+	public VillagerGossips method_21651() {
+		return this.gossip;
+	}
+
+	public void method_21650(Tag tag) {
+		this.gossip.deserialize(new Dynamic<>(NbtOps.INSTANCE, tag));
 	}
 
 	@Override

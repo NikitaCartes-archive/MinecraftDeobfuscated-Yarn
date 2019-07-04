@@ -54,7 +54,7 @@ public class Main {
 	public static DataGenerator create(Path path, Collection<Path> collection, boolean bl, boolean bl2, boolean bl3, boolean bl4, boolean bl5) {
 		DataGenerator dataGenerator = new DataGenerator(path, collection);
 		if (bl || bl2) {
-			dataGenerator.install(new SnbtProvider(dataGenerator));
+			dataGenerator.install(new SnbtProvider(dataGenerator).method_21672(new StructureValidatorProvider()));
 		}
 
 		if (bl2) {
@@ -75,10 +75,6 @@ public class Main {
 			dataGenerator.install(new BlockListProvider(dataGenerator));
 			dataGenerator.install(new ItemListProvider(dataGenerator));
 			dataGenerator.install(new CommandSyntaxProvider(dataGenerator));
-		}
-
-		if (bl5) {
-			dataGenerator.install(new StructureValidatorProvider(dataGenerator));
 		}
 
 		return dataGenerator;

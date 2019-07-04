@@ -27,4 +27,8 @@ public class BlockPosLookTarget implements LookTarget {
 	public boolean isSeenBy(LivingEntity livingEntity) {
 		return true;
 	}
+
+	public String toString() {
+		return "BlockPosWrapper{pos=" + this.blockPos + ", lookAt=" + this.pos + '}';
+	}
 }

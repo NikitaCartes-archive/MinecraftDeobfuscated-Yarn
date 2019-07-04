@@ -6,15 +6,14 @@ import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.exceptions.SimpleCommandExceptionType;
 import java.io.File;
 import java.io.IOException;
-import java.net.URI;
-import java.net.URISyntaxException;
 import java.nio.file.FileSystem;
-import java.nio.file.FileSystems;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.spi.FileSystemProvider;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
+import javax.annotation.Nullable;
 import net.minecraft.SharedConstants;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.text.TranslatableText;
@@ -30,6 +29,12 @@ public class DebugCommand {
 	private static final SimpleCommandExceptionType ALREADYRUNNING_EXCEPTION = new SimpleCommandExceptionType(
 		new TranslatableText("commands.debug.alreadyRunning")
 	);
+	@Nullable
+	private static final FileSystemProvider field_20310 = (FileSystemProvider)FileSystemProvider.installedProviders()
+		.stream()
+		.filter(fileSystemProvider -> fileSystemProvider.getScheme().equalsIgnoreCase("jar"))
+		.findFirst()
+		.orElse(null);
 
 	public static void register(CommandDispatcher<ServerCommandSource> commandDispatcher) {
 		commandDispatcher.register(
@@ -78,39 +83,38 @@ public class DebugCommand {
 		try {
 			Path path = minecraftServer.getFile("debug").toPath();
 			Files.createDirectories(path);
-			if (SharedConstants.isDevelopment) {
-				Path path2 = path.resolve(string);
-				minecraftServer.method_21613(path2);
-			} else {
+			if (!SharedConstants.isDevelopment && field_20310 != null) {
 				Path path2 = path.resolve(string + ".zip");
-				URI uRI = new URI("jar", path2.toUri().toString(), null);
-				FileSystem fileSystem = FileSystems.newFileSystem(uRI, ImmutableMap.of("create", "true"));
-				Throwable var7 = null;
+				FileSystem fileSystem = field_20310.newFileSystem(path2, ImmutableMap.of("create", "true"));
+				Throwable var6 = null;
 
 				try {
 					minecraftServer.method_21613(fileSystem.getPath("/"));
-				} catch (Throwable var17) {
-					var7 = var17;
-					throw var17;
+				} catch (Throwable var16) {
+					var6 = var16;
+					throw var16;
 				} finally {
 					if (fileSystem != null) {
-						if (var7 != null) {
+						if (var6 != null) {
 							try {
 								fileSystem.close();
-							} catch (Throwable var16) {
-								var7.addSuppressed(var16);
+							} catch (Throwable var15) {
+								var6.addSuppressed(var15);
 							}
 						} else {
 							fileSystem.close();
 						}
 					}
 				}
+			} else {
+				Path path2 = path.resolve(string);
+				minecraftServer.method_21613(path2);
 			}
 
 			serverCommandSource.sendFeedback(new TranslatableText("commands.debug.reportSaved", string), false);
 			return 1;
-		} catch (URISyntaxException | IOException var19) {
-			field_20283.error("Failed to save debug dump", (Throwable)var19);
+		} catch (IOException var18) {
+			field_20283.error("Failed to save debug dump", (Throwable)var18);
 			serverCommandSource.sendError(new TranslatableText("commands.debug.reportFailed"));
 			return 0;
 		}

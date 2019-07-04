@@ -1346,6 +1346,7 @@ public class ServerWorld extends World {
 			writer.write(String.format("block_entities: %d\n", this.blockEntities.size()));
 			writer.write(String.format("block_ticks: %d\n", this.method_14196().method_20825()));
 			writer.write(String.format("fluid_ticks: %d\n", this.method_14179().method_20825()));
+			writer.write("distance_manager: " + threadedAnvilChunkStorage.getTicketManager().method_21683());
 		} catch (Throwable var120) {
 			path2 = var120;
 			throw var120;

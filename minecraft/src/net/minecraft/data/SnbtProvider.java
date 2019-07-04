@@ -1,13 +1,17 @@
 package net.minecraft.data;
 
+import com.google.common.collect.Lists;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import java.io.BufferedReader;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.nio.file.Files;
 import java.nio.file.LinkOption;
 import java.nio.file.Path;
+import java.util.List;
 import java.util.Objects;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.NbtIo;
 import net.minecraft.nbt.StringNbtReader;
 import org.apache.commons.io.IOUtils;
@@ -17,9 +21,25 @@ import org.apache.logging.log4j.Logger;
 public class SnbtProvider implements DataProvider {
 	private static final Logger LOGGER = LogManager.getLogger();
 	private final DataGenerator root;
+	private final List<SnbtProvider.class_4460> field_20309 = Lists.<SnbtProvider.class_4460>newArrayList();
 
 	public SnbtProvider(DataGenerator dataGenerator) {
 		this.root = dataGenerator;
+	}
+
+	public SnbtProvider method_21672(SnbtProvider.class_4460 arg) {
+		this.field_20309.add(arg);
+		return this;
+	}
+
+	private CompoundTag method_21673(String string, CompoundTag compoundTag) {
+		CompoundTag compoundTag2 = compoundTag;
+
+		for (SnbtProvider.class_4460 lv : this.field_20309) {
+			compoundTag2 = lv.method_21674(string, compoundTag2);
+		}
+
+		return compoundTag2;
 	}
 
 	@Override
@@ -51,24 +71,26 @@ public class SnbtProvider implements DataProvider {
 
 			try {
 				String string2 = IOUtils.toString(bufferedReader);
-				String string3 = SHA1.hashUnencodedChars(string2).toString();
+				ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+				NbtIo.writeCompressed(this.method_21673(string, StringNbtReader.parse(string2)), byteArrayOutputStream);
+				String string3 = SHA1.hashBytes(byteArrayOutputStream.toByteArray()).toString();
 				if (!Objects.equals(dataCache.getOldSha1(path3), string3) || !Files.exists(path3, new LinkOption[0])) {
 					Files.createDirectories(path3.getParent());
 					OutputStream outputStream = Files.newOutputStream(path3);
-					Throwable var11 = null;
+					Throwable var12 = null;
 
 					try {
-						NbtIo.writeCompressed(StringNbtReader.parse(string2), outputStream);
-					} catch (Throwable var38) {
-						var11 = var38;
-						throw var38;
+						outputStream.write(byteArrayOutputStream.toByteArray());
+					} catch (Throwable var39) {
+						var12 = var39;
+						throw var39;
 					} finally {
 						if (outputStream != null) {
-							if (var11 != null) {
+							if (var12 != null) {
 								try {
 									outputStream.close();
-								} catch (Throwable var37) {
-									var11.addSuppressed(var37);
+								} catch (Throwable var38) {
+									var12.addSuppressed(var38);
 								}
 							} else {
 								outputStream.close();
@@ -78,26 +100,31 @@ public class SnbtProvider implements DataProvider {
 				}
 
 				dataCache.updateSha1(path3, string3);
-			} catch (Throwable var40) {
-				var7 = var40;
-				throw var40;
+			} catch (Throwable var41) {
+				var7 = var41;
+				throw var41;
 			} finally {
 				if (bufferedReader != null) {
 					if (var7 != null) {
 						try {
 							bufferedReader.close();
-						} catch (Throwable var36) {
-							var7.addSuppressed(var36);
+						} catch (Throwable var37) {
+							var7.addSuppressed(var37);
 						}
 					} else {
 						bufferedReader.close();
 					}
 				}
 			}
-		} catch (CommandSyntaxException var42) {
-			LOGGER.error("Couldn't convert {} from SNBT to NBT at {} as it's invalid SNBT", string, path, var42);
-		} catch (IOException var43) {
-			LOGGER.error("Couldn't convert {} from SNBT to NBT at {}", string, path, var43);
+		} catch (CommandSyntaxException var43) {
+			LOGGER.error("Couldn't convert {} from SNBT to NBT at {} as it's invalid SNBT", string, path, var43);
+		} catch (IOException var44) {
+			LOGGER.error("Couldn't convert {} from SNBT to NBT at {}", string, path, var44);
 		}
+	}
+
+	@FunctionalInterface
+	public interface class_4460 {
+		CompoundTag method_21674(String string, CompoundTag compoundTag);
 	}
 }
