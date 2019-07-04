@@ -32,7 +32,6 @@ import net.minecraft.server.world.ChunkTicketType;
 import net.minecraft.server.world.ThreadedAnvilChunkStorage;
 import net.minecraft.util.Actor;
 import net.minecraft.util.ChunkPosLevelPropagator;
-import net.minecraft.util.MailboxProcessor;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.math.ChunkSectionPos;
 import net.minecraft.world.chunk.ChunkStatus;
@@ -50,7 +49,7 @@ public abstract class ChunkTicketManager {
     private final DistanceFromNearestPlayerTracker distanceFromNearestPlayerTracker = new DistanceFromNearestPlayerTracker(8);
     private final NearbyChunkTicketUpdater nearbyChunkTicketUpdater = new NearbyChunkTicketUpdater(33);
     private final Set<ChunkHolder> chunkHolders = Sets.newHashSet();
-    private final ChunkHolder.LevelUpdateListener levelUpdateListener;
+    private final ChunkTaskPrioritySystem levelUpdateListener;
     private final Actor<ChunkTaskPrioritySystem.RunnableMessage<Runnable>> playerTicketThrottler;
     private final Actor<ChunkTaskPrioritySystem.SorterMessage> playerTicketThrottlerSorter;
     private final LongSet chunkPositions = new LongOpenHashSet();
@@ -58,11 +57,11 @@ public abstract class ChunkTicketManager {
     private long location;
 
     protected ChunkTicketManager(Executor executor, Executor executor2) {
-        MailboxProcessor<Runnable> mailboxProcessor = MailboxProcessor.create(executor2, "player ticket throttler");
-        ChunkTaskPrioritySystem chunkTaskPrioritySystem = new ChunkTaskPrioritySystem(ImmutableList.of(mailboxProcessor), executor, 15);
-        this.levelUpdateListener = chunkTaskPrioritySystem;
-        this.playerTicketThrottler = chunkTaskPrioritySystem.createExecutingActor(mailboxProcessor, true);
-        this.playerTicketThrottlerSorter = chunkTaskPrioritySystem.createSortingActor(mailboxProcessor);
+        ChunkTaskPrioritySystem chunkTaskPrioritySystem;
+        Actor<Runnable> actor = Actor.createConsumerActor("player ticket throttler", executor2::execute);
+        this.levelUpdateListener = chunkTaskPrioritySystem = new ChunkTaskPrioritySystem(ImmutableList.of(actor), executor, 15);
+        this.playerTicketThrottler = chunkTaskPrioritySystem.createExecutingActor(actor, true);
+        this.playerTicketThrottlerSorter = chunkTaskPrioritySystem.createSortingActor(actor);
         this.mainThreadExecutor = executor2;
     }
 
@@ -218,6 +217,10 @@ public abstract class ChunkTicketManager {
         return this.distanceFromNearestPlayerTracker.distanceFromNearestPlayer.containsKey(l);
     }
 
+    public String method_21683() {
+        return this.levelUpdateListener.method_21680();
+    }
+
     class class_4077
     extends ChunkPosLevelPropagator {
         public class_4077() {
@@ -297,8 +300,10 @@ public abstract class ChunkTicketManager {
                 ChunkTicket<ChunkPos> chunkTicket = new ChunkTicket<ChunkPos>(ChunkTicketType.PLAYER, NEARBY_PLAYER_TICKET_LEVEL, new ChunkPos(l), ChunkTicketManager.this.location);
                 if (bl2) {
                     ChunkTicketManager.this.playerTicketThrottler.send(ChunkTaskPrioritySystem.createRunnableMessage(() -> ChunkTicketManager.this.mainThreadExecutor.execute(() -> {
-                        ChunkTicketManager.this.addTicket(l, chunkTicket);
-                        ChunkTicketManager.this.chunkPositions.add(l);
+                        if (this.isWithinViewDistance(this.getLevel(l))) {
+                            ChunkTicketManager.this.addTicket(l, chunkTicket);
+                            ChunkTicketManager.this.chunkPositions.add(l);
+                        }
                     }), l, () -> i));
                 } else {
                     ChunkTicketManager.this.playerTicketThrottlerSorter.send(ChunkTaskPrioritySystem.createSorterMessage(() -> ChunkTicketManager.this.mainThreadExecutor.execute(() -> ChunkTicketManager.this.removeTicket(l, chunkTicket)), l, true));

@@ -53,6 +53,7 @@ implements VillagerDataContainer {
     private static final TrackedData<VillagerData> VILLAGER_DATA = DataTracker.registerData(ZombieVillagerEntity.class, TrackedDataHandlerRegistry.VILLAGER_DATA);
     private int conversionTimer;
     private UUID converter;
+    private Tag field_20299;
     private CompoundTag offerData;
     private int xp;
 
@@ -75,6 +76,9 @@ implements VillagerDataContainer {
         if (this.offerData != null) {
             compoundTag.put("Offers", this.offerData);
         }
+        if (this.field_20299 != null) {
+            compoundTag.put("Gossips", this.field_20299);
+        }
         compoundTag.putInt("ConversionTime", this.isConverting() ? this.conversionTimer : -1);
         if (this.converter != null) {
             compoundTag.putUuid("ConversionPlayer", this.converter);
@@ -90,6 +94,9 @@ implements VillagerDataContainer {
         }
         if (compoundTag.containsKey("Offers", 10)) {
             this.offerData = compoundTag.getCompound("Offers");
+        }
+        if (compoundTag.containsKey("Gossips", 10)) {
+            this.field_20299 = compoundTag.getList("Gossips", 10);
         }
         if (compoundTag.containsKey("ConversionTime", 99) && compoundTag.getInt("ConversionTime") > -1) {
             this.setConverting(compoundTag.hasUuid("ConversionPlayer") ? compoundTag.getUuid("ConversionPlayer") : null, compoundTag.getInt("ConversionTime"));
@@ -166,6 +173,9 @@ implements VillagerDataContainer {
         VillagerEntity villagerEntity = EntityType.VILLAGER.create(serverWorld);
         villagerEntity.copyPositionAndRotation(this);
         villagerEntity.setVillagerData(this.getVillagerData());
+        if (this.field_20299 != null) {
+            villagerEntity.method_21650(this.field_20299);
+        }
         if (this.offerData != null) {
             villagerEntity.setOffers(new TraderOfferList(this.offerData));
         }
@@ -245,6 +255,10 @@ implements VillagerDataContainer {
 
     public void setOfferData(CompoundTag compoundTag) {
         this.offerData = compoundTag;
+    }
+
+    public void method_21649(Tag tag) {
+        this.field_20299 = tag;
     }
 
     @Override

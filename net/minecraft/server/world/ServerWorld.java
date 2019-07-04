@@ -1161,6 +1161,7 @@ extends World {
             writer.write(String.format("block_entities: %d\n", this.blockEntities.size()));
             writer.write(String.format("block_ticks: %d\n", this.method_14196().method_20825()));
             writer.write(String.format("fluid_ticks: %d\n", this.method_14179().method_20825()));
+            writer.write("distance_manager: " + threadedAnvilChunkStorage.getTicketManager().method_21683());
         }
         CrashReport crashReport = new CrashReport("Level dump", new Exception("dummy"));
         this.addDetailsToCrashReport(crashReport);

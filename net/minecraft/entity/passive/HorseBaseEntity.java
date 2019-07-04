@@ -512,7 +512,7 @@ JumpingMount {
     protected void walkToParent() {
         HorseBaseEntity livingEntity;
         if (this.isBred() && this.isBaby() && !this.isEatingGrass() && (livingEntity = this.world.getClosestEntity(HorseBaseEntity.class, PARENT_HORSE_PREDICATE, this, this.x, this.y, this.z, this.getBoundingBox().expand(16.0))) != null && this.squaredDistanceTo(livingEntity) > 4.0) {
-            this.navigation.findPathTo(livingEntity);
+            this.navigation.findPathTo(livingEntity, 0);
         }
     }
 

@@ -10,13 +10,11 @@ import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.exceptions.SimpleCommandExceptionType;
 import java.io.File;
 import java.io.IOException;
-import java.net.URI;
-import java.net.URISyntaxException;
 import java.nio.file.FileSystem;
-import java.nio.file.FileSystems;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.attribute.FileAttribute;
+import java.nio.file.spi.FileSystemProvider;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
@@ -30,11 +28,14 @@ import net.minecraft.util.profiler.DisableableProfiler;
 import net.minecraft.util.profiler.ProfileResult;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.jetbrains.annotations.Nullable;
 
 public class DebugCommand {
     private static final Logger field_20283 = LogManager.getLogger();
     private static final SimpleCommandExceptionType NORUNNING_EXCPETION = new SimpleCommandExceptionType(new TranslatableText("commands.debug.notRunning", new Object[0]));
     private static final SimpleCommandExceptionType ALREADYRUNNING_EXCEPTION = new SimpleCommandExceptionType(new TranslatableText("commands.debug.alreadyRunning", new Object[0]));
+    @Nullable
+    private static final FileSystemProvider field_20310 = FileSystemProvider.installedProviders().stream().filter(fileSystemProvider -> fileSystemProvider.getScheme().equalsIgnoreCase("jar")).findFirst().orElse(null);
 
     public static void register(CommandDispatcher<ServerCommandSource> commandDispatcher) {
         commandDispatcher.register((LiteralArgumentBuilder)((LiteralArgumentBuilder)((LiteralArgumentBuilder)((LiteralArgumentBuilder)CommandManager.literal("debug").requires(serverCommandSource -> serverCommandSource.hasPermissionLevel(3))).then(CommandManager.literal("start").executes(commandContext -> DebugCommand.executeStart((ServerCommandSource)commandContext.getSource())))).then(CommandManager.literal("stop").executes(commandContext -> DebugCommand.executeStop((ServerCommandSource)commandContext.getSource())))).then(CommandManager.literal("report").executes(commandContext -> DebugCommand.method_21618((ServerCommandSource)commandContext.getSource()))));
@@ -72,20 +73,19 @@ public class DebugCommand {
         try {
             Path path = minecraftServer.getFile("debug").toPath();
             Files.createDirectories(path, new FileAttribute[0]);
-            if (SharedConstants.isDevelopment) {
+            if (SharedConstants.isDevelopment || field_20310 == null) {
                 Path path2 = path.resolve(string);
                 minecraftServer.method_21613(path2);
             } else {
                 Path path2 = path.resolve(string + ".zip");
-                URI uRI = new URI("jar", path2.toUri().toString(), null);
-                try (FileSystem fileSystem = FileSystems.newFileSystem(uRI, ImmutableMap.of("create", "true"));){
+                try (FileSystem fileSystem = field_20310.newFileSystem(path2, ImmutableMap.of("create", "true"));){
                     minecraftServer.method_21613(fileSystem.getPath("/", new String[0]));
                 }
             }
             serverCommandSource.sendFeedback(new TranslatableText("commands.debug.reportSaved", string), false);
             return 1;
-        } catch (IOException | URISyntaxException exception) {
-            field_20283.error("Failed to save debug dump", (Throwable)exception);
+        } catch (IOException iOException) {
+            field_20283.error("Failed to save debug dump", (Throwable)iOException);
             serverCommandSource.sendError(new TranslatableText("commands.debug.reportFailed", new Object[0]));
             return 0;
         }

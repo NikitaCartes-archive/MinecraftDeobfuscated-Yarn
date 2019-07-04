@@ -26,7 +26,9 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.Queue;
 import java.util.Set;
+import java.util.concurrent.CancellationException;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CompletionException;
 import java.util.concurrent.CompletionStage;
 import java.util.concurrent.Executor;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -136,13 +138,13 @@ implements ChunkHolder.PlayersWatchingChunkProvider {
         this.chunkGenerator = chunkGenerator;
         this.mainThreadExecutor = threadExecutor;
         MailboxProcessor<Runnable> mailboxProcessor = MailboxProcessor.create(executor, "worldgen");
-        MailboxProcessor<Runnable> mailboxProcessor2 = MailboxProcessor.create(threadExecutor, "main");
+        Actor<Runnable> actor = Actor.createConsumerActor("main", threadExecutor::method_18858);
         this.worldGenerationProgressListener = worldGenerationProgressListener;
-        MailboxProcessor<Runnable> mailboxProcessor3 = MailboxProcessor.create(executor, "light");
-        this.chunkTaskPrioritySystem = new ChunkTaskPrioritySystem(ImmutableList.of(mailboxProcessor, mailboxProcessor2, mailboxProcessor3), executor, Integer.MAX_VALUE);
+        MailboxProcessor<Runnable> mailboxProcessor2 = MailboxProcessor.create(executor, "light");
+        this.chunkTaskPrioritySystem = new ChunkTaskPrioritySystem(ImmutableList.of(mailboxProcessor, actor, mailboxProcessor2), executor, Integer.MAX_VALUE);
         this.worldgenActor = this.chunkTaskPrioritySystem.createExecutingActor(mailboxProcessor, false);
-        this.mainActor = this.chunkTaskPrioritySystem.createExecutingActor(mailboxProcessor2, false);
-        this.serverLightingProvider = new ServerLightingProvider(chunkProvider, this, this.world.getDimension().hasSkyLight(), mailboxProcessor3, this.chunkTaskPrioritySystem.createExecutingActor(mailboxProcessor3, false));
+        this.mainActor = this.chunkTaskPrioritySystem.createExecutingActor(actor, false);
+        this.serverLightingProvider = new ServerLightingProvider(chunkProvider, this, this.world.getDimension().hasSkyLight(), mailboxProcessor2, this.chunkTaskPrioritySystem.createExecutingActor(mailboxProcessor2, false));
         this.ticketManager = new TicketManager(executor, threadExecutor);
         this.persistentStateManagerFactory = supplier;
         this.pointOfInterestStorage = new PointOfInterestStorage(new File(this.saveDir, "poi"), dataFixer);
@@ -637,13 +639,27 @@ implements ChunkHolder.PlayersWatchingChunkProvider {
     }
 
     void method_21619(Writer writer) throws IOException {
-        class_4456 lv = class_4456.method_21627().method_21632("x").method_21632("z").method_21632("level").method_21632("in_memory").method_21632("status").method_21632("full_status").method_21632("ticket").method_21632("spawning").method_21632("entity_count").method_21632("block_entity_count").method_21631(writer);
+        class_4456 lv = class_4456.method_21627().method_21632("x").method_21632("z").method_21632("level").method_21632("in_memory").method_21632("status").method_21632("full_status").method_21632("accessible_ready").method_21632("ticking_ready").method_21632("entity_ticking_ready").method_21632("ticket").method_21632("spawning").method_21632("entity_count").method_21632("block_entity_count").method_21631(writer);
         for (Long2ObjectMap.Entry entry : this.chunkHolders.long2ObjectEntrySet()) {
             ChunkPos chunkPos = new ChunkPos(entry.getLongKey());
             ChunkHolder chunkHolder = (ChunkHolder)entry.getValue();
             Optional<Chunk> optional = Optional.ofNullable(chunkHolder.getCompletedChunk());
             Optional<Object> optional2 = optional.flatMap(chunk -> chunk instanceof WorldChunk ? Optional.of((WorldChunk)chunk) : Optional.empty());
-            lv.method_21630(chunkPos.x, chunkPos.z, chunkHolder.getLevel(), optional.isPresent(), optional.map(Chunk::getStatus).orElse(null), optional2.map(WorldChunk::getLevelType).orElse(null), this.ticketManager.method_21623(entry.getLongKey()), !this.isTooFarFromPlayersToSpawnMobs(chunkPos), optional2.map(worldChunk -> Stream.of(worldChunk.getEntitySectionArray()).mapToInt(TypeFilterableList::size).sum()).orElse(0), optional2.map(worldChunk -> worldChunk.getBlockEntities().size()).orElse(0));
+            lv.method_21630(chunkPos.x, chunkPos.z, chunkHolder.getLevel(), optional.isPresent(), optional.map(Chunk::getStatus).orElse(null), optional2.map(WorldChunk::getLevelType).orElse(null), ThreadedAnvilChunkStorage.method_21676(chunkHolder.method_20725()), ThreadedAnvilChunkStorage.method_21676(chunkHolder.getTickingFuture()), ThreadedAnvilChunkStorage.method_21676(chunkHolder.getEntityTickingFuture()), this.ticketManager.method_21623(entry.getLongKey()), !this.isTooFarFromPlayersToSpawnMobs(chunkPos), optional2.map(worldChunk -> Stream.of(worldChunk.getEntitySectionArray()).mapToInt(TypeFilterableList::size).sum()).orElse(0), optional2.map(worldChunk -> worldChunk.getBlockEntities().size()).orElse(0));
+        }
+    }
+
+    private static String method_21676(CompletableFuture<Either<WorldChunk, ChunkHolder.Unloaded>> completableFuture) {
+        try {
+            Either either = completableFuture.getNow(null);
+            if (either != null) {
+                return either.map(worldChunk -> "done", unloaded -> "unloaded");
+            }
+            return "not completed";
+        } catch (CompletionException completionException) {
+            return "failed " + completionException.getCause().getMessage();
+        } catch (CancellationException cancellationException) {
+            return "cancelled";
         }
     }
 

@@ -6,6 +6,7 @@ package net.minecraft.entity.ai.pathing;
 import net.minecraft.block.AbstractRailBlock;
 import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
+import net.minecraft.class_4459;
 import net.minecraft.entity.ai.pathing.LandPathNodeMaker;
 import net.minecraft.entity.ai.pathing.PathNode;
 import net.minecraft.entity.ai.pathing.PathNodeType;
@@ -47,8 +48,8 @@ extends LandPathNodeMaker {
     }
 
     @Override
-    public PathNode getPathNode(double d, double e, double f) {
-        return this.getPathNode(MathHelper.floor(d), MathHelper.floor(e + 0.5), MathHelper.floor(f));
+    public class_4459 getPathNode(double d, double e, double f) {
+        return new class_4459(this.getPathNode(MathHelper.floor(d), MathHelper.floor(e + 0.5), MathHelper.floor(f)));
     }
 
     @Override

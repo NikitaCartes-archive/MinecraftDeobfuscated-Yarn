@@ -16,6 +16,7 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.WindowEventHandler;
 import net.minecraft.client.WindowSettings;
+import net.minecraft.client.util.InputUtil;
 import net.minecraft.client.util.Monitor;
 import net.minecraft.client.util.MonitorTracker;
 import net.minecraft.client.util.VideoMode;
@@ -413,6 +414,12 @@ implements AutoCloseable {
     @Nullable
     public Monitor method_20831() {
         return this.monitorTracker.getMonitor(this);
+    }
+
+    public void method_21668(boolean bl) {
+        if (InputUtil.method_21667()) {
+            GLFW.glfwSetInputMode(this.handle, 208901, bl ? 1 : 0);
+        }
     }
 }
 

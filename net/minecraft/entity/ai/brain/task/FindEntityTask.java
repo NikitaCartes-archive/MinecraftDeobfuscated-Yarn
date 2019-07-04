@@ -51,8 +51,8 @@ extends Task<E> {
         Brain<?> brain = ((LivingEntity)livingEntity).getBrain();
         brain.getOptionalMemory(MemoryModuleType.VISIBLE_MOBS).ifPresent(list -> list.stream().filter(livingEntity -> this.entityType.equals(livingEntity.getType())).map(livingEntity -> livingEntity).filter(livingEntity2 -> livingEntity2.squaredDistanceTo((Entity)livingEntity) <= (double)this.maxSquaredDistance).filter(this.predicate).findFirst().ifPresent(livingEntity -> {
             brain.putMemory(this.targetModule, livingEntity);
-            brain.putMemory(MemoryModuleType.LOOK_TARGET, new EntityPosWrapper((LivingEntity)livingEntity));
-            brain.putMemory(MemoryModuleType.WALK_TARGET, new WalkTarget(new EntityPosWrapper((LivingEntity)livingEntity), this.speed, this.completionRange));
+            brain.putMemory(MemoryModuleType.LOOK_TARGET, new EntityPosWrapper((Entity)livingEntity));
+            brain.putMemory(MemoryModuleType.WALK_TARGET, new WalkTarget(new EntityPosWrapper((Entity)livingEntity), this.speed, this.completionRange));
         }));
     }
 }

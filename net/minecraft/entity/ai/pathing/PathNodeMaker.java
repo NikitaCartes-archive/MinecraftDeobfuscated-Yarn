@@ -5,6 +5,7 @@ package net.minecraft.entity.ai.pathing;
 
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
+import net.minecraft.class_4459;
 import net.minecraft.entity.ai.pathing.PathNode;
 import net.minecraft.entity.ai.pathing.PathNodeType;
 import net.minecraft.entity.mob.MobEntity;
@@ -43,7 +44,7 @@ public abstract class PathNodeMaker {
 
     public abstract PathNode getStart();
 
-    public abstract PathNode getPathNode(double var1, double var3, double var5);
+    public abstract class_4459 getPathNode(double var1, double var3, double var5);
 
     public abstract int getPathNodes(PathNode[] var1, PathNode var2);
 

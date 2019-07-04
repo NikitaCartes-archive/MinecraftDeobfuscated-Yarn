@@ -3,8 +3,10 @@
  */
 package net.minecraft.data;
 
+import com.google.common.collect.Lists;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import java.io.BufferedReader;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.nio.file.FileVisitOption;
@@ -13,10 +15,12 @@ import java.nio.file.LinkOption;
 import java.nio.file.OpenOption;
 import java.nio.file.Path;
 import java.nio.file.attribute.FileAttribute;
+import java.util.List;
 import java.util.Objects;
 import net.minecraft.data.DataCache;
 import net.minecraft.data.DataGenerator;
 import net.minecraft.data.DataProvider;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.NbtIo;
 import net.minecraft.nbt.StringNbtReader;
 import org.apache.commons.io.IOUtils;
@@ -27,9 +31,23 @@ public class SnbtProvider
 implements DataProvider {
     private static final Logger LOGGER = LogManager.getLogger();
     private final DataGenerator root;
+    private final List<class_4460> field_20309 = Lists.newArrayList();
 
     public SnbtProvider(DataGenerator dataGenerator) {
         this.root = dataGenerator;
+    }
+
+    public SnbtProvider method_21672(class_4460 arg) {
+        this.field_20309.add(arg);
+        return this;
+    }
+
+    private CompoundTag method_21673(String string, CompoundTag compoundTag) {
+        CompoundTag compoundTag2 = compoundTag;
+        for (class_4460 lv : this.field_20309) {
+            compoundTag2 = lv.method_21674(string, compoundTag2);
+        }
+        return compoundTag2;
     }
 
     @Override
@@ -55,11 +73,13 @@ implements DataProvider {
             Path path3 = path2.resolve(string + ".nbt");
             try (BufferedReader bufferedReader = Files.newBufferedReader(path);){
                 String string2 = IOUtils.toString(bufferedReader);
-                String string3 = SHA1.hashUnencodedChars(string2).toString();
+                ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+                NbtIo.writeCompressed(this.method_21673(string, StringNbtReader.parse(string2)), byteArrayOutputStream);
+                String string3 = SHA1.hashBytes(byteArrayOutputStream.toByteArray()).toString();
                 if (!Objects.equals(dataCache.getOldSha1(path3), string3) || !Files.exists(path3, new LinkOption[0])) {
                     Files.createDirectories(path3.getParent(), new FileAttribute[0]);
                     try (OutputStream outputStream = Files.newOutputStream(path3, new OpenOption[0]);){
-                        NbtIo.writeCompressed(StringNbtReader.parse(string2), outputStream);
+                        outputStream.write(byteArrayOutputStream.toByteArray());
                     }
                 }
                 dataCache.updateSha1(path3, string3);
@@ -69,6 +89,11 @@ implements DataProvider {
         } catch (IOException iOException) {
             LOGGER.error("Couldn't convert {} from SNBT to NBT at {}", (Object)string, (Object)path, (Object)iOException);
         }
+    }
+
+    @FunctionalInterface
+    public static interface class_4460 {
+        public CompoundTag method_21674(String var1, CompoundTag var2);
     }
 }
 

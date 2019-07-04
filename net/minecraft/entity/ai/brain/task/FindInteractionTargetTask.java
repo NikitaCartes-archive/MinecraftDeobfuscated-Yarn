@@ -6,6 +6,7 @@ package net.minecraft.entity.ai.brain.task;
 import com.google.common.collect.ImmutableMap;
 import java.util.List;
 import java.util.function.Predicate;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.ai.brain.Brain;
@@ -45,7 +46,7 @@ extends Task<LivingEntity> {
         Brain<?> brain = livingEntity.getBrain();
         brain.getOptionalMemory(MemoryModuleType.VISIBLE_MOBS).ifPresent(list -> list.stream().filter(livingEntity2 -> livingEntity2.squaredDistanceTo(livingEntity) <= (double)this.maxSquaredDistance).filter(this::test).findFirst().ifPresent(livingEntity -> {
             brain.putMemory(MemoryModuleType.INTERACTION_TARGET, livingEntity);
-            brain.putMemory(MemoryModuleType.LOOK_TARGET, new EntityPosWrapper((LivingEntity)livingEntity));
+            brain.putMemory(MemoryModuleType.LOOK_TARGET, new EntityPosWrapper((Entity)livingEntity));
         }));
     }
 

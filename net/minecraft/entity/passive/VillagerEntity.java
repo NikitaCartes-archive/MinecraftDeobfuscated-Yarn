@@ -820,6 +820,14 @@ VillagerDataContainer {
         this.field_19427 = 0;
     }
 
+    public VillagerGossips method_21651() {
+        return this.gossip;
+    }
+
+    public void method_21650(Tag tag) {
+        this.gossip.deserialize(new Dynamic<Tag>(NbtOps.INSTANCE, tag));
+    }
+
     @Override
     protected void sendAiDebugData() {
         super.sendAiDebugData();

@@ -64,8 +64,12 @@ extends SerializingRegionBasedStorage<PointOfInterestSet> {
         return this.get(l).map(pointOfInterestSet -> pointOfInterestSet.get(predicate, occupationStatus)).orElseGet(Stream::empty);
     }
 
+    public Stream<BlockPos> method_21647(Predicate<PointOfInterestType> predicate, Predicate<BlockPos> predicate2, BlockPos blockPos, int i, OccupationStatus occupationStatus) {
+        return this.get(predicate, blockPos, i, occupationStatus).map(PointOfInterest::getPos).filter(predicate2);
+    }
+
     public Optional<BlockPos> getPosition(Predicate<PointOfInterestType> predicate, Predicate<BlockPos> predicate2, BlockPos blockPos, int i, OccupationStatus occupationStatus) {
-        return this.get(predicate, blockPos, i, occupationStatus).map(PointOfInterest::getPos).filter(predicate2).findFirst();
+        return this.method_21647(predicate, predicate2, blockPos, i, occupationStatus).findFirst();
     }
 
     public Optional<BlockPos> getNearestPosition(Predicate<PointOfInterestType> predicate, Predicate<BlockPos> predicate2, BlockPos blockPos, int i, OccupationStatus occupationStatus) {
@@ -74,13 +78,6 @@ extends SerializingRegionBasedStorage<PointOfInterestSet> {
 
     public Optional<BlockPos> getPosition(Predicate<PointOfInterestType> predicate, Predicate<BlockPos> predicate2, BlockPos blockPos, int i) {
         return this.get(predicate, blockPos, i, OccupationStatus.HAS_SPACE).filter(pointOfInterest -> predicate2.test(pointOfInterest.getPos())).findFirst().map(pointOfInterest -> {
-            pointOfInterest.reserveTicket();
-            return pointOfInterest.getPos();
-        });
-    }
-
-    public Optional<BlockPos> getNearestPosition(Predicate<PointOfInterestType> predicate, Predicate<BlockPos> predicate2, BlockPos blockPos, int i) {
-        return this.get(predicate, blockPos, i, OccupationStatus.HAS_SPACE).sorted(Comparator.comparingDouble(pointOfInterest -> pointOfInterest.getPos().getSquaredDistance(blockPos))).filter(pointOfInterest -> predicate2.test(pointOfInterest.getPos())).findFirst().map(pointOfInterest -> {
             pointOfInterest.reserveTicket();
             return pointOfInterest.getPos();
         });

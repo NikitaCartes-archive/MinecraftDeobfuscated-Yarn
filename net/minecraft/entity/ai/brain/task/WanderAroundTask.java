@@ -90,12 +90,12 @@ extends Task<MobEntity> {
 
     private boolean method_18977(MobEntity mobEntity, WalkTarget walkTarget, long l) {
         BlockPos blockPos = walkTarget.getLookTarget().getBlockPos();
-        this.field_18369 = mobEntity.getNavigation().findPathTo(blockPos);
+        this.field_18369 = mobEntity.getNavigation().findPathTo(blockPos, 0);
         this.field_18371 = walkTarget.getSpeed();
         if (!this.method_18980(mobEntity, walkTarget)) {
             boolean bl;
             Brain<Long> brain = mobEntity.getBrain();
-            boolean bl2 = bl = this.field_18369 != null && this.field_18369.method_19313(walkTarget.getLookTarget().getBlockPos());
+            boolean bl2 = bl = this.field_18369 != null && this.field_18369.method_21655();
             if (bl) {
                 brain.setMemory(MemoryModuleType.CANT_REACH_WALK_TARGET_SINCE, Optional.empty());
             } else if (!brain.hasMemoryModule(MemoryModuleType.CANT_REACH_WALK_TARGET_SINCE)) {
@@ -106,7 +106,7 @@ extends Task<MobEntity> {
             }
             Vec3d vec3d = PathfindingUtil.method_6373((MobEntityWithAi)mobEntity, 10, 7, new Vec3d(blockPos));
             if (vec3d != null) {
-                this.field_18369 = mobEntity.getNavigation().findPathTo(vec3d.x, vec3d.y, vec3d.z);
+                this.field_18369 = mobEntity.getNavigation().findPathTo(vec3d.x, vec3d.y, vec3d.z, 0);
                 return this.field_18369 != null;
             }
         }

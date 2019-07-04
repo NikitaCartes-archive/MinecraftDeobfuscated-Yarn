@@ -8,6 +8,7 @@ import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
 import com.mojang.datafixers.util.Pair;
 import net.minecraft.class_4318;
+import net.minecraft.class_4458;
 import net.minecraft.entity.EntityCategory;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
@@ -80,7 +81,7 @@ public class VillagerTaskListProvider {
     }
 
     public static ImmutableList<Pair<Integer, ? extends Task<? super VillagerEntity>>> createRestTasks(VillagerProfession villagerProfession, float f) {
-        return ImmutableList.of(Pair.of(2, new VillagerWalkTowardsTask(MemoryModuleType.HOME, f, 1, 150, 1200)), Pair.of(3, new ForgetCompletedPointOfInterestTask(PointOfInterestType.HOME, MemoryModuleType.HOME)), Pair.of(3, new SleepTask()), Pair.of(5, new RandomTask(ImmutableMap.of(MemoryModuleType.HOME, MemoryModuleState.VALUE_ABSENT), ImmutableList.of(Pair.of(new WalkHomeTask(f), 1), Pair.of(new WanderIndoorsTask(f), 4), Pair.of(new WaitTask(20, 40), 2)))), VillagerTaskListProvider.createBusyFollowTask(), Pair.of(99, new ScheduleActivityTask()));
+        return ImmutableList.of(Pair.of(2, new VillagerWalkTowardsTask(MemoryModuleType.HOME, f, 1, 150, 1200)), Pair.of(3, new ForgetCompletedPointOfInterestTask(PointOfInterestType.HOME, MemoryModuleType.HOME)), Pair.of(3, new SleepTask()), Pair.of(5, new RandomTask(ImmutableMap.of(MemoryModuleType.HOME, MemoryModuleState.VALUE_ABSENT), ImmutableList.of(Pair.of(new WalkHomeTask(f), 1), Pair.of(new WanderIndoorsTask(f), 4), Pair.of(new class_4458(f, 4), 2), Pair.of(new WaitTask(20, 40), 2)))), VillagerTaskListProvider.createBusyFollowTask(), Pair.of(99, new ScheduleActivityTask()));
     }
 
     public static ImmutableList<Pair<Integer, ? extends Task<? super VillagerEntity>>> createMeetTasks(VillagerProfession villagerProfession, float f) {

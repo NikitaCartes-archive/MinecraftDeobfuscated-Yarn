@@ -21,6 +21,7 @@ import net.minecraft.client.options.NarratorOption;
 import net.minecraft.client.options.ParticlesOption;
 import net.minecraft.client.resource.language.I18n;
 import net.minecraft.client.util.NarratorManager;
+import net.minecraft.client.util.Window;
 import net.minecraft.util.SystemUtil;
 import net.minecraft.util.math.MathHelper;
 
@@ -129,6 +130,13 @@ public abstract class Option {
     }, (gameOptions, doubleOption) -> {
         double d = doubleOption.method_18611(doubleOption.get((GameOptions)gameOptions));
         return doubleOption.getDisplayPrefix() + String.format("%.2f", doubleOption.method_18616(d));
+    });
+    public static final BooleanOption field_20307 = new BooleanOption("options.rawMouseInput", gameOptions -> gameOptions.field_20308, (gameOptions, boolean_) -> {
+        gameOptions.field_20308 = boolean_;
+        Window window = MinecraftClient.getInstance().window;
+        if (window != null) {
+            window.method_21668((boolean)boolean_);
+        }
     });
     public static final DoubleOption RENDER_DISTANCE = new DoubleOption("options.renderDistance", 2.0, 16.0, 1.0f, gameOptions -> gameOptions.viewDistance, (gameOptions, double_) -> {
         gameOptions.viewDistance = (int)double_.doubleValue();

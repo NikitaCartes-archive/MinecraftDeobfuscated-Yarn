@@ -48,7 +48,7 @@ extends Goal {
         if (!livingEntity.isAlive()) {
             return false;
         }
-        this.field_6509 = this.mob.getNavigation().findPathTo(livingEntity);
+        this.field_6509 = this.mob.getNavigation().findPathTo(livingEntity, 0);
         if (this.field_6509 != null) {
             return true;
         }

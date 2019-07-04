@@ -64,7 +64,7 @@ extends Goal {
         if (((Entity)this.targetEntity).squaredDistanceTo(vec3d.x, vec3d.y, vec3d.z) < ((Entity)this.targetEntity).squaredDistanceTo(this.mob)) {
             return false;
         }
-        this.fleePath = this.fleeingEntityNavigation.findPathTo(vec3d.x, vec3d.y, vec3d.z);
+        this.fleePath = this.fleeingEntityNavigation.findPathTo(vec3d.x, vec3d.y, vec3d.z, 0);
         return this.fleePath != null;
     }
 

@@ -634,7 +634,7 @@ implements Monster {
             pathNode3 = pathNode3.field_35;
             list.add(0, pathNode3);
         }
-        return new Path(list);
+        return new Path(list, new BlockPos(pathNode2.x, pathNode2.y, pathNode2.z), true);
     }
 
     @Override

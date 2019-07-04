@@ -77,7 +77,7 @@ extends Goal {
         MobNavigation mobNavigation = (MobNavigation)this.mob.getNavigation();
         boolean bl = mobNavigation.canEnterOpenDoors();
         mobNavigation.setCanPathThroughDoors(this.field_18415.getAsBoolean());
-        this.targetPath = mobNavigation.findPathTo(this.target);
+        this.targetPath = mobNavigation.findPathTo(this.target, 0);
         mobNavigation.setCanPathThroughDoors(bl);
         if (this.targetPath == null) {
             Vec3d vec3d2 = PathfindingUtil.method_6373(this.mob, 10, 7, new Vec3d(this.target.getX(), this.target.getY(), this.target.getZ()));
@@ -85,7 +85,7 @@ extends Goal {
                 return false;
             }
             mobNavigation.setCanPathThroughDoors(this.field_18415.getAsBoolean());
-            this.targetPath = this.mob.getNavigation().findPathTo(vec3d2.x, vec3d2.y, vec3d2.z);
+            this.targetPath = this.mob.getNavigation().findPathTo(vec3d2.x, vec3d2.y, vec3d2.z, 0);
             mobNavigation.setCanPathThroughDoors(bl);
             if (this.targetPath == null) {
                 return false;
@@ -95,7 +95,7 @@ extends Goal {
             PathNode pathNode = this.targetPath.getNode(i);
             BlockPos blockPos22 = new BlockPos(pathNode.x, pathNode.y + 1, pathNode.z);
             if (!DoorInteractGoal.getDoor(this.mob.world, blockPos22)) continue;
-            this.targetPath = this.mob.getNavigation().findPathTo(pathNode.x, pathNode.y, pathNode.z);
+            this.targetPath = this.mob.getNavigation().findPathTo(pathNode.x, (double)pathNode.y, pathNode.z, 0);
             break;
         }
         return this.targetPath != null;

@@ -12,7 +12,6 @@ import net.fabricmc.api.Environment;
 import net.minecraft.class_4341;
 import net.minecraft.class_4355;
 import net.minecraft.class_4359;
-import net.minecraft.class_4372;
 import net.minecraft.class_4388;
 import net.minecraft.class_4389;
 import net.minecraft.class_4395;
@@ -70,15 +69,6 @@ extends RealmsScreen {
                 Realms.setScreen(new class_4395(class_4406.this.field_19960, class_4406.this, class_4406.this.field_19961));
             }
         });
-        RealmsButton realmsButton = new RealmsButton(3, this.field_19965, class_4359.method_21072(3), this.field_19964 + 10, 20, class_4406.getLocalizedString("mco.configure.world.buttons.activity")){
-
-            @Override
-            public void onPress() {
-                Realms.setScreen(new class_4372(class_4406.this, class_4406.this.field_19961));
-            }
-        };
-        realmsButton.active(false);
-        this.buttonsAdd(realmsButton);
         this.field_19966 = new RealmsButton(4, this.field_19965, class_4359.method_21072(7), this.field_19964 + 10, 20, class_4406.getLocalizedString("mco.configure.world.invites.remove.tooltip")){
 
             @Override

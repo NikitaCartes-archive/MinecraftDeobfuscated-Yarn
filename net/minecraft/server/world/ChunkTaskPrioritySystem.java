@@ -3,6 +3,7 @@
  */
 package net.minecraft.server.world;
 
+import com.google.common.annotations.VisibleForTesting;
 import com.google.common.collect.Sets;
 import com.mojang.datafixers.util.Either;
 import java.util.List;
@@ -121,6 +122,11 @@ ChunkHolder.LevelUpdateListener {
             throw new IllegalArgumentException("No queue for: " + actor);
         }
         return levelPrioritizedQueue;
+    }
+
+    @VisibleForTesting
+    public String method_21680() {
+        return this.queues.entrySet().stream().map(entry -> ((Actor)entry.getKey()).getName() + "=[" + ((LevelPrioritizedQueue)entry.getValue()).method_21679().stream().map(long_ -> long_ + ":" + new ChunkPos((long)long_)).collect(Collectors.joining(",")) + "]").collect(Collectors.joining(","));
     }
 
     @Override

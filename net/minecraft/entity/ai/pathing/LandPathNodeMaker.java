@@ -15,11 +15,13 @@ import net.minecraft.block.DoorBlock;
 import net.minecraft.block.FenceGateBlock;
 import net.minecraft.block.LeavesBlock;
 import net.minecraft.block.Material;
+import net.minecraft.class_4459;
 import net.minecraft.entity.ai.pathing.PathNode;
 import net.minecraft.entity.ai.pathing.PathNodeMaker;
 import net.minecraft.entity.ai.pathing.PathNodeType;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.fluid.FluidState;
+import net.minecraft.fluid.Fluids;
 import net.minecraft.tag.BlockTags;
 import net.minecraft.tag.FluidTags;
 import net.minecraft.util.math.BlockPos;
@@ -54,10 +56,10 @@ extends PathNodeMaker {
         if (this.canSwim() && this.entity.isInsideWater()) {
             i = MathHelper.floor(this.entity.getBoundingBox().minY);
             BlockPos.Mutable mutable = new BlockPos.Mutable(this.entity.x, (double)i, this.entity.z);
-            Block block = this.blockView.getBlockState(mutable).getBlock();
-            while (block == Blocks.WATER) {
+            BlockState blockState = this.blockView.getBlockState(mutable);
+            while (blockState.getBlock() == Blocks.WATER || blockState.getFluidState() == Fluids.WATER.getStill(false)) {
                 mutable.set(this.entity.x, (double)(++i), this.entity.z);
-                block = this.blockView.getBlockState(mutable).getBlock();
+                blockState = this.blockView.getBlockState(mutable);
             }
             --i;
         } else if (this.entity.onGround) {
@@ -87,8 +89,8 @@ extends PathNodeMaker {
     }
 
     @Override
-    public PathNode getPathNode(double d, double e, double f) {
-        return this.getPathNode(MathHelper.floor(d), MathHelper.floor(e), MathHelper.floor(f));
+    public class_4459 getPathNode(double d, double e, double f) {
+        return new class_4459(this.getPathNode(MathHelper.floor(d), MathHelper.floor(e), MathHelper.floor(f)));
     }
 
     @Override
@@ -136,7 +138,16 @@ extends PathNodeMaker {
     }
 
     private boolean method_20536(PathNode pathNode, @Nullable PathNode pathNode2, @Nullable PathNode pathNode3, @Nullable PathNode pathNode4) {
-        return pathNode4 != null && !pathNode4.field_42 && pathNode3 != null && pathNode3.field_43 >= 0.0f && pathNode3.y <= pathNode.y && pathNode2 != null && pathNode2.field_43 >= 0.0f && pathNode2.y <= pathNode.y;
+        if (pathNode4 == null || pathNode3 == null || pathNode2 == null) {
+            return false;
+        }
+        if (pathNode4.field_42) {
+            return false;
+        }
+        if (pathNode3.y > pathNode.y || pathNode2.y > pathNode.y) {
+            return false;
+        }
+        return pathNode4.field_43 >= 0.0f && (pathNode3.y < pathNode.y || pathNode3.field_43 >= 0.0f) && (pathNode2.y < pathNode.y || pathNode2.field_43 >= 0.0f);
     }
 
     public static double method_60(BlockView blockView, BlockPos blockPos) {

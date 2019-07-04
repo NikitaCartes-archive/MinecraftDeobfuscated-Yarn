@@ -5,6 +5,7 @@ package net.minecraft.entity.ai.pathing;
 
 import net.minecraft.block.BlockPlacementEnvironment;
 import net.minecraft.block.BlockState;
+import net.minecraft.class_4459;
 import net.minecraft.entity.ai.pathing.PathNode;
 import net.minecraft.entity.ai.pathing.PathNodeMaker;
 import net.minecraft.entity.ai.pathing.PathNodeType;
@@ -31,8 +32,8 @@ extends PathNodeMaker {
     }
 
     @Override
-    public PathNode getPathNode(double d, double e, double f) {
-        return super.getPathNode(MathHelper.floor(d - (double)(this.entity.getWidth() / 2.0f)), MathHelper.floor(e + 0.5), MathHelper.floor(f - (double)(this.entity.getWidth() / 2.0f)));
+    public class_4459 getPathNode(double d, double e, double f) {
+        return new class_4459(super.getPathNode(MathHelper.floor(d - (double)(this.entity.getWidth() / 2.0f)), MathHelper.floor(e + 0.5), MathHelper.floor(f - (double)(this.entity.getWidth() / 2.0f))));
     }
 
     @Override

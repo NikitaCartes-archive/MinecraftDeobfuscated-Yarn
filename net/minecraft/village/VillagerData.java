@@ -14,7 +14,7 @@ import net.minecraft.village.VillagerProfession;
 import net.minecraft.village.VillagerType;
 
 public class VillagerData {
-    private static final int[] LEVEL_BASE_EXPERIENCE = new int[]{0, 10, 50, 100, 150};
+    private static final int[] LEVEL_BASE_EXPERIENCE = new int[]{0, 10, 70, 150, 250};
     private final VillagerType type;
     private final VillagerProfession profession;
     private final int level;

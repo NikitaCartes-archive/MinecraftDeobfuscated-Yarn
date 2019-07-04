@@ -24,7 +24,6 @@ import net.minecraft.entity.ai.goal.WanderAroundGoal;
 import net.minecraft.entity.ai.goal.ZombieAttackGoal;
 import net.minecraft.entity.ai.pathing.MobNavigation;
 import net.minecraft.entity.ai.pathing.Path;
-import net.minecraft.entity.ai.pathing.PathNode;
 import net.minecraft.entity.ai.pathing.PathNodeType;
 import net.minecraft.entity.ai.pathing.SwimNavigation;
 import net.minecraft.entity.attribute.EntityAttributes;
@@ -241,9 +240,9 @@ implements RangedAttackMob {
 
     protected boolean method_7016() {
         double d;
-        PathNode pathNode;
+        BlockPos blockPos;
         Path path = this.getNavigation().getCurrentPath();
-        return path != null && (pathNode = path.method_48()) != null && (d = this.squaredDistanceTo(pathNode.x, pathNode.y, pathNode.z)) < 4.0;
+        return path != null && (blockPos = path.method_48()) != null && (d = this.squaredDistanceTo(blockPos.getX(), blockPos.getY(), blockPos.getZ())) < 4.0;
     }
 
     @Override
