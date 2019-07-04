@@ -31,8 +31,8 @@ public class BirdNavigation extends EntityNavigation {
 	}
 
 	@Override
-	public Path findPathTo(Entity entity) {
-		return this.findPathTo(new BlockPos(entity));
+	public Path findPathTo(Entity entity, int i) {
+		return this.findPathTo(new BlockPos(entity), i);
 	}
 
 	@Override

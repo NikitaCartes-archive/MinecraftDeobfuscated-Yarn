@@ -119,7 +119,7 @@ public abstract class TrackTargetGoal extends Goal {
 
 	private boolean canNavigateToEntity(LivingEntity livingEntity) {
 		this.checkCanNavigateCooldown = 10 + this.mob.getRand().nextInt(5);
-		Path path = this.mob.getNavigation().findPathTo(livingEntity);
+		Path path = this.mob.getNavigation().findPathTo(livingEntity, 0);
 		if (path == null) {
 			return false;
 		} else {

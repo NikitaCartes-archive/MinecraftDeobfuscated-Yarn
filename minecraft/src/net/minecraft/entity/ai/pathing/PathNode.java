@@ -3,6 +3,7 @@ package net.minecraft.entity.ai.pathing;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.util.PacketByteBuf;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 
 public class PathNode {
@@ -59,6 +60,25 @@ public class PathNode {
 		return f * f + g * g + h * h;
 	}
 
+	public float method_21653(PathNode pathNode) {
+		float f = (float)Math.abs(pathNode.x - this.x);
+		float g = (float)Math.abs(pathNode.y - this.y);
+		float h = (float)Math.abs(pathNode.z - this.z);
+		return f + g + h;
+	}
+
+	public float method_21654(BlockPos blockPos) {
+		float f = (float)Math.abs(blockPos.getX() - this.x);
+		float g = (float)Math.abs(blockPos.getY() - this.y);
+		float h = (float)Math.abs(blockPos.getZ() - this.z);
+		return f + g + h;
+	}
+
+	@Environment(EnvType.CLIENT)
+	public BlockPos method_21652() {
+		return new BlockPos(this.x, this.y, this.z);
+	}
+
 	public boolean equals(Object object) {
 		if (!(object instanceof PathNode)) {
 			return false;
@@ -77,7 +97,7 @@ public class PathNode {
 	}
 
 	public String toString() {
-		return this.x + ", " + this.y + ", " + this.z;
+		return "Node{x=" + this.x + ", y=" + this.y + ", z=" + this.z + '}';
 	}
 
 	@Environment(EnvType.CLIENT)

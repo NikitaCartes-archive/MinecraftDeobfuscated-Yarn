@@ -1,5 +1,9 @@
 package net.minecraft.entity.ai.pathing;
 
+import com.google.common.collect.ImmutableSet;
+import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import javax.annotation.Nullable;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
@@ -35,7 +39,8 @@ public abstract class EntityNavigation {
 	protected boolean shouldRecalculate;
 	protected long lastRecalculateTime;
 	protected PathNodeMaker nodeMaker;
-	private BlockPos targetPos;
+	private BlockPos field_20293;
+	private int field_20294;
 	private PathNodeNavigator pathNodeNavigator;
 
 	public EntityNavigation(MobEntity mobEntity, World world) {
@@ -46,7 +51,7 @@ public abstract class EntityNavigation {
 	}
 
 	public BlockPos getTargetPos() {
-		return this.targetPos;
+		return this.field_20293;
 	}
 
 	protected abstract PathNodeNavigator createPathNodeNavigator(int i);
@@ -65,9 +70,9 @@ public abstract class EntityNavigation {
 
 	public void recalculatePath() {
 		if (this.world.getTime() - this.lastRecalculateTime > 20L) {
-			if (this.targetPos != null) {
+			if (this.field_20293 != null) {
 				this.currentPath = null;
-				this.currentPath = this.findPathTo(this.targetPos);
+				this.currentPath = this.findPathTo(this.field_20293, this.field_20294);
 				this.lastRecalculateTime = this.world.getTime();
 				this.shouldRecalculate = false;
 			}
@@ -77,54 +82,58 @@ public abstract class EntityNavigation {
 	}
 
 	@Nullable
-	public final Path findPathTo(double d, double e, double f) {
-		return this.findPathTo(new BlockPos(d, e, f));
+	public final Path findPathTo(double d, double e, double f, int i) {
+		return this.findPathTo(new BlockPos(d, e, f), i);
 	}
 
 	@Nullable
-	public Path findPathTo(BlockPos blockPos) {
-		float f = (float)blockPos.getX() + 0.5F;
-		float g = (float)blockPos.getY() + 0.5F;
-		float h = (float)blockPos.getZ() + 0.5F;
-		return this.findPathTo(blockPos, (double)f, (double)g, (double)h, 8, false);
+	public Path method_21643(Stream<BlockPos> stream, int i) {
+		return this.findPathTo((Set<BlockPos>)stream.collect(Collectors.toSet()), 8, false, i);
 	}
 
 	@Nullable
-	public Path findPathTo(Entity entity) {
-		BlockPos blockPos = new BlockPos(entity);
-		double d = entity.x;
-		double e = entity.getBoundingBox().minY;
-		double f = entity.z;
-		return this.findPathTo(blockPos, d, e, f, 16, true);
+	public Path findPathTo(BlockPos blockPos, int i) {
+		return this.findPathTo(ImmutableSet.of(blockPos), 8, false, i);
 	}
 
 	@Nullable
-	protected Path findPathTo(BlockPos blockPos, double d, double e, double f, int i, boolean bl) {
-		if (this.entity.y < 0.0) {
+	public Path findPathTo(Entity entity, int i) {
+		return this.findPathTo(ImmutableSet.of(new BlockPos(entity)), 16, true, i);
+	}
+
+	@Nullable
+	protected Path findPathTo(Set<BlockPos> set, int i, boolean bl, int j) {
+		if (set.isEmpty()) {
+			return null;
+		} else if (this.entity.y < 0.0) {
 			return null;
 		} else if (!this.isAtValidPosition()) {
 			return null;
-		} else if (this.currentPath != null && !this.currentPath.isFinished() && blockPos.equals(this.targetPos)) {
+		} else if (this.currentPath != null && !this.currentPath.isFinished() && set.contains(this.field_20293)) {
 			return this.currentPath;
 		} else {
-			this.targetPos = blockPos.toImmutable();
-			float g = this.getFollowRange();
 			this.world.getProfiler().push("pathfind");
-			BlockPos blockPos2 = bl ? new BlockPos(this.entity).up() : new BlockPos(this.entity);
-			int j = (int)(g + (float)i);
-			ViewableWorld viewableWorld = new ChunkCache(this.world, blockPos2.add(-j, -j, -j), blockPos2.add(j, j, j));
-			Path path = this.pathNodeNavigator.pathfind(viewableWorld, this.entity, d, e, f, g);
+			float f = this.getFollowRange();
+			BlockPos blockPos = bl ? new BlockPos(this.entity).up() : new BlockPos(this.entity);
+			int k = (int)(f + (float)i);
+			ViewableWorld viewableWorld = new ChunkCache(this.world, blockPos.add(-k, -k, -k), blockPos.add(k, k, k));
+			Path path = this.pathNodeNavigator.pathfind(viewableWorld, this.entity, set, f, j);
 			this.world.getProfiler().pop();
+			if (path != null && path.method_48() != null) {
+				this.field_20293 = path.method_48();
+				this.field_20294 = j;
+			}
+
 			return path;
 		}
 	}
 
 	public boolean startMovingTo(double d, double e, double f, double g) {
-		return this.startMovingAlong(this.findPathTo(d, e, f), g);
+		return this.startMovingAlong(this.findPathTo(d, e, f, 1), g);
 	}
 
 	public boolean startMovingTo(Entity entity, double d) {
-		Path path = this.findPathTo(entity);
+		Path path = this.findPathTo(entity, 1);
 		return path != null && this.startMovingAlong(path, d);
 	}
 

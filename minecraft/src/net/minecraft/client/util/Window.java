@@ -422,4 +422,10 @@ public final class Window implements AutoCloseable {
 	public Monitor method_20831() {
 		return this.monitorTracker.getMonitor(this);
 	}
+
+	public void method_21668(boolean bl) {
+		if (InputUtil.method_21667()) {
+			GLFW.glfwSetInputMode(this.handle, 208901, bl ? 1 : 0);
+		}
+	}
 }

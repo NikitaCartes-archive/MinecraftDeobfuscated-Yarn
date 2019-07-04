@@ -59,16 +59,6 @@ public class class_4406 extends RealmsScreen {
 				}
 			}
 		);
-		RealmsButton realmsButton = new RealmsButton(
-			3, this.field_19965, class_4359.method_21072(3), this.field_19964 + 10, 20, getLocalizedString("mco.configure.world.buttons.activity")
-		) {
-			@Override
-			public void onPress() {
-				Realms.setScreen(new class_4372(class_4406.this, class_4406.this.field_19961));
-			}
-		};
-		realmsButton.active(false);
-		this.buttonsAdd(realmsButton);
 		this.buttonsAdd(
 			this.field_19966 = new RealmsButton(
 				4, this.field_19965, class_4359.method_21072(7), this.field_19964 + 10, 20, getLocalizedString("mco.configure.world.invites.remove.tooltip")

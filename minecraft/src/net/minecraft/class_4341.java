@@ -15,7 +15,6 @@ import com.mojang.realmsclient.dto.RealmsServerList;
 import com.mojang.realmsclient.dto.RealmsServerPlayerLists;
 import com.mojang.realmsclient.dto.RealmsWorldOptions;
 import com.mojang.realmsclient.dto.RealmsWorldResetDto;
-import com.mojang.realmsclient.dto.ServerActivityList;
 import com.mojang.realmsclient.dto.Subscription;
 import com.mojang.realmsclient.dto.UploadInfo;
 import com.mojang.realmsclient.dto.WorldDownload;
@@ -94,12 +93,6 @@ public class class_4341 {
 		String string = this.method_21011("worlds" + "/$ID".replace("$ID", String.valueOf(l)));
 		String string2 = this.method_20998(class_4346.method_21040(string));
 		return RealmsServer.parse(string2);
-	}
-
-	public ServerActivityList method_21002(long l) throws class_4355 {
-		String string = this.method_21011("activities" + "/$WORLD_ID".replace("$WORLD_ID", String.valueOf(l)));
-		String string2 = this.method_20998(class_4346.method_21040(string));
-		return ServerActivityList.parse(string2);
 	}
 
 	public RealmsServerPlayerLists method_21018() throws class_4355 {
