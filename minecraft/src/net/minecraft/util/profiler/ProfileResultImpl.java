@@ -139,7 +139,7 @@ public class ProfileResultImpl implements ProfileResult {
 		stringBuilder.append("// ");
 		stringBuilder.append(generateWittyComment());
 		stringBuilder.append("\n\n");
-		stringBuilder.append("Version: ").append(SharedConstants.getGameVersion().getName()).append('\n');
+		stringBuilder.append("Version: ").append(SharedConstants.getGameVersion().getId()).append('\n');
 		stringBuilder.append("Time span: ").append(l / 1000000L).append(" ms\n");
 		stringBuilder.append("Tick span: ").append(i).append(" ticks\n");
 		stringBuilder.append("// This is approximately ")

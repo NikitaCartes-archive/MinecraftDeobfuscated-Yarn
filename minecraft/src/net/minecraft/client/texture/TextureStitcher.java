@@ -1,7 +1,9 @@
 package net.minecraft.client.texture;
 
+import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
+import java.util.Collection;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Set;
@@ -48,7 +50,9 @@ public class TextureStitcher {
 
 		for (TextureStitcher.Holder holder : list) {
 			if (!this.tryFit(holder)) {
-				throw new TextureStitcherCannotFitException(holder.sprite);
+				throw new TextureStitcherCannotFitException(
+					holder.sprite, (Collection<Sprite>)list.stream().map(holderx -> holderx.sprite).collect(ImmutableList.toImmutableList())
+				);
 			}
 		}
 

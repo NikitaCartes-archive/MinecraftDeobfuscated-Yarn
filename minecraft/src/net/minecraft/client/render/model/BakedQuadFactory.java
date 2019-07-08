@@ -126,12 +126,12 @@ public class BakedQuadFactory {
 
 	private float[] method_3459(Vector3f vector3f, Vector3f vector3f2) {
 		float[] fs = new float[Direction.values().length];
-		fs[CubeFace.DirectionIds.WEST] = vector3f.x() / 16.0F;
-		fs[CubeFace.DirectionIds.DOWN] = vector3f.y() / 16.0F;
-		fs[CubeFace.DirectionIds.NORTH] = vector3f.z() / 16.0F;
-		fs[CubeFace.DirectionIds.EAST] = vector3f2.x() / 16.0F;
-		fs[CubeFace.DirectionIds.UP] = vector3f2.y() / 16.0F;
-		fs[CubeFace.DirectionIds.SOUTH] = vector3f2.z() / 16.0F;
+		fs[CubeFace.DirectionIds.WEST] = vector3f.getX() / 16.0F;
+		fs[CubeFace.DirectionIds.DOWN] = vector3f.getY() / 16.0F;
+		fs[CubeFace.DirectionIds.NORTH] = vector3f.getZ() / 16.0F;
+		fs[CubeFace.DirectionIds.EAST] = vector3f2.getX() / 16.0F;
+		fs[CubeFace.DirectionIds.UP] = vector3f2.getY() / 16.0F;
+		fs[CubeFace.DirectionIds.SOUTH] = vector3f2.getZ() / 16.0F;
 		return fs;
 	}
 
@@ -157,9 +157,9 @@ public class BakedQuadFactory {
 
 	private void method_3460(int[] is, int i, int j, Vector3f vector3f, int k, Sprite sprite, ModelElementTexture modelElementTexture) {
 		int l = i * 7;
-		is[l] = Float.floatToRawIntBits(vector3f.x());
-		is[l + 1] = Float.floatToRawIntBits(vector3f.y());
-		is[l + 2] = Float.floatToRawIntBits(vector3f.z());
+		is[l] = Float.floatToRawIntBits(vector3f.getX());
+		is[l + 1] = Float.floatToRawIntBits(vector3f.getY());
+		is[l + 2] = Float.floatToRawIntBits(vector3f.getZ());
 		is[l + 3] = k;
 		is[l + 4] = Float.floatToRawIntBits(sprite.getU((double)modelElementTexture.getU(j)));
 		is[l + 4 + 1] = Float.floatToRawIntBits(sprite.getV((double)modelElementTexture.getV(j)));
@@ -213,10 +213,10 @@ public class BakedQuadFactory {
 	}
 
 	private void method_3464(Vector3f vector3f, Vector3f vector3f2, Quaternion quaternion, Vector3f vector3f3) {
-		Vector4f vector4f = new Vector4f(vector3f.x() - vector3f2.x(), vector3f.y() - vector3f2.y(), vector3f.z() - vector3f2.z(), 1.0F);
+		Vector4f vector4f = new Vector4f(vector3f.getX() - vector3f2.getX(), vector3f.getY() - vector3f2.getY(), vector3f.getZ() - vector3f2.getZ(), 1.0F);
 		vector4f.method_4959(quaternion);
 		vector4f.multiply(vector3f3);
-		vector3f.set(vector4f.x() + vector3f2.x(), vector4f.y() + vector3f2.y(), vector4f.z() + vector3f2.z());
+		vector3f.set(vector4f.getX() + vector3f2.getX(), vector4f.getY() + vector3f2.getY(), vector4f.getZ() + vector3f2.getZ());
 	}
 
 	public static Direction method_3467(int[] is) {

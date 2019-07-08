@@ -36,6 +36,10 @@ public abstract class ThreadExecutor<R extends Runnable> implements Actor<R>, Ex
 		return !this.isOnThread();
 	}
 
+	public int method_21684() {
+		return this.taskQueue.size();
+	}
+
 	@Override
 	public String getName() {
 		return this.name;

@@ -98,10 +98,10 @@ public class VillagerEntity extends AbstractTraderEntity implements InteractionO
 	private byte foodLevel;
 	private final VillagerGossips gossip = new VillagerGossips();
 	private long gossipStartTime;
-	private long lastGossipDecay;
+	private long lastGossipDecayTime;
 	private int experience;
-	private long lastRestock;
-	private int field_19427;
+	private long lastRestockTime;
+	private int restocksToday;
 	private static final ImmutableList<MemoryModuleType<?>> MEMORY_MODULES = ImmutableList.of(
 		MemoryModuleType.HOME,
 		MemoryModuleType.JOB_SITE,
@@ -359,11 +359,11 @@ public class VillagerEntity extends AbstractTraderEntity implements InteractionO
 			this.craftBread();
 		}
 
-		this.lastRestock = this.world.getTime();
-		this.field_19427++;
+		this.lastRestockTime = this.world.getTime();
+		this.restocksToday++;
 	}
 
-	private boolean method_20823() {
+	private boolean needRestock() {
 		for (TradeOffer tradeOffer : this.getOffers()) {
 			if (tradeOffer.isDisabled()) {
 				return true;
@@ -373,16 +373,16 @@ public class VillagerEntity extends AbstractTraderEntity implements InteractionO
 		return false;
 	}
 
-	private boolean method_20824() {
-		return this.field_19427 < 2 && this.world.getTime() > this.lastRestock + 2400L;
+	private boolean canRestock() {
+		return this.restocksToday < 2 && this.world.getTime() > this.lastRestockTime + 2400L;
 	}
 
-	public boolean method_20822() {
-		if (this.world.getTime() > this.lastRestock + 12000L) {
-			this.method_20821();
+	public boolean shouldRestock() {
+		if (this.world.getTime() > this.lastRestockTime + 12000L) {
+			this.clearDailyRestockCount();
 		}
 
-		return this.method_20824() && this.method_20823();
+		return this.canRestock() && this.needRestock();
 	}
 
 	private void prepareRecipesFor(PlayerEntity playerEntity) {
@@ -418,9 +418,9 @@ public class VillagerEntity extends AbstractTraderEntity implements InteractionO
 		compoundTag.putByte("FoodLevel", this.foodLevel);
 		compoundTag.put("Gossips", this.gossip.serialize(NbtOps.INSTANCE).getValue());
 		compoundTag.putInt("Xp", this.experience);
-		compoundTag.putLong("LastRestock", this.lastRestock);
-		compoundTag.putLong("LastGossipDecay", this.lastGossipDecay);
-		compoundTag.putInt("RestocksToday", this.field_19427);
+		compoundTag.putLong("LastRestock", this.lastRestockTime);
+		compoundTag.putLong("LastGossipDecay", this.lastGossipDecayTime);
+		compoundTag.putInt("RestocksToday", this.restocksToday);
 	}
 
 	@Override
@@ -444,11 +444,11 @@ public class VillagerEntity extends AbstractTraderEntity implements InteractionO
 			this.experience = compoundTag.getInt("Xp");
 		}
 
-		this.lastRestock = compoundTag.getLong("LastRestock");
-		this.lastGossipDecay = compoundTag.getLong("LastGossipDecay");
+		this.lastRestockTime = compoundTag.getLong("LastRestock");
+		this.lastGossipDecayTime = compoundTag.getLong("LastGossipDecay");
 		this.setCanPickUpLoot(true);
 		this.reinitializeBrain((ServerWorld)this.world);
-		this.field_19427 = compoundTag.getInt("RestocksToday");
+		this.restocksToday = compoundTag.getInt("RestocksToday");
 	}
 
 	@Override
@@ -709,7 +709,7 @@ public class VillagerEntity extends AbstractTraderEntity implements InteractionO
 	protected void loot(ItemEntity itemEntity) {
 		ItemStack itemStack = itemEntity.getStack();
 		Item item = itemStack.getItem();
-		if (this.method_20820(item)) {
+		if (this.canGather(item)) {
 			BasicInventory basicInventory = this.getInventory();
 			boolean bl = false;
 
@@ -745,7 +745,7 @@ public class VillagerEntity extends AbstractTraderEntity implements InteractionO
 		}
 	}
 
-	public boolean method_20820(Item item) {
+	public boolean canGather(Item item) {
 		return GATHERABLE_ITEMS.contains(item) || this.getVillagerData().getProfession().getGatherableItems().contains(item);
 	}
 
@@ -806,11 +806,11 @@ public class VillagerEntity extends AbstractTraderEntity implements InteractionO
 
 	private void decayGossip() {
 		long l = this.world.getTime();
-		if (this.lastGossipDecay == 0L) {
-			this.lastGossipDecay = l;
-		} else if (l >= this.lastGossipDecay + 24000L) {
+		if (this.lastGossipDecayTime == 0L) {
+			this.lastGossipDecayTime = l;
+		} else if (l >= this.lastGossipDecayTime + 24000L) {
 			this.gossip.decay();
-			this.lastGossipDecay = l;
+			this.lastGossipDecayTime = l;
 		}
 	}
 
@@ -910,8 +910,8 @@ public class VillagerEntity extends AbstractTraderEntity implements InteractionO
 		this.experience = i;
 	}
 
-	private void method_20821() {
-		this.field_19427 = 0;
+	private void clearDailyRestockCount() {
+		this.restocksToday = 0;
 	}
 
 	public VillagerGossips method_21651() {

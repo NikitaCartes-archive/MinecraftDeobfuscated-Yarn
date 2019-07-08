@@ -31,26 +31,26 @@ public class Vector4f {
 		return Arrays.hashCode(this.components);
 	}
 
-	public float x() {
+	public float getX() {
 		return this.components[0];
 	}
 
-	public float y() {
+	public float getY() {
 		return this.components[1];
 	}
 
-	public float z() {
+	public float getZ() {
 		return this.components[2];
 	}
 
-	public float w() {
+	public float getW() {
 		return this.components[3];
 	}
 
 	public void multiply(Vector3f vector3f) {
-		this.components[0] = this.components[0] * vector3f.x();
-		this.components[1] = this.components[1] * vector3f.y();
-		this.components[2] = this.components[2] * vector3f.z();
+		this.components[0] = this.components[0] * vector3f.getX();
+		this.components[1] = this.components[1] * vector3f.getY();
+		this.components[2] = this.components[2] * vector3f.getZ();
 	}
 
 	public void set(float f, float g, float h, float i) {
@@ -62,10 +62,10 @@ public class Vector4f {
 
 	public void method_4959(Quaternion quaternion) {
 		Quaternion quaternion2 = new Quaternion(quaternion);
-		quaternion2.method_4925(new Quaternion(this.x(), this.y(), this.z(), 0.0F));
+		quaternion2.method_4925(new Quaternion(this.getX(), this.getY(), this.getZ(), 0.0F));
 		Quaternion quaternion3 = new Quaternion(quaternion);
 		quaternion3.method_4926();
 		quaternion2.method_4925(quaternion3);
-		this.set(quaternion2.method_4921(), quaternion2.method_4922(), quaternion2.method_4923(), this.w());
+		this.set(quaternion2.method_4921(), quaternion2.method_4922(), quaternion2.method_4923(), this.getW());
 	}
 }

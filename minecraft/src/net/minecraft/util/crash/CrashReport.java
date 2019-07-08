@@ -40,6 +40,7 @@ public class CrashReport {
 
 	private void fillSystemDetails() {
 		this.systemDetailsSection.add("Minecraft Version", (CrashCallable<String>)(() -> SharedConstants.getGameVersion().getName()));
+		this.systemDetailsSection.add("Minecraft Version ID", (CrashCallable<String>)(() -> SharedConstants.getGameVersion().getId()));
 		this.systemDetailsSection
 			.add(
 				"Operating System",

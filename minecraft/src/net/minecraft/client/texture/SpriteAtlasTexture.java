@@ -12,6 +12,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.stream.Collectors;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
@@ -125,8 +126,18 @@ public class SpriteAtlasTexture extends AbstractTexture implements TickableTextu
 
 		try {
 			textureStitcher.stitch();
-		} catch (TextureStitcherCannotFitException var12) {
-			throw var12;
+		} catch (TextureStitcherCannotFitException var14) {
+			CrashReport crashReport = CrashReport.create(var14, "Stitching");
+			CrashReportSection crashReportSection = crashReport.addElement("Stitcher");
+			crashReportSection.add(
+				"Sprites",
+				var14.method_21687()
+					.stream()
+					.map(sprite -> String.format("%s[%dx%d]", sprite.getId(), sprite.getWidth(), sprite.getHeight()))
+					.collect(Collectors.joining(","))
+			);
+			crashReportSection.add("Max Texture Size", i);
+			throw new CrashException(crashReport);
 		}
 
 		profiler.swap("loading");

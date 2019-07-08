@@ -535,7 +535,7 @@ public class class_4388 extends class_4415<WorldTemplate> implements class_4367.
 
 	void method_21209(WorldTemplate worldTemplate) {
 		if (worldTemplate != null) {
-			if (WorldTemplate.class_4323.MINIGAME.equals(worldTemplate.type)) {
+			if (WorldTemplate.Type.MINIGAME.equals(worldTemplate.type)) {
 				this.method_21224(worldTemplate);
 			}
 		}

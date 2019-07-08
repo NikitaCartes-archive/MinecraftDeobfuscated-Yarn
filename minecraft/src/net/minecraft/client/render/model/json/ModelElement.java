@@ -46,18 +46,18 @@ public class ModelElement {
 	private float[] method_3401(Direction direction) {
 		switch (direction) {
 			case DOWN:
-				return new float[]{this.from.x(), 16.0F - this.to.z(), this.to.x(), 16.0F - this.from.z()};
+				return new float[]{this.from.getX(), 16.0F - this.to.getZ(), this.to.getX(), 16.0F - this.from.getZ()};
 			case UP:
-				return new float[]{this.from.x(), this.from.z(), this.to.x(), this.to.z()};
+				return new float[]{this.from.getX(), this.from.getZ(), this.to.getX(), this.to.getZ()};
 			case NORTH:
 			default:
-				return new float[]{16.0F - this.to.x(), 16.0F - this.to.y(), 16.0F - this.from.x(), 16.0F - this.from.y()};
+				return new float[]{16.0F - this.to.getX(), 16.0F - this.to.getY(), 16.0F - this.from.getX(), 16.0F - this.from.getY()};
 			case SOUTH:
-				return new float[]{this.from.x(), 16.0F - this.to.y(), this.to.x(), 16.0F - this.from.y()};
+				return new float[]{this.from.getX(), 16.0F - this.to.getY(), this.to.getX(), 16.0F - this.from.getY()};
 			case WEST:
-				return new float[]{this.from.z(), 16.0F - this.to.y(), this.to.z(), 16.0F - this.from.y()};
+				return new float[]{this.from.getZ(), 16.0F - this.to.getY(), this.to.getZ(), 16.0F - this.from.getY()};
 			case EAST:
-				return new float[]{16.0F - this.to.z(), 16.0F - this.to.y(), 16.0F - this.from.z(), 16.0F - this.from.y()};
+				return new float[]{16.0F - this.to.getZ(), 16.0F - this.to.getY(), 16.0F - this.from.getZ(), 16.0F - this.from.getY()};
 		}
 	}
 
@@ -147,12 +147,12 @@ public class ModelElement {
 
 		private Vector3f deserializeTo(JsonObject jsonObject) {
 			Vector3f vector3f = this.deserializeVec3f(jsonObject, "to");
-			if (!(vector3f.x() < -16.0F)
-				&& !(vector3f.y() < -16.0F)
-				&& !(vector3f.z() < -16.0F)
-				&& !(vector3f.x() > 32.0F)
-				&& !(vector3f.y() > 32.0F)
-				&& !(vector3f.z() > 32.0F)) {
+			if (!(vector3f.getX() < -16.0F)
+				&& !(vector3f.getY() < -16.0F)
+				&& !(vector3f.getZ() < -16.0F)
+				&& !(vector3f.getX() > 32.0F)
+				&& !(vector3f.getY() > 32.0F)
+				&& !(vector3f.getZ() > 32.0F)) {
 				return vector3f;
 			} else {
 				throw new JsonParseException("'to' specifier exceeds the allowed boundaries: " + vector3f);
@@ -161,12 +161,12 @@ public class ModelElement {
 
 		private Vector3f deserializeFrom(JsonObject jsonObject) {
 			Vector3f vector3f = this.deserializeVec3f(jsonObject, "from");
-			if (!(vector3f.x() < -16.0F)
-				&& !(vector3f.y() < -16.0F)
-				&& !(vector3f.z() < -16.0F)
-				&& !(vector3f.x() > 32.0F)
-				&& !(vector3f.y() > 32.0F)
-				&& !(vector3f.z() > 32.0F)) {
+			if (!(vector3f.getX() < -16.0F)
+				&& !(vector3f.getY() < -16.0F)
+				&& !(vector3f.getZ() < -16.0F)
+				&& !(vector3f.getX() > 32.0F)
+				&& !(vector3f.getY() > 32.0F)
+				&& !(vector3f.getZ() > 32.0F)) {
 				return vector3f;
 			} else {
 				throw new JsonParseException("'from' specifier exceeds the allowed boundaries: " + vector3f);

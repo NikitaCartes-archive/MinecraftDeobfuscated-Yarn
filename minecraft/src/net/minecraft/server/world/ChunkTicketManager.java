@@ -318,6 +318,9 @@ public abstract class ChunkTicketManager {
 								if (this.isWithinViewDistance(this.getLevel(l))) {
 									ChunkTicketManager.this.addTicket(l, chunkTicket);
 									ChunkTicketManager.this.chunkPositions.add(l);
+								} else {
+									ChunkTicketManager.this.playerTicketThrottlerSorter.send(ChunkTaskPrioritySystem.createSorterMessage(() -> {
+									}, l, false));
 								}
 							}), l, () -> i));
 				} else {

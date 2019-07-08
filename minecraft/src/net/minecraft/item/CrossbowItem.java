@@ -240,7 +240,7 @@ public class CrossbowItem extends RangedWeaponItem {
 				Vec3d vec3d2 = livingEntity.getRotationVec(1.0F);
 				Vector3f vector3f = new Vector3f(vec3d2);
 				vector3f.method_19262(quaternion);
-				projectile.setVelocity((double)vector3f.x(), (double)vector3f.y(), (double)vector3f.z(), g, h);
+				projectile.setVelocity((double)vector3f.getX(), (double)vector3f.getY(), (double)vector3f.getZ(), g, h);
 			}
 
 			itemStack.damage(bl2 ? 3 : 1, livingEntity, livingEntityx -> livingEntityx.sendToolBreakStatus(hand));

@@ -84,13 +84,13 @@ public class ModelTransformation {
 		if (transformation != Transformation.NONE) {
 			int i = bl ? -1 : 1;
 			GlStateManager.translatef(
-				(float)i * (globalTranslationX + transformation.translation.x()),
-				globalTranslationY + transformation.translation.y(),
-				globalTranslationZ + transformation.translation.z()
+				(float)i * (globalTranslationX + transformation.translation.getX()),
+				globalTranslationY + transformation.translation.getY(),
+				globalTranslationZ + transformation.translation.getZ()
 			);
-			float f = globalRotationX + transformation.rotation.x();
-			float g = globalRotationY + transformation.rotation.y();
-			float h = globalRotationZ + transformation.rotation.z();
+			float f = globalRotationX + transformation.rotation.getX();
+			float g = globalRotationY + transformation.rotation.getY();
+			float h = globalRotationZ + transformation.rotation.getZ();
 			if (bl) {
 				g = -g;
 				h = -h;
@@ -98,7 +98,7 @@ public class ModelTransformation {
 
 			GlStateManager.multMatrix(new Matrix4f(new Quaternion(f, g, h, true)));
 			GlStateManager.scalef(
-				globalScaleOffsetX + transformation.scale.x(), globalScaleOffsetY + transformation.scale.y(), globalScaleOffsetZ + transformation.scale.z()
+				globalScaleOffsetX + transformation.scale.getX(), globalScaleOffsetY + transformation.scale.getY(), globalScaleOffsetZ + transformation.scale.getZ()
 			);
 		}
 	}

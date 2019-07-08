@@ -242,7 +242,7 @@ public class ItemRenderer implements SynchronousResourceReloadListener {
 	}
 
 	private boolean areFacesFlippedBy(Transformation transformation) {
-		return transformation.scale.x() < 0.0F ^ transformation.scale.y() < 0.0F ^ transformation.scale.z() < 0.0F;
+		return transformation.scale.getX() < 0.0F ^ transformation.scale.getY() < 0.0F ^ transformation.scale.getZ() < 0.0F;
 	}
 
 	public void renderGuiItemIcon(ItemStack itemStack, int i, int j) {

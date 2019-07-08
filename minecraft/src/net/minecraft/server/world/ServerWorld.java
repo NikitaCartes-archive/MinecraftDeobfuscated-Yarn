@@ -33,7 +33,6 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_4456;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
@@ -87,6 +86,7 @@ import net.minecraft.tag.RegistryTagManager;
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.BooleanBiFunction;
+import net.minecraft.util.CsvWriter;
 import net.minecraft.util.ProgressListener;
 import net.minecraft.util.TypeFilterableList;
 import net.minecraft.util.Unit;
@@ -1346,7 +1346,8 @@ public class ServerWorld extends World {
 			writer.write(String.format("block_entities: %d\n", this.blockEntities.size()));
 			writer.write(String.format("block_ticks: %d\n", this.method_14196().method_20825()));
 			writer.write(String.format("fluid_ticks: %d\n", this.method_14179().method_20825()));
-			writer.write("distance_manager: " + threadedAnvilChunkStorage.getTicketManager().method_21683());
+			writer.write("distance_manager: " + threadedAnvilChunkStorage.getTicketManager().method_21683() + "\n");
+			writer.write(String.format("pending_tasks: %d\n", this.method_14178().method_21694()));
 		} catch (Throwable var120) {
 			path2 = var120;
 			throw var120;
@@ -1393,7 +1394,7 @@ public class ServerWorld extends World {
 		Throwable var128 = null;
 
 		try {
-			threadedAnvilChunkStorage.method_21619(writer3);
+			threadedAnvilChunkStorage.exportChunks(writer3);
 		} catch (Throwable var114) {
 			var128 = var114;
 			throw var114;
@@ -1416,7 +1417,7 @@ public class ServerWorld extends World {
 		Throwable writer5 = null;
 
 		try {
-			this.method_21624(writer4);
+			this.exportEntities(writer4);
 		} catch (Throwable var113) {
 			writer5 = var113;
 			throw var113;
@@ -1439,7 +1440,7 @@ public class ServerWorld extends World {
 		Throwable var8 = null;
 
 		try {
-			this.method_21626(writer5x);
+			this.exportBlockEntities(writer5x);
 		} catch (Throwable var112) {
 			var8 = var112;
 			throw var112;
@@ -1458,31 +1459,31 @@ public class ServerWorld extends World {
 		}
 	}
 
-	private void method_21624(Writer writer) throws IOException {
-		class_4456 lv = class_4456.method_21627()
-			.method_21632("x")
-			.method_21632("y")
-			.method_21632("z")
-			.method_21632("uuid")
-			.method_21632("type")
-			.method_21632("alive")
-			.method_21632("custom_name")
-			.method_21631(writer);
+	private void exportEntities(Writer writer) throws IOException {
+		CsvWriter csvWriter = CsvWriter.makeHeader()
+			.addColumn("x")
+			.addColumn("y")
+			.addColumn("z")
+			.addColumn("uuid")
+			.addColumn("type")
+			.addColumn("alive")
+			.addColumn("custom_name")
+			.startBody(writer);
 
 		for (Entity entity : this.entitiesById.values()) {
 			Text text = entity.getCustomName();
-			lv.method_21630(
+			csvWriter.printRow(
 				entity.x, entity.y, entity.z, entity.getUuid(), Registry.ENTITY_TYPE.getId(entity.getType()), entity.isAlive(), text != null ? text.getString() : null
 			);
 		}
 	}
 
-	private void method_21626(Writer writer) throws IOException {
-		class_4456 lv = class_4456.method_21627().method_21632("x").method_21632("y").method_21632("z").method_21632("type").method_21631(writer);
+	private void exportBlockEntities(Writer writer) throws IOException {
+		CsvWriter csvWriter = CsvWriter.makeHeader().addColumn("x").addColumn("y").addColumn("z").addColumn("type").startBody(writer);
 
 		for (BlockEntity blockEntity : this.blockEntities) {
 			BlockPos blockPos = blockEntity.getPos();
-			lv.method_21630(blockPos.getX(), blockPos.getY(), blockPos.getZ(), Registry.BLOCK_ENTITY_TYPE.getId(blockEntity.getType()));
+			csvWriter.printRow(blockPos.getX(), blockPos.getY(), blockPos.getZ(), Registry.BLOCK_ENTITY_TYPE.getId(blockEntity.getType()));
 		}
 	}
 }

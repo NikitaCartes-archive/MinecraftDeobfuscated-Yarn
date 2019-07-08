@@ -36,7 +36,6 @@ import java.util.stream.Stream;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_4456;
 import net.minecraft.client.network.DebugRendererInfoManager;
 import net.minecraft.client.network.packet.ChunkDataS2CPacket;
 import net.minecraft.client.network.packet.ChunkRenderDistanceCenterS2CPacket;
@@ -57,6 +56,7 @@ import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.structure.StructureManager;
 import net.minecraft.structure.StructureStart;
 import net.minecraft.util.Actor;
+import net.minecraft.util.CsvWriter;
 import net.minecraft.util.MailboxProcessor;
 import net.minecraft.util.SystemUtil;
 import net.minecraft.util.ThreadExecutor;
@@ -712,29 +712,29 @@ public class ThreadedAnvilChunkStorage extends VersionedChunkStorage implements 
 		return Iterables.unmodifiableIterable(this.chunkHolders.values());
 	}
 
-	void method_21619(Writer writer) throws IOException {
-		class_4456 lv = class_4456.method_21627()
-			.method_21632("x")
-			.method_21632("z")
-			.method_21632("level")
-			.method_21632("in_memory")
-			.method_21632("status")
-			.method_21632("full_status")
-			.method_21632("accessible_ready")
-			.method_21632("ticking_ready")
-			.method_21632("entity_ticking_ready")
-			.method_21632("ticket")
-			.method_21632("spawning")
-			.method_21632("entity_count")
-			.method_21632("block_entity_count")
-			.method_21631(writer);
+	void exportChunks(Writer writer) throws IOException {
+		CsvWriter csvWriter = CsvWriter.makeHeader()
+			.addColumn("x")
+			.addColumn("z")
+			.addColumn("level")
+			.addColumn("in_memory")
+			.addColumn("status")
+			.addColumn("full_status")
+			.addColumn("accessible_ready")
+			.addColumn("ticking_ready")
+			.addColumn("entity_ticking_ready")
+			.addColumn("ticket")
+			.addColumn("spawning")
+			.addColumn("entity_count")
+			.addColumn("block_entity_count")
+			.startBody(writer);
 
 		for (Entry<ChunkHolder> entry : this.chunkHolders.long2ObjectEntrySet()) {
 			ChunkPos chunkPos = new ChunkPos(entry.getLongKey());
 			ChunkHolder chunkHolder = (ChunkHolder)entry.getValue();
 			Optional<Chunk> optional = Optional.ofNullable(chunkHolder.getCompletedChunk());
 			Optional<WorldChunk> optional2 = optional.flatMap(chunk -> chunk instanceof WorldChunk ? Optional.of((WorldChunk)chunk) : Optional.empty());
-			lv.method_21630(
+			csvWriter.printRow(
 				chunkPos.x,
 				chunkPos.z,
 				chunkHolder.getLevel(),
