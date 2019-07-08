@@ -37,7 +37,7 @@ public class ItemEntityRenderer extends EntityRenderer<ItemEntity> {
 			int i = this.getRenderedAmount(itemStack);
 			float h = 0.25F;
 			float j = MathHelper.sin(((float)itemEntity.getAge() + g) / 10.0F + itemEntity.hoverHeight) * 0.1F + 0.1F;
-			float k = bakedModel.getTransformation().getTransformation(ModelTransformation.Type.GROUND).scale.y();
+			float k = bakedModel.getTransformation().getTransformation(ModelTransformation.Type.GROUND).scale.getY();
 			GlStateManager.translatef((float)d, (float)e + j + 0.25F * k, (float)f);
 			if (bl || this.renderManager.gameOptions != null) {
 				float l = (((float)itemEntity.getAge() + g) / 20.0F + itemEntity.hoverHeight) * (180.0F / (float)Math.PI);
@@ -84,9 +84,9 @@ public class ItemEntityRenderer extends EntityRenderer<ItemEntity> {
 		GlStateManager.pushMatrix();
 		BakedModel bakedModel = this.itemRenderer.getModel(itemStack, itemEntity.world, null);
 		int j = this.method_3997(itemEntity, d, e, f, h, bakedModel);
-		float k = bakedModel.getTransformation().ground.scale.x();
-		float l = bakedModel.getTransformation().ground.scale.y();
-		float m = bakedModel.getTransformation().ground.scale.z();
+		float k = bakedModel.getTransformation().ground.scale.getX();
+		float l = bakedModel.getTransformation().ground.scale.getY();
+		float m = bakedModel.getTransformation().ground.scale.getZ();
 		boolean bl2 = bakedModel.hasDepthInGui();
 		if (!bl2) {
 			float n = -0.0F * (float)(j - 1) * 0.5F * k;

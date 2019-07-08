@@ -1519,7 +1519,6 @@ public abstract class MinecraftServer extends NonBlockingThreadExecutor<ServerTa
 		this.whitelistEnabled = bl;
 	}
 
-	@Environment(EnvType.CLIENT)
 	public float getTickTime() {
 		return this.tickTime;
 	}
@@ -1569,6 +1568,33 @@ public abstract class MinecraftServer extends NonBlockingThreadExecutor<ServerTa
 		this.method_21615(path.resolve("gamerules.txt"));
 		this.method_21616(path.resolve("classpath.txt"));
 		this.method_21614(path.resolve("example_crash.txt"));
+		this.method_21692(path.resolve("stats.txt"));
+	}
+
+	private void method_21692(Path path) throws IOException {
+		Writer writer = Files.newBufferedWriter(path);
+		Throwable var3 = null;
+
+		try {
+			writer.write(String.format("pending_tasks: %d\n", this.method_21684()));
+			writer.write(String.format("average_tick_time: %f\n", this.getTickTime()));
+			writer.write(String.format("tick_times: %s\n", Arrays.toString(this.lastTickLengths)));
+		} catch (Throwable var12) {
+			var3 = var12;
+			throw var12;
+		} finally {
+			if (writer != null) {
+				if (var3 != null) {
+					try {
+						writer.close();
+					} catch (Throwable var11) {
+						var3.addSuppressed(var11);
+					}
+				} else {
+					writer.close();
+				}
+			}
+		}
 	}
 
 	private void method_21614(Path path) throws IOException {

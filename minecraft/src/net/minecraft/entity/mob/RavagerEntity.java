@@ -254,7 +254,7 @@ public class RavagerEntity extends RaiderEntity {
 	private void knockBack(Entity entity) {
 		double d = entity.x - this.x;
 		double e = entity.z - this.z;
-		double f = d * d + e * e;
+		double f = Math.max(d * d + e * e, 0.001);
 		entity.addVelocity(d / f * 4.0, 0.2, e / f * 4.0);
 	}
 

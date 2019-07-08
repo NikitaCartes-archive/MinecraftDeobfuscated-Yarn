@@ -41,15 +41,15 @@ public final class Vector3f {
 		return Arrays.hashCode(this.components);
 	}
 
-	public float x() {
+	public float getX() {
 		return this.components[0];
 	}
 
-	public float y() {
+	public float getY() {
 		return this.components[1];
 	}
 
-	public float z() {
+	public float getZ() {
 		return this.components[2];
 	}
 
@@ -125,9 +125,9 @@ public final class Vector3f {
 		float f = this.components[0];
 		float g = this.components[1];
 		float h = this.components[2];
-		float i = vector3f.x();
-		float j = vector3f.y();
-		float k = vector3f.z();
+		float i = vector3f.getX();
+		float j = vector3f.getY();
+		float k = vector3f.getZ();
 		this.components[0] = g * k - h * j;
 		this.components[1] = h * i - f * k;
 		this.components[2] = f * j - g * i;
@@ -135,7 +135,7 @@ public final class Vector3f {
 
 	public void method_19262(Quaternion quaternion) {
 		Quaternion quaternion2 = new Quaternion(quaternion);
-		quaternion2.method_4925(new Quaternion(this.x(), this.y(), this.z(), 0.0F));
+		quaternion2.method_4925(new Quaternion(this.getX(), this.getY(), this.getZ(), 0.0F));
 		Quaternion quaternion3 = new Quaternion(quaternion);
 		quaternion3.method_4926();
 		quaternion2.method_4925(quaternion3);

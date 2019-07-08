@@ -12,19 +12,19 @@ import net.minecraft.util.GlobalPos;
 import net.minecraft.util.Timestamp;
 
 public class VillagerWorkTask extends Task<VillagerEntity> {
-	private long field_19426;
+	private long lastCheckedTime;
 
 	public VillagerWorkTask() {
 		super(ImmutableMap.of(MemoryModuleType.JOB_SITE, MemoryModuleState.VALUE_PRESENT, MemoryModuleType.LOOK_TARGET, MemoryModuleState.REGISTERED));
 	}
 
 	protected boolean method_21641(ServerWorld serverWorld, VillagerEntity villagerEntity) {
-		if (serverWorld.getTime() - this.field_19426 < 300L) {
+		if (serverWorld.getTime() - this.lastCheckedTime < 300L) {
 			return false;
 		} else if (serverWorld.random.nextInt(2) != 0) {
 			return false;
 		} else {
-			this.field_19426 = serverWorld.getTime();
+			this.lastCheckedTime = serverWorld.getTime();
 			GlobalPos globalPos = (GlobalPos)villagerEntity.getBrain().getOptionalMemory(MemoryModuleType.JOB_SITE).get();
 			return Objects.equals(globalPos.getDimension(), serverWorld.getDimension().getType()) && globalPos.getPos().isWithinDistance(villagerEntity.getPos(), 1.73);
 		}
@@ -36,7 +36,7 @@ public class VillagerWorkTask extends Task<VillagerEntity> {
 		brain.getOptionalMemory(MemoryModuleType.JOB_SITE)
 			.ifPresent(globalPos -> brain.putMemory(MemoryModuleType.LOOK_TARGET, new BlockPosLookTarget(globalPos.getPos())));
 		villagerEntity.playWorkSound();
-		if (villagerEntity.method_20822()) {
+		if (villagerEntity.shouldRestock()) {
 			villagerEntity.restock();
 		}
 	}

@@ -32,12 +32,12 @@ public class GuiLighting {
 		GlStateManager.enableLight(1);
 		GlStateManager.enableColorMaterial();
 		GlStateManager.colorMaterial(1032, 5634);
-		GlStateManager.light(16384, 4611, singletonBuffer(towardLight.x(), towardLight.y(), towardLight.z(), 0.0F));
+		GlStateManager.light(16384, 4611, singletonBuffer(towardLight.getX(), towardLight.getY(), towardLight.getZ(), 0.0F));
 		float f = 0.6F;
 		GlStateManager.light(16384, 4609, singletonBuffer(0.6F, 0.6F, 0.6F, 1.0F));
 		GlStateManager.light(16384, 4608, singletonBuffer(0.0F, 0.0F, 0.0F, 1.0F));
 		GlStateManager.light(16384, 4610, singletonBuffer(0.0F, 0.0F, 0.0F, 1.0F));
-		GlStateManager.light(16385, 4611, singletonBuffer(oppositeLight.x(), oppositeLight.y(), oppositeLight.z(), 0.0F));
+		GlStateManager.light(16385, 4611, singletonBuffer(oppositeLight.getX(), oppositeLight.getY(), oppositeLight.getZ(), 0.0F));
 		GlStateManager.light(16385, 4609, singletonBuffer(0.6F, 0.6F, 0.6F, 1.0F));
 		GlStateManager.light(16385, 4608, singletonBuffer(0.0F, 0.0F, 0.0F, 1.0F));
 		GlStateManager.light(16385, 4610, singletonBuffer(0.0F, 0.0F, 0.0F, 1.0F));
