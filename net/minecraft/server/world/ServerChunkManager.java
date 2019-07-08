@@ -3,6 +3,7 @@
  */
 package net.minecraft.server.world;
 
+import com.google.common.annotations.VisibleForTesting;
 import com.mojang.datafixers.DataFixer;
 import com.mojang.datafixers.util.Either;
 import it.unimi.dsi.fastutil.objects.Object2IntMap;
@@ -338,6 +339,11 @@ extends ChunkManager {
     @Override
     public String getStatus() {
         return "ServerChunkCache: " + this.getLoadedChunkCount();
+    }
+
+    @VisibleForTesting
+    public int method_21694() {
+        return this.mainThreadExecutor.method_21684();
     }
 
     @Override

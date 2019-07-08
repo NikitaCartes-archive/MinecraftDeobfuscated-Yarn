@@ -17,6 +17,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.stream.Collectors;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
@@ -25,6 +26,7 @@ import net.minecraft.client.texture.AbstractTexture;
 import net.minecraft.client.texture.MissingSprite;
 import net.minecraft.client.texture.Sprite;
 import net.minecraft.client.texture.TextureStitcher;
+import net.minecraft.client.texture.TextureStitcherCannotFitException;
 import net.minecraft.client.texture.TickableTexture;
 import net.minecraft.client.util.PngFile;
 import net.minecraft.resource.Resource;
@@ -102,14 +104,14 @@ implements TickableTexture {
         int j = Integer.MAX_VALUE;
         int k = 1 << this.mipLevel;
         profiler.swap("extracting_frames");
-        for (Sprite sprite : this.loadSprites(resourceManager, set)) {
-            j = Math.min(j, Math.min(sprite.getWidth(), sprite.getHeight()));
-            int l = Math.min(Integer.lowestOneBit(sprite.getWidth()), Integer.lowestOneBit(sprite.getHeight()));
+        for (Sprite sprite2 : this.loadSprites(resourceManager, set)) {
+            j = Math.min(j, Math.min(sprite2.getWidth(), sprite2.getHeight()));
+            int l = Math.min(Integer.lowestOneBit(sprite2.getWidth()), Integer.lowestOneBit(sprite2.getHeight()));
             if (l < k) {
-                LOGGER.warn("Texture {} with size {}x{} limits mip level from {} to {}", (Object)sprite.getId(), (Object)sprite.getWidth(), (Object)sprite.getHeight(), (Object)MathHelper.log2(k), (Object)MathHelper.log2(l));
+                LOGGER.warn("Texture {} with size {}x{} limits mip level from {} to {}", (Object)sprite2.getId(), (Object)sprite2.getWidth(), (Object)sprite2.getHeight(), (Object)MathHelper.log2(k), (Object)MathHelper.log2(l));
                 k = l;
             }
-            textureStitcher.add(sprite);
+            textureStitcher.add(sprite2);
         }
         int m = Math.min(j, k);
         int n = MathHelper.log2(m);
@@ -122,7 +124,15 @@ implements TickableTexture {
         profiler.swap("register");
         textureStitcher.add(this.missingSprite);
         profiler.swap("stitching");
-        textureStitcher.stitch();
+        try {
+            textureStitcher.stitch();
+        } catch (TextureStitcherCannotFitException textureStitcherCannotFitException) {
+            CrashReport crashReport = CrashReport.create(textureStitcherCannotFitException, "Stitching");
+            CrashReportSection crashReportSection = crashReport.addElement("Stitcher");
+            crashReportSection.add("Sprites", textureStitcherCannotFitException.method_21687().stream().map(sprite -> String.format("%s[%dx%d]", sprite.getId(), sprite.getWidth(), sprite.getHeight())).collect(Collectors.joining(",")));
+            crashReportSection.add("Max Texture Size", i);
+            throw new CrashException(crashReport);
+        }
         profiler.swap("loading");
         List<Sprite> list = this.method_18161(resourceManager, textureStitcher);
         profiler.pop();

@@ -3,6 +3,7 @@
  */
 package net.minecraft.client.texture;
 
+import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import java.util.ArrayList;
@@ -49,9 +50,9 @@ public class TextureStitcher {
     public void stitch() {
         ArrayList<Holder> list = Lists.newArrayList(this.holders);
         list.sort(comparator);
-        for (Holder holder : list) {
-            if (this.tryFit(holder)) continue;
-            throw new TextureStitcherCannotFitException(holder.sprite);
+        for (Holder holder2 : list) {
+            if (this.tryFit(holder2)) continue;
+            throw new TextureStitcherCannotFitException(holder2.sprite, list.stream().map(holder -> holder.sprite).collect(ImmutableList.toImmutableList()));
         }
         this.width = MathHelper.smallestEncompassingPowerOfTwo(this.width);
         this.height = MathHelper.smallestEncompassingPowerOfTwo(this.height);

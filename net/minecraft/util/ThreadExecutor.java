@@ -42,6 +42,10 @@ Executor {
         return !this.isOnThread();
     }
 
+    public int method_21684() {
+        return this.taskQueue.size();
+    }
+
     @Override
     public String getName() {
         return this.name;

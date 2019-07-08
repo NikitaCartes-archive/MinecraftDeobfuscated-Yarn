@@ -39,7 +39,6 @@ import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.entity.BlockEntity;
-import net.minecraft.class_4456;
 import net.minecraft.client.network.DebugRendererInfoManager;
 import net.minecraft.client.network.packet.BlockActionS2CPacket;
 import net.minecraft.client.network.packet.BlockBreakingProgressS2CPacket;
@@ -95,6 +94,7 @@ import net.minecraft.tag.RegistryTagManager;
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.BooleanBiFunction;
+import net.minecraft.util.CsvWriter;
 import net.minecraft.util.ProgressListener;
 import net.minecraft.util.TypeFilterableList;
 import net.minecraft.util.Unit;
@@ -1161,7 +1161,8 @@ extends World {
             writer.write(String.format("block_entities: %d\n", this.blockEntities.size()));
             writer.write(String.format("block_ticks: %d\n", this.method_14196().method_20825()));
             writer.write(String.format("fluid_ticks: %d\n", this.method_14179().method_20825()));
-            writer.write("distance_manager: " + threadedAnvilChunkStorage.getTicketManager().method_21683());
+            writer.write("distance_manager: " + threadedAnvilChunkStorage.getTicketManager().method_21683() + "\n");
+            writer.write(String.format("pending_tasks: %d\n", this.method_14178().method_21694()));
         }
         CrashReport crashReport = new CrashReport("Level dump", new Exception("dummy"));
         this.addDetailsToCrashReport(crashReport);
@@ -1188,34 +1189,34 @@ extends World {
         Path path2 = path.resolve("chunks.csv");
         Throwable throwable = null;
         try (BufferedWriter writer3 = Files.newBufferedWriter(path2, new OpenOption[0]);){
-            threadedAnvilChunkStorage.method_21619(writer3);
+            threadedAnvilChunkStorage.exportChunks(writer3);
         } catch (Throwable throwable2) {
             Throwable throwable3 = throwable2;
             throw throwable2;
         }
         Path path3 = path.resolve("entities.csv");
         try (BufferedWriter bufferedWriter = Files.newBufferedWriter(path3, new OpenOption[0]);){
-            this.method_21624(bufferedWriter);
+            this.exportEntities(bufferedWriter);
         }
         Path path4 = path.resolve("block_entities.csv");
         try (BufferedWriter writer5 = Files.newBufferedWriter(path4, new OpenOption[0]);){
-            this.method_21626(writer5);
+            this.exportBlockEntities(writer5);
         }
     }
 
-    private void method_21624(Writer writer) throws IOException {
-        class_4456 lv = class_4456.method_21627().method_21632("x").method_21632("y").method_21632("z").method_21632("uuid").method_21632("type").method_21632("alive").method_21632("custom_name").method_21631(writer);
+    private void exportEntities(Writer writer) throws IOException {
+        CsvWriter csvWriter = CsvWriter.makeHeader().addColumn("x").addColumn("y").addColumn("z").addColumn("uuid").addColumn("type").addColumn("alive").addColumn("custom_name").startBody(writer);
         for (Entity entity : this.entitiesById.values()) {
             Text text = entity.getCustomName();
-            lv.method_21630(entity.x, entity.y, entity.z, entity.getUuid(), Registry.ENTITY_TYPE.getId(entity.getType()), entity.isAlive(), text != null ? text.getString() : null);
+            csvWriter.printRow(entity.x, entity.y, entity.z, entity.getUuid(), Registry.ENTITY_TYPE.getId(entity.getType()), entity.isAlive(), text != null ? text.getString() : null);
         }
     }
 
-    private void method_21626(Writer writer) throws IOException {
-        class_4456 lv = class_4456.method_21627().method_21632("x").method_21632("y").method_21632("z").method_21632("type").method_21631(writer);
+    private void exportBlockEntities(Writer writer) throws IOException {
+        CsvWriter csvWriter = CsvWriter.makeHeader().addColumn("x").addColumn("y").addColumn("z").addColumn("type").startBody(writer);
         for (BlockEntity blockEntity : this.blockEntities) {
             BlockPos blockPos = blockEntity.getPos();
-            lv.method_21630(blockPos.getX(), blockPos.getY(), blockPos.getZ(), Registry.BLOCK_ENTITY.getId(blockEntity.getType()));
+            csvWriter.printRow(blockPos.getX(), blockPos.getY(), blockPos.getZ(), Registry.BLOCK_ENTITY.getId(blockEntity.getType()));
         }
     }
 

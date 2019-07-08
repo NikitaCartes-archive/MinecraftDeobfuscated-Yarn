@@ -23,7 +23,7 @@ extends class_4352 {
     public String image;
     public String trailer;
     public String recommendedPlayers;
-    public class_4323 type;
+    public Type type;
 
     public static WorldTemplate parse(JsonObject jsonObject) {
         WorldTemplate worldTemplate = new WorldTemplate();
@@ -36,7 +36,7 @@ extends class_4352 {
             worldTemplate.image = class_4431.method_21547("image", jsonObject, null);
             worldTemplate.trailer = class_4431.method_21547("trailer", jsonObject, "");
             worldTemplate.recommendedPlayers = class_4431.method_21547("recommendedPlayers", jsonObject, "");
-            worldTemplate.type = class_4323.valueOf(class_4431.method_21547("type", jsonObject, class_4323.WORLD_TEMPLATE.name()));
+            worldTemplate.type = Type.valueOf(class_4431.method_21547("type", jsonObject, Type.WORLD_TEMPLATE.name()));
         } catch (Exception exception) {
             LOGGER.error("Could not parse WorldTemplate: " + exception.getMessage());
         }
@@ -44,7 +44,7 @@ extends class_4352 {
     }
 
     @Environment(value=EnvType.CLIENT)
-    public static enum class_4323 {
+    public static enum Type {
         WORLD_TEMPLATE,
         MINIGAME,
         ADVENTUREMAP,

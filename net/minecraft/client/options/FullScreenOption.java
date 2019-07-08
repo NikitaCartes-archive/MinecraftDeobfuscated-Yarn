@@ -1,7 +1,7 @@
 /*
  * Decompiled with CFR 0.2.0 (FabricMC d28b102d).
  */
-package net.minecraft;
+package net.minecraft.client.options;
 
 import java.util.Optional;
 import net.fabricmc.api.EnvType;
@@ -15,13 +15,13 @@ import net.minecraft.client.util.Window;
 import org.jetbrains.annotations.Nullable;
 
 @Environment(value=EnvType.CLIENT)
-public class class_4454
+public class FullScreenOption
 extends DoubleOption {
-    public class_4454(Window window) {
-        this(window, window.method_20831());
+    public FullScreenOption(Window window) {
+        this(window, window.getMonitor());
     }
 
-    private class_4454(Window window, @Nullable Monitor monitor) {
+    private FullScreenOption(Window window, @Nullable Monitor monitor) {
         super("options.fullscreen.resolution", -1.0, monitor != null ? (double)(monitor.getVideoModeCount() - 1) : -1.0, 1.0f, gameOptions -> {
             if (monitor == null) {
                 return -1.0;
@@ -33,9 +33,9 @@ extends DoubleOption {
                 return;
             }
             if (double_ == -1.0) {
-                window.method_4505(Optional.empty());
+                window.setVideoMode(Optional.empty());
             } else {
-                window.method_4505(Optional.of(monitor.getVideoMode(double_.intValue())));
+                window.setVideoMode(Optional.of(monitor.getVideoMode(double_.intValue())));
             }
         }, (gameOptions, doubleOption) -> {
             if (monitor == null) {

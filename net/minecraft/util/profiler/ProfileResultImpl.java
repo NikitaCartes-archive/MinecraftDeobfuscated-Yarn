@@ -143,7 +143,7 @@ implements ProfileResult {
         stringBuilder.append("// ");
         stringBuilder.append(ProfileResultImpl.generateWittyComment());
         stringBuilder.append("\n\n");
-        stringBuilder.append("Version: ").append(SharedConstants.getGameVersion().getName()).append('\n');
+        stringBuilder.append("Version: ").append(SharedConstants.getGameVersion().getId()).append('\n');
         stringBuilder.append("Time span: ").append(l / 1000000L).append(" ms\n");
         stringBuilder.append("Tick span: ").append(i).append(" ticks\n");
         stringBuilder.append("// This is approximately ").append(String.format(Locale.ROOT, "%.2f", Float.valueOf((float)i / ((float)l / 1.0E9f)))).append(" ticks per second. It should be ").append(20).append(" ticks per second\n\n");

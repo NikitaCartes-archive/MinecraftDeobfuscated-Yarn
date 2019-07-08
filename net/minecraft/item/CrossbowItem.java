@@ -217,7 +217,7 @@ extends RangedWeaponItem {
             Vec3d vec3d2 = livingEntity2.getRotationVec(1.0f);
             Vector3f vector3f = new Vector3f(vec3d2);
             vector3f.method_19262(quaternion);
-            projectile.setVelocity(vector3f.x(), vector3f.y(), vector3f.z(), g, h);
+            projectile.setVelocity(vector3f.getX(), vector3f.getY(), vector3f.getZ(), g, h);
         }
         itemStack.damage(bl2 ? 3 : 1, livingEntity2, livingEntity -> livingEntity.sendToolBreakStatus(hand));
         world.spawnEntity(projectile);

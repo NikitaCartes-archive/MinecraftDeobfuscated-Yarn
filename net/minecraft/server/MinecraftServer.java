@@ -1416,7 +1416,6 @@ Runnable {
         this.whitelistEnabled = bl;
     }
 
-    @Environment(value=EnvType.CLIENT)
     public float getTickTime() {
         return this.tickTime;
     }
@@ -1464,6 +1463,15 @@ Runnable {
         this.method_21615(path.resolve("gamerules.txt"));
         this.method_21616(path.resolve("classpath.txt"));
         this.method_21614(path.resolve("example_crash.txt"));
+        this.method_21692(path.resolve("stats.txt"));
+    }
+
+    private void method_21692(Path path) throws IOException {
+        try (BufferedWriter writer = Files.newBufferedWriter(path, new OpenOption[0]);){
+            writer.write(String.format("pending_tasks: %d\n", this.method_21684()));
+            writer.write(String.format("average_tick_time: %f\n", Float.valueOf(this.getTickTime())));
+            writer.write(String.format("tick_times: %s\n", Arrays.toString(this.lastTickLengths)));
+        }
     }
 
     private void method_21614(Path path) throws IOException {

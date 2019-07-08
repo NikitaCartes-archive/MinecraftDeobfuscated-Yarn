@@ -95,6 +95,7 @@ implements ResourcePackCreator {
         map.put("X-Minecraft-Username", MinecraftClient.getInstance().getSession().getUsername());
         map.put("X-Minecraft-UUID", MinecraftClient.getInstance().getSession().getUuid());
         map.put("X-Minecraft-Version", SharedConstants.getGameVersion().getName());
+        map.put("X-Minecraft-Version-ID", SharedConstants.getGameVersion().getId());
         map.put("X-Minecraft-Pack-Format", String.valueOf(SharedConstants.getGameVersion().getPackVersion()));
         map.put("User-Agent", "Minecraft Java/" + SharedConstants.getGameVersion().getName());
         return map;

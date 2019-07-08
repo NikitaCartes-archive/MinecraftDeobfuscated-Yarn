@@ -511,7 +511,7 @@ implements class_4367.class_4369 {
         if (worldTemplate == null) {
             return;
         }
-        if (WorldTemplate.class_4323.MINIGAME.equals((Object)worldTemplate.type)) {
+        if (WorldTemplate.Type.MINIGAME.equals((Object)worldTemplate.type)) {
             this.method_21224(worldTemplate);
         }
     }

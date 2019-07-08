@@ -243,7 +243,7 @@ implements SynchronousResourceReloadListener {
     }
 
     private boolean areFacesFlippedBy(Transformation transformation) {
-        return transformation.scale.x() < 0.0f ^ transformation.scale.y() < 0.0f ^ transformation.scale.z() < 0.0f;
+        return transformation.scale.getX() < 0.0f ^ transformation.scale.getY() < 0.0f ^ transformation.scale.getZ() < 0.0f;
     }
 
     public void renderGuiItemIcon(ItemStack itemStack, int i, int j) {

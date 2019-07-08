@@ -30,9 +30,9 @@ public final class Quaternion {
         }
         float g = Quaternion.method_16002(f / 2.0f);
         this.components = new float[4];
-        this.components[0] = vector3f.x() * g;
-        this.components[1] = vector3f.y() * g;
-        this.components[2] = vector3f.z() * g;
+        this.components[0] = vector3f.getX() * g;
+        this.components[1] = vector3f.getY() * g;
+        this.components[2] = vector3f.getZ() * g;
         this.components[3] = Quaternion.method_16003(f / 2.0f);
     }
 

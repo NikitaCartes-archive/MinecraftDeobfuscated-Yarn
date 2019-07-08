@@ -45,6 +45,7 @@ public class CrashReport {
 
     private void fillSystemDetails() {
         this.systemDetailsSection.add("Minecraft Version", () -> SharedConstants.getGameVersion().getName());
+        this.systemDetailsSection.add("Minecraft Version ID", () -> SharedConstants.getGameVersion().getId());
         this.systemDetailsSection.add("Operating System", () -> System.getProperty("os.name") + " (" + System.getProperty("os.arch") + ") version " + System.getProperty("os.version"));
         this.systemDetailsSection.add("Java Version", () -> System.getProperty("java.version") + ", " + System.getProperty("java.vendor"));
         this.systemDetailsSection.add("Java VM Version", () -> System.getProperty("java.vm.name") + " (" + System.getProperty("java.vm.info") + "), " + System.getProperty("java.vm.vendor"));

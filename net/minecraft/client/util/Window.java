@@ -283,7 +283,7 @@ implements AutoCloseable {
         return this.videoMode;
     }
 
-    public void method_4505(Optional<VideoMode> optional) {
+    public void setVideoMode(Optional<VideoMode> optional) {
         boolean bl = !optional.equals(this.videoMode);
         this.videoMode = optional;
         if (bl) {
@@ -412,7 +412,7 @@ implements AutoCloseable {
     }
 
     @Nullable
-    public Monitor method_20831() {
+    public Monitor getMonitor() {
         return this.monitorTracker.getMonitor(this);
     }
 
