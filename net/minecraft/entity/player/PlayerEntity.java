@@ -170,6 +170,20 @@ extends LivingEntity {
         this.field_6215 = 180.0f;
     }
 
+    public boolean method_21701(World world, BlockPos blockPos, GameMode gameMode) {
+        if (!gameMode.shouldLimitWorldModification()) {
+            return false;
+        }
+        if (gameMode == GameMode.SPECTATOR) {
+            return true;
+        }
+        if (this.canModifyWorld()) {
+            return false;
+        }
+        ItemStack itemStack = this.getMainHandStack();
+        return itemStack.isEmpty() || !itemStack.canDestroy(world.getTagManager(), new CachedBlockPosition(world, blockPos, false));
+    }
+
     @Override
     protected void initAttributes() {
         super.initAttributes();

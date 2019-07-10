@@ -7,6 +7,7 @@ import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
 import com.google.common.collect.Maps;
 import java.util.Map;
+import net.minecraft.class_4463;
 import net.minecraft.client.network.packet.AdvancementUpdateS2CPacket;
 import net.minecraft.client.network.packet.BlockActionS2CPacket;
 import net.minecraft.client.network.packet.BlockBreakingProgressS2CPacket;
@@ -258,6 +259,7 @@ public enum NetworkState {
             this.addPacket(NetworkSide.CLIENTBOUND, EntityPotionEffectS2CPacket.class);
             this.addPacket(NetworkSide.CLIENTBOUND, SynchronizeRecipesS2CPacket.class);
             this.addPacket(NetworkSide.CLIENTBOUND, SynchronizeTagsS2CPacket.class);
+            this.addPacket(NetworkSide.CLIENTBOUND, class_4463.class);
             this.addPacket(NetworkSide.SERVERBOUND, TeleportConfirmC2SPacket.class);
             this.addPacket(NetworkSide.SERVERBOUND, QueryBlockNbtC2SPacket.class);
             this.addPacket(NetworkSide.SERVERBOUND, UpdateDifficultyC2SPacket.class);

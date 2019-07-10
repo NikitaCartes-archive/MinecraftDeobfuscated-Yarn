@@ -141,7 +141,7 @@ extends DrawableHelper {
         World world;
         String string2;
         IntegratedServer integratedServer = this.client.getServer();
-        ClientConnection clientConnection = this.client.getNetworkHandler().getClientConnection();
+        ClientConnection clientConnection = this.client.getNetworkHandler().getConnection();
         float f = clientConnection.getAveragePacketsSent();
         float g = clientConnection.getAveragePacketsReceived();
         String string = integratedServer != null ? String.format("Integrated server @ %.0f ms ticks, %.0f tx, %.0f rx", Float.valueOf(integratedServer.getTickTime()), Float.valueOf(f), Float.valueOf(g)) : String.format("\"%s\" server, %.0f tx, %.0f rx", this.client.player.getServerBrand(), Float.valueOf(f), Float.valueOf(g));

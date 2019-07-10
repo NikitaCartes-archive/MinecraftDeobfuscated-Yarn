@@ -23,6 +23,10 @@ import java.io.BufferedWriter;
 import java.io.File;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.io.Writer;
+import java.lang.management.ManagementFactory;
+import java.lang.management.ThreadInfo;
+import java.lang.management.ThreadMXBean;
 import java.net.Proxy;
 import java.net.URLEncoder;
 import java.nio.ByteBuffer;
@@ -38,6 +42,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Base64;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -479,6 +484,8 @@ Runnable {
     public abstract boolean isHardcore();
 
     public abstract int getOpPermissionLevel();
+
+    public abstract int method_21714();
 
     public abstract boolean shouldBroadcastRconToOps();
 
@@ -1464,6 +1471,7 @@ Runnable {
         this.method_21616(path.resolve("classpath.txt"));
         this.method_21614(path.resolve("example_crash.txt"));
         this.method_21692(path.resolve("stats.txt"));
+        this.method_21713(path.resolve("threads.txt"));
     }
 
     private void method_21692(Path path) throws IOException {
@@ -1471,6 +1479,7 @@ Runnable {
             writer.write(String.format("pending_tasks: %d\n", this.method_21684()));
             writer.write(String.format("average_tick_time: %f\n", Float.valueOf(this.getTickTime())));
             writer.write(String.format("tick_times: %s\n", Arrays.toString(this.lastTickLengths)));
+            writer.write(String.format("queue: %s\n", SystemUtil.getServerWorkerExecutor()));
         }
     }
 
@@ -1506,6 +1515,18 @@ Runnable {
             for (String string3 : Splitter.on(string2).split(string)) {
                 writer.write(string3);
                 writer.write("\n");
+            }
+        }
+    }
+
+    private void method_21713(Path path) throws IOException {
+        ThreadMXBean threadMXBean = ManagementFactory.getThreadMXBean();
+        ThreadInfo[] threadInfos = threadMXBean.dumpAllThreads(true, true);
+        Arrays.sort(threadInfos, Comparator.comparing(ThreadInfo::getThreadName));
+        try (BufferedWriter writer = Files.newBufferedWriter(path, new OpenOption[0]);){
+            for (ThreadInfo threadInfo : threadInfos) {
+                writer.write(threadInfo.toString());
+                ((Writer)writer).write(10);
             }
         }
     }

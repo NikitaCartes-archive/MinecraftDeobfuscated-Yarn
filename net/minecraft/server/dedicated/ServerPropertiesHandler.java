@@ -50,6 +50,7 @@ extends AbstractPropertiesHandler<ServerPropertiesHandler> {
     public final boolean enableCommandBlock;
     public final int spawnProtection;
     public final int opPermissionLevel;
+    public final int field_20324;
     public final long maxTickTime;
     public final int viewDistance;
     public final int maxPlayers;
@@ -70,6 +71,7 @@ extends AbstractPropertiesHandler<ServerPropertiesHandler> {
         this.enableCommandBlock = this.parseBoolean("enable-command-block", false);
         this.spawnProtection = this.getInt("spawn-protection", 16);
         this.opPermissionLevel = this.getInt("op-permission-level", 4);
+        this.field_20324 = this.getInt("function-permission-level", 2);
         this.maxTickTime = this.parseLong("max-tick-time", TimeUnit.MINUTES.toMillis(1L));
         this.viewDistance = this.getInt("view-distance", 10);
         this.maxPlayers = this.getInt("max-players", 20);

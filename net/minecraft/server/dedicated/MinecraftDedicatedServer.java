@@ -438,6 +438,11 @@ implements DedicatedServer {
     }
 
     @Override
+    public int method_21714() {
+        return this.getProperties().field_20324;
+    }
+
+    @Override
     public void setPlayerIdleTimeout(int i) {
         super.setPlayerIdleTimeout(i);
         this.propertiesLoader.apply(serverPropertiesHandler -> (ServerPropertiesHandler)serverPropertiesHandler.playerIdleTimeout.set(i));

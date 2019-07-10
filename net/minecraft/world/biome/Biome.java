@@ -28,6 +28,8 @@ import net.minecraft.text.TranslatableText;
 import net.minecraft.util.IdList;
 import net.minecraft.util.SystemUtil;
 import net.minecraft.util.WeightedPicker;
+import net.minecraft.util.crash.CrashException;
+import net.minecraft.util.crash.CrashReport;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.noise.OctaveSimplexNoiseSampler;
@@ -231,7 +233,13 @@ public abstract class Biome {
         int i = 0;
         for (ConfiguredFeature<?> configuredFeature : this.features.get((Object)feature)) {
             chunkRandom.setFeatureSeed(l, i, feature.ordinal());
-            configuredFeature.generate(iWorld, chunkGenerator, chunkRandom, blockPos);
+            try {
+                configuredFeature.generate(iWorld, chunkGenerator, chunkRandom, blockPos);
+            } catch (Exception exception) {
+                CrashReport crashReport = CrashReport.create(exception, "Feature placement");
+                crashReport.addElement("Feature").add("Id", Registry.FEATURE.getId(configuredFeature.feature)).add("Description", configuredFeature.feature::toString);
+                throw new CrashException(crashReport);
+            }
             ++i;
         }
     }

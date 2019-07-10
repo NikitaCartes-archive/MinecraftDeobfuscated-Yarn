@@ -134,6 +134,11 @@ public class ServerEntryNetworkPart {
                     ServerEntryNetworkPart.this.ping(serverEntry);
                 }
             }
+
+            @Override
+            public ClientConnection getConnection() {
+                return clientConnection;
+            }
         });
         try {
             clientConnection.send(new HandshakeC2SPacket(serverAddress.getAddress(), serverAddress.getPort(), NetworkState.STATUS));

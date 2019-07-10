@@ -1167,7 +1167,7 @@ extends AnimalEntity {
                 this.friend = livingEntity = (LivingEntity)entity;
                 this.offender = livingEntity.getAttacker();
                 int i = livingEntity.getLastAttackedTime();
-                return i != this.lastAttackedTime && this.canTrack(this.offender, TargetPredicate.DEFAULT);
+                return i != this.lastAttackedTime && this.canTrack(this.offender, this.targetPredicate);
             }
             return false;
         }

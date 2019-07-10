@@ -216,11 +216,11 @@ Iterable<Text> {
                 String string;
                 JsonObject jsonObject = jsonElement.getAsJsonObject();
                 if (jsonObject.has("text")) {
-                    LiteralText literalText = new LiteralText(jsonObject.get("text").getAsString());
+                    LiteralText literalText = new LiteralText(JsonHelper.getString(jsonObject, "text"));
                 } else if (jsonObject.has("translate")) {
-                    string = jsonObject.get("translate").getAsString();
+                    string = JsonHelper.getString(jsonObject, "translate");
                     if (jsonObject.has("with")) {
-                        JsonArray jsonArray = jsonObject.getAsJsonArray("with");
+                        JsonArray jsonArray = JsonHelper.getArray(jsonObject, "with");
                         Object[] objects = new Object[jsonArray.size()];
                         for (int i = 0; i < objects.length; ++i) {
                             LiteralText literalText;
@@ -233,7 +233,7 @@ Iterable<Text> {
                         TranslatableText translatableText = new TranslatableText(string, new Object[0]);
                     }
                 } else if (jsonObject.has("score")) {
-                    JsonObject jsonObject2 = jsonObject.getAsJsonObject("score");
+                    JsonObject jsonObject2 = JsonHelper.getObject(jsonObject, "score");
                     if (!jsonObject2.has("name") || !jsonObject2.has("objective")) throw new JsonParseException("A score component needs a least a name and an objective");
                     ScoreText scoreText = new ScoreText(JsonHelper.getString(jsonObject2, "name"), JsonHelper.getString(jsonObject2, "objective"));
                     if (jsonObject2.has("value")) {
@@ -255,7 +255,7 @@ Iterable<Text> {
                     }
                 }
                 if (jsonObject.has("extra")) {
-                    JsonArray jsonArray2 = jsonObject.getAsJsonArray("extra");
+                    JsonArray jsonArray2 = JsonHelper.getArray(jsonObject, "extra");
                     if (jsonArray2.size() <= 0) throw new JsonParseException("Unexpected empty array of components");
                     for (int j = 0; j < jsonArray2.size(); ++j) {
                         var5_16.append(this.method_10871(jsonArray2.get(j), type, jsonDeserializationContext));

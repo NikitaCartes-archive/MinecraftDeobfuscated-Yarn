@@ -271,6 +271,11 @@ extends MinecraftServer {
         return 2;
     }
 
+    @Override
+    public int method_21714() {
+        return 2;
+    }
+
     public void setLocalPlayerUuid(UUID uUID) {
         this.localPlayerUuid = uUID;
     }

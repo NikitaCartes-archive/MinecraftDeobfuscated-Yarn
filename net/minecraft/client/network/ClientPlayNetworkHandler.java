@@ -39,6 +39,7 @@ import net.minecraft.block.entity.MobSpawnerBlockEntity;
 import net.minecraft.block.entity.SignBlockEntity;
 import net.minecraft.block.entity.SkullBlockEntity;
 import net.minecraft.block.entity.StructureBlockBlockEntity;
+import net.minecraft.class_4463;
 import net.minecraft.client.ClientBrandRetriever;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.MapRenderer;
@@ -1896,6 +1897,12 @@ implements ClientPlayPacketListener {
         this.world.method_2935().setChunkMapCenter(chunkRenderDistanceCenterS2CPacket.getChunkX(), chunkRenderDistanceCenterS2CPacket.getChunkZ());
     }
 
+    @Override
+    public void method_21707(class_4463 arg) {
+        NetworkThreadUtils.forceMainThread(arg, this, this.client);
+        this.client.interactionManager.method_21705(this.world, arg.method_21710(), arg.method_21709(), arg.method_21712(), arg.method_21711());
+    }
+
     private void method_2870(int i, int j, LightingProvider lightingProvider, LightType lightType, int k, int l, Iterator<byte[]> iterator) {
         for (int m = 0; m < 18; ++m) {
             boolean bl2;
@@ -1908,7 +1915,8 @@ implements ClientPlayPacketListener {
         }
     }
 
-    public ClientConnection getClientConnection() {
+    @Override
+    public ClientConnection getConnection() {
         return this.connection;
     }
 

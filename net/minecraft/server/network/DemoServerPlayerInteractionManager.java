@@ -7,6 +7,7 @@ import net.minecraft.client.network.packet.GameStateChangeS2CPacket;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.server.network.ServerPlayerInteractionManager;
+import net.minecraft.server.network.packet.PlayerActionC2SPacket;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.ActionResult;
@@ -70,28 +71,12 @@ extends ServerPlayerInteractionManager {
     }
 
     @Override
-    public void method_14263(BlockPos blockPos, Direction direction) {
+    public void method_14263(BlockPos blockPos, PlayerActionC2SPacket.Action action, Direction direction, int i) {
         if (this.demoEnded) {
             this.sendDemoReminder();
             return;
         }
-        super.method_14263(blockPos, direction);
-    }
-
-    @Override
-    public void method_14258(BlockPos blockPos) {
-        if (this.demoEnded) {
-            return;
-        }
-        super.method_14258(blockPos);
-    }
-
-    @Override
-    public boolean tryBreakBlock(BlockPos blockPos) {
-        if (this.demoEnded) {
-            return false;
-        }
-        return super.tryBreakBlock(blockPos);
+        super.method_14263(blockPos, action, direction, i);
     }
 
     @Override

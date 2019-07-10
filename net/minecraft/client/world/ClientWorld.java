@@ -294,7 +294,7 @@ extends World {
 
     @Override
     public void disconnect() {
-        this.netHandler.getClientConnection().disconnect(new TranslatableText("multiplayer.status.quitting", new Object[0]));
+        this.netHandler.getConnection().disconnect(new TranslatableText("multiplayer.status.quitting", new Object[0]));
     }
 
     public void doRandomBlockDisplayTicks(int i, int j, int k) {

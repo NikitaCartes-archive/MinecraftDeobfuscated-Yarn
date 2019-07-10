@@ -71,6 +71,11 @@ implements ServerLoginPacketListener {
         }
     }
 
+    @Override
+    public ClientConnection getConnection() {
+        return this.client;
+    }
+
     public void disconnect(Text text) {
         try {
             LOGGER.info("Disconnecting {}: {}", (Object)this.getConnectionInfo(), (Object)text.getString());

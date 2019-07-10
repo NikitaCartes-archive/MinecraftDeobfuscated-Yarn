@@ -678,7 +678,8 @@ extends World {
         Object2IntOpenHashMap<EntityCategory> object2IntMap = new Object2IntOpenHashMap<EntityCategory>();
         for (Entity entity : this.entitiesById.values()) {
             EntityCategory entityCategory;
-            if (entity instanceof MobEntity && ((MobEntity)entity).isPersistent() || (entityCategory = entity.getType().getCategory()) == EntityCategory.MISC || !this.method_14178().method_20727(entity)) continue;
+            MobEntity mobEntity;
+            if (entity instanceof MobEntity && ((mobEntity = (MobEntity)entity).isPersistent() || mobEntity.cannotDespawn()) || (entityCategory = entity.getType().getCategory()) == EntityCategory.MISC || !this.method_14178().method_20727(entity)) continue;
             object2IntMap.mergeInt(entityCategory, 1, Integer::sum);
         }
         return object2IntMap;
@@ -1196,19 +1197,24 @@ extends World {
         }
         Path path3 = path.resolve("entities.csv");
         try (BufferedWriter bufferedWriter = Files.newBufferedWriter(path3, new OpenOption[0]);){
-            this.exportEntities(bufferedWriter);
+            ServerWorld.exportEntities(bufferedWriter, this.entitiesById.values());
         }
-        Path path4 = path.resolve("block_entities.csv");
+        Path path4 = path.resolve("global_entities.csv");
         try (BufferedWriter writer5 = Files.newBufferedWriter(path4, new OpenOption[0]);){
-            this.exportBlockEntities(writer5);
+            ServerWorld.exportEntities(writer5, this.globalEntities);
+        }
+        Path path5 = path.resolve("block_entities.csv");
+        try (BufferedWriter writer6 = Files.newBufferedWriter(path5, new OpenOption[0]);){
+            this.exportBlockEntities(writer6);
         }
     }
 
-    private void exportEntities(Writer writer) throws IOException {
-        CsvWriter csvWriter = CsvWriter.makeHeader().addColumn("x").addColumn("y").addColumn("z").addColumn("uuid").addColumn("type").addColumn("alive").addColumn("custom_name").startBody(writer);
-        for (Entity entity : this.entitiesById.values()) {
+    private static void exportEntities(Writer writer, Iterable<Entity> iterable) throws IOException {
+        CsvWriter csvWriter = CsvWriter.makeHeader().addColumn("x").addColumn("y").addColumn("z").addColumn("uuid").addColumn("type").addColumn("alive").addColumn("display_name").addColumn("custom_name").startBody(writer);
+        for (Entity entity : iterable) {
             Text text = entity.getCustomName();
-            csvWriter.printRow(entity.x, entity.y, entity.z, entity.getUuid(), Registry.ENTITY_TYPE.getId(entity.getType()), entity.isAlive(), text != null ? text.getString() : null);
+            Text text2 = entity.getDisplayName();
+            csvWriter.printRow(entity.x, entity.y, entity.z, entity.getUuid(), Registry.ENTITY_TYPE.getId(entity.getType()), entity.isAlive(), text2.getString(), text != null ? text.getString() : null);
         }
     }
 

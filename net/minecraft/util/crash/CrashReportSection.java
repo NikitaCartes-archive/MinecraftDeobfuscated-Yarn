@@ -83,16 +83,18 @@ public class CrashReportSection {
         return stringBuilder.toString();
     }
 
-    public void add(String string, CrashCallable<String> crashCallable) {
+    public CrashReportSection add(String string, CrashCallable<String> crashCallable) {
         try {
             this.add(string, crashCallable.call());
         } catch (Throwable throwable) {
             this.add(string, throwable);
         }
+        return this;
     }
 
-    public void add(String string, Object object) {
+    public CrashReportSection add(String string, Object object) {
         this.elements.add(new Element(string, object));
+        return this;
     }
 
     public void add(String string, Throwable throwable) {

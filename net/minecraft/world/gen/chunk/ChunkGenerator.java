@@ -13,9 +13,12 @@ import net.minecraft.entity.EntityCategory;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.structure.StructureManager;
 import net.minecraft.structure.StructureStart;
+import net.minecraft.util.crash.CrashException;
+import net.minecraft.util.crash.CrashReport;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.math.MutableIntBoundingBox;
+import net.minecraft.util.registry.Registry;
 import net.minecraft.world.ChunkRegion;
 import net.minecraft.world.Heightmap;
 import net.minecraft.world.IWorld;
@@ -102,7 +105,13 @@ public abstract class ChunkGenerator<C extends ChunkGeneratorConfig> {
         ChunkRandom chunkRandom = new ChunkRandom();
         long m = chunkRandom.setSeed(chunkRegion.getSeed(), k, l);
         for (GenerationStep.Feature feature : GenerationStep.Feature.values()) {
-            biome.generateFeatureStep(feature, this, chunkRegion, m, chunkRandom, blockPos);
+            try {
+                biome.generateFeatureStep(feature, this, chunkRegion, m, chunkRandom, blockPos);
+            } catch (Exception exception) {
+                CrashReport crashReport = CrashReport.create(exception, "Biome decoration");
+                crashReport.addElement("Generation").add("CenterX", i).add("CenterZ", j).add("Step", (Object)feature).add("Seed", m).add("Biome", Registry.BIOME.getId(biome));
+                throw new CrashException(crashReport);
+            }
         }
     }
 

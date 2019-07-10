@@ -86,13 +86,14 @@ extends Dimension {
             BiomeSource biomeSource = null;
             JsonElement jsonElement = Dynamic.convert(NbtOps.INSTANCE, JsonOps.INSTANCE, this.world.getLevelProperties().getGeneratorOptions());
             JsonObject jsonObject = jsonElement.getAsJsonObject();
-            if (jsonObject.has("biome_source") && jsonObject.getAsJsonObject("biome_source").has("type") && jsonObject.getAsJsonObject("biome_source").has("options")) {
-                BiomeSourceType<?, ?> biomeSourceType4 = Registry.BIOME_SOURCE_TYPE.get(new Identifier(jsonObject.getAsJsonObject("biome_source").getAsJsonPrimitive("type").getAsString()));
-                JsonObject jsonObject2 = jsonObject.getAsJsonObject("biome_source").getAsJsonObject("options");
+            JsonObject jsonObject2 = jsonObject.getAsJsonObject("biome_source");
+            if (jsonObject2 != null && jsonObject2.has("type") && jsonObject2.has("options")) {
+                BiomeSourceType<?, ?> biomeSourceType4 = Registry.BIOME_SOURCE_TYPE.get(new Identifier(jsonObject2.getAsJsonPrimitive("type").getAsString()));
+                JsonObject jsonObject3 = jsonObject2.getAsJsonObject("options");
                 Biome[] biomes = new Biome[]{Biomes.OCEAN};
-                if (jsonObject2.has("biomes")) {
+                if (jsonObject3.has("biomes")) {
                     Biome[] biomeArray;
-                    JsonArray jsonArray = jsonObject2.getAsJsonArray("biomes");
+                    JsonArray jsonArray = jsonObject3.getAsJsonArray("biomes");
                     if (jsonArray.size() > 0) {
                         biomeArray = new Biome[jsonArray.size()];
                     } else {
@@ -110,7 +111,7 @@ extends Dimension {
                     biomeSource = biomeSourceType.applyConfig(fixedBiomeSourceConfig3);
                 }
                 if (BiomeSourceType.CHECKERBOARD == biomeSourceType4) {
-                    int j = jsonObject2.has("size") ? jsonObject2.getAsJsonPrimitive("size").getAsInt() : 2;
+                    int j = jsonObject3.has("size") ? jsonObject3.getAsJsonPrimitive("size").getAsInt() : 2;
                     CheckerboardBiomeSourceConfig checkerboardBiomeSourceConfig = biomeSourceType3.getConfig().method_8777(biomes).method_8780(j);
                     biomeSource = biomeSourceType3.applyConfig(checkerboardBiomeSourceConfig);
                 }
@@ -124,19 +125,20 @@ extends Dimension {
             }
             BlockState blockState = Blocks.STONE.getDefaultState();
             BlockState blockState2 = Blocks.WATER.getDefaultState();
-            if (jsonObject.has("chunk_generator") && jsonObject.getAsJsonObject("chunk_generator").has("options")) {
-                String string;
-                if (jsonObject.getAsJsonObject("chunk_generator").getAsJsonObject("options").has("default_block")) {
-                    string = jsonObject.getAsJsonObject("chunk_generator").getAsJsonObject("options").getAsJsonPrimitive("default_block").getAsString();
+            JsonObject jsonObject4 = jsonObject.getAsJsonObject("chunk_generator");
+            if (jsonObject4 != null && jsonObject4.has("options")) {
+                JsonObject jsonObject5 = jsonObject4.getAsJsonObject("options");
+                if (jsonObject5.has("default_block")) {
+                    String string = jsonObject5.getAsJsonPrimitive("default_block").getAsString();
                     blockState = Registry.BLOCK.get(new Identifier(string)).getDefaultState();
                 }
-                if (jsonObject.getAsJsonObject("chunk_generator").getAsJsonObject("options").has("default_fluid")) {
-                    string = jsonObject.getAsJsonObject("chunk_generator").getAsJsonObject("options").getAsJsonPrimitive("default_fluid").getAsString();
+                if (jsonObject5.has("default_fluid")) {
+                    String string = jsonObject5.getAsJsonPrimitive("default_fluid").getAsString();
                     blockState2 = Registry.BLOCK.get(new Identifier(string)).getDefaultState();
                 }
             }
-            if (jsonObject.has("chunk_generator") && jsonObject.getAsJsonObject("chunk_generator").has("type")) {
-                ChunkGeneratorType<?, ?> chunkGeneratorType6 = Registry.CHUNK_GENERATOR_TYPE.get(new Identifier(jsonObject.getAsJsonObject("chunk_generator").getAsJsonPrimitive("type").getAsString()));
+            if (jsonObject4 != null && jsonObject4.has("type")) {
+                ChunkGeneratorType<?, ?> chunkGeneratorType6 = Registry.CHUNK_GENERATOR_TYPE.get(new Identifier(jsonObject4.getAsJsonPrimitive("type").getAsString()));
                 if (ChunkGeneratorType.CAVES == chunkGeneratorType6) {
                     CavesChunkGeneratorConfig cavesChunkGeneratorConfig = chunkGeneratorType3.createSettings();
                     cavesChunkGeneratorConfig.setDefaultBlock(blockState);

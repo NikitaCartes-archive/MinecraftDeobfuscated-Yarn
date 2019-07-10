@@ -83,7 +83,7 @@ extends DrawableHelper {
         while (n > 20) {
             n = (m + ++l - 1) / l;
         }
-        boolean bl2 = bl = this.client.isInSingleplayer() || this.client.getNetworkHandler().getClientConnection().isEncrypted();
+        boolean bl2 = bl = this.client.isInSingleplayer() || this.client.getNetworkHandler().getConnection().isEncrypted();
         int o = scoreboardObjective != null ? (scoreboardObjective.getRenderType() == ScoreboardCriterion.RenderType.HEARTS ? 90 : k) : 0;
         int p = Math.min(l * ((bl ? 9 : 0) + j + o + 13), i - 50) / l;
         int q = i / 2 - (p * l + (l - 1) * 5) / 2;

@@ -126,7 +126,7 @@ ChunkHolder.LevelUpdateListener {
 
     @VisibleForTesting
     public String method_21680() {
-        return this.queues.entrySet().stream().map(entry -> ((Actor)entry.getKey()).getName() + "=[" + ((LevelPrioritizedQueue)entry.getValue()).method_21679().stream().map(long_ -> long_ + ":" + new ChunkPos((long)long_)).collect(Collectors.joining(",")) + "]").collect(Collectors.joining(","));
+        return this.queues.entrySet().stream().map(entry -> ((Actor)entry.getKey()).getName() + "=[" + ((LevelPrioritizedQueue)entry.getValue()).method_21679().stream().map(long_ -> long_ + ":" + new ChunkPos((long)long_)).collect(Collectors.joining(",")) + "]").collect(Collectors.joining(",")) + ", s=" + this.actors.size();
     }
 
     @Override

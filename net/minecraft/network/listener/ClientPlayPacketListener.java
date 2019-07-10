@@ -3,6 +3,7 @@
  */
 package net.minecraft.network.listener;
 
+import net.minecraft.class_4463;
 import net.minecraft.client.network.packet.AdvancementUpdateS2CPacket;
 import net.minecraft.client.network.packet.BlockActionS2CPacket;
 import net.minecraft.client.network.packet.BlockBreakingProgressS2CPacket;
@@ -273,5 +274,7 @@ extends PacketListener {
     public void handleChunkLoadDistance(ChunkLoadDistanceS2CPacket var1);
 
     public void handleChunkRenderDistanceCenter(ChunkRenderDistanceCenterS2CPacket var1);
+
+    public void method_21707(class_4463 var1);
 }
 
