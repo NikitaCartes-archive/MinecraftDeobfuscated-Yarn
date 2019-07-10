@@ -458,6 +458,11 @@ public class MinecraftDedicatedServer extends MinecraftServer implements Dedicat
 	}
 
 	@Override
+	public int method_21714() {
+		return this.getProperties().field_20324;
+	}
+
+	@Override
 	public void setPlayerIdleTimeout(int i) {
 		super.setPlayerIdleTimeout(i);
 		this.propertiesLoader.apply(serverPropertiesHandler -> serverPropertiesHandler.playerIdleTimeout.set(i));

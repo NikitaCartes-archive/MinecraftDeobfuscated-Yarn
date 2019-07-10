@@ -35,7 +35,6 @@ public class ForceLoadCommand {
 				.requires(serverCommandSource -> serverCommandSource.hasPermissionLevel(2))
 				.then(
 					CommandManager.literal("add")
-						.requires(serverCommandSource -> serverCommandSource.hasPermissionLevel(4))
 						.then(
 							CommandManager.argument("from", ColumnPosArgumentType.columnPos())
 								.executes(
@@ -61,7 +60,6 @@ public class ForceLoadCommand {
 				)
 				.then(
 					CommandManager.literal("remove")
-						.requires(serverCommandSource -> serverCommandSource.hasPermissionLevel(4))
 						.then(
 							CommandManager.argument("from", ColumnPosArgumentType.columnPos())
 								.executes(

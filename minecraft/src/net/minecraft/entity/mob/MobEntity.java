@@ -563,7 +563,7 @@ public abstract class MobEntity extends LivingEntity {
 		return true;
 	}
 
-	protected boolean cannotDespawn() {
+	public boolean cannotDespawn() {
 		return false;
 	}
 

@@ -3,6 +3,7 @@ package net.minecraft.server.network;
 import net.minecraft.client.network.packet.GameStateChangeS2CPacket;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
+import net.minecraft.server.network.packet.PlayerActionC2SPacket;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.ActionResult;
@@ -67,24 +68,12 @@ public class DemoServerPlayerInteractionManager extends ServerPlayerInteractionM
 	}
 
 	@Override
-	public void method_14263(BlockPos blockPos, Direction direction) {
+	public void method_14263(BlockPos blockPos, PlayerActionC2SPacket.Action action, Direction direction, int i) {
 		if (this.demoEnded) {
 			this.sendDemoReminder();
 		} else {
-			super.method_14263(blockPos, direction);
+			super.method_14263(blockPos, action, direction, i);
 		}
-	}
-
-	@Override
-	public void method_14258(BlockPos blockPos) {
-		if (!this.demoEnded) {
-			super.method_14258(blockPos);
-		}
-	}
-
-	@Override
-	public boolean tryBreakBlock(BlockPos blockPos) {
-		return this.demoEnded ? false : super.tryBreakBlock(blockPos);
 	}
 
 	@Override
