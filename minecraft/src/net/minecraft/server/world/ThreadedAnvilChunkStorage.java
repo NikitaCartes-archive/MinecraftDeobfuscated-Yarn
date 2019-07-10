@@ -784,7 +784,7 @@ public class ThreadedAnvilChunkStorage extends VersionedChunkStorage implements 
 
 	void handlePlayerAddedOrRemoved(ServerPlayerEntity serverPlayerEntity, boolean bl) {
 		boolean bl2 = this.doesNotGenerateChunks(serverPlayerEntity);
-		boolean bl3 = this.playerChunkWatchingManager.isWatchDisabled(serverPlayerEntity);
+		boolean bl3 = this.playerChunkWatchingManager.method_21715(serverPlayerEntity);
 		int i = MathHelper.floor(serverPlayerEntity.x) >> 4;
 		int j = MathHelper.floor(serverPlayerEntity.z) >> 4;
 		if (bl) {

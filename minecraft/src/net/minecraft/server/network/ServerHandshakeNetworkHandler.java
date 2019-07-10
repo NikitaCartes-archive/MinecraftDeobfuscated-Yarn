@@ -48,4 +48,9 @@ public class ServerHandshakeNetworkHandler implements ServerHandshakePacketListe
 	@Override
 	public void onDisconnected(Text text) {
 	}
+
+	@Override
+	public ClientConnection getConnection() {
+		return this.client;
+	}
 }

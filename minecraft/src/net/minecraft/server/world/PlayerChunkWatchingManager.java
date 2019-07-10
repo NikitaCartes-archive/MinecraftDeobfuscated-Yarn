@@ -1,40 +1,39 @@
 package net.minecraft.server.world;
 
-import com.google.common.collect.Sets;
-import com.google.common.collect.Streams;
-import java.util.Set;
+import it.unimi.dsi.fastutil.objects.Object2BooleanMap;
+import it.unimi.dsi.fastutil.objects.Object2BooleanOpenHashMap;
 import java.util.stream.Stream;
 import net.minecraft.server.network.ServerPlayerEntity;
 
 public final class PlayerChunkWatchingManager {
-	private final Set<ServerPlayerEntity> watchingPlayers = Sets.<ServerPlayerEntity>newHashSet();
-	private final Set<ServerPlayerEntity> notWatchingPlayers = Sets.<ServerPlayerEntity>newHashSet();
+	private final Object2BooleanMap<ServerPlayerEntity> watchingPlayers = new Object2BooleanOpenHashMap<>();
 
 	public Stream<ServerPlayerEntity> getPlayersWatchingChunk(long l) {
-		return Streams.concat(this.watchingPlayers.stream(), this.notWatchingPlayers.stream());
+		return this.watchingPlayers.keySet().stream();
 	}
 
 	public void add(long l, ServerPlayerEntity serverPlayerEntity, boolean bl) {
-		(bl ? this.notWatchingPlayers : this.watchingPlayers).add(serverPlayerEntity);
+		this.watchingPlayers.put(serverPlayerEntity, bl);
 	}
 
 	public void remove(long l, ServerPlayerEntity serverPlayerEntity) {
-		this.watchingPlayers.remove(serverPlayerEntity);
-		this.notWatchingPlayers.remove(serverPlayerEntity);
+		this.watchingPlayers.removeBoolean(serverPlayerEntity);
 	}
 
 	public void disableWatch(ServerPlayerEntity serverPlayerEntity) {
-		this.notWatchingPlayers.add(serverPlayerEntity);
-		this.watchingPlayers.remove(serverPlayerEntity);
+		this.watchingPlayers.replace(serverPlayerEntity, true);
 	}
 
 	public void enableWatch(ServerPlayerEntity serverPlayerEntity) {
-		this.notWatchingPlayers.remove(serverPlayerEntity);
-		this.watchingPlayers.add(serverPlayerEntity);
+		this.watchingPlayers.replace(serverPlayerEntity, false);
+	}
+
+	public boolean method_21715(ServerPlayerEntity serverPlayerEntity) {
+		return this.watchingPlayers.getOrDefault(serverPlayerEntity, true);
 	}
 
 	public boolean isWatchDisabled(ServerPlayerEntity serverPlayerEntity) {
-		return !this.watchingPlayers.contains(serverPlayerEntity);
+		return this.watchingPlayers.getBoolean(serverPlayerEntity);
 	}
 
 	public void movePlayer(long l, long m, ServerPlayerEntity serverPlayerEntity) {

@@ -27,4 +27,9 @@ public class IntegratedServerHandshakeNetworkHandler implements ServerHandshakeP
 	@Override
 	public void onDisconnected(Text text) {
 	}
+
+	@Override
+	public ClientConnection getConnection() {
+		return this.client;
+	}
 }

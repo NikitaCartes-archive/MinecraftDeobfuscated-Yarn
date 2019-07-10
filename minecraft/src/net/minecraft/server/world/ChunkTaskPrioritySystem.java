@@ -149,19 +149,21 @@ public class ChunkTaskPrioritySystem implements AutoCloseable, ChunkHolder.Level
 	@VisibleForTesting
 	public String method_21680() {
 		return (String)this.queues
-			.entrySet()
-			.stream()
-			.map(
-				entry -> ((Actor)entry.getKey()).getName()
-						+ "=["
-						+ (String)((LevelPrioritizedQueue)entry.getValue())
-							.method_21679()
-							.stream()
-							.map(long_ -> long_ + ":" + new ChunkPos(long_))
-							.collect(Collectors.joining(","))
-						+ "]"
-			)
-			.collect(Collectors.joining(","));
+				.entrySet()
+				.stream()
+				.map(
+					entry -> ((Actor)entry.getKey()).getName()
+							+ "=["
+							+ (String)((LevelPrioritizedQueue)entry.getValue())
+								.method_21679()
+								.stream()
+								.map(long_ -> long_ + ":" + new ChunkPos(long_))
+								.collect(Collectors.joining(","))
+							+ "]"
+				)
+				.collect(Collectors.joining(","))
+			+ ", s="
+			+ this.actors.size();
 	}
 
 	public void close() {

@@ -110,6 +110,11 @@ public class ClientLoginNetworkHandler implements ClientLoginPacketListener {
 	}
 
 	@Override
+	public ClientConnection getConnection() {
+		return this.connection;
+	}
+
+	@Override
 	public void onDisconnect(LoginDisconnectS2CPacket loginDisconnectS2CPacket) {
 		this.connection.disconnect(loginDisconnectS2CPacket.getReason());
 	}

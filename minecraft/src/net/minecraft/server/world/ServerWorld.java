@@ -781,11 +781,16 @@ public class ServerWorld extends World {
 		Object2IntMap<EntityCategory> object2IntMap = new Object2IntOpenHashMap<>();
 
 		for (Entity entity : this.entitiesById.values()) {
-			if (!(entity instanceof MobEntity) || !((MobEntity)entity).isPersistent()) {
-				EntityCategory entityCategory = entity.getType().getCategory();
-				if (entityCategory != EntityCategory.MISC && this.method_14178().method_20727(entity)) {
-					object2IntMap.mergeInt(entityCategory, 1, Integer::sum);
+			if (entity instanceof MobEntity) {
+				MobEntity mobEntity = (MobEntity)entity;
+				if (mobEntity.isPersistent() || mobEntity.cannotDespawn()) {
+					continue;
 				}
+			}
+
+			EntityCategory entityCategory = entity.getType().getCategory();
+			if (entityCategory != EntityCategory.MISC && this.method_14178().method_20727(entity)) {
+				object2IntMap.mergeInt(entityCategory, 1, Integer::sum);
 			}
 		}
 
@@ -1348,16 +1353,16 @@ public class ServerWorld extends World {
 			writer.write(String.format("fluid_ticks: %d\n", this.method_14179().method_20825()));
 			writer.write("distance_manager: " + threadedAnvilChunkStorage.getTicketManager().method_21683() + "\n");
 			writer.write(String.format("pending_tasks: %d\n", this.method_14178().method_21694()));
-		} catch (Throwable var120) {
-			path2 = var120;
-			throw var120;
+		} catch (Throwable var164) {
+			path2 = var164;
+			throw var164;
 		} finally {
 			if (writer != null) {
 				if (path2 != null) {
 					try {
 						writer.close();
-					} catch (Throwable var111) {
-						path2.addSuppressed(var111);
+					} catch (Throwable var153) {
+						path2.addSuppressed(var153);
 					}
 				} else {
 					writer.close();
@@ -1368,20 +1373,20 @@ public class ServerWorld extends World {
 		CrashReport crashReport = new CrashReport("Level dump", new Exception("dummy"));
 		this.addDetailsToCrashReport(crashReport);
 		Writer writer2 = Files.newBufferedWriter(path.resolve("example_crash.txt"));
-		Throwable var125 = null;
+		Throwable var169 = null;
 
 		try {
 			writer2.write(crashReport.asString());
-		} catch (Throwable var115) {
-			var125 = var115;
-			throw var115;
+		} catch (Throwable var158) {
+			var169 = var158;
+			throw var158;
 		} finally {
 			if (writer2 != null) {
-				if (var125 != null) {
+				if (var169 != null) {
 					try {
 						writer2.close();
-					} catch (Throwable var110) {
-						var125.addSuppressed(var110);
+					} catch (Throwable var152) {
+						var169.addSuppressed(var152);
 					}
 				} else {
 					writer2.close();
@@ -1391,20 +1396,20 @@ public class ServerWorld extends World {
 
 		Path path2x = path.resolve("chunks.csv");
 		Writer writer3 = Files.newBufferedWriter(path2x);
-		Throwable var128 = null;
+		Throwable var172 = null;
 
 		try {
 			threadedAnvilChunkStorage.exportChunks(writer3);
-		} catch (Throwable var114) {
-			var128 = var114;
-			throw var114;
+		} catch (Throwable var157) {
+			var172 = var157;
+			throw var157;
 		} finally {
 			if (writer3 != null) {
-				if (var128 != null) {
+				if (var172 != null) {
 					try {
 						writer3.close();
-					} catch (Throwable var109) {
-						var128.addSuppressed(var109);
+					} catch (Throwable var151) {
+						var172.addSuppressed(var151);
 					}
 				} else {
 					writer3.close();
@@ -1414,20 +1419,20 @@ public class ServerWorld extends World {
 
 		Path path3 = path.resolve("entities.csv");
 		Writer writer4 = Files.newBufferedWriter(path3);
-		Throwable writer5 = null;
+		Throwable path5 = null;
 
 		try {
-			this.exportEntities(writer4);
-		} catch (Throwable var113) {
-			writer5 = var113;
-			throw var113;
+			exportEntities(writer4, this.entitiesById.values());
+		} catch (Throwable var156) {
+			path5 = var156;
+			throw var156;
 		} finally {
 			if (writer4 != null) {
-				if (writer5 != null) {
+				if (path5 != null) {
 					try {
 						writer4.close();
-					} catch (Throwable var108) {
-						writer5.addSuppressed(var108);
+					} catch (Throwable var150) {
+						path5.addSuppressed(var150);
 					}
 				} else {
 					writer4.close();
@@ -1435,31 +1440,54 @@ public class ServerWorld extends World {
 			}
 		}
 
-		Path path4 = path.resolve("block_entities.csv");
-		Writer writer5x = Files.newBufferedWriter(path4);
-		Throwable var8 = null;
+		Path path4 = path.resolve("global_entities.csv");
+		Writer writer5 = Files.newBufferedWriter(path4);
+		Throwable writer6 = null;
 
 		try {
-			this.exportBlockEntities(writer5x);
-		} catch (Throwable var112) {
-			var8 = var112;
-			throw var112;
+			exportEntities(writer5, this.globalEntities);
+		} catch (Throwable var155) {
+			writer6 = var155;
+			throw var155;
 		} finally {
-			if (writer5x != null) {
-				if (var8 != null) {
+			if (writer5 != null) {
+				if (writer6 != null) {
 					try {
-						writer5x.close();
-					} catch (Throwable var107) {
-						var8.addSuppressed(var107);
+						writer5.close();
+					} catch (Throwable var149) {
+						writer6.addSuppressed(var149);
 					}
 				} else {
-					writer5x.close();
+					writer5.close();
+				}
+			}
+		}
+
+		Path path5x = path.resolve("block_entities.csv");
+		Writer writer6x = Files.newBufferedWriter(path5x);
+		Throwable var9 = null;
+
+		try {
+			this.exportBlockEntities(writer6x);
+		} catch (Throwable var154) {
+			var9 = var154;
+			throw var154;
+		} finally {
+			if (writer6x != null) {
+				if (var9 != null) {
+					try {
+						writer6x.close();
+					} catch (Throwable var148) {
+						var9.addSuppressed(var148);
+					}
+				} else {
+					writer6x.close();
 				}
 			}
 		}
 	}
 
-	private void exportEntities(Writer writer) throws IOException {
+	private static void exportEntities(Writer writer, Iterable<Entity> iterable) throws IOException {
 		CsvWriter csvWriter = CsvWriter.makeHeader()
 			.addColumn("x")
 			.addColumn("y")
@@ -1467,13 +1495,22 @@ public class ServerWorld extends World {
 			.addColumn("uuid")
 			.addColumn("type")
 			.addColumn("alive")
+			.addColumn("display_name")
 			.addColumn("custom_name")
 			.startBody(writer);
 
-		for (Entity entity : this.entitiesById.values()) {
+		for (Entity entity : iterable) {
 			Text text = entity.getCustomName();
+			Text text2 = entity.getDisplayName();
 			csvWriter.printRow(
-				entity.x, entity.y, entity.z, entity.getUuid(), Registry.ENTITY_TYPE.getId(entity.getType()), entity.isAlive(), text != null ? text.getString() : null
+				entity.x,
+				entity.y,
+				entity.z,
+				entity.getUuid(),
+				Registry.ENTITY_TYPE.getId(entity.getType()),
+				entity.isAlive(),
+				text2.getString(),
+				text != null ? text.getString() : null
 			);
 		}
 	}

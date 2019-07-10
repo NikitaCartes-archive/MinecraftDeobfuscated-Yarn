@@ -69,6 +69,11 @@ public class ServerLoginNetworkHandler implements ServerLoginPacketListener {
 		}
 	}
 
+	@Override
+	public ClientConnection getConnection() {
+		return this.client;
+	}
+
 	public void disconnect(Text text) {
 		try {
 			LOGGER.info("Disconnecting {}: {}", this.getConnectionInfo(), text.getString());

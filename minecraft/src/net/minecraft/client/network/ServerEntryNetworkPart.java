@@ -154,6 +154,11 @@ public class ServerEntryNetworkPart {
 						ServerEntryNetworkPart.this.ping(serverEntry);
 					}
 				}
+
+				@Override
+				public ClientConnection getConnection() {
+					return clientConnection;
+				}
 			}
 		);
 

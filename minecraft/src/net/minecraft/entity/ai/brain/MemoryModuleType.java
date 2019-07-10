@@ -3,6 +3,7 @@ package net.minecraft.entity.ai.brain;
 import com.mojang.datafixers.Dynamic;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import java.util.function.Function;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.ai.pathing.Path;
@@ -33,6 +34,7 @@ public class MemoryModuleType<U> {
 	public static final MemoryModuleType<VillagerEntity> BREED_TARGET = method_20738("breed_target");
 	public static final MemoryModuleType<Path> PATH = method_20738("path");
 	public static final MemoryModuleType<List<GlobalPos>> INTERACTABLE_DOORS = method_20738("interactable_doors");
+	public static final MemoryModuleType<Set<GlobalPos>> OPENED_DOORS = method_20738("opened_doors");
 	public static final MemoryModuleType<BlockPos> NEAREST_BED = method_20738("nearest_bed");
 	public static final MemoryModuleType<DamageSource> HURT_BY = method_20738("hurt_by");
 	public static final MemoryModuleType<LivingEntity> HURT_BY_ENTITY = method_20738("hurt_by_entity");

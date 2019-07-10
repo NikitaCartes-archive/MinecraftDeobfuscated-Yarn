@@ -26,6 +26,11 @@ public class ServerQueryNetworkHandler implements ServerQueryPacketListener {
 	}
 
 	@Override
+	public ClientConnection getConnection() {
+		return this.client;
+	}
+
+	@Override
 	public void onRequest(QueryRequestC2SPacket queryRequestC2SPacket) {
 		if (this.responseSent) {
 			this.client.disconnect(REQUEST_HANDLED);

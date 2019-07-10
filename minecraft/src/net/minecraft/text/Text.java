@@ -222,11 +222,11 @@ public interface Text extends Message, Iterable<Text> {
 				JsonObject jsonObject = jsonElement.getAsJsonObject();
 				Text text;
 				if (jsonObject.has("text")) {
-					text = new LiteralText(jsonObject.get("text").getAsString());
+					text = new LiteralText(JsonHelper.getString(jsonObject, "text"));
 				} else if (jsonObject.has("translate")) {
-					String string = jsonObject.get("translate").getAsString();
+					String string = JsonHelper.getString(jsonObject, "translate");
 					if (jsonObject.has("with")) {
-						JsonArray jsonArray = jsonObject.getAsJsonArray("with");
+						JsonArray jsonArray = JsonHelper.getArray(jsonObject, "with");
 						Object[] objects = new Object[jsonArray.size()];
 
 						for (int i = 0; i < objects.length; i++) {
@@ -244,7 +244,7 @@ public interface Text extends Message, Iterable<Text> {
 						text = new TranslatableText(string);
 					}
 				} else if (jsonObject.has("score")) {
-					JsonObject jsonObject2 = jsonObject.getAsJsonObject("score");
+					JsonObject jsonObject2 = JsonHelper.getObject(jsonObject, "score");
 					if (!jsonObject2.has("name") || !jsonObject2.has("objective")) {
 						throw new JsonParseException("A score component needs a least a name and an objective");
 					}
@@ -276,7 +276,7 @@ public interface Text extends Message, Iterable<Text> {
 				}
 
 				if (jsonObject.has("extra")) {
-					JsonArray jsonArray2 = jsonObject.getAsJsonArray("extra");
+					JsonArray jsonArray2 = JsonHelper.getArray(jsonObject, "extra");
 					if (jsonArray2.size() <= 0) {
 						throw new JsonParseException("Unexpected empty array of components");
 					}

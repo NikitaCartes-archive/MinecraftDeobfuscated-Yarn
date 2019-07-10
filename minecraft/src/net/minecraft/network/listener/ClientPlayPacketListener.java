@@ -1,5 +1,6 @@
 package net.minecraft.network.listener;
 
+import net.minecraft.class_4463;
 import net.minecraft.client.network.packet.AdvancementUpdateS2CPacket;
 import net.minecraft.client.network.packet.BlockActionS2CPacket;
 import net.minecraft.client.network.packet.BlockBreakingProgressS2CPacket;
@@ -268,4 +269,6 @@ public interface ClientPlayPacketListener extends PacketListener {
 	void handleChunkLoadDistance(ChunkLoadDistanceS2CPacket chunkLoadDistanceS2CPacket);
 
 	void handleChunkRenderDistanceCenter(ChunkRenderDistanceCenterS2CPacket chunkRenderDistanceCenterS2CPacket);
+
+	void method_21707(class_4463 arg);
 }

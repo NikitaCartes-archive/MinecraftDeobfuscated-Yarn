@@ -170,6 +170,19 @@ public abstract class PlayerEntity extends LivingEntity {
 		this.field_6215 = 180.0F;
 	}
 
+	public boolean method_21701(World world, BlockPos blockPos, GameMode gameMode) {
+		if (!gameMode.shouldLimitWorldModification()) {
+			return false;
+		} else if (gameMode == GameMode.SPECTATOR) {
+			return true;
+		} else if (this.canModifyWorld()) {
+			return false;
+		} else {
+			ItemStack itemStack = this.getMainHandStack();
+			return itemStack.isEmpty() || !itemStack.canDestroy(world.getTagManager(), new CachedBlockPosition(world, blockPos, false));
+		}
+	}
+
 	@Override
 	protected void initAttributes() {
 		super.initAttributes();

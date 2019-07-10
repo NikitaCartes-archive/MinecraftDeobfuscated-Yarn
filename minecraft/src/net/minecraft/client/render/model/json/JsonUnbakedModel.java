@@ -331,7 +331,7 @@ public class JsonUnbakedModel implements UnbakedModel {
 		private Map<String, String> deserializeTextures(JsonObject jsonObject) {
 			Map<String, String> map = Maps.<String, String>newHashMap();
 			if (jsonObject.has("textures")) {
-				JsonObject jsonObject2 = jsonObject.getAsJsonObject("textures");
+				JsonObject jsonObject2 = JsonHelper.getObject(jsonObject, "textures");
 
 				for (Entry<String, JsonElement> entry : jsonObject2.entrySet()) {
 					map.put(entry.getKey(), ((JsonElement)entry.getValue()).getAsString());

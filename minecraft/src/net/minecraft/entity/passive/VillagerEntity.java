@@ -117,6 +117,7 @@ public class VillagerEntity extends AbstractTraderEntity implements InteractionO
 		MemoryModuleType.BREED_TARGET,
 		MemoryModuleType.PATH,
 		MemoryModuleType.INTERACTABLE_DOORS,
+		MemoryModuleType.OPENED_DOORS,
 		MemoryModuleType.NEAREST_BED,
 		MemoryModuleType.HURT_BY,
 		MemoryModuleType.HURT_BY_ENTITY,

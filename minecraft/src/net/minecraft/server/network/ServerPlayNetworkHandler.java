@@ -257,6 +257,7 @@ public class ServerPlayNetworkHandler implements ServerPlayPacketListener {
 		this.updatedZ = this.player.z;
 	}
 
+	@Override
 	public ClientConnection getConnection() {
 		return this.client;
 	}
@@ -844,10 +845,10 @@ public class ServerPlayNetworkHandler implements ServerPlayPacketListener {
 	@Override
 	public void onPlayerAction(PlayerActionC2SPacket playerActionC2SPacket) {
 		NetworkThreadUtils.forceMainThread(playerActionC2SPacket, this, this.player.getServerWorld());
-		ServerWorld serverWorld = this.server.getWorld(this.player.dimension);
 		BlockPos blockPos = playerActionC2SPacket.getPos();
 		this.player.updateLastActionTime();
-		switch (playerActionC2SPacket.getAction()) {
+		PlayerActionC2SPacket.Action action = playerActionC2SPacket.getAction();
+		switch (action) {
 			case SWAP_HELD_ITEMS:
 				if (!this.player.isSpectator()) {
 					ItemStack itemStack = this.player.getStackInHand(Hand.OFF_HAND);
@@ -874,35 +875,8 @@ public class ServerPlayNetworkHandler implements ServerPlayPacketListener {
 			case START_DESTROY_BLOCK:
 			case ABORT_DESTROY_BLOCK:
 			case STOP_DESTROY_BLOCK:
-				double d = this.player.x - ((double)blockPos.getX() + 0.5);
-				double e = this.player.y - ((double)blockPos.getY() + 0.5) + 1.5;
-				double f = this.player.z - ((double)blockPos.getZ() + 0.5);
-				double g = d * d + e * e + f * f;
-				if (g > 36.0) {
-					return;
-				} else if (blockPos.getY() >= this.server.getWorldHeight()) {
-					return;
-				} else {
-					if (playerActionC2SPacket.getAction() == PlayerActionC2SPacket.Action.START_DESTROY_BLOCK) {
-						if (!this.server.isSpawnProtected(serverWorld, blockPos, this.player) && serverWorld.getWorldBorder().contains(blockPos)) {
-							this.player.interactionManager.method_14263(blockPos, playerActionC2SPacket.getDirection());
-						} else {
-							this.player.networkHandler.sendPacket(new BlockUpdateS2CPacket(serverWorld, blockPos));
-						}
-					} else {
-						if (playerActionC2SPacket.getAction() == PlayerActionC2SPacket.Action.STOP_DESTROY_BLOCK) {
-							this.player.interactionManager.method_14258(blockPos);
-						} else if (playerActionC2SPacket.getAction() == PlayerActionC2SPacket.Action.ABORT_DESTROY_BLOCK) {
-							this.player.interactionManager.method_14269();
-						}
-
-						if (!serverWorld.getBlockState(blockPos).isAir()) {
-							this.player.networkHandler.sendPacket(new BlockUpdateS2CPacket(serverWorld, blockPos));
-						}
-					}
-
-					return;
-				}
+				this.player.interactionManager.method_14263(blockPos, action, playerActionC2SPacket.getDirection(), this.server.getWorldHeight());
+				return;
 			default:
 				throw new IllegalArgumentException("Invalid player action");
 		}
@@ -921,8 +895,7 @@ public class ServerPlayNetworkHandler implements ServerPlayPacketListener {
 		if (blockPos.getY() < this.server.getWorldHeight() - 1 || direction != Direction.UP && blockPos.getY() < this.server.getWorldHeight()) {
 			if (this.requestedTeleportPos == null
 				&& this.player.squaredDistanceTo((double)blockPos.getX() + 0.5, (double)blockPos.getY() + 0.5, (double)blockPos.getZ() + 0.5) < 64.0
-				&& !this.server.isSpawnProtected(serverWorld, blockPos, this.player)
-				&& serverWorld.getWorldBorder().contains(blockPos)) {
+				&& serverWorld.canPlayerModifyAt(this.player, blockPos)) {
 				this.player.interactionManager.interactBlock(this.player, serverWorld, itemStack, hand, blockHitResult);
 			}
 		} else {

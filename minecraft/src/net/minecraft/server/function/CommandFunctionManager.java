@@ -215,7 +215,7 @@ public class CommandFunctionManager implements SynchronousResourceReloadListener
 	}
 
 	public ServerCommandSource method_20796() {
-		return new ServerCommandSource(CommandOutput.DUMMY, Vec3d.ZERO, Vec2f.ZERO, null, 4, "", new LiteralText(""), this.server, null);
+		return new ServerCommandSource(CommandOutput.DUMMY, Vec3d.ZERO, Vec2f.ZERO, null, this.server.method_21714(), "", new LiteralText(""), this.server, null);
 	}
 
 	public TagContainer<CommandFunction> getTags() {

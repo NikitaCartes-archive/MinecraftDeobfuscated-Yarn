@@ -312,7 +312,7 @@ public class ClientWorld extends World {
 
 	@Override
 	public void disconnect() {
-		this.netHandler.getClientConnection().disconnect(new TranslatableText("multiplayer.status.quitting"));
+		this.netHandler.getConnection().disconnect(new TranslatableText("multiplayer.status.quitting"));
 	}
 
 	public void doRandomBlockDisplayTicks(int i, int j, int k) {

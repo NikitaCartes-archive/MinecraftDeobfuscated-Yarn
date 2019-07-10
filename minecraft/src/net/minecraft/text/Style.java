@@ -5,13 +5,13 @@ import com.google.gson.JsonDeserializer;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
-import com.google.gson.JsonPrimitive;
 import com.google.gson.JsonSerializationContext;
 import com.google.gson.JsonSerializer;
 import java.lang.reflect.Type;
 import java.util.Objects;
 import javax.annotation.Nullable;
 import net.minecraft.util.Formatting;
+import net.minecraft.util.JsonHelper;
 
 public class Style {
 	private Style parent;
@@ -393,27 +393,22 @@ public class Style {
 					}
 
 					if (jsonObject.has("clickEvent")) {
-						JsonObject jsonObject2 = jsonObject.getAsJsonObject("clickEvent");
-						if (jsonObject2 != null) {
-							JsonPrimitive jsonPrimitive = jsonObject2.getAsJsonPrimitive("action");
-							ClickEvent.Action action = jsonPrimitive == null ? null : ClickEvent.Action.byName(jsonPrimitive.getAsString());
-							JsonPrimitive jsonPrimitive2 = jsonObject2.getAsJsonPrimitive("value");
-							String string = jsonPrimitive2 == null ? null : jsonPrimitive2.getAsString();
-							if (action != null && string != null && action.isUserDefinable()) {
-								style.clickEvent = new ClickEvent(action, string);
-							}
+						JsonObject jsonObject2 = JsonHelper.getObject(jsonObject, "clickEvent");
+						String string = JsonHelper.getString(jsonObject2, "action", null);
+						ClickEvent.Action action = string == null ? null : ClickEvent.Action.byName(string);
+						String string2 = JsonHelper.getString(jsonObject2, "value", null);
+						if (action != null && string2 != null && action.isUserDefinable()) {
+							style.clickEvent = new ClickEvent(action, string2);
 						}
 					}
 
 					if (jsonObject.has("hoverEvent")) {
-						JsonObject jsonObject2 = jsonObject.getAsJsonObject("hoverEvent");
-						if (jsonObject2 != null) {
-							JsonPrimitive jsonPrimitive = jsonObject2.getAsJsonPrimitive("action");
-							HoverEvent.Action action2 = jsonPrimitive == null ? null : HoverEvent.Action.byName(jsonPrimitive.getAsString());
-							Text text = jsonDeserializationContext.deserialize(jsonObject2.get("value"), Text.class);
-							if (action2 != null && text != null && action2.isUserDefinable()) {
-								style.hoverEvent = new HoverEvent(action2, text);
-							}
+						JsonObject jsonObject2 = JsonHelper.getObject(jsonObject, "hoverEvent");
+						String string = JsonHelper.getString(jsonObject2, "action", null);
+						HoverEvent.Action action2 = string == null ? null : HoverEvent.Action.byName(string);
+						Text text = jsonDeserializationContext.deserialize(jsonObject2.get("value"), Text.class);
+						if (action2 != null && text != null && action2.isUserDefinable()) {
+							style.hoverEvent = new HoverEvent(action2, text);
 						}
 					}
 

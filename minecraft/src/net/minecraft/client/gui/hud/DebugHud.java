@@ -146,7 +146,7 @@ public class DebugHud extends DrawableHelper {
 
 	protected List<String> getLeftText() {
 		IntegratedServer integratedServer = this.client.getServer();
-		ClientConnection clientConnection = this.client.getNetworkHandler().getClientConnection();
+		ClientConnection clientConnection = this.client.getNetworkHandler().getConnection();
 		float f = clientConnection.getAveragePacketsSent();
 		float g = clientConnection.getAveragePacketsReceived();
 		String string;

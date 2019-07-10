@@ -79,7 +79,7 @@ public class PlayerListHud extends DrawableHelper {
 			l++;
 		}
 
-		boolean bl = this.client.isInSingleplayer() || this.client.getNetworkHandler().getClientConnection().isEncrypted();
+		boolean bl = this.client.isInSingleplayer() || this.client.getNetworkHandler().getConnection().isEncrypted();
 		int o;
 		if (scoreboardObjective != null) {
 			if (scoreboardObjective.getRenderType() == ScoreboardCriterion.RenderType.HEARTS) {

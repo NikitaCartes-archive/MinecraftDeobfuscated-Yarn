@@ -146,9 +146,9 @@ public class FallingBlockEntity extends Entity {
 					if (blockState.getBlock() != Blocks.MOVING_PISTON) {
 						this.remove();
 						if (!this.destroyedOnLanding) {
-							if (bl2
-								|| blockState.canReplace(new AutomaticItemPlacementContext(this.world, blockPos, Direction.DOWN, ItemStack.EMPTY, Direction.UP))
-									&& this.block.canPlaceAt(this.world, blockPos)) {
+							boolean bl3 = blockState.canReplace(new AutomaticItemPlacementContext(this.world, blockPos, Direction.DOWN, ItemStack.EMPTY, Direction.UP));
+							boolean bl4 = this.block.canPlaceAt(this.world, blockPos);
+							if (bl3 && bl4) {
 								if (this.block.contains(Properties.WATERLOGGED) && this.world.getFluidState(blockPos).getFluid() == Fluids.WATER) {
 									this.block = this.block.with(Properties.WATERLOGGED, Boolean.valueOf(true));
 								}
