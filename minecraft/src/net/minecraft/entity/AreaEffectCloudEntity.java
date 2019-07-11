@@ -253,7 +253,7 @@ public class AreaEffectCloudEntity extends Entity {
 					List<LivingEntity> list2 = this.world.getEntities(LivingEntity.class, this.getBoundingBox());
 					if (!list2.isEmpty()) {
 						for (LivingEntity livingEntity : list2) {
-							if (!this.affectedEntities.containsKey(livingEntity) && livingEntity.method_6086()) {
+							if (!this.affectedEntities.containsKey(livingEntity) && livingEntity.isAffectedBySplashPotions()) {
 								double d = livingEntity.x - this.x;
 								double e = livingEntity.z - this.z;
 								double t = d * d + e * e;

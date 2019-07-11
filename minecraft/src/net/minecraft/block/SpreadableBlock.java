@@ -36,7 +36,7 @@ public abstract class SpreadableBlock extends SnowyBlock {
 		if (!world.isClient) {
 			if (!canSurvive(blockState, world, blockPos)) {
 				world.setBlockState(blockPos, Blocks.DIRT.getDefaultState());
-			} else if (world.getLightLevel(blockPos.up()) >= 4) {
+			} else {
 				if (world.getLightLevel(blockPos.up()) >= 9) {
 					BlockState blockState2 = this.getDefaultState();
 

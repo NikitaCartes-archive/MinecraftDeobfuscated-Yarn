@@ -53,6 +53,10 @@ public class TradeOffer {
 	}
 
 	public TradeOffer(ItemStack itemStack, ItemStack itemStack2, ItemStack itemStack3, int i, int j, int k, float f) {
+		this(itemStack, itemStack2, itemStack3, i, j, k, f, 0);
+	}
+
+	public TradeOffer(ItemStack itemStack, ItemStack itemStack2, ItemStack itemStack3, int i, int j, int k, float f, int l) {
 		this.firstBuyItem = itemStack;
 		this.secondBuyItem = itemStack2;
 		this.sellItem = itemStack3;
@@ -60,6 +64,7 @@ public class TradeOffer {
 		this.maxUses = j;
 		this.traderExperience = k;
 		this.priceMultiplier = f;
+		this.demandBonus = l;
 	}
 
 	public ItemStack getOriginalFirstBuyItem() {
@@ -104,6 +109,10 @@ public class TradeOffer {
 
 	public void use() {
 		this.uses++;
+	}
+
+	public int method_21725() {
+		return this.demandBonus;
 	}
 
 	public void increaseSpecialPrice(int i) {

@@ -102,6 +102,7 @@ public class VillagerEntity extends AbstractTraderEntity implements InteractionO
 	private int experience;
 	private long lastRestockTime;
 	private int restocksToday;
+	private long field_20332;
 	private static final ImmutableList<MemoryModuleType<?>> MEMORY_MODULES = ImmutableList.of(
 		MemoryModuleType.HOME,
 		MemoryModuleType.JOB_SITE,
@@ -351,8 +352,9 @@ public class VillagerEntity extends AbstractTraderEntity implements InteractionO
 	}
 
 	public void restock() {
+		this.method_21724();
+
 		for (TradeOffer tradeOffer : this.getOffers()) {
-			tradeOffer.updatePriceOnDemand();
 			tradeOffer.resetUses();
 		}
 
@@ -379,11 +381,35 @@ public class VillagerEntity extends AbstractTraderEntity implements InteractionO
 	}
 
 	public boolean shouldRestock() {
-		if (this.world.getTime() > this.lastRestockTime + 12000L) {
+		long l = this.lastRestockTime + 12000L;
+		boolean bl = this.world.getTime() > l;
+		long m = this.world.getTimeOfDay();
+		if (this.field_20332 > 0L) {
+			long n = this.field_20332 / 24000L;
+			long o = m / 24000L;
+			bl |= o > n;
+		}
+
+		this.field_20332 = m;
+		if (bl) {
 			this.clearDailyRestockCount();
 		}
 
 		return this.canRestock() && this.needRestock();
+	}
+
+	private void method_21723() {
+		int i = 2 - this.restocksToday;
+
+		for (int j = 0; j < i; j++) {
+			this.method_21724();
+		}
+	}
+
+	private void method_21724() {
+		for (TradeOffer tradeOffer : this.getOffers()) {
+			tradeOffer.updatePriceOnDemand();
+		}
 	}
 
 	private void prepareRecipesFor(PlayerEntity playerEntity) {
@@ -912,6 +938,7 @@ public class VillagerEntity extends AbstractTraderEntity implements InteractionO
 	}
 
 	private void clearDailyRestockCount() {
+		this.method_21723();
 		this.restocksToday = 0;
 	}
 

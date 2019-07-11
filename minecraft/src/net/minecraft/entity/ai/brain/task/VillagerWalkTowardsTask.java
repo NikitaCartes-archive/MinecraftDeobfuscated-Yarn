@@ -38,25 +38,42 @@ public class VillagerWalkTowardsTask extends Task<VillagerEntity> {
 		this.maxRunTime = k;
 	}
 
+	private void method_21722(VillagerEntity villagerEntity, long l) {
+		Brain<?> brain = villagerEntity.getBrain();
+		villagerEntity.releaseTicketFor(this.destination);
+		brain.forget(this.destination);
+		brain.putMemory(MemoryModuleType.CANT_REACH_WALK_TARGET_SINCE, l);
+	}
+
 	protected void method_19509(ServerWorld serverWorld, VillagerEntity villagerEntity, long l) {
 		Brain<?> brain = villagerEntity.getBrain();
-		brain.getOptionalMemory(this.destination).ifPresent(globalPos -> {
-			if (this.shouldGiveUp(serverWorld, villagerEntity)) {
-				villagerEntity.releaseTicketFor(this.destination);
-				brain.forget(this.destination);
-				brain.putMemory(MemoryModuleType.CANT_REACH_WALK_TARGET_SINCE, l);
-			} else if (this.method_19597(serverWorld, villagerEntity, globalPos)) {
-				Vec3d vec3d = null;
+		brain.getOptionalMemory(this.destination)
+			.ifPresent(
+				globalPos -> {
+					if (this.shouldGiveUp(serverWorld, villagerEntity)) {
+						this.method_21722(villagerEntity, l);
+					} else if (this.method_19597(serverWorld, villagerEntity, globalPos)) {
+						Vec3d vec3d = null;
+						int i = 0;
 
-				while (vec3d == null || this.method_19597(serverWorld, villagerEntity, GlobalPos.create(villagerEntity.dimension, new BlockPos(vec3d)))) {
-					vec3d = PathfindingUtil.method_6373(villagerEntity, 15, 7, new Vec3d(globalPos.getPos()));
+						for (int j = 1000;
+							i < 1000 && (vec3d == null || this.method_19597(serverWorld, villagerEntity, GlobalPos.create(villagerEntity.dimension, new BlockPos(vec3d))));
+							i++
+						) {
+							vec3d = PathfindingUtil.method_6373(villagerEntity, 15, 7, new Vec3d(globalPos.getPos()));
+						}
+
+						if (i == 1000) {
+							this.method_21722(villagerEntity, l);
+							return;
+						}
+
+						brain.putMemory(MemoryModuleType.WALK_TARGET, new WalkTarget(vec3d, this.speed, this.completionRange));
+					} else if (!this.reachedDestination(serverWorld, villagerEntity, globalPos)) {
+						brain.putMemory(MemoryModuleType.WALK_TARGET, new WalkTarget(globalPos.getPos(), this.speed, this.completionRange));
+					}
 				}
-
-				brain.putMemory(MemoryModuleType.WALK_TARGET, new WalkTarget(vec3d, this.speed, this.completionRange));
-			} else if (!this.reachedDestination(serverWorld, villagerEntity, globalPos)) {
-				brain.putMemory(MemoryModuleType.WALK_TARGET, new WalkTarget(globalPos.getPos(), this.speed, this.completionRange));
-			}
-		});
+			);
 	}
 
 	private boolean shouldGiveUp(ServerWorld serverWorld, VillagerEntity villagerEntity) {

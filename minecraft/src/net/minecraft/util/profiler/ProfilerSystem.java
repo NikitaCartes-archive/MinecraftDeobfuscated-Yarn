@@ -54,7 +54,7 @@ public class ProfilerSystem implements ReadableProfiler {
 			this.pop();
 			this.tickStarted = false;
 			if (!this.location.isEmpty()) {
-				LOGGER.error("Profiler tick ended before path was fully popped (remainder: '{}'). Mismatched push/pop?", this.location);
+				LOGGER.error("Profiler tick ended before path was fully popped (remainder: '{}'). Mismatched push/pop?", () -> ProfileResult.method_21721(this.location));
 			}
 		}
 	}
@@ -65,7 +65,7 @@ public class ProfilerSystem implements ReadableProfiler {
 			LOGGER.error("Cannot push '{}' to profiler if profiler tick hasn't started - missing startTick()?", string);
 		} else {
 			if (!this.location.isEmpty()) {
-				this.location = this.location + ".";
+				this.location = this.location + '\u001e';
 			}
 
 			this.location = this.location + string;
@@ -93,7 +93,7 @@ public class ProfilerSystem implements ReadableProfiler {
 			this.nameDurationMap.put(this.location, this.nameDurationMap.getLong(this.location) + n);
 			this.field_19381.put(this.location, this.field_19381.getLong(this.location) + 1L);
 			if (n > TIMEOUT_NANOSECONDS) {
-				LOGGER.warn("Something's taking too long! '{}' took aprox {} ms", this.location, (double)n / 1000000.0);
+				LOGGER.warn("Something's taking too long! '{}' took aprox {} ms", () -> ProfileResult.method_21721(this.location), () -> (double)n / 1000000.0);
 			}
 
 			this.location = this.nameList.isEmpty() ? "" : (String)this.nameList.get(this.nameList.size() - 1);

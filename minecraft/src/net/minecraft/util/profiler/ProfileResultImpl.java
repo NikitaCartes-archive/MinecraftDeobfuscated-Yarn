@@ -46,13 +46,13 @@ public class ProfileResultImpl implements ProfileResult {
 		long n = (Long)this.field_19382.getOrDefault(string, 0L);
 		List<ProfilerTiming> list = Lists.<ProfilerTiming>newArrayList();
 		if (!string.isEmpty()) {
-			string = string + ".";
+			string = string + '\u001e';
 		}
 
 		long o = 0L;
 
 		for (String string3 : this.timings.keySet()) {
-			if (string3.length() > string.length() && string3.startsWith(string) && string3.indexOf(".", string.length() + 1) < 0) {
+			if (string3.length() > string.length() && string3.startsWith(string) && string3.indexOf(30, string.length() + 1) < 0) {
 				o += this.timings.get(string3);
 			}
 		}
@@ -70,7 +70,7 @@ public class ProfileResultImpl implements ProfileResult {
 		set.addAll(this.field_19382.keySet());
 
 		for (String string4 : set) {
-			if (string4.length() > string.length() && string4.startsWith(string) && string4.indexOf(".", string.length() + 1) < 0) {
+			if (string4.length() > string.length() && string4.startsWith(string) && string4.indexOf(30, string.length() + 1) < 0) {
 				long p = (Long)this.timings.getOrDefault(string4, 0L);
 				double d = (double)p * 100.0 / (double)o;
 				double e = (double)p * 100.0 / (double)l;
@@ -184,7 +184,7 @@ public class ProfileResultImpl implements ProfileResult {
 					.append("%\n");
 				if (!"unspecified".equals(profilerTiming.name)) {
 					try {
-						this.appendTiming(i + 1, string + "." + profilerTiming.name, stringBuilder);
+						this.appendTiming(i + 1, string + '\u001e' + profilerTiming.name, stringBuilder);
 					} catch (Exception var8) {
 						stringBuilder.append("[[ EXCEPTION ").append(var8).append(" ]]");
 					}

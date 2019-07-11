@@ -458,7 +458,7 @@ public class ServerWorld extends World {
 							blockState.onRandomTick(this, blockPos3, this.random);
 						}
 
-						FluidState fluidState = chunkSection.getFluidState(blockPos3.getX() - j, blockPos3.getY() - l, blockPos3.getZ() - k);
+						FluidState fluidState = blockState.getFluidState();
 						if (fluidState.hasRandomTicks()) {
 							fluidState.onRandomTick(this, blockPos3, this.random);
 						}
