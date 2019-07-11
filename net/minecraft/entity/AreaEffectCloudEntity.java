@@ -245,7 +245,7 @@ extends Entity {
                             double e;
                             double d;
                             double t;
-                            if (this.affectedEntities.containsKey(livingEntity) || !livingEntity.method_6086() || !((t = (d = livingEntity.x - this.x) * d + (e = livingEntity.z - this.z) * e) <= (double)(f * f))) continue;
+                            if (this.affectedEntities.containsKey(livingEntity) || !livingEntity.isAffectedBySplashPotions() || !((t = (d = livingEntity.x - this.x) * d + (e = livingEntity.z - this.z) * e) <= (double)(f * f))) continue;
                             this.affectedEntities.put(livingEntity, this.age + this.reapplicationDelay);
                             for (StatusEffectInstance statusEffectInstance2 : list) {
                                 if (statusEffectInstance2.getEffectType().isInstant()) {

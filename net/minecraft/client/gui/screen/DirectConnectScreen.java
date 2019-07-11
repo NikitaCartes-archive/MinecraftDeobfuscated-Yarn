@@ -34,6 +34,15 @@ extends Screen {
     }
 
     @Override
+    public boolean keyPressed(int i, int j, int k) {
+        if (this.getFocused() == this.addressField && (i == 257 || i == 335)) {
+            this.saveAndClose();
+            return true;
+        }
+        return super.keyPressed(i, j, k);
+    }
+
+    @Override
     protected void init() {
         this.minecraft.keyboard.enableRepeatEvents(true);
         this.selectServerButton = this.addButton(new ButtonWidget(this.width / 2 - 100, this.height / 4 + 96 + 12, 200, 20, I18n.translate("selectServer.select", new Object[0]), buttonWidget -> this.saveAndClose()));

@@ -62,7 +62,7 @@ implements ReadableProfiler {
         this.pop();
         this.tickStarted = false;
         if (!this.location.isEmpty()) {
-            LOGGER.error("Profiler tick ended before path was fully popped (remainder: '{}'). Mismatched push/pop?", (Object)this.location);
+            LOGGER.error("Profiler tick ended before path was fully popped (remainder: '{}'). Mismatched push/pop?", () -> ProfileResult.method_21721(this.location));
         }
     }
 
@@ -73,7 +73,7 @@ implements ReadableProfiler {
             return;
         }
         if (!this.location.isEmpty()) {
-            this.location = this.location + ".";
+            this.location = this.location + '\u001e';
         }
         this.location = this.location + string;
         this.nameList.add(this.location);
@@ -102,7 +102,7 @@ implements ReadableProfiler {
         this.nameDurationMap.put(this.location, this.nameDurationMap.getLong(this.location) + n);
         this.field_19381.put(this.location, this.field_19381.getLong(this.location) + 1L);
         if (n > TIMEOUT_NANOSECONDS) {
-            LOGGER.warn("Something's taking too long! '{}' took aprox {} ms", (Object)this.location, (Object)((double)n / 1000000.0));
+            LOGGER.warn("Something's taking too long! '{}' took aprox {} ms", () -> ProfileResult.method_21721(this.location), () -> (double)n / 1000000.0);
         }
         this.location = this.nameList.isEmpty() ? "" : this.nameList.get(this.nameList.size() - 1);
     }

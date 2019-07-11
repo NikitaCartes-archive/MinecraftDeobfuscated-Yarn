@@ -57,6 +57,7 @@ extends ArrayList<TradeOffer> {
             packetByteBuf.writeInt(tradeOffer.getTraderExperience());
             packetByteBuf.writeInt(tradeOffer.getSpecialPrice());
             packetByteBuf.writeFloat(tradeOffer.getPriceMultiplier());
+            packetByteBuf.writeInt(tradeOffer.method_21725());
         }
     }
 
@@ -76,7 +77,8 @@ extends ArrayList<TradeOffer> {
             int m = packetByteBuf.readInt();
             int n = packetByteBuf.readInt();
             float f = packetByteBuf.readFloat();
-            TradeOffer tradeOffer = new TradeOffer(itemStack, itemStack3, itemStack2, k, l, m, f);
+            int o = packetByteBuf.readInt();
+            TradeOffer tradeOffer = new TradeOffer(itemStack, itemStack3, itemStack2, k, l, m, f, o);
             if (bl) {
                 tradeOffer.clearUses();
             }

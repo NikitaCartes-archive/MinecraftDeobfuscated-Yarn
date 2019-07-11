@@ -390,7 +390,7 @@ extends World {
                     if (blockState.hasRandomTicks()) {
                         blockState.onRandomTick(this, blockPos3, this.random);
                     }
-                    if ((fluidState = chunkSection.getFluidState(blockPos3.getX() - j, blockPos3.getY() - l, blockPos3.getZ() - k)).hasRandomTicks()) {
+                    if ((fluidState = blockState.getFluidState()).hasRandomTicks()) {
                         fluidState.onRandomTick(this, blockPos3, this.random);
                     }
                     profiler.pop();

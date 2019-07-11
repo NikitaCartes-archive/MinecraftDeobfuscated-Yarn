@@ -109,6 +109,7 @@ VillagerDataContainer {
     private int experience;
     private long lastRestockTime;
     private int restocksToday;
+    private long field_20332;
     private static final ImmutableList<MemoryModuleType<?>> MEMORY_MODULES = ImmutableList.of(MemoryModuleType.HOME, MemoryModuleType.JOB_SITE, MemoryModuleType.MEETING_POINT, MemoryModuleType.MOBS, MemoryModuleType.VISIBLE_MOBS, MemoryModuleType.VISIBLE_VILLAGER_BABIES, MemoryModuleType.NEAREST_PLAYERS, MemoryModuleType.NEAREST_VISIBLE_PLAYER, MemoryModuleType.WALK_TARGET, MemoryModuleType.LOOK_TARGET, MemoryModuleType.INTERACTION_TARGET, MemoryModuleType.BREED_TARGET, new MemoryModuleType[]{MemoryModuleType.PATH, MemoryModuleType.INTERACTABLE_DOORS, MemoryModuleType.OPENED_DOORS, MemoryModuleType.NEAREST_BED, MemoryModuleType.HURT_BY, MemoryModuleType.HURT_BY_ENTITY, MemoryModuleType.NEAREST_HOSTILE, MemoryModuleType.SECONDARY_JOB_SITE, MemoryModuleType.HIDING_PLACE, MemoryModuleType.HEARD_BELL_TIME, MemoryModuleType.CANT_REACH_WALK_TARGET_SINCE, MemoryModuleType.LAST_SLEPT, MemoryModuleType.LAST_WORKED_AT_POI, MemoryModuleType.GOLEM_LAST_SEEN_TIME});
     private static final ImmutableList<SensorType<? extends Sensor<? super VillagerEntity>>> SENSORS = ImmutableList.of(SensorType.NEAREST_LIVING_ENTITIES, SensorType.NEAREST_PLAYERS, SensorType.INTERACTABLE_DOORS, SensorType.NEAREST_BED, SensorType.HURT_BY, SensorType.VILLAGER_HOSTILES, SensorType.VILLAGER_BABIES, SensorType.SECONDARY_POIS, SensorType.GOLEM_LAST_SEEN);
     public static final Map<MemoryModuleType<GlobalPos>, BiPredicate<VillagerEntity, PointOfInterestType>> POINTS_OF_INTEREST = ImmutableMap.of(MemoryModuleType.HOME, (villagerEntity, pointOfInterestType) -> pointOfInterestType == PointOfInterestType.HOME, MemoryModuleType.JOB_SITE, (villagerEntity, pointOfInterestType) -> villagerEntity.getVillagerData().getProfession().getWorkStation() == pointOfInterestType, MemoryModuleType.MEETING_POINT, (villagerEntity, pointOfInterestType) -> pointOfInterestType == PointOfInterestType.MEETING);
@@ -294,8 +295,8 @@ VillagerDataContainer {
     }
 
     public void restock() {
+        this.method_21724();
         for (TradeOffer tradeOffer : this.getOffers()) {
-            tradeOffer.updatePriceOnDemand();
             tradeOffer.resetUses();
         }
         if (this.getVillagerData().getProfession() == VillagerProfession.FARMER) {
@@ -318,10 +319,32 @@ VillagerDataContainer {
     }
 
     public boolean shouldRestock() {
-        if (this.world.getTime() > this.lastRestockTime + 12000L) {
+        long l = this.lastRestockTime + 12000L;
+        boolean bl = this.world.getTime() > l;
+        long m = this.world.getTimeOfDay();
+        if (this.field_20332 > 0L) {
+            long o = m / 24000L;
+            long n = this.field_20332 / 24000L;
+            bl |= o > n;
+        }
+        this.field_20332 = m;
+        if (bl) {
             this.clearDailyRestockCount();
         }
         return this.canRestock() && this.needRestock();
+    }
+
+    private void method_21723() {
+        int i = 2 - this.restocksToday;
+        for (int j = 0; j < i; ++j) {
+            this.method_21724();
+        }
+    }
+
+    private void method_21724() {
+        for (TradeOffer tradeOffer : this.getOffers()) {
+            tradeOffer.updatePriceOnDemand();
+        }
     }
 
     private void prepareRecipesFor(PlayerEntity playerEntity) {
@@ -817,6 +840,7 @@ VillagerDataContainer {
     }
 
     private void clearDailyRestockCount() {
+        this.method_21723();
         this.restocksToday = 0;
     }
 

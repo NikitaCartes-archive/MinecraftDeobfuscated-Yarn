@@ -46,9 +46,6 @@ extends SnowyBlock {
             world.setBlockState(blockPos, Blocks.DIRT.getDefaultState());
             return;
         }
-        if (world.getLightLevel(blockPos.up()) < 4) {
-            return;
-        }
         if (world.getLightLevel(blockPos.up()) >= 9) {
             BlockState blockState2 = this.getDefaultState();
             for (int i = 0; i < 4; ++i) {

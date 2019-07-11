@@ -113,9 +113,9 @@ implements FlyingItemEntity {
             this.damageEntitiesHurtByWater();
         } else if (!list.isEmpty()) {
             if (this.isLingering()) {
-                this.method_7497(itemStack, potion);
+                this.applyLingeringPotion(itemStack, potion);
             } else {
-                this.method_7498(list, hitResult.getType() == HitResult.Type.ENTITY ? ((EntityHitResult)hitResult).getEntity() : null);
+                this.applySplashPotion(list, hitResult.getType() == HitResult.Type.ENTITY ? ((EntityHitResult)hitResult).getEntity() : null);
             }
         }
         int i = potion.hasInstantEffect() ? 2007 : 2002;
@@ -135,13 +135,13 @@ implements FlyingItemEntity {
         }
     }
 
-    private void method_7498(List<StatusEffectInstance> list, @Nullable Entity entity) {
+    private void applySplashPotion(List<StatusEffectInstance> list, @Nullable Entity entity) {
         Box box = this.getBoundingBox().expand(4.0, 2.0, 4.0);
         List<LivingEntity> list2 = this.world.getEntities(LivingEntity.class, box);
         if (!list2.isEmpty()) {
             for (LivingEntity livingEntity : list2) {
                 double d;
-                if (!livingEntity.method_6086() || !((d = this.squaredDistanceTo(livingEntity)) < 16.0)) continue;
+                if (!livingEntity.isAffectedBySplashPotions() || !((d = this.squaredDistanceTo(livingEntity)) < 16.0)) continue;
                 double e = 1.0 - Math.sqrt(d) / 4.0;
                 if (livingEntity == entity) {
                     e = 1.0;
@@ -160,7 +160,7 @@ implements FlyingItemEntity {
         }
     }
 
-    private void method_7497(ItemStack itemStack, Potion potion) {
+    private void applyLingeringPotion(ItemStack itemStack, Potion potion) {
         AreaEffectCloudEntity areaEffectCloudEntity = new AreaEffectCloudEntity(this.world, this.x, this.y, this.z);
         areaEffectCloudEntity.setOwner(this.getOwner());
         areaEffectCloudEntity.setRadius(3.0f);

@@ -53,11 +53,11 @@ implements ProfileResult {
         long n = this.field_19382.getOrDefault(string, 0L);
         ArrayList<ProfilerTiming> list = Lists.newArrayList();
         if (!string.isEmpty()) {
-            string = string + ".";
+            string = string + '\u001e';
         }
         long o = 0L;
         for (String string3 : this.timings.keySet()) {
-            if (string3.length() <= string.length() || !string3.startsWith(string) || string3.indexOf(".", string.length() + 1) >= 0) continue;
+            if (string3.length() <= string.length() || !string3.startsWith(string) || string3.indexOf(30, string.length() + 1) >= 0) continue;
             o += this.timings.get(string3).longValue();
         }
         float f = o;
@@ -70,7 +70,7 @@ implements ProfileResult {
         HashSet<String> set = Sets.newHashSet(this.timings.keySet());
         set.addAll(this.field_19382.keySet());
         for (String string4 : set) {
-            if (string4.length() <= string.length() || !string4.startsWith(string) || string4.indexOf(".", string.length() + 1) >= 0) continue;
+            if (string4.length() <= string.length() || !string4.startsWith(string) || string4.indexOf(30, string.length() + 1) >= 0) continue;
             long p = this.timings.getOrDefault(string4, 0L);
             double d = (double)p * 100.0 / (double)o;
             double e = (double)p * 100.0 / (double)l;
@@ -174,7 +174,7 @@ implements ProfileResult {
             stringBuilder.append(profilerTiming.name).append('(').append(profilerTiming.field_19384).append('/').append(String.format(Locale.ROOT, "%.0f", Float.valueOf((float)profilerTiming.field_19384 / (float)this.field_19383))).append(')').append(" - ").append(String.format(Locale.ROOT, "%.2f", profilerTiming.parentSectionUsagePercentage)).append("%/").append(String.format(Locale.ROOT, "%.2f", profilerTiming.totalUsagePercentage)).append("%\n");
             if ("unspecified".equals(profilerTiming.name)) continue;
             try {
-                this.appendTiming(i + 1, string + "." + profilerTiming.name, stringBuilder);
+                this.appendTiming(i + 1, string + '\u001e' + profilerTiming.name, stringBuilder);
                 continue;
             } catch (Exception exception) {
                 stringBuilder.append("[[ EXCEPTION ").append(exception).append(" ]]");

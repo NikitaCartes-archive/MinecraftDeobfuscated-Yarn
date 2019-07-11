@@ -2351,7 +2351,7 @@ extends Entity {
         return true;
     }
 
-    public boolean method_6086() {
+    public boolean isAffectedBySplashPotions() {
         return true;
     }
 
