@@ -2661,7 +2661,7 @@ public abstract class LivingEntity extends Entity {
 		}
 	}
 
-	public boolean method_6086() {
+	public boolean isAffectedBySplashPotions() {
 		return true;
 	}
 

@@ -29,6 +29,16 @@ public class DirectConnectScreen extends Screen {
 	}
 
 	@Override
+	public boolean keyPressed(int i, int j, int k) {
+		if (this.getFocused() != this.addressField || i != 257 && i != 335) {
+			return super.keyPressed(i, j, k);
+		} else {
+			this.saveAndClose();
+			return true;
+		}
+	}
+
+	@Override
 	protected void init() {
 		this.minecraft.keyboard.enableRepeatEvents(true);
 		this.selectServerButton = this.addButton(

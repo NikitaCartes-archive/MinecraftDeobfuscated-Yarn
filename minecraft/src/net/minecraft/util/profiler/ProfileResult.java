@@ -28,4 +28,8 @@ public interface ProfileResult {
 	}
 
 	String getTimingTreeString();
+
+	static String method_21721(String string) {
+		return string.replace('\u001e', '.');
+	}
 }

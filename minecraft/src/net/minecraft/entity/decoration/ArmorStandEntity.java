@@ -758,7 +758,7 @@ public class ArmorStandEntity extends LivingEntity {
 	}
 
 	@Override
-	public boolean method_6086() {
+	public boolean isAffectedBySplashPotions() {
 		return false;
 	}
 
