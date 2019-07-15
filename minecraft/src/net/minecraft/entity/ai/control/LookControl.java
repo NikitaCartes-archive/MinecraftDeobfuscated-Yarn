@@ -19,15 +19,15 @@ public class LookControl {
 		this.entity = mobEntity;
 	}
 
-	public void method_19615(Vec3d vec3d) {
-		this.method_20248(vec3d.x, vec3d.y, vec3d.z);
+	public void lookAt(Vec3d vec3d) {
+		this.lookAt(vec3d.x, vec3d.y, vec3d.z);
 	}
 
 	public void lookAt(Entity entity, float f, float g) {
 		this.lookAt(entity.x, getLookingHeightFor(entity), entity.z, f, g);
 	}
 
-	public void method_20248(double d, double e, double f) {
+	public void lookAt(double d, double e, double f) {
 		this.lookAt(d, e, f, (float)this.entity.getLookYawSpeed(), (float)this.entity.getLookPitchSpeed());
 	}
 

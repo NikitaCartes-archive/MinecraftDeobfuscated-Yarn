@@ -45,4 +45,8 @@ public class class_4462 {
 	public int hashCode() {
 		return Objects.hash(new Object[]{this.field_20313, this.field_20314, this.field_20315});
 	}
+
+	public String toString() {
+		return "PosAndRot[" + this.field_20313 + " (" + this.field_20314 + ", " + this.field_20315 + ")]";
+	}
 }

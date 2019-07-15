@@ -104,7 +104,7 @@ public class BowAttackGoal<T extends HostileEntity & RangedAttackMob> extends Go
 					this.field_6571 = true;
 				}
 
-				this.actor.getMoveControl().method_6243(this.field_6571 ? -0.5F : 0.5F, this.field_6573 ? 0.5F : -0.5F);
+				this.actor.getMoveControl().strafeTo(this.field_6571 ? -0.5F : 0.5F, this.field_6573 ? 0.5F : -0.5F);
 				this.actor.lookAtEntity(livingEntity, 30.0F, 30.0F);
 			} else {
 				this.actor.getLookControl().lookAt(livingEntity, 30.0F, 30.0F);

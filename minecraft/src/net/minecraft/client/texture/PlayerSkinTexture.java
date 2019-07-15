@@ -72,7 +72,7 @@ public class PlayerSkinTexture extends ResourceTexture {
 
 				try {
 					try {
-						nativeImage = NativeImage.fromInputStream(new FileInputStream(this.cacheFile));
+						nativeImage = NativeImage.read(new FileInputStream(this.cacheFile));
 						if (this.filter != null) {
 							nativeImage = this.filter.filterImage(nativeImage);
 						}
@@ -117,7 +117,7 @@ public class PlayerSkinTexture extends ResourceTexture {
 							NativeImage nativeImage = null;
 
 							try {
-								nativeImage = NativeImage.fromInputStream(inputStream);
+								nativeImage = NativeImage.read(inputStream);
 								if (PlayerSkinTexture.this.filter != null) {
 									nativeImage = PlayerSkinTexture.this.filter.filterImage(nativeImage);
 								}

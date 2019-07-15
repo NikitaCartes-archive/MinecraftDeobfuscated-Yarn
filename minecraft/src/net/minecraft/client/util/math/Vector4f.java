@@ -3,6 +3,7 @@ package net.minecraft.client.util.math;
 import java.util.Arrays;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.util.math.Quaternion;
 
 @Environment(EnvType.CLIENT)
 public class Vector4f {
@@ -62,10 +63,10 @@ public class Vector4f {
 
 	public void method_4959(Quaternion quaternion) {
 		Quaternion quaternion2 = new Quaternion(quaternion);
-		quaternion2.method_4925(new Quaternion(this.getX(), this.getY(), this.getZ(), 0.0F));
+		quaternion2.copyFrom(new Quaternion(this.getX(), this.getY(), this.getZ(), 0.0F));
 		Quaternion quaternion3 = new Quaternion(quaternion);
-		quaternion3.method_4926();
-		quaternion2.method_4925(quaternion3);
-		this.set(quaternion2.method_4921(), quaternion2.method_4922(), quaternion2.method_4923(), this.getW());
+		quaternion3.reverse();
+		quaternion2.copyFrom(quaternion3);
+		this.set(quaternion2.getX(), quaternion2.getY(), quaternion2.getZ(), this.getW());
 	}
 }

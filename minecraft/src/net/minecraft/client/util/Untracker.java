@@ -12,9 +12,9 @@ import net.fabricmc.api.Environment;
 import org.lwjgl.system.Pointer;
 
 @Environment(EnvType.CLIENT)
-public class UntrackMemoryUtil {
+public class Untracker {
 	@Nullable
-	private static final MethodHandle UNTRACK_METHOD_HANDLE = GLX.make(() -> {
+	private static final MethodHandle ALLOCATOR_UNTRACK = GLX.make(() -> {
 		try {
 			Lookup lookup = MethodHandles.lookup();
 			Class<?> class_ = Class.forName("org.lwjgl.system.MemoryManage$DebugAllocator");
@@ -30,9 +30,9 @@ public class UntrackMemoryUtil {
 	});
 
 	public static void untrack(long l) {
-		if (UNTRACK_METHOD_HANDLE != null) {
+		if (ALLOCATOR_UNTRACK != null) {
 			try {
-				UNTRACK_METHOD_HANDLE.invoke(l);
+				ALLOCATOR_UNTRACK.invoke(l);
 			} catch (Throwable var3) {
 				throw new RuntimeException(var3);
 			}

@@ -23,6 +23,10 @@ public interface EntityView {
 
 	<T extends Entity> List<T> getEntities(Class<? extends T> class_, Box box, @Nullable Predicate<? super T> predicate);
 
+	default <T extends Entity> List<T> method_21729(Class<? extends T> class_, Box box, @Nullable Predicate<? super T> predicate) {
+		return this.getEntities(class_, box, predicate);
+	}
+
 	List<? extends PlayerEntity> getPlayers();
 
 	default List<Entity> getEntities(@Nullable Entity entity, Box box) {
@@ -40,6 +44,10 @@ public interface EntityView {
 
 	default <T extends Entity> List<T> getEntities(Class<? extends T> class_, Box box) {
 		return this.getEntities(class_, box, EntityPredicates.EXCEPT_SPECTATOR);
+	}
+
+	default <T extends Entity> List<T> method_21728(Class<? extends T> class_, Box box) {
+		return this.method_21729(class_, box, EntityPredicates.EXCEPT_SPECTATOR);
 	}
 
 	default Stream<VoxelShape> method_20743(@Nullable Entity entity, Box box, Set<Entity> set) {
@@ -134,10 +142,17 @@ public interface EntityView {
 	}
 
 	@Nullable
-	default <T extends LivingEntity> T getClosestEntity(
+	default <T extends LivingEntity> T method_21726(
 		Class<? extends T> class_, TargetPredicate targetPredicate, @Nullable LivingEntity livingEntity, double d, double e, double f, Box box
 	) {
 		return this.getClosestEntity(this.getEntities(class_, box, null), targetPredicate, livingEntity, d, e, f);
+	}
+
+	@Nullable
+	default <T extends LivingEntity> T method_21727(
+		Class<? extends T> class_, TargetPredicate targetPredicate, @Nullable LivingEntity livingEntity, double d, double e, double f, Box box
+	) {
+		return this.getClosestEntity(this.method_21729(class_, box, null), targetPredicate, livingEntity, d, e, f);
 	}
 
 	@Nullable

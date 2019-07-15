@@ -39,7 +39,7 @@ public class ClientResourcePackContainer extends ResourcePackContainer {
 			Throwable var9 = null;
 
 			try {
-				nativeImage = NativeImage.fromInputStream(inputStream);
+				nativeImage = NativeImage.read(inputStream);
 			} catch (Throwable var19) {
 				var9 = var19;
 				throw var19;

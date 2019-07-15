@@ -384,7 +384,7 @@ public class ThreadedAnvilChunkStorage extends VersionedChunkStorage implements 
 			}
 		}
 
-		while(booleanSupplier.getAsBoolean() && (l = (long)((Runnable)this.field_19343.poll())) != null) {
+		while((booleanSupplier.getAsBoolean() || this.field_19343.size() > 2000) && (l = (long)((Runnable)this.field_19343.poll())) != null) {
 			l.run();
 		}
 	}

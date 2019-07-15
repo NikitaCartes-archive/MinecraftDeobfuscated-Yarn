@@ -16,7 +16,7 @@ public class RawTextureDataLoader {
 		Throwable var3 = null;
 
 		int[] var6;
-		try (NativeImage nativeImage = NativeImage.fromInputStream(resource.getInputStream())) {
+		try (NativeImage nativeImage = NativeImage.read(resource.getInputStream())) {
 			var6 = nativeImage.makePixelArray();
 		} catch (Throwable var31) {
 			var3 = var31;

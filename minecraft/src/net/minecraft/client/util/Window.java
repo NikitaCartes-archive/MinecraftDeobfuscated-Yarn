@@ -424,8 +424,6 @@ public final class Window implements AutoCloseable {
 	}
 
 	public void method_21668(boolean bl) {
-		if (InputUtil.method_21667()) {
-			GLFW.glfwSetInputMode(this.handle, 208901, bl ? 1 : 0);
-		}
+		InputUtil.method_21736(this.handle, bl);
 	}
 }
