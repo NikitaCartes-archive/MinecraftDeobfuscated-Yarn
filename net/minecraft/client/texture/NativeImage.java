@@ -22,7 +22,7 @@ import java.util.EnumSet;
 import java.util.Set;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.client.util.UntrackMemoryUtil;
+import net.minecraft.client.util.Untracker;
 import org.apache.commons.io.IOUtils;
 import org.jetbrains.annotations.Nullable;
 import org.lwjgl.stb.STBIWriteCallback;
@@ -53,7 +53,7 @@ implements AutoCloseable {
         this.format = format;
         this.width = i;
         this.height = j;
-        this.sizeBytes = i * j * format.getBytesPerPixel();
+        this.sizeBytes = i * j * format.getChannelCount();
         this.isStbImage = false;
         this.pointer = bl ? MemoryUtil.nmemCalloc(1L, this.sizeBytes) : MemoryUtil.nmemAlloc(this.sizeBytes);
     }
@@ -64,26 +64,26 @@ implements AutoCloseable {
         this.height = j;
         this.isStbImage = bl;
         this.pointer = l;
-        this.sizeBytes = i * j * format.getBytesPerPixel();
+        this.sizeBytes = i * j * format.getChannelCount();
     }
 
     public String toString() {
         return "NativeImage[" + (Object)((Object)this.format) + " " + this.width + "x" + this.height + "@" + this.pointer + (this.isStbImage ? "S" : "N") + "]";
     }
 
-    public static NativeImage fromInputStream(InputStream inputStream) throws IOException {
-        return NativeImage.fromInputStream(Format.RGBA, inputStream);
+    public static NativeImage read(InputStream inputStream) throws IOException {
+        return NativeImage.read(Format.RGBA, inputStream);
     }
 
     /*
      * WARNING - Removed try catching itself - possible behaviour change.
      */
-    public static NativeImage fromInputStream(@Nullable Format format, InputStream inputStream) throws IOException {
+    public static NativeImage read(@Nullable Format format, InputStream inputStream) throws IOException {
         ByteBuffer byteBuffer = null;
         try {
             byteBuffer = TextureUtil.readResource(inputStream);
             byteBuffer.rewind();
-            NativeImage nativeImage = NativeImage.fromByteBuffer(format, byteBuffer);
+            NativeImage nativeImage = NativeImage.read(format, byteBuffer);
             return nativeImage;
         } finally {
             MemoryUtil.memFree(byteBuffer);
@@ -91,12 +91,12 @@ implements AutoCloseable {
         }
     }
 
-    public static NativeImage fromByteBuffer(ByteBuffer byteBuffer) throws IOException {
-        return NativeImage.fromByteBuffer(Format.RGBA, byteBuffer);
+    public static NativeImage read(ByteBuffer byteBuffer) throws IOException {
+        return NativeImage.read(Format.RGBA, byteBuffer);
     }
 
-    public static NativeImage fromByteBuffer(@Nullable Format format, ByteBuffer byteBuffer) throws IOException {
-        if (format != null && !format.method_4338()) {
+    public static NativeImage read(@Nullable Format format, ByteBuffer byteBuffer) throws IOException {
+        if (format != null && !format.isWriteable()) {
             throw new UnsupportedOperationException("Don't know how to read format " + (Object)((Object)format));
         }
         if (MemoryUtil.memAddress(byteBuffer) == 0L) {
@@ -106,11 +106,11 @@ implements AutoCloseable {
             IntBuffer intBuffer = memoryStack.mallocInt(1);
             IntBuffer intBuffer2 = memoryStack.mallocInt(1);
             IntBuffer intBuffer3 = memoryStack.mallocInt(1);
-            ByteBuffer byteBuffer2 = STBImage.stbi_load_from_memory(byteBuffer, intBuffer, intBuffer2, intBuffer3, format == null ? 0 : format.bytesPerPixel);
+            ByteBuffer byteBuffer2 = STBImage.stbi_load_from_memory(byteBuffer, intBuffer, intBuffer2, intBuffer3, format == null ? 0 : format.channelCount);
             if (byteBuffer2 == null) {
                 throw new IOException("Could not load image: " + STBImage.stbi_failure_reason());
             }
-            NativeImage nativeImage = new NativeImage(format == null ? Format.method_4336(intBuffer3.get(0)) : format, intBuffer.get(0), intBuffer2.get(0), true, MemoryUtil.memAddress(byteBuffer2));
+            NativeImage nativeImage = new NativeImage(format == null ? Format.getFormat(intBuffer3.get(0)) : format, intBuffer.get(0), intBuffer2.get(0), true, MemoryUtil.memAddress(byteBuffer2));
             return nativeImage;
         }
     }
@@ -187,14 +187,14 @@ implements AutoCloseable {
         MemoryUtil.memIntBuffer(this.pointer, this.sizeBytes).put(i + j * this.width, k);
     }
 
-    public byte getAlphaOrLuminance(int i, int j) {
-        if (!this.format.hasLuminanceOrAlpha()) {
+    public byte getPixelOpacity(int i, int j) {
+        if (!this.format.hasOpacityChannel()) {
             throw new IllegalArgumentException(String.format("no luminance or alpha in %s", new Object[]{this.format}));
         }
         if (i > this.width || j > this.height) {
             throw new IllegalArgumentException(String.format("(%s, %s) outside of image bounds (%s, %s)", i, j, this.width, this.height));
         }
-        return MemoryUtil.memByteBuffer(this.pointer, this.sizeBytes).get((i + j * this.width) * this.format.getBytesPerPixel() + this.format.method_4330() / 8);
+        return MemoryUtil.memByteBuffer(this.pointer, this.sizeBytes).get((i + j * this.width) * this.format.getChannelCount() + this.format.getOpacityOffset() / 8);
     }
 
     public void blendPixel(int i, int j, int k) {
@@ -283,16 +283,16 @@ implements AutoCloseable {
         this.checkAllocated();
         this.format.setPackAlignment();
         GlStateManager.getTexImage(3553, i, this.format.getPixelDataFormat(), 5121, this.pointer);
-        if (bl && this.format.method_4329()) {
+        if (bl && this.format.hasAlphaChannel()) {
             for (int j = 0; j < this.getHeight(); ++j) {
                 for (int k = 0; k < this.getWidth(); ++k) {
-                    this.setPixelRGBA(k, j, this.getPixelRGBA(k, j) | 255 << this.format.method_4332());
+                    this.setPixelRGBA(k, j, this.getPixelRGBA(k, j) | 255 << this.format.getAlphaChannelOffset());
                 }
             }
         }
     }
 
-    public void method_4306(boolean bl) {
+    public void loadFromMemory(boolean bl) {
         this.checkAllocated();
         this.format.setPackAlignment();
         if (bl) {
@@ -316,7 +316,7 @@ implements AutoCloseable {
         if (m < 0 || m + j > this.getWidth() || n < 0 || n + k > this.getHeight()) {
             throw new IllegalArgumentException(String.format("Out of bounds: start: (%s, %s) (size: %sx%s); size: %sx%s", m, n, j, k, this.getWidth(), this.getHeight()));
         }
-        if (this.format.getBytesPerPixel() != 1) {
+        if (this.format.getChannelCount() != 1) {
             throw new IllegalArgumentException("Can only write fonts into 1-component images.");
         }
         STBTruetype.nstbtt_MakeGlyphBitmapSubpixel(sTBTTFontinfo.address(), this.pointer + (long)m + (long)(n * this.getWidth()), j, k, this.getWidth(), f, g, h, l, i);
@@ -326,14 +326,14 @@ implements AutoCloseable {
      * WARNING - Removed try catching itself - possible behaviour change.
      */
     public void writeFile(Path path) throws IOException {
-        if (!this.format.method_4338()) {
+        if (!this.format.isWriteable()) {
             throw new UnsupportedOperationException("Don't know how to write format " + (Object)((Object)this.format));
         }
         this.checkAllocated();
         try (SeekableByteChannel writableByteChannel = Files.newByteChannel(path, WRITE_TO_FILE_OPEN_OPTIONS, new FileAttribute[0]);){
             WriteCallback writeCallback = new WriteCallback(writableByteChannel);
             try {
-                if (!STBImageWrite.stbi_write_png_to_func(writeCallback, 0L, this.getWidth(), this.getHeight(), this.format.getBytesPerPixel(), MemoryUtil.memByteBuffer(this.pointer, this.sizeBytes), 0)) {
+                if (!STBImageWrite.stbi_write_png_to_func(writeCallback, 0L, this.getWidth(), this.getHeight(), this.format.getChannelCount(), MemoryUtil.memByteBuffer(this.pointer, this.sizeBytes), 0)) {
                     throw new IOException("Could not write image to the PNG file \"" + path.toAbsolutePath() + "\": " + STBImage.stbi_failure_reason());
                 }
             } finally {
@@ -347,7 +347,7 @@ implements AutoCloseable {
         if (nativeImage.getFormat() != this.format) {
             throw new UnsupportedOperationException("Image formats don't match.");
         }
-        int i = this.format.getBytesPerPixel();
+        int i = this.format.getChannelCount();
         this.checkAllocated();
         nativeImage.checkAllocated();
         if (this.width == nativeImage.width) {
@@ -363,7 +363,7 @@ implements AutoCloseable {
         }
     }
 
-    public void fillRGBA(int i, int j, int k, int l, int m) {
+    public void fillRect(int i, int j, int k, int l, int m) {
         for (int n = j; n < j + l; ++n) {
             for (int o = i; o < i + k; ++o) {
                 this.setPixelRGBA(o, n, m);
@@ -371,7 +371,7 @@ implements AutoCloseable {
         }
     }
 
-    public void method_4304(int i, int j, int k, int l, int m, int n, boolean bl, boolean bl2) {
+    public void copyRect(int i, int j, int k, int l, int m, int n, boolean bl, boolean bl2) {
         for (int o = 0; o < n; ++o) {
             for (int p = 0; p < m; ++p) {
                 int q = bl ? m - 1 - p : p;
@@ -385,7 +385,7 @@ implements AutoCloseable {
     public void method_4319() {
         this.checkAllocated();
         try (MemoryStack memoryStack = MemoryStack.stackPush();){
-            int i = this.format.getBytesPerPixel();
+            int i = this.format.getChannelCount();
             int j = this.getWidth() * i;
             long l = memoryStack.nmalloc(j);
             for (int k = 0; k < this.getHeight() / 2; ++k) {
@@ -403,22 +403,22 @@ implements AutoCloseable {
         if (nativeImage.getFormat() != this.format) {
             throw new UnsupportedOperationException("resizeSubRectTo only works for images of the same format.");
         }
-        int m = this.format.getBytesPerPixel();
+        int m = this.format.getChannelCount();
         STBImageResize.nstbir_resize_uint8(this.pointer + (long)((i + j * this.getWidth()) * m), k, l, this.getWidth() * m, nativeImage.pointer, nativeImage.getWidth(), nativeImage.getHeight(), 0, m);
     }
 
     public void untrack() {
-        UntrackMemoryUtil.untrack(this.pointer);
+        Untracker.untrack(this.pointer);
     }
 
-    public static NativeImage fromBase64(String string) throws IOException {
+    public static NativeImage read(String string) throws IOException {
         try (MemoryStack memoryStack = MemoryStack.stackPush();){
             ByteBuffer byteBuffer = memoryStack.UTF8(string.replaceAll("\n", ""), false);
             ByteBuffer byteBuffer2 = Base64.getDecoder().decode(byteBuffer);
             ByteBuffer byteBuffer3 = memoryStack.malloc(byteBuffer2.remaining());
             byteBuffer3.put(byteBuffer2);
             byteBuffer3.rewind();
-            NativeImage nativeImage = NativeImage.fromByteBuffer(byteBuffer3);
+            NativeImage nativeImage = NativeImage.read(byteBuffer3);
             return nativeImage;
         }
     }
@@ -430,73 +430,73 @@ implements AutoCloseable {
         LUMINANCE_ALPHA(2, 6410, false, false, false, true, true, 255, 255, 255, 0, 8, true),
         LUMINANCE(1, 6409, false, false, false, true, false, 0, 0, 0, 0, 255, true);
 
-        private final int bytesPerPixel;
+        private final int channelCount;
         private final int pixelDataFormat;
-        private final boolean field_5005;
-        private final boolean field_5004;
-        private final boolean field_5003;
-        private final boolean field_5000;
-        private final boolean field_4999;
-        private final int field_5010;
-        private final int field_5009;
-        private final int field_5008;
-        private final int field_5007;
-        private final int field_5006;
-        private final boolean field_4996;
+        private final boolean hasRed;
+        private final boolean hasGreen;
+        private final boolean hasBlue;
+        private final boolean hasLuminance;
+        private final boolean hasAlpha;
+        private final int redOffset;
+        private final int greenOffset;
+        private final int blueOffset;
+        private final int luminanceChannelOffset;
+        private final int alphaChannelOffset;
+        private final boolean writeable;
 
         private Format(int j, int k, boolean bl, boolean bl2, boolean bl3, boolean bl4, boolean bl5, int l, int m, int n, int o, int p, boolean bl6) {
-            this.bytesPerPixel = j;
+            this.channelCount = j;
             this.pixelDataFormat = k;
-            this.field_5005 = bl;
-            this.field_5004 = bl2;
-            this.field_5003 = bl3;
-            this.field_5000 = bl4;
-            this.field_4999 = bl5;
-            this.field_5010 = l;
-            this.field_5009 = m;
-            this.field_5008 = n;
-            this.field_5007 = o;
-            this.field_5006 = p;
-            this.field_4996 = bl6;
+            this.hasRed = bl;
+            this.hasGreen = bl2;
+            this.hasBlue = bl3;
+            this.hasLuminance = bl4;
+            this.hasAlpha = bl5;
+            this.redOffset = l;
+            this.greenOffset = m;
+            this.blueOffset = n;
+            this.luminanceChannelOffset = o;
+            this.alphaChannelOffset = p;
+            this.writeable = bl6;
         }
 
-        public int getBytesPerPixel() {
-            return this.bytesPerPixel;
+        public int getChannelCount() {
+            return this.channelCount;
         }
 
         public void setPackAlignment() {
-            GlStateManager.pixelStore(3333, this.getBytesPerPixel());
+            GlStateManager.pixelStore(3333, this.getChannelCount());
         }
 
         public void setUnpackAlignment() {
-            GlStateManager.pixelStore(3317, this.getBytesPerPixel());
+            GlStateManager.pixelStore(3317, this.getChannelCount());
         }
 
         public int getPixelDataFormat() {
             return this.pixelDataFormat;
         }
 
-        public boolean method_4329() {
-            return this.field_4999;
+        public boolean hasAlphaChannel() {
+            return this.hasAlpha;
         }
 
-        public int method_4332() {
-            return this.field_5006;
+        public int getAlphaChannelOffset() {
+            return this.alphaChannelOffset;
         }
 
-        public boolean hasLuminanceOrAlpha() {
-            return this.field_5000 || this.field_4999;
+        public boolean hasOpacityChannel() {
+            return this.hasLuminance || this.hasAlpha;
         }
 
-        public int method_4330() {
-            return this.field_5000 ? this.field_5007 : this.field_5006;
+        public int getOpacityOffset() {
+            return this.hasLuminance ? this.luminanceChannelOffset : this.alphaChannelOffset;
         }
 
-        public boolean method_4338() {
-            return this.field_4996;
+        public boolean isWriteable() {
+            return this.writeable;
         }
 
-        private static Format method_4336(int i) {
+        private static Format getFormat(int i) {
             switch (i) {
                 case 1: {
                     return LUMINANCE;
@@ -513,21 +513,21 @@ implements AutoCloseable {
     }
 
     @Environment(value=EnvType.CLIENT)
-    public static enum class_1013 {
+    public static enum GLFormat {
         RGBA(6408),
         RGB(6407),
         LUMINANCE_ALPHA(6410),
         LUMINANCE(6409),
         INTENSITY(32841);
 
-        private final int field_5015;
+        private final int glConstant;
 
-        private class_1013(int j) {
-            this.field_5015 = j;
+        private GLFormat(int j) {
+            this.glConstant = j;
         }
 
-        public int method_4341() {
-            return this.field_5015;
+        public int getGlConstant() {
+            return this.glConstant;
         }
     }
 

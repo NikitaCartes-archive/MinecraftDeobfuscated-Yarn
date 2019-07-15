@@ -82,7 +82,7 @@ extends ResourceTexture {
             if (this.cacheFile != null && this.cacheFile.isFile()) {
                 LOGGER.debug("Loading http texture from local cache ({})", (Object)this.cacheFile);
                 try (NativeImage nativeImage = null;){
-                    nativeImage = NativeImage.fromInputStream(new FileInputStream(this.cacheFile));
+                    nativeImage = NativeImage.read(new FileInputStream(this.cacheFile));
                     if (this.filter != null) {
                         nativeImage = this.filter.filterImage(nativeImage);
                     }
@@ -119,7 +119,7 @@ extends ResourceTexture {
                     MinecraftClient.getInstance().execute(() -> {
                         NativeImage nativeImage = null;
                         try {
-                            nativeImage = NativeImage.fromInputStream(inputStream);
+                            nativeImage = NativeImage.read(inputStream);
                             if (PlayerSkinTexture.this.filter != null) {
                                 nativeImage = PlayerSkinTexture.this.filter.filterImage(nativeImage);
                             }

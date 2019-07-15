@@ -206,7 +206,7 @@ implements ResourcePackCreator {
         try (ZipResourcePack zipResourcePack = new ZipResourcePack(file);){
             packResourceMetadata = zipResourcePack.parseMetadata(PackResourceMetadata.READER);
             try (InputStream inputStream = zipResourcePack.openRoot("pack.png");){
-                nativeImage = NativeImage.fromInputStream(inputStream);
+                nativeImage = NativeImage.read(inputStream);
             } catch (IOException | IllegalArgumentException exception) {
                 LOGGER.info("Could not read pack.png: {}", (Object)exception.getMessage());
             }

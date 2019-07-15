@@ -268,7 +268,7 @@ extends AlwaysSelectedEntryListWidget<Entry> {
                 this.iconTexture = null;
             } else {
                 try {
-                    NativeImage nativeImage = NativeImage.fromBase64(string);
+                    NativeImage nativeImage = NativeImage.read(string);
                     Validate.validState(nativeImage.getWidth() == 64, "Must be 64 pixels wide", new Object[0]);
                     Validate.validState(nativeImage.getHeight() == 64, "Must be 64 pixels high", new Object[0]);
                     if (this.iconTexture == null) {

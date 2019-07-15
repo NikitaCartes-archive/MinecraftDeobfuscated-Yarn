@@ -36,14 +36,14 @@ extends AbstractTexture {
     @Override
     public void load(ResourceManager resourceManager) throws IOException {
         try (Resource resource = resourceManager.getResource(this.filename);
-             NativeImage nativeImage = NativeImage.fromInputStream(resource.getInputStream());
+             NativeImage nativeImage = NativeImage.read(resource.getInputStream());
              NativeImage nativeImage2 = new NativeImage(nativeImage.getWidth(), nativeImage.getHeight(), false);){
             nativeImage2.copyFrom(nativeImage);
             for (int i = 0; i < 17 && i < this.patternNames.size() && i < this.dyes.size(); ++i) {
                 String string = this.patternNames.get(i);
                 if (string == null) continue;
                 try (Resource resource2 = resourceManager.getResource(new Identifier(string));
-                     NativeImage nativeImage3 = NativeImage.fromInputStream(resource2.getInputStream());){
+                     NativeImage nativeImage3 = NativeImage.read(resource2.getInputStream());){
                     int j = this.dyes.get(i).getColorSwapped();
                     if (nativeImage3.getWidth() != nativeImage2.getWidth() || nativeImage3.getHeight() != nativeImage2.getHeight()) continue;
                     for (int k = 0; k < nativeImage3.getHeight(); ++k) {

@@ -296,7 +296,7 @@ extends LivingEntity {
 
     @Override
     protected float method_6031(float f, float g) {
-        this.bodyControl.method_6224();
+        this.bodyControl.tick();
         return g;
     }
 

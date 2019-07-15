@@ -20,6 +20,8 @@ import net.minecraft.world.GameRules;
 import net.minecraft.world.IWorld;
 import net.minecraft.world.ViewableWorld;
 import net.minecraft.world.World;
+import net.minecraft.world.chunk.Chunk;
+import net.minecraft.world.chunk.ChunkStatus;
 import org.jetbrains.annotations.Nullable;
 
 public class StepAndDestroyBlockGoal
@@ -52,7 +54,7 @@ extends MoveToTargetPosGoal {
     }
 
     private boolean hasAvailableTarget() {
-        if (this.targetPos != null && this.mob.world.isBlockLoaded(this.targetPos) && this.isTargetPos(this.mob.world, this.targetPos)) {
+        if (this.targetPos != null && this.isTargetPos(this.mob.world, this.targetPos)) {
             return true;
         }
         return this.findTargetPos();
@@ -132,8 +134,11 @@ extends MoveToTargetPosGoal {
 
     @Override
     protected boolean isTargetPos(ViewableWorld viewableWorld, BlockPos blockPos) {
-        Block block = viewableWorld.getBlockState(blockPos).getBlock();
-        return block == this.targetBlock && viewableWorld.getBlockState(blockPos.up()).isAir() && viewableWorld.getBlockState(blockPos.up(2)).isAir();
+        Chunk chunk = viewableWorld.getChunk(blockPos.getX() >> 4, blockPos.getZ() >> 4, ChunkStatus.FULL, false);
+        if (chunk != null) {
+            return chunk.getBlockState(blockPos).getBlock() == this.targetBlock && chunk.getBlockState(blockPos.up()).isAir() && chunk.getBlockState(blockPos.up(2)).isAir();
+        }
+        return false;
     }
 }
 

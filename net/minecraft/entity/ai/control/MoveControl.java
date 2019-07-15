@@ -22,8 +22,8 @@ public class MoveControl {
     protected double targetY;
     protected double targetZ;
     protected double speed;
-    protected float field_6368;
-    protected float field_6373;
+    protected float forwardMovement;
+    protected float sidewaysMovement;
     protected State state = State.WAIT;
 
     public MoveControl(MobEntity mobEntity) {
@@ -48,10 +48,10 @@ public class MoveControl {
         }
     }
 
-    public void method_6243(float f, float g) {
+    public void strafeTo(float f, float g) {
         this.state = State.STRAFE;
-        this.field_6368 = f;
-        this.field_6373 = g;
+        this.forwardMovement = f;
+        this.sidewaysMovement = g;
         this.speed = 0.25;
     }
 
@@ -60,8 +60,8 @@ public class MoveControl {
             PathNodeMaker pathNodeMaker;
             float f = (float)this.entity.getAttributeInstance(EntityAttributes.MOVEMENT_SPEED).getValue();
             float g = (float)this.speed * f;
-            float h = this.field_6368;
-            float i = this.field_6373;
+            float h = this.forwardMovement;
+            float i = this.sidewaysMovement;
             float j = MathHelper.sqrt(h * h + i * i);
             if (j < 1.0f) {
                 j = 1.0f;
@@ -73,13 +73,13 @@ public class MoveControl {
             float n = i * l + h * k;
             EntityNavigation entityNavigation = this.entity.getNavigation();
             if (entityNavigation != null && (pathNodeMaker = entityNavigation.getNodeMaker()) != null && pathNodeMaker.getPathNodeType(this.entity.world, MathHelper.floor(this.entity.x + (double)m), MathHelper.floor(this.entity.y), MathHelper.floor(this.entity.z + (double)n)) != PathNodeType.WALKABLE) {
-                this.field_6368 = 1.0f;
-                this.field_6373 = 0.0f;
+                this.forwardMovement = 1.0f;
+                this.sidewaysMovement = 0.0f;
                 g = f;
             }
             this.entity.setMovementSpeed(g);
-            this.entity.setForwardSpeed(this.field_6368);
-            this.entity.setSidewaysSpeed(this.field_6373);
+            this.entity.setForwardSpeed(this.forwardMovement);
+            this.entity.setSidewaysSpeed(this.sidewaysMovement);
             this.state = State.WAIT;
         } else if (this.state == State.MOVE_TO) {
             this.state = State.WAIT;

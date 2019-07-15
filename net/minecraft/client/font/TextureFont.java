@@ -104,7 +104,7 @@ implements Font {
 
         @Override
         public boolean hasColor() {
-            return this.image.getFormat().getBytesPerPixel() > 1;
+            return this.image.getFormat().getChannelCount() > 1;
         }
     }
 
@@ -155,7 +155,7 @@ implements Font {
         @Nullable
         public Font load(ResourceManager resourceManager) {
             try (Resource resource = resourceManager.getResource(this.filename);){
-                NativeImage nativeImage = NativeImage.fromInputStream(NativeImage.Format.RGBA, resource.getInputStream());
+                NativeImage nativeImage = NativeImage.read(NativeImage.Format.RGBA, resource.getInputStream());
                 int i = nativeImage.getWidth();
                 int j = nativeImage.getHeight();
                 int k = i / this.chars.get(0).length();
@@ -191,7 +191,7 @@ implements Font {
                 int n = k * i + m;
                 for (int o = 0; o < j; ++o) {
                     int p = l * j + o;
-                    if (nativeImage.getAlphaOrLuminance(n, p) == 0) continue;
+                    if (nativeImage.getPixelOpacity(n, p) == 0) continue;
                     return m + 1;
                 }
             }

@@ -53,7 +53,7 @@ extends Goal {
 
     @Override
     public boolean canStart() {
-        this.targetEntity = this.mob.world.getClosestEntity(this.classToFleeFrom, this.withinRangePredicate, this.mob, this.mob.x, this.mob.y, this.mob.z, this.mob.getBoundingBox().expand(this.fleeDistance, 3.0, this.fleeDistance));
+        this.targetEntity = this.mob.world.method_21727(this.classToFleeFrom, this.withinRangePredicate, this.mob, this.mob.x, this.mob.y, this.mob.z, this.mob.getBoundingBox().expand(this.fleeDistance, 3.0, this.fleeDistance));
         if (this.targetEntity == null) {
             return false;
         }

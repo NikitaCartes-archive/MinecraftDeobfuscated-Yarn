@@ -127,7 +127,7 @@ extends Overlay {
             MinecraftClient minecraftClient = MinecraftClient.getInstance();
             DefaultResourcePack defaultResourcePack = minecraftClient.getResourcePackDownloader().getPack();
             try (InputStream inputStream = defaultResourcePack.open(ResourceType.CLIENT_RESOURCES, LOGO);){
-                ResourceTexture.TextureData textureData = new ResourceTexture.TextureData(null, NativeImage.fromInputStream(inputStream));
+                ResourceTexture.TextureData textureData = new ResourceTexture.TextureData(null, NativeImage.read(inputStream));
                 return textureData;
             } catch (IOException iOException) {
                 return new ResourceTexture.TextureData(iOException);

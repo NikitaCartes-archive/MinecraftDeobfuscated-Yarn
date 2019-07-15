@@ -41,7 +41,7 @@ extends AbstractTexture {
         Iterator<String> iterator = this.locations.iterator();
         String string = iterator.next();
         try (Resource resource = resourceManager.getResource(new Identifier(string));
-             NativeImage nativeImage = NativeImage.fromInputStream(resource.getInputStream());){
+             NativeImage nativeImage = NativeImage.read(resource.getInputStream());){
             while (iterator.hasNext()) {
                 Resource resource2;
                 block51: {
@@ -50,7 +50,7 @@ extends AbstractTexture {
                     resource2 = resourceManager.getResource(new Identifier(string2));
                     Throwable throwable = null;
                     try {
-                        try (NativeImage nativeImage2 = NativeImage.fromInputStream(resource2.getInputStream());){
+                        try (NativeImage nativeImage2 = NativeImage.read(resource2.getInputStream());){
                             for (int i = 0; i < nativeImage2.getHeight(); ++i) {
                                 for (int j = 0; j < nativeImage2.getWidth(); ++j) {
                                     nativeImage.blendPixel(j, i, nativeImage2.getPixelRGBA(j, i));

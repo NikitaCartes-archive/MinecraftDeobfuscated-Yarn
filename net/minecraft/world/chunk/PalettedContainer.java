@@ -3,6 +3,7 @@
  */
 package net.minecraft.world.chunk;
 
+import it.unimi.dsi.fastutil.ints.Int2IntOpenHashMap;
 import java.util.Arrays;
 import java.util.Objects;
 import java.util.concurrent.locks.ReentrantLock;
@@ -204,6 +205,17 @@ implements PaletteResizeListener<T> {
 
     public boolean method_19526(T object) {
         return this.palette.accepts(object);
+    }
+
+    public void method_21732(class_4464<T> arg) {
+        Int2IntOpenHashMap int2IntMap = new Int2IntOpenHashMap();
+        this.data.method_21739(i -> int2IntMap.put(i, int2IntMap.get(i) + 1));
+        int2IntMap.int2IntEntrySet().forEach(entry -> arg.accept(this.palette.getByIndex(entry.getIntKey()), entry.getIntValue()));
+    }
+
+    @FunctionalInterface
+    public static interface class_4464<T> {
+        public void accept(T var1, int var2);
     }
 }
 

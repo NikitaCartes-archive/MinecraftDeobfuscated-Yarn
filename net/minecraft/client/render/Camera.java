@@ -55,8 +55,6 @@ public class Camera {
             Direction direction = ((LivingEntity)entity).getSleepingDirection();
             this.setRotation(direction != null ? direction.asRotation() - 180.0f : 0.0f, 0.0f);
             this.moveBy(0.0, 0.3, 0.0);
-        } else {
-            this.moveBy(-0.05f, 0.0, 0.0);
         }
         GlStateManager.rotatef(this.pitch, 1.0f, 0.0f, 0.0f);
         GlStateManager.rotatef(this.yaw + 180.0f, 0.0f, 1.0f, 0.0f);

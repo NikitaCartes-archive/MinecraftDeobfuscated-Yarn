@@ -31,7 +31,7 @@ extends ResourcePackContainer {
         super(string, bl, supplier, resourcePack, packResourceMetadata, insertionPosition);
         NativeImage nativeImage = null;
         try (InputStream inputStream = resourcePack.openRoot("pack.png");){
-            nativeImage = NativeImage.fromInputStream(inputStream);
+            nativeImage = NativeImage.read(inputStream);
         } catch (IOException | IllegalArgumentException exception) {
             // empty catch block
         }

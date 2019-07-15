@@ -318,7 +318,7 @@ public class Sprite {
     }
 
     public void load(Resource resource, int i) throws IOException {
-        NativeImage nativeImage = NativeImage.fromInputStream(resource.getInputStream());
+        NativeImage nativeImage = NativeImage.read(resource.getInputStream());
         this.images = new NativeImage[i];
         this.images[0] = nativeImage;
         int j = this.animationMetadata != null && this.animationMetadata.getWidth() != -1 ? nativeImage.getWidth() / this.animationMetadata.getWidth() : nativeImage.getWidth() / this.width;

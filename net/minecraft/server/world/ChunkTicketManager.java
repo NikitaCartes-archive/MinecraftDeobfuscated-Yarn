@@ -59,7 +59,7 @@ public abstract class ChunkTicketManager {
     protected ChunkTicketManager(Executor executor, Executor executor2) {
         ChunkTaskPrioritySystem chunkTaskPrioritySystem;
         Actor<Runnable> actor = Actor.createConsumerActor("player ticket throttler", executor2::execute);
-        this.levelUpdateListener = chunkTaskPrioritySystem = new ChunkTaskPrioritySystem(ImmutableList.of(actor), executor, 15);
+        this.levelUpdateListener = chunkTaskPrioritySystem = new ChunkTaskPrioritySystem(ImmutableList.of(actor), executor, 4);
         this.playerTicketThrottler = chunkTaskPrioritySystem.createExecutingActor(actor, true);
         this.playerTicketThrottlerSorter = chunkTaskPrioritySystem.createSortingActor(actor);
         this.mainThreadExecutor = executor2;
@@ -323,7 +323,13 @@ public abstract class ChunkTicketManager {
                     long l = longIterator.nextLong();
                     int i2 = this.distances.get(l);
                     if (i2 == (j = this.getLevel(l))) continue;
-                    ChunkTicketManager.this.levelUpdateListener.updateLevel(new ChunkPos(l), () -> this.distances.get(l), j, i -> this.distances.put(l, i));
+                    ChunkTicketManager.this.levelUpdateListener.updateLevel(new ChunkPos(l), () -> this.distances.get(l), j, i -> {
+                        if (i >= this.distances.defaultReturnValue()) {
+                            this.distances.remove(l);
+                        } else {
+                            this.distances.put(l, i);
+                        }
+                    });
                     this.updateTicket(l, j, this.isWithinViewDistance(i2), this.isWithinViewDistance(j));
                 }
                 this.positionsAffected.clear();

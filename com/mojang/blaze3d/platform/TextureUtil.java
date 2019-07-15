@@ -36,18 +36,18 @@ public class TextureUtil {
     }
 
     public static void prepareImage(int i, int j, int k) {
-        TextureUtil.prepareImage(NativeImage.class_1013.RGBA, i, 0, j, k);
+        TextureUtil.prepareImage(NativeImage.GLFormat.RGBA, i, 0, j, k);
     }
 
-    public static void prepareImage(NativeImage.class_1013 arg, int i, int j, int k) {
-        TextureUtil.prepareImage(arg, i, 0, j, k);
+    public static void prepareImage(NativeImage.GLFormat gLFormat, int i, int j, int k) {
+        TextureUtil.prepareImage(gLFormat, i, 0, j, k);
     }
 
     public static void prepareImage(int i, int j, int k, int l) {
-        TextureUtil.prepareImage(NativeImage.class_1013.RGBA, i, j, k, l);
+        TextureUtil.prepareImage(NativeImage.GLFormat.RGBA, i, j, k, l);
     }
 
-    public static void prepareImage(NativeImage.class_1013 arg, int i, int j, int k, int l) {
+    public static void prepareImage(NativeImage.GLFormat gLFormat, int i, int j, int k, int l) {
         TextureUtil.bind(i);
         if (j >= 0) {
             GlStateManager.texParameter(3553, 33085, j);
@@ -56,7 +56,7 @@ public class TextureUtil {
             GlStateManager.texParameter(3553, 34049, 0.0f);
         }
         for (int m = 0; m <= j; ++m) {
-            GlStateManager.texImage2D(3553, m, arg.method_4341(), k >> m, l >> m, 0, 6408, 5121, null);
+            GlStateManager.texImage2D(3553, m, gLFormat.getGlConstant(), k >> m, l >> m, 0, 6408, 5121, null);
         }
     }
 

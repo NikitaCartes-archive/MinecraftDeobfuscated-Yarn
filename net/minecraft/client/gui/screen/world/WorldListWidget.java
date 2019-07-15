@@ -331,7 +331,7 @@ extends AlwaysSelectedEntryListWidget<LevelItem> {
                 return null;
             }
             try (FileInputStream inputStream = new FileInputStream(this.iconFile);){
-                NativeImage nativeImage = NativeImage.fromInputStream(inputStream);
+                NativeImage nativeImage = NativeImage.read(inputStream);
                 Validate.validState(nativeImage.getWidth() == 64, "Must be 64 pixels wide", new Object[0]);
                 Validate.validState(nativeImage.getHeight() == 64, "Must be 64 pixels high", new Object[0]);
                 NativeImageBackedTexture nativeImageBackedTexture2 = new NativeImageBackedTexture(nativeImage);

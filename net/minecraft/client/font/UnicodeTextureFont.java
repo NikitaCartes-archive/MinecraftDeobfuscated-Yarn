@@ -40,7 +40,7 @@ implements Font {
             char c = (char)(i * 256);
             Identifier identifier = this.getGlyphId(c);
             try (Resource resource = this.resourceManager.getResource(identifier);
-                 NativeImage nativeImage = NativeImage.fromInputStream(NativeImage.Format.RGBA, resource.getInputStream());){
+                 NativeImage nativeImage = NativeImage.read(NativeImage.Format.RGBA, resource.getInputStream());){
                 if (nativeImage.getWidth() == 256 && nativeImage.getHeight() == 256) {
                     for (int j = 0; j < 256; ++j) {
                         byte b = bs[c + j];
@@ -86,7 +86,7 @@ implements Font {
     @Nullable
     private NativeImage getGlyphImage(Identifier identifier) {
         try (Resource resource = this.resourceManager.getResource(identifier);){
-            NativeImage nativeImage = NativeImage.fromInputStream(NativeImage.Format.RGBA, resource.getInputStream());
+            NativeImage nativeImage = NativeImage.read(NativeImage.Format.RGBA, resource.getInputStream());
             return nativeImage;
         } catch (IOException iOException) {
             LOGGER.error("Couldn't load texture {}", (Object)identifier, (Object)iOException);
@@ -146,7 +146,7 @@ implements Font {
 
         @Override
         public boolean hasColor() {
-            return this.image.getFormat().getBytesPerPixel() > 1;
+            return this.image.getFormat().getChannelCount() > 1;
         }
 
         @Override

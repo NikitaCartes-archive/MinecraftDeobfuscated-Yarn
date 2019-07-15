@@ -106,7 +106,7 @@ extends Goal {
             } else if (d < (double)(this.squaredRange * 0.25f)) {
                 this.field_6571 = true;
             }
-            ((MobEntity)this.actor).getMoveControl().method_6243(this.field_6571 ? -0.5f : 0.5f, this.field_6573 ? 0.5f : -0.5f);
+            ((MobEntity)this.actor).getMoveControl().strafeTo(this.field_6571 ? -0.5f : 0.5f, this.field_6573 ? 0.5f : -0.5f);
             ((MobEntity)this.actor).lookAtEntity(livingEntity, 30.0f, 30.0f);
         } else {
             ((MobEntity)this.actor).getLookControl().lookAt(livingEntity, 30.0f, 30.0f);

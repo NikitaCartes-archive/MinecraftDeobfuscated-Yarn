@@ -361,7 +361,7 @@ implements ChunkHolder.PlayersWatchingChunkProvider {
             }
             longIterator.remove();
         }
-        while (booleanSupplier.getAsBoolean() && (runnable = this.field_19343.poll()) != null) {
+        while ((booleanSupplier.getAsBoolean() || this.field_19343.size() > 2000) && (runnable = this.field_19343.poll()) != null) {
             runnable.run();
         }
     }

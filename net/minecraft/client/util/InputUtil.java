@@ -6,6 +6,9 @@ package net.minecraft.client.util;
 import com.google.common.collect.Maps;
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
+import java.lang.invoke.MethodHandle;
+import java.lang.invoke.MethodHandles;
+import java.lang.invoke.MethodType;
 import java.util.Map;
 import java.util.Objects;
 import net.fabricmc.api.EnvType;
@@ -20,7 +23,10 @@ import org.lwjgl.glfw.GLFWScrollCallbackI;
 
 @Environment(value=EnvType.CLIENT)
 public class InputUtil {
-    public static final KeyCode UNKNOWN_KEYCODE = Type.KEYSYM.createFromCode(-1);
+    @Nullable
+    private static final MethodHandle field_20333;
+    private static final int field_20334;
+    public static final KeyCode UNKNOWN_KEYCODE;
 
     public static KeyCode getKeyCode(int i, int j) {
         if (i == -1) {
@@ -61,8 +67,18 @@ public class InputUtil {
         GLFW.glfwSetInputMode(l, 208897, i);
     }
 
-    public static boolean method_21667() {
-        return GLFW.glfwRawMouseMotionSupported();
+    public static boolean method_21735() {
+        try {
+            return field_20333 != null && field_20333.invokeExact();
+        } catch (Throwable throwable) {
+            throw new RuntimeException(throwable);
+        }
+    }
+
+    public static void method_21736(long l, boolean bl) {
+        if (InputUtil.method_21735()) {
+            GLFW.glfwSetInputMode(l, field_20334, bl ? 1 : 0);
+        }
     }
 
     @Nullable
@@ -73,6 +89,24 @@ public class InputUtil {
     @Nullable
     public static String getScancodeName(int i) {
         return GLFW.glfwGetKeyName(-1, i);
+    }
+
+    static {
+        MethodHandles.Lookup lookup = MethodHandles.lookup();
+        MethodType methodType = MethodType.methodType(Boolean.TYPE);
+        MethodHandle methodHandle = null;
+        int i = 0;
+        try {
+            methodHandle = lookup.findStatic(GLFW.class, "glfwRawMouseMotionSupported", methodType);
+            MethodHandle methodHandle2 = lookup.findStaticGetter(GLFW.class, "GLFW_RAW_MOUSE_MOTION", Integer.TYPE);
+            i = methodHandle2.invokeExact();
+        } catch (NoSuchFieldException | NoSuchMethodException methodHandle2) {
+        } catch (Throwable throwable) {
+            throw new RuntimeException(throwable);
+        }
+        field_20333 = methodHandle;
+        field_20334 = i;
+        UNKNOWN_KEYCODE = Type.KEYSYM.createFromCode(-1);
     }
 
     @Environment(value=EnvType.CLIENT)

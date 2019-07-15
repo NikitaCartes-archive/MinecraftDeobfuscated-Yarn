@@ -27,6 +27,11 @@ AutoCloseable {
         return (WorldChunk)this.getChunk(i, j, ChunkStatus.FULL, bl);
     }
 
+    @Nullable
+    public WorldChunk method_21730(int i, int j) {
+        return this.getWorldChunk(i, j, false);
+    }
+
     @Override
     @Nullable
     public BlockView getChunk(int i, int j) {

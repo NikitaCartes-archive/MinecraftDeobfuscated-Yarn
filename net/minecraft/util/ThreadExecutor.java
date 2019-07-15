@@ -131,7 +131,8 @@ Executor {
     }
 
     protected void method_20813() {
-        LockSupport.parkNanos("waiting for tasks", 1000L);
+        Thread.yield();
+        LockSupport.parkNanos("waiting for tasks", 100000L);
     }
 
     protected void runSafely(R runnable) {

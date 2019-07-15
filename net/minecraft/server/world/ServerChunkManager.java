@@ -103,6 +103,17 @@ extends ChunkManager {
         return this.threadedAnvilChunkStorage.getTotalChunksLoadedCount();
     }
 
+    private void method_21738(long l, Chunk chunk, ChunkStatus chunkStatus) {
+        for (int i = 3; i > 0; --i) {
+            this.chunkPosCache[i] = this.chunkPosCache[i - 1];
+            this.chunkStatusCache[i] = this.chunkStatusCache[i - 1];
+            this.chunkCache[i] = this.chunkCache[i - 1];
+        }
+        this.chunkPosCache[0] = l;
+        this.chunkStatusCache[0] = chunkStatus;
+        this.chunkCache[0] = chunk;
+    }
+
     @Override
     @Nullable
     public Chunk getChunk(int i, int j, ChunkStatus chunkStatus, boolean bl) {
@@ -123,15 +134,38 @@ extends ChunkManager {
             }
             return null;
         });
-        for (int m = 3; m > 0; --m) {
-            this.chunkPosCache[m] = this.chunkPosCache[m - 1];
-            this.chunkStatusCache[m] = this.chunkStatusCache[m - 1];
-            this.chunkCache[m] = this.chunkCache[m - 1];
-        }
-        this.chunkPosCache[0] = l;
-        this.chunkStatusCache[0] = chunkStatus;
-        this.chunkCache[0] = chunk2;
+        this.method_21738(l, chunk2, chunkStatus);
         return chunk2;
+    }
+
+    @Override
+    @Nullable
+    public WorldChunk method_21730(int i, int j) {
+        if (Thread.currentThread() != this.serverThread) {
+            return null;
+        }
+        long l = ChunkPos.toLong(i, j);
+        for (int k = 0; k < 4; ++k) {
+            if (l != this.chunkPosCache[k] || this.chunkStatusCache[k] != ChunkStatus.FULL) continue;
+            Chunk chunk = this.chunkCache[k];
+            return chunk instanceof WorldChunk ? (WorldChunk)chunk : null;
+        }
+        ChunkHolder chunkHolder = this.getChunkHolder(l);
+        if (chunkHolder == null) {
+            return null;
+        }
+        Either either = chunkHolder.method_21737(ChunkStatus.FULL).getNow(null);
+        if (either == null) {
+            return null;
+        }
+        Chunk chunk2 = either.left().orElse(null);
+        if (chunk2 != null) {
+            this.method_21738(l, chunk2, ChunkStatus.FULL);
+            if (chunk2 instanceof WorldChunk) {
+                return (WorldChunk)chunk2;
+            }
+        }
+        return null;
     }
 
     private void initChunkCaches() {

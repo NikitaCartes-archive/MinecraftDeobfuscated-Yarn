@@ -455,7 +455,7 @@ implements Monster {
         }
 
         @Override
-        public void method_6224() {
+        public void tick() {
             PhantomEntity.this.headYaw = PhantomEntity.this.field_6283;
             PhantomEntity.this.field_6283 = PhantomEntity.this.yaw;
         }

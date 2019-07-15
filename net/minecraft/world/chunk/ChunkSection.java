@@ -110,24 +110,21 @@ public class ChunkSection {
         this.nonEmptyBlockCount = 0;
         this.randomTickableBlockCount = 0;
         this.nonEmptyFluidCount = 0;
-        for (int i = 0; i < 16; ++i) {
-            for (int j = 0; j < 16; ++j) {
-                for (int k = 0; k < 16; ++k) {
-                    BlockState blockState = this.getBlockState(i, j, k);
-                    FluidState fluidState = blockState.getFluidState();
-                    if (!blockState.isAir()) {
-                        this.nonEmptyBlockCount = (short)(this.nonEmptyBlockCount + 1);
-                        if (blockState.hasRandomTicks()) {
-                            this.randomTickableBlockCount = (short)(this.randomTickableBlockCount + 1);
-                        }
-                    }
-                    if (fluidState.isEmpty()) continue;
-                    this.nonEmptyBlockCount = (short)(this.nonEmptyBlockCount + 1);
-                    if (!fluidState.hasRandomTicks()) continue;
-                    this.nonEmptyFluidCount = (short)(this.nonEmptyFluidCount + 1);
+        this.container.method_21732((blockState, i) -> {
+            FluidState fluidState = blockState.getFluidState();
+            if (!blockState.isAir()) {
+                this.nonEmptyBlockCount = (short)(this.nonEmptyBlockCount + i);
+                if (blockState.hasRandomTicks()) {
+                    this.randomTickableBlockCount = (short)(this.randomTickableBlockCount + i);
                 }
             }
-        }
+            if (!fluidState.isEmpty()) {
+                this.nonEmptyBlockCount = (short)(this.nonEmptyBlockCount + i);
+                if (fluidState.hasRandomTicks()) {
+                    this.nonEmptyFluidCount = (short)(this.nonEmptyFluidCount + i);
+                }
+            }
+        });
     }
 
     public PalettedContainer<BlockState> getContainer() {

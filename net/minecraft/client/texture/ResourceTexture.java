@@ -75,7 +75,7 @@ extends AbstractTexture {
          */
         public static TextureData load(ResourceManager resourceManager, Identifier identifier) {
             try (Resource resource = resourceManager.getResource(identifier);){
-                NativeImage nativeImage = NativeImage.fromInputStream(resource.getInputStream());
+                NativeImage nativeImage = NativeImage.read(resource.getInputStream());
                 TextureResourceMetadata textureResourceMetadata = null;
                 try {
                     textureResourceMetadata = resource.getMetadata(TextureResourceMetadata.READER);

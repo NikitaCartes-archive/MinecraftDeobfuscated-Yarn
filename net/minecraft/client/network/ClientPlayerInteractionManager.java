@@ -115,7 +115,6 @@ public class ClientPlayerInteractionManager {
         if (bl) {
             block.onBroken(world, blockPos, blockState);
         }
-        this.currentBreakingPos = new BlockPos(this.currentBreakingPos.getX(), -1, this.currentBreakingPos.getZ());
         return bl;
     }
 
@@ -127,7 +126,8 @@ public class ClientPlayerInteractionManager {
             return false;
         }
         if (this.gameMode.isCreative()) {
-            this.client.getTutorialManager().onBlockAttacked(this.client.world, blockPos, this.client.world.getBlockState(blockPos), 1.0f);
+            BlockState blockState = this.client.world.getBlockState(blockPos);
+            this.client.getTutorialManager().onBlockAttacked(this.client.world, blockPos, blockState, 1.0f);
             this.method_21706(PlayerActionC2SPacket.Action.START_DESTROY_BLOCK, blockPos, direction);
             ClientPlayerInteractionManager.method_2921(this.client, this, blockPos, direction);
             this.field_3716 = 5;
@@ -159,7 +159,8 @@ public class ClientPlayerInteractionManager {
 
     public void cancelBlockBreaking() {
         if (this.breakingBlock) {
-            this.client.getTutorialManager().onBlockAttacked(this.client.world, this.currentBreakingPos, this.client.world.getBlockState(this.currentBreakingPos), -1.0f);
+            BlockState blockState = this.client.world.getBlockState(this.currentBreakingPos);
+            this.client.getTutorialManager().onBlockAttacked(this.client.world, this.currentBreakingPos, blockState, -1.0f);
             this.method_21706(PlayerActionC2SPacket.Action.ABORT_DESTROY_BLOCK, this.currentBreakingPos, Direction.DOWN);
             this.breakingBlock = false;
             this.currentBreakingProgress = 0.0f;
@@ -176,7 +177,8 @@ public class ClientPlayerInteractionManager {
         }
         if (this.gameMode.isCreative() && this.client.world.getWorldBorder().contains(blockPos)) {
             this.field_3716 = 5;
-            this.client.getTutorialManager().onBlockAttacked(this.client.world, blockPos, this.client.world.getBlockState(blockPos), 1.0f);
+            BlockState blockState = this.client.world.getBlockState(blockPos);
+            this.client.getTutorialManager().onBlockAttacked(this.client.world, blockPos, blockState, 1.0f);
             this.method_21706(PlayerActionC2SPacket.Action.START_DESTROY_BLOCK, blockPos, direction);
             ClientPlayerInteractionManager.method_2921(this.client, this, blockPos, direction);
             return true;
