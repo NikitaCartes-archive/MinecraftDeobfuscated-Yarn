@@ -927,10 +927,32 @@ public abstract class World implements ExtendedBlockView, IWorld, AutoCloseable 
 		int k = MathHelper.floor((box.minZ - 2.0) / 16.0);
 		int l = MathHelper.ceil((box.maxZ + 2.0) / 16.0);
 		List<T> list = Lists.<T>newArrayList();
+		ChunkManager chunkManager = this.getChunkManager();
 
 		for (int m = i; m < j; m++) {
 			for (int n = k; n < l; n++) {
-				WorldChunk worldChunk = this.getChunkManager().getWorldChunk(m, n, false);
+				WorldChunk worldChunk = chunkManager.getWorldChunk(m, n, false);
+				if (worldChunk != null) {
+					worldChunk.appendEntities(class_, box, list, predicate);
+				}
+			}
+		}
+
+		return list;
+	}
+
+	@Override
+	public <T extends Entity> List<T> method_21729(Class<? extends T> class_, Box box, @Nullable Predicate<? super T> predicate) {
+		int i = MathHelper.floor((box.minX - 2.0) / 16.0);
+		int j = MathHelper.ceil((box.maxX + 2.0) / 16.0);
+		int k = MathHelper.floor((box.minZ - 2.0) / 16.0);
+		int l = MathHelper.ceil((box.maxZ + 2.0) / 16.0);
+		List<T> list = Lists.<T>newArrayList();
+		ChunkManager chunkManager = this.getChunkManager();
+
+		for (int m = i; m < j; m++) {
+			for (int n = k; n < l; n++) {
+				WorldChunk worldChunk = chunkManager.method_21730(m, n);
 				if (worldChunk != null) {
 					worldChunk.appendEntities(class_, box, list, predicate);
 				}

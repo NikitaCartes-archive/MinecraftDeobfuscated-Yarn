@@ -38,7 +38,7 @@ public class UnicodeTextureFont implements Font {
 				Resource resource = this.resourceManager.getResource(identifier);
 				Throwable var8 = null;
 
-				try (NativeImage nativeImage = NativeImage.fromInputStream(NativeImage.Format.RGBA, resource.getInputStream())) {
+				try (NativeImage nativeImage = NativeImage.read(NativeImage.Format.RGBA, resource.getInputStream())) {
 					if (nativeImage.getWidth() == 256 && nativeImage.getHeight() == 256) {
 						for (int j = 0; j < 256; j++) {
 							byte b = bs[c + j];
@@ -104,7 +104,7 @@ public class UnicodeTextureFont implements Font {
 
 			NativeImage var4;
 			try {
-				var4 = NativeImage.fromInputStream(NativeImage.Format.RGBA, resource.getInputStream());
+				var4 = NativeImage.read(NativeImage.Format.RGBA, resource.getInputStream());
 			} catch (Throwable var14) {
 				var3 = var14;
 				throw var14;
@@ -231,7 +231,7 @@ public class UnicodeTextureFont implements Font {
 
 		@Override
 		public boolean hasColor() {
-			return this.image.getFormat().getBytesPerPixel() > 1;
+			return this.image.getFormat().getChannelCount() > 1;
 		}
 
 		@Override

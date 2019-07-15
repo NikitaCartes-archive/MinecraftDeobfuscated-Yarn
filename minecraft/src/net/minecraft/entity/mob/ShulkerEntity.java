@@ -639,7 +639,7 @@ public class ShulkerEntity extends GolemEntity implements Monster {
 		}
 
 		@Override
-		public void method_6224() {
+		public void tick() {
 		}
 	}
 }

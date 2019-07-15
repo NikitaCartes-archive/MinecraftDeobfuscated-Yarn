@@ -34,7 +34,7 @@ public class BannerTexture extends AbstractTexture {
 			Throwable var3 = null;
 
 			try (
-				NativeImage nativeImage = NativeImage.fromInputStream(resource.getInputStream());
+				NativeImage nativeImage = NativeImage.read(resource.getInputStream());
 				NativeImage nativeImage2 = new NativeImage(nativeImage.getWidth(), nativeImage.getHeight(), false);
 			) {
 				nativeImage2.copyFrom(nativeImage);
@@ -45,7 +45,7 @@ public class BannerTexture extends AbstractTexture {
 						Resource resource2 = resourceManager.getResource(new Identifier(string));
 						Throwable var11 = null;
 
-						try (NativeImage nativeImage3 = NativeImage.fromInputStream(resource2.getInputStream())) {
+						try (NativeImage nativeImage3 = NativeImage.read(resource2.getInputStream())) {
 							int j = ((DyeColor)this.dyes.get(i)).getColorSwapped();
 							if (nativeImage3.getWidth() == nativeImage2.getWidth() && nativeImage3.getHeight() == nativeImage2.getHeight()) {
 								for (int k = 0; k < nativeImage3.getHeight(); k++) {

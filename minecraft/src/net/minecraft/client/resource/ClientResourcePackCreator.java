@@ -239,7 +239,7 @@ public class ClientResourcePackCreator implements ResourcePackCreator {
 					Throwable var8 = null;
 
 					try {
-						nativeImage = NativeImage.fromInputStream(inputStream);
+						nativeImage = NativeImage.read(inputStream);
 					} catch (Throwable var35) {
 						var8 = var35;
 						throw var35;

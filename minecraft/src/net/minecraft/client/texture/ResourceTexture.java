@@ -87,7 +87,7 @@ public class ResourceTexture extends AbstractTexture {
 
 				ResourceTexture.TextureData runtimeException;
 				try {
-					NativeImage nativeImage = NativeImage.fromInputStream(resource.getInputStream());
+					NativeImage nativeImage = NativeImage.read(resource.getInputStream());
 					TextureResourceMetadata textureResourceMetadata = null;
 
 					try {

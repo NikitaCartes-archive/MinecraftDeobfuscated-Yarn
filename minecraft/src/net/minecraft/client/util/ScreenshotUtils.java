@@ -71,7 +71,7 @@ public class ScreenshotUtils {
 			GlStateManager.bindTexture(glFramebuffer.colorAttachment);
 			nativeImage.loadFromTextureImage(0, true);
 		} else {
-			nativeImage.method_4306(true);
+			nativeImage.loadFromMemory(true);
 		}
 
 		nativeImage.method_4319();

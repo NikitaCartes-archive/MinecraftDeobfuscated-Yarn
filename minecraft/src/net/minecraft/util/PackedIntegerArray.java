@@ -1,5 +1,6 @@
 package net.minecraft.util;
 
+import java.util.function.IntConsumer;
 import net.minecraft.util.math.MathHelper;
 import org.apache.commons.lang3.Validate;
 
@@ -84,5 +85,33 @@ public class PackedIntegerArray {
 
 	public int getElementBits() {
 		return this.elementBits;
+	}
+
+	public void method_21739(IntConsumer intConsumer) {
+		int i = this.storage.length;
+		if (i != 0) {
+			int j = 0;
+			long l = this.storage[0];
+			long m = i > 1 ? this.storage[1] : 0L;
+
+			for (int k = 0; k < this.size; k++) {
+				int n = k * this.elementBits;
+				int o = n >> 6;
+				int p = (k + 1) * this.elementBits - 1 >> 6;
+				int q = n ^ o << 6;
+				if (o != j) {
+					l = m;
+					m = o + 1 < i ? this.storage[o + 1] : 0L;
+					j = o;
+				}
+
+				if (o == p) {
+					intConsumer.accept((int)(l >>> q & this.maxValue));
+				} else {
+					int r = 64 - q;
+					intConsumer.accept((int)((l >>> q | m << r) & this.maxValue));
+				}
+			}
+		}
 	}
 }

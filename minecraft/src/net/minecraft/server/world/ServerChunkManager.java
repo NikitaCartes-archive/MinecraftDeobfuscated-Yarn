@@ -113,6 +113,18 @@ public class ServerChunkManager extends ChunkManager {
 		return this.threadedAnvilChunkStorage.getTotalChunksLoadedCount();
 	}
 
+	private void method_21738(long l, Chunk chunk, ChunkStatus chunkStatus) {
+		for (int i = 3; i > 0; i--) {
+			this.chunkPosCache[i] = this.chunkPosCache[i - 1];
+			this.chunkStatusCache[i] = this.chunkStatusCache[i - 1];
+			this.chunkCache[i] = this.chunkCache[i - 1];
+		}
+
+		this.chunkPosCache[0] = l;
+		this.chunkStatusCache[0] = chunkStatus;
+		this.chunkCache[0] = chunk;
+	}
+
 	@Nullable
 	@Override
 	public Chunk getChunk(int i, int j, ChunkStatus chunkStatus, boolean bl) {
@@ -139,17 +151,45 @@ public class ServerChunkManager extends ChunkManager {
 					return null;
 				}
 			});
+			this.method_21738(l, chunk, chunkStatus);
+			return chunk;
+		}
+	}
 
-			for (int m = 3; m > 0; m--) {
-				this.chunkPosCache[m] = this.chunkPosCache[m - 1];
-				this.chunkStatusCache[m] = this.chunkStatusCache[m - 1];
-				this.chunkCache[m] = this.chunkCache[m - 1];
+	@Nullable
+	@Override
+	public WorldChunk method_21730(int i, int j) {
+		if (Thread.currentThread() != this.serverThread) {
+			return null;
+		} else {
+			long l = ChunkPos.toLong(i, j);
+
+			for (int k = 0; k < 4; k++) {
+				if (l == this.chunkPosCache[k] && this.chunkStatusCache[k] == ChunkStatus.FULL) {
+					Chunk chunk = this.chunkCache[k];
+					return chunk instanceof WorldChunk ? (WorldChunk)chunk : null;
+				}
 			}
 
-			this.chunkPosCache[0] = l;
-			this.chunkStatusCache[0] = chunkStatus;
-			this.chunkCache[0] = chunk;
-			return chunk;
+			ChunkHolder chunkHolder = this.getChunkHolder(l);
+			if (chunkHolder == null) {
+				return null;
+			} else {
+				Either<Chunk, ChunkHolder.Unloaded> either = (Either<Chunk, ChunkHolder.Unloaded>)chunkHolder.method_21737(ChunkStatus.FULL).getNow(null);
+				if (either == null) {
+					return null;
+				} else {
+					Chunk chunk2 = (Chunk)either.left().orElse(null);
+					if (chunk2 != null) {
+						this.method_21738(l, chunk2, ChunkStatus.FULL);
+						if (chunk2 instanceof WorldChunk) {
+							return (WorldChunk)chunk2;
+						}
+					}
+
+					return null;
+				}
+			}
 		}
 	}
 

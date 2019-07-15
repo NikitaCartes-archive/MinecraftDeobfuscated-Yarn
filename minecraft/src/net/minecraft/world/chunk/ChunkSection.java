@@ -115,28 +115,22 @@ public class ChunkSection {
 		this.nonEmptyBlockCount = 0;
 		this.randomTickableBlockCount = 0;
 		this.nonEmptyFluidCount = 0;
-
-		for (int i = 0; i < 16; i++) {
-			for (int j = 0; j < 16; j++) {
-				for (int k = 0; k < 16; k++) {
-					BlockState blockState = this.getBlockState(i, j, k);
-					FluidState fluidState = blockState.getFluidState();
-					if (!blockState.isAir()) {
-						this.nonEmptyBlockCount++;
-						if (blockState.hasRandomTicks()) {
-							this.randomTickableBlockCount++;
-						}
-					}
-
-					if (!fluidState.isEmpty()) {
-						this.nonEmptyBlockCount++;
-						if (fluidState.hasRandomTicks()) {
-							this.nonEmptyFluidCount++;
-						}
-					}
+		this.container.method_21732((blockState, i) -> {
+			FluidState fluidState = blockState.getFluidState();
+			if (!blockState.isAir()) {
+				this.nonEmptyBlockCount = (short)(this.nonEmptyBlockCount + i);
+				if (blockState.hasRandomTicks()) {
+					this.randomTickableBlockCount = (short)(this.randomTickableBlockCount + i);
 				}
 			}
-		}
+
+			if (!fluidState.isEmpty()) {
+				this.nonEmptyBlockCount = (short)(this.nonEmptyBlockCount + i);
+				if (fluidState.hasRandomTicks()) {
+					this.nonEmptyFluidCount = (short)(this.nonEmptyFluidCount + i);
+				}
+			}
+		});
 	}
 
 	public PalettedContainer<BlockState> getContainer() {

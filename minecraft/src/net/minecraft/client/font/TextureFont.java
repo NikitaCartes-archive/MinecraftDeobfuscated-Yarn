@@ -94,7 +94,7 @@ public class TextureFont implements Font {
 
 				TextureFont var28;
 				try {
-					NativeImage nativeImage = NativeImage.fromInputStream(NativeImage.Format.RGBA, resource.getInputStream());
+					NativeImage nativeImage = NativeImage.read(NativeImage.Format.RGBA, resource.getInputStream());
 					int i = nativeImage.getWidth();
 					int j = nativeImage.getHeight();
 					int k = i / ((String)this.chars.get(0)).length();
@@ -150,7 +150,7 @@ public class TextureFont implements Font {
 
 				for (int o = 0; o < j; o++) {
 					int p = l * j + o;
-					if (nativeImage.getAlphaOrLuminance(n, p) != 0) {
+					if (nativeImage.getPixelOpacity(n, p) != 0) {
 						return m + 1;
 					}
 				}
@@ -214,7 +214,7 @@ public class TextureFont implements Font {
 
 		@Override
 		public boolean hasColor() {
-			return this.image.getFormat().getBytesPerPixel() > 1;
+			return this.image.getFormat().getChannelCount() > 1;
 		}
 	}
 }

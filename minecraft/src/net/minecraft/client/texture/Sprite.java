@@ -349,7 +349,7 @@ public class Sprite {
 	}
 
 	public void load(Resource resource, int i) throws IOException {
-		NativeImage nativeImage = NativeImage.fromInputStream(resource.getInputStream());
+		NativeImage nativeImage = NativeImage.read(resource.getInputStream());
 		this.images = new NativeImage[i];
 		this.images[0] = nativeImage;
 		int j;

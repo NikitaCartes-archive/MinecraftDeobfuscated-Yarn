@@ -364,7 +364,7 @@ public class MultiplayerServerListWidget extends AlwaysSelectedEntryListWidget<M
 				this.iconTexture = null;
 			} else {
 				try {
-					NativeImage nativeImage = NativeImage.fromBase64(string);
+					NativeImage nativeImage = NativeImage.read(string);
 					Validate.validState(nativeImage.getWidth() == 64, "Must be 64 pixels wide");
 					Validate.validState(nativeImage.getHeight() == 64, "Must be 64 pixels high");
 					if (this.iconTexture == null) {

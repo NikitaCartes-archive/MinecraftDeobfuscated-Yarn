@@ -135,7 +135,7 @@ public class SplashScreen extends Overlay {
 
 				ResourceTexture.TextureData var6;
 				try {
-					var6 = new ResourceTexture.TextureData(null, NativeImage.fromInputStream(inputStream));
+					var6 = new ResourceTexture.TextureData(null, NativeImage.read(inputStream));
 				} catch (Throwable var16) {
 					var5 = var16;
 					throw var16;

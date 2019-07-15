@@ -20,7 +20,7 @@ public class GlyphAtlasTexture extends AbstractTexture implements Closeable {
 		this.id = identifier;
 		this.hasColor = bl;
 		this.rootSlot = new GlyphAtlasTexture.Slot(0, 0, 256, 256);
-		TextureUtil.prepareImage(bl ? NativeImage.class_1013.RGBA : NativeImage.class_1013.INTENSITY, this.getGlId(), 256, 256);
+		TextureUtil.prepareImage(bl ? NativeImage.GLFormat.RGBA : NativeImage.GLFormat.INTENSITY, this.getGlId(), 256, 256);
 	}
 
 	@Override

@@ -410,7 +410,7 @@ public class WorldListWidget extends AlwaysSelectedEntryListWidget<WorldListWidg
 
 					NativeImageBackedTexture var6;
 					try {
-						NativeImage nativeImage = NativeImage.fromInputStream(inputStream);
+						NativeImage nativeImage = NativeImage.read(inputStream);
 						Validate.validState(nativeImage.getWidth() == 64, "Must be 64 pixels wide");
 						Validate.validState(nativeImage.getHeight() == 64, "Must be 64 pixels high");
 						NativeImageBackedTexture nativeImageBackedTexture = new NativeImageBackedTexture(nativeImage);

@@ -166,6 +166,7 @@ import net.minecraft.client.sound.PositionedSoundInstance;
 import net.minecraft.client.sound.RidingMinecartSoundInstance;
 import net.minecraft.client.sound.SoundInstance;
 import net.minecraft.client.toast.RecipeToast;
+import net.minecraft.client.world.ClientChunkManager;
 import net.minecraft.client.world.ClientWorld;
 import net.minecraft.container.Container;
 import net.minecraft.container.HorseContainer;
@@ -272,6 +273,7 @@ import net.minecraft.util.Hand;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.PacketByteBuf;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.math.ChunkSectionPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
@@ -761,11 +763,16 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 		NetworkThreadUtils.forceMainThread(unloadChunkS2CPacket, this, this.client);
 		int i = unloadChunkS2CPacket.getX();
 		int j = unloadChunkS2CPacket.getZ();
-		this.world.method_2935().unload(i, j);
+		ClientChunkManager clientChunkManager = this.world.method_2935();
+		clientChunkManager.unload(i, j);
+		LightingProvider lightingProvider = clientChunkManager.getLightingProvider();
 
 		for (int k = 0; k < 16; k++) {
 			this.world.scheduleBlockRenders(i, k, j);
+			lightingProvider.updateSectionStatus(ChunkSectionPos.from(i, k, j), true);
 		}
+
+		lightingProvider.suppressLight(new ChunkPos(i, j), false);
 	}
 
 	@Override

@@ -380,7 +380,7 @@ public class ThreadedAnvilChunkStorage extends VersionedChunkStorage implements 
 		}
 
 		Runnable runnable;
-		while (booleanSupplier.getAsBoolean() && (runnable = (Runnable)this.field_19343.poll()) != null) {
+		while ((booleanSupplier.getAsBoolean() || this.field_19343.size() > 2000) && (runnable = (Runnable)this.field_19343.poll()) != null) {
 			runnable.run();
 		}
 	}

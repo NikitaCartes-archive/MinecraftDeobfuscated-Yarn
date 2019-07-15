@@ -51,7 +51,7 @@ public class FleeEntityGoal<T extends LivingEntity> extends Goal {
 	public boolean canStart() {
 		this.targetEntity = this.mob
 			.world
-			.getClosestEntity(
+			.method_21727(
 				this.classToFleeFrom,
 				this.withinRangePredicate,
 				this.mob,

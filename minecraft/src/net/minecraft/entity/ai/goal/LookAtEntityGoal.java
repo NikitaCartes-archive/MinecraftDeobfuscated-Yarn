@@ -53,7 +53,7 @@ public class LookAtEntityGoal extends Goal {
 			} else {
 				this.target = this.mob
 					.world
-					.getClosestEntity(
+					.method_21727(
 						this.targetType,
 						this.targetPredicate,
 						this.mob,
@@ -89,7 +89,7 @@ public class LookAtEntityGoal extends Goal {
 
 	@Override
 	public void tick() {
-		this.mob.getLookControl().method_20248(this.target.x, this.target.y + (double)this.target.getStandingEyeHeight(), this.target.z);
+		this.mob.getLookControl().lookAt(this.target.x, this.target.y + (double)this.target.getStandingEyeHeight(), this.target.z);
 		this.lookTime--;
 	}
 }

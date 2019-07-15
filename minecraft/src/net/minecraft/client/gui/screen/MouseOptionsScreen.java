@@ -27,7 +27,7 @@ public class MouseOptionsScreen extends Screen {
 	@Override
 	protected void init() {
 		this.buttonList = new ButtonListWidget(this.minecraft, this.width, this.height, 32, this.height - 32, 25);
-		if (InputUtil.method_21667()) {
+		if (InputUtil.method_21735()) {
 			this.buttonList.addAll((Option[])Stream.concat(Arrays.stream(OPTIONS), Stream.of(Option.field_20307)).toArray(Option[]::new));
 		} else {
 			this.buttonList.addAll(OPTIONS);

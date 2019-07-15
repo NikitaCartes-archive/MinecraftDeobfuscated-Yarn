@@ -34,7 +34,7 @@ public class LayeredTexture extends AbstractTexture {
 			Resource resource = resourceManager.getResource(new Identifier(string));
 			Throwable var5 = null;
 
-			try (NativeImage nativeImage = NativeImage.fromInputStream(resource.getInputStream())) {
+			try (NativeImage nativeImage = NativeImage.read(resource.getInputStream())) {
 				while (true) {
 					if (!iterator.hasNext()) {
 						TextureUtil.prepareImage(this.getGlId(), nativeImage.getWidth(), nativeImage.getHeight());
@@ -47,7 +47,7 @@ public class LayeredTexture extends AbstractTexture {
 						Resource resource2 = resourceManager.getResource(new Identifier(string2));
 						Throwable var10 = null;
 
-						try (NativeImage nativeImage2 = NativeImage.fromInputStream(resource2.getInputStream())) {
+						try (NativeImage nativeImage2 = NativeImage.read(resource2.getInputStream())) {
 							for (int i = 0; i < nativeImage2.getHeight(); i++) {
 								for (int j = 0; j < nativeImage2.getWidth(); j++) {
 									nativeImage.blendPixel(j, i, nativeImage2.getPixelRGBA(j, i));
