@@ -890,7 +890,7 @@ public class GameRenderer implements AutoCloseable, SynchronousResourceReloadLis
 				if (blockPos2.getY() <= blockPos.getY() + 10
 					&& blockPos2.getY() >= blockPos.getY() - 10
 					&& biome.getPrecipitation() == Biome.Precipitation.RAIN
-					&& biome.getTemperature(blockPos2) >= 0.15F) {
+					&& biome.method_21740(blockPos2) >= 0.15F) {
 					double h = this.random.nextDouble();
 					double m = this.random.nextDouble();
 					BlockState blockState = viewableWorld.getBlockState(blockPos3);
@@ -1005,7 +1005,7 @@ public class GameRenderer implements AutoCloseable, SynchronousResourceReloadLis
 						if (v != w) {
 							this.random.setSeed((long)(q * q * 3121 + q * 45238971 ^ p * p * 418711 + p * 13761));
 							mutable.set(q, v, p);
-							float y = biome.getTemperature(mutable);
+							float y = biome.method_21740(mutable);
 							if (y >= 0.15F) {
 								if (n != 0) {
 									if (n >= 0) {

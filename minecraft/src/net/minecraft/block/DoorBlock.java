@@ -177,10 +177,10 @@ public class DoorBlock extends Block {
 		BlockState blockState3 = blockView.getBlockState(blockPos5);
 		BlockPos blockPos6 = blockPos2.offset(direction3);
 		BlockState blockState4 = blockView.getBlockState(blockPos6);
-		int i = (isShapeFullCube(blockState.getCollisionShape(blockView, blockPos3)) ? -1 : 0)
-			+ (isShapeFullCube(blockState2.getCollisionShape(blockView, blockPos4)) ? -1 : 0)
-			+ (isShapeFullCube(blockState3.getCollisionShape(blockView, blockPos5)) ? 1 : 0)
-			+ (isShapeFullCube(blockState4.getCollisionShape(blockView, blockPos6)) ? 1 : 0);
+		int i = (blockState.method_21743(blockView, blockPos3) ? -1 : 0)
+			+ (blockState2.method_21743(blockView, blockPos4) ? -1 : 0)
+			+ (blockState3.method_21743(blockView, blockPos5) ? 1 : 0)
+			+ (blockState4.method_21743(blockView, blockPos6) ? 1 : 0);
 		boolean bl = blockState.getBlock() == this && blockState.get(HALF) == DoubleBlockHalf.LOWER;
 		boolean bl2 = blockState3.getBlock() == this && blockState3.get(HALF) == DoubleBlockHalf.LOWER;
 		if ((!bl || bl2) && i <= 0) {

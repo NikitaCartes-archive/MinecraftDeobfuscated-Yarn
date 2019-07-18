@@ -423,10 +423,7 @@ public class EndermanEntity extends HostileEntity {
 		private boolean method_7033(
 			ViewableWorld viewableWorld, BlockPos blockPos, BlockState blockState, BlockState blockState2, BlockState blockState3, BlockPos blockPos2
 		) {
-			return blockState2.isAir()
-				&& !blockState3.isAir()
-				&& Block.isShapeFullCube(blockState3.getCollisionShape(viewableWorld, blockPos2))
-				&& blockState.canPlaceAt(viewableWorld, blockPos);
+			return blockState2.isAir() && !blockState3.isAir() && blockState3.method_21743(viewableWorld, blockPos2) && blockState.canPlaceAt(viewableWorld, blockPos);
 		}
 	}
 

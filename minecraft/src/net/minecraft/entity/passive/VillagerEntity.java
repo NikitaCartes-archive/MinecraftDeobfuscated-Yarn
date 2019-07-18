@@ -400,6 +400,11 @@ public class VillagerEntity extends AbstractTraderEntity implements InteractionO
 
 	private void method_21723() {
 		int i = 2 - this.restocksToday;
+		if (i > 0) {
+			for (TradeOffer tradeOffer : this.getOffers()) {
+				tradeOffer.resetUses();
+			}
+		}
 
 		for (int j = 0; j < i; j++) {
 			this.method_21724();

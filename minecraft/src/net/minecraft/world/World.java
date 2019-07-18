@@ -435,7 +435,7 @@ public abstract class World implements ExtendedBlockView, IWorld, AutoCloseable 
 		float h = MathHelper.cos(g * (float) (Math.PI * 2)) * 2.0F + 0.5F;
 		h = MathHelper.clamp(h, 0.0F, 1.0F);
 		Biome biome = this.getBiome(blockPos);
-		float i = biome.getTemperature(blockPos);
+		float i = biome.method_21740(blockPos);
 		int j = biome.getSkyColor(i);
 		float k = (float)(j >> 16 & 0xFF) / 255.0F;
 		float l = (float)(j >> 8 & 0xFF) / 255.0F;

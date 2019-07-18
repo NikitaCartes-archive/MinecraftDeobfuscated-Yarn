@@ -3,6 +3,7 @@ package net.minecraft.world.biome;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
+import it.unimi.dsi.fastutil.longs.Long2FloatLinkedOpenHashMap;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
@@ -81,6 +82,15 @@ public abstract class Biome {
 	protected final List<ConfiguredFeature<?>> flowerFeatures = Lists.<ConfiguredFeature<?>>newArrayList();
 	protected final Map<StructureFeature<?>, FeatureConfig> structureFeatures = Maps.<StructureFeature<?>, FeatureConfig>newHashMap();
 	private final Map<EntityCategory, List<Biome.SpawnEntry>> spawns = Maps.<EntityCategory, List<Biome.SpawnEntry>>newHashMap();
+	private final ThreadLocal<Long2FloatLinkedOpenHashMap> field_20335 = ThreadLocal.withInitial(() -> SystemUtil.get(() -> {
+			Long2FloatLinkedOpenHashMap long2FloatLinkedOpenHashMap = new Long2FloatLinkedOpenHashMap(1024, 0.25F) {
+				@Override
+				protected void rehash(int i) {
+				}
+			};
+			long2FloatLinkedOpenHashMap.defaultReturnValue(Float.NaN);
+			return long2FloatLinkedOpenHashMap;
+		}));
 
 	@Nullable
 	public static Biome getParentBiome(Biome biome) {
@@ -162,7 +172,7 @@ public abstract class Biome {
 		return 0.1F;
 	}
 
-	public float getTemperature(BlockPos blockPos) {
+	protected float getTemperature(BlockPos blockPos) {
 		if (blockPos.getY() > 64) {
 			float f = (float)(TEMPERATURE_NOISE.sample((double)((float)blockPos.getX() / 8.0F), (double)((float)blockPos.getZ() / 8.0F)) * 4.0);
 			return this.getTemperature() - (f + (float)blockPos.getY() - 64.0F) * 0.05F / 30.0F;
@@ -171,12 +181,29 @@ public abstract class Biome {
 		}
 	}
 
+	public final float method_21740(BlockPos blockPos) {
+		long l = blockPos.asLong();
+		Long2FloatLinkedOpenHashMap long2FloatLinkedOpenHashMap = (Long2FloatLinkedOpenHashMap)this.field_20335.get();
+		float f = long2FloatLinkedOpenHashMap.get(l);
+		if (!Float.isNaN(f)) {
+			return f;
+		} else {
+			float g = this.getTemperature(blockPos);
+			if (long2FloatLinkedOpenHashMap.size() == 1024) {
+				long2FloatLinkedOpenHashMap.removeFirstFloat();
+			}
+
+			long2FloatLinkedOpenHashMap.put(l, g);
+			return g;
+		}
+	}
+
 	public boolean canSetSnow(ViewableWorld viewableWorld, BlockPos blockPos) {
 		return this.canSetSnow(viewableWorld, blockPos, true);
 	}
 
 	public boolean canSetSnow(ViewableWorld viewableWorld, BlockPos blockPos, boolean bl) {
-		if (this.getTemperature(blockPos) >= 0.15F) {
+		if (this.method_21740(blockPos) >= 0.15F) {
 			return false;
 		} else {
 			if (blockPos.getY() >= 0 && blockPos.getY() < 256 && viewableWorld.getLightLevel(LightType.BLOCK, blockPos) < 10) {
@@ -202,7 +229,7 @@ public abstract class Biome {
 	}
 
 	public boolean canSetIce(ViewableWorld viewableWorld, BlockPos blockPos) {
-		if (this.getTemperature(blockPos) >= 0.15F) {
+		if (this.method_21740(blockPos) >= 0.15F) {
 			return false;
 		} else {
 			if (blockPos.getY() >= 0 && blockPos.getY() < 256 && viewableWorld.getLightLevel(LightType.BLOCK, blockPos) < 10) {
@@ -280,14 +307,14 @@ public abstract class Biome {
 
 	@Environment(EnvType.CLIENT)
 	public int getGrassColorAt(BlockPos blockPos) {
-		double d = (double)MathHelper.clamp(this.getTemperature(blockPos), 0.0F, 1.0F);
+		double d = (double)MathHelper.clamp(this.method_21740(blockPos), 0.0F, 1.0F);
 		double e = (double)MathHelper.clamp(this.getRainfall(), 0.0F, 1.0F);
 		return GrassColors.getColor(d, e);
 	}
 
 	@Environment(EnvType.CLIENT)
 	public int getFoliageColorAt(BlockPos blockPos) {
-		double d = (double)MathHelper.clamp(this.getTemperature(blockPos), 0.0F, 1.0F);
+		double d = (double)MathHelper.clamp(this.method_21740(blockPos), 0.0F, 1.0F);
 		double e = (double)MathHelper.clamp(this.getRainfall(), 0.0F, 1.0F);
 		return FoliageColors.getColor(d, e);
 	}

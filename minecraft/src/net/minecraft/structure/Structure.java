@@ -81,7 +81,7 @@ public class Structure {
 						compoundTag.remove("y");
 						compoundTag.remove("z");
 						list2.add(new Structure.StructureBlockInfo(blockPos7, blockState, compoundTag));
-					} else if (!blockState.isFullOpaque(world, blockPos6) && !Block.isShapeFullCube(blockState.getCollisionShape(world, blockPos6))) {
+					} else if (!blockState.isFullOpaque(world, blockPos6) && !blockState.method_21743(world, blockPos6)) {
 						list3.add(new Structure.StructureBlockInfo(blockPos7, blockState, null));
 					} else {
 						list.add(new Structure.StructureBlockInfo(blockPos7, blockState, null));

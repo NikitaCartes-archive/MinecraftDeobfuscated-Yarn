@@ -168,7 +168,7 @@ public class RedstoneWireBlock extends Block {
 		if (!blockState2.isSimpleFullBlock(blockView, blockPos3)) {
 			boolean bl = blockState.method_20827(blockView, blockPos2, Direction.UP) || blockState.getBlock() == Blocks.HOPPER;
 			if (bl && connectsTo(blockView.getBlockState(blockPos2.up()))) {
-				if (isShapeFullCube(blockState.getCollisionShape(blockView, blockPos2))) {
+				if (blockState.method_21743(blockView, blockPos2)) {
 					return WireConnection.UP;
 				}
 

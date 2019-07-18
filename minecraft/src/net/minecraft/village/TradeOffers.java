@@ -69,7 +69,7 @@ public class TradeOffers {
 						4,
 						new TradeOffers.Factory[]{
 							new TradeOffers.SellItemFactory(Blocks.CAKE, 1, 1, 12, 15),
-							new TradeOffers.SellSuspiciousStewFactory(StatusEffects.SPEED, 160, 15),
+							new TradeOffers.SellSuspiciousStewFactory(StatusEffects.NIGHT_VISION, 100, 15),
 							new TradeOffers.SellSuspiciousStewFactory(StatusEffects.JUMP_BOOST, 160, 15),
 							new TradeOffers.SellSuspiciousStewFactory(StatusEffects.WEAKNESS, 140, 15),
 							new TradeOffers.SellSuspiciousStewFactory(StatusEffects.BLINDNESS, 120, 15),

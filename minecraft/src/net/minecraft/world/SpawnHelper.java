@@ -4,7 +4,6 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Random;
 import javax.annotation.Nullable;
-import net.minecraft.block.Block;
 import net.minecraft.block.BlockPlacementEnvironment;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.Entity;
@@ -168,7 +167,7 @@ public final class SpawnHelper {
 	}
 
 	public static boolean isClearForSpawn(BlockView blockView, BlockPos blockPos, BlockState blockState, FluidState fluidState) {
-		if (Block.isShapeFullCube(blockState.getCollisionShape(blockView, blockPos))) {
+		if (blockState.method_21743(blockView, blockPos)) {
 			return false;
 		} else if (blockState.emitsRedstonePower()) {
 			return false;

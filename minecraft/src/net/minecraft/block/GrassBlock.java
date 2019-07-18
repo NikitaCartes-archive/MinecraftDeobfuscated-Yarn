@@ -35,7 +35,7 @@ public class GrassBlock extends SpreadableBlock implements Fertilizable {
 
 			for (int j = 0; j < i / 16; j++) {
 				blockPos3 = blockPos3.add(random.nextInt(3) - 1, (random.nextInt(3) - 1) * random.nextInt(3) / 2, random.nextInt(3) - 1);
-				if (world.getBlockState(blockPos3.down()).getBlock() != this || isShapeFullCube(world.getBlockState(blockPos3).getCollisionShape(world, blockPos3))) {
+				if (world.getBlockState(blockPos3.down()).getBlock() != this || world.getBlockState(blockPos3).method_21743(world, blockPos3)) {
 					continue label48;
 				}
 			}

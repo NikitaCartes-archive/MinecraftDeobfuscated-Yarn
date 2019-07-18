@@ -1964,7 +1964,7 @@ public abstract class Entity implements Nameable, CommandOutput {
 
 		for (Direction direction2 : new Direction[]{Direction.NORTH, Direction.SOUTH, Direction.WEST, Direction.EAST, Direction.UP}) {
 			mutable.set(blockPos).setOffset(direction2);
-			if (!Block.isShapeFullCube(this.world.getBlockState(mutable).getCollisionShape(this.world, mutable))) {
+			if (!this.world.getBlockState(mutable).method_21743(this.world, mutable)) {
 				double h = vec3d.getComponentAlongAxis(direction2.getAxis());
 				double i = direction2.getDirection() == Direction.AxisDirection.POSITIVE ? 1.0 - h : h;
 				if (i < g) {

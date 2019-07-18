@@ -3,7 +3,6 @@ package net.minecraft.item;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.DeadCoralWallFanBlock;
@@ -81,7 +80,7 @@ public class BoneMealItem extends Item {
 					for (int j = 0; j < i / 16; j++) {
 						blockPos2 = blockPos2.add(RANDOM.nextInt(3) - 1, (RANDOM.nextInt(3) - 1) * RANDOM.nextInt(3) / 2, RANDOM.nextInt(3) - 1);
 						biome = world.getBiome(blockPos2);
-						if (Block.isShapeFullCube(world.getBlockState(blockPos2).getCollisionShape(world, blockPos2))) {
+						if (world.getBlockState(blockPos2).method_21743(world, blockPos2)) {
 							continue label79;
 						}
 					}

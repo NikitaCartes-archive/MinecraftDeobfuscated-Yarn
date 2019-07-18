@@ -279,7 +279,9 @@ public class TextFieldWidget extends AbstractButtonWidget implements Drawable, E
 				switch (i) {
 					case 259:
 						if (this.editable) {
+							this.field_17037 = false;
 							this.method_16873(-1);
+							this.field_17037 = Screen.hasShiftDown();
 						}
 
 						return true;
@@ -292,7 +294,9 @@ public class TextFieldWidget extends AbstractButtonWidget implements Drawable, E
 						return false;
 					case 261:
 						if (this.editable) {
+							this.field_17037 = false;
 							this.method_16873(1);
+							this.field_17037 = Screen.hasShiftDown();
 						}
 
 						return true;
