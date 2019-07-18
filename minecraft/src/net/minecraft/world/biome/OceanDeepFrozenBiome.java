@@ -67,7 +67,7 @@ public class OceanDeepFrozenBiome extends Biome {
 	}
 
 	@Override
-	public float getTemperature(BlockPos blockPos) {
+	protected float getTemperature(BlockPos blockPos) {
 		float f = this.getTemperature();
 		double d = field_9484.sample((double)blockPos.getX() * 0.05, (double)blockPos.getZ() * 0.05);
 		double e = FOLIAGE_NOISE.sample((double)blockPos.getX() * 0.2, (double)blockPos.getZ() * 0.2);

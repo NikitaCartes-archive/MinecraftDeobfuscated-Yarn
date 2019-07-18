@@ -84,7 +84,7 @@ public class DefaultSurfaceBuilder extends SurfaceBuilder<TernarySurfaceConfig> 
 					}
 
 					if (q < l && (blockState6 == null || blockState6.isAir())) {
-						if (biome.getTemperature(mutable.set(i, q, j)) < 0.15F) {
+						if (biome.method_21740(mutable.set(i, q, j)) < 0.15F) {
 							blockState6 = Blocks.ICE.getDefaultState();
 						} else {
 							blockState6 = blockState2;
