@@ -4,8 +4,8 @@
 package net.minecraft.client.render.block;
 
 import com.mojang.blaze3d.platform.GlStateManager;
-import it.unimi.dsi.fastutil.objects.Object2FloatLinkedOpenHashMap;
-import it.unimi.dsi.fastutil.objects.Object2IntLinkedOpenHashMap;
+import it.unimi.dsi.fastutil.longs.Long2FloatLinkedOpenHashMap;
+import it.unimi.dsi.fastutil.longs.Long2IntLinkedOpenHashMap;
 import java.util.BitSet;
 import java.util.List;
 import java.util.Random;
@@ -168,32 +168,32 @@ public class BlockModelRenderer {
         switch (direction) {
             case DOWN: {
                 bitSet.set(1, f >= 1.0E-4f || h >= 1.0E-4f || i <= 0.9999f || k <= 0.9999f);
-                bitSet.set(0, (g < 1.0E-4f || Block.isShapeFullCube(blockState.getCollisionShape(extendedBlockView, blockPos))) && g == j);
+                bitSet.set(0, g == j && (g < 1.0E-4f || blockState.method_21743(extendedBlockView, blockPos)));
                 break;
             }
             case UP: {
                 bitSet.set(1, f >= 1.0E-4f || h >= 1.0E-4f || i <= 0.9999f || k <= 0.9999f);
-                bitSet.set(0, (j > 0.9999f || Block.isShapeFullCube(blockState.getCollisionShape(extendedBlockView, blockPos))) && g == j);
+                bitSet.set(0, g == j && (j > 0.9999f || blockState.method_21743(extendedBlockView, blockPos)));
                 break;
             }
             case NORTH: {
                 bitSet.set(1, f >= 1.0E-4f || g >= 1.0E-4f || i <= 0.9999f || j <= 0.9999f);
-                bitSet.set(0, (h < 1.0E-4f || Block.isShapeFullCube(blockState.getCollisionShape(extendedBlockView, blockPos))) && h == k);
+                bitSet.set(0, h == k && (h < 1.0E-4f || blockState.method_21743(extendedBlockView, blockPos)));
                 break;
             }
             case SOUTH: {
                 bitSet.set(1, f >= 1.0E-4f || g >= 1.0E-4f || i <= 0.9999f || j <= 0.9999f);
-                bitSet.set(0, (k > 0.9999f || Block.isShapeFullCube(blockState.getCollisionShape(extendedBlockView, blockPos))) && h == k);
+                bitSet.set(0, h == k && (k > 0.9999f || blockState.method_21743(extendedBlockView, blockPos)));
                 break;
             }
             case WEST: {
                 bitSet.set(1, g >= 1.0E-4f || h >= 1.0E-4f || j <= 0.9999f || k <= 0.9999f);
-                bitSet.set(0, (f < 1.0E-4f || Block.isShapeFullCube(blockState.getCollisionShape(extendedBlockView, blockPos))) && f == i);
+                bitSet.set(0, f == i && (f < 1.0E-4f || blockState.method_21743(extendedBlockView, blockPos)));
                 break;
             }
             case EAST: {
                 bitSet.set(1, g >= 1.0E-4f || h >= 1.0E-4f || j <= 0.9999f || k <= 0.9999f);
-                bitSet.set(0, (i > 0.9999f || Block.isShapeFullCube(blockState.getCollisionShape(extendedBlockView, blockPos))) && f == i);
+                bitSet.set(0, f == i && (i > 0.9999f || blockState.method_21743(extendedBlockView, blockPos)));
             }
         }
     }
@@ -505,25 +505,25 @@ public class BlockModelRenderer {
     @Environment(value=EnvType.CLIENT)
     static class BrightnessCache {
         private boolean enabled;
-        private final Object2IntLinkedOpenHashMap<BlockPos> intCache = SystemUtil.get(() -> {
-            Object2IntLinkedOpenHashMap<BlockPos> object2IntLinkedOpenHashMap = new Object2IntLinkedOpenHashMap<BlockPos>(100, 0.25f){
+        private final Long2IntLinkedOpenHashMap intCache = SystemUtil.get(() -> {
+            Long2IntLinkedOpenHashMap long2IntLinkedOpenHashMap = new Long2IntLinkedOpenHashMap(100, 0.25f){
 
                 @Override
                 protected void rehash(int i) {
                 }
             };
-            object2IntLinkedOpenHashMap.defaultReturnValue(Integer.MAX_VALUE);
-            return object2IntLinkedOpenHashMap;
+            long2IntLinkedOpenHashMap.defaultReturnValue(Integer.MAX_VALUE);
+            return long2IntLinkedOpenHashMap;
         });
-        private final Object2FloatLinkedOpenHashMap<BlockPos> floatCache = SystemUtil.get(() -> {
-            Object2FloatLinkedOpenHashMap<BlockPos> object2FloatLinkedOpenHashMap = new Object2FloatLinkedOpenHashMap<BlockPos>(100, 0.25f){
+        private final Long2FloatLinkedOpenHashMap floatCache = SystemUtil.get(() -> {
+            Long2FloatLinkedOpenHashMap long2FloatLinkedOpenHashMap = new Long2FloatLinkedOpenHashMap(100, 0.25f){
 
                 @Override
                 protected void rehash(int i) {
                 }
             };
-            object2FloatLinkedOpenHashMap.defaultReturnValue(Float.NaN);
-            return object2FloatLinkedOpenHashMap;
+            long2FloatLinkedOpenHashMap.defaultReturnValue(Float.NaN);
+            return long2FloatLinkedOpenHashMap;
         });
 
         private BrightnessCache() {
@@ -541,7 +541,8 @@ public class BlockModelRenderer {
 
         public int getInt(BlockState blockState, ExtendedBlockView extendedBlockView, BlockPos blockPos) {
             int i;
-            if (this.enabled && (i = this.intCache.getInt(blockPos)) != Integer.MAX_VALUE) {
+            long l = blockPos.asLong();
+            if (this.enabled && (i = this.intCache.get(l)) != Integer.MAX_VALUE) {
                 return i;
             }
             i = blockState.getBlockBrightness(extendedBlockView, blockPos);
@@ -549,14 +550,15 @@ public class BlockModelRenderer {
                 if (this.intCache.size() == 100) {
                     this.intCache.removeFirstInt();
                 }
-                this.intCache.put(blockPos.toImmutable(), i);
+                this.intCache.put(l, i);
             }
             return i;
         }
 
         public float getFloat(BlockState blockState, ExtendedBlockView extendedBlockView, BlockPos blockPos) {
             float f;
-            if (this.enabled && !Float.isNaN(f = this.floatCache.getFloat(blockPos))) {
+            long l = blockPos.asLong();
+            if (this.enabled && !Float.isNaN(f = this.floatCache.get(l))) {
                 return f;
             }
             f = blockState.getAmbientOcclusionLightLevel(extendedBlockView, blockPos);
@@ -564,7 +566,7 @@ public class BlockModelRenderer {
                 if (this.floatCache.size() == 100) {
                     this.floatCache.removeFirstFloat();
                 }
-                this.floatCache.put(blockPos.toImmutable(), f);
+                this.floatCache.put(l, f);
             }
             return f;
         }

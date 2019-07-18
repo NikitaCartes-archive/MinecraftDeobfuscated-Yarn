@@ -7,7 +7,6 @@ import com.mojang.blaze3d.platform.GLX;
 import com.mojang.blaze3d.platform.GlStateManager;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.block.Block;
 import net.minecraft.block.BlockRenderType;
 import net.minecraft.block.BlockState;
 import net.minecraft.client.MinecraftClient;
@@ -198,7 +197,7 @@ public abstract class EntityRenderer<T extends Entity> {
     }
 
     private void projectShadow(BlockState blockState, ViewableWorld viewableWorld, BlockPos blockPos, double d, double e, double f, BlockPos blockPos2, float g, float h, double i, double j, double k) {
-        if (!Block.isShapeFullCube(blockState.getCollisionShape(viewableWorld, blockPos))) {
+        if (!blockState.method_21743(viewableWorld, blockPos)) {
             return;
         }
         VoxelShape voxelShape = blockState.getOutlineShape(this.getWorld(), blockPos2.down());

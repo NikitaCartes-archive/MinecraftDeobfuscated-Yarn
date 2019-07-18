@@ -195,7 +195,7 @@ extends Block {
         if (world.random.nextInt(20) != 1) {
             return;
         }
-        float f = world.getBiome(blockPos).getTemperature(blockPos);
+        float f = world.getBiome(blockPos).method_21740(blockPos);
         if (f < 0.15f) {
             return;
         }

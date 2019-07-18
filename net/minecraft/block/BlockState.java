@@ -357,6 +357,13 @@ implements PropertyContainer<BlockState> {
         return Block.isSolidFullSquare(this, blockView, blockPos, direction);
     }
 
+    public boolean method_21743(BlockView blockView, BlockPos blockPos) {
+        if (this.shapeCache != null) {
+            return this.shapeCache.field_20337;
+        }
+        return Block.isShapeFullCube(this.getCollisionShape(blockView, blockPos));
+    }
+
     public static <T> Dynamic<T> serialize(DynamicOps<T> dynamicOps, BlockState blockState) {
         ImmutableMap<Property<?>, Comparable<?>> immutableMap = blockState.getEntries();
         Object object = immutableMap.isEmpty() ? dynamicOps.createMap(ImmutableMap.of(dynamicOps.createString("Name"), dynamicOps.createString(Registry.BLOCK.getId(blockState.getBlock()).toString()))) : dynamicOps.createMap(ImmutableMap.of(dynamicOps.createString("Name"), dynamicOps.createString(Registry.BLOCK.getId(blockState.getBlock()).toString()), dynamicOps.createString("Properties"), dynamicOps.createMap(immutableMap.entrySet().stream().map(entry -> Pair.of(dynamicOps.createString(((Property)entry.getKey()).getName()), dynamicOps.createString(PropertyContainer.getValueAsString((Property)entry.getKey(), (Comparable)entry.getValue())))).collect(Collectors.toMap(Pair::getFirst, Pair::getSecond)))));
@@ -387,6 +394,7 @@ implements PropertyContainer<BlockState> {
         private final VoxelShape field_19360;
         private final boolean field_17651;
         private final boolean[] field_19429;
+        private final boolean field_20337;
 
         private ShapeCache(BlockState blockState) {
             Block block = blockState.getBlock();
@@ -412,6 +420,7 @@ implements PropertyContainer<BlockState> {
             for (Direction direction2 : DIRECTIONS) {
                 this.field_19429[direction2.ordinal()] = Block.isSolidFullSquare(blockState, EmptyBlockView.INSTANCE, BlockPos.ORIGIN, direction2);
             }
+            this.field_20337 = Block.isShapeFullCube(blockState.getCollisionShape(EmptyBlockView.INSTANCE, BlockPos.ORIGIN));
         }
     }
 }

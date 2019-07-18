@@ -15,7 +15,6 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.function.Predicate;
-import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.entity.BlockEntity;
@@ -77,7 +76,7 @@ public class CloneCommand {
                         deque.addLast(blockPos6);
                         continue;
                     }
-                    if (blockState.isFullOpaque(serverWorld, blockPos6) || Block.isShapeFullCube(blockState.getCollisionShape(serverWorld, blockPos6))) {
+                    if (blockState.isFullOpaque(serverWorld, blockPos6) || blockState.method_21743(serverWorld, blockPos6)) {
                         list.add(new BlockInfo(blockPos7, blockState, null));
                         deque.addLast(blockPos6);
                         continue;

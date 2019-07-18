@@ -1702,6 +1702,8 @@ AutoCloseable {
                 cachedMaxTextureSize = i;
                 return i;
             }
+            cachedMaxTextureSize = MathHelper.clamp(GlStateManager.getInteger(3379), 1024, 16384);
+            LOGGER.info("Failed to determine maximum texture size by probing, trying GL_MAX_TEXTURE_SIZE = {}", (Object)cachedMaxTextureSize);
         }
         return cachedMaxTextureSize;
     }

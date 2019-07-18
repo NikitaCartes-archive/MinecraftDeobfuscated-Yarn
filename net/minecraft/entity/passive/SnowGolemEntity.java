@@ -95,7 +95,7 @@ implements RangedAttackMob {
             }
             BlockPos blockPos = new BlockPos(i, 0, k);
             BlockPos blockPos2 = new BlockPos(i, j, k);
-            if (this.world.getBiome(blockPos).getTemperature(blockPos2) > 1.0f) {
+            if (this.world.getBiome(blockPos).method_21740(blockPos2) > 1.0f) {
                 this.damage(DamageSource.ON_FIRE, 1.0f);
             }
             if (!this.world.getGameRules().getBoolean(GameRules.MOB_GRIEFING)) {
@@ -105,7 +105,7 @@ implements RangedAttackMob {
             for (int l = 0; l < 4; ++l) {
                 i = MathHelper.floor(this.x + (double)((float)(l % 2 * 2 - 1) * 0.25f));
                 BlockPos blockPos3 = new BlockPos(i, j = MathHelper.floor(this.y), k = MathHelper.floor(this.z + (double)((float)(l / 2 % 2 * 2 - 1) * 0.25f)));
-                if (!this.world.getBlockState(blockPos3).isAir() || !(this.world.getBiome(blockPos3).getTemperature(blockPos3) < 0.8f) || !blockState.canPlaceAt(this.world, blockPos3)) continue;
+                if (!this.world.getBlockState(blockPos3).isAir() || !(this.world.getBiome(blockPos3).method_21740(blockPos3) < 0.8f) || !blockState.canPlaceAt(this.world, blockPos3)) continue;
                 this.world.setBlockState(blockPos3, blockState);
             }
         }

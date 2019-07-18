@@ -49,7 +49,7 @@ extends SurfaceBuilder<TernarySurfaceConfig> {
                     blockState7 = blockState4;
                 }
                 if (q < l && (blockState6 == null || blockState6.isAir())) {
-                    blockState6 = biome.getTemperature(mutable.set(i, q, j)) < 0.15f ? Blocks.ICE.getDefaultState() : blockState2;
+                    blockState6 = biome.method_21740(mutable.set(i, q, j)) < 0.15f ? Blocks.ICE.getDefaultState() : blockState2;
                     mutable.set(o, q, p);
                 }
                 m = n;

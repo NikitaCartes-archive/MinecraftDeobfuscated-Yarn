@@ -294,13 +294,17 @@ Element {
             }
             case 259: {
                 if (this.editable) {
+                    this.field_17037 = false;
                     this.method_16873(-1);
+                    this.field_17037 = Screen.hasShiftDown();
                 }
                 return true;
             }
             case 261: {
                 if (this.editable) {
+                    this.field_17037 = false;
                     this.method_16873(1);
+                    this.field_17037 = Screen.hasShiftDown();
                 }
                 return true;
             }

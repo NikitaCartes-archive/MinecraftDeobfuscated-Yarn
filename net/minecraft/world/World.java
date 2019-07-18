@@ -407,7 +407,7 @@ AutoCloseable {
         float h = MathHelper.cos(g * ((float)Math.PI * 2)) * 2.0f + 0.5f;
         h = MathHelper.clamp(h, 0.0f, 1.0f);
         Biome biome = this.getBiome(blockPos);
-        float i = biome.getTemperature(blockPos);
+        float i = biome.method_21740(blockPos);
         int j = biome.getSkyColor(i);
         float k = (float)(j >> 16 & 0xFF) / 255.0f;
         float l = (float)(j >> 8 & 0xFF) / 255.0f;

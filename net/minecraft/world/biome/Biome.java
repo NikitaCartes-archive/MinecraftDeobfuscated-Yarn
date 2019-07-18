@@ -6,6 +6,7 @@ package net.minecraft.world.biome;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
+import it.unimi.dsi.fastutil.longs.Long2FloatLinkedOpenHashMap;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
@@ -84,6 +85,16 @@ public abstract class Biome {
     protected final List<ConfiguredFeature<?>> flowerFeatures = Lists.newArrayList();
     protected final Map<StructureFeature<?>, FeatureConfig> structureFeatures = Maps.newHashMap();
     private final Map<EntityCategory, List<SpawnEntry>> spawns = Maps.newHashMap();
+    private final ThreadLocal<Long2FloatLinkedOpenHashMap> field_20335 = ThreadLocal.withInitial(() -> SystemUtil.get(() -> {
+        Long2FloatLinkedOpenHashMap long2FloatLinkedOpenHashMap = new Long2FloatLinkedOpenHashMap(1024, 0.25f){
+
+            @Override
+            protected void rehash(int i) {
+            }
+        };
+        long2FloatLinkedOpenHashMap.defaultReturnValue(Float.NaN);
+        return long2FloatLinkedOpenHashMap;
+    }));
 
     @Nullable
     public static Biome getParentBiome(Biome biome) {
@@ -152,7 +163,7 @@ public abstract class Biome {
         return 0.1f;
     }
 
-    public float getTemperature(BlockPos blockPos) {
+    protected float getTemperature(BlockPos blockPos) {
         if (blockPos.getY() > 64) {
             float f = (float)(TEMPERATURE_NOISE.sample((float)blockPos.getX() / 8.0f, (float)blockPos.getZ() / 8.0f) * 4.0);
             return this.getTemperature() - (f + (float)blockPos.getY() - 64.0f) * 0.05f / 30.0f;
@@ -160,12 +171,27 @@ public abstract class Biome {
         return this.getTemperature();
     }
 
+    public final float method_21740(BlockPos blockPos) {
+        long l = blockPos.asLong();
+        Long2FloatLinkedOpenHashMap long2FloatLinkedOpenHashMap = this.field_20335.get();
+        float f = long2FloatLinkedOpenHashMap.get(l);
+        if (!Float.isNaN(f)) {
+            return f;
+        }
+        float g = this.getTemperature(blockPos);
+        if (long2FloatLinkedOpenHashMap.size() == 1024) {
+            long2FloatLinkedOpenHashMap.removeFirstFloat();
+        }
+        long2FloatLinkedOpenHashMap.put(l, g);
+        return g;
+    }
+
     public boolean canSetSnow(ViewableWorld viewableWorld, BlockPos blockPos) {
         return this.canSetSnow(viewableWorld, blockPos, true);
     }
 
     public boolean canSetSnow(ViewableWorld viewableWorld, BlockPos blockPos, boolean bl) {
-        if (this.getTemperature(blockPos) >= 0.15f) {
+        if (this.method_21740(blockPos) >= 0.15f) {
             return false;
         }
         if (blockPos.getY() >= 0 && blockPos.getY() < 256 && viewableWorld.getLightLevel(LightType.BLOCK, blockPos) < 10) {
@@ -187,7 +213,7 @@ public abstract class Biome {
 
     public boolean canSetIce(ViewableWorld viewableWorld, BlockPos blockPos) {
         BlockState blockState;
-        if (this.getTemperature(blockPos) >= 0.15f) {
+        if (this.method_21740(blockPos) >= 0.15f) {
             return false;
         }
         return blockPos.getY() >= 0 && blockPos.getY() < 256 && viewableWorld.getLightLevel(LightType.BLOCK, blockPos) < 10 && (blockState = viewableWorld.getBlockState(blockPos)).isAir() && Blocks.SNOW.getDefaultState().canPlaceAt(viewableWorld, blockPos);
@@ -246,14 +272,14 @@ public abstract class Biome {
 
     @Environment(value=EnvType.CLIENT)
     public int getGrassColorAt(BlockPos blockPos) {
-        double d = MathHelper.clamp(this.getTemperature(blockPos), 0.0f, 1.0f);
+        double d = MathHelper.clamp(this.method_21740(blockPos), 0.0f, 1.0f);
         double e = MathHelper.clamp(this.getRainfall(), 0.0f, 1.0f);
         return GrassColors.getColor(d, e);
     }
 
     @Environment(value=EnvType.CLIENT)
     public int getFoliageColorAt(BlockPos blockPos) {
-        double d = MathHelper.clamp(this.getTemperature(blockPos), 0.0f, 1.0f);
+        double d = MathHelper.clamp(this.method_21740(blockPos), 0.0f, 1.0f);
         double e = MathHelper.clamp(this.getRainfall(), 0.0f, 1.0f);
         return FoliageColors.getColor(d, e);
     }

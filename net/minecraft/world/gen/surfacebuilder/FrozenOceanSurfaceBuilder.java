@@ -36,7 +36,7 @@ extends SurfaceBuilder<TernarySurfaceConfig> {
         double e = 0.0;
         double f = 0.0;
         BlockPos.Mutable mutable = new BlockPos.Mutable();
-        float g = biome.getTemperature(mutable.set(i, 63, j));
+        float g = biome.method_21740(mutable.set(i, 63, j));
         double h = Math.min(Math.abs(d), this.field_15644.sample((double)i * 0.1, (double)j * 0.1));
         if (h > 1.8) {
             double n = 0.09765625;
@@ -87,7 +87,7 @@ extends SurfaceBuilder<TernarySurfaceConfig> {
                         blockState3 = biome.getSurfaceConfig().getUnderMaterial();
                     }
                     if (x < l && (blockState4 == null || blockState4.isAir())) {
-                        blockState4 = biome.getTemperature(mutable.set(i, x, j)) < 0.15f ? ICE : blockState2;
+                        blockState4 = biome.method_21740(mutable.set(i, x, j)) < 0.15f ? ICE : blockState2;
                     }
                     t = s;
                     if (x >= l - 1) {

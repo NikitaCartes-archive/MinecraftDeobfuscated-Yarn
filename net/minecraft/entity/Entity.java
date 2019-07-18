@@ -1851,7 +1851,7 @@ CommandOutput {
         for (Direction direction2 : new Direction[]{Direction.NORTH, Direction.SOUTH, Direction.WEST, Direction.EAST, Direction.UP}) {
             double i;
             mutable.set(blockPos).setOffset(direction2);
-            if (Block.isShapeFullCube(this.world.getBlockState(mutable).getCollisionShape(this.world, mutable))) continue;
+            if (this.world.getBlockState(mutable).method_21743(this.world, mutable)) continue;
             double h = vec3d.getComponentAlongAxis(direction2.getAxis());
             double d2 = i = direction2.getDirection() == Direction.AxisDirection.POSITIVE ? 1.0 - h : h;
             if (!(i < g)) continue;

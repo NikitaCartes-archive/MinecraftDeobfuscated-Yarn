@@ -271,12 +271,12 @@ implements ItemConvertible {
 
     @Deprecated
     public boolean isSimpleFullBlock(BlockState blockState, BlockView blockView, BlockPos blockPos) {
-        return blockState.getMaterial().blocksLight() && Block.isShapeFullCube(blockState.getCollisionShape(blockView, blockPos)) && !blockState.emitsRedstonePower();
+        return blockState.getMaterial().blocksLight() && blockState.method_21743(blockView, blockPos) && !blockState.emitsRedstonePower();
     }
 
     @Deprecated
     public boolean canSuffocate(BlockState blockState, BlockView blockView, BlockPos blockPos) {
-        return this.material.blocksMovement() && Block.isShapeFullCube(blockState.getCollisionShape(blockView, blockPos));
+        return this.material.blocksMovement() && blockState.method_21743(blockView, blockPos);
     }
 
     @Deprecated
@@ -289,13 +289,13 @@ implements ItemConvertible {
     public boolean canPlaceAtSide(BlockState blockState, BlockView blockView, BlockPos blockPos, BlockPlacementEnvironment blockPlacementEnvironment) {
         switch (blockPlacementEnvironment) {
             case LAND: {
-                return !Block.isShapeFullCube(blockState.getCollisionShape(blockView, blockPos));
+                return !blockState.method_21743(blockView, blockPos);
             }
             case WATER: {
                 return blockView.getFluidState(blockPos).matches(FluidTags.WATER);
             }
             case AIR: {
-                return !Block.isShapeFullCube(blockState.getCollisionShape(blockView, blockPos));
+                return !blockState.method_21743(blockView, blockPos);
             }
         }
         return false;
@@ -667,7 +667,7 @@ implements ItemConvertible {
     @Deprecated
     @Environment(value=EnvType.CLIENT)
     public float getAmbientOcclusionLightLevel(BlockState blockState, BlockView blockView, BlockPos blockPos) {
-        return Block.isShapeFullCube(blockState.getCollisionShape(blockView, blockPos)) ? 0.2f : 1.0f;
+        return blockState.method_21743(blockView, blockPos) ? 0.2f : 1.0f;
     }
 
     public void onLandedUpon(World world, BlockPos blockPos, Entity entity, float f) {

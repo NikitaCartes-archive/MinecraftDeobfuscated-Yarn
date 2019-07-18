@@ -85,7 +85,7 @@ public class Structure {
                 list2.add(new StructureBlockInfo(blockPos7, blockState, compoundTag));
                 continue;
             }
-            if (blockState.isFullOpaque(world, blockPos6) || Block.isShapeFullCube(blockState.getCollisionShape(world, blockPos6))) {
+            if (blockState.isFullOpaque(world, blockPos6) || blockState.method_21743(world, blockPos6)) {
                 list.add(new StructureBlockInfo(blockPos7, blockState, null));
                 continue;
             }

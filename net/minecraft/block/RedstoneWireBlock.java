@@ -135,7 +135,7 @@ extends Block {
             boolean bl;
             boolean bl2 = bl = blockState.method_20827(blockView, blockPos2, Direction.UP) || blockState.getBlock() == Blocks.HOPPER;
             if (bl && RedstoneWireBlock.connectsTo(blockView.getBlockState(blockPos2.up()))) {
-                if (RedstoneWireBlock.isShapeFullCube(blockState.getCollisionShape(blockView, blockPos2))) {
+                if (blockState.method_21743(blockView, blockPos2)) {
                     return WireConnection.UP;
                 }
                 return WireConnection.SIDE;

@@ -770,7 +770,7 @@ SynchronousResourceReloadListener {
             BlockPos blockPos2 = viewableWorld.getTopPosition(Heightmap.Type.MOTION_BLOCKING, blockPos.add(this.random.nextInt(10) - this.random.nextInt(10), 0, this.random.nextInt(10) - this.random.nextInt(10)));
             Biome biome = viewableWorld.getBiome(blockPos2);
             BlockPos blockPos3 = blockPos2.down();
-            if (blockPos2.getY() > blockPos.getY() + 10 || blockPos2.getY() < blockPos.getY() - 10 || biome.getPrecipitation() != Biome.Precipitation.RAIN || !(biome.getTemperature(blockPos2) >= 0.15f)) continue;
+            if (blockPos2.getY() > blockPos.getY() + 10 || blockPos2.getY() < blockPos.getY() - 10 || biome.getPrecipitation() != Biome.Precipitation.RAIN || !(biome.method_21740(blockPos2) >= 0.15f)) continue;
             double h = this.random.nextDouble();
             double m = this.random.nextDouble();
             BlockState blockState = viewableWorld.getBlockState(blockPos3);
@@ -863,7 +863,7 @@ SynchronousResourceReloadListener {
                 if (v == w) continue;
                 this.random.setSeed(q * q * 3121 + q * 45238971 ^ p * p * 418711 + p * 13761);
                 mutable.set(q, v, p);
-                float y = biome.getTemperature(mutable);
+                float y = biome.method_21740(mutable);
                 if (y >= 0.15f) {
                     if (n != 0) {
                         if (n >= 0) {
