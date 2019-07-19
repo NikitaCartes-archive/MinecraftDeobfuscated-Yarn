@@ -18,8 +18,8 @@ public class ChatUtil {
 	}
 
 	@Environment(EnvType.CLIENT)
-	public static String stripTextFormat(String string) {
-		return PATTERN.matcher(string).replaceAll("");
+	public static String stripTextFormat(String text) {
+		return PATTERN.matcher(text).replaceAll("");
 	}
 
 	public static boolean isEmpty(@Nullable String string) {

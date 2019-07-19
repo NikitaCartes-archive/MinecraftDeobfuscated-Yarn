@@ -10,27 +10,27 @@ public class RangeDecoratorConfig implements DecoratorConfig {
 	public final int topOffset;
 	public final int maximum;
 
-	public RangeDecoratorConfig(int i, int j, int k, int l) {
-		this.count = i;
-		this.bottomOffset = j;
-		this.topOffset = k;
-		this.maximum = l;
+	public RangeDecoratorConfig(int count, int bottomOffset, int topOffset, int maximum) {
+		this.count = count;
+		this.bottomOffset = bottomOffset;
+		this.topOffset = topOffset;
+		this.maximum = maximum;
 	}
 
 	@Override
-	public <T> Dynamic<T> serialize(DynamicOps<T> dynamicOps) {
+	public <T> Dynamic<T> serialize(DynamicOps<T> ops) {
 		return new Dynamic<>(
-			dynamicOps,
-			dynamicOps.createMap(
+			ops,
+			ops.createMap(
 				ImmutableMap.of(
-					dynamicOps.createString("count"),
-					dynamicOps.createInt(this.count),
-					dynamicOps.createString("bottom_offset"),
-					dynamicOps.createInt(this.bottomOffset),
-					dynamicOps.createString("top_offset"),
-					dynamicOps.createInt(this.topOffset),
-					dynamicOps.createString("maximum"),
-					dynamicOps.createInt(this.maximum)
+					ops.createString("count"),
+					ops.createInt(this.count),
+					ops.createString("bottom_offset"),
+					ops.createInt(this.bottomOffset),
+					ops.createString("top_offset"),
+					ops.createInt(this.topOffset),
+					ops.createString("maximum"),
+					ops.createInt(this.maximum)
 				)
 			)
 		);

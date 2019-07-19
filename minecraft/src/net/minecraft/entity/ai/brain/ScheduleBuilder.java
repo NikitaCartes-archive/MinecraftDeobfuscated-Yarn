@@ -13,8 +13,8 @@ public class ScheduleBuilder {
 		this.schedule = schedule;
 	}
 
-	public ScheduleBuilder withActivity(int i, Activity activity) {
-		this.activities.add(new ScheduleBuilder.ActivityEntry(i, activity));
+	public ScheduleBuilder withActivity(int startTime, Activity activity) {
+		this.activities.add(new ScheduleBuilder.ActivityEntry(startTime, activity));
 		return this;
 	}
 
@@ -22,8 +22,8 @@ public class ScheduleBuilder {
 		((Set)this.activities.stream().map(ScheduleBuilder.ActivityEntry::getActivity).collect(Collectors.toSet())).forEach(this.schedule::addActivity);
 		this.activities.forEach(activityEntry -> {
 			Activity activity = activityEntry.getActivity();
-			this.schedule.getOtherRules(activity).forEach(scheduleRule -> scheduleRule.withEntry(activityEntry.getStartTime(), 0.0F));
-			this.schedule.getRule(activity).withEntry(activityEntry.getStartTime(), 1.0F);
+			this.schedule.getOtherRules(activity).forEach(scheduleRule -> scheduleRule.add(activityEntry.getStartTime(), 0.0F));
+			this.schedule.getRule(activity).add(activityEntry.getStartTime(), 1.0F);
 		});
 		return this.schedule;
 	}
@@ -32,8 +32,8 @@ public class ScheduleBuilder {
 		private final int startTime;
 		private final Activity activity;
 
-		public ActivityEntry(int i, Activity activity) {
-			this.startTime = i;
+		public ActivityEntry(int startTime, Activity activity) {
+			this.startTime = startTime;
 			this.activity = activity;
 		}
 

@@ -60,8 +60,8 @@ public class ServerConfigList<K, V extends ServerConfigEntry<K>> {
 		return this.enabled;
 	}
 
-	public void setEnabled(boolean bl) {
-		this.enabled = bl;
+	public void setEnabled(boolean enabled) {
+		this.enabled = enabled;
 	}
 
 	public File getFile() {
@@ -106,8 +106,8 @@ public class ServerConfigList<K, V extends ServerConfigEntry<K>> {
 		return this.map.size() < 1;
 	}
 
-	protected String toString(K object) {
-		return object.toString();
+	protected String toString(K profile) {
+		return profile.toString();
 	}
 
 	protected boolean contains(K object) {
@@ -175,13 +175,13 @@ public class ServerConfigList<K, V extends ServerConfigEntry<K>> {
 		private DeSerializer() {
 		}
 
-		public JsonElement method_14646(ServerConfigEntry<K> serverConfigEntry, Type type, JsonSerializationContext jsonSerializationContext) {
+		public JsonElement serialize(ServerConfigEntry<K> serverConfigEntry, Type type, JsonSerializationContext jsonSerializationContext) {
 			JsonObject jsonObject = new JsonObject();
 			serverConfigEntry.serialize(jsonObject);
 			return jsonObject;
 		}
 
-		public ServerConfigEntry<K> method_14645(JsonElement jsonElement, Type type, JsonDeserializationContext jsonDeserializationContext) throws JsonParseException {
+		public ServerConfigEntry<K> deserialize(JsonElement jsonElement, Type type, JsonDeserializationContext jsonDeserializationContext) throws JsonParseException {
 			if (jsonElement.isJsonObject()) {
 				JsonObject jsonObject = jsonElement.getAsJsonObject();
 				return ServerConfigList.this.fromJson(jsonObject);

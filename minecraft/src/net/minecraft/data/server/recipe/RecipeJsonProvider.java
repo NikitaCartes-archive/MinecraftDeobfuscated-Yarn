@@ -7,7 +7,7 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.registry.Registry;
 
 public interface RecipeJsonProvider {
-	void serialize(JsonObject jsonObject);
+	void serialize(JsonObject json);
 
 	default JsonObject toJson() {
 		JsonObject jsonObject = new JsonObject();

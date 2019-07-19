@@ -3,7 +3,7 @@ package net.minecraft.entity.ai.goal;
 import java.util.EnumSet;
 import java.util.Random;
 import javax.annotation.Nullable;
-import net.minecraft.entity.ai.PathfindingUtil;
+import net.minecraft.entity.ai.TargetFinder;
 import net.minecraft.entity.ai.pathing.EntityNavigation;
 import net.minecraft.entity.mob.MobEntityWithAi;
 import net.minecraft.server.world.ServerWorld;
@@ -18,9 +18,9 @@ public class GoToVillageGoal extends Goal {
 	@Nullable
 	private BlockPos targetPosition;
 
-	public GoToVillageGoal(MobEntityWithAi mobEntityWithAi, int i) {
-		this.mob = mobEntityWithAi;
-		this.searchRange = i;
+	public GoToVillageGoal(MobEntityWithAi mob, int searchRange) {
+		this.mob = mob;
+		this.searchRange = searchRange;
 		this.setControls(EnumSet.of(Goal.Control.MOVE));
 	}
 
@@ -28,9 +28,9 @@ public class GoToVillageGoal extends Goal {
 	public boolean canStart() {
 		if (this.mob.hasPassengers()) {
 			return false;
-		} else if (this.mob.world.isDaylight()) {
+		} else if (this.mob.world.isDay()) {
 			return false;
-		} else if (this.mob.getRand().nextInt(this.searchRange) != 0) {
+		} else if (this.mob.getRandom().nextInt(this.searchRange) != 0) {
 			return false;
 		} else {
 			ServerWorld serverWorld = (ServerWorld)this.mob.world;
@@ -38,7 +38,7 @@ public class GoToVillageGoal extends Goal {
 			if (!serverWorld.isNearOccupiedPointOfInterest(blockPos, 6)) {
 				return false;
 			} else {
-				Vec3d vec3d = PathfindingUtil.findTargetStraight(
+				Vec3d vec3d = TargetFinder.findGroundTarget(
 					this.mob, 15, 7, blockPosx -> (double)(-serverWorld.getOccupiedPointOfInterestDistance(ChunkSectionPos.from(blockPosx)))
 				);
 				this.targetPosition = vec3d == null ? null : new BlockPos(vec3d);
@@ -72,7 +72,7 @@ public class GoToVillageGoal extends Goal {
 	}
 
 	private void findOtherWaypoint() {
-		Random random = this.mob.getRand();
+		Random random = this.mob.getRandom();
 		BlockPos blockPos = this.mob
 			.world
 			.getTopPosition(Heightmap.Type.MOTION_BLOCKING_NO_LEAVES, new BlockPos(this.mob).add(-8 + random.nextInt(16), 0, -8 + random.nextInt(16)));

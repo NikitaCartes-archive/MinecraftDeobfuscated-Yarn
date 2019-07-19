@@ -39,8 +39,8 @@ public final class ProjectileUtil {
 		);
 	}
 
-	public static HitResult getCollision(Entity entity, Box box, Predicate<Entity> predicate, RayTraceContext.ShapeType shapeType, boolean bl) {
-		return getCollision(entity, bl, false, null, shapeType, false, predicate, box);
+	public static HitResult getCollision(Entity entity, Box box, Predicate<Entity> entityCollisionPredicate, RayTraceContext.ShapeType shapeType, boolean bl) {
+		return getCollision(entity, bl, false, null, shapeType, false, entityCollisionPredicate, box);
 	}
 
 	@Nullable
@@ -49,7 +49,14 @@ public final class ProjectileUtil {
 	}
 
 	private static HitResult getCollision(
-		Entity entity, boolean bl, boolean bl2, @Nullable Entity entity2, RayTraceContext.ShapeType shapeType, boolean bl3, Predicate<Entity> predicate, Box box
+		Entity entity,
+		boolean bl,
+		boolean bl2,
+		@Nullable Entity entity2,
+		RayTraceContext.ShapeType shapeType,
+		boolean bl3,
+		Predicate<Entity> entityCollisionPredicate,
+		Box boz
 	) {
 		double d = entity.x;
 		double e = entity.y;
@@ -68,7 +75,7 @@ public final class ProjectileUtil {
 					vec3d3 = hitResult.getPos();
 				}
 
-				HitResult hitResult2 = getEntityCollision(world, entity, vec3d2, vec3d3, box, predicate);
+				HitResult hitResult2 = getEntityCollision(world, entity, vec3d2, vec3d3, boz, entityCollisionPredicate);
 				if (hitResult2 != null) {
 					hitResult = hitResult2;
 				}
@@ -167,8 +174,8 @@ public final class ProjectileUtil {
 		entity.yaw = MathHelper.lerp(f, entity.prevYaw, entity.yaw);
 	}
 
-	public static Hand getHandPossiblyHolding(LivingEntity livingEntity, Item item) {
-		return livingEntity.getMainHandStack().getItem() == item ? Hand.MAIN_HAND : Hand.OFF_HAND;
+	public static Hand getHandPossiblyHolding(LivingEntity entity, Item item) {
+		return entity.getMainHandStack().getItem() == item ? Hand.MAIN_HAND : Hand.OFF_HAND;
 	}
 
 	public static ProjectileEntity createArrowProjectile(LivingEntity livingEntity, ItemStack itemStack, float f) {

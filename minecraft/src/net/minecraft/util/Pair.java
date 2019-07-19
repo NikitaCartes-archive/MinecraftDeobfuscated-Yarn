@@ -4,9 +4,9 @@ public class Pair<A, B> {
 	private A field_15772;
 	private B field_15773;
 
-	public Pair(A object, B object2) {
-		this.field_15772 = object;
-		this.field_15773 = object2;
+	public Pair(A left, B right) {
+		this.field_15772 = left;
+		this.field_15773 = right;
 	}
 
 	public A getLeft() {

@@ -46,7 +46,7 @@ public class EndermiteEntity extends HostileEntity {
 	}
 
 	@Override
-	protected float getActiveEyeHeight(EntityPose entityPose, EntityDimensions entityDimensions) {
+	protected float getActiveEyeHeight(EntityPose pose, EntityDimensions dimensions) {
 		return 0.1F;
 	}
 
@@ -69,7 +69,7 @@ public class EndermiteEntity extends HostileEntity {
 	}
 
 	@Override
-	protected SoundEvent getHurtSound(DamageSource damageSource) {
+	protected SoundEvent getHurtSound(DamageSource source) {
 		return SoundEvents.ENTITY_ENDERMITE_HURT;
 	}
 
@@ -79,22 +79,22 @@ public class EndermiteEntity extends HostileEntity {
 	}
 
 	@Override
-	protected void playStepSound(BlockPos blockPos, BlockState blockState) {
+	protected void playStepSound(BlockPos pos, BlockState state) {
 		this.playSound(SoundEvents.ENTITY_ENDERMITE_STEP, 0.15F, 1.0F);
 	}
 
 	@Override
-	public void readCustomDataFromTag(CompoundTag compoundTag) {
-		super.readCustomDataFromTag(compoundTag);
-		this.lifeTime = compoundTag.getInt("Lifetime");
-		this.playerSpawned = compoundTag.getBoolean("PlayerSpawned");
+	public void readCustomDataFromTag(CompoundTag tag) {
+		super.readCustomDataFromTag(tag);
+		this.lifeTime = tag.getInt("Lifetime");
+		this.playerSpawned = tag.getBoolean("PlayerSpawned");
 	}
 
 	@Override
-	public void writeCustomDataToTag(CompoundTag compoundTag) {
-		super.writeCustomDataToTag(compoundTag);
-		compoundTag.putInt("Lifetime", this.lifeTime);
-		compoundTag.putBoolean("PlayerSpawned", this.playerSpawned);
+	public void writeCustomDataToTag(CompoundTag tag) {
+		super.writeCustomDataToTag(tag);
+		tag.putInt("Lifetime", this.lifeTime);
+		tag.putBoolean("PlayerSpawned", this.playerSpawned);
 	}
 
 	@Override
@@ -104,9 +104,9 @@ public class EndermiteEntity extends HostileEntity {
 	}
 
 	@Override
-	public void setYaw(float f) {
-		this.yaw = f;
-		super.setYaw(f);
+	public void setYaw(float yaw) {
+		this.yaw = yaw;
+		super.setYaw(yaw);
 	}
 
 	@Override
@@ -118,8 +118,8 @@ public class EndermiteEntity extends HostileEntity {
 		return this.playerSpawned;
 	}
 
-	public void setPlayerSpawned(boolean bl) {
-		this.playerSpawned = bl;
+	public void setPlayerSpawned(boolean playerSpawned) {
+		this.playerSpawned = playerSpawned;
 	}
 
 	@Override

@@ -17,16 +17,16 @@ public class DolphinEntityRenderer extends MobEntityRenderer<DolphinEntity, Dolp
 		this.addFeature(new DolphinHeldItemFeatureRenderer(this));
 	}
 
-	protected Identifier method_3903(DolphinEntity dolphinEntity) {
+	protected Identifier getTexture(DolphinEntity dolphinEntity) {
 		return SKIN;
 	}
 
-	protected void method_3901(DolphinEntity dolphinEntity, float f) {
+	protected void scale(DolphinEntity dolphinEntity, float f) {
 		float g = 1.0F;
 		GlStateManager.scalef(1.0F, 1.0F, 1.0F);
 	}
 
-	protected void method_3902(DolphinEntity dolphinEntity, float f, float g, float h) {
+	protected void setupTransforms(DolphinEntity dolphinEntity, float f, float g, float h) {
 		super.setupTransforms(dolphinEntity, f, g, h);
 	}
 }

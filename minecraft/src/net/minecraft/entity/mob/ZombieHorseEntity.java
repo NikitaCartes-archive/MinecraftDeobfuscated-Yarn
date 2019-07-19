@@ -47,44 +47,44 @@ public class ZombieHorseEntity extends HorseBaseEntity {
 	}
 
 	@Override
-	protected SoundEvent getHurtSound(DamageSource damageSource) {
-		super.getHurtSound(damageSource);
+	protected SoundEvent getHurtSound(DamageSource source) {
+		super.getHurtSound(source);
 		return SoundEvents.ENTITY_ZOMBIE_HORSE_HURT;
 	}
 
 	@Nullable
 	@Override
-	public PassiveEntity createChild(PassiveEntity passiveEntity) {
+	public PassiveEntity createChild(PassiveEntity mate) {
 		return EntityType.ZOMBIE_HORSE.create(this.world);
 	}
 
 	@Override
-	public boolean interactMob(PlayerEntity playerEntity, Hand hand) {
-		ItemStack itemStack = playerEntity.getStackInHand(hand);
+	public boolean interactMob(PlayerEntity player, Hand hand) {
+		ItemStack itemStack = player.getStackInHand(hand);
 		if (itemStack.getItem() instanceof SpawnEggItem) {
-			return super.interactMob(playerEntity, hand);
+			return super.interactMob(player, hand);
 		} else if (!this.isTame()) {
 			return false;
 		} else if (this.isBaby()) {
-			return super.interactMob(playerEntity, hand);
-		} else if (playerEntity.isSneaking()) {
-			this.openInventory(playerEntity);
+			return super.interactMob(player, hand);
+		} else if (player.isSneaking()) {
+			this.openInventory(player);
 			return true;
 		} else if (this.hasPassengers()) {
-			return super.interactMob(playerEntity, hand);
+			return super.interactMob(player, hand);
 		} else {
 			if (!itemStack.isEmpty()) {
 				if (!this.isSaddled() && itemStack.getItem() == Items.SADDLE) {
-					this.openInventory(playerEntity);
+					this.openInventory(player);
 					return true;
 				}
 
-				if (itemStack.useOnEntity(playerEntity, this, hand)) {
+				if (itemStack.useOnEntity(player, this, hand)) {
 					return true;
 				}
 			}
 
-			this.putPlayerOnBack(playerEntity);
+			this.putPlayerOnBack(player);
 			return true;
 		}
 	}

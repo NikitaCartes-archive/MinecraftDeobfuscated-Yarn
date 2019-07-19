@@ -6,7 +6,7 @@ import net.minecraft.util.DefaultedList;
 public interface ContainerListener {
 	void onContainerRegistered(Container container, DefaultedList<ItemStack> defaultedList);
 
-	void onContainerSlotUpdate(Container container, int i, ItemStack itemStack);
+	void onContainerSlotUpdate(Container container, int slotId, ItemStack itemStack);
 
-	void onContainerPropertyUpdate(Container container, int i, int j);
+	void onContainerPropertyUpdate(Container container, int propertyId, int i);
 }

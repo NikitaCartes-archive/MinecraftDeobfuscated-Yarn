@@ -12,7 +12,7 @@ public class MountainSurfaceBuilder extends SurfaceBuilder<TernarySurfaceConfig>
 		super(function);
 	}
 
-	public void method_15233(
+	public void generate(
 		Random random,
 		Chunk chunk,
 		Biome biome,

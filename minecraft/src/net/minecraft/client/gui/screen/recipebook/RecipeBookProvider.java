@@ -7,5 +7,5 @@ import net.fabricmc.api.Environment;
 public interface RecipeBookProvider {
 	void refreshRecipeBook();
 
-	RecipeBookWidget getRecipeBookGui();
+	RecipeBookWidget getRecipeBookWidget();
 }

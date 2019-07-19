@@ -8,21 +8,20 @@ import java.util.Iterator;
 import java.util.List;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_4352;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 @Environment(EnvType.CLIENT)
-public class PendingInvitesList extends class_4352 {
+public class PendingInvitesList extends ValueObject {
 	private static final Logger LOGGER = LogManager.getLogger();
 	public List<PendingInvite> pendingInvites = Lists.<PendingInvite>newArrayList();
 
-	public static PendingInvitesList parse(String string) {
+	public static PendingInvitesList parse(String json) {
 		PendingInvitesList pendingInvitesList = new PendingInvitesList();
 
 		try {
 			JsonParser jsonParser = new JsonParser();
-			JsonObject jsonObject = jsonParser.parse(string).getAsJsonObject();
+			JsonObject jsonObject = jsonParser.parse(json).getAsJsonObject();
 			if (jsonObject.get("invites").isJsonArray()) {
 				Iterator<JsonElement> iterator = jsonObject.get("invites").getAsJsonArray().iterator();
 

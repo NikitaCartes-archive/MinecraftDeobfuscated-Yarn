@@ -59,8 +59,8 @@ public abstract class AbstractSkeletonEntity extends HostileEntity implements Ra
 		}
 	};
 
-	protected AbstractSkeletonEntity(EntityType<? extends AbstractSkeletonEntity> entityType, World world) {
-		super(entityType, world);
+	protected AbstractSkeletonEntity(EntityType<? extends AbstractSkeletonEntity> type, World world) {
+		super(type, world);
 		this.updateAttackType();
 	}
 
@@ -85,7 +85,7 @@ public abstract class AbstractSkeletonEntity extends HostileEntity implements Ra
 	}
 
 	@Override
-	protected void playStepSound(BlockPos blockPos, BlockState blockState) {
+	protected void playStepSound(BlockPos pos, BlockState state) {
 		this.playSound(this.getStepSound(), 0.15F, 1.0F);
 	}
 
@@ -106,7 +106,7 @@ public abstract class AbstractSkeletonEntity extends HostileEntity implements Ra
 					itemStack.setDamage(itemStack.getDamage() + this.random.nextInt(2));
 					if (itemStack.getDamage() >= itemStack.getMaxDamage()) {
 						this.sendEquipmentBreakStatus(EquipmentSlot.HEAD);
-						this.setEquippedStack(EquipmentSlot.HEAD, ItemStack.EMPTY);
+						this.equipStack(EquipmentSlot.HEAD, ItemStack.EMPTY);
 					}
 				}
 
@@ -131,27 +131,25 @@ public abstract class AbstractSkeletonEntity extends HostileEntity implements Ra
 	}
 
 	@Override
-	protected void initEquipment(LocalDifficulty localDifficulty) {
-		super.initEquipment(localDifficulty);
-		this.setEquippedStack(EquipmentSlot.MAINHAND, new ItemStack(Items.BOW));
+	protected void initEquipment(LocalDifficulty difficulty) {
+		super.initEquipment(difficulty);
+		this.equipStack(EquipmentSlot.MAINHAND, new ItemStack(Items.BOW));
 	}
 
 	@Nullable
 	@Override
-	public EntityData initialize(
-		IWorld iWorld, LocalDifficulty localDifficulty, SpawnType spawnType, @Nullable EntityData entityData, @Nullable CompoundTag compoundTag
-	) {
-		entityData = super.initialize(iWorld, localDifficulty, spawnType, entityData, compoundTag);
-		this.initEquipment(localDifficulty);
-		this.updateEnchantments(localDifficulty);
+	public EntityData initialize(IWorld world, LocalDifficulty difficulty, SpawnType spawnType, @Nullable EntityData entityData, @Nullable CompoundTag entityTag) {
+		entityData = super.initialize(world, difficulty, spawnType, entityData, entityTag);
+		this.initEquipment(difficulty);
+		this.updateEnchantments(difficulty);
 		this.updateAttackType();
-		this.setCanPickUpLoot(this.random.nextFloat() < 0.55F * localDifficulty.getClampedLocalDifficulty());
+		this.setCanPickUpLoot(this.random.nextFloat() < 0.55F * difficulty.getClampedLocalDifficulty());
 		if (this.getEquippedStack(EquipmentSlot.HEAD).isEmpty()) {
 			LocalDate localDate = LocalDate.now();
 			int i = localDate.get(ChronoField.DAY_OF_MONTH);
 			int j = localDate.get(ChronoField.MONTH_OF_YEAR);
 			if (j == 10 && i == 31 && this.random.nextFloat() < 0.25F) {
-				this.setEquippedStack(EquipmentSlot.HEAD, new ItemStack(this.random.nextFloat() < 0.1F ? Blocks.JACK_O_LANTERN : Blocks.CARVED_PUMPKIN));
+				this.equipStack(EquipmentSlot.HEAD, new ItemStack(this.random.nextFloat() < 0.1F ? Blocks.JACK_O_LANTERN : Blocks.CARVED_PUMPKIN));
 				this.armorDropChances[EquipmentSlot.HEAD.getEntitySlotId()] = 0.0F;
 			}
 		}
@@ -179,38 +177,38 @@ public abstract class AbstractSkeletonEntity extends HostileEntity implements Ra
 	}
 
 	@Override
-	public void attack(LivingEntity livingEntity, float f) {
+	public void attack(LivingEntity target, float f) {
 		ItemStack itemStack = this.getArrowType(this.getStackInHand(ProjectileUtil.getHandPossiblyHolding(this, Items.BOW)));
 		ProjectileEntity projectileEntity = this.createArrowProjectile(itemStack, f);
-		double d = livingEntity.x - this.x;
-		double e = livingEntity.getBoundingBox().minY + (double)(livingEntity.getHeight() / 3.0F) - projectileEntity.y;
-		double g = livingEntity.z - this.z;
+		double d = target.x - this.x;
+		double e = target.getBoundingBox().y1 + (double)(target.getHeight() / 3.0F) - projectileEntity.y;
+		double g = target.z - this.z;
 		double h = (double)MathHelper.sqrt(d * d + g * g);
 		projectileEntity.setVelocity(d, e + h * 0.2F, g, 1.6F, (float)(14 - this.world.getDifficulty().getId() * 4));
-		this.playSound(SoundEvents.ENTITY_SKELETON_SHOOT, 1.0F, 1.0F / (this.getRand().nextFloat() * 0.4F + 0.8F));
+		this.playSound(SoundEvents.ENTITY_SKELETON_SHOOT, 1.0F, 1.0F / (this.getRandom().nextFloat() * 0.4F + 0.8F));
 		this.world.spawnEntity(projectileEntity);
 	}
 
-	protected ProjectileEntity createArrowProjectile(ItemStack itemStack, float f) {
-		return ProjectileUtil.createArrowProjectile(this, itemStack, f);
+	protected ProjectileEntity createArrowProjectile(ItemStack arrow, float f) {
+		return ProjectileUtil.createArrowProjectile(this, arrow, f);
 	}
 
 	@Override
-	public void readCustomDataFromTag(CompoundTag compoundTag) {
-		super.readCustomDataFromTag(compoundTag);
+	public void readCustomDataFromTag(CompoundTag tag) {
+		super.readCustomDataFromTag(tag);
 		this.updateAttackType();
 	}
 
 	@Override
-	public void setEquippedStack(EquipmentSlot equipmentSlot, ItemStack itemStack) {
-		super.setEquippedStack(equipmentSlot, itemStack);
+	public void equipStack(EquipmentSlot slot, ItemStack stack) {
+		super.equipStack(slot, stack);
 		if (!this.world.isClient) {
 			this.updateAttackType();
 		}
 	}
 
 	@Override
-	protected float getActiveEyeHeight(EntityPose entityPose, EntityDimensions entityDimensions) {
+	protected float getActiveEyeHeight(EntityPose pose, EntityDimensions dimensions) {
 		return 1.74F;
 	}
 

@@ -6,21 +6,21 @@ import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.gui.widget.TextFieldWidget;
-import net.minecraft.client.options.ServerEntry;
+import net.minecraft.client.network.ServerInfo;
 import net.minecraft.client.resource.language.I18n;
 import net.minecraft.text.TranslatableText;
 
 @Environment(EnvType.CLIENT)
 public class DirectConnectScreen extends Screen {
 	private ButtonWidget selectServerButton;
-	private final ServerEntry serverEntry;
+	private final ServerInfo serverEntry;
 	private TextFieldWidget addressField;
 	private final BooleanConsumer callback;
 
-	public DirectConnectScreen(BooleanConsumer booleanConsumer, ServerEntry serverEntry) {
+	public DirectConnectScreen(BooleanConsumer callback, ServerInfo serverEntry) {
 		super(new TranslatableText("selectServer.direct"));
 		this.serverEntry = serverEntry;
-		this.callback = booleanConsumer;
+		this.callback = callback;
 	}
 
 	@Override
@@ -51,16 +51,16 @@ public class DirectConnectScreen extends Screen {
 		this.addressField.setMaxLength(128);
 		this.addressField.method_1876(true);
 		this.addressField.setText(this.minecraft.options.lastServer);
-		this.addressField.setChangedListener(string -> this.onAddressFieldChanged());
+		this.addressField.setChangedListener(text -> this.onAddressFieldChanged());
 		this.children.add(this.addressField);
 		this.setInitialFocus(this.addressField);
 		this.onAddressFieldChanged();
 	}
 
 	@Override
-	public void resize(MinecraftClient minecraftClient, int i, int j) {
+	public void resize(MinecraftClient client, int width, int height) {
 		String string = this.addressField.getText();
-		this.init(minecraftClient, i, j);
+		this.init(client, width, height);
 		this.addressField.setText(string);
 	}
 
@@ -81,11 +81,11 @@ public class DirectConnectScreen extends Screen {
 	}
 
 	@Override
-	public void render(int i, int j, float f) {
+	public void render(int mouseX, int mouseY, float delta) {
 		this.renderBackground();
 		this.drawCenteredString(this.font, this.title.asFormattedString(), this.width / 2, 20, 16777215);
 		this.drawString(this.font, I18n.translate("addServer.enterIp"), this.width / 2 - 100, 100, 10526880);
-		this.addressField.render(i, j, f);
-		super.render(i, j, f);
+		this.addressField.render(mouseX, mouseY, delta);
+		super.render(mouseX, mouseY, delta);
 	}
 }

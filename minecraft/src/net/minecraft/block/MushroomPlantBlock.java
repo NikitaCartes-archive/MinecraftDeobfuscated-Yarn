@@ -5,8 +5,8 @@ import net.minecraft.entity.EntityContext;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.world.BlockView;
+import net.minecraft.world.CollisionView;
 import net.minecraft.world.IWorld;
-import net.minecraft.world.ViewableWorld;
 import net.minecraft.world.World;
 import net.minecraft.world.gen.feature.Feature;
 import net.minecraft.world.gen.feature.PlantedFeatureConfig;
@@ -19,59 +19,59 @@ public class MushroomPlantBlock extends PlantBlock implements Fertilizable {
 	}
 
 	@Override
-	public VoxelShape getOutlineShape(BlockState blockState, BlockView blockView, BlockPos blockPos, EntityContext entityContext) {
+	public VoxelShape getOutlineShape(BlockState state, BlockView view, BlockPos pos, EntityContext context) {
 		return SHAPE;
 	}
 
 	@Override
-	public void onScheduledTick(BlockState blockState, World world, BlockPos blockPos, Random random) {
+	public void onScheduledTick(BlockState state, World world, BlockPos pos, Random random) {
 		if (random.nextInt(25) == 0) {
 			int i = 5;
 			int j = 4;
 
-			for(BlockPos blockPos2 : BlockPos.iterate(blockPos.add(-4, -1, -4), blockPos.add(4, 1, 4))) {
-				if (world.getBlockState(blockPos2).getBlock() == this) {
+			for(BlockPos blockPos : BlockPos.iterate(pos.add(-4, -1, -4), pos.add(4, 1, 4))) {
+				if (world.getBlockState(blockPos).getBlock() == this) {
 					if (--i <= 0) {
 						return;
 					}
 				}
 			}
 
-			BlockPos blockPos3 = blockPos.add(random.nextInt(3) - 1, random.nextInt(2) - random.nextInt(2), random.nextInt(3) - 1);
+			BlockPos blockPos2 = pos.add(random.nextInt(3) - 1, random.nextInt(2) - random.nextInt(2), random.nextInt(3) - 1);
 
 			for(int k = 0; k < 4; ++k) {
-				if (world.isAir(blockPos3) && blockState.canPlaceAt(world, blockPos3)) {
-					blockPos = blockPos3;
+				if (world.isAir(blockPos2) && state.canPlaceAt(world, blockPos2)) {
+					pos = blockPos2;
 				}
 
-				blockPos3 = blockPos.add(random.nextInt(3) - 1, random.nextInt(2) - random.nextInt(2), random.nextInt(3) - 1);
+				blockPos2 = pos.add(random.nextInt(3) - 1, random.nextInt(2) - random.nextInt(2), random.nextInt(3) - 1);
 			}
 
-			if (world.isAir(blockPos3) && blockState.canPlaceAt(world, blockPos3)) {
-				world.setBlockState(blockPos3, blockState, 2);
+			if (world.isAir(blockPos2) && state.canPlaceAt(world, blockPos2)) {
+				world.setBlockState(blockPos2, state, 2);
 			}
 		}
 	}
 
 	@Override
-	protected boolean canPlantOnTop(BlockState blockState, BlockView blockView, BlockPos blockPos) {
-		return blockState.isFullOpaque(blockView, blockPos);
+	protected boolean canPlantOnTop(BlockState floor, BlockView view, BlockPos pos) {
+		return floor.isFullOpaque(view, pos);
 	}
 
 	@Override
-	public boolean canPlaceAt(BlockState blockState, ViewableWorld viewableWorld, BlockPos blockPos) {
-		BlockPos blockPos2 = blockPos.down();
-		BlockState blockState2 = viewableWorld.getBlockState(blockPos2);
-		Block block = blockState2.getBlock();
+	public boolean canPlaceAt(BlockState state, CollisionView world, BlockPos pos) {
+		BlockPos blockPos = pos.down();
+		BlockState blockState = world.getBlockState(blockPos);
+		Block block = blockState.getBlock();
 		if (block != Blocks.MYCELIUM && block != Blocks.PODZOL) {
-			return viewableWorld.getLightLevel(blockPos, 0) < 13 && this.canPlantOnTop(blockState2, viewableWorld, blockPos2);
+			return world.getLightLevel(pos, 0) < 13 && this.canPlantOnTop(blockState, world, blockPos);
 		} else {
 			return true;
 		}
 	}
 
-	public boolean trySpawningBigMushroom(IWorld iWorld, BlockPos blockPos, BlockState blockState, Random random) {
-		iWorld.clearBlockState(blockPos, false);
+	public boolean trySpawningBigMushroom(IWorld world, BlockPos pos, BlockState state, Random random) {
+		world.removeBlock(pos, false);
 		Feature<PlantedFeatureConfig> feature = null;
 		if (this == Blocks.BROWN_MUSHROOM) {
 			feature = Feature.HUGE_BROWN_MUSHROOM;
@@ -79,31 +79,31 @@ public class MushroomPlantBlock extends PlantBlock implements Fertilizable {
 			feature = Feature.HUGE_RED_MUSHROOM;
 		}
 
-		if (feature != null && feature.generate(iWorld, iWorld.getChunkManager().getChunkGenerator(), random, blockPos, new PlantedFeatureConfig(true))) {
+		if (feature != null && feature.generate(world, world.getChunkManager().getChunkGenerator(), random, pos, new PlantedFeatureConfig(true))) {
 			return true;
 		} else {
-			iWorld.setBlockState(blockPos, blockState, 3);
+			world.setBlockState(pos, state, 3);
 			return false;
 		}
 	}
 
 	@Override
-	public boolean isFertilizable(BlockView blockView, BlockPos blockPos, BlockState blockState, boolean bl) {
+	public boolean isFertilizable(BlockView world, BlockPos pos, BlockState state, boolean isClient) {
 		return true;
 	}
 
 	@Override
-	public boolean canGrow(World world, Random random, BlockPos blockPos, BlockState blockState) {
+	public boolean canGrow(World world, Random random, BlockPos pos, BlockState state) {
 		return (double)random.nextFloat() < 0.4;
 	}
 
 	@Override
-	public void grow(World world, Random random, BlockPos blockPos, BlockState blockState) {
-		this.trySpawningBigMushroom(world, blockPos, blockState, random);
+	public void grow(World world, Random random, BlockPos pos, BlockState state) {
+		this.trySpawningBigMushroom(world, pos, state, random);
 	}
 
 	@Override
-	public boolean shouldPostProcess(BlockState blockState, BlockView blockView, BlockPos blockPos) {
+	public boolean shouldPostProcess(BlockState state, BlockView view, BlockPos pos) {
 		return true;
 	}
 }

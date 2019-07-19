@@ -18,7 +18,7 @@ public class TntEntityRenderer extends EntityRenderer<TntEntity> {
 		this.field_4673 = 0.5F;
 	}
 
-	public void method_4135(TntEntity tntEntity, double d, double e, double f, float g, float h) {
+	public void render(TntEntity tntEntity, double d, double e, double f, float g, float h) {
 		BlockRenderManager blockRenderManager = MinecraftClient.getInstance().getBlockRenderManager();
 		GlStateManager.pushMatrix();
 		GlStateManager.translatef((float)d, (float)e + 0.5F, (float)f);
@@ -64,7 +64,7 @@ public class TntEntityRenderer extends EntityRenderer<TntEntity> {
 		super.render(tntEntity, d, e, f, g, h);
 	}
 
-	protected Identifier method_4136(TntEntity tntEntity) {
+	protected Identifier getTexture(TntEntity tntEntity) {
 		return SpriteAtlasTexture.BLOCK_ATLAS_TEX;
 	}
 }

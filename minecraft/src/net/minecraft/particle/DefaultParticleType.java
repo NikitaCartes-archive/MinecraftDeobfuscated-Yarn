@@ -7,11 +7,11 @@ import net.minecraft.util.registry.Registry;
 
 public class DefaultParticleType extends ParticleType<DefaultParticleType> implements ParticleEffect {
 	private static final ParticleEffect.Factory<DefaultParticleType> PARAMETER_FACTORY = new ParticleEffect.Factory<DefaultParticleType>() {
-		public DefaultParticleType method_10307(ParticleType<DefaultParticleType> particleType, StringReader stringReader) throws CommandSyntaxException {
+		public DefaultParticleType read(ParticleType<DefaultParticleType> particleType, StringReader stringReader) throws CommandSyntaxException {
 			return (DefaultParticleType)particleType;
 		}
 
-		public DefaultParticleType method_10306(ParticleType<DefaultParticleType> particleType, PacketByteBuf packetByteBuf) {
+		public DefaultParticleType read(ParticleType<DefaultParticleType> particleType, PacketByteBuf packetByteBuf) {
 			return (DefaultParticleType)particleType;
 		}
 	};
@@ -26,7 +26,7 @@ public class DefaultParticleType extends ParticleType<DefaultParticleType> imple
 	}
 
 	@Override
-	public void write(PacketByteBuf packetByteBuf) {
+	public void write(PacketByteBuf buf) {
 	}
 
 	@Override

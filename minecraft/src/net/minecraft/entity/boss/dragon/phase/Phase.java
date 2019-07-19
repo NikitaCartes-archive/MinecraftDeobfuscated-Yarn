@@ -14,7 +14,7 @@ public interface Phase {
 
 	void serverTick();
 
-	void crystalDestroyed(EnderCrystalEntity enderCrystalEntity, BlockPos blockPos, DamageSource damageSource, @Nullable PlayerEntity playerEntity);
+	void crystalDestroyed(EnderCrystalEntity crystal, BlockPos pos, DamageSource source, @Nullable PlayerEntity player);
 
 	void beginPhase();
 

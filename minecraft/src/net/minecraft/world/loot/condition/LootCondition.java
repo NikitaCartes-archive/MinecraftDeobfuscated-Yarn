@@ -4,12 +4,14 @@ import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonSerializationContext;
 import java.util.function.Predicate;
+import net.minecraft.loot.condition.AlternativeLootCondition;
+import net.minecraft.loot.condition.InvertedLootCondition;
+import net.minecraft.loot.context.LootContext;
+import net.minecraft.loot.context.LootContextAware;
 import net.minecraft.util.Identifier;
-import net.minecraft.world.loot.context.LootContext;
-import net.minecraft.world.loot.context.ParameterConsumer;
 
 @FunctionalInterface
-public interface LootCondition extends ParameterConsumer, Predicate<LootContext> {
+public interface LootCondition extends LootContextAware, Predicate<LootContext> {
 	@FunctionalInterface
 	public interface Builder {
 		LootCondition build();
@@ -18,8 +20,8 @@ public interface LootCondition extends ParameterConsumer, Predicate<LootContext>
 			return InvertedLootCondition.builder(this);
 		}
 
-		default AlternativeLootCondition.Builder withCondition(LootCondition.Builder builder) {
-			return AlternativeLootCondition.builder(this, builder);
+		default AlternativeLootCondition.Builder withCondition(LootCondition.Builder condition) {
+			return AlternativeLootCondition.builder(this, condition);
 		}
 	}
 
@@ -27,9 +29,9 @@ public interface LootCondition extends ParameterConsumer, Predicate<LootContext>
 		private final Identifier id;
 		private final Class<T> conditionClass;
 
-		protected Factory(Identifier identifier, Class<T> class_) {
-			this.id = identifier;
-			this.conditionClass = class_;
+		protected Factory(Identifier id, Class<T> clazz) {
+			this.id = id;
+			this.conditionClass = clazz;
 		}
 
 		public Identifier getId() {
@@ -40,8 +42,8 @@ public interface LootCondition extends ParameterConsumer, Predicate<LootContext>
 			return this.conditionClass;
 		}
 
-		public abstract void toJson(JsonObject jsonObject, T lootCondition, JsonSerializationContext jsonSerializationContext);
+		public abstract void toJson(JsonObject json, T condition, JsonSerializationContext context);
 
-		public abstract T fromJson(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext);
+		public abstract T fromJson(JsonObject json, JsonDeserializationContext context);
 	}
 }

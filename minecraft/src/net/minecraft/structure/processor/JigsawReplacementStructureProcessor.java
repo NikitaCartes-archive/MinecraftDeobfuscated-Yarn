@@ -11,7 +11,7 @@ import net.minecraft.command.arguments.BlockArgumentParser;
 import net.minecraft.structure.Structure;
 import net.minecraft.structure.StructurePlacementData;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.ViewableWorld;
+import net.minecraft.world.CollisionView;
 
 public class JigsawReplacementStructureProcessor extends StructureProcessor {
 	public static final JigsawReplacementStructureProcessor INSTANCE = new JigsawReplacementStructureProcessor();
@@ -22,11 +22,11 @@ public class JigsawReplacementStructureProcessor extends StructureProcessor {
 	@Nullable
 	@Override
 	public Structure.StructureBlockInfo process(
-		ViewableWorld viewableWorld,
-		BlockPos blockPos,
+		CollisionView world,
+		BlockPos pos,
 		Structure.StructureBlockInfo structureBlockInfo,
 		Structure.StructureBlockInfo structureBlockInfo2,
-		StructurePlacementData structurePlacementData
+		StructurePlacementData placementData
 	) {
 		Block block = structureBlockInfo2.state.getBlock();
 		if (block != Blocks.JIGSAW) {

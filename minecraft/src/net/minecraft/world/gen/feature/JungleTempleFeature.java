@@ -5,13 +5,13 @@ import java.util.function.Function;
 import net.minecraft.structure.JungleTempleGenerator;
 import net.minecraft.structure.StructureManager;
 import net.minecraft.structure.StructureStart;
-import net.minecraft.util.math.MutableIntBoundingBox;
+import net.minecraft.util.math.BlockBox;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
 
 public class JungleTempleFeature extends AbstractTempleFeature<DefaultFeatureConfig> {
-	public JungleTempleFeature(Function<Dynamic<?>, ? extends DefaultFeatureConfig> function) {
-		super(function);
+	public JungleTempleFeature(Function<Dynamic<?>, ? extends DefaultFeatureConfig> configFactory) {
+		super(configFactory);
 	}
 
 	@Override
@@ -35,13 +35,13 @@ public class JungleTempleFeature extends AbstractTempleFeature<DefaultFeatureCon
 	}
 
 	public static class Start extends StructureStart {
-		public Start(StructureFeature<?> structureFeature, int i, int j, Biome biome, MutableIntBoundingBox mutableIntBoundingBox, int k, long l) {
-			super(structureFeature, i, j, biome, mutableIntBoundingBox, k, l);
+		public Start(StructureFeature<?> structureFeature, int chunkX, int chunkZ, Biome biome, BlockBox blockBox, int i, long l) {
+			super(structureFeature, chunkX, chunkZ, biome, blockBox, i, l);
 		}
 
 		@Override
-		public void initialize(ChunkGenerator<?> chunkGenerator, StructureManager structureManager, int i, int j, Biome biome) {
-			JungleTempleGenerator jungleTempleGenerator = new JungleTempleGenerator(this.random, i * 16, j * 16);
+		public void initialize(ChunkGenerator<?> chunkGenerator, StructureManager structureManager, int x, int z, Biome biome) {
+			JungleTempleGenerator jungleTempleGenerator = new JungleTempleGenerator(this.random, x * 16, z * 16);
 			this.children.add(jungleTempleGenerator);
 			this.setBoundingBoxFromChildren();
 		}

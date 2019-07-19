@@ -1,14 +1,14 @@
 package net.minecraft.block;
 
-import net.minecraft.client.block.ColoredBlock;
+import net.minecraft.client.render.RenderLayer;
 import net.minecraft.util.DyeColor;
 
-public class StainedGlassBlock extends AbstractGlassBlock implements ColoredBlock {
+public class StainedGlassBlock extends AbstractGlassBlock implements Stainable {
 	private final DyeColor color;
 
-	public StainedGlassBlock(DyeColor dyeColor, Block.Settings settings) {
+	public StainedGlassBlock(DyeColor color, Block.Settings settings) {
 		super(settings);
-		this.color = dyeColor;
+		this.color = color;
 	}
 
 	@Override
@@ -17,7 +17,7 @@ public class StainedGlassBlock extends AbstractGlassBlock implements ColoredBloc
 	}
 
 	@Override
-	public BlockRenderLayer getRenderLayer() {
-		return BlockRenderLayer.TRANSLUCENT;
+	public RenderLayer getRenderLayer() {
+		return RenderLayer.TRANSLUCENT;
 	}
 }

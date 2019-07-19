@@ -1,10 +1,10 @@
 package net.minecraft.realms;
 
+import com.mojang.realmsclient.RealmsMainScreen;
+import com.mojang.realmsclient.gui.screens.RealmsNotificationsScreen;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_4325;
-import net.minecraft.class_4399;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.Screen;
 
@@ -14,13 +14,13 @@ public class RealmsBridge extends RealmsScreen {
 
 	public void switchToRealms(Screen screen) {
 		this.previousScreen = screen;
-		Realms.setScreen(new class_4325(this));
+		Realms.setScreen(new RealmsMainScreen(this));
 	}
 
 	@Nullable
 	public RealmsScreenProxy getNotificationScreen(Screen screen) {
 		this.previousScreen = screen;
-		return new class_4399(this).getProxy();
+		return new RealmsNotificationsScreen(this).getProxy();
 	}
 
 	@Override

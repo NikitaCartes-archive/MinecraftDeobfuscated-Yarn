@@ -22,27 +22,27 @@ public class DropperBlock extends DispenserBlock {
 	}
 
 	@Override
-	protected DispenserBehavior getBehaviorForItem(ItemStack itemStack) {
+	protected DispenserBehavior getBehaviorForItem(ItemStack stack) {
 		return BEHAVIOR;
 	}
 
 	@Override
-	public BlockEntity createBlockEntity(BlockView blockView) {
+	public BlockEntity createBlockEntity(BlockView view) {
 		return new DropperBlockEntity();
 	}
 
 	@Override
-	protected void dispense(World world, BlockPos blockPos) {
-		BlockPointerImpl blockPointerImpl = new BlockPointerImpl(world, blockPos);
+	protected void dispense(World world, BlockPos pos) {
+		BlockPointerImpl blockPointerImpl = new BlockPointerImpl(world, pos);
 		DispenserBlockEntity dispenserBlockEntity = blockPointerImpl.getBlockEntity();
 		int i = dispenserBlockEntity.chooseNonEmptySlot();
 		if (i < 0) {
-			world.playLevelEvent(1001, blockPos, 0);
+			world.playLevelEvent(1001, pos, 0);
 		} else {
 			ItemStack itemStack = dispenserBlockEntity.getInvStack(i);
 			if (!itemStack.isEmpty()) {
-				Direction direction = world.getBlockState(blockPos).get(FACING);
-				Inventory inventory = HopperBlockEntity.getInventoryAt(world, blockPos.offset(direction));
+				Direction direction = world.getBlockState(pos).get(FACING);
+				Inventory inventory = HopperBlockEntity.getInventoryAt(world, pos.offset(direction));
 				ItemStack itemStack2;
 				if (inventory == null) {
 					itemStack2 = BEHAVIOR.dispense(blockPointerImpl, itemStack);

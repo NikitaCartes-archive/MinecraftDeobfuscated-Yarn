@@ -17,14 +17,14 @@ public class IntTag extends AbstractNumberTag {
 	}
 
 	@Override
-	public void write(DataOutput dataOutput) throws IOException {
-		dataOutput.writeInt(this.value);
+	public void write(DataOutput output) throws IOException {
+		output.writeInt(this.value);
 	}
 
 	@Override
-	public void read(DataInput dataInput, int i, PositionTracker positionTracker) throws IOException {
+	public void read(DataInput input, int depth, PositionTracker positionTracker) throws IOException {
 		positionTracker.add(96L);
-		this.value = dataInput.readInt();
+		this.value = input.readInt();
 	}
 
 	@Override
@@ -37,15 +37,15 @@ public class IntTag extends AbstractNumberTag {
 		return String.valueOf(this.value);
 	}
 
-	public IntTag method_10592() {
+	public IntTag copy() {
 		return new IntTag(this.value);
 	}
 
-	public boolean equals(Object object) {
-		if (this == object) {
+	public boolean equals(Object o) {
+		if (this == o) {
 			return true;
 		} else {
-			return object instanceof IntTag && this.value == ((IntTag)object).value;
+			return o instanceof IntTag && this.value == ((IntTag)o).value;
 		}
 	}
 
@@ -54,7 +54,7 @@ public class IntTag extends AbstractNumberTag {
 	}
 
 	@Override
-	public Text toText(String string, int i) {
+	public Text toText(String indent, int depth) {
 		return new LiteralText(String.valueOf(this.value)).formatted(GOLD);
 	}
 

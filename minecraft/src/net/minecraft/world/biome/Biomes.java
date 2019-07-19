@@ -50,13 +50,13 @@ public abstract class Biomes {
 	public static final Biome END_MIDLANDS = register(41, "end_midlands", new EndMidlandsBiome());
 	public static final Biome END_HIGHLANDS = register(42, "end_highlands", new EndHighlandsBiome());
 	public static final Biome END_BARRENS = register(43, "end_barrens", new EndBarrensBiome());
-	public static final Biome WARM_OCEAN = register(44, "warm_ocean", new OceanWarmBiome());
-	public static final Biome LUKEWARM_OCEAN = register(45, "lukewarm_ocean", new OceanLukewarmBiome());
-	public static final Biome COLD_OCEAN = register(46, "cold_ocean", new OceanColdBiome());
-	public static final Biome DEEP_WARM_OCEAN = register(47, "deep_warm_ocean", new OceanDeepWarmBiome());
-	public static final Biome DEEP_LUKEWARM_OCEAN = register(48, "deep_lukewarm_ocean", new OceanDeepLukewarmBiome());
-	public static final Biome DEEP_COLD_OCEAN = register(49, "deep_cold_ocean", new OceanDeepColdBiome());
-	public static final Biome DEEP_FROZEN_OCEAN = register(50, "deep_frozen_ocean", new OceanDeepFrozenBiome());
+	public static final Biome WARM_OCEAN = register(44, "warm_ocean", new WarmOceanBiome());
+	public static final Biome LUKEWARM_OCEAN = register(45, "lukewarm_ocean", new LukewarmOceanBiome());
+	public static final Biome COLD_OCEAN = register(46, "cold_ocean", new ColdOceanBiome());
+	public static final Biome DEEP_WARM_OCEAN = register(47, "deep_warm_ocean", new DeepWarmOceanBiome());
+	public static final Biome DEEP_LUKEWARM_OCEAN = register(48, "deep_lukewarm_ocean", new DeepLukewarmOceanBiome());
+	public static final Biome DEEP_COLD_OCEAN = register(49, "deep_cold_ocean", new DeepColdOceanBiome());
+	public static final Biome DEEP_FROZEN_OCEAN = register(50, "deep_frozen_ocean", new DeepFrozenOceanBiome());
 	public static final Biome THE_VOID = register(127, "the_void", new VoidBiome());
 	public static final Biome SUNFLOWER_PLAINS = register(129, "sunflower_plains", new SunflowerPlainsBiome());
 	public static final Biome DESERT_LAKES = register(130, "desert_lakes", new DesertLakesBiome());
@@ -82,8 +82,8 @@ public abstract class Biomes {
 	public static final Biome BAMBOO_JUNGLE = register(168, "bamboo_jungle", new BambooJungleBiome());
 	public static final Biome BAMBOO_JUNGLE_HILLS = register(169, "bamboo_jungle_hills", new BambooJungleHillsBiome());
 
-	private static Biome register(int i, String string, Biome biome) {
-		Registry.register(Registry.BIOME, i, string, biome);
+	private static Biome register(int rawId, String id, Biome biome) {
+		Registry.register(Registry.BIOME, rawId, id, biome);
 		if (biome.hasParent()) {
 			Biome.PARENT_BIOME_ID_MAP.set(biome, Registry.BIOME.getRawId(Registry.BIOME.get(new Identifier(biome.parent))));
 		}

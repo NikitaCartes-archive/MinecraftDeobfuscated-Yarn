@@ -1,20 +1,23 @@
 package net.minecraft.container;
 
+/**
+ * A {@link PropertyDelegate} that is implemented using an int array.
+ */
 public class ArrayPropertyDelegate implements PropertyDelegate {
 	private final int[] data;
 
-	public ArrayPropertyDelegate(int i) {
-		this.data = new int[i];
+	public ArrayPropertyDelegate(int size) {
+		this.data = new int[size];
 	}
 
 	@Override
-	public int get(int i) {
-		return this.data[i];
+	public int get(int index) {
+		return this.data[index];
 	}
 
 	@Override
-	public void set(int i, int j) {
-		this.data[i] = j;
+	public void set(int index, int value) {
+		this.data[index] = value;
 	}
 
 	@Override

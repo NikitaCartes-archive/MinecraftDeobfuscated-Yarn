@@ -13,8 +13,8 @@ import java.util.stream.Stream;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.network.packet.c2s.play.RequestCommandCompletionsC2SPacket;
 import net.minecraft.server.command.CommandSource;
-import net.minecraft.server.network.packet.RequestCommandCompletionsC2SPacket;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.hit.EntityHitResult;
@@ -29,9 +29,9 @@ public class ClientCommandSource implements CommandSource {
 	private int completionId = -1;
 	private CompletableFuture<Suggestions> pendingCompletion;
 
-	public ClientCommandSource(ClientPlayNetworkHandler clientPlayNetworkHandler, MinecraftClient minecraftClient) {
-		this.networkHandler = clientPlayNetworkHandler;
-		this.client = minecraftClient;
+	public ClientCommandSource(ClientPlayNetworkHandler networkHandler, MinecraftClient client) {
+		this.networkHandler = networkHandler;
+		this.client = client;
 	}
 
 	@Override
@@ -47,8 +47,8 @@ public class ClientCommandSource implements CommandSource {
 
 	@Override
 	public Collection<String> getEntitySuggestions() {
-		return (Collection<String>)(this.client.hitResult != null && this.client.hitResult.getType() == HitResult.Type.ENTITY
-			? Collections.singleton(((EntityHitResult)this.client.hitResult).getEntity().getUuidAsString())
+		return (Collection<String>)(this.client.crosshairTarget != null && this.client.crosshairTarget.getType() == HitResult.Type.ENTITY
+			? Collections.singleton(((EntityHitResult)this.client.crosshairTarget).getEntity().getUuidAsString())
 			: Collections.emptyList());
 	}
 
@@ -68,37 +68,37 @@ public class ClientCommandSource implements CommandSource {
 	}
 
 	@Override
-	public boolean hasPermissionLevel(int i) {
+	public boolean hasPermissionLevel(int level) {
 		ClientPlayerEntity clientPlayerEntity = this.client.player;
-		return clientPlayerEntity != null ? clientPlayerEntity.allowsPermissionLevel(i) : i == 0;
+		return clientPlayerEntity != null ? clientPlayerEntity.allowsPermissionLevel(level) : level == 0;
 	}
 
 	@Override
-	public CompletableFuture<Suggestions> getCompletions(CommandContext<CommandSource> commandContext, SuggestionsBuilder suggestionsBuilder) {
+	public CompletableFuture<Suggestions> getCompletions(CommandContext<CommandSource> context, SuggestionsBuilder builder) {
 		if (this.pendingCompletion != null) {
 			this.pendingCompletion.cancel(false);
 		}
 
 		this.pendingCompletion = new CompletableFuture();
 		int i = ++this.completionId;
-		this.networkHandler.sendPacket(new RequestCommandCompletionsC2SPacket(i, commandContext.getInput()));
+		this.networkHandler.sendPacket(new RequestCommandCompletionsC2SPacket(i, context.getInput()));
 		return this.pendingCompletion;
 	}
 
-	private static String formatDouble(double d) {
+	private static String format(double d) {
 		return String.format(Locale.ROOT, "%.2f", d);
 	}
 
-	private static String formatInt(int i) {
+	private static String format(int i) {
 		return Integer.toString(i);
 	}
 
 	@Override
 	public Collection<CommandSource.RelativePosition> getBlockPositionSuggestions() {
-		HitResult hitResult = this.client.hitResult;
+		HitResult hitResult = this.client.crosshairTarget;
 		if (hitResult != null && hitResult.getType() == HitResult.Type.BLOCK) {
 			BlockPos blockPos = ((BlockHitResult)hitResult).getBlockPos();
-			return Collections.singleton(new CommandSource.RelativePosition(formatInt(blockPos.getX()), formatInt(blockPos.getY()), formatInt(blockPos.getZ())));
+			return Collections.singleton(new CommandSource.RelativePosition(format(blockPos.getX()), format(blockPos.getY()), format(blockPos.getZ())));
 		} else {
 			return CommandSource.super.getBlockPositionSuggestions();
 		}
@@ -106,17 +106,17 @@ public class ClientCommandSource implements CommandSource {
 
 	@Override
 	public Collection<CommandSource.RelativePosition> getPositionSuggestions() {
-		HitResult hitResult = this.client.hitResult;
+		HitResult hitResult = this.client.crosshairTarget;
 		if (hitResult != null && hitResult.getType() == HitResult.Type.BLOCK) {
 			Vec3d vec3d = hitResult.getPos();
-			return Collections.singleton(new CommandSource.RelativePosition(formatDouble(vec3d.x), formatDouble(vec3d.y), formatDouble(vec3d.z)));
+			return Collections.singleton(new CommandSource.RelativePosition(format(vec3d.x), format(vec3d.y), format(vec3d.z)));
 		} else {
 			return CommandSource.super.getPositionSuggestions();
 		}
 	}
 
-	public void onCommandSuggestions(int i, Suggestions suggestions) {
-		if (i == this.completionId) {
+	public void onCommandSuggestions(int completionId, Suggestions suggestions) {
+		if (completionId == this.completionId) {
 			this.pendingCompletion.complete(suggestions);
 			this.pendingCompletion = null;
 			this.completionId = -1;

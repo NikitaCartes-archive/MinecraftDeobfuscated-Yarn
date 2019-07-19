@@ -8,30 +8,30 @@ import net.minecraft.world.World;
 public class SpiderNavigation extends MobNavigation {
 	private BlockPos field_6687;
 
-	public SpiderNavigation(MobEntity mobEntity, World world) {
-		super(mobEntity, world);
+	public SpiderNavigation(MobEntity entity, World world) {
+		super(entity, world);
 	}
 
 	@Override
-	public Path findPathTo(BlockPos blockPos, int i) {
-		this.field_6687 = blockPos;
-		return super.findPathTo(blockPos, i);
+	public Path findPathTo(BlockPos target, int distance) {
+		this.field_6687 = target;
+		return super.findPathTo(target, distance);
 	}
 
 	@Override
-	public Path findPathTo(Entity entity, int i) {
+	public Path findPathTo(Entity entity, int distance) {
 		this.field_6687 = new BlockPos(entity);
-		return super.findPathTo(entity, i);
+		return super.findPathTo(entity, distance);
 	}
 
 	@Override
-	public boolean startMovingTo(Entity entity, double d) {
+	public boolean startMovingTo(Entity entity, double speed) {
 		Path path = this.findPathTo(entity, 0);
 		if (path != null) {
-			return this.startMovingAlong(path, d);
+			return this.startMovingAlong(path, speed);
 		} else {
 			this.field_6687 = new BlockPos(entity);
-			this.speed = d;
+			this.speed = speed;
 			return true;
 		}
 	}

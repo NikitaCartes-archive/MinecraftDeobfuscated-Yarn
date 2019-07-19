@@ -15,16 +15,16 @@ public class TurtleEntityRenderer extends MobEntityRenderer<TurtleEntity, Turtle
 		super(entityRenderDispatcher, new TurtleEntityModel<>(0.0F), 0.7F);
 	}
 
-	public void method_4138(TurtleEntity turtleEntity, double d, double e, double f, float g, float h) {
+	public void render(TurtleEntity turtleEntity, double d, double e, double f, float g, float h) {
 		if (turtleEntity.isBaby()) {
 			this.field_4673 *= 0.5F;
 		}
 
-		super.method_4072(turtleEntity, d, e, f, g, h);
+		super.render(turtleEntity, d, e, f, g, h);
 	}
 
 	@Nullable
-	protected Identifier method_4139(TurtleEntity turtleEntity) {
+	protected Identifier getTexture(TurtleEntity turtleEntity) {
 		return SKIN;
 	}
 }

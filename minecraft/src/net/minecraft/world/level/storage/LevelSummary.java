@@ -26,19 +26,19 @@ public class LevelSummary implements Comparable<LevelSummary> {
 	private final boolean isSnapshot;
 	private final LevelGeneratorType generatorType;
 
-	public LevelSummary(LevelProperties levelProperties, String string, String string2, long l, boolean bl) {
-		this.name = string;
-		this.displayName = string2;
-		this.lastPlayed = levelProperties.getLastPlayed();
-		this.getSizeOnDisk = l;
-		this.gameMode = levelProperties.getGameMode();
-		this.requiresConversion = bl;
-		this.isHardcore = levelProperties.isHardcore();
-		this.commandsAllowed = levelProperties.areCommandsAllowed();
-		this.versionName = levelProperties.getVersionName();
-		this.versionId = levelProperties.getVersionId();
-		this.isSnapshot = levelProperties.isVersionSnapshot();
-		this.generatorType = levelProperties.getGeneratorType();
+	public LevelSummary(LevelProperties properties, String name, String displayName, long size, boolean requiresConversion) {
+		this.name = name;
+		this.displayName = displayName;
+		this.lastPlayed = properties.getLastPlayed();
+		this.getSizeOnDisk = size;
+		this.gameMode = properties.getGameMode();
+		this.requiresConversion = requiresConversion;
+		this.isHardcore = properties.isHardcore();
+		this.commandsAllowed = properties.areCommandsAllowed();
+		this.versionName = properties.getVersionName();
+		this.versionId = properties.getVersionId();
+		this.isSnapshot = properties.isVersionSnapshot();
+		this.generatorType = properties.getGeneratorType();
 	}
 
 	public String getName() {
@@ -61,7 +61,7 @@ public class LevelSummary implements Comparable<LevelSummary> {
 		return this.lastPlayed;
 	}
 
-	public int method_251(LevelSummary levelSummary) {
+	public int compareTo(LevelSummary levelSummary) {
 		if (this.lastPlayed < levelSummary.lastPlayed) {
 			return 1;
 		} else {

@@ -22,25 +22,31 @@ public class GoToSecondaryPositionTask extends Task<VillagerEntity> {
 	@Nullable
 	private GlobalPos chosenPosition;
 
-	public GoToSecondaryPositionTask(MemoryModuleType<List<GlobalPos>> memoryModuleType, float f, int i, int j, MemoryModuleType<GlobalPos> memoryModuleType2) {
+	public GoToSecondaryPositionTask(
+		MemoryModuleType<List<GlobalPos>> secondaryPositions,
+		float speed,
+		int completionRange,
+		int primaryPositionActivationDistance,
+		MemoryModuleType<GlobalPos> primaryPosition
+	) {
 		super(
 			ImmutableMap.of(
 				MemoryModuleType.WALK_TARGET,
 				MemoryModuleState.REGISTERED,
-				memoryModuleType,
+				secondaryPositions,
 				MemoryModuleState.VALUE_PRESENT,
-				memoryModuleType2,
+				primaryPosition,
 				MemoryModuleState.VALUE_PRESENT
 			)
 		);
-		this.secondaryPositions = memoryModuleType;
-		this.speed = f;
-		this.completionRange = i;
-		this.primaryPositionActivationDistance = j;
-		this.primaryPosition = memoryModuleType2;
+		this.secondaryPositions = secondaryPositions;
+		this.speed = speed;
+		this.completionRange = completionRange;
+		this.primaryPositionActivationDistance = primaryPositionActivationDistance;
+		this.primaryPosition = primaryPosition;
 	}
 
-	protected boolean method_19609(ServerWorld serverWorld, VillagerEntity villagerEntity) {
+	protected boolean shouldRun(ServerWorld serverWorld, VillagerEntity villagerEntity) {
 		Optional<List<GlobalPos>> optional = villagerEntity.getBrain().getOptionalMemory(this.secondaryPositions);
 		Optional<GlobalPos> optional2 = villagerEntity.getBrain().getOptionalMemory(this.primaryPosition);
 		if (optional.isPresent() && optional2.isPresent()) {
@@ -56,7 +62,7 @@ public class GoToSecondaryPositionTask extends Task<VillagerEntity> {
 		return false;
 	}
 
-	protected void method_19610(ServerWorld serverWorld, VillagerEntity villagerEntity, long l) {
+	protected void run(ServerWorld serverWorld, VillagerEntity villagerEntity, long l) {
 		if (l > this.nextRunTime && this.chosenPosition != null) {
 			villagerEntity.getBrain().putMemory(MemoryModuleType.WALK_TARGET, new WalkTarget(this.chosenPosition.getPos(), this.speed, this.completionRange));
 			this.nextRunTime = l + 100L;

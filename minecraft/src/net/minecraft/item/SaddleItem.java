@@ -13,13 +13,13 @@ public class SaddleItem extends Item {
 	}
 
 	@Override
-	public boolean useOnEntity(ItemStack itemStack, PlayerEntity playerEntity, LivingEntity livingEntity, Hand hand) {
-		if (livingEntity instanceof PigEntity) {
-			PigEntity pigEntity = (PigEntity)livingEntity;
+	public boolean useOnEntity(ItemStack stack, PlayerEntity user, LivingEntity entity, Hand hand) {
+		if (entity instanceof PigEntity) {
+			PigEntity pigEntity = (PigEntity)entity;
 			if (pigEntity.isAlive() && !pigEntity.isSaddled() && !pigEntity.isBaby()) {
 				pigEntity.setSaddled(true);
-				pigEntity.world.playSound(playerEntity, pigEntity.x, pigEntity.y, pigEntity.z, SoundEvents.ENTITY_PIG_SADDLE, SoundCategory.NEUTRAL, 0.5F, 1.0F);
-				itemStack.decrement(1);
+				pigEntity.world.playSound(user, pigEntity.x, pigEntity.y, pigEntity.z, SoundEvents.ENTITY_PIG_SADDLE, SoundCategory.NEUTRAL, 0.5F, 1.0F);
+				stack.decrement(1);
 			}
 
 			return true;

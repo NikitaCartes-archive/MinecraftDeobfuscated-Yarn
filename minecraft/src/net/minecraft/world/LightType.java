@@ -4,9 +4,9 @@ public enum LightType {
 	SKY(15),
 	BLOCK(0);
 
-	public final int field_9283;
+	public final int value;
 
-	private LightType(int j) {
-		this.field_9283 = j;
+	private LightType(int value) {
+		this.value = value;
 	}
 }

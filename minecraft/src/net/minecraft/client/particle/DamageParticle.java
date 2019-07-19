@@ -8,18 +8,18 @@ import net.minecraft.world.World;
 
 @Environment(EnvType.CLIENT)
 public class DamageParticle extends SpriteBillboardParticle {
-	private DamageParticle(World world, double d, double e, double f, double g, double h, double i) {
-		super(world, d, e, f, 0.0, 0.0, 0.0);
+	private DamageParticle(World world, double x, double y, double z, double d, double e, double f) {
+		super(world, x, y, z, 0.0, 0.0, 0.0);
 		this.velocityX *= 0.1F;
 		this.velocityY *= 0.1F;
 		this.velocityZ *= 0.1F;
-		this.velocityX += g * 0.4;
-		this.velocityY += h * 0.4;
-		this.velocityZ += i * 0.4;
-		float j = (float)(Math.random() * 0.3F + 0.6F);
-		this.colorRed = j;
-		this.colorGreen = j;
-		this.colorBlue = j;
+		this.velocityX += d * 0.4;
+		this.velocityY += e * 0.4;
+		this.velocityZ += f * 0.4;
+		float g = (float)(Math.random() * 0.3F + 0.6F);
+		this.colorRed = g;
+		this.colorGreen = g;
+		this.colorBlue = g;
 		this.scale *= 0.75F;
 		this.maxAge = Math.max((int)(6.0 / (Math.random() * 0.8 + 0.6)), 1);
 		this.collidesWithWorld = false;
@@ -27,8 +27,8 @@ public class DamageParticle extends SpriteBillboardParticle {
 	}
 
 	@Override
-	public float getSize(float f) {
-		return this.scale * MathHelper.clamp(((float)this.age + f) / (float)this.maxAge * 32.0F, 0.0F, 1.0F);
+	public float getSize(float tickDelta) {
+		return this.scale * MathHelper.clamp(((float)this.age + tickDelta) / (float)this.maxAge * 32.0F, 0.0F, 1.0F);
 	}
 
 	@Override
@@ -66,7 +66,7 @@ public class DamageParticle extends SpriteBillboardParticle {
 			this.field_17790 = spriteProvider;
 		}
 
-		public Particle method_3013(DefaultParticleType defaultParticleType, World world, double d, double e, double f, double g, double h, double i) {
+		public Particle createParticle(DefaultParticleType defaultParticleType, World world, double d, double e, double f, double g, double h, double i) {
 			DamageParticle damageParticle = new DamageParticle(world, d, e, f, g, h + 1.0, i);
 			damageParticle.setMaxAge(20);
 			damageParticle.setSprite(this.field_17790);
@@ -82,7 +82,7 @@ public class DamageParticle extends SpriteBillboardParticle {
 			this.field_17791 = spriteProvider;
 		}
 
-		public Particle method_3014(DefaultParticleType defaultParticleType, World world, double d, double e, double f, double g, double h, double i) {
+		public Particle createParticle(DefaultParticleType defaultParticleType, World world, double d, double e, double f, double g, double h, double i) {
 			DamageParticle damageParticle = new DamageParticle(world, d, e, f, g, h, i);
 			damageParticle.colorRed *= 0.3F;
 			damageParticle.colorGreen *= 0.8F;
@@ -92,14 +92,14 @@ public class DamageParticle extends SpriteBillboardParticle {
 	}
 
 	@Environment(EnvType.CLIENT)
-	public static class class_3939 implements ParticleFactory<DefaultParticleType> {
+	public static class Factory implements ParticleFactory<DefaultParticleType> {
 		private final SpriteProvider field_18291;
 
-		public class_3939(SpriteProvider spriteProvider) {
+		public Factory(SpriteProvider spriteProvider) {
 			this.field_18291 = spriteProvider;
 		}
 
-		public Particle method_17580(DefaultParticleType defaultParticleType, World world, double d, double e, double f, double g, double h, double i) {
+		public Particle createParticle(DefaultParticleType defaultParticleType, World world, double d, double e, double f, double g, double h, double i) {
 			DamageParticle damageParticle = new DamageParticle(world, d, e, f, g, h, i);
 			damageParticle.setSprite(this.field_18291);
 			return damageParticle;

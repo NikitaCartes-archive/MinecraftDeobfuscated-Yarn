@@ -11,8 +11,8 @@ public class HealthBoostStatusEffect extends StatusEffect {
 	@Override
 	public void method_5562(LivingEntity livingEntity, AbstractEntityAttributeContainer abstractEntityAttributeContainer, int i) {
 		super.method_5562(livingEntity, abstractEntityAttributeContainer, i);
-		if (livingEntity.getHealth() > livingEntity.getHealthMaximum()) {
-			livingEntity.setHealth(livingEntity.getHealthMaximum());
+		if (livingEntity.getHealth() > livingEntity.getMaximumHealth()) {
+			livingEntity.setHealth(livingEntity.getMaximumHealth());
 		}
 	}
 }

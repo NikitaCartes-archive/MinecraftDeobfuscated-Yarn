@@ -16,11 +16,11 @@ public class VexEntityRenderer extends BipedEntityRenderer<VexEntity, VexEntityM
 		super(entityRenderDispatcher, new VexEntityModel(), 0.3F);
 	}
 
-	protected Identifier method_4144(VexEntity vexEntity) {
+	protected Identifier getTexture(VexEntity vexEntity) {
 		return vexEntity.isCharging() ? CHARGING_TEXTURE : TEXTURE;
 	}
 
-	protected void method_4143(VexEntity vexEntity, float f) {
+	protected void scale(VexEntity vexEntity, float f) {
 		GlStateManager.scalef(0.4F, 0.4F, 0.4F);
 	}
 }

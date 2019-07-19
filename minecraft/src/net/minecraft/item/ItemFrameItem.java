@@ -12,7 +12,7 @@ public class ItemFrameItem extends DecorationItem {
 	}
 
 	@Override
-	protected boolean canPlaceOn(PlayerEntity playerEntity, Direction direction, ItemStack itemStack, BlockPos blockPos) {
-		return !World.isHeightInvalid(blockPos) && playerEntity.canPlaceOn(blockPos, direction, itemStack);
+	protected boolean canPlaceOn(PlayerEntity player, Direction side, ItemStack stack, BlockPos pos) {
+		return !World.isHeightInvalid(pos) && player.canPlaceOn(pos, side, stack);
 	}
 }

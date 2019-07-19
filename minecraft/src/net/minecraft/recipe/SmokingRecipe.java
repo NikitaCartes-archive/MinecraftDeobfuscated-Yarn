@@ -7,8 +7,8 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.util.Identifier;
 
 public class SmokingRecipe extends AbstractCookingRecipe {
-	public SmokingRecipe(Identifier identifier, String string, Ingredient ingredient, ItemStack itemStack, float f, int i) {
-		super(RecipeType.SMOKING, identifier, string, ingredient, itemStack, f, i);
+	public SmokingRecipe(Identifier id, String group, Ingredient input, ItemStack output, float experience, int cookTime) {
+		super(RecipeType.SMOKING, id, group, input, output, experience, cookTime);
 	}
 
 	@Environment(EnvType.CLIENT)

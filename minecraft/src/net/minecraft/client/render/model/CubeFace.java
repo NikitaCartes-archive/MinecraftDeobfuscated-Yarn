@@ -2,7 +2,7 @@ package net.minecraft.client.render.model;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.util.SystemUtil;
+import net.minecraft.util.Util;
 import net.minecraft.util.math.Direction;
 
 @Environment(EnvType.CLIENT)
@@ -44,7 +44,7 @@ public enum CubeFace {
 		new CubeFace.Corner(CubeFace.DirectionIds.EAST, CubeFace.DirectionIds.UP, CubeFace.DirectionIds.NORTH)
 	);
 
-	private static final CubeFace[] field_3958 = SystemUtil.consume(new CubeFace[6], cubeFaces -> {
+	private static final CubeFace[] field_3958 = Util.make(new CubeFace[6], cubeFaces -> {
 		cubeFaces[CubeFace.DirectionIds.DOWN] = DOWN;
 		cubeFaces[CubeFace.DirectionIds.UP] = UP;
 		cubeFaces[CubeFace.DirectionIds.NORTH] = NORTH;
@@ -62,8 +62,8 @@ public enum CubeFace {
 		this.corners = corners;
 	}
 
-	public CubeFace.Corner getCorner(int i) {
-		return this.corners[i];
+	public CubeFace.Corner getCorner(int corner) {
+		return this.corners[corner];
 	}
 
 	@Environment(EnvType.CLIENT)

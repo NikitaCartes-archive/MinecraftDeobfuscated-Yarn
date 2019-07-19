@@ -16,7 +16,7 @@ public class SheepEntityRenderer extends MobEntityRenderer<SheepEntity, SheepEnt
 		this.addFeature(new SheepWoolFeatureRenderer(this));
 	}
 
-	protected Identifier method_4106(SheepEntity sheepEntity) {
+	protected Identifier getTexture(SheepEntity sheepEntity) {
 		return SKIN;
 	}
 }

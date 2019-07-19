@@ -11,8 +11,8 @@ import net.minecraft.entity.Entity;
 public class SlimeOverlayFeatureRenderer<T extends Entity> extends FeatureRenderer<T, SlimeEntityModel<T>> {
 	private final EntityModel<T> model = new SlimeEntityModel<>(0);
 
-	public SlimeOverlayFeatureRenderer(FeatureRendererContext<T, SlimeEntityModel<T>> featureRendererContext) {
-		super(featureRendererContext);
+	public SlimeOverlayFeatureRenderer(FeatureRendererContext<T, SlimeEntityModel<T>> context) {
+		super(context);
 	}
 
 	@Override
@@ -22,7 +22,7 @@ public class SlimeOverlayFeatureRenderer<T extends Entity> extends FeatureRender
 			GlStateManager.enableNormalize();
 			GlStateManager.enableBlend();
 			GlStateManager.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA);
-			this.getModel().copyStateTo(this.model);
+			this.getContextModel().copyStateTo(this.model);
 			this.model.render(entity, f, g, i, j, k, l);
 			GlStateManager.disableBlend();
 			GlStateManager.disableNormalize();

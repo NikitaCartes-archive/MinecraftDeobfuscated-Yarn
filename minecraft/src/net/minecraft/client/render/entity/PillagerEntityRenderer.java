@@ -16,7 +16,7 @@ public class PillagerEntityRenderer extends IllagerEntityRenderer<PillagerEntity
 		this.addFeature(new HeldItemFeatureRenderer<>(this));
 	}
 
-	protected Identifier method_4092(PillagerEntity pillagerEntity) {
+	protected Identifier getTexture(PillagerEntity pillagerEntity) {
 		return SKIN;
 	}
 }

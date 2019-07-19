@@ -13,7 +13,7 @@ import net.minecraft.client.render.Tessellator;
 import net.minecraft.client.render.VertexFormats;
 import net.minecraft.client.util.GlAllocationUtils;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.SystemUtil;
+import net.minecraft.util.Util;
 import net.minecraft.util.math.Direction;
 
 @Environment(EnvType.CLIENT)
@@ -25,7 +25,7 @@ public class EndPortalBlockEntityRenderer extends BlockEntityRenderer<EndPortalB
 	private static final FloatBuffer field_4404 = GlAllocationUtils.allocateFloatBuffer(16);
 	private final FloatBuffer field_4403 = GlAllocationUtils.allocateFloatBuffer(16);
 
-	public void method_3591(EndPortalBlockEntity endPortalBlockEntity, double d, double e, double f, float g, int i) {
+	public void render(EndPortalBlockEntity endPortalBlockEntity, double d, double e, double f, float g, int i) {
 		GlStateManager.disableLighting();
 		RANDOM.setSeed(31100L);
 		GlStateManager.getMatrix(2982, field_4408);
@@ -73,13 +73,13 @@ public class EndPortalBlockEntityRenderer extends BlockEntityRenderer<EndPortalB
 			GlStateManager.translatef(0.5F, 0.5F, 0.0F);
 			GlStateManager.scalef(0.5F, 0.5F, 1.0F);
 			float n = (float)(l + 1);
-			GlStateManager.translatef(17.0F / n, (2.0F + n / 1.5F) * ((float)(SystemUtil.getMeasuringTimeMs() % 800000L) / 800000.0F), 0.0F);
+			GlStateManager.translatef(17.0F / n, (2.0F + n / 1.5F) * ((float)(Util.getMeasuringTimeMs() % 800000L) / 800000.0F), 0.0F);
 			GlStateManager.rotatef((n * n * 4321.0F + n * 9.0F) * 2.0F, 0.0F, 0.0F, 1.0F);
 			GlStateManager.scalef(4.5F - n / 4.0F, 4.5F - n / 4.0F, 1.0F);
 			GlStateManager.multMatrix(field_4404);
 			GlStateManager.multMatrix(field_4408);
 			Tessellator tessellator = Tessellator.getInstance();
-			BufferBuilder bufferBuilder = tessellator.getBufferBuilder();
+			BufferBuilder bufferBuilder = tessellator.getBuffer();
 			bufferBuilder.begin(7, VertexFormats.POSITION_COLOR);
 			float o = (RANDOM.nextFloat() * 0.5F + 0.1F) * m;
 			float p = (RANDOM.nextFloat() * 0.5F + 0.4F) * m;

@@ -77,47 +77,47 @@ public class StringNbtReader {
 		}
 	}
 
-	private Tag parsePrimitive(String string) {
+	private Tag parsePrimitive(String input) {
 		try {
-			if (FLOAT_PATTERN.matcher(string).matches()) {
-				return new FloatTag(Float.parseFloat(string.substring(0, string.length() - 1)));
+			if (FLOAT_PATTERN.matcher(input).matches()) {
+				return new FloatTag(Float.parseFloat(input.substring(0, input.length() - 1)));
 			}
 
-			if (BYTE_PATTERN.matcher(string).matches()) {
-				return new ByteTag(Byte.parseByte(string.substring(0, string.length() - 1)));
+			if (BYTE_PATTERN.matcher(input).matches()) {
+				return new ByteTag(Byte.parseByte(input.substring(0, input.length() - 1)));
 			}
 
-			if (LONG_PATTERN.matcher(string).matches()) {
-				return new LongTag(Long.parseLong(string.substring(0, string.length() - 1)));
+			if (LONG_PATTERN.matcher(input).matches()) {
+				return new LongTag(Long.parseLong(input.substring(0, input.length() - 1)));
 			}
 
-			if (SHORT_PATTERN.matcher(string).matches()) {
-				return new ShortTag(Short.parseShort(string.substring(0, string.length() - 1)));
+			if (SHORT_PATTERN.matcher(input).matches()) {
+				return new ShortTag(Short.parseShort(input.substring(0, input.length() - 1)));
 			}
 
-			if (INT_PATTERN.matcher(string).matches()) {
-				return new IntTag(Integer.parseInt(string));
+			if (INT_PATTERN.matcher(input).matches()) {
+				return new IntTag(Integer.parseInt(input));
 			}
 
-			if (DOUBLE_PATTERN.matcher(string).matches()) {
-				return new DoubleTag(Double.parseDouble(string.substring(0, string.length() - 1)));
+			if (DOUBLE_PATTERN.matcher(input).matches()) {
+				return new DoubleTag(Double.parseDouble(input.substring(0, input.length() - 1)));
 			}
 
-			if (DOUBLE_PATTERN_IMPLICIT.matcher(string).matches()) {
-				return new DoubleTag(Double.parseDouble(string));
+			if (DOUBLE_PATTERN_IMPLICIT.matcher(input).matches()) {
+				return new DoubleTag(Double.parseDouble(input));
 			}
 
-			if ("true".equalsIgnoreCase(string)) {
+			if ("true".equalsIgnoreCase(input)) {
 				return new ByteTag((byte)1);
 			}
 
-			if ("false".equalsIgnoreCase(string)) {
+			if ("false".equalsIgnoreCase(input)) {
 				return new ByteTag((byte)0);
 			}
 		} catch (NumberFormatException var3) {
 		}
 
-		return new StringTag(string);
+		return new StringTag(input);
 	}
 
 	public Tag parseTag() throws CommandSyntaxException {

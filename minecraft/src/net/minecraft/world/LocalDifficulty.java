@@ -8,9 +8,9 @@ public class LocalDifficulty {
 	private final Difficulty globalDifficulty;
 	private final float localDifficulty;
 
-	public LocalDifficulty(Difficulty difficulty, long l, long m, float f) {
+	public LocalDifficulty(Difficulty difficulty, long timeOfDay, long l, float f) {
 		this.globalDifficulty = difficulty;
-		this.localDifficulty = this.setLocalDifficulty(difficulty, l, m, f);
+		this.localDifficulty = this.setLocalDifficulty(difficulty, timeOfDay, l, f);
 	}
 
 	public Difficulty getGlobalDifficulty() {
@@ -21,8 +21,8 @@ public class LocalDifficulty {
 		return this.localDifficulty;
 	}
 
-	public boolean method_5455(float f) {
-		return this.localDifficulty > f;
+	public boolean isHarderThan(float difficulty) {
+		return this.localDifficulty > difficulty;
 	}
 
 	public float getClampedLocalDifficulty() {

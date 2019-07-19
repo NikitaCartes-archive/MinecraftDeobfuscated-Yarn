@@ -12,29 +12,29 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
-import net.minecraft.village.PointOfInterestStorage;
-import net.minecraft.village.PointOfInterestType;
 import net.minecraft.world.biome.Biomes;
 import net.minecraft.world.level.LevelProperties;
+import net.minecraft.world.poi.PointOfInterestStorage;
+import net.minecraft.world.poi.PointOfInterestType;
 
 public class WanderingTraderManager {
 	private final Random random = new Random();
 	private final ServerWorld world;
 	private int field_17728;
-	private int field_17729;
-	private int field_17730;
+	private int spawnDelay;
+	private int spawnChance;
 
-	public WanderingTraderManager(ServerWorld serverWorld) {
-		this.world = serverWorld;
+	public WanderingTraderManager(ServerWorld world) {
+		this.world = world;
 		this.field_17728 = 1200;
-		LevelProperties levelProperties = serverWorld.getLevelProperties();
-		this.field_17729 = levelProperties.getWanderingTraderSpawnDelay();
-		this.field_17730 = levelProperties.getWanderingTraderSpawnChance();
-		if (this.field_17729 == 0 && this.field_17730 == 0) {
-			this.field_17729 = 24000;
-			levelProperties.setWanderingTraderSpawnDelay(this.field_17729);
-			this.field_17730 = 25;
-			levelProperties.setWanderingTraderSpawnChance(this.field_17730);
+		LevelProperties levelProperties = world.getLevelProperties();
+		this.spawnDelay = levelProperties.getWanderingTraderSpawnDelay();
+		this.spawnChance = levelProperties.getWanderingTraderSpawnChance();
+		if (this.spawnDelay == 0 && this.spawnChance == 0) {
+			this.spawnDelay = 24000;
+			levelProperties.setWanderingTraderSpawnDelay(this.spawnDelay);
+			this.spawnChance = 25;
+			levelProperties.setWanderingTraderSpawnChance(this.spawnChance);
 		}
 	}
 
@@ -42,17 +42,17 @@ public class WanderingTraderManager {
 		if (--this.field_17728 <= 0) {
 			this.field_17728 = 1200;
 			LevelProperties levelProperties = this.world.getLevelProperties();
-			this.field_17729 -= 1200;
-			levelProperties.setWanderingTraderSpawnDelay(this.field_17729);
-			if (this.field_17729 <= 0) {
-				this.field_17729 = 24000;
+			this.spawnDelay -= 1200;
+			levelProperties.setWanderingTraderSpawnDelay(this.spawnDelay);
+			if (this.spawnDelay <= 0) {
+				this.spawnDelay = 24000;
 				if (this.world.getGameRules().getBoolean(GameRules.DO_MOB_SPAWNING)) {
-					int i = this.field_17730;
-					this.field_17730 = MathHelper.clamp(this.field_17730 + 25, 25, 75);
-					levelProperties.setWanderingTraderSpawnChance(this.field_17730);
+					int i = this.spawnChance;
+					this.spawnChance = MathHelper.clamp(this.spawnChance + 25, 25, 75);
+					levelProperties.setWanderingTraderSpawnChance(this.spawnChance);
 					if (this.random.nextInt(100) <= i) {
 						if (this.method_18018()) {
-							this.field_17730 = 25;
+							this.spawnChance = 25;
 						}
 					}
 				}
@@ -89,7 +89,7 @@ public class WanderingTraderManager {
 					this.world.getLevelProperties().setWanderingTraderId(wanderingTraderEntity.getUuid());
 					wanderingTraderEntity.setDespawnDelay(48000);
 					wanderingTraderEntity.setWanderTarget(blockPos2);
-					wanderingTraderEntity.setWalkTarget(blockPos2, 16);
+					wanderingTraderEntity.setPositionTarget(blockPos2, 16);
 					return true;
 				}
 			}

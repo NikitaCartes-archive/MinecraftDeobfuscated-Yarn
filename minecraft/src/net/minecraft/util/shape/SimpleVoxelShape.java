@@ -5,8 +5,8 @@ import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
 
 public final class SimpleVoxelShape extends VoxelShape {
-	protected SimpleVoxelShape(VoxelSet voxelSet) {
-		super(voxelSet);
+	protected SimpleVoxelShape(VoxelSet shape) {
+		super(shape);
 	}
 
 	@Override
@@ -15,8 +15,8 @@ public final class SimpleVoxelShape extends VoxelShape {
 	}
 
 	@Override
-	protected int getCoordIndex(Direction.Axis axis, double d) {
+	protected int getCoordIndex(Direction.Axis axis, double coord) {
 		int i = this.voxels.getSize(axis);
-		return MathHelper.clamp(MathHelper.floor(d * (double)i), -1, i);
+		return MathHelper.clamp(MathHelper.floor(coord * (double)i), -1, i);
 	}
 }

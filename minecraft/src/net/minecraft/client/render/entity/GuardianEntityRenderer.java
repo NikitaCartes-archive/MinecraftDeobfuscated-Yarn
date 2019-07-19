@@ -29,8 +29,8 @@ public class GuardianEntityRenderer extends MobEntityRenderer<GuardianEntity, Gu
 		super(entityRenderDispatcher, new GuardianEntityModel(), f);
 	}
 
-	public boolean method_3978(GuardianEntity guardianEntity, VisibleRegion visibleRegion, double d, double e, double f) {
-		if (super.method_4068(guardianEntity, visibleRegion, d, e, f)) {
+	public boolean isVisible(GuardianEntity guardianEntity, VisibleRegion visibleRegion, double d, double e, double f) {
+		if (super.isVisible(guardianEntity, visibleRegion, d, e, f)) {
 			return true;
 		} else {
 			if (guardianEntity.hasBeamTarget()) {
@@ -48,20 +48,20 @@ public class GuardianEntityRenderer extends MobEntityRenderer<GuardianEntity, Gu
 		}
 	}
 
-	private Vec3d fromLerpedPosition(LivingEntity livingEntity, double d, float f) {
-		double e = MathHelper.lerp((double)f, livingEntity.prevRenderX, livingEntity.x);
-		double g = MathHelper.lerp((double)f, livingEntity.prevRenderY, livingEntity.y) + d;
-		double h = MathHelper.lerp((double)f, livingEntity.prevRenderZ, livingEntity.z);
-		return new Vec3d(e, g, h);
+	private Vec3d fromLerpedPosition(LivingEntity entity, double yOffset, float delta) {
+		double d = MathHelper.lerp((double)delta, entity.lastRenderX, entity.x);
+		double e = MathHelper.lerp((double)delta, entity.lastRenderY, entity.y) + yOffset;
+		double f = MathHelper.lerp((double)delta, entity.lastRenderZ, entity.z);
+		return new Vec3d(d, e, f);
 	}
 
-	public void method_3977(GuardianEntity guardianEntity, double d, double e, double f, float g, float h) {
-		super.method_4072(guardianEntity, d, e, f, g, h);
+	public void render(GuardianEntity guardianEntity, double d, double e, double f, float g, float h) {
+		super.render(guardianEntity, d, e, f, g, h);
 		LivingEntity livingEntity = guardianEntity.getBeamTarget();
 		if (livingEntity != null) {
 			float i = guardianEntity.getBeamProgress(h);
 			Tessellator tessellator = Tessellator.getInstance();
-			BufferBuilder bufferBuilder = tessellator.getBufferBuilder();
+			BufferBuilder bufferBuilder = tessellator.getBuffer();
 			this.bindTexture(EXPLOSION_BEAM_TEX);
 			GlStateManager.texParameter(3553, 10242, 10497);
 			GlStateManager.texParameter(3553, 10243, 10497);
@@ -90,7 +90,7 @@ public class GuardianEntityRenderer extends MobEntityRenderer<GuardianEntity, Gu
 			GlStateManager.rotatef(o * (180.0F / (float)Math.PI), 1.0F, 0.0F, 0.0F);
 			int q = 1;
 			double r = (double)k * 0.05 * -1.5;
-			bufferBuilder.begin(7, VertexFormats.POSITION_UV_COLOR);
+			bufferBuilder.begin(7, VertexFormats.POSITION_TEXTURE_COLOR);
 			float s = i * i;
 			int t = 64 + (int)(s * 191.0F);
 			int u = 32 + (int)(s * 191.0F);
@@ -139,7 +139,7 @@ public class GuardianEntityRenderer extends MobEntityRenderer<GuardianEntity, Gu
 		}
 	}
 
-	protected Identifier method_3976(GuardianEntity guardianEntity) {
+	protected Identifier getTexture(GuardianEntity guardianEntity) {
 		return SKIN;
 	}
 }

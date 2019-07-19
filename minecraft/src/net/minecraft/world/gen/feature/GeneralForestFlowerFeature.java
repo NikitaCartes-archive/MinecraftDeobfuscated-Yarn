@@ -8,12 +8,12 @@ import net.minecraft.block.Blocks;
 import net.minecraft.util.math.BlockPos;
 
 public class GeneralForestFlowerFeature extends FlowerFeature {
-	public GeneralForestFlowerFeature(Function<Dynamic<?>, ? extends DefaultFeatureConfig> function) {
-		super(function);
+	public GeneralForestFlowerFeature(Function<Dynamic<?>, ? extends DefaultFeatureConfig> configFactory) {
+		super(configFactory);
 	}
 
 	@Override
-	public BlockState getFlowerToPlace(Random random, BlockPos blockPos) {
+	public BlockState getFlowerToPlace(Random random, BlockPos pos) {
 		return Blocks.LILY_OF_THE_VALLEY.getDefaultState();
 	}
 }

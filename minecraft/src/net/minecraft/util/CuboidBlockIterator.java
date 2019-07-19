@@ -12,13 +12,13 @@ public class CuboidBlockIterator {
 	private int z;
 	private boolean complete;
 
-	public CuboidBlockIterator(int i, int j, int k, int l, int m, int n) {
-		this.startX = i;
-		this.startY = j;
-		this.startZ = k;
-		this.endX = l;
-		this.endY = m;
-		this.endZ = n;
+	public CuboidBlockIterator(int startX, int startY, int startZ, int endX, int endY, int endZ) {
+		this.startX = startX;
+		this.startY = startY;
+		this.startZ = startZ;
+		this.endX = endX;
+		this.endY = endY;
+		this.endZ = endZ;
 	}
 
 	public boolean step() {

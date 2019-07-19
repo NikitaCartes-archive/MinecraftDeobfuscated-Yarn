@@ -9,9 +9,9 @@ public class FollowParentGoal extends Goal {
 	private final double speed;
 	private int delay;
 
-	public FollowParentGoal(AnimalEntity animalEntity, double d) {
-		this.animal = animalEntity;
-		this.speed = d;
+	public FollowParentGoal(AnimalEntity animal, double speed) {
+		this.animal = animal;
+		this.speed = speed;
 	}
 
 	@Override
@@ -19,7 +19,7 @@ public class FollowParentGoal extends Goal {
 		if (this.animal.getBreedingAge() >= 0) {
 			return false;
 		} else {
-			List<AnimalEntity> list = this.animal.world.getEntities(this.animal.getClass(), this.animal.getBoundingBox().expand(8.0, 4.0, 8.0));
+			List<AnimalEntity> list = this.animal.world.getNonSpectatingEntities(this.animal.getClass(), this.animal.getBoundingBox().expand(8.0, 4.0, 8.0));
 			AnimalEntity animalEntity = null;
 			double d = Double.MAX_VALUE;
 

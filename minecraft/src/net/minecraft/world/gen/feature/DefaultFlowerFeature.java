@@ -8,12 +8,12 @@ import net.minecraft.block.Blocks;
 import net.minecraft.util.math.BlockPos;
 
 public class DefaultFlowerFeature extends FlowerFeature {
-	public DefaultFlowerFeature(Function<Dynamic<?>, ? extends DefaultFeatureConfig> function) {
-		super(function);
+	public DefaultFlowerFeature(Function<Dynamic<?>, ? extends DefaultFeatureConfig> configFactory) {
+		super(configFactory);
 	}
 
 	@Override
-	public BlockState getFlowerToPlace(Random random, BlockPos blockPos) {
+	public BlockState getFlowerToPlace(Random random, BlockPos pos) {
 		return random.nextFloat() > 0.6666667F ? Blocks.DANDELION.getDefaultState() : Blocks.POPPY.getDefaultState();
 	}
 }

@@ -10,8 +10,8 @@ public enum StructureBlockMode implements StringIdentifiable {
 
 	private final String name;
 
-	private StructureBlockMode(String string2) {
-		this.name = string2;
+	private StructureBlockMode(String name) {
+		this.name = name;
 	}
 
 	@Override

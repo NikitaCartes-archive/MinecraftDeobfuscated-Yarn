@@ -9,24 +9,24 @@ public class OceanRuinFeatureConfig implements FeatureConfig {
 	public final float largeProbability;
 	public final float clusterProbability;
 
-	public OceanRuinFeatureConfig(OceanRuinFeature.BiomeType biomeType, float f, float g) {
+	public OceanRuinFeatureConfig(OceanRuinFeature.BiomeType biomeType, float largeProbability, float clusterProbability) {
 		this.biomeType = biomeType;
-		this.largeProbability = f;
-		this.clusterProbability = g;
+		this.largeProbability = largeProbability;
+		this.clusterProbability = clusterProbability;
 	}
 
 	@Override
-	public <T> Dynamic<T> serialize(DynamicOps<T> dynamicOps) {
+	public <T> Dynamic<T> serialize(DynamicOps<T> ops) {
 		return new Dynamic<>(
-			dynamicOps,
-			dynamicOps.createMap(
+			ops,
+			ops.createMap(
 				ImmutableMap.of(
-					dynamicOps.createString("biome_temp"),
-					dynamicOps.createString(this.biomeType.getName()),
-					dynamicOps.createString("large_probability"),
-					dynamicOps.createFloat(this.largeProbability),
-					dynamicOps.createString("cluster_probability"),
-					dynamicOps.createFloat(this.clusterProbability)
+					ops.createString("biome_temp"),
+					ops.createString(this.biomeType.getName()),
+					ops.createString("large_probability"),
+					ops.createFloat(this.largeProbability),
+					ops.createString("cluster_probability"),
+					ops.createFloat(this.clusterProbability)
 				)
 			)
 		);

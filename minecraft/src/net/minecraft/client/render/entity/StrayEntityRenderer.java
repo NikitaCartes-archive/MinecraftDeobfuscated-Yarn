@@ -16,7 +16,7 @@ public class StrayEntityRenderer extends SkeletonEntityRenderer {
 	}
 
 	@Override
-	protected Identifier method_4119(AbstractSkeletonEntity abstractSkeletonEntity) {
+	protected Identifier getTexture(AbstractSkeletonEntity abstractSkeletonEntity) {
 		return SKIN;
 	}
 }

@@ -2,7 +2,7 @@ package net.minecraft.village;
 
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.util.TagHelper;
+import net.minecraft.nbt.NbtHelper;
 import net.minecraft.util.math.MathHelper;
 
 public class TradeOffer {
@@ -22,21 +22,21 @@ public class TradeOffer {
 		this.secondBuyItem = ItemStack.fromTag(compoundTag.getCompound("buyB"));
 		this.sellItem = ItemStack.fromTag(compoundTag.getCompound("sell"));
 		this.uses = compoundTag.getInt("uses");
-		if (compoundTag.containsKey("maxUses", 99)) {
+		if (compoundTag.contains("maxUses", 99)) {
 			this.maxUses = compoundTag.getInt("maxUses");
 		} else {
 			this.maxUses = 4;
 		}
 
-		if (compoundTag.containsKey("rewardExp", 1)) {
+		if (compoundTag.contains("rewardExp", 1)) {
 			this.rewardingPlayerExperience = compoundTag.getBoolean("rewardExp");
 		}
 
-		if (compoundTag.containsKey("xp", 3)) {
+		if (compoundTag.contains("xp", 3)) {
 			this.traderExperience = compoundTag.getInt("xp");
 		}
 
-		if (compoundTag.containsKey("priceMultiplier", 5)) {
+		if (compoundTag.contains("priceMultiplier", 5)) {
 			this.priceMultiplier = compoundTag.getFloat("priceMultiplier");
 		}
 
@@ -44,16 +44,16 @@ public class TradeOffer {
 		this.demandBonus = compoundTag.getInt("demand");
 	}
 
-	public TradeOffer(ItemStack itemStack, ItemStack itemStack2, int i, int j, float f) {
-		this(itemStack, ItemStack.EMPTY, itemStack2, i, j, f);
+	public TradeOffer(ItemStack buyItem, ItemStack sellItem, int maxUses, int rewardedExp, float priceMultiplier) {
+		this(buyItem, ItemStack.EMPTY, sellItem, maxUses, rewardedExp, priceMultiplier);
 	}
 
-	public TradeOffer(ItemStack itemStack, ItemStack itemStack2, ItemStack itemStack3, int i, int j, float f) {
-		this(itemStack, itemStack2, itemStack3, 0, i, j, f);
+	public TradeOffer(ItemStack firstBuyItem, ItemStack secondBuyItem, ItemStack sellItem, int maxUses, int rewardedExp, float priceMultiplier) {
+		this(firstBuyItem, secondBuyItem, sellItem, 0, maxUses, rewardedExp, priceMultiplier);
 	}
 
-	public TradeOffer(ItemStack itemStack, ItemStack itemStack2, ItemStack itemStack3, int i, int j, int k, float f) {
-		this(itemStack, itemStack2, itemStack3, i, j, k, f, 0);
+	public TradeOffer(ItemStack firstBuyItem, ItemStack secondBuyItem, ItemStack sellItem, int uses, int maxUses, int rewardedExp, float priceMultiplier) {
+		this(firstBuyItem, secondBuyItem, sellItem, uses, maxUses, rewardedExp, priceMultiplier, 0);
 	}
 
 	public TradeOffer(ItemStack itemStack, ItemStack itemStack2, ItemStack itemStack3, int i, int j, int k, float f, int l) {
@@ -166,24 +166,24 @@ public class TradeOffer {
 		return compoundTag;
 	}
 
-	public boolean matchesBuyItems(ItemStack itemStack, ItemStack itemStack2) {
-		return this.acceptsBuy(itemStack, this.getAdjustedFirstBuyItem())
-			&& itemStack.getCount() >= this.getAdjustedFirstBuyItem().getCount()
-			&& this.acceptsBuy(itemStack2, this.secondBuyItem)
-			&& itemStack2.getCount() >= this.secondBuyItem.getCount();
+	public boolean matchesBuyItems(ItemStack first, ItemStack second) {
+		return this.acceptsBuy(first, this.getAdjustedFirstBuyItem())
+			&& first.getCount() >= this.getAdjustedFirstBuyItem().getCount()
+			&& this.acceptsBuy(second, this.secondBuyItem)
+			&& second.getCount() >= this.secondBuyItem.getCount();
 	}
 
-	private boolean acceptsBuy(ItemStack itemStack, ItemStack itemStack2) {
-		if (itemStack2.isEmpty() && itemStack.isEmpty()) {
+	private boolean acceptsBuy(ItemStack given, ItemStack sample) {
+		if (sample.isEmpty() && given.isEmpty()) {
 			return true;
 		} else {
-			ItemStack itemStack3 = itemStack.copy();
-			if (itemStack3.getItem().isDamageable()) {
-				itemStack3.setDamage(itemStack3.getDamage());
+			ItemStack itemStack = given.copy();
+			if (itemStack.getItem().isDamageable()) {
+				itemStack.setDamage(itemStack.getDamage());
 			}
 
-			return ItemStack.areItemsEqualIgnoreDamage(itemStack3, itemStack2)
-				&& (!itemStack2.hasTag() || itemStack3.hasTag() && TagHelper.areTagsEqual(itemStack2.getTag(), itemStack3.getTag(), false));
+			return ItemStack.areItemsEqualIgnoreDamage(itemStack, sample)
+				&& (!sample.hasTag() || itemStack.hasTag() && NbtHelper.matches(sample.getTag(), itemStack.getTag(), false));
 		}
 	}
 

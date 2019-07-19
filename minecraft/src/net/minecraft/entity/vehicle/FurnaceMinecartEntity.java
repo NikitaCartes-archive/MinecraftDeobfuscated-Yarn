@@ -33,8 +33,8 @@ public class FurnaceMinecartEntity extends AbstractMinecartEntity {
 		super(entityType, world);
 	}
 
-	public FurnaceMinecartEntity(World world, double d, double e, double f) {
-		super(EntityType.FURNACE_MINECART, world, d, e, f);
+	public FurnaceMinecartEntity(World world, double x, double y, double z) {
+		super(EntityType.FURNACE_MINECART, world, x, y, z);
 	}
 
 	@Override
@@ -115,43 +115,43 @@ public class FurnaceMinecartEntity extends AbstractMinecartEntity {
 	}
 
 	@Override
-	public boolean interact(PlayerEntity playerEntity, Hand hand) {
-		ItemStack itemStack = playerEntity.getStackInHand(hand);
-		if (ACCEPTABLE_FUEL.method_8093(itemStack) && this.fuel + 3600 <= 32000) {
-			if (!playerEntity.abilities.creativeMode) {
+	public boolean interact(PlayerEntity player, Hand hand) {
+		ItemStack itemStack = player.getStackInHand(hand);
+		if (ACCEPTABLE_FUEL.test(itemStack) && this.fuel + 3600 <= 32000) {
+			if (!player.abilities.creativeMode) {
 				itemStack.decrement(1);
 			}
 
 			this.fuel += 3600;
 		}
 
-		this.pushX = this.x - playerEntity.x;
-		this.pushZ = this.z - playerEntity.z;
+		this.pushX = this.x - player.x;
+		this.pushZ = this.z - player.z;
 		return true;
 	}
 
 	@Override
-	protected void writeCustomDataToTag(CompoundTag compoundTag) {
-		super.writeCustomDataToTag(compoundTag);
-		compoundTag.putDouble("PushX", this.pushX);
-		compoundTag.putDouble("PushZ", this.pushZ);
-		compoundTag.putShort("Fuel", (short)this.fuel);
+	protected void writeCustomDataToTag(CompoundTag tag) {
+		super.writeCustomDataToTag(tag);
+		tag.putDouble("PushX", this.pushX);
+		tag.putDouble("PushZ", this.pushZ);
+		tag.putShort("Fuel", (short)this.fuel);
 	}
 
 	@Override
-	protected void readCustomDataFromTag(CompoundTag compoundTag) {
-		super.readCustomDataFromTag(compoundTag);
-		this.pushX = compoundTag.getDouble("PushX");
-		this.pushZ = compoundTag.getDouble("PushZ");
-		this.fuel = compoundTag.getShort("Fuel");
+	protected void readCustomDataFromTag(CompoundTag tag) {
+		super.readCustomDataFromTag(tag);
+		this.pushX = tag.getDouble("PushX");
+		this.pushZ = tag.getDouble("PushZ");
+		this.fuel = tag.getShort("Fuel");
 	}
 
 	protected boolean isLit() {
 		return this.dataTracker.get(LIT);
 	}
 
-	protected void setLit(boolean bl) {
-		this.dataTracker.set(LIT, bl);
+	protected void setLit(boolean lit) {
+		this.dataTracker.set(LIT, lit);
 	}
 
 	@Override

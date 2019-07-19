@@ -15,10 +15,10 @@ public class FlyingItemEntityRenderer<T extends Entity & FlyingItemEntity> exten
 	private final ItemRenderer item;
 	private final float scale;
 
-	public FlyingItemEntityRenderer(EntityRenderDispatcher entityRenderDispatcher, ItemRenderer itemRenderer, float f) {
-		super(entityRenderDispatcher);
+	public FlyingItemEntityRenderer(EntityRenderDispatcher renderManager, ItemRenderer itemRenderer, float scale) {
+		super(renderManager);
 		this.item = itemRenderer;
-		this.scale = f;
+		this.scale = scale;
 	}
 
 	public FlyingItemEntityRenderer(EntityRenderDispatcher entityRenderDispatcher, ItemRenderer itemRenderer) {
@@ -26,9 +26,9 @@ public class FlyingItemEntityRenderer<T extends Entity & FlyingItemEntity> exten
 	}
 
 	@Override
-	public void render(T entity, double d, double e, double f, float g, float h) {
+	public void render(T entity, double x, double y, double z, float yaw, float tickDelta) {
 		GlStateManager.pushMatrix();
-		GlStateManager.translatef((float)d, (float)e, (float)f);
+		GlStateManager.translatef((float)x, (float)y, (float)z);
 		GlStateManager.enableRescaleNormal();
 		GlStateManager.scalef(this.scale, this.scale, this.scale);
 		GlStateManager.rotatef(-this.renderManager.cameraYaw, 0.0F, 1.0F, 0.0F);
@@ -48,7 +48,7 @@ public class FlyingItemEntityRenderer<T extends Entity & FlyingItemEntity> exten
 
 		GlStateManager.disableRescaleNormal();
 		GlStateManager.popMatrix();
-		super.render(entity, d, e, f, g, h);
+		super.render(entity, x, y, z, yaw, tickDelta);
 	}
 
 	@Override

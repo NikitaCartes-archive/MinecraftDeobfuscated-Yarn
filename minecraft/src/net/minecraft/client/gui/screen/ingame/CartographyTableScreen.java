@@ -15,33 +15,33 @@ import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 
 @Environment(EnvType.CLIENT)
-public class CartographyTableScreen extends AbstractContainerScreen<CartographyTableContainer> {
+public class CartographyTableScreen extends ContainerScreen<CartographyTableContainer> {
 	private static final Identifier TEXTURE = new Identifier("textures/gui/container/cartography_table.png");
 
-	public CartographyTableScreen(CartographyTableContainer cartographyTableContainer, PlayerInventory playerInventory, Text text) {
-		super(cartographyTableContainer, playerInventory, text);
+	public CartographyTableScreen(CartographyTableContainer container, PlayerInventory inventory, Text title) {
+		super(container, inventory, title);
 	}
 
 	@Override
-	public void render(int i, int j, float f) {
-		super.render(i, j, f);
-		this.drawMouseoverTooltip(i, j);
+	public void render(int mouseX, int mouseY, float delta) {
+		super.render(mouseX, mouseY, delta);
+		this.drawMouseoverTooltip(mouseX, mouseY);
 	}
 
 	@Override
-	protected void drawForeground(int i, int j) {
+	protected void drawForeground(int mouseX, int mouseY) {
 		this.font.draw(this.title.asFormattedString(), 8.0F, 4.0F, 4210752);
 		this.font.draw(this.playerInventory.getDisplayName().asFormattedString(), 8.0F, (float)(this.containerHeight - 96 + 2), 4210752);
 	}
 
 	@Override
-	protected void drawBackground(float f, int i, int j) {
+	protected void drawBackground(float delta, int mouseX, int mouseY) {
 		this.renderBackground();
 		GlStateManager.color4f(1.0F, 1.0F, 1.0F, 1.0F);
 		this.minecraft.getTextureManager().bindTexture(TEXTURE);
-		int k = this.left;
-		int l = this.top;
-		this.blit(k, l, 0, 0, this.containerWidth, this.containerHeight);
+		int i = this.x;
+		int j = this.y;
+		this.blit(i, j, 0, 0, this.containerWidth, this.containerHeight);
 		Item item = this.container.getSlot(1).getStack().getItem();
 		boolean bl = item == Items.MAP;
 		boolean bl2 = item == Items.PAPER;
@@ -55,13 +55,13 @@ public class CartographyTableScreen extends AbstractContainerScreen<CartographyT
 				if (mapState.locked) {
 					bl4 = true;
 					if (bl2 || bl3) {
-						this.blit(k + 35, l + 31, this.containerWidth + 50, 132, 28, 21);
+						this.blit(i + 35, j + 31, this.containerWidth + 50, 132, 28, 21);
 					}
 				}
 
 				if (bl2 && mapState.scale >= 4) {
 					bl4 = true;
-					this.blit(k + 35, l + 31, this.containerWidth + 50, 132, 28, 21);
+					this.blit(i + 35, j + 31, this.containerWidth + 50, 132, 28, 21);
 				}
 			}
 		} else {
@@ -71,13 +71,13 @@ public class CartographyTableScreen extends AbstractContainerScreen<CartographyT
 		this.drawMap(mapState, bl, bl2, bl3, bl4);
 	}
 
-	private void drawMap(@Nullable MapState mapState, boolean bl, boolean bl2, boolean bl3, boolean bl4) {
-		int i = this.left;
-		int j = this.top;
-		if (bl2 && !bl4) {
+	private void drawMap(@Nullable MapState mapState, boolean isMap, boolean isPaper, boolean isGlassPane, boolean bl) {
+		int i = this.x;
+		int j = this.y;
+		if (isPaper && !bl) {
 			this.blit(i + 67, j + 13, this.containerWidth, 66, 66, 66);
 			this.drawMap(mapState, i + 85, j + 31, 0.226F);
-		} else if (bl) {
+		} else if (isMap) {
 			this.blit(i + 67 + 16, j + 13, this.containerWidth, 132, 50, 66);
 			this.drawMap(mapState, i + 86, j + 16, 0.34F);
 			this.minecraft.getTextureManager().bindTexture(TEXTURE);
@@ -86,7 +86,7 @@ public class CartographyTableScreen extends AbstractContainerScreen<CartographyT
 			this.blit(i + 67, j + 13 + 16, this.containerWidth, 132, 50, 66);
 			this.drawMap(mapState, i + 70, j + 32, 0.34F);
 			GlStateManager.popMatrix();
-		} else if (bl3) {
+		} else if (isGlassPane) {
 			this.blit(i + 67, j + 13, this.containerWidth, 0, 66, 66);
 			this.drawMap(mapState, i + 71, j + 17, 0.45F);
 			this.minecraft.getTextureManager().bindTexture(TEXTURE);
@@ -100,12 +100,12 @@ public class CartographyTableScreen extends AbstractContainerScreen<CartographyT
 		}
 	}
 
-	private void drawMap(@Nullable MapState mapState, int i, int j, float f) {
-		if (mapState != null) {
+	private void drawMap(@Nullable MapState state, int x, int y, float size) {
+		if (state != null) {
 			GlStateManager.pushMatrix();
-			GlStateManager.translatef((float)i, (float)j, 1.0F);
-			GlStateManager.scalef(f, f, 1.0F);
-			this.minecraft.gameRenderer.getMapRenderer().draw(mapState, true);
+			GlStateManager.translatef((float)x, (float)y, 1.0F);
+			GlStateManager.scalef(size, size, 1.0F);
+			this.minecraft.gameRenderer.getMapRenderer().draw(state, true);
 			GlStateManager.popMatrix();
 		}
 	}

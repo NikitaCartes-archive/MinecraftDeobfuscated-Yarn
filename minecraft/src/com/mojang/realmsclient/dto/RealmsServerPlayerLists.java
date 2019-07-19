@@ -9,22 +9,21 @@ import java.util.Iterator;
 import java.util.List;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_4352;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 @Environment(EnvType.CLIENT)
-public class RealmsServerPlayerLists extends class_4352 {
+public class RealmsServerPlayerLists extends ValueObject {
 	private static final Logger LOGGER = LogManager.getLogger();
 	public List<RealmsServerPlayerList> servers;
 
-	public static RealmsServerPlayerLists parse(String string) {
+	public static RealmsServerPlayerLists parse(String json) {
 		RealmsServerPlayerLists realmsServerPlayerLists = new RealmsServerPlayerLists();
 		realmsServerPlayerLists.servers = new ArrayList();
 
 		try {
 			JsonParser jsonParser = new JsonParser();
-			JsonObject jsonObject = jsonParser.parse(string).getAsJsonObject();
+			JsonObject jsonObject = jsonParser.parse(json).getAsJsonObject();
 			if (jsonObject.get("lists").isJsonArray()) {
 				JsonArray jsonArray = jsonObject.get("lists").getAsJsonArray();
 				Iterator<JsonElement> iterator = jsonArray.iterator();

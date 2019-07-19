@@ -5,11 +5,11 @@ import net.fabricmc.api.Environment;
 
 public interface JumpingMount {
 	@Environment(EnvType.CLIENT)
-	void setJumpStrength(int i);
+	void setJumpStrength(int strength);
 
 	boolean canJump();
 
-	void startJumping(int i);
+	void startJumping(int height);
 
 	void stopJumping();
 }

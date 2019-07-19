@@ -7,7 +7,7 @@ import net.minecraft.client.render.BufferRenderer;
 
 @Environment(EnvType.CLIENT)
 public class GlBufferRenderer extends BufferRenderer {
-	private GlBuffer glBuffer;
+	private VertexBuffer glBuffer;
 
 	@Override
 	public void draw(BufferBuilder bufferBuilder) {
@@ -15,7 +15,7 @@ public class GlBufferRenderer extends BufferRenderer {
 		this.glBuffer.set(bufferBuilder.getByteBuffer());
 	}
 
-	public void setGlBuffer(GlBuffer glBuffer) {
+	public void setGlBuffer(VertexBuffer glBuffer) {
 		this.glBuffer = glBuffer;
 	}
 }

@@ -17,16 +17,16 @@ public class ChunkRenderTask implements Comparable<ChunkRenderTask> {
 	private final double squaredCameraDistance;
 	@Nullable
 	private ChunkRendererRegion region;
-	private BlockLayeredBufferBuilder bufferBuilder;
+	private BlockBufferBuilderStorage bufferBuilder;
 	private ChunkRenderData renderData;
 	private ChunkRenderTask.Stage stage = ChunkRenderTask.Stage.PENDING;
 	private boolean cancelled;
 
-	public ChunkRenderTask(ChunkRenderer chunkRenderer, ChunkRenderTask.Mode mode, double d, @Nullable ChunkRendererRegion chunkRendererRegion) {
+	public ChunkRenderTask(ChunkRenderer chunkRenderer, ChunkRenderTask.Mode mode, double squaredCameraDistance, @Nullable ChunkRendererRegion region) {
 		this.chunkRenderer = chunkRenderer;
 		this.mode = mode;
-		this.squaredCameraDistance = d;
-		this.region = chunkRendererRegion;
+		this.squaredCameraDistance = squaredCameraDistance;
+		this.region = region;
 	}
 
 	public ChunkRenderTask.Stage getStage() {
@@ -48,16 +48,16 @@ public class ChunkRenderTask implements Comparable<ChunkRenderTask> {
 		return this.renderData;
 	}
 
-	public void setRenderData(ChunkRenderData chunkRenderData) {
-		this.renderData = chunkRenderData;
+	public void setRenderData(ChunkRenderData renderData) {
+		this.renderData = renderData;
 	}
 
-	public BlockLayeredBufferBuilder getBufferBuilders() {
+	public BlockBufferBuilderStorage getBufferBuilders() {
 		return this.bufferBuilder;
 	}
 
-	public void setBufferBuilders(BlockLayeredBufferBuilder blockLayeredBufferBuilder) {
-		this.bufferBuilder = blockLayeredBufferBuilder;
+	public void setBufferBuilders(BlockBufferBuilderStorage blockBufferBuilderStorage) {
+		this.bufferBuilder = blockBufferBuilderStorage;
 	}
 
 	public void setStage(ChunkRenderTask.Stage stage) {
@@ -90,13 +90,13 @@ public class ChunkRenderTask implements Comparable<ChunkRenderTask> {
 		}
 	}
 
-	public void addCompletionAction(Runnable runnable) {
+	public void addCompletionAction(Runnable action) {
 		this.lock.lock();
 
 		try {
-			this.completionActions.add(runnable);
+			this.completionActions.add(action);
 			if (this.cancelled) {
-				runnable.run();
+				action.run();
 			}
 		} finally {
 			this.lock.unlock();
@@ -115,7 +115,7 @@ public class ChunkRenderTask implements Comparable<ChunkRenderTask> {
 		return this.cancelled;
 	}
 
-	public int method_3601(ChunkRenderTask chunkRenderTask) {
+	public int compareTo(ChunkRenderTask chunkRenderTask) {
 		return Doubles.compare(this.squaredCameraDistance, chunkRenderTask.squaredCameraDistance);
 	}
 

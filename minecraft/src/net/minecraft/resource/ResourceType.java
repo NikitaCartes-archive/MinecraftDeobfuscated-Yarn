@@ -4,13 +4,13 @@ public enum ResourceType {
 	CLIENT_RESOURCES("assets"),
 	SERVER_DATA("data");
 
-	private final String name;
+	private final String directory;
 
-	private ResourceType(String string2) {
-		this.name = string2;
+	private ResourceType(String name) {
+		this.directory = name;
 	}
 
-	public String getName() {
-		return this.name;
+	public String getDirectory() {
+		return this.directory;
 	}
 }

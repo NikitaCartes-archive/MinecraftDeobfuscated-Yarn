@@ -62,11 +62,11 @@ public class ParticleTypes {
 	public static final DefaultParticleType CAMPFIRE_COSY_SMOKE = register("campfire_cosy_smoke", true);
 	public static final DefaultParticleType CAMPFIRE_SIGNAL_SMOKE = register("campfire_signal_smoke", true);
 
-	private static DefaultParticleType register(String string, boolean bl) {
-		return Registry.register(Registry.PARTICLE_TYPE, string, new DefaultParticleType(bl));
+	private static DefaultParticleType register(String name, boolean alwaysShow) {
+		return Registry.register(Registry.PARTICLE_TYPE, name, new DefaultParticleType(alwaysShow));
 	}
 
-	private static <T extends ParticleEffect> ParticleType<T> register(String string, ParticleEffect.Factory<T> factory) {
-		return Registry.register(Registry.PARTICLE_TYPE, string, new ParticleType<>(false, factory));
+	private static <T extends ParticleEffect> ParticleType<T> register(String name, ParticleEffect.Factory<T> factory) {
+		return Registry.register(Registry.PARTICLE_TYPE, name, new ParticleType<>(false, factory));
 	}
 }

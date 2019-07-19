@@ -18,9 +18,9 @@ public abstract class DoorInteractGoal extends Goal {
 	private float field_6410;
 	private float field_6409;
 
-	public DoorInteractGoal(MobEntity mobEntity) {
-		this.mob = mobEntity;
-		if (!(mobEntity.getNavigation() instanceof MobNavigation)) {
+	public DoorInteractGoal(MobEntity mob) {
+		this.mob = mob;
+		if (!(mob.getNavigation() instanceof MobNavigation)) {
 			throw new IllegalArgumentException("Unsupported mob type for DoorInteractGoal");
 		}
 	}
@@ -39,11 +39,11 @@ public abstract class DoorInteractGoal extends Goal {
 		}
 	}
 
-	protected void setDoorOpen(boolean bl) {
+	protected void setDoorOpen(boolean open) {
 		if (this.field_6412) {
 			BlockState blockState = this.mob.world.getBlockState(this.doorPos);
 			if (blockState.getBlock() instanceof DoorBlock) {
-				((DoorBlock)blockState.getBlock()).setOpen(this.mob.world, this.doorPos, bl);
+				((DoorBlock)blockState.getBlock()).setOpen(this.mob.world, this.doorPos, open);
 			}
 		}
 	}
@@ -60,7 +60,7 @@ public abstract class DoorInteractGoal extends Goal {
 					PathNode pathNode = path.getNode(i);
 					this.doorPos = new BlockPos(pathNode.x, pathNode.y + 1, pathNode.z);
 					if (!(this.mob.squaredDistanceTo((double)this.doorPos.getX(), this.mob.y, (double)this.doorPos.getZ()) > 2.25)) {
-						this.field_6412 = getDoor(this.mob.world, this.doorPos);
+						this.field_6412 = isWoodenDoor(this.mob.world, this.doorPos);
 						if (this.field_6412) {
 							return true;
 						}
@@ -68,7 +68,7 @@ public abstract class DoorInteractGoal extends Goal {
 				}
 
 				this.doorPos = new BlockPos(this.mob).up();
-				this.field_6412 = getDoor(this.mob.world, this.doorPos);
+				this.field_6412 = isWoodenDoor(this.mob.world, this.doorPos);
 				return this.field_6412;
 			} else {
 				return false;
@@ -98,8 +98,8 @@ public abstract class DoorInteractGoal extends Goal {
 		}
 	}
 
-	public static boolean getDoor(World world, BlockPos blockPos) {
-		BlockState blockState = world.getBlockState(blockPos);
+	public static boolean isWoodenDoor(World world, BlockPos pos) {
+		BlockState blockState = world.getBlockState(pos);
 		return blockState.getBlock() instanceof DoorBlock && blockState.getMaterial() == Material.WOOD;
 	}
 }

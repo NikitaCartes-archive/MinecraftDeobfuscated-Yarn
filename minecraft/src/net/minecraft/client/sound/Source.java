@@ -28,8 +28,8 @@ public class Source {
 		return AlUtil.checkErrors("Allocate new source") ? null : new Source(is[0]);
 	}
 
-	private Source(int i) {
-		this.pointer = i;
+	private Source(int pointer) {
+		this.pointer = pointer;
 	}
 
 	public void close() {
@@ -118,15 +118,15 @@ public class Source {
 		staticSound.getStreamBufferPointer().ifPresent(i -> AL10.alSourcei(this.pointer, 4105, i));
 	}
 
-	public void setStream(AudioStream audioStream) {
-		this.stream = audioStream;
-		AudioFormat audioFormat = audioStream.getFormat();
+	public void setStream(AudioStream stream) {
+		this.stream = stream;
+		AudioFormat audioFormat = stream.getFormat();
 		this.bufferSize = getBufferSize(audioFormat, 1);
 		this.method_19640(4);
 	}
 
-	private static int getBufferSize(AudioFormat audioFormat, int i) {
-		return (int)((float)(i * audioFormat.getSampleSizeInBits()) / 8.0F * (float)audioFormat.getChannels() * audioFormat.getSampleRate());
+	private static int getBufferSize(AudioFormat format, int time) {
+		return (int)((float)(time * format.getSampleSizeInBits()) / 8.0F * (float)format.getChannels() * format.getSampleRate());
 	}
 
 	private void method_19640(int i) {

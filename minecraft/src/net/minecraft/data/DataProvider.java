@@ -18,10 +18,10 @@ public interface DataProvider {
 
 	String getName();
 
-	static void writeToPath(Gson gson, DataCache dataCache, JsonElement jsonElement, Path path) throws IOException {
-		String string = gson.toJson(jsonElement);
+	static void writeToPath(Gson gson, DataCache cache, JsonElement output, Path path) throws IOException {
+		String string = gson.toJson(output);
 		String string2 = SHA1.hashUnencodedChars(string).toString();
-		if (!Objects.equals(dataCache.getOldSha1(path), string2) || !Files.exists(path, new LinkOption[0])) {
+		if (!Objects.equals(cache.getOldSha1(path), string2) || !Files.exists(path, new LinkOption[0])) {
 			Files.createDirectories(path.getParent());
 			BufferedWriter bufferedWriter = Files.newBufferedWriter(path);
 			Throwable var7 = null;
@@ -46,6 +46,6 @@ public interface DataProvider {
 			}
 		}
 
-		dataCache.updateSha1(path, string2);
+		cache.updateSha1(path, string2);
 	}
 }

@@ -11,16 +11,16 @@ public class IronGolemLookGoal extends Goal {
 	private VillagerEntity targetVillager;
 	private int lookCountdown;
 
-	public IronGolemLookGoal(IronGolemEntity ironGolemEntity) {
-		this.golem = ironGolemEntity;
+	public IronGolemLookGoal(IronGolemEntity golem) {
+		this.golem = golem;
 		this.setControls(EnumSet.of(Goal.Control.MOVE, Goal.Control.LOOK));
 	}
 
 	@Override
 	public boolean canStart() {
-		if (!this.golem.world.isDaylight()) {
+		if (!this.golem.world.isDay()) {
 			return false;
-		} else if (this.golem.getRand().nextInt(8000) != 0) {
+		} else if (this.golem.getRandom().nextInt(8000) != 0) {
 			return false;
 		} else {
 			this.targetVillager = this.golem

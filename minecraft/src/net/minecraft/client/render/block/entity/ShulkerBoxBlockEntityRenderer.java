@@ -19,7 +19,7 @@ public class ShulkerBoxBlockEntityRenderer extends BlockEntityRenderer<ShulkerBo
 		this.model = shulkerEntityModel;
 	}
 
-	public void method_3574(ShulkerBoxBlockEntity shulkerBoxBlockEntity, double d, double e, double f, float g, int i) {
+	public void render(ShulkerBoxBlockEntity shulkerBoxBlockEntity, double d, double e, double f, float g, int i) {
 		Direction direction = Direction.UP;
 		if (shulkerBoxBlockEntity.hasWorld()) {
 			BlockState blockState = this.getWorld().getBlockState(shulkerBoxBlockEntity.getPos());

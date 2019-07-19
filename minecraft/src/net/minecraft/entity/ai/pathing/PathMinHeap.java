@@ -4,8 +4,8 @@ public class PathMinHeap {
 	private PathNode[] pathNodes = new PathNode[128];
 	private int count;
 
-	public PathNode push(PathNode pathNode) {
-		if (pathNode.heapIndex >= 0) {
+	public PathNode push(PathNode node) {
+		if (node.heapIndex >= 0) {
 			throw new IllegalStateException("OW KNOWS!");
 		} else {
 			if (this.count == this.pathNodes.length) {
@@ -14,10 +14,10 @@ public class PathMinHeap {
 				this.pathNodes = pathNodes;
 			}
 
-			this.pathNodes[this.count] = pathNode;
-			pathNode.heapIndex = this.count;
+			this.pathNodes[this.count] = node;
+			node.heapIndex = this.count;
 			this.shiftUp(this.count++);
-			return pathNode;
+			return node;
 		}
 	}
 
@@ -37,13 +37,13 @@ public class PathMinHeap {
 		return pathNode;
 	}
 
-	public void setNodeWeight(PathNode pathNode, float f) {
-		float g = pathNode.heapWeight;
-		pathNode.heapWeight = f;
+	public void setNodeWeight(PathNode node, float f) {
+		float g = node.heapWeight;
+		node.heapWeight = f;
 		if (f < g) {
-			this.shiftUp(pathNode.heapIndex);
+			this.shiftUp(node.heapIndex);
 		} else {
-			this.shiftDown(pathNode.heapIndex);
+			this.shiftDown(node.heapIndex);
 		}
 	}
 

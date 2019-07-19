@@ -16,12 +16,12 @@ public class ThrownExperienceBottleEntity extends ThrownItemEntity {
 		super(entityType, world);
 	}
 
-	public ThrownExperienceBottleEntity(World world, LivingEntity livingEntity) {
-		super(EntityType.EXPERIENCE_BOTTLE, livingEntity, world);
+	public ThrownExperienceBottleEntity(World world, LivingEntity owner) {
+		super(EntityType.EXPERIENCE_BOTTLE, owner, world);
 	}
 
-	public ThrownExperienceBottleEntity(World world, double d, double e, double f) {
-		super(EntityType.EXPERIENCE_BOTTLE, d, e, f, world);
+	public ThrownExperienceBottleEntity(World world, double x, double y, double z) {
+		super(EntityType.EXPERIENCE_BOTTLE, x, y, z, world);
 	}
 
 	@Override

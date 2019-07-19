@@ -10,9 +10,9 @@ import net.minecraft.sound.SoundEvents;
 public class GuardianAttackSoundInstance extends MovingSoundInstance {
 	private final GuardianEntity guardian;
 
-	public GuardianAttackSoundInstance(GuardianEntity guardianEntity) {
+	public GuardianAttackSoundInstance(GuardianEntity guardian) {
 		super(SoundEvents.ENTITY_GUARDIAN_ATTACK, SoundCategory.HOSTILE);
-		this.guardian = guardianEntity;
+		this.guardian = guardian;
 		this.attenuationType = SoundInstance.AttenuationType.NONE;
 		this.repeat = true;
 		this.repeatDelay = 0;

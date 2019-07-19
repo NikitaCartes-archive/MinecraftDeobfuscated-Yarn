@@ -4,7 +4,7 @@ import com.google.common.collect.Maps;
 import java.util.HashMap;
 import java.util.Map;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.SystemUtil;
+import net.minecraft.util.Util;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.biome.Biomes;
@@ -17,7 +17,7 @@ public interface VillagerType {
 	VillagerType SNOW = create("snow");
 	VillagerType SWAMP = create("swamp");
 	VillagerType TAIGA = create("taiga");
-	Map<Biome, VillagerType> BIOME_TO_TYPE = SystemUtil.consume(Maps.<Biome, VillagerType>newHashMap(), hashMap -> {
+	Map<Biome, VillagerType> BIOME_TO_TYPE = Util.make(Maps.<Biome, VillagerType>newHashMap(), hashMap -> {
 		hashMap.put(Biomes.BADLANDS, DESERT);
 		hashMap.put(Biomes.BADLANDS_PLATEAU, DESERT);
 		hashMap.put(Biomes.DESERT, DESERT);
@@ -64,10 +64,10 @@ public interface VillagerType {
 		hashMap.put(Biomes.WOODED_MOUNTAINS, TAIGA);
 	});
 
-	static VillagerType create(String string) {
-		return Registry.register(Registry.VILLAGER_TYPE, new Identifier(string), new VillagerType() {
+	static VillagerType create(String id) {
+		return Registry.register(Registry.VILLAGER_TYPE, new Identifier(id), new VillagerType() {
 			public String toString() {
-				return string;
+				return id;
 			}
 		});
 	}

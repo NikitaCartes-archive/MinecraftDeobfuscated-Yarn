@@ -5,5 +5,5 @@ import net.fabricmc.api.Environment;
 
 @Environment(EnvType.CLIENT)
 public interface SpectatorMenuCloseCallback {
-	void close(SpectatorMenu spectatorMenu);
+	void close(SpectatorMenu menu);
 }

@@ -800,7 +800,7 @@ public class SoundEvents {
 	public static final SoundEvent ENTITY_ZOMBIE_VILLAGER_HURT = register("entity.zombie_villager.hurt");
 	public static final SoundEvent ENTITY_ZOMBIE_VILLAGER_STEP = register("entity.zombie_villager.step");
 
-	private static SoundEvent register(String string) {
-		return Registry.register(Registry.SOUND_EVENT, string, new SoundEvent(new Identifier(string)));
+	private static SoundEvent register(String id) {
+		return Registry.register(Registry.SOUND_EVENT, id, new SoundEvent(new Identifier(id)));
 	}
 }

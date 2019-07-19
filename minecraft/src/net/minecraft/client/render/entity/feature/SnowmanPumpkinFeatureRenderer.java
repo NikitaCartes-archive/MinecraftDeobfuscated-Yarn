@@ -12,19 +12,19 @@ import net.minecraft.item.ItemStack;
 
 @Environment(EnvType.CLIENT)
 public class SnowmanPumpkinFeatureRenderer extends FeatureRenderer<SnowGolemEntity, SnowmanEntityModel<SnowGolemEntity>> {
-	public SnowmanPumpkinFeatureRenderer(FeatureRendererContext<SnowGolemEntity, SnowmanEntityModel<SnowGolemEntity>> featureRendererContext) {
-		super(featureRendererContext);
+	public SnowmanPumpkinFeatureRenderer(FeatureRendererContext<SnowGolemEntity, SnowmanEntityModel<SnowGolemEntity>> context) {
+		super(context);
 	}
 
-	public void method_4201(SnowGolemEntity snowGolemEntity, float f, float g, float h, float i, float j, float k, float l) {
+	public void render(SnowGolemEntity snowGolemEntity, float f, float g, float h, float i, float j, float k, float l) {
 		if (!snowGolemEntity.isInvisible() && snowGolemEntity.hasPumpkin()) {
 			GlStateManager.pushMatrix();
-			this.getModel().method_2834().applyTransform(0.0625F);
+			this.getContextModel().method_2834().applyTransform(0.0625F);
 			float m = 0.625F;
 			GlStateManager.translatef(0.0F, -0.34375F, 0.0F);
 			GlStateManager.rotatef(180.0F, 0.0F, 1.0F, 0.0F);
 			GlStateManager.scalef(0.625F, -0.625F, -0.625F);
-			MinecraftClient.getInstance().getFirstPersonRenderer().renderItem(snowGolemEntity, new ItemStack(Blocks.CARVED_PUMPKIN), ModelTransformation.Type.HEAD);
+			MinecraftClient.getInstance().getHeldItemRenderer().renderItem(snowGolemEntity, new ItemStack(Blocks.CARVED_PUMPKIN), ModelTransformation.Type.HEAD);
 			GlStateManager.popMatrix();
 		}
 	}

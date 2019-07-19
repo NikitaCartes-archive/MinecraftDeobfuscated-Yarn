@@ -19,7 +19,7 @@ public class WoodedBadlandsSurfaceBuilder extends BadlandsSurfaceBuilder {
 	}
 
 	@Override
-	public void method_15208(
+	public void generate(
 		Random random,
 		Chunk chunk,
 		Biome biome,

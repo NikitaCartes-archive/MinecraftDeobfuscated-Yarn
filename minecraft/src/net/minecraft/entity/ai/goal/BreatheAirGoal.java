@@ -9,19 +9,19 @@ import net.minecraft.entity.mob.MobEntityWithAi;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
-import net.minecraft.world.ViewableWorld;
+import net.minecraft.world.CollisionView;
 
 public class BreatheAirGoal extends Goal {
 	private final MobEntityWithAi mob;
 
-	public BreatheAirGoal(MobEntityWithAi mobEntityWithAi) {
-		this.mob = mobEntityWithAi;
+	public BreatheAirGoal(MobEntityWithAi mob) {
+		this.mob = mob;
 		this.setControls(EnumSet.of(Goal.Control.MOVE, Goal.Control.LOOK));
 	}
 
 	@Override
 	public boolean canStart() {
-		return this.mob.getBreath() < 140;
+		return this.mob.getAir() < 140;
 	}
 
 	@Override
@@ -71,9 +71,9 @@ public class BreatheAirGoal extends Goal {
 		this.mob.move(MovementType.SELF, this.mob.getVelocity());
 	}
 
-	private boolean isAirPos(ViewableWorld viewableWorld, BlockPos blockPos) {
-		BlockState blockState = viewableWorld.getBlockState(blockPos);
-		return (viewableWorld.getFluidState(blockPos).isEmpty() || blockState.getBlock() == Blocks.BUBBLE_COLUMN)
-			&& blockState.canPlaceAtSide(viewableWorld, blockPos, BlockPlacementEnvironment.LAND);
+	private boolean isAirPos(CollisionView world, BlockPos pos) {
+		BlockState blockState = world.getBlockState(pos);
+		return (world.getFluidState(pos).isEmpty() || blockState.getBlock() == Blocks.BUBBLE_COLUMN)
+			&& blockState.canPlaceAtSide(world, pos, BlockPlacementEnvironment.LAND);
 	}
 }

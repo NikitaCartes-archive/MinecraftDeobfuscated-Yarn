@@ -1,5 +1,5 @@
 package net.minecraft.world.chunk;
 
 interface PaletteResizeListener<T> {
-	int onResize(int i, T object);
+	int onResize(int newSize, T objectAdded);
 }

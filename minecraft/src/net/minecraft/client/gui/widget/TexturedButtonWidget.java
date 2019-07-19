@@ -15,42 +15,65 @@ public class TexturedButtonWidget extends ButtonWidget {
 	private final int textureWidth;
 	private final int textureHeight;
 
-	public TexturedButtonWidget(int i, int j, int k, int l, int m, int n, int o, Identifier identifier, ButtonWidget.PressAction pressAction) {
-		this(i, j, k, l, m, n, o, identifier, 256, 256, pressAction);
-	}
-
-	public TexturedButtonWidget(int i, int j, int k, int l, int m, int n, int o, Identifier identifier, int p, int q, ButtonWidget.PressAction pressAction) {
-		this(i, j, k, l, m, n, o, identifier, p, q, pressAction, "");
+	public TexturedButtonWidget(int x, int y, int width, int height, int u, int v, int hoveredVOffset, Identifier texture, ButtonWidget.PressAction pressAction) {
+		this(x, y, width, height, u, v, hoveredVOffset, texture, 256, 256, pressAction);
 	}
 
 	public TexturedButtonWidget(
-		int i, int j, int k, int l, int m, int n, int o, Identifier identifier, int p, int q, ButtonWidget.PressAction pressAction, String string
+		int x,
+		int y,
+		int width,
+		int height,
+		int u,
+		int v,
+		int hoveredVOffset,
+		Identifier texture,
+		int textureWidth,
+		int textureHeight,
+		ButtonWidget.PressAction pressAction
 	) {
-		super(i, j, k, l, string, pressAction);
-		this.textureWidth = p;
-		this.textureHeight = q;
-		this.u = m;
-		this.v = n;
-		this.hoveredVOffset = o;
-		this.texture = identifier;
+		this(x, y, width, height, u, v, hoveredVOffset, texture, textureWidth, textureHeight, pressAction, "");
 	}
 
-	public void setPos(int i, int j) {
-		this.x = i;
-		this.y = j;
+	public TexturedButtonWidget(
+		int x,
+		int y,
+		int width,
+		int height,
+		int u,
+		int v,
+		int hoveredVOffset,
+		Identifier texture,
+		int textureWidth,
+		int textureHeight,
+		ButtonWidget.PressAction pressAction,
+		String text
+	) {
+		super(x, y, width, height, text, pressAction);
+		this.textureWidth = textureWidth;
+		this.textureHeight = textureHeight;
+		this.u = u;
+		this.v = v;
+		this.hoveredVOffset = hoveredVOffset;
+		this.texture = texture;
+	}
+
+	public void setPos(int x, int y) {
+		this.x = x;
+		this.y = y;
 	}
 
 	@Override
-	public void renderButton(int i, int j, float f) {
+	public void renderButton(int mouseX, int mouseY, float delta) {
 		MinecraftClient minecraftClient = MinecraftClient.getInstance();
 		minecraftClient.getTextureManager().bindTexture(this.texture);
 		GlStateManager.disableDepthTest();
-		int k = this.v;
+		int i = this.v;
 		if (this.isHovered()) {
-			k += this.hoveredVOffset;
+			i += this.hoveredVOffset;
 		}
 
-		blit(this.x, this.y, (float)this.u, (float)k, this.width, this.height, this.textureWidth, this.textureHeight);
+		blit(this.x, this.y, (float)this.u, (float)i, this.width, this.height, this.textureWidth, this.textureHeight);
 		GlStateManager.enableDepthTest();
 	}
 }

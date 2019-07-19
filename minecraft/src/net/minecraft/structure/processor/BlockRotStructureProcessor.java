@@ -8,13 +8,13 @@ import javax.annotation.Nullable;
 import net.minecraft.structure.Structure;
 import net.minecraft.structure.StructurePlacementData;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.ViewableWorld;
+import net.minecraft.world.CollisionView;
 
 public class BlockRotStructureProcessor extends StructureProcessor {
 	private final float integrity;
 
-	public BlockRotStructureProcessor(float f) {
-		this.integrity = f;
+	public BlockRotStructureProcessor(float integrity) {
+		this.integrity = integrity;
 	}
 
 	public BlockRotStructureProcessor(Dynamic<?> dynamic) {
@@ -24,13 +24,13 @@ public class BlockRotStructureProcessor extends StructureProcessor {
 	@Nullable
 	@Override
 	public Structure.StructureBlockInfo process(
-		ViewableWorld viewableWorld,
-		BlockPos blockPos,
+		CollisionView world,
+		BlockPos pos,
 		Structure.StructureBlockInfo structureBlockInfo,
 		Structure.StructureBlockInfo structureBlockInfo2,
-		StructurePlacementData structurePlacementData
+		StructurePlacementData placementData
 	) {
-		Random random = structurePlacementData.getRandom(structureBlockInfo2.pos);
+		Random random = placementData.getRandom(structureBlockInfo2.pos);
 		return !(this.integrity >= 1.0F) && !(random.nextFloat() <= this.integrity) ? null : structureBlockInfo2;
 	}
 

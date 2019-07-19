@@ -17,18 +17,18 @@ public class PhantomEntityRenderer extends MobEntityRenderer<PhantomEntity, Phan
 		this.addFeature(new PhantomEyesFeatureRenderer<>(this));
 	}
 
-	protected Identifier method_4090(PhantomEntity phantomEntity) {
+	protected Identifier getTexture(PhantomEntity phantomEntity) {
 		return SKIN;
 	}
 
-	protected void method_4088(PhantomEntity phantomEntity, float f) {
+	protected void scale(PhantomEntity phantomEntity, float f) {
 		int i = phantomEntity.getPhantomSize();
 		float g = 1.0F + 0.15F * (float)i;
 		GlStateManager.scalef(g, g, g);
 		GlStateManager.translatef(0.0F, 1.3125F, 0.1875F);
 	}
 
-	protected void method_4089(PhantomEntity phantomEntity, float f, float g, float h) {
+	protected void setupTransforms(PhantomEntity phantomEntity, float f, float g, float h) {
 		super.setupTransforms(phantomEntity, f, g, h);
 		GlStateManager.rotatef(phantomEntity.pitch, 1.0F, 0.0F, 0.0F);
 	}

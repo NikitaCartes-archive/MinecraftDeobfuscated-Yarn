@@ -14,11 +14,11 @@ public class ZombieEntityModel<T extends ZombieEntity> extends AbstractZombieMod
 		super(f, 0.0F, 64, bl ? 32 : 64);
 	}
 
-	protected ZombieEntityModel(float f, float g, int i, int j) {
-		super(f, g, i, j);
+	protected ZombieEntityModel(float scale, float f, int textureWidth, int i) {
+		super(scale, f, textureWidth, i);
 	}
 
-	public boolean method_17793(T zombieEntity) {
+	public boolean method_17790(T zombieEntity) {
 		return zombieEntity.isAttacking();
 	}
 }

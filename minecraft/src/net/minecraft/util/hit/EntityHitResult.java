@@ -10,8 +10,8 @@ public class EntityHitResult extends HitResult {
 		this(entity, new Vec3d(entity.x, entity.y, entity.z));
 	}
 
-	public EntityHitResult(Entity entity, Vec3d vec3d) {
-		super(vec3d);
+	public EntityHitResult(Entity entity, Vec3d pos) {
+		super(pos);
 		this.entity = entity;
 	}
 

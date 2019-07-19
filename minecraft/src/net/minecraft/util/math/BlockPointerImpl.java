@@ -8,9 +8,9 @@ public class BlockPointerImpl implements BlockPointer {
 	private final World world;
 	private final BlockPos pos;
 
-	public BlockPointerImpl(World world, BlockPos blockPos) {
+	public BlockPointerImpl(World world, BlockPos pos) {
 		this.world = world;
-		this.pos = blockPos;
+		this.pos = pos;
 	}
 
 	@Override

@@ -16,15 +16,15 @@ public class BatEntityRenderer extends MobEntityRenderer<BatEntity, BatEntityMod
 		super(entityRenderDispatcher, new BatEntityModel(), 0.25F);
 	}
 
-	protected Identifier method_3883(BatEntity batEntity) {
+	protected Identifier getTexture(BatEntity batEntity) {
 		return SKIN;
 	}
 
-	protected void method_3884(BatEntity batEntity, float f) {
+	protected void scale(BatEntity batEntity, float f) {
 		GlStateManager.scalef(0.35F, 0.35F, 0.35F);
 	}
 
-	protected void method_3882(BatEntity batEntity, float f, float g, float h) {
+	protected void setupTransforms(BatEntity batEntity, float f, float g, float h) {
 		if (batEntity.isRoosting()) {
 			GlStateManager.translatef(0.0F, -0.1F, 0.0F);
 		} else {

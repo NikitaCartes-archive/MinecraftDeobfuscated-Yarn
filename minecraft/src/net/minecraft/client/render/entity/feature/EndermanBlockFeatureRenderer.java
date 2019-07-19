@@ -12,11 +12,11 @@ import net.minecraft.entity.mob.EndermanEntity;
 
 @Environment(EnvType.CLIENT)
 public class EndermanBlockFeatureRenderer extends FeatureRenderer<EndermanEntity, EndermanEntityModel<EndermanEntity>> {
-	public EndermanBlockFeatureRenderer(FeatureRendererContext<EndermanEntity, EndermanEntityModel<EndermanEntity>> featureRendererContext) {
-		super(featureRendererContext);
+	public EndermanBlockFeatureRenderer(FeatureRendererContext<EndermanEntity, EndermanEntityModel<EndermanEntity>> context) {
+		super(context);
 	}
 
-	public void method_4179(EndermanEntity endermanEntity, float f, float g, float h, float i, float j, float k, float l) {
+	public void render(EndermanEntity endermanEntity, float f, float g, float h, float i, float j, float k, float l) {
 		BlockState blockState = endermanEntity.getCarriedBlock();
 		if (blockState != null) {
 			GlStateManager.enableRescaleNormal();

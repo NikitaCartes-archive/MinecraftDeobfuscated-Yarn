@@ -16,7 +16,7 @@ public class TntMinecartEntityRenderer extends MinecartEntityRenderer<TntMinecar
 		super(entityRenderDispatcher);
 	}
 
-	protected void method_4137(TntMinecartEntity tntMinecartEntity, float f, BlockState blockState) {
+	protected void renderBlock(TntMinecartEntity tntMinecartEntity, float f, BlockState blockState) {
 		int i = tntMinecartEntity.getFuseTicks();
 		if (i > -1 && (float)i - f + 1.0F < 10.0F) {
 			float g = 1.0F - ((float)i - f + 1.0F) / 10.0F;

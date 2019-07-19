@@ -43,18 +43,18 @@ public class Criterions {
 	public static final LocationArrivalCriterion HERO_OF_THE_VILLAGE = register(new LocationArrivalCriterion(new Identifier("hero_of_the_village")));
 	public static final LocationArrivalCriterion VOLUNTARY_EXILE = register(new LocationArrivalCriterion(new Identifier("voluntary_exile")));
 
-	private static <T extends Criterion<?>> T register(T criterion) {
-		if (VALUES.containsKey(criterion.getId())) {
-			throw new IllegalArgumentException("Duplicate criterion id " + criterion.getId());
+	private static <T extends Criterion<?>> T register(T object) {
+		if (VALUES.containsKey(object.getId())) {
+			throw new IllegalArgumentException("Duplicate criterion id " + object.getId());
 		} else {
-			VALUES.put(criterion.getId(), criterion);
-			return criterion;
+			VALUES.put(object.getId(), object);
+			return object;
 		}
 	}
 
 	@Nullable
-	public static <T extends CriterionConditions> Criterion<T> getById(Identifier identifier) {
-		return (Criterion<T>)VALUES.get(identifier);
+	public static <T extends CriterionConditions> Criterion<T> getById(Identifier id) {
+		return (Criterion<T>)VALUES.get(id);
 	}
 
 	public static Iterable<? extends Criterion<?>> getAllCriterions() {

@@ -11,11 +11,11 @@ import net.minecraft.world.gen.chunk.ChunkGenerator;
 import net.minecraft.world.gen.chunk.ChunkGeneratorConfig;
 
 public class SpringFeature extends Feature<SpringFeatureConfig> {
-	public SpringFeature(Function<Dynamic<?>, ? extends SpringFeatureConfig> function) {
-		super(function);
+	public SpringFeature(Function<Dynamic<?>, ? extends SpringFeatureConfig> configFactory) {
+		super(configFactory);
 	}
 
-	public boolean method_13979(
+	public boolean generate(
 		IWorld iWorld, ChunkGenerator<? extends ChunkGeneratorConfig> chunkGenerator, Random random, BlockPos blockPos, SpringFeatureConfig springFeatureConfig
 	) {
 		if (!Block.isNaturalStone(iWorld.getBlockState(blockPos.up()).getBlock())) {

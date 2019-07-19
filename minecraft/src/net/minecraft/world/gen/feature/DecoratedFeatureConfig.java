@@ -12,9 +12,9 @@ public class DecoratedFeatureConfig implements FeatureConfig {
 	public final ConfiguredFeature<?> feature;
 	public final ConfiguredDecorator<?> decorator;
 
-	public DecoratedFeatureConfig(ConfiguredFeature<?> configuredFeature, ConfiguredDecorator<?> configuredDecorator) {
-		this.feature = configuredFeature;
-		this.decorator = configuredDecorator;
+	public DecoratedFeatureConfig(ConfiguredFeature<?> feature, ConfiguredDecorator<?> decorator) {
+		this.feature = feature;
+		this.decorator = decorator;
 	}
 
 	public <F extends FeatureConfig, D extends DecoratorConfig> DecoratedFeatureConfig(
@@ -24,15 +24,12 @@ public class DecoratedFeatureConfig implements FeatureConfig {
 	}
 
 	@Override
-	public <T> Dynamic<T> serialize(DynamicOps<T> dynamicOps) {
+	public <T> Dynamic<T> serialize(DynamicOps<T> ops) {
 		return new Dynamic<>(
-			dynamicOps,
-			dynamicOps.createMap(
+			ops,
+			ops.createMap(
 				ImmutableMap.of(
-					dynamicOps.createString("feature"),
-					this.feature.serialize(dynamicOps).getValue(),
-					dynamicOps.createString("decorator"),
-					this.decorator.serialize(dynamicOps).getValue()
+					ops.createString("feature"), this.feature.serialize(ops).getValue(), ops.createString("decorator"), this.decorator.serialize(ops).getValue()
 				)
 			)
 		);

@@ -41,18 +41,18 @@ public enum DyeColor implements StringIdentifiable {
 	private final int fireworkColor;
 	private final int signColor;
 
-	private DyeColor(int j, String string2, int k, MaterialColor materialColor, int l, int m) {
-		this.id = j;
-		this.name = string2;
-		this.color = k;
+	private DyeColor(int woolId, String name, int color, MaterialColor materialColor, int j, int k) {
+		this.id = woolId;
+		this.name = name;
+		this.color = color;
 		this.materialColor = materialColor;
-		this.signColor = m;
-		int n = (k & 0xFF0000) >> 16;
-		int o = (k & 0xFF00) >> 8;
-		int p = (k & 0xFF) >> 0;
-		this.colorSwapped = p << 16 | o << 8 | n << 0;
-		this.colorComponents = new float[]{(float)n / 255.0F, (float)o / 255.0F, (float)p / 255.0F};
-		this.fireworkColor = l;
+		this.signColor = k;
+		int l = (color & 0xFF0000) >> 16;
+		int m = (color & 0xFF00) >> 8;
+		int n = (color & 0xFF) >> 0;
+		this.colorSwapped = n << 16 | m << 8 | l << 0;
+		this.colorComponents = new float[]{(float)l / 255.0F, (float)m / 255.0F, (float)n / 255.0F};
+		this.fireworkColor = j;
 	}
 
 	public int getId() {
@@ -85,12 +85,12 @@ public enum DyeColor implements StringIdentifiable {
 		return this.signColor;
 	}
 
-	public static DyeColor byId(int i) {
-		if (i < 0 || i >= VALUES.length) {
-			i = 0;
+	public static DyeColor byId(int id) {
+		if (id < 0 || id >= VALUES.length) {
+			id = 0;
 		}
 
-		return VALUES[i];
+		return VALUES[id];
 	}
 
 	public static DyeColor byName(String string, DyeColor dyeColor) {

@@ -14,7 +14,7 @@ public class EndGatewayBlockEntityRenderer extends EndPortalBlockEntityRenderer 
 	private static final Identifier BEAM_TEXTURE = new Identifier("textures/entity/end_gateway_beam.png");
 
 	@Override
-	public void method_3591(EndPortalBlockEntity endPortalBlockEntity, double d, double e, double f, float g, int i) {
+	public void render(EndPortalBlockEntity endPortalBlockEntity, double d, double e, double f, float g, int i) {
 		GlStateManager.disableFog();
 		EndGatewayBlockEntity endGatewayBlockEntity = (EndGatewayBlockEntity)endPortalBlockEntity;
 		if (endGatewayBlockEntity.isRecentlyGenerated() || endGatewayBlockEntity.needsCooldownBeforeTeleporting()) {
@@ -31,7 +31,7 @@ public class EndGatewayBlockEntityRenderer extends EndPortalBlockEntityRenderer 
 			BeaconBlockEntityRenderer.renderLightBeam(d, e, f, (double)g, (double)h, endGatewayBlockEntity.getWorld().getTime(), 0, -k, fs, 0.15, 0.175);
 		}
 
-		super.method_3591(endPortalBlockEntity, d, e, f, g, i);
+		super.render(endPortalBlockEntity, d, e, f, g, i);
 		GlStateManager.enableFog();
 	}
 

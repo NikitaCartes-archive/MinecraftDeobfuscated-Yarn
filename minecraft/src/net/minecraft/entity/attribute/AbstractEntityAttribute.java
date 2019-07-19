@@ -8,11 +8,11 @@ public abstract class AbstractEntityAttribute implements EntityAttribute {
 	private final double defaultValue;
 	private boolean tracked;
 
-	protected AbstractEntityAttribute(@Nullable EntityAttribute entityAttribute, String string, double d) {
-		this.parent = entityAttribute;
-		this.id = string;
-		this.defaultValue = d;
-		if (string == null) {
+	protected AbstractEntityAttribute(@Nullable EntityAttribute parent, String id, double defaultValue) {
+		this.parent = parent;
+		this.id = id;
+		this.defaultValue = defaultValue;
+		if (id == null) {
 			throw new IllegalArgumentException("Name cannot be null!");
 		}
 	}
@@ -32,8 +32,8 @@ public abstract class AbstractEntityAttribute implements EntityAttribute {
 		return this.tracked;
 	}
 
-	public AbstractEntityAttribute setTracked(boolean bl) {
-		this.tracked = bl;
+	public AbstractEntityAttribute setTracked(boolean tracked) {
+		this.tracked = tracked;
 		return this;
 	}
 
@@ -47,7 +47,7 @@ public abstract class AbstractEntityAttribute implements EntityAttribute {
 		return this.id.hashCode();
 	}
 
-	public boolean equals(Object object) {
-		return object instanceof EntityAttribute && this.id.equals(((EntityAttribute)object).getId());
+	public boolean equals(Object o) {
+		return o instanceof EntityAttribute && this.id.equals(((EntityAttribute)o).getId());
 	}
 }

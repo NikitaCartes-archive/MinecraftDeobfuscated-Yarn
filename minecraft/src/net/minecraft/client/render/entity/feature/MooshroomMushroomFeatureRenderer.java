@@ -12,11 +12,11 @@ import net.minecraft.entity.passive.MooshroomEntity;
 
 @Environment(EnvType.CLIENT)
 public class MooshroomMushroomFeatureRenderer<T extends MooshroomEntity> extends FeatureRenderer<T, CowEntityModel<T>> {
-	public MooshroomMushroomFeatureRenderer(FeatureRendererContext<T, CowEntityModel<T>> featureRendererContext) {
-		super(featureRendererContext);
+	public MooshroomMushroomFeatureRenderer(FeatureRendererContext<T, CowEntityModel<T>> context) {
+		super(context);
 	}
 
-	public void method_4195(T mooshroomEntity, float f, float g, float h, float i, float j, float k, float l) {
+	public void render(T mooshroomEntity, float f, float g, float h, float i, float j, float k, float l) {
 		if (!mooshroomEntity.isBaby() && !mooshroomEntity.isInvisible()) {
 			BlockState blockState = mooshroomEntity.getMooshroomType().getMushroomState();
 			this.bindTexture(SpriteAtlasTexture.BLOCK_ATLAS_TEX);
@@ -39,7 +39,7 @@ public class MooshroomMushroomFeatureRenderer<T extends MooshroomEntity> extends
 			GlStateManager.popMatrix();
 			GlStateManager.popMatrix();
 			GlStateManager.pushMatrix();
-			this.getModel().method_2800().applyTransform(0.0625F);
+			this.getContextModel().method_2800().applyTransform(0.0625F);
 			GlStateManager.scalef(1.0F, -1.0F, 1.0F);
 			GlStateManager.translatef(0.0F, 0.7F, -0.2F);
 			GlStateManager.rotatef(12.0F, 0.0F, 1.0F, 0.0F);

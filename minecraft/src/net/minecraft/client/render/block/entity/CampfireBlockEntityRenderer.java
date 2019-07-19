@@ -13,7 +13,7 @@ import net.minecraft.util.math.Direction;
 
 @Environment(EnvType.CLIENT)
 public class CampfireBlockEntityRenderer extends BlockEntityRenderer<CampfireBlockEntity> {
-	public void method_17581(CampfireBlockEntity campfireBlockEntity, double d, double e, double f, float g, int i) {
+	public void render(CampfireBlockEntity campfireBlockEntity, double d, double e, double f, float g, int i) {
 		Direction direction = campfireBlockEntity.getCachedState().get(CampfireBlock.FACING);
 		DefaultedList<ItemStack> defaultedList = campfireBlockEntity.getItemsBeingCooked();
 

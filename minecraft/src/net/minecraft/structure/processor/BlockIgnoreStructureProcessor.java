@@ -12,7 +12,7 @@ import net.minecraft.block.Blocks;
 import net.minecraft.structure.Structure;
 import net.minecraft.structure.StructurePlacementData;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.ViewableWorld;
+import net.minecraft.world.CollisionView;
 
 public class BlockIgnoreStructureProcessor extends StructureProcessor {
 	public static final BlockIgnoreStructureProcessor IGNORE_STRUCTURE_BLOCKS = new BlockIgnoreStructureProcessor(ImmutableList.of(Blocks.STRUCTURE_BLOCK));
@@ -33,11 +33,11 @@ public class BlockIgnoreStructureProcessor extends StructureProcessor {
 	@Nullable
 	@Override
 	public Structure.StructureBlockInfo process(
-		ViewableWorld viewableWorld,
-		BlockPos blockPos,
+		CollisionView world,
+		BlockPos pos,
 		Structure.StructureBlockInfo structureBlockInfo,
 		Structure.StructureBlockInfo structureBlockInfo2,
-		StructurePlacementData structurePlacementData
+		StructurePlacementData placementData
 	) {
 		return this.blocks.contains(structureBlockInfo2.state.getBlock()) ? null : structureBlockInfo2;
 	}

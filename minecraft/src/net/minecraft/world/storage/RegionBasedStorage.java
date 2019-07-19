@@ -14,12 +14,12 @@ public abstract class RegionBasedStorage implements AutoCloseable {
 	protected final Long2ObjectLinkedOpenHashMap<RegionFile> cachedRegionFiles = new Long2ObjectLinkedOpenHashMap<>();
 	private final File directory;
 
-	protected RegionBasedStorage(File file) {
-		this.directory = file;
+	protected RegionBasedStorage(File directory) {
+		this.directory = directory;
 	}
 
-	private RegionFile getRegionFile(ChunkPos chunkPos) throws IOException {
-		long l = ChunkPos.toLong(chunkPos.getRegionX(), chunkPos.getRegionZ());
+	private RegionFile getRegionFile(ChunkPos pos) throws IOException {
+		long l = ChunkPos.toLong(pos.getRegionX(), pos.getRegionZ());
 		RegionFile regionFile = this.cachedRegionFiles.getAndMoveToFirst(l);
 		if (regionFile != null) {
 			return regionFile;
@@ -32,7 +32,7 @@ public abstract class RegionBasedStorage implements AutoCloseable {
 				this.directory.mkdirs();
 			}
 
-			File file = new File(this.directory, "r." + chunkPos.getRegionX() + "." + chunkPos.getRegionZ() + ".mca");
+			File file = new File(this.directory, "r." + pos.getRegionX() + "." + pos.getRegionZ() + ".mca");
 			RegionFile regionFile2 = new RegionFile(file);
 			this.cachedRegionFiles.putAndMoveToFirst(l, regionFile2);
 			return regionFile2;
@@ -40,9 +40,9 @@ public abstract class RegionBasedStorage implements AutoCloseable {
 	}
 
 	@Nullable
-	public CompoundTag getTagAt(ChunkPos chunkPos) throws IOException {
-		RegionFile regionFile = this.getRegionFile(chunkPos);
-		DataInputStream dataInputStream = regionFile.getChunkDataInputStream(chunkPos);
+	public CompoundTag getTagAt(ChunkPos pos) throws IOException {
+		RegionFile regionFile = this.getRegionFile(pos);
+		DataInputStream dataInputStream = regionFile.getChunkDataInputStream(pos);
 		Throwable var4 = null;
 
 		Object var5;
@@ -72,13 +72,13 @@ public abstract class RegionBasedStorage implements AutoCloseable {
 		return (CompoundTag)var5;
 	}
 
-	protected void setTagAt(ChunkPos chunkPos, CompoundTag compoundTag) throws IOException {
-		RegionFile regionFile = this.getRegionFile(chunkPos);
-		DataOutputStream dataOutputStream = regionFile.getChunkDataOutputStream(chunkPos);
+	protected void setTagAt(ChunkPos pos, CompoundTag tag) throws IOException {
+		RegionFile regionFile = this.getRegionFile(pos);
+		DataOutputStream dataOutputStream = regionFile.getChunkDataOutputStream(pos);
 		Throwable var5 = null;
 
 		try {
-			NbtIo.write(compoundTag, dataOutputStream);
+			NbtIo.write(tag, dataOutputStream);
 		} catch (Throwable var14) {
 			var5 = var14;
 			throw var14;

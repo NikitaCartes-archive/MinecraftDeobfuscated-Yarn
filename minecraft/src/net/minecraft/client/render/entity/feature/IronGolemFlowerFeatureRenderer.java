@@ -12,15 +12,15 @@ import net.minecraft.entity.passive.IronGolemEntity;
 
 @Environment(EnvType.CLIENT)
 public class IronGolemFlowerFeatureRenderer extends FeatureRenderer<IronGolemEntity, IronGolemEntityModel<IronGolemEntity>> {
-	public IronGolemFlowerFeatureRenderer(FeatureRendererContext<IronGolemEntity, IronGolemEntityModel<IronGolemEntity>> featureRendererContext) {
-		super(featureRendererContext);
+	public IronGolemFlowerFeatureRenderer(FeatureRendererContext<IronGolemEntity, IronGolemEntityModel<IronGolemEntity>> context) {
+		super(context);
 	}
 
-	public void method_4188(IronGolemEntity ironGolemEntity, float f, float g, float h, float i, float j, float k, float l) {
+	public void render(IronGolemEntity ironGolemEntity, float f, float g, float h, float i, float j, float k, float l) {
 		if (ironGolemEntity.method_6502() != 0) {
 			GlStateManager.enableRescaleNormal();
 			GlStateManager.pushMatrix();
-			GlStateManager.rotatef(5.0F + 180.0F * this.getModel().method_2809().pitch / (float) Math.PI, 1.0F, 0.0F, 0.0F);
+			GlStateManager.rotatef(5.0F + 180.0F * this.getContextModel().method_2809().pitch / (float) Math.PI, 1.0F, 0.0F, 0.0F);
 			GlStateManager.rotatef(90.0F, 1.0F, 0.0F, 0.0F);
 			GlStateManager.translatef(-0.9375F, -0.625F, -0.9375F);
 			float m = 0.5F;

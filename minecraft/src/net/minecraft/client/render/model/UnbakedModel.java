@@ -13,8 +13,8 @@ import net.minecraft.util.Identifier;
 public interface UnbakedModel {
 	Collection<Identifier> getModelDependencies();
 
-	Collection<Identifier> getTextureDependencies(Function<Identifier, UnbakedModel> function, Set<String> set);
+	Collection<Identifier> getTextureDependencies(Function<Identifier, UnbakedModel> unbakedModelGetter, Set<String> unresolvedTextureReferences);
 
 	@Nullable
-	BakedModel bake(ModelLoader modelLoader, Function<Identifier, Sprite> function, ModelBakeSettings modelBakeSettings);
+	BakedModel bake(ModelLoader loader, Function<Identifier, Sprite> textureGetter, ModelBakeSettings rotationContainer);
 }

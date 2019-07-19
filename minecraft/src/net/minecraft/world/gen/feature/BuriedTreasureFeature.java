@@ -6,22 +6,22 @@ import java.util.function.Function;
 import net.minecraft.structure.BuriedTreasureGenerator;
 import net.minecraft.structure.StructureManager;
 import net.minecraft.structure.StructureStart;
+import net.minecraft.util.math.BlockBox;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.MutableIntBoundingBox;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.gen.ChunkRandom;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
 
 public class BuriedTreasureFeature extends StructureFeature<BuriedTreasureFeatureConfig> {
-	public BuriedTreasureFeature(Function<Dynamic<?>, ? extends BuriedTreasureFeatureConfig> function) {
-		super(function);
+	public BuriedTreasureFeature(Function<Dynamic<?>, ? extends BuriedTreasureFeatureConfig> configFactory) {
+		super(configFactory);
 	}
 
 	@Override
-	public boolean shouldStartAt(ChunkGenerator<?> chunkGenerator, Random random, int i, int j) {
-		Biome biome = chunkGenerator.getBiomeSource().getBiome(new BlockPos((i << 4) + 9, 0, (j << 4) + 9));
+	public boolean shouldStartAt(ChunkGenerator<?> chunkGenerator, Random random, int chunkX, int chunkZ) {
+		Biome biome = chunkGenerator.getBiomeSource().getBiome(new BlockPos((chunkX << 4) + 9, 0, (chunkZ << 4) + 9));
 		if (chunkGenerator.hasStructure(biome, Feature.BURIED_TREASURE)) {
-			((ChunkRandom)random).setStructureSeed(chunkGenerator.getSeed(), i, j, 10387320);
+			((ChunkRandom)random).setStructureSeed(chunkGenerator.getSeed(), chunkX, chunkZ, 10387320);
 			BuriedTreasureFeatureConfig buriedTreasureFeatureConfig = chunkGenerator.getStructureConfig(biome, Feature.BURIED_TREASURE);
 			return random.nextFloat() < buriedTreasureFeatureConfig.probability;
 		} else {
@@ -45,15 +45,15 @@ public class BuriedTreasureFeature extends StructureFeature<BuriedTreasureFeatur
 	}
 
 	public static class Start extends StructureStart {
-		public Start(StructureFeature<?> structureFeature, int i, int j, Biome biome, MutableIntBoundingBox mutableIntBoundingBox, int k, long l) {
-			super(structureFeature, i, j, biome, mutableIntBoundingBox, k, l);
+		public Start(StructureFeature<?> structureFeature, int chunkX, int chunkZ, Biome biome, BlockBox blockBox, int i, long l) {
+			super(structureFeature, chunkX, chunkZ, biome, blockBox, i, l);
 		}
 
 		@Override
-		public void initialize(ChunkGenerator<?> chunkGenerator, StructureManager structureManager, int i, int j, Biome biome) {
-			int k = i * 16;
-			int l = j * 16;
-			BlockPos blockPos = new BlockPos(k + 9, 90, l + 9);
+		public void initialize(ChunkGenerator<?> chunkGenerator, StructureManager structureManager, int x, int z, Biome biome) {
+			int i = x * 16;
+			int j = z * 16;
+			BlockPos blockPos = new BlockPos(i + 9, 90, j + 9);
 			this.children.add(new BuriedTreasureGenerator.Piece(blockPos));
 			this.setBoundingBoxFromChildren();
 		}

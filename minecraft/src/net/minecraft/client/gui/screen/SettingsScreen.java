@@ -2,7 +2,12 @@ package net.minecraft.client.gui.screen;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.client.gui.screen.controls.ControlsOptionsScreen;
+import net.minecraft.client.gui.screen.options.AccessibilityScreen;
+import net.minecraft.client.gui.screen.options.ChatOptionsScreen;
+import net.minecraft.client.gui.screen.options.ControlsOptionsScreen;
+import net.minecraft.client.gui.screen.options.LanguageOptionsScreen;
+import net.minecraft.client.gui.screen.options.SkinOptionsScreen;
+import net.minecraft.client.gui.screen.options.SoundOptionsScreen;
 import net.minecraft.client.gui.screen.resourcepack.ResourcePackOptionsScreen;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.gui.widget.LockButtonWidget;
@@ -10,8 +15,8 @@ import net.minecraft.client.gui.widget.OptionButtonWidget;
 import net.minecraft.client.options.GameOptions;
 import net.minecraft.client.options.Option;
 import net.minecraft.client.resource.language.I18n;
-import net.minecraft.server.network.packet.UpdateDifficultyC2SPacket;
-import net.minecraft.server.network.packet.UpdateDifficultyLockC2SPacket;
+import net.minecraft.network.packet.c2s.play.UpdateDifficultyC2SPacket;
+import net.minecraft.network.packet.c2s.play.UpdateDifficultyLockC2SPacket;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.world.Difficulty;
 
@@ -24,9 +29,9 @@ public class SettingsScreen extends Screen {
 	private LockButtonWidget lockDifficultyButton;
 	private Difficulty difficulty;
 
-	public SettingsScreen(Screen screen, GameOptions gameOptions) {
+	public SettingsScreen(Screen parent, GameOptions gameOptions) {
 		super(new TranslatableText("options.title"));
-		this.parent = screen;
+		this.parent = parent;
 		this.settings = gameOptions;
 	}
 
@@ -183,9 +188,9 @@ public class SettingsScreen extends Screen {
 		return new TranslatableText("options.difficulty").append(": ").append(difficulty.getTranslatableName()).asFormattedString();
 	}
 
-	private void lockDifficulty(boolean bl) {
+	private void lockDifficulty(boolean difficultyLocked) {
 		this.minecraft.openScreen(this);
-		if (bl && this.minecraft.world != null) {
+		if (difficultyLocked && this.minecraft.world != null) {
 			this.minecraft.getNetworkHandler().sendPacket(new UpdateDifficultyLockC2SPacket(true));
 			this.lockDifficultyButton.setLocked(true);
 			this.lockDifficultyButton.active = false;
@@ -199,9 +204,9 @@ public class SettingsScreen extends Screen {
 	}
 
 	@Override
-	public void render(int i, int j, float f) {
+	public void render(int mouseX, int mouseY, float delta) {
 		this.renderBackground();
 		this.drawCenteredString(this.font, this.title.asFormattedString(), this.width / 2, 15, 16777215);
-		super.render(i, j, f);
+		super.render(mouseX, mouseY, delta);
 	}
 }

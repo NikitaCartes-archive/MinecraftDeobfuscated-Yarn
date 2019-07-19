@@ -14,7 +14,7 @@ public class EmptyGlyphRenderer extends GlyphRenderer {
 	}
 
 	@Override
-	public void draw(TextureManager textureManager, boolean bl, float f, float g, BufferBuilder bufferBuilder, float h, float i, float j, float k) {
+	public void draw(TextureManager textureManager, boolean italic, float x, float y, BufferBuilder buffer, float red, float green, float blue, float alpha) {
 	}
 
 	@Nullable

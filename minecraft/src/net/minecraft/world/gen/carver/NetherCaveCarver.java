@@ -45,36 +45,36 @@ public class NetherCaveCarver extends CaveCarver {
 	@Override
 	protected boolean carveAtPoint(
 		Chunk chunk,
-		BitSet bitSet,
+		BitSet mask,
 		Random random,
-		BlockPos.Mutable mutable,
-		BlockPos.Mutable mutable2,
-		BlockPos.Mutable mutable3,
-		int i,
-		int j,
-		int k,
-		int l,
-		int m,
-		int n,
-		int o,
-		int p,
+		BlockPos.Mutable pos1,
+		BlockPos.Mutable pos2,
+		BlockPos.Mutable pos3,
+		int seaLevel,
+		int mainChunkX,
+		int mainChunkZ,
+		int x,
+		int z,
+		int relativeX,
+		int y,
+		int relativeZ,
 		AtomicBoolean atomicBoolean
 	) {
-		int q = n | p << 4 | o << 8;
-		if (bitSet.get(q)) {
+		int i = relativeX | relativeZ << 4 | y << 8;
+		if (mask.get(i)) {
 			return false;
 		} else {
-			bitSet.set(q);
-			mutable.set(l, o, m);
-			if (this.canAlwaysCarveBlock(chunk.getBlockState(mutable))) {
+			mask.set(i);
+			pos1.set(x, y, z);
+			if (this.canAlwaysCarveBlock(chunk.getBlockState(pos1))) {
 				BlockState blockState;
-				if (o <= 31) {
+				if (y <= 31) {
 					blockState = LAVA.getBlockState();
 				} else {
 					blockState = CAVE_AIR;
 				}
 
-				chunk.setBlockState(mutable, blockState, false);
+				chunk.setBlockState(pos1, blockState, false);
 				return true;
 			} else {
 				return false;

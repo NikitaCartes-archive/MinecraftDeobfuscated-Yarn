@@ -12,11 +12,11 @@ import net.minecraft.world.gen.chunk.ChunkGenerator;
 import net.minecraft.world.gen.chunk.ChunkGeneratorConfig;
 
 public class EndGatewayFeature extends Feature<EndGatewayFeatureConfig> {
-	public EndGatewayFeature(Function<Dynamic<?>, ? extends EndGatewayFeatureConfig> function) {
-		super(function);
+	public EndGatewayFeature(Function<Dynamic<?>, ? extends EndGatewayFeatureConfig> configFactory) {
+		super(configFactory);
 	}
 
-	public boolean method_13142(
+	public boolean generate(
 		IWorld iWorld,
 		ChunkGenerator<? extends ChunkGeneratorConfig> chunkGenerator,
 		Random random,

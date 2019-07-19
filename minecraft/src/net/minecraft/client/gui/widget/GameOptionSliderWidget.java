@@ -9,9 +9,9 @@ import net.minecraft.client.options.GameOptions;
 public class GameOptionSliderWidget extends SliderWidget {
 	private final DoubleOption option;
 
-	public GameOptionSliderWidget(GameOptions gameOptions, int i, int j, int k, int l, DoubleOption doubleOption) {
-		super(gameOptions, i, j, k, l, (double)((float)doubleOption.method_18611(doubleOption.get(gameOptions))));
-		this.option = doubleOption;
+	public GameOptionSliderWidget(GameOptions gameOptions, int x, int y, int width, int height, DoubleOption option) {
+		super(gameOptions, x, y, width, height, (double)((float)option.method_18611(option.get(gameOptions))));
+		this.option = option;
 		this.updateMessage();
 	}
 

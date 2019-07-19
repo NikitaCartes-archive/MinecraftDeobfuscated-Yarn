@@ -6,11 +6,11 @@ import net.minecraft.text.Text;
 
 @Environment(EnvType.CLIENT)
 public interface SpectatorMenuCommand {
-	void use(SpectatorMenu spectatorMenu);
+	void use(SpectatorMenu menu);
 
 	Text getName();
 
-	void renderIcon(float f, int i);
+	void renderIcon(float brightness, int alpha);
 
 	boolean isEnabled();
 }

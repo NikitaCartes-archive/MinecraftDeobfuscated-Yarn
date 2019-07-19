@@ -5,8 +5,8 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.structure.pool.StructurePoolBasedGenerator;
 import net.minecraft.structure.pool.StructurePoolElement;
 import net.minecraft.util.BlockRotation;
+import net.minecraft.util.math.BlockBox;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.MutableIntBoundingBox;
 import net.minecraft.world.gen.ChunkRandom;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
 import net.minecraft.world.gen.feature.VillageFeatureConfig;
@@ -15,35 +15,28 @@ public class VillageGenerator {
 	public static void addPieces(
 		ChunkGenerator<?> chunkGenerator,
 		StructureManager structureManager,
-		BlockPos blockPos,
-		List<StructurePiece> list,
-		ChunkRandom chunkRandom,
-		VillageFeatureConfig villageFeatureConfig
+		BlockPos pos,
+		List<StructurePiece> pieces,
+		ChunkRandom random,
+		VillageFeatureConfig config
 	) {
 		PlainsVillageData.initialize();
 		SnowyVillageData.initialize();
 		SavannaVillageData.initialize();
 		DesertVillageData.initialize();
 		TaigaVillageData.initialize();
-		StructurePoolBasedGenerator.addPieces(
-			villageFeatureConfig.startPool, villageFeatureConfig.size, VillageGenerator.Piece::new, chunkGenerator, structureManager, blockPos, list, chunkRandom
-		);
+		StructurePoolBasedGenerator.addPieces(config.startPool, config.size, VillageGenerator.Piece::new, chunkGenerator, structureManager, pos, pieces, random);
 	}
 
 	public static class Piece extends PoolStructurePiece {
 		public Piece(
-			StructureManager structureManager,
-			StructurePoolElement structurePoolElement,
-			BlockPos blockPos,
-			int i,
-			BlockRotation blockRotation,
-			MutableIntBoundingBox mutableIntBoundingBox
+			StructureManager structureManager, StructurePoolElement structurePoolElement, BlockPos blockPos, int i, BlockRotation blockRotation, BlockBox blockBox
 		) {
-			super(StructurePieceType.NVI, structureManager, structurePoolElement, blockPos, i, blockRotation, mutableIntBoundingBox);
+			super(StructurePieceType.VILLAGE, structureManager, structurePoolElement, blockPos, i, blockRotation, blockBox);
 		}
 
 		public Piece(StructureManager structureManager, CompoundTag compoundTag) {
-			super(structureManager, compoundTag, StructurePieceType.NVI);
+			super(structureManager, compoundTag, StructurePieceType.VILLAGE);
 		}
 	}
 }

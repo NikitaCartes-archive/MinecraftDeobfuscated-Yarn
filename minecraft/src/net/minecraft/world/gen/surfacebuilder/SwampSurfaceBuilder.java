@@ -13,7 +13,7 @@ public class SwampSurfaceBuilder extends SurfaceBuilder<TernarySurfaceConfig> {
 		super(function);
 	}
 
-	public void method_15333(
+	public void generate(
 		Random random,
 		Chunk chunk,
 		Biome biome,

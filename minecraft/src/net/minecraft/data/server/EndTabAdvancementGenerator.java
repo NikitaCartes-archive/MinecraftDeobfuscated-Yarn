@@ -14,17 +14,17 @@ import net.minecraft.advancement.criterion.SummonedEntityCriterion;
 import net.minecraft.block.Blocks;
 import net.minecraft.entity.EntityType;
 import net.minecraft.item.Items;
+import net.minecraft.predicate.NumberRange;
 import net.minecraft.predicate.entity.DistancePredicate;
 import net.minecraft.predicate.entity.EntityPredicate;
 import net.minecraft.predicate.entity.LocationPredicate;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.NumberRange;
 import net.minecraft.world.dimension.DimensionType;
 import net.minecraft.world.gen.feature.Feature;
 
 public class EndTabAdvancementGenerator implements Consumer<Consumer<Advancement>> {
-	public void method_10348(Consumer<Advancement> consumer) {
+	public void accept(Consumer<Advancement> consumer) {
 		Advancement advancement = Advancement.Task.create()
 			.display(
 				Blocks.END_STONE,

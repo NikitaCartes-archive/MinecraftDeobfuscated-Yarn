@@ -91,13 +91,13 @@ public class PickaxeItem extends MiningToolItem {
 		Blocks.YELLOW_SHULKER_BOX
 	);
 
-	protected PickaxeItem(ToolMaterial toolMaterial, int i, float f, Item.Settings settings) {
-		super((float)i, f, toolMaterial, EFFECTIVE_BLOCKS, settings);
+	protected PickaxeItem(ToolMaterial material, int attackDamage, float attackSpeed, Item.Settings settings) {
+		super((float)attackDamage, attackSpeed, material, EFFECTIVE_BLOCKS, settings);
 	}
 
 	@Override
-	public boolean isEffectiveOn(BlockState blockState) {
-		Block block = blockState.getBlock();
+	public boolean isEffectiveOn(BlockState state) {
+		Block block = state.getBlock();
 		int i = this.getMaterial().getMiningLevel();
 		if (block == Blocks.OBSIDIAN) {
 			return i == 3;
@@ -110,7 +110,7 @@ public class PickaxeItem extends MiningToolItem {
 			|| block == Blocks.REDSTONE_ORE) {
 			return i >= 2;
 		} else if (block != Blocks.IRON_BLOCK && block != Blocks.IRON_ORE && block != Blocks.LAPIS_BLOCK && block != Blocks.LAPIS_ORE) {
-			Material material = blockState.getMaterial();
+			Material material = state.getMaterial();
 			return material == Material.STONE || material == Material.METAL || material == Material.ANVIL;
 		} else {
 			return i >= 1;
@@ -118,10 +118,8 @@ public class PickaxeItem extends MiningToolItem {
 	}
 
 	@Override
-	public float getMiningSpeed(ItemStack itemStack, BlockState blockState) {
-		Material material = blockState.getMaterial();
-		return material != Material.METAL && material != Material.ANVIL && material != Material.STONE
-			? super.getMiningSpeed(itemStack, blockState)
-			: this.miningSpeed;
+	public float getMiningSpeed(ItemStack stack, BlockState state) {
+		Material material = state.getMaterial();
+		return material != Material.METAL && material != Material.ANVIL && material != Material.STONE ? super.getMiningSpeed(stack, state) : this.miningSpeed;
 	}
 }

@@ -14,35 +14,35 @@ public class Slot {
 	public int xPosition;
 	public int yPosition;
 
-	public Slot(Inventory inventory, int i, int j, int k) {
+	public Slot(Inventory inventory, int invSlot, int xPosition, int yPosition) {
 		this.inventory = inventory;
-		this.invSlot = i;
-		this.xPosition = j;
-		this.yPosition = k;
+		this.invSlot = invSlot;
+		this.xPosition = xPosition;
+		this.yPosition = yPosition;
 	}
 
-	public void onStackChanged(ItemStack itemStack, ItemStack itemStack2) {
-		int i = itemStack2.getCount() - itemStack.getCount();
+	public void onStackChanged(ItemStack originalItem, ItemStack itemStack) {
+		int i = itemStack.getCount() - originalItem.getCount();
 		if (i > 0) {
-			this.onCrafted(itemStack2, i);
+			this.onCrafted(itemStack, i);
 		}
 	}
 
-	protected void onCrafted(ItemStack itemStack, int i) {
+	protected void onCrafted(ItemStack stack, int amount) {
 	}
 
-	protected void onTake(int i) {
+	protected void onTake(int amount) {
 	}
 
-	protected void onCrafted(ItemStack itemStack) {
+	protected void onCrafted(ItemStack stack) {
 	}
 
-	public ItemStack onTakeItem(PlayerEntity playerEntity, ItemStack itemStack) {
+	public ItemStack onTakeItem(PlayerEntity player, ItemStack stack) {
 		this.markDirty();
-		return itemStack;
+		return stack;
 	}
 
-	public boolean canInsert(ItemStack itemStack) {
+	public boolean canInsert(ItemStack stack) {
 		return true;
 	}
 
@@ -77,8 +77,8 @@ public class Slot {
 		return null;
 	}
 
-	public ItemStack takeStack(int i) {
-		return this.inventory.takeInvStack(this.invSlot, i);
+	public ItemStack takeStack(int amount) {
+		return this.inventory.takeInvStack(this.invSlot, amount);
 	}
 
 	public boolean canTakeItems(PlayerEntity playerEntity) {

@@ -18,9 +18,9 @@ public enum CloudRenderMode {
 	private final int value;
 	private final String translationKey;
 
-	private CloudRenderMode(int j, String string2) {
-		this.value = j;
-		this.translationKey = string2;
+	private CloudRenderMode(int value, String translationKey) {
+		this.value = value;
+		this.translationKey = translationKey;
 	}
 
 	public int getValue() {
@@ -31,7 +31,7 @@ public enum CloudRenderMode {
 		return this.translationKey;
 	}
 
-	public static CloudRenderMode getOption(int i) {
-		return RENDER_MODES[MathHelper.floorMod(i, RENDER_MODES.length)];
+	public static CloudRenderMode getOption(int id) {
+		return RENDER_MODES[MathHelper.floorMod(id, RENDER_MODES.length)];
 	}
 }

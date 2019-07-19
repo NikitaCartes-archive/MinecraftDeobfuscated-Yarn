@@ -6,9 +6,9 @@ import net.minecraft.entity.player.PlayerEntity;
 public class LookAtCustomerGoal extends LookAtEntityGoal {
 	private final AbstractTraderEntity trader;
 
-	public LookAtCustomerGoal(AbstractTraderEntity abstractTraderEntity) {
-		super(abstractTraderEntity, PlayerEntity.class, 8.0F);
-		this.trader = abstractTraderEntity;
+	public LookAtCustomerGoal(AbstractTraderEntity trader) {
+		super(trader, PlayerEntity.class, 8.0F);
+		this.trader = trader;
 	}
 
 	@Override

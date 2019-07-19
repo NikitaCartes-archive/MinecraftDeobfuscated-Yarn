@@ -7,13 +7,13 @@ import com.mojang.datafixers.types.DynamicOps;
 public class PlantedFeatureConfig implements FeatureConfig {
 	public final boolean planted;
 
-	public PlantedFeatureConfig(boolean bl) {
-		this.planted = bl;
+	public PlantedFeatureConfig(boolean planted) {
+		this.planted = planted;
 	}
 
 	@Override
-	public <T> Dynamic<T> serialize(DynamicOps<T> dynamicOps) {
-		return new Dynamic<>(dynamicOps, dynamicOps.createMap(ImmutableMap.of(dynamicOps.createString("planted"), dynamicOps.createBoolean(this.planted))));
+	public <T> Dynamic<T> serialize(DynamicOps<T> ops) {
+		return new Dynamic<>(ops, ops.createMap(ImmutableMap.of(ops.createString("planted"), ops.createBoolean(this.planted))));
 	}
 
 	public static <T> PlantedFeatureConfig deserialize(Dynamic<T> dynamic) {

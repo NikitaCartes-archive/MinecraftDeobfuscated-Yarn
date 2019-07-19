@@ -35,7 +35,7 @@ public class HuskEntity extends ZombieEntity {
 	}
 
 	@Override
-	protected SoundEvent getHurtSound(DamageSource damageSource) {
+	protected SoundEvent getHurtSound(DamageSource source) {
 		return SoundEvents.ENTITY_HUSK_HURT;
 	}
 
@@ -50,11 +50,11 @@ public class HuskEntity extends ZombieEntity {
 	}
 
 	@Override
-	public boolean tryAttack(Entity entity) {
-		boolean bl = super.tryAttack(entity);
-		if (bl && this.getMainHandStack().isEmpty() && entity instanceof LivingEntity) {
+	public boolean tryAttack(Entity target) {
+		boolean bl = super.tryAttack(target);
+		if (bl && this.getMainHandStack().isEmpty() && target instanceof LivingEntity) {
 			float f = this.world.getLocalDifficulty(new BlockPos(this)).getLocalDifficulty();
-			((LivingEntity)entity).addPotionEffect(new StatusEffectInstance(StatusEffects.HUNGER, 140 * (int)f));
+			((LivingEntity)target).addStatusEffect(new StatusEffectInstance(StatusEffects.HUNGER, 140 * (int)f));
 		}
 
 		return bl;

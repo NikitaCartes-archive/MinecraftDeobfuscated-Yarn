@@ -11,11 +11,11 @@ public class DragonBreathParticle extends SpriteBillboardParticle {
 	private boolean field_3792;
 	private final SpriteProvider field_17793;
 
-	private DragonBreathParticle(World world, double d, double e, double f, double g, double h, double i, SpriteProvider spriteProvider) {
-		super(world, d, e, f);
-		this.velocityX = g;
-		this.velocityY = h;
-		this.velocityZ = i;
+	private DragonBreathParticle(World world, double x, double y, double z, double velocityX, double velocityY, double velocityZ, SpriteProvider spriteProvider) {
+		super(world, x, y, z);
+		this.velocityX = velocityX;
+		this.velocityY = velocityY;
+		this.velocityZ = velocityZ;
 		this.colorRed = MathHelper.nextFloat(this.random, 0.7176471F, 0.8745098F);
 		this.colorGreen = MathHelper.nextFloat(this.random, 0.0F, 0.0F);
 		this.colorBlue = MathHelper.nextFloat(this.random, 0.8235294F, 0.9764706F);
@@ -65,8 +65,8 @@ public class DragonBreathParticle extends SpriteBillboardParticle {
 	}
 
 	@Override
-	public float getSize(float f) {
-		return this.scale * MathHelper.clamp(((float)this.age + f) / (float)this.maxAge * 32.0F, 0.0F, 1.0F);
+	public float getSize(float tickDelta) {
+		return this.scale * MathHelper.clamp(((float)this.age + tickDelta) / (float)this.maxAge * 32.0F, 0.0F, 1.0F);
 	}
 
 	@Environment(EnvType.CLIENT)
@@ -77,7 +77,7 @@ public class DragonBreathParticle extends SpriteBillboardParticle {
 			this.field_17794 = spriteProvider;
 		}
 
-		public Particle method_3019(DefaultParticleType defaultParticleType, World world, double d, double e, double f, double g, double h, double i) {
+		public Particle createParticle(DefaultParticleType defaultParticleType, World world, double d, double e, double f, double g, double h, double i) {
 			return new DragonBreathParticle(world, d, e, f, g, h, i, this.field_17794);
 		}
 	}

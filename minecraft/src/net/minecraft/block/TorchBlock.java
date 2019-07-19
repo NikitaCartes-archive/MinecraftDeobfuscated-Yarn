@@ -3,14 +3,15 @@ package net.minecraft.block;
 import java.util.Random;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.client.render.RenderLayer;
 import net.minecraft.entity.EntityContext;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.world.BlockView;
+import net.minecraft.world.CollisionView;
 import net.minecraft.world.IWorld;
-import net.minecraft.world.ViewableWorld;
 import net.minecraft.world.World;
 
 public class TorchBlock extends Block {
@@ -21,36 +22,34 @@ public class TorchBlock extends Block {
 	}
 
 	@Override
-	public VoxelShape getOutlineShape(BlockState blockState, BlockView blockView, BlockPos blockPos, EntityContext entityContext) {
+	public VoxelShape getOutlineShape(BlockState state, BlockView view, BlockPos pos, EntityContext context) {
 		return BOUNDING_SHAPE;
 	}
 
 	@Override
-	public BlockState getStateForNeighborUpdate(
-		BlockState blockState, Direction direction, BlockState blockState2, IWorld iWorld, BlockPos blockPos, BlockPos blockPos2
-	) {
-		return direction == Direction.DOWN && !this.canPlaceAt(blockState, iWorld, blockPos)
+	public BlockState getStateForNeighborUpdate(BlockState state, Direction facing, BlockState neighborState, IWorld world, BlockPos pos, BlockPos neighborPos) {
+		return facing == Direction.DOWN && !this.canPlaceAt(state, world, pos)
 			? Blocks.AIR.getDefaultState()
-			: super.getStateForNeighborUpdate(blockState, direction, blockState2, iWorld, blockPos, blockPos2);
+			: super.getStateForNeighborUpdate(state, facing, neighborState, world, pos, neighborPos);
 	}
 
 	@Override
-	public boolean canPlaceAt(BlockState blockState, ViewableWorld viewableWorld, BlockPos blockPos) {
-		return isSolidSmallSquare(viewableWorld, blockPos.down(), Direction.UP);
+	public boolean canPlaceAt(BlockState state, CollisionView world, BlockPos pos) {
+		return isSolidSmallSquare(world, pos.down(), Direction.UP);
 	}
 
 	@Environment(EnvType.CLIENT)
 	@Override
-	public void randomDisplayTick(BlockState blockState, World world, BlockPos blockPos, Random random) {
-		double d = (double)blockPos.getX() + 0.5;
-		double e = (double)blockPos.getY() + 0.7;
-		double f = (double)blockPos.getZ() + 0.5;
+	public void randomDisplayTick(BlockState state, World world, BlockPos pos, Random random) {
+		double d = (double)pos.getX() + 0.5;
+		double e = (double)pos.getY() + 0.7;
+		double f = (double)pos.getZ() + 0.5;
 		world.addParticle(ParticleTypes.SMOKE, d, e, f, 0.0, 0.0, 0.0);
 		world.addParticle(ParticleTypes.FLAME, d, e, f, 0.0, 0.0, 0.0);
 	}
 
 	@Override
-	public BlockRenderLayer getRenderLayer() {
-		return BlockRenderLayer.CUTOUT;
+	public RenderLayer getRenderLayer() {
+		return RenderLayer.CUTOUT;
 	}
 }

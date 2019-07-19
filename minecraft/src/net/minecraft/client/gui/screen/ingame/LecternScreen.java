@@ -14,7 +14,7 @@ import net.minecraft.util.DefaultedList;
 
 @Environment(EnvType.CLIENT)
 public class LecternScreen extends BookScreen implements ContainerProvider<LecternContainer> {
-	private final LecternContainer lecternContainer;
+	private final LecternContainer container;
 	private final ContainerListener listener = new ContainerListener() {
 		@Override
 		public void onContainerRegistered(Container container, DefaultedList<ItemStack> defaultedList) {
@@ -22,30 +22,30 @@ public class LecternScreen extends BookScreen implements ContainerProvider<Lecte
 		}
 
 		@Override
-		public void onContainerSlotUpdate(Container container, int i, ItemStack itemStack) {
+		public void onContainerSlotUpdate(Container container, int slotId, ItemStack itemStack) {
 			LecternScreen.this.updatePageProvider();
 		}
 
 		@Override
-		public void onContainerPropertyUpdate(Container container, int i, int j) {
-			if (i == 0) {
+		public void onContainerPropertyUpdate(Container container, int propertyId, int i) {
+			if (propertyId == 0) {
 				LecternScreen.this.updatePage();
 			}
 		}
 	};
 
 	public LecternScreen(LecternContainer lecternContainer, PlayerInventory playerInventory, Text text) {
-		this.lecternContainer = lecternContainer;
+		this.container = lecternContainer;
 	}
 
-	public LecternContainer method_17573() {
-		return this.lecternContainer;
+	public LecternContainer getContainer() {
+		return this.container;
 	}
 
 	@Override
 	protected void init() {
 		super.init();
-		this.lecternContainer.addListener(this.listener);
+		this.container.addListener(this.listener);
 	}
 
 	@Override
@@ -57,7 +57,7 @@ public class LecternScreen extends BookScreen implements ContainerProvider<Lecte
 	@Override
 	public void removed() {
 		super.removed();
-		this.lecternContainer.removeListener(this.listener);
+		this.container.removeListener(this.listener);
 	}
 
 	@Override
@@ -81,17 +81,17 @@ public class LecternScreen extends BookScreen implements ContainerProvider<Lecte
 	}
 
 	@Override
-	protected boolean jumpToPage(int i) {
-		if (i != this.lecternContainer.getPage()) {
-			this.sendButtonPressPacket(100 + i);
+	protected boolean jumpToPage(int page) {
+		if (page != this.container.getPage()) {
+			this.sendButtonPressPacket(100 + page);
 			return true;
 		} else {
 			return false;
 		}
 	}
 
-	private void sendButtonPressPacket(int i) {
-		this.minecraft.interactionManager.clickButton(this.lecternContainer.syncId, i);
+	private void sendButtonPressPacket(int id) {
+		this.minecraft.interactionManager.clickButton(this.container.syncId, id);
 	}
 
 	@Override
@@ -100,11 +100,11 @@ public class LecternScreen extends BookScreen implements ContainerProvider<Lecte
 	}
 
 	private void updatePageProvider() {
-		ItemStack itemStack = this.lecternContainer.getBookItem();
+		ItemStack itemStack = this.container.getBookItem();
 		this.setPageProvider(BookScreen.Contents.create(itemStack));
 	}
 
 	private void updatePage() {
-		this.setPage(this.lecternContainer.getPage());
+		this.setPage(this.container.getPage());
 	}
 }

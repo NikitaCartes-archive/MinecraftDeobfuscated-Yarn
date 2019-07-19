@@ -7,8 +7,8 @@ import net.minecraft.world.World;
 
 @Environment(EnvType.CLIENT)
 public class SpitParticle extends ExplosionSmokeParticle {
-	private SpitParticle(World world, double d, double e, double f, double g, double h, double i, SpriteProvider spriteProvider) {
-		super(world, d, e, f, g, h, i, spriteProvider);
+	private SpitParticle(World world, double x, double y, double z, double velocityX, double velocityY, double velocityZ, SpriteProvider spriteProvider) {
+		super(world, x, y, z, velocityX, velocityY, velocityZ, spriteProvider);
 		this.gravityStrength = 0.5F;
 	}
 
@@ -20,14 +20,14 @@ public class SpitParticle extends ExplosionSmokeParticle {
 
 	@Environment(EnvType.CLIENT)
 	public static class Factory implements ParticleFactory<DefaultParticleType> {
-		private final SpriteProvider field_17876;
+		private final SpriteProvider spriteProvider;
 
 		public Factory(SpriteProvider spriteProvider) {
-			this.field_17876 = spriteProvider;
+			this.spriteProvider = spriteProvider;
 		}
 
-		public Particle method_3103(DefaultParticleType defaultParticleType, World world, double d, double e, double f, double g, double h, double i) {
-			return new SpitParticle(world, d, e, f, g, h, i, this.field_17876);
+		public Particle createParticle(DefaultParticleType defaultParticleType, World world, double d, double e, double f, double g, double h, double i) {
+			return new SpitParticle(world, d, e, f, g, h, i, this.spriteProvider);
 		}
 	}
 }

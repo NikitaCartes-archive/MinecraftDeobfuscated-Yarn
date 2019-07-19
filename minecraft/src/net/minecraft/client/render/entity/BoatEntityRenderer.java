@@ -25,7 +25,7 @@ public class BoatEntityRenderer extends EntityRenderer<BoatEntity> {
 		this.field_4673 = 0.8F;
 	}
 
-	public void method_3888(BoatEntity boatEntity, double d, double e, double f, float g, float h) {
+	public void render(BoatEntity boatEntity, double d, double e, double f, float g, float h) {
 		GlStateManager.pushMatrix();
 		this.translateToBoat(d, e, f);
 		this.rotateToBoat(boatEntity, g, h);
@@ -35,7 +35,7 @@ public class BoatEntityRenderer extends EntityRenderer<BoatEntity> {
 			GlStateManager.setupSolidRenderingTextureCombine(this.getOutlineColor(boatEntity));
 		}
 
-		this.model.method_17071(boatEntity, h, 0.0F, -0.1F, 0.0F, 0.0F, 0.0625F);
+		this.model.render(boatEntity, h, 0.0F, -0.1F, 0.0F, 0.0F, 0.0625F);
 		if (this.renderOutlines) {
 			GlStateManager.tearDownSolidRenderingTextureCombine();
 			GlStateManager.disableColorMaterial();
@@ -45,31 +45,31 @@ public class BoatEntityRenderer extends EntityRenderer<BoatEntity> {
 		super.render(boatEntity, d, e, f, g, h);
 	}
 
-	public void rotateToBoat(BoatEntity boatEntity, float f, float g) {
-		GlStateManager.rotatef(180.0F - f, 0.0F, 1.0F, 0.0F);
-		float h = (float)boatEntity.getDamageWobbleTicks() - g;
-		float i = boatEntity.getDamageWobbleStrength() - g;
-		if (i < 0.0F) {
-			i = 0.0F;
+	public void rotateToBoat(BoatEntity boat, float yaw, float tickDelta) {
+		GlStateManager.rotatef(180.0F - yaw, 0.0F, 1.0F, 0.0F);
+		float f = (float)boat.getDamageWobbleTicks() - tickDelta;
+		float g = boat.getDamageWobbleStrength() - tickDelta;
+		if (g < 0.0F) {
+			g = 0.0F;
 		}
 
-		if (h > 0.0F) {
-			GlStateManager.rotatef(MathHelper.sin(h) * h * i / 10.0F * (float)boatEntity.getDamageWobbleSide(), 1.0F, 0.0F, 0.0F);
+		if (f > 0.0F) {
+			GlStateManager.rotatef(MathHelper.sin(f) * f * g / 10.0F * (float)boat.getDamageWobbleSide(), 1.0F, 0.0F, 0.0F);
 		}
 
-		float j = boatEntity.interpolateBubbleWobble(g);
-		if (!MathHelper.equalsApproximate(j, 0.0F)) {
-			GlStateManager.rotatef(boatEntity.interpolateBubbleWobble(g), 1.0F, 0.0F, 1.0F);
+		float h = boat.interpolateBubbleWobble(tickDelta);
+		if (!MathHelper.approximatelyEquals(h, 0.0F)) {
+			GlStateManager.rotatef(boat.interpolateBubbleWobble(tickDelta), 1.0F, 0.0F, 1.0F);
 		}
 
 		GlStateManager.scalef(-1.0F, -1.0F, 1.0F);
 	}
 
-	public void translateToBoat(double d, double e, double f) {
-		GlStateManager.translatef((float)d, (float)e + 0.375F, (float)f);
+	public void translateToBoat(double x, double y, double z) {
+		GlStateManager.translatef((float)x, (float)y + 0.375F, (float)z);
 	}
 
-	protected Identifier method_3891(BoatEntity boatEntity) {
+	protected Identifier getTexture(BoatEntity boatEntity) {
 		return SKIN[boatEntity.getBoatType().ordinal()];
 	}
 
@@ -78,7 +78,7 @@ public class BoatEntityRenderer extends EntityRenderer<BoatEntity> {
 		return true;
 	}
 
-	public void method_3887(BoatEntity boatEntity, double d, double e, double f, float g, float h) {
+	public void renderSecondPass(BoatEntity boatEntity, double d, double e, double f, float g, float h) {
 		GlStateManager.pushMatrix();
 		this.translateToBoat(d, e, f);
 		this.rotateToBoat(boatEntity, g, h);

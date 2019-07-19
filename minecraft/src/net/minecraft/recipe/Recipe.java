@@ -11,12 +11,12 @@ import net.minecraft.util.Identifier;
 import net.minecraft.world.World;
 
 public interface Recipe<C extends Inventory> {
-	boolean matches(C inventory, World world);
+	boolean matches(C inv, World world);
 
-	ItemStack craft(C inventory);
+	ItemStack craft(C inv);
 
 	@Environment(EnvType.CLIENT)
-	boolean fits(int i, int j);
+	boolean fits(int width, int height);
 
 	ItemStack getOutput();
 

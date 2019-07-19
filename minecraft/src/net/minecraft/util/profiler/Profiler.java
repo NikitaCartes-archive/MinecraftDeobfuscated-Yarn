@@ -9,14 +9,14 @@ public interface Profiler {
 
 	void endTick();
 
-	void push(String string);
+	void push(String location);
 
-	void push(Supplier<String> supplier);
+	void push(Supplier<String> locationGetter);
 
 	void pop();
 
-	void swap(String string);
+	void swap(String location);
 
 	@Environment(EnvType.CLIENT)
-	void swap(Supplier<String> supplier);
+	void swap(Supplier<String> locationGetter);
 }

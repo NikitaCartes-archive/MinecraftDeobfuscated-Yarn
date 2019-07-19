@@ -17,11 +17,11 @@ import net.minecraft.entity.EntityType;
 import net.minecraft.entity.passive.CatEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.Items;
+import net.minecraft.predicate.NumberRange;
 import net.minecraft.predicate.entity.EntityPredicate;
 import net.minecraft.predicate.item.ItemPredicate;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.NumberRange;
 import net.minecraft.util.registry.Registry;
 
 public class HusbandryTabAdvancementGenerator implements Consumer<Consumer<Advancement>> {
@@ -84,7 +84,7 @@ public class HusbandryTabAdvancementGenerator implements Consumer<Consumer<Advan
 		Items.SWEET_BERRIES
 	};
 
-	public void method_10338(Consumer<Advancement> consumer) {
+	public void accept(Consumer<Advancement> consumer) {
 		Advancement advancement = Advancement.Task.create()
 			.display(
 				Blocks.HAY_BLOCK,

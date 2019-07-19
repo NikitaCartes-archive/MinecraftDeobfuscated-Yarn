@@ -8,7 +8,7 @@ import net.minecraft.util.JsonHelper;
 
 @Environment(EnvType.CLIENT)
 public class VillagerResourceMetadataReader implements ResourceMetadataReader<VillagerResourceMetadata> {
-	public VillagerResourceMetadata method_17171(JsonObject jsonObject) {
+	public VillagerResourceMetadata fromJson(JsonObject jsonObject) {
 		return new VillagerResourceMetadata(VillagerResourceMetadata.HatType.from(JsonHelper.getString(jsonObject, "hat", "none")));
 	}
 

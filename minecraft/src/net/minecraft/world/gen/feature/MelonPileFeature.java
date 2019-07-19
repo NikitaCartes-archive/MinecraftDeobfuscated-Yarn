@@ -7,12 +7,12 @@ import net.minecraft.block.Blocks;
 import net.minecraft.world.IWorld;
 
 public class MelonPileFeature extends AbstractPileFeature {
-	public MelonPileFeature(Function<Dynamic<?>, ? extends DefaultFeatureConfig> function) {
-		super(function);
+	public MelonPileFeature(Function<Dynamic<?>, ? extends DefaultFeatureConfig> configFactory) {
+		super(configFactory);
 	}
 
 	@Override
-	protected BlockState getPileBlockState(IWorld iWorld) {
+	protected BlockState getPileBlockState(IWorld world) {
 		return Blocks.MELON.getDefaultState();
 	}
 }

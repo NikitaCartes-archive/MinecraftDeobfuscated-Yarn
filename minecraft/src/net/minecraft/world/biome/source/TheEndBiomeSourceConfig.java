@@ -1,14 +1,14 @@
 package net.minecraft.world.biome.source;
 
 public class TheEndBiomeSourceConfig implements BiomeSourceConfig {
-	private long field_9814;
+	private long seed;
 
-	public TheEndBiomeSourceConfig method_9205(long l) {
-		this.field_9814 = l;
+	public TheEndBiomeSourceConfig setSeed(long seed) {
+		this.seed = seed;
 		return this;
 	}
 
-	public long method_9204() {
-		return this.field_9814;
+	public long getSeed() {
+		return this.seed;
 	}
 }
