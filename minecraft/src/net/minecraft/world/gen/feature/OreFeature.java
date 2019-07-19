@@ -12,11 +12,11 @@ import net.minecraft.world.gen.chunk.ChunkGenerator;
 import net.minecraft.world.gen.chunk.ChunkGeneratorConfig;
 
 public class OreFeature extends Feature<OreFeatureConfig> {
-	public OreFeature(Function<Dynamic<?>, ? extends OreFeatureConfig> function) {
-		super(function);
+	public OreFeature(Function<Dynamic<?>, ? extends OreFeatureConfig> configFactory) {
+		super(configFactory);
 	}
 
-	public boolean method_13628(
+	public boolean generate(
 		IWorld iWorld, ChunkGenerator<? extends ChunkGeneratorConfig> chunkGenerator, Random random, BlockPos blockPos, OreFeatureConfig oreFeatureConfig
 	) {
 		float f = random.nextFloat() * (float) Math.PI;
@@ -47,52 +47,52 @@ public class OreFeature extends Feature<OreFeatureConfig> {
 	}
 
 	protected boolean generateVeinPart(
-		IWorld iWorld,
+		IWorld world,
 		Random random,
-		OreFeatureConfig oreFeatureConfig,
-		double d,
-		double e,
-		double f,
-		double g,
-		double h,
-		double i,
-		int j,
-		int k,
-		int l,
-		int m,
-		int n
+		OreFeatureConfig config,
+		double startX,
+		double endX,
+		double startZ,
+		double endZ,
+		double startY,
+		double endY,
+		int x,
+		int y,
+		int z,
+		int size,
+		int i
 	) {
-		int o = 0;
-		BitSet bitSet = new BitSet(m * n * m);
+		int j = 0;
+		BitSet bitSet = new BitSet(size * i * size);
 		BlockPos.Mutable mutable = new BlockPos.Mutable();
-		double[] ds = new double[oreFeatureConfig.size * 4];
+		double[] ds = new double[config.size * 4];
 
-		for (int p = 0; p < oreFeatureConfig.size; p++) {
-			float q = (float)p / (float)oreFeatureConfig.size;
-			double r = MathHelper.lerp((double)q, d, e);
-			double s = MathHelper.lerp((double)q, h, i);
-			double t = MathHelper.lerp((double)q, f, g);
-			double u = random.nextDouble() * (double)oreFeatureConfig.size / 16.0;
-			double v = ((double)(MathHelper.sin((float) Math.PI * q) + 1.0F) * u + 1.0) / 2.0;
-			ds[p * 4 + 0] = r;
-			ds[p * 4 + 1] = s;
-			ds[p * 4 + 2] = t;
-			ds[p * 4 + 3] = v;
+		for (int k = 0; k < config.size; k++) {
+			float f = (float)k / (float)config.size;
+			double d = MathHelper.lerp((double)f, startX, endX);
+			double e = MathHelper.lerp((double)f, startY, endY);
+			double g = MathHelper.lerp((double)f, startZ, endZ);
+			double h = random.nextDouble() * (double)config.size / 16.0;
+			double l = ((double)(MathHelper.sin((float) Math.PI * f) + 1.0F) * h + 1.0) / 2.0;
+			ds[k * 4 + 0] = d;
+			ds[k * 4 + 1] = e;
+			ds[k * 4 + 2] = g;
+			ds[k * 4 + 3] = l;
 		}
 
-		for (int p = 0; p < oreFeatureConfig.size - 1; p++) {
-			if (!(ds[p * 4 + 3] <= 0.0)) {
-				for (int w = p + 1; w < oreFeatureConfig.size; w++) {
-					if (!(ds[w * 4 + 3] <= 0.0)) {
-						double r = ds[p * 4 + 0] - ds[w * 4 + 0];
-						double s = ds[p * 4 + 1] - ds[w * 4 + 1];
-						double t = ds[p * 4 + 2] - ds[w * 4 + 2];
-						double u = ds[p * 4 + 3] - ds[w * 4 + 3];
-						if (u * u > r * r + s * s + t * t) {
-							if (u > 0.0) {
-								ds[w * 4 + 3] = -1.0;
+		for (int k = 0; k < config.size - 1; k++) {
+			if (!(ds[k * 4 + 3] <= 0.0)) {
+				for (int m = k + 1; m < config.size; m++) {
+					if (!(ds[m * 4 + 3] <= 0.0)) {
+						double d = ds[k * 4 + 0] - ds[m * 4 + 0];
+						double e = ds[k * 4 + 1] - ds[m * 4 + 1];
+						double g = ds[k * 4 + 2] - ds[m * 4 + 2];
+						double h = ds[k * 4 + 3] - ds[m * 4 + 3];
+						if (h * h > d * d + e * e + g * g) {
+							if (h > 0.0) {
+								ds[m * 4 + 3] = -1.0;
 							} else {
-								ds[p * 4 + 3] = -1.0;
+								ds[k * 4 + 3] = -1.0;
 							}
 						}
 					}
@@ -100,35 +100,35 @@ public class OreFeature extends Feature<OreFeatureConfig> {
 			}
 		}
 
-		for (int px = 0; px < oreFeatureConfig.size; px++) {
-			double x = ds[px * 4 + 3];
-			if (!(x < 0.0)) {
-				double y = ds[px * 4 + 0];
-				double z = ds[px * 4 + 1];
-				double aa = ds[px * 4 + 2];
-				int ab = Math.max(MathHelper.floor(y - x), j);
-				int ac = Math.max(MathHelper.floor(z - x), k);
-				int ad = Math.max(MathHelper.floor(aa - x), l);
-				int ae = Math.max(MathHelper.floor(y + x), ab);
-				int af = Math.max(MathHelper.floor(z + x), ac);
-				int ag = Math.max(MathHelper.floor(aa + x), ad);
+		for (int kx = 0; kx < config.size; kx++) {
+			double n = ds[kx * 4 + 3];
+			if (!(n < 0.0)) {
+				double o = ds[kx * 4 + 0];
+				double p = ds[kx * 4 + 1];
+				double q = ds[kx * 4 + 2];
+				int r = Math.max(MathHelper.floor(o - n), x);
+				int s = Math.max(MathHelper.floor(p - n), y);
+				int t = Math.max(MathHelper.floor(q - n), z);
+				int u = Math.max(MathHelper.floor(o + n), r);
+				int v = Math.max(MathHelper.floor(p + n), s);
+				int w = Math.max(MathHelper.floor(q + n), t);
 
-				for (int ah = ab; ah <= ae; ah++) {
-					double ai = ((double)ah + 0.5 - y) / x;
-					if (ai * ai < 1.0) {
-						for (int aj = ac; aj <= af; aj++) {
-							double ak = ((double)aj + 0.5 - z) / x;
-							if (ai * ai + ak * ak < 1.0) {
-								for (int al = ad; al <= ag; al++) {
-									double am = ((double)al + 0.5 - aa) / x;
-									if (ai * ai + ak * ak + am * am < 1.0) {
-										int an = ah - j + (aj - k) * m + (al - l) * m * n;
-										if (!bitSet.get(an)) {
-											bitSet.set(an);
-											mutable.set(ah, aj, al);
-											if (oreFeatureConfig.target.getCondition().test(iWorld.getBlockState(mutable))) {
-												iWorld.setBlockState(mutable, oreFeatureConfig.state, 2);
-												o++;
+				for (int aa = r; aa <= u; aa++) {
+					double ab = ((double)aa + 0.5 - o) / n;
+					if (ab * ab < 1.0) {
+						for (int ac = s; ac <= v; ac++) {
+							double ad = ((double)ac + 0.5 - p) / n;
+							if (ab * ab + ad * ad < 1.0) {
+								for (int ae = t; ae <= w; ae++) {
+									double af = ((double)ae + 0.5 - q) / n;
+									if (ab * ab + ad * ad + af * af < 1.0) {
+										int ag = aa - x + (ac - y) * size + (ae - z) * size * i;
+										if (!bitSet.get(ag)) {
+											bitSet.set(ag);
+											mutable.set(aa, ac, ae);
+											if (config.target.getCondition().test(world.getBlockState(mutable))) {
+												world.setBlockState(mutable, config.state, 2);
+												j++;
 											}
 										}
 									}
@@ -140,6 +140,6 @@ public class OreFeature extends Feature<OreFeatureConfig> {
 			}
 		}
 
-		return o > 0;
+		return j > 0;
 	}
 }

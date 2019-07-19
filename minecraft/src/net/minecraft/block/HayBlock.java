@@ -8,11 +8,11 @@ import net.minecraft.world.World;
 public class HayBlock extends PillarBlock {
 	public HayBlock(Block.Settings settings) {
 		super(settings);
-		this.setDefaultState(this.stateFactory.getDefaultState().with(AXIS, Direction.Axis.Y));
+		this.setDefaultState(this.stateManager.getDefaultState().with(AXIS, Direction.Axis.Y));
 	}
 
 	@Override
-	public void onLandedUpon(World world, BlockPos blockPos, Entity entity, float f) {
-		entity.handleFallDamage(f, 0.2F);
+	public void onLandedUpon(World world, BlockPos pos, Entity entity, float distance) {
+		entity.handleFallDamage(distance, 0.2F);
 	}
 }

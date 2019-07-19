@@ -4,10 +4,11 @@ import java.util.Random;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.block.piston.PistonBehavior;
+import net.minecraft.client.render.RenderLayer;
 import net.minecraft.entity.EntityContext;
 import net.minecraft.item.ItemPlacementContext;
 import net.minecraft.particle.ParticleTypes;
-import net.minecraft.state.StateFactory;
+import net.minecraft.state.StateManager;
 import net.minecraft.util.BlockMirror;
 import net.minecraft.util.BlockRotation;
 import net.minecraft.util.math.BlockPos;
@@ -23,22 +24,22 @@ public class EndRodBlock extends FacingBlock {
 
 	protected EndRodBlock(Block.Settings settings) {
 		super(settings);
-		this.setDefaultState(this.stateFactory.getDefaultState().with(FACING, Direction.UP));
+		this.setDefaultState(this.stateManager.getDefaultState().with(FACING, Direction.UP));
 	}
 
 	@Override
-	public BlockState rotate(BlockState blockState, BlockRotation blockRotation) {
-		return blockState.with(FACING, blockRotation.rotate(blockState.get(FACING)));
+	public BlockState rotate(BlockState state, BlockRotation rotation) {
+		return state.with(FACING, rotation.rotate(state.get(FACING)));
 	}
 
 	@Override
-	public BlockState mirror(BlockState blockState, BlockMirror blockMirror) {
-		return blockState.with(FACING, blockMirror.apply(blockState.get(FACING)));
+	public BlockState mirror(BlockState state, BlockMirror mirror) {
+		return state.with(FACING, mirror.apply(state.get(FACING)));
 	}
 
 	@Override
-	public VoxelShape getOutlineShape(BlockState blockState, BlockView blockView, BlockPos blockPos, EntityContext entityContext) {
-		switch (((Direction)blockState.get(FACING)).getAxis()) {
+	public VoxelShape getOutlineShape(BlockState state, BlockView view, BlockPos pos, EntityContext context) {
+		switch (((Direction)state.get(FACING)).getAxis()) {
 			case X:
 			default:
 				return X_SHAPE;
@@ -50,9 +51,9 @@ public class EndRodBlock extends FacingBlock {
 	}
 
 	@Override
-	public BlockState getPlacementState(ItemPlacementContext itemPlacementContext) {
-		Direction direction = itemPlacementContext.getSide();
-		BlockState blockState = itemPlacementContext.getWorld().getBlockState(itemPlacementContext.getBlockPos().offset(direction.getOpposite()));
+	public BlockState getPlacementState(ItemPlacementContext ctx) {
+		Direction direction = ctx.getSide();
+		BlockState blockState = ctx.getWorld().getBlockState(ctx.getBlockPos().offset(direction.getOpposite()));
 		return blockState.getBlock() == this && blockState.get(FACING) == direction
 			? this.getDefaultState().with(FACING, direction.getOpposite())
 			: this.getDefaultState().with(FACING, direction);
@@ -60,11 +61,11 @@ public class EndRodBlock extends FacingBlock {
 
 	@Environment(EnvType.CLIENT)
 	@Override
-	public void randomDisplayTick(BlockState blockState, World world, BlockPos blockPos, Random random) {
-		Direction direction = blockState.get(FACING);
-		double d = (double)blockPos.getX() + 0.55 - (double)(random.nextFloat() * 0.1F);
-		double e = (double)blockPos.getY() + 0.55 - (double)(random.nextFloat() * 0.1F);
-		double f = (double)blockPos.getZ() + 0.55 - (double)(random.nextFloat() * 0.1F);
+	public void randomDisplayTick(BlockState state, World world, BlockPos pos, Random random) {
+		Direction direction = state.get(FACING);
+		double d = (double)pos.getX() + 0.55 - (double)(random.nextFloat() * 0.1F);
+		double e = (double)pos.getY() + 0.55 - (double)(random.nextFloat() * 0.1F);
+		double f = (double)pos.getZ() + 0.55 - (double)(random.nextFloat() * 0.1F);
 		double g = (double)(0.4F - (random.nextFloat() + random.nextFloat()) * 0.4F);
 		if (random.nextInt(5) == 0) {
 			world.addParticle(
@@ -80,17 +81,17 @@ public class EndRodBlock extends FacingBlock {
 	}
 
 	@Override
-	public BlockRenderLayer getRenderLayer() {
-		return BlockRenderLayer.CUTOUT;
+	public RenderLayer getRenderLayer() {
+		return RenderLayer.CUTOUT;
 	}
 
 	@Override
-	protected void appendProperties(StateFactory.Builder<Block, BlockState> builder) {
+	protected void appendProperties(StateManager.Builder<Block, BlockState> builder) {
 		builder.add(FACING);
 	}
 
 	@Override
-	public PistonBehavior getPistonBehavior(BlockState blockState) {
+	public PistonBehavior getPistonBehavior(BlockState state) {
 		return PistonBehavior.NORMAL;
 	}
 }

@@ -86,8 +86,8 @@ public class RealmsVertexFormat {
 		return this.v.getVertexSizeInteger();
 	}
 
-	public boolean equals(Object object) {
-		return this.v.equals(object);
+	public boolean equals(Object o) {
+		return this.v.equals(o);
 	}
 
 	public int hashCode() {

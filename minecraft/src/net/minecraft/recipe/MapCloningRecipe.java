@@ -13,7 +13,7 @@ public class MapCloningRecipe extends SpecialCraftingRecipe {
 		super(identifier);
 	}
 
-	public boolean method_17715(CraftingInventory craftingInventory, World world) {
+	public boolean matches(CraftingInventory craftingInventory, World world) {
 		int i = 0;
 		ItemStack itemStack = ItemStack.EMPTY;
 
@@ -39,7 +39,7 @@ public class MapCloningRecipe extends SpecialCraftingRecipe {
 		return !itemStack.isEmpty() && i > 0;
 	}
 
-	public ItemStack method_17714(CraftingInventory craftingInventory) {
+	public ItemStack craft(CraftingInventory craftingInventory) {
 		int i = 0;
 		ItemStack itemStack = ItemStack.EMPTY;
 
@@ -73,8 +73,8 @@ public class MapCloningRecipe extends SpecialCraftingRecipe {
 
 	@Environment(EnvType.CLIENT)
 	@Override
-	public boolean fits(int i, int j) {
-		return i >= 3 && j >= 3;
+	public boolean fits(int width, int height) {
+		return width >= 3 && height >= 3;
 	}
 
 	@Override

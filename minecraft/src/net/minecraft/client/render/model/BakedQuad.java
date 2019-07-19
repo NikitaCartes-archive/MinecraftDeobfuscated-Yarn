@@ -12,10 +12,10 @@ public class BakedQuad {
 	protected final Direction face;
 	protected final Sprite sprite;
 
-	public BakedQuad(int[] is, int i, Direction direction, Sprite sprite) {
-		this.vertexData = is;
-		this.colorIndex = i;
-		this.face = direction;
+	public BakedQuad(int[] vertexData, int colorIndex, Direction face, Sprite sprite) {
+		this.vertexData = vertexData;
+		this.colorIndex = colorIndex;
+		this.face = face;
 		this.sprite = sprite;
 	}
 

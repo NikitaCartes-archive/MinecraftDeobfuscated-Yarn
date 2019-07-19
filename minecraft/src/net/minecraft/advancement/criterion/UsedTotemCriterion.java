@@ -26,45 +26,41 @@ public class UsedTotemCriterion implements Criterion<UsedTotemCriterion.Conditio
 	}
 
 	@Override
-	public void beginTrackingCondition(
-		PlayerAdvancementTracker playerAdvancementTracker, Criterion.ConditionsContainer<UsedTotemCriterion.Conditions> conditionsContainer
-	) {
-		UsedTotemCriterion.Handler handler = (UsedTotemCriterion.Handler)this.handlers.get(playerAdvancementTracker);
+	public void beginTrackingCondition(PlayerAdvancementTracker manager, Criterion.ConditionsContainer<UsedTotemCriterion.Conditions> conditionsContainer) {
+		UsedTotemCriterion.Handler handler = (UsedTotemCriterion.Handler)this.handlers.get(manager);
 		if (handler == null) {
-			handler = new UsedTotemCriterion.Handler(playerAdvancementTracker);
-			this.handlers.put(playerAdvancementTracker, handler);
+			handler = new UsedTotemCriterion.Handler(manager);
+			this.handlers.put(manager, handler);
 		}
 
 		handler.addCondition(conditionsContainer);
 	}
 
 	@Override
-	public void endTrackingCondition(
-		PlayerAdvancementTracker playerAdvancementTracker, Criterion.ConditionsContainer<UsedTotemCriterion.Conditions> conditionsContainer
-	) {
-		UsedTotemCriterion.Handler handler = (UsedTotemCriterion.Handler)this.handlers.get(playerAdvancementTracker);
+	public void endTrackingCondition(PlayerAdvancementTracker manager, Criterion.ConditionsContainer<UsedTotemCriterion.Conditions> conditionsContainer) {
+		UsedTotemCriterion.Handler handler = (UsedTotemCriterion.Handler)this.handlers.get(manager);
 		if (handler != null) {
 			handler.removeCondition(conditionsContainer);
 			if (handler.isEmpty()) {
-				this.handlers.remove(playerAdvancementTracker);
+				this.handlers.remove(manager);
 			}
 		}
 	}
 
 	@Override
-	public void endTracking(PlayerAdvancementTracker playerAdvancementTracker) {
-		this.handlers.remove(playerAdvancementTracker);
+	public void endTracking(PlayerAdvancementTracker tracker) {
+		this.handlers.remove(tracker);
 	}
 
-	public UsedTotemCriterion.Conditions method_9163(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext) {
-		ItemPredicate itemPredicate = ItemPredicate.deserialize(jsonObject.get("item"));
+	public UsedTotemCriterion.Conditions conditionsFromJson(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext) {
+		ItemPredicate itemPredicate = ItemPredicate.fromJson(jsonObject.get("item"));
 		return new UsedTotemCriterion.Conditions(itemPredicate);
 	}
 
-	public void handle(ServerPlayerEntity serverPlayerEntity, ItemStack itemStack) {
-		UsedTotemCriterion.Handler handler = (UsedTotemCriterion.Handler)this.handlers.get(serverPlayerEntity.getAdvancementManager());
+	public void trigger(ServerPlayerEntity player, ItemStack stack) {
+		UsedTotemCriterion.Handler handler = (UsedTotemCriterion.Handler)this.handlers.get(player.getAdvancementTracker());
 		if (handler != null) {
-			handler.handle(itemStack);
+			handler.handle(stack);
 		}
 	}
 
@@ -87,7 +83,7 @@ public class UsedTotemCriterion implements Criterion<UsedTotemCriterion.Conditio
 		@Override
 		public JsonElement toJson() {
 			JsonObject jsonObject = new JsonObject();
-			jsonObject.add("item", this.item.serialize());
+			jsonObject.add("item", this.item.toJson());
 			return jsonObject;
 		}
 	}

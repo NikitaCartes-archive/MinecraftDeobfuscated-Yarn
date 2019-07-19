@@ -16,9 +16,9 @@ public enum AoOption {
 	private final int value;
 	private final String translationKey;
 
-	private AoOption(int j, String string2) {
-		this.value = j;
-		this.translationKey = string2;
+	private AoOption(int value, String translationKey) {
+		this.value = value;
+		this.translationKey = translationKey;
 	}
 
 	public int getValue() {

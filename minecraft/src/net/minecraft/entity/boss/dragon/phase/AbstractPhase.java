@@ -13,8 +13,8 @@ import net.minecraft.util.math.Vec3d;
 public abstract class AbstractPhase implements Phase {
 	protected final EnderDragonEntity dragon;
 
-	public AbstractPhase(EnderDragonEntity enderDragonEntity) {
-		this.dragon = enderDragonEntity;
+	public AbstractPhase(EnderDragonEntity dragon) {
+		this.dragon = dragon;
 	}
 
 	@Override
@@ -31,7 +31,7 @@ public abstract class AbstractPhase implements Phase {
 	}
 
 	@Override
-	public void crystalDestroyed(EnderCrystalEntity enderCrystalEntity, BlockPos blockPos, DamageSource damageSource, @Nullable PlayerEntity playerEntity) {
+	public void crystalDestroyed(EnderCrystalEntity crystal, BlockPos pos, DamageSource source, @Nullable PlayerEntity player) {
 	}
 
 	@Override

@@ -47,8 +47,8 @@ public abstract class AbstractTraderEntity extends PassiveEntity implements Npc,
 		return this.dataTracker.get(HEAD_ROLLING_TIME_LEFT);
 	}
 
-	public void setHeadRollingTimeLeft(int i) {
-		this.dataTracker.set(HEAD_ROLLING_TIME_LEFT, i);
+	public void setHeadRollingTimeLeft(int ticks) {
+		this.dataTracker.set(HEAD_ROLLING_TIME_LEFT, ticks);
 	}
 
 	@Override
@@ -57,7 +57,7 @@ public abstract class AbstractTraderEntity extends PassiveEntity implements Npc,
 	}
 
 	@Override
-	protected float getActiveEyeHeight(EntityPose entityPose, EntityDimensions entityDimensions) {
+	protected float getActiveEyeHeight(EntityPose pose, EntityDimensions dimensions) {
 		return this.isBaby() ? 0.81F : 1.62F;
 	}
 
@@ -68,8 +68,8 @@ public abstract class AbstractTraderEntity extends PassiveEntity implements Npc,
 	}
 
 	@Override
-	public void setCurrentCustomer(@Nullable PlayerEntity playerEntity) {
-		this.customer = playerEntity;
+	public void setCurrentCustomer(@Nullable PlayerEntity customer) {
+		this.customer = customer;
 	}
 
 	@Nullable
@@ -98,7 +98,7 @@ public abstract class AbstractTraderEntity extends PassiveEntity implements Npc,
 	}
 
 	@Override
-	public void setExperienceFromServer(int i) {
+	public void setExperienceFromServer(int experience) {
 	}
 
 	@Override
@@ -111,7 +111,7 @@ public abstract class AbstractTraderEntity extends PassiveEntity implements Npc,
 		}
 	}
 
-	protected abstract void afterUsing(TradeOffer tradeOffer);
+	protected abstract void afterUsing(TradeOffer offer);
 
 	@Override
 	public boolean isLevelledTrader() {
@@ -131,8 +131,8 @@ public abstract class AbstractTraderEntity extends PassiveEntity implements Npc,
 		return SoundEvents.ENTITY_VILLAGER_YES;
 	}
 
-	protected SoundEvent getTradingSound(boolean bl) {
-		return bl ? SoundEvents.ENTITY_VILLAGER_YES : SoundEvents.ENTITY_VILLAGER_NO;
+	protected SoundEvent getTradingSound(boolean sold) {
+		return sold ? SoundEvents.ENTITY_VILLAGER_YES : SoundEvents.ENTITY_VILLAGER_NO;
 	}
 
 	public void playCelebrateSound() {
@@ -140,11 +140,11 @@ public abstract class AbstractTraderEntity extends PassiveEntity implements Npc,
 	}
 
 	@Override
-	public void writeCustomDataToTag(CompoundTag compoundTag) {
-		super.writeCustomDataToTag(compoundTag);
+	public void writeCustomDataToTag(CompoundTag tag) {
+		super.writeCustomDataToTag(tag);
 		TraderOfferList traderOfferList = this.getOffers();
 		if (!traderOfferList.isEmpty()) {
-			compoundTag.put("Offers", traderOfferList.toTag());
+			tag.put("Offers", traderOfferList.toTag());
 		}
 
 		ListTag listTag = new ListTag();
@@ -156,20 +156,20 @@ public abstract class AbstractTraderEntity extends PassiveEntity implements Npc,
 			}
 		}
 
-		compoundTag.put("Inventory", listTag);
+		tag.put("Inventory", listTag);
 	}
 
 	@Override
-	public void readCustomDataFromTag(CompoundTag compoundTag) {
-		super.readCustomDataFromTag(compoundTag);
-		if (compoundTag.containsKey("Offers", 10)) {
-			this.offers = new TraderOfferList(compoundTag.getCompound("Offers"));
+	public void readCustomDataFromTag(CompoundTag tag) {
+		super.readCustomDataFromTag(tag);
+		if (tag.contains("Offers", 10)) {
+			this.offers = new TraderOfferList(tag.getCompound("Offers"));
 		}
 
-		ListTag listTag = compoundTag.getList("Inventory", 10);
+		ListTag listTag = tag.getList("Inventory", 10);
 
 		for (int i = 0; i < listTag.size(); i++) {
-			ItemStack itemStack = ItemStack.fromTag(listTag.getCompoundTag(i));
+			ItemStack itemStack = ItemStack.fromTag(listTag.getCompound(i));
 			if (!itemStack.isEmpty()) {
 				this.inventory.add(itemStack);
 			}
@@ -178,9 +178,9 @@ public abstract class AbstractTraderEntity extends PassiveEntity implements Npc,
 
 	@Nullable
 	@Override
-	public Entity changeDimension(DimensionType dimensionType) {
+	public Entity changeDimension(DimensionType newDimension) {
 		this.resetCustomer();
-		return super.changeDimension(dimensionType);
+		return super.changeDimension(newDimension);
 	}
 
 	protected void resetCustomer() {
@@ -188,20 +188,20 @@ public abstract class AbstractTraderEntity extends PassiveEntity implements Npc,
 	}
 
 	@Override
-	public void onDeath(DamageSource damageSource) {
-		super.onDeath(damageSource);
+	public void onDeath(DamageSource source) {
+		super.onDeath(source);
 		this.resetCustomer();
 	}
 
 	@Environment(EnvType.CLIENT)
-	protected void produceParticles(ParticleEffect particleEffect) {
+	protected void produceParticles(ParticleEffect parameters) {
 		for (int i = 0; i < 5; i++) {
 			double d = this.random.nextGaussian() * 0.02;
 			double e = this.random.nextGaussian() * 0.02;
 			double f = this.random.nextGaussian() * 0.02;
 			this.world
 				.addParticle(
-					particleEffect,
+					parameters,
 					this.x + (double)(this.random.nextFloat() * this.getWidth() * 2.0F) - (double)this.getWidth(),
 					this.y + 1.0 + (double)(this.random.nextFloat() * this.getHeight()),
 					this.z + (double)(this.random.nextFloat() * this.getWidth() * 2.0F) - (double)this.getWidth(),
@@ -213,7 +213,7 @@ public abstract class AbstractTraderEntity extends PassiveEntity implements Npc,
 	}
 
 	@Override
-	public boolean canBeLeashedBy(PlayerEntity playerEntity) {
+	public boolean canBeLeashedBy(PlayerEntity player) {
 		return false;
 	}
 
@@ -222,13 +222,13 @@ public abstract class AbstractTraderEntity extends PassiveEntity implements Npc,
 	}
 
 	@Override
-	public boolean equip(int i, ItemStack itemStack) {
-		if (super.equip(i, itemStack)) {
+	public boolean equip(int slot, ItemStack item) {
+		if (super.equip(slot, item)) {
 			return true;
 		} else {
-			int j = i - 300;
-			if (j >= 0 && j < this.inventory.getInvSize()) {
-				this.inventory.setInvStack(j, itemStack);
+			int i = slot - 300;
+			if (i >= 0 && i < this.inventory.getInvSize()) {
+				this.inventory.setInvStack(i, item);
 				return true;
 			} else {
 				return false;
@@ -243,23 +243,23 @@ public abstract class AbstractTraderEntity extends PassiveEntity implements Npc,
 
 	protected abstract void fillRecipes();
 
-	protected void fillRecipesFromPool(TraderOfferList traderOfferList, TradeOffers.Factory[] factorys, int i) {
+	protected void fillRecipesFromPool(TraderOfferList recipeList, TradeOffers.Factory[] pool, int count) {
 		Set<Integer> set = Sets.<Integer>newHashSet();
-		if (factorys.length > i) {
-			while (set.size() < i) {
-				set.add(this.random.nextInt(factorys.length));
+		if (pool.length > count) {
+			while (set.size() < count) {
+				set.add(this.random.nextInt(pool.length));
 			}
 		} else {
-			for (int j = 0; j < factorys.length; j++) {
-				set.add(j);
+			for (int i = 0; i < pool.length; i++) {
+				set.add(i);
 			}
 		}
 
 		for (Integer integer : set) {
-			TradeOffers.Factory factory = factorys[integer];
+			TradeOffers.Factory factory = pool[integer];
 			TradeOffer tradeOffer = factory.create(this, this.random);
 			if (tradeOffer != null) {
-				traderOfferList.add(tradeOffer);
+				recipeList.add(tradeOffer);
 			}
 		}
 	}

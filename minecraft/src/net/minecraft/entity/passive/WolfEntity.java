@@ -62,7 +62,7 @@ public class WolfEntity extends TameableEntity {
 	};
 	private float begAnimationProgress;
 	private float lastBegAnimationProgress;
-	private boolean wet;
+	private boolean furWet;
 	private boolean canShakeWaterOff;
 	private float shakeProgress;
 	private float lastShakeProgress;
@@ -104,13 +104,13 @@ public class WolfEntity extends TameableEntity {
 			this.getAttributeInstance(EntityAttributes.MAX_HEALTH).setBaseValue(8.0);
 		}
 
-		this.getAttributeContainer().register(EntityAttributes.ATTACK_DAMAGE).setBaseValue(2.0);
+		this.getAttributes().register(EntityAttributes.ATTACK_DAMAGE).setBaseValue(2.0);
 	}
 
 	@Override
-	public void setTarget(@Nullable LivingEntity livingEntity) {
-		super.setTarget(livingEntity);
-		if (livingEntity == null) {
+	public void setTarget(@Nullable LivingEntity target) {
+		super.setTarget(target);
+		if (target == null) {
 			this.setAngry(false);
 		} else if (!this.isTamed()) {
 			this.setAngry(true);
@@ -131,23 +131,23 @@ public class WolfEntity extends TameableEntity {
 	}
 
 	@Override
-	protected void playStepSound(BlockPos blockPos, BlockState blockState) {
+	protected void playStepSound(BlockPos pos, BlockState state) {
 		this.playSound(SoundEvents.ENTITY_WOLF_STEP, 0.15F, 1.0F);
 	}
 
 	@Override
-	public void writeCustomDataToTag(CompoundTag compoundTag) {
-		super.writeCustomDataToTag(compoundTag);
-		compoundTag.putBoolean("Angry", this.isAngry());
-		compoundTag.putByte("CollarColor", (byte)this.getCollarColor().getId());
+	public void writeCustomDataToTag(CompoundTag tag) {
+		super.writeCustomDataToTag(tag);
+		tag.putBoolean("Angry", this.isAngry());
+		tag.putByte("CollarColor", (byte)this.getCollarColor().getId());
 	}
 
 	@Override
-	public void readCustomDataFromTag(CompoundTag compoundTag) {
-		super.readCustomDataFromTag(compoundTag);
-		this.setAngry(compoundTag.getBoolean("Angry"));
-		if (compoundTag.containsKey("CollarColor", 99)) {
-			this.setCollarColor(DyeColor.byId(compoundTag.getInt("CollarColor")));
+	public void readCustomDataFromTag(CompoundTag tag) {
+		super.readCustomDataFromTag(tag);
+		this.setAngry(tag.getBoolean("Angry"));
+		if (tag.contains("CollarColor", 99)) {
+			this.setCollarColor(DyeColor.byId(tag.getInt("CollarColor")));
 		}
 	}
 
@@ -163,7 +163,7 @@ public class WolfEntity extends TameableEntity {
 	}
 
 	@Override
-	protected SoundEvent getHurtSound(DamageSource damageSource) {
+	protected SoundEvent getHurtSound(DamageSource source) {
 		return SoundEvents.ENTITY_WOLF_HURT;
 	}
 
@@ -180,7 +180,7 @@ public class WolfEntity extends TameableEntity {
 	@Override
 	public void tickMovement() {
 		super.tickMovement();
-		if (!this.world.isClient && this.wet && !this.canShakeWaterOff && !this.isNavigating() && this.onGround) {
+		if (!this.world.isClient && this.furWet && !this.canShakeWaterOff && !this.isNavigating() && this.onGround) {
 			this.canShakeWaterOff = true;
 			this.shakeProgress = 0.0F;
 			this.lastShakeProgress = 0.0F;
@@ -203,12 +203,12 @@ public class WolfEntity extends TameableEntity {
 				this.begAnimationProgress = this.begAnimationProgress + (0.0F - this.begAnimationProgress) * 0.4F;
 			}
 
-			if (this.isTouchingWater()) {
-				this.wet = true;
+			if (this.isWet()) {
+				this.furWet = true;
 				this.canShakeWaterOff = false;
 				this.shakeProgress = 0.0F;
 				this.lastShakeProgress = 0.0F;
-			} else if ((this.wet || this.canShakeWaterOff) && this.canShakeWaterOff) {
+			} else if ((this.furWet || this.canShakeWaterOff) && this.canShakeWaterOff) {
 				if (this.shakeProgress == 0.0F) {
 					this.playSound(SoundEvents.ENTITY_WOLF_SHAKE, this.getSoundVolume(), (this.random.nextFloat() - this.random.nextFloat()) * 0.2F + 1.0F);
 				}
@@ -216,14 +216,14 @@ public class WolfEntity extends TameableEntity {
 				this.lastShakeProgress = this.shakeProgress;
 				this.shakeProgress += 0.05F;
 				if (this.lastShakeProgress >= 2.0F) {
-					this.wet = false;
+					this.furWet = false;
 					this.canShakeWaterOff = false;
 					this.lastShakeProgress = 0.0F;
 					this.shakeProgress = 0.0F;
 				}
 
 				if (this.shakeProgress > 0.4F) {
-					float f = (float)this.getBoundingBox().minY;
+					float f = (float)this.getBoundingBox().y1;
 					int i = (int)(MathHelper.sin((this.shakeProgress - 0.4F) * (float) Math.PI) * 7.0F);
 					Vec3d vec3d = this.getVelocity();
 
@@ -238,44 +238,58 @@ public class WolfEntity extends TameableEntity {
 	}
 
 	@Override
-	public void onDeath(DamageSource damageSource) {
-		this.wet = false;
+	public void onDeath(DamageSource source) {
+		this.furWet = false;
 		this.canShakeWaterOff = false;
 		this.lastShakeProgress = 0.0F;
 		this.shakeProgress = 0.0F;
-		super.onDeath(damageSource);
+		super.onDeath(source);
+	}
+
+	/**
+	 * Returns whether this wolf's fur is wet.
+	 * <p>
+	 * The wolf's fur will remain wet until the wolf shakes.
+	 */
+	@Environment(EnvType.CLIENT)
+	public boolean isFurWet() {
+		return this.furWet;
+	}
+
+	/**
+	 * Returns this wolf's brightness multiplier based on the fur wetness.
+	 * <p>
+	 * The brightness multiplier represents how much darker the wolf gets while its fur is wet. The multiplier changes (from 0.75 to 1.0 incrementally) when a wolf shakes.
+	 * 
+	 * @param tickDelta Progress for linearly interpolating between the previous and current game state.
+	 * @return Brightness as a float value between 0.75 and 1.0.
+	 * @see net.minecraft.client.render.entity.model.TintableAnimalModel
+	 */
+	@Environment(EnvType.CLIENT)
+	public float getFurWetBrightnessMultiplier(float tickDelta) {
+		return 0.75F + MathHelper.lerp(tickDelta, this.lastShakeProgress, this.shakeProgress) / 2.0F * 0.25F;
 	}
 
 	@Environment(EnvType.CLIENT)
-	public boolean isWet() {
-		return this.wet;
-	}
-
-	@Environment(EnvType.CLIENT)
-	public float getWetBrightnessMultiplier(float f) {
-		return 0.75F + MathHelper.lerp(f, this.lastShakeProgress, this.shakeProgress) / 2.0F * 0.25F;
-	}
-
-	@Environment(EnvType.CLIENT)
-	public float getShakeAnimationProgress(float f, float g) {
-		float h = (MathHelper.lerp(f, this.lastShakeProgress, this.shakeProgress) + g) / 1.8F;
-		if (h < 0.0F) {
-			h = 0.0F;
-		} else if (h > 1.0F) {
-			h = 1.0F;
+	public float getShakeAnimationProgress(float tickDelta, float f) {
+		float g = (MathHelper.lerp(tickDelta, this.lastShakeProgress, this.shakeProgress) + f) / 1.8F;
+		if (g < 0.0F) {
+			g = 0.0F;
+		} else if (g > 1.0F) {
+			g = 1.0F;
 		}
 
-		return MathHelper.sin(h * (float) Math.PI) * MathHelper.sin(h * (float) Math.PI * 11.0F) * 0.15F * (float) Math.PI;
+		return MathHelper.sin(g * (float) Math.PI) * MathHelper.sin(g * (float) Math.PI * 11.0F) * 0.15F * (float) Math.PI;
 	}
 
 	@Environment(EnvType.CLIENT)
-	public float getBegAnimationProgress(float f) {
-		return MathHelper.lerp(f, this.lastBegAnimationProgress, this.begAnimationProgress) * 0.15F * (float) Math.PI;
+	public float getBegAnimationProgress(float tickDelta) {
+		return MathHelper.lerp(tickDelta, this.lastBegAnimationProgress, this.begAnimationProgress) * 0.15F * (float) Math.PI;
 	}
 
 	@Override
-	protected float getActiveEyeHeight(EntityPose entityPose, EntityDimensions entityDimensions) {
-		return entityDimensions.height * 0.8F;
+	protected float getActiveEyeHeight(EntityPose pose, EntityDimensions dimensions) {
+		return dimensions.height * 0.8F;
 	}
 
 	@Override
@@ -284,37 +298,37 @@ public class WolfEntity extends TameableEntity {
 	}
 
 	@Override
-	public boolean damage(DamageSource damageSource, float f) {
-		if (this.isInvulnerableTo(damageSource)) {
+	public boolean damage(DamageSource source, float amount) {
+		if (this.isInvulnerableTo(source)) {
 			return false;
 		} else {
-			Entity entity = damageSource.getAttacker();
+			Entity entity = source.getAttacker();
 			if (this.sitGoal != null) {
 				this.sitGoal.setEnabledWithOwner(false);
 			}
 
 			if (entity != null && !(entity instanceof PlayerEntity) && !(entity instanceof ProjectileEntity)) {
-				f = (f + 1.0F) / 2.0F;
+				amount = (amount + 1.0F) / 2.0F;
 			}
 
-			return super.damage(damageSource, f);
+			return super.damage(source, amount);
 		}
 	}
 
 	@Override
-	public boolean tryAttack(Entity entity) {
-		boolean bl = entity.damage(DamageSource.mob(this), (float)((int)this.getAttributeInstance(EntityAttributes.ATTACK_DAMAGE).getValue()));
+	public boolean tryAttack(Entity target) {
+		boolean bl = target.damage(DamageSource.mob(this), (float)((int)this.getAttributeInstance(EntityAttributes.ATTACK_DAMAGE).getValue()));
 		if (bl) {
-			this.dealDamage(this, entity);
+			this.dealDamage(this, target);
 		}
 
 		return bl;
 	}
 
 	@Override
-	public void setTamed(boolean bl) {
-		super.setTamed(bl);
-		if (bl) {
+	public void setTamed(boolean tamed) {
+		super.setTamed(tamed);
+		if (tamed) {
 			this.getAttributeInstance(EntityAttributes.MAX_HEALTH).setBaseValue(20.0);
 		} else {
 			this.getAttributeInstance(EntityAttributes.MAX_HEALTH).setBaseValue(8.0);
@@ -324,14 +338,14 @@ public class WolfEntity extends TameableEntity {
 	}
 
 	@Override
-	public boolean interactMob(PlayerEntity playerEntity, Hand hand) {
-		ItemStack itemStack = playerEntity.getStackInHand(hand);
+	public boolean interactMob(PlayerEntity player, Hand hand) {
+		ItemStack itemStack = player.getStackInHand(hand);
 		Item item = itemStack.getItem();
 		if (this.isTamed()) {
 			if (!itemStack.isEmpty()) {
 				if (item.isFood()) {
 					if (item.getFoodComponent().isMeat() && this.dataTracker.get(WOLF_HEALTH) < 20.0F) {
-						if (!playerEntity.abilities.creativeMode) {
+						if (!player.abilities.creativeMode) {
 							itemStack.decrement(1);
 						}
 
@@ -342,7 +356,7 @@ public class WolfEntity extends TameableEntity {
 					DyeColor dyeColor = ((DyeItem)item).getColor();
 					if (dyeColor != this.getCollarColor()) {
 						this.setCollarColor(dyeColor);
-						if (!playerEntity.abilities.creativeMode) {
+						if (!player.abilities.creativeMode) {
 							itemStack.decrement(1);
 						}
 
@@ -351,20 +365,20 @@ public class WolfEntity extends TameableEntity {
 				}
 			}
 
-			if (this.isOwner(playerEntity) && !this.world.isClient && !this.isBreedingItem(itemStack)) {
+			if (this.isOwner(player) && !this.world.isClient && !this.isBreedingItem(itemStack)) {
 				this.sitGoal.setEnabledWithOwner(!this.isSitting());
 				this.jumping = false;
 				this.navigation.stop();
 				this.setTarget(null);
 			}
 		} else if (item == Items.BONE && !this.isAngry()) {
-			if (!playerEntity.abilities.creativeMode) {
+			if (!player.abilities.creativeMode) {
 				itemStack.decrement(1);
 			}
 
 			if (!this.world.isClient) {
 				if (this.random.nextInt(3) == 0) {
-					this.setOwner(playerEntity);
+					this.setOwner(player);
 					this.navigation.stop();
 					this.setTarget(null);
 					this.sitGoal.setEnabledWithOwner(true);
@@ -380,18 +394,18 @@ public class WolfEntity extends TameableEntity {
 			return true;
 		}
 
-		return super.interactMob(playerEntity, hand);
+		return super.interactMob(player, hand);
 	}
 
 	@Environment(EnvType.CLIENT)
 	@Override
-	public void handleStatus(byte b) {
-		if (b == 8) {
+	public void handleStatus(byte status) {
+		if (status == 8) {
 			this.canShakeWaterOff = true;
 			this.shakeProgress = 0.0F;
 			this.lastShakeProgress = 0.0F;
 		} else {
-			super.handleStatus(b);
+			super.handleStatus(status);
 		}
 	}
 
@@ -400,13 +414,13 @@ public class WolfEntity extends TameableEntity {
 		if (this.isAngry()) {
 			return 1.5393804F;
 		} else {
-			return this.isTamed() ? (0.55F - (this.getHealthMaximum() - this.dataTracker.get(WOLF_HEALTH)) * 0.02F) * (float) Math.PI : (float) (Math.PI / 5);
+			return this.isTamed() ? (0.55F - (this.getMaximumHealth() - this.dataTracker.get(WOLF_HEALTH)) * 0.02F) * (float) Math.PI : (float) (Math.PI / 5);
 		}
 	}
 
 	@Override
-	public boolean isBreedingItem(ItemStack itemStack) {
-		Item item = itemStack.getItem();
+	public boolean isBreedingItem(ItemStack stack) {
+		Item item = stack.getItem();
 		return item.isFood() && item.getFoodComponent().isMeat();
 	}
 
@@ -419,9 +433,9 @@ public class WolfEntity extends TameableEntity {
 		return (this.dataTracker.get(TAMEABLE_FLAGS) & 2) != 0;
 	}
 
-	public void setAngry(boolean bl) {
+	public void setAngry(boolean angry) {
 		byte b = this.dataTracker.get(TAMEABLE_FLAGS);
-		if (bl) {
+		if (angry) {
 			this.dataTracker.set(TAMEABLE_FLAGS, (byte)(b | 2));
 		} else {
 			this.dataTracker.set(TAMEABLE_FLAGS, (byte)(b & -3));
@@ -432,11 +446,11 @@ public class WolfEntity extends TameableEntity {
 		return DyeColor.byId(this.dataTracker.get(COLLAR_COLOR));
 	}
 
-	public void setCollarColor(DyeColor dyeColor) {
-		this.dataTracker.set(COLLAR_COLOR, dyeColor.getId());
+	public void setCollarColor(DyeColor color) {
+		this.dataTracker.set(COLLAR_COLOR, color.getId());
 	}
 
-	public WolfEntity method_6717(PassiveEntity passiveEntity) {
+	public WolfEntity createChild(PassiveEntity passiveEntity) {
 		WolfEntity wolfEntity = EntityType.WOLF.create(this.world);
 		UUID uUID = this.getOwnerUuid();
 		if (uUID != null) {
@@ -447,20 +461,20 @@ public class WolfEntity extends TameableEntity {
 		return wolfEntity;
 	}
 
-	public void setBegging(boolean bl) {
-		this.dataTracker.set(BEGGING, bl);
+	public void setBegging(boolean begging) {
+		this.dataTracker.set(BEGGING, begging);
 	}
 
 	@Override
-	public boolean canBreedWith(AnimalEntity animalEntity) {
-		if (animalEntity == this) {
+	public boolean canBreedWith(AnimalEntity other) {
+		if (other == this) {
 			return false;
 		} else if (!this.isTamed()) {
 			return false;
-		} else if (!(animalEntity instanceof WolfEntity)) {
+		} else if (!(other instanceof WolfEntity)) {
 			return false;
 		} else {
-			WolfEntity wolfEntity = (WolfEntity)animalEntity;
+			WolfEntity wolfEntity = (WolfEntity)other;
 			if (!wolfEntity.isTamed()) {
 				return false;
 			} else {
@@ -474,23 +488,19 @@ public class WolfEntity extends TameableEntity {
 	}
 
 	@Override
-	public boolean canAttackWithOwner(LivingEntity livingEntity, LivingEntity livingEntity2) {
-		if (!(livingEntity instanceof CreeperEntity) && !(livingEntity instanceof GhastEntity)) {
-			if (livingEntity instanceof WolfEntity) {
-				WolfEntity wolfEntity = (WolfEntity)livingEntity;
-				if (wolfEntity.isTamed() && wolfEntity.getOwner() == livingEntity2) {
+	public boolean canAttackWithOwner(LivingEntity target, LivingEntity owner) {
+		if (!(target instanceof CreeperEntity) && !(target instanceof GhastEntity)) {
+			if (target instanceof WolfEntity) {
+				WolfEntity wolfEntity = (WolfEntity)target;
+				if (wolfEntity.isTamed() && wolfEntity.getOwner() == owner) {
 					return false;
 				}
 			}
 
-			if (livingEntity instanceof PlayerEntity
-				&& livingEntity2 instanceof PlayerEntity
-				&& !((PlayerEntity)livingEntity2).shouldDamagePlayer((PlayerEntity)livingEntity)) {
+			if (target instanceof PlayerEntity && owner instanceof PlayerEntity && !((PlayerEntity)owner).shouldDamagePlayer((PlayerEntity)target)) {
 				return false;
 			} else {
-				return livingEntity instanceof HorseBaseEntity && ((HorseBaseEntity)livingEntity).isTame()
-					? false
-					: !(livingEntity instanceof CatEntity) || !((CatEntity)livingEntity).isTamed();
+				return target instanceof HorseBaseEntity && ((HorseBaseEntity)target).isTame() ? false : !(target instanceof CatEntity) || !((CatEntity)target).isTamed();
 			}
 		} else {
 			return false;
@@ -498,16 +508,16 @@ public class WolfEntity extends TameableEntity {
 	}
 
 	@Override
-	public boolean canBeLeashedBy(PlayerEntity playerEntity) {
-		return !this.isAngry() && super.canBeLeashedBy(playerEntity);
+	public boolean canBeLeashedBy(PlayerEntity player) {
+		return !this.isAngry() && super.canBeLeashedBy(player);
 	}
 
 	class AvoidLlamaGoal<T extends LivingEntity> extends FleeEntityGoal<T> {
 		private final WolfEntity wolf;
 
-		public AvoidLlamaGoal(WolfEntity wolfEntity2, Class<T> class_, float f, double d, double e) {
-			super(wolfEntity2, class_, f, d, e);
-			this.wolf = wolfEntity2;
+		public AvoidLlamaGoal(WolfEntity wolf, Class<T> fleeFromType, float distance, double slowSpeed, double fastSpeed) {
+			super(wolf, fleeFromType, distance, slowSpeed, fastSpeed);
+			this.wolf = wolf;
 		}
 
 		@Override
@@ -515,8 +525,8 @@ public class WolfEntity extends TameableEntity {
 			return super.canStart() && this.targetEntity instanceof LlamaEntity ? !this.wolf.isTamed() && this.isScaredOf((LlamaEntity)this.targetEntity) : false;
 		}
 
-		private boolean isScaredOf(LlamaEntity llamaEntity) {
-			return llamaEntity.getStrength() >= WolfEntity.this.random.nextInt(5);
+		private boolean isScaredOf(LlamaEntity llama) {
+			return llama.getStrength() >= WolfEntity.this.random.nextInt(5);
 		}
 
 		@Override

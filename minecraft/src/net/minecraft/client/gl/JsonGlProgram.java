@@ -46,16 +46,16 @@ public class JsonGlProgram implements GlProgram, AutoCloseable {
 	private final GlShader vertexShader;
 	private final GlShader fragmentShader;
 
-	public JsonGlProgram(ResourceManager resourceManager, String string) throws IOException {
-		Identifier identifier = new Identifier("shaders/program/" + string + ".json");
-		this.name = string;
-		Resource resource = null;
+	public JsonGlProgram(ResourceManager resource, String name) throws IOException {
+		Identifier identifier = new Identifier("shaders/program/" + name + ".json");
+		this.name = name;
+		Resource resource2 = null;
 
 		try {
-			resource = resourceManager.getResource(identifier);
-			JsonObject jsonObject = JsonHelper.deserialize(new InputStreamReader(resource.getInputStream(), StandardCharsets.UTF_8));
-			String string2 = JsonHelper.getString(jsonObject, "vertex");
-			String string3 = JsonHelper.getString(jsonObject, "fragment");
+			resource2 = resource.getResource(identifier);
+			JsonObject jsonObject = JsonHelper.deserialize(new InputStreamReader(resource2.getInputStream(), StandardCharsets.UTF_8));
+			String string = JsonHelper.getString(jsonObject, "vertex");
+			String string2 = JsonHelper.getString(jsonObject, "fragment");
 			JsonArray jsonArray = JsonHelper.getArray(jsonObject, "samplers", null);
 			if (jsonArray != null) {
 				int i = 0;
@@ -114,14 +114,14 @@ public class JsonGlProgram implements GlProgram, AutoCloseable {
 
 			this.blendState = deserializeBlendState(JsonHelper.getObject(jsonObject, "blend", null));
 			this.useCullFace = JsonHelper.getBoolean(jsonObject, "cull", true);
-			this.vertexShader = getShader(resourceManager, GlShader.Type.VERTEX, string2);
-			this.fragmentShader = getShader(resourceManager, GlShader.Type.FRAGMENT, string3);
+			this.vertexShader = getShader(resource, GlShader.Type.VERTEX, string);
+			this.fragmentShader = getShader(resource, GlShader.Type.FRAGMENT, string2);
 			this.programRef = GlProgramManager.getInstance().createProgram();
 			GlProgramManager.getInstance().linkProgram(this);
 			this.finalizeUniformsAndSamplers();
 			if (this.attribNames != null) {
-				for (String string4 : this.attribNames) {
-					int l = GLX.glGetAttribLocation(this.programRef, string4);
+				for (String string3 : this.attribNames) {
+					int l = GLX.glGetAttribLocation(this.programRef, string3);
 					this.attribLocs.add(l);
 				}
 			}
@@ -130,20 +130,20 @@ public class JsonGlProgram implements GlProgram, AutoCloseable {
 			shaderParseException4.addFaultyFile(identifier.getPath());
 			throw shaderParseException4;
 		} finally {
-			IOUtils.closeQuietly(resource);
+			IOUtils.closeQuietly(resource2);
 		}
 
 		this.markUniformsDirty();
 	}
 
-	public static GlShader getShader(ResourceManager resourceManager, GlShader.Type type, String string) throws IOException {
-		GlShader glShader = (GlShader)type.getLoadedShaders().get(string);
+	public static GlShader getShader(ResourceManager resourceManager, GlShader.Type type, String name) throws IOException {
+		GlShader glShader = (GlShader)type.getLoadedShaders().get(name);
 		if (glShader == null) {
-			Identifier identifier = new Identifier("shaders/program/" + string + type.getFileExtension());
+			Identifier identifier = new Identifier("shaders/program/" + name + type.getFileExtension());
 			Resource resource = resourceManager.getResource(identifier);
 
 			try {
-				glShader = GlShader.createFromResource(type, string, resource.getInputStream());
+				glShader = GlShader.createFromResource(type, name, resource.getInputStream());
 			} finally {
 				IOUtils.closeQuietly(resource);
 			}
@@ -152,8 +152,8 @@ public class JsonGlProgram implements GlProgram, AutoCloseable {
 		return glShader;
 	}
 
-	public static GlBlendState deserializeBlendState(JsonObject jsonObject) {
-		if (jsonObject == null) {
+	public static GlBlendState deserializeBlendState(JsonObject json) {
+		if (json == null) {
 			return new GlBlendState();
 		} else {
 			int i = 32774;
@@ -163,29 +163,29 @@ public class JsonGlProgram implements GlProgram, AutoCloseable {
 			int m = 0;
 			boolean bl = true;
 			boolean bl2 = false;
-			if (JsonHelper.hasString(jsonObject, "func")) {
-				i = GlBlendState.getFuncFromString(jsonObject.get("func").getAsString());
+			if (JsonHelper.hasString(json, "func")) {
+				i = GlBlendState.getFuncFromString(json.get("func").getAsString());
 				if (i != 32774) {
 					bl = false;
 				}
 			}
 
-			if (JsonHelper.hasString(jsonObject, "srcrgb")) {
-				j = GlBlendState.getComponentFromString(jsonObject.get("srcrgb").getAsString());
+			if (JsonHelper.hasString(json, "srcrgb")) {
+				j = GlBlendState.getComponentFromString(json.get("srcrgb").getAsString());
 				if (j != 1) {
 					bl = false;
 				}
 			}
 
-			if (JsonHelper.hasString(jsonObject, "dstrgb")) {
-				k = GlBlendState.getComponentFromString(jsonObject.get("dstrgb").getAsString());
+			if (JsonHelper.hasString(json, "dstrgb")) {
+				k = GlBlendState.getComponentFromString(json.get("dstrgb").getAsString());
 				if (k != 0) {
 					bl = false;
 				}
 			}
 
-			if (JsonHelper.hasString(jsonObject, "srcalpha")) {
-				l = GlBlendState.getComponentFromString(jsonObject.get("srcalpha").getAsString());
+			if (JsonHelper.hasString(json, "srcalpha")) {
+				l = GlBlendState.getComponentFromString(json.get("srcalpha").getAsString());
 				if (l != 1) {
 					bl = false;
 				}
@@ -193,8 +193,8 @@ public class JsonGlProgram implements GlProgram, AutoCloseable {
 				bl2 = true;
 			}
 
-			if (JsonHelper.hasString(jsonObject, "dstalpha")) {
-				m = GlBlendState.getComponentFromString(jsonObject.get("dstalpha").getAsString());
+			if (JsonHelper.hasString(json, "dstalpha")) {
+				m = GlBlendState.getComponentFromString(json.get("dstalpha").getAsString());
 				if (m != 0) {
 					bl = false;
 				}
@@ -252,8 +252,8 @@ public class JsonGlProgram implements GlProgram, AutoCloseable {
 				GlStateManager.enableTexture();
 				Object object = this.samplerBinds.get(this.samplerNames.get(i));
 				int j = -1;
-				if (object instanceof GlFramebuffer) {
-					j = ((GlFramebuffer)object).colorAttachment;
+				if (object instanceof Framebuffer) {
+					j = ((Framebuffer)object).colorAttachment;
 				} else if (object instanceof Texture) {
 					j = ((Texture)object).getGlId();
 				} else if (object instanceof Integer) {
@@ -278,12 +278,12 @@ public class JsonGlProgram implements GlProgram, AutoCloseable {
 	}
 
 	@Nullable
-	public GlUniform getUniformByName(String string) {
-		return (GlUniform)this.uniformByName.get(string);
+	public GlUniform getUniformByName(String name) {
+		return (GlUniform)this.uniformByName.get(name);
 	}
 
-	public Uniform getUniformByNameOrDummy(String string) {
-		GlUniform glUniform = this.getUniformByName(string);
+	public Uniform getUniformByNameOrDummy(String name) {
+		GlUniform glUniform = this.getUniformByName(name);
 		return (Uniform)(glUniform == null ? dummyUniform : glUniform);
 	}
 
@@ -329,12 +329,12 @@ public class JsonGlProgram implements GlProgram, AutoCloseable {
 		}
 	}
 
-	public void bindSampler(String string, Object object) {
-		if (this.samplerBinds.containsKey(string)) {
-			this.samplerBinds.remove(string);
+	public void bindSampler(String samplerName, Object object) {
+		if (this.samplerBinds.containsKey(samplerName)) {
+			this.samplerBinds.remove(samplerName);
 		}
 
-		this.samplerBinds.put(string, object);
+		this.samplerBinds.put(samplerName, object);
 		this.markUniformsDirty();
 	}
 

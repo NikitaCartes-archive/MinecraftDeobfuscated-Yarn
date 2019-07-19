@@ -13,9 +13,9 @@ public class AmbientSoundLoops {
 	public static class MusicLoop extends MovingSoundInstance {
 		private final ClientPlayerEntity player;
 
-		protected MusicLoop(ClientPlayerEntity clientPlayerEntity, SoundEvent soundEvent) {
+		protected MusicLoop(ClientPlayerEntity player, SoundEvent soundEvent) {
 			super(soundEvent, SoundCategory.AMBIENT);
-			this.player = clientPlayerEntity;
+			this.player = player;
 			this.repeat = false;
 			this.repeatDelay = 0;
 			this.volume = 1.0F;
@@ -25,7 +25,7 @@ public class AmbientSoundLoops {
 
 		@Override
 		public void tick() {
-			if (this.player.removed || !this.player.isInWater()) {
+			if (this.player.removed || !this.player.isSubmergedInWater()) {
 				this.done = true;
 			}
 		}
@@ -49,7 +49,7 @@ public class AmbientSoundLoops {
 		@Override
 		public void tick() {
 			if (!this.player.removed && this.transitionTimer >= 0) {
-				if (this.player.isInWater()) {
+				if (this.player.isSubmergedInWater()) {
 					this.transitionTimer++;
 				} else {
 					this.transitionTimer -= 2;

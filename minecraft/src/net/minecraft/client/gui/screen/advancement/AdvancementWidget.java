@@ -14,7 +14,7 @@ import net.minecraft.advancement.AdvancementDisplay;
 import net.minecraft.advancement.AdvancementProgress;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawableHelper;
-import net.minecraft.client.render.GuiLighting;
+import net.minecraft.client.render.DiffuseLighting;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.MathHelper;
 
@@ -22,7 +22,7 @@ import net.minecraft.util.math.MathHelper;
 public class AdvancementWidget extends DrawableHelper {
 	private static final Identifier WIDGETS_TEX = new Identifier("textures/gui/advancements/widgets.png");
 	private static final Pattern field_2708 = Pattern.compile("(.+) \\S+");
-	private final AdvancementTreeWidget tree;
+	private final AdvancementTab tab;
 	private final Advancement advancement;
 	private final AdvancementDisplay display;
 	private final String field_2713;
@@ -35,29 +35,23 @@ public class AdvancementWidget extends DrawableHelper {
 	private final int xPos;
 	private final int yPos;
 
-	public AdvancementWidget(
-		AdvancementTreeWidget advancementTreeWidget, MinecraftClient minecraftClient, Advancement advancement, AdvancementDisplay advancementDisplay
-	) {
-		this.tree = advancementTreeWidget;
+	public AdvancementWidget(AdvancementTab tab, MinecraftClient client, Advancement advancement, AdvancementDisplay display) {
+		this.tab = tab;
 		this.advancement = advancement;
-		this.display = advancementDisplay;
-		this.client = minecraftClient;
-		this.field_2713 = minecraftClient.textRenderer.trimToWidth(advancementDisplay.getTitle().asFormattedString(), 163);
-		this.xPos = MathHelper.floor(advancementDisplay.getX() * 28.0F);
-		this.yPos = MathHelper.floor(advancementDisplay.getY() * 27.0F);
+		this.display = display;
+		this.client = client;
+		this.field_2713 = client.textRenderer.trimToWidth(display.getTitle().asFormattedString(), 163);
+		this.xPos = MathHelper.floor(display.getX() * 28.0F);
+		this.yPos = MathHelper.floor(display.getY() * 27.0F);
 		int i = advancement.getRequirementCount();
 		int j = String.valueOf(i).length();
-		int k = i > 1
-			? minecraftClient.textRenderer.getStringWidth("  ")
-				+ minecraftClient.textRenderer.getStringWidth("0") * j * 2
-				+ minecraftClient.textRenderer.getStringWidth("/")
-			: 0;
-		int l = 29 + minecraftClient.textRenderer.getStringWidth(this.field_2713) + k;
-		String string = advancementDisplay.getDescription().asFormattedString();
+		int k = i > 1 ? client.textRenderer.getStringWidth("  ") + client.textRenderer.getStringWidth("0") * j * 2 + client.textRenderer.getStringWidth("/") : 0;
+		int l = 29 + client.textRenderer.getStringWidth(this.field_2713) + k;
+		String string = display.getDescription().asFormattedString();
 		this.field_2705 = this.method_2330(string, l);
 
 		for (String string2 : this.field_2705) {
-			l = Math.max(l, minecraftClient.textRenderer.getStringWidth(string2));
+			l = Math.max(l, client.textRenderer.getStringWidth(string2));
 		}
 
 		this.field_2715 = l + 3 + 5;
@@ -92,12 +86,12 @@ public class AdvancementWidget extends DrawableHelper {
 	}
 
 	@Nullable
-	private AdvancementWidget getRootWidget(Advancement advancement) {
+	private AdvancementWidget getParent(Advancement advancement) {
 		do {
 			advancement = advancement.getParent();
 		} while (advancement != null && advancement.getDisplay() == null);
 
-		return advancement != null && advancement.getDisplay() != null ? this.tree.getWidgetForAdvancement(advancement) : null;
+		return advancement != null && advancement.getDisplay() != null ? this.tab.getWidget(advancement) : null;
 	}
 
 	public void method_2323(int i, int j, boolean bl) {
@@ -143,7 +137,7 @@ public class AdvancementWidget extends DrawableHelper {
 			GlStateManager.color4f(1.0F, 1.0F, 1.0F, 1.0F);
 			GlStateManager.enableBlend();
 			this.blit(i + this.xPos + 3, j + this.yPos, this.display.getFrame().texV(), 128 + advancementObtainedStatus.getSpriteIndex() * 26, 26, 26);
-			GuiLighting.enableForItems();
+			DiffuseLighting.enableForItems();
 			this.client.getItemRenderer().renderGuiItem(null, this.display.getIcon(), i + this.xPos + 8, j + this.yPos + 5);
 		}
 
@@ -152,8 +146,8 @@ public class AdvancementWidget extends DrawableHelper {
 		}
 	}
 
-	public void setProgress(AdvancementProgress advancementProgress) {
-		this.field_2714 = advancementProgress;
+	public void setProgress(AdvancementProgress progress) {
+		this.field_2714 = progress;
 	}
 
 	public void method_2322(AdvancementWidget advancementWidget) {
@@ -161,7 +155,7 @@ public class AdvancementWidget extends DrawableHelper {
 	}
 
 	public void method_2331(int i, int j, float f, int k, int l) {
-		boolean bl = k + i + this.xPos + this.field_2715 + 26 >= this.tree.method_2312().width;
+		boolean bl = k + i + this.xPos + this.field_2715 + 26 >= this.tab.method_2312().width;
 		String string = this.field_2714 == null ? null : this.field_2714.getProgressBarFraction();
 		int m = string == null ? 0 : this.client.textRenderer.getStringWidth(string);
 		boolean bl2 = 113 - j - this.yPos - 26 <= 6 + this.field_2705.size() * 9;
@@ -237,7 +231,7 @@ public class AdvancementWidget extends DrawableHelper {
 			}
 		}
 
-		GuiLighting.enableForItems();
+		DiffuseLighting.enableForItems();
 		this.client.getItemRenderer().renderGuiItem(null, this.display.getIcon(), i + this.xPos + 8, j + this.yPos + 5);
 	}
 
@@ -286,7 +280,7 @@ public class AdvancementWidget extends DrawableHelper {
 
 	public void method_2332() {
 		if (this.field_2706 == null && this.advancement.getParent() != null) {
-			this.field_2706 = this.getRootWidget(this.advancement);
+			this.field_2706 = this.getParent(this.advancement);
 			if (this.field_2706 != null) {
 				this.field_2706.method_2322(this);
 			}

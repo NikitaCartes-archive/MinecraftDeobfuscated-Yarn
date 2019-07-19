@@ -16,14 +16,14 @@ import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.server.command.CommandSource;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.text.TranslatableText;
-import net.minecraft.util.SystemUtil;
+import net.minecraft.util.Util;
 
 public class ItemSlotArgumentType implements ArgumentType<Integer> {
 	private static final Collection<String> EXAMPLES = Arrays.asList("container.5", "12", "weapon");
 	private static final DynamicCommandExceptionType UNKNOWN_SLOT_EXCEPTION = new DynamicCommandExceptionType(
 		object -> new TranslatableText("slot.unknown", object)
 	);
-	private static final Map<String, Integer> slotNamesToSlotCommandId = SystemUtil.consume(Maps.<String, Integer>newHashMap(), hashMap -> {
+	private static final Map<String, Integer> slotNamesToSlotCommandId = Util.make(Maps.<String, Integer>newHashMap(), hashMap -> {
 		for (int i = 0; i < 54; i++) {
 			hashMap.put("container." + i, i);
 		}
@@ -64,12 +64,12 @@ public class ItemSlotArgumentType implements ArgumentType<Integer> {
 		return new ItemSlotArgumentType();
 	}
 
-	public static int getItemSlot(CommandContext<ServerCommandSource> commandContext, String string) {
-		return commandContext.<Integer>getArgument(string, Integer.class);
+	public static int getItemSlot(CommandContext<ServerCommandSource> context, String name) {
+		return context.<Integer>getArgument(name, Integer.class);
 	}
 
-	public Integer method_9470(StringReader stringReader) throws CommandSyntaxException {
-		String string = stringReader.readUnquotedString();
+	public Integer parse(StringReader reader) throws CommandSyntaxException {
+		String string = reader.readUnquotedString();
 		if (!slotNamesToSlotCommandId.containsKey(string)) {
 			throw UNKNOWN_SLOT_EXCEPTION.create(string);
 		} else {
@@ -78,8 +78,8 @@ public class ItemSlotArgumentType implements ArgumentType<Integer> {
 	}
 
 	@Override
-	public <S> CompletableFuture<Suggestions> listSuggestions(CommandContext<S> commandContext, SuggestionsBuilder suggestionsBuilder) {
-		return CommandSource.suggestMatching(slotNamesToSlotCommandId.keySet(), suggestionsBuilder);
+	public <S> CompletableFuture<Suggestions> listSuggestions(CommandContext<S> context, SuggestionsBuilder builder) {
+		return CommandSource.suggestMatching(slotNamesToSlotCommandId.keySet(), builder);
 	}
 
 	@Override

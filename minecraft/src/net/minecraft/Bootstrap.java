@@ -49,12 +49,12 @@ public class Bootstrap {
 		}
 	}
 
-	private static <T> void collectMissingTranslations(Registry<T> registry, Function<T, String> function, Set<String> set) {
+	private static <T> void collectMissingTranslations(Registry<T> registry, Function<T, String> keyExtractor, Set<String> translationKeys) {
 		Language language = Language.getInstance();
 		registry.iterator().forEachRemaining(object -> {
-			String string = (String)function.apply(object);
+			String string = (String)keyExtractor.apply(object);
 			if (!language.hasTranslation(string)) {
-				set.add(string);
+				translationKeys.add(string);
 			}
 		});
 	}
@@ -62,7 +62,7 @@ public class Bootstrap {
 	public static Set<String> getMissingTranslations() {
 		Set<String> set = new TreeSet();
 		collectMissingTranslations(Registry.ENTITY_TYPE, EntityType::getTranslationKey, set);
-		collectMissingTranslations(Registry.MOB_EFFECT, StatusEffect::getTranslationKey, set);
+		collectMissingTranslations(Registry.STATUS_EFFECT, StatusEffect::getTranslationKey, set);
 		collectMissingTranslations(Registry.ITEM, Item::getTranslationKey, set);
 		collectMissingTranslations(Registry.ENCHANTMENT, Enchantment::getTranslationKey, set);
 		collectMissingTranslations(Registry.BIOME, Biome::getTranslationKey, set);
@@ -89,7 +89,7 @@ public class Bootstrap {
 		}
 	}
 
-	public static void println(String string) {
-		SYSOUT.println(string);
+	public static void println(String str) {
+		SYSOUT.println(str);
 	}
 }

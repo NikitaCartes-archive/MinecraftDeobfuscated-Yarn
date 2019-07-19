@@ -1,15 +1,14 @@
 package com.mojang.realmsclient.dto;
 
 import com.google.gson.JsonObject;
+import com.mojang.realmsclient.util.JsonUtils;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_4352;
-import net.minecraft.class_4431;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 @Environment(EnvType.CLIENT)
-public class WorldTemplate extends class_4352 {
+public class WorldTemplate extends ValueObject {
 	private static final Logger LOGGER = LogManager.getLogger();
 	public String id;
 	public String name;
@@ -19,21 +18,21 @@ public class WorldTemplate extends class_4352 {
 	public String image;
 	public String trailer;
 	public String recommendedPlayers;
-	public WorldTemplate.Type type;
+	public WorldTemplate.WorldTemplateType type;
 
-	public static WorldTemplate parse(JsonObject jsonObject) {
+	public static WorldTemplate parse(JsonObject node) {
 		WorldTemplate worldTemplate = new WorldTemplate();
 
 		try {
-			worldTemplate.id = class_4431.method_21547("id", jsonObject, "");
-			worldTemplate.name = class_4431.method_21547("name", jsonObject, "");
-			worldTemplate.version = class_4431.method_21547("version", jsonObject, "");
-			worldTemplate.author = class_4431.method_21547("author", jsonObject, "");
-			worldTemplate.link = class_4431.method_21547("link", jsonObject, "");
-			worldTemplate.image = class_4431.method_21547("image", jsonObject, null);
-			worldTemplate.trailer = class_4431.method_21547("trailer", jsonObject, "");
-			worldTemplate.recommendedPlayers = class_4431.method_21547("recommendedPlayers", jsonObject, "");
-			worldTemplate.type = WorldTemplate.Type.valueOf(class_4431.method_21547("type", jsonObject, WorldTemplate.Type.WORLD_TEMPLATE.name()));
+			worldTemplate.id = JsonUtils.getStringOr("id", node, "");
+			worldTemplate.name = JsonUtils.getStringOr("name", node, "");
+			worldTemplate.version = JsonUtils.getStringOr("version", node, "");
+			worldTemplate.author = JsonUtils.getStringOr("author", node, "");
+			worldTemplate.link = JsonUtils.getStringOr("link", node, "");
+			worldTemplate.image = JsonUtils.getStringOr("image", node, null);
+			worldTemplate.trailer = JsonUtils.getStringOr("trailer", node, "");
+			worldTemplate.recommendedPlayers = JsonUtils.getStringOr("recommendedPlayers", node, "");
+			worldTemplate.type = WorldTemplate.WorldTemplateType.valueOf(JsonUtils.getStringOr("type", node, WorldTemplate.WorldTemplateType.WORLD_TEMPLATE.name()));
 		} catch (Exception var3) {
 			LOGGER.error("Could not parse WorldTemplate: " + var3.getMessage());
 		}
@@ -42,7 +41,7 @@ public class WorldTemplate extends class_4352 {
 	}
 
 	@Environment(EnvType.CLIENT)
-	public static enum Type {
+	public static enum WorldTemplateType {
 		WORLD_TEMPLATE,
 		MINIGAME,
 		ADVENTUREMAP,

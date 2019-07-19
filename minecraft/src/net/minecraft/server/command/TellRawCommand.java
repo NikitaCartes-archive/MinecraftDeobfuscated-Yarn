@@ -7,8 +7,8 @@ import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.Texts;
 
 public class TellRawCommand {
-	public static void register(CommandDispatcher<ServerCommandSource> commandDispatcher) {
-		commandDispatcher.register(
+	public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
+		dispatcher.register(
 			CommandManager.literal("tellraw")
 				.requires(serverCommandSource -> serverCommandSource.hasPermissionLevel(2))
 				.then(

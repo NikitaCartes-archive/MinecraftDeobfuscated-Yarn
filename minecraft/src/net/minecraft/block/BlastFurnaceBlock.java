@@ -5,7 +5,7 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.block.entity.BlastFurnaceBlockEntity;
 import net.minecraft.block.entity.BlockEntity;
-import net.minecraft.container.NameableContainerProvider;
+import net.minecraft.container.NameableContainerFactory;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.sound.SoundCategory;
@@ -22,31 +22,31 @@ public class BlastFurnaceBlock extends AbstractFurnaceBlock {
 	}
 
 	@Override
-	public BlockEntity createBlockEntity(BlockView blockView) {
+	public BlockEntity createBlockEntity(BlockView view) {
 		return new BlastFurnaceBlockEntity();
 	}
 
 	@Override
-	protected void openContainer(World world, BlockPos blockPos, PlayerEntity playerEntity) {
-		BlockEntity blockEntity = world.getBlockEntity(blockPos);
+	protected void openContainer(World world, BlockPos pos, PlayerEntity player) {
+		BlockEntity blockEntity = world.getBlockEntity(pos);
 		if (blockEntity instanceof BlastFurnaceBlockEntity) {
-			playerEntity.openContainer((NameableContainerProvider)blockEntity);
-			playerEntity.incrementStat(Stats.INTERACT_WITH_BLAST_FURNACE);
+			player.openContainer((NameableContainerFactory)blockEntity);
+			player.incrementStat(Stats.INTERACT_WITH_BLAST_FURNACE);
 		}
 	}
 
 	@Environment(EnvType.CLIENT)
 	@Override
-	public void randomDisplayTick(BlockState blockState, World world, BlockPos blockPos, Random random) {
-		if ((Boolean)blockState.get(LIT)) {
-			double d = (double)blockPos.getX() + 0.5;
-			double e = (double)blockPos.getY();
-			double f = (double)blockPos.getZ() + 0.5;
+	public void randomDisplayTick(BlockState state, World world, BlockPos pos, Random random) {
+		if ((Boolean)state.get(LIT)) {
+			double d = (double)pos.getX() + 0.5;
+			double e = (double)pos.getY();
+			double f = (double)pos.getZ() + 0.5;
 			if (random.nextDouble() < 0.1) {
 				world.playSound(d, e, f, SoundEvents.BLOCK_BLASTFURNACE_FIRE_CRACKLE, SoundCategory.BLOCKS, 1.0F, 1.0F, false);
 			}
 
-			Direction direction = blockState.get(FACING);
+			Direction direction = state.get(FACING);
 			Direction.Axis axis = direction.getAxis();
 			double g = 0.52;
 			double h = random.nextDouble() * 0.6 - 0.3;

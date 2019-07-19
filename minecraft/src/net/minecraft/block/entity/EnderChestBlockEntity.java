@@ -81,9 +81,9 @@ public class EnderChestBlockEntity extends BlockEntity implements ChestAnimation
 	}
 
 	@Override
-	public void invalidate() {
+	public void markRemoved() {
 		this.resetBlock();
-		super.invalidate();
+		super.markRemoved();
 	}
 
 	public void onOpen() {

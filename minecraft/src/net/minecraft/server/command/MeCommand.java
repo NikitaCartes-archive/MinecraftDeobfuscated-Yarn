@@ -5,8 +5,8 @@ import com.mojang.brigadier.arguments.StringArgumentType;
 import net.minecraft.text.TranslatableText;
 
 public class MeCommand {
-	public static void register(CommandDispatcher<ServerCommandSource> commandDispatcher) {
-		commandDispatcher.register(
+	public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
+		dispatcher.register(
 			CommandManager.literal("me")
 				.then(
 					CommandManager.argument("action", StringArgumentType.greedyString())

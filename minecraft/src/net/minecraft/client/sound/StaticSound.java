@@ -16,9 +16,9 @@ public class StaticSound {
 	private boolean hasBuffer;
 	private int streamBufferPointer;
 
-	public StaticSound(ByteBuffer byteBuffer, AudioFormat audioFormat) {
-		this.sample = byteBuffer;
-		this.format = audioFormat;
+	public StaticSound(ByteBuffer sample, AudioFormat format) {
+		this.sample = sample;
+		this.format = format;
 	}
 
 	OptionalInt getStreamBufferPointer() {

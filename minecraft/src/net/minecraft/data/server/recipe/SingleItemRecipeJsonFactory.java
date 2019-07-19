@@ -23,59 +23,59 @@ public class SingleItemRecipeJsonFactory {
 	private String group;
 	private final RecipeSerializer<?> serializer;
 
-	public SingleItemRecipeJsonFactory(RecipeSerializer<?> recipeSerializer, Ingredient ingredient, ItemConvertible itemConvertible, int i) {
-		this.serializer = recipeSerializer;
-		this.output = itemConvertible.asItem();
-		this.input = ingredient;
-		this.count = i;
+	public SingleItemRecipeJsonFactory(RecipeSerializer<?> serializer, Ingredient input, ItemConvertible output, int outputCount) {
+		this.serializer = serializer;
+		this.output = output.asItem();
+		this.input = input;
+		this.count = outputCount;
 	}
 
-	public static SingleItemRecipeJsonFactory create(Ingredient ingredient, ItemConvertible itemConvertible) {
-		return new SingleItemRecipeJsonFactory(RecipeSerializer.STONECUTTING, ingredient, itemConvertible, 1);
+	public static SingleItemRecipeJsonFactory create(Ingredient input, ItemConvertible output) {
+		return new SingleItemRecipeJsonFactory(RecipeSerializer.STONECUTTING, input, output, 1);
 	}
 
-	public static SingleItemRecipeJsonFactory create(Ingredient ingredient, ItemConvertible itemConvertible, int i) {
-		return new SingleItemRecipeJsonFactory(RecipeSerializer.STONECUTTING, ingredient, itemConvertible, i);
+	public static SingleItemRecipeJsonFactory create(Ingredient input, ItemConvertible output, int outputCount) {
+		return new SingleItemRecipeJsonFactory(RecipeSerializer.STONECUTTING, input, output, outputCount);
 	}
 
-	public SingleItemRecipeJsonFactory create(String string, CriterionConditions criterionConditions) {
-		this.builder.criterion(string, criterionConditions);
+	public SingleItemRecipeJsonFactory create(String criterionName, CriterionConditions conditions) {
+		this.builder.criterion(criterionName, conditions);
 		return this;
 	}
 
-	public void offerTo(Consumer<RecipeJsonProvider> consumer, String string) {
+	public void offerTo(Consumer<RecipeJsonProvider> exporter, String recipeIdStr) {
 		Identifier identifier = Registry.ITEM.getId(this.output);
-		if (new Identifier(string).equals(identifier)) {
-			throw new IllegalStateException("Single Item Recipe " + string + " should remove its 'save' argument");
+		if (new Identifier(recipeIdStr).equals(identifier)) {
+			throw new IllegalStateException("Single Item Recipe " + recipeIdStr + " should remove its 'save' argument");
 		} else {
-			this.offerTo(consumer, new Identifier(string));
+			this.offerTo(exporter, new Identifier(recipeIdStr));
 		}
 	}
 
-	public void offerTo(Consumer<RecipeJsonProvider> consumer, Identifier identifier) {
-		this.validate(identifier);
+	public void offerTo(Consumer<RecipeJsonProvider> exporter, Identifier recipeId) {
+		this.validate(recipeId);
 		this.builder
 			.parent(new Identifier("recipes/root"))
-			.criterion("has_the_recipe", new RecipeUnlockedCriterion.Conditions(identifier))
-			.rewards(AdvancementRewards.Builder.recipe(identifier))
+			.criterion("has_the_recipe", new RecipeUnlockedCriterion.Conditions(recipeId))
+			.rewards(AdvancementRewards.Builder.recipe(recipeId))
 			.criteriaMerger(CriteriaMerger.OR);
-		consumer.accept(
+		exporter.accept(
 			new SingleItemRecipeJsonFactory.SingleItemRecipeJsonProvider(
-				identifier,
+				recipeId,
 				this.serializer,
 				this.group == null ? "" : this.group,
 				this.input,
 				this.output,
 				this.count,
 				this.builder,
-				new Identifier(identifier.getNamespace(), "recipes/" + this.output.getGroup().getName() + "/" + identifier.getPath())
+				new Identifier(recipeId.getNamespace(), "recipes/" + this.output.getGroup().getName() + "/" + recipeId.getPath())
 			)
 		);
 	}
 
-	private void validate(Identifier identifier) {
+	private void validate(Identifier recipeId) {
 		if (this.builder.getCriteria().isEmpty()) {
-			throw new IllegalStateException("No way of obtaining recipe " + identifier);
+			throw new IllegalStateException("No way of obtaining recipe " + recipeId);
 		}
 	}
 
@@ -90,34 +90,34 @@ public class SingleItemRecipeJsonFactory {
 		private final RecipeSerializer<?> serializer;
 
 		public SingleItemRecipeJsonProvider(
-			Identifier identifier,
-			RecipeSerializer<?> recipeSerializer,
-			String string,
-			Ingredient ingredient,
-			Item item,
-			int i,
-			Advancement.Task task,
-			Identifier identifier2
+			Identifier recipeId,
+			RecipeSerializer<?> serializer,
+			String group,
+			Ingredient input,
+			Item output,
+			int outputCount,
+			Advancement.Task builder,
+			Identifier advancementId
 		) {
-			this.recipeId = identifier;
-			this.serializer = recipeSerializer;
-			this.group = string;
-			this.input = ingredient;
-			this.output = item;
-			this.count = i;
-			this.builder = task;
-			this.advancementId = identifier2;
+			this.recipeId = recipeId;
+			this.serializer = serializer;
+			this.group = group;
+			this.input = input;
+			this.output = output;
+			this.count = outputCount;
+			this.builder = builder;
+			this.advancementId = advancementId;
 		}
 
 		@Override
-		public void serialize(JsonObject jsonObject) {
+		public void serialize(JsonObject json) {
 			if (!this.group.isEmpty()) {
-				jsonObject.addProperty("group", this.group);
+				json.addProperty("group", this.group);
 			}
 
-			jsonObject.add("ingredient", this.input.toJson());
-			jsonObject.addProperty("result", Registry.ITEM.getId(this.output).toString());
-			jsonObject.addProperty("count", this.count);
+			json.add("ingredient", this.input.toJson());
+			json.addProperty("result", Registry.ITEM.getId(this.output).toString());
+			json.addProperty("count", this.count);
 		}
 
 		@Override

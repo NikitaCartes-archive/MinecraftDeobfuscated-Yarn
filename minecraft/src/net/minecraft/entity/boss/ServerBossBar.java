@@ -6,7 +6,7 @@ import com.google.common.collect.Sets;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Set;
-import net.minecraft.client.network.packet.BossBarS2CPacket;
+import net.minecraft.network.packet.s2c.play.BossBarS2CPacket;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.Text;
 import net.minecraft.util.math.MathHelper;
@@ -16,14 +16,14 @@ public class ServerBossBar extends BossBar {
 	private final Set<ServerPlayerEntity> unmodifiablePlayers = Collections.unmodifiableSet(this.players);
 	private boolean visible = true;
 
-	public ServerBossBar(Text text, BossBar.Color color, BossBar.Style style) {
-		super(MathHelper.randomUUID(), text, color, style);
+	public ServerBossBar(Text displayName, BossBar.Color color, BossBar.Style style) {
+		super(MathHelper.randomUUID(), displayName, color, style);
 	}
 
 	@Override
-	public void setPercent(float f) {
-		if (f != this.percent) {
-			super.setPercent(f);
+	public void setPercent(float percentage) {
+		if (percentage != this.percent) {
+			super.setPercent(percentage);
 			this.sendPacket(BossBarS2CPacket.Type.UPDATE_PCT);
 		}
 	}
@@ -45,9 +45,9 @@ public class ServerBossBar extends BossBar {
 	}
 
 	@Override
-	public BossBar setDarkenSky(boolean bl) {
-		if (bl != this.darkenSky) {
-			super.setDarkenSky(bl);
+	public BossBar setDarkenSky(boolean darkenSky) {
+		if (darkenSky != this.darkenSky) {
+			super.setDarkenSky(darkenSky);
 			this.sendPacket(BossBarS2CPacket.Type.UPDATE_PROPERTIES);
 		}
 
@@ -55,9 +55,9 @@ public class ServerBossBar extends BossBar {
 	}
 
 	@Override
-	public BossBar setDragonMusic(boolean bl) {
-		if (bl != this.dragonMusic) {
-			super.setDragonMusic(bl);
+	public BossBar setDragonMusic(boolean dragonMusic) {
+		if (dragonMusic != this.dragonMusic) {
+			super.setDragonMusic(dragonMusic);
 			this.sendPacket(BossBarS2CPacket.Type.UPDATE_PROPERTIES);
 		}
 
@@ -65,9 +65,9 @@ public class ServerBossBar extends BossBar {
 	}
 
 	@Override
-	public BossBar setThickenFog(boolean bl) {
-		if (bl != this.thickenFog) {
-			super.setThickenFog(bl);
+	public BossBar setThickenFog(boolean thickenFog) {
+		if (thickenFog != this.thickenFog) {
+			super.setThickenFog(thickenFog);
 			this.sendPacket(BossBarS2CPacket.Type.UPDATE_PROPERTIES);
 		}
 
@@ -75,9 +75,9 @@ public class ServerBossBar extends BossBar {
 	}
 
 	@Override
-	public void setName(Text text) {
-		if (!Objects.equal(text, this.name)) {
-			super.setName(text);
+	public void setName(Text name) {
+		if (!Objects.equal(name, this.name)) {
+			super.setName(name);
 			this.sendPacket(BossBarS2CPacket.Type.UPDATE_NAME);
 		}
 	}
@@ -92,15 +92,15 @@ public class ServerBossBar extends BossBar {
 		}
 	}
 
-	public void addPlayer(ServerPlayerEntity serverPlayerEntity) {
-		if (this.players.add(serverPlayerEntity) && this.visible) {
-			serverPlayerEntity.networkHandler.sendPacket(new BossBarS2CPacket(BossBarS2CPacket.Type.ADD, this));
+	public void addPlayer(ServerPlayerEntity player) {
+		if (this.players.add(player) && this.visible) {
+			player.networkHandler.sendPacket(new BossBarS2CPacket(BossBarS2CPacket.Type.ADD, this));
 		}
 	}
 
-	public void removePlayer(ServerPlayerEntity serverPlayerEntity) {
-		if (this.players.remove(serverPlayerEntity) && this.visible) {
-			serverPlayerEntity.networkHandler.sendPacket(new BossBarS2CPacket(BossBarS2CPacket.Type.REMOVE, this));
+	public void removePlayer(ServerPlayerEntity player) {
+		if (this.players.remove(player) && this.visible) {
+			player.networkHandler.sendPacket(new BossBarS2CPacket(BossBarS2CPacket.Type.REMOVE, this));
 		}
 	}
 
@@ -116,12 +116,12 @@ public class ServerBossBar extends BossBar {
 		return this.visible;
 	}
 
-	public void setVisible(boolean bl) {
-		if (bl != this.visible) {
-			this.visible = bl;
+	public void setVisible(boolean visible) {
+		if (visible != this.visible) {
+			this.visible = visible;
 
 			for (ServerPlayerEntity serverPlayerEntity : this.players) {
-				serverPlayerEntity.networkHandler.sendPacket(new BossBarS2CPacket(bl ? BossBarS2CPacket.Type.ADD : BossBarS2CPacket.Type.REMOVE, this));
+				serverPlayerEntity.networkHandler.sendPacket(new BossBarS2CPacket(visible ? BossBarS2CPacket.Type.ADD : BossBarS2CPacket.Type.REMOVE, this));
 			}
 		}
 	}

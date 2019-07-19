@@ -7,8 +7,8 @@ import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.fluid.FluidState;
+import net.minecraft.nbt.NbtHelper;
 import net.minecraft.util.PacketByteBuf;
-import net.minecraft.util.TagHelper;
 
 public class ChunkSection {
 	private static final Palette<BlockState> palette = new IdListPalette<>(Block.STATE_IDS, Blocks.AIR.getDefaultState());
@@ -18,26 +18,24 @@ public class ChunkSection {
 	private short nonEmptyFluidCount;
 	private final PalettedContainer<BlockState> container;
 
-	public ChunkSection(int i) {
-		this(i, (short)0, (short)0, (short)0);
+	public ChunkSection(int yOffset) {
+		this(yOffset, (short)0, (short)0, (short)0);
 	}
 
-	public ChunkSection(int i, short s, short t, short u) {
-		this.yOffset = i;
-		this.nonEmptyBlockCount = s;
-		this.randomTickableBlockCount = t;
-		this.nonEmptyFluidCount = u;
-		this.container = new PalettedContainer<>(
-			palette, Block.STATE_IDS, TagHelper::deserializeBlockState, TagHelper::serializeBlockState, Blocks.AIR.getDefaultState()
-		);
+	public ChunkSection(int yOffset, short nonEmptyBlockCount, short randomTickableBlockCount, short nonEmptyFluidCount) {
+		this.yOffset = yOffset;
+		this.nonEmptyBlockCount = nonEmptyBlockCount;
+		this.randomTickableBlockCount = randomTickableBlockCount;
+		this.nonEmptyFluidCount = nonEmptyFluidCount;
+		this.container = new PalettedContainer<>(palette, Block.STATE_IDS, NbtHelper::toBlockState, NbtHelper::fromBlockState, Blocks.AIR.getDefaultState());
 	}
 
-	public BlockState getBlockState(int i, int j, int k) {
-		return this.container.get(i, j, k);
+	public BlockState getBlockState(int x, int y, int z) {
+		return this.container.get(x, y, z);
 	}
 
-	public FluidState getFluidState(int i, int j, int k) {
-		return this.container.get(i, j, k).getFluidState();
+	public FluidState getFluidState(int x, int y, int z) {
+		return this.container.get(x, y, z).getFluidState();
 	}
 
 	public void lock() {
@@ -48,23 +46,23 @@ public class ChunkSection {
 		this.container.unlock();
 	}
 
-	public BlockState setBlockState(int i, int j, int k, BlockState blockState) {
-		return this.setBlockState(i, j, k, blockState, true);
+	public BlockState setBlockState(int x, int y, int z, BlockState state) {
+		return this.setBlockState(x, y, z, state, true);
 	}
 
-	public BlockState setBlockState(int i, int j, int k, BlockState blockState, boolean bl) {
-		BlockState blockState2;
-		if (bl) {
-			blockState2 = this.container.setSync(i, j, k, blockState);
+	public BlockState setBlockState(int x, int y, int z, BlockState state, boolean lock) {
+		BlockState blockState;
+		if (lock) {
+			blockState = this.container.setSync(x, y, z, state);
 		} else {
-			blockState2 = this.container.set(i, j, k, blockState);
+			blockState = this.container.set(x, y, z, state);
 		}
 
-		FluidState fluidState = blockState2.getFluidState();
-		FluidState fluidState2 = blockState.getFluidState();
-		if (!blockState2.isAir()) {
+		FluidState fluidState = blockState.getFluidState();
+		FluidState fluidState2 = state.getFluidState();
+		if (!blockState.isAir()) {
 			this.nonEmptyBlockCount--;
-			if (blockState2.hasRandomTicks()) {
+			if (blockState.hasRandomTicks()) {
 				this.randomTickableBlockCount--;
 			}
 		}
@@ -73,9 +71,9 @@ public class ChunkSection {
 			this.nonEmptyFluidCount--;
 		}
 
-		if (!blockState.isAir()) {
+		if (!state.isAir()) {
 			this.nonEmptyBlockCount++;
-			if (blockState.hasRandomTicks()) {
+			if (state.hasRandomTicks()) {
 				this.randomTickableBlockCount++;
 			}
 		}
@@ -84,15 +82,15 @@ public class ChunkSection {
 			this.nonEmptyFluidCount++;
 		}
 
-		return blockState2;
+		return blockState;
 	}
 
 	public boolean isEmpty() {
 		return this.nonEmptyBlockCount == 0;
 	}
 
-	public static boolean isEmpty(@Nullable ChunkSection chunkSection) {
-		return chunkSection == WorldChunk.EMPTY_SECTION || chunkSection.isEmpty();
+	public static boolean isEmpty(@Nullable ChunkSection section) {
+		return section == WorldChunk.EMPTY_SECTION || section.isEmpty();
 	}
 
 	public boolean hasRandomTicks() {

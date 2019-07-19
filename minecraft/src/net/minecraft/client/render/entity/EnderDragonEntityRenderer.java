@@ -4,7 +4,7 @@ import com.mojang.blaze3d.platform.GlStateManager;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.render.BufferBuilder;
-import net.minecraft.client.render.GuiLighting;
+import net.minecraft.client.render.DiffuseLighting;
 import net.minecraft.client.render.Tessellator;
 import net.minecraft.client.render.VertexFormats;
 import net.minecraft.client.render.entity.feature.EnderDragonDeathFeatureRenderer;
@@ -16,7 +16,7 @@ import net.minecraft.util.math.MathHelper;
 
 @Environment(EnvType.CLIENT)
 public class EnderDragonEntityRenderer extends MobEntityRenderer<EnderDragonEntity, DragonEntityModel> {
-	public static final Identifier CRYSTAL_BEAM = new Identifier("textures/entity/end_crystal/end_crystal_beam.png");
+	public static final Identifier CRYSTAL_BEAM_TEX = new Identifier("textures/entity/end_crystal/end_crystal_beam.png");
 	private static final Identifier EXPLOSION_TEX = new Identifier("textures/entity/enderdragon/dragon_exploding.png");
 	private static final Identifier SKIN = new Identifier("textures/entity/enderdragon/dragon.png");
 
@@ -26,7 +26,7 @@ public class EnderDragonEntityRenderer extends MobEntityRenderer<EnderDragonEnti
 		this.addFeature(new EnderDragonDeathFeatureRenderer(this));
 	}
 
-	protected void method_3915(EnderDragonEntity enderDragonEntity, float f, float g, float h) {
+	protected void setupTransforms(EnderDragonEntity enderDragonEntity, float f, float g, float h) {
 		float i = (float)enderDragonEntity.method_6817(7, h)[0];
 		float j = (float)(enderDragonEntity.method_6817(5, h)[1] - enderDragonEntity.method_6817(10, h)[1]);
 		GlStateManager.rotatef(-i, 0.0F, 1.0F, 0.0F);
@@ -43,37 +43,37 @@ public class EnderDragonEntityRenderer extends MobEntityRenderer<EnderDragonEnti
 		}
 	}
 
-	protected void method_3916(EnderDragonEntity enderDragonEntity, float f, float g, float h, float i, float j, float k) {
+	protected void render(EnderDragonEntity enderDragonEntity, float f, float g, float h, float i, float j, float k) {
 		if (enderDragonEntity.field_7031 > 0) {
 			float l = (float)enderDragonEntity.field_7031 / 200.0F;
 			GlStateManager.depthFunc(515);
 			GlStateManager.enableAlphaTest();
 			GlStateManager.alphaFunc(516, l);
 			this.bindTexture(EXPLOSION_TEX);
-			this.model.method_17137(enderDragonEntity, f, g, h, i, j, k);
+			this.model.render(enderDragonEntity, f, g, h, i, j, k);
 			GlStateManager.alphaFunc(516, 0.1F);
 			GlStateManager.depthFunc(514);
 		}
 
 		this.bindEntityTexture(enderDragonEntity);
-		this.model.method_17137(enderDragonEntity, f, g, h, i, j, k);
+		this.model.render(enderDragonEntity, f, g, h, i, j, k);
 		if (enderDragonEntity.hurtTime > 0) {
 			GlStateManager.depthFunc(514);
 			GlStateManager.disableTexture();
 			GlStateManager.enableBlend();
 			GlStateManager.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA);
 			GlStateManager.color4f(1.0F, 0.0F, 0.0F, 0.5F);
-			this.model.method_17137(enderDragonEntity, f, g, h, i, j, k);
+			this.model.render(enderDragonEntity, f, g, h, i, j, k);
 			GlStateManager.enableTexture();
 			GlStateManager.disableBlend();
 			GlStateManager.depthFunc(515);
 		}
 	}
 
-	public void method_3918(EnderDragonEntity enderDragonEntity, double d, double e, double f, float g, float h) {
-		super.method_4072(enderDragonEntity, d, e, f, g, h);
+	public void render(EnderDragonEntity enderDragonEntity, double d, double e, double f, float g, float h) {
+		super.render(enderDragonEntity, d, e, f, g, h);
 		if (enderDragonEntity.connectedCrystal != null) {
-			this.bindTexture(CRYSTAL_BEAM);
+			this.bindTexture(CRYSTAL_BEAM_TEX);
 			float i = MathHelper.sin(((float)enderDragonEntity.connectedCrystal.age + h) * 0.2F) / 2.0F + 0.5F;
 			i = (i * i + i) * 0.2F;
 			renderCrystalBeam(
@@ -103,13 +103,13 @@ public class EnderDragonEntityRenderer extends MobEntityRenderer<EnderDragonEnti
 		GlStateManager.rotatef((float)(-Math.atan2((double)q, (double)o)) * (180.0F / (float)Math.PI) - 90.0F, 0.0F, 1.0F, 0.0F);
 		GlStateManager.rotatef((float)(-Math.atan2((double)r, (double)p)) * (180.0F / (float)Math.PI) - 90.0F, 1.0F, 0.0F, 0.0F);
 		Tessellator tessellator = Tessellator.getInstance();
-		BufferBuilder bufferBuilder = tessellator.getBufferBuilder();
-		GuiLighting.disable();
+		BufferBuilder bufferBuilder = tessellator.getBuffer();
+		DiffuseLighting.disable();
 		GlStateManager.disableCull();
 		GlStateManager.shadeModel(7425);
 		float t = 0.0F - ((float)k + g) * 0.01F;
 		float u = MathHelper.sqrt(o * o + p * p + q * q) / 32.0F - ((float)k + g) * 0.01F;
-		bufferBuilder.begin(5, VertexFormats.POSITION_UV_COLOR);
+		bufferBuilder.begin(5, VertexFormats.POSITION_TEXTURE_COLOR);
 		int v = 8;
 
 		for (int w = 0; w <= 8; w++) {
@@ -123,11 +123,11 @@ public class EnderDragonEntityRenderer extends MobEntityRenderer<EnderDragonEnti
 		tessellator.draw();
 		GlStateManager.enableCull();
 		GlStateManager.shadeModel(7424);
-		GuiLighting.enable();
+		DiffuseLighting.enable();
 		GlStateManager.popMatrix();
 	}
 
-	protected Identifier method_3914(EnderDragonEntity enderDragonEntity) {
+	protected Identifier getTexture(EnderDragonEntity enderDragonEntity) {
 		return SKIN;
 	}
 }

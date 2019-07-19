@@ -11,10 +11,10 @@ public class SoundEntry {
 	private final boolean replace;
 	private final String subtitle;
 
-	public SoundEntry(List<Sound> list, boolean bl, String string) {
-		this.sounds = list;
-		this.replace = bl;
-		this.subtitle = string;
+	public SoundEntry(List<Sound> sounds, boolean replace, String subtitle) {
+		this.sounds = sounds;
+		this.replace = replace;
+		this.subtitle = subtitle;
 	}
 
 	public List<Sound> getSounds() {

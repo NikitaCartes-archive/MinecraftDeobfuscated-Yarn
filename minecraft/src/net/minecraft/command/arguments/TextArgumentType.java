@@ -21,15 +21,15 @@ public class TextArgumentType implements ArgumentType<Text> {
 	private TextArgumentType() {
 	}
 
-	public static Text getTextArgument(CommandContext<ServerCommandSource> commandContext, String string) {
-		return commandContext.getArgument(string, Text.class);
+	public static Text getTextArgument(CommandContext<ServerCommandSource> context, String name) {
+		return context.getArgument(name, Text.class);
 	}
 
 	public static TextArgumentType text() {
 		return new TextArgumentType();
 	}
 
-	public Text method_9283(StringReader stringReader) throws CommandSyntaxException {
+	public Text parse(StringReader stringReader) throws CommandSyntaxException {
 		try {
 			Text text = Text.Serializer.fromJson(stringReader);
 			if (text == null) {

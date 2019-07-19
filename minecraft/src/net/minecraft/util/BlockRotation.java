@@ -12,8 +12,8 @@ public enum BlockRotation {
 	CLOCKWISE_180,
 	COUNTERCLOCKWISE_90;
 
-	public BlockRotation rotate(BlockRotation blockRotation) {
-		switch (blockRotation) {
+	public BlockRotation rotate(BlockRotation rotation) {
+		switch (rotation) {
 			case CLOCKWISE_180:
 				switch (this) {
 					case NONE:
@@ -69,16 +69,16 @@ public enum BlockRotation {
 		}
 	}
 
-	public int rotate(int i, int j) {
+	public int rotate(int rotation, int fullTurn) {
 		switch (this) {
 			case CLOCKWISE_90:
-				return (i + j / 4) % j;
+				return (rotation + fullTurn / 4) % fullTurn;
 			case CLOCKWISE_180:
-				return (i + j / 2) % j;
+				return (rotation + fullTurn / 2) % fullTurn;
 			case COUNTERCLOCKWISE_90:
-				return (i + j * 3 / 4) % j;
+				return (rotation + fullTurn * 3 / 4) % fullTurn;
 			default:
-				return i;
+				return rotation;
 		}
 	}
 

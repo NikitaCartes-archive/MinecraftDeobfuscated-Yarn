@@ -48,8 +48,8 @@ public class ItemTags {
 	public static final Tag<Item> COALS = register("coals");
 	public static final Tag<Item> ARROWS = register("arrows");
 
-	public static void setContainer(TagContainer<Item> tagContainer) {
-		container = tagContainer;
+	public static void setContainer(TagContainer<Item> container) {
+		ItemTags.container = container;
 		latestVersion++;
 	}
 
@@ -57,8 +57,8 @@ public class ItemTags {
 		return container;
 	}
 
-	private static Tag<Item> register(String string) {
-		return new ItemTags.CachingTag(new Identifier(string));
+	private static Tag<Item> register(String id) {
+		return new ItemTags.CachingTag(new Identifier(id));
 	}
 
 	public static class CachingTag extends Tag<Item> {
@@ -69,7 +69,7 @@ public class ItemTags {
 			super(identifier);
 		}
 
-		public boolean method_15109(Item item) {
+		public boolean contains(Item item) {
 			if (this.version != ItemTags.latestVersion) {
 				this.delegate = ItemTags.container.getOrCreate(this.getId());
 				this.version = ItemTags.latestVersion;

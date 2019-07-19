@@ -8,21 +8,21 @@ public class ClampedEntityAttribute extends AbstractEntityAttribute {
 	private final double maxValue;
 	private String name;
 
-	public ClampedEntityAttribute(@Nullable EntityAttribute entityAttribute, String string, double d, double e, double f) {
-		super(entityAttribute, string, d);
-		this.minValue = e;
-		this.maxValue = f;
-		if (e > f) {
+	public ClampedEntityAttribute(@Nullable EntityAttribute parent, String id, double defaultValue, double minValue, double maxValue) {
+		super(parent, id, defaultValue);
+		this.minValue = minValue;
+		this.maxValue = maxValue;
+		if (minValue > maxValue) {
 			throw new IllegalArgumentException("Minimum value cannot be bigger than maximum value!");
-		} else if (d < e) {
+		} else if (defaultValue < minValue) {
 			throw new IllegalArgumentException("Default value cannot be lower than minimum value!");
-		} else if (d > f) {
+		} else if (defaultValue > maxValue) {
 			throw new IllegalArgumentException("Default value cannot be bigger than maximum value!");
 		}
 	}
 
-	public ClampedEntityAttribute setName(String string) {
-		this.name = string;
+	public ClampedEntityAttribute setName(String name) {
+		this.name = name;
 		return this;
 	}
 
@@ -31,7 +31,7 @@ public class ClampedEntityAttribute extends AbstractEntityAttribute {
 	}
 
 	@Override
-	public double clamp(double d) {
-		return MathHelper.clamp(d, this.minValue, this.maxValue);
+	public double clamp(double value) {
+		return MathHelper.clamp(value, this.minValue, this.maxValue);
 	}
 }

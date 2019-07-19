@@ -59,8 +59,8 @@ public class BlockTags {
 	public static final Tag<Block> DRAGON_IMMUNE = register("dragon_immune");
 	public static final Tag<Block> WITHER_IMMUNE = register("wither_immune");
 
-	public static void setContainer(TagContainer<Block> tagContainer) {
-		container = tagContainer;
+	public static void setContainer(TagContainer<Block> container) {
+		BlockTags.container = container;
 		latestVersion++;
 	}
 
@@ -68,8 +68,8 @@ public class BlockTags {
 		return container;
 	}
 
-	private static Tag<Block> register(String string) {
-		return new BlockTags.CachingTag(new Identifier(string));
+	private static Tag<Block> register(String id) {
+		return new BlockTags.CachingTag(new Identifier(id));
 	}
 
 	static class CachingTag extends Tag<Block> {
@@ -80,7 +80,7 @@ public class BlockTags {
 			super(identifier);
 		}
 
-		public boolean method_15076(Block block) {
+		public boolean contains(Block block) {
 			if (this.version != BlockTags.latestVersion) {
 				this.delegate = BlockTags.container.getOrCreate(this.getId());
 				this.version = BlockTags.latestVersion;

@@ -31,7 +31,7 @@ public class ShulkerBulletEntityRenderer extends EntityRenderer<ShulkerBulletEnt
 		return f + h * i;
 	}
 
-	public void method_4103(ShulkerBulletEntity shulkerBulletEntity, double d, double e, double f, float g, float h) {
+	public void render(ShulkerBulletEntity shulkerBulletEntity, double d, double e, double f, float g, float h) {
 		GlStateManager.pushMatrix();
 		float i = this.method_4104(shulkerBulletEntity.prevYaw, shulkerBulletEntity.yaw, h);
 		float j = MathHelper.lerp(h, shulkerBulletEntity.prevPitch, shulkerBulletEntity.pitch);
@@ -54,7 +54,7 @@ public class ShulkerBulletEntityRenderer extends EntityRenderer<ShulkerBulletEnt
 		super.render(shulkerBulletEntity, d, e, f, g, h);
 	}
 
-	protected Identifier method_4105(ShulkerBulletEntity shulkerBulletEntity) {
+	protected Identifier getTexture(ShulkerBulletEntity shulkerBulletEntity) {
 		return SKIN;
 	}
 }

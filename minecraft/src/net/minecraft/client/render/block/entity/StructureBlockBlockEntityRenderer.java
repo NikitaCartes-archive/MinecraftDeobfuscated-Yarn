@@ -17,7 +17,7 @@ import net.minecraft.world.BlockView;
 
 @Environment(EnvType.CLIENT)
 public class StructureBlockBlockEntityRenderer extends BlockEntityRenderer<StructureBlockBlockEntity> {
-	public void method_3587(StructureBlockBlockEntity structureBlockBlockEntity, double d, double e, double f, float g, int i) {
+	public void render(StructureBlockBlockEntity structureBlockBlockEntity, double d, double e, double f, float g, int i) {
 		if (MinecraftClient.getInstance().player.isCreativeLevelTwoOp() || MinecraftClient.getInstance().player.isSpectator()) {
 			super.render(structureBlockBlockEntity, d, e, f, g, i);
 			BlockPos blockPos = structureBlockBlockEntity.getOffset();
@@ -79,7 +79,7 @@ public class StructureBlockBlockEntityRenderer extends BlockEntityRenderer<Struc
 					int u = 223;
 					int v = 127;
 					Tessellator tessellator = Tessellator.getInstance();
-					BufferBuilder bufferBuilder = tessellator.getBufferBuilder();
+					BufferBuilder bufferBuilder = tessellator.getBuffer();
 					GlStateManager.disableFog();
 					GlStateManager.disableLighting();
 					GlStateManager.disableTexture();
@@ -138,11 +138,11 @@ public class StructureBlockBlockEntityRenderer extends BlockEntityRenderer<Struc
 				double l = (double)((float)(blockPos4.getY() - blockPos2.getY()) + 0.55F) + e + (double)g;
 				double m = (double)((float)(blockPos4.getZ() - blockPos2.getZ()) + 0.55F) + f + (double)g;
 				if (bl) {
-					WorldRenderer.buildBoxOutline(bufferBuilder, h, i, j, k, l, m, 0.0F, 0.0F, 0.0F, 1.0F);
+					WorldRenderer.drawBox(bufferBuilder, h, i, j, k, l, m, 0.0F, 0.0F, 0.0F, 1.0F);
 				} else if (bl2) {
-					WorldRenderer.buildBoxOutline(bufferBuilder, h, i, j, k, l, m, 0.5F, 0.5F, 1.0F, 1.0F);
+					WorldRenderer.drawBox(bufferBuilder, h, i, j, k, l, m, 0.5F, 0.5F, 1.0F, 1.0F);
 				} else {
-					WorldRenderer.buildBoxOutline(bufferBuilder, h, i, j, k, l, m, 1.0F, 0.25F, 0.25F, 1.0F);
+					WorldRenderer.drawBox(bufferBuilder, h, i, j, k, l, m, 1.0F, 0.25F, 0.25F, 1.0F);
 				}
 			}
 		}
@@ -175,7 +175,7 @@ public class StructureBlockBlockEntityRenderer extends BlockEntityRenderer<Struc
 		GlStateManager.lineWidth(1.0F);
 	}
 
-	public boolean method_3588(StructureBlockBlockEntity structureBlockBlockEntity) {
+	public boolean method_3563(StructureBlockBlockEntity structureBlockBlockEntity) {
 		return true;
 	}
 }

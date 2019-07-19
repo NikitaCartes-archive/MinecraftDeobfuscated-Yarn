@@ -5,8 +5,8 @@ import net.minecraft.world.PersistentState;
 public class ScoreboardSynchronizer implements Runnable {
 	private final PersistentState compound;
 
-	public ScoreboardSynchronizer(PersistentState persistentState) {
-		this.compound = persistentState;
+	public ScoreboardSynchronizer(PersistentState compound) {
+		this.compound = compound;
 	}
 
 	public void run() {

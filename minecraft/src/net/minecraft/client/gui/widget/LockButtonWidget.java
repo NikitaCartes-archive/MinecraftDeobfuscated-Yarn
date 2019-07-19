@@ -10,8 +10,8 @@ import net.minecraft.client.resource.language.I18n;
 public class LockButtonWidget extends ButtonWidget {
 	private boolean locked;
 
-	public LockButtonWidget(int i, int j, ButtonWidget.PressAction pressAction) {
-		super(i, j, 20, 20, I18n.translate("narrator.button.difficulty_lock"), pressAction);
+	public LockButtonWidget(int x, int y, ButtonWidget.PressAction action) {
+		super(x, y, 20, 20, I18n.translate("narrator.button.difficulty_lock"), action);
 	}
 
 	@Override
@@ -25,12 +25,12 @@ public class LockButtonWidget extends ButtonWidget {
 		return this.locked;
 	}
 
-	public void setLocked(boolean bl) {
-		this.locked = bl;
+	public void setLocked(boolean locked) {
+		this.locked = locked;
 	}
 
 	@Override
-	public void renderButton(int i, int j, float f) {
+	public void renderButton(int mouseX, int mouseY, float delta) {
 		MinecraftClient.getInstance().getTextureManager().bindTexture(ButtonWidget.WIDGETS_LOCATION);
 		GlStateManager.color4f(1.0F, 1.0F, 1.0F, 1.0F);
 		LockButtonWidget.IconLocation iconLocation;

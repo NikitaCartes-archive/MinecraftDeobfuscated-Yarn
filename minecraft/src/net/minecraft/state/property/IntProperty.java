@@ -9,17 +9,17 @@ import java.util.Set;
 public class IntProperty extends AbstractProperty<Integer> {
 	private final ImmutableSet<Integer> values;
 
-	protected IntProperty(String string, int i, int j) {
-		super(string, Integer.class);
-		if (i < 0) {
-			throw new IllegalArgumentException("Min value of " + string + " must be 0 or greater");
-		} else if (j <= i) {
-			throw new IllegalArgumentException("Max value of " + string + " must be greater than min (" + i + ")");
+	protected IntProperty(String name, int min, int max) {
+		super(name, Integer.class);
+		if (min < 0) {
+			throw new IllegalArgumentException("Min value of " + name + " must be 0 or greater");
+		} else if (max <= min) {
+			throw new IllegalArgumentException("Max value of " + name + " must be greater than min (" + min + ")");
 		} else {
 			Set<Integer> set = Sets.<Integer>newHashSet();
 
-			for (int k = i; k <= j; k++) {
-				set.add(k);
+			for (int i = min; i <= max; i++) {
+				set.add(i);
 			}
 
 			this.values = ImmutableSet.copyOf(set);
@@ -32,11 +32,11 @@ public class IntProperty extends AbstractProperty<Integer> {
 	}
 
 	@Override
-	public boolean equals(Object object) {
-		if (this == object) {
+	public boolean equals(Object o) {
+		if (this == o) {
 			return true;
-		} else if (object instanceof IntProperty && super.equals(object)) {
-			IntProperty intProperty = (IntProperty)object;
+		} else if (o instanceof IntProperty && super.equals(o)) {
+			IntProperty intProperty = (IntProperty)o;
 			return this.values.equals(intProperty.values);
 		} else {
 			return false;
@@ -48,21 +48,21 @@ public class IntProperty extends AbstractProperty<Integer> {
 		return 31 * super.computeHashCode() + this.values.hashCode();
 	}
 
-	public static IntProperty of(String string, int i, int j) {
-		return new IntProperty(string, i, j);
+	public static IntProperty of(String name, int min, int max) {
+		return new IntProperty(name, min, max);
 	}
 
 	@Override
-	public Optional<Integer> getValue(String string) {
+	public Optional<Integer> parse(String name) {
 		try {
-			Integer integer = Integer.valueOf(string);
+			Integer integer = Integer.valueOf(name);
 			return this.values.contains(integer) ? Optional.of(integer) : Optional.empty();
 		} catch (NumberFormatException var3) {
 			return Optional.empty();
 		}
 	}
 
-	public String method_11868(Integer integer) {
+	public String name(Integer integer) {
 		return integer.toString();
 	}
 }

@@ -14,12 +14,12 @@ public class RaidCenterDebugRenderer implements DebugRenderer.Renderer {
 	private final MinecraftClient client;
 	private Collection<BlockPos> raidCenters = Lists.<BlockPos>newArrayList();
 
-	public RaidCenterDebugRenderer(MinecraftClient minecraftClient) {
-		this.client = minecraftClient;
+	public RaidCenterDebugRenderer(MinecraftClient client) {
+		this.client = client;
 	}
 
-	public void setRaidCenters(Collection<BlockPos> collection) {
-		this.raidCenters = collection;
+	public void setRaidCenters(Collection<BlockPos> centers) {
+		this.raidCenters = centers;
 	}
 
 	@Override

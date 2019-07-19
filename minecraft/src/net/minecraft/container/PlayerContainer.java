@@ -22,34 +22,34 @@ public class PlayerContainer extends CraftingContainer<CraftingInventory> {
 	private static final EquipmentSlot[] EQUIPMENT_SLOT_ORDER = new EquipmentSlot[]{
 		EquipmentSlot.HEAD, EquipmentSlot.CHEST, EquipmentSlot.LEGS, EquipmentSlot.FEET
 	};
-	private final CraftingInventory invCrafting = new CraftingInventory(this, 2, 2);
-	private final CraftingResultInventory invCraftingResult = new CraftingResultInventory();
-	public final boolean local;
+	private final CraftingInventory craftingInventory = new CraftingInventory(this, 2, 2);
+	private final CraftingResultInventory craftingResultInventory = new CraftingResultInventory();
+	public final boolean onServer;
 	private final PlayerEntity owner;
 
-	public PlayerContainer(PlayerInventory playerInventory, boolean bl, PlayerEntity playerEntity) {
+	public PlayerContainer(PlayerInventory inventory, boolean onServer, PlayerEntity owner) {
 		super(null, 0);
-		this.local = bl;
-		this.owner = playerEntity;
-		this.addSlot(new CraftingResultSlot(playerInventory.player, this.invCrafting, this.invCraftingResult, 0, 154, 28));
+		this.onServer = onServer;
+		this.owner = owner;
+		this.addSlot(new CraftingResultSlot(inventory.player, this.craftingInventory, this.craftingResultInventory, 0, 154, 28));
 
 		for (int i = 0; i < 2; i++) {
 			for (int j = 0; j < 2; j++) {
-				this.addSlot(new Slot(this.invCrafting, j + i * 2, 98 + j * 18, 18 + i * 18));
+				this.addSlot(new Slot(this.craftingInventory, j + i * 2, 98 + j * 18, 18 + i * 18));
 			}
 		}
 
 		for (int i = 0; i < 4; i++) {
 			final EquipmentSlot equipmentSlot = EQUIPMENT_SLOT_ORDER[i];
-			this.addSlot(new Slot(playerInventory, 39 - i, 8, 8 + i * 18) {
+			this.addSlot(new Slot(inventory, 39 - i, 8, 8 + i * 18) {
 				@Override
 				public int getMaxStackAmount() {
 					return 1;
 				}
 
 				@Override
-				public boolean canInsert(ItemStack itemStack) {
-					return equipmentSlot == MobEntity.getPreferredEquipmentSlot(itemStack);
+				public boolean canInsert(ItemStack stack) {
+					return equipmentSlot == MobEntity.getPreferredEquipmentSlot(stack);
 				}
 
 				@Override
@@ -69,15 +69,15 @@ public class PlayerContainer extends CraftingContainer<CraftingInventory> {
 
 		for (int i = 0; i < 3; i++) {
 			for (int j = 0; j < 9; j++) {
-				this.addSlot(new Slot(playerInventory, j + (i + 1) * 9, 8 + j * 18, 84 + i * 18));
+				this.addSlot(new Slot(inventory, j + (i + 1) * 9, 8 + j * 18, 84 + i * 18));
 			}
 		}
 
 		for (int i = 0; i < 9; i++) {
-			this.addSlot(new Slot(playerInventory, i, 8 + i * 18, 142));
+			this.addSlot(new Slot(inventory, i, 8 + i * 18, 142));
 		}
 
-		this.addSlot(new Slot(playerInventory, 40, 77, 62) {
+		this.addSlot(new Slot(inventory, 40, 77, 62) {
 			@Nullable
 			@Environment(EnvType.CLIENT)
 			@Override
@@ -89,75 +89,75 @@ public class PlayerContainer extends CraftingContainer<CraftingInventory> {
 
 	@Override
 	public void populateRecipeFinder(RecipeFinder recipeFinder) {
-		this.invCrafting.provideRecipeInputs(recipeFinder);
+		this.craftingInventory.provideRecipeInputs(recipeFinder);
 	}
 
 	@Override
 	public void clearCraftingSlots() {
-		this.invCraftingResult.clear();
-		this.invCrafting.clear();
+		this.craftingResultInventory.clear();
+		this.craftingInventory.clear();
 	}
 
 	@Override
 	public boolean matches(Recipe<? super CraftingInventory> recipe) {
-		return recipe.matches(this.invCrafting, this.owner.world);
+		return recipe.matches(this.craftingInventory, this.owner.world);
 	}
 
 	@Override
 	public void onContentChanged(Inventory inventory) {
-		CraftingTableContainer.updateResult(this.syncId, this.owner.world, this.owner, this.invCrafting, this.invCraftingResult);
+		CraftingTableContainer.updateResult(this.syncId, this.owner.world, this.owner, this.craftingInventory, this.craftingResultInventory);
 	}
 
 	@Override
-	public void close(PlayerEntity playerEntity) {
-		super.close(playerEntity);
-		this.invCraftingResult.clear();
-		if (!playerEntity.world.isClient) {
-			this.dropInventory(playerEntity, playerEntity.world, this.invCrafting);
+	public void close(PlayerEntity player) {
+		super.close(player);
+		this.craftingResultInventory.clear();
+		if (!player.world.isClient) {
+			this.dropInventory(player, player.world, this.craftingInventory);
 		}
 	}
 
 	@Override
-	public boolean canUse(PlayerEntity playerEntity) {
+	public boolean canUse(PlayerEntity player) {
 		return true;
 	}
 
 	@Override
-	public ItemStack transferSlot(PlayerEntity playerEntity, int i) {
+	public ItemStack transferSlot(PlayerEntity player, int invSlot) {
 		ItemStack itemStack = ItemStack.EMPTY;
-		Slot slot = (Slot)this.slotList.get(i);
+		Slot slot = (Slot)this.slots.get(invSlot);
 		if (slot != null && slot.hasStack()) {
 			ItemStack itemStack2 = slot.getStack();
 			itemStack = itemStack2.copy();
 			EquipmentSlot equipmentSlot = MobEntity.getPreferredEquipmentSlot(itemStack);
-			if (i == 0) {
+			if (invSlot == 0) {
 				if (!this.insertItem(itemStack2, 9, 45, true)) {
 					return ItemStack.EMPTY;
 				}
 
 				slot.onStackChanged(itemStack2, itemStack);
-			} else if (i >= 1 && i < 5) {
+			} else if (invSlot >= 1 && invSlot < 5) {
 				if (!this.insertItem(itemStack2, 9, 45, false)) {
 					return ItemStack.EMPTY;
 				}
-			} else if (i >= 5 && i < 9) {
+			} else if (invSlot >= 5 && invSlot < 9) {
 				if (!this.insertItem(itemStack2, 9, 45, false)) {
 					return ItemStack.EMPTY;
 				}
-			} else if (equipmentSlot.getType() == EquipmentSlot.Type.ARMOR && !((Slot)this.slotList.get(8 - equipmentSlot.getEntitySlotId())).hasStack()) {
-				int j = 8 - equipmentSlot.getEntitySlotId();
-				if (!this.insertItem(itemStack2, j, j + 1, false)) {
+			} else if (equipmentSlot.getType() == EquipmentSlot.Type.ARMOR && !((Slot)this.slots.get(8 - equipmentSlot.getEntitySlotId())).hasStack()) {
+				int i = 8 - equipmentSlot.getEntitySlotId();
+				if (!this.insertItem(itemStack2, i, i + 1, false)) {
 					return ItemStack.EMPTY;
 				}
-			} else if (equipmentSlot == EquipmentSlot.OFFHAND && !((Slot)this.slotList.get(45)).hasStack()) {
+			} else if (equipmentSlot == EquipmentSlot.OFFHAND && !((Slot)this.slots.get(45)).hasStack()) {
 				if (!this.insertItem(itemStack2, 45, 46, false)) {
 					return ItemStack.EMPTY;
 				}
-			} else if (i >= 9 && i < 36) {
+			} else if (invSlot >= 9 && invSlot < 36) {
 				if (!this.insertItem(itemStack2, 36, 45, false)) {
 					return ItemStack.EMPTY;
 				}
-			} else if (i >= 36 && i < 45) {
+			} else if (invSlot >= 36 && invSlot < 45) {
 				if (!this.insertItem(itemStack2, 9, 36, false)) {
 					return ItemStack.EMPTY;
 				}
@@ -175,9 +175,9 @@ public class PlayerContainer extends CraftingContainer<CraftingInventory> {
 				return ItemStack.EMPTY;
 			}
 
-			ItemStack itemStack3 = slot.onTakeItem(playerEntity, itemStack2);
-			if (i == 0) {
-				playerEntity.dropItem(itemStack3, false);
+			ItemStack itemStack3 = slot.onTakeItem(player, itemStack2);
+			if (invSlot == 0) {
+				player.dropItem(itemStack3, false);
 			}
 		}
 
@@ -185,8 +185,8 @@ public class PlayerContainer extends CraftingContainer<CraftingInventory> {
 	}
 
 	@Override
-	public boolean canInsertIntoSlot(ItemStack itemStack, Slot slot) {
-		return slot.inventory != this.invCraftingResult && super.canInsertIntoSlot(itemStack, slot);
+	public boolean canInsertIntoSlot(ItemStack stack, Slot slot) {
+		return slot.inventory != this.craftingResultInventory && super.canInsertIntoSlot(stack, slot);
 	}
 
 	@Override
@@ -196,12 +196,12 @@ public class PlayerContainer extends CraftingContainer<CraftingInventory> {
 
 	@Override
 	public int getCraftingWidth() {
-		return this.invCrafting.getWidth();
+		return this.craftingInventory.getWidth();
 	}
 
 	@Override
 	public int getCraftingHeight() {
-		return this.invCrafting.getHeight();
+		return this.craftingInventory.getHeight();
 	}
 
 	@Environment(EnvType.CLIENT)

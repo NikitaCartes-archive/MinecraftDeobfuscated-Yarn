@@ -20,15 +20,15 @@ import net.minecraft.world.chunk.ChunkManager;
 import net.minecraft.world.dimension.Dimension;
 import net.minecraft.world.level.LevelProperties;
 
-public interface IWorld extends EntityView, ViewableWorld, ModifiableTestableWorld {
+public interface IWorld extends EntityView, CollisionView, ModifiableTestableWorld {
 	long getSeed();
 
 	default float getMoonSize() {
 		return Dimension.MOON_PHASE_TO_SIZE[this.getDimension().getMoonPhase(this.getLevelProperties().getTimeOfDay())];
 	}
 
-	default float getSkyAngle(float f) {
-		return this.getDimension().getSkyAngle(this.getLevelProperties().getTimeOfDay(), f);
+	default float getSkyAngle(float tickDelta) {
+		return this.getDimension().getSkyAngle(this.getLevelProperties().getTimeOfDay(), tickDelta);
 	}
 
 	@Environment(EnvType.CLIENT)
@@ -44,7 +44,7 @@ public interface IWorld extends EntityView, ViewableWorld, ModifiableTestableWor
 
 	LevelProperties getLevelProperties();
 
-	LocalDifficulty getLocalDifficulty(BlockPos blockPos);
+	LocalDifficulty getLocalDifficulty(BlockPos pos);
 
 	default Difficulty getDifficulty() {
 		return this.getLevelProperties().getDifficulty();
@@ -53,25 +53,25 @@ public interface IWorld extends EntityView, ViewableWorld, ModifiableTestableWor
 	ChunkManager getChunkManager();
 
 	@Override
-	default boolean isChunkLoaded(int i, int j) {
-		return this.getChunkManager().isChunkLoaded(i, j);
+	default boolean isChunkLoaded(int chunkX, int chunkZ) {
+		return this.getChunkManager().isChunkLoaded(chunkX, chunkZ);
 	}
 
 	Random getRandom();
 
-	void updateNeighbors(BlockPos blockPos, Block block);
+	void updateNeighbors(BlockPos pos, Block block);
 
 	@Environment(EnvType.CLIENT)
 	BlockPos getSpawnPos();
 
-	void playSound(@Nullable PlayerEntity playerEntity, BlockPos blockPos, SoundEvent soundEvent, SoundCategory soundCategory, float f, float g);
+	void playSound(@Nullable PlayerEntity player, BlockPos blockPos, SoundEvent soundEvent, SoundCategory soundCategory, float volume, float pitch);
 
-	void addParticle(ParticleEffect particleEffect, double d, double e, double f, double g, double h, double i);
+	void addParticle(ParticleEffect parameters, double x, double y, double z, double velocityX, double velocityY, double velocityZ);
 
-	void playLevelEvent(@Nullable PlayerEntity playerEntity, int i, BlockPos blockPos, int j);
+	void playLevelEvent(@Nullable PlayerEntity player, int eventId, BlockPos blockPos, int data);
 
-	default void playLevelEvent(int i, BlockPos blockPos, int j) {
-		this.playLevelEvent(null, i, blockPos, j);
+	default void playLevelEvent(int eventId, BlockPos blockPos, int data) {
+		this.playLevelEvent(null, eventId, blockPos, data);
 	}
 
 	@Override
@@ -80,7 +80,7 @@ public interface IWorld extends EntityView, ViewableWorld, ModifiableTestableWor
 	}
 
 	@Override
-	default boolean intersectsEntities(@Nullable Entity entity, VoxelShape voxelShape) {
-		return EntityView.super.intersectsEntities(entity, voxelShape);
+	default boolean intersectsEntities(@Nullable Entity except, VoxelShape shape) {
+		return EntityView.super.intersectsEntities(except, shape);
 	}
 }

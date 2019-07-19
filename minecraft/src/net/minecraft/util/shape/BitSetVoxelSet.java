@@ -13,32 +13,32 @@ public final class BitSetVoxelSet extends VoxelSet {
 	private int yMax;
 	private int zMax;
 
-	public BitSetVoxelSet(int i, int j, int k) {
-		this(i, j, k, i, j, k, 0, 0, 0);
+	public BitSetVoxelSet(int xSize, int ySize, int zSize) {
+		this(xSize, ySize, zSize, xSize, ySize, zSize, 0, 0, 0);
 	}
 
-	public BitSetVoxelSet(int i, int j, int k, int l, int m, int n, int o, int p, int q) {
-		super(i, j, k);
-		this.storage = new BitSet(i * j * k);
-		this.xMin = l;
-		this.yMin = m;
-		this.zMin = n;
-		this.xMax = o;
-		this.yMax = p;
-		this.zMax = q;
+	public BitSetVoxelSet(int xMask, int yMask, int zMask, int xMin, int yMin, int zMin, int xMax, int yMax, int zMax) {
+		super(xMask, yMask, zMask);
+		this.storage = new BitSet(xMask * yMask * zMask);
+		this.xMin = xMin;
+		this.yMin = yMin;
+		this.zMin = zMin;
+		this.xMax = xMax;
+		this.yMax = yMax;
+		this.zMax = zMax;
 	}
 
-	public BitSetVoxelSet(VoxelSet voxelSet) {
-		super(voxelSet.xSize, voxelSet.ySize, voxelSet.zSize);
-		if (voxelSet instanceof BitSetVoxelSet) {
-			this.storage = (BitSet)((BitSetVoxelSet)voxelSet).storage.clone();
+	public BitSetVoxelSet(VoxelSet other) {
+		super(other.xSize, other.ySize, other.zSize);
+		if (other instanceof BitSetVoxelSet) {
+			this.storage = (BitSet)((BitSetVoxelSet)other).storage.clone();
 		} else {
 			this.storage = new BitSet(this.xSize * this.ySize * this.zSize);
 
 			for (int i = 0; i < this.xSize; i++) {
 				for (int j = 0; j < this.ySize; j++) {
 					for (int k = 0; k < this.zSize; k++) {
-						if (voxelSet.contains(i, j, k)) {
+						if (other.contains(i, j, k)) {
 							this.storage.set(this.getIndex(i, j, k));
 						}
 					}
@@ -46,33 +46,33 @@ public final class BitSetVoxelSet extends VoxelSet {
 			}
 		}
 
-		this.xMin = voxelSet.getMin(Direction.Axis.X);
-		this.yMin = voxelSet.getMin(Direction.Axis.Y);
-		this.zMin = voxelSet.getMin(Direction.Axis.Z);
-		this.xMax = voxelSet.getMax(Direction.Axis.X);
-		this.yMax = voxelSet.getMax(Direction.Axis.Y);
-		this.zMax = voxelSet.getMax(Direction.Axis.Z);
+		this.xMin = other.getMin(Direction.Axis.X);
+		this.yMin = other.getMin(Direction.Axis.Y);
+		this.zMin = other.getMin(Direction.Axis.Z);
+		this.xMax = other.getMax(Direction.Axis.X);
+		this.yMax = other.getMax(Direction.Axis.Y);
+		this.zMax = other.getMax(Direction.Axis.Z);
 	}
 
-	protected int getIndex(int i, int j, int k) {
-		return (i * this.ySize + j) * this.zSize + k;
-	}
-
-	@Override
-	public boolean contains(int i, int j, int k) {
-		return this.storage.get(this.getIndex(i, j, k));
+	protected int getIndex(int x, int y, int z) {
+		return (x * this.ySize + y) * this.zSize + z;
 	}
 
 	@Override
-	public void set(int i, int j, int k, boolean bl, boolean bl2) {
-		this.storage.set(this.getIndex(i, j, k), bl2);
-		if (bl && bl2) {
-			this.xMin = Math.min(this.xMin, i);
-			this.yMin = Math.min(this.yMin, j);
-			this.zMin = Math.min(this.zMin, k);
-			this.xMax = Math.max(this.xMax, i + 1);
-			this.yMax = Math.max(this.yMax, j + 1);
-			this.zMax = Math.max(this.zMax, k + 1);
+	public boolean contains(int x, int y, int z) {
+		return this.storage.get(this.getIndex(x, y, z));
+	}
+
+	@Override
+	public void set(int x, int y, int z, boolean resize, boolean included) {
+		this.storage.set(this.getIndex(x, y, z), included);
+		if (resize && included) {
+			this.xMin = Math.min(this.xMin, x);
+			this.yMin = Math.min(this.yMin, y);
+			this.zMin = Math.min(this.zMin, z);
+			this.xMax = Math.max(this.xMax, x + 1);
+			this.yMax = Math.max(this.yMax, y + 1);
+			this.zMax = Math.max(this.zMax, z + 1);
 		}
 	}
 
@@ -92,37 +92,28 @@ public final class BitSetVoxelSet extends VoxelSet {
 	}
 
 	@Override
-	protected boolean isColumnFull(int i, int j, int k, int l) {
-		if (k < 0 || l < 0 || i < 0) {
+	protected boolean isColumnFull(int minZ, int maxZ, int x, int y) {
+		if (x < 0 || y < 0 || minZ < 0) {
 			return false;
 		} else {
-			return k < this.xSize && l < this.ySize && j <= this.zSize ? this.storage.nextClearBit(this.getIndex(k, l, i)) >= this.getIndex(k, l, j) : false;
+			return x < this.xSize && y < this.ySize && maxZ <= this.zSize ? this.storage.nextClearBit(this.getIndex(x, y, minZ)) >= this.getIndex(x, y, maxZ) : false;
 		}
 	}
 
 	@Override
-	protected void setColumn(int i, int j, int k, int l, boolean bl) {
-		this.storage.set(this.getIndex(k, l, i), this.getIndex(k, l, j), bl);
+	protected void setColumn(int minZ, int maxZ, int x, int y, boolean included) {
+		this.storage.set(this.getIndex(x, y, minZ), this.getIndex(x, y, maxZ), included);
 	}
 
-	static BitSetVoxelSet combine(
-		VoxelSet voxelSet,
-		VoxelSet voxelSet2,
-		DoubleListPair doubleListPair,
-		DoubleListPair doubleListPair2,
-		DoubleListPair doubleListPair3,
-		BooleanBiFunction booleanBiFunction
-	) {
-		BitSetVoxelSet bitSetVoxelSet = new BitSetVoxelSet(
-			doubleListPair.getMergedList().size() - 1, doubleListPair2.getMergedList().size() - 1, doubleListPair3.getMergedList().size() - 1
-		);
+	static BitSetVoxelSet combine(VoxelSet first, VoxelSet second, PairList xPoints, PairList yPoints, PairList zPoints, BooleanBiFunction function) {
+		BitSetVoxelSet bitSetVoxelSet = new BitSetVoxelSet(xPoints.getPairs().size() - 1, yPoints.getPairs().size() - 1, zPoints.getPairs().size() - 1);
 		int[] is = new int[]{Integer.MAX_VALUE, Integer.MAX_VALUE, Integer.MAX_VALUE, Integer.MIN_VALUE, Integer.MIN_VALUE, Integer.MIN_VALUE};
-		doubleListPair.forAllOverlappingSections((i, j, k) -> {
+		xPoints.forEachPair((i, j, k) -> {
 			boolean[] bls = new boolean[]{false};
-			boolean bl = doubleListPair2.forAllOverlappingSections((l, m, n) -> {
+			boolean bl = yPoints.forEachPair((l, m, n) -> {
 				boolean[] bls2 = new boolean[]{false};
-				boolean blx = doubleListPair3.forAllOverlappingSections((o, p, q) -> {
-					boolean blxx = booleanBiFunction.apply(voxelSet.inBoundsAndContains(i, l, o), voxelSet2.inBoundsAndContains(j, m, p));
+				boolean blx = zPoints.forEachPair((o, p, q) -> {
+					boolean blxx = function.apply(first.inBoundsAndContains(i, l, o), second.inBoundsAndContains(j, m, p));
 					if (blxx) {
 						bitSetVoxelSet.storage.set(bitSetVoxelSet.getIndex(k, n, q));
 						is[2] = Math.min(is[2], q);

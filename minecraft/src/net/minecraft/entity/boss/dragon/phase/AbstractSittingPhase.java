@@ -5,8 +5,8 @@ import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.projectile.ProjectileEntity;
 
 public abstract class AbstractSittingPhase extends AbstractPhase {
-	public AbstractSittingPhase(EnderDragonEntity enderDragonEntity) {
-		super(enderDragonEntity);
+	public AbstractSittingPhase(EnderDragonEntity dragon) {
+		super(dragon);
 	}
 
 	@Override

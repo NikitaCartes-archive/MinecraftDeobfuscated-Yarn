@@ -9,7 +9,7 @@ import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.resource.language.I18n;
 import net.minecraft.text.TranslatableText;
-import net.minecraft.util.SystemUtil;
+import net.minecraft.util.Util;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.dimension.DimensionType;
 import net.minecraft.world.level.storage.LevelStorage;
@@ -17,8 +17,8 @@ import net.minecraft.world.updater.WorldUpdater;
 
 @Environment(EnvType.CLIENT)
 public class OptimizeWorldScreen extends Screen {
-	private static final Object2IntMap<DimensionType> field_3232 = SystemUtil.consume(
-		new Object2IntOpenCustomHashMap<>(SystemUtil.identityHashStrategy()), object2IntOpenCustomHashMap -> {
+	private static final Object2IntMap<DimensionType> field_3232 = Util.make(
+		new Object2IntOpenCustomHashMap<>(Util.identityHashStrategy()), object2IntOpenCustomHashMap -> {
 			object2IntOpenCustomHashMap.put(DimensionType.OVERWORLD, -13408734);
 			object2IntOpenCustomHashMap.put(DimensionType.THE_NETHER, -10075085);
 			object2IntOpenCustomHashMap.put(DimensionType.THE_END, -8943531);
@@ -56,32 +56,32 @@ public class OptimizeWorldScreen extends Screen {
 	}
 
 	@Override
-	public void render(int i, int j, float f) {
+	public void render(int mouseX, int mouseY, float delta) {
 		this.renderBackground();
 		this.drawCenteredString(this.font, this.title.asFormattedString(), this.width / 2, 20, 16777215);
-		int k = this.width / 2 - 150;
-		int l = this.width / 2 + 150;
-		int m = this.height / 4 + 100;
-		int n = m + 10;
-		this.drawCenteredString(this.font, this.updater.getStatus().asFormattedString(), this.width / 2, m - 9 - 2, 10526880);
+		int i = this.width / 2 - 150;
+		int j = this.width / 2 + 150;
+		int k = this.height / 4 + 100;
+		int l = k + 10;
+		this.drawCenteredString(this.font, this.updater.getStatus().asFormattedString(), this.width / 2, k - 9 - 2, 10526880);
 		if (this.updater.getTotalChunkCount() > 0) {
-			fill(k - 1, m - 1, l + 1, n + 1, -16777216);
-			this.drawString(this.font, I18n.translate("optimizeWorld.info.converted", this.updater.getUpgradedChunkCount()), k, 40, 10526880);
-			this.drawString(this.font, I18n.translate("optimizeWorld.info.skipped", this.updater.getSkippedChunkCount()), k, 40 + 9 + 3, 10526880);
-			this.drawString(this.font, I18n.translate("optimizeWorld.info.total", this.updater.getTotalChunkCount()), k, 40 + (9 + 3) * 2, 10526880);
-			int o = 0;
+			fill(i - 1, k - 1, j + 1, l + 1, -16777216);
+			this.drawString(this.font, I18n.translate("optimizeWorld.info.converted", this.updater.getUpgradedChunkCount()), i, 40, 10526880);
+			this.drawString(this.font, I18n.translate("optimizeWorld.info.skipped", this.updater.getSkippedChunkCount()), i, 40 + 9 + 3, 10526880);
+			this.drawString(this.font, I18n.translate("optimizeWorld.info.total", this.updater.getTotalChunkCount()), i, 40 + (9 + 3) * 2, 10526880);
+			int m = 0;
 
 			for (DimensionType dimensionType : DimensionType.getAll()) {
-				int p = MathHelper.floor(this.updater.getProgress(dimensionType) * (float)(l - k));
-				fill(k + o, m, k + o + p, n, field_3232.getInt(dimensionType));
-				o += p;
+				int n = MathHelper.floor(this.updater.getProgress(dimensionType) * (float)(j - i));
+				fill(i + m, k, i + m + n, l, field_3232.getInt(dimensionType));
+				m += n;
 			}
 
-			int q = this.updater.getUpgradedChunkCount() + this.updater.getSkippedChunkCount();
-			this.drawCenteredString(this.font, q + " / " + this.updater.getTotalChunkCount(), this.width / 2, m + 2 * 9 + 2, 10526880);
-			this.drawCenteredString(this.font, MathHelper.floor(this.updater.getProgress() * 100.0F) + "%", this.width / 2, m + (n - m) / 2 - 9 / 2, 10526880);
+			int o = this.updater.getUpgradedChunkCount() + this.updater.getSkippedChunkCount();
+			this.drawCenteredString(this.font, o + " / " + this.updater.getTotalChunkCount(), this.width / 2, k + 2 * 9 + 2, 10526880);
+			this.drawCenteredString(this.font, MathHelper.floor(this.updater.getProgress() * 100.0F) + "%", this.width / 2, k + (l - k) / 2 - 9 / 2, 10526880);
 		}
 
-		super.render(i, j, f);
+		super.render(mouseX, mouseY, delta);
 	}
 }

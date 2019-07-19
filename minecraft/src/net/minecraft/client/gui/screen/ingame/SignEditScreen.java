@@ -13,7 +13,7 @@ import net.minecraft.client.network.ClientPlayNetworkHandler;
 import net.minecraft.client.render.block.entity.BlockEntityRenderDispatcher;
 import net.minecraft.client.resource.language.I18n;
 import net.minecraft.client.util.SelectionManager;
-import net.minecraft.server.network.packet.UpdateSignC2SPacket;
+import net.minecraft.network.packet.c2s.play.UpdateSignC2SPacket;
 import net.minecraft.text.LiteralText;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.math.Direction;
@@ -25,9 +25,9 @@ public class SignEditScreen extends Screen {
 	private int currentRow;
 	private SelectionManager selectionManager;
 
-	public SignEditScreen(SignBlockEntity signBlockEntity) {
+	public SignEditScreen(SignBlockEntity sign) {
 		super(new TranslatableText("sign.edit"));
-		this.sign = signBlockEntity;
+		this.sign = sign;
 	}
 
 	@Override
@@ -67,8 +67,8 @@ public class SignEditScreen extends Screen {
 	}
 
 	@Override
-	public boolean charTyped(char c, int i) {
-		this.selectionManager.insert(c);
+	public boolean charTyped(char chr, int keyCode) {
+		this.selectionManager.insert(chr);
 		return true;
 	}
 
@@ -78,45 +78,45 @@ public class SignEditScreen extends Screen {
 	}
 
 	@Override
-	public boolean keyPressed(int i, int j, int k) {
-		if (i == 265) {
+	public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
+		if (keyCode == 265) {
 			this.currentRow = this.currentRow - 1 & 3;
 			this.selectionManager.moveCaretToEnd();
 			return true;
-		} else if (i == 264 || i == 257 || i == 335) {
+		} else if (keyCode == 264 || keyCode == 257 || keyCode == 335) {
 			this.currentRow = this.currentRow + 1 & 3;
 			this.selectionManager.moveCaretToEnd();
 			return true;
 		} else {
-			return this.selectionManager.handleSpecialKey(i) ? true : super.keyPressed(i, j, k);
+			return this.selectionManager.handleSpecialKey(keyCode) ? true : super.keyPressed(keyCode, scanCode, modifiers);
 		}
 	}
 
 	@Override
-	public void render(int i, int j, float f) {
+	public void render(int mouseX, int mouseY, float delta) {
 		this.renderBackground();
 		this.drawCenteredString(this.font, this.title.asFormattedString(), this.width / 2, 40, 16777215);
 		GlStateManager.color4f(1.0F, 1.0F, 1.0F, 1.0F);
 		GlStateManager.pushMatrix();
 		GlStateManager.translatef((float)(this.width / 2), 0.0F, 50.0F);
-		float g = 93.75F;
+		float f = 93.75F;
 		GlStateManager.scalef(-93.75F, -93.75F, -93.75F);
 		GlStateManager.rotatef(180.0F, 0.0F, 1.0F, 0.0F);
 		BlockState blockState = this.sign.getCachedState();
-		float h;
+		float g;
 		if (blockState.getBlock() instanceof SignBlock) {
-			h = (float)((Integer)blockState.get(SignBlock.ROTATION) * 360) / 16.0F;
+			g = (float)((Integer)blockState.get(SignBlock.ROTATION) * 360) / 16.0F;
 		} else {
-			h = ((Direction)blockState.get(WallSignBlock.FACING)).asRotation();
+			g = ((Direction)blockState.get(WallSignBlock.FACING)).asRotation();
 		}
 
-		GlStateManager.rotatef(h, 0.0F, 1.0F, 0.0F);
+		GlStateManager.rotatef(g, 0.0F, 1.0F, 0.0F);
 		GlStateManager.translatef(0.0F, -1.0625F, 0.0F);
 		this.sign
 			.setSelectionState(this.currentRow, this.selectionManager.getSelectionStart(), this.selectionManager.getSelectionEnd(), this.ticksSinceOpened / 6 % 2 == 0);
 		BlockEntityRenderDispatcher.INSTANCE.renderEntity(this.sign, -0.5, -0.75, -0.5, 0.0F);
 		this.sign.resetSelectionState();
 		GlStateManager.popMatrix();
-		super.render(i, j, f);
+		super.render(mouseX, mouseY, delta);
 	}
 }

@@ -15,7 +15,7 @@ public class RepairItemRecipe extends SpecialCraftingRecipe {
 		super(identifier);
 	}
 
-	public boolean method_20808(CraftingInventory craftingInventory, World world) {
+	public boolean matches(CraftingInventory craftingInventory, World world) {
 		List<ItemStack> list = Lists.<ItemStack>newArrayList();
 
 		for (int i = 0; i < craftingInventory.getInvSize(); i++) {
@@ -34,7 +34,7 @@ public class RepairItemRecipe extends SpecialCraftingRecipe {
 		return list.size() == 2;
 	}
 
-	public ItemStack method_20807(CraftingInventory craftingInventory) {
+	public ItemStack craft(CraftingInventory craftingInventory) {
 		List<ItemStack> list = Lists.<ItemStack>newArrayList();
 
 		for (int i = 0; i < craftingInventory.getInvSize(); i++) {
@@ -74,8 +74,8 @@ public class RepairItemRecipe extends SpecialCraftingRecipe {
 
 	@Environment(EnvType.CLIENT)
 	@Override
-	public boolean fits(int i, int j) {
-		return i * j >= 2;
+	public boolean fits(int width, int height) {
+		return width * height >= 2;
 	}
 
 	@Override

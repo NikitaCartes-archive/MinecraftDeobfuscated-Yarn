@@ -17,7 +17,7 @@ public class FindInteractionTargetTask extends Task<LivingEntity> {
 	private final Predicate<LivingEntity> predicate;
 	private final Predicate<LivingEntity> shouldRunPredicate;
 
-	public FindInteractionTargetTask(EntityType<?> entityType, int i, Predicate<LivingEntity> predicate, Predicate<LivingEntity> predicate2) {
+	public FindInteractionTargetTask(EntityType<?> entityType, int maxDistance, Predicate<LivingEntity> shouldRunPredicate, Predicate<LivingEntity> predicate) {
 		super(
 			ImmutableMap.of(
 				MemoryModuleType.LOOK_TARGET,
@@ -29,9 +29,9 @@ public class FindInteractionTargetTask extends Task<LivingEntity> {
 			)
 		);
 		this.entityType = entityType;
-		this.maxSquaredDistance = i * i;
-		this.predicate = predicate2;
-		this.shouldRunPredicate = predicate;
+		this.maxSquaredDistance = maxDistance * maxDistance;
+		this.predicate = predicate;
+		this.shouldRunPredicate = shouldRunPredicate;
 	}
 
 	public FindInteractionTargetTask(EntityType<?> entityType, int i) {
@@ -39,32 +39,32 @@ public class FindInteractionTargetTask extends Task<LivingEntity> {
 	}
 
 	@Override
-	public boolean shouldRun(ServerWorld serverWorld, LivingEntity livingEntity) {
-		return this.shouldRunPredicate.test(livingEntity) && this.getVisibleMobs(livingEntity).stream().anyMatch(this::test);
+	public boolean shouldRun(ServerWorld world, LivingEntity entity) {
+		return this.shouldRunPredicate.test(entity) && this.getVisibleMobs(entity).stream().anyMatch(this::test);
 	}
 
 	@Override
-	public void run(ServerWorld serverWorld, LivingEntity livingEntity, long l) {
-		super.run(serverWorld, livingEntity, l);
-		Brain<?> brain = livingEntity.getBrain();
+	public void run(ServerWorld world, LivingEntity entity, long time) {
+		super.run(world, entity, time);
+		Brain<?> brain = entity.getBrain();
 		brain.getOptionalMemory(MemoryModuleType.VISIBLE_MOBS)
 			.ifPresent(
 				list -> list.stream()
-						.filter(livingEntity2 -> livingEntity2.squaredDistanceTo(livingEntity) <= (double)this.maxSquaredDistance)
+						.filter(livingEntity2 -> livingEntity2.squaredDistanceTo(entity) <= (double)this.maxSquaredDistance)
 						.filter(this::test)
 						.findFirst()
-						.ifPresent(livingEntityxx -> {
-							brain.putMemory(MemoryModuleType.INTERACTION_TARGET, livingEntityxx);
-							brain.putMemory(MemoryModuleType.LOOK_TARGET, new EntityPosWrapper(livingEntityxx));
+						.ifPresent(livingEntityx -> {
+							brain.putMemory(MemoryModuleType.INTERACTION_TARGET, livingEntityx);
+							brain.putMemory(MemoryModuleType.LOOK_TARGET, new EntityPosWrapper(livingEntityx));
 						})
 			);
 	}
 
-	private boolean test(LivingEntity livingEntity) {
-		return this.entityType.equals(livingEntity.getType()) && this.predicate.test(livingEntity);
+	private boolean test(LivingEntity entity) {
+		return this.entityType.equals(entity.getType()) && this.predicate.test(entity);
 	}
 
-	private List<LivingEntity> getVisibleMobs(LivingEntity livingEntity) {
-		return (List<LivingEntity>)livingEntity.getBrain().getOptionalMemory(MemoryModuleType.VISIBLE_MOBS).get();
+	private List<LivingEntity> getVisibleMobs(LivingEntity entity) {
+		return (List<LivingEntity>)entity.getBrain().getOptionalMemory(MemoryModuleType.VISIBLE_MOBS).get();
 	}
 }

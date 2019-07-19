@@ -30,36 +30,36 @@ public class InputUtil {
 		return i == -1 ? InputUtil.Type.SCANCODE.createFromCode(j) : InputUtil.Type.KEYSYM.createFromCode(i);
 	}
 
-	public static InputUtil.KeyCode fromName(String string) {
-		if (InputUtil.KeyCode.NAMES.containsKey(string)) {
-			return (InputUtil.KeyCode)InputUtil.KeyCode.NAMES.get(string);
+	public static InputUtil.KeyCode fromName(String s) {
+		if (InputUtil.KeyCode.NAMES.containsKey(s)) {
+			return (InputUtil.KeyCode)InputUtil.KeyCode.NAMES.get(s);
 		} else {
 			for (InputUtil.Type type : InputUtil.Type.values()) {
-				if (string.startsWith(type.name)) {
-					String string2 = string.substring(type.name.length() + 1);
-					return type.createFromCode(Integer.parseInt(string2));
+				if (s.startsWith(type.name)) {
+					String string = s.substring(type.name.length() + 1);
+					return type.createFromCode(Integer.parseInt(string));
 				}
 			}
 
-			throw new IllegalArgumentException("Unknown key name: " + string);
+			throw new IllegalArgumentException("Unknown key name: " + s);
 		}
 	}
 
-	public static boolean isKeyPressed(long l, int i) {
-		return GLFW.glfwGetKey(l, i) == 1;
+	public static boolean isKeyPressed(long handle, int i) {
+		return GLFW.glfwGetKey(handle, i) == 1;
 	}
 
-	public static void setKeyboardCallbacks(long l, GLFWKeyCallbackI gLFWKeyCallbackI, GLFWCharModsCallbackI gLFWCharModsCallbackI) {
-		GLFW.glfwSetKeyCallback(l, gLFWKeyCallbackI);
-		GLFW.glfwSetCharModsCallback(l, gLFWCharModsCallbackI);
+	public static void setKeyboardCallbacks(long handle, GLFWKeyCallbackI gLFWKeyCallbackI, GLFWCharModsCallbackI gLFWCharModsCallbackI) {
+		GLFW.glfwSetKeyCallback(handle, gLFWKeyCallbackI);
+		GLFW.glfwSetCharModsCallback(handle, gLFWCharModsCallbackI);
 	}
 
 	public static void setMouseCallbacks(
-		long l, GLFWCursorPosCallbackI gLFWCursorPosCallbackI, GLFWMouseButtonCallbackI gLFWMouseButtonCallbackI, GLFWScrollCallbackI gLFWScrollCallbackI
+		long handle, GLFWCursorPosCallbackI gLFWCursorPosCallbackI, GLFWMouseButtonCallbackI gLFWMouseButtonCallbackI, GLFWScrollCallbackI gLFWScrollCallbackI
 	) {
-		GLFW.glfwSetCursorPosCallback(l, gLFWCursorPosCallbackI);
-		GLFW.glfwSetMouseButtonCallback(l, gLFWMouseButtonCallbackI);
-		GLFW.glfwSetScrollCallback(l, gLFWScrollCallbackI);
+		GLFW.glfwSetCursorPosCallback(handle, gLFWCursorPosCallbackI);
+		GLFW.glfwSetMouseButtonCallback(handle, gLFWMouseButtonCallbackI);
+		GLFW.glfwSetScrollCallback(handle, gLFWScrollCallbackI);
 	}
 
 	public static void setCursorParameters(long l, int i, double d, double e) {
@@ -118,11 +118,11 @@ public class InputUtil {
 		private final int keyCode;
 		private static final Map<String, InputUtil.KeyCode> NAMES = Maps.<String, InputUtil.KeyCode>newHashMap();
 
-		private KeyCode(String string, InputUtil.Type type, int i) {
-			this.name = string;
+		private KeyCode(String keyName, InputUtil.Type type, int i) {
+			this.name = keyName;
 			this.type = type;
 			this.keyCode = i;
-			NAMES.put(string, this);
+			NAMES.put(keyName, this);
 		}
 
 		public InputUtil.Type getCategory() {
@@ -137,11 +137,11 @@ public class InputUtil {
 			return this.name;
 		}
 
-		public boolean equals(Object object) {
-			if (this == object) {
+		public boolean equals(Object o) {
+			if (this == o) {
 				return true;
-			} else if (object != null && this.getClass() == object.getClass()) {
-				InputUtil.KeyCode keyCode = (InputUtil.KeyCode)object;
+			} else if (o != null && this.getClass() == o.getClass()) {
+				InputUtil.KeyCode keyCode = (InputUtil.KeyCode)o;
 				return this.keyCode == keyCode.keyCode && this.type == keyCode.type;
 			} else {
 				return false;
@@ -167,9 +167,9 @@ public class InputUtil {
 		private final Int2ObjectMap<InputUtil.KeyCode> map = new Int2ObjectOpenHashMap<>();
 		private final String name;
 
-		private static void mapKey(InputUtil.Type type, String string, int i) {
-			InputUtil.KeyCode keyCode = new InputUtil.KeyCode(string, type, i);
-			type.map.put(i, keyCode);
+		private static void mapKey(InputUtil.Type type, String name, int keyCode) {
+			InputUtil.KeyCode keyCode2 = new InputUtil.KeyCode(name, type, keyCode);
+			type.map.put(keyCode, keyCode2);
 		}
 
 		private Type(String string2) {

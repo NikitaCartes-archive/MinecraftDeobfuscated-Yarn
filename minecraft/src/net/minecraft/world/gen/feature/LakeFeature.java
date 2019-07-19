@@ -19,11 +19,11 @@ import net.minecraft.world.gen.chunk.ChunkGeneratorConfig;
 public class LakeFeature extends Feature<LakeFeatureConfig> {
 	private static final BlockState CAVE_AIR = Blocks.CAVE_AIR.getDefaultState();
 
-	public LakeFeature(Function<Dynamic<?>, ? extends LakeFeatureConfig> function) {
-		super(function);
+	public LakeFeature(Function<Dynamic<?>, ? extends LakeFeatureConfig> configFactory) {
+		super(configFactory);
 	}
 
-	public boolean method_13471(
+	public boolean generate(
 		IWorld iWorld, ChunkGenerator<? extends ChunkGeneratorConfig> chunkGenerator, Random random, BlockPos blockPos, LakeFeatureConfig lakeFeatureConfig
 	) {
 		while (blockPos.getY() > 5 && iWorld.isAir(blockPos)) {

@@ -17,7 +17,7 @@ public class NoRenderParticle extends Particle {
 	}
 
 	@Override
-	public final void buildGeometry(BufferBuilder bufferBuilder, Camera camera, float f, float g, float h, float i, float j, float k) {
+	public final void buildGeometry(BufferBuilder bufferBuilder, Camera camera, float tickDelta, float f, float g, float h, float i, float j) {
 	}
 
 	@Override

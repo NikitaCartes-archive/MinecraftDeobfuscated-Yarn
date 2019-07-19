@@ -35,9 +35,9 @@ import net.minecraft.advancement.criterion.Criterion;
 import net.minecraft.advancement.criterion.CriterionConditions;
 import net.minecraft.advancement.criterion.CriterionProgress;
 import net.minecraft.advancement.criterion.Criterions;
-import net.minecraft.client.network.packet.AdvancementUpdateS2CPacket;
-import net.minecraft.client.network.packet.SelectAdvancementTabS2CPacket;
-import net.minecraft.datafixers.DataFixTypes;
+import net.minecraft.datafixer.DataFixTypes;
+import net.minecraft.network.packet.s2c.play.AdvancementUpdateS2CPacket;
+import net.minecraft.network.packet.s2c.play.SelectAdvancementTabS2CPacket;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.TranslatableText;
@@ -66,15 +66,15 @@ public class PlayerAdvancementTracker {
 	private Advancement currentDisplayTab;
 	private boolean dirty = true;
 
-	public PlayerAdvancementTracker(MinecraftServer minecraftServer, File file, ServerPlayerEntity serverPlayerEntity) {
-		this.server = minecraftServer;
-		this.advancementFile = file;
-		this.owner = serverPlayerEntity;
+	public PlayerAdvancementTracker(MinecraftServer server, File advancementFile, ServerPlayerEntity owner) {
+		this.server = server;
+		this.advancementFile = advancementFile;
+		this.owner = owner;
 		this.load();
 	}
 
-	public void setOwner(ServerPlayerEntity serverPlayerEntity) {
-		this.owner = serverPlayerEntity;
+	public void setOwner(ServerPlayerEntity owner) {
+		this.owner = owner;
 	}
 
 	public void clearCriterions() {
@@ -248,11 +248,11 @@ public class PlayerAdvancementTracker {
 		}
 	}
 
-	public boolean grantCriterion(Advancement advancement, String string) {
+	public boolean grantCriterion(Advancement advancement, String criterion) {
 		boolean bl = false;
 		AdvancementProgress advancementProgress = this.getProgress(advancement);
 		boolean bl2 = advancementProgress.isDone();
-		if (advancementProgress.obtain(string)) {
+		if (advancementProgress.obtain(criterion)) {
 			this.endTrackingCompleted(advancement);
 			this.progressUpdates.add(advancement);
 			bl = true;
@@ -277,10 +277,10 @@ public class PlayerAdvancementTracker {
 		return bl;
 	}
 
-	public boolean revokeCriterion(Advancement advancement, String string) {
+	public boolean revokeCriterion(Advancement advancement, String criterion) {
 		boolean bl = false;
 		AdvancementProgress advancementProgress = this.getProgress(advancement);
-		if (advancementProgress.reset(string)) {
+		if (advancementProgress.reset(criterion)) {
 			this.beginTracking(advancement);
 			this.progressUpdates.add(advancement);
 			bl = true;

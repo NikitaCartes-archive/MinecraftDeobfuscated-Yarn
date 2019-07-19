@@ -1,5 +1,5 @@
 package net.minecraft.server;
 
 public interface WorldGenerationProgressListenerFactory {
-	WorldGenerationProgressListener create(int i);
+	WorldGenerationProgressListener create(int radius);
 }

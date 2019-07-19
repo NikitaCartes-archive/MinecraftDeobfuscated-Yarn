@@ -5,20 +5,20 @@ import javax.annotation.Nullable;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.ViewableWorld;
+import net.minecraft.world.CollisionView;
 
 public class CachedBlockPosition {
-	private final ViewableWorld world;
+	private final CollisionView world;
 	private final BlockPos pos;
 	private final boolean forceLoad;
 	private BlockState state;
 	private BlockEntity blockEntity;
 	private boolean cachedEntity;
 
-	public CachedBlockPosition(ViewableWorld viewableWorld, BlockPos blockPos, boolean bl) {
-		this.world = viewableWorld;
-		this.pos = blockPos.toImmutable();
-		this.forceLoad = bl;
+	public CachedBlockPosition(CollisionView collisionView, BlockPos pos, boolean forceLoad) {
+		this.world = collisionView;
+		this.pos = pos.toImmutable();
+		this.forceLoad = forceLoad;
 	}
 
 	public BlockState getBlockState() {
@@ -39,7 +39,7 @@ public class CachedBlockPosition {
 		return this.blockEntity;
 	}
 
-	public ViewableWorld getWorld() {
+	public CollisionView getWorld() {
 		return this.world;
 	}
 
@@ -47,7 +47,7 @@ public class CachedBlockPosition {
 		return this.pos;
 	}
 
-	public static Predicate<CachedBlockPosition> matchesBlockState(Predicate<BlockState> predicate) {
-		return cachedBlockPosition -> cachedBlockPosition != null && predicate.test(cachedBlockPosition.getBlockState());
+	public static Predicate<CachedBlockPosition> matchesBlockState(Predicate<BlockState> state) {
+		return cachedBlockPosition -> cachedBlockPosition != null && state.test(cachedBlockPosition.getBlockState());
 	}
 }

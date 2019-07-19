@@ -4,8 +4,8 @@ import com.mojang.blaze3d.platform.GlStateManager;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.block.entity.ConduitBlockEntity;
-import net.minecraft.client.model.Cuboid;
 import net.minecraft.client.model.Model;
+import net.minecraft.client.model.ModelPart;
 import net.minecraft.client.render.Camera;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.MathHelper;
@@ -23,7 +23,7 @@ public class ConduitBlockEntityRenderer extends BlockEntityRenderer<ConduitBlock
 	private final ConduitBlockEntityRenderer.WindModel windModel = new ConduitBlockEntityRenderer.WindModel();
 	private final ConduitBlockEntityRenderer.EyeModel eyeModel = new ConduitBlockEntityRenderer.EyeModel();
 
-	public void method_3572(ConduitBlockEntity conduitBlockEntity, double d, double e, double f, float g, int i) {
+	public void render(ConduitBlockEntity conduitBlockEntity, double d, double e, double f, float g, int i) {
 		float h = (float)conduitBlockEntity.ticks + g;
 		if (!conduitBlockEntity.isActive()) {
 			float j = conduitBlockEntity.getRotation(0.0F);
@@ -94,7 +94,7 @@ public class ConduitBlockEntityRenderer extends BlockEntityRenderer<ConduitBlock
 					GlStateManager.popMatrix();
 			}
 
-			Camera camera = this.renderManager.cameraEntity;
+			Camera camera = this.renderManager.camera;
 			if (conduitBlockEntity.isEyeOpen()) {
 				this.bindTexture(OPEN_EYE_TEX);
 			} else {
@@ -116,13 +116,13 @@ public class ConduitBlockEntityRenderer extends BlockEntityRenderer<ConduitBlock
 
 	@Environment(EnvType.CLIENT)
 	static class BaseModel extends Model {
-		private final Cuboid cuboid;
+		private final ModelPart cuboid;
 
 		public BaseModel() {
 			this.textureWidth = 32;
 			this.textureHeight = 16;
-			this.cuboid = new Cuboid(this, 0, 0);
-			this.cuboid.addBox(-3.0F, -3.0F, -3.0F, 6, 6, 6);
+			this.cuboid = new ModelPart(this, 0, 0);
+			this.cuboid.addCuboid(-3.0F, -3.0F, -3.0F, 6, 6, 6);
 		}
 
 		public void render(float f, float g, float h, float i, float j, float k) {
@@ -132,13 +132,13 @@ public class ConduitBlockEntityRenderer extends BlockEntityRenderer<ConduitBlock
 
 	@Environment(EnvType.CLIENT)
 	static class CageModel extends Model {
-		private final Cuboid cuboid;
+		private final ModelPart cuboid;
 
 		public CageModel() {
 			this.textureWidth = 32;
 			this.textureHeight = 16;
-			this.cuboid = new Cuboid(this, 0, 0);
-			this.cuboid.addBox(-4.0F, -4.0F, -4.0F, 8, 8, 8);
+			this.cuboid = new ModelPart(this, 0, 0);
+			this.cuboid.addCuboid(-4.0F, -4.0F, -4.0F, 8, 8, 8);
 		}
 
 		public void render(float f, float g, float h, float i, float j, float k) {
@@ -148,13 +148,13 @@ public class ConduitBlockEntityRenderer extends BlockEntityRenderer<ConduitBlock
 
 	@Environment(EnvType.CLIENT)
 	static class EyeModel extends Model {
-		private final Cuboid cuboid;
+		private final ModelPart cuboid;
 
 		public EyeModel() {
 			this.textureWidth = 8;
 			this.textureHeight = 8;
-			this.cuboid = new Cuboid(this, 0, 0);
-			this.cuboid.addBox(-4.0F, -4.0F, 0.0F, 8, 8, 0, 0.01F);
+			this.cuboid = new ModelPart(this, 0, 0);
+			this.cuboid.addCuboid(-4.0F, -4.0F, 0.0F, 8, 8, 0, 0.01F);
 		}
 
 		public void render(float f, float g, float h, float i, float j, float k) {
@@ -164,7 +164,7 @@ public class ConduitBlockEntityRenderer extends BlockEntityRenderer<ConduitBlock
 
 	@Environment(EnvType.CLIENT)
 	static class WindModel extends Model {
-		private final Cuboid[] cuboids = new Cuboid[22];
+		private final ModelPart[] cuboids = new ModelPart[22];
 		private int field_4384;
 
 		public WindModel() {
@@ -172,8 +172,8 @@ public class ConduitBlockEntityRenderer extends BlockEntityRenderer<ConduitBlock
 			this.textureHeight = 1024;
 
 			for (int i = 0; i < 22; i++) {
-				this.cuboids[i] = new Cuboid(this, 0, 32 * i);
-				this.cuboids[i].addBox(-8.0F, -8.0F, -8.0F, 16, 16, 16);
+				this.cuboids[i] = new ModelPart(this, 0, 32 * i);
+				this.cuboids[i].addCuboid(-8.0F, -8.0F, -8.0F, 16, 16, 16);
 			}
 		}
 

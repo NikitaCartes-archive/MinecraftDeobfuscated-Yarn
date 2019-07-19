@@ -26,25 +26,25 @@ public class ScoreboardState extends PersistentState {
 	}
 
 	@Override
-	public void fromTag(CompoundTag compoundTag) {
+	public void fromTag(CompoundTag tag) {
 		if (this.scoreboard == null) {
-			this.tag = compoundTag;
+			this.tag = tag;
 		} else {
-			this.deserializeObjectives(compoundTag.getList("Objectives", 10));
-			this.scoreboard.fromTag(compoundTag.getList("PlayerScores", 10));
-			if (compoundTag.containsKey("DisplaySlots", 10)) {
-				this.deserializeDisplaySlots(compoundTag.getCompound("DisplaySlots"));
+			this.deserializeObjectives(tag.getList("Objectives", 10));
+			this.scoreboard.fromTag(tag.getList("PlayerScores", 10));
+			if (tag.contains("DisplaySlots", 10)) {
+				this.deserializeDisplaySlots(tag.getCompound("DisplaySlots"));
 			}
 
-			if (compoundTag.containsKey("Teams", 9)) {
-				this.deserializeTeams(compoundTag.getList("Teams", 10));
+			if (tag.contains("Teams", 9)) {
+				this.deserializeTeams(tag.getList("Teams", 10));
 			}
 		}
 	}
 
 	protected void deserializeTeams(ListTag listTag) {
 		for (int i = 0; i < listTag.size(); i++) {
-			CompoundTag compoundTag = listTag.getCompoundTag(i);
+			CompoundTag compoundTag = listTag.getCompound(i);
 			String string = compoundTag.getString("Name");
 			if (string.length() > 16) {
 				string = string.substring(0, 16);
@@ -56,47 +56,47 @@ public class ScoreboardState extends PersistentState {
 				team.setDisplayName(text);
 			}
 
-			if (compoundTag.containsKey("TeamColor", 8)) {
+			if (compoundTag.contains("TeamColor", 8)) {
 				team.setColor(Formatting.byName(compoundTag.getString("TeamColor")));
 			}
 
-			if (compoundTag.containsKey("AllowFriendlyFire", 99)) {
+			if (compoundTag.contains("AllowFriendlyFire", 99)) {
 				team.setFriendlyFireAllowed(compoundTag.getBoolean("AllowFriendlyFire"));
 			}
 
-			if (compoundTag.containsKey("SeeFriendlyInvisibles", 99)) {
+			if (compoundTag.contains("SeeFriendlyInvisibles", 99)) {
 				team.setShowFriendlyInvisibles(compoundTag.getBoolean("SeeFriendlyInvisibles"));
 			}
 
-			if (compoundTag.containsKey("MemberNamePrefix", 8)) {
+			if (compoundTag.contains("MemberNamePrefix", 8)) {
 				Text text2 = Text.Serializer.fromJson(compoundTag.getString("MemberNamePrefix"));
 				if (text2 != null) {
 					team.setPrefix(text2);
 				}
 			}
 
-			if (compoundTag.containsKey("MemberNameSuffix", 8)) {
+			if (compoundTag.contains("MemberNameSuffix", 8)) {
 				Text text2 = Text.Serializer.fromJson(compoundTag.getString("MemberNameSuffix"));
 				if (text2 != null) {
 					team.setSuffix(text2);
 				}
 			}
 
-			if (compoundTag.containsKey("NameTagVisibility", 8)) {
+			if (compoundTag.contains("NameTagVisibility", 8)) {
 				AbstractTeam.VisibilityRule visibilityRule = AbstractTeam.VisibilityRule.getRule(compoundTag.getString("NameTagVisibility"));
 				if (visibilityRule != null) {
 					team.setNameTagVisibilityRule(visibilityRule);
 				}
 			}
 
-			if (compoundTag.containsKey("DeathMessageVisibility", 8)) {
+			if (compoundTag.contains("DeathMessageVisibility", 8)) {
 				AbstractTeam.VisibilityRule visibilityRule = AbstractTeam.VisibilityRule.getRule(compoundTag.getString("DeathMessageVisibility"));
 				if (visibilityRule != null) {
 					team.setDeathMessageVisibilityRule(visibilityRule);
 				}
 			}
 
-			if (compoundTag.containsKey("CollisionRule", 8)) {
+			if (compoundTag.contains("CollisionRule", 8)) {
 				AbstractTeam.CollisionRule collisionRule = AbstractTeam.CollisionRule.getRule(compoundTag.getString("CollisionRule"));
 				if (collisionRule != null) {
 					team.setCollisionRule(collisionRule);
@@ -115,7 +115,7 @@ public class ScoreboardState extends PersistentState {
 
 	protected void deserializeDisplaySlots(CompoundTag compoundTag) {
 		for (int i = 0; i < 19; i++) {
-			if (compoundTag.containsKey("slot_" + i, 8)) {
+			if (compoundTag.contains("slot_" + i, 8)) {
 				String string = compoundTag.getString("slot_" + i);
 				ScoreboardObjective scoreboardObjective = this.scoreboard.getNullableObjective(string);
 				this.scoreboard.setObjectiveSlot(i, scoreboardObjective);
@@ -125,7 +125,7 @@ public class ScoreboardState extends PersistentState {
 
 	protected void deserializeObjectives(ListTag listTag) {
 		for (int i = 0; i < listTag.size(); i++) {
-			CompoundTag compoundTag = listTag.getCompoundTag(i);
+			CompoundTag compoundTag = listTag.getCompound(i);
 			ScoreboardCriterion.createStatCriterion(compoundTag.getString("CriteriaName")).ifPresent(scoreboardCriterion -> {
 				String string = compoundTag.getString("Name");
 				if (string.length() > 16) {
@@ -140,16 +140,16 @@ public class ScoreboardState extends PersistentState {
 	}
 
 	@Override
-	public CompoundTag toTag(CompoundTag compoundTag) {
+	public CompoundTag toTag(CompoundTag tag) {
 		if (this.scoreboard == null) {
 			LOGGER.warn("Tried to save scoreboard without having a scoreboard...");
-			return compoundTag;
+			return tag;
 		} else {
-			compoundTag.put("Objectives", this.serializeObjectives());
-			compoundTag.put("PlayerScores", this.scoreboard.toTag());
-			compoundTag.put("Teams", this.serializeTeams());
-			this.serializeSlots(compoundTag);
-			return compoundTag;
+			tag.put("Objectives", this.serializeObjectives());
+			tag.put("PlayerScores", this.scoreboard.toTag());
+			tag.put("Teams", this.serializeTeams());
+			this.serializeSlots(tag);
+			return tag;
 		}
 	}
 

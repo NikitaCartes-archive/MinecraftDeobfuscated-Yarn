@@ -12,13 +12,13 @@ import net.minecraft.util.math.Direction;
 import net.minecraft.world.IWorld;
 
 public class CoralClawFeature extends CoralFeature {
-	public CoralClawFeature(Function<Dynamic<?>, ? extends DefaultFeatureConfig> function) {
-		super(function);
+	public CoralClawFeature(Function<Dynamic<?>, ? extends DefaultFeatureConfig> configFactory) {
+		super(configFactory);
 	}
 
 	@Override
-	protected boolean spawnCoral(IWorld iWorld, Random random, BlockPos blockPos, BlockState blockState) {
-		if (!this.spawnCoralPiece(iWorld, random, blockPos, blockState)) {
+	protected boolean spawnCoral(IWorld world, Random random, BlockPos pos, BlockState state) {
+		if (!this.spawnCoralPiece(world, random, pos, state)) {
 			return false;
 		} else {
 			Direction direction = Direction.Type.HORIZONTAL.random(random);
@@ -27,7 +27,7 @@ public class CoralClawFeature extends CoralFeature {
 			Collections.shuffle(list, random);
 
 			for (Direction direction2 : list.subList(0, i)) {
-				BlockPos.Mutable mutable = new BlockPos.Mutable(blockPos);
+				BlockPos.Mutable mutable = new BlockPos.Mutable(pos);
 				int j = random.nextInt(2) + 1;
 				mutable.setOffset(direction2);
 				int k;
@@ -42,7 +42,7 @@ public class CoralClawFeature extends CoralFeature {
 					k = random.nextInt(3) + 3;
 				}
 
-				for (int l = 0; l < j && this.spawnCoralPiece(iWorld, random, mutable, blockState); l++) {
+				for (int l = 0; l < j && this.spawnCoralPiece(world, random, mutable, state); l++) {
 					mutable.setOffset(direction3);
 				}
 
@@ -51,7 +51,7 @@ public class CoralClawFeature extends CoralFeature {
 
 				for (int l = 0; l < k; l++) {
 					mutable.setOffset(direction);
-					if (!this.spawnCoralPiece(iWorld, random, mutable, blockState)) {
+					if (!this.spawnCoralPiece(world, random, mutable, state)) {
 						break;
 					}
 

@@ -19,12 +19,12 @@ import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gui.ClientChatListener;
 import net.minecraft.client.gui.DrawableHelper;
 import net.minecraft.client.gui.GameInfoChatListener;
-import net.minecraft.client.gui.screen.ingame.AbstractContainerScreen;
+import net.minecraft.client.gui.screen.ingame.ContainerScreen;
 import net.minecraft.client.options.AttackIndicator;
 import net.minecraft.client.options.GameOptions;
 import net.minecraft.client.render.BufferBuilder;
 import net.minecraft.client.render.Camera;
-import net.minecraft.client.render.GuiLighting;
+import net.minecraft.client.render.DiffuseLighting;
 import net.minecraft.client.render.Tessellator;
 import net.minecraft.client.render.VertexFormats;
 import net.minecraft.client.render.item.ItemRenderer;
@@ -33,7 +33,7 @@ import net.minecraft.client.texture.Sprite;
 import net.minecraft.client.texture.SpriteAtlasTexture;
 import net.minecraft.client.texture.StatusEffectSpriteManager;
 import net.minecraft.client.util.NarratorManager;
-import net.minecraft.container.NameableContainerProvider;
+import net.minecraft.container.NameableContainerFactory;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.attribute.EntityAttributeInstance;
@@ -56,7 +56,7 @@ import net.minecraft.util.Arm;
 import net.minecraft.util.ChatUtil;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.SystemUtil;
+import net.minecraft.util.Util;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.hit.EntityHitResult;
 import net.minecraft.util.hit.HitResult;
@@ -101,26 +101,26 @@ public class InGameHud extends DrawableHelper {
 	private int scaledHeight;
 	private final Map<MessageType, List<ClientChatListener>> listeners = Maps.<MessageType, List<ClientChatListener>>newHashMap();
 
-	public InGameHud(MinecraftClient minecraftClient) {
-		this.client = minecraftClient;
-		this.itemRenderer = minecraftClient.getItemRenderer();
-		this.debugHud = new DebugHud(minecraftClient);
-		this.spectatorHud = new SpectatorHud(minecraftClient);
-		this.chatHud = new ChatHud(minecraftClient);
-		this.playerListHud = new PlayerListHud(minecraftClient, this);
-		this.bossBarHud = new BossBarHud(minecraftClient);
-		this.subtitlesHud = new SubtitlesHud(minecraftClient);
+	public InGameHud(MinecraftClient client) {
+		this.client = client;
+		this.itemRenderer = client.getItemRenderer();
+		this.debugHud = new DebugHud(client);
+		this.spectatorHud = new SpectatorHud(client);
+		this.chatHud = new ChatHud(client);
+		this.playerListHud = new PlayerListHud(client, this);
+		this.bossBarHud = new BossBarHud(client);
+		this.subtitlesHud = new SubtitlesHud(client);
 
 		for (MessageType messageType : MessageType.values()) {
 			this.listeners.put(messageType, Lists.newArrayList());
 		}
 
 		ClientChatListener clientChatListener = NarratorManager.INSTANCE;
-		((List)this.listeners.get(MessageType.CHAT)).add(new ChatListenerHud(minecraftClient));
+		((List)this.listeners.get(MessageType.CHAT)).add(new ChatListenerHud(client));
 		((List)this.listeners.get(MessageType.CHAT)).add(clientChatListener);
-		((List)this.listeners.get(MessageType.SYSTEM)).add(new ChatListenerHud(minecraftClient));
+		((List)this.listeners.get(MessageType.SYSTEM)).add(new ChatListenerHud(client));
 		((List)this.listeners.get(MessageType.SYSTEM)).add(clientChatListener);
-		((List)this.listeners.get(MessageType.GAME_INFO)).add(new GameInfoChatListener(minecraftClient));
+		((List)this.listeners.get(MessageType.GAME_INFO)).add(new GameInfoChatListener(client));
 		this.setDefaultTitleFade();
 	}
 
@@ -130,7 +130,7 @@ public class InGameHud extends DrawableHelper {
 		this.titleFadeOutTicks = 20;
 	}
 
-	public void render(float f) {
+	public void render(float tickDelta) {
 		this.scaledWidth = this.client.window.getScaledWidth();
 		this.scaledHeight = this.client.window.getScaledHeight();
 		TextRenderer textRenderer = this.getFontRenderer();
@@ -150,16 +150,16 @@ public class InGameHud extends DrawableHelper {
 		}
 
 		if (!this.client.player.hasStatusEffect(StatusEffects.NAUSEA)) {
-			float g = MathHelper.lerp(f, this.client.player.lastNauseaStrength, this.client.player.nextNauseaStrength);
-			if (g > 0.0F) {
-				this.renderPortalOverlay(g);
+			float f = MathHelper.lerp(tickDelta, this.client.player.lastNauseaStrength, this.client.player.nextNauseaStrength);
+			if (f > 0.0F) {
+				this.renderPortalOverlay(f);
 			}
 		}
 
 		if (this.client.interactionManager.getCurrentGameMode() == GameMode.SPECTATOR) {
-			this.spectatorHud.render(f);
+			this.spectatorHud.render(tickDelta);
 		} else if (!this.client.options.hudHidden) {
-			this.renderHotbar(f);
+			this.renderHotbar(tickDelta);
 		}
 
 		if (!this.client.options.hudHidden) {
@@ -200,13 +200,13 @@ public class InGameHud extends DrawableHelper {
 			this.client.getProfiler().push("sleep");
 			GlStateManager.disableDepthTest();
 			GlStateManager.disableAlphaTest();
-			float g = (float)this.client.player.getSleepTimer();
-			float h = g / 100.0F;
-			if (h > 1.0F) {
-				h = 1.0F - (g - 100.0F) / 10.0F;
+			float f = (float)this.client.player.getSleepTimer();
+			float g = f / 100.0F;
+			if (g > 1.0F) {
+				g = 1.0F - (f - 100.0F) / 10.0F;
 			}
 
-			int j = (int)(220.0F * h) << 24 | 1052704;
+			int j = (int)(220.0F * g) << 24 | 1052704;
 			fill(0, 0, this.scaledWidth, this.scaledHeight, j);
 			GlStateManager.enableAlphaTest();
 			GlStateManager.enableDepthTest();
@@ -226,8 +226,8 @@ public class InGameHud extends DrawableHelper {
 		if (!this.client.options.hudHidden) {
 			if (this.overlayRemaining > 0) {
 				this.client.getProfiler().push("overlayMessage");
-				float g = (float)this.overlayRemaining - f;
-				int k = (int)(g * 255.0F / 20.0F);
+				float f = (float)this.overlayRemaining - tickDelta;
+				int k = (int)(f * 255.0F / 20.0F);
 				if (k > 255) {
 					k = 255;
 				}
@@ -241,7 +241,7 @@ public class InGameHud extends DrawableHelper {
 					);
 					int j = 16777215;
 					if (this.overlayTinted) {
-						j = MathHelper.hsvToRgb(g / 50.0F, 0.7F, 0.6F) & 16777215;
+						j = MathHelper.hsvToRgb(f / 50.0F, 0.7F, 0.6F) & 16777215;
 					}
 
 					int l = k << 24 & 0xFF000000;
@@ -256,15 +256,15 @@ public class InGameHud extends DrawableHelper {
 
 			if (this.titleTotalTicks > 0) {
 				this.client.getProfiler().push("titleAndSubtitle");
-				float gx = (float)this.titleTotalTicks - f;
+				float fx = (float)this.titleTotalTicks - tickDelta;
 				int kx = 255;
 				if (this.titleTotalTicks > this.titleFadeOutTicks + this.titleRemainTicks) {
-					float m = (float)(this.titleFadeInTicks + this.titleRemainTicks + this.titleFadeOutTicks) - gx;
-					kx = (int)(m * 255.0F / (float)this.titleFadeInTicks);
+					float h = (float)(this.titleFadeInTicks + this.titleRemainTicks + this.titleFadeOutTicks) - fx;
+					kx = (int)(h * 255.0F / (float)this.titleFadeInTicks);
 				}
 
 				if (this.titleTotalTicks <= this.titleFadeOutTicks) {
-					kx = (int)(gx * 255.0F / (float)this.titleFadeOutTicks);
+					kx = (int)(fx * 255.0F / (float)this.titleFadeOutTicks);
 				}
 
 				kx = MathHelper.clamp(kx, 0, 255);
@@ -285,9 +285,9 @@ public class InGameHud extends DrawableHelper {
 					if (!this.subtitle.isEmpty()) {
 						GlStateManager.pushMatrix();
 						GlStateManager.scalef(2.0F, 2.0F, 2.0F);
-						int n = textRenderer.getStringWidth(this.subtitle);
-						this.method_19346(textRenderer, 5, n);
-						textRenderer.drawWithShadow(this.subtitle, (float)(-n / 2), 5.0F, 16777215 | j);
+						int m = textRenderer.getStringWidth(this.subtitle);
+						this.method_19346(textRenderer, 5, m);
+						textRenderer.drawWithShadow(this.subtitle, (float)(-m / 2), 5.0F, 16777215 | j);
 						GlStateManager.popMatrix();
 					}
 
@@ -351,7 +351,7 @@ public class InGameHud extends DrawableHelper {
 	private void renderCrosshair() {
 		GameOptions gameOptions = this.client.options;
 		if (gameOptions.perspective == 0) {
-			if (this.client.interactionManager.getCurrentGameMode() != GameMode.SPECTATOR || this.shouldRenderSpectatorCrosshair(this.client.hitResult)) {
+			if (this.client.interactionManager.getCurrentGameMode() != GameMode.SPECTATOR || this.shouldRenderSpectatorCrosshair(this.client.crosshairTarget)) {
 				if (gameOptions.debugEnabled && !gameOptions.hudHidden && !this.client.player.getReducedDebugInfo() && !gameOptions.reducedDebugInfo) {
 					GlStateManager.pushMatrix();
 					GlStateManager.translatef((float)(this.scaledWidth / 2), (float)(this.scaledHeight / 2), (float)this.blitOffset);
@@ -397,11 +397,11 @@ public class InGameHud extends DrawableHelper {
 		if (hitResult == null) {
 			return false;
 		} else if (hitResult.getType() == HitResult.Type.ENTITY) {
-			return ((EntityHitResult)hitResult).getEntity() instanceof NameableContainerProvider;
+			return ((EntityHitResult)hitResult).getEntity() instanceof NameableContainerFactory;
 		} else if (hitResult.getType() == HitResult.Type.BLOCK) {
 			BlockPos blockPos = ((BlockHitResult)hitResult).getBlockPos();
 			World world = this.client.world;
-			return world.getBlockState(blockPos).createContainerProvider(world, blockPos) != null;
+			return world.getBlockState(blockPos).createContainerFactory(world, blockPos) != null;
 		} else {
 			return false;
 		}
@@ -415,7 +415,7 @@ public class InGameHud extends DrawableHelper {
 			int j = 0;
 			StatusEffectSpriteManager statusEffectSpriteManager = this.client.getStatusEffectSpriteManager();
 			List<Runnable> list = Lists.<Runnable>newArrayListWithExpectedSize(collection.size());
-			this.client.getTextureManager().bindTexture(AbstractContainerScreen.BACKGROUND_TEXTURE);
+			this.client.getTextureManager().bindTexture(ContainerScreen.BACKGROUND_TEXTURE);
 
 			for (StatusEffectInstance statusEffectInstance : Ordering.natural().reverse().sortedCopy(collection)) {
 				StatusEffect statusEffect = statusEffectInstance.getEffectType();
@@ -492,7 +492,7 @@ public class InGameHud extends DrawableHelper {
 			GlStateManager.blendFuncSeparate(
 				GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO
 			);
-			GuiLighting.enableForItems();
+			DiffuseLighting.enableForItems();
 
 			for (int m = 0; m < 9; m++) {
 				int n = i - 90 + m * 20 + 2;
@@ -526,7 +526,7 @@ public class InGameHud extends DrawableHelper {
 				}
 			}
 
-			GuiLighting.disable();
+			DiffuseLighting.disable();
 			GlStateManager.disableRescaleNormal();
 			GlStateManager.disableBlend();
 		}
@@ -699,7 +699,7 @@ public class InGameHud extends DrawableHelper {
 
 	private int method_1744(LivingEntity livingEntity) {
 		if (livingEntity != null && livingEntity.isLiving()) {
-			float f = livingEntity.getHealthMaximum();
+			float f = livingEntity.getMaximumHealth();
 			int i = (int)(f + 0.5F) / 2;
 			if (i > 30) {
 				i = 30;
@@ -720,7 +720,7 @@ public class InGameHud extends DrawableHelper {
 		if (playerEntity != null) {
 			int i = MathHelper.ceil(playerEntity.getHealth());
 			boolean bl = this.field_2032 > (long)this.ticks && (this.field_2032 - (long)this.ticks) / 3L % 2L == 1L;
-			long l = SystemUtil.getMeasuringTimeMs();
+			long l = Util.getMeasuringTimeMs();
 			if (i < this.field_2014 && playerEntity.timeUntilRegen > 0) {
 				this.field_2012 = l;
 				this.field_2032 = (long)(this.ticks + 20);
@@ -870,8 +870,8 @@ public class InGameHud extends DrawableHelper {
 			}
 
 			this.client.getProfiler().swap("air");
-			int zx = playerEntity.getBreath();
-			int aaxx = playerEntity.getMaxBreath();
+			int zx = playerEntity.getAir();
+			int aaxx = playerEntity.getMaxAir();
 			if (playerEntity.isInFluid(FluidTags.WATER) || zx < aaxx) {
 				int abxx = this.method_1733(yxx) - 1;
 				t -= abxx * 10;
@@ -937,8 +937,8 @@ public class InGameHud extends DrawableHelper {
 		GlStateManager.disableAlphaTest();
 		this.client.getTextureManager().bindTexture(PUMPKIN_BLUR);
 		Tessellator tessellator = Tessellator.getInstance();
-		BufferBuilder bufferBuilder = tessellator.getBufferBuilder();
-		bufferBuilder.begin(7, VertexFormats.POSITION_UV);
+		BufferBuilder bufferBuilder = tessellator.getBuffer();
+		bufferBuilder.begin(7, VertexFormats.POSITION_TEXTURE);
 		bufferBuilder.vertex(0.0, (double)this.scaledHeight, -90.0).texture(0.0, 1.0).next();
 		bufferBuilder.vertex((double)this.scaledWidth, (double)this.scaledHeight, -90.0).texture(1.0, 1.0).next();
 		bufferBuilder.vertex((double)this.scaledWidth, 0.0, -90.0).texture(1.0, 0.0).next();
@@ -959,7 +959,7 @@ public class InGameHud extends DrawableHelper {
 
 	private void renderVignetteOverlay(Entity entity) {
 		WorldBorder worldBorder = this.client.world.getWorldBorder();
-		float f = (float)worldBorder.contains(entity);
+		float f = (float)worldBorder.getDistanceInsideBorder(entity);
 		double d = Math.min(
 			worldBorder.getShrinkingSpeed() * (double)worldBorder.getWarningTime() * 1000.0, Math.abs(worldBorder.getTargetSize() - worldBorder.getSize())
 		);
@@ -983,8 +983,8 @@ public class InGameHud extends DrawableHelper {
 
 		this.client.getTextureManager().bindTexture(VIGNETTE_TEX);
 		Tessellator tessellator = Tessellator.getInstance();
-		BufferBuilder bufferBuilder = tessellator.getBufferBuilder();
-		bufferBuilder.begin(7, VertexFormats.POSITION_UV);
+		BufferBuilder bufferBuilder = tessellator.getBuffer();
+		bufferBuilder.begin(7, VertexFormats.POSITION_TEXTURE);
 		bufferBuilder.vertex(0.0, (double)this.scaledHeight, -90.0).texture(0.0, 1.0).next();
 		bufferBuilder.vertex((double)this.scaledWidth, (double)this.scaledHeight, -90.0).texture(1.0, 1.0).next();
 		bufferBuilder.vertex((double)this.scaledWidth, 0.0, -90.0).texture(1.0, 0.0).next();
@@ -1019,8 +1019,8 @@ public class InGameHud extends DrawableHelper {
 		float i = sprite.getMaxU();
 		float j = sprite.getMaxV();
 		Tessellator tessellator = Tessellator.getInstance();
-		BufferBuilder bufferBuilder = tessellator.getBufferBuilder();
-		bufferBuilder.begin(7, VertexFormats.POSITION_UV);
+		BufferBuilder bufferBuilder = tessellator.getBuffer();
+		bufferBuilder.begin(7, VertexFormats.POSITION_TEXTURE);
 		bufferBuilder.vertex(0.0, (double)this.scaledHeight, -90.0).texture((double)g, (double)j).next();
 		bufferBuilder.vertex((double)this.scaledWidth, (double)this.scaledHeight, -90.0).texture((double)i, (double)j).next();
 		bufferBuilder.vertex((double)this.scaledWidth, 0.0, -90.0).texture((double)i, (double)h).next();
@@ -1146,7 +1146,7 @@ public class InGameHud extends DrawableHelper {
 		return this.client.textRenderer;
 	}
 
-	public SpectatorHud getSpectatorWidget() {
+	public SpectatorHud getSpectatorHud() {
 		return this.spectatorHud;
 	}
 

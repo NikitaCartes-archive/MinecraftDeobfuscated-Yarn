@@ -12,7 +12,7 @@ import net.minecraft.util.registry.Registry;
 public class DustParticleEffect implements ParticleEffect {
 	public static final DustParticleEffect RED = new DustParticleEffect(1.0F, 0.0F, 0.0F, 1.0F);
 	public static final ParticleEffect.Factory<DustParticleEffect> PARAMETERS_FACTORY = new ParticleEffect.Factory<DustParticleEffect>() {
-		public DustParticleEffect method_10287(ParticleType<DustParticleEffect> particleType, StringReader stringReader) throws CommandSyntaxException {
+		public DustParticleEffect read(ParticleType<DustParticleEffect> particleType, StringReader stringReader) throws CommandSyntaxException {
 			stringReader.expect(' ');
 			float f = (float)stringReader.readDouble();
 			stringReader.expect(' ');
@@ -24,33 +24,33 @@ public class DustParticleEffect implements ParticleEffect {
 			return new DustParticleEffect(f, g, h, i);
 		}
 
-		public DustParticleEffect method_10288(ParticleType<DustParticleEffect> particleType, PacketByteBuf packetByteBuf) {
+		public DustParticleEffect read(ParticleType<DustParticleEffect> particleType, PacketByteBuf packetByteBuf) {
 			return new DustParticleEffect(packetByteBuf.readFloat(), packetByteBuf.readFloat(), packetByteBuf.readFloat(), packetByteBuf.readFloat());
 		}
 	};
 	private final float red;
 	private final float green;
 	private final float blue;
-	private final float alpha;
+	private final float scale;
 
-	public DustParticleEffect(float f, float g, float h, float i) {
-		this.red = f;
-		this.green = g;
-		this.blue = h;
-		this.alpha = MathHelper.clamp(i, 0.01F, 4.0F);
+	public DustParticleEffect(float red, float green, float blue, float scale) {
+		this.red = red;
+		this.green = green;
+		this.blue = blue;
+		this.scale = MathHelper.clamp(scale, 0.01F, 4.0F);
 	}
 
 	@Override
-	public void write(PacketByteBuf packetByteBuf) {
-		packetByteBuf.writeFloat(this.red);
-		packetByteBuf.writeFloat(this.green);
-		packetByteBuf.writeFloat(this.blue);
-		packetByteBuf.writeFloat(this.alpha);
+	public void write(PacketByteBuf buf) {
+		buf.writeFloat(this.red);
+		buf.writeFloat(this.green);
+		buf.writeFloat(this.blue);
+		buf.writeFloat(this.scale);
 	}
 
 	@Override
 	public String asString() {
-		return String.format(Locale.ROOT, "%s %.2f %.2f %.2f %.2f", Registry.PARTICLE_TYPE.getId(this.getType()), this.red, this.green, this.blue, this.alpha);
+		return String.format(Locale.ROOT, "%s %.2f %.2f %.2f %.2f", Registry.PARTICLE_TYPE.getId(this.getType()), this.red, this.green, this.blue, this.scale);
 	}
 
 	@Override
@@ -74,7 +74,7 @@ public class DustParticleEffect implements ParticleEffect {
 	}
 
 	@Environment(EnvType.CLIENT)
-	public float getAlpha() {
-		return this.alpha;
+	public float getScale() {
+		return this.scale;
 	}
 }

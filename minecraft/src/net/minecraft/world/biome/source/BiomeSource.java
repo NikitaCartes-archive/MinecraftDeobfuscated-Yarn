@@ -28,32 +28,32 @@ public abstract class BiomeSource {
 		return SPAWN_BIOMES;
 	}
 
-	public Biome getBiome(BlockPos blockPos) {
-		return this.getBiome(blockPos.getX(), blockPos.getZ());
+	public Biome getBiome(BlockPos pos) {
+		return this.getBiome(pos.getX(), pos.getZ());
 	}
 
-	public abstract Biome getBiome(int i, int j);
+	public abstract Biome getBiome(int x, int z);
 
-	public Biome getBiomeForNoiseGen(int i, int j) {
-		return this.getBiome(i << 2, j << 2);
+	public Biome getBiomeForNoiseGen(int x, int z) {
+		return this.getBiome(x << 2, z << 2);
 	}
 
-	public Biome[] sampleBiomes(int i, int j, int k, int l) {
-		return this.sampleBiomes(i, j, k, l, true);
+	public Biome[] sampleBiomes(int x, int z, int width, int height) {
+		return this.sampleBiomes(x, z, width, height, true);
 	}
 
-	public abstract Biome[] sampleBiomes(int i, int j, int k, int l, boolean bl);
+	public abstract Biome[] sampleBiomes(int x, int z, int width, int height, boolean bl);
 
-	public abstract Set<Biome> getBiomesInArea(int i, int j, int k);
+	public abstract Set<Biome> getBiomesInArea(int x, int z, int radius);
 
 	@Nullable
-	public abstract BlockPos locateBiome(int i, int j, int k, List<Biome> list, Random random);
+	public abstract BlockPos locateBiome(int x, int z, int radius, List<Biome> biomes, Random random);
 
 	public float method_8757(int i, int j) {
 		return 0.0F;
 	}
 
-	public abstract boolean hasStructureFeature(StructureFeature<?> structureFeature);
+	public abstract boolean hasStructureFeature(StructureFeature<?> feature);
 
 	public abstract Set<BlockState> getTopMaterials();
 }

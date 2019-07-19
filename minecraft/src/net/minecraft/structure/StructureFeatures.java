@@ -5,8 +5,8 @@ import javax.annotation.Nullable;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.math.BlockBox;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.MutableIntBoundingBox;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.biome.source.BiomeSource;
@@ -34,18 +34,16 @@ public class StructureFeatures {
 	public static final StructureFeature<?> SHIPWRECK = register("Shipwreck", Feature.SHIPWRECK);
 	public static final StructureFeature<?> VILLAGE = register("Village", Feature.VILLAGE);
 
-	private static StructureFeature<?> register(String string, StructureFeature<?> structureFeature) {
-		return Registry.register(Registry.STRUCTURE_FEATURE, string.toLowerCase(Locale.ROOT), structureFeature);
+	private static StructureFeature<?> register(String name, StructureFeature<?> feature) {
+		return Registry.register(Registry.STRUCTURE_FEATURE, name.toLowerCase(Locale.ROOT), feature);
 	}
 
 	public static void initialize() {
 	}
 
 	@Nullable
-	public static StructureStart readStructureStart(
-		ChunkGenerator<?> chunkGenerator, StructureManager structureManager, BiomeSource biomeSource, CompoundTag compoundTag
-	) {
-		String string = compoundTag.getString("id");
+	public static StructureStart readStructureStart(ChunkGenerator<?> chunkGenerator, StructureManager structureManager, BiomeSource biomeSource, CompoundTag tag) {
+		String string = tag.getString("id");
 		if ("INVALID".equals(string)) {
 			return StructureStart.DEFAULT;
 		} else {
@@ -54,29 +52,26 @@ public class StructureFeatures {
 				LOGGER.error("Unknown feature id: {}", string);
 				return null;
 			} else {
-				int i = compoundTag.getInt("ChunkX");
-				int j = compoundTag.getInt("ChunkZ");
-				Biome biome = compoundTag.containsKey("biome")
-					? Registry.BIOME.get(new Identifier(compoundTag.getString("biome")))
+				int i = tag.getInt("ChunkX");
+				int j = tag.getInt("ChunkZ");
+				Biome biome = tag.contains("biome")
+					? Registry.BIOME.get(new Identifier(tag.getString("biome")))
 					: biomeSource.getBiome(new BlockPos((i << 4) + 9, 0, (j << 4) + 9));
-				MutableIntBoundingBox mutableIntBoundingBox = compoundTag.containsKey("BB")
-					? new MutableIntBoundingBox(compoundTag.getIntArray("BB"))
-					: MutableIntBoundingBox.empty();
-				ListTag listTag = compoundTag.getList("Children", 10);
+				BlockBox blockBox = tag.contains("BB") ? new BlockBox(tag.getIntArray("BB")) : BlockBox.empty();
+				ListTag listTag = tag.getList("Children", 10);
 
 				try {
-					StructureStart structureStart = structureFeature.getStructureStartFactory()
-						.create(structureFeature, i, j, biome, mutableIntBoundingBox, 0, chunkGenerator.getSeed());
+					StructureStart structureStart = structureFeature.getStructureStartFactory().create(structureFeature, i, j, biome, blockBox, 0, chunkGenerator.getSeed());
 
 					for (int k = 0; k < listTag.size(); k++) {
-						CompoundTag compoundTag2 = listTag.getCompoundTag(k);
-						String string2 = compoundTag2.getString("id");
+						CompoundTag compoundTag = listTag.getCompound(k);
+						String string2 = compoundTag.getString("id");
 						StructurePieceType structurePieceType = Registry.STRUCTURE_PIECE.get(new Identifier(string2.toLowerCase(Locale.ROOT)));
 						if (structurePieceType == null) {
 							LOGGER.error("Unknown structure piece id: {}", string2);
 						} else {
 							try {
-								StructurePiece structurePiece = structurePieceType.load(structureManager, compoundTag2);
+								StructurePiece structurePiece = structurePieceType.load(structureManager, compoundTag);
 								structureStart.children.add(structurePiece);
 							} catch (Exception var17) {
 								LOGGER.error("Exception loading structure piece with id {}", string2, var17);

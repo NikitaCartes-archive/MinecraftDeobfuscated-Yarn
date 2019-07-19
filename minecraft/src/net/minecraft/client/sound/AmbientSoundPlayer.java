@@ -12,15 +12,15 @@ public class AmbientSoundPlayer implements ClientPlayerTickable {
 	private final SoundManager soundManager;
 	private int ticksUntilPlay = 0;
 
-	public AmbientSoundPlayer(ClientPlayerEntity clientPlayerEntity, SoundManager soundManager) {
-		this.player = clientPlayerEntity;
+	public AmbientSoundPlayer(ClientPlayerEntity player, SoundManager soundManager) {
+		this.player = player;
 		this.soundManager = soundManager;
 	}
 
 	@Override
 	public void tick() {
 		this.ticksUntilPlay--;
-		if (this.ticksUntilPlay <= 0 && this.player.isInWater()) {
+		if (this.ticksUntilPlay <= 0 && this.player.isSubmergedInWater()) {
 			float f = this.player.world.random.nextFloat();
 			if (f < 1.0E-4F) {
 				this.ticksUntilPlay = 0;

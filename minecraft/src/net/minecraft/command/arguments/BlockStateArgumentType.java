@@ -18,19 +18,19 @@ public class BlockStateArgumentType implements ArgumentType<BlockStateArgument> 
 		return new BlockStateArgumentType();
 	}
 
-	public BlockStateArgument method_9654(StringReader stringReader) throws CommandSyntaxException {
-		BlockArgumentParser blockArgumentParser = new BlockArgumentParser(stringReader, false).parse(true);
+	public BlockStateArgument parse(StringReader reader) throws CommandSyntaxException {
+		BlockArgumentParser blockArgumentParser = new BlockArgumentParser(reader, false).parse(true);
 		return new BlockStateArgument(blockArgumentParser.getBlockState(), blockArgumentParser.getBlockProperties().keySet(), blockArgumentParser.getNbtData());
 	}
 
-	public static BlockStateArgument getBlockState(CommandContext<ServerCommandSource> commandContext, String string) {
-		return commandContext.getArgument(string, BlockStateArgument.class);
+	public static BlockStateArgument getBlockState(CommandContext<ServerCommandSource> context, String name) {
+		return context.getArgument(name, BlockStateArgument.class);
 	}
 
 	@Override
-	public <S> CompletableFuture<Suggestions> listSuggestions(CommandContext<S> commandContext, SuggestionsBuilder suggestionsBuilder) {
-		StringReader stringReader = new StringReader(suggestionsBuilder.getInput());
-		stringReader.setCursor(suggestionsBuilder.getStart());
+	public <S> CompletableFuture<Suggestions> listSuggestions(CommandContext<S> context, SuggestionsBuilder builder) {
+		StringReader stringReader = new StringReader(builder.getInput());
+		stringReader.setCursor(builder.getStart());
 		BlockArgumentParser blockArgumentParser = new BlockArgumentParser(stringReader, false);
 
 		try {
@@ -38,7 +38,7 @@ public class BlockStateArgumentType implements ArgumentType<BlockStateArgument> 
 		} catch (CommandSyntaxException var6) {
 		}
 
-		return blockArgumentParser.getSuggestions(suggestionsBuilder);
+		return blockArgumentParser.getSuggestions(builder);
 	}
 
 	@Override

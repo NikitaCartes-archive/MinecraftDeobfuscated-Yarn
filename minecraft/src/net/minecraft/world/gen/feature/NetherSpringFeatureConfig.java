@@ -7,13 +7,13 @@ import com.mojang.datafixers.types.DynamicOps;
 public class NetherSpringFeatureConfig implements FeatureConfig {
 	public final boolean insideRock;
 
-	public NetherSpringFeatureConfig(boolean bl) {
-		this.insideRock = bl;
+	public NetherSpringFeatureConfig(boolean insideRock) {
+		this.insideRock = insideRock;
 	}
 
 	@Override
-	public <T> Dynamic<T> serialize(DynamicOps<T> dynamicOps) {
-		return new Dynamic<>(dynamicOps, dynamicOps.createMap(ImmutableMap.of(dynamicOps.createString("inside_rock"), dynamicOps.createBoolean(this.insideRock))));
+	public <T> Dynamic<T> serialize(DynamicOps<T> ops) {
+		return new Dynamic<>(ops, ops.createMap(ImmutableMap.of(ops.createString("inside_rock"), ops.createBoolean(this.insideRock))));
 	}
 
 	public static <T> NetherSpringFeatureConfig deserialize(Dynamic<T> dynamic) {

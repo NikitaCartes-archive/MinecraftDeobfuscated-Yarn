@@ -1,14 +1,13 @@
 package com.mojang.realmsclient.dto;
 
 import com.google.gson.JsonObject;
+import com.mojang.realmsclient.util.JsonUtils;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_4352;
-import net.minecraft.class_4431;
 import net.minecraft.realms.RealmsScreen;
 
 @Environment(EnvType.CLIENT)
-public class RealmsWorldOptions extends class_4352 {
+public class RealmsWorldOptions extends ValueObject {
 	public Boolean pvp;
 	public Boolean spawnAnimals;
 	public Boolean spawnMonsters;
@@ -38,27 +37,27 @@ public class RealmsWorldOptions extends class_4352 {
 	private static final boolean adventureMapDefault = false;
 
 	public RealmsWorldOptions(
-		Boolean boolean_,
-		Boolean boolean2,
-		Boolean boolean3,
-		Boolean boolean4,
-		Integer integer,
-		Boolean boolean5,
-		Integer integer2,
-		Integer integer3,
-		Boolean boolean6,
-		String string
+		Boolean pvp,
+		Boolean spawnAnimals,
+		Boolean spawnMonsters,
+		Boolean spawnNPCs,
+		Integer spawnProtection,
+		Boolean commandBlocks,
+		Integer difficulty,
+		Integer gameMode,
+		Boolean forceGameMode,
+		String slotName
 	) {
-		this.pvp = boolean_;
-		this.spawnAnimals = boolean2;
-		this.spawnMonsters = boolean3;
-		this.spawnNPCs = boolean4;
-		this.spawnProtection = integer;
-		this.commandBlocks = boolean5;
-		this.difficulty = integer2;
-		this.gameMode = integer3;
-		this.forceGameMode = boolean6;
-		this.slotName = string;
+		this.pvp = pvp;
+		this.spawnAnimals = spawnAnimals;
+		this.spawnMonsters = spawnMonsters;
+		this.spawnNPCs = spawnNPCs;
+		this.spawnProtection = spawnProtection;
+		this.commandBlocks = commandBlocks;
+		this.difficulty = difficulty;
+		this.gameMode = gameMode;
+		this.forceGameMode = forceGameMode;
+		this.slotName = slotName;
 	}
 
 	public static RealmsWorldOptions getDefaults() {
@@ -71,26 +70,26 @@ public class RealmsWorldOptions extends class_4352 {
 		return realmsWorldOptions;
 	}
 
-	public void setEmpty(boolean bl) {
-		this.empty = bl;
+	public void setEmpty(boolean empty) {
+		this.empty = empty;
 	}
 
 	public static RealmsWorldOptions parse(JsonObject jsonObject) {
 		RealmsWorldOptions realmsWorldOptions = new RealmsWorldOptions(
-			class_4431.method_21548("pvp", jsonObject, true),
-			class_4431.method_21548("spawnAnimals", jsonObject, true),
-			class_4431.method_21548("spawnMonsters", jsonObject, true),
-			class_4431.method_21548("spawnNPCs", jsonObject, true),
-			class_4431.method_21545("spawnProtection", jsonObject, 0),
-			class_4431.method_21548("commandBlocks", jsonObject, false),
-			class_4431.method_21545("difficulty", jsonObject, 2),
-			class_4431.method_21545("gameMode", jsonObject, 0),
-			class_4431.method_21548("forceGameMode", jsonObject, false),
-			class_4431.method_21547("slotName", jsonObject, "")
+			JsonUtils.getBooleanOr("pvp", jsonObject, true),
+			JsonUtils.getBooleanOr("spawnAnimals", jsonObject, true),
+			JsonUtils.getBooleanOr("spawnMonsters", jsonObject, true),
+			JsonUtils.getBooleanOr("spawnNPCs", jsonObject, true),
+			JsonUtils.getIntOr("spawnProtection", jsonObject, 0),
+			JsonUtils.getBooleanOr("commandBlocks", jsonObject, false),
+			JsonUtils.getIntOr("difficulty", jsonObject, 2),
+			JsonUtils.getIntOr("gameMode", jsonObject, 0),
+			JsonUtils.getBooleanOr("forceGameMode", jsonObject, false),
+			JsonUtils.getStringOr("slotName", jsonObject, "")
 		);
-		realmsWorldOptions.templateId = class_4431.method_21546("worldTemplateId", jsonObject, -1L);
-		realmsWorldOptions.templateImage = class_4431.method_21547("worldTemplateImage", jsonObject, templateImageDefault);
-		realmsWorldOptions.adventureMap = class_4431.method_21548("adventureMap", jsonObject, false);
+		realmsWorldOptions.templateId = JsonUtils.getLongOr("worldTemplateId", jsonObject, -1L);
+		realmsWorldOptions.templateImage = JsonUtils.getStringOr("worldTemplateImage", jsonObject, templateImageDefault);
+		realmsWorldOptions.adventureMap = JsonUtils.getBooleanOr("adventureMap", jsonObject, false);
 		return realmsWorldOptions;
 	}
 

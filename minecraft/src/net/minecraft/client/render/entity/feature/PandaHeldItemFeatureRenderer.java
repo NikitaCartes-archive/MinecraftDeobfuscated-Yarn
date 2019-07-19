@@ -13,11 +13,11 @@ import net.minecraft.util.math.MathHelper;
 
 @Environment(EnvType.CLIENT)
 public class PandaHeldItemFeatureRenderer extends FeatureRenderer<PandaEntity, PandaEntityModel<PandaEntity>> {
-	public PandaHeldItemFeatureRenderer(FeatureRendererContext<PandaEntity, PandaEntityModel<PandaEntity>> featureRendererContext) {
-		super(featureRendererContext);
+	public PandaHeldItemFeatureRenderer(FeatureRendererContext<PandaEntity, PandaEntityModel<PandaEntity>> context) {
+		super(context);
 	}
 
-	public void method_4194(PandaEntity pandaEntity, float f, float g, float h, float i, float j, float k, float l) {
+	public void render(PandaEntity pandaEntity, float f, float g, float h, float i, float j, float k, float l) {
 		ItemStack itemStack = pandaEntity.getEquippedStack(EquipmentSlot.MAINHAND);
 		if (pandaEntity.isScared() && !itemStack.isEmpty() && !pandaEntity.method_6524()) {
 			float m = -0.6F;

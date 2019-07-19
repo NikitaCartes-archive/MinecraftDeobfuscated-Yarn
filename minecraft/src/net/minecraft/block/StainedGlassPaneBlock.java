@@ -1,16 +1,16 @@
 package net.minecraft.block;
 
-import net.minecraft.client.block.ColoredBlock;
+import net.minecraft.client.render.RenderLayer;
 import net.minecraft.util.DyeColor;
 
-public class StainedGlassPaneBlock extends PaneBlock implements ColoredBlock {
+public class StainedGlassPaneBlock extends PaneBlock implements Stainable {
 	private final DyeColor color;
 
-	public StainedGlassPaneBlock(DyeColor dyeColor, Block.Settings settings) {
+	public StainedGlassPaneBlock(DyeColor color, Block.Settings settings) {
 		super(settings);
-		this.color = dyeColor;
+		this.color = color;
 		this.setDefaultState(
-			this.stateFactory
+			this.stateManager
 				.getDefaultState()
 				.with(NORTH, Boolean.valueOf(false))
 				.with(EAST, Boolean.valueOf(false))
@@ -26,7 +26,7 @@ public class StainedGlassPaneBlock extends PaneBlock implements ColoredBlock {
 	}
 
 	@Override
-	public BlockRenderLayer getRenderLayer() {
-		return BlockRenderLayer.TRANSLUCENT;
+	public RenderLayer getRenderLayer() {
+		return RenderLayer.TRANSLUCENT;
 	}
 }

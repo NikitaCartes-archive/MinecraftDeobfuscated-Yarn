@@ -8,18 +8,18 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
-import net.minecraft.state.StateFactory;
+import net.minecraft.state.StateManager;
 
 @Environment(EnvType.CLIENT)
 public class OrMultipartModelSelector implements MultipartModelSelector {
 	private final Iterable<? extends MultipartModelSelector> selectors;
 
-	public OrMultipartModelSelector(Iterable<? extends MultipartModelSelector> iterable) {
-		this.selectors = iterable;
+	public OrMultipartModelSelector(Iterable<? extends MultipartModelSelector> selectors) {
+		this.selectors = selectors;
 	}
 
 	@Override
-	public Predicate<BlockState> getPredicate(StateFactory<Block, BlockState> stateFactory) {
+	public Predicate<BlockState> getPredicate(StateManager<Block, BlockState> stateFactory) {
 		List<Predicate<BlockState>> list = (List<Predicate<BlockState>>)Streams.stream(this.selectors)
 			.map(multipartModelSelector -> multipartModelSelector.getPredicate(stateFactory))
 			.collect(Collectors.toList());

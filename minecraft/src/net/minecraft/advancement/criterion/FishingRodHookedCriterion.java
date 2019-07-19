@@ -21,7 +21,7 @@ import net.minecraft.util.Identifier;
 
 public class FishingRodHookedCriterion implements Criterion<FishingRodHookedCriterion.Conditions> {
 	private static final Identifier ID = new Identifier("fishing_rod_hooked");
-	private final Map<PlayerAdvancementTracker, FishingRodHookedCriterion.Handler> field_9618 = Maps.<PlayerAdvancementTracker, FishingRodHookedCriterion.Handler>newHashMap();
+	private final Map<PlayerAdvancementTracker, FishingRodHookedCriterion.Handler> handlers = Maps.<PlayerAdvancementTracker, FishingRodHookedCriterion.Handler>newHashMap();
 
 	@Override
 	public Identifier getId() {
@@ -29,83 +29,79 @@ public class FishingRodHookedCriterion implements Criterion<FishingRodHookedCrit
 	}
 
 	@Override
-	public void beginTrackingCondition(
-		PlayerAdvancementTracker playerAdvancementTracker, Criterion.ConditionsContainer<FishingRodHookedCriterion.Conditions> conditionsContainer
-	) {
-		FishingRodHookedCriterion.Handler handler = (FishingRodHookedCriterion.Handler)this.field_9618.get(playerAdvancementTracker);
+	public void beginTrackingCondition(PlayerAdvancementTracker manager, Criterion.ConditionsContainer<FishingRodHookedCriterion.Conditions> conditionsContainer) {
+		FishingRodHookedCriterion.Handler handler = (FishingRodHookedCriterion.Handler)this.handlers.get(manager);
 		if (handler == null) {
-			handler = new FishingRodHookedCriterion.Handler(playerAdvancementTracker);
-			this.field_9618.put(playerAdvancementTracker, handler);
+			handler = new FishingRodHookedCriterion.Handler(manager);
+			this.handlers.put(manager, handler);
 		}
 
 		handler.addCondition(conditionsContainer);
 	}
 
 	@Override
-	public void endTrackingCondition(
-		PlayerAdvancementTracker playerAdvancementTracker, Criterion.ConditionsContainer<FishingRodHookedCriterion.Conditions> conditionsContainer
-	) {
-		FishingRodHookedCriterion.Handler handler = (FishingRodHookedCriterion.Handler)this.field_9618.get(playerAdvancementTracker);
+	public void endTrackingCondition(PlayerAdvancementTracker manager, Criterion.ConditionsContainer<FishingRodHookedCriterion.Conditions> conditionsContainer) {
+		FishingRodHookedCriterion.Handler handler = (FishingRodHookedCriterion.Handler)this.handlers.get(manager);
 		if (handler != null) {
 			handler.removeCondition(conditionsContainer);
 			if (handler.isEmpty()) {
-				this.field_9618.remove(playerAdvancementTracker);
+				this.handlers.remove(manager);
 			}
 		}
 	}
 
 	@Override
-	public void endTracking(PlayerAdvancementTracker playerAdvancementTracker) {
-		this.field_9618.remove(playerAdvancementTracker);
+	public void endTracking(PlayerAdvancementTracker tracker) {
+		this.handlers.remove(tracker);
 	}
 
-	public FishingRodHookedCriterion.Conditions method_8941(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext) {
-		ItemPredicate itemPredicate = ItemPredicate.deserialize(jsonObject.get("rod"));
-		EntityPredicate entityPredicate = EntityPredicate.deserialize(jsonObject.get("entity"));
-		ItemPredicate itemPredicate2 = ItemPredicate.deserialize(jsonObject.get("item"));
+	public FishingRodHookedCriterion.Conditions conditionsFromJson(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext) {
+		ItemPredicate itemPredicate = ItemPredicate.fromJson(jsonObject.get("rod"));
+		EntityPredicate entityPredicate = EntityPredicate.fromJson(jsonObject.get("entity"));
+		ItemPredicate itemPredicate2 = ItemPredicate.fromJson(jsonObject.get("item"));
 		return new FishingRodHookedCriterion.Conditions(itemPredicate, entityPredicate, itemPredicate2);
 	}
 
-	public void handle(ServerPlayerEntity serverPlayerEntity, ItemStack itemStack, FishingBobberEntity fishingBobberEntity, Collection<ItemStack> collection) {
-		FishingRodHookedCriterion.Handler handler = (FishingRodHookedCriterion.Handler)this.field_9618.get(serverPlayerEntity.getAdvancementManager());
+	public void trigger(ServerPlayerEntity player, ItemStack rodStack, FishingBobberEntity bobber, Collection<ItemStack> fishingLoots) {
+		FishingRodHookedCriterion.Handler handler = (FishingRodHookedCriterion.Handler)this.handlers.get(player.getAdvancementTracker());
 		if (handler != null) {
-			handler.handle(serverPlayerEntity, itemStack, fishingBobberEntity, collection);
+			handler.handle(player, rodStack, bobber, fishingLoots);
 		}
 	}
 
 	public static class Conditions extends AbstractCriterionConditions {
 		private final ItemPredicate rod;
-		private final EntityPredicate entity;
+		private final EntityPredicate bobber;
 		private final ItemPredicate item;
 
-		public Conditions(ItemPredicate itemPredicate, EntityPredicate entityPredicate, ItemPredicate itemPredicate2) {
+		public Conditions(ItemPredicate rod, EntityPredicate bobber, ItemPredicate item) {
 			super(FishingRodHookedCriterion.ID);
-			this.rod = itemPredicate;
-			this.entity = entityPredicate;
-			this.item = itemPredicate2;
+			this.rod = rod;
+			this.bobber = bobber;
+			this.item = item;
 		}
 
-		public static FishingRodHookedCriterion.Conditions create(ItemPredicate itemPredicate, EntityPredicate entityPredicate, ItemPredicate itemPredicate2) {
-			return new FishingRodHookedCriterion.Conditions(itemPredicate, entityPredicate, itemPredicate2);
+		public static FishingRodHookedCriterion.Conditions create(ItemPredicate rod, EntityPredicate bobber, ItemPredicate item) {
+			return new FishingRodHookedCriterion.Conditions(rod, bobber, item);
 		}
 
-		public boolean matches(ServerPlayerEntity serverPlayerEntity, ItemStack itemStack, FishingBobberEntity fishingBobberEntity, Collection<ItemStack> collection) {
-			if (!this.rod.test(itemStack)) {
+		public boolean matches(ServerPlayerEntity player, ItemStack rodStack, FishingBobberEntity bobber, Collection<ItemStack> collection) {
+			if (!this.rod.test(rodStack)) {
 				return false;
-			} else if (!this.entity.test(serverPlayerEntity, fishingBobberEntity.hookedEntity)) {
+			} else if (!this.bobber.test(player, bobber.hookedEntity)) {
 				return false;
 			} else {
 				if (this.item != ItemPredicate.ANY) {
 					boolean bl = false;
-					if (fishingBobberEntity.hookedEntity instanceof ItemEntity) {
-						ItemEntity itemEntity = (ItemEntity)fishingBobberEntity.hookedEntity;
+					if (bobber.hookedEntity instanceof ItemEntity) {
+						ItemEntity itemEntity = (ItemEntity)bobber.hookedEntity;
 						if (this.item.test(itemEntity.getStack())) {
 							bl = true;
 						}
 					}
 
-					for (ItemStack itemStack2 : collection) {
-						if (this.item.test(itemStack2)) {
+					for (ItemStack itemStack : collection) {
+						if (this.item.test(itemStack)) {
 							bl = true;
 							break;
 						}
@@ -123,9 +119,9 @@ public class FishingRodHookedCriterion implements Criterion<FishingRodHookedCrit
 		@Override
 		public JsonElement toJson() {
 			JsonObject jsonObject = new JsonObject();
-			jsonObject.add("rod", this.rod.serialize());
-			jsonObject.add("entity", this.entity.serialize());
-			jsonObject.add("item", this.item.serialize());
+			jsonObject.add("rod", this.rod.toJson());
+			jsonObject.add("entity", this.bobber.serialize());
+			jsonObject.add("item", this.item.toJson());
 			return jsonObject;
 		}
 	}
@@ -134,8 +130,8 @@ public class FishingRodHookedCriterion implements Criterion<FishingRodHookedCrit
 		private final PlayerAdvancementTracker manager;
 		private final Set<Criterion.ConditionsContainer<FishingRodHookedCriterion.Conditions>> conditions = Sets.<Criterion.ConditionsContainer<FishingRodHookedCriterion.Conditions>>newHashSet();
 
-		public Handler(PlayerAdvancementTracker playerAdvancementTracker) {
-			this.manager = playerAdvancementTracker;
+		public Handler(PlayerAdvancementTracker manager) {
+			this.manager = manager;
 		}
 
 		public boolean isEmpty() {
@@ -150,11 +146,11 @@ public class FishingRodHookedCriterion implements Criterion<FishingRodHookedCrit
 			this.conditions.remove(conditionsContainer);
 		}
 
-		public void handle(ServerPlayerEntity serverPlayerEntity, ItemStack itemStack, FishingBobberEntity fishingBobberEntity, Collection<ItemStack> collection) {
+		public void handle(ServerPlayerEntity player, ItemStack rodStack, FishingBobberEntity entity, Collection<ItemStack> collection) {
 			List<Criterion.ConditionsContainer<FishingRodHookedCriterion.Conditions>> list = null;
 
 			for (Criterion.ConditionsContainer<FishingRodHookedCriterion.Conditions> conditionsContainer : this.conditions) {
-				if (conditionsContainer.getConditions().matches(serverPlayerEntity, itemStack, fishingBobberEntity, collection)) {
+				if (conditionsContainer.getConditions().matches(player, rodStack, entity, collection)) {
 					if (list == null) {
 						list = Lists.<Criterion.ConditionsContainer<FishingRodHookedCriterion.Conditions>>newArrayList();
 					}

@@ -7,8 +7,8 @@ import net.minecraft.util.Identifier;
 public class SoundEvent {
 	private final Identifier id;
 
-	public SoundEvent(Identifier identifier) {
-		this.id = identifier;
+	public SoundEvent(Identifier id) {
+		this.id = id;
 	}
 
 	@Environment(EnvType.CLIENT)

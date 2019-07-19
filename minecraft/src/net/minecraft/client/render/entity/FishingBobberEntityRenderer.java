@@ -24,7 +24,7 @@ public class FishingBobberEntityRenderer extends EntityRenderer<FishingBobberEnt
 		super(entityRenderDispatcher);
 	}
 
-	public void method_3974(FishingBobberEntity fishingBobberEntity, double d, double e, double f, float g, float h) {
+	public void render(FishingBobberEntity fishingBobberEntity, double d, double e, double f, float g, float h) {
 		PlayerEntity playerEntity = fishingBobberEntity.getOwner();
 		if (playerEntity != null && !this.renderOutlines) {
 			GlStateManager.pushMatrix();
@@ -33,7 +33,7 @@ public class FishingBobberEntityRenderer extends EntityRenderer<FishingBobberEnt
 			GlStateManager.scalef(0.5F, 0.5F, 0.5F);
 			this.bindEntityTexture(fishingBobberEntity);
 			Tessellator tessellator = Tessellator.getInstance();
-			BufferBuilder bufferBuilder = tessellator.getBufferBuilder();
+			BufferBuilder bufferBuilder = tessellator.getBuffer();
 			float i = 1.0F;
 			float j = 0.5F;
 			float k = 0.5F;
@@ -116,7 +116,7 @@ public class FishingBobberEntityRenderer extends EntityRenderer<FishingBobberEnt
 		}
 	}
 
-	protected Identifier method_3975(FishingBobberEntity fishingBobberEntity) {
+	protected Identifier getTexture(FishingBobberEntity fishingBobberEntity) {
 		return SKIN;
 	}
 }

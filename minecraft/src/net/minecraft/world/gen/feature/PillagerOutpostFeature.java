@@ -9,17 +9,17 @@ import net.minecraft.entity.EntityType;
 import net.minecraft.structure.PillagerOutpostGenerator;
 import net.minecraft.structure.StructureManager;
 import net.minecraft.structure.VillageStructureStart;
+import net.minecraft.util.math.BlockBox;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
-import net.minecraft.util.math.MutableIntBoundingBox;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
 
 public class PillagerOutpostFeature extends AbstractTempleFeature<PillagerOutpostFeatureConfig> {
 	private static final List<Biome.SpawnEntry> MONSTER_SPAWNS = Lists.<Biome.SpawnEntry>newArrayList(new Biome.SpawnEntry(EntityType.PILLAGER, 1, 1, 1));
 
-	public PillagerOutpostFeature(Function<Dynamic<?>, ? extends PillagerOutpostFeatureConfig> function) {
-		super(function);
+	public PillagerOutpostFeature(Function<Dynamic<?>, ? extends PillagerOutpostFeatureConfig> configFactory) {
+		super(configFactory);
 	}
 
 	@Override
@@ -38,22 +38,22 @@ public class PillagerOutpostFeature extends AbstractTempleFeature<PillagerOutpos
 	}
 
 	@Override
-	public boolean shouldStartAt(ChunkGenerator<?> chunkGenerator, Random random, int i, int j) {
-		ChunkPos chunkPos = this.getStart(chunkGenerator, random, i, j, 0, 0);
-		if (i == chunkPos.x && j == chunkPos.z) {
-			int k = i >> 4;
-			int l = j >> 4;
-			random.setSeed((long)(k ^ l << 4) ^ chunkGenerator.getSeed());
+	public boolean shouldStartAt(ChunkGenerator<?> chunkGenerator, Random random, int chunkX, int chunkZ) {
+		ChunkPos chunkPos = this.getStart(chunkGenerator, random, chunkX, chunkZ, 0, 0);
+		if (chunkX == chunkPos.x && chunkZ == chunkPos.z) {
+			int i = chunkX >> 4;
+			int j = chunkZ >> 4;
+			random.setSeed((long)(i ^ j << 4) ^ chunkGenerator.getSeed());
 			random.nextInt();
 			if (random.nextInt(5) != 0) {
 				return false;
 			}
 
-			Biome biome = chunkGenerator.getBiomeSource().getBiome(new BlockPos((i << 4) + 9, 0, (j << 4) + 9));
+			Biome biome = chunkGenerator.getBiomeSource().getBiome(new BlockPos((chunkX << 4) + 9, 0, (chunkZ << 4) + 9));
 			if (chunkGenerator.hasStructure(biome, Feature.PILLAGER_OUTPOST)) {
-				for (int m = i - 10; m <= i + 10; m++) {
-					for (int n = j - 10; n <= j + 10; n++) {
-						if (Feature.VILLAGE.shouldStartAt(chunkGenerator, random, m, n)) {
+				for (int k = chunkX - 10; k <= chunkX + 10; k++) {
+					for (int l = chunkZ - 10; l <= chunkZ + 10; l++) {
+						if (Feature.VILLAGE.shouldStartAt(chunkGenerator, random, k, l)) {
 							return false;
 						}
 					}
@@ -77,13 +77,13 @@ public class PillagerOutpostFeature extends AbstractTempleFeature<PillagerOutpos
 	}
 
 	public static class Start extends VillageStructureStart {
-		public Start(StructureFeature<?> structureFeature, int i, int j, Biome biome, MutableIntBoundingBox mutableIntBoundingBox, int k, long l) {
-			super(structureFeature, i, j, biome, mutableIntBoundingBox, k, l);
+		public Start(StructureFeature<?> structureFeature, int chunkX, int chunkZ, Biome biome, BlockBox blockBox, int i, long l) {
+			super(structureFeature, chunkX, chunkZ, biome, blockBox, i, l);
 		}
 
 		@Override
-		public void initialize(ChunkGenerator<?> chunkGenerator, StructureManager structureManager, int i, int j, Biome biome) {
-			BlockPos blockPos = new BlockPos(i * 16, 90, j * 16);
+		public void initialize(ChunkGenerator<?> chunkGenerator, StructureManager structureManager, int x, int z, Biome biome) {
+			BlockPos blockPos = new BlockPos(x * 16, 90, z * 16);
 			PillagerOutpostGenerator.addPieces(chunkGenerator, structureManager, blockPos, this.children, this.random);
 			this.setBoundingBoxFromChildren();
 		}

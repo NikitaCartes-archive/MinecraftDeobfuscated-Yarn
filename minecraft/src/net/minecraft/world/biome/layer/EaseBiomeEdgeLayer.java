@@ -3,6 +3,8 @@ package net.minecraft.world.biome.layer;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.biome.Biomes;
+import net.minecraft.world.biome.layer.type.CrossSamplingLayer;
+import net.minecraft.world.biome.layer.util.LayerRandomnessSource;
 
 public enum EaseBiomeEdgeLayer implements CrossSamplingLayer {
 	INSTANCE;
@@ -14,7 +16,7 @@ public enum EaseBiomeEdgeLayer implements CrossSamplingLayer {
 	private static final int JUNGLE_ID = Registry.BIOME.getRawId(Biomes.JUNGLE);
 	private static final int BAMBOO_JUNGLE_ID = Registry.BIOME.getRawId(Biomes.BAMBOO_JUNGLE);
 	private static final int JUNGLE_EDGE_ID = Registry.BIOME.getRawId(Biomes.JUNGLE_EDGE);
-	private static final int BALDANDS_ID = Registry.BIOME.getRawId(Biomes.BADLANDS);
+	private static final int BADLANDS_ID = Registry.BIOME.getRawId(Biomes.BADLANDS);
 	private static final int BADLANDS_PLATEAU_ID = Registry.BIOME.getRawId(Biomes.BADLANDS_PLATEAU);
 	private static final int WOODED_BADLANDS_PLATEAU_ID = Registry.BIOME.getRawId(Biomes.WOODED_BADLANDS_PLATEAU);
 	private static final int PLAINS_ID = Registry.BIOME.getRawId(Biomes.PLAINS);
@@ -25,42 +27,42 @@ public enum EaseBiomeEdgeLayer implements CrossSamplingLayer {
 	private static final int SNOWY_TAIGA_ID = Registry.BIOME.getRawId(Biomes.SNOWY_TAIGA);
 
 	@Override
-	public int sample(LayerRandomnessSource layerRandomnessSource, int i, int j, int k, int l, int m) {
+	public int sample(LayerRandomnessSource context, int n, int e, int s, int w, int center) {
 		int[] is = new int[1];
-		if (!this.method_15841(is, i, j, k, l, m, MOUNTAINS_ID, MOUNTAIN_EDGE_ID)
-			&& !this.method_15840(is, i, j, k, l, m, WOODED_BADLANDS_PLATEAU_ID, BALDANDS_ID)
-			&& !this.method_15840(is, i, j, k, l, m, BADLANDS_PLATEAU_ID, BALDANDS_ID)
-			&& !this.method_15840(is, i, j, k, l, m, GIANT_TREE_TAIGA_ID, TAIGA_ID)) {
-			if (m != DESERT_ID || i != SNOWY_TUNDRA_ID && j != SNOWY_TUNDRA_ID && l != SNOWY_TUNDRA_ID && k != SNOWY_TUNDRA_ID) {
-				if (m == SWAMP_ID) {
-					if (i == DESERT_ID
-						|| j == DESERT_ID
-						|| l == DESERT_ID
-						|| k == DESERT_ID
-						|| i == SNOWY_TAIGA_ID
-						|| j == SNOWY_TAIGA_ID
-						|| l == SNOWY_TAIGA_ID
-						|| k == SNOWY_TAIGA_ID
-						|| i == SNOWY_TUNDRA_ID
-						|| j == SNOWY_TUNDRA_ID
-						|| l == SNOWY_TUNDRA_ID
-						|| k == SNOWY_TUNDRA_ID) {
+		if (!this.method_15841(is, n, e, s, w, center, MOUNTAINS_ID, MOUNTAIN_EDGE_ID)
+			&& !this.method_15840(is, n, e, s, w, center, WOODED_BADLANDS_PLATEAU_ID, BADLANDS_ID)
+			&& !this.method_15840(is, n, e, s, w, center, BADLANDS_PLATEAU_ID, BADLANDS_ID)
+			&& !this.method_15840(is, n, e, s, w, center, GIANT_TREE_TAIGA_ID, TAIGA_ID)) {
+			if (center != DESERT_ID || n != SNOWY_TUNDRA_ID && e != SNOWY_TUNDRA_ID && w != SNOWY_TUNDRA_ID && s != SNOWY_TUNDRA_ID) {
+				if (center == SWAMP_ID) {
+					if (n == DESERT_ID
+						|| e == DESERT_ID
+						|| w == DESERT_ID
+						|| s == DESERT_ID
+						|| n == SNOWY_TAIGA_ID
+						|| e == SNOWY_TAIGA_ID
+						|| w == SNOWY_TAIGA_ID
+						|| s == SNOWY_TAIGA_ID
+						|| n == SNOWY_TUNDRA_ID
+						|| e == SNOWY_TUNDRA_ID
+						|| w == SNOWY_TUNDRA_ID
+						|| s == SNOWY_TUNDRA_ID) {
 						return PLAINS_ID;
 					}
 
-					if (i == JUNGLE_ID
-						|| k == JUNGLE_ID
-						|| j == JUNGLE_ID
-						|| l == JUNGLE_ID
-						|| i == BAMBOO_JUNGLE_ID
-						|| k == BAMBOO_JUNGLE_ID
-						|| j == BAMBOO_JUNGLE_ID
-						|| l == BAMBOO_JUNGLE_ID) {
+					if (n == JUNGLE_ID
+						|| s == JUNGLE_ID
+						|| e == JUNGLE_ID
+						|| w == JUNGLE_ID
+						|| n == BAMBOO_JUNGLE_ID
+						|| s == BAMBOO_JUNGLE_ID
+						|| e == BAMBOO_JUNGLE_ID
+						|| w == BAMBOO_JUNGLE_ID) {
 						return JUNGLE_EDGE_ID;
 					}
 				}
 
-				return m;
+				return center;
 			} else {
 				return WOODED_MOUNTAINS_ID;
 			}

@@ -13,15 +13,15 @@ public class RidingMinecartSoundInstance extends MovingSoundInstance {
 	private final AbstractMinecartEntity minecart;
 	private float distance = 0.0F;
 
-	public RidingMinecartSoundInstance(AbstractMinecartEntity abstractMinecartEntity) {
+	public RidingMinecartSoundInstance(AbstractMinecartEntity minecart) {
 		super(SoundEvents.ENTITY_MINECART_RIDING, SoundCategory.NEUTRAL);
-		this.minecart = abstractMinecartEntity;
+		this.minecart = minecart;
 		this.repeat = true;
 		this.repeatDelay = 0;
 		this.volume = 0.0F;
-		this.x = (float)abstractMinecartEntity.x;
-		this.y = (float)abstractMinecartEntity.y;
-		this.z = (float)abstractMinecartEntity.z;
+		this.x = (float)minecart.x;
+		this.y = (float)minecart.y;
+		this.z = (float)minecart.z;
 	}
 
 	@Override

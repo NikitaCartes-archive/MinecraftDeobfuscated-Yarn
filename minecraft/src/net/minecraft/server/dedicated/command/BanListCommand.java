@@ -44,17 +44,17 @@ public class BanListCommand {
 		);
 	}
 
-	private static int execute(ServerCommandSource serverCommandSource, Collection<? extends BanEntry<?>> collection) {
-		if (collection.isEmpty()) {
-			serverCommandSource.sendFeedback(new TranslatableText("commands.banlist.none"), false);
+	private static int execute(ServerCommandSource source, Collection<? extends BanEntry<?>> targets) {
+		if (targets.isEmpty()) {
+			source.sendFeedback(new TranslatableText("commands.banlist.none"), false);
 		} else {
-			serverCommandSource.sendFeedback(new TranslatableText("commands.banlist.list", collection.size()), false);
+			source.sendFeedback(new TranslatableText("commands.banlist.list", targets.size()), false);
 
-			for (BanEntry<?> banEntry : collection) {
-				serverCommandSource.sendFeedback(new TranslatableText("commands.banlist.entry", banEntry.toText(), banEntry.getSource(), banEntry.getReason()), false);
+			for (BanEntry<?> banEntry : targets) {
+				source.sendFeedback(new TranslatableText("commands.banlist.entry", banEntry.toText(), banEntry.getSource(), banEntry.getReason()), false);
 			}
 		}
 
-		return collection.size();
+		return targets.size();
 	}
 }

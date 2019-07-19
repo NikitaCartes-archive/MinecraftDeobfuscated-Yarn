@@ -11,10 +11,10 @@ import net.minecraft.advancement.AdvancementProgress;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.network.ClientAdvancementManager;
 import net.minecraft.client.network.ClientPlayNetworkHandler;
-import net.minecraft.client.render.GuiLighting;
+import net.minecraft.client.render.DiffuseLighting;
 import net.minecraft.client.resource.language.I18n;
 import net.minecraft.client.util.NarratorManager;
-import net.minecraft.server.network.packet.AdvancementTabC2SPacket;
+import net.minecraft.network.packet.c2s.play.AdvancementTabC2SPacket;
 import net.minecraft.util.Identifier;
 
 @Environment(EnvType.CLIENT)
@@ -22,8 +22,8 @@ public class AdvancementsScreen extends Screen implements ClientAdvancementManag
 	private static final Identifier WINDOW_TEXTURE = new Identifier("textures/gui/advancements/window.png");
 	private static final Identifier TABS_TEXTURE = new Identifier("textures/gui/advancements/tabs.png");
 	private final ClientAdvancementManager advancementHandler;
-	private final Map<Advancement, AdvancementTreeWidget> widgetMap = Maps.<Advancement, AdvancementTreeWidget>newLinkedHashMap();
-	private AdvancementTreeWidget selectedWidget;
+	private final Map<Advancement, AdvancementTab> tabs = Maps.<Advancement, AdvancementTab>newLinkedHashMap();
+	private AdvancementTab selectedTab;
 	private boolean field_2718;
 
 	public AdvancementsScreen(ClientAdvancementManager clientAdvancementManager) {
@@ -33,13 +33,13 @@ public class AdvancementsScreen extends Screen implements ClientAdvancementManag
 
 	@Override
 	protected void init() {
-		this.widgetMap.clear();
-		this.selectedWidget = null;
+		this.tabs.clear();
+		this.selectedTab = null;
 		this.advancementHandler.setListener(this);
-		if (this.selectedWidget == null && !this.widgetMap.isEmpty()) {
-			this.advancementHandler.selectTab(((AdvancementTreeWidget)this.widgetMap.values().iterator().next()).method_2307(), true);
+		if (this.selectedTab == null && !this.tabs.isEmpty()) {
+			this.advancementHandler.selectTab(((AdvancementTab)this.tabs.values().iterator().next()).method_2307(), true);
 		} else {
-			this.advancementHandler.selectTab(this.selectedWidget == null ? null : this.selectedWidget.method_2307(), true);
+			this.advancementHandler.selectTab(this.selectedTab == null ? null : this.selectedTab.method_2307(), true);
 		}
 	}
 
@@ -53,122 +53,122 @@ public class AdvancementsScreen extends Screen implements ClientAdvancementManag
 	}
 
 	@Override
-	public boolean mouseClicked(double d, double e, int i) {
-		if (i == 0) {
-			int j = (this.width - 252) / 2;
-			int k = (this.height - 140) / 2;
+	public boolean mouseClicked(double mouseX, double mouseY, int button) {
+		if (button == 0) {
+			int i = (this.width - 252) / 2;
+			int j = (this.height - 140) / 2;
 
-			for (AdvancementTreeWidget advancementTreeWidget : this.widgetMap.values()) {
-				if (advancementTreeWidget.method_2316(j, k, d, e)) {
-					this.advancementHandler.selectTab(advancementTreeWidget.method_2307(), true);
+			for (AdvancementTab advancementTab : this.tabs.values()) {
+				if (advancementTab.method_2316(i, j, mouseX, mouseY)) {
+					this.advancementHandler.selectTab(advancementTab.method_2307(), true);
 					break;
 				}
 			}
 		}
 
-		return super.mouseClicked(d, e, i);
+		return super.mouseClicked(mouseX, mouseY, button);
 	}
 
 	@Override
-	public boolean keyPressed(int i, int j, int k) {
-		if (this.minecraft.options.keyAdvancements.matchesKey(i, j)) {
+	public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
+		if (this.minecraft.options.keyAdvancements.matchesKey(keyCode, scanCode)) {
 			this.minecraft.openScreen(null);
 			this.minecraft.mouse.lockCursor();
 			return true;
 		} else {
-			return super.keyPressed(i, j, k);
+			return super.keyPressed(keyCode, scanCode, modifiers);
 		}
 	}
 
 	@Override
-	public void render(int i, int j, float f) {
-		int k = (this.width - 252) / 2;
-		int l = (this.height - 140) / 2;
+	public void render(int mouseX, int mouseY, float delta) {
+		int i = (this.width - 252) / 2;
+		int j = (this.height - 140) / 2;
 		this.renderBackground();
-		this.drawAdvancementTree(i, j, k, l);
-		this.drawWidgets(k, l);
-		this.drawWidgetTooltip(i, j, k, l);
+		this.drawAdvancementTree(mouseX, mouseY, i, j);
+		this.drawWidgets(i, j);
+		this.drawWidgetTooltip(mouseX, mouseY, i, j);
 	}
 
 	@Override
-	public boolean mouseDragged(double d, double e, int i, double f, double g) {
-		if (i != 0) {
+	public boolean mouseDragged(double mouseX, double mouseY, int button, double deltaX, double deltaY) {
+		if (button != 0) {
 			this.field_2718 = false;
 			return false;
 		} else {
 			if (!this.field_2718) {
 				this.field_2718 = true;
-			} else if (this.selectedWidget != null) {
-				this.selectedWidget.method_2313(f, g);
+			} else if (this.selectedTab != null) {
+				this.selectedTab.method_2313(deltaX, deltaY);
 			}
 
 			return true;
 		}
 	}
 
-	private void drawAdvancementTree(int i, int j, int k, int l) {
-		AdvancementTreeWidget advancementTreeWidget = this.selectedWidget;
-		if (advancementTreeWidget == null) {
-			fill(k + 9, l + 18, k + 9 + 234, l + 18 + 113, -16777216);
+	private void drawAdvancementTree(int mouseX, int mouseY, int x, int y) {
+		AdvancementTab advancementTab = this.selectedTab;
+		if (advancementTab == null) {
+			fill(x + 9, y + 18, x + 9 + 234, y + 18 + 113, -16777216);
 			String string = I18n.translate("advancements.empty");
-			int m = this.font.getStringWidth(string);
-			this.font.draw(string, (float)(k + 9 + 117 - m / 2), (float)(l + 18 + 56 - 9 / 2), -1);
-			this.font.draw(":(", (float)(k + 9 + 117 - this.font.getStringWidth(":(") / 2), (float)(l + 18 + 113 - 9), -1);
+			int i = this.font.getStringWidth(string);
+			this.font.draw(string, (float)(x + 9 + 117 - i / 2), (float)(y + 18 + 56 - 9 / 2), -1);
+			this.font.draw(":(", (float)(x + 9 + 117 - this.font.getStringWidth(":(") / 2), (float)(y + 18 + 113 - 9), -1);
 		} else {
 			GlStateManager.pushMatrix();
-			GlStateManager.translatef((float)(k + 9), (float)(l + 18), -400.0F);
+			GlStateManager.translatef((float)(x + 9), (float)(y + 18), -400.0F);
 			GlStateManager.enableDepthTest();
-			advancementTreeWidget.method_2310();
+			advancementTab.method_2310();
 			GlStateManager.popMatrix();
 			GlStateManager.depthFunc(515);
 			GlStateManager.disableDepthTest();
 		}
 	}
 
-	public void drawWidgets(int i, int j) {
+	public void drawWidgets(int x, int y) {
 		GlStateManager.color4f(1.0F, 1.0F, 1.0F, 1.0F);
 		GlStateManager.enableBlend();
-		GuiLighting.disable();
+		DiffuseLighting.disable();
 		this.minecraft.getTextureManager().bindTexture(WINDOW_TEXTURE);
-		this.blit(i, j, 0, 0, 252, 140);
-		if (this.widgetMap.size() > 1) {
+		this.blit(x, y, 0, 0, 252, 140);
+		if (this.tabs.size() > 1) {
 			this.minecraft.getTextureManager().bindTexture(TABS_TEXTURE);
 
-			for (AdvancementTreeWidget advancementTreeWidget : this.widgetMap.values()) {
-				advancementTreeWidget.drawBackground(i, j, advancementTreeWidget == this.selectedWidget);
+			for (AdvancementTab advancementTab : this.tabs.values()) {
+				advancementTab.drawBackground(x, y, advancementTab == this.selectedTab);
 			}
 
 			GlStateManager.enableRescaleNormal();
 			GlStateManager.blendFuncSeparate(
 				GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO
 			);
-			GuiLighting.enableForItems();
+			DiffuseLighting.enableForItems();
 
-			for (AdvancementTreeWidget advancementTreeWidget : this.widgetMap.values()) {
-				advancementTreeWidget.drawIcon(i, j, this.itemRenderer);
+			for (AdvancementTab advancementTab : this.tabs.values()) {
+				advancementTab.drawIcon(x, y, this.itemRenderer);
 			}
 
 			GlStateManager.disableBlend();
 		}
 
-		this.font.draw(I18n.translate("gui.advancements"), (float)(i + 8), (float)(j + 6), 4210752);
+		this.font.draw(I18n.translate("gui.advancements"), (float)(x + 8), (float)(y + 6), 4210752);
 	}
 
-	private void drawWidgetTooltip(int i, int j, int k, int l) {
+	private void drawWidgetTooltip(int mouseX, int mouseY, int x, int y) {
 		GlStateManager.color4f(1.0F, 1.0F, 1.0F, 1.0F);
-		if (this.selectedWidget != null) {
+		if (this.selectedTab != null) {
 			GlStateManager.pushMatrix();
 			GlStateManager.enableDepthTest();
-			GlStateManager.translatef((float)(k + 9), (float)(l + 18), 400.0F);
-			this.selectedWidget.method_2314(i - k - 9, j - l - 18, k, l);
+			GlStateManager.translatef((float)(x + 9), (float)(y + 18), 400.0F);
+			this.selectedTab.method_2314(mouseX - x - 9, mouseY - y - 18, x, y);
 			GlStateManager.disableDepthTest();
 			GlStateManager.popMatrix();
 		}
 
-		if (this.widgetMap.size() > 1) {
-			for (AdvancementTreeWidget advancementTreeWidget : this.widgetMap.values()) {
-				if (advancementTreeWidget.method_2316(k, l, (double)i, (double)j)) {
-					this.renderTooltip(advancementTreeWidget.method_2309(), i, j);
+		if (this.tabs.size() > 1) {
+			for (AdvancementTab advancementTab : this.tabs.values()) {
+				if (advancementTab.method_2316(x, y, (double)mouseX, (double)mouseY)) {
+					this.renderTooltip(advancementTab.method_2309(), mouseX, mouseY);
 				}
 			}
 		}
@@ -176,9 +176,9 @@ public class AdvancementsScreen extends Screen implements ClientAdvancementManag
 
 	@Override
 	public void onRootAdded(Advancement advancement) {
-		AdvancementTreeWidget advancementTreeWidget = AdvancementTreeWidget.create(this.minecraft, this, this.widgetMap.size(), advancement);
-		if (advancementTreeWidget != null) {
-			this.widgetMap.put(advancement, advancementTreeWidget);
+		AdvancementTab advancementTab = AdvancementTab.create(this.minecraft, this, this.tabs.size(), advancement);
+		if (advancementTab != null) {
+			this.tabs.put(advancement, advancementTab);
 		}
 	}
 
@@ -188,9 +188,9 @@ public class AdvancementsScreen extends Screen implements ClientAdvancementManag
 
 	@Override
 	public void onDependentAdded(Advancement advancement) {
-		AdvancementTreeWidget advancementTreeWidget = this.getAdvancementTreeWidget(advancement);
-		if (advancementTreeWidget != null) {
-			advancementTreeWidget.method_2318(advancement);
+		AdvancementTab advancementTab = this.getTab(advancement);
+		if (advancementTab != null) {
+			advancementTab.method_2318(advancement);
 		}
 	}
 
@@ -208,27 +208,27 @@ public class AdvancementsScreen extends Screen implements ClientAdvancementManag
 
 	@Override
 	public void selectTab(@Nullable Advancement advancement) {
-		this.selectedWidget = (AdvancementTreeWidget)this.widgetMap.get(advancement);
+		this.selectedTab = (AdvancementTab)this.tabs.get(advancement);
 	}
 
 	@Override
 	public void onClear() {
-		this.widgetMap.clear();
-		this.selectedWidget = null;
+		this.tabs.clear();
+		this.selectedTab = null;
 	}
 
 	@Nullable
 	public AdvancementWidget getAdvancementWidget(Advancement advancement) {
-		AdvancementTreeWidget advancementTreeWidget = this.getAdvancementTreeWidget(advancement);
-		return advancementTreeWidget == null ? null : advancementTreeWidget.getWidgetForAdvancement(advancement);
+		AdvancementTab advancementTab = this.getTab(advancement);
+		return advancementTab == null ? null : advancementTab.getWidget(advancement);
 	}
 
 	@Nullable
-	private AdvancementTreeWidget getAdvancementTreeWidget(Advancement advancement) {
+	private AdvancementTab getTab(Advancement advancement) {
 		while (advancement.getParent() != null) {
 			advancement = advancement.getParent();
 		}
 
-		return (AdvancementTreeWidget)this.widgetMap.get(advancement);
+		return (AdvancementTab)this.tabs.get(advancement);
 	}
 }

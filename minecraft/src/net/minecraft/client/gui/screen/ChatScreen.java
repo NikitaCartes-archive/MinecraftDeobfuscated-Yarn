@@ -54,9 +54,9 @@ public class ChatScreen extends Screen {
 	private boolean field_2380;
 	private boolean completingSuggestion;
 
-	public ChatScreen(String string) {
+	public ChatScreen(String originalChatText) {
 		super(NarratorManager.EMPTY);
-		this.originalChatText = string;
+		this.originalChatText = originalChatText;
 	}
 
 	@Override
@@ -75,9 +75,9 @@ public class ChatScreen extends Screen {
 	}
 
 	@Override
-	public void resize(MinecraftClient minecraftClient, int i, int j) {
+	public void resize(MinecraftClient client, int width, int height) {
 		String string = this.chatField.getText();
-		this.init(minecraftClient, i, j);
+		this.init(client, width, height);
 		this.setText(string);
 		this.updateCommand();
 	}
@@ -100,21 +100,21 @@ public class ChatScreen extends Screen {
 	}
 
 	@Override
-	public boolean keyPressed(int i, int j, int k) {
-		if (this.suggestionsWindow != null && this.suggestionsWindow.keyPressed(i, j, k)) {
+	public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
+		if (this.suggestionsWindow != null && this.suggestionsWindow.keyPressed(keyCode, scanCode, modifiers)) {
 			return true;
 		} else {
-			if (i == 258) {
+			if (keyCode == 258) {
 				this.field_2380 = true;
 				this.showSuggestions();
 			}
 
-			if (super.keyPressed(i, j, k)) {
+			if (super.keyPressed(keyCode, scanCode, modifiers)) {
 				return true;
-			} else if (i == 256) {
+			} else if (keyCode == 256) {
 				this.minecraft.openScreen(null);
 				return true;
-			} else if (i == 257 || i == 335) {
+			} else if (keyCode == 257 || keyCode == 335) {
 				String string = this.chatField.getText().trim();
 				if (!string.isEmpty()) {
 					this.sendMessage(string);
@@ -122,16 +122,16 @@ public class ChatScreen extends Screen {
 
 				this.minecraft.openScreen(null);
 				return true;
-			} else if (i == 265) {
+			} else if (keyCode == 265) {
 				this.setChatFromHistory(-1);
 				return true;
-			} else if (i == 264) {
+			} else if (keyCode == 264) {
 				this.setChatFromHistory(1);
 				return true;
-			} else if (i == 266) {
+			} else if (keyCode == 266) {
 				this.minecraft.inGameHud.getChatHud().scroll((double)(this.minecraft.inGameHud.getChatHud().getVisibleLineCount() - 1));
 				return true;
-			} else if (i == 267) {
+			} else if (keyCode == 267) {
 				this.minecraft.inGameHud.getChatHud().scroll((double)(-this.minecraft.inGameHud.getChatHud().getVisibleLineCount() + 1));
 				return true;
 			} else {
@@ -238,88 +238,88 @@ public class ChatScreen extends Screen {
 		}
 	}
 
-	private String getRenderText(String string, int i) {
-		return this.parseResults != null ? getRenderText(this.parseResults, string, i) : string;
+	private String getRenderText(String string, int cursorPosition) {
+		return this.parseResults != null ? getRenderText(this.parseResults, string, cursorPosition) : string;
 	}
 
-	public static String getRenderText(ParseResults<CommandSource> parseResults, String string, int i) {
+	public static String getRenderText(ParseResults<CommandSource> parseResults, String typedText, int cursorPosition) {
 		Formatting[] formattings = new Formatting[]{Formatting.AQUA, Formatting.YELLOW, Formatting.GREEN, Formatting.LIGHT_PURPLE, Formatting.GOLD};
-		String string2 = Formatting.GRAY.toString();
-		StringBuilder stringBuilder = new StringBuilder(string2);
-		int j = 0;
-		int k = -1;
+		String string = Formatting.GRAY.toString();
+		StringBuilder stringBuilder = new StringBuilder(string);
+		int i = 0;
+		int j = -1;
 		CommandContextBuilder<CommandSource> commandContextBuilder = parseResults.getContext().getLastChild();
 
 		for (ParsedArgument<CommandSource, ?> parsedArgument : commandContextBuilder.getArguments().values()) {
-			if (++k >= formattings.length) {
-				k = 0;
+			if (++j >= formattings.length) {
+				j = 0;
 			}
 
-			int l = Math.max(parsedArgument.getRange().getStart() - i, 0);
-			if (l >= string.length()) {
+			int k = Math.max(parsedArgument.getRange().getStart() - cursorPosition, 0);
+			if (k >= typedText.length()) {
 				break;
 			}
 
-			int m = Math.min(parsedArgument.getRange().getEnd() - i, string.length());
-			if (m > 0) {
-				stringBuilder.append(string, j, l);
-				stringBuilder.append(formattings[k]);
-				stringBuilder.append(string, l, m);
-				stringBuilder.append(string2);
-				j = m;
+			int l = Math.min(parsedArgument.getRange().getEnd() - cursorPosition, typedText.length());
+			if (l > 0) {
+				stringBuilder.append(typedText, i, k);
+				stringBuilder.append(formattings[j]);
+				stringBuilder.append(typedText, k, l);
+				stringBuilder.append(string);
+				i = l;
 			}
 		}
 
 		if (parseResults.getReader().canRead()) {
-			int n = Math.max(parseResults.getReader().getCursor() - i, 0);
-			if (n < string.length()) {
-				int o = Math.min(n + parseResults.getReader().getRemainingLength(), string.length());
-				stringBuilder.append(string, j, n);
+			int m = Math.max(parseResults.getReader().getCursor() - cursorPosition, 0);
+			if (m < typedText.length()) {
+				int n = Math.min(m + parseResults.getReader().getRemainingLength(), typedText.length());
+				stringBuilder.append(typedText, i, m);
 				stringBuilder.append(Formatting.RED);
-				stringBuilder.append(string, n, o);
-				j = o;
+				stringBuilder.append(typedText, m, n);
+				i = n;
 			}
 		}
 
-		stringBuilder.append(string, j, string.length());
+		stringBuilder.append(typedText, i, typedText.length());
 		return stringBuilder.toString();
 	}
 
 	@Override
-	public boolean mouseScrolled(double d, double e, double f) {
-		if (f > 1.0) {
-			f = 1.0;
+	public boolean mouseScrolled(double d, double e, double amount) {
+		if (amount > 1.0) {
+			amount = 1.0;
 		}
 
-		if (f < -1.0) {
-			f = -1.0;
+		if (amount < -1.0) {
+			amount = -1.0;
 		}
 
-		if (this.suggestionsWindow != null && this.suggestionsWindow.mouseScrolled(f)) {
+		if (this.suggestionsWindow != null && this.suggestionsWindow.mouseScrolled(amount)) {
 			return true;
 		} else {
 			if (!hasShiftDown()) {
-				f *= 7.0;
+				amount *= 7.0;
 			}
 
-			this.minecraft.inGameHud.getChatHud().scroll(f);
+			this.minecraft.inGameHud.getChatHud().scroll(amount);
 			return true;
 		}
 	}
 
 	@Override
-	public boolean mouseClicked(double d, double e, int i) {
-		if (this.suggestionsWindow != null && this.suggestionsWindow.mouseClicked((int)d, (int)e, i)) {
+	public boolean mouseClicked(double mouseX, double mouseY, int button) {
+		if (this.suggestionsWindow != null && this.suggestionsWindow.mouseClicked((int)mouseX, (int)mouseY, button)) {
 			return true;
 		} else {
-			if (i == 0) {
-				Text text = this.minecraft.inGameHud.getChatHud().getText(d, e);
+			if (button == 0) {
+				Text text = this.minecraft.inGameHud.getChatHud().getText(mouseX, mouseY);
 				if (text != null && this.handleComponentClicked(text)) {
 					return true;
 				}
 			}
 
-			return this.chatField.mouseClicked(d, e, i) ? true : super.mouseClicked(d, e, i);
+			return this.chatField.mouseClicked(mouseX, mouseY, button) ? true : super.mouseClicked(mouseX, mouseY, button);
 		}
 	}
 
@@ -328,7 +328,7 @@ public class ChatScreen extends Screen {
 		if (bl) {
 			this.chatField.setText(string);
 		} else {
-			this.chatField.addText(string);
+			this.chatField.write(string);
 		}
 	}
 
@@ -354,35 +354,35 @@ public class ChatScreen extends Screen {
 	}
 
 	@Override
-	public void render(int i, int j, float f) {
+	public void render(int mouseX, int mouseY, float delta) {
 		this.setFocused(this.chatField);
 		this.chatField.method_1876(true);
 		fill(2, this.height - 14, this.width - 2, this.height - 2, this.minecraft.options.getTextBackgroundColor(Integer.MIN_VALUE));
-		this.chatField.render(i, j, f);
+		this.chatField.render(mouseX, mouseY, delta);
 		if (this.suggestionsWindow != null) {
-			this.suggestionsWindow.draw(i, j);
+			this.suggestionsWindow.draw(mouseX, mouseY);
 		} else {
-			int k = 0;
+			int i = 0;
 
 			for (String string : this.commandExceptions) {
 				fill(
 					this.commandExceptionsX - 1,
-					this.height - 14 - 13 - 12 * k,
+					this.height - 14 - 13 - 12 * i,
 					this.commandExceptionsX + this.commandExceptionsWidth + 1,
-					this.height - 2 - 13 - 12 * k,
+					this.height - 2 - 13 - 12 * i,
 					-16777216
 				);
-				this.font.drawWithShadow(string, (float)this.commandExceptionsX, (float)(this.height - 14 - 13 + 2 - 12 * k), -1);
-				k++;
+				this.font.drawWithShadow(string, (float)this.commandExceptionsX, (float)(this.height - 14 - 13 + 2 - 12 * i), -1);
+				i++;
 			}
 		}
 
-		Text text = this.minecraft.inGameHud.getChatHud().getText((double)i, (double)j);
+		Text text = this.minecraft.inGameHud.getChatHud().getText((double)mouseX, (double)mouseY);
 		if (text != null && text.getStyle().getHoverEvent() != null) {
-			this.renderComponentHoverEffect(text, i, j);
+			this.renderComponentHoverEffect(text, mouseX, mouseY);
 		}
 
-		super.render(i, j, f);
+		super.render(mouseX, mouseY, delta);
 	}
 
 	@Override
@@ -416,12 +416,12 @@ public class ChatScreen extends Screen {
 	}
 
 	@Nullable
-	private static String suggestSuffix(String string, String string2) {
-		return string2.startsWith(string) ? string2.substring(string.length()) : null;
+	private static String suggestSuffix(String typed, String suggestion) {
+		return suggestion.startsWith(typed) ? suggestion.substring(typed.length()) : null;
 	}
 
-	private void setText(String string) {
-		this.chatField.setText(string);
+	private void setText(String text) {
+		this.chatField.setText(text);
 	}
 
 	@Environment(EnvType.CLIENT)
@@ -434,22 +434,22 @@ public class ChatScreen extends Screen {
 		private Vec2f mouse = Vec2f.ZERO;
 		private boolean completed;
 
-		private SuggestionWindow(int i, int j, int k, Suggestions suggestions) {
-			this.area = new Rect2i(i - 1, j - 3 - Math.min(suggestions.getList().size(), 10) * 12, k + 1, Math.min(suggestions.getList().size(), 10) * 12);
+		private SuggestionWindow(int x, int y, int width, Suggestions suggestions) {
+			this.area = new Rect2i(x - 1, y - 3 - Math.min(suggestions.getList().size(), 10) * 12, width + 1, Math.min(suggestions.getList().size(), 10) * 12);
 			this.suggestions = suggestions;
 			this.input = ChatScreen.this.chatField.getText();
 			this.select(0);
 		}
 
-		public void draw(int i, int j) {
-			int k = Math.min(this.suggestions.getList().size(), 10);
-			int l = -5592406;
+		public void draw(int mouseX, int mouseY) {
+			int i = Math.min(this.suggestions.getList().size(), 10);
+			int j = -5592406;
 			boolean bl = this.inWindowIndex > 0;
-			boolean bl2 = this.suggestions.getList().size() > this.inWindowIndex + k;
+			boolean bl2 = this.suggestions.getList().size() > this.inWindowIndex + i;
 			boolean bl3 = bl || bl2;
-			boolean bl4 = this.mouse.x != (float)i || this.mouse.y != (float)j;
+			boolean bl4 = this.mouse.x != (float)mouseX || this.mouse.y != (float)mouseY;
 			if (bl4) {
-				this.mouse = new Vec2f((float)i, (float)j);
+				this.mouse = new Vec2f((float)mouseX, (float)mouseY);
 			}
 
 			if (bl3) {
@@ -462,18 +462,18 @@ public class ChatScreen extends Screen {
 					-805306368
 				);
 				if (bl) {
-					for (int m = 0; m < this.area.getWidth(); m++) {
-						if (m % 2 == 0) {
-							DrawableHelper.fill(this.area.getX() + m, this.area.getY() - 1, this.area.getX() + m + 1, this.area.getY(), -1);
+					for (int k = 0; k < this.area.getWidth(); k++) {
+						if (k % 2 == 0) {
+							DrawableHelper.fill(this.area.getX() + k, this.area.getY() - 1, this.area.getX() + k + 1, this.area.getY(), -1);
 						}
 					}
 				}
 
 				if (bl2) {
-					for (int mx = 0; mx < this.area.getWidth(); mx++) {
-						if (mx % 2 == 0) {
+					for (int kx = 0; kx < this.area.getWidth(); kx++) {
+						if (kx % 2 == 0) {
 							DrawableHelper.fill(
-								this.area.getX() + mx, this.area.getY() + this.area.getHeight(), this.area.getX() + mx + 1, this.area.getY() + this.area.getHeight() + 1, -1
+								this.area.getX() + kx, this.area.getY() + this.area.getHeight(), this.area.getX() + kx + 1, this.area.getY() + this.area.getHeight() + 1, -1
 							);
 						}
 					}
@@ -482,12 +482,15 @@ public class ChatScreen extends Screen {
 
 			boolean bl5 = false;
 
-			for (int n = 0; n < k; n++) {
-				Suggestion suggestion = (Suggestion)this.suggestions.getList().get(n + this.inWindowIndex);
-				DrawableHelper.fill(this.area.getX(), this.area.getY() + 12 * n, this.area.getX() + this.area.getWidth(), this.area.getY() + 12 * n + 12, -805306368);
-				if (i > this.area.getX() && i < this.area.getX() + this.area.getWidth() && j > this.area.getY() + 12 * n && j < this.area.getY() + 12 * n + 12) {
+			for (int l = 0; l < i; l++) {
+				Suggestion suggestion = (Suggestion)this.suggestions.getList().get(l + this.inWindowIndex);
+				DrawableHelper.fill(this.area.getX(), this.area.getY() + 12 * l, this.area.getX() + this.area.getWidth(), this.area.getY() + 12 * l + 12, -805306368);
+				if (mouseX > this.area.getX()
+					&& mouseX < this.area.getX() + this.area.getWidth()
+					&& mouseY > this.area.getY() + 12 * l
+					&& mouseY < this.area.getY() + 12 * l + 12) {
 					if (bl4) {
-						this.select(n + this.inWindowIndex);
+						this.select(l + this.inWindowIndex);
 					}
 
 					bl5 = true;
@@ -495,25 +498,25 @@ public class ChatScreen extends Screen {
 
 				ChatScreen.this.font
 					.drawWithShadow(
-						suggestion.getText(), (float)(this.area.getX() + 1), (float)(this.area.getY() + 2 + 12 * n), n + this.inWindowIndex == this.selection ? -256 : -5592406
+						suggestion.getText(), (float)(this.area.getX() + 1), (float)(this.area.getY() + 2 + 12 * l), l + this.inWindowIndex == this.selection ? -256 : -5592406
 					);
 			}
 
 			if (bl5) {
 				Message message = ((Suggestion)this.suggestions.getList().get(this.selection)).getTooltip();
 				if (message != null) {
-					ChatScreen.this.renderTooltip(Texts.toText(message).asFormattedString(), i, j);
+					ChatScreen.this.renderTooltip(Texts.toText(message).asFormattedString(), mouseX, mouseY);
 				}
 			}
 		}
 
-		public boolean mouseClicked(int i, int j, int k) {
-			if (!this.area.contains(i, j)) {
+		public boolean mouseClicked(int x, int y, int button) {
+			if (!this.area.contains(x, y)) {
 				return false;
 			} else {
-				int l = (j - this.area.getY()) / 12 + this.inWindowIndex;
-				if (l >= 0 && l < this.suggestions.getList().size()) {
-					this.select(l);
+				int i = (y - this.area.getY()) / 12 + this.inWindowIndex;
+				if (i >= 0 && i < this.suggestions.getList().size()) {
+					this.select(i);
 					this.complete();
 				}
 
@@ -521,7 +524,7 @@ public class ChatScreen extends Screen {
 			}
 		}
 
-		public boolean mouseScrolled(double d) {
+		public boolean mouseScrolled(double amount) {
 			int i = (int)(
 				ChatScreen.this.minecraft.mouse.getX() * (double)ChatScreen.this.minecraft.window.getScaledWidth() / (double)ChatScreen.this.minecraft.window.getWidth()
 			);
@@ -529,30 +532,30 @@ public class ChatScreen extends Screen {
 				ChatScreen.this.minecraft.mouse.getY() * (double)ChatScreen.this.minecraft.window.getScaledHeight() / (double)ChatScreen.this.minecraft.window.getHeight()
 			);
 			if (this.area.contains(i, j)) {
-				this.inWindowIndex = MathHelper.clamp((int)((double)this.inWindowIndex - d), 0, Math.max(this.suggestions.getList().size() - 10, 0));
+				this.inWindowIndex = MathHelper.clamp((int)((double)this.inWindowIndex - amount), 0, Math.max(this.suggestions.getList().size() - 10, 0));
 				return true;
 			} else {
 				return false;
 			}
 		}
 
-		public boolean keyPressed(int i, int j, int k) {
-			if (i == 265) {
+		public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
+			if (keyCode == 265) {
 				this.scroll(-1);
 				this.completed = false;
 				return true;
-			} else if (i == 264) {
+			} else if (keyCode == 264) {
 				this.scroll(1);
 				this.completed = false;
 				return true;
-			} else if (i == 258) {
+			} else if (keyCode == 258) {
 				if (this.completed) {
 					this.scroll(Screen.hasShiftDown() ? -1 : 1);
 				}
 
 				this.complete();
 				return true;
-			} else if (i == 256) {
+			} else if (keyCode == 256) {
 				this.close();
 				return true;
 			} else {
@@ -560,19 +563,19 @@ public class ChatScreen extends Screen {
 			}
 		}
 
-		public void scroll(int i) {
-			this.select(this.selection + i);
-			int j = this.inWindowIndex;
-			int k = this.inWindowIndex + 10 - 1;
-			if (this.selection < j) {
+		public void scroll(int offset) {
+			this.select(this.selection + offset);
+			int i = this.inWindowIndex;
+			int j = this.inWindowIndex + 10 - 1;
+			if (this.selection < i) {
 				this.inWindowIndex = MathHelper.clamp(this.selection, 0, Math.max(this.suggestions.getList().size() - 10, 0));
-			} else if (this.selection > k) {
+			} else if (this.selection > j) {
 				this.inWindowIndex = MathHelper.clamp(this.selection + 1 - 10, 0, Math.max(this.suggestions.getList().size() - 10, 0));
 			}
 		}
 
-		public void select(int i) {
-			this.selection = i;
+		public void select(int index) {
+			this.selection = index;
 			if (this.selection < 0) {
 				this.selection = this.selection + this.suggestions.getList().size();
 			}
@@ -590,7 +593,7 @@ public class ChatScreen extends Screen {
 			ChatScreen.this.completingSuggestion = true;
 			ChatScreen.this.setText(suggestion.apply(this.input));
 			int i = suggestion.getRange().getStart() + suggestion.getText().length();
-			ChatScreen.this.chatField.setCursor(i);
+			ChatScreen.this.chatField.setSelectionStart(i);
 			ChatScreen.this.chatField.method_1884(i);
 			this.select(this.selection);
 			ChatScreen.this.completingSuggestion = false;

@@ -23,7 +23,7 @@ public class EnderChestInventory extends BasicInventory {
 		}
 
 		for (int i = 0; i < listTag.size(); i++) {
-			CompoundTag compoundTag = listTag.getCompoundTag(i);
+			CompoundTag compoundTag = listTag.getCompound(i);
 			int j = compoundTag.getByte("Slot") & 255;
 			if (j >= 0 && j < this.getInvSize()) {
 				this.setInvStack(j, ItemStack.fromTag(compoundTag));
@@ -48,26 +48,26 @@ public class EnderChestInventory extends BasicInventory {
 	}
 
 	@Override
-	public boolean canPlayerUseInv(PlayerEntity playerEntity) {
-		return this.currentBlockEntity != null && !this.currentBlockEntity.canPlayerUse(playerEntity) ? false : super.canPlayerUseInv(playerEntity);
+	public boolean canPlayerUseInv(PlayerEntity player) {
+		return this.currentBlockEntity != null && !this.currentBlockEntity.canPlayerUse(player) ? false : super.canPlayerUseInv(player);
 	}
 
 	@Override
-	public void onInvOpen(PlayerEntity playerEntity) {
+	public void onInvOpen(PlayerEntity player) {
 		if (this.currentBlockEntity != null) {
 			this.currentBlockEntity.onOpen();
 		}
 
-		super.onInvOpen(playerEntity);
+		super.onInvOpen(player);
 	}
 
 	@Override
-	public void onInvClose(PlayerEntity playerEntity) {
+	public void onInvClose(PlayerEntity player) {
 		if (this.currentBlockEntity != null) {
 			this.currentBlockEntity.onClose();
 		}
 
-		super.onInvClose(playerEntity);
+		super.onInvClose(player);
 		this.currentBlockEntity = null;
 	}
 }

@@ -37,9 +37,9 @@ public class ItemStringReader {
 	private int cursor;
 	private Function<SuggestionsBuilder, CompletableFuture<Suggestions>> suggestions = NBT_SUGGESTION_PROVIDER;
 
-	public ItemStringReader(StringReader stringReader, boolean bl) {
-		this.reader = stringReader;
-		this.allowTag = bl;
+	public ItemStringReader(StringReader reader, boolean allowTag) {
+		this.reader = reader;
+		this.allowTag = allowTag;
 	}
 
 	public Item getItem() {

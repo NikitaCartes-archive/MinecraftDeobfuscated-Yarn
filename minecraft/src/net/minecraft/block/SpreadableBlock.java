@@ -4,7 +4,7 @@ import java.util.Random;
 import net.minecraft.tag.FluidTags;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
-import net.minecraft.world.ViewableWorld;
+import net.minecraft.world.CollisionView;
 import net.minecraft.world.World;
 import net.minecraft.world.chunk.light.ChunkLightProvider;
 
@@ -13,37 +13,35 @@ public abstract class SpreadableBlock extends SnowyBlock {
 		super(settings);
 	}
 
-	private static boolean canSurvive(BlockState blockState, ViewableWorld viewableWorld, BlockPos blockPos) {
-		BlockPos blockPos2 = blockPos.up();
-		BlockState blockState2 = viewableWorld.getBlockState(blockPos2);
-		if (blockState2.getBlock() == Blocks.SNOW && (Integer)blockState2.get(SnowBlock.LAYERS) == 1) {
+	private static boolean canSurvive(BlockState state, CollisionView world, BlockPos pos) {
+		BlockPos blockPos = pos.up();
+		BlockState blockState = world.getBlockState(blockPos);
+		if (blockState.getBlock() == Blocks.SNOW && (Integer)blockState.get(SnowBlock.LAYERS) == 1) {
 			return true;
 		} else {
-			int i = ChunkLightProvider.method_20049(
-				viewableWorld, blockState, blockPos, blockState2, blockPos2, Direction.UP, blockState2.getLightSubtracted(viewableWorld, blockPos2)
-			);
-			return i < viewableWorld.getMaxLightLevel();
+			int i = ChunkLightProvider.method_20049(world, state, pos, blockState, blockPos, Direction.UP, blockState.getOpacity(world, blockPos));
+			return i < world.getMaxLightLevel();
 		}
 	}
 
-	private static boolean canSpread(BlockState blockState, ViewableWorld viewableWorld, BlockPos blockPos) {
-		BlockPos blockPos2 = blockPos.up();
-		return canSurvive(blockState, viewableWorld, blockPos) && !viewableWorld.getFluidState(blockPos2).matches(FluidTags.WATER);
+	private static boolean canSpread(BlockState state, CollisionView world, BlockPos pos) {
+		BlockPos blockPos = pos.up();
+		return canSurvive(state, world, pos) && !world.getFluidState(blockPos).matches(FluidTags.WATER);
 	}
 
 	@Override
-	public void onScheduledTick(BlockState blockState, World world, BlockPos blockPos, Random random) {
+	public void onScheduledTick(BlockState state, World world, BlockPos pos, Random random) {
 		if (!world.isClient) {
-			if (!canSurvive(blockState, world, blockPos)) {
-				world.setBlockState(blockPos, Blocks.DIRT.getDefaultState());
+			if (!canSurvive(state, world, pos)) {
+				world.setBlockState(pos, Blocks.DIRT.getDefaultState());
 			} else {
-				if (world.getLightLevel(blockPos.up()) >= 9) {
-					BlockState blockState2 = this.getDefaultState();
+				if (world.getLightLevel(pos.up()) >= 9) {
+					BlockState blockState = this.getDefaultState();
 
 					for (int i = 0; i < 4; i++) {
-						BlockPos blockPos2 = blockPos.add(random.nextInt(3) - 1, random.nextInt(5) - 3, random.nextInt(3) - 1);
-						if (world.getBlockState(blockPos2).getBlock() == Blocks.DIRT && canSpread(blockState2, world, blockPos2)) {
-							world.setBlockState(blockPos2, blockState2.with(SNOWY, Boolean.valueOf(world.getBlockState(blockPos2.up()).getBlock() == Blocks.SNOW)));
+						BlockPos blockPos = pos.add(random.nextInt(3) - 1, random.nextInt(5) - 3, random.nextInt(3) - 1);
+						if (world.getBlockState(blockPos).getBlock() == Blocks.DIRT && canSpread(blockState, world, blockPos)) {
+							world.setBlockState(blockPos, blockState.with(SNOWY, Boolean.valueOf(world.getBlockState(blockPos.up()).getBlock() == Blocks.SNOW)));
 						}
 					}
 				}

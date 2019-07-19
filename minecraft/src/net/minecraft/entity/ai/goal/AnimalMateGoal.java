@@ -26,15 +26,15 @@ public class AnimalMateGoal extends Goal {
 	private int timer;
 	private final double chance;
 
-	public AnimalMateGoal(AnimalEntity animalEntity, double d) {
-		this(animalEntity, d, animalEntity.getClass());
+	public AnimalMateGoal(AnimalEntity animal, double chance) {
+		this(animal, chance, animal.getClass());
 	}
 
-	public AnimalMateGoal(AnimalEntity animalEntity, double d, Class<? extends AnimalEntity> class_) {
-		this.animal = animalEntity;
-		this.world = animalEntity.world;
-		this.entityClass = class_;
-		this.chance = d;
+	public AnimalMateGoal(AnimalEntity animal, double chance, Class<? extends AnimalEntity> entityClass) {
+		this.animal = animal;
+		this.world = animal.world;
+		this.entityClass = entityClass;
+		this.chance = chance;
 		this.setControls(EnumSet.of(Goal.Control.MOVE, Goal.Control.LOOK));
 	}
 
@@ -95,7 +95,7 @@ public class AnimalMateGoal extends Goal {
 
 			if (serverPlayerEntity != null) {
 				serverPlayerEntity.incrementStat(Stats.ANIMALS_BRED);
-				Criterions.BRED_ANIMALS.handle(serverPlayerEntity, this.animal, this.mate, passiveEntity);
+				Criterions.BRED_ANIMALS.trigger(serverPlayerEntity, this.animal, this.mate, passiveEntity);
 			}
 
 			this.animal.setBreedingAge(6000);
@@ -103,11 +103,11 @@ public class AnimalMateGoal extends Goal {
 			this.animal.resetLoveTicks();
 			this.mate.resetLoveTicks();
 			passiveEntity.setBreedingAge(-24000);
-			passiveEntity.setPositionAndAngles(this.animal.x, this.animal.y, this.animal.z, 0.0F, 0.0F);
+			passiveEntity.refreshPositionAndAngles(this.animal.x, this.animal.y, this.animal.z, 0.0F, 0.0F);
 			this.world.spawnEntity(passiveEntity);
 			this.world.sendEntityStatus(this.animal, (byte)18);
 			if (this.world.getGameRules().getBoolean(GameRules.DO_MOB_LOOT)) {
-				this.world.spawnEntity(new ExperienceOrbEntity(this.world, this.animal.x, this.animal.y, this.animal.z, this.animal.getRand().nextInt(7) + 1));
+				this.world.spawnEntity(new ExperienceOrbEntity(this.world, this.animal.x, this.animal.y, this.animal.z, this.animal.getRandom().nextInt(7) + 1));
 			}
 		}
 	}

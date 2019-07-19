@@ -83,11 +83,9 @@ public class IllusionerEntity extends SpellcastingIllagerEntity implements Range
 	}
 
 	@Override
-	public EntityData initialize(
-		IWorld iWorld, LocalDifficulty localDifficulty, SpawnType spawnType, @Nullable EntityData entityData, @Nullable CompoundTag compoundTag
-	) {
-		this.setEquippedStack(EquipmentSlot.MAINHAND, new ItemStack(Items.BOW));
-		return super.initialize(iWorld, localDifficulty, spawnType, entityData, compoundTag);
+	public EntityData initialize(IWorld world, LocalDifficulty difficulty, SpawnType spawnType, @Nullable EntityData entityData, @Nullable CompoundTag entityTag) {
+		this.equipStack(EquipmentSlot.MAINHAND, new ItemStack(Items.BOW));
+		return super.initialize(world, difficulty, spawnType, entityData, entityTag);
 	}
 
 	@Override
@@ -172,12 +170,12 @@ public class IllusionerEntity extends SpellcastingIllagerEntity implements Range
 	}
 
 	@Override
-	public boolean isTeammate(Entity entity) {
-		if (super.isTeammate(entity)) {
+	public boolean isTeammate(Entity other) {
+		if (super.isTeammate(other)) {
 			return true;
 		} else {
-			return entity instanceof LivingEntity && ((LivingEntity)entity).getGroup() == EntityGroup.ILLAGER
-				? this.getScoreboardTeam() == null && entity.getScoreboardTeam() == null
+			return other instanceof LivingEntity && ((LivingEntity)other).getGroup() == EntityGroup.ILLAGER
+				? this.getScoreboardTeam() == null && other.getScoreboardTeam() == null
 				: false;
 		}
 	}
@@ -193,7 +191,7 @@ public class IllusionerEntity extends SpellcastingIllagerEntity implements Range
 	}
 
 	@Override
-	protected SoundEvent getHurtSound(DamageSource damageSource) {
+	protected SoundEvent getHurtSound(DamageSource source) {
 		return SoundEvents.ENTITY_ILLUSIONER_HURT;
 	}
 
@@ -203,19 +201,19 @@ public class IllusionerEntity extends SpellcastingIllagerEntity implements Range
 	}
 
 	@Override
-	public void addBonusForWave(int i, boolean bl) {
+	public void addBonusForWave(int wave, boolean unused) {
 	}
 
 	@Override
-	public void attack(LivingEntity livingEntity, float f) {
+	public void attack(LivingEntity target, float f) {
 		ItemStack itemStack = this.getArrowType(this.getStackInHand(ProjectileUtil.getHandPossiblyHolding(this, Items.BOW)));
 		ProjectileEntity projectileEntity = ProjectileUtil.createArrowProjectile(this, itemStack, f);
-		double d = livingEntity.x - this.x;
-		double e = livingEntity.getBoundingBox().minY + (double)(livingEntity.getHeight() / 3.0F) - projectileEntity.y;
-		double g = livingEntity.z - this.z;
+		double d = target.x - this.x;
+		double e = target.getBoundingBox().y1 + (double)(target.getHeight() / 3.0F) - projectileEntity.y;
+		double g = target.z - this.z;
 		double h = (double)MathHelper.sqrt(d * d + g * g);
 		projectileEntity.setVelocity(d, e + h * 0.2F, g, 1.6F, (float)(14 - this.world.getDifficulty().getId() * 4));
-		this.playSound(SoundEvents.ENTITY_SKELETON_SHOOT, 1.0F, 1.0F / (this.getRand().nextFloat() * 0.4F + 0.8F));
+		this.playSound(SoundEvents.ENTITY_SKELETON_SHOOT, 1.0F, 1.0F / (this.getRandom().nextFloat() * 0.4F + 0.8F));
 		this.world.spawnEntity(projectileEntity);
 	}
 
@@ -244,7 +242,7 @@ public class IllusionerEntity extends SpellcastingIllagerEntity implements Range
 			} else {
 				return IllusionerEntity.this.getTarget().getEntityId() == this.targetId
 					? false
-					: IllusionerEntity.this.world.getLocalDifficulty(new BlockPos(IllusionerEntity.this)).method_5455((float)Difficulty.NORMAL.ordinal());
+					: IllusionerEntity.this.world.getLocalDifficulty(new BlockPos(IllusionerEntity.this)).isHarderThan((float)Difficulty.NORMAL.ordinal());
 			}
 		}
 
@@ -266,7 +264,7 @@ public class IllusionerEntity extends SpellcastingIllagerEntity implements Range
 
 		@Override
 		protected void castSpell() {
-			IllusionerEntity.this.getTarget().addPotionEffect(new StatusEffectInstance(StatusEffects.BLINDNESS, 400));
+			IllusionerEntity.this.getTarget().addStatusEffect(new StatusEffectInstance(StatusEffects.BLINDNESS, 400));
 		}
 
 		@Override
@@ -301,7 +299,7 @@ public class IllusionerEntity extends SpellcastingIllagerEntity implements Range
 
 		@Override
 		protected void castSpell() {
-			IllusionerEntity.this.addPotionEffect(new StatusEffectInstance(StatusEffects.INVISIBILITY, 1200));
+			IllusionerEntity.this.addStatusEffect(new StatusEffectInstance(StatusEffects.INVISIBILITY, 1200));
 		}
 
 		@Nullable

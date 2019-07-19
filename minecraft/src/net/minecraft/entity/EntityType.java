@@ -10,8 +10,8 @@ import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.SharedConstants;
-import net.minecraft.datafixers.Schemas;
-import net.minecraft.datafixers.TypeReferences;
+import net.minecraft.datafixer.Schemas;
+import net.minecraft.datafixer.TypeReferences;
 import net.minecraft.entity.boss.WitherEntity;
 import net.minecraft.entity.boss.dragon.EnderDragonEntity;
 import net.minecraft.entity.decoration.ArmorStandEntity;
@@ -115,7 +115,7 @@ import net.minecraft.tag.Tag;
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.SystemUtil;
+import net.minecraft.util.Util;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Direction;
@@ -123,7 +123,7 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.util.shape.VoxelShapes;
-import net.minecraft.world.ViewableWorld;
+import net.minecraft.world.CollisionView;
 import net.minecraft.world.World;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -443,64 +443,64 @@ public class EntityType<T extends Entity> {
 	private Identifier lootTableId;
 	private final EntityDimensions dimensions;
 
-	private static <T extends Entity> EntityType<T> register(String string, EntityType.Builder<T> builder) {
-		return Registry.register(Registry.ENTITY_TYPE, string, builder.build(string));
+	private static <T extends Entity> EntityType<T> register(String id, EntityType.Builder<T> type) {
+		return Registry.register(Registry.ENTITY_TYPE, id, type.build(id));
 	}
 
-	public static Identifier getId(EntityType<?> entityType) {
-		return Registry.ENTITY_TYPE.getId(entityType);
+	public static Identifier getId(EntityType<?> type) {
+		return Registry.ENTITY_TYPE.getId(type);
 	}
 
-	public static Optional<EntityType<?>> get(String string) {
-		return Registry.ENTITY_TYPE.getOrEmpty(Identifier.tryParse(string));
+	public static Optional<EntityType<?>> get(String id) {
+		return Registry.ENTITY_TYPE.getOrEmpty(Identifier.tryParse(id));
 	}
 
 	public EntityType(
-		EntityType.EntityFactory<T> entityFactory,
-		EntityCategory entityCategory,
-		boolean bl,
-		boolean bl2,
-		boolean bl3,
-		boolean bl4,
-		EntityDimensions entityDimensions
+		EntityType.EntityFactory<T> factory,
+		EntityCategory category,
+		boolean saveable,
+		boolean summonable,
+		boolean fireImmune,
+		boolean spawnableFarFromPlayer,
+		EntityDimensions dimensions
 	) {
-		this.factory = entityFactory;
-		this.category = entityCategory;
-		this.field_19423 = bl4;
-		this.saveable = bl;
-		this.summonable = bl2;
-		this.fireImmune = bl3;
-		this.dimensions = entityDimensions;
+		this.factory = factory;
+		this.category = category;
+		this.field_19423 = spawnableFarFromPlayer;
+		this.saveable = saveable;
+		this.summonable = summonable;
+		this.fireImmune = fireImmune;
+		this.dimensions = dimensions;
 	}
 
 	@Nullable
 	public Entity spawnFromItemStack(
-		World world, @Nullable ItemStack itemStack, @Nullable PlayerEntity playerEntity, BlockPos blockPos, SpawnType spawnType, boolean bl, boolean bl2
+		World world, @Nullable ItemStack stack, @Nullable PlayerEntity player, BlockPos pos, SpawnType spawnType, boolean alignPosition, boolean invertY
 	) {
 		return this.spawn(
 			world,
-			itemStack == null ? null : itemStack.getTag(),
-			itemStack != null && itemStack.hasCustomName() ? itemStack.getName() : null,
-			playerEntity,
-			blockPos,
+			stack == null ? null : stack.getTag(),
+			stack != null && stack.hasCustomName() ? stack.getName() : null,
+			player,
+			pos,
 			spawnType,
-			bl,
-			bl2
+			alignPosition,
+			invertY
 		);
 	}
 
 	@Nullable
 	public T spawn(
 		World world,
-		@Nullable CompoundTag compoundTag,
-		@Nullable Text text,
-		@Nullable PlayerEntity playerEntity,
-		BlockPos blockPos,
+		@Nullable CompoundTag itemTag,
+		@Nullable Text name,
+		@Nullable PlayerEntity player,
+		BlockPos pos,
 		SpawnType spawnType,
-		boolean bl,
-		boolean bl2
+		boolean alignPosition,
+		boolean invertY
 	) {
-		T entity = this.create(world, compoundTag, text, playerEntity, blockPos, spawnType, bl, bl2);
+		T entity = this.create(world, itemTag, name, player, pos, spawnType, alignPosition, invertY);
 		world.spawnEntity(entity);
 		return entity;
 	}
@@ -508,68 +508,66 @@ public class EntityType<T extends Entity> {
 	@Nullable
 	public T create(
 		World world,
-		@Nullable CompoundTag compoundTag,
-		@Nullable Text text,
-		@Nullable PlayerEntity playerEntity,
-		BlockPos blockPos,
+		@Nullable CompoundTag itemTag,
+		@Nullable Text name,
+		@Nullable PlayerEntity player,
+		BlockPos pos,
 		SpawnType spawnType,
-		boolean bl,
-		boolean bl2
+		boolean alignPosition,
+		boolean invertY
 	) {
 		T entity = this.create(world);
 		if (entity == null) {
 			return null;
 		} else {
 			double d;
-			if (bl) {
-				entity.setPosition((double)blockPos.getX() + 0.5, (double)(blockPos.getY() + 1), (double)blockPos.getZ() + 0.5);
-				d = getOriginY(world, blockPos, bl2, entity.getBoundingBox());
+			if (alignPosition) {
+				entity.updatePosition((double)pos.getX() + 0.5, (double)(pos.getY() + 1), (double)pos.getZ() + 0.5);
+				d = getOriginY(world, pos, invertY, entity.getBoundingBox());
 			} else {
 				d = 0.0;
 			}
 
-			entity.setPositionAndAngles(
-				(double)blockPos.getX() + 0.5, (double)blockPos.getY() + d, (double)blockPos.getZ() + 0.5, MathHelper.wrapDegrees(world.random.nextFloat() * 360.0F), 0.0F
+			entity.refreshPositionAndAngles(
+				(double)pos.getX() + 0.5, (double)pos.getY() + d, (double)pos.getZ() + 0.5, MathHelper.wrapDegrees(world.random.nextFloat() * 360.0F), 0.0F
 			);
 			if (entity instanceof MobEntity) {
 				MobEntity mobEntity = (MobEntity)entity;
 				mobEntity.headYaw = mobEntity.yaw;
 				mobEntity.field_6283 = mobEntity.yaw;
-				mobEntity.initialize(world, world.getLocalDifficulty(new BlockPos(mobEntity)), spawnType, null, compoundTag);
+				mobEntity.initialize(world, world.getLocalDifficulty(new BlockPos(mobEntity)), spawnType, null, itemTag);
 				mobEntity.playAmbientSound();
 			}
 
-			if (text != null && entity instanceof LivingEntity) {
-				entity.setCustomName(text);
+			if (name != null && entity instanceof LivingEntity) {
+				entity.setCustomName(name);
 			}
 
-			loadFromEntityTag(world, playerEntity, entity, compoundTag);
+			loadFromEntityTag(world, player, entity, itemTag);
 			return entity;
 		}
 	}
 
-	protected static double getOriginY(ViewableWorld viewableWorld, BlockPos blockPos, boolean bl, Box box) {
-		Box box2 = new Box(blockPos);
+	protected static double getOriginY(CollisionView world, BlockPos pos, boolean bl, Box boundingBox) {
+		Box box = new Box(pos);
 		if (bl) {
-			box2 = box2.stretch(0.0, -1.0, 0.0);
+			box = box.stretch(0.0, -1.0, 0.0);
 		}
 
-		Stream<VoxelShape> stream = viewableWorld.getCollisionShapes(null, box2, Collections.emptySet());
-		return 1.0 + VoxelShapes.calculateMaxOffset(Direction.Axis.Y, box, stream, bl ? -2.0 : -1.0);
+		Stream<VoxelShape> stream = world.getCollisions(null, box, Collections.emptySet());
+		return 1.0 + VoxelShapes.calculateMaxOffset(Direction.Axis.Y, boundingBox, stream, bl ? -2.0 : -1.0);
 	}
 
-	public static void loadFromEntityTag(World world, @Nullable PlayerEntity playerEntity, @Nullable Entity entity, @Nullable CompoundTag compoundTag) {
-		if (compoundTag != null && compoundTag.containsKey("EntityTag", 10)) {
+	public static void loadFromEntityTag(World world, @Nullable PlayerEntity player, @Nullable Entity entity, @Nullable CompoundTag itemTag) {
+		if (itemTag != null && itemTag.contains("EntityTag", 10)) {
 			MinecraftServer minecraftServer = world.getServer();
 			if (minecraftServer != null && entity != null) {
-				if (world.isClient
-					|| !entity.entityDataRequiresOperator()
-					|| playerEntity != null && minecraftServer.getPlayerManager().isOperator(playerEntity.getGameProfile())) {
-					CompoundTag compoundTag2 = entity.toTag(new CompoundTag());
+				if (world.isClient || !entity.entityDataRequiresOperator() || player != null && minecraftServer.getPlayerManager().isOperator(player.getGameProfile())) {
+					CompoundTag compoundTag = entity.toTag(new CompoundTag());
 					UUID uUID = entity.getUuid();
-					compoundTag2.copyFrom(compoundTag.getCompound("EntityTag"));
+					compoundTag.copyFrom(itemTag.getCompound("EntityTag"));
 					entity.setUuid(uUID);
-					entity.fromTag(compoundTag2);
+					entity.fromTag(compoundTag);
 				}
 			}
 		}
@@ -597,7 +595,7 @@ public class EntityType<T extends Entity> {
 
 	public String getTranslationKey() {
 		if (this.translationKey == null) {
-			this.translationKey = SystemUtil.createTranslationKey("entity", Registry.ENTITY_TYPE.getId(this));
+			this.translationKey = Util.createTranslationKey("entity", Registry.ENTITY_TYPE.getId(this));
 		}
 
 		return this.translationKey;
@@ -635,27 +633,27 @@ public class EntityType<T extends Entity> {
 
 	@Nullable
 	@Environment(EnvType.CLIENT)
-	public static Entity createInstanceFromId(int i, World world) {
-		return newInstance(world, Registry.ENTITY_TYPE.get(i));
+	public static Entity createInstanceFromId(int type, World world) {
+		return newInstance(world, Registry.ENTITY_TYPE.get(type));
 	}
 
-	public static Optional<Entity> getEntityFromTag(CompoundTag compoundTag, World world) {
-		return SystemUtil.ifPresentOrElse(
-			fromTag(compoundTag).map(entityType -> entityType.create(world)),
-			entity -> entity.fromTag(compoundTag),
-			() -> LOGGER.warn("Skipping Entity with id {}", compoundTag.getString("id"))
+	public static Optional<Entity> getEntityFromTag(CompoundTag tag, World world) {
+		return Util.ifPresentOrElse(
+			fromTag(tag).map(entityType -> entityType.create(world)),
+			entity -> entity.fromTag(tag),
+			() -> LOGGER.warn("Skipping Entity with id {}", tag.getString("id"))
 		);
 	}
 
 	@Nullable
 	@Environment(EnvType.CLIENT)
-	private static Entity newInstance(World world, @Nullable EntityType<?> entityType) {
-		return entityType == null ? null : entityType.create(world);
+	private static Entity newInstance(World world, @Nullable EntityType<?> type) {
+		return type == null ? null : type.create(world);
 	}
 
-	public Box createSimpleBoundingBox(double d, double e, double f) {
-		float g = this.getWidth() / 2.0F;
-		return new Box(d - (double)g, e, f - (double)g, d + (double)g, e + (double)this.getHeight(), f + (double)g);
+	public Box createSimpleBoundingBox(double feetX, double feetY, double feetZ) {
+		float f = this.getWidth() / 2.0F;
+		return new Box(feetX - (double)f, feetY, feetZ - (double)f, feetX + (double)f, feetY + (double)this.getHeight(), feetZ + (double)f);
 	}
 
 	public EntityDimensions getDimensions() {
@@ -667,13 +665,13 @@ public class EntityType<T extends Entity> {
 	}
 
 	@Nullable
-	public static Entity loadEntityWithPassengers(CompoundTag compoundTag, World world, Function<Entity, Entity> function) {
-		return (Entity)loadEntityFromTag(compoundTag, world).map(function).map(entity -> {
-			if (compoundTag.containsKey("Passengers", 9)) {
+	public static Entity loadEntityWithPassengers(CompoundTag compoundTag, World world, Function<Entity, Entity> entityProcessor) {
+		return (Entity)loadEntityFromTag(compoundTag, world).map(entityProcessor).map(entity -> {
+			if (compoundTag.contains("Passengers", 9)) {
 				ListTag listTag = compoundTag.getList("Passengers", 10);
 
 				for (int i = 0; i < listTag.size(); i++) {
-					Entity entity2 = loadEntityWithPassengers(listTag.getCompoundTag(i), world, function);
+					Entity entity2 = loadEntityWithPassengers(listTag.getCompound(i), world, entityProcessor);
 					if (entity2 != null) {
 						entity2.startRiding(entity, true);
 					}
@@ -784,22 +782,22 @@ public class EntityType<T extends Entity> {
 		private boolean field_19424;
 		private EntityDimensions size = EntityDimensions.changing(0.6F, 1.8F);
 
-		private Builder(EntityType.EntityFactory<T> entityFactory, EntityCategory entityCategory) {
-			this.factory = entityFactory;
-			this.category = entityCategory;
-			this.field_19424 = entityCategory == EntityCategory.CREATURE || entityCategory == EntityCategory.MISC;
+		private Builder(EntityType.EntityFactory<T> factory, EntityCategory category) {
+			this.factory = factory;
+			this.category = category;
+			this.field_19424 = category == EntityCategory.CREATURE || category == EntityCategory.MISC;
 		}
 
-		public static <T extends Entity> EntityType.Builder<T> create(EntityType.EntityFactory<T> entityFactory, EntityCategory entityCategory) {
-			return new EntityType.Builder<>(entityFactory, entityCategory);
+		public static <T extends Entity> EntityType.Builder<T> create(EntityType.EntityFactory<T> factory, EntityCategory category) {
+			return new EntityType.Builder<>(factory, category);
 		}
 
-		public static <T extends Entity> EntityType.Builder<T> create(EntityCategory entityCategory) {
-			return new EntityType.Builder<>((entityType, world) -> null, entityCategory);
+		public static <T extends Entity> EntityType.Builder<T> create(EntityCategory category) {
+			return new EntityType.Builder<>((entityType, world) -> null, category);
 		}
 
-		public EntityType.Builder<T> setDimensions(float f, float g) {
-			this.size = EntityDimensions.changing(f, g);
+		public EntityType.Builder<T> setDimensions(float width, float height) {
+			this.size = EntityDimensions.changing(width, height);
 			return this;
 		}
 
@@ -823,16 +821,16 @@ public class EntityType<T extends Entity> {
 			return this;
 		}
 
-		public EntityType<T> build(String string) {
+		public EntityType<T> build(String id) {
 			if (this.saveable) {
 				try {
-					Schemas.getFixer().getSchema(DataFixUtils.makeKey(SharedConstants.getGameVersion().getWorldVersion())).getChoiceType(TypeReferences.ENTITY_TREE, string);
+					Schemas.getFixer().getSchema(DataFixUtils.makeKey(SharedConstants.getGameVersion().getWorldVersion())).getChoiceType(TypeReferences.ENTITY_TREE, id);
 				} catch (IllegalStateException var3) {
 					if (SharedConstants.isDevelopment) {
 						throw var3;
 					}
 
-					EntityType.LOGGER.warn("No data fixer registered for entity {}", string);
+					EntityType.LOGGER.warn("No data fixer registered for entity {}", id);
 				}
 			}
 
@@ -841,6 +839,6 @@ public class EntityType<T extends Entity> {
 	}
 
 	public interface EntityFactory<T extends Entity> {
-		T create(EntityType<T> entityType, World world);
+		T create(EntityType<T> type, World world);
 	}
 }

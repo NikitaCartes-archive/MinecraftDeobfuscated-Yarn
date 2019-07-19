@@ -13,12 +13,12 @@ import net.minecraft.world.gen.chunk.ChunkGeneratorConfig;
 public class WildCropFeature extends Feature<DefaultFeatureConfig> {
 	protected final BlockState crop;
 
-	public WildCropFeature(Function<Dynamic<?>, ? extends DefaultFeatureConfig> function, BlockState blockState) {
-		super(function);
-		this.crop = blockState;
+	public WildCropFeature(Function<Dynamic<?>, ? extends DefaultFeatureConfig> configDeserializer, BlockState crop) {
+		super(configDeserializer);
+		this.crop = crop;
 	}
 
-	public boolean method_13651(
+	public boolean generate(
 		IWorld iWorld, ChunkGenerator<? extends ChunkGeneratorConfig> chunkGenerator, Random random, BlockPos blockPos, DefaultFeatureConfig defaultFeatureConfig
 	) {
 		int i = 0;

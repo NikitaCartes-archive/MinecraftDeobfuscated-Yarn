@@ -14,7 +14,7 @@ public class CowEntityRenderer extends MobEntityRenderer<CowEntity, CowEntityMod
 		super(entityRenderDispatcher, new CowEntityModel<>(), 0.7F);
 	}
 
-	protected Identifier method_3895(CowEntity cowEntity) {
+	protected Identifier getTexture(CowEntity cowEntity) {
 		return SKIN;
 	}
 }

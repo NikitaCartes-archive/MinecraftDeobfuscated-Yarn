@@ -35,10 +35,10 @@ public class BlazeEntity extends HostileEntity {
 
 	public BlazeEntity(EntityType<? extends BlazeEntity> entityType, World world) {
 		super(entityType, world);
-		this.setPathNodeTypeWeight(PathNodeType.WATER, -1.0F);
-		this.setPathNodeTypeWeight(PathNodeType.LAVA, 8.0F);
-		this.setPathNodeTypeWeight(PathNodeType.DANGER_FIRE, 0.0F);
-		this.setPathNodeTypeWeight(PathNodeType.DAMAGE_FIRE, 0.0F);
+		this.setPathfindingPenalty(PathNodeType.WATER, -1.0F);
+		this.setPathfindingPenalty(PathNodeType.LAVA, 8.0F);
+		this.setPathfindingPenalty(PathNodeType.DANGER_FIRE, 0.0F);
+		this.setPathfindingPenalty(PathNodeType.DAMAGE_FIRE, 0.0F);
 		this.experiencePoints = 10;
 	}
 
@@ -73,7 +73,7 @@ public class BlazeEntity extends HostileEntity {
 	}
 
 	@Override
-	protected SoundEvent getHurtSound(DamageSource damageSource) {
+	protected SoundEvent getHurtSound(DamageSource source) {
 		return SoundEvents.ENTITY_BLAZE_HURT;
 	}
 
@@ -133,7 +133,7 @@ public class BlazeEntity extends HostileEntity {
 
 	@Override
 	protected void mobTick() {
-		if (this.isTouchingWater()) {
+		if (this.isWet()) {
 			this.damage(DamageSource.DROWN, 1.0F);
 		}
 
@@ -156,7 +156,7 @@ public class BlazeEntity extends HostileEntity {
 	}
 
 	@Override
-	public void handleFallDamage(float f, float g) {
+	public void handleFallDamage(float fallDistance, float damageMultiplier) {
 	}
 
 	@Override
@@ -185,8 +185,8 @@ public class BlazeEntity extends HostileEntity {
 		private int field_7217;
 		private int field_19420;
 
-		public ShootFireballGoal(BlazeEntity blazeEntity) {
-			this.blaze = blazeEntity;
+		public ShootFireballGoal(BlazeEntity blaze) {
+			this.blaze = blaze;
 			this.setControls(EnumSet.of(Goal.Control.MOVE, Goal.Control.LOOK));
 		}
 
@@ -233,7 +233,7 @@ public class BlazeEntity extends HostileEntity {
 					this.blaze.getMoveControl().moveTo(livingEntity.x, livingEntity.y, livingEntity.z, 1.0);
 				} else if (d < this.method_6995() * this.method_6995() && bl) {
 					double e = livingEntity.x - this.blaze.x;
-					double f = livingEntity.getBoundingBox().minY + (double)(livingEntity.getHeight() / 2.0F) - (this.blaze.y + (double)(this.blaze.getHeight() / 2.0F));
+					double f = livingEntity.getBoundingBox().y1 + (double)(livingEntity.getHeight() / 2.0F) - (this.blaze.y + (double)(this.blaze.getHeight() / 2.0F));
 					double g = livingEntity.z - this.blaze.z;
 					if (this.field_7217 <= 0) {
 						this.field_7218++;
@@ -254,7 +254,7 @@ public class BlazeEntity extends HostileEntity {
 
 							for (int i = 0; i < 1; i++) {
 								SmallFireballEntity smallFireballEntity = new SmallFireballEntity(
-									this.blaze.world, this.blaze, e + this.blaze.getRand().nextGaussian() * (double)h, f, g + this.blaze.getRand().nextGaussian() * (double)h
+									this.blaze.world, this.blaze, e + this.blaze.getRandom().nextGaussian() * (double)h, f, g + this.blaze.getRandom().nextGaussian() * (double)h
 								);
 								smallFireballEntity.y = this.blaze.y + (double)(this.blaze.getHeight() / 2.0F) + 0.5;
 								this.blaze.world.spawnEntity(smallFireballEntity);

@@ -9,7 +9,7 @@ import java.util.Date;
 import java.util.Locale;
 import java.util.Timer;
 import java.util.TimerTask;
-import net.minecraft.util.SystemUtil;
+import net.minecraft.util.Util;
 import net.minecraft.util.crash.CrashReport;
 import net.minecraft.util.crash.CrashReportSection;
 import org.apache.logging.log4j.LogManager;
@@ -28,7 +28,7 @@ public class DedicatedServerWatchdog implements Runnable {
 	public void run() {
 		while (this.server.isRunning()) {
 			long l = this.server.getServerStartTime();
-			long m = SystemUtil.getMeasuringTimeMs();
+			long m = Util.getMeasuringTimeMs();
 			long n = m - l;
 			if (n > this.maxTickTime) {
 				LOGGER.fatal(

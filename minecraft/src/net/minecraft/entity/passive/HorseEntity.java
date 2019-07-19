@@ -64,11 +64,11 @@ public class HorseEntity extends HorseBaseEntity {
 	}
 
 	@Override
-	public void writeCustomDataToTag(CompoundTag compoundTag) {
-		super.writeCustomDataToTag(compoundTag);
-		compoundTag.putInt("Variant", this.getVariant());
+	public void writeCustomDataToTag(CompoundTag tag) {
+		super.writeCustomDataToTag(tag);
+		tag.putInt("Variant", this.getVariant());
 		if (!this.items.getInvStack(1).isEmpty()) {
-			compoundTag.put("ArmorItem", this.items.getInvStack(1).toTag(new CompoundTag()));
+			tag.put("ArmorItem", this.items.getInvStack(1).toTag(new CompoundTag()));
 		}
 	}
 
@@ -76,17 +76,17 @@ public class HorseEntity extends HorseBaseEntity {
 		return this.getEquippedStack(EquipmentSlot.CHEST);
 	}
 
-	private void equipArmor(ItemStack itemStack) {
-		this.setEquippedStack(EquipmentSlot.CHEST, itemStack);
+	private void equipArmor(ItemStack stack) {
+		this.equipStack(EquipmentSlot.CHEST, stack);
 		this.setEquipmentDropChance(EquipmentSlot.CHEST, 0.0F);
 	}
 
 	@Override
-	public void readCustomDataFromTag(CompoundTag compoundTag) {
-		super.readCustomDataFromTag(compoundTag);
-		this.setVariant(compoundTag.getInt("Variant"));
-		if (compoundTag.containsKey("ArmorItem", 10)) {
-			ItemStack itemStack = ItemStack.fromTag(compoundTag.getCompound("ArmorItem"));
+	public void readCustomDataFromTag(CompoundTag tag) {
+		super.readCustomDataFromTag(tag);
+		this.setVariant(tag.getInt("Variant"));
+		if (tag.contains("ArmorItem", 10)) {
+			ItemStack itemStack = ItemStack.fromTag(tag.getCompound("ArmorItem"));
 			if (!itemStack.isEmpty() && this.canEquip(itemStack)) {
 				this.items.setInvStack(1, itemStack);
 			}
@@ -95,8 +95,8 @@ public class HorseEntity extends HorseBaseEntity {
 		this.updateSaddle();
 	}
 
-	public void setVariant(int i) {
-		this.dataTracker.set(VARIANT, i);
+	public void setVariant(int variant) {
+		this.dataTracker.set(VARIANT, variant);
 		this.clearTextureInfo();
 	}
 
@@ -142,12 +142,12 @@ public class HorseEntity extends HorseBaseEntity {
 		this.setArmorTypeFromStack(this.items.getInvStack(1));
 	}
 
-	private void setArmorTypeFromStack(ItemStack itemStack) {
-		this.equipArmor(itemStack);
+	private void setArmorTypeFromStack(ItemStack stack) {
+		this.equipArmor(stack);
 		if (!this.world.isClient) {
 			this.getAttributeInstance(EntityAttributes.ARMOR).removeModifier(HORSE_ARMOR_BONUS_UUID);
-			if (this.canEquip(itemStack)) {
-				int i = ((HorseArmorItem)itemStack.getItem()).getBonus();
+			if (this.canEquip(stack)) {
+				int i = ((HorseArmorItem)stack.getItem()).getBonus();
 				if (i != 0) {
 					this.getAttributeInstance(EntityAttributes.ARMOR)
 						.addModifier(
@@ -169,10 +169,10 @@ public class HorseEntity extends HorseBaseEntity {
 	}
 
 	@Override
-	protected void playWalkSound(BlockSoundGroup blockSoundGroup) {
-		super.playWalkSound(blockSoundGroup);
+	protected void playWalkSound(BlockSoundGroup group) {
+		super.playWalkSound(group);
 		if (this.random.nextInt(10) == 0) {
-			this.playSound(SoundEvents.ENTITY_HORSE_BREATHE, blockSoundGroup.getVolume() * 0.6F, blockSoundGroup.getPitch());
+			this.playSound(SoundEvents.ENTITY_HORSE_BREATHE, group.getVolume() * 0.6F, group.getPitch());
 		}
 	}
 
@@ -206,8 +206,8 @@ public class HorseEntity extends HorseBaseEntity {
 	}
 
 	@Override
-	protected SoundEvent getHurtSound(DamageSource damageSource) {
-		super.getHurtSound(damageSource);
+	protected SoundEvent getHurtSound(DamageSource source) {
+		super.getHurtSound(source);
 		return SoundEvents.ENTITY_HORSE_HURT;
 	}
 
@@ -218,33 +218,33 @@ public class HorseEntity extends HorseBaseEntity {
 	}
 
 	@Override
-	public boolean interactMob(PlayerEntity playerEntity, Hand hand) {
-		ItemStack itemStack = playerEntity.getStackInHand(hand);
+	public boolean interactMob(PlayerEntity player, Hand hand) {
+		ItemStack itemStack = player.getStackInHand(hand);
 		boolean bl = !itemStack.isEmpty();
 		if (bl && itemStack.getItem() instanceof SpawnEggItem) {
-			return super.interactMob(playerEntity, hand);
+			return super.interactMob(player, hand);
 		} else {
 			if (!this.isBaby()) {
-				if (this.isTame() && playerEntity.isSneaking()) {
-					this.openInventory(playerEntity);
+				if (this.isTame() && player.isSneaking()) {
+					this.openInventory(player);
 					return true;
 				}
 
 				if (this.hasPassengers()) {
-					return super.interactMob(playerEntity, hand);
+					return super.interactMob(player, hand);
 				}
 			}
 
 			if (bl) {
-				if (this.receiveFood(playerEntity, itemStack)) {
-					if (!playerEntity.abilities.creativeMode) {
+				if (this.receiveFood(player, itemStack)) {
+					if (!player.abilities.creativeMode) {
 						itemStack.decrement(1);
 					}
 
 					return true;
 				}
 
-				if (itemStack.useOnEntity(playerEntity, this, hand)) {
+				if (itemStack.useOnEntity(player, this, hand)) {
 					return true;
 				}
 
@@ -255,38 +255,36 @@ public class HorseEntity extends HorseBaseEntity {
 
 				boolean bl2 = !this.isBaby() && !this.isSaddled() && itemStack.getItem() == Items.SADDLE;
 				if (this.canEquip(itemStack) || bl2) {
-					this.openInventory(playerEntity);
+					this.openInventory(player);
 					return true;
 				}
 			}
 
 			if (this.isBaby()) {
-				return super.interactMob(playerEntity, hand);
+				return super.interactMob(player, hand);
 			} else {
-				this.putPlayerOnBack(playerEntity);
+				this.putPlayerOnBack(player);
 				return true;
 			}
 		}
 	}
 
 	@Override
-	public boolean canBreedWith(AnimalEntity animalEntity) {
-		if (animalEntity == this) {
+	public boolean canBreedWith(AnimalEntity other) {
+		if (other == this) {
 			return false;
 		} else {
-			return !(animalEntity instanceof DonkeyEntity) && !(animalEntity instanceof HorseEntity)
-				? false
-				: this.canBreed() && ((HorseBaseEntity)animalEntity).canBreed();
+			return !(other instanceof DonkeyEntity) && !(other instanceof HorseEntity) ? false : this.canBreed() && ((HorseBaseEntity)other).canBreed();
 		}
 	}
 
 	@Override
-	public PassiveEntity createChild(PassiveEntity passiveEntity) {
+	public PassiveEntity createChild(PassiveEntity mate) {
 		HorseBaseEntity horseBaseEntity;
-		if (passiveEntity instanceof DonkeyEntity) {
+		if (mate instanceof DonkeyEntity) {
 			horseBaseEntity = EntityType.MULE.create(this.world);
 		} else {
-			HorseEntity horseEntity = (HorseEntity)passiveEntity;
+			HorseEntity horseEntity = (HorseEntity)mate;
 			horseBaseEntity = EntityType.HORSE.create(this.world);
 			int i = this.random.nextInt(9);
 			int j;
@@ -310,7 +308,7 @@ public class HorseEntity extends HorseBaseEntity {
 			((HorseEntity)horseBaseEntity).setVariant(j);
 		}
 
-		this.setChildAttributes(passiveEntity, horseBaseEntity);
+		this.setChildAttributes(mate, horseBaseEntity);
 		return horseBaseEntity;
 	}
 
@@ -320,16 +318,14 @@ public class HorseEntity extends HorseBaseEntity {
 	}
 
 	@Override
-	public boolean canEquip(ItemStack itemStack) {
-		return itemStack.getItem() instanceof HorseArmorItem;
+	public boolean canEquip(ItemStack item) {
+		return item.getItem() instanceof HorseArmorItem;
 	}
 
 	@Nullable
 	@Override
-	public EntityData initialize(
-		IWorld iWorld, LocalDifficulty localDifficulty, SpawnType spawnType, @Nullable EntityData entityData, @Nullable CompoundTag compoundTag
-	) {
-		entityData = super.initialize(iWorld, localDifficulty, spawnType, entityData, compoundTag);
+	public EntityData initialize(IWorld world, LocalDifficulty difficulty, SpawnType spawnType, @Nullable EntityData entityData, @Nullable CompoundTag entityTag) {
+		entityData = super.initialize(world, difficulty, spawnType, entityData, entityTag);
 		int i;
 		if (entityData instanceof HorseEntity.class_1499) {
 			i = ((HorseEntity.class_1499)entityData).field_6994;

@@ -10,14 +10,14 @@ import net.minecraft.block.enums.BedPart;
 import net.minecraft.entity.passive.CatEntity;
 import net.minecraft.tag.BlockTags;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.ViewableWorld;
+import net.minecraft.world.CollisionView;
 
 public class CatSitOnBlockGoal extends MoveToTargetPosGoal {
 	private final CatEntity cat;
 
-	public CatSitOnBlockGoal(CatEntity catEntity, double d) {
-		super(catEntity, d, 8);
-		this.cat = catEntity;
+	public CatSitOnBlockGoal(CatEntity cat, double speed) {
+		super(cat, speed, 8);
+		this.cat = cat;
 	}
 
 	@Override
@@ -49,14 +49,14 @@ public class CatSitOnBlockGoal extends MoveToTargetPosGoal {
 	}
 
 	@Override
-	protected boolean isTargetPos(ViewableWorld viewableWorld, BlockPos blockPos) {
-		if (!viewableWorld.isAir(blockPos.up())) {
+	protected boolean isTargetPos(CollisionView world, BlockPos pos) {
+		if (!world.isAir(pos.up())) {
 			return false;
 		} else {
-			BlockState blockState = viewableWorld.getBlockState(blockPos);
+			BlockState blockState = world.getBlockState(pos);
 			Block block = blockState.getBlock();
 			if (block == Blocks.CHEST) {
-				return ChestBlockEntity.getPlayersLookingInChestCount(viewableWorld, blockPos) < 1;
+				return ChestBlockEntity.getPlayersLookingInChestCount(world, pos) < 1;
 			} else {
 				return block == Blocks.FURNACE && blockState.get(FurnaceBlock.LIT) ? true : block.matches(BlockTags.BEDS) && blockState.get(BedBlock.PART) != BedPart.HEAD;
 			}

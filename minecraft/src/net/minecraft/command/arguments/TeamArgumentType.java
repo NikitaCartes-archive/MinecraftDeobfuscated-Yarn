@@ -26,25 +26,25 @@ public class TeamArgumentType implements ArgumentType<String> {
 		return new TeamArgumentType();
 	}
 
-	public static Team getTeam(CommandContext<ServerCommandSource> commandContext, String string) throws CommandSyntaxException {
-		String string2 = commandContext.getArgument(string, String.class);
-		Scoreboard scoreboard = commandContext.getSource().getMinecraftServer().getScoreboard();
-		Team team = scoreboard.getTeam(string2);
+	public static Team getTeam(CommandContext<ServerCommandSource> context, String name) throws CommandSyntaxException {
+		String string = context.getArgument(name, String.class);
+		Scoreboard scoreboard = context.getSource().getMinecraftServer().getScoreboard();
+		Team team = scoreboard.getTeam(string);
 		if (team == null) {
-			throw UNKNOWN_TEAM_EXCEPTION.create(string2);
+			throw UNKNOWN_TEAM_EXCEPTION.create(string);
 		} else {
 			return team;
 		}
 	}
 
-	public String method_9483(StringReader stringReader) throws CommandSyntaxException {
+	public String parse(StringReader stringReader) throws CommandSyntaxException {
 		return stringReader.readUnquotedString();
 	}
 
 	@Override
-	public <S> CompletableFuture<Suggestions> listSuggestions(CommandContext<S> commandContext, SuggestionsBuilder suggestionsBuilder) {
-		return commandContext.getSource() instanceof CommandSource
-			? CommandSource.suggestMatching(((CommandSource)commandContext.getSource()).getTeamNames(), suggestionsBuilder)
+	public <S> CompletableFuture<Suggestions> listSuggestions(CommandContext<S> context, SuggestionsBuilder builder) {
+		return context.getSource() instanceof CommandSource
+			? CommandSource.suggestMatching(((CommandSource)context.getSource()).getTeamNames(), builder)
 			: Suggestions.empty();
 	}
 

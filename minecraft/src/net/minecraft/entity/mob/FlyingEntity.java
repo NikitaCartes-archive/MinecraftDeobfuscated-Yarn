@@ -9,41 +9,41 @@ import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 
 public abstract class FlyingEntity extends MobEntity {
-	protected FlyingEntity(EntityType<? extends FlyingEntity> entityType, World world) {
-		super(entityType, world);
+	protected FlyingEntity(EntityType<? extends FlyingEntity> type, World world) {
+		super(type, world);
 	}
 
 	@Override
-	public void handleFallDamage(float f, float g) {
+	public void handleFallDamage(float fallDistance, float damageMultiplier) {
 	}
 
 	@Override
-	protected void fall(double d, boolean bl, BlockState blockState, BlockPos blockPos) {
+	protected void fall(double heightDifference, boolean onGround, BlockState landedState, BlockPos landedPosition) {
 	}
 
 	@Override
-	public void travel(Vec3d vec3d) {
-		if (this.isInsideWater()) {
-			this.updateVelocity(0.02F, vec3d);
+	public void travel(Vec3d movementInput) {
+		if (this.isTouchingWater()) {
+			this.updateVelocity(0.02F, movementInput);
 			this.move(MovementType.SELF, this.getVelocity());
 			this.setVelocity(this.getVelocity().multiply(0.8F));
 		} else if (this.isInLava()) {
-			this.updateVelocity(0.02F, vec3d);
+			this.updateVelocity(0.02F, movementInput);
 			this.move(MovementType.SELF, this.getVelocity());
 			this.setVelocity(this.getVelocity().multiply(0.5));
 		} else {
 			float f = 0.91F;
 			if (this.onGround) {
-				f = this.world.getBlockState(new BlockPos(this.x, this.getBoundingBox().minY - 1.0, this.z)).getBlock().getSlipperiness() * 0.91F;
+				f = this.world.getBlockState(new BlockPos(this.x, this.getBoundingBox().y1 - 1.0, this.z)).getBlock().getSlipperiness() * 0.91F;
 			}
 
 			float g = 0.16277137F / (f * f * f);
 			f = 0.91F;
 			if (this.onGround) {
-				f = this.world.getBlockState(new BlockPos(this.x, this.getBoundingBox().minY - 1.0, this.z)).getBlock().getSlipperiness() * 0.91F;
+				f = this.world.getBlockState(new BlockPos(this.x, this.getBoundingBox().y1 - 1.0, this.z)).getBlock().getSlipperiness() * 0.91F;
 			}
 
-			this.updateVelocity(this.onGround ? 0.1F * g : 0.02F, vec3d);
+			this.updateVelocity(this.onGround ? 0.1F * g : 0.02F, movementInput);
 			this.move(MovementType.SELF, this.getVelocity());
 			this.setVelocity(this.getVelocity().multiply((double)f));
 		}

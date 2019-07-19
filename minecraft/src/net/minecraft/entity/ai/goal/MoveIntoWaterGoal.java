@@ -8,8 +8,8 @@ import net.minecraft.util.math.MathHelper;
 public class MoveIntoWaterGoal extends Goal {
 	private final MobEntityWithAi mob;
 
-	public MoveIntoWaterGoal(MobEntityWithAi mobEntityWithAi) {
-		this.mob = mobEntityWithAi;
+	public MoveIntoWaterGoal(MobEntityWithAi mob) {
+		this.mob = mob;
 	}
 
 	@Override

@@ -5,8 +5,8 @@ import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.server.network.packet.QueryBlockNbtC2SPacket;
-import net.minecraft.server.network.packet.QueryEntityNbtC2SPacket;
+import net.minecraft.network.packet.c2s.play.QueryBlockNbtC2SPacket;
+import net.minecraft.network.packet.c2s.play.QueryEntityNbtC2SPacket;
 import net.minecraft.util.math.BlockPos;
 
 @Environment(EnvType.CLIENT)
@@ -14,34 +14,34 @@ public class DataQueryHandler {
 	private final ClientPlayNetworkHandler networkHandler;
 	private int expectedTransactionId = -1;
 	@Nullable
-	private Consumer<CompoundTag> queryConsumer;
+	private Consumer<CompoundTag> callback;
 
 	public DataQueryHandler(ClientPlayNetworkHandler clientPlayNetworkHandler) {
 		this.networkHandler = clientPlayNetworkHandler;
 	}
 
-	public boolean handleQueryResponse(int i, @Nullable CompoundTag compoundTag) {
-		if (this.expectedTransactionId == i && this.queryConsumer != null) {
-			this.queryConsumer.accept(compoundTag);
-			this.queryConsumer = null;
+	public boolean handleQueryResponse(int transactionId, @Nullable CompoundTag tag) {
+		if (this.expectedTransactionId == transactionId && this.callback != null) {
+			this.callback.accept(tag);
+			this.callback = null;
 			return true;
 		} else {
 			return false;
 		}
 	}
 
-	private int setNextQueryConsumer(Consumer<CompoundTag> consumer) {
-		this.queryConsumer = consumer;
+	private int nextQuery(Consumer<CompoundTag> callback) {
+		this.callback = callback;
 		return ++this.expectedTransactionId;
 	}
 
-	public void queryEntityNbt(int i, Consumer<CompoundTag> consumer) {
-		int j = this.setNextQueryConsumer(consumer);
-		this.networkHandler.sendPacket(new QueryEntityNbtC2SPacket(j, i));
+	public void queryEntityNbt(int entityNetworkId, Consumer<CompoundTag> callback) {
+		int i = this.nextQuery(callback);
+		this.networkHandler.sendPacket(new QueryEntityNbtC2SPacket(i, entityNetworkId));
 	}
 
-	public void queryBlockNbt(BlockPos blockPos, Consumer<CompoundTag> consumer) {
-		int i = this.setNextQueryConsumer(consumer);
-		this.networkHandler.sendPacket(new QueryBlockNbtC2SPacket(i, blockPos));
+	public void queryBlockNbt(BlockPos pos, Consumer<CompoundTag> callback) {
+		int i = this.nextQuery(callback);
+		this.networkHandler.sendPacket(new QueryBlockNbtC2SPacket(i, pos));
 	}
 }

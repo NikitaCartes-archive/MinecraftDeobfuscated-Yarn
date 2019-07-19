@@ -15,11 +15,11 @@ public class WitherArmorFeatureRenderer extends FeatureRenderer<WitherEntity, Wi
 	private static final Identifier SKIN = new Identifier("textures/entity/wither/wither_armor.png");
 	private final WitherEntityModel<WitherEntity> model = new WitherEntityModel<>(0.5F);
 
-	public WitherArmorFeatureRenderer(FeatureRendererContext<WitherEntity, WitherEntityModel<WitherEntity>> featureRendererContext) {
-		super(featureRendererContext);
+	public WitherArmorFeatureRenderer(FeatureRendererContext<WitherEntity, WitherEntityModel<WitherEntity>> context) {
+		super(context);
 	}
 
-	public void method_4207(WitherEntity witherEntity, float f, float g, float h, float i, float j, float k, float l) {
+	public void render(WitherEntity witherEntity, float f, float g, float h, float i, float j, float k, float l) {
 		if (witherEntity.isAtHalfHealth()) {
 			GlStateManager.depthMask(!witherEntity.isInvisible());
 			this.bindTexture(SKIN);
@@ -35,11 +35,11 @@ public class WitherArmorFeatureRenderer extends FeatureRenderer<WitherEntity, Wi
 			GlStateManager.color4f(0.5F, 0.5F, 0.5F, 1.0F);
 			GlStateManager.disableLighting();
 			GlStateManager.blendFunc(GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ONE);
-			this.model.method_17128(witherEntity, f, g, h);
-			this.getModel().copyStateTo(this.model);
+			this.model.animateModel(witherEntity, f, g, h);
+			this.getContextModel().copyStateTo(this.model);
 			GameRenderer gameRenderer = MinecraftClient.getInstance().gameRenderer;
 			gameRenderer.setFogBlack(true);
-			this.model.method_17129(witherEntity, f, g, i, j, k, l);
+			this.model.render(witherEntity, f, g, i, j, k, l);
 			gameRenderer.setFogBlack(false);
 			GlStateManager.matrixMode(5890);
 			GlStateManager.loadIdentity();

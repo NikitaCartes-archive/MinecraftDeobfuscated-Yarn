@@ -16,7 +16,7 @@ import net.minecraft.client.render.BufferBuilder;
 import net.minecraft.client.render.Tessellator;
 import net.minecraft.client.render.VertexFormats;
 import net.minecraft.client.render.entity.model.SignBlockEntityModel;
-import net.minecraft.client.util.TextComponentUtil;
+import net.minecraft.client.util.Texts;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.Direction;
@@ -31,7 +31,7 @@ public class SignBlockEntityRenderer extends BlockEntityRenderer<SignBlockEntity
 	private static final Identifier DARK_OAK_TEX = new Identifier("textures/entity/signs/dark_oak.png");
 	private final SignBlockEntityModel model = new SignBlockEntityModel();
 
-	public void method_3582(SignBlockEntity signBlockEntity, double d, double e, double f, float g, int i) {
+	public void render(SignBlockEntity signBlockEntity, double d, double e, double f, float g, int i) {
 		BlockState blockState = signBlockEntity.getCachedState();
 		GlStateManager.pushMatrix();
 		float h = 0.6666667F;
@@ -72,7 +72,7 @@ public class SignBlockEntityRenderer extends BlockEntityRenderer<SignBlockEntity
 		if (i < 0) {
 			for (int l = 0; l < 4; l++) {
 				String string = signBlockEntity.getTextBeingEditedOnRow(l, text -> {
-					List<Text> list = TextComponentUtil.wrapLines(text, 90, textRenderer, false, true);
+					List<Text> list = Texts.wrapLines(text, 90, textRenderer, false, true);
 					return list.isEmpty() ? "" : ((Text)list.get(0)).asFormattedString();
 				});
 				if (string != null) {
@@ -130,7 +130,7 @@ public class SignBlockEntityRenderer extends BlockEntityRenderer<SignBlockEntity
 
 	private void method_16210(int i, int j, int k, int l) {
 		Tessellator tessellator = Tessellator.getInstance();
-		BufferBuilder bufferBuilder = tessellator.getBufferBuilder();
+		BufferBuilder bufferBuilder = tessellator.getBuffer();
 		GlStateManager.color4f(0.0F, 0.0F, 255.0F, 255.0F);
 		GlStateManager.disableTexture();
 		GlStateManager.enableColorLogicOp();

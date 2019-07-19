@@ -27,7 +27,7 @@ public class SimpleTrader implements Trader {
 	}
 
 	@Override
-	public void setCurrentCustomer(@Nullable PlayerEntity playerEntity) {
+	public void setCurrentCustomer(@Nullable PlayerEntity customer) {
 	}
 
 	@Override
@@ -61,8 +61,8 @@ public class SimpleTrader implements Trader {
 	}
 
 	@Override
-	public void setExperienceFromServer(int i) {
-		this.experience = i;
+	public void setExperienceFromServer(int experience) {
+		this.experience = experience;
 	}
 
 	@Override

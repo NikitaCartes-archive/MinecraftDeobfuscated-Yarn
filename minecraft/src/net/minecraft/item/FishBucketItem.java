@@ -25,25 +25,25 @@ import net.minecraft.world.World;
 public class FishBucketItem extends BucketItem {
 	private final EntityType<?> fishType;
 
-	public FishBucketItem(EntityType<?> entityType, Fluid fluid, Item.Settings settings) {
+	public FishBucketItem(EntityType<?> type, Fluid fluid, Item.Settings settings) {
 		super(fluid, settings);
-		this.fishType = entityType;
+		this.fishType = type;
 	}
 
 	@Override
-	public void onEmptied(World world, ItemStack itemStack, BlockPos blockPos) {
+	public void onEmptied(World world, ItemStack stack, BlockPos pos) {
 		if (!world.isClient) {
-			this.spawnFish(world, itemStack, blockPos);
+			this.spawnFish(world, stack, pos);
 		}
 	}
 
 	@Override
-	protected void playEmptyingSound(@Nullable PlayerEntity playerEntity, IWorld iWorld, BlockPos blockPos) {
-		iWorld.playSound(playerEntity, blockPos, SoundEvents.ITEM_BUCKET_EMPTY_FISH, SoundCategory.NEUTRAL, 1.0F, 1.0F);
+	protected void playEmptyingSound(@Nullable PlayerEntity player, IWorld world, BlockPos pos) {
+		world.playSound(player, pos, SoundEvents.ITEM_BUCKET_EMPTY_FISH, SoundCategory.NEUTRAL, 1.0F, 1.0F);
 	}
 
-	private void spawnFish(World world, ItemStack itemStack, BlockPos blockPos) {
-		Entity entity = this.fishType.spawnFromItemStack(world, itemStack, null, blockPos, SpawnType.BUCKET, true, false);
+	private void spawnFish(World world, ItemStack stack, BlockPos pos) {
+		Entity entity = this.fishType.spawnFromItemStack(world, stack, null, pos, SpawnType.BUCKET, true, false);
 		if (entity != null) {
 			((FishEntity)entity).setFromBucket(true);
 		}
@@ -51,10 +51,10 @@ public class FishBucketItem extends BucketItem {
 
 	@Environment(EnvType.CLIENT)
 	@Override
-	public void appendTooltip(ItemStack itemStack, @Nullable World world, List<Text> list, TooltipContext tooltipContext) {
+	public void appendTooltip(ItemStack stack, @Nullable World world, List<Text> tooltip, TooltipContext context) {
 		if (this.fishType == EntityType.TROPICAL_FISH) {
-			CompoundTag compoundTag = itemStack.getTag();
-			if (compoundTag != null && compoundTag.containsKey("BucketVariantTag", 3)) {
+			CompoundTag compoundTag = stack.getTag();
+			if (compoundTag != null && compoundTag.contains("BucketVariantTag", 3)) {
 				int i = compoundTag.getInt("BucketVariantTag");
 				Formatting[] formattings = new Formatting[]{Formatting.ITALIC, Formatting.GRAY};
 				String string = "color.minecraft." + TropicalFishEntity.getBaseDyeColor(i);
@@ -62,19 +62,19 @@ public class FishBucketItem extends BucketItem {
 
 				for (int j = 0; j < TropicalFishEntity.COMMON_VARIANTS.length; j++) {
 					if (i == TropicalFishEntity.COMMON_VARIANTS[j]) {
-						list.add(new TranslatableText(TropicalFishEntity.getToolTipForVariant(j)).formatted(formattings));
+						tooltip.add(new TranslatableText(TropicalFishEntity.getToolTipForVariant(j)).formatted(formattings));
 						return;
 					}
 				}
 
-				list.add(new TranslatableText(TropicalFishEntity.getTranslationKey(i)).formatted(formattings));
+				tooltip.add(new TranslatableText(TropicalFishEntity.getTranslationKey(i)).formatted(formattings));
 				Text text = new TranslatableText(string);
 				if (!string.equals(string2)) {
 					text.append(", ").append(new TranslatableText(string2));
 				}
 
 				text.formatted(formattings);
-				list.add(text);
+				tooltip.add(text);
 			}
 		}
 	}

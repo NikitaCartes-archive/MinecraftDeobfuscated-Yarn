@@ -25,58 +25,54 @@ public class EffectsChangedCriterion implements Criterion<EffectsChangedCriterio
 	}
 
 	@Override
-	public void beginTrackingCondition(
-		PlayerAdvancementTracker playerAdvancementTracker, Criterion.ConditionsContainer<EffectsChangedCriterion.Conditions> conditionsContainer
-	) {
-		EffectsChangedCriterion.Handler handler = (EffectsChangedCriterion.Handler)this.handlers.get(playerAdvancementTracker);
+	public void beginTrackingCondition(PlayerAdvancementTracker manager, Criterion.ConditionsContainer<EffectsChangedCriterion.Conditions> conditionsContainer) {
+		EffectsChangedCriterion.Handler handler = (EffectsChangedCriterion.Handler)this.handlers.get(manager);
 		if (handler == null) {
-			handler = new EffectsChangedCriterion.Handler(playerAdvancementTracker);
-			this.handlers.put(playerAdvancementTracker, handler);
+			handler = new EffectsChangedCriterion.Handler(manager);
+			this.handlers.put(manager, handler);
 		}
 
 		handler.addCondition(conditionsContainer);
 	}
 
 	@Override
-	public void endTrackingCondition(
-		PlayerAdvancementTracker playerAdvancementTracker, Criterion.ConditionsContainer<EffectsChangedCriterion.Conditions> conditionsContainer
-	) {
-		EffectsChangedCriterion.Handler handler = (EffectsChangedCriterion.Handler)this.handlers.get(playerAdvancementTracker);
+	public void endTrackingCondition(PlayerAdvancementTracker manager, Criterion.ConditionsContainer<EffectsChangedCriterion.Conditions> conditionsContainer) {
+		EffectsChangedCriterion.Handler handler = (EffectsChangedCriterion.Handler)this.handlers.get(manager);
 		if (handler != null) {
 			handler.removeCondition(conditionsContainer);
 			if (handler.isEmpty()) {
-				this.handlers.remove(playerAdvancementTracker);
+				this.handlers.remove(manager);
 			}
 		}
 	}
 
 	@Override
-	public void endTracking(PlayerAdvancementTracker playerAdvancementTracker) {
-		this.handlers.remove(playerAdvancementTracker);
+	public void endTracking(PlayerAdvancementTracker tracker) {
+		this.handlers.remove(tracker);
 	}
 
-	public EffectsChangedCriterion.Conditions method_8862(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext) {
+	public EffectsChangedCriterion.Conditions conditionsFromJson(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext) {
 		EntityEffectPredicate entityEffectPredicate = EntityEffectPredicate.deserialize(jsonObject.get("effects"));
 		return new EffectsChangedCriterion.Conditions(entityEffectPredicate);
 	}
 
-	public void handle(ServerPlayerEntity serverPlayerEntity) {
-		EffectsChangedCriterion.Handler handler = (EffectsChangedCriterion.Handler)this.handlers.get(serverPlayerEntity.getAdvancementManager());
+	public void trigger(ServerPlayerEntity player) {
+		EffectsChangedCriterion.Handler handler = (EffectsChangedCriterion.Handler)this.handlers.get(player.getAdvancementTracker());
 		if (handler != null) {
-			handler.handle(serverPlayerEntity);
+			handler.handle(player);
 		}
 	}
 
 	public static class Conditions extends AbstractCriterionConditions {
 		private final EntityEffectPredicate effects;
 
-		public Conditions(EntityEffectPredicate entityEffectPredicate) {
+		public Conditions(EntityEffectPredicate effects) {
 			super(EffectsChangedCriterion.ID);
-			this.effects = entityEffectPredicate;
+			this.effects = effects;
 		}
 
-		public static EffectsChangedCriterion.Conditions create(EntityEffectPredicate entityEffectPredicate) {
-			return new EffectsChangedCriterion.Conditions(entityEffectPredicate);
+		public static EffectsChangedCriterion.Conditions create(EntityEffectPredicate effects) {
+			return new EffectsChangedCriterion.Conditions(effects);
 		}
 
 		public boolean matches(ServerPlayerEntity serverPlayerEntity) {
@@ -95,8 +91,8 @@ public class EffectsChangedCriterion implements Criterion<EffectsChangedCriterio
 		private final PlayerAdvancementTracker manager;
 		private final Set<Criterion.ConditionsContainer<EffectsChangedCriterion.Conditions>> conditions = Sets.<Criterion.ConditionsContainer<EffectsChangedCriterion.Conditions>>newHashSet();
 
-		public Handler(PlayerAdvancementTracker playerAdvancementTracker) {
-			this.manager = playerAdvancementTracker;
+		public Handler(PlayerAdvancementTracker manager) {
+			this.manager = manager;
 		}
 
 		public boolean isEmpty() {

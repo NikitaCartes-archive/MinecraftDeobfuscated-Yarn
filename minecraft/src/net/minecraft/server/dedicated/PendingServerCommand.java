@@ -6,8 +6,8 @@ public class PendingServerCommand {
 	public final String command;
 	public final ServerCommandSource source;
 
-	public PendingServerCommand(String string, ServerCommandSource serverCommandSource) {
-		this.command = string;
-		this.source = serverCommandSource;
+	public PendingServerCommand(String command, ServerCommandSource commandSource) {
+		this.command = command;
+		this.source = commandSource;
 	}
 }

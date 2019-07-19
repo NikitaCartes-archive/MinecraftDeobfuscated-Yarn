@@ -22,12 +22,12 @@ public class MessageArgumentType implements ArgumentType<MessageArgumentType.Mes
 		return new MessageArgumentType();
 	}
 
-	public static Text getMessage(CommandContext<ServerCommandSource> commandContext, String string) throws CommandSyntaxException {
-		return commandContext.<MessageArgumentType.MessageFormat>getArgument(string, MessageArgumentType.MessageFormat.class)
-			.format(commandContext.getSource(), commandContext.getSource().hasPermissionLevel(2));
+	public static Text getMessage(CommandContext<ServerCommandSource> command, String name) throws CommandSyntaxException {
+		return command.<MessageArgumentType.MessageFormat>getArgument(name, MessageArgumentType.MessageFormat.class)
+			.format(command.getSource(), command.getSource().hasPermissionLevel(2));
 	}
 
-	public MessageArgumentType.MessageFormat method_9338(StringReader stringReader) throws CommandSyntaxException {
+	public MessageArgumentType.MessageFormat parse(StringReader stringReader) throws CommandSyntaxException {
 		return MessageArgumentType.MessageFormat.parse(stringReader, true);
 	}
 

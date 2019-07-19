@@ -62,21 +62,21 @@ public enum BannerPattern {
 	private final String[] recipePattern = new String[3];
 	private ItemStack baseStack = ItemStack.EMPTY;
 
-	private BannerPattern(String string2, String string3) {
-		this.name = string2;
-		this.id = string3;
+	private BannerPattern(String name, String id) {
+		this.name = name;
+		this.id = id;
 	}
 
-	private BannerPattern(String string2, String string3, ItemStack itemStack) {
-		this(string2, string3);
-		this.baseStack = itemStack;
+	private BannerPattern(String name, String id, ItemStack baseStack) {
+		this(name, id);
+		this.baseStack = baseStack;
 	}
 
-	private BannerPattern(String string2, String string3, String string4, String string5, String string6) {
-		this(string2, string3);
-		this.recipePattern[0] = string4;
-		this.recipePattern[1] = string5;
-		this.recipePattern[2] = string6;
+	private BannerPattern(String name, String id, String recipePattern0, String recipePattern1, String recipePattern2) {
+		this(name, id);
+		this.recipePattern[0] = recipePattern0;
+		this.recipePattern[1] = recipePattern1;
+		this.recipePattern[2] = recipePattern2;
 	}
 
 	@Environment(EnvType.CLIENT)
@@ -90,9 +90,9 @@ public enum BannerPattern {
 
 	@Nullable
 	@Environment(EnvType.CLIENT)
-	public static BannerPattern byId(String string) {
+	public static BannerPattern byId(String id) {
 		for (BannerPattern bannerPattern : values()) {
-			if (bannerPattern.id.equals(string)) {
+			if (bannerPattern.id.equals(id)) {
 				return bannerPattern;
 			}
 		}
@@ -103,8 +103,8 @@ public enum BannerPattern {
 	public static class Builder {
 		private final List<Pair<BannerPattern, DyeColor>> patterns = Lists.<Pair<BannerPattern, DyeColor>>newArrayList();
 
-		public BannerPattern.Builder with(BannerPattern bannerPattern, DyeColor dyeColor) {
-			this.patterns.add(Pair.of(bannerPattern, dyeColor));
+		public BannerPattern.Builder with(BannerPattern pattern, DyeColor dyeColor) {
+			this.patterns.add(Pair.of(pattern, dyeColor));
 			return this;
 		}
 

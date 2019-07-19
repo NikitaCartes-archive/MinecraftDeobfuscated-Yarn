@@ -12,8 +12,8 @@ public class CommandBlockItem extends BlockItem {
 
 	@Nullable
 	@Override
-	protected BlockState getPlacementState(ItemPlacementContext itemPlacementContext) {
-		PlayerEntity playerEntity = itemPlacementContext.getPlayer();
-		return playerEntity != null && !playerEntity.isCreativeLevelTwoOp() ? null : super.getPlacementState(itemPlacementContext);
+	protected BlockState getPlacementState(ItemPlacementContext context) {
+		PlayerEntity playerEntity = context.getPlayer();
+		return playerEntity != null && !playerEntity.isCreativeLevelTwoOp() ? null : super.getPlacementState(context);
 	}
 }

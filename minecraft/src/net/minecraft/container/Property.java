@@ -1,36 +1,53 @@
 package net.minecraft.container;
 
+/**
+ * An integer property that is stored in a {@link Container}.
+ * 
+ * <p>{@code Property} instances are used for tracking integer properties in property delegates
+ * and other sources of integer properties, and sending needed content updates to listeners.
+ * 
+ * @see Container
+ */
 public abstract class Property {
 	private int oldValue;
 
-	public static Property create(PropertyDelegate propertyDelegate, int i) {
+	/**
+	 * Creates a new property that accesses the {@code index} of the {@code delegate}.
+	 */
+	public static Property create(PropertyDelegate delegate, int index) {
 		return new Property() {
 			@Override
 			public int get() {
-				return propertyDelegate.get(i);
+				return delegate.get(index);
 			}
 
 			@Override
-			public void set(int i) {
-				propertyDelegate.set(i, i);
+			public void set(int value) {
+				delegate.set(index, value);
 			}
 		};
 	}
 
-	public static Property create(int[] is, int i) {
+	/**
+	 * Creates a new property that accesses the {@code index} of the {@code array}.
+	 */
+	public static Property create(int[] array, int index) {
 		return new Property() {
 			@Override
 			public int get() {
-				return is[i];
+				return array[index];
 			}
 
 			@Override
-			public void set(int i) {
-				is[i] = i;
+			public void set(int value) {
+				array[index] = value;
 			}
 		};
 	}
 
+	/**
+	 * Creates a new property that is not attached to any other objects.
+	 */
 	public static Property create() {
 		return new Property() {
 			private int value;
@@ -41,17 +58,20 @@ public abstract class Property {
 			}
 
 			@Override
-			public void set(int i) {
-				this.value = i;
+			public void set(int value) {
+				this.value = value;
 			}
 		};
 	}
 
 	public abstract int get();
 
-	public abstract void set(int i);
+	public abstract void set(int value);
 
-	public boolean detectChanges() {
+	/**
+	 * Returns true if the value of this property has changed since the last call to {@code hasChanged()}.
+	 */
+	public boolean hasChanged() {
 		int i = this.get();
 		boolean bl = i != this.oldValue;
 		this.oldValue = i;

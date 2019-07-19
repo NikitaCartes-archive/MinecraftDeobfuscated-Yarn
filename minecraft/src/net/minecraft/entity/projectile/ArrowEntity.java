@@ -32,40 +32,40 @@ public class ArrowEntity extends ProjectileEntity {
 		super(entityType, world);
 	}
 
-	public ArrowEntity(World world, double d, double e, double f) {
-		super(EntityType.ARROW, d, e, f, world);
+	public ArrowEntity(World world, double x, double y, double z) {
+		super(EntityType.ARROW, x, y, z, world);
 	}
 
-	public ArrowEntity(World world, LivingEntity livingEntity) {
-		super(EntityType.ARROW, livingEntity, world);
+	public ArrowEntity(World world, LivingEntity owner) {
+		super(EntityType.ARROW, owner, world);
 	}
 
-	public void initFromStack(ItemStack itemStack) {
-		if (itemStack.getItem() == Items.TIPPED_ARROW) {
-			this.potion = PotionUtil.getPotion(itemStack);
-			Collection<StatusEffectInstance> collection = PotionUtil.getCustomPotionEffects(itemStack);
+	public void initFromStack(ItemStack stack) {
+		if (stack.getItem() == Items.TIPPED_ARROW) {
+			this.potion = PotionUtil.getPotion(stack);
+			Collection<StatusEffectInstance> collection = PotionUtil.getCustomPotionEffects(stack);
 			if (!collection.isEmpty()) {
 				for (StatusEffectInstance statusEffectInstance : collection) {
 					this.effects.add(new StatusEffectInstance(statusEffectInstance));
 				}
 			}
 
-			int i = getCustomPotionColor(itemStack);
+			int i = getCustomPotionColor(stack);
 			if (i == -1) {
 				this.initColor();
 			} else {
 				this.setColor(i);
 			}
-		} else if (itemStack.getItem() == Items.ARROW) {
+		} else if (stack.getItem() == Items.ARROW) {
 			this.potion = Potions.EMPTY;
 			this.effects.clear();
 			this.dataTracker.set(COLOR, -1);
 		}
 	}
 
-	public static int getCustomPotionColor(ItemStack itemStack) {
-		CompoundTag compoundTag = itemStack.getTag();
-		return compoundTag != null && compoundTag.containsKey("CustomPotionColor", 99) ? compoundTag.getInt("CustomPotionColor") : -1;
+	public static int getCustomPotionColor(ItemStack stack) {
+		CompoundTag compoundTag = stack.getTag();
+		return compoundTag != null && compoundTag.contains("CustomPotionColor", 99) ? compoundTag.getInt("CustomPotionColor") : -1;
 	}
 
 	private void initColor() {
@@ -73,8 +73,8 @@ public class ArrowEntity extends ProjectileEntity {
 		this.dataTracker.set(COLOR, PotionUtil.getColor(PotionUtil.getPotionEffects(this.potion, this.effects)));
 	}
 
-	public void addEffect(StatusEffectInstance statusEffectInstance) {
-		this.effects.add(statusEffectInstance);
+	public void addEffect(StatusEffectInstance effect) {
+		this.effects.add(effect);
 		this.getDataTracker().set(COLOR, PotionUtil.getColor(PotionUtil.getPotionEffects(this.potion, this.effects)));
 	}
 
@@ -129,57 +129,57 @@ public class ArrowEntity extends ProjectileEntity {
 		return this.dataTracker.get(COLOR);
 	}
 
-	private void setColor(int i) {
+	private void setColor(int color) {
 		this.colorSet = true;
-		this.dataTracker.set(COLOR, i);
+		this.dataTracker.set(COLOR, color);
 	}
 
 	@Override
-	public void writeCustomDataToTag(CompoundTag compoundTag) {
-		super.writeCustomDataToTag(compoundTag);
+	public void writeCustomDataToTag(CompoundTag tag) {
+		super.writeCustomDataToTag(tag);
 		if (this.potion != Potions.EMPTY && this.potion != null) {
-			compoundTag.putString("Potion", Registry.POTION.getId(this.potion).toString());
+			tag.putString("Potion", Registry.POTION.getId(this.potion).toString());
 		}
 
 		if (this.colorSet) {
-			compoundTag.putInt("Color", this.getColor());
+			tag.putInt("Color", this.getColor());
 		}
 
 		if (!this.effects.isEmpty()) {
 			ListTag listTag = new ListTag();
 
 			for (StatusEffectInstance statusEffectInstance : this.effects) {
-				listTag.add(statusEffectInstance.serialize(new CompoundTag()));
+				listTag.add(statusEffectInstance.toTag(new CompoundTag()));
 			}
 
-			compoundTag.put("CustomPotionEffects", listTag);
+			tag.put("CustomPotionEffects", listTag);
 		}
 	}
 
 	@Override
-	public void readCustomDataFromTag(CompoundTag compoundTag) {
-		super.readCustomDataFromTag(compoundTag);
-		if (compoundTag.containsKey("Potion", 8)) {
-			this.potion = PotionUtil.getPotion(compoundTag);
+	public void readCustomDataFromTag(CompoundTag tag) {
+		super.readCustomDataFromTag(tag);
+		if (tag.contains("Potion", 8)) {
+			this.potion = PotionUtil.getPotion(tag);
 		}
 
-		for (StatusEffectInstance statusEffectInstance : PotionUtil.getCustomPotionEffects(compoundTag)) {
+		for (StatusEffectInstance statusEffectInstance : PotionUtil.getCustomPotionEffects(tag)) {
 			this.addEffect(statusEffectInstance);
 		}
 
-		if (compoundTag.containsKey("Color", 99)) {
-			this.setColor(compoundTag.getInt("Color"));
+		if (tag.contains("Color", 99)) {
+			this.setColor(tag.getInt("Color"));
 		} else {
 			this.initColor();
 		}
 	}
 
 	@Override
-	protected void onHit(LivingEntity livingEntity) {
-		super.onHit(livingEntity);
+	protected void onHit(LivingEntity target) {
+		super.onHit(target);
 
 		for (StatusEffectInstance statusEffectInstance : this.potion.getEffects()) {
-			livingEntity.addPotionEffect(
+			target.addStatusEffect(
 				new StatusEffectInstance(
 					statusEffectInstance.getEffectType(),
 					Math.max(statusEffectInstance.getDuration() / 8, 1),
@@ -192,7 +192,7 @@ public class ArrowEntity extends ProjectileEntity {
 
 		if (!this.effects.isEmpty()) {
 			for (StatusEffectInstance statusEffectInstance : this.effects) {
-				livingEntity.addPotionEffect(statusEffectInstance);
+				target.addStatusEffect(statusEffectInstance);
 			}
 		}
 	}
@@ -215,8 +215,8 @@ public class ArrowEntity extends ProjectileEntity {
 
 	@Environment(EnvType.CLIENT)
 	@Override
-	public void handleStatus(byte b) {
-		if (b == 0) {
+	public void handleStatus(byte status) {
+		if (status == 0) {
 			int i = this.getColor();
 			if (i != -1) {
 				double d = (double)(i >> 16 & 0xFF) / 255.0;
@@ -237,7 +237,7 @@ public class ArrowEntity extends ProjectileEntity {
 				}
 			}
 		} else {
-			super.handleStatus(b);
+			super.handleStatus(status);
 		}
 	}
 }

@@ -20,32 +20,32 @@ public class WritableBookItem extends Item {
 	}
 
 	@Override
-	public ActionResult useOnBlock(ItemUsageContext itemUsageContext) {
-		World world = itemUsageContext.getWorld();
-		BlockPos blockPos = itemUsageContext.getBlockPos();
+	public ActionResult useOnBlock(ItemUsageContext context) {
+		World world = context.getWorld();
+		BlockPos blockPos = context.getBlockPos();
 		BlockState blockState = world.getBlockState(blockPos);
 		if (blockState.getBlock() == Blocks.LECTERN) {
-			return LecternBlock.putBookIfAbsent(world, blockPos, blockState, itemUsageContext.getStack()) ? ActionResult.SUCCESS : ActionResult.PASS;
+			return LecternBlock.putBookIfAbsent(world, blockPos, blockState, context.getStack()) ? ActionResult.SUCCESS : ActionResult.PASS;
 		} else {
 			return ActionResult.PASS;
 		}
 	}
 
 	@Override
-	public TypedActionResult<ItemStack> use(World world, PlayerEntity playerEntity, Hand hand) {
-		ItemStack itemStack = playerEntity.getStackInHand(hand);
-		playerEntity.openEditBookScreen(itemStack, hand);
-		playerEntity.incrementStat(Stats.USED.getOrCreateStat(this));
+	public TypedActionResult<ItemStack> use(World world, PlayerEntity user, Hand hand) {
+		ItemStack itemStack = user.getStackInHand(hand);
+		user.openEditBookScreen(itemStack, hand);
+		user.incrementStat(Stats.USED.getOrCreateStat(this));
 		return new TypedActionResult<>(ActionResult.SUCCESS, itemStack);
 	}
 
-	public static boolean isValid(@Nullable CompoundTag compoundTag) {
-		if (compoundTag == null) {
+	public static boolean isValid(@Nullable CompoundTag tag) {
+		if (tag == null) {
 			return false;
-		} else if (!compoundTag.containsKey("pages", 9)) {
+		} else if (!tag.contains("pages", 9)) {
 			return false;
 		} else {
-			ListTag listTag = compoundTag.getList("pages", 8);
+			ListTag listTag = tag.getList("pages", 8);
 
 			for (int i = 0; i < listTag.size(); i++) {
 				String string = listTag.getString(i);

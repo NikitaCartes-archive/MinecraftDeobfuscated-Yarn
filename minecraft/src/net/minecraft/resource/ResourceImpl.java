@@ -34,11 +34,11 @@ public class ResourceImpl implements Resource {
 	@Environment(EnvType.CLIENT)
 	private JsonObject metadata;
 
-	public ResourceImpl(String string, Identifier identifier, InputStream inputStream, @Nullable InputStream inputStream2) {
-		this.packName = string;
-		this.id = identifier;
+	public ResourceImpl(String packName, Identifier id, InputStream inputStream, @Nullable InputStream metaInputStream) {
+		this.packName = packName;
+		this.id = id;
 		this.inputStream = inputStream;
-		this.metaInputStream = inputStream2;
+		this.metaInputStream = metaInputStream;
 	}
 
 	@Environment(EnvType.CLIENT)
@@ -60,7 +60,7 @@ public class ResourceImpl implements Resource {
 	@Nullable
 	@Environment(EnvType.CLIENT)
 	@Override
-	public <T> T getMetadata(ResourceMetadataReader<T> resourceMetadataReader) {
+	public <T> T getMetadata(ResourceMetadataReader<T> metaReader) {
 		if (!this.hasMetadata()) {
 			return null;
 		} else {
@@ -79,8 +79,8 @@ public class ResourceImpl implements Resource {
 			if (this.metadata == null) {
 				return null;
 			} else {
-				String string = resourceMetadataReader.getKey();
-				return this.metadata.has(string) ? resourceMetadataReader.fromJson(JsonHelper.getObject(this.metadata, string)) : null;
+				String string = metaReader.getKey();
+				return this.metadata.has(string) ? metaReader.fromJson(JsonHelper.getObject(this.metadata, string)) : null;
 			}
 		}
 	}
@@ -90,13 +90,13 @@ public class ResourceImpl implements Resource {
 		return this.packName;
 	}
 
-	public boolean equals(Object object) {
-		if (this == object) {
+	public boolean equals(Object o) {
+		if (this == o) {
 			return true;
-		} else if (!(object instanceof ResourceImpl)) {
+		} else if (!(o instanceof ResourceImpl)) {
 			return false;
 		} else {
-			ResourceImpl resourceImpl = (ResourceImpl)object;
+			ResourceImpl resourceImpl = (ResourceImpl)o;
 			if (this.id != null ? this.id.equals(resourceImpl.id) : resourceImpl.id == null) {
 				return this.packName != null ? this.packName.equals(resourceImpl.packName) : resourceImpl.packName == null;
 			} else {

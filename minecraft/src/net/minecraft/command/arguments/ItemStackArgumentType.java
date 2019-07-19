@@ -17,19 +17,19 @@ public class ItemStackArgumentType implements ArgumentType<ItemStackArgument> {
 		return new ItemStackArgumentType();
 	}
 
-	public ItemStackArgument method_9778(StringReader stringReader) throws CommandSyntaxException {
+	public ItemStackArgument parse(StringReader stringReader) throws CommandSyntaxException {
 		ItemStringReader itemStringReader = new ItemStringReader(stringReader, false).consume();
 		return new ItemStackArgument(itemStringReader.getItem(), itemStringReader.getTag());
 	}
 
-	public static <S> ItemStackArgument getItemStackArgument(CommandContext<S> commandContext, String string) {
-		return commandContext.getArgument(string, ItemStackArgument.class);
+	public static <S> ItemStackArgument getItemStackArgument(CommandContext<S> context, String name) {
+		return context.getArgument(name, ItemStackArgument.class);
 	}
 
 	@Override
-	public <S> CompletableFuture<Suggestions> listSuggestions(CommandContext<S> commandContext, SuggestionsBuilder suggestionsBuilder) {
-		StringReader stringReader = new StringReader(suggestionsBuilder.getInput());
-		stringReader.setCursor(suggestionsBuilder.getStart());
+	public <S> CompletableFuture<Suggestions> listSuggestions(CommandContext<S> context, SuggestionsBuilder builder) {
+		StringReader stringReader = new StringReader(builder.getInput());
+		stringReader.setCursor(builder.getStart());
 		ItemStringReader itemStringReader = new ItemStringReader(stringReader, false);
 
 		try {
@@ -37,7 +37,7 @@ public class ItemStackArgumentType implements ArgumentType<ItemStackArgument> {
 		} catch (CommandSyntaxException var6) {
 		}
 
-		return itemStringReader.method_9793(suggestionsBuilder);
+		return itemStringReader.method_9793(builder);
 	}
 
 	@Override

@@ -19,15 +19,15 @@ public class ArmorBipedFeatureRenderer<T extends LivingEntity, M extends BipedEn
 		switch (equipmentSlot) {
 			case HEAD:
 				bipedEntityModel.head.visible = true;
-				bipedEntityModel.headwear.visible = true;
+				bipedEntityModel.helmet.visible = true;
 				break;
 			case CHEST:
-				bipedEntityModel.body.visible = true;
+				bipedEntityModel.torso.visible = true;
 				bipedEntityModel.rightArm.visible = true;
 				bipedEntityModel.leftArm.visible = true;
 				break;
 			case LEGS:
-				bipedEntityModel.body.visible = true;
+				bipedEntityModel.torso.visible = true;
 				bipedEntityModel.rightLeg.visible = true;
 				bipedEntityModel.leftLeg.visible = true;
 				break;

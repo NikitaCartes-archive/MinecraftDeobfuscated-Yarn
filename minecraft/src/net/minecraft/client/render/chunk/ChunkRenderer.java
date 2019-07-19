@@ -10,14 +10,14 @@ import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.block.Block;
-import net.minecraft.block.BlockRenderLayer;
 import net.minecraft.block.BlockRenderType;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.gl.GlBuffer;
+import net.minecraft.client.gl.VertexBuffer;
 import net.minecraft.client.render.BufferBuilder;
 import net.minecraft.client.render.Camera;
+import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.render.VertexFormats;
 import net.minecraft.client.render.WorldRenderer;
 import net.minecraft.client.render.block.BlockModelRenderer;
@@ -25,7 +25,7 @@ import net.minecraft.client.render.block.BlockRenderManager;
 import net.minecraft.client.render.block.entity.BlockEntityRenderDispatcher;
 import net.minecraft.client.render.block.entity.BlockEntityRenderer;
 import net.minecraft.fluid.FluidState;
-import net.minecraft.util.SystemUtil;
+import net.minecraft.util.Util;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Direction;
@@ -42,12 +42,12 @@ public class ChunkRenderer {
 	private final ReentrantLock dataLock = new ReentrantLock();
 	private ChunkRenderTask task;
 	private final Set<BlockEntity> blockEntities = Sets.<BlockEntity>newHashSet();
-	private final GlBuffer[] buffers = new GlBuffer[BlockRenderLayer.values().length];
+	private final VertexBuffer[] buffers = new VertexBuffer[RenderLayer.values().length];
 	public Box boundingBox;
 	private int field_4471 = -1;
 	private boolean rebuildScheduled = true;
 	private final BlockPos.Mutable origin = new BlockPos.Mutable(-1, -1, -1);
-	private final BlockPos.Mutable[] neighborPositions = SystemUtil.consume(new BlockPos.Mutable[6], mutables -> {
+	private final BlockPos.Mutable[] neighborPositions = Util.make(new BlockPos.Mutable[6], mutables -> {
 		for (int ix = 0; ix < mutables.length; ix++) {
 			mutables[ix] = new BlockPos.Mutable();
 		}
@@ -58,14 +58,14 @@ public class ChunkRenderer {
 		this.world = world;
 		this.renderer = worldRenderer;
 		if (GLX.useVbo()) {
-			for (int i = 0; i < BlockRenderLayer.values().length; i++) {
-				this.buffers[i] = new GlBuffer(VertexFormats.POSITION_COLOR_UV_LMAP);
+			for (int i = 0; i < RenderLayer.values().length; i++) {
+				this.buffers[i] = new VertexBuffer(VertexFormats.POSITION_COLOR_UV_LMAP);
 			}
 		}
 	}
 
-	private static boolean isChunkNonEmpty(BlockPos blockPos, World world) {
-		return !world.method_8497(blockPos.getX() >> 4, blockPos.getZ() >> 4).isEmpty();
+	private static boolean isChunkNonEmpty(BlockPos pos, World world) {
+		return !world.getChunk(pos.getX() >> 4, pos.getZ() >> 4).isEmpty();
 	}
 
 	public boolean shouldBuild() {
@@ -90,15 +90,15 @@ public class ChunkRenderer {
 		}
 	}
 
-	public GlBuffer getGlBuffer(int i) {
-		return this.buffers[i];
+	public VertexBuffer getGlBuffer(int layer) {
+		return this.buffers[layer];
 	}
 
-	public void setOrigin(int i, int j, int k) {
-		if (i != this.origin.getX() || j != this.origin.getY() || k != this.origin.getZ()) {
+	public void setOrigin(int x, int y, int z) {
+		if (x != this.origin.getX() || y != this.origin.getY() || z != this.origin.getZ()) {
 			this.clear();
-			this.origin.set(i, j, k);
-			this.boundingBox = new Box((double)i, (double)j, (double)k, (double)(i + 16), (double)(j + 16), (double)(k + 16));
+			this.origin.set(x, y, z);
+			this.boundingBox = new Box((double)x, (double)y, (double)z, (double)(x + 16), (double)(y + 16), (double)(z + 16));
 
 			for (Direction direction : Direction.values()) {
 				this.neighborPositions[direction.ordinal()].set(this.origin).setOffset(direction, 16);
@@ -108,38 +108,38 @@ public class ChunkRenderer {
 
 	public void resortTransparency(float f, float g, float h, ChunkRenderTask chunkRenderTask) {
 		ChunkRenderData chunkRenderData = chunkRenderTask.getRenderData();
-		if (chunkRenderData.getBufferState() != null && !chunkRenderData.isEmpty(BlockRenderLayer.TRANSLUCENT)) {
-			this.beginBufferBuilding(chunkRenderTask.getBufferBuilders().get(BlockRenderLayer.TRANSLUCENT), this.origin);
-			chunkRenderTask.getBufferBuilders().get(BlockRenderLayer.TRANSLUCENT).restoreState(chunkRenderData.getBufferState());
-			this.endBufferBuilding(BlockRenderLayer.TRANSLUCENT, f, g, h, chunkRenderTask.getBufferBuilders().get(BlockRenderLayer.TRANSLUCENT), chunkRenderData);
+		if (chunkRenderData.getBufferState() != null && !chunkRenderData.isEmpty(RenderLayer.TRANSLUCENT)) {
+			this.beginBufferBuilding(chunkRenderTask.getBufferBuilders().get(RenderLayer.TRANSLUCENT), this.origin);
+			chunkRenderTask.getBufferBuilders().get(RenderLayer.TRANSLUCENT).restoreState(chunkRenderData.getBufferState());
+			this.endBufferBuilding(RenderLayer.TRANSLUCENT, f, g, h, chunkRenderTask.getBufferBuilders().get(RenderLayer.TRANSLUCENT), chunkRenderData);
 		}
 	}
 
-	public void rebuildChunk(float f, float g, float h, ChunkRenderTask chunkRenderTask) {
+	public void rebuildChunk(float cameraX, float cameraY, float cameraZ, ChunkRenderTask task) {
 		ChunkRenderData chunkRenderData = new ChunkRenderData();
 		int i = 1;
 		BlockPos blockPos = this.origin.toImmutable();
 		BlockPos blockPos2 = blockPos.add(15, 15, 15);
 		World world = this.world;
 		if (world != null) {
-			chunkRenderTask.getLock().lock();
+			task.getLock().lock();
 
 			try {
-				if (chunkRenderTask.getStage() != ChunkRenderTask.Stage.COMPILING) {
+				if (task.getStage() != ChunkRenderTask.Stage.COMPILING) {
 					return;
 				}
 
-				chunkRenderTask.setRenderData(chunkRenderData);
+				task.setRenderData(chunkRenderData);
 			} finally {
-				chunkRenderTask.getLock().unlock();
+				task.getLock().unlock();
 			}
 
-			ChunkOcclusionGraphBuilder chunkOcclusionGraphBuilder = new ChunkOcclusionGraphBuilder();
+			ChunkOcclusionDataBuilder chunkOcclusionDataBuilder = new ChunkOcclusionDataBuilder();
 			HashSet set = Sets.newHashSet();
-			ChunkRendererRegion chunkRendererRegion = chunkRenderTask.takeRegion();
+			ChunkRendererRegion chunkRendererRegion = task.takeRegion();
 			if (chunkRendererRegion != null) {
 				chunkUpdateCount++;
-				boolean[] bls = new boolean[BlockRenderLayer.values().length];
+				boolean[] bls = new boolean[RenderLayer.values().length];
 				BlockModelRenderer.enableBrightnessCache();
 				Random random = new Random();
 				BlockRenderManager blockRenderManager = MinecraftClient.getInstance().getBlockRenderManager();
@@ -148,7 +148,7 @@ public class ChunkRenderer {
 					BlockState blockState = chunkRendererRegion.getBlockState(blockPos3);
 					Block block = blockState.getBlock();
 					if (blockState.isFullOpaque(chunkRendererRegion, blockPos3)) {
-						chunkOcclusionGraphBuilder.markClosed(blockPos3);
+						chunkOcclusionDataBuilder.markClosed(blockPos3);
 					}
 
 					if (block.hasBlockEntity()) {
@@ -166,11 +166,11 @@ public class ChunkRenderer {
 
 					FluidState fluidState = chunkRendererRegion.getFluidState(blockPos3);
 					if (!fluidState.isEmpty()) {
-						BlockRenderLayer blockRenderLayer = fluidState.getRenderLayer();
-						int j = blockRenderLayer.ordinal();
-						BufferBuilder bufferBuilder = chunkRenderTask.getBufferBuilders().get(j);
-						if (!chunkRenderData.isBufferInitialized(blockRenderLayer)) {
-							chunkRenderData.markBufferInitialized(blockRenderLayer);
+						RenderLayer renderLayer = fluidState.getRenderLayer();
+						int j = renderLayer.ordinal();
+						BufferBuilder bufferBuilder = task.getBufferBuilders().get(j);
+						if (!chunkRenderData.isBufferInitialized(renderLayer)) {
+							chunkRenderData.markBufferInitialized(renderLayer);
 							this.beginBufferBuilding(bufferBuilder, blockPos);
 						}
 
@@ -178,11 +178,11 @@ public class ChunkRenderer {
 					}
 
 					if (blockState.getRenderType() != BlockRenderType.INVISIBLE) {
-						BlockRenderLayer blockRenderLayer = block.getRenderLayer();
-						int j = blockRenderLayer.ordinal();
-						BufferBuilder bufferBuilder = chunkRenderTask.getBufferBuilders().get(j);
-						if (!chunkRenderData.isBufferInitialized(blockRenderLayer)) {
-							chunkRenderData.markBufferInitialized(blockRenderLayer);
+						RenderLayer renderLayer = block.getRenderLayer();
+						int j = renderLayer.ordinal();
+						BufferBuilder bufferBuilder = task.getBufferBuilders().get(j);
+						if (!chunkRenderData.isBufferInitialized(renderLayer)) {
+							chunkRenderData.markBufferInitialized(renderLayer);
 							this.beginBufferBuilding(bufferBuilder, blockPos);
 						}
 
@@ -190,20 +190,20 @@ public class ChunkRenderer {
 					}
 				}
 
-				for (BlockRenderLayer blockRenderLayer2 : BlockRenderLayer.values()) {
-					if (bls[blockRenderLayer2.ordinal()]) {
-						chunkRenderData.setNonEmpty(blockRenderLayer2);
+				for (RenderLayer renderLayer2 : RenderLayer.values()) {
+					if (bls[renderLayer2.ordinal()]) {
+						chunkRenderData.setNonEmpty(renderLayer2);
 					}
 
-					if (chunkRenderData.isBufferInitialized(blockRenderLayer2)) {
-						this.endBufferBuilding(blockRenderLayer2, f, g, h, chunkRenderTask.getBufferBuilders().get(blockRenderLayer2), chunkRenderData);
+					if (chunkRenderData.isBufferInitialized(renderLayer2)) {
+						this.endBufferBuilding(renderLayer2, cameraX, cameraY, cameraZ, task.getBufferBuilders().get(renderLayer2), chunkRenderData);
 					}
 				}
 
 				BlockModelRenderer.disableBrightnessCache();
 			}
 
-			chunkRenderData.setOcclusionGraph(chunkOcclusionGraphBuilder.build());
+			chunkRenderData.setOcclusionGraph(chunkOcclusionDataBuilder.build());
 			this.lock.lock();
 
 			try {
@@ -213,7 +213,7 @@ public class ChunkRenderer {
 				set3.removeAll(set);
 				this.blockEntities.clear();
 				this.blockEntities.addAll(set);
-				this.renderer.updateBlockEntities(set3, set2);
+				this.renderer.updateNoCullingBlockEntities(set3, set2);
 			} finally {
 				this.lock.unlock();
 			}
@@ -282,9 +282,9 @@ public class ChunkRenderer {
 
 	protected double getSquaredCameraDistance() {
 		Camera camera = MinecraftClient.getInstance().gameRenderer.getCamera();
-		double d = this.boundingBox.minX + 8.0 - camera.getPos().x;
-		double e = this.boundingBox.minY + 8.0 - camera.getPos().y;
-		double f = this.boundingBox.minZ + 8.0 - camera.getPos().z;
+		double d = this.boundingBox.x1 + 8.0 - camera.getPos().x;
+		double e = this.boundingBox.y1 + 8.0 - camera.getPos().y;
+		double f = this.boundingBox.z1 + 8.0 - camera.getPos().z;
 		return d * d + e * e + f * f;
 	}
 
@@ -293,10 +293,10 @@ public class ChunkRenderer {
 		bufferBuilder.setOffset((double)(-blockPos.getX()), (double)(-blockPos.getY()), (double)(-blockPos.getZ()));
 	}
 
-	private void endBufferBuilding(BlockRenderLayer blockRenderLayer, float f, float g, float h, BufferBuilder bufferBuilder, ChunkRenderData chunkRenderData) {
-		if (blockRenderLayer == BlockRenderLayer.TRANSLUCENT && !chunkRenderData.isEmpty(blockRenderLayer)) {
+	private void endBufferBuilding(RenderLayer renderLayer, float f, float g, float h, BufferBuilder bufferBuilder, ChunkRenderData chunkRenderData) {
+		if (renderLayer == RenderLayer.TRANSLUCENT && !chunkRenderData.isEmpty(renderLayer)) {
 			bufferBuilder.sortQuads(f, g, h);
-			chunkRenderData.setBufferState(bufferBuilder.toBufferState());
+			chunkRenderData.setBufferState(bufferBuilder.popState());
 		}
 
 		bufferBuilder.end();
@@ -306,11 +306,11 @@ public class ChunkRenderer {
 		return this.data;
 	}
 
-	public void setData(ChunkRenderData chunkRenderData) {
+	public void setData(ChunkRenderData data) {
 		this.dataLock.lock();
 
 		try {
-			this.data = chunkRenderData;
+			this.data = data;
 		} finally {
 			this.dataLock.unlock();
 		}
@@ -326,7 +326,7 @@ public class ChunkRenderer {
 		this.clear();
 		this.world = null;
 
-		for (int i = 0; i < BlockRenderLayer.values().length; i++) {
+		for (int i = 0; i < RenderLayer.values().length; i++) {
 			if (this.buffers[i] != null) {
 				this.buffers[i].delete();
 			}
@@ -337,13 +337,13 @@ public class ChunkRenderer {
 		return this.origin;
 	}
 
-	public void scheduleRebuild(boolean bl) {
+	public void scheduleRebuild(boolean rebuildOnClientThread) {
 		if (this.rebuildScheduled) {
-			bl |= this.rebuildOnClientThread;
+			rebuildOnClientThread |= this.rebuildOnClientThread;
 		}
 
 		this.rebuildScheduled = true;
-		this.rebuildOnClientThread = bl;
+		this.rebuildOnClientThread = rebuildOnClientThread;
 	}
 
 	public void unscheduleRebuild() {

@@ -13,18 +13,18 @@ import java.util.UUID;
 import java.util.concurrent.atomic.AtomicInteger;
 import javax.annotation.Nullable;
 import javax.crypto.SecretKey;
-import net.minecraft.client.network.packet.LoginCompressionS2CPacket;
-import net.minecraft.client.network.packet.LoginDisconnectS2CPacket;
-import net.minecraft.client.network.packet.LoginHelloS2CPacket;
-import net.minecraft.client.network.packet.LoginSuccessS2CPacket;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.network.ClientConnection;
 import net.minecraft.network.NetworkEncryptionUtils;
 import net.minecraft.network.listener.ServerLoginPacketListener;
+import net.minecraft.network.packet.c2s.login.LoginHelloC2SPacket;
+import net.minecraft.network.packet.c2s.login.LoginKeyC2SPacket;
+import net.minecraft.network.packet.c2s.login.LoginQueryResponseC2SPacket;
+import net.minecraft.network.packet.s2c.login.LoginCompressionS2CPacket;
+import net.minecraft.network.packet.s2c.login.LoginDisconnectS2CPacket;
+import net.minecraft.network.packet.s2c.login.LoginHelloS2CPacket;
+import net.minecraft.network.packet.s2c.login.LoginSuccessS2CPacket;
 import net.minecraft.server.MinecraftServer;
-import net.minecraft.server.network.packet.LoginHelloC2SPacket;
-import net.minecraft.server.network.packet.LoginKeyC2SPacket;
-import net.minecraft.server.network.packet.LoginQueryResponseC2SPacket;
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.UncaughtExceptionLogger;
@@ -38,7 +38,7 @@ public class ServerLoginNetworkHandler implements ServerLoginPacketListener {
 	private static final Random RANDOM = new Random();
 	private final byte[] nonce = new byte[4];
 	private final MinecraftServer server;
-	public final ClientConnection client;
+	public final ClientConnection connection;
 	private ServerLoginNetworkHandler.State state = ServerLoginNetworkHandler.State.HELLO;
 	private int loginTicks;
 	private GameProfile profile;
@@ -48,7 +48,7 @@ public class ServerLoginNetworkHandler implements ServerLoginPacketListener {
 
 	public ServerLoginNetworkHandler(MinecraftServer minecraftServer, ClientConnection clientConnection) {
 		this.server = minecraftServer;
-		this.client = clientConnection;
+		this.connection = clientConnection;
 		RANDOM.nextBytes(this.nonce);
 	}
 
@@ -59,7 +59,7 @@ public class ServerLoginNetworkHandler implements ServerLoginPacketListener {
 			ServerPlayerEntity serverPlayerEntity = this.server.getPlayerManager().getPlayer(this.profile.getId());
 			if (serverPlayerEntity == null) {
 				this.state = ServerLoginNetworkHandler.State.READY_TO_ACCEPT;
-				this.server.getPlayerManager().onPlayerConnect(this.client, this.clientEntity);
+				this.server.getPlayerManager().onPlayerConnect(this.connection, this.clientEntity);
 				this.clientEntity = null;
 			}
 		}
@@ -71,14 +71,14 @@ public class ServerLoginNetworkHandler implements ServerLoginPacketListener {
 
 	@Override
 	public ClientConnection getConnection() {
-		return this.client;
+		return this.connection;
 	}
 
-	public void disconnect(Text text) {
+	public void disconnect(Text reason) {
 		try {
-			LOGGER.info("Disconnecting {}: {}", this.getConnectionInfo(), text.getString());
-			this.client.send(new LoginDisconnectS2CPacket(text));
-			this.client.disconnect(text);
+			LOGGER.info("Disconnecting {}: {}", this.getConnectionInfo(), reason.getString());
+			this.connection.send(new LoginDisconnectS2CPacket(reason));
+			this.connection.disconnect(reason);
 		} catch (Exception var3) {
 			LOGGER.error("Error whilst disconnecting player", (Throwable)var3);
 		}
@@ -89,61 +89,61 @@ public class ServerLoginNetworkHandler implements ServerLoginPacketListener {
 			this.profile = this.toOfflineProfile(this.profile);
 		}
 
-		Text text = this.server.getPlayerManager().checkCanJoin(this.client.getAddress(), this.profile);
+		Text text = this.server.getPlayerManager().checkCanJoin(this.connection.getAddress(), this.profile);
 		if (text != null) {
 			this.disconnect(text);
 		} else {
 			this.state = ServerLoginNetworkHandler.State.ACCEPTED;
-			if (this.server.getNetworkCompressionThreshold() >= 0 && !this.client.isLocal()) {
-				this.client
+			if (this.server.getNetworkCompressionThreshold() >= 0 && !this.connection.isLocal()) {
+				this.connection
 					.send(
 						new LoginCompressionS2CPacket(this.server.getNetworkCompressionThreshold()),
-						channelFuture -> this.client.setMinCompressedSize(this.server.getNetworkCompressionThreshold())
+						channelFuture -> this.connection.setCompressionThreshold(this.server.getNetworkCompressionThreshold())
 					);
 			}
 
-			this.client.send(new LoginSuccessS2CPacket(this.profile));
+			this.connection.send(new LoginSuccessS2CPacket(this.profile));
 			ServerPlayerEntity serverPlayerEntity = this.server.getPlayerManager().getPlayer(this.profile.getId());
 			if (serverPlayerEntity != null) {
 				this.state = ServerLoginNetworkHandler.State.DELAY_ACCEPT;
 				this.clientEntity = this.server.getPlayerManager().createPlayer(this.profile);
 			} else {
-				this.server.getPlayerManager().onPlayerConnect(this.client, this.server.getPlayerManager().createPlayer(this.profile));
+				this.server.getPlayerManager().onPlayerConnect(this.connection, this.server.getPlayerManager().createPlayer(this.profile));
 			}
 		}
 	}
 
 	@Override
-	public void onDisconnected(Text text) {
-		LOGGER.info("{} lost connection: {}", this.getConnectionInfo(), text.getString());
+	public void onDisconnected(Text reason) {
+		LOGGER.info("{} lost connection: {}", this.getConnectionInfo(), reason.getString());
 	}
 
 	public String getConnectionInfo() {
-		return this.profile != null ? this.profile + " (" + this.client.getAddress() + ")" : String.valueOf(this.client.getAddress());
+		return this.profile != null ? this.profile + " (" + this.connection.getAddress() + ")" : String.valueOf(this.connection.getAddress());
 	}
 
 	@Override
-	public void onHello(LoginHelloC2SPacket loginHelloC2SPacket) {
+	public void onHello(LoginHelloC2SPacket packet) {
 		Validate.validState(this.state == ServerLoginNetworkHandler.State.HELLO, "Unexpected hello packet");
-		this.profile = loginHelloC2SPacket.getProfile();
-		if (this.server.isOnlineMode() && !this.client.isLocal()) {
+		this.profile = packet.getProfile();
+		if (this.server.isOnlineMode() && !this.connection.isLocal()) {
 			this.state = ServerLoginNetworkHandler.State.KEY;
-			this.client.send(new LoginHelloS2CPacket("", this.server.getKeyPair().getPublic(), this.nonce));
+			this.connection.send(new LoginHelloS2CPacket("", this.server.getKeyPair().getPublic(), this.nonce));
 		} else {
 			this.state = ServerLoginNetworkHandler.State.READY_TO_ACCEPT;
 		}
 	}
 
 	@Override
-	public void onKey(LoginKeyC2SPacket loginKeyC2SPacket) {
+	public void onKey(LoginKeyC2SPacket packet) {
 		Validate.validState(this.state == ServerLoginNetworkHandler.State.KEY, "Unexpected key packet");
 		PrivateKey privateKey = this.server.getKeyPair().getPrivate();
-		if (!Arrays.equals(this.nonce, loginKeyC2SPacket.decryptNonce(privateKey))) {
+		if (!Arrays.equals(this.nonce, packet.decryptNonce(privateKey))) {
 			throw new IllegalStateException("Invalid nonce!");
 		} else {
-			this.secretKey = loginKeyC2SPacket.decryptSecretKey(privateKey);
+			this.secretKey = packet.decryptSecretKey(privateKey);
 			this.state = ServerLoginNetworkHandler.State.AUTHENTICATING;
-			this.client.setupEncryption(this.secretKey);
+			this.connection.setupEncryption(this.secretKey);
 			Thread thread = new Thread("User Authenticator #" + authenticatorThreadId.incrementAndGet()) {
 				public void run() {
 					GameProfile gameProfile = ServerLoginNetworkHandler.this.profile;
@@ -182,7 +182,7 @@ public class ServerLoginNetworkHandler implements ServerLoginPacketListener {
 
 				@Nullable
 				private InetAddress method_14386() {
-					SocketAddress socketAddress = ServerLoginNetworkHandler.this.client.getAddress();
+					SocketAddress socketAddress = ServerLoginNetworkHandler.this.connection.getAddress();
 					return ServerLoginNetworkHandler.this.server.shouldPreventProxyConnections() && socketAddress instanceof InetSocketAddress
 						? ((InetSocketAddress)socketAddress).getAddress()
 						: null;
@@ -194,13 +194,13 @@ public class ServerLoginNetworkHandler implements ServerLoginPacketListener {
 	}
 
 	@Override
-	public void onQueryResponse(LoginQueryResponseC2SPacket loginQueryResponseC2SPacket) {
+	public void onQueryResponse(LoginQueryResponseC2SPacket packet) {
 		this.disconnect(new TranslatableText("multiplayer.disconnect.unexpected_query_response"));
 	}
 
-	protected GameProfile toOfflineProfile(GameProfile gameProfile) {
-		UUID uUID = PlayerEntity.getOfflinePlayerUuid(gameProfile.getName());
-		return new GameProfile(uUID, gameProfile.getName());
+	protected GameProfile toOfflineProfile(GameProfile profile) {
+		UUID uUID = PlayerEntity.getOfflinePlayerUuid(profile.getName());
+		return new GameProfile(uUID, profile.getName());
 	}
 
 	static enum State {

@@ -12,7 +12,7 @@ import java.util.function.Function;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.SweetBerryBushBlock;
-import net.minecraft.util.SystemUtil;
+import net.minecraft.util.Util;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.world.IWorld;
@@ -122,7 +122,7 @@ public abstract class Feature<FC extends FeatureConfig> {
 	public static final Feature<DefaultFeatureConfig> ICE_PILE = register("ice_pile", new IcePileFeature(DefaultFeatureConfig::deserialize));
 	public static final Feature<DefaultFeatureConfig> MELON_PILE = register("melon_pile", new MelonPileFeature(DefaultFeatureConfig::deserialize));
 	public static final Feature<DefaultFeatureConfig> PUMPKIN_PILE = register("pumpkin_pile", new PumpkinPileFeature(DefaultFeatureConfig::deserialize));
-	public static final Feature<BushFeatureConfig> BUSH = register("bush", new BushFeature(BushFeatureConfig::deserialize));
+	public static final Feature<SingleStateFeatureConfig> BUSH = register("bush", new BushFeature(SingleStateFeatureConfig::deserialize));
 	public static final Feature<DiskFeatureConfig> DISK = register("disk", new DiskFeature(DiskFeatureConfig::deserialize));
 	public static final Feature<DoublePlantFeatureConfig> DOUBLE_PLANT = register("double_plant", new DoublePlantFeature(DoublePlantFeatureConfig::deserialize));
 	public static final Feature<NetherSpringFeatureConfig> NETHER_SPRING = register(
@@ -165,7 +165,7 @@ public abstract class Feature<FC extends FeatureConfig> {
 	);
 	public static final Feature<FillLayerFeatureConfig> FILL_LAYER = register("fill_layer", new FillLayerFeature(FillLayerFeatureConfig::deserialize));
 	public static final BonusChestFeature BONUS_CHEST = register("bonus_chest", new BonusChestFeature(DefaultFeatureConfig::deserialize));
-	public static final BiMap<String, StructureFeature<?>> STRUCTURES = SystemUtil.consume(HashBiMap.create(), hashBiMap -> {
+	public static final BiMap<String, StructureFeature<?>> STRUCTURES = Util.make(HashBiMap.create(), hashBiMap -> {
 		hashBiMap.put("Pillager_Outpost".toLowerCase(Locale.ROOT), PILLAGER_OUTPOST);
 		hashBiMap.put("Mineshaft".toLowerCase(Locale.ROOT), MINESHAFT);
 		hashBiMap.put("Mansion".toLowerCase(Locale.ROOT), WOODLAND_MANSION);
@@ -186,35 +186,33 @@ public abstract class Feature<FC extends FeatureConfig> {
 	private final Function<Dynamic<?>, ? extends FC> configDeserializer;
 	protected final boolean emitNeighborBlockUpdates;
 
-	private static <C extends FeatureConfig, F extends Feature<C>> F register(String string, F feature) {
-		return Registry.register(Registry.FEATURE, string, feature);
+	private static <C extends FeatureConfig, F extends Feature<C>> F register(String name, F feature) {
+		return Registry.register(Registry.FEATURE, name, feature);
 	}
 
-	public Feature(Function<Dynamic<?>, ? extends FC> function) {
-		this.configDeserializer = function;
+	public Feature(Function<Dynamic<?>, ? extends FC> configDeserializer) {
+		this.configDeserializer = configDeserializer;
 		this.emitNeighborBlockUpdates = false;
 	}
 
-	public Feature(Function<Dynamic<?>, ? extends FC> function, boolean bl) {
-		this.configDeserializer = function;
-		this.emitNeighborBlockUpdates = bl;
+	public Feature(Function<Dynamic<?>, ? extends FC> configDeserializer, boolean emitNeighborBlockUpdates) {
+		this.configDeserializer = configDeserializer;
+		this.emitNeighborBlockUpdates = emitNeighborBlockUpdates;
 	}
 
 	public FC deserializeConfig(Dynamic<?> dynamic) {
 		return (FC)this.configDeserializer.apply(dynamic);
 	}
 
-	protected void setBlockState(ModifiableWorld modifiableWorld, BlockPos blockPos, BlockState blockState) {
+	protected void setBlockState(ModifiableWorld world, BlockPos pos, BlockState state) {
 		if (this.emitNeighborBlockUpdates) {
-			modifiableWorld.setBlockState(blockPos, blockState, 3);
+			world.setBlockState(pos, state, 3);
 		} else {
-			modifiableWorld.setBlockState(blockPos, blockState, 2);
+			world.setBlockState(pos, state, 2);
 		}
 	}
 
-	public abstract boolean generate(
-		IWorld iWorld, ChunkGenerator<? extends ChunkGeneratorConfig> chunkGenerator, Random random, BlockPos blockPos, FC featureConfig
-	);
+	public abstract boolean generate(IWorld world, ChunkGenerator<? extends ChunkGeneratorConfig> generator, Random random, BlockPos pos, FC config);
 
 	public List<Biome.SpawnEntry> getMonsterSpawns() {
 		return Collections.emptyList();

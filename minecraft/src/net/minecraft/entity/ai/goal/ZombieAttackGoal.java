@@ -6,9 +6,9 @@ public class ZombieAttackGoal extends MeleeAttackGoal {
 	private final ZombieEntity zombie;
 	private int field_6627;
 
-	public ZombieAttackGoal(ZombieEntity zombieEntity, double d, boolean bl) {
-		super(zombieEntity, d, bl);
-		this.zombie = zombieEntity;
+	public ZombieAttackGoal(ZombieEntity zombie, double speed, boolean pauseWhenMobIdle) {
+		super(zombie, speed, pauseWhenMobIdle);
+		this.zombie = zombie;
 	}
 
 	@Override

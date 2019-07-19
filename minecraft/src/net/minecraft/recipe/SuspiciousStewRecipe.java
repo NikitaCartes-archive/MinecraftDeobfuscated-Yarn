@@ -19,7 +19,7 @@ public class SuspiciousStewRecipe extends SpecialCraftingRecipe {
 		super(identifier);
 	}
 
-	public boolean method_17739(CraftingInventory craftingInventory, World world) {
+	public boolean matches(CraftingInventory craftingInventory, World world) {
 		boolean bl = false;
 		boolean bl2 = false;
 		boolean bl3 = false;
@@ -47,7 +47,7 @@ public class SuspiciousStewRecipe extends SpecialCraftingRecipe {
 		return bl && bl3 && bl2 && bl4;
 	}
 
-	public ItemStack method_17738(CraftingInventory craftingInventory) {
+	public ItemStack craft(CraftingInventory craftingInventory) {
 		ItemStack itemStack = ItemStack.EMPTY;
 
 		for (int i = 0; i < craftingInventory.getInvSize(); i++) {
@@ -70,8 +70,8 @@ public class SuspiciousStewRecipe extends SpecialCraftingRecipe {
 
 	@Environment(EnvType.CLIENT)
 	@Override
-	public boolean fits(int i, int j) {
-		return i >= 2 && j >= 2;
+	public boolean fits(int width, int height) {
+		return width >= 2 && height >= 2;
 	}
 
 	@Override

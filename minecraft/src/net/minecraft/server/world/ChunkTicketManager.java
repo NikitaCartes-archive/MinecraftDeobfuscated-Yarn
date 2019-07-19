@@ -25,10 +25,10 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
 import javax.annotation.Nullable;
 import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.util.Actor;
-import net.minecraft.util.ChunkPosLevelPropagator;
+import net.minecraft.util.ChunkPosDistanceLevelPropagator;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.math.ChunkSectionPos;
+import net.minecraft.util.thread.MessageListener;
 import net.minecraft.world.chunk.ChunkStatus;
 import net.minecraft.world.chunk.WorldChunk;
 import org.apache.logging.log4j.LogManager;
@@ -44,29 +44,29 @@ public abstract class ChunkTicketManager {
 	private final ChunkTicketManager.NearbyChunkTicketUpdater nearbyChunkTicketUpdater = new ChunkTicketManager.NearbyChunkTicketUpdater(33);
 	private final Set<ChunkHolder> chunkHolders = Sets.<ChunkHolder>newHashSet();
 	private final ChunkTaskPrioritySystem levelUpdateListener;
-	private final Actor<ChunkTaskPrioritySystem.RunnableMessage<Runnable>> playerTicketThrottler;
-	private final Actor<ChunkTaskPrioritySystem.SorterMessage> playerTicketThrottlerSorter;
+	private final MessageListener<ChunkTaskPrioritySystem.RunnableMessage<Runnable>> playerTicketThrottler;
+	private final MessageListener<ChunkTaskPrioritySystem.SorterMessage> playerTicketThrottlerSorter;
 	private final LongSet chunkPositions = new LongOpenHashSet();
 	private final Executor mainThreadExecutor;
-	private long location;
+	private long age;
 
-	protected ChunkTicketManager(Executor executor, Executor executor2) {
-		Actor<Runnable> actor = Actor.createConsumerActor("player ticket throttler", executor2::execute);
-		ChunkTaskPrioritySystem chunkTaskPrioritySystem = new ChunkTaskPrioritySystem(ImmutableList.of(actor), executor, 4);
+	protected ChunkTicketManager(Executor workerExecutor, Executor mainThreadExecutor) {
+		MessageListener<Runnable> messageListener = MessageListener.create("player ticket throttler", mainThreadExecutor::execute);
+		ChunkTaskPrioritySystem chunkTaskPrioritySystem = new ChunkTaskPrioritySystem(ImmutableList.of(messageListener), workerExecutor, 4);
 		this.levelUpdateListener = chunkTaskPrioritySystem;
-		this.playerTicketThrottler = chunkTaskPrioritySystem.createExecutingActor(actor, true);
-		this.playerTicketThrottlerSorter = chunkTaskPrioritySystem.createSortingActor(actor);
-		this.mainThreadExecutor = executor2;
+		this.playerTicketThrottler = chunkTaskPrioritySystem.createExecutor(messageListener, true);
+		this.playerTicketThrottlerSorter = chunkTaskPrioritySystem.createSorterExecutor(messageListener);
+		this.mainThreadExecutor = mainThreadExecutor;
 	}
 
 	protected void purge() {
-		this.location++;
+		this.age++;
 		ObjectIterator<Entry<ObjectSortedSet<ChunkTicket<?>>>> objectIterator = this.ticketsByPosition.long2ObjectEntrySet().fastIterator();
 
 		while (objectIterator.hasNext()) {
 			Entry<ObjectSortedSet<ChunkTicket<?>>> entry = (Entry<ObjectSortedSet<ChunkTicket<?>>>)objectIterator.next();
-			if (((ObjectSortedSet)entry.getValue()).removeIf(chunkTicket -> chunkTicket.method_20627(this.location))) {
-				this.distanceFromTicketTracker.update(entry.getLongKey(), this.getLevel((ObjectSortedSet<ChunkTicket<?>>)entry.getValue()), false);
+			if (((ObjectSortedSet)entry.getValue()).removeIf(chunkTicket -> chunkTicket.method_20627(this.age))) {
+				this.distanceFromTicketTracker.updateLevel(entry.getLongKey(), this.getLevel((ObjectSortedSet<ChunkTicket<?>>)entry.getValue()), false);
 			}
 
 			if (((ObjectSortedSet)entry.getValue()).isEmpty()) {
@@ -75,20 +75,20 @@ public abstract class ChunkTicketManager {
 		}
 	}
 
-	private int getLevel(ObjectSortedSet<ChunkTicket<?>> objectSortedSet) {
-		ObjectBidirectionalIterator<ChunkTicket<?>> objectBidirectionalIterator = objectSortedSet.iterator();
+	private int getLevel(ObjectSortedSet<ChunkTicket<?>> ticketSet) {
+		ObjectBidirectionalIterator<ChunkTicket<?>> objectBidirectionalIterator = ticketSet.iterator();
 		return objectBidirectionalIterator.hasNext() ? ((ChunkTicket)objectBidirectionalIterator.next()).getLevel() : ThreadedAnvilChunkStorage.MAX_LEVEL + 1;
 	}
 
-	protected abstract boolean isUnloaded(long l);
+	protected abstract boolean isUnloaded(long pos);
 
 	@Nullable
-	protected abstract ChunkHolder getChunkHolder(long l);
+	protected abstract ChunkHolder getChunkHolder(long pos);
 
 	@Nullable
-	protected abstract ChunkHolder setLevel(long l, int i, @Nullable ChunkHolder chunkHolder, int j);
+	protected abstract ChunkHolder setLevel(long pos, int level, @Nullable ChunkHolder holder, int i);
 
-	public boolean tick(ThreadedAnvilChunkStorage threadedAnvilChunkStorage) {
+	public boolean tick(ThreadedAnvilChunkStorage chunkStorage) {
 		this.distanceFromNearestPlayerTracker.updateLevels();
 		this.nearbyChunkTicketUpdater.updateLevels();
 		int i = Integer.MAX_VALUE - this.distanceFromTicketTracker.method_18746(Integer.MAX_VALUE);
@@ -97,7 +97,7 @@ public abstract class ChunkTicketManager {
 		}
 
 		if (!this.chunkHolders.isEmpty()) {
-			this.chunkHolders.forEach(chunkHolderx -> chunkHolderx.tick(threadedAnvilChunkStorage));
+			this.chunkHolders.forEach(chunkHolderx -> chunkHolderx.tick(chunkStorage));
 			this.chunkHolders.clear();
 			return true;
 		} else {
@@ -107,7 +107,7 @@ public abstract class ChunkTicketManager {
 				while (longIterator.hasNext()) {
 					long l = longIterator.nextLong();
 					if (this.getTicketSet(l).stream().anyMatch(chunkTicket -> chunkTicket.getType() == ChunkTicketType.PLAYER)) {
-						ChunkHolder chunkHolder = threadedAnvilChunkStorage.getCurrentChunkHolder(l);
+						ChunkHolder chunkHolder = chunkStorage.getCurrentChunkHolder(l);
 						if (chunkHolder == null) {
 							throw new IllegalStateException();
 						}
@@ -127,8 +127,8 @@ public abstract class ChunkTicketManager {
 		}
 	}
 
-	private void addTicket(long l, ChunkTicket<?> chunkTicket) {
-		ObjectSortedSet<ChunkTicket<?>> objectSortedSet = this.getTicketSet(l);
+	private void addTicket(long position, ChunkTicket<?> ticket) {
+		ObjectSortedSet<ChunkTicket<?>> objectSortedSet = this.getTicketSet(position);
 		ObjectBidirectionalIterator<ChunkTicket<?>> objectBidirectionalIterator = objectSortedSet.iterator();
 		int i;
 		if (objectBidirectionalIterator.hasNext()) {
@@ -137,72 +137,72 @@ public abstract class ChunkTicketManager {
 			i = ThreadedAnvilChunkStorage.MAX_LEVEL + 1;
 		}
 
-		if (objectSortedSet.add(chunkTicket)) {
+		if (objectSortedSet.add(ticket)) {
 		}
 
-		if (chunkTicket.getLevel() < i) {
-			this.distanceFromTicketTracker.update(l, chunkTicket.getLevel(), true);
+		if (ticket.getLevel() < i) {
+			this.distanceFromTicketTracker.updateLevel(position, ticket.getLevel(), true);
 		}
 	}
 
-	private void removeTicket(long l, ChunkTicket<?> chunkTicket) {
-		ObjectSortedSet<ChunkTicket<?>> objectSortedSet = this.getTicketSet(l);
-		if (objectSortedSet.remove(chunkTicket)) {
+	private void removeTicket(long pos, ChunkTicket<?> ticket) {
+		ObjectSortedSet<ChunkTicket<?>> objectSortedSet = this.getTicketSet(pos);
+		if (objectSortedSet.remove(ticket)) {
 		}
 
 		if (objectSortedSet.isEmpty()) {
-			this.ticketsByPosition.remove(l);
+			this.ticketsByPosition.remove(pos);
 		}
 
-		this.distanceFromTicketTracker.update(l, this.getLevel(objectSortedSet), false);
+		this.distanceFromTicketTracker.updateLevel(pos, this.getLevel(objectSortedSet), false);
 	}
 
-	public <T> void addTicketWithLevel(ChunkTicketType<T> chunkTicketType, ChunkPos chunkPos, int i, T object) {
-		this.addTicket(chunkPos.toLong(), new ChunkTicket<>(chunkTicketType, i, object, this.location));
+	public <T> void addTicketWithLevel(ChunkTicketType<T> type, ChunkPos pos, int level, T argument) {
+		this.addTicket(pos.toLong(), new ChunkTicket<>(type, level, argument, this.age));
 	}
 
-	public <T> void removeTicketWithLevel(ChunkTicketType<T> chunkTicketType, ChunkPos chunkPos, int i, T object) {
-		ChunkTicket<T> chunkTicket = new ChunkTicket<>(chunkTicketType, i, object, this.location);
-		this.removeTicket(chunkPos.toLong(), chunkTicket);
+	public <T> void removeTicketWithLevel(ChunkTicketType<T> type, ChunkPos pos, int level, T argument) {
+		ChunkTicket<T> chunkTicket = new ChunkTicket<>(type, level, argument, this.age);
+		this.removeTicket(pos.toLong(), chunkTicket);
 	}
 
-	public <T> void addTicket(ChunkTicketType<T> chunkTicketType, ChunkPos chunkPos, int i, T object) {
-		this.addTicket(chunkPos.toLong(), new ChunkTicket<>(chunkTicketType, 33 - i, object, this.location));
+	public <T> void addTicket(ChunkTicketType<T> type, ChunkPos pos, int radius, T argument) {
+		this.addTicket(pos.toLong(), new ChunkTicket<>(type, 33 - radius, argument, this.age));
 	}
 
-	public <T> void removeTicket(ChunkTicketType<T> chunkTicketType, ChunkPos chunkPos, int i, T object) {
-		ChunkTicket<T> chunkTicket = new ChunkTicket<>(chunkTicketType, 33 - i, object, this.location);
-		this.removeTicket(chunkPos.toLong(), chunkTicket);
+	public <T> void removeTicket(ChunkTicketType<T> type, ChunkPos pos, int radius, T argument) {
+		ChunkTicket<T> chunkTicket = new ChunkTicket<>(type, 33 - radius, argument, this.age);
+		this.removeTicket(pos.toLong(), chunkTicket);
 	}
 
-	private ObjectSortedSet<ChunkTicket<?>> getTicketSet(long l) {
-		return this.ticketsByPosition.computeIfAbsent(l, lx -> new ObjectAVLTreeSet());
+	private ObjectSortedSet<ChunkTicket<?>> getTicketSet(long position) {
+		return this.ticketsByPosition.computeIfAbsent(position, l -> new ObjectAVLTreeSet());
 	}
 
-	protected void setChunkForced(ChunkPos chunkPos, boolean bl) {
-		ChunkTicket<ChunkPos> chunkTicket = new ChunkTicket<>(ChunkTicketType.FORCED, 31, chunkPos, this.location);
-		if (bl) {
-			this.addTicket(chunkPos.toLong(), chunkTicket);
+	protected void setChunkForced(ChunkPos pos, boolean forced) {
+		ChunkTicket<ChunkPos> chunkTicket = new ChunkTicket<>(ChunkTicketType.FORCED, 31, pos, this.age);
+		if (forced) {
+			this.addTicket(pos.toLong(), chunkTicket);
 		} else {
-			this.removeTicket(chunkPos.toLong(), chunkTicket);
+			this.removeTicket(pos.toLong(), chunkTicket);
 		}
 	}
 
-	public void handleChunkEnter(ChunkSectionPos chunkSectionPos, ServerPlayerEntity serverPlayerEntity) {
-		long l = chunkSectionPos.toChunkPos().toLong();
+	public void handleChunkEnter(ChunkSectionPos pos, ServerPlayerEntity serverPlayerEntity) {
+		long l = pos.toChunkPos().toLong();
 		this.playersByChunkPos.computeIfAbsent(l, lx -> new ObjectOpenHashSet()).add(serverPlayerEntity);
-		this.distanceFromNearestPlayerTracker.update(l, 0, true);
-		this.nearbyChunkTicketUpdater.update(l, 0, true);
+		this.distanceFromNearestPlayerTracker.updateLevel(l, 0, true);
+		this.nearbyChunkTicketUpdater.updateLevel(l, 0, true);
 	}
 
-	public void handleChunkLeave(ChunkSectionPos chunkSectionPos, ServerPlayerEntity serverPlayerEntity) {
-		long l = chunkSectionPos.toChunkPos().toLong();
+	public void handleChunkLeave(ChunkSectionPos pos, ServerPlayerEntity player) {
+		long l = pos.toChunkPos().toLong();
 		ObjectSet<ServerPlayerEntity> objectSet = this.playersByChunkPos.get(l);
-		objectSet.remove(serverPlayerEntity);
+		objectSet.remove(player);
 		if (objectSet.isEmpty()) {
 			this.playersByChunkPos.remove(l);
-			this.distanceFromNearestPlayerTracker.update(l, Integer.MAX_VALUE, false);
-			this.nearbyChunkTicketUpdater.update(l, Integer.MAX_VALUE, false);
+			this.distanceFromNearestPlayerTracker.updateLevel(l, Integer.MAX_VALUE, false);
+			this.nearbyChunkTicketUpdater.updateLevel(l, Integer.MAX_VALUE, false);
 		}
 	}
 
@@ -218,8 +218,8 @@ public abstract class ChunkTicketManager {
 		return string;
 	}
 
-	protected void setWatchDistance(int i) {
-		this.nearbyChunkTicketUpdater.setWatchDistance(i);
+	protected void setWatchDistance(int viewDistance) {
+		this.nearbyChunkTicketUpdater.setWatchDistance(viewDistance);
 	}
 
 	public int getLevelCount() {
@@ -236,7 +236,7 @@ public abstract class ChunkTicketManager {
 		return this.levelUpdateListener.method_21680();
 	}
 
-	class DistanceFromNearestPlayerTracker extends ChunkPosLevelPropagator {
+	class DistanceFromNearestPlayerTracker extends ChunkPosDistanceLevelPropagator {
 		protected final Long2ByteMap distanceFromNearestPlayer = new Long2ByteOpenHashMap();
 		protected final int maxDistance;
 
@@ -247,37 +247,37 @@ public abstract class ChunkTicketManager {
 		}
 
 		@Override
-		protected int getLevel(long l) {
-			return this.distanceFromNearestPlayer.get(l);
+		protected int getLevel(long id) {
+			return this.distanceFromNearestPlayer.get(id);
 		}
 
 		@Override
-		protected void setLevel(long l, int i) {
+		protected void setLevel(long id, int level) {
 			byte b;
-			if (i > this.maxDistance) {
-				b = this.distanceFromNearestPlayer.remove(l);
+			if (level > this.maxDistance) {
+				b = this.distanceFromNearestPlayer.remove(id);
 			} else {
-				b = this.distanceFromNearestPlayer.put(l, (byte)i);
+				b = this.distanceFromNearestPlayer.put(id, (byte)level);
 			}
 
-			this.onDistanceChange(l, b, i);
+			this.onDistanceChange(id, b, level);
 		}
 
-		protected void onDistanceChange(long l, int i, int j) {
+		protected void onDistanceChange(long pos, int oldDistance, int distance) {
 		}
 
 		@Override
-		protected int getInitialLevel(long l) {
-			return this.isPlayerInChunk(l) ? 0 : Integer.MAX_VALUE;
+		protected int getInitialLevel(long id) {
+			return this.isPlayerInChunk(id) ? 0 : Integer.MAX_VALUE;
 		}
 
-		private boolean isPlayerInChunk(long l) {
-			ObjectSet<ServerPlayerEntity> objectSet = ChunkTicketManager.this.playersByChunkPos.get(l);
+		private boolean isPlayerInChunk(long chunkPos) {
+			ObjectSet<ServerPlayerEntity> objectSet = ChunkTicketManager.this.playersByChunkPos.get(chunkPos);
 			return objectSet != null && !objectSet.isEmpty();
 		}
 
 		public void updateLevels() {
-			this.updateAllRecursively(Integer.MAX_VALUE);
+			this.applyPendingUpdates(Integer.MAX_VALUE);
 		}
 	}
 
@@ -293,41 +293,40 @@ public abstract class ChunkTicketManager {
 		}
 
 		@Override
-		protected void onDistanceChange(long l, int i, int j) {
-			this.positionsAffected.add(l);
+		protected void onDistanceChange(long pos, int oldDistance, int distance) {
+			this.positionsAffected.add(pos);
 		}
 
-		public void setWatchDistance(int i) {
+		public void setWatchDistance(int watchDistance) {
 			for (it.unimi.dsi.fastutil.longs.Long2ByteMap.Entry entry : this.distanceFromNearestPlayer.long2ByteEntrySet()) {
 				byte b = entry.getByteValue();
 				long l = entry.getLongKey();
-				this.updateTicket(l, b, this.isWithinViewDistance(b), b <= i - 2);
+				this.updateTicket(l, b, this.isWithinViewDistance(b), b <= watchDistance - 2);
 			}
 
-			this.watchDistance = i;
+			this.watchDistance = watchDistance;
 		}
 
-		private void updateTicket(long l, int i, boolean bl, boolean bl2) {
-			if (bl != bl2) {
+		private void updateTicket(long pos, int distance, boolean oldWithinViewDistance, boolean withinViewDistance) {
+			if (oldWithinViewDistance != withinViewDistance) {
 				ChunkTicket<?> chunkTicket = new ChunkTicket<>(
-					ChunkTicketType.PLAYER, ChunkTicketManager.NEARBY_PLAYER_TICKET_LEVEL, new ChunkPos(l), ChunkTicketManager.this.location
+					ChunkTicketType.PLAYER, ChunkTicketManager.NEARBY_PLAYER_TICKET_LEVEL, new ChunkPos(pos), ChunkTicketManager.this.age
 				);
-				if (bl2) {
-					ChunkTicketManager.this.playerTicketThrottler
-						.send(ChunkTaskPrioritySystem.createRunnableMessage(() -> ChunkTicketManager.this.mainThreadExecutor.execute(() -> {
-								if (this.isWithinViewDistance(this.getLevel(l))) {
-									ChunkTicketManager.this.addTicket(l, chunkTicket);
-									ChunkTicketManager.this.chunkPositions.add(l);
-								} else {
-									ChunkTicketManager.this.playerTicketThrottlerSorter.send(ChunkTaskPrioritySystem.createSorterMessage(() -> {
-									}, l, false));
-								}
-							}), l, () -> i));
+				if (withinViewDistance) {
+					ChunkTicketManager.this.playerTicketThrottler.send(ChunkTaskPrioritySystem.createMessage(() -> ChunkTicketManager.this.mainThreadExecutor.execute(() -> {
+							if (this.isWithinViewDistance(this.getLevel(pos))) {
+								ChunkTicketManager.this.addTicket(pos, chunkTicket);
+								ChunkTicketManager.this.chunkPositions.add(pos);
+							} else {
+								ChunkTicketManager.this.playerTicketThrottlerSorter.send(ChunkTaskPrioritySystem.createSorterMessage(() -> {
+								}, pos, false));
+							}
+						}), pos, () -> distance));
 				} else {
 					ChunkTicketManager.this.playerTicketThrottlerSorter
 						.send(
 							ChunkTaskPrioritySystem.createSorterMessage(
-								() -> ChunkTicketManager.this.mainThreadExecutor.execute(() -> ChunkTicketManager.this.removeTicket(l, chunkTicket)), l, true
+								() -> ChunkTicketManager.this.mainThreadExecutor.execute(() -> ChunkTicketManager.this.removeTicket(pos, chunkTicket)), pos, true
 							)
 						);
 				}
@@ -360,19 +359,19 @@ public abstract class ChunkTicketManager {
 			}
 		}
 
-		private boolean isWithinViewDistance(int i) {
-			return i <= this.watchDistance - 2;
+		private boolean isWithinViewDistance(int distance) {
+			return distance <= this.watchDistance - 2;
 		}
 	}
 
-	class class_4077 extends ChunkPosLevelPropagator {
+	class class_4077 extends ChunkPosDistanceLevelPropagator {
 		public class_4077() {
 			super(ThreadedAnvilChunkStorage.MAX_LEVEL + 2, 16, 256);
 		}
 
 		@Override
-		protected int getInitialLevel(long l) {
-			ObjectSortedSet<ChunkTicket<?>> objectSortedSet = ChunkTicketManager.this.ticketsByPosition.get(l);
+		protected int getInitialLevel(long id) {
+			ObjectSortedSet<ChunkTicket<?>> objectSortedSet = ChunkTicketManager.this.ticketsByPosition.get(id);
 			if (objectSortedSet == null) {
 				return Integer.MAX_VALUE;
 			} else {
@@ -382,9 +381,9 @@ public abstract class ChunkTicketManager {
 		}
 
 		@Override
-		protected int getLevel(long l) {
-			if (!ChunkTicketManager.this.isUnloaded(l)) {
-				ChunkHolder chunkHolder = ChunkTicketManager.this.getChunkHolder(l);
+		protected int getLevel(long id) {
+			if (!ChunkTicketManager.this.isUnloaded(id)) {
+				ChunkHolder chunkHolder = ChunkTicketManager.this.getChunkHolder(id);
 				if (chunkHolder != null) {
 					return chunkHolder.getLevel();
 				}
@@ -394,11 +393,11 @@ public abstract class ChunkTicketManager {
 		}
 
 		@Override
-		protected void setLevel(long l, int i) {
-			ChunkHolder chunkHolder = ChunkTicketManager.this.getChunkHolder(l);
-			int j = chunkHolder == null ? ThreadedAnvilChunkStorage.MAX_LEVEL + 1 : chunkHolder.getLevel();
-			if (j != i) {
-				chunkHolder = ChunkTicketManager.this.setLevel(l, i, chunkHolder, j);
+		protected void setLevel(long id, int level) {
+			ChunkHolder chunkHolder = ChunkTicketManager.this.getChunkHolder(id);
+			int i = chunkHolder == null ? ThreadedAnvilChunkStorage.MAX_LEVEL + 1 : chunkHolder.getLevel();
+			if (i != level) {
+				chunkHolder = ChunkTicketManager.this.setLevel(id, level, chunkHolder, i);
 				if (chunkHolder != null) {
 					ChunkTicketManager.this.chunkHolders.add(chunkHolder);
 				}
@@ -406,7 +405,7 @@ public abstract class ChunkTicketManager {
 		}
 
 		public int method_18746(int i) {
-			return this.updateAllRecursively(i);
+			return this.applyPendingUpdates(i);
 		}
 	}
 }

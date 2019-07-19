@@ -34,32 +34,32 @@ public class UpgradeData {
 	private static final Logger LOGGER = LogManager.getLogger();
 	public static final UpgradeData NO_UPGRADE_DATA = new UpgradeData();
 	private static final EightWayDirection[] field_12952 = EightWayDirection.values();
-	private final EnumSet<EightWayDirection> sides = EnumSet.noneOf(EightWayDirection.class);
-	private final int[][] indices = new int[16][];
+	private final EnumSet<EightWayDirection> sidesToUpgrade = EnumSet.noneOf(EightWayDirection.class);
+	private final int[][] centerIndicesToUpgrade = new int[16][];
 	private static final Map<Block, UpgradeData.class_2844> field_12953 = new IdentityHashMap();
 	private static final Set<UpgradeData.class_2844> field_12954 = Sets.<UpgradeData.class_2844>newHashSet();
 
 	private UpgradeData() {
 	}
 
-	public UpgradeData(CompoundTag compoundTag) {
+	public UpgradeData(CompoundTag tag) {
 		this();
-		if (compoundTag.containsKey("Indices", 10)) {
-			CompoundTag compoundTag2 = compoundTag.getCompound("Indices");
+		if (tag.contains("Indices", 10)) {
+			CompoundTag compoundTag = tag.getCompound("Indices");
 
-			for (int i = 0; i < this.indices.length; i++) {
+			for (int i = 0; i < this.centerIndicesToUpgrade.length; i++) {
 				String string = String.valueOf(i);
-				if (compoundTag2.containsKey(string, 11)) {
-					this.indices[i] = compoundTag2.getIntArray(string);
+				if (compoundTag.contains(string, 11)) {
+					this.centerIndicesToUpgrade[i] = compoundTag.getIntArray(string);
 				}
 			}
 		}
 
-		int j = compoundTag.getInt("Sides");
+		int j = tag.getInt("Sides");
 
 		for (EightWayDirection eightWayDirection : EightWayDirection.values()) {
 			if ((j & 1 << eightWayDirection.ordinal()) != 0) {
-				this.sides.add(eightWayDirection);
+				this.sidesToUpgrade.add(eightWayDirection);
 			}
 		}
 	}
@@ -77,7 +77,7 @@ public class UpgradeData {
 
 	private static void method_12352(WorldChunk worldChunk, EightWayDirection eightWayDirection) {
 		World world = worldChunk.getWorld();
-		if (worldChunk.getUpgradeData().sides.remove(eightWayDirection)) {
+		if (worldChunk.getUpgradeData().sidesToUpgrade.remove(eightWayDirection)) {
 			Set<Direction> set = eightWayDirection.getDirections();
 			int i = 0;
 			int j = 15;
@@ -109,7 +109,7 @@ public class UpgradeData {
 	}
 
 	private static BlockState method_12351(BlockState blockState, Direction direction, IWorld iWorld, BlockPos blockPos, BlockPos blockPos2) {
-		return ((UpgradeData.class_2844)field_12953.getOrDefault(blockState.getBlock(), UpgradeData.class_2845.DEFAULT))
+		return ((UpgradeData.class_2844)field_12953.getOrDefault(blockState.getBlock(), UpgradeData.class_2845.field_12962))
 			.method_12358(blockState, direction, iWorld.getBlockState(blockPos2), iWorld, blockPos, blockPos2);
 	}
 
@@ -123,8 +123,8 @@ public class UpgradeData {
 
 			for (int i = 0; i < 16; i++) {
 				ChunkSection chunkSection = worldChunk.getSectionArray()[i];
-				int[] is = this.indices[i];
-				this.indices[i] = null;
+				int[] is = this.centerIndicesToUpgrade[i];
+				this.centerIndicesToUpgrade[i] = null;
 				if (chunkSection != null && is != null && is.length > 0) {
 					Direction[] directions = Direction.values();
 					PalettedContainer<BlockState> palettedContainer = chunkSection.getContainer();
@@ -133,12 +133,12 @@ public class UpgradeData {
 						int k = j & 15;
 						int l = j >> 8 & 15;
 						int m = j >> 4 & 15;
-						pooledMutable.method_10113(chunkPos.getStartX() + k, (i << 4) + l, chunkPos.getStartZ() + m);
+						pooledMutable.set(chunkPos.getStartX() + k, (i << 4) + l, chunkPos.getStartZ() + m);
 						BlockState blockState = palettedContainer.get(j);
 						BlockState blockState2 = blockState;
 
 						for (Direction direction : directions) {
-							pooledMutable2.method_10114(pooledMutable).method_10118(direction);
+							pooledMutable2.set(pooledMutable).setOffset(direction);
 							if (pooledMutable.getX() >> 4 == chunkPos.x && pooledMutable.getZ() >> 4 == chunkPos.z) {
 								blockState2 = method_12351(blockState2, direction, iWorld, pooledMutable, pooledMutable2);
 							}
@@ -149,34 +149,34 @@ public class UpgradeData {
 				}
 			}
 
-			for (int ix = 0; ix < this.indices.length; ix++) {
-				if (this.indices[ix] != null) {
+			for (int ix = 0; ix < this.centerIndicesToUpgrade.length; ix++) {
+				if (this.centerIndicesToUpgrade[ix] != null) {
 					LOGGER.warn("Discarding update data for section {} for chunk ({} {})", ix, chunkPos.x, chunkPos.z);
 				}
 
-				this.indices[ix] = null;
+				this.centerIndicesToUpgrade[ix] = null;
 			}
 		}
 	}
 
 	public boolean method_12349() {
-		for (int[] is : this.indices) {
+		for (int[] is : this.centerIndicesToUpgrade) {
 			if (is != null) {
 				return false;
 			}
 		}
 
-		return this.sides.isEmpty();
+		return this.sidesToUpgrade.isEmpty();
 	}
 
 	public CompoundTag toTag() {
 		CompoundTag compoundTag = new CompoundTag();
 		CompoundTag compoundTag2 = new CompoundTag();
 
-		for (int i = 0; i < this.indices.length; i++) {
+		for (int i = 0; i < this.centerIndicesToUpgrade.length; i++) {
 			String string = String.valueOf(i);
-			if (this.indices[i] != null && this.indices[i].length != 0) {
-				compoundTag2.putIntArray(string, this.indices[i]);
+			if (this.centerIndicesToUpgrade[i] != null && this.centerIndicesToUpgrade[i].length != 0) {
+				compoundTag2.putIntArray(string, this.centerIndicesToUpgrade[i]);
 			}
 		}
 
@@ -186,7 +186,7 @@ public class UpgradeData {
 
 		int ix = 0;
 
-		for (EightWayDirection eightWayDirection : this.sides) {
+		for (EightWayDirection eightWayDirection : this.sidesToUpgrade) {
 			ix |= 1 << eightWayDirection.ordinal();
 		}
 
@@ -202,7 +202,7 @@ public class UpgradeData {
 	}
 
 	static enum class_2845 implements UpgradeData.class_2844 {
-		BLACKLIST(
+		field_12957(
 			Blocks.OBSERVER,
 			Blocks.NETHER_PORTAL,
 			Blocks.WHITE_CONCRETE_POWDER,
@@ -246,13 +246,13 @@ public class UpgradeData {
 				return blockState;
 			}
 		},
-		DEFAULT {
+		field_12962 {
 			@Override
 			public BlockState method_12358(BlockState blockState, Direction direction, BlockState blockState2, IWorld iWorld, BlockPos blockPos, BlockPos blockPos2) {
 				return blockState.getStateForNeighborUpdate(direction, iWorld.getBlockState(blockPos2), iWorld, blockPos, blockPos2);
 			}
 		},
-		CHEST(Blocks.CHEST, Blocks.TRAPPED_CHEST) {
+		field_12960(Blocks.CHEST, Blocks.TRAPPED_CHEST) {
 			@Override
 			public BlockState method_12358(BlockState blockState, Direction direction, BlockState blockState2, IWorld iWorld, BlockPos blockPos, BlockPos blockPos2) {
 				if (blockState2.getBlock() == blockState.getBlock()
@@ -278,7 +278,7 @@ public class UpgradeData {
 				return blockState;
 			}
 		},
-		LEAVES(true, Blocks.ACACIA_LEAVES, Blocks.BIRCH_LEAVES, Blocks.DARK_OAK_LEAVES, Blocks.JUNGLE_LEAVES, Blocks.OAK_LEAVES, Blocks.SPRUCE_LEAVES) {
+		field_12963(true, Blocks.ACACIA_LEAVES, Blocks.BIRCH_LEAVES, Blocks.DARK_OAK_LEAVES, Blocks.JUNGLE_LEAVES, Blocks.OAK_LEAVES, Blocks.SPRUCE_LEAVES) {
 			private final ThreadLocal<List<ObjectSet<BlockPos>>> field_12964 = ThreadLocal.withInitial(() -> Lists.newArrayListWithCapacity(7));
 
 			@Override
@@ -329,7 +329,7 @@ public class UpgradeData {
 				list.clear();
 			}
 		},
-		STEM_BLOCK(Blocks.MELON_STEM, Blocks.PUMPKIN_STEM) {
+		field_12958(Blocks.MELON_STEM, Blocks.PUMPKIN_STEM) {
 			@Override
 			public BlockState method_12358(BlockState blockState, Direction direction, BlockState blockState2, IWorld iWorld, BlockPos blockPos, BlockPos blockPos2) {
 				if ((Integer)blockState.get(StemBlock.AGE) == 7) {

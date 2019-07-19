@@ -87,7 +87,7 @@ public class WitchEntity extends RaiderEntity implements RangedAttackMob {
 	}
 
 	@Override
-	protected SoundEvent getHurtSound(DamageSource damageSource) {
+	protected SoundEvent getHurtSound(DamageSource source) {
 		return SoundEvents.ENTITY_WITCH_HURT;
 	}
 
@@ -96,8 +96,8 @@ public class WitchEntity extends RaiderEntity implements RangedAttackMob {
 		return SoundEvents.ENTITY_WITCH_DEATH;
 	}
 
-	public void setDrinking(boolean bl) {
-		this.getDataTracker().set(DRINKING, bl);
+	public void setDrinking(boolean drinking) {
+		this.getDataTracker().set(DRINKING, drinking);
 	}
 
 	public boolean isDrinking() {
@@ -125,12 +125,12 @@ public class WitchEntity extends RaiderEntity implements RangedAttackMob {
 				if (this.drinkTimeLeft-- <= 0) {
 					this.setDrinking(false);
 					ItemStack itemStack = this.getMainHandStack();
-					this.setEquippedStack(EquipmentSlot.MAINHAND, ItemStack.EMPTY);
+					this.equipStack(EquipmentSlot.MAINHAND, ItemStack.EMPTY);
 					if (itemStack.getItem() == Items.POTION) {
 						List<StatusEffectInstance> list = PotionUtil.getPotionEffects(itemStack);
 						if (list != null) {
 							for (StatusEffectInstance statusEffectInstance : list) {
-								this.addPotionEffect(new StatusEffectInstance(statusEffectInstance));
+								this.addStatusEffect(new StatusEffectInstance(statusEffectInstance));
 							}
 						}
 					}
@@ -145,7 +145,7 @@ public class WitchEntity extends RaiderEntity implements RangedAttackMob {
 					&& (this.isOnFire() || this.getRecentDamageSource() != null && this.getRecentDamageSource().isFire())
 					&& !this.hasStatusEffect(StatusEffects.FIRE_RESISTANCE)) {
 					potion = Potions.FIRE_RESISTANCE;
-				} else if (this.random.nextFloat() < 0.05F && this.getHealth() < this.getHealthMaximum()) {
+				} else if (this.random.nextFloat() < 0.05F && this.getHealth() < this.getMaximumHealth()) {
 					potion = Potions.HEALING;
 				} else if (this.random.nextFloat() < 0.5F
 					&& this.getTarget() != null
@@ -155,7 +155,7 @@ public class WitchEntity extends RaiderEntity implements RangedAttackMob {
 				}
 
 				if (potion != null) {
-					this.setEquippedStack(EquipmentSlot.MAINHAND, PotionUtil.setPotion(new ItemStack(Items.POTION), potion));
+					this.equipStack(EquipmentSlot.MAINHAND, PotionUtil.setPotion(new ItemStack(Items.POTION), potion));
 					this.drinkTimeLeft = this.getMainHandStack().getMaxUseTime();
 					this.setDrinking(true);
 					this.world.playSound(null, this.x, this.y, this.z, SoundEvents.ENTITY_WITCH_DRINK, this.getSoundCategory(), 1.0F, 0.8F + this.random.nextFloat() * 0.4F);
@@ -180,14 +180,14 @@ public class WitchEntity extends RaiderEntity implements RangedAttackMob {
 
 	@Environment(EnvType.CLIENT)
 	@Override
-	public void handleStatus(byte b) {
-		if (b == 15) {
+	public void handleStatus(byte status) {
+		if (status == 15) {
 			for (int i = 0; i < this.random.nextInt(35) + 10; i++) {
 				this.world
 					.addParticle(
 						ParticleTypes.WITCH,
 						this.x + this.random.nextGaussian() * 0.13F,
-						this.getBoundingBox().maxY + 0.5 + this.random.nextGaussian() * 0.13F,
+						this.getBoundingBox().y2 + 0.5 + this.random.nextGaussian() * 0.13F,
 						this.z + this.random.nextGaussian() * 0.13F,
 						0.0,
 						0.0,
@@ -195,46 +195,46 @@ public class WitchEntity extends RaiderEntity implements RangedAttackMob {
 					);
 			}
 		} else {
-			super.handleStatus(b);
+			super.handleStatus(status);
 		}
 	}
 
 	@Override
-	protected float applyEnchantmentsToDamage(DamageSource damageSource, float f) {
-		f = super.applyEnchantmentsToDamage(damageSource, f);
-		if (damageSource.getAttacker() == this) {
-			f = 0.0F;
+	protected float applyEnchantmentsToDamage(DamageSource source, float amount) {
+		amount = super.applyEnchantmentsToDamage(source, amount);
+		if (source.getAttacker() == this) {
+			amount = 0.0F;
 		}
 
-		if (damageSource.getMagic()) {
-			f = (float)((double)f * 0.15);
+		if (source.getMagic()) {
+			amount = (float)((double)amount * 0.15);
 		}
 
-		return f;
+		return amount;
 	}
 
 	@Override
-	public void attack(LivingEntity livingEntity, float f) {
+	public void attack(LivingEntity target, float f) {
 		if (!this.isDrinking()) {
-			Vec3d vec3d = livingEntity.getVelocity();
-			double d = livingEntity.x + vec3d.x - this.x;
-			double e = livingEntity.y + (double)livingEntity.getStandingEyeHeight() - 1.1F - this.y;
-			double g = livingEntity.z + vec3d.z - this.z;
+			Vec3d vec3d = target.getVelocity();
+			double d = target.x + vec3d.x - this.x;
+			double e = target.y + (double)target.getStandingEyeHeight() - 1.1F - this.y;
+			double g = target.z + vec3d.z - this.z;
 			float h = MathHelper.sqrt(d * d + g * g);
 			Potion potion = Potions.HARMING;
-			if (livingEntity instanceof RaiderEntity) {
-				if (livingEntity.getHealth() <= 4.0F) {
+			if (target instanceof RaiderEntity) {
+				if (target.getHealth() <= 4.0F) {
 					potion = Potions.HEALING;
 				} else {
 					potion = Potions.REGENERATION;
 				}
 
 				this.setTarget(null);
-			} else if (h >= 8.0F && !livingEntity.hasStatusEffect(StatusEffects.SLOWNESS)) {
+			} else if (h >= 8.0F && !target.hasStatusEffect(StatusEffects.SLOWNESS)) {
 				potion = Potions.SLOWNESS;
-			} else if (livingEntity.getHealth() >= 8.0F && !livingEntity.hasStatusEffect(StatusEffects.POISON)) {
+			} else if (target.getHealth() >= 8.0F && !target.hasStatusEffect(StatusEffects.POISON)) {
 				potion = Potions.POISON;
-			} else if (h <= 3.0F && !livingEntity.hasStatusEffect(StatusEffects.WEAKNESS) && this.random.nextFloat() < 0.25F) {
+			} else if (h <= 3.0F && !target.hasStatusEffect(StatusEffects.WEAKNESS) && this.random.nextFloat() < 0.25F) {
 				potion = Potions.WEAKNESS;
 			}
 
@@ -248,12 +248,12 @@ public class WitchEntity extends RaiderEntity implements RangedAttackMob {
 	}
 
 	@Override
-	protected float getActiveEyeHeight(EntityPose entityPose, EntityDimensions entityDimensions) {
+	protected float getActiveEyeHeight(EntityPose pose, EntityDimensions dimensions) {
 		return 1.62F;
 	}
 
 	@Override
-	public void addBonusForWave(int i, boolean bl) {
+	public void addBonusForWave(int wave, boolean unused) {
 	}
 
 	@Override

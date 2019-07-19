@@ -23,8 +23,8 @@ public class Activity {
 		return this.id;
 	}
 
-	private static Activity register(String string) {
-		return Registry.register(Registry.ACTIVITY, string, new Activity(string));
+	private static Activity register(String id) {
+		return Registry.register(Registry.ACTIVITY, id, new Activity(id));
 	}
 
 	public String toString() {

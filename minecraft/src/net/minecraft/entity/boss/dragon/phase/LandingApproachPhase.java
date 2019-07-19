@@ -16,8 +16,8 @@ public class LandingApproachPhase extends AbstractPhase {
 	private Path field_7047;
 	private Vec3d field_7048;
 
-	public LandingApproachPhase(EnderDragonEntity enderDragonEntity) {
-		super(enderDragonEntity);
+	public LandingApproachPhase(EnderDragonEntity dragon) {
+		super(dragon);
 	}
 
 	@Override
@@ -82,7 +82,7 @@ public class LandingApproachPhase extends AbstractPhase {
 
 			double f;
 			do {
-				f = vec3d.y + (double)(this.dragon.getRand().nextFloat() * 20.0F);
+				f = vec3d.y + (double)(this.dragon.getRandom().nextFloat() * 20.0F);
 			} while (f < vec3d.y);
 
 			this.field_7048 = new Vec3d(d, f, e);

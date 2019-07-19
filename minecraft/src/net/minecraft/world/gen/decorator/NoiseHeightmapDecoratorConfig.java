@@ -9,24 +9,24 @@ public class NoiseHeightmapDecoratorConfig implements DecoratorConfig {
 	public final int belowNoise;
 	public final int aboveNoise;
 
-	public NoiseHeightmapDecoratorConfig(double d, int i, int j) {
-		this.noiseLevel = d;
-		this.belowNoise = i;
-		this.aboveNoise = j;
+	public NoiseHeightmapDecoratorConfig(double noiseLevel, int belowNoise, int aboveNoise) {
+		this.noiseLevel = noiseLevel;
+		this.belowNoise = belowNoise;
+		this.aboveNoise = aboveNoise;
 	}
 
 	@Override
-	public <T> Dynamic<T> serialize(DynamicOps<T> dynamicOps) {
+	public <T> Dynamic<T> serialize(DynamicOps<T> ops) {
 		return new Dynamic<>(
-			dynamicOps,
-			dynamicOps.createMap(
+			ops,
+			ops.createMap(
 				ImmutableMap.of(
-					dynamicOps.createString("noise_level"),
-					dynamicOps.createDouble(this.noiseLevel),
-					dynamicOps.createString("below_noise"),
-					dynamicOps.createInt(this.belowNoise),
-					dynamicOps.createString("above_noise"),
-					dynamicOps.createInt(this.aboveNoise)
+					ops.createString("noise_level"),
+					ops.createDouble(this.noiseLevel),
+					ops.createString("below_noise"),
+					ops.createInt(this.belowNoise),
+					ops.createString("above_noise"),
+					ops.createInt(this.aboveNoise)
 				)
 			)
 		);

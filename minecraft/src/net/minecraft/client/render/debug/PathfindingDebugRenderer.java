@@ -13,7 +13,7 @@ import net.minecraft.client.render.Tessellator;
 import net.minecraft.client.render.VertexFormats;
 import net.minecraft.entity.ai.pathing.Path;
 import net.minecraft.entity.ai.pathing.PathNode;
-import net.minecraft.util.SystemUtil;
+import net.minecraft.util.Util;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
 import net.minecraft.util.math.MathHelper;
@@ -29,16 +29,16 @@ public class PathfindingDebugRenderer implements DebugRenderer.Renderer {
 		this.client = minecraftClient;
 	}
 
-	public void addPath(int i, Path path, float f) {
-		this.paths.put(i, path);
-		this.pathTimes.put(i, SystemUtil.getMeasuringTimeMs());
-		this.field_4617.put(i, f);
+	public void addPath(int id, Path path, float f) {
+		this.paths.put(id, path);
+		this.pathTimes.put(id, Util.getMeasuringTimeMs());
+		this.field_4617.put(id, f);
 	}
 
 	@Override
 	public void render(long l) {
 		if (!this.paths.isEmpty()) {
-			long m = SystemUtil.getMeasuringTimeMs();
+			long m = Util.getMeasuringTimeMs();
 
 			for (Integer integer : this.paths.keySet()) {
 				Path path = (Path)this.paths.get(integer);
@@ -154,7 +154,7 @@ public class PathfindingDebugRenderer implements DebugRenderer.Renderer {
 
 	public static void method_20555(Camera camera, Path path) {
 		Tessellator tessellator = Tessellator.getInstance();
-		BufferBuilder bufferBuilder = tessellator.getBufferBuilder();
+		BufferBuilder bufferBuilder = tessellator.getBuffer();
 		double d = camera.getPos().x;
 		double e = camera.getPos().y;
 		double f = camera.getPos().z;

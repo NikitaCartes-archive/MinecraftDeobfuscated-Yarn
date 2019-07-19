@@ -14,10 +14,10 @@ public class VillagerData {
 	private final VillagerProfession profession;
 	private final int level;
 
-	public VillagerData(VillagerType villagerType, VillagerProfession villagerProfession, int i) {
+	public VillagerData(VillagerType villagerType, VillagerProfession villagerProfession, int level) {
 		this.type = villagerType;
 		this.profession = villagerProfession;
-		this.level = Math.max(1, i);
+		this.level = Math.max(1, level);
 	}
 
 	public VillagerData(Dynamic<?> dynamic) {
@@ -48,33 +48,33 @@ public class VillagerData {
 		return new VillagerData(this.type, villagerProfession, this.level);
 	}
 
-	public VillagerData withLevel(int i) {
-		return new VillagerData(this.type, this.profession, i);
+	public VillagerData withLevel(int level) {
+		return new VillagerData(this.type, this.profession, level);
 	}
 
-	public <T> T serialize(DynamicOps<T> dynamicOps) {
-		return dynamicOps.createMap(
+	public <T> T serialize(DynamicOps<T> ops) {
+		return ops.createMap(
 			ImmutableMap.of(
-				dynamicOps.createString("type"),
-				dynamicOps.createString(Registry.VILLAGER_TYPE.getId(this.type).toString()),
-				dynamicOps.createString("profession"),
-				dynamicOps.createString(Registry.VILLAGER_PROFESSION.getId(this.profession).toString()),
-				dynamicOps.createString("level"),
-				dynamicOps.createInt(this.level)
+				ops.createString("type"),
+				ops.createString(Registry.VILLAGER_TYPE.getId(this.type).toString()),
+				ops.createString("profession"),
+				ops.createString(Registry.VILLAGER_PROFESSION.getId(this.profession).toString()),
+				ops.createString("level"),
+				ops.createInt(this.level)
 			)
 		);
 	}
 
 	@Environment(EnvType.CLIENT)
-	public static int getLowerLevelExperience(int i) {
-		return canLevelUp(i) ? LEVEL_BASE_EXPERIENCE[i - 1] : 0;
+	public static int getLowerLevelExperience(int level) {
+		return canLevelUp(level) ? LEVEL_BASE_EXPERIENCE[level - 1] : 0;
 	}
 
-	public static int getUpperLevelExperience(int i) {
-		return canLevelUp(i) ? LEVEL_BASE_EXPERIENCE[i] : 0;
+	public static int getUpperLevelExperience(int level) {
+		return canLevelUp(level) ? LEVEL_BASE_EXPERIENCE[level] : 0;
 	}
 
-	public static boolean canLevelUp(int i) {
-		return i >= 1 && i < 5;
+	public static boolean canLevelUp(int level) {
+		return level >= 1 && level < 5;
 	}
 }

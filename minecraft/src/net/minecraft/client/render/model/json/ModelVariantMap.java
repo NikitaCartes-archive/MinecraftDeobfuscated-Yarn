@@ -20,7 +20,7 @@ import net.fabricmc.api.Environment;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.client.render.model.MultipartUnbakedModel;
-import net.minecraft.state.StateFactory;
+import net.minecraft.state.StateManager;
 import net.minecraft.util.JsonHelper;
 
 @Environment(EnvType.CLIENT)
@@ -28,19 +28,19 @@ public class ModelVariantMap {
 	private final Map<String, WeightedUnbakedModel> variantMap = Maps.<String, WeightedUnbakedModel>newLinkedHashMap();
 	private MultipartUnbakedModel multipartModel;
 
-	public static ModelVariantMap deserialize(ModelVariantMap.DeserializationContext deserializationContext, Reader reader) {
-		return JsonHelper.deserialize(deserializationContext.gson, reader, ModelVariantMap.class);
+	public static ModelVariantMap deserialize(ModelVariantMap.DeserializationContext context, Reader reader) {
+		return JsonHelper.deserialize(context.gson, reader, ModelVariantMap.class);
 	}
 
-	public ModelVariantMap(Map<String, WeightedUnbakedModel> map, MultipartUnbakedModel multipartUnbakedModel) {
-		this.multipartModel = multipartUnbakedModel;
-		this.variantMap.putAll(map);
+	public ModelVariantMap(Map<String, WeightedUnbakedModel> variantMap, MultipartUnbakedModel multipartModel) {
+		this.multipartModel = multipartModel;
+		this.variantMap.putAll(variantMap);
 	}
 
-	public ModelVariantMap(List<ModelVariantMap> list) {
+	public ModelVariantMap(List<ModelVariantMap> variantMapList) {
 		ModelVariantMap modelVariantMap = null;
 
-		for (ModelVariantMap modelVariantMap2 : list) {
+		for (ModelVariantMap modelVariantMap2 : variantMapList) {
 			if (modelVariantMap2.hasMultipartModel()) {
 				this.variantMap.clear();
 				modelVariantMap = modelVariantMap2;
@@ -54,12 +54,12 @@ public class ModelVariantMap {
 		}
 	}
 
-	public boolean equals(Object object) {
-		if (this == object) {
+	public boolean equals(Object o) {
+		if (this == o) {
 			return true;
 		} else {
-			if (object instanceof ModelVariantMap) {
-				ModelVariantMap modelVariantMap = (ModelVariantMap)object;
+			if (o instanceof ModelVariantMap) {
+				ModelVariantMap modelVariantMap = (ModelVariantMap)o;
 				if (this.variantMap.equals(modelVariantMap.variantMap)) {
 					return this.hasMultipartModel() ? this.multipartModel.equals(modelVariantMap.multipartModel) : !modelVariantMap.hasMultipartModel();
 				}
@@ -94,23 +94,23 @@ public class ModelVariantMap {
 			.registerTypeAdapter(MultipartUnbakedModel.class, new MultipartUnbakedModel.Deserializer(this))
 			.registerTypeAdapter(MultipartModelComponent.class, new MultipartModelComponent.Deserializer())
 			.create();
-		private StateFactory<Block, BlockState> stateFactory;
+		private StateManager<Block, BlockState> stateFactory;
 
-		public StateFactory<Block, BlockState> getStateFactory() {
+		public StateManager<Block, BlockState> getStateFactory() {
 			return this.stateFactory;
 		}
 
-		public void setStateFactory(StateFactory<Block, BlockState> stateFactory) {
+		public void setStateFactory(StateManager<Block, BlockState> stateFactory) {
 			this.stateFactory = stateFactory;
 		}
 	}
 
 	@Environment(EnvType.CLIENT)
 	public static class Deserializer implements JsonDeserializer<ModelVariantMap> {
-		public ModelVariantMap method_3428(JsonElement jsonElement, Type type, JsonDeserializationContext jsonDeserializationContext) throws JsonParseException {
-			JsonObject jsonObject = jsonElement.getAsJsonObject();
-			Map<String, WeightedUnbakedModel> map = this.deserializeVariants(jsonDeserializationContext, jsonObject);
-			MultipartUnbakedModel multipartUnbakedModel = this.deserializeMultipart(jsonDeserializationContext, jsonObject);
+		public ModelVariantMap deserialize(JsonElement element, Type type, JsonDeserializationContext context) throws JsonParseException {
+			JsonObject jsonObject = element.getAsJsonObject();
+			Map<String, WeightedUnbakedModel> map = this.deserializeVariants(context, jsonObject);
+			MultipartUnbakedModel multipartUnbakedModel = this.deserializeMultipart(context, jsonObject);
 			if (!map.isEmpty() || multipartUnbakedModel != null && !multipartUnbakedModel.getModels().isEmpty()) {
 				return new ModelVariantMap(map, multipartUnbakedModel);
 			} else {
@@ -118,13 +118,13 @@ public class ModelVariantMap {
 			}
 		}
 
-		protected Map<String, WeightedUnbakedModel> deserializeVariants(JsonDeserializationContext jsonDeserializationContext, JsonObject jsonObject) {
+		protected Map<String, WeightedUnbakedModel> deserializeVariants(JsonDeserializationContext context, JsonObject object) {
 			Map<String, WeightedUnbakedModel> map = Maps.<String, WeightedUnbakedModel>newHashMap();
-			if (jsonObject.has("variants")) {
-				JsonObject jsonObject2 = JsonHelper.getObject(jsonObject, "variants");
+			if (object.has("variants")) {
+				JsonObject jsonObject = JsonHelper.getObject(object, "variants");
 
-				for (Entry<String, JsonElement> entry : jsonObject2.entrySet()) {
-					map.put(entry.getKey(), jsonDeserializationContext.deserialize((JsonElement)entry.getValue(), WeightedUnbakedModel.class));
+				for (Entry<String, JsonElement> entry : jsonObject.entrySet()) {
+					map.put(entry.getKey(), context.deserialize((JsonElement)entry.getValue(), WeightedUnbakedModel.class));
 				}
 			}
 
@@ -132,12 +132,12 @@ public class ModelVariantMap {
 		}
 
 		@Nullable
-		protected MultipartUnbakedModel deserializeMultipart(JsonDeserializationContext jsonDeserializationContext, JsonObject jsonObject) {
-			if (!jsonObject.has("multipart")) {
+		protected MultipartUnbakedModel deserializeMultipart(JsonDeserializationContext context, JsonObject object) {
+			if (!object.has("multipart")) {
 				return null;
 			} else {
-				JsonArray jsonArray = JsonHelper.getArray(jsonObject, "multipart");
-				return jsonDeserializationContext.deserialize(jsonArray, MultipartUnbakedModel.class);
+				JsonArray jsonArray = JsonHelper.getArray(object, "multipart");
+				return context.deserialize(jsonArray, MultipartUnbakedModel.class);
 			}
 		}
 	}

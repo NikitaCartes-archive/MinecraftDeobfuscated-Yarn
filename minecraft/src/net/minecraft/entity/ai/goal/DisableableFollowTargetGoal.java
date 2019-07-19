@@ -8,12 +8,19 @@ import net.minecraft.entity.raid.RaiderEntity;
 public class DisableableFollowTargetGoal<T extends LivingEntity> extends FollowTargetGoal<T> {
 	private boolean enabled = true;
 
-	public DisableableFollowTargetGoal(RaiderEntity raiderEntity, Class<T> class_, int i, boolean bl, boolean bl2, @Nullable Predicate<LivingEntity> predicate) {
-		super(raiderEntity, class_, i, bl, bl2, predicate);
+	public DisableableFollowTargetGoal(
+		RaiderEntity actor,
+		Class<T> targetEntityClass,
+		int reciprocalChance,
+		boolean checkVisibility,
+		boolean checkCanNavigate,
+		@Nullable Predicate<LivingEntity> targetPredicate
+	) {
+		super(actor, targetEntityClass, reciprocalChance, checkVisibility, checkCanNavigate, targetPredicate);
 	}
 
-	public void setEnabled(boolean bl) {
-		this.enabled = bl;
+	public void setEnabled(boolean enabled) {
+		this.enabled = enabled;
 	}
 
 	@Override

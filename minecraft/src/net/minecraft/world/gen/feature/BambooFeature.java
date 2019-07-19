@@ -26,11 +26,11 @@ public class BambooFeature extends Feature<ProbabilityConfig> {
 	private static final BlockState BAMBOO_TOP_2 = BAMBOO.with(BambooBlock.LEAVES, BambooLeaves.LARGE);
 	private static final BlockState BAMBOO_TOP_3 = BAMBOO.with(BambooBlock.LEAVES, BambooLeaves.SMALL);
 
-	public BambooFeature(Function<Dynamic<?>, ? extends ProbabilityConfig> function) {
-		super(function);
+	public BambooFeature(Function<Dynamic<?>, ? extends ProbabilityConfig> configFactory) {
+		super(configFactory);
 	}
 
-	public boolean method_12718(
+	public boolean generate(
 		IWorld iWorld, ChunkGenerator<? extends ChunkGeneratorConfig> chunkGenerator, Random random, BlockPos blockPos, ProbabilityConfig probabilityConfig
 	) {
 		int i = 0;

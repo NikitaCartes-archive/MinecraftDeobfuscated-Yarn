@@ -15,11 +15,11 @@ import net.minecraft.world.gen.chunk.ChunkGenerator;
 import net.minecraft.world.gen.chunk.ChunkGeneratorConfig;
 
 public class HugeBrownMushroomFeature extends Feature<PlantedFeatureConfig> {
-	public HugeBrownMushroomFeature(Function<Dynamic<?>, ? extends PlantedFeatureConfig> function) {
-		super(function);
+	public HugeBrownMushroomFeature(Function<Dynamic<?>, ? extends PlantedFeatureConfig> configFactory) {
+		super(configFactory);
 	}
 
-	public boolean method_13362(
+	public boolean generate(
 		IWorld iWorld, ChunkGenerator<? extends ChunkGeneratorConfig> chunkGenerator, Random random, BlockPos blockPos, PlantedFeatureConfig plantedFeatureConfig
 	) {
 		int i = random.nextInt(3) + 4;

@@ -18,14 +18,14 @@ public class Quad {
 		this.vertexCount = vertexs.length;
 	}
 
-	public Quad(Vertex[] vertexs, int i, int j, int k, int l, float f, float g) {
-		this(vertexs);
+	public Quad(Vertex[] vertices, int i, int j, int k, int l, float f, float g) {
+		this(vertices);
 		float h = 0.0F / f;
 		float m = 0.0F / g;
-		vertexs[0] = vertexs[0].remap((float)k / f - h, (float)j / g + m);
-		vertexs[1] = vertexs[1].remap((float)i / f + h, (float)j / g + m);
-		vertexs[2] = vertexs[2].remap((float)i / f + h, (float)l / g - m);
-		vertexs[3] = vertexs[3].remap((float)k / f - h, (float)l / g - m);
+		vertices[0] = vertices[0].remap((float)k / f - h, (float)j / g + m);
+		vertices[1] = vertices[1].remap((float)i / f + h, (float)j / g + m);
+		vertices[2] = vertices[2].remap((float)i / f + h, (float)l / g - m);
+		vertices[3] = vertices[3].remap((float)k / f - h, (float)l / g - m);
 	}
 
 	public void flip() {
@@ -38,26 +38,26 @@ public class Quad {
 		this.vertices = vertexs;
 	}
 
-	public void render(BufferBuilder bufferBuilder, float f) {
+	public void render(BufferBuilder bufferBuilder, float scale) {
 		Vec3d vec3d = this.vertices[1].pos.reverseSubtract(this.vertices[0].pos);
 		Vec3d vec3d2 = this.vertices[1].pos.reverseSubtract(this.vertices[2].pos);
 		Vec3d vec3d3 = vec3d2.crossProduct(vec3d).normalize();
-		float g = (float)vec3d3.x;
-		float h = (float)vec3d3.y;
-		float i = (float)vec3d3.z;
+		float f = (float)vec3d3.x;
+		float g = (float)vec3d3.y;
+		float h = (float)vec3d3.z;
 		if (this.flipNormals) {
+			f = -f;
 			g = -g;
 			h = -h;
-			i = -i;
 		}
 
-		bufferBuilder.begin(7, VertexFormats.POSITION_UV_NORMAL_2);
+		bufferBuilder.begin(7, VertexFormats.POSITION_COLOR_TEXTURE_OVERLAY_LIGHT_NORMAL);
 
-		for (int j = 0; j < 4; j++) {
-			Vertex vertex = this.vertices[j];
-			bufferBuilder.vertex(vertex.pos.x * (double)f, vertex.pos.y * (double)f, vertex.pos.z * (double)f)
+		for (int i = 0; i < 4; i++) {
+			Vertex vertex = this.vertices[i];
+			bufferBuilder.vertex(vertex.pos.x * (double)scale, vertex.pos.y * (double)scale, vertex.pos.z * (double)scale)
 				.texture((double)vertex.u, (double)vertex.v)
-				.normal(g, h, i)
+				.normal(f, g, h)
 				.next();
 		}
 

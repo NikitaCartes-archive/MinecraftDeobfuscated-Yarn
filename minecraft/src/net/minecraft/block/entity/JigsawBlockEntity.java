@@ -3,8 +3,8 @@ package net.minecraft.block.entity;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.client.network.packet.BlockEntityUpdateS2CPacket;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.packet.s2c.play.BlockEntityUpdateS2CPacket;
 import net.minecraft.util.Identifier;
 
 public class JigsawBlockEntity extends BlockEntity {
@@ -35,33 +35,33 @@ public class JigsawBlockEntity extends BlockEntity {
 		return this.finalState;
 	}
 
-	public void setAttachmentType(Identifier identifier) {
-		this.attachmentType = identifier;
+	public void setAttachmentType(Identifier value) {
+		this.attachmentType = value;
 	}
 
-	public void setTargetPool(Identifier identifier) {
-		this.targetPool = identifier;
+	public void setTargetPool(Identifier value) {
+		this.targetPool = value;
 	}
 
-	public void setFinalState(String string) {
-		this.finalState = string;
-	}
-
-	@Override
-	public CompoundTag toTag(CompoundTag compoundTag) {
-		super.toTag(compoundTag);
-		compoundTag.putString("attachement_type", this.attachmentType.toString());
-		compoundTag.putString("target_pool", this.targetPool.toString());
-		compoundTag.putString("final_state", this.finalState);
-		return compoundTag;
+	public void setFinalState(String value) {
+		this.finalState = value;
 	}
 
 	@Override
-	public void fromTag(CompoundTag compoundTag) {
-		super.fromTag(compoundTag);
-		this.attachmentType = new Identifier(compoundTag.getString("attachement_type"));
-		this.targetPool = new Identifier(compoundTag.getString("target_pool"));
-		this.finalState = compoundTag.getString("final_state");
+	public CompoundTag toTag(CompoundTag tag) {
+		super.toTag(tag);
+		tag.putString("attachement_type", this.attachmentType.toString());
+		tag.putString("target_pool", this.targetPool.toString());
+		tag.putString("final_state", this.finalState);
+		return tag;
+	}
+
+	@Override
+	public void fromTag(CompoundTag tag) {
+		super.fromTag(tag);
+		this.attachmentType = new Identifier(tag.getString("attachement_type"));
+		this.targetPool = new Identifier(tag.getString("target_pool"));
+		this.finalState = tag.getString("final_state");
 	}
 
 	@Nullable

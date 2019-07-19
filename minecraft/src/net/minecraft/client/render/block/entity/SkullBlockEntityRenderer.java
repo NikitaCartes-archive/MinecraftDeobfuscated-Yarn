@@ -21,26 +21,24 @@ import net.minecraft.client.render.entity.model.SkullOverlayEntityModel;
 import net.minecraft.client.util.DefaultSkinHelper;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.SystemUtil;
+import net.minecraft.util.Util;
 import net.minecraft.util.math.Direction;
 
 @Environment(EnvType.CLIENT)
 public class SkullBlockEntityRenderer extends BlockEntityRenderer<SkullBlockEntity> {
 	public static SkullBlockEntityRenderer INSTANCE;
-	private static final Map<SkullBlock.SkullType, SkullEntityModel> MODELS = SystemUtil.consume(
-		Maps.<SkullBlock.SkullType, SkullEntityModel>newHashMap(), hashMap -> {
-			SkullEntityModel skullEntityModel = new SkullEntityModel(0, 0, 64, 32);
-			SkullEntityModel skullEntityModel2 = new SkullOverlayEntityModel();
-			DragonHeadEntityModel dragonHeadEntityModel = new DragonHeadEntityModel(0.0F);
-			hashMap.put(SkullBlock.Type.SKELETON, skullEntityModel);
-			hashMap.put(SkullBlock.Type.WITHER_SKELETON, skullEntityModel);
-			hashMap.put(SkullBlock.Type.PLAYER, skullEntityModel2);
-			hashMap.put(SkullBlock.Type.ZOMBIE, skullEntityModel2);
-			hashMap.put(SkullBlock.Type.CREEPER, skullEntityModel);
-			hashMap.put(SkullBlock.Type.DRAGON, dragonHeadEntityModel);
-		}
-	);
-	private static final Map<SkullBlock.SkullType, Identifier> TEXTURES = SystemUtil.consume(Maps.<SkullBlock.SkullType, Identifier>newHashMap(), hashMap -> {
+	private static final Map<SkullBlock.SkullType, SkullEntityModel> MODELS = Util.make(Maps.<SkullBlock.SkullType, SkullEntityModel>newHashMap(), hashMap -> {
+		SkullEntityModel skullEntityModel = new SkullEntityModel(0, 0, 64, 32);
+		SkullEntityModel skullEntityModel2 = new SkullOverlayEntityModel();
+		DragonHeadEntityModel dragonHeadEntityModel = new DragonHeadEntityModel(0.0F);
+		hashMap.put(SkullBlock.Type.SKELETON, skullEntityModel);
+		hashMap.put(SkullBlock.Type.WITHER_SKELETON, skullEntityModel);
+		hashMap.put(SkullBlock.Type.PLAYER, skullEntityModel2);
+		hashMap.put(SkullBlock.Type.ZOMBIE, skullEntityModel2);
+		hashMap.put(SkullBlock.Type.CREEPER, skullEntityModel);
+		hashMap.put(SkullBlock.Type.DRAGON, dragonHeadEntityModel);
+	});
+	private static final Map<SkullBlock.SkullType, Identifier> TEXTURES = Util.make(Maps.<SkullBlock.SkullType, Identifier>newHashMap(), hashMap -> {
 		hashMap.put(SkullBlock.Type.SKELETON, new Identifier("textures/entity/skeleton/skeleton.png"));
 		hashMap.put(SkullBlock.Type.WITHER_SKELETON, new Identifier("textures/entity/skeleton/wither_skeleton.png"));
 		hashMap.put(SkullBlock.Type.ZOMBIE, new Identifier("textures/entity/zombie/zombie.png"));
@@ -49,7 +47,7 @@ public class SkullBlockEntityRenderer extends BlockEntityRenderer<SkullBlockEnti
 		hashMap.put(SkullBlock.Type.PLAYER, DefaultSkinHelper.getTexture());
 	});
 
-	public void method_3577(SkullBlockEntity skullBlockEntity, double d, double e, double f, float g, int i) {
+	public void render(SkullBlockEntity skullBlockEntity, double d, double e, double f, float g, int i) {
 		float h = skullBlockEntity.getTicksPowered(g);
 		BlockState blockState = skullBlockEntity.getCachedState();
 		boolean bl = blockState.getBlock() instanceof WallSkullBlock;

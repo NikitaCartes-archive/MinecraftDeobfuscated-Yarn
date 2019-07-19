@@ -30,7 +30,7 @@ public class StrayEntity extends AbstractSkeletonEntity {
 	}
 
 	@Override
-	protected SoundEvent getHurtSound(DamageSource damageSource) {
+	protected SoundEvent getHurtSound(DamageSource source) {
 		return SoundEvents.ENTITY_STRAY_HURT;
 	}
 
@@ -45,8 +45,8 @@ public class StrayEntity extends AbstractSkeletonEntity {
 	}
 
 	@Override
-	protected ProjectileEntity createArrowProjectile(ItemStack itemStack, float f) {
-		ProjectileEntity projectileEntity = super.createArrowProjectile(itemStack, f);
+	protected ProjectileEntity createArrowProjectile(ItemStack arrow, float f) {
+		ProjectileEntity projectileEntity = super.createArrowProjectile(arrow, f);
 		if (projectileEntity instanceof ArrowEntity) {
 			((ArrowEntity)projectileEntity).addEffect(new StatusEffectInstance(StatusEffects.SLOWNESS, 600));
 		}

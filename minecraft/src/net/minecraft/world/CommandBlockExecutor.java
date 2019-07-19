@@ -34,8 +34,8 @@ public abstract class CommandBlockExecutor implements CommandOutput {
 		return this.successCount;
 	}
 
-	public void setSuccessCount(int i) {
-		this.successCount = i;
+	public void setSuccessCount(int successCount) {
+		this.successCount = successCount;
 	}
 
 	public Text getLastOutput() {
@@ -62,15 +62,15 @@ public abstract class CommandBlockExecutor implements CommandOutput {
 	public void deserialize(CompoundTag compoundTag) {
 		this.command = compoundTag.getString("Command");
 		this.successCount = compoundTag.getInt("SuccessCount");
-		if (compoundTag.containsKey("CustomName", 8)) {
+		if (compoundTag.contains("CustomName", 8)) {
 			this.customName = Text.Serializer.fromJson(compoundTag.getString("CustomName"));
 		}
 
-		if (compoundTag.containsKey("TrackOutput", 1)) {
+		if (compoundTag.contains("TrackOutput", 1)) {
 			this.trackOutput = compoundTag.getBoolean("TrackOutput");
 		}
 
-		if (compoundTag.containsKey("LastOutput", 8) && this.trackOutput) {
+		if (compoundTag.contains("LastOutput", 8) && this.trackOutput) {
 			try {
 				this.lastOutput = Text.Serializer.fromJson(compoundTag.getString("LastOutput"));
 			} catch (Throwable var3) {
@@ -80,11 +80,11 @@ public abstract class CommandBlockExecutor implements CommandOutput {
 			this.lastOutput = null;
 		}
 
-		if (compoundTag.containsKey("UpdateLastExecution")) {
+		if (compoundTag.contains("UpdateLastExecution")) {
 			this.updateLastExecution = compoundTag.getBoolean("UpdateLastExecution");
 		}
 
-		if (this.updateLastExecution && compoundTag.containsKey("LastExecution")) {
+		if (this.updateLastExecution && compoundTag.contains("LastExecution")) {
 			this.lastExecution = compoundTag.getLong("LastExecution");
 		} else {
 			this.lastExecution = -1L;
@@ -110,7 +110,7 @@ public abstract class CommandBlockExecutor implements CommandOutput {
 		} else {
 			this.successCount = 0;
 			MinecraftServer minecraftServer = this.getWorld().getServer();
-			if (minecraftServer != null && minecraftServer.method_3814() && minecraftServer.areCommandBlocksEnabled() && !ChatUtil.isEmpty(this.command)) {
+			if (minecraftServer != null && minecraftServer.hasGameDir() && minecraftServer.areCommandBlocksEnabled() && !ChatUtil.isEmpty(this.command)) {
 				try {
 					this.lastOutput = null;
 					ServerCommandSource serverCommandSource = this.getSource().withConsumer((commandContext, bl, i) -> {
@@ -142,14 +142,14 @@ public abstract class CommandBlockExecutor implements CommandOutput {
 		return this.customName;
 	}
 
-	public void setCustomName(Text text) {
-		this.customName = text;
+	public void setCustomName(Text customName) {
+		this.customName = customName;
 	}
 
 	@Override
-	public void sendMessage(Text text) {
+	public void sendMessage(Text message) {
 		if (this.trackOutput) {
-			this.lastOutput = new LiteralText("[" + DATE_FORMAT.format(new Date()) + "] ").append(text);
+			this.lastOutput = new LiteralText("[" + DATE_FORMAT.format(new Date()) + "] ").append(message);
 			this.markDirty();
 		}
 	}
@@ -158,12 +158,12 @@ public abstract class CommandBlockExecutor implements CommandOutput {
 
 	public abstract void markDirty();
 
-	public void setLastOutput(@Nullable Text text) {
-		this.lastOutput = text;
+	public void setLastOutput(@Nullable Text lastOutput) {
+		this.lastOutput = lastOutput;
 	}
 
-	public void shouldTrackOutput(boolean bl) {
-		this.trackOutput = bl;
+	public void shouldTrackOutput(boolean trackOutput) {
+		this.trackOutput = trackOutput;
 	}
 
 	@Environment(EnvType.CLIENT)
@@ -171,12 +171,12 @@ public abstract class CommandBlockExecutor implements CommandOutput {
 		return this.trackOutput;
 	}
 
-	public boolean interact(PlayerEntity playerEntity) {
-		if (!playerEntity.isCreativeLevelTwoOp()) {
+	public boolean interact(PlayerEntity player) {
+		if (!player.isCreativeLevelTwoOp()) {
 			return false;
 		} else {
-			if (playerEntity.getEntityWorld().isClient) {
-				playerEntity.openCommandBlockMinecartScreen(this);
+			if (player.getEntityWorld().isClient) {
+				player.openCommandBlockMinecartScreen(this);
 			}
 
 			return true;

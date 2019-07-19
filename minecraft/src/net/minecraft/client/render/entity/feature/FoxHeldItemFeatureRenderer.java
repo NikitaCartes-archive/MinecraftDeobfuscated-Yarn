@@ -16,7 +16,7 @@ public class FoxHeldItemFeatureRenderer extends FeatureRenderer<FoxEntity, FoxEn
 		super(featureRendererContext);
 	}
 
-	public void method_18335(FoxEntity foxEntity, float f, float g, float h, float i, float j, float k, float l) {
+	public void render(FoxEntity foxEntity, float f, float g, float h, float i, float j, float k, float l) {
 		ItemStack itemStack = foxEntity.getEquippedStack(EquipmentSlot.MAINHAND);
 		if (!itemStack.isEmpty()) {
 			boolean bl = foxEntity.isSleeping();
@@ -28,9 +28,7 @@ public class FoxHeldItemFeatureRenderer extends FeatureRenderer<FoxEntity, FoxEn
 				GlStateManager.translatef(0.0F, 8.0F * l, 3.35F * l);
 			}
 
-			GlStateManager.translatef(
-				this.getModel().head.rotationPointX / 16.0F, this.getModel().head.rotationPointY / 16.0F, this.getModel().head.rotationPointZ / 16.0F
-			);
+			GlStateManager.translatef(this.getContextModel().head.pivotX / 16.0F, this.getContextModel().head.pivotY / 16.0F, this.getContextModel().head.pivotZ / 16.0F);
 			float m = foxEntity.getHeadRoll(h) * (180.0F / (float)Math.PI);
 			GlStateManager.rotatef(m, 0.0F, 0.0F, 1.0F);
 			GlStateManager.rotatef(j, 0.0F, 1.0F, 0.0F);

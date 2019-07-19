@@ -25,236 +25,232 @@ import org.apache.commons.lang3.StringUtils;
 public class JsonHelper {
 	private static final Gson GSON = new GsonBuilder().create();
 
-	public static boolean hasString(JsonObject jsonObject, String string) {
-		return !hasPrimitive(jsonObject, string) ? false : jsonObject.getAsJsonPrimitive(string).isString();
+	public static boolean hasString(JsonObject object, String element) {
+		return !hasPrimitive(object, element) ? false : object.getAsJsonPrimitive(element).isString();
 	}
 
 	@Environment(EnvType.CLIENT)
-	public static boolean isString(JsonElement jsonElement) {
-		return !jsonElement.isJsonPrimitive() ? false : jsonElement.getAsJsonPrimitive().isString();
+	public static boolean isString(JsonElement element) {
+		return !element.isJsonPrimitive() ? false : element.getAsJsonPrimitive().isString();
 	}
 
-	public static boolean isNumber(JsonElement jsonElement) {
-		return !jsonElement.isJsonPrimitive() ? false : jsonElement.getAsJsonPrimitive().isNumber();
+	public static boolean isNumber(JsonElement element) {
+		return !element.isJsonPrimitive() ? false : element.getAsJsonPrimitive().isNumber();
 	}
 
 	@Environment(EnvType.CLIENT)
-	public static boolean hasBoolean(JsonObject jsonObject, String string) {
-		return !hasPrimitive(jsonObject, string) ? false : jsonObject.getAsJsonPrimitive(string).isBoolean();
+	public static boolean hasBoolean(JsonObject object, String element) {
+		return !hasPrimitive(object, element) ? false : object.getAsJsonPrimitive(element).isBoolean();
 	}
 
-	public static boolean hasArray(JsonObject jsonObject, String string) {
-		return !hasElement(jsonObject, string) ? false : jsonObject.get(string).isJsonArray();
+	public static boolean hasArray(JsonObject object, String element) {
+		return !hasElement(object, element) ? false : object.get(element).isJsonArray();
 	}
 
-	public static boolean hasPrimitive(JsonObject jsonObject, String string) {
-		return !hasElement(jsonObject, string) ? false : jsonObject.get(string).isJsonPrimitive();
+	public static boolean hasPrimitive(JsonObject object, String element) {
+		return !hasElement(object, element) ? false : object.get(element).isJsonPrimitive();
 	}
 
-	public static boolean hasElement(JsonObject jsonObject, String string) {
-		return jsonObject == null ? false : jsonObject.get(string) != null;
+	public static boolean hasElement(JsonObject object, String lement) {
+		return object == null ? false : object.get(lement) != null;
 	}
 
-	public static String asString(JsonElement jsonElement, String string) {
-		if (jsonElement.isJsonPrimitive()) {
-			return jsonElement.getAsString();
+	public static String asString(JsonElement element, String name) {
+		if (element.isJsonPrimitive()) {
+			return element.getAsString();
 		} else {
-			throw new JsonSyntaxException("Expected " + string + " to be a string, was " + getType(jsonElement));
+			throw new JsonSyntaxException("Expected " + name + " to be a string, was " + getType(element));
 		}
 	}
 
-	public static String getString(JsonObject jsonObject, String string) {
-		if (jsonObject.has(string)) {
-			return asString(jsonObject.get(string), string);
+	public static String getString(JsonObject object, String element) {
+		if (object.has(element)) {
+			return asString(object.get(element), element);
 		} else {
-			throw new JsonSyntaxException("Missing " + string + ", expected to find a string");
+			throw new JsonSyntaxException("Missing " + element + ", expected to find a string");
 		}
 	}
 
-	public static String getString(JsonObject jsonObject, String string, String string2) {
-		return jsonObject.has(string) ? asString(jsonObject.get(string), string) : string2;
+	public static String getString(JsonObject object, String element, String defaultStr) {
+		return object.has(element) ? asString(object.get(element), element) : defaultStr;
 	}
 
-	public static Item asItem(JsonElement jsonElement, String string) {
-		if (jsonElement.isJsonPrimitive()) {
-			String string2 = jsonElement.getAsString();
+	public static Item asItem(JsonElement element, String name) {
+		if (element.isJsonPrimitive()) {
+			String string = element.getAsString();
 			return (Item)Registry.ITEM
-				.getOrEmpty(new Identifier(string2))
-				.orElseThrow(() -> new JsonSyntaxException("Expected " + string + " to be an item, was unknown string '" + string2 + "'"));
+				.getOrEmpty(new Identifier(string))
+				.orElseThrow(() -> new JsonSyntaxException("Expected " + name + " to be an item, was unknown string '" + string + "'"));
 		} else {
-			throw new JsonSyntaxException("Expected " + string + " to be an item, was " + getType(jsonElement));
+			throw new JsonSyntaxException("Expected " + name + " to be an item, was " + getType(element));
 		}
 	}
 
-	public static Item getItem(JsonObject jsonObject, String string) {
-		if (jsonObject.has(string)) {
-			return asItem(jsonObject.get(string), string);
+	public static Item getItem(JsonObject object, String key) {
+		if (object.has(key)) {
+			return asItem(object.get(key), key);
 		} else {
-			throw new JsonSyntaxException("Missing " + string + ", expected to find an item");
+			throw new JsonSyntaxException("Missing " + key + ", expected to find an item");
 		}
 	}
 
-	public static boolean asBoolean(JsonElement jsonElement, String string) {
-		if (jsonElement.isJsonPrimitive()) {
-			return jsonElement.getAsBoolean();
+	public static boolean asBoolean(JsonElement element, String name) {
+		if (element.isJsonPrimitive()) {
+			return element.getAsBoolean();
 		} else {
-			throw new JsonSyntaxException("Expected " + string + " to be a Boolean, was " + getType(jsonElement));
+			throw new JsonSyntaxException("Expected " + name + " to be a Boolean, was " + getType(element));
 		}
 	}
 
-	public static boolean getBoolean(JsonObject jsonObject, String string) {
-		if (jsonObject.has(string)) {
-			return asBoolean(jsonObject.get(string), string);
+	public static boolean getBoolean(JsonObject object, String element) {
+		if (object.has(element)) {
+			return asBoolean(object.get(element), element);
 		} else {
-			throw new JsonSyntaxException("Missing " + string + ", expected to find a Boolean");
+			throw new JsonSyntaxException("Missing " + element + ", expected to find a Boolean");
 		}
 	}
 
-	public static boolean getBoolean(JsonObject jsonObject, String string, boolean bl) {
-		return jsonObject.has(string) ? asBoolean(jsonObject.get(string), string) : bl;
+	public static boolean getBoolean(JsonObject object, String element, boolean defaultBoolean) {
+		return object.has(element) ? asBoolean(object.get(element), element) : defaultBoolean;
 	}
 
-	public static float asFloat(JsonElement jsonElement, String string) {
-		if (jsonElement.isJsonPrimitive() && jsonElement.getAsJsonPrimitive().isNumber()) {
-			return jsonElement.getAsFloat();
+	public static float asFloat(JsonElement element, String name) {
+		if (element.isJsonPrimitive() && element.getAsJsonPrimitive().isNumber()) {
+			return element.getAsFloat();
 		} else {
-			throw new JsonSyntaxException("Expected " + string + " to be a Float, was " + getType(jsonElement));
+			throw new JsonSyntaxException("Expected " + name + " to be a Float, was " + getType(element));
 		}
 	}
 
-	public static float getFloat(JsonObject jsonObject, String string) {
-		if (jsonObject.has(string)) {
-			return asFloat(jsonObject.get(string), string);
+	public static float getFloat(JsonObject object, String element) {
+		if (object.has(element)) {
+			return asFloat(object.get(element), element);
 		} else {
-			throw new JsonSyntaxException("Missing " + string + ", expected to find a Float");
+			throw new JsonSyntaxException("Missing " + element + ", expected to find a Float");
 		}
 	}
 
-	public static float getFloat(JsonObject jsonObject, String string, float f) {
-		return jsonObject.has(string) ? asFloat(jsonObject.get(string), string) : f;
+	public static float getFloat(JsonObject object, String element, float defaultFloat) {
+		return object.has(element) ? asFloat(object.get(element), element) : defaultFloat;
 	}
 
-	public static long asLong(JsonElement jsonElement, String string) {
-		if (jsonElement.isJsonPrimitive() && jsonElement.getAsJsonPrimitive().isNumber()) {
-			return jsonElement.getAsLong();
+	public static long asLong(JsonElement element, String name) {
+		if (element.isJsonPrimitive() && element.getAsJsonPrimitive().isNumber()) {
+			return element.getAsLong();
 		} else {
-			throw new JsonSyntaxException("Expected " + string + " to be a Long, was " + getType(jsonElement));
+			throw new JsonSyntaxException("Expected " + name + " to be a Long, was " + getType(element));
 		}
 	}
 
-	public static long getLong(JsonObject jsonObject, String string, long l) {
-		return jsonObject.has(string) ? asLong(jsonObject.get(string), string) : l;
+	public static long getLong(JsonObject object, String element, long defaultLong) {
+		return object.has(element) ? asLong(object.get(element), element) : defaultLong;
 	}
 
-	public static int asInt(JsonElement jsonElement, String string) {
-		if (jsonElement.isJsonPrimitive() && jsonElement.getAsJsonPrimitive().isNumber()) {
-			return jsonElement.getAsInt();
+	public static int asInt(JsonElement element, String name) {
+		if (element.isJsonPrimitive() && element.getAsJsonPrimitive().isNumber()) {
+			return element.getAsInt();
 		} else {
-			throw new JsonSyntaxException("Expected " + string + " to be a Int, was " + getType(jsonElement));
+			throw new JsonSyntaxException("Expected " + name + " to be a Int, was " + getType(element));
 		}
 	}
 
-	public static int getInt(JsonObject jsonObject, String string) {
-		if (jsonObject.has(string)) {
-			return asInt(jsonObject.get(string), string);
+	public static int getInt(JsonObject object, String element) {
+		if (object.has(element)) {
+			return asInt(object.get(element), element);
 		} else {
-			throw new JsonSyntaxException("Missing " + string + ", expected to find a Int");
+			throw new JsonSyntaxException("Missing " + element + ", expected to find a Int");
 		}
 	}
 
-	public static int getInt(JsonObject jsonObject, String string, int i) {
-		return jsonObject.has(string) ? asInt(jsonObject.get(string), string) : i;
+	public static int getInt(JsonObject object, String element, int defaultInt) {
+		return object.has(element) ? asInt(object.get(element), element) : defaultInt;
 	}
 
-	public static byte asByte(JsonElement jsonElement, String string) {
-		if (jsonElement.isJsonPrimitive() && jsonElement.getAsJsonPrimitive().isNumber()) {
-			return jsonElement.getAsByte();
+	public static byte asByte(JsonElement element, String name) {
+		if (element.isJsonPrimitive() && element.getAsJsonPrimitive().isNumber()) {
+			return element.getAsByte();
 		} else {
-			throw new JsonSyntaxException("Expected " + string + " to be a Byte, was " + getType(jsonElement));
+			throw new JsonSyntaxException("Expected " + name + " to be a Byte, was " + getType(element));
 		}
 	}
 
-	public static byte getByte(JsonObject jsonObject, String string, byte b) {
-		return jsonObject.has(string) ? asByte(jsonObject.get(string), string) : b;
+	public static byte getByte(JsonObject object, String element, byte defaultByte) {
+		return object.has(element) ? asByte(object.get(element), element) : defaultByte;
 	}
 
-	public static JsonObject asObject(JsonElement jsonElement, String string) {
-		if (jsonElement.isJsonObject()) {
-			return jsonElement.getAsJsonObject();
+	public static JsonObject asObject(JsonElement element, String name) {
+		if (element.isJsonObject()) {
+			return element.getAsJsonObject();
 		} else {
-			throw new JsonSyntaxException("Expected " + string + " to be a JsonObject, was " + getType(jsonElement));
+			throw new JsonSyntaxException("Expected " + name + " to be a JsonObject, was " + getType(element));
 		}
 	}
 
-	public static JsonObject getObject(JsonObject jsonObject, String string) {
-		if (jsonObject.has(string)) {
-			return asObject(jsonObject.get(string), string);
+	public static JsonObject getObject(JsonObject object, String element) {
+		if (object.has(element)) {
+			return asObject(object.get(element), element);
 		} else {
-			throw new JsonSyntaxException("Missing " + string + ", expected to find a JsonObject");
+			throw new JsonSyntaxException("Missing " + element + ", expected to find a JsonObject");
 		}
 	}
 
-	public static JsonObject getObject(JsonObject jsonObject, String string, JsonObject jsonObject2) {
-		return jsonObject.has(string) ? asObject(jsonObject.get(string), string) : jsonObject2;
+	public static JsonObject getObject(JsonObject object, String element, JsonObject defaultObject) {
+		return object.has(element) ? asObject(object.get(element), element) : defaultObject;
 	}
 
-	public static JsonArray asArray(JsonElement jsonElement, String string) {
-		if (jsonElement.isJsonArray()) {
-			return jsonElement.getAsJsonArray();
+	public static JsonArray asArray(JsonElement element, String name) {
+		if (element.isJsonArray()) {
+			return element.getAsJsonArray();
 		} else {
-			throw new JsonSyntaxException("Expected " + string + " to be a JsonArray, was " + getType(jsonElement));
+			throw new JsonSyntaxException("Expected " + name + " to be a JsonArray, was " + getType(element));
 		}
 	}
 
-	public static JsonArray getArray(JsonObject jsonObject, String string) {
-		if (jsonObject.has(string)) {
-			return asArray(jsonObject.get(string), string);
+	public static JsonArray getArray(JsonObject object, String element) {
+		if (object.has(element)) {
+			return asArray(object.get(element), element);
 		} else {
-			throw new JsonSyntaxException("Missing " + string + ", expected to find a JsonArray");
+			throw new JsonSyntaxException("Missing " + element + ", expected to find a JsonArray");
 		}
 	}
 
-	public static JsonArray getArray(JsonObject jsonObject, String string, @Nullable JsonArray jsonArray) {
-		return jsonObject.has(string) ? asArray(jsonObject.get(string), string) : jsonArray;
+	public static JsonArray getArray(JsonObject object, String name, @Nullable JsonArray defaultArray) {
+		return object.has(name) ? asArray(object.get(name), name) : defaultArray;
 	}
 
-	public static <T> T deserialize(
-		@Nullable JsonElement jsonElement, String string, JsonDeserializationContext jsonDeserializationContext, Class<? extends T> class_
-	) {
-		if (jsonElement != null) {
-			return jsonDeserializationContext.deserialize(jsonElement, class_);
+	public static <T> T deserialize(@Nullable JsonElement element, String name, JsonDeserializationContext context, Class<? extends T> type) {
+		if (element != null) {
+			return context.deserialize(element, type);
 		} else {
-			throw new JsonSyntaxException("Missing " + string);
+			throw new JsonSyntaxException("Missing " + name);
 		}
 	}
 
-	public static <T> T deserialize(JsonObject jsonObject, String string, JsonDeserializationContext jsonDeserializationContext, Class<? extends T> class_) {
-		if (jsonObject.has(string)) {
-			return deserialize(jsonObject.get(string), string, jsonDeserializationContext, class_);
+	public static <T> T deserialize(JsonObject object, String element, JsonDeserializationContext context, Class<? extends T> type) {
+		if (object.has(element)) {
+			return deserialize(object.get(element), element, context, type);
 		} else {
-			throw new JsonSyntaxException("Missing " + string);
+			throw new JsonSyntaxException("Missing " + element);
 		}
 	}
 
-	public static <T> T deserialize(
-		JsonObject jsonObject, String string, T object, JsonDeserializationContext jsonDeserializationContext, Class<? extends T> class_
-	) {
-		return jsonObject.has(string) ? deserialize(jsonObject.get(string), string, jsonDeserializationContext, class_) : object;
+	public static <T> T deserialize(JsonObject object, String element, T defaultValue, JsonDeserializationContext context, Class<? extends T> type) {
+		return object.has(element) ? deserialize(object.get(element), element, context, type) : defaultValue;
 	}
 
-	public static String getType(JsonElement jsonElement) {
-		String string = StringUtils.abbreviateMiddle(String.valueOf(jsonElement), "...", 10);
-		if (jsonElement == null) {
+	public static String getType(JsonElement element) {
+		String string = StringUtils.abbreviateMiddle(String.valueOf(element), "...", 10);
+		if (element == null) {
 			return "null (missing)";
-		} else if (jsonElement.isJsonNull()) {
+		} else if (element.isJsonNull()) {
 			return "null (json)";
-		} else if (jsonElement.isJsonArray()) {
+		} else if (element.isJsonArray()) {
 			return "an array (" + string + ")";
-		} else if (jsonElement.isJsonObject()) {
+		} else if (element.isJsonObject()) {
 			return "an object (" + string + ")";
 		} else {
-			if (jsonElement.isJsonPrimitive()) {
-				JsonPrimitive jsonPrimitive = jsonElement.getAsJsonPrimitive();
+			if (element.isJsonPrimitive()) {
+				JsonPrimitive jsonPrimitive = element.getAsJsonPrimitive();
 				if (jsonPrimitive.isNumber()) {
 					return "a number (" + string + ")";
 				}
@@ -269,21 +265,21 @@ public class JsonHelper {
 	}
 
 	@Nullable
-	public static <T> T deserialize(Gson gson, Reader reader, Class<T> class_, boolean bl) {
+	public static <T> T deserialize(Gson gson, Reader reader, Class<T> type, boolean lenient) {
 		try {
 			JsonReader jsonReader = new JsonReader(reader);
-			jsonReader.setLenient(bl);
-			return gson.<T>getAdapter(class_).read(jsonReader);
+			jsonReader.setLenient(lenient);
+			return gson.<T>getAdapter(type).read(jsonReader);
 		} catch (IOException var5) {
 			throw new JsonParseException(var5);
 		}
 	}
 
 	@Nullable
-	public static <T> T deserialize(Gson gson, Reader reader, Type type, boolean bl) {
+	public static <T> T deserialize(Gson gson, Reader reader, Type type, boolean lenient) {
 		try {
 			JsonReader jsonReader = new JsonReader(reader);
-			jsonReader.setLenient(bl);
+			jsonReader.setLenient(lenient);
 			return (T)gson.getAdapter(TypeToken.get(type)).read(jsonReader);
 		} catch (IOException var5) {
 			throw new JsonParseException(var5);
@@ -292,13 +288,13 @@ public class JsonHelper {
 
 	@Nullable
 	@Environment(EnvType.CLIENT)
-	public static <T> T deserialize(Gson gson, String string, Type type, boolean bl) {
-		return deserialize(gson, new StringReader(string), type, bl);
+	public static <T> T deserialize(Gson gson, String content, Type type, boolean lenient) {
+		return deserialize(gson, new StringReader(content), type, lenient);
 	}
 
 	@Nullable
-	public static <T> T deserialize(Gson gson, String string, Class<T> class_, boolean bl) {
-		return deserialize(gson, new StringReader(string), class_, bl);
+	public static <T> T deserialize(Gson gson, String content, Class<T> class_, boolean lenient) {
+		return deserialize(gson, new StringReader(content), class_, lenient);
 	}
 
 	@Nullable
@@ -308,8 +304,8 @@ public class JsonHelper {
 
 	@Nullable
 	@Environment(EnvType.CLIENT)
-	public static <T> T deserialize(Gson gson, String string, Type type) {
-		return deserialize(gson, string, type, false);
+	public static <T> T deserialize(Gson gson, String content, Type type) {
+		return deserialize(gson, content, type, false);
 	}
 
 	@Nullable
@@ -318,20 +314,20 @@ public class JsonHelper {
 	}
 
 	@Nullable
-	public static <T> T deserialize(Gson gson, String string, Class<T> class_) {
-		return deserialize(gson, string, class_, false);
+	public static <T> T deserialize(Gson gson, String content, Class<T> class_) {
+		return deserialize(gson, content, class_, false);
 	}
 
-	public static JsonObject deserialize(String string, boolean bl) {
-		return deserialize(new StringReader(string), bl);
+	public static JsonObject deserialize(String content, boolean lenient) {
+		return deserialize(new StringReader(content), lenient);
 	}
 
-	public static JsonObject deserialize(Reader reader, boolean bl) {
-		return deserialize(GSON, reader, JsonObject.class, bl);
+	public static JsonObject deserialize(Reader reader, boolean lenient) {
+		return deserialize(GSON, reader, JsonObject.class, lenient);
 	}
 
-	public static JsonObject deserialize(String string) {
-		return deserialize(string, false);
+	public static JsonObject deserialize(String content) {
+		return deserialize(content, false);
 	}
 
 	public static JsonObject deserialize(Reader reader) {

@@ -6,13 +6,13 @@ import java.util.Set;
 import java.util.UUID;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
+import net.minecraft.nbt.NbtHelper;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.HoverEvent;
 import net.minecraft.text.LiteralText;
 import net.minecraft.text.Text;
 import net.minecraft.text.Texts;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.TagHelper;
 import net.minecraft.util.math.MathHelper;
 
 public class CommandBossBar extends ServerBossBar {
@@ -21,9 +21,9 @@ public class CommandBossBar extends ServerBossBar {
 	private int value;
 	private int maxValue = 100;
 
-	public CommandBossBar(Identifier identifier, Text text) {
-		super(text, BossBar.Color.WHITE, BossBar.Style.PROGRESS);
-		this.id = identifier;
+	public CommandBossBar(Identifier id, Text displayName) {
+		super(displayName, BossBar.Color.WHITE, BossBar.Style.PROGRESS);
+		this.id = id;
 		this.setPercent(0.0F);
 	}
 
@@ -32,19 +32,19 @@ public class CommandBossBar extends ServerBossBar {
 	}
 
 	@Override
-	public void addPlayer(ServerPlayerEntity serverPlayerEntity) {
-		super.addPlayer(serverPlayerEntity);
-		this.playerUuids.add(serverPlayerEntity.getUuid());
+	public void addPlayer(ServerPlayerEntity player) {
+		super.addPlayer(player);
+		this.playerUuids.add(player.getUuid());
 	}
 
-	public void addPlayer(UUID uUID) {
-		this.playerUuids.add(uUID);
+	public void addPlayer(UUID uuid) {
+		this.playerUuids.add(uuid);
 	}
 
 	@Override
-	public void removePlayer(ServerPlayerEntity serverPlayerEntity) {
-		super.removePlayer(serverPlayerEntity);
-		this.playerUuids.remove(serverPlayerEntity.getUuid());
+	public void removePlayer(ServerPlayerEntity player) {
+		super.removePlayer(player);
+		this.playerUuids.remove(player.getUuid());
 	}
 
 	@Override
@@ -61,14 +61,14 @@ public class CommandBossBar extends ServerBossBar {
 		return this.maxValue;
 	}
 
-	public void setValue(int i) {
-		this.value = i;
-		this.setPercent(MathHelper.clamp((float)i / (float)this.maxValue, 0.0F, 1.0F));
+	public void setValue(int value) {
+		this.value = value;
+		this.setPercent(MathHelper.clamp((float)value / (float)this.maxValue, 0.0F, 1.0F));
 	}
 
-	public void setMaxValue(int i) {
-		this.maxValue = i;
-		this.setPercent(MathHelper.clamp((float)this.value / (float)i, 0.0F, 1.0F));
+	public void setMaxValue(int maxValue) {
+		this.maxValue = maxValue;
+		this.setPercent(MathHelper.clamp((float)this.value / (float)maxValue, 0.0F, 1.0F));
 	}
 
 	public final Text toHoverableText() {
@@ -80,14 +80,14 @@ public class CommandBossBar extends ServerBossBar {
 			);
 	}
 
-	public boolean addPlayers(Collection<ServerPlayerEntity> collection) {
+	public boolean addPlayers(Collection<ServerPlayerEntity> players) {
 		Set<UUID> set = Sets.<UUID>newHashSet();
 		Set<ServerPlayerEntity> set2 = Sets.<ServerPlayerEntity>newHashSet();
 
 		for (UUID uUID : this.playerUuids) {
 			boolean bl = false;
 
-			for (ServerPlayerEntity serverPlayerEntity : collection) {
+			for (ServerPlayerEntity serverPlayerEntity : players) {
 				if (serverPlayerEntity.getUuid().equals(uUID)) {
 					bl = true;
 					break;
@@ -99,7 +99,7 @@ public class CommandBossBar extends ServerBossBar {
 			}
 		}
 
-		for (ServerPlayerEntity serverPlayerEntity2 : collection) {
+		for (ServerPlayerEntity serverPlayerEntity2 : players) {
 			boolean bl = false;
 
 			for (UUID uUID2 : this.playerUuids) {
@@ -146,39 +146,39 @@ public class CommandBossBar extends ServerBossBar {
 		ListTag listTag = new ListTag();
 
 		for (UUID uUID : this.playerUuids) {
-			listTag.add(TagHelper.serializeUuid(uUID));
+			listTag.add(NbtHelper.fromUuid(uUID));
 		}
 
 		compoundTag.put("Players", listTag);
 		return compoundTag;
 	}
 
-	public static CommandBossBar fromTag(CompoundTag compoundTag, Identifier identifier) {
-		CommandBossBar commandBossBar = new CommandBossBar(identifier, Text.Serializer.fromJson(compoundTag.getString("Name")));
-		commandBossBar.setVisible(compoundTag.getBoolean("Visible"));
-		commandBossBar.setValue(compoundTag.getInt("Value"));
-		commandBossBar.setMaxValue(compoundTag.getInt("Max"));
-		commandBossBar.setColor(BossBar.Color.byName(compoundTag.getString("Color")));
-		commandBossBar.setOverlay(BossBar.Style.byName(compoundTag.getString("Overlay")));
-		commandBossBar.setDarkenSky(compoundTag.getBoolean("DarkenScreen"));
-		commandBossBar.setDragonMusic(compoundTag.getBoolean("PlayBossMusic"));
-		commandBossBar.setThickenFog(compoundTag.getBoolean("CreateWorldFog"));
-		ListTag listTag = compoundTag.getList("Players", 10);
+	public static CommandBossBar fromTag(CompoundTag tag, Identifier id) {
+		CommandBossBar commandBossBar = new CommandBossBar(id, Text.Serializer.fromJson(tag.getString("Name")));
+		commandBossBar.setVisible(tag.getBoolean("Visible"));
+		commandBossBar.setValue(tag.getInt("Value"));
+		commandBossBar.setMaxValue(tag.getInt("Max"));
+		commandBossBar.setColor(BossBar.Color.byName(tag.getString("Color")));
+		commandBossBar.setOverlay(BossBar.Style.byName(tag.getString("Overlay")));
+		commandBossBar.setDarkenSky(tag.getBoolean("DarkenScreen"));
+		commandBossBar.setDragonMusic(tag.getBoolean("PlayBossMusic"));
+		commandBossBar.setThickenFog(tag.getBoolean("CreateWorldFog"));
+		ListTag listTag = tag.getList("Players", 10);
 
 		for (int i = 0; i < listTag.size(); i++) {
-			commandBossBar.addPlayer(TagHelper.deserializeUuid(listTag.getCompoundTag(i)));
+			commandBossBar.addPlayer(NbtHelper.toUuid(listTag.getCompound(i)));
 		}
 
 		return commandBossBar;
 	}
 
-	public void onPlayerConnect(ServerPlayerEntity serverPlayerEntity) {
-		if (this.playerUuids.contains(serverPlayerEntity.getUuid())) {
-			this.addPlayer(serverPlayerEntity);
+	public void onPlayerConnect(ServerPlayerEntity player) {
+		if (this.playerUuids.contains(player.getUuid())) {
+			this.addPlayer(player);
 		}
 	}
 
-	public void onPlayerDisconnect(ServerPlayerEntity serverPlayerEntity) {
-		super.removePlayer(serverPlayerEntity);
+	public void onPlayerDisconnect(ServerPlayerEntity player) {
+		super.removePlayer(player);
 	}
 }

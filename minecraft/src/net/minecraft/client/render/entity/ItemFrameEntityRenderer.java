@@ -5,7 +5,7 @@ import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.render.GuiLighting;
+import net.minecraft.client.render.DiffuseLighting;
 import net.minecraft.client.render.block.BlockRenderManager;
 import net.minecraft.client.render.item.ItemRenderer;
 import net.minecraft.client.render.model.BakedModelManager;
@@ -28,12 +28,12 @@ public class ItemFrameEntityRenderer extends EntityRenderer<ItemFrameEntity> {
 	private final MinecraftClient client = MinecraftClient.getInstance();
 	private final ItemRenderer itemRenderer;
 
-	public ItemFrameEntityRenderer(EntityRenderDispatcher entityRenderDispatcher, ItemRenderer itemRenderer) {
-		super(entityRenderDispatcher);
+	public ItemFrameEntityRenderer(EntityRenderDispatcher renderManager, ItemRenderer itemRenderer) {
+		super(renderManager);
 		this.itemRenderer = itemRenderer;
 	}
 
-	public void method_3994(ItemFrameEntity itemFrameEntity, double d, double e, double f, float g, float h) {
+	public void render(ItemFrameEntity itemFrameEntity, double d, double e, double f, float g, float h) {
 		GlStateManager.pushMatrix();
 		BlockPos blockPos = itemFrameEntity.getDecorationBlockPos();
 		double i = (double)blockPos.getX() - itemFrameEntity.x + d;
@@ -63,19 +63,19 @@ public class ItemFrameEntityRenderer extends EntityRenderer<ItemFrameEntity> {
 		GlStateManager.enableLighting();
 		if (itemFrameEntity.getHeldItemStack().getItem() == Items.FILLED_MAP) {
 			GlStateManager.pushLightingAttributes();
-			GuiLighting.enable();
+			DiffuseLighting.enable();
 		}
 
 		GlStateManager.translatef(0.0F, 0.0F, 0.4375F);
 		this.renderItem(itemFrameEntity);
 		if (itemFrameEntity.getHeldItemStack().getItem() == Items.FILLED_MAP) {
-			GuiLighting.disable();
+			DiffuseLighting.disable();
 			GlStateManager.popAttributes();
 		}
 
 		GlStateManager.enableLighting();
 		GlStateManager.popMatrix();
-		this.method_3995(
+		this.renderLabelIfPresent(
 			itemFrameEntity,
 			d + (double)((float)itemFrameEntity.getHorizontalFacing().getOffsetX() * 0.3F),
 			e - 0.25,
@@ -84,7 +84,7 @@ public class ItemFrameEntityRenderer extends EntityRenderer<ItemFrameEntity> {
 	}
 
 	@Nullable
-	protected Identifier method_3993(ItemFrameEntity itemFrameEntity) {
+	protected Identifier getTexture(ItemFrameEntity itemFrameEntity) {
 		return null;
 	}
 
@@ -116,7 +116,7 @@ public class ItemFrameEntityRenderer extends EntityRenderer<ItemFrameEntity> {
 		}
 	}
 
-	protected void method_3995(ItemFrameEntity itemFrameEntity, double d, double e, double f) {
+	protected void renderLabelIfPresent(ItemFrameEntity itemFrameEntity, double d, double e, double f) {
 		if (MinecraftClient.isHudEnabled()
 			&& !itemFrameEntity.getHeldItemStack().isEmpty()
 			&& itemFrameEntity.getHeldItemStack().hasCustomName()

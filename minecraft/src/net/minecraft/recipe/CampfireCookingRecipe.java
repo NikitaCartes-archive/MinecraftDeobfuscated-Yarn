@@ -7,8 +7,8 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.util.Identifier;
 
 public class CampfireCookingRecipe extends AbstractCookingRecipe {
-	public CampfireCookingRecipe(Identifier identifier, String string, Ingredient ingredient, ItemStack itemStack, float f, int i) {
-		super(RecipeType.CAMPFIRE_COOKING, identifier, string, ingredient, itemStack, f, i);
+	public CampfireCookingRecipe(Identifier id, String group, Ingredient input, ItemStack output, float experience, int cookTime) {
+		super(RecipeType.CAMPFIRE_COOKING, id, group, input, output, experience, cookTime);
 	}
 
 	@Environment(EnvType.CLIENT)

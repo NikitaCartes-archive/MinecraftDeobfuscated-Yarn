@@ -28,13 +28,13 @@ public class ModelItemPropertyOverrideList {
 	}
 
 	public ModelItemPropertyOverrideList(
-		ModelLoader modelLoader, JsonUnbakedModel jsonUnbakedModel, Function<Identifier, UnbakedModel> function, List<ModelItemOverride> list
+		ModelLoader modelLoader, JsonUnbakedModel unbakedModel, Function<Identifier, UnbakedModel> unbakedModelGetter, List<ModelItemOverride> overrides
 	) {
-		this.models = (List<BakedModel>)list.stream()
+		this.models = (List<BakedModel>)overrides.stream()
 			.map(
 				modelItemOverride -> {
-					UnbakedModel unbakedModel = (UnbakedModel)function.apply(modelItemOverride.getModelId());
-					return Objects.equals(unbakedModel, jsonUnbakedModel)
+					UnbakedModel unbakedModelx = (UnbakedModel)unbakedModelGetter.apply(modelItemOverride.getModelId());
+					return Objects.equals(unbakedModelx, unbakedModel)
 						? null
 						: modelLoader.bake(modelItemOverride.getModelId(), net.minecraft.client.render.model.ModelRotation.X0_Y0);
 				}
@@ -42,27 +42,27 @@ public class ModelItemPropertyOverrideList {
 			.collect(Collectors.toList());
 		Collections.reverse(this.models);
 
-		for (int i = list.size() - 1; i >= 0; i--) {
-			this.overrides.add(list.get(i));
+		for (int i = overrides.size() - 1; i >= 0; i--) {
+			this.overrides.add(overrides.get(i));
 		}
 	}
 
 	@Nullable
-	public BakedModel apply(BakedModel bakedModel, ItemStack itemStack, @Nullable World world, @Nullable LivingEntity livingEntity) {
+	public BakedModel apply(BakedModel model, ItemStack stack, @Nullable World world, @Nullable LivingEntity entity) {
 		if (!this.overrides.isEmpty()) {
 			for (int i = 0; i < this.overrides.size(); i++) {
 				ModelItemOverride modelItemOverride = (ModelItemOverride)this.overrides.get(i);
-				if (modelItemOverride.matches(itemStack, world, livingEntity)) {
-					BakedModel bakedModel2 = (BakedModel)this.models.get(i);
-					if (bakedModel2 == null) {
-						return bakedModel;
+				if (modelItemOverride.matches(stack, world, entity)) {
+					BakedModel bakedModel = (BakedModel)this.models.get(i);
+					if (bakedModel == null) {
+						return model;
 					}
 
-					return bakedModel2;
+					return bakedModel;
 				}
 			}
 		}
 
-		return bakedModel;
+		return model;
 	}
 }

@@ -14,8 +14,8 @@ public class PublishCommand {
 		object -> new TranslatableText("commands.publish.alreadyPublished", object)
 	);
 
-	public static void register(CommandDispatcher<ServerCommandSource> commandDispatcher) {
-		commandDispatcher.register(
+	public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
+		dispatcher.register(
 			CommandManager.literal("publish")
 				.requires(serverCommandSource -> serverCommandSource.getMinecraftServer().isSinglePlayer() && serverCommandSource.hasPermissionLevel(4))
 				.executes(commandContext -> execute(commandContext.getSource(), NetworkUtils.findLocalPort()))
@@ -26,14 +26,14 @@ public class PublishCommand {
 		);
 	}
 
-	private static int execute(ServerCommandSource serverCommandSource, int i) throws CommandSyntaxException {
-		if (serverCommandSource.getMinecraftServer().isRemote()) {
-			throw ALREADY_PUBLISHED_EXCEPTION.create(serverCommandSource.getMinecraftServer().getServerPort());
-		} else if (!serverCommandSource.getMinecraftServer().openToLan(serverCommandSource.getMinecraftServer().getDefaultGameMode(), false, i)) {
+	private static int execute(ServerCommandSource source, int port) throws CommandSyntaxException {
+		if (source.getMinecraftServer().isRemote()) {
+			throw ALREADY_PUBLISHED_EXCEPTION.create(source.getMinecraftServer().getServerPort());
+		} else if (!source.getMinecraftServer().openToLan(source.getMinecraftServer().getDefaultGameMode(), false, port)) {
 			throw FAILED_EXCEPTION.create();
 		} else {
-			serverCommandSource.sendFeedback(new TranslatableText("commands.publish.success", i), true);
-			return i;
+			source.sendFeedback(new TranslatableText("commands.publish.success", port), true);
+			return port;
 		}
 	}
 }

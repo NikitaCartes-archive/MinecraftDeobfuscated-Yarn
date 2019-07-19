@@ -16,16 +16,16 @@ import net.minecraft.world.gen.feature.FeatureConfig;
 
 public abstract class LargeTreeSaplingGenerator extends SaplingGenerator {
 	@Override
-	public boolean generate(IWorld iWorld, BlockPos blockPos, BlockState blockState, Random random) {
+	public boolean generate(IWorld world, BlockPos pos, BlockState state, Random random) {
 		for (int i = 0; i >= -1; i--) {
 			for (int j = 0; j >= -1; j--) {
-				if (canGenerateLargeTree(blockState, iWorld, blockPos, i, j)) {
-					return this.generateLargeTree(iWorld, blockPos, blockState, random, i, j);
+				if (canGenerateLargeTree(state, world, pos, i, j)) {
+					return this.generateLargeTree(world, pos, state, random, i, j);
 				}
 			}
 		}
 
-		return super.generate(iWorld, blockPos, blockState, random);
+		return super.generate(world, pos, state, random);
 	}
 
 	@Nullable
@@ -55,11 +55,11 @@ public abstract class LargeTreeSaplingGenerator extends SaplingGenerator {
 		}
 	}
 
-	public static boolean canGenerateLargeTree(BlockState blockState, BlockView blockView, BlockPos blockPos, int i, int j) {
-		Block block = blockState.getBlock();
-		return block == blockView.getBlockState(blockPos.add(i, 0, j)).getBlock()
-			&& block == blockView.getBlockState(blockPos.add(i + 1, 0, j)).getBlock()
-			&& block == blockView.getBlockState(blockPos.add(i, 0, j + 1)).getBlock()
-			&& block == blockView.getBlockState(blockPos.add(i + 1, 0, j + 1)).getBlock();
+	public static boolean canGenerateLargeTree(BlockState state, BlockView world, BlockPos pos, int x, int z) {
+		Block block = state.getBlock();
+		return block == world.getBlockState(pos.add(x, 0, z)).getBlock()
+			&& block == world.getBlockState(pos.add(x + 1, 0, z)).getBlock()
+			&& block == world.getBlockState(pos.add(x, 0, z + 1)).getBlock()
+			&& block == world.getBlockState(pos.add(x + 1, 0, z + 1)).getBlock();
 	}
 }

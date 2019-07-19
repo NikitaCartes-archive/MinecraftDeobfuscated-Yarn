@@ -10,9 +10,9 @@ import net.minecraft.text.Text;
 public class FatalErrorScreen extends Screen {
 	private final String message;
 
-	public FatalErrorScreen(Text text, String string) {
-		super(text);
-		this.message = string;
+	public FatalErrorScreen(Text title, String message) {
+		super(title);
+		this.message = message;
 	}
 
 	@Override
@@ -22,11 +22,11 @@ public class FatalErrorScreen extends Screen {
 	}
 
 	@Override
-	public void render(int i, int j, float f) {
+	public void render(int mouseX, int mouseY, float delta) {
 		this.fillGradient(0, 0, this.width, this.height, -12574688, -11530224);
 		this.drawCenteredString(this.font, this.title.asFormattedString(), this.width / 2, 90, 16777215);
 		this.drawCenteredString(this.font, this.message, this.width / 2, 110, 16777215);
-		super.render(i, j, f);
+		super.render(mouseX, mouseY, delta);
 	}
 
 	@Override

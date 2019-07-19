@@ -27,18 +27,18 @@ public class ItemEnchantmentArgumentType implements ArgumentType<Enchantment> {
 		return new ItemEnchantmentArgumentType();
 	}
 
-	public static Enchantment getEnchantment(CommandContext<ServerCommandSource> commandContext, String string) {
-		return commandContext.getArgument(string, Enchantment.class);
+	public static Enchantment getEnchantment(CommandContext<ServerCommandSource> context, String name) {
+		return context.getArgument(name, Enchantment.class);
 	}
 
-	public Enchantment method_9335(StringReader stringReader) throws CommandSyntaxException {
+	public Enchantment parse(StringReader stringReader) throws CommandSyntaxException {
 		Identifier identifier = Identifier.fromCommandInput(stringReader);
 		return (Enchantment)Registry.ENCHANTMENT.getOrEmpty(identifier).orElseThrow(() -> UNKNOWN_ENCHANTMENT_EXCEPTION.create(identifier));
 	}
 
 	@Override
-	public <S> CompletableFuture<Suggestions> listSuggestions(CommandContext<S> commandContext, SuggestionsBuilder suggestionsBuilder) {
-		return CommandSource.suggestIdentifiers(Registry.ENCHANTMENT.getIds(), suggestionsBuilder);
+	public <S> CompletableFuture<Suggestions> listSuggestions(CommandContext<S> context, SuggestionsBuilder builder) {
+		return CommandSource.suggestIdentifiers(Registry.ENCHANTMENT.getIds(), builder);
 	}
 
 	@Override

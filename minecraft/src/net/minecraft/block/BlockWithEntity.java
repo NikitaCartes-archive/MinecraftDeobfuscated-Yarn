@@ -2,7 +2,7 @@ package net.minecraft.block;
 
 import javax.annotation.Nullable;
 import net.minecraft.block.entity.BlockEntity;
-import net.minecraft.container.NameableContainerProvider;
+import net.minecraft.container.NameableContainerFactory;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
@@ -12,21 +12,21 @@ public abstract class BlockWithEntity extends Block implements BlockEntityProvid
 	}
 
 	@Override
-	public BlockRenderType getRenderType(BlockState blockState) {
+	public BlockRenderType getRenderType(BlockState state) {
 		return BlockRenderType.INVISIBLE;
 	}
 
 	@Override
-	public boolean onBlockAction(BlockState blockState, World world, BlockPos blockPos, int i, int j) {
-		super.onBlockAction(blockState, world, blockPos, i, j);
-		BlockEntity blockEntity = world.getBlockEntity(blockPos);
-		return blockEntity == null ? false : blockEntity.onBlockAction(i, j);
+	public boolean onBlockAction(BlockState state, World world, BlockPos pos, int type, int data) {
+		super.onBlockAction(state, world, pos, type, data);
+		BlockEntity blockEntity = world.getBlockEntity(pos);
+		return blockEntity == null ? false : blockEntity.onBlockAction(type, data);
 	}
 
 	@Nullable
 	@Override
-	public NameableContainerProvider createContainerProvider(BlockState blockState, World world, BlockPos blockPos) {
-		BlockEntity blockEntity = world.getBlockEntity(blockPos);
-		return blockEntity instanceof NameableContainerProvider ? (NameableContainerProvider)blockEntity : null;
+	public NameableContainerFactory createContainerFactory(BlockState state, World world, BlockPos pos) {
+		BlockEntity blockEntity = world.getBlockEntity(pos);
+		return blockEntity instanceof NameableContainerFactory ? (NameableContainerFactory)blockEntity : null;
 	}
 }

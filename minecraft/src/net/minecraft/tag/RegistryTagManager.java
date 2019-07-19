@@ -37,35 +37,35 @@ public class RegistryTagManager implements ResourceReloadListener {
 		return this.entityTypes;
 	}
 
-	public void toPacket(PacketByteBuf packetByteBuf) {
-		this.blocks.toPacket(packetByteBuf);
-		this.items.toPacket(packetByteBuf);
-		this.fluids.toPacket(packetByteBuf);
-		this.entityTypes.toPacket(packetByteBuf);
+	public void toPacket(PacketByteBuf buf) {
+		this.blocks.toPacket(buf);
+		this.items.toPacket(buf);
+		this.fluids.toPacket(buf);
+		this.entityTypes.toPacket(buf);
 	}
 
-	public static RegistryTagManager fromPacket(PacketByteBuf packetByteBuf) {
+	public static RegistryTagManager fromPacket(PacketByteBuf buf) {
 		RegistryTagManager registryTagManager = new RegistryTagManager();
-		registryTagManager.blocks().fromPacket(packetByteBuf);
-		registryTagManager.items().fromPacket(packetByteBuf);
-		registryTagManager.fluids().fromPacket(packetByteBuf);
-		registryTagManager.entityTypes().fromPacket(packetByteBuf);
+		registryTagManager.blocks().fromPacket(buf);
+		registryTagManager.items().fromPacket(buf);
+		registryTagManager.fluids().fromPacket(buf);
+		registryTagManager.entityTypes().fromPacket(buf);
 		return registryTagManager;
 	}
 
 	@Override
 	public CompletableFuture<Void> reload(
 		ResourceReloadListener.Synchronizer synchronizer,
-		ResourceManager resourceManager,
-		Profiler profiler,
-		Profiler profiler2,
-		Executor executor,
-		Executor executor2
+		ResourceManager manager,
+		Profiler prepareProfiler,
+		Profiler applyProfiler,
+		Executor prepareExecutor,
+		Executor applyExecutor
 	) {
-		CompletableFuture<Map<Identifier, Tag.Builder<Block>>> completableFuture = this.blocks.prepareReload(resourceManager, executor);
-		CompletableFuture<Map<Identifier, Tag.Builder<Item>>> completableFuture2 = this.items.prepareReload(resourceManager, executor);
-		CompletableFuture<Map<Identifier, Tag.Builder<Fluid>>> completableFuture3 = this.fluids.prepareReload(resourceManager, executor);
-		CompletableFuture<Map<Identifier, Tag.Builder<EntityType<?>>>> completableFuture4 = this.entityTypes.prepareReload(resourceManager, executor);
+		CompletableFuture<Map<Identifier, Tag.Builder<Block>>> completableFuture = this.blocks.prepareReload(manager, prepareExecutor);
+		CompletableFuture<Map<Identifier, Tag.Builder<Item>>> completableFuture2 = this.items.prepareReload(manager, prepareExecutor);
+		CompletableFuture<Map<Identifier, Tag.Builder<Fluid>>> completableFuture3 = this.fluids.prepareReload(manager, prepareExecutor);
+		CompletableFuture<Map<Identifier, Tag.Builder<EntityType<?>>>> completableFuture4 = this.entityTypes.prepareReload(manager, prepareExecutor);
 		return completableFuture.thenCombine(completableFuture2, Pair::of)
 			.thenCombine(
 				completableFuture3.thenCombine(completableFuture4, Pair::of),
@@ -86,7 +86,7 @@ public class RegistryTagManager implements ResourceReloadListener {
 				ItemTags.setContainer(this.items);
 				FluidTags.setContainer(this.fluids);
 				EntityTypeTags.setContainer(this.entityTypes);
-			}, executor2);
+			}, applyExecutor);
 	}
 
 	public static class BuilderHolder {
@@ -96,15 +96,15 @@ public class RegistryTagManager implements ResourceReloadListener {
 		final Map<Identifier, Tag.Builder<EntityType<?>>> entityTypes;
 
 		public BuilderHolder(
-			Map<Identifier, Tag.Builder<Block>> map,
-			Map<Identifier, Tag.Builder<Item>> map2,
-			Map<Identifier, Tag.Builder<Fluid>> map3,
-			Map<Identifier, Tag.Builder<EntityType<?>>> map4
+			Map<Identifier, Tag.Builder<Block>> blocks,
+			Map<Identifier, Tag.Builder<Item>> items,
+			Map<Identifier, Tag.Builder<Fluid>> fluids,
+			Map<Identifier, Tag.Builder<EntityType<?>>> entityTypes
 		) {
-			this.blocks = map;
-			this.items = map2;
-			this.fluids = map3;
-			this.entityTypes = map4;
+			this.blocks = blocks;
+			this.items = items;
+			this.fluids = fluids;
+			this.entityTypes = entityTypes;
 		}
 	}
 }

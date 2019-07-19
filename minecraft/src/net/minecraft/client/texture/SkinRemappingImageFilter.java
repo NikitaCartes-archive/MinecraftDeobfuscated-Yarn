@@ -45,7 +45,7 @@ public class SkinRemappingImageFilter implements ImageFilter {
 	private static void method_3311(NativeImage nativeImage, int i, int j, int k, int l) {
 		for (int m = i; m < k; m++) {
 			for (int n = j; n < l; n++) {
-				int o = nativeImage.getPixelRGBA(m, n);
+				int o = nativeImage.getPixelRgba(m, n);
 				if ((o >> 24 & 0xFF) < 128) {
 					return;
 				}
@@ -54,7 +54,7 @@ public class SkinRemappingImageFilter implements ImageFilter {
 
 		for (int m = i; m < k; m++) {
 			for (int nx = j; nx < l; nx++) {
-				nativeImage.setPixelRGBA(m, nx, nativeImage.getPixelRGBA(m, nx) & 16777215);
+				nativeImage.setPixelRgba(m, nx, nativeImage.getPixelRgba(m, nx) & 16777215);
 			}
 		}
 	}
@@ -62,7 +62,7 @@ public class SkinRemappingImageFilter implements ImageFilter {
 	private static void method_3312(NativeImage nativeImage, int i, int j, int k, int l) {
 		for (int m = i; m < k; m++) {
 			for (int n = j; n < l; n++) {
-				nativeImage.setPixelRGBA(m, n, nativeImage.getPixelRGBA(m, n) | 0xFF000000);
+				nativeImage.setPixelRgba(m, n, nativeImage.getPixelRgba(m, n) | 0xFF000000);
 			}
 		}
 	}

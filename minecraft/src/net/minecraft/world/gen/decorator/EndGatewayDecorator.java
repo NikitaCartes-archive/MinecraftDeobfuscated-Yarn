@@ -15,7 +15,7 @@ public class EndGatewayDecorator extends Decorator<NopeDecoratorConfig> {
 		super(function);
 	}
 
-	public Stream<BlockPos> method_15924(
+	public Stream<BlockPos> getPositions(
 		IWorld iWorld, ChunkGenerator<? extends ChunkGeneratorConfig> chunkGenerator, Random random, NopeDecoratorConfig nopeDecoratorConfig, BlockPos blockPos
 	) {
 		if (random.nextInt(700) == 0) {

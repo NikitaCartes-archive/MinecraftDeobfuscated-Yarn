@@ -11,47 +11,47 @@ public class CoordinateArgument {
 	private final boolean relative;
 	private final double value;
 
-	public CoordinateArgument(boolean bl, double d) {
-		this.relative = bl;
-		this.value = d;
+	public CoordinateArgument(boolean relative, double value) {
+		this.relative = relative;
+		this.value = value;
 	}
 
-	public double toAbsoluteCoordinate(double d) {
-		return this.relative ? this.value + d : this.value;
+	public double toAbsoluteCoordinate(double offset) {
+		return this.relative ? this.value + offset : this.value;
 	}
 
-	public static CoordinateArgument parse(StringReader stringReader, boolean bl) throws CommandSyntaxException {
-		if (stringReader.canRead() && stringReader.peek() == '^') {
-			throw Vec3ArgumentType.MIXED_COORDINATE_EXCEPTION.createWithContext(stringReader);
-		} else if (!stringReader.canRead()) {
-			throw MISSING_COORDINATE.createWithContext(stringReader);
+	public static CoordinateArgument parse(StringReader reader, boolean centerIntegers) throws CommandSyntaxException {
+		if (reader.canRead() && reader.peek() == '^') {
+			throw Vec3ArgumentType.MIXED_COORDINATE_EXCEPTION.createWithContext(reader);
+		} else if (!reader.canRead()) {
+			throw MISSING_COORDINATE.createWithContext(reader);
 		} else {
-			boolean bl2 = isRelative(stringReader);
-			int i = stringReader.getCursor();
-			double d = stringReader.canRead() && stringReader.peek() != ' ' ? stringReader.readDouble() : 0.0;
-			String string = stringReader.getString().substring(i, stringReader.getCursor());
-			if (bl2 && string.isEmpty()) {
+			boolean bl = isRelative(reader);
+			int i = reader.getCursor();
+			double d = reader.canRead() && reader.peek() != ' ' ? reader.readDouble() : 0.0;
+			String string = reader.getString().substring(i, reader.getCursor());
+			if (bl && string.isEmpty()) {
 				return new CoordinateArgument(true, 0.0);
 			} else {
-				if (!string.contains(".") && !bl2 && bl) {
+				if (!string.contains(".") && !bl && centerIntegers) {
 					d += 0.5;
 				}
 
-				return new CoordinateArgument(bl2, d);
+				return new CoordinateArgument(bl, d);
 			}
 		}
 	}
 
-	public static CoordinateArgument parse(StringReader stringReader) throws CommandSyntaxException {
-		if (stringReader.canRead() && stringReader.peek() == '^') {
-			throw Vec3ArgumentType.MIXED_COORDINATE_EXCEPTION.createWithContext(stringReader);
-		} else if (!stringReader.canRead()) {
-			throw MISSING_BLOCK_POSITION.createWithContext(stringReader);
+	public static CoordinateArgument parse(StringReader reader) throws CommandSyntaxException {
+		if (reader.canRead() && reader.peek() == '^') {
+			throw Vec3ArgumentType.MIXED_COORDINATE_EXCEPTION.createWithContext(reader);
+		} else if (!reader.canRead()) {
+			throw MISSING_BLOCK_POSITION.createWithContext(reader);
 		} else {
-			boolean bl = isRelative(stringReader);
+			boolean bl = isRelative(reader);
 			double d;
-			if (stringReader.canRead() && stringReader.peek() != ' ') {
-				d = bl ? stringReader.readDouble() : (double)stringReader.readInt();
+			if (reader.canRead() && reader.peek() != ' ') {
+				d = bl ? reader.readDouble() : (double)reader.readInt();
 			} else {
 				d = 0.0;
 			}
@@ -60,11 +60,11 @@ public class CoordinateArgument {
 		}
 	}
 
-	private static boolean isRelative(StringReader stringReader) {
+	private static boolean isRelative(StringReader reader) {
 		boolean bl;
-		if (stringReader.peek() == '~') {
+		if (reader.peek() == '~') {
 			bl = true;
-			stringReader.skip();
+			reader.skip();
 		} else {
 			bl = false;
 		}
@@ -72,13 +72,13 @@ public class CoordinateArgument {
 		return bl;
 	}
 
-	public boolean equals(Object object) {
-		if (this == object) {
+	public boolean equals(Object o) {
+		if (this == o) {
 			return true;
-		} else if (!(object instanceof CoordinateArgument)) {
+		} else if (!(o instanceof CoordinateArgument)) {
 			return false;
 		} else {
-			CoordinateArgument coordinateArgument = (CoordinateArgument)object;
+			CoordinateArgument coordinateArgument = (CoordinateArgument)o;
 			return this.relative != coordinateArgument.relative ? false : Double.compare(coordinateArgument.value, this.value) == 0;
 		}
 	}

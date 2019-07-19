@@ -5,14 +5,14 @@ import net.minecraft.entity.mob.MobEntityWithAi;
 import net.minecraft.entity.passive.CatEntity;
 import net.minecraft.tag.BlockTags;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.ViewableWorld;
+import net.minecraft.world.CollisionView;
 
 public class GoToOwnerAndPurrGoal extends MoveToTargetPosGoal {
 	private final CatEntity cat;
 
-	public GoToOwnerAndPurrGoal(CatEntity catEntity, double d, int i) {
-		super(catEntity, d, i, 6);
-		this.cat = catEntity;
+	public GoToOwnerAndPurrGoal(CatEntity cat, double speed, int range) {
+		super(cat, speed, range, 6);
+		this.cat = cat;
 		this.lowestY = -2;
 		this.setControls(EnumSet.of(Goal.Control.JUMP, Goal.Control.MOVE));
 	}
@@ -29,7 +29,7 @@ public class GoToOwnerAndPurrGoal extends MoveToTargetPosGoal {
 	}
 
 	@Override
-	protected int getInterval(MobEntityWithAi mobEntityWithAi) {
+	protected int getInterval(MobEntityWithAi mob) {
 		return 40;
 	}
 
@@ -51,7 +51,7 @@ public class GoToOwnerAndPurrGoal extends MoveToTargetPosGoal {
 	}
 
 	@Override
-	protected boolean isTargetPos(ViewableWorld viewableWorld, BlockPos blockPos) {
-		return viewableWorld.isAir(blockPos.up()) && viewableWorld.getBlockState(blockPos).getBlock().matches(BlockTags.BEDS);
+	protected boolean isTargetPos(CollisionView world, BlockPos pos) {
+		return world.isAir(pos.up()) && world.getBlockState(pos).getBlock().matches(BlockTags.BEDS);
 	}
 }

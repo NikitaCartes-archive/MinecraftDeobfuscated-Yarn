@@ -5,8 +5,8 @@ import net.minecraft.util.math.Vec3d;
 public abstract class HitResult {
 	protected final Vec3d pos;
 
-	protected HitResult(Vec3d vec3d) {
-		this.pos = vec3d;
+	protected HitResult(Vec3d pos) {
+		this.pos = pos;
 	}
 
 	public abstract HitResult.Type getType();

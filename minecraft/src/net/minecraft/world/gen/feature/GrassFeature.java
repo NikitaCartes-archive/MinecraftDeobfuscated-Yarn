@@ -11,11 +11,11 @@ import net.minecraft.world.gen.chunk.ChunkGenerator;
 import net.minecraft.world.gen.chunk.ChunkGeneratorConfig;
 
 public class GrassFeature extends Feature<GrassFeatureConfig> {
-	public GrassFeature(Function<Dynamic<?>, ? extends GrassFeatureConfig> function) {
-		super(function);
+	public GrassFeature(Function<Dynamic<?>, ? extends GrassFeatureConfig> configFactory) {
+		super(configFactory);
 	}
 
-	public boolean method_14080(
+	public boolean generate(
 		IWorld iWorld, ChunkGenerator<? extends ChunkGeneratorConfig> chunkGenerator, Random random, BlockPos blockPos, GrassFeatureConfig grassFeatureConfig
 	) {
 		for (BlockState blockState = iWorld.getBlockState(blockPos);

@@ -13,11 +13,11 @@ import net.minecraft.util.math.Direction;
 
 @Environment(EnvType.CLIENT)
 public interface BakedModel {
-	List<BakedQuad> getQuads(@Nullable BlockState blockState, @Nullable Direction direction, Random random);
+	List<BakedQuad> getQuads(@Nullable BlockState state, @Nullable Direction face, Random random);
 
 	boolean useAmbientOcclusion();
 
-	boolean hasDepthInGui();
+	boolean hasDepth();
 
 	boolean isBuiltin();
 

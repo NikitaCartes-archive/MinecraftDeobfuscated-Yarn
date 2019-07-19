@@ -44,7 +44,7 @@ public class FontManager implements AutoCloseable {
 	private final TextureManager textureManager;
 	private boolean forceUnicodeFont;
 	private final ResourceReloadListener resourceReloadListener = new SinglePreparationResourceReloadListener<Map<Identifier, List<Font>>>() {
-		protected Map<Identifier, List<Font>> method_18638(ResourceManager resourceManager, Profiler profiler) {
+		protected Map<Identifier, List<Font>> prepare(ResourceManager resourceManager, Profiler profiler) {
 			profiler.startTick();
 			Gson gson = new GsonBuilder().setPrettyPrinting().disableHtmlEscaping().create();
 			Map<Identifier, List<Font>> map = Maps.<Identifier, List<Font>>newHashMap();
@@ -153,7 +153,7 @@ public class FontManager implements AutoCloseable {
 			return map;
 		}
 
-		protected void method_18635(Map<Identifier, List<Font>> map, ResourceManager resourceManager, Profiler profiler) {
+		protected void apply(Map<Identifier, List<Font>> map, ResourceManager resourceManager, Profiler profiler) {
 			profiler.startTick();
 			profiler.push("reloading");
 			Stream.concat(FontManager.this.textRenderers.keySet().stream(), map.keySet().stream())
@@ -189,17 +189,17 @@ public class FontManager implements AutoCloseable {
 		});
 	}
 
-	public void setForceUnicodeFont(boolean bl, Executor executor, Executor executor2) {
-		if (bl != this.forceUnicodeFont) {
-			this.forceUnicodeFont = bl;
+	public void setForceUnicodeFont(boolean forceUnicodeFont, Executor prepareExecutor, Executor applyExecutor) {
+		if (forceUnicodeFont != this.forceUnicodeFont) {
+			this.forceUnicodeFont = forceUnicodeFont;
 			ResourceManager resourceManager = MinecraftClient.getInstance().getResourceManager();
 			ResourceReloadListener.Synchronizer synchronizer = new ResourceReloadListener.Synchronizer() {
 				@Override
-				public <T> CompletableFuture<T> whenPrepared(T object) {
-					return CompletableFuture.completedFuture(object);
+				public <T> CompletableFuture<T> whenPrepared(T preparedObject) {
+					return CompletableFuture.completedFuture(preparedObject);
 				}
 			};
-			this.resourceReloadListener.reload(synchronizer, resourceManager, DummyProfiler.INSTANCE, DummyProfiler.INSTANCE, executor, executor2);
+			this.resourceReloadListener.reload(synchronizer, resourceManager, DummyProfiler.INSTANCE, DummyProfiler.INSTANCE, prepareExecutor, applyExecutor);
 		}
 	}
 

@@ -53,14 +53,14 @@ public class CriterionProgress {
 		return criterionProgress;
 	}
 
-	public static CriterionProgress obtainedAt(String string) {
+	public static CriterionProgress obtainedAt(String datetime) {
 		CriterionProgress criterionProgress = new CriterionProgress();
 
 		try {
-			criterionProgress.obtained = FORMAT.parse(string);
+			criterionProgress.obtained = FORMAT.parse(datetime);
 			return criterionProgress;
 		} catch (ParseException var3) {
-			throw new JsonSyntaxException("Invalid datetime: " + string, var3);
+			throw new JsonSyntaxException("Invalid datetime: " + datetime, var3);
 		}
 	}
 }

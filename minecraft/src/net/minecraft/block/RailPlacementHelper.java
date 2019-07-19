@@ -16,12 +16,12 @@ public class RailPlacementHelper {
 	private final boolean allowCurves;
 	private final List<BlockPos> neighbors = Lists.<BlockPos>newArrayList();
 
-	public RailPlacementHelper(World world, BlockPos blockPos, BlockState blockState) {
+	public RailPlacementHelper(World world, BlockPos pos, BlockState state) {
 		this.world = world;
-		this.pos = blockPos;
-		this.state = blockState;
-		this.block = (AbstractRailBlock)blockState.getBlock();
-		RailShape railShape = blockState.get(this.block.getShapeProperty());
+		this.pos = pos;
+		this.state = state;
+		this.block = (AbstractRailBlock)state.getBlock();
+		RailShape railShape = state.get(this.block.getShapeProperty());
 		this.allowCurves = this.block.canMakeCurves();
 		this.computeNeighbors(railShape);
 	}
@@ -30,9 +30,9 @@ public class RailPlacementHelper {
 		return this.neighbors;
 	}
 
-	private void computeNeighbors(RailShape railShape) {
+	private void computeNeighbors(RailShape shape) {
 		this.neighbors.clear();
-		switch (railShape) {
+		switch (shape) {
 			case NORTH_SOUTH:
 				this.neighbors.add(this.pos.north());
 				this.neighbors.add(this.pos.south());
@@ -86,38 +86,36 @@ public class RailPlacementHelper {
 		}
 	}
 
-	private boolean isVerticallyNearRail(BlockPos blockPos) {
-		return AbstractRailBlock.isRail(this.world, blockPos)
-			|| AbstractRailBlock.isRail(this.world, blockPos.up())
-			|| AbstractRailBlock.isRail(this.world, blockPos.down());
+	private boolean isVerticallyNearRail(BlockPos pos) {
+		return AbstractRailBlock.isRail(this.world, pos) || AbstractRailBlock.isRail(this.world, pos.up()) || AbstractRailBlock.isRail(this.world, pos.down());
 	}
 
 	@Nullable
-	private RailPlacementHelper method_10458(BlockPos blockPos) {
-		BlockState blockState = this.world.getBlockState(blockPos);
+	private RailPlacementHelper method_10458(BlockPos pos) {
+		BlockState blockState = this.world.getBlockState(pos);
 		if (AbstractRailBlock.isRail(blockState)) {
-			return new RailPlacementHelper(this.world, blockPos, blockState);
+			return new RailPlacementHelper(this.world, pos, blockState);
 		} else {
-			BlockPos blockPos2 = blockPos.up();
-			blockState = this.world.getBlockState(blockPos2);
+			BlockPos blockPos = pos.up();
+			blockState = this.world.getBlockState(blockPos);
 			if (AbstractRailBlock.isRail(blockState)) {
-				return new RailPlacementHelper(this.world, blockPos2, blockState);
+				return new RailPlacementHelper(this.world, blockPos, blockState);
 			} else {
-				blockPos2 = blockPos.down();
-				blockState = this.world.getBlockState(blockPos2);
-				return AbstractRailBlock.isRail(blockState) ? new RailPlacementHelper(this.world, blockPos2, blockState) : null;
+				blockPos = pos.down();
+				blockState = this.world.getBlockState(blockPos);
+				return AbstractRailBlock.isRail(blockState) ? new RailPlacementHelper(this.world, blockPos, blockState) : null;
 			}
 		}
 	}
 
-	private boolean isNeighbor(RailPlacementHelper railPlacementHelper) {
-		return this.isNeighbor(railPlacementHelper.pos);
+	private boolean isNeighbor(RailPlacementHelper other) {
+		return this.isNeighbor(other.pos);
 	}
 
-	private boolean isNeighbor(BlockPos blockPos) {
+	private boolean isNeighbor(BlockPos pos) {
 		for (int i = 0; i < this.neighbors.size(); i++) {
-			BlockPos blockPos2 = (BlockPos)this.neighbors.get(i);
-			if (blockPos2.getX() == blockPos.getX() && blockPos2.getZ() == blockPos.getZ()) {
+			BlockPos blockPos = (BlockPos)this.neighbors.get(i);
+			if (blockPos.getX() == pos.getX() && blockPos.getZ() == pos.getZ()) {
 				return true;
 			}
 		}
@@ -137,12 +135,12 @@ public class RailPlacementHelper {
 		return i;
 	}
 
-	private boolean method_10455(RailPlacementHelper railPlacementHelper) {
-		return this.isNeighbor(railPlacementHelper) || this.neighbors.size() != 2;
+	private boolean method_10455(RailPlacementHelper placementHelper) {
+		return this.isNeighbor(placementHelper) || this.neighbors.size() != 2;
 	}
 
-	private void method_10461(RailPlacementHelper railPlacementHelper) {
-		this.neighbors.add(railPlacementHelper.pos);
+	private void method_10461(RailPlacementHelper placementHelper) {
+		this.neighbors.add(placementHelper.pos);
 		BlockPos blockPos = this.pos.north();
 		BlockPos blockPos2 = this.pos.south();
 		BlockPos blockPos3 = this.pos.west();
@@ -206,8 +204,8 @@ public class RailPlacementHelper {
 		this.world.setBlockState(this.pos, this.state, 3);
 	}
 
-	private boolean method_10465(BlockPos blockPos) {
-		RailPlacementHelper railPlacementHelper = this.method_10458(blockPos);
+	private boolean method_10465(BlockPos pos) {
+		RailPlacementHelper railPlacementHelper = this.method_10458(pos);
 		if (railPlacementHelper == null) {
 			return false;
 		} else {
@@ -216,82 +214,82 @@ public class RailPlacementHelper {
 		}
 	}
 
-	public RailPlacementHelper updateBlockState(boolean bl, boolean bl2) {
+	public RailPlacementHelper updateBlockState(boolean powered, boolean forceUpdate) {
 		BlockPos blockPos = this.pos.north();
 		BlockPos blockPos2 = this.pos.south();
 		BlockPos blockPos3 = this.pos.west();
 		BlockPos blockPos4 = this.pos.east();
-		boolean bl3 = this.method_10465(blockPos);
-		boolean bl4 = this.method_10465(blockPos2);
-		boolean bl5 = this.method_10465(blockPos3);
-		boolean bl6 = this.method_10465(blockPos4);
+		boolean bl = this.method_10465(blockPos);
+		boolean bl2 = this.method_10465(blockPos2);
+		boolean bl3 = this.method_10465(blockPos3);
+		boolean bl4 = this.method_10465(blockPos4);
 		RailShape railShape = null;
-		if ((bl3 || bl4) && !bl5 && !bl6) {
+		if ((bl || bl2) && !bl3 && !bl4) {
 			railShape = RailShape.NORTH_SOUTH;
 		}
 
-		if ((bl5 || bl6) && !bl3 && !bl4) {
+		if ((bl3 || bl4) && !bl && !bl2) {
 			railShape = RailShape.EAST_WEST;
 		}
 
 		if (!this.allowCurves) {
-			if (bl4 && bl6 && !bl3 && !bl5) {
+			if (bl2 && bl4 && !bl && !bl3) {
 				railShape = RailShape.SOUTH_EAST;
 			}
 
-			if (bl4 && bl5 && !bl3 && !bl6) {
+			if (bl2 && bl3 && !bl && !bl4) {
 				railShape = RailShape.SOUTH_WEST;
 			}
 
-			if (bl3 && bl5 && !bl4 && !bl6) {
+			if (bl && bl3 && !bl2 && !bl4) {
 				railShape = RailShape.NORTH_WEST;
 			}
 
-			if (bl3 && bl6 && !bl4 && !bl5) {
+			if (bl && bl4 && !bl2 && !bl3) {
 				railShape = RailShape.NORTH_EAST;
 			}
 		}
 
 		if (railShape == null) {
-			if (bl3 || bl4) {
+			if (bl || bl2) {
 				railShape = RailShape.NORTH_SOUTH;
 			}
 
-			if (bl5 || bl6) {
+			if (bl3 || bl4) {
 				railShape = RailShape.EAST_WEST;
 			}
 
 			if (!this.allowCurves) {
-				if (bl) {
-					if (bl4 && bl6) {
+				if (powered) {
+					if (bl2 && bl4) {
 						railShape = RailShape.SOUTH_EAST;
 					}
 
-					if (bl5 && bl4) {
+					if (bl3 && bl2) {
 						railShape = RailShape.SOUTH_WEST;
 					}
 
-					if (bl6 && bl3) {
+					if (bl4 && bl) {
 						railShape = RailShape.NORTH_EAST;
 					}
 
-					if (bl3 && bl5) {
+					if (bl && bl3) {
 						railShape = RailShape.NORTH_WEST;
 					}
 				} else {
-					if (bl3 && bl5) {
+					if (bl && bl3) {
 						railShape = RailShape.NORTH_WEST;
 					}
 
-					if (bl6 && bl3) {
+					if (bl4 && bl) {
 						railShape = RailShape.NORTH_EAST;
 					}
 
-					if (bl5 && bl4) {
+					if (bl3 && bl2) {
 						railShape = RailShape.SOUTH_WEST;
 					}
 
-					if (bl4 && bl6) {
+					if (bl2 && bl4) {
 						railShape = RailShape.SOUTH_EAST;
 					}
 				}
@@ -324,7 +322,7 @@ public class RailPlacementHelper {
 
 		this.computeNeighbors(railShape);
 		this.state = this.state.with(this.block.getShapeProperty(), railShape);
-		if (bl2 || this.world.getBlockState(this.pos) != this.state) {
+		if (forceUpdate || this.world.getBlockState(this.pos) != this.state) {
 			this.world.setBlockState(this.pos, this.state, 3);
 
 			for (int i = 0; i < this.neighbors.size(); i++) {

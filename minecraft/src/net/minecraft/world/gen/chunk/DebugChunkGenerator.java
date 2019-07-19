@@ -17,15 +17,15 @@ import net.minecraft.world.gen.GenerationStep;
 
 public class DebugChunkGenerator extends ChunkGenerator<DebugChunkGeneratorConfig> {
 	private static final List<BlockState> BLOCK_STATES = (List<BlockState>)StreamSupport.stream(Registry.BLOCK.spliterator(), false)
-		.flatMap(block -> block.getStateFactory().getStates().stream())
+		.flatMap(block -> block.getStateManager().getStates().stream())
 		.collect(Collectors.toList());
 	private static final int X_SIDE_LENGTH = MathHelper.ceil(MathHelper.sqrt((float)BLOCK_STATES.size()));
 	private static final int Z_SIDE_LENGTH = MathHelper.ceil((float)BLOCK_STATES.size() / (float)X_SIDE_LENGTH);
 	protected static final BlockState AIR = Blocks.AIR.getDefaultState();
 	protected static final BlockState BARRIER = Blocks.BARRIER.getDefaultState();
 
-	public DebugChunkGenerator(IWorld iWorld, BiomeSource biomeSource, DebugChunkGeneratorConfig debugChunkGeneratorConfig) {
-		super(iWorld, biomeSource, debugChunkGeneratorConfig);
+	public DebugChunkGenerator(IWorld world, BiomeSource biomeSource, DebugChunkGeneratorConfig config) {
+		super(world, biomeSource, config);
 	}
 
 	@Override
@@ -33,7 +33,7 @@ public class DebugChunkGenerator extends ChunkGenerator<DebugChunkGeneratorConfi
 	}
 
 	@Override
-	public void carve(Chunk chunk, GenerationStep.Carver carver) {
+	public void carve(Chunk chunk, GenerationStep.Carver carverStep) {
 	}
 
 	@Override
@@ -42,42 +42,42 @@ public class DebugChunkGenerator extends ChunkGenerator<DebugChunkGeneratorConfi
 	}
 
 	@Override
-	public void generateFeatures(ChunkRegion chunkRegion) {
+	public void generateFeatures(ChunkRegion region) {
 		BlockPos.Mutable mutable = new BlockPos.Mutable();
-		int i = chunkRegion.getCenterChunkX();
-		int j = chunkRegion.getCenterChunkZ();
+		int i = region.getCenterChunkX();
+		int j = region.getCenterChunkZ();
 
 		for (int k = 0; k < 16; k++) {
 			for (int l = 0; l < 16; l++) {
 				int m = (i << 4) + k;
 				int n = (j << 4) + l;
-				chunkRegion.setBlockState(mutable.set(m, 60, n), BARRIER, 2);
+				region.setBlockState(mutable.set(m, 60, n), BARRIER, 2);
 				BlockState blockState = getBlockState(m, n);
 				if (blockState != null) {
-					chunkRegion.setBlockState(mutable.set(m, 70, n), blockState, 2);
+					region.setBlockState(mutable.set(m, 70, n), blockState, 2);
 				}
 			}
 		}
 	}
 
 	@Override
-	public void populateNoise(IWorld iWorld, Chunk chunk) {
+	public void populateNoise(IWorld world, Chunk chunk) {
 	}
 
 	@Override
-	public int getHeightOnGround(int i, int j, Heightmap.Type type) {
+	public int getHeightOnGround(int x, int z, Heightmap.Type heightmapType) {
 		return 0;
 	}
 
-	public static BlockState getBlockState(int i, int j) {
+	public static BlockState getBlockState(int x, int z) {
 		BlockState blockState = AIR;
-		if (i > 0 && j > 0 && i % 2 != 0 && j % 2 != 0) {
-			i /= 2;
-			j /= 2;
-			if (i <= X_SIDE_LENGTH && j <= Z_SIDE_LENGTH) {
-				int k = MathHelper.abs(i * X_SIDE_LENGTH + j);
-				if (k < BLOCK_STATES.size()) {
-					blockState = (BlockState)BLOCK_STATES.get(k);
+		if (x > 0 && z > 0 && x % 2 != 0 && z % 2 != 0) {
+			x /= 2;
+			z /= 2;
+			if (x <= X_SIDE_LENGTH && z <= Z_SIDE_LENGTH) {
+				int i = MathHelper.abs(x * X_SIDE_LENGTH + z);
+				if (i < BLOCK_STATES.size()) {
+					blockState = (BlockState)BLOCK_STATES.get(i);
 				}
 			}
 		}

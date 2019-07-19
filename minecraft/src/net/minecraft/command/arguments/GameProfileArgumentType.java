@@ -34,7 +34,7 @@ public class GameProfileArgumentType implements ArgumentType<GameProfileArgument
 		return new GameProfileArgumentType();
 	}
 
-	public GameProfileArgumentType.GameProfileArgument method_9331(StringReader stringReader) throws CommandSyntaxException {
+	public GameProfileArgumentType.GameProfileArgument parse(StringReader stringReader) throws CommandSyntaxException {
 		if (stringReader.canRead() && stringReader.peek() == '@') {
 			EntitySelectorReader entitySelectorReader = new EntitySelectorReader(stringReader);
 			EntitySelector entitySelector = entitySelectorReader.read();
@@ -63,10 +63,10 @@ public class GameProfileArgumentType implements ArgumentType<GameProfileArgument
 	}
 
 	@Override
-	public <S> CompletableFuture<Suggestions> listSuggestions(CommandContext<S> commandContext, SuggestionsBuilder suggestionsBuilder) {
-		if (commandContext.getSource() instanceof CommandSource) {
-			StringReader stringReader = new StringReader(suggestionsBuilder.getInput());
-			stringReader.setCursor(suggestionsBuilder.getStart());
+	public <S> CompletableFuture<Suggestions> listSuggestions(CommandContext<S> context, SuggestionsBuilder builder) {
+		if (context.getSource() instanceof CommandSource) {
+			StringReader stringReader = new StringReader(builder.getInput());
+			stringReader.setCursor(builder.getStart());
 			EntitySelectorReader entitySelectorReader = new EntitySelectorReader(stringReader);
 
 			try {
@@ -75,7 +75,7 @@ public class GameProfileArgumentType implements ArgumentType<GameProfileArgument
 			}
 
 			return entitySelectorReader.listSuggestions(
-				suggestionsBuilder, suggestionsBuilderx -> CommandSource.suggestMatching(((CommandSource)commandContext.getSource()).getPlayerNames(), suggestionsBuilderx)
+				builder, suggestionsBuilder -> CommandSource.suggestMatching(((CommandSource)context.getSource()).getPlayerNames(), suggestionsBuilder)
 			);
 		} else {
 			return Suggestions.empty();

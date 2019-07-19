@@ -3,18 +3,18 @@ package net.minecraft.enchantment;
 import net.minecraft.entity.EquipmentSlot;
 
 public class AquaAffinityEnchantment extends Enchantment {
-	public AquaAffinityEnchantment(Enchantment.Weight weight, EquipmentSlot... equipmentSlots) {
-		super(weight, EnchantmentTarget.ARMOR_HEAD, equipmentSlots);
+	public AquaAffinityEnchantment(Enchantment.Weight weight, EquipmentSlot... slotTypes) {
+		super(weight, EnchantmentTarget.ARMOR_HEAD, slotTypes);
 	}
 
 	@Override
-	public int getMinimumPower(int i) {
+	public int getMinimumPower(int level) {
 		return 1;
 	}
 
 	@Override
-	public int method_20742(int i) {
-		return this.getMinimumPower(i) + 40;
+	public int getMaximumPower(int level) {
+		return this.getMinimumPower(level) + 40;
 	}
 
 	@Override

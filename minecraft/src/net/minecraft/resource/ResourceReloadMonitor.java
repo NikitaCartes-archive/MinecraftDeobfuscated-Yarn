@@ -12,7 +12,7 @@ public interface ResourceReloadMonitor {
 	float getProgress();
 
 	@Environment(EnvType.CLIENT)
-	boolean isLoadStageComplete();
+	boolean isPrepareStageComplete();
 
 	@Environment(EnvType.CLIENT)
 	boolean isApplyStageComplete();

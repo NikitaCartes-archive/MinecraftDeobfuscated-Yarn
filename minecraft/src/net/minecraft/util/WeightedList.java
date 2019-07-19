@@ -49,8 +49,8 @@ public class WeightedList<U> {
 			return this.shuffledOrder;
 		}
 
-		public void setShuffledOrder(float f) {
-			this.shuffledOrder = -Math.pow((double)f, (double)(1.0F / (float)this.weight));
+		public void setShuffledOrder(float random) {
+			this.shuffledOrder = -Math.pow((double)random, (double)(1.0F / (float)this.weight));
 		}
 
 		public T getElement() {

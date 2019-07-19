@@ -8,12 +8,12 @@ import net.minecraft.sound.SoundEvent;
 import net.minecraft.world.World;
 
 public abstract class GolemEntity extends MobEntityWithAi {
-	protected GolemEntity(EntityType<? extends GolemEntity> entityType, World world) {
-		super(entityType, world);
+	protected GolemEntity(EntityType<? extends GolemEntity> type, World world) {
+		super(type, world);
 	}
 
 	@Override
-	public void handleFallDamage(float f, float g) {
+	public void handleFallDamage(float fallDistance, float damageMultiplier) {
 	}
 
 	@Nullable
@@ -24,7 +24,7 @@ public abstract class GolemEntity extends MobEntityWithAi {
 
 	@Nullable
 	@Override
-	protected SoundEvent getHurtSound(DamageSource damageSource) {
+	protected SoundEvent getHurtSound(DamageSource source) {
 		return null;
 	}
 
@@ -40,7 +40,7 @@ public abstract class GolemEntity extends MobEntityWithAi {
 	}
 
 	@Override
-	public boolean canImmediatelyDespawn(double d) {
+	public boolean canImmediatelyDespawn(double distanceSquared) {
 		return false;
 	}
 }

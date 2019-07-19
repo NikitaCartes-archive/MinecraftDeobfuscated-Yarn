@@ -29,8 +29,8 @@ public enum RecipeBookGroup {
 
 	private final List<ItemStack> icons;
 
-	private RecipeBookGroup(ItemStack... itemStacks) {
-		this.icons = ImmutableList.copyOf(itemStacks);
+	private RecipeBookGroup(ItemStack... entries) {
+		this.icons = ImmutableList.copyOf(entries);
 	}
 
 	public List<ItemStack> getIcons() {

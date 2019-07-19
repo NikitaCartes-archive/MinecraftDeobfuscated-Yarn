@@ -7,22 +7,21 @@ import java.util.Iterator;
 import java.util.List;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_4352;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 @Environment(EnvType.CLIENT)
-public class BackupList extends class_4352 {
+public class BackupList extends ValueObject {
 	private static final Logger LOGGER = LogManager.getLogger();
 	public List<Backup> backups;
 
-	public static BackupList parse(String string) {
+	public static BackupList parse(String json) {
 		JsonParser jsonParser = new JsonParser();
 		BackupList backupList = new BackupList();
 		backupList.backups = new ArrayList();
 
 		try {
-			JsonElement jsonElement = jsonParser.parse(string).getAsJsonObject().get("backups");
+			JsonElement jsonElement = jsonParser.parse(json).getAsJsonObject().get("backups");
 			if (jsonElement.isJsonArray()) {
 				Iterator<JsonElement> iterator = jsonElement.getAsJsonArray().iterator();
 

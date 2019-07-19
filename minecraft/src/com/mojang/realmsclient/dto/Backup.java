@@ -2,19 +2,18 @@ package com.mojang.realmsclient.dto;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import com.mojang.realmsclient.util.JsonUtils;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_4352;
-import net.minecraft.class_4431;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 @Environment(EnvType.CLIENT)
-public class Backup extends class_4352 {
+public class Backup extends ValueObject {
 	private static final Logger LOGGER = LogManager.getLogger();
 	public String backupId;
 	public Date lastModifiedDate;
@@ -23,14 +22,14 @@ public class Backup extends class_4352 {
 	public Map<String, String> metadata = new HashMap();
 	public Map<String, String> changeList = new HashMap();
 
-	public static Backup parse(JsonElement jsonElement) {
-		JsonObject jsonObject = jsonElement.getAsJsonObject();
+	public static Backup parse(JsonElement node) {
+		JsonObject jsonObject = node.getAsJsonObject();
 		Backup backup = new Backup();
 
 		try {
-			backup.backupId = class_4431.method_21547("backupId", jsonObject, "");
-			backup.lastModifiedDate = class_4431.method_21544("lastModifiedDate", jsonObject);
-			backup.size = class_4431.method_21546("size", jsonObject, 0L);
+			backup.backupId = JsonUtils.getStringOr("backupId", jsonObject, "");
+			backup.lastModifiedDate = JsonUtils.getDateOr("lastModifiedDate", jsonObject);
+			backup.size = JsonUtils.getLongOr("size", jsonObject, 0L);
 			if (jsonObject.has("metadata")) {
 				JsonObject jsonObject2 = jsonObject.getAsJsonObject("metadata");
 
@@ -47,17 +46,17 @@ public class Backup extends class_4352 {
 		return backup;
 	}
 
-	private static String format(String string) {
-		String[] strings = string.split("_");
+	private static String format(String key) {
+		String[] strings = key.split("_");
 		StringBuilder stringBuilder = new StringBuilder();
 
-		for (String string2 : strings) {
-			if (string2 != null && string2.length() >= 1) {
-				if ("of".equals(string2)) {
-					stringBuilder.append(string2).append(" ");
+		for (String string : strings) {
+			if (string != null && string.length() >= 1) {
+				if ("of".equals(string)) {
+					stringBuilder.append(string).append(" ");
 				} else {
-					char c = Character.toUpperCase(string2.charAt(0));
-					stringBuilder.append(c).append(string2.substring(1, string2.length())).append(" ");
+					char c = Character.toUpperCase(string.charAt(0));
+					stringBuilder.append(c).append(string.substring(1, string.length())).append(" ");
 				}
 			}
 		}
@@ -69,7 +68,7 @@ public class Backup extends class_4352 {
 		return this.uploadedVersion;
 	}
 
-	public void setUploadedVersion(boolean bl) {
-		this.uploadedVersion = bl;
+	public void setUploadedVersion(boolean uploadedVersion) {
+		this.uploadedVersion = uploadedVersion;
 	}
 }

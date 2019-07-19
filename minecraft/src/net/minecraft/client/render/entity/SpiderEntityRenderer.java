@@ -16,11 +16,11 @@ public class SpiderEntityRenderer<T extends SpiderEntity> extends MobEntityRende
 		this.addFeature(new SpiderEyesFeatureRenderer<>(this));
 	}
 
-	protected float method_4124(T spiderEntity) {
+	protected float getLyingAngle(T spiderEntity) {
 		return 180.0F;
 	}
 
-	protected Identifier method_4123(T spiderEntity) {
+	protected Identifier getTexture(T spiderEntity) {
 		return SKIN;
 	}
 }

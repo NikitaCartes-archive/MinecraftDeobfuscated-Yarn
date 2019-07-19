@@ -11,10 +11,10 @@ import java.util.Map;
 import java.util.function.Supplier;
 import javax.annotation.Nullable;
 import net.minecraft.SharedConstants;
-import net.minecraft.datafixers.DataFixTypes;
+import net.minecraft.datafixer.DataFixTypes;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtHelper;
 import net.minecraft.nbt.NbtIo;
-import net.minecraft.util.TagHelper;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -24,21 +24,21 @@ public class PersistentStateManager {
 	private final DataFixer dataFixer;
 	private final File directory;
 
-	public PersistentStateManager(File file, DataFixer dataFixer) {
+	public PersistentStateManager(File directory, DataFixer dataFixer) {
 		this.dataFixer = dataFixer;
-		this.directory = file;
+		this.directory = directory;
 	}
 
-	private File getFile(String string) {
-		return new File(this.directory, string + ".dat");
+	private File getFile(String id) {
+		return new File(this.directory, id + ".dat");
 	}
 
-	public <T extends PersistentState> T getOrCreate(Supplier<T> supplier, String string) {
-		T persistentState = this.method_20786(supplier, string);
+	public <T extends PersistentState> T getOrCreate(Supplier<T> factory, String id) {
+		T persistentState = this.method_20786(factory, id);
 		if (persistentState != null) {
 			return persistentState;
 		} else {
-			T persistentState2 = (T)supplier.get();
+			T persistentState2 = (T)factory.get();
 			this.set(persistentState2);
 			return persistentState2;
 		}
@@ -48,7 +48,7 @@ public class PersistentStateManager {
 	public <T extends PersistentState> T method_20786(Supplier<T> supplier, String string) {
 		PersistentState persistentState = (PersistentState)this.loadedStates.get(string);
 		if (persistentState == null && !this.loadedStates.containsKey(string)) {
-			persistentState = this.get(supplier, string);
+			persistentState = this.readFromFile(supplier, string);
 			this.loadedStates.put(string, persistentState);
 		}
 
@@ -56,24 +56,24 @@ public class PersistentStateManager {
 	}
 
 	@Nullable
-	private <T extends PersistentState> T get(Supplier<T> supplier, String string) {
+	private <T extends PersistentState> T readFromFile(Supplier<T> factory, String id) {
 		try {
-			File file = this.getFile(string);
+			File file = this.getFile(id);
 			if (file.exists()) {
-				T persistentState = (T)supplier.get();
-				CompoundTag compoundTag = this.method_17923(string, SharedConstants.getGameVersion().getWorldVersion());
+				T persistentState = (T)factory.get();
+				CompoundTag compoundTag = this.method_17923(id, SharedConstants.getGameVersion().getWorldVersion());
 				persistentState.fromTag(compoundTag.getCompound("data"));
 				return persistentState;
 			}
 		} catch (Exception var6) {
-			LOGGER.error("Error loading saved data: {}", string, var6);
+			LOGGER.error("Error loading saved data: {}", id, var6);
 		}
 
 		return null;
 	}
 
-	public void set(PersistentState persistentState) {
-		this.loadedStates.put(persistentState.getId(), persistentState);
+	public void set(PersistentState state) {
+		this.loadedStates.put(state.getId(), state);
 	}
 
 	public CompoundTag method_17923(String string, int i) throws IOException {
@@ -110,8 +110,8 @@ public class PersistentStateManager {
 				}
 			}
 
-			int j = compoundTag.containsKey("DataVersion", 99) ? compoundTag.getInt("DataVersion") : 1343;
-			var36 = TagHelper.update(this.dataFixer, DataFixTypes.SAVED_DATA, compoundTag, j, i);
+			int j = compoundTag.contains("DataVersion", 99) ? compoundTag.getInt("DataVersion") : 1343;
+			var36 = NbtHelper.update(this.dataFixer, DataFixTypes.SAVED_DATA, compoundTag, j, i);
 		} catch (Throwable var33) {
 			var5 = var33;
 			throw var33;
@@ -153,7 +153,7 @@ public class PersistentStateManager {
 	public void save() {
 		for (PersistentState persistentState : this.loadedStates.values()) {
 			if (persistentState != null) {
-				persistentState.method_17919(this.getFile(persistentState.getId()));
+				persistentState.save(this.getFile(persistentState.getId()));
 			}
 		}
 	}

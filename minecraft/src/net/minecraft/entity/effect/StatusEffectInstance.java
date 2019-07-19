@@ -24,25 +24,25 @@ public class StatusEffectInstance implements Comparable<StatusEffectInstance> {
 		this(statusEffect, 0, 0);
 	}
 
-	public StatusEffectInstance(StatusEffect statusEffect, int i) {
-		this(statusEffect, i, 0);
+	public StatusEffectInstance(StatusEffect type, int duration) {
+		this(type, duration, 0);
 	}
 
-	public StatusEffectInstance(StatusEffect statusEffect, int i, int j) {
-		this(statusEffect, i, j, false, true);
+	public StatusEffectInstance(StatusEffect type, int duration, int amplifier) {
+		this(type, duration, amplifier, false, true);
 	}
 
-	public StatusEffectInstance(StatusEffect statusEffect, int i, int j, boolean bl, boolean bl2) {
-		this(statusEffect, i, j, bl, bl2, bl2);
+	public StatusEffectInstance(StatusEffect type, int duration, int amplifier, boolean ambient, boolean visible) {
+		this(type, duration, amplifier, ambient, visible, visible);
 	}
 
-	public StatusEffectInstance(StatusEffect statusEffect, int i, int j, boolean bl, boolean bl2, boolean bl3) {
-		this.type = statusEffect;
-		this.duration = i;
-		this.amplifier = j;
-		this.ambient = bl;
-		this.showParticles = bl2;
-		this.showIcon = bl3;
+	public StatusEffectInstance(StatusEffect type, int duration, int amplifier, boolean ambient, boolean showParticles, boolean showIcon) {
+		this.type = type;
+		this.duration = duration;
+		this.amplifier = amplifier;
+		this.ambient = ambient;
+		this.showParticles = showParticles;
+		this.showIcon = showIcon;
 	}
 
 	public StatusEffectInstance(StatusEffectInstance statusEffectInstance) {
@@ -54,33 +54,33 @@ public class StatusEffectInstance implements Comparable<StatusEffectInstance> {
 		this.showIcon = statusEffectInstance.showIcon;
 	}
 
-	public boolean upgrade(StatusEffectInstance statusEffectInstance) {
-		if (this.type != statusEffectInstance.type) {
+	public boolean upgrade(StatusEffectInstance that) {
+		if (this.type != that.type) {
 			LOGGER.warn("This method should only be called for matching effects!");
 		}
 
 		boolean bl = false;
-		if (statusEffectInstance.amplifier > this.amplifier) {
-			this.amplifier = statusEffectInstance.amplifier;
-			this.duration = statusEffectInstance.duration;
+		if (that.amplifier > this.amplifier) {
+			this.amplifier = that.amplifier;
+			this.duration = that.duration;
 			bl = true;
-		} else if (statusEffectInstance.amplifier == this.amplifier && this.duration < statusEffectInstance.duration) {
-			this.duration = statusEffectInstance.duration;
-			bl = true;
-		}
-
-		if (!statusEffectInstance.ambient && this.ambient || bl) {
-			this.ambient = statusEffectInstance.ambient;
+		} else if (that.amplifier == this.amplifier && this.duration < that.duration) {
+			this.duration = that.duration;
 			bl = true;
 		}
 
-		if (statusEffectInstance.showParticles != this.showParticles) {
-			this.showParticles = statusEffectInstance.showParticles;
+		if (!that.ambient && this.ambient || bl) {
+			this.ambient = that.ambient;
 			bl = true;
 		}
 
-		if (statusEffectInstance.showIcon != this.showIcon) {
-			this.showIcon = statusEffectInstance.showIcon;
+		if (that.showParticles != this.showParticles) {
+			this.showParticles = that.showParticles;
+			bl = true;
+		}
+
+		if (that.showIcon != this.showIcon) {
+			this.showIcon = that.showIcon;
 			bl = true;
 		}
 
@@ -127,9 +127,9 @@ public class StatusEffectInstance implements Comparable<StatusEffectInstance> {
 		return --this.duration;
 	}
 
-	public void applyUpdateEffect(LivingEntity livingEntity) {
+	public void applyUpdateEffect(LivingEntity entity) {
 		if (this.duration > 0) {
-			this.type.applyUpdateEffect(livingEntity, this.amplifier);
+			this.type.applyUpdateEffect(entity, this.amplifier);
 		}
 	}
 
@@ -160,13 +160,13 @@ public class StatusEffectInstance implements Comparable<StatusEffectInstance> {
 		return string;
 	}
 
-	public boolean equals(Object object) {
-		if (this == object) {
+	public boolean equals(Object o) {
+		if (this == o) {
 			return true;
-		} else if (!(object instanceof StatusEffectInstance)) {
+		} else if (!(o instanceof StatusEffectInstance)) {
 			return false;
 		} else {
-			StatusEffectInstance statusEffectInstance = (StatusEffectInstance)object;
+			StatusEffectInstance statusEffectInstance = (StatusEffectInstance)o;
 			return this.duration == statusEffectInstance.duration
 				&& this.amplifier == statusEffectInstance.amplifier
 				&& this.splash == statusEffectInstance.splash
@@ -183,33 +183,33 @@ public class StatusEffectInstance implements Comparable<StatusEffectInstance> {
 		return 31 * i + (this.ambient ? 1 : 0);
 	}
 
-	public CompoundTag serialize(CompoundTag compoundTag) {
-		compoundTag.putByte("Id", (byte)StatusEffect.getRawId(this.getEffectType()));
-		compoundTag.putByte("Amplifier", (byte)this.getAmplifier());
-		compoundTag.putInt("Duration", this.getDuration());
-		compoundTag.putBoolean("Ambient", this.isAmbient());
-		compoundTag.putBoolean("ShowParticles", this.shouldShowParticles());
-		compoundTag.putBoolean("ShowIcon", this.shouldShowIcon());
-		return compoundTag;
+	public CompoundTag toTag(CompoundTag tag) {
+		tag.putByte("Id", (byte)StatusEffect.getRawId(this.getEffectType()));
+		tag.putByte("Amplifier", (byte)this.getAmplifier());
+		tag.putInt("Duration", this.getDuration());
+		tag.putBoolean("Ambient", this.isAmbient());
+		tag.putBoolean("ShowParticles", this.shouldShowParticles());
+		tag.putBoolean("ShowIcon", this.shouldShowIcon());
+		return tag;
 	}
 
-	public static StatusEffectInstance deserialize(CompoundTag compoundTag) {
-		int i = compoundTag.getByte("Id");
+	public static StatusEffectInstance fromTag(CompoundTag tag) {
+		int i = tag.getByte("Id");
 		StatusEffect statusEffect = StatusEffect.byRawId(i);
 		if (statusEffect == null) {
 			return null;
 		} else {
-			int j = compoundTag.getByte("Amplifier");
-			int k = compoundTag.getInt("Duration");
-			boolean bl = compoundTag.getBoolean("Ambient");
+			int j = tag.getByte("Amplifier");
+			int k = tag.getInt("Duration");
+			boolean bl = tag.getBoolean("Ambient");
 			boolean bl2 = true;
-			if (compoundTag.containsKey("ShowParticles", 1)) {
-				bl2 = compoundTag.getBoolean("ShowParticles");
+			if (tag.contains("ShowParticles", 1)) {
+				bl2 = tag.getBoolean("ShowParticles");
 			}
 
 			boolean bl3 = bl2;
-			if (compoundTag.containsKey("ShowIcon", 1)) {
-				bl3 = compoundTag.getBoolean("ShowIcon");
+			if (tag.contains("ShowIcon", 1)) {
+				bl3 = tag.getBoolean("ShowIcon");
 			}
 
 			return new StatusEffectInstance(statusEffect, k, j < 0 ? 0 : j, bl, bl2, bl3);
@@ -217,8 +217,8 @@ public class StatusEffectInstance implements Comparable<StatusEffectInstance> {
 	}
 
 	@Environment(EnvType.CLIENT)
-	public void setPermanent(boolean bl) {
-		this.permanent = bl;
+	public void setPermanent(boolean permanent) {
+		this.permanent = permanent;
 	}
 
 	@Environment(EnvType.CLIENT)
@@ -226,7 +226,7 @@ public class StatusEffectInstance implements Comparable<StatusEffectInstance> {
 		return this.permanent;
 	}
 
-	public int method_5587(StatusEffectInstance statusEffectInstance) {
+	public int compareTo(StatusEffectInstance statusEffectInstance) {
 		int i = 32147;
 		return (this.getDuration() <= 32147 || statusEffectInstance.getDuration() <= 32147) && (!this.isAmbient() || !statusEffectInstance.isAmbient())
 			? ComparisonChain.start()

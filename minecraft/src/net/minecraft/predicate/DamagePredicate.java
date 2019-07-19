@@ -9,7 +9,6 @@ import net.minecraft.predicate.entity.DamageSourcePredicate;
 import net.minecraft.predicate.entity.EntityPredicate;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.JsonHelper;
-import net.minecraft.util.NumberRange;
 
 public class DamagePredicate {
 	public static final DamagePredicate ANY = DamagePredicate.Builder.create().build();
@@ -28,30 +27,26 @@ public class DamagePredicate {
 	}
 
 	public DamagePredicate(
-		NumberRange.FloatRange floatRange,
-		NumberRange.FloatRange floatRange2,
-		EntityPredicate entityPredicate,
-		@Nullable Boolean boolean_,
-		DamageSourcePredicate damageSourcePredicate
+		NumberRange.FloatRange dealt, NumberRange.FloatRange taken, EntityPredicate sourceEntity, @Nullable Boolean blocked, DamageSourcePredicate type
 	) {
-		this.dealt = floatRange;
-		this.taken = floatRange2;
-		this.sourceEntity = entityPredicate;
-		this.blocked = boolean_;
-		this.type = damageSourcePredicate;
+		this.dealt = dealt;
+		this.taken = taken;
+		this.sourceEntity = sourceEntity;
+		this.blocked = blocked;
+		this.type = type;
 	}
 
-	public boolean test(ServerPlayerEntity serverPlayerEntity, DamageSource damageSource, float f, float g, boolean bl) {
+	public boolean test(ServerPlayerEntity player, DamageSource source, float dealt, float taken, boolean blocked) {
 		if (this == ANY) {
 			return true;
-		} else if (!this.dealt.matches(f)) {
+		} else if (!this.dealt.matches(dealt)) {
 			return false;
-		} else if (!this.taken.matches(g)) {
+		} else if (!this.taken.matches(taken)) {
 			return false;
-		} else if (!this.sourceEntity.test(serverPlayerEntity, damageSource.getAttacker())) {
+		} else if (!this.sourceEntity.test(player, source.getAttacker())) {
 			return false;
 		} else {
-			return this.blocked != null && this.blocked != bl ? false : this.type.test(serverPlayerEntity, damageSource);
+			return this.blocked != null && this.blocked != blocked ? false : this.type.test(player, source);
 		}
 	}
 
@@ -61,7 +56,7 @@ public class DamagePredicate {
 			NumberRange.FloatRange floatRange = NumberRange.FloatRange.fromJson(jsonObject.get("dealt"));
 			NumberRange.FloatRange floatRange2 = NumberRange.FloatRange.fromJson(jsonObject.get("taken"));
 			Boolean boolean_ = jsonObject.has("blocked") ? JsonHelper.getBoolean(jsonObject, "blocked") : null;
-			EntityPredicate entityPredicate = EntityPredicate.deserialize(jsonObject.get("source_entity"));
+			EntityPredicate entityPredicate = EntityPredicate.fromJson(jsonObject.get("source_entity"));
 			DamageSourcePredicate damageSourcePredicate = DamageSourcePredicate.deserialize(jsonObject.get("type"));
 			return new DamagePredicate(floatRange, floatRange2, entityPredicate, boolean_, damageSourcePredicate);
 		} else {
@@ -74,8 +69,8 @@ public class DamagePredicate {
 			return JsonNull.INSTANCE;
 		} else {
 			JsonObject jsonObject = new JsonObject();
-			jsonObject.add("dealt", this.dealt.serialize());
-			jsonObject.add("taken", this.taken.serialize());
+			jsonObject.add("dealt", this.dealt.toJson());
+			jsonObject.add("taken", this.taken.toJson());
 			jsonObject.add("source_entity", this.sourceEntity.serialize());
 			jsonObject.add("type", this.type.serialize());
 			if (this.blocked != null) {
@@ -97,8 +92,8 @@ public class DamagePredicate {
 			return new DamagePredicate.Builder();
 		}
 
-		public DamagePredicate.Builder blocked(Boolean boolean_) {
-			this.blocked = boolean_;
+		public DamagePredicate.Builder blocked(Boolean blocked) {
+			this.blocked = blocked;
 			return this;
 		}
 

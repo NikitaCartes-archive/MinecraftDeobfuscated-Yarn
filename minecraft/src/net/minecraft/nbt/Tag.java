@@ -13,16 +13,16 @@ public interface Tag {
 	Formatting GOLD = Formatting.GOLD;
 	Formatting RED = Formatting.RED;
 
-	void write(DataOutput dataOutput) throws IOException;
+	void write(DataOutput output) throws IOException;
 
-	void read(DataInput dataInput, int i, PositionTracker positionTracker) throws IOException;
+	void read(DataInput input, int depth, PositionTracker positionTracker) throws IOException;
 
 	String toString();
 
 	byte getType();
 
-	static Tag createTag(byte b) {
-		switch (b) {
+	static Tag createTag(byte id) {
+		switch (id) {
 			case 0:
 				return new EndTag();
 			case 1:
@@ -54,8 +54,8 @@ public interface Tag {
 		}
 	}
 
-	static String idToString(int i) {
-		switch (i) {
+	static String idToString(int id) {
+		switch (id) {
 			case 0:
 				return "TAG_End";
 			case 1:
@@ -99,5 +99,5 @@ public interface Tag {
 		return this.toText("", 0);
 	}
 
-	Text toText(String string, int i);
+	Text toText(String indent, int depth);
 }

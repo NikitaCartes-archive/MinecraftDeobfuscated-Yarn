@@ -45,7 +45,7 @@ public class BlockModels {
 		this.models.clear();
 
 		for (Block block : Registry.BLOCK) {
-			block.getStateFactory().getStates().forEach(blockState -> {
+			block.getStateManager().getStates().forEach(blockState -> {
 				BakedModel var10000 = (BakedModel)this.models.put(blockState, this.modelManager.getModel(getModelId(blockState)));
 			});
 		}
@@ -77,6 +77,6 @@ public class BlockModels {
 	}
 
 	private static <T extends Comparable<T>> String propertyValueToString(Property<T> property, Comparable<?> comparable) {
-		return property.getName((T)comparable);
+		return property.name((T)comparable);
 	}
 }

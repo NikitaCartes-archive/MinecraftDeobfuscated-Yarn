@@ -10,12 +10,12 @@ import net.minecraft.client.render.entity.feature.PandaHeldItemFeatureRenderer;
 import net.minecraft.client.render.entity.model.PandaEntityModel;
 import net.minecraft.entity.passive.PandaEntity;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.SystemUtil;
+import net.minecraft.util.Util;
 import net.minecraft.util.math.MathHelper;
 
 @Environment(EnvType.CLIENT)
 public class PandaEntityRenderer extends MobEntityRenderer<PandaEntity, PandaEntityModel<PandaEntity>> {
-	private static final Map<PandaEntity.Gene, Identifier> SKIN_MAP = SystemUtil.consume(Maps.newEnumMap(PandaEntity.Gene.class), enumMap -> {
+	private static final Map<PandaEntity.Gene, Identifier> SKIN_MAP = Util.make(Maps.newEnumMap(PandaEntity.Gene.class), enumMap -> {
 		enumMap.put(PandaEntity.Gene.NORMAL, new Identifier("textures/entity/panda/panda.png"));
 		enumMap.put(PandaEntity.Gene.LAZY, new Identifier("textures/entity/panda/lazy_panda.png"));
 		enumMap.put(PandaEntity.Gene.WORRIED, new Identifier("textures/entity/panda/worried_panda.png"));
@@ -31,11 +31,11 @@ public class PandaEntityRenderer extends MobEntityRenderer<PandaEntity, PandaEnt
 	}
 
 	@Nullable
-	protected Identifier method_4083(PandaEntity pandaEntity) {
+	protected Identifier getTexture(PandaEntity pandaEntity) {
 		return (Identifier)SKIN_MAP.getOrDefault(pandaEntity.getProductGene(), SKIN_MAP.get(PandaEntity.Gene.NORMAL));
 	}
 
-	protected void method_4085(PandaEntity pandaEntity, float f, float g, float h) {
+	protected void setupTransforms(PandaEntity pandaEntity, float f, float g, float h) {
 		super.setupTransforms(pandaEntity, f, g, h);
 		if (pandaEntity.playingTicks > 0) {
 			int i = pandaEntity.playingTicks;

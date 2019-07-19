@@ -22,20 +22,20 @@ public class TheEndBiomeSource extends BiomeSource {
 	private final ChunkRandom random;
 	private final Biome[] biomes = new Biome[]{Biomes.THE_END, Biomes.END_HIGHLANDS, Biomes.END_MIDLANDS, Biomes.SMALL_END_ISLANDS, Biomes.END_BARRENS};
 
-	public TheEndBiomeSource(TheEndBiomeSourceConfig theEndBiomeSourceConfig) {
-		this.random = new ChunkRandom(theEndBiomeSourceConfig.method_9204());
+	public TheEndBiomeSource(TheEndBiomeSourceConfig config) {
+		this.random = new ChunkRandom(config.getSeed());
 		this.random.consume(17292);
 		this.noise = new SimplexNoiseSampler(this.random);
 	}
 
 	@Override
-	public Biome getBiome(int i, int j) {
-		int k = i >> 4;
-		int l = j >> 4;
-		if ((long)k * (long)k + (long)l * (long)l <= 4096L) {
+	public Biome getBiome(int x, int z) {
+		int i = x >> 4;
+		int j = z >> 4;
+		if ((long)i * (long)i + (long)j * (long)j <= 4096L) {
 			return Biomes.THE_END;
 		} else {
-			float f = this.method_8757(k * 2 + 1, l * 2 + 1);
+			float f = this.method_8757(i * 2 + 1, j * 2 + 1);
 			if (f > 40.0F) {
 				return Biomes.END_HIGHLANDS;
 			} else if (f >= 0.0F) {
@@ -47,22 +47,22 @@ public class TheEndBiomeSource extends BiomeSource {
 	}
 
 	@Override
-	public Biome[] sampleBiomes(int i, int j, int k, int l, boolean bl) {
-		Biome[] biomes = new Biome[k * l];
+	public Biome[] sampleBiomes(int x, int z, int width, int height, boolean bl) {
+		Biome[] biomes = new Biome[width * height];
 		Long2ObjectMap<Biome> long2ObjectMap = new Long2ObjectOpenHashMap<>();
 
-		for (int m = 0; m < k; m++) {
-			for (int n = 0; n < l; n++) {
-				int o = m + i;
-				int p = n + j;
-				long q = ChunkPos.toLong(o, p);
-				Biome biome = long2ObjectMap.get(q);
+		for (int i = 0; i < width; i++) {
+			for (int j = 0; j < height; j++) {
+				int k = i + x;
+				int l = j + z;
+				long m = ChunkPos.toLong(k, l);
+				Biome biome = long2ObjectMap.get(m);
 				if (biome == null) {
-					biome = this.getBiome(o, p);
-					long2ObjectMap.put(q, biome);
+					biome = this.getBiome(k, l);
+					long2ObjectMap.put(m, biome);
 				}
 
-				biomes[m + n * k] = biome;
+				biomes[i + j * width] = biome;
 			}
 		}
 
@@ -70,38 +70,38 @@ public class TheEndBiomeSource extends BiomeSource {
 	}
 
 	@Override
-	public Set<Biome> getBiomesInArea(int i, int j, int k) {
-		int l = i - k >> 2;
-		int m = j - k >> 2;
-		int n = i + k >> 2;
-		int o = j + k >> 2;
-		int p = n - l + 1;
-		int q = o - m + 1;
-		return Sets.<Biome>newHashSet(this.sampleBiomes(l, m, p, q));
+	public Set<Biome> getBiomesInArea(int x, int z, int radius) {
+		int i = x - radius >> 2;
+		int j = z - radius >> 2;
+		int k = x + radius >> 2;
+		int l = z + radius >> 2;
+		int m = k - i + 1;
+		int n = l - j + 1;
+		return Sets.<Biome>newHashSet(this.sampleBiomes(i, j, m, n));
 	}
 
 	@Nullable
 	@Override
-	public BlockPos locateBiome(int i, int j, int k, List<Biome> list, Random random) {
-		int l = i - k >> 2;
-		int m = j - k >> 2;
-		int n = i + k >> 2;
-		int o = j + k >> 2;
-		int p = n - l + 1;
-		int q = o - m + 1;
-		Biome[] biomes = this.sampleBiomes(l, m, p, q);
+	public BlockPos locateBiome(int x, int z, int radius, List<Biome> biomes, Random random) {
+		int i = x - radius >> 2;
+		int j = z - radius >> 2;
+		int k = x + radius >> 2;
+		int l = z + radius >> 2;
+		int m = k - i + 1;
+		int n = l - j + 1;
+		Biome[] biomes2 = this.sampleBiomes(i, j, m, n);
 		BlockPos blockPos = null;
-		int r = 0;
+		int o = 0;
 
-		for (int s = 0; s < p * q; s++) {
-			int t = l + s % p << 2;
-			int u = m + s / p << 2;
-			if (list.contains(biomes[s])) {
-				if (blockPos == null || random.nextInt(r + 1) == 0) {
-					blockPos = new BlockPos(t, 0, u);
+		for (int p = 0; p < m * n; p++) {
+			int q = i + p % m << 2;
+			int r = j + p / m << 2;
+			if (biomes.contains(biomes2[p])) {
+				if (blockPos == null || random.nextInt(o + 1) == 0) {
+					blockPos = new BlockPos(q, 0, r);
 				}
 
-				r++;
+				o++;
 			}
 		}
 
@@ -136,10 +136,10 @@ public class TheEndBiomeSource extends BiomeSource {
 	}
 
 	@Override
-	public boolean hasStructureFeature(StructureFeature<?> structureFeature) {
-		return (Boolean)this.structureFeatures.computeIfAbsent(structureFeature, structureFeaturex -> {
+	public boolean hasStructureFeature(StructureFeature<?> feature) {
+		return (Boolean)this.structureFeatures.computeIfAbsent(feature, structureFeature -> {
 			for (Biome biome : this.biomes) {
-				if (biome.hasStructureFeature(structureFeaturex)) {
+				if (biome.hasStructureFeature(structureFeature)) {
 					return true;
 				}
 			}

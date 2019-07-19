@@ -22,7 +22,7 @@ public class FoxEntityRenderer extends MobEntityRenderer<FoxEntity, FoxEntityMod
 		this.addFeature(new FoxHeldItemFeatureRenderer(this));
 	}
 
-	protected void method_18334(FoxEntity foxEntity, float f, float g, float h) {
+	protected void setupTransforms(FoxEntity foxEntity, float f, float g, float h) {
 		super.setupTransforms(foxEntity, f, g, h);
 		if (foxEntity.isChasing() || foxEntity.isWalking()) {
 			GlStateManager.rotatef(-MathHelper.lerp(h, foxEntity.prevPitch, foxEntity.pitch), 1.0F, 0.0F, 0.0F);
@@ -30,7 +30,7 @@ public class FoxEntityRenderer extends MobEntityRenderer<FoxEntity, FoxEntityMod
 	}
 
 	@Nullable
-	protected Identifier method_18333(FoxEntity foxEntity) {
+	protected Identifier getTexture(FoxEntity foxEntity) {
 		if (foxEntity.getFoxType() == FoxEntity.Type.RED) {
 			return foxEntity.isSleeping() ? SLEEPING_SKIN : SKIN;
 		} else {

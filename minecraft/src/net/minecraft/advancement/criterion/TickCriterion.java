@@ -21,42 +21,38 @@ public class TickCriterion implements Criterion<TickCriterion.Conditions> {
 	}
 
 	@Override
-	public void beginTrackingCondition(
-		PlayerAdvancementTracker playerAdvancementTracker, Criterion.ConditionsContainer<TickCriterion.Conditions> conditionsContainer
-	) {
-		TickCriterion.Handler handler = (TickCriterion.Handler)this.handlers.get(playerAdvancementTracker);
+	public void beginTrackingCondition(PlayerAdvancementTracker manager, Criterion.ConditionsContainer<TickCriterion.Conditions> conditionsContainer) {
+		TickCriterion.Handler handler = (TickCriterion.Handler)this.handlers.get(manager);
 		if (handler == null) {
-			handler = new TickCriterion.Handler(playerAdvancementTracker);
-			this.handlers.put(playerAdvancementTracker, handler);
+			handler = new TickCriterion.Handler(manager);
+			this.handlers.put(manager, handler);
 		}
 
 		handler.addCondition(conditionsContainer);
 	}
 
 	@Override
-	public void endTrackingCondition(
-		PlayerAdvancementTracker playerAdvancementTracker, Criterion.ConditionsContainer<TickCriterion.Conditions> conditionsContainer
-	) {
-		TickCriterion.Handler handler = (TickCriterion.Handler)this.handlers.get(playerAdvancementTracker);
+	public void endTrackingCondition(PlayerAdvancementTracker manager, Criterion.ConditionsContainer<TickCriterion.Conditions> conditionsContainer) {
+		TickCriterion.Handler handler = (TickCriterion.Handler)this.handlers.get(manager);
 		if (handler != null) {
 			handler.removeCondition(conditionsContainer);
 			if (handler.isEmpty()) {
-				this.handlers.remove(playerAdvancementTracker);
+				this.handlers.remove(manager);
 			}
 		}
 	}
 
 	@Override
-	public void endTracking(PlayerAdvancementTracker playerAdvancementTracker) {
-		this.handlers.remove(playerAdvancementTracker);
+	public void endTracking(PlayerAdvancementTracker tracker) {
+		this.handlers.remove(tracker);
 	}
 
-	public TickCriterion.Conditions method_9140(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext) {
+	public TickCriterion.Conditions conditionsFromJson(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext) {
 		return new TickCriterion.Conditions();
 	}
 
-	public void handle(ServerPlayerEntity serverPlayerEntity) {
-		TickCriterion.Handler handler = (TickCriterion.Handler)this.handlers.get(serverPlayerEntity.getAdvancementManager());
+	public void trigger(ServerPlayerEntity player) {
+		TickCriterion.Handler handler = (TickCriterion.Handler)this.handlers.get(player.getAdvancementTracker());
 		if (handler != null) {
 			handler.handle();
 		}

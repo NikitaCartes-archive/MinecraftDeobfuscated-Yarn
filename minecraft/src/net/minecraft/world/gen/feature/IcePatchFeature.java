@@ -13,11 +13,11 @@ import net.minecraft.world.gen.chunk.ChunkGeneratorConfig;
 public class IcePatchFeature extends Feature<IcePatchFeatureConfig> {
 	private final Block ICE = Blocks.PACKED_ICE;
 
-	public IcePatchFeature(Function<Dynamic<?>, ? extends IcePatchFeatureConfig> function) {
-		super(function);
+	public IcePatchFeature(Function<Dynamic<?>, ? extends IcePatchFeatureConfig> configFactory) {
+		super(configFactory);
 	}
 
-	public boolean method_13385(
+	public boolean generate(
 		IWorld iWorld, ChunkGenerator<? extends ChunkGeneratorConfig> chunkGenerator, Random random, BlockPos blockPos, IcePatchFeatureConfig icePatchFeatureConfig
 	) {
 		while (iWorld.isAir(blockPos) && blockPos.getY() > 2) {

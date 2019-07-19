@@ -17,12 +17,12 @@ public class SpectralArrowEntity extends ProjectileEntity {
 		super(entityType, world);
 	}
 
-	public SpectralArrowEntity(World world, LivingEntity livingEntity) {
-		super(EntityType.SPECTRAL_ARROW, livingEntity, world);
+	public SpectralArrowEntity(World world, LivingEntity owner) {
+		super(EntityType.SPECTRAL_ARROW, owner, world);
 	}
 
-	public SpectralArrowEntity(World world, double d, double e, double f) {
-		super(EntityType.SPECTRAL_ARROW, d, e, f, world);
+	public SpectralArrowEntity(World world, double x, double y, double z) {
+		super(EntityType.SPECTRAL_ARROW, x, y, z, world);
 	}
 
 	@Override
@@ -39,23 +39,23 @@ public class SpectralArrowEntity extends ProjectileEntity {
 	}
 
 	@Override
-	protected void onHit(LivingEntity livingEntity) {
-		super.onHit(livingEntity);
+	protected void onHit(LivingEntity target) {
+		super.onHit(target);
 		StatusEffectInstance statusEffectInstance = new StatusEffectInstance(StatusEffects.GLOWING, this.duration, 0);
-		livingEntity.addPotionEffect(statusEffectInstance);
+		target.addStatusEffect(statusEffectInstance);
 	}
 
 	@Override
-	public void readCustomDataFromTag(CompoundTag compoundTag) {
-		super.readCustomDataFromTag(compoundTag);
-		if (compoundTag.containsKey("Duration")) {
-			this.duration = compoundTag.getInt("Duration");
+	public void readCustomDataFromTag(CompoundTag tag) {
+		super.readCustomDataFromTag(tag);
+		if (tag.contains("Duration")) {
+			this.duration = tag.getInt("Duration");
 		}
 	}
 
 	@Override
-	public void writeCustomDataToTag(CompoundTag compoundTag) {
-		super.writeCustomDataToTag(compoundTag);
-		compoundTag.putInt("Duration", this.duration);
+	public void writeCustomDataToTag(CompoundTag tag) {
+		super.writeCustomDataToTag(tag);
+		tag.putInt("Duration", this.duration);
 	}
 }

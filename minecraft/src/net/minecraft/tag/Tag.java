@@ -17,33 +17,45 @@ import javax.annotation.Nullable;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.JsonHelper;
 
+/**
+ * A tag is a set of objects.
+ * 
+ * <p>Tags simplifies reference to multiple objects, especially for
+ * predicate (testing against) purposes.
+ * 
+ * <p>A tag is immutable by design. It has a builder, which is a mutable
+ * equivalent.
+ * 
+ * <p>Its entries' iteration may be ordered
+ * or unordered, depending on the configuration from the tag builder.
+ */
 public class Tag<T> {
 	private final Identifier id;
 	private final Set<T> values;
 	private final Collection<Tag.Entry<T>> entries;
 
-	public Tag(Identifier identifier) {
-		this.id = identifier;
+	public Tag(Identifier id) {
+		this.id = id;
 		this.values = Collections.emptySet();
 		this.entries = Collections.emptyList();
 	}
 
-	public Tag(Identifier identifier, Collection<Tag.Entry<T>> collection, boolean bl) {
-		this.id = identifier;
-		this.values = (Set<T>)(bl ? Sets.<T>newLinkedHashSet() : Sets.<T>newHashSet());
-		this.entries = collection;
+	public Tag(Identifier id, Collection<Tag.Entry<T>> entries, boolean ordered) {
+		this.id = id;
+		this.values = (Set<T>)(ordered ? Sets.<T>newLinkedHashSet() : Sets.<T>newHashSet());
+		this.entries = entries;
 
-		for (Tag.Entry<T> entry : collection) {
+		for (Tag.Entry<T> entry : entries) {
 			entry.build(this.values);
 		}
 	}
 
-	public JsonObject toJson(Function<T, Identifier> function) {
+	public JsonObject toJson(Function<T, Identifier> idGetter) {
 		JsonObject jsonObject = new JsonObject();
 		JsonArray jsonArray = new JsonArray();
 
 		for (Tag.Entry<T> entry : this.entries) {
-			entry.toJson(jsonArray, function);
+			entry.toJson(jsonArray, idGetter);
 		}
 
 		jsonObject.addProperty("replace", false);
@@ -51,8 +63,8 @@ public class Tag<T> {
 		return jsonObject;
 	}
 
-	public boolean contains(T object) {
-		return this.values.contains(object);
+	public boolean contains(T entry) {
+		return this.values.contains(entry);
 	}
 
 	public Collection<T> values() {

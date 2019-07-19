@@ -13,7 +13,7 @@ public class AreaEffectCloudEntityRenderer extends EntityRenderer<AreaEffectClou
 	}
 
 	@Nullable
-	protected Identifier method_3873(AreaEffectCloudEntity areaEffectCloudEntity) {
+	protected Identifier getTexture(AreaEffectCloudEntity areaEffectCloudEntity) {
 		return null;
 	}
 }

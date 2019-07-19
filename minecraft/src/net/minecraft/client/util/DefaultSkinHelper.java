@@ -14,15 +14,15 @@ public class DefaultSkinHelper {
 		return STEVE_SKIN;
 	}
 
-	public static Identifier getTexture(UUID uUID) {
-		return shouldUseSlimModel(uUID) ? ALEX_SKIN : STEVE_SKIN;
+	public static Identifier getTexture(UUID uuid) {
+		return shouldUseSlimModel(uuid) ? ALEX_SKIN : STEVE_SKIN;
 	}
 
-	public static String getModel(UUID uUID) {
-		return shouldUseSlimModel(uUID) ? "slim" : "default";
+	public static String getModel(UUID uuid) {
+		return shouldUseSlimModel(uuid) ? "slim" : "default";
 	}
 
-	private static boolean shouldUseSlimModel(UUID uUID) {
-		return (uUID.hashCode() & 1) == 1;
+	private static boolean shouldUseSlimModel(UUID uuid) {
+		return (uuid.hashCode() & 1) == 1;
 	}
 }

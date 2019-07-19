@@ -13,8 +13,8 @@ import net.minecraft.world.gen.feature.EndPortalFeature;
 public class LandingPhase extends AbstractPhase {
 	private Vec3d field_7046;
 
-	public LandingPhase(EnderDragonEntity enderDragonEntity) {
-		super(enderDragonEntity);
+	public LandingPhase(EnderDragonEntity dragon) {
+		super(dragon);
 	}
 
 	@Override
@@ -26,7 +26,7 @@ public class LandingPhase extends AbstractPhase {
 		double f = this.dragon.partHead.z;
 
 		for (int i = 0; i < 8; i++) {
-			Random random = this.dragon.getRand();
+			Random random = this.dragon.getRandom();
 			double g = d + random.nextGaussian() / 2.0;
 			double h = e + random.nextGaussian() / 2.0;
 			double j = f + random.nextGaussian() / 2.0;

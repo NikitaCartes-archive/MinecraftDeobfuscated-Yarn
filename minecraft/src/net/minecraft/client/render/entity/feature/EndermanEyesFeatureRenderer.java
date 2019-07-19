@@ -14,11 +14,11 @@ import net.minecraft.util.Identifier;
 public class EndermanEyesFeatureRenderer<T extends LivingEntity> extends FeatureRenderer<T, EndermanEntityModel<T>> {
 	private static final Identifier SKIN = new Identifier("textures/entity/enderman/enderman_eyes.png");
 
-	public EndermanEyesFeatureRenderer(FeatureRendererContext<T, EndermanEntityModel<T>> featureRendererContext) {
-		super(featureRendererContext);
+	public EndermanEyesFeatureRenderer(FeatureRendererContext<T, EndermanEntityModel<T>> context) {
+		super(context);
 	}
 
-	public void method_4187(T livingEntity, float f, float g, float h, float i, float j, float k, float l) {
+	public void render(T livingEntity, float f, float g, float h, float i, float j, float k, float l) {
 		this.bindTexture(SKIN);
 		GlStateManager.enableBlend();
 		GlStateManager.disableAlphaTest();
@@ -33,7 +33,7 @@ public class EndermanEyesFeatureRenderer<T extends LivingEntity> extends Feature
 		GlStateManager.color4f(1.0F, 1.0F, 1.0F, 1.0F);
 		GameRenderer gameRenderer = MinecraftClient.getInstance().gameRenderer;
 		gameRenderer.setFogBlack(true);
-		this.getModel().method_17088(livingEntity, f, g, i, j, k, l);
+		this.getContextModel().render(livingEntity, f, g, i, j, k, l);
 		gameRenderer.setFogBlack(false);
 		this.applyLightmapCoordinates(livingEntity);
 		GlStateManager.depthMask(true);

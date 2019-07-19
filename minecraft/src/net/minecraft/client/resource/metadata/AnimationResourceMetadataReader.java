@@ -14,7 +14,7 @@ import org.apache.commons.lang3.Validate;
 
 @Environment(EnvType.CLIENT)
 public class AnimationResourceMetadataReader implements ResourceMetadataReader<AnimationResourceMetadata> {
-	public AnimationResourceMetadata method_4692(JsonObject jsonObject) {
+	public AnimationResourceMetadata fromJson(JsonObject jsonObject) {
 		List<AnimationFrameResourceMetadata> list = Lists.<AnimationFrameResourceMetadata>newArrayList();
 		int i = JsonHelper.getInt(jsonObject, "frametime", 1);
 		if (i != 1) {
@@ -51,19 +51,19 @@ public class AnimationResourceMetadataReader implements ResourceMetadataReader<A
 		return new AnimationResourceMetadata(list, k, jx, i, bl);
 	}
 
-	private AnimationFrameResourceMetadata readFrameMetadata(int i, JsonElement jsonElement) {
-		if (jsonElement.isJsonPrimitive()) {
-			return new AnimationFrameResourceMetadata(JsonHelper.asInt(jsonElement, "frames[" + i + "]"));
-		} else if (jsonElement.isJsonObject()) {
-			JsonObject jsonObject = JsonHelper.asObject(jsonElement, "frames[" + i + "]");
-			int j = JsonHelper.getInt(jsonObject, "time", -1);
+	private AnimationFrameResourceMetadata readFrameMetadata(int frame, JsonElement json) {
+		if (json.isJsonPrimitive()) {
+			return new AnimationFrameResourceMetadata(JsonHelper.asInt(json, "frames[" + frame + "]"));
+		} else if (json.isJsonObject()) {
+			JsonObject jsonObject = JsonHelper.asObject(json, "frames[" + frame + "]");
+			int i = JsonHelper.getInt(jsonObject, "time", -1);
 			if (jsonObject.has("time")) {
-				Validate.inclusiveBetween(1L, 2147483647L, (long)j, "Invalid frame time");
+				Validate.inclusiveBetween(1L, 2147483647L, (long)i, "Invalid frame time");
 			}
 
-			int k = JsonHelper.getInt(jsonObject, "index");
-			Validate.inclusiveBetween(0L, 2147483647L, (long)k, "Invalid frame index");
-			return new AnimationFrameResourceMetadata(k, j);
+			int j = JsonHelper.getInt(jsonObject, "index");
+			Validate.inclusiveBetween(0L, 2147483647L, (long)j, "Invalid frame index");
+			return new AnimationFrameResourceMetadata(j, i);
 		} else {
 			return null;
 		}

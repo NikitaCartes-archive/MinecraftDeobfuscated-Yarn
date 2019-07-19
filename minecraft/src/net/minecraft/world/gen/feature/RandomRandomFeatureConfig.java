@@ -11,31 +11,29 @@ public class RandomRandomFeatureConfig implements FeatureConfig {
 	public final List<ConfiguredFeature<?>> features;
 	public final int count;
 
-	public RandomRandomFeatureConfig(List<ConfiguredFeature<?>> list, int i) {
-		this.features = list;
-		this.count = i;
+	public RandomRandomFeatureConfig(List<ConfiguredFeature<?>> features, int count) {
+		this.features = features;
+		this.count = count;
 	}
 
-	public RandomRandomFeatureConfig(Feature<?>[] features, FeatureConfig[] featureConfigs, int i) {
-		this(
-			(List<ConfiguredFeature<?>>)IntStream.range(0, features.length).mapToObj(ix -> configure(features[ix], featureConfigs[ix])).collect(Collectors.toList()), i
-		);
+	public RandomRandomFeatureConfig(Feature<?>[] features, FeatureConfig[] configs, int count) {
+		this((List<ConfiguredFeature<?>>)IntStream.range(0, features.length).mapToObj(i -> configure(features[i], configs[i])).collect(Collectors.toList()), count);
 	}
 
-	private static <FC extends FeatureConfig> ConfiguredFeature<?> configure(Feature<FC> feature, FeatureConfig featureConfig) {
-		return new ConfiguredFeature<>(feature, (FC)featureConfig);
+	private static <FC extends FeatureConfig> ConfiguredFeature<?> configure(Feature<FC> feature, FeatureConfig config) {
+		return new ConfiguredFeature<>(feature, (FC)config);
 	}
 
 	@Override
-	public <T> Dynamic<T> serialize(DynamicOps<T> dynamicOps) {
+	public <T> Dynamic<T> serialize(DynamicOps<T> ops) {
 		return new Dynamic<>(
-			dynamicOps,
-			dynamicOps.createMap(
+			ops,
+			ops.createMap(
 				ImmutableMap.of(
-					dynamicOps.createString("features"),
-					dynamicOps.createList(this.features.stream().map(configuredFeature -> configuredFeature.serialize(dynamicOps).getValue())),
-					dynamicOps.createString("count"),
-					dynamicOps.createInt(this.count)
+					ops.createString("features"),
+					ops.createList(this.features.stream().map(configuredFeature -> configuredFeature.serialize(ops).getValue())),
+					ops.createString("count"),
+					ops.createInt(this.count)
 				)
 			)
 		);

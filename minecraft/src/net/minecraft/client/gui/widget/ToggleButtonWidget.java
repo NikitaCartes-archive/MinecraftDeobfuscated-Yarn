@@ -15,48 +15,48 @@ public class ToggleButtonWidget extends AbstractButtonWidget {
 	protected int pressedUOffset;
 	protected int hoverVOffset;
 
-	public ToggleButtonWidget(int i, int j, int k, int l, boolean bl) {
-		super(i, j, k, l, "");
-		this.toggled = bl;
+	public ToggleButtonWidget(int x, int y, int width, int height, boolean toggled) {
+		super(x, y, width, height, "");
+		this.toggled = toggled;
 	}
 
-	public void setTextureUV(int i, int j, int k, int l, Identifier identifier) {
-		this.u = i;
-		this.v = j;
-		this.pressedUOffset = k;
-		this.hoverVOffset = l;
-		this.texture = identifier;
+	public void setTextureUV(int u, int v, int pressedUOffset, int hoverVOffset, Identifier texture) {
+		this.u = u;
+		this.v = v;
+		this.pressedUOffset = pressedUOffset;
+		this.hoverVOffset = hoverVOffset;
+		this.texture = texture;
 	}
 
-	public void setToggled(boolean bl) {
-		this.toggled = bl;
+	public void setToggled(boolean toggled) {
+		this.toggled = toggled;
 	}
 
 	public boolean isToggled() {
 		return this.toggled;
 	}
 
-	public void setPos(int i, int j) {
-		this.x = i;
-		this.y = j;
+	public void setPos(int x, int y) {
+		this.x = x;
+		this.y = y;
 	}
 
 	@Override
-	public void renderButton(int i, int j, float f) {
+	public void renderButton(int mouseX, int mouseY, float delta) {
 		MinecraftClient minecraftClient = MinecraftClient.getInstance();
 		minecraftClient.getTextureManager().bindTexture(this.texture);
 		GlStateManager.disableDepthTest();
-		int k = this.u;
-		int l = this.v;
+		int i = this.u;
+		int j = this.v;
 		if (this.toggled) {
-			k += this.pressedUOffset;
+			i += this.pressedUOffset;
 		}
 
 		if (this.isHovered()) {
-			l += this.hoverVOffset;
+			j += this.hoverVOffset;
 		}
 
-		this.blit(this.x, this.y, k, l, this.width, this.height);
+		this.blit(this.x, this.y, i, j, this.width, this.height);
 		GlStateManager.enableDepthTest();
 	}
 }

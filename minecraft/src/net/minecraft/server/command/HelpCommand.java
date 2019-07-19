@@ -14,11 +14,11 @@ import net.minecraft.text.TranslatableText;
 public class HelpCommand {
 	private static final SimpleCommandExceptionType FAILED_EXCEPTION = new SimpleCommandExceptionType(new TranslatableText("commands.help.failed"));
 
-	public static void register(CommandDispatcher<ServerCommandSource> commandDispatcher) {
-		commandDispatcher.register(
+	public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
+		dispatcher.register(
 			CommandManager.literal("help")
 				.executes(commandContext -> {
-					Map<CommandNode<ServerCommandSource>, String> map = commandDispatcher.getSmartUsage(commandDispatcher.getRoot(), commandContext.getSource());
+					Map<CommandNode<ServerCommandSource>, String> map = dispatcher.getSmartUsage(dispatcher.getRoot(), commandContext.getSource());
 
 					for (String string : map.values()) {
 						commandContext.getSource().sendFeedback(new LiteralText("/" + string), false);
@@ -30,13 +30,11 @@ public class HelpCommand {
 					CommandManager.argument("command", StringArgumentType.greedyString())
 						.executes(
 							commandContext -> {
-								ParseResults<ServerCommandSource> parseResults = commandDispatcher.parse(
-									StringArgumentType.getString(commandContext, "command"), commandContext.getSource()
-								);
+								ParseResults<ServerCommandSource> parseResults = dispatcher.parse(StringArgumentType.getString(commandContext, "command"), commandContext.getSource());
 								if (parseResults.getContext().getNodes().isEmpty()) {
 									throw FAILED_EXCEPTION.create();
 								} else {
-									Map<CommandNode<ServerCommandSource>, String> map = commandDispatcher.getSmartUsage(
+									Map<CommandNode<ServerCommandSource>, String> map = dispatcher.getSmartUsage(
 										Iterables.<ParsedCommandNode<ServerCommandSource>>getLast(parseResults.getContext().getNodes()).getNode(), commandContext.getSource()
 									);
 

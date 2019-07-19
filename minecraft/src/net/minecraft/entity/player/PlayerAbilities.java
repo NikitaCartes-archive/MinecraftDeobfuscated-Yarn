@@ -26,18 +26,18 @@ public class PlayerAbilities {
 	}
 
 	public void deserialize(CompoundTag compoundTag) {
-		if (compoundTag.containsKey("abilities", 10)) {
+		if (compoundTag.contains("abilities", 10)) {
 			CompoundTag compoundTag2 = compoundTag.getCompound("abilities");
 			this.invulnerable = compoundTag2.getBoolean("invulnerable");
 			this.flying = compoundTag2.getBoolean("flying");
 			this.allowFlying = compoundTag2.getBoolean("mayfly");
 			this.creativeMode = compoundTag2.getBoolean("instabuild");
-			if (compoundTag2.containsKey("flySpeed", 99)) {
+			if (compoundTag2.contains("flySpeed", 99)) {
 				this.flySpeed = compoundTag2.getFloat("flySpeed");
 				this.walkSpeed = compoundTag2.getFloat("walkSpeed");
 			}
 
-			if (compoundTag2.containsKey("mayBuild", 1)) {
+			if (compoundTag2.contains("mayBuild", 1)) {
 				this.allowModifyWorld = compoundTag2.getBoolean("mayBuild");
 			}
 		}
@@ -48,8 +48,8 @@ public class PlayerAbilities {
 	}
 
 	@Environment(EnvType.CLIENT)
-	public void setFlySpeed(float f) {
-		this.flySpeed = f;
+	public void setFlySpeed(float flySpeed) {
+		this.flySpeed = flySpeed;
 	}
 
 	public float getWalkSpeed() {
@@ -57,7 +57,7 @@ public class PlayerAbilities {
 	}
 
 	@Environment(EnvType.CLIENT)
-	public void setWalkSpeed(float f) {
-		this.walkSpeed = f;
+	public void setWalkSpeed(float walkSpeed) {
+		this.walkSpeed = walkSpeed;
 	}
 }

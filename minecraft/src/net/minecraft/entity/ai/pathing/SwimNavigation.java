@@ -1,9 +1,9 @@
 package net.minecraft.entity.ai.pathing;
 
-import net.minecraft.client.network.DebugRendererInfoManager;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.passive.DolphinEntity;
-import net.minecraft.util.SystemUtil;
+import net.minecraft.server.network.DebugInfoSender;
+import net.minecraft.util.Util;
 import net.minecraft.util.hit.HitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
@@ -14,8 +14,8 @@ import net.minecraft.world.World;
 public class SwimNavigation extends EntityNavigation {
 	private boolean field_6689;
 
-	public SwimNavigation(MobEntity mobEntity, World world) {
-		super(mobEntity, world);
+	public SwimNavigation(MobEntity entity, World world) {
+		super(entity, world);
 	}
 
 	@Override
@@ -54,7 +54,7 @@ public class SwimNavigation extends EntityNavigation {
 				}
 			}
 
-			DebugRendererInfoManager.sendPathfindingData(this.world, this.entity, this.currentPath, this.field_6683);
+			DebugInfoSender.sendPathfindingData(this.world, this.entity, this.currentPath, this.field_6683);
 			if (!this.isIdle()) {
 				Vec3d vec3d = this.currentPath.getNodePosition(this.entity);
 				this.entity.getMoveControl().moveTo(vec3d.x, vec3d.y, vec3d.z, this.speed);
@@ -107,7 +107,7 @@ public class SwimNavigation extends EntityNavigation {
 		if (this.currentPath != null && !this.currentPath.isFinished()) {
 			Vec3d vec3d2 = this.currentPath.getCurrentPosition();
 			if (vec3d2.equals(this.field_6680)) {
-				this.field_6670 = this.field_6670 + (SystemUtil.getMeasuringTimeMs() - this.field_6669);
+				this.field_6670 = this.field_6670 + (Util.getMeasuringTimeMs() - this.field_6669);
 			} else {
 				this.field_6680 = vec3d2;
 				double d = vec3d.distanceTo(this.field_6680);
@@ -121,23 +121,23 @@ public class SwimNavigation extends EntityNavigation {
 				this.stop();
 			}
 
-			this.field_6669 = SystemUtil.getMeasuringTimeMs();
+			this.field_6669 = Util.getMeasuringTimeMs();
 		}
 	}
 
 	@Override
-	protected boolean canPathDirectlyThrough(Vec3d vec3d, Vec3d vec3d2, int i, int j, int k) {
-		Vec3d vec3d3 = new Vec3d(vec3d2.x, vec3d2.y + (double)this.entity.getHeight() * 0.5, vec3d2.z);
-		return this.world.rayTrace(new RayTraceContext(vec3d, vec3d3, RayTraceContext.ShapeType.COLLIDER, RayTraceContext.FluidHandling.NONE, this.entity)).getType()
+	protected boolean canPathDirectlyThrough(Vec3d origin, Vec3d target, int sizeX, int sizeY, int sizeZ) {
+		Vec3d vec3d = new Vec3d(target.x, target.y + (double)this.entity.getHeight() * 0.5, target.z);
+		return this.world.rayTrace(new RayTraceContext(origin, vec3d, RayTraceContext.ShapeType.COLLIDER, RayTraceContext.FluidHandling.NONE, this.entity)).getType()
 			== HitResult.Type.MISS;
 	}
 
 	@Override
-	public boolean isValidPosition(BlockPos blockPos) {
-		return !this.world.getBlockState(blockPos).isFullOpaque(this.world, blockPos);
+	public boolean isValidPosition(BlockPos pos) {
+		return !this.world.getBlockState(pos).isFullOpaque(this.world, pos);
 	}
 
 	@Override
-	public void setCanSwim(boolean bl) {
+	public void setCanSwim(boolean canSwim) {
 	}
 }

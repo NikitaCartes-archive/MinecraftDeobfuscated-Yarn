@@ -4,7 +4,7 @@ import java.util.Random;
 import net.minecraft.util.math.MathHelper;
 
 public final class PerlinNoiseSampler {
-	private final byte[] field_16590;
+	private final byte[] permutations;
 	public final double originX;
 	public final double originY;
 	public final double originZ;
@@ -13,68 +13,70 @@ public final class PerlinNoiseSampler {
 		this.originX = random.nextDouble() * 256.0;
 		this.originY = random.nextDouble() * 256.0;
 		this.originZ = random.nextDouble() * 256.0;
-		this.field_16590 = new byte[256];
+		this.permutations = new byte[256];
 
 		for (int i = 0; i < 256; i++) {
-			this.field_16590[i] = (byte)i;
+			this.permutations[i] = (byte)i;
 		}
 
 		for (int i = 0; i < 256; i++) {
 			int j = random.nextInt(256 - i);
-			byte b = this.field_16590[i];
-			this.field_16590[i] = this.field_16590[i + j];
-			this.field_16590[i + j] = b;
+			byte b = this.permutations[i];
+			this.permutations[i] = this.permutations[i + j];
+			this.permutations[i + j] = b;
 		}
 	}
 
-	public double sample(double d, double e, double f, double g, double h) {
-		double i = d + this.originX;
-		double j = e + this.originY;
-		double k = f + this.originZ;
-		int l = MathHelper.floor(i);
-		int m = MathHelper.floor(j);
-		int n = MathHelper.floor(k);
-		double o = i - (double)l;
-		double p = j - (double)m;
-		double q = k - (double)n;
-		double r = MathHelper.perlinFade(o);
-		double s = MathHelper.perlinFade(p);
-		double t = MathHelper.perlinFade(q);
-		double v;
-		if (g != 0.0) {
-			double u = Math.min(h, p);
-			v = (double)MathHelper.floor(u / g) * g;
+	public double sample(double x, double y, double z, double d, double e) {
+		double f = x + this.originX;
+		double g = y + this.originY;
+		double h = z + this.originZ;
+		int i = MathHelper.floor(f);
+		int j = MathHelper.floor(g);
+		int k = MathHelper.floor(h);
+		double l = f - (double)i;
+		double m = g - (double)j;
+		double n = h - (double)k;
+		double o = MathHelper.perlinFade(l);
+		double p = MathHelper.perlinFade(m);
+		double q = MathHelper.perlinFade(n);
+		double s;
+		if (d != 0.0) {
+			double r = Math.min(e, m);
+			s = (double)MathHelper.floor(r / d) * d;
 		} else {
-			v = 0.0;
+			s = 0.0;
 		}
 
-		return this.method_16450(l, m, n, o, p - v, q, r, s, t);
+		return this.sample(i, j, k, l, m - s, n, o, p, q);
 	}
 
-	private static double method_16448(int i, double d, double e, double f) {
-		int j = i & 15;
-		return SimplexNoiseSampler.dot(SimplexNoiseSampler.gradients[j], d, e, f);
+	private static double grad(int hash, double x, double y, double z) {
+		int i = hash & 15;
+		return SimplexNoiseSampler.dot(SimplexNoiseSampler.gradients[i], x, y, z);
 	}
 
-	private int method_16449(int i) {
-		return this.field_16590[i & 0xFF] & 0xFF;
+	private int getGradient(int hash) {
+		return this.permutations[hash & 0xFF] & 0xFF;
 	}
 
-	public double method_16450(int i, int j, int k, double d, double e, double f, double g, double h, double l) {
-		int m = this.method_16449(i) + j;
-		int n = this.method_16449(m) + k;
-		int o = this.method_16449(m + 1) + k;
-		int p = this.method_16449(i + 1) + j;
-		int q = this.method_16449(p) + k;
-		int r = this.method_16449(p + 1) + k;
-		double s = method_16448(this.method_16449(n), d, e, f);
-		double t = method_16448(this.method_16449(q), d - 1.0, e, f);
-		double u = method_16448(this.method_16449(o), d, e - 1.0, f);
-		double v = method_16448(this.method_16449(r), d - 1.0, e - 1.0, f);
-		double w = method_16448(this.method_16449(n + 1), d, e, f - 1.0);
-		double x = method_16448(this.method_16449(q + 1), d - 1.0, e, f - 1.0);
-		double y = method_16448(this.method_16449(o + 1), d, e - 1.0, f - 1.0);
-		double z = method_16448(this.method_16449(r + 1), d - 1.0, e - 1.0, f - 1.0);
-		return MathHelper.lerp3(g, h, l, s, t, u, v, w, x, y, z);
+	public double sample(
+		int sectionX, int sectionY, int sectionZ, double localX, double localY, double localZ, double fadeLocalX, double fadeLocalY, double fadeLocalZ
+	) {
+		int i = this.getGradient(sectionX) + sectionY;
+		int j = this.getGradient(i) + sectionZ;
+		int k = this.getGradient(i + 1) + sectionZ;
+		int l = this.getGradient(sectionX + 1) + sectionY;
+		int m = this.getGradient(l) + sectionZ;
+		int n = this.getGradient(l + 1) + sectionZ;
+		double d = grad(this.getGradient(j), localX, localY, localZ);
+		double e = grad(this.getGradient(m), localX - 1.0, localY, localZ);
+		double f = grad(this.getGradient(k), localX, localY - 1.0, localZ);
+		double g = grad(this.getGradient(n), localX - 1.0, localY - 1.0, localZ);
+		double h = grad(this.getGradient(j + 1), localX, localY, localZ - 1.0);
+		double o = grad(this.getGradient(m + 1), localX - 1.0, localY, localZ - 1.0);
+		double p = grad(this.getGradient(k + 1), localX, localY - 1.0, localZ - 1.0);
+		double q = grad(this.getGradient(n + 1), localX - 1.0, localY - 1.0, localZ - 1.0);
+		return MathHelper.lerp3(fadeLocalX, fadeLocalY, fadeLocalZ, d, e, f, g, h, o, p, q);
 	}
 }

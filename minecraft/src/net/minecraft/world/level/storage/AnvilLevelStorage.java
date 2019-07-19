@@ -39,8 +39,8 @@ public class AnvilLevelStorage {
 		List<File> list2 = Lists.<File>newArrayList();
 		List<File> list3 = Lists.<File>newArrayList();
 		File file = new File(path.toFile(), string);
-		File file2 = DimensionType.THE_NETHER.getFile(file);
-		File file3 = DimensionType.THE_END.getFile(file);
+		File file2 = DimensionType.THE_NETHER.getSaveDirectory(file);
+		File file3 = DimensionType.THE_END.getSaveDirectory(file);
 		LOGGER.info("Scanning folders...");
 		addRegionFiles(file, list);
 		if (file2.exists()) {
@@ -105,25 +105,25 @@ public class AnvilLevelStorage {
 		}
 	}
 
-	private static void convertRegions(File file, Iterable<File> iterable, BiomeSource biomeSource, int i, int j, ProgressListener progressListener) {
+	private static void convertRegions(File file, Iterable<File> iterable, BiomeSource biomeSource, int i, int currentCount, ProgressListener progressListener) {
 		for (File file2 : iterable) {
-			convertRegion(file, file2, biomeSource, i, j, progressListener);
+			convertRegion(file, file2, biomeSource, i, currentCount, progressListener);
 			i++;
-			int k = (int)Math.round(100.0 * (double)i / (double)j);
-			progressListener.progressStagePercentage(k);
+			int j = (int)Math.round(100.0 * (double)i / (double)currentCount);
+			progressListener.progressStagePercentage(j);
 		}
 	}
 
-	private static void convertRegion(File file, File file2, BiomeSource biomeSource, int i, int j, ProgressListener progressListener) {
-		String string = file2.getName();
+	private static void convertRegion(File file, File baseFolder, BiomeSource biomeSource, int i, int progressStart, ProgressListener progressListener) {
+		String string = baseFolder.getName();
 
 		try (
-			RegionFile regionFile = new RegionFile(file2);
+			RegionFile regionFile = new RegionFile(baseFolder);
 			RegionFile regionFile2 = new RegionFile(new File(file, string.substring(0, string.length() - ".mcr".length()) + ".mca"));
 		) {
-			for (int k = 0; k < 32; k++) {
-				for (int l = 0; l < 32; l++) {
-					ChunkPos chunkPos = new ChunkPos(k, l);
+			for (int j = 0; j < 32; j++) {
+				for (int k = 0; k < 32; k++) {
+					ChunkPos chunkPos = new ChunkPos(j, k);
 					if (regionFile.hasChunk(chunkPos) && !regionFile2.hasChunk(chunkPos)) {
 						CompoundTag compoundTag;
 						try {
@@ -188,14 +188,14 @@ public class AnvilLevelStorage {
 					}
 				}
 
-				int lx = (int)Math.round(100.0 * (double)(i * 1024) / (double)(j * 1024));
-				int m = (int)Math.round(100.0 * (double)((k + 1) * 32 + i * 1024) / (double)(j * 1024));
-				if (m > lx) {
-					progressListener.progressStagePercentage(m);
+				int kx = (int)Math.round(100.0 * (double)(i * 1024) / (double)(progressStart * 1024));
+				int l = (int)Math.round(100.0 * (double)((j + 1) * 32 + i * 1024) / (double)(progressStart * 1024));
+				if (l > kx) {
+					progressListener.progressStagePercentage(l);
 				}
 			}
 		} catch (IOException var111) {
-			LOGGER.error("Failed to upgrade region file {}", file2, var111);
+			LOGGER.error("Failed to upgrade region file {}", baseFolder, var111);
 		}
 	}
 

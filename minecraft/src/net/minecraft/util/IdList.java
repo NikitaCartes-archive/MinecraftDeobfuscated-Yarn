@@ -22,14 +22,14 @@ public class IdList<T> implements IndexedIterable<T> {
 		this.idMap = new IdentityHashMap(i);
 	}
 
-	public void set(T object, int i) {
-		this.idMap.put(object, i);
+	public void set(T value, int i) {
+		this.idMap.put(value, i);
 
 		while (this.list.size() <= i) {
 			this.list.add(null);
 		}
 
-		this.list.set(i, object);
+		this.list.set(i, value);
 		if (this.nextId <= i) {
 			this.nextId = i + 1;
 		}
@@ -46,8 +46,8 @@ public class IdList<T> implements IndexedIterable<T> {
 
 	@Nullable
 	@Override
-	public final T get(int i) {
-		return (T)(i >= 0 && i < this.list.size() ? this.list.get(i) : null);
+	public final T get(int index) {
+		return (T)(index >= 0 && index < this.list.size() ? this.list.get(index) : null);
 	}
 
 	public Iterator<T> iterator() {

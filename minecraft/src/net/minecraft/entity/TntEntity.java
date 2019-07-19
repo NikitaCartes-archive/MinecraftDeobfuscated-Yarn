@@ -1,12 +1,12 @@
 package net.minecraft.entity;
 
 import javax.annotation.Nullable;
-import net.minecraft.client.network.packet.EntitySpawnS2CPacket;
 import net.minecraft.entity.data.DataTracker;
 import net.minecraft.entity.data.TrackedData;
 import net.minecraft.entity.data.TrackedDataHandlerRegistry;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.Packet;
+import net.minecraft.network.packet.s2c.play.EntitySpawnS2CPacket;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.world.World;
 import net.minecraft.world.explosion.Explosion;
@@ -22,16 +22,16 @@ public class TntEntity extends Entity {
 		this.inanimate = true;
 	}
 
-	public TntEntity(World world, double d, double e, double f, @Nullable LivingEntity livingEntity) {
+	public TntEntity(World world, double x, double y, double z, @Nullable LivingEntity igniter) {
 		this(EntityType.TNT, world);
-		this.setPosition(d, e, f);
-		double g = world.random.nextDouble() * (float) (Math.PI * 2);
-		this.setVelocity(-Math.sin(g) * 0.02, 0.2F, -Math.cos(g) * 0.02);
+		this.updatePosition(x, y, z);
+		double d = world.random.nextDouble() * (float) (Math.PI * 2);
+		this.setVelocity(-Math.sin(d) * 0.02, 0.2F, -Math.cos(d) * 0.02);
 		this.setFuse(80);
-		this.prevX = d;
-		this.prevY = e;
-		this.prevZ = f;
-		this.causingEntity = livingEntity;
+		this.prevX = x;
+		this.prevY = y;
+		this.prevZ = z;
+		this.causingEntity = igniter;
 	}
 
 	@Override
@@ -82,13 +82,13 @@ public class TntEntity extends Entity {
 	}
 
 	@Override
-	protected void writeCustomDataToTag(CompoundTag compoundTag) {
-		compoundTag.putShort("Fuse", (short)this.getFuseTimer());
+	protected void writeCustomDataToTag(CompoundTag tag) {
+		tag.putShort("Fuse", (short)this.getFuseTimer());
 	}
 
 	@Override
-	protected void readCustomDataFromTag(CompoundTag compoundTag) {
-		this.setFuse(compoundTag.getShort("Fuse"));
+	protected void readCustomDataFromTag(CompoundTag tag) {
+		this.setFuse(tag.getShort("Fuse"));
 	}
 
 	@Nullable
@@ -97,18 +97,18 @@ public class TntEntity extends Entity {
 	}
 
 	@Override
-	protected float getEyeHeight(EntityPose entityPose, EntityDimensions entityDimensions) {
+	protected float getEyeHeight(EntityPose pose, EntityDimensions dimensions) {
 		return 0.0F;
 	}
 
-	public void setFuse(int i) {
-		this.dataTracker.set(FUSE, i);
-		this.fuseTimer = i;
+	public void setFuse(int fuse) {
+		this.dataTracker.set(FUSE, fuse);
+		this.fuseTimer = fuse;
 	}
 
 	@Override
-	public void onTrackedDataSet(TrackedData<?> trackedData) {
-		if (FUSE.equals(trackedData)) {
+	public void onTrackedDataSet(TrackedData<?> data) {
+		if (FUSE.equals(data)) {
 			this.fuseTimer = this.getFuse();
 		}
 	}

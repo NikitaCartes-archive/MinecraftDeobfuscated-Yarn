@@ -46,12 +46,12 @@ public class CommandFunctionManager implements SynchronousResourceReloadListener
 	private final List<CommandFunction> tickFunctions = Lists.<CommandFunction>newArrayList();
 	private boolean needToRunLoadFunctions;
 
-	public CommandFunctionManager(MinecraftServer minecraftServer) {
-		this.server = minecraftServer;
+	public CommandFunctionManager(MinecraftServer server) {
+		this.server = server;
 	}
 
-	public Optional<CommandFunction> getFunction(Identifier identifier) {
-		return Optional.ofNullable(this.idMap.get(identifier));
+	public Optional<CommandFunction> getFunction(Identifier id) {
+		return Optional.ofNullable(this.idMap.get(id));
 	}
 
 	public MinecraftServer getServer() {
@@ -74,7 +74,7 @@ public class CommandFunctionManager implements SynchronousResourceReloadListener
 		this.server.getProfiler().push(TICK_FUNCTION::toString);
 
 		for (CommandFunction commandFunction : this.tickFunctions) {
-			this.execute(commandFunction, this.getFunctionCommandSource());
+			this.execute(commandFunction, this.getTaggedFunctionSource());
 		}
 
 		this.server.getProfiler().pop();
@@ -84,18 +84,18 @@ public class CommandFunctionManager implements SynchronousResourceReloadListener
 			this.server.getProfiler().push(LOAD_FUNCTION::toString);
 
 			for (CommandFunction commandFunction2 : collection) {
-				this.execute(commandFunction2, this.getFunctionCommandSource());
+				this.execute(commandFunction2, this.getTaggedFunctionSource());
 			}
 
 			this.server.getProfiler().pop();
 		}
 	}
 
-	public int execute(CommandFunction commandFunction, ServerCommandSource serverCommandSource) {
+	public int execute(CommandFunction function, ServerCommandSource source) {
 		int i = this.getMaxCommandChainLength();
 		if (this.executing) {
 			if (this.chain.size() + this.pending.size() < i) {
-				this.pending.add(new CommandFunctionManager.Entry(this, serverCommandSource, new CommandFunction.FunctionElement(commandFunction)));
+				this.pending.add(new CommandFunctionManager.Entry(this, source, new CommandFunction.FunctionElement(function)));
 			}
 
 			return 0;
@@ -104,10 +104,10 @@ public class CommandFunctionManager implements SynchronousResourceReloadListener
 			try {
 				this.executing = true;
 				int j = 0;
-				CommandFunction.Element[] elements = commandFunction.getElements();
+				CommandFunction.Element[] elements = function.getElements();
 
 				for (int k = elements.length - 1; k >= 0; k--) {
-					this.chain.push(new CommandFunctionManager.Entry(this, serverCommandSource, elements[k]));
+					this.chain.push(new CommandFunctionManager.Entry(this, source, elements[k]));
 				}
 
 				do {
@@ -140,17 +140,17 @@ public class CommandFunctionManager implements SynchronousResourceReloadListener
 	}
 
 	@Override
-	public void apply(ResourceManager resourceManager) {
+	public void apply(ResourceManager manager) {
 		this.idMap.clear();
 		this.tickFunctions.clear();
-		Collection<Identifier> collection = resourceManager.findResources("functions", stringx -> stringx.endsWith(".mcfunction"));
+		Collection<Identifier> collection = manager.findResources("functions", stringx -> stringx.endsWith(".mcfunction"));
 		List<CompletableFuture<CommandFunction>> list = Lists.<CompletableFuture<CommandFunction>>newArrayList();
 
 		for (Identifier identifier : collection) {
 			String string = identifier.getPath();
 			Identifier identifier2 = new Identifier(identifier.getNamespace(), string.substring(PATH_PREFIX_LENGTH, string.length() - EXTENSION_LENGTH));
 			list.add(
-				CompletableFuture.supplyAsync(() -> readLines(resourceManager, identifier), ResourceImpl.RESOURCE_IO_EXECUTOR)
+				CompletableFuture.supplyAsync(() -> readLines(manager, identifier), ResourceImpl.RESOURCE_IO_EXECUTOR)
 					.thenApplyAsync(listx -> CommandFunction.create(identifier2, this, listx), this.server.getWorkerExecutor())
 					.handle((commandFunction, throwable) -> this.load(commandFunction, throwable, identifier))
 			);
@@ -161,27 +161,27 @@ public class CommandFunctionManager implements SynchronousResourceReloadListener
 			LOGGER.info("Loaded {} custom command functions", this.idMap.size());
 		}
 
-		this.tags.applyReload((Map<Identifier, Tag.Builder<CommandFunction>>)this.tags.prepareReload(resourceManager, this.server.getWorkerExecutor()).join());
+		this.tags.applyReload((Map<Identifier, Tag.Builder<CommandFunction>>)this.tags.prepareReload(manager, this.server.getWorkerExecutor()).join());
 		this.tickFunctions.addAll(this.tags.getOrCreate(TICK_FUNCTION).values());
 		this.needToRunLoadFunctions = true;
 	}
 
 	@Nullable
-	private CommandFunction load(CommandFunction commandFunction, @Nullable Throwable throwable, Identifier identifier) {
-		if (throwable != null) {
-			LOGGER.error("Couldn't load function at {}", identifier, throwable);
+	private CommandFunction load(CommandFunction function, @Nullable Throwable exception, Identifier id) {
+		if (exception != null) {
+			LOGGER.error("Couldn't load function at {}", id, exception);
 			return null;
 		} else {
 			synchronized (this.idMap) {
-				this.idMap.put(commandFunction.getId(), commandFunction);
-				return commandFunction;
+				this.idMap.put(function.getId(), function);
+				return function;
 			}
 		}
 	}
 
-	private static List<String> readLines(ResourceManager resourceManager, Identifier identifier) {
+	private static List<String> readLines(ResourceManager resourceManager, Identifier id) {
 		try {
-			Resource resource = resourceManager.getResource(identifier);
+			Resource resource = resourceManager.getResource(id);
 			Throwable var3 = null;
 
 			List var4;
@@ -210,7 +210,7 @@ public class CommandFunctionManager implements SynchronousResourceReloadListener
 		}
 	}
 
-	public ServerCommandSource getFunctionCommandSource() {
+	public ServerCommandSource getTaggedFunctionSource() {
 		return this.server.getCommandSource().withLevel(2).withSilent();
 	}
 
@@ -227,9 +227,9 @@ public class CommandFunctionManager implements SynchronousResourceReloadListener
 		private final ServerCommandSource source;
 		private final CommandFunction.Element element;
 
-		public Entry(CommandFunctionManager commandFunctionManager, ServerCommandSource serverCommandSource, CommandFunction.Element element) {
-			this.manager = commandFunctionManager;
-			this.source = serverCommandSource;
+		public Entry(CommandFunctionManager manger, ServerCommandSource source, CommandFunction.Element element) {
+			this.manager = manger;
+			this.source = source;
 			this.element = element;
 		}
 

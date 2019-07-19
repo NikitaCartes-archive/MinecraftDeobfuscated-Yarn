@@ -22,17 +22,6 @@ import net.minecraft.block.entity.CommandBlockBlockEntity;
 import net.minecraft.block.entity.JigsawBlockEntity;
 import net.minecraft.block.entity.SignBlockEntity;
 import net.minecraft.block.entity.StructureBlockBlockEntity;
-import net.minecraft.client.network.packet.BlockUpdateS2CPacket;
-import net.minecraft.client.network.packet.ChatMessageS2CPacket;
-import net.minecraft.client.network.packet.CommandSuggestionsS2CPacket;
-import net.minecraft.client.network.packet.ConfirmGuiActionS2CPacket;
-import net.minecraft.client.network.packet.DisconnectS2CPacket;
-import net.minecraft.client.network.packet.GuiSlotUpdateS2CPacket;
-import net.minecraft.client.network.packet.HeldItemChangeS2CPacket;
-import net.minecraft.client.network.packet.KeepAliveS2CPacket;
-import net.minecraft.client.network.packet.PlayerPositionLookS2CPacket;
-import net.minecraft.client.network.packet.TagQueryResponseS2CPacket;
-import net.minecraft.client.network.packet.VehicleMoveS2CPacket;
 import net.minecraft.client.options.ChatVisibility;
 import net.minecraft.container.AnvilContainer;
 import net.minecraft.container.BeaconContainer;
@@ -58,56 +47,68 @@ import net.minecraft.item.WritableBookItem;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.StringTag;
+import net.minecraft.nbt.Tag;
 import net.minecraft.network.ClientConnection;
 import net.minecraft.network.MessageType;
 import net.minecraft.network.NetworkThreadUtils;
 import net.minecraft.network.Packet;
 import net.minecraft.network.listener.ServerPlayPacketListener;
+import net.minecraft.network.packet.c2s.play.AdvancementTabC2SPacket;
+import net.minecraft.network.packet.c2s.play.BoatPaddleStateC2SPacket;
+import net.minecraft.network.packet.c2s.play.BookUpdateC2SPacket;
+import net.minecraft.network.packet.c2s.play.ButtonClickC2SPacket;
+import net.minecraft.network.packet.c2s.play.ChatMessageC2SPacket;
+import net.minecraft.network.packet.c2s.play.ClickWindowC2SPacket;
+import net.minecraft.network.packet.c2s.play.ClientCommandC2SPacket;
+import net.minecraft.network.packet.c2s.play.ClientSettingsC2SPacket;
+import net.minecraft.network.packet.c2s.play.ClientStatusC2SPacket;
+import net.minecraft.network.packet.c2s.play.ConfirmGuiActionC2SPacket;
+import net.minecraft.network.packet.c2s.play.CraftRequestC2SPacket;
+import net.minecraft.network.packet.c2s.play.CreativeInventoryActionC2SPacket;
+import net.minecraft.network.packet.c2s.play.CustomPayloadC2SPacket;
+import net.minecraft.network.packet.c2s.play.GuiCloseC2SPacket;
+import net.minecraft.network.packet.c2s.play.HandSwingC2SPacket;
+import net.minecraft.network.packet.c2s.play.KeepAliveC2SPacket;
+import net.minecraft.network.packet.c2s.play.PickFromInventoryC2SPacket;
+import net.minecraft.network.packet.c2s.play.PlayerActionC2SPacket;
+import net.minecraft.network.packet.c2s.play.PlayerInputC2SPacket;
+import net.minecraft.network.packet.c2s.play.PlayerInteractBlockC2SPacket;
+import net.minecraft.network.packet.c2s.play.PlayerInteractEntityC2SPacket;
+import net.minecraft.network.packet.c2s.play.PlayerInteractItemC2SPacket;
+import net.minecraft.network.packet.c2s.play.PlayerMoveC2SPacket;
+import net.minecraft.network.packet.c2s.play.QueryBlockNbtC2SPacket;
+import net.minecraft.network.packet.c2s.play.QueryEntityNbtC2SPacket;
+import net.minecraft.network.packet.c2s.play.RecipeBookDataC2SPacket;
+import net.minecraft.network.packet.c2s.play.RenameItemC2SPacket;
+import net.minecraft.network.packet.c2s.play.RequestCommandCompletionsC2SPacket;
+import net.minecraft.network.packet.c2s.play.ResourcePackStatusC2SPacket;
+import net.minecraft.network.packet.c2s.play.SelectVillagerTradeC2SPacket;
+import net.minecraft.network.packet.c2s.play.SpectatorTeleportC2SPacket;
+import net.minecraft.network.packet.c2s.play.TeleportConfirmC2SPacket;
+import net.minecraft.network.packet.c2s.play.UpdateBeaconC2SPacket;
+import net.minecraft.network.packet.c2s.play.UpdateCommandBlockC2SPacket;
+import net.minecraft.network.packet.c2s.play.UpdateCommandBlockMinecartC2SPacket;
+import net.minecraft.network.packet.c2s.play.UpdateDifficultyC2SPacket;
+import net.minecraft.network.packet.c2s.play.UpdateDifficultyLockC2SPacket;
+import net.minecraft.network.packet.c2s.play.UpdateJigsawC2SPacket;
+import net.minecraft.network.packet.c2s.play.UpdatePlayerAbilitiesC2SPacket;
+import net.minecraft.network.packet.c2s.play.UpdateSelectedSlotC2SPacket;
+import net.minecraft.network.packet.c2s.play.UpdateSignC2SPacket;
+import net.minecraft.network.packet.c2s.play.UpdateStructureBlockC2SPacket;
+import net.minecraft.network.packet.c2s.play.VehicleMoveC2SPacket;
+import net.minecraft.network.packet.s2c.play.BlockUpdateS2CPacket;
+import net.minecraft.network.packet.s2c.play.ChatMessageS2CPacket;
+import net.minecraft.network.packet.s2c.play.CommandSuggestionsS2CPacket;
+import net.minecraft.network.packet.s2c.play.ConfirmGuiActionS2CPacket;
+import net.minecraft.network.packet.s2c.play.ContainerSlotUpdateS2CPacket;
+import net.minecraft.network.packet.s2c.play.DisconnectS2CPacket;
+import net.minecraft.network.packet.s2c.play.HeldItemChangeS2CPacket;
+import net.minecraft.network.packet.s2c.play.KeepAliveS2CPacket;
+import net.minecraft.network.packet.s2c.play.PlayerPositionLookS2CPacket;
+import net.minecraft.network.packet.s2c.play.TagQueryResponseS2CPacket;
+import net.minecraft.network.packet.s2c.play.VehicleMoveS2CPacket;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.command.ServerCommandSource;
-import net.minecraft.server.network.packet.AdvancementTabC2SPacket;
-import net.minecraft.server.network.packet.BoatPaddleStateC2SPacket;
-import net.minecraft.server.network.packet.BookUpdateC2SPacket;
-import net.minecraft.server.network.packet.ButtonClickC2SPacket;
-import net.minecraft.server.network.packet.ChatMessageC2SPacket;
-import net.minecraft.server.network.packet.ClickWindowC2SPacket;
-import net.minecraft.server.network.packet.ClientCommandC2SPacket;
-import net.minecraft.server.network.packet.ClientSettingsC2SPacket;
-import net.minecraft.server.network.packet.ClientStatusC2SPacket;
-import net.minecraft.server.network.packet.CraftRequestC2SPacket;
-import net.minecraft.server.network.packet.CreativeInventoryActionC2SPacket;
-import net.minecraft.server.network.packet.CustomPayloadC2SPacket;
-import net.minecraft.server.network.packet.GuiActionConfirmC2SPacket;
-import net.minecraft.server.network.packet.GuiCloseC2SPacket;
-import net.minecraft.server.network.packet.HandSwingC2SPacket;
-import net.minecraft.server.network.packet.KeepAliveC2SPacket;
-import net.minecraft.server.network.packet.PickFromInventoryC2SPacket;
-import net.minecraft.server.network.packet.PlayerActionC2SPacket;
-import net.minecraft.server.network.packet.PlayerInputC2SPacket;
-import net.minecraft.server.network.packet.PlayerInteractBlockC2SPacket;
-import net.minecraft.server.network.packet.PlayerInteractEntityC2SPacket;
-import net.minecraft.server.network.packet.PlayerInteractItemC2SPacket;
-import net.minecraft.server.network.packet.PlayerMoveC2SPacket;
-import net.minecraft.server.network.packet.QueryBlockNbtC2SPacket;
-import net.minecraft.server.network.packet.QueryEntityNbtC2SPacket;
-import net.minecraft.server.network.packet.RecipeBookDataC2SPacket;
-import net.minecraft.server.network.packet.RenameItemC2SPacket;
-import net.minecraft.server.network.packet.RequestCommandCompletionsC2SPacket;
-import net.minecraft.server.network.packet.ResourcePackStatusC2SPacket;
-import net.minecraft.server.network.packet.SelectVillagerTradeC2SPacket;
-import net.minecraft.server.network.packet.SpectatorTeleportC2SPacket;
-import net.minecraft.server.network.packet.TeleportConfirmC2SPacket;
-import net.minecraft.server.network.packet.UpdateBeaconC2SPacket;
-import net.minecraft.server.network.packet.UpdateCommandBlockC2SPacket;
-import net.minecraft.server.network.packet.UpdateCommandBlockMinecartC2SPacket;
-import net.minecraft.server.network.packet.UpdateDifficultyC2SPacket;
-import net.minecraft.server.network.packet.UpdateDifficultyLockC2SPacket;
-import net.minecraft.server.network.packet.UpdateJigsawC2SPacket;
-import net.minecraft.server.network.packet.UpdatePlayerAbilitiesC2SPacket;
-import net.minecraft.server.network.packet.UpdateSelectedSlotC2SPacket;
-import net.minecraft.server.network.packet.UpdateSignC2SPacket;
-import net.minecraft.server.network.packet.UpdateStructureBlockC2SPacket;
-import net.minecraft.server.network.packet.VehicleMoveC2SPacket;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.text.LiteralText;
 import net.minecraft.text.Text;
@@ -117,7 +118,7 @@ import net.minecraft.util.DefaultedList;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Hand;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.SystemUtil;
+import net.minecraft.util.Util;
 import net.minecraft.util.crash.CrashCallable;
 import net.minecraft.util.crash.CrashException;
 import net.minecraft.util.crash.CrashReport;
@@ -126,10 +127,10 @@ import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.Vec3d;
+import net.minecraft.world.CollisionView;
 import net.minecraft.world.CommandBlockExecutor;
 import net.minecraft.world.GameMode;
 import net.minecraft.world.GameRules;
-import net.minecraft.world.ViewableWorld;
 import net.minecraft.world.dimension.DimensionType;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
@@ -137,7 +138,7 @@ import org.apache.logging.log4j.Logger;
 
 public class ServerPlayNetworkHandler implements ServerPlayPacketListener {
 	private static final Logger LOGGER = LogManager.getLogger();
-	public final ClientConnection client;
+	public final ClientConnection connection;
 	private final MinecraftServer server;
 	public ServerPlayerEntity player;
 	private int ticks;
@@ -172,7 +173,7 @@ public class ServerPlayNetworkHandler implements ServerPlayPacketListener {
 
 	public ServerPlayNetworkHandler(MinecraftServer minecraftServer, ClientConnection clientConnection, ServerPlayerEntity serverPlayerEntity) {
 		this.server = minecraftServer;
-		this.client = clientConnection;
+		this.connection = clientConnection;
 		clientConnection.setPacketListener(this);
 		this.player = serverPlayerEntity;
 		serverPlayerEntity.networkHandler = this;
@@ -181,7 +182,7 @@ public class ServerPlayNetworkHandler implements ServerPlayPacketListener {
 	public void tick() {
 		this.syncWithPlayerPosition();
 		this.player.method_14226();
-		this.player.setPositionAnglesAndUpdate(this.lastTickX, this.lastTickY, this.lastTickZ, this.player.yaw, this.player.pitch);
+		this.player.updatePositionAndAngles(this.lastTickX, this.lastTickY, this.lastTickZ, this.player.yaw, this.player.pitch);
 		this.ticks++;
 		this.lastTickMovePacketsCount = this.movePacketsCount;
 		if (this.floating) {
@@ -220,7 +221,7 @@ public class ServerPlayNetworkHandler implements ServerPlayPacketListener {
 		}
 
 		this.server.getProfiler().push("keepAlive");
-		long l = SystemUtil.getMeasuringTimeMs();
+		long l = Util.getMeasuringTimeMs();
 		if (l - this.lastKeepAliveTime >= 15000L) {
 			if (this.waitingForKeepAlive) {
 				this.disconnect(new TranslatableText("disconnect.timeout"));
@@ -243,7 +244,7 @@ public class ServerPlayNetworkHandler implements ServerPlayPacketListener {
 
 		if (this.player.getLastActionTime() > 0L
 			&& this.server.getPlayerIdleTimeout() > 0
-			&& SystemUtil.getMeasuringTimeMs() - this.player.getLastActionTime() > (long)(this.server.getPlayerIdleTimeout() * 1000 * 60)) {
+			&& Util.getMeasuringTimeMs() - this.player.getLastActionTime() > (long)(this.server.getPlayerIdleTimeout() * 1000 * 60)) {
 			this.disconnect(new TranslatableText("multiplayer.disconnect.idling"));
 		}
 	}
@@ -259,24 +260,23 @@ public class ServerPlayNetworkHandler implements ServerPlayPacketListener {
 
 	@Override
 	public ClientConnection getConnection() {
-		return this.client;
+		return this.connection;
 	}
 
 	private boolean isServerOwner() {
 		return this.server.isOwner(this.player.getGameProfile());
 	}
 
-	public void disconnect(Text text) {
-		this.client.send(new DisconnectS2CPacket(text), future -> this.client.disconnect(text));
-		this.client.disableAutoRead();
-		this.server.executeSync(this.client::handleDisconnection);
+	public void disconnect(Text reason) {
+		this.connection.send(new DisconnectS2CPacket(reason), future -> this.connection.disconnect(reason));
+		this.connection.disableAutoRead();
+		this.server.submitAndJoin(this.connection::handleDisconnection);
 	}
 
 	@Override
-	public void onPlayerInput(PlayerInputC2SPacket playerInputC2SPacket) {
-		NetworkThreadUtils.forceMainThread(playerInputC2SPacket, this, this.player.getServerWorld());
-		this.player
-			.method_14218(playerInputC2SPacket.getSideways(), playerInputC2SPacket.getForward(), playerInputC2SPacket.isJumping(), playerInputC2SPacket.isSneaking());
+	public void onPlayerInput(PlayerInputC2SPacket packet) {
+		NetworkThreadUtils.forceMainThread(packet, this, this.player.getServerWorld());
+		this.player.method_14218(packet.getSideways(), packet.getForward(), packet.isJumping(), packet.isSneaking());
 	}
 
 	private static boolean validatePlayerMove(PlayerMoveC2SPacket playerMoveC2SPacket) {
@@ -298,9 +298,9 @@ public class ServerPlayNetworkHandler implements ServerPlayPacketListener {
 	}
 
 	@Override
-	public void onVehicleMove(VehicleMoveC2SPacket vehicleMoveC2SPacket) {
-		NetworkThreadUtils.forceMainThread(vehicleMoveC2SPacket, this, this.player.getServerWorld());
-		if (validateVehicleMove(vehicleMoveC2SPacket)) {
+	public void onVehicleMove(VehicleMoveC2SPacket packet) {
+		NetworkThreadUtils.forceMainThread(packet, this, this.player.getServerWorld());
+		if (validateVehicleMove(packet)) {
 			this.disconnect(new TranslatableText("multiplayer.disconnect.invalid_vehicle_movement"));
 		} else {
 			Entity entity = this.player.getRootVehicle();
@@ -309,11 +309,11 @@ public class ServerPlayNetworkHandler implements ServerPlayPacketListener {
 				double d = entity.x;
 				double e = entity.y;
 				double f = entity.z;
-				double g = vehicleMoveC2SPacket.getX();
-				double h = vehicleMoveC2SPacket.getY();
-				double i = vehicleMoveC2SPacket.getZ();
-				float j = vehicleMoveC2SPacket.getYaw();
-				float k = vehicleMoveC2SPacket.getPitch();
+				double g = packet.getX();
+				double h = packet.getY();
+				double i = packet.getZ();
+				float j = packet.getYaw();
+				float k = packet.getPitch();
 				double l = g - this.lastTickRiddenX;
 				double m = h - this.lastTickRiddenY;
 				double n = i - this.lastTickRiddenZ;
@@ -321,7 +321,7 @@ public class ServerPlayNetworkHandler implements ServerPlayPacketListener {
 				double p = l * l + m * m + n * n;
 				if (p - o > 100.0 && !this.isServerOwner()) {
 					LOGGER.warn("{} (vehicle of {}) moved too quickly! {},{},{}", entity.getName().getString(), this.player.getName().getString(), l, m, n);
-					this.client.send(new VehicleMoveS2CPacket(entity));
+					this.connection.send(new VehicleMoveS2CPacket(entity));
 					return;
 				}
 
@@ -344,15 +344,15 @@ public class ServerPlayNetworkHandler implements ServerPlayPacketListener {
 					LOGGER.warn("{} moved wrongly!", entity.getName().getString());
 				}
 
-				entity.setPositionAnglesAndUpdate(g, h, i, j, k);
+				entity.updatePositionAndAngles(g, h, i, j, k);
 				boolean bl3 = serverWorld.doesNotCollide(entity, entity.getBoundingBox().contract(0.0625));
 				if (bl && (bl2 || !bl3)) {
-					entity.setPositionAnglesAndUpdate(d, e, f, j, k);
-					this.client.send(new VehicleMoveS2CPacket(entity));
+					entity.updatePositionAndAngles(d, e, f, j, k);
+					this.connection.send(new VehicleMoveS2CPacket(entity));
 					return;
 				}
 
-				this.player.getServerWorld().method_14178().updateCameraPosition(this.player);
+				this.player.getServerWorld().getChunkManager().updateCameraPosition(this.player);
 				this.player.method_7282(this.player.x - d, this.player.y - e, this.player.z - f);
 				this.ridingEntity = m >= -0.03125
 					&& !this.server.isFlightEnabled()
@@ -365,11 +365,11 @@ public class ServerPlayNetworkHandler implements ServerPlayPacketListener {
 	}
 
 	@Override
-	public void onTeleportConfirm(TeleportConfirmC2SPacket teleportConfirmC2SPacket) {
-		NetworkThreadUtils.forceMainThread(teleportConfirmC2SPacket, this, this.player.getServerWorld());
-		if (teleportConfirmC2SPacket.getTeleportId() == this.requestedTeleportId) {
+	public void onTeleportConfirm(TeleportConfirmC2SPacket packet) {
+		NetworkThreadUtils.forceMainThread(packet, this, this.player.getServerWorld());
+		if (packet.getTeleportId() == this.requestedTeleportId) {
 			this.player
-				.setPositionAnglesAndUpdate(this.requestedTeleportPos.x, this.requestedTeleportPos.y, this.requestedTeleportPos.z, this.player.yaw, this.player.pitch);
+				.updatePositionAndAngles(this.requestedTeleportPos.x, this.requestedTeleportPos.y, this.requestedTeleportPos.z, this.player.yaw, this.player.pitch);
 			this.updatedX = this.requestedTeleportPos.x;
 			this.updatedY = this.requestedTeleportPos.y;
 			this.updatedZ = this.requestedTeleportPos.z;
@@ -382,38 +382,38 @@ public class ServerPlayNetworkHandler implements ServerPlayPacketListener {
 	}
 
 	@Override
-	public void onRecipeBookData(RecipeBookDataC2SPacket recipeBookDataC2SPacket) {
-		NetworkThreadUtils.forceMainThread(recipeBookDataC2SPacket, this, this.player.getServerWorld());
-		if (recipeBookDataC2SPacket.getMode() == RecipeBookDataC2SPacket.Mode.SHOWN) {
-			this.server.getRecipeManager().get(recipeBookDataC2SPacket.getRecipeId()).ifPresent(this.player.getRecipeBook()::onRecipeDisplayed);
-		} else if (recipeBookDataC2SPacket.getMode() == RecipeBookDataC2SPacket.Mode.SETTINGS) {
-			this.player.getRecipeBook().setGuiOpen(recipeBookDataC2SPacket.isGuiOpen());
-			this.player.getRecipeBook().setFilteringCraftable(recipeBookDataC2SPacket.isFilteringCraftable());
-			this.player.getRecipeBook().setFurnaceGuiOpen(recipeBookDataC2SPacket.isFurnaceGuiOpen());
-			this.player.getRecipeBook().setFurnaceFilteringCraftable(recipeBookDataC2SPacket.isFurnaceFilteringCraftable());
-			this.player.getRecipeBook().setBlastFurnaceGuiOpen(recipeBookDataC2SPacket.isBlastFurnaceGuiOpen());
-			this.player.getRecipeBook().setBlastFurnaceFilteringCraftable(recipeBookDataC2SPacket.isBlastFurnaceFilteringCraftable());
-			this.player.getRecipeBook().setSmokerGuiOpen(recipeBookDataC2SPacket.isSmokerGuiOpen());
-			this.player.getRecipeBook().setSmokerFilteringCraftable(recipeBookDataC2SPacket.isSmokerGuiFilteringCraftable());
+	public void onRecipeBookData(RecipeBookDataC2SPacket packet) {
+		NetworkThreadUtils.forceMainThread(packet, this, this.player.getServerWorld());
+		if (packet.getMode() == RecipeBookDataC2SPacket.Mode.SHOWN) {
+			this.server.getRecipeManager().get(packet.getRecipeId()).ifPresent(this.player.getRecipeBook()::onRecipeDisplayed);
+		} else if (packet.getMode() == RecipeBookDataC2SPacket.Mode.SETTINGS) {
+			this.player.getRecipeBook().setGuiOpen(packet.isGuiOpen());
+			this.player.getRecipeBook().setFilteringCraftable(packet.isFilteringCraftable());
+			this.player.getRecipeBook().setFurnaceGuiOpen(packet.isFurnaceGuiOpen());
+			this.player.getRecipeBook().setFurnaceFilteringCraftable(packet.isFurnaceFilteringCraftable());
+			this.player.getRecipeBook().setBlastFurnaceGuiOpen(packet.isBlastFurnaceGuiOpen());
+			this.player.getRecipeBook().setBlastFurnaceFilteringCraftable(packet.isBlastFurnaceFilteringCraftable());
+			this.player.getRecipeBook().setSmokerGuiOpen(packet.isSmokerGuiOpen());
+			this.player.getRecipeBook().setSmokerFilteringCraftable(packet.isSmokerGuiFilteringCraftable());
 		}
 	}
 
 	@Override
-	public void onAdvancementTab(AdvancementTabC2SPacket advancementTabC2SPacket) {
-		NetworkThreadUtils.forceMainThread(advancementTabC2SPacket, this, this.player.getServerWorld());
-		if (advancementTabC2SPacket.getAction() == AdvancementTabC2SPacket.Action.OPENED_TAB) {
-			Identifier identifier = advancementTabC2SPacket.getTabToOpen();
+	public void onAdvancementTab(AdvancementTabC2SPacket packet) {
+		NetworkThreadUtils.forceMainThread(packet, this, this.player.getServerWorld());
+		if (packet.getAction() == AdvancementTabC2SPacket.Action.OPENED_TAB) {
+			Identifier identifier = packet.getTabToOpen();
 			Advancement advancement = this.server.getAdvancementManager().get(identifier);
 			if (advancement != null) {
-				this.player.getAdvancementManager().setDisplayTab(advancement);
+				this.player.getAdvancementTracker().setDisplayTab(advancement);
 			}
 		}
 	}
 
 	@Override
-	public void onRequestCommandCompletions(RequestCommandCompletionsC2SPacket requestCommandCompletionsC2SPacket) {
-		NetworkThreadUtils.forceMainThread(requestCommandCompletionsC2SPacket, this, this.player.getServerWorld());
-		StringReader stringReader = new StringReader(requestCommandCompletionsC2SPacket.getPartialCommand());
+	public void onRequestCommandCompletions(RequestCommandCompletionsC2SPacket packet) {
+		NetworkThreadUtils.forceMainThread(packet, this, this.player.getServerWorld());
+		StringReader stringReader = new StringReader(packet.getPartialCommand());
 		if (stringReader.canRead() && stringReader.peek() == '/') {
 			stringReader.skip();
 		}
@@ -423,12 +423,12 @@ public class ServerPlayNetworkHandler implements ServerPlayPacketListener {
 			.getCommandManager()
 			.getDispatcher()
 			.getCompletionSuggestions(parseResults)
-			.thenAccept(suggestions -> this.client.send(new CommandSuggestionsS2CPacket(requestCommandCompletionsC2SPacket.getCompletionId(), suggestions)));
+			.thenAccept(suggestions -> this.connection.send(new CommandSuggestionsS2CPacket(packet.getCompletionId(), suggestions)));
 	}
 
 	@Override
-	public void onUpdateCommandBlock(UpdateCommandBlockC2SPacket updateCommandBlockC2SPacket) {
-		NetworkThreadUtils.forceMainThread(updateCommandBlockC2SPacket, this, this.player.getServerWorld());
+	public void onUpdateCommandBlock(UpdateCommandBlockC2SPacket packet) {
+		NetworkThreadUtils.forceMainThread(packet, this, this.player.getServerWorld());
 		if (!this.server.areCommandBlocksEnabled()) {
 			this.player.sendMessage(new TranslatableText("advMode.notEnabled"));
 		} else if (!this.player.isCreativeLevelTwoOp()) {
@@ -436,38 +436,30 @@ public class ServerPlayNetworkHandler implements ServerPlayPacketListener {
 		} else {
 			CommandBlockExecutor commandBlockExecutor = null;
 			CommandBlockBlockEntity commandBlockBlockEntity = null;
-			BlockPos blockPos = updateCommandBlockC2SPacket.getBlockPos();
+			BlockPos blockPos = packet.getBlockPos();
 			BlockEntity blockEntity = this.player.world.getBlockEntity(blockPos);
 			if (blockEntity instanceof CommandBlockBlockEntity) {
 				commandBlockBlockEntity = (CommandBlockBlockEntity)blockEntity;
 				commandBlockExecutor = commandBlockBlockEntity.getCommandExecutor();
 			}
 
-			String string = updateCommandBlockC2SPacket.getCommand();
-			boolean bl = updateCommandBlockC2SPacket.shouldTrackOutput();
+			String string = packet.getCommand();
+			boolean bl = packet.shouldTrackOutput();
 			if (commandBlockExecutor != null) {
 				Direction direction = this.player.world.getBlockState(blockPos).get(CommandBlock.FACING);
-				switch (updateCommandBlockC2SPacket.getType()) {
+				switch (packet.getType()) {
 					case SEQUENCE: {
 						BlockState blockState = Blocks.CHAIN_COMMAND_BLOCK.getDefaultState();
 						this.player
 							.world
-							.setBlockState(
-								blockPos,
-								blockState.with(CommandBlock.FACING, direction).with(CommandBlock.CONDITIONAL, Boolean.valueOf(updateCommandBlockC2SPacket.isConditional())),
-								2
-							);
+							.setBlockState(blockPos, blockState.with(CommandBlock.FACING, direction).with(CommandBlock.CONDITIONAL, Boolean.valueOf(packet.isConditional())), 2);
 						break;
 					}
 					case AUTO: {
 						BlockState blockState = Blocks.REPEATING_COMMAND_BLOCK.getDefaultState();
 						this.player
 							.world
-							.setBlockState(
-								blockPos,
-								blockState.with(CommandBlock.FACING, direction).with(CommandBlock.CONDITIONAL, Boolean.valueOf(updateCommandBlockC2SPacket.isConditional())),
-								2
-							);
+							.setBlockState(blockPos, blockState.with(CommandBlock.FACING, direction).with(CommandBlock.CONDITIONAL, Boolean.valueOf(packet.isConditional())), 2);
 						break;
 					}
 					case REDSTONE:
@@ -475,15 +467,11 @@ public class ServerPlayNetworkHandler implements ServerPlayPacketListener {
 						BlockState blockState = Blocks.COMMAND_BLOCK.getDefaultState();
 						this.player
 							.world
-							.setBlockState(
-								blockPos,
-								blockState.with(CommandBlock.FACING, direction).with(CommandBlock.CONDITIONAL, Boolean.valueOf(updateCommandBlockC2SPacket.isConditional())),
-								2
-							);
+							.setBlockState(blockPos, blockState.with(CommandBlock.FACING, direction).with(CommandBlock.CONDITIONAL, Boolean.valueOf(packet.isConditional())), 2);
 					}
 				}
 
-				blockEntity.validate();
+				blockEntity.cancelRemoval();
 				this.player.world.setBlockEntity(blockPos, blockEntity);
 				commandBlockExecutor.setCommand(string);
 				commandBlockExecutor.shouldTrackOutput(bl);
@@ -491,7 +479,7 @@ public class ServerPlayNetworkHandler implements ServerPlayPacketListener {
 					commandBlockExecutor.setLastOutput(null);
 				}
 
-				commandBlockBlockEntity.setAuto(updateCommandBlockC2SPacket.isAlwaysActive());
+				commandBlockBlockEntity.setAuto(packet.isAlwaysActive());
 				commandBlockExecutor.markDirty();
 				if (!ChatUtil.isEmpty(string)) {
 					this.player.sendMessage(new TranslatableText("advMode.setCommand.success", string));
@@ -501,46 +489,44 @@ public class ServerPlayNetworkHandler implements ServerPlayPacketListener {
 	}
 
 	@Override
-	public void onUpdateCommandBlockMinecart(UpdateCommandBlockMinecartC2SPacket updateCommandBlockMinecartC2SPacket) {
-		NetworkThreadUtils.forceMainThread(updateCommandBlockMinecartC2SPacket, this, this.player.getServerWorld());
+	public void onUpdateCommandBlockMinecart(UpdateCommandBlockMinecartC2SPacket packet) {
+		NetworkThreadUtils.forceMainThread(packet, this, this.player.getServerWorld());
 		if (!this.server.areCommandBlocksEnabled()) {
 			this.player.sendMessage(new TranslatableText("advMode.notEnabled"));
 		} else if (!this.player.isCreativeLevelTwoOp()) {
 			this.player.sendMessage(new TranslatableText("advMode.notAllowed"));
 		} else {
-			CommandBlockExecutor commandBlockExecutor = updateCommandBlockMinecartC2SPacket.getMinecartCommandExecutor(this.player.world);
+			CommandBlockExecutor commandBlockExecutor = packet.getMinecartCommandExecutor(this.player.world);
 			if (commandBlockExecutor != null) {
-				commandBlockExecutor.setCommand(updateCommandBlockMinecartC2SPacket.getCommand());
-				commandBlockExecutor.shouldTrackOutput(updateCommandBlockMinecartC2SPacket.shouldTrackOutput());
-				if (!updateCommandBlockMinecartC2SPacket.shouldTrackOutput()) {
+				commandBlockExecutor.setCommand(packet.getCommand());
+				commandBlockExecutor.shouldTrackOutput(packet.shouldTrackOutput());
+				if (!packet.shouldTrackOutput()) {
 					commandBlockExecutor.setLastOutput(null);
 				}
 
 				commandBlockExecutor.markDirty();
-				this.player.sendMessage(new TranslatableText("advMode.setCommand.success", updateCommandBlockMinecartC2SPacket.getCommand()));
+				this.player.sendMessage(new TranslatableText("advMode.setCommand.success", packet.getCommand()));
 			}
 		}
 	}
 
 	@Override
-	public void onPickFromInventory(PickFromInventoryC2SPacket pickFromInventoryC2SPacket) {
-		NetworkThreadUtils.forceMainThread(pickFromInventoryC2SPacket, this, this.player.getServerWorld());
-		this.player.inventory.swapSlotWithHotbar(pickFromInventoryC2SPacket.getSlot());
+	public void onPickFromInventory(PickFromInventoryC2SPacket packet) {
+		NetworkThreadUtils.forceMainThread(packet, this, this.player.getServerWorld());
+		this.player.inventory.swapSlotWithHotbar(packet.getSlot());
 		this.player
 			.networkHandler
-			.sendPacket(new GuiSlotUpdateS2CPacket(-2, this.player.inventory.selectedSlot, this.player.inventory.getInvStack(this.player.inventory.selectedSlot)));
-		this.player
-			.networkHandler
-			.sendPacket(new GuiSlotUpdateS2CPacket(-2, pickFromInventoryC2SPacket.getSlot(), this.player.inventory.getInvStack(pickFromInventoryC2SPacket.getSlot())));
+			.sendPacket(new ContainerSlotUpdateS2CPacket(-2, this.player.inventory.selectedSlot, this.player.inventory.getInvStack(this.player.inventory.selectedSlot)));
+		this.player.networkHandler.sendPacket(new ContainerSlotUpdateS2CPacket(-2, packet.getSlot(), this.player.inventory.getInvStack(packet.getSlot())));
 		this.player.networkHandler.sendPacket(new HeldItemChangeS2CPacket(this.player.inventory.selectedSlot));
 	}
 
 	@Override
-	public void onRenameItem(RenameItemC2SPacket renameItemC2SPacket) {
-		NetworkThreadUtils.forceMainThread(renameItemC2SPacket, this, this.player.getServerWorld());
+	public void onRenameItem(RenameItemC2SPacket packet) {
+		NetworkThreadUtils.forceMainThread(packet, this, this.player.getServerWorld());
 		if (this.player.container instanceof AnvilContainer) {
 			AnvilContainer anvilContainer = (AnvilContainer)this.player.container;
-			String string = SharedConstants.stripInvalidChars(renameItemC2SPacket.getItemName());
+			String string = SharedConstants.stripInvalidChars(packet.getItemName());
 			if (string.length() <= 35) {
 				anvilContainer.setNewItemName(string);
 			}
@@ -548,43 +534,43 @@ public class ServerPlayNetworkHandler implements ServerPlayPacketListener {
 	}
 
 	@Override
-	public void onUpdateBeacon(UpdateBeaconC2SPacket updateBeaconC2SPacket) {
-		NetworkThreadUtils.forceMainThread(updateBeaconC2SPacket, this, this.player.getServerWorld());
+	public void onUpdateBeacon(UpdateBeaconC2SPacket packet) {
+		NetworkThreadUtils.forceMainThread(packet, this, this.player.getServerWorld());
 		if (this.player.container instanceof BeaconContainer) {
-			((BeaconContainer)this.player.container).setEffects(updateBeaconC2SPacket.getPrimaryEffectId(), updateBeaconC2SPacket.getSecondaryEffectId());
+			((BeaconContainer)this.player.container).setEffects(packet.getPrimaryEffectId(), packet.getSecondaryEffectId());
 		}
 	}
 
 	@Override
-	public void onStructureBlockUpdate(UpdateStructureBlockC2SPacket updateStructureBlockC2SPacket) {
-		NetworkThreadUtils.forceMainThread(updateStructureBlockC2SPacket, this, this.player.getServerWorld());
+	public void onStructureBlockUpdate(UpdateStructureBlockC2SPacket packet) {
+		NetworkThreadUtils.forceMainThread(packet, this, this.player.getServerWorld());
 		if (this.player.isCreativeLevelTwoOp()) {
-			BlockPos blockPos = updateStructureBlockC2SPacket.getPos();
+			BlockPos blockPos = packet.getPos();
 			BlockState blockState = this.player.world.getBlockState(blockPos);
 			BlockEntity blockEntity = this.player.world.getBlockEntity(blockPos);
 			if (blockEntity instanceof StructureBlockBlockEntity) {
 				StructureBlockBlockEntity structureBlockBlockEntity = (StructureBlockBlockEntity)blockEntity;
-				structureBlockBlockEntity.setMode(updateStructureBlockC2SPacket.getMode());
-				structureBlockBlockEntity.setStructureName(updateStructureBlockC2SPacket.getStructureName());
-				structureBlockBlockEntity.setOffset(updateStructureBlockC2SPacket.getOffset());
-				structureBlockBlockEntity.setSize(updateStructureBlockC2SPacket.getSize());
-				structureBlockBlockEntity.setMirror(updateStructureBlockC2SPacket.getMirror());
-				structureBlockBlockEntity.setRotation(updateStructureBlockC2SPacket.getRotation());
-				structureBlockBlockEntity.setMetadata(updateStructureBlockC2SPacket.getMetadata());
-				structureBlockBlockEntity.setIgnoreEntities(updateStructureBlockC2SPacket.getIgnoreEntities());
-				structureBlockBlockEntity.setShowAir(updateStructureBlockC2SPacket.shouldShowAir());
-				structureBlockBlockEntity.setShowBoundingBox(updateStructureBlockC2SPacket.shouldShowBoundingBox());
-				structureBlockBlockEntity.setIntegrity(updateStructureBlockC2SPacket.getIntegrity());
-				structureBlockBlockEntity.setSeed(updateStructureBlockC2SPacket.getSeed());
+				structureBlockBlockEntity.setMode(packet.getMode());
+				structureBlockBlockEntity.setStructureName(packet.getStructureName());
+				structureBlockBlockEntity.setOffset(packet.getOffset());
+				structureBlockBlockEntity.setSize(packet.getSize());
+				structureBlockBlockEntity.setMirror(packet.getMirror());
+				structureBlockBlockEntity.setRotation(packet.getRotation());
+				structureBlockBlockEntity.setMetadata(packet.getMetadata());
+				structureBlockBlockEntity.setIgnoreEntities(packet.getIgnoreEntities());
+				structureBlockBlockEntity.setShowAir(packet.shouldShowAir());
+				structureBlockBlockEntity.setShowBoundingBox(packet.shouldShowBoundingBox());
+				structureBlockBlockEntity.setIntegrity(packet.getIntegrity());
+				structureBlockBlockEntity.setSeed(packet.getSeed());
 				if (structureBlockBlockEntity.hasStructureName()) {
 					String string = structureBlockBlockEntity.getStructureName();
-					if (updateStructureBlockC2SPacket.getAction() == StructureBlockBlockEntity.Action.SAVE_AREA) {
+					if (packet.getAction() == StructureBlockBlockEntity.Action.SAVE_AREA) {
 						if (structureBlockBlockEntity.saveStructure()) {
 							this.player.addChatMessage(new TranslatableText("structure_block.save_success", string), false);
 						} else {
 							this.player.addChatMessage(new TranslatableText("structure_block.save_failure", string), false);
 						}
-					} else if (updateStructureBlockC2SPacket.getAction() == StructureBlockBlockEntity.Action.LOAD_AREA) {
+					} else if (packet.getAction() == StructureBlockBlockEntity.Action.LOAD_AREA) {
 						if (!structureBlockBlockEntity.isStructureAvailable()) {
 							this.player.addChatMessage(new TranslatableText("structure_block.load_not_found", string), false);
 						} else if (structureBlockBlockEntity.loadStructure()) {
@@ -592,7 +578,7 @@ public class ServerPlayNetworkHandler implements ServerPlayPacketListener {
 						} else {
 							this.player.addChatMessage(new TranslatableText("structure_block.load_prepare", string), false);
 						}
-					} else if (updateStructureBlockC2SPacket.getAction() == StructureBlockBlockEntity.Action.SCAN_AREA) {
+					} else if (packet.getAction() == StructureBlockBlockEntity.Action.SCAN_AREA) {
 						if (structureBlockBlockEntity.detectStructureSize()) {
 							this.player.addChatMessage(new TranslatableText("structure_block.size_success", string), false);
 						} else {
@@ -600,7 +586,7 @@ public class ServerPlayNetworkHandler implements ServerPlayPacketListener {
 						}
 					}
 				} else {
-					this.player.addChatMessage(new TranslatableText("structure_block.invalid_structure_name", updateStructureBlockC2SPacket.getStructureName()), false);
+					this.player.addChatMessage(new TranslatableText("structure_block.invalid_structure_name", packet.getStructureName()), false);
 				}
 
 				structureBlockBlockEntity.markDirty();
@@ -610,17 +596,17 @@ public class ServerPlayNetworkHandler implements ServerPlayPacketListener {
 	}
 
 	@Override
-	public void onJigsawUpdate(UpdateJigsawC2SPacket updateJigsawC2SPacket) {
-		NetworkThreadUtils.forceMainThread(updateJigsawC2SPacket, this, this.player.getServerWorld());
+	public void onJigsawUpdate(UpdateJigsawC2SPacket packet) {
+		NetworkThreadUtils.forceMainThread(packet, this, this.player.getServerWorld());
 		if (this.player.isCreativeLevelTwoOp()) {
-			BlockPos blockPos = updateJigsawC2SPacket.getPos();
+			BlockPos blockPos = packet.getPos();
 			BlockState blockState = this.player.world.getBlockState(blockPos);
 			BlockEntity blockEntity = this.player.world.getBlockEntity(blockPos);
 			if (blockEntity instanceof JigsawBlockEntity) {
 				JigsawBlockEntity jigsawBlockEntity = (JigsawBlockEntity)blockEntity;
-				jigsawBlockEntity.setAttachmentType(updateJigsawC2SPacket.getAttachmentType());
-				jigsawBlockEntity.setTargetPool(updateJigsawC2SPacket.getTargetPool());
-				jigsawBlockEntity.setFinalState(updateJigsawC2SPacket.getFinalState());
+				jigsawBlockEntity.setAttachmentType(packet.getAttachmentType());
+				jigsawBlockEntity.setTargetPool(packet.getTargetPool());
+				jigsawBlockEntity.setFinalState(packet.getFinalState());
 				jigsawBlockEntity.markDirty();
 				this.player.world.updateListeners(blockPos, blockState, blockState, 3);
 			}
@@ -628,9 +614,9 @@ public class ServerPlayNetworkHandler implements ServerPlayPacketListener {
 	}
 
 	@Override
-	public void onVillagerTradeSelect(SelectVillagerTradeC2SPacket selectVillagerTradeC2SPacket) {
-		NetworkThreadUtils.forceMainThread(selectVillagerTradeC2SPacket, this, this.player.getServerWorld());
-		int i = selectVillagerTradeC2SPacket.method_12431();
+	public void onVillagerTradeSelect(SelectVillagerTradeC2SPacket packet) {
+		NetworkThreadUtils.forceMainThread(packet, this, this.player.getServerWorld());
+		int i = packet.getTradeId();
 		Container container = this.player.container;
 		if (container instanceof MerchantContainer) {
 			MerchantContainer merchantContainer = (MerchantContainer)container;
@@ -640,17 +626,17 @@ public class ServerPlayNetworkHandler implements ServerPlayPacketListener {
 	}
 
 	@Override
-	public void onBookUpdate(BookUpdateC2SPacket bookUpdateC2SPacket) {
-		ItemStack itemStack = bookUpdateC2SPacket.getBook();
+	public void onBookUpdate(BookUpdateC2SPacket packet) {
+		ItemStack itemStack = packet.getBook();
 		if (!itemStack.isEmpty()) {
 			if (WritableBookItem.isValid(itemStack.getTag())) {
-				ItemStack itemStack2 = this.player.getStackInHand(bookUpdateC2SPacket.getHand());
+				ItemStack itemStack2 = this.player.getStackInHand(packet.getHand());
 				if (itemStack.getItem() == Items.WRITABLE_BOOK && itemStack2.getItem() == Items.WRITABLE_BOOK) {
-					if (bookUpdateC2SPacket.wasSigned()) {
+					if (packet.wasSigned()) {
 						ItemStack itemStack3 = new ItemStack(Items.WRITTEN_BOOK);
 						CompoundTag compoundTag = itemStack2.getTag();
 						if (compoundTag != null) {
-							itemStack3.setTag(compoundTag.method_10553());
+							itemStack3.setTag(compoundTag.copy());
 						}
 
 						itemStack3.putSubTag("author", new StringTag(this.player.getName().getString()));
@@ -661,11 +647,11 @@ public class ServerPlayNetworkHandler implements ServerPlayPacketListener {
 							String string = listTag.getString(i);
 							Text text = new LiteralText(string);
 							string = Text.Serializer.toJson(text);
-							listTag.method_10606(i, new StringTag(string));
+							listTag.set(i, (Tag)(new StringTag(string)));
 						}
 
 						itemStack3.putSubTag("pages", listTag);
-						this.player.setStackInHand(bookUpdateC2SPacket.getHand(), itemStack3);
+						this.player.setStackInHand(packet.getHand(), itemStack3);
 					} else {
 						itemStack2.putSubTag("pages", itemStack.getTag().getList("pages", 8));
 					}
@@ -675,31 +661,31 @@ public class ServerPlayNetworkHandler implements ServerPlayPacketListener {
 	}
 
 	@Override
-	public void onQueryEntityNbt(QueryEntityNbtC2SPacket queryEntityNbtC2SPacket) {
-		NetworkThreadUtils.forceMainThread(queryEntityNbtC2SPacket, this, this.player.getServerWorld());
+	public void onQueryEntityNbt(QueryEntityNbtC2SPacket packet) {
+		NetworkThreadUtils.forceMainThread(packet, this, this.player.getServerWorld());
 		if (this.player.allowsPermissionLevel(2)) {
-			Entity entity = this.player.getServerWorld().getEntityById(queryEntityNbtC2SPacket.getEntityId());
+			Entity entity = this.player.getServerWorld().getEntityById(packet.getEntityId());
 			if (entity != null) {
 				CompoundTag compoundTag = entity.toTag(new CompoundTag());
-				this.player.networkHandler.sendPacket(new TagQueryResponseS2CPacket(queryEntityNbtC2SPacket.getTransactionId(), compoundTag));
+				this.player.networkHandler.sendPacket(new TagQueryResponseS2CPacket(packet.getTransactionId(), compoundTag));
 			}
 		}
 	}
 
 	@Override
-	public void onQueryBlockNbt(QueryBlockNbtC2SPacket queryBlockNbtC2SPacket) {
-		NetworkThreadUtils.forceMainThread(queryBlockNbtC2SPacket, this, this.player.getServerWorld());
+	public void onQueryBlockNbt(QueryBlockNbtC2SPacket packet) {
+		NetworkThreadUtils.forceMainThread(packet, this, this.player.getServerWorld());
 		if (this.player.allowsPermissionLevel(2)) {
-			BlockEntity blockEntity = this.player.getServerWorld().getBlockEntity(queryBlockNbtC2SPacket.getPos());
+			BlockEntity blockEntity = this.player.getServerWorld().getBlockEntity(packet.getPos());
 			CompoundTag compoundTag = blockEntity != null ? blockEntity.toTag(new CompoundTag()) : null;
-			this.player.networkHandler.sendPacket(new TagQueryResponseS2CPacket(queryBlockNbtC2SPacket.getTransactionId(), compoundTag));
+			this.player.networkHandler.sendPacket(new TagQueryResponseS2CPacket(packet.getTransactionId(), compoundTag));
 		}
 	}
 
 	@Override
-	public void onPlayerMove(PlayerMoveC2SPacket playerMoveC2SPacket) {
-		NetworkThreadUtils.forceMainThread(playerMoveC2SPacket, this, this.player.getServerWorld());
-		if (validatePlayerMove(playerMoveC2SPacket)) {
+	public void onPlayerMove(PlayerMoveC2SPacket packet) {
+		NetworkThreadUtils.forceMainThread(packet, this, this.player.getServerWorld());
+		if (validatePlayerMove(packet)) {
 			this.disconnect(new TranslatableText("multiplayer.disconnect.invalid_player_movement"));
 		} else {
 			ServerWorld serverWorld = this.server.getWorld(this.player.dimension);
@@ -716,21 +702,18 @@ public class ServerPlayNetworkHandler implements ServerPlayPacketListener {
 				} else {
 					this.teleportRequestTick = this.ticks;
 					if (this.player.hasVehicle()) {
-						this.player
-							.setPositionAnglesAndUpdate(
-								this.player.x, this.player.y, this.player.z, playerMoveC2SPacket.getYaw(this.player.yaw), playerMoveC2SPacket.getPitch(this.player.pitch)
-							);
-						this.player.getServerWorld().method_14178().updateCameraPosition(this.player);
+						this.player.updatePositionAndAngles(this.player.x, this.player.y, this.player.z, packet.getYaw(this.player.yaw), packet.getPitch(this.player.pitch));
+						this.player.getServerWorld().getChunkManager().updateCameraPosition(this.player);
 					} else {
 						double d = this.player.x;
 						double e = this.player.y;
 						double f = this.player.z;
 						double g = this.player.y;
-						double h = playerMoveC2SPacket.getX(this.player.x);
-						double i = playerMoveC2SPacket.getY(this.player.y);
-						double j = playerMoveC2SPacket.getZ(this.player.z);
-						float k = playerMoveC2SPacket.getYaw(this.player.yaw);
-						float l = playerMoveC2SPacket.getPitch(this.player.pitch);
+						double h = packet.getX(this.player.x);
+						double i = packet.getY(this.player.y);
+						double j = packet.getZ(this.player.z);
+						float k = packet.getYaw(this.player.yaw);
+						float l = packet.getPitch(this.player.pitch);
 						double m = h - this.lastTickX;
 						double n = i - this.lastTickY;
 						double o = j - this.lastTickZ;
@@ -738,9 +721,7 @@ public class ServerPlayNetworkHandler implements ServerPlayPacketListener {
 						double q = m * m + n * n + o * o;
 						if (this.player.isSleeping()) {
 							if (q > 1.0) {
-								this.requestTeleport(
-									this.player.x, this.player.y, this.player.z, playerMoveC2SPacket.getYaw(this.player.yaw), playerMoveC2SPacket.getPitch(this.player.pitch)
-								);
+								this.requestTeleport(this.player.x, this.player.y, this.player.z, packet.getYaw(this.player.yaw), packet.getPitch(this.player.pitch));
 							}
 						} else {
 							this.movePacketsCount++;
@@ -764,12 +745,12 @@ public class ServerPlayNetworkHandler implements ServerPlayPacketListener {
 							m = h - this.updatedX;
 							n = i - this.updatedY;
 							o = j - this.updatedZ;
-							if (this.player.onGround && !playerMoveC2SPacket.isOnGround() && n > 0.0) {
+							if (this.player.onGround && !packet.isOnGround() && n > 0.0) {
 								this.player.jump();
 							}
 
 							this.player.move(MovementType.PLAYER, new Vec3d(m, n, o));
-							this.player.onGround = playerMoveC2SPacket.isOnGround();
+							this.player.onGround = packet.isOnGround();
 							m = h - this.player.x;
 							n = i - this.player.y;
 							if (n > -0.5 || n < 0.5) {
@@ -788,7 +769,7 @@ public class ServerPlayNetworkHandler implements ServerPlayPacketListener {
 								LOGGER.warn("{} moved wrongly!", this.player.getName().getString());
 							}
 
-							this.player.setPositionAnglesAndUpdate(h, i, j, k, l);
+							this.player.updatePositionAndAngles(h, i, j, k, l);
 							this.player.method_7282(this.player.x - d, this.player.y - e, this.player.z - f);
 							if (!this.player.noClip && !this.player.isSleeping()) {
 								boolean bl3 = this.method_20630(serverWorld);
@@ -805,9 +786,9 @@ public class ServerPlayNetworkHandler implements ServerPlayPacketListener {
 								&& !this.player.hasStatusEffect(StatusEffects.LEVITATION)
 								&& !this.player.isFallFlying()
 								&& !serverWorld.isAreaNotEmpty(this.player.getBoundingBox().expand(0.0625).stretch(0.0, -0.55, 0.0));
-							this.player.onGround = playerMoveC2SPacket.isOnGround();
-							this.player.getServerWorld().method_14178().updateCameraPosition(this.player);
-							this.player.method_14207(this.player.y - g, playerMoveC2SPacket.isOnGround());
+							this.player.onGround = packet.isOnGround();
+							this.player.getServerWorld().getChunkManager().updateCameraPosition(this.player);
+							this.player.method_14207(this.player.y - g, packet.isOnGround());
 							this.updatedX = this.player.x;
 							this.updatedY = this.player.y;
 							this.updatedZ = this.player.z;
@@ -818,36 +799,36 @@ public class ServerPlayNetworkHandler implements ServerPlayPacketListener {
 		}
 	}
 
-	private boolean method_20630(ViewableWorld viewableWorld) {
-		return viewableWorld.doesNotCollide(this.player, this.player.getBoundingBox().contract(1.0E-5F));
+	private boolean method_20630(CollisionView collisionView) {
+		return collisionView.doesNotCollide(this.player, this.player.getBoundingBox().contract(1.0E-5F));
 	}
 
-	public void requestTeleport(double d, double e, double f, float g, float h) {
-		this.teleportRequest(d, e, f, g, h, Collections.emptySet());
+	public void requestTeleport(double x, double y, double z, float yaw, float pitch) {
+		this.teleportRequest(x, y, z, yaw, pitch, Collections.emptySet());
 	}
 
-	public void teleportRequest(double d, double e, double f, float g, float h, Set<PlayerPositionLookS2CPacket.Flag> set) {
-		double i = set.contains(PlayerPositionLookS2CPacket.Flag.X) ? this.player.x : 0.0;
-		double j = set.contains(PlayerPositionLookS2CPacket.Flag.Y) ? this.player.y : 0.0;
-		double k = set.contains(PlayerPositionLookS2CPacket.Flag.Z) ? this.player.z : 0.0;
-		float l = set.contains(PlayerPositionLookS2CPacket.Flag.Y_ROT) ? this.player.yaw : 0.0F;
-		float m = set.contains(PlayerPositionLookS2CPacket.Flag.X_ROT) ? this.player.pitch : 0.0F;
-		this.requestedTeleportPos = new Vec3d(d, e, f);
+	public void teleportRequest(double x, double y, double z, float yaw, float pitch, Set<PlayerPositionLookS2CPacket.Flag> set) {
+		double d = set.contains(PlayerPositionLookS2CPacket.Flag.X) ? this.player.x : 0.0;
+		double e = set.contains(PlayerPositionLookS2CPacket.Flag.Y) ? this.player.y : 0.0;
+		double f = set.contains(PlayerPositionLookS2CPacket.Flag.Z) ? this.player.z : 0.0;
+		float g = set.contains(PlayerPositionLookS2CPacket.Flag.Y_ROT) ? this.player.yaw : 0.0F;
+		float h = set.contains(PlayerPositionLookS2CPacket.Flag.X_ROT) ? this.player.pitch : 0.0F;
+		this.requestedTeleportPos = new Vec3d(x, y, z);
 		if (++this.requestedTeleportId == Integer.MAX_VALUE) {
 			this.requestedTeleportId = 0;
 		}
 
 		this.teleportRequestTick = this.ticks;
-		this.player.setPositionAnglesAndUpdate(d, e, f, g, h);
-		this.player.networkHandler.sendPacket(new PlayerPositionLookS2CPacket(d - i, e - j, f - k, g - l, h - m, set, this.requestedTeleportId));
+		this.player.updatePositionAndAngles(x, y, z, yaw, pitch);
+		this.player.networkHandler.sendPacket(new PlayerPositionLookS2CPacket(x - d, y - e, z - f, yaw - g, pitch - h, set, this.requestedTeleportId));
 	}
 
 	@Override
-	public void onPlayerAction(PlayerActionC2SPacket playerActionC2SPacket) {
-		NetworkThreadUtils.forceMainThread(playerActionC2SPacket, this, this.player.getServerWorld());
-		BlockPos blockPos = playerActionC2SPacket.getPos();
+	public void onPlayerAction(PlayerActionC2SPacket packet) {
+		NetworkThreadUtils.forceMainThread(packet, this, this.player.getServerWorld());
+		BlockPos blockPos = packet.getPos();
 		this.player.updateLastActionTime();
-		PlayerActionC2SPacket.Action action = playerActionC2SPacket.getAction();
+		PlayerActionC2SPacket.Action action = packet.getAction();
 		switch (action) {
 			case SWAP_HELD_ITEMS:
 				if (!this.player.isSpectator()) {
@@ -875,7 +856,7 @@ public class ServerPlayNetworkHandler implements ServerPlayPacketListener {
 			case START_DESTROY_BLOCK:
 			case ABORT_DESTROY_BLOCK:
 			case STOP_DESTROY_BLOCK:
-				this.player.interactionManager.method_14263(blockPos, action, playerActionC2SPacket.getDirection(), this.server.getWorldHeight());
+				this.player.interactionManager.method_14263(blockPos, action, packet.getDirection(), this.server.getWorldHeight());
 				return;
 			default:
 				throw new IllegalArgumentException("Invalid player action");
@@ -883,12 +864,12 @@ public class ServerPlayNetworkHandler implements ServerPlayPacketListener {
 	}
 
 	@Override
-	public void onPlayerInteractBlock(PlayerInteractBlockC2SPacket playerInteractBlockC2SPacket) {
-		NetworkThreadUtils.forceMainThread(playerInteractBlockC2SPacket, this, this.player.getServerWorld());
+	public void onPlayerInteractBlock(PlayerInteractBlockC2SPacket packet) {
+		NetworkThreadUtils.forceMainThread(packet, this, this.player.getServerWorld());
 		ServerWorld serverWorld = this.server.getWorld(this.player.dimension);
-		Hand hand = playerInteractBlockC2SPacket.getHand();
+		Hand hand = packet.getHand();
 		ItemStack itemStack = this.player.getStackInHand(hand);
-		BlockHitResult blockHitResult = playerInteractBlockC2SPacket.getHitY();
+		BlockHitResult blockHitResult = packet.getBlockHitResult();
 		BlockPos blockPos = blockHitResult.getBlockPos();
 		Direction direction = blockHitResult.getSide();
 		this.player.updateLastActionTime();
@@ -908,10 +889,10 @@ public class ServerPlayNetworkHandler implements ServerPlayPacketListener {
 	}
 
 	@Override
-	public void onPlayerInteractItem(PlayerInteractItemC2SPacket playerInteractItemC2SPacket) {
-		NetworkThreadUtils.forceMainThread(playerInteractItemC2SPacket, this, this.player.getServerWorld());
+	public void onPlayerInteractItem(PlayerInteractItemC2SPacket packet) {
+		NetworkThreadUtils.forceMainThread(packet, this, this.player.getServerWorld());
 		ServerWorld serverWorld = this.server.getWorld(this.player.dimension);
-		Hand hand = playerInteractItemC2SPacket.getHand();
+		Hand hand = packet.getHand();
 		ItemStack itemStack = this.player.getStackInHand(hand);
 		this.player.updateLastActionTime();
 		if (!itemStack.isEmpty()) {
@@ -920,11 +901,11 @@ public class ServerPlayNetworkHandler implements ServerPlayPacketListener {
 	}
 
 	@Override
-	public void onSpectatorTeleport(SpectatorTeleportC2SPacket spectatorTeleportC2SPacket) {
-		NetworkThreadUtils.forceMainThread(spectatorTeleportC2SPacket, this, this.player.getServerWorld());
+	public void onSpectatorTeleport(SpectatorTeleportC2SPacket packet) {
+		NetworkThreadUtils.forceMainThread(packet, this, this.player.getServerWorld());
 		if (this.player.isSpectator()) {
 			for (ServerWorld serverWorld : this.server.getWorlds()) {
-				Entity entity = spectatorTeleportC2SPacket.getTarget(serverWorld);
+				Entity entity = packet.getTarget(serverWorld);
 				if (entity != null) {
 					this.player.teleport(serverWorld, entity.x, entity.y, entity.z, entity.yaw, entity.pitch);
 					return;
@@ -934,21 +915,21 @@ public class ServerPlayNetworkHandler implements ServerPlayPacketListener {
 	}
 
 	@Override
-	public void onResourcePackStatus(ResourcePackStatusC2SPacket resourcePackStatusC2SPacket) {
+	public void onResourcePackStatus(ResourcePackStatusC2SPacket packet) {
 	}
 
 	@Override
-	public void onBoatPaddleState(BoatPaddleStateC2SPacket boatPaddleStateC2SPacket) {
-		NetworkThreadUtils.forceMainThread(boatPaddleStateC2SPacket, this, this.player.getServerWorld());
+	public void onBoatPaddleState(BoatPaddleStateC2SPacket packet) {
+		NetworkThreadUtils.forceMainThread(packet, this, this.player.getServerWorld());
 		Entity entity = this.player.getVehicle();
 		if (entity instanceof BoatEntity) {
-			((BoatEntity)entity).setPaddleMovings(boatPaddleStateC2SPacket.isLeftPaddling(), boatPaddleStateC2SPacket.isRightPaddling());
+			((BoatEntity)entity).setPaddleMovings(packet.isLeftPaddling(), packet.isRightPaddling());
 		}
 	}
 
 	@Override
-	public void onDisconnected(Text text) {
-		LOGGER.info("{} lost connection: {}", this.player.getName().getString(), text.getString());
+	public void onDisconnected(Text reason) {
+		LOGGER.info("{} lost connection: {}", this.player.getName().getString(), reason.getString());
 		this.server.forcePlayerSampleUpdate();
 		this.server.getPlayerManager().sendToAll(new TranslatableText("multiplayer.player.left", this.player.getDisplayName()).formatted(Formatting.YELLOW));
 		this.player.method_14231();
@@ -977,7 +958,7 @@ public class ServerPlayNetworkHandler implements ServerPlayPacketListener {
 		}
 
 		try {
-			this.client.send(packet, genericFutureListener);
+			this.connection.send(packet, genericFutureListener);
 		} catch (Throwable var6) {
 			CrashReport crashReport = CrashReport.create(var6, "Sending packet");
 			CrashReportSection crashReportSection = crashReport.addElement("Packet being sent");
@@ -987,10 +968,10 @@ public class ServerPlayNetworkHandler implements ServerPlayPacketListener {
 	}
 
 	@Override
-	public void onUpdateSelectedSlot(UpdateSelectedSlotC2SPacket updateSelectedSlotC2SPacket) {
-		NetworkThreadUtils.forceMainThread(updateSelectedSlotC2SPacket, this, this.player.getServerWorld());
-		if (updateSelectedSlotC2SPacket.getSelectedSlot() >= 0 && updateSelectedSlotC2SPacket.getSelectedSlot() < PlayerInventory.getHotbarSize()) {
-			this.player.inventory.selectedSlot = updateSelectedSlotC2SPacket.getSelectedSlot();
+	public void onUpdateSelectedSlot(UpdateSelectedSlotC2SPacket packet) {
+		NetworkThreadUtils.forceMainThread(packet, this, this.player.getServerWorld());
+		if (packet.getSelectedSlot() >= 0 && packet.getSelectedSlot() < PlayerInventory.getHotbarSize()) {
+			this.player.inventory.selectedSlot = packet.getSelectedSlot();
 			this.player.updateLastActionTime();
 		} else {
 			LOGGER.warn("{} tried to set an invalid carried item", this.player.getName().getString());
@@ -998,13 +979,13 @@ public class ServerPlayNetworkHandler implements ServerPlayPacketListener {
 	}
 
 	@Override
-	public void onChatMessage(ChatMessageC2SPacket chatMessageC2SPacket) {
-		NetworkThreadUtils.forceMainThread(chatMessageC2SPacket, this, this.player.getServerWorld());
+	public void onChatMessage(ChatMessageC2SPacket packet) {
+		NetworkThreadUtils.forceMainThread(packet, this, this.player.getServerWorld());
 		if (this.player.getClientChatVisibility() == ChatVisibility.HIDDEN) {
 			this.sendPacket(new ChatMessageS2CPacket(new TranslatableText("chat.cannotSend").formatted(Formatting.RED)));
 		} else {
 			this.player.updateLastActionTime();
-			String string = chatMessageC2SPacket.getChatMessage();
+			String string = packet.getChatMessage();
 			string = StringUtils.normalizeSpace(string);
 
 			for (int i = 0; i < string.length(); i++) {
@@ -1033,17 +1014,17 @@ public class ServerPlayNetworkHandler implements ServerPlayPacketListener {
 	}
 
 	@Override
-	public void onHandSwing(HandSwingC2SPacket handSwingC2SPacket) {
-		NetworkThreadUtils.forceMainThread(handSwingC2SPacket, this, this.player.getServerWorld());
+	public void onHandSwing(HandSwingC2SPacket packet) {
+		NetworkThreadUtils.forceMainThread(packet, this, this.player.getServerWorld());
 		this.player.updateLastActionTime();
-		this.player.swingHand(handSwingC2SPacket.getHand());
+		this.player.swingHand(packet.getHand());
 	}
 
 	@Override
-	public void onClientCommand(ClientCommandC2SPacket clientCommandC2SPacket) {
-		NetworkThreadUtils.forceMainThread(clientCommandC2SPacket, this, this.player.getServerWorld());
+	public void onClientCommand(ClientCommandC2SPacket packet) {
+		NetworkThreadUtils.forceMainThread(packet, this, this.player.getServerWorld());
 		this.player.updateLastActionTime();
-		switch (clientCommandC2SPacket.getMode()) {
+		switch (packet.getMode()) {
 			case START_SNEAKING:
 				this.player.setSneaking(true);
 				break;
@@ -1065,7 +1046,7 @@ public class ServerPlayNetworkHandler implements ServerPlayPacketListener {
 			case START_RIDING_JUMP:
 				if (this.player.getVehicle() instanceof JumpingMount) {
 					JumpingMount jumpingMount = (JumpingMount)this.player.getVehicle();
-					int i = clientCommandC2SPacket.getMountJumpHeight();
+					int i = packet.getMountJumpHeight();
 					if (jumpingMount.canJump() && i > 0) {
 						jumpingMount.startJumping(i);
 					}
@@ -1083,7 +1064,7 @@ public class ServerPlayNetworkHandler implements ServerPlayPacketListener {
 				}
 				break;
 			case START_FALL_FLYING:
-				if (!this.player.onGround && this.player.getVelocity().y < 0.0 && !this.player.isFallFlying() && !this.player.isInsideWater()) {
+				if (!this.player.onGround && this.player.getVelocity().y < 0.0 && !this.player.isFallFlying() && !this.player.isTouchingWater()) {
 					ItemStack itemStack = this.player.getEquippedStack(EquipmentSlot.CHEST);
 					if (itemStack.getItem() == Items.ELYTRA && ElytraItem.isUsable(itemStack)) {
 						this.player.method_14243();
@@ -1098,10 +1079,10 @@ public class ServerPlayNetworkHandler implements ServerPlayPacketListener {
 	}
 
 	@Override
-	public void onPlayerInteractEntity(PlayerInteractEntityC2SPacket playerInteractEntityC2SPacket) {
-		NetworkThreadUtils.forceMainThread(playerInteractEntityC2SPacket, this, this.player.getServerWorld());
+	public void onPlayerInteractEntity(PlayerInteractEntityC2SPacket rpacket) {
+		NetworkThreadUtils.forceMainThread(rpacket, this, this.player.getServerWorld());
 		ServerWorld serverWorld = this.server.getWorld(this.player.dimension);
-		Entity entity = playerInteractEntityC2SPacket.getEntity(serverWorld);
+		Entity entity = rpacket.getEntity(serverWorld);
 		this.player.updateLastActionTime();
 		if (entity != null) {
 			boolean bl = this.player.canSee(entity);
@@ -1111,13 +1092,13 @@ public class ServerPlayNetworkHandler implements ServerPlayPacketListener {
 			}
 
 			if (this.player.squaredDistanceTo(entity) < d) {
-				if (playerInteractEntityC2SPacket.getType() == PlayerInteractEntityC2SPacket.InteractionType.INTERACT) {
-					Hand hand = playerInteractEntityC2SPacket.getHand();
+				if (rpacket.getType() == PlayerInteractEntityC2SPacket.InteractionType.INTERACT) {
+					Hand hand = rpacket.getHand();
 					this.player.interact(entity, hand);
-				} else if (playerInteractEntityC2SPacket.getType() == PlayerInteractEntityC2SPacket.InteractionType.INTERACT_AT) {
-					Hand hand = playerInteractEntityC2SPacket.getHand();
-					entity.interactAt(this.player, playerInteractEntityC2SPacket.getHitPosition(), hand);
-				} else if (playerInteractEntityC2SPacket.getType() == PlayerInteractEntityC2SPacket.InteractionType.ATTACK) {
+				} else if (rpacket.getType() == PlayerInteractEntityC2SPacket.InteractionType.INTERACT_AT) {
+					Hand hand = rpacket.getHand();
+					entity.interactAt(this.player, rpacket.getHitPosition(), hand);
+				} else if (rpacket.getType() == PlayerInteractEntityC2SPacket.InteractionType.ATTACK) {
 					if (entity instanceof ItemEntity || entity instanceof ExperienceOrbEntity || entity instanceof ProjectileEntity || entity == this.player) {
 						this.disconnect(new TranslatableText("multiplayer.disconnect.invalid_entity_attacked"));
 						this.server.warn("Player " + this.player.getName().getString() + " tried to attack an invalid entity");
@@ -1131,16 +1112,16 @@ public class ServerPlayNetworkHandler implements ServerPlayPacketListener {
 	}
 
 	@Override
-	public void onClientStatus(ClientStatusC2SPacket clientStatusC2SPacket) {
-		NetworkThreadUtils.forceMainThread(clientStatusC2SPacket, this, this.player.getServerWorld());
+	public void onClientStatus(ClientStatusC2SPacket packet) {
+		NetworkThreadUtils.forceMainThread(packet, this, this.player.getServerWorld());
 		this.player.updateLastActionTime();
-		ClientStatusC2SPacket.Mode mode = clientStatusC2SPacket.getMode();
+		ClientStatusC2SPacket.Mode mode = packet.getMode();
 		switch (mode) {
 			case PERFORM_RESPAWN:
 				if (this.player.notInAnyWorld) {
 					this.player.notInAnyWorld = false;
 					this.player = this.server.getPlayerManager().respawnPlayer(this.player, DimensionType.OVERWORLD, true);
-					Criterions.CHANGED_DIMENSION.handle(this.player, DimensionType.THE_END, DimensionType.OVERWORLD);
+					Criterions.CHANGED_DIMENSION.trigger(this.player, DimensionType.THE_END, DimensionType.OVERWORLD);
 				} else {
 					if (this.player.getHealth() > 0.0F) {
 						return;
@@ -1159,42 +1140,40 @@ public class ServerPlayNetworkHandler implements ServerPlayPacketListener {
 	}
 
 	@Override
-	public void onGuiClose(GuiCloseC2SPacket guiCloseC2SPacket) {
-		NetworkThreadUtils.forceMainThread(guiCloseC2SPacket, this, this.player.getServerWorld());
+	public void onGuiClose(GuiCloseC2SPacket packet) {
+		NetworkThreadUtils.forceMainThread(packet, this, this.player.getServerWorld());
 		this.player.method_14247();
 	}
 
 	@Override
-	public void onClickWindow(ClickWindowC2SPacket clickWindowC2SPacket) {
-		NetworkThreadUtils.forceMainThread(clickWindowC2SPacket, this, this.player.getServerWorld());
+	public void onClickWindow(ClickWindowC2SPacket packet) {
+		NetworkThreadUtils.forceMainThread(packet, this, this.player.getServerWorld());
 		this.player.updateLastActionTime();
-		if (this.player.container.syncId == clickWindowC2SPacket.getSyncId() && this.player.container.isRestricted(this.player)) {
+		if (this.player.container.syncId == packet.getSyncId() && this.player.container.isNotRestricted(this.player)) {
 			if (this.player.isSpectator()) {
 				DefaultedList<ItemStack> defaultedList = DefaultedList.of();
 
-				for (int i = 0; i < this.player.container.slotList.size(); i++) {
-					defaultedList.add(((Slot)this.player.container.slotList.get(i)).getStack());
+				for (int i = 0; i < this.player.container.slots.size(); i++) {
+					defaultedList.add(((Slot)this.player.container.slots.get(i)).getStack());
 				}
 
 				this.player.onContainerRegistered(this.player.container, defaultedList);
 			} else {
-				ItemStack itemStack = this.player
-					.container
-					.onSlotClick(clickWindowC2SPacket.getSlot(), clickWindowC2SPacket.getButton(), clickWindowC2SPacket.getActionType(), this.player);
-				if (ItemStack.areEqualIgnoreDamage(clickWindowC2SPacket.getStack(), itemStack)) {
-					this.player.networkHandler.sendPacket(new ConfirmGuiActionS2CPacket(clickWindowC2SPacket.getSyncId(), clickWindowC2SPacket.getTransactionId(), true));
+				ItemStack itemStack = this.player.container.onSlotClick(packet.getSlot(), packet.getButton(), packet.getActionType(), this.player);
+				if (ItemStack.areEqualIgnoreDamage(packet.getStack(), itemStack)) {
+					this.player.networkHandler.sendPacket(new ConfirmGuiActionS2CPacket(packet.getSyncId(), packet.getTransactionId(), true));
 					this.player.field_13991 = true;
 					this.player.container.sendContentUpdates();
 					this.player.method_14241();
 					this.player.field_13991 = false;
 				} else {
-					this.transactions.put(this.player.container.syncId, clickWindowC2SPacket.getTransactionId());
-					this.player.networkHandler.sendPacket(new ConfirmGuiActionS2CPacket(clickWindowC2SPacket.getSyncId(), clickWindowC2SPacket.getTransactionId(), false));
+					this.transactions.put(this.player.container.syncId, packet.getTransactionId());
+					this.player.networkHandler.sendPacket(new ConfirmGuiActionS2CPacket(packet.getSyncId(), packet.getTransactionId(), false));
 					this.player.container.setPlayerRestriction(this.player, false);
 					DefaultedList<ItemStack> defaultedList2 = DefaultedList.of();
 
-					for (int j = 0; j < this.player.container.slotList.size(); j++) {
-						ItemStack itemStack2 = ((Slot)this.player.container.slotList.get(j)).getStack();
+					for (int j = 0; j < this.player.container.slots.size(); j++) {
+						ItemStack itemStack2 = ((Slot)this.player.container.slots.get(j)).getStack();
 						defaultedList2.add(itemStack2.isEmpty() ? ItemStack.EMPTY : itemStack2);
 					}
 
@@ -1205,38 +1184,38 @@ public class ServerPlayNetworkHandler implements ServerPlayPacketListener {
 	}
 
 	@Override
-	public void onCraftRequest(CraftRequestC2SPacket craftRequestC2SPacket) {
-		NetworkThreadUtils.forceMainThread(craftRequestC2SPacket, this, this.player.getServerWorld());
+	public void onCraftRequest(CraftRequestC2SPacket packet) {
+		NetworkThreadUtils.forceMainThread(packet, this, this.player.getServerWorld());
 		this.player.updateLastActionTime();
 		if (!this.player.isSpectator()
-			&& this.player.container.syncId == craftRequestC2SPacket.getSyncId()
-			&& this.player.container.isRestricted(this.player)
+			&& this.player.container.syncId == packet.getSyncId()
+			&& this.player.container.isNotRestricted(this.player)
 			&& this.player.container instanceof CraftingContainer) {
 			this.server
 				.getRecipeManager()
-				.get(craftRequestC2SPacket.getRecipe())
-				.ifPresent(recipe -> ((CraftingContainer)this.player.container).fillInputSlots(craftRequestC2SPacket.shouldCraftAll(), recipe, this.player));
+				.get(packet.getRecipe())
+				.ifPresent(recipe -> ((CraftingContainer)this.player.container).fillInputSlots(packet.shouldCraftAll(), recipe, this.player));
 		}
 	}
 
 	@Override
-	public void onButtonClick(ButtonClickC2SPacket buttonClickC2SPacket) {
-		NetworkThreadUtils.forceMainThread(buttonClickC2SPacket, this, this.player.getServerWorld());
+	public void onButtonClick(ButtonClickC2SPacket packet) {
+		NetworkThreadUtils.forceMainThread(packet, this, this.player.getServerWorld());
 		this.player.updateLastActionTime();
-		if (this.player.container.syncId == buttonClickC2SPacket.getSyncId() && this.player.container.isRestricted(this.player) && !this.player.isSpectator()) {
-			this.player.container.onButtonClick(this.player, buttonClickC2SPacket.getButtonId());
+		if (this.player.container.syncId == packet.getSyncId() && this.player.container.isNotRestricted(this.player) && !this.player.isSpectator()) {
+			this.player.container.onButtonClick(this.player, packet.getButtonId());
 			this.player.container.sendContentUpdates();
 		}
 	}
 
 	@Override
-	public void onCreativeInventoryAction(CreativeInventoryActionC2SPacket creativeInventoryActionC2SPacket) {
-		NetworkThreadUtils.forceMainThread(creativeInventoryActionC2SPacket, this, this.player.getServerWorld());
+	public void onCreativeInventoryAction(CreativeInventoryActionC2SPacket packet) {
+		NetworkThreadUtils.forceMainThread(packet, this, this.player.getServerWorld());
 		if (this.player.interactionManager.isCreative()) {
-			boolean bl = creativeInventoryActionC2SPacket.getSlot() < 0;
-			ItemStack itemStack = creativeInventoryActionC2SPacket.getItemStack();
+			boolean bl = packet.getSlot() < 0;
+			ItemStack itemStack = packet.getItemStack();
 			CompoundTag compoundTag = itemStack.getSubTag("BlockEntityTag");
-			if (!itemStack.isEmpty() && compoundTag != null && compoundTag.containsKey("x") && compoundTag.containsKey("y") && compoundTag.containsKey("z")) {
+			if (!itemStack.isEmpty() && compoundTag != null && compoundTag.contains("x") && compoundTag.contains("y") && compoundTag.contains("z")) {
 				BlockPos blockPos = new BlockPos(compoundTag.getInt("x"), compoundTag.getInt("y"), compoundTag.getInt("z"));
 				BlockEntity blockEntity = this.player.world.getBlockEntity(blockPos);
 				if (blockEntity != null) {
@@ -1248,13 +1227,13 @@ public class ServerPlayNetworkHandler implements ServerPlayPacketListener {
 				}
 			}
 
-			boolean bl2 = creativeInventoryActionC2SPacket.getSlot() >= 1 && creativeInventoryActionC2SPacket.getSlot() <= 45;
+			boolean bl2 = packet.getSlot() >= 1 && packet.getSlot() <= 45;
 			boolean bl3 = itemStack.isEmpty() || itemStack.getDamage() >= 0 && itemStack.getCount() <= 64 && !itemStack.isEmpty();
 			if (bl2 && bl3) {
 				if (itemStack.isEmpty()) {
-					this.player.playerContainer.setStackInSlot(creativeInventoryActionC2SPacket.getSlot(), ItemStack.EMPTY);
+					this.player.playerContainer.setStackInSlot(packet.getSlot(), ItemStack.EMPTY);
 				} else {
-					this.player.playerContainer.setStackInSlot(creativeInventoryActionC2SPacket.getSlot(), itemStack);
+					this.player.playerContainer.setStackInSlot(packet.getSlot(), itemStack);
 				}
 
 				this.player.playerContainer.setPlayerRestriction(this.player, true);
@@ -1263,30 +1242,30 @@ public class ServerPlayNetworkHandler implements ServerPlayPacketListener {
 				this.creativeItemDropThreshold += 20;
 				ItemEntity itemEntity = this.player.dropItem(itemStack, true);
 				if (itemEntity != null) {
-					itemEntity.method_6980();
+					itemEntity.setCreativeDespawnTime();
 				}
 			}
 		}
 	}
 
 	@Override
-	public void onConfirmTransaction(GuiActionConfirmC2SPacket guiActionConfirmC2SPacket) {
-		NetworkThreadUtils.forceMainThread(guiActionConfirmC2SPacket, this, this.player.getServerWorld());
+	public void onConfirmTransaction(ConfirmGuiActionC2SPacket packet) {
+		NetworkThreadUtils.forceMainThread(packet, this, this.player.getServerWorld());
 		int i = this.player.container.syncId;
-		if (i == guiActionConfirmC2SPacket.getWindowId()
-			&& this.transactions.getOrDefault(i, (short)(guiActionConfirmC2SPacket.getSyncId() + 1)) == guiActionConfirmC2SPacket.getSyncId()
-			&& !this.player.container.isRestricted(this.player)
+		if (i == packet.getWindowId()
+			&& this.transactions.getOrDefault(i, (short)(packet.getSyncId() + 1)) == packet.getSyncId()
+			&& !this.player.container.isNotRestricted(this.player)
 			&& !this.player.isSpectator()) {
 			this.player.container.setPlayerRestriction(this.player, true);
 		}
 	}
 
 	@Override
-	public void onSignUpdate(UpdateSignC2SPacket updateSignC2SPacket) {
-		NetworkThreadUtils.forceMainThread(updateSignC2SPacket, this, this.player.getServerWorld());
+	public void onSignUpdate(UpdateSignC2SPacket packet) {
+		NetworkThreadUtils.forceMainThread(packet, this, this.player.getServerWorld());
 		this.player.updateLastActionTime();
 		ServerWorld serverWorld = this.server.getWorld(this.player.dimension);
-		BlockPos blockPos = updateSignC2SPacket.getPos();
+		BlockPos blockPos = packet.getPos();
 		if (serverWorld.isBlockLoaded(blockPos)) {
 			BlockState blockState = serverWorld.getBlockState(blockPos);
 			BlockEntity blockEntity = serverWorld.getBlockEntity(blockPos);
@@ -1300,7 +1279,7 @@ public class ServerPlayNetworkHandler implements ServerPlayPacketListener {
 				return;
 			}
 
-			String[] strings = updateSignC2SPacket.getText();
+			String[] strings = packet.getText();
 
 			for (int i = 0; i < strings.length; i++) {
 				signBlockEntity.setTextOnRow(i, new LiteralText(Formatting.strip(strings[i])));
@@ -1312,9 +1291,9 @@ public class ServerPlayNetworkHandler implements ServerPlayPacketListener {
 	}
 
 	@Override
-	public void onKeepAlive(KeepAliveC2SPacket keepAliveC2SPacket) {
-		if (this.waitingForKeepAlive && keepAliveC2SPacket.getId() == this.keepAliveId) {
-			int i = (int)(SystemUtil.getMeasuringTimeMs() - this.lastKeepAliveTime);
+	public void onKeepAlive(KeepAliveC2SPacket packet) {
+		if (this.waitingForKeepAlive && packet.getId() == this.keepAliveId) {
+			int i = (int)(Util.getMeasuringTimeMs() - this.lastKeepAliveTime);
 			this.player.pingMilliseconds = (this.player.pingMilliseconds * 3 + i) / 4;
 			this.waitingForKeepAlive = false;
 		} else if (!this.isServerOwner()) {
@@ -1323,34 +1302,34 @@ public class ServerPlayNetworkHandler implements ServerPlayPacketListener {
 	}
 
 	@Override
-	public void onPlayerAbilities(UpdatePlayerAbilitiesC2SPacket updatePlayerAbilitiesC2SPacket) {
-		NetworkThreadUtils.forceMainThread(updatePlayerAbilitiesC2SPacket, this, this.player.getServerWorld());
-		this.player.abilities.flying = updatePlayerAbilitiesC2SPacket.isFlying() && this.player.abilities.allowFlying;
+	public void onPlayerAbilities(UpdatePlayerAbilitiesC2SPacket packet) {
+		NetworkThreadUtils.forceMainThread(packet, this, this.player.getServerWorld());
+		this.player.abilities.flying = packet.isFlying() && this.player.abilities.allowFlying;
 	}
 
 	@Override
-	public void onClientSettings(ClientSettingsC2SPacket clientSettingsC2SPacket) {
-		NetworkThreadUtils.forceMainThread(clientSettingsC2SPacket, this, this.player.getServerWorld());
-		this.player.setClientSettings(clientSettingsC2SPacket);
+	public void onClientSettings(ClientSettingsC2SPacket packet) {
+		NetworkThreadUtils.forceMainThread(packet, this, this.player.getServerWorld());
+		this.player.setClientSettings(packet);
 	}
 
 	@Override
-	public void onCustomPayload(CustomPayloadC2SPacket customPayloadC2SPacket) {
+	public void onCustomPayload(CustomPayloadC2SPacket packet) {
 	}
 
 	@Override
-	public void onUpdateDifficulty(UpdateDifficultyC2SPacket updateDifficultyC2SPacket) {
-		NetworkThreadUtils.forceMainThread(updateDifficultyC2SPacket, this, this.player.getServerWorld());
+	public void onUpdateDifficulty(UpdateDifficultyC2SPacket packet) {
+		NetworkThreadUtils.forceMainThread(packet, this, this.player.getServerWorld());
 		if (this.player.allowsPermissionLevel(2) || this.isServerOwner()) {
-			this.server.setDifficulty(updateDifficultyC2SPacket.getDifficulty(), false);
+			this.server.setDifficulty(packet.getDifficulty(), false);
 		}
 	}
 
 	@Override
-	public void onUpdateDifficultyLock(UpdateDifficultyLockC2SPacket updateDifficultyLockC2SPacket) {
-		NetworkThreadUtils.forceMainThread(updateDifficultyLockC2SPacket, this, this.player.getServerWorld());
+	public void onUpdateDifficultyLock(UpdateDifficultyLockC2SPacket packet) {
+		NetworkThreadUtils.forceMainThread(packet, this, this.player.getServerWorld());
 		if (this.player.allowsPermissionLevel(2) || this.isServerOwner()) {
-			this.server.setDifficultyLocked(updateDifficultyLockC2SPacket.isDifficultyLocked());
+			this.server.setDifficultyLocked(packet.isDifficultyLocked());
 		}
 	}
 }

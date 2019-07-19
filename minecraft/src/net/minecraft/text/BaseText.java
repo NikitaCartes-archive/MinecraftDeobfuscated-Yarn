@@ -51,13 +51,13 @@ public abstract class BaseText implements Text {
 		return Streams.concat(Stream.of(this), this.siblings.stream().flatMap(Text::stream));
 	}
 
-	public boolean equals(Object object) {
-		if (this == object) {
+	public boolean equals(Object obj) {
+		if (this == obj) {
 			return true;
-		} else if (!(object instanceof BaseText)) {
+		} else if (!(obj instanceof BaseText)) {
 			return false;
 		} else {
-			BaseText baseText = (BaseText)object;
+			BaseText baseText = (BaseText)obj;
 			return this.siblings.equals(baseText.siblings) && this.getStyle().equals(baseText.getStyle());
 		}
 	}

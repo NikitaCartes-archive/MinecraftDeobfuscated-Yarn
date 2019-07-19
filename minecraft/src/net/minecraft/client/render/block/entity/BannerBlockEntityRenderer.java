@@ -8,7 +8,7 @@ import net.minecraft.block.BannerBlock;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.WallBannerBlock;
 import net.minecraft.block.entity.BannerBlockEntity;
-import net.minecraft.client.model.Cuboid;
+import net.minecraft.client.model.ModelPart;
 import net.minecraft.client.render.entity.model.BannerBlockEntityModel;
 import net.minecraft.client.texture.TextureCache;
 import net.minecraft.util.Identifier;
@@ -20,28 +20,28 @@ import net.minecraft.util.math.MathHelper;
 public class BannerBlockEntityRenderer extends BlockEntityRenderer<BannerBlockEntity> {
 	private final BannerBlockEntityModel model = new BannerBlockEntityModel();
 
-	public void method_3546(BannerBlockEntity bannerBlockEntity, double d, double e, double f, float g, int i) {
+	public void render(BannerBlockEntity bannerBlockEntity, double d, double e, double f, float g, int i) {
 		float h = 0.6666667F;
 		boolean bl = bannerBlockEntity.getWorld() == null;
 		GlStateManager.pushMatrix();
-		Cuboid cuboid = this.model.method_2791();
+		ModelPart modelPart = this.model.method_2791();
 		long l;
 		if (bl) {
 			l = 0L;
 			GlStateManager.translatef((float)d + 0.5F, (float)e + 0.5F, (float)f + 0.5F);
-			cuboid.visible = true;
+			modelPart.visible = true;
 		} else {
 			l = bannerBlockEntity.getWorld().getTime();
 			BlockState blockState = bannerBlockEntity.getCachedState();
 			if (blockState.getBlock() instanceof BannerBlock) {
 				GlStateManager.translatef((float)d + 0.5F, (float)e + 0.5F, (float)f + 0.5F);
 				GlStateManager.rotatef((float)(-(Integer)blockState.get(BannerBlock.ROTATION) * 360) / 16.0F, 0.0F, 1.0F, 0.0F);
-				cuboid.visible = true;
+				modelPart.visible = true;
 			} else {
 				GlStateManager.translatef((float)d + 0.5F, (float)e - 0.16666667F, (float)f + 0.5F);
 				GlStateManager.rotatef(-((Direction)blockState.get(WallBannerBlock.FACING)).asRotation(), 0.0F, 1.0F, 0.0F);
 				GlStateManager.translatef(0.0F, -0.3125F, -0.4375F);
-				cuboid.visible = false;
+				modelPart.visible = false;
 			}
 		}
 

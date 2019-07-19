@@ -13,16 +13,16 @@ public class LookingPosArgument implements PosArgument {
 	private final double y;
 	private final double z;
 
-	public LookingPosArgument(double d, double e, double f) {
-		this.x = d;
-		this.y = e;
-		this.z = f;
+	public LookingPosArgument(double x, double y, double z) {
+		this.x = x;
+		this.y = y;
+		this.z = z;
 	}
 
 	@Override
-	public Vec3d toAbsolutePos(ServerCommandSource serverCommandSource) {
-		Vec2f vec2f = serverCommandSource.getRotation();
-		Vec3d vec3d = serverCommandSource.getEntityAnchor().positionAt(serverCommandSource);
+	public Vec3d toAbsolutePos(ServerCommandSource source) {
+		Vec2f vec2f = source.getRotation();
+		Vec3d vec3d = source.getEntityAnchor().positionAt(source);
 		float f = MathHelper.cos((vec2f.y + 90.0F) * (float) (Math.PI / 180.0));
 		float g = MathHelper.sin((vec2f.y + 90.0F) * (float) (Math.PI / 180.0));
 		float h = MathHelper.cos(-vec2f.x * (float) (Math.PI / 180.0));
@@ -39,7 +39,7 @@ public class LookingPosArgument implements PosArgument {
 	}
 
 	@Override
-	public Vec2f toAbsoluteRotation(ServerCommandSource serverCommandSource) {
+	public Vec2f toAbsoluteRotation(ServerCommandSource source) {
 		return Vec2f.ZERO;
 	}
 
@@ -58,45 +58,45 @@ public class LookingPosArgument implements PosArgument {
 		return true;
 	}
 
-	public static LookingPosArgument parse(StringReader stringReader) throws CommandSyntaxException {
-		int i = stringReader.getCursor();
-		double d = readCoordinate(stringReader, i);
-		if (stringReader.canRead() && stringReader.peek() == ' ') {
-			stringReader.skip();
-			double e = readCoordinate(stringReader, i);
-			if (stringReader.canRead() && stringReader.peek() == ' ') {
-				stringReader.skip();
-				double f = readCoordinate(stringReader, i);
+	public static LookingPosArgument parse(StringReader reader) throws CommandSyntaxException {
+		int i = reader.getCursor();
+		double d = readCoordinate(reader, i);
+		if (reader.canRead() && reader.peek() == ' ') {
+			reader.skip();
+			double e = readCoordinate(reader, i);
+			if (reader.canRead() && reader.peek() == ' ') {
+				reader.skip();
+				double f = readCoordinate(reader, i);
 				return new LookingPosArgument(d, e, f);
 			} else {
-				stringReader.setCursor(i);
-				throw Vec3ArgumentType.INCOMPLETE_EXCEPTION.createWithContext(stringReader);
+				reader.setCursor(i);
+				throw Vec3ArgumentType.INCOMPLETE_EXCEPTION.createWithContext(reader);
 			}
 		} else {
-			stringReader.setCursor(i);
-			throw Vec3ArgumentType.INCOMPLETE_EXCEPTION.createWithContext(stringReader);
+			reader.setCursor(i);
+			throw Vec3ArgumentType.INCOMPLETE_EXCEPTION.createWithContext(reader);
 		}
 	}
 
-	private static double readCoordinate(StringReader stringReader, int i) throws CommandSyntaxException {
-		if (!stringReader.canRead()) {
-			throw CoordinateArgument.MISSING_COORDINATE.createWithContext(stringReader);
-		} else if (stringReader.peek() != '^') {
-			stringReader.setCursor(i);
-			throw Vec3ArgumentType.MIXED_COORDINATE_EXCEPTION.createWithContext(stringReader);
+	private static double readCoordinate(StringReader reader, int startingCursorPos) throws CommandSyntaxException {
+		if (!reader.canRead()) {
+			throw CoordinateArgument.MISSING_COORDINATE.createWithContext(reader);
+		} else if (reader.peek() != '^') {
+			reader.setCursor(startingCursorPos);
+			throw Vec3ArgumentType.MIXED_COORDINATE_EXCEPTION.createWithContext(reader);
 		} else {
-			stringReader.skip();
-			return stringReader.canRead() && stringReader.peek() != ' ' ? stringReader.readDouble() : 0.0;
+			reader.skip();
+			return reader.canRead() && reader.peek() != ' ' ? reader.readDouble() : 0.0;
 		}
 	}
 
-	public boolean equals(Object object) {
-		if (this == object) {
+	public boolean equals(Object o) {
+		if (this == o) {
 			return true;
-		} else if (!(object instanceof LookingPosArgument)) {
+		} else if (!(o instanceof LookingPosArgument)) {
 			return false;
 		} else {
-			LookingPosArgument lookingPosArgument = (LookingPosArgument)object;
+			LookingPosArgument lookingPosArgument = (LookingPosArgument)o;
 			return this.x == lookingPosArgument.x && this.y == lookingPosArgument.y && this.z == lookingPosArgument.z;
 		}
 	}

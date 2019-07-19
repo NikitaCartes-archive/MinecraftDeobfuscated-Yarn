@@ -6,7 +6,7 @@ import net.minecraft.entity.EntityContext;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemPlacementContext;
-import net.minecraft.state.StateFactory;
+import net.minecraft.state.StateManager;
 import net.minecraft.state.property.IntProperty;
 import net.minecraft.state.property.Properties;
 import net.minecraft.tag.FluidTags;
@@ -14,9 +14,9 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.world.BlockView;
+import net.minecraft.world.CollisionView;
 import net.minecraft.world.GameRules;
 import net.minecraft.world.IWorld;
-import net.minecraft.world.ViewableWorld;
 import net.minecraft.world.World;
 
 public class FarmlandBlock extends Block {
@@ -25,86 +25,82 @@ public class FarmlandBlock extends Block {
 
 	protected FarmlandBlock(Block.Settings settings) {
 		super(settings);
-		this.setDefaultState(this.stateFactory.getDefaultState().with(MOISTURE, Integer.valueOf(0)));
+		this.setDefaultState(this.stateManager.getDefaultState().with(MOISTURE, Integer.valueOf(0)));
 	}
 
 	@Override
-	public BlockState getStateForNeighborUpdate(
-		BlockState blockState, Direction direction, BlockState blockState2, IWorld iWorld, BlockPos blockPos, BlockPos blockPos2
-	) {
-		if (direction == Direction.UP && !blockState.canPlaceAt(iWorld, blockPos)) {
-			iWorld.getBlockTickScheduler().schedule(blockPos, this, 1);
+	public BlockState getStateForNeighborUpdate(BlockState state, Direction facing, BlockState neighborState, IWorld world, BlockPos pos, BlockPos neighborPos) {
+		if (facing == Direction.UP && !state.canPlaceAt(world, pos)) {
+			world.getBlockTickScheduler().schedule(pos, this, 1);
 		}
 
-		return super.getStateForNeighborUpdate(blockState, direction, blockState2, iWorld, blockPos, blockPos2);
+		return super.getStateForNeighborUpdate(state, facing, neighborState, world, pos, neighborPos);
 	}
 
 	@Override
-	public boolean canPlaceAt(BlockState blockState, ViewableWorld viewableWorld, BlockPos blockPos) {
-		BlockState blockState2 = viewableWorld.getBlockState(blockPos.up());
-		return !blockState2.getMaterial().isSolid() || blockState2.getBlock() instanceof FenceGateBlock;
+	public boolean canPlaceAt(BlockState state, CollisionView world, BlockPos pos) {
+		BlockState blockState = world.getBlockState(pos.up());
+		return !blockState.getMaterial().isSolid() || blockState.getBlock() instanceof FenceGateBlock;
 	}
 
 	@Override
-	public BlockState getPlacementState(ItemPlacementContext itemPlacementContext) {
-		return !this.getDefaultState().canPlaceAt(itemPlacementContext.getWorld(), itemPlacementContext.getBlockPos())
-			? Blocks.DIRT.getDefaultState()
-			: super.getPlacementState(itemPlacementContext);
+	public BlockState getPlacementState(ItemPlacementContext ctx) {
+		return !this.getDefaultState().canPlaceAt(ctx.getWorld(), ctx.getBlockPos()) ? Blocks.DIRT.getDefaultState() : super.getPlacementState(ctx);
 	}
 
 	@Override
-	public boolean hasSidedTransparency(BlockState blockState) {
+	public boolean hasSidedTransparency(BlockState state) {
 		return true;
 	}
 
 	@Override
-	public VoxelShape getOutlineShape(BlockState blockState, BlockView blockView, BlockPos blockPos, EntityContext entityContext) {
+	public VoxelShape getOutlineShape(BlockState state, BlockView view, BlockPos pos, EntityContext context) {
 		return SHAPE;
 	}
 
 	@Override
-	public void onScheduledTick(BlockState blockState, World world, BlockPos blockPos, Random random) {
-		if (!blockState.canPlaceAt(world, blockPos)) {
-			setToDirt(blockState, world, blockPos);
+	public void onScheduledTick(BlockState state, World world, BlockPos pos, Random random) {
+		if (!state.canPlaceAt(world, pos)) {
+			setToDirt(state, world, pos);
 		} else {
-			int i = (Integer)blockState.get(MOISTURE);
-			if (!isWaterNearby(world, blockPos) && !world.hasRain(blockPos.up())) {
+			int i = (Integer)state.get(MOISTURE);
+			if (!isWaterNearby(world, pos) && !world.hasRain(pos.up())) {
 				if (i > 0) {
-					world.setBlockState(blockPos, blockState.with(MOISTURE, Integer.valueOf(i - 1)), 2);
-				} else if (!hasCrop(world, blockPos)) {
-					setToDirt(blockState, world, blockPos);
+					world.setBlockState(pos, state.with(MOISTURE, Integer.valueOf(i - 1)), 2);
+				} else if (!hasCrop(world, pos)) {
+					setToDirt(state, world, pos);
 				}
 			} else if (i < 7) {
-				world.setBlockState(blockPos, blockState.with(MOISTURE, Integer.valueOf(7)), 2);
+				world.setBlockState(pos, state.with(MOISTURE, Integer.valueOf(7)), 2);
 			}
 		}
 	}
 
 	@Override
-	public void onLandedUpon(World world, BlockPos blockPos, Entity entity, float f) {
+	public void onLandedUpon(World world, BlockPos pos, Entity entity, float distance) {
 		if (!world.isClient
-			&& world.random.nextFloat() < f - 0.5F
+			&& world.random.nextFloat() < distance - 0.5F
 			&& entity instanceof LivingEntity
 			&& (entity instanceof PlayerEntity || world.getGameRules().getBoolean(GameRules.MOB_GRIEFING))
 			&& entity.getWidth() * entity.getWidth() * entity.getHeight() > 0.512F) {
-			setToDirt(world.getBlockState(blockPos), world, blockPos);
+			setToDirt(world.getBlockState(pos), world, pos);
 		}
 
-		super.onLandedUpon(world, blockPos, entity, f);
+		super.onLandedUpon(world, pos, entity, distance);
 	}
 
-	public static void setToDirt(BlockState blockState, World world, BlockPos blockPos) {
-		world.setBlockState(blockPos, pushEntitiesUpBeforeBlockChange(blockState, Blocks.DIRT.getDefaultState(), world, blockPos));
+	public static void setToDirt(BlockState state, World world, BlockPos pos) {
+		world.setBlockState(pos, pushEntitiesUpBeforeBlockChange(state, Blocks.DIRT.getDefaultState(), world, pos));
 	}
 
-	private static boolean hasCrop(BlockView blockView, BlockPos blockPos) {
-		Block block = blockView.getBlockState(blockPos.up()).getBlock();
+	private static boolean hasCrop(BlockView world, BlockPos pos) {
+		Block block = world.getBlockState(pos.up()).getBlock();
 		return block instanceof CropBlock || block instanceof StemBlock || block instanceof AttachedStemBlock;
 	}
 
-	private static boolean isWaterNearby(ViewableWorld viewableWorld, BlockPos blockPos) {
-		for (BlockPos blockPos2 : BlockPos.iterate(blockPos.add(-4, 0, -4), blockPos.add(4, 1, 4))) {
-			if (viewableWorld.getFluidState(blockPos2).matches(FluidTags.WATER)) {
+	private static boolean isWaterNearby(CollisionView world, BlockPos pos) {
+		for (BlockPos blockPos : BlockPos.iterate(pos.add(-4, 0, -4), pos.add(4, 1, 4))) {
+			if (world.getFluidState(blockPos).matches(FluidTags.WATER)) {
 				return true;
 			}
 		}
@@ -113,12 +109,12 @@ public class FarmlandBlock extends Block {
 	}
 
 	@Override
-	protected void appendProperties(StateFactory.Builder<Block, BlockState> builder) {
+	protected void appendProperties(StateManager.Builder<Block, BlockState> builder) {
 		builder.add(MOISTURE);
 	}
 
 	@Override
-	public boolean canPlaceAtSide(BlockState blockState, BlockView blockView, BlockPos blockPos, BlockPlacementEnvironment blockPlacementEnvironment) {
+	public boolean canPlaceAtSide(BlockState world, BlockView view, BlockPos pos, BlockPlacementEnvironment env) {
 		return false;
 	}
 }

@@ -17,14 +17,14 @@ public class ByteTag extends AbstractNumberTag {
 	}
 
 	@Override
-	public void write(DataOutput dataOutput) throws IOException {
-		dataOutput.writeByte(this.value);
+	public void write(DataOutput output) throws IOException {
+		output.writeByte(this.value);
 	}
 
 	@Override
-	public void read(DataInput dataInput, int i, PositionTracker positionTracker) throws IOException {
+	public void read(DataInput input, int depth, PositionTracker positionTracker) throws IOException {
 		positionTracker.add(72L);
-		this.value = dataInput.readByte();
+		this.value = input.readByte();
 	}
 
 	@Override
@@ -37,12 +37,12 @@ public class ByteTag extends AbstractNumberTag {
 		return this.value + "b";
 	}
 
-	public ByteTag method_10530() {
+	public ByteTag copy() {
 		return new ByteTag(this.value);
 	}
 
-	public boolean equals(Object object) {
-		return this == object ? true : object instanceof ByteTag && this.value == ((ByteTag)object).value;
+	public boolean equals(Object o) {
+		return this == o ? true : o instanceof ByteTag && this.value == ((ByteTag)o).value;
 	}
 
 	public int hashCode() {
@@ -50,7 +50,7 @@ public class ByteTag extends AbstractNumberTag {
 	}
 
 	@Override
-	public Text toText(String string, int i) {
+	public Text toText(String indent, int depth) {
 		Text text = new LiteralText("b").formatted(RED);
 		return new LiteralText(String.valueOf(this.value)).append(text).formatted(GOLD);
 	}

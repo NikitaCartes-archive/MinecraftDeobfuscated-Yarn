@@ -16,12 +16,12 @@ public class StatType<T> implements Iterable<Stat<T>> {
 	}
 
 	@Environment(EnvType.CLIENT)
-	public boolean hasStat(T object) {
-		return this.stats.containsKey(object);
+	public boolean hasStat(T key) {
+		return this.stats.containsKey(key);
 	}
 
-	public Stat<T> getOrCreateStat(T object, StatFormatter statFormatter) {
-		return (Stat<T>)this.stats.computeIfAbsent(object, objectx -> new Stat<>(this, (T)objectx, statFormatter));
+	public Stat<T> getOrCreateStat(T key, StatFormatter formatter) {
+		return (Stat<T>)this.stats.computeIfAbsent(key, object -> new Stat<>(this, (T)object, formatter));
 	}
 
 	public Registry<T> getRegistry() {
@@ -32,8 +32,8 @@ public class StatType<T> implements Iterable<Stat<T>> {
 		return this.stats.values().iterator();
 	}
 
-	public Stat<T> getOrCreateStat(T object) {
-		return this.getOrCreateStat(object, StatFormatter.DEFAULT);
+	public Stat<T> getOrCreateStat(T key) {
+		return this.getOrCreateStat(key, StatFormatter.DEFAULT);
 	}
 
 	@Environment(EnvType.CLIENT)

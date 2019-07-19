@@ -8,10 +8,10 @@ public class OperatorEntry extends ServerConfigEntry<GameProfile> {
 	private final int permissionLevel;
 	private final boolean bypassPlayerLimit;
 
-	public OperatorEntry(GameProfile gameProfile, int i, boolean bl) {
-		super(gameProfile);
-		this.permissionLevel = i;
-		this.bypassPlayerLimit = bl;
+	public OperatorEntry(GameProfile profile, int permissionLevel, boolean bypassPlayerLimit) {
+		super(profile);
+		this.permissionLevel = permissionLevel;
+		this.bypassPlayerLimit = bypassPlayerLimit;
 	}
 
 	public OperatorEntry(JsonObject jsonObject) {
@@ -39,9 +39,9 @@ public class OperatorEntry extends ServerConfigEntry<GameProfile> {
 		}
 	}
 
-	private static GameProfile getProfileFromJson(JsonObject jsonObject) {
-		if (jsonObject.has("uuid") && jsonObject.has("name")) {
-			String string = jsonObject.get("uuid").getAsString();
+	private static GameProfile getProfileFromJson(JsonObject json) {
+		if (json.has("uuid") && json.has("name")) {
+			String string = json.get("uuid").getAsString();
 
 			UUID uUID;
 			try {
@@ -50,7 +50,7 @@ public class OperatorEntry extends ServerConfigEntry<GameProfile> {
 				return null;
 			}
 
-			return new GameProfile(uUID, jsonObject.get("name").getAsString());
+			return new GameProfile(uUID, json.get("name").getAsString());
 		} else {
 			return null;
 		}

@@ -13,16 +13,16 @@ public abstract class AbstractTexture implements Texture {
 	protected boolean oldBilinear;
 	protected boolean oldMipmap;
 
-	public void setFilter(boolean bl, boolean bl2) {
-		this.bilinear = bl;
-		this.mipmap = bl2;
+	public void setFilter(boolean bilinear, boolean mipmap) {
+		this.bilinear = bilinear;
+		this.mipmap = mipmap;
 		int i;
 		int j;
-		if (bl) {
-			i = bl2 ? 9987 : 9729;
+		if (bilinear) {
+			i = mipmap ? 9987 : 9729;
 			j = 9729;
 		} else {
-			i = bl2 ? 9986 : 9728;
+			i = mipmap ? 9986 : 9728;
 			j = 9728;
 		}
 
@@ -31,10 +31,10 @@ public abstract class AbstractTexture implements Texture {
 	}
 
 	@Override
-	public void pushFilter(boolean bl, boolean bl2) {
+	public void pushFilter(boolean bilinear, boolean mipmap) {
 		this.oldBilinear = this.bilinear;
 		this.oldMipmap = this.mipmap;
-		this.setFilter(bl, bl2);
+		this.setFilter(bilinear, mipmap);
 	}
 
 	@Override

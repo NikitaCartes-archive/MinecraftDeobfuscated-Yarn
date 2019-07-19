@@ -3,6 +3,8 @@ package net.minecraft.world.biome.layer;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.biome.Biomes;
+import net.minecraft.world.biome.layer.type.CrossSamplingLayer;
+import net.minecraft.world.biome.layer.util.LayerRandomnessSource;
 
 public enum AddEdgeBiomesLayer implements CrossSamplingLayer {
 	INSTANCE;
@@ -31,58 +33,58 @@ public enum AddEdgeBiomesLayer implements CrossSamplingLayer {
 	private static final int TAIGA_ID = Registry.BIOME.getRawId(Biomes.TAIGA);
 
 	@Override
-	public int sample(LayerRandomnessSource layerRandomnessSource, int i, int j, int k, int l, int m) {
-		Biome biome = Registry.BIOME.get(m);
-		if (m == MUSHROOM_FIELDS_ID) {
-			if (BiomeLayers.isShallowOcean(i) || BiomeLayers.isShallowOcean(j) || BiomeLayers.isShallowOcean(k) || BiomeLayers.isShallowOcean(l)) {
+	public int sample(LayerRandomnessSource context, int n, int e, int s, int w, int center) {
+		Biome biome = Registry.BIOME.get(center);
+		if (center == MUSHROOM_FIELDS_ID) {
+			if (BiomeLayers.isShallowOcean(n) || BiomeLayers.isShallowOcean(e) || BiomeLayers.isShallowOcean(s) || BiomeLayers.isShallowOcean(w)) {
 				return MUSHROOM_FIELD_SHORE_ID;
 			}
 		} else if (biome != null && biome.getCategory() == Biome.Category.JUNGLE) {
-			if (!isWooded(i) || !isWooded(j) || !isWooded(k) || !isWooded(l)) {
+			if (!isWooded(n) || !isWooded(e) || !isWooded(s) || !isWooded(w)) {
 				return JUNGLE_EDGE_ID;
 			}
 
-			if (BiomeLayers.isOcean(i) || BiomeLayers.isOcean(j) || BiomeLayers.isOcean(k) || BiomeLayers.isOcean(l)) {
+			if (BiomeLayers.isOcean(n) || BiomeLayers.isOcean(e) || BiomeLayers.isOcean(s) || BiomeLayers.isOcean(w)) {
 				return BEACH_ID;
 			}
-		} else if (m != MOUNTAINS_ID && m != WOODED_MOUNTAINS_ID && m != MOUNTAIN_EDGE_ID) {
+		} else if (center != MOUNTAINS_ID && center != WOODED_MOUNTAINS_ID && center != MOUNTAIN_EDGE_ID) {
 			if (biome != null && biome.getPrecipitation() == Biome.Precipitation.SNOW) {
-				if (!BiomeLayers.isOcean(m) && (BiomeLayers.isOcean(i) || BiomeLayers.isOcean(j) || BiomeLayers.isOcean(k) || BiomeLayers.isOcean(l))) {
+				if (!BiomeLayers.isOcean(center) && (BiomeLayers.isOcean(n) || BiomeLayers.isOcean(e) || BiomeLayers.isOcean(s) || BiomeLayers.isOcean(w))) {
 					return SNOWY_BEACH_ID;
 				}
-			} else if (m != BADLANDS_ID && m != WOODED_BADLANDS_PLATEAU_ID) {
-				if (!BiomeLayers.isOcean(m)
-					&& m != RIVER_ID
-					&& m != SWAMP_ID
-					&& (BiomeLayers.isOcean(i) || BiomeLayers.isOcean(j) || BiomeLayers.isOcean(k) || BiomeLayers.isOcean(l))) {
+			} else if (center != BADLANDS_ID && center != WOODED_BADLANDS_PLATEAU_ID) {
+				if (!BiomeLayers.isOcean(center)
+					&& center != RIVER_ID
+					&& center != SWAMP_ID
+					&& (BiomeLayers.isOcean(n) || BiomeLayers.isOcean(e) || BiomeLayers.isOcean(s) || BiomeLayers.isOcean(w))) {
 					return BEACH_ID;
 				}
-			} else if (!BiomeLayers.isOcean(i)
-				&& !BiomeLayers.isOcean(j)
-				&& !BiomeLayers.isOcean(k)
-				&& !BiomeLayers.isOcean(l)
-				&& (!this.isBadlands(i) || !this.isBadlands(j) || !this.isBadlands(k) || !this.isBadlands(l))) {
+			} else if (!BiomeLayers.isOcean(n)
+				&& !BiomeLayers.isOcean(e)
+				&& !BiomeLayers.isOcean(s)
+				&& !BiomeLayers.isOcean(w)
+				&& (!this.isBadlands(n) || !this.isBadlands(e) || !this.isBadlands(s) || !this.isBadlands(w))) {
 				return DESERT_ID;
 			}
-		} else if (!BiomeLayers.isOcean(m) && (BiomeLayers.isOcean(i) || BiomeLayers.isOcean(j) || BiomeLayers.isOcean(k) || BiomeLayers.isOcean(l))) {
+		} else if (!BiomeLayers.isOcean(center) && (BiomeLayers.isOcean(n) || BiomeLayers.isOcean(e) || BiomeLayers.isOcean(s) || BiomeLayers.isOcean(w))) {
 			return STONE_SHORE_ID;
 		}
 
-		return m;
+		return center;
 	}
 
-	private static boolean isWooded(int i) {
-		return Registry.BIOME.get(i) != null && Registry.BIOME.get(i).getCategory() == Biome.Category.JUNGLE
+	private static boolean isWooded(int id) {
+		return Registry.BIOME.get(id) != null && Registry.BIOME.get(id).getCategory() == Biome.Category.JUNGLE
 			? true
-			: i == JUNGLE_EDGE_ID || i == JUNGLE_ID || i == JUNGLE_HILLS_ID || i == FOREST_ID || i == TAIGA_ID || BiomeLayers.isOcean(i);
+			: id == JUNGLE_EDGE_ID || id == JUNGLE_ID || id == JUNGLE_HILLS_ID || id == FOREST_ID || id == TAIGA_ID || BiomeLayers.isOcean(id);
 	}
 
-	private boolean isBadlands(int i) {
-		return i == BADLANDS_ID
-			|| i == WOODED_BADLANDS_PLATEAU_ID
-			|| i == BADLANDS_PLATEAU_ID
-			|| i == ERODED_BADLANDS_ID
-			|| i == MODIFIED_WOODED_BADLANDS_PLATEAU_ID
-			|| i == MODIFIED_BADLANDS_PLATEAU_ID;
+	private boolean isBadlands(int id) {
+		return id == BADLANDS_ID
+			|| id == WOODED_BADLANDS_PLATEAU_ID
+			|| id == BADLANDS_PLATEAU_ID
+			|| id == ERODED_BADLANDS_ID
+			|| id == MODIFIED_WOODED_BADLANDS_PLATEAU_ID
+			|| id == MODIFIED_BADLANDS_PLATEAU_ID;
 	}
 }

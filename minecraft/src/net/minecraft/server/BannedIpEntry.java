@@ -7,12 +7,12 @@ import net.minecraft.text.LiteralText;
 import net.minecraft.text.Text;
 
 public class BannedIpEntry extends BanEntry<String> {
-	public BannedIpEntry(String string) {
-		this(string, null, null, null, null);
+	public BannedIpEntry(String ip) {
+		this(ip, null, null, null, null);
 	}
 
-	public BannedIpEntry(String string, @Nullable Date date, @Nullable String string2, @Nullable Date date2, @Nullable String string3) {
-		super(string, date, string2, date2, string3);
+	public BannedIpEntry(String ip, @Nullable Date created, @Nullable String source, @Nullable Date expiry, @Nullable String reason) {
+		super(ip, created, source, expiry, reason);
 	}
 
 	@Override
@@ -24,8 +24,8 @@ public class BannedIpEntry extends BanEntry<String> {
 		super(getIpFromJson(jsonObject), jsonObject);
 	}
 
-	private static String getIpFromJson(JsonObject jsonObject) {
-		return jsonObject.has("ip") ? jsonObject.get("ip").getAsString() : null;
+	private static String getIpFromJson(JsonObject json) {
+		return json.has("ip") ? json.get("ip").getAsString() : null;
 	}
 
 	@Override

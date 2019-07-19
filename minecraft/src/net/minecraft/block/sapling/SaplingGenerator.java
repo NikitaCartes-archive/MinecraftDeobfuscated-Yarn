@@ -16,18 +16,18 @@ public abstract class SaplingGenerator {
 	@Nullable
 	protected abstract AbstractTreeFeature<DefaultFeatureConfig> createTreeFeature(Random random);
 
-	public boolean generate(IWorld iWorld, BlockPos blockPos, BlockState blockState, Random random) {
+	public boolean generate(IWorld world, BlockPos pos, BlockState state, Random random) {
 		AbstractTreeFeature<DefaultFeatureConfig> abstractTreeFeature = this.createTreeFeature(random);
 		if (abstractTreeFeature == null) {
 			return false;
 		} else {
-			iWorld.setBlockState(blockPos, Blocks.AIR.getDefaultState(), 4);
+			world.setBlockState(pos, Blocks.AIR.getDefaultState(), 4);
 			if (abstractTreeFeature.generate(
-				iWorld, (ChunkGenerator<? extends ChunkGeneratorConfig>)iWorld.getChunkManager().getChunkGenerator(), random, blockPos, FeatureConfig.DEFAULT
+				world, (ChunkGenerator<? extends ChunkGeneratorConfig>)world.getChunkManager().getChunkGenerator(), random, pos, FeatureConfig.DEFAULT
 			)) {
 				return true;
 			} else {
-				iWorld.setBlockState(blockPos, blockState, 4);
+				world.setBlockState(pos, state, 4);
 				return false;
 			}
 		}

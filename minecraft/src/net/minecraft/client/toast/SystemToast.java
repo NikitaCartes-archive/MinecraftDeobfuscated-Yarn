@@ -8,54 +8,54 @@ import net.minecraft.text.Text;
 
 @Environment(EnvType.CLIENT)
 public class SystemToast implements Toast {
-	private final SystemToast.Type field_2213;
-	private String field_2215;
-	private String field_2217;
+	private final SystemToast.Type type;
+	private String title;
+	private String description;
 	private long startTime;
 	private boolean justUpdated;
 
-	public SystemToast(SystemToast.Type type, Text text, @Nullable Text text2) {
-		this.field_2213 = type;
-		this.field_2215 = text.getString();
-		this.field_2217 = text2 == null ? null : text2.getString();
+	public SystemToast(SystemToast.Type type, Text title, @Nullable Text description) {
+		this.type = type;
+		this.title = title.getString();
+		this.description = description == null ? null : description.getString();
 	}
 
 	@Override
-	public Toast.Visibility draw(ToastManager toastManager, long l) {
+	public Toast.Visibility draw(ToastManager manager, long currentTime) {
 		if (this.justUpdated) {
-			this.startTime = l;
+			this.startTime = currentTime;
 			this.justUpdated = false;
 		}
 
-		toastManager.getGame().getTextureManager().bindTexture(TOASTS_TEX);
+		manager.getGame().getTextureManager().bindTexture(TOASTS_TEX);
 		GlStateManager.color3f(1.0F, 1.0F, 1.0F);
-		toastManager.blit(0, 0, 0, 64, 160, 32);
-		if (this.field_2217 == null) {
-			toastManager.getGame().textRenderer.draw(this.field_2215, 18.0F, 12.0F, -256);
+		manager.blit(0, 0, 0, 64, 160, 32);
+		if (this.description == null) {
+			manager.getGame().textRenderer.draw(this.title, 18.0F, 12.0F, -256);
 		} else {
-			toastManager.getGame().textRenderer.draw(this.field_2215, 18.0F, 7.0F, -256);
-			toastManager.getGame().textRenderer.draw(this.field_2217, 18.0F, 18.0F, -1);
+			manager.getGame().textRenderer.draw(this.title, 18.0F, 7.0F, -256);
+			manager.getGame().textRenderer.draw(this.description, 18.0F, 18.0F, -1);
 		}
 
-		return l - this.startTime < 5000L ? Toast.Visibility.SHOW : Toast.Visibility.HIDE;
+		return currentTime - this.startTime < 5000L ? Toast.Visibility.SHOW : Toast.Visibility.HIDE;
 	}
 
-	public void setContent(Text text, @Nullable Text text2) {
-		this.field_2215 = text.getString();
-		this.field_2217 = text2 == null ? null : text2.getString();
+	public void setContent(Text title, @Nullable Text description) {
+		this.title = title.getString();
+		this.description = description == null ? null : description.getString();
 		this.justUpdated = true;
 	}
 
-	public SystemToast.Type method_1989() {
-		return this.field_2213;
+	public SystemToast.Type getType() {
+		return this.type;
 	}
 
-	public static void show(ToastManager toastManager, SystemToast.Type type, Text text, @Nullable Text text2) {
+	public static void show(ToastManager toastManager, SystemToast.Type type, Text title, @Nullable Text description) {
 		SystemToast systemToast = toastManager.getToast(SystemToast.class, type);
 		if (systemToast == null) {
-			toastManager.add(new SystemToast(type, text, text2));
+			toastManager.add(new SystemToast(type, title, description));
 		} else {
-			systemToast.setContent(text, text2);
+			systemToast.setContent(title, description);
 		}
 	}
 

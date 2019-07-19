@@ -14,12 +14,12 @@ public class EmptyProfileResult implements ProfileResult {
 
 	@Environment(EnvType.CLIENT)
 	@Override
-	public List<ProfilerTiming> getTimings(String string) {
+	public List<ProfilerTiming> getTimings(String parentPath) {
 		return Collections.emptyList();
 	}
 
 	@Override
-	public boolean saveToFile(File file) {
+	public boolean save(File file) {
 		return false;
 	}
 

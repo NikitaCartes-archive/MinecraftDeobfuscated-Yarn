@@ -13,7 +13,7 @@ public class PacketDecryptor extends MessageToMessageDecoder<ByteBuf> {
 		this.manager = new PacketEncryptionManager(cipher);
 	}
 
-	protected void method_10735(ChannelHandlerContext channelHandlerContext, ByteBuf byteBuf, List<Object> list) throws Exception {
+	protected void decode(ChannelHandlerContext channelHandlerContext, ByteBuf byteBuf, List<Object> list) throws Exception {
 		list.add(this.manager.decrypt(channelHandlerContext, byteBuf));
 	}
 }

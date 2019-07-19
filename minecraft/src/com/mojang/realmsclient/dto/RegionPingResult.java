@@ -3,16 +3,15 @@ package com.mojang.realmsclient.dto;
 import java.util.Locale;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_4352;
 
 @Environment(EnvType.CLIENT)
-public class RegionPingResult extends class_4352 {
+public class RegionPingResult extends ValueObject {
 	private final String regionName;
 	private final int ping;
 
-	public RegionPingResult(String string, int i) {
-		this.regionName = string;
-		this.ping = i;
+	public RegionPingResult(String regionName, int ping) {
+		this.regionName = regionName;
+		this.ping = ping;
 	}
 
 	public int ping() {

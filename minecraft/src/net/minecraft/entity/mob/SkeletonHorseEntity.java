@@ -53,8 +53,8 @@ public class SkeletonHorseEntity extends HorseBaseEntity {
 	}
 
 	@Override
-	protected SoundEvent getHurtSound(DamageSource damageSource) {
-		super.getHurtSound(damageSource);
+	protected SoundEvent getHurtSound(DamageSource source) {
+		super.getHurtSound(source);
 		return SoundEvents.ENTITY_SKELETON_HORSE_HURT;
 	}
 
@@ -79,17 +79,17 @@ public class SkeletonHorseEntity extends HorseBaseEntity {
 	}
 
 	@Override
-	protected void playSwimSound(float f) {
+	protected void playSwimSound(float volume) {
 		if (this.onGround) {
 			super.playSwimSound(0.3F);
 		} else {
-			super.playSwimSound(Math.min(0.1F, f * 25.0F));
+			super.playSwimSound(Math.min(0.1F, volume * 25.0F));
 		}
 	}
 
 	@Override
 	protected void playJumpSound() {
-		if (this.isInsideWater()) {
+		if (this.isTouchingWater()) {
 			this.playSound(SoundEvents.ENTITY_SKELETON_HORSE_JUMP_WATER, 0.4F, 1.0F);
 		} else {
 			super.playJumpSound();
@@ -115,17 +115,17 @@ public class SkeletonHorseEntity extends HorseBaseEntity {
 	}
 
 	@Override
-	public void writeCustomDataToTag(CompoundTag compoundTag) {
-		super.writeCustomDataToTag(compoundTag);
-		compoundTag.putBoolean("SkeletonTrap", this.isTrapped());
-		compoundTag.putInt("SkeletonTrapTime", this.trapTime);
+	public void writeCustomDataToTag(CompoundTag tag) {
+		super.writeCustomDataToTag(tag);
+		tag.putBoolean("SkeletonTrap", this.isTrapped());
+		tag.putInt("SkeletonTrapTime", this.trapTime);
 	}
 
 	@Override
-	public void readCustomDataFromTag(CompoundTag compoundTag) {
-		super.readCustomDataFromTag(compoundTag);
-		this.setTrapped(compoundTag.getBoolean("SkeletonTrap"));
-		this.trapTime = compoundTag.getInt("SkeletonTrapTime");
+	public void readCustomDataFromTag(CompoundTag tag) {
+		super.readCustomDataFromTag(tag);
+		this.setTrapped(tag.getBoolean("SkeletonTrap"));
+		this.trapTime = tag.getInt("SkeletonTrapTime");
 	}
 
 	@Override
@@ -142,10 +142,10 @@ public class SkeletonHorseEntity extends HorseBaseEntity {
 		return this.trapped;
 	}
 
-	public void setTrapped(boolean bl) {
-		if (bl != this.trapped) {
-			this.trapped = bl;
-			if (bl) {
+	public void setTrapped(boolean trapped) {
+		if (trapped != this.trapped) {
+			this.trapped = trapped;
+			if (trapped) {
 				this.goalSelector.add(1, this.field_7003);
 			} else {
 				this.goalSelector.remove(this.field_7003);
@@ -155,37 +155,37 @@ public class SkeletonHorseEntity extends HorseBaseEntity {
 
 	@Nullable
 	@Override
-	public PassiveEntity createChild(PassiveEntity passiveEntity) {
+	public PassiveEntity createChild(PassiveEntity mate) {
 		return EntityType.SKELETON_HORSE.create(this.world);
 	}
 
 	@Override
-	public boolean interactMob(PlayerEntity playerEntity, Hand hand) {
-		ItemStack itemStack = playerEntity.getStackInHand(hand);
+	public boolean interactMob(PlayerEntity player, Hand hand) {
+		ItemStack itemStack = player.getStackInHand(hand);
 		if (itemStack.getItem() instanceof SpawnEggItem) {
-			return super.interactMob(playerEntity, hand);
+			return super.interactMob(player, hand);
 		} else if (!this.isTame()) {
 			return false;
 		} else if (this.isBaby()) {
-			return super.interactMob(playerEntity, hand);
-		} else if (playerEntity.isSneaking()) {
-			this.openInventory(playerEntity);
+			return super.interactMob(player, hand);
+		} else if (player.isSneaking()) {
+			this.openInventory(player);
 			return true;
 		} else if (this.hasPassengers()) {
-			return super.interactMob(playerEntity, hand);
+			return super.interactMob(player, hand);
 		} else {
 			if (!itemStack.isEmpty()) {
 				if (itemStack.getItem() == Items.SADDLE && !this.isSaddled()) {
-					this.openInventory(playerEntity);
+					this.openInventory(player);
 					return true;
 				}
 
-				if (itemStack.useOnEntity(playerEntity, this, hand)) {
+				if (itemStack.useOnEntity(player, this, hand)) {
 					return true;
 				}
 			}
 
-			this.putPlayerOnBack(playerEntity);
+			this.putPlayerOnBack(player);
 			return true;
 		}
 	}

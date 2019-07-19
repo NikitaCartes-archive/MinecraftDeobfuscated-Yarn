@@ -2,9 +2,10 @@ package net.minecraft.block;
 
 import javax.annotation.Nullable;
 import net.minecraft.block.piston.PistonBehavior;
+import net.minecraft.client.render.RenderLayer;
 import net.minecraft.entity.EntityContext;
 import net.minecraft.item.ItemPlacementContext;
-import net.minecraft.state.StateFactory;
+import net.minecraft.state.StateManager;
 import net.minecraft.state.property.BooleanProperty;
 import net.minecraft.state.property.Properties;
 import net.minecraft.util.math.BlockPos;
@@ -12,8 +13,8 @@ import net.minecraft.util.math.Direction;
 import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.util.shape.VoxelShapes;
 import net.minecraft.world.BlockView;
+import net.minecraft.world.CollisionView;
 import net.minecraft.world.IWorld;
-import net.minecraft.world.ViewableWorld;
 
 public class LanternBlock extends Block {
 	public static final BooleanProperty HANGING = Properties.HANGING;
@@ -26,16 +27,16 @@ public class LanternBlock extends Block {
 
 	public LanternBlock(Block.Settings settings) {
 		super(settings);
-		this.setDefaultState(this.stateFactory.getDefaultState().with(HANGING, Boolean.valueOf(false)));
+		this.setDefaultState(this.stateManager.getDefaultState().with(HANGING, Boolean.valueOf(false)));
 	}
 
 	@Nullable
 	@Override
-	public BlockState getPlacementState(ItemPlacementContext itemPlacementContext) {
-		for (Direction direction : itemPlacementContext.getPlacementDirections()) {
+	public BlockState getPlacementState(ItemPlacementContext ctx) {
+		for (Direction direction : ctx.getPlacementDirections()) {
 			if (direction.getAxis() == Direction.Axis.Y) {
 				BlockState blockState = this.getDefaultState().with(HANGING, Boolean.valueOf(direction == Direction.UP));
-				if (blockState.canPlaceAt(itemPlacementContext.getWorld(), itemPlacementContext.getBlockPos())) {
+				if (blockState.canPlaceAt(ctx.getWorld(), ctx.getBlockPos())) {
 					return blockState;
 				}
 			}
@@ -45,46 +46,44 @@ public class LanternBlock extends Block {
 	}
 
 	@Override
-	public VoxelShape getOutlineShape(BlockState blockState, BlockView blockView, BlockPos blockPos, EntityContext entityContext) {
-		return blockState.get(HANGING) ? HANGING_SHAPE : STANDING_SHAPE;
+	public VoxelShape getOutlineShape(BlockState state, BlockView view, BlockPos pos, EntityContext context) {
+		return state.get(HANGING) ? HANGING_SHAPE : STANDING_SHAPE;
 	}
 
 	@Override
-	protected void appendProperties(StateFactory.Builder<Block, BlockState> builder) {
+	protected void appendProperties(StateManager.Builder<Block, BlockState> builder) {
 		builder.add(HANGING);
 	}
 
 	@Override
-	public BlockRenderLayer getRenderLayer() {
-		return BlockRenderLayer.CUTOUT;
+	public RenderLayer getRenderLayer() {
+		return RenderLayer.CUTOUT;
 	}
 
 	@Override
-	public boolean canPlaceAt(BlockState blockState, ViewableWorld viewableWorld, BlockPos blockPos) {
-		Direction direction = attachedDirection(blockState).getOpposite();
-		return Block.isSolidSmallSquare(viewableWorld, blockPos.offset(direction), direction.getOpposite());
+	public boolean canPlaceAt(BlockState state, CollisionView world, BlockPos pos) {
+		Direction direction = attachedDirection(state).getOpposite();
+		return Block.isSolidSmallSquare(world, pos.offset(direction), direction.getOpposite());
 	}
 
-	protected static Direction attachedDirection(BlockState blockState) {
-		return blockState.get(HANGING) ? Direction.DOWN : Direction.UP;
+	protected static Direction attachedDirection(BlockState state) {
+		return state.get(HANGING) ? Direction.DOWN : Direction.UP;
 	}
 
 	@Override
-	public PistonBehavior getPistonBehavior(BlockState blockState) {
+	public PistonBehavior getPistonBehavior(BlockState state) {
 		return PistonBehavior.DESTROY;
 	}
 
 	@Override
-	public BlockState getStateForNeighborUpdate(
-		BlockState blockState, Direction direction, BlockState blockState2, IWorld iWorld, BlockPos blockPos, BlockPos blockPos2
-	) {
-		return attachedDirection(blockState).getOpposite() == direction && !blockState.canPlaceAt(iWorld, blockPos)
+	public BlockState getStateForNeighborUpdate(BlockState state, Direction facing, BlockState neighborState, IWorld world, BlockPos pos, BlockPos neighborPos) {
+		return attachedDirection(state).getOpposite() == facing && !state.canPlaceAt(world, pos)
 			? Blocks.AIR.getDefaultState()
-			: super.getStateForNeighborUpdate(blockState, direction, blockState2, iWorld, blockPos, blockPos2);
+			: super.getStateForNeighborUpdate(state, facing, neighborState, world, pos, neighborPos);
 	}
 
 	@Override
-	public boolean canPlaceAtSide(BlockState blockState, BlockView blockView, BlockPos blockPos, BlockPlacementEnvironment blockPlacementEnvironment) {
+	public boolean canPlaceAtSide(BlockState world, BlockView view, BlockPos pos, BlockPlacementEnvironment env) {
 		return false;
 	}
 }

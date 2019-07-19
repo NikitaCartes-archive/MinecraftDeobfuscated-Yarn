@@ -46,7 +46,7 @@ public class FarmerVillagerTask extends Task<VillagerEntity> {
 		);
 	}
 
-	protected boolean method_19564(ServerWorld serverWorld, VillagerEntity villagerEntity) {
+	protected boolean shouldRun(ServerWorld serverWorld, VillagerEntity villagerEntity) {
 		if (!serverWorld.getGameRules().getBoolean(GameRules.MOB_GRIEFING)) {
 			return false;
 		} else if (villagerEntity.getVillagerData().getProfession() != VillagerProfession.FARMER) {
@@ -102,21 +102,21 @@ public class FarmerVillagerTask extends Task<VillagerEntity> {
 			|| blockState.isAir() && block2 instanceof FarmlandBlock && this.field_18859;
 	}
 
-	protected void method_20392(ServerWorld serverWorld, VillagerEntity villagerEntity, long l) {
+	protected void run(ServerWorld serverWorld, VillagerEntity villagerEntity, long l) {
 		if (l > this.field_18861 && this.field_18858 != null) {
 			villagerEntity.getBrain().putMemory(MemoryModuleType.LOOK_TARGET, new BlockPosLookTarget(this.field_18858));
 			villagerEntity.getBrain().putMemory(MemoryModuleType.WALK_TARGET, new WalkTarget(new BlockPosLookTarget(this.field_18858), 0.5F, 1));
 		}
 	}
 
-	protected void method_19566(ServerWorld serverWorld, VillagerEntity villagerEntity, long l) {
+	protected void finishRunning(ServerWorld serverWorld, VillagerEntity villagerEntity, long l) {
 		villagerEntity.getBrain().forget(MemoryModuleType.LOOK_TARGET);
 		villagerEntity.getBrain().forget(MemoryModuleType.WALK_TARGET);
 		this.field_19239 = 0;
 		this.field_18861 = l + 40L;
 	}
 
-	protected void method_19565(ServerWorld serverWorld, VillagerEntity villagerEntity, long l) {
+	protected void keepRunning(ServerWorld serverWorld, VillagerEntity villagerEntity, long l) {
 		if (this.field_18858 != null && l > this.field_18861) {
 			BlockState blockState = serverWorld.getBlockState(this.field_18858);
 			Block block = blockState.getBlock();
@@ -181,7 +181,7 @@ public class FarmerVillagerTask extends Task<VillagerEntity> {
 		this.field_19239++;
 	}
 
-	protected boolean method_20394(ServerWorld serverWorld, VillagerEntity villagerEntity, long l) {
+	protected boolean shouldKeepRunning(ServerWorld serverWorld, VillagerEntity villagerEntity, long l) {
 		return this.field_19239 < 200;
 	}
 }

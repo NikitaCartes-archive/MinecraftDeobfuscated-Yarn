@@ -11,12 +11,12 @@ import net.minecraft.entity.passive.TameableEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
-import net.minecraft.world.ViewableWorld;
+import net.minecraft.world.CollisionView;
 
 public class FollowOwnerGoal extends Goal {
 	protected final TameableEntity tameable;
 	private LivingEntity owner;
-	protected final ViewableWorld world;
+	protected final CollisionView world;
 	private final double field_6442;
 	private final EntityNavigation navigation;
 	private int field_6443;
@@ -24,15 +24,15 @@ public class FollowOwnerGoal extends Goal {
 	private final float minDistance;
 	private float field_6447;
 
-	public FollowOwnerGoal(TameableEntity tameableEntity, double d, float f, float g) {
-		this.tameable = tameableEntity;
-		this.world = tameableEntity.world;
-		this.field_6442 = d;
-		this.navigation = tameableEntity.getNavigation();
-		this.minDistance = f;
-		this.maxDistance = g;
+	public FollowOwnerGoal(TameableEntity tameable, double speed, float minDistance, float maxDistance) {
+		this.tameable = tameable;
+		this.world = tameable.world;
+		this.field_6442 = speed;
+		this.navigation = tameable.getNavigation();
+		this.minDistance = minDistance;
+		this.maxDistance = maxDistance;
 		this.setControls(EnumSet.of(Goal.Control.MOVE, Goal.Control.LOOK));
-		if (!(tameableEntity.getNavigation() instanceof MobNavigation) && !(tameableEntity.getNavigation() instanceof BirdNavigation)) {
+		if (!(tameable.getNavigation() instanceof MobNavigation) && !(tameable.getNavigation() instanceof BirdNavigation)) {
 			throw new IllegalArgumentException("Unsupported mob type for FollowOwnerGoal");
 		}
 	}
@@ -62,15 +62,15 @@ public class FollowOwnerGoal extends Goal {
 	@Override
 	public void start() {
 		this.field_6443 = 0;
-		this.field_6447 = this.tameable.getPathNodeTypeWeight(PathNodeType.WATER);
-		this.tameable.setPathNodeTypeWeight(PathNodeType.WATER, 0.0F);
+		this.field_6447 = this.tameable.getPathfindingPenalty(PathNodeType.WATER);
+		this.tameable.setPathfindingPenalty(PathNodeType.WATER, 0.0F);
 	}
 
 	@Override
 	public void stop() {
 		this.owner = null;
 		this.navigation.stop();
-		this.tameable.setPathNodeTypeWeight(PathNodeType.WATER, this.field_6447);
+		this.tameable.setPathfindingPenalty(PathNodeType.WATER, this.field_6447);
 	}
 
 	@Override
@@ -84,13 +84,13 @@ public class FollowOwnerGoal extends Goal {
 						if (!(this.tameable.squaredDistanceTo(this.owner) < 144.0)) {
 							int i = MathHelper.floor(this.owner.x) - 2;
 							int j = MathHelper.floor(this.owner.z) - 2;
-							int k = MathHelper.floor(this.owner.getBoundingBox().minY);
+							int k = MathHelper.floor(this.owner.getBoundingBox().y1);
 
 							for (int l = 0; l <= 4; l++) {
 								for (int m = 0; m <= 4; m++) {
 									if ((l < 1 || m < 1 || l > 3 || m > 3) && this.method_6263(new BlockPos(i + l, k - 1, j + m))) {
 										this.tameable
-											.setPositionAndAngles((double)((float)(i + l) + 0.5F), (double)k, (double)((float)(j + m) + 0.5F), this.tameable.yaw, this.tameable.pitch);
+											.refreshPositionAndAngles((double)((float)(i + l) + 0.5F), (double)k, (double)((float)(j + m) + 0.5F), this.tameable.yaw, this.tameable.pitch);
 										this.navigation.stop();
 										return;
 									}
@@ -103,8 +103,8 @@ public class FollowOwnerGoal extends Goal {
 		}
 	}
 
-	protected boolean method_6263(BlockPos blockPos) {
-		BlockState blockState = this.world.getBlockState(blockPos);
-		return blockState.allowsSpawning(this.world, blockPos, this.tameable.getType()) && this.world.isAir(blockPos.up()) && this.world.isAir(blockPos.up(2));
+	protected boolean method_6263(BlockPos pos) {
+		BlockState blockState = this.world.getBlockState(pos);
+		return blockState.allowsSpawning(this.world, pos, this.tameable.getType()) && this.world.isAir(pos.up()) && this.world.isAir(pos.up(2));
 	}
 }

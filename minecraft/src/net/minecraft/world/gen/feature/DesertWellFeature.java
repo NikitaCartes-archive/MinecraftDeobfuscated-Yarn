@@ -18,11 +18,11 @@ public class DesertWellFeature extends Feature<DefaultFeatureConfig> {
 	private final BlockState wall = Blocks.SANDSTONE.getDefaultState();
 	private final BlockState fluidInside = Blocks.WATER.getDefaultState();
 
-	public DesertWellFeature(Function<Dynamic<?>, ? extends DefaultFeatureConfig> function) {
-		super(function);
+	public DesertWellFeature(Function<Dynamic<?>, ? extends DefaultFeatureConfig> configFactory) {
+		super(configFactory);
 	}
 
-	public boolean method_12977(
+	public boolean generate(
 		IWorld iWorld, ChunkGenerator<? extends ChunkGeneratorConfig> chunkGenerator, Random random, BlockPos blockPos, DefaultFeatureConfig defaultFeatureConfig
 	) {
 		blockPos = blockPos.up();
@@ -31,7 +31,7 @@ public class DesertWellFeature extends Feature<DefaultFeatureConfig> {
 			blockPos = blockPos.down();
 		}
 
-		if (!CAN_GENERATE.method_11760(iWorld.getBlockState(blockPos))) {
+		if (!CAN_GENERATE.test(iWorld.getBlockState(blockPos))) {
 			return false;
 		} else {
 			for (int i = -2; i <= 2; i++) {

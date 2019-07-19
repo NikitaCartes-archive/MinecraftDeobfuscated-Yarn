@@ -17,14 +17,14 @@ public class ShortTag extends AbstractNumberTag {
 	}
 
 	@Override
-	public void write(DataOutput dataOutput) throws IOException {
-		dataOutput.writeShort(this.value);
+	public void write(DataOutput output) throws IOException {
+		output.writeShort(this.value);
 	}
 
 	@Override
-	public void read(DataInput dataInput, int i, PositionTracker positionTracker) throws IOException {
+	public void read(DataInput input, int depth, PositionTracker positionTracker) throws IOException {
 		positionTracker.add(80L);
-		this.value = dataInput.readShort();
+		this.value = input.readShort();
 	}
 
 	@Override
@@ -37,12 +37,12 @@ public class ShortTag extends AbstractNumberTag {
 		return this.value + "s";
 	}
 
-	public ShortTag method_10704() {
+	public ShortTag copy() {
 		return new ShortTag(this.value);
 	}
 
-	public boolean equals(Object object) {
-		return this == object ? true : object instanceof ShortTag && this.value == ((ShortTag)object).value;
+	public boolean equals(Object o) {
+		return this == o ? true : o instanceof ShortTag && this.value == ((ShortTag)o).value;
 	}
 
 	public int hashCode() {
@@ -50,7 +50,7 @@ public class ShortTag extends AbstractNumberTag {
 	}
 
 	@Override
-	public Text toText(String string, int i) {
+	public Text toText(String indent, int depth) {
 		Text text = new LiteralText("s").formatted(RED);
 		return new LiteralText(String.valueOf(this.value)).append(text).formatted(GOLD);
 	}

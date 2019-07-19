@@ -11,7 +11,7 @@ import net.minecraft.util.Lazy;
 public final class MissingSprite extends Sprite {
 	private static final Identifier MISSINGNO = new Identifier("missingno");
 	@Nullable
-	private static NativeImageBackedTexture TEXTURE;
+	private static NativeImageBackedTexture texture;
 	private static final Lazy<NativeImage> IMAGE = new Lazy<>(() -> {
 		NativeImage nativeImage = new NativeImage(16, 16, false);
 		int i = -16777216;
@@ -20,9 +20,9 @@ public final class MissingSprite extends Sprite {
 		for (int k = 0; k < 16; k++) {
 			for (int l = 0; l < 16; l++) {
 				if (k < 8 ^ l < 8) {
-					nativeImage.setPixelRGBA(l, k, -524040);
+					nativeImage.setPixelRgba(l, k, -524040);
 				} else {
-					nativeImage.setPixelRGBA(l, k, -16777216);
+					nativeImage.setPixelRgba(l, k, -16777216);
 				}
 			}
 		}
@@ -54,11 +54,11 @@ public final class MissingSprite extends Sprite {
 	}
 
 	public static NativeImageBackedTexture getMissingSpriteTexture() {
-		if (TEXTURE == null) {
-			TEXTURE = new NativeImageBackedTexture(IMAGE.get());
-			MinecraftClient.getInstance().getTextureManager().registerTexture(MISSINGNO, TEXTURE);
+		if (texture == null) {
+			texture = new NativeImageBackedTexture(IMAGE.get());
+			MinecraftClient.getInstance().getTextureManager().registerTexture(MISSINGNO, texture);
 		}
 
-		return TEXTURE;
+		return texture;
 	}
 }

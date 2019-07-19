@@ -27,7 +27,7 @@ public class DebugRenderer {
 	public final DebugRenderer.Renderer waterDebugRenderer;
 	public final DebugRenderer.Renderer chunkBorderDebugRenderer;
 	public final DebugRenderer.Renderer heightmapDebugRenderer;
-	public final DebugRenderer.Renderer voxelDebugRenderer;
+	public final DebugRenderer.Renderer collisionDebugRenderer;
 	public final DebugRenderer.Renderer neighborUpdateDebugRenderer;
 	public final CaveDebugRenderer caveDebugRenderer;
 	public final StructureDebugRenderer structureDebugRenderer;
@@ -35,7 +35,7 @@ public class DebugRenderer {
 	public final DebugRenderer.Renderer worldGenAttemptDebugRenderer;
 	public final DebugRenderer.Renderer blockOutlineDebugRenderer;
 	public final DebugRenderer.Renderer chunkLoadingDebugRenderer;
-	public final PointOfInterestDebugRenderer pointsOfInterestDebugRenderer;
+	public final VillageDebugRenderer villageDebugRenderer;
 	public final RaidCenterDebugRenderer raidCenterDebugRenderer;
 	public final GoalSelectorDebugRenderer goalSelectorDebugRenderer;
 	private boolean showChunkBorder;
@@ -45,7 +45,7 @@ public class DebugRenderer {
 		this.waterDebugRenderer = new WaterDebugRenderer(minecraftClient);
 		this.chunkBorderDebugRenderer = new ChunkBorderDebugRenderer(minecraftClient);
 		this.heightmapDebugRenderer = new HeightmapDebugRenderer(minecraftClient);
-		this.voxelDebugRenderer = new VoxelDebugRenderer(minecraftClient);
+		this.collisionDebugRenderer = new CollisionDebugRenderer(minecraftClient);
 		this.neighborUpdateDebugRenderer = new NeighborUpdateDebugRenderer(minecraftClient);
 		this.caveDebugRenderer = new CaveDebugRenderer(minecraftClient);
 		this.structureDebugRenderer = new StructureDebugRenderer(minecraftClient);
@@ -53,7 +53,7 @@ public class DebugRenderer {
 		this.worldGenAttemptDebugRenderer = new WorldGenAttemptDebugRenderer(minecraftClient);
 		this.blockOutlineDebugRenderer = new BlockOutlineDebugRenderer(minecraftClient);
 		this.chunkLoadingDebugRenderer = new ChunkLoadingDebugRenderer(minecraftClient);
-		this.pointsOfInterestDebugRenderer = new PointOfInterestDebugRenderer(minecraftClient);
+		this.villageDebugRenderer = new VillageDebugRenderer(minecraftClient);
 		this.raidCenterDebugRenderer = new RaidCenterDebugRenderer(minecraftClient);
 		this.goalSelectorDebugRenderer = new GoalSelectorDebugRenderer(minecraftClient);
 	}
@@ -63,7 +63,7 @@ public class DebugRenderer {
 		this.waterDebugRenderer.method_20414();
 		this.chunkBorderDebugRenderer.method_20414();
 		this.heightmapDebugRenderer.method_20414();
-		this.voxelDebugRenderer.method_20414();
+		this.collisionDebugRenderer.method_20414();
 		this.neighborUpdateDebugRenderer.method_20414();
 		this.caveDebugRenderer.method_20414();
 		this.structureDebugRenderer.method_20414();
@@ -71,7 +71,7 @@ public class DebugRenderer {
 		this.worldGenAttemptDebugRenderer.method_20414();
 		this.blockOutlineDebugRenderer.method_20414();
 		this.chunkLoadingDebugRenderer.method_20414();
-		this.pointsOfInterestDebugRenderer.method_20414();
+		this.villageDebugRenderer.method_20414();
 		this.raidCenterDebugRenderer.method_20414();
 		this.goalSelectorDebugRenderer.method_20414();
 	}
@@ -129,12 +129,12 @@ public class DebugRenderer {
 	}
 
 	public static void method_19695(Box box, float f, float g, float h, float i) {
-		method_19692(box.minX, box.minY, box.minZ, box.maxX, box.maxY, box.maxZ, f, g, h, i);
+		method_19692(box.x1, box.y1, box.z1, box.x2, box.y2, box.z2, f, g, h, i);
 	}
 
 	public static void method_19692(double d, double e, double f, double g, double h, double i, float j, float k, float l, float m) {
 		Tessellator tessellator = Tessellator.getInstance();
-		BufferBuilder bufferBuilder = tessellator.getBufferBuilder();
+		BufferBuilder bufferBuilder = tessellator.getBuffer();
 		bufferBuilder.begin(5, VertexFormats.POSITION_COLOR);
 		WorldRenderer.buildBox(bufferBuilder, d, e, f, g, h, i, j, k, l, m);
 		tessellator.draw();

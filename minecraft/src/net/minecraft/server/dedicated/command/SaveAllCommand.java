@@ -20,15 +20,15 @@ public class SaveAllCommand {
 		);
 	}
 
-	private static int saveAll(ServerCommandSource serverCommandSource, boolean bl) throws CommandSyntaxException {
-		serverCommandSource.sendFeedback(new TranslatableText("commands.save.saving"), false);
-		MinecraftServer minecraftServer = serverCommandSource.getMinecraftServer();
+	private static int saveAll(ServerCommandSource source, boolean flush) throws CommandSyntaxException {
+		source.sendFeedback(new TranslatableText("commands.save.saving"), false);
+		MinecraftServer minecraftServer = source.getMinecraftServer();
 		minecraftServer.getPlayerManager().saveAllPlayerData();
-		boolean bl2 = minecraftServer.save(true, bl, true);
-		if (!bl2) {
+		boolean bl = minecraftServer.save(true, flush, true);
+		if (!bl) {
 			throw SAVE_FAILED_EXCEPTION.create();
 		} else {
-			serverCommandSource.sendFeedback(new TranslatableText("commands.save.success"), true);
+			source.sendFeedback(new TranslatableText("commands.save.success"), true);
 			return 1;
 		}
 	}

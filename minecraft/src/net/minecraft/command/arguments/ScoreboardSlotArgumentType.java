@@ -28,11 +28,11 @@ public class ScoreboardSlotArgumentType implements ArgumentType<Integer> {
 		return new ScoreboardSlotArgumentType();
 	}
 
-	public static int getScorebordSlot(CommandContext<ServerCommandSource> commandContext, String string) {
-		return commandContext.<Integer>getArgument(string, Integer.class);
+	public static int getScorebordSlot(CommandContext<ServerCommandSource> context, String name) {
+		return context.<Integer>getArgument(name, Integer.class);
 	}
 
-	public Integer method_9466(StringReader stringReader) throws CommandSyntaxException {
+	public Integer parse(StringReader stringReader) throws CommandSyntaxException {
 		String string = stringReader.readUnquotedString();
 		int i = Scoreboard.getDisplaySlotId(string);
 		if (i == -1) {
@@ -43,8 +43,8 @@ public class ScoreboardSlotArgumentType implements ArgumentType<Integer> {
 	}
 
 	@Override
-	public <S> CompletableFuture<Suggestions> listSuggestions(CommandContext<S> commandContext, SuggestionsBuilder suggestionsBuilder) {
-		return CommandSource.suggestMatching(Scoreboard.getDisplaySlotNames(), suggestionsBuilder);
+	public <S> CompletableFuture<Suggestions> listSuggestions(CommandContext<S> context, SuggestionsBuilder builder) {
+		return CommandSource.suggestMatching(Scoreboard.getDisplaySlotNames(), builder);
 	}
 
 	@Override

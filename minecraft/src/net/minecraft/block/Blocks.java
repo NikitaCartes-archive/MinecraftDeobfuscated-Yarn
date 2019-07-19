@@ -564,7 +564,9 @@ public class Blocks {
 	);
 	public static final Block NETHER_PORTAL = register(
 		"nether_portal",
-		new PortalBlock(Block.Settings.of(Material.PORTAL).noCollision().ticksRandomly().strength(-1.0F).sounds(BlockSoundGroup.GLASS).lightLevel(11).dropsNothing())
+		new NetherPortalBlock(
+			Block.Settings.of(Material.PORTAL).noCollision().ticksRandomly().strength(-1.0F).sounds(BlockSoundGroup.GLASS).lightLevel(11).dropsNothing()
+		)
 	);
 	public static final Block CARVED_PUMPKIN = register(
 		"carved_pumpkin", new CarvedPumpkinBlock(Block.Settings.of(Material.PUMPKIN, MaterialColor.ORANGE).strength(1.0F).sounds(BlockSoundGroup.WOOD))
@@ -1911,13 +1913,13 @@ public class Blocks {
 	);
 	public static final Block COMPOSTER = register("composter", new ComposterBlock(Block.Settings.of(Material.WOOD).strength(0.6F).sounds(BlockSoundGroup.WOOD)));
 
-	private static Block register(String string, Block block) {
-		return Registry.register(Registry.BLOCK, string, block);
+	private static Block register(String id, Block block) {
+		return Registry.register(Registry.BLOCK, id, block);
 	}
 
 	static {
 		for (Block block : Registry.BLOCK) {
-			for (BlockState blockState : block.getStateFactory().getStates()) {
+			for (BlockState blockState : block.getStateManager().getStates()) {
 				blockState.initShapeCache();
 				Block.STATE_IDS.add(blockState);
 			}

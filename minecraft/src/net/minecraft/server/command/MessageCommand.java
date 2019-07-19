@@ -11,8 +11,8 @@ import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Formatting;
 
 public class MessageCommand {
-	public static void register(CommandDispatcher<ServerCommandSource> commandDispatcher) {
-		LiteralCommandNode<ServerCommandSource> literalCommandNode = commandDispatcher.register(
+	public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
+		LiteralCommandNode<ServerCommandSource> literalCommandNode = dispatcher.register(
 			CommandManager.literal("msg")
 				.then(
 					CommandManager.argument("targets", EntityArgumentType.players())
@@ -26,23 +26,23 @@ public class MessageCommand {
 						)
 				)
 		);
-		commandDispatcher.register(CommandManager.literal("tell").redirect(literalCommandNode));
-		commandDispatcher.register(CommandManager.literal("w").redirect(literalCommandNode));
+		dispatcher.register(CommandManager.literal("tell").redirect(literalCommandNode));
+		dispatcher.register(CommandManager.literal("w").redirect(literalCommandNode));
 	}
 
-	private static int execute(ServerCommandSource serverCommandSource, Collection<ServerPlayerEntity> collection, Text text) {
-		for (ServerPlayerEntity serverPlayerEntity : collection) {
+	private static int execute(ServerCommandSource source, Collection<ServerPlayerEntity> targets, Text message) {
+		for (ServerPlayerEntity serverPlayerEntity : targets) {
 			serverPlayerEntity.sendMessage(
-				new TranslatableText("commands.message.display.incoming", serverCommandSource.getDisplayName(), text.deepCopy())
+				new TranslatableText("commands.message.display.incoming", source.getDisplayName(), message.deepCopy())
 					.formatted(new Formatting[]{Formatting.GRAY, Formatting.ITALIC})
 			);
-			serverCommandSource.sendFeedback(
-				new TranslatableText("commands.message.display.outgoing", serverPlayerEntity.getDisplayName(), text.deepCopy())
+			source.sendFeedback(
+				new TranslatableText("commands.message.display.outgoing", serverPlayerEntity.getDisplayName(), message.deepCopy())
 					.formatted(new Formatting[]{Formatting.GRAY, Formatting.ITALIC}),
 				false
 			);
 		}
 
-		return collection.size();
+		return targets.size();
 	}
 }

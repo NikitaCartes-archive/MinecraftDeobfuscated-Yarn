@@ -21,46 +21,45 @@ public class ShieldItem extends Item {
 	public ShieldItem(Item.Settings settings) {
 		super(settings);
 		this.addPropertyGetter(
-			new Identifier("blocking"),
-			(itemStack, world, livingEntity) -> livingEntity != null && livingEntity.isUsingItem() && livingEntity.getActiveItem() == itemStack ? 1.0F : 0.0F
+			new Identifier("blocking"), (stack, world, entity) -> entity != null && entity.isUsingItem() && entity.getActiveItem() == stack ? 1.0F : 0.0F
 		);
 		DispenserBlock.registerBehavior(this, ArmorItem.DISPENSER_BEHAVIOR);
 	}
 
 	@Override
-	public String getTranslationKey(ItemStack itemStack) {
-		return itemStack.getSubTag("BlockEntityTag") != null ? this.getTranslationKey() + '.' + getColor(itemStack).getName() : super.getTranslationKey(itemStack);
+	public String getTranslationKey(ItemStack stack) {
+		return stack.getSubTag("BlockEntityTag") != null ? this.getTranslationKey() + '.' + getColor(stack).getName() : super.getTranslationKey(stack);
 	}
 
 	@Environment(EnvType.CLIENT)
 	@Override
-	public void appendTooltip(ItemStack itemStack, @Nullable World world, List<Text> list, TooltipContext tooltipContext) {
-		BannerItem.appendBannerTooltip(itemStack, list);
+	public void appendTooltip(ItemStack stack, @Nullable World world, List<Text> tooltip, TooltipContext context) {
+		BannerItem.appendBannerTooltip(stack, tooltip);
 	}
 
 	@Override
-	public UseAction getUseAction(ItemStack itemStack) {
+	public UseAction getUseAction(ItemStack stack) {
 		return UseAction.BLOCK;
 	}
 
 	@Override
-	public int getMaxUseTime(ItemStack itemStack) {
+	public int getMaxUseTime(ItemStack stack) {
 		return 72000;
 	}
 
 	@Override
-	public TypedActionResult<ItemStack> use(World world, PlayerEntity playerEntity, Hand hand) {
-		ItemStack itemStack = playerEntity.getStackInHand(hand);
-		playerEntity.setCurrentHand(hand);
+	public TypedActionResult<ItemStack> use(World world, PlayerEntity user, Hand hand) {
+		ItemStack itemStack = user.getStackInHand(hand);
+		user.setCurrentHand(hand);
 		return new TypedActionResult<>(ActionResult.SUCCESS, itemStack);
 	}
 
 	@Override
-	public boolean canRepair(ItemStack itemStack, ItemStack itemStack2) {
-		return ItemTags.PLANKS.contains(itemStack2.getItem()) || super.canRepair(itemStack, itemStack2);
+	public boolean canRepair(ItemStack stack, ItemStack ingredient) {
+		return ItemTags.PLANKS.contains(ingredient.getItem()) || super.canRepair(stack, ingredient);
 	}
 
-	public static DyeColor getColor(ItemStack itemStack) {
-		return DyeColor.byId(itemStack.getOrCreateSubTag("BlockEntityTag").getInt("Base"));
+	public static DyeColor getColor(ItemStack stack) {
+		return DyeColor.byId(stack.getOrCreateSubTag("BlockEntityTag").getInt("Base"));
 	}
 }

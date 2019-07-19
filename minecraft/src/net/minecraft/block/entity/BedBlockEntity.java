@@ -3,7 +3,7 @@ package net.minecraft.block.entity;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.block.BedBlock;
-import net.minecraft.client.network.packet.BlockEntityUpdateS2CPacket;
+import net.minecraft.network.packet.s2c.play.BlockEntityUpdateS2CPacket;
 import net.minecraft.util.DyeColor;
 
 public class BedBlockEntity extends BlockEntity {
@@ -32,7 +32,7 @@ public class BedBlockEntity extends BlockEntity {
 		return this.color;
 	}
 
-	public void setColor(DyeColor dyeColor) {
-		this.color = dyeColor;
+	public void setColor(DyeColor color) {
+		this.color = color;
 	}
 }

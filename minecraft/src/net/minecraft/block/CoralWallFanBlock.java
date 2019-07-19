@@ -10,36 +10,34 @@ import net.minecraft.world.World;
 public class CoralWallFanBlock extends DeadCoralWallFanBlock {
 	private final Block deadCoralBlock;
 
-	protected CoralWallFanBlock(Block block, Block.Settings settings) {
+	protected CoralWallFanBlock(Block deadCoralBlock, Block.Settings settings) {
 		super(settings);
-		this.deadCoralBlock = block;
+		this.deadCoralBlock = deadCoralBlock;
 	}
 
 	@Override
-	public void onBlockAdded(BlockState blockState, World world, BlockPos blockPos, BlockState blockState2, boolean bl) {
-		this.checkLivingConditions(blockState, world, blockPos);
+	public void onBlockAdded(BlockState state, World world, BlockPos pos, BlockState oldState, boolean moved) {
+		this.checkLivingConditions(state, world, pos);
 	}
 
 	@Override
-	public void onScheduledTick(BlockState blockState, World world, BlockPos blockPos, Random random) {
-		if (!isInWater(blockState, world, blockPos)) {
-			world.setBlockState(blockPos, this.deadCoralBlock.getDefaultState().with(WATERLOGGED, Boolean.valueOf(false)).with(FACING, blockState.get(FACING)), 2);
+	public void onScheduledTick(BlockState state, World world, BlockPos pos, Random random) {
+		if (!isInWater(state, world, pos)) {
+			world.setBlockState(pos, this.deadCoralBlock.getDefaultState().with(WATERLOGGED, Boolean.valueOf(false)).with(FACING, state.get(FACING)), 2);
 		}
 	}
 
 	@Override
-	public BlockState getStateForNeighborUpdate(
-		BlockState blockState, Direction direction, BlockState blockState2, IWorld iWorld, BlockPos blockPos, BlockPos blockPos2
-	) {
-		if (direction.getOpposite() == blockState.get(FACING) && !blockState.canPlaceAt(iWorld, blockPos)) {
+	public BlockState getStateForNeighborUpdate(BlockState state, Direction facing, BlockState neighborState, IWorld world, BlockPos pos, BlockPos neighborPos) {
+		if (facing.getOpposite() == state.get(FACING) && !state.canPlaceAt(world, pos)) {
 			return Blocks.AIR.getDefaultState();
 		} else {
-			if ((Boolean)blockState.get(WATERLOGGED)) {
-				iWorld.getFluidTickScheduler().schedule(blockPos, Fluids.WATER, Fluids.WATER.getTickRate(iWorld));
+			if ((Boolean)state.get(WATERLOGGED)) {
+				world.getFluidTickScheduler().schedule(pos, Fluids.WATER, Fluids.WATER.getTickRate(world));
 			}
 
-			this.checkLivingConditions(blockState, iWorld, blockPos);
-			return super.getStateForNeighborUpdate(blockState, direction, blockState2, iWorld, blockPos, blockPos2);
+			this.checkLivingConditions(state, world, pos);
+			return super.getStateForNeighborUpdate(state, facing, neighborState, world, pos, neighborPos);
 		}
 	}
 }

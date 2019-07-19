@@ -22,13 +22,13 @@ public class ScoreText extends BaseText implements ParsableText {
 	private final String objective;
 	private String score = "";
 
-	public ScoreText(String string, String string2) {
-		this.name = string;
-		this.objective = string2;
+	public ScoreText(String name, String objective) {
+		this.name = name;
+		this.objective = objective;
 		EntitySelector entitySelector = null;
 
 		try {
-			EntitySelectorReader entitySelectorReader = new EntitySelectorReader(new StringReader(string));
+			EntitySelectorReader entitySelectorReader = new EntitySelectorReader(new StringReader(name));
 			entitySelector = entitySelectorReader.read();
 		} catch (CommandSyntaxException var5) {
 		}
@@ -44,8 +44,8 @@ public class ScoreText extends BaseText implements ParsableText {
 		return this.objective;
 	}
 
-	public void setScore(String string) {
-		this.score = string;
+	public void setScore(String score) {
+		this.score = score;
 	}
 
 	@Override
@@ -53,9 +53,9 @@ public class ScoreText extends BaseText implements ParsableText {
 		return this.score;
 	}
 
-	private void parse(ServerCommandSource serverCommandSource) {
-		MinecraftServer minecraftServer = serverCommandSource.getMinecraftServer();
-		if (minecraftServer != null && minecraftServer.method_3814() && ChatUtil.isEmpty(this.score)) {
+	private void parse(ServerCommandSource source) {
+		MinecraftServer minecraftServer = source.getMinecraftServer();
+		if (minecraftServer != null && minecraftServer.hasGameDir() && ChatUtil.isEmpty(this.score)) {
 			Scoreboard scoreboard = minecraftServer.getScoreboard();
 			ScoreboardObjective scoreboardObjective = scoreboard.getNullableObjective(this.objective);
 			if (scoreboard.playerHasObjective(this.name, scoreboardObjective)) {
@@ -67,20 +67,20 @@ public class ScoreText extends BaseText implements ParsableText {
 		}
 	}
 
-	public ScoreText method_10929() {
+	public ScoreText copy() {
 		ScoreText scoreText = new ScoreText(this.name, this.objective);
 		scoreText.setScore(this.score);
 		return scoreText;
 	}
 
 	@Override
-	public Text parse(@Nullable ServerCommandSource serverCommandSource, @Nullable Entity entity, int i) throws CommandSyntaxException {
-		if (serverCommandSource == null) {
-			return this.method_10929();
+	public Text parse(@Nullable ServerCommandSource source, @Nullable Entity sender, int depth) throws CommandSyntaxException {
+		if (source == null) {
+			return this.copy();
 		} else {
 			String string;
 			if (this.selector != null) {
-				List<? extends Entity> list = this.selector.getEntities(serverCommandSource);
+				List<? extends Entity> list = this.selector.getEntities(source);
 				if (list.isEmpty()) {
 					string = this.name;
 				} else {
@@ -94,23 +94,23 @@ public class ScoreText extends BaseText implements ParsableText {
 				string = this.name;
 			}
 
-			String string2 = entity != null && string.equals("*") ? entity.getEntityName() : string;
+			String string2 = sender != null && string.equals("*") ? sender.getEntityName() : string;
 			ScoreText scoreText = new ScoreText(string2, this.objective);
 			scoreText.setScore(this.score);
-			scoreText.parse(serverCommandSource);
+			scoreText.parse(source);
 			return scoreText;
 		}
 	}
 
 	@Override
-	public boolean equals(Object object) {
-		if (this == object) {
+	public boolean equals(Object o) {
+		if (this == o) {
 			return true;
-		} else if (!(object instanceof ScoreText)) {
+		} else if (!(o instanceof ScoreText)) {
 			return false;
 		} else {
-			ScoreText scoreText = (ScoreText)object;
-			return this.name.equals(scoreText.name) && this.objective.equals(scoreText.objective) && super.equals(object);
+			ScoreText scoreText = (ScoreText)o;
+			return this.name.equals(scoreText.name) && this.objective.equals(scoreText.objective) && super.equals(o);
 		}
 	}
 

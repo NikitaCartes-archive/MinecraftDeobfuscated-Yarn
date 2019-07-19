@@ -9,7 +9,7 @@ import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.resource.language.I18n;
 import net.minecraft.realms.RealmsBridge;
 import net.minecraft.text.TranslatableText;
-import net.minecraft.util.SystemUtil;
+import net.minecraft.util.Util;
 
 @Environment(EnvType.CLIENT)
 public class GameMenuScreen extends Screen {
@@ -51,7 +51,7 @@ public class GameMenuScreen extends Screen {
 				98,
 				20,
 				I18n.translate("gui.stats"),
-				buttonWidgetx -> this.minecraft.openScreen(new StatsScreen(this, this.minecraft.player.getStats()))
+				buttonWidgetx -> this.minecraft.openScreen(new StatsScreen(this, this.minecraft.player.getStatHandler()))
 			)
 		);
 		String string = SharedConstants.getGameVersion().isStable() ? "https://aka.ms/javafeedback?ref=game" : "https://aka.ms/snapshotfeedback?ref=game";
@@ -64,7 +64,7 @@ public class GameMenuScreen extends Screen {
 				I18n.translate("menu.sendFeedback"),
 				buttonWidgetx -> this.minecraft.openScreen(new ConfirmChatLinkScreen(bl -> {
 						if (bl) {
-							SystemUtil.getOperatingSystem().open(string);
+							Util.getOperatingSystem().open(string);
 						}
 
 						this.minecraft.openScreen(this);
@@ -80,7 +80,7 @@ public class GameMenuScreen extends Screen {
 				I18n.translate("menu.reportBugs"),
 				buttonWidgetx -> this.minecraft.openScreen(new ConfirmChatLinkScreen(bl -> {
 						if (bl) {
-							SystemUtil.getOperatingSystem().open("https://aka.ms/snapshotbugs?ref=game");
+							Util.getOperatingSystem().open("https://aka.ms/snapshotbugs?ref=game");
 						}
 
 						this.minecraft.openScreen(this);
@@ -141,7 +141,7 @@ public class GameMenuScreen extends Screen {
 	}
 
 	@Override
-	public void render(int i, int j, float f) {
+	public void render(int mouseX, int mouseY, float delta) {
 		if (this.field_19319) {
 			this.renderBackground();
 			this.drawCenteredString(this.font, this.title.asFormattedString(), this.width / 2, 40, 16777215);
@@ -149,6 +149,6 @@ public class GameMenuScreen extends Screen {
 			this.drawCenteredString(this.font, this.title.asFormattedString(), this.width / 2, 10, 16777215);
 		}
 
-		super.render(i, j, f);
+		super.render(mouseX, mouseY, delta);
 	}
 }

@@ -12,13 +12,13 @@ public class DamageRecord {
 	private final String fallDeathSuffix;
 	private final float fallDistance;
 
-	public DamageRecord(DamageSource damageSource, int i, float f, float g, String string, float h) {
+	public DamageRecord(DamageSource damageSource, int entityAge, float entityOriginalHealth, float damage, String fallDeathSuffix, float f) {
 		this.damageSource = damageSource;
-		this.entityAge = i;
-		this.damage = g;
-		this.entityHealth = f;
-		this.fallDeathSuffix = string;
-		this.fallDistance = h;
+		this.entityAge = entityAge;
+		this.damage = damage;
+		this.entityHealth = entityOriginalHealth;
+		this.fallDeathSuffix = fallDeathSuffix;
+		this.fallDistance = f;
 	}
 
 	public DamageSource getDamageSource() {

@@ -17,9 +17,9 @@ public class WeightedSoundSet implements SoundContainer<Sound> {
 	private final Identifier id;
 	private final Text subtitle;
 
-	public WeightedSoundSet(Identifier identifier, @Nullable String string) {
-		this.id = identifier;
-		this.subtitle = string == null ? null : new TranslatableText(string);
+	public WeightedSoundSet(Identifier id, @Nullable String subtitle) {
+		this.id = id;
+		this.subtitle = subtitle == null ? null : new TranslatableText(subtitle);
 	}
 
 	@Override
@@ -33,7 +33,7 @@ public class WeightedSoundSet implements SoundContainer<Sound> {
 		return i;
 	}
 
-	public Sound method_4887() {
+	public Sound getSound() {
 		int i = this.getWeight();
 		if (!this.sounds.isEmpty() && i != 0) {
 			int j = this.random.nextInt(i);

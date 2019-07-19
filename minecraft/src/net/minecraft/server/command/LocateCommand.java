@@ -15,8 +15,8 @@ import net.minecraft.util.math.MathHelper;
 public class LocateCommand {
 	private static final SimpleCommandExceptionType FAILED_EXCEPTION = new SimpleCommandExceptionType(new TranslatableText("commands.locate.failed"));
 
-	public static void register(CommandDispatcher<ServerCommandSource> commandDispatcher) {
-		commandDispatcher.register(
+	public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
+		dispatcher.register(
 			CommandManager.literal("locate")
 				.requires(serverCommandSource -> serverCommandSource.hasPermissionLevel(2))
 				.then(CommandManager.literal("Pillager_Outpost").executes(commandContext -> execute(commandContext.getSource(), "Pillager_Outpost")))
@@ -37,9 +37,9 @@ public class LocateCommand {
 		);
 	}
 
-	private static int execute(ServerCommandSource serverCommandSource, String string) throws CommandSyntaxException {
-		BlockPos blockPos = new BlockPos(serverCommandSource.getPosition());
-		BlockPos blockPos2 = serverCommandSource.getWorld().locateStructure(string, blockPos, 100, false);
+	private static int execute(ServerCommandSource source, String structure) throws CommandSyntaxException {
+		BlockPos blockPos = new BlockPos(source.getPosition());
+		BlockPos blockPos2 = source.getWorld().locateStructure(structure, blockPos, 100, false);
 		if (blockPos2 == null) {
 			throw FAILED_EXCEPTION.create();
 		} else {
@@ -50,14 +50,14 @@ public class LocateCommand {
 							.setClickEvent(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND, "/tp @s " + blockPos2.getX() + " ~ " + blockPos2.getZ()))
 							.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new TranslatableText("chat.coordinates.tooltip")))
 				);
-			serverCommandSource.sendFeedback(new TranslatableText("commands.locate.success", string, text, i), false);
+			source.sendFeedback(new TranslatableText("commands.locate.success", structure, text, i), false);
 			return i;
 		}
 	}
 
-	private static float getDistance(int i, int j, int k, int l) {
-		int m = k - i;
-		int n = l - j;
-		return MathHelper.sqrt((float)(m * m + n * n));
+	private static float getDistance(int x1, int y1, int x2, int y2) {
+		int i = x2 - x1;
+		int j = y2 - y1;
+		return MathHelper.sqrt((float)(i * i + j * j));
 	}
 }

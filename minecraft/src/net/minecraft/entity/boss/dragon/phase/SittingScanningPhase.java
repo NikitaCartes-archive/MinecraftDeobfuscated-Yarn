@@ -11,11 +11,9 @@ public class SittingScanningPhase extends AbstractSittingPhase {
 	private final TargetPredicate CLOSE_PLAYER_PREDICATE;
 	private int ticks;
 
-	public SittingScanningPhase(EnderDragonEntity enderDragonEntity) {
-		super(enderDragonEntity);
-		this.CLOSE_PLAYER_PREDICATE = new TargetPredicate()
-			.setBaseMaxDistance(20.0)
-			.setPredicate(livingEntity -> Math.abs(livingEntity.y - enderDragonEntity.y) <= 10.0);
+	public SittingScanningPhase(EnderDragonEntity dragon) {
+		super(dragon);
+		this.CLOSE_PLAYER_PREDICATE = new TargetPredicate().setBaseMaxDistance(20.0).setPredicate(livingEntity -> Math.abs(livingEntity.y - dragon.y) <= 10.0);
 	}
 
 	@Override

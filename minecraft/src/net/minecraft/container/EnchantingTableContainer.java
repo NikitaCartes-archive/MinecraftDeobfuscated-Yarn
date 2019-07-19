@@ -39,16 +39,16 @@ public class EnchantingTableContainer extends Container {
 	public final int[] enchantmentId = new int[]{-1, -1, -1};
 	public final int[] enchantmentLevel = new int[]{-1, -1, -1};
 
-	public EnchantingTableContainer(int i, PlayerInventory playerInventory) {
-		this(i, playerInventory, BlockContext.EMPTY);
+	public EnchantingTableContainer(int syncId, PlayerInventory playerInventory) {
+		this(syncId, playerInventory, BlockContext.EMPTY);
 	}
 
-	public EnchantingTableContainer(int i, PlayerInventory playerInventory, BlockContext blockContext) {
-		super(ContainerType.ENCHANTMENT, i);
+	public EnchantingTableContainer(int syncId, PlayerInventory playerInventory, BlockContext blockContext) {
+		super(ContainerType.ENCHANTMENT, syncId);
 		this.context = blockContext;
 		this.addSlot(new Slot(this.inventory, 0, 15, 47) {
 			@Override
-			public boolean canInsert(ItemStack itemStack) {
+			public boolean canInsert(ItemStack stack) {
 				return true;
 			}
 
@@ -59,19 +59,19 @@ public class EnchantingTableContainer extends Container {
 		});
 		this.addSlot(new Slot(this.inventory, 1, 35, 47) {
 			@Override
-			public boolean canInsert(ItemStack itemStack) {
-				return itemStack.getItem() == Items.LAPIS_LAZULI;
+			public boolean canInsert(ItemStack stack) {
+				return stack.getItem() == Items.LAPIS_LAZULI;
 			}
 		});
 
-		for (int j = 0; j < 3; j++) {
-			for (int k = 0; k < 9; k++) {
-				this.addSlot(new Slot(playerInventory, k + j * 9 + 9, 8 + k * 18, 84 + j * 18));
+		for (int i = 0; i < 3; i++) {
+			for (int j = 0; j < 9; j++) {
+				this.addSlot(new Slot(playerInventory, j + i * 9 + 9, 8 + j * 18, 84 + i * 18));
 			}
 		}
 
-		for (int j = 0; j < 9; j++) {
-			this.addSlot(new Slot(playerInventory, j, 8 + j * 18, 142));
+		for (int i = 0; i < 9; i++) {
+			this.addSlot(new Slot(playerInventory, i, 8 + i * 18, 142));
 		}
 
 		this.addProperty(Property.create(this.enchantmentPower, 0));
@@ -161,22 +161,22 @@ public class EnchantingTableContainer extends Container {
 	}
 
 	@Override
-	public boolean onButtonClick(PlayerEntity playerEntity, int i) {
+	public boolean onButtonClick(PlayerEntity player, int id) {
 		ItemStack itemStack = this.inventory.getInvStack(0);
 		ItemStack itemStack2 = this.inventory.getInvStack(1);
-		int j = i + 1;
-		if ((itemStack2.isEmpty() || itemStack2.getCount() < j) && !playerEntity.abilities.creativeMode) {
+		int i = id + 1;
+		if ((itemStack2.isEmpty() || itemStack2.getCount() < i) && !player.abilities.creativeMode) {
 			return false;
-		} else if (this.enchantmentPower[i] <= 0
+		} else if (this.enchantmentPower[id] <= 0
 			|| itemStack.isEmpty()
-			|| (playerEntity.experienceLevel < j || playerEntity.experienceLevel < this.enchantmentPower[i]) && !playerEntity.abilities.creativeMode) {
+			|| (player.experienceLevel < i || player.experienceLevel < this.enchantmentPower[id]) && !player.abilities.creativeMode) {
 			return false;
 		} else {
 			this.context.run((BiConsumer<World, BlockPos>)((world, blockPos) -> {
 				ItemStack itemStack3 = itemStack;
-				List<InfoEnchantment> list = this.getRandomEnchantments(itemStack, i, this.enchantmentPower[i]);
+				List<InfoEnchantment> list = this.getRandomEnchantments(itemStack, id, this.enchantmentPower[id]);
 				if (!list.isEmpty()) {
-					playerEntity.applyEnchantmentCosts(itemStack, j);
+					player.applyEnchantmentCosts(itemStack, i);
 					boolean bl = itemStack.getItem() == Items.BOOK;
 					if (bl) {
 						itemStack3 = new ItemStack(Items.ENCHANTED_BOOK);
@@ -192,20 +192,20 @@ public class EnchantingTableContainer extends Container {
 						}
 					}
 
-					if (!playerEntity.abilities.creativeMode) {
-						itemStack2.decrement(j);
+					if (!player.abilities.creativeMode) {
+						itemStack2.decrement(i);
 						if (itemStack2.isEmpty()) {
 							this.inventory.setInvStack(1, ItemStack.EMPTY);
 						}
 					}
 
-					playerEntity.incrementStat(Stats.ENCHANT_ITEM);
-					if (playerEntity instanceof ServerPlayerEntity) {
-						Criterions.ENCHANTED_ITEM.handle((ServerPlayerEntity)playerEntity, itemStack3, j);
+					player.incrementStat(Stats.ENCHANT_ITEM);
+					if (player instanceof ServerPlayerEntity) {
+						Criterions.ENCHANTED_ITEM.trigger((ServerPlayerEntity)player, itemStack3, i);
 					}
 
 					this.inventory.markDirty();
-					this.seed.set(playerEntity.getEnchantmentTableSeed());
+					this.seed.set(player.getEnchantmentTableSeed());
 					this.onContentChanged(this.inventory);
 					world.playSound(null, blockPos, SoundEvents.BLOCK_ENCHANTMENT_TABLE_USE, SoundCategory.BLOCKS, 1.0F, world.random.nextFloat() * 0.1F + 0.9F);
 				}
@@ -214,10 +214,10 @@ public class EnchantingTableContainer extends Container {
 		}
 	}
 
-	private List<InfoEnchantment> getRandomEnchantments(ItemStack itemStack, int i, int j) {
+	private List<InfoEnchantment> getRandomEnchantments(ItemStack stack, int i, int j) {
 		this.random.setSeed((long)(this.seed.get() + i));
-		List<InfoEnchantment> list = EnchantmentHelper.getEnchantments(this.random, itemStack, j, false);
-		if (itemStack.getItem() == Items.BOOK && list.size() > 1) {
+		List<InfoEnchantment> list = EnchantmentHelper.getEnchantments(this.random, stack, j, false);
+		if (stack.getItem() == Items.BOOK && list.size() > 1) {
 			list.remove(this.random.nextInt(list.size()));
 		}
 
@@ -236,28 +236,28 @@ public class EnchantingTableContainer extends Container {
 	}
 
 	@Override
-	public void close(PlayerEntity playerEntity) {
-		super.close(playerEntity);
-		this.context.run((BiConsumer<World, BlockPos>)((world, blockPos) -> this.dropInventory(playerEntity, playerEntity.world, this.inventory)));
+	public void close(PlayerEntity player) {
+		super.close(player);
+		this.context.run((BiConsumer<World, BlockPos>)((world, blockPos) -> this.dropInventory(player, player.world, this.inventory)));
 	}
 
 	@Override
-	public boolean canUse(PlayerEntity playerEntity) {
-		return canUse(this.context, playerEntity, Blocks.ENCHANTING_TABLE);
+	public boolean canUse(PlayerEntity player) {
+		return canUse(this.context, player, Blocks.ENCHANTING_TABLE);
 	}
 
 	@Override
-	public ItemStack transferSlot(PlayerEntity playerEntity, int i) {
+	public ItemStack transferSlot(PlayerEntity player, int invSlot) {
 		ItemStack itemStack = ItemStack.EMPTY;
-		Slot slot = (Slot)this.slotList.get(i);
+		Slot slot = (Slot)this.slots.get(invSlot);
 		if (slot != null && slot.hasStack()) {
 			ItemStack itemStack2 = slot.getStack();
 			itemStack = itemStack2.copy();
-			if (i == 0) {
+			if (invSlot == 0) {
 				if (!this.insertItem(itemStack2, 2, 38, true)) {
 					return ItemStack.EMPTY;
 				}
-			} else if (i == 1) {
+			} else if (invSlot == 1) {
 				if (!this.insertItem(itemStack2, 2, 38, true)) {
 					return ItemStack.EMPTY;
 				}
@@ -266,15 +266,15 @@ public class EnchantingTableContainer extends Container {
 					return ItemStack.EMPTY;
 				}
 			} else {
-				if (((Slot)this.slotList.get(0)).hasStack() || !((Slot)this.slotList.get(0)).canInsert(itemStack2)) {
+				if (((Slot)this.slots.get(0)).hasStack() || !((Slot)this.slots.get(0)).canInsert(itemStack2)) {
 					return ItemStack.EMPTY;
 				}
 
 				if (itemStack2.hasTag() && itemStack2.getCount() == 1) {
-					((Slot)this.slotList.get(0)).setStack(itemStack2.copy());
+					((Slot)this.slots.get(0)).setStack(itemStack2.copy());
 					itemStack2.setCount(0);
 				} else if (!itemStack2.isEmpty()) {
-					((Slot)this.slotList.get(0)).setStack(new ItemStack(itemStack2.getItem()));
+					((Slot)this.slots.get(0)).setStack(new ItemStack(itemStack2.getItem()));
 					itemStack2.decrement(1);
 				}
 			}
@@ -289,7 +289,7 @@ public class EnchantingTableContainer extends Container {
 				return ItemStack.EMPTY;
 			}
 
-			slot.onTakeItem(playerEntity, itemStack2);
+			slot.onTakeItem(player, itemStack2);
 		}
 
 		return itemStack;

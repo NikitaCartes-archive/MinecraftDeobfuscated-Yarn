@@ -32,21 +32,21 @@ public class BarrelBlockEntity extends LootableContainerBlockEntity {
 	}
 
 	@Override
-	public CompoundTag toTag(CompoundTag compoundTag) {
-		super.toTag(compoundTag);
-		if (!this.serializeLootTable(compoundTag)) {
-			Inventories.toTag(compoundTag, this.inventory);
+	public CompoundTag toTag(CompoundTag tag) {
+		super.toTag(tag);
+		if (!this.serializeLootTable(tag)) {
+			Inventories.toTag(tag, this.inventory);
 		}
 
-		return compoundTag;
+		return tag;
 	}
 
 	@Override
-	public void fromTag(CompoundTag compoundTag) {
-		super.fromTag(compoundTag);
+	public void fromTag(CompoundTag tag) {
+		super.fromTag(tag);
 		this.inventory = DefaultedList.ofSize(this.getInvSize(), ItemStack.EMPTY);
-		if (!this.deserializeLootTable(compoundTag)) {
-			Inventories.fromTag(compoundTag, this.inventory);
+		if (!this.deserializeLootTable(tag)) {
+			Inventories.fromTag(tag, this.inventory);
 		}
 	}
 
@@ -67,25 +67,25 @@ public class BarrelBlockEntity extends LootableContainerBlockEntity {
 	}
 
 	@Override
-	public ItemStack getInvStack(int i) {
-		return this.inventory.get(i);
+	public ItemStack getInvStack(int slot) {
+		return this.inventory.get(slot);
 	}
 
 	@Override
-	public ItemStack takeInvStack(int i, int j) {
-		return Inventories.splitStack(this.inventory, i, j);
+	public ItemStack takeInvStack(int slot, int amount) {
+		return Inventories.splitStack(this.inventory, slot, amount);
 	}
 
 	@Override
-	public ItemStack removeInvStack(int i) {
-		return Inventories.removeStack(this.inventory, i);
+	public ItemStack removeInvStack(int slot) {
+		return Inventories.removeStack(this.inventory, slot);
 	}
 
 	@Override
-	public void setInvStack(int i, ItemStack itemStack) {
-		this.inventory.set(i, itemStack);
-		if (itemStack.getCount() > this.getInvMaxStackAmount()) {
-			itemStack.setCount(this.getInvMaxStackAmount());
+	public void setInvStack(int slot, ItemStack stack) {
+		this.inventory.set(slot, stack);
+		if (stack.getCount() > this.getInvMaxStackAmount()) {
+			stack.setCount(this.getInvMaxStackAmount());
 		}
 	}
 
@@ -100,8 +100,8 @@ public class BarrelBlockEntity extends LootableContainerBlockEntity {
 	}
 
 	@Override
-	protected void setInvStackList(DefaultedList<ItemStack> defaultedList) {
-		this.inventory = defaultedList;
+	protected void setInvStackList(DefaultedList<ItemStack> list) {
+		this.inventory = list;
 	}
 
 	@Override
@@ -115,8 +115,8 @@ public class BarrelBlockEntity extends LootableContainerBlockEntity {
 	}
 
 	@Override
-	public void onInvOpen(PlayerEntity playerEntity) {
-		if (!playerEntity.isSpectator()) {
+	public void onInvOpen(PlayerEntity player) {
+		if (!player.isSpectator()) {
 			if (this.viewerCount < 0) {
 				this.viewerCount = 0;
 			}
@@ -147,7 +147,7 @@ public class BarrelBlockEntity extends LootableContainerBlockEntity {
 		} else {
 			BlockState blockState = this.getCachedState();
 			if (blockState.getBlock() != Blocks.BARREL) {
-				this.invalidate();
+				this.markRemoved();
 				return;
 			}
 
@@ -160,14 +160,14 @@ public class BarrelBlockEntity extends LootableContainerBlockEntity {
 	}
 
 	@Override
-	public void onInvClose(PlayerEntity playerEntity) {
-		if (!playerEntity.isSpectator()) {
+	public void onInvClose(PlayerEntity player) {
+		if (!player.isSpectator()) {
 			this.viewerCount--;
 		}
 	}
 
-	private void setOpen(BlockState blockState, boolean bl) {
-		this.world.setBlockState(this.getPos(), blockState.with(BarrelBlock.OPEN, Boolean.valueOf(bl)), 3);
+	private void setOpen(BlockState state, boolean open) {
+		this.world.setBlockState(this.getPos(), state.with(BarrelBlock.OPEN, Boolean.valueOf(open)), 3);
 	}
 
 	private void playSound(BlockState blockState, SoundEvent soundEvent) {

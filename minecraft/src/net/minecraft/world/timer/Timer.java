@@ -30,23 +30,23 @@ public class Timer<T> {
 		this.callback = timerCallbackSerializer;
 	}
 
-	public void processEvents(T object, long l) {
+	public void processEvents(T server, long time) {
 		while (true) {
 			Timer.Event<T> event = (Timer.Event<T>)this.events.peek();
-			if (event == null || event.triggerTime > l) {
+			if (event == null || event.triggerTime > time) {
 				return;
 			}
 
 			this.events.remove();
 			this.eventsByName.remove(event.name);
-			event.callback.call(object, this, l);
+			event.callback.call(server, this, time);
 		}
 	}
 
-	private void setEvent(String string, long l, TimerCallback<T> timerCallback) {
+	private void setEvent(String name, long triggerTime, TimerCallback<T> callback) {
 		this.eventCounter = this.eventCounter.plus(UnsignedLong.ONE);
-		Timer.Event<T> event = new Timer.Event<>(l, this.eventCounter, string, timerCallback);
-		this.eventsByName.put(string, event);
+		Timer.Event<T> event = new Timer.Event<>(triggerTime, this.eventCounter, name, callback);
+		this.eventsByName.put(name, event);
 		this.events.add(event);
 	}
 
@@ -59,35 +59,35 @@ public class Timer<T> {
 		}
 	}
 
-	public void replaceEvent(String string, long l, TimerCallback<T> timerCallback) {
-		Timer.Event<T> event = (Timer.Event<T>)this.eventsByName.remove(string);
+	public void replaceEvent(String name, long triggerTime, TimerCallback<T> callback) {
+		Timer.Event<T> event = (Timer.Event<T>)this.eventsByName.remove(name);
 		if (event != null) {
 			this.events.remove(event);
 		}
 
-		this.setEvent(string, l, timerCallback);
+		this.setEvent(name, triggerTime, callback);
 	}
 
-	private void addEvent(CompoundTag compoundTag) {
-		CompoundTag compoundTag2 = compoundTag.getCompound("Callback");
-		TimerCallback<T> timerCallback = this.callback.deserialize(compoundTag2);
+	private void addEvent(CompoundTag tag) {
+		CompoundTag compoundTag = tag.getCompound("Callback");
+		TimerCallback<T> timerCallback = this.callback.deserialize(compoundTag);
 		if (timerCallback != null) {
-			String string = compoundTag.getString("Name");
-			long l = compoundTag.getLong("TriggerTime");
+			String string = tag.getString("Name");
+			long l = tag.getLong("TriggerTime");
 			this.addEvent(string, l, timerCallback);
 		}
 	}
 
-	public void fromTag(ListTag listTag) {
+	public void fromTag(ListTag tag) {
 		this.events.clear();
 		this.eventsByName.clear();
 		this.eventCounter = UnsignedLong.ZERO;
-		if (!listTag.isEmpty()) {
-			if (listTag.getListType() != 10) {
-				LOGGER.warn("Invalid format of events: " + listTag);
+		if (!tag.isEmpty()) {
+			if (tag.getElementType() != 10) {
+				LOGGER.warn("Invalid format of events: " + tag);
 			} else {
-				for (Tag tag : listTag) {
-					this.addEvent((CompoundTag)tag);
+				for (Tag tag2 : tag) {
+					this.addEvent((CompoundTag)tag2);
 				}
 			}
 		}
@@ -113,11 +113,11 @@ public class Timer<T> {
 		public final String name;
 		public final TimerCallback<T> callback;
 
-		private Event(long l, UnsignedLong unsignedLong, String string, TimerCallback<T> timerCallback) {
-			this.triggerTime = l;
-			this.id = unsignedLong;
-			this.name = string;
-			this.callback = timerCallback;
+		private Event(long triggerTime, UnsignedLong id, String name, TimerCallback<T> callback) {
+			this.triggerTime = triggerTime;
+			this.id = id;
+			this.name = name;
+			this.callback = callback;
 		}
 	}
 }

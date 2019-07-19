@@ -18,7 +18,7 @@ public class NoiseHeightmap32Decorator extends Decorator<NoiseHeightmapDecorator
 		super(function);
 	}
 
-	public Stream<BlockPos> method_15936(
+	public Stream<BlockPos> getPositions(
 		IWorld iWorld,
 		ChunkGenerator<? extends ChunkGeneratorConfig> chunkGenerator,
 		Random random,

@@ -21,15 +21,15 @@ import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.SystemUtil;
+import net.minecraft.util.Util;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.biome.Biomes;
 import net.minecraft.world.gen.GenerationStep;
+import net.minecraft.world.gen.decorator.ChanceDecoratorConfig;
 import net.minecraft.world.gen.decorator.Decorator;
 import net.minecraft.world.gen.decorator.DecoratorConfig;
-import net.minecraft.world.gen.decorator.LakeDecoratorConfig;
 import net.minecraft.world.gen.feature.ConfiguredFeature;
 import net.minecraft.world.gen.feature.Feature;
 import net.minecraft.world.gen.feature.FeatureConfig;
@@ -70,10 +70,10 @@ public class FlatChunkGeneratorConfig extends ChunkGeneratorConfig {
 		Feature.OCEAN_MONUMENT, FeatureConfig.DEFAULT, Decorator.NOPE, DecoratorConfig.DEFAULT
 	);
 	private static final ConfiguredFeature<?> WATER_LAKE = Biome.configureFeature(
-		Feature.LAKE, new LakeFeatureConfig(Blocks.WATER.getDefaultState()), Decorator.WATER_LAKE, new LakeDecoratorConfig(4)
+		Feature.LAKE, new LakeFeatureConfig(Blocks.WATER.getDefaultState()), Decorator.WATER_LAKE, new ChanceDecoratorConfig(4)
 	);
 	private static final ConfiguredFeature<?> LAVA_LAKE = Biome.configureFeature(
-		Feature.LAKE, new LakeFeatureConfig(Blocks.LAVA.getDefaultState()), Decorator.LAVA_LAKE, new LakeDecoratorConfig(80)
+		Feature.LAKE, new LakeFeatureConfig(Blocks.LAVA.getDefaultState()), Decorator.LAVA_LAKE, new ChanceDecoratorConfig(80)
 	);
 	private static final ConfiguredFeature<?> END_CITY = Biome.configureFeature(Feature.END_CITY, FeatureConfig.DEFAULT, Decorator.NOPE, DecoratorConfig.DEFAULT);
 	private static final ConfiguredFeature<?> WOODLAND_MANSION = Biome.configureFeature(
@@ -88,7 +88,7 @@ public class FlatChunkGeneratorConfig extends ChunkGeneratorConfig {
 	private static final ConfiguredFeature<?> field_19182 = Biome.configureFeature(
 		Feature.PILLAGER_OUTPOST, new PillagerOutpostFeatureConfig(0.004), Decorator.NOPE, DecoratorConfig.DEFAULT
 	);
-	public static final Map<ConfiguredFeature<?>, GenerationStep.Feature> FEATURE_TO_GENERATION_STEP = SystemUtil.consume(
+	public static final Map<ConfiguredFeature<?>, GenerationStep.Feature> FEATURE_TO_GENERATION_STEP = Util.make(
 		Maps.<ConfiguredFeature<?>, GenerationStep.Feature>newHashMap(), hashMap -> {
 			hashMap.put(MINESHAFT, GenerationStep.Feature.UNDERGROUND_STRUCTURES);
 			hashMap.put(VILLAGE, GenerationStep.Feature.SURFACE_STRUCTURES);
@@ -108,22 +108,20 @@ public class FlatChunkGeneratorConfig extends ChunkGeneratorConfig {
 			hashMap.put(field_19182, GenerationStep.Feature.SURFACE_STRUCTURES);
 		}
 	);
-	public static final Map<String, ConfiguredFeature<?>[]> STRUCTURE_TO_FEATURES = SystemUtil.consume(
-		Maps.<String, ConfiguredFeature<?>[]>newHashMap(), hashMap -> {
-			hashMap.put("mineshaft", new ConfiguredFeature[]{MINESHAFT});
-			hashMap.put("village", new ConfiguredFeature[]{VILLAGE});
-			hashMap.put("stronghold", new ConfiguredFeature[]{STRONGHOLD});
-			hashMap.put("biome_1", new ConfiguredFeature[]{SWAMP_HUT, DESERT_PYRAMID, JUNGLE_TEMPLE, IGLOO, OCEAN_RUIN, SHIPWRECK});
-			hashMap.put("oceanmonument", new ConfiguredFeature[]{OCEAN_MONUMENT});
-			hashMap.put("lake", new ConfiguredFeature[]{WATER_LAKE});
-			hashMap.put("lava_lake", new ConfiguredFeature[]{LAVA_LAKE});
-			hashMap.put("endcity", new ConfiguredFeature[]{END_CITY});
-			hashMap.put("mansion", new ConfiguredFeature[]{WOODLAND_MANSION});
-			hashMap.put("fortress", new ConfiguredFeature[]{NETHER_BRIDGE});
-			hashMap.put("pillager_outpost", new ConfiguredFeature[]{field_19182});
-		}
-	);
-	public static final Map<ConfiguredFeature<?>, FeatureConfig> FEATURE_TO_FEATURE_CONFIG = SystemUtil.consume(
+	public static final Map<String, ConfiguredFeature<?>[]> STRUCTURE_TO_FEATURES = Util.make(Maps.<String, ConfiguredFeature<?>[]>newHashMap(), hashMap -> {
+		hashMap.put("mineshaft", new ConfiguredFeature[]{MINESHAFT});
+		hashMap.put("village", new ConfiguredFeature[]{VILLAGE});
+		hashMap.put("stronghold", new ConfiguredFeature[]{STRONGHOLD});
+		hashMap.put("biome_1", new ConfiguredFeature[]{SWAMP_HUT, DESERT_PYRAMID, JUNGLE_TEMPLE, IGLOO, OCEAN_RUIN, SHIPWRECK});
+		hashMap.put("oceanmonument", new ConfiguredFeature[]{OCEAN_MONUMENT});
+		hashMap.put("lake", new ConfiguredFeature[]{WATER_LAKE});
+		hashMap.put("lava_lake", new ConfiguredFeature[]{LAVA_LAKE});
+		hashMap.put("endcity", new ConfiguredFeature[]{END_CITY});
+		hashMap.put("mansion", new ConfiguredFeature[]{WOODLAND_MANSION});
+		hashMap.put("fortress", new ConfiguredFeature[]{NETHER_BRIDGE});
+		hashMap.put("pillager_outpost", new ConfiguredFeature[]{field_19182});
+	});
+	public static final Map<ConfiguredFeature<?>, FeatureConfig> FEATURE_TO_FEATURE_CONFIG = Util.make(
 		Maps.<ConfiguredFeature<?>, FeatureConfig>newHashMap(), hashMap -> {
 			hashMap.put(MINESHAFT, new MineshaftFeatureConfig(0.004, MineshaftFeature.Type.NORMAL));
 			hashMap.put(VILLAGE, new VillageFeatureConfig("village/plains/town_centers", 6));
@@ -253,22 +251,22 @@ public class FlatChunkGeneratorConfig extends ChunkGeneratorConfig {
 
 	@Nullable
 	@Environment(EnvType.CLIENT)
-	private static FlatChunkGeneratorLayer parseLayerString(String string, int i) {
+	private static FlatChunkGeneratorLayer parseLayerString(String string, int startY) {
 		String[] strings = string.split("\\*", 2);
-		int j;
+		int i;
 		if (strings.length == 2) {
 			try {
-				j = Math.max(Integer.parseInt(strings[0]), 0);
+				i = Math.max(Integer.parseInt(strings[0]), 0);
 			} catch (NumberFormatException var9) {
 				LOGGER.error("Error while parsing flat world string => {}", var9.getMessage());
 				return null;
 			}
 		} else {
-			j = 1;
+			i = 1;
 		}
 
-		int k = Math.min(i + j, 256);
-		int l = k - i;
+		int j = Math.min(startY + i, 256);
+		int k = j - startY;
 
 		Block block;
 		try {
@@ -282,8 +280,8 @@ public class FlatChunkGeneratorConfig extends ChunkGeneratorConfig {
 			LOGGER.error("Error while parsing flat world string => Unknown block, {}", strings[strings.length - 1]);
 			return null;
 		} else {
-			FlatChunkGeneratorLayer flatChunkGeneratorLayer = new FlatChunkGeneratorLayer(l, block);
-			flatChunkGeneratorLayer.setStartY(i);
+			FlatChunkGeneratorLayer flatChunkGeneratorLayer = new FlatChunkGeneratorLayer(k, block);
+			flatChunkGeneratorLayer.setStartY(startY);
 			return flatChunkGeneratorLayer;
 		}
 	}
@@ -426,9 +424,9 @@ public class FlatChunkGeneratorConfig extends ChunkGeneratorConfig {
 	}
 
 	@Environment(EnvType.CLIENT)
-	private void addStructure(String string) {
+	private void addStructure(String id) {
 		Map<String, String> map = Maps.<String, String>newHashMap();
-		this.structures.put(string, map);
+		this.structures.put(id, map);
 	}
 
 	@Environment(EnvType.CLIENT)

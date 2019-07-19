@@ -2,7 +2,6 @@ package net.minecraft.entity.passive;
 
 import java.util.List;
 import java.util.function.Predicate;
-import net.minecraft.client.network.packet.GameStateChangeS2CPacket;
 import net.minecraft.entity.EntityDimensions;
 import net.minecraft.entity.EntityGroup;
 import net.minecraft.entity.EntityPose;
@@ -20,6 +19,7 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.packet.s2c.play.GameStateChangeS2CPacket;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
@@ -53,29 +53,29 @@ public class PufferfishEntity extends FishEntity {
 		return this.dataTracker.get(PUFF_STATE);
 	}
 
-	public void setPuffState(int i) {
-		this.dataTracker.set(PUFF_STATE, i);
+	public void setPuffState(int puffState) {
+		this.dataTracker.set(PUFF_STATE, puffState);
 	}
 
 	@Override
-	public void onTrackedDataSet(TrackedData<?> trackedData) {
-		if (PUFF_STATE.equals(trackedData)) {
+	public void onTrackedDataSet(TrackedData<?> data) {
+		if (PUFF_STATE.equals(data)) {
 			this.calculateDimensions();
 		}
 
-		super.onTrackedDataSet(trackedData);
+		super.onTrackedDataSet(data);
 	}
 
 	@Override
-	public void writeCustomDataToTag(CompoundTag compoundTag) {
-		super.writeCustomDataToTag(compoundTag);
-		compoundTag.putInt("PuffState", this.getPuffState());
+	public void writeCustomDataToTag(CompoundTag tag) {
+		super.writeCustomDataToTag(tag);
+		tag.putInt("PuffState", this.getPuffState());
 	}
 
 	@Override
-	public void readCustomDataFromTag(CompoundTag compoundTag) {
-		super.readCustomDataFromTag(compoundTag);
-		this.setPuffState(compoundTag.getInt("PuffState"));
+	public void readCustomDataFromTag(CompoundTag tag) {
+		super.readCustomDataFromTag(tag);
+		this.setPuffState(tag.getInt("PuffState"));
 	}
 
 	@Override
@@ -130,20 +130,20 @@ public class PufferfishEntity extends FishEntity {
 		}
 	}
 
-	private void sting(MobEntity mobEntity) {
+	private void sting(MobEntity mob) {
 		int i = this.getPuffState();
-		if (mobEntity.damage(DamageSource.mob(this), (float)(1 + i))) {
-			mobEntity.addPotionEffect(new StatusEffectInstance(StatusEffects.POISON, 60 * i, 0));
+		if (mob.damage(DamageSource.mob(this), (float)(1 + i))) {
+			mob.addStatusEffect(new StatusEffectInstance(StatusEffects.POISON, 60 * i, 0));
 			this.playSound(SoundEvents.ENTITY_PUFFER_FISH_STING, 1.0F, 1.0F);
 		}
 	}
 
 	@Override
-	public void onPlayerCollision(PlayerEntity playerEntity) {
+	public void onPlayerCollision(PlayerEntity player) {
 		int i = this.getPuffState();
-		if (playerEntity instanceof ServerPlayerEntity && i > 0 && playerEntity.damage(DamageSource.mob(this), (float)(1 + i))) {
-			((ServerPlayerEntity)playerEntity).networkHandler.sendPacket(new GameStateChangeS2CPacket(9, 0.0F));
-			playerEntity.addPotionEffect(new StatusEffectInstance(StatusEffects.POISON, 60 * i, 0));
+		if (player instanceof ServerPlayerEntity && i > 0 && player.damage(DamageSource.mob(this), (float)(1 + i))) {
+			((ServerPlayerEntity)player).networkHandler.sendPacket(new GameStateChangeS2CPacket(9, 0.0F));
+			player.addStatusEffect(new StatusEffectInstance(StatusEffects.POISON, 60 * i, 0));
 		}
 	}
 
@@ -158,7 +158,7 @@ public class PufferfishEntity extends FishEntity {
 	}
 
 	@Override
-	protected SoundEvent getHurtSound(DamageSource damageSource) {
+	protected SoundEvent getHurtSound(DamageSource source) {
 		return SoundEvents.ENTITY_PUFFER_FISH_HURT;
 	}
 
@@ -168,12 +168,12 @@ public class PufferfishEntity extends FishEntity {
 	}
 
 	@Override
-	public EntityDimensions getDimensions(EntityPose entityPose) {
-		return super.getDimensions(entityPose).scaled(getScaleForPuffState(this.getPuffState()));
+	public EntityDimensions getDimensions(EntityPose pose) {
+		return super.getDimensions(pose).scaled(getScaleForPuffState(this.getPuffState()));
 	}
 
-	private static float getScaleForPuffState(int i) {
-		switch (i) {
+	private static float getScaleForPuffState(int puffState) {
+		switch (puffState) {
 			case 0:
 				return 0.5F;
 			case 1:
@@ -186,8 +186,8 @@ public class PufferfishEntity extends FishEntity {
 	static class class_1455 extends Goal {
 		private final PufferfishEntity pufferfish;
 
-		public class_1455(PufferfishEntity pufferfishEntity) {
-			this.pufferfish = pufferfishEntity;
+		public class_1455(PufferfishEntity pufferfish) {
+			this.pufferfish = pufferfish;
 		}
 
 		@Override

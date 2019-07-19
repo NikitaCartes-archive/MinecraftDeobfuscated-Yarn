@@ -16,10 +16,10 @@ public class RandomFeatureEntry<FC extends FeatureConfig> {
 	public final FC config;
 	public final Float chance;
 
-	public RandomFeatureEntry(Feature<FC> feature, FC featureConfig, Float float_) {
+	public RandomFeatureEntry(Feature<FC> feature, FC config, Float chance) {
 		this.feature = feature;
-		this.config = featureConfig;
-		this.chance = float_;
+		this.config = config;
+		this.chance = chance;
 	}
 
 	public RandomFeatureEntry(Feature<FC> feature, Dynamic<?> dynamic, float f) {
@@ -42,8 +42,8 @@ public class RandomFeatureEntry<FC extends FeatureConfig> {
 		);
 	}
 
-	public boolean generate(IWorld iWorld, ChunkGenerator<? extends ChunkGeneratorConfig> chunkGenerator, Random random, BlockPos blockPos) {
-		return this.feature.generate(iWorld, chunkGenerator, random, blockPos, this.config);
+	public boolean generate(IWorld world, ChunkGenerator<? extends ChunkGeneratorConfig> chunkGenerator, Random random, BlockPos blockPos) {
+		return this.feature.generate(world, chunkGenerator, random, blockPos, this.config);
 	}
 
 	public static <T> RandomFeatureEntry<?> deserialize(Dynamic<T> dynamic) {

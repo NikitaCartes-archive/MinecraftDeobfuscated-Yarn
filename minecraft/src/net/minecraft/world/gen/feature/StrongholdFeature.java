@@ -10,9 +10,9 @@ import net.minecraft.structure.StrongholdGenerator;
 import net.minecraft.structure.StructureManager;
 import net.minecraft.structure.StructurePiece;
 import net.minecraft.structure.StructureStart;
+import net.minecraft.util.math.BlockBox;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
-import net.minecraft.util.math.MutableIntBoundingBox;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.world.World;
 import net.minecraft.world.biome.Biome;
@@ -25,12 +25,12 @@ public class StrongholdFeature extends StructureFeature<DefaultFeatureConfig> {
 	private final List<StructureStart> starts = Lists.<StructureStart>newArrayList();
 	private long lastSeed;
 
-	public StrongholdFeature(Function<Dynamic<?>, ? extends DefaultFeatureConfig> function) {
-		super(function);
+	public StrongholdFeature(Function<Dynamic<?>, ? extends DefaultFeatureConfig> configFactory) {
+		super(configFactory);
 	}
 
 	@Override
-	public boolean shouldStartAt(ChunkGenerator<?> chunkGenerator, Random random, int i, int j) {
+	public boolean shouldStartAt(ChunkGenerator<?> chunkGenerator, Random random, int chunkX, int chunkZ) {
 		if (this.lastSeed != chunkGenerator.getSeed()) {
 			this.invalidateState();
 		}
@@ -41,7 +41,7 @@ public class StrongholdFeature extends StructureFeature<DefaultFeatureConfig> {
 		}
 
 		for (ChunkPos chunkPos : this.startPositions) {
-			if (i == chunkPos.x && j == chunkPos.z) {
+			if (chunkX == chunkPos.x && chunkZ == chunkPos.z) {
 				return true;
 			}
 		}
@@ -72,7 +72,9 @@ public class StrongholdFeature extends StructureFeature<DefaultFeatureConfig> {
 
 	@Nullable
 	@Override
-	public BlockPos locateStructure(World world, ChunkGenerator<? extends ChunkGeneratorConfig> chunkGenerator, BlockPos blockPos, int i, boolean bl) {
+	public BlockPos locateStructure(
+		World world, ChunkGenerator<? extends ChunkGeneratorConfig> chunkGenerator, BlockPos blockPos, int i, boolean skipExistingChunks
+	) {
 		if (!chunkGenerator.getBiomeSource().hasStructureFeature(this)) {
 			return null;
 		} else {
@@ -162,29 +164,29 @@ public class StrongholdFeature extends StructureFeature<DefaultFeatureConfig> {
 	}
 
 	public static class Start extends StructureStart {
-		public Start(StructureFeature<?> structureFeature, int i, int j, Biome biome, MutableIntBoundingBox mutableIntBoundingBox, int k, long l) {
-			super(structureFeature, i, j, biome, mutableIntBoundingBox, k, l);
+		public Start(StructureFeature<?> structureFeature, int chunkX, int chunkZ, Biome biome, BlockBox blockBox, int i, long l) {
+			super(structureFeature, chunkX, chunkZ, biome, blockBox, i, l);
 		}
 
 		@Override
-		public void initialize(ChunkGenerator<?> chunkGenerator, StructureManager structureManager, int i, int j, Biome biome) {
-			int k = 0;
+		public void initialize(ChunkGenerator<?> chunkGenerator, StructureManager structureManager, int x, int z, Biome biome) {
+			int i = 0;
 			long l = chunkGenerator.getSeed();
 
 			StrongholdGenerator.Start start;
 			do {
 				this.children.clear();
-				this.boundingBox = MutableIntBoundingBox.empty();
-				this.random.setStructureSeed(l + (long)(k++), i, j);
+				this.boundingBox = BlockBox.empty();
+				this.random.setStructureSeed(l + (long)(i++), x, z);
 				StrongholdGenerator.method_14855();
-				start = new StrongholdGenerator.Start(this.random, (i << 4) + 2, (j << 4) + 2);
+				start = new StrongholdGenerator.Start(this.random, (x << 4) + 2, (z << 4) + 2);
 				this.children.add(start);
 				start.method_14918(start, this.children, this.random);
 				List<StructurePiece> list = start.field_15282;
 
 				while (!list.isEmpty()) {
-					int m = this.random.nextInt(list.size());
-					StructurePiece structurePiece = (StructurePiece)list.remove(m);
+					int j = this.random.nextInt(list.size());
+					StructurePiece structurePiece = (StructurePiece)list.remove(j);
 					structurePiece.method_14918(start, this.children, this.random);
 				}
 

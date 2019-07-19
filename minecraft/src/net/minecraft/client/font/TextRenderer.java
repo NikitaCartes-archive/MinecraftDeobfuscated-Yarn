@@ -31,138 +31,138 @@ public class TextRenderer implements AutoCloseable {
 		this.fontStorage = fontStorage;
 	}
 
-	public void setFonts(List<Font> list) {
-		this.fontStorage.setFonts(list);
+	public void setFonts(List<Font> fonts) {
+		this.fontStorage.setFonts(fonts);
 	}
 
 	public void close() {
 		this.fontStorage.close();
 	}
 
-	public int drawWithShadow(String string, float f, float g, int i) {
+	public int drawWithShadow(String text, float x, float y, int color) {
 		GlStateManager.enableAlphaTest();
-		return this.draw(string, f, g, i, true);
+		return this.draw(text, x, y, color, true);
 	}
 
-	public int draw(String string, float f, float g, int i) {
+	public int draw(String text, float x, float y, int color) {
 		GlStateManager.enableAlphaTest();
-		return this.draw(string, f, g, i, false);
+		return this.draw(text, x, y, color, false);
 	}
 
-	public String mirror(String string) {
+	public String mirror(String text) {
 		try {
-			Bidi bidi = new Bidi(new ArabicShaping(8).shape(string), 127);
+			Bidi bidi = new Bidi(new ArabicShaping(8).shape(text), 127);
 			bidi.setReorderingMode(0);
 			return bidi.writeReordered(2);
 		} catch (ArabicShapingException var3) {
-			return string;
+			return text;
 		}
 	}
 
-	private int draw(String string, float f, float g, int i, boolean bl) {
-		if (string == null) {
+	private int draw(String str, float x, float y, int color, boolean withShadow) {
+		if (str == null) {
 			return 0;
 		} else {
 			if (this.rightToLeft) {
-				string = this.mirror(string);
+				str = this.mirror(str);
 			}
 
-			if ((i & -67108864) == 0) {
-				i |= -16777216;
+			if ((color & -67108864) == 0) {
+				color |= -16777216;
 			}
 
-			if (bl) {
-				this.drawLayer(string, f, g, i, true);
+			if (withShadow) {
+				this.drawLayer(str, x, y, color, true);
 			}
 
-			f = this.drawLayer(string, f, g, i, false);
-			return (int)f + (bl ? 1 : 0);
+			x = this.drawLayer(str, x, y, color, false);
+			return (int)x + (withShadow ? 1 : 0);
 		}
 	}
 
-	private float drawLayer(String string, float f, float g, int i, boolean bl) {
-		float h = bl ? 0.25F : 1.0F;
-		float j = (float)(i >> 16 & 0xFF) / 255.0F * h;
-		float k = (float)(i >> 8 & 0xFF) / 255.0F * h;
-		float l = (float)(i & 0xFF) / 255.0F * h;
-		float m = j;
-		float n = k;
-		float o = l;
-		float p = (float)(i >> 24 & 0xFF) / 255.0F;
+	private float drawLayer(String str, float x, float y, int color, boolean isShadow) {
+		float f = isShadow ? 0.25F : 1.0F;
+		float g = (float)(color >> 16 & 0xFF) / 255.0F * f;
+		float h = (float)(color >> 8 & 0xFF) / 255.0F * f;
+		float i = (float)(color & 0xFF) / 255.0F * f;
+		float j = g;
+		float k = h;
+		float l = i;
+		float m = (float)(color >> 24 & 0xFF) / 255.0F;
 		Tessellator tessellator = Tessellator.getInstance();
-		BufferBuilder bufferBuilder = tessellator.getBufferBuilder();
+		BufferBuilder bufferBuilder = tessellator.getBuffer();
 		Identifier identifier = null;
-		bufferBuilder.begin(7, VertexFormats.POSITION_UV_COLOR);
+		bufferBuilder.begin(7, VertexFormats.POSITION_TEXTURE_COLOR);
+		boolean bl = false;
 		boolean bl2 = false;
 		boolean bl3 = false;
 		boolean bl4 = false;
 		boolean bl5 = false;
-		boolean bl6 = false;
 		List<TextRenderer.Rectangle> list = Lists.<TextRenderer.Rectangle>newArrayList();
 
-		for (int q = 0; q < string.length(); q++) {
-			char c = string.charAt(q);
-			if (c == 167 && q + 1 < string.length()) {
-				Formatting formatting = Formatting.byCode(string.charAt(q + 1));
+		for (int n = 0; n < str.length(); n++) {
+			char c = str.charAt(n);
+			if (c == 167 && n + 1 < str.length()) {
+				Formatting formatting = Formatting.byCode(str.charAt(n + 1));
 				if (formatting != null) {
 					if (formatting.affectsGlyphWidth()) {
+						bl = false;
 						bl2 = false;
-						bl3 = false;
-						bl6 = false;
 						bl5 = false;
 						bl4 = false;
-						m = j;
-						n = k;
-						o = l;
+						bl3 = false;
+						j = g;
+						k = h;
+						l = i;
 					}
 
 					if (formatting.getColorValue() != null) {
-						int r = formatting.getColorValue();
-						m = (float)(r >> 16 & 0xFF) / 255.0F * h;
-						n = (float)(r >> 8 & 0xFF) / 255.0F * h;
-						o = (float)(r & 0xFF) / 255.0F * h;
+						int o = formatting.getColorValue();
+						j = (float)(o >> 16 & 0xFF) / 255.0F * f;
+						k = (float)(o >> 8 & 0xFF) / 255.0F * f;
+						l = (float)(o & 0xFF) / 255.0F * f;
 					} else if (formatting == Formatting.OBFUSCATED) {
-						bl2 = true;
+						bl = true;
 					} else if (formatting == Formatting.BOLD) {
-						bl3 = true;
+						bl2 = true;
 					} else if (formatting == Formatting.STRIKETHROUGH) {
-						bl6 = true;
-					} else if (formatting == Formatting.UNDERLINE) {
 						bl5 = true;
-					} else if (formatting == Formatting.ITALIC) {
+					} else if (formatting == Formatting.UNDERLINE) {
 						bl4 = true;
+					} else if (formatting == Formatting.ITALIC) {
+						bl3 = true;
 					}
 				}
 
-				q++;
+				n++;
 			} else {
 				Glyph glyph = this.fontStorage.getGlyph(c);
-				GlyphRenderer glyphRenderer = bl2 && c != ' ' ? this.fontStorage.getObfuscatedGlyphRenderer(glyph) : this.fontStorage.getGlyphRenderer(c);
+				GlyphRenderer glyphRenderer = bl && c != ' ' ? this.fontStorage.getObfuscatedGlyphRenderer(glyph) : this.fontStorage.getGlyphRenderer(c);
 				Identifier identifier2 = glyphRenderer.getId();
 				if (identifier2 != null) {
 					if (identifier != identifier2) {
 						tessellator.draw();
 						this.textureManager.bindTexture(identifier2);
-						bufferBuilder.begin(7, VertexFormats.POSITION_UV_COLOR);
+						bufferBuilder.begin(7, VertexFormats.POSITION_TEXTURE_COLOR);
 						identifier = identifier2;
 					}
 
-					float s = bl3 ? glyph.getBoldOffset() : 0.0F;
-					float t = bl ? glyph.getShadowOffset() : 0.0F;
-					this.drawGlyph(glyphRenderer, bl3, bl4, s, f + t, g + t, bufferBuilder, m, n, o, p);
+					float p = bl2 ? glyph.getBoldOffset() : 0.0F;
+					float q = isShadow ? glyph.getShadowOffset() : 0.0F;
+					this.drawGlyph(glyphRenderer, bl2, bl3, p, x + q, y + q, bufferBuilder, j, k, l, m);
 				}
 
-				float s = glyph.getAdvance(bl3);
-				float t = bl ? 1.0F : 0.0F;
-				if (bl6) {
-					list.add(new TextRenderer.Rectangle(f + t - 1.0F, g + t + 4.5F, f + t + s, g + t + 4.5F - 1.0F, m, n, o, p));
-				}
-
+				float p = glyph.getAdvance(bl2);
+				float q = isShadow ? 1.0F : 0.0F;
 				if (bl5) {
-					list.add(new TextRenderer.Rectangle(f + t - 1.0F, g + t + 9.0F, f + t + s, g + t + 9.0F - 1.0F, m, n, o, p));
+					list.add(new TextRenderer.Rectangle(x + q - 1.0F, y + q + 4.5F, x + q + p, y + q + 4.5F - 1.0F, j, k, l, m));
 				}
 
-				f += s;
+				if (bl4) {
+					list.add(new TextRenderer.Rectangle(x + q - 1.0F, y + q + 9.0F, x + q + p, y + q + 9.0F - 1.0F, j, k, l, m));
+				}
+
+				x += p;
 			}
 		}
 
@@ -179,29 +179,39 @@ public class TextRenderer implements AutoCloseable {
 			GlStateManager.enableTexture();
 		}
 
-		return f;
+		return x;
 	}
 
 	private void drawGlyph(
-		GlyphRenderer glyphRenderer, boolean bl, boolean bl2, float f, float g, float h, BufferBuilder bufferBuilder, float i, float j, float k, float l
+		GlyphRenderer glyphRenderer,
+		boolean bold,
+		boolean strikethrough,
+		float boldOffset,
+		float x,
+		float y,
+		BufferBuilder buffer,
+		float red,
+		float green,
+		float blue,
+		float alpha
 	) {
-		glyphRenderer.draw(this.textureManager, bl2, g, h, bufferBuilder, i, j, k, l);
-		if (bl) {
-			glyphRenderer.draw(this.textureManager, bl2, g + f, h, bufferBuilder, i, j, k, l);
+		glyphRenderer.draw(this.textureManager, strikethrough, x, y, buffer, red, green, blue, alpha);
+		if (bold) {
+			glyphRenderer.draw(this.textureManager, strikethrough, x + boldOffset, y, buffer, red, green, blue, alpha);
 		}
 	}
 
-	public int getStringWidth(String string) {
-		if (string == null) {
+	public int getStringWidth(String text) {
+		if (text == null) {
 			return 0;
 		} else {
 			float f = 0.0F;
 			boolean bl = false;
 
-			for (int i = 0; i < string.length(); i++) {
-				char c = string.charAt(i);
-				if (c == 167 && i < string.length() - 1) {
-					Formatting formatting = Formatting.byCode(string.charAt(++i));
+			for (int i = 0; i < text.length(); i++) {
+				char c = text.charAt(i);
+				if (c == 167 && i < text.length() - 1) {
+					Formatting formatting = Formatting.byCode(text.charAt(++i));
 					if (formatting == Formatting.BOLD) {
 						bl = true;
 					} else if (formatting != null && formatting.affectsGlyphWidth()) {
@@ -216,46 +226,46 @@ public class TextRenderer implements AutoCloseable {
 		}
 	}
 
-	public float getCharWidth(char c) {
-		return c == 167 ? 0.0F : this.fontStorage.getGlyph(c).getAdvance(false);
+	public float getCharWidth(char character) {
+		return character == 167 ? 0.0F : this.fontStorage.getGlyph(character).getAdvance(false);
 	}
 
-	public String trimToWidth(String string, int i) {
-		return this.trimToWidth(string, i, false);
+	public String trimToWidth(String text, int width) {
+		return this.trimToWidth(text, width, false);
 	}
 
-	public String trimToWidth(String string, int i, boolean bl) {
+	public String trimToWidth(String text, int width, boolean rightToLeft) {
 		StringBuilder stringBuilder = new StringBuilder();
 		float f = 0.0F;
-		int j = bl ? string.length() - 1 : 0;
-		int k = bl ? -1 : 1;
+		int i = rightToLeft ? text.length() - 1 : 0;
+		int j = rightToLeft ? -1 : 1;
+		boolean bl = false;
 		boolean bl2 = false;
-		boolean bl3 = false;
 
-		for (int l = j; l >= 0 && l < string.length() && f < (float)i; l += k) {
-			char c = string.charAt(l);
-			if (bl2) {
-				bl2 = false;
+		for (int k = i; k >= 0 && k < text.length() && f < (float)width; k += j) {
+			char c = text.charAt(k);
+			if (bl) {
+				bl = false;
 				Formatting formatting = Formatting.byCode(c);
 				if (formatting == Formatting.BOLD) {
-					bl3 = true;
+					bl2 = true;
 				} else if (formatting != null && formatting.affectsGlyphWidth()) {
-					bl3 = false;
+					bl2 = false;
 				}
 			} else if (c == 167) {
-				bl2 = true;
+				bl = true;
 			} else {
 				f += this.getCharWidth(c);
-				if (bl3) {
+				if (bl2) {
 					f++;
 				}
 			}
 
-			if (f > (float)i) {
+			if (f > (float)width) {
 				break;
 			}
 
-			if (bl) {
+			if (rightToLeft) {
 				stringBuilder.insert(0, c);
 			} else {
 				stringBuilder.append(c);
@@ -265,79 +275,79 @@ public class TextRenderer implements AutoCloseable {
 		return stringBuilder.toString();
 	}
 
-	private String trimEndNewlines(String string) {
-		while (string != null && string.endsWith("\n")) {
-			string = string.substring(0, string.length() - 1);
+	private String trimEndNewlines(String text) {
+		while (text != null && text.endsWith("\n")) {
+			text = text.substring(0, text.length() - 1);
+		}
+
+		return text;
+	}
+
+	public void drawTrimmed(String text, int x, int y, int maxWidth, int color) {
+		text = this.trimEndNewlines(text);
+		this.drawWrapped(text, x, y, maxWidth, color);
+	}
+
+	private void drawWrapped(String text, int x, int y, int maxWidth, int color) {
+		for (String string : this.wrapStringToWidthAsList(text, maxWidth)) {
+			float f = (float)x;
+			if (this.rightToLeft) {
+				int i = this.getStringWidth(this.mirror(string));
+				f += (float)(maxWidth - i);
+			}
+
+			this.draw(string, f, (float)y, color, false);
+			y += 9;
+		}
+	}
+
+	public int getStringBoundedHeight(String text, int maxWidth) {
+		return 9 * this.wrapStringToWidthAsList(text, maxWidth).size();
+	}
+
+	public void setRightToLeft(boolean rightToLeft) {
+		this.rightToLeft = rightToLeft;
+	}
+
+	public List<String> wrapStringToWidthAsList(String text, int width) {
+		return Arrays.asList(this.wrapStringToWidth(text, width).split("\n"));
+	}
+
+	public String wrapStringToWidth(String text, int width) {
+		String string = "";
+
+		while (!text.isEmpty()) {
+			int i = this.getCharacterCountForWidth(text, width);
+			if (text.length() <= i) {
+				return string + text;
+			}
+
+			String string2 = text.substring(0, i);
+			char c = text.charAt(i);
+			boolean bl = c == ' ' || c == '\n';
+			text = Formatting.getFormatAtEnd(string2) + text.substring(i + (bl ? 1 : 0));
+			string = string + string2 + "\n";
 		}
 
 		return string;
 	}
 
-	public void drawStringBounded(String string, int i, int j, int k, int l) {
-		string = this.trimEndNewlines(string);
-		this.renderStringBounded(string, i, j, k, l);
-	}
-
-	private void renderStringBounded(String string, int i, int j, int k, int l) {
-		for (String string2 : this.wrapStringToWidthAsList(string, k)) {
-			float f = (float)i;
-			if (this.rightToLeft) {
-				int m = this.getStringWidth(this.mirror(string2));
-				f += (float)(k - m);
-			}
-
-			this.draw(string2, f, (float)j, l, false);
-			j += 9;
-		}
-	}
-
-	public int getStringBoundedHeight(String string, int i) {
-		return 9 * this.wrapStringToWidthAsList(string, i).size();
-	}
-
-	public void setRightToLeft(boolean bl) {
-		this.rightToLeft = bl;
-	}
-
-	public List<String> wrapStringToWidthAsList(String string, int i) {
-		return Arrays.asList(this.wrapStringToWidth(string, i).split("\n"));
-	}
-
-	public String wrapStringToWidth(String string, int i) {
-		String string2 = "";
-
-		while (!string.isEmpty()) {
-			int j = this.getCharacterCountForWidth(string, i);
-			if (string.length() <= j) {
-				return string2 + string;
-			}
-
-			String string3 = string.substring(0, j);
-			char c = string.charAt(j);
-			boolean bl = c == ' ' || c == '\n';
-			string = Formatting.getFormatAtEnd(string3) + string.substring(j + (bl ? 1 : 0));
-			string2 = string2 + string3 + "\n";
-		}
-
-		return string2;
-	}
-
-	public int getCharacterCountForWidth(String string, int i) {
-		int j = Math.max(1, i);
-		int k = string.length();
+	public int getCharacterCountForWidth(String text, int offset) {
+		int i = Math.max(1, offset);
+		int j = text.length();
 		float f = 0.0F;
-		int l = 0;
-		int m = -1;
+		int k = 0;
+		int l = -1;
 		boolean bl = false;
 
-		for (boolean bl2 = true; l < k; l++) {
-			char c = string.charAt(l);
+		for (boolean bl2 = true; k < j; k++) {
+			char c = text.charAt(k);
 			switch (c) {
 				case '\n':
-					l--;
+					k--;
 					break;
 				case ' ':
-					m = l;
+					l = k;
 				default:
 					if (f != 0.0F) {
 						bl2 = false;
@@ -349,8 +359,8 @@ public class TextRenderer implements AutoCloseable {
 					}
 					break;
 				case '§':
-					if (l < k - 1) {
-						Formatting formatting = Formatting.byCode(string.charAt(++l));
+					if (k < j - 1) {
+						Formatting formatting = Formatting.byCode(text.charAt(++k));
 						if (formatting == Formatting.BOLD) {
 							bl = true;
 						} else if (formatting != null && formatting.affectsGlyphWidth()) {
@@ -360,60 +370,60 @@ public class TextRenderer implements AutoCloseable {
 			}
 
 			if (c == '\n') {
-				m = ++l;
+				l = ++k;
 				break;
 			}
 
-			if (f > (float)j) {
+			if (f > (float)i) {
 				if (bl2) {
-					l++;
+					k++;
 				}
 				break;
 			}
 		}
 
-		return l != k && m != -1 && m < l ? m : l;
+		return k != j && l != -1 && l < k ? l : k;
 	}
 
-	public int findWordEdge(String string, int i, int j, boolean bl) {
-		int k = j;
-		boolean bl2 = i < 0;
-		int l = Math.abs(i);
+	public int findWordEdge(String text, int direction, int position, boolean skipWhitespaceToRightOfWord) {
+		int i = position;
+		boolean bl = direction < 0;
+		int j = Math.abs(direction);
 
-		for (int m = 0; m < l; m++) {
-			if (bl2) {
-				while (bl && k > 0 && (string.charAt(k - 1) == ' ' || string.charAt(k - 1) == '\n')) {
-					k--;
+		for (int k = 0; k < j; k++) {
+			if (bl) {
+				while (skipWhitespaceToRightOfWord && i > 0 && (text.charAt(i - 1) == ' ' || text.charAt(i - 1) == '\n')) {
+					i--;
 				}
 
-				while (k > 0 && string.charAt(k - 1) != ' ' && string.charAt(k - 1) != '\n') {
-					k--;
+				while (i > 0 && text.charAt(i - 1) != ' ' && text.charAt(i - 1) != '\n') {
+					i--;
 				}
 			} else {
-				int n = string.length();
-				int o = string.indexOf(32, k);
-				int p = string.indexOf(10, k);
-				if (o == -1 && p == -1) {
-					k = -1;
-				} else if (o != -1 && p != -1) {
-					k = Math.min(o, p);
-				} else if (o != -1) {
-					k = o;
+				int l = text.length();
+				int m = text.indexOf(32, i);
+				int n = text.indexOf(10, i);
+				if (m == -1 && n == -1) {
+					i = -1;
+				} else if (m != -1 && n != -1) {
+					i = Math.min(m, n);
+				} else if (m != -1) {
+					i = m;
 				} else {
-					k = p;
+					i = n;
 				}
 
-				if (k == -1) {
-					k = n;
+				if (i == -1) {
+					i = l;
 				} else {
-					while (bl && k < n && (string.charAt(k) == ' ' || string.charAt(k) == '\n')) {
-						k++;
+					while (skipWhitespaceToRightOfWord && i < l && (text.charAt(i) == ' ' || text.charAt(i) == '\n')) {
+						i++;
 					}
 				}
 			}
 		}
 
-		return k;
+		return i;
 	}
 
 	public boolean isRightToLeft() {
@@ -431,15 +441,15 @@ public class TextRenderer implements AutoCloseable {
 		protected final float blue;
 		protected final float alpha;
 
-		private Rectangle(float f, float g, float h, float i, float j, float k, float l, float m) {
-			this.xMin = f;
-			this.yMin = g;
-			this.xMax = h;
-			this.yMax = i;
-			this.red = j;
-			this.green = k;
-			this.blue = l;
-			this.alpha = m;
+		private Rectangle(float xMin, float yMin, float xMax, float yMax, float red, float green, float blue, float alpha) {
+			this.xMin = xMin;
+			this.yMin = yMin;
+			this.xMax = xMax;
+			this.yMax = yMax;
+			this.red = red;
+			this.green = green;
+			this.blue = blue;
+			this.alpha = alpha;
 		}
 
 		public void draw(BufferBuilder bufferBuilder) {

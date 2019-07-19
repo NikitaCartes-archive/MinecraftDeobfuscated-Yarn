@@ -12,9 +12,9 @@ public class AnimationFrameResourceMetadata {
 		this(i, -1);
 	}
 
-	public AnimationFrameResourceMetadata(int i, int j) {
-		this.index = i;
-		this.time = j;
+	public AnimationFrameResourceMetadata(int index, int time) {
+		this.index = index;
+		this.time = time;
 	}
 
 	public boolean usesDefaultFrameTime() {

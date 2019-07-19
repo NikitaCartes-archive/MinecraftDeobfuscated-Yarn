@@ -4,7 +4,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 
 public class ResourceNotFoundException extends FileNotFoundException {
-	public ResourceNotFoundException(File file, String string) {
-		super(String.format("'%s' in ResourcePack '%s'", string, file));
+	public ResourceNotFoundException(File packSource, String resource) {
+		super(String.format("'%s' in ResourcePack '%s'", resource, packSource));
 	}
 }

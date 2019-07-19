@@ -21,23 +21,23 @@ public class EnchantingPhrases {
 		return INSTANCE;
 	}
 
-	public String generatePhrase(TextRenderer textRenderer, int i) {
-		int j = this.random.nextInt(2) + 3;
+	public String generatePhrase(TextRenderer fontRenderer, int width) {
+		int i = this.random.nextInt(2) + 3;
 		String string = "";
 
-		for (int k = 0; k < j; k++) {
-			if (k > 0) {
+		for (int j = 0; j < i; j++) {
+			if (j > 0) {
 				string = string + " ";
 			}
 
 			string = string + this.phrases[this.random.nextInt(this.phrases.length)];
 		}
 
-		List<String> list = textRenderer.wrapStringToWidthAsList(string, i);
+		List<String> list = fontRenderer.wrapStringToWidthAsList(string, width);
 		return StringUtils.join(list.size() >= 2 ? list.subList(0, 2) : list, " ");
 	}
 
-	public void setSeed(long l) {
-		this.random.setSeed(l);
+	public void setSeed(long seed) {
+		this.random.setSeed(seed);
 	}
 }

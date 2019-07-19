@@ -29,24 +29,24 @@ public class SuffixArray<T> {
 	private IntList field_5506 = new IntArrayList();
 	private int maxTextLength;
 
-	public void add(T object, String string) {
-		this.maxTextLength = Math.max(this.maxTextLength, string.length());
+	public void add(T object, String text) {
+		this.maxTextLength = Math.max(this.maxTextLength, text.length());
 		int i = this.objects.size();
 		this.objects.add(object);
 		this.field_5509.add(this.field_5505.size());
 
-		for (int j = 0; j < string.length(); j++) {
+		for (int j = 0; j < text.length(); j++) {
 			this.field_5504.add(i);
 			this.field_5506.add(j);
-			this.field_5505.add(string.charAt(j));
+			this.field_5505.add(text.charAt(j));
 		}
 
 		this.field_5504.add(i);
-		this.field_5506.add(string.length());
+		this.field_5506.add(text.length());
 		this.field_5505.add(-1);
 	}
 
-	public void reload() {
+	public void sort() {
 		int i = this.field_5505.size();
 		int[] is = new int[i];
 		final int[] js = new int[i];
@@ -112,11 +112,11 @@ public class SuffixArray<T> {
 		}
 
 		if (PRINT_ARRAY) {
-			this.debugPrintArray();
+			this.printArray();
 		}
 	}
 
-	private void debugPrintArray() {
+	private void printArray() {
 		for (int i = 0; i < this.field_5504.size(); i++) {
 			LOGGER.debug("{} {}", i, this.method_4808(i));
 		}
@@ -169,16 +169,16 @@ public class SuffixArray<T> {
 		return 0;
 	}
 
-	public List<T> findAll(String string) {
+	public List<T> findAll(String text) {
 		int i = this.field_5504.size();
 		int j = 0;
 		int k = i;
 
 		while (j < k) {
 			int l = j + (k - j) / 2;
-			int m = this.method_4805(string, l);
+			int m = this.method_4805(text, l);
 			if (PRINT_COMPARISONS) {
-				LOGGER.debug("comparing lower \"{}\" with {} \"{}\": {}", string, l, this.method_4808(l), m);
+				LOGGER.debug("comparing lower \"{}\" with {} \"{}\": {}", text, l, this.method_4808(l), m);
 			}
 
 			if (m > 0) {
@@ -194,9 +194,9 @@ public class SuffixArray<T> {
 
 			while (j < k) {
 				int mx = j + (k - j) / 2;
-				int n = this.method_4805(string, mx);
+				int n = this.method_4805(text, mx);
 				if (PRINT_COMPARISONS) {
-					LOGGER.debug("comparing upper \"{}\" with {} \"{}\": {}", string, mx, this.method_4808(mx), n);
+					LOGGER.debug("comparing upper \"{}\" with {} \"{}\": {}", text, mx, this.method_4808(mx), n);
 				}
 
 				if (n >= 0) {

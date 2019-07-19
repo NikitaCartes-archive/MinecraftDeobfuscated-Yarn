@@ -44,24 +44,24 @@ public class BakedQuadFactory {
 	};
 
 	public BakedQuad bake(
-		Vector3f vector3f,
-		Vector3f vector3f2,
-		ModelElementFace modelElementFace,
-		Sprite sprite,
-		Direction direction,
-		ModelBakeSettings modelBakeSettings,
-		@Nullable net.minecraft.client.render.model.json.ModelRotation modelRotation,
-		boolean bl
+		Vector3f from,
+		Vector3f to,
+		ModelElementFace face,
+		Sprite texture,
+		Direction side,
+		ModelBakeSettings settings,
+		@Nullable net.minecraft.client.render.model.json.ModelRotation rotation,
+		boolean shade
 	) {
-		ModelElementTexture modelElementTexture = modelElementFace.textureData;
-		if (modelBakeSettings.isUvLocked()) {
-			modelElementTexture = this.uvLock(modelElementFace.textureData, direction, modelBakeSettings.getRotation());
+		ModelElementTexture modelElementTexture = face.textureData;
+		if (settings.isShaded()) {
+			modelElementTexture = this.uvLock(face.textureData, side, settings.getRotation());
 		}
 
 		float[] fs = new float[modelElementTexture.uvs.length];
 		System.arraycopy(modelElementTexture.uvs, 0, fs, 0, fs.length);
-		float f = (float)sprite.getWidth() / (sprite.getMaxU() - sprite.getMinU());
-		float g = (float)sprite.getHeight() / (sprite.getMaxV() - sprite.getMinV());
+		float f = (float)texture.getWidth() / (texture.getMaxU() - texture.getMinU());
+		float g = (float)texture.getHeight() / (texture.getMaxV() - texture.getMinV());
 		float h = 4.0F / Math.max(g, f);
 		float i = (modelElementTexture.uvs[0] + modelElementTexture.uvs[0] + modelElementTexture.uvs[2] + modelElementTexture.uvs[2]) / 4.0F;
 		float j = (modelElementTexture.uvs[1] + modelElementTexture.uvs[1] + modelElementTexture.uvs[3] + modelElementTexture.uvs[3]) / 4.0F;
@@ -69,14 +69,14 @@ public class BakedQuadFactory {
 		modelElementTexture.uvs[2] = MathHelper.lerp(h, modelElementTexture.uvs[2], i);
 		modelElementTexture.uvs[1] = MathHelper.lerp(h, modelElementTexture.uvs[1], j);
 		modelElementTexture.uvs[3] = MathHelper.lerp(h, modelElementTexture.uvs[3], j);
-		int[] is = this.method_3458(modelElementTexture, sprite, direction, this.method_3459(vector3f, vector3f2), modelBakeSettings.getRotation(), modelRotation, bl);
-		Direction direction2 = method_3467(is);
+		int[] is = this.method_3458(modelElementTexture, texture, side, this.method_3459(from, to), settings.getRotation(), rotation, shade);
+		Direction direction = method_3467(is);
 		System.arraycopy(fs, 0, modelElementTexture.uvs, 0, fs.length);
-		if (modelRotation == null) {
-			this.method_3462(is, direction2);
+		if (rotation == null) {
+			this.method_3462(is, direction);
 		}
 
-		return new BakedQuad(is, modelElementFace.tintIndex, direction2, sprite);
+		return new BakedQuad(is, face.tintIndex, direction, texture);
 	}
 
 	private ModelElementTexture uvLock(ModelElementTexture modelElementTexture, Direction direction, ModelRotation modelRotation) {
@@ -161,8 +161,8 @@ public class BakedQuadFactory {
 		is[l + 1] = Float.floatToRawIntBits(vector3f.getY());
 		is[l + 2] = Float.floatToRawIntBits(vector3f.getZ());
 		is[l + 3] = k;
-		is[l + 4] = Float.floatToRawIntBits(sprite.getU((double)modelElementTexture.getU(j)));
-		is[l + 4 + 1] = Float.floatToRawIntBits(sprite.getV((double)modelElementTexture.getV(j)));
+		is[l + 4] = Float.floatToRawIntBits(sprite.getFrameU((double)modelElementTexture.getU(j)));
+		is[l + 4 + 1] = Float.floatToRawIntBits(sprite.getFrameV((double)modelElementTexture.getV(j)));
 	}
 
 	private void method_3463(Vector3f vector3f, @Nullable net.minecraft.client.render.model.json.ModelRotation modelRotation) {
@@ -215,7 +215,7 @@ public class BakedQuadFactory {
 	private void method_3464(Vector3f vector3f, Vector3f vector3f2, Quaternion quaternion, Vector3f vector3f3) {
 		Vector4f vector4f = new Vector4f(vector3f.getX() - vector3f2.getX(), vector3f.getY() - vector3f2.getY(), vector3f.getZ() - vector3f2.getZ(), 1.0F);
 		vector4f.method_4959(quaternion);
-		vector4f.multiply(vector3f3);
+		vector4f.multiplyComponentwise(vector3f3);
 		vector3f.set(vector4f.getX() + vector3f2.getX(), vector4f.getY() + vector3f2.getY(), vector4f.getZ() + vector3f2.getZ());
 	}
 
@@ -304,7 +304,7 @@ public class BakedQuadFactory {
 				float p = Float.intBitsToFloat(js[o]);
 				float q = Float.intBitsToFloat(js[o + 1]);
 				float r = Float.intBitsToFloat(js[o + 2]);
-				if (MathHelper.equalsApproximate(hx, p) && MathHelper.equalsApproximate(l, q) && MathHelper.equalsApproximate(m, r)) {
+				if (MathHelper.approximatelyEquals(hx, p) && MathHelper.approximatelyEquals(l, q) && MathHelper.approximatelyEquals(m, r)) {
 					is[k + 4] = js[o + 4];
 					is[k + 4 + 1] = js[o + 4 + 1];
 				}

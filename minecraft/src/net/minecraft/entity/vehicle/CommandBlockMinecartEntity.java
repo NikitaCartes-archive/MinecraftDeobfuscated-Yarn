@@ -29,8 +29,8 @@ public class CommandBlockMinecartEntity extends AbstractMinecartEntity {
 		super(entityType, world);
 	}
 
-	public CommandBlockMinecartEntity(World world, double d, double e, double f) {
-		super(EntityType.COMMAND_BLOCK_MINECART, world, d, e, f);
+	public CommandBlockMinecartEntity(World world, double x, double y, double z) {
+		super(EntityType.COMMAND_BLOCK_MINECART, world, x, y, z);
 	}
 
 	@Override
@@ -41,17 +41,17 @@ public class CommandBlockMinecartEntity extends AbstractMinecartEntity {
 	}
 
 	@Override
-	protected void readCustomDataFromTag(CompoundTag compoundTag) {
-		super.readCustomDataFromTag(compoundTag);
-		this.commandExecutor.deserialize(compoundTag);
+	protected void readCustomDataFromTag(CompoundTag tag) {
+		super.readCustomDataFromTag(tag);
+		this.commandExecutor.deserialize(tag);
 		this.getDataTracker().set(COMMAND, this.getCommandExecutor().getCommand());
 		this.getDataTracker().set(LAST_OUTPUT, this.getCommandExecutor().getLastOutput());
 	}
 
 	@Override
-	protected void writeCustomDataToTag(CompoundTag compoundTag) {
-		super.writeCustomDataToTag(compoundTag);
-		this.commandExecutor.serialize(compoundTag);
+	protected void writeCustomDataToTag(CompoundTag tag) {
+		super.writeCustomDataToTag(tag);
+		this.commandExecutor.serialize(tag);
 	}
 
 	@Override
@@ -69,28 +69,28 @@ public class CommandBlockMinecartEntity extends AbstractMinecartEntity {
 	}
 
 	@Override
-	public void onActivatorRail(int i, int j, int k, boolean bl) {
-		if (bl && this.age - this.lastExecuted >= 4) {
+	public void onActivatorRail(int x, int y, int z, boolean powered) {
+		if (powered && this.age - this.lastExecuted >= 4) {
 			this.getCommandExecutor().execute(this.world);
 			this.lastExecuted = this.age;
 		}
 	}
 
 	@Override
-	public boolean interact(PlayerEntity playerEntity, Hand hand) {
-		this.commandExecutor.interact(playerEntity);
+	public boolean interact(PlayerEntity player, Hand hand) {
+		this.commandExecutor.interact(player);
 		return true;
 	}
 
 	@Override
-	public void onTrackedDataSet(TrackedData<?> trackedData) {
-		super.onTrackedDataSet(trackedData);
-		if (LAST_OUTPUT.equals(trackedData)) {
+	public void onTrackedDataSet(TrackedData<?> data) {
+		super.onTrackedDataSet(data);
+		if (LAST_OUTPUT.equals(data)) {
 			try {
 				this.commandExecutor.setLastOutput(this.getDataTracker().get(LAST_OUTPUT));
 			} catch (Throwable var3) {
 			}
-		} else if (COMMAND.equals(trackedData)) {
+		} else if (COMMAND.equals(data)) {
 			this.commandExecutor.setCommand(this.getDataTracker().get(COMMAND));
 		}
 	}

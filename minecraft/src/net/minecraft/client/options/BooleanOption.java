@@ -13,38 +13,38 @@ public class BooleanOption extends Option {
 	private final Predicate<GameOptions> getter;
 	private final BiConsumer<GameOptions, Boolean> setter;
 
-	public BooleanOption(String string, Predicate<GameOptions> predicate, BiConsumer<GameOptions, Boolean> biConsumer) {
-		super(string);
-		this.getter = predicate;
-		this.setter = biConsumer;
+	public BooleanOption(String key, Predicate<GameOptions> getter, BiConsumer<GameOptions, Boolean> setter) {
+		super(key);
+		this.getter = getter;
+		this.setter = setter;
 	}
 
-	public void set(GameOptions gameOptions, String string) {
-		this.set(gameOptions, "true".equals(string));
+	public void set(GameOptions options, String value) {
+		this.set(options, "true".equals(value));
 	}
 
-	public void set(GameOptions gameOptions) {
-		this.set(gameOptions, !this.get(gameOptions));
-		gameOptions.write();
+	public void set(GameOptions options) {
+		this.set(options, !this.get(options));
+		options.write();
 	}
 
-	private void set(GameOptions gameOptions, boolean bl) {
-		this.setter.accept(gameOptions, bl);
+	private void set(GameOptions options, boolean value) {
+		this.setter.accept(options, value);
 	}
 
-	public boolean get(GameOptions gameOptions) {
-		return this.getter.test(gameOptions);
+	public boolean get(GameOptions options) {
+		return this.getter.test(options);
 	}
 
 	@Override
-	public AbstractButtonWidget createButton(GameOptions gameOptions, int i, int j, int k) {
-		return new OptionButtonWidget(i, j, k, 20, this, this.getDisplayString(gameOptions), buttonWidget -> {
-			this.set(gameOptions);
-			buttonWidget.setMessage(this.getDisplayString(gameOptions));
+	public AbstractButtonWidget createButton(GameOptions options, int x, int y, int width) {
+		return new OptionButtonWidget(x, y, width, 20, this, this.getDisplayString(options), buttonWidget -> {
+			this.set(options);
+			buttonWidget.setMessage(this.getDisplayString(options));
 		});
 	}
 
-	public String getDisplayString(GameOptions gameOptions) {
-		return this.getDisplayPrefix() + I18n.translate(this.get(gameOptions) ? "options.on" : "options.off");
+	public String getDisplayString(GameOptions options) {
+		return this.getDisplayPrefix() + I18n.translate(this.get(options) ? "options.on" : "options.off");
 	}
 }

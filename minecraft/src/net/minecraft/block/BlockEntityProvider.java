@@ -6,5 +6,5 @@ import net.minecraft.world.BlockView;
 
 public interface BlockEntityProvider {
 	@Nullable
-	BlockEntity createBlockEntity(BlockView blockView);
+	BlockEntity createBlockEntity(BlockView view);
 }

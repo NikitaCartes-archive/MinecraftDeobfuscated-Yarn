@@ -34,77 +34,75 @@ public class ModelTransformation {
 
 	private ModelTransformation() {
 		this(
-			Transformation.NONE,
-			Transformation.NONE,
-			Transformation.NONE,
-			Transformation.NONE,
-			Transformation.NONE,
-			Transformation.NONE,
-			Transformation.NONE,
-			Transformation.NONE
+			Transformation.IDENTITY,
+			Transformation.IDENTITY,
+			Transformation.IDENTITY,
+			Transformation.IDENTITY,
+			Transformation.IDENTITY,
+			Transformation.IDENTITY,
+			Transformation.IDENTITY,
+			Transformation.IDENTITY
 		);
 	}
 
-	public ModelTransformation(ModelTransformation modelTransformation) {
-		this.thirdPersonLeftHand = modelTransformation.thirdPersonLeftHand;
-		this.thirdPersonRightHand = modelTransformation.thirdPersonRightHand;
-		this.firstPersonLeftHand = modelTransformation.firstPersonLeftHand;
-		this.firstPersonRightHand = modelTransformation.firstPersonRightHand;
-		this.head = modelTransformation.head;
-		this.gui = modelTransformation.gui;
-		this.ground = modelTransformation.ground;
-		this.fixed = modelTransformation.fixed;
+	public ModelTransformation(ModelTransformation other) {
+		this.thirdPersonLeftHand = other.thirdPersonLeftHand;
+		this.thirdPersonRightHand = other.thirdPersonRightHand;
+		this.firstPersonLeftHand = other.firstPersonLeftHand;
+		this.firstPersonRightHand = other.firstPersonRightHand;
+		this.head = other.head;
+		this.gui = other.gui;
+		this.ground = other.ground;
+		this.fixed = other.fixed;
 	}
 
 	public ModelTransformation(
-		Transformation transformation,
-		Transformation transformation2,
-		Transformation transformation3,
-		Transformation transformation4,
-		Transformation transformation5,
-		Transformation transformation6,
-		Transformation transformation7,
-		Transformation transformation8
+		Transformation thirdPersonLeftHand,
+		Transformation thirdPersonRightHand,
+		Transformation firstPersonLeftHand,
+		Transformation firstPersonRightHand,
+		Transformation head,
+		Transformation gui,
+		Transformation ground,
+		Transformation fixed
 	) {
-		this.thirdPersonLeftHand = transformation;
-		this.thirdPersonRightHand = transformation2;
-		this.firstPersonLeftHand = transformation3;
-		this.firstPersonRightHand = transformation4;
-		this.head = transformation5;
-		this.gui = transformation6;
-		this.ground = transformation7;
-		this.fixed = transformation8;
+		this.thirdPersonLeftHand = thirdPersonLeftHand;
+		this.thirdPersonRightHand = thirdPersonRightHand;
+		this.firstPersonLeftHand = firstPersonLeftHand;
+		this.firstPersonRightHand = firstPersonRightHand;
+		this.head = head;
+		this.gui = gui;
+		this.ground = ground;
+		this.fixed = fixed;
 	}
 
 	public void applyGl(ModelTransformation.Type type) {
 		applyGl(this.getTransformation(type), false);
 	}
 
-	public static void applyGl(Transformation transformation, boolean bl) {
-		if (transformation != Transformation.NONE) {
-			int i = bl ? -1 : 1;
+	public static void applyGl(Transformation transform, boolean leftyFlip) {
+		if (transform != Transformation.IDENTITY) {
+			int i = leftyFlip ? -1 : 1;
 			GlStateManager.translatef(
-				(float)i * (globalTranslationX + transformation.translation.getX()),
-				globalTranslationY + transformation.translation.getY(),
-				globalTranslationZ + transformation.translation.getZ()
+				(float)i * (globalTranslationX + transform.translation.getX()),
+				globalTranslationY + transform.translation.getY(),
+				globalTranslationZ + transform.translation.getZ()
 			);
-			float f = globalRotationX + transformation.rotation.getX();
-			float g = globalRotationY + transformation.rotation.getY();
-			float h = globalRotationZ + transformation.rotation.getZ();
-			if (bl) {
+			float f = globalRotationX + transform.rotation.getX();
+			float g = globalRotationY + transform.rotation.getY();
+			float h = globalRotationZ + transform.rotation.getZ();
+			if (leftyFlip) {
 				g = -g;
 				h = -h;
 			}
 
 			GlStateManager.multMatrix(new Matrix4f(new Quaternion(f, g, h, true)));
-			GlStateManager.scalef(
-				globalScaleOffsetX + transformation.scale.getX(), globalScaleOffsetY + transformation.scale.getY(), globalScaleOffsetZ + transformation.scale.getZ()
-			);
+			GlStateManager.scalef(globalScaleOffsetX + transform.scale.getX(), globalScaleOffsetY + transform.scale.getY(), globalScaleOffsetZ + transform.scale.getZ());
 		}
 	}
 
-	public Transformation getTransformation(ModelTransformation.Type type) {
-		switch (type) {
+	public Transformation getTransformation(ModelTransformation.Type renderMode) {
+		switch (renderMode) {
 			case THIRD_PERSON_LEFT_HAND:
 				return this.thirdPersonLeftHand;
 			case THIRD_PERSON_RIGHT_HAND:
@@ -122,12 +120,12 @@ public class ModelTransformation {
 			case FIXED:
 				return this.fixed;
 			default:
-				return Transformation.NONE;
+				return Transformation.IDENTITY;
 		}
 	}
 
-	public boolean isTransformationDefined(ModelTransformation.Type type) {
-		return this.getTransformation(type) != Transformation.NONE;
+	public boolean isTransformationDefined(ModelTransformation.Type renderMode) {
+		return this.getTransformation(renderMode) != Transformation.IDENTITY;
 	}
 
 	@Environment(EnvType.CLIENT)
@@ -135,31 +133,31 @@ public class ModelTransformation {
 		protected Deserializer() {
 		}
 
-		public ModelTransformation method_3505(JsonElement jsonElement, java.lang.reflect.Type type, JsonDeserializationContext jsonDeserializationContext) throws JsonParseException {
-			JsonObject jsonObject = jsonElement.getAsJsonObject();
-			Transformation transformation = this.parseModelTransformation(jsonDeserializationContext, jsonObject, "thirdperson_righthand");
-			Transformation transformation2 = this.parseModelTransformation(jsonDeserializationContext, jsonObject, "thirdperson_lefthand");
-			if (transformation2 == Transformation.NONE) {
+		public ModelTransformation deserialize(JsonElement element, java.lang.reflect.Type type, JsonDeserializationContext context) throws JsonParseException {
+			JsonObject jsonObject = element.getAsJsonObject();
+			Transformation transformation = this.parseModelTransformation(context, jsonObject, "thirdperson_righthand");
+			Transformation transformation2 = this.parseModelTransformation(context, jsonObject, "thirdperson_lefthand");
+			if (transformation2 == Transformation.IDENTITY) {
 				transformation2 = transformation;
 			}
 
-			Transformation transformation3 = this.parseModelTransformation(jsonDeserializationContext, jsonObject, "firstperson_righthand");
-			Transformation transformation4 = this.parseModelTransformation(jsonDeserializationContext, jsonObject, "firstperson_lefthand");
-			if (transformation4 == Transformation.NONE) {
+			Transformation transformation3 = this.parseModelTransformation(context, jsonObject, "firstperson_righthand");
+			Transformation transformation4 = this.parseModelTransformation(context, jsonObject, "firstperson_lefthand");
+			if (transformation4 == Transformation.IDENTITY) {
 				transformation4 = transformation3;
 			}
 
-			Transformation transformation5 = this.parseModelTransformation(jsonDeserializationContext, jsonObject, "head");
-			Transformation transformation6 = this.parseModelTransformation(jsonDeserializationContext, jsonObject, "gui");
-			Transformation transformation7 = this.parseModelTransformation(jsonDeserializationContext, jsonObject, "ground");
-			Transformation transformation8 = this.parseModelTransformation(jsonDeserializationContext, jsonObject, "fixed");
+			Transformation transformation5 = this.parseModelTransformation(context, jsonObject, "head");
+			Transformation transformation6 = this.parseModelTransformation(context, jsonObject, "gui");
+			Transformation transformation7 = this.parseModelTransformation(context, jsonObject, "ground");
+			Transformation transformation8 = this.parseModelTransformation(context, jsonObject, "fixed");
 			return new ModelTransformation(
 				transformation2, transformation, transformation4, transformation3, transformation5, transformation6, transformation7, transformation8
 			);
 		}
 
-		private Transformation parseModelTransformation(JsonDeserializationContext jsonDeserializationContext, JsonObject jsonObject, String string) {
-			return jsonObject.has(string) ? jsonDeserializationContext.deserialize(jsonObject.get(string), Transformation.class) : Transformation.NONE;
+		private Transformation parseModelTransformation(JsonDeserializationContext ctx, JsonObject json, String key) {
+			return json.has(key) ? ctx.deserialize(json.get(key), Transformation.class) : Transformation.IDENTITY;
 		}
 	}
 

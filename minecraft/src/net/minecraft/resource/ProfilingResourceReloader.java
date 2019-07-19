@@ -6,8 +6,8 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicLong;
-import net.minecraft.util.SystemUtil;
 import net.minecraft.util.Unit;
+import net.minecraft.util.Util;
 import net.minecraft.util.profiler.ProfileResult;
 import net.minecraft.util.profiler.ProfilerSystem;
 import org.apache.logging.log4j.LogManager;
@@ -18,48 +18,48 @@ public class ProfilingResourceReloader extends ResourceReloader<ProfilingResourc
 	private final Stopwatch reloadTimer = Stopwatch.createUnstarted();
 
 	public ProfilingResourceReloader(
-		ResourceManager resourceManager, List<ResourceReloadListener> list, Executor executor, Executor executor2, CompletableFuture<Unit> completableFuture
+		ResourceManager manager, List<ResourceReloadListener> listeners, Executor prepareExecutor, Executor applyExecutor, CompletableFuture<Unit> completableFuture
 	) {
 		super(
-			executor,
-			executor2,
-			resourceManager,
-			list,
-			(synchronizer, resourceManagerx, resourceReloadListener, executor2x, executor3) -> {
+			prepareExecutor,
+			applyExecutor,
+			manager,
+			listeners,
+			(synchronizer, resourceManager, resourceReloadListener, prepareExecutorx, applyExecutorx) -> {
 				AtomicLong atomicLong = new AtomicLong();
 				AtomicLong atomicLong2 = new AtomicLong();
-				ProfilerSystem profilerSystem = new ProfilerSystem(SystemUtil.getMeasuringTimeNano(), () -> 0);
-				ProfilerSystem profilerSystem2 = new ProfilerSystem(SystemUtil.getMeasuringTimeNano(), () -> 0);
+				ProfilerSystem profilerSystem = new ProfilerSystem(Util.getMeasuringTimeNano(), () -> 0);
+				ProfilerSystem profilerSystem2 = new ProfilerSystem(Util.getMeasuringTimeNano(), () -> 0);
 				CompletableFuture<Void> completableFuturex = resourceReloadListener.reload(
-					synchronizer, resourceManagerx, profilerSystem, profilerSystem2, runnable -> executor2x.execute(() -> {
-							long l = SystemUtil.getMeasuringTimeNano();
+					synchronizer, resourceManager, profilerSystem, profilerSystem2, runnable -> prepareExecutorx.execute(() -> {
+							long l = Util.getMeasuringTimeNano();
 							runnable.run();
-							atomicLong.addAndGet(SystemUtil.getMeasuringTimeNano() - l);
-						}), runnable -> executor3.execute(() -> {
-							long l = SystemUtil.getMeasuringTimeNano();
+							atomicLong.addAndGet(Util.getMeasuringTimeNano() - l);
+						}), runnable -> applyExecutorx.execute(() -> {
+							long l = Util.getMeasuringTimeNano();
 							runnable.run();
-							atomicLong2.addAndGet(SystemUtil.getMeasuringTimeNano() - l);
+							atomicLong2.addAndGet(Util.getMeasuringTimeNano() - l);
 						})
 				);
 				return completableFuturex.thenApplyAsync(
 					void_ -> new ProfilingResourceReloader.Summary(
-							resourceReloadListener.getClass().getSimpleName(), profilerSystem.getResults(), profilerSystem2.getResults(), atomicLong, atomicLong2
+							resourceReloadListener.getClass().getSimpleName(), profilerSystem.getResult(), profilerSystem2.getResult(), atomicLong, atomicLong2
 						),
-					executor2
+					applyExecutor
 				);
 			},
 			completableFuture
 		);
 		this.reloadTimer.start();
-		this.applyStageFuture.thenAcceptAsync(this::finish, executor2);
+		this.applyStageFuture.thenAcceptAsync(this::finish, applyExecutor);
 	}
 
-	private void finish(List<ProfilingResourceReloader.Summary> list) {
+	private void finish(List<ProfilingResourceReloader.Summary> summaries) {
 		this.reloadTimer.stop();
 		int i = 0;
 		LOGGER.info("Resource reload finished after " + this.reloadTimer.elapsed(TimeUnit.MILLISECONDS) + " ms");
 
-		for (ProfilingResourceReloader.Summary summary : list) {
+		for (ProfilingResourceReloader.Summary summary : summaries) {
 			ProfileResult profileResult = summary.prepareProfile;
 			ProfileResult profileResult2 = summary.applyProfile;
 			int j = (int)((double)summary.prepareTimeMs.get() / 1000000.0);
@@ -91,12 +91,12 @@ public class ProfilingResourceReloader extends ResourceReloader<ProfilingResourc
 		private final AtomicLong prepareTimeMs;
 		private final AtomicLong applyTimeMs;
 
-		private Summary(String string, ProfileResult profileResult, ProfileResult profileResult2, AtomicLong atomicLong, AtomicLong atomicLong2) {
-			this.name = string;
-			this.prepareProfile = profileResult;
-			this.applyProfile = profileResult2;
-			this.prepareTimeMs = atomicLong;
-			this.applyTimeMs = atomicLong2;
+		private Summary(String name, ProfileResult prepareProfile, ProfileResult applyProfile, AtomicLong prepareTimeMs, AtomicLong applyTimeMs) {
+			this.name = name;
+			this.prepareProfile = prepareProfile;
+			this.applyProfile = applyProfile;
+			this.prepareTimeMs = prepareTimeMs;
+			this.applyTimeMs = applyTimeMs;
 		}
 	}
 }

@@ -21,10 +21,10 @@ public class ScoreboardPlayerScore {
 	private boolean locked;
 	private boolean forceUpdate;
 
-	public ScoreboardPlayerScore(Scoreboard scoreboard, ScoreboardObjective scoreboardObjective, String string) {
+	public ScoreboardPlayerScore(Scoreboard scoreboard, ScoreboardObjective objective, String playerName) {
 		this.scoreboard = scoreboard;
-		this.objective = scoreboardObjective;
-		this.playerName = string;
+		this.objective = objective;
+		this.playerName = playerName;
 		this.locked = true;
 		this.forceUpdate = true;
 	}
@@ -49,10 +49,10 @@ public class ScoreboardPlayerScore {
 		this.setScore(0);
 	}
 
-	public void setScore(int i) {
-		int j = this.score;
-		this.score = i;
-		if (j != i || this.forceUpdate) {
+	public void setScore(int score) {
+		int i = this.score;
+		this.score = score;
+		if (i != score || this.forceUpdate) {
 			this.forceUpdate = false;
 			this.getScoreboard().updateScore(this);
 		}
@@ -75,7 +75,7 @@ public class ScoreboardPlayerScore {
 		return this.locked;
 	}
 
-	public void setLocked(boolean bl) {
-		this.locked = bl;
+	public void setLocked(boolean locked) {
+		this.locked = locked;
 	}
 }

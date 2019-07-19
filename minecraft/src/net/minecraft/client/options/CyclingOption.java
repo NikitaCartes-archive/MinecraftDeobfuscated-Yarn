@@ -12,26 +12,26 @@ public class CyclingOption extends Option {
 	private final BiConsumer<GameOptions, Integer> setter;
 	private final BiFunction<GameOptions, CyclingOption, String> messageProvider;
 
-	public CyclingOption(String string, BiConsumer<GameOptions, Integer> biConsumer, BiFunction<GameOptions, CyclingOption, String> biFunction) {
-		super(string);
-		this.setter = biConsumer;
-		this.messageProvider = biFunction;
+	public CyclingOption(String key, BiConsumer<GameOptions, Integer> setter, BiFunction<GameOptions, CyclingOption, String> messageProvider) {
+		super(key);
+		this.setter = setter;
+		this.messageProvider = messageProvider;
 	}
 
-	public void cycle(GameOptions gameOptions, int i) {
-		this.setter.accept(gameOptions, i);
-		gameOptions.write();
+	public void cycle(GameOptions options, int amount) {
+		this.setter.accept(options, amount);
+		options.write();
 	}
 
 	@Override
-	public AbstractButtonWidget createButton(GameOptions gameOptions, int i, int j, int k) {
-		return new OptionButtonWidget(i, j, k, 20, this, this.getMessage(gameOptions), buttonWidget -> {
-			this.cycle(gameOptions, 1);
-			buttonWidget.setMessage(this.getMessage(gameOptions));
+	public AbstractButtonWidget createButton(GameOptions options, int x, int y, int width) {
+		return new OptionButtonWidget(x, y, width, 20, this, this.getMessage(options), buttonWidget -> {
+			this.cycle(options, 1);
+			buttonWidget.setMessage(this.getMessage(options));
 		});
 	}
 
-	public String getMessage(GameOptions gameOptions) {
-		return (String)this.messageProvider.apply(gameOptions, this);
+	public String getMessage(GameOptions options) {
+		return (String)this.messageProvider.apply(options, this);
 	}
 }

@@ -11,14 +11,14 @@ public class PigSaddleFeatureRenderer extends FeatureRenderer<PigEntity, PigEnti
 	private static final Identifier SKIN = new Identifier("textures/entity/pig/pig_saddle.png");
 	private final PigEntityModel<PigEntity> model = new PigEntityModel<>(0.5F);
 
-	public PigSaddleFeatureRenderer(FeatureRendererContext<PigEntity, PigEntityModel<PigEntity>> featureRendererContext) {
-		super(featureRendererContext);
+	public PigSaddleFeatureRenderer(FeatureRendererContext<PigEntity, PigEntityModel<PigEntity>> context) {
+		super(context);
 	}
 
-	public void method_4196(PigEntity pigEntity, float f, float g, float h, float i, float j, float k, float l) {
+	public void render(PigEntity pigEntity, float f, float g, float h, float i, float j, float k, float l) {
 		if (pigEntity.isSaddled()) {
 			this.bindTexture(SKIN);
-			this.getModel().copyStateTo(this.model);
+			this.getContextModel().copyStateTo(this.model);
 			this.model.render(pigEntity, f, g, i, j, k, l);
 		}
 	}

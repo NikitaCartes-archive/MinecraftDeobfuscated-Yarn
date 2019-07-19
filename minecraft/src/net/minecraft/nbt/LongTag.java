@@ -17,14 +17,14 @@ public class LongTag extends AbstractNumberTag {
 	}
 
 	@Override
-	public void write(DataOutput dataOutput) throws IOException {
-		dataOutput.writeLong(this.value);
+	public void write(DataOutput output) throws IOException {
+		output.writeLong(this.value);
 	}
 
 	@Override
-	public void read(DataInput dataInput, int i, PositionTracker positionTracker) throws IOException {
+	public void read(DataInput input, int depth, PositionTracker positionTracker) throws IOException {
 		positionTracker.add(128L);
-		this.value = dataInput.readLong();
+		this.value = input.readLong();
 	}
 
 	@Override
@@ -37,12 +37,12 @@ public class LongTag extends AbstractNumberTag {
 		return this.value + "L";
 	}
 
-	public LongTag method_10621() {
+	public LongTag copy() {
 		return new LongTag(this.value);
 	}
 
-	public boolean equals(Object object) {
-		return this == object ? true : object instanceof LongTag && this.value == ((LongTag)object).value;
+	public boolean equals(Object o) {
+		return this == o ? true : o instanceof LongTag && this.value == ((LongTag)o).value;
 	}
 
 	public int hashCode() {
@@ -50,7 +50,7 @@ public class LongTag extends AbstractNumberTag {
 	}
 
 	@Override
-	public Text toText(String string, int i) {
+	public Text toText(String indent, int depth) {
 		Text text = new LiteralText("L").formatted(RED);
 		return new LiteralText(String.valueOf(this.value)).append(text).formatted(GOLD);
 	}

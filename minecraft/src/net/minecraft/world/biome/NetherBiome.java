@@ -12,11 +12,11 @@ import net.minecraft.world.gen.decorator.CountDecoratorConfig;
 import net.minecraft.world.gen.decorator.Decorator;
 import net.minecraft.world.gen.decorator.DecoratorConfig;
 import net.minecraft.world.gen.decorator.RangeDecoratorConfig;
-import net.minecraft.world.gen.feature.BushFeatureConfig;
 import net.minecraft.world.gen.feature.Feature;
 import net.minecraft.world.gen.feature.FeatureConfig;
 import net.minecraft.world.gen.feature.NetherSpringFeatureConfig;
 import net.minecraft.world.gen.feature.OreFeatureConfig;
+import net.minecraft.world.gen.feature.SingleStateFeatureConfig;
 import net.minecraft.world.gen.feature.SpringFeatureConfig;
 import net.minecraft.world.gen.surfacebuilder.SurfaceBuilder;
 
@@ -65,13 +65,16 @@ public final class NetherBiome extends Biome {
 		this.addFeature(
 			GenerationStep.Feature.UNDERGROUND_DECORATION,
 			configureFeature(
-				Feature.BUSH, new BushFeatureConfig(Blocks.BROWN_MUSHROOM.getDefaultState()), Decorator.CHANCE_RANGE, new ChanceRangeDecoratorConfig(0.5F, 0, 0, 128)
+				Feature.BUSH,
+				new SingleStateFeatureConfig(Blocks.BROWN_MUSHROOM.getDefaultState()),
+				Decorator.CHANCE_RANGE,
+				new ChanceRangeDecoratorConfig(0.5F, 0, 0, 128)
 			)
 		);
 		this.addFeature(
 			GenerationStep.Feature.UNDERGROUND_DECORATION,
 			configureFeature(
-				Feature.BUSH, new BushFeatureConfig(Blocks.RED_MUSHROOM.getDefaultState()), Decorator.CHANCE_RANGE, new ChanceRangeDecoratorConfig(0.5F, 0, 0, 128)
+				Feature.BUSH, new SingleStateFeatureConfig(Blocks.RED_MUSHROOM.getDefaultState()), Decorator.CHANCE_RANGE, new ChanceRangeDecoratorConfig(0.5F, 0, 0, 128)
 			)
 		);
 		this.addFeature(

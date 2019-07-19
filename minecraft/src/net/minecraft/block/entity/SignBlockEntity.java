@@ -5,9 +5,9 @@ import java.util.function.Function;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.client.network.packet.BlockEntityUpdateS2CPacket;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.packet.s2c.play.BlockEntityUpdateS2CPacket;
 import net.minecraft.server.command.CommandOutput;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
@@ -38,26 +38,26 @@ public class SignBlockEntity extends BlockEntity {
 	}
 
 	@Override
-	public CompoundTag toTag(CompoundTag compoundTag) {
-		super.toTag(compoundTag);
+	public CompoundTag toTag(CompoundTag tag) {
+		super.toTag(tag);
 
 		for (int i = 0; i < 4; i++) {
 			String string = Text.Serializer.toJson(this.text[i]);
-			compoundTag.putString("Text" + (i + 1), string);
+			tag.putString("Text" + (i + 1), string);
 		}
 
-		compoundTag.putString("Color", this.textColor.getName());
-		return compoundTag;
+		tag.putString("Color", this.textColor.getName());
+		return tag;
 	}
 
 	@Override
-	public void fromTag(CompoundTag compoundTag) {
+	public void fromTag(CompoundTag tag) {
 		this.editable = false;
-		super.fromTag(compoundTag);
-		this.textColor = DyeColor.byName(compoundTag.getString("Color"), DyeColor.BLACK);
+		super.fromTag(tag);
+		this.textColor = DyeColor.byName(tag.getString("Color"), DyeColor.BLACK);
 
 		for (int i = 0; i < 4; i++) {
-			String string = compoundTag.getString("Text" + (i + 1));
+			String string = tag.getString("Text" + (i + 1));
 			Text text = Text.Serializer.fromJson(string.isEmpty() ? "\"\"" : string);
 			if (this.world instanceof ServerWorld) {
 				try {
@@ -74,23 +74,23 @@ public class SignBlockEntity extends BlockEntity {
 	}
 
 	@Environment(EnvType.CLIENT)
-	public Text getTextOnRow(int i) {
-		return this.text[i];
+	public Text getTextOnRow(int row) {
+		return this.text[row];
 	}
 
-	public void setTextOnRow(int i, Text text) {
-		this.text[i] = text;
-		this.textBeingEdited[i] = null;
+	public void setTextOnRow(int row, Text text) {
+		this.text[row] = text;
+		this.textBeingEdited[row] = null;
 	}
 
 	@Nullable
 	@Environment(EnvType.CLIENT)
-	public String getTextBeingEditedOnRow(int i, Function<Text, String> function) {
-		if (this.textBeingEdited[i] == null && this.text[i] != null) {
-			this.textBeingEdited[i] = (String)function.apply(this.text[i]);
+	public String getTextBeingEditedOnRow(int row, Function<Text, String> function) {
+		if (this.textBeingEdited[row] == null && this.text[row] != null) {
+			this.textBeingEdited[row] = (String)function.apply(this.text[row]);
 		}
 
-		return this.textBeingEdited[i];
+		return this.textBeingEdited[row];
 	}
 
 	@Nullable
@@ -143,9 +143,9 @@ public class SignBlockEntity extends BlockEntity {
 		return true;
 	}
 
-	public ServerCommandSource getCommandSource(@Nullable ServerPlayerEntity serverPlayerEntity) {
-		String string = serverPlayerEntity == null ? "Sign" : serverPlayerEntity.getName().getString();
-		Text text = (Text)(serverPlayerEntity == null ? new LiteralText("Sign") : serverPlayerEntity.getDisplayName());
+	public ServerCommandSource getCommandSource(@Nullable ServerPlayerEntity player) {
+		String string = player == null ? "Sign" : player.getName().getString();
+		Text text = (Text)(player == null ? new LiteralText("Sign") : player.getDisplayName());
 		return new ServerCommandSource(
 			CommandOutput.DUMMY,
 			new Vec3d((double)this.pos.getX() + 0.5, (double)this.pos.getY() + 0.5, (double)this.pos.getZ() + 0.5),
@@ -155,7 +155,7 @@ public class SignBlockEntity extends BlockEntity {
 			string,
 			text,
 			this.world.getServer(),
-			serverPlayerEntity
+			player
 		);
 	}
 
@@ -163,9 +163,9 @@ public class SignBlockEntity extends BlockEntity {
 		return this.textColor;
 	}
 
-	public boolean setTextColor(DyeColor dyeColor) {
-		if (dyeColor != this.getTextColor()) {
-			this.textColor = dyeColor;
+	public boolean setTextColor(DyeColor value) {
+		if (value != this.getTextColor()) {
+			this.textColor = value;
 			this.markDirty();
 			this.world.updateListeners(this.getPos(), this.getCachedState(), this.getCachedState(), 3);
 			return true;
@@ -175,11 +175,11 @@ public class SignBlockEntity extends BlockEntity {
 	}
 
 	@Environment(EnvType.CLIENT)
-	public void setSelectionState(int i, int j, int k, boolean bl) {
-		this.currentRow = i;
-		this.selectionStart = j;
-		this.selectionEnd = k;
-		this.caretVisible = bl;
+	public void setSelectionState(int currentRow, int selectionStart, int selectionEnd, boolean caretVisible) {
+		this.currentRow = currentRow;
+		this.selectionStart = selectionStart;
+		this.selectionEnd = selectionEnd;
+		this.caretVisible = caretVisible;
 	}
 
 	@Environment(EnvType.CLIENT)

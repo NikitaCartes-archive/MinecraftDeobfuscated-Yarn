@@ -5,7 +5,7 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
-import net.minecraft.state.StateFactory;
+import net.minecraft.state.StateManager;
 import net.minecraft.state.property.BooleanProperty;
 import net.minecraft.state.property.Properties;
 import net.minecraft.util.math.BlockPos;
@@ -17,50 +17,50 @@ public class PressurePlateBlock extends AbstractPressurePlateBlock {
 	public static final BooleanProperty POWERED = Properties.POWERED;
 	private final PressurePlateBlock.ActivationRule type;
 
-	protected PressurePlateBlock(PressurePlateBlock.ActivationRule activationRule, Block.Settings settings) {
+	protected PressurePlateBlock(PressurePlateBlock.ActivationRule type, Block.Settings settings) {
 		super(settings);
-		this.setDefaultState(this.stateFactory.getDefaultState().with(POWERED, Boolean.valueOf(false)));
-		this.type = activationRule;
+		this.setDefaultState(this.stateManager.getDefaultState().with(POWERED, Boolean.valueOf(false)));
+		this.type = type;
 	}
 
 	@Override
-	protected int getRedstoneOutput(BlockState blockState) {
-		return blockState.get(POWERED) ? 15 : 0;
+	protected int getRedstoneOutput(BlockState state) {
+		return state.get(POWERED) ? 15 : 0;
 	}
 
 	@Override
-	protected BlockState setRedstoneOutput(BlockState blockState, int i) {
-		return blockState.with(POWERED, Boolean.valueOf(i > 0));
+	protected BlockState setRedstoneOutput(BlockState state, int rsOut) {
+		return state.with(POWERED, Boolean.valueOf(rsOut > 0));
 	}
 
 	@Override
-	protected void playPressSound(IWorld iWorld, BlockPos blockPos) {
+	protected void playPressSound(IWorld world, BlockPos pos) {
 		if (this.material == Material.WOOD) {
-			iWorld.playSound(null, blockPos, SoundEvents.BLOCK_WOODEN_PRESSURE_PLATE_CLICK_ON, SoundCategory.BLOCKS, 0.3F, 0.8F);
+			world.playSound(null, pos, SoundEvents.BLOCK_WOODEN_PRESSURE_PLATE_CLICK_ON, SoundCategory.BLOCKS, 0.3F, 0.8F);
 		} else {
-			iWorld.playSound(null, blockPos, SoundEvents.BLOCK_STONE_PRESSURE_PLATE_CLICK_ON, SoundCategory.BLOCKS, 0.3F, 0.6F);
+			world.playSound(null, pos, SoundEvents.BLOCK_STONE_PRESSURE_PLATE_CLICK_ON, SoundCategory.BLOCKS, 0.3F, 0.6F);
 		}
 	}
 
 	@Override
-	protected void playDepressSound(IWorld iWorld, BlockPos blockPos) {
+	protected void playDepressSound(IWorld world, BlockPos pos) {
 		if (this.material == Material.WOOD) {
-			iWorld.playSound(null, blockPos, SoundEvents.BLOCK_WOODEN_PRESSURE_PLATE_CLICK_OFF, SoundCategory.BLOCKS, 0.3F, 0.7F);
+			world.playSound(null, pos, SoundEvents.BLOCK_WOODEN_PRESSURE_PLATE_CLICK_OFF, SoundCategory.BLOCKS, 0.3F, 0.7F);
 		} else {
-			iWorld.playSound(null, blockPos, SoundEvents.BLOCK_STONE_PRESSURE_PLATE_CLICK_OFF, SoundCategory.BLOCKS, 0.3F, 0.5F);
+			world.playSound(null, pos, SoundEvents.BLOCK_STONE_PRESSURE_PLATE_CLICK_OFF, SoundCategory.BLOCKS, 0.3F, 0.5F);
 		}
 	}
 
 	@Override
-	protected int getRedstoneOutput(World world, BlockPos blockPos) {
-		Box box = BOX.offset(blockPos);
+	protected int getRedstoneOutput(World world, BlockPos pos) {
+		Box box = BOX.offset(pos);
 		List<? extends Entity> list;
 		switch (this.type) {
 			case EVERYTHING:
 				list = world.getEntities(null, box);
 				break;
 			case MOBS:
-				list = world.getEntities(LivingEntity.class, box);
+				list = world.getNonSpectatingEntities(LivingEntity.class, box);
 				break;
 			default:
 				return 0;
@@ -78,7 +78,7 @@ public class PressurePlateBlock extends AbstractPressurePlateBlock {
 	}
 
 	@Override
-	protected void appendProperties(StateFactory.Builder<Block, BlockState> builder) {
+	protected void appendProperties(StateManager.Builder<Block, BlockState> builder) {
 		builder.add(POWERED);
 	}
 

@@ -7,7 +7,7 @@ import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.widget.AbstractButtonWidget;
-import net.minecraft.client.render.GuiLighting;
+import net.minecraft.client.render.DiffuseLighting;
 import net.minecraft.client.resource.language.I18n;
 import net.minecraft.container.CraftingContainer;
 import net.minecraft.item.ItemStack;
@@ -49,64 +49,64 @@ public class AnimatedResultButton extends AbstractButtonWidget {
 		return this.results;
 	}
 
-	public void setPos(int i, int j) {
-		this.x = i;
-		this.y = j;
+	public void setPos(int x, int y) {
+		this.x = x;
+		this.y = y;
 	}
 
 	@Override
-	public void renderButton(int i, int j, float f) {
+	public void renderButton(int mouseX, int mouseY, float delta) {
 		if (!Screen.hasControlDown()) {
-			this.time += f;
+			this.time += delta;
 		}
 
-		GuiLighting.enableForItems();
+		DiffuseLighting.enableForItems();
 		MinecraftClient minecraftClient = MinecraftClient.getInstance();
 		minecraftClient.getTextureManager().bindTexture(BG_TEX);
 		GlStateManager.disableLighting();
-		int k = 29;
-		if (!this.results.hasCraftableResults()) {
-			k += 25;
+		int i = 29;
+		if (!this.results.hasCraftableRecipes()) {
+			i += 25;
 		}
 
-		int l = 206;
+		int j = 206;
 		if (this.results.getResults(this.recipeBook.isFilteringCraftable(this.craftingContainer)).size() > 1) {
-			l += 25;
+			j += 25;
 		}
 
 		boolean bl = this.bounce > 0.0F;
 		if (bl) {
-			float g = 1.0F + 0.1F * (float)Math.sin((double)(this.bounce / 15.0F * (float) Math.PI));
+			float f = 1.0F + 0.1F * (float)Math.sin((double)(this.bounce / 15.0F * (float) Math.PI));
 			GlStateManager.pushMatrix();
 			GlStateManager.translatef((float)(this.x + 8), (float)(this.y + 12), 0.0F);
-			GlStateManager.scalef(g, g, 1.0F);
+			GlStateManager.scalef(f, f, 1.0F);
 			GlStateManager.translatef((float)(-(this.x + 8)), (float)(-(this.y + 12)), 0.0F);
-			this.bounce -= f;
+			this.bounce -= delta;
 		}
 
-		this.blit(this.x, this.y, k, l, this.width, this.height);
+		this.blit(this.x, this.y, i, j, this.width, this.height);
 		List<Recipe<?>> list = this.getResults();
 		this.currentResultIndex = MathHelper.floor(this.time / 30.0F) % list.size();
 		ItemStack itemStack = ((Recipe)list.get(this.currentResultIndex)).getOutput();
-		int m = 4;
+		int k = 4;
 		if (this.results.method_2656() && this.getResults().size() > 1) {
-			minecraftClient.getItemRenderer().renderGuiItem(itemStack, this.x + m + 1, this.y + m + 1);
-			m--;
+			minecraftClient.getItemRenderer().renderGuiItem(itemStack, this.x + k + 1, this.y + k + 1);
+			k--;
 		}
 
-		minecraftClient.getItemRenderer().renderGuiItem(itemStack, this.x + m, this.y + m);
+		minecraftClient.getItemRenderer().renderGuiItem(itemStack, this.x + k, this.y + k);
 		if (bl) {
 			GlStateManager.popMatrix();
 		}
 
 		GlStateManager.enableLighting();
-		GuiLighting.disable();
+		DiffuseLighting.disable();
 	}
 
 	private List<Recipe<?>> getResults() {
-		List<Recipe<?>> list = this.results.getResultsExclusive(true);
+		List<Recipe<?>> list = this.results.getRecipes(true);
 		if (!this.recipeBook.isFilteringCraftable(this.craftingContainer)) {
-			list.addAll(this.results.getResultsExclusive(false));
+			list.addAll(this.results.getRecipes(false));
 		}
 
 		return list;

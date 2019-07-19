@@ -22,8 +22,8 @@ public class TheEndDimension extends Dimension {
 	public static final BlockPos SPAWN_POINT = new BlockPos(100, 50, 0);
 	private final EnderDragonFight enderDragonFight;
 
-	public TheEndDimension(World world, DimensionType dimensionType) {
-		super(world, dimensionType);
+	public TheEndDimension(World world, DimensionType type) {
+		super(world, type);
 		CompoundTag compoundTag = world.getLevelProperties().getWorldData(DimensionType.THE_END);
 		this.enderDragonFight = world instanceof ServerWorld ? new EnderDragonFight((ServerWorld)world, compoundTag.getCompound("DragonFight")) : null;
 	}
@@ -36,35 +36,35 @@ public class TheEndDimension extends Dimension {
 		floatingIslandsChunkGeneratorConfig.withCenter(this.getForcedSpawnPoint());
 		return ChunkGeneratorType.FLOATING_ISLANDS
 			.create(
-				this.world, BiomeSourceType.THE_END.applyConfig(BiomeSourceType.THE_END.getConfig().method_9205(this.world.getSeed())), floatingIslandsChunkGeneratorConfig
+				this.world, BiomeSourceType.THE_END.applyConfig(BiomeSourceType.THE_END.getConfig().setSeed(this.world.getSeed())), floatingIslandsChunkGeneratorConfig
 			);
 	}
 
 	@Override
-	public float getSkyAngle(long l, float f) {
+	public float getSkyAngle(long timeOfDay, float tickDelta) {
 		return 0.0F;
 	}
 
 	@Nullable
 	@Environment(EnvType.CLIENT)
 	@Override
-	public float[] getBackgroundColor(float f, float g) {
+	public float[] getBackgroundColor(float skyAngle, float tickDelta) {
 		return null;
 	}
 
 	@Environment(EnvType.CLIENT)
 	@Override
-	public Vec3d getFogColor(float f, float g) {
+	public Vec3d getFogColor(float skyAngle, float tickDelta) {
 		int i = 10518688;
-		float h = MathHelper.cos(f * (float) (Math.PI * 2)) * 2.0F + 0.5F;
-		h = MathHelper.clamp(h, 0.0F, 1.0F);
+		float f = MathHelper.cos(skyAngle * (float) (Math.PI * 2)) * 2.0F + 0.5F;
+		f = MathHelper.clamp(f, 0.0F, 1.0F);
+		float g = 0.627451F;
+		float h = 0.5019608F;
 		float j = 0.627451F;
-		float k = 0.5019608F;
-		float l = 0.627451F;
-		j *= h * 0.0F + 0.15F;
-		k *= h * 0.0F + 0.15F;
-		l *= h * 0.0F + 0.15F;
-		return new Vec3d((double)j, (double)k, (double)l);
+		g *= f * 0.0F + 0.15F;
+		h *= f * 0.0F + 0.15F;
+		j *= f * 0.0F + 0.15F;
+		return new Vec3d((double)g, (double)h, (double)j);
 	}
 
 	@Environment(EnvType.CLIENT)
@@ -91,7 +91,7 @@ public class TheEndDimension extends Dimension {
 
 	@Nullable
 	@Override
-	public BlockPos getSpawningBlockInChunk(ChunkPos chunkPos, boolean bl) {
+	public BlockPos getSpawningBlockInChunk(ChunkPos chunkPos, boolean checkMobSpawnValidity) {
 		Random random = new Random(this.world.getSeed());
 		BlockPos blockPos = new BlockPos(chunkPos.getStartX() + random.nextInt(15), 0, chunkPos.getEndZ() + random.nextInt(15));
 		return this.world.getTopNonAirState(blockPos).getMaterial().blocksMovement() ? blockPos : null;
@@ -104,13 +104,13 @@ public class TheEndDimension extends Dimension {
 
 	@Nullable
 	@Override
-	public BlockPos getTopSpawningBlockPosition(int i, int j, boolean bl) {
-		return this.getSpawningBlockInChunk(new ChunkPos(i >> 4, j >> 4), bl);
+	public BlockPos getTopSpawningBlockPosition(int x, int z, boolean checkMobSpawnValidity) {
+		return this.getSpawningBlockInChunk(new ChunkPos(x >> 4, z >> 4), checkMobSpawnValidity);
 	}
 
 	@Environment(EnvType.CLIENT)
 	@Override
-	public boolean shouldRenderFog(int i, int j) {
+	public boolean isFogThick(int x, int z) {
 		return false;
 	}
 

@@ -9,43 +9,43 @@ public class DefaultedRegistry<T> extends SimpleRegistry<T> {
 	private final Identifier defaultId;
 	private T defaultValue;
 
-	public DefaultedRegistry(String string) {
-		this.defaultId = new Identifier(string);
+	public DefaultedRegistry(String defaultId) {
+		this.defaultId = new Identifier(defaultId);
 	}
 
 	@Override
-	public <V extends T> V set(int i, Identifier identifier, V object) {
-		if (this.defaultId.equals(identifier)) {
-			this.defaultValue = (T)object;
+	public <V extends T> V set(int rawId, Identifier id, V entry) {
+		if (this.defaultId.equals(id)) {
+			this.defaultValue = (T)entry;
 		}
 
-		return super.set(i, identifier, object);
+		return super.set(rawId, id, entry);
 	}
 
 	@Override
-	public int getRawId(@Nullable T object) {
-		int i = super.getRawId(object);
+	public int getRawId(@Nullable T entry) {
+		int i = super.getRawId(entry);
 		return i == -1 ? super.getRawId(this.defaultValue) : i;
 	}
 
 	@Nonnull
 	@Override
-	public Identifier getId(T object) {
-		Identifier identifier = super.getId(object);
+	public Identifier getId(T entry) {
+		Identifier identifier = super.getId(entry);
 		return identifier == null ? this.defaultId : identifier;
 	}
 
 	@Nonnull
 	@Override
-	public T get(@Nullable Identifier identifier) {
-		T object = super.get(identifier);
+	public T get(@Nullable Identifier id) {
+		T object = super.get(id);
 		return object == null ? this.defaultValue : object;
 	}
 
 	@Nonnull
 	@Override
-	public T get(int i) {
-		T object = super.get(i);
+	public T get(int index) {
+		T object = super.get(index);
 		return object == null ? this.defaultValue : object;
 	}
 

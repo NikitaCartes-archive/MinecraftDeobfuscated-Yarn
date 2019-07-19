@@ -26,9 +26,9 @@ import org.lwjgl.opengl.KHRDebug;
 @Environment(EnvType.CLIENT)
 public class GlDebug {
 	private static final Logger LOGGER = LogManager.getLogger();
-	protected static final ByteBuffer field_4924 = GlAllocationUtils.allocateByteBuffer(64);
-	protected static final FloatBuffer field_4916 = field_4924.asFloatBuffer();
-	protected static final IntBuffer field_4917 = field_4924.asIntBuffer();
+	protected static final ByteBuffer byteBuffer = GlAllocationUtils.allocateByteBuffer(64);
+	protected static final FloatBuffer floatBuffer = byteBuffer.asFloatBuffer();
+	protected static final IntBuffer intBuffer = byteBuffer.asIntBuffer();
 	private static final Joiner NEWLINE_JOINER = Joiner.on('\n');
 	private static final Joiner SEMICOLON_JOINER = Joiner.on("; ");
 	private static final Map<Integer, String> CONSTANTS = Maps.<Integer, String>newHashMap();
@@ -36,12 +36,12 @@ public class GlDebug {
 	private static final List<Integer> ARB_VERBOSITY_LEVELS = ImmutableList.of(37190, 37191, 37192);
 	private static final Map<String, List<String>> field_4923 = Maps.<String, List<String>>newHashMap();
 
-	private static String unknown(int i) {
-		return "Unknown (0x" + Integer.toHexString(i).toUpperCase() + ")";
+	private static String unknown(int opcode) {
+		return "Unknown (0x" + Integer.toHexString(opcode).toUpperCase() + ")";
 	}
 
-	private static String getSource(int i) {
-		switch (i) {
+	private static String getSource(int opcode) {
+		switch (opcode) {
 			case 33350:
 				return "API";
 			case 33351:
@@ -55,12 +55,12 @@ public class GlDebug {
 			case 33355:
 				return "OTHER";
 			default:
-				return unknown(i);
+				return unknown(opcode);
 		}
 	}
 
-	private static String getType(int i) {
-		switch (i) {
+	private static String getType(int opcode) {
+		switch (opcode) {
 			case 33356:
 				return "ERROR";
 			case 33357:
@@ -76,12 +76,12 @@ public class GlDebug {
 			case 33384:
 				return "MARKER";
 			default:
-				return unknown(i);
+				return unknown(opcode);
 		}
 	}
 
-	private static String getSeverity(int i) {
-		switch (i) {
+	private static String getSeverity(int opcode) {
+		switch (opcode) {
 			case 33387:
 				return "NOTIFICATION";
 			case 37190:
@@ -91,48 +91,48 @@ public class GlDebug {
 			case 37192:
 				return "LOW";
 			default:
-				return unknown(i);
+				return unknown(opcode);
 		}
 	}
 
-	private static void info(int i, int j, int k, int l, int m, long n, long o) {
+	private static void info(int source, int type, int id, int severity, int i, long l, long m) {
 		LOGGER.info(
 			"OpenGL debug message, id={}, source={}, type={}, severity={}, message={}",
-			k,
-			getSource(i),
-			getType(j),
-			getSeverity(l),
-			GLDebugMessageCallback.getMessage(m, n)
+			id,
+			getSource(source),
+			getType(type),
+			getSeverity(severity),
+			GLDebugMessageCallback.getMessage(i, l)
 		);
 	}
 
-	private static void registerConstant(int i, String string) {
-		CONSTANTS.merge(i, string, (stringx, string2) -> stringx + "/" + string2);
+	private static void registerConstant(int constant, String description) {
+		CONSTANTS.merge(constant, description, (string, string2) -> string + "/" + string2);
 	}
 
-	public static void enableDebug(int i, boolean bl) {
-		if (i > 0) {
+	public static void enableDebug(int verbosity, boolean sync) {
+		if (verbosity > 0) {
 			GLCapabilities gLCapabilities = GL.getCapabilities();
 			if (gLCapabilities.GL_KHR_debug) {
 				GL11.glEnable(37600);
-				if (bl) {
+				if (sync) {
 					GL11.glEnable(33346);
 				}
 
-				for (int j = 0; j < KHR_VERBOSITY_LEVELS.size(); j++) {
-					boolean bl2 = j < i;
-					KHRDebug.glDebugMessageControl(4352, 4352, (Integer)KHR_VERBOSITY_LEVELS.get(j), (int[])null, bl2);
+				for (int i = 0; i < KHR_VERBOSITY_LEVELS.size(); i++) {
+					boolean bl = i < verbosity;
+					KHRDebug.glDebugMessageControl(4352, 4352, (Integer)KHR_VERBOSITY_LEVELS.get(i), (int[])null, bl);
 				}
 
 				KHRDebug.glDebugMessageCallback(GLX.make(GLDebugMessageCallback.create(GlDebug::info), Untracker::untrack), 0L);
 			} else if (gLCapabilities.GL_ARB_debug_output) {
-				if (bl) {
+				if (sync) {
 					GL11.glEnable(33346);
 				}
 
-				for (int j = 0; j < ARB_VERBOSITY_LEVELS.size(); j++) {
-					boolean bl2 = j < i;
-					ARBDebugOutput.glDebugMessageControlARB(4352, 4352, (Integer)ARB_VERBOSITY_LEVELS.get(j), (int[])null, bl2);
+				for (int i = 0; i < ARB_VERBOSITY_LEVELS.size(); i++) {
+					boolean bl = i < verbosity;
+					ARBDebugOutput.glDebugMessageControlARB(4352, 4352, (Integer)ARB_VERBOSITY_LEVELS.get(i), (int[])null, bl);
 				}
 
 				ARBDebugOutput.glDebugMessageCallbackARB(GLX.make(GLDebugMessageARBCallback.create(GlDebug::info), Untracker::untrack), 0L);

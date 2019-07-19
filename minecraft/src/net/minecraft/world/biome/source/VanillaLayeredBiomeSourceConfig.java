@@ -7,13 +7,13 @@ public class VanillaLayeredBiomeSourceConfig implements BiomeSourceConfig {
 	private LevelProperties levelProperties;
 	private OverworldChunkGeneratorConfig generatorSettings;
 
-	public VanillaLayeredBiomeSourceConfig setLevelProperties(LevelProperties levelProperties) {
-		this.levelProperties = levelProperties;
+	public VanillaLayeredBiomeSourceConfig setLevelProperties(LevelProperties properties) {
+		this.levelProperties = properties;
 		return this;
 	}
 
-	public VanillaLayeredBiomeSourceConfig setGeneratorSettings(OverworldChunkGeneratorConfig overworldChunkGeneratorConfig) {
-		this.generatorSettings = overworldChunkGeneratorConfig;
+	public VanillaLayeredBiomeSourceConfig setGeneratorSettings(OverworldChunkGeneratorConfig generatorSettings) {
+		this.generatorSettings = generatorSettings;
 		return this;
 	}
 

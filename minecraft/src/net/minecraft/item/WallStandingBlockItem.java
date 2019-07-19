@@ -7,35 +7,35 @@ import net.minecraft.block.BlockState;
 import net.minecraft.entity.EntityContext;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
-import net.minecraft.world.ViewableWorld;
+import net.minecraft.world.CollisionView;
 
 public class WallStandingBlockItem extends BlockItem {
 	protected final Block wallBlock;
 
-	public WallStandingBlockItem(Block block, Block block2, Item.Settings settings) {
-		super(block, settings);
-		this.wallBlock = block2;
+	public WallStandingBlockItem(Block standingBlock, Block wallBlock, Item.Settings settings) {
+		super(standingBlock, settings);
+		this.wallBlock = wallBlock;
 	}
 
 	@Nullable
 	@Override
-	protected BlockState getPlacementState(ItemPlacementContext itemPlacementContext) {
-		BlockState blockState = this.wallBlock.getPlacementState(itemPlacementContext);
+	protected BlockState getPlacementState(ItemPlacementContext context) {
+		BlockState blockState = this.wallBlock.getPlacementState(context);
 		BlockState blockState2 = null;
-		ViewableWorld viewableWorld = itemPlacementContext.getWorld();
-		BlockPos blockPos = itemPlacementContext.getBlockPos();
+		CollisionView collisionView = context.getWorld();
+		BlockPos blockPos = context.getBlockPos();
 
-		for (Direction direction : itemPlacementContext.getPlacementDirections()) {
+		for (Direction direction : context.getPlacementDirections()) {
 			if (direction != Direction.UP) {
-				BlockState blockState3 = direction == Direction.DOWN ? this.getBlock().getPlacementState(itemPlacementContext) : blockState;
-				if (blockState3 != null && blockState3.canPlaceAt(viewableWorld, blockPos)) {
+				BlockState blockState3 = direction == Direction.DOWN ? this.getBlock().getPlacementState(context) : blockState;
+				if (blockState3 != null && blockState3.canPlaceAt(collisionView, blockPos)) {
 					blockState2 = blockState3;
 					break;
 				}
 			}
 		}
 
-		return blockState2 != null && viewableWorld.canPlace(blockState2, blockPos, EntityContext.absent()) ? blockState2 : null;
+		return blockState2 != null && collisionView.canPlace(blockState2, blockPos, EntityContext.absent()) ? blockState2 : null;
 	}
 
 	@Override

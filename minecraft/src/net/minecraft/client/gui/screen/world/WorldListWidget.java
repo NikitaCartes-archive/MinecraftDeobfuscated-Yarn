@@ -36,7 +36,7 @@ import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.SystemUtil;
+import net.minecraft.util.Util;
 import net.minecraft.world.WorldSaveHandler;
 import net.minecraft.world.level.LevelProperties;
 import net.minecraft.world.level.storage.LevelStorage;
@@ -48,7 +48,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 @Environment(EnvType.CLIENT)
-public class WorldListWidget extends AlwaysSelectedEntryListWidget<WorldListWidget.LevelItem> {
+public class WorldListWidget extends AlwaysSelectedEntryListWidget<WorldListWidget.Entry> {
 	private static final Logger LOGGER = LogManager.getLogger();
 	private static final DateFormat DATE_FORMAT = new SimpleDateFormat();
 	private static final Identifier UNKNOWN_SERVER_LOCATION = new Identifier("textures/misc/unknown_server.png");
@@ -58,29 +58,29 @@ public class WorldListWidget extends AlwaysSelectedEntryListWidget<WorldListWidg
 	private List<LevelSummary> levels;
 
 	public WorldListWidget(
-		SelectWorldScreen selectWorldScreen,
-		MinecraftClient minecraftClient,
-		int i,
-		int j,
-		int k,
-		int l,
-		int m,
-		Supplier<String> supplier,
-		@Nullable WorldListWidget worldListWidget
+		SelectWorldScreen parent,
+		MinecraftClient client,
+		int width,
+		int height,
+		int top,
+		int bottom,
+		int itemHeight,
+		Supplier<String> searchFilter,
+		@Nullable WorldListWidget list
 	) {
-		super(minecraftClient, i, j, k, l, m);
-		this.parent = selectWorldScreen;
-		if (worldListWidget != null) {
-			this.levels = worldListWidget.levels;
+		super(client, width, height, top, bottom, itemHeight);
+		this.parent = parent;
+		if (list != null) {
+			this.levels = list.levels;
 		}
 
-		this.filter(supplier, false);
+		this.filter(searchFilter, false);
 	}
 
-	public void filter(Supplier<String> supplier, boolean bl) {
+	public void filter(Supplier<String> filter, boolean load) {
 		this.clearEntries();
 		LevelStorage levelStorage = this.minecraft.getLevelStorage();
-		if (this.levels == null || bl) {
+		if (this.levels == null || load) {
 			try {
 				this.levels = levelStorage.getLevelList();
 			} catch (LevelStorageException var7) {
@@ -92,11 +92,11 @@ public class WorldListWidget extends AlwaysSelectedEntryListWidget<WorldListWidg
 			Collections.sort(this.levels);
 		}
 
-		String string = ((String)supplier.get()).toLowerCase(Locale.ROOT);
+		String string = ((String)filter.get()).toLowerCase(Locale.ROOT);
 
 		for (LevelSummary levelSummary : this.levels) {
 			if (levelSummary.getDisplayName().toLowerCase(Locale.ROOT).contains(string) || levelSummary.getName().toLowerCase(Locale.ROOT).contains(string)) {
-				this.addEntry(new WorldListWidget.LevelItem(this, levelSummary, this.minecraft.getLevelStorage()));
+				this.addEntry(new WorldListWidget.Entry(this, levelSummary, this.minecraft.getLevelStorage()));
 			}
 		}
 	}
@@ -116,10 +116,10 @@ public class WorldListWidget extends AlwaysSelectedEntryListWidget<WorldListWidg
 		return this.parent.getFocused() == this;
 	}
 
-	public void method_20157(@Nullable WorldListWidget.LevelItem levelItem) {
-		super.setSelected(levelItem);
-		if (levelItem != null) {
-			LevelSummary levelSummary = levelItem.level;
+	public void setSelected(@Nullable WorldListWidget.Entry entry) {
+		super.setSelected(entry);
+		if (entry != null) {
+			LevelSummary levelSummary = entry.level;
 			NarratorManager.INSTANCE
 				.narrate(
 					new TranslatableText(
@@ -144,7 +144,7 @@ public class WorldListWidget extends AlwaysSelectedEntryListWidget<WorldListWidg
 		this.parent.worldSelected(true);
 	}
 
-	public Optional<WorldListWidget.LevelItem> method_20159() {
+	public Optional<WorldListWidget.Entry> method_20159() {
 		return Optional.ofNullable(this.getSelected());
 	}
 
@@ -153,7 +153,7 @@ public class WorldListWidget extends AlwaysSelectedEntryListWidget<WorldListWidg
 	}
 
 	@Environment(EnvType.CLIENT)
-	public final class LevelItem extends AlwaysSelectedEntryListWidget.Entry<WorldListWidget.LevelItem> implements AutoCloseable {
+	public final class Entry extends AlwaysSelectedEntryListWidget.Entry<WorldListWidget.Entry> implements AutoCloseable {
 		private final MinecraftClient client;
 		private final SelectWorldScreen screen;
 		private final LevelSummary level;
@@ -163,12 +163,12 @@ public class WorldListWidget extends AlwaysSelectedEntryListWidget<WorldListWidg
 		private final NativeImageBackedTexture icon;
 		private long time;
 
-		public LevelItem(WorldListWidget worldListWidget2, LevelSummary levelSummary, LevelStorage levelStorage) {
-			this.screen = worldListWidget2.getParent();
-			this.level = levelSummary;
+		public Entry(WorldListWidget levelList, LevelSummary level, LevelStorage levelStorage) {
+			this.screen = levelList.getParent();
+			this.level = level;
 			this.client = MinecraftClient.getInstance();
-			this.iconLocation = new Identifier("worlds/" + Hashing.sha1().hashUnencodedChars(levelSummary.getName()) + "/icon");
-			this.iconFile = levelStorage.resolveFile(levelSummary.getName(), "icon.png");
+			this.iconLocation = new Identifier("worlds/" + Hashing.sha1().hashUnencodedChars(level.getName()) + "/icon");
+			this.iconFile = levelStorage.resolveFile(level.getName(), "icon.png");
 			if (!this.iconFile.isFile()) {
 				this.iconFile = null;
 			}
@@ -259,17 +259,17 @@ public class WorldListWidget extends AlwaysSelectedEntryListWidget<WorldListWidg
 		}
 
 		@Override
-		public boolean mouseClicked(double d, double e, int i) {
-			WorldListWidget.this.method_20157(this);
+		public boolean mouseClicked(double mouseX, double mouseY, int button) {
+			WorldListWidget.this.setSelected(this);
 			this.screen.worldSelected(WorldListWidget.this.method_20159().isPresent());
-			if (d - (double)WorldListWidget.this.getRowLeft() <= 32.0) {
+			if (mouseX - (double)WorldListWidget.this.getRowLeft() <= 32.0) {
 				this.play();
 				return true;
-			} else if (SystemUtil.getMeasuringTimeMs() - this.time < 250L) {
+			} else if (Util.getMeasuringTimeMs() - this.time < 250L) {
 				this.play();
 				return true;
 			} else {
-				this.time = SystemUtil.getMeasuringTimeMs();
+				this.time = Util.getMeasuringTimeMs();
 				return false;
 			}
 		}

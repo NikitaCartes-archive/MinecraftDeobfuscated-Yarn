@@ -34,12 +34,12 @@ public class FontStorage implements AutoCloseable {
 	private final Int2ObjectMap<CharList> charactersByWidth = new Int2ObjectOpenHashMap<>();
 	private final List<GlyphAtlasTexture> glyphAtlases = Lists.<GlyphAtlasTexture>newArrayList();
 
-	public FontStorage(TextureManager textureManager, Identifier identifier) {
+	public FontStorage(TextureManager textureManager, Identifier id) {
 		this.textureManager = textureManager;
-		this.id = identifier;
+		this.id = id;
 	}
 
-	public void setFonts(List<Font> list) {
+	public void setFonts(List<Font> fonts) {
 		for (Font font : this.fonts) {
 			font.close();
 		}
@@ -54,7 +54,7 @@ public class FontStorage implements AutoCloseable {
 		Set<Font> set = Sets.<Font>newHashSet();
 
 		for (char c = 0; c < '\uffff'; c++) {
-			for (Font font2 : list) {
+			for (Font font2 : fonts) {
 				Glyph glyph = (Glyph)(c == ' ' ? SPACE : font2.getGlyph(c));
 				if (glyph != null) {
 					set.add(font2);
@@ -66,7 +66,7 @@ public class FontStorage implements AutoCloseable {
 			}
 		}
 
-		list.stream().filter(set::contains).forEach(this.fonts::add);
+		fonts.stream().filter(set::contains).forEach(this.fonts::add);
 	}
 
 	public void close() {
@@ -79,13 +79,13 @@ public class FontStorage implements AutoCloseable {
 		}
 	}
 
-	public Glyph getGlyph(char c) {
-		return this.glyphCache.computeIfAbsent(c, i -> (Glyph)(i == 32 ? SPACE : this.getRenderableGlyph((char)i)));
+	public Glyph getGlyph(char character) {
+		return this.glyphCache.computeIfAbsent(character, i -> (Glyph)(i == 32 ? SPACE : this.getRenderableGlyph((char)i)));
 	}
 
-	private RenderableGlyph getRenderableGlyph(char c) {
+	private RenderableGlyph getRenderableGlyph(char character) {
 		for (Font font : this.fonts) {
-			RenderableGlyph renderableGlyph = font.getGlyph(c);
+			RenderableGlyph renderableGlyph = font.getGlyph(character);
 			if (renderableGlyph != null) {
 				return renderableGlyph;
 			}
@@ -94,25 +94,25 @@ public class FontStorage implements AutoCloseable {
 		return BlankGlyph.INSTANCE;
 	}
 
-	public GlyphRenderer getGlyphRenderer(char c) {
+	public GlyphRenderer getGlyphRenderer(char character) {
 		return this.glyphRendererCache
-			.computeIfAbsent(c, i -> (GlyphRenderer)(i == 32 ? EMPTY_GLYPH_RENDERER : this.getGlyphRenderer(this.getRenderableGlyph((char)i))));
+			.computeIfAbsent(character, i -> (GlyphRenderer)(i == 32 ? EMPTY_GLYPH_RENDERER : this.getGlyphRenderer(this.getRenderableGlyph((char)i))));
 	}
 
-	private GlyphRenderer getGlyphRenderer(RenderableGlyph renderableGlyph) {
+	private GlyphRenderer getGlyphRenderer(RenderableGlyph c) {
 		for (GlyphAtlasTexture glyphAtlasTexture : this.glyphAtlases) {
-			GlyphRenderer glyphRenderer = glyphAtlasTexture.getGlyphRenderer(renderableGlyph);
+			GlyphRenderer glyphRenderer = glyphAtlasTexture.getGlyphRenderer(c);
 			if (glyphRenderer != null) {
 				return glyphRenderer;
 			}
 		}
 
 		GlyphAtlasTexture glyphAtlasTexture2 = new GlyphAtlasTexture(
-			new Identifier(this.id.getNamespace(), this.id.getPath() + "/" + this.glyphAtlases.size()), renderableGlyph.hasColor()
+			new Identifier(this.id.getNamespace(), this.id.getPath() + "/" + this.glyphAtlases.size()), c.hasColor()
 		);
 		this.glyphAtlases.add(glyphAtlasTexture2);
 		this.textureManager.registerTexture(glyphAtlasTexture2.getId(), glyphAtlasTexture2);
-		GlyphRenderer glyphRenderer2 = glyphAtlasTexture2.getGlyphRenderer(renderableGlyph);
+		GlyphRenderer glyphRenderer2 = glyphAtlasTexture2.getGlyphRenderer(c);
 		return glyphRenderer2 == null ? this.blankGlyphRenderer : glyphRenderer2;
 	}
 

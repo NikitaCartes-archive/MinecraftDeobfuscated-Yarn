@@ -48,13 +48,13 @@ public abstract class AbstractTeam {
 		public final int value;
 
 		@Nullable
-		public static AbstractTeam.CollisionRule getRule(String string) {
-			return (AbstractTeam.CollisionRule)COLLISION_RULES.get(string);
+		public static AbstractTeam.CollisionRule getRule(String name) {
+			return (AbstractTeam.CollisionRule)COLLISION_RULES.get(name);
 		}
 
-		private CollisionRule(String string2, int j) {
-			this.name = string2;
-			this.value = j;
+		private CollisionRule(String name, int value) {
+			this.name = name;
+			this.value = value;
 		}
 
 		public Text getTranslationKey() {
@@ -74,13 +74,13 @@ public abstract class AbstractTeam {
 		public final int value;
 
 		@Nullable
-		public static AbstractTeam.VisibilityRule getRule(String string) {
-			return (AbstractTeam.VisibilityRule)VISIBILITY_RULES.get(string);
+		public static AbstractTeam.VisibilityRule getRule(String name) {
+			return (AbstractTeam.VisibilityRule)VISIBILITY_RULES.get(name);
 		}
 
-		private VisibilityRule(String string2, int j) {
-			this.name = string2;
-			this.value = j;
+		private VisibilityRule(String name, int value) {
+			this.name = name;
+			this.value = value;
 		}
 
 		public Text getTranslationKey() {

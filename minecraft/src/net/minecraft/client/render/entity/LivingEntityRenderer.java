@@ -19,7 +19,7 @@ import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.scoreboard.AbstractTeam;
 import net.minecraft.util.Formatting;
-import net.minecraft.util.SystemUtil;
+import net.minecraft.util.Util;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
 import org.apache.logging.log4j.LogManager;
@@ -28,19 +28,17 @@ import org.apache.logging.log4j.Logger;
 @Environment(EnvType.CLIENT)
 public abstract class LivingEntityRenderer<T extends LivingEntity, M extends EntityModel<T>> extends EntityRenderer<T> implements FeatureRendererContext<T, M> {
 	private static final Logger LOGGER = LogManager.getLogger();
-	private static final NativeImageBackedTexture colorOverlayTexture = SystemUtil.consume(
-		new NativeImageBackedTexture(16, 16, false), nativeImageBackedTexture -> {
-			nativeImageBackedTexture.getImage().untrack();
+	private static final NativeImageBackedTexture colorOverlayTexture = Util.make(new NativeImageBackedTexture(16, 16, false), nativeImageBackedTexture -> {
+		nativeImageBackedTexture.getImage().untrack();
 
-			for (int i = 0; i < 16; i++) {
-				for (int j = 0; j < 16; j++) {
-					nativeImageBackedTexture.getImage().setPixelRGBA(j, i, -1);
-				}
+		for (int i = 0; i < 16; i++) {
+			for (int j = 0; j < 16; j++) {
+				nativeImageBackedTexture.getImage().setPixelRgba(j, i, -1);
 			}
-
-			nativeImageBackedTexture.upload();
 		}
-	);
+
+		nativeImageBackedTexture.upload();
+	});
 	protected M model;
 	protected final FloatBuffer colorOverlayBuffer = GlAllocationUtils.allocateFloatBuffer(4);
 	protected final List<FeatureRenderer<T, M>> features = Lists.<FeatureRenderer<T, M>>newArrayList();
@@ -52,8 +50,8 @@ public abstract class LivingEntityRenderer<T extends LivingEntity, M extends Ent
 		this.field_4673 = f;
 	}
 
-	protected final boolean addFeature(FeatureRenderer<T, M> featureRenderer) {
-		return this.features.add(featureRenderer);
+	protected final boolean addFeature(FeatureRenderer<T, M> feature) {
+		return this.features.add(feature);
 	}
 
 	@Override
@@ -61,12 +59,12 @@ public abstract class LivingEntityRenderer<T extends LivingEntity, M extends Ent
 		return this.model;
 	}
 
-	public void method_4054(T livingEntity, double d, double e, double f, float g, float h) {
+	public void render(T livingEntity, double d, double e, double f, float g, float h) {
 		GlStateManager.pushMatrix();
 		GlStateManager.disableCull();
 		this.model.handSwingProgress = this.getHandSwingProgress(livingEntity, h);
-		this.model.isRiding = livingEntity.hasVehicle();
-		this.model.isChild = livingEntity.isBaby();
+		this.model.riding = livingEntity.hasVehicle();
+		this.model.child = livingEntity.isBaby();
 
 		try {
 			float i = MathHelper.lerpAngleDegrees(h, livingEntity.field_6220, livingEntity.field_6283);
@@ -95,7 +93,7 @@ public abstract class LivingEntityRenderer<T extends LivingEntity, M extends Ent
 
 			float m = MathHelper.lerp(h, livingEntity.prevPitch, livingEntity.pitch);
 			this.method_4048(livingEntity, d, e, f);
-			float lx = this.getAge(livingEntity, h);
+			float lx = this.getAnimationProgress(livingEntity, h);
 			this.setupTransforms(livingEntity, lx, i, h);
 			float n = this.scaleAndTranslate(livingEntity, h);
 			float o = 0.0F;
@@ -158,11 +156,11 @@ public abstract class LivingEntityRenderer<T extends LivingEntity, M extends Ent
 		super.render(livingEntity, d, e, f, g, h);
 	}
 
-	public float scaleAndTranslate(T livingEntity, float f) {
+	public float scaleAndTranslate(T entity, float tickDelta) {
 		GlStateManager.enableRescaleNormal();
 		GlStateManager.scalef(-1.0F, -1.0F, 1.0F);
-		this.scale(livingEntity, f);
-		float g = 0.0625F;
+		this.scale(entity, tickDelta);
+		float f = 0.0625F;
 		GlStateManager.translatef(0.0F, -1.501F, 0.0F);
 		return 0.0625F;
 	}
@@ -182,11 +180,11 @@ public abstract class LivingEntityRenderer<T extends LivingEntity, M extends Ent
 		GlStateManager.activeTexture(GLX.GL_TEXTURE0);
 	}
 
-	protected void render(T livingEntity, float f, float g, float h, float i, float j, float k) {
-		boolean bl = this.method_4056(livingEntity);
-		boolean bl2 = !bl && !livingEntity.canSeePlayer(MinecraftClient.getInstance().player);
+	protected void render(T entity, float limbAngle, float limbDistance, float age, float headYaw, float headPitch, float scale) {
+		boolean bl = this.method_4056(entity);
+		boolean bl2 = !bl && !entity.isInvisibleTo(MinecraftClient.getInstance().player);
 		if (bl || bl2) {
-			if (!this.bindEntityTexture(livingEntity)) {
+			if (!this.bindEntityTexture(entity)) {
 				return;
 			}
 
@@ -194,7 +192,7 @@ public abstract class LivingEntityRenderer<T extends LivingEntity, M extends Ent
 				GlStateManager.setProfile(GlStateManager.RenderMode.TRANSPARENT_MODEL);
 			}
 
-			this.model.render(livingEntity, f, g, h, i, j, k);
+			this.model.render(entity, limbAngle, limbDistance, age, headYaw, headPitch, scale);
 			if (bl2) {
 				GlStateManager.unsetProfile(GlStateManager.RenderMode.TRANSPARENT_MODEL);
 			}
@@ -209,14 +207,14 @@ public abstract class LivingEntityRenderer<T extends LivingEntity, M extends Ent
 		return this.applyOverlayColor(livingEntity, f, true);
 	}
 
-	protected boolean applyOverlayColor(T livingEntity, float f, boolean bl) {
-		float g = livingEntity.getBrightnessAtEyes();
-		int i = this.getOverlayColor(livingEntity, g, f);
-		boolean bl2 = (i >> 24 & 0xFF) > 0;
-		boolean bl3 = livingEntity.hurtTime > 0 || livingEntity.deathTime > 0;
-		if (!bl2 && !bl3) {
+	protected boolean applyOverlayColor(T entity, float tickDelta, boolean hasHurtOverlay) {
+		float f = entity.getBrightnessAtEyes();
+		int i = this.getOverlayColor(entity, f, tickDelta);
+		boolean bl = (i >> 24 & 0xFF) > 0;
+		boolean bl2 = entity.hurtTime > 0 || entity.deathTime > 0;
+		if (!bl && !bl2) {
 			return false;
-		} else if (!bl2 && !bl) {
+		} else if (!bl && !hasHurtOverlay) {
 			return false;
 		} else {
 			GlStateManager.activeTexture(GLX.GL_TEXTURE0);
@@ -244,20 +242,20 @@ public abstract class LivingEntityRenderer<T extends LivingEntity, M extends Ent
 			GlStateManager.texEnv(8960, GLX.GL_SOURCE0_ALPHA, GLX.GL_PREVIOUS);
 			GlStateManager.texEnv(8960, GLX.GL_OPERAND0_ALPHA, 770);
 			this.colorOverlayBuffer.position(0);
-			if (bl3) {
+			if (bl2) {
 				this.colorOverlayBuffer.put(1.0F);
 				this.colorOverlayBuffer.put(0.0F);
 				this.colorOverlayBuffer.put(0.0F);
 				this.colorOverlayBuffer.put(0.3F);
 			} else {
-				float h = (float)(i >> 24 & 0xFF) / 255.0F;
-				float j = (float)(i >> 16 & 0xFF) / 255.0F;
-				float k = (float)(i >> 8 & 0xFF) / 255.0F;
-				float l = (float)(i & 0xFF) / 255.0F;
+				float g = (float)(i >> 24 & 0xFF) / 255.0F;
+				float h = (float)(i >> 16 & 0xFF) / 255.0F;
+				float j = (float)(i >> 8 & 0xFF) / 255.0F;
+				float k = (float)(i & 0xFF) / 255.0F;
+				this.colorOverlayBuffer.put(h);
 				this.colorOverlayBuffer.put(j);
 				this.colorOverlayBuffer.put(k);
-				this.colorOverlayBuffer.put(l);
-				this.colorOverlayBuffer.put(1.0F - h);
+				this.colorOverlayBuffer.put(1.0F - g);
 			}
 
 			this.colorOverlayBuffer.flip();
@@ -347,58 +345,62 @@ public abstract class LivingEntityRenderer<T extends LivingEntity, M extends Ent
 		}
 	}
 
-	protected void setupTransforms(T livingEntity, float f, float g, float h) {
-		EntityPose entityPose = livingEntity.getPose();
+	protected void setupTransforms(T entity, float pitch, float yaw, float delta) {
+		EntityPose entityPose = entity.getPose();
 		if (entityPose != EntityPose.SLEEPING) {
-			GlStateManager.rotatef(180.0F - g, 0.0F, 1.0F, 0.0F);
+			GlStateManager.rotatef(180.0F - yaw, 0.0F, 1.0F, 0.0F);
 		}
 
-		if (livingEntity.deathTime > 0) {
-			float i = ((float)livingEntity.deathTime + h - 1.0F) / 20.0F * 1.6F;
-			i = MathHelper.sqrt(i);
-			if (i > 1.0F) {
-				i = 1.0F;
+		if (entity.deathTime > 0) {
+			float f = ((float)entity.deathTime + delta - 1.0F) / 20.0F * 1.6F;
+			f = MathHelper.sqrt(f);
+			if (f > 1.0F) {
+				f = 1.0F;
 			}
 
-			GlStateManager.rotatef(i * this.getLyingAngle(livingEntity), 0.0F, 0.0F, 1.0F);
-		} else if (livingEntity.isUsingRiptide()) {
-			GlStateManager.rotatef(-90.0F - livingEntity.pitch, 1.0F, 0.0F, 0.0F);
-			GlStateManager.rotatef(((float)livingEntity.age + h) * -75.0F, 0.0F, 1.0F, 0.0F);
+			GlStateManager.rotatef(f * this.getLyingAngle(entity), 0.0F, 0.0F, 1.0F);
+		} else if (entity.isUsingRiptide()) {
+			GlStateManager.rotatef(-90.0F - entity.pitch, 1.0F, 0.0F, 0.0F);
+			GlStateManager.rotatef(((float)entity.age + delta) * -75.0F, 0.0F, 1.0F, 0.0F);
 		} else if (entityPose == EntityPose.SLEEPING) {
-			Direction direction = livingEntity.getSleepingDirection();
-			GlStateManager.rotatef(direction != null ? method_18656(direction) : g, 0.0F, 1.0F, 0.0F);
-			GlStateManager.rotatef(this.getLyingAngle(livingEntity), 0.0F, 0.0F, 1.0F);
+			Direction direction = entity.getSleepingDirection();
+			GlStateManager.rotatef(direction != null ? method_18656(direction) : yaw, 0.0F, 1.0F, 0.0F);
+			GlStateManager.rotatef(this.getLyingAngle(entity), 0.0F, 0.0F, 1.0F);
 			GlStateManager.rotatef(270.0F, 0.0F, 1.0F, 0.0F);
-		} else if (livingEntity.hasCustomName() || livingEntity instanceof PlayerEntity) {
-			String string = Formatting.strip(livingEntity.getName().getString());
+		} else if (entity.hasCustomName() || entity instanceof PlayerEntity) {
+			String string = Formatting.strip(entity.getName().getString());
 			if (string != null
 				&& ("Dinnerbone".equals(string) || "Grumm".equals(string))
-				&& (!(livingEntity instanceof PlayerEntity) || ((PlayerEntity)livingEntity).isSkinOverlayVisible(PlayerModelPart.CAPE))) {
-				GlStateManager.translatef(0.0F, livingEntity.getHeight() + 0.1F, 0.0F);
+				&& (!(entity instanceof PlayerEntity) || ((PlayerEntity)entity).isPartVisible(PlayerModelPart.CAPE))) {
+				GlStateManager.translatef(0.0F, entity.getHeight() + 0.1F, 0.0F);
 				GlStateManager.rotatef(180.0F, 0.0F, 0.0F, 1.0F);
 			}
 		}
 	}
 
-	protected float getHandSwingProgress(T livingEntity, float f) {
-		return livingEntity.getHandSwingProgress(f);
+	protected float getHandSwingProgress(T entity, float tickDelta) {
+		return entity.getHandSwingProgress(tickDelta);
 	}
 
-	protected float getAge(T livingEntity, float f) {
-		return (float)livingEntity.age + f;
+	/**
+	 * This value is passed to other methods when calculating angles for animation.
+	 * It's typically just the sum of the entity's age (in ticks) and the passed in tickDelta.
+	 */
+	protected float getAnimationProgress(T entity, float tickDelta) {
+		return (float)entity.age + tickDelta;
 	}
 
-	protected void renderFeatures(T livingEntity, float f, float g, float h, float i, float j, float k, float l) {
+	protected void renderFeatures(T entity, float limbAngle, float limbDistance, float tickDelta, float age, float headYaw, float headPitch, float scale) {
 		for (FeatureRenderer<T, M> featureRenderer : this.features) {
-			boolean bl = this.applyOverlayColor(livingEntity, h, featureRenderer.hasHurtOverlay());
-			featureRenderer.render(livingEntity, f, g, h, i, j, k, l);
+			boolean bl = this.applyOverlayColor(entity, tickDelta, featureRenderer.hasHurtOverlay());
+			featureRenderer.render(entity, limbAngle, limbDistance, tickDelta, age, headYaw, headPitch, scale);
 			if (bl) {
 				this.disableOverlayColor();
 			}
 		}
 	}
 
-	protected float getLyingAngle(T livingEntity) {
+	protected float getLyingAngle(T entity) {
 		return 90.0F;
 	}
 
@@ -406,11 +408,11 @@ public abstract class LivingEntityRenderer<T extends LivingEntity, M extends Ent
 		return 0;
 	}
 
-	protected void scale(T livingEntity, float f) {
+	protected void scale(T entity, float tickDelta) {
 	}
 
-	public void method_4041(T livingEntity, double d, double e, double f) {
-		if (this.method_4055(livingEntity)) {
+	public void renderLabelIfPresent(T livingEntity, double d, double e, double f) {
+		if (this.hasLabel(livingEntity)) {
 			double g = livingEntity.squaredDistanceTo(this.renderManager.camera.getPos());
 			float h = livingEntity.isInSneakingPose() ? 32.0F : 64.0F;
 			if (!(g >= (double)(h * h))) {
@@ -421,9 +423,9 @@ public abstract class LivingEntityRenderer<T extends LivingEntity, M extends Ent
 		}
 	}
 
-	protected boolean method_4055(T livingEntity) {
+	protected boolean hasLabel(T livingEntity) {
 		ClientPlayerEntity clientPlayerEntity = MinecraftClient.getInstance().player;
-		boolean bl = !livingEntity.canSeePlayer(clientPlayerEntity);
+		boolean bl = !livingEntity.isInvisibleTo(clientPlayerEntity);
 		if (livingEntity != clientPlayerEntity) {
 			AbstractTeam abstractTeam = livingEntity.getScoreboardTeam();
 			AbstractTeam abstractTeam2 = clientPlayerEntity.getScoreboardTeam();

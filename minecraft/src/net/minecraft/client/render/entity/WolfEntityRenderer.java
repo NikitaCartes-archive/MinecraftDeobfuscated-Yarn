@@ -19,20 +19,20 @@ public class WolfEntityRenderer extends MobEntityRenderer<WolfEntity, WolfEntity
 		this.addFeature(new WolfCollarFeatureRenderer(this));
 	}
 
-	protected float method_4167(WolfEntity wolfEntity, float f) {
+	protected float getAnimationProgress(WolfEntity wolfEntity, float f) {
 		return wolfEntity.method_6714();
 	}
 
-	public void method_4166(WolfEntity wolfEntity, double d, double e, double f, float g, float h) {
-		if (wolfEntity.isWet()) {
-			float i = wolfEntity.getBrightnessAtEyes() * wolfEntity.getWetBrightnessMultiplier(h);
+	public void render(WolfEntity wolfEntity, double d, double e, double f, float g, float h) {
+		if (wolfEntity.isFurWet()) {
+			float i = wolfEntity.getBrightnessAtEyes() * wolfEntity.getFurWetBrightnessMultiplier(h);
 			GlStateManager.color3f(i, i, i);
 		}
 
-		super.method_4072(wolfEntity, d, e, f, g, h);
+		super.render(wolfEntity, d, e, f, g, h);
 	}
 
-	protected Identifier method_4165(WolfEntity wolfEntity) {
+	protected Identifier getTexture(WolfEntity wolfEntity) {
 		if (wolfEntity.isTamed()) {
 			return TAMED_SKIN;
 		} else {

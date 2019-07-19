@@ -7,18 +7,17 @@ import java.util.HashSet;
 import java.util.Set;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_4352;
 
 @Environment(EnvType.CLIENT)
-public class Ops extends class_4352 {
+public class Ops extends ValueObject {
 	public Set<String> ops = new HashSet();
 
-	public static Ops parse(String string) {
+	public static Ops parse(String json) {
 		Ops ops = new Ops();
 		JsonParser jsonParser = new JsonParser();
 
 		try {
-			JsonElement jsonElement = jsonParser.parse(string);
+			JsonElement jsonElement = jsonParser.parse(json);
 			JsonObject jsonObject = jsonElement.getAsJsonObject();
 			JsonElement jsonElement2 = jsonObject.get("ops");
 			if (jsonElement2.isJsonArray()) {

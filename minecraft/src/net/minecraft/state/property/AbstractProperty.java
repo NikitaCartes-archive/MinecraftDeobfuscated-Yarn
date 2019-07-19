@@ -7,9 +7,9 @@ public abstract class AbstractProperty<T extends Comparable<T>> implements Prope
 	private final String name;
 	private Integer computedHashCode;
 
-	protected AbstractProperty(String string, Class<T> class_) {
-		this.type = class_;
-		this.name = string;
+	protected AbstractProperty(String name, Class<T> type) {
+		this.type = type;
+		this.name = name;
 	}
 
 	@Override
@@ -18,7 +18,7 @@ public abstract class AbstractProperty<T extends Comparable<T>> implements Prope
 	}
 
 	@Override
-	public Class<T> getValueType() {
+	public Class<T> getType() {
 		return this.type;
 	}
 
@@ -26,13 +26,13 @@ public abstract class AbstractProperty<T extends Comparable<T>> implements Prope
 		return MoreObjects.toStringHelper(this).add("name", this.name).add("clazz", this.type).add("values", this.getValues()).toString();
 	}
 
-	public boolean equals(Object object) {
-		if (this == object) {
+	public boolean equals(Object obj) {
+		if (this == obj) {
 			return true;
-		} else if (!(object instanceof AbstractProperty)) {
+		} else if (!(obj instanceof AbstractProperty)) {
 			return false;
 		} else {
-			AbstractProperty<?> abstractProperty = (AbstractProperty<?>)object;
+			AbstractProperty<?> abstractProperty = (AbstractProperty<?>)obj;
 			return this.type.equals(abstractProperty.type) && this.name.equals(abstractProperty.name);
 		}
 	}

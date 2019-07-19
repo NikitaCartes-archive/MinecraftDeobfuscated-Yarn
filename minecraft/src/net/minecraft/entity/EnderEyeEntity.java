@@ -4,7 +4,6 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.fabricmc.api.EnvironmentInterface;
 import net.fabricmc.api.EnvironmentInterfaces;
-import net.minecraft.client.network.packet.EntitySpawnS2CPacket;
 import net.minecraft.entity.data.DataTracker;
 import net.minecraft.entity.data.TrackedData;
 import net.minecraft.entity.data.TrackedDataHandlerRegistry;
@@ -12,9 +11,10 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.Packet;
+import net.minecraft.network.packet.s2c.play.EntitySpawnS2CPacket;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.sound.SoundEvents;
-import net.minecraft.util.SystemUtil;
+import net.minecraft.util.Util;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
@@ -36,15 +36,15 @@ public class EnderEyeEntity extends Entity implements FlyingItemEntity {
 		super(entityType, world);
 	}
 
-	public EnderEyeEntity(World world, double d, double e, double f) {
+	public EnderEyeEntity(World world, double x, double y, double z) {
 		this(EntityType.EYE_OF_ENDER, world);
 		this.useCount = 0;
-		this.setPosition(d, e, f);
+		this.updatePosition(x, y, z);
 	}
 
-	public void setItem(ItemStack itemStack) {
-		if (itemStack.getItem() != Items.ENDER_EYE || itemStack.hasTag()) {
-			this.getDataTracker().set(ITEM, SystemUtil.consume(itemStack.copy(), itemStackx -> itemStackx.setCount(1)));
+	public void setItem(ItemStack stack) {
+		if (stack.getItem() != Items.ENDER_EYE || stack.hasTag()) {
+			this.getDataTracker().set(ITEM, Util.make(stack.copy(), stackx -> stackx.setCount(1)));
 		}
 	}
 
@@ -65,20 +65,20 @@ public class EnderEyeEntity extends Entity implements FlyingItemEntity {
 
 	@Environment(EnvType.CLIENT)
 	@Override
-	public boolean shouldRenderAtDistance(double d) {
-		double e = this.getBoundingBox().averageDimension() * 4.0;
-		if (Double.isNaN(e)) {
-			e = 4.0;
+	public boolean shouldRender(double distance) {
+		double d = this.getBoundingBox().getAverageSideLength() * 4.0;
+		if (Double.isNaN(d)) {
+			d = 4.0;
 		}
 
-		e *= 64.0;
-		return d < e * e;
+		d *= 64.0;
+		return distance < d * d;
 	}
 
-	public void moveTowards(BlockPos blockPos) {
-		double d = (double)blockPos.getX();
-		int i = blockPos.getY();
-		double e = (double)blockPos.getZ();
+	public void moveTowards(BlockPos pos) {
+		double d = (double)pos.getX();
+		int i = pos.getY();
+		double e = (double)pos.getZ();
 		double f = d - this.x;
 		double g = e - this.z;
 		float h = MathHelper.sqrt(f * f + g * g);
@@ -98,12 +98,12 @@ public class EnderEyeEntity extends Entity implements FlyingItemEntity {
 
 	@Environment(EnvType.CLIENT)
 	@Override
-	public void setVelocityClient(double d, double e, double f) {
-		this.setVelocity(d, e, f);
+	public void setVelocityClient(double x, double y, double z) {
+		this.setVelocity(x, y, z);
 		if (this.prevPitch == 0.0F && this.prevYaw == 0.0F) {
-			float g = MathHelper.sqrt(d * d + f * f);
-			this.yaw = (float)(MathHelper.atan2(d, f) * 180.0F / (float)Math.PI);
-			this.pitch = (float)(MathHelper.atan2(e, (double)g) * 180.0F / (float)Math.PI);
+			float f = MathHelper.sqrt(x * x + z * z);
+			this.yaw = (float)(MathHelper.atan2(x, z) * 180.0F / (float)Math.PI);
+			this.pitch = (float)(MathHelper.atan2(y, (double)f) * 180.0F / (float)Math.PI);
 			this.prevYaw = this.yaw;
 			this.prevPitch = this.pitch;
 		}
@@ -111,9 +111,9 @@ public class EnderEyeEntity extends Entity implements FlyingItemEntity {
 
 	@Override
 	public void tick() {
-		this.prevRenderX = this.x;
-		this.prevRenderY = this.y;
-		this.prevRenderZ = this.z;
+		this.lastRenderX = this.x;
+		this.lastRenderY = this.y;
+		this.lastRenderZ = this.z;
 		super.tick();
 		Vec3d vec3d = this.getVelocity();
 		this.x = this.x + vec3d.x;
@@ -159,7 +159,7 @@ public class EnderEyeEntity extends Entity implements FlyingItemEntity {
 		}
 
 		float l = 0.25F;
-		if (this.isInsideWater()) {
+		if (this.isTouchingWater()) {
 			for (int m = 0; m < 4; m++) {
 				this.world.addParticle(ParticleTypes.BUBBLE, this.x - vec3d.x * 0.25, this.y - vec3d.y * 0.25, this.z - vec3d.z * 0.25, vec3d.x, vec3d.y, vec3d.z);
 			}
@@ -177,7 +177,7 @@ public class EnderEyeEntity extends Entity implements FlyingItemEntity {
 		}
 
 		if (!this.world.isClient) {
-			this.setPosition(this.x, this.y, this.z);
+			this.updatePosition(this.x, this.y, this.z);
 			this.useCount++;
 			if (this.useCount > 80 && !this.world.isClient) {
 				this.playSound(SoundEvents.ENTITY_ENDER_EYE_DEATH, 1.0F, 1.0F);
@@ -192,16 +192,16 @@ public class EnderEyeEntity extends Entity implements FlyingItemEntity {
 	}
 
 	@Override
-	public void writeCustomDataToTag(CompoundTag compoundTag) {
+	public void writeCustomDataToTag(CompoundTag tag) {
 		ItemStack itemStack = this.getTrackedItem();
 		if (!itemStack.isEmpty()) {
-			compoundTag.put("Item", itemStack.toTag(new CompoundTag()));
+			tag.put("Item", itemStack.toTag(new CompoundTag()));
 		}
 	}
 
 	@Override
-	public void readCustomDataFromTag(CompoundTag compoundTag) {
-		ItemStack itemStack = ItemStack.fromTag(compoundTag.getCompound("Item"));
+	public void readCustomDataFromTag(CompoundTag tag) {
+		ItemStack itemStack = ItemStack.fromTag(tag.getCompound("Item"));
 		this.setItem(itemStack);
 	}
 

@@ -27,45 +27,43 @@ public class CuredZombieVillagerCriterion implements Criterion<CuredZombieVillag
 
 	@Override
 	public void beginTrackingCondition(
-		PlayerAdvancementTracker playerAdvancementTracker, Criterion.ConditionsContainer<CuredZombieVillagerCriterion.Conditions> conditionsContainer
+		PlayerAdvancementTracker manager, Criterion.ConditionsContainer<CuredZombieVillagerCriterion.Conditions> conditionsContainer
 	) {
-		CuredZombieVillagerCriterion.Handler handler = (CuredZombieVillagerCriterion.Handler)this.handlers.get(playerAdvancementTracker);
+		CuredZombieVillagerCriterion.Handler handler = (CuredZombieVillagerCriterion.Handler)this.handlers.get(manager);
 		if (handler == null) {
-			handler = new CuredZombieVillagerCriterion.Handler(playerAdvancementTracker);
-			this.handlers.put(playerAdvancementTracker, handler);
+			handler = new CuredZombieVillagerCriterion.Handler(manager);
+			this.handlers.put(manager, handler);
 		}
 
 		handler.addCondition(conditionsContainer);
 	}
 
 	@Override
-	public void endTrackingCondition(
-		PlayerAdvancementTracker playerAdvancementTracker, Criterion.ConditionsContainer<CuredZombieVillagerCriterion.Conditions> conditionsContainer
-	) {
-		CuredZombieVillagerCriterion.Handler handler = (CuredZombieVillagerCriterion.Handler)this.handlers.get(playerAdvancementTracker);
+	public void endTrackingCondition(PlayerAdvancementTracker manager, Criterion.ConditionsContainer<CuredZombieVillagerCriterion.Conditions> conditionsContainer) {
+		CuredZombieVillagerCriterion.Handler handler = (CuredZombieVillagerCriterion.Handler)this.handlers.get(manager);
 		if (handler != null) {
 			handler.removeCondition(conditionsContainer);
 			if (handler.isEmpty()) {
-				this.handlers.remove(playerAdvancementTracker);
+				this.handlers.remove(manager);
 			}
 		}
 	}
 
 	@Override
-	public void endTracking(PlayerAdvancementTracker playerAdvancementTracker) {
-		this.handlers.remove(playerAdvancementTracker);
+	public void endTracking(PlayerAdvancementTracker tracker) {
+		this.handlers.remove(tracker);
 	}
 
-	public CuredZombieVillagerCriterion.Conditions method_8830(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext) {
-		EntityPredicate entityPredicate = EntityPredicate.deserialize(jsonObject.get("zombie"));
-		EntityPredicate entityPredicate2 = EntityPredicate.deserialize(jsonObject.get("villager"));
+	public CuredZombieVillagerCriterion.Conditions conditionsFromJson(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext) {
+		EntityPredicate entityPredicate = EntityPredicate.fromJson(jsonObject.get("zombie"));
+		EntityPredicate entityPredicate2 = EntityPredicate.fromJson(jsonObject.get("villager"));
 		return new CuredZombieVillagerCriterion.Conditions(entityPredicate, entityPredicate2);
 	}
 
-	public void handle(ServerPlayerEntity serverPlayerEntity, ZombieEntity zombieEntity, VillagerEntity villagerEntity) {
-		CuredZombieVillagerCriterion.Handler handler = (CuredZombieVillagerCriterion.Handler)this.handlers.get(serverPlayerEntity.getAdvancementManager());
+	public void trigger(ServerPlayerEntity player, ZombieEntity zombie, VillagerEntity villager) {
+		CuredZombieVillagerCriterion.Handler handler = (CuredZombieVillagerCriterion.Handler)this.handlers.get(player.getAdvancementTracker());
 		if (handler != null) {
-			handler.handle(serverPlayerEntity, zombieEntity, villagerEntity);
+			handler.handle(player, zombie, villager);
 		}
 	}
 
@@ -73,18 +71,18 @@ public class CuredZombieVillagerCriterion implements Criterion<CuredZombieVillag
 		private final EntityPredicate zombie;
 		private final EntityPredicate villager;
 
-		public Conditions(EntityPredicate entityPredicate, EntityPredicate entityPredicate2) {
+		public Conditions(EntityPredicate zombie, EntityPredicate villager) {
 			super(CuredZombieVillagerCriterion.ID);
-			this.zombie = entityPredicate;
-			this.villager = entityPredicate2;
+			this.zombie = zombie;
+			this.villager = villager;
 		}
 
 		public static CuredZombieVillagerCriterion.Conditions any() {
 			return new CuredZombieVillagerCriterion.Conditions(EntityPredicate.ANY, EntityPredicate.ANY);
 		}
 
-		public boolean matches(ServerPlayerEntity serverPlayerEntity, ZombieEntity zombieEntity, VillagerEntity villagerEntity) {
-			return !this.zombie.test(serverPlayerEntity, zombieEntity) ? false : this.villager.test(serverPlayerEntity, villagerEntity);
+		public boolean matches(ServerPlayerEntity player, ZombieEntity zombie, VillagerEntity villager) {
+			return !this.zombie.test(player, zombie) ? false : this.villager.test(player, villager);
 		}
 
 		@Override
@@ -100,8 +98,8 @@ public class CuredZombieVillagerCriterion implements Criterion<CuredZombieVillag
 		private final PlayerAdvancementTracker manager;
 		private final Set<Criterion.ConditionsContainer<CuredZombieVillagerCriterion.Conditions>> conditions = Sets.<Criterion.ConditionsContainer<CuredZombieVillagerCriterion.Conditions>>newHashSet();
 
-		public Handler(PlayerAdvancementTracker playerAdvancementTracker) {
-			this.manager = playerAdvancementTracker;
+		public Handler(PlayerAdvancementTracker manager) {
+			this.manager = manager;
 		}
 
 		public boolean isEmpty() {
@@ -116,11 +114,11 @@ public class CuredZombieVillagerCriterion implements Criterion<CuredZombieVillag
 			this.conditions.remove(conditionsContainer);
 		}
 
-		public void handle(ServerPlayerEntity serverPlayerEntity, ZombieEntity zombieEntity, VillagerEntity villagerEntity) {
+		public void handle(ServerPlayerEntity player, ZombieEntity zombie, VillagerEntity villager) {
 			List<Criterion.ConditionsContainer<CuredZombieVillagerCriterion.Conditions>> list = null;
 
 			for (Criterion.ConditionsContainer<CuredZombieVillagerCriterion.Conditions> conditionsContainer : this.conditions) {
-				if (conditionsContainer.getConditions().matches(serverPlayerEntity, zombieEntity, villagerEntity)) {
+				if (conditionsContainer.getConditions().matches(player, zombie, villager)) {
 					if (list == null) {
 						list = Lists.<Criterion.ConditionsContainer<CuredZombieVillagerCriterion.Conditions>>newArrayList();
 					}

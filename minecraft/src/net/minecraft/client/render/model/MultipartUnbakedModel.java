@@ -23,17 +23,17 @@ import net.minecraft.client.render.model.json.ModelVariantMap;
 import net.minecraft.client.render.model.json.MultipartModelComponent;
 import net.minecraft.client.render.model.json.WeightedUnbakedModel;
 import net.minecraft.client.texture.Sprite;
-import net.minecraft.state.StateFactory;
+import net.minecraft.state.StateManager;
 import net.minecraft.util.Identifier;
 
 @Environment(EnvType.CLIENT)
 public class MultipartUnbakedModel implements UnbakedModel {
-	private final StateFactory<Block, BlockState> stateFactory;
+	private final StateManager<Block, BlockState> stateFactory;
 	private final List<MultipartModelComponent> components;
 
-	public MultipartUnbakedModel(StateFactory<Block, BlockState> stateFactory, List<MultipartModelComponent> list) {
+	public MultipartUnbakedModel(StateManager<Block, BlockState> stateFactory, List<MultipartModelComponent> components) {
 		this.stateFactory = stateFactory;
-		this.components = list;
+		this.components = components;
 	}
 
 	public List<MultipartModelComponent> getComponents() {
@@ -50,13 +50,13 @@ public class MultipartUnbakedModel implements UnbakedModel {
 		return set;
 	}
 
-	public boolean equals(Object object) {
-		if (this == object) {
+	public boolean equals(Object o) {
+		if (this == o) {
 			return true;
-		} else if (!(object instanceof MultipartUnbakedModel)) {
+		} else if (!(o instanceof MultipartUnbakedModel)) {
 			return false;
 		} else {
-			MultipartUnbakedModel multipartUnbakedModel = (MultipartUnbakedModel)object;
+			MultipartUnbakedModel multipartUnbakedModel = (MultipartUnbakedModel)o;
 			return Objects.equals(this.stateFactory, multipartUnbakedModel.stateFactory) && Objects.equals(this.components, multipartUnbakedModel.components);
 		}
 	}
@@ -74,20 +74,20 @@ public class MultipartUnbakedModel implements UnbakedModel {
 	}
 
 	@Override
-	public Collection<Identifier> getTextureDependencies(Function<Identifier, UnbakedModel> function, Set<String> set) {
+	public Collection<Identifier> getTextureDependencies(Function<Identifier, UnbakedModel> unbakedModelGetter, Set<String> unresolvedTextureReferences) {
 		return (Collection<Identifier>)this.getComponents()
 			.stream()
-			.flatMap(multipartModelComponent -> multipartModelComponent.getModel().getTextureDependencies(function, set).stream())
+			.flatMap(multipartModelComponent -> multipartModelComponent.getModel().getTextureDependencies(unbakedModelGetter, unresolvedTextureReferences).stream())
 			.collect(Collectors.toSet());
 	}
 
 	@Nullable
 	@Override
-	public BakedModel bake(ModelLoader modelLoader, Function<Identifier, Sprite> function, ModelBakeSettings modelBakeSettings) {
+	public BakedModel bake(ModelLoader loader, Function<Identifier, Sprite> textureGetter, ModelBakeSettings rotationContainer) {
 		MultipartBakedModel.Builder builder = new MultipartBakedModel.Builder();
 
 		for (MultipartModelComponent multipartModelComponent : this.getComponents()) {
-			BakedModel bakedModel = multipartModelComponent.getModel().bake(modelLoader, function, modelBakeSettings);
+			BakedModel bakedModel = multipartModelComponent.getModel().bake(loader, textureGetter, rotationContainer);
 			if (bakedModel != null) {
 				builder.addComponent(multipartModelComponent.getPredicate(this.stateFactory), bakedModel);
 			}
@@ -100,19 +100,19 @@ public class MultipartUnbakedModel implements UnbakedModel {
 	public static class Deserializer implements JsonDeserializer<MultipartUnbakedModel> {
 		private final ModelVariantMap.DeserializationContext context;
 
-		public Deserializer(ModelVariantMap.DeserializationContext deserializationContext) {
-			this.context = deserializationContext;
+		public Deserializer(ModelVariantMap.DeserializationContext context) {
+			this.context = context;
 		}
 
-		public MultipartUnbakedModel method_3523(JsonElement jsonElement, Type type, JsonDeserializationContext jsonDeserializationContext) throws JsonParseException {
-			return new MultipartUnbakedModel(this.context.getStateFactory(), this.deserializeComponents(jsonDeserializationContext, jsonElement.getAsJsonArray()));
+		public MultipartUnbakedModel deserialize(JsonElement element, Type type, JsonDeserializationContext context) throws JsonParseException {
+			return new MultipartUnbakedModel(this.context.getStateFactory(), this.deserializeComponents(context, element.getAsJsonArray()));
 		}
 
-		private List<MultipartModelComponent> deserializeComponents(JsonDeserializationContext jsonDeserializationContext, JsonArray jsonArray) {
+		private List<MultipartModelComponent> deserializeComponents(JsonDeserializationContext context, JsonArray array) {
 			List<MultipartModelComponent> list = Lists.<MultipartModelComponent>newArrayList();
 
-			for (JsonElement jsonElement : jsonArray) {
-				list.add(jsonDeserializationContext.deserialize(jsonElement, MultipartModelComponent.class));
+			for (JsonElement jsonElement : array) {
+				list.add(context.deserialize(jsonElement, MultipartModelComponent.class));
 			}
 
 			return list;

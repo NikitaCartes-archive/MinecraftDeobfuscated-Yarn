@@ -13,20 +13,20 @@ import net.minecraft.advancement.criterion.Criterions;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
-import net.minecraft.client.block.ColoredBlock;
-import net.minecraft.client.network.packet.BlockEntityUpdateS2CPacket;
+import net.minecraft.block.Stainable;
 import net.minecraft.container.BeaconContainer;
 import net.minecraft.container.BlockContext;
 import net.minecraft.container.Container;
-import net.minecraft.container.ContainerLock;
-import net.minecraft.container.NameableContainerProvider;
+import net.minecraft.container.NameableContainerFactory;
 import net.minecraft.container.PropertyDelegate;
 import net.minecraft.entity.effect.StatusEffect;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
+import net.minecraft.inventory.ContainerLock;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.packet.s2c.play.BlockEntityUpdateS2CPacket;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvent;
@@ -38,7 +38,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
 import net.minecraft.world.Heightmap;
 
-public class BeaconBlockEntity extends BlockEntity implements NameableContainerProvider, Tickable {
+public class BeaconBlockEntity extends BlockEntity implements NameableContainerFactory, Tickable {
 	public static final StatusEffect[][] EFFECTS_BY_LEVEL = new StatusEffect[][]{
 		{StatusEffects.SPEED, StatusEffects.HASTE}, {StatusEffects.RESISTANCE, StatusEffects.JUMP_BOOST}, {StatusEffects.STRENGTH}, {StatusEffects.REGENERATION}
 	};
@@ -53,11 +53,11 @@ public class BeaconBlockEntity extends BlockEntity implements NameableContainerP
 	private StatusEffect secondary;
 	@Nullable
 	private Text customName;
-	private ContainerLock lock = ContainerLock.NONE;
+	private ContainerLock lock = ContainerLock.EMPTY;
 	private final PropertyDelegate propertyDelegate = new PropertyDelegate() {
 		@Override
-		public int get(int i) {
-			switch (i) {
+		public int get(int index) {
+			switch (index) {
 				case 0:
 					return BeaconBlockEntity.this.level;
 				case 1:
@@ -70,20 +70,20 @@ public class BeaconBlockEntity extends BlockEntity implements NameableContainerP
 		}
 
 		@Override
-		public void set(int i, int j) {
-			switch (i) {
+		public void set(int index, int value) {
+			switch (index) {
 				case 0:
-					BeaconBlockEntity.this.level = j;
+					BeaconBlockEntity.this.level = value;
 					break;
 				case 1:
 					if (!BeaconBlockEntity.this.world.isClient && !BeaconBlockEntity.this.beamSegments.isEmpty()) {
 						BeaconBlockEntity.this.playSound(SoundEvents.BLOCK_BEACON_POWER_SELECT);
 					}
 
-					BeaconBlockEntity.this.primary = BeaconBlockEntity.getPotionEffectById(j);
+					BeaconBlockEntity.this.primary = BeaconBlockEntity.getPotionEffectById(value);
 					break;
 				case 2:
-					BeaconBlockEntity.this.secondary = BeaconBlockEntity.getPotionEffectById(j);
+					BeaconBlockEntity.this.secondary = BeaconBlockEntity.getPotionEffectById(value);
 			}
 		}
 
@@ -119,8 +119,8 @@ public class BeaconBlockEntity extends BlockEntity implements NameableContainerP
 		for (int m = 0; m < 10 && blockPos.getY() <= l; m++) {
 			BlockState blockState = this.world.getBlockState(blockPos);
 			Block block = blockState.getBlock();
-			if (block instanceof ColoredBlock) {
-				float[] fs = ((ColoredBlock)block).getColor().getColorComponents();
+			if (block instanceof Stainable) {
+				float[] fs = ((Stainable)block).getColor().getColorComponents();
 				if (this.field_19178.size() <= 1) {
 					beamSegment = new BeaconBlockEntity.BeamSegment(fs);
 					this.field_19178.add(beamSegment);
@@ -135,7 +135,7 @@ public class BeaconBlockEntity extends BlockEntity implements NameableContainerP
 					}
 				}
 			} else {
-				if (beamSegment == null || blockState.getLightSubtracted(this.world, blockPos) >= 15 && block != Blocks.BEDROCK) {
+				if (beamSegment == null || blockState.getOpacity(this.world, blockPos) >= 15 && block != Blocks.BEDROCK) {
 					this.field_19178.clear();
 					this.field_19179 = l;
 					break;
@@ -170,8 +170,10 @@ public class BeaconBlockEntity extends BlockEntity implements NameableContainerP
 					this.playSound(SoundEvents.BLOCK_BEACON_ACTIVATE);
 
 					for (ServerPlayerEntity serverPlayerEntity : this.world
-						.getEntities(ServerPlayerEntity.class, new Box((double)i, (double)j, (double)k, (double)i, (double)(j - 4), (double)k).expand(10.0, 5.0, 10.0))) {
-						Criterions.CONSTRUCT_BEACON.handle(serverPlayerEntity, this);
+						.getNonSpectatingEntities(
+							ServerPlayerEntity.class, new Box((double)i, (double)j, (double)k, (double)i, (double)(j - 4), (double)k).expand(10.0, 5.0, 10.0)
+						)) {
+						Criterions.CONSTRUCT_BEACON.trigger(serverPlayerEntity, this);
 					}
 				} else if (bl && !bl2) {
 					this.playSound(SoundEvents.BLOCK_BEACON_DEACTIVATE);
@@ -180,20 +182,20 @@ public class BeaconBlockEntity extends BlockEntity implements NameableContainerP
 		}
 	}
 
-	private void updateLevel(int i, int j, int k) {
+	private void updateLevel(int x, int y, int z) {
 		this.level = 0;
 
-		for (int l = 1; l <= 4; this.level = l++) {
-			int m = j - l;
-			if (m < 0) {
+		for (int i = 1; i <= 4; this.level = i++) {
+			int j = y - i;
+			if (j < 0) {
 				break;
 			}
 
 			boolean bl = true;
 
-			for (int n = i - l; n <= i + l && bl; n++) {
-				for (int o = k - l; o <= k + l; o++) {
-					Block block = this.world.getBlockState(new BlockPos(n, m, o)).getBlock();
+			for (int k = x - i; k <= x + i && bl; k++) {
+				for (int l = z - i; l <= z + i; l++) {
+					Block block = this.world.getBlockState(new BlockPos(k, j, l)).getBlock();
 					if (block != Blocks.EMERALD_BLOCK && block != Blocks.GOLD_BLOCK && block != Blocks.DIAMOND_BLOCK && block != Blocks.IRON_BLOCK) {
 						bl = false;
 						break;
@@ -208,9 +210,9 @@ public class BeaconBlockEntity extends BlockEntity implements NameableContainerP
 	}
 
 	@Override
-	public void invalidate() {
+	public void markRemoved() {
 		this.playSound(SoundEvents.BLOCK_BEACON_DEACTIVATE);
-		super.invalidate();
+		super.markRemoved();
 	}
 
 	private void applyPlayerEffects() {
@@ -223,15 +225,15 @@ public class BeaconBlockEntity extends BlockEntity implements NameableContainerP
 
 			int j = (9 + this.level * 2) * 20;
 			Box box = new Box(this.pos).expand(d).stretch(0.0, (double)this.world.getHeight(), 0.0);
-			List<PlayerEntity> list = this.world.getEntities(PlayerEntity.class, box);
+			List<PlayerEntity> list = this.world.getNonSpectatingEntities(PlayerEntity.class, box);
 
 			for (PlayerEntity playerEntity : list) {
-				playerEntity.addPotionEffect(new StatusEffectInstance(this.primary, j, i, true, true));
+				playerEntity.addStatusEffect(new StatusEffectInstance(this.primary, j, i, true, true));
 			}
 
 			if (this.level >= 4 && this.primary != this.secondary && this.secondary != null) {
 				for (PlayerEntity playerEntity : list) {
-					playerEntity.addPotionEffect(new StatusEffectInstance(this.secondary, j, 0, true, true));
+					playerEntity.addStatusEffect(new StatusEffectInstance(this.secondary, j, 0, true, true));
 				}
 			}
 		}
@@ -268,35 +270,35 @@ public class BeaconBlockEntity extends BlockEntity implements NameableContainerP
 	}
 
 	@Nullable
-	private static StatusEffect getPotionEffectById(int i) {
-		StatusEffect statusEffect = StatusEffect.byRawId(i);
+	private static StatusEffect getPotionEffectById(int id) {
+		StatusEffect statusEffect = StatusEffect.byRawId(id);
 		return EFFECTS.contains(statusEffect) ? statusEffect : null;
 	}
 
 	@Override
-	public void fromTag(CompoundTag compoundTag) {
-		super.fromTag(compoundTag);
-		this.primary = getPotionEffectById(compoundTag.getInt("Primary"));
-		this.secondary = getPotionEffectById(compoundTag.getInt("Secondary"));
-		if (compoundTag.containsKey("CustomName", 8)) {
-			this.customName = Text.Serializer.fromJson(compoundTag.getString("CustomName"));
+	public void fromTag(CompoundTag tag) {
+		super.fromTag(tag);
+		this.primary = getPotionEffectById(tag.getInt("Primary"));
+		this.secondary = getPotionEffectById(tag.getInt("Secondary"));
+		if (tag.contains("CustomName", 8)) {
+			this.customName = Text.Serializer.fromJson(tag.getString("CustomName"));
 		}
 
-		this.lock = ContainerLock.deserialize(compoundTag);
+		this.lock = ContainerLock.fromTag(tag);
 	}
 
 	@Override
-	public CompoundTag toTag(CompoundTag compoundTag) {
-		super.toTag(compoundTag);
-		compoundTag.putInt("Primary", StatusEffect.getRawId(this.primary));
-		compoundTag.putInt("Secondary", StatusEffect.getRawId(this.secondary));
-		compoundTag.putInt("Levels", this.level);
+	public CompoundTag toTag(CompoundTag tag) {
+		super.toTag(tag);
+		tag.putInt("Primary", StatusEffect.getRawId(this.primary));
+		tag.putInt("Secondary", StatusEffect.getRawId(this.secondary));
+		tag.putInt("Levels", this.level);
 		if (this.customName != null) {
-			compoundTag.putString("CustomName", Text.Serializer.toJson(this.customName));
+			tag.putString("CustomName", Text.Serializer.toJson(this.customName));
 		}
 
-		this.lock.serialize(compoundTag);
-		return compoundTag;
+		this.lock.toTag(tag);
+		return tag;
 	}
 
 	public void setCustomName(@Nullable Text text) {
@@ -305,9 +307,9 @@ public class BeaconBlockEntity extends BlockEntity implements NameableContainerP
 
 	@Nullable
 	@Override
-	public Container createMenu(int i, PlayerInventory playerInventory, PlayerEntity playerEntity) {
+	public Container createMenu(int syncId, PlayerInventory playerInventory, PlayerEntity playerEntity) {
 		return LockableContainerBlockEntity.checkUnlocked(playerEntity, this.lock, this.getDisplayName())
-			? new BeaconContainer(i, playerInventory, this.propertyDelegate, BlockContext.create(this.world, this.getPos()))
+			? new BeaconContainer(syncId, playerInventory, this.propertyDelegate, BlockContext.create(this.world, this.getPos()))
 			: null;
 	}
 
@@ -320,8 +322,8 @@ public class BeaconBlockEntity extends BlockEntity implements NameableContainerP
 		private final float[] color;
 		private int height;
 
-		public BeamSegment(float[] fs) {
-			this.color = fs;
+		public BeamSegment(float[] color) {
+			this.color = color;
 			this.height = 1;
 		}
 

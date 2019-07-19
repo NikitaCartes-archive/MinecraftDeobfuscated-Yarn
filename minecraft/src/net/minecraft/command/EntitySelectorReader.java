@@ -20,9 +20,9 @@ import java.util.function.ToDoubleFunction;
 import javax.annotation.Nullable;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
+import net.minecraft.predicate.NumberRange;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.TranslatableText;
-import net.minecraft.util.NumberRange;
 import net.minecraft.util.math.Box;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
@@ -42,39 +42,39 @@ public class EntitySelectorReader {
 	public static final DynamicCommandExceptionType VALUELESS_EXCEPTION = new DynamicCommandExceptionType(
 		object -> new TranslatableText("argument.entity.options.valueless", object)
 	);
-	public static final BiConsumer<Vec3d, List<? extends Entity>> UNSORTED = (vec3d, list) -> {
+	public static final BiConsumer<Vec3d, List<? extends Entity>> ARBITRARY = (vec3d, list) -> {
 	};
-	public static final BiConsumer<Vec3d, List<? extends Entity>> NEAREST_FIRST = (vec3d, list) -> list.sort(
+	public static final BiConsumer<Vec3d, List<? extends Entity>> NEAREST = (vec3d, list) -> list.sort(
 			(entity, entity2) -> Doubles.compare(entity.squaredDistanceTo(vec3d), entity2.squaredDistanceTo(vec3d))
 		);
-	public static final BiConsumer<Vec3d, List<? extends Entity>> FURTHEST_FIRST = (vec3d, list) -> list.sort(
+	public static final BiConsumer<Vec3d, List<? extends Entity>> FURTHEST = (vec3d, list) -> list.sort(
 			(entity, entity2) -> Doubles.compare(entity2.squaredDistanceTo(vec3d), entity.squaredDistanceTo(vec3d))
 		);
 	public static final BiConsumer<Vec3d, List<? extends Entity>> RANDOM = (vec3d, list) -> Collections.shuffle(list);
 	public static final BiFunction<SuggestionsBuilder, Consumer<SuggestionsBuilder>, CompletableFuture<Suggestions>> DEFAULT_SUGGESTION_PROVIDER = (suggestionsBuilder, consumer) -> suggestionsBuilder.buildFuture();
 	private final StringReader reader;
 	private final boolean field_10846;
-	private int count;
-	private boolean includingNonPlayer;
+	private int limit;
+	private boolean includesNonPlayers;
 	private boolean localWorldOnly;
 	private NumberRange.FloatRange distance = NumberRange.FloatRange.ANY;
-	private NumberRange.IntRange experienceRange = NumberRange.IntRange.ANY;
+	private NumberRange.IntRange levelRange = NumberRange.IntRange.ANY;
 	@Nullable
-	private Double offsetX;
+	private Double x;
 	@Nullable
-	private Double offsetY;
+	private Double y;
 	@Nullable
-	private Double offsetZ;
+	private Double z;
 	@Nullable
-	private Double boxX;
+	private Double dx;
 	@Nullable
-	private Double boxY;
+	private Double dy;
 	@Nullable
-	private Double boxZ;
-	private FloatRange pitchRange = FloatRange.ANY;
-	private FloatRange yawRange = FloatRange.ANY;
+	private Double dz;
+	private FloatRangeArgument pitchRange = FloatRangeArgument.ANY;
+	private FloatRangeArgument yawRange = FloatRangeArgument.ANY;
 	private Predicate<Entity> predicate = entity -> true;
-	private BiConsumer<Vec3d, List<? extends Entity>> sorter = UNSORTED;
+	private BiConsumer<Vec3d, List<? extends Entity>> sorter = ARBITRARY;
 	private boolean senderOnly;
 	@Nullable
 	private String playerName;
@@ -95,7 +95,7 @@ public class EntitySelectorReader {
 	private boolean field_10865;
 	private boolean field_10841;
 	private boolean field_10864;
-	private boolean checkPermissions;
+	private boolean usesAt;
 
 	public EntitySelectorReader(StringReader stringReader) {
 		this(stringReader, true);
@@ -108,7 +108,7 @@ public class EntitySelectorReader {
 
 	public EntitySelector build() {
 		Box box;
-		if (this.boxX == null && this.boxY == null && this.boxZ == null) {
+		if (this.dx == null && this.dy == null && this.dz == null) {
 			if (this.distance.getMax() != null) {
 				float f = (Float)this.distance.getMax();
 				box = new Box((double)(-f), (double)(-f), (double)(-f), (double)(f + 1.0F), (double)(f + 1.0F), (double)(f + 1.0F));
@@ -116,21 +116,19 @@ public class EntitySelectorReader {
 				box = null;
 			}
 		} else {
-			box = this.createBox(this.boxX == null ? 0.0 : this.boxX, this.boxY == null ? 0.0 : this.boxY, this.boxZ == null ? 0.0 : this.boxZ);
+			box = this.createBox(this.dx == null ? 0.0 : this.dx, this.dy == null ? 0.0 : this.dy, this.dz == null ? 0.0 : this.dz);
 		}
 
 		Function<Vec3d, Vec3d> function;
-		if (this.offsetX == null && this.offsetY == null && this.offsetZ == null) {
+		if (this.x == null && this.y == null && this.z == null) {
 			function = vec3d -> vec3d;
 		} else {
-			function = vec3d -> new Vec3d(
-					this.offsetX == null ? vec3d.x : this.offsetX, this.offsetY == null ? vec3d.y : this.offsetY, this.offsetZ == null ? vec3d.z : this.offsetZ
-				);
+			function = vec3d -> new Vec3d(this.x == null ? vec3d.x : this.x, this.y == null ? vec3d.y : this.y, this.z == null ? vec3d.z : this.z);
 		}
 
 		return new EntitySelector(
-			this.count,
-			this.includingNonPlayer,
+			this.limit,
+			this.includesNonPlayers,
 			this.localWorldOnly,
 			this.predicate,
 			this.distance,
@@ -141,49 +139,49 @@ public class EntitySelectorReader {
 			this.playerName,
 			this.uuid,
 			this.entityType,
-			this.checkPermissions
+			this.usesAt
 		);
 	}
 
-	private Box createBox(double d, double e, double f) {
-		boolean bl = d < 0.0;
-		boolean bl2 = e < 0.0;
-		boolean bl3 = f < 0.0;
-		double g = bl ? d : 0.0;
-		double h = bl2 ? e : 0.0;
-		double i = bl3 ? f : 0.0;
-		double j = (bl ? 0.0 : d) + 1.0;
-		double k = (bl2 ? 0.0 : e) + 1.0;
-		double l = (bl3 ? 0.0 : f) + 1.0;
-		return new Box(g, h, i, j, k, l);
+	private Box createBox(double x, double y, double z) {
+		boolean bl = x < 0.0;
+		boolean bl2 = y < 0.0;
+		boolean bl3 = z < 0.0;
+		double d = bl ? x : 0.0;
+		double e = bl2 ? y : 0.0;
+		double f = bl3 ? z : 0.0;
+		double g = (bl ? 0.0 : x) + 1.0;
+		double h = (bl2 ? 0.0 : y) + 1.0;
+		double i = (bl3 ? 0.0 : z) + 1.0;
+		return new Box(d, e, f, g, h, i);
 	}
 
 	private void buildPredicate() {
-		if (this.pitchRange != FloatRange.ANY) {
+		if (this.pitchRange != FloatRangeArgument.ANY) {
 			this.predicate = this.predicate.and(this.rotationPredicate(this.pitchRange, entity -> (double)entity.pitch));
 		}
 
-		if (this.yawRange != FloatRange.ANY) {
+		if (this.yawRange != FloatRangeArgument.ANY) {
 			this.predicate = this.predicate.and(this.rotationPredicate(this.yawRange, entity -> (double)entity.yaw));
 		}
 
-		if (!this.experienceRange.isDummy()) {
+		if (!this.levelRange.isDummy()) {
 			this.predicate = this.predicate
-				.and(entity -> !(entity instanceof ServerPlayerEntity) ? false : this.experienceRange.test(((ServerPlayerEntity)entity).experienceLevel));
+				.and(entity -> !(entity instanceof ServerPlayerEntity) ? false : this.levelRange.test(((ServerPlayerEntity)entity).experienceLevel));
 		}
 	}
 
-	private Predicate<Entity> rotationPredicate(FloatRange floatRange, ToDoubleFunction<Entity> toDoubleFunction) {
-		double d = (double)MathHelper.wrapDegrees(floatRange.getMin() == null ? 0.0F : floatRange.getMin());
-		double e = (double)MathHelper.wrapDegrees(floatRange.getMax() == null ? 359.0F : floatRange.getMax());
+	private Predicate<Entity> rotationPredicate(FloatRangeArgument floatRangeArgument, ToDoubleFunction<Entity> toDoubleFunction) {
+		double d = (double)MathHelper.wrapDegrees(floatRangeArgument.getMin() == null ? 0.0F : floatRangeArgument.getMin());
+		double e = (double)MathHelper.wrapDegrees(floatRangeArgument.getMax() == null ? 359.0F : floatRangeArgument.getMax());
 		return entity -> {
 			double f = MathHelper.wrapDegrees(toDoubleFunction.applyAsDouble(entity));
 			return d > e ? f >= d || f <= e : f >= d && f <= e;
 		};
 	}
 
-	protected void readAtSelector() throws CommandSyntaxException {
-		this.checkPermissions = true;
+	protected void readAtVariable() throws CommandSyntaxException {
+		this.usesAt = true;
 		this.suggestionProvider = this::suggestSelectorRest;
 		if (!this.reader.canRead()) {
 			throw MISSING_EXCEPTION.createWithContext(this.reader);
@@ -191,23 +189,23 @@ public class EntitySelectorReader {
 			int i = this.reader.getCursor();
 			char c = this.reader.read();
 			if (c == 'p') {
-				this.count = 1;
-				this.includingNonPlayer = false;
-				this.sorter = NEAREST_FIRST;
+				this.limit = 1;
+				this.includesNonPlayers = false;
+				this.sorter = NEAREST;
 				this.setEntityType(EntityType.PLAYER);
 			} else if (c == 'a') {
-				this.count = Integer.MAX_VALUE;
-				this.includingNonPlayer = false;
-				this.sorter = UNSORTED;
+				this.limit = Integer.MAX_VALUE;
+				this.includesNonPlayers = false;
+				this.sorter = ARBITRARY;
 				this.setEntityType(EntityType.PLAYER);
 			} else if (c == 'r') {
-				this.count = 1;
-				this.includingNonPlayer = false;
+				this.limit = 1;
+				this.includesNonPlayers = false;
 				this.sorter = RANDOM;
 				this.setEntityType(EntityType.PLAYER);
 			} else if (c == 's') {
-				this.count = 1;
-				this.includingNonPlayer = true;
+				this.limit = 1;
+				this.includesNonPlayers = true;
 				this.senderOnly = true;
 			} else {
 				if (c != 'e') {
@@ -215,9 +213,9 @@ public class EntitySelectorReader {
 					throw UNKNOWN_SELECTOR_EXCEPTION.createWithContext(this.reader, '@' + String.valueOf(c));
 				}
 
-				this.count = Integer.MAX_VALUE;
-				this.includingNonPlayer = true;
-				this.sorter = UNSORTED;
+				this.limit = Integer.MAX_VALUE;
+				this.includesNonPlayers = true;
+				this.sorter = ARBITRARY;
 				this.predicate = Entity::isAlive;
 			}
 
@@ -225,7 +223,7 @@ public class EntitySelectorReader {
 			if (this.reader.canRead() && this.reader.peek() == '[') {
 				this.reader.skip();
 				this.suggestionProvider = this::suggestOptionOrEnd;
-				this.readOption();
+				this.readArguments();
 			}
 		}
 	}
@@ -240,21 +238,21 @@ public class EntitySelectorReader {
 
 		try {
 			this.uuid = UUID.fromString(string);
-			this.includingNonPlayer = true;
+			this.includesNonPlayers = true;
 		} catch (IllegalArgumentException var4) {
 			if (string.isEmpty() || string.length() > 16) {
 				this.reader.setCursor(i);
 				throw INVALID_ENTITY_EXCEPTION.createWithContext(this.reader);
 			}
 
-			this.includingNonPlayer = false;
+			this.includesNonPlayers = false;
 			this.playerName = string;
 		}
 
-		this.count = 1;
+		this.limit = 1;
 	}
 
-	protected void readOption() throws CommandSyntaxException {
+	protected void readArguments() throws CommandSyntaxException {
 		this.suggestionProvider = this::suggestOption;
 		this.reader.skipWhitespace();
 
@@ -334,98 +332,98 @@ public class EntitySelectorReader {
 		return this.distance;
 	}
 
-	public void setDistance(NumberRange.FloatRange floatRange) {
-		this.distance = floatRange;
+	public void setDistance(NumberRange.FloatRange distance) {
+		this.distance = distance;
 	}
 
-	public NumberRange.IntRange getExperienceRange() {
-		return this.experienceRange;
+	public NumberRange.IntRange getLevelRange() {
+		return this.levelRange;
 	}
 
-	public void setExperienceRange(NumberRange.IntRange intRange) {
-		this.experienceRange = intRange;
+	public void setLevelRange(NumberRange.IntRange experienceRange) {
+		this.levelRange = experienceRange;
 	}
 
-	public FloatRange getPitchRange() {
+	public FloatRangeArgument getPitchRange() {
 		return this.pitchRange;
 	}
 
-	public void setPitchRange(FloatRange floatRange) {
-		this.pitchRange = floatRange;
+	public void setPitchRange(FloatRangeArgument floatRangeArgument) {
+		this.pitchRange = floatRangeArgument;
 	}
 
-	public FloatRange getYawRange() {
+	public FloatRangeArgument getYawRange() {
 		return this.yawRange;
 	}
 
-	public void setYawRange(FloatRange floatRange) {
-		this.yawRange = floatRange;
+	public void setYawRange(FloatRangeArgument floatRangeArgument) {
+		this.yawRange = floatRangeArgument;
 	}
 
 	@Nullable
-	public Double getOffsetX() {
-		return this.offsetX;
+	public Double getX() {
+		return this.x;
 	}
 
 	@Nullable
-	public Double getOffsetY() {
-		return this.offsetY;
+	public Double getY() {
+		return this.y;
 	}
 
 	@Nullable
-	public Double getOffsetZ() {
-		return this.offsetZ;
+	public Double getZ() {
+		return this.z;
 	}
 
-	public void setOffsetX(double d) {
-		this.offsetX = d;
+	public void setX(double x) {
+		this.x = x;
 	}
 
-	public void setOffsetY(double d) {
-		this.offsetY = d;
+	public void setY(double y) {
+		this.y = y;
 	}
 
-	public void setOffsetZ(double d) {
-		this.offsetZ = d;
+	public void setZ(double z) {
+		this.z = z;
 	}
 
-	public void setBoxX(double d) {
-		this.boxX = d;
+	public void setDx(double dx) {
+		this.dx = dx;
 	}
 
-	public void setBoxY(double d) {
-		this.boxY = d;
+	public void setDy(double dy) {
+		this.dy = dy;
 	}
 
-	public void setBoxZ(double d) {
-		this.boxZ = d;
-	}
-
-	@Nullable
-	public Double getBoxX() {
-		return this.boxX;
+	public void setDz(double dz) {
+		this.dz = dz;
 	}
 
 	@Nullable
-	public Double getBoxY() {
-		return this.boxY;
+	public Double getDx() {
+		return this.dx;
 	}
 
 	@Nullable
-	public Double getBoxZ() {
-		return this.boxZ;
+	public Double getDy() {
+		return this.dy;
 	}
 
-	public void setCount(int i) {
-		this.count = i;
+	@Nullable
+	public Double getDz() {
+		return this.dz;
 	}
 
-	public void setIncludingNonPlayer(boolean bl) {
-		this.includingNonPlayer = bl;
+	public void setLimit(int limit) {
+		this.limit = limit;
 	}
 
-	public void setSorter(BiConsumer<Vec3d, List<? extends Entity>> biConsumer) {
-		this.sorter = biConsumer;
+	public void setIncludesNonPlayers(boolean includesNonPlayers) {
+		this.includesNonPlayers = includesNonPlayers;
+	}
+
+	public void setSorter(BiConsumer<Vec3d, List<? extends Entity>> sorter) {
+		this.sorter = sorter;
 	}
 
 	public EntitySelector read() throws CommandSyntaxException {
@@ -437,7 +435,7 @@ public class EntitySelectorReader {
 			}
 
 			this.reader.skip();
-			this.readAtSelector();
+			this.readAtVariable();
 		} else {
 			this.readRegular();
 		}
@@ -446,56 +444,56 @@ public class EntitySelectorReader {
 		return this.build();
 	}
 
-	private static void suggestSelector(SuggestionsBuilder suggestionsBuilder) {
-		suggestionsBuilder.suggest("@p", new TranslatableText("argument.entity.selector.nearestPlayer"));
-		suggestionsBuilder.suggest("@a", new TranslatableText("argument.entity.selector.allPlayers"));
-		suggestionsBuilder.suggest("@r", new TranslatableText("argument.entity.selector.randomPlayer"));
-		suggestionsBuilder.suggest("@s", new TranslatableText("argument.entity.selector.self"));
-		suggestionsBuilder.suggest("@e", new TranslatableText("argument.entity.selector.allEntities"));
+	private static void suggestSelector(SuggestionsBuilder builder) {
+		builder.suggest("@p", new TranslatableText("argument.entity.selector.nearestPlayer"));
+		builder.suggest("@a", new TranslatableText("argument.entity.selector.allPlayers"));
+		builder.suggest("@r", new TranslatableText("argument.entity.selector.randomPlayer"));
+		builder.suggest("@s", new TranslatableText("argument.entity.selector.self"));
+		builder.suggest("@e", new TranslatableText("argument.entity.selector.allEntities"));
 	}
 
-	private CompletableFuture<Suggestions> suggestSelector(SuggestionsBuilder suggestionsBuilder, Consumer<SuggestionsBuilder> consumer) {
-		consumer.accept(suggestionsBuilder);
+	private CompletableFuture<Suggestions> suggestSelector(SuggestionsBuilder builder, Consumer<SuggestionsBuilder> consumer) {
+		consumer.accept(builder);
 		if (this.field_10846) {
-			suggestSelector(suggestionsBuilder);
+			suggestSelector(builder);
 		}
 
-		return suggestionsBuilder.buildFuture();
+		return builder.buildFuture();
 	}
 
-	private CompletableFuture<Suggestions> suggestNormal(SuggestionsBuilder suggestionsBuilder, Consumer<SuggestionsBuilder> consumer) {
-		SuggestionsBuilder suggestionsBuilder2 = suggestionsBuilder.createOffset(this.startCursor);
-		consumer.accept(suggestionsBuilder2);
-		return suggestionsBuilder.add(suggestionsBuilder2).buildFuture();
+	private CompletableFuture<Suggestions> suggestNormal(SuggestionsBuilder builder, Consumer<SuggestionsBuilder> consumer) {
+		SuggestionsBuilder suggestionsBuilder = builder.createOffset(this.startCursor);
+		consumer.accept(suggestionsBuilder);
+		return builder.add(suggestionsBuilder).buildFuture();
 	}
 
-	private CompletableFuture<Suggestions> suggestSelectorRest(SuggestionsBuilder suggestionsBuilder, Consumer<SuggestionsBuilder> consumer) {
-		SuggestionsBuilder suggestionsBuilder2 = suggestionsBuilder.createOffset(suggestionsBuilder.getStart() - 1);
-		suggestSelector(suggestionsBuilder2);
-		suggestionsBuilder.add(suggestionsBuilder2);
-		return suggestionsBuilder.buildFuture();
+	private CompletableFuture<Suggestions> suggestSelectorRest(SuggestionsBuilder builder, Consumer<SuggestionsBuilder> consumer) {
+		SuggestionsBuilder suggestionsBuilder = builder.createOffset(builder.getStart() - 1);
+		suggestSelector(suggestionsBuilder);
+		builder.add(suggestionsBuilder);
+		return builder.buildFuture();
 	}
 
-	private CompletableFuture<Suggestions> suggestOpen(SuggestionsBuilder suggestionsBuilder, Consumer<SuggestionsBuilder> consumer) {
-		suggestionsBuilder.suggest(String.valueOf('['));
-		return suggestionsBuilder.buildFuture();
+	private CompletableFuture<Suggestions> suggestOpen(SuggestionsBuilder builder, Consumer<SuggestionsBuilder> consumer) {
+		builder.suggest(String.valueOf('['));
+		return builder.buildFuture();
 	}
 
-	private CompletableFuture<Suggestions> suggestOptionOrEnd(SuggestionsBuilder suggestionsBuilder, Consumer<SuggestionsBuilder> consumer) {
-		suggestionsBuilder.suggest(String.valueOf(']'));
-		EntitySelectorOptions.suggestOptions(this, suggestionsBuilder);
-		return suggestionsBuilder.buildFuture();
+	private CompletableFuture<Suggestions> suggestOptionOrEnd(SuggestionsBuilder builder, Consumer<SuggestionsBuilder> consumer) {
+		builder.suggest(String.valueOf(']'));
+		EntitySelectorOptions.suggestOptions(this, builder);
+		return builder.buildFuture();
 	}
 
-	private CompletableFuture<Suggestions> suggestOption(SuggestionsBuilder suggestionsBuilder, Consumer<SuggestionsBuilder> consumer) {
-		EntitySelectorOptions.suggestOptions(this, suggestionsBuilder);
-		return suggestionsBuilder.buildFuture();
+	private CompletableFuture<Suggestions> suggestOption(SuggestionsBuilder builder, Consumer<SuggestionsBuilder> consumer) {
+		EntitySelectorOptions.suggestOptions(this, builder);
+		return builder.buildFuture();
 	}
 
-	private CompletableFuture<Suggestions> suggestEndNext(SuggestionsBuilder suggestionsBuilder, Consumer<SuggestionsBuilder> consumer) {
-		suggestionsBuilder.suggest(String.valueOf(','));
-		suggestionsBuilder.suggest(String.valueOf(']'));
-		return suggestionsBuilder.buildFuture();
+	private CompletableFuture<Suggestions> suggestEndNext(SuggestionsBuilder builder, Consumer<SuggestionsBuilder> consumer) {
+		builder.suggest(String.valueOf(','));
+		builder.suggest(String.valueOf(']'));
+		return builder.buildFuture();
 	}
 
 	public boolean isSenderOnly() {
@@ -506,8 +504,8 @@ public class EntitySelectorReader {
 		this.suggestionProvider = biFunction;
 	}
 
-	public CompletableFuture<Suggestions> listSuggestions(SuggestionsBuilder suggestionsBuilder, Consumer<SuggestionsBuilder> consumer) {
-		return (CompletableFuture<Suggestions>)this.suggestionProvider.apply(suggestionsBuilder.createOffset(this.reader.getCursor()), consumer);
+	public CompletableFuture<Suggestions> listSuggestions(SuggestionsBuilder builder, Consumer<SuggestionsBuilder> consumer) {
+		return (CompletableFuture<Suggestions>)this.suggestionProvider.apply(builder.createOffset(this.reader.getCursor()), consumer);
 	}
 
 	public boolean method_9912() {
@@ -578,7 +576,7 @@ public class EntitySelectorReader {
 		this.field_10865 = true;
 	}
 
-	public boolean hasEntityType() {
+	public boolean selectsEntityType() {
 		return this.entityType != null;
 	}
 

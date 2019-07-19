@@ -60,8 +60,8 @@ public class TntMinecartEntity extends AbstractMinecartEntity {
 	}
 
 	@Override
-	public boolean damage(DamageSource damageSource, float f) {
-		Entity entity = damageSource.getSource();
+	public boolean damage(DamageSource source, float amount) {
+		Entity entity = source.getSource();
 		if (entity instanceof ProjectileEntity) {
 			ProjectileEntity projectileEntity = (ProjectileEntity)entity;
 			if (projectileEntity.isOnFire()) {
@@ -69,7 +69,7 @@ public class TntMinecartEntity extends AbstractMinecartEntity {
 			}
 		}
 
-		return super.damage(damageSource, f);
+		return super.damage(source, amount);
 	}
 
 	@Override
@@ -101,29 +101,29 @@ public class TntMinecartEntity extends AbstractMinecartEntity {
 	}
 
 	@Override
-	public void handleFallDamage(float f, float g) {
-		if (f >= 3.0F) {
-			float h = f / 10.0F;
-			this.explode((double)(h * h));
+	public void handleFallDamage(float fallDistance, float damageMultiplier) {
+		if (fallDistance >= 3.0F) {
+			float f = fallDistance / 10.0F;
+			this.explode((double)(f * f));
 		}
 
-		super.handleFallDamage(f, g);
+		super.handleFallDamage(fallDistance, damageMultiplier);
 	}
 
 	@Override
-	public void onActivatorRail(int i, int j, int k, boolean bl) {
-		if (bl && this.fuseTicks < 0) {
+	public void onActivatorRail(int x, int y, int z, boolean powered) {
+		if (powered && this.fuseTicks < 0) {
 			this.prime();
 		}
 	}
 
 	@Environment(EnvType.CLIENT)
 	@Override
-	public void handleStatus(byte b) {
-		if (b == 10) {
+	public void handleStatus(byte status) {
+		if (status == 10) {
 			this.prime();
 		} else {
-			super.handleStatus(b);
+			super.handleStatus(status);
 		}
 	}
 
@@ -147,32 +147,30 @@ public class TntMinecartEntity extends AbstractMinecartEntity {
 	}
 
 	@Override
-	public float getEffectiveExplosionResistance(
-		Explosion explosion, BlockView blockView, BlockPos blockPos, BlockState blockState, FluidState fluidState, float f
-	) {
-		return !this.isPrimed() || !blockState.matches(BlockTags.RAILS) && !blockView.getBlockState(blockPos.up()).matches(BlockTags.RAILS)
-			? super.getEffectiveExplosionResistance(explosion, blockView, blockPos, blockState, fluidState, f)
+	public float getEffectiveExplosionResistance(Explosion explosion, BlockView world, BlockPos pos, BlockState blockState, FluidState fluidState, float max) {
+		return !this.isPrimed() || !blockState.matches(BlockTags.RAILS) && !world.getBlockState(pos.up()).matches(BlockTags.RAILS)
+			? super.getEffectiveExplosionResistance(explosion, world, pos, blockState, fluidState, max)
 			: 0.0F;
 	}
 
 	@Override
-	public boolean canExplosionDestroyBlock(Explosion explosion, BlockView blockView, BlockPos blockPos, BlockState blockState, float f) {
-		return !this.isPrimed() || !blockState.matches(BlockTags.RAILS) && !blockView.getBlockState(blockPos.up()).matches(BlockTags.RAILS)
-			? super.canExplosionDestroyBlock(explosion, blockView, blockPos, blockState, f)
+	public boolean canExplosionDestroyBlock(Explosion explosion, BlockView world, BlockPos pos, BlockState state, float explosionPower) {
+		return !this.isPrimed() || !state.matches(BlockTags.RAILS) && !world.getBlockState(pos.up()).matches(BlockTags.RAILS)
+			? super.canExplosionDestroyBlock(explosion, world, pos, state, explosionPower)
 			: false;
 	}
 
 	@Override
-	protected void readCustomDataFromTag(CompoundTag compoundTag) {
-		super.readCustomDataFromTag(compoundTag);
-		if (compoundTag.containsKey("TNTFuse", 99)) {
-			this.fuseTicks = compoundTag.getInt("TNTFuse");
+	protected void readCustomDataFromTag(CompoundTag tag) {
+		super.readCustomDataFromTag(tag);
+		if (tag.contains("TNTFuse", 99)) {
+			this.fuseTicks = tag.getInt("TNTFuse");
 		}
 	}
 
 	@Override
-	protected void writeCustomDataToTag(CompoundTag compoundTag) {
-		super.writeCustomDataToTag(compoundTag);
-		compoundTag.putInt("TNTFuse", this.fuseTicks);
+	protected void writeCustomDataToTag(CompoundTag tag) {
+		super.writeCustomDataToTag(tag);
+		tag.putInt("TNTFuse", this.fuseTicks);
 	}
 }

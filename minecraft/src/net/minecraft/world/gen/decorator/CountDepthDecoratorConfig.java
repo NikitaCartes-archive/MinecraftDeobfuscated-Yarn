@@ -9,24 +9,24 @@ public class CountDepthDecoratorConfig implements DecoratorConfig {
 	public final int baseline;
 	public final int spread;
 
-	public CountDepthDecoratorConfig(int i, int j, int k) {
-		this.count = i;
-		this.baseline = j;
-		this.spread = k;
+	public CountDepthDecoratorConfig(int count, int baseline, int spread) {
+		this.count = count;
+		this.baseline = baseline;
+		this.spread = spread;
 	}
 
 	@Override
-	public <T> Dynamic<T> serialize(DynamicOps<T> dynamicOps) {
+	public <T> Dynamic<T> serialize(DynamicOps<T> ops) {
 		return new Dynamic<>(
-			dynamicOps,
-			dynamicOps.createMap(
+			ops,
+			ops.createMap(
 				ImmutableMap.of(
-					dynamicOps.createString("count"),
-					dynamicOps.createInt(this.count),
-					dynamicOps.createString("baseline"),
-					dynamicOps.createInt(this.baseline),
-					dynamicOps.createString("spread"),
-					dynamicOps.createInt(this.spread)
+					ops.createString("count"),
+					ops.createInt(this.count),
+					ops.createString("baseline"),
+					ops.createInt(this.baseline),
+					ops.createString("spread"),
+					ops.createInt(this.spread)
 				)
 			)
 		);

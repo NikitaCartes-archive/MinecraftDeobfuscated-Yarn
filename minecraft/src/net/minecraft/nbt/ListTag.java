@@ -15,38 +15,38 @@ public class ListTag extends AbstractListTag<Tag> {
 	private byte type = 0;
 
 	@Override
-	public void write(DataOutput dataOutput) throws IOException {
+	public void write(DataOutput output) throws IOException {
 		if (this.value.isEmpty()) {
 			this.type = 0;
 		} else {
 			this.type = ((Tag)this.value.get(0)).getType();
 		}
 
-		dataOutput.writeByte(this.type);
-		dataOutput.writeInt(this.value.size());
+		output.writeByte(this.type);
+		output.writeInt(this.value.size());
 
 		for (Tag tag : this.value) {
-			tag.write(dataOutput);
+			tag.write(output);
 		}
 	}
 
 	@Override
-	public void read(DataInput dataInput, int i, PositionTracker positionTracker) throws IOException {
+	public void read(DataInput input, int depth, PositionTracker positionTracker) throws IOException {
 		positionTracker.add(296L);
-		if (i > 512) {
+		if (depth > 512) {
 			throw new RuntimeException("Tried to read NBT tag with too high complexity, depth > 512");
 		} else {
-			this.type = dataInput.readByte();
-			int j = dataInput.readInt();
-			if (this.type == 0 && j > 0) {
+			this.type = input.readByte();
+			int i = input.readInt();
+			if (this.type == 0 && i > 0) {
 				throw new RuntimeException("Missing type on ListTag");
 			} else {
-				positionTracker.add(32L * (long)j);
-				this.value = Lists.<Tag>newArrayListWithCapacity(j);
+				positionTracker.add(32L * (long)i);
+				this.value = Lists.<Tag>newArrayListWithCapacity(i);
 
-				for (int k = 0; k < j; k++) {
+				for (int j = 0; j < i; j++) {
 					Tag tag = Tag.createTag(this.type);
-					tag.read(dataInput, i + 1, positionTracker);
+					tag.read(input, depth + 1, positionTracker);
 					this.value.add(tag);
 				}
 			}
@@ -80,7 +80,7 @@ public class ListTag extends AbstractListTag<Tag> {
 	}
 
 	@Override
-	public Tag method_10536(int i) {
+	public Tag remove(int i) {
 		Tag tag = (Tag)this.value.remove(i);
 		this.forgetTypeIfEmpty();
 		return tag;
@@ -90,9 +90,9 @@ public class ListTag extends AbstractListTag<Tag> {
 		return this.value.isEmpty();
 	}
 
-	public CompoundTag getCompoundTag(int i) {
-		if (i >= 0 && i < this.value.size()) {
-			Tag tag = (Tag)this.value.get(i);
+	public CompoundTag getCompound(int index) {
+		if (index >= 0 && index < this.value.size()) {
+			Tag tag = (Tag)this.value.get(index);
 			if (tag.getType() == 10) {
 				return (CompoundTag)tag;
 			}
@@ -101,9 +101,9 @@ public class ListTag extends AbstractListTag<Tag> {
 		return new CompoundTag();
 	}
 
-	public ListTag getListTag(int i) {
-		if (i >= 0 && i < this.value.size()) {
-			Tag tag = (Tag)this.value.get(i);
+	public ListTag getList(int index) {
+		if (index >= 0 && index < this.value.size()) {
+			Tag tag = (Tag)this.value.get(index);
 			if (tag.getType() == 9) {
 				return (ListTag)tag;
 			}
@@ -112,9 +112,9 @@ public class ListTag extends AbstractListTag<Tag> {
 		return new ListTag();
 	}
 
-	public short getShort(int i) {
-		if (i >= 0 && i < this.value.size()) {
-			Tag tag = (Tag)this.value.get(i);
+	public short getShort(int index) {
+		if (index >= 0 && index < this.value.size()) {
+			Tag tag = (Tag)this.value.get(index);
 			if (tag.getType() == 2) {
 				return ((ShortTag)tag).getShort();
 			}
@@ -134,9 +134,9 @@ public class ListTag extends AbstractListTag<Tag> {
 		return 0;
 	}
 
-	public int[] getIntArray(int i) {
-		if (i >= 0 && i < this.value.size()) {
-			Tag tag = (Tag)this.value.get(i);
+	public int[] getIntArray(int index) {
+		if (index >= 0 && index < this.value.size()) {
+			Tag tag = (Tag)this.value.get(index);
 			if (tag.getType() == 11) {
 				return ((IntArrayTag)tag).getIntArray();
 			}
@@ -145,9 +145,9 @@ public class ListTag extends AbstractListTag<Tag> {
 		return new int[0];
 	}
 
-	public double getDouble(int i) {
-		if (i >= 0 && i < this.value.size()) {
-			Tag tag = (Tag)this.value.get(i);
+	public double getDouble(int index) {
+		if (index >= 0 && index < this.value.size()) {
+			Tag tag = (Tag)this.value.get(index);
 			if (tag.getType() == 6) {
 				return ((DoubleTag)tag).getDouble();
 			}
@@ -156,9 +156,9 @@ public class ListTag extends AbstractListTag<Tag> {
 		return 0.0;
 	}
 
-	public float getFloat(int i) {
-		if (i >= 0 && i < this.value.size()) {
-			Tag tag = (Tag)this.value.get(i);
+	public float getFloat(int index) {
+		if (index >= 0 && index < this.value.size()) {
+			Tag tag = (Tag)this.value.get(index);
 			if (tag.getType() == 5) {
 				return ((FloatTag)tag).getFloat();
 			}
@@ -167,9 +167,9 @@ public class ListTag extends AbstractListTag<Tag> {
 		return 0.0F;
 	}
 
-	public String getString(int i) {
-		if (i >= 0 && i < this.value.size()) {
-			Tag tag = (Tag)this.value.get(i);
+	public String getString(int index) {
+		if (index >= 0 && index < this.value.size()) {
+			Tag tag = (Tag)this.value.get(index);
 			return tag.getType() == 8 ? tag.asString() : tag.toString();
 		} else {
 			return "";
@@ -180,13 +180,13 @@ public class ListTag extends AbstractListTag<Tag> {
 		return this.value.size();
 	}
 
-	public Tag method_10534(int i) {
+	public Tag get(int i) {
 		return (Tag)this.value.get(i);
 	}
 
 	@Override
-	public Tag method_10606(int i, Tag tag) {
-		Tag tag2 = this.method_10534(i);
+	public Tag set(int i, Tag tag) {
+		Tag tag2 = this.get(i);
 		if (!this.setTag(i, tag)) {
 			throw new UnsupportedOperationException(String.format("Trying to add tag of type %d to list of %d", tag.getType(), this.type));
 		} else {
@@ -195,16 +195,16 @@ public class ListTag extends AbstractListTag<Tag> {
 	}
 
 	@Override
-	public void method_10531(int i, Tag tag) {
+	public void add(int i, Tag tag) {
 		if (!this.addTag(i, tag)) {
 			throw new UnsupportedOperationException(String.format("Trying to add tag of type %d to list of %d", tag.getType(), this.type));
 		}
 	}
 
 	@Override
-	public boolean setTag(int i, Tag tag) {
+	public boolean setTag(int index, Tag tag) {
 		if (this.canAdd(tag)) {
-			this.value.set(i, tag);
+			this.value.set(index, tag);
 			return true;
 		} else {
 			return false;
@@ -212,9 +212,9 @@ public class ListTag extends AbstractListTag<Tag> {
 	}
 
 	@Override
-	public boolean addTag(int i, Tag tag) {
+	public boolean addTag(int index, Tag tag) {
 		if (this.canAdd(tag)) {
-			this.value.add(i, tag);
+			this.value.add(index, tag);
 			return true;
 		} else {
 			return false;
@@ -232,7 +232,7 @@ public class ListTag extends AbstractListTag<Tag> {
 		}
 	}
 
-	public ListTag method_10612() {
+	public ListTag copy() {
 		ListTag listTag = new ListTag();
 		listTag.type = this.type;
 
@@ -244,8 +244,8 @@ public class ListTag extends AbstractListTag<Tag> {
 		return listTag;
 	}
 
-	public boolean equals(Object object) {
-		return this == object ? true : object instanceof ListTag && Objects.equals(this.value, ((ListTag)object).value);
+	public boolean equals(Object o) {
+		return this == o ? true : o instanceof ListTag && Objects.equals(this.value, ((ListTag)o).value);
 	}
 
 	public int hashCode() {
@@ -253,27 +253,27 @@ public class ListTag extends AbstractListTag<Tag> {
 	}
 
 	@Override
-	public Text toText(String string, int i) {
+	public Text toText(String indent, int depth) {
 		if (this.isEmpty()) {
 			return new LiteralText("[]");
 		} else {
 			Text text = new LiteralText("[");
-			if (!string.isEmpty()) {
+			if (!indent.isEmpty()) {
 				text.append("\n");
 			}
 
-			for (int j = 0; j < this.value.size(); j++) {
-				Text text2 = new LiteralText(Strings.repeat(string, i + 1));
-				text2.append(((Tag)this.value.get(j)).toText(string, i + 1));
-				if (j != this.value.size() - 1) {
-					text2.append(String.valueOf(',')).append(string.isEmpty() ? " " : "\n");
+			for (int i = 0; i < this.value.size(); i++) {
+				Text text2 = new LiteralText(Strings.repeat(indent, depth + 1));
+				text2.append(((Tag)this.value.get(i)).toText(indent, depth + 1));
+				if (i != this.value.size() - 1) {
+					text2.append(String.valueOf(',')).append(indent.isEmpty() ? " " : "\n");
 				}
 
 				text.append(text2);
 			}
 
-			if (!string.isEmpty()) {
-				text.append("\n").append(Strings.repeat(string, i));
+			if (!indent.isEmpty()) {
+				text.append("\n").append(Strings.repeat(indent, depth));
 			}
 
 			text.append("]");
@@ -281,7 +281,7 @@ public class ListTag extends AbstractListTag<Tag> {
 		}
 	}
 
-	public int getListType() {
+	public int getElementType() {
 		return this.type;
 	}
 

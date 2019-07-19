@@ -7,8 +7,8 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.world.BlockView;
+import net.minecraft.world.CollisionView;
 import net.minecraft.world.IWorld;
-import net.minecraft.world.ViewableWorld;
 import net.minecraft.world.World;
 
 public class GrassPathBlock extends Block {
@@ -19,48 +19,44 @@ public class GrassPathBlock extends Block {
 	}
 
 	@Override
-	public boolean hasSidedTransparency(BlockState blockState) {
+	public boolean hasSidedTransparency(BlockState state) {
 		return true;
 	}
 
 	@Override
-	public BlockState getPlacementState(ItemPlacementContext itemPlacementContext) {
-		return !this.getDefaultState().canPlaceAt(itemPlacementContext.getWorld(), itemPlacementContext.getBlockPos())
-			? Block.pushEntitiesUpBeforeBlockChange(
-				this.getDefaultState(), Blocks.DIRT.getDefaultState(), itemPlacementContext.getWorld(), itemPlacementContext.getBlockPos()
-			)
-			: super.getPlacementState(itemPlacementContext);
+	public BlockState getPlacementState(ItemPlacementContext ctx) {
+		return !this.getDefaultState().canPlaceAt(ctx.getWorld(), ctx.getBlockPos())
+			? Block.pushEntitiesUpBeforeBlockChange(this.getDefaultState(), Blocks.DIRT.getDefaultState(), ctx.getWorld(), ctx.getBlockPos())
+			: super.getPlacementState(ctx);
 	}
 
 	@Override
-	public BlockState getStateForNeighborUpdate(
-		BlockState blockState, Direction direction, BlockState blockState2, IWorld iWorld, BlockPos blockPos, BlockPos blockPos2
-	) {
-		if (direction == Direction.UP && !blockState.canPlaceAt(iWorld, blockPos)) {
-			iWorld.getBlockTickScheduler().schedule(blockPos, this, 1);
+	public BlockState getStateForNeighborUpdate(BlockState state, Direction facing, BlockState neighborState, IWorld world, BlockPos pos, BlockPos neighborPos) {
+		if (facing == Direction.UP && !state.canPlaceAt(world, pos)) {
+			world.getBlockTickScheduler().schedule(pos, this, 1);
 		}
 
-		return super.getStateForNeighborUpdate(blockState, direction, blockState2, iWorld, blockPos, blockPos2);
+		return super.getStateForNeighborUpdate(state, facing, neighborState, world, pos, neighborPos);
 	}
 
 	@Override
-	public void onScheduledTick(BlockState blockState, World world, BlockPos blockPos, Random random) {
-		FarmlandBlock.setToDirt(blockState, world, blockPos);
+	public void onScheduledTick(BlockState state, World world, BlockPos pos, Random random) {
+		FarmlandBlock.setToDirt(state, world, pos);
 	}
 
 	@Override
-	public boolean canPlaceAt(BlockState blockState, ViewableWorld viewableWorld, BlockPos blockPos) {
-		BlockState blockState2 = viewableWorld.getBlockState(blockPos.up());
-		return !blockState2.getMaterial().isSolid() || blockState2.getBlock() instanceof FenceGateBlock;
+	public boolean canPlaceAt(BlockState state, CollisionView world, BlockPos pos) {
+		BlockState blockState = world.getBlockState(pos.up());
+		return !blockState.getMaterial().isSolid() || blockState.getBlock() instanceof FenceGateBlock;
 	}
 
 	@Override
-	public VoxelShape getOutlineShape(BlockState blockState, BlockView blockView, BlockPos blockPos, EntityContext entityContext) {
+	public VoxelShape getOutlineShape(BlockState state, BlockView view, BlockPos pos, EntityContext context) {
 		return SHAPE;
 	}
 
 	@Override
-	public boolean canPlaceAtSide(BlockState blockState, BlockView blockView, BlockPos blockPos, BlockPlacementEnvironment blockPlacementEnvironment) {
+	public boolean canPlaceAtSide(BlockState world, BlockView view, BlockPos pos, BlockPlacementEnvironment env) {
 		return false;
 	}
 }

@@ -6,13 +6,13 @@ import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.BlockPos;
 
 public class HideInHomeDuringRaidTask extends HideInHomeTask {
-	public HideInHomeDuringRaidTask(int i, float f) {
-		super(i, f, 1);
+	public HideInHomeDuringRaidTask(int maxDistance, float walkSpeed) {
+		super(maxDistance, walkSpeed, 1);
 	}
 
 	@Override
-	protected boolean shouldRun(ServerWorld serverWorld, LivingEntity livingEntity) {
-		Raid raid = serverWorld.getRaidAt(new BlockPos(livingEntity));
-		return super.shouldRun(serverWorld, livingEntity) && raid != null && raid.isActive() && !raid.hasWon() && !raid.hasLost();
+	protected boolean shouldRun(ServerWorld world, LivingEntity entity) {
+		Raid raid = world.getRaidAt(new BlockPos(entity));
+		return super.shouldRun(world, entity) && raid != null && raid.isActive() && !raid.hasWon() && !raid.hasLost();
 	}
 }

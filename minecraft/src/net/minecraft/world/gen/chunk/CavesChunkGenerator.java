@@ -10,34 +10,34 @@ import net.minecraft.world.biome.source.BiomeSource;
 import net.minecraft.world.gen.feature.Feature;
 
 public class CavesChunkGenerator extends SurfaceChunkGenerator<CavesChunkGeneratorConfig> {
-	private final double[] noiseFalloff = this.buidlNoiseFalloff();
+	private final double[] noiseFalloff = this.buildNoiseFalloff();
 
-	public CavesChunkGenerator(World world, BiomeSource biomeSource, CavesChunkGeneratorConfig cavesChunkGeneratorConfig) {
-		super(world, biomeSource, 4, 8, 128, cavesChunkGeneratorConfig, false);
+	public CavesChunkGenerator(World world, BiomeSource biomeSource, CavesChunkGeneratorConfig config) {
+		super(world, biomeSource, 4, 8, 128, config, false);
 	}
 
 	@Override
-	protected void sampleNoiseColumn(double[] ds, int i, int j) {
+	protected void sampleNoiseColumn(double[] buffer, int x, int z) {
 		double d = 684.412;
 		double e = 2053.236;
 		double f = 8.555150000000001;
 		double g = 34.2206;
-		int k = -10;
-		int l = 3;
-		this.sampleNoiseColumn(ds, i, j, 684.412, 2053.236, 8.555150000000001, 34.2206, 3, -10);
+		int i = -10;
+		int j = 3;
+		this.sampleNoiseColumn(buffer, x, z, 684.412, 2053.236, 8.555150000000001, 34.2206, 3, -10);
 	}
 
 	@Override
-	protected double[] computeNoiseRange(int i, int j) {
+	protected double[] computeNoiseRange(int x, int z) {
 		return new double[]{0.0, 0.0};
 	}
 
 	@Override
-	protected double computeNoiseFalloff(double d, double e, int i) {
-		return this.noiseFalloff[i];
+	protected double computeNoiseFalloff(double depth, double scale, int y) {
+		return this.noiseFalloff[y];
 	}
 
-	private double[] buidlNoiseFalloff() {
+	private double[] buildNoiseFalloff() {
 		double[] ds = new double[this.getNoiseSizeY()];
 
 		for (int i = 0; i < this.getNoiseSizeY(); i++) {
@@ -57,19 +57,18 @@ public class CavesChunkGenerator extends SurfaceChunkGenerator<CavesChunkGenerat
 	}
 
 	@Override
-	public List<Biome.SpawnEntry> getEntitySpawnList(EntityCategory entityCategory, BlockPos blockPos) {
-		if (entityCategory == EntityCategory.MONSTER) {
-			if (Feature.NETHER_BRIDGE.isInsideStructure(this.world, blockPos)) {
+	public List<Biome.SpawnEntry> getEntitySpawnList(EntityCategory category, BlockPos pos) {
+		if (category == EntityCategory.MONSTER) {
+			if (Feature.NETHER_BRIDGE.isInsideStructure(this.world, pos)) {
 				return Feature.NETHER_BRIDGE.getMonsterSpawns();
 			}
 
-			if (Feature.NETHER_BRIDGE.isApproximatelyInsideStructure(this.world, blockPos)
-				&& this.world.getBlockState(blockPos.down()).getBlock() == Blocks.NETHER_BRICKS) {
+			if (Feature.NETHER_BRIDGE.isApproximatelyInsideStructure(this.world, pos) && this.world.getBlockState(pos.down()).getBlock() == Blocks.NETHER_BRICKS) {
 				return Feature.NETHER_BRIDGE.getMonsterSpawns();
 			}
 		}
 
-		return super.getEntitySpawnList(entityCategory, blockPos);
+		return super.getEntitySpawnList(category, pos);
 	}
 
 	@Override

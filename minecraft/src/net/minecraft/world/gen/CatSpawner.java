@@ -10,18 +10,18 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
-import net.minecraft.village.PointOfInterestStorage;
-import net.minecraft.village.PointOfInterestType;
 import net.minecraft.world.GameRules;
 import net.minecraft.world.SpawnHelper;
 import net.minecraft.world.World;
 import net.minecraft.world.gen.feature.Feature;
+import net.minecraft.world.poi.PointOfInterestStorage;
+import net.minecraft.world.poi.PointOfInterestType;
 
 public class CatSpawner {
 	private int ticksUntilNextSpawn;
 
-	public int spawn(ServerWorld serverWorld, boolean bl, boolean bl2) {
-		if (bl2 && serverWorld.getGameRules().getBoolean(GameRules.DO_MOB_SPAWNING)) {
+	public int spawn(ServerWorld serverWorld, boolean spawnMonsters, boolean spawnAnimals) {
+		if (spawnAnimals && serverWorld.getGameRules().getBoolean(GameRules.DO_MOB_SPAWNING)) {
 			this.ticksUntilNextSpawn--;
 			if (this.ticksUntilNextSpawn > 0) {
 				return 0;
@@ -59,33 +59,32 @@ public class CatSpawner {
 		}
 	}
 
-	private int spawnInHouse(ServerWorld serverWorld, BlockPos blockPos) {
+	private int spawnInHouse(ServerWorld world, BlockPos pos) {
 		int i = 48;
-		if (serverWorld.getPointOfInterestStorage()
-				.count(PointOfInterestType.HOME.getCompletionCondition(), blockPos, 48, PointOfInterestStorage.OccupationStatus.IS_OCCUPIED)
+		if (world.getPointOfInterestStorage().count(PointOfInterestType.HOME.getCompletionCondition(), pos, 48, PointOfInterestStorage.OccupationStatus.IS_OCCUPIED)
 			> 4L) {
-			List<CatEntity> list = serverWorld.getEntities(CatEntity.class, new Box(blockPos).expand(48.0, 8.0, 48.0));
+			List<CatEntity> list = world.getNonSpectatingEntities(CatEntity.class, new Box(pos).expand(48.0, 8.0, 48.0));
 			if (list.size() < 5) {
-				return this.spawn(blockPos, serverWorld);
+				return this.spawn(pos, world);
 			}
 		}
 
 		return 0;
 	}
 
-	private int spawnInSwampHut(World world, BlockPos blockPos) {
+	private int spawnInSwampHut(World world, BlockPos pos) {
 		int i = 16;
-		List<CatEntity> list = world.getEntities(CatEntity.class, new Box(blockPos).expand(16.0, 8.0, 16.0));
-		return list.size() < 1 ? this.spawn(blockPos, world) : 0;
+		List<CatEntity> list = world.getNonSpectatingEntities(CatEntity.class, new Box(pos).expand(16.0, 8.0, 16.0));
+		return list.size() < 1 ? this.spawn(pos, world) : 0;
 	}
 
-	private int spawn(BlockPos blockPos, World world) {
+	private int spawn(BlockPos pos, World world) {
 		CatEntity catEntity = EntityType.CAT.create(world);
 		if (catEntity == null) {
 			return 0;
 		} else {
-			catEntity.initialize(world, world.getLocalDifficulty(blockPos), SpawnType.NATURAL, null, null);
-			catEntity.setPositionAndAngles(blockPos, 0.0F, 0.0F);
+			catEntity.initialize(world, world.getLocalDifficulty(pos), SpawnType.NATURAL, null, null);
+			catEntity.refreshPositionAndAngles(pos, 0.0F, 0.0F);
 			world.spawnEntity(catEntity);
 			return 1;
 		}

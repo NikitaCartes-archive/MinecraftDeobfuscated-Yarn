@@ -39,16 +39,16 @@ public class ChestBlockEntityRenderer<T extends BlockEntity & ChestAnimationProg
 	}
 
 	@Override
-	public void render(T blockEntity, double d, double e, double f, float g, int i) {
+	public void render(T entity, double xOffset, double yOffset, double zOffset, float tickDelta, int blockBreakStage) {
 		GlStateManager.enableDepthTest();
 		GlStateManager.depthFunc(515);
 		GlStateManager.depthMask(true);
-		BlockState blockState = blockEntity.hasWorld() ? blockEntity.getCachedState() : Blocks.CHEST.getDefaultState().with(ChestBlock.FACING, Direction.SOUTH);
+		BlockState blockState = entity.hasWorld() ? entity.getCachedState() : Blocks.CHEST.getDefaultState().with(ChestBlock.FACING, Direction.SOUTH);
 		ChestType chestType = blockState.contains((Property<T>)ChestBlock.CHEST_TYPE) ? blockState.get(ChestBlock.CHEST_TYPE) : ChestType.SINGLE;
 		if (chestType != ChestType.LEFT) {
 			boolean bl = chestType != ChestType.SINGLE;
-			ChestEntityModel chestEntityModel = this.method_3562(blockEntity, i, bl);
-			if (i >= 0) {
+			ChestEntityModel chestEntityModel = this.method_3562(entity, blockBreakStage, bl);
+			if (blockBreakStage >= 0) {
 				GlStateManager.matrixMode(5890);
 				GlStateManager.pushMatrix();
 				GlStateManager.scalef(bl ? 8.0F : 4.0F, 4.0F, 1.0F);
@@ -60,21 +60,21 @@ public class ChestBlockEntityRenderer<T extends BlockEntity & ChestAnimationProg
 
 			GlStateManager.pushMatrix();
 			GlStateManager.enableRescaleNormal();
-			GlStateManager.translatef((float)d, (float)e + 1.0F, (float)f + 1.0F);
+			GlStateManager.translatef((float)xOffset, (float)yOffset + 1.0F, (float)zOffset + 1.0F);
 			GlStateManager.scalef(1.0F, -1.0F, -1.0F);
-			float h = ((Direction)blockState.get(ChestBlock.FACING)).asRotation();
-			if ((double)Math.abs(h) > 1.0E-5) {
+			float f = ((Direction)blockState.get(ChestBlock.FACING)).asRotation();
+			if ((double)Math.abs(f) > 1.0E-5) {
 				GlStateManager.translatef(0.5F, 0.5F, 0.5F);
-				GlStateManager.rotatef(h, 0.0F, 1.0F, 0.0F);
+				GlStateManager.rotatef(f, 0.0F, 1.0F, 0.0F);
 				GlStateManager.translatef(-0.5F, -0.5F, -0.5F);
 			}
 
-			this.method_3561(blockEntity, g, chestEntityModel);
+			this.method_3561(entity, tickDelta, chestEntityModel);
 			chestEntityModel.method_2799();
 			GlStateManager.disableRescaleNormal();
 			GlStateManager.popMatrix();
 			GlStateManager.color4f(1.0F, 1.0F, 1.0F, 1.0F);
-			if (i >= 0) {
+			if (blockBreakStage >= 0) {
 				GlStateManager.matrixMode(5890);
 				GlStateManager.popMatrix();
 				GlStateManager.matrixMode(5888);

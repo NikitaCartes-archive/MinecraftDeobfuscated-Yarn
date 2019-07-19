@@ -14,11 +14,11 @@ import net.minecraft.nbt.CompoundTag;
 public class ShoulderParrotFeatureRenderer<T extends PlayerEntity> extends FeatureRenderer<T, PlayerEntityModel<T>> {
 	private final ParrotEntityModel model = new ParrotEntityModel();
 
-	public ShoulderParrotFeatureRenderer(FeatureRendererContext<T, PlayerEntityModel<T>> featureRendererContext) {
-		super(featureRendererContext);
+	public ShoulderParrotFeatureRenderer(FeatureRendererContext<T, PlayerEntityModel<T>> context) {
+		super(context);
 	}
 
-	public void method_4185(T playerEntity, float f, float g, float h, float i, float j, float k, float l) {
+	public void render(T playerEntity, float f, float g, float h, float i, float j, float k, float l) {
 		GlStateManager.enableRescaleNormal();
 		GlStateManager.color4f(1.0F, 1.0F, 1.0F, 1.0F);
 		this.renderShoulderParrot(playerEntity, f, g, h, j, k, l, true);

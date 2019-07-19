@@ -1,12 +1,12 @@
 package net.minecraft.structure;
 
-import net.minecraft.util.math.MutableIntBoundingBox;
+import net.minecraft.util.math.BlockBox;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.gen.feature.StructureFeature;
 
 public abstract class VillageStructureStart extends StructureStart {
-	public VillageStructureStart(StructureFeature<?> structureFeature, int i, int j, Biome biome, MutableIntBoundingBox mutableIntBoundingBox, int k, long l) {
-		super(structureFeature, i, j, biome, mutableIntBoundingBox, k, l);
+	public VillageStructureStart(StructureFeature<?> structureFeature, int i, int j, Biome biome, BlockBox blockBox, int k, long l) {
+		super(structureFeature, i, j, biome, blockBox, k, l);
 	}
 
 	@Override

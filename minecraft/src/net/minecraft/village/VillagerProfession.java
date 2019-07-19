@@ -7,6 +7,7 @@ import net.minecraft.item.Item;
 import net.minecraft.item.Items;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.registry.Registry;
+import net.minecraft.world.poi.PointOfInterestType;
 
 public class VillagerProfession {
 	public static final VillagerProfession NONE = register("none", PointOfInterestType.UNEMPLOYED);
@@ -31,11 +32,11 @@ public class VillagerProfession {
 	private final ImmutableSet<Item> gatherableItems;
 	private final ImmutableSet<Block> secondaryJobSites;
 
-	private VillagerProfession(String string, PointOfInterestType pointOfInterestType, ImmutableSet<Item> immutableSet, ImmutableSet<Block> immutableSet2) {
-		this.id = string;
-		this.workStation = pointOfInterestType;
-		this.gatherableItems = immutableSet;
-		this.secondaryJobSites = immutableSet2;
+	private VillagerProfession(String id, PointOfInterestType workStation, ImmutableSet<Item> gatherableItems, ImmutableSet<Block> secondaryJobSites) {
+		this.id = id;
+		this.workStation = workStation;
+		this.gatherableItems = gatherableItems;
+		this.secondaryJobSites = secondaryJobSites;
 	}
 
 	public PointOfInterestType getWorkStation() {
@@ -54,8 +55,8 @@ public class VillagerProfession {
 		return this.id;
 	}
 
-	static VillagerProfession register(String string, PointOfInterestType pointOfInterestType) {
-		return register(string, pointOfInterestType, ImmutableSet.of(), ImmutableSet.of());
+	static VillagerProfession register(String key, PointOfInterestType pointOfInterestType) {
+		return register(key, pointOfInterestType, ImmutableSet.of(), ImmutableSet.of());
 	}
 
 	static VillagerProfession register(String string, PointOfInterestType pointOfInterestType, ImmutableSet<Item> immutableSet, ImmutableSet<Block> immutableSet2) {

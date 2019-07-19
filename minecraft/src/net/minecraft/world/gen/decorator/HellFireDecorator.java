@@ -13,7 +13,7 @@ public class HellFireDecorator extends SimpleDecorator<CountDecoratorConfig> {
 		super(function);
 	}
 
-	public Stream<BlockPos> method_15947(Random random, CountDecoratorConfig countDecoratorConfig, BlockPos blockPos) {
+	public Stream<BlockPos> getPositions(Random random, CountDecoratorConfig countDecoratorConfig, BlockPos blockPos) {
 		List<BlockPos> list = Lists.<BlockPos>newArrayList();
 
 		for (int i = 0; i < random.nextInt(random.nextInt(countDecoratorConfig.count) + 1) + 1; i++) {

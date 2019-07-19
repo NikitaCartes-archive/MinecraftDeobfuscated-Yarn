@@ -15,11 +15,11 @@ public class CaveSpiderEntityRenderer extends SpiderEntityRenderer<CaveSpiderEnt
 		this.field_4673 *= 0.7F;
 	}
 
-	protected void method_3886(CaveSpiderEntity caveSpiderEntity, float f) {
+	protected void scale(CaveSpiderEntity caveSpiderEntity, float f) {
 		GlStateManager.scalef(0.7F, 0.7F, 0.7F);
 	}
 
-	protected Identifier method_3885(CaveSpiderEntity caveSpiderEntity) {
+	protected Identifier getTexture(CaveSpiderEntity caveSpiderEntity) {
 		return SKIN;
 	}
 }

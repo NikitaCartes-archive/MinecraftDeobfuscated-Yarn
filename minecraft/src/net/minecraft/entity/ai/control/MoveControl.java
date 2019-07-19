@@ -23,8 +23,8 @@ public class MoveControl {
 	protected float sidewaysMovement;
 	protected MoveControl.State state = MoveControl.State.WAIT;
 
-	public MoveControl(MobEntity mobEntity) {
-		this.entity = mobEntity;
+	public MoveControl(MobEntity entity) {
+		this.entity = entity;
 	}
 
 	public boolean isMoving() {
@@ -35,20 +35,20 @@ public class MoveControl {
 		return this.speed;
 	}
 
-	public void moveTo(double d, double e, double f, double g) {
-		this.targetX = d;
-		this.targetY = e;
-		this.targetZ = f;
-		this.speed = g;
+	public void moveTo(double x, double y, double z, double speed) {
+		this.targetX = x;
+		this.targetY = y;
+		this.targetZ = z;
+		this.speed = speed;
 		if (this.state != MoveControl.State.JUMPING) {
 			this.state = MoveControl.State.MOVE_TO;
 		}
 	}
 
-	public void strafeTo(float f, float g) {
+	public void strafeTo(float forward, float sideways) {
 		this.state = MoveControl.State.STRAFE;
-		this.forwardMovement = f;
-		this.sidewaysMovement = g;
+		this.forwardMovement = forward;
+		this.sidewaysMovement = sideways;
 		this.speed = 0.25;
 	}
 
@@ -74,7 +74,7 @@ public class MoveControl {
 			if (entityNavigation != null) {
 				PathNodeMaker pathNodeMaker = entityNavigation.getNodeMaker();
 				if (pathNodeMaker != null
-					&& pathNodeMaker.getPathNodeType(
+					&& pathNodeMaker.getNodeType(
 							this.entity.world, MathHelper.floor(this.entity.x + (double)m), MathHelper.floor(this.entity.y), MathHelper.floor(this.entity.z + (double)n)
 						)
 						!= PathNodeType.WALKABLE) {
@@ -124,24 +124,24 @@ public class MoveControl {
 		}
 	}
 
-	protected float changeAngle(float f, float g, float h) {
-		float i = MathHelper.wrapDegrees(g - f);
-		if (i > h) {
-			i = h;
+	protected float changeAngle(float from, float to, float max) {
+		float f = MathHelper.wrapDegrees(to - from);
+		if (f > max) {
+			f = max;
 		}
 
-		if (i < -h) {
-			i = -h;
+		if (f < -max) {
+			f = -max;
 		}
 
-		float j = f + i;
-		if (j < 0.0F) {
-			j += 360.0F;
-		} else if (j > 360.0F) {
-			j -= 360.0F;
+		float g = from + f;
+		if (g < 0.0F) {
+			g += 360.0F;
+		} else if (g > 360.0F) {
+			g -= 360.0F;
 		}
 
-		return j;
+		return g;
 	}
 
 	public double getTargetX() {

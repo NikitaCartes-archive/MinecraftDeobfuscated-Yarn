@@ -6,12 +6,12 @@ import net.minecraft.text.Text;
 public class CommandException extends RuntimeException {
 	private final Text message;
 
-	public CommandException(Text text) {
-		super(text.asString(), null, CommandSyntaxException.ENABLE_COMMAND_STACK_TRACES, CommandSyntaxException.ENABLE_COMMAND_STACK_TRACES);
-		this.message = text;
+	public CommandException(Text message) {
+		super(message.asString(), null, CommandSyntaxException.ENABLE_COMMAND_STACK_TRACES, CommandSyntaxException.ENABLE_COMMAND_STACK_TRACES);
+		this.message = message;
 	}
 
-	public Text getMessageText() {
+	public Text getTextMessage() {
 		return this.message;
 	}
 }

@@ -5,5 +5,5 @@ import net.fabricmc.api.Environment;
 
 @Environment(EnvType.CLIENT)
 public interface ListenerSoundInstance {
-	void onSoundPlayed(SoundInstance soundInstance, WeightedSoundSet weightedSoundSet);
+	void onSoundPlayed(SoundInstance sound, WeightedSoundSet soundSet);
 }

@@ -13,7 +13,7 @@ import net.minecraft.block.Block;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.widget.AlwaysSelectedEntryListWidget;
 import net.minecraft.client.gui.widget.ButtonWidget;
-import net.minecraft.client.render.GuiLighting;
+import net.minecraft.client.render.DiffuseLighting;
 import net.minecraft.client.render.Tessellator;
 import net.minecraft.client.resource.language.I18n;
 import net.minecraft.client.sound.PositionedSoundInstance;
@@ -21,7 +21,7 @@ import net.minecraft.entity.EntityType;
 import net.minecraft.item.BlockItem;
 import net.minecraft.item.Item;
 import net.minecraft.item.Items;
-import net.minecraft.server.network.packet.ClientStatusC2SPacket;
+import net.minecraft.network.packet.c2s.play.ClientStatusC2SPacket;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.stat.Stat;
 import net.minecraft.stat.StatHandler;
@@ -31,23 +31,23 @@ import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.SystemUtil;
+import net.minecraft.util.Util;
 import net.minecraft.util.registry.Registry;
 
 @Environment(EnvType.CLIENT)
 public class StatsScreen extends Screen implements StatsListener {
 	protected final Screen parent;
-	private StatsScreen.CustomStatsListWidget generalButton;
-	private StatsScreen.ItemStatsListWidget itemsButton;
-	private StatsScreen.EntityStatsListWidget mobsButton;
+	private StatsScreen.CustomStatsListWidget generalStats;
+	private StatsScreen.ItemStatsListWidget itemStats;
+	private StatsScreen.EntityStatsListWidget mobStats;
 	private final StatHandler statHandler;
 	@Nullable
-	private AlwaysSelectedEntryListWidget<?> listWidget;
+	private AlwaysSelectedEntryListWidget<?> selectedList;
 	private boolean field_2645 = true;
 
-	public StatsScreen(Screen screen, StatHandler statHandler) {
+	public StatsScreen(Screen parent, StatHandler statHandler) {
 		super(new TranslatableText("gui.stats"));
-		this.parent = screen;
+		this.parent = parent;
 		this.statHandler = statHandler;
 	}
 
@@ -58,51 +58,49 @@ public class StatsScreen extends Screen implements StatsListener {
 	}
 
 	public void method_2270() {
-		this.generalButton = new StatsScreen.CustomStatsListWidget(this.minecraft);
-		this.itemsButton = new StatsScreen.ItemStatsListWidget(this.minecraft);
-		this.mobsButton = new StatsScreen.EntityStatsListWidget(this.minecraft);
+		this.generalStats = new StatsScreen.CustomStatsListWidget(this.minecraft);
+		this.itemStats = new StatsScreen.ItemStatsListWidget(this.minecraft);
+		this.mobStats = new StatsScreen.EntityStatsListWidget(this.minecraft);
 	}
 
 	public void method_2267() {
 		this.addButton(
-			new ButtonWidget(
-				this.width / 2 - 120, this.height - 52, 80, 20, I18n.translate("stat.generalButton"), buttonWidgetx -> this.method_19390(this.generalButton)
-			)
+			new ButtonWidget(this.width / 2 - 120, this.height - 52, 80, 20, I18n.translate("stat.generalButton"), buttonWidgetx -> this.method_19390(this.generalStats))
 		);
 		ButtonWidget buttonWidget = this.addButton(
-			new ButtonWidget(this.width / 2 - 40, this.height - 52, 80, 20, I18n.translate("stat.itemsButton"), buttonWidgetx -> this.method_19390(this.itemsButton))
+			new ButtonWidget(this.width / 2 - 40, this.height - 52, 80, 20, I18n.translate("stat.itemsButton"), buttonWidgetx -> this.method_19390(this.itemStats))
 		);
 		ButtonWidget buttonWidget2 = this.addButton(
-			new ButtonWidget(this.width / 2 + 40, this.height - 52, 80, 20, I18n.translate("stat.mobsButton"), buttonWidgetx -> this.method_19390(this.mobsButton))
+			new ButtonWidget(this.width / 2 + 40, this.height - 52, 80, 20, I18n.translate("stat.mobsButton"), buttonWidgetx -> this.method_19390(this.mobStats))
 		);
 		this.addButton(
 			new ButtonWidget(this.width / 2 - 100, this.height - 28, 200, 20, I18n.translate("gui.done"), buttonWidgetx -> this.minecraft.openScreen(this.parent))
 		);
-		if (this.itemsButton.children().isEmpty()) {
+		if (this.itemStats.children().isEmpty()) {
 			buttonWidget.active = false;
 		}
 
-		if (this.mobsButton.children().isEmpty()) {
+		if (this.mobStats.children().isEmpty()) {
 			buttonWidget2.active = false;
 		}
 	}
 
 	@Override
-	public void render(int i, int j, float f) {
+	public void render(int mouseX, int mouseY, float delta) {
 		if (this.field_2645) {
 			this.renderBackground();
 			this.drawCenteredString(this.font, I18n.translate("multiplayer.downloadingStats"), this.width / 2, this.height / 2, 16777215);
 			this.drawCenteredString(
 				this.font,
-				PROGRESS_BAR_STAGES[(int)(SystemUtil.getMeasuringTimeMs() / 150L % (long)PROGRESS_BAR_STAGES.length)],
+				PROGRESS_BAR_STAGES[(int)(Util.getMeasuringTimeMs() / 150L % (long)PROGRESS_BAR_STAGES.length)],
 				this.width / 2,
 				this.height / 2 + 9 * 2,
 				16777215
 			);
 		} else {
-			this.method_19399().render(i, j, f);
+			this.method_19399().render(mouseX, mouseY, delta);
 			this.drawCenteredString(this.font, this.title.asFormattedString(), this.width / 2, 20, 16777215);
-			super.render(i, j, f);
+			super.render(mouseX, mouseY, delta);
 		}
 	}
 
@@ -111,7 +109,7 @@ public class StatsScreen extends Screen implements StatsListener {
 		if (this.field_2645) {
 			this.method_2270();
 			this.method_2267();
-			this.method_19390(this.generalButton);
+			this.method_19390(this.generalStats);
 			this.field_2645 = false;
 		}
 	}
@@ -123,16 +121,16 @@ public class StatsScreen extends Screen implements StatsListener {
 
 	@Nullable
 	public AlwaysSelectedEntryListWidget<?> method_19399() {
-		return this.listWidget;
+		return this.selectedList;
 	}
 
 	public void method_19390(@Nullable AlwaysSelectedEntryListWidget<?> alwaysSelectedEntryListWidget) {
-		this.children.remove(this.generalButton);
-		this.children.remove(this.itemsButton);
-		this.children.remove(this.mobsButton);
+		this.children.remove(this.generalStats);
+		this.children.remove(this.itemStats);
+		this.children.remove(this.mobStats);
 		if (alwaysSelectedEntryListWidget != null) {
 			this.children.add(0, alwaysSelectedEntryListWidget);
-			this.listWidget = alwaysSelectedEntryListWidget;
+			this.selectedList = alwaysSelectedEntryListWidget;
 		}
 	}
 
@@ -143,9 +141,9 @@ public class StatsScreen extends Screen implements StatsListener {
 	private void method_2289(int i, int j, Item item) {
 		this.method_2282(i + 1, j + 1, 0, 0);
 		GlStateManager.enableRescaleNormal();
-		GuiLighting.enableForItems();
+		DiffuseLighting.enableForItems();
 		this.itemRenderer.renderGuiItemIcon(item.getStackForRender(), i + 2, j + 2);
-		GuiLighting.disable();
+		DiffuseLighting.disable();
 		GlStateManager.disableRescaleNormal();
 	}
 
@@ -218,7 +216,7 @@ public class StatsScreen extends Screen implements StatsListener {
 
 			@Override
 			public void render(int i, int j, int k, int l, int m, int n, int o, boolean bl, float f) {
-				String string = I18n.translate(SystemUtil.createTranslationKey("entity", EntityType.getId(this.field_18762)));
+				String string = I18n.translate(Util.createTranslationKey("entity", EntityType.getId(this.field_18762)));
 				int p = StatsScreen.this.statHandler.getStat(Stats.KILLED.getOrCreateStat(this.field_18762));
 				int q = StatsScreen.this.statHandler.getStat(Stats.KILLED_BY.getOrCreateStat(this.field_18762));
 				EntityStatsListWidget.this.drawString(StatsScreen.this.font, string, k + 2, j + 1, 16777215);
@@ -364,30 +362,30 @@ public class StatsScreen extends Screen implements StatsListener {
 		}
 
 		@Override
-		protected void renderDecorations(int i, int j) {
-			if (j >= this.top && j <= this.bottom) {
-				StatsScreen.ItemStatsListWidget.ItemStatItem itemStatItem = this.getEntryAtPosition((double)i, (double)j);
-				int k = (this.width - this.getRowWidth()) / 2;
+		protected void renderDecorations(int mouseX, int mouseY) {
+			if (mouseY >= this.top && mouseY <= this.bottom) {
+				StatsScreen.ItemStatsListWidget.ItemStatItem itemStatItem = this.getEntryAtPosition((double)mouseX, (double)mouseY);
+				int i = (this.width - this.getRowWidth()) / 2;
 				if (itemStatItem != null) {
-					if (i < k + 40 || i > k + 40 + 20) {
+					if (mouseX < i + 40 || mouseX > i + 40 + 20) {
 						return;
 					}
 
 					Item item = (Item)this.field_18757.get(this.children().indexOf(itemStatItem));
-					this.method_19407(this.method_19406(item), i, j);
+					this.method_19407(this.method_19406(item), mouseX, mouseY);
 				} else {
 					Text text = null;
-					int l = i - k;
+					int j = mouseX - i;
 
-					for (int m = 0; m < this.field_18753.length; m++) {
-						int n = StatsScreen.this.method_2285(m);
-						if (l >= n - 18 && l <= n) {
-							text = new TranslatableText(this.method_19410(m).getTranslationKey());
+					for (int k = 0; k < this.field_18753.length; k++) {
+						int l = StatsScreen.this.method_2285(k);
+						if (j >= l - 18 && j <= l) {
+							text = new TranslatableText(this.method_19410(k).getTranslationKey());
 							break;
 						}
 					}
 
-					this.method_19407(text, i, j);
+					this.method_19407(text, mouseX, mouseY);
 				}
 			}
 		}
@@ -428,13 +426,13 @@ public class StatsScreen extends Screen implements StatsListener {
 
 			@Override
 			public void render(int i, int j, int k, int l, int m, int n, int o, boolean bl, float f) {
-				Item item = (Item)StatsScreen.this.itemsButton.field_18757.get(i);
+				Item item = (Item)StatsScreen.this.itemStats.field_18757.get(i);
 				StatsScreen.this.method_2289(k + 40, j, item);
 
-				for (int p = 0; p < StatsScreen.this.itemsButton.field_18754.size(); p++) {
+				for (int p = 0; p < StatsScreen.this.itemStats.field_18754.size(); p++) {
 					Stat<Block> stat;
 					if (item instanceof BlockItem) {
-						stat = ((StatType)StatsScreen.this.itemsButton.field_18754.get(p)).getOrCreateStat(((BlockItem)item).getBlock());
+						stat = ((StatType)StatsScreen.this.itemStats.field_18754.get(p)).getOrCreateStat(((BlockItem)item).getBlock());
 					} else {
 						stat = null;
 					}
@@ -442,10 +440,10 @@ public class StatsScreen extends Screen implements StatsListener {
 					this.method_19405(stat, k + StatsScreen.this.method_2285(p), j, i % 2 == 0);
 				}
 
-				for (int p = 0; p < StatsScreen.this.itemsButton.field_18755.size(); p++) {
+				for (int p = 0; p < StatsScreen.this.itemStats.field_18755.size(); p++) {
 					this.method_19405(
-						((StatType)StatsScreen.this.itemsButton.field_18755.get(p)).getOrCreateStat(item),
-						k + StatsScreen.this.method_2285(p + StatsScreen.this.itemsButton.field_18754.size()),
+						((StatType)StatsScreen.this.itemStats.field_18755.get(p)).getOrCreateStat(item),
+						k + StatsScreen.this.method_2285(p + StatsScreen.this.itemStats.field_18754.size()),
 						j,
 						i % 2 == 0
 					);
@@ -463,7 +461,7 @@ public class StatsScreen extends Screen implements StatsListener {
 			private class_450() {
 			}
 
-			public int method_2297(Item item, Item item2) {
+			public int compare(Item item, Item item2) {
 				int i;
 				int j;
 				if (ItemStatsListWidget.this.field_18759 == null) {

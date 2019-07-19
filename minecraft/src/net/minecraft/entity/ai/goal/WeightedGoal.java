@@ -8,13 +8,13 @@ public class WeightedGoal extends Goal {
 	private final int weight;
 	private boolean running;
 
-	public WeightedGoal(int i, Goal goal) {
-		this.weight = i;
+	public WeightedGoal(int weight, Goal goal) {
+		this.weight = weight;
 		this.goal = goal;
 	}
 
-	public boolean canBeReplacedBy(WeightedGoal weightedGoal) {
-		return this.canStop() && weightedGoal.getWeight() < this.getWeight();
+	public boolean canBeReplacedBy(WeightedGoal goal) {
+		return this.canStop() && goal.getWeight() < this.getWeight();
 	}
 
 	@Override
@@ -54,8 +54,8 @@ public class WeightedGoal extends Goal {
 	}
 
 	@Override
-	public void setControls(EnumSet<Goal.Control> enumSet) {
-		this.goal.setControls(enumSet);
+	public void setControls(EnumSet<Goal.Control> controls) {
+		this.goal.setControls(controls);
 	}
 
 	@Override

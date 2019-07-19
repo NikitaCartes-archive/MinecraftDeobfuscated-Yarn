@@ -17,7 +17,7 @@ import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
-import net.minecraft.util.SystemUtil;
+import net.minecraft.util.Util;
 import net.minecraft.util.registry.Registry;
 
 public class StatusEffect {
@@ -28,12 +28,12 @@ public class StatusEffect {
 	private String translationKey;
 
 	@Nullable
-	public static StatusEffect byRawId(int i) {
-		return Registry.MOB_EFFECT.get(i);
+	public static StatusEffect byRawId(int rawId) {
+		return Registry.STATUS_EFFECT.get(rawId);
 	}
 
-	public static int getRawId(StatusEffect statusEffect) {
-		return Registry.MOB_EFFECT.getRawId(statusEffect);
+	public static int getRawId(StatusEffect type) {
+		return Registry.STATUS_EFFECT.getRawId(type);
 	}
 
 	protected StatusEffect(StatusEffectType statusEffectType, int i) {
@@ -41,60 +41,60 @@ public class StatusEffect {
 		this.color = i;
 	}
 
-	public void applyUpdateEffect(LivingEntity livingEntity, int i) {
+	public void applyUpdateEffect(LivingEntity entity, int amplifier) {
 		if (this == StatusEffects.REGENERATION) {
-			if (livingEntity.getHealth() < livingEntity.getHealthMaximum()) {
-				livingEntity.heal(1.0F);
+			if (entity.getHealth() < entity.getMaximumHealth()) {
+				entity.heal(1.0F);
 			}
 		} else if (this == StatusEffects.POISON) {
-			if (livingEntity.getHealth() > 1.0F) {
-				livingEntity.damage(DamageSource.MAGIC, 1.0F);
+			if (entity.getHealth() > 1.0F) {
+				entity.damage(DamageSource.MAGIC, 1.0F);
 			}
 		} else if (this == StatusEffects.WITHER) {
-			livingEntity.damage(DamageSource.WITHER, 1.0F);
-		} else if (this == StatusEffects.HUNGER && livingEntity instanceof PlayerEntity) {
-			((PlayerEntity)livingEntity).addExhaustion(0.005F * (float)(i + 1));
-		} else if (this == StatusEffects.SATURATION && livingEntity instanceof PlayerEntity) {
-			if (!livingEntity.world.isClient) {
-				((PlayerEntity)livingEntity).getHungerManager().add(i + 1, 1.0F);
+			entity.damage(DamageSource.WITHER, 1.0F);
+		} else if (this == StatusEffects.HUNGER && entity instanceof PlayerEntity) {
+			((PlayerEntity)entity).addExhaustion(0.005F * (float)(amplifier + 1));
+		} else if (this == StatusEffects.SATURATION && entity instanceof PlayerEntity) {
+			if (!entity.world.isClient) {
+				((PlayerEntity)entity).getHungerManager().add(amplifier + 1, 1.0F);
 			}
-		} else if ((this != StatusEffects.INSTANT_HEALTH || livingEntity.isUndead()) && (this != StatusEffects.INSTANT_DAMAGE || !livingEntity.isUndead())) {
-			if (this == StatusEffects.INSTANT_DAMAGE && !livingEntity.isUndead() || this == StatusEffects.INSTANT_HEALTH && livingEntity.isUndead()) {
-				livingEntity.damage(DamageSource.MAGIC, (float)(6 << i));
+		} else if ((this != StatusEffects.INSTANT_HEALTH || entity.isUndead()) && (this != StatusEffects.INSTANT_DAMAGE || !entity.isUndead())) {
+			if (this == StatusEffects.INSTANT_DAMAGE && !entity.isUndead() || this == StatusEffects.INSTANT_HEALTH && entity.isUndead()) {
+				entity.damage(DamageSource.MAGIC, (float)(6 << amplifier));
 			}
 		} else {
-			livingEntity.heal((float)Math.max(4 << i, 0));
+			entity.heal((float)Math.max(4 << amplifier, 0));
 		}
 	}
 
-	public void applyInstantEffect(@Nullable Entity entity, @Nullable Entity entity2, LivingEntity livingEntity, int i, double d) {
-		if ((this != StatusEffects.INSTANT_HEALTH || livingEntity.isUndead()) && (this != StatusEffects.INSTANT_DAMAGE || !livingEntity.isUndead())) {
-			if (this == StatusEffects.INSTANT_DAMAGE && !livingEntity.isUndead() || this == StatusEffects.INSTANT_HEALTH && livingEntity.isUndead()) {
-				int j = (int)(d * (double)(6 << i) + 0.5);
-				if (entity == null) {
-					livingEntity.damage(DamageSource.MAGIC, (float)j);
+	public void applyInstantEffect(@Nullable Entity source, @Nullable Entity attacker, LivingEntity target, int amplifier, double proximity) {
+		if ((this != StatusEffects.INSTANT_HEALTH || target.isUndead()) && (this != StatusEffects.INSTANT_DAMAGE || !target.isUndead())) {
+			if (this == StatusEffects.INSTANT_DAMAGE && !target.isUndead() || this == StatusEffects.INSTANT_HEALTH && target.isUndead()) {
+				int i = (int)(proximity * (double)(6 << amplifier) + 0.5);
+				if (source == null) {
+					target.damage(DamageSource.MAGIC, (float)i);
 				} else {
-					livingEntity.damage(DamageSource.magic(entity, entity2), (float)j);
+					target.damage(DamageSource.magic(source, attacker), (float)i);
 				}
 			} else {
-				this.applyUpdateEffect(livingEntity, i);
+				this.applyUpdateEffect(target, amplifier);
 			}
 		} else {
-			int j = (int)(d * (double)(4 << i) + 0.5);
-			livingEntity.heal((float)j);
+			int i = (int)(proximity * (double)(4 << amplifier) + 0.5);
+			target.heal((float)i);
 		}
 	}
 
-	public boolean canApplyUpdateEffect(int i, int j) {
+	public boolean canApplyUpdateEffect(int duration, int amplifier) {
 		if (this == StatusEffects.REGENERATION) {
-			int k = 50 >> j;
-			return k > 0 ? i % k == 0 : true;
+			int i = 50 >> amplifier;
+			return i > 0 ? duration % i == 0 : true;
 		} else if (this == StatusEffects.POISON) {
-			int k = 25 >> j;
-			return k > 0 ? i % k == 0 : true;
+			int i = 25 >> amplifier;
+			return i > 0 ? duration % i == 0 : true;
 		} else if (this == StatusEffects.WITHER) {
-			int k = 40 >> j;
-			return k > 0 ? i % k == 0 : true;
+			int i = 40 >> amplifier;
+			return i > 0 ? duration % i == 0 : true;
 		} else {
 			return this == StatusEffects.HUNGER;
 		}
@@ -106,7 +106,7 @@ public class StatusEffect {
 
 	protected String method_5559() {
 		if (this.translationKey == null) {
-			this.translationKey = SystemUtil.createTranslationKey("effect", Registry.MOB_EFFECT.getId(this));
+			this.translationKey = Util.createTranslationKey("effect", Registry.STATUS_EFFECT.getId(this));
 		}
 
 		return this.translationKey;
@@ -129,9 +129,9 @@ public class StatusEffect {
 		return this.color;
 	}
 
-	public StatusEffect addAttributeModifier(EntityAttribute entityAttribute, String string, double d, EntityAttributeModifier.Operation operation) {
-		EntityAttributeModifier entityAttributeModifier = new EntityAttributeModifier(UUID.fromString(string), this::getTranslationKey, d, operation);
-		this.attributeModifiers.put(entityAttribute, entityAttributeModifier);
+	public StatusEffect addAttributeModifier(EntityAttribute attribute, String uuid, double amount, EntityAttributeModifier.Operation operation) {
+		EntityAttributeModifier entityAttributeModifier = new EntityAttributeModifier(UUID.fromString(uuid), this::getTranslationKey, amount, operation);
+		this.attributeModifiers.put(attribute, entityAttributeModifier);
 		return this;
 	}
 

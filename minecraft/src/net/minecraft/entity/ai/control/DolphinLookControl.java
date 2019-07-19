@@ -6,9 +6,9 @@ import net.minecraft.util.math.MathHelper;
 public class DolphinLookControl extends LookControl {
 	private final int field_6357;
 
-	public DolphinLookControl(MobEntity mobEntity, int i) {
-		super(mobEntity);
-		this.field_6357 = i;
+	public DolphinLookControl(MobEntity entity, int maxYawDifference) {
+		super(entity);
+		this.field_6357 = maxYawDifference;
 	}
 
 	@Override

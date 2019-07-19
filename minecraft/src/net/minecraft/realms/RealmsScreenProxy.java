@@ -33,9 +33,9 @@ public class RealmsScreenProxy extends Screen {
 	}
 
 	@Override
-	public void init(MinecraftClient minecraftClient, int i, int j) {
-		this.screen.init(minecraftClient, i, j);
-		super.init(minecraftClient, i, j);
+	public void init(MinecraftClient client, int width, int height) {
+		this.screen.init(client, width, height);
+		super.init(client, width, height);
 	}
 
 	@Override
@@ -44,15 +44,15 @@ public class RealmsScreenProxy extends Screen {
 		super.init();
 	}
 
-	public void drawCenteredString(String string, int i, int j, int k) {
-		super.drawCenteredString(this.font, string, i, j, k);
+	public void drawCenteredString(String text, int x, int y, int i) {
+		super.drawCenteredString(this.font, text, x, y, i);
 	}
 
-	public void drawString(String string, int i, int j, int k, boolean bl) {
+	public void drawString(String text, int x, int y, int color, boolean bl) {
 		if (bl) {
-			super.drawString(this.font, string, i, j, k);
+			super.drawString(this.font, text, x, y, color);
 		} else {
-			this.font.draw(string, (float)i, (float)j, k);
+			this.font.draw(text, (float)x, (float)y, color);
 		}
 	}
 
@@ -86,28 +86,28 @@ public class RealmsScreenProxy extends Screen {
 	}
 
 	@Override
-	public void renderBackground(int i) {
-		super.renderBackground(i);
+	public void renderBackground(int alpha) {
+		super.renderBackground(alpha);
 	}
 
 	@Override
-	public void render(int i, int j, float f) {
-		this.screen.render(i, j, f);
+	public void render(int mouseX, int mouseY, float delta) {
+		this.screen.render(mouseX, mouseY, delta);
 	}
 
 	@Override
-	public void renderTooltip(ItemStack itemStack, int i, int j) {
-		super.renderTooltip(itemStack, i, j);
+	public void renderTooltip(ItemStack stack, int x, int y) {
+		super.renderTooltip(stack, x, y);
 	}
 
 	@Override
-	public void renderTooltip(String string, int i, int j) {
-		super.renderTooltip(string, i, j);
+	public void renderTooltip(String text, int x, int y) {
+		super.renderTooltip(text, x, y);
 	}
 
 	@Override
-	public void renderTooltip(List<String> list, int i, int j) {
-		super.renderTooltip(list, i, j);
+	public void renderTooltip(List<String> text, int x, int y) {
+		super.renderTooltip(text, x, y);
 	}
 
 	@Override
@@ -132,8 +132,8 @@ public class RealmsScreenProxy extends Screen {
 		return this.font.getStringWidth(string);
 	}
 
-	public void fontDrawShadow(String string, int i, int j, int k) {
-		this.font.drawWithShadow(string, (float)i, (float)j, k);
+	public void fontDrawShadow(String text, int x, int y, int i) {
+		this.font.drawWithShadow(text, (float)x, (float)y, i);
 	}
 
 	public List<String> fontSplit(String string, int i) {
@@ -195,28 +195,28 @@ public class RealmsScreenProxy extends Screen {
 	}
 
 	@Override
-	public boolean mouseClicked(double d, double e, int i) {
-		return this.screen.mouseClicked(d, e, i) ? true : super.mouseClicked(d, e, i);
+	public boolean mouseClicked(double mouseX, double mouseY, int button) {
+		return this.screen.mouseClicked(mouseX, mouseY, button) ? true : super.mouseClicked(mouseX, mouseY, button);
 	}
 
 	@Override
-	public boolean mouseReleased(double d, double e, int i) {
-		return this.screen.mouseReleased(d, e, i);
+	public boolean mouseReleased(double mouseX, double mouseY, int button) {
+		return this.screen.mouseReleased(mouseX, mouseY, button);
 	}
 
 	@Override
-	public boolean mouseDragged(double d, double e, int i, double f, double g) {
-		return this.screen.mouseDragged(d, e, i, f, g) ? true : super.mouseDragged(d, e, i, f, g);
+	public boolean mouseDragged(double mouseX, double mouseY, int button, double deltaX, double deltaY) {
+		return this.screen.mouseDragged(mouseX, mouseY, button, deltaX, deltaY) ? true : super.mouseDragged(mouseX, mouseY, button, deltaX, deltaY);
 	}
 
 	@Override
-	public boolean keyPressed(int i, int j, int k) {
-		return this.screen.keyPressed(i, j, k) ? true : super.keyPressed(i, j, k);
+	public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
+		return this.screen.keyPressed(keyCode, scanCode, modifiers) ? true : super.keyPressed(keyCode, scanCode, modifiers);
 	}
 
 	@Override
-	public boolean charTyped(char c, int i) {
-		return this.screen.charTyped(c, i) ? true : super.charTyped(c, i);
+	public boolean charTyped(char chr, int keyCode) {
+		return this.screen.charTyped(chr, keyCode) ? true : super.charTyped(chr, keyCode);
 	}
 
 	@Override

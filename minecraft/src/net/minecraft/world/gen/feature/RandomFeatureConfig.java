@@ -11,35 +11,31 @@ public class RandomFeatureConfig implements FeatureConfig {
 	public final List<RandomFeatureEntry<?>> features;
 	public final ConfiguredFeature<?> defaultFeature;
 
-	public RandomFeatureConfig(List<RandomFeatureEntry<?>> list, ConfiguredFeature<?> configuredFeature) {
-		this.features = list;
-		this.defaultFeature = configuredFeature;
+	public RandomFeatureConfig(List<RandomFeatureEntry<?>> features, ConfiguredFeature<?> defaultFeature) {
+		this.features = features;
+		this.defaultFeature = defaultFeature;
 	}
 
-	public RandomFeatureConfig(Feature<?>[] features, FeatureConfig[] featureConfigs, float[] fs, Feature<?> feature, FeatureConfig featureConfig) {
+	public RandomFeatureConfig(Feature<?>[] features, FeatureConfig[] configs, float[] chances, Feature<?> defaultFeature, FeatureConfig featureConfig) {
 		this(
-			(List<RandomFeatureEntry<?>>)IntStream.range(0, features.length)
-				.mapToObj(i -> makeEntry(features[i], featureConfigs[i], fs[i]))
-				.collect(Collectors.toList()),
-			configure(feature, featureConfig)
+			(List<RandomFeatureEntry<?>>)IntStream.range(0, features.length).mapToObj(i -> makeEntry(features[i], configs[i], chances[i])).collect(Collectors.toList()),
+			configure(defaultFeature, featureConfig)
 		);
 	}
 
-	private static <FC extends FeatureConfig> RandomFeatureEntry<FC> makeEntry(Feature<FC> feature, FeatureConfig featureConfig, float f) {
-		return new RandomFeatureEntry<>(feature, (FC)featureConfig, Float.valueOf(f));
+	private static <FC extends FeatureConfig> RandomFeatureEntry<FC> makeEntry(Feature<FC> feature, FeatureConfig config, float chance) {
+		return new RandomFeatureEntry<>(feature, (FC)config, Float.valueOf(chance));
 	}
 
-	private static <FC extends FeatureConfig> ConfiguredFeature<FC> configure(Feature<FC> feature, FeatureConfig featureConfig) {
-		return new ConfiguredFeature<>(feature, (FC)featureConfig);
+	private static <FC extends FeatureConfig> ConfiguredFeature<FC> configure(Feature<FC> feature, FeatureConfig config) {
+		return new ConfiguredFeature<>(feature, (FC)config);
 	}
 
 	@Override
-	public <T> Dynamic<T> serialize(DynamicOps<T> dynamicOps) {
-		T object = dynamicOps.createList(this.features.stream().map(randomFeatureEntry -> randomFeatureEntry.serialize(dynamicOps).getValue()));
-		T object2 = this.defaultFeature.serialize(dynamicOps).getValue();
-		return new Dynamic<>(
-			dynamicOps, dynamicOps.createMap(ImmutableMap.of(dynamicOps.createString("features"), object, dynamicOps.createString("default"), object2))
-		);
+	public <T> Dynamic<T> serialize(DynamicOps<T> ops) {
+		T object = ops.createList(this.features.stream().map(randomFeatureEntry -> randomFeatureEntry.serialize(ops).getValue()));
+		T object2 = this.defaultFeature.serialize(ops).getValue();
+		return new Dynamic<>(ops, ops.createMap(ImmutableMap.of(ops.createString("features"), object, ops.createString("default"), object2)));
 	}
 
 	public static <T> RandomFeatureConfig deserialize(Dynamic<T> dynamic) {

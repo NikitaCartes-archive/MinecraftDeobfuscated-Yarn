@@ -11,28 +11,28 @@ import net.minecraft.world.biome.Biome;
 import net.minecraft.world.gen.feature.StructureFeature;
 
 public class CheckerboardBiomeSource extends BiomeSource {
-	private final Biome[] biomes;
+	private final Biome[] biomeArray;
 	private final int gridSize;
 
-	public CheckerboardBiomeSource(CheckerboardBiomeSourceConfig checkerboardBiomeSourceConfig) {
-		this.biomes = checkerboardBiomeSourceConfig.getBiomes();
-		this.gridSize = checkerboardBiomeSourceConfig.getSize() + 4;
+	public CheckerboardBiomeSource(CheckerboardBiomeSourceConfig config) {
+		this.biomeArray = config.getBiomes();
+		this.gridSize = config.getSize() + 4;
 	}
 
 	@Override
-	public Biome getBiome(int i, int j) {
-		return this.biomes[Math.abs(((i >> this.gridSize) + (j >> this.gridSize)) % this.biomes.length)];
+	public Biome getBiome(int x, int z) {
+		return this.biomeArray[Math.abs(((x >> this.gridSize) + (z >> this.gridSize)) % this.biomeArray.length)];
 	}
 
 	@Override
-	public Biome[] sampleBiomes(int i, int j, int k, int l, boolean bl) {
-		Biome[] biomes = new Biome[k * l];
+	public Biome[] sampleBiomes(int x, int z, int width, int height, boolean bl) {
+		Biome[] biomes = new Biome[width * height];
 
-		for (int m = 0; m < l; m++) {
-			for (int n = 0; n < k; n++) {
-				int o = Math.abs(((i + m >> this.gridSize) + (j + n >> this.gridSize)) % this.biomes.length);
-				Biome biome = this.biomes[o];
-				biomes[m * k + n] = biome;
+		for (int i = 0; i < height; i++) {
+			for (int j = 0; j < width; j++) {
+				int k = Math.abs(((x + i >> this.gridSize) + (z + j >> this.gridSize)) % this.biomeArray.length);
+				Biome biome = this.biomeArray[k];
+				biomes[i * width + j] = biome;
 			}
 		}
 
@@ -41,15 +41,15 @@ public class CheckerboardBiomeSource extends BiomeSource {
 
 	@Nullable
 	@Override
-	public BlockPos locateBiome(int i, int j, int k, List<Biome> list, Random random) {
+	public BlockPos locateBiome(int x, int z, int radius, List<Biome> biomes, Random random) {
 		return null;
 	}
 
 	@Override
-	public boolean hasStructureFeature(StructureFeature<?> structureFeature) {
-		return (Boolean)this.structureFeatures.computeIfAbsent(structureFeature, structureFeaturex -> {
-			for (Biome biome : this.biomes) {
-				if (biome.hasStructureFeature(structureFeaturex)) {
+	public boolean hasStructureFeature(StructureFeature<?> feature) {
+		return (Boolean)this.structureFeatures.computeIfAbsent(feature, structureFeature -> {
+			for (Biome biome : this.biomeArray) {
+				if (biome.hasStructureFeature(structureFeature)) {
 					return true;
 				}
 			}
@@ -61,7 +61,7 @@ public class CheckerboardBiomeSource extends BiomeSource {
 	@Override
 	public Set<BlockState> getTopMaterials() {
 		if (this.topMaterials.isEmpty()) {
-			for (Biome biome : this.biomes) {
+			for (Biome biome : this.biomeArray) {
 				this.topMaterials.add(biome.getSurfaceConfig().getTopMaterial());
 			}
 		}
@@ -70,7 +70,7 @@ public class CheckerboardBiomeSource extends BiomeSource {
 	}
 
 	@Override
-	public Set<Biome> getBiomesInArea(int i, int j, int k) {
-		return Sets.<Biome>newHashSet(this.biomes);
+	public Set<Biome> getBiomesInArea(int x, int z, int radius) {
+		return Sets.<Biome>newHashSet(this.biomeArray);
 	}
 }

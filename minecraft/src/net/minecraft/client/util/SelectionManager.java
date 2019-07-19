@@ -15,8 +15,8 @@ import net.minecraft.util.math.MathHelper;
 public class SelectionManager {
 	private final MinecraftClient client;
 	private final TextRenderer fontRenderer;
-	private final Supplier<String> stringSupplier;
-	private final Consumer<String> stringConsumer;
+	private final Supplier<String> stringGetter;
+	private final Consumer<String> stringSetter;
 	private final int field_16455;
 	private int selectionStart;
 	private int selectionEnd;
@@ -24,8 +24,8 @@ public class SelectionManager {
 	public SelectionManager(MinecraftClient minecraftClient, Supplier<String> supplier, Consumer<String> consumer, int i) {
 		this.client = minecraftClient;
 		this.fontRenderer = minecraftClient.textRenderer;
-		this.stringSupplier = supplier;
-		this.stringConsumer = consumer;
+		this.stringGetter = supplier;
+		this.stringSetter = consumer;
 		this.field_16455 = i;
 		this.moveCaretToEnd();
 	}
@@ -43,61 +43,61 @@ public class SelectionManager {
 			this.deleteSelectedText();
 		}
 
-		String string2 = (String)this.stringSupplier.get();
+		String string2 = (String)this.stringGetter.get();
 		this.selectionStart = MathHelper.clamp(this.selectionStart, 0, string2.length());
 		String string3 = new StringBuilder(string2).insert(this.selectionStart, string).toString();
 		if (this.fontRenderer.getStringWidth(string3) <= this.field_16455) {
-			this.stringConsumer.accept(string3);
+			this.stringSetter.accept(string3);
 			this.selectionEnd = this.selectionStart = Math.min(string3.length(), this.selectionStart + string.length());
 		}
 	}
 
-	public boolean handleSpecialKey(int i) {
-		String string = (String)this.stringSupplier.get();
-		if (Screen.isSelectAll(i)) {
+	public boolean handleSpecialKey(int keyCode) {
+		String string = (String)this.stringGetter.get();
+		if (Screen.isSelectAll(keyCode)) {
 			this.selectionEnd = 0;
 			this.selectionStart = string.length();
 			return true;
-		} else if (Screen.isCopy(i)) {
+		} else if (Screen.isCopy(keyCode)) {
 			this.client.keyboard.setClipboard(this.getSelectedText());
 			return true;
-		} else if (Screen.isPaste(i)) {
+		} else if (Screen.isPaste(keyCode)) {
 			this.insert(SharedConstants.stripInvalidChars(Formatting.strip(this.client.keyboard.getClipboard().replaceAll("\\r", ""))));
 			this.selectionEnd = this.selectionStart;
 			return true;
-		} else if (Screen.isCut(i)) {
+		} else if (Screen.isCut(keyCode)) {
 			this.client.keyboard.setClipboard(this.getSelectedText());
 			this.deleteSelectedText();
 			return true;
-		} else if (i == 259) {
+		} else if (keyCode == 259) {
 			if (!string.isEmpty()) {
 				if (this.selectionEnd != this.selectionStart) {
 					this.deleteSelectedText();
 				} else if (this.selectionStart > 0) {
 					string = new StringBuilder(string).deleteCharAt(Math.max(0, this.selectionStart - 1)).toString();
 					this.selectionEnd = this.selectionStart = Math.max(0, this.selectionStart - 1);
-					this.stringConsumer.accept(string);
+					this.stringSetter.accept(string);
 				}
 			}
 
 			return true;
-		} else if (i == 261) {
+		} else if (keyCode == 261) {
 			if (!string.isEmpty()) {
 				if (this.selectionEnd != this.selectionStart) {
 					this.deleteSelectedText();
 				} else if (this.selectionStart < string.length()) {
 					string = new StringBuilder(string).deleteCharAt(Math.max(0, this.selectionStart)).toString();
-					this.stringConsumer.accept(string);
+					this.stringSetter.accept(string);
 				}
 			}
 
 			return true;
-		} else if (i == 263) {
-			int j = this.fontRenderer.isRightToLeft() ? 1 : -1;
+		} else if (keyCode == 263) {
+			int i = this.fontRenderer.isRightToLeft() ? 1 : -1;
 			if (Screen.hasControlDown()) {
-				this.selectionStart = this.fontRenderer.findWordEdge(string, j, this.selectionStart, true);
+				this.selectionStart = this.fontRenderer.findWordEdge(string, i, this.selectionStart, true);
 			} else {
-				this.selectionStart = Math.max(0, Math.min(string.length(), this.selectionStart + j));
+				this.selectionStart = Math.max(0, Math.min(string.length(), this.selectionStart + i));
 			}
 
 			if (!Screen.hasShiftDown()) {
@@ -105,12 +105,12 @@ public class SelectionManager {
 			}
 
 			return true;
-		} else if (i == 262) {
-			int jx = this.fontRenderer.isRightToLeft() ? -1 : 1;
+		} else if (keyCode == 262) {
+			int ix = this.fontRenderer.isRightToLeft() ? -1 : 1;
 			if (Screen.hasControlDown()) {
-				this.selectionStart = this.fontRenderer.findWordEdge(string, jx, this.selectionStart, true);
+				this.selectionStart = this.fontRenderer.findWordEdge(string, ix, this.selectionStart, true);
 			} else {
-				this.selectionStart = Math.max(0, Math.min(string.length(), this.selectionStart + jx));
+				this.selectionStart = Math.max(0, Math.min(string.length(), this.selectionStart + ix));
 			}
 
 			if (!Screen.hasShiftDown()) {
@@ -118,15 +118,15 @@ public class SelectionManager {
 			}
 
 			return true;
-		} else if (i == 268) {
+		} else if (keyCode == 268) {
 			this.selectionStart = 0;
 			if (!Screen.hasShiftDown()) {
 				this.selectionEnd = this.selectionStart;
 			}
 
 			return true;
-		} else if (i == 269) {
-			this.selectionStart = ((String)this.stringSupplier.get()).length();
+		} else if (keyCode == 269) {
+			this.selectionStart = ((String)this.stringGetter.get()).length();
 			if (!Screen.hasShiftDown()) {
 				this.selectionEnd = this.selectionStart;
 			}
@@ -138,7 +138,7 @@ public class SelectionManager {
 	}
 
 	private String getSelectedText() {
-		String string = (String)this.stringSupplier.get();
+		String string = (String)this.stringGetter.get();
 		int i = Math.min(this.selectionStart, this.selectionEnd);
 		int j = Math.max(this.selectionStart, this.selectionEnd);
 		return string.substring(i, j);
@@ -146,18 +146,18 @@ public class SelectionManager {
 
 	private void deleteSelectedText() {
 		if (this.selectionEnd != this.selectionStart) {
-			String string = (String)this.stringSupplier.get();
+			String string = (String)this.stringGetter.get();
 			int i = Math.min(this.selectionStart, this.selectionEnd);
 			int j = Math.max(this.selectionStart, this.selectionEnd);
 			String string2 = string.substring(0, i) + string.substring(j);
 			this.selectionStart = i;
 			this.selectionEnd = this.selectionStart;
-			this.stringConsumer.accept(string2);
+			this.stringSetter.accept(string2);
 		}
 	}
 
 	public void moveCaretToEnd() {
-		this.selectionEnd = this.selectionStart = ((String)this.stringSupplier.get()).length();
+		this.selectionEnd = this.selectionStart = ((String)this.stringGetter.get()).length();
 	}
 
 	public int getSelectionStart() {

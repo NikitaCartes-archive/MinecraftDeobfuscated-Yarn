@@ -42,25 +42,25 @@ public class HopperBlockEntity extends LootableContainerBlockEntity implements H
 	}
 
 	@Override
-	public void fromTag(CompoundTag compoundTag) {
-		super.fromTag(compoundTag);
+	public void fromTag(CompoundTag tag) {
+		super.fromTag(tag);
 		this.inventory = DefaultedList.ofSize(this.getInvSize(), ItemStack.EMPTY);
-		if (!this.deserializeLootTable(compoundTag)) {
-			Inventories.fromTag(compoundTag, this.inventory);
+		if (!this.deserializeLootTable(tag)) {
+			Inventories.fromTag(tag, this.inventory);
 		}
 
-		this.transferCooldown = compoundTag.getInt("TransferCooldown");
+		this.transferCooldown = tag.getInt("TransferCooldown");
 	}
 
 	@Override
-	public CompoundTag toTag(CompoundTag compoundTag) {
-		super.toTag(compoundTag);
-		if (!this.serializeLootTable(compoundTag)) {
-			Inventories.toTag(compoundTag, this.inventory);
+	public CompoundTag toTag(CompoundTag tag) {
+		super.toTag(tag);
+		if (!this.serializeLootTable(tag)) {
+			Inventories.toTag(tag, this.inventory);
 		}
 
-		compoundTag.putInt("TransferCooldown", this.transferCooldown);
-		return compoundTag;
+		tag.putInt("TransferCooldown", this.transferCooldown);
+		return tag;
 	}
 
 	@Override
@@ -69,17 +69,17 @@ public class HopperBlockEntity extends LootableContainerBlockEntity implements H
 	}
 
 	@Override
-	public ItemStack takeInvStack(int i, int j) {
+	public ItemStack takeInvStack(int slot, int amount) {
 		this.checkLootInteraction(null);
-		return Inventories.splitStack(this.getInvStackList(), i, j);
+		return Inventories.splitStack(this.getInvStackList(), slot, amount);
 	}
 
 	@Override
-	public void setInvStack(int i, ItemStack itemStack) {
+	public void setInvStack(int slot, ItemStack stack) {
 		this.checkLootInteraction(null);
-		this.getInvStackList().set(i, itemStack);
-		if (itemStack.getCount() > this.getInvMaxStackAmount()) {
-			itemStack.setCount(this.getInvMaxStackAmount());
+		this.getInvStackList().set(slot, stack);
+		if (stack.getCount() > this.getInvMaxStackAmount()) {
+			stack.setCount(this.getInvMaxStackAmount());
 		}
 	}
 
@@ -100,7 +100,7 @@ public class HopperBlockEntity extends LootableContainerBlockEntity implements H
 		}
 	}
 
-	private boolean insertAndExtract(Supplier<Boolean> supplier) {
+	private boolean insertAndExtract(Supplier<Boolean> extractMethod) {
 		if (this.world != null && !this.world.isClient) {
 			if (!this.needsCooldown() && (Boolean)this.getCachedState().get(HopperBlock.ENABLED)) {
 				boolean bl = false;
@@ -109,7 +109,7 @@ public class HopperBlockEntity extends LootableContainerBlockEntity implements H
 				}
 
 				if (!this.isFull()) {
-					bl |= supplier.get();
+					bl |= extractMethod.get();
 				}
 
 				if (bl) {
@@ -177,21 +177,21 @@ public class HopperBlockEntity extends LootableContainerBlockEntity implements H
 		}
 	}
 
-	private static IntStream getAvailableSlots(Inventory inventory, Direction direction) {
+	private static IntStream getAvailableSlots(Inventory inventory, Direction side) {
 		return inventory instanceof SidedInventory
-			? IntStream.of(((SidedInventory)inventory).getInvAvailableSlots(direction))
+			? IntStream.of(((SidedInventory)inventory).getInvAvailableSlots(side))
 			: IntStream.range(0, inventory.getInvSize());
 	}
 
-	private boolean isInventoryFull(Inventory inventory, Direction direction) {
-		return getAvailableSlots(inventory, direction).allMatch(i -> {
-			ItemStack itemStack = inventory.getInvStack(i);
+	private boolean isInventoryFull(Inventory inv, Direction direction) {
+		return getAvailableSlots(inv, direction).allMatch(i -> {
+			ItemStack itemStack = inv.getInvStack(i);
 			return itemStack.getCount() >= itemStack.getMaxCount();
 		});
 	}
 
-	private static boolean isInventoryEmpty(Inventory inventory, Direction direction) {
-		return getAvailableSlots(inventory, direction).allMatch(i -> inventory.getInvStack(i).isEmpty());
+	private static boolean isInventoryEmpty(Inventory inv, Direction facing) {
+		return getAvailableSlots(inv, facing).allMatch(i -> inv.getInvStack(i).isEmpty());
 	}
 
 	public static boolean extract(Hopper hopper) {
@@ -210,17 +210,17 @@ public class HopperBlockEntity extends LootableContainerBlockEntity implements H
 		}
 	}
 
-	private static boolean extract(Hopper hopper, Inventory inventory, int i, Direction direction) {
-		ItemStack itemStack = inventory.getInvStack(i);
-		if (!itemStack.isEmpty() && canExtract(inventory, itemStack, i, direction)) {
+	private static boolean extract(Hopper hopper, Inventory inventory, int slot, Direction side) {
+		ItemStack itemStack = inventory.getInvStack(slot);
+		if (!itemStack.isEmpty() && canExtract(inventory, itemStack, slot, side)) {
 			ItemStack itemStack2 = itemStack.copy();
-			ItemStack itemStack3 = transfer(inventory, hopper, inventory.takeInvStack(i, 1), null);
+			ItemStack itemStack3 = transfer(inventory, hopper, inventory.takeInvStack(slot, 1), null);
 			if (itemStack3.isEmpty()) {
 				inventory.markDirty();
 				return true;
 			}
 
-			inventory.setInvStack(i, itemStack2);
+			inventory.setInvStack(slot, itemStack2);
 		}
 
 		return false;
@@ -240,73 +240,73 @@ public class HopperBlockEntity extends LootableContainerBlockEntity implements H
 		return bl;
 	}
 
-	public static ItemStack transfer(@Nullable Inventory inventory, Inventory inventory2, ItemStack itemStack, @Nullable Direction direction) {
-		if (inventory2 instanceof SidedInventory && direction != null) {
-			SidedInventory sidedInventory = (SidedInventory)inventory2;
-			int[] is = sidedInventory.getInvAvailableSlots(direction);
+	public static ItemStack transfer(@Nullable Inventory from, Inventory to, ItemStack stack, @Nullable Direction side) {
+		if (to instanceof SidedInventory && side != null) {
+			SidedInventory sidedInventory = (SidedInventory)to;
+			int[] is = sidedInventory.getInvAvailableSlots(side);
 
-			for (int i = 0; i < is.length && !itemStack.isEmpty(); i++) {
-				itemStack = transfer(inventory, inventory2, itemStack, is[i], direction);
+			for (int i = 0; i < is.length && !stack.isEmpty(); i++) {
+				stack = transfer(from, to, stack, is[i], side);
 			}
 		} else {
-			int j = inventory2.getInvSize();
+			int j = to.getInvSize();
 
-			for (int k = 0; k < j && !itemStack.isEmpty(); k++) {
-				itemStack = transfer(inventory, inventory2, itemStack, k, direction);
+			for (int k = 0; k < j && !stack.isEmpty(); k++) {
+				stack = transfer(from, to, stack, k, side);
 			}
 		}
 
-		return itemStack;
+		return stack;
 	}
 
-	private static boolean canInsert(Inventory inventory, ItemStack itemStack, int i, @Nullable Direction direction) {
-		return !inventory.isValidInvStack(i, itemStack)
+	private static boolean canInsert(Inventory inventory, ItemStack stack, int slot, @Nullable Direction side) {
+		return !inventory.isValidInvStack(slot, stack)
 			? false
-			: !(inventory instanceof SidedInventory) || ((SidedInventory)inventory).canInsertInvStack(i, itemStack, direction);
+			: !(inventory instanceof SidedInventory) || ((SidedInventory)inventory).canInsertInvStack(slot, stack, side);
 	}
 
-	private static boolean canExtract(Inventory inventory, ItemStack itemStack, int i, Direction direction) {
-		return !(inventory instanceof SidedInventory) || ((SidedInventory)inventory).canExtractInvStack(i, itemStack, direction);
+	private static boolean canExtract(Inventory inv, ItemStack stack, int slot, Direction facing) {
+		return !(inv instanceof SidedInventory) || ((SidedInventory)inv).canExtractInvStack(slot, stack, facing);
 	}
 
-	private static ItemStack transfer(@Nullable Inventory inventory, Inventory inventory2, ItemStack itemStack, int i, @Nullable Direction direction) {
-		ItemStack itemStack2 = inventory2.getInvStack(i);
-		if (canInsert(inventory2, itemStack, i, direction)) {
+	private static ItemStack transfer(@Nullable Inventory from, Inventory to, ItemStack stack, int slot, @Nullable Direction direction) {
+		ItemStack itemStack = to.getInvStack(slot);
+		if (canInsert(to, stack, slot, direction)) {
 			boolean bl = false;
-			boolean bl2 = inventory2.isInvEmpty();
-			if (itemStack2.isEmpty()) {
-				inventory2.setInvStack(i, itemStack);
-				itemStack = ItemStack.EMPTY;
+			boolean bl2 = to.isInvEmpty();
+			if (itemStack.isEmpty()) {
+				to.setInvStack(slot, stack);
+				stack = ItemStack.EMPTY;
 				bl = true;
-			} else if (canMergeItems(itemStack2, itemStack)) {
-				int j = itemStack.getMaxCount() - itemStack2.getCount();
-				int k = Math.min(itemStack.getCount(), j);
-				itemStack.decrement(k);
-				itemStack2.increment(k);
-				bl = k > 0;
+			} else if (canMergeItems(itemStack, stack)) {
+				int i = stack.getMaxCount() - itemStack.getCount();
+				int j = Math.min(stack.getCount(), i);
+				stack.decrement(j);
+				itemStack.increment(j);
+				bl = j > 0;
 			}
 
 			if (bl) {
-				if (bl2 && inventory2 instanceof HopperBlockEntity) {
-					HopperBlockEntity hopperBlockEntity = (HopperBlockEntity)inventory2;
+				if (bl2 && to instanceof HopperBlockEntity) {
+					HopperBlockEntity hopperBlockEntity = (HopperBlockEntity)to;
 					if (!hopperBlockEntity.isDisabled()) {
-						int k = 0;
-						if (inventory instanceof HopperBlockEntity) {
-							HopperBlockEntity hopperBlockEntity2 = (HopperBlockEntity)inventory;
+						int j = 0;
+						if (from instanceof HopperBlockEntity) {
+							HopperBlockEntity hopperBlockEntity2 = (HopperBlockEntity)from;
 							if (hopperBlockEntity.lastTickTime >= hopperBlockEntity2.lastTickTime) {
-								k = 1;
+								j = 1;
 							}
 						}
 
-						hopperBlockEntity.setCooldown(8 - k);
+						hopperBlockEntity.setCooldown(8 - j);
 					}
 				}
 
-				inventory2.markDirty();
+				to.markDirty();
 			}
 		}
 
-		return itemStack;
+		return stack;
 	}
 
 	@Nullable
@@ -338,9 +338,9 @@ public class HopperBlockEntity extends LootableContainerBlockEntity implements H
 	}
 
 	@Nullable
-	public static Inventory getInventoryAt(World world, double d, double e, double f) {
+	public static Inventory getInventoryAt(World world, double x, double y, double z) {
 		Inventory inventory = null;
-		BlockPos blockPos = new BlockPos(d, e, f);
+		BlockPos blockPos = new BlockPos(x, y, z);
 		BlockState blockState = world.getBlockState(blockPos);
 		Block block = blockState.getBlock();
 		if (block instanceof InventoryProvider) {
@@ -356,7 +356,7 @@ public class HopperBlockEntity extends LootableContainerBlockEntity implements H
 		}
 
 		if (inventory == null) {
-			List<Entity> list = world.getEntities((Entity)null, new Box(d - 0.5, e - 0.5, f - 0.5, d + 0.5, e + 0.5, f + 0.5), EntityPredicates.VALID_INVENTORIES);
+			List<Entity> list = world.getEntities((Entity)null, new Box(x - 0.5, y - 0.5, z - 0.5, x + 0.5, y + 0.5, z + 0.5), EntityPredicates.VALID_INVENTORIES);
 			if (!list.isEmpty()) {
 				inventory = (Inventory)list.get(world.random.nextInt(list.size()));
 			}
@@ -365,13 +365,13 @@ public class HopperBlockEntity extends LootableContainerBlockEntity implements H
 		return inventory;
 	}
 
-	private static boolean canMergeItems(ItemStack itemStack, ItemStack itemStack2) {
-		if (itemStack.getItem() != itemStack2.getItem()) {
+	private static boolean canMergeItems(ItemStack first, ItemStack second) {
+		if (first.getItem() != second.getItem()) {
 			return false;
-		} else if (itemStack.getDamage() != itemStack2.getDamage()) {
+		} else if (first.getDamage() != second.getDamage()) {
 			return false;
 		} else {
-			return itemStack.getCount() > itemStack.getMaxCount() ? false : ItemStack.areTagsEqual(itemStack, itemStack2);
+			return first.getCount() > first.getMaxCount() ? false : ItemStack.areTagsEqual(first, second);
 		}
 	}
 
@@ -390,8 +390,8 @@ public class HopperBlockEntity extends LootableContainerBlockEntity implements H
 		return (double)this.pos.getZ() + 0.5;
 	}
 
-	private void setCooldown(int i) {
-		this.transferCooldown = i;
+	private void setCooldown(int cooldown) {
+		this.transferCooldown = cooldown;
 	}
 
 	private boolean needsCooldown() {
@@ -408,8 +408,8 @@ public class HopperBlockEntity extends LootableContainerBlockEntity implements H
 	}
 
 	@Override
-	protected void setInvStackList(DefaultedList<ItemStack> defaultedList) {
-		this.inventory = defaultedList;
+	protected void setInvStackList(DefaultedList<ItemStack> list) {
+		this.inventory = list;
 	}
 
 	public void onEntityCollided(Entity entity) {

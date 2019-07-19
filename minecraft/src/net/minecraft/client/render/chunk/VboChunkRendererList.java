@@ -4,25 +4,25 @@ import com.mojang.blaze3d.platform.GLX;
 import com.mojang.blaze3d.platform.GlStateManager;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.block.BlockRenderLayer;
-import net.minecraft.client.gl.GlBuffer;
+import net.minecraft.client.gl.VertexBuffer;
+import net.minecraft.client.render.RenderLayer;
 
 @Environment(EnvType.CLIENT)
 public class VboChunkRendererList extends ChunkRendererList {
 	@Override
-	public void render(BlockRenderLayer blockRenderLayer) {
+	public void render(RenderLayer layer) {
 		if (this.isCameraPositionSet) {
 			for (ChunkRenderer chunkRenderer : this.chunkRenderers) {
-				GlBuffer glBuffer = chunkRenderer.getGlBuffer(blockRenderLayer.ordinal());
+				VertexBuffer vertexBuffer = chunkRenderer.getGlBuffer(layer.ordinal());
 				GlStateManager.pushMatrix();
 				this.translateToOrigin(chunkRenderer);
-				glBuffer.bind();
+				vertexBuffer.bind();
 				this.method_1356();
-				glBuffer.draw(7);
+				vertexBuffer.draw(7);
 				GlStateManager.popMatrix();
 			}
 
-			GlBuffer.unbind();
+			VertexBuffer.unbind();
 			GlStateManager.clearCurrentColor();
 			this.chunkRenderers.clear();
 		}

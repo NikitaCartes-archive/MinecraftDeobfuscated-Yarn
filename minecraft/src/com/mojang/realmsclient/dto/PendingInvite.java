@@ -1,16 +1,15 @@
 package com.mojang.realmsclient.dto;
 
 import com.google.gson.JsonObject;
+import com.mojang.realmsclient.util.JsonUtils;
 import java.util.Date;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_4352;
-import net.minecraft.class_4431;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 @Environment(EnvType.CLIENT)
-public class PendingInvite extends class_4352 {
+public class PendingInvite extends ValueObject {
 	private static final Logger LOGGER = LogManager.getLogger();
 	public String invitationId;
 	public String worldName;
@@ -18,15 +17,15 @@ public class PendingInvite extends class_4352 {
 	public String worldOwnerUuid;
 	public Date date;
 
-	public static PendingInvite parse(JsonObject jsonObject) {
+	public static PendingInvite parse(JsonObject json) {
 		PendingInvite pendingInvite = new PendingInvite();
 
 		try {
-			pendingInvite.invitationId = class_4431.method_21547("invitationId", jsonObject, "");
-			pendingInvite.worldName = class_4431.method_21547("worldName", jsonObject, "");
-			pendingInvite.worldOwnerName = class_4431.method_21547("worldOwnerName", jsonObject, "");
-			pendingInvite.worldOwnerUuid = class_4431.method_21547("worldOwnerUuid", jsonObject, "");
-			pendingInvite.date = class_4431.method_21544("date", jsonObject);
+			pendingInvite.invitationId = JsonUtils.getStringOr("invitationId", json, "");
+			pendingInvite.worldName = JsonUtils.getStringOr("worldName", json, "");
+			pendingInvite.worldOwnerName = JsonUtils.getStringOr("worldOwnerName", json, "");
+			pendingInvite.worldOwnerUuid = JsonUtils.getStringOr("worldOwnerUuid", json, "");
+			pendingInvite.date = JsonUtils.getDateOr("date", json);
 		} catch (Exception var3) {
 			LOGGER.error("Could not parse PendingInvite: " + var3.getMessage());
 		}

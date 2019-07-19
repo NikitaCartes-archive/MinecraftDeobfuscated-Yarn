@@ -10,9 +10,9 @@ import net.minecraft.sound.SoundCategory;
 public class SoundSliderWidget extends SliderWidget {
 	private final SoundCategory category;
 
-	public SoundSliderWidget(MinecraftClient minecraftClient, int i, int j, SoundCategory soundCategory, int k) {
-		super(minecraftClient.options, i, j, k, 20, (double)minecraftClient.options.getSoundVolume(soundCategory));
-		this.category = soundCategory;
+	public SoundSliderWidget(MinecraftClient client, int x, int y, SoundCategory category, int width) {
+		super(client.options, x, y, width, 20, (double)client.options.getSoundVolume(category));
+		this.category = category;
 		this.updateMessage();
 	}
 

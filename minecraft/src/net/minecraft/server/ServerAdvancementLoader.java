@@ -42,7 +42,7 @@ public class ServerAdvancementLoader extends JsonDataLoader {
 		super(GSON, "advancements");
 	}
 
-	protected void method_20724(Map<Identifier, JsonObject> map, ResourceManager resourceManager, Profiler profiler) {
+	protected void apply(Map<Identifier, JsonObject> map, ResourceManager resourceManager, Profiler profiler) {
 		Map<Identifier, Advancement.Task> map2 = Maps.<Identifier, Advancement.Task>newHashMap();
 		map.forEach((identifier, jsonObject) -> {
 			try {

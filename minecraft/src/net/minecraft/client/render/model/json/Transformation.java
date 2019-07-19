@@ -14,24 +14,24 @@ import net.minecraft.util.JsonHelper;
 
 @Environment(EnvType.CLIENT)
 public class Transformation {
-	public static final Transformation NONE = new Transformation(new Vector3f(), new Vector3f(), new Vector3f(1.0F, 1.0F, 1.0F));
+	public static final Transformation IDENTITY = new Transformation(new Vector3f(), new Vector3f(), new Vector3f(1.0F, 1.0F, 1.0F));
 	public final Vector3f rotation;
 	public final Vector3f translation;
 	public final Vector3f scale;
 
-	public Transformation(Vector3f vector3f, Vector3f vector3f2, Vector3f vector3f3) {
-		this.rotation = new Vector3f(vector3f);
-		this.translation = new Vector3f(vector3f2);
-		this.scale = new Vector3f(vector3f3);
+	public Transformation(Vector3f rotation, Vector3f translation, Vector3f scale) {
+		this.rotation = new Vector3f(rotation);
+		this.translation = new Vector3f(translation);
+		this.scale = new Vector3f(scale);
 	}
 
-	public boolean equals(Object object) {
-		if (this == object) {
+	public boolean equals(Object o) {
+		if (this == o) {
 			return true;
-		} else if (this.getClass() != object.getClass()) {
+		} else if (this.getClass() != o.getClass()) {
 			return false;
 		} else {
-			Transformation transformation = (Transformation)object;
+			Transformation transformation = (Transformation)o;
 			return this.rotation.equals(transformation.rotation) && this.scale.equals(transformation.scale) && this.translation.equals(transformation.translation);
 		}
 	}
@@ -51,7 +51,7 @@ public class Transformation {
 		protected Deserializer() {
 		}
 
-		public Transformation method_3494(JsonElement jsonElement, Type type, JsonDeserializationContext jsonDeserializationContext) throws JsonParseException {
+		public Transformation deserialize(JsonElement jsonElement, Type type, JsonDeserializationContext jsonDeserializationContext) throws JsonParseException {
 			JsonObject jsonObject = jsonElement.getAsJsonObject();
 			Vector3f vector3f = this.parseVector3f(jsonObject, "rotation", DEFAULT_ROATATION);
 			Vector3f vector3f2 = this.parseVector3f(jsonObject, "translation", DEFAULT_TRANSLATION);
@@ -62,18 +62,18 @@ public class Transformation {
 			return new Transformation(vector3f, vector3f2, vector3f3);
 		}
 
-		private Vector3f parseVector3f(JsonObject jsonObject, String string, Vector3f vector3f) {
-			if (!jsonObject.has(string)) {
-				return vector3f;
+		private Vector3f parseVector3f(JsonObject json, String key, Vector3f default_) {
+			if (!json.has(key)) {
+				return default_;
 			} else {
-				JsonArray jsonArray = JsonHelper.getArray(jsonObject, string);
+				JsonArray jsonArray = JsonHelper.getArray(json, key);
 				if (jsonArray.size() != 3) {
-					throw new JsonParseException("Expected 3 " + string + " values, found: " + jsonArray.size());
+					throw new JsonParseException("Expected 3 " + key + " values, found: " + jsonArray.size());
 				} else {
 					float[] fs = new float[3];
 
 					for (int i = 0; i < fs.length; i++) {
-						fs[i] = JsonHelper.asFloat(jsonArray.get(i), string + "[" + i + "]");
+						fs[i] = JsonHelper.asFloat(jsonArray.get(i), key + "[" + i + "]");
 					}
 
 					return new Vector3f(fs[0], fs[1], fs[2]);

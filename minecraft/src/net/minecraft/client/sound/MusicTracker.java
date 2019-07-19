@@ -15,8 +15,8 @@ public class MusicTracker {
 	private SoundInstance current;
 	private int timeUntilNextSong = 100;
 
-	public MusicTracker(MinecraftClient minecraftClient) {
-		this.client = minecraftClient;
+	public MusicTracker(MinecraftClient client) {
+		this.client = client;
 	}
 
 	public void tick() {
@@ -72,10 +72,10 @@ public class MusicTracker {
 		private final int minDelay;
 		private final int maxDelay;
 
-		private MusicType(SoundEvent soundEvent, int j, int k) {
+		private MusicType(SoundEvent soundEvent, int minDelay, int maxDelay) {
 			this.sound = soundEvent;
-			this.minDelay = j;
-			this.maxDelay = k;
+			this.minDelay = minDelay;
+			this.maxDelay = maxDelay;
 		}
 
 		public SoundEvent getSound() {

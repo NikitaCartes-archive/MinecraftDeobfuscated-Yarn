@@ -7,13 +7,13 @@ import com.mojang.datafixers.types.DynamicOps;
 public class PillagerOutpostFeatureConfig implements FeatureConfig {
 	public final double probability;
 
-	public PillagerOutpostFeatureConfig(double d) {
-		this.probability = d;
+	public PillagerOutpostFeatureConfig(double probability) {
+		this.probability = probability;
 	}
 
 	@Override
-	public <T> Dynamic<T> serialize(DynamicOps<T> dynamicOps) {
-		return new Dynamic<>(dynamicOps, dynamicOps.createMap(ImmutableMap.of(dynamicOps.createString("probability"), dynamicOps.createDouble(this.probability))));
+	public <T> Dynamic<T> serialize(DynamicOps<T> ops) {
+		return new Dynamic<>(ops, ops.createMap(ImmutableMap.of(ops.createString("probability"), ops.createDouble(this.probability))));
 	}
 
 	public static <T> PillagerOutpostFeatureConfig deserialize(Dynamic<T> dynamic) {

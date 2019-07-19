@@ -13,27 +13,27 @@ public class DiskFeatureConfig implements FeatureConfig {
 	public final int ySize;
 	public final List<BlockState> targets;
 
-	public DiskFeatureConfig(BlockState blockState, int i, int j, List<BlockState> list) {
-		this.state = blockState;
-		this.radius = i;
-		this.ySize = j;
-		this.targets = list;
+	public DiskFeatureConfig(BlockState state, int radius, int ySize, List<BlockState> targets) {
+		this.state = state;
+		this.radius = radius;
+		this.ySize = ySize;
+		this.targets = targets;
 	}
 
 	@Override
-	public <T> Dynamic<T> serialize(DynamicOps<T> dynamicOps) {
+	public <T> Dynamic<T> serialize(DynamicOps<T> ops) {
 		return new Dynamic<>(
-			dynamicOps,
-			dynamicOps.createMap(
+			ops,
+			ops.createMap(
 				ImmutableMap.of(
-					dynamicOps.createString("state"),
-					BlockState.serialize(dynamicOps, this.state).getValue(),
-					dynamicOps.createString("radius"),
-					dynamicOps.createInt(this.radius),
-					dynamicOps.createString("y_size"),
-					dynamicOps.createInt(this.ySize),
-					dynamicOps.createString("targets"),
-					dynamicOps.createList(this.targets.stream().map(blockState -> BlockState.serialize(dynamicOps, blockState).getValue()))
+					ops.createString("state"),
+					BlockState.serialize(ops, this.state).getValue(),
+					ops.createString("radius"),
+					ops.createInt(this.radius),
+					ops.createString("y_size"),
+					ops.createInt(this.ySize),
+					ops.createString("targets"),
+					ops.createList(this.targets.stream().map(blockState -> BlockState.serialize(ops, blockState).getValue()))
 				)
 			)
 		);

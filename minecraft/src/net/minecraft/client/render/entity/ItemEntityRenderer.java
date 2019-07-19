@@ -4,7 +4,7 @@ import com.mojang.blaze3d.platform.GlStateManager;
 import java.util.Random;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.client.render.GuiLighting;
+import net.minecraft.client.render.DiffuseLighting;
 import net.minecraft.client.render.item.ItemRenderer;
 import net.minecraft.client.render.model.BakedModel;
 import net.minecraft.client.render.model.json.ModelTransformation;
@@ -20,9 +20,9 @@ public class ItemEntityRenderer extends EntityRenderer<ItemEntity> {
 	private final ItemRenderer itemRenderer;
 	private final Random random = new Random();
 
-	public ItemEntityRenderer(EntityRenderDispatcher entityRenderDispatcher, ItemRenderer itemRenderer) {
-		super(entityRenderDispatcher);
-		this.itemRenderer = itemRenderer;
+	public ItemEntityRenderer(EntityRenderDispatcher dispatcher, ItemRenderer renderer) {
+		super(dispatcher);
+		this.itemRenderer = renderer;
 		this.field_4673 = 0.15F;
 		this.field_4672 = 0.75F;
 	}
@@ -33,7 +33,7 @@ public class ItemEntityRenderer extends EntityRenderer<ItemEntity> {
 		if (item == null) {
 			return 0;
 		} else {
-			boolean bl = bakedModel.hasDepthInGui();
+			boolean bl = bakedModel.hasDepth();
 			int i = this.getRenderedAmount(itemStack);
 			float h = 0.25F;
 			float j = MathHelper.sin(((float)itemEntity.getAge() + g) / 10.0F + itemEntity.hoverHeight) * 0.1F + 0.1F;
@@ -49,35 +49,35 @@ public class ItemEntityRenderer extends EntityRenderer<ItemEntity> {
 		}
 	}
 
-	private int getRenderedAmount(ItemStack itemStack) {
+	private int getRenderedAmount(ItemStack stack) {
 		int i = 1;
-		if (itemStack.getCount() > 48) {
+		if (stack.getCount() > 48) {
 			i = 5;
-		} else if (itemStack.getCount() > 32) {
+		} else if (stack.getCount() > 32) {
 			i = 4;
-		} else if (itemStack.getCount() > 16) {
+		} else if (stack.getCount() > 16) {
 			i = 3;
-		} else if (itemStack.getCount() > 1) {
+		} else if (stack.getCount() > 1) {
 			i = 2;
 		}
 
 		return i;
 	}
 
-	public void method_3996(ItemEntity itemEntity, double d, double e, double f, float g, float h) {
+	public void render(ItemEntity itemEntity, double d, double e, double f, float g, float h) {
 		ItemStack itemStack = itemEntity.getStack();
 		int i = itemStack.isEmpty() ? 187 : Item.getRawId(itemStack.getItem()) + itemStack.getDamage();
 		this.random.setSeed((long)i);
 		boolean bl = false;
 		if (this.bindEntityTexture(itemEntity)) {
-			this.renderManager.textureManager.getTexture(this.method_3999(itemEntity)).pushFilter(false, false);
+			this.renderManager.textureManager.getTexture(this.getTexture(itemEntity)).pushFilter(false, false);
 			bl = true;
 		}
 
 		GlStateManager.enableRescaleNormal();
 		GlStateManager.alphaFunc(516, 0.1F);
 		GlStateManager.enableBlend();
-		GuiLighting.enable();
+		DiffuseLighting.enable();
 		GlStateManager.blendFuncSeparate(
 			GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO
 		);
@@ -87,7 +87,7 @@ public class ItemEntityRenderer extends EntityRenderer<ItemEntity> {
 		float k = bakedModel.getTransformation().ground.scale.getX();
 		float l = bakedModel.getTransformation().ground.scale.getY();
 		float m = bakedModel.getTransformation().ground.scale.getZ();
-		boolean bl2 = bakedModel.hasDepthInGui();
+		boolean bl2 = bakedModel.hasDepth();
 		if (!bl2) {
 			float n = -0.0F * (float)(j - 1) * 0.5F * k;
 			float o = -0.0F * (float)(j - 1) * 0.5F * l;
@@ -138,13 +138,13 @@ public class ItemEntityRenderer extends EntityRenderer<ItemEntity> {
 		GlStateManager.disableBlend();
 		this.bindEntityTexture(itemEntity);
 		if (bl) {
-			this.renderManager.textureManager.getTexture(this.method_3999(itemEntity)).popFilter();
+			this.renderManager.textureManager.getTexture(this.getTexture(itemEntity)).popFilter();
 		}
 
 		super.render(itemEntity, d, e, f, g, h);
 	}
 
-	protected Identifier method_3999(ItemEntity itemEntity) {
+	protected Identifier getTexture(ItemEntity itemEntity) {
 		return SpriteAtlasTexture.BLOCK_ATLAS_TEX;
 	}
 }

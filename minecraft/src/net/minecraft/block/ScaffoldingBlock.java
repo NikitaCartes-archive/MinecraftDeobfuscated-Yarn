@@ -1,12 +1,13 @@
 package net.minecraft.block;
 
 import java.util.Random;
+import net.minecraft.client.render.RenderLayer;
 import net.minecraft.entity.EntityContext;
 import net.minecraft.entity.FallingBlockEntity;
 import net.minecraft.fluid.FluidState;
 import net.minecraft.fluid.Fluids;
 import net.minecraft.item.ItemPlacementContext;
-import net.minecraft.state.StateFactory;
+import net.minecraft.state.StateManager;
 import net.minecraft.state.property.BooleanProperty;
 import net.minecraft.state.property.IntProperty;
 import net.minecraft.state.property.Properties;
@@ -15,8 +16,8 @@ import net.minecraft.util.math.Direction;
 import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.util.shape.VoxelShapes;
 import net.minecraft.world.BlockView;
+import net.minecraft.world.CollisionView;
 import net.minecraft.world.IWorld;
-import net.minecraft.world.ViewableWorld;
 import net.minecraft.world.World;
 
 public class ScaffoldingBlock extends Block implements Waterloggable {
@@ -31,43 +32,43 @@ public class ScaffoldingBlock extends Block implements Waterloggable {
 	protected ScaffoldingBlock(Block.Settings settings) {
 		super(settings);
 		this.setDefaultState(
-			this.stateFactory.getDefaultState().with(DISTANCE, Integer.valueOf(7)).with(WATERLOGGED, Boolean.valueOf(false)).with(BOTTOM, Boolean.valueOf(false))
+			this.stateManager.getDefaultState().with(DISTANCE, Integer.valueOf(7)).with(WATERLOGGED, Boolean.valueOf(false)).with(BOTTOM, Boolean.valueOf(false))
 		);
 	}
 
 	@Override
-	protected void appendProperties(StateFactory.Builder<Block, BlockState> builder) {
+	protected void appendProperties(StateManager.Builder<Block, BlockState> builder) {
 		builder.add(DISTANCE, WATERLOGGED, BOTTOM);
 	}
 
 	@Override
-	public VoxelShape getOutlineShape(BlockState blockState, BlockView blockView, BlockPos blockPos, EntityContext entityContext) {
-		if (!entityContext.isHolding(blockState.getBlock().asItem())) {
-			return blockState.get(BOTTOM) ? BOTTOM_OUTLINE_SHAPE : NORMAL_OUTLINE_SHAPE;
+	public VoxelShape getOutlineShape(BlockState state, BlockView view, BlockPos pos, EntityContext context) {
+		if (!context.isHolding(state.getBlock().asItem())) {
+			return state.get(BOTTOM) ? BOTTOM_OUTLINE_SHAPE : NORMAL_OUTLINE_SHAPE;
 		} else {
 			return VoxelShapes.fullCube();
 		}
 	}
 
 	@Override
-	public VoxelShape getRayTraceShape(BlockState blockState, BlockView blockView, BlockPos blockPos) {
+	public VoxelShape getRayTraceShape(BlockState state, BlockView view, BlockPos pos) {
 		return VoxelShapes.fullCube();
 	}
 
 	@Override
-	public BlockRenderLayer getRenderLayer() {
-		return BlockRenderLayer.CUTOUT;
+	public RenderLayer getRenderLayer() {
+		return RenderLayer.CUTOUT;
 	}
 
 	@Override
-	public boolean canReplace(BlockState blockState, ItemPlacementContext itemPlacementContext) {
-		return itemPlacementContext.getStack().getItem() == this.asItem();
+	public boolean canReplace(BlockState state, ItemPlacementContext ctx) {
+		return ctx.getStack().getItem() == this.asItem();
 	}
 
 	@Override
-	public BlockState getPlacementState(ItemPlacementContext itemPlacementContext) {
-		BlockPos blockPos = itemPlacementContext.getBlockPos();
-		World world = itemPlacementContext.getWorld();
+	public BlockState getPlacementState(ItemPlacementContext ctx) {
+		BlockPos blockPos = ctx.getBlockPos();
+		World world = ctx.getWorld();
 		int i = calculateDistance(world, blockPos);
 		return this.getDefaultState()
 			.with(WATERLOGGED, Boolean.valueOf(world.getFluidState(blockPos).getFluid() == Fluids.WATER))
@@ -76,83 +77,77 @@ public class ScaffoldingBlock extends Block implements Waterloggable {
 	}
 
 	@Override
-	public void onBlockAdded(BlockState blockState, World world, BlockPos blockPos, BlockState blockState2, boolean bl) {
+	public void onBlockAdded(BlockState state, World world, BlockPos pos, BlockState oldState, boolean moved) {
 		if (!world.isClient) {
-			world.getBlockTickScheduler().schedule(blockPos, this, 1);
+			world.getBlockTickScheduler().schedule(pos, this, 1);
 		}
 	}
 
 	@Override
-	public BlockState getStateForNeighborUpdate(
-		BlockState blockState, Direction direction, BlockState blockState2, IWorld iWorld, BlockPos blockPos, BlockPos blockPos2
-	) {
-		if ((Boolean)blockState.get(WATERLOGGED)) {
-			iWorld.getFluidTickScheduler().schedule(blockPos, Fluids.WATER, Fluids.WATER.getTickRate(iWorld));
+	public BlockState getStateForNeighborUpdate(BlockState state, Direction facing, BlockState neighborState, IWorld world, BlockPos pos, BlockPos neighborPos) {
+		if ((Boolean)state.get(WATERLOGGED)) {
+			world.getFluidTickScheduler().schedule(pos, Fluids.WATER, Fluids.WATER.getTickRate(world));
 		}
 
-		if (!iWorld.isClient()) {
-			iWorld.getBlockTickScheduler().schedule(blockPos, this, 1);
+		if (!world.isClient()) {
+			world.getBlockTickScheduler().schedule(pos, this, 1);
 		}
 
-		return blockState;
+		return state;
 	}
 
 	@Override
-	public void onScheduledTick(BlockState blockState, World world, BlockPos blockPos, Random random) {
-		int i = calculateDistance(world, blockPos);
-		BlockState blockState2 = blockState.with(DISTANCE, Integer.valueOf(i)).with(BOTTOM, Boolean.valueOf(this.shouldBeBottom(world, blockPos, i)));
-		if ((Integer)blockState2.get(DISTANCE) == 7) {
-			if ((Integer)blockState.get(DISTANCE) == 7) {
+	public void onScheduledTick(BlockState state, World world, BlockPos pos, Random random) {
+		int i = calculateDistance(world, pos);
+		BlockState blockState = state.with(DISTANCE, Integer.valueOf(i)).with(BOTTOM, Boolean.valueOf(this.shouldBeBottom(world, pos, i)));
+		if ((Integer)blockState.get(DISTANCE) == 7) {
+			if ((Integer)state.get(DISTANCE) == 7) {
 				world.spawnEntity(
-					new FallingBlockEntity(
-						world, (double)blockPos.getX() + 0.5, (double)blockPos.getY(), (double)blockPos.getZ() + 0.5, blockState2.with(WATERLOGGED, Boolean.valueOf(false))
-					)
+					new FallingBlockEntity(world, (double)pos.getX() + 0.5, (double)pos.getY(), (double)pos.getZ() + 0.5, blockState.with(WATERLOGGED, Boolean.valueOf(false)))
 				);
 			} else {
-				world.breakBlock(blockPos, true);
+				world.breakBlock(pos, true);
 			}
-		} else if (blockState != blockState2) {
-			world.setBlockState(blockPos, blockState2, 3);
+		} else if (state != blockState) {
+			world.setBlockState(pos, blockState, 3);
 		}
 	}
 
 	@Override
-	public boolean canPlaceAt(BlockState blockState, ViewableWorld viewableWorld, BlockPos blockPos) {
-		return calculateDistance(viewableWorld, blockPos) < 7;
+	public boolean canPlaceAt(BlockState state, CollisionView world, BlockPos pos) {
+		return calculateDistance(world, pos) < 7;
 	}
 
 	@Override
-	public VoxelShape getCollisionShape(BlockState blockState, BlockView blockView, BlockPos blockPos, EntityContext entityContext) {
-		if (entityContext.isAbove(VoxelShapes.fullCube(), blockPos, true) && !entityContext.isSneaking()) {
+	public VoxelShape getCollisionShape(BlockState state, BlockView view, BlockPos pos, EntityContext context) {
+		if (context.isAbove(VoxelShapes.fullCube(), pos, true) && !context.isDescending()) {
 			return NORMAL_OUTLINE_SHAPE;
 		} else {
-			return blockState.get(DISTANCE) != 0 && blockState.get(BOTTOM) && entityContext.isAbove(OUTLINE_SHAPE, blockPos, true)
-				? COLLISION_SHAPE
-				: VoxelShapes.empty();
+			return state.get(DISTANCE) != 0 && state.get(BOTTOM) && context.isAbove(OUTLINE_SHAPE, pos, true) ? COLLISION_SHAPE : VoxelShapes.empty();
 		}
 	}
 
 	@Override
-	public FluidState getFluidState(BlockState blockState) {
-		return blockState.get(WATERLOGGED) ? Fluids.WATER.getStill(false) : super.getFluidState(blockState);
+	public FluidState getFluidState(BlockState state) {
+		return state.get(WATERLOGGED) ? Fluids.WATER.getStill(false) : super.getFluidState(state);
 	}
 
-	private boolean shouldBeBottom(BlockView blockView, BlockPos blockPos, int i) {
-		return i > 0 && blockView.getBlockState(blockPos.down()).getBlock() != this;
+	private boolean shouldBeBottom(BlockView world, BlockPos pos, int distance) {
+		return distance > 0 && world.getBlockState(pos.down()).getBlock() != this;
 	}
 
-	public static int calculateDistance(BlockView blockView, BlockPos blockPos) {
-		BlockPos.Mutable mutable = new BlockPos.Mutable(blockPos).setOffset(Direction.DOWN);
-		BlockState blockState = blockView.getBlockState(mutable);
+	public static int calculateDistance(BlockView world, BlockPos pos) {
+		BlockPos.Mutable mutable = new BlockPos.Mutable(pos).setOffset(Direction.DOWN);
+		BlockState blockState = world.getBlockState(mutable);
 		int i = 7;
 		if (blockState.getBlock() == Blocks.SCAFFOLDING) {
 			i = (Integer)blockState.get(DISTANCE);
-		} else if (blockState.method_20827(blockView, mutable, Direction.UP)) {
+		} else if (blockState.isSideSolidFullSquare(world, mutable, Direction.UP)) {
 			return 0;
 		}
 
 		for (Direction direction : Direction.Type.HORIZONTAL) {
-			BlockState blockState2 = blockView.getBlockState(mutable.set(blockPos).setOffset(direction));
+			BlockState blockState2 = world.getBlockState(mutable.set(pos).setOffset(direction));
 			if (blockState2.getBlock() == Blocks.SCAFFOLDING) {
 				i = Math.min(i, (Integer)blockState2.get(DISTANCE) + 1);
 				if (i == 1) {

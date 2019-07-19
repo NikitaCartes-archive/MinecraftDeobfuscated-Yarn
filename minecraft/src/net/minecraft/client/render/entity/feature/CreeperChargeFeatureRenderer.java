@@ -14,11 +14,11 @@ public class CreeperChargeFeatureRenderer extends FeatureRenderer<CreeperEntity,
 	private static final Identifier SKIN = new Identifier("textures/entity/creeper/creeper_armor.png");
 	private final CreeperEntityModel<CreeperEntity> model = new CreeperEntityModel<>(2.0F);
 
-	public CreeperChargeFeatureRenderer(FeatureRendererContext<CreeperEntity, CreeperEntityModel<CreeperEntity>> featureRendererContext) {
-		super(featureRendererContext);
+	public CreeperChargeFeatureRenderer(FeatureRendererContext<CreeperEntity, CreeperEntityModel<CreeperEntity>> context) {
+		super(context);
 	}
 
-	public void method_4178(CreeperEntity creeperEntity, float f, float g, float h, float i, float j, float k, float l) {
+	public void render(CreeperEntity creeperEntity, float f, float g, float h, float i, float j, float k, float l) {
 		if (creeperEntity.isCharged()) {
 			boolean bl = creeperEntity.isInvisible();
 			GlStateManager.depthMask(!bl);
@@ -33,7 +33,7 @@ public class CreeperChargeFeatureRenderer extends FeatureRenderer<CreeperEntity,
 			GlStateManager.color4f(0.5F, 0.5F, 0.5F, 1.0F);
 			GlStateManager.disableLighting();
 			GlStateManager.blendFunc(GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ONE);
-			this.getModel().copyStateTo(this.model);
+			this.getContextModel().copyStateTo(this.model);
 			GameRenderer gameRenderer = MinecraftClient.getInstance().gameRenderer;
 			gameRenderer.setFogBlack(true);
 			this.model.render(creeperEntity, f, g, i, j, k, l);

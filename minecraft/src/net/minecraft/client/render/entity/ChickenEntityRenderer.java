@@ -15,11 +15,11 @@ public class ChickenEntityRenderer extends MobEntityRenderer<ChickenEntity, Chic
 		super(entityRenderDispatcher, new ChickenEntityModel<>(), 0.3F);
 	}
 
-	protected Identifier method_3892(ChickenEntity chickenEntity) {
+	protected Identifier getTexture(ChickenEntity chickenEntity) {
 		return SKIN;
 	}
 
-	protected float method_3893(ChickenEntity chickenEntity, float f) {
+	protected float getAnimationProgress(ChickenEntity chickenEntity, float f) {
 		float g = MathHelper.lerp(f, chickenEntity.field_6736, chickenEntity.field_6741);
 		float h = MathHelper.lerp(f, chickenEntity.field_6738, chickenEntity.field_6743);
 		return (MathHelper.sin(g) + 1.0F) * h;

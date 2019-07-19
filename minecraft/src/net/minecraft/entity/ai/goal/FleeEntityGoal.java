@@ -3,7 +3,7 @@ package net.minecraft.entity.ai.goal;
 import java.util.EnumSet;
 import java.util.function.Predicate;
 import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.ai.PathfindingUtil;
+import net.minecraft.entity.ai.TargetFinder;
 import net.minecraft.entity.ai.TargetPredicate;
 import net.minecraft.entity.ai.pathing.EntityNavigation;
 import net.minecraft.entity.ai.pathing.Path;
@@ -24,27 +24,40 @@ public class FleeEntityGoal<T extends LivingEntity> extends Goal {
 	protected final Predicate<LivingEntity> field_6388;
 	private final TargetPredicate withinRangePredicate;
 
-	public FleeEntityGoal(MobEntityWithAi mobEntityWithAi, Class<T> class_, float f, double d, double e) {
-		this(mobEntityWithAi, class_, livingEntity -> true, f, d, e, EntityPredicates.EXCEPT_CREATIVE_OR_SPECTATOR::test);
+	public FleeEntityGoal(MobEntityWithAi mob, Class<T> fleeFromType, float distance, double slowSpeed, double fastSpeed) {
+		this(mob, fleeFromType, livingEntity -> true, distance, slowSpeed, fastSpeed, EntityPredicates.EXCEPT_CREATIVE_OR_SPECTATOR::test);
 	}
 
 	public FleeEntityGoal(
-		MobEntityWithAi mobEntityWithAi, Class<T> class_, Predicate<LivingEntity> predicate, float f, double d, double e, Predicate<LivingEntity> predicate2
+		MobEntityWithAi mob,
+		Class<T> fleeFromType,
+		Predicate<LivingEntity> extraInclusionSelector,
+		float distance,
+		double slowSpeed,
+		double fastSpeed,
+		Predicate<LivingEntity> inclusionSelector
 	) {
-		this.mob = mobEntityWithAi;
-		this.classToFleeFrom = class_;
-		this.field_6393 = predicate;
-		this.fleeDistance = f;
-		this.slowSpeed = d;
-		this.fastSpeed = e;
-		this.field_6388 = predicate2;
-		this.fleeingEntityNavigation = mobEntityWithAi.getNavigation();
+		this.mob = mob;
+		this.classToFleeFrom = fleeFromType;
+		this.field_6393 = extraInclusionSelector;
+		this.fleeDistance = distance;
+		this.slowSpeed = slowSpeed;
+		this.fastSpeed = fastSpeed;
+		this.field_6388 = inclusionSelector;
+		this.fleeingEntityNavigation = mob.getNavigation();
 		this.setControls(EnumSet.of(Goal.Control.MOVE));
-		this.withinRangePredicate = new TargetPredicate().setBaseMaxDistance((double)f).setPredicate(predicate2.and(predicate));
+		this.withinRangePredicate = new TargetPredicate().setBaseMaxDistance((double)distance).setPredicate(inclusionSelector.and(extraInclusionSelector));
 	}
 
-	public FleeEntityGoal(MobEntityWithAi mobEntityWithAi, Class<T> class_, float f, double d, double e, Predicate<LivingEntity> predicate) {
-		this(mobEntityWithAi, class_, livingEntity -> true, f, d, e, predicate);
+	public FleeEntityGoal(
+		MobEntityWithAi fleeingEntity,
+		Class<T> classToFleeFrom,
+		float fleeDistance,
+		double fleeSlowSpeed,
+		double fleeFastSpeed,
+		Predicate<LivingEntity> inclusionSelector
+	) {
+		this(fleeingEntity, classToFleeFrom, livingEntity -> true, fleeDistance, fleeSlowSpeed, fleeFastSpeed, inclusionSelector);
 	}
 
 	@Override
@@ -63,7 +76,7 @@ public class FleeEntityGoal<T extends LivingEntity> extends Goal {
 		if (this.targetEntity == null) {
 			return false;
 		} else {
-			Vec3d vec3d = PathfindingUtil.method_6379(this.mob, 16, 7, new Vec3d(this.targetEntity.x, this.targetEntity.y, this.targetEntity.z));
+			Vec3d vec3d = TargetFinder.method_6379(this.mob, 16, 7, new Vec3d(this.targetEntity.x, this.targetEntity.y, this.targetEntity.z));
 			if (vec3d == null) {
 				return false;
 			} else if (this.targetEntity.squaredDistanceTo(vec3d.x, vec3d.y, vec3d.z) < this.targetEntity.squaredDistanceTo(this.mob)) {

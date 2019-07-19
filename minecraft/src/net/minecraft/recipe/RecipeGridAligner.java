@@ -4,54 +4,54 @@ import java.util.Iterator;
 import net.minecraft.util.math.MathHelper;
 
 public interface RecipeGridAligner<T> {
-	default void alignRecipeToGrid(int i, int j, int k, Recipe<?> recipe, Iterator<T> iterator, int l) {
-		int m = i;
-		int n = j;
+	default void alignRecipeToGrid(int gridWidth, int gridHeight, int gridOutputSlot, Recipe<?> recipe, Iterator<T> inputs, int amount) {
+		int i = gridWidth;
+		int j = gridHeight;
 		if (recipe instanceof ShapedRecipe) {
 			ShapedRecipe shapedRecipe = (ShapedRecipe)recipe;
-			m = shapedRecipe.getWidth();
-			n = shapedRecipe.getHeight();
+			i = shapedRecipe.getWidth();
+			j = shapedRecipe.getHeight();
 		}
 
-		int o = 0;
+		int k = 0;
 
-		for (int p = 0; p < j; p++) {
-			if (o == k) {
-				o++;
+		for (int l = 0; l < gridHeight; l++) {
+			if (k == gridOutputSlot) {
+				k++;
 			}
 
-			boolean bl = (float)n < (float)j / 2.0F;
-			int q = MathHelper.floor((float)j / 2.0F - (float)n / 2.0F);
-			if (bl && q > p) {
-				o += i;
-				p++;
+			boolean bl = (float)j < (float)gridHeight / 2.0F;
+			int m = MathHelper.floor((float)gridHeight / 2.0F - (float)j / 2.0F);
+			if (bl && m > l) {
+				k += gridWidth;
+				l++;
 			}
 
-			for (int r = 0; r < i; r++) {
-				if (!iterator.hasNext()) {
+			for (int n = 0; n < gridWidth; n++) {
+				if (!inputs.hasNext()) {
 					return;
 				}
 
-				bl = (float)m < (float)i / 2.0F;
-				q = MathHelper.floor((float)i / 2.0F - (float)m / 2.0F);
-				int s = m;
-				boolean bl2 = r < m;
+				bl = (float)i < (float)gridWidth / 2.0F;
+				m = MathHelper.floor((float)gridWidth / 2.0F - (float)i / 2.0F);
+				int o = i;
+				boolean bl2 = n < i;
 				if (bl) {
-					s = q + m;
-					bl2 = q <= r && r < q + m;
+					o = m + i;
+					bl2 = m <= n && n < m + i;
 				}
 
 				if (bl2) {
-					this.acceptAlignedInput(iterator, o, l, p, r);
-				} else if (s == r) {
-					o += i - r;
+					this.acceptAlignedInput(inputs, k, amount, l, n);
+				} else if (o == n) {
+					k += gridWidth - n;
 					break;
 				}
 
-				o++;
+				k++;
 			}
 		}
 	}
 
-	void acceptAlignedInput(Iterator<T> iterator, int i, int j, int k, int l);
+	void acceptAlignedInput(Iterator<T> inputs, int slot, int amount, int gridX, int gridY);
 }

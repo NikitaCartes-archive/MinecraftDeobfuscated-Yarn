@@ -23,16 +23,16 @@ public class SleepTask extends Task<LivingEntity> {
 	}
 
 	@Override
-	protected boolean shouldRun(ServerWorld serverWorld, LivingEntity livingEntity) {
-		if (livingEntity.hasVehicle()) {
+	protected boolean shouldRun(ServerWorld world, LivingEntity entity) {
+		if (entity.hasVehicle()) {
 			return false;
 		} else {
-			GlobalPos globalPos = (GlobalPos)livingEntity.getBrain().getOptionalMemory(MemoryModuleType.HOME).get();
-			if (!Objects.equals(serverWorld.getDimension().getType(), globalPos.getDimension())) {
+			GlobalPos globalPos = (GlobalPos)entity.getBrain().getOptionalMemory(MemoryModuleType.HOME).get();
+			if (!Objects.equals(world.getDimension().getType(), globalPos.getDimension())) {
 				return false;
 			} else {
-				BlockState blockState = serverWorld.getBlockState(globalPos.getPos());
-				return globalPos.getPos().isWithinDistance(livingEntity.getPos(), 2.0)
+				BlockState blockState = world.getBlockState(globalPos.getPos());
+				return globalPos.getPos().isWithinDistance(entity.getPos(), 2.0)
 					&& blockState.getBlock().matches(BlockTags.BEDS)
 					&& !(Boolean)blockState.get(BedBlock.OCCUPIED);
 			}
@@ -40,38 +40,36 @@ public class SleepTask extends Task<LivingEntity> {
 	}
 
 	@Override
-	protected boolean shouldKeepRunning(ServerWorld serverWorld, LivingEntity livingEntity, long l) {
-		Optional<GlobalPos> optional = livingEntity.getBrain().getOptionalMemory(MemoryModuleType.HOME);
+	protected boolean shouldKeepRunning(ServerWorld world, LivingEntity entity, long time) {
+		Optional<GlobalPos> optional = entity.getBrain().getOptionalMemory(MemoryModuleType.HOME);
 		if (!optional.isPresent()) {
 			return false;
 		} else {
 			BlockPos blockPos = ((GlobalPos)optional.get()).getPos();
-			return livingEntity.getBrain().hasActivity(Activity.REST)
-				&& livingEntity.y > (double)blockPos.getY() + 0.4
-				&& blockPos.isWithinDistance(livingEntity.getPos(), 1.14);
+			return entity.getBrain().hasActivity(Activity.REST) && entity.y > (double)blockPos.getY() + 0.4 && blockPos.isWithinDistance(entity.getPos(), 1.14);
 		}
 	}
 
 	@Override
-	protected void run(ServerWorld serverWorld, LivingEntity livingEntity, long l) {
-		if (l > this.field_18848) {
-			livingEntity.getBrain()
+	protected void run(ServerWorld world, LivingEntity entity, long time) {
+		if (time > this.field_18848) {
+			entity.getBrain()
 				.getOptionalMemory(MemoryModuleType.OPENED_DOORS)
-				.ifPresent(set -> OpenDoorsTask.method_21697(serverWorld, ImmutableList.of(), 0, livingEntity, livingEntity.getBrain()));
-			livingEntity.sleep(((GlobalPos)livingEntity.getBrain().getOptionalMemory(MemoryModuleType.HOME).get()).getPos());
+				.ifPresent(set -> OpenDoorsTask.method_21697(world, ImmutableList.of(), 0, entity, entity.getBrain()));
+			entity.sleep(((GlobalPos)entity.getBrain().getOptionalMemory(MemoryModuleType.HOME).get()).getPos());
 		}
 	}
 
 	@Override
-	protected boolean isTimeLimitExceeded(long l) {
+	protected boolean isTimeLimitExceeded(long time) {
 		return false;
 	}
 
 	@Override
-	protected void finishRunning(ServerWorld serverWorld, LivingEntity livingEntity, long l) {
-		if (livingEntity.isSleeping()) {
-			livingEntity.wakeUp();
-			this.field_18848 = l + 40L;
+	protected void finishRunning(ServerWorld world, LivingEntity entity, long time) {
+		if (entity.isSleeping()) {
+			entity.wakeUp();
+			this.field_18848 = time + 40L;
 		}
 	}
 }

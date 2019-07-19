@@ -8,7 +8,7 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.widget.ToggleButtonWidget;
 import net.minecraft.client.recipe.book.ClientRecipeBook;
 import net.minecraft.client.recipe.book.RecipeBookGroup;
-import net.minecraft.client.render.GuiLighting;
+import net.minecraft.client.render.DiffuseLighting;
 import net.minecraft.client.render.item.ItemRenderer;
 import net.minecraft.container.CraftingContainer;
 import net.minecraft.item.ItemStack;
@@ -25,12 +25,12 @@ public class RecipeGroupButtonWidget extends ToggleButtonWidget {
 		this.setTextureUV(153, 2, 35, 0, RecipeBookWidget.TEXTURE);
 	}
 
-	public void checkForNewRecipes(MinecraftClient minecraftClient) {
-		ClientRecipeBook clientRecipeBook = minecraftClient.player.getRecipeBook();
+	public void checkForNewRecipes(MinecraftClient client) {
+		ClientRecipeBook clientRecipeBook = client.player.getRecipeBook();
 		List<RecipeResultCollection> list = clientRecipeBook.getResultsForGroup(this.category);
-		if (minecraftClient.player.container instanceof CraftingContainer) {
+		if (client.player.container instanceof CraftingContainer) {
 			for (RecipeResultCollection recipeResultCollection : list) {
-				for (Recipe<?> recipe : recipeResultCollection.getResults(clientRecipeBook.isFilteringCraftable((CraftingContainer<?>)minecraftClient.player.container))) {
+				for (Recipe<?> recipe : recipeResultCollection.getResults(clientRecipeBook.isFilteringCraftable((CraftingContainer<?>)client.player.container))) {
 					if (clientRecipeBook.shouldDisplay(recipe)) {
 						this.bounce = 15.0F;
 						return;
@@ -41,44 +41,44 @@ public class RecipeGroupButtonWidget extends ToggleButtonWidget {
 	}
 
 	@Override
-	public void renderButton(int i, int j, float f) {
+	public void renderButton(int mouseX, int mouseY, float delta) {
 		if (this.bounce > 0.0F) {
-			float g = 1.0F + 0.1F * (float)Math.sin((double)(this.bounce / 15.0F * (float) Math.PI));
+			float f = 1.0F + 0.1F * (float)Math.sin((double)(this.bounce / 15.0F * (float) Math.PI));
 			GlStateManager.pushMatrix();
 			GlStateManager.translatef((float)(this.x + 8), (float)(this.y + 12), 0.0F);
-			GlStateManager.scalef(1.0F, g, 1.0F);
+			GlStateManager.scalef(1.0F, f, 1.0F);
 			GlStateManager.translatef((float)(-(this.x + 8)), (float)(-(this.y + 12)), 0.0F);
 		}
 
 		MinecraftClient minecraftClient = MinecraftClient.getInstance();
 		minecraftClient.getTextureManager().bindTexture(this.texture);
 		GlStateManager.disableDepthTest();
-		int k = this.u;
-		int l = this.v;
+		int i = this.u;
+		int j = this.v;
 		if (this.toggled) {
-			k += this.pressedUOffset;
+			i += this.pressedUOffset;
 		}
 
 		if (this.isHovered()) {
-			l += this.hoverVOffset;
+			j += this.hoverVOffset;
 		}
 
-		int m = this.x;
+		int k = this.x;
 		if (this.toggled) {
-			m -= 2;
+			k -= 2;
 		}
 
 		GlStateManager.color4f(1.0F, 1.0F, 1.0F, 1.0F);
-		this.blit(m, this.y, k, l, this.width, this.height);
+		this.blit(k, this.y, i, j, this.width, this.height);
 		GlStateManager.enableDepthTest();
-		GuiLighting.enableForItems();
+		DiffuseLighting.enableForItems();
 		GlStateManager.disableLighting();
 		this.method_2621(minecraftClient.getItemRenderer());
 		GlStateManager.enableLighting();
-		GuiLighting.disable();
+		DiffuseLighting.disable();
 		if (this.bounce > 0.0F) {
 			GlStateManager.popMatrix();
-			this.bounce -= f;
+			this.bounce -= delta;
 		}
 	}
 
@@ -97,12 +97,12 @@ public class RecipeGroupButtonWidget extends ToggleButtonWidget {
 		return this.category;
 	}
 
-	public boolean hasKnownRecipes(ClientRecipeBook clientRecipeBook) {
-		List<RecipeResultCollection> list = clientRecipeBook.getResultsForGroup(this.category);
+	public boolean hasKnownRecipes(ClientRecipeBook recipeBook) {
+		List<RecipeResultCollection> list = recipeBook.getResultsForGroup(this.category);
 		this.visible = false;
 		if (list != null) {
 			for (RecipeResultCollection recipeResultCollection : list) {
-				if (recipeResultCollection.isInitialized() && recipeResultCollection.hasFittableResults()) {
+				if (recipeResultCollection.isInitialized() && recipeResultCollection.hasFittingRecipes()) {
 					this.visible = true;
 					break;
 				}

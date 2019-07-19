@@ -8,41 +8,41 @@ import net.minecraft.world.biome.source.BiomeSource;
 import net.minecraft.world.chunk.ChunkNibbleArray;
 
 public class AlphaChunkIo {
-	public static AlphaChunkIo.AlphaChunk readAlphaChunk(CompoundTag compoundTag) {
-		int i = compoundTag.getInt("xPos");
-		int j = compoundTag.getInt("zPos");
+	public static AlphaChunkIo.AlphaChunk readAlphaChunk(CompoundTag tag) {
+		int i = tag.getInt("xPos");
+		int j = tag.getInt("zPos");
 		AlphaChunkIo.AlphaChunk alphaChunk = new AlphaChunkIo.AlphaChunk(i, j);
-		alphaChunk.blocks = compoundTag.getByteArray("Blocks");
-		alphaChunk.data = new AlphaChunkDataArray(compoundTag.getByteArray("Data"), 7);
-		alphaChunk.skyLight = new AlphaChunkDataArray(compoundTag.getByteArray("SkyLight"), 7);
-		alphaChunk.blockLight = new AlphaChunkDataArray(compoundTag.getByteArray("BlockLight"), 7);
-		alphaChunk.heightMap = compoundTag.getByteArray("HeightMap");
-		alphaChunk.terrainPopulated = compoundTag.getBoolean("TerrainPopulated");
-		alphaChunk.entities = compoundTag.getList("Entities", 10);
-		alphaChunk.blockEntities = compoundTag.getList("TileEntities", 10);
-		alphaChunk.blockTicks = compoundTag.getList("TileTicks", 10);
+		alphaChunk.blocks = tag.getByteArray("Blocks");
+		alphaChunk.data = new AlphaChunkDataArray(tag.getByteArray("Data"), 7);
+		alphaChunk.skyLight = new AlphaChunkDataArray(tag.getByteArray("SkyLight"), 7);
+		alphaChunk.blockLight = new AlphaChunkDataArray(tag.getByteArray("BlockLight"), 7);
+		alphaChunk.heightMap = tag.getByteArray("HeightMap");
+		alphaChunk.terrainPopulated = tag.getBoolean("TerrainPopulated");
+		alphaChunk.entities = tag.getList("Entities", 10);
+		alphaChunk.blockEntities = tag.getList("TileEntities", 10);
+		alphaChunk.blockTicks = tag.getList("TileTicks", 10);
 
 		try {
-			alphaChunk.lastUpdate = compoundTag.getLong("LastUpdate");
+			alphaChunk.lastUpdate = tag.getLong("LastUpdate");
 		} catch (ClassCastException var5) {
-			alphaChunk.lastUpdate = (long)compoundTag.getInt("LastUpdate");
+			alphaChunk.lastUpdate = (long)tag.getInt("LastUpdate");
 		}
 
 		return alphaChunk;
 	}
 
-	public static void convertAlphaChunk(AlphaChunkIo.AlphaChunk alphaChunk, CompoundTag compoundTag, BiomeSource biomeSource) {
-		compoundTag.putInt("xPos", alphaChunk.x);
-		compoundTag.putInt("zPos", alphaChunk.z);
-		compoundTag.putLong("LastUpdate", alphaChunk.lastUpdate);
+	public static void convertAlphaChunk(AlphaChunkIo.AlphaChunk alphaChunk, CompoundTag tag, BiomeSource biomeSource) {
+		tag.putInt("xPos", alphaChunk.x);
+		tag.putInt("zPos", alphaChunk.z);
+		tag.putLong("LastUpdate", alphaChunk.lastUpdate);
 		int[] is = new int[alphaChunk.heightMap.length];
 
 		for (int i = 0; i < alphaChunk.heightMap.length; i++) {
 			is[i] = alphaChunk.heightMap[i];
 		}
 
-		compoundTag.putIntArray("HeightMap", is);
-		compoundTag.putBoolean("TerrainPopulated", alphaChunk.terrainPopulated);
+		tag.putIntArray("HeightMap", is);
+		tag.putBoolean("TerrainPopulated", alphaChunk.terrainPopulated);
 		ListTag listTag = new ListTag();
 
 		for (int j = 0; j < 8; j++) {
@@ -80,17 +80,17 @@ public class AlphaChunkIo {
 					}
 				}
 
-				CompoundTag compoundTag2 = new CompoundTag();
-				compoundTag2.putByte("Y", (byte)(j & 0xFF));
-				compoundTag2.putByteArray("Blocks", bs);
-				compoundTag2.putByteArray("Data", chunkNibbleArray.asByteArray());
-				compoundTag2.putByteArray("SkyLight", chunkNibbleArray2.asByteArray());
-				compoundTag2.putByteArray("BlockLight", chunkNibbleArray3.asByteArray());
-				listTag.add(compoundTag2);
+				CompoundTag compoundTag = new CompoundTag();
+				compoundTag.putByte("Y", (byte)(j & 0xFF));
+				compoundTag.putByteArray("Blocks", bs);
+				compoundTag.putByteArray("Data", chunkNibbleArray.asByteArray());
+				compoundTag.putByteArray("SkyLight", chunkNibbleArray2.asByteArray());
+				compoundTag.putByteArray("BlockLight", chunkNibbleArray3.asByteArray());
+				listTag.add(compoundTag);
 			}
 		}
 
-		compoundTag.put("Sections", listTag);
+		tag.put("Sections", listTag);
 		byte[] cs = new byte[256];
 		BlockPos.Mutable mutable = new BlockPos.Mutable();
 
@@ -101,14 +101,14 @@ public class AlphaChunkIo {
 			}
 		}
 
-		compoundTag.putByteArray("Biomes", cs);
-		compoundTag.put("Entities", alphaChunk.entities);
-		compoundTag.put("TileEntities", alphaChunk.blockEntities);
+		tag.putByteArray("Biomes", cs);
+		tag.put("Entities", alphaChunk.entities);
+		tag.put("TileEntities", alphaChunk.blockEntities);
 		if (alphaChunk.blockTicks != null) {
-			compoundTag.put("TileTicks", alphaChunk.blockTicks);
+			tag.put("TileTicks", alphaChunk.blockTicks);
 		}
 
-		compoundTag.putBoolean("convertedFromAlphaFormat", true);
+		tag.putBoolean("convertedFromAlphaFormat", true);
 	}
 
 	public static class AlphaChunk {
@@ -125,9 +125,9 @@ public class AlphaChunkIo {
 		public final int x;
 		public final int z;
 
-		public AlphaChunk(int i, int j) {
-			this.x = i;
-			this.z = j;
+		public AlphaChunk(int x, int z) {
+			this.x = x;
+			this.z = z;
 		}
 	}
 }

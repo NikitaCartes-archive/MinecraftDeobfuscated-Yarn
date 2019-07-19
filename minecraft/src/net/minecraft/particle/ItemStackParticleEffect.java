@@ -12,28 +12,28 @@ import net.minecraft.util.registry.Registry;
 
 public class ItemStackParticleEffect implements ParticleEffect {
 	public static final ParticleEffect.Factory<ItemStackParticleEffect> PARAMETERS_FACTORY = new ParticleEffect.Factory<ItemStackParticleEffect>() {
-		public ItemStackParticleEffect method_10290(ParticleType<ItemStackParticleEffect> particleType, StringReader stringReader) throws CommandSyntaxException {
+		public ItemStackParticleEffect read(ParticleType<ItemStackParticleEffect> particleType, StringReader stringReader) throws CommandSyntaxException {
 			stringReader.expect(' ');
 			ItemStringReader itemStringReader = new ItemStringReader(stringReader, false).consume();
 			ItemStack itemStack = new ItemStackArgument(itemStringReader.getItem(), itemStringReader.getTag()).createStack(1, false);
 			return new ItemStackParticleEffect(particleType, itemStack);
 		}
 
-		public ItemStackParticleEffect method_10291(ParticleType<ItemStackParticleEffect> particleType, PacketByteBuf packetByteBuf) {
+		public ItemStackParticleEffect read(ParticleType<ItemStackParticleEffect> particleType, PacketByteBuf packetByteBuf) {
 			return new ItemStackParticleEffect(particleType, packetByteBuf.readItemStack());
 		}
 	};
 	private final ParticleType<ItemStackParticleEffect> type;
 	private final ItemStack stack;
 
-	public ItemStackParticleEffect(ParticleType<ItemStackParticleEffect> particleType, ItemStack itemStack) {
-		this.type = particleType;
-		this.stack = itemStack;
+	public ItemStackParticleEffect(ParticleType<ItemStackParticleEffect> type, ItemStack stack) {
+		this.type = type;
+		this.stack = stack;
 	}
 
 	@Override
-	public void write(PacketByteBuf packetByteBuf) {
-		packetByteBuf.writeItemStack(this.stack);
+	public void write(PacketByteBuf buf) {
+		buf.writeItemStack(this.stack);
 	}
 
 	@Override

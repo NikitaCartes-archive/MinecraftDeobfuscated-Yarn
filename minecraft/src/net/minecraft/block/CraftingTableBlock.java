@@ -1,9 +1,9 @@
 package net.minecraft.block;
 
-import net.minecraft.client.network.ClientDummyContainerProvider;
 import net.minecraft.container.BlockContext;
 import net.minecraft.container.CraftingTableContainer;
-import net.minecraft.container.NameableContainerProvider;
+import net.minecraft.container.NameableContainerFactory;
+import net.minecraft.container.SimpleNamedContainerFactory;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.stat.Stats;
 import net.minecraft.text.Text;
@@ -21,16 +21,16 @@ public class CraftingTableBlock extends Block {
 	}
 
 	@Override
-	public boolean activate(BlockState blockState, World world, BlockPos blockPos, PlayerEntity playerEntity, Hand hand, BlockHitResult blockHitResult) {
-		playerEntity.openContainer(blockState.createContainerProvider(world, blockPos));
-		playerEntity.incrementStat(Stats.INTERACT_WITH_CRAFTING_TABLE);
+	public boolean activate(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
+		player.openContainer(state.createContainerFactory(world, pos));
+		player.incrementStat(Stats.INTERACT_WITH_CRAFTING_TABLE);
 		return true;
 	}
 
 	@Override
-	public NameableContainerProvider createContainerProvider(BlockState blockState, World world, BlockPos blockPos) {
-		return new ClientDummyContainerProvider(
-			(i, playerInventory, playerEntity) -> new CraftingTableContainer(i, playerInventory, BlockContext.create(world, blockPos)), CONTAINER_NAME
+	public NameableContainerFactory createContainerFactory(BlockState state, World world, BlockPos pos) {
+		return new SimpleNamedContainerFactory(
+			(i, playerInventory, playerEntity) -> new CraftingTableContainer(i, playerInventory, BlockContext.create(world, pos)), CONTAINER_NAME
 		);
 	}
 }

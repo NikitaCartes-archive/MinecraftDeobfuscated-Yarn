@@ -12,7 +12,7 @@ public class PacketEncryptor extends MessageToByteEncoder<ByteBuf> {
 		this.manager = new PacketEncryptionManager(cipher);
 	}
 
-	protected void method_10736(ChannelHandlerContext channelHandlerContext, ByteBuf byteBuf, ByteBuf byteBuf2) throws Exception {
+	protected void encode(ChannelHandlerContext channelHandlerContext, ByteBuf byteBuf, ByteBuf byteBuf2) throws Exception {
 		this.manager.encrypt(byteBuf, byteBuf2);
 	}
 }

@@ -8,8 +8,8 @@ import net.minecraft.world.World;
 
 @Environment(EnvType.CLIENT)
 public class EmotionParticle extends SpriteBillboardParticle {
-	private EmotionParticle(World world, double d, double e, double f) {
-		super(world, d, e, f, 0.0, 0.0, 0.0);
+	private EmotionParticle(World world, double x, double y, double z) {
+		super(world, x, y, z, 0.0, 0.0, 0.0);
 		this.velocityX *= 0.01F;
 		this.velocityY *= 0.01F;
 		this.velocityZ *= 0.01F;
@@ -25,8 +25,8 @@ public class EmotionParticle extends SpriteBillboardParticle {
 	}
 
 	@Override
-	public float getSize(float f) {
-		return this.scale * MathHelper.clamp(((float)this.age + f) / (float)this.maxAge * 32.0F, 0.0F, 1.0F);
+	public float getSize(float tickDelta) {
+		return this.scale * MathHelper.clamp(((float)this.age + tickDelta) / (float)this.maxAge * 32.0F, 0.0F, 1.0F);
 	}
 
 	@Override
@@ -61,7 +61,7 @@ public class EmotionParticle extends SpriteBillboardParticle {
 			this.field_17813 = spriteProvider;
 		}
 
-		public Particle method_3034(DefaultParticleType defaultParticleType, World world, double d, double e, double f, double g, double h, double i) {
+		public Particle createParticle(DefaultParticleType defaultParticleType, World world, double d, double e, double f, double g, double h, double i) {
 			EmotionParticle emotionParticle = new EmotionParticle(world, d, e + 0.5, f);
 			emotionParticle.setSprite(this.field_17813);
 			emotionParticle.setColor(1.0F, 1.0F, 1.0F);
@@ -77,7 +77,7 @@ public class EmotionParticle extends SpriteBillboardParticle {
 			this.field_17814 = spriteProvider;
 		}
 
-		public Particle method_3035(DefaultParticleType defaultParticleType, World world, double d, double e, double f, double g, double h, double i) {
+		public Particle createParticle(DefaultParticleType defaultParticleType, World world, double d, double e, double f, double g, double h, double i) {
 			EmotionParticle emotionParticle = new EmotionParticle(world, d, e, f);
 			emotionParticle.setSprite(this.field_17814);
 			return emotionParticle;

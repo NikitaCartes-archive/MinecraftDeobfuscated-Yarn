@@ -5,24 +5,24 @@ import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.block.Block;
-import net.minecraft.block.BlockRenderLayer;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.FluidBlock;
 import net.minecraft.block.entity.BlockEntity;
+import net.minecraft.client.render.RenderLayer;
 import net.minecraft.item.Item;
 import net.minecraft.item.Items;
 import net.minecraft.particle.ParticleEffect;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
-import net.minecraft.state.StateFactory;
+import net.minecraft.state.StateManager;
 import net.minecraft.tag.FluidTags;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.world.BlockView;
+import net.minecraft.world.CollisionView;
 import net.minecraft.world.IWorld;
-import net.minecraft.world.ViewableWorld;
 import net.minecraft.world.World;
 
 public abstract class WaterFluid extends BaseFluid {
@@ -38,8 +38,8 @@ public abstract class WaterFluid extends BaseFluid {
 
 	@Environment(EnvType.CLIENT)
 	@Override
-	public BlockRenderLayer getRenderLayer() {
-		return BlockRenderLayer.TRANSLUCENT;
+	public RenderLayer getRenderLayer() {
+		return RenderLayer.TRANSLUCENT;
 	}
 
 	@Override
@@ -49,13 +49,13 @@ public abstract class WaterFluid extends BaseFluid {
 
 	@Environment(EnvType.CLIENT)
 	@Override
-	public void randomDisplayTick(World world, BlockPos blockPos, FluidState fluidState, Random random) {
-		if (!fluidState.isStill() && !(Boolean)fluidState.get(FALLING)) {
+	public void randomDisplayTick(World world, BlockPos pos, FluidState state, Random random) {
+		if (!state.isStill() && !(Boolean)state.get(FALLING)) {
 			if (random.nextInt(64) == 0) {
 				world.playSound(
-					(double)blockPos.getX() + 0.5,
-					(double)blockPos.getY() + 0.5,
-					(double)blockPos.getZ() + 0.5,
+					(double)pos.getX() + 0.5,
+					(double)pos.getY() + 0.5,
+					(double)pos.getZ() + 0.5,
 					SoundEvents.BLOCK_WATER_AMBIENT,
 					SoundCategory.BLOCKS,
 					random.nextFloat() * 0.25F + 0.75F,
@@ -66,9 +66,9 @@ public abstract class WaterFluid extends BaseFluid {
 		} else if (random.nextInt(10) == 0) {
 			world.addParticle(
 				ParticleTypes.UNDERWATER,
-				(double)((float)blockPos.getX() + random.nextFloat()),
-				(double)((float)blockPos.getY() + random.nextFloat()),
-				(double)((float)blockPos.getZ() + random.nextFloat()),
+				(double)((float)pos.getX() + random.nextFloat()),
+				(double)((float)pos.getY() + random.nextFloat()),
+				(double)((float)pos.getZ() + random.nextFloat()),
 				0.0,
 				0.0,
 				0.0
@@ -89,19 +89,19 @@ public abstract class WaterFluid extends BaseFluid {
 	}
 
 	@Override
-	protected void beforeBreakingBlock(IWorld iWorld, BlockPos blockPos, BlockState blockState) {
-		BlockEntity blockEntity = blockState.getBlock().hasBlockEntity() ? iWorld.getBlockEntity(blockPos) : null;
-		Block.dropStacks(blockState, iWorld.getWorld(), blockPos, blockEntity);
+	protected void beforeBreakingBlock(IWorld world, BlockPos pos, BlockState state) {
+		BlockEntity blockEntity = state.getBlock().hasBlockEntity() ? world.getBlockEntity(pos) : null;
+		Block.dropStacks(state, world.getWorld(), pos, blockEntity);
 	}
 
 	@Override
-	public int method_15733(ViewableWorld viewableWorld) {
+	public int method_15733(CollisionView collisionView) {
 		return 4;
 	}
 
 	@Override
-	public BlockState toBlockState(FluidState fluidState) {
-		return Blocks.WATER.getDefaultState().with(FluidBlock.LEVEL, Integer.valueOf(method_15741(fluidState)));
+	public BlockState toBlockState(FluidState state) {
+		return Blocks.WATER.getDefaultState().with(FluidBlock.LEVEL, Integer.valueOf(method_15741(state)));
 	}
 
 	@Override
@@ -110,17 +110,17 @@ public abstract class WaterFluid extends BaseFluid {
 	}
 
 	@Override
-	public int getLevelDecreasePerBlock(ViewableWorld viewableWorld) {
+	public int getLevelDecreasePerBlock(CollisionView world) {
 		return 1;
 	}
 
 	@Override
-	public int getTickRate(ViewableWorld viewableWorld) {
+	public int getTickRate(CollisionView collisionView) {
 		return 5;
 	}
 
 	@Override
-	public boolean method_15777(FluidState fluidState, BlockView blockView, BlockPos blockPos, Fluid fluid, Direction direction) {
+	public boolean canBeReplacedWith(FluidState state, BlockView world, BlockPos pos, Fluid fluid, Direction direction) {
 		return direction == Direction.DOWN && !fluid.matches(FluidTags.WATER);
 	}
 
@@ -131,30 +131,30 @@ public abstract class WaterFluid extends BaseFluid {
 
 	public static class Flowing extends WaterFluid {
 		@Override
-		protected void appendProperties(StateFactory.Builder<Fluid, FluidState> builder) {
+		protected void appendProperties(StateManager.Builder<Fluid, FluidState> builder) {
 			super.appendProperties(builder);
 			builder.add(LEVEL);
 		}
 
 		@Override
-		public int getLevel(FluidState fluidState) {
-			return (Integer)fluidState.get(LEVEL);
+		public int getLevel(FluidState state) {
+			return (Integer)state.get(LEVEL);
 		}
 
 		@Override
-		public boolean isStill(FluidState fluidState) {
+		public boolean isStill(FluidState state) {
 			return false;
 		}
 	}
 
 	public static class Still extends WaterFluid {
 		@Override
-		public int getLevel(FluidState fluidState) {
+		public int getLevel(FluidState state) {
 			return 8;
 		}
 
 		@Override
-		public boolean isStill(FluidState fluidState) {
+		public boolean isStill(FluidState state) {
 			return true;
 		}
 	}

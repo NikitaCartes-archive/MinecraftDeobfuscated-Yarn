@@ -4,12 +4,12 @@ import java.util.Optional;
 import java.util.Random;
 import javax.annotation.Nullable;
 import net.minecraft.block.CampfireBlock;
-import net.minecraft.client.network.packet.BlockEntityUpdateS2CPacket;
 import net.minecraft.inventory.BasicInventory;
 import net.minecraft.inventory.Inventories;
 import net.minecraft.inventory.Inventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.packet.s2c.play.BlockEntityUpdateS2CPacket;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.recipe.CampfireCookingRecipe;
 import net.minecraft.recipe.RecipeType;
@@ -113,33 +113,33 @@ public class CampfireBlockEntity extends BlockEntity implements Clearable, Ticka
 	}
 
 	@Override
-	public void fromTag(CompoundTag compoundTag) {
-		super.fromTag(compoundTag);
+	public void fromTag(CompoundTag tag) {
+		super.fromTag(tag);
 		this.itemsBeingCooked.clear();
-		Inventories.fromTag(compoundTag, this.itemsBeingCooked);
-		if (compoundTag.containsKey("CookingTimes", 11)) {
-			int[] is = compoundTag.getIntArray("CookingTimes");
+		Inventories.fromTag(tag, this.itemsBeingCooked);
+		if (tag.contains("CookingTimes", 11)) {
+			int[] is = tag.getIntArray("CookingTimes");
 			System.arraycopy(is, 0, this.cookingTimes, 0, Math.min(this.cookingTotalTimes.length, is.length));
 		}
 
-		if (compoundTag.containsKey("CookingTotalTimes", 11)) {
-			int[] is = compoundTag.getIntArray("CookingTotalTimes");
+		if (tag.contains("CookingTotalTimes", 11)) {
+			int[] is = tag.getIntArray("CookingTotalTimes");
 			System.arraycopy(is, 0, this.cookingTotalTimes, 0, Math.min(this.cookingTotalTimes.length, is.length));
 		}
 	}
 
 	@Override
-	public CompoundTag toTag(CompoundTag compoundTag) {
-		this.saveInitialChunkData(compoundTag);
-		compoundTag.putIntArray("CookingTimes", this.cookingTimes);
-		compoundTag.putIntArray("CookingTotalTimes", this.cookingTotalTimes);
-		return compoundTag;
+	public CompoundTag toTag(CompoundTag tag) {
+		this.saveInitialChunkData(tag);
+		tag.putIntArray("CookingTimes", this.cookingTimes);
+		tag.putIntArray("CookingTotalTimes", this.cookingTotalTimes);
+		return tag;
 	}
 
-	private CompoundTag saveInitialChunkData(CompoundTag compoundTag) {
-		super.toTag(compoundTag);
-		Inventories.toTag(compoundTag, this.itemsBeingCooked, true);
-		return compoundTag;
+	private CompoundTag saveInitialChunkData(CompoundTag tag) {
+		super.toTag(tag);
+		Inventories.toTag(tag, this.itemsBeingCooked, true);
+		return tag;
 	}
 
 	@Nullable
@@ -153,19 +153,19 @@ public class CampfireBlockEntity extends BlockEntity implements Clearable, Ticka
 		return this.saveInitialChunkData(new CompoundTag());
 	}
 
-	public Optional<CampfireCookingRecipe> getRecipeFor(ItemStack itemStack) {
+	public Optional<CampfireCookingRecipe> getRecipeFor(ItemStack item) {
 		return this.itemsBeingCooked.stream().noneMatch(ItemStack::isEmpty)
 			? Optional.empty()
-			: this.world.getRecipeManager().getFirstMatch(RecipeType.CAMPFIRE_COOKING, new BasicInventory(itemStack), this.world);
+			: this.world.getRecipeManager().getFirstMatch(RecipeType.CAMPFIRE_COOKING, new BasicInventory(item), this.world);
 	}
 
-	public boolean addItem(ItemStack itemStack, int i) {
-		for (int j = 0; j < this.itemsBeingCooked.size(); j++) {
-			ItemStack itemStack2 = this.itemsBeingCooked.get(j);
-			if (itemStack2.isEmpty()) {
-				this.cookingTotalTimes[j] = i;
-				this.cookingTimes[j] = 0;
-				this.itemsBeingCooked.set(j, itemStack.split(1));
+	public boolean addItem(ItemStack item, int integer) {
+		for (int i = 0; i < this.itemsBeingCooked.size(); i++) {
+			ItemStack itemStack = this.itemsBeingCooked.get(i);
+			if (itemStack.isEmpty()) {
+				this.cookingTotalTimes[i] = integer;
+				this.cookingTimes[i] = 0;
+				this.itemsBeingCooked.set(i, item.split(1));
 				this.updateListeners();
 				return true;
 			}

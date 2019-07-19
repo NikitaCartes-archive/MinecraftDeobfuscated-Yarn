@@ -16,15 +16,15 @@ import net.minecraft.world.gen.chunk.ChunkGenerator;
 import net.minecraft.world.gen.chunk.ChunkGeneratorType;
 
 public class TheNetherDimension extends Dimension {
-	public TheNetherDimension(World world, DimensionType dimensionType) {
-		super(world, dimensionType);
+	public TheNetherDimension(World world, DimensionType type) {
+		super(world, type);
 		this.waterVaporizes = true;
 		this.isNether = true;
 	}
 
 	@Environment(EnvType.CLIENT)
 	@Override
-	public Vec3d getFogColor(float f, float g) {
+	public Vec3d getFogColor(float skyAngle, float tickDelta) {
 		return new Vec3d(0.2F, 0.03F, 0.03F);
 	}
 
@@ -54,18 +54,18 @@ public class TheNetherDimension extends Dimension {
 
 	@Nullable
 	@Override
-	public BlockPos getSpawningBlockInChunk(ChunkPos chunkPos, boolean bl) {
+	public BlockPos getSpawningBlockInChunk(ChunkPos chunkPos, boolean checkMobSpawnValidity) {
 		return null;
 	}
 
 	@Nullable
 	@Override
-	public BlockPos getTopSpawningBlockPosition(int i, int j, boolean bl) {
+	public BlockPos getTopSpawningBlockPosition(int x, int z, boolean checkMobSpawnValidity) {
 		return null;
 	}
 
 	@Override
-	public float getSkyAngle(long l, float f) {
+	public float getSkyAngle(long timeOfDay, float tickDelta) {
 		return 0.5F;
 	}
 
@@ -76,7 +76,7 @@ public class TheNetherDimension extends Dimension {
 
 	@Environment(EnvType.CLIENT)
 	@Override
-	public boolean shouldRenderFog(int i, int j) {
+	public boolean isFogThick(int x, int z) {
 		return true;
 	}
 

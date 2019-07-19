@@ -10,11 +10,11 @@ import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.MovementType;
 import net.minecraft.entity.SpawnType;
-import net.minecraft.entity.WaterCreatureEntity;
 import net.minecraft.entity.ai.goal.Goal;
 import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.effect.StatusEffects;
+import net.minecraft.entity.mob.WaterCreatureEntity;
 import net.minecraft.fluid.FluidState;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.server.world.ServerWorld;
@@ -62,8 +62,8 @@ public class SquidEntity extends WaterCreatureEntity {
 	}
 
 	@Override
-	protected float getActiveEyeHeight(EntityPose entityPose, EntityDimensions entityDimensions) {
-		return entityDimensions.height * 0.5F;
+	protected float getActiveEyeHeight(EntityPose pose, EntityDimensions dimensions) {
+		return dimensions.height * 0.5F;
 	}
 
 	@Override
@@ -72,7 +72,7 @@ public class SquidEntity extends WaterCreatureEntity {
 	}
 
 	@Override
-	protected SoundEvent getHurtSound(DamageSource damageSource) {
+	protected SoundEvent getHurtSound(DamageSource source) {
 		return SoundEvents.ENTITY_SQUID_HURT;
 	}
 
@@ -160,8 +160,8 @@ public class SquidEntity extends WaterCreatureEntity {
 	}
 
 	@Override
-	public boolean damage(DamageSource damageSource, float f) {
-		if (super.damage(damageSource, f) && this.getAttacker() != null) {
+	public boolean damage(DamageSource source, float amount) {
+		if (super.damage(source, amount) && this.getAttacker() != null) {
 			this.squirt();
 			return true;
 		} else {
@@ -186,7 +186,7 @@ public class SquidEntity extends WaterCreatureEntity {
 	}
 
 	@Override
-	public void travel(Vec3d vec3d) {
+	public void travel(Vec3d movementInput) {
 		this.move(MovementType.SELF, this.getVelocity());
 	}
 
@@ -196,11 +196,11 @@ public class SquidEntity extends WaterCreatureEntity {
 
 	@Environment(EnvType.CLIENT)
 	@Override
-	public void handleStatus(byte b) {
-		if (b == 19) {
+	public void handleStatus(byte status) {
+		if (status == 19) {
 			this.field_6908 = 0.0F;
 		} else {
-			super.handleStatus(b);
+			super.handleStatus(status);
 		}
 	}
 
@@ -223,7 +223,7 @@ public class SquidEntity extends WaterCreatureEntity {
 		@Override
 		public boolean canStart() {
 			LivingEntity livingEntity = SquidEntity.this.getAttacker();
-			return SquidEntity.this.isInsideWater() && livingEntity != null ? SquidEntity.this.squaredDistanceTo(livingEntity) < 100.0 : false;
+			return SquidEntity.this.isTouchingWater() && livingEntity != null ? SquidEntity.this.squaredDistanceTo(livingEntity) < 100.0 : false;
 		}
 
 		@Override
@@ -272,8 +272,8 @@ public class SquidEntity extends WaterCreatureEntity {
 	class SwimGoal extends Goal {
 		private final SquidEntity squid;
 
-		public SwimGoal(SquidEntity squidEntity2) {
-			this.squid = squidEntity2;
+		public SwimGoal(SquidEntity squid) {
+			this.squid = squid;
 		}
 
 		@Override
@@ -286,10 +286,10 @@ public class SquidEntity extends WaterCreatureEntity {
 			int i = this.squid.getDespawnCounter();
 			if (i > 100) {
 				this.squid.setConstantVelocity(0.0F, 0.0F, 0.0F);
-			} else if (this.squid.getRand().nextInt(50) == 0 || !this.squid.insideWater || !this.squid.hasConstantVelocity()) {
-				float f = this.squid.getRand().nextFloat() * (float) (Math.PI * 2);
+			} else if (this.squid.getRandom().nextInt(50) == 0 || !this.squid.touchingWater || !this.squid.hasConstantVelocity()) {
+				float f = this.squid.getRandom().nextFloat() * (float) (Math.PI * 2);
 				float g = MathHelper.cos(f) * 0.2F;
-				float h = -0.1F + this.squid.getRand().nextFloat() * 0.2F;
+				float h = -0.1F + this.squid.getRandom().nextFloat() * 0.2F;
 				float j = MathHelper.sin(f) * 0.2F;
 				this.squid.setConstantVelocity(g, h, j);
 			}

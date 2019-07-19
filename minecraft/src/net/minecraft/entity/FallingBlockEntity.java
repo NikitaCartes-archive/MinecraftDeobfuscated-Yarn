@@ -12,7 +12,6 @@ import net.minecraft.block.Blocks;
 import net.minecraft.block.ConcretePowderBlock;
 import net.minecraft.block.FallingBlock;
 import net.minecraft.block.entity.BlockEntity;
-import net.minecraft.client.network.packet.EntitySpawnS2CPacket;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.data.DataTracker;
 import net.minecraft.entity.data.TrackedData;
@@ -21,12 +20,13 @@ import net.minecraft.fluid.Fluids;
 import net.minecraft.item.AutomaticItemPlacementContext;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtHelper;
 import net.minecraft.nbt.Tag;
 import net.minecraft.network.Packet;
+import net.minecraft.network.packet.s2c.play.EntitySpawnS2CPacket;
 import net.minecraft.state.property.Properties;
 import net.minecraft.tag.BlockTags;
 import net.minecraft.tag.FluidTags;
-import net.minecraft.util.TagHelper;
 import net.minecraft.util.crash.CrashReportSection;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.hit.HitResult;
@@ -53,15 +53,15 @@ public class FallingBlockEntity extends Entity {
 		super(entityType, world);
 	}
 
-	public FallingBlockEntity(World world, double d, double e, double f, BlockState blockState) {
+	public FallingBlockEntity(World world, double x, double y, double z, BlockState block) {
 		this(EntityType.FALLING_BLOCK, world);
-		this.block = blockState;
+		this.block = block;
 		this.inanimate = true;
-		this.setPosition(d, e + (double)((1.0F - this.getHeight()) / 2.0F), f);
+		this.updatePosition(x, y + (double)((1.0F - this.getHeight()) / 2.0F), z);
 		this.setVelocity(Vec3d.ZERO);
-		this.prevX = d;
-		this.prevY = e;
-		this.prevZ = f;
+		this.prevX = x;
+		this.prevY = y;
+		this.prevZ = z;
 		this.setFallingBlockPos(new BlockPos(this));
 	}
 
@@ -70,8 +70,8 @@ public class FallingBlockEntity extends Entity {
 		return false;
 	}
 
-	public void setFallingBlockPos(BlockPos blockPos) {
-		this.dataTracker.set(BLOCK_POS, blockPos);
+	public void setFallingBlockPos(BlockPos pos) {
+		this.dataTracker.set(BLOCK_POS, pos);
 	}
 
 	@Environment(EnvType.CLIENT)
@@ -106,7 +106,7 @@ public class FallingBlockEntity extends Entity {
 			if (this.timeFalling++ == 0) {
 				BlockPos blockPos = new BlockPos(this);
 				if (this.world.getBlockState(blockPos).getBlock() == block) {
-					this.world.clearBlockState(blockPos, false);
+					this.world.removeBlock(blockPos, false);
 				} else if (!this.world.isClient) {
 					this.remove();
 					return;
@@ -164,7 +164,7 @@ public class FallingBlockEntity extends Entity {
 											CompoundTag compoundTag = blockEntity.toTag(new CompoundTag());
 
 											for (String string : this.blockEntityData.getKeys()) {
-												Tag tag = this.blockEntityData.getTag(string);
+												Tag tag = this.blockEntityData.get(string);
 												if (!"x".equals(string) && !"y".equals(string) && !"z".equals(string)) {
 													compoundTag.put(string, tag.copy());
 												}
@@ -198,9 +198,9 @@ public class FallingBlockEntity extends Entity {
 	}
 
 	@Override
-	public void handleFallDamage(float f, float g) {
+	public void handleFallDamage(float fallDistance, float damageMultiplier) {
 		if (this.hurtEntities) {
-			int i = MathHelper.ceil(f - 1.0F);
+			int i = MathHelper.ceil(fallDistance - 1.0F);
 			if (i > 0) {
 				List<Entity> list = Lists.<Entity>newArrayList(this.world.getEntities(this, this.getBoundingBox()));
 				boolean bl = this.block.matches(BlockTags.ANVIL);
@@ -223,36 +223,36 @@ public class FallingBlockEntity extends Entity {
 	}
 
 	@Override
-	protected void writeCustomDataToTag(CompoundTag compoundTag) {
-		compoundTag.put("BlockState", TagHelper.serializeBlockState(this.block));
-		compoundTag.putInt("Time", this.timeFalling);
-		compoundTag.putBoolean("DropItem", this.dropItem);
-		compoundTag.putBoolean("HurtEntities", this.hurtEntities);
-		compoundTag.putFloat("FallHurtAmount", this.fallHurtAmount);
-		compoundTag.putInt("FallHurtMax", this.fallHurtMax);
+	protected void writeCustomDataToTag(CompoundTag tag) {
+		tag.put("BlockState", NbtHelper.fromBlockState(this.block));
+		tag.putInt("Time", this.timeFalling);
+		tag.putBoolean("DropItem", this.dropItem);
+		tag.putBoolean("HurtEntities", this.hurtEntities);
+		tag.putFloat("FallHurtAmount", this.fallHurtAmount);
+		tag.putInt("FallHurtMax", this.fallHurtMax);
 		if (this.blockEntityData != null) {
-			compoundTag.put("TileEntityData", this.blockEntityData);
+			tag.put("TileEntityData", this.blockEntityData);
 		}
 	}
 
 	@Override
-	protected void readCustomDataFromTag(CompoundTag compoundTag) {
-		this.block = TagHelper.deserializeBlockState(compoundTag.getCompound("BlockState"));
-		this.timeFalling = compoundTag.getInt("Time");
-		if (compoundTag.containsKey("HurtEntities", 99)) {
-			this.hurtEntities = compoundTag.getBoolean("HurtEntities");
-			this.fallHurtAmount = compoundTag.getFloat("FallHurtAmount");
-			this.fallHurtMax = compoundTag.getInt("FallHurtMax");
+	protected void readCustomDataFromTag(CompoundTag tag) {
+		this.block = NbtHelper.toBlockState(tag.getCompound("BlockState"));
+		this.timeFalling = tag.getInt("Time");
+		if (tag.contains("HurtEntities", 99)) {
+			this.hurtEntities = tag.getBoolean("HurtEntities");
+			this.fallHurtAmount = tag.getFloat("FallHurtAmount");
+			this.fallHurtMax = tag.getInt("FallHurtMax");
 		} else if (this.block.matches(BlockTags.ANVIL)) {
 			this.hurtEntities = true;
 		}
 
-		if (compoundTag.containsKey("DropItem", 99)) {
-			this.dropItem = compoundTag.getBoolean("DropItem");
+		if (tag.contains("DropItem", 99)) {
+			this.dropItem = tag.getBoolean("DropItem");
 		}
 
-		if (compoundTag.containsKey("TileEntityData", 10)) {
-			this.blockEntityData = compoundTag.getCompound("TileEntityData");
+		if (tag.contains("TileEntityData", 10)) {
+			this.blockEntityData = tag.getCompound("TileEntityData");
 		}
 
 		if (this.block.isAir()) {
@@ -265,8 +265,8 @@ public class FallingBlockEntity extends Entity {
 		return this.world;
 	}
 
-	public void setHurtEntities(boolean bl) {
-		this.hurtEntities = bl;
+	public void setHurtEntities(boolean hurtEntities) {
+		this.hurtEntities = hurtEntities;
 	}
 
 	@Environment(EnvType.CLIENT)
@@ -276,9 +276,9 @@ public class FallingBlockEntity extends Entity {
 	}
 
 	@Override
-	public void populateCrashReport(CrashReportSection crashReportSection) {
-		super.populateCrashReport(crashReportSection);
-		crashReportSection.add("Immitating BlockState", this.block.toString());
+	public void populateCrashReport(CrashReportSection section) {
+		super.populateCrashReport(section);
+		section.add("Immitating BlockState", this.block.toString());
 	}
 
 	public BlockState getBlockState() {

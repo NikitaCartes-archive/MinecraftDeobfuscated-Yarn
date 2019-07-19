@@ -7,12 +7,12 @@ import net.minecraft.block.Blocks;
 import net.minecraft.world.IWorld;
 
 public class PumpkinPileFeature extends AbstractPileFeature {
-	public PumpkinPileFeature(Function<Dynamic<?>, ? extends DefaultFeatureConfig> function) {
-		super(function);
+	public PumpkinPileFeature(Function<Dynamic<?>, ? extends DefaultFeatureConfig> configFactory) {
+		super(configFactory);
 	}
 
 	@Override
-	protected BlockState getPileBlockState(IWorld iWorld) {
-		return iWorld.getRandom().nextFloat() < 0.95F ? Blocks.PUMPKIN.getDefaultState() : Blocks.JACK_O_LANTERN.getDefaultState();
+	protected BlockState getPileBlockState(IWorld world) {
+		return world.getRandom().nextFloat() < 0.95F ? Blocks.PUMPKIN.getDefaultState() : Blocks.JACK_O_LANTERN.getDefaultState();
 	}
 }

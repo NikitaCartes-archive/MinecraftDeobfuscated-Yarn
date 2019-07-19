@@ -10,8 +10,8 @@ import net.minecraft.structure.Structure;
 import net.minecraft.structure.StructureManager;
 import net.minecraft.util.BlockRotation;
 import net.minecraft.util.DynamicDeserializer;
+import net.minecraft.util.math.BlockBox;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.MutableIntBoundingBox;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.world.IWorld;
 
@@ -45,30 +45,26 @@ public class ListPoolElement extends StructurePoolElement {
 	}
 
 	@Override
-	public List<Structure.StructureBlockInfo> getStructureBlockInfos(
-		StructureManager structureManager, BlockPos blockPos, BlockRotation blockRotation, Random random
-	) {
-		return ((StructurePoolElement)this.elements.get(0)).getStructureBlockInfos(structureManager, blockPos, blockRotation, random);
+	public List<Structure.StructureBlockInfo> getStructureBlockInfos(StructureManager structureManager, BlockPos pos, BlockRotation rotation, Random random) {
+		return ((StructurePoolElement)this.elements.get(0)).getStructureBlockInfos(structureManager, pos, rotation, random);
 	}
 
 	@Override
-	public MutableIntBoundingBox getBoundingBox(StructureManager structureManager, BlockPos blockPos, BlockRotation blockRotation) {
-		MutableIntBoundingBox mutableIntBoundingBox = MutableIntBoundingBox.empty();
+	public BlockBox getBoundingBox(StructureManager structureManager, BlockPos pos, BlockRotation rotation) {
+		BlockBox blockBox = BlockBox.empty();
 
 		for (StructurePoolElement structurePoolElement : this.elements) {
-			MutableIntBoundingBox mutableIntBoundingBox2 = structurePoolElement.getBoundingBox(structureManager, blockPos, blockRotation);
-			mutableIntBoundingBox.setFrom(mutableIntBoundingBox2);
+			BlockBox blockBox2 = structurePoolElement.getBoundingBox(structureManager, pos, rotation);
+			blockBox.encompass(blockBox2);
 		}
 
-		return mutableIntBoundingBox;
+		return blockBox;
 	}
 
 	@Override
-	public boolean generate(
-		StructureManager structureManager, IWorld iWorld, BlockPos blockPos, BlockRotation blockRotation, MutableIntBoundingBox mutableIntBoundingBox, Random random
-	) {
+	public boolean generate(StructureManager structureManager, IWorld world, BlockPos pos, BlockRotation rotation, BlockBox boundingBox, Random random) {
 		for (StructurePoolElement structurePoolElement : this.elements) {
-			if (!structurePoolElement.generate(structureManager, iWorld, blockPos, blockRotation, mutableIntBoundingBox, random)) {
+			if (!structurePoolElement.generate(structureManager, world, pos, rotation, boundingBox, random)) {
 				return false;
 			}
 		}

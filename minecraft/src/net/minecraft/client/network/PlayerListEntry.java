@@ -9,8 +9,8 @@ import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.network.packet.PlayerListS2CPacket;
 import net.minecraft.client.util.DefaultSkinHelper;
+import net.minecraft.network.packet.s2c.play.PlayerListS2CPacket;
 import net.minecraft.scoreboard.Team;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
@@ -31,15 +31,15 @@ public class PlayerListEntry {
 	private long field_3747;
 	private long field_3746;
 
-	public PlayerListEntry(GameProfile gameProfile) {
-		this.profile = gameProfile;
+	public PlayerListEntry(GameProfile profile) {
+		this.profile = profile;
 	}
 
-	public PlayerListEntry(PlayerListS2CPacket.Entry entry) {
-		this.profile = entry.getProfile();
-		this.gameMode = entry.getGameMode();
-		this.latency = entry.getLatency();
-		this.displayName = entry.getDisplayName();
+	public PlayerListEntry(PlayerListS2CPacket.Entry playerListPacketEntry) {
+		this.profile = playerListPacketEntry.getProfile();
+		this.gameMode = playerListPacketEntry.getGameMode();
+		this.latency = playerListPacketEntry.getLatency();
+		this.displayName = playerListPacketEntry.getDisplayName();
 	}
 
 	public GameProfile getProfile() {
@@ -58,8 +58,8 @@ public class PlayerListEntry {
 		return this.latency;
 	}
 
-	protected void setLatency(int i) {
-		this.latency = i;
+	protected void setLatency(int latency) {
+		this.latency = latency;
 	}
 
 	public boolean hasSkinTexture() {
@@ -116,8 +116,8 @@ public class PlayerListEntry {
 		}
 	}
 
-	public void setDisplayName(@Nullable Text text) {
-		this.displayName = text;
+	public void setDisplayName(@Nullable Text displayName) {
+		this.displayName = displayName;
 	}
 
 	@Nullable
