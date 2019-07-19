@@ -12,12 +12,12 @@ import net.minecraft.block.BlockState;
 import net.minecraft.block.CommandBlock;
 import net.minecraft.block.JigsawBlock;
 import net.minecraft.block.StructureBlock;
-import net.minecraft.class_4462;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.network.ClientPlayNetworkHandler;
 import net.minecraft.client.network.ClientPlayerEntity;
 import net.minecraft.client.recipe.book.ClientRecipeBook;
 import net.minecraft.client.sound.PositionedSoundInstance;
+import net.minecraft.client.util.math.PosAndRot;
 import net.minecraft.client.world.ClientWorld;
 import net.minecraft.container.SlotActionType;
 import net.minecraft.entity.Entity;
@@ -26,17 +26,17 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.fluid.FluidState;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.ItemUsageContext;
+import net.minecraft.network.packet.c2s.play.ButtonClickC2SPacket;
+import net.minecraft.network.packet.c2s.play.ClickWindowC2SPacket;
+import net.minecraft.network.packet.c2s.play.CraftRequestC2SPacket;
+import net.minecraft.network.packet.c2s.play.CreativeInventoryActionC2SPacket;
+import net.minecraft.network.packet.c2s.play.PickFromInventoryC2SPacket;
+import net.minecraft.network.packet.c2s.play.PlayerActionC2SPacket;
+import net.minecraft.network.packet.c2s.play.PlayerInteractBlockC2SPacket;
+import net.minecraft.network.packet.c2s.play.PlayerInteractEntityC2SPacket;
+import net.minecraft.network.packet.c2s.play.PlayerInteractItemC2SPacket;
+import net.minecraft.network.packet.c2s.play.UpdateSelectedSlotC2SPacket;
 import net.minecraft.recipe.Recipe;
-import net.minecraft.server.network.packet.ButtonClickC2SPacket;
-import net.minecraft.server.network.packet.ClickWindowC2SPacket;
-import net.minecraft.server.network.packet.CraftRequestC2SPacket;
-import net.minecraft.server.network.packet.CreativeInventoryActionC2SPacket;
-import net.minecraft.server.network.packet.PickFromInventoryC2SPacket;
-import net.minecraft.server.network.packet.PlayerActionC2SPacket;
-import net.minecraft.server.network.packet.PlayerInteractBlockC2SPacket;
-import net.minecraft.server.network.packet.PlayerInteractEntityC2SPacket;
-import net.minecraft.server.network.packet.PlayerInteractItemC2SPacket;
-import net.minecraft.server.network.packet.UpdateSelectedSlotC2SPacket;
 import net.minecraft.sound.BlockSoundGroup;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.stat.StatHandler;
@@ -66,7 +66,7 @@ public class ClientPlayerInteractionManager {
     private int field_3716;
     private boolean breakingBlock;
     private GameMode gameMode = GameMode.SURVIVAL;
-    private final Object2ObjectLinkedOpenHashMap<Pair<BlockPos, PlayerActionC2SPacket.Action>, class_4462> field_20317 = new Object2ObjectLinkedOpenHashMap();
+    private final Object2ObjectLinkedOpenHashMap<Pair<BlockPos, PlayerActionC2SPacket.Action>, PosAndRot> field_20317 = new Object2ObjectLinkedOpenHashMap();
     private int lastSelectedSlot;
 
     public ClientPlayerInteractionManager(MinecraftClient minecraftClient, ClientPlayNetworkHandler clientPlayNetworkHandler) {
@@ -151,7 +151,7 @@ public class ClientPlayerInteractionManager {
                 this.selectedStack = this.client.player.getMainHandStack();
                 this.currentBreakingProgress = 0.0f;
                 this.field_3713 = 0.0f;
-                this.client.world.setBlockBreakingProgress(this.client.player.getEntityId(), this.currentBreakingPos, (int)(this.currentBreakingProgress * 10.0f) - 1);
+                this.client.world.setBlockBreakingInfo(this.client.player.getEntityId(), this.currentBreakingPos, (int)(this.currentBreakingProgress * 10.0f) - 1);
             }
         }
         return true;
@@ -164,7 +164,7 @@ public class ClientPlayerInteractionManager {
             this.method_21706(PlayerActionC2SPacket.Action.ABORT_DESTROY_BLOCK, this.currentBreakingPos, Direction.DOWN);
             this.breakingBlock = false;
             this.currentBreakingProgress = 0.0f;
-            this.client.world.setBlockBreakingProgress(this.client.player.getEntityId(), this.currentBreakingPos, -1);
+            this.client.world.setBlockBreakingInfo(this.client.player.getEntityId(), this.currentBreakingPos, -1);
             this.client.player.resetLastAttackedTicks();
         }
     }
@@ -207,7 +207,7 @@ public class ClientPlayerInteractionManager {
         } else {
             return this.attackBlock(blockPos, direction);
         }
-        this.client.world.setBlockBreakingProgress(this.client.player.getEntityId(), this.currentBreakingPos, (int)(this.currentBreakingProgress * 10.0f) - 1);
+        this.client.world.setBlockBreakingInfo(this.client.player.getEntityId(), this.currentBreakingPos, (int)(this.currentBreakingProgress * 10.0f) - 1);
         return true;
     }
 
@@ -402,17 +402,17 @@ public class ClientPlayerInteractionManager {
 
     private void method_21706(PlayerActionC2SPacket.Action action, BlockPos blockPos, Direction direction) {
         ClientPlayerEntity clientPlayerEntity = this.client.player;
-        this.field_20317.put(Pair.of(blockPos, action), new class_4462(clientPlayerEntity.getPos(), clientPlayerEntity.pitch, clientPlayerEntity.yaw));
+        this.field_20317.put(Pair.of(blockPos, action), new PosAndRot(clientPlayerEntity.getPos(), clientPlayerEntity.pitch, clientPlayerEntity.yaw));
         this.networkHandler.sendPacket(new PlayerActionC2SPacket(action, blockPos, direction));
     }
 
     public void method_21705(ClientWorld clientWorld, BlockPos blockPos, BlockState blockState, PlayerActionC2SPacket.Action action, boolean bl) {
-        class_4462 lv = this.field_20317.remove(Pair.of(blockPos, action));
-        if (lv == null || !bl || action != PlayerActionC2SPacket.Action.START_DESTROY_BLOCK && clientWorld.getBlockState(blockPos) != blockState) {
+        PosAndRot posAndRot = this.field_20317.remove(Pair.of(blockPos, action));
+        if (posAndRot == null || !bl || action != PlayerActionC2SPacket.Action.START_DESTROY_BLOCK && clientWorld.getBlockState(blockPos) != blockState) {
             clientWorld.setBlockStateWithoutNeighborUpdates(blockPos, blockState);
-            if (lv != null) {
-                Vec3d vec3d = lv.method_21702();
-                this.client.player.setPositionAnglesAndUpdate(vec3d.x, vec3d.y, vec3d.z, lv.method_21704(), lv.method_21703());
+            if (posAndRot != null) {
+                Vec3d vec3d = posAndRot.getPos();
+                this.client.player.updatePositionAndAngles(vec3d.x, vec3d.y, vec3d.z, posAndRot.getYaw(), posAndRot.getPitch());
             }
         }
         while (this.field_20317.size() >= 50) {

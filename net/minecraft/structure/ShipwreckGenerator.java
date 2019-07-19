@@ -6,6 +6,7 @@ package net.minecraft.structure;
 import java.util.List;
 import java.util.Random;
 import net.minecraft.block.entity.LootableContainerBlockEntity;
+import net.minecraft.loot.LootTables;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.structure.SimpleStructurePiece;
 import net.minecraft.structure.Structure;
@@ -17,13 +18,12 @@ import net.minecraft.structure.processor.BlockIgnoreStructureProcessor;
 import net.minecraft.util.BlockMirror;
 import net.minecraft.util.BlockRotation;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.math.BlockBox;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
-import net.minecraft.util.math.MutableIntBoundingBox;
 import net.minecraft.world.Heightmap;
 import net.minecraft.world.IWorld;
 import net.minecraft.world.gen.feature.ShipwreckFeatureConfig;
-import net.minecraft.world.loot.LootTables;
 
 public class ShipwreckGenerator {
     private static final BlockPos field_14536 = new BlockPos(4, 0, 15);
@@ -73,7 +73,7 @@ public class ShipwreckGenerator {
         }
 
         @Override
-        protected void handleMetadata(String string, BlockPos blockPos, IWorld iWorld, Random random, MutableIntBoundingBox mutableIntBoundingBox) {
+        protected void handleMetadata(String string, BlockPos blockPos, IWorld iWorld, Random random, BlockBox blockBox) {
             if ("map_chest".equals(string)) {
                 LootableContainerBlockEntity.setLootTable(iWorld, random, blockPos.down(), LootTables.SHIPWRECK_MAP_CHEST);
             } else if ("treasure_chest".equals(string)) {
@@ -84,7 +84,7 @@ public class ShipwreckGenerator {
         }
 
         @Override
-        public boolean generate(IWorld iWorld, Random random, MutableIntBoundingBox mutableIntBoundingBox, ChunkPos chunkPos) {
+        public boolean generate(IWorld iWorld, Random random, BlockBox blockBox, ChunkPos chunkPos) {
             int i = 256;
             int j = 0;
             BlockPos blockPos = this.pos.add(this.structure.getSize().getX() - 1, 0, this.structure.getSize().getZ() - 1);
@@ -95,7 +95,7 @@ public class ShipwreckGenerator {
             }
             int l = this.grounded ? i - this.structure.getSize().getY() / 2 - random.nextInt(3) : (j /= this.structure.getSize().getX() * this.structure.getSize().getZ());
             this.pos = new BlockPos(this.pos.getX(), l, this.pos.getZ());
-            return super.generate(iWorld, random, mutableIntBoundingBox, chunkPos);
+            return super.generate(iWorld, random, blockBox, chunkPos);
         }
     }
 }

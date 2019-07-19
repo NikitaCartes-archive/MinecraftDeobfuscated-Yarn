@@ -20,8 +20,8 @@ import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Clearable;
+import net.minecraft.util.math.BlockBox;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.MutableIntBoundingBox;
 import org.jetbrains.annotations.Nullable;
 
 public class SetBlockCommand {
@@ -55,7 +55,7 @@ public class SetBlockCommand {
 
     public static interface Filter {
         @Nullable
-        public BlockStateArgument filter(MutableIntBoundingBox var1, BlockPos var2, BlockStateArgument var3, ServerWorld var4);
+        public BlockStateArgument filter(BlockBox var1, BlockPos var2, BlockStateArgument var3, ServerWorld var4);
     }
 
     public static enum Mode {

@@ -45,7 +45,8 @@ extends AbstractNumberTag {
         return this.value + "d";
     }
 
-    public DoubleTag method_10585() {
+    @Override
+    public DoubleTag copy() {
         return new DoubleTag(this.value);
     }
 
@@ -104,7 +105,7 @@ extends AbstractNumberTag {
 
     @Override
     public /* synthetic */ Tag copy() {
-        return this.method_10585();
+        return this.copy();
     }
 }
 

@@ -12,7 +12,7 @@ import net.fabricmc.api.Environment;
 import net.minecraft.client.gui.DrawableHelper;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.screen.recipebook.RecipeBookWidget;
-import net.minecraft.client.render.GuiLighting;
+import net.minecraft.client.render.DiffuseLighting;
 import net.minecraft.client.resource.language.I18n;
 import net.minecraft.container.Slot;
 import net.minecraft.item.Item;
@@ -115,7 +115,7 @@ extends RecipeBookWidget {
         if (!Screen.hasControlDown()) {
             this.field_3151 += f;
         }
-        GuiLighting.enableForItems();
+        DiffuseLighting.enableForItems();
         GlStateManager.disableLighting();
         int k = this.outputSlot.xPosition + i;
         int l = this.outputSlot.yPosition + j;
@@ -125,7 +125,7 @@ extends RecipeBookWidget {
         DrawableHelper.fill(k, l, k + 16, l + 16, 0x30FFFFFF);
         GlStateManager.depthFunc(515);
         GlStateManager.enableLighting();
-        GuiLighting.disable();
+        DiffuseLighting.disable();
     }
 
     private Item method_2658() {

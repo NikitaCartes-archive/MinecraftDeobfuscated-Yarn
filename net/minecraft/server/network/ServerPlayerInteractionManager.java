@@ -9,14 +9,14 @@ import net.minecraft.block.CommandBlock;
 import net.minecraft.block.JigsawBlock;
 import net.minecraft.block.StructureBlock;
 import net.minecraft.block.entity.BlockEntity;
-import net.minecraft.class_4463;
-import net.minecraft.client.network.packet.PlayerListS2CPacket;
-import net.minecraft.container.NameableContainerProvider;
+import net.minecraft.container.NameableContainerFactory;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.ItemUsageContext;
+import net.minecraft.network.packet.c2s.play.PlayerActionC2SPacket;
+import net.minecraft.network.packet.s2c.play.PlayerActionResponseS2CPacket;
+import net.minecraft.network.packet.s2c.play.PlayerListS2CPacket;
 import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.server.network.packet.PlayerActionC2SPacket;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
@@ -90,7 +90,7 @@ public class ServerPlayerInteractionManager {
         } else if (this.field_14003) {
             BlockState blockState = this.world.getBlockState(this.field_20327);
             if (blockState.isAir()) {
-                this.world.setBlockBreakingProgress(this.player.getEntityId(), this.field_20327, -1);
+                this.world.setBlockBreakingInfo(this.player.getEntityId(), this.field_20327, -1);
                 this.field_20331 = -1;
                 this.field_14003 = false;
             } else {
@@ -104,7 +104,7 @@ public class ServerPlayerInteractionManager {
         float f = blockState.calcBlockBreakingDelta(this.player, this.player.world, blockPos) * (float)(i + 1);
         int j = (int)(f * 10.0f);
         if (j != this.field_20331) {
-            this.world.setBlockBreakingProgress(this.player.getEntityId(), blockPos, j);
+            this.world.setBlockBreakingInfo(this.player.getEntityId(), blockPos, j);
             this.field_20331 = j;
         }
         return f;
@@ -116,28 +116,28 @@ public class ServerPlayerInteractionManager {
         double d = this.player.x - ((double)blockPos.getX() + 0.5);
         double g = d * d + (e = this.player.y - ((double)blockPos.getY() + 0.5) + 1.5) * e + (f = this.player.z - ((double)blockPos.getZ() + 0.5)) * f;
         if (g > 36.0) {
-            this.player.networkHandler.sendPacket(new class_4463(blockPos, this.world.getBlockState(blockPos), action, false));
+            this.player.networkHandler.sendPacket(new PlayerActionResponseS2CPacket(blockPos, this.world.getBlockState(blockPos), action, false));
             return;
         }
         if (blockPos.getY() >= i) {
-            this.player.networkHandler.sendPacket(new class_4463(blockPos, this.world.getBlockState(blockPos), action, false));
+            this.player.networkHandler.sendPacket(new PlayerActionResponseS2CPacket(blockPos, this.world.getBlockState(blockPos), action, false));
             return;
         }
         if (action == PlayerActionC2SPacket.Action.START_DESTROY_BLOCK) {
             if (!this.world.canPlayerModifyAt(this.player, blockPos)) {
-                this.player.networkHandler.sendPacket(new class_4463(blockPos, this.world.getBlockState(blockPos), action, false));
+                this.player.networkHandler.sendPacket(new PlayerActionResponseS2CPacket(blockPos, this.world.getBlockState(blockPos), action, false));
                 return;
             }
             if (this.isCreative()) {
                 if (!this.world.method_8506(null, blockPos, direction)) {
                     this.method_21717(blockPos, action);
                 } else {
-                    this.player.networkHandler.sendPacket(new class_4463(blockPos, this.world.getBlockState(blockPos), action, true));
+                    this.player.networkHandler.sendPacket(new PlayerActionResponseS2CPacket(blockPos, this.world.getBlockState(blockPos), action, true));
                 }
                 return;
             }
             if (this.player.method_21701(this.world, blockPos, this.gameMode)) {
-                this.player.networkHandler.sendPacket(new class_4463(blockPos, this.world.getBlockState(blockPos), action, false));
+                this.player.networkHandler.sendPacket(new PlayerActionResponseS2CPacket(blockPos, this.world.getBlockState(blockPos), action, false));
                 return;
             }
             this.world.method_8506(null, blockPos, direction);
@@ -154,8 +154,8 @@ public class ServerPlayerInteractionManager {
                 this.field_14003 = true;
                 this.field_20327 = blockPos;
                 int j = (int)(h * 10.0f);
-                this.world.setBlockBreakingProgress(this.player.getEntityId(), blockPos, j);
-                this.player.networkHandler.sendPacket(new class_4463(blockPos, this.world.getBlockState(blockPos), action, true));
+                this.world.setBlockBreakingInfo(this.player.getEntityId(), blockPos, j);
+                this.player.networkHandler.sendPacket(new PlayerActionResponseS2CPacket(blockPos, this.world.getBlockState(blockPos), action, true));
                 this.field_20331 = j;
             }
         } else if (action == PlayerActionC2SPacket.Action.STOP_DESTROY_BLOCK) {
@@ -166,7 +166,7 @@ public class ServerPlayerInteractionManager {
                     float l = blockState.calcBlockBreakingDelta(this.player, this.player.world, blockPos) * (float)(k + 1);
                     if (l >= 0.7f) {
                         this.field_14003 = false;
-                        this.world.setBlockBreakingProgress(this.player.getEntityId(), blockPos, -1);
+                        this.world.setBlockBreakingInfo(this.player.getEntityId(), blockPos, -1);
                         this.method_21717(blockPos, action);
                         return;
                     }
@@ -178,19 +178,19 @@ public class ServerPlayerInteractionManager {
                     }
                 }
             }
-            this.player.networkHandler.sendPacket(new class_4463(blockPos, this.world.getBlockState(blockPos), action, true));
+            this.player.networkHandler.sendPacket(new PlayerActionResponseS2CPacket(blockPos, this.world.getBlockState(blockPos), action, true));
         } else if (action == PlayerActionC2SPacket.Action.ABORT_DESTROY_BLOCK) {
             this.field_14003 = false;
-            this.world.setBlockBreakingProgress(this.player.getEntityId(), this.field_20327, -1);
-            this.player.networkHandler.sendPacket(new class_4463(blockPos, this.world.getBlockState(blockPos), action, true));
+            this.world.setBlockBreakingInfo(this.player.getEntityId(), this.field_20327, -1);
+            this.player.networkHandler.sendPacket(new PlayerActionResponseS2CPacket(blockPos, this.world.getBlockState(blockPos), action, true));
         }
     }
 
     public void method_21717(BlockPos blockPos, PlayerActionC2SPacket.Action action) {
         if (this.tryBreakBlock(blockPos)) {
-            this.player.networkHandler.sendPacket(new class_4463(blockPos, this.world.getBlockState(blockPos), action, true));
+            this.player.networkHandler.sendPacket(new PlayerActionResponseS2CPacket(blockPos, this.world.getBlockState(blockPos), action, true));
         } else {
-            this.player.networkHandler.sendPacket(new class_4463(blockPos, this.world.getBlockState(blockPos), action, false));
+            this.player.networkHandler.sendPacket(new PlayerActionResponseS2CPacket(blockPos, this.world.getBlockState(blockPos), action, false));
         }
     }
 
@@ -209,7 +209,7 @@ public class ServerPlayerInteractionManager {
             return false;
         }
         block.onBreak(this.world, blockPos, blockState, this.player);
-        boolean bl = this.world.clearBlockState(blockPos, false);
+        boolean bl = this.world.removeBlock(blockPos, false);
         if (bl) {
             block.onBroken(this.world, blockPos, blockState);
         }
@@ -264,9 +264,9 @@ public class ServerPlayerInteractionManager {
         BlockPos blockPos = blockHitResult.getBlockPos();
         BlockState blockState = world.getBlockState(blockPos);
         if (this.gameMode == GameMode.SPECTATOR) {
-            NameableContainerProvider nameableContainerProvider = blockState.createContainerProvider(world, blockPos);
-            if (nameableContainerProvider != null) {
-                playerEntity.openContainer(nameableContainerProvider);
+            NameableContainerFactory nameableContainerFactory = blockState.createContainerFactory(world, blockPos);
+            if (nameableContainerFactory != null) {
+                playerEntity.openContainer(nameableContainerFactory);
                 return ActionResult.SUCCESS;
             }
             return ActionResult.PASS;

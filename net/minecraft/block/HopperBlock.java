@@ -5,13 +5,13 @@ package net.minecraft.block;
 
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockPlacementEnvironment;
-import net.minecraft.block.BlockRenderLayer;
 import net.minecraft.block.BlockRenderType;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.BlockWithEntity;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.Hopper;
 import net.minecraft.block.entity.HopperBlockEntity;
+import net.minecraft.client.render.RenderLayer;
 import net.minecraft.container.Container;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityContext;
@@ -21,7 +21,7 @@ import net.minecraft.inventory.Inventory;
 import net.minecraft.item.ItemPlacementContext;
 import net.minecraft.item.ItemStack;
 import net.minecraft.stat.Stats;
-import net.minecraft.state.StateFactory;
+import net.minecraft.state.StateManager;
 import net.minecraft.state.property.BooleanProperty;
 import net.minecraft.state.property.DirectionProperty;
 import net.minecraft.state.property.Properties;
@@ -59,7 +59,7 @@ extends BlockWithEntity {
 
     public HopperBlock(Block.Settings settings) {
         super(settings);
-        this.setDefaultState((BlockState)((BlockState)((BlockState)this.stateFactory.getDefaultState()).with(FACING, Direction.DOWN)).with(ENABLED, true));
+        this.setDefaultState((BlockState)((BlockState)((BlockState)this.stateManager.getDefaultState()).with(FACING, Direction.DOWN)).with(ENABLED, true));
     }
 
     @Override
@@ -188,8 +188,8 @@ extends BlockWithEntity {
     }
 
     @Override
-    public BlockRenderLayer getRenderLayer() {
-        return BlockRenderLayer.CUTOUT_MIPPED;
+    public RenderLayer getRenderLayer() {
+        return RenderLayer.CUTOUT_MIPPED;
     }
 
     @Override
@@ -203,7 +203,7 @@ extends BlockWithEntity {
     }
 
     @Override
-    protected void appendProperties(StateFactory.Builder<Block, BlockState> builder) {
+    protected void appendProperties(StateManager.Builder<Block, BlockState> builder) {
         builder.add(FACING, ENABLED);
     }
 

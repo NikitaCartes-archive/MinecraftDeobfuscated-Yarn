@@ -96,7 +96,8 @@ extends SpriteBillboardParticle {
             this.field_17804 = spriteProvider;
         }
 
-        public Particle method_3020(DefaultParticleType defaultParticleType, World world, double d, double e, double f, double g, double h, double i) {
+        @Override
+        public Particle createParticle(DefaultParticleType defaultParticleType, World world, double d, double e, double f, double g, double h, double i) {
             EnchantGlyphParticle enchantGlyphParticle = new EnchantGlyphParticle(world, d, e, f, g, h, i);
             enchantGlyphParticle.setSprite(this.field_17804);
             return enchantGlyphParticle;
@@ -112,7 +113,8 @@ extends SpriteBillboardParticle {
             this.field_17803 = spriteProvider;
         }
 
-        public Particle method_3021(DefaultParticleType defaultParticleType, World world, double d, double e, double f, double g, double h, double i) {
+        @Override
+        public Particle createParticle(DefaultParticleType defaultParticleType, World world, double d, double e, double f, double g, double h, double i) {
             EnchantGlyphParticle enchantGlyphParticle = new EnchantGlyphParticle(world, d, e, f, g, h, i);
             enchantGlyphParticle.setSprite(this.field_17803);
             return enchantGlyphParticle;

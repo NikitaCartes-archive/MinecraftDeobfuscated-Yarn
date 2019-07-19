@@ -20,8 +20,8 @@ import net.minecraft.util.registry.Registry;
 
 public abstract class CuttingRecipe
 implements Recipe<Inventory> {
-    protected final Ingredient ingredient;
-    protected final ItemStack result;
+    protected final Ingredient input;
+    protected final ItemStack output;
     private final RecipeType<?> type;
     private final RecipeSerializer<?> serializer;
     protected final Identifier id;
@@ -32,8 +32,8 @@ implements Recipe<Inventory> {
         this.serializer = recipeSerializer;
         this.id = identifier;
         this.group = string;
-        this.ingredient = ingredient;
-        this.result = itemStack;
+        this.input = ingredient;
+        this.output = itemStack;
     }
 
     @Override
@@ -59,13 +59,13 @@ implements Recipe<Inventory> {
 
     @Override
     public ItemStack getOutput() {
-        return this.result;
+        return this.output;
     }
 
     @Override
     public DefaultedList<Ingredient> getPreviewInputs() {
         DefaultedList<Ingredient> defaultedList = DefaultedList.of();
-        defaultedList.add(this.ingredient);
+        defaultedList.add(this.input);
         return defaultedList;
     }
 
@@ -77,7 +77,7 @@ implements Recipe<Inventory> {
 
     @Override
     public ItemStack craft(Inventory inventory) {
-        return this.result.copy();
+        return this.output.copy();
     }
 
     public static class Serializer<T extends CuttingRecipe>
@@ -88,7 +88,8 @@ implements Recipe<Inventory> {
             this.field_17648 = arg;
         }
 
-        public T method_17881(Identifier identifier, JsonObject jsonObject) {
+        @Override
+        public T read(Identifier identifier, JsonObject jsonObject) {
             String string = JsonHelper.getString(jsonObject, "group", "");
             Ingredient ingredient = JsonHelper.hasArray(jsonObject, "ingredient") ? Ingredient.fromJson(JsonHelper.getArray(jsonObject, "ingredient")) : Ingredient.fromJson(JsonHelper.getObject(jsonObject, "ingredient"));
             String string2 = JsonHelper.getString(jsonObject, "result");
@@ -97,27 +98,29 @@ implements Recipe<Inventory> {
             return this.field_17648.create(identifier, string, ingredient, itemStack);
         }
 
-        public T method_17882(Identifier identifier, PacketByteBuf packetByteBuf) {
+        @Override
+        public T read(Identifier identifier, PacketByteBuf packetByteBuf) {
             String string = packetByteBuf.readString(Short.MAX_VALUE);
             Ingredient ingredient = Ingredient.fromPacket(packetByteBuf);
             ItemStack itemStack = packetByteBuf.readItemStack();
             return this.field_17648.create(identifier, string, ingredient, itemStack);
         }
 
-        public void method_17880(PacketByteBuf packetByteBuf, T cuttingRecipe) {
+        @Override
+        public void write(PacketByteBuf packetByteBuf, T cuttingRecipe) {
             packetByteBuf.writeString(((CuttingRecipe)cuttingRecipe).group);
-            ((CuttingRecipe)cuttingRecipe).ingredient.write(packetByteBuf);
-            packetByteBuf.writeItemStack(((CuttingRecipe)cuttingRecipe).result);
+            ((CuttingRecipe)cuttingRecipe).input.write(packetByteBuf);
+            packetByteBuf.writeItemStack(((CuttingRecipe)cuttingRecipe).output);
         }
 
         @Override
         public /* synthetic */ Recipe read(Identifier identifier, PacketByteBuf packetByteBuf) {
-            return this.method_17882(identifier, packetByteBuf);
+            return this.read(identifier, packetByteBuf);
         }
 
         @Override
         public /* synthetic */ Recipe read(Identifier identifier, JsonObject jsonObject) {
-            return this.method_17881(identifier, jsonObject);
+            return this.read(identifier, jsonObject);
         }
 
         static interface class_3974<T extends CuttingRecipe> {

@@ -38,7 +38,8 @@ implements ArgumentType<PosArgument> {
         return new ColumnPos(blockPos.getX(), blockPos.getZ());
     }
 
-    public PosArgument method_9703(StringReader stringReader) throws CommandSyntaxException {
+    @Override
+    public PosArgument parse(StringReader stringReader) throws CommandSyntaxException {
         int i = stringReader.getCursor();
         if (!stringReader.canRead()) {
             throw INCOMPLETE_EXCEPTION.createWithContext(stringReader);
@@ -58,7 +59,7 @@ implements ArgumentType<PosArgument> {
         if (commandContext.getSource() instanceof CommandSource) {
             String string = suggestionsBuilder.getRemaining();
             Collection<CommandSource.RelativePosition> collection = !string.isEmpty() && string.charAt(0) == '^' ? Collections.singleton(CommandSource.RelativePosition.ZERO_LOCAL) : ((CommandSource)commandContext.getSource()).getBlockPositionSuggestions();
-            return CommandSource.suggestColumnPositions(string, collection, suggestionsBuilder, CommandManager.getCommandValidator(this::method_9703));
+            return CommandSource.suggestColumnPositions(string, collection, suggestionsBuilder, CommandManager.getCommandValidator(this::parse));
         }
         return Suggestions.empty();
     }
@@ -70,7 +71,7 @@ implements ArgumentType<PosArgument> {
 
     @Override
     public /* synthetic */ Object parse(StringReader stringReader) throws CommandSyntaxException {
-        return this.method_9703(stringReader);
+        return this.parse(stringReader);
     }
 }
 

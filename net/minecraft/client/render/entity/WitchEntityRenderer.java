@@ -23,16 +23,19 @@ extends MobEntityRenderer<WitchEntity, WitchEntityModel<WitchEntity>> {
         this.addFeature(new WitchHeldItemFeatureRenderer<WitchEntity>(this));
     }
 
-    public void method_4155(WitchEntity witchEntity, double d, double e, double f, float g, float h) {
+    @Override
+    public void render(WitchEntity witchEntity, double d, double e, double f, float g, float h) {
         ((WitchEntityModel)this.model).method_2840(!witchEntity.getMainHandStack().isEmpty());
-        super.method_4072(witchEntity, d, e, f, g, h);
+        super.render(witchEntity, d, e, f, g, h);
     }
 
-    protected Identifier method_4154(WitchEntity witchEntity) {
+    @Override
+    protected Identifier getTexture(WitchEntity witchEntity) {
         return SKIN;
     }
 
-    protected void method_4157(WitchEntity witchEntity, float f) {
+    @Override
+    protected void scale(WitchEntity witchEntity, float f) {
         float g = 0.9375f;
         GlStateManager.scalef(0.9375f, 0.9375f, 0.9375f);
     }

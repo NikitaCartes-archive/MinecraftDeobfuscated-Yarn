@@ -14,7 +14,6 @@ import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.BlockEntityType;
-import net.minecraft.client.network.packet.BlockEntityUpdateS2CPacket;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.effect.StatusEffectInstance;
@@ -22,11 +21,12 @@ import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.entity.mob.Monster;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtHelper;
+import net.minecraft.network.packet.s2c.play.BlockEntityUpdateS2CPacket;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
-import net.minecraft.util.TagHelper;
 import net.minecraft.util.Tickable;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
@@ -60,14 +60,14 @@ implements Tickable {
     @Override
     public void fromTag(CompoundTag compoundTag) {
         super.fromTag(compoundTag);
-        this.targetUuid = compoundTag.containsKey("target_uuid") ? TagHelper.deserializeUuid(compoundTag.getCompound("target_uuid")) : null;
+        this.targetUuid = compoundTag.contains("target_uuid") ? NbtHelper.toUuid(compoundTag.getCompound("target_uuid")) : null;
     }
 
     @Override
     public CompoundTag toTag(CompoundTag compoundTag) {
         super.toTag(compoundTag);
         if (this.targetEntity != null) {
-            compoundTag.put("target_uuid", TagHelper.serializeUuid(this.targetEntity.getUuid()));
+            compoundTag.put("target_uuid", NbtHelper.fromUuid(this.targetEntity.getUuid()));
         }
         return compoundTag;
     }
@@ -151,13 +151,13 @@ implements Tickable {
         int j = i / 7 * 16;
         int k = this.pos.getX();
         Box box = new Box(k, l = this.pos.getY(), m = this.pos.getZ(), k + 1, l + 1, m + 1).expand(j).stretch(0.0, this.world.getHeight(), 0.0);
-        List<PlayerEntity> list = this.world.getEntities(PlayerEntity.class, box);
+        List<PlayerEntity> list = this.world.getNonSpectatingEntities(PlayerEntity.class, box);
         if (list.isEmpty()) {
             return;
         }
         for (PlayerEntity playerEntity : list) {
-            if (!this.pos.isWithinDistance(new BlockPos(playerEntity), (double)j) || !playerEntity.isInsideWaterOrRain()) continue;
-            playerEntity.addPotionEffect(new StatusEffectInstance(StatusEffects.CONDUIT_POWER, 260, 0, true, true));
+            if (!this.pos.isWithinDistance(new BlockPos(playerEntity), (double)j) || !playerEntity.isTouchingWaterOrRain()) continue;
+            playerEntity.addStatusEffect(new StatusEffectInstance(StatusEffects.CONDUIT_POWER, 260, 0, true, true));
         }
     }
 
@@ -170,7 +170,7 @@ implements Tickable {
             this.targetEntity = this.findTargetEntity();
             this.targetUuid = null;
         } else if (this.targetEntity == null) {
-            List<LivingEntity> list = this.world.getEntities(LivingEntity.class, this.getAttackZone(), livingEntity -> livingEntity instanceof Monster && livingEntity.isInsideWaterOrRain());
+            List<LivingEntity> list = this.world.getEntities(LivingEntity.class, this.getAttackZone(), livingEntity -> livingEntity instanceof Monster && livingEntity.isTouchingWaterOrRain());
             if (!list.isEmpty()) {
                 this.targetEntity = list.get(this.world.random.nextInt(list.size()));
             }

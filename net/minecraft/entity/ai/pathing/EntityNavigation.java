@@ -10,7 +10,6 @@ import java.util.stream.Stream;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
-import net.minecraft.client.network.DebugRendererInfoManager;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.ai.pathing.LandPathNodeMaker;
 import net.minecraft.entity.ai.pathing.Path;
@@ -20,7 +19,8 @@ import net.minecraft.entity.ai.pathing.PathNodeNavigator;
 import net.minecraft.entity.attribute.EntityAttributeInstance;
 import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.mob.MobEntity;
-import net.minecraft.util.SystemUtil;
+import net.minecraft.server.network.DebugInfoSender;
+import net.minecraft.util.Util;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
@@ -95,21 +95,21 @@ public abstract class EntityNavigation {
 
     @Nullable
     public Path method_21643(Stream<BlockPos> stream, int i) {
-        return this.findPathTo(stream.collect(Collectors.toSet()), 8, false, i);
+        return this.findPathToAny(stream.collect(Collectors.toSet()), 8, false, i);
     }
 
     @Nullable
     public Path findPathTo(BlockPos blockPos, int i) {
-        return this.findPathTo(ImmutableSet.of(blockPos), 8, false, i);
+        return this.findPathToAny(ImmutableSet.of(blockPos), 8, false, i);
     }
 
     @Nullable
     public Path findPathTo(Entity entity, int i) {
-        return this.findPathTo(ImmutableSet.of(new BlockPos(entity)), 16, true, i);
+        return this.findPathToAny(ImmutableSet.of(new BlockPos(entity)), 16, true, i);
     }
 
     @Nullable
-    protected Path findPathTo(Set<BlockPos> set, int i, boolean bl, int j) {
+    protected Path findPathToAny(Set<BlockPos> set, int i, boolean bl, int j) {
         if (set.isEmpty()) {
             return null;
         }
@@ -126,8 +126,8 @@ public abstract class EntityNavigation {
         float f = this.getFollowRange();
         BlockPos blockPos = bl ? new BlockPos(this.entity).up() : new BlockPos(this.entity);
         int k = (int)(f + (float)i);
-        ChunkCache viewableWorld = new ChunkCache(this.world, blockPos.add(-k, -k, -k), blockPos.add(k, k, k));
-        Path path = this.pathNodeNavigator.pathfind(viewableWorld, this.entity, set, f, j);
+        ChunkCache collisionView = new ChunkCache(this.world, blockPos.add(-k, -k, -k), blockPos.add(k, k, k));
+        Path path = this.pathNodeNavigator.pathfind(collisionView, this.entity, set, f, j);
         this.world.getProfiler().pop();
         if (path != null && path.method_48() != null) {
             this.field_20293 = path.method_48();
@@ -187,7 +187,7 @@ public abstract class EntityNavigation {
                 this.currentPath.setCurrentNodeIndex(this.currentPath.getCurrentNodeIndex() + 1);
             }
         }
-        DebugRendererInfoManager.sendPathfindingData(this.world, this.entity, this.currentPath, this.field_6683);
+        DebugInfoSender.sendPathfindingData(this.world, this.entity, this.currentPath, this.field_6683);
         if (this.isIdle()) {
             return;
         }
@@ -217,7 +217,7 @@ public abstract class EntityNavigation {
         if (this.currentPath != null && !this.currentPath.isFinished()) {
             Vec3d vec3d2 = this.currentPath.getCurrentPosition();
             if (vec3d2.equals(this.field_6680)) {
-                this.field_6670 += SystemUtil.getMeasuringTimeMs() - this.field_6669;
+                this.field_6670 += Util.getMeasuringTimeMs() - this.field_6669;
             } else {
                 this.field_6680 = vec3d2;
                 double d = vec3d.distanceTo(this.field_6680);
@@ -229,7 +229,7 @@ public abstract class EntityNavigation {
                 this.field_6682 = 0.0;
                 this.stop();
             }
-            this.field_6669 = SystemUtil.getMeasuringTimeMs();
+            this.field_6669 = Util.getMeasuringTimeMs();
         }
     }
 

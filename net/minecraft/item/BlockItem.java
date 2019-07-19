@@ -25,7 +25,7 @@ import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.sound.BlockSoundGroup;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvent;
-import net.minecraft.state.StateFactory;
+import net.minecraft.state.StateManager;
 import net.minecraft.state.property.Property;
 import net.minecraft.text.Text;
 import net.minecraft.util.ActionResult;
@@ -79,7 +79,7 @@ extends Item {
             this.postPlacement(blockPos, world, playerEntity, itemStack, blockState2);
             block.onPlaced(world, blockPos, blockState2, playerEntity, itemStack);
             if (playerEntity instanceof ServerPlayerEntity) {
-                Criterions.PLACED_BLOCK.handle((ServerPlayerEntity)playerEntity, blockPos, itemStack);
+                Criterions.PLACED_BLOCK.trigger((ServerPlayerEntity)playerEntity, blockPos, itemStack);
             }
         }
         BlockSoundGroup blockSoundGroup = blockState2.getSoundGroup();
@@ -112,11 +112,11 @@ extends Item {
         CompoundTag compoundTag = itemStack.getTag();
         if (compoundTag != null) {
             CompoundTag compoundTag2 = compoundTag.getCompound("BlockStateTag");
-            StateFactory<Block, BlockState> stateFactory = blockState2.getBlock().getStateFactory();
+            StateManager<Block, BlockState> stateManager = blockState2.getBlock().getStateManager();
             for (String string : compoundTag2.getKeys()) {
-                Property<?> property = stateFactory.getProperty(string);
+                Property<?> property = stateManager.getProperty(string);
                 if (property == null) continue;
-                String string2 = compoundTag2.getTag(string).asString();
+                String string2 = compoundTag2.get(string).asString();
                 blockState2 = BlockItem.with(blockState2, property, string2);
             }
         }
@@ -127,7 +127,7 @@ extends Item {
     }
 
     private static <T extends Comparable<T>> BlockState with(BlockState blockState, Property<T> property, String string) {
-        return property.getValue(string).map(comparable -> (BlockState)blockState.with(property, comparable)).orElse(blockState);
+        return property.parse(string).map(comparable -> (BlockState)blockState.with(property, comparable)).orElse(blockState);
     }
 
     protected boolean canPlace(ItemPlacementContext itemPlacementContext, BlockState blockState) {
@@ -156,7 +156,7 @@ extends Item {
                 return false;
             }
             CompoundTag compoundTag2 = blockEntity.toTag(new CompoundTag());
-            CompoundTag compoundTag3 = compoundTag2.method_10553();
+            CompoundTag compoundTag3 = compoundTag2.copy();
             compoundTag2.copyFrom(compoundTag);
             compoundTag2.putInt("x", blockPos.getX());
             compoundTag2.putInt("y", blockPos.getY());

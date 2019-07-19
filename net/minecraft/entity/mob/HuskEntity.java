@@ -59,7 +59,7 @@ extends ZombieEntity {
         boolean bl = super.tryAttack(entity);
         if (bl && this.getMainHandStack().isEmpty() && entity instanceof LivingEntity) {
             float f = this.world.getLocalDifficulty(new BlockPos(this)).getLocalDifficulty();
-            ((LivingEntity)entity).addPotionEffect(new StatusEffectInstance(StatusEffects.HUNGER, 140 * (int)f));
+            ((LivingEntity)entity).addStatusEffect(new StatusEffectInstance(StatusEffects.HUNGER, 140 * (int)f));
         }
         return bl;
     }

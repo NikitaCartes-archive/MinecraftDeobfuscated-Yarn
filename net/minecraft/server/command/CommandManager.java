@@ -16,9 +16,9 @@ import com.mojang.brigadier.tree.RootCommandNode;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Predicate;
-import net.minecraft.client.network.packet.CommandTreeS2CPacket;
 import net.minecraft.command.CommandException;
 import net.minecraft.command.suggestion.SuggestionProviders;
+import net.minecraft.network.packet.s2c.play.CommandTreeS2CPacket;
 import net.minecraft.server.command.AdvancementCommand;
 import net.minecraft.server.command.BossBarCommand;
 import net.minecraft.server.command.ClearCommand;
@@ -188,7 +188,7 @@ public class CommandManager {
             int n = this.dispatcher.execute(stringReader, serverCommandSource);
             return n;
         } catch (CommandException commandException) {
-            serverCommandSource.sendError(commandException.getMessageText());
+            serverCommandSource.sendError(commandException.getTextMessage());
             int n = 0;
             return n;
         } catch (CommandSyntaxException commandSyntaxException) {

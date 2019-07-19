@@ -209,12 +209,12 @@ extends ProtoChunk {
     }
 
     @Override
-    public ChunkTickScheduler<Block> method_12303() {
+    public ChunkTickScheduler<Block> getBlockTickScheduler() {
         return new ChunkTickScheduler<Block>(block -> block.getDefaultState().isAir(), this.getPos());
     }
 
     @Override
-    public ChunkTickScheduler<Fluid> method_12313() {
+    public ChunkTickScheduler<Fluid> getFluidTickScheduler() {
         return new ChunkTickScheduler<Fluid>(fluid -> fluid == Fluids.EMPTY, this.getPos());
     }
 
@@ -239,12 +239,12 @@ extends ProtoChunk {
 
     @Override
     public /* synthetic */ TickScheduler getFluidTickScheduler() {
-        return this.method_12313();
+        return this.getFluidTickScheduler();
     }
 
     @Override
     public /* synthetic */ TickScheduler getBlockTickScheduler() {
-        return this.method_12303();
+        return this.getBlockTickScheduler();
     }
 }
 

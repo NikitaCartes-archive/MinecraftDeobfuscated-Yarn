@@ -24,11 +24,12 @@ import net.minecraft.command.arguments.BlockPredicateArgumentType;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
+import net.minecraft.server.world.ServerTickScheduler;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Clearable;
+import net.minecraft.util.math.BlockBox;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.MutableIntBoundingBox;
 import org.jetbrains.annotations.Nullable;
 
 public class CloneCommand {
@@ -42,13 +43,13 @@ public class CloneCommand {
     }
 
     private static int execute(ServerCommandSource serverCommandSource, BlockPos blockPos, BlockPos blockPos2, BlockPos blockPos3, Predicate<CachedBlockPosition> predicate, Mode mode) throws CommandSyntaxException {
-        MutableIntBoundingBox mutableIntBoundingBox = new MutableIntBoundingBox(blockPos, blockPos2);
-        BlockPos blockPos4 = blockPos3.add(mutableIntBoundingBox.getSize());
-        MutableIntBoundingBox mutableIntBoundingBox2 = new MutableIntBoundingBox(blockPos3, blockPos4);
-        if (!mode.allowsOverlap() && mutableIntBoundingBox2.intersects(mutableIntBoundingBox)) {
+        BlockBox blockBox = new BlockBox(blockPos, blockPos2);
+        BlockPos blockPos4 = blockPos3.add(blockBox.getDimensions());
+        BlockBox blockBox2 = new BlockBox(blockPos3, blockPos4);
+        if (!mode.allowsOverlap() && blockBox2.intersects(blockBox)) {
             throw OVERLAP_EXCEPTION.create();
         }
-        int i = mutableIntBoundingBox.getBlockCountX() * mutableIntBoundingBox.getBlockCountY() * mutableIntBoundingBox.getBlockCountZ();
+        int i = blockBox.getBlockCountX() * blockBox.getBlockCountY() * blockBox.getBlockCountZ();
         if (i > 32768) {
             throw TOOBIG_EXCEPTION.create(32768, i);
         }
@@ -60,10 +61,10 @@ public class CloneCommand {
         ArrayList<BlockInfo> list2 = Lists.newArrayList();
         ArrayList<BlockInfo> list3 = Lists.newArrayList();
         LinkedList<BlockPos> deque = Lists.newLinkedList();
-        BlockPos blockPos5 = new BlockPos(mutableIntBoundingBox2.minX - mutableIntBoundingBox.minX, mutableIntBoundingBox2.minY - mutableIntBoundingBox.minY, mutableIntBoundingBox2.minZ - mutableIntBoundingBox.minZ);
-        for (int j = mutableIntBoundingBox.minZ; j <= mutableIntBoundingBox.maxZ; ++j) {
-            for (int k = mutableIntBoundingBox.minY; k <= mutableIntBoundingBox.maxY; ++k) {
-                for (int l = mutableIntBoundingBox.minX; l <= mutableIntBoundingBox.maxX; ++l) {
+        BlockPos blockPos5 = new BlockPos(blockBox2.minX - blockBox.minX, blockBox2.minY - blockBox.minY, blockBox2.minZ - blockBox.minZ);
+        for (int j = blockBox.minZ; j <= blockBox.maxZ; ++j) {
+            for (int k = blockBox.minY; k <= blockBox.maxY; ++k) {
+                for (int l = blockBox.minX; l <= blockBox.maxX; ++l) {
                     BlockPos blockPos6 = new BlockPos(l, k, j);
                     BlockPos blockPos7 = blockPos6.add(blockPos5);
                     CachedBlockPosition cachedBlockPosition = new CachedBlockPosition(serverWorld, blockPos6, false);
@@ -125,7 +126,7 @@ public class CloneCommand {
         for (BlockInfo blockInfo2 : list5) {
             serverWorld.updateNeighbors(blockInfo2.pos, blockInfo2.state.getBlock());
         }
-        serverWorld.method_14196().copyScheduledTicks(mutableIntBoundingBox, blockPos5);
+        ((ServerTickScheduler)serverWorld.getBlockTickScheduler()).copyScheduledTicks(blockBox, blockPos5);
         if (l == 0) {
             throw FAILED_EXCEPTION.create();
         }

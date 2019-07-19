@@ -7,10 +7,10 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonNull;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonSyntaxException;
+import net.minecraft.predicate.NumberRange;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.JsonHelper;
-import net.minecraft.util.NumberRange;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.world.biome.Biome;
@@ -76,16 +76,16 @@ public class LocationPredicate {
         return this.feature == null || this.feature.isInsideStructure(serverWorld, blockPos);
     }
 
-    public JsonElement serialize() {
+    public JsonElement toJson() {
         if (this == ANY) {
             return JsonNull.INSTANCE;
         }
         JsonObject jsonObject = new JsonObject();
         if (!(this.x.isDummy() && this.y.isDummy() && this.z.isDummy())) {
             JsonObject jsonObject2 = new JsonObject();
-            jsonObject2.add("x", this.x.serialize());
-            jsonObject2.add("y", this.y.serialize());
-            jsonObject2.add("z", this.z.serialize());
+            jsonObject2.add("x", this.x.toJson());
+            jsonObject2.add("y", this.y.toJson());
+            jsonObject2.add("z", this.z.toJson());
             jsonObject.add("position", jsonObject2);
         }
         if (this.dimension != null) {
@@ -100,7 +100,7 @@ public class LocationPredicate {
         return jsonObject;
     }
 
-    public static LocationPredicate deserialize(@Nullable JsonElement jsonElement) {
+    public static LocationPredicate fromJson(@Nullable JsonElement jsonElement) {
         if (jsonElement == null || jsonElement.isJsonNull()) {
             return ANY;
         }

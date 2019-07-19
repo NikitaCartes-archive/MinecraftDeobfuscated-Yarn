@@ -20,7 +20,7 @@ import net.minecraft.client.gui.widget.AlwaysSelectedEntryListWidget;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.gui.widget.EntryListWidget;
 import net.minecraft.client.gui.widget.TextFieldWidget;
-import net.minecraft.client.render.GuiLighting;
+import net.minecraft.client.render.DiffuseLighting;
 import net.minecraft.client.resource.language.I18n;
 import net.minecraft.client.util.NarratorManager;
 import net.minecraft.item.Item;
@@ -156,7 +156,8 @@ extends Screen {
             }
         }
 
-        public void method_20103(@Nullable SuperflatPresetEntry superflatPresetEntry) {
+        @Override
+        public void setSelected(@Nullable SuperflatPresetEntry superflatPresetEntry) {
             super.setSelected(superflatPresetEntry);
             if (superflatPresetEntry != null) {
                 NarratorManager.INSTANCE.narrate(new TranslatableText("narrator.select", ((SuperflatPreset)presets.get((int)this.children().indexOf((Object)superflatPresetEntry))).name).getString());
@@ -187,7 +188,7 @@ extends Screen {
 
         @Override
         public /* synthetic */ void setSelected(@Nullable EntryListWidget.Entry entry) {
-            this.method_20103((SuperflatPresetEntry)entry);
+            this.setSelected((SuperflatPresetEntry)entry);
         }
 
         @Environment(value=EnvType.CLIENT)
@@ -209,7 +210,7 @@ extends Screen {
             }
 
             private void setPreset() {
-                SuperflatPresetsListWidget.this.method_20103(this);
+                SuperflatPresetsListWidget.this.setSelected(this);
                 PresetsScreen.this.updateSelectButton(true);
                 PresetsScreen.this.customPresetField.setText(((SuperflatPreset)presets.get((int)SuperflatPresetsListWidget.this.children().indexOf((Object)this))).config);
                 PresetsScreen.this.customPresetField.method_1870();
@@ -218,9 +219,9 @@ extends Screen {
             private void method_2200(int i, int j, Item item) {
                 this.method_2198(i + 1, j + 1);
                 GlStateManager.enableRescaleNormal();
-                GuiLighting.enableForItems();
+                DiffuseLighting.enableForItems();
                 PresetsScreen.this.itemRenderer.renderGuiItemIcon(new ItemStack(item), i + 2, j + 2);
-                GuiLighting.disable();
+                DiffuseLighting.disable();
                 GlStateManager.disableRescaleNormal();
             }
 

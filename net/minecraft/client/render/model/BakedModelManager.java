@@ -23,47 +23,49 @@ import net.minecraft.util.profiler.Profiler;
 @Environment(value=EnvType.CLIENT)
 public class BakedModelManager
 extends SinglePreparationResourceReloadListener<ModelLoader> {
-    private Map<Identifier, BakedModel> modelMap;
+    private Map<Identifier, BakedModel> models;
     private final SpriteAtlasTexture spriteAtlas;
-    private final BlockModels blockStateMaps;
-    private final BlockColors field_20277;
+    private final BlockModels blockModelCache;
+    private final BlockColors colorMap;
     private BakedModel missingModel;
     private Object2IntMap<BlockState> field_20278;
 
     public BakedModelManager(SpriteAtlasTexture spriteAtlasTexture, BlockColors blockColors) {
         this.spriteAtlas = spriteAtlasTexture;
-        this.field_20277 = blockColors;
-        this.blockStateMaps = new BlockModels(this);
+        this.colorMap = blockColors;
+        this.blockModelCache = new BlockModels(this);
     }
 
     public BakedModel getModel(ModelIdentifier modelIdentifier) {
-        return this.modelMap.getOrDefault(modelIdentifier, this.missingModel);
+        return this.models.getOrDefault(modelIdentifier, this.missingModel);
     }
 
     public BakedModel getMissingModel() {
         return this.missingModel;
     }
 
-    public BlockModels getBlockStateMaps() {
-        return this.blockStateMaps;
+    public BlockModels getBlockModels() {
+        return this.blockModelCache;
     }
 
-    protected ModelLoader method_18178(ResourceManager resourceManager, Profiler profiler) {
+    @Override
+    protected ModelLoader prepare(ResourceManager resourceManager, Profiler profiler) {
         profiler.startTick();
-        ModelLoader modelLoader = new ModelLoader(resourceManager, this.spriteAtlas, this.field_20277, profiler);
+        ModelLoader modelLoader = new ModelLoader(resourceManager, this.spriteAtlas, this.colorMap, profiler);
         profiler.endTick();
         return modelLoader;
     }
 
-    protected void method_18179(ModelLoader modelLoader, ResourceManager resourceManager, Profiler profiler) {
+    @Override
+    protected void apply(ModelLoader modelLoader, ResourceManager resourceManager, Profiler profiler) {
         profiler.startTick();
         profiler.push("upload");
         modelLoader.upload(profiler);
-        this.modelMap = modelLoader.getBakedModelMap();
+        this.models = modelLoader.getBakedModelMap();
         this.field_20278 = modelLoader.method_21605();
-        this.missingModel = this.modelMap.get(ModelLoader.MISSING);
+        this.missingModel = this.models.get(ModelLoader.MISSING);
         profiler.swap("cache");
-        this.blockStateMaps.reload();
+        this.blockModelCache.reload();
         profiler.pop();
         profiler.endTick();
     }
@@ -84,7 +86,7 @@ extends SinglePreparationResourceReloadListener<ModelLoader> {
 
     @Override
     protected /* synthetic */ Object prepare(ResourceManager resourceManager, Profiler profiler) {
-        return this.method_18178(resourceManager, profiler);
+        return this.prepare(resourceManager, profiler);
     }
 }
 

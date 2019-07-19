@@ -102,6 +102,7 @@ import net.minecraft.block.MelonBlock;
 import net.minecraft.block.MushroomBlock;
 import net.minecraft.block.MushroomPlantBlock;
 import net.minecraft.block.MyceliumBlock;
+import net.minecraft.block.NetherPortalBlock;
 import net.minecraft.block.NetherWartBlock;
 import net.minecraft.block.NoteBlock;
 import net.minecraft.block.ObserverBlock;
@@ -112,7 +113,6 @@ import net.minecraft.block.PistonBlock;
 import net.minecraft.block.PistonExtensionBlock;
 import net.minecraft.block.PistonHeadBlock;
 import net.minecraft.block.PlayerSkullBlock;
-import net.minecraft.block.PortalBlock;
 import net.minecraft.block.PotatoesBlock;
 import net.minecraft.block.PoweredRailBlock;
 import net.minecraft.block.PressurePlateBlock;
@@ -383,7 +383,7 @@ public class Blocks {
     public static final Block NETHERRACK = Blocks.register("netherrack", new Block(Block.Settings.of(Material.STONE, MaterialColor.NETHER).strength(0.4f)));
     public static final Block SOUL_SAND = Blocks.register("soul_sand", new SoulSandBlock(Block.Settings.of(Material.SAND, MaterialColor.BROWN).ticksRandomly().strength(0.5f).sounds(BlockSoundGroup.SAND)));
     public static final Block GLOWSTONE = Blocks.register("glowstone", new Block(Block.Settings.of(Material.GLASS, MaterialColor.SAND).strength(0.3f).sounds(BlockSoundGroup.GLASS).lightLevel(15)));
-    public static final Block NETHER_PORTAL = Blocks.register("nether_portal", new PortalBlock(Block.Settings.of(Material.PORTAL).noCollision().ticksRandomly().strength(-1.0f).sounds(BlockSoundGroup.GLASS).lightLevel(11).dropsNothing()));
+    public static final Block NETHER_PORTAL = Blocks.register("nether_portal", new NetherPortalBlock(Block.Settings.of(Material.PORTAL).noCollision().ticksRandomly().strength(-1.0f).sounds(BlockSoundGroup.GLASS).lightLevel(11).dropsNothing()));
     public static final Block CARVED_PUMPKIN = Blocks.register("carved_pumpkin", new CarvedPumpkinBlock(Block.Settings.of(Material.PUMPKIN, MaterialColor.ORANGE).strength(1.0f).sounds(BlockSoundGroup.WOOD)));
     public static final Block JACK_O_LANTERN = Blocks.register("jack_o_lantern", new CarvedPumpkinBlock(Block.Settings.of(Material.PUMPKIN, MaterialColor.ORANGE).strength(1.0f).sounds(BlockSoundGroup.WOOD).lightLevel(15)));
     public static final Block CAKE = Blocks.register("cake", new CakeBlock(Block.Settings.of(Material.CAKE).strength(0.5f).sounds(BlockSoundGroup.WOOL)));
@@ -872,7 +872,7 @@ public class Blocks {
 
     static {
         for (Block block : Registry.BLOCK) {
-            for (BlockState blockState : block.getStateFactory().getStates()) {
+            for (BlockState blockState : block.getStateManager().getStates()) {
                 blockState.initShapeCache();
                 Block.STATE_IDS.add(blockState);
             }

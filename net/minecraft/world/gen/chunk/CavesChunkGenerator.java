@@ -16,7 +16,7 @@ import net.minecraft.world.gen.feature.Feature;
 
 public class CavesChunkGenerator
 extends SurfaceChunkGenerator<CavesChunkGeneratorConfig> {
-    private final double[] noiseFalloff = this.buidlNoiseFalloff();
+    private final double[] noiseFalloff = this.buildNoiseFalloff();
 
     public CavesChunkGenerator(World world, BiomeSource biomeSource, CavesChunkGeneratorConfig cavesChunkGeneratorConfig) {
         super(world, biomeSource, 4, 8, 128, cavesChunkGeneratorConfig, false);
@@ -43,7 +43,7 @@ extends SurfaceChunkGenerator<CavesChunkGeneratorConfig> {
         return this.noiseFalloff[i];
     }
 
-    private double[] buidlNoiseFalloff() {
+    private double[] buildNoiseFalloff() {
         double[] ds = new double[this.getNoiseSizeY()];
         for (int i = 0; i < this.getNoiseSizeY(); ++i) {
             ds[i] = Math.cos((double)i * Math.PI * 6.0 / (double)this.getNoiseSizeY()) * 2.0;

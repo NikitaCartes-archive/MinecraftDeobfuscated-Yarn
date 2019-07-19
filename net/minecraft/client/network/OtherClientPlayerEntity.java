@@ -23,8 +23,8 @@ extends AbstractClientPlayerEntity {
     }
 
     @Override
-    public boolean shouldRenderAtDistance(double d) {
-        double e = this.getBoundingBox().averageDimension() * 10.0;
+    public boolean shouldRender(double d) {
+        double e = this.getBoundingBox().getAverageSideLength() * 10.0;
         if (Double.isNaN(e)) {
             e = 1.0;
         }
@@ -59,7 +59,7 @@ extends AbstractClientPlayerEntity {
             this.yaw = (float)((double)this.yaw + MathHelper.wrapDegrees(this.field_6284 - (double)this.yaw) / (double)this.field_6210);
             this.pitch = (float)((double)this.pitch + (this.field_6221 - (double)this.pitch) / (double)this.field_6210);
             --this.field_6210;
-            this.setPosition(d, e, f);
+            this.updatePosition(d, e, f);
             this.setRotation(this.yaw, this.pitch);
         }
         if (this.field_6265 > 0) {
@@ -76,7 +76,7 @@ extends AbstractClientPlayerEntity {
         }
         this.field_7483 += (g - this.field_7483) * 0.4f;
         this.world.getProfiler().push("push");
-        this.tickPushing();
+        this.tickCramming();
         this.world.getProfiler().pop();
     }
 

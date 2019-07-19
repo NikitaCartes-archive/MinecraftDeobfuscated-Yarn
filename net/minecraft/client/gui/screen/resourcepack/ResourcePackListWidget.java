@@ -14,7 +14,7 @@ import net.minecraft.client.gui.screen.resourcepack.ResourcePackOptionsScreen;
 import net.minecraft.client.gui.screen.resourcepack.SelectedResourcePackListWidget;
 import net.minecraft.client.gui.widget.AlwaysSelectedEntryListWidget;
 import net.minecraft.client.render.Tessellator;
-import net.minecraft.client.resource.ClientResourcePackContainer;
+import net.minecraft.client.resource.ClientResourcePackProfile;
 import net.minecraft.resource.ResourcePackCompatibility;
 import net.minecraft.text.LiteralText;
 import net.minecraft.text.Text;
@@ -56,7 +56,7 @@ extends AlwaysSelectedEntryListWidget<ResourcePackEntry> {
         return this.right - 6;
     }
 
-    public void addEntry(ResourcePackEntry resourcePackEntry) {
+    public void add(ResourcePackEntry resourcePackEntry) {
         this.addEntry(resourcePackEntry);
         resourcePackEntry.widget = this;
     }
@@ -67,12 +67,12 @@ extends AlwaysSelectedEntryListWidget<ResourcePackEntry> {
         private ResourcePackListWidget widget;
         protected final MinecraftClient client;
         protected final ResourcePackOptionsScreen screen;
-        private final ClientResourcePackContainer packContainer;
+        private final ClientResourcePackProfile packContainer;
 
-        public ResourcePackEntry(ResourcePackListWidget resourcePackListWidget, ResourcePackOptionsScreen resourcePackOptionsScreen, ClientResourcePackContainer clientResourcePackContainer) {
+        public ResourcePackEntry(ResourcePackListWidget resourcePackListWidget, ResourcePackOptionsScreen resourcePackOptionsScreen, ClientResourcePackProfile clientResourcePackProfile) {
             this.screen = resourcePackOptionsScreen;
             this.client = MinecraftClient.getInstance();
-            this.packContainer = clientResourcePackContainer;
+            this.packContainer = clientResourcePackProfile;
             this.widget = resourcePackListWidget;
         }
 
@@ -97,7 +97,7 @@ extends AlwaysSelectedEntryListWidget<ResourcePackEntry> {
             return this.packContainer.getDisplayName().asFormattedString();
         }
 
-        public ClientResourcePackContainer getPackContainer() {
+        public ClientResourcePackProfile getPackContainer() {
             return this.packContainer;
         }
 
@@ -165,7 +165,7 @@ extends AlwaysSelectedEntryListWidget<ResourcePackEntry> {
         }
 
         protected boolean method_20151() {
-            return !this.packContainer.isPositionFixed() || !this.packContainer.canBeSorted();
+            return !this.packContainer.isPinned() || !this.packContainer.isAlwaysEnabled();
         }
 
         protected boolean method_20152() {
@@ -173,19 +173,19 @@ extends AlwaysSelectedEntryListWidget<ResourcePackEntry> {
         }
 
         protected boolean method_20153() {
-            return this.screen.method_2669(this) && !this.packContainer.canBeSorted();
+            return this.screen.method_2669(this) && !this.packContainer.isAlwaysEnabled();
         }
 
         protected boolean canSortUp() {
             List list = this.widget.children();
             int i = list.indexOf(this);
-            return i > 0 && !((ResourcePackEntry)list.get((int)(i - 1))).packContainer.isPositionFixed();
+            return i > 0 && !((ResourcePackEntry)list.get((int)(i - 1))).packContainer.isPinned();
         }
 
         protected boolean canSortDown() {
             List list = this.widget.children();
             int i = list.indexOf(this);
-            return i >= 0 && i < list.size() - 1 && !((ResourcePackEntry)list.get((int)(i + 1))).packContainer.isPositionFixed();
+            return i >= 0 && i < list.size() - 1 && !((ResourcePackEntry)list.get((int)(i + 1))).packContainer.isPinned();
         }
 
         @Override
@@ -194,23 +194,23 @@ extends AlwaysSelectedEntryListWidget<ResourcePackEntry> {
             double g = e - (double)this.widget.getRowTop(this.widget.children().indexOf(this));
             if (this.method_20151() && f <= 32.0) {
                 if (this.method_20152()) {
-                    this.getScreen().setEdited();
+                    this.getScreen().markDirty();
                     ResourcePackCompatibility resourcePackCompatibility = this.getCompatibility();
                     if (resourcePackCompatibility.isCompatible()) {
-                        this.getScreen().select(this);
+                        this.getScreen().enable(this);
                     } else {
                         Text text = resourcePackCompatibility.getConfirmMessage();
                         this.client.openScreen(new ConfirmScreen(bl -> {
                             this.client.openScreen(this.getScreen());
                             if (bl) {
-                                this.getScreen().select(this);
+                                this.getScreen().enable(this);
                             }
                         }, INCOMPATIBLE_CONFIRM, text));
                     }
                     return true;
                 }
                 if (f < 16.0 && this.method_20153()) {
-                    this.getScreen().remove(this);
+                    this.getScreen().disable(this);
                     return true;
                 }
                 if (f > 16.0 && g < 16.0 && this.canSortUp()) {
@@ -218,7 +218,7 @@ extends AlwaysSelectedEntryListWidget<ResourcePackEntry> {
                     int j = list.indexOf(this);
                     list.remove(this);
                     list.add(j - 1, this);
-                    this.getScreen().setEdited();
+                    this.getScreen().markDirty();
                     return true;
                 }
                 if (f > 16.0 && g > 16.0 && this.canSortDown()) {
@@ -226,7 +226,7 @@ extends AlwaysSelectedEntryListWidget<ResourcePackEntry> {
                     int j = list.indexOf(this);
                     list.remove(this);
                     list.add(j + 1, this);
-                    this.getScreen().setEdited();
+                    this.getScreen().markDirty();
                     return true;
                 }
             }

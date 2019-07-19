@@ -15,7 +15,7 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.projectile.ProjectileEntity;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvent;
-import net.minecraft.state.StateFactory;
+import net.minecraft.state.StateManager;
 import net.minecraft.state.property.BooleanProperty;
 import net.minecraft.state.property.Properties;
 import net.minecraft.util.Hand;
@@ -24,8 +24,8 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.world.BlockView;
+import net.minecraft.world.CollisionView;
 import net.minecraft.world.IWorld;
-import net.minecraft.world.ViewableWorld;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
 
@@ -52,12 +52,12 @@ extends WallMountedBlock {
 
     protected AbstractButtonBlock(boolean bl, Block.Settings settings) {
         super(settings);
-        this.setDefaultState((BlockState)((BlockState)((BlockState)((BlockState)this.stateFactory.getDefaultState()).with(FACING, Direction.NORTH)).with(POWERED, false)).with(FACE, WallMountLocation.WALL));
+        this.setDefaultState((BlockState)((BlockState)((BlockState)((BlockState)this.stateManager.getDefaultState()).with(FACING, Direction.NORTH)).with(POWERED, false)).with(FACE, WallMountLocation.WALL));
         this.wooden = bl;
     }
 
     @Override
-    public int getTickRate(ViewableWorld viewableWorld) {
+    public int getTickRate(CollisionView collisionView) {
         return this.wooden ? 30 : 20;
     }
 
@@ -164,7 +164,7 @@ extends WallMountedBlock {
 
     private void tryPowerWithProjectiles(BlockState blockState, World world, BlockPos blockPos) {
         boolean bl2;
-        List<ProjectileEntity> list = world.getEntities(ProjectileEntity.class, blockState.getOutlineShape(world, blockPos).getBoundingBox().offset(blockPos));
+        List<ProjectileEntity> list = world.getNonSpectatingEntities(ProjectileEntity.class, blockState.getOutlineShape(world, blockPos).getBoundingBox().offset(blockPos));
         boolean bl = !list.isEmpty();
         if (bl != (bl2 = blockState.get(POWERED).booleanValue())) {
             world.setBlockState(blockPos, (BlockState)blockState.with(POWERED, bl), 3);
@@ -182,7 +182,7 @@ extends WallMountedBlock {
     }
 
     @Override
-    protected void appendProperties(StateFactory.Builder<Block, BlockState> builder) {
+    protected void appendProperties(StateManager.Builder<Block, BlockState> builder) {
         builder.add(FACING, POWERED, FACE);
     }
 }

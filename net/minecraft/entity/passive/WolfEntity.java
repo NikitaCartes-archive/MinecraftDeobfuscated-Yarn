@@ -74,7 +74,7 @@ extends TameableEntity {
     };
     private float begAnimationProgress;
     private float lastBegAnimationProgress;
-    private boolean wet;
+    private boolean furWet;
     private boolean canShakeWaterOff;
     private float shakeProgress;
     private float lastShakeProgress;
@@ -115,7 +115,7 @@ extends TameableEntity {
         } else {
             this.getAttributeInstance(EntityAttributes.MAX_HEALTH).setBaseValue(8.0);
         }
-        this.getAttributeContainer().register(EntityAttributes.ATTACK_DAMAGE).setBaseValue(2.0);
+        this.getAttributes().register(EntityAttributes.ATTACK_DAMAGE).setBaseValue(2.0);
     }
 
     @Override
@@ -157,7 +157,7 @@ extends TameableEntity {
     public void readCustomDataFromTag(CompoundTag compoundTag) {
         super.readCustomDataFromTag(compoundTag);
         this.setAngry(compoundTag.getBoolean("Angry"));
-        if (compoundTag.containsKey("CollarColor", 99)) {
+        if (compoundTag.contains("CollarColor", 99)) {
             this.setCollarColor(DyeColor.byId(compoundTag.getInt("CollarColor")));
         }
     }
@@ -194,7 +194,7 @@ extends TameableEntity {
     @Override
     public void tickMovement() {
         super.tickMovement();
-        if (!this.world.isClient && this.wet && !this.canShakeWaterOff && !this.isNavigating() && this.onGround) {
+        if (!this.world.isClient && this.furWet && !this.canShakeWaterOff && !this.isNavigating() && this.onGround) {
             this.canShakeWaterOff = true;
             this.shakeProgress = 0.0f;
             this.lastShakeProgress = 0.0f;
@@ -213,25 +213,25 @@ extends TameableEntity {
         }
         this.lastBegAnimationProgress = this.begAnimationProgress;
         this.begAnimationProgress = this.isBegging() ? (this.begAnimationProgress += (1.0f - this.begAnimationProgress) * 0.4f) : (this.begAnimationProgress += (0.0f - this.begAnimationProgress) * 0.4f);
-        if (this.isTouchingWater()) {
-            this.wet = true;
+        if (this.isWet()) {
+            this.furWet = true;
             this.canShakeWaterOff = false;
             this.shakeProgress = 0.0f;
             this.lastShakeProgress = 0.0f;
-        } else if ((this.wet || this.canShakeWaterOff) && this.canShakeWaterOff) {
+        } else if ((this.furWet || this.canShakeWaterOff) && this.canShakeWaterOff) {
             if (this.shakeProgress == 0.0f) {
                 this.playSound(SoundEvents.ENTITY_WOLF_SHAKE, this.getSoundVolume(), (this.random.nextFloat() - this.random.nextFloat()) * 0.2f + 1.0f);
             }
             this.lastShakeProgress = this.shakeProgress;
             this.shakeProgress += 0.05f;
             if (this.lastShakeProgress >= 2.0f) {
-                this.wet = false;
+                this.furWet = false;
                 this.canShakeWaterOff = false;
                 this.lastShakeProgress = 0.0f;
                 this.shakeProgress = 0.0f;
             }
             if (this.shakeProgress > 0.4f) {
-                float f = (float)this.getBoundingBox().minY;
+                float f = (float)this.getBoundingBox().y1;
                 int i = (int)(MathHelper.sin((this.shakeProgress - 0.4f) * (float)Math.PI) * 7.0f);
                 Vec3d vec3d = this.getVelocity();
                 for (int j = 0; j < i; ++j) {
@@ -245,7 +245,7 @@ extends TameableEntity {
 
     @Override
     public void onDeath(DamageSource damageSource) {
-        this.wet = false;
+        this.furWet = false;
         this.canShakeWaterOff = false;
         this.lastShakeProgress = 0.0f;
         this.shakeProgress = 0.0f;
@@ -253,12 +253,12 @@ extends TameableEntity {
     }
 
     @Environment(value=EnvType.CLIENT)
-    public boolean isWet() {
-        return this.wet;
+    public boolean isFurWet() {
+        return this.furWet;
     }
 
     @Environment(value=EnvType.CLIENT)
-    public float getWetBrightnessMultiplier(float f) {
+    public float getFurWetBrightnessMultiplier(float f) {
         return 0.75f + MathHelper.lerp(f, this.lastShakeProgress, this.shakeProgress) / 2.0f * 0.25f;
     }
 
@@ -396,7 +396,7 @@ extends TameableEntity {
             return 1.5393804f;
         }
         if (this.isTamed()) {
-            return (0.55f - (this.getHealthMaximum() - this.dataTracker.get(WOLF_HEALTH).floatValue()) * 0.02f) * (float)Math.PI;
+            return (0.55f - (this.getMaximumHealth() - this.dataTracker.get(WOLF_HEALTH).floatValue()) * 0.02f) * (float)Math.PI;
         }
         return 0.62831855f;
     }
@@ -433,7 +433,8 @@ extends TameableEntity {
         this.dataTracker.set(COLLAR_COLOR, dyeColor.getId());
     }
 
-    public WolfEntity method_6717(PassiveEntity passiveEntity) {
+    @Override
+    public WolfEntity createChild(PassiveEntity passiveEntity) {
         WolfEntity wolfEntity = EntityType.WOLF.create(this.world);
         UUID uUID = this.getOwnerUuid();
         if (uUID != null) {
@@ -497,7 +498,7 @@ extends TameableEntity {
 
     @Override
     public /* synthetic */ PassiveEntity createChild(PassiveEntity passiveEntity) {
-        return this.method_6717(passiveEntity);
+        return this.createChild(passiveEntity);
     }
 
     class AvoidLlamaGoal<T extends LivingEntity>

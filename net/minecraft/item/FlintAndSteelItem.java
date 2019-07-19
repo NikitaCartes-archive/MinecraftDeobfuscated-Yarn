@@ -7,7 +7,7 @@ import net.minecraft.advancement.criterion.Criterions;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.FireBlock;
-import net.minecraft.block.PortalBlock;
+import net.minecraft.block.NetherPortalBlock;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -40,7 +40,7 @@ extends Item {
             iWorld.setBlockState(blockPos2, blockState, 11);
             ItemStack itemStack = itemUsageContext.getStack();
             if (playerEntity2 instanceof ServerPlayerEntity) {
-                Criterions.PLACED_BLOCK.handle((ServerPlayerEntity)playerEntity2, blockPos2, itemStack);
+                Criterions.PLACED_BLOCK.trigger((ServerPlayerEntity)playerEntity2, blockPos2, itemStack);
                 itemStack.damage(1, playerEntity2, playerEntity -> playerEntity.sendToolBreakStatus(itemUsageContext.getHand()));
             }
             return ActionResult.SUCCESS;
@@ -65,7 +65,7 @@ extends Item {
         BlockState blockState2 = ((FireBlock)Blocks.FIRE).getStateForPosition(iWorld, blockPos);
         boolean bl = false;
         for (Direction direction : Direction.Type.HORIZONTAL) {
-            if (iWorld.getBlockState(blockPos.offset(direction)).getBlock() != Blocks.OBSIDIAN || ((PortalBlock)Blocks.NETHER_PORTAL).createAreaHelper(iWorld, blockPos) == null) continue;
+            if (iWorld.getBlockState(blockPos.offset(direction)).getBlock() != Blocks.OBSIDIAN || ((NetherPortalBlock)Blocks.NETHER_PORTAL).createAreaHelper(iWorld, blockPos) == null) continue;
             bl = true;
         }
         return blockState.isAir() && (blockState2.canPlaceAt(iWorld, blockPos) || bl);

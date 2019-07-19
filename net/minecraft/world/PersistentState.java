@@ -41,7 +41,7 @@ public abstract class PersistentState {
         return this.key;
     }
 
-    public void method_17919(File file) {
+    public void save(File file) {
         if (!this.isDirty()) {
             return;
         }

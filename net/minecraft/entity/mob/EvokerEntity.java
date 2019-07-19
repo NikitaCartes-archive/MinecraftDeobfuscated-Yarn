@@ -267,7 +267,7 @@ extends SpellcastingIllagerEntity {
             for (int i = 0; i < 3; ++i) {
                 BlockPos blockPos = new BlockPos(EvokerEntity.this).add(-2 + EvokerEntity.this.random.nextInt(5), 1, -2 + EvokerEntity.this.random.nextInt(5));
                 VexEntity vexEntity = EntityType.VEX.create(EvokerEntity.this.world);
-                vexEntity.setPositionAndAngles(blockPos, 0.0f, 0.0f);
+                vexEntity.refreshPositionAndAngles(blockPos, 0.0f, 0.0f);
                 vexEntity.initialize(EvokerEntity.this.world, EvokerEntity.this.world.getLocalDifficulty(blockPos), SpawnType.MOB_SUMMONED, null, null);
                 vexEntity.setOwner(EvokerEntity.this);
                 vexEntity.setBounds(blockPos);
@@ -338,7 +338,7 @@ extends SpellcastingIllagerEntity {
                 VoxelShape voxelShape;
                 BlockPos blockPos2;
                 BlockState blockState;
-                if (!(blockState = EvokerEntity.this.world.getBlockState(blockPos2 = blockPos.down())).method_20827(EvokerEntity.this.world, blockPos2, Direction.UP)) continue;
+                if (!(blockState = EvokerEntity.this.world.getBlockState(blockPos2 = blockPos.down())).isSideSolidFullSquare(EvokerEntity.this.world, blockPos2, Direction.UP)) continue;
                 if (!EvokerEntity.this.world.isAir(blockPos) && !(voxelShape = (blockState2 = EvokerEntity.this.world.getBlockState(blockPos)).getCollisionShape(EvokerEntity.this.world, blockPos)).isEmpty()) {
                     j = voxelShape.getMaximum(Direction.Axis.Y);
                 }

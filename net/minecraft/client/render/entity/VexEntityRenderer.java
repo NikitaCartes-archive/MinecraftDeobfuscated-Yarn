@@ -22,14 +22,16 @@ extends BipedEntityRenderer<VexEntity, VexEntityModel> {
         super(entityRenderDispatcher, new VexEntityModel(), 0.3f);
     }
 
-    protected Identifier method_4144(VexEntity vexEntity) {
+    @Override
+    protected Identifier getTexture(VexEntity vexEntity) {
         if (vexEntity.isCharging()) {
             return CHARGING_TEXTURE;
         }
         return TEXTURE;
     }
 
-    protected void method_4143(VexEntity vexEntity, float f) {
+    @Override
+    protected void scale(VexEntity vexEntity, float f) {
         GlStateManager.scalef(0.4f, 0.4f, 0.4f);
     }
 }

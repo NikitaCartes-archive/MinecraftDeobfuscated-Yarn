@@ -10,7 +10,7 @@ import net.minecraft.item.Item;
 import net.minecraft.item.Items;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.registry.Registry;
-import net.minecraft.village.PointOfInterestType;
+import net.minecraft.world.poi.PointOfInterestType;
 
 public class VillagerProfession {
     public static final VillagerProfession NONE = VillagerProfession.register("none", PointOfInterestType.UNEMPLOYED);

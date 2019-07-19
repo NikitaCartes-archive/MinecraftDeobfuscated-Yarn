@@ -15,8 +15,8 @@ import net.minecraft.particle.BlockStateParticleEffect;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
+import net.minecraft.world.CollisionView;
 import net.minecraft.world.IWorld;
-import net.minecraft.world.ViewableWorld;
 import net.minecraft.world.World;
 
 public class FallingBlock
@@ -58,7 +58,7 @@ extends Block {
     }
 
     @Override
-    public int getTickRate(ViewableWorld viewableWorld) {
+    public int getTickRate(CollisionView collisionView) {
         return 2;
     }
 

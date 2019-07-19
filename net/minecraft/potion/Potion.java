@@ -11,8 +11,8 @@ import net.minecraft.util.registry.Registry;
 import org.jetbrains.annotations.Nullable;
 
 public class Potion {
-    private final String name;
-    private final ImmutableList<StatusEffectInstance> effectList;
+    private final String baseName;
+    private final ImmutableList<StatusEffectInstance> effects;
 
     public static Potion byId(String string) {
         return Registry.POTION.get(Identifier.tryParse(string));
@@ -23,21 +23,21 @@ public class Potion {
     }
 
     public Potion(@Nullable String string, StatusEffectInstance ... statusEffectInstances) {
-        this.name = string;
-        this.effectList = ImmutableList.copyOf(statusEffectInstances);
+        this.baseName = string;
+        this.effects = ImmutableList.copyOf(statusEffectInstances);
     }
 
-    public String getName(String string) {
-        return string + (this.name == null ? Registry.POTION.getId(this).getPath() : this.name);
+    public String finishTranslationKey(String string) {
+        return string + (this.baseName == null ? Registry.POTION.getId(this).getPath() : this.baseName);
     }
 
     public List<StatusEffectInstance> getEffects() {
-        return this.effectList;
+        return this.effects;
     }
 
     public boolean hasInstantEffect() {
-        if (!this.effectList.isEmpty()) {
-            for (StatusEffectInstance statusEffectInstance : this.effectList) {
+        if (!this.effects.isEmpty()) {
+            for (StatusEffectInstance statusEffectInstance : this.effects) {
                 if (!statusEffectInstance.getEffectType().isInstant()) continue;
                 return true;
             }

@@ -41,20 +41,20 @@ import net.minecraft.entity.mob.MobEntityWithAi;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtHelper;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.tag.BlockTags;
-import net.minecraft.util.TagHelper;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.hit.HitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
+import net.minecraft.world.CollisionView;
 import net.minecraft.world.GameRules;
 import net.minecraft.world.RayTraceContext;
-import net.minecraft.world.ViewableWorld;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
 
@@ -71,7 +71,7 @@ extends HostileEntity {
     public EndermanEntity(EntityType<? extends EndermanEntity> entityType, World world) {
         super((EntityType<? extends HostileEntity>)entityType, world);
         this.stepHeight = 1.0f;
-        this.setPathNodeTypeWeight(PathNodeType.WATER, -1.0f);
+        this.setPathfindingPenalty(PathNodeType.WATER, -1.0f);
     }
 
     @Override
@@ -144,7 +144,7 @@ extends HostileEntity {
         super.writeCustomDataToTag(compoundTag);
         BlockState blockState = this.getCarriedBlock();
         if (blockState != null) {
-            compoundTag.put("carriedBlockState", TagHelper.serializeBlockState(blockState));
+            compoundTag.put("carriedBlockState", NbtHelper.fromBlockState(blockState));
         }
     }
 
@@ -152,7 +152,7 @@ extends HostileEntity {
     public void readCustomDataFromTag(CompoundTag compoundTag) {
         super.readCustomDataFromTag(compoundTag);
         BlockState blockState = null;
-        if (compoundTag.containsKey("carriedBlockState", 10) && (blockState = TagHelper.deserializeBlockState(compoundTag.getCompound("carriedBlockState"))).isAir()) {
+        if (compoundTag.contains("carriedBlockState", 10) && (blockState = NbtHelper.toBlockState(compoundTag.getCompound("carriedBlockState"))).isAir()) {
             blockState = null;
         }
         this.setCarriedBlock(blockState);
@@ -164,7 +164,7 @@ extends HostileEntity {
             return false;
         }
         Vec3d vec3d = playerEntity.getRotationVec(1.0f).normalize();
-        Vec3d vec3d2 = new Vec3d(this.x - playerEntity.x, this.getBoundingBox().minY + (double)this.getStandingEyeHeight() - (playerEntity.y + (double)playerEntity.getStandingEyeHeight()), this.z - playerEntity.z);
+        Vec3d vec3d2 = new Vec3d(this.x - playerEntity.x, this.getBoundingBox().y1 + (double)this.getStandingEyeHeight() - (playerEntity.y + (double)playerEntity.getStandingEyeHeight()), this.z - playerEntity.z);
         double d = vec3d2.length();
         double e = vec3d.dotProduct(vec3d2 = vec3d2.normalize());
         if (e > 1.0 - 0.025 / d) {
@@ -192,10 +192,10 @@ extends HostileEntity {
     @Override
     protected void mobTick() {
         float f;
-        if (this.isTouchingWater()) {
+        if (this.isWet()) {
             this.damage(DamageSource.DROWN, 1.0f);
         }
-        if (this.world.isDaylight() && this.age >= this.ageWhenTargetSet + 600 && (f = this.getBrightnessAtEyes()) > 0.5f && this.world.isSkyVisible(new BlockPos(this)) && this.random.nextFloat() * 30.0f < (f - 0.4f) * 2.0f) {
+        if (this.world.isDay() && this.age >= this.ageWhenTargetSet + 600 && (f = this.getBrightnessAtEyes()) > 0.5f && this.world.isSkyVisible(new BlockPos(this)) && this.random.nextFloat() * 30.0f < (f - 0.4f) * 2.0f) {
             this.setTarget(null);
             this.teleportRandomly();
         }
@@ -210,7 +210,7 @@ extends HostileEntity {
     }
 
     private boolean teleportTo(Entity entity) {
-        Vec3d vec3d = new Vec3d(this.x - entity.x, this.getBoundingBox().minY + (double)(this.getHeight() / 2.0f) - entity.y + (double)entity.getStandingEyeHeight(), this.z - entity.z);
+        Vec3d vec3d = new Vec3d(this.x - entity.x, this.getBoundingBox().y1 + (double)(this.getHeight() / 2.0f) - entity.y + (double)entity.getStandingEyeHeight(), this.z - entity.z);
         vec3d = vec3d.normalize();
         double d = 16.0;
         double e = this.x + (this.random.nextDouble() - 0.5) * 8.0 - vec3d.x * 16.0;
@@ -307,14 +307,14 @@ extends HostileEntity {
             if (!this.enderman.world.getGameRules().getBoolean(GameRules.MOB_GRIEFING)) {
                 return false;
             }
-            return this.enderman.getRand().nextInt(20) == 0;
+            return this.enderman.getRandom().nextInt(20) == 0;
         }
 
         @Override
         public void tick() {
             boolean bl;
             Vec3d vec3d2;
-            Random random = this.enderman.getRand();
+            Random random = this.enderman.getRandom();
             World world = this.enderman.world;
             int i = MathHelper.floor(this.enderman.x - 2.0 + random.nextDouble() * 4.0);
             int j = MathHelper.floor(this.enderman.y + random.nextDouble() * 3.0);
@@ -327,7 +327,7 @@ extends HostileEntity {
             boolean bl2 = bl = blockHitResult.getType() != HitResult.Type.MISS && blockHitResult.getBlockPos().equals(blockPos);
             if (block.matches(BlockTags.ENDERMAN_HOLDABLE) && bl) {
                 this.enderman.setCarriedBlock(blockState);
-                world.clearBlockState(blockPos, false);
+                world.removeBlock(blockPos, false);
             }
         }
     }
@@ -348,12 +348,12 @@ extends HostileEntity {
             if (!this.enderman.world.getGameRules().getBoolean(GameRules.MOB_GRIEFING)) {
                 return false;
             }
-            return this.enderman.getRand().nextInt(2000) == 0;
+            return this.enderman.getRandom().nextInt(2000) == 0;
         }
 
         @Override
         public void tick() {
-            Random random = this.enderman.getRand();
+            Random random = this.enderman.getRandom();
             World iWorld = this.enderman.world;
             int i = MathHelper.floor(this.enderman.x - 1.0 + random.nextDouble() * 2.0);
             int j = MathHelper.floor(this.enderman.y + random.nextDouble() * 2.0);
@@ -369,8 +369,8 @@ extends HostileEntity {
             }
         }
 
-        private boolean method_7033(ViewableWorld viewableWorld, BlockPos blockPos, BlockState blockState, BlockState blockState2, BlockState blockState3, BlockPos blockPos2) {
-            return blockState2.isAir() && !blockState3.isAir() && blockState3.method_21743(viewableWorld, blockPos2) && blockState.canPlaceAt(viewableWorld, blockPos);
+        private boolean method_7033(CollisionView collisionView, BlockPos blockPos, BlockState blockState, BlockState blockState2, BlockState blockState3, BlockPos blockPos2) {
+            return blockState2.isAir() && !blockState3.isAir() && blockState3.method_21743(collisionView, blockPos2) && blockState.canPlaceAt(collisionView, blockPos);
         }
     }
 

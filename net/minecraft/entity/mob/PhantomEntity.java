@@ -77,7 +77,7 @@ implements Monster {
     @Override
     protected void initAttributes() {
         super.initAttributes();
-        this.getAttributeContainer().register(EntityAttributes.ATTACK_DAMAGE);
+        this.getAttributes().register(EntityAttributes.ATTACK_DAMAGE);
     }
 
     @Override
@@ -156,7 +156,7 @@ implements Monster {
     @Override
     public void readCustomDataFromTag(CompoundTag compoundTag) {
         super.readCustomDataFromTag(compoundTag);
-        if (compoundTag.containsKey("AX")) {
+        if (compoundTag.contains("AX")) {
             this.field_7312 = new BlockPos(compoundTag.getInt("AX"), compoundTag.getInt("AY"), compoundTag.getInt("AZ"));
         }
         this.setPhantomSize(compoundTag.getInt("Size"));
@@ -173,7 +173,7 @@ implements Monster {
 
     @Override
     @Environment(value=EnvType.CLIENT)
-    public boolean shouldRenderAtDistance(double d) {
+    public boolean shouldRender(double d) {
         return true;
     }
 
@@ -235,7 +235,7 @@ implements Monster {
                 return false;
             }
             this.delay = 60;
-            List<PlayerEntity> list = PhantomEntity.this.world.getPlayersInBox(this.PLAYERS_IN_RANGE_PREDICATE, PhantomEntity.this, PhantomEntity.this.getBoundingBox().expand(16.0, 64.0, 16.0));
+            List<PlayerEntity> list = PhantomEntity.this.world.getPlayers(this.PLAYERS_IN_RANGE_PREDICATE, PhantomEntity.this, PhantomEntity.this.getBoundingBox().expand(16.0, 64.0, 16.0));
             if (!list.isEmpty()) {
                 list.sort((playerEntity, playerEntity2) -> playerEntity.y > playerEntity2.y ? -1 : 1);
                 for (PlayerEntity playerEntity3 : list) {

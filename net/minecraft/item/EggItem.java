@@ -31,7 +31,7 @@ extends Item {
         if (!world.isClient) {
             ThrownEggEntity thrownEggEntity = new ThrownEggEntity(world, playerEntity);
             thrownEggEntity.setItem(itemStack);
-            thrownEggEntity.method_19207(playerEntity, playerEntity.pitch, playerEntity.yaw, 0.0f, 1.5f, 1.0f);
+            thrownEggEntity.setProperties(playerEntity, playerEntity.pitch, playerEntity.yaw, 0.0f, 1.5f, 1.0f);
             world.spawnEntity(thrownEggEntity);
         }
         playerEntity.incrementStat(Stats.USED.getOrCreateStat(this));

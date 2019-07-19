@@ -11,9 +11,9 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawableHelper;
-import net.minecraft.client.render.GuiLighting;
+import net.minecraft.client.render.DiffuseLighting;
 import net.minecraft.client.toast.Toast;
-import net.minecraft.util.SystemUtil;
+import net.minecraft.util.Util;
 import net.minecraft.util.math.MathHelper;
 import org.jetbrains.annotations.Nullable;
 
@@ -32,7 +32,7 @@ extends DrawableHelper {
         if (this.client.options.hudHidden) {
             return;
         }
-        GuiLighting.disable();
+        DiffuseLighting.disable();
         for (int i = 0; i < this.visibleEntries.length; ++i) {
             Entry<?> entry = this.visibleEntries[i];
             if (entry != null && entry.draw(this.client.window.getScaledWidth(), i)) {
@@ -74,7 +74,7 @@ extends DrawableHelper {
         private final T instance;
         private long field_2243 = -1L;
         private long field_2242 = -1L;
-        private Toast.Visibility field_2244 = Toast.Visibility.SHOW;
+        private Toast.Visibility visibility = Toast.Visibility.SHOW;
         final /* synthetic */ ToastManager field_2245;
 
         private Entry(T toast) {
@@ -89,31 +89,31 @@ extends DrawableHelper {
         private float getDissapearProgress(long l) {
             float f = MathHelper.clamp((float)(l - this.field_2243) / 600.0f, 0.0f, 1.0f);
             f *= f;
-            if (this.field_2244 == Toast.Visibility.HIDE) {
+            if (this.visibility == Toast.Visibility.HIDE) {
                 return 1.0f - f;
             }
             return f;
         }
 
         public boolean draw(int i, int j) {
-            long l = SystemUtil.getMeasuringTimeMs();
+            long l = Util.getMeasuringTimeMs();
             if (this.field_2243 == -1L) {
                 this.field_2243 = l;
-                this.field_2244.play(this.field_2245.client.getSoundManager());
+                this.visibility.playSound(this.field_2245.client.getSoundManager());
             }
-            if (this.field_2244 == Toast.Visibility.SHOW && l - this.field_2243 <= 600L) {
+            if (this.visibility == Toast.Visibility.SHOW && l - this.field_2243 <= 600L) {
                 this.field_2242 = l;
             }
             GlStateManager.pushMatrix();
             GlStateManager.translatef((float)i - 160.0f * this.getDissapearProgress(l), j * 32, 500 + j);
             Toast.Visibility visibility = this.instance.draw(this.field_2245, l - this.field_2242);
             GlStateManager.popMatrix();
-            if (visibility != this.field_2244) {
+            if (visibility != this.visibility) {
                 this.field_2243 = l - (long)((int)((1.0f - this.getDissapearProgress(l)) * 600.0f));
-                this.field_2244 = visibility;
-                this.field_2244.play(this.field_2245.client.getSoundManager());
+                this.visibility = visibility;
+                this.visibility.playSound(this.field_2245.client.getSoundManager());
             }
-            return this.field_2244 == Toast.Visibility.HIDE && l - this.field_2243 > 600L;
+            return this.visibility == Toast.Visibility.HIDE && l - this.field_2243 > 600L;
         }
     }
 }

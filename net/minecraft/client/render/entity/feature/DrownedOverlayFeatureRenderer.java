@@ -23,15 +23,16 @@ extends FeatureRenderer<T, DrownedEntityModel<T>> {
         super(featureRendererContext);
     }
 
-    public void method_4182(T zombieEntity, float f, float g, float h, float i, float j, float k, float l) {
+    @Override
+    public void render(T zombieEntity, float f, float g, float h, float i, float j, float k, float l) {
         if (((Entity)zombieEntity).isInvisible()) {
             return;
         }
-        ((DrownedEntityModel)this.getModel()).setAttributes(this.model);
-        this.model.method_17077(zombieEntity, f, g, h);
+        ((DrownedEntityModel)this.getContextModel()).setAttributes(this.model);
+        this.model.animateModel(zombieEntity, f, g, h);
         GlStateManager.color4f(1.0f, 1.0f, 1.0f, 1.0f);
         this.bindTexture(SKIN);
-        this.model.method_17088(zombieEntity, f, g, i, j, k, l);
+        this.model.render(zombieEntity, f, g, i, j, k, l);
     }
 
     @Override

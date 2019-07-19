@@ -28,15 +28,17 @@ extends MobEntityRenderer<FoxEntity, FoxEntityModel<FoxEntity>> {
         this.addFeature(new FoxHeldItemFeatureRenderer(this));
     }
 
-    protected void method_18334(FoxEntity foxEntity, float f, float g, float h) {
+    @Override
+    protected void setupTransforms(FoxEntity foxEntity, float f, float g, float h) {
         super.setupTransforms(foxEntity, f, g, h);
         if (foxEntity.isChasing() || foxEntity.isWalking()) {
             GlStateManager.rotatef(-MathHelper.lerp(h, foxEntity.prevPitch, foxEntity.pitch), 1.0f, 0.0f, 0.0f);
         }
     }
 
+    @Override
     @Nullable
-    protected Identifier method_18333(FoxEntity foxEntity) {
+    protected Identifier getTexture(FoxEntity foxEntity) {
         if (foxEntity.getFoxType() == FoxEntity.Type.RED) {
             return foxEntity.isSleeping() ? SLEEPING_SKIN : SKIN;
         }

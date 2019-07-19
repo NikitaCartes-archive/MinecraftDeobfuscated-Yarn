@@ -51,15 +51,16 @@ extends SpriteBillboardParticle {
     }
 
     @Environment(value=EnvType.CLIENT)
-    public static class class_3995
+    public static class SignalSmokeFactory
     implements ParticleFactory<DefaultParticleType> {
         private final SpriteProvider field_17789;
 
-        public class_3995(SpriteProvider spriteProvider) {
+        public SignalSmokeFactory(SpriteProvider spriteProvider) {
             this.field_17789 = spriteProvider;
         }
 
-        public Particle method_18820(DefaultParticleType defaultParticleType, World world, double d, double e, double f, double g, double h, double i) {
+        @Override
+        public Particle createParticle(DefaultParticleType defaultParticleType, World world, double d, double e, double f, double g, double h, double i) {
             CampfireSmokeParticle campfireSmokeParticle = new CampfireSmokeParticle(world, d, e, f, g, h, i, true);
             campfireSmokeParticle.setColorAlpha(0.95f);
             campfireSmokeParticle.setSprite(this.field_17789);
@@ -68,15 +69,16 @@ extends SpriteBillboardParticle {
     }
 
     @Environment(value=EnvType.CLIENT)
-    public static class class_3938
+    public static class CosySmokeFactory
     implements ParticleFactory<DefaultParticleType> {
         private final SpriteProvider field_18290;
 
-        public class_3938(SpriteProvider spriteProvider) {
+        public CosySmokeFactory(SpriteProvider spriteProvider) {
             this.field_18290 = spriteProvider;
         }
 
-        public Particle method_17579(DefaultParticleType defaultParticleType, World world, double d, double e, double f, double g, double h, double i) {
+        @Override
+        public Particle createParticle(DefaultParticleType defaultParticleType, World world, double d, double e, double f, double g, double h, double i) {
             CampfireSmokeParticle campfireSmokeParticle = new CampfireSmokeParticle(world, d, e, f, g, h, i, false);
             campfireSmokeParticle.setColorAlpha(0.9f);
             campfireSmokeParticle.setSprite(this.field_18290);

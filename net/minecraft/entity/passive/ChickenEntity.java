@@ -48,7 +48,7 @@ extends AnimalEntity {
 
     public ChickenEntity(EntityType<? extends ChickenEntity> entityType, World world) {
         super((EntityType<? extends AnimalEntity>)entityType, world);
-        this.setPathNodeTypeWeight(PathNodeType.WATER, 0.0f);
+        this.setPathfindingPenalty(PathNodeType.WATER, 0.0f);
     }
 
     @Override
@@ -122,13 +122,14 @@ extends AnimalEntity {
         this.playSound(SoundEvents.ENTITY_CHICKEN_STEP, 0.15f, 1.0f);
     }
 
-    public ChickenEntity method_6471(PassiveEntity passiveEntity) {
+    @Override
+    public ChickenEntity createChild(PassiveEntity passiveEntity) {
         return EntityType.CHICKEN.create(this.world);
     }
 
     @Override
     public boolean isBreedingItem(ItemStack itemStack) {
-        return BREEDING_INGREDIENT.method_8093(itemStack);
+        return BREEDING_INGREDIENT.test(itemStack);
     }
 
     @Override
@@ -143,7 +144,7 @@ extends AnimalEntity {
     public void readCustomDataFromTag(CompoundTag compoundTag) {
         super.readCustomDataFromTag(compoundTag);
         this.jockey = compoundTag.getBoolean("IsChickenJockey");
-        if (compoundTag.containsKey("EggLayTime")) {
+        if (compoundTag.contains("EggLayTime")) {
             this.eggLayTime = compoundTag.getInt("EggLayTime");
         }
     }
@@ -167,7 +168,7 @@ extends AnimalEntity {
         float g = MathHelper.cos(this.field_6283 * ((float)Math.PI / 180));
         float h = 0.1f;
         float i = 0.0f;
-        entity.setPosition(this.x + (double)(0.1f * f), this.y + (double)(this.getHeight() * 0.5f) + entity.getHeightOffset() + 0.0, this.z - (double)(0.1f * g));
+        entity.updatePosition(this.x + (double)(0.1f * f), this.y + (double)(this.getHeight() * 0.5f) + entity.getHeightOffset() + 0.0, this.z - (double)(0.1f * g));
         if (entity instanceof LivingEntity) {
             ((LivingEntity)entity).field_6283 = this.field_6283;
         }
@@ -183,7 +184,7 @@ extends AnimalEntity {
 
     @Override
     public /* synthetic */ PassiveEntity createChild(PassiveEntity passiveEntity) {
-        return this.method_6471(passiveEntity);
+        return this.createChild(passiveEntity);
     }
 }
 

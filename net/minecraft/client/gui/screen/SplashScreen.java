@@ -17,7 +17,7 @@ import net.minecraft.resource.ResourceManager;
 import net.minecraft.resource.ResourceReloadMonitor;
 import net.minecraft.resource.ResourceType;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.SystemUtil;
+import net.minecraft.util.Util;
 import net.minecraft.util.math.MathHelper;
 
 @Environment(value=EnvType.CLIENT)
@@ -50,8 +50,8 @@ extends Overlay {
         float h;
         int k = this.client.window.getScaledWidth();
         int l = this.client.window.getScaledHeight();
-        long m = SystemUtil.getMeasuringTimeMs();
-        if (this.field_18219 && (this.reloadMonitor.isLoadStageComplete() || this.client.currentScreen != null) && this.field_18220 == -1L) {
+        long m = Util.getMeasuringTimeMs();
+        if (this.field_18219 && (this.reloadMonitor.isPrepareStageComplete() || this.client.currentScreen != null) && this.field_18220 == -1L) {
             this.field_18220 = m;
         }
         float g = this.field_17771 > -1L ? (float)(m - this.field_17771) / 1000.0f : -1.0f;
@@ -90,7 +90,7 @@ extends Overlay {
         }
         if (this.field_17771 == -1L && this.reloadMonitor.isApplyStageComplete() && (!this.field_18219 || h >= 2.0f)) {
             this.reloadMonitor.throwExceptions();
-            this.field_17771 = SystemUtil.getMeasuringTimeMs();
+            this.field_17771 = Util.getMeasuringTimeMs();
             this.field_18218.run();
             if (this.client.currentScreen != null) {
                 this.client.currentScreen.init(this.client, this.client.window.getScaledWidth(), this.client.window.getScaledHeight());

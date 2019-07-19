@@ -9,7 +9,7 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.BufferBuilder;
-import net.minecraft.client.render.GuiLighting;
+import net.minecraft.client.render.DiffuseLighting;
 import net.minecraft.client.render.Tessellator;
 import net.minecraft.client.render.VertexFormats;
 import net.minecraft.client.render.entity.EntityRenderDispatcher;
@@ -29,14 +29,15 @@ extends EntityRenderer<ExperienceOrbEntity> {
         this.field_4672 = 0.75f;
     }
 
-    public void method_3966(ExperienceOrbEntity experienceOrbEntity, double d, double e, double f, float g, float h) {
+    @Override
+    public void render(ExperienceOrbEntity experienceOrbEntity, double d, double e, double f, float g, float h) {
         if (this.renderOutlines || MinecraftClient.getInstance().getEntityRenderManager().gameOptions == null) {
             return;
         }
         GlStateManager.pushMatrix();
         GlStateManager.translatef((float)d, (float)e, (float)f);
         this.bindEntityTexture(experienceOrbEntity);
-        GuiLighting.enable();
+        DiffuseLighting.enable();
         int i = experienceOrbEntity.getOrbSize();
         float j = (float)(i % 4 * 16 + 0) / 64.0f;
         float k = (float)(i % 4 * 16 + 16) / 64.0f;
@@ -61,8 +62,8 @@ extends EntityRenderer<ExperienceOrbEntity> {
         float y = 0.3f;
         GlStateManager.scalef(0.3f, 0.3f, 0.3f);
         Tessellator tessellator = Tessellator.getInstance();
-        BufferBuilder bufferBuilder = tessellator.getBufferBuilder();
-        bufferBuilder.begin(7, VertexFormats.POSITION_UV_COLOR_NORMAL);
+        BufferBuilder bufferBuilder = tessellator.getBuffer();
+        bufferBuilder.begin(7, VertexFormats.POSITION_TEXTURE_COLOR_NORMAL);
         bufferBuilder.vertex(-0.5, -0.25, 0.0).texture(j, m).color(v, 255, x, 128).normal(0.0f, 1.0f, 0.0f).next();
         bufferBuilder.vertex(0.5, -0.25, 0.0).texture(k, m).color(v, 255, x, 128).normal(0.0f, 1.0f, 0.0f).next();
         bufferBuilder.vertex(0.5, 0.75, 0.0).texture(k, l).color(v, 255, x, 128).normal(0.0f, 1.0f, 0.0f).next();
@@ -74,7 +75,8 @@ extends EntityRenderer<ExperienceOrbEntity> {
         super.render(experienceOrbEntity, d, e, f, g, h);
     }
 
-    protected Identifier method_3967(ExperienceOrbEntity experienceOrbEntity) {
+    @Override
+    protected Identifier getTexture(ExperienceOrbEntity experienceOrbEntity) {
         return SKIN;
     }
 }

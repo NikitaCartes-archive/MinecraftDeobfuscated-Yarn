@@ -18,7 +18,7 @@ import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.ItemEntity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.SpawnType;
-import net.minecraft.entity.ai.PathfindingUtil;
+import net.minecraft.entity.ai.TargetFinder;
 import net.minecraft.entity.ai.TargetPredicate;
 import net.minecraft.entity.ai.goal.Goal;
 import net.minecraft.entity.ai.goal.MoveToRaidCenterGoal;
@@ -42,12 +42,12 @@ import net.minecraft.sound.SoundEvent;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
-import net.minecraft.village.PointOfInterestStorage;
-import net.minecraft.village.PointOfInterestType;
 import net.minecraft.world.GameRules;
 import net.minecraft.world.IWorld;
 import net.minecraft.world.LocalDifficulty;
 import net.minecraft.world.World;
+import net.minecraft.world.poi.PointOfInterestStorage;
+import net.minecraft.world.poi.PointOfInterestType;
 import org.jetbrains.annotations.Nullable;
 
 public abstract class RaiderEntity
@@ -147,14 +147,14 @@ extends PatrolEntity {
                     int i = 1;
                     if (statusEffectInstance != null) {
                         i += statusEffectInstance.getAmplifier();
-                        playerEntity.removePotionEffect(StatusEffects.BAD_OMEN);
+                        playerEntity.removeStatusEffectInternal(StatusEffects.BAD_OMEN);
                     } else {
                         --i;
                     }
                     i = MathHelper.clamp(i, 0, 5);
                     StatusEffectInstance statusEffectInstance2 = new StatusEffectInstance(StatusEffects.BAD_OMEN, 120000, i, false, false, true);
                     if (!this.world.getGameRules().getBoolean(GameRules.DISABLE_RAIDS)) {
-                        playerEntity.addPotionEffect(statusEffectInstance2);
+                        playerEntity.addStatusEffect(statusEffectInstance2);
                     }
                 }
             }
@@ -212,7 +212,7 @@ extends PatrolEntity {
         super.readCustomDataFromTag(compoundTag);
         this.wave = compoundTag.getInt("Wave");
         this.ableToJoinRaid = compoundTag.getBoolean("CanJoinRaid");
-        if (compoundTag.containsKey("RaidId", 3)) {
+        if (compoundTag.contains("RaidId", 3)) {
             if (this.world instanceof ServerWorld) {
                 this.raid = ((ServerWorld)this.world).getRaidManager().getRaid(compoundTag.getInt("RaidId"));
             }
@@ -237,7 +237,7 @@ extends PatrolEntity {
             if (!itemStack2.isEmpty() && (double)(this.random.nextFloat() - 0.1f) < d) {
                 this.dropStack(itemStack2);
             }
-            this.setEquippedStack(equipmentSlot, itemStack);
+            this.equipStack(equipmentSlot, itemStack);
             this.sendPickup(itemEntity, itemStack.getCount());
             itemEntity.remove();
             this.getRaid().setWaveCaptain(this.getWave(), this);
@@ -351,9 +351,9 @@ extends PatrolEntity {
                 int k;
                 int j;
                 int i = this.home.getX();
-                Vec3d vec3d = PathfindingUtil.method_6377(this.raider, 16, 7, new Vec3d(i, j = this.home.getY(), k = this.home.getZ()), 0.3141592741012573);
+                Vec3d vec3d = TargetFinder.method_6377(this.raider, 16, 7, new Vec3d(i, j = this.home.getY(), k = this.home.getZ()), 0.3141592741012573);
                 if (vec3d == null) {
-                    vec3d = PathfindingUtil.method_6373(this.raider, 8, 7, new Vec3d(i, j, k));
+                    vec3d = TargetFinder.method_6373(this.raider, 8, 7, new Vec3d(i, j, k));
                 }
                 if (vec3d == null) {
                     this.finished = true;

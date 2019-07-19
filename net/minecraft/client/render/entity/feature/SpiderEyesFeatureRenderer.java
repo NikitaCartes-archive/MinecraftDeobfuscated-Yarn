@@ -42,7 +42,7 @@ extends FeatureRenderer<T, M> {
         GlStateManager.color4f(1.0f, 1.0f, 1.0f, 1.0f);
         GameRenderer gameRenderer = MinecraftClient.getInstance().gameRenderer;
         gameRenderer.setFogBlack(true);
-        ((SpiderEntityModel)this.getModel()).render(entity, f, g, i, j, k, l);
+        ((SpiderEntityModel)this.getContextModel()).render(entity, f, g, i, j, k, l);
         gameRenderer.setFogBlack(false);
         m = ((Entity)entity).getLightmapCoordinates();
         n = m % 65536;

@@ -19,7 +19,9 @@ import net.minecraft.block.enums.PistonType;
 import net.minecraft.entity.EntityContext;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
-import net.minecraft.state.StateFactory;
+import net.minecraft.loot.context.LootContext;
+import net.minecraft.loot.context.LootContextParameters;
+import net.minecraft.state.StateManager;
 import net.minecraft.state.property.DirectionProperty;
 import net.minecraft.state.property.EnumProperty;
 import net.minecraft.util.BlockMirror;
@@ -33,8 +35,6 @@ import net.minecraft.util.shape.VoxelShapes;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.IWorld;
 import net.minecraft.world.World;
-import net.minecraft.world.loot.context.LootContext;
-import net.minecraft.world.loot.context.LootContextParameters;
 import org.jetbrains.annotations.Nullable;
 
 public class PistonExtensionBlock
@@ -44,7 +44,7 @@ extends BlockWithEntity {
 
     public PistonExtensionBlock(Block.Settings settings) {
         super(settings);
-        this.setDefaultState((BlockState)((BlockState)((BlockState)this.stateFactory.getDefaultState()).with(FACING, Direction.NORTH)).with(TYPE, PistonType.DEFAULT));
+        this.setDefaultState((BlockState)((BlockState)((BlockState)this.stateManager.getDefaultState()).with(FACING, Direction.NORTH)).with(TYPE, PistonType.DEFAULT));
     }
 
     @Override
@@ -73,7 +73,7 @@ extends BlockWithEntity {
         BlockPos blockPos2 = blockPos.offset(blockState.get(FACING).getOpposite());
         BlockState blockState2 = iWorld.getBlockState(blockPos2);
         if (blockState2.getBlock() instanceof PistonBlock && blockState2.get(PistonBlock.EXTENDED).booleanValue()) {
-            iWorld.clearBlockState(blockPos2, false);
+            iWorld.removeBlock(blockPos2, false);
         }
     }
 
@@ -95,7 +95,7 @@ extends BlockWithEntity {
     @Override
     public boolean activate(BlockState blockState, World world, BlockPos blockPos, PlayerEntity playerEntity, Hand hand, BlockHitResult blockHitResult) {
         if (!world.isClient && world.getBlockEntity(blockPos) == null) {
-            world.clearBlockState(blockPos, false);
+            world.removeBlock(blockPos, false);
             return true;
         }
         return false;
@@ -150,7 +150,7 @@ extends BlockWithEntity {
     }
 
     @Override
-    protected void appendProperties(StateFactory.Builder<Block, BlockState> builder) {
+    protected void appendProperties(StateManager.Builder<Block, BlockState> builder) {
         builder.add(FACING, TYPE);
     }
 

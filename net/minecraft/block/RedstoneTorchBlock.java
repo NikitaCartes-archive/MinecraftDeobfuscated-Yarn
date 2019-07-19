@@ -14,13 +14,13 @@ import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.TorchBlock;
 import net.minecraft.particle.DustParticleEffect;
-import net.minecraft.state.StateFactory;
+import net.minecraft.state.StateManager;
 import net.minecraft.state.property.BooleanProperty;
 import net.minecraft.state.property.Properties;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.world.BlockView;
-import net.minecraft.world.ViewableWorld;
+import net.minecraft.world.CollisionView;
 import net.minecraft.world.World;
 
 public class RedstoneTorchBlock
@@ -30,11 +30,11 @@ extends TorchBlock {
 
     protected RedstoneTorchBlock(Block.Settings settings) {
         super(settings);
-        this.setDefaultState((BlockState)((BlockState)this.stateFactory.getDefaultState()).with(LIT, true));
+        this.setDefaultState((BlockState)((BlockState)this.stateManager.getDefaultState()).with(LIT, true));
     }
 
     @Override
-    public int getTickRate(ViewableWorld viewableWorld) {
+    public int getTickRate(CollisionView collisionView) {
         return 2;
     }
 
@@ -128,7 +128,7 @@ extends TorchBlock {
     }
 
     @Override
-    protected void appendProperties(StateFactory.Builder<Block, BlockState> builder) {
+    protected void appendProperties(StateManager.Builder<Block, BlockState> builder) {
         builder.add(LIT);
     }
 

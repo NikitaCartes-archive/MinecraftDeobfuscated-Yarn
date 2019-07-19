@@ -20,7 +20,8 @@ extends Feature<DoublePlantFeatureConfig> {
         super(function);
     }
 
-    public boolean method_13019(IWorld iWorld, ChunkGenerator<? extends ChunkGeneratorConfig> chunkGenerator, Random random, BlockPos blockPos, DoublePlantFeatureConfig doublePlantFeatureConfig) {
+    @Override
+    public boolean generate(IWorld iWorld, ChunkGenerator<? extends ChunkGeneratorConfig> chunkGenerator, Random random, BlockPos blockPos, DoublePlantFeatureConfig doublePlantFeatureConfig) {
         boolean bl = false;
         for (int i = 0; i < 64; ++i) {
             BlockPos blockPos2 = blockPos.add(random.nextInt(8) - random.nextInt(8), random.nextInt(4) - random.nextInt(4), random.nextInt(8) - random.nextInt(8));

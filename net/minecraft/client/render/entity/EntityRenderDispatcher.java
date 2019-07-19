@@ -427,13 +427,13 @@ public class EntityRenderDispatcher {
 
     public void render(Entity entity, float f, boolean bl) {
         if (entity.age == 0) {
-            entity.prevRenderX = entity.x;
-            entity.prevRenderY = entity.y;
-            entity.prevRenderZ = entity.z;
+            entity.lastRenderX = entity.x;
+            entity.lastRenderY = entity.y;
+            entity.lastRenderZ = entity.z;
         }
-        double d = MathHelper.lerp((double)f, entity.prevRenderX, entity.x);
-        double e = MathHelper.lerp((double)f, entity.prevRenderY, entity.y);
-        double g = MathHelper.lerp((double)f, entity.prevRenderZ, entity.z);
+        double d = MathHelper.lerp((double)f, entity.lastRenderX, entity.x);
+        double e = MathHelper.lerp((double)f, entity.lastRenderY, entity.y);
+        double g = MathHelper.lerp((double)f, entity.lastRenderZ, entity.z);
         float h = MathHelper.lerp(f, entity.prevYaw, entity.yaw);
         int i = entity.getLightmapCoordinates();
         if (entity.isOnFire()) {
@@ -487,13 +487,13 @@ public class EntityRenderDispatcher {
 
     public void renderSecondPass(Entity entity, float f) {
         if (entity.age == 0) {
-            entity.prevRenderX = entity.x;
-            entity.prevRenderY = entity.y;
-            entity.prevRenderZ = entity.z;
+            entity.lastRenderX = entity.x;
+            entity.lastRenderY = entity.y;
+            entity.lastRenderZ = entity.z;
         }
-        double d = MathHelper.lerp((double)f, entity.prevRenderX, entity.x);
-        double e = MathHelper.lerp((double)f, entity.prevRenderY, entity.y);
-        double g = MathHelper.lerp((double)f, entity.prevRenderZ, entity.z);
+        double d = MathHelper.lerp((double)f, entity.lastRenderX, entity.x);
+        double e = MathHelper.lerp((double)f, entity.lastRenderY, entity.y);
+        double g = MathHelper.lerp((double)f, entity.lastRenderZ, entity.z);
         float h = MathHelper.lerp(f, entity.prevYaw, entity.yaw);
         int i = entity.getLightmapCoordinates();
         if (entity.isOnFire()) {
@@ -517,14 +517,14 @@ public class EntityRenderDispatcher {
         GlStateManager.disableBlend();
         float i = entity.getWidth() / 2.0f;
         Box box = entity.getBoundingBox();
-        WorldRenderer.drawBoxOutline(box.minX - entity.x + d, box.minY - entity.y + e, box.minZ - entity.z + f, box.maxX - entity.x + d, box.maxY - entity.y + e, box.maxZ - entity.z + f, 1.0f, 1.0f, 1.0f, 1.0f);
+        WorldRenderer.drawBoxOutline(box.x1 - entity.x + d, box.y1 - entity.y + e, box.z1 - entity.z + f, box.x2 - entity.x + d, box.y2 - entity.y + e, box.z2 - entity.z + f, 1.0f, 1.0f, 1.0f, 1.0f);
         if (entity instanceof EnderDragonEntity) {
             for (EnderDragonPart enderDragonPart : ((EnderDragonEntity)entity).method_5690()) {
                 double j = (enderDragonPart.x - enderDragonPart.prevX) * (double)h;
                 double k = (enderDragonPart.y - enderDragonPart.prevY) * (double)h;
                 double l = (enderDragonPart.z - enderDragonPart.prevZ) * (double)h;
                 Box box2 = enderDragonPart.getBoundingBox();
-                WorldRenderer.drawBoxOutline(box2.minX - this.renderPosX + j, box2.minY - this.renderPosY + k, box2.minZ - this.renderPosZ + l, box2.maxX - this.renderPosX + j, box2.maxY - this.renderPosY + k, box2.maxZ - this.renderPosZ + l, 0.25f, 1.0f, 0.0f, 1.0f);
+                WorldRenderer.drawBoxOutline(box2.x1 - this.renderPosX + j, box2.y1 - this.renderPosY + k, box2.z1 - this.renderPosZ + l, box2.x2 - this.renderPosX + j, box2.y2 - this.renderPosY + k, box2.z2 - this.renderPosZ + l, 0.25f, 1.0f, 0.0f, 1.0f);
             }
         }
         if (entity instanceof LivingEntity) {
@@ -532,7 +532,7 @@ public class EntityRenderDispatcher {
             WorldRenderer.drawBoxOutline(d - (double)i, e + (double)entity.getStandingEyeHeight() - (double)0.01f, f - (double)i, d + (double)i, e + (double)entity.getStandingEyeHeight() + (double)0.01f, f + (double)i, 1.0f, 0.0f, 0.0f, 1.0f);
         }
         Tessellator tessellator = Tessellator.getInstance();
-        BufferBuilder bufferBuilder = tessellator.getBufferBuilder();
+        BufferBuilder bufferBuilder = tessellator.getBuffer();
         Vec3d vec3d = entity.getRotationVec(h);
         bufferBuilder.begin(3, VertexFormats.POSITION_COLOR);
         bufferBuilder.vertex(d, e + (double)entity.getStandingEyeHeight(), f).color(0, 0, 255, 255).next();
@@ -552,7 +552,7 @@ public class EntityRenderDispatcher {
         }
     }
 
-    public double squaredDistanceToCamera(double d, double e, double f) {
+    public double getSquaredDistanceToCamera(double d, double e, double f) {
         return this.camera.getPos().squaredDistanceTo(d, e, f);
     }
 

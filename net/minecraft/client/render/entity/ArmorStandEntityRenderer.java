@@ -32,11 +32,13 @@ extends LivingEntityRenderer<ArmorStandEntity, ArmorStandArmorEntityModel> {
         this.addFeature(new HeadFeatureRenderer<ArmorStandEntity, ArmorStandArmorEntityModel>(this));
     }
 
-    protected Identifier method_3880(ArmorStandEntity armorStandEntity) {
+    @Override
+    protected Identifier getTexture(ArmorStandEntity armorStandEntity) {
         return SKIN;
     }
 
-    protected void method_3877(ArmorStandEntity armorStandEntity, float f, float g, float h) {
+    @Override
+    protected void setupTransforms(ArmorStandEntity armorStandEntity, float f, float g, float h) {
         GlStateManager.rotatef(180.0f - g, 0.0f, 1.0f, 0.0f);
         float i = (float)(armorStandEntity.world.getTime() - armorStandEntity.field_7112) + h;
         if (i < 5.0f) {
@@ -44,23 +46,25 @@ extends LivingEntityRenderer<ArmorStandEntity, ArmorStandArmorEntityModel> {
         }
     }
 
-    protected boolean method_3878(ArmorStandEntity armorStandEntity) {
+    @Override
+    protected boolean hasLabel(ArmorStandEntity armorStandEntity) {
         return armorStandEntity.isCustomNameVisible();
     }
 
-    public void method_3876(ArmorStandEntity armorStandEntity, double d, double e, double f, float g, float h) {
+    @Override
+    public void render(ArmorStandEntity armorStandEntity, double d, double e, double f, float g, float h) {
         if (armorStandEntity.isMarker()) {
             this.disableOutlineRender = true;
         }
-        super.method_4054(armorStandEntity, d, e, f, g, h);
+        super.render(armorStandEntity, d, e, f, g, h);
         if (armorStandEntity.isMarker()) {
             this.disableOutlineRender = false;
         }
     }
 
     @Override
-    protected /* synthetic */ boolean method_4055(LivingEntity livingEntity) {
-        return this.method_3878((ArmorStandEntity)livingEntity);
+    protected /* synthetic */ boolean hasLabel(LivingEntity livingEntity) {
+        return this.hasLabel((ArmorStandEntity)livingEntity);
     }
 }
 

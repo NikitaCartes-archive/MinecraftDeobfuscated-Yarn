@@ -4,12 +4,12 @@
 package net.minecraft.world.biome;
 
 import net.minecraft.block.Blocks;
+import net.minecraft.class_3267;
 import net.minecraft.entity.EntityCategory;
 import net.minecraft.entity.EntityType;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.biome.DefaultBiomeFeatures;
 import net.minecraft.world.gen.GenerationStep;
-import net.minecraft.world.gen.decorator.ChanceDecoratorConfig;
 import net.minecraft.world.gen.decorator.CountDecoratorConfig;
 import net.minecraft.world.gen.decorator.Decorator;
 import net.minecraft.world.gen.feature.DoublePlantFeatureConfig;
@@ -37,7 +37,7 @@ extends Biome {
         DefaultBiomeFeatures.addPlainsFeatures(this);
         this.addFeature(GenerationStep.Feature.VEGETAL_DECORATION, SunflowerPlainsBiome.configureFeature(Feature.REED, FeatureConfig.DEFAULT, Decorator.COUNT_HEIGHTMAP_DOUBLE, new CountDecoratorConfig(10)));
         DefaultBiomeFeatures.addDefaultMushrooms(this);
-        this.addFeature(GenerationStep.Feature.VEGETAL_DECORATION, SunflowerPlainsBiome.configureFeature(Feature.PUMPKIN, FeatureConfig.DEFAULT, Decorator.CHANCE_HEIGHTMAP_DOUBLE, new ChanceDecoratorConfig(32)));
+        this.addFeature(GenerationStep.Feature.VEGETAL_DECORATION, SunflowerPlainsBiome.configureFeature(Feature.PUMPKIN, FeatureConfig.DEFAULT, Decorator.CHANCE_HEIGHTMAP_DOUBLE, new class_3267(32)));
         DefaultBiomeFeatures.addSprings(this);
         DefaultBiomeFeatures.addFrozenTopLayer(this);
         this.addSpawn(EntityCategory.CREATURE, new Biome.SpawnEntry(EntityType.SHEEP, 12, 4, 4));

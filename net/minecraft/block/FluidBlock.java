@@ -22,7 +22,8 @@ import net.minecraft.fluid.Fluid;
 import net.minecraft.fluid.FluidState;
 import net.minecraft.fluid.Fluids;
 import net.minecraft.item.ItemStack;
-import net.minecraft.state.StateFactory;
+import net.minecraft.loot.context.LootContext;
+import net.minecraft.state.StateManager;
 import net.minecraft.state.property.IntProperty;
 import net.minecraft.state.property.Properties;
 import net.minecraft.tag.FluidTags;
@@ -31,10 +32,9 @@ import net.minecraft.util.math.Direction;
 import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.util.shape.VoxelShapes;
 import net.minecraft.world.BlockView;
+import net.minecraft.world.CollisionView;
 import net.minecraft.world.IWorld;
-import net.minecraft.world.ViewableWorld;
 import net.minecraft.world.World;
-import net.minecraft.world.loot.context.LootContext;
 
 public class FluidBlock
 extends Block
@@ -52,7 +52,7 @@ implements FluidDrainable {
             this.statesByLevel.add(baseFluid.getFlowing(8 - i, false));
         }
         this.statesByLevel.add(baseFluid.getFlowing(8, true));
-        this.setDefaultState((BlockState)((BlockState)this.stateFactory.getDefaultState()).with(LEVEL, 0));
+        this.setDefaultState((BlockState)((BlockState)this.stateManager.getDefaultState()).with(LEVEL, 0));
     }
 
     @Override
@@ -101,8 +101,8 @@ implements FluidDrainable {
     }
 
     @Override
-    public int getTickRate(ViewableWorld viewableWorld) {
-        return this.fluid.getTickRate(viewableWorld);
+    public int getTickRate(CollisionView collisionView) {
+        return this.fluid.getTickRate(collisionView);
     }
 
     @Override
@@ -157,7 +157,7 @@ implements FluidDrainable {
     }
 
     @Override
-    protected void appendProperties(StateFactory.Builder<Block, BlockState> builder) {
+    protected void appendProperties(StateManager.Builder<Block, BlockState> builder) {
         builder.add(LEVEL);
     }
 

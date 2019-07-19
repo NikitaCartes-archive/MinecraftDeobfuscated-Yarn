@@ -62,7 +62,8 @@ implements CraftingRecipe {
         return this.input;
     }
 
-    public boolean method_17730(CraftingInventory craftingInventory, World world) {
+    @Override
+    public boolean matches(CraftingInventory craftingInventory, World world) {
         RecipeFinder recipeFinder = new RecipeFinder();
         int i = 0;
         for (int j = 0; j < craftingInventory.getInvSize(); ++j) {
@@ -74,7 +75,8 @@ implements CraftingRecipe {
         return i == this.input.size() && recipeFinder.findRecipe(this, null);
     }
 
-    public ItemStack method_17729(CraftingInventory craftingInventory) {
+    @Override
+    public ItemStack craft(CraftingInventory craftingInventory) {
         return this.output.copy();
     }
 
@@ -86,7 +88,8 @@ implements CraftingRecipe {
 
     public static class Serializer
     implements RecipeSerializer<ShapelessRecipe> {
-        public ShapelessRecipe method_8142(Identifier identifier, JsonObject jsonObject) {
+        @Override
+        public ShapelessRecipe read(Identifier identifier, JsonObject jsonObject) {
             String string = JsonHelper.getString(jsonObject, "group", "");
             DefaultedList<Ingredient> defaultedList = Serializer.getIngredients(JsonHelper.getArray(jsonObject, "ingredients"));
             if (defaultedList.isEmpty()) {
@@ -109,7 +112,8 @@ implements CraftingRecipe {
             return defaultedList;
         }
 
-        public ShapelessRecipe method_8141(Identifier identifier, PacketByteBuf packetByteBuf) {
+        @Override
+        public ShapelessRecipe read(Identifier identifier, PacketByteBuf packetByteBuf) {
             String string = packetByteBuf.readString(Short.MAX_VALUE);
             int i = packetByteBuf.readVarInt();
             DefaultedList<Ingredient> defaultedList = DefaultedList.ofSize(i, Ingredient.EMPTY);
@@ -120,7 +124,8 @@ implements CraftingRecipe {
             return new ShapelessRecipe(identifier, string, itemStack, defaultedList);
         }
 
-        public void method_8143(PacketByteBuf packetByteBuf, ShapelessRecipe shapelessRecipe) {
+        @Override
+        public void write(PacketByteBuf packetByteBuf, ShapelessRecipe shapelessRecipe) {
             packetByteBuf.writeString(shapelessRecipe.group);
             packetByteBuf.writeVarInt(shapelessRecipe.input.size());
             for (Ingredient ingredient : shapelessRecipe.input) {
@@ -131,12 +136,12 @@ implements CraftingRecipe {
 
         @Override
         public /* synthetic */ Recipe read(Identifier identifier, PacketByteBuf packetByteBuf) {
-            return this.method_8141(identifier, packetByteBuf);
+            return this.read(identifier, packetByteBuf);
         }
 
         @Override
         public /* synthetic */ Recipe read(Identifier identifier, JsonObject jsonObject) {
-            return this.method_8142(identifier, jsonObject);
+            return this.read(identifier, jsonObject);
         }
     }
 }

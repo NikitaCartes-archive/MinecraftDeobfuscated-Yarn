@@ -78,7 +78,7 @@ implements PaletteResizeListener<T> {
             this.palette = new BiMapPalette<T>(this.idList, this.paletteSize, this, this.elementDeserializer, this.elementSerializer);
         } else {
             this.palette = this.fallbackPalette;
-            this.paletteSize = MathHelper.log2DeBrujin(this.idList.size());
+            this.paletteSize = MathHelper.log2DeBruijn(this.idList.size());
         }
         this.palette.getIndex(this.field_12935);
         this.data = new PackedIntegerArray(this.paletteSize, 4096);
@@ -155,7 +155,7 @@ implements PaletteResizeListener<T> {
 
     public void read(ListTag listTag, long[] ls) {
         this.lock();
-        int i = Math.max(4, MathHelper.log2DeBrujin(listTag.size()));
+        int i = Math.max(4, MathHelper.log2DeBruijn(listTag.size()));
         if (i != this.paletteSize) {
             this.setPaletteSize(i);
         }
@@ -190,7 +190,7 @@ implements PaletteResizeListener<T> {
         ListTag listTag = new ListTag();
         biMapPalette.toTag(listTag);
         compoundTag.put(string, listTag);
-        int j = Math.max(4, MathHelper.log2DeBrujin(listTag.size()));
+        int j = Math.max(4, MathHelper.log2DeBruijn(listTag.size()));
         PackedIntegerArray packedIntegerArray = new PackedIntegerArray(j, 4096);
         for (int k = 0; k < is.length; ++k) {
             packedIntegerArray.set(k, is[k]);

@@ -20,14 +20,15 @@ extends ZombieEntityRenderer {
         super(entityRenderDispatcher);
     }
 
-    protected void method_3985(ZombieEntity zombieEntity, float f) {
+    @Override
+    protected void scale(ZombieEntity zombieEntity, float f) {
         float g = 1.0625f;
         GlStateManager.scalef(1.0625f, 1.0625f, 1.0625f);
         super.scale(zombieEntity, f);
     }
 
     @Override
-    protected Identifier method_4163(ZombieEntity zombieEntity) {
+    protected Identifier getTexture(ZombieEntity zombieEntity) {
         return SKIN;
     }
 }

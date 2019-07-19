@@ -13,7 +13,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import net.minecraft.block.piston.PistonBehavior;
-import net.minecraft.client.network.packet.EntitySpawnS2CPacket;
 import net.minecraft.command.arguments.ParticleArgumentType;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityDimensions;
@@ -27,6 +26,7 @@ import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.network.Packet;
+import net.minecraft.network.packet.s2c.play.EntitySpawnS2CPacket;
 import net.minecraft.particle.ParticleEffect;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.potion.Potion;
@@ -68,7 +68,7 @@ extends Entity {
 
     public AreaEffectCloudEntity(World world, double d, double e, double f) {
         this((EntityType<? extends AreaEffectCloudEntity>)EntityType.AREA_EFFECT_CLOUD, world);
-        this.setPosition(d, e, f);
+        this.updatePosition(d, e, f);
     }
 
     @Override
@@ -91,7 +91,7 @@ extends Entity {
         double e = this.y;
         double f = this.z;
         super.calculateDimensions();
-        this.setPosition(d, e, f);
+        this.updatePosition(d, e, f);
     }
 
     public float getRadius() {
@@ -239,7 +239,7 @@ extends Entity {
                 if (list.isEmpty()) {
                     this.affectedEntities.clear();
                 } else {
-                    List<LivingEntity> list2 = this.world.getEntities(LivingEntity.class, this.getBoundingBox());
+                    List<LivingEntity> list2 = this.world.getNonSpectatingEntities(LivingEntity.class, this.getBoundingBox());
                     if (!list2.isEmpty()) {
                         for (LivingEntity livingEntity : list2) {
                             double e;
@@ -252,7 +252,7 @@ extends Entity {
                                     statusEffectInstance2.getEffectType().applyInstantEffect(this, this.getOwner(), livingEntity, statusEffectInstance2.getAmplifier(), 0.5);
                                     continue;
                                 }
-                                livingEntity.addPotionEffect(new StatusEffectInstance(statusEffectInstance2));
+                                livingEntity.addStatusEffect(new StatusEffectInstance(statusEffectInstance2));
                             }
                             if (this.radiusOnUse != 0.0f) {
                                 if ((f += this.radiusOnUse) < 0.5f) {
@@ -310,24 +310,24 @@ extends Entity {
         this.radiusGrowth = compoundTag.getFloat("RadiusPerTick");
         this.setRadius(compoundTag.getFloat("Radius"));
         this.ownerUuid = compoundTag.getUuid("OwnerUUID");
-        if (compoundTag.containsKey("Particle", 8)) {
+        if (compoundTag.contains("Particle", 8)) {
             try {
                 this.setParticleType(ParticleArgumentType.readParameters(new StringReader(compoundTag.getString("Particle"))));
             } catch (CommandSyntaxException commandSyntaxException) {
                 LOGGER.warn("Couldn't load custom particle {}", (Object)compoundTag.getString("Particle"), (Object)commandSyntaxException);
             }
         }
-        if (compoundTag.containsKey("Color", 99)) {
+        if (compoundTag.contains("Color", 99)) {
             this.setColor(compoundTag.getInt("Color"));
         }
-        if (compoundTag.containsKey("Potion", 8)) {
+        if (compoundTag.contains("Potion", 8)) {
             this.setPotion(PotionUtil.getPotion(compoundTag));
         }
-        if (compoundTag.containsKey("Effects", 9)) {
+        if (compoundTag.contains("Effects", 9)) {
             ListTag listTag = compoundTag.getList("Effects", 10);
             this.effects.clear();
             for (int i = 0; i < listTag.size(); ++i) {
-                StatusEffectInstance statusEffectInstance = StatusEffectInstance.deserialize(listTag.getCompoundTag(i));
+                StatusEffectInstance statusEffectInstance = StatusEffectInstance.fromTag(listTag.getCompound(i));
                 if (statusEffectInstance == null) continue;
                 this.addEffect(statusEffectInstance);
             }
@@ -357,7 +357,7 @@ extends Entity {
         if (!this.effects.isEmpty()) {
             ListTag listTag = new ListTag();
             for (StatusEffectInstance statusEffectInstance : this.effects) {
-                listTag.add(statusEffectInstance.serialize(new CompoundTag()));
+                listTag.add(statusEffectInstance.toTag(new CompoundTag()));
             }
             compoundTag.put("Effects", listTag);
         }

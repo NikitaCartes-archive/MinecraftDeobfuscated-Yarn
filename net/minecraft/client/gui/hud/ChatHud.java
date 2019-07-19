@@ -14,7 +14,7 @@ import net.minecraft.client.gui.DrawableHelper;
 import net.minecraft.client.gui.hud.ChatHudLine;
 import net.minecraft.client.gui.screen.ChatScreen;
 import net.minecraft.client.options.ChatVisibility;
-import net.minecraft.client.util.TextComponentUtil;
+import net.minecraft.client.util.Texts;
 import net.minecraft.text.LiteralText;
 import net.minecraft.text.Text;
 import net.minecraft.util.math.MathHelper;
@@ -64,7 +64,7 @@ extends DrawableHelper {
         int m = 0;
         for (n = 0; n + this.scrolledLines < this.visibleMessages.size() && n < j; ++n) {
             ChatHudLine chatHudLine = this.visibleMessages.get(n + this.scrolledLines);
-            if (chatHudLine == null || (o = i - chatHudLine.getTimestamp()) >= 200 && !bl) continue;
+            if (chatHudLine == null || (o = i - chatHudLine.getCreationTick()) >= 200 && !bl) continue;
             double g = bl ? 1.0 : ChatHud.method_19348(o);
             p = (int)(255.0 * g * e);
             q = (int)(255.0 * g * f);
@@ -127,7 +127,7 @@ extends DrawableHelper {
             this.removeMessage(i);
         }
         int k = MathHelper.floor((double)this.getWidth() / this.getChatScale());
-        List<Text> list = TextComponentUtil.wrapLines(text, k, this.client.textRenderer, false, false);
+        List<Text> list = Texts.wrapLines(text, k, this.client.textRenderer, false, false);
         boolean bl2 = this.isChatFocused();
         for (Text text2 : list) {
             if (bl2 && this.scrolledLines > 0) {
@@ -152,7 +152,7 @@ extends DrawableHelper {
         this.method_1820();
         for (int i = this.messages.size() - 1; i >= 0; --i) {
             ChatHudLine chatHudLine = this.messages.get(i);
-            this.addMessage(chatHudLine.getText(), chatHudLine.getId(), chatHudLine.getTimestamp(), true);
+            this.addMessage(chatHudLine.getText(), chatHudLine.getId(), chatHudLine.getCreationTick(), true);
         }
     }
 
@@ -203,7 +203,7 @@ extends DrawableHelper {
                 ChatHudLine chatHudLine = this.visibleMessages.get(j);
                 int k = 0;
                 for (Text text : chatHudLine.getText()) {
-                    if (!(text instanceof LiteralText) || !((double)(k += this.client.textRenderer.getStringWidth(TextComponentUtil.getRenderChatMessage(((LiteralText)text).getRawString(), false))) > g)) continue;
+                    if (!(text instanceof LiteralText) || !((double)(k += this.client.textRenderer.getStringWidth(Texts.getRenderChatMessage(((LiteralText)text).getRawString(), false))) > g)) continue;
                     return text;
                 }
             }

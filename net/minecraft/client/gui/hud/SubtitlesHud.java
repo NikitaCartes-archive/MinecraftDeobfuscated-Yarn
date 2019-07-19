@@ -14,7 +14,7 @@ import net.minecraft.client.gui.DrawableHelper;
 import net.minecraft.client.sound.ListenerSoundInstance;
 import net.minecraft.client.sound.SoundInstance;
 import net.minecraft.client.sound.WeightedSoundSet;
-import net.minecraft.util.SystemUtil;
+import net.minecraft.util.Util;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 
@@ -53,7 +53,7 @@ implements ListenerSoundInstance {
         Iterator<SubtitleEntry> iterator = this.entries.iterator();
         while (iterator.hasNext()) {
             SubtitleEntry subtitleEntry = iterator.next();
-            if (subtitleEntry.getTime() + 3000L <= SystemUtil.getMeasuringTimeMs()) {
+            if (subtitleEntry.getTime() + 3000L <= Util.getMeasuringTimeMs()) {
                 iterator.remove();
                 continue;
             }
@@ -72,7 +72,7 @@ implements ListenerSoundInstance {
             int n = m / 2;
             float f = 1.0f;
             int o = this.client.textRenderer.getStringWidth(string);
-            int p = MathHelper.floor(MathHelper.clampedLerp(255.0, 75.0, (float)(SystemUtil.getMeasuringTimeMs() - subtitleEntry.getTime()) / 3000.0f));
+            int p = MathHelper.floor(MathHelper.clampedLerp(255.0, 75.0, (float)(Util.getMeasuringTimeMs() - subtitleEntry.getTime()) / 3000.0f));
             int q = p << 16 | p << 8 | p;
             GlStateManager.pushMatrix();
             GlStateManager.translatef((float)this.client.window.getScaledWidth() - (float)l * 1.0f - 2.0f, (float)(this.client.window.getScaledHeight() - 30) - (float)(i * (m + 1)) * 1.0f, 0.0f);
@@ -119,7 +119,7 @@ implements ListenerSoundInstance {
         public SubtitleEntry(String string, Vec3d vec3d) {
             this.text = string;
             this.pos = vec3d;
-            this.time = SystemUtil.getMeasuringTimeMs();
+            this.time = Util.getMeasuringTimeMs();
         }
 
         public String getText() {
@@ -136,7 +136,7 @@ implements ListenerSoundInstance {
 
         public void reset(Vec3d vec3d) {
             this.pos = vec3d;
-            this.time = SystemUtil.getMeasuringTimeMs();
+            this.time = Util.getMeasuringTimeMs();
         }
     }
 }

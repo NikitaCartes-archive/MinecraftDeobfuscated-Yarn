@@ -20,7 +20,8 @@ public class BeaconBlockEntityRenderer
 extends BlockEntityRenderer<BeaconBlockEntity> {
     private static final Identifier BEAM_TEX = new Identifier("textures/entity/beacon_beam.png");
 
-    public void method_3541(BeaconBlockEntity beaconBlockEntity, double d, double e, double f, float g, int i) {
+    @Override
+    public void render(BeaconBlockEntity beaconBlockEntity, double d, double e, double f, float g, int i) {
         this.render(d, e, f, (double)g, beaconBlockEntity.getBeamSegments(), beaconBlockEntity.getWorld().getTime());
     }
 
@@ -53,7 +54,7 @@ extends BlockEntityRenderer<BeaconBlockEntity> {
         GlStateManager.pushMatrix();
         GlStateManager.translated(d + 0.5, e, f + 0.5);
         Tessellator tessellator = Tessellator.getInstance();
-        BufferBuilder bufferBuilder = tessellator.getBufferBuilder();
+        BufferBuilder bufferBuilder = tessellator.getBuffer();
         double o = (double)Math.floorMod(l, 40L) + g;
         double p = j < 0 ? o : -o;
         double q = MathHelper.fractionalPart(p * 0.2 - (double)MathHelper.floor(p * 0.1));
@@ -74,7 +75,7 @@ extends BlockEntityRenderer<BeaconBlockEntity> {
         double ad = 1.0;
         double ae = -1.0 + q;
         double af = (double)j * h * (0.5 / k) + ae;
-        bufferBuilder.begin(7, VertexFormats.POSITION_UV_COLOR);
+        bufferBuilder.begin(7, VertexFormats.POSITION_TEXTURE_COLOR);
         bufferBuilder.vertex(0.0, n, v).texture(1.0, af).color(r, s, t, 1.0f).next();
         bufferBuilder.vertex(0.0, i, v).texture(1.0, ae).color(r, s, t, 1.0f).next();
         bufferBuilder.vertex(w, i, 0.0).texture(0.0, ae).color(r, s, t, 1.0f).next();
@@ -108,7 +109,7 @@ extends BlockEntityRenderer<BeaconBlockEntity> {
         ad = 1.0;
         ae = -1.0 + q;
         af = (double)j * h + ae;
-        bufferBuilder.begin(7, VertexFormats.POSITION_UV_COLOR);
+        bufferBuilder.begin(7, VertexFormats.POSITION_TEXTURE_COLOR);
         bufferBuilder.vertex(u, n, v).texture(1.0, af).color(r, s, t, 0.125f).next();
         bufferBuilder.vertex(u, i, v).texture(1.0, ae).color(r, s, t, 0.125f).next();
         bufferBuilder.vertex(w, i, x).texture(0.0, ae).color(r, s, t, 0.125f).next();
@@ -132,7 +133,8 @@ extends BlockEntityRenderer<BeaconBlockEntity> {
         GlStateManager.depthMask(true);
     }
 
-    public boolean method_3542(BeaconBlockEntity beaconBlockEntity) {
+    @Override
+    public boolean method_3563(BeaconBlockEntity beaconBlockEntity) {
         return true;
     }
 }

@@ -27,7 +27,7 @@ import net.minecraft.client.gui.screen.ConfirmChatLinkScreen;
 import net.minecraft.client.gui.widget.AbstractButtonWidget;
 import net.minecraft.client.item.TooltipContext;
 import net.minecraft.client.render.BufferBuilder;
-import net.minecraft.client.render.GuiLighting;
+import net.minecraft.client.render.DiffuseLighting;
 import net.minecraft.client.render.Tessellator;
 import net.minecraft.client.render.VertexFormats;
 import net.minecraft.client.render.item.ItemRenderer;
@@ -39,7 +39,7 @@ import net.minecraft.text.ClickEvent;
 import net.minecraft.text.HoverEvent;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
-import net.minecraft.util.SystemUtil;
+import net.minecraft.util.Util;
 import net.minecraft.util.crash.CrashException;
 import net.minecraft.util.crash.CrashReport;
 import net.minecraft.util.crash.CrashReportSection;
@@ -138,7 +138,7 @@ implements Drawable {
             return;
         }
         GlStateManager.disableRescaleNormal();
-        GuiLighting.disable();
+        DiffuseLighting.disable();
         GlStateManager.disableLighting();
         GlStateManager.disableDepthTest();
         int k = 0;
@@ -186,7 +186,7 @@ implements Drawable {
         this.itemRenderer.zOffset = 0.0f;
         GlStateManager.enableLighting();
         GlStateManager.enableDepthTest();
-        GuiLighting.enable();
+        DiffuseLighting.enable();
         GlStateManager.enableRescaleNormal();
     }
 
@@ -219,7 +219,7 @@ implements Drawable {
                     if (text2 != null) {
                         list.add(text2.asFormattedString());
                     }
-                    if (compoundTag.containsKey("type", 8)) {
+                    if (compoundTag.contains("type", 8)) {
                         String string = compoundTag.getString("type");
                         list.add("Type: " + string);
                     }
@@ -345,11 +345,11 @@ implements Drawable {
         GlStateManager.disableLighting();
         GlStateManager.disableFog();
         Tessellator tessellator = Tessellator.getInstance();
-        BufferBuilder bufferBuilder = tessellator.getBufferBuilder();
+        BufferBuilder bufferBuilder = tessellator.getBuffer();
         this.minecraft.getTextureManager().bindTexture(BACKGROUND_LOCATION);
         GlStateManager.color4f(1.0f, 1.0f, 1.0f, 1.0f);
         float f = 32.0f;
-        bufferBuilder.begin(7, VertexFormats.POSITION_UV_COLOR);
+        bufferBuilder.begin(7, VertexFormats.POSITION_TEXTURE_COLOR);
         bufferBuilder.vertex(0.0, this.height, 0.0).texture(0.0, (float)this.height / 32.0f + (float)i).color(64, 64, 64, 255).next();
         bufferBuilder.vertex(this.width, this.height, 0.0).texture((float)this.width / 32.0f, (float)this.height / 32.0f + (float)i).color(64, 64, 64, 255).next();
         bufferBuilder.vertex(this.width, 0.0, 0.0).texture((float)this.width / 32.0f, (double)i).color(64, 64, 64, 255).next();
@@ -370,7 +370,7 @@ implements Drawable {
     }
 
     private void openLink(URI uRI) {
-        SystemUtil.getOperatingSystem().open(uRI);
+        Util.getOperatingSystem().open(uRI);
     }
 
     public static boolean hasControlDown() {

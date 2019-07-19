@@ -17,7 +17,8 @@ extends SimpleDecorator<ChanceRangeDecoratorConfig> {
         super(function);
     }
 
-    public Stream<BlockPos> method_15944(Random random, ChanceRangeDecoratorConfig chanceRangeDecoratorConfig, BlockPos blockPos) {
+    @Override
+    public Stream<BlockPos> getPositions(Random random, ChanceRangeDecoratorConfig chanceRangeDecoratorConfig, BlockPos blockPos) {
         if (random.nextFloat() < chanceRangeDecoratorConfig.chance) {
             int i = random.nextInt(16);
             int j = random.nextInt(chanceRangeDecoratorConfig.top - chanceRangeDecoratorConfig.topOffset) + chanceRangeDecoratorConfig.bottomOffset;

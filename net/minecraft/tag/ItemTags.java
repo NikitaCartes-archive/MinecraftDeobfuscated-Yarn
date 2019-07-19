@@ -117,7 +117,8 @@ public class ItemTags {
             super(identifier);
         }
 
-        public boolean method_15109(Item item) {
+        @Override
+        public boolean contains(Item item) {
             if (this.version != latestVersion) {
                 this.delegate = container.getOrCreate(this.getId());
                 this.version = latestVersion;

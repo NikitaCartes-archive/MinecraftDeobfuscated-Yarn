@@ -10,30 +10,30 @@ import java.util.Random;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.block.Block;
-import net.minecraft.block.BlockRenderLayer;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
-import net.minecraft.block.ConnectedPlantBlock;
-import net.minecraft.block.PortalBlock;
+import net.minecraft.block.ConnectingBlock;
+import net.minecraft.block.NetherPortalBlock;
 import net.minecraft.block.TntBlock;
+import net.minecraft.client.render.RenderLayer;
 import net.minecraft.entity.EntityContext;
 import net.minecraft.item.ItemPlacementContext;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
-import net.minecraft.state.StateFactory;
+import net.minecraft.state.StateManager;
 import net.minecraft.state.property.BooleanProperty;
 import net.minecraft.state.property.IntProperty;
 import net.minecraft.state.property.Properties;
-import net.minecraft.util.SystemUtil;
+import net.minecraft.util.Util;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.util.shape.VoxelShapes;
 import net.minecraft.world.BlockView;
+import net.minecraft.world.CollisionView;
 import net.minecraft.world.GameRules;
 import net.minecraft.world.IWorld;
-import net.minecraft.world.ViewableWorld;
 import net.minecraft.world.World;
 import net.minecraft.world.dimension.DimensionType;
 import net.minecraft.world.dimension.TheEndDimension;
@@ -42,18 +42,18 @@ import org.jetbrains.annotations.Nullable;
 public class FireBlock
 extends Block {
     public static final IntProperty AGE = Properties.AGE_15;
-    public static final BooleanProperty NORTH = ConnectedPlantBlock.NORTH;
-    public static final BooleanProperty EAST = ConnectedPlantBlock.EAST;
-    public static final BooleanProperty SOUTH = ConnectedPlantBlock.SOUTH;
-    public static final BooleanProperty WEST = ConnectedPlantBlock.WEST;
-    public static final BooleanProperty UP = ConnectedPlantBlock.UP;
-    private static final Map<Direction, BooleanProperty> DIRECTION_PROPERTIES = ConnectedPlantBlock.FACING_PROPERTIES.entrySet().stream().filter(entry -> entry.getKey() != Direction.DOWN).collect(SystemUtil.toMap());
+    public static final BooleanProperty NORTH = ConnectingBlock.NORTH;
+    public static final BooleanProperty EAST = ConnectingBlock.EAST;
+    public static final BooleanProperty SOUTH = ConnectingBlock.SOUTH;
+    public static final BooleanProperty WEST = ConnectingBlock.WEST;
+    public static final BooleanProperty UP = ConnectingBlock.UP;
+    private static final Map<Direction, BooleanProperty> DIRECTION_PROPERTIES = ConnectingBlock.FACING_PROPERTIES.entrySet().stream().filter(entry -> entry.getKey() != Direction.DOWN).collect(Util.toMap());
     private final Object2IntMap<Block> burnChances = new Object2IntOpenHashMap<Block>();
     private final Object2IntMap<Block> spreadChances = new Object2IntOpenHashMap<Block>();
 
     protected FireBlock(Block.Settings settings) {
         super(settings);
-        this.setDefaultState((BlockState)((BlockState)((BlockState)((BlockState)((BlockState)((BlockState)((BlockState)this.stateFactory.getDefaultState()).with(AGE, 0)).with(NORTH, false)).with(EAST, false)).with(SOUTH, false)).with(WEST, false)).with(UP, false));
+        this.setDefaultState((BlockState)((BlockState)((BlockState)((BlockState)((BlockState)((BlockState)((BlockState)this.stateManager.getDefaultState()).with(AGE, 0)).with(NORTH, false)).with(EAST, false)).with(SOUTH, false)).with(WEST, false)).with(UP, false));
     }
 
     @Override
@@ -78,7 +78,7 @@ extends Block {
     public BlockState getStateForPosition(BlockView blockView, BlockPos blockPos) {
         BlockPos blockPos2 = blockPos.down();
         BlockState blockState = blockView.getBlockState(blockPos2);
-        if (this.isFlammable(blockState) || blockState.method_20827(blockView, blockPos2, Direction.UP)) {
+        if (this.isFlammable(blockState) || blockState.isSideSolidFullSquare(blockView, blockPos2, Direction.UP)) {
             return this.getDefaultState();
         }
         BlockState blockState2 = this.getDefaultState();
@@ -91,13 +91,13 @@ extends Block {
     }
 
     @Override
-    public boolean canPlaceAt(BlockState blockState, ViewableWorld viewableWorld, BlockPos blockPos) {
+    public boolean canPlaceAt(BlockState blockState, CollisionView collisionView, BlockPos blockPos) {
         BlockPos blockPos2 = blockPos.down();
-        return viewableWorld.getBlockState(blockPos2).method_20827(viewableWorld, blockPos2, Direction.UP) || this.areBlocksAroundFlammable(viewableWorld, blockPos);
+        return collisionView.getBlockState(blockPos2).isSideSolidFullSquare(collisionView, blockPos2, Direction.UP) || this.areBlocksAroundFlammable(collisionView, blockPos);
     }
 
     @Override
-    public int getTickRate(ViewableWorld viewableWorld) {
+    public int getTickRate(CollisionView collisionView) {
         return 30;
     }
 
@@ -108,13 +108,13 @@ extends Block {
             return;
         }
         if (!blockState.canPlaceAt(world, blockPos)) {
-            world.clearBlockState(blockPos, false);
+            world.removeBlock(blockPos, false);
         }
         Block block = world.getBlockState(blockPos.down()).getBlock();
         boolean bl = world.dimension instanceof TheEndDimension && block == Blocks.BEDROCK || block == Blocks.NETHERRACK || block == Blocks.MAGMA_BLOCK;
         int i = blockState.get(AGE);
         if (!bl && world.isRaining() && this.isRainingAround(world, blockPos) && random.nextFloat() < 0.2f + (float)i * 0.03f) {
-            world.clearBlockState(blockPos, false);
+            world.removeBlock(blockPos, false);
             return;
         }
         int j = Math.min(15, i + random.nextInt(3) / 2);
@@ -126,13 +126,13 @@ extends Block {
             world.getBlockTickScheduler().schedule(blockPos, this, this.getTickRate(world) + random.nextInt(10));
             if (!this.areBlocksAroundFlammable(world, blockPos)) {
                 BlockPos blockPos2 = blockPos.down();
-                if (!world.getBlockState(blockPos2).method_20827(world, blockPos2, Direction.UP) || i > 3) {
-                    world.clearBlockState(blockPos, false);
+                if (!world.getBlockState(blockPos2).isSideSolidFullSquare(world, blockPos2, Direction.UP) || i > 3) {
+                    world.removeBlock(blockPos, false);
                 }
                 return;
             }
             if (i == 15 && random.nextInt(4) == 0 && !this.isFlammable(world.getBlockState(blockPos.down()))) {
-                world.clearBlockState(blockPos, false);
+                world.removeBlock(blockPos, false);
                 return;
             }
         }
@@ -193,7 +193,7 @@ extends Block {
                 int l = Math.min(j + random.nextInt(5) / 4, 15);
                 world.setBlockState(blockPos, (BlockState)this.getStateForPosition(world, blockPos).with(AGE, l), 3);
             } else {
-                world.clearBlockState(blockPos, false);
+                world.removeBlock(blockPos, false);
             }
             Block block = blockState.getBlock();
             if (block instanceof TntBlock) {
@@ -211,13 +211,13 @@ extends Block {
         return false;
     }
 
-    private int getBurnChance(ViewableWorld viewableWorld, BlockPos blockPos) {
-        if (!viewableWorld.isAir(blockPos)) {
+    private int getBurnChance(CollisionView collisionView, BlockPos blockPos) {
+        if (!collisionView.isAir(blockPos)) {
             return 0;
         }
         int i = 0;
         for (Direction direction : Direction.values()) {
-            BlockState blockState = viewableWorld.getBlockState(blockPos.offset(direction));
+            BlockState blockState = collisionView.getBlockState(blockPos.offset(direction));
             i = Math.max(this.getBurnChance(blockState), i);
         }
         return i;
@@ -232,11 +232,11 @@ extends Block {
         if (blockState2.getBlock() == blockState.getBlock()) {
             return;
         }
-        if ((world.dimension.getType() == DimensionType.OVERWORLD || world.dimension.getType() == DimensionType.THE_NETHER) && ((PortalBlock)Blocks.NETHER_PORTAL).createPortalAt(world, blockPos)) {
+        if ((world.dimension.getType() == DimensionType.OVERWORLD || world.dimension.getType() == DimensionType.THE_NETHER) && ((NetherPortalBlock)Blocks.NETHER_PORTAL).createPortalAt(world, blockPos)) {
             return;
         }
         if (!blockState.canPlaceAt(world, blockPos)) {
-            world.clearBlockState(blockPos, false);
+            world.removeBlock(blockPos, false);
             return;
         }
         world.getBlockTickScheduler().schedule(blockPos, this, this.getTickRate(world) + world.random.nextInt(10));
@@ -256,7 +256,7 @@ extends Block {
                 if (random.nextInt(24) == 0) {
                     world.playSound((float)blockPos.getX() + 0.5f, (double)((float)blockPos.getY() + 0.5f), (double)((float)blockPos.getZ() + 0.5f), SoundEvents.BLOCK_FIRE_AMBIENT, SoundCategory.BLOCKS, 1.0f + random.nextFloat(), random.nextFloat() * 0.7f + 0.3f, false);
                 }
-                if (!this.isFlammable(blockState2 = world.getBlockState(blockPos2 = blockPos.down())) && !blockState2.method_20827(world, blockPos2, Direction.UP)) break block11;
+                if (!this.isFlammable(blockState2 = world.getBlockState(blockPos2 = blockPos.down())) && !blockState2.isSideSolidFullSquare(world, blockPos2, Direction.UP)) break block11;
                 for (int i2 = 0; i2 < 3; ++i2) {
                     double d2 = (double)blockPos.getX() + random.nextDouble();
                     double e2 = (double)blockPos.getY() + random.nextDouble() * 0.5 + 0.5;
@@ -308,12 +308,12 @@ extends Block {
     }
 
     @Override
-    public BlockRenderLayer getRenderLayer() {
-        return BlockRenderLayer.CUTOUT;
+    public RenderLayer getRenderLayer() {
+        return RenderLayer.CUTOUT;
     }
 
     @Override
-    protected void appendProperties(StateFactory.Builder<Block, BlockState> builder) {
+    protected void appendProperties(StateManager.Builder<Block, BlockState> builder) {
         builder.add(AGE, NORTH, EAST, SOUTH, WEST, UP);
     }
 

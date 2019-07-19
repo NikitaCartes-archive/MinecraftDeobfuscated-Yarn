@@ -6,8 +6,8 @@ package net.minecraft.client.render.entity.feature;
 import com.mojang.blaze3d.platform.GlStateManager;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.client.model.Cuboid;
 import net.minecraft.client.model.Model;
+import net.minecraft.client.model.ModelPart;
 import net.minecraft.client.render.entity.feature.FeatureRenderer;
 import net.minecraft.client.render.entity.feature.FeatureRendererContext;
 import net.minecraft.client.render.entity.model.PlayerEntityModel;
@@ -24,7 +24,8 @@ extends FeatureRenderer<T, PlayerEntityModel<T>> {
         super(featureRendererContext);
     }
 
-    public void method_4203(T livingEntity, float f, float g, float h, float i, float j, float k, float l) {
+    @Override
+    public void render(T livingEntity, float f, float g, float h, float i, float j, float k, float l) {
         if (!((LivingEntity)livingEntity).isUsingRiptide()) {
             return;
         }
@@ -49,13 +50,13 @@ extends FeatureRenderer<T, PlayerEntityModel<T>> {
     @Environment(value=EnvType.CLIENT)
     static class TridentRiptideModel
     extends Model {
-        private final Cuboid field_4900;
+        private final ModelPart field_4900;
 
         public TridentRiptideModel() {
             this.textureWidth = 64;
             this.textureHeight = 64;
-            this.field_4900 = new Cuboid(this, 0, 0);
-            this.field_4900.addBox(-8.0f, -16.0f, -8.0f, 16, 32, 16);
+            this.field_4900 = new ModelPart(this, 0, 0);
+            this.field_4900.addCuboid(-8.0f, -16.0f, -8.0f, 16, 32, 16);
         }
 
         public void method_17166(float f, float g, float h, float i, float j, float k) {

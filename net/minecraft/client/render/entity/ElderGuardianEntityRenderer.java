@@ -21,12 +21,13 @@ extends GuardianEntityRenderer {
         super(entityRenderDispatcher, 1.2f);
     }
 
-    protected void method_3910(GuardianEntity guardianEntity, float f) {
+    @Override
+    protected void scale(GuardianEntity guardianEntity, float f) {
         GlStateManager.scalef(ElderGuardianEntity.field_17492, ElderGuardianEntity.field_17492, ElderGuardianEntity.field_17492);
     }
 
     @Override
-    protected Identifier method_3976(GuardianEntity guardianEntity) {
+    protected Identifier getTexture(GuardianEntity guardianEntity) {
         return SKIN;
     }
 }

@@ -6,7 +6,7 @@ package net.minecraft.client.sound;
 import java.util.concurrent.locks.LockSupport;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.util.ThreadExecutor;
+import net.minecraft.util.thread.ThreadExecutor;
 
 @Environment(value=EnvType.CLIENT)
 public class SoundExecutor
@@ -27,12 +27,12 @@ extends ThreadExecutor<Runnable> {
     }
 
     @Override
-    protected Runnable prepareRunnable(Runnable runnable) {
+    protected Runnable createTask(Runnable runnable) {
         return runnable;
     }
 
     @Override
-    protected boolean canRun(Runnable runnable) {
+    protected boolean canExecute(Runnable runnable) {
         return !this.stopped;
     }
 
@@ -43,7 +43,7 @@ extends ThreadExecutor<Runnable> {
 
     private void waitForStop() {
         while (!this.stopped) {
-            this.waitFor(() -> this.stopped);
+            this.runTasks(() -> this.stopped);
         }
     }
 
@@ -60,7 +60,7 @@ extends ThreadExecutor<Runnable> {
         } catch (InterruptedException interruptedException) {
             Thread.currentThread().interrupt();
         }
-        this.clear();
+        this.cancelTasks();
         this.stopped = false;
         this.thread = this.createThread();
     }

@@ -16,7 +16,7 @@ import net.minecraft.client.network.ClientPlayNetworkHandler;
 import net.minecraft.client.render.block.entity.BlockEntityRenderDispatcher;
 import net.minecraft.client.resource.language.I18n;
 import net.minecraft.client.util.SelectionManager;
-import net.minecraft.server.network.packet.UpdateSignC2SPacket;
+import net.minecraft.network.packet.c2s.play.UpdateSignC2SPacket;
 import net.minecraft.text.LiteralText;
 import net.minecraft.text.TranslatableText;
 

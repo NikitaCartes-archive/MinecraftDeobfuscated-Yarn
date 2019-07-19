@@ -8,7 +8,7 @@ import com.mojang.blaze3d.platform.GlStateManager;
 import java.util.List;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.block.BlockRenderLayer;
+import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.render.chunk.ChunkRenderer;
 import net.minecraft.util.math.BlockPos;
 
@@ -33,10 +33,10 @@ public abstract class ChunkRendererList {
         GlStateManager.translatef((float)((double)blockPos.getX() - this.cameraX), (float)((double)blockPos.getY() - this.cameraY), (float)((double)blockPos.getZ() - this.cameraZ));
     }
 
-    public void add(ChunkRenderer chunkRenderer, BlockRenderLayer blockRenderLayer) {
+    public void add(ChunkRenderer chunkRenderer, RenderLayer renderLayer) {
         this.chunkRenderers.add(chunkRenderer);
     }
 
-    public abstract void render(BlockRenderLayer var1);
+    public abstract void render(RenderLayer var1);
 }
 

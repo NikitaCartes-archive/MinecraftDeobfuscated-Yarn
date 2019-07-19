@@ -34,7 +34,7 @@ import net.minecraft.state.property.Property;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.MetricsData;
-import net.minecraft.util.SystemUtil;
+import net.minecraft.util.Util;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.hit.HitResult;
 import net.minecraft.util.math.BlockPos;
@@ -55,7 +55,7 @@ import org.jetbrains.annotations.Nullable;
 @Environment(value=EnvType.CLIENT)
 public class DebugHud
 extends DrawableHelper {
-    private static final Map<Heightmap.Type, String> HEIGHT_MAP_TYPES = SystemUtil.consume(new EnumMap(Heightmap.Type.class), enumMap -> {
+    private static final Map<Heightmap.Type, String> HEIGHT_MAP_TYPES = Util.make(new EnumMap(Heightmap.Type.class), enumMap -> {
         enumMap.put(Heightmap.Type.WORLD_SURFACE_WG, "SW");
         enumMap.put(Heightmap.Type.WORLD_SURFACE, "S");
         enumMap.put(Heightmap.Type.OCEAN_FLOOR_WG, "OW");
@@ -145,9 +145,9 @@ extends DrawableHelper {
         float f = clientConnection.getAveragePacketsSent();
         float g = clientConnection.getAveragePacketsReceived();
         String string = integratedServer != null ? String.format("Integrated server @ %.0f ms ticks, %.0f tx, %.0f rx", Float.valueOf(integratedServer.getTickTime()), Float.valueOf(f), Float.valueOf(g)) : String.format("\"%s\" server, %.0f tx, %.0f rx", this.client.player.getServerBrand(), Float.valueOf(f), Float.valueOf(g));
-        BlockPos blockPos = new BlockPos(this.client.getCameraEntity().x, this.client.getCameraEntity().getBoundingBox().minY, this.client.getCameraEntity().z);
+        BlockPos blockPos = new BlockPos(this.client.getCameraEntity().x, this.client.getCameraEntity().getBoundingBox().y1, this.client.getCameraEntity().z);
         if (this.client.hasReducedDebugInfo()) {
-            return Lists.newArrayList("Minecraft " + SharedConstants.getGameVersion().getName() + " (" + this.client.getGameVersion() + "/" + ClientBrandRetriever.getClientModName() + ")", this.client.fpsDebugString, string, this.client.worldRenderer.getChunksDebugString(), this.client.worldRenderer.getEntitiesDebugString(), "P: " + this.client.particleManager.getDebugString() + ". T: " + this.client.world.getRegularEntityCount(), this.client.world.getChunkProviderStatus(), "", String.format("Chunk-relative: %d %d %d", blockPos.getX() & 0xF, blockPos.getY() & 0xF, blockPos.getZ() & 0xF));
+            return Lists.newArrayList("Minecraft " + SharedConstants.getGameVersion().getName() + " (" + this.client.getGameVersion() + "/" + ClientBrandRetriever.getClientModName() + ")", this.client.fpsDebugString, string, this.client.worldRenderer.getChunksDebugString(), this.client.worldRenderer.getEntitiesDebugString(), "P: " + this.client.particleManager.getDebugString() + ". T: " + this.client.world.getRegularEntityCount(), this.client.world.getDebugString(), "", String.format("Chunk-relative: %d %d %d", blockPos.getX() & 0xF, blockPos.getY() & 0xF, blockPos.getZ() & 0xF));
         }
         Entity entity = this.client.getCameraEntity();
         Direction direction = entity.getHorizontalFacing();
@@ -178,14 +178,14 @@ extends DrawableHelper {
             this.resetChunk();
         }
         LongSets.EmptySet longSet = (world = this.getWorld()) instanceof ServerWorld ? ((ServerWorld)world).getForcedChunks() : LongSets.EMPTY_SET;
-        ArrayList<String> list = Lists.newArrayList("Minecraft " + SharedConstants.getGameVersion().getName() + " (" + this.client.getGameVersion() + "/" + ClientBrandRetriever.getClientModName() + ("release".equalsIgnoreCase(this.client.getVersionType()) ? "" : "/" + this.client.getVersionType()) + ")", this.client.fpsDebugString, string, this.client.worldRenderer.getChunksDebugString(), this.client.worldRenderer.getEntitiesDebugString(), "P: " + this.client.particleManager.getDebugString() + ". T: " + this.client.world.getRegularEntityCount(), this.client.world.getChunkProviderStatus());
+        ArrayList<String> list = Lists.newArrayList("Minecraft " + SharedConstants.getGameVersion().getName() + " (" + this.client.getGameVersion() + "/" + ClientBrandRetriever.getClientModName() + ("release".equalsIgnoreCase(this.client.getVersionType()) ? "" : "/" + this.client.getVersionType()) + ")", this.client.fpsDebugString, string, this.client.worldRenderer.getChunksDebugString(), this.client.worldRenderer.getEntitiesDebugString(), "P: " + this.client.particleManager.getDebugString() + ". T: " + this.client.world.getRegularEntityCount(), this.client.world.getDebugString());
         String string3 = this.method_20603();
         if (string3 != null) {
             list.add(string3);
         }
         list.add(DimensionType.getId(this.client.world.dimension.getType()).toString() + " FC: " + Integer.toString(longSet.size()));
         list.add("");
-        list.add(String.format(Locale.ROOT, "XYZ: %.3f / %.5f / %.3f", this.client.getCameraEntity().x, this.client.getCameraEntity().getBoundingBox().minY, this.client.getCameraEntity().z));
+        list.add(String.format(Locale.ROOT, "XYZ: %.3f / %.5f / %.3f", this.client.getCameraEntity().x, this.client.getCameraEntity().getBoundingBox().y1, this.client.getCameraEntity().z));
         list.add(String.format("Block: %d %d %d", blockPos.getX(), blockPos.getY(), blockPos.getZ()));
         list.add(String.format("Chunk: %d %d %d in %d %d %d", blockPos.getX() & 0xF, blockPos.getY() & 0xF, blockPos.getZ() & 0xF, blockPos.getX() >> 4, blockPos.getY() >> 4, blockPos.getZ() >> 4));
         list.add(String.format(Locale.ROOT, "Facing: %s (%s) (%.1f / %.1f)", direction, string2, Float.valueOf(MathHelper.wrapDegrees(entity.yaw)), Float.valueOf(MathHelper.wrapDegrees(entity.pitch))));
@@ -254,7 +254,7 @@ extends DrawableHelper {
         ServerWorld serverWorld;
         IntegratedServer integratedServer = this.client.getServer();
         if (integratedServer != null && (serverWorld = integratedServer.getWorld(this.client.world.getDimension().getType())) != null) {
-            return serverWorld.getChunkProviderStatus();
+            return serverWorld.getDebugString();
         }
         return null;
     }
@@ -269,7 +269,7 @@ extends DrawableHelper {
             ServerWorld serverWorld;
             IntegratedServer integratedServer = this.client.getServer();
             if (integratedServer != null && (serverWorld = integratedServer.getWorld(this.client.world.dimension.getType())) != null) {
-                this.chunkFuture = serverWorld.method_14178().getChunkFutureSyncOnMainThread(this.pos.x, this.pos.z, ChunkStatus.FULL, false).thenApply(either -> either.map(chunk -> (WorldChunk)chunk, unloaded -> null));
+                this.chunkFuture = serverWorld.getChunkManager().getChunkFutureSyncOnMainThread(this.pos.x, this.pos.z, ChunkStatus.FULL, false).thenApply(either -> either.map(chunk -> (WorldChunk)chunk, unloaded -> null));
             }
             if (this.chunkFuture == null) {
                 this.chunkFuture = CompletableFuture.completedFuture(this.getClientChunk());
@@ -280,7 +280,7 @@ extends DrawableHelper {
 
     private WorldChunk getClientChunk() {
         if (this.chunk == null) {
-            this.chunk = this.client.world.method_8497(this.pos.x, this.pos.z);
+            this.chunk = this.client.world.getChunk(this.pos.x, this.pos.z);
         }
         return this.chunk;
     }
@@ -333,7 +333,7 @@ extends DrawableHelper {
     private String propertyToString(Map.Entry<Property<?>, Comparable<?>> entry) {
         Property<?> property = entry.getKey();
         Comparable<?> comparable = entry.getValue();
-        String string = SystemUtil.getValueAsString(property, comparable);
+        String string = Util.getValueAsString(property, comparable);
         if (Boolean.TRUE.equals(comparable)) {
             string = (Object)((Object)Formatting.GREEN) + string;
         } else if (Boolean.FALSE.equals(comparable)) {

@@ -11,7 +11,7 @@ import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawableHelper;
 import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.client.render.GuiLighting;
+import net.minecraft.client.render.DiffuseLighting;
 import net.minecraft.client.render.item.ItemRenderer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.recipe.Ingredient;
@@ -56,7 +56,7 @@ public class RecipeBookGhostSlots {
         if (!Screen.hasControlDown()) {
             this.time += f;
         }
-        GuiLighting.enableForItems();
+        DiffuseLighting.enableForItems();
         GlStateManager.disableLighting();
         for (int k = 0; k < this.slots.size(); ++k) {
             GhostInputSlot ghostInputSlot = this.slots.get(k);
@@ -78,7 +78,7 @@ public class RecipeBookGhostSlots {
             }
             GlStateManager.enableLighting();
         }
-        GuiLighting.disable();
+        DiffuseLighting.disable();
     }
 
     @Environment(value=EnvType.CLIENT)
@@ -102,7 +102,7 @@ public class RecipeBookGhostSlots {
         }
 
         public ItemStack getCurrentItemStack() {
-            ItemStack[] itemStacks = this.ingredient.getStackArray();
+            ItemStack[] itemStacks = this.ingredient.getMatchingStacksClient();
             return itemStacks[MathHelper.floor(RecipeBookGhostSlots.this.time / 30.0f) % itemStacks.length];
         }
     }

@@ -5,7 +5,6 @@ package net.minecraft.entity.projectile;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.client.network.packet.EntitySpawnS2CPacket;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
@@ -14,6 +13,7 @@ import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.network.Packet;
+import net.minecraft.network.packet.s2c.play.EntitySpawnS2CPacket;
 import net.minecraft.particle.ParticleEffect;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.util.hit.HitResult;
@@ -38,8 +38,8 @@ extends Entity {
 
     public ExplosiveProjectileEntity(EntityType<? extends ExplosiveProjectileEntity> entityType, double d, double e, double f, double g, double h, double i, World world) {
         this(entityType, world);
-        this.setPositionAndAngles(d, e, f, this.yaw, this.pitch);
-        this.setPosition(d, e, f);
+        this.refreshPositionAndAngles(d, e, f, this.yaw, this.pitch);
+        this.updatePosition(d, e, f);
         double j = MathHelper.sqrt(g * g + h * h + i * i);
         this.posX = g / j * 0.1;
         this.posY = h / j * 0.1;
@@ -49,8 +49,8 @@ extends Entity {
     public ExplosiveProjectileEntity(EntityType<? extends ExplosiveProjectileEntity> entityType, LivingEntity livingEntity, double d, double e, double f, World world) {
         this(entityType, world);
         this.owner = livingEntity;
-        this.setPositionAndAngles(livingEntity.x, livingEntity.y, livingEntity.z, livingEntity.yaw, livingEntity.pitch);
-        this.setPosition(this.x, this.y, this.z);
+        this.refreshPositionAndAngles(livingEntity.x, livingEntity.y, livingEntity.z, livingEntity.yaw, livingEntity.pitch);
+        this.updatePosition(this.x, this.y, this.z);
         this.setVelocity(Vec3d.ZERO);
         double g = MathHelper.sqrt((d += this.random.nextGaussian() * 0.4) * d + (e += this.random.nextGaussian() * 0.4) * e + (f += this.random.nextGaussian() * 0.4) * f);
         this.posX = d / g * 0.1;
@@ -64,8 +64,8 @@ extends Entity {
 
     @Override
     @Environment(value=EnvType.CLIENT)
-    public boolean shouldRenderAtDistance(double d) {
-        double e = this.getBoundingBox().averageDimension() * 4.0;
+    public boolean shouldRender(double d) {
+        double e = this.getBoundingBox().getAverageSideLength() * 4.0;
         if (Double.isNaN(e)) {
             e = 4.0;
         }
@@ -93,7 +93,7 @@ extends Entity {
         this.z += vec3d.z;
         ProjectileUtil.method_7484(this, 0.2f);
         float f = this.getDrag();
-        if (this.isInsideWater()) {
+        if (this.isTouchingWater()) {
             for (int i = 0; i < 4; ++i) {
                 float g = 0.25f;
                 this.world.addParticle(ParticleTypes.BUBBLE, this.x - vec3d.x * 0.25, this.y - vec3d.y * 0.25, this.z - vec3d.z * 0.25, vec3d.x, vec3d.y, vec3d.z);
@@ -102,7 +102,7 @@ extends Entity {
         }
         this.setVelocity(vec3d.add(this.posX, this.posY, this.posZ).multiply(f));
         this.world.addParticle(this.getParticleType(), this.x, this.y + 0.5, this.z, 0.0, 0.0, 0.0);
-        this.setPosition(this.x, this.y, this.z);
+        this.updatePosition(this.x, this.y, this.z);
     }
 
     protected boolean isBurning() {
@@ -130,13 +130,13 @@ extends Entity {
     @Override
     public void readCustomDataFromTag(CompoundTag compoundTag) {
         ListTag listTag;
-        if (compoundTag.containsKey("power", 9) && (listTag = compoundTag.getList("power", 6)).size() == 3) {
+        if (compoundTag.contains("power", 9) && (listTag = compoundTag.getList("power", 6)).size() == 3) {
             this.posX = listTag.getDouble(0);
             this.posY = listTag.getDouble(1);
             this.posZ = listTag.getDouble(2);
         }
         this.life = compoundTag.getInt("life");
-        if (compoundTag.containsKey("direction", 9) && compoundTag.getList("direction", 6).size() == 3) {
+        if (compoundTag.contains("direction", 9) && compoundTag.getList("direction", 6).size() == 3) {
             listTag = compoundTag.getList("direction", 6);
             this.setVelocity(listTag.getDouble(0), listTag.getDouble(1), listTag.getDouble(2));
         } else {

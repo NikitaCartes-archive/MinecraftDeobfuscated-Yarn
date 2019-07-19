@@ -25,7 +25,8 @@ extends Feature<IcebergFeatureConfig> {
         super(function);
     }
 
-    public boolean method_13423(IWorld iWorld, ChunkGenerator<? extends ChunkGeneratorConfig> chunkGenerator, Random random, BlockPos blockPos, IcebergFeatureConfig icebergFeatureConfig) {
+    @Override
+    public boolean generate(IWorld iWorld, ChunkGenerator<? extends ChunkGeneratorConfig> chunkGenerator, Random random, BlockPos blockPos, IcebergFeatureConfig icebergFeatureConfig) {
         boolean bl3;
         int s;
         int r;

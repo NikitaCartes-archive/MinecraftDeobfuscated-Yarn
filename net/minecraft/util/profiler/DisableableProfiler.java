@@ -8,7 +8,7 @@ import java.util.function.IntSupplier;
 import java.util.function.Supplier;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.util.SystemUtil;
+import net.minecraft.util.Util;
 import net.minecraft.util.profiler.DummyProfiler;
 import net.minecraft.util.profiler.ProfileResult;
 import net.minecraft.util.profiler.Profiler;
@@ -90,7 +90,7 @@ implements Profiler {
 
         @Override
         public ProfileResult disable() {
-            ProfileResult profileResult = this.profiler.getResults();
+            ProfileResult profileResult = this.profiler.getResult();
             this.profiler = DummyProfiler.INSTANCE;
             return profileResult;
         }
@@ -98,13 +98,13 @@ implements Profiler {
         @Override
         @Environment(value=EnvType.CLIENT)
         public ProfileResult getResults() {
-            return this.profiler.getResults();
+            return this.profiler.getResult();
         }
 
         @Override
         public void enable() {
             if (this.profiler == DummyProfiler.INSTANCE) {
-                this.profiler = new ProfilerSystem(SystemUtil.getMeasuringTimeNano(), DisableableProfiler.this.tickSupplier);
+                this.profiler = new ProfilerSystem(Util.getMeasuringTimeNano(), DisableableProfiler.this.tickSupplier);
             }
         }
     }

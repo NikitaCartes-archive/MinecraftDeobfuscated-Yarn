@@ -52,7 +52,7 @@ public class Vector4f {
         return this.components[3];
     }
 
-    public void multiply(Vector3f vector3f) {
+    public void multiplyComponentwise(Vector3f vector3f) {
         this.components[0] = this.components[0] * vector3f.getX();
         this.components[1] = this.components[1] * vector3f.getY();
         this.components[2] = this.components[2] * vector3f.getZ();
@@ -67,11 +67,11 @@ public class Vector4f {
 
     public void method_4959(Quaternion quaternion) {
         Quaternion quaternion2 = new Quaternion(quaternion);
-        quaternion2.copyFrom(new Quaternion(this.getX(), this.getY(), this.getZ(), 0.0f));
+        quaternion2.hamiltonProduct(new Quaternion(this.getX(), this.getY(), this.getZ(), 0.0f));
         Quaternion quaternion3 = new Quaternion(quaternion);
-        quaternion3.reverse();
-        quaternion2.copyFrom(quaternion3);
-        this.set(quaternion2.getX(), quaternion2.getY(), quaternion2.getZ(), this.getW());
+        quaternion3.conjugate();
+        quaternion2.hamiltonProduct(quaternion3);
+        this.set(quaternion2.getB(), quaternion2.getC(), quaternion2.getD(), this.getW());
     }
 }
 

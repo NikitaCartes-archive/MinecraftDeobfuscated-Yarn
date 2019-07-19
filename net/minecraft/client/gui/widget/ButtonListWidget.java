@@ -17,18 +17,18 @@ import org.jetbrains.annotations.Nullable;
 
 @Environment(value=EnvType.CLIENT)
 public class ButtonListWidget
-extends ElementListWidget<ButtonEntry> {
+extends ElementListWidget<class_354> {
     public ButtonListWidget(MinecraftClient minecraftClient, int i, int j, int k, int l, int m) {
         super(minecraftClient, i, j, k, l, m);
         this.centerListVertically = false;
     }
 
     public int addSingleOptionEntry(Option option) {
-        return this.addEntry(ButtonEntry.create(this.minecraft.options, this.width, option));
+        return this.addEntry(class_354.create(this.minecraft.options, this.width, option));
     }
 
     public void addOptionEntry(Option option, @Nullable Option option2) {
-        this.addEntry(ButtonEntry.create(this.minecraft.options, this.width, option, option2));
+        this.addEntry(class_354.create(this.minecraft.options, this.width, option, option2));
     }
 
     public void addAll(Option[] options) {
@@ -48,24 +48,24 @@ extends ElementListWidget<ButtonEntry> {
     }
 
     @Environment(value=EnvType.CLIENT)
-    public static class ButtonEntry
-    extends ElementListWidget.Entry<ButtonEntry> {
+    public static class class_354
+    extends ElementListWidget.Entry<class_354> {
         private final List<AbstractButtonWidget> buttons;
 
-        private ButtonEntry(List<AbstractButtonWidget> list) {
+        private class_354(List<AbstractButtonWidget> list) {
             this.buttons = list;
         }
 
-        public static ButtonEntry create(GameOptions gameOptions, int i, Option option) {
-            return new ButtonEntry(ImmutableList.of(option.createButton(gameOptions, i / 2 - 155, 0, 310)));
+        public static class_354 create(GameOptions gameOptions, int i, Option option) {
+            return new class_354(ImmutableList.of(option.createButton(gameOptions, i / 2 - 155, 0, 310)));
         }
 
-        public static ButtonEntry create(GameOptions gameOptions, int i, Option option, @Nullable Option option2) {
+        public static class_354 create(GameOptions gameOptions, int i, Option option, @Nullable Option option2) {
             AbstractButtonWidget abstractButtonWidget = option.createButton(gameOptions, i / 2 - 155, 0, 150);
             if (option2 == null) {
-                return new ButtonEntry(ImmutableList.of(abstractButtonWidget));
+                return new class_354(ImmutableList.of(abstractButtonWidget));
             }
-            return new ButtonEntry(ImmutableList.of(abstractButtonWidget, option2.createButton(gameOptions, i / 2 - 155 + 160, 0, 150)));
+            return new class_354(ImmutableList.of(abstractButtonWidget, option2.createButton(gameOptions, i / 2 - 155 + 160, 0, 150)));
         }
 
         @Override

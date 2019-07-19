@@ -59,7 +59,7 @@ extends Item {
         boolean bl = true;
         Identifier identifier = Registry.ENCHANTMENT.getId(infoEnchantment.enchantment);
         for (int i = 0; i < listTag.size(); ++i) {
-            CompoundTag compoundTag = listTag.getCompoundTag(i);
+            CompoundTag compoundTag = listTag.getCompound(i);
             Identifier identifier2 = Identifier.tryParse(compoundTag.getString("id"));
             if (identifier2 == null || !identifier2.equals(identifier)) continue;
             if (compoundTag.getInt("lvl") < infoEnchantment.level) {

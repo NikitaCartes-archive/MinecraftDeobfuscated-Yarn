@@ -22,7 +22,8 @@ extends MinecartEntityRenderer<TntMinecartEntity> {
         super(entityRenderDispatcher);
     }
 
-    protected void method_4137(TntMinecartEntity tntMinecartEntity, float f, BlockState blockState) {
+    @Override
+    protected void renderBlock(TntMinecartEntity tntMinecartEntity, float f, BlockState blockState) {
         int i = tntMinecartEntity.getFuseTicks();
         if (i > -1 && (float)i - f + 1.0f < 10.0f) {
             float g = 1.0f - ((float)i - f + 1.0f) / 10.0f;

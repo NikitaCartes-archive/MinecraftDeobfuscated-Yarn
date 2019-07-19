@@ -65,7 +65,8 @@ implements Comparable<LevelSummary> {
         return this.lastPlayed;
     }
 
-    public int method_251(LevelSummary levelSummary) {
+    @Override
+    public int compareTo(LevelSummary levelSummary) {
         if (this.lastPlayed < levelSummary.lastPlayed) {
             return 1;
         }
@@ -112,7 +113,7 @@ implements Comparable<LevelSummary> {
 
     @Override
     public /* synthetic */ int compareTo(Object object) {
-        return this.method_251((LevelSummary)object);
+        return this.compareTo((LevelSummary)object);
     }
 }
 

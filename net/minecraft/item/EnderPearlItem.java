@@ -32,7 +32,7 @@ extends Item {
         if (!world.isClient) {
             ThrownEnderpearlEntity thrownEnderpearlEntity = new ThrownEnderpearlEntity(world, playerEntity);
             thrownEnderpearlEntity.setItem(itemStack);
-            thrownEnderpearlEntity.method_19207(playerEntity, playerEntity.pitch, playerEntity.yaw, 0.0f, 1.5f, 1.0f);
+            thrownEnderpearlEntity.setProperties(playerEntity, playerEntity.pitch, playerEntity.yaw, 0.0f, 1.5f, 1.0f);
             world.spawnEntity(thrownEnderpearlEntity);
         }
         playerEntity.incrementStat(Stats.USED.getOrCreateStat(this));

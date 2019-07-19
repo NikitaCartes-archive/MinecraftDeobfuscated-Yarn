@@ -83,7 +83,8 @@ implements UnbakedModel {
     @Environment(value=EnvType.CLIENT)
     public static class Deserializer
     implements JsonDeserializer<WeightedUnbakedModel> {
-        public WeightedUnbakedModel method_3499(JsonElement jsonElement, Type type, JsonDeserializationContext jsonDeserializationContext) throws JsonParseException {
+        @Override
+        public WeightedUnbakedModel deserialize(JsonElement jsonElement, Type type, JsonDeserializationContext jsonDeserializationContext) throws JsonParseException {
             ArrayList<ModelVariant> list = Lists.newArrayList();
             if (jsonElement.isJsonArray()) {
                 JsonArray jsonArray = jsonElement.getAsJsonArray();
@@ -101,7 +102,7 @@ implements UnbakedModel {
 
         @Override
         public /* synthetic */ Object deserialize(JsonElement jsonElement, Type type, JsonDeserializationContext jsonDeserializationContext) throws JsonParseException {
-            return this.method_3499(jsonElement, type, jsonDeserializationContext);
+            return this.deserialize(jsonElement, type, jsonDeserializationContext);
         }
     }
 }

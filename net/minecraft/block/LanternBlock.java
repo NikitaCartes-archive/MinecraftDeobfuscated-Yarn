@@ -5,13 +5,13 @@ package net.minecraft.block;
 
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockPlacementEnvironment;
-import net.minecraft.block.BlockRenderLayer;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.piston.PistonBehavior;
+import net.minecraft.client.render.RenderLayer;
 import net.minecraft.entity.EntityContext;
 import net.minecraft.item.ItemPlacementContext;
-import net.minecraft.state.StateFactory;
+import net.minecraft.state.StateManager;
 import net.minecraft.state.property.BooleanProperty;
 import net.minecraft.state.property.Properties;
 import net.minecraft.util.math.BlockPos;
@@ -19,8 +19,8 @@ import net.minecraft.util.math.Direction;
 import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.util.shape.VoxelShapes;
 import net.minecraft.world.BlockView;
+import net.minecraft.world.CollisionView;
 import net.minecraft.world.IWorld;
-import net.minecraft.world.ViewableWorld;
 import org.jetbrains.annotations.Nullable;
 
 public class LanternBlock
@@ -31,7 +31,7 @@ extends Block {
 
     public LanternBlock(Block.Settings settings) {
         super(settings);
-        this.setDefaultState((BlockState)((BlockState)this.stateFactory.getDefaultState()).with(HANGING, false));
+        this.setDefaultState((BlockState)((BlockState)this.stateManager.getDefaultState()).with(HANGING, false));
     }
 
     @Override
@@ -51,19 +51,19 @@ extends Block {
     }
 
     @Override
-    protected void appendProperties(StateFactory.Builder<Block, BlockState> builder) {
+    protected void appendProperties(StateManager.Builder<Block, BlockState> builder) {
         builder.add(HANGING);
     }
 
     @Override
-    public BlockRenderLayer getRenderLayer() {
-        return BlockRenderLayer.CUTOUT;
+    public RenderLayer getRenderLayer() {
+        return RenderLayer.CUTOUT;
     }
 
     @Override
-    public boolean canPlaceAt(BlockState blockState, ViewableWorld viewableWorld, BlockPos blockPos) {
+    public boolean canPlaceAt(BlockState blockState, CollisionView collisionView, BlockPos blockPos) {
         Direction direction = LanternBlock.attachedDirection(blockState).getOpposite();
-        return Block.isSolidSmallSquare(viewableWorld, blockPos.offset(direction), direction.getOpposite());
+        return Block.isSolidSmallSquare(collisionView, blockPos.offset(direction), direction.getOpposite());
     }
 
     protected static Direction attachedDirection(BlockState blockState) {

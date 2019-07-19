@@ -15,14 +15,14 @@ import net.minecraft.SharedConstants;
 import net.minecraft.client.gui.CubeMapRenderer;
 import net.minecraft.client.gui.DrawableHelper;
 import net.minecraft.client.gui.RotatingCubeMapRenderer;
-import net.minecraft.client.gui.screen.AccessibilityScreen;
 import net.minecraft.client.gui.screen.ConfirmChatLinkScreen;
 import net.minecraft.client.gui.screen.ConfirmScreen;
-import net.minecraft.client.gui.screen.EndCreditsScreen;
-import net.minecraft.client.gui.screen.LanguageOptionsScreen;
+import net.minecraft.client.gui.screen.CreditsScreen;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.screen.SettingsScreen;
 import net.minecraft.client.gui.screen.multiplayer.MultiplayerScreen;
+import net.minecraft.client.gui.screen.options.AccessibilityScreen;
+import net.minecraft.client.gui.screen.options.LanguageOptionsScreen;
 import net.minecraft.client.gui.screen.world.SelectWorldScreen;
 import net.minecraft.client.gui.widget.AbstractButtonWidget;
 import net.minecraft.client.gui.widget.ButtonWidget;
@@ -36,7 +36,7 @@ import net.minecraft.text.TranslatableText;
 import net.minecraft.util.ChatUtil;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.SystemUtil;
+import net.minecraft.util.Util;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.level.LevelProperties;
 import net.minecraft.world.level.storage.LevelStorage;
@@ -164,9 +164,9 @@ extends Screen {
     @Override
     public void render(int i, int j, float f) {
         if (this.backgroundFadeStart == 0L && this.doBackgroundFade) {
-            this.backgroundFadeStart = SystemUtil.getMeasuringTimeMs();
+            this.backgroundFadeStart = Util.getMeasuringTimeMs();
         }
-        float g = this.doBackgroundFade ? (float)(SystemUtil.getMeasuringTimeMs() - this.backgroundFadeStart) / 1000.0f : 1.0f;
+        float g = this.doBackgroundFade ? (float)(Util.getMeasuringTimeMs() - this.backgroundFadeStart) / 1000.0f : 1.0f;
         TitleScreen.fill(0, 0, this.width, this.height, -1);
         this.backgroundRenderer.render(f, MathHelper.clamp(g, 0.0f, 1.0f));
         int k = 274;
@@ -200,7 +200,7 @@ extends Screen {
             GlStateManager.pushMatrix();
             GlStateManager.translatef(this.width / 2 + 90, 70.0f, 0.0f);
             GlStateManager.rotatef(-20.0f, 0.0f, 0.0f, 1.0f);
-            float o = 1.8f - MathHelper.abs(MathHelper.sin((float)(SystemUtil.getMeasuringTimeMs() % 1000L) / 1000.0f * ((float)Math.PI * 2)) * 0.1f);
+            float o = 1.8f - MathHelper.abs(MathHelper.sin((float)(Util.getMeasuringTimeMs() % 1000L) / 1000.0f * ((float)Math.PI * 2)) * 0.1f);
             o = o * 100.0f / (float)(this.font.getStringWidth(this.splashText) + 32);
             GlStateManager.scalef(o, o, o);
             this.drawCenteredString(this.font, this.splashText, 0, -8, 0xFFFF00 | n);
@@ -237,7 +237,7 @@ extends Screen {
             return true;
         }
         if (d > (double)this.copyrightTextX && d < (double)(this.copyrightTextX + this.copyrightTextWidth) && e > (double)(this.height - 10) && e < (double)this.height) {
-            this.minecraft.openScreen(new EndCreditsScreen(false, Runnables.doNothing()));
+            this.minecraft.openScreen(new CreditsScreen(false, Runnables.doNothing()));
         }
         return false;
     }
@@ -294,7 +294,7 @@ extends Screen {
             if (!ChatUtil.isEmpty(this.helpUrl) && d >= (double)this.startX && d <= (double)this.endX && e >= (double)this.startY && e <= (double)this.endY) {
                 TitleScreen.this.minecraft.openScreen(new ConfirmChatLinkScreen(bl -> {
                     if (bl) {
-                        SystemUtil.getOperatingSystem().open(this.helpUrl);
+                        Util.getOperatingSystem().open(this.helpUrl);
                     }
                     TitleScreen.this.minecraft.openScreen(TitleScreen.this);
                 }, this.helpUrl, true));

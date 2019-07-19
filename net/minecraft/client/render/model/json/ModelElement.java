@@ -38,17 +38,17 @@ public class ModelElement {
         this.faces = map;
         this.rotation = modelRotation;
         this.shade = bl;
-        this.method_3402();
+        this.initTextures();
     }
 
-    private void method_3402() {
+    private void initTextures() {
         for (Map.Entry<Direction, ModelElementFace> entry : this.faces.entrySet()) {
-            float[] fs = this.method_3401(entry.getKey());
+            float[] fs = this.getRotatedMatrix(entry.getKey());
             entry.getValue().textureData.setUvs(fs);
         }
     }
 
-    private float[] method_3401(Direction direction) {
+    private float[] getRotatedMatrix(Direction direction) {
         switch (direction) {
             case DOWN: {
                 return new float[]{this.from.getX(), 16.0f - this.to.getZ(), this.to.getX(), 16.0f - this.from.getZ()};
@@ -76,7 +76,8 @@ public class ModelElement {
         protected Deserializer() {
         }
 
-        public ModelElement method_3406(JsonElement jsonElement, Type type, JsonDeserializationContext jsonDeserializationContext) throws JsonParseException {
+        @Override
+        public ModelElement deserialize(JsonElement jsonElement, Type type, JsonDeserializationContext jsonDeserializationContext) throws JsonParseException {
             JsonObject jsonObject = jsonElement.getAsJsonObject();
             Vector3f vector3f = this.deserializeFrom(jsonObject);
             Vector3f vector3f2 = this.deserializeTo(jsonObject);
@@ -177,7 +178,7 @@ public class ModelElement {
 
         @Override
         public /* synthetic */ Object deserialize(JsonElement jsonElement, Type type, JsonDeserializationContext jsonDeserializationContext) throws JsonParseException {
-            return this.method_3406(jsonElement, type, jsonDeserializationContext);
+            return this.deserialize(jsonElement, type, jsonDeserializationContext);
         }
     }
 }

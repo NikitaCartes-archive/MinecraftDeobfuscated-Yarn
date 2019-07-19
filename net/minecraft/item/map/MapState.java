@@ -8,7 +8,6 @@ import com.google.common.collect.Maps;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import net.minecraft.client.network.packet.MapUpdateS2CPacket;
 import net.minecraft.entity.decoration.ItemFrameEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.FilledMapItem;
@@ -19,6 +18,7 @@ import net.minecraft.item.map.MapIcon;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.network.Packet;
+import net.minecraft.network.packet.s2c.play.MapUpdateS2CPacket;
 import net.minecraft.text.Text;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
@@ -76,7 +76,7 @@ extends PersistentState {
         this.xCenter = compoundTag.getInt("xCenter");
         this.zCenter = compoundTag.getInt("zCenter");
         this.scale = (byte)MathHelper.clamp(compoundTag.getByte("scale"), 0, 4);
-        this.showIcons = !compoundTag.containsKey("trackingPosition", 1) || compoundTag.getBoolean("trackingPosition");
+        this.showIcons = !compoundTag.contains("trackingPosition", 1) || compoundTag.getBoolean("trackingPosition");
         this.unlimitedTracking = compoundTag.getBoolean("unlimitedTracking");
         this.locked = compoundTag.getBoolean("locked");
         this.colors = compoundTag.getByteArray("colors");
@@ -85,13 +85,13 @@ extends PersistentState {
         }
         ListTag listTag = compoundTag.getList("banners", 10);
         for (int j = 0; j < listTag.size(); ++j) {
-            MapBannerMarker mapBannerMarker = MapBannerMarker.fromNbt(listTag.getCompoundTag(j));
+            MapBannerMarker mapBannerMarker = MapBannerMarker.fromNbt(listTag.getCompound(j));
             this.banners.put(mapBannerMarker.getKey(), mapBannerMarker);
             this.addIcon(mapBannerMarker.getIconType(), null, mapBannerMarker.getKey(), mapBannerMarker.getPos().getX(), mapBannerMarker.getPos().getZ(), 180.0, mapBannerMarker.getName());
         }
         ListTag listTag2 = compoundTag.getList("frames", 10);
         for (int k = 0; k < listTag2.size(); ++k) {
-            MapFrameMarker mapFrameMarker = MapFrameMarker.fromTag(listTag2.getCompoundTag(k));
+            MapFrameMarker mapFrameMarker = MapFrameMarker.fromTag(listTag2.getCompound(k));
             this.frames.put(mapFrameMarker.getKey(), mapFrameMarker);
             this.addIcon(MapIcon.Type.FRAME, null, "frame-" + mapFrameMarker.getEntityId(), mapFrameMarker.getPos().getX(), mapFrameMarker.getPos().getZ(), mapFrameMarker.getRotation(), null);
         }
@@ -163,10 +163,10 @@ extends PersistentState {
             this.addIcon(MapIcon.Type.FRAME, playerEntity.world, "frame-" + itemFrameEntity.getEntityId(), blockPos.getX(), blockPos.getZ(), itemFrameEntity.getHorizontalFacing().getHorizontal() * 90, null);
             this.frames.put(mapFrameMarker2.getKey(), mapFrameMarker2);
         }
-        if ((compoundTag = itemStack.getTag()) != null && compoundTag.containsKey("Decorations", 9)) {
+        if ((compoundTag = itemStack.getTag()) != null && compoundTag.contains("Decorations", 9)) {
             ListTag listTag = compoundTag.getList("Decorations", 10);
             for (int j = 0; j < listTag.size(); ++j) {
-                CompoundTag compoundTag2 = listTag.getCompoundTag(j);
+                CompoundTag compoundTag2 = listTag.getCompound(j);
                 if (this.icons.containsKey(compoundTag2.getString("id"))) continue;
                 this.addIcon(MapIcon.Type.byId(compoundTag2.getByte("type")), playerEntity.world, compoundTag2.getString("id"), compoundTag2.getDouble("x"), compoundTag2.getDouble("z"), compoundTag2.getDouble("rot"), null);
             }
@@ -175,7 +175,7 @@ extends PersistentState {
 
     public static void addDecorationsTag(ItemStack itemStack, BlockPos blockPos, String string, MapIcon.Type type) {
         ListTag listTag;
-        if (itemStack.hasTag() && itemStack.getTag().containsKey("Decorations", 9)) {
+        if (itemStack.hasTag() && itemStack.getTag().contains("Decorations", 9)) {
             listTag = itemStack.getTag().getList("Decorations", 10);
         } else {
             listTag = new ListTag();

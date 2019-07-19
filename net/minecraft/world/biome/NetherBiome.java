@@ -17,11 +17,11 @@ import net.minecraft.world.gen.decorator.CountDecoratorConfig;
 import net.minecraft.world.gen.decorator.Decorator;
 import net.minecraft.world.gen.decorator.DecoratorConfig;
 import net.minecraft.world.gen.decorator.RangeDecoratorConfig;
-import net.minecraft.world.gen.feature.BushFeatureConfig;
 import net.minecraft.world.gen.feature.Feature;
 import net.minecraft.world.gen.feature.FeatureConfig;
 import net.minecraft.world.gen.feature.NetherSpringFeatureConfig;
 import net.minecraft.world.gen.feature.OreFeatureConfig;
+import net.minecraft.world.gen.feature.SingleStateFeatureConfig;
 import net.minecraft.world.gen.feature.SpringFeatureConfig;
 import net.minecraft.world.gen.surfacebuilder.SurfaceBuilder;
 
@@ -38,8 +38,8 @@ extends Biome {
         this.addFeature(GenerationStep.Feature.UNDERGROUND_DECORATION, NetherBiome.configureFeature(Feature.HELL_FIRE, FeatureConfig.DEFAULT, Decorator.HELL_FIRE, new CountDecoratorConfig(10)));
         this.addFeature(GenerationStep.Feature.UNDERGROUND_DECORATION, NetherBiome.configureFeature(Feature.GLOWSTONE_BLOB, FeatureConfig.DEFAULT, Decorator.LIGHT_GEM_CHANCE, new CountDecoratorConfig(10)));
         this.addFeature(GenerationStep.Feature.UNDERGROUND_DECORATION, NetherBiome.configureFeature(Feature.GLOWSTONE_BLOB, FeatureConfig.DEFAULT, Decorator.COUNT_RANGE, new RangeDecoratorConfig(10, 0, 0, 128)));
-        this.addFeature(GenerationStep.Feature.UNDERGROUND_DECORATION, NetherBiome.configureFeature(Feature.BUSH, new BushFeatureConfig(Blocks.BROWN_MUSHROOM.getDefaultState()), Decorator.CHANCE_RANGE, new ChanceRangeDecoratorConfig(0.5f, 0, 0, 128)));
-        this.addFeature(GenerationStep.Feature.UNDERGROUND_DECORATION, NetherBiome.configureFeature(Feature.BUSH, new BushFeatureConfig(Blocks.RED_MUSHROOM.getDefaultState()), Decorator.CHANCE_RANGE, new ChanceRangeDecoratorConfig(0.5f, 0, 0, 128)));
+        this.addFeature(GenerationStep.Feature.UNDERGROUND_DECORATION, NetherBiome.configureFeature(Feature.BUSH, new SingleStateFeatureConfig(Blocks.BROWN_MUSHROOM.getDefaultState()), Decorator.CHANCE_RANGE, new ChanceRangeDecoratorConfig(0.5f, 0, 0, 128)));
+        this.addFeature(GenerationStep.Feature.UNDERGROUND_DECORATION, NetherBiome.configureFeature(Feature.BUSH, new SingleStateFeatureConfig(Blocks.RED_MUSHROOM.getDefaultState()), Decorator.CHANCE_RANGE, new ChanceRangeDecoratorConfig(0.5f, 0, 0, 128)));
         this.addFeature(GenerationStep.Feature.UNDERGROUND_DECORATION, NetherBiome.configureFeature(Feature.ORE, new OreFeatureConfig(OreFeatureConfig.Target.NETHERRACK, Blocks.NETHER_QUARTZ_ORE.getDefaultState(), 14), Decorator.COUNT_RANGE, new RangeDecoratorConfig(16, 10, 20, 128)));
         this.addFeature(GenerationStep.Feature.UNDERGROUND_DECORATION, NetherBiome.configureFeature(Feature.ORE, new OreFeatureConfig(OreFeatureConfig.Target.NETHERRACK, Blocks.MAGMA_BLOCK.getDefaultState(), 33), Decorator.MAGMA, new CountDecoratorConfig(4)));
         this.addFeature(GenerationStep.Feature.UNDERGROUND_DECORATION, NetherBiome.configureFeature(Feature.NETHER_SPRING, new NetherSpringFeatureConfig(true), Decorator.COUNT_RANGE, new RangeDecoratorConfig(16, 10, 20, 128)));

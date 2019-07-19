@@ -59,15 +59,16 @@ implements Criterion<Conditions> {
         this.handlers.remove(playerAdvancementTracker);
     }
 
-    public Conditions method_854(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext) {
-        EntityPredicate entityPredicate = EntityPredicate.deserialize(jsonObject.get("parent"));
-        EntityPredicate entityPredicate2 = EntityPredicate.deserialize(jsonObject.get("partner"));
-        EntityPredicate entityPredicate3 = EntityPredicate.deserialize(jsonObject.get("child"));
+    @Override
+    public Conditions conditionsFromJson(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext) {
+        EntityPredicate entityPredicate = EntityPredicate.fromJson(jsonObject.get("parent"));
+        EntityPredicate entityPredicate2 = EntityPredicate.fromJson(jsonObject.get("partner"));
+        EntityPredicate entityPredicate3 = EntityPredicate.fromJson(jsonObject.get("child"));
         return new Conditions(entityPredicate, entityPredicate2, entityPredicate3);
     }
 
-    public void handle(ServerPlayerEntity serverPlayerEntity, AnimalEntity animalEntity, @Nullable AnimalEntity animalEntity2, @Nullable PassiveEntity passiveEntity) {
-        Handler handler = this.handlers.get(serverPlayerEntity.getAdvancementManager());
+    public void trigger(ServerPlayerEntity serverPlayerEntity, AnimalEntity animalEntity, @Nullable AnimalEntity animalEntity2, @Nullable PassiveEntity passiveEntity) {
+        Handler handler = this.handlers.get(serverPlayerEntity.getAdvancementTracker());
         if (handler != null) {
             handler.handle(serverPlayerEntity, animalEntity, animalEntity2, passiveEntity);
         }
@@ -75,7 +76,7 @@ implements Criterion<Conditions> {
 
     @Override
     public /* synthetic */ CriterionConditions conditionsFromJson(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext) {
-        return this.method_854(jsonObject, jsonDeserializationContext);
+        return this.conditionsFromJson(jsonObject, jsonDeserializationContext);
     }
 
     static class Handler {

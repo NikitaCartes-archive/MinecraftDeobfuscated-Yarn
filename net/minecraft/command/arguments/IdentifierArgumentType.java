@@ -47,7 +47,8 @@ implements ArgumentType<Identifier> {
         return commandContext.getArgument(string, Identifier.class);
     }
 
-    public Identifier method_9446(StringReader stringReader) throws CommandSyntaxException {
+    @Override
+    public Identifier parse(StringReader stringReader) throws CommandSyntaxException {
         return Identifier.fromCommandInput(stringReader);
     }
 
@@ -58,7 +59,7 @@ implements ArgumentType<Identifier> {
 
     @Override
     public /* synthetic */ Object parse(StringReader stringReader) throws CommandSyntaxException {
-        return this.method_9446(stringReader);
+        return this.parse(stringReader);
     }
 }
 

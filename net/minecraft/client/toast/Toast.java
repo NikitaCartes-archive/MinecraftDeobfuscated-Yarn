@@ -34,7 +34,7 @@ public interface Toast {
             this.sound = soundEvent;
         }
 
-        public void play(SoundManager soundManager) {
+        public void playSound(SoundManager soundManager) {
             soundManager.play(PositionedSoundInstance.master(this.sound, 1.0f, 1.0f));
         }
     }

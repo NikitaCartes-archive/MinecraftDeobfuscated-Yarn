@@ -8,7 +8,7 @@ import net.fabricmc.api.Environment;
 import net.minecraft.client.render.entity.EntityRenderDispatcher;
 import net.minecraft.client.render.entity.IllagerEntityRenderer;
 import net.minecraft.client.render.entity.feature.HeldItemFeatureRenderer;
-import net.minecraft.client.render.entity.model.EvilVillagerEntityModel;
+import net.minecraft.client.render.entity.model.IllagerEntityModel;
 import net.minecraft.client.render.entity.model.PillagerEntityModel;
 import net.minecraft.entity.mob.PillagerEntity;
 import net.minecraft.util.Identifier;
@@ -20,10 +20,11 @@ extends IllagerEntityRenderer<PillagerEntity> {
 
     public PillagerEntityRenderer(EntityRenderDispatcher entityRenderDispatcher) {
         super(entityRenderDispatcher, new PillagerEntityModel(0.0f, 0.0f, 64, 64), 0.5f);
-        this.addFeature(new HeldItemFeatureRenderer<PillagerEntity, EvilVillagerEntityModel<PillagerEntity>>(this));
+        this.addFeature(new HeldItemFeatureRenderer<PillagerEntity, IllagerEntityModel<PillagerEntity>>(this));
     }
 
-    protected Identifier method_4092(PillagerEntity pillagerEntity) {
+    @Override
+    protected Identifier getTexture(PillagerEntity pillagerEntity) {
         return SKIN;
     }
 }

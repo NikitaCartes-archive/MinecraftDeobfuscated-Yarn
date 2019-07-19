@@ -59,7 +59,7 @@ extends Biome {
     }
 
     @Override
-    protected float getTemperature(BlockPos blockPos) {
+    protected float computeTemperature(BlockPos blockPos) {
         double h;
         double e;
         float f = this.getTemperature();

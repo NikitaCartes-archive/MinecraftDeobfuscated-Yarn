@@ -51,9 +51,9 @@ public class MonitorTracker {
         if (l != 0L) {
             return this.getMonitor(l);
         }
-        int i = window.getPositionY();
+        int i = window.getX();
         int j = i + window.getWidth();
-        int k = window.getPositionX();
+        int k = window.getY();
         int m = k + window.getHeight();
         int n = -1;
         Monitor monitor = null;

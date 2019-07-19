@@ -82,15 +82,15 @@ extends Container {
     }
 
     @Override
-    public void setProperties(int i, int j) {
-        super.setProperties(i, j);
+    public void setProperty(int i, int j) {
+        super.setProperty(i, j);
         this.sendContentUpdates();
     }
 
     @Override
     public ItemStack transferSlot(PlayerEntity playerEntity, int i) {
         ItemStack itemStack = ItemStack.EMPTY;
-        Slot slot = (Slot)this.slotList.get(i);
+        Slot slot = (Slot)this.slots.get(i);
         if (slot != null && slot.hasStack()) {
             ItemStack itemStack2 = slot.getStack();
             itemStack = itemStack2.copy();

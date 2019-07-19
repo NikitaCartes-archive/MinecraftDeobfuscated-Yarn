@@ -19,8 +19,8 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.network.ClientPlayNetworkHandler;
 import net.minecraft.client.network.ClientPlayerEntity;
 import net.minecraft.client.network.PlayerListEntry;
+import net.minecraft.network.packet.c2s.play.RequestCommandCompletionsC2SPacket;
 import net.minecraft.server.command.CommandSource;
-import net.minecraft.server.network.packet.RequestCommandCompletionsC2SPacket;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.hit.EntityHitResult;
@@ -52,8 +52,8 @@ implements CommandSource {
 
     @Override
     public Collection<String> getEntitySuggestions() {
-        if (this.client.hitResult != null && this.client.hitResult.getType() == HitResult.Type.ENTITY) {
-            return Collections.singleton(((EntityHitResult)this.client.hitResult).getEntity().getUuidAsString());
+        if (this.client.crosshairTarget != null && this.client.crosshairTarget.getType() == HitResult.Type.ENTITY) {
+            return Collections.singleton(((EntityHitResult)this.client.crosshairTarget).getEntity().getUuidAsString());
         }
         return Collections.emptyList();
     }
@@ -90,32 +90,32 @@ implements CommandSource {
         return this.pendingCompletion;
     }
 
-    private static String formatDouble(double d) {
+    private static String format(double d) {
         return String.format(Locale.ROOT, "%.2f", d);
     }
 
-    private static String formatInt(int i) {
+    private static String format(int i) {
         return Integer.toString(i);
     }
 
     @Override
     public Collection<CommandSource.RelativePosition> getBlockPositionSuggestions() {
-        HitResult hitResult = this.client.hitResult;
+        HitResult hitResult = this.client.crosshairTarget;
         if (hitResult == null || hitResult.getType() != HitResult.Type.BLOCK) {
             return CommandSource.super.getBlockPositionSuggestions();
         }
         BlockPos blockPos = ((BlockHitResult)hitResult).getBlockPos();
-        return Collections.singleton(new CommandSource.RelativePosition(ClientCommandSource.formatInt(blockPos.getX()), ClientCommandSource.formatInt(blockPos.getY()), ClientCommandSource.formatInt(blockPos.getZ())));
+        return Collections.singleton(new CommandSource.RelativePosition(ClientCommandSource.format(blockPos.getX()), ClientCommandSource.format(blockPos.getY()), ClientCommandSource.format(blockPos.getZ())));
     }
 
     @Override
     public Collection<CommandSource.RelativePosition> getPositionSuggestions() {
-        HitResult hitResult = this.client.hitResult;
+        HitResult hitResult = this.client.crosshairTarget;
         if (hitResult == null || hitResult.getType() != HitResult.Type.BLOCK) {
             return CommandSource.super.getPositionSuggestions();
         }
         Vec3d vec3d = hitResult.getPos();
-        return Collections.singleton(new CommandSource.RelativePosition(ClientCommandSource.formatDouble(vec3d.x), ClientCommandSource.formatDouble(vec3d.y), ClientCommandSource.formatDouble(vec3d.z)));
+        return Collections.singleton(new CommandSource.RelativePosition(ClientCommandSource.format(vec3d.x), ClientCommandSource.format(vec3d.y), ClientCommandSource.format(vec3d.z)));
     }
 
     public void onCommandSuggestions(int i, Suggestions suggestions) {

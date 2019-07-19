@@ -31,7 +31,7 @@ extends Item {
         if (!world.isClient) {
             SnowballEntity snowballEntity = new SnowballEntity(world, playerEntity);
             snowballEntity.setItem(itemStack);
-            snowballEntity.method_19207(playerEntity, playerEntity.pitch, playerEntity.yaw, 0.0f, 1.5f, 1.0f);
+            snowballEntity.setProperties(playerEntity, playerEntity.pitch, playerEntity.yaw, 0.0f, 1.5f, 1.0f);
             world.spawnEntity(snowballEntity);
         }
         playerEntity.incrementStat(Stats.USED.getOrCreateStat(this));

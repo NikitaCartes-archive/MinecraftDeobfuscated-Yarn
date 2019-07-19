@@ -10,7 +10,7 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.ingame.AbstractCommandBlockScreen;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.resource.language.I18n;
-import net.minecraft.server.network.packet.UpdateCommandBlockC2SPacket;
+import net.minecraft.network.packet.c2s.play.UpdateCommandBlockC2SPacket;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.CommandBlockExecutor;
 
@@ -65,7 +65,7 @@ extends AbstractCommandBlockScreen {
         CommandBlockExecutor commandBlockExecutor = this.blockEntity.getCommandExecutor();
         this.consoleCommandTextField.setText(commandBlockExecutor.getCommand());
         this.trackingOutput = commandBlockExecutor.isTrackingOutput();
-        this.mode = this.blockEntity.getType();
+        this.mode = this.blockEntity.getCommandBlockType();
         this.conditional = this.blockEntity.isConditionalCommandBlock();
         this.autoActivate = this.blockEntity.isAuto();
         this.updateTrackedOutput();

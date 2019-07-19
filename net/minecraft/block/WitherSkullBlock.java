@@ -72,11 +72,11 @@ extends SkullBlock {
         }
         WitherEntity witherEntity = EntityType.WITHER.create(world);
         BlockPos blockPos2 = result.translate(1, 2, 0).getBlockPos();
-        witherEntity.setPositionAndAngles((double)blockPos2.getX() + 0.5, (double)blockPos2.getY() + 0.55, (double)blockPos2.getZ() + 0.5, result.getForwards().getAxis() == Direction.Axis.X ? 0.0f : 90.0f, 0.0f);
+        witherEntity.refreshPositionAndAngles((double)blockPos2.getX() + 0.5, (double)blockPos2.getY() + 0.55, (double)blockPos2.getZ() + 0.5, result.getForwards().getAxis() == Direction.Axis.X ? 0.0f : 90.0f, 0.0f);
         witherEntity.field_6283 = result.getForwards().getAxis() == Direction.Axis.X ? 0.0f : 90.0f;
         witherEntity.method_6885();
-        for (ServerPlayerEntity serverPlayerEntity : world.getEntities(ServerPlayerEntity.class, witherEntity.getBoundingBox().expand(50.0))) {
-            Criterions.SUMMONED_ENTITY.handle(serverPlayerEntity, witherEntity);
+        for (ServerPlayerEntity serverPlayerEntity : world.getNonSpectatingEntities(ServerPlayerEntity.class, witherEntity.getBoundingBox().expand(50.0))) {
+            Criterions.SUMMONED_ENTITY.trigger(serverPlayerEntity, witherEntity);
         }
         world.spawnEntity(witherEntity);
         for (int k = 0; k < blockPattern.getWidth(); ++k) {

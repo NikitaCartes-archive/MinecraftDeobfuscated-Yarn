@@ -4,15 +4,15 @@
 package com.mojang.realmsclient.dto;
 
 import com.google.gson.JsonObject;
+import com.mojang.realmsclient.dto.ValueObject;
+import com.mojang.realmsclient.util.JsonUtils;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_4352;
-import net.minecraft.class_4431;
 import net.minecraft.realms.RealmsScreen;
 
 @Environment(value=EnvType.CLIENT)
 public class RealmsWorldOptions
-extends class_4352 {
+extends ValueObject {
     public Boolean pvp;
     public Boolean spawnAnimals;
     public Boolean spawnMonsters;
@@ -69,10 +69,10 @@ extends class_4352 {
     }
 
     public static RealmsWorldOptions parse(JsonObject jsonObject) {
-        RealmsWorldOptions realmsWorldOptions = new RealmsWorldOptions(class_4431.method_21548("pvp", jsonObject, true), class_4431.method_21548("spawnAnimals", jsonObject, true), class_4431.method_21548("spawnMonsters", jsonObject, true), class_4431.method_21548("spawnNPCs", jsonObject, true), class_4431.method_21545("spawnProtection", jsonObject, 0), class_4431.method_21548("commandBlocks", jsonObject, false), class_4431.method_21545("difficulty", jsonObject, 2), class_4431.method_21545("gameMode", jsonObject, 0), class_4431.method_21548("forceGameMode", jsonObject, false), class_4431.method_21547("slotName", jsonObject, slotNameDefault));
-        realmsWorldOptions.templateId = class_4431.method_21546("worldTemplateId", jsonObject, -1L);
-        realmsWorldOptions.templateImage = class_4431.method_21547("worldTemplateImage", jsonObject, templateImageDefault);
-        realmsWorldOptions.adventureMap = class_4431.method_21548("adventureMap", jsonObject, false);
+        RealmsWorldOptions realmsWorldOptions = new RealmsWorldOptions(JsonUtils.getBooleanOr("pvp", jsonObject, true), JsonUtils.getBooleanOr("spawnAnimals", jsonObject, true), JsonUtils.getBooleanOr("spawnMonsters", jsonObject, true), JsonUtils.getBooleanOr("spawnNPCs", jsonObject, true), JsonUtils.getIntOr("spawnProtection", jsonObject, 0), JsonUtils.getBooleanOr("commandBlocks", jsonObject, false), JsonUtils.getIntOr("difficulty", jsonObject, 2), JsonUtils.getIntOr("gameMode", jsonObject, 0), JsonUtils.getBooleanOr("forceGameMode", jsonObject, false), JsonUtils.getStringOr("slotName", jsonObject, slotNameDefault));
+        realmsWorldOptions.templateId = JsonUtils.getLongOr("worldTemplateId", jsonObject, -1L);
+        realmsWorldOptions.templateImage = JsonUtils.getStringOr("worldTemplateImage", jsonObject, templateImageDefault);
+        realmsWorldOptions.adventureMap = JsonUtils.getBooleanOr("adventureMap", jsonObject, false);
         return realmsWorldOptions;
     }
 

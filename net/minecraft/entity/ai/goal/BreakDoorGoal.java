@@ -56,13 +56,13 @@ extends DoorInteractGoal {
     @Override
     public void stop() {
         super.stop();
-        this.mob.world.setBlockBreakingProgress(this.mob.getEntityId(), this.doorPos, -1);
+        this.mob.world.setBlockBreakingInfo(this.mob.getEntityId(), this.doorPos, -1);
     }
 
     @Override
     public void tick() {
         super.tick();
-        if (this.mob.getRand().nextInt(20) == 0) {
+        if (this.mob.getRandom().nextInt(20) == 0) {
             this.mob.world.playLevelEvent(1019, this.doorPos, 0);
             if (!this.mob.isHandSwinging) {
                 this.mob.swingHand(this.mob.getActiveHand());
@@ -71,11 +71,11 @@ extends DoorInteractGoal {
         ++this.breakProgress;
         int i = (int)((float)this.breakProgress / (float)this.method_16462() * 10.0f);
         if (i != this.prevBreakProgress) {
-            this.mob.world.setBlockBreakingProgress(this.mob.getEntityId(), this.doorPos, i);
+            this.mob.world.setBlockBreakingInfo(this.mob.getEntityId(), this.doorPos, i);
             this.prevBreakProgress = i;
         }
         if (this.breakProgress == this.method_16462() && this.isDifficultySufficient(this.mob.world.getDifficulty())) {
-            this.mob.world.clearBlockState(this.doorPos, false);
+            this.mob.world.removeBlock(this.doorPos, false);
             this.mob.world.playLevelEvent(1021, this.doorPos, 0);
             this.mob.world.playLevelEvent(2001, this.doorPos, Block.getRawIdFromState(this.mob.world.getBlockState(this.doorPos)));
         }

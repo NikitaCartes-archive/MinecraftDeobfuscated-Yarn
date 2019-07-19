@@ -19,9 +19,9 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.structure.StructureStart;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
-import net.minecraft.world.BlockViewWithStructures;
 import net.minecraft.world.Heightmap;
 import net.minecraft.world.LightType;
+import net.minecraft.world.StructureHolder;
 import net.minecraft.world.TickScheduler;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.chunk.ChunkSection;
@@ -33,7 +33,7 @@ import org.apache.logging.log4j.LogManager;
 import org.jetbrains.annotations.Nullable;
 
 public interface Chunk
-extends BlockViewWithStructures {
+extends StructureHolder {
     @Nullable
     public BlockState setBlockState(BlockPos var1, BlockState var2, boolean var3);
 

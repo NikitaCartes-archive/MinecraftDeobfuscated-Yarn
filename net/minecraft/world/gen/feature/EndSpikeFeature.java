@@ -46,7 +46,8 @@ extends Feature<EndSpikeFeatureConfig> {
         return CACHE.getUnchecked(l);
     }
 
-    public boolean method_15887(IWorld iWorld, ChunkGenerator<? extends ChunkGeneratorConfig> chunkGenerator, Random random, BlockPos blockPos, EndSpikeFeatureConfig endSpikeFeatureConfig) {
+    @Override
+    public boolean generate(IWorld iWorld, ChunkGenerator<? extends ChunkGeneratorConfig> chunkGenerator, Random random, BlockPos blockPos, EndSpikeFeatureConfig endSpikeFeatureConfig) {
         List<Spike> list = endSpikeFeatureConfig.getSpikes();
         if (list.isEmpty()) {
             list = EndSpikeFeature.getSpikes(iWorld);
@@ -92,7 +93,7 @@ extends Feature<EndSpikeFeatureConfig> {
         EnderCrystalEntity enderCrystalEntity = EntityType.END_CRYSTAL.create(iWorld.getWorld());
         enderCrystalEntity.setBeamTarget(endSpikeFeatureConfig.getPos());
         enderCrystalEntity.setInvulnerable(endSpikeFeatureConfig.isCrystalInvulerable());
-        enderCrystalEntity.setPositionAndAngles((float)spike.getCenterX() + 0.5f, spike.getHeight() + 1, (float)spike.getCenterZ() + 0.5f, random.nextFloat() * 360.0f, 0.0f);
+        enderCrystalEntity.refreshPositionAndAngles((float)spike.getCenterX() + 0.5f, spike.getHeight() + 1, (float)spike.getCenterZ() + 0.5f, random.nextFloat() * 360.0f, 0.0f);
         iWorld.spawnEntity(enderCrystalEntity);
         this.setBlockState(iWorld, new BlockPos(spike.getCenterX(), spike.getHeight(), spike.getCenterZ()), Blocks.BEDROCK.getDefaultState());
     }
@@ -102,7 +103,8 @@ extends Feature<EndSpikeFeatureConfig> {
         private SpikeCache() {
         }
 
-        public List<Spike> method_14507(Long long_) {
+        @Override
+        public List<Spike> load(Long long_) {
             List list = IntStream.range(0, 10).boxed().collect(Collectors.toList());
             Collections.shuffle(list, new Random(long_));
             ArrayList<Spike> list2 = Lists.newArrayList();
@@ -120,7 +122,7 @@ extends Feature<EndSpikeFeatureConfig> {
 
         @Override
         public /* synthetic */ Object load(Object object) throws Exception {
-            return this.method_14507((Long)object);
+            return this.load((Long)object);
         }
     }
 

@@ -24,7 +24,8 @@ extends AbstractZombieModel<T> {
         super(f, g, i, j);
     }
 
-    public boolean method_17793(T zombieEntity) {
+    @Override
+    public boolean method_17790(T zombieEntity) {
         return ((MobEntity)zombieEntity).isAttacking();
     }
 }

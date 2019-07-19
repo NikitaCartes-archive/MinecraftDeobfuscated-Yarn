@@ -7,8 +7,8 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BlockEntityType;
-import net.minecraft.client.network.packet.BlockEntityUpdateS2CPacket;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.packet.s2c.play.BlockEntityUpdateS2CPacket;
 import net.minecraft.util.BlockMirror;
 import net.minecraft.util.BlockRotation;
 import net.minecraft.util.Identifier;
@@ -26,10 +26,10 @@ public abstract class BlockEntity {
     @Nullable
     protected World world;
     protected BlockPos pos = BlockPos.ORIGIN;
-    protected boolean invalid;
+    protected boolean removed;
     @Nullable
     private BlockState cachedState;
-    private boolean field_19314;
+    private boolean markedInvalid;
 
     public BlockEntity(BlockEntityType<?> blockEntityType) {
         this.type = blockEntityType;
@@ -135,16 +135,16 @@ public abstract class BlockEntity {
         return this.writeIdentifyingData(new CompoundTag());
     }
 
-    public boolean isInvalid() {
-        return this.invalid;
+    public boolean isRemoved() {
+        return this.removed;
     }
 
-    public void invalidate() {
-        this.invalid = true;
+    public void markRemoved() {
+        this.removed = true;
     }
 
-    public void validate() {
-        this.invalid = false;
+    public void cancelRemoval() {
+        this.removed = false;
     }
 
     public boolean onBlockAction(int i, int j) {
@@ -182,11 +182,11 @@ public abstract class BlockEntity {
         return this.type;
     }
 
-    public void method_20525() {
-        if (this.field_19314) {
+    public void markInvalid() {
+        if (this.markedInvalid) {
             return;
         }
-        this.field_19314 = true;
+        this.markedInvalid = true;
         LOGGER.warn("Block entity invalid: {} @ {}", () -> Registry.BLOCK_ENTITY.getId(this.getType()), this::getPos);
     }
 }

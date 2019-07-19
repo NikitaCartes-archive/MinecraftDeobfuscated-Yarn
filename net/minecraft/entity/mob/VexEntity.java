@@ -105,10 +105,10 @@ extends HostileEntity {
     @Override
     public void readCustomDataFromTag(CompoundTag compoundTag) {
         super.readCustomDataFromTag(compoundTag);
-        if (compoundTag.containsKey("BoundX")) {
+        if (compoundTag.contains("BoundX")) {
             this.bounds = new BlockPos(compoundTag.getInt("BoundX"), compoundTag.getInt("BoundY"), compoundTag.getInt("BoundZ"));
         }
-        if (compoundTag.containsKey("LifeTicks")) {
+        if (compoundTag.contains("LifeTicks")) {
             this.setLifeTicks(compoundTag.getInt("LifeTicks"));
         }
     }
@@ -203,7 +203,7 @@ extends HostileEntity {
 
     @Override
     protected void initEquipment(LocalDifficulty localDifficulty) {
-        this.setEquippedStack(EquipmentSlot.MAINHAND, new ItemStack(Items.IRON_SWORD));
+        this.equipStack(EquipmentSlot.MAINHAND, new ItemStack(Items.IRON_SWORD));
         this.setEquipmentDropChance(EquipmentSlot.MAINHAND, 0.0f);
     }
 
@@ -323,7 +323,7 @@ extends HostileEntity {
             }
             Vec3d vec3d = new Vec3d(this.targetX - VexEntity.this.x, this.targetY - VexEntity.this.y, this.targetZ - VexEntity.this.z);
             double d = vec3d.length();
-            if (d < VexEntity.this.getBoundingBox().averageDimension()) {
+            if (d < VexEntity.this.getBoundingBox().getAverageSideLength()) {
                 this.state = MoveControl.State.WAIT;
                 VexEntity.this.setVelocity(VexEntity.this.getVelocity().multiply(0.5));
             } else {

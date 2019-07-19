@@ -39,7 +39,8 @@ implements ArgumentType<GameProfileArgument> {
         return new GameProfileArgumentType();
     }
 
-    public GameProfileArgument method_9331(StringReader stringReader) throws CommandSyntaxException {
+    @Override
+    public GameProfileArgument parse(StringReader stringReader) throws CommandSyntaxException {
         if (stringReader.canRead() && stringReader.peek() == '@') {
             EntitySelectorReader entitySelectorReader = new EntitySelectorReader(stringReader);
             EntitySelector entitySelector = entitySelectorReader.read();
@@ -85,7 +86,7 @@ implements ArgumentType<GameProfileArgument> {
 
     @Override
     public /* synthetic */ Object parse(StringReader stringReader) throws CommandSyntaxException {
-        return this.method_9331(stringReader);
+        return this.parse(stringReader);
     }
 
     public static class class_2193

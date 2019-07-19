@@ -8,15 +8,15 @@ import java.util.List;
 import java.util.Random;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.client.model.Cuboid;
+import net.minecraft.client.model.ModelPart;
 
 @Environment(value=EnvType.CLIENT)
 public class Model {
-    public final List<Cuboid> cuboidList = Lists.newArrayList();
+    public final List<ModelPart> cuboidList = Lists.newArrayList();
     public int textureWidth = 64;
     public int textureHeight = 32;
 
-    public Cuboid getRandomCuboid(Random random) {
+    public ModelPart getRandomCuboid(Random random) {
         return this.cuboidList.get(random.nextInt(this.cuboidList.size()));
     }
 }

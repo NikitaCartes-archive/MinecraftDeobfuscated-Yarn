@@ -25,7 +25,7 @@ public class LocalDifficulty {
         return this.localDifficulty;
     }
 
-    public boolean method_5455(float f) {
+    public boolean isHarderThan(float f) {
         return this.localDifficulty > f;
     }
 

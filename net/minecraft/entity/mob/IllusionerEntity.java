@@ -91,7 +91,7 @@ implements RangedAttackMob {
 
     @Override
     public EntityData initialize(IWorld iWorld, LocalDifficulty localDifficulty, SpawnType spawnType, @Nullable EntityData entityData, @Nullable CompoundTag compoundTag) {
-        this.setEquippedStack(EquipmentSlot.MAINHAND, new ItemStack(Items.BOW));
+        this.equipStack(EquipmentSlot.MAINHAND, new ItemStack(Items.BOW));
         return super.initialize(iWorld, localDifficulty, spawnType, entityData, compoundTag);
     }
 
@@ -196,11 +196,11 @@ implements RangedAttackMob {
         ItemStack itemStack = this.getArrowType(this.getStackInHand(ProjectileUtil.getHandPossiblyHolding(this, Items.BOW)));
         ProjectileEntity projectileEntity = ProjectileUtil.createArrowProjectile(this, itemStack, f);
         double d = livingEntity.x - this.x;
-        double e = livingEntity.getBoundingBox().minY + (double)(livingEntity.getHeight() / 3.0f) - projectileEntity.y;
+        double e = livingEntity.getBoundingBox().y1 + (double)(livingEntity.getHeight() / 3.0f) - projectileEntity.y;
         double g = livingEntity.z - this.z;
         double h = MathHelper.sqrt(d * d + g * g);
         projectileEntity.setVelocity(d, e + h * (double)0.2f, g, 1.6f, 14 - this.world.getDifficulty().getId() * 4);
-        this.playSound(SoundEvents.ENTITY_SKELETON_SHOOT, 1.0f, 1.0f / (this.getRand().nextFloat() * 0.4f + 0.8f));
+        this.playSound(SoundEvents.ENTITY_SKELETON_SHOOT, 1.0f, 1.0f / (this.getRandom().nextFloat() * 0.4f + 0.8f));
         this.world.spawnEntity(projectileEntity);
     }
 
@@ -235,7 +235,7 @@ implements RangedAttackMob {
             if (IllusionerEntity.this.getTarget().getEntityId() == this.targetId) {
                 return false;
             }
-            return IllusionerEntity.this.world.getLocalDifficulty(new BlockPos(IllusionerEntity.this)).method_5455(Difficulty.NORMAL.ordinal());
+            return IllusionerEntity.this.world.getLocalDifficulty(new BlockPos(IllusionerEntity.this)).isHarderThan(Difficulty.NORMAL.ordinal());
         }
 
         @Override
@@ -256,7 +256,7 @@ implements RangedAttackMob {
 
         @Override
         protected void castSpell() {
-            IllusionerEntity.this.getTarget().addPotionEffect(new StatusEffectInstance(StatusEffects.BLINDNESS, 400));
+            IllusionerEntity.this.getTarget().addStatusEffect(new StatusEffectInstance(StatusEffects.BLINDNESS, 400));
         }
 
         @Override
@@ -296,7 +296,7 @@ implements RangedAttackMob {
 
         @Override
         protected void castSpell() {
-            IllusionerEntity.this.addPotionEffect(new StatusEffectInstance(StatusEffects.INVISIBILITY, 1200));
+            IllusionerEntity.this.addStatusEffect(new StatusEffectInstance(StatusEffects.INVISIBILITY, 1200));
         }
 
         @Override

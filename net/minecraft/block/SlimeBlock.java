@@ -4,8 +4,8 @@
 package net.minecraft.block;
 
 import net.minecraft.block.Block;
-import net.minecraft.block.BlockRenderLayer;
 import net.minecraft.block.TransparentBlock;
+import net.minecraft.client.render.RenderLayer;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.util.math.BlockPos;
@@ -20,8 +20,8 @@ extends TransparentBlock {
     }
 
     @Override
-    public BlockRenderLayer getRenderLayer() {
-        return BlockRenderLayer.TRANSLUCENT;
+    public RenderLayer getRenderLayer() {
+        return RenderLayer.TRANSLUCENT;
     }
 
     @Override

@@ -59,14 +59,15 @@ extends AnimatedParticle {
     @Environment(value=EnvType.CLIENT)
     public static class Factory
     implements ParticleFactory<DefaultParticleType> {
-        private final SpriteProvider field_17878;
+        private final SpriteProvider spriteProvider;
 
         public Factory(SpriteProvider spriteProvider) {
-            this.field_17878 = spriteProvider;
+            this.spriteProvider = spriteProvider;
         }
 
-        public Particle method_3105(DefaultParticleType defaultParticleType, World world, double d, double e, double f, double g, double h, double i) {
-            return new SquidInkParticle(world, d, e, f, g, h, i, this.field_17878);
+        @Override
+        public Particle createParticle(DefaultParticleType defaultParticleType, World world, double d, double e, double f, double g, double h, double i) {
+            return new SquidInkParticle(world, d, e, f, g, h, i, this.spriteProvider);
         }
     }
 }

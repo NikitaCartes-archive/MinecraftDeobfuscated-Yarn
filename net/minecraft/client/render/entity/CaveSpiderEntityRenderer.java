@@ -21,11 +21,13 @@ extends SpiderEntityRenderer<CaveSpiderEntity> {
         this.field_4673 *= 0.7f;
     }
 
-    protected void method_3886(CaveSpiderEntity caveSpiderEntity, float f) {
+    @Override
+    protected void scale(CaveSpiderEntity caveSpiderEntity, float f) {
         GlStateManager.scalef(0.7f, 0.7f, 0.7f);
     }
 
-    protected Identifier method_3885(CaveSpiderEntity caveSpiderEntity) {
+    @Override
+    protected Identifier getTexture(CaveSpiderEntity caveSpiderEntity) {
         return SKIN;
     }
 }

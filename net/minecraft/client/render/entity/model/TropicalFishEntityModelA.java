@@ -5,7 +5,7 @@ package net.minecraft.client.render.entity.model;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.client.model.Cuboid;
+import net.minecraft.client.model.ModelPart;
 import net.minecraft.client.render.entity.model.EntityModel;
 import net.minecraft.entity.Entity;
 import net.minecraft.util.math.MathHelper;
@@ -13,11 +13,11 @@ import net.minecraft.util.math.MathHelper;
 @Environment(value=EnvType.CLIENT)
 public class TropicalFishEntityModelA<T extends Entity>
 extends EntityModel<T> {
-    private final Cuboid field_3589;
-    private final Cuboid field_3591;
-    private final Cuboid field_3590;
-    private final Cuboid field_3588;
-    private final Cuboid field_3587;
+    private final ModelPart field_3589;
+    private final ModelPart field_3591;
+    private final ModelPart field_3590;
+    private final ModelPart field_3588;
+    private final ModelPart field_3587;
 
     public TropicalFishEntityModelA() {
         this(0.0f);
@@ -27,23 +27,23 @@ extends EntityModel<T> {
         this.textureWidth = 32;
         this.textureHeight = 32;
         int i = 22;
-        this.field_3589 = new Cuboid(this, 0, 0);
-        this.field_3589.addBox(-1.0f, -1.5f, -3.0f, 2, 3, 6, f);
-        this.field_3589.setRotationPoint(0.0f, 22.0f, 0.0f);
-        this.field_3591 = new Cuboid(this, 22, -6);
-        this.field_3591.addBox(0.0f, -1.5f, 0.0f, 0, 3, 6, f);
-        this.field_3591.setRotationPoint(0.0f, 22.0f, 3.0f);
-        this.field_3590 = new Cuboid(this, 2, 16);
-        this.field_3590.addBox(-2.0f, -1.0f, 0.0f, 2, 2, 0, f);
-        this.field_3590.setRotationPoint(-1.0f, 22.5f, 0.0f);
+        this.field_3589 = new ModelPart(this, 0, 0);
+        this.field_3589.addCuboid(-1.0f, -1.5f, -3.0f, 2, 3, 6, f);
+        this.field_3589.setPivot(0.0f, 22.0f, 0.0f);
+        this.field_3591 = new ModelPart(this, 22, -6);
+        this.field_3591.addCuboid(0.0f, -1.5f, 0.0f, 0, 3, 6, f);
+        this.field_3591.setPivot(0.0f, 22.0f, 3.0f);
+        this.field_3590 = new ModelPart(this, 2, 16);
+        this.field_3590.addCuboid(-2.0f, -1.0f, 0.0f, 2, 2, 0, f);
+        this.field_3590.setPivot(-1.0f, 22.5f, 0.0f);
         this.field_3590.yaw = 0.7853982f;
-        this.field_3588 = new Cuboid(this, 2, 12);
-        this.field_3588.addBox(0.0f, -1.0f, 0.0f, 2, 2, 0, f);
-        this.field_3588.setRotationPoint(1.0f, 22.5f, 0.0f);
+        this.field_3588 = new ModelPart(this, 2, 12);
+        this.field_3588.addCuboid(0.0f, -1.0f, 0.0f, 2, 2, 0, f);
+        this.field_3588.setPivot(1.0f, 22.5f, 0.0f);
         this.field_3588.yaw = -0.7853982f;
-        this.field_3587 = new Cuboid(this, 10, -5);
-        this.field_3587.addBox(0.0f, -3.0f, 0.0f, 0, 3, 6, f);
-        this.field_3587.setRotationPoint(0.0f, 20.5f, -3.0f);
+        this.field_3587 = new ModelPart(this, 10, -5);
+        this.field_3587.addCuboid(0.0f, -3.0f, 0.0f, 0, 3, 6, f);
+        this.field_3587.setPivot(0.0f, 20.5f, -3.0f);
     }
 
     @Override
@@ -59,7 +59,7 @@ extends EntityModel<T> {
     @Override
     public void setAngles(T entity, float f, float g, float h, float i, float j, float k) {
         float l = 1.0f;
-        if (!((Entity)entity).isInsideWater()) {
+        if (!((Entity)entity).isTouchingWater()) {
             l = 1.5f;
         }
         this.field_3591.yaw = -l * 0.45f * MathHelper.sin(0.6f * h);

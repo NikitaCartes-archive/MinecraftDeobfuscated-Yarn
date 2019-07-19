@@ -14,7 +14,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.math.Vec3i;
-import net.minecraft.world.ViewableWorld;
+import net.minecraft.world.CollisionView;
 
 public class BreatheAirGoal
 extends Goal {
@@ -27,7 +27,7 @@ extends Goal {
 
     @Override
     public boolean canStart() {
-        return this.mob.getBreath() < 140;
+        return this.mob.getAir() < 140;
     }
 
     @Override
@@ -66,9 +66,9 @@ extends Goal {
         this.mob.move(MovementType.SELF, this.mob.getVelocity());
     }
 
-    private boolean isAirPos(ViewableWorld viewableWorld, BlockPos blockPos) {
-        BlockState blockState = viewableWorld.getBlockState(blockPos);
-        return (viewableWorld.getFluidState(blockPos).isEmpty() || blockState.getBlock() == Blocks.BUBBLE_COLUMN) && blockState.canPlaceAtSide(viewableWorld, blockPos, BlockPlacementEnvironment.LAND);
+    private boolean isAirPos(CollisionView collisionView, BlockPos blockPos) {
+        BlockState blockState = collisionView.getBlockState(blockPos);
+        return (collisionView.getFluidState(blockPos).isEmpty() || blockState.getBlock() == Blocks.BUBBLE_COLUMN) && blockState.canPlaceAtSide(collisionView, blockPos, BlockPlacementEnvironment.LAND);
     }
 }
 

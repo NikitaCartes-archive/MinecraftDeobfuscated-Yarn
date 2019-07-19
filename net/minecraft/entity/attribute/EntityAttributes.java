@@ -66,7 +66,7 @@ public class EntityAttributes {
 
     public static void fromTag(AbstractEntityAttributeContainer abstractEntityAttributeContainer, ListTag listTag) {
         for (int i = 0; i < listTag.size(); ++i) {
-            CompoundTag compoundTag = listTag.getCompoundTag(i);
+            CompoundTag compoundTag = listTag.getCompound(i);
             EntityAttributeInstance entityAttributeInstance = abstractEntityAttributeContainer.get(compoundTag.getString("Name"));
             if (entityAttributeInstance == null) {
                 LOGGER.warn("Ignoring unknown attribute '{}'", (Object)compoundTag.getString("Name"));
@@ -78,10 +78,10 @@ public class EntityAttributes {
 
     private static void fromTag(EntityAttributeInstance entityAttributeInstance, CompoundTag compoundTag) {
         entityAttributeInstance.setBaseValue(compoundTag.getDouble("Base"));
-        if (compoundTag.containsKey("Modifiers", 9)) {
+        if (compoundTag.contains("Modifiers", 9)) {
             ListTag listTag = compoundTag.getList("Modifiers", 10);
             for (int i = 0; i < listTag.size(); ++i) {
-                EntityAttributeModifier entityAttributeModifier = EntityAttributes.createFromTag(listTag.getCompoundTag(i));
+                EntityAttributeModifier entityAttributeModifier = EntityAttributes.createFromTag(listTag.getCompound(i));
                 if (entityAttributeModifier == null) continue;
                 EntityAttributeModifier entityAttributeModifier2 = entityAttributeInstance.getModifier(entityAttributeModifier.getId());
                 if (entityAttributeModifier2 != null) {

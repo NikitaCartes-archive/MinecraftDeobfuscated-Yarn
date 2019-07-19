@@ -16,8 +16,8 @@ import net.fabricmc.api.Environment;
 import net.minecraft.resource.ResourceManager;
 import net.minecraft.resource.ResourceReloadListener;
 import net.minecraft.resource.ResourceReloadMonitor;
-import net.minecraft.util.SystemUtil;
 import net.minecraft.util.Unit;
+import net.minecraft.util.Util;
 import net.minecraft.util.profiler.DummyProfiler;
 
 public class ResourceReloader<S>
@@ -74,7 +74,7 @@ implements ResourceReloadMonitor {
             list2.add(completableFuture4);
             completableFuture2 = completableFuture4;
         }
-        this.applyStageFuture = SystemUtil.thenCombine(list2);
+        this.applyStageFuture = Util.combine(list2);
     }
 
     @Override
@@ -93,7 +93,7 @@ implements ResourceReloadMonitor {
 
     @Override
     @Environment(value=EnvType.CLIENT)
-    public boolean isLoadStageComplete() {
+    public boolean isPrepareStageComplete() {
         return this.prepareStageFuture.isDone();
     }
 

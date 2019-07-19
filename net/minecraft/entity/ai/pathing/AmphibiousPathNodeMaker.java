@@ -6,10 +6,10 @@ package net.minecraft.entity.ai.pathing;
 import net.minecraft.block.AbstractRailBlock;
 import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
-import net.minecraft.class_4459;
 import net.minecraft.entity.ai.pathing.LandPathNodeMaker;
 import net.minecraft.entity.ai.pathing.PathNode;
 import net.minecraft.entity.ai.pathing.PathNodeType;
+import net.minecraft.entity.ai.pathing.TargetPathNode;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
@@ -17,7 +17,7 @@ import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.world.BlockView;
-import net.minecraft.world.ViewableWorld;
+import net.minecraft.world.CollisionView;
 import org.jetbrains.annotations.Nullable;
 
 public class AmphibiousPathNodeMaker
@@ -26,34 +26,34 @@ extends LandPathNodeMaker {
     private float field_64;
 
     @Override
-    public void init(ViewableWorld viewableWorld, MobEntity mobEntity) {
-        super.init(viewableWorld, mobEntity);
-        mobEntity.setPathNodeTypeWeight(PathNodeType.WATER, 0.0f);
-        this.field_65 = mobEntity.getPathNodeTypeWeight(PathNodeType.WALKABLE);
-        mobEntity.setPathNodeTypeWeight(PathNodeType.WALKABLE, 6.0f);
-        this.field_64 = mobEntity.getPathNodeTypeWeight(PathNodeType.WATER_BORDER);
-        mobEntity.setPathNodeTypeWeight(PathNodeType.WATER_BORDER, 4.0f);
+    public void init(CollisionView collisionView, MobEntity mobEntity) {
+        super.init(collisionView, mobEntity);
+        mobEntity.setPathfindingPenalty(PathNodeType.WATER, 0.0f);
+        this.field_65 = mobEntity.getPathfindingPenalty(PathNodeType.WALKABLE);
+        mobEntity.setPathfindingPenalty(PathNodeType.WALKABLE, 6.0f);
+        this.field_64 = mobEntity.getPathfindingPenalty(PathNodeType.WATER_BORDER);
+        mobEntity.setPathfindingPenalty(PathNodeType.WATER_BORDER, 4.0f);
     }
 
     @Override
     public void clear() {
-        this.entity.setPathNodeTypeWeight(PathNodeType.WALKABLE, this.field_65);
-        this.entity.setPathNodeTypeWeight(PathNodeType.WATER_BORDER, this.field_64);
+        this.entity.setPathfindingPenalty(PathNodeType.WALKABLE, this.field_65);
+        this.entity.setPathfindingPenalty(PathNodeType.WATER_BORDER, this.field_64);
         super.clear();
     }
 
     @Override
     public PathNode getStart() {
-        return this.getPathNode(MathHelper.floor(this.entity.getBoundingBox().minX), MathHelper.floor(this.entity.getBoundingBox().minY + 0.5), MathHelper.floor(this.entity.getBoundingBox().minZ));
+        return this.getNode(MathHelper.floor(this.entity.getBoundingBox().x1), MathHelper.floor(this.entity.getBoundingBox().y1 + 0.5), MathHelper.floor(this.entity.getBoundingBox().z1));
     }
 
     @Override
-    public class_4459 getPathNode(double d, double e, double f) {
-        return new class_4459(this.getPathNode(MathHelper.floor(d), MathHelper.floor(e + 0.5), MathHelper.floor(f)));
+    public TargetPathNode getNode(double d, double e, double f) {
+        return new TargetPathNode(this.getNode(MathHelper.floor(d), MathHelper.floor(e + 0.5), MathHelper.floor(f)));
     }
 
     @Override
-    public int getPathNodes(PathNode[] pathNodes, PathNode pathNode) {
+    public int getSuccessors(PathNode[] pathNodes, PathNode pathNode) {
         PathNode pathNode8;
         boolean bl4;
         int i = 0;
@@ -104,7 +104,7 @@ extends LandPathNodeMaker {
     }
 
     private double method_66(BlockPos blockPos) {
-        if (!this.entity.isInsideWater()) {
+        if (!this.entity.isTouchingWater()) {
             BlockPos blockPos2 = blockPos.down();
             VoxelShape voxelShape = this.blockView.getBlockState(blockPos2).getCollisionShape(this.blockView, blockPos2);
             return (double)blockPos2.getY() + (voxelShape.isEmpty() ? 0.0 : voxelShape.getMaximum(Direction.Axis.Y));
@@ -120,11 +120,11 @@ extends LandPathNodeMaker {
         if (e - d > 1.125) {
             return null;
         }
-        PathNodeType pathNodeType = this.getPathNodeType(this.blockView, i, j, k, this.entity, this.field_31, this.field_30, this.field_28, false, false);
-        float f = this.entity.getPathNodeTypeWeight(pathNodeType);
+        PathNodeType pathNodeType = this.getNodeType(this.blockView, i, j, k, this.entity, this.field_31, this.field_30, this.field_28, false, false);
+        float f = this.entity.getPathfindingPenalty(pathNodeType);
         double g = (double)this.entity.getWidth() / 2.0;
         if (f >= 0.0f) {
-            pathNode = this.getPathNode(i, j, k);
+            pathNode = this.getNode(i, j, k);
             pathNode.type = pathNodeType;
             pathNode.field_43 = Math.max(pathNode.field_43, f);
         }
@@ -142,15 +142,15 @@ extends LandPathNodeMaker {
             if (!this.entity.world.doesNotCollide(this.entity, box)) {
                 return null;
             }
-            PathNodeType pathNodeType2 = this.getPathNodeType(this.blockView, i, j - 1, k, this.entity, this.field_31, this.field_30, this.field_28, false, false);
+            PathNodeType pathNodeType2 = this.getNodeType(this.blockView, i, j - 1, k, this.entity, this.field_31, this.field_30, this.field_28, false, false);
             if (pathNodeType2 == PathNodeType.BLOCKED) {
-                pathNode = this.getPathNode(i, j, k);
+                pathNode = this.getNode(i, j, k);
                 pathNode.type = PathNodeType.WALKABLE;
                 pathNode.field_43 = Math.max(pathNode.field_43, f);
                 return pathNode;
             }
             if (pathNodeType2 == PathNodeType.WATER) {
-                pathNode = this.getPathNode(i, j, k);
+                pathNode = this.getNode(i, j, k);
                 pathNode.type = PathNodeType.WATER;
                 pathNode.field_43 = Math.max(pathNode.field_43, f);
                 return pathNode;
@@ -161,10 +161,10 @@ extends LandPathNodeMaker {
                 if (m++ >= this.entity.getSafeFallDistance()) {
                     return null;
                 }
-                pathNodeType = this.getPathNodeType(this.blockView, i, j, k, this.entity, this.field_31, this.field_30, this.field_28, false, false);
-                f = this.entity.getPathNodeTypeWeight(pathNodeType);
+                pathNodeType = this.getNodeType(this.blockView, i, j, k, this.entity, this.field_31, this.field_30, this.field_28, false, false);
+                f = this.entity.getPathfindingPenalty(pathNodeType);
                 if (pathNodeType != PathNodeType.OPEN && f >= 0.0f) {
-                    pathNode = this.getPathNode(i, j, k);
+                    pathNode = this.getNode(i, j, k);
                     pathNode.type = pathNodeType;
                     pathNode.field_43 = Math.max(pathNode.field_43, f);
                     break;
@@ -191,7 +191,7 @@ extends LandPathNodeMaker {
     }
 
     @Override
-    public PathNodeType getPathNodeType(BlockView blockView, int i, int j, int k) {
+    public PathNodeType getNodeType(BlockView blockView, int i, int j, int k) {
         PathNodeType pathNodeType = this.getBasicPathNodeType(blockView, i, j, k);
         if (pathNodeType == PathNodeType.WATER) {
             for (Direction direction : Direction.values()) {

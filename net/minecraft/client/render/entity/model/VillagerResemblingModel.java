@@ -5,7 +5,7 @@ package net.minecraft.client.render.entity.model;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.client.model.Cuboid;
+import net.minecraft.client.model.ModelPart;
 import net.minecraft.client.render.entity.model.EntityModel;
 import net.minecraft.client.render.entity.model.ModelWithHat;
 import net.minecraft.client.render.entity.model.ModelWithHead;
@@ -18,15 +18,15 @@ public class VillagerResemblingModel<T extends Entity>
 extends EntityModel<T>
 implements ModelWithHead,
 ModelWithHat {
-    protected final Cuboid head;
-    protected Cuboid headOverlay;
-    protected final Cuboid hat;
-    protected final Cuboid body;
-    protected final Cuboid robe;
-    protected final Cuboid arms;
-    protected final Cuboid leftLeg;
-    protected final Cuboid rightLeg;
-    protected final Cuboid nose;
+    protected final ModelPart head;
+    protected ModelPart headOverlay;
+    protected final ModelPart hat;
+    protected final ModelPart torso;
+    protected final ModelPart robe;
+    protected final ModelPart arms;
+    protected final ModelPart rightLeg;
+    protected final ModelPart leftLeg;
+    protected final ModelPart nose;
 
     public VillagerResemblingModel(float f) {
         this(f, 64, 64);
@@ -34,50 +34,50 @@ ModelWithHat {
 
     public VillagerResemblingModel(float f, int i, int j) {
         float g = 0.5f;
-        this.head = new Cuboid(this).setTextureSize(i, j);
-        this.head.setRotationPoint(0.0f, 0.0f, 0.0f);
-        this.head.setTextureOffset(0, 0).addBox(-4.0f, -10.0f, -4.0f, 8, 10, 8, f);
-        this.headOverlay = new Cuboid(this).setTextureSize(i, j);
-        this.headOverlay.setRotationPoint(0.0f, 0.0f, 0.0f);
-        this.headOverlay.setTextureOffset(32, 0).addBox(-4.0f, -10.0f, -4.0f, 8, 10, 8, f + 0.5f);
+        this.head = new ModelPart(this).setTextureSize(i, j);
+        this.head.setPivot(0.0f, 0.0f, 0.0f);
+        this.head.setTextureOffset(0, 0).addCuboid(-4.0f, -10.0f, -4.0f, 8, 10, 8, f);
+        this.headOverlay = new ModelPart(this).setTextureSize(i, j);
+        this.headOverlay.setPivot(0.0f, 0.0f, 0.0f);
+        this.headOverlay.setTextureOffset(32, 0).addCuboid(-4.0f, -10.0f, -4.0f, 8, 10, 8, f + 0.5f);
         this.head.addChild(this.headOverlay);
-        this.hat = new Cuboid(this).setTextureSize(i, j);
-        this.hat.setRotationPoint(0.0f, 0.0f, 0.0f);
-        this.hat.setTextureOffset(30, 47).addBox(-8.0f, -8.0f, -6.0f, 16, 16, 1, f);
+        this.hat = new ModelPart(this).setTextureSize(i, j);
+        this.hat.setPivot(0.0f, 0.0f, 0.0f);
+        this.hat.setTextureOffset(30, 47).addCuboid(-8.0f, -8.0f, -6.0f, 16, 16, 1, f);
         this.hat.pitch = -1.5707964f;
         this.headOverlay.addChild(this.hat);
-        this.nose = new Cuboid(this).setTextureSize(i, j);
-        this.nose.setRotationPoint(0.0f, -2.0f, 0.0f);
-        this.nose.setTextureOffset(24, 0).addBox(-1.0f, -1.0f, -6.0f, 2, 4, 2, f);
+        this.nose = new ModelPart(this).setTextureSize(i, j);
+        this.nose.setPivot(0.0f, -2.0f, 0.0f);
+        this.nose.setTextureOffset(24, 0).addCuboid(-1.0f, -1.0f, -6.0f, 2, 4, 2, f);
         this.head.addChild(this.nose);
-        this.body = new Cuboid(this).setTextureSize(i, j);
-        this.body.setRotationPoint(0.0f, 0.0f, 0.0f);
-        this.body.setTextureOffset(16, 20).addBox(-4.0f, 0.0f, -3.0f, 8, 12, 6, f);
-        this.robe = new Cuboid(this).setTextureSize(i, j);
-        this.robe.setRotationPoint(0.0f, 0.0f, 0.0f);
-        this.robe.setTextureOffset(0, 38).addBox(-4.0f, 0.0f, -3.0f, 8, 18, 6, f + 0.5f);
-        this.body.addChild(this.robe);
-        this.arms = new Cuboid(this).setTextureSize(i, j);
-        this.arms.setRotationPoint(0.0f, 2.0f, 0.0f);
-        this.arms.setTextureOffset(44, 22).addBox(-8.0f, -2.0f, -2.0f, 4, 8, 4, f);
-        this.arms.setTextureOffset(44, 22).addBox(4.0f, -2.0f, -2.0f, 4, 8, 4, f, true);
-        this.arms.setTextureOffset(40, 38).addBox(-4.0f, 2.0f, -2.0f, 8, 4, 4, f);
-        this.leftLeg = new Cuboid(this, 0, 22).setTextureSize(i, j);
-        this.leftLeg.setRotationPoint(-2.0f, 12.0f, 0.0f);
-        this.leftLeg.addBox(-2.0f, 0.0f, -2.0f, 4, 12, 4, f);
-        this.rightLeg = new Cuboid(this, 0, 22).setTextureSize(i, j);
-        this.rightLeg.mirror = true;
-        this.rightLeg.setRotationPoint(2.0f, 12.0f, 0.0f);
-        this.rightLeg.addBox(-2.0f, 0.0f, -2.0f, 4, 12, 4, f);
+        this.torso = new ModelPart(this).setTextureSize(i, j);
+        this.torso.setPivot(0.0f, 0.0f, 0.0f);
+        this.torso.setTextureOffset(16, 20).addCuboid(-4.0f, 0.0f, -3.0f, 8, 12, 6, f);
+        this.robe = new ModelPart(this).setTextureSize(i, j);
+        this.robe.setPivot(0.0f, 0.0f, 0.0f);
+        this.robe.setTextureOffset(0, 38).addCuboid(-4.0f, 0.0f, -3.0f, 8, 18, 6, f + 0.5f);
+        this.torso.addChild(this.robe);
+        this.arms = new ModelPart(this).setTextureSize(i, j);
+        this.arms.setPivot(0.0f, 2.0f, 0.0f);
+        this.arms.setTextureOffset(44, 22).addCuboid(-8.0f, -2.0f, -2.0f, 4, 8, 4, f);
+        this.arms.setTextureOffset(44, 22).addCuboid(4.0f, -2.0f, -2.0f, 4, 8, 4, f, true);
+        this.arms.setTextureOffset(40, 38).addCuboid(-4.0f, 2.0f, -2.0f, 8, 4, 4, f);
+        this.rightLeg = new ModelPart(this, 0, 22).setTextureSize(i, j);
+        this.rightLeg.setPivot(-2.0f, 12.0f, 0.0f);
+        this.rightLeg.addCuboid(-2.0f, 0.0f, -2.0f, 4, 12, 4, f);
+        this.leftLeg = new ModelPart(this, 0, 22).setTextureSize(i, j);
+        this.leftLeg.mirror = true;
+        this.leftLeg.setPivot(2.0f, 12.0f, 0.0f);
+        this.leftLeg.addCuboid(-2.0f, 0.0f, -2.0f, 4, 12, 4, f);
     }
 
     @Override
     public void render(T entity, float f, float g, float h, float i, float j, float k) {
         this.setAngles(entity, f, g, h, i, j, k);
         this.head.render(k);
-        this.body.render(k);
-        this.leftLeg.render(k);
+        this.torso.render(k);
         this.rightLeg.render(k);
+        this.leftLeg.render(k);
         this.arms.render(k);
     }
 
@@ -95,17 +95,17 @@ ModelWithHat {
         } else {
             this.head.roll = 0.0f;
         }
-        this.arms.rotationPointY = 3.0f;
-        this.arms.rotationPointZ = -1.0f;
+        this.arms.pivotY = 3.0f;
+        this.arms.pivotZ = -1.0f;
         this.arms.pitch = -0.75f;
-        this.leftLeg.pitch = MathHelper.cos(f * 0.6662f) * 1.4f * g * 0.5f;
-        this.rightLeg.pitch = MathHelper.cos(f * 0.6662f + (float)Math.PI) * 1.4f * g * 0.5f;
-        this.leftLeg.yaw = 0.0f;
+        this.rightLeg.pitch = MathHelper.cos(f * 0.6662f) * 1.4f * g * 0.5f;
+        this.leftLeg.pitch = MathHelper.cos(f * 0.6662f + (float)Math.PI) * 1.4f * g * 0.5f;
         this.rightLeg.yaw = 0.0f;
+        this.leftLeg.yaw = 0.0f;
     }
 
     @Override
-    public Cuboid getHead() {
+    public ModelPart getHead() {
         return this.head;
     }
 

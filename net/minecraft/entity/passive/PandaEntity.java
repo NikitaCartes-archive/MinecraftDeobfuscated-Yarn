@@ -267,7 +267,7 @@ extends AnimalEntity {
     protected void initAttributes() {
         super.initAttributes();
         this.getAttributeInstance(EntityAttributes.MOVEMENT_SPEED).setBaseValue(0.15f);
-        this.getAttributeContainer().register(EntityAttributes.ATTACK_DAMAGE).setBaseValue(6.0);
+        this.getAttributes().register(EntityAttributes.ATTACK_DAMAGE).setBaseValue(6.0);
     }
 
     public Gene getProductGene() {
@@ -313,7 +313,7 @@ extends AnimalEntity {
     public void tick() {
         super.tick();
         if (this.isWorried()) {
-            if (this.world.isThundering() && !this.isInsideWater()) {
+            if (this.world.isThundering() && !this.isTouchingWater()) {
                 this.setScared(true);
                 this.setEating(false);
             } else if (!this.isEating()) {
@@ -371,7 +371,7 @@ extends AnimalEntity {
             if (!this.world.isClient && this.getEatingTicks() > 80 && this.random.nextInt(20) == 1) {
                 if (this.getEatingTicks() > 100 && this.canEat(this.getEquippedStack(EquipmentSlot.MAINHAND))) {
                     if (!this.world.isClient) {
-                        this.setEquippedStack(EquipmentSlot.MAINHAND, ItemStack.EMPTY);
+                        this.equipStack(EquipmentSlot.MAINHAND, ItemStack.EMPTY);
                     }
                     this.setScared(false);
                 }
@@ -453,9 +453,9 @@ extends AnimalEntity {
         Vec3d vec3d = this.getVelocity();
         this.world.addParticle(ParticleTypes.SNEEZE, this.x - (double)(this.getWidth() + 1.0f) * 0.5 * (double)MathHelper.sin(this.field_6283 * ((float)Math.PI / 180)), this.y + (double)this.getStandingEyeHeight() - (double)0.1f, this.z + (double)(this.getWidth() + 1.0f) * 0.5 * (double)MathHelper.cos(this.field_6283 * ((float)Math.PI / 180)), vec3d.x, 0.0, vec3d.z);
         this.playSound(SoundEvents.ENTITY_PANDA_SNEEZE, 1.0f, 1.0f);
-        List<PandaEntity> list = this.world.getEntities(PandaEntity.class, this.getBoundingBox().expand(10.0));
+        List<PandaEntity> list = this.world.getNonSpectatingEntities(PandaEntity.class, this.getBoundingBox().expand(10.0));
         for (PandaEntity pandaEntity : list) {
-            if (pandaEntity.isBaby() || !pandaEntity.onGround || pandaEntity.isInsideWater() || !pandaEntity.method_18442()) continue;
+            if (pandaEntity.isBaby() || !pandaEntity.onGround || pandaEntity.isTouchingWater() || !pandaEntity.method_18442()) continue;
             pandaEntity.jump();
         }
         if (!this.world.isClient() && this.random.nextInt(700) == 0 && this.world.getGameRules().getBoolean(GameRules.DO_MOB_LOOT)) {
@@ -467,7 +467,7 @@ extends AnimalEntity {
     protected void loot(ItemEntity itemEntity) {
         if (this.getEquippedStack(EquipmentSlot.MAINHAND).isEmpty() && IS_FOOD.test(itemEntity)) {
             ItemStack itemStack = itemEntity.getStack();
-            this.setEquippedStack(EquipmentSlot.MAINHAND, itemStack);
+            this.equipStack(EquipmentSlot.MAINHAND, itemStack);
             this.handDropChances[EquipmentSlot.MAINHAND.getEntitySlotId()] = 2.0f;
             this.sendPickup(itemEntity, itemStack.getCount());
             itemEntity.remove();
@@ -538,7 +538,7 @@ extends AnimalEntity {
     }
 
     private void stop() {
-        if (!this.isInsideWater()) {
+        if (!this.isTouchingWater()) {
             this.setForwardSpeed(0.0f);
             this.getNavigation().stop();
             this.setScared(true);
@@ -568,14 +568,14 @@ extends AnimalEntity {
             } else if (!this.world.isClient && this.getBreedingAge() == 0 && this.canEat()) {
                 this.eat(playerEntity, itemStack);
                 this.lovePlayer(playerEntity);
-            } else if (!(this.world.isClient || this.isScared() || this.isInsideWater())) {
+            } else if (!(this.world.isClient || this.isScared() || this.isTouchingWater())) {
                 this.stop();
                 this.setEating(true);
                 ItemStack itemStack2 = this.getEquippedStack(EquipmentSlot.MAINHAND);
                 if (!itemStack2.isEmpty() && !playerEntity.abilities.creativeMode) {
                     this.dropStack(itemStack2);
                 }
-                this.setEquippedStack(EquipmentSlot.MAINHAND, new ItemStack(itemStack.getItem(), 1));
+                this.equipStack(EquipmentSlot.MAINHAND, new ItemStack(itemStack.getItem(), 1));
                 this.eat(playerEntity, itemStack);
             } else {
                 return false;
@@ -703,7 +703,7 @@ extends AnimalEntity {
 
         @Override
         public boolean shouldContinue() {
-            if (this.panda.isInsideWater() || !this.panda.isLazy() && this.panda.random.nextInt(600) == 1) {
+            if (this.panda.isTouchingWater() || !this.panda.isLazy() && this.panda.random.nextInt(600) == 1) {
                 return false;
             }
             return this.panda.random.nextInt(2000) != 1;
@@ -732,7 +732,7 @@ extends AnimalEntity {
 
         @Override
         public boolean canStart() {
-            if (this.startAge > PandaEntity.this.age || PandaEntity.this.isBaby() || PandaEntity.this.isInsideWater() || !PandaEntity.this.method_18442() || PandaEntity.this.getAskForBambooTicks() > 0) {
+            if (this.startAge > PandaEntity.this.age || PandaEntity.this.isBaby() || PandaEntity.this.isTouchingWater() || !PandaEntity.this.method_18442() || PandaEntity.this.getAskForBambooTicks() > 0) {
                 return false;
             }
             List<ItemEntity> list = PandaEntity.this.world.getEntities(ItemEntity.class, PandaEntity.this.getBoundingBox().expand(6.0, 6.0, 6.0), IS_FOOD);
@@ -741,7 +741,7 @@ extends AnimalEntity {
 
         @Override
         public boolean shouldContinue() {
-            if (PandaEntity.this.isInsideWater() || !PandaEntity.this.isLazy() && PandaEntity.this.random.nextInt(600) == 1) {
+            if (PandaEntity.this.isTouchingWater() || !PandaEntity.this.isLazy() && PandaEntity.this.random.nextInt(600) == 1) {
                 return false;
             }
             return PandaEntity.this.random.nextInt(2000) != 1;
@@ -770,7 +770,7 @@ extends AnimalEntity {
             ItemStack itemStack = PandaEntity.this.getEquippedStack(EquipmentSlot.MAINHAND);
             if (!itemStack.isEmpty()) {
                 PandaEntity.this.dropStack(itemStack);
-                PandaEntity.this.setEquippedStack(EquipmentSlot.MAINHAND, ItemStack.EMPTY);
+                PandaEntity.this.equipStack(EquipmentSlot.MAINHAND, ItemStack.EMPTY);
                 int i = PandaEntity.this.isLazy() ? PandaEntity.this.random.nextInt(50) + 10 : PandaEntity.this.random.nextInt(150) + 10;
                 this.startAge = PandaEntity.this.age + i * 20;
             }

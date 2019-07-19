@@ -5,12 +5,12 @@ package net.minecraft.block;
 
 import java.util.Random;
 import net.minecraft.block.Block;
-import net.minecraft.block.BlockRenderLayer;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
+import net.minecraft.client.render.RenderLayer;
 import net.minecraft.entity.EntityContext;
 import net.minecraft.fluid.FluidState;
-import net.minecraft.state.StateFactory;
+import net.minecraft.state.StateManager;
 import net.minecraft.state.property.IntProperty;
 import net.minecraft.state.property.Properties;
 import net.minecraft.tag.FluidTags;
@@ -18,8 +18,8 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.world.BlockView;
+import net.minecraft.world.CollisionView;
 import net.minecraft.world.IWorld;
-import net.minecraft.world.ViewableWorld;
 import net.minecraft.world.World;
 
 public class SugarCaneBlock
@@ -29,7 +29,7 @@ extends Block {
 
     protected SugarCaneBlock(Block.Settings settings) {
         super(settings);
-        this.setDefaultState((BlockState)((BlockState)this.stateFactory.getDefaultState()).with(AGE, 0));
+        this.setDefaultState((BlockState)((BlockState)this.stateManager.getDefaultState()).with(AGE, 0));
     }
 
     @Override
@@ -67,16 +67,16 @@ extends Block {
     }
 
     @Override
-    public boolean canPlaceAt(BlockState blockState, ViewableWorld viewableWorld, BlockPos blockPos) {
-        Block block = viewableWorld.getBlockState(blockPos.down()).getBlock();
+    public boolean canPlaceAt(BlockState blockState, CollisionView collisionView, BlockPos blockPos) {
+        Block block = collisionView.getBlockState(blockPos.down()).getBlock();
         if (block == this) {
             return true;
         }
         if (block == Blocks.GRASS_BLOCK || block == Blocks.DIRT || block == Blocks.COARSE_DIRT || block == Blocks.PODZOL || block == Blocks.SAND || block == Blocks.RED_SAND) {
             BlockPos blockPos2 = blockPos.down();
             for (Direction direction : Direction.Type.HORIZONTAL) {
-                BlockState blockState2 = viewableWorld.getBlockState(blockPos2.offset(direction));
-                FluidState fluidState = viewableWorld.getFluidState(blockPos2.offset(direction));
+                BlockState blockState2 = collisionView.getBlockState(blockPos2.offset(direction));
+                FluidState fluidState = collisionView.getFluidState(blockPos2.offset(direction));
                 if (!fluidState.matches(FluidTags.WATER) && blockState2.getBlock() != Blocks.FROSTED_ICE) continue;
                 return true;
             }
@@ -85,12 +85,12 @@ extends Block {
     }
 
     @Override
-    public BlockRenderLayer getRenderLayer() {
-        return BlockRenderLayer.CUTOUT;
+    public RenderLayer getRenderLayer() {
+        return RenderLayer.CUTOUT;
     }
 
     @Override
-    protected void appendProperties(StateFactory.Builder<Block, BlockState> builder) {
+    protected void appendProperties(StateManager.Builder<Block, BlockState> builder) {
         builder.add(AGE);
     }
 }

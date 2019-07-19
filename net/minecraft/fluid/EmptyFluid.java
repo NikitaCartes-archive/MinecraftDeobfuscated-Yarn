@@ -5,9 +5,9 @@ package net.minecraft.fluid;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.block.BlockRenderLayer;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
+import net.minecraft.client.render.RenderLayer;
 import net.minecraft.fluid.Fluid;
 import net.minecraft.fluid.FluidState;
 import net.minecraft.item.Item;
@@ -18,14 +18,14 @@ import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.util.shape.VoxelShapes;
 import net.minecraft.world.BlockView;
-import net.minecraft.world.ViewableWorld;
+import net.minecraft.world.CollisionView;
 
 public class EmptyFluid
 extends Fluid {
     @Override
     @Environment(value=EnvType.CLIENT)
-    public BlockRenderLayer getRenderLayer() {
-        return BlockRenderLayer.SOLID;
+    public RenderLayer getRenderLayer() {
+        return RenderLayer.SOLID;
     }
 
     @Override
@@ -34,7 +34,7 @@ extends Fluid {
     }
 
     @Override
-    public boolean method_15777(FluidState fluidState, BlockView blockView, BlockPos blockPos, Fluid fluid, Direction direction) {
+    public boolean canBeReplacedWith(FluidState fluidState, BlockView blockView, BlockPos blockPos, Fluid fluid, Direction direction) {
         return true;
     }
 
@@ -44,7 +44,7 @@ extends Fluid {
     }
 
     @Override
-    public int getTickRate(ViewableWorld viewableWorld) {
+    public int getTickRate(CollisionView collisionView) {
         return 0;
     }
 

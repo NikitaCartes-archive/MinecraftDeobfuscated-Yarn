@@ -53,7 +53,7 @@ extends Item {
         LivingEntity livingEntity = (LivingEntity)list.get(0);
         EquipmentSlot equipmentSlot = MobEntity.getPreferredEquipmentSlot(itemStack);
         ItemStack itemStack2 = itemStack.split(1);
-        livingEntity.setEquippedStack(equipmentSlot, itemStack2);
+        livingEntity.equipStack(equipmentSlot, itemStack2);
         if (livingEntity instanceof MobEntity) {
             ((MobEntity)livingEntity).setEquipmentDropChance(equipmentSlot, 2.0f);
             ((MobEntity)livingEntity).setPersistent();
@@ -85,7 +85,7 @@ extends Item {
 
     @Override
     public boolean canRepair(ItemStack itemStack, ItemStack itemStack2) {
-        return this.type.getRepairIngredient().method_8093(itemStack2) || super.canRepair(itemStack, itemStack2);
+        return this.type.getRepairIngredient().test(itemStack2) || super.canRepair(itemStack, itemStack2);
     }
 
     @Override
@@ -94,7 +94,7 @@ extends Item {
         EquipmentSlot equipmentSlot = MobEntity.getPreferredEquipmentSlot(itemStack);
         ItemStack itemStack2 = playerEntity.getEquippedStack(equipmentSlot);
         if (itemStack2.isEmpty()) {
-            playerEntity.setEquippedStack(equipmentSlot, itemStack.copy());
+            playerEntity.equipStack(equipmentSlot, itemStack.copy());
             itemStack.setCount(0);
             return new TypedActionResult<ItemStack>(ActionResult.SUCCESS, itemStack);
         }

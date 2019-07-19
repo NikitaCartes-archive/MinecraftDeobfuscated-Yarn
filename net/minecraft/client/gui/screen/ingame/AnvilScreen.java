@@ -7,7 +7,7 @@ import com.mojang.blaze3d.platform.GlStateManager;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.gui.screen.ingame.AbstractContainerScreen;
+import net.minecraft.client.gui.screen.ingame.ContainerScreen;
 import net.minecraft.client.gui.widget.TextFieldWidget;
 import net.minecraft.client.resource.language.I18n;
 import net.minecraft.container.AnvilContainer;
@@ -16,14 +16,14 @@ import net.minecraft.container.ContainerListener;
 import net.minecraft.container.Slot;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.item.ItemStack;
-import net.minecraft.server.network.packet.RenameItemC2SPacket;
+import net.minecraft.network.packet.c2s.play.RenameItemC2SPacket;
 import net.minecraft.text.Text;
 import net.minecraft.util.DefaultedList;
 import net.minecraft.util.Identifier;
 
 @Environment(value=EnvType.CLIENT)
 public class AnvilScreen
-extends AbstractContainerScreen<AnvilContainer>
+extends ContainerScreen<AnvilContainer>
 implements ContainerListener {
     private static final Identifier BG_TEX = new Identifier("textures/gui/container/anvil.png");
     private TextFieldWidget nameField;
@@ -149,7 +149,7 @@ implements ContainerListener {
     public void onContainerSlotUpdate(Container container, int i, ItemStack itemStack) {
         if (i == 0) {
             this.nameField.setText(itemStack.isEmpty() ? "" : itemStack.getName().getString());
-            this.nameField.setIsEditable(!itemStack.isEmpty());
+            this.nameField.setEditable(!itemStack.isEmpty());
         }
     }
 

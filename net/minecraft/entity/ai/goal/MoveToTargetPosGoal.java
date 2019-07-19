@@ -7,7 +7,7 @@ import java.util.EnumSet;
 import net.minecraft.entity.ai.goal.Goal;
 import net.minecraft.entity.mob.MobEntityWithAi;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.ViewableWorld;
+import net.minecraft.world.CollisionView;
 
 public abstract class MoveToTargetPosGoal
 extends Goal {
@@ -46,7 +46,7 @@ extends Goal {
     }
 
     protected int getInterval(MobEntityWithAi mobEntityWithAi) {
-        return 200 + mobEntityWithAi.getRand().nextInt(200);
+        return 200 + mobEntityWithAi.getRandom().nextInt(200);
     }
 
     @Override
@@ -58,7 +58,7 @@ extends Goal {
     public void start() {
         this.startMovingToTarget();
         this.tryingTime = 0;
-        this.safeWaitingTime = this.mob.getRand().nextInt(this.mob.getRand().nextInt(1200) + 1200) + 1200;
+        this.safeWaitingTime = this.mob.getRandom().nextInt(this.mob.getRandom().nextInt(1200) + 1200) + 1200;
     }
 
     protected void startMovingToTarget() {
@@ -119,6 +119,6 @@ extends Goal {
         return false;
     }
 
-    protected abstract boolean isTargetPos(ViewableWorld var1, BlockPos var2);
+    protected abstract boolean isTargetPos(CollisionView var1, BlockPos var2);
 }
 

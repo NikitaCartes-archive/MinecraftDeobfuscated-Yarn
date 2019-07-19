@@ -10,7 +10,7 @@ import net.minecraft.block.Blocks;
 import net.minecraft.fluid.FluidState;
 import net.minecraft.fluid.Fluids;
 import net.minecraft.item.ItemPlacementContext;
-import net.minecraft.state.StateFactory;
+import net.minecraft.state.StateManager;
 import net.minecraft.state.property.IntProperty;
 import net.minecraft.state.property.Properties;
 import net.minecraft.util.BlockMirror;
@@ -18,8 +18,8 @@ import net.minecraft.util.BlockRotation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
+import net.minecraft.world.CollisionView;
 import net.minecraft.world.IWorld;
-import net.minecraft.world.ViewableWorld;
 
 public class SignBlock
 extends AbstractSignBlock {
@@ -27,12 +27,12 @@ extends AbstractSignBlock {
 
     public SignBlock(Block.Settings settings) {
         super(settings);
-        this.setDefaultState((BlockState)((BlockState)((BlockState)this.stateFactory.getDefaultState()).with(ROTATION, 0)).with(WATERLOGGED, false));
+        this.setDefaultState((BlockState)((BlockState)((BlockState)this.stateManager.getDefaultState()).with(ROTATION, 0)).with(WATERLOGGED, false));
     }
 
     @Override
-    public boolean canPlaceAt(BlockState blockState, ViewableWorld viewableWorld, BlockPos blockPos) {
-        return viewableWorld.getBlockState(blockPos.down()).getMaterial().isSolid();
+    public boolean canPlaceAt(BlockState blockState, CollisionView collisionView, BlockPos blockPos) {
+        return collisionView.getBlockState(blockPos.down()).getMaterial().isSolid();
     }
 
     @Override
@@ -60,7 +60,7 @@ extends AbstractSignBlock {
     }
 
     @Override
-    protected void appendProperties(StateFactory.Builder<Block, BlockState> builder) {
+    protected void appendProperties(StateManager.Builder<Block, BlockState> builder) {
         builder.add(ROTATION, WATERLOGGED);
     }
 }

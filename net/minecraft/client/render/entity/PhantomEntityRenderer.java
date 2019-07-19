@@ -23,18 +23,21 @@ extends MobEntityRenderer<PhantomEntity, PhantomEntityModel<PhantomEntity>> {
         this.addFeature(new PhantomEyesFeatureRenderer<PhantomEntity>(this));
     }
 
-    protected Identifier method_4090(PhantomEntity phantomEntity) {
+    @Override
+    protected Identifier getTexture(PhantomEntity phantomEntity) {
         return SKIN;
     }
 
-    protected void method_4088(PhantomEntity phantomEntity, float f) {
+    @Override
+    protected void scale(PhantomEntity phantomEntity, float f) {
         int i = phantomEntity.getPhantomSize();
         float g = 1.0f + 0.15f * (float)i;
         GlStateManager.scalef(g, g, g);
         GlStateManager.translatef(0.0f, 1.3125f, 0.1875f);
     }
 
-    protected void method_4089(PhantomEntity phantomEntity, float f, float g, float h) {
+    @Override
+    protected void setupTransforms(PhantomEntity phantomEntity, float f, float g, float h) {
         super.setupTransforms(phantomEntity, f, g, h);
         GlStateManager.rotatef(phantomEntity.pitch, 1.0f, 0.0f, 0.0f);
     }

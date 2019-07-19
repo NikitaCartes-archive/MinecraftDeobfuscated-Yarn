@@ -25,11 +25,13 @@ extends BipedEntityRenderer<ZombieVillagerEntity, ZombieVillagerEntityModel<Zomb
         this.addFeature(new VillagerClothingFeatureRenderer<ZombieVillagerEntity, ZombieVillagerEntityModel<ZombieVillagerEntity>>(this, reloadableResourceManager, "zombie_villager"));
     }
 
-    protected Identifier method_4175(ZombieVillagerEntity zombieVillagerEntity) {
+    @Override
+    protected Identifier getTexture(ZombieVillagerEntity zombieVillagerEntity) {
         return SKIN;
     }
 
-    protected void method_4176(ZombieVillagerEntity zombieVillagerEntity, float f, float g, float h) {
+    @Override
+    protected void setupTransforms(ZombieVillagerEntity zombieVillagerEntity, float f, float g, float h) {
         if (zombieVillagerEntity.isConverting()) {
             g += (float)(Math.cos((double)zombieVillagerEntity.age * 3.25) * Math.PI * 0.25);
         }

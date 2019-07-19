@@ -22,7 +22,8 @@ extends Feature<DefaultFeatureConfig> {
         super(function);
     }
 
-    public boolean method_16709(IWorld iWorld, ChunkGenerator<? extends ChunkGeneratorConfig> chunkGenerator, Random random, BlockPos blockPos, DefaultFeatureConfig defaultFeatureConfig) {
+    @Override
+    public boolean generate(IWorld iWorld, ChunkGenerator<? extends ChunkGeneratorConfig> chunkGenerator, Random random, BlockPos blockPos, DefaultFeatureConfig defaultFeatureConfig) {
         if (blockPos.getY() < 5) {
             return false;
         }
@@ -47,7 +48,7 @@ extends Feature<DefaultFeatureConfig> {
         if (blockState.getBlock() == Blocks.GRASS_PATH) {
             return random.nextBoolean();
         }
-        return blockState.method_20827(iWorld, blockPos2, Direction.UP);
+        return blockState.isSideSolidFullSquare(iWorld, blockPos2, Direction.UP);
     }
 
     private void addPileBlock(IWorld iWorld, BlockPos blockPos, Random random) {

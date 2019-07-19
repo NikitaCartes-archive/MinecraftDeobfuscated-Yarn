@@ -41,7 +41,7 @@ public enum Direction implements StringIdentifiable
     private final Vec3i vector;
     private static final Direction[] ALL;
     private static final Map<String, Direction> NAME_MAP;
-    private static final Direction[] ID_TO_DIRECTION;
+    private static final Direction[] VALUES;
     private static final Direction[] HORIZONTAL;
     private static final Long2ObjectMap<Direction> VECTOR_TO_DIRECTION;
 
@@ -241,7 +241,7 @@ public enum Direction implements StringIdentifiable
     }
 
     public static Direction byId(int i) {
-        return ID_TO_DIRECTION[MathHelper.abs(i % ID_TO_DIRECTION.length)];
+        return VALUES[MathHelper.abs(i % VALUES.length)];
     }
 
     public static Direction fromHorizontal(int i) {
@@ -317,7 +317,7 @@ public enum Direction implements StringIdentifiable
     static {
         ALL = Direction.values();
         NAME_MAP = Arrays.stream(ALL).collect(Collectors.toMap(Direction::getName, direction -> direction));
-        ID_TO_DIRECTION = (Direction[])Arrays.stream(ALL).sorted(Comparator.comparingInt(direction -> direction.id)).toArray(Direction[]::new);
+        VALUES = (Direction[])Arrays.stream(ALL).sorted(Comparator.comparingInt(direction -> direction.id)).toArray(Direction[]::new);
         HORIZONTAL = (Direction[])Arrays.stream(ALL).filter(direction -> direction.getAxis().isHorizontal()).sorted(Comparator.comparingInt(direction -> direction.idHorizontal)).toArray(Direction[]::new);
         VECTOR_TO_DIRECTION = Arrays.stream(ALL).collect(Collectors.toMap(direction -> new BlockPos(direction.getVector()).asLong(), direction -> direction, (direction, direction2) -> {
             throw new IllegalArgumentException("Duplicate keys");
@@ -342,7 +342,8 @@ public enum Direction implements StringIdentifiable
             return this.facingArray[random.nextInt(this.facingArray.length)];
         }
 
-        public boolean method_10182(@Nullable Direction direction) {
+        @Override
+        public boolean test(@Nullable Direction direction) {
             return direction != null && direction.getAxis().getType() == this;
         }
 
@@ -353,7 +354,7 @@ public enum Direction implements StringIdentifiable
 
         @Override
         public /* synthetic */ boolean test(@Nullable Object object) {
-            return this.method_10182((Direction)object);
+            return this.test((Direction)object);
         }
     }
 
@@ -395,7 +396,7 @@ public enum Direction implements StringIdentifiable
 
             @Override
             public /* synthetic */ boolean test(@Nullable Object object) {
-                return super.method_10176((Direction)object);
+                return super.test((Direction)object);
             }
         }
         ,
@@ -413,7 +414,7 @@ public enum Direction implements StringIdentifiable
 
             @Override
             public /* synthetic */ boolean test(@Nullable Object object) {
-                return super.method_10176((Direction)object);
+                return super.test((Direction)object);
             }
         }
         ,
@@ -431,7 +432,7 @@ public enum Direction implements StringIdentifiable
 
             @Override
             public /* synthetic */ boolean test(@Nullable Object object) {
-                return super.method_10176((Direction)object);
+                return super.test((Direction)object);
             }
         };
 
@@ -468,7 +469,8 @@ public enum Direction implements StringIdentifiable
             return Axis.values()[random.nextInt(Axis.values().length)];
         }
 
-        public boolean method_10176(@Nullable Direction direction) {
+        @Override
+        public boolean test(@Nullable Direction direction) {
             return direction != null && direction.getAxis() == this;
         }
 
@@ -496,7 +498,7 @@ public enum Direction implements StringIdentifiable
 
         @Override
         public /* synthetic */ boolean test(@Nullable Object object) {
-            return this.method_10176((Direction)object);
+            return this.test((Direction)object);
         }
 
         static {

@@ -97,7 +97,7 @@ implements Monster {
         this.partWingRight = new EnderDragonPart(this, "wing", 4.0f, 2.0f);
         this.partWingLeft = new EnderDragonPart(this, "wing", 4.0f, 2.0f);
         this.parts = new EnderDragonPart[]{this.partHead, this.partNeck, this.partBody, this.partTail1, this.partTail2, this.partTail3, this.partWingRight, this.partWingLeft};
-        this.setHealth(this.getHealthMaximum());
+        this.setHealth(this.getMaximumHealth());
         this.noClip = true;
         this.ignoreCameraFrustum = true;
         this.fight = !world.isClient && world.dimension instanceof TheEndDimension ? ((TheEndDimension)world.dimension).method_12513() : null;
@@ -194,7 +194,7 @@ implements Monster {
                 this.yaw = (float)((double)this.yaw + k / (double)this.field_6210);
                 this.pitch = (float)((double)this.pitch + (this.field_6221 - (double)this.pitch) / (double)this.field_6210);
                 --this.field_6210;
-                this.setPosition(d, e, j);
+                this.updatePosition(d, e, j);
                 this.setRotation(this.yaw, this.pitch);
             }
             this.phaseManager.getCurrent().clientTick();
@@ -250,11 +250,11 @@ implements Monster {
         float y = MathHelper.sin(x);
         float z = MathHelper.cos(x);
         this.partBody.tick();
-        this.partBody.setPositionAndAngles(this.x + (double)(y * 0.5f), this.y, this.z - (double)(z * 0.5f), 0.0f, 0.0f);
+        this.partBody.refreshPositionAndAngles(this.x + (double)(y * 0.5f), this.y, this.z - (double)(z * 0.5f), 0.0f, 0.0f);
         this.partWingRight.tick();
-        this.partWingRight.setPositionAndAngles(this.x + (double)(z * 4.5f), this.y + 2.0, this.z + (double)(y * 4.5f), 0.0f, 0.0f);
+        this.partWingRight.refreshPositionAndAngles(this.x + (double)(z * 4.5f), this.y + 2.0, this.z + (double)(y * 4.5f), 0.0f, 0.0f);
         this.partWingLeft.tick();
-        this.partWingLeft.setPositionAndAngles(this.x - (double)(z * 4.5f), this.y + 2.0, this.z - (double)(y * 4.5f), 0.0f, 0.0f);
+        this.partWingLeft.refreshPositionAndAngles(this.x - (double)(z * 4.5f), this.y + 2.0, this.z - (double)(y * 4.5f), 0.0f, 0.0f);
         if (!this.world.isClient && this.hurtTime == 0) {
             this.method_6825(this.world.getEntities(this, this.partWingRight.getBoundingBox().expand(4.0, 2.0, 4.0).offset(0.0, -2.0, 0.0), EntityPredicates.EXCEPT_CREATIVE_OR_SPECTATOR));
             this.method_6825(this.world.getEntities(this, this.partWingLeft.getBoundingBox().expand(4.0, 2.0, 4.0).offset(0.0, -2.0, 0.0), EntityPredicates.EXCEPT_CREATIVE_OR_SPECTATOR));
@@ -267,8 +267,8 @@ implements Monster {
         this.partHead.tick();
         this.partNeck.tick();
         m = this.method_6820(1.0f);
-        this.partHead.setPositionAndAngles(this.x + (double)(aa * 6.5f * v), this.y + (double)m + (double)(w * 6.5f), this.z - (double)(ab * 6.5f * v), 0.0f, 0.0f);
-        this.partNeck.setPositionAndAngles(this.x + (double)(aa * 5.5f * v), this.y + (double)m + (double)(w * 5.5f), this.z - (double)(ab * 5.5f * v), 0.0f, 0.0f);
+        this.partHead.refreshPositionAndAngles(this.x + (double)(aa * 6.5f * v), this.y + (double)m + (double)(w * 6.5f), this.z - (double)(ab * 6.5f * v), 0.0f, 0.0f);
+        this.partNeck.refreshPositionAndAngles(this.x + (double)(aa * 5.5f * v), this.y + (double)m + (double)(w * 5.5f), this.z - (double)(ab * 5.5f * v), 0.0f, 0.0f);
         for (ac = 0; ac < 3; ++ac) {
             EnderDragonPart enderDragonPart = null;
             if (ac == 0) {
@@ -287,7 +287,7 @@ implements Monster {
             float ag = 1.5f;
             float ah = (float)(ac + 1) * 2.0f;
             enderDragonPart.tick();
-            enderDragonPart.setPositionAndAngles(this.x - (double)((y * 1.5f + ae * ah) * v), this.y + (es[1] - ds[1]) - (double)((ah + 1.5f) * w) + 1.5, this.z + (double)((z * 1.5f + af * ah) * v), 0.0f, 0.0f);
+            enderDragonPart.refreshPositionAndAngles(this.x - (double)((y * 1.5f + ae * ah) * v), this.y + (es[1] - ds[1]) - (double)((ah + 1.5f) * w) + 1.5, this.z + (double)((z * 1.5f + af * ah) * v), 0.0f, 0.0f);
         }
         if (!this.world.isClient) {
             this.field_7027 = this.method_6821(this.partHead.getBoundingBox()) | this.method_6821(this.partNeck.getBoundingBox()) | this.method_6821(this.partBody.getBoundingBox());
@@ -318,12 +318,12 @@ implements Monster {
         if (this.connectedCrystal != null) {
             if (this.connectedCrystal.removed) {
                 this.connectedCrystal = null;
-            } else if (this.age % 10 == 0 && this.getHealth() < this.getHealthMaximum()) {
+            } else if (this.age % 10 == 0 && this.getHealth() < this.getMaximumHealth()) {
                 this.setHealth(this.getHealth() + 1.0f);
             }
         }
         if (this.random.nextInt(10) == 0) {
-            List<EnderCrystalEntity> list = this.world.getEntities(EnderCrystalEntity.class, this.getBoundingBox().expand(32.0));
+            List<EnderCrystalEntity> list = this.world.getNonSpectatingEntities(EnderCrystalEntity.class, this.getBoundingBox().expand(32.0));
             EnderCrystalEntity enderCrystalEntity = null;
             double d = Double.MAX_VALUE;
             for (EnderCrystalEntity enderCrystalEntity2 : list) {
@@ -337,8 +337,8 @@ implements Monster {
     }
 
     private void method_6825(List<Entity> list) {
-        double d = (this.partBody.getBoundingBox().minX + this.partBody.getBoundingBox().maxX) / 2.0;
-        double e = (this.partBody.getBoundingBox().minZ + this.partBody.getBoundingBox().maxZ) / 2.0;
+        double d = (this.partBody.getBoundingBox().x1 + this.partBody.getBoundingBox().x2) / 2.0;
+        double e = (this.partBody.getBoundingBox().z1 + this.partBody.getBoundingBox().z2) / 2.0;
         for (Entity entity : list) {
             if (!(entity instanceof LivingEntity)) continue;
             double f = entity.x - d;
@@ -365,12 +365,12 @@ implements Monster {
     }
 
     private boolean method_6821(Box box) {
-        int i = MathHelper.floor(box.minX);
-        int j = MathHelper.floor(box.minY);
-        int k = MathHelper.floor(box.minZ);
-        int l = MathHelper.floor(box.maxX);
-        int m = MathHelper.floor(box.maxY);
-        int n = MathHelper.floor(box.maxZ);
+        int i = MathHelper.floor(box.x1);
+        int j = MathHelper.floor(box.y1);
+        int k = MathHelper.floor(box.z1);
+        int l = MathHelper.floor(box.x2);
+        int m = MathHelper.floor(box.y2);
+        int n = MathHelper.floor(box.z2);
         boolean bl = false;
         boolean bl2 = false;
         for (int o = i; o <= l; ++o) {
@@ -384,7 +384,7 @@ implements Monster {
                         bl = true;
                         continue;
                     }
-                    bl2 = this.world.clearBlockState(blockPos, false) || bl2;
+                    bl2 = this.world.removeBlock(blockPos, false) || bl2;
                 }
             }
         }
@@ -412,7 +412,7 @@ implements Monster {
             }
             if (this.phaseManager.getCurrent().method_6848()) {
                 this.field_7029 = (int)((float)this.field_7029 + (g - this.getHealth()));
-                if ((float)this.field_7029 > 0.25f * this.getHealthMaximum()) {
+                if ((float)this.field_7029 > 0.25f * this.getMaximumHealth()) {
                     this.field_7029 = 0;
                     this.phaseManager.setPhase(PhaseType.TAKEOFF);
                 }
@@ -548,7 +548,7 @@ implements Monster {
         }
         for (int k = j; k < 24; ++k) {
             float h;
-            if (this.field_7012[k] == null || !((h = this.field_7012[k].distanceSquared(pathNode)) < g)) continue;
+            if (this.field_7012[k] == null || !((h = this.field_7012[k].getSquaredDistance(pathNode)) < g)) continue;
             g = h;
             i = k;
         }
@@ -570,7 +570,7 @@ implements Monster {
         PathNode pathNode3 = this.field_7012[i];
         pathNode2 = this.field_7012[j];
         pathNode3.field_36 = 0.0f;
-        pathNode3.heapWeight = pathNode3.field_34 = pathNode3.distance(pathNode2);
+        pathNode3.heapWeight = pathNode3.field_34 = pathNode3.getDistance(pathNode2);
         this.field_7008.clear();
         this.field_7008.push(pathNode3);
         PathNode pathNode4 = pathNode3;
@@ -588,7 +588,7 @@ implements Monster {
                 }
                 return this.method_6826(pathNode3, pathNode2);
             }
-            if (pathNode5.distance(pathNode2) < pathNode4.distance(pathNode2)) {
+            if (pathNode5.getDistance(pathNode2) < pathNode4.getDistance(pathNode2)) {
                 pathNode4 = pathNode5;
             }
             pathNode5.field_42 = true;
@@ -602,11 +602,11 @@ implements Monster {
                 if ((this.field_7025[m] & 1 << n) <= 0) continue;
                 PathNode pathNode6 = this.field_7012[n];
                 if (pathNode6.field_42) continue;
-                float f = pathNode5.field_36 + pathNode5.distance(pathNode6);
+                float f = pathNode5.field_36 + pathNode5.getDistance(pathNode6);
                 if (pathNode6.isInHeap() && !(f < pathNode6.field_36)) continue;
                 pathNode6.field_35 = pathNode5;
                 pathNode6.field_36 = f;
-                pathNode6.field_34 = pathNode6.distance(pathNode2);
+                pathNode6.field_34 = pathNode6.getDistance(pathNode2);
                 if (pathNode6.isInHeap()) {
                     this.field_7008.setNodeWeight(pathNode6, pathNode6.field_36 + pathNode6.field_34);
                     continue;
@@ -646,7 +646,7 @@ implements Monster {
     @Override
     public void readCustomDataFromTag(CompoundTag compoundTag) {
         super.readCustomDataFromTag(compoundTag);
-        if (compoundTag.containsKey("DragonPhase")) {
+        if (compoundTag.contains("DragonPhase")) {
             this.phaseManager.setPhase(PhaseType.getFromId(compoundTag.getInt("DragonPhase")));
         }
     }
@@ -750,7 +750,7 @@ implements Monster {
     }
 
     @Override
-    public boolean addPotionEffect(StatusEffectInstance statusEffectInstance) {
+    public boolean addStatusEffect(StatusEffectInstance statusEffectInstance) {
         return false;
     }
 

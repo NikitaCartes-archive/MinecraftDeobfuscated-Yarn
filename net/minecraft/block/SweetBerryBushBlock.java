@@ -20,7 +20,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
-import net.minecraft.state.StateFactory;
+import net.minecraft.state.StateManager;
 import net.minecraft.state.property.IntProperty;
 import net.minecraft.state.property.Properties;
 import net.minecraft.util.Hand;
@@ -40,7 +40,7 @@ implements Fertilizable {
 
     public SweetBerryBushBlock(Block.Settings settings) {
         super(settings);
-        this.setDefaultState((BlockState)((BlockState)this.stateFactory.getDefaultState()).with(AGE, 0));
+        this.setDefaultState((BlockState)((BlockState)this.stateManager.getDefaultState()).with(AGE, 0));
     }
 
     @Override
@@ -75,9 +75,9 @@ implements Fertilizable {
             return;
         }
         entity.slowMovement(blockState, new Vec3d(0.8f, 0.75, 0.8f));
-        if (!(world.isClient || blockState.get(AGE) <= 0 || entity.prevRenderX == entity.x && entity.prevRenderZ == entity.z)) {
-            double d = Math.abs(entity.x - entity.prevRenderX);
-            double e = Math.abs(entity.z - entity.prevRenderZ);
+        if (!(world.isClient || blockState.get(AGE) <= 0 || entity.lastRenderX == entity.x && entity.lastRenderZ == entity.z)) {
+            double d = Math.abs(entity.x - entity.lastRenderX);
+            double e = Math.abs(entity.z - entity.lastRenderZ);
             if (d >= (double)0.003f || e >= (double)0.003f) {
                 entity.damage(DamageSource.SWEET_BERRY_BUSH, 1.0f);
             }
@@ -103,7 +103,7 @@ implements Fertilizable {
     }
 
     @Override
-    protected void appendProperties(StateFactory.Builder<Block, BlockState> builder) {
+    protected void appendProperties(StateManager.Builder<Block, BlockState> builder) {
         builder.add(AGE);
     }
 

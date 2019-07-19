@@ -27,10 +27,9 @@ import net.minecraft.block.BlockRenderType;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.FenceGateBlock;
-import net.minecraft.block.PortalBlock;
+import net.minecraft.block.NetherPortalBlock;
 import net.minecraft.block.pattern.BlockPattern;
 import net.minecraft.block.piston.PistonBehavior;
-import net.minecraft.client.network.packet.EntityS2CPacket;
 import net.minecraft.command.arguments.EntityAnchorArgumentType;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.enchantment.ProtectionEnchantment;
@@ -59,6 +58,7 @@ import net.minecraft.nbt.FloatTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.StringTag;
 import net.minecraft.network.Packet;
+import net.minecraft.network.packet.s2c.play.EntityS2CPacket;
 import net.minecraft.particle.BlockStateParticleEffect;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.scoreboard.AbstractTeam;
@@ -101,10 +101,10 @@ import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.util.shape.VoxelShapes;
 import net.minecraft.world.BlockView;
+import net.minecraft.world.CollisionView;
 import net.minecraft.world.GameRules;
 import net.minecraft.world.Heightmap;
 import net.minecraft.world.RayTraceContext;
-import net.minecraft.world.ViewableWorld;
 import net.minecraft.world.World;
 import net.minecraft.world.dimension.DimensionType;
 import net.minecraft.world.explosion.Explosion;
@@ -149,28 +149,28 @@ CommandOutput {
     public boolean removed;
     public float prevHorizontalSpeed;
     public float horizontalSpeed;
-    public float distanceWalked;
+    public float distanceTraveled;
     public float fallDistance;
-    private float nextStepDistance = 1.0f;
-    private float aerialStepDelta = 1.0f;
-    public double prevRenderX;
-    public double prevRenderY;
-    public double prevRenderZ;
+    private float nextStepSoundDistance = 1.0f;
+    private float nextFlySoundDistance = 1.0f;
+    public double lastRenderX;
+    public double lastRenderY;
+    public double lastRenderZ;
     public float stepHeight;
     public boolean noClip;
     public float pushSpeedReduction;
     protected final Random random = new Random();
     public int age;
-    private int fireTime = -this.getBurningDuration();
-    protected boolean insideWater;
+    private int fireTicks = -this.getBurningDuration();
+    protected boolean touchingWater;
     protected double waterHeight;
-    protected boolean inWater;
+    protected boolean submergedInWater;
     protected boolean inLava;
     public int timeUntilRegen;
     protected boolean firstUpdate = true;
     protected final DataTracker dataTracker;
     protected static final TrackedData<Byte> FLAGS = DataTracker.registerData(Entity.class, TrackedDataHandlerRegistry.BYTE);
-    private static final TrackedData<Integer> BREATH = DataTracker.registerData(Entity.class, TrackedDataHandlerRegistry.INTEGER);
+    private static final TrackedData<Integer> AIR = DataTracker.registerData(Entity.class, TrackedDataHandlerRegistry.INTEGER);
     private static final TrackedData<Optional<Text>> CUSTOM_NAME = DataTracker.registerData(Entity.class, TrackedDataHandlerRegistry.OPTIONAL_TEXT_COMPONENT);
     private static final TrackedData<Boolean> NAME_VISIBLE = DataTracker.registerData(Entity.class, TrackedDataHandlerRegistry.BOOLEAN);
     private static final TrackedData<Boolean> SILENT = DataTracker.registerData(Entity.class, TrackedDataHandlerRegistry.BOOLEAN);
@@ -188,13 +188,13 @@ CommandOutput {
     public long trackedZ;
     public boolean ignoreCameraFrustum;
     public boolean velocityDirty;
-    public int portalCooldown;
-    protected boolean inPortal;
-    protected int portalTime;
+    public int netherPortalCooldown;
+    protected boolean inNetherPortal;
+    protected int netherPortalTime;
     public DimensionType dimension;
-    protected BlockPos lastPortalPosition;
-    protected Vec3d lastPortalDirectionVector;
-    protected Direction lastPortalDirection;
+    protected BlockPos lastNetherPortalPosition;
+    protected Vec3d lastNetherPortalDirectionVector;
+    protected Direction lastNetherPortalDirection;
     private boolean invulnerable;
     protected UUID uuid = MathHelper.randomUuid(this.random);
     protected String uuidString = this.uuid.toString();
@@ -210,13 +210,13 @@ CommandOutput {
         this.type = entityType;
         this.world = world;
         this.dimensions = entityType.getDimensions();
-        this.setPosition(0.0, 0.0, 0.0);
+        this.updatePosition(0.0, 0.0, 0.0);
         if (world != null) {
             this.dimension = world.dimension.getType();
         }
         this.dataTracker = new DataTracker(this);
         this.dataTracker.startTracking(FLAGS, (byte)0);
-        this.dataTracker.startTracking(BREATH, this.getMaxBreath());
+        this.dataTracker.startTracking(AIR, this.getMaxAir());
         this.dataTracker.startTracking(NAME_VISIBLE, false);
         this.dataTracker.startTracking(CUSTOM_NAME, Optional.empty());
         this.dataTracker.startTracking(SILENT, false);
@@ -300,7 +300,7 @@ CommandOutput {
             return;
         }
         while (this.y > 0.0 && this.y < 256.0) {
-            this.setPosition(this.x, this.y, this.z);
+            this.updatePosition(this.x, this.y, this.z);
             if (this.world.doesNotCollide(this)) break;
             this.y += 1.0;
         }
@@ -325,7 +325,7 @@ CommandOutput {
         this.pitch = g % 360.0f;
     }
 
-    public void setPosition(double d, double e, double f) {
+    public void updatePosition(double d, double e, double f) {
         this.x = d;
         this.y = e;
         this.z = f;
@@ -370,22 +370,22 @@ CommandOutput {
         this.prevZ = this.z;
         this.prevPitch = this.pitch;
         this.prevYaw = this.yaw;
-        this.tickPortal();
+        this.tickNetherPortal();
         this.attemptSprintingParticles();
-        this.updateInWater();
+        this.updateWaterState();
         if (this.world.isClient) {
             this.extinguish();
-        } else if (this.fireTime > 0) {
+        } else if (this.fireTicks > 0) {
             if (this.isFireImmune()) {
-                this.fireTime -= 4;
-                if (this.fireTime < 0) {
+                this.fireTicks -= 4;
+                if (this.fireTicks < 0) {
                     this.extinguish();
                 }
             } else {
-                if (this.fireTime % 20 == 0) {
+                if (this.fireTicks % 20 == 0) {
                     this.damage(DamageSource.ON_FIRE, 1.0f);
                 }
-                --this.fireTime;
+                --this.fireTicks;
             }
         }
         if (this.isInLava()) {
@@ -396,19 +396,19 @@ CommandOutput {
             this.destroy();
         }
         if (!this.world.isClient) {
-            this.setFlag(0, this.fireTime > 0);
+            this.setFlag(0, this.fireTicks > 0);
         }
         this.firstUpdate = false;
         this.world.getProfiler().pop();
     }
 
-    protected void tickPortalCooldown() {
-        if (this.portalCooldown > 0) {
-            --this.portalCooldown;
+    protected void tickNetherPortalCooldown() {
+        if (this.netherPortalCooldown > 0) {
+            --this.netherPortalCooldown;
         }
     }
 
-    public int getMaxPortalTime() {
+    public int getMaxNetherPortalTime() {
         return 1;
     }
 
@@ -425,21 +425,21 @@ CommandOutput {
         if (this instanceof LivingEntity) {
             j = ProtectionEnchantment.transformFireDuration((LivingEntity)this, j);
         }
-        if (this.fireTime < j) {
-            this.fireTime = j;
+        if (this.fireTicks < j) {
+            this.fireTicks = j;
         }
     }
 
     public void method_20803(int i) {
-        this.fireTime = i;
+        this.fireTicks = i;
     }
 
     public int method_20802() {
-        return this.fireTime;
+        return this.fireTicks;
     }
 
     public void extinguish() {
-        this.fireTime = 0;
+        this.fireTicks = 0;
     }
 
     protected void destroy() {
@@ -464,7 +464,7 @@ CommandOutput {
             this.moveToBoundingBoxCenter();
             return;
         }
-        if (movementType == MovementType.PISTON && (vec3d = this.applyPistonMovement(vec3d)).equals(Vec3d.ZERO)) {
+        if (movementType == MovementType.PISTON && (vec3d = this.adjustMovementForPiston(vec3d)).equals(Vec3d.ZERO)) {
             return;
         }
         this.world.getProfiler().push("move");
@@ -473,7 +473,7 @@ CommandOutput {
             this.movementMultiplier = Vec3d.ZERO;
             this.setVelocity(Vec3d.ZERO);
         }
-        if ((vec3d2 = this.handleCollisions(vec3d = this.clipSneakingMovement(vec3d, movementType))).lengthSquared() > 1.0E-7) {
+        if ((vec3d2 = this.adjustMovementForCollisions(vec3d = this.adjustMovementForSneaking(vec3d, movementType))).lengthSquared() > 1.0E-7) {
             this.setBoundingBox(this.getBoundingBox().offset(vec3d2));
             this.moveToBoundingBoxCenter();
         }
@@ -515,10 +515,10 @@ CommandOutput {
                 block2.onSteppedOn(this.world, blockPos, this);
             }
             this.horizontalSpeed = (float)((double)this.horizontalSpeed + (double)MathHelper.sqrt(Entity.squaredHorizontalLength(vec3d2)) * 0.6);
-            this.distanceWalked = (float)((double)this.distanceWalked + (double)MathHelper.sqrt(d * d + e * e + f * f) * 0.6);
-            if (this.distanceWalked > this.nextStepDistance && !blockState.isAir()) {
-                this.nextStepDistance = this.calculateStepDelta();
-                if (this.isInsideWater()) {
+            this.distanceTraveled = (float)((double)this.distanceTraveled + (double)MathHelper.sqrt(d * d + e * e + f * f) * 0.6);
+            if (this.distanceTraveled > this.nextStepSoundDistance && !blockState.isAir()) {
+                this.nextStepSoundDistance = this.calculateNextStepSoundDistance();
+                if (this.isTouchingWater()) {
                     Entity entity = this.hasPassengers() && this.getPrimaryPassenger() != null ? this.getPrimaryPassenger() : this;
                     float g = entity == this ? 0.35f : 0.4f;
                     Vec3d vec3d4 = entity.getVelocity();
@@ -530,8 +530,8 @@ CommandOutput {
                 } else {
                     this.playStepSound(blockPos, blockState);
                 }
-            } else if (this.distanceWalked > this.aerialStepDelta && this.method_5776() && blockState.isAir()) {
-                this.aerialStepDelta = this.calculateAerialStepDelta(this.distanceWalked);
+            } else if (this.distanceTraveled > this.nextFlySoundDistance && this.method_5776() && blockState.isAir()) {
+                this.nextFlySoundDistance = this.playFlySound(this.distanceTraveled);
             }
         }
         try {
@@ -543,26 +543,26 @@ CommandOutput {
             this.populateCrashReport(crashReportSection);
             throw new CrashException(crashReport);
         }
-        boolean bl = this.isTouchingWater();
+        boolean bl = this.isWet();
         if (this.world.doesAreaContainFireSource(this.getBoundingBox().contract(0.001))) {
             if (!bl) {
-                ++this.fireTime;
-                if (this.fireTime == 0) {
+                ++this.fireTicks;
+                if (this.fireTicks == 0) {
                     this.setOnFireFor(8);
                 }
             }
             this.burn(1);
-        } else if (this.fireTime <= 0) {
-            this.fireTime = -this.getBurningDuration();
+        } else if (this.fireTicks <= 0) {
+            this.fireTicks = -this.getBurningDuration();
         }
         if (bl && this.isOnFire()) {
             this.playSound(SoundEvents.ENTITY_GENERIC_EXTINGUISH_FIRE, 0.7f, 1.6f + (this.random.nextFloat() - this.random.nextFloat()) * 0.4f);
-            this.fireTime = -this.getBurningDuration();
+            this.fireTicks = -this.getBurningDuration();
         }
         this.world.getProfiler().pop();
     }
 
-    protected Vec3d clipSneakingMovement(Vec3d vec3d, MovementType movementType) {
+    protected Vec3d adjustMovementForSneaking(Vec3d vec3d, MovementType movementType) {
         if (this instanceof PlayerEntity && (movementType == MovementType.SELF || movementType == MovementType.PLAYER) && this.onGround && this.isSneaking()) {
             double d = vec3d.x;
             double e = vec3d.z;
@@ -606,7 +606,7 @@ CommandOutput {
         return vec3d;
     }
 
-    protected Vec3d applyPistonMovement(Vec3d vec3d) {
+    protected Vec3d adjustMovementForPiston(Vec3d vec3d) {
         if (vec3d.lengthSquared() <= 1.0E-7) {
             return vec3d;
         }
@@ -638,7 +638,7 @@ CommandOutput {
         return d;
     }
 
-    private Vec3d handleCollisions(Vec3d vec3d) {
+    private Vec3d adjustMovementForCollisions(Vec3d vec3d) {
         boolean bl4;
         Box box = this.getBoundingBox();
         EntityContext entityContext = EntityContext.of(this);
@@ -646,20 +646,20 @@ CommandOutput {
         Stream<Object> stream = VoxelShapes.matchesAnywhere(voxelShape, VoxelShapes.cuboid(box.contract(1.0E-7)), BooleanBiFunction.AND) ? Stream.empty() : Stream.of(voxelShape);
         Stream<VoxelShape> stream2 = this.world.method_20743(this, box.stretch(vec3d), ImmutableSet.of());
         ReusableStream<VoxelShape> reusableStream = new ReusableStream<VoxelShape>(Stream.concat(stream2, stream));
-        Vec3d vec3d2 = vec3d.lengthSquared() == 0.0 ? vec3d : Entity.calculateMotionVector(this, vec3d, box, this.world, entityContext, reusableStream);
+        Vec3d vec3d2 = vec3d.lengthSquared() == 0.0 ? vec3d : Entity.adjustMovementForCollisions(this, vec3d, box, this.world, entityContext, reusableStream);
         boolean bl = vec3d.x != vec3d2.x;
         boolean bl2 = vec3d.y != vec3d2.y;
         boolean bl3 = vec3d.z != vec3d2.z;
         boolean bl5 = bl4 = this.onGround || bl2 && vec3d.y < 0.0;
         if (this.stepHeight > 0.0f && bl4 && (bl || bl3)) {
             Vec3d vec3d5;
-            Vec3d vec3d3 = Entity.calculateMotionVector(this, new Vec3d(vec3d.x, this.stepHeight, vec3d.z), box, this.world, entityContext, reusableStream);
-            Vec3d vec3d4 = Entity.calculateMotionVector(this, new Vec3d(0.0, this.stepHeight, 0.0), box.stretch(vec3d.x, 0.0, vec3d.z), this.world, entityContext, reusableStream);
-            if (vec3d4.y < (double)this.stepHeight && Entity.squaredHorizontalLength(vec3d5 = Entity.calculateMotionVector(this, new Vec3d(vec3d.x, 0.0, vec3d.z), box.offset(vec3d4), this.world, entityContext, reusableStream).add(vec3d4)) > Entity.squaredHorizontalLength(vec3d3)) {
+            Vec3d vec3d3 = Entity.adjustMovementForCollisions(this, new Vec3d(vec3d.x, this.stepHeight, vec3d.z), box, this.world, entityContext, reusableStream);
+            Vec3d vec3d4 = Entity.adjustMovementForCollisions(this, new Vec3d(0.0, this.stepHeight, 0.0), box.stretch(vec3d.x, 0.0, vec3d.z), this.world, entityContext, reusableStream);
+            if (vec3d4.y < (double)this.stepHeight && Entity.squaredHorizontalLength(vec3d5 = Entity.adjustMovementForCollisions(this, new Vec3d(vec3d.x, 0.0, vec3d.z), box.offset(vec3d4), this.world, entityContext, reusableStream).add(vec3d4)) > Entity.squaredHorizontalLength(vec3d3)) {
                 vec3d3 = vec3d5;
             }
             if (Entity.squaredHorizontalLength(vec3d3) > Entity.squaredHorizontalLength(vec3d2)) {
-                return vec3d3.add(Entity.calculateMotionVector(this, new Vec3d(0.0, -vec3d3.y + vec3d.y, 0.0), box.offset(vec3d3), this.world, entityContext, reusableStream));
+                return vec3d3.add(Entity.adjustMovementForCollisions(this, new Vec3d(0.0, -vec3d3.y + vec3d.y, 0.0), box.offset(vec3d3), this.world, entityContext, reusableStream));
             }
         }
         return vec3d2;
@@ -669,7 +669,7 @@ CommandOutput {
         return vec3d.x * vec3d.x + vec3d.z * vec3d.z;
     }
 
-    public static Vec3d calculateMotionVector(@Nullable Entity entity, Vec3d vec3d, Box box, World world, EntityContext entityContext, ReusableStream<VoxelShape> reusableStream) {
+    public static Vec3d adjustMovementForCollisions(@Nullable Entity entity, Vec3d vec3d, Box box, World world, EntityContext entityContext, ReusableStream<VoxelShape> reusableStream) {
         boolean bl3;
         boolean bl = vec3d.x == 0.0;
         boolean bl2 = vec3d.y == 0.0;
@@ -705,39 +705,39 @@ CommandOutput {
         return new Vec3d(d, e, f);
     }
 
-    public static Vec3d calculateTangentialMotionVector(Vec3d vec3d, Box box, ViewableWorld viewableWorld, EntityContext entityContext, ReusableStream<VoxelShape> reusableStream) {
+    public static Vec3d calculateTangentialMotionVector(Vec3d vec3d, Box box, CollisionView collisionView, EntityContext entityContext, ReusableStream<VoxelShape> reusableStream) {
         boolean bl;
         double d = vec3d.x;
         double e = vec3d.y;
         double f = vec3d.z;
-        if (e != 0.0 && (e = VoxelShapes.calculateSoftOffset(Direction.Axis.Y, box, viewableWorld, e, entityContext, reusableStream.stream())) != 0.0) {
+        if (e != 0.0 && (e = VoxelShapes.calculateSoftOffset(Direction.Axis.Y, box, collisionView, e, entityContext, reusableStream.stream())) != 0.0) {
             box = box.offset(0.0, e, 0.0);
         }
         boolean bl2 = bl = Math.abs(d) < Math.abs(f);
-        if (bl && f != 0.0 && (f = VoxelShapes.calculateSoftOffset(Direction.Axis.Z, box, viewableWorld, f, entityContext, reusableStream.stream())) != 0.0) {
+        if (bl && f != 0.0 && (f = VoxelShapes.calculateSoftOffset(Direction.Axis.Z, box, collisionView, f, entityContext, reusableStream.stream())) != 0.0) {
             box = box.offset(0.0, 0.0, f);
         }
         if (d != 0.0) {
-            d = VoxelShapes.calculateSoftOffset(Direction.Axis.X, box, viewableWorld, d, entityContext, reusableStream.stream());
+            d = VoxelShapes.calculateSoftOffset(Direction.Axis.X, box, collisionView, d, entityContext, reusableStream.stream());
             if (!bl && d != 0.0) {
                 box = box.offset(d, 0.0, 0.0);
             }
         }
         if (!bl && f != 0.0) {
-            f = VoxelShapes.calculateSoftOffset(Direction.Axis.Z, box, viewableWorld, f, entityContext, reusableStream.stream());
+            f = VoxelShapes.calculateSoftOffset(Direction.Axis.Z, box, collisionView, f, entityContext, reusableStream.stream());
         }
         return new Vec3d(d, e, f);
     }
 
-    protected float calculateStepDelta() {
-        return (int)this.distanceWalked + 1;
+    protected float calculateNextStepSoundDistance() {
+        return (int)this.distanceTraveled + 1;
     }
 
     public void moveToBoundingBoxCenter() {
         Box box = this.getBoundingBox();
-        this.x = (box.minX + box.maxX) / 2.0;
-        this.y = box.minY;
-        this.z = (box.minZ + box.maxZ) / 2.0;
+        this.x = (box.x1 + box.x2) / 2.0;
+        this.y = box.y1;
+        this.z = (box.z1 + box.z2) / 2.0;
     }
 
     protected SoundEvent getSwimSound() {
@@ -754,14 +754,14 @@ CommandOutput {
 
     protected void checkBlockCollision() {
         Box box = this.getBoundingBox();
-        try (BlockPos.PooledMutable pooledMutable = BlockPos.PooledMutable.get(box.minX + 0.001, box.minY + 0.001, box.minZ + 0.001);
-             BlockPos.PooledMutable pooledMutable2 = BlockPos.PooledMutable.get(box.maxX - 0.001, box.maxY - 0.001, box.maxZ - 0.001);
+        try (BlockPos.PooledMutable pooledMutable = BlockPos.PooledMutable.get(box.x1 + 0.001, box.y1 + 0.001, box.z1 + 0.001);
+             BlockPos.PooledMutable pooledMutable2 = BlockPos.PooledMutable.get(box.x2 - 0.001, box.y2 - 0.001, box.z2 - 0.001);
              BlockPos.PooledMutable pooledMutable3 = BlockPos.PooledMutable.get();){
             if (this.world.isAreaLoaded(pooledMutable, pooledMutable2)) {
                 for (int i = pooledMutable.getX(); i <= pooledMutable2.getX(); ++i) {
                     for (int j = pooledMutable.getY(); j <= pooledMutable2.getY(); ++j) {
                         for (int k = pooledMutable.getZ(); k <= pooledMutable2.getZ(); ++k) {
-                            pooledMutable3.method_10113(i, j, k);
+                            pooledMutable3.set(i, j, k);
                             BlockState blockState = this.world.getBlockState(pooledMutable3);
                             try {
                                 blockState.onEntityCollision(this.world, pooledMutable3, this);
@@ -796,7 +796,7 @@ CommandOutput {
         this.playSound(this.getSwimSound(), f, 1.0f + (this.random.nextFloat() - this.random.nextFloat()) * 0.4f);
     }
 
-    protected float calculateAerialStepDelta(float f) {
+    protected float playFlySound(float f) {
         return 0.0f;
     }
 
@@ -864,13 +864,13 @@ CommandOutput {
         }
     }
 
-    public boolean isInsideWater() {
-        return this.insideWater;
+    public boolean isTouchingWater() {
+        return this.touchingWater;
     }
 
     private boolean isBeingRainedOn() {
         try (BlockPos.PooledMutable pooledMutable = BlockPos.PooledMutable.getEntityPos(this);){
-            boolean bl = this.world.hasRain(pooledMutable) || this.world.hasRain(pooledMutable.method_10112(this.x, this.y + (double)this.dimensions.height, this.z));
+            boolean bl = this.world.hasRain(pooledMutable) || this.world.hasRain(pooledMutable.set(this.x, this.y + (double)this.dimensions.height, this.z));
             return bl;
         }
     }
@@ -879,54 +879,54 @@ CommandOutput {
         return this.world.getBlockState(new BlockPos(this)).getBlock() == Blocks.BUBBLE_COLUMN;
     }
 
-    public boolean isInsideWaterOrRain() {
-        return this.isInsideWater() || this.isBeingRainedOn();
+    public boolean isTouchingWaterOrRain() {
+        return this.isTouchingWater() || this.isBeingRainedOn();
     }
 
-    public boolean isTouchingWater() {
-        return this.isInsideWater() || this.isBeingRainedOn() || this.isInsideBubbleColumn();
+    public boolean isWet() {
+        return this.isTouchingWater() || this.isBeingRainedOn() || this.isInsideBubbleColumn();
     }
 
     public boolean isInsideWaterOrBubbleColumn() {
-        return this.isInsideWater() || this.isInsideBubbleColumn();
+        return this.isTouchingWater() || this.isInsideBubbleColumn();
     }
 
-    public boolean isInWater() {
-        return this.inWater && this.isInsideWater();
+    public boolean isSubmergedInWater() {
+        return this.submergedInWater && this.isTouchingWater();
     }
 
-    private void updateInWater() {
+    private void updateWaterState() {
         this.checkWaterState();
-        this.updateWetState();
+        this.updateSubmergedInWaterState();
         this.updateSwimming();
     }
 
     public void updateSwimming() {
         if (this.isSwimming()) {
-            this.setSwimming(this.isSprinting() && this.isInsideWater() && !this.hasVehicle());
+            this.setSwimming(this.isSprinting() && this.isTouchingWater() && !this.hasVehicle());
         } else {
-            this.setSwimming(this.isSprinting() && this.isInWater() && !this.hasVehicle());
+            this.setSwimming(this.isSprinting() && this.isSubmergedInWater() && !this.hasVehicle());
         }
     }
 
     public boolean checkWaterState() {
         if (this.getVehicle() instanceof BoatEntity) {
-            this.insideWater = false;
+            this.touchingWater = false;
         } else if (this.updateMovementInFluid(FluidTags.WATER)) {
-            if (!this.insideWater && !this.firstUpdate) {
+            if (!this.touchingWater && !this.firstUpdate) {
                 this.onSwimmingStart();
             }
             this.fallDistance = 0.0f;
-            this.insideWater = true;
+            this.touchingWater = true;
             this.extinguish();
         } else {
-            this.insideWater = false;
+            this.touchingWater = false;
         }
-        return this.insideWater;
+        return this.touchingWater;
     }
 
-    private void updateWetState() {
-        this.inWater = this.isSubmergedIn(FluidTags.WATER, true);
+    private void updateSubmergedInWaterState() {
+        this.submergedInWater = this.isSubmergedIn(FluidTags.WATER, true);
     }
 
     protected void onSwimmingStart() {
@@ -944,7 +944,7 @@ CommandOutput {
         } else {
             this.playSound(this.getHighSpeedSplashSound(), g, 1.0f + (this.random.nextFloat() - this.random.nextFloat()) * 0.4f);
         }
-        float h = MathHelper.floor(this.getBoundingBox().minY);
+        float h = MathHelper.floor(this.getBoundingBox().y1);
         int i = 0;
         while ((float)i < 1.0f + this.dimensions.width * 20.0f) {
             j = (this.random.nextFloat() * 2.0f - 1.0f) * this.dimensions.width;
@@ -962,7 +962,7 @@ CommandOutput {
     }
 
     public void attemptSprintingParticles() {
-        if (this.isSprinting() && !this.isInsideWater()) {
+        if (this.isSprinting() && !this.isTouchingWater()) {
             this.spawnSprintingParticles();
         }
     }
@@ -1042,7 +1042,7 @@ CommandOutput {
         this.world = world;
     }
 
-    public void setPositionAnglesAndUpdate(double d, double e, double f, float g, float h) {
+    public void updatePositionAndAngles(double d, double e, double f, float g, float h) {
         this.x = MathHelper.clamp(d, -3.0E7, 3.0E7);
         this.y = e;
         this.z = MathHelper.clamp(f, -3.0E7, 3.0E7);
@@ -1061,27 +1061,27 @@ CommandOutput {
         if (i >= 180.0) {
             this.prevYaw -= 360.0f;
         }
-        this.setPosition(this.x, this.y, this.z);
+        this.updatePosition(this.x, this.y, this.z);
         this.setRotation(g, h);
     }
 
-    public void setPositionAndAngles(BlockPos blockPos, float f, float g) {
-        this.setPositionAndAngles((double)blockPos.getX() + 0.5, blockPos.getY(), (double)blockPos.getZ() + 0.5, f, g);
+    public void refreshPositionAndAngles(BlockPos blockPos, float f, float g) {
+        this.refreshPositionAndAngles((double)blockPos.getX() + 0.5, blockPos.getY(), (double)blockPos.getZ() + 0.5, f, g);
     }
 
-    public void setPositionAndAngles(double d, double e, double f, float g, float h) {
+    public void refreshPositionAndAngles(double d, double e, double f, float g, float h) {
         this.x = d;
         this.y = e;
         this.z = f;
         this.prevX = this.x;
         this.prevY = this.y;
         this.prevZ = this.z;
-        this.prevRenderX = this.x;
-        this.prevRenderY = this.y;
-        this.prevRenderZ = this.z;
+        this.lastRenderX = this.x;
+        this.lastRenderY = this.y;
+        this.lastRenderZ = this.z;
         this.yaw = g;
         this.pitch = h;
-        this.setPosition(this.x, this.y, this.z);
+        this.updatePosition(this.x, this.y, this.z);
     }
 
     public float distanceTo(Entity entity) {
@@ -1226,22 +1226,22 @@ CommandOutput {
 
     public void updateKilledAdvancementCriterion(Entity entity, int i, DamageSource damageSource) {
         if (entity instanceof ServerPlayerEntity) {
-            Criterions.ENTITY_KILLED_PLAYER.handle((ServerPlayerEntity)entity, this, damageSource);
+            Criterions.ENTITY_KILLED_PLAYER.trigger((ServerPlayerEntity)entity, this, damageSource);
         }
     }
 
     @Environment(value=EnvType.CLIENT)
-    public boolean shouldRenderFrom(double d, double e, double f) {
+    public boolean shouldRender(double d, double e, double f) {
         double g = this.x - d;
         double h = this.y - e;
         double i = this.z - f;
         double j = g * g + h * h + i * i;
-        return this.shouldRenderAtDistance(j);
+        return this.shouldRender(j);
     }
 
     @Environment(value=EnvType.CLIENT)
-    public boolean shouldRenderAtDistance(double d) {
-        double e = this.getBoundingBox().averageDimension();
+    public boolean shouldRender(double d) {
+        double e = this.getBoundingBox().getAverageSideLength();
         if (Double.isNaN(e)) {
             e = 1.0;
         }
@@ -1273,12 +1273,12 @@ CommandOutput {
             compoundTag.put("Motion", this.toListTag(vec3d.x, vec3d.y, vec3d.z));
             compoundTag.put("Rotation", this.toListTag(this.yaw, this.pitch));
             compoundTag.putFloat("FallDistance", this.fallDistance);
-            compoundTag.putShort("Fire", (short)this.fireTime);
-            compoundTag.putShort("Air", (short)this.getBreath());
+            compoundTag.putShort("Fire", (short)this.fireTicks);
+            compoundTag.putShort("Air", (short)this.getAir());
             compoundTag.putBoolean("OnGround", this.onGround);
             compoundTag.putInt("Dimension", this.dimension.getRawId());
             compoundTag.putBoolean("Invulnerable", this.invulnerable);
-            compoundTag.putInt("PortalCooldown", this.portalCooldown);
+            compoundTag.putInt("PortalCooldown", this.netherPortalCooldown);
             compoundTag.putUuid("UUID", this.getUuid());
             Text text = this.getCustomName();
             if (text != null) {
@@ -1336,9 +1336,9 @@ CommandOutput {
             this.x = listTag.getDouble(0);
             this.y = listTag.getDouble(1);
             this.z = listTag.getDouble(2);
-            this.prevRenderX = this.x;
-            this.prevRenderY = this.y;
-            this.prevRenderZ = this.z;
+            this.lastRenderX = this.x;
+            this.lastRenderY = this.y;
+            this.lastRenderZ = this.z;
             this.prevX = this.x;
             this.prevY = this.y;
             this.prevZ = this.z;
@@ -1349,15 +1349,15 @@ CommandOutput {
             this.setHeadYaw(this.yaw);
             this.setYaw(this.yaw);
             this.fallDistance = compoundTag.getFloat("FallDistance");
-            this.fireTime = compoundTag.getShort("Fire");
-            this.setBreath(compoundTag.getShort("Air"));
+            this.fireTicks = compoundTag.getShort("Fire");
+            this.setAir(compoundTag.getShort("Air"));
             this.onGround = compoundTag.getBoolean("OnGround");
-            if (compoundTag.containsKey("Dimension")) {
+            if (compoundTag.contains("Dimension")) {
                 this.dimension = DimensionType.byRawId(compoundTag.getInt("Dimension"));
             }
             this.invulnerable = compoundTag.getBoolean("Invulnerable");
-            this.portalCooldown = compoundTag.getInt("PortalCooldown");
-            if (compoundTag.hasUuid("UUID")) {
+            this.netherPortalCooldown = compoundTag.getInt("PortalCooldown");
+            if (compoundTag.containsUuid("UUID")) {
                 this.uuid = compoundTag.getUuid("UUID");
                 this.uuidString = this.uuid.toString();
             }
@@ -1367,16 +1367,16 @@ CommandOutput {
             if (!Double.isFinite(this.yaw) || !Double.isFinite(this.pitch)) {
                 throw new IllegalStateException("Entity has invalid rotation");
             }
-            this.setPosition(this.x, this.y, this.z);
+            this.updatePosition(this.x, this.y, this.z);
             this.setRotation(this.yaw, this.pitch);
-            if (compoundTag.containsKey("CustomName", 8)) {
+            if (compoundTag.contains("CustomName", 8)) {
                 this.setCustomName(Text.Serializer.fromJson(compoundTag.getString("CustomName")));
             }
             this.setCustomNameVisible(compoundTag.getBoolean("CustomNameVisible"));
             this.setSilent(compoundTag.getBoolean("Silent"));
             this.setNoGravity(compoundTag.getBoolean("NoGravity"));
             this.setGlowing(compoundTag.getBoolean("Glowing"));
-            if (compoundTag.containsKey("Tags", 9)) {
+            if (compoundTag.contains("Tags", 9)) {
                 this.scoreboardTags.clear();
                 ListTag listTag4 = compoundTag.getList("Tags", 8);
                 int i = Math.min(listTag4.size(), 1024);
@@ -1386,7 +1386,7 @@ CommandOutput {
             }
             this.readCustomDataFromTag(compoundTag);
             if (this.shouldSetPositionOnLoad()) {
-                this.setPosition(this.x, this.y, this.z);
+                this.updatePosition(this.x, this.y, this.z);
             }
         } catch (Throwable throwable) {
             CrashReport crashReport = CrashReport.create(throwable, "Loading entity NBT");
@@ -1470,7 +1470,7 @@ CommandOutput {
                 int k = MathHelper.floor(this.x + (double)(((float)((i >> 1) % 2) - 0.5f) * this.dimensions.width * 0.8f));
                 int l = MathHelper.floor(this.z + (double)(((float)((i >> 2) % 2) - 0.5f) * this.dimensions.width * 0.8f));
                 if (pooledMutable.getX() == k && pooledMutable.getY() == j && pooledMutable.getZ() == l) continue;
-                pooledMutable.method_10113(k, j, l);
+                pooledMutable.set(k, j, l);
                 if (!this.world.getBlockState(pooledMutable).canSuffocate(this.world, pooledMutable)) continue;
                 boolean bl = true;
                 return bl;
@@ -1501,7 +1501,7 @@ CommandOutput {
         if (!this.hasPassenger(entity)) {
             return;
         }
-        entity.setPosition(this.x, this.y + this.getMountedHeightOffset() + entity.getHeightOffset(), this.z);
+        entity.updatePosition(this.x, this.y + this.getMountedHeightOffset() + entity.getHeightOffset(), this.z);
     }
 
     @Environment(value=EnvType.CLIENT)
@@ -1591,7 +1591,7 @@ CommandOutput {
 
     @Environment(value=EnvType.CLIENT)
     public void updateTrackedPositionAndAngles(double d, double e, double f, float g, float h, int i, boolean bl) {
-        this.setPosition(d, e, f);
+        this.updatePosition(d, e, f);
         this.setRotation(g, h);
     }
 
@@ -1617,49 +1617,49 @@ CommandOutput {
         return Vec3d.fromPolar(this.getRotationClient());
     }
 
-    public void setInPortal(BlockPos blockPos) {
-        if (this.portalCooldown > 0) {
-            this.portalCooldown = this.getDefaultPortalCooldown();
+    public void setInNetherPortal(BlockPos blockPos) {
+        if (this.netherPortalCooldown > 0) {
+            this.netherPortalCooldown = this.getDefaultNetherPortalCooldown();
             return;
         }
-        if (!this.world.isClient && !blockPos.equals(this.lastPortalPosition)) {
-            this.lastPortalPosition = new BlockPos(blockPos);
-            BlockPattern.Result result = ((PortalBlock)Blocks.NETHER_PORTAL).findPortal(this.world, this.lastPortalPosition);
+        if (!this.world.isClient && !blockPos.equals(this.lastNetherPortalPosition)) {
+            this.lastNetherPortalPosition = new BlockPos(blockPos);
+            BlockPattern.Result result = ((NetherPortalBlock)Blocks.NETHER_PORTAL).findPortal(this.world, this.lastNetherPortalPosition);
             double d = result.getForwards().getAxis() == Direction.Axis.X ? (double)result.getFrontTopLeft().getZ() : (double)result.getFrontTopLeft().getX();
             double e = Math.abs(MathHelper.minusDiv((result.getForwards().getAxis() == Direction.Axis.X ? this.z : this.x) - (double)(result.getForwards().rotateYClockwise().getDirection() == Direction.AxisDirection.NEGATIVE ? 1 : 0), d, d - (double)result.getWidth()));
             double f = MathHelper.minusDiv(this.y - 1.0, result.getFrontTopLeft().getY(), result.getFrontTopLeft().getY() - result.getHeight());
-            this.lastPortalDirectionVector = new Vec3d(e, f, 0.0);
-            this.lastPortalDirection = result.getForwards();
+            this.lastNetherPortalDirectionVector = new Vec3d(e, f, 0.0);
+            this.lastNetherPortalDirection = result.getForwards();
         }
-        this.inPortal = true;
+        this.inNetherPortal = true;
     }
 
-    protected void tickPortal() {
+    protected void tickNetherPortal() {
         if (!(this.world instanceof ServerWorld)) {
             return;
         }
-        int i = this.getMaxPortalTime();
-        if (this.inPortal) {
-            if (this.world.getServer().isNetherAllowed() && !this.hasVehicle() && this.portalTime++ >= i) {
+        int i = this.getMaxNetherPortalTime();
+        if (this.inNetherPortal) {
+            if (this.world.getServer().isNetherAllowed() && !this.hasVehicle() && this.netherPortalTime++ >= i) {
                 this.world.getProfiler().push("portal");
-                this.portalTime = i;
-                this.portalCooldown = this.getDefaultPortalCooldown();
+                this.netherPortalTime = i;
+                this.netherPortalCooldown = this.getDefaultNetherPortalCooldown();
                 this.changeDimension(this.world.dimension.getType() == DimensionType.THE_NETHER ? DimensionType.OVERWORLD : DimensionType.THE_NETHER);
                 this.world.getProfiler().pop();
             }
-            this.inPortal = false;
+            this.inNetherPortal = false;
         } else {
-            if (this.portalTime > 0) {
-                this.portalTime -= 4;
+            if (this.netherPortalTime > 0) {
+                this.netherPortalTime -= 4;
             }
-            if (this.portalTime < 0) {
-                this.portalTime = 0;
+            if (this.netherPortalTime < 0) {
+                this.netherPortalTime = 0;
             }
         }
-        this.tickPortalCooldown();
+        this.tickNetherPortalCooldown();
     }
 
-    public int getDefaultPortalCooldown() {
+    public int getDefaultNetherPortalCooldown() {
         return 300;
     }
 
@@ -1688,12 +1688,12 @@ CommandOutput {
         return Iterables.concat(this.getItemsHand(), this.getArmorItems());
     }
 
-    public void setEquippedStack(EquipmentSlot equipmentSlot, ItemStack itemStack) {
+    public void equipStack(EquipmentSlot equipmentSlot, ItemStack itemStack) {
     }
 
     public boolean isOnFire() {
         boolean bl = this.world != null && this.world.isClient;
-        return !this.isFireImmune() && (this.fireTime > 0 || bl && this.getFlag(0));
+        return !this.isFireImmune() && (this.fireTicks > 0 || bl && this.getFlag(0));
     }
 
     public boolean hasVehicle() {
@@ -1739,7 +1739,7 @@ CommandOutput {
 
     @Environment(value=EnvType.CLIENT)
     public boolean shouldLeaveSwimmingPose() {
-        return this.isInSwimmingPose() && !this.isInsideWater();
+        return this.isInSwimmingPose() && !this.isTouchingWater();
     }
 
     public void setSwimming(boolean bl) {
@@ -1762,7 +1762,7 @@ CommandOutput {
     }
 
     @Environment(value=EnvType.CLIENT)
-    public boolean canSeePlayer(PlayerEntity playerEntity) {
+    public boolean isInvisibleTo(PlayerEntity playerEntity) {
         if (playerEntity.isSpectator()) {
             return false;
         }
@@ -1806,21 +1806,21 @@ CommandOutput {
         }
     }
 
-    public int getMaxBreath() {
+    public int getMaxAir() {
         return 300;
     }
 
-    public int getBreath() {
-        return this.dataTracker.get(BREATH);
+    public int getAir() {
+        return this.dataTracker.get(AIR);
     }
 
-    public void setBreath(int i) {
-        this.dataTracker.set(BREATH, i);
+    public void setAir(int i) {
+        this.dataTracker.set(AIR, i);
     }
 
     public void onStruckByLightning(LightningEntity lightningEntity) {
-        ++this.fireTime;
-        if (this.fireTime == 0) {
+        ++this.fireTicks;
+        if (this.fireTicks == 0) {
             this.setOnFireFor(8);
         }
         this.damage(DamageSource.LIGHTNING_BOLT, 5.0f);
@@ -1929,17 +1929,17 @@ CommandOutput {
     }
 
     public void copyPositionAndRotation(Entity entity) {
-        this.setPositionAndAngles(entity.x, entity.y, entity.z, entity.yaw, entity.pitch);
+        this.refreshPositionAndAngles(entity.x, entity.y, entity.z, entity.yaw, entity.pitch);
     }
 
     public void copyFrom(Entity entity) {
         CompoundTag compoundTag = entity.toTag(new CompoundTag());
         compoundTag.remove("Dimension");
         this.fromTag(compoundTag);
-        this.portalCooldown = entity.portalCooldown;
-        this.lastPortalPosition = entity.lastPortalPosition;
-        this.lastPortalDirectionVector = entity.lastPortalDirectionVector;
-        this.lastPortalDirection = entity.lastPortalDirection;
+        this.netherPortalCooldown = entity.netherPortalCooldown;
+        this.lastNetherPortalPosition = entity.lastNetherPortalPosition;
+        this.lastNetherPortalDirectionVector = entity.lastNetherPortalDirectionVector;
+        this.lastNetherPortalDirection = entity.lastNetherPortalDirection;
     }
 
     @Nullable
@@ -1979,9 +1979,9 @@ CommandOutput {
             double k = Math.min(2.9999872E7, serverWorld2.getWorldBorder().getBoundSouth() - 16.0);
             d = MathHelper.clamp(d, h, j);
             e = MathHelper.clamp(e, i, k);
-            Vec3d vec3d2 = this.getLastPortalDirectionVector();
+            Vec3d vec3d2 = this.getLastNetherPortalDirectionVector();
             blockPos = new BlockPos(d, this.y, e);
-            BlockPattern.TeleportTarget teleportTarget = serverWorld2.getPortalForcer().getPortal(blockPos, vec3d, this.getLastPortalDirection(), vec3d2.x, vec3d2.y, this instanceof PlayerEntity);
+            BlockPattern.TeleportTarget teleportTarget = serverWorld2.getPortalForcer().getPortal(blockPos, vec3d, this.getLastNetherPortalDirection(), vec3d2.x, vec3d2.y, this instanceof PlayerEntity);
             if (teleportTarget == null) {
                 return null;
             }
@@ -1993,7 +1993,7 @@ CommandOutput {
         Object entity = this.getType().create(serverWorld2);
         if (entity != null) {
             ((Entity)entity).copyFrom(this);
-            ((Entity)entity).setPositionAndAngles(blockPos, ((Entity)entity).yaw + f, ((Entity)entity).pitch);
+            ((Entity)entity).refreshPositionAndAngles(blockPos, ((Entity)entity).yaw + f, ((Entity)entity).pitch);
             ((Entity)entity).setVelocity(vec3d);
             serverWorld2.method_18769((Entity)entity);
         }
@@ -2021,12 +2021,12 @@ CommandOutput {
         return 3;
     }
 
-    public Vec3d getLastPortalDirectionVector() {
-        return this.lastPortalDirectionVector;
+    public Vec3d getLastNetherPortalDirectionVector() {
+        return this.lastNetherPortalDirectionVector;
     }
 
-    public Direction getLastPortalDirection() {
-        return this.lastPortalDirection;
+    public Direction getLastNetherPortalDirection() {
+        return this.lastNetherPortalDirection;
     }
 
     public boolean canAvoidTraps() {
@@ -2114,8 +2114,8 @@ CommandOutput {
             return;
         }
         ChunkPos chunkPos = new ChunkPos(new BlockPos(d, e, f));
-        ((ServerWorld)this.world).method_14178().addTicket(ChunkTicketType.POST_TELEPORT, chunkPos, 0, this.getEntityId());
-        this.world.method_8497(chunkPos.x, chunkPos.z);
+        ((ServerWorld)this.world).getChunkManager().addTicket(ChunkTicketType.POST_TELEPORT, chunkPos, 0, this.getEntityId());
+        this.world.getChunk(chunkPos.x, chunkPos.z);
         this.requestTeleport(d, e, f);
     }
 
@@ -2124,7 +2124,7 @@ CommandOutput {
             return;
         }
         this.teleportRequested = true;
-        this.setPositionAndAngles(d, e, f, this.yaw, this.pitch);
+        this.refreshPositionAndAngles(d, e, f, this.yaw, this.pitch);
         ((ServerWorld)this.world).checkChunk(this);
     }
 
@@ -2151,7 +2151,7 @@ CommandOutput {
             return;
         }
         Box box = this.getBoundingBox();
-        this.setBoundingBox(new Box(box.minX, box.minY, box.minZ, box.minX + (double)entityDimensions2.width, box.minY + (double)entityDimensions2.height, box.minZ + (double)entityDimensions2.width));
+        this.setBoundingBox(new Box(box.x1, box.y1, box.z1, box.x1 + (double)entityDimensions2.width, box.y1 + (double)entityDimensions2.height, box.z1 + (double)entityDimensions2.width));
         if (entityDimensions2.width > entityDimensions.width && !this.firstUpdate && !this.world.isClient) {
             float f = entityDimensions.width - entityDimensions2.width;
             this.move(MovementType.SELF, new Vec3d(f, 0.0, f));
@@ -2443,12 +2443,12 @@ CommandOutput {
     public boolean updateMovementInFluid(Tag<Fluid> tag) {
         int n;
         Box box = this.getBoundingBox().contract(0.001);
-        int i = MathHelper.floor(box.minX);
-        int j = MathHelper.ceil(box.maxX);
-        int k = MathHelper.floor(box.minY);
-        int l = MathHelper.ceil(box.maxY);
-        int m = MathHelper.floor(box.minZ);
-        if (!this.world.isAreaLoaded(i, k, m, j, l, n = MathHelper.ceil(box.maxZ))) {
+        int i = MathHelper.floor(box.x1);
+        int j = MathHelper.ceil(box.x2);
+        int k = MathHelper.floor(box.y1);
+        int l = MathHelper.ceil(box.y2);
+        int m = MathHelper.floor(box.z1);
+        if (!this.world.isAreaLoaded(i, k, m, j, l, n = MathHelper.ceil(box.z2))) {
             return false;
         }
         double d = 0.0;
@@ -2461,11 +2461,11 @@ CommandOutput {
                 for (int q = k; q < l; ++q) {
                     for (int r = m; r < n; ++r) {
                         double e;
-                        pooledMutable.method_10113(p, q, r);
+                        pooledMutable.set(p, q, r);
                         FluidState fluidState = this.world.getFluidState(pooledMutable);
-                        if (!fluidState.matches(tag) || !((e = (double)((float)q + fluidState.getHeight(this.world, pooledMutable))) >= box.minY)) continue;
+                        if (!fluidState.matches(tag) || !((e = (double)((float)q + fluidState.getHeight(this.world, pooledMutable))) >= box.y1)) continue;
                         bl2 = true;
-                        d = Math.max(e - box.minY, d);
+                        d = Math.max(e - box.y1, d);
                         if (!bl) continue;
                         Vec3d vec3d2 = fluidState.getVelocity(this.world, pooledMutable);
                         if (d < 0.4) {

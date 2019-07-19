@@ -79,7 +79,7 @@ extends LivingEntity {
 
     public ArmorStandEntity(World world, double d, double e, double f) {
         this((EntityType<? extends ArmorStandEntity>)EntityType.ARMOR_STAND, world);
-        this.setPosition(d, e, f);
+        this.updatePosition(d, e, f);
     }
 
     @Override
@@ -88,7 +88,7 @@ extends LivingEntity {
         double e = this.y;
         double f = this.z;
         super.calculateDimensions();
-        this.setPosition(d, e, f);
+        this.updatePosition(d, e, f);
     }
 
     private boolean canClip() {
@@ -136,7 +136,7 @@ extends LivingEntity {
     }
 
     @Override
-    public void setEquippedStack(EquipmentSlot equipmentSlot, ItemStack itemStack) {
+    public void equipStack(EquipmentSlot equipmentSlot, ItemStack itemStack) {
         switch (equipmentSlot.getType()) {
             case HAND: {
                 this.onEquipStack(itemStack);
@@ -169,7 +169,7 @@ extends LivingEntity {
             return false;
         }
         if (itemStack.isEmpty() || MobEntity.canEquipmentSlotContain(equipmentSlot, itemStack) || equipmentSlot == EquipmentSlot.HEAD) {
-            this.setEquippedStack(equipmentSlot, itemStack);
+            this.equipStack(equipmentSlot, itemStack);
             return true;
         }
         return false;
@@ -218,16 +218,16 @@ extends LivingEntity {
         int i;
         ListTag listTag;
         super.readCustomDataFromTag(compoundTag);
-        if (compoundTag.containsKey("ArmorItems", 9)) {
+        if (compoundTag.contains("ArmorItems", 9)) {
             listTag = compoundTag.getList("ArmorItems", 10);
             for (i = 0; i < this.armorItems.size(); ++i) {
-                this.armorItems.set(i, ItemStack.fromTag(listTag.getCompoundTag(i)));
+                this.armorItems.set(i, ItemStack.fromTag(listTag.getCompound(i)));
             }
         }
-        if (compoundTag.containsKey("HandItems", 9)) {
+        if (compoundTag.contains("HandItems", 9)) {
             listTag = compoundTag.getList("HandItems", 10);
             for (i = 0; i < this.heldItems.size(); ++i) {
-                this.heldItems.set(i, ItemStack.fromTag(listTag.getCompoundTag(i)));
+                this.heldItems.set(i, ItemStack.fromTag(listTag.getCompound(i)));
             }
         }
         this.setInvisible(compoundTag.getBoolean("Invisible"));
@@ -289,7 +289,7 @@ extends LivingEntity {
     }
 
     @Override
-    protected void tickPushing() {
+    protected void tickCramming() {
         List<Entity> list = this.world.getEntities(this, this.getBoundingBox(), RIDEABLE_MINECART_PREDICATE);
         for (int i = 0; i < list.size(); ++i) {
             Entity entity = list.get(i);
@@ -312,7 +312,7 @@ extends LivingEntity {
             EquipmentSlot equipmentSlot3;
             EquipmentSlot equipmentSlot2 = this.method_6916(vec3d);
             EquipmentSlot equipmentSlot4 = equipmentSlot3 = this.method_6915(equipmentSlot2) ? equipmentSlot : equipmentSlot2;
-            if (this.isEquippedStackValid(equipmentSlot3)) {
+            if (this.hasStackEquipped(equipmentSlot3)) {
                 this.method_6904(playerEntity, equipmentSlot3, itemStack, hand);
             }
         } else {
@@ -338,28 +338,28 @@ extends LivingEntity {
         EquipmentSlot equipmentSlot2 = EquipmentSlot.FEET;
         if (d >= 0.1) {
             double d2 = bl ? 0.8 : 0.45;
-            if (d < 0.1 + d2 && this.isEquippedStackValid(equipmentSlot2)) {
+            if (d < 0.1 + d2 && this.hasStackEquipped(equipmentSlot2)) {
                 return EquipmentSlot.FEET;
             }
         }
         double d3 = bl ? 0.3 : 0.0;
         if (d >= 0.9 + d3) {
             double d4 = bl ? 1.0 : 0.7;
-            if (d < 0.9 + d4 && this.isEquippedStackValid(EquipmentSlot.CHEST)) {
+            if (d < 0.9 + d4 && this.hasStackEquipped(EquipmentSlot.CHEST)) {
                 return EquipmentSlot.CHEST;
             }
         }
         if (d >= 0.4) {
             double d5 = bl ? 1.0 : 0.8;
-            if (d < 0.4 + d5 && this.isEquippedStackValid(EquipmentSlot.LEGS)) {
+            if (d < 0.4 + d5 && this.hasStackEquipped(EquipmentSlot.LEGS)) {
                 return EquipmentSlot.LEGS;
             }
         }
-        if (d >= 1.6 && this.isEquippedStackValid(EquipmentSlot.HEAD)) {
+        if (d >= 1.6 && this.hasStackEquipped(EquipmentSlot.HEAD)) {
             return EquipmentSlot.HEAD;
         }
-        if (this.isEquippedStackValid(EquipmentSlot.MAINHAND)) return equipmentSlot;
-        if (!this.isEquippedStackValid(EquipmentSlot.OFFHAND)) return equipmentSlot;
+        if (this.hasStackEquipped(EquipmentSlot.MAINHAND)) return equipmentSlot;
+        if (!this.hasStackEquipped(EquipmentSlot.OFFHAND)) return equipmentSlot;
         return EquipmentSlot.OFFHAND;
     }
 
@@ -378,7 +378,7 @@ extends LivingEntity {
         if (playerEntity.abilities.creativeMode && itemStack2.isEmpty() && !itemStack.isEmpty()) {
             ItemStack itemStack3 = itemStack.copy();
             itemStack3.setCount(1);
-            this.setEquippedStack(equipmentSlot, itemStack3);
+            this.equipStack(equipmentSlot, itemStack3);
             return;
         }
         if (!itemStack.isEmpty() && itemStack.getCount() > 1) {
@@ -387,11 +387,11 @@ extends LivingEntity {
             }
             ItemStack itemStack3 = itemStack.copy();
             itemStack3.setCount(1);
-            this.setEquippedStack(equipmentSlot, itemStack3);
+            this.equipStack(equipmentSlot, itemStack3);
             itemStack.decrement(1);
             return;
         }
-        this.setEquippedStack(equipmentSlot, itemStack);
+        this.equipStack(equipmentSlot, itemStack);
         playerEntity.setStackInHand(hand, itemStack2);
     }
 
@@ -466,8 +466,8 @@ extends LivingEntity {
 
     @Override
     @Environment(value=EnvType.CLIENT)
-    public boolean shouldRenderAtDistance(double d) {
-        double e = this.getBoundingBox().averageDimension() * 4.0;
+    public boolean shouldRender(double d) {
+        double e = this.getBoundingBox().getAverageSideLength() * 4.0;
         if (Double.isNaN(e) || e == 0.0) {
             e = 4.0;
         }
@@ -519,7 +519,7 @@ extends LivingEntity {
     }
 
     @Override
-    protected float method_6031(float f, float g) {
+    protected float turnHead(float f, float g) {
         this.field_6220 = this.prevYaw;
         this.field_6283 = this.yaw;
         return 0.0f;

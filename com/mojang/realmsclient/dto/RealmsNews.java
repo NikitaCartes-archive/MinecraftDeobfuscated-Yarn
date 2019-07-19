@@ -5,16 +5,16 @@ package com.mojang.realmsclient.dto;
 
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import com.mojang.realmsclient.dto.ValueObject;
+import com.mojang.realmsclient.util.JsonUtils;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_4352;
-import net.minecraft.class_4431;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 @Environment(value=EnvType.CLIENT)
 public class RealmsNews
-extends class_4352 {
+extends ValueObject {
     private static final Logger LOGGER = LogManager.getLogger();
     public String newsLink;
 
@@ -23,7 +23,7 @@ extends class_4352 {
         try {
             JsonParser jsonParser = new JsonParser();
             JsonObject jsonObject = jsonParser.parse(string).getAsJsonObject();
-            realmsNews.newsLink = class_4431.method_21547("newsLink", jsonObject, null);
+            realmsNews.newsLink = JsonUtils.getStringOr("newsLink", jsonObject, null);
         } catch (Exception exception) {
             LOGGER.error("Could not parse RealmsNews: " + exception.getMessage());
         }

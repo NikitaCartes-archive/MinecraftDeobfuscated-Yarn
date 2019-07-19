@@ -34,7 +34,8 @@ implements ArgumentType<Formatting> {
         return commandContext.getArgument(string, Formatting.class);
     }
 
-    public Formatting method_9279(StringReader stringReader) throws CommandSyntaxException {
+    @Override
+    public Formatting parse(StringReader stringReader) throws CommandSyntaxException {
         String string = stringReader.readUnquotedString();
         Formatting formatting = Formatting.byName(string);
         if (formatting == null || formatting.isModifier()) {
@@ -55,7 +56,7 @@ implements ArgumentType<Formatting> {
 
     @Override
     public /* synthetic */ Object parse(StringReader stringReader) throws CommandSyntaxException {
-        return this.method_9279(stringReader);
+        return this.parse(stringReader);
     }
 }
 

@@ -40,15 +40,15 @@ extends Goal {
 
     @Override
     public void start() {
-        ((MobEntity)this.actor).setEquippedStack(EquipmentSlot.MAINHAND, this.item.copy());
+        ((MobEntity)this.actor).equipStack(EquipmentSlot.MAINHAND, this.item.copy());
         ((LivingEntity)this.actor).setCurrentHand(Hand.MAIN_HAND);
     }
 
     @Override
     public void stop() {
-        ((MobEntity)this.actor).setEquippedStack(EquipmentSlot.MAINHAND, ItemStack.EMPTY);
+        ((MobEntity)this.actor).equipStack(EquipmentSlot.MAINHAND, ItemStack.EMPTY);
         if (this.sound != null) {
-            ((Entity)this.actor).playSound(this.sound, 1.0f, ((LivingEntity)this.actor).getRand().nextFloat() * 0.2f + 0.9f);
+            ((Entity)this.actor).playSound(this.sound, 1.0f, ((LivingEntity)this.actor).getRandom().nextFloat() * 0.2f + 0.9f);
         }
     }
 }

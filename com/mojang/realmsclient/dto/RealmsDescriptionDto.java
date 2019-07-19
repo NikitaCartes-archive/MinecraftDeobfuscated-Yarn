@@ -3,13 +3,13 @@
  */
 package com.mojang.realmsclient.dto;
 
+import com.mojang.realmsclient.dto.ValueObject;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_4352;
 
 @Environment(value=EnvType.CLIENT)
 public class RealmsDescriptionDto
-extends class_4352 {
+extends ValueObject {
     public String name;
     public String description;
 

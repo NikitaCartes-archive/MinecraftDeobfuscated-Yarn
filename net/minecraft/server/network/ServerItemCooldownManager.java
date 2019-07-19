@@ -3,9 +3,9 @@
  */
 package net.minecraft.server.network;
 
-import net.minecraft.client.network.packet.CooldownUpdateS2CPacket;
 import net.minecraft.entity.player.ItemCooldownManager;
 import net.minecraft.item.Item;
+import net.minecraft.network.packet.s2c.play.CooldownUpdateS2CPacket;
 import net.minecraft.server.network.ServerPlayerEntity;
 
 public class ServerItemCooldownManager

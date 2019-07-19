@@ -23,7 +23,8 @@ extends BaseText {
         return this.string;
     }
 
-    public LiteralText method_10992() {
+    @Override
+    public LiteralText copy() {
         return new LiteralText(this.string);
     }
 
@@ -46,7 +47,7 @@ extends BaseText {
 
     @Override
     public /* synthetic */ Text copy() {
-        return this.method_10992();
+        return this.copy();
     }
 }
 

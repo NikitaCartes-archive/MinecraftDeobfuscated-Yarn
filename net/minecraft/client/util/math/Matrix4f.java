@@ -18,10 +18,10 @@ public final class Matrix4f {
 
     public Matrix4f(Quaternion quaternion) {
         this();
-        float f = quaternion.getX();
-        float g = quaternion.getY();
-        float h = quaternion.getZ();
-        float i = quaternion.getW();
+        float f = quaternion.getB();
+        float g = quaternion.getC();
+        float h = quaternion.getD();
+        float i = quaternion.getA();
         float j = 2.0f * f * f;
         float k = 2.0f * g * g;
         float l = 2.0f * h * h;
@@ -88,7 +88,7 @@ public final class Matrix4f {
         return stringBuilder.toString();
     }
 
-    public void putIntoBuffer(FloatBuffer floatBuffer) {
+    public void writeToBuffer(FloatBuffer floatBuffer) {
         this.putIntoBuffer(floatBuffer, false);
     }
 

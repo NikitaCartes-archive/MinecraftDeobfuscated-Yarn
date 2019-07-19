@@ -9,12 +9,12 @@ import com.mojang.brigadier.arguments.FloatArgumentType;
 import com.mojang.brigadier.arguments.IntegerArgumentType;
 import com.mojang.brigadier.arguments.LongArgumentType;
 import com.mojang.brigadier.arguments.StringArgumentType;
-import net.minecraft.class_4461;
 import net.minecraft.command.arguments.ArgumentTypes;
 import net.minecraft.command.arguments.serialize.ConstantArgumentSerializer;
 import net.minecraft.command.arguments.serialize.DoubleArgumentSerializer;
 import net.minecraft.command.arguments.serialize.FloatArgumentSerializer;
 import net.minecraft.command.arguments.serialize.IntegerArgumentSerializer;
+import net.minecraft.command.arguments.serialize.LongArgumentSerializer;
 import net.minecraft.command.arguments.serialize.StringArgumentSerializer;
 
 public class BrigadierArgumentTypes {
@@ -23,7 +23,7 @@ public class BrigadierArgumentTypes {
         ArgumentTypes.register("brigadier:float", FloatArgumentType.class, new FloatArgumentSerializer());
         ArgumentTypes.register("brigadier:double", DoubleArgumentType.class, new DoubleArgumentSerializer());
         ArgumentTypes.register("brigadier:integer", IntegerArgumentType.class, new IntegerArgumentSerializer());
-        ArgumentTypes.register("brigadier:long", LongArgumentType.class, new class_4461());
+        ArgumentTypes.register("brigadier:long", LongArgumentType.class, new LongArgumentSerializer());
         ArgumentTypes.register("brigadier:string", StringArgumentType.class, new StringArgumentSerializer());
     }
 

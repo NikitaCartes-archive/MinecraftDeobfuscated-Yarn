@@ -5,14 +5,14 @@ package net.minecraft.client.render.entity.model;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.client.model.Cuboid;
+import net.minecraft.client.model.ModelPart;
 import net.minecraft.client.render.entity.model.EntityModel;
 import net.minecraft.entity.Entity;
 
 @Environment(value=EnvType.CLIENT)
 public class LlamaSpitEntityModel<T extends Entity>
 extends EntityModel<T> {
-    private final Cuboid field_3433 = new Cuboid(this);
+    private final ModelPart field_3433 = new ModelPart(this);
 
     public LlamaSpitEntityModel() {
         this(0.0f);
@@ -20,14 +20,14 @@ extends EntityModel<T> {
 
     public LlamaSpitEntityModel(float f) {
         int i = 2;
-        this.field_3433.setTextureOffset(0, 0).addBox(-4.0f, 0.0f, 0.0f, 2, 2, 2, f);
-        this.field_3433.setTextureOffset(0, 0).addBox(0.0f, -4.0f, 0.0f, 2, 2, 2, f);
-        this.field_3433.setTextureOffset(0, 0).addBox(0.0f, 0.0f, -4.0f, 2, 2, 2, f);
-        this.field_3433.setTextureOffset(0, 0).addBox(0.0f, 0.0f, 0.0f, 2, 2, 2, f);
-        this.field_3433.setTextureOffset(0, 0).addBox(2.0f, 0.0f, 0.0f, 2, 2, 2, f);
-        this.field_3433.setTextureOffset(0, 0).addBox(0.0f, 2.0f, 0.0f, 2, 2, 2, f);
-        this.field_3433.setTextureOffset(0, 0).addBox(0.0f, 0.0f, 2.0f, 2, 2, 2, f);
-        this.field_3433.setRotationPoint(0.0f, 0.0f, 0.0f);
+        this.field_3433.setTextureOffset(0, 0).addCuboid(-4.0f, 0.0f, 0.0f, 2, 2, 2, f);
+        this.field_3433.setTextureOffset(0, 0).addCuboid(0.0f, -4.0f, 0.0f, 2, 2, 2, f);
+        this.field_3433.setTextureOffset(0, 0).addCuboid(0.0f, 0.0f, -4.0f, 2, 2, 2, f);
+        this.field_3433.setTextureOffset(0, 0).addCuboid(0.0f, 0.0f, 0.0f, 2, 2, 2, f);
+        this.field_3433.setTextureOffset(0, 0).addCuboid(2.0f, 0.0f, 0.0f, 2, 2, 2, f);
+        this.field_3433.setTextureOffset(0, 0).addCuboid(0.0f, 2.0f, 0.0f, 2, 2, 2, f);
+        this.field_3433.setTextureOffset(0, 0).addCuboid(0.0f, 0.0f, 2.0f, 2, 2, 2, f);
+        this.field_3433.setPivot(0.0f, 0.0f, 0.0f);
     }
 
     @Override

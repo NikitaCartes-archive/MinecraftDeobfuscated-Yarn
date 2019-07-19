@@ -8,7 +8,7 @@ import java.util.Random;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.render.BufferBuilder;
-import net.minecraft.client.render.GuiLighting;
+import net.minecraft.client.render.DiffuseLighting;
 import net.minecraft.client.render.Tessellator;
 import net.minecraft.client.render.VertexFormats;
 import net.minecraft.client.render.entity.feature.FeatureRenderer;
@@ -23,13 +23,14 @@ extends FeatureRenderer<EnderDragonEntity, DragonEntityModel> {
         super(featureRendererContext);
     }
 
-    public void method_4184(EnderDragonEntity enderDragonEntity, float f, float g, float h, float i, float j, float k, float l) {
+    @Override
+    public void render(EnderDragonEntity enderDragonEntity, float f, float g, float h, float i, float j, float k, float l) {
         if (enderDragonEntity.field_7031 <= 0) {
             return;
         }
         Tessellator tessellator = Tessellator.getInstance();
-        BufferBuilder bufferBuilder = tessellator.getBufferBuilder();
-        GuiLighting.disable();
+        BufferBuilder bufferBuilder = tessellator.getBuffer();
+        DiffuseLighting.disable();
         float m = ((float)enderDragonEntity.field_7031 + h) / 200.0f;
         float n = 0.0f;
         if (m > 0.8f) {
@@ -72,7 +73,7 @@ extends FeatureRenderer<EnderDragonEntity, DragonEntityModel> {
         GlStateManager.color4f(1.0f, 1.0f, 1.0f, 1.0f);
         GlStateManager.enableTexture();
         GlStateManager.enableAlphaTest();
-        GuiLighting.enable();
+        DiffuseLighting.enable();
     }
 
     @Override

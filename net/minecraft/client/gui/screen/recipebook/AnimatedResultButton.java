@@ -12,7 +12,7 @@ import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.screen.recipebook.RecipeBookResults;
 import net.minecraft.client.gui.screen.recipebook.RecipeResultCollection;
 import net.minecraft.client.gui.widget.AbstractButtonWidget;
-import net.minecraft.client.render.GuiLighting;
+import net.minecraft.client.render.DiffuseLighting;
 import net.minecraft.client.resource.language.I18n;
 import net.minecraft.container.CraftingContainer;
 import net.minecraft.item.ItemStack;
@@ -64,12 +64,12 @@ extends AbstractButtonWidget {
         if (!Screen.hasControlDown()) {
             this.time += f;
         }
-        GuiLighting.enableForItems();
+        DiffuseLighting.enableForItems();
         MinecraftClient minecraftClient = MinecraftClient.getInstance();
         minecraftClient.getTextureManager().bindTexture(BG_TEX);
         GlStateManager.disableLighting();
         int k = 29;
-        if (!this.results.hasCraftableResults()) {
+        if (!this.results.hasCraftableRecipes()) {
             k += 25;
         }
         int l = 206;
@@ -99,13 +99,13 @@ extends AbstractButtonWidget {
             GlStateManager.popMatrix();
         }
         GlStateManager.enableLighting();
-        GuiLighting.disable();
+        DiffuseLighting.disable();
     }
 
     private List<Recipe<?>> getResults() {
-        List<Recipe<?>> list = this.results.getResultsExclusive(true);
+        List<Recipe<?>> list = this.results.getRecipes(true);
         if (!this.recipeBook.isFilteringCraftable(this.craftingContainer)) {
-            list.addAll(this.results.getResultsExclusive(false));
+            list.addAll(this.results.getRecipes(false));
         }
         return list;
     }

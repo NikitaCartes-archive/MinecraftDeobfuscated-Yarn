@@ -8,16 +8,16 @@ import java.util.List;
 import java.util.ListIterator;
 import java.util.Locale;
 import java.util.Map;
-import net.minecraft.client.network.DebugRendererInfoManager;
 import net.minecraft.entity.EntityCategory;
+import net.minecraft.server.network.DebugInfoSender;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.structure.StructureManager;
 import net.minecraft.structure.StructureStart;
 import net.minecraft.util.crash.CrashException;
 import net.minecraft.util.crash.CrashReport;
+import net.minecraft.util.math.BlockBox;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
-import net.minecraft.util.math.MutableIntBoundingBox;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.world.ChunkRegion;
 import net.minecraft.world.Heightmap;
@@ -162,7 +162,7 @@ public abstract class ChunkGenerator<C extends ChunkGeneratorConfig> {
             StructureStart structureStart = StructureStart.DEFAULT;
             if (structureFeature.shouldStartAt(chunkGenerator, chunkRandom, chunkPos.x, chunkPos.z)) {
                 Biome biome = this.getBiomeSource().getBiome(new BlockPos(chunkPos.getStartX() + 9, 0, chunkPos.getStartZ() + 9));
-                StructureStart structureStart2 = structureFeature.getStructureStartFactory().create(structureFeature, chunkPos.x, chunkPos.z, biome, MutableIntBoundingBox.empty(), 0, chunkGenerator.getSeed());
+                StructureStart structureStart2 = structureFeature.getStructureStartFactory().create(structureFeature, chunkPos.x, chunkPos.z, biome, BlockBox.empty(), 0, chunkGenerator.getSeed());
                 structureStart2.initialize(this, structureManager, chunkPos.x, chunkPos.z, biome);
                 structureStart = structureStart2.hasChildren() ? structureStart2 : StructureStart.DEFAULT;
             }
@@ -183,7 +183,7 @@ public abstract class ChunkGenerator<C extends ChunkGeneratorConfig> {
                     StructureStart structureStart = entry.getValue();
                     if (structureStart == StructureStart.DEFAULT || !structureStart.getBoundingBox().intersectsXZ(l, m, l + 15, m + 15)) continue;
                     chunk.addStructureReference(entry.getKey(), p);
-                    DebugRendererInfoManager.sendStructureStart(iWorld, structureStart);
+                    DebugInfoSender.sendStructureStart(iWorld, structureStart);
                 }
             }
         }

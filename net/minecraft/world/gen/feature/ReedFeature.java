@@ -21,7 +21,8 @@ extends Feature<DefaultFeatureConfig> {
         super(function);
     }
 
-    public boolean method_13782(IWorld iWorld, ChunkGenerator<? extends ChunkGeneratorConfig> chunkGenerator, Random random, BlockPos blockPos, DefaultFeatureConfig defaultFeatureConfig) {
+    @Override
+    public boolean generate(IWorld iWorld, ChunkGenerator<? extends ChunkGeneratorConfig> chunkGenerator, Random random, BlockPos blockPos, DefaultFeatureConfig defaultFeatureConfig) {
         int i = 0;
         for (int j = 0; j < 20; ++j) {
             BlockPos blockPos3;

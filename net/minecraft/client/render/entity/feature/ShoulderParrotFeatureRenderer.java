@@ -24,7 +24,8 @@ extends FeatureRenderer<T, PlayerEntityModel<T>> {
         super(featureRendererContext);
     }
 
-    public void method_4185(T playerEntity, float f, float g, float h, float i, float j, float k, float l) {
+    @Override
+    public void render(T playerEntity, float f, float g, float h, float i, float j, float k, float l) {
         GlStateManager.enableRescaleNormal();
         GlStateManager.color4f(1.0f, 1.0f, 1.0f, 1.0f);
         this.renderShoulderParrot(playerEntity, f, g, h, j, k, l, true);

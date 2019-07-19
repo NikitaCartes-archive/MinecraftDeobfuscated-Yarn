@@ -76,7 +76,7 @@ implements IWorld {
         this.width = i;
         this.world = serverWorld;
         this.seed = serverWorld.getSeed();
-        this.generatorSettings = serverWorld.method_14178().getChunkGenerator().getConfig();
+        this.generatorSettings = serverWorld.getChunkManager().getChunkGenerator().getConfig();
         this.seaLevel = serverWorld.getSeaLevel();
         this.levelProperties = serverWorld.getLevelProperties();
         this.random = serverWorld.getRandom();
@@ -255,7 +255,7 @@ implements IWorld {
     }
 
     @Override
-    public boolean clearBlockState(BlockPos blockPos, boolean bl) {
+    public boolean removeBlock(BlockPos blockPos, boolean bl) {
         return this.setBlockState(blockPos, Blocks.AIR.getDefaultState(), 3);
     }
 
@@ -274,8 +274,9 @@ implements IWorld {
         return false;
     }
 
+    @Override
     @Deprecated
-    public ServerWorld method_19506() {
+    public ServerWorld getWorld() {
         return this.world;
     }
 
@@ -294,7 +295,7 @@ implements IWorld {
 
     @Override
     public ChunkManager getChunkManager() {
-        return this.world.method_14178();
+        return this.world.getChunkManager();
     }
 
     @Override
@@ -381,7 +382,7 @@ implements IWorld {
     @Override
     @Deprecated
     public /* synthetic */ World getWorld() {
-        return this.method_19506();
+        return this.getWorld();
     }
 }
 

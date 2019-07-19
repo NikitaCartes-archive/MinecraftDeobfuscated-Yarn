@@ -18,34 +18,36 @@ import net.minecraft.world.World;
 
 public class FireworkRocketRecipe
 extends SpecialCraftingRecipe {
-    private static final Ingredient field_9007 = Ingredient.ofItems(Items.PAPER);
-    private static final Ingredient field_9006 = Ingredient.ofItems(Items.GUNPOWDER);
-    private static final Ingredient field_9008 = Ingredient.ofItems(Items.FIREWORK_STAR);
+    private static final Ingredient PAPER = Ingredient.ofItems(Items.PAPER);
+    private static final Ingredient DURATION_MODIFIER = Ingredient.ofItems(Items.GUNPOWDER);
+    private static final Ingredient FIREWORK_STAR = Ingredient.ofItems(Items.FIREWORK_STAR);
 
     public FireworkRocketRecipe(Identifier identifier) {
         super(identifier);
     }
 
-    public boolean method_17709(CraftingInventory craftingInventory, World world) {
+    @Override
+    public boolean matches(CraftingInventory craftingInventory, World world) {
         boolean bl = false;
         int i = 0;
         for (int j = 0; j < craftingInventory.getInvSize(); ++j) {
             ItemStack itemStack = craftingInventory.getInvStack(j);
             if (itemStack.isEmpty()) continue;
-            if (field_9007.method_8093(itemStack)) {
+            if (PAPER.test(itemStack)) {
                 if (bl) {
                     return false;
                 }
                 bl = true;
                 continue;
             }
-            if (!(field_9006.method_8093(itemStack) ? ++i > 3 : !field_9008.method_8093(itemStack))) continue;
+            if (!(DURATION_MODIFIER.test(itemStack) ? ++i > 3 : !FIREWORK_STAR.test(itemStack))) continue;
             return false;
         }
         return bl && i >= 1;
     }
 
-    public ItemStack method_17708(CraftingInventory craftingInventory) {
+    @Override
+    public ItemStack craft(CraftingInventory craftingInventory) {
         ItemStack itemStack = new ItemStack(Items.FIREWORK_ROCKET, 3);
         CompoundTag compoundTag = itemStack.getOrCreateSubTag("Fireworks");
         ListTag listTag = new ListTag();
@@ -54,11 +56,11 @@ extends SpecialCraftingRecipe {
             CompoundTag compoundTag2;
             ItemStack itemStack2 = craftingInventory.getInvStack(j);
             if (itemStack2.isEmpty()) continue;
-            if (field_9006.method_8093(itemStack2)) {
+            if (DURATION_MODIFIER.test(itemStack2)) {
                 ++i;
                 continue;
             }
-            if (!field_9008.method_8093(itemStack2) || (compoundTag2 = itemStack2.getSubTag("Explosion")) == null) continue;
+            if (!FIREWORK_STAR.test(itemStack2) || (compoundTag2 = itemStack2.getSubTag("Explosion")) == null) continue;
             listTag.add(compoundTag2);
         }
         compoundTag.putByte("Flight", (byte)i);

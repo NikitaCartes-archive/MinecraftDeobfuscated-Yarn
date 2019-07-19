@@ -24,12 +24,14 @@ extends MobEntityRenderer<SlimeEntity, SlimeEntityModel<SlimeEntity>> {
         this.addFeature(new SlimeOverlayFeatureRenderer<SlimeEntity>(this));
     }
 
-    public void method_4117(SlimeEntity slimeEntity, double d, double e, double f, float g, float h) {
+    @Override
+    public void render(SlimeEntity slimeEntity, double d, double e, double f, float g, float h) {
         this.field_4673 = 0.25f * (float)slimeEntity.getSize();
-        super.method_4072(slimeEntity, d, e, f, g, h);
+        super.render(slimeEntity, d, e, f, g, h);
     }
 
-    protected void method_4118(SlimeEntity slimeEntity, float f) {
+    @Override
+    protected void scale(SlimeEntity slimeEntity, float f) {
         float g = 0.999f;
         GlStateManager.scalef(0.999f, 0.999f, 0.999f);
         float h = slimeEntity.getSize();
@@ -38,7 +40,8 @@ extends MobEntityRenderer<SlimeEntity, SlimeEntityModel<SlimeEntity>> {
         GlStateManager.scalef(j * h, 1.0f / j * h, j * h);
     }
 
-    protected Identifier method_4116(SlimeEntity slimeEntity) {
+    @Override
+    protected Identifier getTexture(SlimeEntity slimeEntity) {
         return SKIN;
     }
 }

@@ -45,7 +45,8 @@ extends AbstractNumberTag {
         return this.value + "f";
     }
 
-    public FloatTag method_10587() {
+    @Override
+    public FloatTag copy() {
         return new FloatTag(this.value);
     }
 
@@ -103,7 +104,7 @@ extends AbstractNumberTag {
 
     @Override
     public /* synthetic */ Tag copy() {
-        return this.method_10587();
+        return this.copy();
     }
 }
 

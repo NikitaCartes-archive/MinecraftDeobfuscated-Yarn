@@ -37,7 +37,7 @@ public class EffectCommand {
         int k = integer != null ? (statusEffect.isInstant() ? integer : integer * 20) : (statusEffect.isInstant() ? 1 : 600);
         for (Entity entity : collection) {
             StatusEffectInstance statusEffectInstance;
-            if (!(entity instanceof LivingEntity) || !((LivingEntity)entity).addPotionEffect(statusEffectInstance = new StatusEffectInstance(statusEffect, k, i, false, bl))) continue;
+            if (!(entity instanceof LivingEntity) || !((LivingEntity)entity).addStatusEffect(statusEffectInstance = new StatusEffectInstance(statusEffect, k, i, false, bl))) continue;
             ++j;
         }
         if (j == 0) {
@@ -54,7 +54,7 @@ public class EffectCommand {
     private static int executeClear(ServerCommandSource serverCommandSource, Collection<? extends Entity> collection) throws CommandSyntaxException {
         int i = 0;
         for (Entity entity : collection) {
-            if (!(entity instanceof LivingEntity) || !((LivingEntity)entity).clearPotionEffects()) continue;
+            if (!(entity instanceof LivingEntity) || !((LivingEntity)entity).clearStatusEffects()) continue;
             ++i;
         }
         if (i == 0) {

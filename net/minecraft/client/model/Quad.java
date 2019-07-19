@@ -52,7 +52,7 @@ public class Quad {
             h = -h;
             i = -i;
         }
-        bufferBuilder.begin(7, VertexFormats.POSITION_UV_NORMAL_2);
+        bufferBuilder.begin(7, VertexFormats.POSITION_COLOR_TEXTURE_OVERLAY_LIGHT_NORMAL);
         for (int j = 0; j < 4; ++j) {
             Vertex vertex = this.vertices[j];
             bufferBuilder.vertex(vertex.pos.x * (double)f, vertex.pos.y * (double)f, vertex.pos.z * (double)f).texture(vertex.u, vertex.v).normal(g, h, i).next();

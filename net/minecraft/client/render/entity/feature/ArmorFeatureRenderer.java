@@ -43,7 +43,8 @@ extends FeatureRenderer<T, M> {
         this.modelBody = bipedEntityModel2;
     }
 
-    public void method_17157(T livingEntity, float f, float g, float h, float i, float j, float k, float l) {
+    @Override
+    public void render(T livingEntity, float f, float g, float h, float i, float j, float k, float l) {
         this.renderArmor(livingEntity, f, g, h, i, j, k, l, EquipmentSlot.CHEST);
         this.renderArmor(livingEntity, f, g, h, i, j, k, l, EquipmentSlot.LEGS);
         this.renderArmor(livingEntity, f, g, h, i, j, k, l, EquipmentSlot.FEET);
@@ -65,8 +66,8 @@ extends FeatureRenderer<T, M> {
             return;
         }
         A bipedEntityModel = this.getArmor(equipmentSlot);
-        ((BipedEntityModel)this.getModel()).setAttributes(bipedEntityModel);
-        ((BipedEntityModel)bipedEntityModel).method_17086(livingEntity, f, g, h);
+        ((BipedEntityModel)this.getContextModel()).setAttributes(bipedEntityModel);
+        ((BipedEntityModel)bipedEntityModel).animateModel(livingEntity, f, g, h);
         this.method_4170(bipedEntityModel, equipmentSlot);
         boolean bl = this.isLegs(equipmentSlot);
         this.bindTexture(this.getArmorTexture(armorItem, bl));
@@ -76,11 +77,11 @@ extends FeatureRenderer<T, M> {
             float o = (float)(m >> 8 & 0xFF) / 255.0f;
             float p = (float)(m & 0xFF) / 255.0f;
             GlStateManager.color4f(this.red * n, this.green * o, this.blue * p, this.alpha);
-            ((BipedEntityModel)bipedEntityModel).method_17088(livingEntity, f, g, i, j, k, l);
+            ((BipedEntityModel)bipedEntityModel).render(livingEntity, f, g, i, j, k, l);
             this.bindTexture(this.method_4174(armorItem, bl, "overlay"));
         }
         GlStateManager.color4f(this.red, this.green, this.blue, this.alpha);
-        ((BipedEntityModel)bipedEntityModel).method_17088(livingEntity, f, g, i, j, k, l);
+        ((BipedEntityModel)bipedEntityModel).render(livingEntity, f, g, i, j, k, l);
         if (!this.ignoreGlint && itemStack.hasEnchantments()) {
             ArmorFeatureRenderer.renderEnchantedGlint(this::bindTexture, livingEntity, bipedEntityModel, f, g, h, i, j, k, l);
         }

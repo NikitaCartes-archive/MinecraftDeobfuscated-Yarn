@@ -46,7 +46,7 @@ public class SuffixArray<T> {
         this.field_5505.add(-1);
     }
 
-    public void reload() {
+    public void sort() {
         int j2;
         int i2 = this.field_5505.size();
         int[] is = new int[i2];
@@ -109,11 +109,11 @@ public class SuffixArray<T> {
             this.field_5506.add(intList2.getInt(n));
         }
         if (PRINT_ARRAY) {
-            this.debugPrintArray();
+            this.printArray();
         }
     }
 
-    private void debugPrintArray() {
+    private void printArray() {
         for (int i = 0; i < this.field_5504.size(); ++i) {
             LOGGER.debug("{} {}", (Object)i, (Object)this.method_4808(i));
         }

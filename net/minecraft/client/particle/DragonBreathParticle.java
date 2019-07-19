@@ -84,7 +84,8 @@ extends SpriteBillboardParticle {
             this.field_17794 = spriteProvider;
         }
 
-        public Particle method_3019(DefaultParticleType defaultParticleType, World world, double d, double e, double f, double g, double h, double i) {
+        @Override
+        public Particle createParticle(DefaultParticleType defaultParticleType, World world, double d, double e, double f, double g, double h, double i) {
             return new DragonBreathParticle(world, d, e, f, g, h, i, this.field_17794);
         }
     }

@@ -122,7 +122,7 @@ extends IllagerEntity {
     @Override
     public void readCustomDataFromTag(CompoundTag compoundTag) {
         super.readCustomDataFromTag(compoundTag);
-        if (compoundTag.containsKey("Johnny", 99)) {
+        if (compoundTag.contains("Johnny", 99)) {
             this.isJohnny = compoundTag.getBoolean("Johnny");
         }
     }
@@ -145,7 +145,7 @@ extends IllagerEntity {
     @Override
     protected void initEquipment(LocalDifficulty localDifficulty) {
         if (this.getRaid() == null) {
-            this.setEquippedStack(EquipmentSlot.MAINHAND, new ItemStack(Items.IRON_AXE));
+            this.equipStack(EquipmentSlot.MAINHAND, new ItemStack(Items.IRON_AXE));
         }
     }
 
@@ -198,7 +198,7 @@ extends IllagerEntity {
             map.put(Enchantments.SHARPNESS, j);
             EnchantmentHelper.set(map, itemStack);
         }
-        this.setEquippedStack(EquipmentSlot.MAINHAND, itemStack);
+        this.equipStack(EquipmentSlot.MAINHAND, itemStack);
     }
 
     static class FollowEntityGoal

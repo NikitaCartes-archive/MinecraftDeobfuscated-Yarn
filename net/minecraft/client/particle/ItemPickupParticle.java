@@ -52,9 +52,9 @@ extends Particle {
         double d = this.field_3823.x;
         double e = this.field_3823.y;
         double m = this.field_3823.z;
-        double n = MathHelper.lerp((double)f, this.field_3821.prevRenderX, this.field_3821.x);
-        double o = MathHelper.lerp((double)f, this.field_3821.prevRenderY, this.field_3821.y) + (double)this.field_3822;
-        double p = MathHelper.lerp((double)f, this.field_3821.prevRenderZ, this.field_3821.z);
+        double n = MathHelper.lerp((double)f, this.field_3821.lastRenderX, this.field_3821.x);
+        double o = MathHelper.lerp((double)f, this.field_3821.lastRenderY, this.field_3821.y) + (double)this.field_3822;
+        double p = MathHelper.lerp((double)f, this.field_3821.lastRenderZ, this.field_3821.z);
         double q = MathHelper.lerp((double)l, d, n);
         double r = MathHelper.lerp((double)l, e, o);
         double s = MathHelper.lerp((double)l, m, p);

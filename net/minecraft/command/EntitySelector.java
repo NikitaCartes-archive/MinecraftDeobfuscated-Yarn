@@ -15,19 +15,19 @@ import java.util.function.Predicate;
 import net.minecraft.command.arguments.EntityArgumentType;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
+import net.minecraft.predicate.NumberRange;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.text.Text;
 import net.minecraft.text.Texts;
-import net.minecraft.util.NumberRange;
 import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Vec3d;
 import org.jetbrains.annotations.Nullable;
 
 public class EntitySelector {
-    private final int count;
-    private final boolean includeNonPlayers;
+    private final int limit;
+    private final boolean includesNonPlayers;
     private final boolean localWorldOnly;
     private final Predicate<Entity> basePredicate;
     private final NumberRange.FloatRange distance;
@@ -42,11 +42,11 @@ public class EntitySelector {
     private final UUID uuid;
     @Nullable
     private final EntityType<?> type;
-    private final boolean checkPermissions;
+    private final boolean usesAt;
 
     public EntitySelector(int i, boolean bl, boolean bl2, Predicate<Entity> predicate, NumberRange.FloatRange floatRange, Function<Vec3d, Vec3d> function, @Nullable Box box, BiConsumer<Vec3d, List<? extends Entity>> biConsumer, boolean bl3, @Nullable String string, @Nullable UUID uUID, @Nullable EntityType<?> entityType, boolean bl4) {
-        this.count = i;
-        this.includeNonPlayers = bl;
+        this.limit = i;
+        this.includesNonPlayers = bl;
         this.localWorldOnly = bl2;
         this.basePredicate = predicate;
         this.distance = floatRange;
@@ -57,15 +57,15 @@ public class EntitySelector {
         this.playerName = string;
         this.uuid = uUID;
         this.type = entityType;
-        this.checkPermissions = bl4;
+        this.usesAt = bl4;
     }
 
-    public int getCount() {
-        return this.count;
+    public int getLimit() {
+        return this.limit;
     }
 
     public boolean includesNonPlayers() {
-        return this.includeNonPlayers;
+        return this.includesNonPlayers;
     }
 
     public boolean isSenderOnly() {
@@ -76,14 +76,14 @@ public class EntitySelector {
         return this.localWorldOnly;
     }
 
-    private void check(ServerCommandSource serverCommandSource) throws CommandSyntaxException {
-        if (this.checkPermissions && !serverCommandSource.hasPermissionLevel(2)) {
+    private void checkSourcePermission(ServerCommandSource serverCommandSource) throws CommandSyntaxException {
+        if (this.usesAt && !serverCommandSource.hasPermissionLevel(2)) {
             throw EntityArgumentType.NOT_ALLOWED_EXCEPTION.create();
         }
     }
 
     public Entity getEntity(ServerCommandSource serverCommandSource) throws CommandSyntaxException {
-        this.check(serverCommandSource);
+        this.checkSourcePermission(serverCommandSource);
         List<? extends Entity> list = this.getEntities(serverCommandSource);
         if (list.isEmpty()) {
             throw EntityArgumentType.ENTITY_NOT_FOUND_EXCEPTION.create();
@@ -95,8 +95,8 @@ public class EntitySelector {
     }
 
     public List<? extends Entity> getEntities(ServerCommandSource serverCommandSource) throws CommandSyntaxException {
-        this.check(serverCommandSource);
-        if (!this.includeNonPlayers) {
+        this.checkSourcePermission(serverCommandSource);
+        if (!this.includesNonPlayers) {
             return this.getPlayers(serverCommandSource);
         }
         if (this.playerName != null) {
@@ -142,7 +142,7 @@ public class EntitySelector {
     }
 
     public ServerPlayerEntity getPlayer(ServerCommandSource serverCommandSource) throws CommandSyntaxException {
-        this.check(serverCommandSource);
+        this.checkSourcePermission(serverCommandSource);
         List<ServerPlayerEntity> list = this.getPlayers(serverCommandSource);
         if (list.size() != 1) {
             throw EntityArgumentType.PLAYER_NOT_FOUND_EXCEPTION.create();
@@ -152,7 +152,7 @@ public class EntitySelector {
 
     public List<ServerPlayerEntity> getPlayers(ServerCommandSource serverCommandSource) throws CommandSyntaxException {
         List<Object> list;
-        this.check(serverCommandSource);
+        this.checkSourcePermission(serverCommandSource);
         if (this.playerName != null) {
             ServerPlayerEntity serverPlayerEntity = serverCommandSource.getMinecraftServer().getPlayerManager().getPlayer(this.playerName);
             if (serverPlayerEntity == null) {
@@ -204,7 +204,7 @@ public class EntitySelector {
         if (list.size() > 1) {
             this.sorter.accept(vec3d, list);
         }
-        return list.subList(0, Math.min(this.count, list.size()));
+        return list.subList(0, Math.min(this.limit, list.size()));
     }
 
     public static Text getNames(List<? extends Entity> list) {

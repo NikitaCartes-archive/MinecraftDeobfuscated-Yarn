@@ -90,7 +90,7 @@ extends AnimalEntity {
         this.getAttributeInstance(EntityAttributes.MAX_HEALTH).setBaseValue(30.0);
         this.getAttributeInstance(EntityAttributes.FOLLOW_RANGE).setBaseValue(20.0);
         this.getAttributeInstance(EntityAttributes.MOVEMENT_SPEED).setBaseValue(0.25);
-        this.getAttributeContainer().register(EntityAttributes.ATTACK_DAMAGE);
+        this.getAttributes().register(EntityAttributes.ATTACK_DAMAGE);
         this.getAttributeInstance(EntityAttributes.ATTACK_DAMAGE).setBaseValue(6.0);
     }
 
@@ -267,7 +267,7 @@ extends AnimalEntity {
                 return false;
             }
             if (super.canStart()) {
-                List<PolarBearEntity> list = PolarBearEntity.this.world.getEntities(PolarBearEntity.class, PolarBearEntity.this.getBoundingBox().expand(8.0, 4.0, 8.0));
+                List<PolarBearEntity> list = PolarBearEntity.this.world.getNonSpectatingEntities(PolarBearEntity.class, PolarBearEntity.this.getBoundingBox().expand(8.0, 4.0, 8.0));
                 for (PolarBearEntity polarBearEntity : list) {
                     if (!polarBearEntity.isBaby()) continue;
                     return true;

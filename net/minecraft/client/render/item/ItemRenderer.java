@@ -17,7 +17,7 @@ import net.minecraft.client.network.ClientPlayerEntity;
 import net.minecraft.client.render.BufferBuilder;
 import net.minecraft.client.render.Tessellator;
 import net.minecraft.client.render.VertexFormats;
-import net.minecraft.client.render.item.ItemDynamicRenderer;
+import net.minecraft.client.render.item.BuiltinModelItemRenderer;
 import net.minecraft.client.render.item.ItemModels;
 import net.minecraft.client.render.model.BakedModel;
 import net.minecraft.client.render.model.BakedModelManager;
@@ -34,7 +34,7 @@ import net.minecraft.item.Items;
 import net.minecraft.resource.ResourceManager;
 import net.minecraft.resource.SynchronousResourceReloadListener;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.SystemUtil;
+import net.minecraft.util.Util;
 import net.minecraft.util.crash.CrashException;
 import net.minecraft.util.crash.CrashReport;
 import net.minecraft.util.crash.CrashReportSection;
@@ -79,8 +79,8 @@ implements SynchronousResourceReloadListener {
 
     private void renderModel(BakedModel bakedModel, int i, ItemStack itemStack) {
         Tessellator tessellator = Tessellator.getInstance();
-        BufferBuilder bufferBuilder = tessellator.getBufferBuilder();
-        bufferBuilder.begin(7, VertexFormats.POSITION_COLOR_UV_NORMAL);
+        BufferBuilder bufferBuilder = tessellator.getBuffer();
+        bufferBuilder.begin(7, VertexFormats.POSITION_COLOR_TEXTURE_LIGHT_NORMAL);
         Random random = new Random();
         long l = 42L;
         for (Direction direction : Direction.values()) {
@@ -101,7 +101,7 @@ implements SynchronousResourceReloadListener {
         if (bakedModel.isBuiltin()) {
             GlStateManager.color4f(1.0f, 1.0f, 1.0f, 1.0f);
             GlStateManager.enableRescaleNormal();
-            ItemDynamicRenderer.INSTANCE.render(itemStack);
+            BuiltinModelItemRenderer.INSTANCE.render(itemStack);
         } else {
             this.renderItemModel(bakedModel, itemStack);
             if (itemStack.hasEnchantmentGlint()) {
@@ -120,14 +120,14 @@ implements SynchronousResourceReloadListener {
         GlStateManager.matrixMode(5890);
         GlStateManager.pushMatrix();
         GlStateManager.scalef(i, i, i);
-        float f = (float)(SystemUtil.getMeasuringTimeMs() % 3000L) / 3000.0f / (float)i;
+        float f = (float)(Util.getMeasuringTimeMs() % 3000L) / 3000.0f / (float)i;
         GlStateManager.translatef(f, 0.0f, 0.0f);
         GlStateManager.rotatef(-50.0f, 0.0f, 0.0f, 1.0f);
         runnable.run();
         GlStateManager.popMatrix();
         GlStateManager.pushMatrix();
         GlStateManager.scalef(i, i, i);
-        float g = (float)(SystemUtil.getMeasuringTimeMs() % 4873L) / 4873.0f / (float)i;
+        float g = (float)(Util.getMeasuringTimeMs() % 4873L) / 4873.0f / (float)i;
         GlStateManager.translatef(-g, 0.0f, 0.0f);
         GlStateManager.rotatef(10.0f, 0.0f, 0.0f, 1.0f);
         runnable.run();
@@ -170,7 +170,7 @@ implements SynchronousResourceReloadListener {
         if (bakedModel == null) {
             return false;
         }
-        return bakedModel.hasDepthInGui();
+        return bakedModel.hasDepth();
     }
 
     public void renderItem(ItemStack itemStack, ModelTransformation.Type type) {
@@ -260,7 +260,7 @@ implements SynchronousResourceReloadListener {
         GlStateManager.enableBlend();
         GlStateManager.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA);
         GlStateManager.color4f(1.0f, 1.0f, 1.0f, 1.0f);
-        this.prepareGuiItemRender(i, j, bakedModel.hasDepthInGui());
+        this.prepareGuiItemRender(i, j, bakedModel.hasDepth());
         bakedModel.getTransformation().applyGl(ModelTransformation.Type.GUI);
         this.renderItemAndGlow(itemStack, bakedModel);
         GlStateManager.disableAlphaTest();
@@ -333,7 +333,7 @@ implements SynchronousResourceReloadListener {
             GlStateManager.disableAlphaTest();
             GlStateManager.disableBlend();
             Tessellator tessellator = Tessellator.getInstance();
-            BufferBuilder bufferBuilder = tessellator.getBufferBuilder();
+            BufferBuilder bufferBuilder = tessellator.getBuffer();
             float f = itemStack.getDamage();
             float g = itemStack.getMaxDamage();
             float h = Math.max(0.0f, (g - f) / g);
@@ -353,7 +353,7 @@ implements SynchronousResourceReloadListener {
             GlStateManager.disableDepthTest();
             GlStateManager.disableTexture();
             Tessellator tessellator2 = Tessellator.getInstance();
-            BufferBuilder bufferBuilder2 = tessellator2.getBufferBuilder();
+            BufferBuilder bufferBuilder2 = tessellator2.getBuffer();
             this.renderGuiQuad(bufferBuilder2, i, j + MathHelper.floor(16.0f * (1.0f - m)), 16, MathHelper.ceil(16.0f * m), 255, 255, 255, 127);
             GlStateManager.enableTexture();
             GlStateManager.enableLighting();

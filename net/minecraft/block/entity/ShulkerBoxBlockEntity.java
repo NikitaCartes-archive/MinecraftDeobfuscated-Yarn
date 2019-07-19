@@ -123,7 +123,7 @@ Tickable {
         }
         Direction direction = blockState.get(ShulkerBoxBlock.FACING);
         Box box = this.getCollisionBox(direction).offset(this.pos);
-        List<Entity> list = this.world.getEntities((Entity)null, box);
+        List<Entity> list = this.world.getEntities(null, box);
         if (list.isEmpty()) {
             return;
         }
@@ -136,17 +136,17 @@ Tickable {
             Box box2 = entity.getBoundingBox();
             switch (direction.getAxis()) {
                 case X: {
-                    d = direction.getDirection() == Direction.AxisDirection.POSITIVE ? box.maxX - box2.minX : box2.maxX - box.minX;
+                    d = direction.getDirection() == Direction.AxisDirection.POSITIVE ? box.x2 - box2.x1 : box2.x2 - box.x1;
                     d += 0.01;
                     break;
                 }
                 case Y: {
-                    e = direction.getDirection() == Direction.AxisDirection.POSITIVE ? box.maxY - box2.minY : box2.maxY - box.minY;
+                    e = direction.getDirection() == Direction.AxisDirection.POSITIVE ? box.y2 - box2.y1 : box2.y2 - box.y1;
                     e += 0.01;
                     break;
                 }
                 case Z: {
-                    f = direction.getDirection() == Direction.AxisDirection.POSITIVE ? box.maxZ - box2.minZ : box2.maxZ - box.minZ;
+                    f = direction.getDirection() == Direction.AxisDirection.POSITIVE ? box.z2 - box2.z1 : box2.z2 - box.z1;
                     f += 0.01;
                 }
             }
@@ -224,7 +224,7 @@ Tickable {
 
     public void deserializeInventory(CompoundTag compoundTag) {
         this.inventory = DefaultedList.ofSize(this.getInvSize(), ItemStack.EMPTY);
-        if (!this.deserializeLootTable(compoundTag) && compoundTag.containsKey("Items", 9)) {
+        if (!this.deserializeLootTable(compoundTag) && compoundTag.contains("Items", 9)) {
             Inventories.fromTag(compoundTag, this.inventory);
         }
     }

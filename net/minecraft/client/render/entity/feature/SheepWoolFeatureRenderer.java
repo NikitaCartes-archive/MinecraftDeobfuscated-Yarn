@@ -24,7 +24,8 @@ extends FeatureRenderer<SheepEntity, SheepEntityModel<SheepEntity>> {
         super(featureRendererContext);
     }
 
-    public void method_4198(SheepEntity sheepEntity, float f, float g, float h, float i, float j, float k, float l) {
+    @Override
+    public void render(SheepEntity sheepEntity, float f, float g, float h, float i, float j, float k, float l) {
         if (sheepEntity.isSheared() || sheepEntity.isInvisible()) {
             return;
         }
@@ -43,8 +44,8 @@ extends FeatureRenderer<SheepEntity, SheepEntityModel<SheepEntity>> {
             float[] hs = SheepEntity.getRgbColor(sheepEntity.getColor());
             GlStateManager.color3f(hs[0], hs[1], hs[2]);
         }
-        ((SheepEntityModel)this.getModel()).copyStateTo(this.model);
-        this.model.method_17118(sheepEntity, f, g, h);
+        ((SheepEntityModel)this.getContextModel()).copyStateTo(this.model);
+        this.model.animateModel(sheepEntity, f, g, h);
         this.model.render(sheepEntity, f, g, i, j, k, l);
     }
 

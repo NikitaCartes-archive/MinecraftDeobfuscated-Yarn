@@ -30,7 +30,7 @@ extends PotionItem {
         if (!world.isClient) {
             ThrownPotionEntity thrownPotionEntity = new ThrownPotionEntity(world, playerEntity);
             thrownPotionEntity.setItemStack(itemStack2);
-            thrownPotionEntity.method_19207(playerEntity, playerEntity.pitch, playerEntity.yaw, -20.0f, 0.5f, 1.0f);
+            thrownPotionEntity.setProperties(playerEntity, playerEntity.pitch, playerEntity.yaw, -20.0f, 0.5f, 1.0f);
             world.spawnEntity(thrownPotionEntity);
         }
         playerEntity.incrementStat(Stats.USED.getOrCreateStat(this));

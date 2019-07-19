@@ -30,7 +30,7 @@ public abstract class AbstractDecorationEntity
 extends Entity {
     protected static final Predicate<Entity> PREDICATE = entity -> entity instanceof AbstractDecorationEntity;
     private int field_7097;
-    protected BlockPos blockPos;
+    protected BlockPos attachmentPos;
     protected Direction facing = Direction.SOUTH;
 
     protected AbstractDecorationEntity(EntityType<? extends AbstractDecorationEntity> entityType, World world) {
@@ -39,7 +39,7 @@ extends Entity {
 
     protected AbstractDecorationEntity(EntityType<? extends AbstractDecorationEntity> entityType, World world, BlockPos blockPos) {
         this(entityType, world);
-        this.blockPos = blockPos;
+        this.attachmentPos = blockPos;
     }
 
     @Override
@@ -58,9 +58,9 @@ extends Entity {
         if (this.facing == null) {
             return;
         }
-        double d = (double)this.blockPos.getX() + 0.5;
-        double e = (double)this.blockPos.getY() + 0.5;
-        double f = (double)this.blockPos.getZ() + 0.5;
+        double d = (double)this.attachmentPos.getX() + 0.5;
+        double e = (double)this.attachmentPos.getY() + 0.5;
+        double f = (double)this.attachmentPos.getZ() + 0.5;
         double g = 0.46875;
         double h = this.method_6893(this.getWidthPixels());
         double i = this.method_6893(this.getHeightPixels());
@@ -105,7 +105,7 @@ extends Entity {
         }
         int i = Math.max(1, this.getWidthPixels() / 16);
         int j = Math.max(1, this.getHeightPixels() / 16);
-        BlockPos blockPos = this.blockPos.offset(this.facing.getOpposite());
+        BlockPos blockPos = this.attachmentPos.offset(this.facing.getOpposite());
         Direction direction = this.facing.rotateYCounterclockwise();
         BlockPos.Mutable mutable = new BlockPos.Mutable();
         for (int k = 0; k < i; ++k) {
@@ -179,7 +179,7 @@ extends Entity {
 
     @Override
     public void readCustomDataFromTag(CompoundTag compoundTag) {
-        this.blockPos = new BlockPos(compoundTag.getInt("TileX"), compoundTag.getInt("TileY"), compoundTag.getInt("TileZ"));
+        this.attachmentPos = new BlockPos(compoundTag.getInt("TileX"), compoundTag.getInt("TileY"), compoundTag.getInt("TileZ"));
         this.facing = Direction.fromHorizontal(compoundTag.getByte("Facing"));
     }
 
@@ -205,14 +205,14 @@ extends Entity {
     }
 
     @Override
-    public void setPosition(double d, double e, double f) {
-        this.blockPos = new BlockPos(d, e, f);
+    public void updatePosition(double d, double e, double f) {
+        this.attachmentPos = new BlockPos(d, e, f);
         this.method_6895();
         this.velocityDirty = true;
     }
 
     public BlockPos getDecorationBlockPos() {
-        return this.blockPos;
+        return this.attachmentPos;
     }
 
     @Override

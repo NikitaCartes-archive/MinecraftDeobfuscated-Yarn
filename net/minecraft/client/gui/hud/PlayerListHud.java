@@ -25,7 +25,7 @@ import net.minecraft.scoreboard.Team;
 import net.minecraft.text.LiteralText;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
-import net.minecraft.util.SystemUtil;
+import net.minecraft.util.Util;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.GameMode;
 import org.jetbrains.annotations.Nullable;
@@ -55,7 +55,7 @@ extends DrawableHelper {
 
     public void tick(boolean bl) {
         if (bl && !this.visible) {
-            this.showTime = SystemUtil.getMeasuringTimeMs();
+            this.showTime = Util.getMeasuringTimeMs();
         }
         this.visible = bl;
     }
@@ -131,12 +131,12 @@ extends DrawableHelper {
             GameProfile gameProfile = playerListEntry2.getProfile();
             if (bl) {
                 PlayerEntity playerEntity = this.client.world.getPlayerByUuid(gameProfile.getId());
-                boolean bl22 = playerEntity != null && playerEntity.isSkinOverlayVisible(PlayerModelPart.CAPE) && ("Dinnerbone".equals(gameProfile.getName()) || "Grumm".equals(gameProfile.getName()));
+                boolean bl22 = playerEntity != null && playerEntity.isPartVisible(PlayerModelPart.CAPE) && ("Dinnerbone".equals(gameProfile.getName()) || "Grumm".equals(gameProfile.getName()));
                 this.client.getTextureManager().bindTexture(playerListEntry2.getSkinTexture());
                 z = 8 + (bl22 ? 8 : 0);
                 int aa = 8 * (bl22 ? -1 : 1);
                 DrawableHelper.blit(x, y, 8, 8, 8.0f, z, 8, aa, 64, 64);
-                if (playerEntity != null && playerEntity.isSkinOverlayVisible(PlayerModelPart.HAT)) {
+                if (playerEntity != null && playerEntity.isPartVisible(PlayerModelPart.HAT)) {
                     int ab = 8 + (bl22 ? 8 : 0);
                     int ac = 8 * (bl22 ? -1 : 1);
                     DrawableHelper.blit(x, y, 8, 8, 40.0f, ab, 8, ac, 64, 64);
@@ -179,7 +179,7 @@ extends DrawableHelper {
         if (scoreboardObjective.getRenderType() == ScoreboardCriterion.RenderType.HEARTS) {
             boolean bl;
             this.client.getTextureManager().bindTexture(GUI_ICONS_LOCATION);
-            long m = SystemUtil.getMeasuringTimeMs();
+            long m = Util.getMeasuringTimeMs();
             if (this.showTime == playerListEntry.method_2976()) {
                 if (l < playerListEntry.method_2973()) {
                     playerListEntry.method_2978(m);
@@ -257,7 +257,8 @@ extends DrawableHelper {
         private EntryOrderComparator() {
         }
 
-        public int method_1926(PlayerListEntry playerListEntry, PlayerListEntry playerListEntry2) {
+        @Override
+        public int compare(PlayerListEntry playerListEntry, PlayerListEntry playerListEntry2) {
             Team team = playerListEntry.getScoreboardTeam();
             Team team2 = playerListEntry2.getScoreboardTeam();
             return ComparisonChain.start().compareTrueFirst(playerListEntry.getGameMode() != GameMode.SPECTATOR, playerListEntry2.getGameMode() != GameMode.SPECTATOR).compare((Comparable<?>)((Object)(team != null ? team.getName() : "")), (Comparable<?>)((Object)(team2 != null ? team2.getName() : ""))).compare(playerListEntry.getProfile().getName(), playerListEntry2.getProfile().getName(), String::compareToIgnoreCase).result();
@@ -265,7 +266,7 @@ extends DrawableHelper {
 
         @Override
         public /* synthetic */ int compare(Object object, Object object2) {
-            return this.method_1926((PlayerListEntry)object, (PlayerListEntry)object2);
+            return this.compare((PlayerListEntry)object, (PlayerListEntry)object2);
         }
     }
 }

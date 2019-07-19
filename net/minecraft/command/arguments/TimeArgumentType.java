@@ -30,7 +30,8 @@ implements ArgumentType<Integer> {
         return new TimeArgumentType();
     }
 
-    public Integer method_9490(StringReader stringReader) throws CommandSyntaxException {
+    @Override
+    public Integer parse(StringReader stringReader) throws CommandSyntaxException {
         float f = stringReader.readFloat();
         String string = stringReader.readUnquotedString();
         int i = units.getOrDefault((Object)string, 0);
@@ -62,7 +63,7 @@ implements ArgumentType<Integer> {
 
     @Override
     public /* synthetic */ Object parse(StringReader stringReader) throws CommandSyntaxException {
-        return this.method_9490(stringReader);
+        return this.parse(stringReader);
     }
 
     static {

@@ -24,7 +24,8 @@ extends FeatureRenderer<T, CowEntityModel<T>> {
         super(featureRendererContext);
     }
 
-    public void method_4195(T mooshroomEntity, float f, float g, float h, float i, float j, float k, float l) {
+    @Override
+    public void render(T mooshroomEntity, float f, float g, float h, float i, float j, float k, float l) {
         if (((PassiveEntity)mooshroomEntity).isBaby() || ((Entity)mooshroomEntity).isInvisible()) {
             return;
         }
@@ -49,7 +50,7 @@ extends FeatureRenderer<T, CowEntityModel<T>> {
         GlStateManager.popMatrix();
         GlStateManager.popMatrix();
         GlStateManager.pushMatrix();
-        ((CowEntityModel)this.getModel()).method_2800().applyTransform(0.0625f);
+        ((CowEntityModel)this.getContextModel()).method_2800().applyTransform(0.0625f);
         GlStateManager.scalef(1.0f, -1.0f, 1.0f);
         GlStateManager.translatef(0.0f, 0.7f, -0.2f);
         GlStateManager.rotatef(12.0f, 0.0f, 1.0f, 0.0f);

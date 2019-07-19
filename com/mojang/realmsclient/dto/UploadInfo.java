@@ -6,16 +6,16 @@ package com.mojang.realmsclient.dto;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.google.gson.annotations.Expose;
+import com.mojang.realmsclient.dto.ValueObject;
+import com.mojang.realmsclient.util.JsonUtils;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_4352;
-import net.minecraft.class_4431;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 @Environment(value=EnvType.CLIENT)
 public class UploadInfo
-extends class_4352 {
+extends ValueObject {
     private static final Logger LOGGER = LogManager.getLogger();
     @Expose
     private boolean worldClosed;
@@ -30,10 +30,10 @@ extends class_4352 {
         try {
             JsonParser jsonParser = new JsonParser();
             JsonObject jsonObject = jsonParser.parse(string).getAsJsonObject();
-            uploadInfo.worldClosed = class_4431.method_21548("worldClosed", jsonObject, false);
-            uploadInfo.token = class_4431.method_21547("token", jsonObject, null);
-            uploadInfo.uploadEndpoint = class_4431.method_21547("uploadEndpoint", jsonObject, null);
-            uploadInfo.port = class_4431.method_21545("port", jsonObject, 8080);
+            uploadInfo.worldClosed = JsonUtils.getBooleanOr("worldClosed", jsonObject, false);
+            uploadInfo.token = JsonUtils.getStringOr("token", jsonObject, null);
+            uploadInfo.uploadEndpoint = JsonUtils.getStringOr("uploadEndpoint", jsonObject, null);
+            uploadInfo.port = JsonUtils.getIntOr("port", jsonObject, 8080);
         } catch (Exception exception) {
             LOGGER.error("Could not parse UploadInfo: " + exception.getMessage());
         }

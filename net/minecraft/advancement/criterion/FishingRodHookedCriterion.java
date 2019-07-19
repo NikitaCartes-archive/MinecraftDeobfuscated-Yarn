@@ -28,7 +28,7 @@ import net.minecraft.util.Identifier;
 public class FishingRodHookedCriterion
 implements Criterion<Conditions> {
     private static final Identifier ID = new Identifier("fishing_rod_hooked");
-    private final Map<PlayerAdvancementTracker, Handler> field_9618 = Maps.newHashMap();
+    private final Map<PlayerAdvancementTracker, Handler> handlers = Maps.newHashMap();
 
     @Override
     public Identifier getId() {
@@ -37,39 +37,40 @@ implements Criterion<Conditions> {
 
     @Override
     public void beginTrackingCondition(PlayerAdvancementTracker playerAdvancementTracker, Criterion.ConditionsContainer<Conditions> conditionsContainer) {
-        Handler handler = this.field_9618.get(playerAdvancementTracker);
+        Handler handler = this.handlers.get(playerAdvancementTracker);
         if (handler == null) {
             handler = new Handler(playerAdvancementTracker);
-            this.field_9618.put(playerAdvancementTracker, handler);
+            this.handlers.put(playerAdvancementTracker, handler);
         }
         handler.addCondition(conditionsContainer);
     }
 
     @Override
     public void endTrackingCondition(PlayerAdvancementTracker playerAdvancementTracker, Criterion.ConditionsContainer<Conditions> conditionsContainer) {
-        Handler handler = this.field_9618.get(playerAdvancementTracker);
+        Handler handler = this.handlers.get(playerAdvancementTracker);
         if (handler != null) {
             handler.removeCondition(conditionsContainer);
             if (handler.isEmpty()) {
-                this.field_9618.remove(playerAdvancementTracker);
+                this.handlers.remove(playerAdvancementTracker);
             }
         }
     }
 
     @Override
     public void endTracking(PlayerAdvancementTracker playerAdvancementTracker) {
-        this.field_9618.remove(playerAdvancementTracker);
+        this.handlers.remove(playerAdvancementTracker);
     }
 
-    public Conditions method_8941(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext) {
-        ItemPredicate itemPredicate = ItemPredicate.deserialize(jsonObject.get("rod"));
-        EntityPredicate entityPredicate = EntityPredicate.deserialize(jsonObject.get("entity"));
-        ItemPredicate itemPredicate2 = ItemPredicate.deserialize(jsonObject.get("item"));
+    @Override
+    public Conditions conditionsFromJson(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext) {
+        ItemPredicate itemPredicate = ItemPredicate.fromJson(jsonObject.get("rod"));
+        EntityPredicate entityPredicate = EntityPredicate.fromJson(jsonObject.get("entity"));
+        ItemPredicate itemPredicate2 = ItemPredicate.fromJson(jsonObject.get("item"));
         return new Conditions(itemPredicate, entityPredicate, itemPredicate2);
     }
 
-    public void handle(ServerPlayerEntity serverPlayerEntity, ItemStack itemStack, FishingBobberEntity fishingBobberEntity, Collection<ItemStack> collection) {
-        Handler handler = this.field_9618.get(serverPlayerEntity.getAdvancementManager());
+    public void trigger(ServerPlayerEntity serverPlayerEntity, ItemStack itemStack, FishingBobberEntity fishingBobberEntity, Collection<ItemStack> collection) {
+        Handler handler = this.handlers.get(serverPlayerEntity.getAdvancementTracker());
         if (handler != null) {
             handler.handle(serverPlayerEntity, itemStack, fishingBobberEntity, collection);
         }
@@ -77,7 +78,7 @@ implements Criterion<Conditions> {
 
     @Override
     public /* synthetic */ CriterionConditions conditionsFromJson(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext) {
-        return this.method_8941(jsonObject, jsonDeserializationContext);
+        return this.conditionsFromJson(jsonObject, jsonDeserializationContext);
     }
 
     static class Handler {
@@ -120,13 +121,13 @@ implements Criterion<Conditions> {
     public static class Conditions
     extends AbstractCriterionConditions {
         private final ItemPredicate rod;
-        private final EntityPredicate entity;
+        private final EntityPredicate bobber;
         private final ItemPredicate item;
 
         public Conditions(ItemPredicate itemPredicate, EntityPredicate entityPredicate, ItemPredicate itemPredicate2) {
             super(ID);
             this.rod = itemPredicate;
-            this.entity = entityPredicate;
+            this.bobber = entityPredicate;
             this.item = itemPredicate2;
         }
 
@@ -138,7 +139,7 @@ implements Criterion<Conditions> {
             if (!this.rod.test(itemStack)) {
                 return false;
             }
-            if (!this.entity.test(serverPlayerEntity, fishingBobberEntity.hookedEntity)) {
+            if (!this.bobber.test(serverPlayerEntity, fishingBobberEntity.hookedEntity)) {
                 return false;
             }
             if (this.item != ItemPredicate.ANY) {
@@ -162,9 +163,9 @@ implements Criterion<Conditions> {
         @Override
         public JsonElement toJson() {
             JsonObject jsonObject = new JsonObject();
-            jsonObject.add("rod", this.rod.serialize());
-            jsonObject.add("entity", this.entity.serialize());
-            jsonObject.add("item", this.item.serialize());
+            jsonObject.add("rod", this.rod.toJson());
+            jsonObject.add("entity", this.bobber.serialize());
+            jsonObject.add("item", this.item.toJson());
             return jsonObject;
         }
     }

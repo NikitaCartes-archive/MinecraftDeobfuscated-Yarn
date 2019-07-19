@@ -17,7 +17,7 @@ import net.minecraft.client.render.VertexFormats;
 import net.minecraft.client.render.block.entity.BlockEntityRenderer;
 import net.minecraft.client.util.GlAllocationUtils;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.SystemUtil;
+import net.minecraft.util.Util;
 import net.minecraft.util.math.Direction;
 
 @Environment(value=EnvType.CLIENT)
@@ -30,7 +30,8 @@ extends BlockEntityRenderer<EndPortalBlockEntity> {
     private static final FloatBuffer field_4404 = GlAllocationUtils.allocateFloatBuffer(16);
     private final FloatBuffer field_4403 = GlAllocationUtils.allocateFloatBuffer(16);
 
-    public void method_3591(EndPortalBlockEntity endPortalBlockEntity, double d, double e, double f, float g, int i) {
+    @Override
+    public void render(EndPortalBlockEntity endPortalBlockEntity, double d, double e, double f, float g, int i) {
         GlStateManager.disableLighting();
         RANDOM.setSeed(31100L);
         GlStateManager.getMatrix(2982, field_4408);
@@ -74,13 +75,13 @@ extends BlockEntityRenderer<EndPortalBlockEntity> {
             GlStateManager.translatef(0.5f, 0.5f, 0.0f);
             GlStateManager.scalef(0.5f, 0.5f, 1.0f);
             float n = l + 1;
-            GlStateManager.translatef(17.0f / n, (2.0f + n / 1.5f) * ((float)(SystemUtil.getMeasuringTimeMs() % 800000L) / 800000.0f), 0.0f);
+            GlStateManager.translatef(17.0f / n, (2.0f + n / 1.5f) * ((float)(Util.getMeasuringTimeMs() % 800000L) / 800000.0f), 0.0f);
             GlStateManager.rotatef((n * n * 4321.0f + n * 9.0f) * 2.0f, 0.0f, 0.0f, 1.0f);
             GlStateManager.scalef(4.5f - n / 4.0f, 4.5f - n / 4.0f, 1.0f);
             GlStateManager.multMatrix(field_4404);
             GlStateManager.multMatrix(field_4408);
             Tessellator tessellator = Tessellator.getInstance();
-            BufferBuilder bufferBuilder = tessellator.getBufferBuilder();
+            BufferBuilder bufferBuilder = tessellator.getBuffer();
             bufferBuilder.begin(7, VertexFormats.POSITION_COLOR);
             float o = (RANDOM.nextFloat() * 0.5f + 0.1f) * m;
             float p = (RANDOM.nextFloat() * 0.5f + 0.4f) * m;

@@ -47,13 +47,13 @@ extends ProjectileEntity {
     protected void onHit(LivingEntity livingEntity) {
         super.onHit(livingEntity);
         StatusEffectInstance statusEffectInstance = new StatusEffectInstance(StatusEffects.GLOWING, this.duration, 0);
-        livingEntity.addPotionEffect(statusEffectInstance);
+        livingEntity.addStatusEffect(statusEffectInstance);
     }
 
     @Override
     public void readCustomDataFromTag(CompoundTag compoundTag) {
         super.readCustomDataFromTag(compoundTag);
-        if (compoundTag.containsKey("Duration")) {
+        if (compoundTag.contains("Duration")) {
             this.duration = compoundTag.getInt("Duration");
         }
     }

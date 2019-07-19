@@ -13,7 +13,7 @@ import net.minecraft.client.font.FontLoader;
 import net.minecraft.client.font.TextureFont;
 import net.minecraft.client.font.TrueTypeFontLoader;
 import net.minecraft.client.font.UnicodeTextureFont;
-import net.minecraft.util.SystemUtil;
+import net.minecraft.util.Util;
 
 @Environment(value=EnvType.CLIENT)
 public enum FontType {
@@ -43,7 +43,7 @@ public enum FontType {
     }
 
     static {
-        REGISTRY = SystemUtil.consume(Maps.newHashMap(), hashMap -> {
+        REGISTRY = Util.make(Maps.newHashMap(), hashMap -> {
             for (FontType fontType : FontType.values()) {
                 hashMap.put(fontType.id, fontType);
             }

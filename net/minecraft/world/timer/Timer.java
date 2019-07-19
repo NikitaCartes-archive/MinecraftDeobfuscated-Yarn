@@ -87,7 +87,7 @@ public class Timer<T> {
         if (listTag.isEmpty()) {
             return;
         }
-        if (listTag.getListType() != 10) {
+        if (listTag.getElementType() != 10) {
             LOGGER.warn("Invalid format of events: " + listTag);
             return;
         }

@@ -6,7 +6,6 @@ package net.minecraft.entity.mob;
 import java.util.List;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.client.network.packet.GameStateChangeS2CPacket;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.attribute.EntityAttributes;
@@ -15,6 +14,7 @@ import net.minecraft.entity.effect.StatusEffect;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.entity.mob.GuardianEntity;
+import net.minecraft.network.packet.s2c.play.GameStateChangeS2CPacket;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundEvent;
@@ -85,11 +85,11 @@ extends GuardianEntity {
             for (ServerPlayerEntity serverPlayerEntity2 : list) {
                 if (serverPlayerEntity2.hasStatusEffect(statusEffect) && serverPlayerEntity2.getStatusEffect(statusEffect).getAmplifier() >= 2 && serverPlayerEntity2.getStatusEffect(statusEffect).getDuration() >= 1200) continue;
                 serverPlayerEntity2.networkHandler.sendPacket(new GameStateChangeS2CPacket(10, 0.0f));
-                serverPlayerEntity2.addPotionEffect(new StatusEffectInstance(statusEffect, 6000, 2));
+                serverPlayerEntity2.addStatusEffect(new StatusEffectInstance(statusEffect, 6000, 2));
             }
         }
-        if (!this.hasWalkTargetRange()) {
-            this.setWalkTarget(new BlockPos(this), 16);
+        if (!this.hasPositionTarget()) {
+            this.setPositionTarget(new BlockPos(this), 16);
         }
     }
 }

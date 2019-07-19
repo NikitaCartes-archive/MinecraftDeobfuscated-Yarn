@@ -9,7 +9,6 @@ import java.util.List;
 import java.util.UUID;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.client.network.packet.EntitySpawnS2CPacket;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
@@ -19,12 +18,13 @@ import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtHelper;
 import net.minecraft.network.Packet;
+import net.minecraft.network.packet.s2c.play.EntitySpawnS2CPacket;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
-import net.minecraft.util.TagHelper;
 import net.minecraft.util.hit.EntityHitResult;
 import net.minecraft.util.hit.HitResult;
 import net.minecraft.util.math.BlockPos;
@@ -62,7 +62,7 @@ extends Entity {
     @Environment(value=EnvType.CLIENT)
     public ShulkerBulletEntity(World world, double d, double e, double f, double g, double h, double i) {
         this((EntityType<? extends ShulkerBulletEntity>)EntityType.SHULKER_BULLET, world);
-        this.setPositionAndAngles(d, e, f, this.yaw, this.pitch);
+        this.refreshPositionAndAngles(d, e, f, this.yaw, this.pitch);
         this.setVelocity(g, h, i);
     }
 
@@ -73,7 +73,7 @@ extends Entity {
         double d = (double)blockPos.getX() + 0.5;
         double e = (double)blockPos.getY() + 0.5;
         double f = (double)blockPos.getZ() + 0.5;
-        this.setPositionAndAngles(d, e, f, this.yaw, this.pitch);
+        this.refreshPositionAndAngles(d, e, f, this.yaw, this.pitch);
         this.target = entity;
         this.direction = Direction.UP;
         this.method_7486(axis);
@@ -90,7 +90,7 @@ extends Entity {
         BlockPos blockPos;
         if (this.owner != null) {
             blockPos = new BlockPos(this.owner);
-            compoundTag2 = TagHelper.serializeUuid(this.owner.getUuid());
+            compoundTag2 = NbtHelper.fromUuid(this.owner.getUuid());
             compoundTag2.putInt("X", blockPos.getX());
             compoundTag2.putInt("Y", blockPos.getY());
             compoundTag2.putInt("Z", blockPos.getZ());
@@ -98,7 +98,7 @@ extends Entity {
         }
         if (this.target != null) {
             blockPos = new BlockPos(this.target);
-            compoundTag2 = TagHelper.serializeUuid(this.target.getUuid());
+            compoundTag2 = NbtHelper.fromUuid(this.target.getUuid());
             compoundTag2.putInt("X", blockPos.getX());
             compoundTag2.putInt("Y", blockPos.getY());
             compoundTag2.putInt("Z", blockPos.getZ());
@@ -120,17 +120,17 @@ extends Entity {
         this.field_7635 = compoundTag.getDouble("TXD");
         this.field_7633 = compoundTag.getDouble("TYD");
         this.field_7625 = compoundTag.getDouble("TZD");
-        if (compoundTag.containsKey("Dir", 99)) {
+        if (compoundTag.contains("Dir", 99)) {
             this.direction = Direction.byId(compoundTag.getInt("Dir"));
         }
-        if (compoundTag.containsKey("Owner", 10)) {
+        if (compoundTag.contains("Owner", 10)) {
             compoundTag2 = compoundTag.getCompound("Owner");
-            this.ownerUuid = TagHelper.deserializeUuid(compoundTag2);
+            this.ownerUuid = NbtHelper.toUuid(compoundTag2);
             this.ownerPos = new BlockPos(compoundTag2.getInt("X"), compoundTag2.getInt("Y"), compoundTag2.getInt("Z"));
         }
-        if (compoundTag.containsKey("Target", 10)) {
+        if (compoundTag.contains("Target", 10)) {
             compoundTag2 = compoundTag.getCompound("Target");
-            this.targetUuid = TagHelper.deserializeUuid(compoundTag2);
+            this.targetUuid = NbtHelper.toUuid(compoundTag2);
             this.targetPos = new BlockPos(compoundTag2.getInt("X"), compoundTag2.getInt("Y"), compoundTag2.getInt("Z"));
         }
     }
@@ -221,7 +221,7 @@ extends Entity {
         if (!this.world.isClient) {
             List<LivingEntity> list;
             if (this.target == null && this.targetUuid != null) {
-                list = this.world.getEntities(LivingEntity.class, new Box(this.targetPos.add(-2, -2, -2), this.targetPos.add(2, 2, 2)));
+                list = this.world.getNonSpectatingEntities(LivingEntity.class, new Box(this.targetPos.add(-2, -2, -2), this.targetPos.add(2, 2, 2)));
                 for (LivingEntity livingEntity : list) {
                     if (!livingEntity.getUuid().equals(this.targetUuid)) continue;
                     this.target = livingEntity;
@@ -230,7 +230,7 @@ extends Entity {
                 this.targetUuid = null;
             }
             if (this.owner == null && this.ownerUuid != null) {
-                list = this.world.getEntities(LivingEntity.class, new Box(this.ownerPos.add(-2, -2, -2), this.ownerPos.add(2, 2, 2)));
+                list = this.world.getNonSpectatingEntities(LivingEntity.class, new Box(this.ownerPos.add(-2, -2, -2), this.ownerPos.add(2, 2, 2)));
                 for (LivingEntity livingEntity : list) {
                     if (!livingEntity.getUuid().equals(this.ownerUuid)) continue;
                     this.owner = livingEntity;
@@ -253,7 +253,7 @@ extends Entity {
             }
         }
         vec3d = this.getVelocity();
-        this.setPosition(this.x + vec3d.x, this.y + vec3d.y, this.z + vec3d.z);
+        this.updatePosition(this.x + vec3d.x, this.y + vec3d.y, this.z + vec3d.z);
         ProjectileUtil.method_7484(this, 0.5f);
         if (this.world.isClient) {
             this.world.addParticle(ParticleTypes.END_ROD, this.x - vec3d.x, this.y - vec3d.y + 0.15, this.z - vec3d.z, 0.0, 0.0, 0.0);
@@ -267,7 +267,7 @@ extends Entity {
             if (this.direction != null) {
                 BlockPos blockPos = new BlockPos(this);
                 Direction.Axis axis = this.direction.getAxis();
-                if (this.world.doesBlockHaveSolidTopSurface(blockPos.offset(this.direction), this)) {
+                if (this.world.isTopSolid(blockPos.offset(this.direction), this)) {
                     this.method_7486(axis);
                 } else {
                     BlockPos blockPos2 = new BlockPos(this.target);
@@ -286,7 +286,7 @@ extends Entity {
 
     @Override
     @Environment(value=EnvType.CLIENT)
-    public boolean shouldRenderAtDistance(double d) {
+    public boolean shouldRender(double d) {
         return d < 16384.0;
     }
 
@@ -308,7 +308,7 @@ extends Entity {
             if (bl) {
                 this.dealDamage(this.owner, entity);
                 if (entity instanceof LivingEntity) {
-                    ((LivingEntity)entity).addPotionEffect(new StatusEffectInstance(StatusEffects.LEVITATION, 200));
+                    ((LivingEntity)entity).addStatusEffect(new StatusEffectInstance(StatusEffects.LEVITATION, 200));
                 }
             }
         } else {

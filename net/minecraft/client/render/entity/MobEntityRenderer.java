@@ -26,11 +26,13 @@ extends LivingEntityRenderer<T, M> {
         super(entityRenderDispatcher, entityModel, f);
     }
 
-    protected boolean method_4071(T mobEntity) {
-        return super.method_4055(mobEntity) && (((LivingEntity)mobEntity).shouldRenderName() || ((Entity)mobEntity).hasCustomName() && mobEntity == this.renderManager.targetedEntity);
+    @Override
+    protected boolean hasLabel(T mobEntity) {
+        return super.hasLabel(mobEntity) && (((LivingEntity)mobEntity).shouldRenderName() || ((Entity)mobEntity).hasCustomName() && mobEntity == this.renderManager.targetedEntity);
     }
 
-    public boolean method_4068(T mobEntity, VisibleRegion visibleRegion, double d, double e, double f) {
+    @Override
+    public boolean isVisible(T mobEntity, VisibleRegion visibleRegion, double d, double e, double f) {
         if (super.isVisible(mobEntity, visibleRegion, d, e, f)) {
             return true;
         }
@@ -41,8 +43,9 @@ extends LivingEntityRenderer<T, M> {
         return false;
     }
 
-    public void method_4072(T mobEntity, double d, double e, double f, float g, float h) {
-        super.method_4054(mobEntity, d, e, f, g, h);
+    @Override
+    public void render(T mobEntity, double d, double e, double f, float g, float h) {
+        super.render(mobEntity, d, e, f, g, h);
         if (!this.renderOutlines) {
             this.method_4073(mobEntity, d, e, f, g, h);
         }
@@ -60,7 +63,7 @@ extends LivingEntityRenderer<T, M> {
         }
         e -= (1.6 - (double)((Entity)mobEntity).getHeight()) * 0.5;
         Tessellator tessellator = Tessellator.getInstance();
-        BufferBuilder bufferBuilder = tessellator.getBufferBuilder();
+        BufferBuilder bufferBuilder = tessellator.getBuffer();
         double i = MathHelper.lerp(h * 0.5f, entity.yaw, entity.prevYaw) * ((float)Math.PI / 180);
         double j = MathHelper.lerp(h * 0.5f, entity.pitch, entity.prevPitch) * ((float)Math.PI / 180);
         double k = Math.cos(i);
@@ -127,8 +130,8 @@ extends LivingEntityRenderer<T, M> {
     }
 
     @Override
-    protected /* synthetic */ boolean method_4055(LivingEntity livingEntity) {
-        return this.method_4071((MobEntity)livingEntity);
+    protected /* synthetic */ boolean hasLabel(LivingEntity livingEntity) {
+        return this.hasLabel((T)((MobEntity)livingEntity));
     }
 }
 

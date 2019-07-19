@@ -9,25 +9,25 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 import net.minecraft.advancement.criterion.Criterions;
-import net.minecraft.client.network.DebugRendererInfoManager;
-import net.minecraft.client.network.packet.EntityStatusS2CPacket;
 import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.entity.raid.Raid;
 import net.minecraft.entity.raid.RaiderEntity;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
+import net.minecraft.network.packet.s2c.play.EntityStatusS2CPacket;
+import net.minecraft.server.network.DebugInfoSender;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.stat.Stats;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
-import net.minecraft.village.PointOfInterest;
-import net.minecraft.village.PointOfInterestStorage;
-import net.minecraft.village.PointOfInterestType;
 import net.minecraft.world.GameRules;
 import net.minecraft.world.PersistentState;
 import net.minecraft.world.dimension.Dimension;
 import net.minecraft.world.dimension.DimensionType;
+import net.minecraft.world.poi.PointOfInterest;
+import net.minecraft.world.poi.PointOfInterestStorage;
+import net.minecraft.world.poi.PointOfInterestType;
 import org.jetbrains.annotations.Nullable;
 
 public class RaidManager
@@ -66,7 +66,7 @@ extends PersistentState {
         if (this.currentTime % 200 == 0) {
             this.markDirty();
         }
-        DebugRendererInfoManager.sendRaids(this.world, this.raids.values());
+        DebugInfoSender.sendRaids(this.world, this.raids.values());
     }
 
     public static boolean isValidRaiderFor(RaiderEntity raiderEntity, Raid raid) {
@@ -122,7 +122,7 @@ extends PersistentState {
             serverPlayerEntity.networkHandler.sendPacket(new EntityStatusS2CPacket(serverPlayerEntity, 43));
             if (!raid.hasSpawned()) {
                 serverPlayerEntity.incrementStat(Stats.RAID_TRIGGER);
-                Criterions.VOLUNTARY_EXILE.handle(serverPlayerEntity);
+                Criterions.VOLUNTARY_EXILE.trigger(serverPlayerEntity);
             }
         }
         this.markDirty();
@@ -140,7 +140,7 @@ extends PersistentState {
         this.currentTime = compoundTag.getInt("Tick");
         ListTag listTag = compoundTag.getList("Raids", 10);
         for (int i = 0; i < listTag.size(); ++i) {
-            CompoundTag compoundTag2 = listTag.getCompoundTag(i);
+            CompoundTag compoundTag2 = listTag.getCompound(i);
             Raid raid = new Raid(this.world, compoundTag2);
             this.raids.put(raid.getRaidId(), raid);
         }

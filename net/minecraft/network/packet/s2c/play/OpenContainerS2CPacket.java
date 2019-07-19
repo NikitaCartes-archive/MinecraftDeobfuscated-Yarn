@@ -1,0 +1,67 @@
+/*
+ * Decompiled with CFR 0.2.0 (FabricMC d28b102d).
+ */
+package net.minecraft.network.packet.s2c.play;
+
+import java.io.IOException;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
+import net.minecraft.container.ContainerType;
+import net.minecraft.network.Packet;
+import net.minecraft.network.listener.ClientPlayPacketListener;
+import net.minecraft.text.Text;
+import net.minecraft.util.PacketByteBuf;
+import net.minecraft.util.registry.Registry;
+import org.jetbrains.annotations.Nullable;
+
+public class OpenContainerS2CPacket
+implements Packet<ClientPlayPacketListener> {
+    private int syncId;
+    private int containerId;
+    private Text name;
+
+    public OpenContainerS2CPacket() {
+    }
+
+    public OpenContainerS2CPacket(int i, ContainerType<?> containerType, Text text) {
+        this.syncId = i;
+        this.containerId = Registry.CONTAINER.getRawId(containerType);
+        this.name = text;
+    }
+
+    @Override
+    public void read(PacketByteBuf packetByteBuf) throws IOException {
+        this.syncId = packetByteBuf.readVarInt();
+        this.containerId = packetByteBuf.readVarInt();
+        this.name = packetByteBuf.readText();
+    }
+
+    @Override
+    public void write(PacketByteBuf packetByteBuf) throws IOException {
+        packetByteBuf.writeVarInt(this.syncId);
+        packetByteBuf.writeVarInt(this.containerId);
+        packetByteBuf.writeText(this.name);
+    }
+
+    @Override
+    public void apply(ClientPlayPacketListener clientPlayPacketListener) {
+        clientPlayPacketListener.onOpenContainer(this);
+    }
+
+    @Environment(value=EnvType.CLIENT)
+    public int getSyncId() {
+        return this.syncId;
+    }
+
+    @Nullable
+    @Environment(value=EnvType.CLIENT)
+    public ContainerType<?> getContainerType() {
+        return (ContainerType)Registry.CONTAINER.get(this.containerId);
+    }
+
+    @Environment(value=EnvType.CLIENT)
+    public Text getName() {
+        return this.name;
+    }
+}
+

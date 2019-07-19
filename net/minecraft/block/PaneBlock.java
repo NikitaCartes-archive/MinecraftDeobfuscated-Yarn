@@ -6,13 +6,13 @@ package net.minecraft.block;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.block.Block;
-import net.minecraft.block.BlockRenderLayer;
 import net.minecraft.block.BlockState;
-import net.minecraft.block.HorizontalConnectedBlock;
+import net.minecraft.block.HorizontalConnectingBlock;
+import net.minecraft.client.render.RenderLayer;
 import net.minecraft.fluid.FluidState;
 import net.minecraft.fluid.Fluids;
 import net.minecraft.item.ItemPlacementContext;
-import net.minecraft.state.StateFactory;
+import net.minecraft.state.StateManager;
 import net.minecraft.state.property.Property;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
@@ -20,10 +20,10 @@ import net.minecraft.world.IWorld;
 import net.minecraft.world.World;
 
 public class PaneBlock
-extends HorizontalConnectedBlock {
+extends HorizontalConnectingBlock {
     protected PaneBlock(Block.Settings settings) {
         super(1.0f, 1.0f, 16.0f, 16.0f, 16.0f, settings);
-        this.setDefaultState((BlockState)((BlockState)((BlockState)((BlockState)((BlockState)((BlockState)this.stateFactory.getDefaultState()).with(NORTH, false)).with(EAST, false)).with(SOUTH, false)).with(WEST, false)).with(WATERLOGGED, false));
+        this.setDefaultState((BlockState)((BlockState)((BlockState)((BlockState)((BlockState)((BlockState)this.stateManager.getDefaultState()).with(NORTH, false)).with(EAST, false)).with(SOUTH, false)).with(WEST, false)).with(WATERLOGGED, false));
     }
 
     @Override
@@ -39,7 +39,7 @@ extends HorizontalConnectedBlock {
         BlockState blockState2 = blockView.getBlockState(blockPos3);
         BlockState blockState3 = blockView.getBlockState(blockPos4);
         BlockState blockState4 = blockView.getBlockState(blockPos5);
-        return (BlockState)((BlockState)((BlockState)((BlockState)((BlockState)this.getDefaultState().with(NORTH, this.connectsTo(blockState, blockState.method_20827(blockView, blockPos2, Direction.SOUTH)))).with(SOUTH, this.connectsTo(blockState2, blockState2.method_20827(blockView, blockPos3, Direction.NORTH)))).with(WEST, this.connectsTo(blockState3, blockState3.method_20827(blockView, blockPos4, Direction.EAST)))).with(EAST, this.connectsTo(blockState4, blockState4.method_20827(blockView, blockPos5, Direction.WEST)))).with(WATERLOGGED, fluidState.getFluid() == Fluids.WATER);
+        return (BlockState)((BlockState)((BlockState)((BlockState)((BlockState)this.getDefaultState().with(NORTH, this.connectsTo(blockState, blockState.isSideSolidFullSquare(blockView, blockPos2, Direction.SOUTH)))).with(SOUTH, this.connectsTo(blockState2, blockState2.isSideSolidFullSquare(blockView, blockPos3, Direction.NORTH)))).with(WEST, this.connectsTo(blockState3, blockState3.isSideSolidFullSquare(blockView, blockPos4, Direction.EAST)))).with(EAST, this.connectsTo(blockState4, blockState4.isSideSolidFullSquare(blockView, blockPos5, Direction.WEST)))).with(WATERLOGGED, fluidState.getFluid() == Fluids.WATER);
     }
 
     @Override
@@ -48,7 +48,7 @@ extends HorizontalConnectedBlock {
             iWorld.getFluidTickScheduler().schedule(blockPos, Fluids.WATER, Fluids.WATER.getTickRate(iWorld));
         }
         if (direction.getAxis().isHorizontal()) {
-            return (BlockState)blockState.with((Property)FACING_PROPERTIES.get(direction), this.connectsTo(blockState2, blockState2.method_20827(iWorld, blockPos2, direction.getOpposite())));
+            return (BlockState)blockState.with((Property)FACING_PROPERTIES.get(direction), this.connectsTo(blockState2, blockState2.isSideSolidFullSquare(iWorld, blockPos2, direction.getOpposite())));
         }
         return super.getStateForNeighborUpdate(blockState, direction, blockState2, iWorld, blockPos, blockPos2);
     }
@@ -69,16 +69,16 @@ extends HorizontalConnectedBlock {
 
     public final boolean connectsTo(BlockState blockState, boolean bl) {
         Block block = blockState.getBlock();
-        return !PaneBlock.canConnect(block) && bl || block instanceof PaneBlock;
+        return !PaneBlock.cannotConnect(block) && bl || block instanceof PaneBlock;
     }
 
     @Override
-    public BlockRenderLayer getRenderLayer() {
-        return BlockRenderLayer.CUTOUT_MIPPED;
+    public RenderLayer getRenderLayer() {
+        return RenderLayer.CUTOUT_MIPPED;
     }
 
     @Override
-    protected void appendProperties(StateFactory.Builder<Block, BlockState> builder) {
+    protected void appendProperties(StateManager.Builder<Block, BlockState> builder) {
         builder.add(NORTH, EAST, WEST, SOUTH, WATERLOGGED);
     }
 }

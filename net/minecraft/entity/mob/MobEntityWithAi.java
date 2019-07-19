@@ -11,8 +11,8 @@ import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.passive.TameableEntity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
+import net.minecraft.world.CollisionView;
 import net.minecraft.world.IWorld;
-import net.minecraft.world.ViewableWorld;
 import net.minecraft.world.World;
 
 public abstract class MobEntityWithAi
@@ -25,13 +25,13 @@ extends MobEntity {
         return this.getPathfindingFavor(blockPos, this.world);
     }
 
-    public float getPathfindingFavor(BlockPos blockPos, ViewableWorld viewableWorld) {
+    public float getPathfindingFavor(BlockPos blockPos, CollisionView collisionView) {
         return 0.0f;
     }
 
     @Override
     public boolean canSpawn(IWorld iWorld, SpawnType spawnType) {
-        return this.getPathfindingFavor(new BlockPos(this.x, this.getBoundingBox().minY, this.z), iWorld) >= 0.0f;
+        return this.getPathfindingFavor(new BlockPos(this.x, this.getBoundingBox().y1, this.z), iWorld) >= 0.0f;
     }
 
     public boolean isNavigating() {
@@ -43,7 +43,7 @@ extends MobEntity {
         super.updateLeash();
         Entity entity = this.getHoldingEntity();
         if (entity != null && entity.world == this.world) {
-            this.setWalkTarget(new BlockPos(entity), 5);
+            this.setPositionTarget(new BlockPos(entity), 5);
             float f = this.distanceTo(entity);
             if (this instanceof TameableEntity && ((TameableEntity)this).isSitting()) {
                 if (f > 10.0f) {

@@ -44,8 +44,8 @@ import net.minecraft.util.math.Box;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.BlockView;
+import net.minecraft.world.CollisionView;
 import net.minecraft.world.GameRules;
-import net.minecraft.world.ViewableWorld;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
 
@@ -153,7 +153,7 @@ extends RaiderEntity {
         if (!this.isAlive()) {
             return;
         }
-        if (this.cannotMove()) {
+        if (this.isImmobile()) {
             this.getAttributeInstance(EntityAttributes.MOVEMENT_SPEED).setBaseValue(0.0);
         } else {
             double d = this.getTarget() != null ? 0.35 : 0.3;
@@ -163,7 +163,7 @@ extends RaiderEntity {
         if (this.horizontalCollision && this.world.getGameRules().getBoolean(GameRules.MOB_GRIEFING)) {
             boolean bl = false;
             Box box = this.getBoundingBox().expand(0.2);
-            for (BlockPos blockPos : BlockPos.iterate(MathHelper.floor(box.minX), MathHelper.floor(box.minY), MathHelper.floor(box.minZ), MathHelper.floor(box.maxX), MathHelper.floor(box.maxY), MathHelper.floor(box.maxZ))) {
+            for (BlockPos blockPos : BlockPos.iterate(MathHelper.floor(box.x1), MathHelper.floor(box.y1), MathHelper.floor(box.z1), MathHelper.floor(box.x2), MathHelper.floor(box.y2), MathHelper.floor(box.z2))) {
                 BlockState blockState = this.world.getBlockState(blockPos);
                 Block block = blockState.getBlock();
                 if (!(block instanceof LeavesBlock)) continue;
@@ -202,8 +202,8 @@ extends RaiderEntity {
     }
 
     @Override
-    protected boolean cannotMove() {
-        return super.cannotMove() || this.attackTick > 0 || this.stunTick > 0 || this.roarTick > 0;
+    protected boolean isImmobile() {
+        return super.isImmobile() || this.attackTick > 0 || this.stunTick > 0 || this.roarTick > 0;
     }
 
     @Override
@@ -312,8 +312,8 @@ extends RaiderEntity {
     }
 
     @Override
-    public boolean canSpawn(ViewableWorld viewableWorld) {
-        return !viewableWorld.intersectsFluid(this.getBoundingBox());
+    public boolean canSpawn(CollisionView collisionView) {
+        return !collisionView.intersectsFluid(this.getBoundingBox());
     }
 
     @Override

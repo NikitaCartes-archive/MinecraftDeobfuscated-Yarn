@@ -39,11 +39,12 @@ extends AbstractProperty<T> {
     }
 
     @Override
-    public Optional<T> getValue(String string) {
+    public Optional<T> parse(String string) {
         return Optional.ofNullable(this.byName.get(string));
     }
 
-    public String method_11846(T enum_) {
+    @Override
+    public String name(T enum_) {
         return ((StringIdentifiable)enum_).asString();
     }
 

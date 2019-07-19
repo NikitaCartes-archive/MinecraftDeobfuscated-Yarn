@@ -23,12 +23,12 @@ import net.minecraft.item.Items;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
-import net.minecraft.state.StateFactory;
+import net.minecraft.state.StateManager;
 import net.minecraft.state.property.IntProperty;
 import net.minecraft.state.property.Properties;
 import net.minecraft.util.BooleanBiFunction;
 import net.minecraft.util.Hand;
-import net.minecraft.util.SystemUtil;
+import net.minecraft.util.Util;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
@@ -45,7 +45,7 @@ implements InventoryProvider {
     public static final IntProperty LEVEL = Properties.LEVEL_8;
     public static final Object2FloatMap<ItemConvertible> ITEM_TO_LEVEL_INCREASE_CHANCE = new Object2FloatOpenHashMap<ItemConvertible>();
     public static final VoxelShape RAY_TRACE_SHAPE = VoxelShapes.fullCube();
-    private static final VoxelShape[] LEVEL_TO_COLLISION_SHAPE = SystemUtil.consume(new VoxelShape[9], voxelShapes -> {
+    private static final VoxelShape[] LEVEL_TO_COLLISION_SHAPE = Util.make(new VoxelShape[9], voxelShapes -> {
         for (int i = 0; i < 8; ++i) {
             voxelShapes[i] = VoxelShapes.combineAndSimplify(RAY_TRACE_SHAPE, Block.createCuboidShape(2.0, Math.max(2, 1 + i * 2), 2.0, 14.0, 16.0, 14.0), BooleanBiFunction.ONLY_FIRST);
         }
@@ -135,7 +135,7 @@ implements InventoryProvider {
 
     public ComposterBlock(Block.Settings settings) {
         super(settings);
-        this.setDefaultState((BlockState)((BlockState)this.stateFactory.getDefaultState()).with(LEVEL, 0));
+        this.setDefaultState((BlockState)((BlockState)this.stateManager.getDefaultState()).with(LEVEL, 0));
     }
 
     @Environment(value=EnvType.CLIENT)
@@ -245,7 +245,7 @@ implements InventoryProvider {
     }
 
     @Override
-    protected void appendProperties(StateFactory.Builder<Block, BlockState> builder) {
+    protected void appendProperties(StateManager.Builder<Block, BlockState> builder) {
         builder.add(LEVEL);
     }
 

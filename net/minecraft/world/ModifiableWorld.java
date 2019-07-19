@@ -10,7 +10,7 @@ import net.minecraft.util.math.BlockPos;
 public interface ModifiableWorld {
     public boolean setBlockState(BlockPos var1, BlockState var2, int var3);
 
-    public boolean clearBlockState(BlockPos var1, boolean var2);
+    public boolean removeBlock(BlockPos var1, boolean var2);
 
     public boolean breakBlock(BlockPos var1, boolean var2);
 

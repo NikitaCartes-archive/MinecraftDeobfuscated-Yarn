@@ -21,11 +21,13 @@ extends MobEntityRenderer<PolarBearEntity, PolarBearEntityModel<PolarBearEntity>
         super(entityRenderDispatcher, new PolarBearEntityModel(), 0.9f);
     }
 
-    protected Identifier method_4097(PolarBearEntity polarBearEntity) {
+    @Override
+    protected Identifier getTexture(PolarBearEntity polarBearEntity) {
         return SKIN;
     }
 
-    protected void method_4099(PolarBearEntity polarBearEntity, float f) {
+    @Override
+    protected void scale(PolarBearEntity polarBearEntity, float f) {
         GlStateManager.scalef(1.2f, 1.2f, 1.2f);
         super.scale(polarBearEntity, f);
     }

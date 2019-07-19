@@ -23,16 +23,19 @@ extends MobEntityRenderer<DolphinEntity, DolphinEntityModel<DolphinEntity>> {
         this.addFeature(new DolphinHeldItemFeatureRenderer(this));
     }
 
-    protected Identifier method_3903(DolphinEntity dolphinEntity) {
+    @Override
+    protected Identifier getTexture(DolphinEntity dolphinEntity) {
         return SKIN;
     }
 
-    protected void method_3901(DolphinEntity dolphinEntity, float f) {
+    @Override
+    protected void scale(DolphinEntity dolphinEntity, float f) {
         float g = 1.0f;
         GlStateManager.scalef(1.0f, 1.0f, 1.0f);
     }
 
-    protected void method_3902(DolphinEntity dolphinEntity, float f, float g, float h) {
+    @Override
+    protected void setupTransforms(DolphinEntity dolphinEntity, float f, float g, float h) {
         super.setupTransforms(dolphinEntity, f, g, h);
     }
 }

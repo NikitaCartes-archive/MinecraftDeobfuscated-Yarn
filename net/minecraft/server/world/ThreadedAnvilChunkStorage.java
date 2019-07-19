@@ -40,12 +40,6 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.client.network.DebugRendererInfoManager;
-import net.minecraft.client.network.packet.ChunkDataS2CPacket;
-import net.minecraft.client.network.packet.ChunkRenderDistanceCenterS2CPacket;
-import net.minecraft.client.network.packet.EntityAttachS2CPacket;
-import net.minecraft.client.network.packet.EntityPassengersSetS2CPacket;
-import net.minecraft.client.network.packet.LightUpdateS2CPacket;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LightningEntity;
@@ -54,7 +48,13 @@ import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.Packet;
+import net.minecraft.network.packet.s2c.play.ChunkDataS2CPacket;
+import net.minecraft.network.packet.s2c.play.ChunkRenderDistanceCenterS2CPacket;
+import net.minecraft.network.packet.s2c.play.EntityAttachS2CPacket;
+import net.minecraft.network.packet.s2c.play.EntityPassengersSetS2CPacket;
+import net.minecraft.network.packet.s2c.play.LightUpdateS2CPacket;
 import net.minecraft.server.WorldGenerationProgressListener;
+import net.minecraft.server.network.DebugInfoSender;
 import net.minecraft.server.network.EntityTrackerEntry;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ChunkHolder;
@@ -67,12 +67,9 @@ import net.minecraft.server.world.ServerLightingProvider;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.structure.StructureManager;
 import net.minecraft.structure.StructureStart;
-import net.minecraft.util.Actor;
 import net.minecraft.util.CsvWriter;
-import net.minecraft.util.MailboxProcessor;
-import net.minecraft.util.SystemUtil;
-import net.minecraft.util.ThreadExecutor;
 import net.minecraft.util.TypeFilterableList;
+import net.minecraft.util.Util;
 import net.minecraft.util.crash.CrashException;
 import net.minecraft.util.crash.CrashReport;
 import net.minecraft.util.crash.CrashReportSection;
@@ -81,12 +78,13 @@ import net.minecraft.util.math.ChunkSectionPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.profiler.Profiler;
-import net.minecraft.village.PointOfInterestStorage;
+import net.minecraft.util.thread.MessageListener;
+import net.minecraft.util.thread.TaskExecutor;
+import net.minecraft.util.thread.ThreadExecutor;
 import net.minecraft.world.ChunkSerializer;
 import net.minecraft.world.GameRules;
 import net.minecraft.world.PersistentStateManager;
 import net.minecraft.world.SessionLockException;
-import net.minecraft.world.VersionedChunkStorage;
 import net.minecraft.world.chunk.Chunk;
 import net.minecraft.world.chunk.ChunkProvider;
 import net.minecraft.world.chunk.ChunkStatus;
@@ -95,6 +93,8 @@ import net.minecraft.world.chunk.ReadOnlyChunk;
 import net.minecraft.world.chunk.UpgradeData;
 import net.minecraft.world.chunk.WorldChunk;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
+import net.minecraft.world.poi.PointOfInterestStorage;
+import net.minecraft.world.storage.VersionedChunkStorage;
 import org.apache.commons.lang3.mutable.MutableBoolean;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -118,8 +118,8 @@ implements ChunkHolder.PlayersWatchingChunkProvider {
     private final LongSet unloadedChunks = new LongOpenHashSet();
     private boolean chunkHolderListDirty;
     private final ChunkTaskPrioritySystem chunkTaskPrioritySystem;
-    private final Actor<ChunkTaskPrioritySystem.RunnableMessage<Runnable>> worldgenActor;
-    private final Actor<ChunkTaskPrioritySystem.RunnableMessage<Runnable>> mainActor;
+    private final MessageListener<ChunkTaskPrioritySystem.RunnableMessage<Runnable>> worldgenExecutor;
+    private final MessageListener<ChunkTaskPrioritySystem.RunnableMessage<Runnable>> mainExecutor;
     private final WorldGenerationProgressListener worldGenerationProgressListener;
     private final TicketManager ticketManager;
     private final AtomicInteger totalChunksLoadedCount = new AtomicInteger();
@@ -131,20 +131,20 @@ implements ChunkHolder.PlayersWatchingChunkProvider {
     private int watchDistance;
 
     public ThreadedAnvilChunkStorage(ServerWorld serverWorld, File file, DataFixer dataFixer, StructureManager structureManager, Executor executor, ThreadExecutor<Runnable> threadExecutor, ChunkProvider chunkProvider, ChunkGenerator<?> chunkGenerator, WorldGenerationProgressListener worldGenerationProgressListener, Supplier<PersistentStateManager> supplier, int i) {
-        super(new File(serverWorld.getDimension().getType().getFile(file), "region"), dataFixer);
+        super(new File(serverWorld.getDimension().getType().getSaveDirectory(file), "region"), dataFixer);
         this.structureManager = structureManager;
-        this.saveDir = serverWorld.getDimension().getType().getFile(file);
+        this.saveDir = serverWorld.getDimension().getType().getSaveDirectory(file);
         this.world = serverWorld;
         this.chunkGenerator = chunkGenerator;
         this.mainThreadExecutor = threadExecutor;
-        MailboxProcessor<Runnable> mailboxProcessor = MailboxProcessor.create(executor, "worldgen");
-        Actor<Runnable> actor = Actor.createConsumerActor("main", threadExecutor::method_18858);
+        TaskExecutor<Runnable> taskExecutor = TaskExecutor.create(executor, "worldgen");
+        MessageListener<Runnable> messageListener = MessageListener.create("main", threadExecutor::send);
         this.worldGenerationProgressListener = worldGenerationProgressListener;
-        MailboxProcessor<Runnable> mailboxProcessor2 = MailboxProcessor.create(executor, "light");
-        this.chunkTaskPrioritySystem = new ChunkTaskPrioritySystem(ImmutableList.of(mailboxProcessor, actor, mailboxProcessor2), executor, Integer.MAX_VALUE);
-        this.worldgenActor = this.chunkTaskPrioritySystem.createExecutingActor(mailboxProcessor, false);
-        this.mainActor = this.chunkTaskPrioritySystem.createExecutingActor(actor, false);
-        this.serverLightingProvider = new ServerLightingProvider(chunkProvider, this, this.world.getDimension().hasSkyLight(), mailboxProcessor2, this.chunkTaskPrioritySystem.createExecutingActor(mailboxProcessor2, false));
+        TaskExecutor<Runnable> taskExecutor2 = TaskExecutor.create(executor, "light");
+        this.chunkTaskPrioritySystem = new ChunkTaskPrioritySystem(ImmutableList.of(taskExecutor, messageListener, taskExecutor2), executor, Integer.MAX_VALUE);
+        this.worldgenExecutor = this.chunkTaskPrioritySystem.createExecutor(taskExecutor, false);
+        this.mainExecutor = this.chunkTaskPrioritySystem.createExecutor(messageListener, false);
+        this.serverLightingProvider = new ServerLightingProvider(chunkProvider, this, this.world.getDimension().hasSkyLight(), taskExecutor2, this.chunkTaskPrioritySystem.createExecutor(taskExecutor2, false));
         this.ticketManager = new TicketManager(executor, threadExecutor);
         this.persistentStateManagerFactory = supplier;
         this.pointOfInterestStorage = new PointOfInterestStorage(new File(this.saveDir, "poi"), dataFixer);
@@ -164,8 +164,8 @@ implements ChunkHolder.PlayersWatchingChunkProvider {
         int i;
         if (bl) {
             ChunkSectionPos chunkSectionPos = serverPlayerEntity.getCameraPosition();
-            i = chunkSectionPos.getChunkX();
-            j = chunkSectionPos.getChunkZ();
+            i = chunkSectionPos.getSectionX();
+            j = chunkSectionPos.getSectionZ();
         } else {
             i = MathHelper.floor(serverPlayerEntity.x / 16.0);
             j = MathHelper.floor(serverPlayerEntity.z / 16.0);
@@ -246,7 +246,7 @@ implements ChunkHolder.PlayersWatchingChunkProvider {
                 list2.add(completableFuture);
             }
         }
-        CompletableFuture completableFuture2 = SystemUtil.thenCombine(list2);
+        CompletableFuture completableFuture2 = Util.combine(list2);
         return completableFuture2.thenApply(list -> {
             ArrayList list2 = Lists.newArrayList();
             int l = 0;
@@ -317,7 +317,7 @@ implements ChunkHolder.PlayersWatchingChunkProvider {
                     CompletableFuture<Chunk> completableFuture;
                     do {
                         completableFuture = chunkHolder.getFuture();
-                        this.mainThreadExecutor.waitFor(completableFuture::isDone);
+                        this.mainThreadExecutor.runTasks(completableFuture::isDone);
                     } while (completableFuture != chunkHolder.getFuture());
                     return completableFuture.join();
                 }).filter(chunk -> chunk instanceof ReadOnlyChunk || chunk instanceof WorldChunk).filter(this::save).forEach(chunk -> mutableBoolean.setTrue());
@@ -433,7 +433,7 @@ implements ChunkHolder.PlayersWatchingChunkProvider {
                 CompoundTag compoundTag = this.getUpdatedChunkTag(chunkPos);
                 if (compoundTag != null) {
                     boolean bl;
-                    boolean bl2 = bl = compoundTag.containsKey("Level", 10) && compoundTag.getCompound("Level").containsKey("Status", 8);
+                    boolean bl2 = bl = compoundTag.contains("Level", 10) && compoundTag.getCompound("Level").contains("Status", 8);
                     if (bl) {
                         ProtoChunk chunk = ChunkSerializer.deserialize(this.world, this.structureManager, this.pointOfInterestStorage, chunkPos, compoundTag);
                         chunk.setLastSaveTime(this.world.getTime());
@@ -473,11 +473,11 @@ implements ChunkHolder.PlayersWatchingChunkProvider {
         }, unloaded -> {
             this.method_20441(chunkPos);
             return CompletableFuture.completedFuture(Either.right(unloaded));
-        }), runnable -> this.worldgenActor.send(ChunkTaskPrioritySystem.createExecutorMessage(chunkHolder, runnable)));
+        }), runnable -> this.worldgenExecutor.send(ChunkTaskPrioritySystem.createMessage(chunkHolder, runnable)));
     }
 
     protected void method_20441(ChunkPos chunkPos) {
-        this.mainThreadExecutor.method_18858(SystemUtil.debugRunnable(() -> this.ticketManager.removeTicketWithLevel(ChunkTicketType.LIGHT, chunkPos, 33 + ChunkStatus.getTargetGenerationRadius(ChunkStatus.FEATURES), chunkPos), () -> "release light ticket " + chunkPos));
+        this.mainThreadExecutor.send(Util.debugRunnable(() -> this.ticketManager.removeTicketWithLevel(ChunkTicketType.LIGHT, chunkPos, 33 + ChunkStatus.getTargetGenerationRadius(ChunkStatus.FEATURES), chunkPos), () -> "release light ticket " + chunkPos));
     }
 
     private ChunkStatus getRequiredStatusForGeneration(ChunkStatus chunkStatus, int i) {
@@ -523,7 +523,7 @@ implements ChunkHolder.PlayersWatchingChunkProvider {
                 }
                 return worldChunk;
             });
-        }, runnable -> this.mainActor.send(ChunkTaskPrioritySystem.createRunnableMessage(runnable, chunkHolder.getPos().toLong(), chunkHolder::getLevel)));
+        }, runnable -> this.mainExecutor.send(ChunkTaskPrioritySystem.createMessage(runnable, chunkHolder.getPos().toLong(), chunkHolder::getLevel)));
     }
 
     public CompletableFuture<Either<WorldChunk, ChunkHolder.Unloaded>> createTickingFuture(ChunkHolder chunkHolder) {
@@ -533,13 +533,13 @@ implements ChunkHolder.PlayersWatchingChunkProvider {
             WorldChunk worldChunk = (WorldChunk)list.get(list.size() / 2);
             worldChunk.runPostProcessing();
             return Either.left(worldChunk);
-        }), runnable -> this.mainActor.send(ChunkTaskPrioritySystem.createExecutorMessage(chunkHolder, runnable)));
+        }), runnable -> this.mainExecutor.send(ChunkTaskPrioritySystem.createMessage(chunkHolder, runnable)));
         ((CompletableFuture)completableFuture2).thenAcceptAsync(either -> either.mapLeft(worldChunk -> {
             this.totalChunksLoadedCount.getAndIncrement();
             Packet[] packets = new Packet[2];
             this.getPlayersWatchingChunk(chunkPos, false).forEach(serverPlayerEntity -> this.sendChunkDataPackets((ServerPlayerEntity)serverPlayerEntity, packets, (WorldChunk)worldChunk));
             return Either.left(worldChunk);
-        }), runnable -> this.mainActor.send(ChunkTaskPrioritySystem.createExecutorMessage(chunkHolder, runnable)));
+        }), runnable -> this.mainExecutor.send(ChunkTaskPrioritySystem.createMessage(chunkHolder, runnable)));
         return completableFuture2;
     }
 
@@ -548,7 +548,7 @@ implements ChunkHolder.PlayersWatchingChunkProvider {
             WorldChunk worldChunk = (WorldChunk)chunk;
             worldChunk.method_20530();
             return worldChunk;
-        }), runnable -> this.mainActor.send(ChunkTaskPrioritySystem.createExecutorMessage(chunkHolder, runnable)));
+        }), runnable -> this.mainExecutor.send(ChunkTaskPrioritySystem.createMessage(chunkHolder, runnable)));
     }
 
     public int getTotalChunksLoadedCount() {
@@ -619,7 +619,7 @@ implements ChunkHolder.PlayersWatchingChunkProvider {
             if (worldChunk != null) {
                 this.sendChunkDataPackets(serverPlayerEntity, packets, worldChunk);
             }
-            DebugRendererInfoManager.method_19775(this.world, chunkPos);
+            DebugInfoSender.method_19775(this.world, chunkPos);
         }
         if (!bl2 && bl) {
             serverPlayerEntity.sendUnloadChunkPacket(chunkPos);
@@ -713,7 +713,7 @@ implements ChunkHolder.PlayersWatchingChunkProvider {
     private ChunkSectionPos method_20726(ServerPlayerEntity serverPlayerEntity) {
         ChunkSectionPos chunkSectionPos = ChunkSectionPos.from(serverPlayerEntity);
         serverPlayerEntity.setCameraPosition(chunkSectionPos);
-        serverPlayerEntity.networkHandler.sendPacket(new ChunkRenderDistanceCenterS2CPacket(chunkSectionPos.getChunkX(), chunkSectionPos.getChunkZ()));
+        serverPlayerEntity.networkHandler.sendPacket(new ChunkRenderDistanceCenterS2CPacket(chunkSectionPos.getSectionX(), chunkSectionPos.getSectionZ()));
         return chunkSectionPos;
     }
 
@@ -753,8 +753,8 @@ implements ChunkHolder.PlayersWatchingChunkProvider {
                 this.playerChunkWatchingManager.movePlayer(l, m, serverPlayerEntity);
             }
         }
-        int k = chunkSectionPos.getChunkX();
-        int n = chunkSectionPos.getChunkZ();
+        int k = chunkSectionPos.getSectionX();
+        int n = chunkSectionPos.getSectionZ();
         if (Math.abs(k - i) <= this.watchDistance * 2 && Math.abs(n - j) <= this.watchDistance * 2) {
             int o = Math.min(i, k) - this.watchDistance;
             int p = Math.min(j, n) - this.watchDistance;
@@ -885,7 +885,7 @@ implements ChunkHolder.PlayersWatchingChunkProvider {
             packets[1] = new LightUpdateS2CPacket(worldChunk.getPos(), this.serverLightingProvider);
         }
         serverPlayerEntity.sendInitialChunkPackets(worldChunk.getPos(), packets[0], packets[1]);
-        DebugRendererInfoManager.method_19775(this.world, worldChunk.getPos());
+        DebugInfoSender.method_19775(this.world, worldChunk.getPos());
         ArrayList<Entity> list = Lists.newArrayList();
         ArrayList<Entity> list2 = Lists.newArrayList();
         for (EntityTracker entityTracker : this.entityTrackers.values()) {

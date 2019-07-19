@@ -19,7 +19,8 @@ extends AbstractZombieModel<GiantEntity> {
         super(f, 0.0f, 64, bl ? 32 : 64);
     }
 
-    public boolean method_17792(GiantEntity giantEntity) {
+    @Override
+    public boolean method_17790(GiantEntity giantEntity) {
         return false;
     }
 }

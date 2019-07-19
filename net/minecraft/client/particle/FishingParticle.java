@@ -16,11 +16,11 @@ import net.minecraft.world.World;
 @Environment(value=EnvType.CLIENT)
 public class FishingParticle
 extends SpriteBillboardParticle {
-    private final SpriteProvider field_17888;
+    private final SpriteProvider spriteProvider;
 
     private FishingParticle(World world, double d, double e, double f, double g, double h, double i, SpriteProvider spriteProvider) {
         super(world, d, e, f, 0.0, 0.0, 0.0);
-        this.field_17888 = spriteProvider;
+        this.spriteProvider = spriteProvider;
         this.velocityX *= (double)0.3f;
         this.velocityY = Math.random() * (double)0.2f + (double)0.1f;
         this.velocityZ *= (double)0.3f;
@@ -55,7 +55,7 @@ extends SpriteBillboardParticle {
         this.velocityZ *= (double)0.98f;
         float f = (float)i * 0.001f;
         this.setBoundingBoxSpacing(f, f);
-        this.setSprite(this.field_17888.getSprite(i % 4, 4));
+        this.setSprite(this.spriteProvider.getSprite(i % 4, 4));
     }
 
     @Environment(value=EnvType.CLIENT)
@@ -67,7 +67,8 @@ extends SpriteBillboardParticle {
             this.field_17889 = spriteProvider;
         }
 
-        public Particle method_3115(DefaultParticleType defaultParticleType, World world, double d, double e, double f, double g, double h, double i) {
+        @Override
+        public Particle createParticle(DefaultParticleType defaultParticleType, World world, double d, double e, double f, double g, double h, double i) {
             return new FishingParticle(world, d, e, f, g, h, i, this.field_17889);
         }
     }

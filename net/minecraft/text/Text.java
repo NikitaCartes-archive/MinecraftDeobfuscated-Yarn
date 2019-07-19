@@ -35,7 +35,7 @@ import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.JsonHelper;
 import net.minecraft.util.LowercaseEnumTypeAdapterFactory;
-import net.minecraft.util.SystemUtil;
+import net.minecraft.util.Util;
 import org.jetbrains.annotations.Nullable;
 
 public interface Text
@@ -172,7 +172,7 @@ Iterable<Text> {
     public static class Serializer
     implements JsonDeserializer<Text>,
     JsonSerializer<Text> {
-        private static final Gson GSON = SystemUtil.get(() -> {
+        private static final Gson GSON = Util.make(() -> {
             GsonBuilder gsonBuilder = new GsonBuilder();
             gsonBuilder.disableHtmlEscaping();
             gsonBuilder.registerTypeHierarchyAdapter(Text.class, new Serializer());
@@ -180,7 +180,7 @@ Iterable<Text> {
             gsonBuilder.registerTypeAdapterFactory(new LowercaseEnumTypeAdapterFactory());
             return gsonBuilder.create();
         });
-        private static final Field JSON_READER_POS = SystemUtil.get(() -> {
+        private static final Field JSON_READER_POS = Util.make(() -> {
             try {
                 new JsonReader(new StringReader(""));
                 Field field = JsonReader.class.getDeclaredField("pos");
@@ -190,7 +190,7 @@ Iterable<Text> {
                 throw new IllegalStateException("Couldn't get field 'pos' for JsonReader", noSuchFieldException);
             }
         });
-        private static final Field JSON_READER_LINE_START = SystemUtil.get(() -> {
+        private static final Field JSON_READER_LINE_START = Util.make(() -> {
             try {
                 new JsonReader(new StringReader(""));
                 Field field = JsonReader.class.getDeclaredField("lineStart");
@@ -206,7 +206,8 @@ Iterable<Text> {
          * Enabled force condition propagation
          * Lifted jumps to return sites
          */
-        public Text method_10871(JsonElement jsonElement, Type type, JsonDeserializationContext jsonDeserializationContext) throws JsonParseException {
+        @Override
+        public Text deserialize(JsonElement jsonElement, Type type, JsonDeserializationContext jsonDeserializationContext) throws JsonParseException {
             void var5_18;
             if (jsonElement.isJsonPrimitive()) {
                 return new LiteralText(jsonElement.getAsString());
@@ -224,7 +225,7 @@ Iterable<Text> {
                         Object[] objects = new Object[jsonArray.size()];
                         for (int i = 0; i < objects.length; ++i) {
                             LiteralText literalText;
-                            objects[i] = this.method_10871(jsonArray.get(i), type, jsonDeserializationContext);
+                            objects[i] = this.deserialize(jsonArray.get(i), type, jsonDeserializationContext);
                             if (!(objects[i] instanceof LiteralText) || !(literalText = (LiteralText)objects[i]).getStyle().isEmpty() || !literalText.getSiblings().isEmpty()) continue;
                             objects[i] = literalText.getRawString();
                         }
@@ -258,7 +259,7 @@ Iterable<Text> {
                     JsonArray jsonArray2 = JsonHelper.getArray(jsonObject, "extra");
                     if (jsonArray2.size() <= 0) throw new JsonParseException("Unexpected empty array of components");
                     for (int j = 0; j < jsonArray2.size(); ++j) {
-                        var5_16.append(this.method_10871(jsonArray2.get(j), type, jsonDeserializationContext));
+                        var5_16.append(this.deserialize(jsonArray2.get(j), type, jsonDeserializationContext));
                     }
                 }
                 var5_16.setStyle((Style)jsonDeserializationContext.deserialize(jsonElement, (Type)((Object)Style.class)));
@@ -268,7 +269,7 @@ Iterable<Text> {
             JsonArray jsonArray3 = jsonElement.getAsJsonArray();
             Object var5_17 = null;
             for (JsonElement jsonElement2 : jsonArray3) {
-                Text text2 = this.method_10871(jsonElement2, jsonElement2.getClass(), jsonDeserializationContext);
+                Text text2 = this.deserialize(jsonElement2, jsonElement2.getClass(), jsonDeserializationContext);
                 if (var5_18 == null) {
                     Text text = text2;
                     continue;
@@ -292,7 +293,8 @@ Iterable<Text> {
          * Enabled force condition propagation
          * Lifted jumps to return sites
          */
-        public JsonElement method_10874(Text text, Type type, JsonSerializationContext jsonSerializationContext) {
+        @Override
+        public JsonElement serialize(Text text, Type type, JsonSerializationContext jsonSerializationContext) {
             JsonObject jsonObject = new JsonObject();
             if (!text.getStyle().isEmpty()) {
                 this.addStyle(text.getStyle(), jsonObject, jsonSerializationContext);
@@ -300,7 +302,7 @@ Iterable<Text> {
             if (!text.getSiblings().isEmpty()) {
                 JsonArray jsonArray = new JsonArray();
                 for (Text text2 : text.getSiblings()) {
-                    jsonArray.add(this.method_10874(text2, text2.getClass(), jsonSerializationContext));
+                    jsonArray.add(this.serialize(text2, (Type)text2.getClass(), jsonSerializationContext));
                 }
                 jsonObject.add("extra", jsonArray);
             }
@@ -314,7 +316,7 @@ Iterable<Text> {
                 JsonArray jsonArray2 = new JsonArray();
                 for (Object object : translatableText.getArgs()) {
                     if (object instanceof Text) {
-                        jsonArray2.add(this.method_10874((Text)object, object.getClass(), jsonSerializationContext));
+                        jsonArray2.add(this.serialize((Text)object, (Type)object.getClass(), jsonSerializationContext));
                         continue;
                     }
                     jsonArray2.add(new JsonPrimitive(String.valueOf(object)));
@@ -400,12 +402,12 @@ Iterable<Text> {
 
         @Override
         public /* synthetic */ JsonElement serialize(Object object, Type type, JsonSerializationContext jsonSerializationContext) {
-            return this.method_10874((Text)object, type, jsonSerializationContext);
+            return this.serialize((Text)object, type, jsonSerializationContext);
         }
 
         @Override
         public /* synthetic */ Object deserialize(JsonElement jsonElement, Type type, JsonDeserializationContext jsonDeserializationContext) throws JsonParseException {
-            return this.method_10871(jsonElement, type, jsonDeserializationContext);
+            return this.deserialize(jsonElement, type, jsonDeserializationContext);
         }
     }
 }

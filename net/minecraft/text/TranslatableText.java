@@ -166,7 +166,8 @@ implements ParsableText {
         return stringBuilder.toString();
     }
 
-    public TranslatableText method_11020() {
+    @Override
+    public TranslatableText copy() {
         Object[] objects = new Object[this.args.length];
         for (int i = 0; i < this.args.length; ++i) {
             objects[i] = this.args[i] instanceof Text ? ((Text)this.args[i]).deepCopy() : this.args[i];
@@ -219,7 +220,7 @@ implements ParsableText {
 
     @Override
     public /* synthetic */ Text copy() {
-        return this.method_11020();
+        return this.copy();
     }
 }
 

@@ -23,8 +23,9 @@ extends FeatureRenderer<AbstractClientPlayerEntity, PlayerEntityModel<AbstractCl
         super(featureRendererContext);
     }
 
-    public void method_4177(AbstractClientPlayerEntity abstractClientPlayerEntity, float f, float g, float h, float i, float j, float k, float l) {
-        if (!abstractClientPlayerEntity.canRenderCapeTexture() || abstractClientPlayerEntity.isInvisible() || !abstractClientPlayerEntity.isSkinOverlayVisible(PlayerModelPart.CAPE) || abstractClientPlayerEntity.getCapeTexture() == null) {
+    @Override
+    public void render(AbstractClientPlayerEntity abstractClientPlayerEntity, float f, float g, float h, float i, float j, float k, float l) {
+        if (!abstractClientPlayerEntity.canRenderCapeTexture() || abstractClientPlayerEntity.isInvisible() || !abstractClientPlayerEntity.isPartVisible(PlayerModelPart.CAPE) || abstractClientPlayerEntity.getCapeTexture() == null) {
             return;
         }
         ItemStack itemStack = abstractClientPlayerEntity.getEquippedStack(EquipmentSlot.CHEST);
@@ -59,7 +60,7 @@ extends FeatureRenderer<AbstractClientPlayerEntity, PlayerEntityModel<AbstractCl
         GlStateManager.rotatef(s / 2.0f, 0.0f, 0.0f, 1.0f);
         GlStateManager.rotatef(-s / 2.0f, 0.0f, 1.0f, 0.0f);
         GlStateManager.rotatef(180.0f, 0.0f, 1.0f, 0.0f);
-        ((PlayerEntityModel)this.getModel()).renderCape(0.0625f);
+        ((PlayerEntityModel)this.getContextModel()).renderCape(0.0625f);
         GlStateManager.popMatrix();
     }
 

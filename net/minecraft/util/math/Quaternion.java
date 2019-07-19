@@ -77,45 +77,45 @@ public final class Quaternion {
 
     public String toString() {
         StringBuilder stringBuilder = new StringBuilder();
-        stringBuilder.append("Quaternion[").append(this.getW()).append(" + ");
-        stringBuilder.append(this.getX()).append("i + ");
-        stringBuilder.append(this.getY()).append("j + ");
-        stringBuilder.append(this.getZ()).append("k]");
+        stringBuilder.append("Quaternion[").append(this.getA()).append(" + ");
+        stringBuilder.append(this.getB()).append("i + ");
+        stringBuilder.append(this.getC()).append("j + ");
+        stringBuilder.append(this.getD()).append("k]");
         return stringBuilder.toString();
     }
 
-    public float getX() {
+    public float getB() {
         return this.components[0];
     }
 
-    public float getY() {
+    public float getC() {
         return this.components[1];
     }
 
-    public float getZ() {
+    public float getD() {
         return this.components[2];
     }
 
-    public float getW() {
+    public float getA() {
         return this.components[3];
     }
 
-    public void copyFrom(Quaternion quaternion) {
-        float f = this.getX();
-        float g = this.getY();
-        float h = this.getZ();
-        float i = this.getW();
-        float j = quaternion.getX();
-        float k = quaternion.getY();
-        float l = quaternion.getZ();
-        float m = quaternion.getW();
+    public void hamiltonProduct(Quaternion quaternion) {
+        float f = this.getB();
+        float g = this.getC();
+        float h = this.getD();
+        float i = this.getA();
+        float j = quaternion.getB();
+        float k = quaternion.getC();
+        float l = quaternion.getD();
+        float m = quaternion.getA();
         this.components[0] = i * j + f * m + g * l - h * k;
         this.components[1] = i * k - f * l + g * m + h * j;
         this.components[2] = i * l + f * k - g * j + h * m;
         this.components[3] = i * m - f * j - g * k - h * l;
     }
 
-    public void reverse() {
+    public void conjugate() {
         this.components[0] = -this.components[0];
         this.components[1] = -this.components[1];
         this.components[2] = -this.components[2];

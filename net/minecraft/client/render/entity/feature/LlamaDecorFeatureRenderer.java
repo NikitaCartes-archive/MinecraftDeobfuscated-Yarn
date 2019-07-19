@@ -23,7 +23,8 @@ extends FeatureRenderer<LlamaEntity, LlamaEntityModel<LlamaEntity>> {
         super(featureRendererContext);
     }
 
-    public void method_4191(LlamaEntity llamaEntity, float f, float g, float h, float i, float j, float k, float l) {
+    @Override
+    public void render(LlamaEntity llamaEntity, float f, float g, float h, float i, float j, float k, float l) {
         DyeColor dyeColor = llamaEntity.getCarpetColor();
         if (dyeColor != null) {
             this.bindTexture(LLAMA_DECOR[dyeColor.getId()]);
@@ -32,8 +33,8 @@ extends FeatureRenderer<LlamaEntity, LlamaEntityModel<LlamaEntity>> {
         } else {
             return;
         }
-        ((LlamaEntityModel)this.getModel()).copyStateTo(this.model);
-        this.model.method_17100(llamaEntity, f, g, i, j, k, l);
+        ((LlamaEntityModel)this.getContextModel()).copyStateTo(this.model);
+        this.model.render(llamaEntity, f, g, i, j, k, l);
     }
 
     @Override

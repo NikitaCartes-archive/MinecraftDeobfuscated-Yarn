@@ -22,17 +22,18 @@ extends FeatureRenderer<SnowGolemEntity, SnowmanEntityModel<SnowGolemEntity>> {
         super(featureRendererContext);
     }
 
-    public void method_4201(SnowGolemEntity snowGolemEntity, float f, float g, float h, float i, float j, float k, float l) {
+    @Override
+    public void render(SnowGolemEntity snowGolemEntity, float f, float g, float h, float i, float j, float k, float l) {
         if (snowGolemEntity.isInvisible() || !snowGolemEntity.hasPumpkin()) {
             return;
         }
         GlStateManager.pushMatrix();
-        ((SnowmanEntityModel)this.getModel()).method_2834().applyTransform(0.0625f);
+        ((SnowmanEntityModel)this.getContextModel()).method_2834().applyTransform(0.0625f);
         float m = 0.625f;
         GlStateManager.translatef(0.0f, -0.34375f, 0.0f);
         GlStateManager.rotatef(180.0f, 0.0f, 1.0f, 0.0f);
         GlStateManager.scalef(0.625f, -0.625f, -0.625f);
-        MinecraftClient.getInstance().getFirstPersonRenderer().renderItem(snowGolemEntity, new ItemStack(Blocks.CARVED_PUMPKIN), ModelTransformation.Type.HEAD);
+        MinecraftClient.getInstance().getHeldItemRenderer().renderItem(snowGolemEntity, new ItemStack(Blocks.CARVED_PUMPKIN), ModelTransformation.Type.HEAD);
         GlStateManager.popMatrix();
     }
 

@@ -5,20 +5,20 @@ package net.minecraft.block;
 
 import java.util.Random;
 import net.minecraft.block.Block;
-import net.minecraft.block.BlockRenderLayer;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.ChorusPlantBlock;
+import net.minecraft.client.render.RenderLayer;
 import net.minecraft.entity.Entity;
 import net.minecraft.item.ItemStack;
-import net.minecraft.state.StateFactory;
+import net.minecraft.state.StateManager;
 import net.minecraft.state.property.IntProperty;
 import net.minecraft.state.property.Properties;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
+import net.minecraft.world.CollisionView;
 import net.minecraft.world.IWorld;
-import net.minecraft.world.ViewableWorld;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
 
@@ -30,7 +30,7 @@ extends Block {
     protected ChorusFlowerBlock(ChorusPlantBlock chorusPlantBlock, Block.Settings settings) {
         super(settings);
         this.plantBlock = chorusPlantBlock;
-        this.setDefaultState((BlockState)((BlockState)this.stateFactory.getDefaultState()).with(AGE, 0));
+        this.setDefaultState((BlockState)((BlockState)this.stateManager.getDefaultState()).with(AGE, 0));
     }
 
     @Override
@@ -108,9 +108,9 @@ extends Block {
         world.playLevelEvent(1034, blockPos, 0);
     }
 
-    private static boolean isSurroundedByAir(ViewableWorld viewableWorld, BlockPos blockPos, @Nullable Direction direction) {
+    private static boolean isSurroundedByAir(CollisionView collisionView, BlockPos blockPos, @Nullable Direction direction) {
         for (Direction direction2 : Direction.Type.HORIZONTAL) {
-            if (direction2 == direction || viewableWorld.isAir(blockPos.offset(direction2))) continue;
+            if (direction2 == direction || collisionView.isAir(blockPos.offset(direction2))) continue;
             return false;
         }
         return true;
@@ -125,8 +125,8 @@ extends Block {
     }
 
     @Override
-    public boolean canPlaceAt(BlockState blockState, ViewableWorld viewableWorld, BlockPos blockPos) {
-        BlockState blockState2 = viewableWorld.getBlockState(blockPos.down());
+    public boolean canPlaceAt(BlockState blockState, CollisionView collisionView, BlockPos blockPos) {
+        BlockState blockState2 = collisionView.getBlockState(blockPos.down());
         Block block = blockState2.getBlock();
         if (block == this.plantBlock || block == Blocks.END_STONE) {
             return true;
@@ -136,7 +136,7 @@ extends Block {
         }
         boolean bl = false;
         for (Direction direction : Direction.Type.HORIZONTAL) {
-            BlockState blockState3 = viewableWorld.getBlockState(blockPos.offset(direction));
+            BlockState blockState3 = collisionView.getBlockState(blockPos.offset(direction));
             if (blockState3.getBlock() == this.plantBlock) {
                 if (bl) {
                     return false;
@@ -151,12 +151,12 @@ extends Block {
     }
 
     @Override
-    public BlockRenderLayer getRenderLayer() {
-        return BlockRenderLayer.CUTOUT;
+    public RenderLayer getRenderLayer() {
+        return RenderLayer.CUTOUT;
     }
 
     @Override
-    protected void appendProperties(StateFactory.Builder<Block, BlockState> builder) {
+    protected void appendProperties(StateManager.Builder<Block, BlockState> builder) {
         builder.add(AGE);
     }
 

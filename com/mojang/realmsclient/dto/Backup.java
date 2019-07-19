@@ -5,20 +5,20 @@ package com.mojang.realmsclient.dto;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import com.mojang.realmsclient.dto.ValueObject;
+import com.mojang.realmsclient.util.JsonUtils;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_4352;
-import net.minecraft.class_4431;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 @Environment(value=EnvType.CLIENT)
 public class Backup
-extends class_4352 {
+extends ValueObject {
     private static final Logger LOGGER = LogManager.getLogger();
     public String backupId;
     public Date lastModifiedDate;
@@ -31,9 +31,9 @@ extends class_4352 {
         JsonObject jsonObject = jsonElement.getAsJsonObject();
         Backup backup = new Backup();
         try {
-            backup.backupId = class_4431.method_21547("backupId", jsonObject, "");
-            backup.lastModifiedDate = class_4431.method_21544("lastModifiedDate", jsonObject);
-            backup.size = class_4431.method_21546("size", jsonObject, 0L);
+            backup.backupId = JsonUtils.getStringOr("backupId", jsonObject, "");
+            backup.lastModifiedDate = JsonUtils.getDateOr("lastModifiedDate", jsonObject);
+            backup.size = JsonUtils.getLongOr("size", jsonObject, 0L);
             if (jsonObject.has("metadata")) {
                 JsonObject jsonObject2 = jsonObject.getAsJsonObject("metadata");
                 Set<Map.Entry<String, JsonElement>> set = jsonObject2.entrySet();

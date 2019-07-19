@@ -55,15 +55,16 @@ extends SpriteBillboardParticle {
     @Environment(value=EnvType.CLIENT)
     public static class Factory
     implements ParticleFactory<DefaultParticleType> {
-        private final SpriteProvider field_17786;
+        private final SpriteProvider spriteProvider;
 
         public Factory(SpriteProvider spriteProvider) {
-            this.field_17786 = spriteProvider;
+            this.spriteProvider = spriteProvider;
         }
 
-        public Particle method_3011(DefaultParticleType defaultParticleType, World world, double d, double e, double f, double g, double h, double i) {
+        @Override
+        public Particle createParticle(DefaultParticleType defaultParticleType, World world, double d, double e, double f, double g, double h, double i) {
             WaterBubbleParticle waterBubbleParticle = new WaterBubbleParticle(world, d, e, f, g, h, i);
-            waterBubbleParticle.setSprite(this.field_17786);
+            waterBubbleParticle.setSprite(this.spriteProvider);
             return waterBubbleParticle;
         }
     }

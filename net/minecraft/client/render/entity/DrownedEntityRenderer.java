@@ -28,13 +28,14 @@ extends ZombieBaseEntityRenderer<DrownedEntity, DrownedEntityModel<DrownedEntity
 
     @Override
     @Nullable
-    protected Identifier method_4163(ZombieEntity zombieEntity) {
+    protected Identifier getTexture(ZombieEntity zombieEntity) {
         return SKIN;
     }
 
-    protected void method_4164(DrownedEntity drownedEntity, float f, float g, float h) {
+    @Override
+    protected void setupTransforms(DrownedEntity drownedEntity, float f, float g, float h) {
         float i = drownedEntity.method_6024(h);
-        super.method_17144(drownedEntity, f, g, h);
+        super.setupTransforms(drownedEntity, f, g, h);
         if (i > 0.0f) {
             GlStateManager.rotatef(MathHelper.lerp(i, drownedEntity.pitch, -10.0f - drownedEntity.pitch), 1.0f, 0.0f, 0.0f);
         }

@@ -26,7 +26,7 @@ extends BadlandsSurfaceBuilder {
     }
 
     @Override
-    public void method_15208(Random random, Chunk chunk, Biome biome, int i, int j, int k, double d, BlockState blockState, BlockState blockState2, int l, long m, TernarySurfaceConfig ternarySurfaceConfig) {
+    public void generate(Random random, Chunk chunk, Biome biome, int i, int j, int k, double d, BlockState blockState, BlockState blockState2, int l, long m, TernarySurfaceConfig ternarySurfaceConfig) {
         double e = 0.0;
         double f = Math.min(Math.abs(d), this.field_15623.sample((double)i * 0.25, (double)j * 0.25));
         if (f > 0.0) {

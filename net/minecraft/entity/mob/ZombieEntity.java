@@ -10,7 +10,7 @@ import java.util.UUID;
 import java.util.function.Predicate;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
-import net.minecraft.datafixers.NbtOps;
+import net.minecraft.datafixer.NbtOps;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityData;
 import net.minecraft.entity.EntityDimensions;
@@ -116,7 +116,7 @@ extends HostileEntity {
         this.getAttributeInstance(EntityAttributes.MOVEMENT_SPEED).setBaseValue(0.23f);
         this.getAttributeInstance(EntityAttributes.ATTACK_DAMAGE).setBaseValue(3.0);
         this.getAttributeInstance(EntityAttributes.ARMOR).setBaseValue(2.0);
-        this.getAttributeContainer().register(SPAWN_REINFORCEMENTS).setBaseValue(this.random.nextDouble() * (double)0.1f);
+        this.getAttributes().register(SPAWN_REINFORCEMENTS).setBaseValue(this.random.nextDouble() * (double)0.1f);
     }
 
     @Override
@@ -169,7 +169,7 @@ extends HostileEntity {
         return super.getCurrentExperience(playerEntity);
     }
 
-    public void setChild(boolean bl) {
+    public void setBaby(boolean bl) {
         this.getDataTracker().set(BABY, bl);
         if (this.world != null && !this.world.isClient) {
             EntityAttributeInstance entityAttributeInstance = this.getAttributeInstance(EntityAttributes.MOVEMENT_SPEED);
@@ -226,7 +226,7 @@ extends HostileEntity {
                         itemStack.setDamage(itemStack.getDamage() + this.random.nextInt(2));
                         if (itemStack.getDamage() >= itemStack.getMaxDamage()) {
                             this.sendEquipmentBreakStatus(EquipmentSlot.HEAD);
-                            this.setEquippedStack(EquipmentSlot.HEAD, ItemStack.EMPTY);
+                            this.equipStack(EquipmentSlot.HEAD, ItemStack.EMPTY);
                         }
                     }
                     bl = false;
@@ -258,12 +258,12 @@ extends HostileEntity {
         zombieEntity.setCanPickUpLoot(this.canPickUpLoot());
         zombieEntity.setCanBreakDoors(zombieEntity.shouldBreakDoors() && this.canBreakDoors());
         zombieEntity.method_7205(zombieEntity.world.getLocalDifficulty(new BlockPos(zombieEntity)).getClampedLocalDifficulty());
-        zombieEntity.setChild(this.isBaby());
+        zombieEntity.setBaby(this.isBaby());
         zombieEntity.setAiDisabled(this.isAiDisabled());
         for (EquipmentSlot equipmentSlot : EquipmentSlot.values()) {
             ItemStack itemStack = this.getEquippedStack(equipmentSlot);
             if (itemStack.isEmpty()) continue;
-            zombieEntity.setEquippedStack(equipmentSlot, itemStack.copy());
+            zombieEntity.equipStack(equipmentSlot, itemStack.copy());
             zombieEntity.setEquipmentDropChance(equipmentSlot, this.getDropChance(equipmentSlot));
             itemStack.setCount(0);
         }
@@ -297,7 +297,7 @@ extends HostileEntity {
                     int m = i + MathHelper.nextInt(this.random, 7, 40) * MathHelper.nextInt(this.random, -1, 1);
                     BlockPos blockPos = new BlockPos(m, (n = j + MathHelper.nextInt(this.random, 7, 40) * MathHelper.nextInt(this.random, -1, 1)) - 1, o = k + MathHelper.nextInt(this.random, 7, 40) * MathHelper.nextInt(this.random, -1, 1));
                     if (!this.world.getBlockState(blockPos).hasSolidTopSurface(this.world, blockPos, zombieEntity) || this.world.getLightLevel(new BlockPos(m, n, o)) >= 10) continue;
-                    zombieEntity.setPosition(m, n, o);
+                    zombieEntity.updatePosition(m, n, o);
                     if (this.world.isPlayerInRange(m, n, o, 7.0) || !this.world.intersectsEntities(zombieEntity) || !this.world.doesNotCollide(zombieEntity) || this.world.intersectsFluid(zombieEntity.getBoundingBox())) continue;
                     this.world.spawnEntity(zombieEntity);
                     zombieEntity.setTarget(livingEntity);
@@ -361,9 +361,9 @@ extends HostileEntity {
         if (f < f2) {
             int i = this.random.nextInt(3);
             if (i == 0) {
-                this.setEquippedStack(EquipmentSlot.MAINHAND, new ItemStack(Items.IRON_SWORD));
+                this.equipStack(EquipmentSlot.MAINHAND, new ItemStack(Items.IRON_SWORD));
             } else {
-                this.setEquippedStack(EquipmentSlot.MAINHAND, new ItemStack(Items.IRON_SHOVEL));
+                this.equipStack(EquipmentSlot.MAINHAND, new ItemStack(Items.IRON_SHOVEL));
             }
         }
     }
@@ -375,7 +375,7 @@ extends HostileEntity {
             compoundTag.putBoolean("IsBaby", true);
         }
         compoundTag.putBoolean("CanBreakDoors", this.canBreakDoors());
-        compoundTag.putInt("InWaterTime", this.isInsideWater() ? this.inWaterTime : -1);
+        compoundTag.putInt("InWaterTime", this.isTouchingWater() ? this.inWaterTime : -1);
         compoundTag.putInt("DrownedConversionTime", this.isConvertingInWater() ? this.ticksUntilWaterConversion : -1);
     }
 
@@ -383,11 +383,11 @@ extends HostileEntity {
     public void readCustomDataFromTag(CompoundTag compoundTag) {
         super.readCustomDataFromTag(compoundTag);
         if (compoundTag.getBoolean("IsBaby")) {
-            this.setChild(true);
+            this.setBaby(true);
         }
         this.setCanBreakDoors(compoundTag.getBoolean("CanBreakDoors"));
         this.inWaterTime = compoundTag.getInt("InWaterTime");
-        if (compoundTag.containsKey("DrownedConversionTime", 99) && compoundTag.getInt("DrownedConversionTime") > -1) {
+        if (compoundTag.contains("DrownedConversionTime", 99) && compoundTag.getInt("DrownedConversionTime") > -1) {
             this.setTicksUntilWaterConversion(compoundTag.getInt("DrownedConversionTime"));
         }
     }
@@ -408,7 +408,7 @@ extends HostileEntity {
             zombieVillagerEntity.method_21649(villagerEntity.method_21651().serialize(NbtOps.INSTANCE).getValue());
             zombieVillagerEntity.setOfferData(villagerEntity.getOffers().toTag());
             zombieVillagerEntity.setXp(villagerEntity.getExperience());
-            zombieVillagerEntity.setChild(villagerEntity.isBaby());
+            zombieVillagerEntity.setBaby(villagerEntity.isBaby());
             zombieVillagerEntity.setAiDisabled(villagerEntity.isAiDisabled());
             if (villagerEntity.hasCustomName()) {
                 zombieVillagerEntity.setCustomName(villagerEntity.getCustomName());
@@ -444,7 +444,7 @@ extends HostileEntity {
         if (entityData instanceof class_1644) {
             class_1644 lv = (class_1644)entityData;
             if (lv.field_7439) {
-                this.setChild(true);
+                this.setBaby(true);
                 if ((double)iWorld.getRandom().nextFloat() < 0.05) {
                     List<Entity> list = iWorld.getEntities(ChickenEntity.class, this.getBoundingBox().expand(5.0, 3.0, 5.0), EntityPredicates.NOT_MOUNTED);
                     if (!list.isEmpty()) {
@@ -454,7 +454,7 @@ extends HostileEntity {
                     }
                 } else if ((double)iWorld.getRandom().nextFloat() < 0.05) {
                     ChickenEntity chickenEntity2 = EntityType.CHICKEN.create(this.world);
-                    chickenEntity2.setPositionAndAngles(this.x, this.y, this.z, this.yaw, 0.0f);
+                    chickenEntity2.refreshPositionAndAngles(this.x, this.y, this.z, this.yaw, 0.0f);
                     chickenEntity2.initialize(iWorld, localDifficulty, SpawnType.JOCKEY, null, null);
                     chickenEntity2.setHasJockey(true);
                     iWorld.spawnEntity(chickenEntity2);
@@ -470,7 +470,7 @@ extends HostileEntity {
             int i = localDate.get(ChronoField.DAY_OF_MONTH);
             int j = localDate.get(ChronoField.MONTH_OF_YEAR);
             if (j == 10 && i == 31 && this.random.nextFloat() < 0.25f) {
-                this.setEquippedStack(EquipmentSlot.HEAD, new ItemStack(this.random.nextFloat() < 0.1f ? Blocks.JACK_O_LANTERN : Blocks.CARVED_PUMPKIN));
+                this.equipStack(EquipmentSlot.HEAD, new ItemStack(this.random.nextFloat() < 0.1f ? Blocks.JACK_O_LANTERN : Blocks.CARVED_PUMPKIN));
                 this.armorDropChances[EquipmentSlot.HEAD.getEntitySlotId()] = 0.0f;
             }
         }

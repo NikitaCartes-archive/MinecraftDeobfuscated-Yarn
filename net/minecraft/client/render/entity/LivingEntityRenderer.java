@@ -26,7 +26,7 @@ import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.scoreboard.AbstractTeam;
 import net.minecraft.util.Formatting;
-import net.minecraft.util.SystemUtil;
+import net.minecraft.util.Util;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
 import org.apache.logging.log4j.LogManager;
@@ -37,11 +37,11 @@ public abstract class LivingEntityRenderer<T extends LivingEntity, M extends Ent
 extends EntityRenderer<T>
 implements FeatureRendererContext<T, M> {
     private static final Logger LOGGER = LogManager.getLogger();
-    private static final NativeImageBackedTexture colorOverlayTexture = SystemUtil.consume(new NativeImageBackedTexture(16, 16, false), nativeImageBackedTexture -> {
+    private static final NativeImageBackedTexture colorOverlayTexture = Util.make(new NativeImageBackedTexture(16, 16, false), nativeImageBackedTexture -> {
         nativeImageBackedTexture.getImage().untrack();
         for (int i = 0; i < 16; ++i) {
             for (int j = 0; j < 16; ++j) {
-                nativeImageBackedTexture.getImage().setPixelRGBA(j, i, -1);
+                nativeImageBackedTexture.getImage().setPixelRgba(j, i, -1);
             }
         }
         nativeImageBackedTexture.upload();
@@ -66,12 +66,13 @@ implements FeatureRendererContext<T, M> {
         return this.model;
     }
 
-    public void method_4054(T livingEntity, double d, double e, double f, float g, float h) {
+    @Override
+    public void render(T livingEntity, double d, double e, double f, float g, float h) {
         GlStateManager.pushMatrix();
         GlStateManager.disableCull();
         ((EntityModel)this.model).handSwingProgress = this.getHandSwingProgress(livingEntity, h);
-        ((EntityModel)this.model).isRiding = ((Entity)livingEntity).hasVehicle();
-        ((EntityModel)this.model).isChild = ((LivingEntity)livingEntity).isBaby();
+        ((EntityModel)this.model).riding = ((Entity)livingEntity).hasVehicle();
+        ((EntityModel)this.model).child = ((LivingEntity)livingEntity).isBaby();
         try {
             float l;
             float i = MathHelper.lerpAngleDegrees(h, ((LivingEntity)livingEntity).field_6220, ((LivingEntity)livingEntity).field_6283);
@@ -96,7 +97,7 @@ implements FeatureRendererContext<T, M> {
             }
             float m = MathHelper.lerp(h, ((LivingEntity)livingEntity).prevPitch, ((LivingEntity)livingEntity).pitch);
             this.method_4048(livingEntity, d, e, f);
-            l = this.getAge(livingEntity, h);
+            l = this.getAnimationProgress(livingEntity, h);
             this.setupTransforms(livingEntity, l, i, h);
             float n = this.scaleAndTranslate(livingEntity, h);
             float o = 0.0f;
@@ -179,7 +180,7 @@ implements FeatureRendererContext<T, M> {
     protected void render(T livingEntity, float f, float g, float h, float i, float j, float k) {
         boolean bl2;
         boolean bl = this.method_4056(livingEntity);
-        boolean bl3 = bl2 = !bl && !((Entity)livingEntity).canSeePlayer(MinecraftClient.getInstance().player);
+        boolean bl3 = bl2 = !bl && !((Entity)livingEntity).isInvisibleTo(MinecraftClient.getInstance().player);
         if (bl || bl2) {
             if (!this.bindEntityTexture(livingEntity)) {
                 return;
@@ -360,7 +361,7 @@ implements FeatureRendererContext<T, M> {
             GlStateManager.rotatef(direction != null ? LivingEntityRenderer.method_18656(direction) : g, 0.0f, 1.0f, 0.0f);
             GlStateManager.rotatef(this.getLyingAngle(livingEntity), 0.0f, 0.0f, 1.0f);
             GlStateManager.rotatef(270.0f, 0.0f, 1.0f, 0.0f);
-        } else if ((((Entity)livingEntity).hasCustomName() || livingEntity instanceof PlayerEntity) && (string = Formatting.strip(((Entity)livingEntity).getName().getString())) != null && ("Dinnerbone".equals(string) || "Grumm".equals(string)) && (!(livingEntity instanceof PlayerEntity) || ((PlayerEntity)livingEntity).isSkinOverlayVisible(PlayerModelPart.CAPE))) {
+        } else if ((((Entity)livingEntity).hasCustomName() || livingEntity instanceof PlayerEntity) && (string = Formatting.strip(((Entity)livingEntity).getName().getString())) != null && ("Dinnerbone".equals(string) || "Grumm".equals(string)) && (!(livingEntity instanceof PlayerEntity) || ((PlayerEntity)livingEntity).isPartVisible(PlayerModelPart.CAPE))) {
             GlStateManager.translatef(0.0f, ((Entity)livingEntity).getHeight() + 0.1f, 0.0f);
             GlStateManager.rotatef(180.0f, 0.0f, 0.0f, 1.0f);
         }
@@ -370,7 +371,7 @@ implements FeatureRendererContext<T, M> {
         return ((LivingEntity)livingEntity).getHandSwingProgress(f);
     }
 
-    protected float getAge(T livingEntity, float f) {
+    protected float getAnimationProgress(T livingEntity, float f) {
         return (float)((LivingEntity)livingEntity).age + f;
     }
 
@@ -394,9 +395,10 @@ implements FeatureRendererContext<T, M> {
     protected void scale(T livingEntity, float f) {
     }
 
-    public void method_4041(T livingEntity, double d, double e, double f) {
+    @Override
+    public void renderLabelIfPresent(T livingEntity, double d, double e, double f) {
         float h;
-        if (!this.method_4055(livingEntity)) {
+        if (!this.hasLabel(livingEntity)) {
             return;
         }
         double g = ((Entity)livingEntity).squaredDistanceTo(this.renderManager.camera.getPos());
@@ -409,10 +411,11 @@ implements FeatureRendererContext<T, M> {
         this.renderLabel(livingEntity, d, e, f, string, g);
     }
 
-    protected boolean method_4055(T livingEntity) {
+    @Override
+    protected boolean hasLabel(T livingEntity) {
         boolean bl;
         ClientPlayerEntity clientPlayerEntity = MinecraftClient.getInstance().player;
-        boolean bl2 = bl = !((Entity)livingEntity).canSeePlayer(clientPlayerEntity);
+        boolean bl2 = bl = !((Entity)livingEntity).isInvisibleTo(clientPlayerEntity);
         if (livingEntity != clientPlayerEntity) {
             AbstractTeam abstractTeam = ((Entity)livingEntity).getScoreboardTeam();
             AbstractTeam abstractTeam2 = clientPlayerEntity.getScoreboardTeam();
@@ -440,12 +443,12 @@ implements FeatureRendererContext<T, M> {
 
     @Override
     protected /* synthetic */ boolean hasLabel(Entity entity) {
-        return this.method_4055((LivingEntity)entity);
+        return this.hasLabel((T)((LivingEntity)entity));
     }
 
     @Override
     public /* synthetic */ void renderLabelIfPresent(Entity entity, double d, double e, double f) {
-        this.method_4041((LivingEntity)entity, d, e, f);
+        this.renderLabelIfPresent((T)((LivingEntity)entity), d, e, f);
     }
 }
 

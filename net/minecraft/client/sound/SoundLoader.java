@@ -19,7 +19,7 @@ import net.minecraft.client.sound.StaticSound;
 import net.minecraft.resource.Resource;
 import net.minecraft.resource.ResourceManager;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.SystemUtil;
+import net.minecraft.util.Util;
 
 @Environment(value=EnvType.CLIENT)
 public class SoundLoader {
@@ -94,7 +94,7 @@ public class SoundLoader {
              *     at java.base/java.lang.Thread.run(Thread.java:833)
              */
             throw new IllegalStateException("Decompilation failed");
-        }, SystemUtil.getServerWorkerExecutor()));
+        }, Util.getServerWorkerExecutor()));
     }
 
     public CompletableFuture<AudioStream> loadStreamed(Identifier identifier) {
@@ -106,7 +106,7 @@ public class SoundLoader {
             } catch (IOException iOException) {
                 throw new CompletionException(iOException);
             }
-        }, SystemUtil.getServerWorkerExecutor());
+        }, Util.getServerWorkerExecutor());
     }
 
     public void close() {

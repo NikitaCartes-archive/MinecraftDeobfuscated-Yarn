@@ -73,7 +73,7 @@ extends AbstractPhase {
                     double q = this.field_7062.z - n;
                     this.dragon.world.playLevelEvent(null, 1017, new BlockPos(this.dragon), 0);
                     DragonFireballEntity dragonFireballEntity = new DragonFireballEntity(this.dragon.world, this.dragon, o, p, q);
-                    dragonFireballEntity.setPositionAndAngles(l, m, n, 0.0f, 0.0f);
+                    dragonFireballEntity.refreshPositionAndAngles(l, m, n, 0.0f, 0.0f);
                     this.dragon.world.spawnEntity(dragonFireballEntity);
                     this.field_7060 = 0;
                     if (this.field_7059 != null) {
@@ -95,7 +95,7 @@ extends AbstractPhase {
         if (this.field_7059 == null || this.field_7059.isFinished()) {
             int i;
             int j = i = this.dragon.method_6818();
-            if (this.dragon.getRand().nextInt(8) == 0) {
+            if (this.dragon.getRandom().nextInt(8) == 0) {
                 this.field_7058 = !this.field_7058;
                 j += 6;
             }
@@ -122,7 +122,7 @@ extends AbstractPhase {
             this.field_7059.next();
             double d = vec3d.x;
             double e = vec3d.z;
-            while ((f = vec3d.y + (double)(this.dragon.getRand().nextFloat() * 20.0f)) < vec3d.y) {
+            while ((f = vec3d.y + (double)(this.dragon.getRandom().nextFloat() * 20.0f)) < vec3d.y) {
             }
             this.field_7057 = new Vec3d(d, f, e);
         }

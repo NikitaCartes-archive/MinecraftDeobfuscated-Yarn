@@ -20,7 +20,8 @@ extends Feature<DecoratedFeatureConfig> {
         super(function);
     }
 
-    public boolean method_12892(IWorld iWorld, ChunkGenerator<? extends ChunkGeneratorConfig> chunkGenerator, Random random, BlockPos blockPos, DecoratedFeatureConfig decoratedFeatureConfig) {
+    @Override
+    public boolean generate(IWorld iWorld, ChunkGenerator<? extends ChunkGeneratorConfig> chunkGenerator, Random random, BlockPos blockPos, DecoratedFeatureConfig decoratedFeatureConfig) {
         return decoratedFeatureConfig.decorator.generate(iWorld, chunkGenerator, random, blockPos, decoratedFeatureConfig.feature);
     }
 

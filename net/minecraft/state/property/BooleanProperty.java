@@ -26,14 +26,15 @@ extends AbstractProperty<Boolean> {
     }
 
     @Override
-    public Optional<Boolean> getValue(String string) {
+    public Optional<Boolean> parse(String string) {
         if ("true".equals(string) || "false".equals(string)) {
             return Optional.of(Boolean.valueOf(string));
         }
         return Optional.empty();
     }
 
-    public String method_11826(Boolean boolean_) {
+    @Override
+    public String name(Boolean boolean_) {
         return boolean_.toString();
     }
 

@@ -57,7 +57,7 @@ public class DamageSourcePredicate {
         if (this.bypassesArmor != null && this.bypassesArmor.booleanValue() != damageSource.bypassesArmor()) {
             return false;
         }
-        if (this.bypassesInvulnerability != null && this.bypassesInvulnerability.booleanValue() != damageSource.doesDamageToCreative()) {
+        if (this.bypassesInvulnerability != null && this.bypassesInvulnerability.booleanValue() != damageSource.isOutOfWorld()) {
             return false;
         }
         if (this.bypassesMagic != null && this.bypassesMagic.booleanValue() != damageSource.isUnblockable()) {
@@ -91,8 +91,8 @@ public class DamageSourcePredicate {
         Boolean boolean6 = DamageSourcePredicate.getBoolean(jsonObject, "is_fire");
         Boolean boolean7 = DamageSourcePredicate.getBoolean(jsonObject, "is_magic");
         Boolean boolean8 = DamageSourcePredicate.getBoolean(jsonObject, "is_lightning");
-        EntityPredicate entityPredicate = EntityPredicate.deserialize(jsonObject.get("direct_entity"));
-        EntityPredicate entityPredicate2 = EntityPredicate.deserialize(jsonObject.get("source_entity"));
+        EntityPredicate entityPredicate = EntityPredicate.fromJson(jsonObject.get("direct_entity"));
+        EntityPredicate entityPredicate2 = EntityPredicate.fromJson(jsonObject.get("source_entity"));
         return new DamageSourcePredicate(boolean_, boolean2, boolean3, boolean4, boolean5, boolean6, boolean7, boolean8, entityPredicate, entityPredicate2);
     }
 

@@ -37,7 +37,7 @@ public class ModelTransformation {
     public final Transformation fixed;
 
     private ModelTransformation() {
-        this(Transformation.NONE, Transformation.NONE, Transformation.NONE, Transformation.NONE, Transformation.NONE, Transformation.NONE, Transformation.NONE, Transformation.NONE);
+        this(Transformation.IDENTITY, Transformation.IDENTITY, Transformation.IDENTITY, Transformation.IDENTITY, Transformation.IDENTITY, Transformation.IDENTITY, Transformation.IDENTITY, Transformation.IDENTITY);
     }
 
     public ModelTransformation(ModelTransformation modelTransformation) {
@@ -67,7 +67,7 @@ public class ModelTransformation {
     }
 
     public static void applyGl(Transformation transformation, boolean bl) {
-        if (transformation == Transformation.NONE) {
+        if (transformation == Transformation.IDENTITY) {
             return;
         }
         int i = bl ? -1 : 1;
@@ -110,11 +110,11 @@ public class ModelTransformation {
                 return this.fixed;
             }
         }
-        return Transformation.NONE;
+        return Transformation.IDENTITY;
     }
 
     public boolean isTransformationDefined(Type type) {
-        return this.getTransformation(type) != Transformation.NONE;
+        return this.getTransformation(type) != Transformation.IDENTITY;
     }
 
     @Environment(value=EnvType.CLIENT)
@@ -123,16 +123,17 @@ public class ModelTransformation {
         protected Deserializer() {
         }
 
-        public ModelTransformation method_3505(JsonElement jsonElement, java.lang.reflect.Type type, JsonDeserializationContext jsonDeserializationContext) throws JsonParseException {
+        @Override
+        public ModelTransformation deserialize(JsonElement jsonElement, java.lang.reflect.Type type, JsonDeserializationContext jsonDeserializationContext) throws JsonParseException {
             JsonObject jsonObject = jsonElement.getAsJsonObject();
             Transformation transformation = this.parseModelTransformation(jsonDeserializationContext, jsonObject, "thirdperson_righthand");
             Transformation transformation2 = this.parseModelTransformation(jsonDeserializationContext, jsonObject, "thirdperson_lefthand");
-            if (transformation2 == Transformation.NONE) {
+            if (transformation2 == Transformation.IDENTITY) {
                 transformation2 = transformation;
             }
             Transformation transformation3 = this.parseModelTransformation(jsonDeserializationContext, jsonObject, "firstperson_righthand");
             Transformation transformation4 = this.parseModelTransformation(jsonDeserializationContext, jsonObject, "firstperson_lefthand");
-            if (transformation4 == Transformation.NONE) {
+            if (transformation4 == Transformation.IDENTITY) {
                 transformation4 = transformation3;
             }
             Transformation transformation5 = this.parseModelTransformation(jsonDeserializationContext, jsonObject, "head");
@@ -146,12 +147,12 @@ public class ModelTransformation {
             if (jsonObject.has(string)) {
                 return (Transformation)jsonDeserializationContext.deserialize(jsonObject.get(string), (java.lang.reflect.Type)((Object)Transformation.class));
             }
-            return Transformation.NONE;
+            return Transformation.IDENTITY;
         }
 
         @Override
         public /* synthetic */ Object deserialize(JsonElement jsonElement, java.lang.reflect.Type type, JsonDeserializationContext jsonDeserializationContext) throws JsonParseException {
-            return this.method_3505(jsonElement, type, jsonDeserializationContext);
+            return this.deserialize(jsonElement, type, jsonDeserializationContext);
         }
     }
 

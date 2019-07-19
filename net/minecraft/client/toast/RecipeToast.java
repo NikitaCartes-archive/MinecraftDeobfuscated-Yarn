@@ -8,7 +8,7 @@ import com.mojang.blaze3d.platform.GlStateManager;
 import java.util.List;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.client.render.GuiLighting;
+import net.minecraft.client.render.DiffuseLighting;
 import net.minecraft.client.resource.language.I18n;
 import net.minecraft.client.toast.Toast;
 import net.minecraft.client.toast.ToastManager;
@@ -40,7 +40,7 @@ implements Toast {
         toastManager.blit(0, 0, 0, 32, 160, 32);
         toastManager.getGame().textRenderer.draw(I18n.translate("recipe.toast.title", new Object[0]), 30.0f, 7.0f, -11534256);
         toastManager.getGame().textRenderer.draw(I18n.translate("recipe.toast.description", new Object[0]), 30.0f, 18.0f, -16777216);
-        GuiLighting.enableForItems();
+        DiffuseLighting.enableForItems();
         Recipe<?> recipe = this.recipes.get((int)(l / (5000L / (long)this.recipes.size()) % (long)this.recipes.size()));
         ItemStack itemStack = recipe.getRecipeKindIcon();
         GlStateManager.pushMatrix();

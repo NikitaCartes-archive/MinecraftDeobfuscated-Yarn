@@ -23,8 +23,8 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.world.BlockView;
+import net.minecraft.world.CollisionView;
 import net.minecraft.world.IWorld;
-import net.minecraft.world.ViewableWorld;
 import org.jetbrains.annotations.Nullable;
 
 public class TallSeagrassBlock
@@ -44,7 +44,7 @@ implements FluidFillable {
 
     @Override
     protected boolean canPlantOnTop(BlockState blockState, BlockView blockView, BlockPos blockPos) {
-        return blockState.method_20827(blockView, blockPos, Direction.UP) && blockState.getBlock() != Blocks.MAGMA_BLOCK;
+        return blockState.isSideSolidFullSquare(blockView, blockPos, Direction.UP) && blockState.getBlock() != Blocks.MAGMA_BLOCK;
     }
 
     @Override
@@ -65,13 +65,13 @@ implements FluidFillable {
     }
 
     @Override
-    public boolean canPlaceAt(BlockState blockState, ViewableWorld viewableWorld, BlockPos blockPos) {
+    public boolean canPlaceAt(BlockState blockState, CollisionView collisionView, BlockPos blockPos) {
         if (blockState.get(HALF) == DoubleBlockHalf.UPPER) {
-            BlockState blockState2 = viewableWorld.getBlockState(blockPos.down());
+            BlockState blockState2 = collisionView.getBlockState(blockPos.down());
             return blockState2.getBlock() == this && blockState2.get(HALF) == DoubleBlockHalf.LOWER;
         }
-        FluidState fluidState = viewableWorld.getFluidState(blockPos);
-        return super.canPlaceAt(blockState, viewableWorld, blockPos) && fluidState.matches(FluidTags.WATER) && fluidState.getLevel() == 8;
+        FluidState fluidState = collisionView.getFluidState(blockPos);
+        return super.canPlaceAt(blockState, collisionView, blockPos) && fluidState.matches(FluidTags.WATER) && fluidState.getLevel() == 8;
     }
 
     @Override

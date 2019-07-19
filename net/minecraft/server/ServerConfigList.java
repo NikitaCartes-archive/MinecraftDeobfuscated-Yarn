@@ -189,13 +189,15 @@ public class ServerConfigList<K, V extends ServerConfigEntry<K>> {
         private DeSerializer() {
         }
 
-        public JsonElement method_14646(ServerConfigEntry<K> serverConfigEntry, Type type, JsonSerializationContext jsonSerializationContext) {
+        @Override
+        public JsonElement serialize(ServerConfigEntry<K> serverConfigEntry, Type type, JsonSerializationContext jsonSerializationContext) {
             JsonObject jsonObject = new JsonObject();
             serverConfigEntry.serialize(jsonObject);
             return jsonObject;
         }
 
-        public ServerConfigEntry<K> method_14645(JsonElement jsonElement, Type type, JsonDeserializationContext jsonDeserializationContext) throws JsonParseException {
+        @Override
+        public ServerConfigEntry<K> deserialize(JsonElement jsonElement, Type type, JsonDeserializationContext jsonDeserializationContext) throws JsonParseException {
             if (jsonElement.isJsonObject()) {
                 JsonObject jsonObject = jsonElement.getAsJsonObject();
                 return ServerConfigList.this.fromJson(jsonObject);
@@ -205,12 +207,12 @@ public class ServerConfigList<K, V extends ServerConfigEntry<K>> {
 
         @Override
         public /* synthetic */ JsonElement serialize(Object object, Type type, JsonSerializationContext jsonSerializationContext) {
-            return this.method_14646((ServerConfigEntry)object, type, jsonSerializationContext);
+            return this.serialize((ServerConfigEntry)object, type, jsonSerializationContext);
         }
 
         @Override
         public /* synthetic */ Object deserialize(JsonElement jsonElement, Type type, JsonDeserializationContext jsonDeserializationContext) throws JsonParseException {
-            return this.method_14645(jsonElement, type, jsonDeserializationContext);
+            return this.deserialize(jsonElement, type, jsonDeserializationContext);
         }
     }
 }

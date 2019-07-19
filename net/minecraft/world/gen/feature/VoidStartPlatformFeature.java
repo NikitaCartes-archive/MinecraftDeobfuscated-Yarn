@@ -28,7 +28,8 @@ extends Feature<DefaultFeatureConfig> {
         return Math.max(Math.abs(i - k), Math.abs(j - l));
     }
 
-    public boolean method_14165(IWorld iWorld, ChunkGenerator<? extends ChunkGeneratorConfig> chunkGenerator, Random random, BlockPos blockPos, DefaultFeatureConfig defaultFeatureConfig) {
+    @Override
+    public boolean generate(IWorld iWorld, ChunkGenerator<? extends ChunkGeneratorConfig> chunkGenerator, Random random, BlockPos blockPos, DefaultFeatureConfig defaultFeatureConfig) {
         ChunkPos chunkPos = new ChunkPos(blockPos);
         if (VoidStartPlatformFeature.method_20403(chunkPos.x, chunkPos.z, VoidStartPlatformFeature.field_19242.x, VoidStartPlatformFeature.field_19242.z) > 1) {
             return true;

@@ -85,7 +85,7 @@ extends AmbientEntity {
     }
 
     @Override
-    protected void tickPushing() {
+    protected void tickCramming() {
     }
 
     @Override

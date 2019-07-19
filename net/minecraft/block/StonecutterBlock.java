@@ -5,19 +5,19 @@ package net.minecraft.block;
 
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockPlacementEnvironment;
-import net.minecraft.block.BlockRenderLayer;
 import net.minecraft.block.BlockRenderType;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.HorizontalFacingBlock;
-import net.minecraft.client.network.ClientDummyContainerProvider;
+import net.minecraft.client.render.RenderLayer;
 import net.minecraft.container.BlockContext;
-import net.minecraft.container.NameableContainerProvider;
+import net.minecraft.container.NameableContainerFactory;
+import net.minecraft.container.SimpleNamedContainerFactory;
 import net.minecraft.container.StonecutterContainer;
 import net.minecraft.entity.EntityContext;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemPlacementContext;
 import net.minecraft.stat.Stats;
-import net.minecraft.state.StateFactory;
+import net.minecraft.state.StateManager;
 import net.minecraft.state.property.DirectionProperty;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.BlockMirror;
@@ -39,7 +39,7 @@ extends Block {
 
     public StonecutterBlock(Block.Settings settings) {
         super(settings);
-        this.setDefaultState((BlockState)((BlockState)this.stateFactory.getDefaultState()).with(FACING, Direction.NORTH));
+        this.setDefaultState((BlockState)((BlockState)this.stateManager.getDefaultState()).with(FACING, Direction.NORTH));
     }
 
     @Override
@@ -49,15 +49,15 @@ extends Block {
 
     @Override
     public boolean activate(BlockState blockState, World world, BlockPos blockPos, PlayerEntity playerEntity, Hand hand, BlockHitResult blockHitResult) {
-        playerEntity.openContainer(blockState.createContainerProvider(world, blockPos));
+        playerEntity.openContainer(blockState.createContainerFactory(world, blockPos));
         playerEntity.incrementStat(Stats.INTERACT_WITH_STONECUTTER);
         return true;
     }
 
     @Override
     @Nullable
-    public NameableContainerProvider createContainerProvider(BlockState blockState, World world, BlockPos blockPos) {
-        return new ClientDummyContainerProvider((i, playerInventory, playerEntity) -> new StonecutterContainer(i, playerInventory, BlockContext.create(world, blockPos)), CONTAINER_NAME);
+    public NameableContainerFactory createContainerFactory(BlockState blockState, World world, BlockPos blockPos) {
+        return new SimpleNamedContainerFactory((i, playerInventory, playerEntity) -> new StonecutterContainer(i, playerInventory, BlockContext.create(world, blockPos)), CONTAINER_NAME);
     }
 
     @Override
@@ -81,8 +81,8 @@ extends Block {
     }
 
     @Override
-    public BlockRenderLayer getRenderLayer() {
-        return BlockRenderLayer.CUTOUT;
+    public RenderLayer getRenderLayer() {
+        return RenderLayer.CUTOUT;
     }
 
     @Override
@@ -96,7 +96,7 @@ extends Block {
     }
 
     @Override
-    protected void appendProperties(StateFactory.Builder<Block, BlockState> builder) {
+    protected void appendProperties(StateManager.Builder<Block, BlockState> builder) {
         builder.add(FACING);
     }
 

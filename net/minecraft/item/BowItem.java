@@ -66,7 +66,7 @@ extends RangedWeaponItem {
             int k;
             ArrowItem arrowItem = (ArrowItem)(itemStack2.getItem() instanceof ArrowItem ? itemStack2.getItem() : Items.ARROW);
             ProjectileEntity projectileEntity = arrowItem.createArrow(world, itemStack2, playerEntity);
-            projectileEntity.method_7474(playerEntity, playerEntity.pitch, playerEntity.yaw, 0.0f, f * 3.0f, 1.0f);
+            projectileEntity.setProperties(playerEntity, playerEntity.pitch, playerEntity.yaw, 0.0f, f * 3.0f, 1.0f);
             if (f == 1.0f) {
                 projectileEntity.setCritical(true);
             }

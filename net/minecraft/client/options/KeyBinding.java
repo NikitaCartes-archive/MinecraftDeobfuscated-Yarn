@@ -14,7 +14,7 @@ import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.resource.language.I18n;
 import net.minecraft.client.util.InputUtil;
-import net.minecraft.util.SystemUtil;
+import net.minecraft.util.Util;
 
 @Environment(value=EnvType.CLIENT)
 public class KeyBinding
@@ -22,7 +22,7 @@ implements Comparable<KeyBinding> {
     private static final Map<String, KeyBinding> keysById = Maps.newHashMap();
     private static final Map<InputUtil.KeyCode, KeyBinding> keysByCode = Maps.newHashMap();
     private static final Set<String> keyCategories = Sets.newHashSet();
-    private static final Map<String, Integer> categoryOrderMap = SystemUtil.consume(Maps.newHashMap(), hashMap -> {
+    private static final Map<String, Integer> categoryOrderMap = Util.make(Maps.newHashMap(), hashMap -> {
         hashMap.put("key.categories.movement", 1);
         hashMap.put("key.categories.gameplay", 2);
         hashMap.put("key.categories.inventory", 3);
@@ -118,7 +118,8 @@ implements Comparable<KeyBinding> {
         this.keyCode = keyCode;
     }
 
-    public int method_1430(KeyBinding keyBinding) {
+    @Override
+    public int compareTo(KeyBinding keyBinding) {
         if (this.category.equals(keyBinding.category)) {
             return I18n.translate(this.id, new Object[0]).compareTo(I18n.translate(keyBinding.id, new Object[0]));
         }
@@ -183,7 +184,7 @@ implements Comparable<KeyBinding> {
 
     @Override
     public /* synthetic */ int compareTo(Object object) {
-        return this.method_1430((KeyBinding)object);
+        return this.compareTo((KeyBinding)object);
     }
 }
 

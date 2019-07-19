@@ -52,7 +52,7 @@ implements DebugRenderer.Renderer {
         GlStateManager.blendFuncSeparate(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO);
         GlStateManager.disableTexture();
         Tessellator tessellator = Tessellator.getInstance();
-        BufferBuilder bufferBuilder = tessellator.getBufferBuilder();
+        BufferBuilder bufferBuilder = tessellator.getBuffer();
         bufferBuilder.begin(5, VertexFormats.POSITION_COLOR);
         for (int i = 0; i < this.field_4640.size(); ++i) {
             BlockPos blockPos = this.field_4640.get(i);

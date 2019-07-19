@@ -34,7 +34,8 @@ extends EntityRenderer<WitherSkullEntity> {
         return f + h * i;
     }
 
-    public void method_4159(WitherSkullEntity witherSkullEntity, double d, double e, double f, float g, float h) {
+    @Override
+    public void render(WitherSkullEntity witherSkullEntity, double d, double e, double f, float g, float h) {
         GlStateManager.pushMatrix();
         GlStateManager.disableCull();
         float i = this.method_4158(witherSkullEntity.prevYaw, witherSkullEntity.yaw, h);
@@ -58,7 +59,8 @@ extends EntityRenderer<WitherSkullEntity> {
         super.render(witherSkullEntity, d, e, f, g, h);
     }
 
-    protected Identifier method_4160(WitherSkullEntity witherSkullEntity) {
+    @Override
+    protected Identifier getTexture(WitherSkullEntity witherSkullEntity) {
         return witherSkullEntity.isCharged() ? INVINCIBLE_SKIN : SKIN;
     }
 }

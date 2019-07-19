@@ -22,14 +22,16 @@ extends MobEntityRenderer<GhastEntity, GhastEntityModel<GhastEntity>> {
         super(entityRenderDispatcher, new GhastEntityModel(), 1.5f);
     }
 
-    protected Identifier method_3972(GhastEntity ghastEntity) {
+    @Override
+    protected Identifier getTexture(GhastEntity ghastEntity) {
         if (ghastEntity.isShooting()) {
             return ANGRY_SKIN;
         }
         return SKIN;
     }
 
-    protected void method_3973(GhastEntity ghastEntity, float f) {
+    @Override
+    protected void scale(GhastEntity ghastEntity, float f) {
         float g = 1.0f;
         float h = 4.5f;
         float i = 4.5f;

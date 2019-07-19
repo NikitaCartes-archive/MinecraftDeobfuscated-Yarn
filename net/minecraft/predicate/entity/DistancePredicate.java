@@ -6,8 +6,8 @@ package net.minecraft.predicate.entity;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonNull;
 import com.google.gson.JsonObject;
+import net.minecraft.predicate.NumberRange;
 import net.minecraft.util.JsonHelper;
-import net.minecraft.util.NumberRange;
 import net.minecraft.util.math.MathHelper;
 import org.jetbrains.annotations.Nullable;
 
@@ -66,11 +66,11 @@ public class DistancePredicate {
             return JsonNull.INSTANCE;
         }
         JsonObject jsonObject = new JsonObject();
-        jsonObject.add("x", this.x.serialize());
-        jsonObject.add("y", this.y.serialize());
-        jsonObject.add("z", this.z.serialize());
-        jsonObject.add("horizontal", this.horizontal.serialize());
-        jsonObject.add("absolute", this.absolute.serialize());
+        jsonObject.add("x", this.x.toJson());
+        jsonObject.add("y", this.y.toJson());
+        jsonObject.add("z", this.z.toJson());
+        jsonObject.add("horizontal", this.horizontal.toJson());
+        jsonObject.add("absolute", this.absolute.toJson());
         return jsonObject;
     }
 }

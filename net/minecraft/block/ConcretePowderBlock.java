@@ -48,7 +48,7 @@ extends FallingBlock {
             if (direction == Direction.DOWN && !ConcretePowderBlock.hardensIn(blockState)) continue;
             mutable.set(blockPos).setOffset(direction);
             blockState = blockView.getBlockState(mutable);
-            if (!ConcretePowderBlock.hardensIn(blockState) || blockState.method_20827(blockView, blockPos, direction.getOpposite())) continue;
+            if (!ConcretePowderBlock.hardensIn(blockState) || blockState.isSideSolidFullSquare(blockView, blockPos, direction.getOpposite())) continue;
             bl = true;
             break;
         }

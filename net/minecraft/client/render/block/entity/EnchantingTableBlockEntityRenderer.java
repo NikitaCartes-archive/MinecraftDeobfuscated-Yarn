@@ -18,7 +18,8 @@ extends BlockEntityRenderer<EnchantingTableBlockEntity> {
     private static final Identifier BOOK_TEX = new Identifier("textures/entity/enchanting_table_book.png");
     private final BookModel book = new BookModel();
 
-    public void method_3571(EnchantingTableBlockEntity enchantingTableBlockEntity, double d, double e, double f, float g, int i) {
+    @Override
+    public void render(EnchantingTableBlockEntity enchantingTableBlockEntity, double d, double e, double f, float g, int i) {
         float j;
         GlStateManager.pushMatrix();
         GlStateManager.translatef((float)d + 0.5f, (float)e + 0.75f, (float)f + 0.5f);

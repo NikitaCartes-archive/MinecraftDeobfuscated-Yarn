@@ -72,7 +72,7 @@ public class MoveControl {
             float m = (h *= j) * l - (i *= j) * k;
             float n = i * l + h * k;
             EntityNavigation entityNavigation = this.entity.getNavigation();
-            if (entityNavigation != null && (pathNodeMaker = entityNavigation.getNodeMaker()) != null && pathNodeMaker.getPathNodeType(this.entity.world, MathHelper.floor(this.entity.x + (double)m), MathHelper.floor(this.entity.y), MathHelper.floor(this.entity.z + (double)n)) != PathNodeType.WALKABLE) {
+            if (entityNavigation != null && (pathNodeMaker = entityNavigation.getNodeMaker()) != null && pathNodeMaker.getNodeType(this.entity.world, MathHelper.floor(this.entity.x + (double)m), MathHelper.floor(this.entity.y), MathHelper.floor(this.entity.z + (double)n)) != PathNodeType.WALKABLE) {
                 this.forwardMovement = 1.0f;
                 this.sidewaysMovement = 0.0f;
                 g = f;

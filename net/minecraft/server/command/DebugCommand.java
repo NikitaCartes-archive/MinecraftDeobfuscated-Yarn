@@ -31,7 +31,7 @@ import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.Nullable;
 
 public class DebugCommand {
-    private static final Logger field_20283 = LogManager.getLogger();
+    private static final Logger logger = LogManager.getLogger();
     private static final SimpleCommandExceptionType NORUNNING_EXCPETION = new SimpleCommandExceptionType(new TranslatableText("commands.debug.notRunning", new Object[0]));
     private static final SimpleCommandExceptionType ALREADYRUNNING_EXCEPTION = new SimpleCommandExceptionType(new TranslatableText("commands.debug.alreadyRunning", new Object[0]));
     @Nullable
@@ -60,7 +60,7 @@ public class DebugCommand {
         }
         ProfileResult profileResult = disableableProfiler.getController().disable();
         File file = new File(minecraftServer.getFile("debug"), "profile-results-" + new SimpleDateFormat("yyyy-MM-dd_HH.mm.ss").format(new Date()) + ".txt");
-        profileResult.saveToFile(file);
+        profileResult.save(file);
         float f = (float)profileResult.getTimeSpan() / 1.0E9f;
         float g = (float)profileResult.getTickSpan() / f;
         serverCommandSource.sendFeedback(new TranslatableText("commands.debug.stopped", String.format(Locale.ROOT, "%.2f", Float.valueOf(f)), profileResult.getTickSpan(), String.format("%.2f", Float.valueOf(g))), true);
@@ -75,17 +75,17 @@ public class DebugCommand {
             Files.createDirectories(path, new FileAttribute[0]);
             if (SharedConstants.isDevelopment || field_20310 == null) {
                 Path path2 = path.resolve(string);
-                minecraftServer.method_21613(path2);
+                minecraftServer.dump(path2);
             } else {
                 Path path2 = path.resolve(string + ".zip");
                 try (FileSystem fileSystem = field_20310.newFileSystem(path2, ImmutableMap.of("create", "true"));){
-                    minecraftServer.method_21613(fileSystem.getPath("/", new String[0]));
+                    minecraftServer.dump(fileSystem.getPath("/", new String[0]));
                 }
             }
             serverCommandSource.sendFeedback(new TranslatableText("commands.debug.reportSaved", string), false);
             return 1;
         } catch (IOException iOException) {
-            field_20283.error("Failed to save debug dump", (Throwable)iOException);
+            logger.error("Failed to save debug dump", (Throwable)iOException);
             serverCommandSource.sendError(new TranslatableText("commands.debug.reportFailed", new Object[0]));
             return 0;
         }

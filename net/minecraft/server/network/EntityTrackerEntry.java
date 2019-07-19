@@ -8,16 +8,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 import java.util.function.Consumer;
-import net.minecraft.client.network.packet.EntityAttributesS2CPacket;
-import net.minecraft.client.network.packet.EntityEquipmentUpdateS2CPacket;
-import net.minecraft.client.network.packet.EntityPassengersSetS2CPacket;
-import net.minecraft.client.network.packet.EntityPositionS2CPacket;
-import net.minecraft.client.network.packet.EntityPotionEffectS2CPacket;
-import net.minecraft.client.network.packet.EntityS2CPacket;
-import net.minecraft.client.network.packet.EntitySetHeadYawS2CPacket;
-import net.minecraft.client.network.packet.EntityTrackerUpdateS2CPacket;
-import net.minecraft.client.network.packet.EntityVelocityUpdateS2CPacket;
-import net.minecraft.client.network.packet.MobSpawnS2CPacket;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.LivingEntity;
@@ -32,6 +22,16 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.map.MapState;
 import net.minecraft.network.Packet;
 import net.minecraft.network.listener.ClientPlayPacketListener;
+import net.minecraft.network.packet.s2c.play.EntityAttributesS2CPacket;
+import net.minecraft.network.packet.s2c.play.EntityEquipmentUpdateS2CPacket;
+import net.minecraft.network.packet.s2c.play.EntityPassengersSetS2CPacket;
+import net.minecraft.network.packet.s2c.play.EntityPositionS2CPacket;
+import net.minecraft.network.packet.s2c.play.EntityS2CPacket;
+import net.minecraft.network.packet.s2c.play.EntitySetHeadYawS2CPacket;
+import net.minecraft.network.packet.s2c.play.EntityStatusEffectS2CPacket;
+import net.minecraft.network.packet.s2c.play.EntityTrackerUpdateS2CPacket;
+import net.minecraft.network.packet.s2c.play.EntityVelocityUpdateS2CPacket;
+import net.minecraft.network.packet.s2c.play.MobSpawnS2CPacket;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.MathHelper;
@@ -191,7 +191,7 @@ public class EntityTrackerEntry {
         }
         boolean bl = this.alwaysUpdateVelocity;
         if (this.entity instanceof LivingEntity) {
-            EquipmentSlot[] entityAttributeContainer = (EquipmentSlot[])((LivingEntity)this.entity).getAttributeContainer();
+            EquipmentSlot[] entityAttributeContainer = (EquipmentSlot[])((LivingEntity)this.entity).getAttributes();
             Collection<EntityAttributeInstance> collection = entityAttributeContainer.buildTrackedAttributesCollection();
             if (!collection.isEmpty()) {
                 consumer.accept(new EntityAttributesS2CPacket(this.entity.getEntityId(), collection));
@@ -214,7 +214,7 @@ public class EntityTrackerEntry {
         if (this.entity instanceof LivingEntity) {
             LivingEntity livingEntity = (LivingEntity)this.entity;
             for (StatusEffectInstance statusEffectInstance : livingEntity.getStatusEffects()) {
-                consumer.accept(new EntityPotionEffectS2CPacket(this.entity.getEntityId(), statusEffectInstance));
+                consumer.accept(new EntityStatusEffectS2CPacket(this.entity.getEntityId(), statusEffectInstance));
             }
         }
         if (!this.entity.getPassengerList().isEmpty()) {
@@ -231,7 +231,7 @@ public class EntityTrackerEntry {
             this.method_18758(new EntityTrackerUpdateS2CPacket(this.entity.getEntityId(), dataTracker, false));
         }
         if (this.entity instanceof LivingEntity) {
-            EntityAttributeContainer entityAttributeContainer = (EntityAttributeContainer)((LivingEntity)this.entity).getAttributeContainer();
+            EntityAttributeContainer entityAttributeContainer = (EntityAttributeContainer)((LivingEntity)this.entity).getAttributes();
             Set<EntityAttributeInstance> set = entityAttributeContainer.getTrackedAttributes();
             if (!set.isEmpty()) {
                 this.method_18758(new EntityAttributesS2CPacket(this.entity.getEntityId(), set));

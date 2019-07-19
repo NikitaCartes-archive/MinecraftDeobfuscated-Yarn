@@ -23,7 +23,8 @@ extends FeatureRenderer<PandaEntity, PandaEntityModel<PandaEntity>> {
         super(featureRendererContext);
     }
 
-    public void method_4194(PandaEntity pandaEntity, float f, float g, float h, float i, float j, float k, float l) {
+    @Override
+    public void render(PandaEntity pandaEntity, float f, float g, float h, float i, float j, float k, float l) {
         ItemStack itemStack = pandaEntity.getEquippedStack(EquipmentSlot.MAINHAND);
         if (!pandaEntity.isScared() || itemStack.isEmpty() || pandaEntity.method_6524()) {
             return;

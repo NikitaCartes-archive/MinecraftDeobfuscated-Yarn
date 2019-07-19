@@ -22,13 +22,14 @@ extends FeatureRenderer<IronGolemEntity, IronGolemEntityModel<IronGolemEntity>> 
         super(featureRendererContext);
     }
 
-    public void method_4188(IronGolemEntity ironGolemEntity, float f, float g, float h, float i, float j, float k, float l) {
+    @Override
+    public void render(IronGolemEntity ironGolemEntity, float f, float g, float h, float i, float j, float k, float l) {
         if (ironGolemEntity.method_6502() == 0) {
             return;
         }
         GlStateManager.enableRescaleNormal();
         GlStateManager.pushMatrix();
-        GlStateManager.rotatef(5.0f + 180.0f * ((IronGolemEntityModel)this.getModel()).method_2809().pitch / (float)Math.PI, 1.0f, 0.0f, 0.0f);
+        GlStateManager.rotatef(5.0f + 180.0f * ((IronGolemEntityModel)this.getContextModel()).method_2809().pitch / (float)Math.PI, 1.0f, 0.0f, 0.0f);
         GlStateManager.rotatef(90.0f, 1.0f, 0.0f, 0.0f);
         GlStateManager.translatef(-0.9375f, -0.625f, -0.9375f);
         float m = 0.5f;

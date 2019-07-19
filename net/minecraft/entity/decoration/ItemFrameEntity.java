@@ -9,7 +9,6 @@ import net.fabricmc.api.Environment;
 import net.minecraft.block.AbstractRedstoneGateBlock;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
-import net.minecraft.client.network.packet.EntitySpawnS2CPacket;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityDimensions;
 import net.minecraft.entity.EntityPose;
@@ -26,6 +25,7 @@ import net.minecraft.item.Items;
 import net.minecraft.item.map.MapState;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.Packet;
+import net.minecraft.network.packet.s2c.play.EntitySpawnS2CPacket;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.Hand;
 import net.minecraft.util.math.BlockPos;
@@ -87,9 +87,9 @@ extends AbstractDecorationEntity {
             return;
         }
         double d = 0.46875;
-        this.x = (double)this.blockPos.getX() + 0.5 - (double)this.facing.getOffsetX() * 0.46875;
-        this.y = (double)this.blockPos.getY() + 0.5 - (double)this.facing.getOffsetY() * 0.46875;
-        this.z = (double)this.blockPos.getZ() + 0.5 - (double)this.facing.getOffsetZ() * 0.46875;
+        this.x = (double)this.attachmentPos.getX() + 0.5 - (double)this.facing.getOffsetX() * 0.46875;
+        this.y = (double)this.attachmentPos.getY() + 0.5 - (double)this.facing.getOffsetY() * 0.46875;
+        this.z = (double)this.attachmentPos.getZ() + 0.5 - (double)this.facing.getOffsetZ() * 0.46875;
         double e = this.getWidthPixels();
         double f = this.getHeightPixels();
         double g = this.getWidthPixels();
@@ -115,7 +115,7 @@ extends AbstractDecorationEntity {
         if (!this.world.doesNotCollide(this)) {
             return false;
         }
-        BlockState blockState = this.world.getBlockState(this.blockPos.offset(this.facing.getOpposite()));
+        BlockState blockState = this.world.getBlockState(this.attachmentPos.offset(this.facing.getOpposite()));
         if (!(blockState.getMaterial().isSolid() || this.facing.getAxis().isHorizontal() && AbstractRedstoneGateBlock.isRedstoneGate(blockState))) {
             return false;
         }
@@ -160,7 +160,7 @@ extends AbstractDecorationEntity {
 
     @Override
     @Environment(value=EnvType.CLIENT)
-    public boolean shouldRenderAtDistance(double d) {
+    public boolean shouldRender(double d) {
         double e = 16.0;
         return d < (e *= 64.0 * ItemFrameEntity.getRenderDistanceMultiplier()) * e;
     }
@@ -207,7 +207,7 @@ extends AbstractDecorationEntity {
     private void removeFromFrame(ItemStack itemStack) {
         if (itemStack.getItem() == Items.FILLED_MAP) {
             MapState mapState = FilledMapItem.getOrCreateMapState(itemStack, this.world);
-            mapState.removeFrame(this.blockPos, this.getEntityId());
+            mapState.removeFrame(this.attachmentPos, this.getEntityId());
             mapState.setDirty(true);
         }
         itemStack.setFrame(null);
@@ -231,8 +231,8 @@ extends AbstractDecorationEntity {
         if (!itemStack.isEmpty()) {
             this.playSound(SoundEvents.ENTITY_ITEM_FRAME_ADD_ITEM, 1.0f, 1.0f);
         }
-        if (bl && this.blockPos != null) {
-            this.world.updateHorizontalAdjacent(this.blockPos, Blocks.AIR);
+        if (bl && this.attachmentPos != null) {
+            this.world.updateHorizontalAdjacent(this.attachmentPos, Blocks.AIR);
         }
     }
 
@@ -263,8 +263,8 @@ extends AbstractDecorationEntity {
 
     private void setRotation(int i, boolean bl) {
         this.getDataTracker().set(ROTATION, i % 8);
-        if (bl && this.blockPos != null) {
-            this.world.updateHorizontalAdjacent(this.blockPos, Blocks.AIR);
+        if (bl && this.attachmentPos != null) {
+            this.world.updateHorizontalAdjacent(this.attachmentPos, Blocks.AIR);
         }
     }
 
@@ -294,7 +294,7 @@ extends AbstractDecorationEntity {
             }
             this.setHeldItemStack(itemStack, false);
             this.setRotation(compoundTag.getByte("ItemRotation"), false);
-            if (compoundTag.containsKey("ItemDropChance", 99)) {
+            if (compoundTag.contains("ItemDropChance", 99)) {
                 this.itemDropChance = compoundTag.getFloat("ItemDropChance");
             }
         }

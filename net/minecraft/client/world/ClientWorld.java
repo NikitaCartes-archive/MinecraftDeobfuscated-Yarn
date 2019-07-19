@@ -140,12 +140,12 @@ extends World {
     }
 
     public void tickEntity(Entity entity) {
-        if (!(entity instanceof PlayerEntity) && !this.method_2935().shouldTickEntity(entity)) {
+        if (!(entity instanceof PlayerEntity) && !this.getChunkManager().shouldTickEntity(entity)) {
             return;
         }
-        entity.prevRenderX = entity.x;
-        entity.prevRenderY = entity.y;
-        entity.prevRenderZ = entity.z;
+        entity.lastRenderX = entity.x;
+        entity.lastRenderY = entity.y;
+        entity.lastRenderZ = entity.z;
         entity.prevYaw = entity.yaw;
         entity.prevPitch = entity.pitch;
         if (entity.updateNeeded || entity.isSpectator()) {
@@ -167,12 +167,12 @@ extends World {
             entity2.stopRiding();
             return;
         }
-        if (!(entity2 instanceof PlayerEntity) && !this.method_2935().shouldTickEntity(entity2)) {
+        if (!(entity2 instanceof PlayerEntity) && !this.getChunkManager().shouldTickEntity(entity2)) {
             return;
         }
-        entity2.prevRenderX = entity2.x;
-        entity2.prevRenderY = entity2.y;
-        entity2.prevRenderZ = entity2.z;
+        entity2.lastRenderX = entity2.x;
+        entity2.lastRenderY = entity2.y;
+        entity2.lastRenderZ = entity2.z;
         entity2.prevYaw = entity2.yaw;
         entity2.prevPitch = entity2.pitch;
         if (entity2.updateNeeded) {
@@ -194,10 +194,10 @@ extends World {
         int k = MathHelper.floor(entity.z / 16.0);
         if (!entity.updateNeeded || entity.chunkX != i || entity.chunkY != j || entity.chunkZ != k) {
             if (entity.updateNeeded && this.isChunkLoaded(entity.chunkX, entity.chunkZ)) {
-                this.method_8497(entity.chunkX, entity.chunkZ).remove(entity, entity.chunkY);
+                this.getChunk(entity.chunkX, entity.chunkZ).remove(entity, entity.chunkY);
             }
             if (entity.teleportRequested() || this.isChunkLoaded(i, k)) {
-                this.method_8497(i, k).addEntity(entity);
+                this.getChunk(i, k).addEntity(entity);
             } else {
                 entity.updateNeeded = false;
             }
@@ -207,7 +207,7 @@ extends World {
 
     public void unloadBlockEntities(WorldChunk worldChunk) {
         this.unloadedBlockEntities.addAll(worldChunk.getBlockEntities().values());
-        this.chunkManager.getLightingProvider().suppressLight(worldChunk.getPos(), false);
+        this.chunkManager.getLightingProvider().setLightEnabled(worldChunk.getPos(), false);
     }
 
     @Override
@@ -253,7 +253,7 @@ extends World {
     private void addEntityPrivate(int i, Entity entity) {
         this.removeEntity(i);
         this.regularEntities.put(i, entity);
-        this.method_2935().method_2857(MathHelper.floor(entity.x / 16.0), MathHelper.floor(entity.z / 16.0), ChunkStatus.FULL, true).addEntity(entity);
+        this.getChunkManager().getChunk(MathHelper.floor(entity.x / 16.0), MathHelper.floor(entity.z / 16.0), ChunkStatus.FULL, true).addEntity(entity);
     }
 
     public void removeEntity(int i) {
@@ -267,7 +267,7 @@ extends World {
     private void finishRemovingEntity(Entity entity) {
         entity.detach();
         if (entity.updateNeeded) {
-            this.method_8497(entity.chunkX, entity.chunkZ).remove(entity);
+            this.getChunk(entity.chunkX, entity.chunkZ).remove(entity);
         }
         this.players.remove(entity);
     }
@@ -321,7 +321,7 @@ extends World {
             fluidState.randomDisplayTick(this, mutable, random);
             ParticleEffect particleEffect = fluidState.getParticle();
             if (particleEffect != null && this.random.nextInt(10) == 0) {
-                boolean bl2 = blockState.method_20827(this, mutable, Direction.DOWN);
+                boolean bl2 = blockState.isSideSolidFullSquare(this, mutable, Direction.DOWN);
                 BlockPos blockPos = mutable.down();
                 this.addParticle(blockPos, this.getBlockState(blockPos), particleEffect, bl2);
             }
@@ -454,7 +454,8 @@ extends World {
         return DummyClientTickScheduler.get();
     }
 
-    public ClientChunkManager method_2935() {
+    @Override
+    public ClientChunkManager getChunkManager() {
         return (ClientChunkManager)super.getChunkManager();
     }
 
@@ -490,7 +491,7 @@ extends World {
     }
 
     @Override
-    public void scheduleBlockRender(BlockPos blockPos, BlockState blockState, BlockState blockState2) {
+    public void checkBlockRerender(BlockPos blockPos, BlockState blockState, BlockState blockState2) {
         this.worldRenderer.method_21596(blockPos, blockState, blockState2);
     }
 
@@ -499,8 +500,8 @@ extends World {
     }
 
     @Override
-    public void setBlockBreakingProgress(int i, BlockPos blockPos, int j) {
-        this.worldRenderer.setBlockBreakingProgress(i, blockPos, j);
+    public void setBlockBreakingInfo(int i, BlockPos blockPos, int j) {
+        this.worldRenderer.setBlockBreakingInfo(i, blockPos, j);
     }
 
     @Override
@@ -549,7 +550,7 @@ extends World {
 
     @Override
     public /* synthetic */ ChunkManager getChunkManager() {
-        return this.method_2935();
+        return this.getChunkManager();
     }
 }
 

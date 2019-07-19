@@ -85,11 +85,11 @@ extends Container {
     @Override
     public ItemStack transferSlot(PlayerEntity playerEntity, int i) {
         ItemStack itemStack = ItemStack.EMPTY;
-        Slot slot = (Slot)this.slotList.get(i);
+        Slot slot = (Slot)this.slots.get(i);
         if (slot != null && slot.hasStack()) {
             ItemStack itemStack2 = slot.getStack();
             itemStack = itemStack2.copy();
-            if (i < this.playerInv.getInvSize() ? !this.insertItem(itemStack2, this.playerInv.getInvSize(), this.slotList.size(), true) : (this.getSlot(1).canInsert(itemStack2) && !this.getSlot(1).hasStack() ? !this.insertItem(itemStack2, 1, 2, false) : (this.getSlot(0).canInsert(itemStack2) ? !this.insertItem(itemStack2, 0, 1, false) : this.playerInv.getInvSize() <= 2 || !this.insertItem(itemStack2, 2, this.playerInv.getInvSize(), false)))) {
+            if (i < this.playerInv.getInvSize() ? !this.insertItem(itemStack2, this.playerInv.getInvSize(), this.slots.size(), true) : (this.getSlot(1).canInsert(itemStack2) && !this.getSlot(1).hasStack() ? !this.insertItem(itemStack2, 1, 2, false) : (this.getSlot(0).canInsert(itemStack2) ? !this.insertItem(itemStack2, 0, 1, false) : this.playerInv.getInvSize() <= 2 || !this.insertItem(itemStack2, 2, this.playerInv.getInvSize(), false)))) {
                 return ItemStack.EMPTY;
             }
             if (itemStack2.isEmpty()) {

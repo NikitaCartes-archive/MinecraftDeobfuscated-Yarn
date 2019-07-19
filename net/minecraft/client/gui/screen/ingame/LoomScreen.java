@@ -11,7 +11,7 @@ import net.fabricmc.api.Environment;
 import net.minecraft.block.entity.BannerBlockEntity;
 import net.minecraft.block.entity.BannerPattern;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.gui.screen.ingame.AbstractContainerScreen;
+import net.minecraft.client.gui.screen.ingame.ContainerScreen;
 import net.minecraft.client.sound.PositionedSoundInstance;
 import net.minecraft.client.texture.TextureCache;
 import net.minecraft.container.LoomContainer;
@@ -28,7 +28,7 @@ import net.minecraft.util.math.MathHelper;
 
 @Environment(value=EnvType.CLIENT)
 public class LoomScreen
-extends AbstractContainerScreen<LoomContainer> {
+extends ContainerScreen<LoomContainer> {
     private static final Identifier TEXTURE = new Identifier("textures/gui/container/loom.png");
     private static final int PATTERN_BUTTON_ROW_COUNT = (BannerPattern.COUNT - 5 - 1 + 4 - 1) / 4;
     private static final DyeColor PATTERN_BUTTON_BACKGROUND_COLOR = DyeColor.GRAY;
@@ -81,8 +81,8 @@ extends AbstractContainerScreen<LoomContainer> {
         this.renderBackground();
         GlStateManager.color4f(1.0f, 1.0f, 1.0f, 1.0f);
         this.minecraft.getTextureManager().bindTexture(TEXTURE);
-        int k = this.left;
-        int l = this.top;
+        int k = this.x;
+        int l = this.y;
         this.blit(k, l, 0, 0, this.containerWidth, this.containerHeight);
         Slot slot = ((LoomContainer)this.container).getBannerSlot();
         Slot slot2 = ((LoomContainer)this.container).getDyeSlot();
@@ -142,8 +142,8 @@ extends AbstractContainerScreen<LoomContainer> {
     public boolean mouseClicked(double d, double e, int i) {
         this.scrollbarClicked = false;
         if (this.canApplyDyePattern) {
-            int j = this.left + 60;
-            int k = this.top + 13;
+            int j = this.x + 60;
+            int k = this.y + 13;
             int l = this.firstPatternButtonId + 16;
             for (int m = this.firstPatternButtonId; m < l; ++m) {
                 int n = m - this.firstPatternButtonId;
@@ -154,8 +154,8 @@ extends AbstractContainerScreen<LoomContainer> {
                 this.minecraft.interactionManager.clickButton(((LoomContainer)this.container).syncId, m);
                 return true;
             }
-            j = this.left + 119;
-            k = this.top + 9;
+            j = this.x + 119;
+            k = this.y + 9;
             if (d >= (double)j && d < (double)(j + 12) && e >= (double)k && e < (double)(k + 56)) {
                 this.scrollbarClicked = true;
             }
@@ -166,7 +166,7 @@ extends AbstractContainerScreen<LoomContainer> {
     @Override
     public boolean mouseDragged(double d, double e, int i, double f, double g) {
         if (this.scrollbarClicked && this.canApplyDyePattern) {
-            int j = this.top + 13;
+            int j = this.y + 13;
             int k = j + 56;
             this.scrollPosition = ((float)e - (float)j - 7.5f) / ((float)(k - j) - 15.0f);
             this.scrollPosition = MathHelper.clamp(this.scrollPosition, 0.0f, 1.0f);
@@ -203,14 +203,14 @@ extends AbstractContainerScreen<LoomContainer> {
             this.output = null;
         } else {
             BannerBlockEntity bannerBlockEntity = new BannerBlockEntity();
-            bannerBlockEntity.deserialize(itemStack, ((BannerItem)itemStack.getItem()).getColor());
+            bannerBlockEntity.readFrom(itemStack, ((BannerItem)itemStack.getItem()).getColor());
             this.output = TextureCache.BANNER.get(bannerBlockEntity.getPatternCacheKey(), bannerBlockEntity.getPatterns(), bannerBlockEntity.getPatternColors());
         }
         ItemStack itemStack2 = ((LoomContainer)this.container).getBannerSlot().getStack();
         ItemStack itemStack3 = ((LoomContainer)this.container).getDyeSlot().getStack();
         ItemStack itemStack4 = ((LoomContainer)this.container).getPatternSlot().getStack();
         CompoundTag compoundTag = itemStack2.getOrCreateSubTag("BlockEntityTag");
-        boolean bl = this.hasTooManyPatterns = compoundTag.containsKey("Patterns", 9) && !itemStack2.isEmpty() && compoundTag.getList("Patterns", 10).size() >= 6;
+        boolean bl = this.hasTooManyPatterns = compoundTag.contains("Patterns", 9) && !itemStack2.isEmpty() && compoundTag.getList("Patterns", 10).size() >= 6;
         if (this.hasTooManyPatterns) {
             this.output = null;
         }

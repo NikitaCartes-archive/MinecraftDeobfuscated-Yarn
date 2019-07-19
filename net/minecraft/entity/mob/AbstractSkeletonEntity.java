@@ -115,7 +115,7 @@ implements RangedAttackMob {
                     itemStack.setDamage(itemStack.getDamage() + this.random.nextInt(2));
                     if (itemStack.getDamage() >= itemStack.getMaxDamage()) {
                         this.sendEquipmentBreakStatus(EquipmentSlot.HEAD);
-                        this.setEquippedStack(EquipmentSlot.HEAD, ItemStack.EMPTY);
+                        this.equipStack(EquipmentSlot.HEAD, ItemStack.EMPTY);
                     }
                 }
                 bl = false;
@@ -139,7 +139,7 @@ implements RangedAttackMob {
     @Override
     protected void initEquipment(LocalDifficulty localDifficulty) {
         super.initEquipment(localDifficulty);
-        this.setEquippedStack(EquipmentSlot.MAINHAND, new ItemStack(Items.BOW));
+        this.equipStack(EquipmentSlot.MAINHAND, new ItemStack(Items.BOW));
     }
 
     @Override
@@ -155,7 +155,7 @@ implements RangedAttackMob {
             int i = localDate.get(ChronoField.DAY_OF_MONTH);
             int j = localDate.get(ChronoField.MONTH_OF_YEAR);
             if (j == 10 && i == 31 && this.random.nextFloat() < 0.25f) {
-                this.setEquippedStack(EquipmentSlot.HEAD, new ItemStack(this.random.nextFloat() < 0.1f ? Blocks.JACK_O_LANTERN : Blocks.CARVED_PUMPKIN));
+                this.equipStack(EquipmentSlot.HEAD, new ItemStack(this.random.nextFloat() < 0.1f ? Blocks.JACK_O_LANTERN : Blocks.CARVED_PUMPKIN));
                 this.armorDropChances[EquipmentSlot.HEAD.getEntitySlotId()] = 0.0f;
             }
         }
@@ -186,11 +186,11 @@ implements RangedAttackMob {
         ItemStack itemStack = this.getArrowType(this.getStackInHand(ProjectileUtil.getHandPossiblyHolding(this, Items.BOW)));
         ProjectileEntity projectileEntity = this.createArrowProjectile(itemStack, f);
         double d = livingEntity.x - this.x;
-        double e = livingEntity.getBoundingBox().minY + (double)(livingEntity.getHeight() / 3.0f) - projectileEntity.y;
+        double e = livingEntity.getBoundingBox().y1 + (double)(livingEntity.getHeight() / 3.0f) - projectileEntity.y;
         double g = livingEntity.z - this.z;
         double h = MathHelper.sqrt(d * d + g * g);
         projectileEntity.setVelocity(d, e + h * (double)0.2f, g, 1.6f, 14 - this.world.getDifficulty().getId() * 4);
-        this.playSound(SoundEvents.ENTITY_SKELETON_SHOOT, 1.0f, 1.0f / (this.getRand().nextFloat() * 0.4f + 0.8f));
+        this.playSound(SoundEvents.ENTITY_SKELETON_SHOOT, 1.0f, 1.0f / (this.getRandom().nextFloat() * 0.4f + 0.8f));
         this.world.spawnEntity(projectileEntity);
     }
 
@@ -205,8 +205,8 @@ implements RangedAttackMob {
     }
 
     @Override
-    public void setEquippedStack(EquipmentSlot equipmentSlot, ItemStack itemStack) {
-        super.setEquippedStack(equipmentSlot, itemStack);
+    public void equipStack(EquipmentSlot equipmentSlot, ItemStack itemStack) {
+        super.equipStack(equipmentSlot, itemStack);
         if (!this.world.isClient) {
             this.updateAttackType();
         }

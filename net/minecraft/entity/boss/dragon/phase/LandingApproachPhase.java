@@ -82,7 +82,7 @@ extends AbstractPhase {
             this.field_7047.next();
             double d = vec3d.x;
             double e = vec3d.z;
-            while ((f = vec3d.y + (double)(this.dragon.getRand().nextFloat() * 20.0f)) < vec3d.y) {
+            while ((f = vec3d.y + (double)(this.dragon.getRandom().nextFloat() * 20.0f)) < vec3d.y) {
             }
             this.field_7048 = new Vec3d(d, f, e);
         }

@@ -24,7 +24,7 @@ import net.minecraft.client.render.entity.model.SkullOverlayEntityModel;
 import net.minecraft.client.util.DefaultSkinHelper;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.SystemUtil;
+import net.minecraft.util.Util;
 import net.minecraft.util.math.Direction;
 import org.jetbrains.annotations.Nullable;
 
@@ -35,7 +35,8 @@ extends BlockEntityRenderer<SkullBlockEntity> {
     private static final Map<SkullBlock.SkullType, SkullEntityModel> MODELS;
     private static final Map<SkullBlock.SkullType, Identifier> TEXTURES;
 
-    public void method_3577(SkullBlockEntity skullBlockEntity, double d, double e, double f, float g, int i) {
+    @Override
+    public void render(SkullBlockEntity skullBlockEntity, double d, double e, double f, float g, int i) {
         float h = skullBlockEntity.getTicksPowered(g);
         BlockState blockState = skullBlockEntity.getCachedState();
         boolean bl = blockState.getBlock() instanceof WallSkullBlock;
@@ -111,7 +112,7 @@ extends BlockEntityRenderer<SkullBlockEntity> {
     }
 
     static {
-        MODELS = SystemUtil.consume(Maps.newHashMap(), hashMap -> {
+        MODELS = Util.make(Maps.newHashMap(), hashMap -> {
             SkullEntityModel skullEntityModel = new SkullEntityModel(0, 0, 64, 32);
             SkullOverlayEntityModel skullEntityModel2 = new SkullOverlayEntityModel();
             DragonHeadEntityModel dragonHeadEntityModel = new DragonHeadEntityModel(0.0f);
@@ -122,7 +123,7 @@ extends BlockEntityRenderer<SkullBlockEntity> {
             hashMap.put(SkullBlock.Type.CREEPER, skullEntityModel);
             hashMap.put(SkullBlock.Type.DRAGON, dragonHeadEntityModel);
         });
-        TEXTURES = SystemUtil.consume(Maps.newHashMap(), hashMap -> {
+        TEXTURES = Util.make(Maps.newHashMap(), hashMap -> {
             hashMap.put(SkullBlock.Type.SKELETON, new Identifier("textures/entity/skeleton/skeleton.png"));
             hashMap.put(SkullBlock.Type.WITHER_SKELETON, new Identifier("textures/entity/skeleton/wither_skeleton.png"));
             hashMap.put(SkullBlock.Type.ZOMBIE, new Identifier("textures/entity/zombie/zombie.png"));

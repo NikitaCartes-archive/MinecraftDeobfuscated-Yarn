@@ -5,11 +5,11 @@ package net.minecraft.client.render.entity.model;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.client.model.Cuboid;
+import net.minecraft.client.model.ModelPart;
 
 @Environment(value=EnvType.CLIENT)
 public interface ModelWithHead {
-    public Cuboid getHead();
+    public ModelPart getHead();
 
     default public void setHeadAngle(float f) {
         this.getHead().applyTransform(f);

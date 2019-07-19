@@ -7,13 +7,13 @@ import java.util.List;
 import java.util.UUID;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.client.network.packet.EntitySpawnS2CPacket;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.Packet;
+import net.minecraft.network.packet.s2c.play.EntitySpawnS2CPacket;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundEvents;
@@ -38,7 +38,7 @@ extends Entity {
         this.warmup = i;
         this.setOwner(livingEntity);
         this.yaw = g * 57.295776f;
-        this.setPosition(d, e, f);
+        this.updatePosition(d, e, f);
     }
 
     @Override
@@ -62,7 +62,7 @@ extends Entity {
     @Override
     protected void readCustomDataFromTag(CompoundTag compoundTag) {
         this.warmup = compoundTag.getInt("Warmup");
-        if (compoundTag.hasUuid("OwnerUUID")) {
+        if (compoundTag.containsUuid("OwnerUUID")) {
             this.ownerUuid = compoundTag.getUuid("OwnerUUID");
         }
     }
@@ -95,7 +95,7 @@ extends Entity {
             }
         } else if (--this.warmup < 0) {
             if (this.warmup == -8) {
-                List<LivingEntity> list = this.world.getEntities(LivingEntity.class, this.getBoundingBox().expand(0.2, 0.0, 0.2));
+                List<LivingEntity> list = this.world.getNonSpectatingEntities(LivingEntity.class, this.getBoundingBox().expand(0.2, 0.0, 0.2));
                 for (LivingEntity livingEntity : list) {
                     this.damage(livingEntity);
                 }

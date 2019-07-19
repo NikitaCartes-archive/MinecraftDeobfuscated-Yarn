@@ -21,7 +21,7 @@ import net.minecraft.entity.LightningEntity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.MovementType;
 import net.minecraft.entity.SpawnType;
-import net.minecraft.entity.ai.PathfindingUtil;
+import net.minecraft.entity.ai.TargetFinder;
 import net.minecraft.entity.ai.TargetPredicate;
 import net.minecraft.entity.ai.control.MoveControl;
 import net.minecraft.entity.ai.goal.AnimalMateGoal;
@@ -55,10 +55,10 @@ import net.minecraft.tag.FluidTags;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
+import net.minecraft.world.CollisionView;
 import net.minecraft.world.GameRules;
 import net.minecraft.world.IWorld;
 import net.minecraft.world.LocalDifficulty;
-import net.minecraft.world.ViewableWorld;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
 
@@ -71,7 +71,7 @@ extends AnimalEntity {
     private static final TrackedData<Boolean> LAND_BOUND = DataTracker.registerData(TurtleEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
     private static final TrackedData<Boolean> ACTIVELY_TRAVELLING = DataTracker.registerData(TurtleEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
     private int sandDiggingCounter;
-    public static final Predicate<LivingEntity> BABY_TURTLE_ON_LAND_FILTER = livingEntity -> livingEntity.isBaby() && !livingEntity.isInsideWater();
+    public static final Predicate<LivingEntity> BABY_TURTLE_ON_LAND_FILTER = livingEntity -> livingEntity.isBaby() && !livingEntity.isTouchingWater();
 
     public TurtleEntity(EntityType<? extends TurtleEntity> entityType, World world) {
         super((EntityType<? extends AnimalEntity>)entityType, world);
@@ -220,7 +220,7 @@ extends AnimalEntity {
     @Override
     @Nullable
     protected SoundEvent getAmbientSound() {
-        if (!this.isInsideWater() && this.onGround && !this.isBaby()) {
+        if (!this.isTouchingWater() && this.onGround && !this.isBaby()) {
             return SoundEvents.ENTITY_TURTLE_AMBIENT_LAND;
         }
         return super.getAmbientSound();
@@ -266,8 +266,8 @@ extends AnimalEntity {
     }
 
     @Override
-    protected float calculateStepDelta() {
-        return this.distanceWalked + 0.15f;
+    protected float calculateNextStepSoundDistance() {
+        return this.distanceTraveled + 0.15f;
     }
 
     @Override
@@ -292,14 +292,14 @@ extends AnimalEntity {
     }
 
     @Override
-    public float getPathfindingFavor(BlockPos blockPos, ViewableWorld viewableWorld) {
-        if (!this.isLandBound() && viewableWorld.getFluidState(blockPos).matches(FluidTags.WATER)) {
+    public float getPathfindingFavor(BlockPos blockPos, CollisionView collisionView) {
+        if (!this.isLandBound() && collisionView.getFluidState(blockPos).matches(FluidTags.WATER)) {
             return 10.0f;
         }
-        if (viewableWorld.getBlockState(blockPos.down()).getBlock() == Blocks.SAND) {
+        if (collisionView.getBlockState(blockPos.down()).getBlock() == Blocks.SAND) {
             return 10.0f;
         }
-        return viewableWorld.getBrightness(blockPos) - 0.5f;
+        return collisionView.getBrightness(blockPos) - 0.5f;
     }
 
     @Override
@@ -321,7 +321,7 @@ extends AnimalEntity {
 
     @Override
     public void travel(Vec3d vec3d) {
-        if (this.canMoveVoluntarily() && this.isInsideWater()) {
+        if (this.canMoveVoluntarily() && this.isTouchingWater()) {
             this.updateVelocity(0.1f, vec3d);
             this.move(MovementType.SELF, this.getVelocity());
             this.setVelocity(this.getVelocity().multiply(0.9));
@@ -379,7 +379,7 @@ extends AnimalEntity {
         }
 
         private void updateVelocity() {
-            if (this.turtle.isInsideWater()) {
+            if (this.turtle.isTouchingWater()) {
                 this.turtle.setVelocity(this.turtle.getVelocity().add(0.0, 0.005, 0.0));
                 if (!this.turtle.getHomePos().isWithinDistance(this.turtle.getPos(), 16.0)) {
                     this.turtle.setMovementSpeed(Math.max(this.turtle.getMovementSpeed() / 2.0f, 0.08f));
@@ -423,15 +423,15 @@ extends AnimalEntity {
 
         @Override
         public boolean shouldContinue() {
-            return !this.turtle.isInsideWater() && this.tryingTime <= 1200 && this.isTargetPos(this.turtle.world, this.targetPos);
+            return !this.turtle.isTouchingWater() && this.tryingTime <= 1200 && this.isTargetPos(this.turtle.world, this.targetPos);
         }
 
         @Override
         public boolean canStart() {
-            if (this.turtle.isBaby() && !this.turtle.isInsideWater()) {
+            if (this.turtle.isBaby() && !this.turtle.isTouchingWater()) {
                 return super.canStart();
             }
-            if (!(this.turtle.isLandBound() || this.turtle.isInsideWater() || this.turtle.hasEgg())) {
+            if (!(this.turtle.isLandBound() || this.turtle.isTouchingWater() || this.turtle.hasEgg())) {
                 return super.canStart();
             }
             return false;
@@ -443,8 +443,8 @@ extends AnimalEntity {
         }
 
         @Override
-        protected boolean isTargetPos(ViewableWorld viewableWorld, BlockPos blockPos) {
-            Block block = viewableWorld.getBlockState(blockPos).getBlock();
+        protected boolean isTargetPos(CollisionView collisionView, BlockPos blockPos) {
+            Block block = collisionView.getBlockState(blockPos).getBlock();
             return block == Blocks.WATER;
         }
     }
@@ -460,7 +460,7 @@ extends AnimalEntity {
 
         @Override
         public boolean canStart() {
-            if (!(this.mob.isInsideWater() || this.turtle.isLandBound() || this.turtle.hasEgg())) {
+            if (!(this.mob.isTouchingWater() || this.turtle.isLandBound() || this.turtle.hasEgg())) {
                 return super.canStart();
             }
             return false;
@@ -493,7 +493,7 @@ extends AnimalEntity {
         public void tick() {
             super.tick();
             BlockPos blockPos = new BlockPos(this.turtle);
-            if (!this.turtle.isInsideWater() && this.hasReached()) {
+            if (!this.turtle.isTouchingWater() && this.hasReached()) {
                 if (this.turtle.sandDiggingCounter < 1) {
                     this.turtle.setDiggingSand(true);
                 } else if (this.turtle.sandDiggingCounter > 200) {
@@ -511,11 +511,11 @@ extends AnimalEntity {
         }
 
         @Override
-        protected boolean isTargetPos(ViewableWorld viewableWorld, BlockPos blockPos) {
-            if (!viewableWorld.isAir(blockPos.up())) {
+        protected boolean isTargetPos(CollisionView collisionView, BlockPos blockPos) {
+            if (!collisionView.isAir(blockPos.up())) {
                 return false;
             }
-            Block block = viewableWorld.getBlockState(blockPos).getBlock();
+            Block block = collisionView.getBlockState(blockPos).getBlock();
             return block == Blocks.SAND;
         }
     }
@@ -542,12 +542,12 @@ extends AnimalEntity {
             }
             if (serverPlayerEntity != null) {
                 serverPlayerEntity.incrementStat(Stats.ANIMALS_BRED);
-                Criterions.BRED_ANIMALS.handle(serverPlayerEntity, this.animal, this.mate, null);
+                Criterions.BRED_ANIMALS.trigger(serverPlayerEntity, this.animal, this.mate, null);
             }
             this.turtle.setHasEgg(true);
             this.animal.resetLoveTicks();
             this.mate.resetLoveTicks();
-            Random random = this.animal.getRand();
+            Random random = this.animal.getRandom();
             if (this.world.getGameRules().getBoolean(GameRules.DO_MOB_LOOT)) {
                 this.world.spawnEntity(new ExperienceOrbEntity(this.world, this.animal.x, this.animal.y, this.animal.z, random.nextInt(7) + 1));
             }
@@ -630,7 +630,7 @@ extends AnimalEntity {
             if (this.turtle.hasEgg()) {
                 return true;
             }
-            if (this.turtle.getRand().nextInt(700) != 0) {
+            if (this.turtle.getRandom().nextInt(700) != 0) {
                 return false;
             }
             return !this.turtle.getHomePos().isWithinDistance(this.turtle.getPos(), 64.0);
@@ -661,12 +661,12 @@ extends AnimalEntity {
                 ++this.homeReachingTryTicks;
             }
             if (this.turtle.getNavigation().isIdle()) {
-                Vec3d vec3d = PathfindingUtil.method_6377(this.turtle, 16, 3, new Vec3d(blockPos.getX(), blockPos.getY(), blockPos.getZ()), 0.3141592741012573);
+                Vec3d vec3d = TargetFinder.method_6377(this.turtle, 16, 3, new Vec3d(blockPos.getX(), blockPos.getY(), blockPos.getZ()), 0.3141592741012573);
                 if (vec3d == null) {
-                    vec3d = PathfindingUtil.method_6373(this.turtle, 8, 7, new Vec3d(blockPos.getX(), blockPos.getY(), blockPos.getZ()));
+                    vec3d = TargetFinder.method_6373(this.turtle, 8, 7, new Vec3d(blockPos.getX(), blockPos.getY(), blockPos.getZ()));
                 }
                 if (vec3d != null && !bl && this.turtle.world.getBlockState(new BlockPos(vec3d)).getBlock() != Blocks.WATER) {
-                    vec3d = PathfindingUtil.method_6373(this.turtle, 16, 5, new Vec3d(blockPos.getX(), blockPos.getY(), blockPos.getZ()));
+                    vec3d = TargetFinder.method_6373(this.turtle, 16, 5, new Vec3d(blockPos.getX(), blockPos.getY(), blockPos.getZ()));
                 }
                 if (vec3d == null) {
                     this.noPath = true;
@@ -690,7 +690,7 @@ extends AnimalEntity {
 
         @Override
         public boolean canStart() {
-            return !this.turtle.isLandBound() && !this.turtle.hasEgg() && this.turtle.isInsideWater();
+            return !this.turtle.isLandBound() && !this.turtle.hasEgg() && this.turtle.isTouchingWater();
         }
 
         @Override
@@ -714,9 +714,9 @@ extends AnimalEntity {
         public void tick() {
             if (this.turtle.getNavigation().isIdle()) {
                 BlockPos blockPos = this.turtle.getTravelPos();
-                Vec3d vec3d = PathfindingUtil.method_6377(this.turtle, 16, 3, new Vec3d(blockPos.getX(), blockPos.getY(), blockPos.getZ()), 0.3141592741012573);
+                Vec3d vec3d = TargetFinder.method_6377(this.turtle, 16, 3, new Vec3d(blockPos.getX(), blockPos.getY(), blockPos.getZ()), 0.3141592741012573);
                 if (vec3d == null) {
-                    vec3d = PathfindingUtil.method_6373(this.turtle, 8, 7, new Vec3d(blockPos.getX(), blockPos.getY(), blockPos.getZ()));
+                    vec3d = TargetFinder.method_6373(this.turtle, 8, 7, new Vec3d(blockPos.getX(), blockPos.getY(), blockPos.getZ()));
                 }
                 if (vec3d != null) {
                     int i = MathHelper.floor(vec3d.x);

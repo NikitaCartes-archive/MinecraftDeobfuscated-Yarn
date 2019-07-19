@@ -17,8 +17,7 @@ import java.util.function.BiPredicate;
 import java.util.stream.Collectors;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.client.network.DebugRendererInfoManager;
-import net.minecraft.datafixers.NbtOps;
+import net.minecraft.datafixer.NbtOps;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityData;
 import net.minecraft.entity.EntityInteraction;
@@ -62,6 +61,7 @@ import net.minecraft.particle.ParticleTypes;
 import net.minecraft.scoreboard.AbstractTeam;
 import net.minecraft.scoreboard.Team;
 import net.minecraft.server.MinecraftServer;
+import net.minecraft.server.network.DebugInfoSender;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
@@ -75,8 +75,6 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.registry.Registry;
-import net.minecraft.village.PointOfInterestStorage;
-import net.minecraft.village.PointOfInterestType;
 import net.minecraft.village.TradeOffer;
 import net.minecraft.village.TradeOffers;
 import net.minecraft.village.TraderOfferList;
@@ -89,6 +87,8 @@ import net.minecraft.village.VillagerType;
 import net.minecraft.world.IWorld;
 import net.minecraft.world.LocalDifficulty;
 import net.minecraft.world.World;
+import net.minecraft.world.poi.PointOfInterestStorage;
+import net.minecraft.world.poi.PointOfInterestType;
 import org.jetbrains.annotations.Nullable;
 
 public class VillagerEntity
@@ -197,7 +197,7 @@ VillagerDataContainer {
                     this.levelUp();
                     this.levellingUp = false;
                 }
-                this.addPotionEffect(new StatusEffectInstance(StatusEffects.REGENERATION, 200, 0));
+                this.addStatusEffect(new StatusEffectInstance(StatusEffects.REGENERATION, 200, 0));
             }
         }
         if (this.lastCustomer != null && this.world instanceof ServerWorld) {
@@ -391,18 +391,18 @@ VillagerDataContainer {
     @Override
     public void readCustomDataFromTag(CompoundTag compoundTag) {
         super.readCustomDataFromTag(compoundTag);
-        if (compoundTag.containsKey("VillagerData", 10)) {
-            this.setVillagerData(new VillagerData(new Dynamic<Tag>(NbtOps.INSTANCE, compoundTag.getTag("VillagerData"))));
+        if (compoundTag.contains("VillagerData", 10)) {
+            this.setVillagerData(new VillagerData(new Dynamic<Tag>(NbtOps.INSTANCE, compoundTag.get("VillagerData"))));
         }
-        if (compoundTag.containsKey("Offers", 10)) {
+        if (compoundTag.contains("Offers", 10)) {
             this.offers = new TraderOfferList(compoundTag.getCompound("Offers"));
         }
-        if (compoundTag.containsKey("FoodLevel", 1)) {
+        if (compoundTag.contains("FoodLevel", 1)) {
             this.foodLevel = compoundTag.getByte("FoodLevel");
         }
         ListTag listTag = compoundTag.getList("Gossips", 10);
         this.gossip.deserialize(new Dynamic<ListTag>(NbtOps.INSTANCE, listTag));
-        if (compoundTag.containsKey("Xp", 3)) {
+        if (compoundTag.contains("Xp", 3)) {
             this.experience = compoundTag.getInt("Xp");
         }
         this.lastRestockTime = compoundTag.getLong("LastRestock");
@@ -521,7 +521,7 @@ VillagerDataContainer {
             BiPredicate<VillagerEntity, PointOfInterestType> biPredicate = POINTS_OF_INTEREST.get(memoryModuleType);
             if (optional.isPresent() && biPredicate.test(this, optional.get())) {
                 pointOfInterestStorage.releaseTicket(globalPos.getPos());
-                DebugRendererInfoManager.sendPointOfInterest(serverWorld, globalPos.getPos());
+                DebugInfoSender.sendPointOfInterest(serverWorld, globalPos.getPos());
             }
         });
     }
@@ -622,7 +622,8 @@ VillagerDataContainer {
         return super.initialize(iWorld, localDifficulty, spawnType, entityData, compoundTag);
     }
 
-    public VillagerEntity method_7225(PassiveEntity passiveEntity) {
+    @Override
+    public VillagerEntity createChild(PassiveEntity passiveEntity) {
         double d = this.random.nextDouble();
         VillagerType villagerType = d < 0.5 ? VillagerType.forBiome(this.world.getBiome(new BlockPos(this))) : (d < 0.75 ? this.getVillagerData().getType() : ((VillagerEntity)passiveEntity).getVillagerData().getType());
         VillagerEntity villagerEntity = new VillagerEntity(EntityType.VILLAGER, this.world, villagerType);
@@ -633,7 +634,7 @@ VillagerDataContainer {
     @Override
     public void onStruckByLightning(LightningEntity lightningEntity) {
         WitchEntity witchEntity = EntityType.WITCH.create(this.world);
-        witchEntity.setPositionAndAngles(this.x, this.y, this.z, this.yaw, this.pitch);
+        witchEntity.refreshPositionAndAngles(this.x, this.y, this.z, this.yaw, this.pitch);
         witchEntity.initialize(this.world, this.world.getLocalDifficulty(new BlockPos(witchEntity)), SpawnType.CONVERSION, null, null);
         witchEntity.setAiDisabled(this.isAiDisabled());
         if (this.hasCustomName()) {
@@ -760,7 +761,7 @@ VillagerDataContainer {
             return;
         }
         Box box = this.getBoundingBox().expand(10.0, 10.0, 10.0);
-        List<VillagerEntity> list = this.world.getEntities(VillagerEntity.class, box);
+        List<VillagerEntity> list = this.world.getNonSpectatingEntities(VillagerEntity.class, box);
         List list2 = list.stream().filter(villagerEntity -> villagerEntity.canSummonGolem(l)).limit(5L).collect(Collectors.toList());
         if (list2.size() < i) {
             return;
@@ -860,7 +861,7 @@ VillagerDataContainer {
     @Override
     protected void sendAiDebugData() {
         super.sendAiDebugData();
-        DebugRendererInfoManager.sendVillagerAiDebugData(this);
+        DebugInfoSender.sendVillagerAiDebugData(this);
     }
 
     @Override
@@ -880,7 +881,7 @@ VillagerDataContainer {
 
     @Override
     public /* synthetic */ PassiveEntity createChild(PassiveEntity passiveEntity) {
-        return this.method_7225(passiveEntity);
+        return this.createChild(passiveEntity);
     }
 }
 

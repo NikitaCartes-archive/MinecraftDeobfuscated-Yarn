@@ -10,17 +10,16 @@ import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.LilyPadBlock;
-import net.minecraft.client.network.packet.EntitySpawnS2CPacket;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.MovementType;
-import net.minecraft.entity.WaterCreatureEntity;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.damage.ProjectileDamageSource;
 import net.minecraft.entity.data.DataTracker;
 import net.minecraft.entity.data.TrackedData;
 import net.minecraft.entity.data.TrackedDataHandlerRegistry;
+import net.minecraft.entity.mob.WaterCreatureEntity;
 import net.minecraft.entity.passive.AnimalEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.fluid.FluidState;
@@ -28,9 +27,10 @@ import net.minecraft.item.Item;
 import net.minecraft.item.Items;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.Packet;
+import net.minecraft.network.packet.c2s.play.BoatPaddleStateC2SPacket;
+import net.minecraft.network.packet.s2c.play.EntitySpawnS2CPacket;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.predicate.entity.EntityPredicates;
-import net.minecraft.server.network.packet.BoatPaddleStateC2SPacket;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.tag.FluidTags;
@@ -88,7 +88,7 @@ extends Entity {
 
     public BoatEntity(World world, double d, double e, double f) {
         this((EntityType<? extends BoatEntity>)EntityType.BOAT, world);
-        this.setPosition(d, e, f);
+        this.updatePosition(d, e, f);
         this.setVelocity(Vec3d.ZERO);
         this.prevX = d;
         this.prevY = e;
@@ -180,10 +180,10 @@ extends Entity {
     @Override
     public void pushAwayFrom(Entity entity) {
         if (entity instanceof BoatEntity) {
-            if (entity.getBoundingBox().minY < this.getBoundingBox().maxY) {
+            if (entity.getBoundingBox().y1 < this.getBoundingBox().y2) {
                 super.pushAwayFrom(entity);
             }
-        } else if (entity.getBoundingBox().minY <= this.getBoundingBox().minY) {
+        } else if (entity.getBoundingBox().y1 <= this.getBoundingBox().y1) {
             super.pushAwayFrom(entity);
         }
     }
@@ -359,7 +359,7 @@ extends Entity {
         this.yaw = (float)((double)this.yaw + g / (double)this.field_7708);
         this.pitch = (float)((double)this.pitch + (this.field_7684 - (double)this.pitch) / (double)this.field_7708);
         --this.field_7708;
-        this.setPosition(d, e, f);
+        this.updatePosition(d, e, f);
         this.setRotation(this.yaw, this.pitch);
     }
 
@@ -379,10 +379,10 @@ extends Entity {
     private Location checkLocation() {
         Location location = this.getUnderWaterLocation();
         if (location != null) {
-            this.waterLevel = this.getBoundingBox().maxY;
+            this.waterLevel = this.getBoundingBox().y2;
             return location;
         }
-        if (this.checKBoatInWater()) {
+        if (this.checkBoatInWater()) {
             return Location.IN_WATER;
         }
         float f = this.method_7548();
@@ -395,18 +395,18 @@ extends Entity {
 
     public float method_7544() {
         Box box = this.getBoundingBox();
-        int i = MathHelper.floor(box.minX);
-        int j = MathHelper.ceil(box.maxX);
-        int k = MathHelper.floor(box.maxY);
-        int l = MathHelper.ceil(box.maxY - this.fallVelocity);
-        int m = MathHelper.floor(box.minZ);
-        int n = MathHelper.ceil(box.maxZ);
+        int i = MathHelper.floor(box.x1);
+        int j = MathHelper.ceil(box.x2);
+        int k = MathHelper.floor(box.y2);
+        int l = MathHelper.ceil(box.y2 - this.fallVelocity);
+        int m = MathHelper.floor(box.z1);
+        int n = MathHelper.ceil(box.z2);
         try (BlockPos.PooledMutable pooledMutable = BlockPos.PooledMutable.get();){
             block12: for (int o = k; o < l; ++o) {
                 float f = 0.0f;
                 for (int p = i; p < j; ++p) {
                     for (int q = m; q < n; ++q) {
-                        pooledMutable.method_10113(p, o, q);
+                        pooledMutable.set(p, o, q);
                         FluidState fluidState = this.world.getFluidState(pooledMutable);
                         if (fluidState.matches(FluidTags.WATER)) {
                             f = Math.max(f, fluidState.getHeight(this.world, pooledMutable));
@@ -425,13 +425,13 @@ extends Entity {
 
     public float method_7548() {
         Box box = this.getBoundingBox();
-        Box box2 = new Box(box.minX, box.minY - 0.001, box.minZ, box.maxX, box.minY, box.maxZ);
-        int i = MathHelper.floor(box2.minX) - 1;
-        int j = MathHelper.ceil(box2.maxX) + 1;
-        int k = MathHelper.floor(box2.minY) - 1;
-        int l = MathHelper.ceil(box2.maxY) + 1;
-        int m = MathHelper.floor(box2.minZ) - 1;
-        int n = MathHelper.ceil(box2.maxZ) + 1;
+        Box box2 = new Box(box.x1, box.y1 - 0.001, box.z1, box.x2, box.y1, box.z2);
+        int i = MathHelper.floor(box2.x1) - 1;
+        int j = MathHelper.ceil(box2.x2) + 1;
+        int k = MathHelper.floor(box2.y1) - 1;
+        int l = MathHelper.ceil(box2.y2) + 1;
+        int m = MathHelper.floor(box2.z1) - 1;
+        int n = MathHelper.ceil(box2.z2) + 1;
         VoxelShape voxelShape = VoxelShapes.cuboid(box2);
         float f = 0.0f;
         int o = 0;
@@ -442,7 +442,7 @@ extends Entity {
                     if (r == 2) continue;
                     for (int s = k; s < l; ++s) {
                         if (r > 0 && (s == k || s == l - 1)) continue;
-                        pooledMutable.method_10113(p, s, q);
+                        pooledMutable.set(p, s, q);
                         BlockState blockState = this.world.getBlockState(pooledMutable);
                         if (blockState.getBlock() instanceof LilyPadBlock || !VoxelShapes.matchesAnywhere(blockState.getCollisionShape(this.world, pooledMutable).offset(p, s, q), voxelShape, BooleanBiFunction.AND)) continue;
                         f += blockState.getBlock().getSlipperiness();
@@ -454,26 +454,26 @@ extends Entity {
         return f / (float)o;
     }
 
-    private boolean checKBoatInWater() {
+    private boolean checkBoatInWater() {
         Box box = this.getBoundingBox();
-        int i = MathHelper.floor(box.minX);
-        int j = MathHelper.ceil(box.maxX);
-        int k = MathHelper.floor(box.minY);
-        int l = MathHelper.ceil(box.minY + 0.001);
-        int m = MathHelper.floor(box.minZ);
-        int n = MathHelper.ceil(box.maxZ);
+        int i = MathHelper.floor(box.x1);
+        int j = MathHelper.ceil(box.x2);
+        int k = MathHelper.floor(box.y1);
+        int l = MathHelper.ceil(box.y1 + 0.001);
+        int m = MathHelper.floor(box.z1);
+        int n = MathHelper.ceil(box.z2);
         boolean bl = false;
         this.waterLevel = Double.MIN_VALUE;
         try (BlockPos.PooledMutable pooledMutable = BlockPos.PooledMutable.get();){
             for (int o = i; o < j; ++o) {
                 for (int p = k; p < l; ++p) {
                     for (int q = m; q < n; ++q) {
-                        pooledMutable.method_10113(o, p, q);
+                        pooledMutable.set(o, p, q);
                         FluidState fluidState = this.world.getFluidState(pooledMutable);
                         if (!fluidState.matches(FluidTags.WATER)) continue;
                         float f = (float)p + fluidState.getHeight(this.world, pooledMutable);
                         this.waterLevel = Math.max((double)f, this.waterLevel);
-                        bl |= box.minY < (double)f;
+                        bl |= box.y1 < (double)f;
                     }
                 }
             }
@@ -484,19 +484,19 @@ extends Entity {
     @Nullable
     private Location getUnderWaterLocation() {
         Box box = this.getBoundingBox();
-        double d = box.maxY + 0.001;
-        int i = MathHelper.floor(box.minX);
-        int j = MathHelper.ceil(box.maxX);
-        int k = MathHelper.floor(box.maxY);
+        double d = box.y2 + 0.001;
+        int i = MathHelper.floor(box.x1);
+        int j = MathHelper.ceil(box.x2);
+        int k = MathHelper.floor(box.y2);
         int l = MathHelper.ceil(d);
-        int m = MathHelper.floor(box.minZ);
-        int n = MathHelper.ceil(box.maxZ);
+        int m = MathHelper.floor(box.z1);
+        int n = MathHelper.ceil(box.z2);
         boolean bl = false;
         try (BlockPos.PooledMutable pooledMutable = BlockPos.PooledMutable.get();){
             for (int o = i; o < j; ++o) {
                 for (int p = k; p < l; ++p) {
                     for (int q = m; q < n; ++q) {
-                        pooledMutable.method_10113(o, p, q);
+                        pooledMutable.set(o, p, q);
                         FluidState fluidState = this.world.getFluidState(pooledMutable);
                         if (!fluidState.matches(FluidTags.WATER) || !(d < (double)((float)pooledMutable.getY() + fluidState.getHeight(this.world, pooledMutable)))) continue;
                         if (fluidState.isStill()) {
@@ -518,14 +518,14 @@ extends Entity {
         double f = 0.0;
         this.velocityDecay = 0.05f;
         if (this.lastLocation == Location.IN_AIR && this.location != Location.IN_AIR && this.location != Location.ON_LAND) {
-            this.waterLevel = this.getBoundingBox().minY + (double)this.getHeight();
-            this.setPosition(this.x, (double)(this.method_7544() - this.getHeight()) + 0.101, this.z);
+            this.waterLevel = this.getBoundingBox().y1 + (double)this.getHeight();
+            this.updatePosition(this.x, (double)(this.method_7544() - this.getHeight()) + 0.101, this.z);
             this.setVelocity(this.getVelocity().multiply(1.0, 0.0, 1.0));
             this.fallVelocity = 0.0;
             this.location = Location.IN_WATER;
         } else {
             if (this.location == Location.IN_WATER) {
-                f = (this.waterLevel - this.getBoundingBox().minY) / (double)this.getHeight();
+                f = (this.waterLevel - this.getBoundingBox().y1) / (double)this.getHeight();
                 this.velocityDecay = 0.9f;
             } else if (this.location == Location.UNDER_FLOWING_WATER) {
                 e = -7.0E-4;
@@ -591,7 +591,7 @@ extends Entity {
             }
         }
         Vec3d vec3d = new Vec3d(f, 0.0, 0.0).rotateY(-this.yaw * ((float)Math.PI / 180) - 1.5707964f);
-        entity.setPosition(this.x + vec3d.x, this.y + (double)g, this.z + vec3d.z);
+        entity.updatePosition(this.x + vec3d.x, this.y + (double)g, this.z + vec3d.z);
         entity.yaw += this.yawVelocity;
         entity.setHeadYaw(entity.getHeadYaw() + this.yawVelocity);
         this.copyEntityData(entity);
@@ -624,7 +624,7 @@ extends Entity {
 
     @Override
     protected void readCustomDataFromTag(CompoundTag compoundTag) {
-        if (compoundTag.containsKey("Type", 8)) {
+        if (compoundTag.contains("Type", 8)) {
             this.setBoatType(Type.getType(compoundTag.getString("Type")));
         }
     }

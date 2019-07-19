@@ -57,13 +57,14 @@ implements Criterion<Conditions> {
         this.handlers.remove(playerAdvancementTracker);
     }
 
-    public Conditions method_9106(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext) {
+    @Override
+    public Conditions conditionsFromJson(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext) {
         Identifier identifier = new Identifier(JsonHelper.getString(jsonObject, "recipe"));
         return new Conditions(identifier);
     }
 
-    public void handle(ServerPlayerEntity serverPlayerEntity, Recipe<?> recipe) {
-        Handler handler = this.handlers.get(serverPlayerEntity.getAdvancementManager());
+    public void trigger(ServerPlayerEntity serverPlayerEntity, Recipe<?> recipe) {
+        Handler handler = this.handlers.get(serverPlayerEntity.getAdvancementTracker());
         if (handler != null) {
             handler.handle(recipe);
         }
@@ -71,7 +72,7 @@ implements Criterion<Conditions> {
 
     @Override
     public /* synthetic */ CriterionConditions conditionsFromJson(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext) {
-        return this.method_9106(jsonObject, jsonDeserializationContext);
+        return this.conditionsFromJson(jsonObject, jsonDeserializationContext);
     }
 
     static class Handler {

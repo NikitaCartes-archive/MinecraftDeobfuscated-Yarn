@@ -24,7 +24,6 @@ import net.fabricmc.api.Environment;
 import net.minecraft.block.AbstractSignBlock;
 import net.minecraft.block.AbstractSkullBlock;
 import net.minecraft.block.Block;
-import net.minecraft.block.BlockRenderLayer;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.ChestBlock;
 import net.minecraft.block.ComposterBlock;
@@ -34,30 +33,30 @@ import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.ChestBlockEntity;
 import net.minecraft.block.enums.ChestType;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.gl.GlBuffer;
-import net.minecraft.client.gl.GlFramebuffer;
+import net.minecraft.client.gl.Framebuffer;
 import net.minecraft.client.gl.GlProgramManager;
 import net.minecraft.client.gl.ShaderEffect;
+import net.minecraft.client.gl.VertexBuffer;
 import net.minecraft.client.options.CloudRenderMode;
 import net.minecraft.client.options.ParticlesOption;
 import net.minecraft.client.particle.Particle;
+import net.minecraft.client.render.BlockBreakingInfo;
 import net.minecraft.client.render.BufferBuilder;
+import net.minecraft.client.render.BuiltChunkStorage;
 import net.minecraft.client.render.Camera;
-import net.minecraft.client.render.ChunkRenderDispatcher;
+import net.minecraft.client.render.DiffuseLighting;
 import net.minecraft.client.render.Frustum;
 import net.minecraft.client.render.FrustumWithOrigin;
-import net.minecraft.client.render.GuiLighting;
-import net.minecraft.client.render.PartiallyBrokenBlockEntry;
+import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.render.Tessellator;
-import net.minecraft.client.render.Vec3d;
 import net.minecraft.client.render.VertexFormat;
 import net.minecraft.client.render.VertexFormatElement;
 import net.minecraft.client.render.VertexFormats;
 import net.minecraft.client.render.VisibleRegion;
 import net.minecraft.client.render.block.BlockRenderManager;
 import net.minecraft.client.render.block.entity.BlockEntityRenderDispatcher;
-import net.minecraft.client.render.chunk.ChunkBatcher;
-import net.minecraft.client.render.chunk.ChunkOcclusionGraphBuilder;
+import net.minecraft.client.render.chunk.ChunkBuilder;
+import net.minecraft.client.render.chunk.ChunkOcclusionDataBuilder;
 import net.minecraft.client.render.chunk.ChunkRenderData;
 import net.minecraft.client.render.chunk.ChunkRenderer;
 import net.minecraft.client.render.chunk.ChunkRendererFactory;
@@ -73,6 +72,7 @@ import net.minecraft.client.texture.Sprite;
 import net.minecraft.client.texture.SpriteAtlasTexture;
 import net.minecraft.client.texture.TextureManager;
 import net.minecraft.client.util.GlAllocationUtils;
+import net.minecraft.client.util.math.Vector3d;
 import net.minecraft.client.util.math.Vector4f;
 import net.minecraft.client.world.ClientWorld;
 import net.minecraft.entity.Entity;
@@ -95,7 +95,7 @@ import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.SystemUtil;
+import net.minecraft.util.Util;
 import net.minecraft.util.crash.CrashException;
 import net.minecraft.util.crash.CrashReport;
 import net.minecraft.util.crash.CrashReportSection;
@@ -105,6 +105,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.util.shape.VoxelShapes;
@@ -122,36 +123,36 @@ public class WorldRenderer
 implements AutoCloseable,
 SynchronousResourceReloadListener {
     private static final Logger LOGGER = LogManager.getLogger();
-    private static final Identifier MOON_PHASES_TEX = new Identifier("textures/environment/moon_phases.png");
-    private static final Identifier SUN_TEX = new Identifier("textures/environment/sun.png");
-    private static final Identifier CLOUDS_TEX = new Identifier("textures/environment/clouds.png");
-    private static final Identifier END_SKY_TEX = new Identifier("textures/environment/end_sky.png");
-    private static final Identifier FORCEFIELD_TEX = new Identifier("textures/misc/forcefield.png");
+    private static final Identifier MOON_PHASES = new Identifier("textures/environment/moon_phases.png");
+    private static final Identifier SUN = new Identifier("textures/environment/sun.png");
+    private static final Identifier CLOUDS = new Identifier("textures/environment/clouds.png");
+    private static final Identifier END_SKY = new Identifier("textures/environment/end_sky.png");
+    private static final Identifier FORCEFIELD = new Identifier("textures/misc/forcefield.png");
     public static final Direction[] DIRECTIONS = Direction.values();
     private final MinecraftClient client;
     private final TextureManager textureManager;
     private final EntityRenderDispatcher entityRenderDispatcher;
     private ClientWorld world;
-    private Set<ChunkRenderer> chunkRenderers = Sets.newLinkedHashSet();
+    private Set<ChunkRenderer> chunksToRebuild = Sets.newLinkedHashSet();
     private List<ChunkInfo> chunkInfos = Lists.newArrayListWithCapacity(69696);
-    private final Set<BlockEntity> blockEntities = Sets.newHashSet();
-    private ChunkRenderDispatcher chunkRenderDispatcher;
+    private final Set<BlockEntity> noCullingBlockEntities = Sets.newHashSet();
+    private BuiltChunkStorage chunks;
     private int starsDisplayList = -1;
     private int field_4117 = -1;
     private int field_4067 = -1;
     private final VertexFormat field_4100;
-    private GlBuffer starsBuffer;
-    private GlBuffer field_4087;
-    private GlBuffer field_4102;
+    private VertexBuffer starsBuffer;
+    private VertexBuffer field_4087;
+    private VertexBuffer field_4102;
     private final int field_4079 = 28;
     private boolean cloudsDirty = true;
     private int cloudsDisplayList = -1;
-    private GlBuffer cloudsBuffer;
+    private VertexBuffer cloudsBuffer;
     private int ticks;
-    private final Map<Integer, PartiallyBrokenBlockEntry> partiallyBrokenBlocks = Maps.newHashMap();
+    private final Map<Integer, BlockBreakingInfo> partiallyBrokenBlocks = Maps.newHashMap();
     private final Map<BlockPos, SoundInstance> playingSongs = Maps.newHashMap();
     private final Sprite[] destroyStages = new Sprite[10];
-    private GlFramebuffer entityOutlinesFramebuffer;
+    private Framebuffer entityOutlinesFramebuffer;
     private ShaderEffect entityOutlineShader;
     private double lastCameraChunkUpdateX = Double.MIN_VALUE;
     private double lastCameraChunkUpdateY = Double.MIN_VALUE;
@@ -167,9 +168,9 @@ SynchronousResourceReloadListener {
     private int field_4082 = Integer.MIN_VALUE;
     private int field_4097 = Integer.MIN_VALUE;
     private int field_4116 = Integer.MIN_VALUE;
-    private net.minecraft.util.math.Vec3d field_4072 = net.minecraft.util.math.Vec3d.ZERO;
+    private Vec3d field_4072 = Vec3d.ZERO;
     private CloudRenderMode field_4080;
-    private ChunkBatcher chunkBatcher;
+    private ChunkBuilder chunkBuilder;
     private ChunkRendererList chunkRendererList;
     private int renderDistance = -1;
     private int field_4076 = 2;
@@ -178,14 +179,14 @@ SynchronousResourceReloadListener {
     private boolean field_4066;
     private Frustum forcedFrustum;
     private final Vector4f[] field_4065 = new Vector4f[8];
-    private final Vec3d forcedFrustumPosition = new Vec3d(0.0, 0.0, 0.0);
+    private final Vector3d capturedFrustumPosition = new Vector3d(0.0, 0.0, 0.0);
     private boolean vertexBufferObjectsEnabled;
     private ChunkRendererFactory chunkRendererFactory;
     private double lastTranslucentSortX;
     private double lastTranslucentSortY;
     private double lastTranslucentSortZ;
-    private boolean terrainUpdateNecessary = true;
-    private boolean entityOutlinesUpdateNecessary;
+    private boolean needsTerrainUpdate = true;
+    private boolean shouldCaptureFrustum;
 
     public WorldRenderer(MinecraftClient minecraftClient) {
         this.client = minecraftClient;
@@ -215,7 +216,7 @@ SynchronousResourceReloadListener {
 
     @Override
     public void apply(ResourceManager resourceManager) {
-        this.textureManager.bindTexture(FORCEFIELD_TEX);
+        this.textureManager.bindTexture(FORCEFIELD);
         GlStateManager.texParameter(3553, 10242, 10497);
         GlStateManager.texParameter(3553, 10243, 10497);
         GlStateManager.bindTexture(0);
@@ -269,7 +270,7 @@ SynchronousResourceReloadListener {
         if (this.canDrawEntityOutlines()) {
             GlStateManager.enableBlend();
             GlStateManager.blendFuncSeparate(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ZERO, GlStateManager.DestFactor.ONE);
-            this.entityOutlinesFramebuffer.draw(this.client.window.getFramebufferWidth(), this.client.window.getFramebufferHeight(), false);
+            this.entityOutlinesFramebuffer.drawInternal(this.client.window.getFramebufferWidth(), this.client.window.getFramebufferHeight(), false);
             GlStateManager.disableBlend();
         }
     }
@@ -280,7 +281,7 @@ SynchronousResourceReloadListener {
 
     private void method_3265() {
         Tessellator tessellator = Tessellator.getInstance();
-        BufferBuilder bufferBuilder = tessellator.getBufferBuilder();
+        BufferBuilder bufferBuilder = tessellator.getBuffer();
         if (this.field_4102 != null) {
             this.field_4102.delete();
         }
@@ -289,15 +290,15 @@ SynchronousResourceReloadListener {
             this.field_4067 = -1;
         }
         if (this.vertexBufferObjectsEnabled) {
-            this.field_4102 = new GlBuffer(this.field_4100);
-            this.method_3283(bufferBuilder, -16.0f, true);
+            this.field_4102 = new VertexBuffer(this.field_4100);
+            this.renderSkyHalf(bufferBuilder, -16.0f, true);
             bufferBuilder.end();
             bufferBuilder.clear();
             this.field_4102.set(bufferBuilder.getByteBuffer());
         } else {
             this.field_4067 = GlAllocationUtils.genLists(1);
             GlStateManager.newList(this.field_4067, 4864);
-            this.method_3283(bufferBuilder, -16.0f, true);
+            this.renderSkyHalf(bufferBuilder, -16.0f, true);
             tessellator.draw();
             GlStateManager.endList();
         }
@@ -305,7 +306,7 @@ SynchronousResourceReloadListener {
 
     private void method_3277() {
         Tessellator tessellator = Tessellator.getInstance();
-        BufferBuilder bufferBuilder = tessellator.getBufferBuilder();
+        BufferBuilder bufferBuilder = tessellator.getBuffer();
         if (this.field_4087 != null) {
             this.field_4087.delete();
         }
@@ -314,21 +315,21 @@ SynchronousResourceReloadListener {
             this.field_4117 = -1;
         }
         if (this.vertexBufferObjectsEnabled) {
-            this.field_4087 = new GlBuffer(this.field_4100);
-            this.method_3283(bufferBuilder, 16.0f, false);
+            this.field_4087 = new VertexBuffer(this.field_4100);
+            this.renderSkyHalf(bufferBuilder, 16.0f, false);
             bufferBuilder.end();
             bufferBuilder.clear();
             this.field_4087.set(bufferBuilder.getByteBuffer());
         } else {
             this.field_4117 = GlAllocationUtils.genLists(1);
             GlStateManager.newList(this.field_4117, 4864);
-            this.method_3283(bufferBuilder, 16.0f, false);
+            this.renderSkyHalf(bufferBuilder, 16.0f, false);
             tessellator.draw();
             GlStateManager.endList();
         }
     }
 
-    private void method_3283(BufferBuilder bufferBuilder, float f, boolean bl) {
+    private void renderSkyHalf(BufferBuilder bufferBuilder, float f, boolean bl) {
         int i = 64;
         int j = 6;
         bufferBuilder.begin(7, VertexFormats.POSITION);
@@ -350,7 +351,7 @@ SynchronousResourceReloadListener {
 
     private void renderStars() {
         Tessellator tessellator = Tessellator.getInstance();
-        BufferBuilder bufferBuilder = tessellator.getBufferBuilder();
+        BufferBuilder bufferBuilder = tessellator.getBuffer();
         if (this.starsBuffer != null) {
             this.starsBuffer.delete();
         }
@@ -359,7 +360,7 @@ SynchronousResourceReloadListener {
             this.starsDisplayList = -1;
         }
         if (this.vertexBufferObjectsEnabled) {
-            this.starsBuffer = new GlBuffer(this.field_4100);
+            this.starsBuffer = new VertexBuffer(this.field_4100);
             this.renderStars(bufferBuilder);
             bufferBuilder.end();
             bufferBuilder.clear();
@@ -428,17 +429,17 @@ SynchronousResourceReloadListener {
         if (clientWorld != null) {
             this.reload();
         } else {
-            this.chunkRenderers.clear();
+            this.chunksToRebuild.clear();
             this.chunkInfos.clear();
-            if (this.chunkRenderDispatcher != null) {
-                this.chunkRenderDispatcher.delete();
-                this.chunkRenderDispatcher = null;
+            if (this.chunks != null) {
+                this.chunks.clear();
+                this.chunks = null;
             }
-            if (this.chunkBatcher != null) {
-                this.chunkBatcher.stop();
+            if (this.chunkBuilder != null) {
+                this.chunkBuilder.stop();
             }
-            this.chunkBatcher = null;
-            this.blockEntities.clear();
+            this.chunkBuilder = null;
+            this.noCullingBlockEntities.clear();
         }
     }
 
@@ -450,10 +451,10 @@ SynchronousResourceReloadListener {
         if (this.world == null) {
             return;
         }
-        if (this.chunkBatcher == null) {
-            this.chunkBatcher = new ChunkBatcher(this.client.is64Bit());
+        if (this.chunkBuilder == null) {
+            this.chunkBuilder = new ChunkBuilder(this.client.is64Bit());
         }
-        this.terrainUpdateNecessary = true;
+        this.needsTerrainUpdate = true;
         this.cloudsDirty = true;
         LeavesBlock.setRenderingMode(this.client.options.fancyGraphics);
         this.renderDistance = this.client.options.viewDistance;
@@ -471,24 +472,24 @@ SynchronousResourceReloadListener {
             this.method_3277();
             this.method_3265();
         }
-        if (this.chunkRenderDispatcher != null) {
-            this.chunkRenderDispatcher.delete();
+        if (this.chunks != null) {
+            this.chunks.clear();
         }
         this.clearChunkRenderers();
-        Set<BlockEntity> set = this.blockEntities;
+        Set<BlockEntity> set = this.noCullingBlockEntities;
         synchronized (set) {
-            this.blockEntities.clear();
+            this.noCullingBlockEntities.clear();
         }
-        this.chunkRenderDispatcher = new ChunkRenderDispatcher(this.world, this.client.options.viewDistance, this, this.chunkRendererFactory);
+        this.chunks = new BuiltChunkStorage(this.world, this.client.options.viewDistance, this, this.chunkRendererFactory);
         if (this.world != null && (entity = this.client.getCameraEntity()) != null) {
-            this.chunkRenderDispatcher.updateCameraPosition(entity.x, entity.z);
+            this.chunks.updateCameraPosition(entity.x, entity.z);
         }
         this.field_4076 = 2;
     }
 
     protected void clearChunkRenderers() {
-        this.chunkRenderers.clear();
-        this.chunkBatcher.reset();
+        this.chunksToRebuild.clear();
+        this.chunkBuilder.reset();
     }
 
     public void onResized(int i, int j) {
@@ -502,7 +503,7 @@ SynchronousResourceReloadListener {
     }
 
     public void method_21595(Camera camera) {
-        BlockEntityRenderDispatcher.INSTANCE.configure(this.world, this.client.getTextureManager(), this.client.textRenderer, camera, this.client.hitResult);
+        BlockEntityRenderDispatcher.INSTANCE.configure(this.world, this.client.getTextureManager(), this.client.textRenderer, camera, this.client.crosshairTarget);
         this.entityRenderDispatcher.configure(this.world, this.client.textRenderer, camera, this.client.targetedEntity, this.client.options);
     }
 
@@ -546,21 +547,21 @@ SynchronousResourceReloadListener {
                 this.entityRenderDispatcher.renderSecondPass(entity, f);
             }
         }
-        if (this.canDrawEntityOutlines() && (!list.isEmpty() || this.entityOutlinesUpdateNecessary)) {
+        if (this.canDrawEntityOutlines() && (!list.isEmpty() || this.shouldCaptureFrustum)) {
             this.world.getProfiler().swap("entityOutlines");
             this.entityOutlinesFramebuffer.clear(MinecraftClient.IS_SYSTEM_MAC);
-            boolean bl = this.entityOutlinesUpdateNecessary = !list.isEmpty();
+            boolean bl = this.shouldCaptureFrustum = !list.isEmpty();
             if (!list.isEmpty()) {
                 GlStateManager.depthFunc(519);
                 GlStateManager.disableFog();
                 this.entityOutlinesFramebuffer.beginWrite(false);
-                GuiLighting.disable();
+                DiffuseLighting.disable();
                 this.entityRenderDispatcher.setRenderOutlines(true);
                 for (int k = 0; k < list.size(); ++k) {
                     this.entityRenderDispatcher.render((Entity)list.get(k), f, false);
                 }
                 this.entityRenderDispatcher.setRenderOutlines(false);
-                GuiLighting.enable();
+                DiffuseLighting.enable();
                 GlStateManager.depthMask(false);
                 this.entityOutlineShader.render(f);
                 GlStateManager.enableLighting();
@@ -575,7 +576,7 @@ SynchronousResourceReloadListener {
             this.client.getFramebuffer().beginWrite(false);
         }
         this.world.getProfiler().swap("blockentities");
-        GuiLighting.enable();
+        DiffuseLighting.enable();
         for (ChunkInfo chunkInfo : this.chunkInfos) {
             List<BlockEntity> list3 = chunkInfo.renderer.getData().getBlockEntities();
             if (list3.isEmpty()) continue;
@@ -583,16 +584,16 @@ SynchronousResourceReloadListener {
                 BlockEntityRenderDispatcher.INSTANCE.render(blockEntity, f, -1);
             }
         }
-        Set<BlockEntity> k = this.blockEntities;
+        Set<BlockEntity> k = this.noCullingBlockEntities;
         synchronized (k) {
-            for (BlockEntity blockEntity2 : this.blockEntities) {
+            for (BlockEntity blockEntity2 : this.noCullingBlockEntities) {
                 BlockEntityRenderDispatcher.INSTANCE.render(blockEntity2, f, -1);
             }
         }
         this.enableBlockOverlayRendering();
-        for (PartiallyBrokenBlockEntry partiallyBrokenBlockEntry : this.partiallyBrokenBlocks.values()) {
+        for (BlockBreakingInfo blockBreakingInfo : this.partiallyBrokenBlocks.values()) {
             BlockEntity blockEntity;
-            BlockPos blockPos = partiallyBrokenBlockEntry.getPos();
+            BlockPos blockPos = blockBreakingInfo.getPos();
             BlockState blockState = this.world.getBlockState(blockPos);
             if (!blockState.getBlock().hasBlockEntity()) continue;
             blockEntity = this.world.getBlockEntity(blockPos);
@@ -601,7 +602,7 @@ SynchronousResourceReloadListener {
                 blockEntity = this.world.getBlockEntity(blockPos);
             }
             if (blockEntity == null || !blockState.hasBlockEntityBreakingRender()) continue;
-            BlockEntityRenderDispatcher.INSTANCE.render(blockEntity, f, partiallyBrokenBlockEntry.getStage());
+            BlockEntityRenderDispatcher.INSTANCE.render(blockEntity, f, blockBreakingInfo.getStage());
         }
         this.disableBlockOverlayRendering();
         this.client.gameRenderer.disableLightmap();
@@ -609,12 +610,12 @@ SynchronousResourceReloadListener {
     }
 
     public String getChunksDebugString() {
-        int i = this.chunkRenderDispatcher.renderers.length;
-        int j = this.getChunkNumber();
-        return String.format("C: %d/%d %sD: %d, %s", j, i, this.client.field_1730 ? "(s) " : "", this.renderDistance, this.chunkBatcher == null ? "null" : this.chunkBatcher.getDebugString());
+        int i = this.chunks.renderers.length;
+        int j = this.getCompletedChunkCount();
+        return String.format("C: %d/%d %sD: %d, %s", j, i, this.client.field_1730 ? "(s) " : "", this.renderDistance, this.chunkBuilder == null ? "null" : this.chunkBuilder.getDebugString());
     }
 
-    protected int getChunkNumber() {
+    protected int getCompletedChunkCount() {
         int i = 0;
         for (ChunkInfo chunkInfo : this.chunkInfos) {
             ChunkRenderData chunkRenderData = ((ChunkInfo)chunkInfo).renderer.data;
@@ -643,24 +644,24 @@ SynchronousResourceReloadListener {
             this.cameraChunkX = this.client.player.chunkX;
             this.cameraChunkY = this.client.player.chunkY;
             this.cameraChunkZ = this.client.player.chunkZ;
-            this.chunkRenderDispatcher.updateCameraPosition(this.client.player.x, this.client.player.z);
+            this.chunks.updateCameraPosition(this.client.player.x, this.client.player.z);
         }
         this.world.getProfiler().swap("renderlistcamera");
         this.chunkRendererList.setCameraPosition(camera.getPos().x, camera.getPos().y, camera.getPos().z);
-        this.chunkBatcher.setCameraPosition(camera.getPos());
+        this.chunkBuilder.setCameraPosition(camera.getPos());
         this.world.getProfiler().swap("cull");
         if (this.forcedFrustum != null) {
             FrustumWithOrigin frustumWithOrigin = new FrustumWithOrigin(this.forcedFrustum);
-            frustumWithOrigin.setOrigin(this.forcedFrustumPosition.x, this.forcedFrustumPosition.y, this.forcedFrustumPosition.z);
+            frustumWithOrigin.setOrigin(this.capturedFrustumPosition.x, this.capturedFrustumPosition.y, this.capturedFrustumPosition.z);
             visibleRegion = frustumWithOrigin;
         }
         this.client.getProfiler().swap("culling");
         BlockPos blockPos = camera.getBlockPos();
-        ChunkRenderer chunkRenderer = this.chunkRenderDispatcher.getChunkRenderer(blockPos);
+        ChunkRenderer chunkRenderer = this.chunks.getChunkRenderer(blockPos);
         BlockPos blockPos2 = new BlockPos(MathHelper.floor(camera.getPos().x / 16.0) * 16, MathHelper.floor(camera.getPos().y / 16.0) * 16, MathHelper.floor(camera.getPos().z / 16.0) * 16);
         float g = camera.getPitch();
         float h = camera.getYaw();
-        this.terrainUpdateNecessary = this.terrainUpdateNecessary || !this.chunkRenderers.isEmpty() || camera.getPos().x != this.lastCameraX || camera.getPos().y != this.lastCameraY || camera.getPos().z != this.lastCameraZ || (double)g != this.lastCameraPitch || (double)h != this.lastCameraYaw;
+        this.needsTerrainUpdate = this.needsTerrainUpdate || !this.chunksToRebuild.isEmpty() || camera.getPos().x != this.lastCameraX || camera.getPos().y != this.lastCameraY || camera.getPos().z != this.lastCameraZ || (double)g != this.lastCameraPitch || (double)h != this.lastCameraYaw;
         this.lastCameraX = camera.getPos().x;
         this.lastCameraY = camera.getPos().y;
         this.lastCameraZ = camera.getPos().z;
@@ -668,8 +669,8 @@ SynchronousResourceReloadListener {
         this.lastCameraYaw = h;
         boolean bl2 = this.forcedFrustum != null;
         this.client.getProfiler().swap("update");
-        if (!bl2 && this.terrainUpdateNecessary) {
-            this.terrainUpdateNecessary = false;
+        if (!bl2 && this.needsTerrainUpdate) {
+            this.needsTerrainUpdate = false;
             this.chunkInfos = Lists.newArrayList();
             ArrayDeque<ChunkInfo> queue = Queues.newArrayDeque();
             Entity.setRenderDistanceMultiplier(MathHelper.clamp((double)this.client.options.viewDistance / 8.0, 1.0, 2.5));
@@ -678,7 +679,7 @@ SynchronousResourceReloadListener {
                 int j = blockPos.getY() > 0 ? 248 : 8;
                 for (int k = -this.renderDistance; k <= this.renderDistance; ++k) {
                     for (int l = -this.renderDistance; l <= this.renderDistance; ++l) {
-                        ChunkRenderer chunkRenderer2 = this.chunkRenderDispatcher.getChunkRenderer(new BlockPos((k << 4) + 8, j, (l << 4) + 8));
+                        ChunkRenderer chunkRenderer2 = this.chunks.getChunkRenderer(new BlockPos((k << 4) + 8, j, (l << 4) + 8));
                         if (chunkRenderer2 == null || !visibleRegion.intersects(chunkRenderer2.boundingBox)) continue;
                         chunkRenderer2.method_3671(i);
                         queue.add(new ChunkInfo(chunkRenderer2, null, 0));
@@ -728,37 +729,37 @@ SynchronousResourceReloadListener {
             this.field_4066 = false;
         }
         this.client.getProfiler().swap("rebuildNear");
-        Set<ChunkRenderer> set2 = this.chunkRenderers;
-        this.chunkRenderers = Sets.newLinkedHashSet();
+        Set<ChunkRenderer> set2 = this.chunksToRebuild;
+        this.chunksToRebuild = Sets.newLinkedHashSet();
         for (ChunkInfo chunkInfo2 : this.chunkInfos) {
             boolean bl5;
             ChunkRenderer chunkRenderer3 = chunkInfo2.renderer;
             if (!chunkRenderer3.shouldRebuild() && !set2.contains(chunkRenderer3)) continue;
-            this.terrainUpdateNecessary = true;
+            this.needsTerrainUpdate = true;
             BlockPos blockPos3 = chunkRenderer3.getOrigin().add(8, 8, 8);
             boolean bl3 = bl5 = blockPos3.getSquaredDistance(blockPos) < 768.0;
             if (chunkRenderer3.shouldRebuildOnClientThread() || bl5) {
                 this.client.getProfiler().push("build near");
-                this.chunkBatcher.rebuildSync(chunkRenderer3);
+                this.chunkBuilder.rebuildSync(chunkRenderer3);
                 chunkRenderer3.unscheduleRebuild();
                 this.client.getProfiler().pop();
                 continue;
             }
-            this.chunkRenderers.add(chunkRenderer3);
+            this.chunksToRebuild.add(chunkRenderer3);
         }
-        this.chunkRenderers.addAll(set2);
+        this.chunksToRebuild.addAll(set2);
         this.client.getProfiler().pop();
     }
 
     private Set<Direction> getOpenChunkFaces(BlockPos blockPos) {
-        ChunkOcclusionGraphBuilder chunkOcclusionGraphBuilder = new ChunkOcclusionGraphBuilder();
+        ChunkOcclusionDataBuilder chunkOcclusionDataBuilder = new ChunkOcclusionDataBuilder();
         BlockPos blockPos2 = new BlockPos(blockPos.getX() >> 4 << 4, blockPos.getY() >> 4 << 4, blockPos.getZ() >> 4 << 4);
         WorldChunk worldChunk = this.world.getWorldChunk(blockPos2);
         for (BlockPos blockPos3 : BlockPos.iterate(blockPos2, blockPos2.add(15, 15, 15))) {
             if (!worldChunk.getBlockState(blockPos3).isFullOpaque(this.world, blockPos3)) continue;
-            chunkOcclusionGraphBuilder.markClosed(blockPos3);
+            chunkOcclusionDataBuilder.markClosed(blockPos3);
         }
-        return chunkOcclusionGraphBuilder.getOpenFaces(blockPos);
+        return chunkOcclusionDataBuilder.getOpenFaces(blockPos);
     }
 
     @Nullable
@@ -773,15 +774,15 @@ SynchronousResourceReloadListener {
         if (MathHelper.abs(blockPos.getZ() - blockPos2.getZ()) > this.renderDistance * 16) {
             return null;
         }
-        return this.chunkRenderDispatcher.getChunkRenderer(blockPos2);
+        return this.chunks.getChunkRenderer(blockPos2);
     }
 
     private void method_3275(double d, double e, double f) {
     }
 
-    public int renderLayer(BlockRenderLayer blockRenderLayer, Camera camera) {
-        GuiLighting.disable();
-        if (blockRenderLayer == BlockRenderLayer.TRANSLUCENT) {
+    public int renderLayer(RenderLayer renderLayer, Camera camera) {
+        DiffuseLighting.disable();
+        if (renderLayer == RenderLayer.TRANSLUCENT) {
             this.client.getProfiler().push("translucent_sort");
             double d = camera.getPos().x - this.lastTranslucentSortX;
             double e = camera.getPos().y - this.lastTranslucentSortY;
@@ -792,31 +793,31 @@ SynchronousResourceReloadListener {
                 this.lastTranslucentSortZ = camera.getPos().z;
                 int i = 0;
                 for (ChunkInfo chunkInfo : this.chunkInfos) {
-                    if (!((ChunkInfo)chunkInfo).renderer.data.isBufferInitialized(blockRenderLayer) || i++ >= 15) continue;
-                    this.chunkBatcher.resortTransparency(chunkInfo.renderer);
+                    if (!((ChunkInfo)chunkInfo).renderer.data.isBufferInitialized(renderLayer) || i++ >= 15) continue;
+                    this.chunkBuilder.resortTransparency(chunkInfo.renderer);
                 }
             }
             this.client.getProfiler().pop();
         }
         this.client.getProfiler().push("filterempty");
         int j = 0;
-        boolean bl = blockRenderLayer == BlockRenderLayer.TRANSLUCENT;
+        boolean bl = renderLayer == RenderLayer.TRANSLUCENT;
         int k = bl ? this.chunkInfos.size() - 1 : 0;
         int l = bl ? -1 : this.chunkInfos.size();
         int m = bl ? -1 : 1;
         for (int n = k; n != l; n += m) {
             ChunkRenderer chunkRenderer = this.chunkInfos.get(n).renderer;
-            if (chunkRenderer.getData().isEmpty(blockRenderLayer)) continue;
+            if (chunkRenderer.getData().isEmpty(renderLayer)) continue;
             ++j;
-            this.chunkRendererList.add(chunkRenderer, blockRenderLayer);
+            this.chunkRendererList.add(chunkRenderer, renderLayer);
         }
-        this.client.getProfiler().swap(() -> "render_" + (Object)((Object)blockRenderLayer));
-        this.renderLayer(blockRenderLayer);
+        this.client.getProfiler().swap(() -> "render_" + (Object)((Object)renderLayer));
+        this.renderLayer(renderLayer);
         this.client.getProfiler().pop();
         return j;
     }
 
-    private void renderLayer(BlockRenderLayer blockRenderLayer) {
+    private void renderLayer(RenderLayer renderLayer) {
         this.client.gameRenderer.enableLightmap();
         if (GLX.useVbo()) {
             GlStateManager.enableClientState(32884);
@@ -827,7 +828,7 @@ SynchronousResourceReloadListener {
             GLX.glClientActiveTexture(GLX.GL_TEXTURE0);
             GlStateManager.enableClientState(32886);
         }
-        this.chunkRendererList.render(blockRenderLayer);
+        this.chunkRendererList.render(renderLayer);
         if (GLX.useVbo()) {
             List<VertexFormatElement> list = VertexFormats.POSITION_COLOR_UV_LMAP.getElements();
             for (VertexFormatElement vertexFormatElement : list) {
@@ -854,10 +855,10 @@ SynchronousResourceReloadListener {
         this.client.gameRenderer.disableLightmap();
     }
 
-    private void removeOutdatedPartiallyBrokenBlocks(Iterator<PartiallyBrokenBlockEntry> iterator) {
+    private void removeOutdatedPartiallyBrokenBlocks(Iterator<BlockBreakingInfo> iterator) {
         while (iterator.hasNext()) {
-            PartiallyBrokenBlockEntry partiallyBrokenBlockEntry = iterator.next();
-            int i = partiallyBrokenBlockEntry.getLastUpdateTicks();
+            BlockBreakingInfo blockBreakingInfo = iterator.next();
+            int i = blockBreakingInfo.getLastUpdateTick();
             if (this.ticks - i <= 400) continue;
             iterator.remove();
         }
@@ -875,11 +876,11 @@ SynchronousResourceReloadListener {
         GlStateManager.disableAlphaTest();
         GlStateManager.enableBlend();
         GlStateManager.blendFuncSeparate(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO);
-        GuiLighting.disable();
+        DiffuseLighting.disable();
         GlStateManager.depthMask(false);
-        this.textureManager.bindTexture(END_SKY_TEX);
+        this.textureManager.bindTexture(END_SKY);
         Tessellator tessellator = Tessellator.getInstance();
-        BufferBuilder bufferBuilder = tessellator.getBufferBuilder();
+        BufferBuilder bufferBuilder = tessellator.getBuffer();
         for (int i = 0; i < 6; ++i) {
             GlStateManager.pushMatrix();
             if (i == 1) {
@@ -897,7 +898,7 @@ SynchronousResourceReloadListener {
             if (i == 5) {
                 GlStateManager.rotatef(-90.0f, 0.0f, 0.0f, 1.0f);
             }
-            bufferBuilder.begin(7, VertexFormats.POSITION_UV_COLOR);
+            bufferBuilder.begin(7, VertexFormats.POSITION_TEXTURE_COLOR);
             bufferBuilder.vertex(-100.0, -100.0, -100.0).texture(0.0, 0.0).color(40, 40, 40, 255).next();
             bufferBuilder.vertex(-100.0, -100.0, 100.0).texture(0.0, 16.0).color(40, 40, 40, 255).next();
             bufferBuilder.vertex(100.0, -100.0, 100.0).texture(16.0, 16.0).color(40, 40, 40, 255).next();
@@ -927,13 +928,13 @@ SynchronousResourceReloadListener {
             return;
         }
         GlStateManager.disableTexture();
-        net.minecraft.util.math.Vec3d vec3d = this.world.getSkyColor(this.client.gameRenderer.getCamera().getBlockPos(), f);
+        Vec3d vec3d = this.world.getSkyColor(this.client.gameRenderer.getCamera().getBlockPos(), f);
         float g = (float)vec3d.x;
         float h = (float)vec3d.y;
         float i = (float)vec3d.z;
         GlStateManager.color3f(g, h, i);
         Tessellator tessellator = Tessellator.getInstance();
-        BufferBuilder bufferBuilder = tessellator.getBufferBuilder();
+        BufferBuilder bufferBuilder = tessellator.getBuffer();
         GlStateManager.depthMask(false);
         GlStateManager.enableFog();
         GlStateManager.color3f(g, h, i);
@@ -942,7 +943,7 @@ SynchronousResourceReloadListener {
             GlStateManager.enableClientState(32884);
             GlStateManager.vertexPointer(3, 5126, 12, 0);
             this.field_4087.draw(7);
-            GlBuffer.unbind();
+            VertexBuffer.unbind();
             GlStateManager.disableClientState(32884);
         } else {
             GlStateManager.callList(this.field_4117);
@@ -951,7 +952,7 @@ SynchronousResourceReloadListener {
         GlStateManager.disableAlphaTest();
         GlStateManager.enableBlend();
         GlStateManager.blendFuncSeparate(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO);
-        GuiLighting.disable();
+        DiffuseLighting.disable();
         float[] fs = this.world.dimension.getBackgroundColor(this.world.getSkyAngle(f), f);
         if (fs != null) {
             GlStateManager.disableTexture();
@@ -984,15 +985,15 @@ SynchronousResourceReloadListener {
         GlStateManager.rotatef(-90.0f, 0.0f, 1.0f, 0.0f);
         GlStateManager.rotatef(this.world.getSkyAngle(f) * 360.0f, 1.0f, 0.0f, 0.0f);
         k = 30.0f;
-        this.textureManager.bindTexture(SUN_TEX);
-        bufferBuilder.begin(7, VertexFormats.POSITION_UV);
+        this.textureManager.bindTexture(SUN);
+        bufferBuilder.begin(7, VertexFormats.POSITION_TEXTURE);
         bufferBuilder.vertex(-k, 100.0, -k).texture(0.0, 0.0).next();
         bufferBuilder.vertex(k, 100.0, -k).texture(1.0, 0.0).next();
         bufferBuilder.vertex(k, 100.0, k).texture(1.0, 1.0).next();
         bufferBuilder.vertex(-k, 100.0, k).texture(0.0, 1.0).next();
         tessellator.draw();
         k = 20.0f;
-        this.textureManager.bindTexture(MOON_PHASES_TEX);
+        this.textureManager.bindTexture(MOON_PHASES);
         int r = this.world.getMoonPhase();
         m = r % 4;
         n = r / 4 % 2;
@@ -1000,7 +1001,7 @@ SynchronousResourceReloadListener {
         p = (float)(n + 0) / 2.0f;
         q = (float)(m + 1) / 4.0f;
         float s = (float)(n + 1) / 2.0f;
-        bufferBuilder.begin(7, VertexFormats.POSITION_UV);
+        bufferBuilder.begin(7, VertexFormats.POSITION_TEXTURE);
         bufferBuilder.vertex(-k, -100.0, k).texture(q, s).next();
         bufferBuilder.vertex(k, -100.0, k).texture(o, s).next();
         bufferBuilder.vertex(k, -100.0, -k).texture(o, p).next();
@@ -1015,7 +1016,7 @@ SynchronousResourceReloadListener {
                 GlStateManager.enableClientState(32884);
                 GlStateManager.vertexPointer(3, 5126, 12, 0);
                 this.starsBuffer.draw(7);
-                GlBuffer.unbind();
+                VertexBuffer.unbind();
                 GlStateManager.disableClientState(32884);
             } else {
                 GlStateManager.callList(this.starsDisplayList);
@@ -1037,7 +1038,7 @@ SynchronousResourceReloadListener {
                 GlStateManager.enableClientState(32884);
                 GlStateManager.vertexPointer(3, 5126, 12, 0);
                 this.field_4102.draw(7);
-                GlBuffer.unbind();
+                VertexBuffer.unbind();
                 GlStateManager.disableClientState(32884);
             } else {
                 GlStateManager.callList(this.field_4067);
@@ -1073,7 +1074,7 @@ SynchronousResourceReloadListener {
         float o = (float)(l - (double)MathHelper.floor(l));
         float p = (float)(m / 4.0 - (double)MathHelper.floor(m / 4.0)) * 4.0f;
         float q = (float)(n - (double)MathHelper.floor(n));
-        net.minecraft.util.math.Vec3d vec3d = this.world.getCloudColor(f);
+        Vec3d vec3d = this.world.getCloudColor(f);
         int r = (int)Math.floor(l);
         int s = (int)Math.floor(m / 4.0);
         int t = (int)Math.floor(n);
@@ -1088,7 +1089,7 @@ SynchronousResourceReloadListener {
         if (this.cloudsDirty) {
             this.cloudsDirty = false;
             Tessellator tessellator = Tessellator.getInstance();
-            BufferBuilder bufferBuilder = tessellator.getBufferBuilder();
+            BufferBuilder bufferBuilder = tessellator.getBuffer();
             if (this.cloudsBuffer != null) {
                 this.cloudsBuffer.delete();
             }
@@ -1097,7 +1098,7 @@ SynchronousResourceReloadListener {
                 this.cloudsDisplayList = -1;
             }
             if (this.vertexBufferObjectsEnabled) {
-                this.cloudsBuffer = new GlBuffer(VertexFormats.POSITION_UV_COLOR_NORMAL);
+                this.cloudsBuffer = new VertexBuffer(VertexFormats.POSITION_TEXTURE_COLOR_NORMAL);
                 this.renderClouds(bufferBuilder, l, m, n, vec3d);
                 bufferBuilder.end();
                 bufferBuilder.clear();
@@ -1111,7 +1112,7 @@ SynchronousResourceReloadListener {
             }
         }
         GlStateManager.disableCull();
-        this.textureManager.bindTexture(CLOUDS_TEX);
+        this.textureManager.bindTexture(CLOUDS);
         GlStateManager.enableBlend();
         GlStateManager.blendFuncSeparate(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO);
         GlStateManager.pushMatrix();
@@ -1137,7 +1138,7 @@ SynchronousResourceReloadListener {
                 }
                 this.cloudsBuffer.draw(7);
             }
-            GlBuffer.unbind();
+            VertexBuffer.unbind();
             GlStateManager.disableClientState(32884);
             GlStateManager.disableClientState(32888);
             GlStateManager.disableClientState(32886);
@@ -1160,7 +1161,7 @@ SynchronousResourceReloadListener {
         GlStateManager.enableCull();
     }
 
-    private void renderClouds(BufferBuilder bufferBuilder, double d, double e, double f, net.minecraft.util.math.Vec3d vec3d) {
+    private void renderClouds(BufferBuilder bufferBuilder, double d, double e, double f, Vec3d vec3d) {
         float g = 4.0f;
         float h = 0.00390625f;
         int i = 8;
@@ -1180,7 +1181,7 @@ SynchronousResourceReloadListener {
         float w = n * 0.8f;
         float x = o * 0.8f;
         float y = p * 0.8f;
-        bufferBuilder.begin(7, VertexFormats.POSITION_UV_COLOR_NORMAL);
+        bufferBuilder.begin(7, VertexFormats.POSITION_TEXTURE_COLOR_NORMAL);
         float z = (float)Math.floor(e / 4.0) * 4.0f;
         if (this.field_4080 == CloudRenderMode.FANCY) {
             for (int aa = -3; aa <= 4; ++aa) {
@@ -1248,15 +1249,15 @@ SynchronousResourceReloadListener {
     }
 
     public void updateChunks(long l) {
-        this.terrainUpdateNecessary |= this.chunkBatcher.runTasksSync(l);
-        if (!this.chunkRenderers.isEmpty()) {
+        this.needsTerrainUpdate |= this.chunkBuilder.runTasksSync(l);
+        if (!this.chunksToRebuild.isEmpty()) {
             ChunkRenderer chunkRenderer;
             boolean bl;
-            Iterator<ChunkRenderer> iterator = this.chunkRenderers.iterator();
-            while (iterator.hasNext() && (bl = (chunkRenderer = iterator.next()).shouldRebuildOnClientThread() ? this.chunkBatcher.rebuildSync(chunkRenderer) : this.chunkBatcher.rebuild(chunkRenderer))) {
+            Iterator<ChunkRenderer> iterator = this.chunksToRebuild.iterator();
+            while (iterator.hasNext() && (bl = (chunkRenderer = iterator.next()).shouldRebuildOnClientThread() ? this.chunkBuilder.rebuildSync(chunkRenderer) : this.chunkBuilder.rebuild(chunkRenderer))) {
                 chunkRenderer.unscheduleRebuild();
                 iterator.remove();
-                long m = l - SystemUtil.getMeasuringTimeNano();
+                long m = l - Util.getMeasuringTimeNano();
                 if (m >= 0L) continue;
                 break;
             }
@@ -1269,20 +1270,20 @@ SynchronousResourceReloadListener {
         double u;
         float t;
         Tessellator tessellator = Tessellator.getInstance();
-        BufferBuilder bufferBuilder = tessellator.getBufferBuilder();
+        BufferBuilder bufferBuilder = tessellator.getBuffer();
         WorldBorder worldBorder = this.world.getWorldBorder();
         double d = this.client.options.viewDistance * 16;
         if (camera.getPos().x < worldBorder.getBoundEast() - d && camera.getPos().x > worldBorder.getBoundWest() + d && camera.getPos().z < worldBorder.getBoundSouth() - d && camera.getPos().z > worldBorder.getBoundNorth() + d) {
             return;
         }
-        double e = 1.0 - worldBorder.contains(camera.getPos().x, camera.getPos().z) / d;
+        double e = 1.0 - worldBorder.getDistanceInsideBorder(camera.getPos().x, camera.getPos().z) / d;
         e = Math.pow(e, 4.0);
         double g = camera.getPos().x;
         double h = camera.getPos().y;
         double i = camera.getPos().z;
         GlStateManager.enableBlend();
         GlStateManager.blendFuncSeparate(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO);
-        this.textureManager.bindTexture(FORCEFIELD_TEX);
+        this.textureManager.bindTexture(FORCEFIELD);
         GlStateManager.depthMask(false);
         GlStateManager.pushMatrix();
         int j = worldBorder.getStage().getColor();
@@ -1295,11 +1296,11 @@ SynchronousResourceReloadListener {
         GlStateManager.alphaFunc(516, 0.1f);
         GlStateManager.enableAlphaTest();
         GlStateManager.disableCull();
-        float n = (float)(SystemUtil.getMeasuringTimeMs() % 3000L) / 3000.0f;
+        float n = (float)(Util.getMeasuringTimeMs() % 3000L) / 3000.0f;
         float o = 0.0f;
         float p = 0.0f;
         float q = 128.0f;
-        bufferBuilder.begin(7, VertexFormats.POSITION_UV);
+        bufferBuilder.begin(7, VertexFormats.POSITION_TEXTURE);
         bufferBuilder.setOffset(-g, -h, -i);
         double r = Math.max((double)MathHelper.floor(i - d), worldBorder.getBoundNorth());
         double s = Math.min((double)MathHelper.ceil(i + d), worldBorder.getBoundSouth());
@@ -1403,12 +1404,12 @@ SynchronousResourceReloadListener {
             bufferBuilder.begin(7, VertexFormats.POSITION_COLOR_UV_LMAP);
             bufferBuilder.setOffset(-d, -e, -f);
             bufferBuilder.disableColor();
-            Iterator<PartiallyBrokenBlockEntry> iterator = this.partiallyBrokenBlocks.values().iterator();
+            Iterator<BlockBreakingInfo> iterator = this.partiallyBrokenBlocks.values().iterator();
             while (iterator.hasNext()) {
                 double i;
                 double h;
-                PartiallyBrokenBlockEntry partiallyBrokenBlockEntry = iterator.next();
-                BlockPos blockPos = partiallyBrokenBlockEntry.getPos();
+                BlockBreakingInfo blockBreakingInfo = iterator.next();
+                BlockPos blockPos = blockBreakingInfo.getPos();
                 Block block = this.world.getBlockState(blockPos).getBlock();
                 if (block instanceof ChestBlock || block instanceof EnderChestBlock || block instanceof AbstractSignBlock || block instanceof AbstractSkullBlock) continue;
                 double g = (double)blockPos.getX() - d;
@@ -1418,7 +1419,7 @@ SynchronousResourceReloadListener {
                 }
                 BlockState blockState = this.world.getBlockState(blockPos);
                 if (blockState.isAir()) continue;
-                int j = partiallyBrokenBlockEntry.getStage();
+                int j = blockBreakingInfo.getStage();
                 Sprite sprite = this.destroyStages[j];
                 BlockRenderManager blockRenderManager = this.client.getBlockRenderManager();
                 blockRenderManager.tesselateDamage(blockState, blockPos, sprite, this.world);
@@ -1469,7 +1470,7 @@ SynchronousResourceReloadListener {
 
     public static void drawShapeOutline(VoxelShape voxelShape, double d, double e, double f, float g, float h, float i, float j) {
         Tessellator tessellator = Tessellator.getInstance();
-        BufferBuilder bufferBuilder = tessellator.getBufferBuilder();
+        BufferBuilder bufferBuilder = tessellator.getBuffer();
         bufferBuilder.begin(1, VertexFormats.POSITION_COLOR);
         voxelShape.forEachEdge((k, l, m, n, o, p) -> {
             bufferBuilder.vertex(k + d, l + e, m + f).color(g, h, i, j).next();
@@ -1479,18 +1480,18 @@ SynchronousResourceReloadListener {
     }
 
     public static void drawBoxOutline(Box box, float f, float g, float h, float i) {
-        WorldRenderer.drawBoxOutline(box.minX, box.minY, box.minZ, box.maxX, box.maxY, box.maxZ, f, g, h, i);
+        WorldRenderer.drawBoxOutline(box.x1, box.y1, box.z1, box.x2, box.y2, box.z2, f, g, h, i);
     }
 
     public static void drawBoxOutline(double d, double e, double f, double g, double h, double i, float j, float k, float l, float m) {
         Tessellator tessellator = Tessellator.getInstance();
-        BufferBuilder bufferBuilder = tessellator.getBufferBuilder();
+        BufferBuilder bufferBuilder = tessellator.getBuffer();
         bufferBuilder.begin(3, VertexFormats.POSITION_COLOR);
-        WorldRenderer.buildBoxOutline(bufferBuilder, d, e, f, g, h, i, j, k, l, m);
+        WorldRenderer.drawBox(bufferBuilder, d, e, f, g, h, i, j, k, l, m);
         tessellator.draw();
     }
 
-    public static void buildBoxOutline(BufferBuilder bufferBuilder, double d, double e, double f, double g, double h, double i, float j, float k, float l, float m) {
+    public static void drawBox(BufferBuilder bufferBuilder, double d, double e, double f, double g, double h, double i, float j, float k, float l, float m) {
         bufferBuilder.vertex(d, e, f).color(j, k, l, 0.0f).next();
         bufferBuilder.vertex(d, e, f).color(j, k, l, m).next();
         bufferBuilder.vertex(g, e, f).color(j, k, l, m).next();
@@ -1589,7 +1590,7 @@ SynchronousResourceReloadListener {
     }
 
     private void scheduleChunkRender(int i, int j, int k, boolean bl) {
-        this.chunkRenderDispatcher.scheduleChunkRender(i, j, k, bl);
+        this.chunks.scheduleRebuild(i, j, k, bl);
     }
 
     public void playSong(@Nullable SoundEvent soundEvent, BlockPos blockPos) {
@@ -1611,7 +1612,7 @@ SynchronousResourceReloadListener {
     }
 
     private void updateEntitiesForSong(World world, BlockPos blockPos, boolean bl) {
-        List<LivingEntity> list = world.getEntities(LivingEntity.class, new Box(blockPos).expand(3.0));
+        List<LivingEntity> list = world.getNonSpectatingEntities(LivingEntity.class, new Box(blockPos).expand(3.0));
         for (LivingEntity livingEntity : list) {
             livingEntity.setNearbySongPlaying(blockPos, bl);
         }
@@ -2025,37 +2026,37 @@ SynchronousResourceReloadListener {
         }
     }
 
-    public void setBlockBreakingProgress(int i, BlockPos blockPos, int j) {
+    public void setBlockBreakingInfo(int i, BlockPos blockPos, int j) {
         if (j < 0 || j >= 10) {
             this.partiallyBrokenBlocks.remove(i);
         } else {
-            PartiallyBrokenBlockEntry partiallyBrokenBlockEntry = this.partiallyBrokenBlocks.get(i);
-            if (partiallyBrokenBlockEntry == null || partiallyBrokenBlockEntry.getPos().getX() != blockPos.getX() || partiallyBrokenBlockEntry.getPos().getY() != blockPos.getY() || partiallyBrokenBlockEntry.getPos().getZ() != blockPos.getZ()) {
-                partiallyBrokenBlockEntry = new PartiallyBrokenBlockEntry(i, blockPos);
-                this.partiallyBrokenBlocks.put(i, partiallyBrokenBlockEntry);
+            BlockBreakingInfo blockBreakingInfo = this.partiallyBrokenBlocks.get(i);
+            if (blockBreakingInfo == null || blockBreakingInfo.getPos().getX() != blockPos.getX() || blockBreakingInfo.getPos().getY() != blockPos.getY() || blockBreakingInfo.getPos().getZ() != blockPos.getZ()) {
+                blockBreakingInfo = new BlockBreakingInfo(i, blockPos);
+                this.partiallyBrokenBlocks.put(i, blockBreakingInfo);
             }
-            partiallyBrokenBlockEntry.setStage(j);
-            partiallyBrokenBlockEntry.setLastUpdateTicks(this.ticks);
+            blockBreakingInfo.setStage(j);
+            blockBreakingInfo.setLastUpdateTick(this.ticks);
         }
     }
 
     public boolean isTerrainRenderComplete() {
-        return this.chunkRenderers.isEmpty() && this.chunkBatcher.isEmpty();
+        return this.chunksToRebuild.isEmpty() && this.chunkBuilder.isEmpty();
     }
 
     public void scheduleTerrainUpdate() {
-        this.terrainUpdateNecessary = true;
+        this.needsTerrainUpdate = true;
         this.cloudsDirty = true;
     }
 
     /*
      * WARNING - Removed try catching itself - possible behaviour change.
      */
-    public void updateBlockEntities(Collection<BlockEntity> collection, Collection<BlockEntity> collection2) {
-        Set<BlockEntity> set = this.blockEntities;
+    public void updateNoCullingBlockEntities(Collection<BlockEntity> collection, Collection<BlockEntity> collection2) {
+        Set<BlockEntity> set = this.noCullingBlockEntities;
         synchronized (set) {
-            this.blockEntities.removeAll(collection);
-            this.blockEntities.addAll(collection2);
+            this.noCullingBlockEntities.removeAll(collection);
+            this.noCullingBlockEntities.addAll(collection2);
         }
     }
 

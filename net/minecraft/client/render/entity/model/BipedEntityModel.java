@@ -6,7 +6,7 @@ package net.minecraft.client.render.entity.model;
 import com.mojang.blaze3d.platform.GlStateManager;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.client.model.Cuboid;
+import net.minecraft.client.model.ModelPart;
 import net.minecraft.client.render.entity.model.EntityModel;
 import net.minecraft.client.render.entity.model.ModelWithArms;
 import net.minecraft.client.render.entity.model.ModelWithHead;
@@ -22,13 +22,13 @@ public class BipedEntityModel<T extends LivingEntity>
 extends EntityModel<T>
 implements ModelWithArms,
 ModelWithHead {
-    public Cuboid head;
-    public Cuboid headwear;
-    public Cuboid body;
-    public Cuboid rightArm;
-    public Cuboid leftArm;
-    public Cuboid rightLeg;
-    public Cuboid leftLeg;
+    public ModelPart head;
+    public ModelPart helmet;
+    public ModelPart torso;
+    public ModelPart rightArm;
+    public ModelPart leftArm;
+    public ModelPart rightLeg;
+    public ModelPart leftLeg;
     public ArmPose leftArmPose = ArmPose.EMPTY;
     public ArmPose rightArmPose = ArmPose.EMPTY;
     public boolean isSneaking;
@@ -46,35 +46,36 @@ ModelWithHead {
     public BipedEntityModel(float f, float g, int i, int j) {
         this.textureWidth = i;
         this.textureHeight = j;
-        this.head = new Cuboid(this, 0, 0);
-        this.head.addBox(-4.0f, -8.0f, -4.0f, 8, 8, 8, f);
-        this.head.setRotationPoint(0.0f, 0.0f + g, 0.0f);
-        this.headwear = new Cuboid(this, 32, 0);
-        this.headwear.addBox(-4.0f, -8.0f, -4.0f, 8, 8, 8, f + 0.5f);
-        this.headwear.setRotationPoint(0.0f, 0.0f + g, 0.0f);
-        this.body = new Cuboid(this, 16, 16);
-        this.body.addBox(-4.0f, 0.0f, -2.0f, 8, 12, 4, f);
-        this.body.setRotationPoint(0.0f, 0.0f + g, 0.0f);
-        this.rightArm = new Cuboid(this, 40, 16);
-        this.rightArm.addBox(-3.0f, -2.0f, -2.0f, 4, 12, 4, f);
-        this.rightArm.setRotationPoint(-5.0f, 2.0f + g, 0.0f);
-        this.leftArm = new Cuboid(this, 40, 16);
+        this.head = new ModelPart(this, 0, 0);
+        this.head.addCuboid(-4.0f, -8.0f, -4.0f, 8, 8, 8, f);
+        this.head.setPivot(0.0f, 0.0f + g, 0.0f);
+        this.helmet = new ModelPart(this, 32, 0);
+        this.helmet.addCuboid(-4.0f, -8.0f, -4.0f, 8, 8, 8, f + 0.5f);
+        this.helmet.setPivot(0.0f, 0.0f + g, 0.0f);
+        this.torso = new ModelPart(this, 16, 16);
+        this.torso.addCuboid(-4.0f, 0.0f, -2.0f, 8, 12, 4, f);
+        this.torso.setPivot(0.0f, 0.0f + g, 0.0f);
+        this.rightArm = new ModelPart(this, 40, 16);
+        this.rightArm.addCuboid(-3.0f, -2.0f, -2.0f, 4, 12, 4, f);
+        this.rightArm.setPivot(-5.0f, 2.0f + g, 0.0f);
+        this.leftArm = new ModelPart(this, 40, 16);
         this.leftArm.mirror = true;
-        this.leftArm.addBox(-1.0f, -2.0f, -2.0f, 4, 12, 4, f);
-        this.leftArm.setRotationPoint(5.0f, 2.0f + g, 0.0f);
-        this.rightLeg = new Cuboid(this, 0, 16);
-        this.rightLeg.addBox(-2.0f, 0.0f, -2.0f, 4, 12, 4, f);
-        this.rightLeg.setRotationPoint(-1.9f, 12.0f + g, 0.0f);
-        this.leftLeg = new Cuboid(this, 0, 16);
+        this.leftArm.addCuboid(-1.0f, -2.0f, -2.0f, 4, 12, 4, f);
+        this.leftArm.setPivot(5.0f, 2.0f + g, 0.0f);
+        this.rightLeg = new ModelPart(this, 0, 16);
+        this.rightLeg.addCuboid(-2.0f, 0.0f, -2.0f, 4, 12, 4, f);
+        this.rightLeg.setPivot(-1.9f, 12.0f + g, 0.0f);
+        this.leftLeg = new ModelPart(this, 0, 16);
         this.leftLeg.mirror = true;
-        this.leftLeg.addBox(-2.0f, 0.0f, -2.0f, 4, 12, 4, f);
-        this.leftLeg.setRotationPoint(1.9f, 12.0f + g, 0.0f);
+        this.leftLeg.addCuboid(-2.0f, 0.0f, -2.0f, 4, 12, 4, f);
+        this.leftLeg.setPivot(1.9f, 12.0f + g, 0.0f);
     }
 
-    public void method_17088(T livingEntity, float f, float g, float h, float i, float j, float k) {
-        this.method_17087(livingEntity, f, g, h, i, j, k);
+    @Override
+    public void render(T livingEntity, float f, float g, float h, float i, float j, float k) {
+        this.setAngles(livingEntity, f, g, h, i, j, k);
         GlStateManager.pushMatrix();
-        if (this.isChild) {
+        if (this.child) {
             float l = 2.0f;
             GlStateManager.scalef(0.75f, 0.75f, 0.75f);
             GlStateManager.translatef(0.0f, 16.0f * k, 0.0f);
@@ -83,34 +84,36 @@ ModelWithHead {
             GlStateManager.pushMatrix();
             GlStateManager.scalef(0.5f, 0.5f, 0.5f);
             GlStateManager.translatef(0.0f, 24.0f * k, 0.0f);
-            this.body.render(k);
+            this.torso.render(k);
             this.rightArm.render(k);
             this.leftArm.render(k);
             this.rightLeg.render(k);
             this.leftLeg.render(k);
-            this.headwear.render(k);
+            this.helmet.render(k);
         } else {
             if (((Entity)livingEntity).isInSneakingPose()) {
                 GlStateManager.translatef(0.0f, 0.2f, 0.0f);
             }
             this.head.render(k);
-            this.body.render(k);
+            this.torso.render(k);
             this.rightArm.render(k);
             this.leftArm.render(k);
             this.rightLeg.render(k);
             this.leftLeg.render(k);
-            this.headwear.render(k);
+            this.helmet.render(k);
         }
         GlStateManager.popMatrix();
     }
 
-    public void method_17086(T livingEntity, float f, float g, float h) {
+    @Override
+    public void animateModel(T livingEntity, float f, float g, float h) {
         this.field_3396 = ((LivingEntity)livingEntity).method_6024(h);
         this.field_3393 = ((LivingEntity)livingEntity).getItemUseTime();
         super.animateModel(livingEntity, f, g, h);
     }
 
-    public void method_17087(T livingEntity, float f, float g, float h, float i, float j, float k) {
+    @Override
+    public void setAngles(T livingEntity, float f, float g, float h, float i, float j, float k) {
         float o;
         float n;
         float m;
@@ -118,11 +121,11 @@ ModelWithHead {
         boolean bl2 = ((LivingEntity)livingEntity).isInSwimmingPose();
         this.head.yaw = i * ((float)Math.PI / 180);
         this.head.pitch = bl ? -0.7853982f : (this.field_3396 > 0.0f ? (bl2 ? this.method_2804(this.head.pitch, -0.7853982f, this.field_3396) : this.method_2804(this.head.pitch, j * ((float)Math.PI / 180), this.field_3396)) : j * ((float)Math.PI / 180));
-        this.body.yaw = 0.0f;
-        this.rightArm.rotationPointZ = 0.0f;
-        this.rightArm.rotationPointX = -5.0f;
-        this.leftArm.rotationPointZ = 0.0f;
-        this.leftArm.rotationPointX = 5.0f;
+        this.torso.yaw = 0.0f;
+        this.rightArm.pivotZ = 0.0f;
+        this.rightArm.pivotX = -5.0f;
+        this.leftArm.pivotZ = 0.0f;
+        this.leftArm.pivotX = 5.0f;
         float l = 1.0f;
         if (bl) {
             l = (float)((Entity)livingEntity).getVelocity().lengthSquared();
@@ -142,7 +145,7 @@ ModelWithHead {
         this.leftLeg.yaw = 0.0f;
         this.rightLeg.roll = 0.0f;
         this.leftLeg.roll = 0.0f;
-        if (this.isRiding) {
+        if (this.riding) {
             this.rightArm.pitch += -0.62831855f;
             this.leftArm.pitch += -0.62831855f;
             this.rightLeg.pitch = -1.4137167f;
@@ -195,45 +198,45 @@ ModelWithHead {
         }
         if (this.handSwingProgress > 0.0f) {
             Arm arm = this.getPreferredArm(livingEntity);
-            Cuboid cuboid = this.getArm(arm);
+            ModelPart modelPart = this.getArm(arm);
             m = this.handSwingProgress;
-            this.body.yaw = MathHelper.sin(MathHelper.sqrt(m) * ((float)Math.PI * 2)) * 0.2f;
+            this.torso.yaw = MathHelper.sin(MathHelper.sqrt(m) * ((float)Math.PI * 2)) * 0.2f;
             if (arm == Arm.LEFT) {
-                this.body.yaw *= -1.0f;
+                this.torso.yaw *= -1.0f;
             }
-            this.rightArm.rotationPointZ = MathHelper.sin(this.body.yaw) * 5.0f;
-            this.rightArm.rotationPointX = -MathHelper.cos(this.body.yaw) * 5.0f;
-            this.leftArm.rotationPointZ = -MathHelper.sin(this.body.yaw) * 5.0f;
-            this.leftArm.rotationPointX = MathHelper.cos(this.body.yaw) * 5.0f;
-            this.rightArm.yaw += this.body.yaw;
-            this.leftArm.yaw += this.body.yaw;
-            this.leftArm.pitch += this.body.yaw;
+            this.rightArm.pivotZ = MathHelper.sin(this.torso.yaw) * 5.0f;
+            this.rightArm.pivotX = -MathHelper.cos(this.torso.yaw) * 5.0f;
+            this.leftArm.pivotZ = -MathHelper.sin(this.torso.yaw) * 5.0f;
+            this.leftArm.pivotX = MathHelper.cos(this.torso.yaw) * 5.0f;
+            this.rightArm.yaw += this.torso.yaw;
+            this.leftArm.yaw += this.torso.yaw;
+            this.leftArm.pitch += this.torso.yaw;
             m = 1.0f - this.handSwingProgress;
             m *= m;
             m *= m;
             m = 1.0f - m;
             n = MathHelper.sin(m * (float)Math.PI);
             o = MathHelper.sin(this.handSwingProgress * (float)Math.PI) * -(this.head.pitch - 0.7f) * 0.75f;
-            cuboid.pitch = (float)((double)cuboid.pitch - ((double)n * 1.2 + (double)o));
-            cuboid.yaw += this.body.yaw * 2.0f;
-            cuboid.roll += MathHelper.sin(this.handSwingProgress * (float)Math.PI) * -0.4f;
+            modelPart.pitch = (float)((double)modelPart.pitch - ((double)n * 1.2 + (double)o));
+            modelPart.yaw += this.torso.yaw * 2.0f;
+            modelPart.roll += MathHelper.sin(this.handSwingProgress * (float)Math.PI) * -0.4f;
         }
         if (this.isSneaking) {
-            this.body.pitch = 0.5f;
+            this.torso.pitch = 0.5f;
             this.rightArm.pitch += 0.4f;
             this.leftArm.pitch += 0.4f;
-            this.rightLeg.rotationPointZ = 4.0f;
-            this.leftLeg.rotationPointZ = 4.0f;
-            this.rightLeg.rotationPointY = 9.0f;
-            this.leftLeg.rotationPointY = 9.0f;
-            this.head.rotationPointY = 1.0f;
+            this.rightLeg.pivotZ = 4.0f;
+            this.leftLeg.pivotZ = 4.0f;
+            this.rightLeg.pivotY = 9.0f;
+            this.leftLeg.pivotY = 9.0f;
+            this.head.pivotY = 1.0f;
         } else {
-            this.body.pitch = 0.0f;
-            this.rightLeg.rotationPointZ = 0.1f;
-            this.leftLeg.rotationPointZ = 0.1f;
-            this.rightLeg.rotationPointY = 12.0f;
-            this.leftLeg.rotationPointY = 12.0f;
-            this.head.rotationPointY = 0.0f;
+            this.torso.pitch = 0.0f;
+            this.rightLeg.pivotZ = 0.1f;
+            this.leftLeg.pivotZ = 0.1f;
+            this.rightLeg.pivotY = 12.0f;
+            this.leftLeg.pivotY = 12.0f;
+            this.head.pivotY = 0.0f;
         }
         this.rightArm.roll += MathHelper.cos(h * 0.09f) * 0.05f + 0.05f;
         this.leftArm.roll -= MathHelper.cos(h * 0.09f) * 0.05f + 0.05f;
@@ -309,7 +312,7 @@ ModelWithHead {
             this.leftLeg.pitch = MathHelper.lerp(this.field_3396, this.leftLeg.pitch, 0.3f * MathHelper.cos(f * 0.33333334f + (float)Math.PI));
             this.rightLeg.pitch = MathHelper.lerp(this.field_3396, this.rightLeg.pitch, 0.3f * MathHelper.cos(f * 0.33333334f));
         }
-        this.headwear.copyRotation(this.head);
+        this.helmet.copyPositionAndRotation(this.head);
     }
 
     protected float method_2804(float f, float g, float h) {
@@ -336,8 +339,8 @@ ModelWithHead {
 
     public void setVisible(boolean bl) {
         this.head.visible = bl;
-        this.headwear.visible = bl;
-        this.body.visible = bl;
+        this.helmet.visible = bl;
+        this.torso.visible = bl;
         this.rightArm.visible = bl;
         this.leftArm.visible = bl;
         this.rightLeg.visible = bl;
@@ -349,7 +352,7 @@ ModelWithHead {
         this.getArm(arm).applyTransform(f);
     }
 
-    protected Cuboid getArm(Arm arm) {
+    protected ModelPart getArm(Arm arm) {
         if (arm == Arm.LEFT) {
             return this.leftArm;
         }
@@ -357,7 +360,7 @@ ModelWithHead {
     }
 
     @Override
-    public Cuboid getHead() {
+    public ModelPart getHead() {
         return this.head;
     }
 

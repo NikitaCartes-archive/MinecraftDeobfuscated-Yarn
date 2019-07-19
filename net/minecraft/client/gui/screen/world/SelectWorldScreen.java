@@ -50,11 +50,11 @@ extends Screen {
         this.levelList = new WorldListWidget(this, this.minecraft, this.width, this.height, 48, this.height - 64, 36, () -> this.searchBox.getText(), this.levelList);
         this.children.add(this.searchBox);
         this.children.add(this.levelList);
-        this.selectButton = this.addButton(new ButtonWidget(this.width / 2 - 154, this.height - 52, 150, 20, I18n.translate("selectWorld.select", new Object[0]), buttonWidget -> this.levelList.method_20159().ifPresent(WorldListWidget.LevelItem::play)));
+        this.selectButton = this.addButton(new ButtonWidget(this.width / 2 - 154, this.height - 52, 150, 20, I18n.translate("selectWorld.select", new Object[0]), buttonWidget -> this.levelList.method_20159().ifPresent(WorldListWidget.Entry::play)));
         this.addButton(new ButtonWidget(this.width / 2 + 4, this.height - 52, 150, 20, I18n.translate("selectWorld.create", new Object[0]), buttonWidget -> this.minecraft.openScreen(new CreateWorldScreen(this))));
-        this.editButton = this.addButton(new ButtonWidget(this.width / 2 - 154, this.height - 28, 72, 20, I18n.translate("selectWorld.edit", new Object[0]), buttonWidget -> this.levelList.method_20159().ifPresent(WorldListWidget.LevelItem::edit)));
-        this.deleteButton = this.addButton(new ButtonWidget(this.width / 2 - 76, this.height - 28, 72, 20, I18n.translate("selectWorld.delete", new Object[0]), buttonWidget -> this.levelList.method_20159().ifPresent(WorldListWidget.LevelItem::delete)));
-        this.recreateButton = this.addButton(new ButtonWidget(this.width / 2 + 4, this.height - 28, 72, 20, I18n.translate("selectWorld.recreate", new Object[0]), buttonWidget -> this.levelList.method_20159().ifPresent(WorldListWidget.LevelItem::recreate)));
+        this.editButton = this.addButton(new ButtonWidget(this.width / 2 - 154, this.height - 28, 72, 20, I18n.translate("selectWorld.edit", new Object[0]), buttonWidget -> this.levelList.method_20159().ifPresent(WorldListWidget.Entry::edit)));
+        this.deleteButton = this.addButton(new ButtonWidget(this.width / 2 - 76, this.height - 28, 72, 20, I18n.translate("selectWorld.delete", new Object[0]), buttonWidget -> this.levelList.method_20159().ifPresent(WorldListWidget.Entry::delete)));
+        this.recreateButton = this.addButton(new ButtonWidget(this.width / 2 + 4, this.height - 28, 72, 20, I18n.translate("selectWorld.recreate", new Object[0]), buttonWidget -> this.levelList.method_20159().ifPresent(WorldListWidget.Entry::recreate)));
         this.addButton(new ButtonWidget(this.width / 2 + 82, this.height - 28, 72, 20, I18n.translate("gui.cancel", new Object[0]), buttonWidget -> this.minecraft.openScreen(this.parent)));
         this.worldSelected(false);
         this.setInitialFocus(this.searchBox);
@@ -99,7 +99,7 @@ extends Screen {
     @Override
     public void removed() {
         if (this.levelList != null) {
-            this.levelList.children().forEach(WorldListWidget.LevelItem::close);
+            this.levelList.children().forEach(WorldListWidget.Entry::close);
         }
     }
 }

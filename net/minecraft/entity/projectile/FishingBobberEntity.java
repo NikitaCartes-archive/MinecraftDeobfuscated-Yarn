@@ -10,7 +10,6 @@ import net.fabricmc.api.Environment;
 import net.minecraft.advancement.criterion.Criterions;
 import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
-import net.minecraft.client.network.packet.EntitySpawnS2CPacket;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.ExperienceOrbEntity;
@@ -24,8 +23,14 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.fluid.FluidState;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
+import net.minecraft.loot.LootTable;
+import net.minecraft.loot.LootTables;
+import net.minecraft.loot.context.LootContext;
+import net.minecraft.loot.context.LootContextParameters;
+import net.minecraft.loot.context.LootContextTypes;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.Packet;
+import net.minecraft.network.packet.s2c.play.EntitySpawnS2CPacket;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
@@ -40,11 +45,6 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.RayTraceContext;
 import net.minecraft.world.World;
-import net.minecraft.world.loot.LootSupplier;
-import net.minecraft.world.loot.LootTables;
-import net.minecraft.world.loot.context.LootContext;
-import net.minecraft.world.loot.context.LootContextParameters;
-import net.minecraft.world.loot.context.LootContextTypes;
 import org.jetbrains.annotations.Nullable;
 
 public class FishingBobberEntity
@@ -60,22 +60,22 @@ extends Entity {
     private float field_7169;
     public Entity hookedEntity;
     private State state = State.FLYING;
-    private final int lureLevel;
     private final int luckOfTheSeaLevel;
+    private final int lureLevel;
 
     private FishingBobberEntity(World world, PlayerEntity playerEntity, int i, int j) {
         super(EntityType.FISHING_BOBBER, world);
         this.ignoreCameraFrustum = true;
         this.owner = playerEntity;
         this.owner.fishHook = this;
-        this.lureLevel = Math.max(0, i);
-        this.luckOfTheSeaLevel = Math.max(0, j);
+        this.luckOfTheSeaLevel = Math.max(0, i);
+        this.lureLevel = Math.max(0, j);
     }
 
     @Environment(value=EnvType.CLIENT)
     public FishingBobberEntity(World world, PlayerEntity playerEntity, double d, double e, double f) {
         this(world, playerEntity, 0, 0);
-        this.setPosition(d, e, f);
+        this.updatePosition(d, e, f);
         this.prevX = this.x;
         this.prevY = this.y;
         this.prevZ = this.z;
@@ -92,7 +92,7 @@ extends Entity {
         double d = this.owner.x - (double)k * 0.3;
         double e = this.owner.y + (double)this.owner.getStandingEyeHeight();
         double n = this.owner.z - (double)h * 0.3;
-        this.setPositionAndAngles(d, e, n, g, f);
+        this.refreshPositionAndAngles(d, e, n, g, f);
         Vec3d vec3d = new Vec3d(-k, MathHelper.clamp(-(m / l), -5.0f, 5.0f), -h);
         double o = vec3d.length();
         vec3d = vec3d.multiply(0.6 / o + 0.5 + this.random.nextGaussian() * 0.0045, 0.6 / o + 0.5 + this.random.nextGaussian() * 0.0045, 0.6 / o + 0.5 + this.random.nextGaussian() * 0.0045);
@@ -119,7 +119,7 @@ extends Entity {
 
     @Override
     @Environment(value=EnvType.CLIENT)
-    public boolean shouldRenderAtDistance(double d) {
+    public boolean shouldRender(double d) {
         double e = 64.0;
         return d < 4096.0;
     }
@@ -180,9 +180,9 @@ extends Entity {
                         this.state = State.FLYING;
                     } else {
                         this.x = this.hookedEntity.x;
-                        this.y = this.hookedEntity.getBoundingBox().minY + (double)this.hookedEntity.getHeight() * 0.8;
+                        this.y = this.hookedEntity.getBoundingBox().y1 + (double)this.hookedEntity.getHeight() * 0.8;
                         this.z = this.hookedEntity.z;
-                        this.setPosition(this.x, this.y, this.z);
+                        this.updatePosition(this.x, this.y, this.z);
                     }
                 }
                 return;
@@ -206,7 +206,7 @@ extends Entity {
         this.method_6952();
         double e = 0.92;
         this.setVelocity(this.getVelocity().multiply(0.92));
-        this.setPosition(this.x, this.y, this.z);
+        this.updatePosition(this.x, this.y, this.z);
     }
 
     private boolean method_6959() {
@@ -286,7 +286,7 @@ extends Entity {
                 float g = MathHelper.sin(f);
                 float h = MathHelper.cos(f);
                 double d = this.x + (double)(g * (float)this.field_7172 * 0.1f);
-                double e = (float)MathHelper.floor(this.getBoundingBox().minY) + 1.0f;
+                double e = (float)MathHelper.floor(this.getBoundingBox().y1) + 1.0f;
                 Block block = serverWorld.getBlockState(new BlockPos(d, e - 1.0, j = this.z + (double)(h * (float)this.field_7172 * 0.1f))).getBlock();
                 if (block == Blocks.WATER) {
                     if (this.random.nextFloat() < 0.15f) {
@@ -301,7 +301,7 @@ extends Entity {
                 Vec3d vec3d = this.getVelocity();
                 this.setVelocity(vec3d.x, -0.4f * MathHelper.nextFloat(this.random, 0.6f, 1.0f), vec3d.z);
                 this.playSound(SoundEvents.ENTITY_FISHING_BOBBER_SPLASH, 0.25f, 1.0f + (this.random.nextFloat() - this.random.nextFloat()) * 0.4f);
-                double m = this.getBoundingBox().minY + 0.5;
+                double m = this.getBoundingBox().y1 + 0.5;
                 serverWorld.spawnParticles(ParticleTypes.BUBBLE, this.x, m, this.z, (int)(1.0f + this.getWidth() * 20.0f), this.getWidth(), 0.0, this.getWidth(), 0.2f);
                 serverWorld.spawnParticles(ParticleTypes.FISHING, this.x, m, this.z, (int)(1.0f + this.getWidth() * 20.0f), this.getWidth(), 0.0, this.getWidth(), 0.2f);
                 this.field_7173 = MathHelper.nextInt(this.random, 20, 40);
@@ -322,7 +322,7 @@ extends Entity {
                 float g = MathHelper.nextFloat(this.random, 0.0f, 360.0f) * ((float)Math.PI / 180);
                 float h = MathHelper.nextFloat(this.random, 25.0f, 60.0f);
                 double d = this.x + (double)(MathHelper.sin(g) * h * 0.1f);
-                Block block = serverWorld.getBlockState(new BlockPos(d, (e = (double)((float)MathHelper.floor(this.getBoundingBox().minY) + 1.0f)) - 1.0, j = this.z + (double)(MathHelper.cos(g) * h * 0.1f))).getBlock();
+                Block block = serverWorld.getBlockState(new BlockPos(d, (e = (double)((float)MathHelper.floor(this.getBoundingBox().y1) + 1.0f)) - 1.0, j = this.z + (double)(MathHelper.cos(g) * h * 0.1f))).getBlock();
                 if (block == Blocks.WATER) {
                     serverWorld.spawnParticles(ParticleTypes.SPLASH, d, e, j, 2 + this.random.nextInt(2), 0.1f, 0.0, 0.1f, 0.0);
                 }
@@ -333,7 +333,7 @@ extends Entity {
             }
         } else {
             this.field_7174 = MathHelper.nextInt(this.random, 100, 600);
-            this.field_7174 -= this.luckOfTheSeaLevel * 20 * 5;
+            this.field_7174 -= this.lureLevel * 20 * 5;
         }
     }
 
@@ -352,14 +352,14 @@ extends Entity {
         int i = 0;
         if (this.hookedEntity != null) {
             this.method_6954();
-            Criterions.FISHING_ROD_HOOKED.handle((ServerPlayerEntity)this.owner, itemStack, this, Collections.emptyList());
+            Criterions.FISHING_ROD_HOOKED.trigger((ServerPlayerEntity)this.owner, itemStack, this, Collections.emptyList());
             this.world.sendEntityStatus(this, (byte)31);
             i = this.hookedEntity instanceof ItemEntity ? 3 : 5;
         } else if (this.field_7173 > 0) {
-            LootContext.Builder builder = new LootContext.Builder((ServerWorld)this.world).put(LootContextParameters.POSITION, new BlockPos(this)).put(LootContextParameters.TOOL, itemStack).setRandom(this.random).setLuck((float)this.lureLevel + this.owner.getLuck());
-            LootSupplier lootSupplier = this.world.getServer().getLootManager().getSupplier(LootTables.FISHING_GAMEPLAY);
-            List<ItemStack> list = lootSupplier.getDrops(builder.build(LootContextTypes.FISHING));
-            Criterions.FISHING_ROD_HOOKED.handle((ServerPlayerEntity)this.owner, itemStack, this, list);
+            LootContext.Builder builder = new LootContext.Builder((ServerWorld)this.world).put(LootContextParameters.POSITION, new BlockPos(this)).put(LootContextParameters.TOOL, itemStack).setRandom(this.random).setLuck((float)this.luckOfTheSeaLevel + this.owner.getLuck());
+            LootTable lootTable = this.world.getServer().getLootManager().getSupplier(LootTables.FISHING_GAMEPLAY);
+            List<ItemStack> list = lootTable.getDrops(builder.build(LootContextTypes.FISHING));
+            Criterions.FISHING_ROD_HOOKED.trigger((ServerPlayerEntity)this.owner, itemStack, this, list);
             for (ItemStack itemStack2 : list) {
                 ItemEntity itemEntity = new ItemEntity(this.world, this.x, this.y, this.z, itemStack2);
                 double d = this.owner.x - this.x;

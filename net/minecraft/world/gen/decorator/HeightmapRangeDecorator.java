@@ -22,7 +22,8 @@ extends Decorator<HeightmapRangeDecoratorConfig> {
         super(function);
     }
 
-    public Stream<BlockPos> method_15945(IWorld iWorld, ChunkGenerator<? extends ChunkGeneratorConfig> chunkGenerator, Random random, HeightmapRangeDecoratorConfig heightmapRangeDecoratorConfig, BlockPos blockPos) {
+    @Override
+    public Stream<BlockPos> getPositions(IWorld iWorld, ChunkGenerator<? extends ChunkGeneratorConfig> chunkGenerator, Random random, HeightmapRangeDecoratorConfig heightmapRangeDecoratorConfig, BlockPos blockPos) {
         int i2 = random.nextInt(heightmapRangeDecoratorConfig.max - heightmapRangeDecoratorConfig.min) + heightmapRangeDecoratorConfig.min;
         return IntStream.range(0, i2).mapToObj(i -> {
             int j = random.nextInt(16);

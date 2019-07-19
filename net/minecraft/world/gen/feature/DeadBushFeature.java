@@ -25,7 +25,8 @@ extends Feature<DefaultFeatureConfig> {
         super(function);
     }
 
-    public boolean method_12869(IWorld iWorld, ChunkGenerator<? extends ChunkGeneratorConfig> chunkGenerator, Random random, BlockPos blockPos, DefaultFeatureConfig defaultFeatureConfig) {
+    @Override
+    public boolean generate(IWorld iWorld, ChunkGenerator<? extends ChunkGeneratorConfig> chunkGenerator, Random random, BlockPos blockPos, DefaultFeatureConfig defaultFeatureConfig) {
         BlockState blockState = iWorld.getBlockState(blockPos);
         while ((blockState.isAir() || blockState.matches(BlockTags.LEAVES)) && blockPos.getY() > 0) {
             blockPos = blockPos.down();

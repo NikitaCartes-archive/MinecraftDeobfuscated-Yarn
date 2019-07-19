@@ -30,7 +30,7 @@ import net.minecraft.block.entity.SkullBlockEntity;
 import net.minecraft.block.entity.StructureBlockBlockEntity;
 import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.render.Camera;
-import net.minecraft.client.render.GuiLighting;
+import net.minecraft.client.render.DiffuseLighting;
 import net.minecraft.client.render.block.entity.BannerBlockEntityRenderer;
 import net.minecraft.client.render.block.entity.BeaconBlockEntityRenderer;
 import net.minecraft.client.render.block.entity.BedBlockEntityRenderer;
@@ -63,14 +63,14 @@ import org.jetbrains.annotations.Nullable;
 public class BlockEntityRenderDispatcher {
     private final Map<Class<? extends BlockEntity>, BlockEntityRenderer<? extends BlockEntity>> renderers = Maps.newHashMap();
     public static final BlockEntityRenderDispatcher INSTANCE = new BlockEntityRenderDispatcher();
-    private TextRenderer fontRenderer;
+    private TextRenderer textRenderer;
     public static double renderOffsetX;
     public static double renderOffsetY;
     public static double renderOffsetZ;
     public TextureManager textureManager;
     public World world;
-    public Camera cameraEntity;
-    public HitResult hitResult;
+    public Camera camera;
+    public HitResult crosshairTarget;
 
     private BlockEntityRenderDispatcher() {
         this.renderers.put(SignBlockEntity.class, new SignBlockEntityRenderer());
@@ -118,14 +118,14 @@ public class BlockEntityRenderDispatcher {
             this.setWorld(world);
         }
         this.textureManager = textureManager;
-        this.cameraEntity = camera;
-        this.fontRenderer = textRenderer;
-        this.hitResult = hitResult;
+        this.camera = camera;
+        this.textRenderer = textRenderer;
+        this.crosshairTarget = hitResult;
     }
 
     public void render(BlockEntity blockEntity, float f, int i) {
-        if (blockEntity.getSquaredDistance(this.cameraEntity.getPos().x, this.cameraEntity.getPos().y, this.cameraEntity.getPos().z) < blockEntity.getSquaredRenderDistance()) {
-            GuiLighting.enable();
+        if (blockEntity.getSquaredDistance(this.camera.getPos().x, this.camera.getPos().y, this.camera.getPos().z) < blockEntity.getSquaredRenderDistance()) {
+            DiffuseLighting.enable();
             int j = this.world.getLightmapIndex(blockEntity.getPos(), 0);
             int k = j % 65536;
             int l = j / 65536;
@@ -163,12 +163,12 @@ public class BlockEntityRenderDispatcher {
     public void setWorld(@Nullable World world) {
         this.world = world;
         if (world == null) {
-            this.cameraEntity = null;
+            this.camera = null;
         }
     }
 
-    public TextRenderer getFontRenderer() {
-        return this.fontRenderer;
+    public TextRenderer getTextRenderer() {
+        return this.textRenderer;
     }
 }
 

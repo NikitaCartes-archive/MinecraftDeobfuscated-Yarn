@@ -5,13 +5,13 @@ package net.minecraft.block;
 
 import java.util.Random;
 import net.minecraft.block.Block;
-import net.minecraft.block.BlockRenderLayer;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.Material;
 import net.minecraft.block.TransparentBlock;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.piston.PistonBehavior;
+import net.minecraft.client.render.RenderLayer;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.enchantment.Enchantments;
 import net.minecraft.entity.EntityType;
@@ -30,8 +30,8 @@ extends TransparentBlock {
     }
 
     @Override
-    public BlockRenderLayer getRenderLayer() {
-        return BlockRenderLayer.TRANSLUCENT;
+    public RenderLayer getRenderLayer() {
+        return RenderLayer.TRANSLUCENT;
     }
 
     @Override
@@ -39,7 +39,7 @@ extends TransparentBlock {
         super.afterBreak(world, playerEntity, blockPos, blockState, blockEntity, itemStack);
         if (EnchantmentHelper.getLevel(Enchantments.SILK_TOUCH, itemStack) == 0) {
             if (world.dimension.doesWaterVaporize()) {
-                world.clearBlockState(blockPos, false);
+                world.removeBlock(blockPos, false);
                 return;
             }
             Material material = world.getBlockState(blockPos.down()).getMaterial();
@@ -51,14 +51,14 @@ extends TransparentBlock {
 
     @Override
     public void onScheduledTick(BlockState blockState, World world, BlockPos blockPos, Random random) {
-        if (world.getLightLevel(LightType.BLOCK, blockPos) > 11 - blockState.getLightSubtracted(world, blockPos)) {
+        if (world.getLightLevel(LightType.BLOCK, blockPos) > 11 - blockState.getOpacity(world, blockPos)) {
             this.melt(blockState, world, blockPos);
         }
     }
 
     protected void melt(BlockState blockState, World world, BlockPos blockPos) {
         if (world.dimension.doesWaterVaporize()) {
-            world.clearBlockState(blockPos, false);
+            world.removeBlock(blockPos, false);
             return;
         }
         world.setBlockState(blockPos, Blocks.WATER.getDefaultState());

@@ -168,11 +168,11 @@ implements Drawable {
         GlStateManager.disableLighting();
         GlStateManager.disableFog();
         Tessellator tessellator = Tessellator.getInstance();
-        BufferBuilder bufferBuilder = tessellator.getBufferBuilder();
+        BufferBuilder bufferBuilder = tessellator.getBuffer();
         this.minecraft.getTextureManager().bindTexture(DrawableHelper.BACKGROUND_LOCATION);
         GlStateManager.color4f(1.0f, 1.0f, 1.0f, 1.0f);
         float g = 32.0f;
-        bufferBuilder.begin(7, VertexFormats.POSITION_UV_COLOR);
+        bufferBuilder.begin(7, VertexFormats.POSITION_TEXTURE_COLOR);
         bufferBuilder.vertex(this.field_2180, this.field_2165, 0.0).texture((float)this.field_2180 / 32.0f, (float)(this.field_2165 + (int)this.field_2175) / 32.0f).color(32, 32, 32, 255).next();
         bufferBuilder.vertex(this.field_2181, this.field_2165, 0.0).texture((float)this.field_2181 / 32.0f, (float)(this.field_2165 + (int)this.field_2175) / 32.0f).color(32, 32, 32, 255).next();
         bufferBuilder.vertex(this.field_2181, this.field_2166, 0.0).texture((float)this.field_2181 / 32.0f, (float)(this.field_2166 + (int)this.field_2175) / 32.0f).color(32, 32, 32, 255).next();
@@ -193,13 +193,13 @@ implements Drawable {
         GlStateManager.shadeModel(7425);
         GlStateManager.disableTexture();
         int o = 4;
-        bufferBuilder.begin(7, VertexFormats.POSITION_UV_COLOR);
+        bufferBuilder.begin(7, VertexFormats.POSITION_TEXTURE_COLOR);
         bufferBuilder.vertex(this.field_2180, this.field_2166 + 4, 0.0).texture(0.0, 1.0).color(0, 0, 0, 0).next();
         bufferBuilder.vertex(this.field_2181, this.field_2166 + 4, 0.0).texture(1.0, 1.0).color(0, 0, 0, 0).next();
         bufferBuilder.vertex(this.field_2181, this.field_2166, 0.0).texture(1.0, 0.0).color(0, 0, 0, 255).next();
         bufferBuilder.vertex(this.field_2180, this.field_2166, 0.0).texture(0.0, 0.0).color(0, 0, 0, 255).next();
         tessellator.draw();
-        bufferBuilder.begin(7, VertexFormats.POSITION_UV_COLOR);
+        bufferBuilder.begin(7, VertexFormats.POSITION_TEXTURE_COLOR);
         bufferBuilder.vertex(this.field_2180, this.field_2165, 0.0).texture(0.0, 1.0).color(0, 0, 0, 255).next();
         bufferBuilder.vertex(this.field_2181, this.field_2165, 0.0).texture(1.0, 1.0).color(0, 0, 0, 255).next();
         bufferBuilder.vertex(this.field_2181, this.field_2165 - 4, 0.0).texture(1.0, 0.0).color(0, 0, 0, 0).next();
@@ -212,19 +212,19 @@ implements Drawable {
             if (r < this.field_2166) {
                 r = this.field_2166;
             }
-            bufferBuilder.begin(7, VertexFormats.POSITION_UV_COLOR);
+            bufferBuilder.begin(7, VertexFormats.POSITION_TEXTURE_COLOR);
             bufferBuilder.vertex(k, this.field_2165, 0.0).texture(0.0, 1.0).color(0, 0, 0, 255).next();
             bufferBuilder.vertex(l, this.field_2165, 0.0).texture(1.0, 1.0).color(0, 0, 0, 255).next();
             bufferBuilder.vertex(l, this.field_2166, 0.0).texture(1.0, 0.0).color(0, 0, 0, 255).next();
             bufferBuilder.vertex(k, this.field_2166, 0.0).texture(0.0, 0.0).color(0, 0, 0, 255).next();
             tessellator.draw();
-            bufferBuilder.begin(7, VertexFormats.POSITION_UV_COLOR);
+            bufferBuilder.begin(7, VertexFormats.POSITION_TEXTURE_COLOR);
             bufferBuilder.vertex(k, r + q, 0.0).texture(0.0, 1.0).color(128, 128, 128, 255).next();
             bufferBuilder.vertex(l, r + q, 0.0).texture(1.0, 1.0).color(128, 128, 128, 255).next();
             bufferBuilder.vertex(l, r, 0.0).texture(1.0, 0.0).color(128, 128, 128, 255).next();
             bufferBuilder.vertex(k, r, 0.0).texture(0.0, 0.0).color(128, 128, 128, 255).next();
             tessellator.draw();
-            bufferBuilder.begin(7, VertexFormats.POSITION_UV_COLOR);
+            bufferBuilder.begin(7, VertexFormats.POSITION_TEXTURE_COLOR);
             bufferBuilder.vertex(k, r + q - 1, 0.0).texture(0.0, 1.0).color(192, 192, 192, 255).next();
             bufferBuilder.vertex(l - 1, r + q - 1, 0.0).texture(1.0, 1.0).color(192, 192, 192, 255).next();
             bufferBuilder.vertex(l - 1, r, 0.0).texture(1.0, 0.0).color(192, 192, 192, 255).next();
@@ -350,7 +350,7 @@ implements Drawable {
     protected void renderList(int i, int j, int k, int l, float f) {
         int m = this.getItemCount();
         Tessellator tessellator = Tessellator.getInstance();
-        BufferBuilder bufferBuilder = tessellator.getBufferBuilder();
+        BufferBuilder bufferBuilder = tessellator.getBuffer();
         for (int n = 0; n < m; ++n) {
             int o = j + n * this.itemHeight + this.headerHeight;
             int p = this.itemHeight - 4;
@@ -392,11 +392,11 @@ implements Drawable {
 
     protected void renderHoleBackground(int i, int j, int k, int l) {
         Tessellator tessellator = Tessellator.getInstance();
-        BufferBuilder bufferBuilder = tessellator.getBufferBuilder();
+        BufferBuilder bufferBuilder = tessellator.getBuffer();
         this.minecraft.getTextureManager().bindTexture(DrawableHelper.BACKGROUND_LOCATION);
         GlStateManager.color4f(1.0f, 1.0f, 1.0f, 1.0f);
         float f = 32.0f;
-        bufferBuilder.begin(7, VertexFormats.POSITION_UV_COLOR);
+        bufferBuilder.begin(7, VertexFormats.POSITION_TEXTURE_COLOR);
         bufferBuilder.vertex(this.field_2180, j, 0.0).texture(0.0, (float)j / 32.0f).color(64, 64, 64, l).next();
         bufferBuilder.vertex(this.field_2180 + this.width, j, 0.0).texture((float)this.width / 32.0f, (float)j / 32.0f).color(64, 64, 64, l).next();
         bufferBuilder.vertex(this.field_2180 + this.width, i, 0.0).texture((float)this.width / 32.0f, (float)i / 32.0f).color(64, 64, 64, k).next();

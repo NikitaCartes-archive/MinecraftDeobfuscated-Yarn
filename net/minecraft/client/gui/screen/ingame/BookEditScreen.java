@@ -13,8 +13,8 @@ import net.minecraft.SharedConstants;
 import net.minecraft.client.gui.DrawableHelper;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.screen.ingame.BookScreen;
-import net.minecraft.client.gui.screen.ingame.PageTurnWidget;
 import net.minecraft.client.gui.widget.ButtonWidget;
+import net.minecraft.client.gui.widget.PageTurnWidget;
 import net.minecraft.client.render.BufferBuilder;
 import net.minecraft.client.render.Tessellator;
 import net.minecraft.client.render.VertexFormats;
@@ -25,10 +25,10 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.StringTag;
-import net.minecraft.server.network.packet.BookUpdateC2SPacket;
+import net.minecraft.network.packet.c2s.play.BookUpdateC2SPacket;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Hand;
-import net.minecraft.util.SystemUtil;
+import net.minecraft.util.Util;
 import net.minecraft.util.math.MathHelper;
 
 @Environment(value=EnvType.CLIENT)
@@ -46,12 +46,12 @@ extends Screen {
     private int highlightTo;
     private long lastClickTime;
     private int lastClickIndex = -1;
-    private PageTurnWidget buttonPreviousPage;
-    private PageTurnWidget buttonNextPage;
-    private ButtonWidget buttonDone;
-    private ButtonWidget buttonSign;
-    private ButtonWidget buttonFinalize;
-    private ButtonWidget buttonCancel;
+    private PageTurnWidget nextPageButton;
+    private PageTurnWidget previousPageButton;
+    private ButtonWidget doneButton;
+    private ButtonWidget signButton;
+    private ButtonWidget finalizeButton;
+    private ButtonWidget cancelButton;
     private final Hand hand;
 
     public BookEditScreen(PlayerEntity playerEntity, ItemStack itemStack, Hand hand) {
@@ -61,7 +61,7 @@ extends Screen {
         this.hand = hand;
         CompoundTag compoundTag = itemStack.getTag();
         if (compoundTag != null) {
-            ListTag listTag = compoundTag.getList("pages", 8).method_10612();
+            ListTag listTag = compoundTag.getList("pages", 8).copy();
             for (int i = 0; i < listTag.size(); ++i) {
                 this.pages.add(listTag.getString(i));
             }
@@ -84,21 +84,21 @@ extends Screen {
     @Override
     protected void init() {
         this.minecraft.keyboard.enableRepeatEvents(true);
-        this.buttonSign = this.addButton(new ButtonWidget(this.width / 2 - 100, 196, 98, 20, I18n.translate("book.signButton", new Object[0]), buttonWidget -> {
+        this.signButton = this.addButton(new ButtonWidget(this.width / 2 - 100, 196, 98, 20, I18n.translate("book.signButton", new Object[0]), buttonWidget -> {
             this.signing = true;
             this.updateButtons();
         }));
-        this.buttonDone = this.addButton(new ButtonWidget(this.width / 2 + 2, 196, 98, 20, I18n.translate("gui.done", new Object[0]), buttonWidget -> {
+        this.doneButton = this.addButton(new ButtonWidget(this.width / 2 + 2, 196, 98, 20, I18n.translate("gui.done", new Object[0]), buttonWidget -> {
             this.minecraft.openScreen(null);
             this.finalizeBook(false);
         }));
-        this.buttonFinalize = this.addButton(new ButtonWidget(this.width / 2 - 100, 196, 98, 20, I18n.translate("book.finalizeButton", new Object[0]), buttonWidget -> {
+        this.finalizeButton = this.addButton(new ButtonWidget(this.width / 2 - 100, 196, 98, 20, I18n.translate("book.finalizeButton", new Object[0]), buttonWidget -> {
             if (this.signing) {
                 this.finalizeBook(true);
                 this.minecraft.openScreen(null);
             }
         }));
-        this.buttonCancel = this.addButton(new ButtonWidget(this.width / 2 + 2, 196, 98, 20, I18n.translate("gui.cancel", new Object[0]), buttonWidget -> {
+        this.cancelButton = this.addButton(new ButtonWidget(this.width / 2 + 2, 196, 98, 20, I18n.translate("gui.cancel", new Object[0]), buttonWidget -> {
             if (this.signing) {
                 this.signing = false;
             }
@@ -106,8 +106,8 @@ extends Screen {
         }));
         int i = (this.width - 192) / 2;
         int j = 2;
-        this.buttonPreviousPage = this.addButton(new PageTurnWidget(i + 116, 159, true, buttonWidget -> this.openNextPage(), true));
-        this.buttonNextPage = this.addButton(new PageTurnWidget(i + 43, 159, false, buttonWidget -> this.openPreviousPage(), true));
+        this.nextPageButton = this.addButton(new PageTurnWidget(i + 116, 159, true, buttonWidget -> this.openNextPage(), true));
+        this.previousPageButton = this.addButton(new PageTurnWidget(i + 43, 159, false, buttonWidget -> this.openPreviousPage(), true));
         this.updateButtons();
     }
 
@@ -148,13 +148,13 @@ extends Screen {
     }
 
     private void updateButtons() {
-        this.buttonNextPage.visible = !this.signing && this.currentPage > 0;
-        this.buttonPreviousPage.visible = !this.signing;
-        this.buttonDone.visible = !this.signing;
-        this.buttonSign.visible = !this.signing;
-        this.buttonCancel.visible = this.signing;
-        this.buttonFinalize.visible = this.signing;
-        this.buttonFinalize.active = !this.title.trim().isEmpty();
+        this.previousPageButton.visible = !this.signing && this.currentPage > 0;
+        this.nextPageButton.visible = !this.signing;
+        this.doneButton.visible = !this.signing;
+        this.signButton.visible = !this.signing;
+        this.cancelButton.visible = this.signing;
+        this.finalizeButton.visible = this.signing;
+        this.finalizeButton.active = !this.title.trim().isEmpty();
     }
 
     private void removeEmptyPages() {
@@ -273,11 +273,11 @@ extends Screen {
                 return true;
             }
             case 266: {
-                this.buttonNextPage.onPress();
+                this.previousPageButton.onPress();
                 return true;
             }
             case 267: {
-                this.buttonPreviousPage.onPress();
+                this.nextPageButton.onPress();
                 return true;
             }
             case 268: {
@@ -472,13 +472,13 @@ extends Screen {
             int o = this.getStringWidth(string3);
             this.font.draw((Object)((Object)Formatting.DARK_GRAY) + string3, k + 36 + (114 - o) / 2, 60.0f, 0);
             String string4 = I18n.translate("book.finalizeWarning", new Object[0]);
-            this.font.drawStringBounded(string4, k + 36, 82, 114, 0);
+            this.font.drawTrimmed(string4, k + 36, 82, 114, 0);
         } else {
             String string = I18n.translate("book.pageIndicator", this.currentPage + 1, this.countPages());
             String string2 = this.getCurrentPageContent();
             int m = this.getStringWidth(string);
             this.font.draw(string, k - m + 192 - 44, 18.0f, 0);
-            this.font.drawStringBounded(string2, k + 36, 32, 114, 0);
+            this.font.drawTrimmed(string2, k + 36, 32, 114, 0);
             this.drawHighlight(string2);
             if (this.tickCounter / 6 % 2 == 0) {
                 Position position = this.getCursorPositionForIndex(string2, this.cursorIndex);
@@ -557,7 +557,7 @@ extends Screen {
         this.translateRelativePositionToGlPosition(position3);
         this.translateRelativePositionToGlPosition(position4);
         Tessellator tessellator = Tessellator.getInstance();
-        BufferBuilder bufferBuilder = tessellator.getBufferBuilder();
+        BufferBuilder bufferBuilder = tessellator.getBuffer();
         GlStateManager.color4f(0.0f, 0.0f, 255.0f, 255.0f);
         GlStateManager.disableTexture();
         GlStateManager.enableColorLogicOp();
@@ -682,7 +682,7 @@ extends Screen {
     @Override
     public boolean mouseClicked(double d, double e, int i) {
         if (i == 0) {
-            long l = SystemUtil.getMeasuringTimeMs();
+            long l = Util.getMeasuringTimeMs();
             String string = this.getCurrentPageContent();
             if (!string.isEmpty()) {
                 Position position = new Position((int)d, (int)e);

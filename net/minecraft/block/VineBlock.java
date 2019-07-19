@@ -6,35 +6,35 @@ package net.minecraft.block;
 import java.util.Map;
 import java.util.Random;
 import net.minecraft.block.Block;
-import net.minecraft.block.BlockRenderLayer;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
-import net.minecraft.block.ConnectedPlantBlock;
+import net.minecraft.block.ConnectingBlock;
+import net.minecraft.client.render.RenderLayer;
 import net.minecraft.entity.EntityContext;
 import net.minecraft.item.ItemPlacementContext;
-import net.minecraft.state.StateFactory;
+import net.minecraft.state.StateManager;
 import net.minecraft.state.property.BooleanProperty;
 import net.minecraft.util.BlockMirror;
 import net.minecraft.util.BlockRotation;
-import net.minecraft.util.SystemUtil;
+import net.minecraft.util.Util;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.util.shape.VoxelShapes;
 import net.minecraft.world.BlockView;
+import net.minecraft.world.CollisionView;
 import net.minecraft.world.IWorld;
-import net.minecraft.world.ViewableWorld;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
 
 public class VineBlock
 extends Block {
-    public static final BooleanProperty UP = ConnectedPlantBlock.UP;
-    public static final BooleanProperty NORTH = ConnectedPlantBlock.NORTH;
-    public static final BooleanProperty EAST = ConnectedPlantBlock.EAST;
-    public static final BooleanProperty SOUTH = ConnectedPlantBlock.SOUTH;
-    public static final BooleanProperty WEST = ConnectedPlantBlock.WEST;
-    public static final Map<Direction, BooleanProperty> FACING_PROPERTIES = ConnectedPlantBlock.FACING_PROPERTIES.entrySet().stream().filter(entry -> entry.getKey() != Direction.DOWN).collect(SystemUtil.toMap());
+    public static final BooleanProperty UP = ConnectingBlock.UP;
+    public static final BooleanProperty NORTH = ConnectingBlock.NORTH;
+    public static final BooleanProperty EAST = ConnectingBlock.EAST;
+    public static final BooleanProperty SOUTH = ConnectingBlock.SOUTH;
+    public static final BooleanProperty WEST = ConnectingBlock.WEST;
+    public static final Map<Direction, BooleanProperty> FACING_PROPERTIES = ConnectingBlock.FACING_PROPERTIES.entrySet().stream().filter(entry -> entry.getKey() != Direction.DOWN).collect(Util.toMap());
     protected static final VoxelShape UP_SHAPE = Block.createCuboidShape(0.0, 15.0, 0.0, 16.0, 16.0, 16.0);
     protected static final VoxelShape WEST_SHAPE = Block.createCuboidShape(0.0, 0.0, 0.0, 1.0, 16.0, 16.0);
     protected static final VoxelShape EAST_SHAPE = Block.createCuboidShape(15.0, 0.0, 0.0, 16.0, 16.0, 16.0);
@@ -43,7 +43,7 @@ extends Block {
 
     public VineBlock(Block.Settings settings) {
         super(settings);
-        this.setDefaultState((BlockState)((BlockState)((BlockState)((BlockState)((BlockState)((BlockState)this.stateFactory.getDefaultState()).with(UP, false)).with(NORTH, false)).with(EAST, false)).with(SOUTH, false)).with(WEST, false));
+        this.setDefaultState((BlockState)((BlockState)((BlockState)((BlockState)((BlockState)((BlockState)this.stateManager.getDefaultState()).with(UP, false)).with(NORTH, false)).with(EAST, false)).with(SOUTH, false)).with(WEST, false));
     }
 
     @Override
@@ -68,8 +68,8 @@ extends Block {
     }
 
     @Override
-    public boolean canPlaceAt(BlockState blockState, ViewableWorld viewableWorld, BlockPos blockPos) {
-        return this.hasAdjacentBlocks(this.getPlacementShape(blockState, viewableWorld, blockPos));
+    public boolean canPlaceAt(BlockState blockState, CollisionView collisionView, BlockPos blockPos) {
+        return this.hasAdjacentBlocks(this.getPlacementShape(blockState, collisionView, blockPos));
     }
 
     private boolean hasAdjacentBlocks(BlockState blockState) {
@@ -154,7 +154,7 @@ extends Block {
                 world.setBlockState(blockPos, blockState2, 2);
             } else {
                 VineBlock.dropStacks(blockState, world, blockPos);
-                world.clearBlockState(blockPos, false);
+                world.removeBlock(blockPos, false);
             }
             return;
         }
@@ -271,12 +271,12 @@ extends Block {
     }
 
     @Override
-    public BlockRenderLayer getRenderLayer() {
-        return BlockRenderLayer.CUTOUT;
+    public RenderLayer getRenderLayer() {
+        return RenderLayer.CUTOUT;
     }
 
     @Override
-    protected void appendProperties(StateFactory.Builder<Block, BlockState> builder) {
+    protected void appendProperties(StateManager.Builder<Block, BlockState> builder) {
         builder.add(UP, NORTH, EAST, SOUTH, WEST);
     }
 

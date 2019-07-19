@@ -136,11 +136,11 @@ extends HostileEntity {
     }
 
     @Override
-    public boolean isPotionEffective(StatusEffectInstance statusEffectInstance) {
+    public boolean canHaveStatusEffect(StatusEffectInstance statusEffectInstance) {
         if (statusEffectInstance.getEffectType() == StatusEffects.POISON) {
             return false;
         }
-        return super.isPotionEffective(statusEffectInstance);
+        return super.canHaveStatusEffect(statusEffectInstance);
     }
 
     public boolean getCanClimb() {
@@ -160,7 +160,7 @@ extends HostileEntity {
         entityData = super.initialize(iWorld, localDifficulty, spawnType, entityData, compoundTag);
         if (iWorld.getRandom().nextInt(100) == 0) {
             SkeletonEntity skeletonEntity = EntityType.SKELETON.create(this.world);
-            skeletonEntity.setPositionAndAngles(this.x, this.y, this.z, this.yaw, 0.0f);
+            skeletonEntity.refreshPositionAndAngles(this.x, this.y, this.z, this.yaw, 0.0f);
             skeletonEntity.initialize(iWorld, localDifficulty, spawnType, null, null);
             iWorld.spawnEntity(skeletonEntity);
             skeletonEntity.startRiding(this);
@@ -172,7 +172,7 @@ extends HostileEntity {
             }
         }
         if (entityData instanceof SpawnEffectData && (statusEffect = ((SpawnEffectData)entityData).effect) != null) {
-            this.addPotionEffect(new StatusEffectInstance(statusEffect, Integer.MAX_VALUE));
+            this.addStatusEffect(new StatusEffectInstance(statusEffect, Integer.MAX_VALUE));
         }
         return entityData;
     }
@@ -212,7 +212,7 @@ extends HostileEntity {
         @Override
         public boolean shouldContinue() {
             float f = this.mob.getBrightnessAtEyes();
-            if (f >= 0.5f && this.mob.getRand().nextInt(100) == 0) {
+            if (f >= 0.5f && this.mob.getRandom().nextInt(100) == 0) {
                 this.mob.setTarget(null);
                 return false;
             }

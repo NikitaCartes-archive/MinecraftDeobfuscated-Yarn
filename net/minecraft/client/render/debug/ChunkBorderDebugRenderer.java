@@ -27,7 +27,7 @@ implements DebugRenderer.Renderer {
         int k;
         Camera camera = this.client.gameRenderer.getCamera();
         Tessellator tessellator = Tessellator.getInstance();
-        BufferBuilder bufferBuilder = tessellator.getBufferBuilder();
+        BufferBuilder bufferBuilder = tessellator.getBuffer();
         double d = camera.getPos().x;
         double e = camera.getPos().y;
         double f = camera.getPos().z;

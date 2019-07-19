@@ -28,11 +28,13 @@ extends MobEntityRenderer<GiantEntity, BipedEntityModel<GiantEntity>> {
         this.addFeature(new ArmorBipedFeatureRenderer<GiantEntity, BipedEntityModel<GiantEntity>, GiantEntityModel>(this, new GiantEntityModel(0.5f, true), new GiantEntityModel(1.0f, true)));
     }
 
-    protected void method_3980(GiantEntity giantEntity, float f) {
+    @Override
+    protected void scale(GiantEntity giantEntity, float f) {
         GlStateManager.scalef(this.scale, this.scale, this.scale);
     }
 
-    protected Identifier method_3981(GiantEntity giantEntity) {
+    @Override
+    protected Identifier getTexture(GiantEntity giantEntity) {
         return SKIN;
     }
 }

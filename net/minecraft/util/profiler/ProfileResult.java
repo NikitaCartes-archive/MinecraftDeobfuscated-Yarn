@@ -13,7 +13,7 @@ public interface ProfileResult {
     @Environment(value=EnvType.CLIENT)
     public List<ProfilerTiming> getTimings(String var1);
 
-    public boolean saveToFile(File var1);
+    public boolean save(File var1);
 
     public long getStartTime();
 

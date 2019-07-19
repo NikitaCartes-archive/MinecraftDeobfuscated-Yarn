@@ -28,7 +28,7 @@ implements NoiseSampler {
         double f = 0.0;
         double g = 1.0;
         for (int i = 0; i < this.octaveCount; ++i) {
-            f += this.octaveSamplers[i].sample(d * g + (bl ? this.octaveSamplers[i].field_15763 : 0.0), e * g + (bl ? this.octaveSamplers[i].field_15762 : 0.0)) / g;
+            f += this.octaveSamplers[i].sample(d * g + (bl ? this.octaveSamplers[i].originX : 0.0), e * g + (bl ? this.octaveSamplers[i].originY : 0.0)) / g;
             g /= 2.0;
         }
         return f;

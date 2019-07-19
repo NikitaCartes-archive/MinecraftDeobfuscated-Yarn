@@ -41,7 +41,8 @@ public class FireworksSparkParticle {
             this.spriteProvider = spriteProvider;
         }
 
-        public Particle method_3025(DefaultParticleType defaultParticleType, World world, double d, double e, double f, double g, double h, double i) {
+        @Override
+        public Particle createParticle(DefaultParticleType defaultParticleType, World world, double d, double e, double f, double g, double h, double i) {
             ExplosionParticle explosionParticle = new ExplosionParticle(world, d, e, f, g, h, i, MinecraftClient.getInstance().particleManager, this.spriteProvider);
             explosionParticle.setColorAlpha(0.99f);
             return explosionParticle;
@@ -57,7 +58,8 @@ public class FireworksSparkParticle {
             this.spriteProvider = spriteProvider;
         }
 
-        public Particle method_18121(DefaultParticleType defaultParticleType, World world, double d, double e, double f, double g, double h, double i) {
+        @Override
+        public Particle createParticle(DefaultParticleType defaultParticleType, World world, double d, double e, double f, double g, double h, double i) {
             FlashParticle flashParticle = new FlashParticle(world, d, e, f);
             flashParticle.setSprite(this.spriteProvider);
             return flashParticle;
@@ -168,7 +170,7 @@ public class FireworksSparkParticle {
                 } else {
                     this.maxAge = this.explosions.size() * 2 - 1;
                     for (int j = 0; j < this.explosions.size(); ++j) {
-                        CompoundTag compoundTag2 = this.explosions.getCompoundTag(j);
+                        CompoundTag compoundTag2 = this.explosions.getCompound(j);
                         if (!compoundTag2.getBoolean("Flicker")) continue;
                         this.flicker = true;
                         this.maxAge += 15;
@@ -188,7 +190,7 @@ public class FireworksSparkParticle {
                     bl2 = true;
                 } else {
                     for (int i = 0; i < this.explosions.size(); ++i) {
-                        CompoundTag compoundTag = this.explosions.getCompoundTag(i);
+                        CompoundTag compoundTag = this.explosions.getCompound(i);
                         if (FireworkItem.Type.byId(compoundTag.getByte("Type")) != FireworkItem.Type.LARGE_BALL) continue;
                         bl2 = true;
                         break;
@@ -199,7 +201,7 @@ public class FireworksSparkParticle {
             }
             if (this.age % 2 == 0 && this.explosions != null && this.age / 2 < this.explosions.size()) {
                 int j = this.age / 2;
-                CompoundTag compoundTag2 = this.explosions.getCompoundTag(j);
+                CompoundTag compoundTag2 = this.explosions.getCompound(j);
                 FireworkItem.Type type = FireworkItem.Type.byId(compoundTag2.getByte("Type"));
                 boolean bl3 = compoundTag2.getBoolean("Trail");
                 boolean bl4 = compoundTag2.getBoolean("Flicker");

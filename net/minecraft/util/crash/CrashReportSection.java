@@ -101,7 +101,7 @@ public class CrashReportSection {
         this.add(string, (Object)throwable);
     }
 
-    public int trimStackTrace(int i) {
+    public int initStackTrace(int i) {
         StackTraceElement[] stackTraceElements = Thread.currentThread().getStackTrace();
         if (stackTraceElements.length <= 0) {
             return 0;

@@ -3,9 +3,9 @@
  */
 package net.minecraft.world.biome.layer;
 
-import net.minecraft.world.biome.layer.LayerSampleContext;
-import net.minecraft.world.biome.layer.LayerSampler;
-import net.minecraft.world.biome.layer.ParentedLayer;
+import net.minecraft.world.biome.layer.type.ParentedLayer;
+import net.minecraft.world.biome.layer.util.LayerSampleContext;
+import net.minecraft.world.biome.layer.util.LayerSampler;
 
 public enum ScaleLayer implements ParentedLayer
 {
@@ -13,7 +13,7 @@ public enum ScaleLayer implements ParentedLayer
     FUZZY{
 
         @Override
-        protected int method_15853(LayerSampleContext<?> layerSampleContext, int i, int j, int k, int l) {
+        protected int sample(LayerSampleContext<?> layerSampleContext, int i, int j, int k, int l) {
             return layerSampleContext.choose(i, j, k, l);
         }
     };
@@ -49,10 +49,10 @@ public enum ScaleLayer implements ParentedLayer
             return q;
         }
         int r = layerSampler.sample(this.transformX(i + 1), this.transformZ(j + 1));
-        return this.method_15853(layerSampleContext, k, p, n, r);
+        return this.sample(layerSampleContext, k, p, n, r);
     }
 
-    protected int method_15853(LayerSampleContext<?> layerSampleContext, int i, int j, int k, int l) {
+    protected int sample(LayerSampleContext<?> layerSampleContext, int i, int j, int k, int l) {
         if (j == k && k == l) {
             return j;
         }

@@ -15,7 +15,7 @@ import net.minecraft.block.enums.PistonType;
 import net.minecraft.entity.EntityContext;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
-import net.minecraft.state.StateFactory;
+import net.minecraft.state.StateManager;
 import net.minecraft.state.property.BooleanProperty;
 import net.minecraft.state.property.EnumProperty;
 import net.minecraft.state.property.Properties;
@@ -26,8 +26,8 @@ import net.minecraft.util.math.Direction;
 import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.util.shape.VoxelShapes;
 import net.minecraft.world.BlockView;
+import net.minecraft.world.CollisionView;
 import net.minecraft.world.IWorld;
-import net.minecraft.world.ViewableWorld;
 import net.minecraft.world.World;
 
 public class PistonHeadBlock
@@ -55,7 +55,7 @@ extends FacingBlock {
 
     public PistonHeadBlock(Block.Settings settings) {
         super(settings);
-        this.setDefaultState((BlockState)((BlockState)((BlockState)((BlockState)this.stateFactory.getDefaultState()).with(FACING, Direction.NORTH)).with(TYPE, PistonType.DEFAULT)).with(SHORT, false));
+        this.setDefaultState((BlockState)((BlockState)((BlockState)((BlockState)this.stateManager.getDefaultState()).with(FACING, Direction.NORTH)).with(TYPE, PistonType.DEFAULT)).with(SHORT, false));
     }
 
     private VoxelShape getHeadShape(BlockState blockState) {
@@ -118,7 +118,7 @@ extends FacingBlock {
         BlockPos blockPos2;
         Block block;
         if (!world.isClient && playerEntity.abilities.creativeMode && ((block = world.getBlockState(blockPos2 = blockPos.offset(blockState.get(FACING).getOpposite())).getBlock()) == Blocks.PISTON || block == Blocks.STICKY_PISTON)) {
-            world.clearBlockState(blockPos2, false);
+            world.removeBlock(blockPos2, false);
         }
         super.onBreak(world, blockPos, blockState, playerEntity);
     }
@@ -134,7 +134,7 @@ extends FacingBlock {
         BlockState blockState3 = world.getBlockState(blockPos);
         if ((blockState3.getBlock() == Blocks.PISTON || blockState3.getBlock() == Blocks.STICKY_PISTON) && blockState3.get(PistonBlock.EXTENDED).booleanValue()) {
             PistonHeadBlock.dropStacks(blockState3, world, blockPos);
-            world.clearBlockState(blockPos, false);
+            world.removeBlock(blockPos, false);
         }
     }
 
@@ -147,8 +147,8 @@ extends FacingBlock {
     }
 
     @Override
-    public boolean canPlaceAt(BlockState blockState, ViewableWorld viewableWorld, BlockPos blockPos) {
-        Block block = viewableWorld.getBlockState(blockPos.offset(blockState.get(FACING).getOpposite())).getBlock();
+    public boolean canPlaceAt(BlockState blockState, CollisionView collisionView, BlockPos blockPos) {
+        Block block = collisionView.getBlockState(blockPos.offset(blockState.get(FACING).getOpposite())).getBlock();
         return block == Blocks.PISTON || block == Blocks.STICKY_PISTON || block == Blocks.MOVING_PISTON;
     }
 
@@ -177,7 +177,7 @@ extends FacingBlock {
     }
 
     @Override
-    protected void appendProperties(StateFactory.Builder<Block, BlockState> builder) {
+    protected void appendProperties(StateManager.Builder<Block, BlockState> builder) {
         builder.add(FACING, TYPE, SHORT);
     }
 

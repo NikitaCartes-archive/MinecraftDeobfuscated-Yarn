@@ -13,12 +13,12 @@ import net.minecraft.client.render.entity.feature.MooshroomMushroomFeatureRender
 import net.minecraft.client.render.entity.model.CowEntityModel;
 import net.minecraft.entity.passive.MooshroomEntity;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.SystemUtil;
+import net.minecraft.util.Util;
 
 @Environment(value=EnvType.CLIENT)
 public class MooshroomEntityRenderer
 extends MobEntityRenderer<MooshroomEntity, CowEntityModel<MooshroomEntity>> {
-    private static final Map<MooshroomEntity.Type, Identifier> SKIN = SystemUtil.consume(Maps.newHashMap(), hashMap -> {
+    private static final Map<MooshroomEntity.Type, Identifier> SKIN = Util.make(Maps.newHashMap(), hashMap -> {
         hashMap.put(MooshroomEntity.Type.BROWN, new Identifier("textures/entity/cow/brown_mooshroom.png"));
         hashMap.put(MooshroomEntity.Type.RED, new Identifier("textures/entity/cow/red_mooshroom.png"));
     });
@@ -28,7 +28,8 @@ extends MobEntityRenderer<MooshroomEntity, CowEntityModel<MooshroomEntity>> {
         this.addFeature(new MooshroomMushroomFeatureRenderer<MooshroomEntity>(this));
     }
 
-    protected Identifier method_4066(MooshroomEntity mooshroomEntity) {
+    @Override
+    protected Identifier getTexture(MooshroomEntity mooshroomEntity) {
         return SKIN.get((Object)mooshroomEntity.getMooshroomType());
     }
 }

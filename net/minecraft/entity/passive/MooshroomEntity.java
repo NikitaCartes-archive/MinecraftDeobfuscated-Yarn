@@ -32,8 +32,8 @@ import net.minecraft.sound.SoundEvents;
 import net.minecraft.tag.ItemTags;
 import net.minecraft.util.Hand;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.CollisionView;
 import net.minecraft.world.IWorld;
-import net.minecraft.world.ViewableWorld;
 import net.minecraft.world.World;
 import org.apache.commons.lang3.tuple.Pair;
 
@@ -49,11 +49,11 @@ extends CowEntity {
     }
 
     @Override
-    public float getPathfindingFavor(BlockPos blockPos, ViewableWorld viewableWorld) {
-        if (viewableWorld.getBlockState(blockPos.down()).getBlock() == Blocks.MYCELIUM) {
+    public float getPathfindingFavor(BlockPos blockPos, CollisionView collisionView) {
+        if (collisionView.getBlockState(blockPos.down()).getBlock() == Blocks.MYCELIUM) {
             return 10.0f;
         }
-        return viewableWorld.getBrightness(blockPos) - 0.5f;
+        return collisionView.getBrightness(blockPos) - 0.5f;
     }
 
     public static boolean method_20665(EntityType<MooshroomEntity> entityType, IWorld iWorld, SpawnType spawnType, BlockPos blockPos, Random random) {
@@ -106,7 +106,7 @@ extends CowEntity {
             if (!this.world.isClient) {
                 this.remove();
                 CowEntity cowEntity = EntityType.COW.create(this.world);
-                cowEntity.setPositionAndAngles(this.x, this.y, this.z, this.yaw, this.pitch);
+                cowEntity.refreshPositionAndAngles(this.x, this.y, this.z, this.yaw, this.pitch);
                 cowEntity.setHealth(this.getHealth());
                 cowEntity.field_6283 = this.field_6283;
                 if (this.hasCustomName()) {
@@ -156,10 +156,10 @@ extends CowEntity {
     public void readCustomDataFromTag(CompoundTag compoundTag) {
         super.readCustomDataFromTag(compoundTag);
         this.setType(Type.fromName(compoundTag.getString("Type")));
-        if (compoundTag.containsKey("EffectId", 1)) {
+        if (compoundTag.contains("EffectId", 1)) {
             this.stewEffect = StatusEffect.byRawId(compoundTag.getByte("EffectId"));
         }
-        if (compoundTag.containsKey("EffectDuration", 3)) {
+        if (compoundTag.contains("EffectDuration", 3)) {
             this.stewEffectDuration = compoundTag.getInt("EffectDuration");
         }
     }
@@ -177,7 +177,8 @@ extends CowEntity {
         return Type.fromName(this.dataTracker.get(MooshroomEntity.TYPE));
     }
 
-    public MooshroomEntity method_6495(PassiveEntity passiveEntity) {
+    @Override
+    public MooshroomEntity createChild(PassiveEntity passiveEntity) {
         MooshroomEntity mooshroomEntity = EntityType.MOOSHROOM.create(this.world);
         mooshroomEntity.setType(this.chooseBabyType((MooshroomEntity)passiveEntity));
         return mooshroomEntity;
@@ -191,13 +192,13 @@ extends CowEntity {
     }
 
     @Override
-    public /* synthetic */ CowEntity method_6483(PassiveEntity passiveEntity) {
-        return this.method_6495(passiveEntity);
+    public /* synthetic */ CowEntity createChild(PassiveEntity passiveEntity) {
+        return this.createChild(passiveEntity);
     }
 
     @Override
     public /* synthetic */ PassiveEntity createChild(PassiveEntity passiveEntity) {
-        return this.method_6495(passiveEntity);
+        return this.createChild(passiveEntity);
     }
 
     public static enum Type {

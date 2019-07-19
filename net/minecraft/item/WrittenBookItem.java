@@ -43,14 +43,14 @@ extends Item {
         if (!WritableBookItem.isValid(compoundTag)) {
             return false;
         }
-        if (!compoundTag.containsKey("title", 8)) {
+        if (!compoundTag.contains("title", 8)) {
             return false;
         }
         String string = compoundTag.getString("title");
         if (string.length() > 32) {
             return false;
         }
-        return compoundTag.containsKey("author", 8);
+        return compoundTag.contains("author", 8);
     }
 
     public static int getGeneration(ItemStack itemStack) {
@@ -123,7 +123,7 @@ extends Item {
             } catch (Exception exception) {
                 text = new LiteralText(string);
             }
-            listTag.method_10606(i, new StringTag(Text.Serializer.toJson(text)));
+            listTag.set(i, new StringTag(Text.Serializer.toJson(text)));
         }
         compoundTag.put("pages", listTag);
         return true;

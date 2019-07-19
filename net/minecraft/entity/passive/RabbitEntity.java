@@ -50,14 +50,14 @@ import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.SystemUtil;
+import net.minecraft.util.Util;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
+import net.minecraft.world.CollisionView;
 import net.minecraft.world.GameRules;
 import net.minecraft.world.IWorld;
 import net.minecraft.world.LocalDifficulty;
-import net.minecraft.world.ViewableWorld;
 import net.minecraft.world.World;
 import net.minecraft.world.biome.Biome;
 import org.jetbrains.annotations.Nullable;
@@ -301,7 +301,8 @@ extends AnimalEntity {
         return item == Items.CARROT || item == Items.GOLDEN_CARROT || item == Blocks.DANDELION.asItem();
     }
 
-    public RabbitEntity method_6620(PassiveEntity passiveEntity) {
+    @Override
+    public RabbitEntity createChild(PassiveEntity passiveEntity) {
         RabbitEntity rabbitEntity = EntityType.RABBIT.create(this.world);
         int i = this.chooseType(this.world);
         if (this.random.nextInt(20) != 0) {
@@ -328,7 +329,7 @@ extends AnimalEntity {
             this.targetSelector.add(2, new FollowTargetGoal<PlayerEntity>((MobEntity)this, PlayerEntity.class, true));
             this.targetSelector.add(2, new FollowTargetGoal<WolfEntity>((MobEntity)this, WolfEntity.class, true));
             if (!this.hasCustomName()) {
-                this.setCustomName(new TranslatableText(SystemUtil.createTranslationKey("entity", KILLER_BUNNY), new Object[0]));
+                this.setCustomName(new TranslatableText(Util.createTranslationKey("entity", KILLER_BUNNY), new Object[0]));
             }
         }
         this.dataTracker.set(RABBIT_TYPE, i);
@@ -388,7 +389,7 @@ extends AnimalEntity {
 
     @Override
     public /* synthetic */ PassiveEntity createChild(PassiveEntity passiveEntity) {
-        return this.method_6620(passiveEntity);
+        return this.createChild(passiveEntity);
     }
 
     static class RabbitAttackGoal
@@ -474,10 +475,10 @@ extends AnimalEntity {
         }
 
         @Override
-        protected boolean isTargetPos(ViewableWorld viewableWorld, BlockPos blockPos) {
+        protected boolean isTargetPos(CollisionView collisionView, BlockPos blockPos) {
             BlockState blockState;
-            Block block = viewableWorld.getBlockState(blockPos).getBlock();
-            if (block == Blocks.FARMLAND && this.wantsCarrots && !this.field_6861 && (block = (blockState = viewableWorld.getBlockState(blockPos = blockPos.up())).getBlock()) instanceof CarrotsBlock && ((CarrotsBlock)block).isMature(blockState)) {
+            Block block = collisionView.getBlockState(blockPos).getBlock();
+            if (block == Blocks.FARMLAND && this.wantsCarrots && !this.field_6861 && (block = (blockState = collisionView.getBlockState(blockPos = blockPos.up())).getBlock()) instanceof CarrotsBlock && ((CarrotsBlock)block).isMature(blockState)) {
                 this.field_6861 = true;
                 return true;
             }
@@ -522,7 +523,7 @@ extends AnimalEntity {
 
         @Override
         public void moveTo(double d, double e, double f, double g) {
-            if (this.rabbit.isInsideWater()) {
+            if (this.rabbit.isTouchingWater()) {
                 g = 1.5;
             }
             super.moveTo(d, e, f, g);

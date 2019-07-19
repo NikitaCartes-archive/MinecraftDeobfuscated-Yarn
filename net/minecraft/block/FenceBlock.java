@@ -7,7 +7,7 @@ import net.minecraft.block.Block;
 import net.minecraft.block.BlockPlacementEnvironment;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.FenceGateBlock;
-import net.minecraft.block.HorizontalConnectedBlock;
+import net.minecraft.block.HorizontalConnectingBlock;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.fluid.FluidState;
 import net.minecraft.fluid.Fluids;
@@ -15,7 +15,7 @@ import net.minecraft.item.ItemPlacementContext;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.item.LeadItem;
-import net.minecraft.state.StateFactory;
+import net.minecraft.state.StateManager;
 import net.minecraft.state.property.Property;
 import net.minecraft.tag.BlockTags;
 import net.minecraft.util.Hand;
@@ -28,18 +28,18 @@ import net.minecraft.world.IWorld;
 import net.minecraft.world.World;
 
 public class FenceBlock
-extends HorizontalConnectedBlock {
-    private final VoxelShape[] SHAPES;
+extends HorizontalConnectingBlock {
+    private final VoxelShape[] cullingShapes;
 
     public FenceBlock(Block.Settings settings) {
         super(2.0f, 2.0f, 16.0f, 16.0f, 24.0f, settings);
-        this.setDefaultState((BlockState)((BlockState)((BlockState)((BlockState)((BlockState)((BlockState)this.stateFactory.getDefaultState()).with(NORTH, false)).with(EAST, false)).with(SOUTH, false)).with(WEST, false)).with(WATERLOGGED, false));
-        this.SHAPES = this.createShapes(2.0f, 1.0f, 16.0f, 6.0f, 15.0f);
+        this.setDefaultState((BlockState)((BlockState)((BlockState)((BlockState)((BlockState)((BlockState)this.stateManager.getDefaultState()).with(NORTH, false)).with(EAST, false)).with(SOUTH, false)).with(WEST, false)).with(WATERLOGGED, false));
+        this.cullingShapes = this.createShapes(2.0f, 1.0f, 16.0f, 6.0f, 15.0f);
     }
 
     @Override
-    public VoxelShape method_9571(BlockState blockState, BlockView blockView, BlockPos blockPos) {
-        return this.SHAPES[this.getShapeIndex(blockState)];
+    public VoxelShape getCullingShape(BlockState blockState, BlockView blockView, BlockPos blockPos) {
+        return this.cullingShapes[this.getShapeIndex(blockState)];
     }
 
     @Override
@@ -51,7 +51,7 @@ extends HorizontalConnectedBlock {
         Block block = blockState.getBlock();
         boolean bl2 = block.matches(BlockTags.FENCES) && blockState.getMaterial() == this.material;
         boolean bl3 = block instanceof FenceGateBlock && FenceGateBlock.canWallConnect(blockState, direction);
-        return !FenceBlock.canConnect(block) && bl || bl2 || bl3;
+        return !FenceBlock.cannotConnect(block) && bl || bl2 || bl3;
     }
 
     @Override
@@ -76,7 +76,7 @@ extends HorizontalConnectedBlock {
         BlockState blockState2 = blockView.getBlockState(blockPos3);
         BlockState blockState3 = blockView.getBlockState(blockPos4);
         BlockState blockState4 = blockView.getBlockState(blockPos5);
-        return (BlockState)((BlockState)((BlockState)((BlockState)((BlockState)super.getPlacementState(itemPlacementContext).with(NORTH, this.canConnect(blockState, blockState.method_20827(blockView, blockPos2, Direction.SOUTH), Direction.SOUTH))).with(EAST, this.canConnect(blockState2, blockState2.method_20827(blockView, blockPos3, Direction.WEST), Direction.WEST))).with(SOUTH, this.canConnect(blockState3, blockState3.method_20827(blockView, blockPos4, Direction.NORTH), Direction.NORTH))).with(WEST, this.canConnect(blockState4, blockState4.method_20827(blockView, blockPos5, Direction.EAST), Direction.EAST))).with(WATERLOGGED, fluidState.getFluid() == Fluids.WATER);
+        return (BlockState)((BlockState)((BlockState)((BlockState)((BlockState)super.getPlacementState(itemPlacementContext).with(NORTH, this.canConnect(blockState, blockState.isSideSolidFullSquare(blockView, blockPos2, Direction.SOUTH), Direction.SOUTH))).with(EAST, this.canConnect(blockState2, blockState2.isSideSolidFullSquare(blockView, blockPos3, Direction.WEST), Direction.WEST))).with(SOUTH, this.canConnect(blockState3, blockState3.isSideSolidFullSquare(blockView, blockPos4, Direction.NORTH), Direction.NORTH))).with(WEST, this.canConnect(blockState4, blockState4.isSideSolidFullSquare(blockView, blockPos5, Direction.EAST), Direction.EAST))).with(WATERLOGGED, fluidState.getFluid() == Fluids.WATER);
     }
 
     @Override
@@ -85,13 +85,13 @@ extends HorizontalConnectedBlock {
             iWorld.getFluidTickScheduler().schedule(blockPos, Fluids.WATER, Fluids.WATER.getTickRate(iWorld));
         }
         if (direction.getAxis().getType() == Direction.Type.HORIZONTAL) {
-            return (BlockState)blockState.with((Property)FACING_PROPERTIES.get(direction), this.canConnect(blockState2, blockState2.method_20827(iWorld, blockPos2, direction.getOpposite()), direction.getOpposite()));
+            return (BlockState)blockState.with((Property)FACING_PROPERTIES.get(direction), this.canConnect(blockState2, blockState2.isSideSolidFullSquare(iWorld, blockPos2, direction.getOpposite()), direction.getOpposite()));
         }
         return super.getStateForNeighborUpdate(blockState, direction, blockState2, iWorld, blockPos, blockPos2);
     }
 
     @Override
-    protected void appendProperties(StateFactory.Builder<Block, BlockState> builder) {
+    protected void appendProperties(StateManager.Builder<Block, BlockState> builder) {
         builder.add(NORTH, EAST, WEST, SOUTH, WATERLOGGED);
     }
 }

@@ -24,7 +24,8 @@ extends BlockEntityRenderer<ShulkerBoxBlockEntity> {
         this.model = shulkerEntityModel;
     }
 
-    public void method_3574(ShulkerBoxBlockEntity shulkerBoxBlockEntity, double d, double e, double f, float g, int i) {
+    @Override
+    public void render(ShulkerBoxBlockEntity shulkerBoxBlockEntity, double d, double e, double f, float g, int i) {
         BlockState blockState;
         Direction direction = Direction.UP;
         if (shulkerBoxBlockEntity.hasWorld() && (blockState = this.getWorld().getBlockState(shulkerBoxBlockEntity.getPos())).getBlock() instanceof ShulkerBoxBlock) {

@@ -169,7 +169,7 @@ implements Comparable<StatusEffectInstance> {
         return i;
     }
 
-    public CompoundTag serialize(CompoundTag compoundTag) {
+    public CompoundTag toTag(CompoundTag compoundTag) {
         compoundTag.putByte("Id", (byte)StatusEffect.getRawId(this.getEffectType()));
         compoundTag.putByte("Amplifier", (byte)this.getAmplifier());
         compoundTag.putInt("Duration", this.getDuration());
@@ -179,7 +179,7 @@ implements Comparable<StatusEffectInstance> {
         return compoundTag;
     }
 
-    public static StatusEffectInstance deserialize(CompoundTag compoundTag) {
+    public static StatusEffectInstance fromTag(CompoundTag compoundTag) {
         byte i = compoundTag.getByte("Id");
         StatusEffect statusEffect = StatusEffect.byRawId(i);
         if (statusEffect == null) {
@@ -189,11 +189,11 @@ implements Comparable<StatusEffectInstance> {
         int k = compoundTag.getInt("Duration");
         boolean bl = compoundTag.getBoolean("Ambient");
         boolean bl2 = true;
-        if (compoundTag.containsKey("ShowParticles", 1)) {
+        if (compoundTag.contains("ShowParticles", 1)) {
             bl2 = compoundTag.getBoolean("ShowParticles");
         }
         boolean bl3 = bl2;
-        if (compoundTag.containsKey("ShowIcon", 1)) {
+        if (compoundTag.contains("ShowIcon", 1)) {
             bl3 = compoundTag.getBoolean("ShowIcon");
         }
         return new StatusEffectInstance(statusEffect, k, j < 0 ? (byte)0 : j, bl, bl2, bl3);
@@ -209,7 +209,8 @@ implements Comparable<StatusEffectInstance> {
         return this.permanent;
     }
 
-    public int method_5587(StatusEffectInstance statusEffectInstance) {
+    @Override
+    public int compareTo(StatusEffectInstance statusEffectInstance) {
         int i = 32147;
         if (this.getDuration() > 32147 && statusEffectInstance.getDuration() > 32147 || this.isAmbient() && statusEffectInstance.isAmbient()) {
             return ComparisonChain.start().compare(this.isAmbient(), statusEffectInstance.isAmbient()).compare(this.getEffectType().getColor(), statusEffectInstance.getEffectType().getColor()).result();
@@ -219,7 +220,7 @@ implements Comparable<StatusEffectInstance> {
 
     @Override
     public /* synthetic */ int compareTo(Object object) {
-        return this.method_5587((StatusEffectInstance)object);
+        return this.compareTo((StatusEffectInstance)object);
     }
 }
 

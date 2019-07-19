@@ -35,9 +35,10 @@ extends MobEntityRenderer<GuardianEntity, GuardianEntityModel> {
         super(entityRenderDispatcher, new GuardianEntityModel(), f);
     }
 
-    public boolean method_3978(GuardianEntity guardianEntity, VisibleRegion visibleRegion, double d, double e, double f) {
+    @Override
+    public boolean isVisible(GuardianEntity guardianEntity, VisibleRegion visibleRegion, double d, double e, double f) {
         LivingEntity livingEntity;
-        if (super.method_4068(guardianEntity, visibleRegion, d, e, f)) {
+        if (super.isVisible(guardianEntity, visibleRegion, d, e, f)) {
             return true;
         }
         if (guardianEntity.hasBeamTarget() && (livingEntity = guardianEntity.getBeamTarget()) != null) {
@@ -51,19 +52,20 @@ extends MobEntityRenderer<GuardianEntity, GuardianEntityModel> {
     }
 
     private Vec3d fromLerpedPosition(LivingEntity livingEntity, double d, float f) {
-        double e = MathHelper.lerp((double)f, livingEntity.prevRenderX, livingEntity.x);
-        double g = MathHelper.lerp((double)f, livingEntity.prevRenderY, livingEntity.y) + d;
-        double h = MathHelper.lerp((double)f, livingEntity.prevRenderZ, livingEntity.z);
+        double e = MathHelper.lerp((double)f, livingEntity.lastRenderX, livingEntity.x);
+        double g = MathHelper.lerp((double)f, livingEntity.lastRenderY, livingEntity.y) + d;
+        double h = MathHelper.lerp((double)f, livingEntity.lastRenderZ, livingEntity.z);
         return new Vec3d(e, g, h);
     }
 
-    public void method_3977(GuardianEntity guardianEntity, double d, double e, double f, float g, float h) {
-        super.method_4072(guardianEntity, d, e, f, g, h);
+    @Override
+    public void render(GuardianEntity guardianEntity, double d, double e, double f, float g, float h) {
+        super.render(guardianEntity, d, e, f, g, h);
         LivingEntity livingEntity = guardianEntity.getBeamTarget();
         if (livingEntity != null) {
             float i = guardianEntity.getBeamProgress(h);
             Tessellator tessellator = Tessellator.getInstance();
-            BufferBuilder bufferBuilder = tessellator.getBufferBuilder();
+            BufferBuilder bufferBuilder = tessellator.getBuffer();
             this.bindTexture(EXPLOSION_BEAM_TEX);
             GlStateManager.texParameter(3553, 10242, 10497);
             GlStateManager.texParameter(3553, 10243, 10497);
@@ -90,7 +92,7 @@ extends MobEntityRenderer<GuardianEntity, GuardianEntityModel> {
             GlStateManager.rotatef(o * 57.295776f, 1.0f, 0.0f, 0.0f);
             boolean q = true;
             double r = (double)k * 0.05 * -1.5;
-            bufferBuilder.begin(7, VertexFormats.POSITION_UV_COLOR);
+            bufferBuilder.begin(7, VertexFormats.POSITION_TEXTURE_COLOR);
             float s = i * i;
             int t = 64 + (int)(s * 191.0f);
             int u = 32 + (int)(s * 191.0f);
@@ -139,7 +141,8 @@ extends MobEntityRenderer<GuardianEntity, GuardianEntityModel> {
         }
     }
 
-    protected Identifier method_3976(GuardianEntity guardianEntity) {
+    @Override
+    protected Identifier getTexture(GuardianEntity guardianEntity) {
         return SKIN;
     }
 }

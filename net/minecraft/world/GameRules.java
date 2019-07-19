@@ -15,8 +15,8 @@ import java.util.Map;
 import java.util.function.BiConsumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
-import net.minecraft.client.network.packet.EntityStatusS2CPacket;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.packet.s2c.play.EntityStatusS2CPacket;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
@@ -27,7 +27,7 @@ import org.jetbrains.annotations.Nullable;
 
 public class GameRules {
     private static final Logger LOGGER = LogManager.getLogger();
-    private static final Map<RuleKey<?>, RuleType<?>> RULES = Maps.newTreeMap(Comparator.comparing(ruleKey -> RuleKey.method_20772(ruleKey)));
+    private static final Map<RuleKey<?>, RuleType<?>> RULE_TYPES = Maps.newTreeMap(Comparator.comparing(ruleKey -> RuleKey.method_20772(ruleKey)));
     public static final RuleKey<BooleanRule> DO_FIRE_TICK = GameRules.register("doFireTick", BooleanRule.method_20755(true));
     public static final RuleKey<BooleanRule> MOB_GRIEFING = GameRules.register("mobGriefing", BooleanRule.method_20755(true));
     public static final RuleKey<BooleanRule> KEEP_INVENTORY = GameRules.register("keepInventory", BooleanRule.method_20755(false));
@@ -57,11 +57,11 @@ public class GameRules {
     public static final RuleKey<IntRule> MAX_COMMAND_CHAIN_LENGTH = GameRules.register("maxCommandChainLength", IntRule.method_20764(65536));
     public static final RuleKey<BooleanRule> ANNOUNCE_ADVANCEMENTS = GameRules.register("announceAdvancements", BooleanRule.method_20755(true));
     public static final RuleKey<BooleanRule> DISABLE_RAIDS = GameRules.register("disableRaids", BooleanRule.method_20755(false));
-    private final Map<RuleKey<?>, Rule<?>> rules = RULES.entrySet().stream().collect(ImmutableMap.toImmutableMap(Map.Entry::getKey, entry -> ((RuleType)entry.getValue()).newRule()));
+    private final Map<RuleKey<?>, Rule<?>> rules = RULE_TYPES.entrySet().stream().collect(ImmutableMap.toImmutableMap(Map.Entry::getKey, entry -> ((RuleType)entry.getValue()).newRule()));
 
     private static <T extends Rule<T>> RuleKey<T> register(String string, RuleType<T> ruleType) {
         RuleKey ruleKey = new RuleKey(string);
-        RuleType<T> ruleType2 = RULES.put(ruleKey, ruleType);
+        RuleType<T> ruleType2 = RULE_TYPES.put(ruleKey, ruleType);
         if (ruleType2 != null) {
             throw new IllegalStateException("Duplicate game rule registration for " + string);
         }
@@ -78,15 +78,15 @@ public class GameRules {
         return compoundTag;
     }
 
-    public void fromNbt(CompoundTag compoundTag) {
+    public void load(CompoundTag compoundTag) {
         this.rules.forEach((ruleKey, rule) -> rule.setFromString(compoundTag.getString(((RuleKey)ruleKey).name)));
     }
 
-    public static void forEach(RuleConsumer ruleConsumer) {
-        RULES.forEach((ruleKey, ruleType) -> GameRules.consumeTyped(ruleConsumer, ruleKey, ruleType));
+    public static void forEachType(RuleConsumer ruleConsumer) {
+        RULE_TYPES.forEach((ruleKey, ruleType) -> GameRules.accept(ruleConsumer, ruleKey, ruleType));
     }
 
-    private static <T extends Rule<T>> void consumeTyped(RuleConsumer ruleConsumer, RuleKey<?> ruleKey, RuleType<?> ruleType) {
+    private static <T extends Rule<T>> void accept(RuleConsumer ruleConsumer, RuleKey<?> ruleKey, RuleType<?> ruleType) {
         RuleKey<?> ruleKey2 = ruleKey;
         RuleType<?> ruleType2 = ruleType;
         ruleConsumer.accept(ruleKey2, ruleType2);
@@ -146,13 +146,14 @@ public class GameRules {
             return this.value ? 1 : 0;
         }
 
-        protected BooleanRule method_20761() {
+        @Override
+        protected BooleanRule getThis() {
             return this;
         }
 
         @Override
         protected /* synthetic */ Rule getThis() {
-            return this.method_20761();
+            return this.getThis();
         }
 
         static /* synthetic */ RuleType method_20755(boolean bl) {
@@ -216,13 +217,14 @@ public class GameRules {
             return this.value;
         }
 
-        protected IntRule method_20770() {
+        @Override
+        protected IntRule getThis() {
             return this;
         }
 
         @Override
         protected /* synthetic */ Rule getThis() {
-            return this.method_20770();
+            return this.getThis();
         }
 
         static /* synthetic */ RuleType method_20764(int i) {

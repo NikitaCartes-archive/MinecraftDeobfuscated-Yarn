@@ -25,7 +25,8 @@ extends HorseBaseEntityRenderer<T, DonkeyEntityModel<T>> {
         super(entityRenderDispatcher, new DonkeyEntityModel(0.0f), f);
     }
 
-    protected Identifier method_3894(T abstractDonkeyEntity) {
+    @Override
+    protected Identifier getTexture(T abstractDonkeyEntity) {
         return TEXTURES.get(abstractDonkeyEntity.getClass());
     }
 }

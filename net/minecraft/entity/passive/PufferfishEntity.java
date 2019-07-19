@@ -5,7 +5,6 @@ package net.minecraft.entity.passive;
 
 import java.util.List;
 import java.util.function.Predicate;
-import net.minecraft.client.network.packet.GameStateChangeS2CPacket;
 import net.minecraft.entity.EntityDimensions;
 import net.minecraft.entity.EntityGroup;
 import net.minecraft.entity.EntityPose;
@@ -24,6 +23,7 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.packet.s2c.play.GameStateChangeS2CPacket;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
@@ -134,7 +134,7 @@ extends FishEntity {
     private void sting(MobEntity mobEntity) {
         int i = this.getPuffState();
         if (mobEntity.damage(DamageSource.mob(this), 1 + i)) {
-            mobEntity.addPotionEffect(new StatusEffectInstance(StatusEffects.POISON, 60 * i, 0));
+            mobEntity.addStatusEffect(new StatusEffectInstance(StatusEffects.POISON, 60 * i, 0));
             this.playSound(SoundEvents.ENTITY_PUFFER_FISH_STING, 1.0f, 1.0f);
         }
     }
@@ -144,7 +144,7 @@ extends FishEntity {
         int i = this.getPuffState();
         if (playerEntity instanceof ServerPlayerEntity && i > 0 && playerEntity.damage(DamageSource.mob(this), 1 + i)) {
             ((ServerPlayerEntity)playerEntity).networkHandler.sendPacket(new GameStateChangeS2CPacket(9, 0.0f));
-            playerEntity.addPotionEffect(new StatusEffectInstance(StatusEffects.POISON, 60 * i, 0));
+            playerEntity.addStatusEffect(new StatusEffectInstance(StatusEffects.POISON, 60 * i, 0));
         }
     }
 

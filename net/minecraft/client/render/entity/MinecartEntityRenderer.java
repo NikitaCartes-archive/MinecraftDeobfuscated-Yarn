@@ -31,7 +31,8 @@ extends EntityRenderer<T> {
         this.field_4673 = 0.7f;
     }
 
-    public void method_4063(T abstractMinecartEntity, double d, double e, double f, float g, float h) {
+    @Override
+    public void render(T abstractMinecartEntity, double d, double e, double f, float g, float h) {
         BlockState blockState;
         GlStateManager.pushMatrix();
         this.bindEntityTexture(abstractMinecartEntity);
@@ -41,9 +42,9 @@ extends EntityRenderer<T> {
         float j = (((float)(l >> 20 & 7L) + 0.5f) / 8.0f - 0.5f) * 0.004f;
         float k = (((float)(l >> 24 & 7L) + 0.5f) / 8.0f - 0.5f) * 0.004f;
         GlStateManager.translatef(i, j, k);
-        double m = MathHelper.lerp((double)h, ((AbstractMinecartEntity)abstractMinecartEntity).prevRenderX, ((AbstractMinecartEntity)abstractMinecartEntity).x);
-        double n = MathHelper.lerp((double)h, ((AbstractMinecartEntity)abstractMinecartEntity).prevRenderY, ((AbstractMinecartEntity)abstractMinecartEntity).y);
-        double o = MathHelper.lerp((double)h, ((AbstractMinecartEntity)abstractMinecartEntity).prevRenderZ, ((AbstractMinecartEntity)abstractMinecartEntity).z);
+        double m = MathHelper.lerp((double)h, ((AbstractMinecartEntity)abstractMinecartEntity).lastRenderX, ((AbstractMinecartEntity)abstractMinecartEntity).x);
+        double n = MathHelper.lerp((double)h, ((AbstractMinecartEntity)abstractMinecartEntity).lastRenderY, ((AbstractMinecartEntity)abstractMinecartEntity).y);
+        double o = MathHelper.lerp((double)h, ((AbstractMinecartEntity)abstractMinecartEntity).lastRenderZ, ((AbstractMinecartEntity)abstractMinecartEntity).z);
         double p = 0.3f;
         Vec3d vec3d = ((AbstractMinecartEntity)abstractMinecartEntity).method_7508(m, n, o);
         float q = MathHelper.lerp(h, ((AbstractMinecartEntity)abstractMinecartEntity).prevPitch, ((AbstractMinecartEntity)abstractMinecartEntity).pitch);
@@ -103,7 +104,8 @@ extends EntityRenderer<T> {
         super.render(abstractMinecartEntity, d, e, f, g, h);
     }
 
-    protected Identifier method_4065(T abstractMinecartEntity) {
+    @Override
+    protected Identifier getTexture(T abstractMinecartEntity) {
         return SKIN;
     }
 

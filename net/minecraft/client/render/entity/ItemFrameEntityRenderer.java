@@ -7,7 +7,7 @@ import com.mojang.blaze3d.platform.GlStateManager;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.render.GuiLighting;
+import net.minecraft.client.render.DiffuseLighting;
 import net.minecraft.client.render.block.BlockRenderManager;
 import net.minecraft.client.render.entity.EntityRenderDispatcher;
 import net.minecraft.client.render.entity.EntityRenderer;
@@ -39,7 +39,8 @@ extends EntityRenderer<ItemFrameEntity> {
         this.itemRenderer = itemRenderer;
     }
 
-    public void method_3994(ItemFrameEntity itemFrameEntity, double d, double e, double f, float g, float h) {
+    @Override
+    public void render(ItemFrameEntity itemFrameEntity, double d, double e, double f, float g, float h) {
         GlStateManager.pushMatrix();
         BlockPos blockPos = itemFrameEntity.getDecorationBlockPos();
         double i = (double)blockPos.getX() - itemFrameEntity.x + d;
@@ -67,21 +68,22 @@ extends EntityRenderer<ItemFrameEntity> {
         GlStateManager.enableLighting();
         if (itemFrameEntity.getHeldItemStack().getItem() == Items.FILLED_MAP) {
             GlStateManager.pushLightingAttributes();
-            GuiLighting.enable();
+            DiffuseLighting.enable();
         }
         GlStateManager.translatef(0.0f, 0.0f, 0.4375f);
         this.renderItem(itemFrameEntity);
         if (itemFrameEntity.getHeldItemStack().getItem() == Items.FILLED_MAP) {
-            GuiLighting.disable();
+            DiffuseLighting.disable();
             GlStateManager.popAttributes();
         }
         GlStateManager.enableLighting();
         GlStateManager.popMatrix();
-        this.method_3995(itemFrameEntity, d + (double)((float)itemFrameEntity.getHorizontalFacing().getOffsetX() * 0.3f), e - 0.25, f + (double)((float)itemFrameEntity.getHorizontalFacing().getOffsetZ() * 0.3f));
+        this.renderLabelIfPresent(itemFrameEntity, d + (double)((float)itemFrameEntity.getHorizontalFacing().getOffsetX() * 0.3f), e - 0.25, f + (double)((float)itemFrameEntity.getHorizontalFacing().getOffsetZ() * 0.3f));
     }
 
+    @Override
     @Nullable
-    protected Identifier method_3993(ItemFrameEntity itemFrameEntity) {
+    protected Identifier getTexture(ItemFrameEntity itemFrameEntity) {
         return null;
     }
 
@@ -113,7 +115,8 @@ extends EntityRenderer<ItemFrameEntity> {
         GlStateManager.popMatrix();
     }
 
-    protected void method_3995(ItemFrameEntity itemFrameEntity, double d, double e, double f) {
+    @Override
+    protected void renderLabelIfPresent(ItemFrameEntity itemFrameEntity, double d, double e, double f) {
         float h;
         if (!MinecraftClient.isHudEnabled() || itemFrameEntity.getHeldItemStack().isEmpty() || !itemFrameEntity.getHeldItemStack().hasCustomName() || this.renderManager.targetedEntity != itemFrameEntity) {
             return;

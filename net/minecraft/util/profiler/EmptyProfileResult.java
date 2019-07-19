@@ -25,7 +25,7 @@ implements ProfileResult {
     }
 
     @Override
-    public boolean saveToFile(File file) {
+    public boolean save(File file) {
         return false;
     }
 

@@ -79,7 +79,7 @@ extends RealmsGuiEventListener {
     }
 
     public void setIsEditable(boolean bl) {
-        this.editBox.setIsEditable(bl);
+        this.editBox.setEditable(bl);
     }
 }
 

@@ -21,7 +21,8 @@ extends Decorator<NopeDecoratorConfig> {
         super(function);
     }
 
-    public Stream<BlockPos> method_15924(IWorld iWorld, ChunkGenerator<? extends ChunkGeneratorConfig> chunkGenerator, Random random, NopeDecoratorConfig nopeDecoratorConfig, BlockPos blockPos) {
+    @Override
+    public Stream<BlockPos> getPositions(IWorld iWorld, ChunkGenerator<? extends ChunkGeneratorConfig> chunkGenerator, Random random, NopeDecoratorConfig nopeDecoratorConfig, BlockPos blockPos) {
         int j;
         int i;
         int k;

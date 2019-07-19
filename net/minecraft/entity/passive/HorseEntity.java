@@ -71,7 +71,7 @@ extends HorseBaseEntity {
     }
 
     private void equipArmor(ItemStack itemStack) {
-        this.setEquippedStack(EquipmentSlot.CHEST, itemStack);
+        this.equipStack(EquipmentSlot.CHEST, itemStack);
         this.setEquipmentDropChance(EquipmentSlot.CHEST, 0.0f);
     }
 
@@ -80,7 +80,7 @@ extends HorseBaseEntity {
         ItemStack itemStack;
         super.readCustomDataFromTag(compoundTag);
         this.setVariant(compoundTag.getInt("Variant"));
-        if (compoundTag.containsKey("ArmorItem", 10) && !(itemStack = ItemStack.fromTag(compoundTag.getCompound("ArmorItem"))).isEmpty() && this.canEquip(itemStack)) {
+        if (compoundTag.contains("ArmorItem", 10) && !(itemStack = ItemStack.fromTag(compoundTag.getCompound("ArmorItem"))).isEmpty() && this.canEquip(itemStack)) {
             this.items.setInvStack(1, itemStack);
         }
         this.updateSaddle();

@@ -170,7 +170,7 @@ extends Container {
     @Override
     public ItemStack transferSlot(PlayerEntity playerEntity, int i) {
         ItemStack itemStack = ItemStack.EMPTY;
-        Slot slot = (Slot)this.slotList.get(i);
+        Slot slot = (Slot)this.slots.get(i);
         if (slot != null && slot.hasStack()) {
             ItemStack itemStack2;
             ItemStack itemStack3 = itemStack2 = slot.getStack();

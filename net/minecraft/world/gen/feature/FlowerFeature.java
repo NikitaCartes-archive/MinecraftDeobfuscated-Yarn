@@ -20,7 +20,8 @@ extends Feature<DefaultFeatureConfig> {
         super(function, false);
     }
 
-    public boolean method_13176(IWorld iWorld, ChunkGenerator<? extends ChunkGeneratorConfig> chunkGenerator, Random random, BlockPos blockPos, DefaultFeatureConfig defaultFeatureConfig) {
+    @Override
+    public boolean generate(IWorld iWorld, ChunkGenerator<? extends ChunkGeneratorConfig> chunkGenerator, Random random, BlockPos blockPos, DefaultFeatureConfig defaultFeatureConfig) {
         BlockState blockState = this.getFlowerToPlace(random, blockPos);
         int i = 0;
         for (int j = 0; j < 64; ++j) {

@@ -15,7 +15,7 @@ import net.minecraft.block.entity.PistonBlockEntity;
 import net.minecraft.block.enums.PistonType;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.BufferBuilder;
-import net.minecraft.client.render.GuiLighting;
+import net.minecraft.client.render.DiffuseLighting;
 import net.minecraft.client.render.Tessellator;
 import net.minecraft.client.render.VertexFormats;
 import net.minecraft.client.render.block.BlockModelRenderer;
@@ -30,16 +30,17 @@ public class PistonBlockEntityRenderer
 extends BlockEntityRenderer<PistonBlockEntity> {
     private final BlockRenderManager manager = MinecraftClient.getInstance().getBlockRenderManager();
 
-    public void method_3576(PistonBlockEntity pistonBlockEntity, double d, double e, double f, float g, int i) {
+    @Override
+    public void render(PistonBlockEntity pistonBlockEntity, double d, double e, double f, float g, int i) {
         BlockPos blockPos = pistonBlockEntity.getPos().offset(pistonBlockEntity.method_11506().getOpposite());
         BlockState blockState = pistonBlockEntity.getPushedBlock();
         if (blockState.isAir() || pistonBlockEntity.getProgress(g) >= 1.0f) {
             return;
         }
         Tessellator tessellator = Tessellator.getInstance();
-        BufferBuilder bufferBuilder = tessellator.getBufferBuilder();
+        BufferBuilder bufferBuilder = tessellator.getBuffer();
         this.bindTexture(SpriteAtlasTexture.BLOCK_ATLAS_TEX);
-        GuiLighting.disable();
+        DiffuseLighting.disable();
         GlStateManager.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA);
         GlStateManager.enableBlend();
         GlStateManager.disableCull();
@@ -70,7 +71,7 @@ extends BlockEntityRenderer<PistonBlockEntity> {
         bufferBuilder.setOffset(0.0, 0.0, 0.0);
         tessellator.draw();
         BlockModelRenderer.disableBrightnessCache();
-        GuiLighting.enable();
+        DiffuseLighting.enable();
     }
 
     private boolean method_3575(BlockPos blockPos, BlockState blockState, BufferBuilder bufferBuilder, World world, boolean bl) {

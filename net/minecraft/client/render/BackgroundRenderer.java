@@ -18,11 +18,11 @@ import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.fluid.FluidState;
 import net.minecraft.tag.FluidTags;
-import net.minecraft.util.SystemUtil;
+import net.minecraft.util.Util;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
-import net.minecraft.world.ViewableWorld;
+import net.minecraft.world.CollisionView;
 import net.minecraft.world.World;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.biome.Biomes;
@@ -160,9 +160,9 @@ public class BackgroundRenderer {
         }
     }
 
-    private void updateColorInWater(Camera camera, ViewableWorld viewableWorld) {
-        long l = SystemUtil.getMeasuringTimeMs();
-        int i = viewableWorld.getBiome(new BlockPos(camera.getPos())).getWaterFogColor();
+    private void updateColorInWater(Camera camera, CollisionView collisionView) {
+        long l = Util.getMeasuringTimeMs();
+        int i = collisionView.getBiome(new BlockPos(camera.getPos())).getWaterFogColor();
         if (this.lastWaterFogColorUpdateTime < 0L) {
             this.waterFogColor = i;
             this.nextWaterFogColor = i;
@@ -239,7 +239,7 @@ public class BackgroundRenderer {
                 GlStateManager.fogEnd(f);
             }
             GLX.setupNvFogDistance();
-            if (this.client.world.dimension.shouldRenderFog(MathHelper.floor(camera.getPos().x), MathHelper.floor(camera.getPos().z)) || this.client.inGameHud.getBossBarHud().shouldThickenFog()) {
+            if (this.client.world.dimension.isFogThick(MathHelper.floor(camera.getPos().x), MathHelper.floor(camera.getPos().z)) || this.client.inGameHud.getBossBarHud().shouldThickenFog()) {
                 GlStateManager.fogStart(f * 0.05f);
                 GlStateManager.fogEnd(Math.min(f, 192.0f) * 0.5f);
             }

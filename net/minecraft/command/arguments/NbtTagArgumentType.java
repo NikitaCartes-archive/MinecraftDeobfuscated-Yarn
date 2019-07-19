@@ -27,7 +27,8 @@ implements ArgumentType<Tag> {
         return commandContext.getArgument(string, Tag.class);
     }
 
-    public Tag method_9388(StringReader stringReader) throws CommandSyntaxException {
+    @Override
+    public Tag parse(StringReader stringReader) throws CommandSyntaxException {
         return new StringNbtReader(stringReader).parseTag();
     }
 
@@ -38,7 +39,7 @@ implements ArgumentType<Tag> {
 
     @Override
     public /* synthetic */ Object parse(StringReader stringReader) throws CommandSyntaxException {
-        return this.method_9388(stringReader);
+        return this.parse(stringReader);
     }
 }
 

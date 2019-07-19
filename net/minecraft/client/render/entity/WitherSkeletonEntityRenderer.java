@@ -21,11 +21,12 @@ extends SkeletonEntityRenderer {
     }
 
     @Override
-    protected Identifier method_4119(AbstractSkeletonEntity abstractSkeletonEntity) {
+    protected Identifier getTexture(AbstractSkeletonEntity abstractSkeletonEntity) {
         return SKIN;
     }
 
-    protected void method_4161(AbstractSkeletonEntity abstractSkeletonEntity, float f) {
+    @Override
+    protected void scale(AbstractSkeletonEntity abstractSkeletonEntity, float f) {
         GlStateManager.scalef(1.2f, 1.2f, 1.2f);
     }
 }

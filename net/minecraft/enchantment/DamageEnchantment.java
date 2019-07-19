@@ -33,7 +33,7 @@ extends Enchantment {
     }
 
     @Override
-    public int method_20742(int i) {
+    public int getMaximumPower(int i) {
         return this.getMinimumPower(i) + field_9064[this.typeIndex];
     }
 
@@ -74,8 +74,8 @@ extends Enchantment {
         if (entity instanceof LivingEntity) {
             LivingEntity livingEntity2 = (LivingEntity)entity;
             if (this.typeIndex == 2 && livingEntity2.getGroup() == EntityGroup.ARTHROPOD) {
-                int j = 20 + livingEntity.getRand().nextInt(10 * i);
-                livingEntity2.addPotionEffect(new StatusEffectInstance(StatusEffects.SLOWNESS, j, 3));
+                int j = 20 + livingEntity.getRandom().nextInt(10 * i);
+                livingEntity2.addStatusEffect(new StatusEffectInstance(StatusEffects.SLOWNESS, j, 3));
             }
         }
     }

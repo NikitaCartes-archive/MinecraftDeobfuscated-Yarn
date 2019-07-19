@@ -24,7 +24,8 @@ extends FeatureRenderer<CreeperEntity, CreeperEntityModel<CreeperEntity>> {
         super(featureRendererContext);
     }
 
-    public void method_4178(CreeperEntity creeperEntity, float f, float g, float h, float i, float j, float k, float l) {
+    @Override
+    public void render(CreeperEntity creeperEntity, float f, float g, float h, float i, float j, float k, float l) {
         if (!creeperEntity.isCharged()) {
             return;
         }
@@ -41,7 +42,7 @@ extends FeatureRenderer<CreeperEntity, CreeperEntityModel<CreeperEntity>> {
         GlStateManager.color4f(0.5f, 0.5f, 0.5f, 1.0f);
         GlStateManager.disableLighting();
         GlStateManager.blendFunc(GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ONE);
-        ((CreeperEntityModel)this.getModel()).copyStateTo(this.model);
+        ((CreeperEntityModel)this.getContextModel()).copyStateTo(this.model);
         GameRenderer gameRenderer = MinecraftClient.getInstance().gameRenderer;
         gameRenderer.setFogBlack(true);
         this.model.render(creeperEntity, f, g, i, j, k, l);

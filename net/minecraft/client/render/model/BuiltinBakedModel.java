@@ -41,7 +41,7 @@ implements BakedModel {
     }
 
     @Override
-    public boolean hasDepthInGui() {
+    public boolean hasDepth() {
         return true;
     }
 

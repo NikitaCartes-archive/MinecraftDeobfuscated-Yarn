@@ -23,7 +23,7 @@ import net.minecraft.item.ItemPlacementContext;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.stat.Stats;
-import net.minecraft.state.StateFactory;
+import net.minecraft.state.StateManager;
 import net.minecraft.state.property.DirectionProperty;
 import net.minecraft.state.property.EnumProperty;
 import net.minecraft.state.property.Properties;
@@ -34,8 +34,8 @@ import net.minecraft.util.math.Direction;
 import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.util.shape.VoxelShapes;
 import net.minecraft.world.BlockView;
+import net.minecraft.world.CollisionView;
 import net.minecraft.world.IWorld;
-import net.minecraft.world.ViewableWorld;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
 
@@ -58,7 +58,7 @@ extends BlockWithEntity {
 
     public BellBlock(Block.Settings settings) {
         super(settings);
-        this.setDefaultState((BlockState)((BlockState)((BlockState)this.stateFactory.getDefaultState()).with(FACING, Direction.NORTH)).with(ATTACHMENT, Attachment.FLOOR));
+        this.setDefaultState((BlockState)((BlockState)((BlockState)this.stateManager.getDefaultState()).with(FACING, Direction.NORTH)).with(ATTACHMENT, Attachment.FLOOR));
     }
 
     @Override
@@ -174,12 +174,12 @@ extends BlockWithEntity {
                 return blockState;
             }
         } else {
-            boolean bl = axis == Direction.Axis.X && world.getBlockState(blockPos.west()).method_20827(world, blockPos.west(), Direction.EAST) && world.getBlockState(blockPos.east()).method_20827(world, blockPos.east(), Direction.WEST) || axis == Direction.Axis.Z && world.getBlockState(blockPos.north()).method_20827(world, blockPos.north(), Direction.SOUTH) && world.getBlockState(blockPos.south()).method_20827(world, blockPos.south(), Direction.NORTH);
+            boolean bl = axis == Direction.Axis.X && world.getBlockState(blockPos.west()).isSideSolidFullSquare(world, blockPos.west(), Direction.EAST) && world.getBlockState(blockPos.east()).isSideSolidFullSquare(world, blockPos.east(), Direction.WEST) || axis == Direction.Axis.Z && world.getBlockState(blockPos.north()).isSideSolidFullSquare(world, blockPos.north(), Direction.SOUTH) && world.getBlockState(blockPos.south()).isSideSolidFullSquare(world, blockPos.south(), Direction.NORTH);
             BlockState blockState = (BlockState)((BlockState)this.getDefaultState().with(FACING, direction.getOpposite())).with(ATTACHMENT, bl ? Attachment.DOUBLE_WALL : Attachment.SINGLE_WALL);
             if (blockState.canPlaceAt(itemPlacementContext.getWorld(), itemPlacementContext.getBlockPos())) {
                 return blockState;
             }
-            boolean bl2 = world.getBlockState(blockPos.down()).method_20827(world, blockPos.down(), Direction.UP);
+            boolean bl2 = world.getBlockState(blockPos.down()).isSideSolidFullSquare(world, blockPos.down(), Direction.UP);
             if ((blockState = (BlockState)blockState.with(ATTACHMENT, bl2 ? Attachment.FLOOR : Attachment.CEILING)).canPlaceAt(itemPlacementContext.getWorld(), itemPlacementContext.getBlockPos())) {
                 return blockState;
             }
@@ -195,10 +195,10 @@ extends BlockWithEntity {
             return Blocks.AIR.getDefaultState();
         }
         if (direction.getAxis() == blockState.get(FACING).getAxis()) {
-            if (attachment == Attachment.DOUBLE_WALL && !blockState2.method_20827(iWorld, blockPos2, direction)) {
+            if (attachment == Attachment.DOUBLE_WALL && !blockState2.isSideSolidFullSquare(iWorld, blockPos2, direction)) {
                 return (BlockState)((BlockState)blockState.with(ATTACHMENT, Attachment.SINGLE_WALL)).with(FACING, direction.getOpposite());
             }
-            if (attachment == Attachment.SINGLE_WALL && direction2.getOpposite() == direction && blockState2.method_20827(iWorld, blockPos2, blockState.get(FACING))) {
+            if (attachment == Attachment.SINGLE_WALL && direction2.getOpposite() == direction && blockState2.isSideSolidFullSquare(iWorld, blockPos2, blockState.get(FACING))) {
                 return (BlockState)blockState.with(ATTACHMENT, Attachment.DOUBLE_WALL);
             }
         }
@@ -206,8 +206,8 @@ extends BlockWithEntity {
     }
 
     @Override
-    public boolean canPlaceAt(BlockState blockState, ViewableWorld viewableWorld, BlockPos blockPos) {
-        return WallMountedBlock.canPlaceAt(viewableWorld, blockPos, BellBlock.getPlacementSide(blockState).getOpposite());
+    public boolean canPlaceAt(BlockState blockState, CollisionView collisionView, BlockPos blockPos) {
+        return WallMountedBlock.canPlaceAt(collisionView, blockPos, BellBlock.getPlacementSide(blockState).getOpposite());
     }
 
     private static Direction getPlacementSide(BlockState blockState) {
@@ -228,7 +228,7 @@ extends BlockWithEntity {
     }
 
     @Override
-    protected void appendProperties(StateFactory.Builder<Block, BlockState> builder) {
+    protected void appendProperties(StateManager.Builder<Block, BlockState> builder) {
         builder.add(FACING, ATTACHMENT);
     }
 

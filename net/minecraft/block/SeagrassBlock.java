@@ -43,7 +43,7 @@ FluidFillable {
 
     @Override
     protected boolean canPlantOnTop(BlockState blockState, BlockView blockView, BlockPos blockPos) {
-        return blockState.method_20827(blockView, blockPos, Direction.UP) && blockState.getBlock() != Blocks.MAGMA_BLOCK;
+        return blockState.isSideSolidFullSquare(blockView, blockPos, Direction.UP) && blockState.getBlock() != Blocks.MAGMA_BLOCK;
     }
 
     @Override

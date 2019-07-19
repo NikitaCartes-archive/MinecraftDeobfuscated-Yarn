@@ -21,15 +21,17 @@ extends MobEntityRenderer<TurtleEntity, TurtleEntityModel<TurtleEntity>> {
         super(entityRenderDispatcher, new TurtleEntityModel(0.0f), 0.7f);
     }
 
-    public void method_4138(TurtleEntity turtleEntity, double d, double e, double f, float g, float h) {
+    @Override
+    public void render(TurtleEntity turtleEntity, double d, double e, double f, float g, float h) {
         if (turtleEntity.isBaby()) {
             this.field_4673 *= 0.5f;
         }
-        super.method_4072(turtleEntity, d, e, f, g, h);
+        super.render(turtleEntity, d, e, f, g, h);
     }
 
+    @Override
     @Nullable
-    protected Identifier method_4139(TurtleEntity turtleEntity) {
+    protected Identifier getTexture(TurtleEntity turtleEntity) {
         return SKIN;
     }
 }

@@ -28,7 +28,7 @@ extends BiomeSource {
     private final Biome[] biomes = new Biome[]{Biomes.THE_END, Biomes.END_HIGHLANDS, Biomes.END_MIDLANDS, Biomes.SMALL_END_ISLANDS, Biomes.END_BARRENS};
 
     public TheEndBiomeSource(TheEndBiomeSourceConfig theEndBiomeSourceConfig) {
-        this.random = new ChunkRandom(theEndBiomeSourceConfig.method_9204());
+        this.random = new ChunkRandom(theEndBiomeSourceConfig.getSeed());
         this.random.consume(17292);
         this.noise = new SimplexNoiseSampler(this.random);
     }

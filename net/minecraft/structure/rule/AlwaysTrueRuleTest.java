@@ -7,11 +7,11 @@ import com.mojang.datafixers.Dynamic;
 import com.mojang.datafixers.types.DynamicOps;
 import java.util.Random;
 import net.minecraft.block.BlockState;
-import net.minecraft.structure.rule.AbstractRuleTest;
 import net.minecraft.structure.rule.RuleTest;
+import net.minecraft.structure.rule.RuleTestType;
 
 public class AlwaysTrueRuleTest
-extends AbstractRuleTest {
+extends RuleTest {
     public static final AlwaysTrueRuleTest INSTANCE = new AlwaysTrueRuleTest();
 
     private AlwaysTrueRuleTest() {
@@ -23,8 +23,8 @@ extends AbstractRuleTest {
     }
 
     @Override
-    protected RuleTest getRuleTest() {
-        return RuleTest.ALWAYS_TRUE;
+    protected RuleTestType getType() {
+        return RuleTestType.ALWAYS_TRUE;
     }
 
     @Override

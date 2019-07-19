@@ -22,7 +22,8 @@ extends FeatureRenderer<FoxEntity, FoxEntityModel<FoxEntity>> {
         super(featureRendererContext);
     }
 
-    public void method_18335(FoxEntity foxEntity, float f, float g, float h, float i, float j, float k, float l) {
+    @Override
+    public void render(FoxEntity foxEntity, float f, float g, float h, float i, float j, float k, float l) {
         float m;
         ItemStack itemStack = foxEntity.getEquippedStack(EquipmentSlot.MAINHAND);
         if (itemStack.isEmpty()) {
@@ -36,7 +37,7 @@ extends FeatureRenderer<FoxEntity, FoxEntityModel<FoxEntity>> {
             GlStateManager.scalef(0.75f, 0.75f, 0.75f);
             GlStateManager.translatef(0.0f, 8.0f * l, 3.35f * l);
         }
-        GlStateManager.translatef(((FoxEntityModel)this.getModel()).head.rotationPointX / 16.0f, ((FoxEntityModel)this.getModel()).head.rotationPointY / 16.0f, ((FoxEntityModel)this.getModel()).head.rotationPointZ / 16.0f);
+        GlStateManager.translatef(((FoxEntityModel)this.getContextModel()).head.pivotX / 16.0f, ((FoxEntityModel)this.getContextModel()).head.pivotY / 16.0f, ((FoxEntityModel)this.getContextModel()).head.pivotZ / 16.0f);
         m = foxEntity.getHeadRoll(h) * 57.295776f;
         GlStateManager.rotatef(m, 0.0f, 0.0f, 1.0f);
         GlStateManager.rotatef(j, 0.0f, 1.0f, 0.0f);

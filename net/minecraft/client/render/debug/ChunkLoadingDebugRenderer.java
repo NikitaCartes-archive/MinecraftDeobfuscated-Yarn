@@ -17,7 +17,7 @@ import net.minecraft.client.world.ClientWorld;
 import net.minecraft.server.integrated.IntegratedServer;
 import net.minecraft.server.world.ServerChunkManager;
 import net.minecraft.server.world.ServerWorld;
-import net.minecraft.util.SystemUtil;
+import net.minecraft.util.Util;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.world.chunk.WorldChunk;
 import net.minecraft.world.dimension.DimensionType;
@@ -38,7 +38,7 @@ implements DebugRenderer.Renderer {
 
     @Override
     public void render(long l) {
-        double d = SystemUtil.getMeasuringTimeNano();
+        double d = Util.getMeasuringTimeNano();
         if (d - this.lastUpdateTime > 3.0E9) {
             this.lastUpdateTime = d;
             IntegratedServer integratedServer = this.client.getServer();
@@ -86,7 +86,7 @@ implements DebugRenderer.Renderer {
             int i = (int)camera.getPos().x >> 4;
             int j = (int)camera.getPos().z >> 4;
             ImmutableMap.Builder<ChunkPos, String> builder = ImmutableMap.builder();
-            ClientChunkManager clientChunkManager = clientWorld.method_2935();
+            ClientChunkManager clientChunkManager = clientWorld.getChunkManager();
             for (int k = i - 12; k <= i + 12; ++k) {
                 for (int l = j - 12; l <= j + 12; ++l) {
                     ChunkPos chunkPos = new ChunkPos(k, l);
@@ -103,9 +103,9 @@ implements DebugRenderer.Renderer {
                 }
             }
             this.field_4515 = builder.build();
-            this.field_4514 = integratedServer.executeFuture(() -> {
+            this.field_4514 = integratedServer.submit(() -> {
                 ImmutableMap.Builder<ChunkPos, String> builder = ImmutableMap.builder();
-                ServerChunkManager serverChunkManager = serverWorld.method_14178();
+                ServerChunkManager serverChunkManager = serverWorld.getChunkManager();
                 for (int k = i - 12; k <= i + 12; ++k) {
                     for (int l = j - 12; l <= j + 12; ++l) {
                         ChunkPos chunkPos = new ChunkPos(k, l);

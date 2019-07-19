@@ -96,9 +96,9 @@ implements AutoCloseable {
         float o = l;
         float p = (float)(i >> 24 & 0xFF) / 255.0f;
         Tessellator tessellator = Tessellator.getInstance();
-        BufferBuilder bufferBuilder = tessellator.getBufferBuilder();
+        BufferBuilder bufferBuilder = tessellator.getBuffer();
         Identifier identifier = null;
-        bufferBuilder.begin(7, VertexFormats.POSITION_UV_COLOR);
+        bufferBuilder.begin(7, VertexFormats.POSITION_TEXTURE_COLOR);
         boolean bl2 = false;
         boolean bl3 = false;
         boolean bl4 = false;
@@ -149,7 +149,7 @@ implements AutoCloseable {
                 if (identifier != identifier2) {
                     tessellator.draw();
                     this.textureManager.bindTexture(identifier2);
-                    bufferBuilder.begin(7, VertexFormats.POSITION_UV_COLOR);
+                    bufferBuilder.begin(7, VertexFormats.POSITION_TEXTURE_COLOR);
                     identifier = identifier2;
                 }
                 s = bl3 ? glyph.getBoldOffset() : 0.0f;
@@ -262,12 +262,12 @@ implements AutoCloseable {
         return string;
     }
 
-    public void drawStringBounded(String string, int i, int j, int k, int l) {
+    public void drawTrimmed(String string, int i, int j, int k, int l) {
         string = this.trimEndNewlines(string);
-        this.renderStringBounded(string, i, j, k, l);
+        this.drawWrapped(string, i, j, k, l);
     }
 
-    private void renderStringBounded(String string, int i, int j, int k, int l) {
+    private void drawWrapped(String string, int i, int j, int k, int l) {
         List<String> list = this.wrapStringToWidthAsList(string, k);
         for (String string2 : list) {
             float f = i;

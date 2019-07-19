@@ -26,9 +26,11 @@ import net.minecraft.inventory.Inventory;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemPlacementContext;
 import net.minecraft.item.ItemStack;
+import net.minecraft.loot.context.LootContext;
+import net.minecraft.loot.context.LootContextParameters;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.stat.Stats;
-import net.minecraft.state.StateFactory;
+import net.minecraft.state.StateManager;
 import net.minecraft.state.property.EnumProperty;
 import net.minecraft.text.LiteralText;
 import net.minecraft.text.Text;
@@ -48,8 +50,6 @@ import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.util.shape.VoxelShapes;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
-import net.minecraft.world.loot.context.LootContext;
-import net.minecraft.world.loot.context.LootContextParameters;
 import org.jetbrains.annotations.Nullable;
 
 public class ShulkerBoxBlock
@@ -62,7 +62,7 @@ extends BlockWithEntity {
     public ShulkerBoxBlock(@Nullable DyeColor dyeColor, Block.Settings settings) {
         super(settings);
         this.color = dyeColor;
-        this.setDefaultState((BlockState)((BlockState)this.stateFactory.getDefaultState()).with(FACING, Direction.UP));
+        this.setDefaultState((BlockState)((BlockState)this.stateManager.getDefaultState()).with(FACING, Direction.UP));
     }
 
     @Override
@@ -120,7 +120,7 @@ extends BlockWithEntity {
     }
 
     @Override
-    protected void appendProperties(StateFactory.Builder<Block, BlockState> builder) {
+    protected void appendProperties(StateManager.Builder<Block, BlockState> builder) {
         builder.add(FACING);
     }
 
@@ -188,10 +188,10 @@ extends BlockWithEntity {
         super.buildTooltip(itemStack, blockView, list, tooltipContext);
         CompoundTag compoundTag = itemStack.getSubTag("BlockEntityTag");
         if (compoundTag != null) {
-            if (compoundTag.containsKey("LootTable", 8)) {
+            if (compoundTag.contains("LootTable", 8)) {
                 list.add(new LiteralText("???????"));
             }
-            if (compoundTag.containsKey("Items", 9)) {
+            if (compoundTag.contains("Items", 9)) {
                 DefaultedList<ItemStack> defaultedList = DefaultedList.ofSize(27, ItemStack.EMPTY);
                 Inventories.fromTag(compoundTag, defaultedList);
                 int i = 0;

@@ -7,17 +7,17 @@ import java.util.List;
 import java.util.Map;
 import java.util.Random;
 import net.minecraft.block.Block;
-import net.minecraft.block.BlockRenderLayer;
 import net.minecraft.block.BlockState;
-import net.minecraft.block.ConnectedPlantBlock;
-import net.minecraft.block.HorizontalConnectedBlock;
+import net.minecraft.block.ConnectingBlock;
+import net.minecraft.block.HorizontalConnectingBlock;
 import net.minecraft.block.TripwireHookBlock;
+import net.minecraft.client.render.RenderLayer;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityContext;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemPlacementContext;
 import net.minecraft.item.Items;
-import net.minecraft.state.StateFactory;
+import net.minecraft.state.StateManager;
 import net.minecraft.state.property.BooleanProperty;
 import net.minecraft.state.property.Properties;
 import net.minecraft.util.BlockMirror;
@@ -34,18 +34,18 @@ extends Block {
     public static final BooleanProperty POWERED = Properties.POWERED;
     public static final BooleanProperty ATTACHED = Properties.ATTACHED;
     public static final BooleanProperty DISARMED = Properties.DISARMED;
-    public static final BooleanProperty NORTH = ConnectedPlantBlock.NORTH;
-    public static final BooleanProperty EAST = ConnectedPlantBlock.EAST;
-    public static final BooleanProperty SOUTH = ConnectedPlantBlock.SOUTH;
-    public static final BooleanProperty WEST = ConnectedPlantBlock.WEST;
-    private static final Map<Direction, BooleanProperty> FACING_PROPERTIES = HorizontalConnectedBlock.FACING_PROPERTIES;
+    public static final BooleanProperty NORTH = ConnectingBlock.NORTH;
+    public static final BooleanProperty EAST = ConnectingBlock.EAST;
+    public static final BooleanProperty SOUTH = ConnectingBlock.SOUTH;
+    public static final BooleanProperty WEST = ConnectingBlock.WEST;
+    private static final Map<Direction, BooleanProperty> FACING_PROPERTIES = HorizontalConnectingBlock.FACING_PROPERTIES;
     protected static final VoxelShape ATTACHED_SHAPE = Block.createCuboidShape(0.0, 1.0, 0.0, 16.0, 2.5, 16.0);
     protected static final VoxelShape DETACHED_SHAPE = Block.createCuboidShape(0.0, 0.0, 0.0, 16.0, 8.0, 16.0);
     private final TripwireHookBlock hookBlock;
 
     public TripwireBlock(TripwireHookBlock tripwireHookBlock, Block.Settings settings) {
         super(settings);
-        this.setDefaultState((BlockState)((BlockState)((BlockState)((BlockState)((BlockState)((BlockState)((BlockState)((BlockState)this.stateFactory.getDefaultState()).with(POWERED, false)).with(ATTACHED, false)).with(DISARMED, false)).with(NORTH, false)).with(EAST, false)).with(SOUTH, false)).with(WEST, false));
+        this.setDefaultState((BlockState)((BlockState)((BlockState)((BlockState)((BlockState)((BlockState)((BlockState)((BlockState)this.stateManager.getDefaultState()).with(POWERED, false)).with(ATTACHED, false)).with(DISARMED, false)).with(NORTH, false)).with(EAST, false)).with(SOUTH, false)).with(WEST, false));
         this.hookBlock = tripwireHookBlock;
     }
 
@@ -70,8 +70,8 @@ extends Block {
     }
 
     @Override
-    public BlockRenderLayer getRenderLayer() {
-        return BlockRenderLayer.TRANSLUCENT;
+    public RenderLayer getRenderLayer() {
+        return RenderLayer.TRANSLUCENT;
     }
 
     @Override
@@ -139,7 +139,7 @@ extends Block {
         BlockState blockState = world.getBlockState(blockPos);
         boolean bl = blockState.get(POWERED);
         boolean bl2 = false;
-        List<Entity> list = world.getEntities((Entity)null, blockState.getOutlineShape(world, blockPos).getBoundingBox().offset(blockPos));
+        List<Entity> list = world.getEntities(null, blockState.getOutlineShape(world, blockPos).getBoundingBox().offset(blockPos));
         if (!list.isEmpty()) {
             for (Entity entity : list) {
                 if (entity.canAvoidTraps()) continue;
@@ -195,7 +195,7 @@ extends Block {
     }
 
     @Override
-    protected void appendProperties(StateFactory.Builder<Block, BlockState> builder) {
+    protected void appendProperties(StateManager.Builder<Block, BlockState> builder) {
         builder.add(POWERED, ATTACHED, DISARMED, NORTH, EAST, WEST, SOUTH);
     }
 }

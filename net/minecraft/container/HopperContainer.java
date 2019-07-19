@@ -48,11 +48,11 @@ extends Container {
     @Override
     public ItemStack transferSlot(PlayerEntity playerEntity, int i) {
         ItemStack itemStack = ItemStack.EMPTY;
-        Slot slot = (Slot)this.slotList.get(i);
+        Slot slot = (Slot)this.slots.get(i);
         if (slot != null && slot.hasStack()) {
             ItemStack itemStack2 = slot.getStack();
             itemStack = itemStack2.copy();
-            if (i < this.inventory.getInvSize() ? !this.insertItem(itemStack2, this.inventory.getInvSize(), this.slotList.size(), true) : !this.insertItem(itemStack2, 0, this.inventory.getInvSize(), false)) {
+            if (i < this.inventory.getInvSize() ? !this.insertItem(itemStack2, this.inventory.getInvSize(), this.slots.size(), true) : !this.insertItem(itemStack2, 0, this.inventory.getInvSize(), false)) {
                 return ItemStack.EMPTY;
             }
             if (itemStack2.isEmpty()) {

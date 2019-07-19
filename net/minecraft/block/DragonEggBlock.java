@@ -16,7 +16,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.world.BlockView;
-import net.minecraft.world.ViewableWorld;
+import net.minecraft.world.CollisionView;
 import net.minecraft.world.World;
 
 public class DragonEggBlock
@@ -60,14 +60,14 @@ extends FallingBlock {
                 }
             } else {
                 world.setBlockState(blockPos2, blockState, 2);
-                world.clearBlockState(blockPos, false);
+                world.removeBlock(blockPos, false);
             }
             return;
         }
     }
 
     @Override
-    public int getTickRate(ViewableWorld viewableWorld) {
+    public int getTickRate(CollisionView collisionView) {
         return 5;
     }
 

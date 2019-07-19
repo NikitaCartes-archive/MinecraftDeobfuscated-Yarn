@@ -32,7 +32,8 @@ implements Tag {
         return "END";
     }
 
-    public EndTag method_10586() {
+    @Override
+    public EndTag copy() {
         return new EndTag();
     }
 
@@ -51,7 +52,7 @@ implements Tag {
 
     @Override
     public /* synthetic */ Tag copy() {
-        return this.method_10586();
+        return this.copy();
     }
 }
 

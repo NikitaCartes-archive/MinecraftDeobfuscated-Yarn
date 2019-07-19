@@ -26,7 +26,8 @@ import net.minecraft.world.gen.feature.Feature;
 
 public class StoryTabAdvancementGenerator
 implements Consumer<Consumer<Advancement>> {
-    public void method_10347(Consumer<Advancement> consumer) {
+    @Override
+    public void accept(Consumer<Advancement> consumer) {
         Advancement advancement = Advancement.Task.create().display(Blocks.GRASS_BLOCK, (Text)new TranslatableText("advancements.story.root.title", new Object[0]), (Text)new TranslatableText("advancements.story.root.description", new Object[0]), new Identifier("textures/gui/advancements/backgrounds/stone.png"), AdvancementFrame.TASK, false, false, false).criterion("crafting_table", InventoryChangedCriterion.Conditions.items(Blocks.CRAFTING_TABLE)).build(consumer, "story/root");
         Advancement advancement2 = Advancement.Task.create().parent(advancement).display(Items.WOODEN_PICKAXE, (Text)new TranslatableText("advancements.story.mine_stone.title", new Object[0]), (Text)new TranslatableText("advancements.story.mine_stone.description", new Object[0]), null, AdvancementFrame.TASK, true, true, false).criterion("get_stone", InventoryChangedCriterion.Conditions.items(Blocks.COBBLESTONE)).build(consumer, "story/mine_stone");
         Advancement advancement3 = Advancement.Task.create().parent(advancement2).display(Items.STONE_PICKAXE, (Text)new TranslatableText("advancements.story.upgrade_tools.title", new Object[0]), (Text)new TranslatableText("advancements.story.upgrade_tools.description", new Object[0]), null, AdvancementFrame.TASK, true, true, false).criterion("stone_pickaxe", InventoryChangedCriterion.Conditions.items(Items.STONE_PICKAXE)).build(consumer, "story/upgrade_tools");
@@ -47,7 +48,7 @@ implements Consumer<Consumer<Advancement>> {
 
     @Override
     public /* synthetic */ void accept(Object object) {
-        this.method_10347((Consumer)object);
+        this.accept((Consumer)object);
     }
 }
 

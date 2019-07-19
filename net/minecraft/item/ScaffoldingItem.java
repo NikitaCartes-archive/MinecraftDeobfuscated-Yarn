@@ -6,12 +6,12 @@ package net.minecraft.item;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.ScaffoldingBlock;
-import net.minecraft.client.network.packet.ChatMessageS2CPacket;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.BlockItem;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemPlacementContext;
 import net.minecraft.network.MessageType;
+import net.minecraft.network.packet.s2c.play.ChatMessageS2CPacket;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Formatting;
@@ -34,7 +34,7 @@ extends BlockItem {
         BlockState blockState = world.getBlockState(blockPos);
         Block block = this.getBlock();
         if (blockState.getBlock() == block) {
-            Direction direction = itemPlacementContext.isPlayerSneaking() ? (itemPlacementContext.method_17699() ? itemPlacementContext.getSide().getOpposite() : itemPlacementContext.getSide()) : (itemPlacementContext.getSide() == Direction.UP ? itemPlacementContext.getPlayerFacing() : Direction.UP);
+            Direction direction = itemPlacementContext.shouldCancelInteraction() ? (itemPlacementContext.method_17699() ? itemPlacementContext.getSide().getOpposite() : itemPlacementContext.getSide()) : (itemPlacementContext.getSide() == Direction.UP ? itemPlacementContext.getPlayerFacing() : Direction.UP);
             int i = 0;
             BlockPos.Mutable mutable = new BlockPos.Mutable(blockPos).setOffset(direction);
             while (i < 7) {

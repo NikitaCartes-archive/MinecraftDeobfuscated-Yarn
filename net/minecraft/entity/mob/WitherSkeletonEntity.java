@@ -33,7 +33,7 @@ public class WitherSkeletonEntity
 extends AbstractSkeletonEntity {
     public WitherSkeletonEntity(EntityType<? extends WitherSkeletonEntity> entityType, World world) {
         super((EntityType<? extends AbstractSkeletonEntity>)entityType, world);
-        this.setPathNodeTypeWeight(PathNodeType.LAVA, 8.0f);
+        this.setPathfindingPenalty(PathNodeType.LAVA, 8.0f);
     }
 
     @Override
@@ -69,7 +69,7 @@ extends AbstractSkeletonEntity {
 
     @Override
     protected void initEquipment(LocalDifficulty localDifficulty) {
-        this.setEquippedStack(EquipmentSlot.MAINHAND, new ItemStack(Items.STONE_SWORD));
+        this.equipStack(EquipmentSlot.MAINHAND, new ItemStack(Items.STONE_SWORD));
     }
 
     @Override
@@ -96,7 +96,7 @@ extends AbstractSkeletonEntity {
             return false;
         }
         if (entity instanceof LivingEntity) {
-            ((LivingEntity)entity).addPotionEffect(new StatusEffectInstance(StatusEffects.WITHER, 200));
+            ((LivingEntity)entity).addStatusEffect(new StatusEffectInstance(StatusEffects.WITHER, 200));
         }
         return true;
     }
@@ -109,11 +109,11 @@ extends AbstractSkeletonEntity {
     }
 
     @Override
-    public boolean isPotionEffective(StatusEffectInstance statusEffectInstance) {
+    public boolean canHaveStatusEffect(StatusEffectInstance statusEffectInstance) {
         if (statusEffectInstance.getEffectType() == StatusEffects.WITHER) {
             return false;
         }
-        return super.isPotionEffective(statusEffectInstance);
+        return super.canHaveStatusEffect(statusEffectInstance);
     }
 }
 

@@ -22,7 +22,8 @@ extends SpecialCraftingRecipe {
         super(identifier);
     }
 
-    public boolean method_17706(CraftingInventory craftingInventory, World world) {
+    @Override
+    public boolean matches(CraftingInventory craftingInventory, World world) {
         int i = 0;
         ItemStack itemStack = ItemStack.EMPTY;
         for (int j = 0; j < craftingInventory.getInvSize(); ++j) {
@@ -44,7 +45,8 @@ extends SpecialCraftingRecipe {
         return !itemStack.isEmpty() && itemStack.hasTag() && i > 0;
     }
 
-    public ItemStack method_17705(CraftingInventory craftingInventory) {
+    @Override
+    public ItemStack craft(CraftingInventory craftingInventory) {
         int i = 0;
         ItemStack itemStack = ItemStack.EMPTY;
         for (int j = 0; j < craftingInventory.getInvSize(); ++j) {
@@ -67,13 +69,14 @@ extends SpecialCraftingRecipe {
             return ItemStack.EMPTY;
         }
         ItemStack itemStack3 = new ItemStack(Items.WRITTEN_BOOK, i);
-        CompoundTag compoundTag = itemStack.getTag().method_10553();
+        CompoundTag compoundTag = itemStack.getTag().copy();
         compoundTag.putInt("generation", WrittenBookItem.getGeneration(itemStack) + 1);
         itemStack3.setTag(compoundTag);
         return itemStack3;
     }
 
-    public DefaultedList<ItemStack> method_17707(CraftingInventory craftingInventory) {
+    @Override
+    public DefaultedList<ItemStack> getRemainingStacks(CraftingInventory craftingInventory) {
         DefaultedList<ItemStack> defaultedList = DefaultedList.ofSize(craftingInventory.getInvSize(), ItemStack.EMPTY);
         for (int i = 0; i < defaultedList.size(); ++i) {
             ItemStack itemStack = craftingInventory.getInvStack(i);

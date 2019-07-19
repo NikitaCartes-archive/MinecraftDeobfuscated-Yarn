@@ -143,11 +143,11 @@ public final class Vector3f {
 
     public void method_19262(Quaternion quaternion) {
         Quaternion quaternion2 = new Quaternion(quaternion);
-        quaternion2.copyFrom(new Quaternion(this.getX(), this.getY(), this.getZ(), 0.0f));
+        quaternion2.hamiltonProduct(new Quaternion(this.getX(), this.getY(), this.getZ(), 0.0f));
         Quaternion quaternion3 = new Quaternion(quaternion);
-        quaternion3.reverse();
-        quaternion2.copyFrom(quaternion3);
-        this.set(quaternion2.getX(), quaternion2.getY(), quaternion2.getZ());
+        quaternion3.conjugate();
+        quaternion2.hamiltonProduct(quaternion3);
+        this.set(quaternion2.getB(), quaternion2.getC(), quaternion2.getD());
     }
 }
 

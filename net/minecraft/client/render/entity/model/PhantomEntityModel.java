@@ -5,7 +5,7 @@ package net.minecraft.client.render.entity.model;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.client.model.Cuboid;
+import net.minecraft.client.model.ModelPart;
 import net.minecraft.client.render.entity.model.EntityModel;
 import net.minecraft.entity.Entity;
 import net.minecraft.util.math.MathHelper;
@@ -13,61 +13,61 @@ import net.minecraft.util.math.MathHelper;
 @Environment(value=EnvType.CLIENT)
 public class PhantomEntityModel<T extends Entity>
 extends EntityModel<T> {
-    private final Cuboid head;
-    private final Cuboid field_3477;
-    private final Cuboid field_3476;
-    private final Cuboid field_3474;
-    private final Cuboid field_3472;
-    private final Cuboid field_3478;
-    private final Cuboid field_3471;
-    private final Cuboid field_3473;
+    private final ModelPart body;
+    private final ModelPart field_3477;
+    private final ModelPart field_3476;
+    private final ModelPart field_3474;
+    private final ModelPart field_3472;
+    private final ModelPart field_3478;
+    private final ModelPart field_3471;
+    private final ModelPart field_3473;
 
     public PhantomEntityModel() {
         this.textureWidth = 64;
         this.textureHeight = 64;
-        this.head = new Cuboid(this, 0, 8);
-        this.head.addBox(-3.0f, -2.0f, -8.0f, 5, 3, 9);
-        this.field_3471 = new Cuboid(this, 3, 20);
-        this.field_3471.addBox(-2.0f, 0.0f, 0.0f, 3, 2, 6);
-        this.field_3471.setRotationPoint(0.0f, -2.0f, 1.0f);
-        this.head.addChild(this.field_3471);
-        this.field_3473 = new Cuboid(this, 4, 29);
-        this.field_3473.addBox(-1.0f, 0.0f, 0.0f, 1, 1, 6);
-        this.field_3473.setRotationPoint(0.0f, 0.5f, 6.0f);
+        this.body = new ModelPart(this, 0, 8);
+        this.body.addCuboid(-3.0f, -2.0f, -8.0f, 5, 3, 9);
+        this.field_3471 = new ModelPart(this, 3, 20);
+        this.field_3471.addCuboid(-2.0f, 0.0f, 0.0f, 3, 2, 6);
+        this.field_3471.setPivot(0.0f, -2.0f, 1.0f);
+        this.body.addChild(this.field_3471);
+        this.field_3473 = new ModelPart(this, 4, 29);
+        this.field_3473.addCuboid(-1.0f, 0.0f, 0.0f, 1, 1, 6);
+        this.field_3473.setPivot(0.0f, 0.5f, 6.0f);
         this.field_3471.addChild(this.field_3473);
-        this.field_3477 = new Cuboid(this, 23, 12);
-        this.field_3477.addBox(0.0f, 0.0f, 0.0f, 6, 2, 9);
-        this.field_3477.setRotationPoint(2.0f, -2.0f, -8.0f);
-        this.field_3476 = new Cuboid(this, 16, 24);
-        this.field_3476.addBox(0.0f, 0.0f, 0.0f, 13, 1, 9);
-        this.field_3476.setRotationPoint(6.0f, 0.0f, 0.0f);
+        this.field_3477 = new ModelPart(this, 23, 12);
+        this.field_3477.addCuboid(0.0f, 0.0f, 0.0f, 6, 2, 9);
+        this.field_3477.setPivot(2.0f, -2.0f, -8.0f);
+        this.field_3476 = new ModelPart(this, 16, 24);
+        this.field_3476.addCuboid(0.0f, 0.0f, 0.0f, 13, 1, 9);
+        this.field_3476.setPivot(6.0f, 0.0f, 0.0f);
         this.field_3477.addChild(this.field_3476);
-        this.field_3474 = new Cuboid(this, 23, 12);
+        this.field_3474 = new ModelPart(this, 23, 12);
         this.field_3474.mirror = true;
-        this.field_3474.addBox(-6.0f, 0.0f, 0.0f, 6, 2, 9);
-        this.field_3474.setRotationPoint(-3.0f, -2.0f, -8.0f);
-        this.field_3472 = new Cuboid(this, 16, 24);
+        this.field_3474.addCuboid(-6.0f, 0.0f, 0.0f, 6, 2, 9);
+        this.field_3474.setPivot(-3.0f, -2.0f, -8.0f);
+        this.field_3472 = new ModelPart(this, 16, 24);
         this.field_3472.mirror = true;
-        this.field_3472.addBox(-13.0f, 0.0f, 0.0f, 13, 1, 9);
-        this.field_3472.setRotationPoint(-6.0f, 0.0f, 0.0f);
+        this.field_3472.addCuboid(-13.0f, 0.0f, 0.0f, 13, 1, 9);
+        this.field_3472.setPivot(-6.0f, 0.0f, 0.0f);
         this.field_3474.addChild(this.field_3472);
         this.field_3477.roll = 0.1f;
         this.field_3476.roll = 0.1f;
         this.field_3474.roll = -0.1f;
         this.field_3472.roll = -0.1f;
-        this.head.pitch = -0.1f;
-        this.field_3478 = new Cuboid(this, 0, 0);
-        this.field_3478.addBox(-4.0f, -2.0f, -5.0f, 7, 3, 5);
-        this.field_3478.setRotationPoint(0.0f, 1.0f, -7.0f);
+        this.body.pitch = -0.1f;
+        this.field_3478 = new ModelPart(this, 0, 0);
+        this.field_3478.addCuboid(-4.0f, -2.0f, -5.0f, 7, 3, 5);
+        this.field_3478.setPivot(0.0f, 1.0f, -7.0f);
         this.field_3478.pitch = 0.2f;
-        this.head.addChild(this.field_3478);
-        this.head.addChild(this.field_3477);
-        this.head.addChild(this.field_3474);
+        this.body.addChild(this.field_3478);
+        this.body.addChild(this.field_3477);
+        this.body.addChild(this.field_3474);
     }
 
     @Override
     public void render(T entity, float f, float g, float h, float i, float j, float k) {
-        this.head.render(k);
+        this.body.render(k);
     }
 
     @Override

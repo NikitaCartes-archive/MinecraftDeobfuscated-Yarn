@@ -38,7 +38,8 @@ implements Map<String, V> {
         return this.delegate.get(object.toString().toLowerCase(Locale.ROOT));
     }
 
-    public V method_15304(String string, V object) {
+    @Override
+    public V put(String string, V object) {
         return this.delegate.put(string.toLowerCase(Locale.ROOT), object);
     }
 
@@ -50,7 +51,7 @@ implements Map<String, V> {
     @Override
     public void putAll(Map<? extends String, ? extends V> map) {
         for (Map.Entry<String, V> entry : map.entrySet()) {
-            this.method_15304(entry.getKey(), entry.getValue());
+            this.put(entry.getKey(), entry.getValue());
         }
     }
 
@@ -76,7 +77,7 @@ implements Map<String, V> {
 
     @Override
     public /* synthetic */ Object put(Object object, Object object2) {
-        return this.method_15304((String)object, object2);
+        return this.put((String)object, object2);
     }
 }
 

@@ -22,12 +22,12 @@ import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.item.ItemConvertible;
 import net.minecraft.item.ItemStack;
 import net.minecraft.predicate.NbtPredicate;
+import net.minecraft.predicate.NumberRange;
 import net.minecraft.predicate.item.EnchantmentPredicate;
 import net.minecraft.predicate.item.ItemPredicate;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.JsonHelper;
-import net.minecraft.util.NumberRange;
 
 public class InventoryChangedCriterion
 implements Criterion<Conditions> {
@@ -65,7 +65,8 @@ implements Criterion<Conditions> {
         this.handlers.remove(playerAdvancementTracker);
     }
 
-    public Conditions method_8952(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext) {
+    @Override
+    public Conditions conditionsFromJson(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext) {
         JsonObject jsonObject2 = JsonHelper.getObject(jsonObject, "slots", new JsonObject());
         NumberRange.IntRange intRange = NumberRange.IntRange.fromJson(jsonObject2.get("occupied"));
         NumberRange.IntRange intRange2 = NumberRange.IntRange.fromJson(jsonObject2.get("full"));
@@ -74,8 +75,8 @@ implements Criterion<Conditions> {
         return new Conditions(intRange, intRange2, intRange3, itemPredicates);
     }
 
-    public void handle(ServerPlayerEntity serverPlayerEntity, PlayerInventory playerInventory) {
-        Handler handler = this.handlers.get(serverPlayerEntity.getAdvancementManager());
+    public void trigger(ServerPlayerEntity serverPlayerEntity, PlayerInventory playerInventory) {
+        Handler handler = this.handlers.get(serverPlayerEntity.getAdvancementTracker());
         if (handler != null) {
             handler.handle(playerInventory);
         }
@@ -83,7 +84,7 @@ implements Criterion<Conditions> {
 
     @Override
     public /* synthetic */ CriterionConditions conditionsFromJson(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext) {
-        return this.method_8952(jsonObject, jsonDeserializationContext);
+        return this.conditionsFromJson(jsonObject, jsonDeserializationContext);
     }
 
     static class Handler {
@@ -155,15 +156,15 @@ implements Criterion<Conditions> {
             JsonObject jsonObject = new JsonObject();
             if (!(this.occupied.isDummy() && this.full.isDummy() && this.empty.isDummy())) {
                 JsonObject jsonObject2 = new JsonObject();
-                jsonObject2.add("occupied", this.occupied.serialize());
-                jsonObject2.add("full", this.full.serialize());
-                jsonObject2.add("empty", this.empty.serialize());
+                jsonObject2.add("occupied", this.occupied.toJson());
+                jsonObject2.add("full", this.full.toJson());
+                jsonObject2.add("empty", this.empty.toJson());
                 jsonObject.add("slots", jsonObject2);
             }
             if (this.items.length > 0) {
                 JsonArray jsonArray = new JsonArray();
                 for (ItemPredicate itemPredicate : this.items) {
-                    jsonArray.add(itemPredicate.serialize());
+                    jsonArray.add(itemPredicate.toJson());
                 }
                 jsonObject.add("items", jsonArray);
             }

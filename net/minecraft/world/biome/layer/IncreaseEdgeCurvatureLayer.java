@@ -4,8 +4,8 @@
 package net.minecraft.world.biome.layer;
 
 import net.minecraft.world.biome.layer.BiomeLayers;
-import net.minecraft.world.biome.layer.DiagonalCrossSamplingLayer;
-import net.minecraft.world.biome.layer.LayerRandomnessSource;
+import net.minecraft.world.biome.layer.type.DiagonalCrossSamplingLayer;
+import net.minecraft.world.biome.layer.util.LayerRandomnessSource;
 
 public enum IncreaseEdgeCurvatureLayer implements DiagonalCrossSamplingLayer
 {

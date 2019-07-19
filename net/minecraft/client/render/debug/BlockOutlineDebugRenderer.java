@@ -50,19 +50,19 @@ implements DebugRenderer.Renderer {
                 BufferBuilder bufferBuilder;
                 Tessellator tessellator;
                 Box box2 = box.offset(blockPos2).expand(0.002).offset(-d, -e, -f);
-                double g = box2.minX;
-                double h = box2.minY;
-                double i = box2.minZ;
-                double j = box2.maxX;
-                double k = box2.maxY;
-                double m = box2.maxZ;
+                double g = box2.x1;
+                double h = box2.y1;
+                double i = box2.z1;
+                double j = box2.x2;
+                double k = box2.y2;
+                double m = box2.z2;
                 float n = 1.0f;
                 float o = 0.0f;
                 float p = 0.0f;
                 float q = 0.5f;
-                if (blockState.method_20827(blockView, blockPos2, Direction.WEST)) {
+                if (blockState.isSideSolidFullSquare(blockView, blockPos2, Direction.WEST)) {
                     tessellator = Tessellator.getInstance();
-                    bufferBuilder = tessellator.getBufferBuilder();
+                    bufferBuilder = tessellator.getBuffer();
                     bufferBuilder.begin(5, VertexFormats.POSITION_COLOR);
                     bufferBuilder.vertex(g, h, i).color(1.0f, 0.0f, 0.0f, 0.5f).next();
                     bufferBuilder.vertex(g, h, m).color(1.0f, 0.0f, 0.0f, 0.5f).next();
@@ -70,9 +70,9 @@ implements DebugRenderer.Renderer {
                     bufferBuilder.vertex(g, k, m).color(1.0f, 0.0f, 0.0f, 0.5f).next();
                     tessellator.draw();
                 }
-                if (blockState.method_20827(blockView, blockPos2, Direction.SOUTH)) {
+                if (blockState.isSideSolidFullSquare(blockView, blockPos2, Direction.SOUTH)) {
                     tessellator = Tessellator.getInstance();
-                    bufferBuilder = tessellator.getBufferBuilder();
+                    bufferBuilder = tessellator.getBuffer();
                     bufferBuilder.begin(5, VertexFormats.POSITION_COLOR);
                     bufferBuilder.vertex(g, k, m).color(1.0f, 0.0f, 0.0f, 0.5f).next();
                     bufferBuilder.vertex(g, h, m).color(1.0f, 0.0f, 0.0f, 0.5f).next();
@@ -80,9 +80,9 @@ implements DebugRenderer.Renderer {
                     bufferBuilder.vertex(j, h, m).color(1.0f, 0.0f, 0.0f, 0.5f).next();
                     tessellator.draw();
                 }
-                if (blockState.method_20827(blockView, blockPos2, Direction.EAST)) {
+                if (blockState.isSideSolidFullSquare(blockView, blockPos2, Direction.EAST)) {
                     tessellator = Tessellator.getInstance();
-                    bufferBuilder = tessellator.getBufferBuilder();
+                    bufferBuilder = tessellator.getBuffer();
                     bufferBuilder.begin(5, VertexFormats.POSITION_COLOR);
                     bufferBuilder.vertex(j, h, m).color(1.0f, 0.0f, 0.0f, 0.5f).next();
                     bufferBuilder.vertex(j, h, i).color(1.0f, 0.0f, 0.0f, 0.5f).next();
@@ -90,9 +90,9 @@ implements DebugRenderer.Renderer {
                     bufferBuilder.vertex(j, k, i).color(1.0f, 0.0f, 0.0f, 0.5f).next();
                     tessellator.draw();
                 }
-                if (blockState.method_20827(blockView, blockPos2, Direction.NORTH)) {
+                if (blockState.isSideSolidFullSquare(blockView, blockPos2, Direction.NORTH)) {
                     tessellator = Tessellator.getInstance();
-                    bufferBuilder = tessellator.getBufferBuilder();
+                    bufferBuilder = tessellator.getBuffer();
                     bufferBuilder.begin(5, VertexFormats.POSITION_COLOR);
                     bufferBuilder.vertex(j, k, i).color(1.0f, 0.0f, 0.0f, 0.5f).next();
                     bufferBuilder.vertex(j, h, i).color(1.0f, 0.0f, 0.0f, 0.5f).next();
@@ -100,9 +100,9 @@ implements DebugRenderer.Renderer {
                     bufferBuilder.vertex(g, h, i).color(1.0f, 0.0f, 0.0f, 0.5f).next();
                     tessellator.draw();
                 }
-                if (blockState.method_20827(blockView, blockPos2, Direction.DOWN)) {
+                if (blockState.isSideSolidFullSquare(blockView, blockPos2, Direction.DOWN)) {
                     tessellator = Tessellator.getInstance();
-                    bufferBuilder = tessellator.getBufferBuilder();
+                    bufferBuilder = tessellator.getBuffer();
                     bufferBuilder.begin(5, VertexFormats.POSITION_COLOR);
                     bufferBuilder.vertex(g, h, i).color(1.0f, 0.0f, 0.0f, 0.5f).next();
                     bufferBuilder.vertex(j, h, i).color(1.0f, 0.0f, 0.0f, 0.5f).next();
@@ -110,9 +110,9 @@ implements DebugRenderer.Renderer {
                     bufferBuilder.vertex(j, h, m).color(1.0f, 0.0f, 0.0f, 0.5f).next();
                     tessellator.draw();
                 }
-                if (!blockState.method_20827(blockView, blockPos2, Direction.UP)) continue;
+                if (!blockState.isSideSolidFullSquare(blockView, blockPos2, Direction.UP)) continue;
                 tessellator = Tessellator.getInstance();
-                bufferBuilder = tessellator.getBufferBuilder();
+                bufferBuilder = tessellator.getBuffer();
                 bufferBuilder.begin(5, VertexFormats.POSITION_COLOR);
                 bufferBuilder.vertex(g, k, i).color(1.0f, 0.0f, 0.0f, 0.5f).next();
                 bufferBuilder.vertex(g, k, m).color(1.0f, 0.0f, 0.0f, 0.5f).next();

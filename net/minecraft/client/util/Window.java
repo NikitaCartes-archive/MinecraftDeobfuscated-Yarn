@@ -38,7 +38,7 @@ public final class Window
 implements AutoCloseable {
     private static final Logger LOGGER = LogManager.getLogger();
     private final GLFWErrorCallback errorCallback = GLFWErrorCallback.create(this::logGlError);
-    private final WindowEventHandler windowEventHandler;
+    private final WindowEventHandler eventHandler;
     private final MonitorTracker monitorTracker;
     private final long handle;
     private int field_5175;
@@ -48,8 +48,8 @@ implements AutoCloseable {
     private Optional<VideoMode> videoMode;
     private boolean fullscreen;
     private boolean field_5177;
-    private int positionX;
-    private int positionY;
+    private int x;
+    private int y;
     private int width;
     private int height;
     private int framebufferWidth;
@@ -65,9 +65,9 @@ implements AutoCloseable {
 
     public Window(WindowEventHandler windowEventHandler, MonitorTracker monitorTracker, WindowSettings windowSettings, String string, String string2) {
         this.monitorTracker = monitorTracker;
-        this.throwExceptionOnGlError();
+        this.throwOnGlError();
         this.setPhase("Pre startup");
-        this.windowEventHandler = windowEventHandler;
+        this.eventHandler = windowEventHandler;
         Optional<VideoMode> optional = VideoMode.fromString(string);
         this.videoMode = optional.isPresent() ? optional : (windowSettings.fullscreenWidth.isPresent() && windowSettings.fullscreenHeight.isPresent() ? Optional.of(new VideoMode(windowSettings.fullscreenWidth.getAsInt(), windowSettings.fullscreenHeight.getAsInt(), 8, 8, 8, 60)) : Optional.empty());
         this.field_5177 = this.fullscreen = windowSettings.fullscreen;
@@ -80,14 +80,14 @@ implements AutoCloseable {
         this.handle = GLFW.glfwCreateWindow(this.width, this.height, string2, this.fullscreen && monitor != null ? monitor.getHandle() : 0L, 0L);
         if (monitor != null) {
             VideoMode videoMode = monitor.findClosestVideoMode(this.fullscreen ? this.videoMode : Optional.empty());
-            this.field_5175 = this.positionX = monitor.getViewportX() + videoMode.getWidth() / 2 - this.width / 2;
-            this.field_5185 = this.positionY = monitor.getViewportY() + videoMode.getHeight() / 2 - this.height / 2;
+            this.field_5175 = this.x = monitor.getViewportX() + videoMode.getWidth() / 2 - this.width / 2;
+            this.field_5185 = this.y = monitor.getViewportY() + videoMode.getHeight() / 2 - this.height / 2;
         } else {
             int[] is = new int[1];
             int[] js = new int[1];
             GLFW.glfwGetWindowPos(this.handle, is, js);
-            this.field_5175 = this.positionX = is[0];
-            this.field_5185 = this.positionY = js[0];
+            this.field_5175 = this.x = is[0];
+            this.field_5185 = this.y = js[0];
         }
         GLFW.glfwMakeContextCurrent(this.handle);
         GL.createCapabilities();
@@ -180,11 +180,11 @@ implements AutoCloseable {
         this.phase = string;
     }
 
-    private void throwExceptionOnGlError() {
-        GLFW.glfwSetErrorCallback(Window::throwExceptionForGlError);
+    private void throwOnGlError() {
+        GLFW.glfwSetErrorCallback(Window::throwGlError);
     }
 
-    private static void throwExceptionForGlError(int i, long l) {
+    private static void throwGlError(int i, long l) {
         throw new IllegalStateException("GLFW error " + i + ": " + MemoryUtil.memUTF8(l));
     }
 
@@ -213,8 +213,8 @@ implements AutoCloseable {
     }
 
     private void onWindowPosChanged(long l, int i, int j) {
-        this.positionX = i;
-        this.positionY = j;
+        this.x = i;
+        this.y = j;
     }
 
     private void onFramebufferSizeChanged(long l, int i, int j) {
@@ -229,7 +229,7 @@ implements AutoCloseable {
         this.framebufferWidth = i;
         this.framebufferHeight = j;
         if (this.getFramebufferWidth() != k || this.getFramebufferHeight() != m) {
-            this.windowEventHandler.onResolutionChanged();
+            this.eventHandler.onResolutionChanged();
         }
     }
 
@@ -248,7 +248,7 @@ implements AutoCloseable {
 
     private void onWindowFocusChanged(long l, boolean bl) {
         if (l == this.handle) {
-            this.windowEventHandler.onWindowFocusChanged(bl);
+            this.eventHandler.onWindowFocusChanged(bl);
         }
     }
 
@@ -295,7 +295,7 @@ implements AutoCloseable {
         if (this.fullscreen && this.field_5186) {
             this.field_5186 = false;
             this.method_4479();
-            this.windowEventHandler.onResolutionChanged();
+            this.eventHandler.onResolutionChanged();
         }
     }
 
@@ -310,23 +310,23 @@ implements AutoCloseable {
             } else {
                 VideoMode videoMode = monitor.findClosestVideoMode(this.videoMode);
                 if (!bl) {
-                    this.field_5175 = this.positionX;
-                    this.field_5185 = this.positionY;
+                    this.field_5175 = this.x;
+                    this.field_5185 = this.y;
                     this.field_5174 = this.width;
                     this.field_5184 = this.height;
                 }
-                this.positionX = 0;
-                this.positionY = 0;
+                this.x = 0;
+                this.y = 0;
                 this.width = videoMode.getWidth();
                 this.height = videoMode.getHeight();
-                GLFW.glfwSetWindowMonitor(this.handle, monitor.getHandle(), this.positionX, this.positionY, this.width, this.height, videoMode.getRefreshRate());
+                GLFW.glfwSetWindowMonitor(this.handle, monitor.getHandle(), this.x, this.y, this.width, this.height, videoMode.getRefreshRate());
             }
         } else {
-            this.positionX = this.field_5175;
-            this.positionY = this.field_5185;
+            this.x = this.field_5175;
+            this.y = this.field_5185;
             this.width = this.field_5174;
             this.height = this.field_5184;
-            GLFW.glfwSetWindowMonitor(this.handle, 0L, this.positionX, this.positionY, this.width, this.height, -1);
+            GLFW.glfwSetWindowMonitor(this.handle, 0L, this.x, this.y, this.width, this.height, -1);
         }
     }
 
@@ -337,9 +337,9 @@ implements AutoCloseable {
     private void method_4485(boolean bl) {
         try {
             this.method_4479();
-            this.windowEventHandler.onResolutionChanged();
+            this.eventHandler.onResolutionChanged();
             this.setVsync(bl);
-            this.windowEventHandler.updateDisplay(false);
+            this.eventHandler.updateDisplay(false);
         } catch (Exception exception) {
             LOGGER.error("Couldn't toggle fullscreen", (Throwable)exception);
         }
@@ -399,12 +399,12 @@ implements AutoCloseable {
         return this.scaledHeight;
     }
 
-    public int getPositionY() {
-        return this.positionX;
+    public int getX() {
+        return this.x;
     }
 
-    public int getPositionX() {
-        return this.positionY;
+    public int getY() {
+        return this.y;
     }
 
     public double getScaleFactor() {

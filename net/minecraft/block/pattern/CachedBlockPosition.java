@@ -7,19 +7,19 @@ import java.util.function.Predicate;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.ViewableWorld;
+import net.minecraft.world.CollisionView;
 import org.jetbrains.annotations.Nullable;
 
 public class CachedBlockPosition {
-    private final ViewableWorld world;
+    private final CollisionView world;
     private final BlockPos pos;
     private final boolean forceLoad;
     private BlockState state;
     private BlockEntity blockEntity;
     private boolean cachedEntity;
 
-    public CachedBlockPosition(ViewableWorld viewableWorld, BlockPos blockPos, boolean bl) {
-        this.world = viewableWorld;
+    public CachedBlockPosition(CollisionView collisionView, BlockPos blockPos, boolean bl) {
+        this.world = collisionView;
         this.pos = blockPos.toImmutable();
         this.forceLoad = bl;
     }
@@ -40,7 +40,7 @@ public class CachedBlockPosition {
         return this.blockEntity;
     }
 
-    public ViewableWorld getWorld() {
+    public CollisionView getWorld() {
         return this.world;
     }
 

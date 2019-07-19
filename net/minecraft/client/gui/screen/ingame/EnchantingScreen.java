@@ -11,9 +11,9 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextRenderer;
-import net.minecraft.client.gui.screen.ingame.AbstractContainerScreen;
+import net.minecraft.client.gui.screen.ingame.ContainerScreen;
 import net.minecraft.client.gui.screen.ingame.EnchantingPhrases;
-import net.minecraft.client.render.GuiLighting;
+import net.minecraft.client.render.DiffuseLighting;
 import net.minecraft.client.render.entity.model.BookModel;
 import net.minecraft.client.resource.language.I18n;
 import net.minecraft.client.util.math.Matrix4f;
@@ -28,7 +28,7 @@ import net.minecraft.util.math.MathHelper;
 
 @Environment(value=EnvType.CLIENT)
 public class EnchantingScreen
-extends AbstractContainerScreen<EnchantingTableContainer> {
+extends ContainerScreen<EnchantingTableContainer> {
     private static final Identifier TEXTURE = new Identifier("textures/gui/container/enchanting_table.png");
     private static final Identifier BOOK_TEXURE = new Identifier("textures/entity/enchanting_table_book.png");
     private static final BookModel bookModel = new BookModel();
@@ -90,7 +90,7 @@ extends AbstractContainerScreen<EnchantingTableContainer> {
         float g = 1.0f;
         GlStateManager.matrixMode(5888);
         GlStateManager.loadIdentity();
-        GuiLighting.enable();
+        DiffuseLighting.enable();
         GlStateManager.translatef(0.0f, 3.3f, -16.0f);
         GlStateManager.scalef(1.0f, 1.0f, 1.0f);
         float h = 5.0f;
@@ -121,13 +121,13 @@ extends AbstractContainerScreen<EnchantingTableContainer> {
         GlStateManager.enableRescaleNormal();
         bookModel.render(0.0f, o, p, n, 0.0f, 0.0625f);
         GlStateManager.disableRescaleNormal();
-        GuiLighting.disable();
+        DiffuseLighting.disable();
         GlStateManager.matrixMode(5889);
         GlStateManager.viewport(0, 0, this.minecraft.window.getFramebufferWidth(), this.minecraft.window.getFramebufferHeight());
         GlStateManager.popMatrix();
         GlStateManager.matrixMode(5888);
         GlStateManager.popMatrix();
-        GuiLighting.disable();
+        DiffuseLighting.disable();
         GlStateManager.color4f(1.0f, 1.0f, 1.0f, 1.0f);
         EnchantingPhrases.getInstance().setSeed(((EnchantingTableContainer)this.container).getSeed());
         int q = ((EnchantingTableContainer)this.container).getLapisCount();
@@ -150,7 +150,7 @@ extends AbstractContainerScreen<EnchantingTableContainer> {
             if (!(q >= r + 1 && this.minecraft.player.experienceLevel >= u || this.minecraft.player.abilities.creativeMode)) {
                 this.blit(s, l + 14 + 19 * r, 0, 185, 108, 19);
                 this.blit(s + 1, l + 15 + 19 * r, 16 * r, 239, 16, 16);
-                textRenderer.drawStringBounded(string2, t, l + 16 + 19 * r, v, (w & 0xFEFEFE) >> 1);
+                textRenderer.drawTrimmed(string2, t, l + 16 + 19 * r, v, (w & 0xFEFEFE) >> 1);
                 w = 4226832;
             } else {
                 int x = i - (k + 60);
@@ -162,7 +162,7 @@ extends AbstractContainerScreen<EnchantingTableContainer> {
                     this.blit(s, l + 14 + 19 * r, 0, 166, 108, 19);
                 }
                 this.blit(s + 1, l + 15 + 19 * r, 16 * r, 223, 16, 16);
-                textRenderer.drawStringBounded(string2, t, l + 16 + 19 * r, v, w);
+                textRenderer.drawTrimmed(string2, t, l + 16 + 19 * r, v, w);
                 w = 8453920;
             }
             textRenderer = this.minecraft.textRenderer;

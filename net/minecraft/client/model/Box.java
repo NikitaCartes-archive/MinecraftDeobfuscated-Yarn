@@ -5,7 +5,7 @@ package net.minecraft.client.model;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.client.model.Cuboid;
+import net.minecraft.client.model.ModelPart;
 import net.minecraft.client.model.Quad;
 import net.minecraft.client.model.Vertex;
 import net.minecraft.client.render.BufferBuilder;
@@ -22,11 +22,11 @@ public class Box {
     public final float zMax;
     public String name;
 
-    public Box(Cuboid cuboid, int i, int j, float f, float g, float h, int k, int l, int m, float n) {
-        this(cuboid, i, j, f, g, h, k, l, m, n, cuboid.mirror);
+    public Box(ModelPart modelPart, int i, int j, float f, float g, float h, int k, int l, int m, float n) {
+        this(modelPart, i, j, f, g, h, k, l, m, n, modelPart.mirror);
     }
 
-    public Box(Cuboid cuboid, int i, int j, float f, float g, float h, int k, int l, int m, float n, boolean bl) {
+    public Box(ModelPart modelPart, int i, int j, float f, float g, float h, int k, int l, int m, float n, boolean bl) {
         this.xMin = f;
         this.yMin = g;
         this.zMin = h;
@@ -65,12 +65,12 @@ public class Box {
         this.vertices[5] = vertex6;
         this.vertices[6] = vertex7;
         this.vertices[7] = vertex8;
-        this.polygons[0] = new Quad(new Vertex[]{vertex6, vertex2, vertex3, vertex7}, i + m + k, j + m, i + m + k + m, j + m + l, cuboid.textureWidth, cuboid.textureHeight);
-        this.polygons[1] = new Quad(new Vertex[]{vertex, vertex5, vertex8, vertex4}, i, j + m, i + m, j + m + l, cuboid.textureWidth, cuboid.textureHeight);
-        this.polygons[2] = new Quad(new Vertex[]{vertex6, vertex5, vertex, vertex2}, i + m, j, i + m + k, j + m, cuboid.textureWidth, cuboid.textureHeight);
-        this.polygons[3] = new Quad(new Vertex[]{vertex3, vertex4, vertex8, vertex7}, i + m + k, j + m, i + m + k + k, j, cuboid.textureWidth, cuboid.textureHeight);
-        this.polygons[4] = new Quad(new Vertex[]{vertex2, vertex, vertex4, vertex3}, i + m, j + m, i + m + k, j + m + l, cuboid.textureWidth, cuboid.textureHeight);
-        this.polygons[5] = new Quad(new Vertex[]{vertex5, vertex6, vertex7, vertex8}, i + m + k + m, j + m, i + m + k + m + k, j + m + l, cuboid.textureWidth, cuboid.textureHeight);
+        this.polygons[0] = new Quad(new Vertex[]{vertex6, vertex2, vertex3, vertex7}, i + m + k, j + m, i + m + k + m, j + m + l, modelPart.textureWidth, modelPart.textureHeight);
+        this.polygons[1] = new Quad(new Vertex[]{vertex, vertex5, vertex8, vertex4}, i, j + m, i + m, j + m + l, modelPart.textureWidth, modelPart.textureHeight);
+        this.polygons[2] = new Quad(new Vertex[]{vertex6, vertex5, vertex, vertex2}, i + m, j, i + m + k, j + m, modelPart.textureWidth, modelPart.textureHeight);
+        this.polygons[3] = new Quad(new Vertex[]{vertex3, vertex4, vertex8, vertex7}, i + m + k, j + m, i + m + k + k, j, modelPart.textureWidth, modelPart.textureHeight);
+        this.polygons[4] = new Quad(new Vertex[]{vertex2, vertex, vertex4, vertex3}, i + m, j + m, i + m + k, j + m + l, modelPart.textureWidth, modelPart.textureHeight);
+        this.polygons[5] = new Quad(new Vertex[]{vertex5, vertex6, vertex7, vertex8}, i + m + k + m, j + m, i + m + k + m + k, j + m + l, modelPart.textureWidth, modelPart.textureHeight);
         if (bl) {
             for (Quad quad : this.polygons) {
                 quad.flip();

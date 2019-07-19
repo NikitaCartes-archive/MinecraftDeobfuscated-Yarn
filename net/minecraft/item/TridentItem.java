@@ -71,14 +71,14 @@ extends Item {
             return;
         }
         int k = EnchantmentHelper.getRiptide(itemStack);
-        if (k > 0 && !playerEntity2.isInsideWaterOrRain()) {
+        if (k > 0 && !playerEntity2.isTouchingWaterOrRain()) {
             return;
         }
         if (!world.isClient) {
             itemStack.damage(1, playerEntity2, playerEntity -> playerEntity.sendToolBreakStatus(livingEntity.getActiveHand()));
             if (k == 0) {
                 TridentEntity tridentEntity = new TridentEntity(world, (LivingEntity)playerEntity2, itemStack);
-                tridentEntity.method_7474(playerEntity2, playerEntity2.pitch, playerEntity2.yaw, 0.0f, 2.5f + (float)k * 0.5f, 1.0f);
+                tridentEntity.setProperties(playerEntity2, playerEntity2.pitch, playerEntity2.yaw, 0.0f, 2.5f + (float)k * 0.5f, 1.0f);
                 if (playerEntity2.abilities.creativeMode) {
                     tridentEntity.pickupType = ProjectileEntity.PickupPermission.CREATIVE_ONLY;
                 }
@@ -115,7 +115,7 @@ extends Item {
         if (itemStack.getDamage() >= itemStack.getMaxDamage()) {
             return new TypedActionResult<ItemStack>(ActionResult.FAIL, itemStack);
         }
-        if (EnchantmentHelper.getRiptide(itemStack) > 0 && !playerEntity.isInsideWaterOrRain()) {
+        if (EnchantmentHelper.getRiptide(itemStack) > 0 && !playerEntity.isTouchingWaterOrRain()) {
             return new TypedActionResult<ItemStack>(ActionResult.FAIL, itemStack);
         }
         playerEntity.setCurrentHand(hand);

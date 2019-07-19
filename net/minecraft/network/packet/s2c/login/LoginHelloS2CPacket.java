@@ -1,0 +1,64 @@
+/*
+ * Decompiled with CFR 0.2.0 (FabricMC d28b102d).
+ */
+package net.minecraft.network.packet.s2c.login;
+
+import java.io.IOException;
+import java.security.PublicKey;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
+import net.minecraft.network.NetworkEncryptionUtils;
+import net.minecraft.network.Packet;
+import net.minecraft.network.listener.ClientLoginPacketListener;
+import net.minecraft.util.PacketByteBuf;
+
+public class LoginHelloS2CPacket
+implements Packet<ClientLoginPacketListener> {
+    private String serverId;
+    private PublicKey publicKey;
+    private byte[] nonce;
+
+    public LoginHelloS2CPacket() {
+    }
+
+    public LoginHelloS2CPacket(String string, PublicKey publicKey, byte[] bs) {
+        this.serverId = string;
+        this.publicKey = publicKey;
+        this.nonce = bs;
+    }
+
+    @Override
+    public void read(PacketByteBuf packetByteBuf) throws IOException {
+        this.serverId = packetByteBuf.readString(20);
+        this.publicKey = NetworkEncryptionUtils.readEncodedPublicKey(packetByteBuf.readByteArray());
+        this.nonce = packetByteBuf.readByteArray();
+    }
+
+    @Override
+    public void write(PacketByteBuf packetByteBuf) throws IOException {
+        packetByteBuf.writeString(this.serverId);
+        packetByteBuf.writeByteArray(this.publicKey.getEncoded());
+        packetByteBuf.writeByteArray(this.nonce);
+    }
+
+    @Override
+    public void apply(ClientLoginPacketListener clientLoginPacketListener) {
+        clientLoginPacketListener.onHello(this);
+    }
+
+    @Environment(value=EnvType.CLIENT)
+    public String getServerId() {
+        return this.serverId;
+    }
+
+    @Environment(value=EnvType.CLIENT)
+    public PublicKey getPublicKey() {
+        return this.publicKey;
+    }
+
+    @Environment(value=EnvType.CLIENT)
+    public byte[] getNonce() {
+        return this.nonce;
+    }
+}
+

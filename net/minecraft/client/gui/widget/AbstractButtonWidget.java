@@ -18,7 +18,7 @@ import net.minecraft.client.sound.SoundManager;
 import net.minecraft.client.util.NarratorManager;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.SystemUtil;
+import net.minecraft.util.Util;
 import net.minecraft.util.math.MathHelper;
 
 @Environment(value=EnvType.CLIENT)
@@ -71,7 +71,7 @@ Element {
         }
         boolean bl = this.isHovered = i >= this.x && j >= this.y && i < this.x + this.width && j < this.y + this.height;
         if (this.wasHovered != this.isHovered()) {
-            this.nextNarration = this.isHovered() ? (this.focused ? SystemUtil.getMeasuringTimeMs() + 200L : SystemUtil.getMeasuringTimeMs() + 750L) : Long.MAX_VALUE;
+            this.nextNarration = this.isHovered() ? (this.focused ? Util.getMeasuringTimeMs() + 200L : Util.getMeasuringTimeMs() + 750L) : Long.MAX_VALUE;
         }
         if (this.visible) {
             this.renderButton(i, j, f);
@@ -82,7 +82,7 @@ Element {
 
     protected void narrate() {
         String string;
-        if (this.active && this.isHovered() && SystemUtil.getMeasuringTimeMs() > this.nextNarration && !(string = this.getNarrationMessage()).isEmpty()) {
+        if (this.active && this.isHovered() && Util.getMeasuringTimeMs() > this.nextNarration && !(string = this.getNarrationMessage()).isEmpty()) {
             NarratorManager.INSTANCE.narrate(string);
             this.nextNarration = Long.MAX_VALUE;
         }
@@ -211,7 +211,7 @@ Element {
 
     public void setMessage(String string) {
         if (!Objects.equals(string, this.message)) {
-            this.nextNarration = SystemUtil.getMeasuringTimeMs() + 250L;
+            this.nextNarration = Util.getMeasuringTimeMs() + 250L;
         }
         this.message = string;
     }

@@ -129,7 +129,7 @@ public abstract class Dimension {
     public abstract boolean canPlayersSleep();
 
     @Environment(value=EnvType.CLIENT)
-    public abstract boolean shouldRenderFog(int var1, int var2);
+    public abstract boolean isFogThick(int var1, int var2);
 
     public abstract DimensionType getType();
 }

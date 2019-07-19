@@ -11,7 +11,7 @@ import net.minecraft.util.math.BlockPos;
 import org.jetbrains.annotations.Nullable;
 
 public class ChunkPos {
-    public static final long INVALID = ChunkPos.toLong(1875016, 1875016);
+    public static final long MARKER = ChunkPos.toLong(1875016, 1875016);
     public final int x;
     public final int z;
 
@@ -118,25 +118,25 @@ public class ChunkPos {
         final int l = chunkPos.z < chunkPos2.z ? 1 : -1;
         return StreamSupport.stream(new Spliterators.AbstractSpliterator<ChunkPos>((long)(i * j), 64){
             @Nullable
-            private ChunkPos field_18684;
+            private ChunkPos position;
 
             @Override
             public boolean tryAdvance(Consumer<? super ChunkPos> consumer) {
-                if (this.field_18684 == null) {
-                    this.field_18684 = chunkPos;
+                if (this.position == null) {
+                    this.position = chunkPos;
                 } else {
-                    int i = this.field_18684.x;
-                    int j = this.field_18684.z;
+                    int i = this.position.x;
+                    int j = this.position.z;
                     if (i == chunkPos2.x) {
                         if (j == chunkPos2.z) {
                             return false;
                         }
-                        this.field_18684 = new ChunkPos(chunkPos.x, j + l);
+                        this.position = new ChunkPos(chunkPos.x, j + l);
                     } else {
-                        this.field_18684 = new ChunkPos(i + k, j);
+                        this.position = new ChunkPos(i + k, j);
                     }
                 }
-                consumer.accept(this.field_18684);
+                consumer.accept(this.position);
                 return true;
             }
         }, false);

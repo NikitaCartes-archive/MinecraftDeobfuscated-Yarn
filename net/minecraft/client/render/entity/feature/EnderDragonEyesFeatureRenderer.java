@@ -24,7 +24,8 @@ extends FeatureRenderer<EnderDragonEntity, DragonEntityModel> {
         super(featureRendererContext);
     }
 
-    public void method_4183(EnderDragonEntity enderDragonEntity, float f, float g, float h, float i, float j, float k, float l) {
+    @Override
+    public void render(EnderDragonEntity enderDragonEntity, float f, float g, float h, float i, float j, float k, float l) {
         this.bindTexture(SKIN);
         GlStateManager.enableBlend();
         GlStateManager.disableAlphaTest();
@@ -39,7 +40,7 @@ extends FeatureRenderer<EnderDragonEntity, DragonEntityModel> {
         GlStateManager.color4f(1.0f, 1.0f, 1.0f, 1.0f);
         GameRenderer gameRenderer = MinecraftClient.getInstance().gameRenderer;
         gameRenderer.setFogBlack(true);
-        ((DragonEntityModel)this.getModel()).method_17137(enderDragonEntity, f, g, i, j, k, l);
+        ((DragonEntityModel)this.getContextModel()).render(enderDragonEntity, f, g, i, j, k, l);
         gameRenderer.setFogBlack(false);
         this.applyLightmapCoordinates(enderDragonEntity);
         GlStateManager.disableBlend();

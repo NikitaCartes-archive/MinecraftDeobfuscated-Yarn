@@ -6,21 +6,21 @@ package com.mojang.realmsclient.dto;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import com.mojang.realmsclient.dto.ValueObject;
 import com.mojang.realmsclient.dto.WorldTemplate;
+import com.mojang.realmsclient.util.JsonUtils;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_4352;
-import net.minecraft.class_4431;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 @Environment(value=EnvType.CLIENT)
 public class WorldTemplatePaginatedList
-extends class_4352 {
+extends ValueObject {
     private static final Logger LOGGER = LogManager.getLogger();
     public List<WorldTemplate> templates;
     public int page;
@@ -53,9 +53,9 @@ extends class_4352 {
                     worldTemplatePaginatedList.templates.add(WorldTemplate.parse(iterator.next().getAsJsonObject()));
                 }
             }
-            worldTemplatePaginatedList.page = class_4431.method_21545("page", jsonObject, 0);
-            worldTemplatePaginatedList.size = class_4431.method_21545("size", jsonObject, 0);
-            worldTemplatePaginatedList.total = class_4431.method_21545("total", jsonObject, 0);
+            worldTemplatePaginatedList.page = JsonUtils.getIntOr("page", jsonObject, 0);
+            worldTemplatePaginatedList.size = JsonUtils.getIntOr("size", jsonObject, 0);
+            worldTemplatePaginatedList.total = JsonUtils.getIntOr("total", jsonObject, 0);
         } catch (Exception exception) {
             LOGGER.error("Could not parse WorldTemplatePaginatedList: " + exception.getMessage());
         }

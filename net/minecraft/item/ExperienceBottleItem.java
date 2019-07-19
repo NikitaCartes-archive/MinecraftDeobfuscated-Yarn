@@ -39,7 +39,7 @@ extends Item {
         if (!world.isClient) {
             ThrownExperienceBottleEntity thrownExperienceBottleEntity = new ThrownExperienceBottleEntity(world, playerEntity);
             thrownExperienceBottleEntity.setItem(itemStack);
-            thrownExperienceBottleEntity.method_19207(playerEntity, playerEntity.pitch, playerEntity.yaw, -20.0f, 0.7f, 1.0f);
+            thrownExperienceBottleEntity.setProperties(playerEntity, playerEntity.pitch, playerEntity.yaw, -20.0f, 0.7f, 1.0f);
             world.spawnEntity(thrownExperienceBottleEntity);
         }
         playerEntity.incrementStat(Stats.USED.getOrCreateStat(this));

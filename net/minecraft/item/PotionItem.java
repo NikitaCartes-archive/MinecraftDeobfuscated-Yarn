@@ -50,7 +50,7 @@ extends Item {
             itemStack.decrement(1);
         }
         if (playerEntity instanceof ServerPlayerEntity) {
-            Criterions.CONSUME_ITEM.handle((ServerPlayerEntity)playerEntity, itemStack);
+            Criterions.CONSUME_ITEM.trigger((ServerPlayerEntity)playerEntity, itemStack);
         }
         if (!world.isClient) {
             List<StatusEffectInstance> list = PotionUtil.getPotionEffects(itemStack);
@@ -59,7 +59,7 @@ extends Item {
                     statusEffectInstance.getEffectType().applyInstantEffect(playerEntity, playerEntity, livingEntity, statusEffectInstance.getAmplifier(), 1.0);
                     continue;
                 }
-                livingEntity.addPotionEffect(new StatusEffectInstance(statusEffectInstance));
+                livingEntity.addStatusEffect(new StatusEffectInstance(statusEffectInstance));
             }
         }
         if (playerEntity != null) {
@@ -94,7 +94,7 @@ extends Item {
 
     @Override
     public String getTranslationKey(ItemStack itemStack) {
-        return PotionUtil.getPotion(itemStack).getName(this.getTranslationKey() + ".effect.");
+        return PotionUtil.getPotion(itemStack).finishTranslationKey(this.getTranslationKey() + ".effect.");
     }
 
     @Override

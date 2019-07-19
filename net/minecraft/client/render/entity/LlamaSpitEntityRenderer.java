@@ -23,7 +23,8 @@ extends EntityRenderer<LlamaSpitEntity> {
         super(entityRenderDispatcher);
     }
 
-    public void method_4061(LlamaSpitEntity llamaSpitEntity, double d, double e, double f, float g, float h) {
+    @Override
+    public void render(LlamaSpitEntity llamaSpitEntity, double d, double e, double f, float g, float h) {
         GlStateManager.pushMatrix();
         GlStateManager.translatef((float)d, (float)e + 0.15f, (float)f);
         GlStateManager.rotatef(MathHelper.lerp(h, llamaSpitEntity.prevYaw, llamaSpitEntity.yaw) - 90.0f, 0.0f, 1.0f, 0.0f);
@@ -42,7 +43,8 @@ extends EntityRenderer<LlamaSpitEntity> {
         super.render(llamaSpitEntity, d, e, f, g, h);
     }
 
-    protected Identifier method_4062(LlamaSpitEntity llamaSpitEntity) {
+    @Override
+    protected Identifier getTexture(LlamaSpitEntity llamaSpitEntity) {
         return SKIN;
     }
 }

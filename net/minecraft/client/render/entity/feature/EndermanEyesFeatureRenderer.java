@@ -25,7 +25,8 @@ extends FeatureRenderer<T, EndermanEntityModel<T>> {
         super(featureRendererContext);
     }
 
-    public void method_4187(T livingEntity, float f, float g, float h, float i, float j, float k, float l) {
+    @Override
+    public void render(T livingEntity, float f, float g, float h, float i, float j, float k, float l) {
         this.bindTexture(SKIN);
         GlStateManager.enableBlend();
         GlStateManager.disableAlphaTest();
@@ -40,7 +41,7 @@ extends FeatureRenderer<T, EndermanEntityModel<T>> {
         GlStateManager.color4f(1.0f, 1.0f, 1.0f, 1.0f);
         GameRenderer gameRenderer = MinecraftClient.getInstance().gameRenderer;
         gameRenderer.setFogBlack(true);
-        ((EndermanEntityModel)this.getModel()).method_17088(livingEntity, f, g, i, j, k, l);
+        ((EndermanEntityModel)this.getContextModel()).render(livingEntity, f, g, i, j, k, l);
         gameRenderer.setFogBlack(false);
         this.applyLightmapCoordinates(livingEntity);
         GlStateManager.depthMask(true);

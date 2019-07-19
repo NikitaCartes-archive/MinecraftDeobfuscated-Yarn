@@ -30,7 +30,8 @@ extends EntityRenderer<PaintingEntity> {
         super(entityRenderDispatcher);
     }
 
-    public void method_4075(PaintingEntity paintingEntity, double d, double e, double f, float g, float h) {
+    @Override
+    public void render(PaintingEntity paintingEntity, double d, double e, double f, float g, float h) {
         GlStateManager.pushMatrix();
         GlStateManager.translated(d, e, f);
         GlStateManager.rotatef(180.0f - g, 0.0f, 1.0f, 0.0f);
@@ -54,7 +55,8 @@ extends EntityRenderer<PaintingEntity> {
         super.render(paintingEntity, d, e, f, g, h);
     }
 
-    protected Identifier method_4077(PaintingEntity paintingEntity) {
+    @Override
+    protected Identifier getTexture(PaintingEntity paintingEntity) {
         return SpriteAtlasTexture.PAINTING_ATLAS_TEX;
     }
 
@@ -69,9 +71,9 @@ extends EntityRenderer<PaintingEntity> {
         float o = sprite2.getMinU();
         float p = sprite2.getMaxU();
         float q = sprite2.getMinV();
-        float r = sprite2.getV(1.0);
+        float r = sprite2.getFrameV(1.0);
         float s = sprite2.getMinU();
-        float t = sprite2.getU(1.0);
+        float t = sprite2.getFrameU(1.0);
         float u = sprite2.getMinV();
         float v = sprite2.getMaxV();
         int w = i / 16;
@@ -85,12 +87,12 @@ extends EntityRenderer<PaintingEntity> {
                 float ac = g + (float)((z + 1) * 16);
                 float ad = g + (float)(z * 16);
                 this.method_4076(paintingEntity, (aa + ab) / 2.0f, (ac + ad) / 2.0f);
-                float ae = sprite.getU(d * (double)(w - y));
-                float af = sprite.getU(d * (double)(w - (y + 1)));
-                float ag = sprite.getV(e * (double)(x - z));
-                float ah = sprite.getV(e * (double)(x - (z + 1)));
+                float ae = sprite.getFrameU(d * (double)(w - y));
+                float af = sprite.getFrameU(d * (double)(w - (y + 1)));
+                float ag = sprite.getFrameV(e * (double)(x - z));
+                float ah = sprite.getFrameV(e * (double)(x - (z + 1)));
                 Tessellator tessellator = Tessellator.getInstance();
-                BufferBuilder bufferBuilder = tessellator.getBufferBuilder();
+                BufferBuilder bufferBuilder = tessellator.getBuffer();
                 bufferBuilder.begin(7, VertexFormats.POSITION_UV_NORMAL);
                 bufferBuilder.vertex(aa, ad, -0.5).texture(af, ag).normal(0.0f, 0.0f, -1.0f).next();
                 bufferBuilder.vertex(ab, ad, -0.5).texture(ae, ag).normal(0.0f, 0.0f, -1.0f).next();

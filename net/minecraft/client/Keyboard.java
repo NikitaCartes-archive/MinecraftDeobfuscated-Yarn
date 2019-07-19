@@ -10,10 +10,10 @@ import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.hud.ChatHud;
-import net.minecraft.client.gui.screen.AccessibilityScreen;
-import net.minecraft.client.gui.screen.ChatOptionsScreen;
 import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.client.gui.screen.controls.ControlsOptionsScreen;
+import net.minecraft.client.gui.screen.options.AccessibilityScreen;
+import net.minecraft.client.gui.screen.options.ChatOptionsScreen;
+import net.minecraft.client.gui.screen.options.ControlsOptionsScreen;
 import net.minecraft.client.gui.widget.TextFieldWidget;
 import net.minecraft.client.options.KeyBinding;
 import net.minecraft.client.options.Option;
@@ -29,7 +29,7 @@ import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.SystemUtil;
+import net.minecraft.util.Util;
 import net.minecraft.util.crash.CrashException;
 import net.minecraft.util.crash.CrashReport;
 import net.minecraft.util.hit.BlockHitResult;
@@ -65,7 +65,7 @@ public class Keyboard {
     }
 
     private boolean processF3(int i) {
-        if (this.debugCrashStartTime > 0L && this.debugCrashStartTime < SystemUtil.getMeasuringTimeMs() - 100L) {
+        if (this.debugCrashStartTime > 0L && this.debugCrashStartTime < Util.getMeasuringTimeMs() - 100L) {
             return true;
         }
         switch (i) {
@@ -160,7 +160,7 @@ public class Keyboard {
     }
 
     private void copyLookAt(boolean bl, boolean bl2) {
-        HitResult hitResult = this.client.hitResult;
+        HitResult hitResult = this.client.crosshairTarget;
         if (hitResult == null) {
             return;
         }
@@ -251,12 +251,12 @@ public class Keyboard {
             }
         } else if (InputUtil.isKeyPressed(MinecraftClient.getInstance().window.getHandle(), 67) && InputUtil.isKeyPressed(MinecraftClient.getInstance().window.getHandle(), 292)) {
             this.switchF3State = true;
-            this.debugCrashStartTime = SystemUtil.getMeasuringTimeMs();
-            this.debugCrashLastLogTime = SystemUtil.getMeasuringTimeMs();
+            this.debugCrashStartTime = Util.getMeasuringTimeMs();
+            this.debugCrashLastLogTime = Util.getMeasuringTimeMs();
             this.debugCrashElapsedTime = 0L;
         }
         Screen parentElement = this.client.currentScreen;
-        if (!(k != 1 || this.client.currentScreen instanceof ControlsOptionsScreen && ((ControlsOptionsScreen)parentElement).time > SystemUtil.getMeasuringTimeMs() - 20L)) {
+        if (!(k != 1 || this.client.currentScreen instanceof ControlsOptionsScreen && ((ControlsOptionsScreen)parentElement).time > Util.getMeasuringTimeMs() - 20L)) {
             if (this.client.options.keyFullscreen.matchesKey(i, j)) {
                 this.client.window.toggleFullscreen();
                 this.client.options.fullscreen = this.client.window.isFullscreen();
@@ -380,7 +380,7 @@ public class Keyboard {
 
     public void pollDebugCrash() {
         if (this.debugCrashStartTime > 0L) {
-            long l = SystemUtil.getMeasuringTimeMs();
+            long l = Util.getMeasuringTimeMs();
             long m = 10000L - (l - this.debugCrashStartTime);
             long n = l - this.debugCrashLastLogTime;
             if (m < 0L) {

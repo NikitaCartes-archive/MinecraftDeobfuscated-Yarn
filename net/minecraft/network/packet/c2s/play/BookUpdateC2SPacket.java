@@ -1,0 +1,62 @@
+/*
+ * Decompiled with CFR 0.2.0 (FabricMC d28b102d).
+ */
+package net.minecraft.network.packet.c2s.play;
+
+import java.io.IOException;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
+import net.minecraft.item.ItemStack;
+import net.minecraft.network.Packet;
+import net.minecraft.network.listener.ServerPlayPacketListener;
+import net.minecraft.util.Hand;
+import net.minecraft.util.PacketByteBuf;
+
+public class BookUpdateC2SPacket
+implements Packet<ServerPlayPacketListener> {
+    private ItemStack book;
+    private boolean signed;
+    private Hand hand;
+
+    public BookUpdateC2SPacket() {
+    }
+
+    @Environment(value=EnvType.CLIENT)
+    public BookUpdateC2SPacket(ItemStack itemStack, boolean bl, Hand hand) {
+        this.book = itemStack.copy();
+        this.signed = bl;
+        this.hand = hand;
+    }
+
+    @Override
+    public void read(PacketByteBuf packetByteBuf) throws IOException {
+        this.book = packetByteBuf.readItemStack();
+        this.signed = packetByteBuf.readBoolean();
+        this.hand = packetByteBuf.readEnumConstant(Hand.class);
+    }
+
+    @Override
+    public void write(PacketByteBuf packetByteBuf) throws IOException {
+        packetByteBuf.writeItemStack(this.book);
+        packetByteBuf.writeBoolean(this.signed);
+        packetByteBuf.writeEnumConstant(this.hand);
+    }
+
+    @Override
+    public void apply(ServerPlayPacketListener serverPlayPacketListener) {
+        serverPlayPacketListener.onBookUpdate(this);
+    }
+
+    public ItemStack getBook() {
+        return this.book;
+    }
+
+    public boolean wasSigned() {
+        return this.signed;
+    }
+
+    public Hand getHand() {
+        return this.hand;
+    }
+}
+

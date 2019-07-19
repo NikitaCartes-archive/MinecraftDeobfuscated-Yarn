@@ -75,7 +75,7 @@ extends ProjectileEntity {
                 Vec3d vec3d = new Vec3d(entity.x - this.x, entity.y + (double)entity.getStandingEyeHeight() - this.y, entity.z - this.z);
                 this.y += vec3d.y * 0.015 * (double)i;
                 if (this.world.isClient) {
-                    this.prevRenderY = this.y;
+                    this.lastRenderY = this.y;
                 }
                 double d = 0.05 * (double)i;
                 this.setVelocity(this.getVelocity().multiply(0.95).add(vec3d.normalize().multiply(d)));
@@ -144,7 +144,7 @@ extends ProjectileEntity {
     }
 
     @Override
-    protected SoundEvent getSound() {
+    protected SoundEvent getHitSound() {
         return SoundEvents.ITEM_TRIDENT_HIT_GROUND;
     }
 
@@ -160,7 +160,7 @@ extends ProjectileEntity {
     @Override
     public void readCustomDataFromTag(CompoundTag compoundTag) {
         super.readCustomDataFromTag(compoundTag);
-        if (compoundTag.containsKey("Trident", 10)) {
+        if (compoundTag.contains("Trident", 10)) {
             this.tridentStack = ItemStack.fromTag(compoundTag.getCompound("Trident"));
         }
         this.dealtDamage = compoundTag.getBoolean("DealtDamage");
@@ -189,7 +189,7 @@ extends ProjectileEntity {
 
     @Override
     @Environment(value=EnvType.CLIENT)
-    public boolean shouldRenderFrom(double d, double e, double f) {
+    public boolean shouldRender(double d, double e, double f) {
         return true;
     }
 }

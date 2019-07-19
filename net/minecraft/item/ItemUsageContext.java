@@ -69,7 +69,7 @@ public class ItemUsageContext {
         return this.player == null ? Direction.NORTH : this.player.getHorizontalFacing();
     }
 
-    public boolean isPlayerSneaking() {
+    public boolean shouldCancelInteraction() {
         return this.player != null && this.player.isSneaking();
     }
 

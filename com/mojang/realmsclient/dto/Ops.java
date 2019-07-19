@@ -6,15 +6,15 @@ package com.mojang.realmsclient.dto;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import com.mojang.realmsclient.dto.ValueObject;
 import java.util.HashSet;
 import java.util.Set;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_4352;
 
 @Environment(value=EnvType.CLIENT)
 public class Ops
-extends class_4352 {
+extends ValueObject {
     public Set<String> ops = new HashSet<String>();
 
     public static Ops parse(String string) {

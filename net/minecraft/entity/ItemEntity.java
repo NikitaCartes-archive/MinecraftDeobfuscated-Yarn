@@ -7,7 +7,6 @@ import java.util.List;
 import java.util.UUID;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.client.network.packet.EntitySpawnS2CPacket;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.MovementType;
@@ -20,13 +19,14 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtHelper;
 import net.minecraft.network.Packet;
+import net.minecraft.network.packet.s2c.play.EntitySpawnS2CPacket;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.stat.Stats;
 import net.minecraft.tag.FluidTags;
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
-import net.minecraft.util.TagHelper;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
@@ -50,7 +50,7 @@ extends Entity {
 
     public ItemEntity(World world, double d, double e, double f) {
         this((EntityType<? extends ItemEntity>)EntityType.ITEM, world);
-        this.setPosition(d, e, f);
+        this.updatePosition(d, e, f);
         this.yaw = this.random.nextFloat() * 360.0f;
         this.setVelocity(this.random.nextDouble() * 0.2 - 0.1, 0.2, this.random.nextDouble() * 0.2 - 0.1);
     }
@@ -87,7 +87,7 @@ extends Entity {
         this.prevZ = this.z;
         Vec3d vec3d = this.getVelocity();
         if (this.isInFluid(FluidTags.WATER)) {
-            this.method_6974();
+            this.applyBuoyancy();
         } else if (!this.hasNoGravity()) {
             this.setVelocity(this.getVelocity().add(0.0, -0.04, 0.0));
         }
@@ -96,14 +96,14 @@ extends Entity {
         } else {
             boolean bl = this.noClip = !this.world.doesNotCollide(this);
             if (this.noClip) {
-                this.pushOutOfBlocks(this.x, (this.getBoundingBox().minY + this.getBoundingBox().maxY) / 2.0, this.z);
+                this.pushOutOfBlocks(this.x, (this.getBoundingBox().y1 + this.getBoundingBox().y2) / 2.0, this.z);
             }
         }
         if (!this.onGround || ItemEntity.squaredHorizontalLength(this.getVelocity()) > (double)1.0E-5f || (this.age + this.getEntityId()) % 4 == 0) {
             this.move(MovementType.SELF, this.getVelocity());
             float f = 0.98f;
             if (this.onGround) {
-                f = this.world.getBlockState(new BlockPos(this.x, this.getBoundingBox().minY - 1.0, this.z)).getBlock().getSlipperiness() * 0.98f;
+                f = this.world.getBlockState(new BlockPos(this.x, this.getBoundingBox().y1 - 1.0, this.z)).getBlock().getSlipperiness() * 0.98f;
             }
             this.setVelocity(this.getVelocity().multiply(f, 0.98, f));
             if (this.onGround) {
@@ -117,7 +117,7 @@ extends Entity {
                 this.setVelocity((this.random.nextFloat() - this.random.nextFloat()) * 0.2f, 0.2f, (this.random.nextFloat() - this.random.nextFloat()) * 0.2f);
                 this.playSound(SoundEvents.ENTITY_GENERIC_BURN, 0.4f, 2.0f + this.random.nextFloat() * 0.4f);
             }
-            if (!this.world.isClient && this.method_20397()) {
+            if (!this.world.isClient && this.canMerge()) {
                 this.tryMerge();
             }
         }
@@ -133,16 +133,16 @@ extends Entity {
         }
     }
 
-    private void method_6974() {
+    private void applyBuoyancy() {
         Vec3d vec3d = this.getVelocity();
         this.setVelocity(vec3d.x * (double)0.99f, vec3d.y + (double)(vec3d.y < (double)0.06f ? 5.0E-4f : 0.0f), vec3d.z * (double)0.99f);
     }
 
     private void tryMerge() {
-        List<ItemEntity> list = this.world.getEntities(ItemEntity.class, this.getBoundingBox().expand(0.5, 0.0, 0.5), itemEntity -> itemEntity != this && itemEntity.method_20397());
+        List<ItemEntity> list = this.world.getEntities(ItemEntity.class, this.getBoundingBox().expand(0.5, 0.0, 0.5), itemEntity -> itemEntity != this && itemEntity.canMerge());
         if (!list.isEmpty()) {
             for (ItemEntity itemEntity2 : list) {
-                if (this.method_20397()) {
+                if (this.canMerge()) {
                     this.tryMerge(itemEntity2);
                     continue;
                 }
@@ -151,7 +151,7 @@ extends Entity {
         }
     }
 
-    private boolean method_20397() {
+    private boolean canMerge() {
         ItemStack itemStack = this.getStack();
         return this.isAlive() && this.pickupDelay != Short.MAX_VALUE && this.age != Short.MIN_VALUE && this.age < 6000 && itemStack.getCount() < itemStack.getMaxCount();
     }
@@ -192,7 +192,7 @@ extends Entity {
         }
     }
 
-    public void method_6980() {
+    public void setCreativeDespawnTime() {
         this.age = 4800;
     }
 
@@ -223,10 +223,10 @@ extends Entity {
         compoundTag.putShort("Age", (short)this.age);
         compoundTag.putShort("PickupDelay", (short)this.pickupDelay);
         if (this.getThrower() != null) {
-            compoundTag.put("Thrower", TagHelper.serializeUuid(this.getThrower()));
+            compoundTag.put("Thrower", NbtHelper.fromUuid(this.getThrower()));
         }
         if (this.getOwner() != null) {
-            compoundTag.put("Owner", TagHelper.serializeUuid(this.getOwner()));
+            compoundTag.put("Owner", NbtHelper.fromUuid(this.getOwner()));
         }
         if (!this.getStack().isEmpty()) {
             compoundTag.put("Item", this.getStack().toTag(new CompoundTag()));
@@ -237,14 +237,14 @@ extends Entity {
     public void readCustomDataFromTag(CompoundTag compoundTag) {
         this.health = compoundTag.getShort("Health");
         this.age = compoundTag.getShort("Age");
-        if (compoundTag.containsKey("PickupDelay")) {
+        if (compoundTag.contains("PickupDelay")) {
             this.pickupDelay = compoundTag.getShort("PickupDelay");
         }
-        if (compoundTag.containsKey("Owner", 10)) {
-            this.owner = TagHelper.deserializeUuid(compoundTag.getCompound("Owner"));
+        if (compoundTag.contains("Owner", 10)) {
+            this.owner = NbtHelper.toUuid(compoundTag.getCompound("Owner"));
         }
-        if (compoundTag.containsKey("Thrower", 10)) {
-            this.thrower = TagHelper.deserializeUuid(compoundTag.getCompound("Thrower"));
+        if (compoundTag.contains("Thrower", 10)) {
+            this.thrower = NbtHelper.toUuid(compoundTag.getCompound("Thrower"));
         }
         CompoundTag compoundTag2 = compoundTag.getCompound("Item");
         this.setStack(ItemStack.fromTag(compoundTag2));
@@ -346,11 +346,11 @@ extends Entity {
         return this.pickupDelay > 0;
     }
 
-    public void method_6976() {
+    public void setCovetedItem() {
         this.age = -6000;
     }
 
-    public void method_6987() {
+    public void setDespawnImmediately() {
         this.setPickupDelayInfinite();
         this.age = 5999;
     }

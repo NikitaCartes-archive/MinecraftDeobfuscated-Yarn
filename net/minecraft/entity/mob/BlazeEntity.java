@@ -42,10 +42,10 @@ extends HostileEntity {
 
     public BlazeEntity(EntityType<? extends BlazeEntity> entityType, World world) {
         super((EntityType<? extends HostileEntity>)entityType, world);
-        this.setPathNodeTypeWeight(PathNodeType.WATER, -1.0f);
-        this.setPathNodeTypeWeight(PathNodeType.LAVA, 8.0f);
-        this.setPathNodeTypeWeight(PathNodeType.DANGER_FIRE, 0.0f);
-        this.setPathNodeTypeWeight(PathNodeType.DAMAGE_FIRE, 0.0f);
+        this.setPathfindingPenalty(PathNodeType.WATER, -1.0f);
+        this.setPathfindingPenalty(PathNodeType.LAVA, 8.0f);
+        this.setPathfindingPenalty(PathNodeType.DANGER_FIRE, 0.0f);
+        this.setPathfindingPenalty(PathNodeType.DAMAGE_FIRE, 0.0f);
         this.experiencePoints = 10;
     }
 
@@ -119,7 +119,7 @@ extends HostileEntity {
     @Override
     protected void mobTick() {
         LivingEntity livingEntity;
-        if (this.isTouchingWater()) {
+        if (this.isWet()) {
             this.damage(DamageSource.DROWN, 1.0f);
         }
         --this.field_7215;
@@ -204,7 +204,7 @@ extends HostileEntity {
                 this.blaze.getMoveControl().moveTo(livingEntity.x, livingEntity.y, livingEntity.z, 1.0);
             } else if (d < this.method_6995() * this.method_6995() && bl) {
                 double e = livingEntity.x - this.blaze.x;
-                double f = livingEntity.getBoundingBox().minY + (double)(livingEntity.getHeight() / 2.0f) - (this.blaze.y + (double)(this.blaze.getHeight() / 2.0f));
+                double f = livingEntity.getBoundingBox().y1 + (double)(livingEntity.getHeight() / 2.0f) - (this.blaze.y + (double)(this.blaze.getHeight() / 2.0f));
                 double g = livingEntity.z - this.blaze.z;
                 if (this.field_7217 <= 0) {
                     ++this.field_7218;
@@ -222,7 +222,7 @@ extends HostileEntity {
                         float h = MathHelper.sqrt(MathHelper.sqrt(d)) * 0.5f;
                         this.blaze.world.playLevelEvent(null, 1018, new BlockPos(this.blaze), 0);
                         for (int i = 0; i < 1; ++i) {
-                            SmallFireballEntity smallFireballEntity = new SmallFireballEntity(this.blaze.world, this.blaze, e + this.blaze.getRand().nextGaussian() * (double)h, f, g + this.blaze.getRand().nextGaussian() * (double)h);
+                            SmallFireballEntity smallFireballEntity = new SmallFireballEntity(this.blaze.world, this.blaze, e + this.blaze.getRandom().nextGaussian() * (double)h, f, g + this.blaze.getRandom().nextGaussian() * (double)h);
                             smallFireballEntity.y = this.blaze.y + (double)(this.blaze.getHeight() / 2.0f) + 0.5;
                             this.blaze.world.spawnEntity(smallFireballEntity);
                         }

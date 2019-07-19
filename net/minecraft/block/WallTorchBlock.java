@@ -17,7 +17,7 @@ import net.minecraft.block.TorchBlock;
 import net.minecraft.entity.EntityContext;
 import net.minecraft.item.ItemPlacementContext;
 import net.minecraft.particle.ParticleTypes;
-import net.minecraft.state.StateFactory;
+import net.minecraft.state.StateManager;
 import net.minecraft.state.property.DirectionProperty;
 import net.minecraft.util.BlockMirror;
 import net.minecraft.util.BlockRotation;
@@ -25,8 +25,8 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.world.BlockView;
+import net.minecraft.world.CollisionView;
 import net.minecraft.world.IWorld;
-import net.minecraft.world.ViewableWorld;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
 
@@ -37,7 +37,7 @@ extends TorchBlock {
 
     protected WallTorchBlock(Block.Settings settings) {
         super(settings);
-        this.setDefaultState((BlockState)((BlockState)this.stateFactory.getDefaultState()).with(FACING, Direction.NORTH));
+        this.setDefaultState((BlockState)((BlockState)this.stateManager.getDefaultState()).with(FACING, Direction.NORTH));
     }
 
     @Override
@@ -55,11 +55,11 @@ extends TorchBlock {
     }
 
     @Override
-    public boolean canPlaceAt(BlockState blockState, ViewableWorld viewableWorld, BlockPos blockPos) {
+    public boolean canPlaceAt(BlockState blockState, CollisionView collisionView, BlockPos blockPos) {
         Direction direction = blockState.get(FACING);
         BlockPos blockPos2 = blockPos.offset(direction.getOpposite());
-        BlockState blockState2 = viewableWorld.getBlockState(blockPos2);
-        return blockState2.method_20827(viewableWorld, blockPos2, direction);
+        BlockState blockState2 = collisionView.getBlockState(blockPos2);
+        return blockState2.isSideSolidFullSquare(collisionView, blockPos2, direction);
     }
 
     @Override
@@ -67,11 +67,11 @@ extends TorchBlock {
     public BlockState getPlacementState(ItemPlacementContext itemPlacementContext) {
         Direction[] directions;
         BlockState blockState = this.getDefaultState();
-        World viewableWorld = itemPlacementContext.getWorld();
+        World collisionView = itemPlacementContext.getWorld();
         BlockPos blockPos = itemPlacementContext.getBlockPos();
         for (Direction direction : directions = itemPlacementContext.getPlacementDirections()) {
             Direction direction2;
-            if (!direction.getAxis().isHorizontal() || !(blockState = (BlockState)blockState.with(FACING, direction2 = direction.getOpposite())).canPlaceAt(viewableWorld, blockPos)) continue;
+            if (!direction.getAxis().isHorizontal() || !(blockState = (BlockState)blockState.with(FACING, direction2 = direction.getOpposite())).canPlaceAt(collisionView, blockPos)) continue;
             return blockState;
         }
         return null;
@@ -110,7 +110,7 @@ extends TorchBlock {
     }
 
     @Override
-    protected void appendProperties(StateFactory.Builder<Block, BlockState> builder) {
+    protected void appendProperties(StateManager.Builder<Block, BlockState> builder) {
         builder.add(FACING);
     }
 }

@@ -47,9 +47,9 @@ import net.minecraft.sound.SoundEvents;
 import net.minecraft.tag.BlockTags;
 import net.minecraft.util.Hand;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.CollisionView;
 import net.minecraft.world.IWorld;
 import net.minecraft.world.LocalDifficulty;
-import net.minecraft.world.ViewableWorld;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
 
@@ -231,13 +231,14 @@ extends AnimalEntity {
         }
     }
 
-    public OcelotEntity method_16104(PassiveEntity passiveEntity) {
+    @Override
+    public OcelotEntity createChild(PassiveEntity passiveEntity) {
         return EntityType.OCELOT.create(this.world);
     }
 
     @Override
     public boolean isBreedingItem(ItemStack itemStack) {
-        return TAMING_INGREDIENT.method_8093(itemStack);
+        return TAMING_INGREDIENT.test(itemStack);
     }
 
     public static boolean method_20666(EntityType<OcelotEntity> entityType, IWorld iWorld, SpawnType spawnType, BlockPos blockPos, Random random) {
@@ -245,13 +246,13 @@ extends AnimalEntity {
     }
 
     @Override
-    public boolean canSpawn(ViewableWorld viewableWorld) {
-        if (viewableWorld.intersectsEntities(this) && !viewableWorld.intersectsFluid(this.getBoundingBox())) {
-            BlockPos blockPos = new BlockPos(this.x, this.getBoundingBox().minY, this.z);
-            if (blockPos.getY() < viewableWorld.getSeaLevel()) {
+    public boolean canSpawn(CollisionView collisionView) {
+        if (collisionView.intersectsEntities(this) && !collisionView.intersectsFluid(this.getBoundingBox())) {
+            BlockPos blockPos = new BlockPos(this.x, this.getBoundingBox().y1, this.z);
+            if (blockPos.getY() < collisionView.getSeaLevel()) {
                 return false;
             }
-            BlockState blockState = viewableWorld.getBlockState(blockPos.down());
+            BlockState blockState = collisionView.getBlockState(blockPos.down());
             Block block = blockState.getBlock();
             if (block == Blocks.GRASS_BLOCK || blockState.matches(BlockTags.LEAVES)) {
                 return true;
@@ -263,7 +264,7 @@ extends AnimalEntity {
     protected void spawnKittens() {
         for (int i = 0; i < 2; ++i) {
             OcelotEntity ocelotEntity = EntityType.OCELOT.create(this.world);
-            ocelotEntity.setPositionAndAngles(this.x, this.y, this.z, this.yaw, 0.0f);
+            ocelotEntity.refreshPositionAndAngles(this.x, this.y, this.z, this.yaw, 0.0f);
             ocelotEntity.setBreedingAge(-24000);
             this.world.spawnEntity(ocelotEntity);
         }
@@ -281,7 +282,7 @@ extends AnimalEntity {
 
     @Override
     public /* synthetic */ PassiveEntity createChild(PassiveEntity passiveEntity) {
-        return this.method_16104(passiveEntity);
+        return this.createChild(passiveEntity);
     }
 
     static class OcelotTemptGoal

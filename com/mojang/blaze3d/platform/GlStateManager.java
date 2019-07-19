@@ -10,7 +10,7 @@ import java.nio.IntBuffer;
 import java.util.stream.IntStream;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.client.render.GuiLighting;
+import net.minecraft.client.render.DiffuseLighting;
 import net.minecraft.client.util.Untracker;
 import net.minecraft.client.util.math.Matrix4f;
 import org.jetbrains.annotations.Nullable;
@@ -589,7 +589,7 @@ public class GlStateManager {
     }
 
     public static void multMatrix(Matrix4f matrix4f) {
-        matrix4f.putIntoBuffer(MATRIX_BUFFER);
+        matrix4f.writeToBuffer(MATRIX_BUFFER);
         MATRIX_BUFFER.rewind();
         GL11.glMultMatrixf(MATRIX_BUFFER);
     }
@@ -756,18 +756,18 @@ public class GlStateManager {
                 GlStateManager.disableAlphaTest();
                 GlStateManager.alphaFunc(519, 0.0f);
                 GlStateManager.disableLighting();
-                GlStateManager.lightModel(2899, GuiLighting.singletonBuffer(0.2f, 0.2f, 0.2f, 1.0f));
+                GlStateManager.lightModel(2899, DiffuseLighting.singletonBuffer(0.2f, 0.2f, 0.2f, 1.0f));
                 for (int i = 0; i < 8; ++i) {
                     GlStateManager.disableLight(i);
-                    GlStateManager.light(16384 + i, 4608, GuiLighting.singletonBuffer(0.0f, 0.0f, 0.0f, 1.0f));
-                    GlStateManager.light(16384 + i, 4611, GuiLighting.singletonBuffer(0.0f, 0.0f, 1.0f, 0.0f));
+                    GlStateManager.light(16384 + i, 4608, DiffuseLighting.singletonBuffer(0.0f, 0.0f, 0.0f, 1.0f));
+                    GlStateManager.light(16384 + i, 4611, DiffuseLighting.singletonBuffer(0.0f, 0.0f, 1.0f, 0.0f));
                     if (i == 0) {
-                        GlStateManager.light(16384 + i, 4609, GuiLighting.singletonBuffer(1.0f, 1.0f, 1.0f, 1.0f));
-                        GlStateManager.light(16384 + i, 4610, GuiLighting.singletonBuffer(1.0f, 1.0f, 1.0f, 1.0f));
+                        GlStateManager.light(16384 + i, 4609, DiffuseLighting.singletonBuffer(1.0f, 1.0f, 1.0f, 1.0f));
+                        GlStateManager.light(16384 + i, 4610, DiffuseLighting.singletonBuffer(1.0f, 1.0f, 1.0f, 1.0f));
                         continue;
                     }
-                    GlStateManager.light(16384 + i, 4609, GuiLighting.singletonBuffer(0.0f, 0.0f, 0.0f, 1.0f));
-                    GlStateManager.light(16384 + i, 4610, GuiLighting.singletonBuffer(0.0f, 0.0f, 0.0f, 1.0f));
+                    GlStateManager.light(16384 + i, 4609, DiffuseLighting.singletonBuffer(0.0f, 0.0f, 0.0f, 1.0f));
+                    GlStateManager.light(16384 + i, 4610, DiffuseLighting.singletonBuffer(0.0f, 0.0f, 0.0f, 1.0f));
                 }
                 GlStateManager.disableColorMaterial();
                 GlStateManager.colorMaterial(1032, 5634);
@@ -783,7 +783,7 @@ public class GlStateManager {
                 GlStateManager.fogDensity(1.0f);
                 GlStateManager.fogStart(0.0f);
                 GlStateManager.fogEnd(1.0f);
-                GlStateManager.fog(2918, GuiLighting.singletonBuffer(0.0f, 0.0f, 0.0f, 0.0f));
+                GlStateManager.fog(2918, DiffuseLighting.singletonBuffer(0.0f, 0.0f, 0.0f, 0.0f));
                 if (GL.getCapabilities().GL_NV_fog_distance) {
                     GlStateManager.fogi(2917, 34140);
                 }
@@ -792,20 +792,20 @@ public class GlStateManager {
                 GlStateManager.logicOp(5379);
                 GlStateManager.disableTexGen(TexCoord.S);
                 GlStateManager.texGenMode(TexCoord.S, 9216);
-                GlStateManager.texGenParam(TexCoord.S, 9474, GuiLighting.singletonBuffer(1.0f, 0.0f, 0.0f, 0.0f));
-                GlStateManager.texGenParam(TexCoord.S, 9217, GuiLighting.singletonBuffer(1.0f, 0.0f, 0.0f, 0.0f));
+                GlStateManager.texGenParam(TexCoord.S, 9474, DiffuseLighting.singletonBuffer(1.0f, 0.0f, 0.0f, 0.0f));
+                GlStateManager.texGenParam(TexCoord.S, 9217, DiffuseLighting.singletonBuffer(1.0f, 0.0f, 0.0f, 0.0f));
                 GlStateManager.disableTexGen(TexCoord.T);
                 GlStateManager.texGenMode(TexCoord.T, 9216);
-                GlStateManager.texGenParam(TexCoord.T, 9474, GuiLighting.singletonBuffer(0.0f, 1.0f, 0.0f, 0.0f));
-                GlStateManager.texGenParam(TexCoord.T, 9217, GuiLighting.singletonBuffer(0.0f, 1.0f, 0.0f, 0.0f));
+                GlStateManager.texGenParam(TexCoord.T, 9474, DiffuseLighting.singletonBuffer(0.0f, 1.0f, 0.0f, 0.0f));
+                GlStateManager.texGenParam(TexCoord.T, 9217, DiffuseLighting.singletonBuffer(0.0f, 1.0f, 0.0f, 0.0f));
                 GlStateManager.disableTexGen(TexCoord.R);
                 GlStateManager.texGenMode(TexCoord.R, 9216);
-                GlStateManager.texGenParam(TexCoord.R, 9474, GuiLighting.singletonBuffer(0.0f, 0.0f, 0.0f, 0.0f));
-                GlStateManager.texGenParam(TexCoord.R, 9217, GuiLighting.singletonBuffer(0.0f, 0.0f, 0.0f, 0.0f));
+                GlStateManager.texGenParam(TexCoord.R, 9474, DiffuseLighting.singletonBuffer(0.0f, 0.0f, 0.0f, 0.0f));
+                GlStateManager.texGenParam(TexCoord.R, 9217, DiffuseLighting.singletonBuffer(0.0f, 0.0f, 0.0f, 0.0f));
                 GlStateManager.disableTexGen(TexCoord.Q);
                 GlStateManager.texGenMode(TexCoord.Q, 9216);
-                GlStateManager.texGenParam(TexCoord.Q, 9474, GuiLighting.singletonBuffer(0.0f, 0.0f, 0.0f, 0.0f));
-                GlStateManager.texGenParam(TexCoord.Q, 9217, GuiLighting.singletonBuffer(0.0f, 0.0f, 0.0f, 0.0f));
+                GlStateManager.texGenParam(TexCoord.Q, 9474, DiffuseLighting.singletonBuffer(0.0f, 0.0f, 0.0f, 0.0f));
+                GlStateManager.texGenParam(TexCoord.Q, 9217, DiffuseLighting.singletonBuffer(0.0f, 0.0f, 0.0f, 0.0f));
                 GlStateManager.activeTexture(0);
                 GlStateManager.texParameter(3553, 10240, 9729);
                 GlStateManager.texParameter(3553, 10241, 9986);
@@ -816,7 +816,7 @@ public class GlStateManager {
                 GlStateManager.texParameter(3553, 33082, -1000);
                 GlStateManager.texParameter(3553, 34049, 0.0f);
                 GlStateManager.texEnv(8960, 8704, 8448);
-                GlStateManager.texEnv(8960, 8705, GuiLighting.singletonBuffer(0.0f, 0.0f, 0.0f, 0.0f));
+                GlStateManager.texEnv(8960, 8705, DiffuseLighting.singletonBuffer(0.0f, 0.0f, 0.0f, 0.0f));
                 GlStateManager.texEnv(8960, 34161, 8448);
                 GlStateManager.texEnv(8960, 34162, 8448);
                 GlStateManager.texEnv(8960, 34176, 5890);

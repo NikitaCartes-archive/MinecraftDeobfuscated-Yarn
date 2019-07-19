@@ -40,7 +40,7 @@ extends Item {
         EquipmentSlot equipmentSlot = MobEntity.getPreferredEquipmentSlot(itemStack);
         ItemStack itemStack2 = playerEntity.getEquippedStack(equipmentSlot);
         if (itemStack2.isEmpty()) {
-            playerEntity.setEquippedStack(equipmentSlot, itemStack.copy());
+            playerEntity.equipStack(equipmentSlot, itemStack.copy());
             itemStack.setCount(0);
             return new TypedActionResult<ItemStack>(ActionResult.SUCCESS, itemStack);
         }

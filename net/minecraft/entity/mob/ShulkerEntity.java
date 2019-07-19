@@ -161,7 +161,7 @@ implements Monster {
         this.dataTracker.set(ATTACHED_FACE, Direction.byId(compoundTag.getByte("AttachFace")));
         this.dataTracker.set(PEEK_AMOUNT, compoundTag.getByte("Peek"));
         this.dataTracker.set(COLOR, compoundTag.getByte("Color"));
-        if (compoundTag.containsKey("APX")) {
+        if (compoundTag.contains("APX")) {
             int i = compoundTag.getInt("APX");
             int j = compoundTag.getInt("APY");
             int k = compoundTag.getInt("APZ");
@@ -226,11 +226,11 @@ implements Monster {
                     this.method_7127();
                 }
             }
-            if (!this.world.doesBlockHaveSolidTopSurface(blockPos2 = blockPos.offset(this.getAttachedFace()), this)) {
+            if (!this.world.isTopSolid(blockPos2 = blockPos.offset(this.getAttachedFace()), this)) {
                 boolean bl = false;
                 for (Direction direction2 : Direction.values()) {
                     blockPos2 = blockPos.offset(direction2);
-                    if (!this.world.doesBlockHaveSolidTopSurface(blockPos2, this)) continue;
+                    if (!this.world.isTopSolid(blockPos2, this)) continue;
                     this.dataTracker.set(ATTACHED_FACE, direction2);
                     bl = true;
                     break;
@@ -239,7 +239,7 @@ implements Monster {
                     this.method_7127();
                 }
             }
-            if (this.world.doesBlockHaveSolidTopSurface(blockPos3 = blockPos.offset(this.getAttachedFace().getOpposite()), this)) {
+            if (this.world.isTopSolid(blockPos3 = blockPos.offset(this.getAttachedFace().getOpposite()), this)) {
                 this.method_7127();
             }
         }
@@ -265,9 +265,9 @@ implements Monster {
             this.prevX = this.x;
             this.prevY = this.y;
             this.prevZ = this.z;
-            this.prevRenderX = this.x;
-            this.prevRenderY = this.y;
-            this.prevRenderZ = this.z;
+            this.lastRenderX = this.x;
+            this.lastRenderY = this.y;
+            this.lastRenderZ = this.z;
             double d = 0.5 - (double)MathHelper.sin((0.5f + this.field_7337) * (float)Math.PI) * 0.5;
             double e = 0.5 - (double)MathHelper.sin((0.5f + this.field_7339) * (float)Math.PI) * 0.5;
             Direction direction3 = this.getAttachedFace().getOpposite();
@@ -292,8 +292,8 @@ implements Monster {
     }
 
     @Override
-    public void setPosition(double d, double e, double f) {
-        super.setPosition(d, e, f);
+    public void updatePosition(double d, double e, double f) {
+        super.updatePosition(d, e, f);
         if (this.dataTracker == null || this.age == 0) {
             return;
         }
@@ -316,7 +316,7 @@ implements Monster {
             if (blockPos2.getY() <= 0 || !this.world.isAir(blockPos2) || !this.world.getWorldBorder().contains(blockPos2) || !this.world.doesNotCollide(this, new Box(blockPos2))) continue;
             boolean bl = false;
             for (Direction direction : Direction.values()) {
-                if (!this.world.doesBlockHaveSolidTopSurface(blockPos2.offset(direction), this)) continue;
+                if (!this.world.isTopSolid(blockPos2.offset(direction), this)) continue;
                 this.dataTracker.set(ATTACHED_FACE, direction);
                 bl = true;
                 break;
@@ -355,9 +355,9 @@ implements Monster {
             this.prevX = this.x;
             this.prevY = this.y;
             this.prevZ = this.z;
-            this.prevRenderX = this.x;
-            this.prevRenderY = this.y;
-            this.prevRenderZ = this.z;
+            this.lastRenderX = this.x;
+            this.lastRenderY = this.y;
+            this.lastRenderZ = this.z;
         }
         super.onTrackedDataSet(trackedData);
     }
@@ -375,7 +375,7 @@ implements Monster {
             return false;
         }
         if (super.damage(damageSource, f)) {
-            if ((double)this.getHealth() < (double)this.getHealthMaximum() * 0.5 && this.random.nextInt(4) == 0) {
+            if ((double)this.getHealth() < (double)this.getMaximumHealth() * 0.5 && this.random.nextInt(4) == 0) {
                 this.method_7127();
             }
             return true;

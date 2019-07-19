@@ -28,8 +28,8 @@ import net.minecraft.client.util.Session;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.server.integrated.IntegratedServer;
 import net.minecraft.util.JsonHelper;
-import net.minecraft.util.SystemUtil;
 import net.minecraft.util.UncaughtExceptionLogger;
+import net.minecraft.util.Util;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.Nullable;
@@ -53,7 +53,7 @@ public class Main {
         ArgumentAcceptingOptionSpec<Integer> optionSpec7 = optionParser.accepts("proxyPort").withRequiredArg().defaultsTo("8080", (String[])new String[0]).ofType(Integer.class);
         ArgumentAcceptingOptionSpec<String> optionSpec8 = optionParser.accepts("proxyUser").withRequiredArg();
         ArgumentAcceptingOptionSpec<String> optionSpec9 = optionParser.accepts("proxyPass").withRequiredArg();
-        ArgumentAcceptingOptionSpec<String> optionSpec10 = optionParser.accepts("username").withRequiredArg().defaultsTo("Player" + SystemUtil.getMeasuringTimeMs() % 1000L, (String[])new String[0]);
+        ArgumentAcceptingOptionSpec<String> optionSpec10 = optionParser.accepts("username").withRequiredArg().defaultsTo("Player" + Util.getMeasuringTimeMs() % 1000L, (String[])new String[0]);
         ArgumentAcceptingOptionSpec<String> optionSpec11 = optionParser.accepts("uuid").withRequiredArg();
         ArgumentAcceptingOptionSpec<String> optionSpec12 = optionParser.accepts("accessToken").withRequiredArg().required();
         ArgumentAcceptingOptionSpec<String> optionSpec13 = optionParser.accepts("version").withRequiredArg().required();
@@ -129,7 +129,7 @@ public class Main {
         thread.setUncaughtExceptionHandler(new UncaughtExceptionLogger(LOGGER));
         Runtime.getRuntime().addShutdownHook(thread);
         Thread.currentThread().setName("Client thread");
-        new MinecraftClient(runArgs).start();
+        new MinecraftClient(runArgs).run();
     }
 
     private static OptionalInt method_21612(@Nullable Integer integer) {

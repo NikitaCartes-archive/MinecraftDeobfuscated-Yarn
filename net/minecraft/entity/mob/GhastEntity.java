@@ -145,7 +145,7 @@ implements Monster {
     @Override
     public void readCustomDataFromTag(CompoundTag compoundTag) {
         super.readCustomDataFromTag(compoundTag);
-        if (compoundTag.containsKey("ExplosionPower", 99)) {
+        if (compoundTag.contains("ExplosionPower", 99)) {
             this.fireballStrength = compoundTag.getInt("ExplosionPower");
         }
     }
@@ -193,7 +193,7 @@ implements Monster {
                     double e = 4.0;
                     Vec3d vec3d = this.ghast.getRotationVec(1.0f);
                     double f = livingEntity.x - (this.ghast.x + vec3d.x * 4.0);
-                    double g = livingEntity.getBoundingBox().minY + (double)(livingEntity.getHeight() / 2.0f) - (0.5 + this.ghast.y + (double)(this.ghast.getHeight() / 2.0f));
+                    double g = livingEntity.getBoundingBox().y1 + (double)(livingEntity.getHeight() / 2.0f) - (0.5 + this.ghast.y + (double)(this.ghast.getHeight() / 2.0f));
                     double h = livingEntity.z - (this.ghast.z + vec3d.z * 4.0);
                     world.playLevelEvent(null, 1016, new BlockPos(this.ghast), 0);
                     FireballEntity fireballEntity = new FireballEntity(world, this.ghast, f, g, h);
@@ -271,7 +271,7 @@ implements Monster {
 
         @Override
         public void start() {
-            Random random = this.ghast.getRand();
+            Random random = this.ghast.getRandom();
             double d = this.ghast.x + (double)((random.nextFloat() * 2.0f - 1.0f) * 16.0f);
             double e = this.ghast.y + (double)((random.nextFloat() * 2.0f - 1.0f) * 16.0f);
             double f = this.ghast.z + (double)((random.nextFloat() * 2.0f - 1.0f) * 16.0f);
@@ -295,7 +295,7 @@ implements Monster {
                 return;
             }
             if (this.field_7276-- <= 0) {
-                this.field_7276 += this.ghast.getRand().nextInt(5) + 2;
+                this.field_7276 += this.ghast.getRandom().nextInt(5) + 2;
                 Vec3d vec3d = new Vec3d(this.targetX - this.ghast.x, this.targetY - this.ghast.y, this.targetZ - this.ghast.z);
                 double d = vec3d.length();
                 if (this.method_7051(vec3d = vec3d.normalize(), MathHelper.ceil(d))) {

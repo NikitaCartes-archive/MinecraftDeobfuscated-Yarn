@@ -12,7 +12,7 @@ import net.minecraft.block.BlockState;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemPlacementContext;
 import net.minecraft.particle.DustParticleEffect;
-import net.minecraft.state.StateFactory;
+import net.minecraft.state.StateManager;
 import net.minecraft.state.property.BooleanProperty;
 import net.minecraft.state.property.IntProperty;
 import net.minecraft.state.property.Properties;
@@ -20,8 +20,8 @@ import net.minecraft.util.Hand;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
+import net.minecraft.world.CollisionView;
 import net.minecraft.world.IWorld;
-import net.minecraft.world.ViewableWorld;
 import net.minecraft.world.World;
 
 public class RepeaterBlock
@@ -31,7 +31,7 @@ extends AbstractRedstoneGateBlock {
 
     protected RepeaterBlock(Block.Settings settings) {
         super(settings);
-        this.setDefaultState((BlockState)((BlockState)((BlockState)((BlockState)((BlockState)this.stateFactory.getDefaultState()).with(FACING, Direction.NORTH)).with(DELAY, 1)).with(LOCKED, false)).with(POWERED, false));
+        this.setDefaultState((BlockState)((BlockState)((BlockState)((BlockState)((BlockState)this.stateManager.getDefaultState()).with(FACING, Direction.NORTH)).with(DELAY, 1)).with(LOCKED, false)).with(POWERED, false));
     }
 
     @Override
@@ -63,8 +63,8 @@ extends AbstractRedstoneGateBlock {
     }
 
     @Override
-    public boolean isLocked(ViewableWorld viewableWorld, BlockPos blockPos, BlockState blockState) {
-        return this.getMaxInputLevelSides(viewableWorld, blockPos, blockState) > 0;
+    public boolean isLocked(CollisionView collisionView, BlockPos blockPos, BlockState blockState) {
+        return this.getMaxInputLevelSides(collisionView, blockPos, blockState) > 0;
     }
 
     @Override
@@ -92,7 +92,7 @@ extends AbstractRedstoneGateBlock {
     }
 
     @Override
-    protected void appendProperties(StateFactory.Builder<Block, BlockState> builder) {
+    protected void appendProperties(StateManager.Builder<Block, BlockState> builder) {
         builder.add(FACING, DELAY, LOCKED, POWERED);
     }
 }

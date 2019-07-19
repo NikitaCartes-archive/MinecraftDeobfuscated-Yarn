@@ -20,7 +20,7 @@ import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.shape.ArrayVoxelShape;
-import net.minecraft.util.shape.SliceVoxelShape;
+import net.minecraft.util.shape.SlicedVoxelShape;
 import net.minecraft.util.shape.VoxelSet;
 import net.minecraft.util.shape.VoxelShapes;
 import org.jetbrains.annotations.Nullable;
@@ -183,14 +183,14 @@ public abstract class VoxelShape {
             return this;
         }
         int i = this.getCoordIndex(axis, axisDirection == Direction.AxisDirection.POSITIVE ? 0.9999999 : 1.0E-7);
-        return new SliceVoxelShape(this, axis, i);
+        return new SlicedVoxelShape(this, axis, i);
     }
 
-    public double method_1108(Direction.Axis axis, Box box, double d) {
-        return this.method_1103(AxisCycleDirection.between(axis, Direction.Axis.X), box, d);
+    public double calculateMaxDistance(Direction.Axis axis, Box box, double d) {
+        return this.calculateMaxDistance(AxisCycleDirection.between(axis, Direction.Axis.X), box, d);
     }
 
-    protected double method_1103(AxisCycleDirection axisCycleDirection, Box box, double d) {
+    protected double calculateMaxDistance(AxisCycleDirection axisCycleDirection, Box box, double d) {
         block11: {
             int n;
             int l;

@@ -3,27 +3,22 @@
  */
 package net.minecraft.structure.rule;
 
-import net.minecraft.structure.rule.AbstractRuleTest;
-import net.minecraft.structure.rule.AlwaysTrueRuleTest;
-import net.minecraft.structure.rule.BlockMatchRuleTest;
-import net.minecraft.structure.rule.BlockStateMatchRuleTest;
-import net.minecraft.structure.rule.RandomBlockMatchRuleTest;
-import net.minecraft.structure.rule.RandomBlockStateMatchRuleTest;
-import net.minecraft.structure.rule.TagMatchRuleTest;
-import net.minecraft.util.DynamicDeserializer;
+import com.mojang.datafixers.Dynamic;
+import com.mojang.datafixers.types.DynamicOps;
+import java.util.Random;
+import net.minecraft.block.BlockState;
+import net.minecraft.structure.rule.RuleTestType;
 import net.minecraft.util.registry.Registry;
 
-public interface RuleTest
-extends DynamicDeserializer<AbstractRuleTest> {
-    public static final RuleTest ALWAYS_TRUE = RuleTest.register("always_true", dynamic -> AlwaysTrueRuleTest.INSTANCE);
-    public static final RuleTest BLOCK_MATCH = RuleTest.register("block_match", BlockMatchRuleTest::new);
-    public static final RuleTest BLOCKSTATE_MATCH = RuleTest.register("blockstate_match", BlockStateMatchRuleTest::new);
-    public static final RuleTest TAG_MATCH = RuleTest.register("tag_match", TagMatchRuleTest::new);
-    public static final RuleTest RANDOM_BLOCK_MATCH = RuleTest.register("random_block_match", RandomBlockMatchRuleTest::new);
-    public static final RuleTest RANDOM_BLOCKSTATE_MATCH = RuleTest.register("random_blockstate_match", RandomBlockStateMatchRuleTest::new);
+public abstract class RuleTest {
+    public abstract boolean test(BlockState var1, Random var2);
 
-    public static RuleTest register(String string, RuleTest ruleTest) {
-        return Registry.register(Registry.RULE_TEST, string, ruleTest);
+    public <T> Dynamic<T> serializeWithId(DynamicOps<T> dynamicOps) {
+        return new Dynamic<T>(dynamicOps, dynamicOps.mergeInto(this.serialize(dynamicOps).getValue(), dynamicOps.createString("predicate_type"), dynamicOps.createString(Registry.RULE_TEST.getId(this.getType()).toString())));
     }
+
+    protected abstract RuleTestType getType();
+
+    protected abstract <T> Dynamic<T> serialize(DynamicOps<T> var1);
 }
 

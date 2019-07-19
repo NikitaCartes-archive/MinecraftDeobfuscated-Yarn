@@ -23,9 +23,10 @@ extends EntityRenderer<LightningEntity> {
         super(entityRenderDispatcher);
     }
 
-    public void method_4034(LightningEntity lightningEntity, double d, double e, double f, float g, float h) {
+    @Override
+    public void render(LightningEntity lightningEntity, double d, double e, double f, float g, float h) {
         Tessellator tessellator = Tessellator.getInstance();
-        BufferBuilder bufferBuilder = tessellator.getBufferBuilder();
+        BufferBuilder bufferBuilder = tessellator.getBuffer();
         GlStateManager.disableTexture();
         GlStateManager.disableLighting();
         GlStateManager.enableBlend();
@@ -106,8 +107,9 @@ extends EntityRenderer<LightningEntity> {
         GlStateManager.enableTexture();
     }
 
+    @Override
     @Nullable
-    protected Identifier method_4033(LightningEntity lightningEntity) {
+    protected Identifier getTexture(LightningEntity lightningEntity) {
         return null;
     }
 }

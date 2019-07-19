@@ -12,7 +12,6 @@ import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.PoweredRailBlock;
 import net.minecraft.block.enums.RailShape;
-import net.minecraft.client.network.packet.EntitySpawnS2CPacket;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.MovementType;
@@ -32,10 +31,11 @@ import net.minecraft.entity.vehicle.TntMinecartEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtHelper;
 import net.minecraft.network.Packet;
+import net.minecraft.network.packet.s2c.play.EntitySpawnS2CPacket;
 import net.minecraft.predicate.entity.EntityPredicates;
 import net.minecraft.tag.BlockTags;
-import net.minecraft.util.TagHelper;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Direction;
@@ -75,7 +75,7 @@ extends Entity {
 
     protected AbstractMinecartEntity(EntityType<?> entityType, World world, double d, double e, double f) {
         this(entityType, world);
-        this.setPosition(d, e, f);
+        this.updatePosition(d, e, f);
         this.setVelocity(Vec3d.ZERO);
         this.prevX = d;
         this.prevY = e;
@@ -209,7 +209,7 @@ extends Entity {
         if (this.y < -64.0) {
             this.destroy();
         }
-        this.tickPortal();
+        this.tickNetherPortal();
         if (this.world.isClient) {
             if (this.field_7669 > 0) {
                 double d = this.x + (this.field_7665 - this.x) / (double)this.field_7669;
@@ -219,10 +219,10 @@ extends Entity {
                 this.yaw = (float)((double)this.yaw + g / (double)this.field_7669);
                 this.pitch = (float)((double)this.pitch + (this.field_7657 - (double)this.pitch) / (double)this.field_7669);
                 --this.field_7669;
-                this.setPosition(d, e, f);
+                this.updatePosition(d, e, f);
                 this.setRotation(this.yaw, this.pitch);
             } else {
-                this.setPosition(this.x, this.y, this.z);
+                this.updatePosition(this.x, this.y, this.z);
                 this.setRotation(this.yaw, this.pitch);
             }
             return;
@@ -391,15 +391,15 @@ extends Entity {
         }
         this.x = l + e * p;
         this.z = m + f * p;
-        this.setPosition(this.x, this.y, this.z);
+        this.updatePosition(this.x, this.y, this.z);
         q = this.hasPassengers() ? 0.75 : 1.0;
         r = this.method_7504();
         vec3d2 = this.getVelocity();
         this.move(MovementType.SELF, new Vec3d(MathHelper.clamp(q * vec3d2.x, -r, r), 0.0, MathHelper.clamp(q * vec3d2.z, -r, r)));
         if (is[0][1] != 0 && MathHelper.floor(this.x) - blockPos.getX() == is[0][0] && MathHelper.floor(this.z) - blockPos.getZ() == is[0][2]) {
-            this.setPosition(this.x, this.y + (double)is[0][1], this.z);
+            this.updatePosition(this.x, this.y + (double)is[0][1], this.z);
         } else if (is[1][1] != 0 && MathHelper.floor(this.x) - blockPos.getX() == is[1][0] && MathHelper.floor(this.z) - blockPos.getZ() == is[1][2]) {
-            this.setPosition(this.x, this.y + (double)is[1][1], this.z);
+            this.updatePosition(this.x, this.y + (double)is[1][1], this.z);
         }
         this.method_7525();
         Vec3d vec3d4 = this.method_7508(this.x, this.y, this.z);
@@ -410,7 +410,7 @@ extends Entity {
             if (t > 0.0) {
                 this.setVelocity(vec3d5.multiply((t + s) / t, 1.0, (t + s) / t));
             }
-            this.setPosition(this.x, vec3d4.y, this.z);
+            this.updatePosition(this.x, vec3d4.y, this.z);
         }
         int u = MathHelper.floor(this.x);
         int v = MathHelper.floor(this.z);
@@ -546,7 +546,7 @@ extends Entity {
     @Override
     protected void readCustomDataFromTag(CompoundTag compoundTag) {
         if (compoundTag.getBoolean("CustomDisplayTile")) {
-            this.setCustomBlock(TagHelper.deserializeBlockState(compoundTag.getCompound("DisplayState")));
+            this.setCustomBlock(NbtHelper.toBlockState(compoundTag.getCompound("DisplayState")));
             this.setCustomBlockOffset(compoundTag.getInt("DisplayOffset"));
         }
     }
@@ -555,7 +555,7 @@ extends Entity {
     protected void writeCustomDataToTag(CompoundTag compoundTag) {
         if (this.hasCustomBlock()) {
             compoundTag.putBoolean("CustomDisplayTile", true);
-            compoundTag.put("DisplayState", TagHelper.serializeBlockState(this.getContainedBlock()));
+            compoundTag.put("DisplayState", NbtHelper.fromBlockState(this.getContainedBlock()));
             compoundTag.putInt("DisplayOffset", this.getBlockOffset());
         }
     }

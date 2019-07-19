@@ -19,7 +19,7 @@ extends Enchantment {
     }
 
     @Override
-    public int method_20742(int i) {
+    public int getMaximumPower(int i) {
         return this.getMinimumPower(i) + 30;
     }
 

@@ -30,7 +30,8 @@ extends EntityRenderer<FallingBlockEntity> {
         this.field_4673 = 0.5f;
     }
 
-    public void method_3965(FallingBlockEntity fallingBlockEntity, double d, double e, double f, float g, float h) {
+    @Override
+    public void render(FallingBlockEntity fallingBlockEntity, double d, double e, double f, float g, float h) {
         BlockState blockState = fallingBlockEntity.getBlockState();
         if (blockState.getRenderType() != BlockRenderType.MODEL) {
             return;
@@ -43,13 +44,13 @@ extends EntityRenderer<FallingBlockEntity> {
         GlStateManager.pushMatrix();
         GlStateManager.disableLighting();
         Tessellator tessellator = Tessellator.getInstance();
-        BufferBuilder bufferBuilder = tessellator.getBufferBuilder();
+        BufferBuilder bufferBuilder = tessellator.getBuffer();
         if (this.renderOutlines) {
             GlStateManager.enableColorMaterial();
             GlStateManager.setupSolidRenderingTextureCombine(this.getOutlineColor(fallingBlockEntity));
         }
         bufferBuilder.begin(7, VertexFormats.POSITION_COLOR_UV_LMAP);
-        BlockPos blockPos = new BlockPos(fallingBlockEntity.x, fallingBlockEntity.getBoundingBox().maxY, fallingBlockEntity.z);
+        BlockPos blockPos = new BlockPos(fallingBlockEntity.x, fallingBlockEntity.getBoundingBox().y2, fallingBlockEntity.z);
         GlStateManager.translatef((float)(d - (double)blockPos.getX() - 0.5), (float)(e - (double)blockPos.getY()), (float)(f - (double)blockPos.getZ() - 0.5));
         BlockRenderManager blockRenderManager = MinecraftClient.getInstance().getBlockRenderManager();
         blockRenderManager.getModelRenderer().tesselate(world, blockRenderManager.getModel(blockState), blockState, blockPos, bufferBuilder, false, new Random(), blockState.getRenderingSeed(fallingBlockEntity.getFallingBlockPos()));
@@ -63,7 +64,8 @@ extends EntityRenderer<FallingBlockEntity> {
         super.render(fallingBlockEntity, d, e, f, g, h);
     }
 
-    protected Identifier method_3964(FallingBlockEntity fallingBlockEntity) {
+    @Override
+    protected Identifier getTexture(FallingBlockEntity fallingBlockEntity) {
         return SpriteAtlasTexture.BLOCK_ATLAS_TEX;
     }
 }

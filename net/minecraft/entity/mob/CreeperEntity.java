@@ -116,10 +116,10 @@ extends HostileEntity {
     public void readCustomDataFromTag(CompoundTag compoundTag) {
         super.readCustomDataFromTag(compoundTag);
         this.dataTracker.set(CHARGED, compoundTag.getBoolean("powered"));
-        if (compoundTag.containsKey("Fuse", 99)) {
+        if (compoundTag.contains("Fuse", 99)) {
             this.fuseTime = compoundTag.getShort("Fuse");
         }
-        if (compoundTag.containsKey("ExplosionRadius", 99)) {
+        if (compoundTag.contains("ExplosionRadius", 99)) {
             this.explosionRadius = compoundTag.getByte("ExplosionRadius");
         }
         if (compoundTag.getBoolean("ignited")) {

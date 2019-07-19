@@ -20,7 +20,7 @@ import net.minecraft.client.render.model.BakedQuad;
 import net.minecraft.client.render.model.json.ModelItemPropertyOverrideList;
 import net.minecraft.client.render.model.json.ModelTransformation;
 import net.minecraft.client.texture.Sprite;
-import net.minecraft.util.SystemUtil;
+import net.minecraft.util.Util;
 import net.minecraft.util.math.Direction;
 import org.apache.commons.lang3.tuple.Pair;
 import org.jetbrains.annotations.Nullable;
@@ -34,13 +34,13 @@ implements BakedModel {
     protected final Sprite sprite;
     protected final ModelTransformation transformations;
     protected final ModelItemPropertyOverrideList itemPropertyOverrides;
-    private final Map<BlockState, BitSet> field_5431 = new Object2ObjectOpenCustomHashMap<BlockState, BitSet>(SystemUtil.identityHashStrategy());
+    private final Map<BlockState, BitSet> field_5431 = new Object2ObjectOpenCustomHashMap<BlockState, BitSet>(Util.identityHashStrategy());
 
     public MultipartBakedModel(List<Pair<Predicate<BlockState>, BakedModel>> list) {
         this.components = list;
         BakedModel bakedModel = list.iterator().next().getRight();
         this.ambientOcclusion = bakedModel.useAmbientOcclusion();
-        this.depthGui = bakedModel.hasDepthInGui();
+        this.depthGui = bakedModel.hasDepth();
         this.sprite = bakedModel.getSprite();
         this.transformations = bakedModel.getTransformation();
         this.itemPropertyOverrides = bakedModel.getItemPropertyOverrides();
@@ -76,7 +76,7 @@ implements BakedModel {
     }
 
     @Override
-    public boolean hasDepthInGui() {
+    public boolean hasDepth() {
         return this.depthGui;
     }
 

@@ -30,12 +30,12 @@ import net.minecraft.client.gui.hud.DebugHud;
 import net.minecraft.client.gui.hud.PlayerListHud;
 import net.minecraft.client.gui.hud.SpectatorHud;
 import net.minecraft.client.gui.hud.SubtitlesHud;
-import net.minecraft.client.gui.screen.ingame.AbstractContainerScreen;
+import net.minecraft.client.gui.screen.ingame.ContainerScreen;
 import net.minecraft.client.options.AttackIndicator;
 import net.minecraft.client.options.GameOptions;
 import net.minecraft.client.render.BufferBuilder;
 import net.minecraft.client.render.Camera;
-import net.minecraft.client.render.GuiLighting;
+import net.minecraft.client.render.DiffuseLighting;
 import net.minecraft.client.render.Tessellator;
 import net.minecraft.client.render.VertexFormats;
 import net.minecraft.client.render.item.ItemRenderer;
@@ -45,7 +45,7 @@ import net.minecraft.client.texture.SpriteAtlasTexture;
 import net.minecraft.client.texture.StatusEffectSpriteManager;
 import net.minecraft.client.util.NarratorManager;
 import net.minecraft.client.world.ClientWorld;
-import net.minecraft.container.NameableContainerProvider;
+import net.minecraft.container.NameableContainerFactory;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.attribute.EntityAttributeInstance;
@@ -68,7 +68,7 @@ import net.minecraft.util.Arm;
 import net.minecraft.util.ChatUtil;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.SystemUtil;
+import net.minecraft.util.Util;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.hit.EntityHitResult;
 import net.minecraft.util.hit.HitResult;
@@ -326,7 +326,7 @@ extends DrawableHelper {
         if (gameOptions.perspective != 0) {
             return;
         }
-        if (this.client.interactionManager.getCurrentGameMode() == GameMode.SPECTATOR && !this.shouldRenderSpectatorCrosshair(this.client.hitResult)) {
+        if (this.client.interactionManager.getCurrentGameMode() == GameMode.SPECTATOR && !this.shouldRenderSpectatorCrosshair(this.client.crosshairTarget)) {
             return;
         }
         if (gameOptions.debugEnabled && !gameOptions.hudHidden && !this.client.player.getReducedDebugInfo() && !gameOptions.reducedDebugInfo) {
@@ -367,12 +367,12 @@ extends DrawableHelper {
             return false;
         }
         if (hitResult.getType() == HitResult.Type.ENTITY) {
-            return ((EntityHitResult)hitResult).getEntity() instanceof NameableContainerProvider;
+            return ((EntityHitResult)hitResult).getEntity() instanceof NameableContainerFactory;
         }
         if (hitResult.getType() == HitResult.Type.BLOCK) {
             ClientWorld world = this.client.world;
             BlockPos blockPos = ((BlockHitResult)hitResult).getBlockPos();
-            return world.getBlockState(blockPos).createContainerProvider(world, blockPos) != null;
+            return world.getBlockState(blockPos).createContainerFactory(world, blockPos) != null;
         }
         return false;
     }
@@ -387,7 +387,7 @@ extends DrawableHelper {
         int j = 0;
         StatusEffectSpriteManager statusEffectSpriteManager = this.client.getStatusEffectSpriteManager();
         ArrayList<Runnable> list = Lists.newArrayListWithExpectedSize(collection.size());
-        this.client.getTextureManager().bindTexture(AbstractContainerScreen.BACKGROUND_TEXTURE);
+        this.client.getTextureManager().bindTexture(ContainerScreen.BACKGROUND_TEXTURE);
         for (StatusEffectInstance statusEffectInstance : Ordering.natural().reverse().sortedCopy(collection)) {
             StatusEffect statusEffect = statusEffectInstance.getEffectType();
             if (!statusEffectInstance.shouldShowIcon()) continue;
@@ -457,7 +457,7 @@ extends DrawableHelper {
         GlStateManager.enableRescaleNormal();
         GlStateManager.enableBlend();
         GlStateManager.blendFuncSeparate(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO);
-        GuiLighting.enableForItems();
+        DiffuseLighting.enableForItems();
         for (m = 0; m < 9; ++m) {
             n = i - 90 + m * 20 + 2;
             o = this.scaledHeight - 16 - 3;
@@ -483,7 +483,7 @@ extends DrawableHelper {
             this.blit(o, n, 0, 94, 18, 18);
             this.blit(o, n + 18 - p, 18, 112 - p, 18, p);
         }
-        GuiLighting.disable();
+        DiffuseLighting.disable();
         GlStateManager.disableRescaleNormal();
         GlStateManager.disableBlend();
     }
@@ -632,7 +632,7 @@ extends DrawableHelper {
         if (livingEntity == null || !livingEntity.isLiving()) {
             return 0;
         }
-        float f = livingEntity.getHealthMaximum();
+        float f = livingEntity.getMaximumHealth();
         int i = (int)(f + 0.5f) / 2;
         if (i > 30) {
             i = 30;
@@ -658,7 +658,7 @@ extends DrawableHelper {
         }
         int i = MathHelper.ceil(playerEntity.getHealth());
         boolean bl = this.field_2032 > (long)this.ticks && (this.field_2032 - (long)this.ticks) / 3L % 2L == 1L;
-        long l = SystemUtil.getMeasuringTimeMs();
+        long l = Util.getMeasuringTimeMs();
         if (i < this.field_2014 && playerEntity.timeUntilRegen > 0) {
             this.field_2012 = l;
             this.field_2032 = this.ticks + 20;
@@ -781,8 +781,8 @@ extends DrawableHelper {
             t -= 10;
         }
         this.client.getProfiler().swap("air");
-        z = playerEntity.getBreath();
-        aa = playerEntity.getMaxBreath();
+        z = playerEntity.getAir();
+        aa = playerEntity.getMaxAir();
         if (playerEntity.isInFluid(FluidTags.WATER) || z < aa) {
             ab = this.method_1733(y) - 1;
             t -= ab * 10;
@@ -842,8 +842,8 @@ extends DrawableHelper {
         GlStateManager.disableAlphaTest();
         this.client.getTextureManager().bindTexture(PUMPKIN_BLUR);
         Tessellator tessellator = Tessellator.getInstance();
-        BufferBuilder bufferBuilder = tessellator.getBufferBuilder();
-        bufferBuilder.begin(7, VertexFormats.POSITION_UV);
+        BufferBuilder bufferBuilder = tessellator.getBuffer();
+        bufferBuilder.begin(7, VertexFormats.POSITION_TEXTURE);
         bufferBuilder.vertex(0.0, this.scaledHeight, -90.0).texture(0.0, 1.0).next();
         bufferBuilder.vertex(this.scaledWidth, this.scaledHeight, -90.0).texture(1.0, 1.0).next();
         bufferBuilder.vertex(this.scaledWidth, 0.0, -90.0).texture(1.0, 0.0).next();
@@ -865,7 +865,7 @@ extends DrawableHelper {
 
     private void renderVignetteOverlay(Entity entity) {
         WorldBorder worldBorder = this.client.world.getWorldBorder();
-        float f = (float)worldBorder.contains(entity);
+        float f = (float)worldBorder.getDistanceInsideBorder(entity);
         double d = Math.min(worldBorder.getShrinkingSpeed() * (double)worldBorder.getWarningTime() * 1000.0, Math.abs(worldBorder.getTargetSize() - worldBorder.getSize()));
         double e = Math.max((double)worldBorder.getWarningBlocks(), d);
         f = (double)f < e ? 1.0f - (float)((double)f / e) : 0.0f;
@@ -879,8 +879,8 @@ extends DrawableHelper {
         }
         this.client.getTextureManager().bindTexture(VIGNETTE_TEX);
         Tessellator tessellator = Tessellator.getInstance();
-        BufferBuilder bufferBuilder = tessellator.getBufferBuilder();
-        bufferBuilder.begin(7, VertexFormats.POSITION_UV);
+        BufferBuilder bufferBuilder = tessellator.getBuffer();
+        bufferBuilder.begin(7, VertexFormats.POSITION_TEXTURE);
         bufferBuilder.vertex(0.0, this.scaledHeight, -90.0).texture(0.0, 1.0).next();
         bufferBuilder.vertex(this.scaledWidth, this.scaledHeight, -90.0).texture(1.0, 1.0).next();
         bufferBuilder.vertex(this.scaledWidth, 0.0, -90.0).texture(1.0, 0.0).next();
@@ -910,8 +910,8 @@ extends DrawableHelper {
         float i = sprite.getMaxU();
         float j = sprite.getMaxV();
         Tessellator tessellator = Tessellator.getInstance();
-        BufferBuilder bufferBuilder = tessellator.getBufferBuilder();
-        bufferBuilder.begin(7, VertexFormats.POSITION_UV);
+        BufferBuilder bufferBuilder = tessellator.getBuffer();
+        bufferBuilder.begin(7, VertexFormats.POSITION_TEXTURE);
         bufferBuilder.vertex(0.0, this.scaledHeight, -90.0).texture(g, j).next();
         bufferBuilder.vertex(this.scaledWidth, this.scaledHeight, -90.0).texture(i, j).next();
         bufferBuilder.vertex(this.scaledWidth, 0.0, -90.0).texture(i, h).next();
@@ -1033,7 +1033,7 @@ extends DrawableHelper {
         return this.client.textRenderer;
     }
 
-    public SpectatorHud getSpectatorWidget() {
+    public SpectatorHud getSpectatorHud() {
         return this.spectatorHud;
     }
 

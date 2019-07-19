@@ -22,10 +22,10 @@ import net.minecraft.sound.SoundEvents;
 import net.minecraft.tag.FluidTags;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
+import net.minecraft.world.BlockRenderView;
 import net.minecraft.world.BlockView;
-import net.minecraft.world.ExtendedBlockView;
+import net.minecraft.world.CollisionView;
 import net.minecraft.world.IWorld;
-import net.minecraft.world.ViewableWorld;
 import net.minecraft.world.World;
 
 public class MagmaBlock
@@ -44,7 +44,7 @@ extends Block {
 
     @Override
     @Environment(value=EnvType.CLIENT)
-    public int getBlockBrightness(BlockState blockState, ExtendedBlockView extendedBlockView, BlockPos blockPos) {
+    public int getBlockBrightness(BlockState blockState, BlockRenderView blockRenderView, BlockPos blockPos) {
         return 0xF000F0;
     }
 
@@ -73,7 +73,7 @@ extends Block {
     }
 
     @Override
-    public int getTickRate(ViewableWorld viewableWorld) {
+    public int getTickRate(CollisionView collisionView) {
         return 20;
     }
 

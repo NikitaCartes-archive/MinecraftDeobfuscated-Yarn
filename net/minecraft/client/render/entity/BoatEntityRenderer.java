@@ -24,7 +24,8 @@ extends EntityRenderer<BoatEntity> {
         this.field_4673 = 0.8f;
     }
 
-    public void method_3888(BoatEntity boatEntity, double d, double e, double f, float g, float h) {
+    @Override
+    public void render(BoatEntity boatEntity, double d, double e, double f, float g, float h) {
         GlStateManager.pushMatrix();
         this.translateToBoat(d, e, f);
         this.rotateToBoat(boatEntity, g, h);
@@ -33,7 +34,7 @@ extends EntityRenderer<BoatEntity> {
             GlStateManager.enableColorMaterial();
             GlStateManager.setupSolidRenderingTextureCombine(this.getOutlineColor(boatEntity));
         }
-        this.model.method_17071(boatEntity, h, 0.0f, -0.1f, 0.0f, 0.0f, 0.0625f);
+        this.model.render(boatEntity, h, 0.0f, -0.1f, 0.0f, 0.0f, 0.0625f);
         if (this.renderOutlines) {
             GlStateManager.tearDownSolidRenderingTextureCombine();
             GlStateManager.disableColorMaterial();
@@ -53,7 +54,7 @@ extends EntityRenderer<BoatEntity> {
         if (h > 0.0f) {
             GlStateManager.rotatef(MathHelper.sin(h) * h * i / 10.0f * (float)boatEntity.getDamageWobbleSide(), 1.0f, 0.0f, 0.0f);
         }
-        if (!MathHelper.equalsApproximate(j = boatEntity.interpolateBubbleWobble(g), 0.0f)) {
+        if (!MathHelper.approximatelyEquals(j = boatEntity.interpolateBubbleWobble(g), 0.0f)) {
             GlStateManager.rotatef(boatEntity.interpolateBubbleWobble(g), 1.0f, 0.0f, 1.0f);
         }
         GlStateManager.scalef(-1.0f, -1.0f, 1.0f);
@@ -63,7 +64,8 @@ extends EntityRenderer<BoatEntity> {
         GlStateManager.translatef((float)d, (float)e + 0.375f, (float)f);
     }
 
-    protected Identifier method_3891(BoatEntity boatEntity) {
+    @Override
+    protected Identifier getTexture(BoatEntity boatEntity) {
         return SKIN[boatEntity.getBoatType().ordinal()];
     }
 
@@ -72,7 +74,8 @@ extends EntityRenderer<BoatEntity> {
         return true;
     }
 
-    public void method_3887(BoatEntity boatEntity, double d, double e, double f, float g, float h) {
+    @Override
+    public void renderSecondPass(BoatEntity boatEntity, double d, double e, double f, float g, float h) {
         GlStateManager.pushMatrix();
         this.translateToBoat(d, e, f);
         this.rotateToBoat(boatEntity, g, h);

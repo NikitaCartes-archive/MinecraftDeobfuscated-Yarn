@@ -95,10 +95,10 @@ implements AutoCloseable {
                     int k = j + i * 128;
                     int l = this.mapState.colors[k] & 0xFF;
                     if (l / 4 == 0) {
-                        this.texture.getImage().setPixelRGBA(j, i, (k + k / 128 & 1) * 8 + 16 << 24);
+                        this.texture.getImage().setPixelRgba(j, i, (k + k / 128 & 1) * 8 + 16 << 24);
                         continue;
                     }
-                    this.texture.getImage().setPixelRGBA(j, i, MaterialColor.COLORS[l / 4].getRenderColor(l & 3));
+                    this.texture.getImage().setPixelRgba(j, i, MaterialColor.COLORS[l / 4].getRenderColor(l & 3));
                 }
             }
             this.texture.upload();
@@ -108,13 +108,13 @@ implements AutoCloseable {
             boolean i = false;
             boolean j = false;
             Tessellator tessellator = Tessellator.getInstance();
-            BufferBuilder bufferBuilder = tessellator.getBufferBuilder();
+            BufferBuilder bufferBuilder = tessellator.getBuffer();
             float f = 0.0f;
             MapRenderer.this.textureManager.bindTexture(this.id);
             GlStateManager.enableBlend();
             GlStateManager.blendFuncSeparate(GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ZERO, GlStateManager.DestFactor.ONE);
             GlStateManager.disableAlphaTest();
-            bufferBuilder.begin(7, VertexFormats.POSITION_UV);
+            bufferBuilder.begin(7, VertexFormats.POSITION_TEXTURE);
             bufferBuilder.vertex(0.0, 128.0, -0.01f).texture(0.0, 1.0).next();
             bufferBuilder.vertex(128.0, 128.0, -0.01f).texture(1.0, 1.0).next();
             bufferBuilder.vertex(128.0, 0.0, -0.01f).texture(1.0, 0.0).next();
@@ -136,7 +136,7 @@ implements AutoCloseable {
                 float h = (float)(b / 16 + 0) / 16.0f;
                 float l = (float)(b % 16 + 1) / 16.0f;
                 float m = (float)(b / 16 + 1) / 16.0f;
-                bufferBuilder.begin(7, VertexFormats.POSITION_UV);
+                bufferBuilder.begin(7, VertexFormats.POSITION_TEXTURE);
                 GlStateManager.color4f(1.0f, 1.0f, 1.0f, 1.0f);
                 float n = -0.001f;
                 bufferBuilder.vertex(-1.0, 1.0, (float)k * -0.001f).texture(g, h).next();

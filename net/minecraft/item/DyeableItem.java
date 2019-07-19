@@ -12,12 +12,12 @@ import net.minecraft.nbt.CompoundTag;
 public interface DyeableItem {
     default public boolean hasColor(ItemStack itemStack) {
         CompoundTag compoundTag = itemStack.getSubTag("display");
-        return compoundTag != null && compoundTag.containsKey("color", 99);
+        return compoundTag != null && compoundTag.contains("color", 99);
     }
 
     default public int getColor(ItemStack itemStack) {
         CompoundTag compoundTag = itemStack.getSubTag("display");
-        if (compoundTag != null && compoundTag.containsKey("color", 99)) {
+        if (compoundTag != null && compoundTag.contains("color", 99)) {
             return compoundTag.getInt("color");
         }
         return 10511680;
@@ -25,7 +25,7 @@ public interface DyeableItem {
 
     default public void removeColor(ItemStack itemStack) {
         CompoundTag compoundTag = itemStack.getSubTag("display");
-        if (compoundTag != null && compoundTag.containsKey("color")) {
+        if (compoundTag != null && compoundTag.contains("color")) {
             compoundTag.remove("color");
         }
     }

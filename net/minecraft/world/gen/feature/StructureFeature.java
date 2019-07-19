@@ -12,9 +12,9 @@ import java.util.Random;
 import java.util.function.Function;
 import net.minecraft.structure.StructurePiece;
 import net.minecraft.structure.StructureStart;
+import net.minecraft.util.math.BlockBox;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
-import net.minecraft.util.math.MutableIntBoundingBox;
 import net.minecraft.world.IWorld;
 import net.minecraft.world.World;
 import net.minecraft.world.biome.Biome;
@@ -51,7 +51,7 @@ extends Feature<C> {
             ChunkPos chunkPos = new ChunkPos(long_);
             StructureStart structureStart = iWorld.getChunk(chunkPos.x, chunkPos.z).getStructureStart(this.getName());
             if (structureStart == null || structureStart == StructureStart.DEFAULT) continue;
-            structureStart.generateStructure(iWorld, random, new MutableIntBoundingBox(k, l, k + 15, l + 15), new ChunkPos(i, j));
+            structureStart.generateStructure(iWorld, random, new BlockBox(k, l, k + 15, l + 15), new ChunkPos(i, j));
             bl = true;
         }
         return bl;
@@ -120,8 +120,8 @@ extends Feature<C> {
         LongIterator longIterator = chunk.getStructureReferences(this.getName()).iterator();
         while (longIterator.hasNext()) {
             long l = longIterator.nextLong();
-            Chunk blockViewWithStructures = iWorld.getChunk(ChunkPos.getPackedX(l), ChunkPos.getPackedZ(l), ChunkStatus.STRUCTURE_STARTS);
-            StructureStart structureStart = blockViewWithStructures.getStructureStart(this.getName());
+            Chunk structureHolder = iWorld.getChunk(ChunkPos.getPackedX(l), ChunkPos.getPackedZ(l), ChunkStatus.STRUCTURE_STARTS);
+            StructureStart structureStart = structureHolder.getStructureStart(this.getName());
             if (structureStart == null) continue;
             list.add(structureStart);
         }
@@ -141,7 +141,7 @@ extends Feature<C> {
     public abstract int getRadius();
 
     public static interface StructureStartFactory {
-        public StructureStart create(StructureFeature<?> var1, int var2, int var3, Biome var4, MutableIntBoundingBox var5, int var6, long var7);
+        public StructureStart create(StructureFeature<?> var1, int var2, int var3, Biome var4, BlockBox var5, int var6, long var7);
     }
 }
 

@@ -19,7 +19,8 @@ extends FeatureRenderer<AbstractClientPlayerEntity, PlayerEntityModel<AbstractCl
         super(featureRendererContext);
     }
 
-    public void method_4181(AbstractClientPlayerEntity abstractClientPlayerEntity, float f, float g, float h, float i, float j, float k, float l) {
+    @Override
+    public void render(AbstractClientPlayerEntity abstractClientPlayerEntity, float f, float g, float h, float i, float j, float k, float l) {
         if (!"deadmau5".equals(abstractClientPlayerEntity.getName().getString()) || !abstractClientPlayerEntity.hasSkinTexture() || abstractClientPlayerEntity.isInvisible()) {
             return;
         }
@@ -36,7 +37,7 @@ extends FeatureRenderer<AbstractClientPlayerEntity, PlayerEntityModel<AbstractCl
             GlStateManager.rotatef(-n, 0.0f, 1.0f, 0.0f);
             float p = 1.3333334f;
             GlStateManager.scalef(1.3333334f, 1.3333334f, 1.3333334f);
-            ((PlayerEntityModel)this.getModel()).renderEars(0.0625f);
+            ((PlayerEntityModel)this.getContextModel()).renderEars(0.0625f);
             GlStateManager.popMatrix();
         }
     }

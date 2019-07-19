@@ -17,11 +17,11 @@ import net.minecraft.world.World;
 @Environment(value=EnvType.CLIENT)
 public class RedDustParticle
 extends SpriteBillboardParticle {
-    private final SpriteProvider field_17801;
+    private final SpriteProvider spriteProvider;
 
     private RedDustParticle(World world, double d, double e, double f, double g, double h, double i, DustParticleEffect dustParticleEffect, SpriteProvider spriteProvider) {
         super(world, d, e, f, g, h, i);
-        this.field_17801 = spriteProvider;
+        this.spriteProvider = spriteProvider;
         this.velocityX *= (double)0.1f;
         this.velocityY *= (double)0.1f;
         this.velocityZ *= (double)0.1f;
@@ -29,9 +29,9 @@ extends SpriteBillboardParticle {
         this.colorRed = ((float)(Math.random() * (double)0.2f) + 0.8f) * dustParticleEffect.getRed() * j;
         this.colorGreen = ((float)(Math.random() * (double)0.2f) + 0.8f) * dustParticleEffect.getGreen() * j;
         this.colorBlue = ((float)(Math.random() * (double)0.2f) + 0.8f) * dustParticleEffect.getBlue() * j;
-        this.scale *= 0.75f * dustParticleEffect.getAlpha();
+        this.scale *= 0.75f * dustParticleEffect.getScale();
         int k = (int)(8.0 / (Math.random() * 0.8 + 0.2));
-        this.maxAge = (int)Math.max((float)k * dustParticleEffect.getAlpha(), 1.0f);
+        this.maxAge = (int)Math.max((float)k * dustParticleEffect.getScale(), 1.0f);
         this.setSpriteForAge(spriteProvider);
     }
 
@@ -54,7 +54,7 @@ extends SpriteBillboardParticle {
             this.markDead();
             return;
         }
-        this.setSpriteForAge(this.field_17801);
+        this.setSpriteForAge(this.spriteProvider);
         this.move(this.velocityX, this.velocityY, this.velocityZ);
         if (this.y == this.prevPosY) {
             this.velocityX *= 1.1;
@@ -72,14 +72,15 @@ extends SpriteBillboardParticle {
     @Environment(value=EnvType.CLIENT)
     public static class Factory
     implements ParticleFactory<DustParticleEffect> {
-        private final SpriteProvider field_17802;
+        private final SpriteProvider spriteProvider;
 
         public Factory(SpriteProvider spriteProvider) {
-            this.field_17802 = spriteProvider;
+            this.spriteProvider = spriteProvider;
         }
 
-        public Particle method_3022(DustParticleEffect dustParticleEffect, World world, double d, double e, double f, double g, double h, double i) {
-            return new RedDustParticle(world, d, e, f, g, h, i, dustParticleEffect, this.field_17802);
+        @Override
+        public Particle createParticle(DustParticleEffect dustParticleEffect, World world, double d, double e, double f, double g, double h, double i) {
+            return new RedDustParticle(world, d, e, f, g, h, i, dustParticleEffect, this.spriteProvider);
         }
     }
 }

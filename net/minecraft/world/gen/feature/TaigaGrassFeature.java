@@ -26,7 +26,8 @@ extends Feature<DefaultFeatureConfig> {
         return random.nextInt(5) > 0 ? Blocks.FERN.getDefaultState() : Blocks.GRASS.getDefaultState();
     }
 
-    public boolean method_14061(IWorld iWorld, ChunkGenerator<? extends ChunkGeneratorConfig> chunkGenerator, Random random, BlockPos blockPos, DefaultFeatureConfig defaultFeatureConfig) {
+    @Override
+    public boolean generate(IWorld iWorld, ChunkGenerator<? extends ChunkGeneratorConfig> chunkGenerator, Random random, BlockPos blockPos, DefaultFeatureConfig defaultFeatureConfig) {
         BlockState blockState = this.getGrass(random);
         BlockState blockState2 = iWorld.getBlockState(blockPos);
         while ((blockState2.isAir() || blockState2.matches(BlockTags.LEAVES)) && blockPos.getY() > 0) {

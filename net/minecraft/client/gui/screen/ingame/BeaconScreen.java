@@ -8,10 +8,10 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.block.entity.BeaconBlockEntity;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.gui.screen.ingame.AbstractContainerScreen;
+import net.minecraft.client.gui.screen.ingame.ContainerScreen;
 import net.minecraft.client.gui.widget.AbstractButtonWidget;
 import net.minecraft.client.gui.widget.AbstractPressableButtonWidget;
-import net.minecraft.client.render.GuiLighting;
+import net.minecraft.client.render.DiffuseLighting;
 import net.minecraft.client.resource.language.I18n;
 import net.minecraft.client.texture.Sprite;
 import net.minecraft.client.texture.SpriteAtlasTexture;
@@ -23,15 +23,15 @@ import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
-import net.minecraft.server.network.packet.GuiCloseC2SPacket;
-import net.minecraft.server.network.packet.UpdateBeaconC2SPacket;
+import net.minecraft.network.packet.c2s.play.GuiCloseC2SPacket;
+import net.minecraft.network.packet.c2s.play.UpdateBeaconC2SPacket;
 import net.minecraft.text.Text;
 import net.minecraft.util.DefaultedList;
 import net.minecraft.util.Identifier;
 
 @Environment(value=EnvType.CLIENT)
 public class BeaconScreen
-extends AbstractContainerScreen<BeaconContainer> {
+extends ContainerScreen<BeaconContainer> {
     private static final Identifier BG_TEX = new Identifier("textures/gui/container/beacon.png");
     private DoneButtonWidget doneButton;
     private boolean consumeGem;
@@ -64,8 +64,8 @@ extends AbstractContainerScreen<BeaconContainer> {
     @Override
     protected void init() {
         super.init();
-        this.doneButton = this.addButton(new DoneButtonWidget(this.left + 164, this.top + 107));
-        this.addButton(new CancelButtonWidget(this.left + 190, this.top + 107));
+        this.doneButton = this.addButton(new DoneButtonWidget(this.x + 164, this.y + 107));
+        this.addButton(new CancelButtonWidget(this.x + 190, this.y + 107));
         this.consumeGem = true;
         this.doneButton.active = false;
     }
@@ -87,7 +87,7 @@ extends AbstractContainerScreen<BeaconContainer> {
                 l = k * 22 + (k - 1) * 2;
                 for (m = 0; m < k; ++m) {
                     statusEffect = BeaconBlockEntity.EFFECTS_BY_LEVEL[j][m];
-                    effectButtonWidget = new EffectButtonWidget(this.left + 76 + m * 24 - l / 2, this.top + 22 + j * 25, statusEffect, true);
+                    effectButtonWidget = new EffectButtonWidget(this.x + 76 + m * 24 - l / 2, this.y + 22 + j * 25, statusEffect, true);
                     this.addButton(effectButtonWidget);
                     if (j >= i) {
                         effectButtonWidget.active = false;
@@ -102,7 +102,7 @@ extends AbstractContainerScreen<BeaconContainer> {
             l = k * 22 + (k - 1) * 2;
             for (m = 0; m < k - 1; ++m) {
                 statusEffect = BeaconBlockEntity.EFFECTS_BY_LEVEL[3][m];
-                effectButtonWidget = new EffectButtonWidget(this.left + 167 + m * 24 - l / 2, this.top + 47, statusEffect, false);
+                effectButtonWidget = new EffectButtonWidget(this.x + 167 + m * 24 - l / 2, this.y + 47, statusEffect, false);
                 this.addButton(effectButtonWidget);
                 if (3 >= i) {
                     effectButtonWidget.active = false;
@@ -112,7 +112,7 @@ extends AbstractContainerScreen<BeaconContainer> {
                 effectButtonWidget.setDisabled(true);
             }
             if (this.primaryEffect != null) {
-                EffectButtonWidget effectButtonWidget2 = new EffectButtonWidget(this.left + 167 + (k - 1) * 24 - l / 2, this.top + 47, this.primaryEffect, false);
+                EffectButtonWidget effectButtonWidget2 = new EffectButtonWidget(this.x + 167 + (k - 1) * 24 - l / 2, this.y + 47, this.primaryEffect, false);
                 this.addButton(effectButtonWidget2);
                 if (3 >= i) {
                     effectButtonWidget2.active = false;
@@ -126,15 +126,15 @@ extends AbstractContainerScreen<BeaconContainer> {
 
     @Override
     protected void drawForeground(int i, int j) {
-        GuiLighting.disable();
+        DiffuseLighting.disable();
         this.drawCenteredString(this.font, I18n.translate("block.minecraft.beacon.primary", new Object[0]), 62, 10, 0xE0E0E0);
         this.drawCenteredString(this.font, I18n.translate("block.minecraft.beacon.secondary", new Object[0]), 169, 10, 0xE0E0E0);
         for (AbstractButtonWidget abstractButtonWidget : this.buttons) {
             if (!abstractButtonWidget.isHovered()) continue;
-            abstractButtonWidget.renderToolTip(i - this.left, j - this.top);
+            abstractButtonWidget.renderToolTip(i - this.x, j - this.y);
             break;
         }
-        GuiLighting.enableForItems();
+        DiffuseLighting.enableForItems();
     }
 
     @Override

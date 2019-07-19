@@ -49,7 +49,7 @@ extends Item {
         if (compoundTag == null) {
             return false;
         }
-        if (!compoundTag.containsKey("pages", 9)) {
+        if (!compoundTag.contains("pages", 9)) {
             return false;
         }
         ListTag listTag = compoundTag.getList("pages", 8);

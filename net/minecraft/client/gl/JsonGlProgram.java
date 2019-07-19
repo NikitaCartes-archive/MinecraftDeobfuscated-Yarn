@@ -18,8 +18,8 @@ import java.util.List;
 import java.util.Map;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.client.gl.Framebuffer;
 import net.minecraft.client.gl.GlBlendState;
-import net.minecraft.client.gl.GlFramebuffer;
 import net.minecraft.client.gl.GlProgram;
 import net.minecraft.client.gl.GlProgramManager;
 import net.minecraft.client.gl.GlShader;
@@ -237,8 +237,8 @@ AutoCloseable {
             GlStateManager.enableTexture();
             Object object = this.samplerBinds.get(this.samplerNames.get(i));
             int j = -1;
-            if (object instanceof GlFramebuffer) {
-                j = ((GlFramebuffer)object).colorAttachment;
+            if (object instanceof Framebuffer) {
+                j = ((Framebuffer)object).colorAttachment;
             } else if (object instanceof Texture) {
                 j = ((Texture)object).getGlId();
             } else if (object instanceof Integer) {

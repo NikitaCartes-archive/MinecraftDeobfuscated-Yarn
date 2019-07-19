@@ -21,12 +21,13 @@ extends FeatureRenderer<PigEntity, PigEntityModel<PigEntity>> {
         super(featureRendererContext);
     }
 
-    public void method_4196(PigEntity pigEntity, float f, float g, float h, float i, float j, float k, float l) {
+    @Override
+    public void render(PigEntity pigEntity, float f, float g, float h, float i, float j, float k, float l) {
         if (!pigEntity.isSaddled()) {
             return;
         }
         this.bindTexture(SKIN);
-        ((PigEntityModel)this.getModel()).copyStateTo(this.model);
+        ((PigEntityModel)this.getContextModel()).copyStateTo(this.model);
         this.model.render(pigEntity, f, g, i, j, k, l);
     }
 

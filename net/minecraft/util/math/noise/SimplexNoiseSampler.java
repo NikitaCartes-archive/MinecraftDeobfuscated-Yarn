@@ -9,38 +9,38 @@ import net.minecraft.util.math.MathHelper;
 public class SimplexNoiseSampler {
     protected static final int[][] gradients = new int[][]{{1, 1, 0}, {-1, 1, 0}, {1, -1, 0}, {-1, -1, 0}, {1, 0, 1}, {-1, 0, 1}, {1, 0, -1}, {-1, 0, -1}, {0, 1, 1}, {0, -1, 1}, {0, 1, -1}, {0, -1, -1}, {1, 1, 0}, {0, -1, 1}, {-1, 1, 0}, {0, -1, -1}};
     private static final double sqrt3 = Math.sqrt(3.0);
-    private static final double field_15768 = 0.5 * (sqrt3 - 1.0);
-    private static final double field_15767 = (3.0 - sqrt3) / 6.0;
-    private final int[] field_15765 = new int[512];
-    public final double field_15763;
-    public final double field_15762;
-    public final double field_15761;
+    private static final double SKEW_FACTOR_2D = 0.5 * (sqrt3 - 1.0);
+    private static final double UNSKEW_FACTOR_2D = (3.0 - sqrt3) / 6.0;
+    private final int[] permutations = new int[512];
+    public final double originX;
+    public final double originY;
+    public final double originZ;
 
     public SimplexNoiseSampler(Random random) {
         int i;
-        this.field_15763 = random.nextDouble() * 256.0;
-        this.field_15762 = random.nextDouble() * 256.0;
-        this.field_15761 = random.nextDouble() * 256.0;
+        this.originX = random.nextDouble() * 256.0;
+        this.originY = random.nextDouble() * 256.0;
+        this.originZ = random.nextDouble() * 256.0;
         for (i = 0; i < 256; ++i) {
-            this.field_15765[i] = i;
+            this.permutations[i] = i;
         }
         for (i = 0; i < 256; ++i) {
             int j = random.nextInt(256 - i);
-            int k = this.field_15765[i];
-            this.field_15765[i] = this.field_15765[j + i];
-            this.field_15765[j + i] = k;
+            int k = this.permutations[i];
+            this.permutations[i] = this.permutations[j + i];
+            this.permutations[j + i] = k;
         }
     }
 
-    private int method_16456(int i) {
-        return this.field_15765[i & 0xFF];
+    private int getGradient(int i) {
+        return this.permutations[i & 0xFF];
     }
 
     protected static double dot(int[] is, double d, double e, double f) {
         return (double)is[0] * d + (double)is[1] * e + (double)is[2] * f;
     }
 
-    private double method_16455(int i, double d, double e, double f, double g) {
+    private double grad(int i, double d, double e, double f, double g) {
         double j;
         double h = g - d * d - e * e - f * f;
         if (h < 0.0) {
@@ -59,9 +59,9 @@ public class SimplexNoiseSampler {
         double m;
         int j;
         double g;
-        double f = (d + e) * field_15768;
+        double f = (d + e) * SKEW_FACTOR_2D;
         int i = MathHelper.floor(d + f);
-        double h = (double)i - (g = (double)(i + (j = MathHelper.floor(e + f))) * field_15767);
+        double h = (double)i - (g = (double)(i + (j = MathHelper.floor(e + f))) * UNSKEW_FACTOR_2D);
         double l = d - h;
         if (l > (m = e - (k = (double)j - g))) {
             n = 1;
@@ -70,18 +70,18 @@ public class SimplexNoiseSampler {
             n = 0;
             o = 1;
         }
-        double p = l - (double)n + field_15767;
-        double q = m - (double)o + field_15767;
-        double r = l - 1.0 + 2.0 * field_15767;
-        double s = m - 1.0 + 2.0 * field_15767;
+        double p = l - (double)n + UNSKEW_FACTOR_2D;
+        double q = m - (double)o + UNSKEW_FACTOR_2D;
+        double r = l - 1.0 + 2.0 * UNSKEW_FACTOR_2D;
+        double s = m - 1.0 + 2.0 * UNSKEW_FACTOR_2D;
         int t = i & 0xFF;
         int u = j & 0xFF;
-        int v = this.method_16456(t + this.method_16456(u)) % 12;
-        int w = this.method_16456(t + n + this.method_16456(u + o)) % 12;
-        int x = this.method_16456(t + 1 + this.method_16456(u + 1)) % 12;
-        double y = this.method_16455(v, l, m, 0.0, 0.5);
-        double z = this.method_16455(w, p, q, 0.0, 0.5);
-        double aa = this.method_16455(x, r, s, 0.0, 0.5);
+        int v = this.getGradient(t + this.getGradient(u)) % 12;
+        int w = this.getGradient(t + n + this.getGradient(u + o)) % 12;
+        int x = this.getGradient(t + 1 + this.getGradient(u + 1)) % 12;
+        double y = this.grad(v, l, m, 0.0, 0.5);
+        double z = this.grad(w, p, q, 0.0, 0.5);
+        double aa = this.grad(x, r, s, 0.0, 0.5);
         return 70.0 * (y + z + aa);
     }
 }

@@ -10,7 +10,7 @@ import net.fabricmc.api.Environment;
 import net.minecraft.advancement.Advancement;
 import net.minecraft.advancement.AdvancementDisplay;
 import net.minecraft.advancement.AdvancementFrame;
-import net.minecraft.client.render.GuiLighting;
+import net.minecraft.client.render.DiffuseLighting;
 import net.minecraft.client.resource.language.I18n;
 import net.minecraft.client.sound.PositionedSoundInstance;
 import net.minecraft.client.toast.Toast;
@@ -21,18 +21,18 @@ import net.minecraft.util.math.MathHelper;
 @Environment(value=EnvType.CLIENT)
 public class AdvancementToast
 implements Toast {
-    private final Advancement field_2205;
-    private boolean field_2206;
+    private final Advancement advancement;
+    private boolean soundPlayed;
 
     public AdvancementToast(Advancement advancement) {
-        this.field_2205 = advancement;
+        this.advancement = advancement;
     }
 
     @Override
     public Toast.Visibility draw(ToastManager toastManager, long l) {
         toastManager.getGame().getTextureManager().bindTexture(TOASTS_TEX);
         GlStateManager.color3f(1.0f, 1.0f, 1.0f);
-        AdvancementDisplay advancementDisplay = this.field_2205.getDisplay();
+        AdvancementDisplay advancementDisplay = this.advancement.getDisplay();
         toastManager.blit(0, 0, 0, 0, 160, 32);
         if (advancementDisplay != null) {
             int i;
@@ -56,13 +56,13 @@ implements Toast {
                     }
                 }
             }
-            if (!this.field_2206 && l > 0L) {
-                this.field_2206 = true;
+            if (!this.soundPlayed && l > 0L) {
+                this.soundPlayed = true;
                 if (advancementDisplay.getFrame() == AdvancementFrame.CHALLENGE) {
                     toastManager.getGame().getSoundManager().play(PositionedSoundInstance.master(SoundEvents.UI_TOAST_CHALLENGE_COMPLETE, 1.0f, 1.0f));
                 }
             }
-            GuiLighting.enableForItems();
+            DiffuseLighting.enableForItems();
             toastManager.getGame().getItemRenderer().renderGuiItem(null, advancementDisplay.getIcon(), 8, 8);
             return l >= 5000L ? Toast.Visibility.HIDE : Toast.Visibility.SHOW;
         }

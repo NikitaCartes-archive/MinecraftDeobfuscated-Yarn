@@ -13,11 +13,11 @@ import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.MovementType;
 import net.minecraft.entity.SpawnType;
-import net.minecraft.entity.WaterCreatureEntity;
 import net.minecraft.entity.ai.goal.Goal;
 import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.effect.StatusEffects;
+import net.minecraft.entity.mob.WaterCreatureEntity;
 import net.minecraft.fluid.FluidState;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.server.world.ServerWorld;
@@ -217,7 +217,7 @@ extends WaterCreatureEntity {
         @Override
         public boolean canStart() {
             LivingEntity livingEntity = SquidEntity.this.getAttacker();
-            if (SquidEntity.this.isInsideWater() && livingEntity != null) {
+            if (SquidEntity.this.isTouchingWater() && livingEntity != null) {
                 return SquidEntity.this.squaredDistanceTo(livingEntity) < 100.0;
             }
             return false;
@@ -279,10 +279,10 @@ extends WaterCreatureEntity {
             int i = this.squid.getDespawnCounter();
             if (i > 100) {
                 this.squid.setConstantVelocity(0.0f, 0.0f, 0.0f);
-            } else if (this.squid.getRand().nextInt(50) == 0 || !this.squid.insideWater || !this.squid.hasConstantVelocity()) {
-                float f = this.squid.getRand().nextFloat() * ((float)Math.PI * 2);
+            } else if (this.squid.getRandom().nextInt(50) == 0 || !this.squid.touchingWater || !this.squid.hasConstantVelocity()) {
+                float f = this.squid.getRandom().nextFloat() * ((float)Math.PI * 2);
                 float g = MathHelper.cos(f) * 0.2f;
-                float h = -0.1f + this.squid.getRand().nextFloat() * 0.2f;
+                float h = -0.1f + this.squid.getRandom().nextFloat() * 0.2f;
                 float j = MathHelper.sin(f) * 0.2f;
                 this.squid.setConstantVelocity(g, h, j);
             }

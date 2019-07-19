@@ -6,24 +6,24 @@ package net.minecraft.client.render.entity.model;
 import com.mojang.blaze3d.platform.GlStateManager;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.client.model.Cuboid;
+import net.minecraft.client.model.ModelPart;
 import net.minecraft.client.render.entity.model.EntityModel;
 import net.minecraft.entity.Entity;
 
 @Environment(value=EnvType.CLIENT)
 public class EndCrystalEntityModel<T extends Entity>
 extends EntityModel<T> {
-    private final Cuboid cube;
-    private final Cuboid glass = new Cuboid(this, "glass");
-    private final Cuboid base;
+    private final ModelPart cube;
+    private final ModelPart glass = new ModelPart(this, "glass");
+    private final ModelPart base;
 
     public EndCrystalEntityModel(float f, boolean bl) {
-        this.glass.setTextureOffset(0, 0).addBox(-4.0f, -4.0f, -4.0f, 8, 8, 8);
-        this.cube = new Cuboid(this, "cube");
-        this.cube.setTextureOffset(32, 0).addBox(-4.0f, -4.0f, -4.0f, 8, 8, 8);
+        this.glass.setTextureOffset(0, 0).addCuboid(-4.0f, -4.0f, -4.0f, 8, 8, 8);
+        this.cube = new ModelPart(this, "cube");
+        this.cube.setTextureOffset(32, 0).addCuboid(-4.0f, -4.0f, -4.0f, 8, 8, 8);
         if (bl) {
-            this.base = new Cuboid(this, "base");
-            this.base.setTextureOffset(0, 16).addBox(-6.0f, 0.0f, -6.0f, 12, 4, 12);
+            this.base = new ModelPart(this, "base");
+            this.base.setTextureOffset(0, 16).addCuboid(-6.0f, 0.0f, -6.0f, 12, 4, 12);
         } else {
             this.base = null;
         }

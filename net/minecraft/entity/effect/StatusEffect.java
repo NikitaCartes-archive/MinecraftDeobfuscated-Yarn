@@ -20,7 +20,7 @@ import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
-import net.minecraft.util.SystemUtil;
+import net.minecraft.util.Util;
 import net.minecraft.util.registry.Registry;
 import org.jetbrains.annotations.Nullable;
 
@@ -47,7 +47,7 @@ public class StatusEffect {
 
     public void applyUpdateEffect(LivingEntity livingEntity, int i) {
         if (this == StatusEffects.REGENERATION) {
-            if (livingEntity.getHealth() < livingEntity.getHealthMaximum()) {
+            if (livingEntity.getHealth() < livingEntity.getMaximumHealth()) {
                 livingEntity.heal(1.0f);
             }
         } else if (this == StatusEffects.POISON) {
@@ -116,7 +116,7 @@ public class StatusEffect {
 
     protected String method_5559() {
         if (this.translationKey == null) {
-            this.translationKey = SystemUtil.createTranslationKey("effect", Registry.STATUS_EFFECT.getId(this));
+            this.translationKey = Util.createTranslationKey("effect", Registry.STATUS_EFFECT.getId(this));
         }
         return this.translationKey;
     }

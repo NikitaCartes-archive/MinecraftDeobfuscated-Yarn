@@ -17,7 +17,7 @@ import net.minecraft.client.render.VertexFormats;
 import net.minecraft.client.render.debug.DebugRenderer;
 import net.minecraft.entity.ai.pathing.Path;
 import net.minecraft.entity.ai.pathing.PathNode;
-import net.minecraft.util.SystemUtil;
+import net.minecraft.util.Util;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
 import net.minecraft.util.math.MathHelper;
@@ -36,7 +36,7 @@ implements DebugRenderer.Renderer {
 
     public void addPath(int i, Path path, float f) {
         this.paths.put(i, path);
-        this.pathTimes.put(i, SystemUtil.getMeasuringTimeMs());
+        this.pathTimes.put(i, Util.getMeasuringTimeMs());
         this.field_4617.put(i, Float.valueOf(f));
     }
 
@@ -45,7 +45,7 @@ implements DebugRenderer.Renderer {
         if (this.paths.isEmpty()) {
             return;
         }
-        long m = SystemUtil.getMeasuringTimeMs();
+        long m = Util.getMeasuringTimeMs();
         for (Integer integer : this.paths.keySet()) {
             Path path = this.paths.get(integer);
             float f = this.field_4617.get(integer).floatValue();
@@ -112,7 +112,7 @@ implements DebugRenderer.Renderer {
 
     public static void method_20555(Camera camera, Path path) {
         Tessellator tessellator = Tessellator.getInstance();
-        BufferBuilder bufferBuilder = tessellator.getBufferBuilder();
+        BufferBuilder bufferBuilder = tessellator.getBuffer();
         double d = camera.getPos().x;
         double e = camera.getPos().y;
         double f = camera.getPos().z;

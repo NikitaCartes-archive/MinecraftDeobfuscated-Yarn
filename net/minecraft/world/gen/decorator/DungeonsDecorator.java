@@ -21,7 +21,8 @@ extends Decorator<DungeonDecoratorConfig> {
         super(function);
     }
 
-    public Stream<BlockPos> method_15933(IWorld iWorld, ChunkGenerator<? extends ChunkGeneratorConfig> chunkGenerator, Random random, DungeonDecoratorConfig dungeonDecoratorConfig, BlockPos blockPos) {
+    @Override
+    public Stream<BlockPos> getPositions(IWorld iWorld, ChunkGenerator<? extends ChunkGeneratorConfig> chunkGenerator, Random random, DungeonDecoratorConfig dungeonDecoratorConfig, BlockPos blockPos) {
         int i2 = dungeonDecoratorConfig.chance;
         return IntStream.range(0, i2).mapToObj(i -> {
             int j = random.nextInt(16);

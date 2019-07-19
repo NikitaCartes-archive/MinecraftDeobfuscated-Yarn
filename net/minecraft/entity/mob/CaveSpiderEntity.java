@@ -44,7 +44,7 @@ extends SpiderEntity {
                     i = 15;
                 }
                 if (i > 0) {
-                    ((LivingEntity)entity).addPotionEffect(new StatusEffectInstance(StatusEffects.POISON, i * 20, 0));
+                    ((LivingEntity)entity).addStatusEffect(new StatusEffectInstance(StatusEffects.POISON, i * 20, 0));
                 }
             }
             return true;

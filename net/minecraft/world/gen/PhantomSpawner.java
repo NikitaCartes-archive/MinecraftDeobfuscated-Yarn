@@ -44,7 +44,7 @@ public class PhantomSpawner {
             LocalDifficulty localDifficulty;
             if (playerEntity.isSpectator()) continue;
             BlockPos blockPos = new BlockPos(playerEntity);
-            if (serverWorld.dimension.hasSkyLight() && (blockPos.getY() < serverWorld.getSeaLevel() || !serverWorld.isSkyVisible(blockPos)) || !(localDifficulty = serverWorld.getLocalDifficulty(blockPos)).method_5455(random.nextFloat() * 3.0f)) continue;
+            if (serverWorld.dimension.hasSkyLight() && (blockPos.getY() < serverWorld.getSeaLevel() || !serverWorld.isSkyVisible(blockPos)) || !(localDifficulty = serverWorld.getLocalDifficulty(blockPos)).isHarderThan(random.nextFloat() * 3.0f)) continue;
             ServerStatHandler serverStatHandler = ((ServerPlayerEntity)playerEntity).getStatHandler();
             int j = MathHelper.clamp(serverStatHandler.getStat(Stats.CUSTOM.getOrCreateStat(Stats.TIME_SINCE_REST)), 1, Integer.MAX_VALUE);
             int k = 24000;
@@ -53,7 +53,7 @@ public class PhantomSpawner {
             int l = 1 + random.nextInt(localDifficulty.getGlobalDifficulty().getId() + 1);
             for (int m = 0; m < l; ++m) {
                 PhantomEntity phantomEntity = EntityType.PHANTOM.create(serverWorld);
-                phantomEntity.setPositionAndAngles(blockPos2, 0.0f, 0.0f);
+                phantomEntity.refreshPositionAndAngles(blockPos2, 0.0f, 0.0f);
                 entityData = phantomEntity.initialize(serverWorld, localDifficulty, SpawnType.NATURAL, entityData, null);
                 serverWorld.spawnEntity(phantomEntity);
             }

@@ -13,8 +13,8 @@ import net.minecraft.entity.EntityContext;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.world.BlockView;
+import net.minecraft.world.CollisionView;
 import net.minecraft.world.IWorld;
-import net.minecraft.world.ViewableWorld;
 import net.minecraft.world.World;
 import net.minecraft.world.gen.feature.Feature;
 import net.minecraft.world.gen.feature.PlantedFeatureConfig;
@@ -61,18 +61,18 @@ implements Fertilizable {
     }
 
     @Override
-    public boolean canPlaceAt(BlockState blockState, ViewableWorld viewableWorld, BlockPos blockPos) {
+    public boolean canPlaceAt(BlockState blockState, CollisionView collisionView, BlockPos blockPos) {
         BlockPos blockPos2 = blockPos.down();
-        BlockState blockState2 = viewableWorld.getBlockState(blockPos2);
+        BlockState blockState2 = collisionView.getBlockState(blockPos2);
         Block block = blockState2.getBlock();
         if (block == Blocks.MYCELIUM || block == Blocks.PODZOL) {
             return true;
         }
-        return viewableWorld.getLightLevel(blockPos, 0) < 13 && this.canPlantOnTop(blockState2, viewableWorld, blockPos2);
+        return collisionView.getLightLevel(blockPos, 0) < 13 && this.canPlantOnTop(blockState2, collisionView, blockPos2);
     }
 
     public boolean trySpawningBigMushroom(IWorld iWorld, BlockPos blockPos, BlockState blockState, Random random) {
-        iWorld.clearBlockState(blockPos, false);
+        iWorld.removeBlock(blockPos, false);
         Feature<PlantedFeatureConfig> feature = null;
         if (this == Blocks.BROWN_MUSHROOM) {
             feature = Feature.HUGE_BROWN_MUSHROOM;

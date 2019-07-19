@@ -17,13 +17,14 @@ extends MessageToByteEncoder<ByteBuf> {
         this.manager = new PacketEncryptionManager(cipher);
     }
 
-    protected void method_10736(ChannelHandlerContext channelHandlerContext, ByteBuf byteBuf, ByteBuf byteBuf2) throws Exception {
+    @Override
+    protected void encode(ChannelHandlerContext channelHandlerContext, ByteBuf byteBuf, ByteBuf byteBuf2) throws Exception {
         this.manager.encrypt(byteBuf, byteBuf2);
     }
 
     @Override
     protected /* synthetic */ void encode(ChannelHandlerContext channelHandlerContext, Object object, ByteBuf byteBuf) throws Exception {
-        this.method_10736(channelHandlerContext, (ByteBuf)object, byteBuf);
+        this.encode(channelHandlerContext, (ByteBuf)object, byteBuf);
     }
 }
 

@@ -56,7 +56,7 @@ public class BakedQuadFactory {
 
     public BakedQuad bake(Vector3f vector3f, Vector3f vector3f2, ModelElementFace modelElementFace, Sprite sprite, Direction direction, ModelBakeSettings modelBakeSettings, @Nullable net.minecraft.client.render.model.json.ModelRotation modelRotation, boolean bl) {
         ModelElementTexture modelElementTexture = modelElementFace.textureData;
-        if (modelBakeSettings.isUvLocked()) {
+        if (modelBakeSettings.isShaded()) {
             modelElementTexture = this.uvLock(modelElementFace.textureData, direction, modelBakeSettings.getRotation());
         }
         float[] fs = new float[modelElementTexture.uvs.length];
@@ -144,8 +144,8 @@ public class BakedQuadFactory {
         is[l + 1] = Float.floatToRawIntBits(vector3f.getY());
         is[l + 2] = Float.floatToRawIntBits(vector3f.getZ());
         is[l + 3] = k;
-        is[l + 4] = Float.floatToRawIntBits(sprite.getU(modelElementTexture.getU(j)));
-        is[l + 4 + 1] = Float.floatToRawIntBits(sprite.getV(modelElementTexture.getV(j)));
+        is[l + 4] = Float.floatToRawIntBits(sprite.getFrameU(modelElementTexture.getU(j)));
+        is[l + 4 + 1] = Float.floatToRawIntBits(sprite.getFrameV(modelElementTexture.getV(j)));
     }
 
     private void method_3463(Vector3f vector3f, @Nullable net.minecraft.client.render.model.json.ModelRotation modelRotation) {
@@ -199,7 +199,7 @@ public class BakedQuadFactory {
     private void method_3464(Vector3f vector3f, Vector3f vector3f2, Quaternion quaternion, Vector3f vector3f3) {
         Vector4f vector4f = new Vector4f(vector3f.getX() - vector3f2.getX(), vector3f.getY() - vector3f2.getY(), vector3f.getZ() - vector3f2.getZ(), 1.0f);
         vector4f.method_4959(quaternion);
-        vector4f.multiply(vector3f3);
+        vector4f.multiplyComponentwise(vector3f3);
         vector3f.set(vector4f.getX() + vector3f2.getX(), vector4f.getY() + vector3f2.getY(), vector4f.getZ() + vector3f2.getZ());
     }
 
@@ -280,7 +280,7 @@ public class BakedQuadFactory {
                 float p = Float.intBitsToFloat(js[o]);
                 float q = Float.intBitsToFloat(js[o + 1]);
                 float r = Float.intBitsToFloat(js[o + 2]);
-                if (!MathHelper.equalsApproximate(h, p) || !MathHelper.equalsApproximate(l, q) || !MathHelper.equalsApproximate(m, r)) continue;
+                if (!MathHelper.approximatelyEquals(h, p) || !MathHelper.approximatelyEquals(l, q) || !MathHelper.approximatelyEquals(m, r)) continue;
                 is[k + 4] = js[o + 4];
                 is[k + 4 + 1] = js[o + 4 + 1];
             }

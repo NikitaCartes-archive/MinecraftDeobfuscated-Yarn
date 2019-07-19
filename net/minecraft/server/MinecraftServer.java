@@ -63,20 +63,21 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.Bootstrap;
 import net.minecraft.SharedConstants;
-import net.minecraft.client.network.packet.DifficultyS2CPacket;
-import net.minecraft.client.network.packet.WorldTimeUpdateS2CPacket;
-import net.minecraft.datafixers.Schemas;
+import net.minecraft.datafixer.Schemas;
 import net.minecraft.entity.boss.BossBarManager;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.loot.LootManager;
+import net.minecraft.network.packet.s2c.play.DifficultyS2CPacket;
+import net.minecraft.network.packet.s2c.play.WorldTimeUpdateS2CPacket;
 import net.minecraft.recipe.RecipeManager;
-import net.minecraft.resource.DefaultResourcePackCreator;
-import net.minecraft.resource.FileResourcePackCreator;
+import net.minecraft.resource.FileResourcePackProvider;
 import net.minecraft.resource.ReloadableResourceManager;
 import net.minecraft.resource.ReloadableResourceManagerImpl;
 import net.minecraft.resource.ResourcePack;
-import net.minecraft.resource.ResourcePackContainer;
-import net.minecraft.resource.ResourcePackContainerManager;
+import net.minecraft.resource.ResourcePackManager;
+import net.minecraft.resource.ResourcePackProfile;
 import net.minecraft.resource.ResourceType;
+import net.minecraft.resource.VanillaDataPackProvider;
 import net.minecraft.scoreboard.ScoreboardState;
 import net.minecraft.scoreboard.ScoreboardSynchronizer;
 import net.minecraft.scoreboard.ServerScoreboard;
@@ -108,12 +109,11 @@ import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.MetricsData;
-import net.minecraft.util.NonBlockingThreadExecutor;
 import net.minecraft.util.ProgressListener;
-import net.minecraft.util.SystemUtil;
 import net.minecraft.util.UncaughtExceptionLogger;
 import net.minecraft.util.Unit;
 import net.minecraft.util.UserCache;
+import net.minecraft.util.Util;
 import net.minecraft.util.crash.CrashException;
 import net.minecraft.util.crash.CrashReport;
 import net.minecraft.util.math.BlockPos;
@@ -126,6 +126,7 @@ import net.minecraft.util.profiler.Profiler;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.util.snooper.Snooper;
 import net.minecraft.util.snooper.SnooperListener;
+import net.minecraft.util.thread.ReentrantThreadExecutor;
 import net.minecraft.world.Difficulty;
 import net.minecraft.world.ForcedChunkState;
 import net.minecraft.world.GameMode;
@@ -139,7 +140,6 @@ import net.minecraft.world.level.LevelGeneratorType;
 import net.minecraft.world.level.LevelInfo;
 import net.minecraft.world.level.LevelProperties;
 import net.minecraft.world.level.storage.LevelStorage;
-import net.minecraft.world.loot.LootManager;
 import net.minecraft.world.updater.WorldUpdater;
 import org.apache.commons.lang3.Validate;
 import org.apache.logging.log4j.LogManager;
@@ -147,7 +147,7 @@ import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.Nullable;
 
 public abstract class MinecraftServer
-extends NonBlockingThreadExecutor<ServerTask>
+extends ReentrantThreadExecutor<ServerTask>
 implements SnooperListener,
 CommandOutput,
 AutoCloseable,
@@ -157,7 +157,7 @@ Runnable {
     private static final CompletableFuture<Unit> field_20279 = CompletableFuture.completedFuture(Unit.INSTANCE);
     public static final LevelInfo DEMO_LEVEL_INFO = new LevelInfo("North Carolina".hashCode(), GameMode.SURVIVAL, true, false, LevelGeneratorType.DEFAULT).setBonusChest();
     private final LevelStorage levelStorage;
-    private final Snooper snooper = new Snooper("server", this, SystemUtil.getMeasuringTimeMs());
+    private final Snooper snooper = new Snooper("server", this, Util.getMeasuringTimeMs());
     private final File gameDir;
     private final List<Runnable> serverGuiTickables = Lists.newArrayList();
     private final DisableableProfiler profiler = new DisableableProfiler(this::getTicks);
@@ -209,16 +209,16 @@ Runnable {
     private final GameProfileRepository gameProfileRepo;
     private final UserCache userCache;
     private long lastPlayerSampleUpdate;
-    protected final Thread serverThread = SystemUtil.consume(new Thread((Runnable)this, "Server thread"), thread2 -> thread2.setUncaughtExceptionHandler((thread, throwable) -> LOGGER.error(throwable)));
-    private long timeReference = SystemUtil.getMeasuringTimeMs();
+    protected final Thread serverThread = Util.make(new Thread((Runnable)this, "Server thread"), thread2 -> thread2.setUncaughtExceptionHandler((thread, throwable) -> LOGGER.error(throwable)));
+    private long timeReference = Util.getMeasuringTimeMs();
     private long field_19248;
     private boolean field_19249;
     @Environment(value=EnvType.CLIENT)
     private boolean iconFilePresent;
     private final ReloadableResourceManager dataManager = new ReloadableResourceManagerImpl(ResourceType.SERVER_DATA, this.serverThread);
-    private final ResourcePackContainerManager<ResourcePackContainer> dataPackContainerManager = new ResourcePackContainerManager<ResourcePackContainer>(ResourcePackContainer::new);
+    private final ResourcePackManager<ResourcePackProfile> dataPackContainerManager = new ResourcePackManager<ResourcePackProfile>(ResourcePackProfile::new);
     @Nullable
-    private FileResourcePackCreator dataPackCreator;
+    private FileResourcePackProvider dataPackCreator;
     private final CommandManager commandManager;
     private final RecipeManager recipeManager = new RecipeManager();
     private final RegistryTagManager tagManager = new RegistryTagManager();
@@ -254,7 +254,7 @@ Runnable {
         this.dataManager.registerListener(this.lootManager);
         this.dataManager.registerListener(this.commandFunctionManager);
         this.dataManager.registerListener(this.advancementManager);
-        this.workerExecutor = SystemUtil.getServerWorkerExecutor();
+        this.workerExecutor = Util.getServerWorkerExecutor();
         this.levelName = string;
     }
 
@@ -271,7 +271,7 @@ Runnable {
             LOGGER.info("Converting map!");
             this.setLoadingStage(new TranslatableText("menu.convertingLevel", new Object[0]));
             this.getLevelStorage().convertLevel(string, new ProgressListener(){
-                private long lastProgressUpdate = SystemUtil.getMeasuringTimeMs();
+                private long lastProgressUpdate = Util.getMeasuringTimeMs();
 
                 @Override
                 public void method_15412(Text text) {
@@ -284,8 +284,8 @@ Runnable {
 
                 @Override
                 public void progressStagePercentage(int i) {
-                    if (SystemUtil.getMeasuringTimeMs() - this.lastProgressUpdate >= 1000L) {
-                        this.lastProgressUpdate = SystemUtil.getMeasuringTimeMs();
+                    if (Util.getMeasuringTimeMs() - this.lastProgressUpdate >= 1000L) {
+                        this.lastProgressUpdate = Util.getMeasuringTimeMs();
                         LOGGER.info("Converting... {}%", (Object)i);
                     }
                 }
@@ -414,20 +414,20 @@ Runnable {
     }
 
     protected void loadWorldDataPacks(File file, LevelProperties levelProperties) {
-        this.dataPackContainerManager.addCreator(new DefaultResourcePackCreator());
-        this.dataPackCreator = new FileResourcePackCreator(new File(file, "datapacks"));
-        this.dataPackContainerManager.addCreator(this.dataPackCreator);
-        this.dataPackContainerManager.callCreators();
-        ArrayList<ResourcePackContainer> list = Lists.newArrayList();
+        this.dataPackContainerManager.registerProvider(new VanillaDataPackProvider());
+        this.dataPackCreator = new FileResourcePackProvider(new File(file, "datapacks"));
+        this.dataPackContainerManager.registerProvider(this.dataPackCreator);
+        this.dataPackContainerManager.scanPacks();
+        ArrayList<ResourcePackProfile> list = Lists.newArrayList();
         for (String string : levelProperties.getEnabledDataPacks()) {
-            ResourcePackContainer resourcePackContainer = this.dataPackContainerManager.getContainer(string);
-            if (resourcePackContainer != null) {
-                list.add(resourcePackContainer);
+            ResourcePackProfile resourcePackProfile = this.dataPackContainerManager.getProfile(string);
+            if (resourcePackProfile != null) {
+                list.add(resourcePackProfile);
                 continue;
             }
             LOGGER.warn("Missing data pack {}", (Object)string);
         }
-        this.dataPackContainerManager.setEnabled(list);
+        this.dataPackContainerManager.setEnabledProfiles(list);
         this.reloadDataPacks(levelProperties);
     }
 
@@ -437,15 +437,15 @@ Runnable {
         LOGGER.info("Preparing start region for dimension " + DimensionType.getId(serverWorld.dimension.getType()));
         BlockPos blockPos = serverWorld.getSpawnPos();
         worldGenerationProgressListener.start(new ChunkPos(blockPos));
-        ServerChunkManager serverChunkManager = serverWorld.method_14178();
-        serverChunkManager.method_17293().setTaskBatchSize(500);
-        this.timeReference = SystemUtil.getMeasuringTimeMs();
+        ServerChunkManager serverChunkManager = serverWorld.getChunkManager();
+        serverChunkManager.getLightingProvider().setTaskBatchSize(500);
+        this.timeReference = Util.getMeasuringTimeMs();
         serverChunkManager.addTicket(ChunkTicketType.START, new ChunkPos(blockPos), 11, Unit.INSTANCE);
         while (serverChunkManager.getTotalChunksLoadedCount() != 441) {
-            this.timeReference = SystemUtil.getMeasuringTimeMs() + 10L;
+            this.timeReference = Util.getMeasuringTimeMs() + 10L;
             this.method_16208();
         }
-        this.timeReference = SystemUtil.getMeasuringTimeMs() + 10L;
+        this.timeReference = Util.getMeasuringTimeMs() + 10L;
         this.method_16208();
         for (DimensionType dimensionType : DimensionType.getAll()) {
             ForcedChunkState forcedChunkState = this.getWorld(dimensionType).getPersistentStateManager().method_20786(ForcedChunkState::new, "chunks");
@@ -455,13 +455,13 @@ Runnable {
             while (longIterator.hasNext()) {
                 long l = longIterator.nextLong();
                 ChunkPos chunkPos = new ChunkPos(l);
-                serverWorld2.method_14178().setChunkForced(chunkPos, true);
+                serverWorld2.getChunkManager().setChunkForced(chunkPos, true);
             }
         }
-        this.timeReference = SystemUtil.getMeasuringTimeMs() + 10L;
+        this.timeReference = Util.getMeasuringTimeMs() + 10L;
         this.method_16208();
         worldGenerationProgressListener.stop();
-        serverChunkManager.method_17293().setTaskBatchSize(5);
+        serverChunkManager.getLightingProvider().setTaskBatchSize(5);
     }
 
     protected void loadWorldResourcePack(String string, WorldSaveHandler worldSaveHandler) {
@@ -574,12 +574,12 @@ Runnable {
     public void run() {
         try {
             if (this.setupServer()) {
-                this.timeReference = SystemUtil.getMeasuringTimeMs();
+                this.timeReference = Util.getMeasuringTimeMs();
                 this.metadata.setDescription(new LiteralText(this.motd));
                 this.metadata.setVersion(new ServerMetadata.Version(SharedConstants.getGameVersion().getName(), SharedConstants.getGameVersion().getProtocolVersion()));
                 this.setFavicon(this.metadata);
                 while (this.running) {
-                    long l = SystemUtil.getMeasuringTimeMs() - this.timeReference;
+                    long l = Util.getMeasuringTimeMs() - this.timeReference;
                     if (l > 2000L && this.timeReference - this.field_4557 >= 15000L) {
                         long m = l / 50L;
                         LOGGER.warn("Can't keep up! Is the server overloaded? Running {}ms or {} ticks behind", (Object)l, (Object)m);
@@ -596,7 +596,7 @@ Runnable {
                     this.tick(this::shouldKeepTicking);
                     this.profiler.swap("nextTickWait");
                     this.field_19249 = true;
-                    this.field_19248 = Math.max(SystemUtil.getMeasuringTimeMs() + 50L, this.timeReference);
+                    this.field_19248 = Math.max(Util.getMeasuringTimeMs() + 50L, this.timeReference);
                     this.method_16208();
                     this.profiler.pop();
                     this.profiler.endTick();
@@ -628,36 +628,38 @@ Runnable {
     }
 
     private boolean shouldKeepTicking() {
-        return this.hasRunningTasks() || SystemUtil.getMeasuringTimeMs() < (this.field_19249 ? this.field_19248 : this.timeReference);
+        return this.hasRunningTasks() || Util.getMeasuringTimeMs() < (this.field_19249 ? this.field_19248 : this.timeReference);
     }
 
     protected void method_16208() {
-        this.executeTaskQueue();
-        this.waitFor(() -> !this.shouldKeepTicking());
+        this.runTasks();
+        this.runTasks(() -> !this.shouldKeepTicking());
     }
 
-    protected ServerTask method_16209(Runnable runnable) {
+    @Override
+    protected ServerTask createTask(Runnable runnable) {
         return new ServerTask(this.ticks, runnable);
     }
 
-    protected boolean method_19464(ServerTask serverTask) {
+    @Override
+    protected boolean canExecute(ServerTask serverTask) {
         return serverTask.getCreationTicks() + 3 < this.ticks || this.shouldKeepTicking();
     }
 
     @Override
-    public boolean executeQueuedTask() {
+    public boolean runTask() {
         boolean bl;
         this.field_19249 = bl = this.method_20415();
         return bl;
     }
 
     private boolean method_20415() {
-        if (super.executeQueuedTask()) {
+        if (super.runTask()) {
             return true;
         }
         if (this.shouldKeepTicking()) {
             for (ServerWorld serverWorld : this.getWorlds()) {
-                if (!serverWorld.method_14178().executeQueuedTasks()) continue;
+                if (!serverWorld.getChunkManager().executeQueuedTasks()) continue;
                 return true;
             }
         }
@@ -711,7 +713,7 @@ Runnable {
     }
 
     protected void tick(BooleanSupplier booleanSupplier) {
-        long l = SystemUtil.getMeasuringTimeNano();
+        long l = Util.getMeasuringTimeNano();
         ++this.ticks;
         this.tickWorlds(booleanSupplier);
         if (l - this.lastPlayerSampleUpdate >= 5000000000L) {
@@ -742,11 +744,11 @@ Runnable {
         }
         this.profiler.pop();
         this.profiler.push("tallying");
-        long l2 = SystemUtil.getMeasuringTimeNano() - l;
+        long l2 = Util.getMeasuringTimeNano() - l;
         this.lastTickLengths[this.ticks % 100] = l2;
         long m = l2;
         this.tickTime = this.tickTime * 0.8f + (float)m / 1000000.0f * 0.19999999f;
-        long n = SystemUtil.getMeasuringTimeNano();
+        long n = Util.getMeasuringTimeNano();
         this.metricsData.pushSample(n - l);
         this.profiler.pop();
     }
@@ -944,12 +946,12 @@ Runnable {
         }
         crashReport.getSystemDetailsSection().add("Data Packs", () -> {
             StringBuilder stringBuilder = new StringBuilder();
-            for (ResourcePackContainer resourcePackContainer : this.dataPackContainerManager.getEnabledContainers()) {
+            for (ResourcePackProfile resourcePackProfile : this.dataPackContainerManager.getEnabledProfiles()) {
                 if (stringBuilder.length() > 0) {
                     stringBuilder.append(", ");
                 }
-                stringBuilder.append(resourcePackContainer.getName());
-                if (resourcePackContainer.getCompatibility().isCompatible()) continue;
+                stringBuilder.append(resourcePackProfile.getName());
+                if (resourcePackProfile.getCompatibility().isCompatible()) continue;
                 stringBuilder.append(" (incompatible)");
             }
             return stringBuilder.toString();
@@ -960,7 +962,7 @@ Runnable {
         return crashReport;
     }
 
-    public boolean method_3814() {
+    public boolean hasGameDir() {
         return this.gameDir != null;
     }
 
@@ -1088,7 +1090,7 @@ Runnable {
         }
         snooper.addInfo("uses_auth", this.onlineMode);
         snooper.addInfo("gui_state", this.hasGui() ? "enabled" : "disabled");
-        snooper.addInfo("run_time", (SystemUtil.getMeasuringTimeMs() - snooper.getStartTime()) / 60L * 1000L);
+        snooper.addInfo("run_time", (Util.getMeasuringTimeMs() - snooper.getStartTime()) / 60L * 1000L);
         snooper.addInfo("avg_tick_ms", (int)(MathHelper.average(this.lastTickLengths) * 1.0E-6));
         int i = 0;
         for (ServerWorld serverWorld : this.getWorlds()) {
@@ -1101,7 +1103,7 @@ Runnable {
             snooper.addInfo("world[" + i + "][generator_name]", levelProperties.getGeneratorType().getName());
             snooper.addInfo("world[" + i + "][generator_version]", levelProperties.getGeneratorType().getVersion());
             snooper.addInfo("world[" + i + "][height]", this.worldHeight);
-            snooper.addInfo("world[" + i + "][chunks_loaded]", serverWorld.method_14178().getLoadedChunkCount());
+            snooper.addInfo("world[" + i + "][chunks_loaded]", serverWorld.getChunkManager().getLoadedChunkCount());
             ++i;
         }
         snooper.addInfo("worlds", i);
@@ -1275,8 +1277,8 @@ Runnable {
     }
 
     @Override
-    public boolean shouldRunAsync() {
-        return super.shouldRunAsync() && !this.isStopped();
+    public boolean shouldExecuteAsync() {
+        return super.shouldExecuteAsync() && !this.isStopped();
     }
 
     @Override
@@ -1317,23 +1319,23 @@ Runnable {
             return;
         }
         this.getPlayerManager().saveAllPlayerData();
-        this.dataPackContainerManager.callCreators();
+        this.dataPackContainerManager.scanPacks();
         this.reloadDataPacks(this.getWorld(DimensionType.OVERWORLD).getLevelProperties());
         this.getPlayerManager().onDataPacksReloaded();
     }
 
     private void reloadDataPacks(LevelProperties levelProperties) {
-        ArrayList<ResourcePackContainer> list = Lists.newArrayList(this.dataPackContainerManager.getEnabledContainers());
-        for (ResourcePackContainer resourcePackContainer2 : this.dataPackContainerManager.getAlphabeticallyOrderedContainers()) {
-            if (levelProperties.getDisabledDataPacks().contains(resourcePackContainer2.getName()) || list.contains(resourcePackContainer2)) continue;
-            LOGGER.info("Found new data pack {}, loading it automatically", (Object)resourcePackContainer2.getName());
-            resourcePackContainer2.getInitialPosition().insert(list, resourcePackContainer2, resourcePackContainer -> resourcePackContainer, false);
+        ArrayList<ResourcePackProfile> list = Lists.newArrayList(this.dataPackContainerManager.getEnabledProfiles());
+        for (ResourcePackProfile resourcePackProfile2 : this.dataPackContainerManager.getProfiles()) {
+            if (levelProperties.getDisabledDataPacks().contains(resourcePackProfile2.getName()) || list.contains(resourcePackProfile2)) continue;
+            LOGGER.info("Found new data pack {}, loading it automatically", (Object)resourcePackProfile2.getName());
+            resourcePackProfile2.getInitialPosition().insert(list, resourcePackProfile2, resourcePackProfile -> resourcePackProfile, false);
         }
-        this.dataPackContainerManager.setEnabled(list);
+        this.dataPackContainerManager.setEnabledProfiles(list);
         ArrayList<ResourcePack> list2 = Lists.newArrayList();
-        this.dataPackContainerManager.getEnabledContainers().forEach(resourcePackContainer -> list2.add(resourcePackContainer.createResourcePack()));
+        this.dataPackContainerManager.getEnabledProfiles().forEach(resourcePackProfile -> list2.add(resourcePackProfile.createResourcePack()));
         CompletableFuture<Unit> completableFuture = this.dataManager.beginReload(this.workerExecutor, this, list2, field_20279);
-        this.waitFor(completableFuture::isDone);
+        this.runTasks(completableFuture::isDone);
         try {
             completableFuture.get();
         } catch (Exception exception) {
@@ -1341,10 +1343,10 @@ Runnable {
         }
         levelProperties.getEnabledDataPacks().clear();
         levelProperties.getDisabledDataPacks().clear();
-        this.dataPackContainerManager.getEnabledContainers().forEach(resourcePackContainer -> levelProperties.getEnabledDataPacks().add(resourcePackContainer.getName()));
-        this.dataPackContainerManager.getAlphabeticallyOrderedContainers().forEach(resourcePackContainer -> {
-            if (!this.dataPackContainerManager.getEnabledContainers().contains(resourcePackContainer)) {
-                levelProperties.getDisabledDataPacks().add(resourcePackContainer.getName());
+        this.dataPackContainerManager.getEnabledProfiles().forEach(resourcePackProfile -> levelProperties.getEnabledDataPacks().add(resourcePackProfile.getName()));
+        this.dataPackContainerManager.getProfiles().forEach(resourcePackProfile -> {
+            if (!this.dataPackContainerManager.getEnabledProfiles().contains(resourcePackProfile)) {
+                levelProperties.getDisabledDataPacks().add(resourcePackProfile.getName());
             }
         });
     }
@@ -1369,7 +1371,7 @@ Runnable {
         return this.dataManager;
     }
 
-    public ResourcePackContainerManager<ResourcePackContainer> getDataPackContainerManager() {
+    public ResourcePackManager<ResourcePackProfile> getDataPackContainerManager() {
         return this.dataPackContainerManager;
     }
 
@@ -1459,7 +1461,7 @@ Runnable {
 
     public abstract boolean isOwner(GameProfile var1);
 
-    public void method_21613(Path path) throws IOException {
+    public void dump(Path path) throws IOException {
         Path path2 = path.resolve("levels");
         for (Map.Entry<DimensionType, ServerWorld> entry : this.worlds.entrySet()) {
             Identifier identifier = DimensionType.getId(entry.getKey());
@@ -1467,23 +1469,23 @@ Runnable {
             Files.createDirectories(path3, new FileAttribute[0]);
             entry.getValue().method_21625(path3);
         }
-        this.method_21615(path.resolve("gamerules.txt"));
-        this.method_21616(path.resolve("classpath.txt"));
-        this.method_21614(path.resolve("example_crash.txt"));
-        this.method_21692(path.resolve("stats.txt"));
-        this.method_21713(path.resolve("threads.txt"));
+        this.dumpGamerules(path.resolve("gamerules.txt"));
+        this.dumpClasspath(path.resolve("classpath.txt"));
+        this.dumpExampleCrash(path.resolve("example_crash.txt"));
+        this.dumpStats(path.resolve("stats.txt"));
+        this.dumpThreads(path.resolve("threads.txt"));
     }
 
-    private void method_21692(Path path) throws IOException {
+    private void dumpStats(Path path) throws IOException {
         try (BufferedWriter writer = Files.newBufferedWriter(path, new OpenOption[0]);){
             writer.write(String.format("pending_tasks: %d\n", this.method_21684()));
             writer.write(String.format("average_tick_time: %f\n", Float.valueOf(this.getTickTime())));
             writer.write(String.format("tick_times: %s\n", Arrays.toString(this.lastTickLengths)));
-            writer.write(String.format("queue: %s\n", SystemUtil.getServerWorkerExecutor()));
+            writer.write(String.format("queue: %s\n", Util.getServerWorkerExecutor()));
         }
     }
 
-    private void method_21614(Path path) throws IOException {
+    private void dumpExampleCrash(Path path) throws IOException {
         CrashReport crashReport = new CrashReport("Server dump", new Exception("dummy"));
         this.populateCrashReport(crashReport);
         try (BufferedWriter writer = Files.newBufferedWriter(path, new OpenOption[0]);){
@@ -1491,11 +1493,11 @@ Runnable {
         }
     }
 
-    private void method_21615(Path path) throws IOException {
+    private void dumpGamerules(Path path) throws IOException {
         try (BufferedWriter writer = Files.newBufferedWriter(path, new OpenOption[0]);){
             final ArrayList<String> list = Lists.newArrayList();
             final GameRules gameRules = this.getGameRules();
-            GameRules.forEach(new GameRules.RuleConsumer(){
+            GameRules.forEachType(new GameRules.RuleConsumer(){
 
                 @Override
                 public <T extends GameRules.Rule<T>> void accept(GameRules.RuleKey<T> ruleKey, GameRules.RuleType<T> ruleType) {
@@ -1508,7 +1510,7 @@ Runnable {
         }
     }
 
-    private void method_21616(Path path) throws IOException {
+    private void dumpClasspath(Path path) throws IOException {
         try (BufferedWriter writer = Files.newBufferedWriter(path, new OpenOption[0]);){
             String string = System.getProperty("java.class.path");
             String string2 = System.getProperty("path.separator");
@@ -1519,7 +1521,7 @@ Runnable {
         }
     }
 
-    private void method_21713(Path path) throws IOException {
+    private void dumpThreads(Path path) throws IOException {
         ThreadMXBean threadMXBean = ManagementFactory.getThreadMXBean();
         ThreadInfo[] threadInfos = threadMXBean.dumpAllThreads(true, true);
         Arrays.sort(threadInfos, Comparator.comparing(ThreadInfo::getThreadName));
@@ -1532,13 +1534,13 @@ Runnable {
     }
 
     @Override
-    public /* synthetic */ boolean canRun(Runnable runnable) {
-        return this.method_19464((ServerTask)runnable);
+    public /* synthetic */ boolean canExecute(Runnable runnable) {
+        return this.canExecute((ServerTask)runnable);
     }
 
     @Override
-    public /* synthetic */ Runnable prepareRunnable(Runnable runnable) {
-        return this.method_16209(runnable);
+    public /* synthetic */ Runnable createTask(Runnable runnable) {
+        return this.createTask(runnable);
     }
 }
 

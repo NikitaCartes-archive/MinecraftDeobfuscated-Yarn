@@ -25,7 +25,7 @@ import net.minecraft.client.render.model.MultipartUnbakedModel;
 import net.minecraft.client.render.model.json.ModelVariant;
 import net.minecraft.client.render.model.json.MultipartModelComponent;
 import net.minecraft.client.render.model.json.WeightedUnbakedModel;
-import net.minecraft.state.StateFactory;
+import net.minecraft.state.StateManager;
 import net.minecraft.util.JsonHelper;
 import org.jetbrains.annotations.Nullable;
 
@@ -89,7 +89,8 @@ public class ModelVariantMap {
     @Environment(value=EnvType.CLIENT)
     public static class Deserializer
     implements JsonDeserializer<ModelVariantMap> {
-        public ModelVariantMap method_3428(JsonElement jsonElement, Type type, JsonDeserializationContext jsonDeserializationContext) throws JsonParseException {
+        @Override
+        public ModelVariantMap deserialize(JsonElement jsonElement, Type type, JsonDeserializationContext jsonDeserializationContext) throws JsonParseException {
             JsonObject jsonObject = jsonElement.getAsJsonObject();
             Map<String, WeightedUnbakedModel> map = this.deserializeVariants(jsonDeserializationContext, jsonObject);
             MultipartUnbakedModel multipartUnbakedModel = this.deserializeMultipart(jsonDeserializationContext, jsonObject);
@@ -121,21 +122,21 @@ public class ModelVariantMap {
 
         @Override
         public /* synthetic */ Object deserialize(JsonElement jsonElement, Type type, JsonDeserializationContext jsonDeserializationContext) throws JsonParseException {
-            return this.method_3428(jsonElement, type, jsonDeserializationContext);
+            return this.deserialize(jsonElement, type, jsonDeserializationContext);
         }
     }
 
     @Environment(value=EnvType.CLIENT)
     public static final class DeserializationContext {
         protected final Gson gson = new GsonBuilder().registerTypeAdapter((Type)((Object)ModelVariantMap.class), new Deserializer()).registerTypeAdapter((Type)((Object)ModelVariant.class), new ModelVariant.Deserializer()).registerTypeAdapter((Type)((Object)WeightedUnbakedModel.class), new WeightedUnbakedModel.Deserializer()).registerTypeAdapter((Type)((Object)MultipartUnbakedModel.class), new MultipartUnbakedModel.Deserializer(this)).registerTypeAdapter((Type)((Object)MultipartModelComponent.class), new MultipartModelComponent.Deserializer()).create();
-        private StateFactory<Block, BlockState> stateFactory;
+        private StateManager<Block, BlockState> stateFactory;
 
-        public StateFactory<Block, BlockState> getStateFactory() {
+        public StateManager<Block, BlockState> getStateFactory() {
             return this.stateFactory;
         }
 
-        public void setStateFactory(StateFactory<Block, BlockState> stateFactory) {
-            this.stateFactory = stateFactory;
+        public void setStateFactory(StateManager<Block, BlockState> stateManager) {
+            this.stateFactory = stateManager;
         }
     }
 }

@@ -16,16 +16,16 @@ import net.minecraft.entity.decoration.ItemFrameEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
-import net.minecraft.state.StateFactory;
+import net.minecraft.state.StateManager;
 import net.minecraft.state.property.EnumProperty;
 import net.minecraft.state.property.Properties;
 import net.minecraft.util.Hand;
-import net.minecraft.util.TaskPriority;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Direction;
 import net.minecraft.world.BlockView;
+import net.minecraft.world.TickPriority;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
 
@@ -36,7 +36,7 @@ implements BlockEntityProvider {
 
     public ComparatorBlock(Block.Settings settings) {
         super(settings);
-        this.setDefaultState((BlockState)((BlockState)((BlockState)((BlockState)this.stateFactory.getDefaultState()).with(FACING, Direction.NORTH)).with(POWERED, false)).with(MODE, ComparatorMode.COMPARE));
+        this.setDefaultState((BlockState)((BlockState)((BlockState)((BlockState)this.stateManager.getDefaultState()).with(FACING, Direction.NORTH)).with(POWERED, false)).with(MODE, ComparatorMode.COMPARE));
     }
 
     @Override
@@ -123,8 +123,8 @@ implements BlockEntityProvider {
         BlockEntity blockEntity = world.getBlockEntity(blockPos);
         int n = j = blockEntity instanceof ComparatorBlockEntity ? ((ComparatorBlockEntity)blockEntity).getOutputSignal() : 0;
         if (i != j || blockState.get(POWERED).booleanValue() != this.hasPower(world, blockPos, blockState)) {
-            TaskPriority taskPriority = this.isTargetNotAligned(world, blockPos, blockState) ? TaskPriority.HIGH : TaskPriority.NORMAL;
-            world.getBlockTickScheduler().schedule(blockPos, this, 2, taskPriority);
+            TickPriority tickPriority = this.isTargetNotAligned(world, blockPos, blockState) ? TickPriority.HIGH : TickPriority.NORMAL;
+            world.getBlockTickScheduler().schedule(blockPos, this, 2, tickPriority);
         }
     }
 
@@ -167,7 +167,7 @@ implements BlockEntityProvider {
     }
 
     @Override
-    protected void appendProperties(StateFactory.Builder<Block, BlockState> builder) {
+    protected void appendProperties(StateManager.Builder<Block, BlockState> builder) {
         builder.add(FACING, MODE, POWERED);
     }
 }

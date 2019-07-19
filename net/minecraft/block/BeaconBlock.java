@@ -4,13 +4,13 @@
 package net.minecraft.block;
 
 import net.minecraft.block.Block;
-import net.minecraft.block.BlockRenderLayer;
 import net.minecraft.block.BlockRenderType;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.BlockWithEntity;
+import net.minecraft.block.Stainable;
 import net.minecraft.block.entity.BeaconBlockEntity;
 import net.minecraft.block.entity.BlockEntity;
-import net.minecraft.client.block.ColoredBlock;
+import net.minecraft.client.render.RenderLayer;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
@@ -24,7 +24,7 @@ import net.minecraft.world.World;
 
 public class BeaconBlock
 extends BlockWithEntity
-implements ColoredBlock {
+implements Stainable {
     public BeaconBlock(Block.Settings settings) {
         super(settings);
     }
@@ -71,8 +71,8 @@ implements ColoredBlock {
     }
 
     @Override
-    public BlockRenderLayer getRenderLayer() {
-        return BlockRenderLayer.CUTOUT;
+    public RenderLayer getRenderLayer() {
+        return RenderLayer.CUTOUT;
     }
 }
 

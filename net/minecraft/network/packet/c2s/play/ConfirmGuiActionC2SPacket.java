@@ -1,0 +1,56 @@
+/*
+ * Decompiled with CFR 0.2.0 (FabricMC d28b102d).
+ */
+package net.minecraft.network.packet.c2s.play;
+
+import java.io.IOException;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
+import net.minecraft.network.Packet;
+import net.minecraft.network.listener.ServerPlayPacketListener;
+import net.minecraft.util.PacketByteBuf;
+
+public class ConfirmGuiActionC2SPacket
+implements Packet<ServerPlayPacketListener> {
+    private int windowId;
+    private short actionId;
+    private boolean accepted;
+
+    public ConfirmGuiActionC2SPacket() {
+    }
+
+    @Environment(value=EnvType.CLIENT)
+    public ConfirmGuiActionC2SPacket(int i, short s, boolean bl) {
+        this.windowId = i;
+        this.actionId = s;
+        this.accepted = bl;
+    }
+
+    @Override
+    public void apply(ServerPlayPacketListener serverPlayPacketListener) {
+        serverPlayPacketListener.onConfirmTransaction(this);
+    }
+
+    @Override
+    public void read(PacketByteBuf packetByteBuf) throws IOException {
+        this.windowId = packetByteBuf.readByte();
+        this.actionId = packetByteBuf.readShort();
+        this.accepted = packetByteBuf.readByte() != 0;
+    }
+
+    @Override
+    public void write(PacketByteBuf packetByteBuf) throws IOException {
+        packetByteBuf.writeByte(this.windowId);
+        packetByteBuf.writeShort(this.actionId);
+        packetByteBuf.writeByte(this.accepted ? 1 : 0);
+    }
+
+    public int getWindowId() {
+        return this.windowId;
+    }
+
+    public short getSyncId() {
+        return this.actionId;
+    }
+}
+

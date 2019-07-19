@@ -24,17 +24,17 @@ extends ArmorFeatureRenderer<T, M, A> {
         switch (equipmentSlot) {
             case HEAD: {
                 ((BipedEntityModel)bipedEntityModel).head.visible = true;
-                ((BipedEntityModel)bipedEntityModel).headwear.visible = true;
+                ((BipedEntityModel)bipedEntityModel).helmet.visible = true;
                 break;
             }
             case CHEST: {
-                ((BipedEntityModel)bipedEntityModel).body.visible = true;
+                ((BipedEntityModel)bipedEntityModel).torso.visible = true;
                 ((BipedEntityModel)bipedEntityModel).rightArm.visible = true;
                 ((BipedEntityModel)bipedEntityModel).leftArm.visible = true;
                 break;
             }
             case LEGS: {
-                ((BipedEntityModel)bipedEntityModel).body.visible = true;
+                ((BipedEntityModel)bipedEntityModel).torso.visible = true;
                 ((BipedEntityModel)bipedEntityModel).rightLeg.visible = true;
                 ((BipedEntityModel)bipedEntityModel).leftLeg.visible = true;
                 break;

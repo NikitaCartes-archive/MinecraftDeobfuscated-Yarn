@@ -5,14 +5,14 @@ package net.minecraft.client.render.entity.model;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.client.model.Cuboid;
+import net.minecraft.client.model.ModelPart;
 import net.minecraft.client.render.entity.model.EntityModel;
 import net.minecraft.entity.Entity;
 
 @Environment(value=EnvType.CLIENT)
 public class LeashEntityModel<T extends Entity>
 extends EntityModel<T> {
-    private final Cuboid field_3431;
+    private final ModelPart field_3431;
 
     public LeashEntityModel() {
         this(0, 0, 32, 32);
@@ -21,9 +21,9 @@ extends EntityModel<T> {
     public LeashEntityModel(int i, int j, int k, int l) {
         this.textureWidth = k;
         this.textureHeight = l;
-        this.field_3431 = new Cuboid(this, i, j);
-        this.field_3431.addBox(-3.0f, -6.0f, -3.0f, 6, 8, 6, 0.0f);
-        this.field_3431.setRotationPoint(0.0f, 0.0f, 0.0f);
+        this.field_3431 = new ModelPart(this, i, j);
+        this.field_3431.addCuboid(-3.0f, -6.0f, -3.0f, 6, 8, 6, 0.0f);
+        this.field_3431.setPivot(0.0f, 0.0f, 0.0f);
     }
 
     @Override

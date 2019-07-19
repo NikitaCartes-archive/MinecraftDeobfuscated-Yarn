@@ -23,16 +23,18 @@ extends MobEntityRenderer<CodEntity, CodEntityModel<CodEntity>> {
         super(entityRenderDispatcher, new CodEntityModel(), 0.3f);
     }
 
+    @Override
     @Nullable
-    protected Identifier method_3897(CodEntity codEntity) {
+    protected Identifier getTexture(CodEntity codEntity) {
         return SKIN;
     }
 
-    protected void method_3896(CodEntity codEntity, float f, float g, float h) {
+    @Override
+    protected void setupTransforms(CodEntity codEntity, float f, float g, float h) {
         super.setupTransforms(codEntity, f, g, h);
         float i = 4.3f * MathHelper.sin(0.6f * f);
         GlStateManager.rotatef(i, 0.0f, 1.0f, 0.0f);
-        if (!codEntity.isInsideWater()) {
+        if (!codEntity.isTouchingWater()) {
             GlStateManager.translatef(0.1f, 0.1f, -0.1f);
             GlStateManager.rotatef(90.0f, 0.0f, 0.0f, 1.0f);
         }

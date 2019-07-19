@@ -5,7 +5,7 @@ package net.minecraft.client.render.entity.model;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.client.model.Cuboid;
+import net.minecraft.client.model.ModelPart;
 import net.minecraft.client.render.entity.model.BipedEntityModel;
 import net.minecraft.client.render.entity.model.ZombieEntityModel;
 import net.minecraft.entity.LivingEntity;
@@ -22,19 +22,20 @@ public class DrownedEntityModel<T extends ZombieEntity>
 extends ZombieEntityModel<T> {
     public DrownedEntityModel(float f, float g, int i, int j) {
         super(f, g, i, j);
-        this.rightArm = new Cuboid(this, 32, 48);
-        this.rightArm.addBox(-3.0f, -2.0f, -2.0f, 4, 12, 4, f);
-        this.rightArm.setRotationPoint(-5.0f, 2.0f + g, 0.0f);
-        this.rightLeg = new Cuboid(this, 16, 48);
-        this.rightLeg.addBox(-2.0f, 0.0f, -2.0f, 4, 12, 4, f);
-        this.rightLeg.setRotationPoint(-1.9f, 12.0f + g, 0.0f);
+        this.rightArm = new ModelPart(this, 32, 48);
+        this.rightArm.addCuboid(-3.0f, -2.0f, -2.0f, 4, 12, 4, f);
+        this.rightArm.setPivot(-5.0f, 2.0f + g, 0.0f);
+        this.rightLeg = new ModelPart(this, 16, 48);
+        this.rightLeg.addCuboid(-2.0f, 0.0f, -2.0f, 4, 12, 4, f);
+        this.rightLeg.setPivot(-1.9f, 12.0f + g, 0.0f);
     }
 
     public DrownedEntityModel(float f, boolean bl) {
         super(f, 0.0f, 64, bl ? 32 : 64);
     }
 
-    public void method_17077(T zombieEntity, float f, float g, float h) {
+    @Override
+    public void animateModel(T zombieEntity, float f, float g, float h) {
         this.rightArmPose = BipedEntityModel.ArmPose.EMPTY;
         this.leftArmPose = BipedEntityModel.ArmPose.EMPTY;
         ItemStack itemStack = ((LivingEntity)zombieEntity).getStackInHand(Hand.MAIN_HAND);
@@ -45,11 +46,12 @@ extends ZombieEntityModel<T> {
                 this.leftArmPose = BipedEntityModel.ArmPose.THROW_SPEAR;
             }
         }
-        super.method_17086(zombieEntity, f, g, h);
+        super.animateModel(zombieEntity, f, g, h);
     }
 
-    public void method_17134(T zombieEntity, float f, float g, float h, float i, float j, float k) {
-        super.method_17791(zombieEntity, f, g, h, i, j, k);
+    @Override
+    public void setAngles(T zombieEntity, float f, float g, float h, float i, float j, float k) {
+        super.setAngles(zombieEntity, f, g, h, i, j, k);
         if (this.leftArmPose == BipedEntityModel.ArmPose.THROW_SPEAR) {
             this.leftArm.pitch = this.leftArm.pitch * 0.5f - (float)Math.PI;
             this.leftArm.yaw = 0.0f;

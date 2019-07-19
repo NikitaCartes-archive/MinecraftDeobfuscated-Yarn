@@ -91,11 +91,12 @@ implements ArgumentType<EntitySelector> {
         return list;
     }
 
-    public EntitySelector method_9318(StringReader stringReader) throws CommandSyntaxException {
+    @Override
+    public EntitySelector parse(StringReader stringReader) throws CommandSyntaxException {
         boolean i = false;
         EntitySelectorReader entitySelectorReader = new EntitySelectorReader(stringReader);
         EntitySelector entitySelector = entitySelectorReader.read();
-        if (entitySelector.getCount() > 1 && this.singleTarget) {
+        if (entitySelector.getLimit() > 1 && this.singleTarget) {
             if (this.playersOnly) {
                 stringReader.setCursor(0);
                 throw TOO_MANY_PLAYERS_EXCEPTION.createWithContext(stringReader);
@@ -138,12 +139,13 @@ implements ArgumentType<EntitySelector> {
 
     @Override
     public /* synthetic */ Object parse(StringReader stringReader) throws CommandSyntaxException {
-        return this.method_9318(stringReader);
+        return this.parse(stringReader);
     }
 
     public static class Serializer
     implements ArgumentSerializer<EntityArgumentType> {
-        public void method_9320(EntityArgumentType entityArgumentType, PacketByteBuf packetByteBuf) {
+        @Override
+        public void toPacket(EntityArgumentType entityArgumentType, PacketByteBuf packetByteBuf) {
             byte b = 0;
             if (entityArgumentType.singleTarget) {
                 b = (byte)(b | 1);
@@ -154,19 +156,21 @@ implements ArgumentType<EntitySelector> {
             packetByteBuf.writeByte(b);
         }
 
-        public EntityArgumentType method_9321(PacketByteBuf packetByteBuf) {
+        @Override
+        public EntityArgumentType fromPacket(PacketByteBuf packetByteBuf) {
             byte b = packetByteBuf.readByte();
             return new EntityArgumentType((b & 1) != 0, (b & 2) != 0);
         }
 
-        public void method_9319(EntityArgumentType entityArgumentType, JsonObject jsonObject) {
+        @Override
+        public void toJson(EntityArgumentType entityArgumentType, JsonObject jsonObject) {
             jsonObject.addProperty("amount", entityArgumentType.singleTarget ? "single" : "multiple");
             jsonObject.addProperty("type", entityArgumentType.playersOnly ? "players" : "entities");
         }
 
         @Override
         public /* synthetic */ ArgumentType fromPacket(PacketByteBuf packetByteBuf) {
-            return this.method_9321(packetByteBuf);
+            return this.fromPacket(packetByteBuf);
         }
     }
 }

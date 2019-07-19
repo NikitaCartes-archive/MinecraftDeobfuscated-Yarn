@@ -172,7 +172,7 @@ implements AutoCloseable {
                 int ac = (int)(u * 255.0f);
                 int ad = (int)(v * 255.0f);
                 int ae = (int)(w * 255.0f);
-                this.image.setPixelRGBA(l, k, 0xFF000000 | ae << 16 | ad << 8 | ac);
+                this.image.setPixelRgba(l, k, 0xFF000000 | ae << 16 | ad << 8 | ac);
             }
         }
         this.texture.upload();

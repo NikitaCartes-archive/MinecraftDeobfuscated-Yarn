@@ -128,7 +128,7 @@ extends Item {
 
     public EntityType<?> getEntityType(@Nullable CompoundTag compoundTag) {
         CompoundTag compoundTag2;
-        if (compoundTag != null && compoundTag.containsKey("EntityTag", 10) && (compoundTag2 = compoundTag.getCompound("EntityTag")).containsKey("id", 8)) {
+        if (compoundTag != null && compoundTag.contains("EntityTag", 10) && (compoundTag2 = compoundTag.getCompound("EntityTag")).contains("id", 8)) {
             return EntityType.get(compoundTag2.getString("id")).orElse(this.type);
         }
         return this.type;

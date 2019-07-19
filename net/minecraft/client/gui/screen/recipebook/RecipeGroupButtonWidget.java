@@ -13,7 +13,7 @@ import net.minecraft.client.gui.screen.recipebook.RecipeResultCollection;
 import net.minecraft.client.gui.widget.ToggleButtonWidget;
 import net.minecraft.client.recipe.book.ClientRecipeBook;
 import net.minecraft.client.recipe.book.RecipeBookGroup;
-import net.minecraft.client.render.GuiLighting;
+import net.minecraft.client.render.DiffuseLighting;
 import net.minecraft.client.render.item.ItemRenderer;
 import net.minecraft.container.CraftingContainer;
 import net.minecraft.item.ItemStack;
@@ -73,11 +73,11 @@ extends ToggleButtonWidget {
         GlStateManager.color4f(1.0f, 1.0f, 1.0f, 1.0f);
         this.blit(m, this.y, k, l, this.width, this.height);
         GlStateManager.enableDepthTest();
-        GuiLighting.enableForItems();
+        DiffuseLighting.enableForItems();
         GlStateManager.disableLighting();
         this.method_2621(minecraftClient.getItemRenderer());
         GlStateManager.enableLighting();
-        GuiLighting.disable();
+        DiffuseLighting.disable();
         if (this.bounce > 0.0f) {
             GlStateManager.popMatrix();
             this.bounce -= f;
@@ -105,7 +105,7 @@ extends ToggleButtonWidget {
         this.visible = false;
         if (list != null) {
             for (RecipeResultCollection recipeResultCollection : list) {
-                if (!recipeResultCollection.isInitialized() || !recipeResultCollection.hasFittableResults()) continue;
+                if (!recipeResultCollection.isInitialized() || !recipeResultCollection.hasFittingRecipes()) continue;
                 this.visible = true;
                 break;
             }

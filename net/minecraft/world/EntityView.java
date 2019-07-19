@@ -44,7 +44,7 @@ public interface EntityView {
         return this.getEntities(entity3, voxelShape.getBoundingBox()).stream().filter(entity2 -> !entity2.removed && entity2.inanimate && (entity3 == null || !entity2.isConnectedThroughVehicle(entity3))).noneMatch(entity -> VoxelShapes.matchesAnywhere(voxelShape, VoxelShapes.cuboid(entity.getBoundingBox()), BooleanBiFunction.AND));
     }
 
-    default public <T extends Entity> List<T> getEntities(Class<? extends T> class_, Box box) {
+    default public <T extends Entity> List<T> getNonSpectatingEntities(Class<? extends T> class_, Box box) {
         return this.getEntities(class_, box, EntityPredicates.EXCEPT_SPECTATOR);
     }
 
@@ -53,7 +53,7 @@ public interface EntityView {
     }
 
     default public Stream<VoxelShape> method_20743(@Nullable Entity entity3, Box box, Set<Entity> set) {
-        if (box.averageDimension() < 1.0E-7) {
+        if (box.getAverageSideLength() < 1.0E-7) {
             return Stream.empty();
         }
         Box box2 = box.expand(1.0E-7);
@@ -148,7 +148,7 @@ public interface EntityView {
         return (T)livingEntity2;
     }
 
-    default public List<PlayerEntity> getPlayersInBox(TargetPredicate targetPredicate, LivingEntity livingEntity, Box box) {
+    default public List<PlayerEntity> getPlayers(TargetPredicate targetPredicate, LivingEntity livingEntity, Box box) {
         ArrayList<PlayerEntity> list = Lists.newArrayList();
         for (PlayerEntity playerEntity : this.getPlayers()) {
             if (!box.contains(playerEntity.x, playerEntity.y, playerEntity.z) || !targetPredicate.test(livingEntity, playerEntity)) continue;

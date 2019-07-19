@@ -21,7 +21,7 @@ import net.minecraft.util.DefaultedList;
 public class LecternScreen
 extends BookScreen
 implements ContainerProvider<LecternContainer> {
-    private final LecternContainer lecternContainer;
+    private final LecternContainer container;
     private final ContainerListener listener = new ContainerListener(){
 
         @Override
@@ -43,17 +43,18 @@ implements ContainerProvider<LecternContainer> {
     };
 
     public LecternScreen(LecternContainer lecternContainer, PlayerInventory playerInventory, Text text) {
-        this.lecternContainer = lecternContainer;
+        this.container = lecternContainer;
     }
 
-    public LecternContainer method_17573() {
-        return this.lecternContainer;
+    @Override
+    public LecternContainer getContainer() {
+        return this.container;
     }
 
     @Override
     protected void init() {
         super.init();
-        this.lecternContainer.addListener(this.listener);
+        this.container.addListener(this.listener);
     }
 
     @Override
@@ -65,7 +66,7 @@ implements ContainerProvider<LecternContainer> {
     @Override
     public void removed() {
         super.removed();
-        this.lecternContainer.removeListener(this.listener);
+        this.container.removeListener(this.listener);
     }
 
     @Override
@@ -90,7 +91,7 @@ implements ContainerProvider<LecternContainer> {
 
     @Override
     protected boolean jumpToPage(int i) {
-        if (i != this.lecternContainer.getPage()) {
+        if (i != this.container.getPage()) {
             this.sendButtonPressPacket(100 + i);
             return true;
         }
@@ -98,7 +99,7 @@ implements ContainerProvider<LecternContainer> {
     }
 
     private void sendButtonPressPacket(int i) {
-        this.minecraft.interactionManager.clickButton(this.lecternContainer.syncId, i);
+        this.minecraft.interactionManager.clickButton(this.container.syncId, i);
     }
 
     @Override
@@ -107,17 +108,17 @@ implements ContainerProvider<LecternContainer> {
     }
 
     private void updatePageProvider() {
-        ItemStack itemStack = this.lecternContainer.getBookItem();
+        ItemStack itemStack = this.container.getBookItem();
         this.setPageProvider(BookScreen.Contents.create(itemStack));
     }
 
     private void updatePage() {
-        this.setPage(this.lecternContainer.getPage());
+        this.setPage(this.container.getPage());
     }
 
     @Override
     public /* synthetic */ Container getContainer() {
-        return this.method_17573();
+        return this.getContainer();
     }
 }
 

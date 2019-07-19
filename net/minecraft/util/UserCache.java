@@ -267,7 +267,8 @@ public class UserCache {
         private JsonConverter() {
         }
 
-        public JsonElement method_14522(Entry entry, Type type, JsonSerializationContext jsonSerializationContext) {
+        @Override
+        public JsonElement serialize(Entry entry, Type type, JsonSerializationContext jsonSerializationContext) {
             JsonObject jsonObject = new JsonObject();
             jsonObject.addProperty("name", entry.getProfile().getName());
             UUID uUID = entry.getProfile().getId();
@@ -276,7 +277,8 @@ public class UserCache {
             return jsonObject;
         }
 
-        public Entry method_14523(JsonElement jsonElement, Type type, JsonDeserializationContext jsonDeserializationContext) throws JsonParseException {
+        @Override
+        public Entry deserialize(JsonElement jsonElement, Type type, JsonDeserializationContext jsonDeserializationContext) throws JsonParseException {
             if (jsonElement.isJsonObject()) {
                 UUID uUID;
                 JsonObject jsonObject = jsonElement.getAsJsonObject();
@@ -311,12 +313,12 @@ public class UserCache {
 
         @Override
         public /* synthetic */ JsonElement serialize(Object object, Type type, JsonSerializationContext jsonSerializationContext) {
-            return this.method_14522((Entry)object, type, jsonSerializationContext);
+            return this.serialize((Entry)object, type, jsonSerializationContext);
         }
 
         @Override
         public /* synthetic */ Object deserialize(JsonElement jsonElement, Type type, JsonDeserializationContext jsonDeserializationContext) throws JsonParseException {
-            return this.method_14523(jsonElement, type, jsonDeserializationContext);
+            return this.deserialize(jsonElement, type, jsonDeserializationContext);
         }
     }
 }

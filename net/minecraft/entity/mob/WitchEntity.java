@@ -125,10 +125,10 @@ implements RangedAttackMob {
                     List<StatusEffectInstance> list;
                     this.setDrinking(false);
                     ItemStack itemStack = this.getMainHandStack();
-                    this.setEquippedStack(EquipmentSlot.MAINHAND, ItemStack.EMPTY);
+                    this.equipStack(EquipmentSlot.MAINHAND, ItemStack.EMPTY);
                     if (itemStack.getItem() == Items.POTION && (list = PotionUtil.getPotionEffects(itemStack)) != null) {
                         for (StatusEffectInstance statusEffectInstance : list) {
-                            this.addPotionEffect(new StatusEffectInstance(statusEffectInstance));
+                            this.addStatusEffect(new StatusEffectInstance(statusEffectInstance));
                         }
                     }
                     this.getAttributeInstance(EntityAttributes.MOVEMENT_SPEED).removeModifier(DRINKING_SPEED_PENALTY_MODIFIER);
@@ -139,13 +139,13 @@ implements RangedAttackMob {
                     potion = Potions.WATER_BREATHING;
                 } else if (this.random.nextFloat() < 0.15f && (this.isOnFire() || this.getRecentDamageSource() != null && this.getRecentDamageSource().isFire()) && !this.hasStatusEffect(StatusEffects.FIRE_RESISTANCE)) {
                     potion = Potions.FIRE_RESISTANCE;
-                } else if (this.random.nextFloat() < 0.05f && this.getHealth() < this.getHealthMaximum()) {
+                } else if (this.random.nextFloat() < 0.05f && this.getHealth() < this.getMaximumHealth()) {
                     potion = Potions.HEALING;
                 } else if (this.random.nextFloat() < 0.5f && this.getTarget() != null && !this.hasStatusEffect(StatusEffects.SPEED) && this.getTarget().squaredDistanceTo(this) > 121.0) {
                     potion = Potions.SWIFTNESS;
                 }
                 if (potion != null) {
-                    this.setEquippedStack(EquipmentSlot.MAINHAND, PotionUtil.setPotion(new ItemStack(Items.POTION), potion));
+                    this.equipStack(EquipmentSlot.MAINHAND, PotionUtil.setPotion(new ItemStack(Items.POTION), potion));
                     this.drinkTimeLeft = this.getMainHandStack().getMaxUseTime();
                     this.setDrinking(true);
                     this.world.playSound(null, this.x, this.y, this.z, SoundEvents.ENTITY_WITCH_DRINK, this.getSoundCategory(), 1.0f, 0.8f + this.random.nextFloat() * 0.4f);
@@ -171,7 +171,7 @@ implements RangedAttackMob {
     public void handleStatus(byte b) {
         if (b == 15) {
             for (int i = 0; i < this.random.nextInt(35) + 10; ++i) {
-                this.world.addParticle(ParticleTypes.WITCH, this.x + this.random.nextGaussian() * (double)0.13f, this.getBoundingBox().maxY + 0.5 + this.random.nextGaussian() * (double)0.13f, this.z + this.random.nextGaussian() * (double)0.13f, 0.0, 0.0, 0.0);
+                this.world.addParticle(ParticleTypes.WITCH, this.x + this.random.nextGaussian() * (double)0.13f, this.getBoundingBox().y2 + 0.5 + this.random.nextGaussian() * (double)0.13f, this.z + this.random.nextGaussian() * (double)0.13f, 0.0, 0.0, 0.0);
             }
         } else {
             super.handleStatus(b);

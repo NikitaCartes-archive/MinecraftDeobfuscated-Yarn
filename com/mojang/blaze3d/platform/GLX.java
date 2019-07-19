@@ -944,7 +944,7 @@ public class GLX {
         GlStateManager.disableTexture();
         GlStateManager.depthMask(false);
         Tessellator tessellator = Tessellator.getInstance();
-        BufferBuilder bufferBuilder = tessellator.getBufferBuilder();
+        BufferBuilder bufferBuilder = tessellator.getBuffer();
         GL11.glLineWidth(4.0f);
         bufferBuilder.begin(1, VertexFormats.POSITION_COLOR);
         if (bl) {

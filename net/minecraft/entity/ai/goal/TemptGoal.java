@@ -57,7 +57,7 @@ extends Goal {
     }
 
     protected boolean isTempedBy(ItemStack itemStack) {
-        return this.food.method_8093(itemStack);
+        return this.food.test(itemStack);
     }
 
     @Override

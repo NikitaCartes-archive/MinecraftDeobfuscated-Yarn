@@ -25,11 +25,13 @@ extends MobEntityRenderer<WanderingTraderEntity, VillagerResemblingModel<Wanderi
         this.addFeature(new VillagerHeldItemFeatureRenderer<WanderingTraderEntity>(this));
     }
 
-    protected Identifier method_18045(WanderingTraderEntity wanderingTraderEntity) {
+    @Override
+    protected Identifier getTexture(WanderingTraderEntity wanderingTraderEntity) {
         return TEXTURE;
     }
 
-    protected void method_18046(WanderingTraderEntity wanderingTraderEntity, float f) {
+    @Override
+    protected void scale(WanderingTraderEntity wanderingTraderEntity, float f) {
         float g = 0.9375f;
         GlStateManager.scalef(0.9375f, 0.9375f, 0.9375f);
     }

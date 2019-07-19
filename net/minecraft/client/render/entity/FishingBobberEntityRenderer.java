@@ -30,7 +30,8 @@ extends EntityRenderer<FishingBobberEntity> {
         super(entityRenderDispatcher);
     }
 
-    public void method_3974(FishingBobberEntity fishingBobberEntity, double d, double e, double f, float g, float h) {
+    @Override
+    public void render(FishingBobberEntity fishingBobberEntity, double d, double e, double f, float g, float h) {
         double x;
         double w;
         double v;
@@ -46,7 +47,7 @@ extends EntityRenderer<FishingBobberEntity> {
         GlStateManager.scalef(0.5f, 0.5f, 0.5f);
         this.bindEntityTexture(fishingBobberEntity);
         Tessellator tessellator = Tessellator.getInstance();
-        BufferBuilder bufferBuilder = tessellator.getBufferBuilder();
+        BufferBuilder bufferBuilder = tessellator.getBuffer();
         float i = 1.0f;
         float j = 0.5f;
         float k = 0.5f;
@@ -117,7 +118,8 @@ extends EntityRenderer<FishingBobberEntity> {
         super.render(fishingBobberEntity, d, e, f, g, h);
     }
 
-    protected Identifier method_3975(FishingBobberEntity fishingBobberEntity) {
+    @Override
+    protected Identifier getTexture(FishingBobberEntity fishingBobberEntity) {
         return SKIN;
     }
 }

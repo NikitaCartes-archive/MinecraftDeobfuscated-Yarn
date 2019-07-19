@@ -12,7 +12,7 @@ import net.minecraft.block.BlockWithEntity;
 import net.minecraft.block.HorizontalFacingBlock;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.LecternBlockEntity;
-import net.minecraft.container.NameableContainerProvider;
+import net.minecraft.container.NameableContainerFactory;
 import net.minecraft.entity.EntityContext;
 import net.minecraft.entity.ItemEntity;
 import net.minecraft.entity.player.PlayerEntity;
@@ -21,7 +21,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.stat.Stats;
-import net.minecraft.state.StateFactory;
+import net.minecraft.state.StateManager;
 import net.minecraft.state.property.BooleanProperty;
 import net.minecraft.state.property.DirectionProperty;
 import net.minecraft.state.property.Properties;
@@ -54,7 +54,7 @@ extends BlockWithEntity {
 
     protected LecternBlock(Block.Settings settings) {
         super(settings);
-        this.setDefaultState((BlockState)((BlockState)((BlockState)((BlockState)this.stateFactory.getDefaultState()).with(FACING, Direction.NORTH)).with(POWERED, false)).with(HAS_BOOK, false));
+        this.setDefaultState((BlockState)((BlockState)((BlockState)((BlockState)this.stateManager.getDefaultState()).with(FACING, Direction.NORTH)).with(POWERED, false)).with(HAS_BOOK, false));
     }
 
     @Override
@@ -63,7 +63,7 @@ extends BlockWithEntity {
     }
 
     @Override
-    public VoxelShape method_9571(BlockState blockState, BlockView blockView, BlockPos blockPos) {
+    public VoxelShape getCullingShape(BlockState blockState, BlockView blockView, BlockPos blockPos) {
         return BASE_SHAPE;
     }
 
@@ -112,7 +112,7 @@ extends BlockWithEntity {
     }
 
     @Override
-    protected void appendProperties(StateFactory.Builder<Block, BlockState> builder) {
+    protected void appendProperties(StateManager.Builder<Block, BlockState> builder) {
         builder.add(FACING, POWERED, HAS_BOOK);
     }
 
@@ -241,11 +241,11 @@ extends BlockWithEntity {
 
     @Override
     @Nullable
-    public NameableContainerProvider createContainerProvider(BlockState blockState, World world, BlockPos blockPos) {
+    public NameableContainerFactory createContainerFactory(BlockState blockState, World world, BlockPos blockPos) {
         if (!blockState.get(HAS_BOOK).booleanValue()) {
             return null;
         }
-        return super.createContainerProvider(blockState, world, blockPos);
+        return super.createContainerFactory(blockState, world, blockPos);
     }
 
     private void openContainer(World world, BlockPos blockPos, PlayerEntity playerEntity) {

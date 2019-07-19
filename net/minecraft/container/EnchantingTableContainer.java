@@ -188,7 +188,7 @@ extends Container {
                     }
                     playerEntity.incrementStat(Stats.ENCHANT_ITEM);
                     if (playerEntity instanceof ServerPlayerEntity) {
-                        Criterions.ENCHANTED_ITEM.handle((ServerPlayerEntity)playerEntity, itemStack3, j);
+                        Criterions.ENCHANTED_ITEM.trigger((ServerPlayerEntity)playerEntity, itemStack3, j);
                     }
                     this.inventory.markDirty();
                     this.seed.set(playerEntity.getEnchantmentTableSeed());
@@ -238,7 +238,7 @@ extends Container {
     @Override
     public ItemStack transferSlot(PlayerEntity playerEntity, int i) {
         ItemStack itemStack = ItemStack.EMPTY;
-        Slot slot = (Slot)this.slotList.get(i);
+        Slot slot = (Slot)this.slots.get(i);
         if (slot != null && slot.hasStack()) {
             ItemStack itemStack2 = slot.getStack();
             itemStack = itemStack2.copy();
@@ -254,12 +254,12 @@ extends Container {
                 if (!this.insertItem(itemStack2, 1, 2, true)) {
                     return ItemStack.EMPTY;
                 }
-            } else if (!((Slot)this.slotList.get(0)).hasStack() && ((Slot)this.slotList.get(0)).canInsert(itemStack2)) {
+            } else if (!((Slot)this.slots.get(0)).hasStack() && ((Slot)this.slots.get(0)).canInsert(itemStack2)) {
                 if (itemStack2.hasTag() && itemStack2.getCount() == 1) {
-                    ((Slot)this.slotList.get(0)).setStack(itemStack2.copy());
+                    ((Slot)this.slots.get(0)).setStack(itemStack2.copy());
                     itemStack2.setCount(0);
                 } else if (!itemStack2.isEmpty()) {
-                    ((Slot)this.slotList.get(0)).setStack(new ItemStack(itemStack2.getItem()));
+                    ((Slot)this.slots.get(0)).setStack(new ItemStack(itemStack2.getItem()));
                     itemStack2.decrement(1);
                 }
             } else {

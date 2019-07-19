@@ -14,10 +14,10 @@ public interface DataCommandObject {
 
     public CompoundTag getTag() throws CommandSyntaxException;
 
-    public Text getModifiedFeedback();
+    public Text feedbackModify();
 
-    public Text getQueryFeedback(Tag var1);
+    public Text feedbackQuery(Tag var1);
 
-    public Text getGetFeedback(NbtPathArgumentType.NbtPath var1, double var2, int var4);
+    public Text feedbackGet(NbtPathArgumentType.NbtPath var1, double var2, int var4);
 }
 

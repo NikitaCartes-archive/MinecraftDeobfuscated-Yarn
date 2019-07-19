@@ -6,7 +6,7 @@ package net.minecraft.client.gui.screen.ingame;
 import com.mojang.blaze3d.platform.GlStateManager;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.client.gui.screen.ingame.AbstractContainerScreen;
+import net.minecraft.client.gui.screen.ingame.ContainerScreen;
 import net.minecraft.client.gui.screen.ingame.InventoryScreen;
 import net.minecraft.container.HorseContainer;
 import net.minecraft.entity.passive.AbstractDonkeyEntity;
@@ -17,7 +17,7 @@ import net.minecraft.util.Identifier;
 
 @Environment(value=EnvType.CLIENT)
 public class HorseScreen
-extends AbstractContainerScreen<HorseContainer> {
+extends ContainerScreen<HorseContainer> {
     private static final Identifier TEXTURE = new Identifier("textures/gui/container/horse.png");
     private final HorseBaseEntity entity;
     private float mouseX;

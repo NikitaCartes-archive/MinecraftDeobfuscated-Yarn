@@ -24,7 +24,7 @@ import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.stat.Stats;
-import net.minecraft.state.StateFactory;
+import net.minecraft.state.StateManager;
 import net.minecraft.state.property.IntProperty;
 import net.minecraft.state.property.Properties;
 import net.minecraft.util.BooleanBiFunction;
@@ -45,7 +45,7 @@ extends Block {
 
     public CauldronBlock(Block.Settings settings) {
         super(settings);
-        this.setDefaultState((BlockState)((BlockState)this.stateFactory.getDefaultState()).with(LEVEL, 0));
+        this.setDefaultState((BlockState)((BlockState)this.stateManager.getDefaultState()).with(LEVEL, 0));
     }
 
     @Override
@@ -67,7 +67,7 @@ extends Block {
     public void onEntityCollision(BlockState blockState, World world, BlockPos blockPos, Entity entity) {
         int i = blockState.get(LEVEL);
         float f = (float)blockPos.getY() + (6.0f + (float)(3 * i)) / 16.0f;
-        if (!world.isClient && entity.isOnFire() && i > 0 && entity.getBoundingBox().minY <= (double)f) {
+        if (!world.isClient && entity.isOnFire() && i > 0 && entity.getBoundingBox().y1 <= (double)f) {
             entity.extinguish();
             this.setLevel(world, blockPos, blockState, i - 1);
         }
@@ -174,7 +174,7 @@ extends Block {
             if (block instanceof ShulkerBoxBlock && !world.isClient()) {
                 ItemStack itemStack3 = new ItemStack(Blocks.SHULKER_BOX, 1);
                 if (itemStack.hasTag()) {
-                    itemStack3.setTag(itemStack.getTag().method_10553());
+                    itemStack3.setTag(itemStack.getTag().copy());
                 }
                 playerEntity.setStackInHand(hand, itemStack3);
                 this.setLevel(world, blockPos, blockState, i - 1);
@@ -191,11 +191,11 @@ extends Block {
     }
 
     @Override
-    public void onRainTick(World world, BlockPos blockPos) {
+    public void rainTick(World world, BlockPos blockPos) {
         if (world.random.nextInt(20) != 1) {
             return;
         }
-        float f = world.getBiome(blockPos).method_21740(blockPos);
+        float f = world.getBiome(blockPos).getTemperature(blockPos);
         if (f < 0.15f) {
             return;
         }
@@ -216,7 +216,7 @@ extends Block {
     }
 
     @Override
-    protected void appendProperties(StateFactory.Builder<Block, BlockState> builder) {
+    protected void appendProperties(StateManager.Builder<Block, BlockState> builder) {
         builder.add(LEVEL);
     }
 

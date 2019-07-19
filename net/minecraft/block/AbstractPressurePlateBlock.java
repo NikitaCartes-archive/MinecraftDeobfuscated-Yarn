@@ -15,8 +15,8 @@ import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.world.BlockView;
+import net.minecraft.world.CollisionView;
 import net.minecraft.world.IWorld;
-import net.minecraft.world.ViewableWorld;
 import net.minecraft.world.World;
 
 public abstract class AbstractPressurePlateBlock
@@ -35,7 +35,7 @@ extends Block {
     }
 
     @Override
-    public int getTickRate(ViewableWorld viewableWorld) {
+    public int getTickRate(CollisionView collisionView) {
         return 20;
     }
 
@@ -53,9 +53,9 @@ extends Block {
     }
 
     @Override
-    public boolean canPlaceAt(BlockState blockState, ViewableWorld viewableWorld, BlockPos blockPos) {
+    public boolean canPlaceAt(BlockState blockState, CollisionView collisionView, BlockPos blockPos) {
         BlockPos blockPos2 = blockPos.down();
-        return AbstractPressurePlateBlock.isSolidMediumSquare(viewableWorld, blockPos2) || AbstractPressurePlateBlock.isSolidSmallSquare(viewableWorld, blockPos2, Direction.UP);
+        return AbstractPressurePlateBlock.topCoversMediumSquare(collisionView, blockPos2) || AbstractPressurePlateBlock.isSolidSmallSquare(collisionView, blockPos2, Direction.UP);
     }
 
     @Override
@@ -89,7 +89,7 @@ extends Block {
             BlockState blockState2 = this.setRedstoneOutput(blockState, j);
             world.setBlockState(blockPos, blockState2, 2);
             this.updateNeighbors(world, blockPos);
-            world.scheduleBlockRender(blockPos, blockState, blockState2);
+            world.checkBlockRerender(blockPos, blockState, blockState2);
         }
         if (!bl2 && bl) {
             this.playDepressSound(world, blockPos);

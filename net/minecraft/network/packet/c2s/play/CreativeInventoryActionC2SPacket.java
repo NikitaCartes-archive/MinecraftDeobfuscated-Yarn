@@ -1,0 +1,53 @@
+/*
+ * Decompiled with CFR 0.2.0 (FabricMC d28b102d).
+ */
+package net.minecraft.network.packet.c2s.play;
+
+import java.io.IOException;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
+import net.minecraft.item.ItemStack;
+import net.minecraft.network.Packet;
+import net.minecraft.network.listener.ServerPlayPacketListener;
+import net.minecraft.util.PacketByteBuf;
+
+public class CreativeInventoryActionC2SPacket
+implements Packet<ServerPlayPacketListener> {
+    private int slot;
+    private ItemStack stack = ItemStack.EMPTY;
+
+    public CreativeInventoryActionC2SPacket() {
+    }
+
+    @Environment(value=EnvType.CLIENT)
+    public CreativeInventoryActionC2SPacket(int i, ItemStack itemStack) {
+        this.slot = i;
+        this.stack = itemStack.copy();
+    }
+
+    @Override
+    public void apply(ServerPlayPacketListener serverPlayPacketListener) {
+        serverPlayPacketListener.onCreativeInventoryAction(this);
+    }
+
+    @Override
+    public void read(PacketByteBuf packetByteBuf) throws IOException {
+        this.slot = packetByteBuf.readShort();
+        this.stack = packetByteBuf.readItemStack();
+    }
+
+    @Override
+    public void write(PacketByteBuf packetByteBuf) throws IOException {
+        packetByteBuf.writeShort(this.slot);
+        packetByteBuf.writeItemStack(this.stack);
+    }
+
+    public int getSlot() {
+        return this.slot;
+    }
+
+    public ItemStack getItemStack() {
+        return this.stack;
+    }
+}
+

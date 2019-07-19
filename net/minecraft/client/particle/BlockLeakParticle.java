@@ -88,7 +88,8 @@ extends SpriteBillboardParticle {
             this.spriteProvider = spriteProvider;
         }
 
-        public Particle method_18824(DefaultParticleType defaultParticleType, World world, double d, double e, double f, double g, double h, double i) {
+        @Override
+        public Particle createParticle(DefaultParticleType defaultParticleType, World world, double d, double e, double f, double g, double h, double i) {
             LandingParticle blockLeakParticle = new LandingParticle(world, d, e, f, Fluids.LAVA);
             blockLeakParticle.setColor(1.0f, 0.2857143f, 0.083333336f);
             blockLeakParticle.setSprite(this.spriteProvider);
@@ -105,7 +106,8 @@ extends SpriteBillboardParticle {
             this.spriteProvider = spriteProvider;
         }
 
-        public Particle method_18823(DefaultParticleType defaultParticleType, World world, double d, double e, double f, double g, double h, double i) {
+        @Override
+        public Particle createParticle(DefaultParticleType defaultParticleType, World world, double d, double e, double f, double g, double h, double i) {
             FallingParticle blockLeakParticle = new FallingParticle(world, d, e, f, Fluids.LAVA, ParticleTypes.LANDING_LAVA);
             blockLeakParticle.setColor(1.0f, 0.2857143f, 0.083333336f);
             blockLeakParticle.setSprite(this.spriteProvider);
@@ -122,7 +124,8 @@ extends SpriteBillboardParticle {
             this.spriteProvider = spriteProvider;
         }
 
-        public Particle method_3017(DefaultParticleType defaultParticleType, World world, double d, double e, double f, double g, double h, double i) {
+        @Override
+        public Particle createParticle(DefaultParticleType defaultParticleType, World world, double d, double e, double f, double g, double h, double i) {
             DrippingLavaParticle drippingLavaParticle = new DrippingLavaParticle(world, d, e, f, Fluids.LAVA, ParticleTypes.FALLING_LAVA);
             drippingLavaParticle.setSprite(this.spriteProvider);
             return drippingLavaParticle;
@@ -138,7 +141,8 @@ extends SpriteBillboardParticle {
             this.spriteProvider = spriteProvider;
         }
 
-        public Particle method_3018(DefaultParticleType defaultParticleType, World world, double d, double e, double f, double g, double h, double i) {
+        @Override
+        public Particle createParticle(DefaultParticleType defaultParticleType, World world, double d, double e, double f, double g, double h, double i) {
             FallingParticle blockLeakParticle = new FallingParticle(world, d, e, f, Fluids.WATER, ParticleTypes.SPLASH);
             blockLeakParticle.setColor(0.2f, 0.3f, 1.0f);
             blockLeakParticle.setSprite(this.spriteProvider);
@@ -155,7 +159,8 @@ extends SpriteBillboardParticle {
             this.spriteProvider = spriteProvider;
         }
 
-        public Particle method_18825(DefaultParticleType defaultParticleType, World world, double d, double e, double f, double g, double h, double i) {
+        @Override
+        public Particle createParticle(DefaultParticleType defaultParticleType, World world, double d, double e, double f, double g, double h, double i) {
             DrippingParticle blockLeakParticle = new DrippingParticle(world, d, e, f, Fluids.WATER, ParticleTypes.FALLING_WATER);
             blockLeakParticle.setColor(0.2f, 0.3f, 1.0f);
             blockLeakParticle.setSprite(this.spriteProvider);

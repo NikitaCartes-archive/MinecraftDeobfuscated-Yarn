@@ -29,7 +29,8 @@ extends EntityRenderer<EnderCrystalEntity> {
         this.field_4673 = 0.5f;
     }
 
-    public void method_3908(EnderCrystalEntity enderCrystalEntity, double d, double e, double f, float g, float h) {
+    @Override
+    public void render(EnderCrystalEntity enderCrystalEntity, double d, double e, double f, float g, float h) {
         float i = (float)enderCrystalEntity.field_7034 + h;
         GlStateManager.pushMatrix();
         GlStateManager.translatef((float)d, (float)e, (float)f);
@@ -52,7 +53,7 @@ extends EntityRenderer<EnderCrystalEntity> {
         GlStateManager.popMatrix();
         BlockPos blockPos = enderCrystalEntity.getBeamTarget();
         if (blockPos != null) {
-            this.bindTexture(EnderDragonEntityRenderer.CRYSTAL_BEAM);
+            this.bindTexture(EnderDragonEntityRenderer.CRYSTAL_BEAM_TEX);
             float k = (float)blockPos.getX() + 0.5f;
             float l = (float)blockPos.getY() + 0.5f;
             float m = (float)blockPos.getZ() + 0.5f;
@@ -64,11 +65,13 @@ extends EntityRenderer<EnderCrystalEntity> {
         super.render(enderCrystalEntity, d, e, f, g, h);
     }
 
-    protected Identifier method_3909(EnderCrystalEntity enderCrystalEntity) {
+    @Override
+    protected Identifier getTexture(EnderCrystalEntity enderCrystalEntity) {
         return SKIN;
     }
 
-    public boolean method_3907(EnderCrystalEntity enderCrystalEntity, VisibleRegion visibleRegion, double d, double e, double f) {
+    @Override
+    public boolean isVisible(EnderCrystalEntity enderCrystalEntity, VisibleRegion visibleRegion, double d, double e, double f) {
         return super.isVisible(enderCrystalEntity, visibleRegion, d, e, f) || enderCrystalEntity.getBeamTarget() != null;
     }
 }

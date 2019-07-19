@@ -25,7 +25,7 @@ import net.minecraft.util.Identifier;
 public class ChanneledLightningCriterion
 implements Criterion<Conditions> {
     private static final Identifier ID = new Identifier("channeled_lightning");
-    private final Map<PlayerAdvancementTracker, Handler> field_9500 = Maps.newHashMap();
+    private final Map<PlayerAdvancementTracker, Handler> handlers = Maps.newHashMap();
 
     @Override
     public Identifier getId() {
@@ -34,37 +34,38 @@ implements Criterion<Conditions> {
 
     @Override
     public void beginTrackingCondition(PlayerAdvancementTracker playerAdvancementTracker, Criterion.ConditionsContainer<Conditions> conditionsContainer) {
-        Handler handler = this.field_9500.get(playerAdvancementTracker);
+        Handler handler = this.handlers.get(playerAdvancementTracker);
         if (handler == null) {
             handler = new Handler(playerAdvancementTracker);
-            this.field_9500.put(playerAdvancementTracker, handler);
+            this.handlers.put(playerAdvancementTracker, handler);
         }
         handler.addCondition(conditionsContainer);
     }
 
     @Override
     public void endTrackingCondition(PlayerAdvancementTracker playerAdvancementTracker, Criterion.ConditionsContainer<Conditions> conditionsContainer) {
-        Handler handler = this.field_9500.get(playerAdvancementTracker);
+        Handler handler = this.handlers.get(playerAdvancementTracker);
         if (handler != null) {
             handler.removeCondition(conditionsContainer);
             if (handler.isEmpty()) {
-                this.field_9500.remove(playerAdvancementTracker);
+                this.handlers.remove(playerAdvancementTracker);
             }
         }
     }
 
     @Override
     public void endTracking(PlayerAdvancementTracker playerAdvancementTracker) {
-        this.field_9500.remove(playerAdvancementTracker);
+        this.handlers.remove(playerAdvancementTracker);
     }
 
-    public Conditions method_8801(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext) {
-        EntityPredicate[] entityPredicates = EntityPredicate.deserializeAll(jsonObject.get("victims"));
+    @Override
+    public Conditions conditionsFromJson(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext) {
+        EntityPredicate[] entityPredicates = EntityPredicate.fromJsonArray(jsonObject.get("victims"));
         return new Conditions(entityPredicates);
     }
 
-    public void handle(ServerPlayerEntity serverPlayerEntity, Collection<? extends Entity> collection) {
-        Handler handler = this.field_9500.get(serverPlayerEntity.getAdvancementManager());
+    public void trigger(ServerPlayerEntity serverPlayerEntity, Collection<? extends Entity> collection) {
+        Handler handler = this.handlers.get(serverPlayerEntity.getAdvancementTracker());
         if (handler != null) {
             handler.handle(serverPlayerEntity, collection);
         }
@@ -72,7 +73,7 @@ implements Criterion<Conditions> {
 
     @Override
     public /* synthetic */ CriterionConditions conditionsFromJson(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext) {
-        return this.method_8801(jsonObject, jsonDeserializationContext);
+        return this.conditionsFromJson(jsonObject, jsonDeserializationContext);
     }
 
     static class Handler {

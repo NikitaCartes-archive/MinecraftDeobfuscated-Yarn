@@ -74,7 +74,8 @@ extends SinglePreparationResourceReloadListener<SoundList> {
         this.soundSystem = new SoundSystem(this, gameOptions, resourceManager);
     }
 
-    protected SoundList method_18180(ResourceManager resourceManager, Profiler profiler) {
+    @Override
+    protected SoundList prepare(ResourceManager resourceManager, Profiler profiler) {
         SoundList soundList = new SoundList();
         profiler.startTick();
         for (String string : resourceManager.getAllNamespaces()) {
@@ -105,7 +106,8 @@ extends SinglePreparationResourceReloadListener<SoundList> {
         return soundList;
     }
 
-    protected void method_18182(SoundList soundList, ResourceManager resourceManager, Profiler profiler) {
+    @Override
+    protected void apply(SoundList soundList, ResourceManager resourceManager, Profiler profiler) {
         soundList.addTo(this.sounds, this.soundSystem);
         for (Identifier identifier : this.sounds.keySet()) {
             String string;
@@ -215,7 +217,7 @@ extends SinglePreparationResourceReloadListener<SoundList> {
 
     @Override
     protected /* synthetic */ Object prepare(ResourceManager resourceManager, Profiler profiler) {
-        return this.method_18180(resourceManager, profiler);
+        return this.prepare(resourceManager, profiler);
     }
 
     @Environment(value=EnvType.CLIENT)
@@ -254,12 +256,13 @@ extends SinglePreparationResourceReloadListener<SoundList> {
                                 return weightedSoundSet == null ? 0 : weightedSoundSet.getWeight();
                             }
 
-                            public Sound method_4883() {
+                            @Override
+                            public Sound getSound() {
                                 WeightedSoundSet weightedSoundSet = (WeightedSoundSet)loadedSounds.get(identifier2);
                                 if (weightedSoundSet == null) {
                                     return MISSING_SOUND;
                                 }
-                                Sound sound2 = weightedSoundSet.method_4887();
+                                Sound sound2 = weightedSoundSet.getSound();
                                 return new Sound(sound2.getIdentifier().toString(), sound2.getVolume() * sound.getVolume(), sound2.getPitch() * sound.getPitch(), sound.getWeight(), Sound.RegistrationType.FILE, sound2.isStreamed() || sound.isStreamed(), sound2.isPreloaded(), sound2.getAttenuation());
                             }
 
@@ -274,7 +277,7 @@ extends SinglePreparationResourceReloadListener<SoundList> {
 
                             @Override
                             public /* synthetic */ Object getSound() {
-                                return this.method_4883();
+                                return this.getSound();
                             }
                         };
                         break;

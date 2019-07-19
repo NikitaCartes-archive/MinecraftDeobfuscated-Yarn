@@ -34,7 +34,8 @@ implements ArgumentType<Identifier> {
         return identifier;
     }
 
-    public Identifier method_9325(StringReader stringReader) throws CommandSyntaxException {
+    @Override
+    public Identifier parse(StringReader stringReader) throws CommandSyntaxException {
         return EntitySummonArgumentType.validate(Identifier.fromCommandInput(stringReader));
     }
 
@@ -45,7 +46,7 @@ implements ArgumentType<Identifier> {
 
     @Override
     public /* synthetic */ Object parse(StringReader stringReader) throws CommandSyntaxException {
-        return this.method_9325(stringReader);
+        return this.parse(stringReader);
     }
 }
 

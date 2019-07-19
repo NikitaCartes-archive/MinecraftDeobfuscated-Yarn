@@ -57,7 +57,7 @@ extends AbstractFireballEntity {
     @Override
     public void readCustomDataFromTag(CompoundTag compoundTag) {
         super.readCustomDataFromTag(compoundTag);
-        if (compoundTag.containsKey("ExplosionPower", 99)) {
+        if (compoundTag.contains("ExplosionPower", 99)) {
             this.explosionPower = compoundTag.getInt("ExplosionPower");
         }
     }

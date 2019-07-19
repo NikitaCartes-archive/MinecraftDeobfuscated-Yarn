@@ -21,12 +21,12 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.potion.Potion;
 import net.minecraft.potion.PotionUtil;
 import net.minecraft.predicate.NbtPredicate;
+import net.minecraft.predicate.NumberRange;
 import net.minecraft.predicate.item.EnchantmentPredicate;
 import net.minecraft.tag.ItemTags;
 import net.minecraft.tag.Tag;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.JsonHelper;
-import net.minecraft.util.NumberRange;
 import net.minecraft.util.registry.Registry;
 import org.jetbrains.annotations.Nullable;
 
@@ -94,7 +94,7 @@ public class ItemPredicate {
         return this.potion == null || this.potion == potion;
     }
 
-    public static ItemPredicate deserialize(@Nullable JsonElement jsonElement) {
+    public static ItemPredicate fromJson(@Nullable JsonElement jsonElement) {
         if (jsonElement == null || jsonElement.isJsonNull()) {
             return ANY;
         }
@@ -104,7 +104,7 @@ public class ItemPredicate {
         if (jsonObject.has("data")) {
             throw new JsonParseException("Disallowed data tag found");
         }
-        NbtPredicate nbtPredicate = NbtPredicate.deserialize(jsonObject.get("nbt"));
+        NbtPredicate nbtPredicate = NbtPredicate.fromJson(jsonObject.get("nbt"));
         Item item = null;
         if (jsonObject.has("item")) {
             Identifier identifier = new Identifier(JsonHelper.getString(jsonObject, "item"));
@@ -127,7 +127,7 @@ public class ItemPredicate {
         return new ItemPredicate(tag, item, intRange, intRange2, enchantmentPredicates, potion, nbtPredicate);
     }
 
-    public JsonElement serialize() {
+    public JsonElement toJson() {
         if (this == ANY) {
             return JsonNull.INSTANCE;
         }
@@ -138,9 +138,9 @@ public class ItemPredicate {
         if (this.tag != null) {
             jsonObject.addProperty("tag", this.tag.getId().toString());
         }
-        jsonObject.add("count", this.count.serialize());
-        jsonObject.add("durability", this.durability.serialize());
-        jsonObject.add("nbt", this.nbt.serialize());
+        jsonObject.add("count", this.count.toJson());
+        jsonObject.add("durability", this.durability.toJson());
+        jsonObject.add("nbt", this.nbt.toJson());
         if (this.enchantments.length > 0) {
             JsonArray jsonArray = new JsonArray();
             for (EnchantmentPredicate enchantmentPredicate : this.enchantments) {
@@ -161,7 +161,7 @@ public class ItemPredicate {
         JsonArray jsonArray = JsonHelper.asArray(jsonElement, "items");
         ItemPredicate[] itemPredicates = new ItemPredicate[jsonArray.size()];
         for (int i = 0; i < itemPredicates.length; ++i) {
-            itemPredicates[i] = ItemPredicate.deserialize(jsonArray.get(i));
+            itemPredicates[i] = ItemPredicate.fromJson(jsonArray.get(i));
         }
         return itemPredicates;
     }

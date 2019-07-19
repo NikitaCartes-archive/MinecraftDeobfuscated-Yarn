@@ -17,8 +17,8 @@ import net.minecraft.advancement.AdvancementProgress;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawableHelper;
 import net.minecraft.client.gui.screen.advancement.AdvancementObtainedStatus;
-import net.minecraft.client.gui.screen.advancement.AdvancementTreeWidget;
-import net.minecraft.client.render.GuiLighting;
+import net.minecraft.client.gui.screen.advancement.AdvancementTab;
+import net.minecraft.client.render.DiffuseLighting;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.MathHelper;
 import org.jetbrains.annotations.Nullable;
@@ -28,7 +28,7 @@ public class AdvancementWidget
 extends DrawableHelper {
     private static final Identifier WIDGETS_TEX = new Identifier("textures/gui/advancements/widgets.png");
     private static final Pattern field_2708 = Pattern.compile("(.+) \\S+");
-    private final AdvancementTreeWidget tree;
+    private final AdvancementTab tab;
     private final Advancement advancement;
     private final AdvancementDisplay display;
     private final String field_2713;
@@ -41,8 +41,8 @@ extends DrawableHelper {
     private final int xPos;
     private final int yPos;
 
-    public AdvancementWidget(AdvancementTreeWidget advancementTreeWidget, MinecraftClient minecraftClient, Advancement advancement, AdvancementDisplay advancementDisplay) {
-        this.tree = advancementTreeWidget;
+    public AdvancementWidget(AdvancementTab advancementTab, MinecraftClient minecraftClient, Advancement advancement, AdvancementDisplay advancementDisplay) {
+        this.tab = advancementTab;
         this.advancement = advancement;
         this.display = advancementDisplay;
         this.client = minecraftClient;
@@ -84,13 +84,13 @@ extends DrawableHelper {
     }
 
     @Nullable
-    private AdvancementWidget getRootWidget(Advancement advancement) {
+    private AdvancementWidget getParent(Advancement advancement) {
         while ((advancement = advancement.getParent()) != null && advancement.getDisplay() == null) {
         }
         if (advancement == null || advancement.getDisplay() == null) {
             return null;
         }
-        return this.tree.getWidgetForAdvancement(advancement);
+        return this.tab.getWidget(advancement);
     }
 
     public void method_2323(int i, int j, boolean bl) {
@@ -130,7 +130,7 @@ extends DrawableHelper {
             GlStateManager.color4f(1.0f, 1.0f, 1.0f, 1.0f);
             GlStateManager.enableBlend();
             this.blit(i + this.xPos + 3, j + this.yPos, this.display.getFrame().texV(), 128 + advancementObtainedStatus.getSpriteIndex() * 26, 26, 26);
-            GuiLighting.enableForItems();
+            DiffuseLighting.enableForItems();
             this.client.getItemRenderer().renderGuiItem(null, this.display.getIcon(), i + this.xPos + 8, j + this.yPos + 5);
         }
         for (AdvancementWidget advancementWidget : this.children) {
@@ -150,7 +150,7 @@ extends DrawableHelper {
         AdvancementObtainedStatus advancementObtainedStatus3;
         AdvancementObtainedStatus advancementObtainedStatus2;
         AdvancementObtainedStatus advancementObtainedStatus;
-        boolean bl = k + i + this.xPos + this.field_2715 + 26 >= this.tree.method_2312().width;
+        boolean bl = k + i + this.xPos + this.field_2715 + 26 >= this.tab.method_2312().width;
         String string = this.field_2714 == null ? null : this.field_2714.getProgressBarFraction();
         int m = string == null ? 0 : this.client.textRenderer.getStringWidth(string);
         boolean bl2 = 113 - j - this.yPos - 26 <= 6 + this.field_2705.size() * this.client.textRenderer.fontHeight;
@@ -213,7 +213,7 @@ extends DrawableHelper {
                 this.client.textRenderer.draw(this.field_2705.get(s), q + 5, j + this.yPos + 9 + 17 + s * this.client.textRenderer.fontHeight, -5592406);
             }
         }
-        GuiLighting.enableForItems();
+        DiffuseLighting.enableForItems();
         this.client.getItemRenderer().renderGuiItem(null, this.display.getIcon(), i + this.xPos + 8, j + this.yPos + 5);
     }
 
@@ -254,7 +254,7 @@ extends DrawableHelper {
 
     public void method_2332() {
         if (this.field_2706 == null && this.advancement.getParent() != null) {
-            this.field_2706 = this.getRootWidget(this.advancement);
+            this.field_2706 = this.getParent(this.advancement);
             if (this.field_2706 != null) {
                 this.field_2706.method_2322(this);
             }

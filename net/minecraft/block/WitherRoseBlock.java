@@ -57,7 +57,7 @@ extends FlowerBlock {
             return;
         }
         if (entity instanceof LivingEntity && !(livingEntity = (LivingEntity)entity).isInvulnerableTo(DamageSource.WITHER)) {
-            livingEntity.addPotionEffect(new StatusEffectInstance(StatusEffects.WITHER, 40));
+            livingEntity.addStatusEffect(new StatusEffectInstance(StatusEffects.WITHER, 40));
         }
     }
 }

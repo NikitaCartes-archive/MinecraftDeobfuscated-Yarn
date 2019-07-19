@@ -28,15 +28,16 @@ extends RainSplashParticle {
     @Environment(value=EnvType.CLIENT)
     public static class SplashFactory
     implements ParticleFactory<DefaultParticleType> {
-        private final SpriteProvider field_17877;
+        private final SpriteProvider spriteProvider;
 
         public SplashFactory(SpriteProvider spriteProvider) {
-            this.field_17877 = spriteProvider;
+            this.spriteProvider = spriteProvider;
         }
 
-        public Particle method_3102(DefaultParticleType defaultParticleType, World world, double d, double e, double f, double g, double h, double i) {
+        @Override
+        public Particle createParticle(DefaultParticleType defaultParticleType, World world, double d, double e, double f, double g, double h, double i) {
             WaterSplashParticle waterSplashParticle = new WaterSplashParticle(world, d, e, f, g, h, i);
-            waterSplashParticle.setSprite(this.field_17877);
+            waterSplashParticle.setSprite(this.spriteProvider);
             return waterSplashParticle;
         }
     }

@@ -11,7 +11,6 @@ import java.util.Locale;
 import java.util.Random;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.block.BlockRenderLayer;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.CampfireBlock;
@@ -28,15 +27,16 @@ import net.minecraft.client.particle.ParticleManager;
 import net.minecraft.client.render.BackgroundRenderer;
 import net.minecraft.client.render.BufferBuilder;
 import net.minecraft.client.render.Camera;
-import net.minecraft.client.render.FirstPersonRenderer;
+import net.minecraft.client.render.DiffuseLighting;
 import net.minecraft.client.render.Frustum;
 import net.minecraft.client.render.FrustumWithOrigin;
 import net.minecraft.client.render.GlMatrixFrustum;
-import net.minecraft.client.render.GuiLighting;
 import net.minecraft.client.render.LightmapTextureManager;
+import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.render.Tessellator;
 import net.minecraft.client.render.VertexFormats;
 import net.minecraft.client.render.WorldRenderer;
+import net.minecraft.client.render.item.HeldItemRenderer;
 import net.minecraft.client.render.model.json.ModelTransformation;
 import net.minecraft.client.texture.NativeImage;
 import net.minecraft.client.texture.SpriteAtlasTexture;
@@ -62,7 +62,7 @@ import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.tag.FluidTags;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.SystemUtil;
+import net.minecraft.util.Util;
 import net.minecraft.util.crash.CrashException;
 import net.minecraft.util.crash.CrashReport;
 import net.minecraft.util.crash.CrashReportSection;
@@ -93,7 +93,7 @@ SynchronousResourceReloadListener {
     private final ResourceManager resourceContainer;
     private final Random random = new Random();
     private float viewDistance;
-    public final FirstPersonRenderer firstPersonRenderer;
+    public final HeldItemRenderer firstPersonRenderer;
     private final MapRenderer mapRenderer;
     private int ticks;
     private float movementFovMultiplier;
@@ -103,7 +103,7 @@ SynchronousResourceReloadListener {
     private boolean renderHand = true;
     private boolean blockOutlineEnabled = true;
     private long lastWorldIconUpdate;
-    private long lastWindowFocusedTime = SystemUtil.getMeasuringTimeMs();
+    private long lastWindowFocusedTime = Util.getMeasuringTimeMs();
     private final LightmapTextureManager lightmapTextureManager;
     private int field_3995;
     private final float[] field_3991 = new float[1024];
@@ -128,7 +128,7 @@ SynchronousResourceReloadListener {
     public GameRenderer(MinecraftClient minecraftClient, ResourceManager resourceManager) {
         this.client = minecraftClient;
         this.resourceContainer = resourceManager;
-        this.firstPersonRenderer = minecraftClient.getFirstPersonRenderer();
+        this.firstPersonRenderer = minecraftClient.getHeldItemRenderer();
         this.mapRenderer = new MapRenderer(minecraftClient.getTextureManager());
         this.lightmapTextureManager = new LightmapTextureManager(this);
         this.backgroundRenderer = new BackgroundRenderer(this);
@@ -271,7 +271,7 @@ SynchronousResourceReloadListener {
         this.client.getProfiler().push("pick");
         this.client.targetedEntity = null;
         double d = this.client.interactionManager.getReachDistance();
-        this.client.hitResult = entity2.rayTrace(d, f, false);
+        this.client.crosshairTarget = entity2.rayTrace(d, f, false);
         Vec3d vec3d = entity2.getCameraPosVec(f);
         boolean bl = false;
         int i = 3;
@@ -285,8 +285,8 @@ SynchronousResourceReloadListener {
             d = e;
         }
         e *= e;
-        if (this.client.hitResult != null) {
-            e = this.client.hitResult.getPos().squaredDistanceTo(vec3d);
+        if (this.client.crosshairTarget != null) {
+            e = this.client.crosshairTarget.getPos().squaredDistanceTo(vec3d);
         }
         Vec3d vec3d2 = entity2.getRotationVec(1.0f);
         Vec3d vec3d3 = vec3d.add(vec3d2.x * d, vec3d2.y * d, vec3d2.z * d);
@@ -298,9 +298,9 @@ SynchronousResourceReloadListener {
             Vec3d vec3d4 = entityHitResult.getPos();
             double h = vec3d.squaredDistanceTo(vec3d4);
             if (bl && h > 9.0) {
-                this.client.hitResult = BlockHitResult.createMissed(vec3d4, Direction.getFacing(vec3d2.x, vec3d2.y, vec3d2.z), new BlockPos(vec3d4));
-            } else if (h < e || this.client.hitResult == null) {
-                this.client.hitResult = entityHitResult;
+                this.client.crosshairTarget = BlockHitResult.createMissed(vec3d4, Direction.getFacing(vec3d2.x, vec3d2.y, vec3d2.z), new BlockPos(vec3d4));
+            } else if (h < e || this.client.crosshairTarget == null) {
+                this.client.crosshairTarget = entityHitResult;
                 if (entity22 instanceof LivingEntity || entity22 instanceof ItemFrameEntity) {
                     this.client.targetedEntity = entity22;
                 }
@@ -457,8 +457,8 @@ SynchronousResourceReloadListener {
 
     public void render(float f, long l, boolean bl) {
         if (this.client.isWindowFocused() || !this.client.options.pauseOnLostFocus || this.client.options.touchscreen && this.client.mouse.wasRightButtonClicked()) {
-            this.lastWindowFocusedTime = SystemUtil.getMeasuringTimeMs();
-        } else if (SystemUtil.getMeasuringTimeMs() - this.lastWindowFocusedTime > 500L) {
+            this.lastWindowFocusedTime = Util.getMeasuringTimeMs();
+        } else if (Util.getMeasuringTimeMs() - this.lastWindowFocusedTime > 500L) {
             this.client.openPauseMenu(false);
         }
         if (this.client.skipGameRender) {
@@ -471,11 +471,11 @@ SynchronousResourceReloadListener {
             this.client.getProfiler().push("level");
             int m = Math.min(MinecraftClient.getCurrentFps(), k);
             m = Math.max(m, 60);
-            long n = SystemUtil.getMeasuringTimeNano() - l;
+            long n = Util.getMeasuringTimeNano() - l;
             long o = Math.max((long)(1000000000 / m / 4) - n, 0L);
-            this.renderWorld(f, SystemUtil.getMeasuringTimeNano() + o);
-            if (this.client.isIntegratedServerRunning() && this.lastWorldIconUpdate < SystemUtil.getMeasuringTimeMs() - 1000L) {
-                this.lastWorldIconUpdate = SystemUtil.getMeasuringTimeMs();
+            this.renderWorld(f, Util.getMeasuringTimeNano() + o);
+            if (this.client.isIntegratedServerRunning() && this.lastWorldIconUpdate < Util.getMeasuringTimeMs() - 1000L) {
+                this.lastWorldIconUpdate = Util.getMeasuringTimeMs();
                 if (!this.client.getServer().hasIconFile()) {
                     this.updateWorldIcon();
                 }
@@ -534,7 +534,7 @@ SynchronousResourceReloadListener {
     }
 
     private void updateWorldIcon() {
-        if (this.client.worldRenderer.getChunkNumber() > 10 && this.client.worldRenderer.isTerrainRenderComplete() && !this.client.getServer().hasIconFile()) {
+        if (this.client.worldRenderer.getCompletedChunkCount() > 10 && this.client.worldRenderer.isTerrainRenderComplete() && !this.client.getServer().hasIconFile()) {
             NativeImage nativeImage = ScreenshotUtils.method_1663(this.client.window.getFramebufferWidth(), this.client.window.getFramebufferHeight(), this.client.getFramebuffer());
             ResourceImpl.RESOURCE_IO_EXECUTOR.execute(() -> {
                 int i = nativeImage.getWidth();
@@ -569,12 +569,12 @@ SynchronousResourceReloadListener {
         boolean bl2 = bl = entity instanceof PlayerEntity && !this.client.options.hudHidden;
         if (bl && !((PlayerEntity)entity).abilities.allowModifyWorld) {
             ItemStack itemStack = ((LivingEntity)entity).getMainHandStack();
-            HitResult hitResult = this.client.hitResult;
+            HitResult hitResult = this.client.crosshairTarget;
             if (hitResult != null && hitResult.getType() == HitResult.Type.BLOCK) {
                 BlockPos blockPos = ((BlockHitResult)hitResult).getBlockPos();
                 BlockState blockState = this.client.world.getBlockState(blockPos);
                 if (this.client.interactionManager.getCurrentGameMode() == GameMode.SPECTATOR) {
-                    bl = blockState.createContainerProvider(this.client.world, blockPos) != null;
+                    bl = blockState.createContainerFactory(this.client.world, blockPos) != null;
                 } else {
                     CachedBlockPosition cachedBlockPosition = new CachedBlockPosition(this.client.world, blockPos, false);
                     bl = !itemStack.isEmpty() && (itemStack.canDestroy(this.client.world.getTagManager(), cachedBlockPosition) || itemStack.canPlaceOn(this.client.world.getTagManager(), cachedBlockPosition));
@@ -640,9 +640,9 @@ SynchronousResourceReloadListener {
         this.client.getProfiler().swap("prepareterrain");
         this.backgroundRenderer.applyFog(camera, 0);
         this.client.getTextureManager().bindTexture(SpriteAtlasTexture.BLOCK_ATLAS_TEX);
-        GuiLighting.disable();
+        DiffuseLighting.disable();
         this.client.getProfiler().swap("terrain_setup");
-        this.client.world.method_2935().getLightingProvider().doLightUpdates(Integer.MAX_VALUE, true, true);
+        this.client.world.getChunkManager().getLightingProvider().doLightUpdates(Integer.MAX_VALUE, true, true);
         worldRenderer.setUpTerrain(camera, visibleRegion, this.field_4021++, this.client.player.isSpectator());
         this.client.getProfiler().swap("updatechunks");
         this.client.worldRenderer.updateChunks(l);
@@ -650,28 +650,28 @@ SynchronousResourceReloadListener {
         GlStateManager.matrixMode(5888);
         GlStateManager.pushMatrix();
         GlStateManager.disableAlphaTest();
-        worldRenderer.renderLayer(BlockRenderLayer.SOLID, camera);
+        worldRenderer.renderLayer(RenderLayer.SOLID, camera);
         GlStateManager.enableAlphaTest();
-        worldRenderer.renderLayer(BlockRenderLayer.CUTOUT_MIPPED, camera);
+        worldRenderer.renderLayer(RenderLayer.CUTOUT_MIPPED, camera);
         this.client.getTextureManager().getTexture(SpriteAtlasTexture.BLOCK_ATLAS_TEX).pushFilter(false, false);
-        worldRenderer.renderLayer(BlockRenderLayer.CUTOUT, camera);
+        worldRenderer.renderLayer(RenderLayer.CUTOUT, camera);
         this.client.getTextureManager().getTexture(SpriteAtlasTexture.BLOCK_ATLAS_TEX).popFilter();
         GlStateManager.shadeModel(7424);
         GlStateManager.alphaFunc(516, 0.1f);
         GlStateManager.matrixMode(5888);
         GlStateManager.popMatrix();
         GlStateManager.pushMatrix();
-        GuiLighting.enable();
+        DiffuseLighting.enable();
         this.client.getProfiler().swap("entities");
         worldRenderer.renderEntities(camera, visibleRegion, f);
-        GuiLighting.disable();
+        DiffuseLighting.disable();
         this.disableLightmap();
         GlStateManager.matrixMode(5888);
         GlStateManager.popMatrix();
-        if (bl && this.client.hitResult != null) {
+        if (bl && this.client.crosshairTarget != null) {
             GlStateManager.disableAlphaTest();
             this.client.getProfiler().swap("outline");
-            worldRenderer.drawHighlightedBlockOutline(camera, this.client.hitResult, 0);
+            worldRenderer.drawHighlightedBlockOutline(camera, this.client.crosshairTarget, 0);
             GlStateManager.enableAlphaTest();
         }
         if (this.client.debugRenderer.shouldRender()) {
@@ -681,7 +681,7 @@ SynchronousResourceReloadListener {
         GlStateManager.enableBlend();
         GlStateManager.blendFuncSeparate(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO);
         this.client.getTextureManager().getTexture(SpriteAtlasTexture.BLOCK_ATLAS_TEX).pushFilter(false, false);
-        worldRenderer.renderPartiallyBrokenBlocks(Tessellator.getInstance(), Tessellator.getInstance().getBufferBuilder(), camera);
+        worldRenderer.renderPartiallyBrokenBlocks(Tessellator.getInstance(), Tessellator.getInstance().getBuffer(), camera);
         this.client.getTextureManager().getTexture(SpriteAtlasTexture.BLOCK_ATLAS_TEX).popFilter();
         GlStateManager.disableBlend();
         this.enableLightmap();
@@ -705,7 +705,7 @@ SynchronousResourceReloadListener {
         this.client.getTextureManager().bindTexture(SpriteAtlasTexture.BLOCK_ATLAS_TEX);
         GlStateManager.shadeModel(7425);
         this.client.getProfiler().swap("translucent");
-        worldRenderer.renderLayer(BlockRenderLayer.TRANSLUCENT, camera);
+        worldRenderer.renderLayer(RenderLayer.TRANSLUCENT, camera);
         GlStateManager.shadeModel(7424);
         GlStateManager.depthMask(true);
         GlStateManager.enableCull();
@@ -750,7 +750,7 @@ SynchronousResourceReloadListener {
             return;
         }
         this.random.setSeed((long)this.ticks * 312987231L);
-        ClientWorld viewableWorld = this.client.world;
+        ClientWorld collisionView = this.client.world;
         BlockPos blockPos = new BlockPos(this.camera.getPos());
         int i = 10;
         double d = 0.0;
@@ -767,17 +767,17 @@ SynchronousResourceReloadListener {
             double q;
             double p;
             double o;
-            BlockPos blockPos2 = viewableWorld.getTopPosition(Heightmap.Type.MOTION_BLOCKING, blockPos.add(this.random.nextInt(10) - this.random.nextInt(10), 0, this.random.nextInt(10) - this.random.nextInt(10)));
-            Biome biome = viewableWorld.getBiome(blockPos2);
+            BlockPos blockPos2 = collisionView.getTopPosition(Heightmap.Type.MOTION_BLOCKING, blockPos.add(this.random.nextInt(10) - this.random.nextInt(10), 0, this.random.nextInt(10) - this.random.nextInt(10)));
+            Biome biome = collisionView.getBiome(blockPos2);
             BlockPos blockPos3 = blockPos2.down();
-            if (blockPos2.getY() > blockPos.getY() + 10 || blockPos2.getY() < blockPos.getY() - 10 || biome.getPrecipitation() != Biome.Precipitation.RAIN || !(biome.method_21740(blockPos2) >= 0.15f)) continue;
+            if (blockPos2.getY() > blockPos.getY() + 10 || blockPos2.getY() < blockPos.getY() - 10 || biome.getPrecipitation() != Biome.Precipitation.RAIN || !(biome.getTemperature(blockPos2) >= 0.15f)) continue;
             double h = this.random.nextDouble();
             double m = this.random.nextDouble();
-            BlockState blockState = viewableWorld.getBlockState(blockPos3);
-            FluidState fluidState = viewableWorld.getFluidState(blockPos2);
-            VoxelShape voxelShape = blockState.getCollisionShape(viewableWorld, blockPos3);
+            BlockState blockState = collisionView.getBlockState(blockPos3);
+            FluidState fluidState = collisionView.getFluidState(blockPos2);
+            VoxelShape voxelShape = blockState.getCollisionShape(collisionView, blockPos3);
             double n = voxelShape.method_1102(Direction.Axis.Y, h, m);
-            if (n >= (o = (double)fluidState.getHeight(viewableWorld, blockPos2))) {
+            if (n >= (o = (double)fluidState.getHeight(collisionView, blockPos2))) {
                 p = n;
                 q = voxelShape.method_1093(Direction.Axis.Y, h, m);
             } else {
@@ -798,7 +798,7 @@ SynchronousResourceReloadListener {
         }
         if (j > 0 && this.random.nextInt(3) < this.field_3995++) {
             this.field_3995 = 0;
-            if (e > (double)(blockPos.getY() + 1) && viewableWorld.getTopPosition(Heightmap.Type.MOTION_BLOCKING, blockPos).getY() > MathHelper.floor(blockPos.getY())) {
+            if (e > (double)(blockPos.getY() + 1) && collisionView.getTopPosition(Heightmap.Type.MOTION_BLOCKING, blockPos).getY() > MathHelper.floor(blockPos.getY())) {
                 this.client.world.playSound(d, e, g, SoundEvents.WEATHER_RAIN_ABOVE, SoundCategory.WEATHER, 0.1f, 0.5f, false);
             } else {
                 this.client.world.playSound(d, e, g, SoundEvents.WEATHER_RAIN, SoundCategory.WEATHER, 0.2f, 1.0f, false);
@@ -817,7 +817,7 @@ SynchronousResourceReloadListener {
         int j = MathHelper.floor(this.camera.getPos().y);
         int k = MathHelper.floor(this.camera.getPos().z);
         Tessellator tessellator = Tessellator.getInstance();
-        BufferBuilder bufferBuilder = tessellator.getBufferBuilder();
+        BufferBuilder bufferBuilder = tessellator.getBuffer();
         GlStateManager.disableCull();
         GlStateManager.normal3f(0.0f, 1.0f, 0.0f);
         GlStateManager.enableBlend();
@@ -863,7 +863,7 @@ SynchronousResourceReloadListener {
                 if (v == w) continue;
                 this.random.setSeed(q * q * 3121 + q * 45238971 ^ p * p * 418711 + p * 13761);
                 mutable.set(q, v, p);
-                float y = biome.method_21740(mutable);
+                float y = biome.getTemperature(mutable);
                 if (y >= 0.15f) {
                     if (n != 0) {
                         if (n >= 0) {
@@ -871,7 +871,7 @@ SynchronousResourceReloadListener {
                         }
                         n = 0;
                         this.client.getTextureManager().bindTexture(RAIN_LOC);
-                        bufferBuilder.begin(7, VertexFormats.POSITION_UV_COLOR_LMAP);
+                        bufferBuilder.begin(7, VertexFormats.POSITION_TEXTURE_COLOR_LIGHT);
                     }
                     z = -((double)(this.ticks + q * q * 3121 + q * 45238971 + p * p * 418711 + p * 13761 & 0x1F) + (double)f) / 32.0 * (3.0 + this.random.nextDouble());
                     aa = (double)((float)q + 0.5f) - this.camera.getPos().x;
@@ -894,7 +894,7 @@ SynchronousResourceReloadListener {
                     }
                     n = 1;
                     this.client.getTextureManager().bindTexture(SNOW_LOC);
-                    bufferBuilder.begin(7, VertexFormats.POSITION_UV_COLOR_LMAP);
+                    bufferBuilder.begin(7, VertexFormats.POSITION_TEXTURE_COLOR_LIGHT);
                 }
                 z = -((float)(this.ticks & 0x1FF) + f) / 512.0f;
                 aa = this.random.nextDouble() + (double)o * 0.01 * (double)((float)this.random.nextGaussian());
@@ -954,7 +954,7 @@ SynchronousResourceReloadListener {
         int l = textRenderer.getStringWidth(string) / 2;
         GlStateManager.disableTexture();
         Tessellator tessellator = Tessellator.getInstance();
-        BufferBuilder bufferBuilder = tessellator.getBufferBuilder();
+        BufferBuilder bufferBuilder = tessellator.getBuffer();
         bufferBuilder.begin(7, VertexFormats.POSITION_COLOR);
         float m = MinecraftClient.getInstance().options.getTextBackgroundOpacity(0.25f);
         bufferBuilder.vertex(-l - 1, -1 + i, 0.0).color(0.0f, 0.0f, 0.0f, m).next();
@@ -999,7 +999,7 @@ SynchronousResourceReloadListener {
         GlStateManager.pushLightingAttributes();
         GlStateManager.enableDepthTest();
         GlStateManager.disableCull();
-        GuiLighting.enable();
+        DiffuseLighting.enable();
         GlStateManager.translatef((float)(i / 2) + o * MathHelper.abs(MathHelper.sin(n * 2.0f)), (float)(j / 2) + p * MathHelper.abs(MathHelper.sin(n * 2.0f)), -50.0f);
         float q = 50.0f + 175.0f * MathHelper.sin(n);
         GlStateManager.scalef(q, -q, q);
@@ -1009,7 +1009,7 @@ SynchronousResourceReloadListener {
         this.client.getItemRenderer().renderItem(this.floatingItem, ModelTransformation.Type.FIXED);
         GlStateManager.popAttributes();
         GlStateManager.popMatrix();
-        GuiLighting.disable();
+        DiffuseLighting.disable();
         GlStateManager.enableCull();
         GlStateManager.disableDepthTest();
     }

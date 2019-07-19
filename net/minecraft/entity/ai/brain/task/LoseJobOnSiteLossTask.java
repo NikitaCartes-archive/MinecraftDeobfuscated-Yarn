@@ -18,12 +18,14 @@ extends Task<VillagerEntity> {
         super(ImmutableMap.of(MemoryModuleType.JOB_SITE, MemoryModuleState.VALUE_ABSENT));
     }
 
-    protected boolean method_20449(ServerWorld serverWorld, VillagerEntity villagerEntity) {
+    @Override
+    protected boolean shouldRun(ServerWorld serverWorld, VillagerEntity villagerEntity) {
         VillagerData villagerData = villagerEntity.getVillagerData();
         return villagerData.getProfession() != VillagerProfession.NONE && villagerData.getProfession() != VillagerProfession.NITWIT && villagerEntity.getExperience() == 0 && villagerData.getLevel() <= 1;
     }
 
-    protected void method_20450(ServerWorld serverWorld, VillagerEntity villagerEntity, long l) {
+    @Override
+    protected void run(ServerWorld serverWorld, VillagerEntity villagerEntity, long l) {
         villagerEntity.setVillagerData(villagerEntity.getVillagerData().withProfession(VillagerProfession.NONE));
         villagerEntity.reinitializeBrain(serverWorld);
     }

@@ -18,8 +18,8 @@ import net.minecraft.util.math.MathHelper;
 public class SelectionManager {
     private final MinecraftClient client;
     private final TextRenderer fontRenderer;
-    private final Supplier<String> stringSupplier;
-    private final Consumer<String> stringConsumer;
+    private final Supplier<String> stringGetter;
+    private final Consumer<String> stringSetter;
     private final int field_16455;
     private int selectionStart;
     private int selectionEnd;
@@ -27,8 +27,8 @@ public class SelectionManager {
     public SelectionManager(MinecraftClient minecraftClient, Supplier<String> supplier, Consumer<String> consumer, int i) {
         this.client = minecraftClient;
         this.fontRenderer = minecraftClient.textRenderer;
-        this.stringSupplier = supplier;
-        this.stringConsumer = consumer;
+        this.stringGetter = supplier;
+        this.stringSetter = consumer;
         this.field_16455 = i;
         this.moveCaretToEnd();
     }
@@ -44,17 +44,17 @@ public class SelectionManager {
         if (this.selectionEnd != this.selectionStart) {
             this.deleteSelectedText();
         }
-        String string2 = this.stringSupplier.get();
+        String string2 = this.stringGetter.get();
         this.selectionStart = MathHelper.clamp(this.selectionStart, 0, string2.length());
         String string3 = new StringBuilder(string2).insert(this.selectionStart, string).toString();
         if (this.fontRenderer.getStringWidth(string3) <= this.field_16455) {
-            this.stringConsumer.accept(string3);
+            this.stringSetter.accept(string3);
             this.selectionEnd = this.selectionStart = Math.min(string3.length(), this.selectionStart + string.length());
         }
     }
 
     public boolean handleSpecialKey(int i) {
-        String string = this.stringSupplier.get();
+        String string = this.stringGetter.get();
         if (Screen.isSelectAll(i)) {
             this.selectionEnd = 0;
             this.selectionStart = string.length();
@@ -81,7 +81,7 @@ public class SelectionManager {
                 } else if (this.selectionStart > 0) {
                     string = new StringBuilder(string).deleteCharAt(Math.max(0, this.selectionStart - 1)).toString();
                     this.selectionEnd = this.selectionStart = Math.max(0, this.selectionStart - 1);
-                    this.stringConsumer.accept(string);
+                    this.stringSetter.accept(string);
                 }
             }
             return true;
@@ -92,7 +92,7 @@ public class SelectionManager {
                     this.deleteSelectedText();
                 } else if (this.selectionStart < string.length()) {
                     string = new StringBuilder(string).deleteCharAt(Math.max(0, this.selectionStart)).toString();
-                    this.stringConsumer.accept(string);
+                    this.stringSetter.accept(string);
                 }
             }
             return true;
@@ -121,7 +121,7 @@ public class SelectionManager {
             return true;
         }
         if (i == 269) {
-            this.selectionStart = this.stringSupplier.get().length();
+            this.selectionStart = this.stringGetter.get().length();
             if (!Screen.hasShiftDown()) {
                 this.selectionEnd = this.selectionStart;
             }
@@ -131,7 +131,7 @@ public class SelectionManager {
     }
 
     private String getSelectedText() {
-        String string = this.stringSupplier.get();
+        String string = this.stringGetter.get();
         int i = Math.min(this.selectionStart, this.selectionEnd);
         int j = Math.max(this.selectionStart, this.selectionEnd);
         return string.substring(i, j);
@@ -141,16 +141,16 @@ public class SelectionManager {
         if (this.selectionEnd == this.selectionStart) {
             return;
         }
-        String string = this.stringSupplier.get();
+        String string = this.stringGetter.get();
         int i = Math.min(this.selectionStart, this.selectionEnd);
         int j = Math.max(this.selectionStart, this.selectionEnd);
         String string2 = string.substring(0, i) + string.substring(j);
         this.selectionEnd = this.selectionStart = i;
-        this.stringConsumer.accept(string2);
+        this.stringSetter.accept(string2);
     }
 
     public void moveCaretToEnd() {
-        this.selectionEnd = this.selectionStart = this.stringSupplier.get().length();
+        this.selectionEnd = this.selectionStart = this.stringGetter.get().length();
     }
 
     public int getSelectionStart() {

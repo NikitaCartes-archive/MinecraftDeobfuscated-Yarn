@@ -58,14 +58,15 @@ implements Criterion<Conditions> {
         this.handlers.remove(playerAdvancementTracker);
     }
 
-    public Conditions method_8830(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext) {
-        EntityPredicate entityPredicate = EntityPredicate.deserialize(jsonObject.get("zombie"));
-        EntityPredicate entityPredicate2 = EntityPredicate.deserialize(jsonObject.get("villager"));
+    @Override
+    public Conditions conditionsFromJson(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext) {
+        EntityPredicate entityPredicate = EntityPredicate.fromJson(jsonObject.get("zombie"));
+        EntityPredicate entityPredicate2 = EntityPredicate.fromJson(jsonObject.get("villager"));
         return new Conditions(entityPredicate, entityPredicate2);
     }
 
-    public void handle(ServerPlayerEntity serverPlayerEntity, ZombieEntity zombieEntity, VillagerEntity villagerEntity) {
-        Handler handler = this.handlers.get(serverPlayerEntity.getAdvancementManager());
+    public void trigger(ServerPlayerEntity serverPlayerEntity, ZombieEntity zombieEntity, VillagerEntity villagerEntity) {
+        Handler handler = this.handlers.get(serverPlayerEntity.getAdvancementTracker());
         if (handler != null) {
             handler.handle(serverPlayerEntity, zombieEntity, villagerEntity);
         }
@@ -73,7 +74,7 @@ implements Criterion<Conditions> {
 
     @Override
     public /* synthetic */ CriterionConditions conditionsFromJson(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext) {
-        return this.method_8830(jsonObject, jsonDeserializationContext);
+        return this.conditionsFromJson(jsonObject, jsonDeserializationContext);
     }
 
     static class Handler {

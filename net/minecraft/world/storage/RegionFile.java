@@ -17,7 +17,7 @@ import java.util.List;
 import java.util.zip.DeflaterOutputStream;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.InflaterInputStream;
-import net.minecraft.util.SystemUtil;
+import net.minecraft.util.Util;
 import net.minecraft.util.math.ChunkPos;
 import org.jetbrains.annotations.Nullable;
 
@@ -67,7 +67,7 @@ implements AutoCloseable {
 
     @Nullable
     public synchronized DataInputStream getChunkDataInputStream(ChunkPos chunkPos) throws IOException {
-        int i = this.getOffset(chunkPos);
+        int i = this.getSectorData(chunkPos);
         if (i == 0) {
             return null;
         }
@@ -99,7 +99,7 @@ implements AutoCloseable {
     }
 
     public boolean isChunkPresent(ChunkPos chunkPos) {
-        int i = this.getOffset(chunkPos);
+        int i = this.getSectorData(chunkPos);
         if (i == 0) {
             return false;
         }
@@ -128,7 +128,7 @@ implements AutoCloseable {
     }
 
     protected synchronized void write(ChunkPos chunkPos, byte[] bs, int i) throws IOException {
-        int j = this.getOffset(chunkPos);
+        int j = this.getSectorData(chunkPos);
         int k = j >> 8;
         int l = j & 0xFF;
         int m = (i + 5) / 4096 + 1;
@@ -174,7 +174,7 @@ implements AutoCloseable {
                 this.setOffset(chunkPos, k << 8 | m);
             }
         }
-        this.setTimestamp(chunkPos, (int)(SystemUtil.getEpochTimeMs() / 1000L));
+        this.setTimestamp(chunkPos, (int)(Util.getEpochTimeMs() / 1000L));
     }
 
     private void write(int i, byte[] bs, int j) throws IOException {
@@ -184,27 +184,27 @@ implements AutoCloseable {
         this.file.write(bs, 0, j);
     }
 
-    private int getOffset(ChunkPos chunkPos) {
-        return this.offsets[this.getPackedRegionRelativePosition(chunkPos)];
+    private int getSectorData(ChunkPos chunkPos) {
+        return this.offsets[this.getIndex(chunkPos)];
     }
 
     public boolean hasChunk(ChunkPos chunkPos) {
-        return this.getOffset(chunkPos) != 0;
+        return this.getSectorData(chunkPos) != 0;
     }
 
     private void setOffset(ChunkPos chunkPos, int i) throws IOException {
-        int j = this.getPackedRegionRelativePosition(chunkPos);
+        int j = this.getIndex(chunkPos);
         this.offsets[j] = i;
         this.file.seek(j * 4);
         this.file.writeInt(i);
     }
 
-    private int getPackedRegionRelativePosition(ChunkPos chunkPos) {
+    private int getIndex(ChunkPos chunkPos) {
         return chunkPos.getRegionRelativeX() + chunkPos.getRegionRelativeZ() * 32;
     }
 
     private void setTimestamp(ChunkPos chunkPos, int i) throws IOException {
-        int j = this.getPackedRegionRelativePosition(chunkPos);
+        int j = this.getIndex(chunkPos);
         this.chunkTimestamps[j] = i;
         this.file.seek(4096 + j * 4);
         this.file.writeInt(i);

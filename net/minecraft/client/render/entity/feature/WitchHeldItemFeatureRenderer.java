@@ -25,20 +25,21 @@ extends FeatureRenderer<T, WitchEntityModel<T>> {
         super(featureRendererContext);
     }
 
-    public void method_4208(T livingEntity, float f, float g, float h, float i, float j, float k, float l) {
+    @Override
+    public void render(T livingEntity, float f, float g, float h, float i, float j, float k, float l) {
         ItemStack itemStack = ((LivingEntity)livingEntity).getMainHandStack();
         if (itemStack.isEmpty()) {
             return;
         }
         GlStateManager.color3f(1.0f, 1.0f, 1.0f);
         GlStateManager.pushMatrix();
-        if (((WitchEntityModel)this.getModel()).isChild) {
+        if (((WitchEntityModel)this.getContextModel()).child) {
             GlStateManager.translatef(0.0f, 0.625f, 0.0f);
             GlStateManager.rotatef(-20.0f, -1.0f, 0.0f, 0.0f);
             float m = 0.5f;
             GlStateManager.scalef(0.5f, 0.5f, 0.5f);
         }
-        ((WitchEntityModel)this.getModel()).method_2839().applyTransform(0.0625f);
+        ((WitchEntityModel)this.getContextModel()).method_2839().applyTransform(0.0625f);
         GlStateManager.translatef(-0.0625f, 0.53125f, 0.21875f);
         Item item = itemStack.getItem();
         if (Block.getBlockFromItem(item).getDefaultState().getRenderType() == BlockRenderType.ENTITYBLOCK_ANIMATED) {
@@ -64,7 +65,7 @@ extends FeatureRenderer<T, WitchEntityModel<T>> {
         }
         GlStateManager.rotatef(-15.0f, 1.0f, 0.0f, 0.0f);
         GlStateManager.rotatef(40.0f, 0.0f, 0.0f, 1.0f);
-        MinecraftClient.getInstance().getFirstPersonRenderer().renderItem((LivingEntity)livingEntity, itemStack, ModelTransformation.Type.THIRD_PERSON_RIGHT_HAND);
+        MinecraftClient.getInstance().getHeldItemRenderer().renderItem((LivingEntity)livingEntity, itemStack, ModelTransformation.Type.THIRD_PERSON_RIGHT_HAND);
         GlStateManager.popMatrix();
     }
 

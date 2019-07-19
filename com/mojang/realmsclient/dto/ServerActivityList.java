@@ -8,16 +8,16 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.mojang.realmsclient.dto.ServerActivity;
+import com.mojang.realmsclient.dto.ValueObject;
+import com.mojang.realmsclient.util.JsonUtils;
 import java.util.ArrayList;
 import java.util.List;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_4352;
-import net.minecraft.class_4431;
 
 @Environment(value=EnvType.CLIENT)
 public class ServerActivityList
-extends class_4352 {
+extends ValueObject {
     public long periodInMillis;
     public List<ServerActivity> serverActivities = new ArrayList<ServerActivity>();
 
@@ -27,7 +27,7 @@ extends class_4352 {
         try {
             JsonElement jsonElement = jsonParser.parse(string);
             JsonObject jsonObject = jsonElement.getAsJsonObject();
-            serverActivityList.periodInMillis = class_4431.method_21546("periodInMillis", jsonObject, -1L);
+            serverActivityList.periodInMillis = JsonUtils.getLongOr("periodInMillis", jsonObject, -1L);
             JsonElement jsonElement2 = jsonObject.get("playerActivityDto");
             if (jsonElement2 != null && jsonElement2.isJsonArray()) {
                 JsonArray jsonArray = jsonElement2.getAsJsonArray();

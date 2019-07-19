@@ -22,22 +22,24 @@ extends MobEntityRenderer<EndermiteEntity, EndermiteEntityModel<EndermiteEntity>
         super(entityRenderDispatcher, new EndermiteEntityModel(), 0.3f);
     }
 
-    protected float method_3919(EndermiteEntity endermiteEntity) {
+    @Override
+    protected float getLyingAngle(EndermiteEntity endermiteEntity) {
         return 180.0f;
     }
 
-    protected Identifier method_3920(EndermiteEntity endermiteEntity) {
+    @Override
+    protected Identifier getTexture(EndermiteEntity endermiteEntity) {
         return SKIN;
     }
 
     @Override
     protected /* synthetic */ float getLyingAngle(LivingEntity livingEntity) {
-        return this.method_3919((EndermiteEntity)livingEntity);
+        return this.getLyingAngle((EndermiteEntity)livingEntity);
     }
 
     @Override
     protected /* synthetic */ Identifier getTexture(Entity entity) {
-        return this.method_3920((EndermiteEntity)entity);
+        return this.getTexture((EndermiteEntity)entity);
     }
 }
 

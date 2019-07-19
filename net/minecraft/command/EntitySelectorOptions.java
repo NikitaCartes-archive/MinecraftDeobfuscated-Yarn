@@ -23,13 +23,15 @@ import net.minecraft.advancement.AdvancementProgress;
 import net.minecraft.advancement.PlayerAdvancementTracker;
 import net.minecraft.advancement.criterion.CriterionProgress;
 import net.minecraft.command.EntitySelectorReader;
-import net.minecraft.command.FloatRange;
+import net.minecraft.command.FloatRangeArgument;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtHelper;
 import net.minecraft.nbt.StringNbtReader;
+import net.minecraft.predicate.NumberRange;
 import net.minecraft.scoreboard.AbstractTeam;
 import net.minecraft.scoreboard.ScoreboardObjective;
 import net.minecraft.scoreboard.ScoreboardPlayerScore;
@@ -42,8 +44,6 @@ import net.minecraft.tag.Tag;
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.NumberRange;
-import net.minecraft.util.TagHelper;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.registry.Registry;
@@ -100,35 +100,35 @@ public class EntitySelectorOptions {
                 entitySelectorReader.getReader().setCursor(i);
                 throw NEGATIVE_LEVEL_EXCEPTION.createWithContext(entitySelectorReader.getReader());
             }
-            entitySelectorReader.setExperienceRange(intRange);
-            entitySelectorReader.setIncludingNonPlayer(false);
-        }, entitySelectorReader -> entitySelectorReader.getExperienceRange().isDummy(), new TranslatableText("argument.entity.options.level.description", new Object[0]));
+            entitySelectorReader.setLevelRange(intRange);
+            entitySelectorReader.setIncludesNonPlayers(false);
+        }, entitySelectorReader -> entitySelectorReader.getLevelRange().isDummy(), new TranslatableText("argument.entity.options.level.description", new Object[0]));
         EntitySelectorOptions.putOption("x", entitySelectorReader -> {
             entitySelectorReader.setLocalWorldOnly();
-            entitySelectorReader.setOffsetX(entitySelectorReader.getReader().readDouble());
-        }, entitySelectorReader -> entitySelectorReader.getOffsetX() == null, new TranslatableText("argument.entity.options.x.description", new Object[0]));
+            entitySelectorReader.setX(entitySelectorReader.getReader().readDouble());
+        }, entitySelectorReader -> entitySelectorReader.getX() == null, new TranslatableText("argument.entity.options.x.description", new Object[0]));
         EntitySelectorOptions.putOption("y", entitySelectorReader -> {
             entitySelectorReader.setLocalWorldOnly();
-            entitySelectorReader.setOffsetY(entitySelectorReader.getReader().readDouble());
-        }, entitySelectorReader -> entitySelectorReader.getOffsetY() == null, new TranslatableText("argument.entity.options.y.description", new Object[0]));
+            entitySelectorReader.setY(entitySelectorReader.getReader().readDouble());
+        }, entitySelectorReader -> entitySelectorReader.getY() == null, new TranslatableText("argument.entity.options.y.description", new Object[0]));
         EntitySelectorOptions.putOption("z", entitySelectorReader -> {
             entitySelectorReader.setLocalWorldOnly();
-            entitySelectorReader.setOffsetZ(entitySelectorReader.getReader().readDouble());
-        }, entitySelectorReader -> entitySelectorReader.getOffsetZ() == null, new TranslatableText("argument.entity.options.z.description", new Object[0]));
+            entitySelectorReader.setZ(entitySelectorReader.getReader().readDouble());
+        }, entitySelectorReader -> entitySelectorReader.getZ() == null, new TranslatableText("argument.entity.options.z.description", new Object[0]));
         EntitySelectorOptions.putOption("dx", entitySelectorReader -> {
             entitySelectorReader.setLocalWorldOnly();
-            entitySelectorReader.setBoxX(entitySelectorReader.getReader().readDouble());
-        }, entitySelectorReader -> entitySelectorReader.getBoxX() == null, new TranslatableText("argument.entity.options.dx.description", new Object[0]));
+            entitySelectorReader.setDx(entitySelectorReader.getReader().readDouble());
+        }, entitySelectorReader -> entitySelectorReader.getDx() == null, new TranslatableText("argument.entity.options.dx.description", new Object[0]));
         EntitySelectorOptions.putOption("dy", entitySelectorReader -> {
             entitySelectorReader.setLocalWorldOnly();
-            entitySelectorReader.setBoxY(entitySelectorReader.getReader().readDouble());
-        }, entitySelectorReader -> entitySelectorReader.getBoxY() == null, new TranslatableText("argument.entity.options.dy.description", new Object[0]));
+            entitySelectorReader.setDy(entitySelectorReader.getReader().readDouble());
+        }, entitySelectorReader -> entitySelectorReader.getDy() == null, new TranslatableText("argument.entity.options.dy.description", new Object[0]));
         EntitySelectorOptions.putOption("dz", entitySelectorReader -> {
             entitySelectorReader.setLocalWorldOnly();
-            entitySelectorReader.setBoxZ(entitySelectorReader.getReader().readDouble());
-        }, entitySelectorReader -> entitySelectorReader.getBoxZ() == null, new TranslatableText("argument.entity.options.dz.description", new Object[0]));
-        EntitySelectorOptions.putOption("x_rotation", entitySelectorReader -> entitySelectorReader.setPitchRange(FloatRange.parse(entitySelectorReader.getReader(), true, MathHelper::wrapDegrees)), entitySelectorReader -> entitySelectorReader.getPitchRange() == FloatRange.ANY, new TranslatableText("argument.entity.options.x_rotation.description", new Object[0]));
-        EntitySelectorOptions.putOption("y_rotation", entitySelectorReader -> entitySelectorReader.setYawRange(FloatRange.parse(entitySelectorReader.getReader(), true, MathHelper::wrapDegrees)), entitySelectorReader -> entitySelectorReader.getYawRange() == FloatRange.ANY, new TranslatableText("argument.entity.options.y_rotation.description", new Object[0]));
+            entitySelectorReader.setDz(entitySelectorReader.getReader().readDouble());
+        }, entitySelectorReader -> entitySelectorReader.getDz() == null, new TranslatableText("argument.entity.options.dz.description", new Object[0]));
+        EntitySelectorOptions.putOption("x_rotation", entitySelectorReader -> entitySelectorReader.setPitchRange(FloatRangeArgument.parse(entitySelectorReader.getReader(), true, MathHelper::wrapDegrees)), entitySelectorReader -> entitySelectorReader.getPitchRange() == FloatRangeArgument.ANY, new TranslatableText("argument.entity.options.x_rotation.description", new Object[0]));
+        EntitySelectorOptions.putOption("y_rotation", entitySelectorReader -> entitySelectorReader.setYawRange(FloatRangeArgument.parse(entitySelectorReader.getReader(), true, MathHelper::wrapDegrees)), entitySelectorReader -> entitySelectorReader.getYawRange() == FloatRangeArgument.ANY, new TranslatableText("argument.entity.options.y_rotation.description", new Object[0]));
         EntitySelectorOptions.putOption("limit", entitySelectorReader -> {
             int i = entitySelectorReader.getReader().getCursor();
             int j = entitySelectorReader.getReader().readInt();
@@ -136,7 +136,7 @@ public class EntitySelectorOptions {
                 entitySelectorReader.getReader().setCursor(i);
                 throw TOO_SMALL_LEVEL_EXCEPTION.createWithContext(entitySelectorReader.getReader());
             }
-            entitySelectorReader.setCount(j);
+            entitySelectorReader.setLimit(j);
             entitySelectorReader.method_9877(true);
         }, entitySelectorReader -> !entitySelectorReader.isSenderOnly() && !entitySelectorReader.method_9866(), new TranslatableText("argument.entity.options.limit.description", new Object[0]));
         EntitySelectorOptions.putOption("sort", entitySelectorReader -> {
@@ -146,11 +146,11 @@ public class EntitySelectorOptions {
             entitySelectorReader.setSuggestionProvider((suggestionsBuilder, consumer) -> CommandSource.suggestMatching(Arrays.asList("nearest", "furthest", "random", "arbitrary"), suggestionsBuilder));
             switch (string) {
                 case "nearest": {
-                    biConsumer = EntitySelectorReader.NEAREST_FIRST;
+                    biConsumer = EntitySelectorReader.NEAREST;
                     break;
                 }
                 case "furthest": {
-                    biConsumer = EntitySelectorReader.FURTHEST_FIRST;
+                    biConsumer = EntitySelectorReader.FURTHEST;
                     break;
                 }
                 case "random": {
@@ -158,7 +158,7 @@ public class EntitySelectorOptions {
                     break;
                 }
                 case "arbitrary": {
-                    biConsumer = EntitySelectorReader.UNSORTED;
+                    biConsumer = EntitySelectorReader.ARBITRARY;
                     break;
                 }
                 default: {
@@ -204,7 +204,7 @@ public class EntitySelectorOptions {
                 entitySelectorReader.getReader().setCursor(i);
                 throw INVALID_MODE_EXCEPTION.createWithContext(entitySelectorReader.getReader(), string);
             }
-            entitySelectorReader.setIncludingNonPlayer(false);
+            entitySelectorReader.setIncludesNonPlayers(false);
             entitySelectorReader.setPredicate(entity -> {
                 if (!(entity instanceof ServerPlayerEntity)) {
                     return false;
@@ -269,14 +269,14 @@ public class EntitySelectorOptions {
                     return INVALID_TYPE_EXCEPTION.createWithContext(entitySelectorReader.getReader(), identifier.toString());
                 });
                 if (Objects.equals(EntityType.PLAYER, entityType) && !bl) {
-                    entitySelectorReader.setIncludingNonPlayer(false);
+                    entitySelectorReader.setIncludesNonPlayers(false);
                 }
                 entitySelectorReader.setPredicate(entity -> Objects.equals(entityType, entity.getType()) != bl);
                 if (!bl) {
                     entitySelectorReader.setEntityType(entityType);
                 }
             }
-        }, entitySelectorReader -> !entitySelectorReader.hasEntityType(), new TranslatableText("argument.entity.options.type.description", new Object[0]));
+        }, entitySelectorReader -> !entitySelectorReader.selectsEntityType(), new TranslatableText("argument.entity.options.type.description", new Object[0]));
         EntitySelectorOptions.putOption("tag", entitySelectorReader -> {
             boolean bl = entitySelectorReader.readNegationCharacter();
             String string = entitySelectorReader.getReader().readUnquotedString();
@@ -296,7 +296,7 @@ public class EntitySelectorOptions {
                 if (entity instanceof ServerPlayerEntity && !(itemStack = ((ServerPlayerEntity)entity).inventory.getMainHandStack()).isEmpty()) {
                     compoundTag2.put("SelectedItem", itemStack.toTag(new CompoundTag()));
                 }
-                return TagHelper.areTagsEqual(compoundTag, compoundTag2, true) != bl;
+                return NbtHelper.matches(compoundTag, compoundTag2, true) != bl;
             });
         }, entitySelectorReader -> true, new TranslatableText("argument.entity.options.nbt.description", new Object[0]));
         EntitySelectorOptions.putOption("scores", entitySelectorReader -> {
@@ -393,7 +393,7 @@ public class EntitySelectorOptions {
                         return false;
                     }
                     ServerPlayerEntity serverPlayerEntity = (ServerPlayerEntity)entity;
-                    PlayerAdvancementTracker playerAdvancementTracker = serverPlayerEntity.getAdvancementManager();
+                    PlayerAdvancementTracker playerAdvancementTracker = serverPlayerEntity.getAdvancementTracker();
                     ServerAdvancementLoader serverAdvancementLoader = serverPlayerEntity.getServer().getAdvancementManager();
                     for (Map.Entry entry : map.entrySet()) {
                         Advancement advancement = serverAdvancementLoader.get((Identifier)entry.getKey());
@@ -402,7 +402,7 @@ public class EntitySelectorOptions {
                     }
                     return true;
                 });
-                entitySelectorReader.setIncludingNonPlayer(false);
+                entitySelectorReader.setIncludesNonPlayers(false);
             }
             entitySelectorReader.method_9906(true);
         }, entitySelectorReader -> !entitySelectorReader.method_9861(), new TranslatableText("argument.entity.options.advancements.description", new Object[0]));

@@ -21,14 +21,15 @@ extends FeatureRenderer<WolfEntity, WolfEntityModel<WolfEntity>> {
         super(featureRendererContext);
     }
 
-    public void method_4209(WolfEntity wolfEntity, float f, float g, float h, float i, float j, float k, float l) {
+    @Override
+    public void render(WolfEntity wolfEntity, float f, float g, float h, float i, float j, float k, float l) {
         if (!wolfEntity.isTamed() || wolfEntity.isInvisible()) {
             return;
         }
         this.bindTexture(SKIN);
         float[] fs = wolfEntity.getCollarColor().getColorComponents();
         GlStateManager.color3f(fs[0], fs[1], fs[2]);
-        ((WolfEntityModel)this.getModel()).method_17132(wolfEntity, f, g, i, j, k, l);
+        ((WolfEntityModel)this.getContextModel()).render(wolfEntity, f, g, i, j, k, l);
     }
 
     @Override

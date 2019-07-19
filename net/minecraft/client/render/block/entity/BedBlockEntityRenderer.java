@@ -24,7 +24,8 @@ extends BlockEntityRenderer<BedBlockEntity> {
     private static final Identifier[] TEXTURES = (Identifier[])Arrays.stream(DyeColor.values()).sorted(Comparator.comparingInt(DyeColor::getId)).map(dyeColor -> new Identifier("textures/entity/bed/" + dyeColor.getName() + ".png")).toArray(Identifier[]::new);
     private final BedEntityModel model = new BedEntityModel();
 
-    public void method_3557(BedBlockEntity bedBlockEntity, double d, double e, double f, float g, int i) {
+    @Override
+    public void render(BedBlockEntity bedBlockEntity, double d, double e, double f, float g, int i) {
         if (i >= 0) {
             this.bindTexture(DESTROY_STAGE_TEXTURES[i]);
             GlStateManager.matrixMode(5890);

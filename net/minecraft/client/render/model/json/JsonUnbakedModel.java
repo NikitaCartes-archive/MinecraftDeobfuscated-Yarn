@@ -278,7 +278,8 @@ implements UnbakedModel {
     @Environment(value=EnvType.CLIENT)
     public static class Deserializer
     implements JsonDeserializer<JsonUnbakedModel> {
-        public JsonUnbakedModel method_3451(JsonElement jsonElement, Type type, JsonDeserializationContext jsonDeserializationContext) throws JsonParseException {
+        @Override
+        public JsonUnbakedModel deserialize(JsonElement jsonElement, Type type, JsonDeserializationContext jsonDeserializationContext) throws JsonParseException {
             JsonObject jsonObject = jsonElement.getAsJsonObject();
             List<ModelElement> list = this.deserializeElements(jsonDeserializationContext, jsonObject);
             String string = this.deserializeParent(jsonObject);
@@ -336,7 +337,7 @@ implements UnbakedModel {
 
         @Override
         public /* synthetic */ Object deserialize(JsonElement jsonElement, Type type, JsonDeserializationContext jsonDeserializationContext) throws JsonParseException {
-            return this.method_3451(jsonElement, type, jsonDeserializationContext);
+            return this.deserialize(jsonElement, type, jsonDeserializationContext);
         }
     }
 

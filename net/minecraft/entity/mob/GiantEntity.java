@@ -9,7 +9,7 @@ import net.minecraft.entity.EntityType;
 import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.mob.HostileEntity;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.ViewableWorld;
+import net.minecraft.world.CollisionView;
 import net.minecraft.world.World;
 
 public class GiantEntity
@@ -32,8 +32,8 @@ extends HostileEntity {
     }
 
     @Override
-    public float getPathfindingFavor(BlockPos blockPos, ViewableWorld viewableWorld) {
-        return viewableWorld.getBrightness(blockPos) - 0.5f;
+    public float getPathfindingFavor(BlockPos blockPos, CollisionView collisionView) {
+        return collisionView.getBrightness(blockPos) - 0.5f;
     }
 }
 

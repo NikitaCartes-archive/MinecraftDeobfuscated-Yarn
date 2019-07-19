@@ -21,7 +21,8 @@ extends EntityRenderer<T> {
         super(entityRenderDispatcher);
     }
 
-    public void method_3875(T projectileEntity, double d, double e, double f, float g, float h) {
+    @Override
+    public void render(T projectileEntity, double d, double e, double f, float g, float h) {
         this.bindEntityTexture(projectileEntity);
         GlStateManager.color4f(1.0f, 1.0f, 1.0f, 1.0f);
         GlStateManager.pushMatrix();
@@ -30,7 +31,7 @@ extends EntityRenderer<T> {
         GlStateManager.rotatef(MathHelper.lerp(h, ((ProjectileEntity)projectileEntity).prevYaw, ((ProjectileEntity)projectileEntity).yaw) - 90.0f, 0.0f, 1.0f, 0.0f);
         GlStateManager.rotatef(MathHelper.lerp(h, ((ProjectileEntity)projectileEntity).prevPitch, ((ProjectileEntity)projectileEntity).pitch), 0.0f, 0.0f, 1.0f);
         Tessellator tessellator = Tessellator.getInstance();
-        BufferBuilder bufferBuilder = tessellator.getBufferBuilder();
+        BufferBuilder bufferBuilder = tessellator.getBuffer();
         boolean i = false;
         float j = 0.0f;
         float k = 0.5f;
@@ -55,14 +56,14 @@ extends EntityRenderer<T> {
             GlStateManager.setupSolidRenderingTextureCombine(this.getOutlineColor(projectileEntity));
         }
         GlStateManager.normal3f(0.05625f, 0.0f, 0.0f);
-        bufferBuilder.begin(7, VertexFormats.POSITION_UV);
+        bufferBuilder.begin(7, VertexFormats.POSITION_TEXTURE);
         bufferBuilder.vertex(-7.0, -2.0, -2.0).texture(0.0, 0.15625).next();
         bufferBuilder.vertex(-7.0, -2.0, 2.0).texture(0.15625, 0.15625).next();
         bufferBuilder.vertex(-7.0, 2.0, 2.0).texture(0.15625, 0.3125).next();
         bufferBuilder.vertex(-7.0, 2.0, -2.0).texture(0.0, 0.3125).next();
         tessellator.draw();
         GlStateManager.normal3f(-0.05625f, 0.0f, 0.0f);
-        bufferBuilder.begin(7, VertexFormats.POSITION_UV);
+        bufferBuilder.begin(7, VertexFormats.POSITION_TEXTURE);
         bufferBuilder.vertex(-7.0, 2.0, -2.0).texture(0.0, 0.15625).next();
         bufferBuilder.vertex(-7.0, 2.0, 2.0).texture(0.15625, 0.15625).next();
         bufferBuilder.vertex(-7.0, -2.0, 2.0).texture(0.15625, 0.3125).next();
@@ -71,7 +72,7 @@ extends EntityRenderer<T> {
         for (int u = 0; u < 4; ++u) {
             GlStateManager.rotatef(90.0f, 1.0f, 0.0f, 0.0f);
             GlStateManager.normal3f(0.0f, 0.0f, 0.05625f);
-            bufferBuilder.begin(7, VertexFormats.POSITION_UV);
+            bufferBuilder.begin(7, VertexFormats.POSITION_TEXTURE);
             bufferBuilder.vertex(-8.0, -2.0, 0.0).texture(0.0, 0.0).next();
             bufferBuilder.vertex(8.0, -2.0, 0.0).texture(0.5, 0.0).next();
             bufferBuilder.vertex(8.0, 2.0, 0.0).texture(0.5, 0.15625).next();

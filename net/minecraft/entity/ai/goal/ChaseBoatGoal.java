@@ -28,7 +28,7 @@ extends Goal {
 
     @Override
     public boolean canStart() {
-        List<BoatEntity> list = this.mob.world.getEntities(BoatEntity.class, this.mob.getBoundingBox().expand(5.0));
+        List<BoatEntity> list = this.mob.world.getNonSpectatingEntities(BoatEntity.class, this.mob.getBoundingBox().expand(5.0));
         boolean bl = false;
         for (BoatEntity boatEntity : list) {
             if (boatEntity.getPrimaryPassenger() == null || !(MathHelper.abs(((LivingEntity)boatEntity.getPrimaryPassenger()).sidewaysSpeed) > 0.0f) && !(MathHelper.abs(((LivingEntity)boatEntity.getPrimaryPassenger()).forwardSpeed) > 0.0f)) continue;
@@ -50,7 +50,7 @@ extends Goal {
 
     @Override
     public void start() {
-        List<BoatEntity> list = this.mob.world.getEntities(BoatEntity.class, this.mob.getBoundingBox().expand(5.0));
+        List<BoatEntity> list = this.mob.world.getNonSpectatingEntities(BoatEntity.class, this.mob.getBoundingBox().expand(5.0));
         for (BoatEntity boatEntity : list) {
             if (boatEntity.getPrimaryPassenger() == null || !(boatEntity.getPrimaryPassenger() instanceof LivingEntity)) continue;
             this.passenger = (LivingEntity)boatEntity.getPrimaryPassenger();

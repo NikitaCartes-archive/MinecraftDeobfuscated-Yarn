@@ -7,22 +7,23 @@ import com.mojang.datafixers.Dynamic;
 import java.util.Random;
 import java.util.function.Function;
 import java.util.stream.Stream;
+import net.minecraft.class_3267;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.Heightmap;
 import net.minecraft.world.IWorld;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
 import net.minecraft.world.gen.chunk.ChunkGeneratorConfig;
-import net.minecraft.world.gen.decorator.ChanceDecoratorConfig;
 import net.minecraft.world.gen.decorator.Decorator;
 
 public class ChanceHeightmapDoubleDecorator
-extends Decorator<ChanceDecoratorConfig> {
-    public ChanceHeightmapDoubleDecorator(Function<Dynamic<?>, ? extends ChanceDecoratorConfig> function) {
+extends Decorator<class_3267> {
+    public ChanceHeightmapDoubleDecorator(Function<Dynamic<?>, ? extends class_3267> function) {
         super(function);
     }
 
-    public Stream<BlockPos> method_14342(IWorld iWorld, ChunkGenerator<? extends ChunkGeneratorConfig> chunkGenerator, Random random, ChanceDecoratorConfig chanceDecoratorConfig, BlockPos blockPos) {
-        if (random.nextFloat() < 1.0f / (float)chanceDecoratorConfig.chance) {
+    @Override
+    public Stream<BlockPos> getPositions(IWorld iWorld, ChunkGenerator<? extends ChunkGeneratorConfig> chunkGenerator, Random random, class_3267 arg, BlockPos blockPos) {
+        if (random.nextFloat() < 1.0f / (float)arg.field_14192) {
             int j;
             int i = random.nextInt(16);
             int k = iWorld.getTopPosition(Heightmap.Type.MOTION_BLOCKING, blockPos.add(i, 0, j = random.nextInt(16))).getY() * 2;

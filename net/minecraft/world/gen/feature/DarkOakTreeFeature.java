@@ -9,9 +9,9 @@ import java.util.Set;
 import java.util.function.Function;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
+import net.minecraft.util.math.BlockBox;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
-import net.minecraft.util.math.MutableIntBoundingBox;
 import net.minecraft.world.ModifiableTestableWorld;
 import net.minecraft.world.TestableWorld;
 import net.minecraft.world.gen.feature.AbstractTreeFeature;
@@ -27,7 +27,7 @@ extends AbstractTreeFeature<DefaultFeatureConfig> {
     }
 
     @Override
-    public boolean generate(Set<BlockPos> set, ModifiableTestableWorld modifiableTestableWorld, Random random, BlockPos blockPos, MutableIntBoundingBox mutableIntBoundingBox) {
+    public boolean generate(Set<BlockPos> set, ModifiableTestableWorld modifiableTestableWorld, Random random, BlockPos blockPos, BlockBox blockBox) {
         int s;
         int r;
         int i = random.nextInt(3) + random.nextInt(2) + 6;
@@ -62,36 +62,36 @@ extends AbstractTreeFeature<DefaultFeatureConfig> {
                 --n;
             }
             if (!DarkOakTreeFeature.isAirOrLeaves(modifiableTestableWorld, blockPos3 = new BlockPos(o, s = k + r, p))) continue;
-            this.addLog(set, modifiableTestableWorld, blockPos3, mutableIntBoundingBox);
-            this.addLog(set, modifiableTestableWorld, blockPos3.east(), mutableIntBoundingBox);
-            this.addLog(set, modifiableTestableWorld, blockPos3.south(), mutableIntBoundingBox);
-            this.addLog(set, modifiableTestableWorld, blockPos3.east().south(), mutableIntBoundingBox);
+            this.addLog(set, modifiableTestableWorld, blockPos3, blockBox);
+            this.addLog(set, modifiableTestableWorld, blockPos3.east(), blockBox);
+            this.addLog(set, modifiableTestableWorld, blockPos3.south(), blockBox);
+            this.addLog(set, modifiableTestableWorld, blockPos3.east().south(), blockBox);
         }
         for (r = -2; r <= 0; ++r) {
             for (s = -2; s <= 0; ++s) {
                 int t = -1;
-                this.addLeaves(modifiableTestableWorld, o + r, q + t, p + s, mutableIntBoundingBox, set);
-                this.addLeaves(modifiableTestableWorld, 1 + o - r, q + t, p + s, mutableIntBoundingBox, set);
-                this.addLeaves(modifiableTestableWorld, o + r, q + t, 1 + p - s, mutableIntBoundingBox, set);
-                this.addLeaves(modifiableTestableWorld, 1 + o - r, q + t, 1 + p - s, mutableIntBoundingBox, set);
+                this.addLeaves(modifiableTestableWorld, o + r, q + t, p + s, blockBox, set);
+                this.addLeaves(modifiableTestableWorld, 1 + o - r, q + t, p + s, blockBox, set);
+                this.addLeaves(modifiableTestableWorld, o + r, q + t, 1 + p - s, blockBox, set);
+                this.addLeaves(modifiableTestableWorld, 1 + o - r, q + t, 1 + p - s, blockBox, set);
                 if (r <= -2 && s <= -1 || r == -1 && s == -2) continue;
                 t = 1;
-                this.addLeaves(modifiableTestableWorld, o + r, q + t, p + s, mutableIntBoundingBox, set);
-                this.addLeaves(modifiableTestableWorld, 1 + o - r, q + t, p + s, mutableIntBoundingBox, set);
-                this.addLeaves(modifiableTestableWorld, o + r, q + t, 1 + p - s, mutableIntBoundingBox, set);
-                this.addLeaves(modifiableTestableWorld, 1 + o - r, q + t, 1 + p - s, mutableIntBoundingBox, set);
+                this.addLeaves(modifiableTestableWorld, o + r, q + t, p + s, blockBox, set);
+                this.addLeaves(modifiableTestableWorld, 1 + o - r, q + t, p + s, blockBox, set);
+                this.addLeaves(modifiableTestableWorld, o + r, q + t, 1 + p - s, blockBox, set);
+                this.addLeaves(modifiableTestableWorld, 1 + o - r, q + t, 1 + p - s, blockBox, set);
             }
         }
         if (random.nextBoolean()) {
-            this.addLeaves(modifiableTestableWorld, o, q + 2, p, mutableIntBoundingBox, set);
-            this.addLeaves(modifiableTestableWorld, o + 1, q + 2, p, mutableIntBoundingBox, set);
-            this.addLeaves(modifiableTestableWorld, o + 1, q + 2, p + 1, mutableIntBoundingBox, set);
-            this.addLeaves(modifiableTestableWorld, o, q + 2, p + 1, mutableIntBoundingBox, set);
+            this.addLeaves(modifiableTestableWorld, o, q + 2, p, blockBox, set);
+            this.addLeaves(modifiableTestableWorld, o + 1, q + 2, p, blockBox, set);
+            this.addLeaves(modifiableTestableWorld, o + 1, q + 2, p + 1, blockBox, set);
+            this.addLeaves(modifiableTestableWorld, o, q + 2, p + 1, blockBox, set);
         }
         for (r = -3; r <= 4; ++r) {
             for (s = -3; s <= 4; ++s) {
                 if (r == -3 && s == -3 || r == -3 && s == 4 || r == 4 && s == -3 || r == 4 && s == 4 || Math.abs(r) >= 3 && Math.abs(s) >= 3) continue;
-                this.addLeaves(modifiableTestableWorld, o + r, q, p + s, mutableIntBoundingBox, set);
+                this.addLeaves(modifiableTestableWorld, o + r, q, p + s, blockBox, set);
             }
         }
         for (r = -1; r <= 2; ++r) {
@@ -101,17 +101,17 @@ extends AbstractTreeFeature<DefaultFeatureConfig> {
                 if (r >= 0 && r <= 1 && s >= 0 && s <= 1 || random.nextInt(3) > 0) continue;
                 int t = random.nextInt(3) + 2;
                 for (u = 0; u < t; ++u) {
-                    this.addLog(set, modifiableTestableWorld, new BlockPos(j + r, q - u - 1, l + s), mutableIntBoundingBox);
+                    this.addLog(set, modifiableTestableWorld, new BlockPos(j + r, q - u - 1, l + s), blockBox);
                 }
                 for (u = -1; u <= 1; ++u) {
                     for (v = -1; v <= 1; ++v) {
-                        this.addLeaves(modifiableTestableWorld, o + r + u, q, p + s + v, mutableIntBoundingBox, set);
+                        this.addLeaves(modifiableTestableWorld, o + r + u, q, p + s + v, blockBox, set);
                     }
                 }
                 for (u = -2; u <= 2; ++u) {
                     for (v = -2; v <= 2; ++v) {
                         if (Math.abs(u) == 2 && Math.abs(v) == 2) continue;
-                        this.addLeaves(modifiableTestableWorld, o + r + u, q - 1, p + s + v, mutableIntBoundingBox, set);
+                        this.addLeaves(modifiableTestableWorld, o + r + u, q - 1, p + s + v, blockBox, set);
                     }
                 }
             }
@@ -142,16 +142,16 @@ extends AbstractTreeFeature<DefaultFeatureConfig> {
         return true;
     }
 
-    private void addLog(Set<BlockPos> set, ModifiableTestableWorld modifiableTestableWorld, BlockPos blockPos, MutableIntBoundingBox mutableIntBoundingBox) {
+    private void addLog(Set<BlockPos> set, ModifiableTestableWorld modifiableTestableWorld, BlockPos blockPos, BlockBox blockBox) {
         if (DarkOakTreeFeature.canTreeReplace(modifiableTestableWorld, blockPos)) {
-            this.setBlockState(set, modifiableTestableWorld, blockPos, LOG, mutableIntBoundingBox);
+            this.setBlockState(set, modifiableTestableWorld, blockPos, LOG, blockBox);
         }
     }
 
-    private void addLeaves(ModifiableTestableWorld modifiableTestableWorld, int i, int j, int k, MutableIntBoundingBox mutableIntBoundingBox, Set<BlockPos> set) {
+    private void addLeaves(ModifiableTestableWorld modifiableTestableWorld, int i, int j, int k, BlockBox blockBox, Set<BlockPos> set) {
         BlockPos blockPos = new BlockPos(i, j, k);
         if (DarkOakTreeFeature.isAir(modifiableTestableWorld, blockPos)) {
-            this.setBlockState(set, modifiableTestableWorld, blockPos, LEAVES, mutableIntBoundingBox);
+            this.setBlockState(set, modifiableTestableWorld, blockPos, LEAVES, blockBox);
         }
     }
 }

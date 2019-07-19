@@ -77,7 +77,8 @@ extends AbstractListTag<IntTag> {
         return stringBuilder.append(']').toString();
     }
 
-    public IntArrayTag method_10591() {
+    @Override
+    public IntArrayTag copy() {
         int[] is = new int[this.value.length];
         System.arraycopy(this.value, 0, is, 0, this.value.length);
         return new IntArrayTag(is);
@@ -118,17 +119,19 @@ extends AbstractListTag<IntTag> {
         return this.value.length;
     }
 
-    public IntTag method_10589(int i) {
+    @Override
+    public IntTag get(int i) {
         return new IntTag(this.value[i]);
     }
 
-    public IntTag method_17806(int i, IntTag intTag) {
+    @Override
+    public IntTag set(int i, IntTag intTag) {
         int j = this.value[i];
         this.value[i] = intTag.getInt();
         return new IntTag(j);
     }
 
-    public void method_17808(int i, IntTag intTag) {
+    public void method_10531(int i, IntTag intTag) {
         this.value = ArrayUtils.add(this.value, i, intTag.getInt());
     }
 
@@ -150,7 +153,7 @@ extends AbstractListTag<IntTag> {
         return false;
     }
 
-    public IntTag method_17807(int i) {
+    public IntTag method_10536(int i) {
         int j = this.value[i];
         this.value = ArrayUtils.remove(this.value, i);
         return new IntTag(j);
@@ -162,43 +165,43 @@ extends AbstractListTag<IntTag> {
     }
 
     @Override
-    public /* synthetic */ Tag method_10536(int i) {
-        return this.method_17807(i);
+    public /* synthetic */ Tag remove(int i) {
+        return this.method_10536(i);
     }
 
     @Override
-    public /* synthetic */ void method_10531(int i, Tag tag) {
-        this.method_17808(i, (IntTag)tag);
+    public /* synthetic */ void add(int i, Tag tag) {
+        this.method_10531(i, (IntTag)tag);
     }
 
     @Override
-    public /* synthetic */ Tag method_10606(int i, Tag tag) {
-        return this.method_17806(i, (IntTag)tag);
+    public /* synthetic */ Tag set(int i, Tag tag) {
+        return this.set(i, (IntTag)tag);
     }
 
     @Override
     public /* synthetic */ Tag copy() {
-        return this.method_10591();
+        return this.copy();
     }
 
     @Override
     public /* synthetic */ Object remove(int i) {
-        return this.method_17807(i);
+        return this.method_10536(i);
     }
 
     @Override
     public /* synthetic */ void add(int i, Object object) {
-        this.method_17808(i, (IntTag)object);
+        this.method_10531(i, (IntTag)object);
     }
 
     @Override
     public /* synthetic */ Object set(int i, Object object) {
-        return this.method_17806(i, (IntTag)object);
+        return this.set(i, (IntTag)object);
     }
 
     @Override
     public /* synthetic */ Object get(int i) {
-        return this.method_10589(i);
+        return this.get(i);
     }
 }
 

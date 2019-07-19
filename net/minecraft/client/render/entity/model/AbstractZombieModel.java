@@ -16,9 +16,10 @@ extends BipedEntityModel<T> {
         super(f, g, i, j);
     }
 
-    public void method_17791(T hostileEntity, float f, float g, float h, float i, float j, float k) {
+    @Override
+    public void setAngles(T hostileEntity, float f, float g, float h, float i, float j, float k) {
         float n;
-        super.method_17087(hostileEntity, f, g, h, i, j, k);
+        super.setAngles(hostileEntity, f, g, h, i, j, k);
         boolean bl = this.method_17790(hostileEntity);
         float l = MathHelper.sin(this.handSwingProgress * (float)Math.PI);
         float m = MathHelper.sin((1.0f - (1.0f - this.handSwingProgress) * (1.0f - this.handSwingProgress)) * (float)Math.PI);

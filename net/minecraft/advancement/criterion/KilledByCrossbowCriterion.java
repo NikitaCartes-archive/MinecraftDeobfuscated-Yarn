@@ -21,10 +21,10 @@ import net.minecraft.advancement.criterion.Criterion;
 import net.minecraft.advancement.criterion.CriterionConditions;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
+import net.minecraft.predicate.NumberRange;
 import net.minecraft.predicate.entity.EntityPredicate;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.NumberRange;
 
 public class KilledByCrossbowCriterion
 implements Criterion<Conditions> {
@@ -62,14 +62,15 @@ implements Criterion<Conditions> {
         this.handlers.remove(playerAdvancementTracker);
     }
 
-    public Conditions method_8979(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext) {
-        EntityPredicate[] entityPredicates = EntityPredicate.deserializeAll(jsonObject.get("victims"));
+    @Override
+    public Conditions conditionsFromJson(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext) {
+        EntityPredicate[] entityPredicates = EntityPredicate.fromJsonArray(jsonObject.get("victims"));
         NumberRange.IntRange intRange = NumberRange.IntRange.fromJson(jsonObject.get("unique_entity_types"));
         return new Conditions(entityPredicates, intRange);
     }
 
     public void trigger(ServerPlayerEntity serverPlayerEntity, Collection<Entity> collection, int i) {
-        Handler handler = this.handlers.get(serverPlayerEntity.getAdvancementManager());
+        Handler handler = this.handlers.get(serverPlayerEntity.getAdvancementTracker());
         if (handler != null) {
             handler.trigger(serverPlayerEntity, collection, i);
         }
@@ -77,15 +78,15 @@ implements Criterion<Conditions> {
 
     @Override
     public /* synthetic */ CriterionConditions conditionsFromJson(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext) {
-        return this.method_8979(jsonObject, jsonDeserializationContext);
+        return this.conditionsFromJson(jsonObject, jsonDeserializationContext);
     }
 
     static class Handler {
-        private final PlayerAdvancementTracker tracker;
+        private final PlayerAdvancementTracker manager;
         private final Set<Criterion.ConditionsContainer<Conditions>> conditions = Sets.newHashSet();
 
         public Handler(PlayerAdvancementTracker playerAdvancementTracker) {
-            this.tracker = playerAdvancementTracker;
+            this.manager = playerAdvancementTracker;
         }
 
         public boolean isEmpty() {
@@ -111,7 +112,7 @@ implements Criterion<Conditions> {
             }
             if (list != null) {
                 for (Criterion.ConditionsContainer<Conditions> conditionsContainer : list) {
-                    conditionsContainer.apply(this.tracker);
+                    conditionsContainer.apply(this.manager);
                 }
             }
         }
@@ -173,7 +174,7 @@ implements Criterion<Conditions> {
         public JsonElement toJson() {
             JsonObject jsonObject = new JsonObject();
             jsonObject.add("victims", EntityPredicate.serializeAll(this.victims));
-            jsonObject.add("unique_entity_types", this.uniqueEntityTypes.serialize());
+            jsonObject.add("unique_entity_types", this.uniqueEntityTypes.toJson());
             return jsonObject;
         }
     }

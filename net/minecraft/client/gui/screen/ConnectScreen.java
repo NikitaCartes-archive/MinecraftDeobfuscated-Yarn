@@ -13,18 +13,18 @@ import net.minecraft.client.gui.screen.DisconnectedScreen;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.network.ClientLoginNetworkHandler;
-import net.minecraft.client.options.ServerEntry;
+import net.minecraft.client.network.ServerInfo;
 import net.minecraft.client.resource.language.I18n;
 import net.minecraft.client.util.NarratorManager;
 import net.minecraft.network.ClientConnection;
 import net.minecraft.network.NetworkState;
 import net.minecraft.network.ServerAddress;
-import net.minecraft.server.network.packet.HandshakeC2SPacket;
-import net.minecraft.server.network.packet.LoginHelloC2SPacket;
+import net.minecraft.network.packet.c2s.handshake.HandshakeC2SPacket;
+import net.minecraft.network.packet.c2s.login.LoginHelloC2SPacket;
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
-import net.minecraft.util.SystemUtil;
 import net.minecraft.util.UncaughtExceptionLogger;
+import net.minecraft.util.Util;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -39,13 +39,13 @@ extends Screen {
     private Text status = new TranslatableText("connect.connecting", new Object[0]);
     private long field_19097 = -1L;
 
-    public ConnectScreen(Screen screen, MinecraftClient minecraftClient, ServerEntry serverEntry) {
+    public ConnectScreen(Screen screen, MinecraftClient minecraftClient, ServerInfo serverInfo) {
         super(NarratorManager.EMPTY);
         this.minecraft = minecraftClient;
         this.parent = screen;
-        ServerAddress serverAddress = ServerAddress.parse(serverEntry.address);
+        ServerAddress serverAddress = ServerAddress.parse(serverInfo.address);
         minecraftClient.disconnect();
-        minecraftClient.setCurrentServerEntry(serverEntry);
+        minecraftClient.setCurrentServerEntry(serverInfo);
         this.connect(serverAddress.getAddress(), serverAddress.getPort());
     }
 
@@ -127,7 +127,7 @@ extends Screen {
     @Override
     public void render(int i, int j, float f) {
         this.renderBackground();
-        long l = SystemUtil.getMeasuringTimeMs();
+        long l = Util.getMeasuringTimeMs();
         if (l - this.field_19097 > 2000L) {
             this.field_19097 = l;
             NarratorManager.INSTANCE.narrate(new TranslatableText("narrator.joining", new Object[0]).getString());

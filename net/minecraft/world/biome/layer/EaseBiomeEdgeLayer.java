@@ -7,8 +7,8 @@ import net.minecraft.util.registry.Registry;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.biome.Biomes;
 import net.minecraft.world.biome.layer.BiomeLayers;
-import net.minecraft.world.biome.layer.CrossSamplingLayer;
-import net.minecraft.world.biome.layer.LayerRandomnessSource;
+import net.minecraft.world.biome.layer.type.CrossSamplingLayer;
+import net.minecraft.world.biome.layer.util.LayerRandomnessSource;
 
 public enum EaseBiomeEdgeLayer implements CrossSamplingLayer
 {
@@ -21,7 +21,7 @@ public enum EaseBiomeEdgeLayer implements CrossSamplingLayer
     private static final int JUNGLE_ID;
     private static final int BAMBOO_JUNGLE_ID;
     private static final int JUNGLE_EDGE_ID;
-    private static final int BALDANDS_ID;
+    private static final int BADLANDS_ID;
     private static final int BADLANDS_PLATEAU_ID;
     private static final int WOODED_BADLANDS_PLATEAU_ID;
     private static final int PLAINS_ID;
@@ -34,7 +34,7 @@ public enum EaseBiomeEdgeLayer implements CrossSamplingLayer
     @Override
     public int sample(LayerRandomnessSource layerRandomnessSource, int i, int j, int k, int l, int m) {
         int[] is = new int[1];
-        if (this.method_15841(is, i, j, k, l, m, MOUNTAINS_ID, MOUNTAIN_EDGE_ID) || this.method_15840(is, i, j, k, l, m, WOODED_BADLANDS_PLATEAU_ID, BALDANDS_ID) || this.method_15840(is, i, j, k, l, m, BADLANDS_PLATEAU_ID, BALDANDS_ID) || this.method_15840(is, i, j, k, l, m, GIANT_TREE_TAIGA_ID, TAIGA_ID)) {
+        if (this.method_15841(is, i, j, k, l, m, MOUNTAINS_ID, MOUNTAIN_EDGE_ID) || this.method_15840(is, i, j, k, l, m, WOODED_BADLANDS_PLATEAU_ID, BADLANDS_ID) || this.method_15840(is, i, j, k, l, m, BADLANDS_PLATEAU_ID, BADLANDS_ID) || this.method_15840(is, i, j, k, l, m, GIANT_TREE_TAIGA_ID, TAIGA_ID)) {
             return is[0];
         }
         if (m == DESERT_ID && (i == SNOWY_TUNDRA_ID || j == SNOWY_TUNDRA_ID || l == SNOWY_TUNDRA_ID || k == SNOWY_TUNDRA_ID)) {
@@ -89,7 +89,7 @@ public enum EaseBiomeEdgeLayer implements CrossSamplingLayer
         JUNGLE_ID = Registry.BIOME.getRawId(Biomes.JUNGLE);
         BAMBOO_JUNGLE_ID = Registry.BIOME.getRawId(Biomes.BAMBOO_JUNGLE);
         JUNGLE_EDGE_ID = Registry.BIOME.getRawId(Biomes.JUNGLE_EDGE);
-        BALDANDS_ID = Registry.BIOME.getRawId(Biomes.BADLANDS);
+        BADLANDS_ID = Registry.BIOME.getRawId(Biomes.BADLANDS);
         BADLANDS_PLATEAU_ID = Registry.BIOME.getRawId(Biomes.BADLANDS_PLATEAU);
         WOODED_BADLANDS_PLATEAU_ID = Registry.BIOME.getRawId(Biomes.WOODED_BADLANDS_PLATEAU);
         PLAINS_ID = Registry.BIOME.getRawId(Biomes.PLAINS);

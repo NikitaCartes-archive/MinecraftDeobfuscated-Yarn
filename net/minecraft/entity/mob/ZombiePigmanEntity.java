@@ -29,10 +29,10 @@ import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.Hand;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.CollisionView;
 import net.minecraft.world.Difficulty;
 import net.minecraft.world.IWorld;
 import net.minecraft.world.LocalDifficulty;
-import net.minecraft.world.ViewableWorld;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
 
@@ -46,7 +46,7 @@ extends ZombieEntity {
 
     public ZombiePigmanEntity(EntityType<? extends ZombiePigmanEntity> entityType, World world) {
         super((EntityType<? extends ZombieEntity>)entityType, world);
-        this.setPathNodeTypeWeight(PathNodeType.LAVA, 8.0f);
+        this.setPathfindingPenalty(PathNodeType.LAVA, 8.0f);
     }
 
     @Override
@@ -117,8 +117,8 @@ extends ZombieEntity {
     }
 
     @Override
-    public boolean canSpawn(ViewableWorld viewableWorld) {
-        return viewableWorld.intersectsEntities(this) && !viewableWorld.intersectsFluid(this.getBoundingBox());
+    public boolean canSpawn(CollisionView collisionView) {
+        return collisionView.intersectsEntities(this) && !collisionView.intersectsFluid(this.getBoundingBox());
     }
 
     @Override
@@ -199,7 +199,7 @@ extends ZombieEntity {
 
     @Override
     protected void initEquipment(LocalDifficulty localDifficulty) {
-        this.setEquippedStack(EquipmentSlot.MAINHAND, new ItemStack(Items.GOLDEN_SWORD));
+        this.equipStack(EquipmentSlot.MAINHAND, new ItemStack(Items.GOLDEN_SWORD));
     }
 
     @Override

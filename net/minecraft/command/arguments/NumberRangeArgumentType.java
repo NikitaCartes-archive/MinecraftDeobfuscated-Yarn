@@ -11,8 +11,8 @@ import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import java.util.Arrays;
 import java.util.Collection;
 import net.minecraft.command.arguments.serialize.ArgumentSerializer;
+import net.minecraft.predicate.NumberRange;
 import net.minecraft.server.command.ServerCommandSource;
-import net.minecraft.util.NumberRange;
 import net.minecraft.util.PacketByteBuf;
 
 public interface NumberRangeArgumentType<T extends NumberRange<?>>
@@ -23,10 +23,12 @@ extends ArgumentType<T> {
 
     public static abstract class NumberSerializer<T extends NumberRangeArgumentType<?>>
     implements ArgumentSerializer<T> {
-        public void method_9429(T numberRangeArgumentType, PacketByteBuf packetByteBuf) {
+        @Override
+        public void toPacket(T numberRangeArgumentType, PacketByteBuf packetByteBuf) {
         }
 
-        public void method_9428(T numberRangeArgumentType, JsonObject jsonObject) {
+        @Override
+        public void toJson(T numberRangeArgumentType, JsonObject jsonObject) {
         }
     }
 
@@ -34,7 +36,8 @@ extends ArgumentType<T> {
     implements NumberRangeArgumentType<NumberRange.FloatRange> {
         private static final Collection<String> EXAMPLES = Arrays.asList("0..5.2", "0", "-5.4", "-100.76..", "..100");
 
-        public NumberRange.FloatRange method_9423(StringReader stringReader) throws CommandSyntaxException {
+        @Override
+        public NumberRange.FloatRange parse(StringReader stringReader) throws CommandSyntaxException {
             return NumberRange.FloatRange.parse(stringReader);
         }
 
@@ -45,18 +48,19 @@ extends ArgumentType<T> {
 
         @Override
         public /* synthetic */ Object parse(StringReader stringReader) throws CommandSyntaxException {
-            return this.method_9423(stringReader);
+            return this.parse(stringReader);
         }
 
         public static class Serializer
         extends NumberSerializer<FloatRangeArgumentType> {
-            public FloatRangeArgumentType method_9424(PacketByteBuf packetByteBuf) {
+            @Override
+            public FloatRangeArgumentType fromPacket(PacketByteBuf packetByteBuf) {
                 return new FloatRangeArgumentType();
             }
 
             @Override
             public /* synthetic */ ArgumentType fromPacket(PacketByteBuf packetByteBuf) {
-                return this.method_9424(packetByteBuf);
+                return this.fromPacket(packetByteBuf);
             }
         }
     }
@@ -69,7 +73,8 @@ extends ArgumentType<T> {
             return commandContext.getArgument(string, NumberRange.IntRange.class);
         }
 
-        public NumberRange.IntRange method_9426(StringReader stringReader) throws CommandSyntaxException {
+        @Override
+        public NumberRange.IntRange parse(StringReader stringReader) throws CommandSyntaxException {
             return NumberRange.IntRange.parse(stringReader);
         }
 
@@ -80,18 +85,19 @@ extends ArgumentType<T> {
 
         @Override
         public /* synthetic */ Object parse(StringReader stringReader) throws CommandSyntaxException {
-            return this.method_9426(stringReader);
+            return this.parse(stringReader);
         }
 
         public static class Serializer
         extends NumberSerializer<IntRangeArgumentType> {
-            public IntRangeArgumentType method_9427(PacketByteBuf packetByteBuf) {
+            @Override
+            public IntRangeArgumentType fromPacket(PacketByteBuf packetByteBuf) {
                 return new IntRangeArgumentType();
             }
 
             @Override
             public /* synthetic */ ArgumentType fromPacket(PacketByteBuf packetByteBuf) {
-                return this.method_9427(packetByteBuf);
+                return this.fromPacket(packetByteBuf);
             }
         }
     }

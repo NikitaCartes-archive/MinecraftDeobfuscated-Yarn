@@ -9,9 +9,9 @@ import java.util.function.Function;
 import net.minecraft.structure.StructureManager;
 import net.minecraft.structure.VillageGenerator;
 import net.minecraft.structure.VillageStructureStart;
+import net.minecraft.util.math.BlockBox;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
-import net.minecraft.util.math.MutableIntBoundingBox;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.gen.ChunkRandom;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
@@ -69,8 +69,8 @@ extends StructureFeature<VillageFeatureConfig> {
 
     public static class Start
     extends VillageStructureStart {
-        public Start(StructureFeature<?> structureFeature, int i, int j, Biome biome, MutableIntBoundingBox mutableIntBoundingBox, int k, long l) {
-            super(structureFeature, i, j, biome, mutableIntBoundingBox, k, l);
+        public Start(StructureFeature<?> structureFeature, int i, int j, Biome biome, BlockBox blockBox, int k, long l) {
+            super(structureFeature, i, j, biome, blockBox, k, l);
         }
 
         @Override

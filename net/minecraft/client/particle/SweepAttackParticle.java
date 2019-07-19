@@ -16,12 +16,12 @@ import net.minecraft.world.World;
 @Environment(value=EnvType.CLIENT)
 public class SweepAttackParticle
 extends SpriteBillboardParticle {
-    private final SpriteProvider field_17781;
+    private final SpriteProvider spriteProvider;
 
     private SweepAttackParticle(World world, double d, double e, double f, double g, SpriteProvider spriteProvider) {
         super(world, d, e, f, 0.0, 0.0, 0.0);
         float h;
-        this.field_17781 = spriteProvider;
+        this.spriteProvider = spriteProvider;
         this.maxAge = 4;
         this.colorRed = h = this.random.nextFloat() * 0.6f + 0.4f;
         this.colorGreen = h;
@@ -44,7 +44,7 @@ extends SpriteBillboardParticle {
             this.markDead();
             return;
         }
-        this.setSpriteForAge(this.field_17781);
+        this.setSpriteForAge(this.spriteProvider);
     }
 
     @Override
@@ -55,14 +55,15 @@ extends SpriteBillboardParticle {
     @Environment(value=EnvType.CLIENT)
     public static class Factory
     implements ParticleFactory<DefaultParticleType> {
-        private final SpriteProvider field_17782;
+        private final SpriteProvider spriteProvider;
 
         public Factory(SpriteProvider spriteProvider) {
-            this.field_17782 = spriteProvider;
+            this.spriteProvider = spriteProvider;
         }
 
-        public Particle method_3006(DefaultParticleType defaultParticleType, World world, double d, double e, double f, double g, double h, double i) {
-            return new SweepAttackParticle(world, d, e, f, g, this.field_17782);
+        @Override
+        public Particle createParticle(DefaultParticleType defaultParticleType, World world, double d, double e, double f, double g, double h, double i) {
+            return new SweepAttackParticle(world, d, e, f, g, this.spriteProvider);
         }
     }
 }

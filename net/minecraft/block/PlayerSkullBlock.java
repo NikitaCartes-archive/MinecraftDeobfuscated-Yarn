@@ -12,7 +12,7 @@ import net.minecraft.block.entity.SkullBlockEntity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.util.TagHelper;
+import net.minecraft.nbt.NbtHelper;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import org.apache.commons.lang3.StringUtils;
@@ -33,9 +33,9 @@ extends SkullBlock {
             GameProfile gameProfile = null;
             if (itemStack.hasTag()) {
                 CompoundTag compoundTag = itemStack.getTag();
-                if (compoundTag.containsKey("SkullOwner", 10)) {
-                    gameProfile = TagHelper.deserializeProfile(compoundTag.getCompound("SkullOwner"));
-                } else if (compoundTag.containsKey("SkullOwner", 8) && !StringUtils.isBlank(compoundTag.getString("SkullOwner"))) {
+                if (compoundTag.contains("SkullOwner", 10)) {
+                    gameProfile = NbtHelper.toGameProfile(compoundTag.getCompound("SkullOwner"));
+                } else if (compoundTag.contains("SkullOwner", 8) && !StringUtils.isBlank(compoundTag.getString("SkullOwner"))) {
                     gameProfile = new GameProfile(null, compoundTag.getString("SkullOwner"));
                 }
             }

@@ -15,22 +15,24 @@ extends ParticleType<DefaultParticleType>
 implements ParticleEffect {
     private static final ParticleEffect.Factory<DefaultParticleType> PARAMETER_FACTORY = new ParticleEffect.Factory<DefaultParticleType>(){
 
-        public DefaultParticleType method_10307(ParticleType<DefaultParticleType> particleType, StringReader stringReader) throws CommandSyntaxException {
+        @Override
+        public DefaultParticleType read(ParticleType<DefaultParticleType> particleType, StringReader stringReader) throws CommandSyntaxException {
             return (DefaultParticleType)particleType;
         }
 
-        public DefaultParticleType method_10306(ParticleType<DefaultParticleType> particleType, PacketByteBuf packetByteBuf) {
+        @Override
+        public DefaultParticleType read(ParticleType<DefaultParticleType> particleType, PacketByteBuf packetByteBuf) {
             return (DefaultParticleType)particleType;
         }
 
         @Override
         public /* synthetic */ ParticleEffect read(ParticleType particleType, PacketByteBuf packetByteBuf) {
-            return this.method_10306(particleType, packetByteBuf);
+            return this.read(particleType, packetByteBuf);
         }
 
         @Override
         public /* synthetic */ ParticleEffect read(ParticleType particleType, StringReader stringReader) throws CommandSyntaxException {
-            return this.method_10307(particleType, stringReader);
+            return this.read(particleType, stringReader);
         }
     };
 

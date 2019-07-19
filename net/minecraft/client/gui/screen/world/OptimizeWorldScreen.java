@@ -12,7 +12,7 @@ import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.resource.language.I18n;
 import net.minecraft.text.TranslatableText;
-import net.minecraft.util.SystemUtil;
+import net.minecraft.util.Util;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.dimension.DimensionType;
 import net.minecraft.world.level.storage.LevelStorage;
@@ -21,7 +21,7 @@ import net.minecraft.world.updater.WorldUpdater;
 @Environment(value=EnvType.CLIENT)
 public class OptimizeWorldScreen
 extends Screen {
-    private static final Object2IntMap<DimensionType> field_3232 = SystemUtil.consume(new Object2IntOpenCustomHashMap(SystemUtil.identityHashStrategy()), object2IntOpenCustomHashMap -> {
+    private static final Object2IntMap<DimensionType> field_3232 = Util.make(new Object2IntOpenCustomHashMap(Util.identityHashStrategy()), object2IntOpenCustomHashMap -> {
         object2IntOpenCustomHashMap.put(DimensionType.OVERWORLD, -13408734);
         object2IntOpenCustomHashMap.put(DimensionType.THE_NETHER, -10075085);
         object2IntOpenCustomHashMap.put(DimensionType.THE_END, -8943531);

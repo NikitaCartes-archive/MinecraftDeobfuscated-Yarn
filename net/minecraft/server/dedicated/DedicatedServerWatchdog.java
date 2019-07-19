@@ -13,7 +13,7 @@ import java.util.Locale;
 import java.util.Timer;
 import java.util.TimerTask;
 import net.minecraft.server.dedicated.MinecraftDedicatedServer;
-import net.minecraft.util.SystemUtil;
+import net.minecraft.util.Util;
 import net.minecraft.util.crash.CrashReport;
 import net.minecraft.util.crash.CrashReportSection;
 import org.apache.logging.log4j.LogManager;
@@ -34,7 +34,7 @@ implements Runnable {
     public void run() {
         while (this.server.isRunning()) {
             long l = this.server.getServerStartTime();
-            long m = SystemUtil.getMeasuringTimeMs();
+            long m = Util.getMeasuringTimeMs();
             long n = m - l;
             if (n > this.maxTickTime) {
                 LOGGER.fatal("A single server tick took {} seconds (should be max {})", (Object)String.format(Locale.ROOT, "%.2f", Float.valueOf((float)n / 1000.0f)), (Object)String.format(Locale.ROOT, "%.2f", Float.valueOf(0.05f)));

@@ -78,7 +78,7 @@ implements RangedAttackMob {
     @Override
     public void readCustomDataFromTag(CompoundTag compoundTag) {
         super.readCustomDataFromTag(compoundTag);
-        if (compoundTag.containsKey("Pumpkin")) {
+        if (compoundTag.contains("Pumpkin")) {
             this.setHasPumpkin(compoundTag.getBoolean("Pumpkin"));
         }
     }
@@ -90,12 +90,12 @@ implements RangedAttackMob {
             int i = MathHelper.floor(this.x);
             int j = MathHelper.floor(this.y);
             int k = MathHelper.floor(this.z);
-            if (this.isTouchingWater()) {
+            if (this.isWet()) {
                 this.damage(DamageSource.DROWN, 1.0f);
             }
             BlockPos blockPos = new BlockPos(i, 0, k);
             BlockPos blockPos2 = new BlockPos(i, j, k);
-            if (this.world.getBiome(blockPos).method_21740(blockPos2) > 1.0f) {
+            if (this.world.getBiome(blockPos).getTemperature(blockPos2) > 1.0f) {
                 this.damage(DamageSource.ON_FIRE, 1.0f);
             }
             if (!this.world.getGameRules().getBoolean(GameRules.MOB_GRIEFING)) {
@@ -105,7 +105,7 @@ implements RangedAttackMob {
             for (int l = 0; l < 4; ++l) {
                 i = MathHelper.floor(this.x + (double)((float)(l % 2 * 2 - 1) * 0.25f));
                 BlockPos blockPos3 = new BlockPos(i, j = MathHelper.floor(this.y), k = MathHelper.floor(this.z + (double)((float)(l / 2 % 2 * 2 - 1) * 0.25f)));
-                if (!this.world.getBlockState(blockPos3).isAir() || !(this.world.getBiome(blockPos3).method_21740(blockPos3) < 0.8f) || !blockState.canPlaceAt(this.world, blockPos3)) continue;
+                if (!this.world.getBlockState(blockPos3).isAir() || !(this.world.getBiome(blockPos3).getTemperature(blockPos3) < 0.8f) || !blockState.canPlaceAt(this.world, blockPos3)) continue;
                 this.world.setBlockState(blockPos3, blockState);
             }
         }
@@ -120,7 +120,7 @@ implements RangedAttackMob {
         double h = livingEntity.z - this.z;
         float i = MathHelper.sqrt(e * e + h * h) * 0.2f;
         snowballEntity.setVelocity(e, g + (double)i, h, 1.6f, 12.0f);
-        this.playSound(SoundEvents.ENTITY_SNOW_GOLEM_SHOOT, 1.0f, 1.0f / (this.getRand().nextFloat() * 0.4f + 0.8f));
+        this.playSound(SoundEvents.ENTITY_SNOW_GOLEM_SHOOT, 1.0f, 1.0f / (this.getRandom().nextFloat() * 0.4f + 0.8f));
         this.world.spawnEntity(snowballEntity);
     }
 

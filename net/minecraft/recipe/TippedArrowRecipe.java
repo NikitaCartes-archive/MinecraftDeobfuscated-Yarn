@@ -21,7 +21,8 @@ extends SpecialCraftingRecipe {
         super(identifier);
     }
 
-    public boolean method_17741(CraftingInventory craftingInventory, World world) {
+    @Override
+    public boolean matches(CraftingInventory craftingInventory, World world) {
         if (craftingInventory.getWidth() != 3 || craftingInventory.getHeight() != 3) {
             return false;
         }
@@ -39,7 +40,8 @@ extends SpecialCraftingRecipe {
         return true;
     }
 
-    public ItemStack method_17740(CraftingInventory craftingInventory) {
+    @Override
+    public ItemStack craft(CraftingInventory craftingInventory) {
         ItemStack itemStack = craftingInventory.getInvStack(1 + craftingInventory.getWidth());
         if (itemStack.getItem() != Items.LINGERING_POTION) {
             return ItemStack.EMPTY;

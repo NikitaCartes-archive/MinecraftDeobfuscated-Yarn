@@ -14,16 +14,16 @@ import org.jetbrains.annotations.Nullable;
 @Environment(value=EnvType.CLIENT)
 public class SystemToast
 implements Toast {
-    private final Type field_2213;
-    private String field_2215;
-    private String field_2217;
+    private final Type type;
+    private String title;
+    private String description;
     private long startTime;
     private boolean justUpdated;
 
     public SystemToast(Type type, Text text, @Nullable Text text2) {
-        this.field_2213 = type;
-        this.field_2215 = text.getString();
-        this.field_2217 = text2 == null ? null : text2.getString();
+        this.type = type;
+        this.title = text.getString();
+        this.description = text2 == null ? null : text2.getString();
     }
 
     @Override
@@ -35,23 +35,23 @@ implements Toast {
         toastManager.getGame().getTextureManager().bindTexture(TOASTS_TEX);
         GlStateManager.color3f(1.0f, 1.0f, 1.0f);
         toastManager.blit(0, 0, 0, 64, 160, 32);
-        if (this.field_2217 == null) {
-            toastManager.getGame().textRenderer.draw(this.field_2215, 18.0f, 12.0f, -256);
+        if (this.description == null) {
+            toastManager.getGame().textRenderer.draw(this.title, 18.0f, 12.0f, -256);
         } else {
-            toastManager.getGame().textRenderer.draw(this.field_2215, 18.0f, 7.0f, -256);
-            toastManager.getGame().textRenderer.draw(this.field_2217, 18.0f, 18.0f, -1);
+            toastManager.getGame().textRenderer.draw(this.title, 18.0f, 7.0f, -256);
+            toastManager.getGame().textRenderer.draw(this.description, 18.0f, 18.0f, -1);
         }
         return l - this.startTime < 5000L ? Toast.Visibility.SHOW : Toast.Visibility.HIDE;
     }
 
     public void setContent(Text text, @Nullable Text text2) {
-        this.field_2215 = text.getString();
-        this.field_2217 = text2 == null ? null : text2.getString();
+        this.title = text.getString();
+        this.description = text2 == null ? null : text2.getString();
         this.justUpdated = true;
     }
 
-    public Type method_1989() {
-        return this.field_2213;
+    public Type getType() {
+        return this.type;
     }
 
     public static void show(ToastManager toastManager, Type type, Text text, @Nullable Text text2) {
@@ -65,7 +65,7 @@ implements Toast {
 
     @Override
     public /* synthetic */ Object getType() {
-        return this.method_1989();
+        return this.getType();
     }
 
     @Environment(value=EnvType.CLIENT)

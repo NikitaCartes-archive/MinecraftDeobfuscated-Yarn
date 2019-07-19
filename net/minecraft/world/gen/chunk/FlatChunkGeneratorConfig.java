@@ -24,7 +24,7 @@ import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.SystemUtil;
+import net.minecraft.util.Util;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.world.biome.Biome;
@@ -33,9 +33,9 @@ import net.minecraft.world.gen.GenerationStep;
 import net.minecraft.world.gen.chunk.ChunkGeneratorConfig;
 import net.minecraft.world.gen.chunk.ChunkGeneratorType;
 import net.minecraft.world.gen.chunk.FlatChunkGeneratorLayer;
+import net.minecraft.world.gen.decorator.ChanceDecoratorConfig;
 import net.minecraft.world.gen.decorator.Decorator;
 import net.minecraft.world.gen.decorator.DecoratorConfig;
-import net.minecraft.world.gen.decorator.LakeDecoratorConfig;
 import net.minecraft.world.gen.feature.ConfiguredFeature;
 import net.minecraft.world.gen.feature.Feature;
 import net.minecraft.world.gen.feature.FeatureConfig;
@@ -63,14 +63,14 @@ extends ChunkGeneratorConfig {
     private static final ConfiguredFeature<?> IGLOO = Biome.configureFeature(Feature.IGLOO, FeatureConfig.DEFAULT, Decorator.NOPE, DecoratorConfig.DEFAULT);
     private static final ConfiguredFeature<?> SHIPWRECK = Biome.configureFeature(Feature.SHIPWRECK, new ShipwreckFeatureConfig(false), Decorator.NOPE, DecoratorConfig.DEFAULT);
     private static final ConfiguredFeature<?> OCEAN_MONUMENT = Biome.configureFeature(Feature.OCEAN_MONUMENT, FeatureConfig.DEFAULT, Decorator.NOPE, DecoratorConfig.DEFAULT);
-    private static final ConfiguredFeature<?> WATER_LAKE = Biome.configureFeature(Feature.LAKE, new LakeFeatureConfig(Blocks.WATER.getDefaultState()), Decorator.WATER_LAKE, new LakeDecoratorConfig(4));
-    private static final ConfiguredFeature<?> LAVA_LAKE = Biome.configureFeature(Feature.LAKE, new LakeFeatureConfig(Blocks.LAVA.getDefaultState()), Decorator.LAVA_LAKE, new LakeDecoratorConfig(80));
+    private static final ConfiguredFeature<?> WATER_LAKE = Biome.configureFeature(Feature.LAKE, new LakeFeatureConfig(Blocks.WATER.getDefaultState()), Decorator.WATER_LAKE, new ChanceDecoratorConfig(4));
+    private static final ConfiguredFeature<?> LAVA_LAKE = Biome.configureFeature(Feature.LAKE, new LakeFeatureConfig(Blocks.LAVA.getDefaultState()), Decorator.LAVA_LAKE, new ChanceDecoratorConfig(80));
     private static final ConfiguredFeature<?> END_CITY = Biome.configureFeature(Feature.END_CITY, FeatureConfig.DEFAULT, Decorator.NOPE, DecoratorConfig.DEFAULT);
     private static final ConfiguredFeature<?> WOODLAND_MANSION = Biome.configureFeature(Feature.WOODLAND_MANSION, FeatureConfig.DEFAULT, Decorator.NOPE, DecoratorConfig.DEFAULT);
     private static final ConfiguredFeature<?> NETHER_BRIDGE = Biome.configureFeature(Feature.NETHER_BRIDGE, FeatureConfig.DEFAULT, Decorator.NOPE, DecoratorConfig.DEFAULT);
     private static final ConfiguredFeature<?> OCEAN_RUIN = Biome.configureFeature(Feature.OCEAN_RUIN, new OceanRuinFeatureConfig(OceanRuinFeature.BiomeType.COLD, 0.3f, 0.1f), Decorator.NOPE, DecoratorConfig.DEFAULT);
     private static final ConfiguredFeature<?> field_19182 = Biome.configureFeature(Feature.PILLAGER_OUTPOST, new PillagerOutpostFeatureConfig(0.004), Decorator.NOPE, DecoratorConfig.DEFAULT);
-    public static final Map<ConfiguredFeature<?>, GenerationStep.Feature> FEATURE_TO_GENERATION_STEP = SystemUtil.consume(Maps.newHashMap(), hashMap -> {
+    public static final Map<ConfiguredFeature<?>, GenerationStep.Feature> FEATURE_TO_GENERATION_STEP = Util.make(Maps.newHashMap(), hashMap -> {
         hashMap.put(MINESHAFT, GenerationStep.Feature.UNDERGROUND_STRUCTURES);
         hashMap.put(VILLAGE, GenerationStep.Feature.SURFACE_STRUCTURES);
         hashMap.put(STRONGHOLD, GenerationStep.Feature.UNDERGROUND_STRUCTURES);
@@ -88,7 +88,7 @@ extends ChunkGeneratorConfig {
         hashMap.put(OCEAN_MONUMENT, GenerationStep.Feature.SURFACE_STRUCTURES);
         hashMap.put(field_19182, GenerationStep.Feature.SURFACE_STRUCTURES);
     });
-    public static final Map<String, ConfiguredFeature<?>[]> STRUCTURE_TO_FEATURES = SystemUtil.consume(Maps.newHashMap(), hashMap -> {
+    public static final Map<String, ConfiguredFeature<?>[]> STRUCTURE_TO_FEATURES = Util.make(Maps.newHashMap(), hashMap -> {
         hashMap.put("mineshaft", new ConfiguredFeature[]{MINESHAFT});
         hashMap.put("village", new ConfiguredFeature[]{VILLAGE});
         hashMap.put("stronghold", new ConfiguredFeature[]{STRONGHOLD});
@@ -101,7 +101,7 @@ extends ChunkGeneratorConfig {
         hashMap.put("fortress", new ConfiguredFeature[]{NETHER_BRIDGE});
         hashMap.put("pillager_outpost", new ConfiguredFeature[]{field_19182});
     });
-    public static final Map<ConfiguredFeature<?>, FeatureConfig> FEATURE_TO_FEATURE_CONFIG = SystemUtil.consume(Maps.newHashMap(), hashMap -> {
+    public static final Map<ConfiguredFeature<?>, FeatureConfig> FEATURE_TO_FEATURE_CONFIG = Util.make(Maps.newHashMap(), hashMap -> {
         hashMap.put(MINESHAFT, new MineshaftFeatureConfig(0.004, MineshaftFeature.Type.NORMAL));
         hashMap.put(VILLAGE, new VillageFeatureConfig("village/plains/town_centers", 6));
         hashMap.put(STRONGHOLD, FeatureConfig.DEFAULT);

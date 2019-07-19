@@ -13,9 +13,9 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.server.world.ServerTickScheduler;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.TaskPriority;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.ScheduledTick;
+import net.minecraft.world.TickPriority;
 import net.minecraft.world.TickScheduler;
 
 public class SimpleTickScheduler<T>
@@ -38,8 +38,8 @@ implements TickScheduler<T> {
     }
 
     @Override
-    public void schedule(BlockPos blockPos, T object, int i, TaskPriority taskPriority) {
-        this.scheduledTicks.add(new ScheduledTick<T>(blockPos, object, i, taskPriority));
+    public void schedule(BlockPos blockPos, T object, int i, TickPriority tickPriority) {
+        this.scheduledTicks.add(new ScheduledTick<T>(blockPos, object, i, tickPriority));
     }
 
     @Override
@@ -63,10 +63,10 @@ implements TickScheduler<T> {
     public static <T> SimpleTickScheduler<T> fromNbt(ListTag listTag, Function<T, Identifier> function, Function<Identifier, T> function2) {
         HashSet<ScheduledTick<T>> set = Sets.newHashSet();
         for (int i = 0; i < listTag.size(); ++i) {
-            CompoundTag compoundTag = listTag.getCompoundTag(i);
+            CompoundTag compoundTag = listTag.getCompound(i);
             T object = function2.apply(new Identifier(compoundTag.getString("i")));
             if (object == null) continue;
-            set.add(new ScheduledTick<T>(new BlockPos(compoundTag.getInt("x"), compoundTag.getInt("y"), compoundTag.getInt("z")), object, compoundTag.getInt("t"), TaskPriority.getByIndex(compoundTag.getInt("p"))));
+            set.add(new ScheduledTick<T>(new BlockPos(compoundTag.getInt("x"), compoundTag.getInt("y"), compoundTag.getInt("z")), object, compoundTag.getInt("t"), TickPriority.byIndex(compoundTag.getInt("p"))));
         }
         return new SimpleTickScheduler<T>(function, set);
     }

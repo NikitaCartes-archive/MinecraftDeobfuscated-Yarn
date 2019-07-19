@@ -20,12 +20,12 @@ extends Goal {
     @Override
     public boolean canStart() {
         double d = (double)this.mob.getStandingEyeHeight() < 0.4 ? 0.2 : 0.4;
-        return this.mob.isInsideWater() && this.mob.getWaterHeight() > d || this.mob.isInLava();
+        return this.mob.isTouchingWater() && this.mob.getWaterHeight() > d || this.mob.isInLava();
     }
 
     @Override
     public void tick() {
-        if (this.mob.getRand().nextFloat() < 0.8f) {
+        if (this.mob.getRandom().nextFloat() < 0.8f) {
             this.mob.getJumpControl().setActive();
         }
     }

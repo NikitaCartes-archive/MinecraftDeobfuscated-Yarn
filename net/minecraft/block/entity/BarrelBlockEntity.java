@@ -148,7 +148,7 @@ extends LootableContainerBlockEntity {
         } else {
             BlockState blockState = this.getCachedState();
             if (blockState.getBlock() != Blocks.BARREL) {
-                this.invalidate();
+                this.markRemoved();
                 return;
             }
             boolean bl = blockState.get(BarrelBlock.OPEN);

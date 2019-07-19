@@ -13,7 +13,7 @@ public interface ModelBakeSettings {
         return ModelRotation.X0_Y0;
     }
 
-    default public boolean isUvLocked() {
+    default public boolean isShaded() {
         return false;
     }
 }

@@ -27,7 +27,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
-import net.minecraft.state.StateFactory;
+import net.minecraft.state.StateManager;
 import net.minecraft.state.property.BooleanProperty;
 import net.minecraft.state.property.Properties;
 import net.minecraft.util.BlockMirror;
@@ -52,7 +52,7 @@ extends FacingBlock {
 
     public PistonBlock(boolean bl, Block.Settings settings) {
         super(settings);
-        this.setDefaultState((BlockState)((BlockState)((BlockState)this.stateFactory.getDefaultState()).with(FACING, Direction.NORTH)).with(EXTENDED, false));
+        this.setDefaultState((BlockState)((BlockState)((BlockState)this.stateManager.getDefaultState()).with(FACING, Direction.NORTH)).with(EXTENDED, false));
         this.isSticky = bl;
     }
 
@@ -202,11 +202,11 @@ extends FacingBlock {
                     if (i == 1 && !blockState2.isAir() && PistonBlock.isMovable(blockState2, world, blockPos2, direction.getOpposite(), false, direction) && (blockState2.getPistonBehavior() == PistonBehavior.NORMAL || block == Blocks.PISTON || block == Blocks.STICKY_PISTON)) {
                         this.move(world, blockPos, direction, false);
                     } else {
-                        world.clearBlockState(blockPos.offset(direction), false);
+                        world.removeBlock(blockPos.offset(direction), false);
                     }
                 }
             } else {
-                world.clearBlockState(blockPos.offset(direction), false);
+                world.removeBlock(blockPos.offset(direction), false);
             }
             world.playSound(null, blockPos, SoundEvents.BLOCK_PISTON_CONTRACT, SoundCategory.BLOCKS, 0.5f, world.random.nextFloat() * 0.15f + 0.6f);
         }
@@ -329,7 +329,7 @@ extends FacingBlock {
     }
 
     @Override
-    protected void appendProperties(StateFactory.Builder<Block, BlockState> builder) {
+    protected void appendProperties(StateManager.Builder<Block, BlockState> builder) {
         builder.add(FACING, EXTENDED);
     }
 

@@ -44,7 +44,8 @@ extends AbstractNumberTag {
         return this.value + "s";
     }
 
-    public ShortTag method_10704() {
+    @Override
+    public ShortTag copy() {
         return new ShortTag(this.value);
     }
 
@@ -102,7 +103,7 @@ extends AbstractNumberTag {
 
     @Override
     public /* synthetic */ Tag copy() {
-        return this.method_10704();
+        return this.copy();
     }
 }
 

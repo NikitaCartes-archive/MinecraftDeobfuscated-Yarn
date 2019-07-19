@@ -137,7 +137,7 @@ implements FlyingItemEntity {
 
     private void applySplashPotion(List<StatusEffectInstance> list, @Nullable Entity entity) {
         Box box = this.getBoundingBox().expand(4.0, 2.0, 4.0);
-        List<LivingEntity> list2 = this.world.getEntities(LivingEntity.class, box);
+        List<LivingEntity> list2 = this.world.getNonSpectatingEntities(LivingEntity.class, box);
         if (!list2.isEmpty()) {
             for (LivingEntity livingEntity : list2) {
                 double d;
@@ -154,7 +154,7 @@ implements FlyingItemEntity {
                     }
                     int i = (int)(e * (double)statusEffectInstance.getDuration() + 0.5);
                     if (i <= 20) continue;
-                    livingEntity.addPotionEffect(new StatusEffectInstance(statusEffect, i, statusEffectInstance.getAmplifier(), statusEffectInstance.isAmbient(), statusEffectInstance.shouldShowParticles()));
+                    livingEntity.addStatusEffect(new StatusEffectInstance(statusEffect, i, statusEffectInstance.getAmplifier(), statusEffectInstance.isAmbient(), statusEffectInstance.shouldShowParticles()));
                 }
             }
         }
@@ -172,7 +172,7 @@ implements FlyingItemEntity {
             areaEffectCloudEntity.addEffect(new StatusEffectInstance(statusEffectInstance));
         }
         CompoundTag compoundTag = itemStack.getTag();
-        if (compoundTag != null && compoundTag.containsKey("CustomPotionColor", 99)) {
+        if (compoundTag != null && compoundTag.contains("CustomPotionColor", 99)) {
             areaEffectCloudEntity.setColor(compoundTag.getInt("CustomPotionColor"));
         }
         this.world.spawnEntity(areaEffectCloudEntity);

@@ -21,7 +21,8 @@ extends MobEntityRenderer<T, M> {
         this.scale = f;
     }
 
-    protected void method_3874(T horseBaseEntity, float f) {
+    @Override
+    protected void scale(T horseBaseEntity, float f) {
         GlStateManager.scalef(this.scale, this.scale, this.scale);
         super.scale(horseBaseEntity, f);
     }

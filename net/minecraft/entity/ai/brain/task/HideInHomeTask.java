@@ -14,8 +14,8 @@ import net.minecraft.entity.ai.brain.task.Task;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.GlobalPos;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.village.PointOfInterestStorage;
-import net.minecraft.village.PointOfInterestType;
+import net.minecraft.world.poi.PointOfInterestStorage;
+import net.minecraft.world.poi.PointOfInterestType;
 
 public class HideInHomeTask
 extends Task<LivingEntity> {
@@ -43,7 +43,7 @@ extends Task<LivingEntity> {
         Optional<GlobalPos> optional2;
         Brain<?> brain = livingEntity.getBrain();
         Optional<BlockPos> optional = this.homePosition;
-        if (!optional.isPresent() && !(optional = serverWorld.getPointOfInterestStorage().getPosition(pointOfInterestType -> pointOfInterestType == PointOfInterestType.HOME, blockPos -> true, PointOfInterestStorage.OccupationStatus.ANY, new BlockPos(livingEntity), this.maxDistance, livingEntity.getRand())).isPresent() && (optional2 = brain.getOptionalMemory(MemoryModuleType.HOME)).isPresent()) {
+        if (!optional.isPresent() && !(optional = serverWorld.getPointOfInterestStorage().getPosition(pointOfInterestType -> pointOfInterestType == PointOfInterestType.HOME, blockPos -> true, PointOfInterestStorage.OccupationStatus.ANY, new BlockPos(livingEntity), this.maxDistance, livingEntity.getRandom())).isPresent() && (optional2 = brain.getOptionalMemory(MemoryModuleType.HOME)).isPresent()) {
             optional = Optional.of(optional2.get().getPos());
         }
         if (optional.isPresent()) {

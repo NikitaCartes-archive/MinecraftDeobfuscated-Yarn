@@ -36,17 +36,17 @@ import net.minecraft.client.options.NarratorOption;
 import net.minecraft.client.options.Option;
 import net.minecraft.client.options.ParticlesOption;
 import net.minecraft.client.render.entity.PlayerModelPart;
-import net.minecraft.client.resource.ClientResourcePackContainer;
+import net.minecraft.client.resource.ClientResourcePackProfile;
 import net.minecraft.client.tutorial.TutorialStep;
 import net.minecraft.client.util.InputUtil;
-import net.minecraft.datafixers.DataFixTypes;
+import net.minecraft.datafixer.DataFixTypes;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.resource.ResourcePackContainerManager;
-import net.minecraft.server.network.packet.ClientSettingsC2SPacket;
+import net.minecraft.nbt.NbtHelper;
+import net.minecraft.network.packet.c2s.play.ClientSettingsC2SPacket;
+import net.minecraft.resource.ResourcePackManager;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.util.Arm;
 import net.minecraft.util.JsonHelper;
-import net.minecraft.util.TagHelper;
 import net.minecraft.world.Difficulty;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.ArrayUtils;
@@ -435,7 +435,7 @@ public class GameOptions {
         } catch (RuntimeException runtimeException) {
             // empty catch block
         }
-        return TagHelper.update(this.client.getDataFixer(), DataFixTypes.OPTIONS, compoundTag, i);
+        return NbtHelper.update(this.client.getDataFixer(), DataFixTypes.OPTIONS, compoundTag, i);
     }
 
     private static float parseFloat(String string) {
@@ -520,7 +520,7 @@ public class GameOptions {
             printWriter.println("narrator:" + this.narrator.getId());
             printWriter.println("tutorialStep:" + this.tutorialStep.getName());
             printWriter.println("mouseWheelSensitivity:" + this.mouseWheelSensitivity);
-            printWriter.println("rawMouseInput:" + Option.field_20307.get(this));
+            printWriter.println("rawMouseInput:" + Option.RAW_MOUSE_INPUT.get(this));
             printWriter.println("glDebugVerbosity:" + this.glDebugVerbosity);
             for (KeyBinding keyBinding : this.keysAll) {
                 printWriter.println("key_" + keyBinding.getId() + ":" + keyBinding.getName());
@@ -592,34 +592,34 @@ public class GameOptions {
         return this.useNativeTransport;
     }
 
-    public void addResourcePackContainersToManager(ResourcePackContainerManager<ClientResourcePackContainer> resourcePackContainerManager) {
-        resourcePackContainerManager.callCreators();
-        LinkedHashSet<ClientResourcePackContainer> set = Sets.newLinkedHashSet();
+    public void addResourcePackProfilesToManager(ResourcePackManager<ClientResourcePackProfile> resourcePackManager) {
+        resourcePackManager.scanPacks();
+        LinkedHashSet<ClientResourcePackProfile> set = Sets.newLinkedHashSet();
         Iterator<String> iterator = this.resourcePacks.iterator();
         while (iterator.hasNext()) {
             String string = iterator.next();
-            ClientResourcePackContainer clientResourcePackContainer = resourcePackContainerManager.getContainer(string);
-            if (clientResourcePackContainer == null && !string.startsWith("file/")) {
-                clientResourcePackContainer = resourcePackContainerManager.getContainer("file/" + string);
+            ClientResourcePackProfile clientResourcePackProfile = resourcePackManager.getProfile(string);
+            if (clientResourcePackProfile == null && !string.startsWith("file/")) {
+                clientResourcePackProfile = resourcePackManager.getProfile("file/" + string);
             }
-            if (clientResourcePackContainer == null) {
+            if (clientResourcePackProfile == null) {
                 LOGGER.warn("Removed resource pack {} from options because it doesn't seem to exist anymore", (Object)string);
                 iterator.remove();
                 continue;
             }
-            if (!clientResourcePackContainer.getCompatibility().isCompatible() && !this.incompatibleResourcePacks.contains(string)) {
+            if (!clientResourcePackProfile.getCompatibility().isCompatible() && !this.incompatibleResourcePacks.contains(string)) {
                 LOGGER.warn("Removed resource pack {} from options because it is no longer compatible", (Object)string);
                 iterator.remove();
                 continue;
             }
-            if (clientResourcePackContainer.getCompatibility().isCompatible() && this.incompatibleResourcePacks.contains(string)) {
+            if (clientResourcePackProfile.getCompatibility().isCompatible() && this.incompatibleResourcePacks.contains(string)) {
                 LOGGER.info("Removed resource pack {} from incompatibility list because it's now compatible", (Object)string);
                 this.incompatibleResourcePacks.remove(string);
                 continue;
             }
-            set.add(clientResourcePackContainer);
+            set.add(clientResourcePackProfile);
         }
-        resourcePackContainerManager.setEnabled(set);
+        resourcePackManager.setEnabledProfiles(set);
     }
 }
 

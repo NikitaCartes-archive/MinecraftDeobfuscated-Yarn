@@ -18,7 +18,7 @@ import net.minecraft.block.entity.ChestBlockEntity;
 import net.minecraft.block.enums.ChestType;
 import net.minecraft.container.Container;
 import net.minecraft.container.GenericContainer;
-import net.minecraft.container.NameableContainerProvider;
+import net.minecraft.container.NameableContainerFactory;
 import net.minecraft.entity.EntityContext;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.passive.CatEntity;
@@ -32,7 +32,7 @@ import net.minecraft.item.ItemPlacementContext;
 import net.minecraft.item.ItemStack;
 import net.minecraft.stat.Stat;
 import net.minecraft.stat.Stats;
-import net.minecraft.state.StateFactory;
+import net.minecraft.state.StateManager;
 import net.minecraft.state.property.BooleanProperty;
 import net.minecraft.state.property.DirectionProperty;
 import net.minecraft.state.property.EnumProperty;
@@ -67,29 +67,32 @@ implements Waterloggable {
     protected static final VoxelShape SINGLE_SHAPE = Block.createCuboidShape(1.0, 0.0, 1.0, 15.0, 14.0, 15.0);
     private static final PropertyRetriever<Inventory> INVENTORY_RETRIEVER = new PropertyRetriever<Inventory>(){
 
-        public Inventory method_17461(ChestBlockEntity chestBlockEntity, ChestBlockEntity chestBlockEntity2) {
+        @Override
+        public Inventory getFromDoubleChest(ChestBlockEntity chestBlockEntity, ChestBlockEntity chestBlockEntity2) {
             return new DoubleInventory(chestBlockEntity, chestBlockEntity2);
         }
 
-        public Inventory method_17460(ChestBlockEntity chestBlockEntity) {
+        @Override
+        public Inventory getFromSingleChest(ChestBlockEntity chestBlockEntity) {
             return chestBlockEntity;
         }
 
         @Override
         public /* synthetic */ Object getFromSingleChest(ChestBlockEntity chestBlockEntity) {
-            return this.method_17460(chestBlockEntity);
+            return this.getFromSingleChest(chestBlockEntity);
         }
 
         @Override
         public /* synthetic */ Object getFromDoubleChest(ChestBlockEntity chestBlockEntity, ChestBlockEntity chestBlockEntity2) {
-            return this.method_17461(chestBlockEntity, chestBlockEntity2);
+            return this.getFromDoubleChest(chestBlockEntity, chestBlockEntity2);
         }
     };
-    private static final PropertyRetriever<NameableContainerProvider> NAME_RETRIEVER = new PropertyRetriever<NameableContainerProvider>(){
+    private static final PropertyRetriever<NameableContainerFactory> NAME_RETRIEVER = new PropertyRetriever<NameableContainerFactory>(){
 
-        public NameableContainerProvider method_17463(final ChestBlockEntity chestBlockEntity, final ChestBlockEntity chestBlockEntity2) {
+        @Override
+        public NameableContainerFactory getFromDoubleChest(final ChestBlockEntity chestBlockEntity, final ChestBlockEntity chestBlockEntity2) {
             final DoubleInventory inventory = new DoubleInventory(chestBlockEntity, chestBlockEntity2);
-            return new NameableContainerProvider(){
+            return new NameableContainerFactory(){
 
                 @Override
                 @Nullable
@@ -115,24 +118,25 @@ implements Waterloggable {
             };
         }
 
-        public NameableContainerProvider method_17462(ChestBlockEntity chestBlockEntity) {
+        @Override
+        public NameableContainerFactory getFromSingleChest(ChestBlockEntity chestBlockEntity) {
             return chestBlockEntity;
         }
 
         @Override
         public /* synthetic */ Object getFromSingleChest(ChestBlockEntity chestBlockEntity) {
-            return this.method_17462(chestBlockEntity);
+            return this.getFromSingleChest(chestBlockEntity);
         }
 
         @Override
         public /* synthetic */ Object getFromDoubleChest(ChestBlockEntity chestBlockEntity, ChestBlockEntity chestBlockEntity2) {
-            return this.method_17463(chestBlockEntity, chestBlockEntity2);
+            return this.getFromDoubleChest(chestBlockEntity, chestBlockEntity2);
         }
     };
 
     protected ChestBlock(Block.Settings settings) {
         super(settings);
-        this.setDefaultState((BlockState)((BlockState)((BlockState)((BlockState)this.stateFactory.getDefaultState()).with(FACING, Direction.NORTH)).with(CHEST_TYPE, ChestType.SINGLE)).with(WATERLOGGED, false));
+        this.setDefaultState((BlockState)((BlockState)((BlockState)((BlockState)this.stateManager.getDefaultState()).with(FACING, Direction.NORTH)).with(CHEST_TYPE, ChestType.SINGLE)).with(WATERLOGGED, false));
     }
 
     @Override
@@ -193,7 +197,7 @@ implements Waterloggable {
         ChestType chestType = ChestType.SINGLE;
         Direction direction = itemPlacementContext.getPlayerFacing().getOpposite();
         FluidState fluidState = itemPlacementContext.getWorld().getFluidState(itemPlacementContext.getBlockPos());
-        boolean bl = itemPlacementContext.isPlayerSneaking();
+        boolean bl = itemPlacementContext.shouldCancelInteraction();
         Direction direction2 = itemPlacementContext.getSide();
         if (direction2.getAxis().isHorizontal() && bl && (direction3 = this.getNeighborChestDirection(itemPlacementContext, direction2.getOpposite())) != null && direction3.getAxis() != direction2.getAxis()) {
             direction = direction3;
@@ -249,9 +253,9 @@ implements Waterloggable {
         if (world.isClient) {
             return true;
         }
-        NameableContainerProvider nameableContainerProvider = this.createContainerProvider(blockState, world, blockPos);
-        if (nameableContainerProvider != null) {
-            playerEntity.openContainer(nameableContainerProvider);
+        NameableContainerFactory nameableContainerFactory = this.createContainerFactory(blockState, world, blockPos);
+        if (nameableContainerFactory != null) {
+            playerEntity.openContainer(nameableContainerFactory);
             playerEntity.incrementStat(this.getOpenStat());
         }
         return true;
@@ -299,7 +303,7 @@ implements Waterloggable {
 
     @Override
     @Nullable
-    public NameableContainerProvider createContainerProvider(BlockState blockState, World world, BlockPos blockPos) {
+    public NameableContainerFactory createContainerFactory(BlockState blockState, World world, BlockPos blockPos) {
         return ChestBlock.retrieve(blockState, world, blockPos, false, NAME_RETRIEVER);
     }
 
@@ -318,7 +322,7 @@ implements Waterloggable {
     }
 
     private static boolean hasOcelotOnTop(IWorld iWorld, BlockPos blockPos) {
-        List<CatEntity> list = iWorld.getEntities(CatEntity.class, new Box(blockPos.getX(), blockPos.getY() + 1, blockPos.getZ(), blockPos.getX() + 1, blockPos.getY() + 2, blockPos.getZ() + 1));
+        List<CatEntity> list = iWorld.getNonSpectatingEntities(CatEntity.class, new Box(blockPos.getX(), blockPos.getY() + 1, blockPos.getZ(), blockPos.getX() + 1, blockPos.getY() + 2, blockPos.getZ() + 1));
         if (!list.isEmpty()) {
             for (CatEntity catEntity : list) {
                 if (!catEntity.isSitting()) continue;
@@ -349,7 +353,7 @@ implements Waterloggable {
     }
 
     @Override
-    protected void appendProperties(StateFactory.Builder<Block, BlockState> builder) {
+    protected void appendProperties(StateManager.Builder<Block, BlockState> builder) {
         builder.add(FACING, CHEST_TYPE, WATERLOGGED);
     }
 

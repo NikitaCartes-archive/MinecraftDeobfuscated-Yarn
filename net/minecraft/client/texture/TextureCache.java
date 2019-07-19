@@ -17,7 +17,7 @@ import net.minecraft.client.texture.BannerTexture;
 import net.minecraft.client.texture.MissingSprite;
 import net.minecraft.util.DyeColor;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.SystemUtil;
+import net.minecraft.util.Util;
 import org.jetbrains.annotations.Nullable;
 
 @Environment(value=EnvType.CLIENT)
@@ -72,12 +72,12 @@ public class TextureCache {
                 MinecraftClient.getInstance().getTextureManager().registerTexture(entry.filename, new BannerTexture(this.filename, list3, list2));
                 this.cacheMap.put(string, entry);
             }
-            entry.lastRequestTimeMillis = SystemUtil.getMeasuringTimeMs();
+            entry.lastRequestTimeMillis = Util.getMeasuringTimeMs();
             return entry.filename;
         }
 
         private boolean removeOldEntries() {
-            long l = SystemUtil.getMeasuringTimeMs();
+            long l = Util.getMeasuringTimeMs();
             Iterator<String> iterator = this.cacheMap.keySet().iterator();
             while (iterator.hasNext()) {
                 String string = iterator.next();

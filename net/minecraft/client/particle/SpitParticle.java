@@ -29,14 +29,15 @@ extends ExplosionSmokeParticle {
     @Environment(value=EnvType.CLIENT)
     public static class Factory
     implements ParticleFactory<DefaultParticleType> {
-        private final SpriteProvider field_17876;
+        private final SpriteProvider spriteProvider;
 
         public Factory(SpriteProvider spriteProvider) {
-            this.field_17876 = spriteProvider;
+            this.spriteProvider = spriteProvider;
         }
 
-        public Particle method_3103(DefaultParticleType defaultParticleType, World world, double d, double e, double f, double g, double h, double i) {
-            return new SpitParticle(world, d, e, f, g, h, i, this.field_17876);
+        @Override
+        public Particle createParticle(DefaultParticleType defaultParticleType, World world, double d, double e, double f, double g, double h, double i) {
+            return new SpitParticle(world, d, e, f, g, h, i, this.spriteProvider);
         }
     }
 }

@@ -5,7 +5,7 @@ package net.minecraft.client.render.model;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.util.SystemUtil;
+import net.minecraft.util.Util;
 import net.minecraft.util.math.Direction;
 
 @Environment(value=EnvType.CLIENT)
@@ -33,7 +33,7 @@ public enum CubeFace {
     }
 
     static {
-        field_3958 = SystemUtil.consume(new CubeFace[6], cubeFaces -> {
+        field_3958 = Util.make(new CubeFace[6], cubeFaces -> {
             cubeFaces[DirectionIds.DOWN] = DOWN;
             cubeFaces[DirectionIds.UP] = UP;
             cubeFaces[DirectionIds.NORTH] = NORTH;

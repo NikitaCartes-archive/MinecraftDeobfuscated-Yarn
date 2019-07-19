@@ -19,7 +19,7 @@ import net.minecraft.server.world.ServerLightingProvider;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.structure.StructureManager;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.SystemUtil;
+import net.minecraft.util.Util;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.world.ChunkRegion;
 import net.minecraft.world.Heightmap;
@@ -72,7 +72,7 @@ public class ChunkStatus {
     public static final ChunkStatus HEIGHTMAPS = ChunkStatus.register("heightmaps", SPAWN, 0, POST_CARVER_HEIGHTMAPS, ChunkType.PROTOCHUNK, (ServerWorld serverWorld, ChunkGenerator<?> chunkGenerator, List<Chunk> list, Chunk chunk) -> {});
     public static final ChunkStatus FULL = ChunkStatus.method_20611("full", HEIGHTMAPS, 0, POST_CARVER_HEIGHTMAPS, ChunkType.LEVELCHUNK, (chunkStatus, serverWorld, chunkGenerator, structureManager, serverLightingProvider, function, list, chunk) -> (CompletableFuture)function.apply(chunk), (chunkStatus, serverWorld, structureManager, serverLightingProvider, function, chunk) -> (CompletableFuture)function.apply(chunk));
     private static final List<ChunkStatus> DISTANCE_TO_TARGET_GENERATION_STATUS = ImmutableList.of(FULL, FEATURES, LIQUID_CARVERS, STRUCTURE_STARTS, STRUCTURE_STARTS, STRUCTURE_STARTS, STRUCTURE_STARTS, STRUCTURE_STARTS, STRUCTURE_STARTS, STRUCTURE_STARTS, STRUCTURE_STARTS);
-    private static final IntList STATUS_TO_TARGET_GENERATION_RADIUS = SystemUtil.consume(new IntArrayList(ChunkStatus.createOrderedList().size()), intArrayList -> {
+    private static final IntList STATUS_TO_TARGET_GENERATION_RADIUS = Util.make(new IntArrayList(ChunkStatus.createOrderedList().size()), intArrayList -> {
         int i = 0;
         for (int j = ChunkStatus.createOrderedList().size() - 1; j >= 0; --j) {
             while (i + 1 < DISTANCE_TO_TARGET_GENERATION_STATUS.size() && j <= DISTANCE_TO_TARGET_GENERATION_STATUS.get(i + 1).getIndex()) {
@@ -81,14 +81,14 @@ public class ChunkStatus {
             intArrayList.add(0, i);
         }
     });
-    private final String name;
+    private final String id;
     private final int index;
     private final ChunkStatus previous;
     private final Task task;
     private final class_4305 field_19346;
     private final int taskMargin;
     private final ChunkType chunkType;
-    private final EnumSet<Heightmap.Type> surfaceGenerated;
+    private final EnumSet<Heightmap.Type> heightMapTypes;
 
     private static CompletableFuture<Either<Chunk, ChunkHolder.Unloaded>> method_20610(ChunkStatus chunkStatus, ServerLightingProvider serverLightingProvider, Chunk chunk) {
         boolean bl = ChunkStatus.method_20608(chunkStatus, chunk);
@@ -144,13 +144,13 @@ public class ChunkStatus {
     }
 
     ChunkStatus(String string, @Nullable ChunkStatus chunkStatus, int i, EnumSet<Heightmap.Type> enumSet, ChunkType chunkType, Task task, class_4305 arg) {
-        this.name = string;
+        this.id = string;
         this.previous = chunkStatus == null ? this : chunkStatus;
         this.task = task;
         this.field_19346 = arg;
         this.taskMargin = i;
         this.chunkType = chunkType;
-        this.surfaceGenerated = enumSet;
+        this.heightMapTypes = enumSet;
         this.index = chunkStatus == null ? 0 : chunkStatus.getIndex() + 1;
     }
 
@@ -158,8 +158,8 @@ public class ChunkStatus {
         return this.index;
     }
 
-    public String getName() {
-        return this.name;
+    public String getId() {
+        return this.id;
     }
 
     public ChunkStatus getPrevious() {
@@ -186,8 +186,8 @@ public class ChunkStatus {
         return Registry.CHUNK_STATUS.get(Identifier.tryParse(string));
     }
 
-    public EnumSet<Heightmap.Type> isSurfaceGenerated() {
-        return this.surfaceGenerated;
+    public EnumSet<Heightmap.Type> getHeightmapTypes() {
+        return this.heightMapTypes;
     }
 
     public boolean isAtLeast(ChunkStatus chunkStatus) {

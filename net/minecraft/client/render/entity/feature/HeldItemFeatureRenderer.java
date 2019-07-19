@@ -23,7 +23,8 @@ extends FeatureRenderer<T, M> {
         super(featureRendererContext);
     }
 
-    public void method_17162(T livingEntity, float f, float g, float h, float i, float j, float k, float l) {
+    @Override
+    public void render(T livingEntity, float f, float g, float h, float i, float j, float k, float l) {
         ItemStack itemStack2;
         boolean bl = ((LivingEntity)livingEntity).getMainArm() == Arm.RIGHT;
         ItemStack itemStack = bl ? ((LivingEntity)livingEntity).getOffHandStack() : ((LivingEntity)livingEntity).getMainHandStack();
@@ -32,7 +33,7 @@ extends FeatureRenderer<T, M> {
             return;
         }
         GlStateManager.pushMatrix();
-        if (((EntityModel)this.getModel()).isChild) {
+        if (((EntityModel)this.getContextModel()).child) {
             float m = 0.5f;
             GlStateManager.translatef(0.0f, 0.75f, 0.0f);
             GlStateManager.scalef(0.5f, 0.5f, 0.5f);
@@ -55,12 +56,12 @@ extends FeatureRenderer<T, M> {
         GlStateManager.rotatef(180.0f, 0.0f, 1.0f, 0.0f);
         boolean bl = arm == Arm.LEFT;
         GlStateManager.translatef((float)(bl ? -1 : 1) / 16.0f, 0.125f, -0.625f);
-        MinecraftClient.getInstance().getFirstPersonRenderer().renderItemFromSide(livingEntity, itemStack, type, bl);
+        MinecraftClient.getInstance().getHeldItemRenderer().renderItemFromSide(livingEntity, itemStack, type, bl);
         GlStateManager.popMatrix();
     }
 
     protected void method_4193(Arm arm) {
-        ((ModelWithArms)this.getModel()).setArmAngle(0.0625f, arm);
+        ((ModelWithArms)this.getContextModel()).setArmAngle(0.0625f, arm);
     }
 
     @Override

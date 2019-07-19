@@ -23,11 +23,13 @@ extends MobEntityRenderer<SquidEntity, SquidEntityModel<SquidEntity>> {
         super(entityRenderDispatcher, new SquidEntityModel(), 0.7f);
     }
 
-    protected Identifier method_4127(SquidEntity squidEntity) {
+    @Override
+    protected Identifier getTexture(SquidEntity squidEntity) {
         return SKIN;
     }
 
-    protected void method_4126(SquidEntity squidEntity, float f, float g, float h) {
+    @Override
+    protected void setupTransforms(SquidEntity squidEntity, float f, float g, float h) {
         float i = MathHelper.lerp(h, squidEntity.field_6905, squidEntity.field_6907);
         float j = MathHelper.lerp(h, squidEntity.field_6906, squidEntity.field_6903);
         GlStateManager.translatef(0.0f, 0.5f, 0.0f);
@@ -37,13 +39,14 @@ extends MobEntityRenderer<SquidEntity, SquidEntityModel<SquidEntity>> {
         GlStateManager.translatef(0.0f, -1.2f, 0.0f);
     }
 
-    protected float method_4125(SquidEntity squidEntity, float f) {
+    @Override
+    protected float getAnimationProgress(SquidEntity squidEntity, float f) {
         return MathHelper.lerp(f, squidEntity.field_6900, squidEntity.field_6904);
     }
 
     @Override
-    protected /* synthetic */ float getAge(LivingEntity livingEntity, float f) {
-        return this.method_4125((SquidEntity)livingEntity, f);
+    protected /* synthetic */ float getAnimationProgress(LivingEntity livingEntity, float f) {
+        return this.getAnimationProgress((SquidEntity)livingEntity, f);
     }
 }
 

@@ -67,7 +67,7 @@ extends ThrownItemEntity {
             EndGatewayBlockEntity endGatewayBlockEntity = (EndGatewayBlockEntity)blockEntity;
             if (livingEntity != null) {
                 if (livingEntity instanceof ServerPlayerEntity) {
-                    Criterions.ENTER_BLOCK.handle((ServerPlayerEntity)livingEntity, this.world.getBlockState(blockPos));
+                    Criterions.ENTER_BLOCK.trigger((ServerPlayerEntity)livingEntity, this.world.getBlockState(blockPos));
                 }
                 endGatewayBlockEntity.tryTeleportingEntity(livingEntity);
                 this.remove();
@@ -86,7 +86,7 @@ extends ThrownItemEntity {
                     if (this.random.nextFloat() < 0.05f && this.world.getGameRules().getBoolean(GameRules.DO_MOB_SPAWNING)) {
                         EndermiteEntity endermiteEntity = EntityType.ENDERMITE.create(this.world);
                         endermiteEntity.setPlayerSpawned(true);
-                        endermiteEntity.setPositionAndAngles(livingEntity.x, livingEntity.y, livingEntity.z, livingEntity.yaw, livingEntity.pitch);
+                        endermiteEntity.refreshPositionAndAngles(livingEntity.x, livingEntity.y, livingEntity.z, livingEntity.yaw, livingEntity.pitch);
                         this.world.spawnEntity(endermiteEntity);
                     }
                     if (livingEntity.hasVehicle()) {

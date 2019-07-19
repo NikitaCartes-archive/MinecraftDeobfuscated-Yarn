@@ -23,7 +23,7 @@ import net.minecraft.world.World;
 public class MinecartItem
 extends Item {
     private static final DispenserBehavior DISPENSER_BEHAVIOR = new ItemDispenserBehavior(){
-        private final ItemDispenserBehavior field_8898 = new ItemDispenserBehavior();
+        private final ItemDispenserBehavior defaultBehavior = new ItemDispenserBehavior();
 
         @Override
         public ItemStack dispenseSilently(BlockPointer blockPointer, ItemStack itemStack) {
@@ -45,7 +45,7 @@ extends Item {
                 RailShape railShape3 = railShape22 = blockState2.getBlock() instanceof AbstractRailBlock ? blockState2.get(((AbstractRailBlock)blockState2.getBlock()).getShapeProperty()) : RailShape.NORTH_SOUTH;
                 g = direction == Direction.DOWN || !railShape22.isAscending() ? -0.9 : -0.4;
             } else {
-                return this.field_8898.dispense(blockPointer, itemStack);
+                return this.defaultBehavior.dispense(blockPointer, itemStack);
             }
             AbstractMinecartEntity abstractMinecartEntity = AbstractMinecartEntity.create(world, d, e + g, f, ((MinecartItem)itemStack.getItem()).type);
             if (itemStack.hasCustomName()) {

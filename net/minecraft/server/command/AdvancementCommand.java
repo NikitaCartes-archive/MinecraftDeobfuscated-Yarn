@@ -130,19 +130,19 @@ public class AdvancementCommand {
 
             @Override
             protected boolean processEach(ServerPlayerEntity serverPlayerEntity, Advancement advancement) {
-                AdvancementProgress advancementProgress = serverPlayerEntity.getAdvancementManager().getProgress(advancement);
+                AdvancementProgress advancementProgress = serverPlayerEntity.getAdvancementTracker().getProgress(advancement);
                 if (advancementProgress.isDone()) {
                     return false;
                 }
                 for (String string : advancementProgress.getUnobtainedCriteria()) {
-                    serverPlayerEntity.getAdvancementManager().grantCriterion(advancement, string);
+                    serverPlayerEntity.getAdvancementTracker().grantCriterion(advancement, string);
                 }
                 return true;
             }
 
             @Override
             protected boolean processEachCriterion(ServerPlayerEntity serverPlayerEntity, Advancement advancement, String string) {
-                return serverPlayerEntity.getAdvancementManager().grantCriterion(advancement, string);
+                return serverPlayerEntity.getAdvancementTracker().grantCriterion(advancement, string);
             }
         }
         ,
@@ -150,19 +150,19 @@ public class AdvancementCommand {
 
             @Override
             protected boolean processEach(ServerPlayerEntity serverPlayerEntity, Advancement advancement) {
-                AdvancementProgress advancementProgress = serverPlayerEntity.getAdvancementManager().getProgress(advancement);
+                AdvancementProgress advancementProgress = serverPlayerEntity.getAdvancementTracker().getProgress(advancement);
                 if (!advancementProgress.isAnyObtained()) {
                     return false;
                 }
                 for (String string : advancementProgress.getObtainedCriteria()) {
-                    serverPlayerEntity.getAdvancementManager().revokeCriterion(advancement, string);
+                    serverPlayerEntity.getAdvancementTracker().revokeCriterion(advancement, string);
                 }
                 return true;
             }
 
             @Override
             protected boolean processEachCriterion(ServerPlayerEntity serverPlayerEntity, Advancement advancement, String string) {
-                return serverPlayerEntity.getAdvancementManager().revokeCriterion(advancement, string);
+                return serverPlayerEntity.getAdvancementTracker().revokeCriterion(advancement, string);
             }
         };
 

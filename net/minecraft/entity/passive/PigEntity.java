@@ -186,8 +186,8 @@ extends AnimalEntity {
     @Override
     public void onStruckByLightning(LightningEntity lightningEntity) {
         ZombiePigmanEntity zombiePigmanEntity = EntityType.ZOMBIE_PIGMAN.create(this.world);
-        zombiePigmanEntity.setEquippedStack(EquipmentSlot.MAINHAND, new ItemStack(Items.GOLDEN_SWORD));
-        zombiePigmanEntity.setPositionAndAngles(this.x, this.y, this.z, this.yaw, this.pitch);
+        zombiePigmanEntity.equipStack(EquipmentSlot.MAINHAND, new ItemStack(Items.GOLDEN_SWORD));
+        zombiePigmanEntity.refreshPositionAndAngles(this.x, this.y, this.z, this.yaw, this.pitch);
         zombiePigmanEntity.setAiDisabled(this.isAiDisabled());
         if (this.hasCustomName()) {
             zombiePigmanEntity.setCustomName(this.getCustomName());
@@ -247,23 +247,24 @@ extends AnimalEntity {
         }
         this.field_6814 = true;
         this.field_6812 = 0;
-        this.field_6813 = this.getRand().nextInt(841) + 140;
+        this.field_6813 = this.getRandom().nextInt(841) + 140;
         this.getDataTracker().set(field_6815, this.field_6813);
         return true;
     }
 
-    public PigEntity method_6574(PassiveEntity passiveEntity) {
+    @Override
+    public PigEntity createChild(PassiveEntity passiveEntity) {
         return EntityType.PIG.create(this.world);
     }
 
     @Override
     public boolean isBreedingItem(ItemStack itemStack) {
-        return BREEDING_INGREDIENT.method_8093(itemStack);
+        return BREEDING_INGREDIENT.test(itemStack);
     }
 
     @Override
     public /* synthetic */ PassiveEntity createChild(PassiveEntity passiveEntity) {
-        return this.method_6574(passiveEntity);
+        return this.createChild(passiveEntity);
     }
 }
 

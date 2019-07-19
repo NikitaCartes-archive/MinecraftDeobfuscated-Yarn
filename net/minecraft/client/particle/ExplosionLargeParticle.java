@@ -61,7 +61,8 @@ extends SpriteBillboardParticle {
             this.field_17816 = spriteProvider;
         }
 
-        public Particle method_3038(DefaultParticleType defaultParticleType, World world, double d, double e, double f, double g, double h, double i) {
+        @Override
+        public Particle createParticle(DefaultParticleType defaultParticleType, World world, double d, double e, double f, double g, double h, double i) {
             return new ExplosionLargeParticle(world, d, e, f, g, this.field_17816);
         }
     }

@@ -34,9 +34,9 @@ extends AbstractSittingPhase {
             double e = this.dragon.partHead.y + (double)(this.dragon.partHead.getHeight() / 2.0f);
             double f = this.dragon.partHead.z;
             for (int i = 0; i < 8; ++i) {
-                double g = d + this.dragon.getRand().nextGaussian() / 2.0;
-                double h = e + this.dragon.getRand().nextGaussian() / 2.0;
-                double j = f + this.dragon.getRand().nextGaussian() / 2.0;
+                double g = d + this.dragon.getRandom().nextGaussian() / 2.0;
+                double h = e + this.dragon.getRandom().nextGaussian() / 2.0;
+                double j = f + this.dragon.getRandom().nextGaussian() / 2.0;
                 for (int k = 0; k < 6; ++k) {
                     this.dragon.world.addParticle(ParticleTypes.DRAGON_BREATH, g, h, j, -vec3d.x * (double)0.08f * (double)k, -vec3d.y * (double)0.6f, -vec3d.z * (double)0.08f * (double)k);
                 }

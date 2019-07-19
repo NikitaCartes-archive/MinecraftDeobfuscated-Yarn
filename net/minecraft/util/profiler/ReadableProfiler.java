@@ -27,6 +27,6 @@ extends Profiler {
     @Environment(value=EnvType.CLIENT)
     public void swap(Supplier<String> var1);
 
-    public ProfileResult getResults();
+    public ProfileResult getResult();
 }
 

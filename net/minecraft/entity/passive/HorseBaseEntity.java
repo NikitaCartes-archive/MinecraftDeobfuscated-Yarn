@@ -306,7 +306,7 @@ JumpingMount {
     @Override
     @Nullable
     protected SoundEvent getAmbientSound() {
-        if (this.random.nextInt(10) == 0 && !this.cannotMove()) {
+        if (this.random.nextInt(10) == 0 && !this.isImmobile()) {
             this.updateAnger();
         }
         return null;
@@ -357,7 +357,7 @@ JumpingMount {
     @Override
     protected void initAttributes() {
         super.initAttributes();
-        this.getAttributeContainer().register(JUMP_STRENGTH);
+        this.getAttributes().register(JUMP_STRENGTH);
         this.getAttributeInstance(EntityAttributes.MAX_HEALTH).setBaseValue(53.0);
         this.getAttributeInstance(EntityAttributes.MOVEMENT_SPEED).setBaseValue(0.225f);
     }
@@ -425,7 +425,7 @@ JumpingMount {
                 this.lovePlayer(playerEntity);
             }
         }
-        if (this.getHealth() < this.getHealthMaximum() && f > 0.0f) {
+        if (this.getHealth() < this.getMaximumHealth() && f > 0.0f) {
             this.heal(f);
             bl = true;
         }
@@ -459,8 +459,8 @@ JumpingMount {
     }
 
     @Override
-    protected boolean cannotMove() {
-        return super.cannotMove() && this.hasPassengers() && this.isSaddled() || this.isEatingGrass() || this.isAngry();
+    protected boolean isImmobile() {
+        return super.isImmobile() && this.hasPassengers() && this.isSaddled() || this.isEatingGrass() || this.isAngry();
     }
 
     @Override
@@ -617,7 +617,7 @@ JumpingMount {
         this.setOwnerUuid(playerEntity.getUuid());
         this.setTame(true);
         if (playerEntity instanceof ServerPlayerEntity) {
-            Criterions.TAME_ANIMAL.handle((ServerPlayerEntity)playerEntity, this);
+            Criterions.TAME_ANIMAL.trigger((ServerPlayerEntity)playerEntity, this);
         }
         this.world.sendEntityStatus(this, (byte)7);
         return true;
@@ -716,7 +716,7 @@ JumpingMount {
         this.setBred(compoundTag.getBoolean("Bred"));
         this.setTemper(compoundTag.getInt("Temper"));
         this.setTame(compoundTag.getBoolean("Tame"));
-        if (compoundTag.containsKey("OwnerUUID", 8)) {
+        if (compoundTag.contains("OwnerUUID", 8)) {
             string = compoundTag.getString("OwnerUUID");
         } else {
             String string2 = compoundTag.getString("Owner");
@@ -725,10 +725,10 @@ JumpingMount {
         if (!string.isEmpty()) {
             this.setOwnerUuid(UUID.fromString(string));
         }
-        if ((entityAttributeInstance = this.getAttributeContainer().get("Speed")) != null) {
+        if ((entityAttributeInstance = this.getAttributes().get("Speed")) != null) {
             this.getAttributeInstance(EntityAttributes.MOVEMENT_SPEED).setBaseValue(entityAttributeInstance.getBaseValue() * 0.25);
         }
-        if (compoundTag.containsKey("SaddleItem", 10) && (itemStack = ItemStack.fromTag(compoundTag.getCompound("SaddleItem"))).getItem() == Items.SADDLE) {
+        if (compoundTag.contains("SaddleItem", 10) && (itemStack = ItemStack.fromTag(compoundTag.getCompound("SaddleItem"))).getItem() == Items.SADDLE) {
             this.items.setInvStack(0, itemStack);
         }
         this.updateSaddle();
@@ -740,7 +740,7 @@ JumpingMount {
     }
 
     protected boolean canBreed() {
-        return !this.hasPassengers() && !this.hasVehicle() && this.isTame() && !this.isBaby() && this.getHealth() >= this.getHealthMaximum() && this.isInLove();
+        return !this.hasPassengers() && !this.hasVehicle() && this.isTame() && !this.isBaby() && this.getHealth() >= this.getMaximumHealth() && this.isInLove();
     }
 
     @Override
@@ -843,7 +843,7 @@ JumpingMount {
             float g = MathHelper.cos(this.field_6283 * ((float)Math.PI / 180));
             float h = 0.7f * this.lastAngryAnimationProgress;
             float i = 0.15f * this.lastAngryAnimationProgress;
-            entity.setPosition(this.x + (double)(h * f), this.y + this.getMountedHeightOffset() + entity.getHeightOffset() + (double)i, this.z - (double)(h * g));
+            entity.updatePosition(this.x + (double)(h * f), this.y + this.getMountedHeightOffset() + entity.getHeightOffset() + (double)i, this.z - (double)(h * g));
             if (entity instanceof LivingEntity) {
                 ((LivingEntity)entity).field_6283 = this.field_6283;
             }

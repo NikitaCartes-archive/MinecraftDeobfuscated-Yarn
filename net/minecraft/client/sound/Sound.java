@@ -53,7 +53,8 @@ implements SoundContainer<Sound> {
         return this.weight;
     }
 
-    public Sound method_4765() {
+    @Override
+    public Sound getSound() {
         return this;
     }
 
@@ -82,7 +83,7 @@ implements SoundContainer<Sound> {
 
     @Override
     public /* synthetic */ Object getSound() {
-        return this.method_4765();
+        return this.getSound();
     }
 
     @Environment(value=EnvType.CLIENT)

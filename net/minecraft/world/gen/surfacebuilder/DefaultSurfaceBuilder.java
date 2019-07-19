@@ -20,7 +20,8 @@ extends SurfaceBuilder<TernarySurfaceConfig> {
         super(function);
     }
 
-    public void method_15219(Random random, Chunk chunk, Biome biome, int i, int j, int k, double d, BlockState blockState, BlockState blockState2, int l, long m, TernarySurfaceConfig ternarySurfaceConfig) {
+    @Override
+    public void generate(Random random, Chunk chunk, Biome biome, int i, int j, int k, double d, BlockState blockState, BlockState blockState2, int l, long m, TernarySurfaceConfig ternarySurfaceConfig) {
         this.generate(random, chunk, biome, i, j, k, d, blockState, blockState2, ternarySurfaceConfig.getTopMaterial(), ternarySurfaceConfig.getUnderMaterial(), ternarySurfaceConfig.getUnderwaterMaterial(), l);
     }
 
@@ -49,7 +50,7 @@ extends SurfaceBuilder<TernarySurfaceConfig> {
                     blockState7 = blockState4;
                 }
                 if (q < l && (blockState6 == null || blockState6.isAir())) {
-                    blockState6 = biome.method_21740(mutable.set(i, q, j)) < 0.15f ? Blocks.ICE.getDefaultState() : blockState2;
+                    blockState6 = biome.getTemperature(mutable.set(i, q, j)) < 0.15f ? Blocks.ICE.getDefaultState() : blockState2;
                     mutable.set(o, q, p);
                 }
                 m = n;

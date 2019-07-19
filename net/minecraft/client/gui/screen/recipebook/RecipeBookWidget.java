@@ -26,7 +26,7 @@ import net.minecraft.client.gui.widget.TextFieldWidget;
 import net.minecraft.client.gui.widget.ToggleButtonWidget;
 import net.minecraft.client.recipe.book.ClientRecipeBook;
 import net.minecraft.client.recipe.book.RecipeBookGroup;
-import net.minecraft.client.render.GuiLighting;
+import net.minecraft.client.render.DiffuseLighting;
 import net.minecraft.client.resource.language.I18n;
 import net.minecraft.client.resource.language.LanguageDefinition;
 import net.minecraft.client.resource.language.LanguageManager;
@@ -34,11 +34,11 @@ import net.minecraft.client.search.SearchManager;
 import net.minecraft.container.CraftingContainer;
 import net.minecraft.container.Slot;
 import net.minecraft.item.ItemStack;
+import net.minecraft.network.packet.c2s.play.RecipeBookDataC2SPacket;
 import net.minecraft.recipe.Ingredient;
 import net.minecraft.recipe.Recipe;
 import net.minecraft.recipe.RecipeFinder;
 import net.minecraft.recipe.RecipeGridAligner;
-import net.minecraft.server.network.packet.RecipeBookDataC2SPacket;
 import net.minecraft.util.Identifier;
 import org.jetbrains.annotations.Nullable;
 
@@ -164,14 +164,14 @@ RecipeGridAligner<Ingredient> {
         list.forEach(recipeResultCollection -> recipeResultCollection.computeCraftables(this.recipeFinder, this.craftingContainer.getCraftingWidth(), this.craftingContainer.getCraftingHeight(), this.recipeBook));
         ArrayList<RecipeResultCollection> list2 = Lists.newArrayList(list);
         list2.removeIf(recipeResultCollection -> !recipeResultCollection.isInitialized());
-        list2.removeIf(recipeResultCollection -> !recipeResultCollection.hasFittableResults());
+        list2.removeIf(recipeResultCollection -> !recipeResultCollection.hasFittingRecipes());
         String string = this.searchField.getText();
         if (!string.isEmpty()) {
             ObjectLinkedOpenHashSet objectSet = new ObjectLinkedOpenHashSet(this.client.getSearchableContainer(SearchManager.RECIPE_OUTPUT).findAll(string.toLowerCase(Locale.ROOT)));
             list2.removeIf(recipeResultCollection -> !objectSet.contains(recipeResultCollection));
         }
         if (this.recipeBook.isFilteringCraftable(this.craftingContainer)) {
-            list2.removeIf(recipeResultCollection -> !recipeResultCollection.hasCraftableResults());
+            list2.removeIf(recipeResultCollection -> !recipeResultCollection.hasCraftableRecipes());
         }
         this.recipesArea.setResults(list2, bl);
     }
@@ -216,7 +216,7 @@ RecipeGridAligner<Ingredient> {
         if (!this.isOpen()) {
             return;
         }
-        GuiLighting.enableForItems();
+        DiffuseLighting.enableForItems();
         GlStateManager.disableLighting();
         GlStateManager.pushMatrix();
         GlStateManager.translatef(0.0f, 0.0f, 100.0f);
@@ -226,7 +226,7 @@ RecipeGridAligner<Ingredient> {
         int l = (this.parentHeight - 166) / 2;
         this.blit(k, l, 1, 1, 147, 166);
         this.searchField.render(i, j, f);
-        GuiLighting.disable();
+        DiffuseLighting.disable();
         for (RecipeGroupButtonWidget recipeGroupButtonWidget : this.tabButtons) {
             recipeGroupButtonWidget.render(i, j, f);
         }
@@ -393,7 +393,7 @@ RecipeGridAligner<Ingredient> {
         if ("excitedze".equals(string)) {
             LanguageManager languageManager = this.client.getLanguageManager();
             LanguageDefinition languageDefinition = languageManager.getLanguage("en_pt");
-            if (languageManager.getLanguage().method_4673(languageDefinition) == 0) {
+            if (languageManager.getLanguage().compareTo(languageDefinition) == 0) {
                 return;
             }
             languageManager.setLanguage(languageDefinition);
@@ -433,7 +433,7 @@ RecipeGridAligner<Ingredient> {
     public void acceptAlignedInput(Iterator<Ingredient> iterator, int i, int j, int k, int l) {
         Ingredient ingredient = iterator.next();
         if (!ingredient.isEmpty()) {
-            Slot slot = (Slot)this.craftingContainer.slotList.get(i);
+            Slot slot = (Slot)this.craftingContainer.slots.get(i);
             this.ghostSlots.addSlot(ingredient, slot.xPosition, slot.yPosition);
         }
     }

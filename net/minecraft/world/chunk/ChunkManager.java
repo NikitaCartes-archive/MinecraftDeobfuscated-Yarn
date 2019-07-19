@@ -48,7 +48,7 @@ AutoCloseable {
     @Environment(value=EnvType.CLIENT)
     public abstract void tick(BooleanSupplier var1);
 
-    public abstract String getStatus();
+    public abstract String getDebugString();
 
     public abstract ChunkGenerator<?> getChunkGenerator();
 

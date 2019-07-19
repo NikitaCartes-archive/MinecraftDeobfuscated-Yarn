@@ -62,7 +62,7 @@ implements ParsableText {
 
     private void parse(ServerCommandSource serverCommandSource) {
         MinecraftServer minecraftServer = serverCommandSource.getMinecraftServer();
-        if (minecraftServer != null && minecraftServer.method_3814() && ChatUtil.isEmpty(this.score)) {
+        if (minecraftServer != null && minecraftServer.hasGameDir() && ChatUtil.isEmpty(this.score)) {
             ScoreboardObjective scoreboardObjective;
             ServerScoreboard scoreboard = minecraftServer.getScoreboard();
             if (scoreboard.playerHasObjective(this.name, scoreboardObjective = scoreboard.getNullableObjective(this.objective))) {
@@ -74,7 +74,8 @@ implements ParsableText {
         }
     }
 
-    public ScoreText method_10929() {
+    @Override
+    public ScoreText copy() {
         ScoreText scoreText = new ScoreText(this.name, this.objective);
         scoreText.setScore(this.score);
         return scoreText;
@@ -88,7 +89,7 @@ implements ParsableText {
     public Text parse(@Nullable ServerCommandSource serverCommandSource, @Nullable Entity entity, int i) throws CommandSyntaxException {
         String string;
         if (serverCommandSource == null) {
-            return this.method_10929();
+            return this.copy();
         }
         if (this.selector != null) {
             List<? extends Entity> list = this.selector.getEntities(serverCommandSource);
@@ -127,7 +128,7 @@ implements ParsableText {
 
     @Override
     public /* synthetic */ Text copy() {
-        return this.method_10929();
+        return this.copy();
     }
 }
 

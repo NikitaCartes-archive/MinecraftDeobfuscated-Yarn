@@ -33,7 +33,8 @@ extends Task<VillagerEntity> {
         super(ImmutableMap.of(MemoryModuleType.INTERACTION_TARGET, MemoryModuleState.VALUE_PRESENT), i, j);
     }
 
-    public boolean method_19599(ServerWorld serverWorld, VillagerEntity villagerEntity) {
+    @Override
+    public boolean shouldRun(ServerWorld serverWorld, VillagerEntity villagerEntity) {
         Brain<VillagerEntity> brain = villagerEntity.getBrain();
         if (!brain.getOptionalMemory(MemoryModuleType.INTERACTION_TARGET).isPresent()) {
             return false;
@@ -42,11 +43,13 @@ extends Task<VillagerEntity> {
         return livingEntity.getType() == EntityType.PLAYER && villagerEntity.isAlive() && livingEntity.isAlive() && !villagerEntity.isBaby() && villagerEntity.squaredDistanceTo(livingEntity) <= 17.0;
     }
 
-    public boolean method_19600(ServerWorld serverWorld, VillagerEntity villagerEntity, long l) {
-        return this.method_19599(serverWorld, villagerEntity) && this.field_18396 > 0 && villagerEntity.getBrain().getOptionalMemory(MemoryModuleType.INTERACTION_TARGET).isPresent();
+    @Override
+    public boolean shouldKeepRunning(ServerWorld serverWorld, VillagerEntity villagerEntity, long l) {
+        return this.shouldRun(serverWorld, villagerEntity) && this.field_18396 > 0 && villagerEntity.getBrain().getOptionalMemory(MemoryModuleType.INTERACTION_TARGET).isPresent();
     }
 
-    public void method_19602(ServerWorld serverWorld, VillagerEntity villagerEntity, long l) {
+    @Override
+    public void run(ServerWorld serverWorld, VillagerEntity villagerEntity, long l) {
         super.run(serverWorld, villagerEntity, l);
         this.method_19603(villagerEntity);
         this.field_18394 = 0;
@@ -54,22 +57,24 @@ extends Task<VillagerEntity> {
         this.field_18396 = 40;
     }
 
-    public void method_19604(ServerWorld serverWorld, VillagerEntity villagerEntity, long l) {
+    @Override
+    public void keepRunning(ServerWorld serverWorld, VillagerEntity villagerEntity, long l) {
         LivingEntity livingEntity = this.method_19603(villagerEntity);
         this.method_19027(livingEntity, villagerEntity);
         if (!this.offers.isEmpty()) {
             this.method_19026(villagerEntity);
         } else {
-            villagerEntity.setEquippedStack(EquipmentSlot.MAINHAND, ItemStack.EMPTY);
+            villagerEntity.equipStack(EquipmentSlot.MAINHAND, ItemStack.EMPTY);
             this.field_18396 = Math.min(this.field_18396, 40);
         }
         --this.field_18396;
     }
 
-    public void method_19605(ServerWorld serverWorld, VillagerEntity villagerEntity, long l) {
+    @Override
+    public void finishRunning(ServerWorld serverWorld, VillagerEntity villagerEntity, long l) {
         super.finishRunning(serverWorld, villagerEntity, l);
         villagerEntity.getBrain().forget(MemoryModuleType.INTERACTION_TARGET);
-        villagerEntity.setEquippedStack(EquipmentSlot.MAINHAND, ItemStack.EMPTY);
+        villagerEntity.equipStack(EquipmentSlot.MAINHAND, ItemStack.EMPTY);
         this.field_18392 = null;
     }
 
@@ -91,7 +96,7 @@ extends Task<VillagerEntity> {
     }
 
     private void method_19598(VillagerEntity villagerEntity) {
-        villagerEntity.setEquippedStack(EquipmentSlot.MAINHAND, this.offers.get(0));
+        villagerEntity.equipStack(EquipmentSlot.MAINHAND, this.offers.get(0));
     }
 
     private void method_19601(VillagerEntity villagerEntity) {
@@ -119,28 +124,28 @@ extends Task<VillagerEntity> {
             if (this.field_18395 > this.offers.size() - 1) {
                 this.field_18395 = 0;
             }
-            villagerEntity.setEquippedStack(EquipmentSlot.MAINHAND, this.offers.get(this.field_18395));
+            villagerEntity.equipStack(EquipmentSlot.MAINHAND, this.offers.get(this.field_18395));
         }
     }
 
     @Override
     public /* synthetic */ boolean shouldKeepRunning(ServerWorld serverWorld, LivingEntity livingEntity, long l) {
-        return this.method_19600(serverWorld, (VillagerEntity)livingEntity, l);
+        return this.shouldKeepRunning(serverWorld, (VillagerEntity)livingEntity, l);
     }
 
     @Override
     public /* synthetic */ void finishRunning(ServerWorld serverWorld, LivingEntity livingEntity, long l) {
-        this.method_19605(serverWorld, (VillagerEntity)livingEntity, l);
+        this.finishRunning(serverWorld, (VillagerEntity)livingEntity, l);
     }
 
     @Override
     public /* synthetic */ void keepRunning(ServerWorld serverWorld, LivingEntity livingEntity, long l) {
-        this.method_19604(serverWorld, (VillagerEntity)livingEntity, l);
+        this.keepRunning(serverWorld, (VillagerEntity)livingEntity, l);
     }
 
     @Override
     public /* synthetic */ void run(ServerWorld serverWorld, LivingEntity livingEntity, long l) {
-        this.method_19602(serverWorld, (VillagerEntity)livingEntity, l);
+        this.run(serverWorld, (VillagerEntity)livingEntity, l);
     }
 }
 

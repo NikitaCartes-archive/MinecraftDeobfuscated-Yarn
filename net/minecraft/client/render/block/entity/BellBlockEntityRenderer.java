@@ -19,7 +19,8 @@ extends BlockEntityRenderer<BellBlockEntity> {
     private static final Identifier BELL_BODY_TEXTURE = new Identifier("textures/entity/bell/bell_body.png");
     private final BellModel model = new BellModel();
 
-    public void method_17139(BellBlockEntity bellBlockEntity, double d, double e, double f, float g, int i) {
+    @Override
+    public void render(BellBlockEntity bellBlockEntity, double d, double e, double f, float g, int i) {
         GlStateManager.pushMatrix();
         GlStateManager.enableRescaleNormal();
         this.bindTexture(BELL_BODY_TEXTURE);

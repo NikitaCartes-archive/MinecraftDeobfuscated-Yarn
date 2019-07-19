@@ -40,7 +40,7 @@ extends FeatureRenderer<T, PhantomEntityModel<T>> {
         GlStateManager.color4f(1.0f, 1.0f, 1.0f, 1.0f);
         GameRenderer gameRenderer = MinecraftClient.getInstance().gameRenderer;
         gameRenderer.setFogBlack(true);
-        ((PhantomEntityModel)this.getModel()).render(entity, f, g, i, j, k, l);
+        ((PhantomEntityModel)this.getContextModel()).render(entity, f, g, i, j, k, l);
         gameRenderer.setFogBlack(false);
         this.applyLightmapCoordinates(entity);
         GlStateManager.depthMask(true);

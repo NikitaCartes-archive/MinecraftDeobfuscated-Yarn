@@ -34,14 +34,15 @@ extends AnimatedParticle {
     @Environment(value=EnvType.CLIENT)
     public static class Factory
     implements ParticleFactory<DefaultParticleType> {
-        private final SpriteProvider field_17887;
+        private final SpriteProvider spriteProvider;
 
         public Factory(SpriteProvider spriteProvider) {
-            this.field_17887 = spriteProvider;
+            this.spriteProvider = spriteProvider;
         }
 
-        public Particle method_3113(DefaultParticleType defaultParticleType, World world, double d, double e, double f, double g, double h, double i) {
-            return new TotemParticle(world, d, e, f, g, h, i, this.field_17887);
+        @Override
+        public Particle createParticle(DefaultParticleType defaultParticleType, World world, double d, double e, double f, double g, double h, double i) {
+            return new TotemParticle(world, d, e, f, g, h, i, this.spriteProvider);
         }
     }
 }

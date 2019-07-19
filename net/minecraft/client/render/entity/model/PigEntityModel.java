@@ -17,7 +17,7 @@ extends QuadrupedEntityModel<T> {
 
     public PigEntityModel(float f) {
         super(6, f);
-        this.head.setTextureOffset(16, 16).addBox(-2.0f, 0.0f, -9.0f, 4, 3, 1, f);
+        this.head.setTextureOffset(16, 16).addCuboid(-2.0f, 0.0f, -9.0f, 4, 3, 1, f);
         this.field_3540 = 4.0f;
     }
 }

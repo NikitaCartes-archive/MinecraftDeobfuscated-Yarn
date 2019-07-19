@@ -22,7 +22,8 @@ extends EntityRenderer<EvokerFangsEntity> {
         super(entityRenderDispatcher);
     }
 
-    public void method_3962(EvokerFangsEntity evokerFangsEntity, double d, double e, double f, float g, float h) {
+    @Override
+    public void render(EvokerFangsEntity evokerFangsEntity, double d, double e, double f, float g, float h) {
         float i = evokerFangsEntity.getAnimationProgress(h);
         if (i == 0.0f) {
             return;
@@ -46,7 +47,8 @@ extends EntityRenderer<EvokerFangsEntity> {
         super.render(evokerFangsEntity, d, e, f, g, h);
     }
 
-    protected Identifier method_3963(EvokerFangsEntity evokerFangsEntity) {
+    @Override
+    protected Identifier getTexture(EvokerFangsEntity evokerFangsEntity) {
         return SKIN;
     }
 }
