@@ -4,8 +4,8 @@ public class ServerTask implements Runnable {
 	private final int creationTicks;
 	private final Runnable runnable;
 
-	public ServerTask(int creationTicks, Runnable runnable) {
-		this.creationTicks = creationTicks;
+	public ServerTask(int i, Runnable runnable) {
+		this.creationTicks = i;
 		this.runnable = runnable;
 	}
 

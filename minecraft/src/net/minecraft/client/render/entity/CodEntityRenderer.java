@@ -18,15 +18,15 @@ public class CodEntityRenderer extends MobEntityRenderer<CodEntity, CodEntityMod
 	}
 
 	@Nullable
-	protected Identifier getTexture(CodEntity codEntity) {
+	protected Identifier method_3897(CodEntity codEntity) {
 		return SKIN;
 	}
 
-	protected void setupTransforms(CodEntity codEntity, float f, float g, float h) {
+	protected void method_3896(CodEntity codEntity, float f, float g, float h) {
 		super.setupTransforms(codEntity, f, g, h);
 		float i = 4.3F * MathHelper.sin(0.6F * f);
 		GlStateManager.rotatef(i, 0.0F, 1.0F, 0.0F);
-		if (!codEntity.isTouchingWater()) {
+		if (!codEntity.isInsideWater()) {
 			GlStateManager.translatef(0.1F, 0.1F, -0.1F);
 			GlStateManager.rotatef(90.0F, 0.0F, 0.0F, 1.0F);
 		}

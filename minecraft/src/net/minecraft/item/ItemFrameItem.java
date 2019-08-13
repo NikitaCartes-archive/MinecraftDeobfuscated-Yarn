@@ -8,11 +8,11 @@ import net.minecraft.world.World;
 
 public class ItemFrameItem extends DecorationItem {
 	public ItemFrameItem(Item.Settings settings) {
-		super(EntityType.ITEM_FRAME, settings);
+		super(EntityType.field_6043, settings);
 	}
 
 	@Override
-	protected boolean canPlaceOn(PlayerEntity player, Direction side, ItemStack stack, BlockPos pos) {
-		return !World.isHeightInvalid(pos) && player.canPlaceOn(pos, side, stack);
+	protected boolean canPlaceOn(PlayerEntity playerEntity, Direction direction, ItemStack itemStack, BlockPos blockPos) {
+		return !World.isHeightInvalid(blockPos) && playerEntity.canPlaceOn(blockPos, direction, itemStack);
 	}
 }

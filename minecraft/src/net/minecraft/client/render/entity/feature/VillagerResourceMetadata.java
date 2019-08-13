@@ -21,9 +21,9 @@ public class VillagerResourceMetadata {
 
 	@Environment(EnvType.CLIENT)
 	public static enum HatType {
-		NONE("none"),
-		PARTIAL("partial"),
-		FULL("full");
+		field_17160("none"),
+		field_17161("partial"),
+		field_17162("full");
 
 		private static final Map<String, VillagerResourceMetadata.HatType> byName = (Map<String, VillagerResourceMetadata.HatType>)Arrays.stream(values())
 			.collect(Collectors.toMap(VillagerResourceMetadata.HatType::getName, hatType -> hatType));
@@ -38,7 +38,7 @@ public class VillagerResourceMetadata {
 		}
 
 		public static VillagerResourceMetadata.HatType from(String string) {
-			return (VillagerResourceMetadata.HatType)byName.getOrDefault(string, NONE);
+			return (VillagerResourceMetadata.HatType)byName.getOrDefault(string, field_17160);
 		}
 	}
 }

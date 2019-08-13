@@ -5,9 +5,9 @@ import net.minecraft.util.math.ChunkPos;
 import net.minecraft.world.chunk.ChunkStatus;
 
 public interface WorldGenerationProgressListener {
-	void start(ChunkPos spawnPos);
+	void start(ChunkPos chunkPos);
 
-	void setChunkStatus(ChunkPos pos, @Nullable ChunkStatus status);
+	void setChunkStatus(ChunkPos chunkPos, @Nullable ChunkStatus chunkStatus);
 
 	void stop();
 }

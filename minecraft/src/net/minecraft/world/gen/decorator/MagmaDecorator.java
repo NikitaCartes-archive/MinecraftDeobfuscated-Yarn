@@ -15,7 +15,7 @@ public class MagmaDecorator extends Decorator<CountDecoratorConfig> {
 		super(function);
 	}
 
-	public Stream<BlockPos> getPositions(
+	public Stream<BlockPos> method_15951(
 		IWorld iWorld, ChunkGenerator<? extends ChunkGeneratorConfig> chunkGenerator, Random random, CountDecoratorConfig countDecoratorConfig, BlockPos blockPos
 	) {
 		int i = iWorld.getSeaLevel() / 2 + 1;

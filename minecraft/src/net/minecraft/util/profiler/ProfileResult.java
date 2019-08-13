@@ -7,9 +7,9 @@ import net.fabricmc.api.Environment;
 
 public interface ProfileResult {
 	@Environment(EnvType.CLIENT)
-	List<ProfilerTiming> getTimings(String parentPath);
+	List<ProfilerTiming> getTimings(String string);
 
-	boolean save(File file);
+	boolean saveToFile(File file);
 
 	long getStartTime();
 

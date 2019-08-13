@@ -13,8 +13,8 @@ public class RealmsDefaultUncaughtExceptionHandler implements UncaughtExceptionH
 		this.logger = logger;
 	}
 
-	public void uncaughtException(Thread t, Throwable e) {
+	public void uncaughtException(Thread thread, Throwable throwable) {
 		this.logger.error("Caught previously unhandled exception :");
-		this.logger.error(e);
+		this.logger.error(throwable);
 	}
 }

@@ -17,24 +17,24 @@ public class OreFeatureConfig implements FeatureConfig {
 	public final int size;
 	public final BlockState state;
 
-	public OreFeatureConfig(OreFeatureConfig.Target target, BlockState state, int size) {
-		this.size = size;
-		this.state = state;
+	public OreFeatureConfig(OreFeatureConfig.Target target, BlockState blockState, int i) {
+		this.size = i;
+		this.state = blockState;
 		this.target = target;
 	}
 
 	@Override
-	public <T> Dynamic<T> serialize(DynamicOps<T> ops) {
+	public <T> Dynamic<T> serialize(DynamicOps<T> dynamicOps) {
 		return new Dynamic<>(
-			ops,
-			ops.createMap(
+			dynamicOps,
+			dynamicOps.createMap(
 				ImmutableMap.of(
-					ops.createString("size"),
-					ops.createInt(this.size),
-					ops.createString("target"),
-					ops.createString(this.target.getName()),
-					ops.createString("state"),
-					BlockState.serialize(ops, this.state).getValue()
+					dynamicOps.createString("size"),
+					dynamicOps.createInt(this.size),
+					dynamicOps.createString("target"),
+					dynamicOps.createString(this.target.getName()),
+					dynamicOps.createString("state"),
+					BlockState.serialize(dynamicOps, this.state).getValue()
 				)
 			)
 		);
@@ -43,28 +43,28 @@ public class OreFeatureConfig implements FeatureConfig {
 	public static OreFeatureConfig deserialize(Dynamic<?> dynamic) {
 		int i = dynamic.get("size").asInt(0);
 		OreFeatureConfig.Target target = OreFeatureConfig.Target.byName(dynamic.get("target").asString(""));
-		BlockState blockState = (BlockState)dynamic.get("state").map(BlockState::deserialize).orElse(Blocks.AIR.getDefaultState());
+		BlockState blockState = (BlockState)dynamic.get("state").map(BlockState::deserialize).orElse(Blocks.field_10124.getDefaultState());
 		return new OreFeatureConfig(target, blockState, i);
 	}
 
 	public static enum Target {
-		NATURAL_STONE("natural_stone", blockState -> {
+		field_13730("natural_stone", blockState -> {
 			if (blockState == null) {
 				return false;
 			} else {
 				Block block = blockState.getBlock();
-				return block == Blocks.STONE || block == Blocks.GRANITE || block == Blocks.DIORITE || block == Blocks.ANDESITE;
+				return block == Blocks.field_10340 || block == Blocks.field_10474 || block == Blocks.field_10508 || block == Blocks.field_10115;
 			}
 		}),
-		NETHERRACK("netherrack", new BlockPredicate(Blocks.NETHERRACK));
+		field_13727("netherrack", new BlockPredicate(Blocks.field_10515));
 
 		private static final Map<String, OreFeatureConfig.Target> nameMap = (Map<String, OreFeatureConfig.Target>)Arrays.stream(values())
 			.collect(Collectors.toMap(OreFeatureConfig.Target::getName, target -> target));
 		private final String name;
 		private final Predicate<BlockState> predicate;
 
-		private Target(String name, Predicate<BlockState> predicate) {
-			this.name = name;
+		private Target(String string2, Predicate<BlockState> predicate) {
+			this.name = string2;
 			this.predicate = predicate;
 		}
 
@@ -72,8 +72,8 @@ public class OreFeatureConfig implements FeatureConfig {
 			return this.name;
 		}
 
-		public static OreFeatureConfig.Target byName(String name) {
-			return (OreFeatureConfig.Target)nameMap.get(name);
+		public static OreFeatureConfig.Target byName(String string) {
+			return (OreFeatureConfig.Target)nameMap.get(string);
 		}
 
 		public Predicate<BlockState> getCondition() {

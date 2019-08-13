@@ -16,12 +16,12 @@ public final class LevelInfo {
 	private boolean bonusChest;
 	private JsonElement generatorOptions = new JsonObject();
 
-	public LevelInfo(long seed, GameMode gameMode, boolean structures, boolean hardcore, LevelGeneratorType generatorType) {
-		this.seed = seed;
+	public LevelInfo(long l, GameMode gameMode, boolean bl, boolean bl2, LevelGeneratorType levelGeneratorType) {
+		this.seed = l;
 		this.gameMode = gameMode;
-		this.structures = structures;
-		this.hardcore = hardcore;
-		this.generatorType = generatorType;
+		this.structures = bl;
+		this.hardcore = bl2;
+		this.generatorType = levelGeneratorType;
 	}
 
 	public LevelInfo(LevelProperties levelProperties) {
@@ -41,8 +41,8 @@ public final class LevelInfo {
 		return this;
 	}
 
-	public LevelInfo setGeneratorOptions(JsonElement generatorOptions) {
-		this.generatorOptions = generatorOptions;
+	public LevelInfo setGeneratorOptions(JsonElement jsonElement) {
+		this.generatorOptions = jsonElement;
 		return this;
 	}
 

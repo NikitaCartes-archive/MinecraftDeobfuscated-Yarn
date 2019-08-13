@@ -15,30 +15,30 @@ public class FernBlock extends PlantBlock implements Fertilizable {
 	}
 
 	@Override
-	public VoxelShape getOutlineShape(BlockState state, BlockView view, BlockPos pos, EntityContext context) {
+	public VoxelShape getOutlineShape(BlockState blockState, BlockView blockView, BlockPos blockPos, EntityContext entityContext) {
 		return SHAPE;
 	}
 
 	@Override
-	public boolean isFertilizable(BlockView world, BlockPos pos, BlockState state, boolean isClient) {
+	public boolean isFertilizable(BlockView blockView, BlockPos blockPos, BlockState blockState, boolean bl) {
 		return true;
 	}
 
 	@Override
-	public boolean canGrow(World world, Random random, BlockPos pos, BlockState state) {
+	public boolean canGrow(World world, Random random, BlockPos blockPos, BlockState blockState) {
 		return true;
 	}
 
 	@Override
-	public void grow(World world, Random random, BlockPos pos, BlockState state) {
-		TallPlantBlock tallPlantBlock = (TallPlantBlock)(this == Blocks.FERN ? Blocks.LARGE_FERN : Blocks.TALL_GRASS);
-		if (tallPlantBlock.getDefaultState().canPlaceAt(world, pos) && world.isAir(pos.up())) {
-			tallPlantBlock.placeAt(world, pos, 2);
+	public void grow(World world, Random random, BlockPos blockPos, BlockState blockState) {
+		TallPlantBlock tallPlantBlock = (TallPlantBlock)(this == Blocks.field_10112 ? Blocks.field_10313 : Blocks.field_10214);
+		if (tallPlantBlock.getDefaultState().canPlaceAt(world, blockPos) && world.isAir(blockPos.up())) {
+			tallPlantBlock.placeAt(world, blockPos, 2);
 		}
 	}
 
 	@Override
 	public Block.OffsetType getOffsetType() {
-		return Block.OffsetType.XYZ;
+		return Block.OffsetType.field_10655;
 	}
 }

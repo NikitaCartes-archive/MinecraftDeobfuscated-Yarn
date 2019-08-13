@@ -10,7 +10,7 @@ import net.minecraft.text.TranslatableText;
 
 public class SmokerBlockEntity extends AbstractFurnaceBlockEntity {
 	public SmokerBlockEntity() {
-		super(BlockEntityType.SMOKER, RecipeType.SMOKING);
+		super(BlockEntityType.field_16414, RecipeType.SMOKING);
 	}
 
 	@Override
@@ -19,8 +19,8 @@ public class SmokerBlockEntity extends AbstractFurnaceBlockEntity {
 	}
 
 	@Override
-	protected int getFuelTime(ItemStack fuel) {
-		return super.getFuelTime(fuel) / 2;
+	protected int getFuelTime(ItemStack itemStack) {
+		return super.getFuelTime(itemStack) / 2;
 	}
 
 	@Override

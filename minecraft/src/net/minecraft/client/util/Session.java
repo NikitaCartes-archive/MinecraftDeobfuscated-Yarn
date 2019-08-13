@@ -19,11 +19,11 @@ public class Session {
 	private final String accessToken;
 	private final Session.AccountType accountType;
 
-	public Session(String username, String uuid, String accessToken, String accountType) {
-		this.username = username;
-		this.uuid = uuid;
-		this.accessToken = accessToken;
-		this.accountType = Session.AccountType.byName(accountType);
+	public Session(String string, String string2, String string3, String string4) {
+		this.username = string;
+		this.uuid = string2;
+		this.accessToken = string3;
+		this.accountType = Session.AccountType.byName(string4);
 	}
 
 	public String getSessionId() {
@@ -53,8 +53,8 @@ public class Session {
 
 	@Environment(EnvType.CLIENT)
 	public static enum AccountType {
-		LEGACY("legacy"),
-		MOJANG("mojang");
+		field_1990("legacy"),
+		field_1988("mojang");
 
 		private static final Map<String, Session.AccountType> field_1989 = (Map<String, Session.AccountType>)Arrays.stream(values())
 			.collect(Collectors.toMap(accountType -> accountType.field_1986, Function.identity()));

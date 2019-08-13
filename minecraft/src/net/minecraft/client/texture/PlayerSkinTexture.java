@@ -33,11 +33,11 @@ public class PlayerSkinTexture extends ResourceTexture {
 	private Thread downloadThread;
 	private volatile boolean field_5215;
 
-	public PlayerSkinTexture(@Nullable File cacheFile, String url, Identifier fallbackSkin, @Nullable ImageFilter filter) {
-		super(fallbackSkin);
-		this.cacheFile = cacheFile;
-		this.url = url;
-		this.filter = filter;
+	public PlayerSkinTexture(@Nullable File file, String string, Identifier identifier, @Nullable ImageFilter imageFilter) {
+		super(identifier);
+		this.cacheFile = file;
+		this.url = string;
+		this.filter = imageFilter;
 	}
 
 	private void method_4531(NativeImage nativeImage) {

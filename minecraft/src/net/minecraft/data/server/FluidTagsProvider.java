@@ -16,8 +16,8 @@ public class FluidTagsProvider extends AbstractTagProvider<Fluid> {
 
 	@Override
 	protected void configure() {
-		this.method_10512(FluidTags.WATER).add(Fluids.WATER, Fluids.FLOWING_WATER);
-		this.method_10512(FluidTags.LAVA).add(Fluids.LAVA, Fluids.FLOWING_LAVA);
+		this.method_10512(FluidTags.field_15517).add(Fluids.WATER, Fluids.FLOWING_WATER);
+		this.method_10512(FluidTags.field_15518).add(Fluids.LAVA, Fluids.FLOWING_LAVA);
 	}
 
 	@Override

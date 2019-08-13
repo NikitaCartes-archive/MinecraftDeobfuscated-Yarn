@@ -13,24 +13,24 @@ import net.minecraft.util.Arm;
 
 @Environment(EnvType.CLIENT)
 public class HeldItemFeatureRenderer<T extends LivingEntity, M extends EntityModel<T> & ModelWithArms> extends FeatureRenderer<T, M> {
-	public HeldItemFeatureRenderer(FeatureRendererContext<T, M> context) {
-		super(context);
+	public HeldItemFeatureRenderer(FeatureRendererContext<T, M> featureRendererContext) {
+		super(featureRendererContext);
 	}
 
-	public void render(T livingEntity, float f, float g, float h, float i, float j, float k, float l) {
-		boolean bl = livingEntity.getMainArm() == Arm.RIGHT;
+	public void method_17162(T livingEntity, float f, float g, float h, float i, float j, float k, float l) {
+		boolean bl = livingEntity.getMainArm() == Arm.field_6183;
 		ItemStack itemStack = bl ? livingEntity.getOffHandStack() : livingEntity.getMainHandStack();
 		ItemStack itemStack2 = bl ? livingEntity.getMainHandStack() : livingEntity.getOffHandStack();
 		if (!itemStack.isEmpty() || !itemStack2.isEmpty()) {
 			GlStateManager.pushMatrix();
-			if (this.getContextModel().child) {
+			if (this.getModel().isChild) {
 				float m = 0.5F;
 				GlStateManager.translatef(0.0F, 0.75F, 0.0F);
 				GlStateManager.scalef(0.5F, 0.5F, 0.5F);
 			}
 
-			this.method_4192(livingEntity, itemStack2, ModelTransformation.Type.THIRD_PERSON_RIGHT_HAND, Arm.RIGHT);
-			this.method_4192(livingEntity, itemStack, ModelTransformation.Type.THIRD_PERSON_LEFT_HAND, Arm.LEFT);
+			this.method_4192(livingEntity, itemStack2, ModelTransformation.Type.field_4320, Arm.field_6183);
+			this.method_4192(livingEntity, itemStack, ModelTransformation.Type.field_4323, Arm.field_6182);
 			GlStateManager.popMatrix();
 		}
 	}
@@ -45,15 +45,15 @@ public class HeldItemFeatureRenderer<T extends LivingEntity, M extends EntityMod
 
 			GlStateManager.rotatef(-90.0F, 1.0F, 0.0F, 0.0F);
 			GlStateManager.rotatef(180.0F, 0.0F, 1.0F, 0.0F);
-			boolean bl = arm == Arm.LEFT;
+			boolean bl = arm == Arm.field_6182;
 			GlStateManager.translatef((float)(bl ? -1 : 1) / 16.0F, 0.125F, -0.625F);
-			MinecraftClient.getInstance().getHeldItemRenderer().renderItemFromSide(livingEntity, itemStack, type, bl);
+			MinecraftClient.getInstance().getFirstPersonRenderer().renderItemFromSide(livingEntity, itemStack, type, bl);
 			GlStateManager.popMatrix();
 		}
 	}
 
 	protected void method_4193(Arm arm) {
-		this.getContextModel().setArmAngle(0.0625F, arm);
+		this.getModel().setArmAngle(0.0625F, arm);
 	}
 
 	@Override

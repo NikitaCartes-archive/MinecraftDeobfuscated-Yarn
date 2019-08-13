@@ -15,26 +15,26 @@ public class VillagerWorkTask extends Task<VillagerEntity> {
 	private long lastCheckedTime;
 
 	public VillagerWorkTask() {
-		super(ImmutableMap.of(MemoryModuleType.JOB_SITE, MemoryModuleState.VALUE_PRESENT, MemoryModuleType.LOOK_TARGET, MemoryModuleState.REGISTERED));
+		super(ImmutableMap.of(MemoryModuleType.field_18439, MemoryModuleState.field_18456, MemoryModuleType.field_18446, MemoryModuleState.field_18458));
 	}
 
-	protected boolean shouldRun(ServerWorld serverWorld, VillagerEntity villagerEntity) {
+	protected boolean method_21641(ServerWorld serverWorld, VillagerEntity villagerEntity) {
 		if (serverWorld.getTime() - this.lastCheckedTime < 300L) {
 			return false;
 		} else if (serverWorld.random.nextInt(2) != 0) {
 			return false;
 		} else {
 			this.lastCheckedTime = serverWorld.getTime();
-			GlobalPos globalPos = (GlobalPos)villagerEntity.getBrain().getOptionalMemory(MemoryModuleType.JOB_SITE).get();
+			GlobalPos globalPos = (GlobalPos)villagerEntity.getBrain().getOptionalMemory(MemoryModuleType.field_18439).get();
 			return Objects.equals(globalPos.getDimension(), serverWorld.getDimension().getType()) && globalPos.getPos().isWithinDistance(villagerEntity.getPos(), 1.73);
 		}
 	}
 
-	protected void run(ServerWorld serverWorld, VillagerEntity villagerEntity, long l) {
+	protected void method_21642(ServerWorld serverWorld, VillagerEntity villagerEntity, long l) {
 		Brain<VillagerEntity> brain = villagerEntity.getBrain();
-		brain.putMemory(MemoryModuleType.LAST_WORKED_AT_POI, Timestamp.of(l));
-		brain.getOptionalMemory(MemoryModuleType.JOB_SITE)
-			.ifPresent(globalPos -> brain.putMemory(MemoryModuleType.LOOK_TARGET, new BlockPosLookTarget(globalPos.getPos())));
+		brain.putMemory(MemoryModuleType.field_19386, Timestamp.of(l));
+		brain.getOptionalMemory(MemoryModuleType.field_18439)
+			.ifPresent(globalPos -> brain.putMemory(MemoryModuleType.field_18446, new BlockPosLookTarget(globalPos.getPos())));
 		villagerEntity.playWorkSound();
 		if (villagerEntity.shouldRestock()) {
 			villagerEntity.restock();

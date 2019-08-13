@@ -28,8 +28,8 @@ public class Int2ObjectBiMap<K> implements IndexedIterable<K> {
 
 	@Nullable
 	@Override
-	public K get(int index) {
-		return index >= 0 && index < this.idToValues.length ? this.idToValues[index] : null;
+	public K get(int i) {
+		return i >= 0 && i < this.idToValues.length ? this.idToValues[i] : null;
 	}
 
 	private int getIdFromIndex(int i) {

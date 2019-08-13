@@ -16,15 +16,15 @@ public class ItemUsageContext {
 	protected final World world;
 	protected final ItemStack stack;
 
-	public ItemUsageContext(PlayerEntity player, Hand hand, BlockHitResult hit) {
-		this(player.world, player, hand, player.getStackInHand(hand), hit);
+	public ItemUsageContext(PlayerEntity playerEntity, Hand hand, BlockHitResult blockHitResult) {
+		this(playerEntity.world, playerEntity, hand, playerEntity.getStackInHand(hand), blockHitResult);
 	}
 
-	protected ItemUsageContext(World world, @Nullable PlayerEntity player, Hand hand, ItemStack stack, BlockHitResult hit) {
-		this.player = player;
+	protected ItemUsageContext(World world, @Nullable PlayerEntity playerEntity, Hand hand, ItemStack itemStack, BlockHitResult blockHitResult) {
+		this.player = playerEntity;
 		this.hand = hand;
-		this.hit = hit;
-		this.stack = stack;
+		this.hit = blockHitResult;
+		this.stack = itemStack;
 		this.world = world;
 	}
 
@@ -62,10 +62,10 @@ public class ItemUsageContext {
 	}
 
 	public Direction getPlayerFacing() {
-		return this.player == null ? Direction.NORTH : this.player.getHorizontalFacing();
+		return this.player == null ? Direction.field_11043 : this.player.getHorizontalFacing();
 	}
 
-	public boolean shouldCancelInteraction() {
+	public boolean isPlayerSneaking() {
 		return this.player != null && this.player.isSneaking();
 	}
 

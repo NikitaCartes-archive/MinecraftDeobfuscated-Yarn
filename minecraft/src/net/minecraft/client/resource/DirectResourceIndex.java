@@ -20,8 +20,8 @@ import net.minecraft.util.Identifier;
 public class DirectResourceIndex extends ResourceIndex {
 	private final File assetDir;
 
-	public DirectResourceIndex(File assetDir) {
-		this.assetDir = assetDir;
+	public DirectResourceIndex(File file) {
+		this.assetDir = file;
 	}
 
 	@Override
@@ -30,16 +30,16 @@ public class DirectResourceIndex extends ResourceIndex {
 	}
 
 	@Override
-	public File findFile(String path) {
-		return new File(this.assetDir, path);
+	public File findFile(String string) {
+		return new File(this.assetDir, string);
 	}
 
 	@Override
-	public Collection<String> getFilesRecursively(String namespace, int maxDepth, Predicate<String> filter) {
+	public Collection<String> getFilesRecursively(String string, int i, Predicate<String> predicate) {
 		Path path = this.assetDir.toPath().resolve("minecraft/");
 
 		try {
-			Stream<Path> stream = Files.walk(path.resolve(namespace), maxDepth, new FileVisitOption[0]);
+			Stream<Path> stream = Files.walk(path.resolve(string), i, new FileVisitOption[0]);
 			Throwable var6 = null;
 
 			Collection var7;
@@ -48,8 +48,8 @@ public class DirectResourceIndex extends ResourceIndex {
 					.filter(pathx -> !pathx.endsWith(".mcmeta"))
 					.map(path::relativize)
 					.map(Object::toString)
-					.map(string -> string.replaceAll("\\\\", "/"))
-					.filter(filter)
+					.map(stringx -> stringx.replaceAll("\\\\", "/"))
+					.filter(predicate)
 					.collect(Collectors.toList());
 			} catch (Throwable var18) {
 				var6 = var18;
@@ -71,7 +71,7 @@ public class DirectResourceIndex extends ResourceIndex {
 			return var7;
 		} catch (NoSuchFileException var20) {
 		} catch (IOException var21) {
-			LOGGER.warn("Unable to getFiles on {}", namespace, var21);
+			LOGGER.warn("Unable to getFiles on {}", string, var21);
 		}
 
 		return Collections.emptyList();

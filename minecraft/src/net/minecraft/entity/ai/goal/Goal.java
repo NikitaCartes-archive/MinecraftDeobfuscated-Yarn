@@ -24,9 +24,9 @@ public abstract class Goal {
 	public void tick() {
 	}
 
-	public void setControls(EnumSet<Goal.Control> controls) {
+	public void setControls(EnumSet<Goal.Control> enumSet) {
 		this.controls.clear();
-		this.controls.addAll(controls);
+		this.controls.addAll(enumSet);
 	}
 
 	public EnumSet<Goal.Control> getControls() {
@@ -34,9 +34,9 @@ public abstract class Goal {
 	}
 
 	public static enum Control {
-		MOVE,
-		LOOK,
-		JUMP,
-		TARGET;
+		field_18405,
+		field_18406,
+		field_18407,
+		field_18408;
 	}
 }

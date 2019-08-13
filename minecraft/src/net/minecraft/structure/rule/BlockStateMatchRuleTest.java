@@ -6,7 +6,7 @@ import com.mojang.datafixers.types.DynamicOps;
 import java.util.Random;
 import net.minecraft.block.BlockState;
 
-public class BlockStateMatchRuleTest extends RuleTest {
+public class BlockStateMatchRuleTest extends AbstractRuleTest {
 	private final BlockState blockState;
 
 	public BlockStateMatchRuleTest(BlockState blockState) {
@@ -18,17 +18,19 @@ public class BlockStateMatchRuleTest extends RuleTest {
 	}
 
 	@Override
-	public boolean test(BlockState state, Random random) {
-		return state == this.blockState;
+	public boolean test(BlockState blockState, Random random) {
+		return blockState == this.blockState;
 	}
 
 	@Override
-	protected RuleTestType getType() {
-		return RuleTestType.BLOCKSTATE_MATCH;
+	protected RuleTest getRuleTest() {
+		return RuleTest.field_16985;
 	}
 
 	@Override
-	protected <T> Dynamic<T> serialize(DynamicOps<T> ops) {
-		return new Dynamic<>(ops, ops.createMap(ImmutableMap.of(ops.createString("blockstate"), BlockState.serialize(ops, this.blockState).getValue())));
+	protected <T> Dynamic<T> serialize(DynamicOps<T> dynamicOps) {
+		return new Dynamic<>(
+			dynamicOps, dynamicOps.createMap(ImmutableMap.of(dynamicOps.createString("blockstate"), BlockState.serialize(dynamicOps, this.blockState).getValue()))
+		);
 	}
 }

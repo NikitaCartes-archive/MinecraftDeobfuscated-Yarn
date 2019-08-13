@@ -12,26 +12,26 @@ import net.minecraft.util.registry.Registry;
 
 public class BlockStateParticleEffect implements ParticleEffect {
 	public static final ParticleEffect.Factory<BlockStateParticleEffect> PARAMETERS_FACTORY = new ParticleEffect.Factory<BlockStateParticleEffect>() {
-		public BlockStateParticleEffect read(ParticleType<BlockStateParticleEffect> particleType, StringReader stringReader) throws CommandSyntaxException {
+		public BlockStateParticleEffect method_10279(ParticleType<BlockStateParticleEffect> particleType, StringReader stringReader) throws CommandSyntaxException {
 			stringReader.expect(' ');
 			return new BlockStateParticleEffect(particleType, new BlockArgumentParser(stringReader, false).parse(false).getBlockState());
 		}
 
-		public BlockStateParticleEffect read(ParticleType<BlockStateParticleEffect> particleType, PacketByteBuf packetByteBuf) {
+		public BlockStateParticleEffect method_10280(ParticleType<BlockStateParticleEffect> particleType, PacketByteBuf packetByteBuf) {
 			return new BlockStateParticleEffect(particleType, Block.STATE_IDS.get(packetByteBuf.readVarInt()));
 		}
 	};
 	private final ParticleType<BlockStateParticleEffect> type;
 	private final BlockState blockState;
 
-	public BlockStateParticleEffect(ParticleType<BlockStateParticleEffect> type, BlockState blockState) {
-		this.type = type;
+	public BlockStateParticleEffect(ParticleType<BlockStateParticleEffect> particleType, BlockState blockState) {
+		this.type = particleType;
 		this.blockState = blockState;
 	}
 
 	@Override
-	public void write(PacketByteBuf buf) {
-		buf.writeVarInt(Block.STATE_IDS.getId(this.blockState));
+	public void write(PacketByteBuf packetByteBuf) {
+		packetByteBuf.writeVarInt(Block.STATE_IDS.getId(this.blockState));
 	}
 
 	@Override

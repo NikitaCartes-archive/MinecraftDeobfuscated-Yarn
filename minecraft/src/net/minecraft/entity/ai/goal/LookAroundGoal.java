@@ -9,14 +9,14 @@ public class LookAroundGoal extends Goal {
 	private double deltaZ;
 	private int lookTime;
 
-	public LookAroundGoal(MobEntity mob) {
-		this.mob = mob;
-		this.setControls(EnumSet.of(Goal.Control.MOVE, Goal.Control.LOOK));
+	public LookAroundGoal(MobEntity mobEntity) {
+		this.mob = mobEntity;
+		this.setControls(EnumSet.of(Goal.Control.field_18405, Goal.Control.field_18406));
 	}
 
 	@Override
 	public boolean canStart() {
-		return this.mob.getRandom().nextFloat() < 0.02F;
+		return this.mob.getRand().nextFloat() < 0.02F;
 	}
 
 	@Override
@@ -26,10 +26,10 @@ public class LookAroundGoal extends Goal {
 
 	@Override
 	public void start() {
-		double d = (Math.PI * 2) * this.mob.getRandom().nextDouble();
+		double d = (Math.PI * 2) * this.mob.getRand().nextDouble();
 		this.deltaX = Math.cos(d);
 		this.deltaZ = Math.sin(d);
-		this.lookTime = 20 + this.mob.getRandom().nextInt(20);
+		this.lookTime = 20 + this.mob.getRand().nextInt(20);
 	}
 
 	@Override

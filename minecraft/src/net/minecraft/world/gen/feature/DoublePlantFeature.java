@@ -10,11 +10,11 @@ import net.minecraft.world.gen.chunk.ChunkGenerator;
 import net.minecraft.world.gen.chunk.ChunkGeneratorConfig;
 
 public class DoublePlantFeature extends Feature<DoublePlantFeatureConfig> {
-	public DoublePlantFeature(Function<Dynamic<?>, ? extends DoublePlantFeatureConfig> configFactory) {
-		super(configFactory);
+	public DoublePlantFeature(Function<Dynamic<?>, ? extends DoublePlantFeatureConfig> function) {
+		super(function);
 	}
 
-	public boolean generate(
+	public boolean method_13019(
 		IWorld iWorld,
 		ChunkGenerator<? extends ChunkGeneratorConfig> chunkGenerator,
 		Random random,

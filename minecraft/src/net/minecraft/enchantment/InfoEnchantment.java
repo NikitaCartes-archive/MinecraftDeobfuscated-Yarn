@@ -6,9 +6,9 @@ public class InfoEnchantment extends WeightedPicker.Entry {
 	public final Enchantment enchantment;
 	public final int level;
 
-	public InfoEnchantment(Enchantment enchantment, int level) {
+	public InfoEnchantment(Enchantment enchantment, int i) {
 		super(enchantment.getWeight().getWeight());
 		this.enchantment = enchantment;
-		this.level = level;
+		this.level = i;
 	}
 }

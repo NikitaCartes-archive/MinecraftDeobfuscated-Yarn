@@ -12,7 +12,7 @@ public class NopeSurfaceBuilder extends SurfaceBuilder<TernarySurfaceConfig> {
 		super(function);
 	}
 
-	public void generate(
+	public void method_15299(
 		Random random,
 		Chunk chunk,
 		Biome biome,

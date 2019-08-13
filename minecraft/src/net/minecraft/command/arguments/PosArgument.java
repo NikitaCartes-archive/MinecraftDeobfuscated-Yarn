@@ -6,12 +6,12 @@ import net.minecraft.util.math.Vec2f;
 import net.minecraft.util.math.Vec3d;
 
 public interface PosArgument {
-	Vec3d toAbsolutePos(ServerCommandSource source);
+	Vec3d toAbsolutePos(ServerCommandSource serverCommandSource);
 
-	Vec2f toAbsoluteRotation(ServerCommandSource source);
+	Vec2f toAbsoluteRotation(ServerCommandSource serverCommandSource);
 
-	default BlockPos toAbsoluteBlockPos(ServerCommandSource source) {
-		return new BlockPos(this.toAbsolutePos(source));
+	default BlockPos toAbsoluteBlockPos(ServerCommandSource serverCommandSource) {
+		return new BlockPos(this.toAbsolutePos(serverCommandSource));
 	}
 
 	boolean isXRelative();

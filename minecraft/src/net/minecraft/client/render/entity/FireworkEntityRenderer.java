@@ -18,7 +18,7 @@ public class FireworkEntityRenderer extends EntityRenderer<FireworkEntity> {
 		this.itemRenderer = itemRenderer;
 	}
 
-	public void render(FireworkEntity fireworkEntity, double d, double e, double f, float g, float h) {
+	public void method_3968(FireworkEntity fireworkEntity, double d, double e, double f, float g, float h) {
 		GlStateManager.pushMatrix();
 		GlStateManager.translatef((float)d, (float)e, (float)f);
 		GlStateManager.enableRescaleNormal();
@@ -36,7 +36,7 @@ public class FireworkEntityRenderer extends EntityRenderer<FireworkEntity> {
 			GlStateManager.setupSolidRenderingTextureCombine(this.getOutlineColor(fireworkEntity));
 		}
 
-		this.itemRenderer.renderItem(fireworkEntity.getStack(), ModelTransformation.Type.GROUND);
+		this.itemRenderer.renderItem(fireworkEntity.getStack(), ModelTransformation.Type.field_4318);
 		if (this.renderOutlines) {
 			GlStateManager.tearDownSolidRenderingTextureCombine();
 			GlStateManager.disableColorMaterial();
@@ -47,7 +47,7 @@ public class FireworkEntityRenderer extends EntityRenderer<FireworkEntity> {
 		super.render(fireworkEntity, d, e, f, g, h);
 	}
 
-	protected Identifier getTexture(FireworkEntity fireworkEntity) {
+	protected Identifier method_3969(FireworkEntity fireworkEntity) {
 		return SpriteAtlasTexture.BLOCK_ATLAS_TEX;
 	}
 }

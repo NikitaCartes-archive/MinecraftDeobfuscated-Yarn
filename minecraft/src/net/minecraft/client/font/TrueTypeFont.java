@@ -26,25 +26,25 @@ public class TrueTypeFont implements Font {
 	private final float scaleFactor;
 	private final float ascent;
 
-	public TrueTypeFont(STBTTFontinfo info, float f, float oversample, float shiftX, float shiftY, String excludedCharacters) {
-		this.info = info;
-		this.oversample = oversample;
-		excludedCharacters.chars().forEach(i -> this.excludedCharacters.add((char)(i & 65535)));
-		this.shiftX = shiftX * oversample;
-		this.shiftY = shiftY * oversample;
-		this.scaleFactor = STBTruetype.stbtt_ScaleForPixelHeight(info, f * oversample);
+	public TrueTypeFont(STBTTFontinfo sTBTTFontinfo, float f, float g, float h, float i, String string) {
+		this.info = sTBTTFontinfo;
+		this.oversample = g;
+		string.chars().forEach(ix -> this.excludedCharacters.add((char)(ix & 65535)));
+		this.shiftX = h * g;
+		this.shiftY = i * g;
+		this.scaleFactor = STBTruetype.stbtt_ScaleForPixelHeight(sTBTTFontinfo, f * g);
 
 		try (MemoryStack memoryStack = MemoryStack.stackPush()) {
 			IntBuffer intBuffer = memoryStack.mallocInt(1);
 			IntBuffer intBuffer2 = memoryStack.mallocInt(1);
 			IntBuffer intBuffer3 = memoryStack.mallocInt(1);
-			STBTruetype.stbtt_GetFontVMetrics(info, intBuffer, intBuffer2, intBuffer3);
+			STBTruetype.stbtt_GetFontVMetrics(sTBTTFontinfo, intBuffer, intBuffer2, intBuffer3);
 			this.ascent = (float)intBuffer.get(0) * this.scaleFactor;
 		}
 	}
 
 	@Nullable
-	public TrueTypeFont.TtfGlyph getGlyph(char c) {
+	public TrueTypeFont.TtfGlyph method_2051(char c) {
 		if (this.excludedCharacters.contains(c)) {
 			return null;
 		} else {
@@ -86,9 +86,9 @@ public class TrueTypeFont implements Font {
 		}
 	}
 
-	public static STBTTFontinfo getSTBTTFontInfo(ByteBuffer font) throws IOException {
+	public static STBTTFontinfo getSTBTTFontInfo(ByteBuffer byteBuffer) throws IOException {
 		STBTTFontinfo sTBTTFontinfo = STBTTFontinfo.create();
-		if (!STBTruetype.stbtt_InitFont(sTBTTFontinfo, font)) {
+		if (!STBTruetype.stbtt_InitFont(sTBTTFontinfo, byteBuffer)) {
 			throw new IOException("Invalid ttf");
 		} else {
 			return sTBTTFontinfo;
@@ -104,13 +104,13 @@ public class TrueTypeFont implements Font {
 		private final float advance;
 		private final int glyphIndex;
 
-		private TtfGlyph(int xMax, int yMax, int yMin, int advance, float f, float glyphIndex, int i) {
-			this.width = yMax - xMax;
-			this.height = yMin - advance;
+		private TtfGlyph(int i, int j, int k, int l, float f, float g, int m) {
+			this.width = j - i;
+			this.height = k - l;
 			this.advance = f / TrueTypeFont.this.oversample;
-			this.bearingX = (glyphIndex + (float)xMax + TrueTypeFont.this.shiftX) / TrueTypeFont.this.oversample;
-			this.ascent = (TrueTypeFont.this.ascent - (float)yMin + TrueTypeFont.this.shiftY) / TrueTypeFont.this.oversample;
-			this.glyphIndex = i;
+			this.bearingX = (g + (float)i + TrueTypeFont.this.shiftX) / TrueTypeFont.this.oversample;
+			this.ascent = (TrueTypeFont.this.ascent - (float)k + TrueTypeFont.this.shiftY) / TrueTypeFont.this.oversample;
+			this.glyphIndex = m;
 		}
 
 		@Override
@@ -144,8 +144,8 @@ public class TrueTypeFont implements Font {
 		}
 
 		@Override
-		public void upload(int x, int y) {
-			try (NativeImage nativeImage = new NativeImage(NativeImage.Format.LUMINANCE, this.width, this.height, false)) {
+		public void upload(int i, int j) {
+			try (NativeImage nativeImage = new NativeImage(NativeImage.Format.field_4998, this.width, this.height, false)) {
 				nativeImage.makeGlyphBitmapSubpixel(
 					TrueTypeFont.this.info,
 					this.glyphIndex,
@@ -158,7 +158,7 @@ public class TrueTypeFont implements Font {
 					0,
 					0
 				);
-				nativeImage.upload(0, x, y, 0, 0, this.width, this.height, false);
+				nativeImage.upload(0, i, j, 0, 0, this.width, this.height, false);
 			}
 		}
 

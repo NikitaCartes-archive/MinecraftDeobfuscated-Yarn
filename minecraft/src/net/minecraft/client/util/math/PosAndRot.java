@@ -11,10 +11,10 @@ public class PosAndRot {
 	private final float pitch;
 	private final float yaw;
 
-	public PosAndRot(Vec3d pos, float pitch, float yaw) {
-		this.pos = pos;
-		this.pitch = pitch;
-		this.yaw = yaw;
+	public PosAndRot(Vec3d vec3d, float f, float g) {
+		this.pos = vec3d;
+		this.pitch = f;
+		this.yaw = g;
 	}
 
 	public Vec3d getPos() {

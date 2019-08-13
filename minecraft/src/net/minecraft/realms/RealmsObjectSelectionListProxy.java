@@ -64,8 +64,8 @@ public class RealmsObjectSelectionListProxy<E extends AlwaysSelectedEntryListWid
 	}
 
 	@Override
-	public boolean mouseScrolled(double d, double e, double amount) {
-		return this.realmsObjectSelectionList.mouseScrolled(d, e, amount) ? true : super.mouseScrolled(d, e, amount);
+	public boolean mouseScrolled(double d, double e, double f) {
+		return this.realmsObjectSelectionList.mouseScrolled(d, e, f) ? true : super.mouseScrolled(d, e, f);
 	}
 
 	@Override
@@ -74,20 +74,18 @@ public class RealmsObjectSelectionListProxy<E extends AlwaysSelectedEntryListWid
 	}
 
 	@Override
-	public boolean mouseClicked(double mouseX, double mouseY, int button) {
-		return this.realmsObjectSelectionList.mouseClicked(mouseX, mouseY, button) ? true : access$001(this, mouseX, mouseY, button);
+	public boolean mouseClicked(double d, double e, int i) {
+		return this.realmsObjectSelectionList.mouseClicked(d, e, i) ? true : access$001(this, d, e, i);
 	}
 
 	@Override
-	public boolean mouseReleased(double mouseX, double mouseY, int button) {
-		return this.realmsObjectSelectionList.mouseReleased(mouseX, mouseY, button);
+	public boolean mouseReleased(double d, double e, int i) {
+		return this.realmsObjectSelectionList.mouseReleased(d, e, i);
 	}
 
 	@Override
-	public boolean mouseDragged(double mouseX, double mouseY, int button, double deltaX, double deltaY) {
-		return this.realmsObjectSelectionList.mouseDragged(mouseX, mouseY, button, deltaX, deltaY)
-			? true
-			: super.mouseDragged(mouseX, mouseY, button, deltaX, deltaY);
+	public boolean mouseDragged(double d, double e, int i, double f, double g) {
+		return this.realmsObjectSelectionList.mouseDragged(d, e, i, f, g) ? true : super.mouseDragged(d, e, i, f, g);
 	}
 
 	protected final int addEntry(E entry) {
@@ -124,8 +122,8 @@ public class RealmsObjectSelectionListProxy<E extends AlwaysSelectedEntryListWid
 	}
 
 	@Override
-	public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
-		return super.keyPressed(keyCode, scanCode, modifiers) ? true : this.realmsObjectSelectionList.keyPressed(keyCode, scanCode, modifiers);
+	public boolean keyPressed(int i, int j, int k) {
+		return super.keyPressed(i, j, k) ? true : this.realmsObjectSelectionList.keyPressed(i, j, k);
 	}
 
 	@Override

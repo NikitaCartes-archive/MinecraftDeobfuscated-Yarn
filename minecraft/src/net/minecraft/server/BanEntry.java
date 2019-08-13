@@ -14,12 +14,12 @@ public abstract class BanEntry<T> extends ServerConfigEntry<T> {
 	protected final Date expiryDate;
 	protected final String reason;
 
-	public BanEntry(T object, @Nullable Date creationDate, @Nullable String source, @Nullable Date expiryDate, @Nullable String reason) {
+	public BanEntry(T object, @Nullable Date date, @Nullable String string, @Nullable Date date2, @Nullable String string2) {
 		super(object);
-		this.creationDate = creationDate == null ? new Date() : creationDate;
-		this.source = source == null ? "(Unknown)" : source;
-		this.expiryDate = expiryDate;
-		this.reason = reason == null ? "Banned by an operator." : reason;
+		this.creationDate = date == null ? new Date() : date;
+		this.source = string == null ? "(Unknown)" : string;
+		this.expiryDate = date2;
+		this.reason = string2 == null ? "Banned by an operator." : string2;
 	}
 
 	protected BanEntry(T object, JsonObject jsonObject) {

@@ -17,9 +17,9 @@ public class RayTraceContext {
 	private final RayTraceContext.FluidHandling fluid;
 	private final EntityContext entityPosition;
 
-	public RayTraceContext(Vec3d start, Vec3d end, RayTraceContext.ShapeType shapeType, RayTraceContext.FluidHandling fluidHandling, Entity entity) {
-		this.start = start;
-		this.end = end;
+	public RayTraceContext(Vec3d vec3d, Vec3d vec3d2, RayTraceContext.ShapeType shapeType, RayTraceContext.FluidHandling fluidHandling, Entity entity) {
+		this.start = vec3d;
+		this.end = vec3d2;
 		this.shapeType = shapeType;
 		this.fluid = fluidHandling;
 		this.entityPosition = EntityContext.of(entity);
@@ -42,9 +42,9 @@ public class RayTraceContext {
 	}
 
 	public static enum FluidHandling {
-		NONE(fluidState -> false),
-		SOURCE_ONLY(FluidState::isStill),
-		ANY(fluidState -> !fluidState.isEmpty());
+		field_1348(fluidState -> false),
+		field_1345(FluidState::isStill),
+		field_1347(fluidState -> !fluidState.isEmpty());
 
 		private final Predicate<FluidState> predicate;
 
@@ -62,8 +62,8 @@ public class RayTraceContext {
 	}
 
 	public static enum ShapeType implements RayTraceContext.ShapeProvider {
-		COLLIDER(BlockState::getCollisionShape),
-		OUTLINE(BlockState::getOutlineShape);
+		field_17558(BlockState::getCollisionShape),
+		field_17559(BlockState::getOutlineShape);
 
 		private final RayTraceContext.ShapeProvider provider;
 

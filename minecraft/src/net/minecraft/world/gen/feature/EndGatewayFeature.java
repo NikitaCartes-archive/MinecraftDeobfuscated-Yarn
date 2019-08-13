@@ -12,11 +12,11 @@ import net.minecraft.world.gen.chunk.ChunkGenerator;
 import net.minecraft.world.gen.chunk.ChunkGeneratorConfig;
 
 public class EndGatewayFeature extends Feature<EndGatewayFeatureConfig> {
-	public EndGatewayFeature(Function<Dynamic<?>, ? extends EndGatewayFeatureConfig> configFactory) {
-		super(configFactory);
+	public EndGatewayFeature(Function<Dynamic<?>, ? extends EndGatewayFeatureConfig> function) {
+		super(function);
 	}
 
-	public boolean generate(
+	public boolean method_13142(
 		IWorld iWorld,
 		ChunkGenerator<? extends ChunkGeneratorConfig> chunkGenerator,
 		Random random,
@@ -30,7 +30,7 @@ public class EndGatewayFeature extends Feature<EndGatewayFeatureConfig> {
 			boolean bl4 = Math.abs(blockPos2.getY() - blockPos.getY()) == 2;
 			if (bl && bl2 && bl3) {
 				BlockPos blockPos3 = blockPos2.toImmutable();
-				this.setBlockState(iWorld, blockPos3, Blocks.END_GATEWAY.getDefaultState());
+				this.setBlockState(iWorld, blockPos3, Blocks.field_10613.getDefaultState());
 				endGatewayFeatureConfig.getExitPos().ifPresent(blockPos2x -> {
 					BlockEntity blockEntity = iWorld.getBlockEntity(blockPos3);
 					if (blockEntity instanceof EndGatewayBlockEntity) {
@@ -40,13 +40,13 @@ public class EndGatewayFeature extends Feature<EndGatewayFeatureConfig> {
 					}
 				});
 			} else if (bl2) {
-				this.setBlockState(iWorld, blockPos2, Blocks.AIR.getDefaultState());
+				this.setBlockState(iWorld, blockPos2, Blocks.field_10124.getDefaultState());
 			} else if (bl4 && bl && bl3) {
-				this.setBlockState(iWorld, blockPos2, Blocks.BEDROCK.getDefaultState());
+				this.setBlockState(iWorld, blockPos2, Blocks.field_9987.getDefaultState());
 			} else if ((bl || bl3) && !bl4) {
-				this.setBlockState(iWorld, blockPos2, Blocks.BEDROCK.getDefaultState());
+				this.setBlockState(iWorld, blockPos2, Blocks.field_9987.getDefaultState());
 			} else {
-				this.setBlockState(iWorld, blockPos2, Blocks.AIR.getDefaultState());
+				this.setBlockState(iWorld, blockPos2, Blocks.field_10124.getDefaultState());
 			}
 		}
 

@@ -12,7 +12,7 @@ public class EndMidlandsBiome extends Biome {
 	public EndMidlandsBiome() {
 		super(
 			new Biome.Settings()
-				.configureSurfaceBuilder(SurfaceBuilder.DEFAULT, SurfaceBuilder.END_CONFIG)
+				.configureSurfaceBuilder(SurfaceBuilder.field_15701, SurfaceBuilder.END_CONFIG)
 				.precipitation(Biome.Precipitation.NONE)
 				.category(Biome.Category.THEEND)
 				.depth(0.1F)
@@ -25,12 +25,12 @@ public class EndMidlandsBiome extends Biome {
 		);
 		this.addStructureFeature(Feature.END_CITY, FeatureConfig.DEFAULT);
 		DefaultBiomeFeatures.method_20826(this);
-		this.addSpawn(EntityCategory.MONSTER, new Biome.SpawnEntry(EntityType.ENDERMAN, 10, 4, 4));
+		this.addSpawn(EntityCategory.field_6302, new Biome.SpawnEntry(EntityType.field_6091, 10, 4, 4));
 	}
 
 	@Environment(EnvType.CLIENT)
 	@Override
-	public int getSkyColor(float temperature) {
+	public int getSkyColor(float f) {
 		return 0;
 	}
 }

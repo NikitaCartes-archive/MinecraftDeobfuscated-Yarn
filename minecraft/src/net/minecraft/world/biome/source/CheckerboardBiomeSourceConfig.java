@@ -4,7 +4,7 @@ import net.minecraft.world.biome.Biome;
 import net.minecraft.world.biome.Biomes;
 
 public class CheckerboardBiomeSourceConfig implements BiomeSourceConfig {
-	private Biome[] biomes = new Biome[]{Biomes.PLAINS};
+	private Biome[] biomes = new Biome[]{Biomes.field_9451};
 	private int size = 1;
 
 	public CheckerboardBiomeSourceConfig method_8777(Biome[] biomes) {

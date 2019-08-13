@@ -11,14 +11,14 @@ import net.minecraft.world.gen.chunk.ChunkGenerator;
 import net.minecraft.world.gen.chunk.ChunkGeneratorConfig;
 
 public class ChorusPlantFeature extends Feature<DefaultFeatureConfig> {
-	public ChorusPlantFeature(Function<Dynamic<?>, ? extends DefaultFeatureConfig> configFactory) {
-		super(configFactory);
+	public ChorusPlantFeature(Function<Dynamic<?>, ? extends DefaultFeatureConfig> function) {
+		super(function);
 	}
 
-	public boolean generate(
+	public boolean method_12843(
 		IWorld iWorld, ChunkGenerator<? extends ChunkGeneratorConfig> chunkGenerator, Random random, BlockPos blockPos, DefaultFeatureConfig defaultFeatureConfig
 	) {
-		if (iWorld.isAir(blockPos.up()) && iWorld.getBlockState(blockPos).getBlock() == Blocks.END_STONE) {
+		if (iWorld.isAir(blockPos.up()) && iWorld.getBlockState(blockPos).getBlock() == Blocks.field_10471) {
 			ChorusFlowerBlock.generate(iWorld, blockPos.up(), random, 8);
 			return true;
 		} else {

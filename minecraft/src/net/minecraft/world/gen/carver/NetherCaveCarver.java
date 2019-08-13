@@ -17,7 +17,15 @@ public class NetherCaveCarver extends CaveCarver {
 	public NetherCaveCarver(Function<Dynamic<?>, ? extends ProbabilityConfig> function) {
 		super(function, 128);
 		this.alwaysCarvableBlocks = ImmutableSet.of(
-			Blocks.STONE, Blocks.GRANITE, Blocks.DIORITE, Blocks.ANDESITE, Blocks.DIRT, Blocks.COARSE_DIRT, Blocks.PODZOL, Blocks.GRASS_BLOCK, Blocks.NETHERRACK
+			Blocks.field_10340,
+			Blocks.field_10474,
+			Blocks.field_10508,
+			Blocks.field_10115,
+			Blocks.field_10566,
+			Blocks.field_10253,
+			Blocks.field_10520,
+			Blocks.field_10219,
+			Blocks.field_10515
 		);
 		this.carvableFluids = ImmutableSet.of(Fluids.LAVA, Fluids.WATER);
 	}
@@ -45,36 +53,36 @@ public class NetherCaveCarver extends CaveCarver {
 	@Override
 	protected boolean carveAtPoint(
 		Chunk chunk,
-		BitSet mask,
+		BitSet bitSet,
 		Random random,
-		BlockPos.Mutable pos1,
-		BlockPos.Mutable pos2,
-		BlockPos.Mutable pos3,
-		int seaLevel,
-		int mainChunkX,
-		int mainChunkZ,
-		int x,
-		int z,
-		int relativeX,
-		int y,
-		int relativeZ,
+		BlockPos.Mutable mutable,
+		BlockPos.Mutable mutable2,
+		BlockPos.Mutable mutable3,
+		int i,
+		int j,
+		int k,
+		int l,
+		int m,
+		int n,
+		int o,
+		int p,
 		AtomicBoolean atomicBoolean
 	) {
-		int i = relativeX | relativeZ << 4 | y << 8;
-		if (mask.get(i)) {
+		int q = n | p << 4 | o << 8;
+		if (bitSet.get(q)) {
 			return false;
 		} else {
-			mask.set(i);
-			pos1.set(x, y, z);
-			if (this.canAlwaysCarveBlock(chunk.getBlockState(pos1))) {
+			bitSet.set(q);
+			mutable.set(l, o, m);
+			if (this.canAlwaysCarveBlock(chunk.getBlockState(mutable))) {
 				BlockState blockState;
-				if (y <= 31) {
+				if (o <= 31) {
 					blockState = LAVA.getBlockState();
 				} else {
 					blockState = CAVE_AIR;
 				}
 
-				chunk.setBlockState(pos1, blockState, false);
+				chunk.setBlockState(mutable, blockState, false);
 				return true;
 			} else {
 				return false;

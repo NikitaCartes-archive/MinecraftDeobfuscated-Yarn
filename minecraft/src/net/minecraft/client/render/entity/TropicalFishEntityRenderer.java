@@ -23,22 +23,22 @@ public class TropicalFishEntityRenderer extends MobEntityRenderer<TropicalFishEn
 	}
 
 	@Nullable
-	protected Identifier getTexture(TropicalFishEntity tropicalFishEntity) {
+	protected Identifier method_4141(TropicalFishEntity tropicalFishEntity) {
 		return tropicalFishEntity.getShapeId();
 	}
 
-	public void render(TropicalFishEntity tropicalFishEntity, double d, double e, double f, float g, float h) {
+	public void method_4140(TropicalFishEntity tropicalFishEntity, double d, double e, double f, float g, float h) {
 		this.model = (EntityModel<TropicalFishEntity>)(tropicalFishEntity.getShape() == 0 ? this.field_4800 : this.field_4799);
 		float[] fs = tropicalFishEntity.getBaseColorComponents();
 		GlStateManager.color3f(fs[0], fs[1], fs[2]);
-		super.render(tropicalFishEntity, d, e, f, g, h);
+		super.method_4072(tropicalFishEntity, d, e, f, g, h);
 	}
 
-	protected void setupTransforms(TropicalFishEntity tropicalFishEntity, float f, float g, float h) {
+	protected void method_4142(TropicalFishEntity tropicalFishEntity, float f, float g, float h) {
 		super.setupTransforms(tropicalFishEntity, f, g, h);
 		float i = 4.3F * MathHelper.sin(0.6F * f);
 		GlStateManager.rotatef(i, 0.0F, 1.0F, 0.0F);
-		if (!tropicalFishEntity.isTouchingWater()) {
+		if (!tropicalFishEntity.isInsideWater()) {
 			GlStateManager.translatef(0.2F, 0.1F, 0.0F);
 			GlStateManager.rotatef(90.0F, 0.0F, 0.0F, 1.0F);
 		}

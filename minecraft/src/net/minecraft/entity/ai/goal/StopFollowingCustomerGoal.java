@@ -7,16 +7,16 @@ import net.minecraft.entity.player.PlayerEntity;
 public class StopFollowingCustomerGoal extends Goal {
 	private final AbstractTraderEntity trader;
 
-	public StopFollowingCustomerGoal(AbstractTraderEntity trader) {
-		this.trader = trader;
-		this.setControls(EnumSet.of(Goal.Control.JUMP, Goal.Control.MOVE));
+	public StopFollowingCustomerGoal(AbstractTraderEntity abstractTraderEntity) {
+		this.trader = abstractTraderEntity;
+		this.setControls(EnumSet.of(Goal.Control.field_18407, Goal.Control.field_18405));
 	}
 
 	@Override
 	public boolean canStart() {
 		if (!this.trader.isAlive()) {
 			return false;
-		} else if (this.trader.isTouchingWater()) {
+		} else if (this.trader.isInsideWater()) {
 			return false;
 		} else if (!this.trader.onGround) {
 			return false;

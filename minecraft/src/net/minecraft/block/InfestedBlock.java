@@ -15,32 +15,32 @@ public class InfestedBlock extends Block {
 	private final Block regularBlock;
 	private static final Map<Block, Block> REGULAR_TO_INFESTED = Maps.<Block, Block>newIdentityHashMap();
 
-	public InfestedBlock(Block regularBlock, Block.Settings settings) {
+	public InfestedBlock(Block block, Block.Settings settings) {
 		super(settings);
-		this.regularBlock = regularBlock;
-		REGULAR_TO_INFESTED.put(regularBlock, this);
+		this.regularBlock = block;
+		REGULAR_TO_INFESTED.put(block, this);
 	}
 
 	public Block getRegularBlock() {
 		return this.regularBlock;
 	}
 
-	public static boolean isInfestable(BlockState block) {
-		return REGULAR_TO_INFESTED.containsKey(block.getBlock());
+	public static boolean isInfestable(BlockState blockState) {
+		return REGULAR_TO_INFESTED.containsKey(blockState.getBlock());
 	}
 
 	@Override
-	public void onStacksDropped(BlockState state, World world, BlockPos pos, ItemStack stack) {
-		super.onStacksDropped(state, world, pos, stack);
-		if (!world.isClient && world.getGameRules().getBoolean(GameRules.DO_TILE_DROPS) && EnchantmentHelper.getLevel(Enchantments.SILK_TOUCH, stack) == 0) {
-			SilverfishEntity silverfishEntity = EntityType.SILVERFISH.create(world);
-			silverfishEntity.refreshPositionAndAngles((double)pos.getX() + 0.5, (double)pos.getY(), (double)pos.getZ() + 0.5, 0.0F, 0.0F);
+	public void onStacksDropped(BlockState blockState, World world, BlockPos blockPos, ItemStack itemStack) {
+		super.onStacksDropped(blockState, world, blockPos, itemStack);
+		if (!world.isClient && world.getGameRules().getBoolean(GameRules.field_19392) && EnchantmentHelper.getLevel(Enchantments.field_9099, itemStack) == 0) {
+			SilverfishEntity silverfishEntity = EntityType.field_6125.create(world);
+			silverfishEntity.setPositionAndAngles((double)blockPos.getX() + 0.5, (double)blockPos.getY(), (double)blockPos.getZ() + 0.5, 0.0F, 0.0F);
 			world.spawnEntity(silverfishEntity);
 			silverfishEntity.playSpawnEffects();
 		}
 	}
 
-	public static BlockState fromRegularBlock(Block regularBlock) {
-		return ((Block)REGULAR_TO_INFESTED.get(regularBlock)).getDefaultState();
+	public static BlockState fromRegularBlock(Block block) {
+		return ((Block)REGULAR_TO_INFESTED.get(block)).getDefaultState();
 	}
 }

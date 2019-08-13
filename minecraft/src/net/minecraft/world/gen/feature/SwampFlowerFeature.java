@@ -8,12 +8,12 @@ import net.minecraft.block.Blocks;
 import net.minecraft.util.math.BlockPos;
 
 public class SwampFlowerFeature extends FlowerFeature {
-	public SwampFlowerFeature(Function<Dynamic<?>, ? extends DefaultFeatureConfig> configFactory) {
-		super(configFactory);
+	public SwampFlowerFeature(Function<Dynamic<?>, ? extends DefaultFeatureConfig> function) {
+		super(function);
 	}
 
 	@Override
-	public BlockState getFlowerToPlace(Random random, BlockPos pos) {
-		return Blocks.BLUE_ORCHID.getDefaultState();
+	public BlockState getFlowerToPlace(Random random, BlockPos blockPos) {
+		return Blocks.field_10086.getDefaultState();
 	}
 }

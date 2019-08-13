@@ -13,7 +13,7 @@ public class EnchantingTableBlockEntityRenderer extends BlockEntityRenderer<Ench
 	private static final Identifier BOOK_TEX = new Identifier("textures/entity/enchanting_table_book.png");
 	private final BookModel book = new BookModel();
 
-	public void render(EnchantingTableBlockEntity enchantingTableBlockEntity, double d, double e, double f, float g, int i) {
+	public void method_3571(EnchantingTableBlockEntity enchantingTableBlockEntity, double d, double e, double f, float g, int i) {
 		GlStateManager.pushMatrix();
 		GlStateManager.translatef((float)d + 0.5F, (float)e + 0.75F, (float)f + 0.5F);
 		float h = (float)enchantingTableBlockEntity.ticks + g;

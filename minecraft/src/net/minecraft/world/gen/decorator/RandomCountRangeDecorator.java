@@ -12,7 +12,7 @@ public class RandomCountRangeDecorator extends SimpleDecorator<RangeDecoratorCon
 		super(function);
 	}
 
-	public Stream<BlockPos> getPositions(Random random, RangeDecoratorConfig rangeDecoratorConfig, BlockPos blockPos) {
+	public Stream<BlockPos> method_15954(Random random, RangeDecoratorConfig rangeDecoratorConfig, BlockPos blockPos) {
 		int i = random.nextInt(Math.max(rangeDecoratorConfig.count, 1));
 		return IntStream.range(0, i).mapToObj(ix -> {
 			int j = random.nextInt(16);

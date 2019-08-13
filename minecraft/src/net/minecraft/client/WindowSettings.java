@@ -12,11 +12,11 @@ public class WindowSettings {
 	public final OptionalInt fullscreenHeight;
 	public final boolean fullscreen;
 
-	public WindowSettings(int width, int height, OptionalInt fullscreenWidth, OptionalInt fullscreenHeight, boolean fullscreen) {
-		this.width = width;
-		this.height = height;
-		this.fullscreenWidth = fullscreenWidth;
-		this.fullscreenHeight = fullscreenHeight;
-		this.fullscreen = fullscreen;
+	public WindowSettings(int i, int j, OptionalInt optionalInt, OptionalInt optionalInt2, boolean bl) {
+		this.width = i;
+		this.height = j;
+		this.fullscreenWidth = optionalInt;
+		this.fullscreenHeight = optionalInt2;
+		this.fullscreen = bl;
 	}
 }

@@ -1,9 +1,9 @@
 package net.minecraft.client.world;
 
 import java.util.stream.Stream;
+import net.minecraft.util.TaskPriority;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.ScheduledTick;
-import net.minecraft.world.TickPriority;
 import net.minecraft.world.TickScheduler;
 
 public class DummyClientTickScheduler<T> implements TickScheduler<T> {
@@ -14,20 +14,20 @@ public class DummyClientTickScheduler<T> implements TickScheduler<T> {
 	}
 
 	@Override
-	public boolean isScheduled(BlockPos pos, T object) {
+	public boolean isScheduled(BlockPos blockPos, T object) {
 		return false;
 	}
 
 	@Override
-	public void schedule(BlockPos pos, T object, int delay) {
+	public void schedule(BlockPos blockPos, T object, int i) {
 	}
 
 	@Override
-	public void schedule(BlockPos pos, T object, int delay, TickPriority priority) {
+	public void schedule(BlockPos blockPos, T object, int i, TaskPriority taskPriority) {
 	}
 
 	@Override
-	public boolean isTicking(BlockPos pos, T object) {
+	public boolean isTicking(BlockPos blockPos, T object) {
 		return false;
 	}
 

@@ -10,18 +10,18 @@ public class SmoothUtil {
 	private double field_15759;
 	private double field_15758;
 
-	public double smooth(double original, double smoother) {
-		this.field_15760 += original;
-		double d = this.field_15760 - this.field_15759;
-		double e = MathHelper.lerp(0.5, this.field_15758, d);
-		double f = Math.signum(d);
-		if (f * d > f * this.field_15758) {
-			d = e;
+	public double smooth(double d, double e) {
+		this.field_15760 += d;
+		double f = this.field_15760 - this.field_15759;
+		double g = MathHelper.lerp(0.5, this.field_15758, f);
+		double h = Math.signum(f);
+		if (h * f > h * this.field_15758) {
+			f = g;
 		}
 
-		this.field_15758 = e;
-		this.field_15759 += d * smoother;
-		return d * smoother;
+		this.field_15758 = g;
+		this.field_15759 += f * e;
+		return f * e;
 	}
 
 	public void clear() {

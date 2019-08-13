@@ -13,7 +13,7 @@ public class SwampSurfaceBuilder extends SurfaceBuilder<TernarySurfaceConfig> {
 		super(function);
 	}
 
-	public void generate(
+	public void method_15333(
 		Random random,
 		Chunk chunk,
 		Biome biome,
@@ -44,6 +44,6 @@ public class SwampSurfaceBuilder extends SurfaceBuilder<TernarySurfaceConfig> {
 			}
 		}
 
-		SurfaceBuilder.DEFAULT.generate(random, chunk, biome, i, j, k, d, blockState, blockState2, l, m, ternarySurfaceConfig);
+		SurfaceBuilder.field_15701.generate(random, chunk, biome, i, j, k, d, blockState, blockState2, l, m, ternarySurfaceConfig);
 	}
 }

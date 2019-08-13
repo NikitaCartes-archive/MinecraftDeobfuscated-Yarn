@@ -6,5 +6,5 @@ import net.minecraft.item.ItemStack;
 
 @Environment(EnvType.CLIENT)
 public interface ItemColorProvider {
-	int getColor(ItemStack stack, int tintIndex);
+	int getColor(ItemStack itemStack, int i);
 }

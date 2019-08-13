@@ -12,15 +12,15 @@ import net.minecraft.util.math.BlockPos;
 
 public class HideWhenBellRingsTask extends Task<LivingEntity> {
 	public HideWhenBellRingsTask() {
-		super(ImmutableMap.of(MemoryModuleType.HEARD_BELL_TIME, MemoryModuleState.VALUE_PRESENT));
+		super(ImmutableMap.of(MemoryModuleType.field_19009, MemoryModuleState.field_18456));
 	}
 
 	@Override
-	protected void run(ServerWorld world, LivingEntity entity, long time) {
-		Brain<?> brain = entity.getBrain();
-		Raid raid = world.getRaidAt(new BlockPos(entity));
+	protected void run(ServerWorld serverWorld, LivingEntity livingEntity, long l) {
+		Brain<?> brain = livingEntity.getBrain();
+		Raid raid = serverWorld.getRaidAt(new BlockPos(livingEntity));
 		if (raid == null) {
-			brain.resetPossibleActivities(Activity.HIDE);
+			brain.resetPossibleActivities(Activity.field_19043);
 		}
 	}
 }

@@ -14,8 +14,8 @@ import net.minecraft.util.Identifier;
 public class PhantomEyesFeatureRenderer<T extends Entity> extends FeatureRenderer<T, PhantomEntityModel<T>> {
 	private static final Identifier SKIN = new Identifier("textures/entity/phantom_eyes.png");
 
-	public PhantomEyesFeatureRenderer(FeatureRendererContext<T, PhantomEntityModel<T>> context) {
-		super(context);
+	public PhantomEyesFeatureRenderer(FeatureRendererContext<T, PhantomEntityModel<T>> featureRendererContext) {
+		super(featureRendererContext);
 	}
 
 	@Override
@@ -34,7 +34,7 @@ public class PhantomEyesFeatureRenderer<T extends Entity> extends FeatureRendere
 		GlStateManager.color4f(1.0F, 1.0F, 1.0F, 1.0F);
 		GameRenderer gameRenderer = MinecraftClient.getInstance().gameRenderer;
 		gameRenderer.setFogBlack(true);
-		this.getContextModel().render(entity, f, g, i, j, k, l);
+		this.getModel().render(entity, f, g, i, j, k, l);
 		gameRenderer.setFogBlack(false);
 		this.applyLightmapCoordinates(entity);
 		GlStateManager.depthMask(true);

@@ -15,11 +15,11 @@ public class WitherSkeletonEntityRenderer extends SkeletonEntityRenderer {
 	}
 
 	@Override
-	protected Identifier getTexture(AbstractSkeletonEntity abstractSkeletonEntity) {
+	protected Identifier method_4119(AbstractSkeletonEntity abstractSkeletonEntity) {
 		return SKIN;
 	}
 
-	protected void scale(AbstractSkeletonEntity abstractSkeletonEntity, float f) {
+	protected void method_4161(AbstractSkeletonEntity abstractSkeletonEntity, float f) {
 		GlStateManager.scalef(1.2F, 1.2F, 1.2F);
 	}
 }

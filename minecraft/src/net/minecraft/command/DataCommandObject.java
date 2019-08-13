@@ -7,13 +7,13 @@ import net.minecraft.nbt.Tag;
 import net.minecraft.text.Text;
 
 public interface DataCommandObject {
-	void setTag(CompoundTag tag) throws CommandSyntaxException;
+	void setTag(CompoundTag compoundTag) throws CommandSyntaxException;
 
 	CompoundTag getTag() throws CommandSyntaxException;
 
-	Text feedbackModify();
+	Text getModifiedFeedback();
 
-	Text feedbackQuery(Tag tag);
+	Text getQueryFeedback(Tag tag);
 
-	Text feedbackGet(NbtPathArgumentType.NbtPath nbtPath, double scale, int result);
+	Text getGetFeedback(NbtPathArgumentType.NbtPath nbtPath, double d, int i);
 }

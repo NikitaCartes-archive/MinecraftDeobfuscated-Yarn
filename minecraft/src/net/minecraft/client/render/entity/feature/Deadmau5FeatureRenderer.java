@@ -9,11 +9,11 @@ import net.minecraft.util.math.MathHelper;
 
 @Environment(EnvType.CLIENT)
 public class Deadmau5FeatureRenderer extends FeatureRenderer<AbstractClientPlayerEntity, PlayerEntityModel<AbstractClientPlayerEntity>> {
-	public Deadmau5FeatureRenderer(FeatureRendererContext<AbstractClientPlayerEntity, PlayerEntityModel<AbstractClientPlayerEntity>> context) {
-		super(context);
+	public Deadmau5FeatureRenderer(FeatureRendererContext<AbstractClientPlayerEntity, PlayerEntityModel<AbstractClientPlayerEntity>> featureRendererContext) {
+		super(featureRendererContext);
 	}
 
-	public void render(AbstractClientPlayerEntity abstractClientPlayerEntity, float f, float g, float h, float i, float j, float k, float l) {
+	public void method_4181(AbstractClientPlayerEntity abstractClientPlayerEntity, float f, float g, float h, float i, float j, float k, float l) {
 		if ("deadmau5".equals(abstractClientPlayerEntity.getName().getString())
 			&& abstractClientPlayerEntity.hasSkinTexture()
 			&& !abstractClientPlayerEntity.isInvisible()) {
@@ -32,7 +32,7 @@ public class Deadmau5FeatureRenderer extends FeatureRenderer<AbstractClientPlaye
 				GlStateManager.rotatef(-n, 0.0F, 1.0F, 0.0F);
 				float p = 1.3333334F;
 				GlStateManager.scalef(1.3333334F, 1.3333334F, 1.3333334F);
-				this.getContextModel().renderEars(0.0625F);
+				this.getModel().renderEars(0.0625F);
 				GlStateManager.popMatrix();
 			}
 		}

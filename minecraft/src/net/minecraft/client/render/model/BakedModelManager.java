@@ -17,47 +17,47 @@ import net.minecraft.util.profiler.Profiler;
 
 @Environment(EnvType.CLIENT)
 public class BakedModelManager extends SinglePreparationResourceReloadListener<ModelLoader> {
-	private Map<Identifier, BakedModel> models;
+	private Map<Identifier, BakedModel> modelMap;
 	private final SpriteAtlasTexture spriteAtlas;
-	private final BlockModels blockModelCache;
+	private final BlockModels blockStateMaps;
 	private final BlockColors colorMap;
 	private BakedModel missingModel;
 	private Object2IntMap<BlockState> field_20278;
 
-	public BakedModelManager(SpriteAtlasTexture spriteAtlas, BlockColors colorMap) {
-		this.spriteAtlas = spriteAtlas;
-		this.colorMap = colorMap;
-		this.blockModelCache = new BlockModels(this);
+	public BakedModelManager(SpriteAtlasTexture spriteAtlasTexture, BlockColors blockColors) {
+		this.spriteAtlas = spriteAtlasTexture;
+		this.colorMap = blockColors;
+		this.blockStateMaps = new BlockModels(this);
 	}
 
-	public BakedModel getModel(ModelIdentifier id) {
-		return (BakedModel)this.models.getOrDefault(id, this.missingModel);
+	public BakedModel getModel(ModelIdentifier modelIdentifier) {
+		return (BakedModel)this.modelMap.getOrDefault(modelIdentifier, this.missingModel);
 	}
 
 	public BakedModel getMissingModel() {
 		return this.missingModel;
 	}
 
-	public BlockModels getBlockModels() {
-		return this.blockModelCache;
+	public BlockModels getBlockStateMaps() {
+		return this.blockStateMaps;
 	}
 
-	protected ModelLoader prepare(ResourceManager resourceManager, Profiler profiler) {
+	protected ModelLoader method_18178(ResourceManager resourceManager, Profiler profiler) {
 		profiler.startTick();
 		ModelLoader modelLoader = new ModelLoader(resourceManager, this.spriteAtlas, this.colorMap, profiler);
 		profiler.endTick();
 		return modelLoader;
 	}
 
-	protected void apply(ModelLoader modelLoader, ResourceManager resourceManager, Profiler profiler) {
+	protected void method_18179(ModelLoader modelLoader, ResourceManager resourceManager, Profiler profiler) {
 		profiler.startTick();
 		profiler.push("upload");
 		modelLoader.upload(profiler);
-		this.models = modelLoader.getBakedModelMap();
+		this.modelMap = modelLoader.getBakedModelMap();
 		this.field_20278 = modelLoader.method_21605();
-		this.missingModel = (BakedModel)this.models.get(ModelLoader.MISSING);
+		this.missingModel = (BakedModel)this.modelMap.get(ModelLoader.MISSING);
 		profiler.swap("cache");
-		this.blockModelCache.reload();
+		this.blockStateMaps.reload();
 		profiler.pop();
 		profiler.endTick();
 	}

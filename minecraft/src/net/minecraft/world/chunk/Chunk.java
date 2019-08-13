@@ -18,20 +18,20 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.structure.StructureStart;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
+import net.minecraft.world.BlockViewWithStructures;
 import net.minecraft.world.Heightmap;
 import net.minecraft.world.LightType;
-import net.minecraft.world.StructureHolder;
 import net.minecraft.world.TickScheduler;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.chunk.light.LightingProvider;
 import net.minecraft.world.gen.GenerationStep;
 import org.apache.logging.log4j.LogManager;
 
-public interface Chunk extends StructureHolder {
+public interface Chunk extends BlockViewWithStructures {
 	@Nullable
-	BlockState setBlockState(BlockPos pos, BlockState state, boolean bl);
+	BlockState setBlockState(BlockPos blockPos, BlockState blockState, boolean bl);
 
-	void setBlockEntity(BlockPos pos, BlockEntity blockEntity);
+	void setBlockEntity(BlockPos blockPos, BlockEntity blockEntity);
 
 	void addEntity(Entity entity);
 
@@ -61,12 +61,12 @@ public interface Chunk extends StructureHolder {
 	@Nullable
 	LightingProvider getLightingProvider();
 
-	default int getLightLevel(BlockPos pos, int darkness, boolean includeSkyLight) {
+	default int getLightLevel(BlockPos blockPos, int i, boolean bl) {
 		LightingProvider lightingProvider = this.getLightingProvider();
-		if (lightingProvider != null && this.getStatus().isAtLeast(ChunkStatus.LIGHT)) {
-			int i = includeSkyLight ? lightingProvider.get(LightType.SKY).getLightLevel(pos) - darkness : 0;
-			int j = lightingProvider.get(LightType.BLOCK).getLightLevel(pos);
-			return Math.max(j, i);
+		if (lightingProvider != null && this.getStatus().isAtLeast(ChunkStatus.field_12805)) {
+			int j = bl ? lightingProvider.get(LightType.field_9284).getLightLevel(blockPos) - i : 0;
+			int k = lightingProvider.get(LightType.field_9282).getLightLevel(blockPos);
+			return Math.max(k, j);
 		} else {
 			return 0;
 		}
@@ -74,23 +74,23 @@ public interface Chunk extends StructureHolder {
 
 	Collection<Entry<Heightmap.Type, Heightmap>> getHeightmaps();
 
-	void setHeightmap(Heightmap.Type type, long[] heightmap);
+	void setHeightmap(Heightmap.Type type, long[] ls);
 
 	Heightmap getHeightmap(Heightmap.Type type);
 
-	int sampleHeightmap(Heightmap.Type type, int x, int z);
+	int sampleHeightmap(Heightmap.Type type, int i, int j);
 
 	ChunkPos getPos();
 
-	void setLastSaveTime(long lastSaveTime);
+	void setLastSaveTime(long l);
 
 	Map<String, StructureStart> getStructureStarts();
 
 	void setStructureStarts(Map<String, StructureStart> map);
 
-	default Biome getBiome(BlockPos pos) {
-		int i = pos.getX() & 15;
-		int j = pos.getZ() & 15;
+	default Biome getBiome(BlockPos blockPos) {
+		int i = blockPos.getX() & 15;
+		int j = blockPos.getZ() & 15;
 		return this.getBiomeArray()[j << 4 | i];
 	}
 
@@ -114,7 +114,7 @@ public interface Chunk extends StructureHolder {
 
 	Biome[] getBiomeArray();
 
-	void setShouldSave(boolean shouldSave);
+	void setShouldSave(boolean bl);
 
 	boolean needsSaving();
 
@@ -139,12 +139,12 @@ public interface Chunk extends StructureHolder {
 	}
 
 	@Nullable
-	CompoundTag getBlockEntityTagAt(BlockPos pos);
+	CompoundTag getBlockEntityTagAt(BlockPos blockPos);
 
 	@Nullable
 	CompoundTag method_20598(BlockPos blockPos);
 
-	default void setBiomeArray(Biome[] biomeArray) {
+	default void setBiomeArray(Biome[] biomes) {
 		throw new UnsupportedOperationException();
 	}
 
@@ -160,19 +160,19 @@ public interface Chunk extends StructureHolder {
 
 	UpgradeData getUpgradeData();
 
-	void setInhabitedTime(long inhabitedTime);
+	void setInhabitedTime(long l);
 
 	long getInhabitedTime();
 
-	static ShortList getList(ShortList[] lists, int index) {
-		if (lists[index] == null) {
-			lists[index] = new ShortArrayList();
+	static ShortList getList(ShortList[] shortLists, int i) {
+		if (shortLists[i] == null) {
+			shortLists[i] = new ShortArrayList();
 		}
 
-		return lists[index];
+		return shortLists[i];
 	}
 
 	boolean isLightOn();
 
-	void setLightOn(boolean lightOn);
+	void setLightOn(boolean bl);
 }

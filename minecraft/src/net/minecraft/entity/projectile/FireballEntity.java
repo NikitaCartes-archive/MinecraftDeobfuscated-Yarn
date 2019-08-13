@@ -21,41 +21,43 @@ public class FireballEntity extends AbstractFireballEntity {
 	}
 
 	@Environment(EnvType.CLIENT)
-	public FireballEntity(World world, double x, double y, double z, double velocityX, double velocityY, double velocityZ) {
-		super(EntityType.FIREBALL, x, y, z, velocityX, velocityY, velocityZ, world);
+	public FireballEntity(World world, double d, double e, double f, double g, double h, double i) {
+		super(EntityType.field_6066, d, e, f, g, h, i, world);
 	}
 
-	public FireballEntity(World world, LivingEntity owner, double velocityX, double velocityY, double velocityZ) {
-		super(EntityType.FIREBALL, owner, velocityX, velocityY, velocityZ, world);
+	public FireballEntity(World world, LivingEntity livingEntity, double d, double e, double f) {
+		super(EntityType.field_6066, livingEntity, d, e, f, world);
 	}
 
 	@Override
 	protected void onCollision(HitResult hitResult) {
 		if (!this.world.isClient) {
-			if (hitResult.getType() == HitResult.Type.ENTITY) {
+			if (hitResult.getType() == HitResult.Type.field_1331) {
 				Entity entity = ((EntityHitResult)hitResult).getEntity();
 				entity.damage(DamageSource.explosiveProjectile(this, this.owner), 6.0F);
 				this.dealDamage(this.owner, entity);
 			}
 
-			boolean bl = this.world.getGameRules().getBoolean(GameRules.MOB_GRIEFING);
+			boolean bl = this.world.getGameRules().getBoolean(GameRules.field_19388);
 			this.world
-				.createExplosion(null, this.x, this.y, this.z, (float)this.explosionPower, bl, bl ? Explosion.DestructionType.DESTROY : Explosion.DestructionType.NONE);
+				.createExplosion(
+					null, this.x, this.y, this.z, (float)this.explosionPower, bl, bl ? Explosion.DestructionType.field_18687 : Explosion.DestructionType.field_18685
+				);
 			this.remove();
 		}
 	}
 
 	@Override
-	public void writeCustomDataToTag(CompoundTag tag) {
-		super.writeCustomDataToTag(tag);
-		tag.putInt("ExplosionPower", this.explosionPower);
+	public void writeCustomDataToTag(CompoundTag compoundTag) {
+		super.writeCustomDataToTag(compoundTag);
+		compoundTag.putInt("ExplosionPower", this.explosionPower);
 	}
 
 	@Override
-	public void readCustomDataFromTag(CompoundTag tag) {
-		super.readCustomDataFromTag(tag);
-		if (tag.contains("ExplosionPower", 99)) {
-			this.explosionPower = tag.getInt("ExplosionPower");
+	public void readCustomDataFromTag(CompoundTag compoundTag) {
+		super.readCustomDataFromTag(compoundTag);
+		if (compoundTag.containsKey("ExplosionPower", 99)) {
+			this.explosionPower = compoundTag.getInt("ExplosionPower");
 		}
 	}
 }

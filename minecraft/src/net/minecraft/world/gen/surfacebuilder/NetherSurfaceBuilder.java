@@ -12,10 +12,10 @@ import net.minecraft.world.chunk.Chunk;
 import net.minecraft.world.gen.ChunkRandom;
 
 public class NetherSurfaceBuilder extends SurfaceBuilder<TernarySurfaceConfig> {
-	private static final BlockState CAVE_AIR = Blocks.CAVE_AIR.getDefaultState();
-	private static final BlockState NETHERRACK = Blocks.NETHERRACK.getDefaultState();
-	private static final BlockState GRAVEL = Blocks.GRAVEL.getDefaultState();
-	private static final BlockState GLOWSTONE = Blocks.SOUL_SAND.getDefaultState();
+	private static final BlockState CAVE_AIR = Blocks.field_10543.getDefaultState();
+	private static final BlockState NETHERRACK = Blocks.field_10515.getDefaultState();
+	private static final BlockState GRAVEL = Blocks.field_10255.getDefaultState();
+	private static final BlockState GLOWSTONE = Blocks.field_10114.getDefaultState();
 	protected long seed;
 	protected OctavePerlinNoiseSampler noise;
 
@@ -23,7 +23,7 @@ public class NetherSurfaceBuilder extends SurfaceBuilder<TernarySurfaceConfig> {
 		super(function);
 	}
 
-	public void generate(
+	public void method_15300(
 		Random random,
 		Chunk chunk,
 		Biome biome,
@@ -94,11 +94,11 @@ public class NetherSurfaceBuilder extends SurfaceBuilder<TernarySurfaceConfig> {
 	}
 
 	@Override
-	public void initSeed(long seed) {
-		if (this.seed != seed || this.noise == null) {
-			this.noise = new OctavePerlinNoiseSampler(new ChunkRandom(seed), 4);
+	public void initSeed(long l) {
+		if (this.seed != l || this.noise == null) {
+			this.noise = new OctavePerlinNoiseSampler(new ChunkRandom(l), 4);
 		}
 
-		this.seed = seed;
+		this.seed = l;
 	}
 }

@@ -23,14 +23,14 @@ public abstract class TrackTargetGoal extends Goal {
 	protected LivingEntity target;
 	protected int maxTimeWithoutVisibility = 60;
 
-	public TrackTargetGoal(MobEntity mob, boolean checkVisibility) {
-		this(mob, checkVisibility, false);
+	public TrackTargetGoal(MobEntity mobEntity, boolean bl) {
+		this(mobEntity, bl, false);
 	}
 
-	public TrackTargetGoal(MobEntity mob, boolean checkVisibility, boolean checkNavigable) {
-		this.mob = mob;
-		this.checkVisibility = checkVisibility;
-		this.checkCanNavigate = checkNavigable;
+	public TrackTargetGoal(MobEntity mobEntity, boolean bl, boolean bl2) {
+		this.mob = mobEntity;
+		this.checkVisibility = bl;
+		this.checkCanNavigate = bl2;
 	}
 
 	@Override
@@ -91,12 +91,12 @@ public abstract class TrackTargetGoal extends Goal {
 		this.target = null;
 	}
 
-	protected boolean canTrack(@Nullable LivingEntity target, TargetPredicate targetPredicate) {
-		if (target == null) {
+	protected boolean canTrack(@Nullable LivingEntity livingEntity, TargetPredicate targetPredicate) {
+		if (livingEntity == null) {
 			return false;
-		} else if (!targetPredicate.test(this.mob, target)) {
+		} else if (!targetPredicate.test(this.mob, livingEntity)) {
 			return false;
-		} else if (!this.mob.isInWalkTargetRange(new BlockPos(target))) {
+		} else if (!this.mob.isInWalkTargetRange(new BlockPos(livingEntity))) {
 			return false;
 		} else {
 			if (this.checkCanNavigate) {
@@ -105,7 +105,7 @@ public abstract class TrackTargetGoal extends Goal {
 				}
 
 				if (this.canNavigateFlag == 0) {
-					this.canNavigateFlag = this.canNavigateToEntity(target) ? 1 : 2;
+					this.canNavigateFlag = this.canNavigateToEntity(livingEntity) ? 1 : 2;
 				}
 
 				if (this.canNavigateFlag == 2) {
@@ -117,9 +117,9 @@ public abstract class TrackTargetGoal extends Goal {
 		}
 	}
 
-	private boolean canNavigateToEntity(LivingEntity entity) {
-		this.checkCanNavigateCooldown = 10 + this.mob.getRandom().nextInt(5);
-		Path path = this.mob.getNavigation().findPathTo(entity, 0);
+	private boolean canNavigateToEntity(LivingEntity livingEntity) {
+		this.checkCanNavigateCooldown = 10 + this.mob.getRand().nextInt(5);
+		Path path = this.mob.getNavigation().findPathTo(livingEntity, 0);
 		if (path == null) {
 			return false;
 		} else {
@@ -127,15 +127,15 @@ public abstract class TrackTargetGoal extends Goal {
 			if (pathNode == null) {
 				return false;
 			} else {
-				int i = pathNode.x - MathHelper.floor(entity.x);
-				int j = pathNode.z - MathHelper.floor(entity.z);
+				int i = pathNode.x - MathHelper.floor(livingEntity.x);
+				int j = pathNode.z - MathHelper.floor(livingEntity.z);
 				return (double)(i * i + j * j) <= 2.25;
 			}
 		}
 	}
 
-	public TrackTargetGoal setMaxTimeWithoutVisibility(int time) {
-		this.maxTimeWithoutVisibility = time;
+	public TrackTargetGoal setMaxTimeWithoutVisibility(int i) {
+		this.maxTimeWithoutVisibility = i;
 		return this;
 	}
 }

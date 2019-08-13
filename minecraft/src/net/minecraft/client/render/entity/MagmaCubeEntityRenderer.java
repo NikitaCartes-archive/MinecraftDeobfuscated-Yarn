@@ -16,11 +16,11 @@ public class MagmaCubeEntityRenderer extends MobEntityRenderer<MagmaCubeEntity, 
 		super(entityRenderDispatcher, new MagmaCubeEntityModel<>(), 0.25F);
 	}
 
-	protected Identifier getTexture(MagmaCubeEntity magmaCubeEntity) {
+	protected Identifier method_4001(MagmaCubeEntity magmaCubeEntity) {
 		return SKIN;
 	}
 
-	protected void scale(MagmaCubeEntity magmaCubeEntity, float f) {
+	protected void method_4000(MagmaCubeEntity magmaCubeEntity, float f) {
 		int i = magmaCubeEntity.getSize();
 		float g = MathHelper.lerp(f, magmaCubeEntity.lastStretch, magmaCubeEntity.stretch) / ((float)i * 0.5F + 1.0F);
 		float h = 1.0F / (g + 1.0F);

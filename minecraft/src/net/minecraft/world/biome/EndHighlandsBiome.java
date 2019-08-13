@@ -17,7 +17,7 @@ public class EndHighlandsBiome extends Biome {
 	public EndHighlandsBiome() {
 		super(
 			new Biome.Settings()
-				.configureSurfaceBuilder(SurfaceBuilder.DEFAULT, SurfaceBuilder.END_CONFIG)
+				.configureSurfaceBuilder(SurfaceBuilder.field_15701, SurfaceBuilder.END_CONFIG)
 				.precipitation(Biome.Precipitation.NONE)
 				.category(Biome.Category.THEEND)
 				.depth(0.1F)
@@ -30,21 +30,21 @@ public class EndHighlandsBiome extends Biome {
 		);
 		this.addStructureFeature(Feature.END_CITY, FeatureConfig.DEFAULT);
 		this.addFeature(
-			GenerationStep.Feature.SURFACE_STRUCTURES,
+			GenerationStep.Feature.field_13173,
 			configureFeature(
-				Feature.END_GATEWAY, EndGatewayFeatureConfig.createConfig(TheEndDimension.SPAWN_POINT, true), Decorator.END_GATEWAY, DecoratorConfig.DEFAULT
+				Feature.field_13564, EndGatewayFeatureConfig.createConfig(TheEndDimension.SPAWN_POINT, true), Decorator.field_14230, DecoratorConfig.DEFAULT
 			)
 		);
 		DefaultBiomeFeatures.method_20826(this);
 		this.addFeature(
-			GenerationStep.Feature.VEGETAL_DECORATION, configureFeature(Feature.CHORUS_PLANT, FeatureConfig.DEFAULT, Decorator.CHORUS_PLANT, DecoratorConfig.DEFAULT)
+			GenerationStep.Feature.field_13178, configureFeature(Feature.field_13552, FeatureConfig.DEFAULT, Decorator.field_14257, DecoratorConfig.DEFAULT)
 		);
-		this.addSpawn(EntityCategory.MONSTER, new Biome.SpawnEntry(EntityType.ENDERMAN, 10, 4, 4));
+		this.addSpawn(EntityCategory.field_6302, new Biome.SpawnEntry(EntityType.field_6091, 10, 4, 4));
 	}
 
 	@Environment(EnvType.CLIENT)
 	@Override
-	public int getSkyColor(float temperature) {
+	public int getSkyColor(float f) {
 		return 0;
 	}
 }

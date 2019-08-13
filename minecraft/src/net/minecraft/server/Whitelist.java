@@ -14,8 +14,8 @@ public class Whitelist extends ServerConfigList<GameProfile, WhitelistEntry> {
 		return new WhitelistEntry(jsonObject);
 	}
 
-	public boolean isAllowed(GameProfile profile) {
-		return this.contains(profile);
+	public boolean isAllowed(GameProfile gameProfile) {
+		return this.contains(gameProfile);
 	}
 
 	@Override
@@ -30,7 +30,7 @@ public class Whitelist extends ServerConfigList<GameProfile, WhitelistEntry> {
 		return strings;
 	}
 
-	protected String toString(GameProfile gameProfile) {
+	protected String method_14652(GameProfile gameProfile) {
 		return gameProfile.getId().toString();
 	}
 }

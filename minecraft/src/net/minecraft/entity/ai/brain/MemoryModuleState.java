@@ -1,7 +1,7 @@
 package net.minecraft.entity.ai.brain;
 
 public enum MemoryModuleState {
-	VALUE_PRESENT,
-	VALUE_ABSENT,
-	REGISTERED;
+	field_18456,
+	field_18457,
+	field_18458;
 }

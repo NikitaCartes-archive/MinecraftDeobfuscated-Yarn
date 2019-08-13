@@ -12,9 +12,9 @@ public class ElytraSoundInstance extends MovingSoundInstance {
 	private final ClientPlayerEntity player;
 	private int tickCount;
 
-	public ElytraSoundInstance(ClientPlayerEntity player) {
-		super(SoundEvents.ITEM_ELYTRA_FLYING, SoundCategory.PLAYERS);
-		this.player = player;
+	public ElytraSoundInstance(ClientPlayerEntity clientPlayerEntity) {
+		super(SoundEvents.field_14572, SoundCategory.PLAYERS);
+		this.player = clientPlayerEntity;
 		this.repeat = true;
 		this.repeatDelay = 0;
 		this.volume = 0.1F;

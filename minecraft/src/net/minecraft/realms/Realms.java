@@ -23,7 +23,7 @@ import net.minecraft.nbt.NbtIo;
 import net.minecraft.network.MessageType;
 import net.minecraft.text.LiteralText;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.Util;
+import net.minecraft.util.SystemUtil;
 import net.minecraft.world.GameMode;
 
 @Environment(EnvType.CLIENT)
@@ -49,7 +49,7 @@ public class Realms {
 	}
 
 	public static long currentTimeMillis() {
-		return Util.getMeasuringTimeMs();
+		return SystemUtil.getMeasuringTimeMs();
 	}
 
 	public static String getSessionId() {
@@ -69,7 +69,7 @@ public class Realms {
 	}
 
 	public static <V> CompletableFuture<V> execute(Supplier<V> supplier) {
-		return MinecraftClient.getInstance().submit(supplier);
+		return MinecraftClient.getInstance().executeFuture(supplier);
 	}
 
 	public static void execute(Runnable runnable) {
@@ -92,19 +92,19 @@ public class Realms {
 	}
 
 	public static int survivalId() {
-		return GameMode.SURVIVAL.getId();
+		return GameMode.field_9215.getId();
 	}
 
 	public static int creativeId() {
-		return GameMode.CREATIVE.getId();
+		return GameMode.field_9220.getId();
 	}
 
 	public static int adventureId() {
-		return GameMode.ADVENTURE.getId();
+		return GameMode.field_9216.getId();
 	}
 
 	public static int spectatorId() {
-		return GameMode.SPECTATOR.getId();
+		return GameMode.field_9219.getId();
 	}
 
 	public static void setConnectedToRealms(boolean bl) {
@@ -141,7 +141,7 @@ public class Realms {
 	}
 
 	public static void openUri(String string) {
-		Util.getOperatingSystem().open(string);
+		SystemUtil.getOperatingSystem().open(string);
 	}
 
 	public static void setClipboard(String string) {
@@ -168,7 +168,7 @@ public class Realms {
 	public static void narrateNow(String string) {
 		NarratorManager narratorManager = NarratorManager.INSTANCE;
 		narratorManager.clear();
-		narratorManager.onChatMessage(MessageType.SYSTEM, new LiteralText(fixNarrationNewlines(string)));
+		narratorManager.onChatMessage(MessageType.field_11735, new LiteralText(fixNarrationNewlines(string)));
 	}
 
 	private static String fixNarrationNewlines(String string) {

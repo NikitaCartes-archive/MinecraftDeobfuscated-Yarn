@@ -7,9 +7,9 @@ import net.fabricmc.api.Environment;
 public class ButtonWidget extends AbstractPressableButtonWidget {
 	protected final ButtonWidget.PressAction onPress;
 
-	public ButtonWidget(int x, int y, int width, int height, String message, ButtonWidget.PressAction onPress) {
-		super(x, y, width, height, message);
-		this.onPress = onPress;
+	public ButtonWidget(int i, int j, int k, int l, String string, ButtonWidget.PressAction pressAction) {
+		super(i, j, k, l, string);
+		this.onPress = pressAction;
 	}
 
 	@Override
@@ -19,6 +19,6 @@ public class ButtonWidget extends AbstractPressableButtonWidget {
 
 	@Environment(EnvType.CLIENT)
 	public interface PressAction {
-		void onPress(ButtonWidget button);
+		void onPress(ButtonWidget buttonWidget);
 	}
 }

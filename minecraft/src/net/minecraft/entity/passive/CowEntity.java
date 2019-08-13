@@ -34,7 +34,7 @@ public class CowEntity extends AnimalEntity {
 		this.goalSelector.add(0, new SwimGoal(this));
 		this.goalSelector.add(1, new EscapeDangerGoal(this, 2.0));
 		this.goalSelector.add(2, new AnimalMateGoal(this, 1.0));
-		this.goalSelector.add(3, new TemptGoal(this, 1.25, Ingredient.ofItems(Items.WHEAT), false));
+		this.goalSelector.add(3, new TemptGoal(this, 1.25, Ingredient.ofItems(Items.field_8861), false));
 		this.goalSelector.add(4, new FollowParentGoal(this, 1.25));
 		this.goalSelector.add(5, new WanderAroundFarGoal(this, 1.0));
 		this.goalSelector.add(6, new LookAtEntityGoal(this, PlayerEntity.class, 6.0F));
@@ -50,22 +50,22 @@ public class CowEntity extends AnimalEntity {
 
 	@Override
 	protected SoundEvent getAmbientSound() {
-		return SoundEvents.ENTITY_COW_AMBIENT;
+		return SoundEvents.field_14780;
 	}
 
 	@Override
-	protected SoundEvent getHurtSound(DamageSource source) {
-		return SoundEvents.ENTITY_COW_HURT;
+	protected SoundEvent getHurtSound(DamageSource damageSource) {
+		return SoundEvents.field_14597;
 	}
 
 	@Override
 	protected SoundEvent getDeathSound() {
-		return SoundEvents.ENTITY_COW_DEATH;
+		return SoundEvents.field_14857;
 	}
 
 	@Override
-	protected void playStepSound(BlockPos pos, BlockState state) {
-		this.playSound(SoundEvents.ENTITY_COW_STEP, 0.15F, 1.0F);
+	protected void playStepSound(BlockPos blockPos, BlockState blockState) {
+		this.playSound(SoundEvents.field_15110, 0.15F, 1.0F);
 	}
 
 	@Override
@@ -74,29 +74,29 @@ public class CowEntity extends AnimalEntity {
 	}
 
 	@Override
-	public boolean interactMob(PlayerEntity player, Hand hand) {
-		ItemStack itemStack = player.getStackInHand(hand);
-		if (itemStack.getItem() == Items.BUCKET && !player.abilities.creativeMode && !this.isBaby()) {
-			player.playSound(SoundEvents.ENTITY_COW_MILK, 1.0F, 1.0F);
+	public boolean interactMob(PlayerEntity playerEntity, Hand hand) {
+		ItemStack itemStack = playerEntity.getStackInHand(hand);
+		if (itemStack.getItem() == Items.field_8550 && !playerEntity.abilities.creativeMode && !this.isBaby()) {
+			playerEntity.playSound(SoundEvents.field_14691, 1.0F, 1.0F);
 			itemStack.decrement(1);
 			if (itemStack.isEmpty()) {
-				player.setStackInHand(hand, new ItemStack(Items.MILK_BUCKET));
-			} else if (!player.inventory.insertStack(new ItemStack(Items.MILK_BUCKET))) {
-				player.dropItem(new ItemStack(Items.MILK_BUCKET), false);
+				playerEntity.setStackInHand(hand, new ItemStack(Items.field_8103));
+			} else if (!playerEntity.inventory.insertStack(new ItemStack(Items.field_8103))) {
+				playerEntity.dropItem(new ItemStack(Items.field_8103), false);
 			}
 
 			return true;
 		} else {
-			return super.interactMob(player, hand);
+			return super.interactMob(playerEntity, hand);
 		}
 	}
 
-	public CowEntity createChild(PassiveEntity passiveEntity) {
-		return EntityType.COW.create(this.world);
+	public CowEntity method_6483(PassiveEntity passiveEntity) {
+		return EntityType.field_6085.create(this.world);
 	}
 
 	@Override
-	protected float getActiveEyeHeight(EntityPose pose, EntityDimensions dimensions) {
-		return this.isBaby() ? dimensions.height * 0.95F : 1.3F;
+	protected float getActiveEyeHeight(EntityPose entityPose, EntityDimensions entityDimensions) {
+		return this.isBaby() ? entityDimensions.height * 0.95F : 1.3F;
 	}
 }

@@ -93,22 +93,22 @@ public class SpiderEntity extends HostileEntity {
 
 	@Override
 	protected SoundEvent getAmbientSound() {
-		return SoundEvents.ENTITY_SPIDER_AMBIENT;
+		return SoundEvents.field_15170;
 	}
 
 	@Override
-	protected SoundEvent getHurtSound(DamageSource source) {
-		return SoundEvents.ENTITY_SPIDER_HURT;
+	protected SoundEvent getHurtSound(DamageSource damageSource) {
+		return SoundEvents.field_14657;
 	}
 
 	@Override
 	protected SoundEvent getDeathSound() {
-		return SoundEvents.ENTITY_SPIDER_DEATH;
+		return SoundEvents.field_14579;
 	}
 
 	@Override
-	protected void playStepSound(BlockPos pos, BlockState state) {
-		this.playSound(SoundEvents.ENTITY_SPIDER_STEP, 0.15F, 1.0F);
+	protected void playStepSound(BlockPos blockPos, BlockState blockState) {
+		this.playSound(SoundEvents.field_14760, 0.15F, 1.0F);
 	}
 
 	@Override
@@ -117,9 +117,9 @@ public class SpiderEntity extends HostileEntity {
 	}
 
 	@Override
-	public void slowMovement(BlockState state, Vec3d multiplier) {
-		if (state.getBlock() != Blocks.COBWEB) {
-			super.slowMovement(state, multiplier);
+	public void slowMovement(BlockState blockState, Vec3d vec3d) {
+		if (blockState.getBlock() != Blocks.field_10343) {
+			super.slowMovement(blockState, vec3d);
 		}
 	}
 
@@ -129,8 +129,8 @@ public class SpiderEntity extends HostileEntity {
 	}
 
 	@Override
-	public boolean canHaveStatusEffect(StatusEffectInstance effect) {
-		return effect.getEffectType() == StatusEffects.POISON ? false : super.canHaveStatusEffect(effect);
+	public boolean isPotionEffective(StatusEffectInstance statusEffectInstance) {
+		return statusEffectInstance.getEffectType() == StatusEffects.field_5899 ? false : super.isPotionEffective(statusEffectInstance);
 	}
 
 	public boolean getCanClimb() {
@@ -150,27 +150,29 @@ public class SpiderEntity extends HostileEntity {
 
 	@Nullable
 	@Override
-	public EntityData initialize(IWorld world, LocalDifficulty difficulty, SpawnType spawnType, @Nullable EntityData entityData, @Nullable CompoundTag entityTag) {
-		entityData = super.initialize(world, difficulty, spawnType, entityData, entityTag);
-		if (world.getRandom().nextInt(100) == 0) {
-			SkeletonEntity skeletonEntity = EntityType.SKELETON.create(this.world);
-			skeletonEntity.refreshPositionAndAngles(this.x, this.y, this.z, this.yaw, 0.0F);
-			skeletonEntity.initialize(world, difficulty, spawnType, null, null);
-			world.spawnEntity(skeletonEntity);
+	public EntityData initialize(
+		IWorld iWorld, LocalDifficulty localDifficulty, SpawnType spawnType, @Nullable EntityData entityData, @Nullable CompoundTag compoundTag
+	) {
+		entityData = super.initialize(iWorld, localDifficulty, spawnType, entityData, compoundTag);
+		if (iWorld.getRandom().nextInt(100) == 0) {
+			SkeletonEntity skeletonEntity = EntityType.field_6137.create(this.world);
+			skeletonEntity.setPositionAndAngles(this.x, this.y, this.z, this.yaw, 0.0F);
+			skeletonEntity.initialize(iWorld, localDifficulty, spawnType, null, null);
+			iWorld.spawnEntity(skeletonEntity);
 			skeletonEntity.startRiding(this);
 		}
 
 		if (entityData == null) {
 			entityData = new SpiderEntity.SpawnEffectData();
-			if (world.getDifficulty() == Difficulty.HARD && world.getRandom().nextFloat() < 0.1F * difficulty.getClampedLocalDifficulty()) {
-				((SpiderEntity.SpawnEffectData)entityData).setEffect(world.getRandom());
+			if (iWorld.getDifficulty() == Difficulty.field_5807 && iWorld.getRandom().nextFloat() < 0.1F * localDifficulty.getClampedLocalDifficulty()) {
+				((SpiderEntity.SpawnEffectData)entityData).setEffect(iWorld.getRandom());
 			}
 		}
 
 		if (entityData instanceof SpiderEntity.SpawnEffectData) {
 			StatusEffect statusEffect = ((SpiderEntity.SpawnEffectData)entityData).effect;
 			if (statusEffect != null) {
-				this.addStatusEffect(new StatusEffectInstance(statusEffect, Integer.MAX_VALUE));
+				this.addPotionEffect(new StatusEffectInstance(statusEffect, Integer.MAX_VALUE));
 			}
 		}
 
@@ -178,13 +180,13 @@ public class SpiderEntity extends HostileEntity {
 	}
 
 	@Override
-	protected float getActiveEyeHeight(EntityPose pose, EntityDimensions dimensions) {
+	protected float getActiveEyeHeight(EntityPose entityPose, EntityDimensions entityDimensions) {
 		return 0.65F;
 	}
 
 	static class AttackGoal extends MeleeAttackGoal {
-		public AttackGoal(SpiderEntity spider) {
-			super(spider, 1.0, true);
+		public AttackGoal(SpiderEntity spiderEntity) {
+			super(spiderEntity, 1.0, true);
 		}
 
 		@Override
@@ -195,7 +197,7 @@ public class SpiderEntity extends HostileEntity {
 		@Override
 		public boolean shouldContinue() {
 			float f = this.mob.getBrightnessAtEyes();
-			if (f >= 0.5F && this.mob.getRandom().nextInt(100) == 0) {
+			if (f >= 0.5F && this.mob.getRand().nextInt(100) == 0) {
 				this.mob.setTarget(null);
 				return false;
 			} else {
@@ -204,14 +206,14 @@ public class SpiderEntity extends HostileEntity {
 		}
 
 		@Override
-		protected double getSquaredMaxAttackDistance(LivingEntity entity) {
-			return (double)(4.0F + entity.getWidth());
+		protected double getSquaredMaxAttackDistance(LivingEntity livingEntity) {
+			return (double)(4.0F + livingEntity.getWidth());
 		}
 	}
 
 	static class FollowTargetGoal<T extends LivingEntity> extends net.minecraft.entity.ai.goal.FollowTargetGoal<T> {
-		public FollowTargetGoal(SpiderEntity spider, Class<T> targetEntityClass) {
-			super(spider, targetEntityClass, true);
+		public FollowTargetGoal(SpiderEntity spiderEntity, Class<T> class_) {
+			super(spiderEntity, class_, true);
 		}
 
 		@Override
@@ -227,13 +229,13 @@ public class SpiderEntity extends HostileEntity {
 		public void setEffect(Random random) {
 			int i = random.nextInt(5);
 			if (i <= 1) {
-				this.effect = StatusEffects.SPEED;
+				this.effect = StatusEffects.field_5904;
 			} else if (i <= 2) {
-				this.effect = StatusEffects.STRENGTH;
+				this.effect = StatusEffects.field_5910;
 			} else if (i <= 3) {
-				this.effect = StatusEffects.REGENERATION;
+				this.effect = StatusEffects.field_5924;
 			} else if (i <= 4) {
-				this.effect = StatusEffects.INVISIBILITY;
+				this.effect = StatusEffects.field_5905;
 			}
 		}
 	}

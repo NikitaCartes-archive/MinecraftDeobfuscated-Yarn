@@ -96,19 +96,19 @@ public abstract class RconBase implements Runnable {
 		this.sockets.add(datagramSocket);
 	}
 
-	protected boolean closeSocket(DatagramSocket socket, boolean bl) {
-		this.log("closeSocket: " + socket);
-		if (null == socket) {
+	protected boolean closeSocket(DatagramSocket datagramSocket, boolean bl) {
+		this.log("closeSocket: " + datagramSocket);
+		if (null == datagramSocket) {
 			return false;
 		} else {
 			boolean bl2 = false;
-			if (!socket.isClosed()) {
-				socket.close();
+			if (!datagramSocket.isClosed()) {
+				datagramSocket.close();
 				bl2 = true;
 			}
 
 			if (bl) {
-				this.sockets.remove(socket);
+				this.sockets.remove(datagramSocket);
 			}
 
 			return bl2;
@@ -119,16 +119,16 @@ public abstract class RconBase implements Runnable {
 		return this.closeSocket(serverSocket, true);
 	}
 
-	protected boolean closeSocket(ServerSocket socket, boolean bl) {
-		this.log("closeSocket: " + socket);
-		if (null == socket) {
+	protected boolean closeSocket(ServerSocket serverSocket, boolean bl) {
+		this.log("closeSocket: " + serverSocket);
+		if (null == serverSocket) {
 			return false;
 		} else {
 			boolean bl2 = false;
 
 			try {
-				if (!socket.isClosed()) {
-					socket.close();
+				if (!serverSocket.isClosed()) {
+					serverSocket.close();
 					bl2 = true;
 				}
 			} catch (IOException var5) {
@@ -136,7 +136,7 @@ public abstract class RconBase implements Runnable {
 			}
 
 			if (bl) {
-				this.serverSockets.remove(socket);
+				this.serverSockets.remove(serverSocket);
 			}
 
 			return bl2;

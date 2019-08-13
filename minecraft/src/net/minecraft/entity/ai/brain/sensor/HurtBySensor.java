@@ -11,21 +11,21 @@ import net.minecraft.server.world.ServerWorld;
 
 public class HurtBySensor extends Sensor<LivingEntity> {
 	@Override
-	protected void sense(ServerWorld world, LivingEntity entity) {
-		Brain<?> brain = entity.getBrain();
-		if (entity.getRecentDamageSource() != null) {
-			brain.putMemory(MemoryModuleType.HURT_BY, entity.getRecentDamageSource());
-			Entity entity2 = ((DamageSource)brain.getOptionalMemory(MemoryModuleType.HURT_BY).get()).getAttacker();
-			if (entity2 instanceof LivingEntity) {
-				brain.putMemory(MemoryModuleType.HURT_BY_ENTITY, (LivingEntity)entity2);
+	protected void sense(ServerWorld serverWorld, LivingEntity livingEntity) {
+		Brain<?> brain = livingEntity.getBrain();
+		if (livingEntity.getRecentDamageSource() != null) {
+			brain.putMemory(MemoryModuleType.field_18451, livingEntity.getRecentDamageSource());
+			Entity entity = ((DamageSource)brain.getOptionalMemory(MemoryModuleType.field_18451).get()).getAttacker();
+			if (entity instanceof LivingEntity) {
+				brain.putMemory(MemoryModuleType.field_18452, (LivingEntity)entity);
 			}
 		} else {
-			brain.forget(MemoryModuleType.HURT_BY);
+			brain.forget(MemoryModuleType.field_18451);
 		}
 	}
 
 	@Override
 	public Set<MemoryModuleType<?>> getOutputMemoryModules() {
-		return ImmutableSet.of(MemoryModuleType.HURT_BY, MemoryModuleType.HURT_BY_ENTITY);
+		return ImmutableSet.of(MemoryModuleType.field_18451, MemoryModuleType.field_18452);
 	}
 }

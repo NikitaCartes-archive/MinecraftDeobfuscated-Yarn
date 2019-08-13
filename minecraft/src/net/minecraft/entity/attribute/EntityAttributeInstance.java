@@ -11,22 +11,22 @@ public interface EntityAttributeInstance {
 
 	double getBaseValue();
 
-	void setBaseValue(double baseValue);
+	void setBaseValue(double d);
 
 	Collection<EntityAttributeModifier> getModifiers(EntityAttributeModifier.Operation operation);
 
 	Collection<EntityAttributeModifier> getModifiers();
 
-	boolean hasModifier(EntityAttributeModifier modifier);
+	boolean hasModifier(EntityAttributeModifier entityAttributeModifier);
 
 	@Nullable
-	EntityAttributeModifier getModifier(UUID uuid);
+	EntityAttributeModifier getModifier(UUID uUID);
 
-	void addModifier(EntityAttributeModifier modifier);
+	void addModifier(EntityAttributeModifier entityAttributeModifier);
 
-	void removeModifier(EntityAttributeModifier modifier);
+	void removeModifier(EntityAttributeModifier entityAttributeModifier);
 
-	void removeModifier(UUID uuid);
+	void removeModifier(UUID uUID);
 
 	@Environment(EnvType.CLIENT)
 	void clearModifiers();

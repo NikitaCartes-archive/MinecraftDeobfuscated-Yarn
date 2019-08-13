@@ -5,5 +5,5 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IWorld;
 
 public interface FluidDrainable {
-	Fluid tryDrainFluid(IWorld world, BlockPos pos, BlockState state);
+	Fluid tryDrainFluid(IWorld iWorld, BlockPos blockPos, BlockState blockState);
 }

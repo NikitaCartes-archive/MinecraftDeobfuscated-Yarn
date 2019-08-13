@@ -7,13 +7,13 @@ import net.minecraft.util.PacketByteBuf;
 public interface ParticleEffect {
 	ParticleType<?> getType();
 
-	void write(PacketByteBuf buf);
+	void write(PacketByteBuf packetByteBuf);
 
 	String asString();
 
 	public interface Factory<T extends ParticleEffect> {
-		T read(ParticleType<T> type, StringReader reader) throws CommandSyntaxException;
+		T read(ParticleType<T> particleType, StringReader stringReader) throws CommandSyntaxException;
 
-		T read(ParticleType<T> type, PacketByteBuf buf);
+		T read(ParticleType<T> particleType, PacketByteBuf packetByteBuf);
 	}
 }

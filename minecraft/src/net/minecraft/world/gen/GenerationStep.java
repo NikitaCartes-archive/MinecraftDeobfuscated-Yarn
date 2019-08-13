@@ -6,15 +6,15 @@ import java.util.stream.Collectors;
 
 public class GenerationStep {
 	public static enum Carver {
-		AIR("air"),
-		LIQUID("liquid");
+		field_13169("air"),
+		field_13166("liquid");
 
 		private static final Map<String, GenerationStep.Carver> BY_NAME = (Map<String, GenerationStep.Carver>)Arrays.stream(values())
 			.collect(Collectors.toMap(GenerationStep.Carver::getName, carver -> carver));
 		private final String name;
 
-		private Carver(String name) {
-			this.name = name;
+		private Carver(String string2) {
+			this.name = string2;
 		}
 
 		public String getName() {
@@ -23,21 +23,21 @@ public class GenerationStep {
 	}
 
 	public static enum Feature {
-		RAW_GENERATION("raw_generation"),
-		LOCAL_MODIFICATIONS("local_modifications"),
-		UNDERGROUND_STRUCTURES("underground_structures"),
-		SURFACE_STRUCTURES("surface_structures"),
-		UNDERGROUND_ORES("underground_ores"),
-		UNDERGROUND_DECORATION("underground_decoration"),
-		VEGETAL_DECORATION("vegetal_decoration"),
-		TOP_LAYER_MODIFICATION("top_layer_modification");
+		field_13174("raw_generation"),
+		field_13171("local_modifications"),
+		field_13172("underground_structures"),
+		field_13173("surface_structures"),
+		field_13176("underground_ores"),
+		field_13177("underground_decoration"),
+		field_13178("vegetal_decoration"),
+		field_13179("top_layer_modification");
 
 		private static final Map<String, GenerationStep.Feature> BY_NAME = (Map<String, GenerationStep.Feature>)Arrays.stream(values())
 			.collect(Collectors.toMap(GenerationStep.Feature::getName, feature -> feature));
 		private final String name;
 
-		private Feature(String name) {
-			this.name = name;
+		private Feature(String string2) {
+			this.name = string2;
 		}
 
 		public String getName() {

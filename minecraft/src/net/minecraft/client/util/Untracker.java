@@ -29,10 +29,10 @@ public class Untracker {
 		}
 	});
 
-	public static void untrack(long address) {
+	public static void untrack(long l) {
 		if (ALLOCATOR_UNTRACK != null) {
 			try {
-				ALLOCATOR_UNTRACK.invoke(address);
+				ALLOCATOR_UNTRACK.invoke(l);
 			} catch (Throwable var3) {
 				throw new RuntimeException(var3);
 			}

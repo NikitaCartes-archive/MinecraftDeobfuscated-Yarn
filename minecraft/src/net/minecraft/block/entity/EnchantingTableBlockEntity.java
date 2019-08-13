@@ -25,24 +25,24 @@ public class EnchantingTableBlockEntity extends BlockEntity implements Nameable,
 	private Text customName;
 
 	public EnchantingTableBlockEntity() {
-		super(BlockEntityType.ENCHANTING_TABLE);
+		super(BlockEntityType.field_11912);
 	}
 
 	@Override
-	public CompoundTag toTag(CompoundTag tag) {
-		super.toTag(tag);
+	public CompoundTag toTag(CompoundTag compoundTag) {
+		super.toTag(compoundTag);
 		if (this.hasCustomName()) {
-			tag.putString("CustomName", Text.Serializer.toJson(this.customName));
+			compoundTag.putString("CustomName", Text.Serializer.toJson(this.customName));
 		}
 
-		return tag;
+		return compoundTag;
 	}
 
 	@Override
-	public void fromTag(CompoundTag tag) {
-		super.fromTag(tag);
-		if (tag.contains("CustomName", 8)) {
-			this.customName = Text.Serializer.fromJson(tag.getString("CustomName"));
+	public void fromTag(CompoundTag compoundTag) {
+		super.fromTag(compoundTag);
+		if (compoundTag.containsKey("CustomName", 8)) {
+			this.customName = Text.Serializer.fromJson(compoundTag.getString("CustomName"));
 		}
 	}
 
@@ -111,8 +111,8 @@ public class EnchantingTableBlockEntity extends BlockEntity implements Nameable,
 		return (Text)(this.customName != null ? this.customName : new TranslatableText("container.enchant"));
 	}
 
-	public void setCustomName(@Nullable Text value) {
-		this.customName = value;
+	public void setCustomName(@Nullable Text text) {
+		this.customName = text;
 	}
 
 	@Nullable

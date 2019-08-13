@@ -14,15 +14,15 @@ public class RealmsError {
 	private String errorMessage;
 	private int errorCode;
 
-	public RealmsError(String error) {
+	public RealmsError(String string) {
 		try {
 			JsonParser jsonParser = new JsonParser();
-			JsonObject jsonObject = jsonParser.parse(error).getAsJsonObject();
+			JsonObject jsonObject = jsonParser.parse(string).getAsJsonObject();
 			this.errorMessage = JsonUtils.getStringOr("errorMsg", jsonObject, "");
 			this.errorCode = JsonUtils.getIntOr("errorCode", jsonObject, -1);
 		} catch (Exception var4) {
 			LOGGER.error("Could not parse RealmsError: " + var4.getMessage());
-			LOGGER.error("The error was: " + error);
+			LOGGER.error("The error was: " + string);
 		}
 	}
 

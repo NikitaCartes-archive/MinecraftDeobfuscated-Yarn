@@ -28,11 +28,11 @@ public class PotatoesBlock extends CropBlock {
 	@Environment(EnvType.CLIENT)
 	@Override
 	protected ItemConvertible getSeedsItem() {
-		return Items.POTATO;
+		return Items.field_8567;
 	}
 
 	@Override
-	public VoxelShape getOutlineShape(BlockState state, BlockView view, BlockPos pos, EntityContext context) {
-		return AGE_TO_SHAPE[state.get(this.getAgeProperty())];
+	public VoxelShape getOutlineShape(BlockState blockState, BlockView blockView, BlockPos blockPos, EntityContext entityContext) {
+		return AGE_TO_SHAPE[blockState.get(this.getAgeProperty())];
 	}
 }

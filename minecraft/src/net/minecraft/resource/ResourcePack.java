@@ -14,18 +14,18 @@ import net.minecraft.util.Identifier;
 
 public interface ResourcePack extends Closeable {
 	@Environment(EnvType.CLIENT)
-	InputStream openRoot(String fileName) throws IOException;
+	InputStream openRoot(String string) throws IOException;
 
-	InputStream open(ResourceType type, Identifier id) throws IOException;
+	InputStream open(ResourceType resourceType, Identifier identifier) throws IOException;
 
-	Collection<Identifier> findResources(ResourceType type, String namespace, int maxDepth, Predicate<String> pathFilter);
+	Collection<Identifier> findResources(ResourceType resourceType, String string, int i, Predicate<String> predicate);
 
-	boolean contains(ResourceType type, Identifier id);
+	boolean contains(ResourceType resourceType, Identifier identifier);
 
-	Set<String> getNamespaces(ResourceType type);
+	Set<String> getNamespaces(ResourceType resourceType);
 
 	@Nullable
-	<T> T parseMetadata(ResourceMetadataReader<T> metaReader) throws IOException;
+	<T> T parseMetadata(ResourceMetadataReader<T> resourceMetadataReader) throws IOException;
 
 	String getName();
 }

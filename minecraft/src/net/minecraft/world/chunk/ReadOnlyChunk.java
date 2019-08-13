@@ -25,26 +25,26 @@ import net.minecraft.world.gen.GenerationStep;
 public class ReadOnlyChunk extends ProtoChunk {
 	private final WorldChunk wrapped;
 
-	public ReadOnlyChunk(WorldChunk wrapped) {
-		super(wrapped.getPos(), UpgradeData.NO_UPGRADE_DATA);
-		this.wrapped = wrapped;
+	public ReadOnlyChunk(WorldChunk worldChunk) {
+		super(worldChunk.getPos(), UpgradeData.NO_UPGRADE_DATA);
+		this.wrapped = worldChunk;
 	}
 
 	@Nullable
 	@Override
-	public BlockEntity getBlockEntity(BlockPos pos) {
-		return this.wrapped.getBlockEntity(pos);
+	public BlockEntity getBlockEntity(BlockPos blockPos) {
+		return this.wrapped.getBlockEntity(blockPos);
 	}
 
 	@Nullable
 	@Override
-	public BlockState getBlockState(BlockPos pos) {
-		return this.wrapped.getBlockState(pos);
+	public BlockState getBlockState(BlockPos blockPos) {
+		return this.wrapped.getBlockState(blockPos);
 	}
 
 	@Override
-	public FluidState getFluidState(BlockPos pos) {
-		return this.wrapped.getFluidState(pos);
+	public FluidState getFluidState(BlockPos blockPos) {
+		return this.wrapped.getFluidState(blockPos);
 	}
 
 	@Override
@@ -54,12 +54,12 @@ public class ReadOnlyChunk extends ProtoChunk {
 
 	@Nullable
 	@Override
-	public BlockState setBlockState(BlockPos pos, BlockState state, boolean bl) {
+	public BlockState setBlockState(BlockPos blockPos, BlockState blockState, boolean bl) {
 		return null;
 	}
 
 	@Override
-	public void setBlockEntity(BlockPos pos, BlockEntity blockEntity) {
+	public void setBlockEntity(BlockPos blockPos, BlockEntity blockEntity) {
 	}
 
 	@Override
@@ -82,20 +82,20 @@ public class ReadOnlyChunk extends ProtoChunk {
 	}
 
 	@Override
-	public void setHeightmap(Heightmap.Type type, long[] heightmap) {
+	public void setHeightmap(Heightmap.Type type, long[] ls) {
 	}
 
 	private Heightmap.Type transformHeightmapType(Heightmap.Type type) {
-		if (type == Heightmap.Type.WORLD_SURFACE_WG) {
-			return Heightmap.Type.WORLD_SURFACE;
+		if (type == Heightmap.Type.field_13194) {
+			return Heightmap.Type.field_13202;
 		} else {
-			return type == Heightmap.Type.OCEAN_FLOOR_WG ? Heightmap.Type.OCEAN_FLOOR : type;
+			return type == Heightmap.Type.field_13195 ? Heightmap.Type.field_13200 : type;
 		}
 	}
 
 	@Override
-	public int sampleHeightmap(Heightmap.Type type, int x, int z) {
-		return this.wrapped.sampleHeightmap(this.transformHeightmapType(type), x, z);
+	public int sampleHeightmap(Heightmap.Type type, int i, int j) {
+		return this.wrapped.sampleHeightmap(this.transformHeightmapType(type), i, j);
 	}
 
 	@Override
@@ -104,17 +104,17 @@ public class ReadOnlyChunk extends ProtoChunk {
 	}
 
 	@Override
-	public void setLastSaveTime(long lastSaveTime) {
+	public void setLastSaveTime(long l) {
 	}
 
 	@Nullable
 	@Override
-	public StructureStart getStructureStart(String structure) {
-		return this.wrapped.getStructureStart(structure);
+	public StructureStart getStructureStart(String string) {
+		return this.wrapped.getStructureStart(string);
 	}
 
 	@Override
-	public void setStructureStart(String structure, StructureStart start) {
+	public void setStructureStart(String string, StructureStart structureStart) {
 	}
 
 	@Override
@@ -127,12 +127,12 @@ public class ReadOnlyChunk extends ProtoChunk {
 	}
 
 	@Override
-	public LongSet getStructureReferences(String structure) {
-		return this.wrapped.getStructureReferences(structure);
+	public LongSet getStructureReferences(String string) {
+		return this.wrapped.getStructureReferences(string);
 	}
 
 	@Override
-	public void addStructureReference(String structure, long reference) {
+	public void addStructureReference(String string, long l) {
 	}
 
 	@Override
@@ -141,7 +141,7 @@ public class ReadOnlyChunk extends ProtoChunk {
 	}
 
 	@Override
-	public void setStructureReferences(Map<String, LongSet> structureReferences) {
+	public void setStructureReferences(Map<String, LongSet> map) {
 	}
 
 	@Override
@@ -150,7 +150,7 @@ public class ReadOnlyChunk extends ProtoChunk {
 	}
 
 	@Override
-	public void setShouldSave(boolean shouldSave) {
+	public void setShouldSave(boolean bl) {
 	}
 
 	@Override
@@ -177,8 +177,8 @@ public class ReadOnlyChunk extends ProtoChunk {
 
 	@Nullable
 	@Override
-	public CompoundTag getBlockEntityTagAt(BlockPos pos) {
-		return this.wrapped.getBlockEntityTagAt(pos);
+	public CompoundTag getBlockEntityTagAt(BlockPos blockPos) {
+		return this.wrapped.getBlockEntityTagAt(blockPos);
 	}
 
 	@Nullable
@@ -188,7 +188,7 @@ public class ReadOnlyChunk extends ProtoChunk {
 	}
 
 	@Override
-	public void setBiomeArray(Biome[] biomeArray) {
+	public void setBiomeArray(Biome[] biomes) {
 	}
 
 	@Override
@@ -197,13 +197,13 @@ public class ReadOnlyChunk extends ProtoChunk {
 	}
 
 	@Override
-	public ChunkTickScheduler<Block> getBlockTickScheduler() {
+	public ChunkTickScheduler<Block> method_12303() {
 		return new ChunkTickScheduler<>(block -> block.getDefaultState().isAir(), this.getPos());
 	}
 
 	@Override
-	public ChunkTickScheduler<Fluid> getFluidTickScheduler() {
-		return new ChunkTickScheduler<>(fluid -> fluid == Fluids.EMPTY, this.getPos());
+	public ChunkTickScheduler<Fluid> method_12313() {
+		return new ChunkTickScheduler<>(fluid -> fluid == Fluids.field_15906, this.getPos());
 	}
 
 	@Override
@@ -221,7 +221,7 @@ public class ReadOnlyChunk extends ProtoChunk {
 	}
 
 	@Override
-	public void setLightOn(boolean lightOn) {
-		this.wrapped.setLightOn(lightOn);
+	public void setLightOn(boolean bl) {
+		this.wrapped.setLightOn(bl);
 	}
 }

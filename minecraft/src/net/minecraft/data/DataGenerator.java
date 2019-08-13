@@ -17,8 +17,8 @@ public class DataGenerator {
 	private final Path output;
 	private final List<DataProvider> providers = Lists.<DataProvider>newArrayList();
 
-	public DataGenerator(Path output, Collection<Path> collection) {
-		this.output = output;
+	public DataGenerator(Path path, Collection<Path> collection) {
+		this.output = path;
 		this.inputs = collection;
 	}
 

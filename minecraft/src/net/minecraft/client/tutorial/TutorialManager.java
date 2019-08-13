@@ -31,21 +31,21 @@ public class TutorialManager {
 		}
 	}
 
-	public void onUpdateMouse(double deltaX, double deltaY) {
+	public void onUpdateMouse(double d, double e) {
 		if (this.currentHandler != null) {
-			this.currentHandler.onMouseUpdate(deltaX, deltaY);
+			this.currentHandler.onMouseUpdate(d, e);
 		}
 	}
 
-	public void tick(@Nullable ClientWorld world, @Nullable HitResult hitResult) {
-		if (this.currentHandler != null && hitResult != null && world != null) {
-			this.currentHandler.onTarget(world, hitResult);
+	public void tick(@Nullable ClientWorld clientWorld, @Nullable HitResult hitResult) {
+		if (this.currentHandler != null && hitResult != null && clientWorld != null) {
+			this.currentHandler.onTarget(clientWorld, hitResult);
 		}
 	}
 
-	public void onBlockAttacked(ClientWorld world, BlockPos pos, BlockState state, float f) {
+	public void onBlockAttacked(ClientWorld clientWorld, BlockPos blockPos, BlockState blockState, float f) {
 		if (this.currentHandler != null) {
-			this.currentHandler.onBlockAttacked(world, pos, state, f);
+			this.currentHandler.onBlockAttacked(clientWorld, blockPos, blockState, f);
 		}
 	}
 
@@ -102,10 +102,10 @@ public class TutorialManager {
 	}
 
 	public GameMode getGameMode() {
-		return this.client.interactionManager == null ? GameMode.NOT_SET : this.client.interactionManager.getCurrentGameMode();
+		return this.client.interactionManager == null ? GameMode.field_9218 : this.client.interactionManager.getCurrentGameMode();
 	}
 
 	public static Text getKeybindName(String string) {
-		return new KeybindText("key." + string).formatted(Formatting.BOLD);
+		return new KeybindText("key." + string).formatted(Formatting.field_1067);
 	}
 }

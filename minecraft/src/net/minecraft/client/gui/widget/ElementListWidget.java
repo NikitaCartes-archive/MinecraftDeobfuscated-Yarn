@@ -40,13 +40,13 @@ public abstract class ElementListWidget<E extends ElementListWidget.Entry<E>> ex
 		}
 
 		@Override
-		public void setDragging(boolean dragging) {
-			this.dragging = dragging;
+		public void setDragging(boolean bl) {
+			this.dragging = bl;
 		}
 
 		@Override
-		public void setFocused(@Nullable Element focused) {
-			this.focused = focused;
+		public void setFocused(@Nullable Element element) {
+			this.focused = element;
 		}
 
 		@Nullable

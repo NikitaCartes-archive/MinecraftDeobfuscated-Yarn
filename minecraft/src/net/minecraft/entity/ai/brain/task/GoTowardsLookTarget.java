@@ -13,16 +13,16 @@ public class GoTowardsLookTarget extends Task<LivingEntity> {
 	private final float speed;
 	private final int completionRange;
 
-	public GoTowardsLookTarget(float speed, int completionRange) {
-		super(ImmutableMap.of(MemoryModuleType.WALK_TARGET, MemoryModuleState.VALUE_ABSENT, MemoryModuleType.LOOK_TARGET, MemoryModuleState.VALUE_PRESENT));
-		this.speed = speed;
-		this.completionRange = completionRange;
+	public GoTowardsLookTarget(float f, int i) {
+		super(ImmutableMap.of(MemoryModuleType.field_18445, MemoryModuleState.field_18457, MemoryModuleType.field_18446, MemoryModuleState.field_18456));
+		this.speed = f;
+		this.completionRange = i;
 	}
 
 	@Override
-	protected void run(ServerWorld world, LivingEntity entity, long time) {
-		Brain<?> brain = entity.getBrain();
-		LookTarget lookTarget = (LookTarget)brain.getOptionalMemory(MemoryModuleType.LOOK_TARGET).get();
-		brain.putMemory(MemoryModuleType.WALK_TARGET, new WalkTarget(lookTarget, this.speed, this.completionRange));
+	protected void run(ServerWorld serverWorld, LivingEntity livingEntity, long l) {
+		Brain<?> brain = livingEntity.getBrain();
+		LookTarget lookTarget = (LookTarget)brain.getOptionalMemory(MemoryModuleType.field_18446).get();
+		brain.putMemory(MemoryModuleType.field_18445, new WalkTarget(lookTarget, this.speed, this.completionRange));
 	}
 }

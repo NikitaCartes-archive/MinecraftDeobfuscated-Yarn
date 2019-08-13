@@ -14,8 +14,8 @@ public class SmokerRecipeBookScreen extends AbstractFurnaceRecipeBookScreen {
 	}
 
 	@Override
-	protected void setFilteringCraftable(boolean filteringCraftable) {
-		this.recipeBook.setSmokerFilteringCraftable(filteringCraftable);
+	protected void setFilteringCraftable(boolean bl) {
+		this.recipeBook.setSmokerFilteringCraftable(bl);
 	}
 
 	@Override
@@ -24,8 +24,8 @@ public class SmokerRecipeBookScreen extends AbstractFurnaceRecipeBookScreen {
 	}
 
 	@Override
-	protected void setGuiOpen(boolean opened) {
-		this.recipeBook.setSmokerGuiOpen(opened);
+	protected void setGuiOpen(boolean bl) {
+		this.recipeBook.setSmokerGuiOpen(bl);
 	}
 
 	@Override

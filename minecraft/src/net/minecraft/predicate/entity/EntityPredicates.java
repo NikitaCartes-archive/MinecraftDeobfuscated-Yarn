@@ -19,28 +19,28 @@ public final class EntityPredicates {
 			|| !entity.isSpectator() && !((PlayerEntity)entity).isCreative();
 	public static final Predicate<Entity> EXCEPT_SPECTATOR = entity -> !entity.isSpectator();
 
-	public static Predicate<Entity> maximumDistance(double x, double d, double e, double f) {
-		double g = f * f;
-		return entity -> entity != null && entity.squaredDistanceTo(x, d, e) <= g;
+	public static Predicate<Entity> maximumDistance(double d, double e, double f, double g) {
+		double h = g * g;
+		return entity -> entity != null && entity.squaredDistanceTo(d, e, f) <= h;
 	}
 
 	public static Predicate<Entity> canBePushedBy(Entity entity) {
 		AbstractTeam abstractTeam = entity.getScoreboardTeam();
-		AbstractTeam.CollisionRule collisionRule = abstractTeam == null ? AbstractTeam.CollisionRule.ALWAYS : abstractTeam.getCollisionRule();
-		return (Predicate<Entity>)(collisionRule == AbstractTeam.CollisionRule.NEVER ? Predicates.alwaysFalse() : EXCEPT_SPECTATOR.and(entity2 -> {
+		AbstractTeam.CollisionRule collisionRule = abstractTeam == null ? AbstractTeam.CollisionRule.field_1437 : abstractTeam.getCollisionRule();
+		return (Predicate<Entity>)(collisionRule == AbstractTeam.CollisionRule.field_1435 ? Predicates.alwaysFalse() : EXCEPT_SPECTATOR.and(entity2 -> {
 			if (!entity2.isPushable()) {
 				return false;
 			} else if (!entity.world.isClient || entity2 instanceof PlayerEntity && ((PlayerEntity)entity2).isMainPlayer()) {
 				AbstractTeam abstractTeam2 = entity2.getScoreboardTeam();
-				AbstractTeam.CollisionRule collisionRule2 = abstractTeam2 == null ? AbstractTeam.CollisionRule.ALWAYS : abstractTeam2.getCollisionRule();
-				if (collisionRule2 == AbstractTeam.CollisionRule.NEVER) {
+				AbstractTeam.CollisionRule collisionRule2 = abstractTeam2 == null ? AbstractTeam.CollisionRule.field_1437 : abstractTeam2.getCollisionRule();
+				if (collisionRule2 == AbstractTeam.CollisionRule.field_1435) {
 					return false;
 				} else {
 					boolean bl = abstractTeam != null && abstractTeam.isEqual(abstractTeam2);
-					if ((collisionRule == AbstractTeam.CollisionRule.PUSH_OWN_TEAM || collisionRule2 == AbstractTeam.CollisionRule.PUSH_OWN_TEAM) && bl) {
+					if ((collisionRule == AbstractTeam.CollisionRule.field_1440 || collisionRule2 == AbstractTeam.CollisionRule.field_1440) && bl) {
 						return false;
 					} else {
-						return collisionRule != AbstractTeam.CollisionRule.PUSH_OTHER_TEAMS && collisionRule2 != AbstractTeam.CollisionRule.PUSH_OTHER_TEAMS || bl;
+						return collisionRule != AbstractTeam.CollisionRule.field_1434 && collisionRule2 != AbstractTeam.CollisionRule.field_1434 || bl;
 					}
 				}
 			} else {
@@ -69,7 +69,7 @@ public final class EntityPredicates {
 			this.itemstack = itemStack;
 		}
 
-		public boolean test(@Nullable Entity entity) {
+		public boolean method_5916(@Nullable Entity entity) {
 			if (!entity.isAlive()) {
 				return false;
 			} else if (!(entity instanceof LivingEntity)) {

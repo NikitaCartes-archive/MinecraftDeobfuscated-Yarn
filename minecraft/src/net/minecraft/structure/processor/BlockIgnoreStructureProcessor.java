@@ -12,13 +12,13 @@ import net.minecraft.block.Blocks;
 import net.minecraft.structure.Structure;
 import net.minecraft.structure.StructurePlacementData;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.CollisionView;
+import net.minecraft.world.ViewableWorld;
 
 public class BlockIgnoreStructureProcessor extends StructureProcessor {
-	public static final BlockIgnoreStructureProcessor IGNORE_STRUCTURE_BLOCKS = new BlockIgnoreStructureProcessor(ImmutableList.of(Blocks.STRUCTURE_BLOCK));
-	public static final BlockIgnoreStructureProcessor IGNORE_AIR = new BlockIgnoreStructureProcessor(ImmutableList.of(Blocks.AIR));
+	public static final BlockIgnoreStructureProcessor IGNORE_STRUCTURE_BLOCKS = new BlockIgnoreStructureProcessor(ImmutableList.of(Blocks.field_10465));
+	public static final BlockIgnoreStructureProcessor IGNORE_AIR = new BlockIgnoreStructureProcessor(ImmutableList.of(Blocks.field_10124));
 	public static final BlockIgnoreStructureProcessor IGNORE_AIR_AND_STRUCTURE_BLOCKS = new BlockIgnoreStructureProcessor(
-		ImmutableList.of(Blocks.AIR, Blocks.STRUCTURE_BLOCK)
+		ImmutableList.of(Blocks.field_10124, Blocks.field_10465)
 	);
 	private final ImmutableList<Block> blocks;
 
@@ -33,18 +33,18 @@ public class BlockIgnoreStructureProcessor extends StructureProcessor {
 	@Nullable
 	@Override
 	public Structure.StructureBlockInfo process(
-		CollisionView world,
-		BlockPos pos,
+		ViewableWorld viewableWorld,
+		BlockPos blockPos,
 		Structure.StructureBlockInfo structureBlockInfo,
 		Structure.StructureBlockInfo structureBlockInfo2,
-		StructurePlacementData placementData
+		StructurePlacementData structurePlacementData
 	) {
 		return this.blocks.contains(structureBlockInfo2.state.getBlock()) ? null : structureBlockInfo2;
 	}
 
 	@Override
 	protected StructureProcessorType getType() {
-		return StructureProcessorType.BLOCK_IGNORE;
+		return StructureProcessorType.field_16986;
 	}
 
 	@Override

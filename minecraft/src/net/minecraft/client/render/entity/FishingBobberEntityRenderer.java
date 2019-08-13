@@ -24,7 +24,7 @@ public class FishingBobberEntityRenderer extends EntityRenderer<FishingBobberEnt
 		super(entityRenderDispatcher);
 	}
 
-	public void render(FishingBobberEntity fishingBobberEntity, double d, double e, double f, float g, float h) {
+	public void method_3974(FishingBobberEntity fishingBobberEntity, double d, double e, double f, float g, float h) {
 		PlayerEntity playerEntity = fishingBobberEntity.getOwner();
 		if (playerEntity != null && !this.renderOutlines) {
 			GlStateManager.pushMatrix();
@@ -33,7 +33,7 @@ public class FishingBobberEntityRenderer extends EntityRenderer<FishingBobberEnt
 			GlStateManager.scalef(0.5F, 0.5F, 0.5F);
 			this.bindEntityTexture(fishingBobberEntity);
 			Tessellator tessellator = Tessellator.getInstance();
-			BufferBuilder bufferBuilder = tessellator.getBuffer();
+			BufferBuilder bufferBuilder = tessellator.getBufferBuilder();
 			float i = 1.0F;
 			float j = 0.5F;
 			float k = 0.5F;
@@ -57,9 +57,9 @@ public class FishingBobberEntityRenderer extends EntityRenderer<FishingBobberEnt
 
 			GlStateManager.disableRescaleNormal();
 			GlStateManager.popMatrix();
-			int l = playerEntity.getMainArm() == Arm.RIGHT ? 1 : -1;
+			int l = playerEntity.getMainArm() == Arm.field_6183 ? 1 : -1;
 			ItemStack itemStack = playerEntity.getMainHandStack();
-			if (itemStack.getItem() != Items.FISHING_ROD) {
+			if (itemStack.getItem() != Items.field_8378) {
 				l = -l;
 			}
 
@@ -116,7 +116,7 @@ public class FishingBobberEntityRenderer extends EntityRenderer<FishingBobberEnt
 		}
 	}
 
-	protected Identifier getTexture(FishingBobberEntity fishingBobberEntity) {
+	protected Identifier method_3975(FishingBobberEntity fishingBobberEntity) {
 		return SKIN;
 	}
 }

@@ -9,17 +9,22 @@ public class CarvingMaskDecoratorConfig implements DecoratorConfig {
 	protected final GenerationStep.Carver step;
 	protected final float probability;
 
-	public CarvingMaskDecoratorConfig(GenerationStep.Carver step, float probability) {
-		this.step = step;
-		this.probability = probability;
+	public CarvingMaskDecoratorConfig(GenerationStep.Carver carver, float f) {
+		this.step = carver;
+		this.probability = f;
 	}
 
 	@Override
-	public <T> Dynamic<T> serialize(DynamicOps<T> ops) {
+	public <T> Dynamic<T> serialize(DynamicOps<T> dynamicOps) {
 		return new Dynamic<>(
-			ops,
-			ops.createMap(
-				ImmutableMap.of(ops.createString("step"), ops.createString(this.step.toString()), ops.createString("probability"), ops.createFloat(this.probability))
+			dynamicOps,
+			dynamicOps.createMap(
+				ImmutableMap.of(
+					dynamicOps.createString("step"),
+					dynamicOps.createString(this.step.toString()),
+					dynamicOps.createString("probability"),
+					dynamicOps.createFloat(this.probability)
+				)
 			)
 		);
 	}

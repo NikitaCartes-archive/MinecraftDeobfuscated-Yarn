@@ -5,7 +5,7 @@ import net.fabricmc.api.Environment;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.network.ClientPlayNetworkHandler;
 import net.minecraft.client.resource.language.I18n;
-import net.minecraft.network.packet.c2s.play.ClientCommandC2SPacket;
+import net.minecraft.server.network.packet.ClientCommandC2SPacket;
 
 @Environment(EnvType.CLIENT)
 public class SleepingChatScreen extends ChatScreen {
@@ -27,10 +27,10 @@ public class SleepingChatScreen extends ChatScreen {
 	}
 
 	@Override
-	public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
-		if (keyCode == 256) {
+	public boolean keyPressed(int i, int j, int k) {
+		if (i == 256) {
 			this.stopSleeping();
-		} else if (keyCode == 257 || keyCode == 335) {
+		} else if (i == 257 || i == 335) {
 			String string = this.chatField.getText().trim();
 			if (!string.isEmpty()) {
 				this.minecraft.player.sendChatMessage(string);
@@ -41,11 +41,11 @@ public class SleepingChatScreen extends ChatScreen {
 			return true;
 		}
 
-		return super.keyPressed(keyCode, scanCode, modifiers);
+		return super.keyPressed(i, j, k);
 	}
 
 	private void stopSleeping() {
 		ClientPlayNetworkHandler clientPlayNetworkHandler = this.minecraft.player.networkHandler;
-		clientPlayNetworkHandler.sendPacket(new ClientCommandC2SPacket(this.minecraft.player, ClientCommandC2SPacket.Mode.STOP_SLEEPING));
+		clientPlayNetworkHandler.sendPacket(new ClientCommandC2SPacket(this.minecraft.player, ClientCommandC2SPacket.Mode.field_12986));
 	}
 }

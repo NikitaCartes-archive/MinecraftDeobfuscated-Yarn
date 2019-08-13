@@ -17,45 +17,45 @@ public class SpectralArrowEntity extends ProjectileEntity {
 		super(entityType, world);
 	}
 
-	public SpectralArrowEntity(World world, LivingEntity owner) {
-		super(EntityType.SPECTRAL_ARROW, owner, world);
+	public SpectralArrowEntity(World world, LivingEntity livingEntity) {
+		super(EntityType.field_6135, livingEntity, world);
 	}
 
-	public SpectralArrowEntity(World world, double x, double y, double z) {
-		super(EntityType.SPECTRAL_ARROW, x, y, z, world);
+	public SpectralArrowEntity(World world, double d, double e, double f) {
+		super(EntityType.field_6135, d, e, f, world);
 	}
 
 	@Override
 	public void tick() {
 		super.tick();
 		if (this.world.isClient && !this.inGround) {
-			this.world.addParticle(ParticleTypes.INSTANT_EFFECT, this.x, this.y, this.z, 0.0, 0.0, 0.0);
+			this.world.addParticle(ParticleTypes.field_11213, this.x, this.y, this.z, 0.0, 0.0, 0.0);
 		}
 	}
 
 	@Override
 	protected ItemStack asItemStack() {
-		return new ItemStack(Items.SPECTRAL_ARROW);
+		return new ItemStack(Items.field_8236);
 	}
 
 	@Override
-	protected void onHit(LivingEntity target) {
-		super.onHit(target);
-		StatusEffectInstance statusEffectInstance = new StatusEffectInstance(StatusEffects.GLOWING, this.duration, 0);
-		target.addStatusEffect(statusEffectInstance);
+	protected void onHit(LivingEntity livingEntity) {
+		super.onHit(livingEntity);
+		StatusEffectInstance statusEffectInstance = new StatusEffectInstance(StatusEffects.field_5912, this.duration, 0);
+		livingEntity.addPotionEffect(statusEffectInstance);
 	}
 
 	@Override
-	public void readCustomDataFromTag(CompoundTag tag) {
-		super.readCustomDataFromTag(tag);
-		if (tag.contains("Duration")) {
-			this.duration = tag.getInt("Duration");
+	public void readCustomDataFromTag(CompoundTag compoundTag) {
+		super.readCustomDataFromTag(compoundTag);
+		if (compoundTag.containsKey("Duration")) {
+			this.duration = compoundTag.getInt("Duration");
 		}
 	}
 
 	@Override
-	public void writeCustomDataToTag(CompoundTag tag) {
-		super.writeCustomDataToTag(tag);
-		tag.putInt("Duration", this.duration);
+	public void writeCustomDataToTag(CompoundTag compoundTag) {
+		super.writeCustomDataToTag(compoundTag);
+		compoundTag.putInt("Duration", this.duration);
 	}
 }

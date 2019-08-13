@@ -12,28 +12,28 @@ public class BarrierBlock extends Block {
 	}
 
 	@Override
-	public boolean isTranslucent(BlockState state, BlockView view, BlockPos pos) {
+	public boolean isTranslucent(BlockState blockState, BlockView blockView, BlockPos blockPos) {
 		return true;
 	}
 
 	@Override
-	public BlockRenderType getRenderType(BlockState state) {
-		return BlockRenderType.INVISIBLE;
+	public BlockRenderType getRenderType(BlockState blockState) {
+		return BlockRenderType.field_11455;
 	}
 
 	@Override
-	public boolean isOpaque(BlockState state) {
+	public boolean isOpaque(BlockState blockState) {
 		return false;
 	}
 
 	@Environment(EnvType.CLIENT)
 	@Override
-	public float getAmbientOcclusionLightLevel(BlockState state, BlockView view, BlockPos pos) {
+	public float getAmbientOcclusionLightLevel(BlockState blockState, BlockView blockView, BlockPos blockPos) {
 		return 1.0F;
 	}
 
 	@Override
-	public boolean allowsSpawning(BlockState state, BlockView view, BlockPos pos, EntityType<?> type) {
+	public boolean allowsSpawning(BlockState blockState, BlockView blockView, BlockPos blockPos, EntityType<?> entityType) {
 		return false;
 	}
 }

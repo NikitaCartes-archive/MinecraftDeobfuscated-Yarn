@@ -6,27 +6,27 @@ public class ComparatorBlockEntity extends BlockEntity {
 	private int outputSignal;
 
 	public ComparatorBlockEntity() {
-		super(BlockEntityType.COMPARATOR);
+		super(BlockEntityType.field_11908);
 	}
 
 	@Override
-	public CompoundTag toTag(CompoundTag tag) {
-		super.toTag(tag);
-		tag.putInt("OutputSignal", this.outputSignal);
-		return tag;
+	public CompoundTag toTag(CompoundTag compoundTag) {
+		super.toTag(compoundTag);
+		compoundTag.putInt("OutputSignal", this.outputSignal);
+		return compoundTag;
 	}
 
 	@Override
-	public void fromTag(CompoundTag tag) {
-		super.fromTag(tag);
-		this.outputSignal = tag.getInt("OutputSignal");
+	public void fromTag(CompoundTag compoundTag) {
+		super.fromTag(compoundTag);
+		this.outputSignal = compoundTag.getInt("OutputSignal");
 	}
 
 	public int getOutputSignal() {
 		return this.outputSignal;
 	}
 
-	public void setOutputSignal(int outputSignal) {
-		this.outputSignal = outputSignal;
+	public void setOutputSignal(int i) {
+		this.outputSignal = i;
 	}
 }

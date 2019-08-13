@@ -146,8 +146,8 @@ public class SoundEngine {
 	}
 
 	@Nullable
-	public Source createSource(SoundEngine.RunMode mode) {
-		return (mode == SoundEngine.RunMode.STREAMING ? this.staticSources : this.streamingSources).createSource();
+	public Source createSource(SoundEngine.RunMode runMode) {
+		return (runMode == SoundEngine.RunMode.field_18353 ? this.staticSources : this.streamingSources).createSource();
 	}
 
 	public void release(Source source) {
@@ -168,8 +168,8 @@ public class SoundEngine {
 
 	@Environment(EnvType.CLIENT)
 	public static enum RunMode {
-		STATIC,
-		STREAMING;
+		field_18352,
+		field_18353;
 	}
 
 	@Environment(EnvType.CLIENT)
@@ -191,8 +191,8 @@ public class SoundEngine {
 		private final int maxSourceCount;
 		private final Set<Source> sources = Sets.newIdentityHashSet();
 
-		public SourceSetImpl(int maxSourceCount) {
-			this.maxSourceCount = maxSourceCount;
+		public SourceSetImpl(int i) {
+			this.maxSourceCount = i;
 		}
 
 		@Nullable

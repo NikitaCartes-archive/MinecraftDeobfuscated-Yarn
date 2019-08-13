@@ -28,7 +28,7 @@ public class TimeArgumentType implements ArgumentType<Integer> {
 		return new TimeArgumentType();
 	}
 
-	public Integer parse(StringReader stringReader) throws CommandSyntaxException {
+	public Integer method_9490(StringReader stringReader) throws CommandSyntaxException {
 		float f = stringReader.readFloat();
 		String string = stringReader.readUnquotedString();
 		int i = units.getOrDefault(string, 0);
@@ -45,16 +45,16 @@ public class TimeArgumentType implements ArgumentType<Integer> {
 	}
 
 	@Override
-	public <S> CompletableFuture<Suggestions> listSuggestions(CommandContext<S> context, SuggestionsBuilder builder) {
-		StringReader stringReader = new StringReader(builder.getRemaining());
+	public <S> CompletableFuture<Suggestions> listSuggestions(CommandContext<S> commandContext, SuggestionsBuilder suggestionsBuilder) {
+		StringReader stringReader = new StringReader(suggestionsBuilder.getRemaining());
 
 		try {
 			stringReader.readFloat();
 		} catch (CommandSyntaxException var5) {
-			return builder.buildFuture();
+			return suggestionsBuilder.buildFuture();
 		}
 
-		return CommandSource.suggestMatching(units.keySet(), builder.createOffset(builder.getStart() + stringReader.getCursor()));
+		return CommandSource.suggestMatching(units.keySet(), suggestionsBuilder.createOffset(suggestionsBuilder.getStart() + stringReader.getCursor()));
 	}
 
 	@Override

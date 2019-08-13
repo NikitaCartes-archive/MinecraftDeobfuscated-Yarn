@@ -14,7 +14,7 @@ public class FoodComponents {
 	public static final FoodComponent CHICKEN = new FoodComponent.Builder()
 		.hunger(2)
 		.saturationModifier(0.3F)
-		.statusEffect(new StatusEffectInstance(StatusEffects.HUNGER, 600, 0), 0.3F)
+		.statusEffect(new StatusEffectInstance(StatusEffects.field_5903, 600, 0), 0.3F)
 		.meat()
 		.build();
 	public static final FoodComponent CHORUS_FRUIT = new FoodComponent.Builder().hunger(4).saturationModifier(0.3F).alwaysEdible().build();
@@ -31,17 +31,17 @@ public class FoodComponents {
 	public static final FoodComponent ENCHANTED_GOLDEN_APPLE = new FoodComponent.Builder()
 		.hunger(4)
 		.saturationModifier(1.2F)
-		.statusEffect(new StatusEffectInstance(StatusEffects.REGENERATION, 400, 1), 1.0F)
-		.statusEffect(new StatusEffectInstance(StatusEffects.RESISTANCE, 6000, 0), 1.0F)
-		.statusEffect(new StatusEffectInstance(StatusEffects.FIRE_RESISTANCE, 6000, 0), 1.0F)
-		.statusEffect(new StatusEffectInstance(StatusEffects.ABSORPTION, 2400, 3), 1.0F)
+		.statusEffect(new StatusEffectInstance(StatusEffects.field_5924, 400, 1), 1.0F)
+		.statusEffect(new StatusEffectInstance(StatusEffects.field_5907, 6000, 0), 1.0F)
+		.statusEffect(new StatusEffectInstance(StatusEffects.field_5918, 6000, 0), 1.0F)
+		.statusEffect(new StatusEffectInstance(StatusEffects.field_5898, 2400, 3), 1.0F)
 		.alwaysEdible()
 		.build();
 	public static final FoodComponent GOLDEN_APPLE = new FoodComponent.Builder()
 		.hunger(4)
 		.saturationModifier(1.2F)
-		.statusEffect(new StatusEffectInstance(StatusEffects.REGENERATION, 100, 1), 1.0F)
-		.statusEffect(new StatusEffectInstance(StatusEffects.ABSORPTION, 2400, 0), 1.0F)
+		.statusEffect(new StatusEffectInstance(StatusEffects.field_5924, 100, 1), 1.0F)
+		.statusEffect(new StatusEffectInstance(StatusEffects.field_5898, 2400, 0), 1.0F)
 		.alwaysEdible()
 		.build();
 	public static final FoodComponent GOLDEN_CARROT = new FoodComponent.Builder().hunger(6).saturationModifier(1.2F).build();
@@ -51,16 +51,16 @@ public class FoodComponents {
 	public static final FoodComponent POISONOUS_POTATO = new FoodComponent.Builder()
 		.hunger(2)
 		.saturationModifier(0.3F)
-		.statusEffect(new StatusEffectInstance(StatusEffects.POISON, 100, 0), 0.6F)
+		.statusEffect(new StatusEffectInstance(StatusEffects.field_5899, 100, 0), 0.6F)
 		.build();
 	public static final FoodComponent PORKCHOP = new FoodComponent.Builder().hunger(3).saturationModifier(0.3F).meat().build();
 	public static final FoodComponent POTATO = new FoodComponent.Builder().hunger(1).saturationModifier(0.3F).build();
 	public static final FoodComponent PUFFERFISH = new FoodComponent.Builder()
 		.hunger(1)
 		.saturationModifier(0.1F)
-		.statusEffect(new StatusEffectInstance(StatusEffects.POISON, 1200, 3), 1.0F)
-		.statusEffect(new StatusEffectInstance(StatusEffects.HUNGER, 300, 2), 1.0F)
-		.statusEffect(new StatusEffectInstance(StatusEffects.NAUSEA, 300, 1), 1.0F)
+		.statusEffect(new StatusEffectInstance(StatusEffects.field_5899, 1200, 3), 1.0F)
+		.statusEffect(new StatusEffectInstance(StatusEffects.field_5903, 300, 2), 1.0F)
+		.statusEffect(new StatusEffectInstance(StatusEffects.field_5916, 300, 1), 1.0F)
 		.build();
 	public static final FoodComponent PUMPKIN_PIE = new FoodComponent.Builder().hunger(8).saturationModifier(0.3F).build();
 	public static final FoodComponent RABBIT = new FoodComponent.Builder().hunger(3).saturationModifier(0.3F).meat().build();
@@ -68,20 +68,20 @@ public class FoodComponents {
 	public static final FoodComponent ROTTEN_FLESH = new FoodComponent.Builder()
 		.hunger(4)
 		.saturationModifier(0.1F)
-		.statusEffect(new StatusEffectInstance(StatusEffects.HUNGER, 600, 0), 0.8F)
+		.statusEffect(new StatusEffectInstance(StatusEffects.field_5903, 600, 0), 0.8F)
 		.meat()
 		.build();
 	public static final FoodComponent SALMON = new FoodComponent.Builder().hunger(2).saturationModifier(0.1F).build();
 	public static final FoodComponent SPIDER_EYE = new FoodComponent.Builder()
 		.hunger(2)
 		.saturationModifier(0.8F)
-		.statusEffect(new StatusEffectInstance(StatusEffects.POISON, 100, 0), 1.0F)
+		.statusEffect(new StatusEffectInstance(StatusEffects.field_5899, 100, 0), 1.0F)
 		.build();
 	public static final FoodComponent SUSPICIOUS_STEW = create(6);
 	public static final FoodComponent SWEET_BERRIES = new FoodComponent.Builder().hunger(2).saturationModifier(0.1F).build();
 	public static final FoodComponent TROPICAL_FISH = new FoodComponent.Builder().hunger(1).saturationModifier(0.1F).build();
 
-	private static FoodComponent create(int hunger) {
-		return new FoodComponent.Builder().hunger(hunger).saturationModifier(0.6F).build();
+	private static FoodComponent create(int i) {
+		return new FoodComponent.Builder().hunger(i).saturationModifier(0.6F).build();
 	}
 }

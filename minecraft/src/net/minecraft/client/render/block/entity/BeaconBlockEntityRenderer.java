@@ -15,7 +15,7 @@ import net.minecraft.util.math.MathHelper;
 public class BeaconBlockEntityRenderer extends BlockEntityRenderer<BeaconBlockEntity> {
 	private static final Identifier BEAM_TEX = new Identifier("textures/entity/beacon_beam.png");
 
-	public void render(BeaconBlockEntity beaconBlockEntity, double d, double e, double f, float g, int i) {
+	public void method_3541(BeaconBlockEntity beaconBlockEntity, double d, double e, double f, float g, int i) {
 		this.render(d, e, f, (double)g, beaconBlockEntity.getBeamSegments(), beaconBlockEntity.getWorld().getTime());
 	}
 
@@ -34,24 +34,12 @@ public class BeaconBlockEntityRenderer extends BlockEntityRenderer<BeaconBlockEn
 		GlStateManager.enableFog();
 	}
 
-	private static void renderBeaconLightBeam(double x, double y, double z, double tickDelta, long l, int i, int j, float[] fs) {
-		renderLightBeam(x, y, z, tickDelta, 1.0, l, i, j, fs, 0.2, 0.25);
+	private static void renderBeaconLightBeam(double d, double e, double f, double g, long l, int i, int j, float[] fs) {
+		renderLightBeam(d, e, f, g, 1.0, l, i, j, fs, 0.2, 0.25);
 	}
 
-	public static void renderLightBeam(
-		double x,
-		double y,
-		double z,
-		double tickDelta,
-		double textureOffset,
-		long worldTime,
-		int startHeight,
-		int height,
-		float[] beamColor,
-		double innerRadius,
-		double outerRadius
-	) {
-		int i = startHeight + height;
+	public static void renderLightBeam(double d, double e, double f, double g, double h, long l, int i, int j, float[] fs, double k, double m) {
+		int n = i + j;
 		GlStateManager.texParameter(3553, 10242, 10497);
 		GlStateManager.texParameter(3553, 10243, 10497);
 		GlStateManager.disableLighting();
@@ -62,44 +50,44 @@ public class BeaconBlockEntityRenderer extends BlockEntityRenderer<BeaconBlockEn
 			GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO
 		);
 		GlStateManager.pushMatrix();
-		GlStateManager.translated(x + 0.5, y, z + 0.5);
+		GlStateManager.translated(d + 0.5, e, f + 0.5);
 		Tessellator tessellator = Tessellator.getInstance();
-		BufferBuilder bufferBuilder = tessellator.getBuffer();
-		double d = (double)Math.floorMod(worldTime, 40L) + tickDelta;
-		double e = height < 0 ? d : -d;
-		double f = MathHelper.fractionalPart(e * 0.2 - (double)MathHelper.floor(e * 0.1));
-		float g = beamColor[0];
-		float h = beamColor[1];
-		float j = beamColor[2];
+		BufferBuilder bufferBuilder = tessellator.getBufferBuilder();
+		double o = (double)Math.floorMod(l, 40L) + g;
+		double p = j < 0 ? o : -o;
+		double q = MathHelper.fractionalPart(p * 0.2 - (double)MathHelper.floor(p * 0.1));
+		float r = fs[0];
+		float s = fs[1];
+		float t = fs[2];
 		GlStateManager.pushMatrix();
-		GlStateManager.rotated(d * 2.25 - 45.0, 0.0, 1.0, 0.0);
-		double k = 0.0;
-		double n = 0.0;
-		double o = -innerRadius;
-		double p = 0.0;
-		double q = 0.0;
-		double r = -innerRadius;
-		double s = 0.0;
-		double t = 1.0;
-		double u = -1.0 + f;
-		double v = (double)height * textureOffset * (0.5 / innerRadius) + u;
-		bufferBuilder.begin(7, VertexFormats.POSITION_TEXTURE_COLOR);
-		bufferBuilder.vertex(0.0, (double)i, innerRadius).texture(1.0, v).color(g, h, j, 1.0F).next();
-		bufferBuilder.vertex(0.0, (double)startHeight, innerRadius).texture(1.0, u).color(g, h, j, 1.0F).next();
-		bufferBuilder.vertex(innerRadius, (double)startHeight, 0.0).texture(0.0, u).color(g, h, j, 1.0F).next();
-		bufferBuilder.vertex(innerRadius, (double)i, 0.0).texture(0.0, v).color(g, h, j, 1.0F).next();
-		bufferBuilder.vertex(0.0, (double)i, r).texture(1.0, v).color(g, h, j, 1.0F).next();
-		bufferBuilder.vertex(0.0, (double)startHeight, r).texture(1.0, u).color(g, h, j, 1.0F).next();
-		bufferBuilder.vertex(o, (double)startHeight, 0.0).texture(0.0, u).color(g, h, j, 1.0F).next();
-		bufferBuilder.vertex(o, (double)i, 0.0).texture(0.0, v).color(g, h, j, 1.0F).next();
-		bufferBuilder.vertex(innerRadius, (double)i, 0.0).texture(1.0, v).color(g, h, j, 1.0F).next();
-		bufferBuilder.vertex(innerRadius, (double)startHeight, 0.0).texture(1.0, u).color(g, h, j, 1.0F).next();
-		bufferBuilder.vertex(0.0, (double)startHeight, r).texture(0.0, u).color(g, h, j, 1.0F).next();
-		bufferBuilder.vertex(0.0, (double)i, r).texture(0.0, v).color(g, h, j, 1.0F).next();
-		bufferBuilder.vertex(o, (double)i, 0.0).texture(1.0, v).color(g, h, j, 1.0F).next();
-		bufferBuilder.vertex(o, (double)startHeight, 0.0).texture(1.0, u).color(g, h, j, 1.0F).next();
-		bufferBuilder.vertex(0.0, (double)startHeight, innerRadius).texture(0.0, u).color(g, h, j, 1.0F).next();
-		bufferBuilder.vertex(0.0, (double)i, innerRadius).texture(0.0, v).color(g, h, j, 1.0F).next();
+		GlStateManager.rotated(o * 2.25 - 45.0, 0.0, 1.0, 0.0);
+		double u = 0.0;
+		double x = 0.0;
+		double y = -k;
+		double z = 0.0;
+		double aa = 0.0;
+		double ab = -k;
+		double ac = 0.0;
+		double ad = 1.0;
+		double ae = -1.0 + q;
+		double af = (double)j * h * (0.5 / k) + ae;
+		bufferBuilder.begin(7, VertexFormats.POSITION_UV_COLOR);
+		bufferBuilder.vertex(0.0, (double)n, k).texture(1.0, af).color(r, s, t, 1.0F).next();
+		bufferBuilder.vertex(0.0, (double)i, k).texture(1.0, ae).color(r, s, t, 1.0F).next();
+		bufferBuilder.vertex(k, (double)i, 0.0).texture(0.0, ae).color(r, s, t, 1.0F).next();
+		bufferBuilder.vertex(k, (double)n, 0.0).texture(0.0, af).color(r, s, t, 1.0F).next();
+		bufferBuilder.vertex(0.0, (double)n, ab).texture(1.0, af).color(r, s, t, 1.0F).next();
+		bufferBuilder.vertex(0.0, (double)i, ab).texture(1.0, ae).color(r, s, t, 1.0F).next();
+		bufferBuilder.vertex(y, (double)i, 0.0).texture(0.0, ae).color(r, s, t, 1.0F).next();
+		bufferBuilder.vertex(y, (double)n, 0.0).texture(0.0, af).color(r, s, t, 1.0F).next();
+		bufferBuilder.vertex(k, (double)n, 0.0).texture(1.0, af).color(r, s, t, 1.0F).next();
+		bufferBuilder.vertex(k, (double)i, 0.0).texture(1.0, ae).color(r, s, t, 1.0F).next();
+		bufferBuilder.vertex(0.0, (double)i, ab).texture(0.0, ae).color(r, s, t, 1.0F).next();
+		bufferBuilder.vertex(0.0, (double)n, ab).texture(0.0, af).color(r, s, t, 1.0F).next();
+		bufferBuilder.vertex(y, (double)n, 0.0).texture(1.0, af).color(r, s, t, 1.0F).next();
+		bufferBuilder.vertex(y, (double)i, 0.0).texture(1.0, ae).color(r, s, t, 1.0F).next();
+		bufferBuilder.vertex(0.0, (double)i, k).texture(0.0, ae).color(r, s, t, 1.0F).next();
+		bufferBuilder.vertex(0.0, (double)n, k).texture(0.0, af).color(r, s, t, 1.0F).next();
 		tessellator.draw();
 		GlStateManager.popMatrix();
 		GlStateManager.enableBlend();
@@ -107,31 +95,31 @@ public class BeaconBlockEntityRenderer extends BlockEntityRenderer<BeaconBlockEn
 			GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO
 		);
 		GlStateManager.depthMask(false);
-		k = -outerRadius;
-		double l = -outerRadius;
-		n = -outerRadius;
-		o = -outerRadius;
-		s = 0.0;
-		t = 1.0;
-		u = -1.0 + f;
-		v = (double)height * textureOffset + u;
-		bufferBuilder.begin(7, VertexFormats.POSITION_TEXTURE_COLOR);
-		bufferBuilder.vertex(k, (double)i, l).texture(1.0, v).color(g, h, j, 0.125F).next();
-		bufferBuilder.vertex(k, (double)startHeight, l).texture(1.0, u).color(g, h, j, 0.125F).next();
-		bufferBuilder.vertex(outerRadius, (double)startHeight, n).texture(0.0, u).color(g, h, j, 0.125F).next();
-		bufferBuilder.vertex(outerRadius, (double)i, n).texture(0.0, v).color(g, h, j, 0.125F).next();
-		bufferBuilder.vertex(outerRadius, (double)i, outerRadius).texture(1.0, v).color(g, h, j, 0.125F).next();
-		bufferBuilder.vertex(outerRadius, (double)startHeight, outerRadius).texture(1.0, u).color(g, h, j, 0.125F).next();
-		bufferBuilder.vertex(o, (double)startHeight, outerRadius).texture(0.0, u).color(g, h, j, 0.125F).next();
-		bufferBuilder.vertex(o, (double)i, outerRadius).texture(0.0, v).color(g, h, j, 0.125F).next();
-		bufferBuilder.vertex(outerRadius, (double)i, n).texture(1.0, v).color(g, h, j, 0.125F).next();
-		bufferBuilder.vertex(outerRadius, (double)startHeight, n).texture(1.0, u).color(g, h, j, 0.125F).next();
-		bufferBuilder.vertex(outerRadius, (double)startHeight, outerRadius).texture(0.0, u).color(g, h, j, 0.125F).next();
-		bufferBuilder.vertex(outerRadius, (double)i, outerRadius).texture(0.0, v).color(g, h, j, 0.125F).next();
-		bufferBuilder.vertex(o, (double)i, outerRadius).texture(1.0, v).color(g, h, j, 0.125F).next();
-		bufferBuilder.vertex(o, (double)startHeight, outerRadius).texture(1.0, u).color(g, h, j, 0.125F).next();
-		bufferBuilder.vertex(k, (double)startHeight, l).texture(0.0, u).color(g, h, j, 0.125F).next();
-		bufferBuilder.vertex(k, (double)i, l).texture(0.0, v).color(g, h, j, 0.125F).next();
+		u = -m;
+		double v = -m;
+		x = -m;
+		y = -m;
+		ac = 0.0;
+		ad = 1.0;
+		ae = -1.0 + q;
+		af = (double)j * h + ae;
+		bufferBuilder.begin(7, VertexFormats.POSITION_UV_COLOR);
+		bufferBuilder.vertex(u, (double)n, v).texture(1.0, af).color(r, s, t, 0.125F).next();
+		bufferBuilder.vertex(u, (double)i, v).texture(1.0, ae).color(r, s, t, 0.125F).next();
+		bufferBuilder.vertex(m, (double)i, x).texture(0.0, ae).color(r, s, t, 0.125F).next();
+		bufferBuilder.vertex(m, (double)n, x).texture(0.0, af).color(r, s, t, 0.125F).next();
+		bufferBuilder.vertex(m, (double)n, m).texture(1.0, af).color(r, s, t, 0.125F).next();
+		bufferBuilder.vertex(m, (double)i, m).texture(1.0, ae).color(r, s, t, 0.125F).next();
+		bufferBuilder.vertex(y, (double)i, m).texture(0.0, ae).color(r, s, t, 0.125F).next();
+		bufferBuilder.vertex(y, (double)n, m).texture(0.0, af).color(r, s, t, 0.125F).next();
+		bufferBuilder.vertex(m, (double)n, x).texture(1.0, af).color(r, s, t, 0.125F).next();
+		bufferBuilder.vertex(m, (double)i, x).texture(1.0, ae).color(r, s, t, 0.125F).next();
+		bufferBuilder.vertex(m, (double)i, m).texture(0.0, ae).color(r, s, t, 0.125F).next();
+		bufferBuilder.vertex(m, (double)n, m).texture(0.0, af).color(r, s, t, 0.125F).next();
+		bufferBuilder.vertex(y, (double)n, m).texture(1.0, af).color(r, s, t, 0.125F).next();
+		bufferBuilder.vertex(y, (double)i, m).texture(1.0, ae).color(r, s, t, 0.125F).next();
+		bufferBuilder.vertex(u, (double)i, v).texture(0.0, ae).color(r, s, t, 0.125F).next();
+		bufferBuilder.vertex(u, (double)n, v).texture(0.0, af).color(r, s, t, 0.125F).next();
 		tessellator.draw();
 		GlStateManager.popMatrix();
 		GlStateManager.enableLighting();
@@ -139,7 +127,7 @@ public class BeaconBlockEntityRenderer extends BlockEntityRenderer<BeaconBlockEn
 		GlStateManager.depthMask(true);
 	}
 
-	public boolean method_3563(BeaconBlockEntity beaconBlockEntity) {
+	public boolean method_3542(BeaconBlockEntity beaconBlockEntity) {
 		return true;
 	}
 }

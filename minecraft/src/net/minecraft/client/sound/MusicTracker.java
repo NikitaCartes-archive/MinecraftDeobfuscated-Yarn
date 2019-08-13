@@ -15,8 +15,8 @@ public class MusicTracker {
 	private SoundInstance current;
 	private int timeUntilNextSong = 100;
 
-	public MusicTracker(MinecraftClient client) {
-		this.client = client;
+	public MusicTracker(MinecraftClient minecraftClient) {
+		this.client = minecraftClient;
 	}
 
 	public void tick() {
@@ -59,23 +59,23 @@ public class MusicTracker {
 
 	@Environment(EnvType.CLIENT)
 	public static enum MusicType {
-		MENU(SoundEvents.MUSIC_MENU, 20, 600),
-		GAME(SoundEvents.MUSIC_GAME, 12000, 24000),
-		CREATIVE(SoundEvents.MUSIC_CREATIVE, 1200, 3600),
-		CREDITS(SoundEvents.MUSIC_CREDITS, 0, 0),
-		NETHER(SoundEvents.MUSIC_NETHER, 1200, 3600),
-		END_BOSS(SoundEvents.MUSIC_DRAGON, 0, 0),
-		END(SoundEvents.MUSIC_END, 6000, 24000),
-		UNDER_WATER(SoundEvents.MUSIC_UNDER_WATER, 12000, 24000);
+		field_5585(SoundEvents.field_15129, 20, 600),
+		field_5586(SoundEvents.field_14681, 12000, 24000),
+		field_5581(SoundEvents.field_14995, 1200, 3600),
+		field_5578(SoundEvents.field_14755, 0, 0),
+		field_5582(SoundEvents.field_14893, 1200, 3600),
+		field_5580(SoundEvents.field_14837, 0, 0),
+		field_5583(SoundEvents.field_14631, 6000, 24000),
+		field_5576(SoundEvents.field_15198, 12000, 24000);
 
 		private final SoundEvent sound;
 		private final int minDelay;
 		private final int maxDelay;
 
-		private MusicType(SoundEvent soundEvent, int minDelay, int maxDelay) {
+		private MusicType(SoundEvent soundEvent, int j, int k) {
 			this.sound = soundEvent;
-			this.minDelay = minDelay;
-			this.maxDelay = maxDelay;
+			this.minDelay = j;
+			this.maxDelay = k;
 		}
 
 		public SoundEvent getSound() {

@@ -40,28 +40,28 @@ public class ItemPickupParticle extends Particle {
 	}
 
 	@Override
-	public void buildGeometry(BufferBuilder bufferBuilder, Camera camera, float tickDelta, float f, float g, float h, float i, float j) {
-		float k = ((float)this.field_3826 + tickDelta) / (float)this.field_3825;
-		k *= k;
+	public void buildGeometry(BufferBuilder bufferBuilder, Camera camera, float f, float g, float h, float i, float j, float k) {
+		float l = ((float)this.field_3826 + f) / (float)this.field_3825;
+		l *= l;
 		double d = this.field_3823.x;
 		double e = this.field_3823.y;
-		double l = this.field_3823.z;
-		double m = MathHelper.lerp((double)tickDelta, this.field_3821.lastRenderX, this.field_3821.x);
-		double n = MathHelper.lerp((double)tickDelta, this.field_3821.lastRenderY, this.field_3821.y) + (double)this.field_3822;
-		double o = MathHelper.lerp((double)tickDelta, this.field_3821.lastRenderZ, this.field_3821.z);
-		double p = MathHelper.lerp((double)k, d, m);
-		double q = MathHelper.lerp((double)k, e, n);
-		double r = MathHelper.lerp((double)k, l, o);
-		int s = this.getColorMultiplier(tickDelta);
-		int t = s % 65536;
-		int u = s / 65536;
-		GLX.glMultiTexCoord2f(GLX.GL_TEXTURE1, (float)t, (float)u);
+		double m = this.field_3823.z;
+		double n = MathHelper.lerp((double)f, this.field_3821.prevRenderX, this.field_3821.x);
+		double o = MathHelper.lerp((double)f, this.field_3821.prevRenderY, this.field_3821.y) + (double)this.field_3822;
+		double p = MathHelper.lerp((double)f, this.field_3821.prevRenderZ, this.field_3821.z);
+		double q = MathHelper.lerp((double)l, d, n);
+		double r = MathHelper.lerp((double)l, e, o);
+		double s = MathHelper.lerp((double)l, m, p);
+		int t = this.getColorMultiplier(f);
+		int u = t % 65536;
+		int v = t / 65536;
+		GLX.glMultiTexCoord2f(GLX.GL_TEXTURE1, (float)u, (float)v);
 		GlStateManager.color4f(1.0F, 1.0F, 1.0F, 1.0F);
-		p -= cameraX;
-		q -= cameraY;
-		r -= cameraZ;
+		q -= cameraX;
+		r -= cameraY;
+		s -= cameraZ;
 		GlStateManager.enableLighting();
-		this.field_3824.render(this.field_3823, p, q, r, this.field_3823.yaw, tickDelta, false);
+		this.field_3824.render(this.field_3823, q, r, s, this.field_3823.yaw, f, false);
 	}
 
 	@Override

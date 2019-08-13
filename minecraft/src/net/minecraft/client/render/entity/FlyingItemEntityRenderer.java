@@ -15,10 +15,10 @@ public class FlyingItemEntityRenderer<T extends Entity & FlyingItemEntity> exten
 	private final ItemRenderer item;
 	private final float scale;
 
-	public FlyingItemEntityRenderer(EntityRenderDispatcher renderManager, ItemRenderer itemRenderer, float scale) {
-		super(renderManager);
+	public FlyingItemEntityRenderer(EntityRenderDispatcher entityRenderDispatcher, ItemRenderer itemRenderer, float f) {
+		super(entityRenderDispatcher);
 		this.item = itemRenderer;
-		this.scale = scale;
+		this.scale = f;
 	}
 
 	public FlyingItemEntityRenderer(EntityRenderDispatcher entityRenderDispatcher, ItemRenderer itemRenderer) {
@@ -26,9 +26,9 @@ public class FlyingItemEntityRenderer<T extends Entity & FlyingItemEntity> exten
 	}
 
 	@Override
-	public void render(T entity, double x, double y, double z, float yaw, float tickDelta) {
+	public void render(T entity, double d, double e, double f, float g, float h) {
 		GlStateManager.pushMatrix();
-		GlStateManager.translatef((float)x, (float)y, (float)z);
+		GlStateManager.translatef((float)d, (float)e, (float)f);
 		GlStateManager.enableRescaleNormal();
 		GlStateManager.scalef(this.scale, this.scale, this.scale);
 		GlStateManager.rotatef(-this.renderManager.cameraYaw, 0.0F, 1.0F, 0.0F);
@@ -40,7 +40,7 @@ public class FlyingItemEntityRenderer<T extends Entity & FlyingItemEntity> exten
 			GlStateManager.setupSolidRenderingTextureCombine(this.getOutlineColor(entity));
 		}
 
-		this.item.renderItem(entity.getStack(), ModelTransformation.Type.GROUND);
+		this.item.renderItem(entity.getStack(), ModelTransformation.Type.field_4318);
 		if (this.renderOutlines) {
 			GlStateManager.tearDownSolidRenderingTextureCombine();
 			GlStateManager.disableColorMaterial();
@@ -48,7 +48,7 @@ public class FlyingItemEntityRenderer<T extends Entity & FlyingItemEntity> exten
 
 		GlStateManager.disableRescaleNormal();
 		GlStateManager.popMatrix();
-		super.render(entity, x, y, z, yaw, tickDelta);
+		super.render(entity, d, e, f, g, h);
 	}
 
 	@Override

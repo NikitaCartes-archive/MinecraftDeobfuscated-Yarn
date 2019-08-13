@@ -6,12 +6,12 @@ import net.minecraft.inventory.Inventory;
 import net.minecraft.item.ItemStack;
 
 public class ShulkerBoxSlot extends Slot {
-	public ShulkerBoxSlot(Inventory inventory, int invSlot, int xPosition, int i) {
-		super(inventory, invSlot, xPosition, i);
+	public ShulkerBoxSlot(Inventory inventory, int i, int j, int k) {
+		super(inventory, i, j, k);
 	}
 
 	@Override
-	public boolean canInsert(ItemStack stack) {
-		return !(Block.getBlockFromItem(stack.getItem()) instanceof ShulkerBoxBlock);
+	public boolean canInsert(ItemStack itemStack) {
+		return !(Block.getBlockFromItem(itemStack.getItem()) instanceof ShulkerBoxBlock);
 	}
 }

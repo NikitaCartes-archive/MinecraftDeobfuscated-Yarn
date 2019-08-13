@@ -8,18 +8,18 @@ public abstract class SinglePreparationResourceReloadListener<T> implements Reso
 	@Override
 	public final CompletableFuture<Void> reload(
 		ResourceReloadListener.Synchronizer synchronizer,
-		ResourceManager manager,
-		Profiler prepareProfiler,
-		Profiler applyProfiler,
-		Executor prepareExecutor,
-		Executor applyExecutor
+		ResourceManager resourceManager,
+		Profiler profiler,
+		Profiler profiler2,
+		Executor executor,
+		Executor executor2
 	) {
-		return CompletableFuture.supplyAsync(() -> this.prepare(manager, prepareProfiler), prepareExecutor)
+		return CompletableFuture.supplyAsync(() -> this.prepare(resourceManager, profiler), executor)
 			.thenCompose(synchronizer::whenPrepared)
-			.thenAcceptAsync(object -> this.apply((T)object, manager, applyProfiler), applyExecutor);
+			.thenAcceptAsync(object -> this.apply((T)object, resourceManager, profiler2), executor2);
 	}
 
-	protected abstract T prepare(ResourceManager manager, Profiler profiler);
+	protected abstract T prepare(ResourceManager resourceManager, Profiler profiler);
 
-	protected abstract void apply(T loader, ResourceManager manager, Profiler profiler);
+	protected abstract void apply(T object, ResourceManager resourceManager, Profiler profiler);
 }

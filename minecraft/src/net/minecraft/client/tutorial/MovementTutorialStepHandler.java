@@ -67,10 +67,10 @@ public class MovementTutorialStepHandler implements TutorialStepHandler {
 		}
 
 		if (this.moveAroundCompletionTicks != -1 && this.lookAroundCompletionTicks != -1) {
-			if (this.manager.getGameMode() == GameMode.SURVIVAL) {
-				this.manager.setStep(TutorialStep.FIND_TREE);
+			if (this.manager.getGameMode() == GameMode.field_9215) {
+				this.manager.setStep(TutorialStep.field_5648);
 			} else {
-				this.manager.setStep(TutorialStep.NONE);
+				this.manager.setStep(TutorialStep.field_5653);
 			}
 		}
 
@@ -84,13 +84,13 @@ public class MovementTutorialStepHandler implements TutorialStepHandler {
 
 		if (this.ticks >= 100) {
 			if (this.moveAroundCompletionTicks == -1 && this.moveToast == null) {
-				this.moveToast = new TutorialToast(TutorialToast.Type.MOVEMENT_KEYS, MOVE_TITLE, MOVE_DESCRIPTION, true);
+				this.moveToast = new TutorialToast(TutorialToast.Type.field_2230, MOVE_TITLE, MOVE_DESCRIPTION, true);
 				this.manager.getClient().getToastManager().add(this.moveToast);
 			} else if (this.moveAroundCompletionTicks != -1
 				&& this.ticks - this.moveAroundCompletionTicks >= 20
 				&& this.lookAroundCompletionTicks == -1
 				&& this.lookAroundToast == null) {
-				this.lookAroundToast = new TutorialToast(TutorialToast.Type.MOUSE, LOOK_TITLE, LOOK_DESCRIPTION, true);
+				this.lookAroundToast = new TutorialToast(TutorialToast.Type.field_2237, LOOK_TITLE, LOOK_DESCRIPTION, true);
 				this.manager.getClient().getToastManager().add(this.lookAroundToast);
 			}
 		}
@@ -117,8 +117,8 @@ public class MovementTutorialStepHandler implements TutorialStepHandler {
 	}
 
 	@Override
-	public void onMouseUpdate(double deltaX, double deltaY) {
-		if (Math.abs(deltaX) > 0.01 || Math.abs(deltaY) > 0.01) {
+	public void onMouseUpdate(double d, double e) {
+		if (Math.abs(d) > 0.01 || Math.abs(e) > 0.01) {
 			this.lookedAroundLastTick = true;
 		}
 	}

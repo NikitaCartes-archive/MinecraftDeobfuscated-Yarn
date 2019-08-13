@@ -17,29 +17,29 @@ public abstract class AbstractCookingRecipe implements Recipe<Inventory> {
 	protected final float experience;
 	protected final int cookTime;
 
-	public AbstractCookingRecipe(RecipeType<?> type, Identifier id, String group, Ingredient input, ItemStack output, float experience, int cookTime) {
-		this.type = type;
-		this.id = id;
-		this.group = group;
-		this.input = input;
-		this.output = output;
-		this.experience = experience;
-		this.cookTime = cookTime;
+	public AbstractCookingRecipe(RecipeType<?> recipeType, Identifier identifier, String string, Ingredient ingredient, ItemStack itemStack, float f, int i) {
+		this.type = recipeType;
+		this.id = identifier;
+		this.group = string;
+		this.input = ingredient;
+		this.output = itemStack;
+		this.experience = f;
+		this.cookTime = i;
 	}
 
 	@Override
-	public boolean matches(Inventory inv, World world) {
-		return this.input.test(inv.getInvStack(0));
+	public boolean matches(Inventory inventory, World world) {
+		return this.input.method_8093(inventory.getInvStack(0));
 	}
 
 	@Override
-	public ItemStack craft(Inventory inv) {
+	public ItemStack craft(Inventory inventory) {
 		return this.output.copy();
 	}
 
 	@Environment(EnvType.CLIENT)
 	@Override
-	public boolean fits(int width, int height) {
+	public boolean fits(int i, int j) {
 		return true;
 	}
 

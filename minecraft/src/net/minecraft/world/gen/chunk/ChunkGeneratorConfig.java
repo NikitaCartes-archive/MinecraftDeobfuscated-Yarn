@@ -21,8 +21,8 @@ public class ChunkGeneratorConfig {
 	protected final int oceanRuinSeparation = 8;
 	protected int mansionDistance = 80;
 	protected final int mansionSeparation = 20;
-	protected BlockState defaultBlock = Blocks.STONE.getDefaultState();
-	protected BlockState defaultFluid = Blocks.WATER.getDefaultState();
+	protected BlockState defaultBlock = Blocks.field_10340.getDefaultState();
+	protected BlockState defaultFluid = Blocks.field_10382.getDefaultState();
 
 	public int getVillageDistance() {
 		return this.villageDistance;
@@ -100,12 +100,12 @@ public class ChunkGeneratorConfig {
 		return this.defaultFluid;
 	}
 
-	public void setDefaultBlock(BlockState state) {
-		this.defaultBlock = state;
+	public void setDefaultBlock(BlockState blockState) {
+		this.defaultBlock = blockState;
 	}
 
-	public void setDefaultFluid(BlockState state) {
-		this.defaultFluid = state;
+	public void setDefaultFluid(BlockState blockState) {
+		this.defaultFluid = blockState;
 	}
 
 	public int getMaxY() {

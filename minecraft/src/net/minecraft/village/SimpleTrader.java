@@ -27,7 +27,7 @@ public class SimpleTrader implements Trader {
 	}
 
 	@Override
-	public void setCurrentCustomer(@Nullable PlayerEntity customer) {
+	public void setCurrentCustomer(@Nullable PlayerEntity playerEntity) {
 	}
 
 	@Override
@@ -61,8 +61,8 @@ public class SimpleTrader implements Trader {
 	}
 
 	@Override
-	public void setExperienceFromServer(int experience) {
-		this.experience = experience;
+	public void setExperienceFromServer(int i) {
+		this.experience = i;
 	}
 
 	@Override
@@ -72,6 +72,6 @@ public class SimpleTrader implements Trader {
 
 	@Override
 	public SoundEvent method_18010() {
-		return SoundEvents.ENTITY_VILLAGER_YES;
+		return SoundEvents.field_14815;
 	}
 }

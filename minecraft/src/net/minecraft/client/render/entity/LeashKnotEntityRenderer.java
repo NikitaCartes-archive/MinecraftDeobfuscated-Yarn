@@ -16,7 +16,7 @@ public class LeashKnotEntityRenderer extends EntityRenderer<LeadKnotEntity> {
 		super(entityRenderDispatcher);
 	}
 
-	public void render(LeadKnotEntity leadKnotEntity, double d, double e, double f, float g, float h) {
+	public void method_4035(LeadKnotEntity leadKnotEntity, double d, double e, double f, float g, float h) {
 		GlStateManager.pushMatrix();
 		GlStateManager.disableCull();
 		GlStateManager.translatef((float)d, (float)e, (float)f);
@@ -40,7 +40,7 @@ public class LeashKnotEntityRenderer extends EntityRenderer<LeadKnotEntity> {
 		super.render(leadKnotEntity, d, e, f, g, h);
 	}
 
-	protected Identifier getTexture(LeadKnotEntity leadKnotEntity) {
+	protected Identifier method_4036(LeadKnotEntity leadKnotEntity) {
 		return SKIN;
 	}
 }

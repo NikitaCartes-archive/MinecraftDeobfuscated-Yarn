@@ -13,14 +13,20 @@ public class EntityDamageSource extends DamageSource {
 	@Nullable
 	protected final Entity source;
 	private boolean field_5880;
+	private boolean field_20338;
 
-	public EntityDamageSource(String name, @Nullable Entity entity) {
-		super(name);
+	public EntityDamageSource(String string, @Nullable Entity entity) {
+		super(string);
 		this.source = entity;
 	}
 
 	public EntityDamageSource method_5550() {
 		this.field_5880 = true;
+		return this;
+	}
+
+	public EntityDamageSource method_21745(boolean bl) {
+		this.field_20338 = bl;
 		return this;
 	}
 

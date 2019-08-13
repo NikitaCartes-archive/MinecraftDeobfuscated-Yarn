@@ -9,13 +9,13 @@ import net.minecraft.block.BlockState;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.registry.Registry;
 
-public class RandomBlockMatchRuleTest extends RuleTest {
+public class RandomBlockMatchRuleTest extends AbstractRuleTest {
 	private final Block block;
 	private final float probability;
 
-	public RandomBlockMatchRuleTest(Block block, float probability) {
+	public RandomBlockMatchRuleTest(Block block, float f) {
 		this.block = block;
-		this.probability = probability;
+		this.probability = f;
 	}
 
 	public <T> RandomBlockMatchRuleTest(Dynamic<T> dynamic) {
@@ -23,25 +23,25 @@ public class RandomBlockMatchRuleTest extends RuleTest {
 	}
 
 	@Override
-	public boolean test(BlockState state, Random random) {
-		return state.getBlock() == this.block && random.nextFloat() < this.probability;
+	public boolean test(BlockState blockState, Random random) {
+		return blockState.getBlock() == this.block && random.nextFloat() < this.probability;
 	}
 
 	@Override
-	protected RuleTestType getType() {
-		return RuleTestType.RANDOM_BLOCK_MATCH;
+	protected RuleTest getRuleTest() {
+		return RuleTest.field_16980;
 	}
 
 	@Override
-	protected <T> Dynamic<T> serialize(DynamicOps<T> ops) {
+	protected <T> Dynamic<T> serialize(DynamicOps<T> dynamicOps) {
 		return new Dynamic<>(
-			ops,
-			ops.createMap(
+			dynamicOps,
+			dynamicOps.createMap(
 				ImmutableMap.of(
-					ops.createString("block"),
-					ops.createString(Registry.BLOCK.getId(this.block).toString()),
-					ops.createString("probability"),
-					ops.createFloat(this.probability)
+					dynamicOps.createString("block"),
+					dynamicOps.createString(Registry.BLOCK.getId(this.block).toString()),
+					dynamicOps.createString("probability"),
+					dynamicOps.createFloat(this.probability)
 				)
 			)
 		);

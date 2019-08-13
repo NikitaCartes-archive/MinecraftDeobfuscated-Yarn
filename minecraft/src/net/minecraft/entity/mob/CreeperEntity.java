@@ -76,9 +76,9 @@ public class CreeperEntity extends HostileEntity {
 	}
 
 	@Override
-	public void handleFallDamage(float fallDistance, float damageMultiplier) {
-		super.handleFallDamage(fallDistance, damageMultiplier);
-		this.currentFuseTime = (int)((float)this.currentFuseTime + fallDistance * 1.5F);
+	public void handleFallDamage(float f, float g) {
+		super.handleFallDamage(f, g);
+		this.currentFuseTime = (int)((float)this.currentFuseTime + f * 1.5F);
 		if (this.currentFuseTime > this.fuseTime - 5) {
 			this.currentFuseTime = this.fuseTime - 5;
 		}
@@ -93,30 +93,30 @@ public class CreeperEntity extends HostileEntity {
 	}
 
 	@Override
-	public void writeCustomDataToTag(CompoundTag tag) {
-		super.writeCustomDataToTag(tag);
+	public void writeCustomDataToTag(CompoundTag compoundTag) {
+		super.writeCustomDataToTag(compoundTag);
 		if (this.dataTracker.get(CHARGED)) {
-			tag.putBoolean("powered", true);
+			compoundTag.putBoolean("powered", true);
 		}
 
-		tag.putShort("Fuse", (short)this.fuseTime);
-		tag.putByte("ExplosionRadius", (byte)this.explosionRadius);
-		tag.putBoolean("ignited", this.getIgnited());
+		compoundTag.putShort("Fuse", (short)this.fuseTime);
+		compoundTag.putByte("ExplosionRadius", (byte)this.explosionRadius);
+		compoundTag.putBoolean("ignited", this.getIgnited());
 	}
 
 	@Override
-	public void readCustomDataFromTag(CompoundTag tag) {
-		super.readCustomDataFromTag(tag);
-		this.dataTracker.set(CHARGED, tag.getBoolean("powered"));
-		if (tag.contains("Fuse", 99)) {
-			this.fuseTime = tag.getShort("Fuse");
+	public void readCustomDataFromTag(CompoundTag compoundTag) {
+		super.readCustomDataFromTag(compoundTag);
+		this.dataTracker.set(CHARGED, compoundTag.getBoolean("powered"));
+		if (compoundTag.containsKey("Fuse", 99)) {
+			this.fuseTime = compoundTag.getShort("Fuse");
 		}
 
-		if (tag.contains("ExplosionRadius", 99)) {
-			this.explosionRadius = tag.getByte("ExplosionRadius");
+		if (compoundTag.containsKey("ExplosionRadius", 99)) {
+			this.explosionRadius = compoundTag.getByte("ExplosionRadius");
 		}
 
-		if (tag.getBoolean("ignited")) {
+		if (compoundTag.getBoolean("ignited")) {
 			this.setIgnited();
 		}
 	}
@@ -131,7 +131,7 @@ public class CreeperEntity extends HostileEntity {
 
 			int i = this.getFuseSpeed();
 			if (i > 0 && this.currentFuseTime == 0) {
-				this.playSound(SoundEvents.ENTITY_CREEPER_PRIMED, 1.0F, 0.5F);
+				this.playSound(SoundEvents.field_15057, 1.0F, 0.5F);
 			}
 
 			this.currentFuseTime += i;
@@ -149,19 +149,19 @@ public class CreeperEntity extends HostileEntity {
 	}
 
 	@Override
-	protected SoundEvent getHurtSound(DamageSource source) {
-		return SoundEvents.ENTITY_CREEPER_HURT;
+	protected SoundEvent getHurtSound(DamageSource damageSource) {
+		return SoundEvents.field_15192;
 	}
 
 	@Override
 	protected SoundEvent getDeathSound() {
-		return SoundEvents.ENTITY_CREEPER_DEATH;
+		return SoundEvents.field_14907;
 	}
 
 	@Override
-	protected void dropEquipment(DamageSource source, int lootingMultiplier, boolean allowDrops) {
-		super.dropEquipment(source, lootingMultiplier, allowDrops);
-		Entity entity = source.getAttacker();
+	protected void dropEquipment(DamageSource damageSource, int i, boolean bl) {
+		super.dropEquipment(damageSource, i, bl);
+		Entity entity = damageSource.getAttacker();
 		if (entity != this && entity instanceof CreeperEntity) {
 			CreeperEntity creeperEntity = (CreeperEntity)entity;
 			if (creeperEntity.shouldDropHead()) {
@@ -172,7 +172,7 @@ public class CreeperEntity extends HostileEntity {
 	}
 
 	@Override
-	public boolean tryAttack(Entity target) {
+	public boolean tryAttack(Entity entity) {
 		return true;
 	}
 
@@ -181,46 +181,45 @@ public class CreeperEntity extends HostileEntity {
 	}
 
 	@Environment(EnvType.CLIENT)
-	public float getClientFuseTime(float timeDelta) {
-		return MathHelper.lerp(timeDelta, (float)this.lastFuseTime, (float)this.currentFuseTime) / (float)(this.fuseTime - 2);
+	public float getClientFuseTime(float f) {
+		return MathHelper.lerp(f, (float)this.lastFuseTime, (float)this.currentFuseTime) / (float)(this.fuseTime - 2);
 	}
 
 	public int getFuseSpeed() {
 		return this.dataTracker.get(FUSE_SPEED);
 	}
 
-	public void setFuseSpeed(int fuseSpeed) {
-		this.dataTracker.set(FUSE_SPEED, fuseSpeed);
+	public void setFuseSpeed(int i) {
+		this.dataTracker.set(FUSE_SPEED, i);
 	}
 
 	@Override
-	public void onStruckByLightning(LightningEntity lightning) {
-		super.onStruckByLightning(lightning);
+	public void onStruckByLightning(LightningEntity lightningEntity) {
+		super.onStruckByLightning(lightningEntity);
 		this.dataTracker.set(CHARGED, true);
 	}
 
 	@Override
-	protected boolean interactMob(PlayerEntity player, Hand hand) {
-		ItemStack itemStack = player.getStackInHand(hand);
-		if (itemStack.getItem() == Items.FLINT_AND_STEEL) {
-			this.world
-				.playSound(player, this.x, this.y, this.z, SoundEvents.ITEM_FLINTANDSTEEL_USE, this.getSoundCategory(), 1.0F, this.random.nextFloat() * 0.4F + 0.8F);
-			player.swingHand(hand);
+	protected boolean interactMob(PlayerEntity playerEntity, Hand hand) {
+		ItemStack itemStack = playerEntity.getStackInHand(hand);
+		if (itemStack.getItem() == Items.field_8884) {
+			this.world.playSound(playerEntity, this.x, this.y, this.z, SoundEvents.field_15145, this.getSoundCategory(), 1.0F, this.random.nextFloat() * 0.4F + 0.8F);
+			playerEntity.swingHand(hand);
 			if (!this.world.isClient) {
 				this.setIgnited();
-				itemStack.damage(1, player, playerEntity -> playerEntity.sendToolBreakStatus(hand));
+				itemStack.damage(1, playerEntity, playerEntityx -> playerEntityx.sendToolBreakStatus(hand));
 				return true;
 			}
 		}
 
-		return super.interactMob(player, hand);
+		return super.interactMob(playerEntity, hand);
 	}
 
 	private void explode() {
 		if (!this.world.isClient) {
-			Explosion.DestructionType destructionType = this.world.getGameRules().getBoolean(GameRules.MOB_GRIEFING)
-				? Explosion.DestructionType.DESTROY
-				: Explosion.DestructionType.NONE;
+			Explosion.DestructionType destructionType = this.world.getGameRules().getBoolean(GameRules.field_19388)
+				? Explosion.DestructionType.field_18687
+				: Explosion.DestructionType.field_18685;
 			float f = this.isCharged() ? 2.0F : 1.0F;
 			this.dead = true;
 			this.world.createExplosion(this, this.x, this.y, this.z, (float)this.explosionRadius * f, destructionType);

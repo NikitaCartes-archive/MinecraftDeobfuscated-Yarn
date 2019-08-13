@@ -3,17 +3,17 @@ package net.minecraft.enchantment;
 import net.minecraft.entity.EquipmentSlot;
 
 public class VanishingCurseEnchantment extends Enchantment {
-	public VanishingCurseEnchantment(Enchantment.Weight weight, EquipmentSlot... slotTypes) {
-		super(weight, EnchantmentTarget.ALL, slotTypes);
+	public VanishingCurseEnchantment(Enchantment.Weight weight, EquipmentSlot... equipmentSlots) {
+		super(weight, EnchantmentTarget.field_9075, equipmentSlots);
 	}
 
 	@Override
-	public int getMinimumPower(int level) {
+	public int getMinimumPower(int i) {
 		return 25;
 	}
 
 	@Override
-	public int getMaximumPower(int level) {
+	public int getMaximumPower(int i) {
 		return 50;
 	}
 

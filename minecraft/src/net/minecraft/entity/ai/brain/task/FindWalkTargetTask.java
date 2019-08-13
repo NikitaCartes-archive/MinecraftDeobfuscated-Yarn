@@ -2,7 +2,7 @@ package net.minecraft.entity.ai.brain.task;
 
 import com.google.common.collect.ImmutableMap;
 import java.util.Optional;
-import net.minecraft.entity.ai.TargetFinder;
+import net.minecraft.entity.ai.PathfindingUtil;
 import net.minecraft.entity.ai.brain.MemoryModuleState;
 import net.minecraft.entity.ai.brain.MemoryModuleType;
 import net.minecraft.entity.ai.brain.WalkTarget;
@@ -17,18 +17,18 @@ public class FindWalkTargetTask extends Task<MobEntityWithAi> {
 	private final int field_19352;
 	private final int field_19353;
 
-	public FindWalkTargetTask(float walkSpeed) {
-		this(walkSpeed, 10, 7);
+	public FindWalkTargetTask(float f) {
+		this(f, 10, 7);
 	}
 
 	public FindWalkTargetTask(float f, int i, int j) {
-		super(ImmutableMap.of(MemoryModuleType.WALK_TARGET, MemoryModuleState.VALUE_ABSENT));
+		super(ImmutableMap.of(MemoryModuleType.field_18445, MemoryModuleState.field_18457));
 		this.walkSpeed = f;
 		this.field_19352 = i;
 		this.field_19353 = j;
 	}
 
-	protected void run(ServerWorld serverWorld, MobEntityWithAi mobEntityWithAi, long l) {
+	protected void method_18996(ServerWorld serverWorld, MobEntityWithAi mobEntityWithAi, long l) {
 		BlockPos blockPos = new BlockPos(mobEntityWithAi);
 		if (serverWorld.isNearOccupiedPointOfInterest(blockPos)) {
 			this.method_20429(mobEntityWithAi);
@@ -46,15 +46,15 @@ public class FindWalkTargetTask extends Task<MobEntityWithAi> {
 	private void method_20430(MobEntityWithAi mobEntityWithAi, ChunkSectionPos chunkSectionPos) {
 		BlockPos blockPos = chunkSectionPos.getCenterPos();
 		Optional<Vec3d> optional = Optional.ofNullable(
-			TargetFinder.method_6373(
+			PathfindingUtil.method_6373(
 				mobEntityWithAi, this.field_19352, this.field_19353, new Vec3d((double)blockPos.getX(), (double)blockPos.getY(), (double)blockPos.getZ())
 			)
 		);
-		mobEntityWithAi.getBrain().setMemory(MemoryModuleType.WALK_TARGET, optional.map(vec3d -> new WalkTarget(vec3d, this.walkSpeed, 0)));
+		mobEntityWithAi.getBrain().setMemory(MemoryModuleType.field_18445, optional.map(vec3d -> new WalkTarget(vec3d, this.walkSpeed, 0)));
 	}
 
 	private void method_20429(MobEntityWithAi mobEntityWithAi) {
-		Optional<Vec3d> optional = Optional.ofNullable(TargetFinder.findGroundTarget(mobEntityWithAi, this.field_19352, this.field_19353));
-		mobEntityWithAi.getBrain().setMemory(MemoryModuleType.WALK_TARGET, optional.map(vec3d -> new WalkTarget(vec3d, this.walkSpeed, 0)));
+		Optional<Vec3d> optional = Optional.ofNullable(PathfindingUtil.findTargetStraight(mobEntityWithAi, this.field_19352, this.field_19353));
+		mobEntityWithAi.getBrain().setMemory(MemoryModuleType.field_18445, optional.map(vec3d -> new WalkTarget(vec3d, this.walkSpeed, 0)));
 	}
 }

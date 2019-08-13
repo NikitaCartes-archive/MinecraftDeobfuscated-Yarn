@@ -3,17 +3,17 @@ package net.minecraft.block.enums;
 import net.minecraft.util.StringIdentifiable;
 
 public enum ChestType implements StringIdentifiable {
-	SINGLE("single", 0),
-	LEFT("left", 2),
-	RIGHT("right", 1);
+	field_12569("single", 0),
+	field_12574("left", 2),
+	field_12571("right", 1);
 
 	public static final ChestType[] VALUES = values();
 	private final String name;
 	private final int opposite;
 
-	private ChestType(String name, int opposite) {
-		this.name = name;
-		this.opposite = opposite;
+	private ChestType(String string2, int j) {
+		this.name = string2;
+		this.opposite = j;
 	}
 
 	@Override

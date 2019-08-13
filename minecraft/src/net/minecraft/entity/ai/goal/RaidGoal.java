@@ -8,8 +8,8 @@ import net.minecraft.entity.raid.RaiderEntity;
 public class RaidGoal<T extends LivingEntity> extends FollowTargetGoal<T> {
 	private int cooldown = 0;
 
-	public RaidGoal(RaiderEntity raider, Class<T> targetEntityClass, boolean checkVisibility, @Nullable Predicate<LivingEntity> tragetPredicate) {
-		super(raider, targetEntityClass, 500, checkVisibility, false, tragetPredicate);
+	public RaidGoal(RaiderEntity raiderEntity, Class<T> class_, boolean bl, @Nullable Predicate<LivingEntity> predicate) {
+		super(raiderEntity, class_, 500, bl, false, predicate);
 	}
 
 	public int getCooldown() {
@@ -22,7 +22,7 @@ public class RaidGoal<T extends LivingEntity> extends FollowTargetGoal<T> {
 
 	@Override
 	public boolean canStart() {
-		if (this.cooldown > 0 || !this.mob.getRandom().nextBoolean()) {
+		if (this.cooldown > 0 || !this.mob.getRand().nextBoolean()) {
 			return false;
 		} else if (!((RaiderEntity)this.mob).hasActiveRaid()) {
 			return false;

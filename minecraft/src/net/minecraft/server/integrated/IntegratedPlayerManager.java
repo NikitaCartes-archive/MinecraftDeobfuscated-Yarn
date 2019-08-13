@@ -20,22 +20,22 @@ public class IntegratedPlayerManager extends PlayerManager {
 	}
 
 	@Override
-	protected void savePlayerData(ServerPlayerEntity player) {
-		if (player.getName().getString().equals(this.getServer().getUserName())) {
-			this.userData = player.toTag(new CompoundTag());
+	protected void savePlayerData(ServerPlayerEntity serverPlayerEntity) {
+		if (serverPlayerEntity.getName().getString().equals(this.method_4811().getUserName())) {
+			this.userData = serverPlayerEntity.toTag(new CompoundTag());
 		}
 
-		super.savePlayerData(player);
+		super.savePlayerData(serverPlayerEntity);
 	}
 
 	@Override
 	public Text checkCanJoin(SocketAddress socketAddress, GameProfile gameProfile) {
-		return (Text)(gameProfile.getName().equalsIgnoreCase(this.getServer().getUserName()) && this.getPlayer(gameProfile.getName()) != null
+		return (Text)(gameProfile.getName().equalsIgnoreCase(this.method_4811().getUserName()) && this.getPlayer(gameProfile.getName()) != null
 			? new TranslatableText("multiplayer.disconnect.name_taken")
 			: super.checkCanJoin(socketAddress, gameProfile));
 	}
 
-	public IntegratedServer getServer() {
+	public IntegratedServer method_4811() {
 		return (IntegratedServer)super.getServer();
 	}
 

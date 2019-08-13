@@ -15,11 +15,11 @@ import javax.annotation.Nullable;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.NbtHelper;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.tag.Tag;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.TagHelper;
 
 public class ItemPredicateArgumentType implements ArgumentType<ItemPredicateArgumentType.ItemPredicateArgument> {
 	private static final Collection<String> EXAMPLES = Arrays.asList("stick", "minecraft:stick", "#stick", "#stick{foo=bar}");
@@ -31,7 +31,7 @@ public class ItemPredicateArgumentType implements ArgumentType<ItemPredicateArgu
 		return new ItemPredicateArgumentType();
 	}
 
-	public ItemPredicateArgumentType.ItemPredicateArgument parse(StringReader stringReader) throws CommandSyntaxException {
+	public ItemPredicateArgumentType.ItemPredicateArgument method_9800(StringReader stringReader) throws CommandSyntaxException {
 		ItemStringReader itemStringReader = new ItemStringReader(stringReader, true).consume();
 		if (itemStringReader.getItem() != null) {
 			ItemPredicateArgumentType.ItemPredicate itemPredicate = new ItemPredicateArgumentType.ItemPredicate(itemStringReader.getItem(), itemStringReader.getTag());
@@ -49,14 +49,15 @@ public class ItemPredicateArgumentType implements ArgumentType<ItemPredicateArgu
 		}
 	}
 
-	public static Predicate<ItemStack> getItemPredicate(CommandContext<ServerCommandSource> context, String name) throws CommandSyntaxException {
-		return context.<ItemPredicateArgumentType.ItemPredicateArgument>getArgument(name, ItemPredicateArgumentType.ItemPredicateArgument.class).create(context);
+	public static Predicate<ItemStack> getItemPredicate(CommandContext<ServerCommandSource> commandContext, String string) throws CommandSyntaxException {
+		return commandContext.<ItemPredicateArgumentType.ItemPredicateArgument>getArgument(string, ItemPredicateArgumentType.ItemPredicateArgument.class)
+			.create(commandContext);
 	}
 
 	@Override
-	public <S> CompletableFuture<Suggestions> listSuggestions(CommandContext<S> context, SuggestionsBuilder builder) {
-		StringReader stringReader = new StringReader(builder.getInput());
-		stringReader.setCursor(builder.getStart());
+	public <S> CompletableFuture<Suggestions> listSuggestions(CommandContext<S> commandContext, SuggestionsBuilder suggestionsBuilder) {
+		StringReader stringReader = new StringReader(suggestionsBuilder.getInput());
+		stringReader.setCursor(suggestionsBuilder.getStart());
 		ItemStringReader itemStringReader = new ItemStringReader(stringReader, true);
 
 		try {
@@ -64,7 +65,7 @@ public class ItemPredicateArgumentType implements ArgumentType<ItemPredicateArgu
 		} catch (CommandSyntaxException var6) {
 		}
 
-		return itemStringReader.method_9793(builder);
+		return itemStringReader.method_9793(suggestionsBuilder);
 	}
 
 	@Override
@@ -82,8 +83,8 @@ public class ItemPredicateArgumentType implements ArgumentType<ItemPredicateArgu
 			this.compound = compoundTag;
 		}
 
-		public boolean test(ItemStack itemStack) {
-			return itemStack.getItem() == this.item && NbtHelper.matches(this.compound, itemStack.getTag(), true);
+		public boolean method_9806(ItemStack itemStack) {
+			return itemStack.getItem() == this.item && TagHelper.areTagsEqual(this.compound, itemStack.getTag(), true);
 		}
 	}
 
@@ -101,8 +102,8 @@ public class ItemPredicateArgumentType implements ArgumentType<ItemPredicateArgu
 			this.compound = compoundTag;
 		}
 
-		public boolean test(ItemStack itemStack) {
-			return this.tag.contains(itemStack.getItem()) && NbtHelper.matches(this.compound, itemStack.getTag(), true);
+		public boolean method_9807(ItemStack itemStack) {
+			return this.tag.contains(itemStack.getItem()) && TagHelper.areTagsEqual(this.compound, itemStack.getTag(), true);
 		}
 	}
 }

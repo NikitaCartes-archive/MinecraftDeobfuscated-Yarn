@@ -7,12 +7,12 @@ import net.minecraft.block.Blocks;
 import net.minecraft.world.IWorld;
 
 public class IcePileFeature extends AbstractPileFeature {
-	public IcePileFeature(Function<Dynamic<?>, ? extends DefaultFeatureConfig> configFactory) {
-		super(configFactory);
+	public IcePileFeature(Function<Dynamic<?>, ? extends DefaultFeatureConfig> function) {
+		super(function);
 	}
 
 	@Override
-	protected BlockState getPileBlockState(IWorld world) {
-		return world.getRandom().nextInt(7) == 0 ? Blocks.BLUE_ICE.getDefaultState() : Blocks.PACKED_ICE.getDefaultState();
+	protected BlockState getPileBlockState(IWorld iWorld) {
+		return iWorld.getRandom().nextInt(7) == 0 ? Blocks.field_10384.getDefaultState() : Blocks.field_10225.getDefaultState();
 	}
 }

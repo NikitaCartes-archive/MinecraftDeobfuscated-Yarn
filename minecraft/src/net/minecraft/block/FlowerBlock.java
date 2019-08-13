@@ -12,25 +12,25 @@ public class FlowerBlock extends PlantBlock {
 	private final StatusEffect effectInStew;
 	private final int effectInStewDuration;
 
-	public FlowerBlock(StatusEffect suspiciousStewEffect, int effectDuration, Block.Settings settings) {
+	public FlowerBlock(StatusEffect statusEffect, int i, Block.Settings settings) {
 		super(settings);
-		this.effectInStew = suspiciousStewEffect;
-		if (suspiciousStewEffect.isInstant()) {
-			this.effectInStewDuration = effectDuration;
+		this.effectInStew = statusEffect;
+		if (statusEffect.isInstant()) {
+			this.effectInStewDuration = i;
 		} else {
-			this.effectInStewDuration = effectDuration * 20;
+			this.effectInStewDuration = i * 20;
 		}
 	}
 
 	@Override
-	public VoxelShape getOutlineShape(BlockState state, BlockView view, BlockPos pos, EntityContext context) {
-		Vec3d vec3d = state.getOffsetPos(view, pos);
+	public VoxelShape getOutlineShape(BlockState blockState, BlockView blockView, BlockPos blockPos, EntityContext entityContext) {
+		Vec3d vec3d = blockState.getOffsetPos(blockView, blockPos);
 		return SHAPE.offset(vec3d.x, vec3d.y, vec3d.z);
 	}
 
 	@Override
 	public Block.OffsetType getOffsetType() {
-		return Block.OffsetType.XZ;
+		return Block.OffsetType.field_10657;
 	}
 
 	public StatusEffect getEffectInStew() {

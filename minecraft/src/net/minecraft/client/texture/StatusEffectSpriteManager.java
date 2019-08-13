@@ -17,7 +17,7 @@ public class StatusEffectSpriteManager extends SpriteAtlasHolder {
 		return Registry.STATUS_EFFECT.getIds();
 	}
 
-	public Sprite getSprite(StatusEffect effect) {
-		return this.getSprite(Registry.STATUS_EFFECT.getId(effect));
+	public Sprite getSprite(StatusEffect statusEffect) {
+		return this.getSprite(Registry.STATUS_EFFECT.getId(statusEffect));
 	}
 }

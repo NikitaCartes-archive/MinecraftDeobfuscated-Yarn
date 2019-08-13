@@ -18,7 +18,7 @@ public class NoiseHeightmap32Decorator extends Decorator<NoiseHeightmapDecorator
 		super(function);
 	}
 
-	public Stream<BlockPos> getPositions(
+	public Stream<BlockPos> method_15936(
 		IWorld iWorld,
 		ChunkGenerator<? extends ChunkGeneratorConfig> chunkGenerator,
 		Random random,
@@ -30,7 +30,7 @@ public class NoiseHeightmap32Decorator extends Decorator<NoiseHeightmapDecorator
 		return IntStream.range(0, i).mapToObj(ix -> {
 			int j = random.nextInt(16);
 			int k = random.nextInt(16);
-			int l = iWorld.getTopPosition(Heightmap.Type.MOTION_BLOCKING, blockPos.add(j, 0, k)).getY() + 32;
+			int l = iWorld.getTopPosition(Heightmap.Type.field_13197, blockPos.add(j, 0, k)).getY() + 32;
 			if (l <= 0) {
 				return null;
 			} else {

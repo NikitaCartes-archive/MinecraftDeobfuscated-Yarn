@@ -5,7 +5,7 @@ import java.util.Random;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.render.BufferBuilder;
-import net.minecraft.client.render.DiffuseLighting;
+import net.minecraft.client.render.GuiLighting;
 import net.minecraft.client.render.Tessellator;
 import net.minecraft.client.render.VertexFormats;
 import net.minecraft.client.render.entity.model.DragonEntityModel;
@@ -13,15 +13,15 @@ import net.minecraft.entity.boss.dragon.EnderDragonEntity;
 
 @Environment(EnvType.CLIENT)
 public class EnderDragonDeathFeatureRenderer extends FeatureRenderer<EnderDragonEntity, DragonEntityModel> {
-	public EnderDragonDeathFeatureRenderer(FeatureRendererContext<EnderDragonEntity, DragonEntityModel> context) {
-		super(context);
+	public EnderDragonDeathFeatureRenderer(FeatureRendererContext<EnderDragonEntity, DragonEntityModel> featureRendererContext) {
+		super(featureRendererContext);
 	}
 
-	public void render(EnderDragonEntity enderDragonEntity, float f, float g, float h, float i, float j, float k, float l) {
+	public void method_4184(EnderDragonEntity enderDragonEntity, float f, float g, float h, float i, float j, float k, float l) {
 		if (enderDragonEntity.field_7031 > 0) {
 			Tessellator tessellator = Tessellator.getInstance();
-			BufferBuilder bufferBuilder = tessellator.getBuffer();
-			DiffuseLighting.disable();
+			BufferBuilder bufferBuilder = tessellator.getBufferBuilder();
+			GuiLighting.disable();
 			float m = ((float)enderDragonEntity.field_7031 + h) / 200.0F;
 			float n = 0.0F;
 			if (m > 0.8F) {
@@ -65,7 +65,7 @@ public class EnderDragonDeathFeatureRenderer extends FeatureRenderer<EnderDragon
 			GlStateManager.color4f(1.0F, 1.0F, 1.0F, 1.0F);
 			GlStateManager.enableTexture();
 			GlStateManager.enableAlphaTest();
-			DiffuseLighting.enable();
+			GuiLighting.enable();
 		}
 	}
 

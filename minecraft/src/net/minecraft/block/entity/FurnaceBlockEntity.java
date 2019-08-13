@@ -9,7 +9,7 @@ import net.minecraft.text.TranslatableText;
 
 public class FurnaceBlockEntity extends AbstractFurnaceBlockEntity {
 	public FurnaceBlockEntity() {
-		super(BlockEntityType.FURNACE, RecipeType.SMELTING);
+		super(BlockEntityType.field_11903, RecipeType.SMELTING);
 	}
 
 	@Override

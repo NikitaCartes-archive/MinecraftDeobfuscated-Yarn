@@ -61,9 +61,9 @@ public interface StructurePieceType {
 	StructurePieceType BURIED_TREASURE = register(BuriedTreasureGenerator.Piece::new, "BTP");
 	StructurePieceType SHIPWRECK = register(ShipwreckGenerator.Piece::new, "Shipwreck");
 
-	StructurePiece load(StructureManager structureManager, CompoundTag tag);
+	StructurePiece load(StructureManager structureManager, CompoundTag compoundTag);
 
-	static StructurePieceType register(StructurePieceType pieceType, String id) {
-		return Registry.register(Registry.STRUCTURE_PIECE, id.toLowerCase(Locale.ROOT), pieceType);
+	static StructurePieceType register(StructurePieceType structurePieceType, String string) {
+		return Registry.register(Registry.STRUCTURE_PIECE, string.toLowerCase(Locale.ROOT), structurePieceType);
 	}
 }

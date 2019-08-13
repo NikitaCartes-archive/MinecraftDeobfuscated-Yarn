@@ -10,24 +10,27 @@ import java.util.stream.IntStream;
 public class SimpleRandomFeatureConfig implements FeatureConfig {
 	public final List<ConfiguredFeature<?>> features;
 
-	public SimpleRandomFeatureConfig(List<ConfiguredFeature<?>> features) {
-		this.features = features;
+	public SimpleRandomFeatureConfig(List<ConfiguredFeature<?>> list) {
+		this.features = list;
 	}
 
-	public SimpleRandomFeatureConfig(Feature<?>[] features, FeatureConfig[] configs) {
-		this((List<ConfiguredFeature<?>>)IntStream.range(0, features.length).mapToObj(i -> configure(features[i], configs[i])).collect(Collectors.toList()));
+	public SimpleRandomFeatureConfig(Feature<?>[] features, FeatureConfig[] featureConfigs) {
+		this((List<ConfiguredFeature<?>>)IntStream.range(0, features.length).mapToObj(i -> configure(features[i], featureConfigs[i])).collect(Collectors.toList()));
 	}
 
-	private static <FC extends FeatureConfig> ConfiguredFeature<FC> configure(Feature<FC> feature, FeatureConfig config) {
-		return new ConfiguredFeature<>(feature, (FC)config);
+	private static <FC extends FeatureConfig> ConfiguredFeature<FC> configure(Feature<FC> feature, FeatureConfig featureConfig) {
+		return new ConfiguredFeature<>(feature, (FC)featureConfig);
 	}
 
 	@Override
-	public <T> Dynamic<T> serialize(DynamicOps<T> ops) {
+	public <T> Dynamic<T> serialize(DynamicOps<T> dynamicOps) {
 		return new Dynamic<>(
-			ops,
-			ops.createMap(
-				ImmutableMap.of(ops.createString("features"), ops.createList(this.features.stream().map(configuredFeature -> configuredFeature.serialize(ops).getValue())))
+			dynamicOps,
+			dynamicOps.createMap(
+				ImmutableMap.of(
+					dynamicOps.createString("features"),
+					dynamicOps.createList(this.features.stream().map(configuredFeature -> configuredFeature.serialize(dynamicOps).getValue()))
+				)
 			)
 		);
 	}

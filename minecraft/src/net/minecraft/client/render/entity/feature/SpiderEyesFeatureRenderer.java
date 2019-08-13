@@ -14,8 +14,8 @@ import net.minecraft.util.Identifier;
 public class SpiderEyesFeatureRenderer<T extends Entity, M extends SpiderEntityModel<T>> extends FeatureRenderer<T, M> {
 	private static final Identifier SKIN = new Identifier("textures/entity/spider_eyes.png");
 
-	public SpiderEyesFeatureRenderer(FeatureRendererContext<T, M> context) {
-		super(context);
+	public SpiderEyesFeatureRenderer(FeatureRendererContext<T, M> featureRendererContext) {
+		super(featureRendererContext);
 	}
 
 	@Override
@@ -37,7 +37,7 @@ public class SpiderEyesFeatureRenderer<T extends Entity, M extends SpiderEntityM
 		GlStateManager.color4f(1.0F, 1.0F, 1.0F, 1.0F);
 		GameRenderer gameRenderer = MinecraftClient.getInstance().gameRenderer;
 		gameRenderer.setFogBlack(true);
-		this.getContextModel().render(entity, f, g, i, j, k, l);
+		this.getModel().render(entity, f, g, i, j, k, l);
 		gameRenderer.setFogBlack(false);
 		m = entity.getLightmapCoordinates();
 		n = m % 65536;

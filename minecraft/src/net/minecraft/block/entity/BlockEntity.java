@@ -4,8 +4,8 @@ import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.block.BlockState;
+import net.minecraft.client.network.packet.BlockEntityUpdateS2CPacket;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.network.packet.s2c.play.BlockEntityUpdateS2CPacket;
 import net.minecraft.util.BlockMirror;
 import net.minecraft.util.BlockRotation;
 import net.minecraft.util.Identifier;
@@ -23,13 +23,13 @@ public abstract class BlockEntity {
 	@Nullable
 	protected World world;
 	protected BlockPos pos = BlockPos.ORIGIN;
-	protected boolean removed;
+	protected boolean invalid;
 	@Nullable
 	private BlockState cachedState;
-	private boolean markedInvalid;
+	private boolean field_19314;
 
-	public BlockEntity(BlockEntityType<?> type) {
-		this.type = type;
+	public BlockEntity(BlockEntityType<?> blockEntityType) {
+		this.type = blockEntityType;
 	}
 
 	@Nullable
@@ -45,12 +45,12 @@ public abstract class BlockEntity {
 		return this.world != null;
 	}
 
-	public void fromTag(CompoundTag tag) {
-		this.pos = new BlockPos(tag.getInt("x"), tag.getInt("y"), tag.getInt("z"));
+	public void fromTag(CompoundTag compoundTag) {
+		this.pos = new BlockPos(compoundTag.getInt("x"), compoundTag.getInt("y"), compoundTag.getInt("z"));
 	}
 
-	public CompoundTag toTag(CompoundTag tag) {
-		return this.writeIdentifyingData(tag);
+	public CompoundTag toTag(CompoundTag compoundTag) {
+		return this.writeIdentifyingData(compoundTag);
 	}
 
 	private CompoundTag writeIdentifyingData(CompoundTag compoundTag) {
@@ -101,11 +101,11 @@ public abstract class BlockEntity {
 	}
 
 	@Environment(EnvType.CLIENT)
-	public double getSquaredDistance(double x, double y, double z) {
-		double d = (double)this.pos.getX() + 0.5 - x;
-		double e = (double)this.pos.getY() + 0.5 - y;
-		double f = (double)this.pos.getZ() + 0.5 - z;
-		return d * d + e * e + f * f;
+	public double getSquaredDistance(double d, double e, double f) {
+		double g = (double)this.pos.getX() + 0.5 - d;
+		double h = (double)this.pos.getY() + 0.5 - e;
+		double i = (double)this.pos.getZ() + 0.5 - f;
+		return g * g + h * h + i * i;
 	}
 
 	@Environment(EnvType.CLIENT)
@@ -134,16 +134,16 @@ public abstract class BlockEntity {
 		return this.writeIdentifyingData(new CompoundTag());
 	}
 
-	public boolean isRemoved() {
-		return this.removed;
+	public boolean isInvalid() {
+		return this.invalid;
 	}
 
-	public void markRemoved() {
-		this.removed = true;
+	public void invalidate() {
+		this.invalid = true;
 	}
 
-	public void cancelRemoval() {
-		this.removed = false;
+	public void validate() {
+		this.invalid = false;
 	}
 
 	public boolean onBlockAction(int i, int j) {
@@ -180,9 +180,9 @@ public abstract class BlockEntity {
 		return this.type;
 	}
 
-	public void markInvalid() {
-		if (!this.markedInvalid) {
-			this.markedInvalid = true;
+	public void method_20525() {
+		if (!this.field_19314) {
+			this.field_19314 = true;
 			LOGGER.warn("Block entity invalid: {} @ {}", () -> Registry.BLOCK_ENTITY.getId(this.getType()), this::getPos);
 		}
 	}

@@ -49,7 +49,9 @@ public class Properties {
 	public static final BooleanProperty TRIGGERED = BooleanProperty.of("triggered");
 	public static final BooleanProperty UNSTABLE = BooleanProperty.of("unstable");
 	public static final BooleanProperty WATERLOGGED = BooleanProperty.of("waterlogged");
-	public static final EnumProperty<Direction.Axis> HORIZONTAL_AXIS = EnumProperty.of("axis", Direction.Axis.class, Direction.Axis.X, Direction.Axis.Z);
+	public static final EnumProperty<Direction.Axis> HORIZONTAL_AXIS = EnumProperty.of(
+		"axis", Direction.Axis.class, Direction.Axis.field_11048, Direction.Axis.field_11051
+	);
 	public static final EnumProperty<Direction.Axis> AXIS = EnumProperty.of("axis", Direction.Axis.class);
 	public static final BooleanProperty UP = BooleanProperty.of("up");
 	public static final BooleanProperty DOWN = BooleanProperty.of("down");
@@ -58,10 +60,10 @@ public class Properties {
 	public static final BooleanProperty SOUTH = BooleanProperty.of("south");
 	public static final BooleanProperty WEST = BooleanProperty.of("west");
 	public static final DirectionProperty FACING = DirectionProperty.of(
-		"facing", Direction.NORTH, Direction.EAST, Direction.SOUTH, Direction.WEST, Direction.UP, Direction.DOWN
+		"facing", Direction.field_11043, Direction.field_11034, Direction.field_11035, Direction.field_11039, Direction.field_11036, Direction.field_11033
 	);
-	public static final DirectionProperty HOPPER_FACING = DirectionProperty.of("facing", (Predicate<Direction>)(facing -> facing != Direction.UP));
-	public static final DirectionProperty HORIZONTAL_FACING = DirectionProperty.of("facing", Direction.Type.HORIZONTAL);
+	public static final DirectionProperty HOPPER_FACING = DirectionProperty.of("facing", (Predicate<Direction>)(direction -> direction != Direction.field_11036));
+	public static final DirectionProperty HORIZONTAL_FACING = DirectionProperty.of("facing", Direction.Type.field_11062);
 	public static final EnumProperty<WallMountLocation> WALL_MOUNT_LOCATION = EnumProperty.of("face", WallMountLocation.class);
 	public static final EnumProperty<Attachment> ATTACHMENT = EnumProperty.of("attachment", Attachment.class);
 	public static final EnumProperty<WireConnection> EAST_WIRE_CONNECTION = EnumProperty.of("east", WireConnection.class);
@@ -74,7 +76,10 @@ public class Properties {
 	public static final EnumProperty<RailShape> STRAIGHT_RAIL_SHAPE = EnumProperty.of(
 		"shape",
 		RailShape.class,
-		(Predicate)(shape -> shape != RailShape.NORTH_EAST && shape != RailShape.NORTH_WEST && shape != RailShape.SOUTH_EAST && shape != RailShape.SOUTH_WEST)
+		(Predicate)(railShape -> railShape != RailShape.field_12663
+				&& railShape != RailShape.field_12672
+				&& railShape != RailShape.field_12664
+				&& railShape != RailShape.field_12671)
 	);
 	public static final IntProperty AGE_1 = IntProperty.of("age", 0, 1);
 	public static final IntProperty AGE_2 = IntProperty.of("age", 0, 2);

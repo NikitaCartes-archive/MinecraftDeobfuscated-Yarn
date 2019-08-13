@@ -12,14 +12,14 @@ public interface Palette<T> {
 	boolean accepts(T object);
 
 	@Nullable
-	T getByIndex(int index);
+	T getByIndex(int i);
 
 	@Environment(EnvType.CLIENT)
-	void fromPacket(PacketByteBuf buf);
+	void fromPacket(PacketByteBuf packetByteBuf);
 
-	void toPacket(PacketByteBuf buf);
+	void toPacket(PacketByteBuf packetByteBuf);
 
 	int getPacketSize();
 
-	void fromTag(ListTag tag);
+	void fromTag(ListTag listTag);
 }
