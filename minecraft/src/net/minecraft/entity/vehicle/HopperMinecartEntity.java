@@ -26,18 +26,18 @@ public class HopperMinecartEntity extends StorageMinecartEntity implements Hoppe
 		super(entityType, world);
 	}
 
-	public HopperMinecartEntity(World world, double x, double y, double z) {
-		super(EntityType.HOPPER_MINECART, x, y, z, world);
+	public HopperMinecartEntity(World world, double d, double e, double f) {
+		super(EntityType.field_6058, d, e, f, world);
 	}
 
 	@Override
 	public AbstractMinecartEntity.Type getMinecartType() {
-		return AbstractMinecartEntity.Type.HOPPER;
+		return AbstractMinecartEntity.Type.field_7677;
 	}
 
 	@Override
 	public BlockState getDefaultContainedBlock() {
-		return Blocks.HOPPER.getDefaultState();
+		return Blocks.field_10312.getDefaultState();
 	}
 
 	@Override
@@ -51,10 +51,10 @@ public class HopperMinecartEntity extends StorageMinecartEntity implements Hoppe
 	}
 
 	@Override
-	public void onActivatorRail(int x, int y, int z, boolean powered) {
-		boolean bl = !powered;
-		if (bl != this.isEnabled()) {
-			this.setEnabled(bl);
+	public void onActivatorRail(int i, int j, int k, boolean bl) {
+		boolean bl2 = !bl;
+		if (bl2 != this.isEnabled()) {
+			this.setEnabled(bl2);
 		}
 	}
 
@@ -62,8 +62,8 @@ public class HopperMinecartEntity extends StorageMinecartEntity implements Hoppe
 		return this.enabled;
 	}
 
-	public void setEnabled(boolean enabled) {
-		this.enabled = enabled;
+	public void setEnabled(boolean bl) {
+		this.enabled = bl;
 	}
 
 	@Override
@@ -123,27 +123,27 @@ public class HopperMinecartEntity extends StorageMinecartEntity implements Hoppe
 	@Override
 	public void dropItems(DamageSource damageSource) {
 		super.dropItems(damageSource);
-		if (this.world.getGameRules().getBoolean(GameRules.DO_ENTITY_DROPS)) {
-			this.dropItem(Blocks.HOPPER);
+		if (this.world.getGameRules().getBoolean(GameRules.field_19393)) {
+			this.dropItem(Blocks.field_10312);
 		}
 	}
 
 	@Override
-	protected void writeCustomDataToTag(CompoundTag tag) {
-		super.writeCustomDataToTag(tag);
-		tag.putInt("TransferCooldown", this.transferCooldown);
-		tag.putBoolean("Enabled", this.enabled);
+	protected void writeCustomDataToTag(CompoundTag compoundTag) {
+		super.writeCustomDataToTag(compoundTag);
+		compoundTag.putInt("TransferCooldown", this.transferCooldown);
+		compoundTag.putBoolean("Enabled", this.enabled);
 	}
 
 	@Override
-	protected void readCustomDataFromTag(CompoundTag tag) {
-		super.readCustomDataFromTag(tag);
-		this.transferCooldown = tag.getInt("TransferCooldown");
-		this.enabled = tag.contains("Enabled") ? tag.getBoolean("Enabled") : true;
+	protected void readCustomDataFromTag(CompoundTag compoundTag) {
+		super.readCustomDataFromTag(compoundTag);
+		this.transferCooldown = compoundTag.getInt("TransferCooldown");
+		this.enabled = compoundTag.containsKey("Enabled") ? compoundTag.getBoolean("Enabled") : true;
 	}
 
-	public void setTransferCooldown(int cooldown) {
-		this.transferCooldown = cooldown;
+	public void setTransferCooldown(int i) {
+		this.transferCooldown = i;
 	}
 
 	public boolean isCoolingDown() {
@@ -151,7 +151,7 @@ public class HopperMinecartEntity extends StorageMinecartEntity implements Hoppe
 	}
 
 	@Override
-	public Container getContainer(int syncId, PlayerInventory playerInventory) {
-		return new HopperContainer(syncId, playerInventory, this);
+	public Container getContainer(int i, PlayerInventory playerInventory) {
+		return new HopperContainer(i, playerInventory, this);
 	}
 }

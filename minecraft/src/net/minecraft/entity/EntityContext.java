@@ -13,9 +13,9 @@ public interface EntityContext {
 		return new EntityContextImpl(entity);
 	}
 
-	boolean isDescending();
+	boolean isSneaking();
 
-	boolean isAbove(VoxelShape shape, BlockPos pos, boolean defaultValue);
+	boolean isAbove(VoxelShape voxelShape, BlockPos blockPos, boolean bl);
 
 	boolean isHolding(Item item);
 }

@@ -22,8 +22,8 @@ public class Backup extends ValueObject {
 	public Map<String, String> metadata = new HashMap();
 	public Map<String, String> changeList = new HashMap();
 
-	public static Backup parse(JsonElement node) {
-		JsonObject jsonObject = node.getAsJsonObject();
+	public static Backup parse(JsonElement jsonElement) {
+		JsonObject jsonObject = jsonElement.getAsJsonObject();
 		Backup backup = new Backup();
 
 		try {
@@ -46,17 +46,17 @@ public class Backup extends ValueObject {
 		return backup;
 	}
 
-	private static String format(String key) {
-		String[] strings = key.split("_");
+	private static String format(String string) {
+		String[] strings = string.split("_");
 		StringBuilder stringBuilder = new StringBuilder();
 
-		for (String string : strings) {
-			if (string != null && string.length() >= 1) {
-				if ("of".equals(string)) {
-					stringBuilder.append(string).append(" ");
+		for (String string2 : strings) {
+			if (string2 != null && string2.length() >= 1) {
+				if ("of".equals(string2)) {
+					stringBuilder.append(string2).append(" ");
 				} else {
-					char c = Character.toUpperCase(string.charAt(0));
-					stringBuilder.append(c).append(string.substring(1, string.length())).append(" ");
+					char c = Character.toUpperCase(string2.charAt(0));
+					stringBuilder.append(c).append(string2.substring(1, string2.length())).append(" ");
 				}
 			}
 		}
@@ -68,7 +68,7 @@ public class Backup extends ValueObject {
 		return this.uploadedVersion;
 	}
 
-	public void setUploadedVersion(boolean uploadedVersion) {
-		this.uploadedVersion = uploadedVersion;
+	public void setUploadedVersion(boolean bl) {
+		this.uploadedVersion = bl;
 	}
 }

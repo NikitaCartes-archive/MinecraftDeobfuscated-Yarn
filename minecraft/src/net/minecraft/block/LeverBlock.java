@@ -9,7 +9,7 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.particle.DustParticleEffect;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
-import net.minecraft.state.StateManager;
+import net.minecraft.state.StateFactory;
 import net.minecraft.state.property.BooleanProperty;
 import net.minecraft.state.property.Properties;
 import net.minecraft.util.Hand;
@@ -35,39 +35,39 @@ public class LeverBlock extends WallMountedBlock {
 	protected LeverBlock(Block.Settings settings) {
 		super(settings);
 		this.setDefaultState(
-			this.stateManager.getDefaultState().with(FACING, Direction.NORTH).with(POWERED, Boolean.valueOf(false)).with(FACE, WallMountLocation.WALL)
+			this.stateFactory.getDefaultState().with(FACING, Direction.field_11043).with(POWERED, Boolean.valueOf(false)).with(FACE, WallMountLocation.field_12471)
 		);
 	}
 
 	@Override
-	public VoxelShape getOutlineShape(BlockState state, BlockView view, BlockPos pos, EntityContext context) {
-		switch ((WallMountLocation)state.get(FACE)) {
-			case FLOOR:
-				switch (((Direction)state.get(FACING)).getAxis()) {
-					case X:
+	public VoxelShape getOutlineShape(BlockState blockState, BlockView blockView, BlockPos blockPos, EntityContext entityContext) {
+		switch ((WallMountLocation)blockState.get(FACE)) {
+			case field_12475:
+				switch (((Direction)blockState.get(FACING)).getAxis()) {
+					case field_11048:
 						return FLOOR_X_AXIS_SHAPE;
-					case Z:
+					case field_11051:
 					default:
 						return FLOOR_Z_AXIS_SHAPE;
 				}
-			case WALL:
-				switch ((Direction)state.get(FACING)) {
-					case EAST:
+			case field_12471:
+				switch ((Direction)blockState.get(FACING)) {
+					case field_11034:
 						return EAST_WALL_SHAPE;
-					case WEST:
+					case field_11039:
 						return WEST_WALL_SHAPE;
-					case SOUTH:
+					case field_11035:
 						return SOUTH_WALL_SHAPE;
-					case NORTH:
+					case field_11043:
 					default:
 						return NORTH_WALL_SHAPE;
 				}
-			case CEILING:
+			case field_12473:
 			default:
-				switch (((Direction)state.get(FACING)).getAxis()) {
-					case X:
+				switch (((Direction)blockState.get(FACING)).getAxis()) {
+					case field_11048:
 						return CEILING_X_AXIS_SHAPE;
-					case Z:
+					case field_11051:
 					default:
 						return CEILING_Z_AXIS_SHAPE;
 				}
@@ -75,74 +75,74 @@ public class LeverBlock extends WallMountedBlock {
 	}
 
 	@Override
-	public boolean activate(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
-		state = state.cycle(POWERED);
-		boolean bl = (Boolean)state.get(POWERED);
+	public boolean activate(BlockState blockState, World world, BlockPos blockPos, PlayerEntity playerEntity, Hand hand, BlockHitResult blockHitResult) {
+		blockState = blockState.cycle(POWERED);
+		boolean bl = (Boolean)blockState.get(POWERED);
 		if (world.isClient) {
 			if (bl) {
-				spawnParticles(state, world, pos, 1.0F);
+				spawnParticles(blockState, world, blockPos, 1.0F);
 			}
 
 			return true;
 		} else {
-			world.setBlockState(pos, state, 3);
+			world.setBlockState(blockPos, blockState, 3);
 			float f = bl ? 0.6F : 0.5F;
-			world.playSound(null, pos, SoundEvents.BLOCK_LEVER_CLICK, SoundCategory.BLOCKS, 0.3F, f);
-			this.updateNeighbors(state, world, pos);
+			world.playSound(null, blockPos, SoundEvents.field_14962, SoundCategory.field_15245, 0.3F, f);
+			this.updateNeighbors(blockState, world, blockPos);
 			return true;
 		}
 	}
 
-	private static void spawnParticles(BlockState state, IWorld world, BlockPos pos, float alpha) {
-		Direction direction = ((Direction)state.get(FACING)).getOpposite();
-		Direction direction2 = getDirection(state).getOpposite();
-		double d = (double)pos.getX() + 0.5 + 0.1 * (double)direction.getOffsetX() + 0.2 * (double)direction2.getOffsetX();
-		double e = (double)pos.getY() + 0.5 + 0.1 * (double)direction.getOffsetY() + 0.2 * (double)direction2.getOffsetY();
-		double f = (double)pos.getZ() + 0.5 + 0.1 * (double)direction.getOffsetZ() + 0.2 * (double)direction2.getOffsetZ();
-		world.addParticle(new DustParticleEffect(1.0F, 0.0F, 0.0F, alpha), d, e, f, 0.0, 0.0, 0.0);
+	private static void spawnParticles(BlockState blockState, IWorld iWorld, BlockPos blockPos, float f) {
+		Direction direction = ((Direction)blockState.get(FACING)).getOpposite();
+		Direction direction2 = getDirection(blockState).getOpposite();
+		double d = (double)blockPos.getX() + 0.5 + 0.1 * (double)direction.getOffsetX() + 0.2 * (double)direction2.getOffsetX();
+		double e = (double)blockPos.getY() + 0.5 + 0.1 * (double)direction.getOffsetY() + 0.2 * (double)direction2.getOffsetY();
+		double g = (double)blockPos.getZ() + 0.5 + 0.1 * (double)direction.getOffsetZ() + 0.2 * (double)direction2.getOffsetZ();
+		iWorld.addParticle(new DustParticleEffect(1.0F, 0.0F, 0.0F, f), d, e, g, 0.0, 0.0, 0.0);
 	}
 
 	@Environment(EnvType.CLIENT)
 	@Override
-	public void randomDisplayTick(BlockState state, World world, BlockPos pos, Random random) {
-		if ((Boolean)state.get(POWERED) && random.nextFloat() < 0.25F) {
-			spawnParticles(state, world, pos, 0.5F);
+	public void randomDisplayTick(BlockState blockState, World world, BlockPos blockPos, Random random) {
+		if ((Boolean)blockState.get(POWERED) && random.nextFloat() < 0.25F) {
+			spawnParticles(blockState, world, blockPos, 0.5F);
 		}
 	}
 
 	@Override
-	public void onBlockRemoved(BlockState state, World world, BlockPos pos, BlockState newState, boolean moved) {
-		if (!moved && state.getBlock() != newState.getBlock()) {
-			if ((Boolean)state.get(POWERED)) {
-				this.updateNeighbors(state, world, pos);
+	public void onBlockRemoved(BlockState blockState, World world, BlockPos blockPos, BlockState blockState2, boolean bl) {
+		if (!bl && blockState.getBlock() != blockState2.getBlock()) {
+			if ((Boolean)blockState.get(POWERED)) {
+				this.updateNeighbors(blockState, world, blockPos);
 			}
 
-			super.onBlockRemoved(state, world, pos, newState, moved);
+			super.onBlockRemoved(blockState, world, blockPos, blockState2, bl);
 		}
 	}
 
 	@Override
-	public int getWeakRedstonePower(BlockState state, BlockView view, BlockPos pos, Direction facing) {
-		return state.get(POWERED) ? 15 : 0;
+	public int getWeakRedstonePower(BlockState blockState, BlockView blockView, BlockPos blockPos, Direction direction) {
+		return blockState.get(POWERED) ? 15 : 0;
 	}
 
 	@Override
-	public int getStrongRedstonePower(BlockState state, BlockView view, BlockPos pos, Direction facing) {
-		return state.get(POWERED) && getDirection(state) == facing ? 15 : 0;
+	public int getStrongRedstonePower(BlockState blockState, BlockView blockView, BlockPos blockPos, Direction direction) {
+		return blockState.get(POWERED) && getDirection(blockState) == direction ? 15 : 0;
 	}
 
 	@Override
-	public boolean emitsRedstonePower(BlockState state) {
+	public boolean emitsRedstonePower(BlockState blockState) {
 		return true;
 	}
 
-	private void updateNeighbors(BlockState state, World world, BlockPos pos) {
-		world.updateNeighborsAlways(pos, this);
-		world.updateNeighborsAlways(pos.offset(getDirection(state).getOpposite()), this);
+	private void updateNeighbors(BlockState blockState, World world, BlockPos blockPos) {
+		world.updateNeighborsAlways(blockPos, this);
+		world.updateNeighborsAlways(blockPos.offset(getDirection(blockState).getOpposite()), this);
 	}
 
 	@Override
-	protected void appendProperties(StateManager.Builder<Block, BlockState> builder) {
+	protected void appendProperties(StateFactory.Builder<Block, BlockState> builder) {
 		builder.add(FACE, FACING, POWERED);
 	}
 }

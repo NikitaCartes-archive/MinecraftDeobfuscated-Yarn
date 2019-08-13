@@ -31,25 +31,25 @@ public class ThrownEnderpearlEntity extends ThrownItemEntity {
 		super(entityType, world);
 	}
 
-	public ThrownEnderpearlEntity(World world, LivingEntity owner) {
-		super(EntityType.ENDER_PEARL, owner, world);
-		this.owner = owner;
+	public ThrownEnderpearlEntity(World world, LivingEntity livingEntity) {
+		super(EntityType.field_6082, livingEntity, world);
+		this.owner = livingEntity;
 	}
 
 	@Environment(EnvType.CLIENT)
-	public ThrownEnderpearlEntity(World world, double x, double y, double z) {
-		super(EntityType.ENDER_PEARL, x, y, z, world);
+	public ThrownEnderpearlEntity(World world, double d, double e, double f) {
+		super(EntityType.field_6082, d, e, f, world);
 	}
 
 	@Override
 	protected Item getDefaultItem() {
-		return Items.ENDER_PEARL;
+		return Items.field_8634;
 	}
 
 	@Override
 	protected void onCollision(HitResult hitResult) {
 		LivingEntity livingEntity = this.getOwner();
-		if (hitResult.getType() == HitResult.Type.ENTITY) {
+		if (hitResult.getType() == HitResult.Type.field_1331) {
 			Entity entity = ((EntityHitResult)hitResult).getEntity();
 			if (entity == this.owner) {
 				return;
@@ -58,14 +58,14 @@ public class ThrownEnderpearlEntity extends ThrownItemEntity {
 			entity.damage(DamageSource.thrownProjectile(this, livingEntity), 0.0F);
 		}
 
-		if (hitResult.getType() == HitResult.Type.BLOCK) {
+		if (hitResult.getType() == HitResult.Type.field_1332) {
 			BlockPos blockPos = ((BlockHitResult)hitResult).getBlockPos();
 			BlockEntity blockEntity = this.world.getBlockEntity(blockPos);
 			if (blockEntity instanceof EndGatewayBlockEntity) {
 				EndGatewayBlockEntity endGatewayBlockEntity = (EndGatewayBlockEntity)blockEntity;
 				if (livingEntity != null) {
 					if (livingEntity instanceof ServerPlayerEntity) {
-						Criterions.ENTER_BLOCK.trigger((ServerPlayerEntity)livingEntity, this.world.getBlockState(blockPos));
+						Criterions.ENTER_BLOCK.handle((ServerPlayerEntity)livingEntity, this.world.getBlockState(blockPos));
 					}
 
 					endGatewayBlockEntity.tryTeleportingEntity(livingEntity);
@@ -80,17 +80,19 @@ public class ThrownEnderpearlEntity extends ThrownItemEntity {
 
 		for (int i = 0; i < 32; i++) {
 			this.world
-				.addParticle(ParticleTypes.PORTAL, this.x, this.y + this.random.nextDouble() * 2.0, this.z, this.random.nextGaussian(), 0.0, this.random.nextGaussian());
+				.addParticle(
+					ParticleTypes.field_11214, this.x, this.y + this.random.nextDouble() * 2.0, this.z, this.random.nextGaussian(), 0.0, this.random.nextGaussian()
+				);
 		}
 
 		if (!this.world.isClient) {
 			if (livingEntity instanceof ServerPlayerEntity) {
 				ServerPlayerEntity serverPlayerEntity = (ServerPlayerEntity)livingEntity;
 				if (serverPlayerEntity.networkHandler.getConnection().isOpen() && serverPlayerEntity.world == this.world && !serverPlayerEntity.isSleeping()) {
-					if (this.random.nextFloat() < 0.05F && this.world.getGameRules().getBoolean(GameRules.DO_MOB_SPAWNING)) {
-						EndermiteEntity endermiteEntity = EntityType.ENDERMITE.create(this.world);
+					if (this.random.nextFloat() < 0.05F && this.world.getGameRules().getBoolean(GameRules.field_19390)) {
+						EndermiteEntity endermiteEntity = EntityType.field_6128.create(this.world);
 						endermiteEntity.setPlayerSpawned(true);
-						endermiteEntity.refreshPositionAndAngles(livingEntity.x, livingEntity.y, livingEntity.z, livingEntity.yaw, livingEntity.pitch);
+						endermiteEntity.setPositionAndAngles(livingEntity.x, livingEntity.y, livingEntity.z, livingEntity.yaw, livingEntity.pitch);
 						this.world.spawnEntity(endermiteEntity);
 					}
 
@@ -123,11 +125,11 @@ public class ThrownEnderpearlEntity extends ThrownItemEntity {
 
 	@Nullable
 	@Override
-	public Entity changeDimension(DimensionType newDimension) {
-		if (this.owner.dimension != newDimension) {
+	public Entity changeDimension(DimensionType dimensionType) {
+		if (this.owner.dimension != dimensionType) {
 			this.owner = null;
 		}
 
-		return super.changeDimension(newDimension);
+		return super.changeDimension(dimensionType);
 	}
 }

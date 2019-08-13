@@ -16,18 +16,20 @@ public class SplashPotionItem extends PotionItem {
 	}
 
 	@Override
-	public TypedActionResult<ItemStack> use(World world, PlayerEntity user, Hand hand) {
-		ItemStack itemStack = user.getStackInHand(hand);
-		ItemStack itemStack2 = user.abilities.creativeMode ? itemStack.copy() : itemStack.split(1);
-		world.playSound(null, user.x, user.y, user.z, SoundEvents.ENTITY_SPLASH_POTION_THROW, SoundCategory.PLAYERS, 0.5F, 0.4F / (RANDOM.nextFloat() * 0.4F + 0.8F));
+	public TypedActionResult<ItemStack> use(World world, PlayerEntity playerEntity, Hand hand) {
+		ItemStack itemStack = playerEntity.getStackInHand(hand);
+		ItemStack itemStack2 = playerEntity.abilities.creativeMode ? itemStack.copy() : itemStack.split(1);
+		world.playSound(
+			null, playerEntity.x, playerEntity.y, playerEntity.z, SoundEvents.field_14910, SoundCategory.PLAYERS, 0.5F, 0.4F / (RANDOM.nextFloat() * 0.4F + 0.8F)
+		);
 		if (!world.isClient) {
-			ThrownPotionEntity thrownPotionEntity = new ThrownPotionEntity(world, user);
+			ThrownPotionEntity thrownPotionEntity = new ThrownPotionEntity(world, playerEntity);
 			thrownPotionEntity.setItemStack(itemStack2);
-			thrownPotionEntity.setProperties(user, user.pitch, user.yaw, -20.0F, 0.5F, 1.0F);
+			thrownPotionEntity.setProperties(playerEntity, playerEntity.pitch, playerEntity.yaw, -20.0F, 0.5F, 1.0F);
 			world.spawnEntity(thrownPotionEntity);
 		}
 
-		user.incrementStat(Stats.USED.getOrCreateStat(this));
-		return new TypedActionResult<>(ActionResult.SUCCESS, itemStack);
+		playerEntity.incrementStat(Stats.field_15372.getOrCreateStat(this));
+		return new TypedActionResult<>(ActionResult.field_5812, itemStack);
 	}
 }

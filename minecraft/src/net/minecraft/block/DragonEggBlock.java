@@ -9,7 +9,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.world.BlockView;
-import net.minecraft.world.CollisionView;
+import net.minecraft.world.ViewableWorld;
 import net.minecraft.world.World;
 
 public class DragonEggBlock extends FallingBlock {
@@ -20,41 +20,41 @@ public class DragonEggBlock extends FallingBlock {
 	}
 
 	@Override
-	public VoxelShape getOutlineShape(BlockState state, BlockView view, BlockPos pos, EntityContext context) {
+	public VoxelShape getOutlineShape(BlockState blockState, BlockView blockView, BlockPos blockPos, EntityContext entityContext) {
 		return SHAPE;
 	}
 
 	@Override
-	public boolean activate(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
-		this.teleport(state, world, pos);
+	public boolean activate(BlockState blockState, World world, BlockPos blockPos, PlayerEntity playerEntity, Hand hand, BlockHitResult blockHitResult) {
+		this.teleport(blockState, world, blockPos);
 		return true;
 	}
 
 	@Override
-	public void onBlockBreakStart(BlockState state, World world, BlockPos pos, PlayerEntity player) {
-		this.teleport(state, world, pos);
+	public void onBlockBreakStart(BlockState blockState, World world, BlockPos blockPos, PlayerEntity playerEntity) {
+		this.teleport(blockState, world, blockPos);
 	}
 
-	private void teleport(BlockState state, World world, BlockPos pos) {
+	private void teleport(BlockState blockState, World world, BlockPos blockPos) {
 		for (int i = 0; i < 1000; i++) {
-			BlockPos blockPos = pos.add(
+			BlockPos blockPos2 = blockPos.add(
 				world.random.nextInt(16) - world.random.nextInt(16), world.random.nextInt(8) - world.random.nextInt(8), world.random.nextInt(16) - world.random.nextInt(16)
 			);
-			if (world.getBlockState(blockPos).isAir()) {
+			if (world.getBlockState(blockPos2).isAir()) {
 				if (world.isClient) {
 					for (int j = 0; j < 128; j++) {
 						double d = world.random.nextDouble();
 						float f = (world.random.nextFloat() - 0.5F) * 0.2F;
 						float g = (world.random.nextFloat() - 0.5F) * 0.2F;
 						float h = (world.random.nextFloat() - 0.5F) * 0.2F;
-						double e = MathHelper.lerp(d, (double)blockPos.getX(), (double)pos.getX()) + (world.random.nextDouble() - 0.5) + 0.5;
-						double k = MathHelper.lerp(d, (double)blockPos.getY(), (double)pos.getY()) + world.random.nextDouble() - 0.5;
-						double l = MathHelper.lerp(d, (double)blockPos.getZ(), (double)pos.getZ()) + (world.random.nextDouble() - 0.5) + 0.5;
-						world.addParticle(ParticleTypes.PORTAL, e, k, l, (double)f, (double)g, (double)h);
+						double e = MathHelper.lerp(d, (double)blockPos2.getX(), (double)blockPos.getX()) + (world.random.nextDouble() - 0.5) + 0.5;
+						double k = MathHelper.lerp(d, (double)blockPos2.getY(), (double)blockPos.getY()) + world.random.nextDouble() - 0.5;
+						double l = MathHelper.lerp(d, (double)blockPos2.getZ(), (double)blockPos.getZ()) + (world.random.nextDouble() - 0.5) + 0.5;
+						world.addParticle(ParticleTypes.field_11214, e, k, l, (double)f, (double)g, (double)h);
 					}
 				} else {
-					world.setBlockState(blockPos, state, 2);
-					world.removeBlock(pos, false);
+					world.setBlockState(blockPos2, blockState, 2);
+					world.clearBlockState(blockPos, false);
 				}
 
 				return;
@@ -63,12 +63,12 @@ public class DragonEggBlock extends FallingBlock {
 	}
 
 	@Override
-	public int getTickRate(CollisionView world) {
+	public int getTickRate(ViewableWorld viewableWorld) {
 		return 5;
 	}
 
 	@Override
-	public boolean canPlaceAtSide(BlockState world, BlockView view, BlockPos pos, BlockPlacementEnvironment env) {
+	public boolean canPlaceAtSide(BlockState blockState, BlockView blockView, BlockPos blockPos, BlockPlacementEnvironment blockPlacementEnvironment) {
 		return false;
 	}
 }

@@ -33,7 +33,7 @@ public class HotbarStorageEntry extends ForwardingList<ItemStack> {
 		List<ItemStack> list = this.delegate();
 
 		for (int i = 0; i < list.size(); i++) {
-			list.set(i, ItemStack.fromTag(listTag.getCompound(i)));
+			list.set(i, ItemStack.fromTag(listTag.getCompoundTag(i)));
 		}
 	}
 

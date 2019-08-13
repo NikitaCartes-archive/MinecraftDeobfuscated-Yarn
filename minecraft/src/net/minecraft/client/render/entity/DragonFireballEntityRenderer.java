@@ -17,14 +17,14 @@ public class DragonFireballEntityRenderer extends EntityRenderer<DragonFireballE
 		super(entityRenderDispatcher);
 	}
 
-	public void render(DragonFireballEntity dragonFireballEntity, double d, double e, double f, float g, float h) {
+	public void method_3906(DragonFireballEntity dragonFireballEntity, double d, double e, double f, float g, float h) {
 		GlStateManager.pushMatrix();
 		this.bindEntityTexture(dragonFireballEntity);
 		GlStateManager.translatef((float)d, (float)e, (float)f);
 		GlStateManager.enableRescaleNormal();
 		GlStateManager.scalef(2.0F, 2.0F, 2.0F);
 		Tessellator tessellator = Tessellator.getInstance();
-		BufferBuilder bufferBuilder = tessellator.getBuffer();
+		BufferBuilder bufferBuilder = tessellator.getBufferBuilder();
 		float i = 1.0F;
 		float j = 0.5F;
 		float k = 0.25F;
@@ -51,7 +51,7 @@ public class DragonFireballEntityRenderer extends EntityRenderer<DragonFireballE
 		super.render(dragonFireballEntity, d, e, f, g, h);
 	}
 
-	protected Identifier getTexture(DragonFireballEntity dragonFireballEntity) {
+	protected Identifier method_3905(DragonFireballEntity dragonFireballEntity) {
 		return SKIN;
 	}
 }

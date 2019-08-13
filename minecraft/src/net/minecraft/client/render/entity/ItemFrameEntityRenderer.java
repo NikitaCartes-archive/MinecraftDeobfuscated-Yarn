@@ -5,7 +5,7 @@ import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.render.DiffuseLighting;
+import net.minecraft.client.render.GuiLighting;
 import net.minecraft.client.render.block.BlockRenderManager;
 import net.minecraft.client.render.item.ItemRenderer;
 import net.minecraft.client.render.model.BakedModelManager;
@@ -28,12 +28,12 @@ public class ItemFrameEntityRenderer extends EntityRenderer<ItemFrameEntity> {
 	private final MinecraftClient client = MinecraftClient.getInstance();
 	private final ItemRenderer itemRenderer;
 
-	public ItemFrameEntityRenderer(EntityRenderDispatcher renderManager, ItemRenderer itemRenderer) {
-		super(renderManager);
+	public ItemFrameEntityRenderer(EntityRenderDispatcher entityRenderDispatcher, ItemRenderer itemRenderer) {
+		super(entityRenderDispatcher);
 		this.itemRenderer = itemRenderer;
 	}
 
-	public void render(ItemFrameEntity itemFrameEntity, double d, double e, double f, float g, float h) {
+	public void method_3994(ItemFrameEntity itemFrameEntity, double d, double e, double f, float g, float h) {
 		GlStateManager.pushMatrix();
 		BlockPos blockPos = itemFrameEntity.getDecorationBlockPos();
 		double i = (double)blockPos.getX() - itemFrameEntity.x + d;
@@ -45,7 +45,7 @@ public class ItemFrameEntityRenderer extends EntityRenderer<ItemFrameEntity> {
 		this.renderManager.textureManager.bindTexture(SpriteAtlasTexture.BLOCK_ATLAS_TEX);
 		BlockRenderManager blockRenderManager = this.client.getBlockRenderManager();
 		BakedModelManager bakedModelManager = blockRenderManager.getModels().getModelManager();
-		ModelIdentifier modelIdentifier = itemFrameEntity.getHeldItemStack().getItem() == Items.FILLED_MAP ? MAP_FRAME : NORMAL_FRAME;
+		ModelIdentifier modelIdentifier = itemFrameEntity.getHeldItemStack().getItem() == Items.field_8204 ? MAP_FRAME : NORMAL_FRAME;
 		GlStateManager.pushMatrix();
 		GlStateManager.translatef(-0.5F, -0.5F, -0.5F);
 		if (this.renderOutlines) {
@@ -61,21 +61,21 @@ public class ItemFrameEntityRenderer extends EntityRenderer<ItemFrameEntity> {
 
 		GlStateManager.popMatrix();
 		GlStateManager.enableLighting();
-		if (itemFrameEntity.getHeldItemStack().getItem() == Items.FILLED_MAP) {
+		if (itemFrameEntity.getHeldItemStack().getItem() == Items.field_8204) {
 			GlStateManager.pushLightingAttributes();
-			DiffuseLighting.enable();
+			GuiLighting.enable();
 		}
 
 		GlStateManager.translatef(0.0F, 0.0F, 0.4375F);
 		this.renderItem(itemFrameEntity);
-		if (itemFrameEntity.getHeldItemStack().getItem() == Items.FILLED_MAP) {
-			DiffuseLighting.disable();
+		if (itemFrameEntity.getHeldItemStack().getItem() == Items.field_8204) {
+			GuiLighting.disable();
 			GlStateManager.popAttributes();
 		}
 
 		GlStateManager.enableLighting();
 		GlStateManager.popMatrix();
-		this.renderLabelIfPresent(
+		this.method_3995(
 			itemFrameEntity,
 			d + (double)((float)itemFrameEntity.getHorizontalFacing().getOffsetX() * 0.3F),
 			e - 0.25,
@@ -84,7 +84,7 @@ public class ItemFrameEntityRenderer extends EntityRenderer<ItemFrameEntity> {
 	}
 
 	@Nullable
-	protected Identifier getTexture(ItemFrameEntity itemFrameEntity) {
+	protected Identifier method_3993(ItemFrameEntity itemFrameEntity) {
 		return null;
 	}
 
@@ -92,7 +92,7 @@ public class ItemFrameEntityRenderer extends EntityRenderer<ItemFrameEntity> {
 		ItemStack itemStack = itemFrameEntity.getHeldItemStack();
 		if (!itemStack.isEmpty()) {
 			GlStateManager.pushMatrix();
-			boolean bl = itemStack.getItem() == Items.FILLED_MAP;
+			boolean bl = itemStack.getItem() == Items.field_8204;
 			int i = bl ? itemFrameEntity.getRotation() % 4 * 2 : itemFrameEntity.getRotation();
 			GlStateManager.rotatef((float)i * 360.0F / 8.0F, 0.0F, 0.0F, 1.0F);
 			if (bl) {
@@ -109,14 +109,14 @@ public class ItemFrameEntityRenderer extends EntityRenderer<ItemFrameEntity> {
 				}
 			} else {
 				GlStateManager.scalef(0.5F, 0.5F, 0.5F);
-				this.itemRenderer.renderItem(itemStack, ModelTransformation.Type.FIXED);
+				this.itemRenderer.renderItem(itemStack, ModelTransformation.Type.field_4319);
 			}
 
 			GlStateManager.popMatrix();
 		}
 	}
 
-	protected void renderLabelIfPresent(ItemFrameEntity itemFrameEntity, double d, double e, double f) {
+	protected void method_3995(ItemFrameEntity itemFrameEntity, double d, double e, double f) {
 		if (MinecraftClient.isHudEnabled()
 			&& !itemFrameEntity.getHeldItemStack().isEmpty()
 			&& itemFrameEntity.getHeldItemStack().hasCustomName()

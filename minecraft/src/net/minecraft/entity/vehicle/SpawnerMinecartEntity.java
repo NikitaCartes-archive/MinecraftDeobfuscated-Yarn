@@ -13,8 +13,8 @@ import net.minecraft.world.World;
 public class SpawnerMinecartEntity extends AbstractMinecartEntity {
 	private final MobSpawnerLogic logic = new MobSpawnerLogic() {
 		@Override
-		public void sendStatus(int status) {
-			SpawnerMinecartEntity.this.world.sendEntityStatus(SpawnerMinecartEntity.this, (byte)status);
+		public void sendStatus(int i) {
+			SpawnerMinecartEntity.this.world.sendEntityStatus(SpawnerMinecartEntity.this, (byte)i);
 		}
 
 		@Override
@@ -32,36 +32,36 @@ public class SpawnerMinecartEntity extends AbstractMinecartEntity {
 		super(entityType, world);
 	}
 
-	public SpawnerMinecartEntity(World world, double x, double y, double z) {
-		super(EntityType.SPAWNER_MINECART, world, x, y, z);
+	public SpawnerMinecartEntity(World world, double d, double e, double f) {
+		super(EntityType.field_6142, world, d, e, f);
 	}
 
 	@Override
 	public AbstractMinecartEntity.Type getMinecartType() {
-		return AbstractMinecartEntity.Type.SPAWNER;
+		return AbstractMinecartEntity.Type.field_7680;
 	}
 
 	@Override
 	public BlockState getDefaultContainedBlock() {
-		return Blocks.SPAWNER.getDefaultState();
+		return Blocks.field_10260.getDefaultState();
 	}
 
 	@Override
-	protected void readCustomDataFromTag(CompoundTag tag) {
-		super.readCustomDataFromTag(tag);
-		this.logic.deserialize(tag);
+	protected void readCustomDataFromTag(CompoundTag compoundTag) {
+		super.readCustomDataFromTag(compoundTag);
+		this.logic.deserialize(compoundTag);
 	}
 
 	@Override
-	protected void writeCustomDataToTag(CompoundTag tag) {
-		super.writeCustomDataToTag(tag);
-		this.logic.serialize(tag);
+	protected void writeCustomDataToTag(CompoundTag compoundTag) {
+		super.writeCustomDataToTag(compoundTag);
+		this.logic.serialize(compoundTag);
 	}
 
 	@Environment(EnvType.CLIENT)
 	@Override
-	public void handleStatus(byte status) {
-		this.logic.method_8275(status);
+	public void handleStatus(byte b) {
+		this.logic.method_8275(b);
 	}
 
 	@Override

@@ -12,7 +12,7 @@ public class LightGemChanceDecorator extends SimpleDecorator<CountDecoratorConfi
 		super(function);
 	}
 
-	public Stream<BlockPos> getPositions(Random random, CountDecoratorConfig countDecoratorConfig, BlockPos blockPos) {
+	public Stream<BlockPos> method_15953(Random random, CountDecoratorConfig countDecoratorConfig, BlockPos blockPos) {
 		return IntStream.range(0, random.nextInt(random.nextInt(countDecoratorConfig.count) + 1)).mapToObj(i -> {
 			int j = random.nextInt(16);
 			int k = random.nextInt(120) + 4;

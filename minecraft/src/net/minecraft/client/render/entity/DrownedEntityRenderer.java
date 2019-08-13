@@ -22,13 +22,13 @@ public class DrownedEntityRenderer extends ZombieBaseEntityRenderer<DrownedEntit
 
 	@Nullable
 	@Override
-	protected Identifier getTexture(ZombieEntity zombieEntity) {
+	protected Identifier method_4163(ZombieEntity zombieEntity) {
 		return SKIN;
 	}
 
-	protected void setupTransforms(DrownedEntity drownedEntity, float f, float g, float h) {
+	protected void method_4164(DrownedEntity drownedEntity, float f, float g, float h) {
 		float i = drownedEntity.method_6024(h);
-		super.setupTransforms(drownedEntity, f, g, h);
+		super.method_17144(drownedEntity, f, g, h);
 		if (i > 0.0F) {
 			GlStateManager.rotatef(MathHelper.lerp(i, drownedEntity.pitch, -10.0F - drownedEntity.pitch), 1.0F, 0.0F, 0.0F);
 		}

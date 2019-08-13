@@ -375,7 +375,7 @@ public class GLX {
 		capsString = capsString + "Using framebuffer objects because ";
 		if (gLCapabilities.OpenGL30) {
 			capsString = capsString + "OpenGL 3.0 is supported and separate blending is supported.\n";
-			fboMode = GLX.FBOMode.BASE;
+			fboMode = GLX.FBOMode.field_4981;
 			GL_FRAMEBUFFER = 36160;
 			GL_RENDERBUFFER = 36161;
 			GL_COLOR_ATTACHMENT0 = 36064;
@@ -387,7 +387,7 @@ public class GLX {
 			GL_FRAMEBUFFER_INCOMPLETE_READ_BUFFER = 36060;
 		} else if (gLCapabilities.GL_ARB_framebuffer_object) {
 			capsString = capsString + "ARB_framebuffer_object is supported and separate blending is supported.\n";
-			fboMode = GLX.FBOMode.ARB;
+			fboMode = GLX.FBOMode.field_4983;
 			GL_FRAMEBUFFER = 36160;
 			GL_RENDERBUFFER = 36161;
 			GL_COLOR_ATTACHMENT0 = 36064;
@@ -403,7 +403,7 @@ public class GLX {
 			}
 
 			capsString = capsString + "EXT_framebuffer_object is supported.\n";
-			fboMode = GLX.FBOMode.EXT;
+			fboMode = GLX.FBOMode.field_4984;
 			GL_FRAMEBUFFER = 36160;
 			GL_RENDERBUFFER = 36161;
 			GL_COLOR_ATTACHMENT0 = 36064;
@@ -476,28 +476,28 @@ public class GLX {
 		return capsString;
 	}
 
-	public static int glGetProgrami(int program, int programName) {
-		return useShaderArb ? ARBShaderObjects.glGetObjectParameteriARB(program, programName) : GL20.glGetProgrami(program, programName);
+	public static int glGetProgrami(int i, int j) {
+		return useShaderArb ? ARBShaderObjects.glGetObjectParameteriARB(i, j) : GL20.glGetProgrami(i, j);
 	}
 
-	public static void glAttachShader(int program, int shader) {
+	public static void glAttachShader(int i, int j) {
 		if (useShaderArb) {
-			ARBShaderObjects.glAttachObjectARB(program, shader);
+			ARBShaderObjects.glAttachObjectARB(i, j);
 		} else {
-			GL20.glAttachShader(program, shader);
+			GL20.glAttachShader(i, j);
 		}
 	}
 
-	public static void glDeleteShader(int shader) {
+	public static void glDeleteShader(int i) {
 		if (useShaderArb) {
-			ARBShaderObjects.glDeleteObjectARB(shader);
+			ARBShaderObjects.glDeleteObjectARB(i);
 		} else {
-			GL20.glDeleteShader(shader);
+			GL20.glDeleteShader(i);
 		}
 	}
 
-	public static int glCreateShader(int type) {
-		return useShaderArb ? ARBShaderObjects.glCreateShaderObjectARB(type) : GL20.glCreateShader(type);
+	public static int glCreateShader(int i) {
+		return useShaderArb ? ARBShaderObjects.glCreateShaderObjectARB(i) : GL20.glCreateShader(i);
 	}
 
 	public static void glShaderSource(int i, CharSequence charSequence) {
@@ -508,31 +508,31 @@ public class GLX {
 		}
 	}
 
-	public static void glCompileShader(int shader) {
+	public static void glCompileShader(int i) {
 		if (useShaderArb) {
-			ARBShaderObjects.glCompileShaderARB(shader);
+			ARBShaderObjects.glCompileShaderARB(i);
 		} else {
-			GL20.glCompileShader(shader);
+			GL20.glCompileShader(i);
 		}
 	}
 
-	public static int glGetShaderi(int shader, int programName) {
-		return useShaderArb ? ARBShaderObjects.glGetObjectParameteriARB(shader, programName) : GL20.glGetShaderi(shader, programName);
+	public static int glGetShaderi(int i, int j) {
+		return useShaderArb ? ARBShaderObjects.glGetObjectParameteriARB(i, j) : GL20.glGetShaderi(i, j);
 	}
 
-	public static String glGetShaderInfoLog(int shader, int maxLength) {
-		return useShaderArb ? ARBShaderObjects.glGetInfoLogARB(shader, maxLength) : GL20.glGetShaderInfoLog(shader, maxLength);
+	public static String glGetShaderInfoLog(int i, int j) {
+		return useShaderArb ? ARBShaderObjects.glGetInfoLogARB(i, j) : GL20.glGetShaderInfoLog(i, j);
 	}
 
-	public static String glGetProgramInfoLog(int program, int maxLength) {
-		return useShaderArb ? ARBShaderObjects.glGetInfoLogARB(program, maxLength) : GL20.glGetProgramInfoLog(program, maxLength);
+	public static String glGetProgramInfoLog(int i, int j) {
+		return useShaderArb ? ARBShaderObjects.glGetInfoLogARB(i, j) : GL20.glGetProgramInfoLog(i, j);
 	}
 
-	public static void glUseProgram(int program) {
+	public static void glUseProgram(int i) {
 		if (useShaderArb) {
-			ARBShaderObjects.glUseProgramObjectARB(program);
+			ARBShaderObjects.glUseProgramObjectARB(i);
 		} else {
-			GL20.glUseProgram(program);
+			GL20.glUseProgram(i);
 		}
 	}
 
@@ -540,124 +540,124 @@ public class GLX {
 		return useShaderArb ? ARBShaderObjects.glCreateProgramObjectARB() : GL20.glCreateProgram();
 	}
 
-	public static void glDeleteProgram(int program) {
+	public static void glDeleteProgram(int i) {
 		if (useShaderArb) {
-			ARBShaderObjects.glDeleteObjectARB(program);
+			ARBShaderObjects.glDeleteObjectARB(i);
 		} else {
-			GL20.glDeleteProgram(program);
+			GL20.glDeleteProgram(i);
 		}
 	}
 
-	public static void glLinkProgram(int program) {
+	public static void glLinkProgram(int i) {
 		if (useShaderArb) {
-			ARBShaderObjects.glLinkProgramARB(program);
+			ARBShaderObjects.glLinkProgramARB(i);
 		} else {
-			GL20.glLinkProgram(program);
+			GL20.glLinkProgram(i);
 		}
 	}
 
-	public static int glGetUniformLocation(int program, CharSequence name) {
-		return useShaderArb ? ARBShaderObjects.glGetUniformLocationARB(program, name) : GL20.glGetUniformLocation(program, name);
+	public static int glGetUniformLocation(int i, CharSequence charSequence) {
+		return useShaderArb ? ARBShaderObjects.glGetUniformLocationARB(i, charSequence) : GL20.glGetUniformLocation(i, charSequence);
 	}
 
-	public static void glUniform1(int location, IntBuffer values) {
+	public static void glUniform1(int i, IntBuffer intBuffer) {
 		if (useShaderArb) {
-			ARBShaderObjects.glUniform1ivARB(location, values);
+			ARBShaderObjects.glUniform1ivARB(i, intBuffer);
 		} else {
-			GL20.glUniform1iv(location, values);
+			GL20.glUniform1iv(i, intBuffer);
 		}
 	}
 
-	public static void glUniform1i(int location, int value) {
+	public static void glUniform1i(int i, int j) {
 		if (useShaderArb) {
-			ARBShaderObjects.glUniform1iARB(location, value);
+			ARBShaderObjects.glUniform1iARB(i, j);
 		} else {
-			GL20.glUniform1i(location, value);
+			GL20.glUniform1i(i, j);
 		}
 	}
 
-	public static void glUniform1(int location, FloatBuffer values) {
+	public static void glUniform1(int i, FloatBuffer floatBuffer) {
 		if (useShaderArb) {
-			ARBShaderObjects.glUniform1fvARB(location, values);
+			ARBShaderObjects.glUniform1fvARB(i, floatBuffer);
 		} else {
-			GL20.glUniform1fv(location, values);
+			GL20.glUniform1fv(i, floatBuffer);
 		}
 	}
 
-	public static void glUniform2(int location, IntBuffer values) {
+	public static void glUniform2(int i, IntBuffer intBuffer) {
 		if (useShaderArb) {
-			ARBShaderObjects.glUniform2ivARB(location, values);
+			ARBShaderObjects.glUniform2ivARB(i, intBuffer);
 		} else {
-			GL20.glUniform2iv(location, values);
+			GL20.glUniform2iv(i, intBuffer);
 		}
 	}
 
-	public static void glUniform2(int location, FloatBuffer values) {
+	public static void glUniform2(int i, FloatBuffer floatBuffer) {
 		if (useShaderArb) {
-			ARBShaderObjects.glUniform2fvARB(location, values);
+			ARBShaderObjects.glUniform2fvARB(i, floatBuffer);
 		} else {
-			GL20.glUniform2fv(location, values);
+			GL20.glUniform2fv(i, floatBuffer);
 		}
 	}
 
-	public static void glUniform3(int location, IntBuffer values) {
+	public static void glUniform3(int i, IntBuffer intBuffer) {
 		if (useShaderArb) {
-			ARBShaderObjects.glUniform3ivARB(location, values);
+			ARBShaderObjects.glUniform3ivARB(i, intBuffer);
 		} else {
-			GL20.glUniform3iv(location, values);
+			GL20.glUniform3iv(i, intBuffer);
 		}
 	}
 
-	public static void glUniform3(int location, FloatBuffer values) {
+	public static void glUniform3(int i, FloatBuffer floatBuffer) {
 		if (useShaderArb) {
-			ARBShaderObjects.glUniform3fvARB(location, values);
+			ARBShaderObjects.glUniform3fvARB(i, floatBuffer);
 		} else {
-			GL20.glUniform3fv(location, values);
+			GL20.glUniform3fv(i, floatBuffer);
 		}
 	}
 
-	public static void glUniform4(int location, IntBuffer values) {
+	public static void glUniform4(int i, IntBuffer intBuffer) {
 		if (useShaderArb) {
-			ARBShaderObjects.glUniform4ivARB(location, values);
+			ARBShaderObjects.glUniform4ivARB(i, intBuffer);
 		} else {
-			GL20.glUniform4iv(location, values);
+			GL20.glUniform4iv(i, intBuffer);
 		}
 	}
 
-	public static void glUniform4(int location, FloatBuffer values) {
+	public static void glUniform4(int i, FloatBuffer floatBuffer) {
 		if (useShaderArb) {
-			ARBShaderObjects.glUniform4fvARB(location, values);
+			ARBShaderObjects.glUniform4fvARB(i, floatBuffer);
 		} else {
-			GL20.glUniform4fv(location, values);
+			GL20.glUniform4fv(i, floatBuffer);
 		}
 	}
 
-	public static void glUniformMatrix2(int location, boolean transpose, FloatBuffer matrices) {
+	public static void glUniformMatrix2(int i, boolean bl, FloatBuffer floatBuffer) {
 		if (useShaderArb) {
-			ARBShaderObjects.glUniformMatrix2fvARB(location, transpose, matrices);
+			ARBShaderObjects.glUniformMatrix2fvARB(i, bl, floatBuffer);
 		} else {
-			GL20.glUniformMatrix2fv(location, transpose, matrices);
+			GL20.glUniformMatrix2fv(i, bl, floatBuffer);
 		}
 	}
 
-	public static void glUniformMatrix3(int location, boolean transpose, FloatBuffer matrices) {
+	public static void glUniformMatrix3(int i, boolean bl, FloatBuffer floatBuffer) {
 		if (useShaderArb) {
-			ARBShaderObjects.glUniformMatrix3fvARB(location, transpose, matrices);
+			ARBShaderObjects.glUniformMatrix3fvARB(i, bl, floatBuffer);
 		} else {
-			GL20.glUniformMatrix3fv(location, transpose, matrices);
+			GL20.glUniformMatrix3fv(i, bl, floatBuffer);
 		}
 	}
 
-	public static void glUniformMatrix4(int location, boolean transpose, FloatBuffer matrices) {
+	public static void glUniformMatrix4(int i, boolean bl, FloatBuffer floatBuffer) {
 		if (useShaderArb) {
-			ARBShaderObjects.glUniformMatrix4fvARB(location, transpose, matrices);
+			ARBShaderObjects.glUniformMatrix4fvARB(i, bl, floatBuffer);
 		} else {
-			GL20.glUniformMatrix4fv(location, transpose, matrices);
+			GL20.glUniformMatrix4fv(i, bl, floatBuffer);
 		}
 	}
 
-	public static int glGetAttribLocation(int program, CharSequence name) {
-		return useShaderArb ? ARBVertexShader.glGetAttribLocationARB(program, name) : GL20.glGetAttribLocation(program, name);
+	public static int glGetAttribLocation(int i, CharSequence charSequence) {
+		return useShaderArb ? ARBVertexShader.glGetAttribLocationARB(i, charSequence) : GL20.glGetAttribLocation(i, charSequence);
 	}
 
 	public static int glGenBuffers() {
@@ -672,27 +672,27 @@ public class GLX {
 		}
 	}
 
-	public static void glBindBuffer(int target, int bufferId) {
+	public static void glBindBuffer(int i, int j) {
 		if (useVboArb) {
-			ARBVertexBufferObject.glBindBufferARB(target, bufferId);
+			ARBVertexBufferObject.glBindBufferARB(i, j);
 		} else {
-			GL15.glBindBuffer(target, bufferId);
+			GL15.glBindBuffer(i, j);
 		}
 	}
 
-	public static void glBufferData(int target, ByteBuffer data, int usage) {
+	public static void glBufferData(int i, ByteBuffer byteBuffer, int j) {
 		if (useVboArb) {
-			ARBVertexBufferObject.glBufferDataARB(target, data, usage);
+			ARBVertexBufferObject.glBufferDataARB(i, byteBuffer, j);
 		} else {
-			GL15.glBufferData(target, data, usage);
+			GL15.glBufferData(i, byteBuffer, j);
 		}
 	}
 
-	public static void glDeleteBuffers(int buffer) {
+	public static void glDeleteBuffers(int i) {
 		if (useVboArb) {
-			ARBVertexBufferObject.glDeleteBuffersARB(buffer);
+			ARBVertexBufferObject.glDeleteBuffersARB(i);
 		} else {
-			GL15.glDeleteBuffers(buffer);
+			GL15.glDeleteBuffers(i);
 		}
 	}
 
@@ -708,65 +708,65 @@ public class GLX {
 		return true;
 	}
 
-	public static void glBindFramebuffer(int target, int framebuffer) {
+	public static void glBindFramebuffer(int i, int j) {
 		switch (fboMode) {
-			case BASE:
-				GL30.glBindFramebuffer(target, framebuffer);
+			case field_4981:
+				GL30.glBindFramebuffer(i, j);
 				break;
-			case ARB:
-				ARBFramebufferObject.glBindFramebuffer(target, framebuffer);
+			case field_4983:
+				ARBFramebufferObject.glBindFramebuffer(i, j);
 				break;
-			case EXT:
-				EXTFramebufferObject.glBindFramebufferEXT(target, framebuffer);
+			case field_4984:
+				EXTFramebufferObject.glBindFramebufferEXT(i, j);
 		}
 	}
 
-	public static void glBindRenderbuffer(int target, int renderbuffer) {
+	public static void glBindRenderbuffer(int i, int j) {
 		switch (fboMode) {
-			case BASE:
-				GL30.glBindRenderbuffer(target, renderbuffer);
+			case field_4981:
+				GL30.glBindRenderbuffer(i, j);
 				break;
-			case ARB:
-				ARBFramebufferObject.glBindRenderbuffer(target, renderbuffer);
+			case field_4983:
+				ARBFramebufferObject.glBindRenderbuffer(i, j);
 				break;
-			case EXT:
-				EXTFramebufferObject.glBindRenderbufferEXT(target, renderbuffer);
+			case field_4984:
+				EXTFramebufferObject.glBindRenderbufferEXT(i, j);
 		}
 	}
 
-	public static void glDeleteRenderbuffers(int renderbuffer) {
+	public static void glDeleteRenderbuffers(int i) {
 		switch (fboMode) {
-			case BASE:
-				GL30.glDeleteRenderbuffers(renderbuffer);
+			case field_4981:
+				GL30.glDeleteRenderbuffers(i);
 				break;
-			case ARB:
-				ARBFramebufferObject.glDeleteRenderbuffers(renderbuffer);
+			case field_4983:
+				ARBFramebufferObject.glDeleteRenderbuffers(i);
 				break;
-			case EXT:
-				EXTFramebufferObject.glDeleteRenderbuffersEXT(renderbuffer);
+			case field_4984:
+				EXTFramebufferObject.glDeleteRenderbuffersEXT(i);
 		}
 	}
 
-	public static void glDeleteFramebuffers(int framebuffer) {
+	public static void glDeleteFramebuffers(int i) {
 		switch (fboMode) {
-			case BASE:
-				GL30.glDeleteFramebuffers(framebuffer);
+			case field_4981:
+				GL30.glDeleteFramebuffers(i);
 				break;
-			case ARB:
-				ARBFramebufferObject.glDeleteFramebuffers(framebuffer);
+			case field_4983:
+				ARBFramebufferObject.glDeleteFramebuffers(i);
 				break;
-			case EXT:
-				EXTFramebufferObject.glDeleteFramebuffersEXT(framebuffer);
+			case field_4984:
+				EXTFramebufferObject.glDeleteFramebuffersEXT(i);
 		}
 	}
 
 	public static int glGenFramebuffers() {
 		switch (fboMode) {
-			case BASE:
+			case field_4981:
 				return GL30.glGenFramebuffers();
-			case ARB:
+			case field_4983:
 				return ARBFramebufferObject.glGenFramebuffers();
-			case EXT:
+			case field_4984:
 				return EXTFramebufferObject.glGenFramebuffersEXT();
 			default:
 				return -1;
@@ -775,115 +775,115 @@ public class GLX {
 
 	public static int glGenRenderbuffers() {
 		switch (fboMode) {
-			case BASE:
+			case field_4981:
 				return GL30.glGenRenderbuffers();
-			case ARB:
+			case field_4983:
 				return ARBFramebufferObject.glGenRenderbuffers();
-			case EXT:
+			case field_4984:
 				return EXTFramebufferObject.glGenRenderbuffersEXT();
 			default:
 				return -1;
 		}
 	}
 
-	public static void glRenderbufferStorage(int target, int internalFormat, int width, int height) {
+	public static void glRenderbufferStorage(int i, int j, int k, int l) {
 		switch (fboMode) {
-			case BASE:
-				GL30.glRenderbufferStorage(target, internalFormat, width, height);
+			case field_4981:
+				GL30.glRenderbufferStorage(i, j, k, l);
 				break;
-			case ARB:
-				ARBFramebufferObject.glRenderbufferStorage(target, internalFormat, width, height);
+			case field_4983:
+				ARBFramebufferObject.glRenderbufferStorage(i, j, k, l);
 				break;
-			case EXT:
-				EXTFramebufferObject.glRenderbufferStorageEXT(target, internalFormat, width, height);
+			case field_4984:
+				EXTFramebufferObject.glRenderbufferStorageEXT(i, j, k, l);
 		}
 	}
 
-	public static void glFramebufferRenderbuffer(int target, int attachment, int renderbufferTarget, int renderbuffer) {
+	public static void glFramebufferRenderbuffer(int i, int j, int k, int l) {
 		switch (fboMode) {
-			case BASE:
-				GL30.glFramebufferRenderbuffer(target, attachment, renderbufferTarget, renderbuffer);
+			case field_4981:
+				GL30.glFramebufferRenderbuffer(i, j, k, l);
 				break;
-			case ARB:
-				ARBFramebufferObject.glFramebufferRenderbuffer(target, attachment, renderbufferTarget, renderbuffer);
+			case field_4983:
+				ARBFramebufferObject.glFramebufferRenderbuffer(i, j, k, l);
 				break;
-			case EXT:
-				EXTFramebufferObject.glFramebufferRenderbufferEXT(target, attachment, renderbufferTarget, renderbuffer);
+			case field_4984:
+				EXTFramebufferObject.glFramebufferRenderbufferEXT(i, j, k, l);
 		}
 	}
 
-	public static int glCheckFramebufferStatus(int target) {
+	public static int glCheckFramebufferStatus(int i) {
 		switch (fboMode) {
-			case BASE:
-				return GL30.glCheckFramebufferStatus(target);
-			case ARB:
-				return ARBFramebufferObject.glCheckFramebufferStatus(target);
-			case EXT:
-				return EXTFramebufferObject.glCheckFramebufferStatusEXT(target);
+			case field_4981:
+				return GL30.glCheckFramebufferStatus(i);
+			case field_4983:
+				return ARBFramebufferObject.glCheckFramebufferStatus(i);
+			case field_4984:
+				return EXTFramebufferObject.glCheckFramebufferStatusEXT(i);
 			default:
 				return -1;
 		}
 	}
 
-	public static void glFramebufferTexture2D(int target, int attachment, int texTarget, int texture, int level) {
+	public static void glFramebufferTexture2D(int i, int j, int k, int l, int m) {
 		switch (fboMode) {
-			case BASE:
-				GL30.glFramebufferTexture2D(target, attachment, texTarget, texture, level);
+			case field_4981:
+				GL30.glFramebufferTexture2D(i, j, k, l, m);
 				break;
-			case ARB:
-				ARBFramebufferObject.glFramebufferTexture2D(target, attachment, texTarget, texture, level);
+			case field_4983:
+				ARBFramebufferObject.glFramebufferTexture2D(i, j, k, l, m);
 				break;
-			case EXT:
-				EXTFramebufferObject.glFramebufferTexture2DEXT(target, attachment, texTarget, texture, level);
+			case field_4984:
+				EXTFramebufferObject.glFramebufferTexture2DEXT(i, j, k, l, m);
 		}
 	}
 
 	public static int getBoundFramebuffer() {
 		switch (fboMode) {
-			case BASE:
+			case field_4981:
 				return GlStateManager.getInteger(36006);
-			case ARB:
+			case field_4983:
 				return GlStateManager.getInteger(36006);
-			case EXT:
+			case field_4984:
 				return GlStateManager.getInteger(36006);
 			default:
 				return 0;
 		}
 	}
 
-	public static void glActiveTexture(int texture) {
+	public static void glActiveTexture(int i) {
 		if (useMultitextureArb) {
-			ARBMultitexture.glActiveTextureARB(texture);
+			ARBMultitexture.glActiveTextureARB(i);
 		} else {
-			GL13.glActiveTexture(texture);
+			GL13.glActiveTexture(i);
 		}
 	}
 
-	public static void glClientActiveTexture(int texture) {
+	public static void glClientActiveTexture(int i) {
 		if (useMultitextureArb) {
-			ARBMultitexture.glClientActiveTextureARB(texture);
+			ARBMultitexture.glClientActiveTextureARB(i);
 		} else {
-			GL13.glClientActiveTexture(texture);
+			GL13.glClientActiveTexture(i);
 		}
 	}
 
-	public static void glMultiTexCoord2f(int target, float s, float t) {
+	public static void glMultiTexCoord2f(int i, float f, float g) {
 		if (useMultitextureArb) {
-			ARBMultitexture.glMultiTexCoord2fARB(target, s, t);
+			ARBMultitexture.glMultiTexCoord2fARB(i, f, g);
 		} else {
-			GL13.glMultiTexCoord2f(target, s, t);
+			GL13.glMultiTexCoord2f(i, f, g);
 		}
 	}
 
-	public static void glBlendFuncSeparate(int sFactorRGB, int dFactorRGB, int sFactorAlpha, int dFactorAlpha) {
+	public static void glBlendFuncSeparate(int i, int j, int k, int l) {
 		if (separateBlend) {
 			if (useSeparateBlendExt) {
-				EXTBlendFuncSeparate.glBlendFuncSeparateEXT(sFactorRGB, dFactorRGB, sFactorAlpha, dFactorAlpha);
+				EXTBlendFuncSeparate.glBlendFuncSeparateEXT(i, j, k, l);
 			} else {
-				GL14.glBlendFuncSeparate(sFactorRGB, dFactorRGB, sFactorAlpha, dFactorAlpha);
+				GL14.glBlendFuncSeparate(i, j, k, l);
 			}
 		} else {
-			GL11.glBlendFunc(sFactorRGB, dFactorRGB);
+			GL11.glBlendFunc(i, j);
 		}
 	}
 
@@ -903,7 +903,7 @@ public class GLX {
 		GlStateManager.disableTexture();
 		GlStateManager.depthMask(false);
 		Tessellator tessellator = Tessellator.getInstance();
-		BufferBuilder bufferBuilder = tessellator.getBuffer();
+		BufferBuilder bufferBuilder = tessellator.getBufferBuilder();
 		GL11.glLineWidth(4.0F);
 		bufferBuilder.begin(1, VertexFormats.POSITION_COLOR);
 		if (bl) {
@@ -960,8 +960,8 @@ public class GLX {
 
 	@Environment(EnvType.CLIENT)
 	static enum FBOMode {
-		BASE,
-		ARB,
-		EXT;
+		field_4981,
+		field_4983,
+		field_4984;
 	}
 }

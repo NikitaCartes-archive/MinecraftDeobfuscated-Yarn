@@ -17,7 +17,7 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
-import net.minecraft.state.StateManager;
+import net.minecraft.state.StateFactory;
 import net.minecraft.util.JsonHelper;
 
 @Environment(EnvType.CLIENT)
@@ -25,14 +25,14 @@ public class MultipartModelComponent {
 	private final MultipartModelSelector selector;
 	private final WeightedUnbakedModel model;
 
-	public MultipartModelComponent(MultipartModelSelector selector, WeightedUnbakedModel model) {
-		if (selector == null) {
+	public MultipartModelComponent(MultipartModelSelector multipartModelSelector, WeightedUnbakedModel weightedUnbakedModel) {
+		if (multipartModelSelector == null) {
 			throw new IllegalArgumentException("Missing condition for selector");
-		} else if (model == null) {
+		} else if (weightedUnbakedModel == null) {
 			throw new IllegalArgumentException("Missing variant for selector");
 		} else {
-			this.selector = selector;
-			this.model = model;
+			this.selector = multipartModelSelector;
+			this.model = weightedUnbakedModel;
 		}
 	}
 
@@ -40,12 +40,12 @@ public class MultipartModelComponent {
 		return this.model;
 	}
 
-	public Predicate<BlockState> getPredicate(StateManager<Block, BlockState> stateFactory) {
+	public Predicate<BlockState> getPredicate(StateFactory<Block, BlockState> stateFactory) {
 		return this.selector.getPredicate(stateFactory);
 	}
 
-	public boolean equals(Object o) {
-		return this == o;
+	public boolean equals(Object object) {
+		return this == object;
 	}
 
 	public int hashCode() {
@@ -54,28 +54,30 @@ public class MultipartModelComponent {
 
 	@Environment(EnvType.CLIENT)
 	public static class Deserializer implements JsonDeserializer<MultipartModelComponent> {
-		public MultipartModelComponent deserialize(JsonElement element, Type type, JsonDeserializationContext context) throws JsonParseException {
-			JsonObject jsonObject = element.getAsJsonObject();
-			return new MultipartModelComponent(this.deserializeSelectorOrDefault(jsonObject), context.deserialize(jsonObject.get("apply"), WeightedUnbakedModel.class));
+		public MultipartModelComponent method_3535(JsonElement jsonElement, Type type, JsonDeserializationContext jsonDeserializationContext) throws JsonParseException {
+			JsonObject jsonObject = jsonElement.getAsJsonObject();
+			return new MultipartModelComponent(
+				this.deserializeSelectorOrDefault(jsonObject), jsonDeserializationContext.deserialize(jsonObject.get("apply"), WeightedUnbakedModel.class)
+			);
 		}
 
-		private MultipartModelSelector deserializeSelectorOrDefault(JsonObject object) {
-			return object.has("when") ? deserializeSelector(JsonHelper.getObject(object, "when")) : MultipartModelSelector.TRUE;
+		private MultipartModelSelector deserializeSelectorOrDefault(JsonObject jsonObject) {
+			return jsonObject.has("when") ? deserializeSelector(JsonHelper.getObject(jsonObject, "when")) : MultipartModelSelector.TRUE;
 		}
 
 		@VisibleForTesting
-		static MultipartModelSelector deserializeSelector(JsonObject object) {
-			Set<Entry<String, JsonElement>> set = object.entrySet();
+		static MultipartModelSelector deserializeSelector(JsonObject jsonObject) {
+			Set<Entry<String, JsonElement>> set = jsonObject.entrySet();
 			if (set.isEmpty()) {
 				throw new JsonParseException("No elements found in selector");
 			} else if (set.size() == 1) {
-				if (object.has("OR")) {
-					List<MultipartModelSelector> list = (List<MultipartModelSelector>)Streams.stream(JsonHelper.getArray(object, "OR"))
+				if (jsonObject.has("OR")) {
+					List<MultipartModelSelector> list = (List<MultipartModelSelector>)Streams.stream(JsonHelper.getArray(jsonObject, "OR"))
 						.map(jsonElement -> deserializeSelector(jsonElement.getAsJsonObject()))
 						.collect(Collectors.toList());
 					return new OrMultipartModelSelector(list);
-				} else if (object.has("AND")) {
-					List<MultipartModelSelector> list = (List<MultipartModelSelector>)Streams.stream(JsonHelper.getArray(object, "AND"))
+				} else if (jsonObject.has("AND")) {
+					List<MultipartModelSelector> list = (List<MultipartModelSelector>)Streams.stream(JsonHelper.getArray(jsonObject, "AND"))
 						.map(jsonElement -> deserializeSelector(jsonElement.getAsJsonObject()))
 						.collect(Collectors.toList());
 					return new AndMultipartModelSelector(list);

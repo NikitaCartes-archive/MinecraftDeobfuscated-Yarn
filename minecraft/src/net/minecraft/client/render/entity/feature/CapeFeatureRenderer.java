@@ -13,17 +13,17 @@ import net.minecraft.util.math.MathHelper;
 
 @Environment(EnvType.CLIENT)
 public class CapeFeatureRenderer extends FeatureRenderer<AbstractClientPlayerEntity, PlayerEntityModel<AbstractClientPlayerEntity>> {
-	public CapeFeatureRenderer(FeatureRendererContext<AbstractClientPlayerEntity, PlayerEntityModel<AbstractClientPlayerEntity>> context) {
-		super(context);
+	public CapeFeatureRenderer(FeatureRendererContext<AbstractClientPlayerEntity, PlayerEntityModel<AbstractClientPlayerEntity>> featureRendererContext) {
+		super(featureRendererContext);
 	}
 
-	public void render(AbstractClientPlayerEntity abstractClientPlayerEntity, float f, float g, float h, float i, float j, float k, float l) {
+	public void method_4177(AbstractClientPlayerEntity abstractClientPlayerEntity, float f, float g, float h, float i, float j, float k, float l) {
 		if (abstractClientPlayerEntity.canRenderCapeTexture()
 			&& !abstractClientPlayerEntity.isInvisible()
-			&& abstractClientPlayerEntity.isPartVisible(PlayerModelPart.CAPE)
+			&& abstractClientPlayerEntity.isSkinOverlayVisible(PlayerModelPart.field_7559)
 			&& abstractClientPlayerEntity.getCapeTexture() != null) {
-			ItemStack itemStack = abstractClientPlayerEntity.getEquippedStack(EquipmentSlot.CHEST);
-			if (itemStack.getItem() != Items.ELYTRA) {
+			ItemStack itemStack = abstractClientPlayerEntity.getEquippedStack(EquipmentSlot.field_6174);
+			if (itemStack.getItem() != Items.field_8833) {
 				GlStateManager.color4f(1.0F, 1.0F, 1.0F, 1.0F);
 				this.bindTexture(abstractClientPlayerEntity.getCapeTexture());
 				GlStateManager.pushMatrix();
@@ -57,7 +57,7 @@ public class CapeFeatureRenderer extends FeatureRenderer<AbstractClientPlayerEnt
 				GlStateManager.rotatef(s / 2.0F, 0.0F, 0.0F, 1.0F);
 				GlStateManager.rotatef(-s / 2.0F, 0.0F, 1.0F, 0.0F);
 				GlStateManager.rotatef(180.0F, 0.0F, 1.0F, 0.0F);
-				this.getContextModel().renderCape(0.0625F);
+				this.getModel().renderCape(0.0625F);
 				GlStateManager.popMatrix();
 			}
 		}

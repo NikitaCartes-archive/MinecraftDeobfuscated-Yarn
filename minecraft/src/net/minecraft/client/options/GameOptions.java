@@ -24,18 +24,18 @@ import net.fabricmc.api.Environment;
 import net.minecraft.SharedConstants;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.entity.PlayerModelPart;
-import net.minecraft.client.resource.ClientResourcePackProfile;
+import net.minecraft.client.resource.ClientResourcePackContainer;
 import net.minecraft.client.tutorial.TutorialStep;
 import net.minecraft.client.util.InputUtil;
 import net.minecraft.client.util.VideoMode;
-import net.minecraft.datafixer.DataFixTypes;
+import net.minecraft.datafixers.DataFixTypes;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.NbtHelper;
-import net.minecraft.network.packet.c2s.play.ClientSettingsC2SPacket;
-import net.minecraft.resource.ResourcePackManager;
+import net.minecraft.resource.ResourcePackContainerManager;
+import net.minecraft.server.network.packet.ClientSettingsC2SPacket;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.util.Arm;
 import net.minecraft.util.JsonHelper;
+import net.minecraft.util.TagHelper;
 import net.minecraft.world.Difficulty;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.ArrayUtils;
@@ -77,7 +77,7 @@ public class GameOptions {
 	public boolean advancedItemTooltips;
 	public boolean pauseOnLostFocus = true;
 	private final Set<PlayerModelPart> enabledPlayerModelParts = Sets.<PlayerModelPart>newHashSet(PlayerModelPart.values());
-	public Arm mainArm = Arm.RIGHT;
+	public Arm mainArm = Arm.field_6183;
 	public int overrideWidth;
 	public int overrideHeight;
 	public boolean heldItemTooltips = true;
@@ -89,7 +89,7 @@ public class GameOptions {
 	private final Map<SoundCategory, Float> soundVolumeLevels = Maps.newEnumMap(SoundCategory.class);
 	public boolean useNativeTransport = true;
 	public AttackIndicator attackIndicator = AttackIndicator.CROSSHAIR;
-	public TutorialStep tutorialStep = TutorialStep.MOVEMENT;
+	public TutorialStep tutorialStep = TutorialStep.field_5650;
 	public int biomeBlendRadius = 2;
 	public double mouseWheelSensitivity = 1.0;
 	public boolean field_20308 = true;
@@ -178,7 +178,7 @@ public class GameOptions {
 	);
 	protected MinecraftClient client;
 	private final File optionsFile;
-	public Difficulty difficulty = Difficulty.NORMAL;
+	public Difficulty difficulty = Difficulty.field_5802;
 	public boolean hudHidden;
 	public int perspective;
 	public boolean debugEnabled;
@@ -193,33 +193,33 @@ public class GameOptions {
 	public NarratorOption narrator = NarratorOption.OFF;
 	public String language = "en_us";
 
-	public GameOptions(MinecraftClient client, File optionsFile) {
-		this.client = client;
-		this.optionsFile = new File(optionsFile, "options.txt");
-		if (client.is64Bit() && Runtime.getRuntime().maxMemory() >= 1000000000L) {
+	public GameOptions(MinecraftClient minecraftClient, File file) {
+		this.client = minecraftClient;
+		this.optionsFile = new File(file, "options.txt");
+		if (minecraftClient.is64Bit() && Runtime.getRuntime().maxMemory() >= 1000000000L) {
 			Option.RENDER_DISTANCE.setMax(32.0F);
 		} else {
 			Option.RENDER_DISTANCE.setMax(16.0F);
 		}
 
-		this.viewDistance = client.is64Bit() ? 12 : 8;
+		this.viewDistance = minecraftClient.is64Bit() ? 12 : 8;
 		this.load();
 	}
 
-	public float getTextBackgroundOpacity(float fallback) {
-		return this.backgroundForChatOnly ? fallback : (float)this.textBackgroundOpacity;
+	public float getTextBackgroundOpacity(float f) {
+		return this.backgroundForChatOnly ? f : (float)this.textBackgroundOpacity;
 	}
 
-	public int getTextBackgroundColor(float fallbackOpacity) {
-		return (int)(this.getTextBackgroundOpacity(fallbackOpacity) * 255.0F) << 24 & 0xFF000000;
+	public int getTextBackgroundColor(float f) {
+		return (int)(this.getTextBackgroundOpacity(f) * 255.0F) << 24 & 0xFF000000;
 	}
 
-	public int getTextBackgroundColor(int fallbackColor) {
-		return this.backgroundForChatOnly ? fallbackColor : (int)(this.textBackgroundOpacity * 255.0) << 24 & 0xFF000000;
+	public int getTextBackgroundColor(int i) {
+		return this.backgroundForChatOnly ? i : (int)(this.textBackgroundOpacity * 255.0) << 24 & 0xFF000000;
 	}
 
-	public void setKeyCode(KeyBinding key, InputUtil.KeyCode code) {
-		key.setKeyCode(code);
+	public void setKeyCode(KeyBinding keyBinding, InputUtil.KeyCode keyCode) {
+		keyBinding.setKeyCode(keyCode);
 		this.write();
 	}
 
@@ -474,7 +474,7 @@ public class GameOptions {
 					}
 
 					if ("mainHand".equals(string)) {
-						this.mainArm = "left".equals(string2) ? Arm.LEFT : Arm.RIGHT;
+						this.mainArm = "left".equals(string2) ? Arm.field_6182 : Arm.field_6183;
 					}
 
 					if ("narrator".equals(string)) {
@@ -533,7 +533,7 @@ public class GameOptions {
 		} catch (RuntimeException var4) {
 		}
 
-		return NbtHelper.update(this.client.getDataFixer(), DataFixTypes.OPTIONS, compoundTag, i);
+		return TagHelper.update(this.client.getDataFixer(), DataFixTypes.field_19216, compoundTag, i);
 	}
 
 	private static float parseFloat(String string) {
@@ -614,7 +614,7 @@ public class GameOptions {
 				printWriter.println("chatWidth:" + this.chatWidth);
 				printWriter.println("mipmapLevels:" + this.mipmapLevels);
 				printWriter.println("useNativeTransport:" + this.useNativeTransport);
-				printWriter.println("mainHand:" + (this.mainArm == Arm.LEFT ? "left" : "right"));
+				printWriter.println("mainHand:" + (this.mainArm == Arm.field_6182 ? "left" : "right"));
 				printWriter.println("attackIndicator:" + this.attackIndicator.getId());
 				printWriter.println("narrator:" + this.narrator.getId());
 				printWriter.println("tutorialStep:" + this.tutorialStep.getName());
@@ -656,13 +656,13 @@ public class GameOptions {
 		this.onPlayerModelPartChange();
 	}
 
-	public float getSoundVolume(SoundCategory category) {
-		return this.soundVolumeLevels.containsKey(category) ? (Float)this.soundVolumeLevels.get(category) : 1.0F;
+	public float getSoundVolume(SoundCategory soundCategory) {
+		return this.soundVolumeLevels.containsKey(soundCategory) ? (Float)this.soundVolumeLevels.get(soundCategory) : 1.0F;
 	}
 
-	public void setSoundVolume(SoundCategory category, float volume) {
-		this.soundVolumeLevels.put(category, volume);
-		this.client.getSoundManager().updateSoundVolume(category, volume);
+	public void setSoundVolume(SoundCategory soundCategory, float f) {
+		this.soundVolumeLevels.put(soundCategory, f);
+		this.client.getSoundManager().updateSoundVolume(soundCategory, f);
 	}
 
 	public void onPlayerModelPartChange() {
@@ -684,21 +684,21 @@ public class GameOptions {
 		return ImmutableSet.copyOf(this.enabledPlayerModelParts);
 	}
 
-	public void setPlayerModelPart(PlayerModelPart part, boolean enabled) {
-		if (enabled) {
-			this.enabledPlayerModelParts.add(part);
+	public void setPlayerModelPart(PlayerModelPart playerModelPart, boolean bl) {
+		if (bl) {
+			this.enabledPlayerModelParts.add(playerModelPart);
 		} else {
-			this.enabledPlayerModelParts.remove(part);
+			this.enabledPlayerModelParts.remove(playerModelPart);
 		}
 
 		this.onPlayerModelPartChange();
 	}
 
-	public void togglePlayerModelPart(PlayerModelPart part) {
-		if (this.getEnabledPlayerModelParts().contains(part)) {
-			this.enabledPlayerModelParts.remove(part);
+	public void togglePlayerModelPart(PlayerModelPart playerModelPart) {
+		if (this.getEnabledPlayerModelParts().contains(playerModelPart)) {
+			this.enabledPlayerModelParts.remove(playerModelPart);
 		} else {
-			this.enabledPlayerModelParts.add(part);
+			this.enabledPlayerModelParts.add(playerModelPart);
 		}
 
 		this.onPlayerModelPartChange();
@@ -712,32 +712,32 @@ public class GameOptions {
 		return this.useNativeTransport;
 	}
 
-	public void addResourcePackProfilesToManager(ResourcePackManager<ClientResourcePackProfile> manager) {
-		manager.scanPacks();
-		Set<ClientResourcePackProfile> set = Sets.<ClientResourcePackProfile>newLinkedHashSet();
+	public void addResourcePackContainersToManager(ResourcePackContainerManager<ClientResourcePackContainer> resourcePackContainerManager) {
+		resourcePackContainerManager.callCreators();
+		Set<ClientResourcePackContainer> set = Sets.<ClientResourcePackContainer>newLinkedHashSet();
 		Iterator<String> iterator = this.resourcePacks.iterator();
 
 		while (iterator.hasNext()) {
 			String string = (String)iterator.next();
-			ClientResourcePackProfile clientResourcePackProfile = manager.getProfile(string);
-			if (clientResourcePackProfile == null && !string.startsWith("file/")) {
-				clientResourcePackProfile = manager.getProfile("file/" + string);
+			ClientResourcePackContainer clientResourcePackContainer = resourcePackContainerManager.getContainer(string);
+			if (clientResourcePackContainer == null && !string.startsWith("file/")) {
+				clientResourcePackContainer = resourcePackContainerManager.getContainer("file/" + string);
 			}
 
-			if (clientResourcePackProfile == null) {
+			if (clientResourcePackContainer == null) {
 				LOGGER.warn("Removed resource pack {} from options because it doesn't seem to exist anymore", string);
 				iterator.remove();
-			} else if (!clientResourcePackProfile.getCompatibility().isCompatible() && !this.incompatibleResourcePacks.contains(string)) {
+			} else if (!clientResourcePackContainer.getCompatibility().isCompatible() && !this.incompatibleResourcePacks.contains(string)) {
 				LOGGER.warn("Removed resource pack {} from options because it is no longer compatible", string);
 				iterator.remove();
-			} else if (clientResourcePackProfile.getCompatibility().isCompatible() && this.incompatibleResourcePacks.contains(string)) {
+			} else if (clientResourcePackContainer.getCompatibility().isCompatible() && this.incompatibleResourcePacks.contains(string)) {
 				LOGGER.info("Removed resource pack {} from incompatibility list because it's now compatible", string);
 				this.incompatibleResourcePacks.remove(string);
 			} else {
-				set.add(clientResourcePackProfile);
+				set.add(clientResourcePackContainer);
 			}
 		}
 
-		manager.setEnabledProfiles(set);
+		resourcePackContainerManager.setEnabled(set);
 	}
 }

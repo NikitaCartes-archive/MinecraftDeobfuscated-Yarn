@@ -10,38 +10,38 @@ import net.minecraft.structure.NetherFortressGenerator;
 import net.minecraft.structure.StructureManager;
 import net.minecraft.structure.StructurePiece;
 import net.minecraft.structure.StructureStart;
-import net.minecraft.util.math.BlockBox;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.MutableIntBoundingBox;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
 
 public class NetherFortressFeature extends StructureFeature<DefaultFeatureConfig> {
 	private static final List<Biome.SpawnEntry> MONSTER_SPAWNS = Lists.<Biome.SpawnEntry>newArrayList(
-		new Biome.SpawnEntry(EntityType.BLAZE, 10, 2, 3),
-		new Biome.SpawnEntry(EntityType.ZOMBIE_PIGMAN, 5, 4, 4),
-		new Biome.SpawnEntry(EntityType.WITHER_SKELETON, 8, 5, 5),
-		new Biome.SpawnEntry(EntityType.SKELETON, 2, 5, 5),
-		new Biome.SpawnEntry(EntityType.MAGMA_CUBE, 3, 4, 4)
+		new Biome.SpawnEntry(EntityType.field_6099, 10, 2, 3),
+		new Biome.SpawnEntry(EntityType.field_6050, 5, 4, 4),
+		new Biome.SpawnEntry(EntityType.field_6076, 8, 5, 5),
+		new Biome.SpawnEntry(EntityType.field_6137, 2, 5, 5),
+		new Biome.SpawnEntry(EntityType.field_6102, 3, 4, 4)
 	);
 
-	public NetherFortressFeature(Function<Dynamic<?>, ? extends DefaultFeatureConfig> configFactory) {
-		super(configFactory);
+	public NetherFortressFeature(Function<Dynamic<?>, ? extends DefaultFeatureConfig> function) {
+		super(function);
 	}
 
 	@Override
-	public boolean shouldStartAt(ChunkGenerator<?> chunkGenerator, Random random, int chunkX, int chunkZ) {
-		int i = chunkX >> 4;
-		int j = chunkZ >> 4;
-		random.setSeed((long)(i ^ j << 4) ^ chunkGenerator.getSeed());
+	public boolean shouldStartAt(ChunkGenerator<?> chunkGenerator, Random random, int i, int j) {
+		int k = i >> 4;
+		int l = j >> 4;
+		random.setSeed((long)(k ^ l << 4) ^ chunkGenerator.getSeed());
 		random.nextInt();
 		if (random.nextInt(3) != 0) {
 			return false;
-		} else if (chunkX != (i << 4) + 4 + random.nextInt(8)) {
+		} else if (i != (k << 4) + 4 + random.nextInt(8)) {
 			return false;
-		} else if (chunkZ != (j << 4) + 4 + random.nextInt(8)) {
+		} else if (j != (l << 4) + 4 + random.nextInt(8)) {
 			return false;
 		} else {
-			Biome biome = chunkGenerator.getBiomeSource().getBiome(new BlockPos((chunkX << 4) + 9, 0, (chunkZ << 4) + 9));
+			Biome biome = chunkGenerator.getBiomeSource().getBiome(new BlockPos((i << 4) + 9, 0, (j << 4) + 9));
 			return chunkGenerator.hasStructure(biome, Feature.NETHER_BRIDGE);
 		}
 	}
@@ -67,20 +67,20 @@ public class NetherFortressFeature extends StructureFeature<DefaultFeatureConfig
 	}
 
 	public static class Start extends StructureStart {
-		public Start(StructureFeature<?> structureFeature, int chunkX, int chunkZ, Biome biome, BlockBox blockBox, int i, long l) {
-			super(structureFeature, chunkX, chunkZ, biome, blockBox, i, l);
+		public Start(StructureFeature<?> structureFeature, int i, int j, Biome biome, MutableIntBoundingBox mutableIntBoundingBox, int k, long l) {
+			super(structureFeature, i, j, biome, mutableIntBoundingBox, k, l);
 		}
 
 		@Override
-		public void initialize(ChunkGenerator<?> chunkGenerator, StructureManager structureManager, int x, int z, Biome biome) {
-			NetherFortressGenerator.Start start = new NetherFortressGenerator.Start(this.random, (x << 4) + 2, (z << 4) + 2);
+		public void initialize(ChunkGenerator<?> chunkGenerator, StructureManager structureManager, int i, int j, Biome biome) {
+			NetherFortressGenerator.Start start = new NetherFortressGenerator.Start(this.random, (i << 4) + 2, (j << 4) + 2);
 			this.children.add(start);
 			start.method_14918(start, this.children, this.random);
 			List<StructurePiece> list = start.field_14505;
 
 			while (!list.isEmpty()) {
-				int i = this.random.nextInt(list.size());
-				StructurePiece structurePiece = (StructurePiece)list.remove(i);
+				int k = this.random.nextInt(list.size());
+				StructurePiece structurePiece = (StructurePiece)list.remove(k);
 				structurePiece.method_14918(start, this.children, this.random);
 			}
 

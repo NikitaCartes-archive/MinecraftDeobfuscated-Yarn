@@ -9,8 +9,8 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawableHelper;
-import net.minecraft.client.render.DiffuseLighting;
-import net.minecraft.util.Util;
+import net.minecraft.client.render.GuiLighting;
+import net.minecraft.util.SystemUtil;
 import net.minecraft.util.math.MathHelper;
 
 @Environment(EnvType.CLIENT)
@@ -19,13 +19,13 @@ public class ToastManager extends DrawableHelper {
 	private final ToastManager.Entry<?>[] visibleEntries = new ToastManager.Entry[5];
 	private final Deque<Toast> toastQueue = Queues.<Toast>newArrayDeque();
 
-	public ToastManager(MinecraftClient client) {
-		this.client = client;
+	public ToastManager(MinecraftClient minecraftClient) {
+		this.client = minecraftClient;
 	}
 
 	public void draw() {
 		if (!this.client.options.hudHidden) {
-			DiffuseLighting.disable();
+			GuiLighting.disable();
 
 			for (int i = 0; i < this.visibleEntries.length; i++) {
 				ToastManager.Entry<?> entry = this.visibleEntries[i];
@@ -41,15 +41,15 @@ public class ToastManager extends DrawableHelper {
 	}
 
 	@Nullable
-	public <T extends Toast> T getToast(Class<? extends T> toastClass, Object type) {
+	public <T extends Toast> T getToast(Class<? extends T> class_, Object object) {
 		for (ToastManager.Entry<?> entry : this.visibleEntries) {
-			if (entry != null && toastClass.isAssignableFrom(entry.getInstance().getClass()) && entry.getInstance().getType().equals(type)) {
+			if (entry != null && class_.isAssignableFrom(entry.getInstance().getClass()) && entry.getInstance().getType().equals(object)) {
 				return (T)entry.getInstance();
 			}
 		}
 
 		for (Toast toast : this.toastQueue) {
-			if (toastClass.isAssignableFrom(toast.getClass()) && toast.getType().equals(type)) {
+			if (class_.isAssignableFrom(toast.getClass()) && toast.getType().equals(object)) {
 				return (T)toast;
 			}
 		}
@@ -75,7 +75,7 @@ public class ToastManager extends DrawableHelper {
 		private final T instance;
 		private long field_2243 = -1L;
 		private long field_2242 = -1L;
-		private Toast.Visibility visibility = Toast.Visibility.SHOW;
+		private Toast.Visibility visibility = Toast.Visibility.field_2210;
 
 		private Entry(T toast) {
 			this.instance = toast;
@@ -85,25 +85,25 @@ public class ToastManager extends DrawableHelper {
 			return this.instance;
 		}
 
-		private float getDissapearProgress(long time) {
-			float f = MathHelper.clamp((float)(time - this.field_2243) / 600.0F, 0.0F, 1.0F);
+		private float getDissapearProgress(long l) {
+			float f = MathHelper.clamp((float)(l - this.field_2243) / 600.0F, 0.0F, 1.0F);
 			f *= f;
-			return this.visibility == Toast.Visibility.HIDE ? 1.0F - f : f;
+			return this.visibility == Toast.Visibility.field_2209 ? 1.0F - f : f;
 		}
 
-		public boolean draw(int x, int y) {
-			long l = Util.getMeasuringTimeMs();
+		public boolean draw(int i, int j) {
+			long l = SystemUtil.getMeasuringTimeMs();
 			if (this.field_2243 == -1L) {
 				this.field_2243 = l;
 				this.visibility.playSound(ToastManager.this.client.getSoundManager());
 			}
 
-			if (this.visibility == Toast.Visibility.SHOW && l - this.field_2243 <= 600L) {
+			if (this.visibility == Toast.Visibility.field_2210 && l - this.field_2243 <= 600L) {
 				this.field_2242 = l;
 			}
 
 			GlStateManager.pushMatrix();
-			GlStateManager.translatef((float)x - 160.0F * this.getDissapearProgress(l), (float)(y * 32), (float)(500 + y));
+			GlStateManager.translatef((float)i - 160.0F * this.getDissapearProgress(l), (float)(j * 32), (float)(500 + j));
 			Toast.Visibility visibility = this.instance.draw(ToastManager.this, l - this.field_2242);
 			GlStateManager.popMatrix();
 			if (visibility != this.visibility) {
@@ -112,7 +112,7 @@ public class ToastManager extends DrawableHelper {
 				this.visibility.playSound(ToastManager.this.client.getSoundManager());
 			}
 
-			return this.visibility == Toast.Visibility.HIDE && l - this.field_2243 > 600L;
+			return this.visibility == Toast.Visibility.field_2209 && l - this.field_2243 > 600L;
 		}
 	}
 }

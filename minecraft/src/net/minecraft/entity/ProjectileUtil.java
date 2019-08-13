@@ -39,8 +39,8 @@ public final class ProjectileUtil {
 		);
 	}
 
-	public static HitResult getCollision(Entity entity, Box box, Predicate<Entity> entityCollisionPredicate, RayTraceContext.ShapeType shapeType, boolean bl) {
-		return getCollision(entity, bl, false, null, shapeType, false, entityCollisionPredicate, box);
+	public static HitResult getCollision(Entity entity, Box box, Predicate<Entity> predicate, RayTraceContext.ShapeType shapeType, boolean bl) {
+		return getCollision(entity, bl, false, null, shapeType, false, predicate, box);
 	}
 
 	@Nullable
@@ -49,14 +49,7 @@ public final class ProjectileUtil {
 	}
 
 	private static HitResult getCollision(
-		Entity entity,
-		boolean bl,
-		boolean bl2,
-		@Nullable Entity entity2,
-		RayTraceContext.ShapeType shapeType,
-		boolean bl3,
-		Predicate<Entity> entityCollisionPredicate,
-		Box boz
+		Entity entity, boolean bl, boolean bl2, @Nullable Entity entity2, RayTraceContext.ShapeType shapeType, boolean bl3, Predicate<Entity> predicate, Box box
 	) {
 		double d = entity.x;
 		double e = entity.y;
@@ -69,13 +62,13 @@ public final class ProjectileUtil {
 			return new BlockHitResult(vec3d2, Direction.getFacing(vec3d.x, vec3d.y, vec3d.z), new BlockPos(entity), false);
 		} else {
 			Vec3d vec3d3 = vec3d2.add(vec3d);
-			HitResult hitResult = world.rayTrace(new RayTraceContext(vec3d2, vec3d3, shapeType, RayTraceContext.FluidHandling.NONE, entity));
+			HitResult hitResult = world.rayTrace(new RayTraceContext(vec3d2, vec3d3, shapeType, RayTraceContext.FluidHandling.field_1348, entity));
 			if (bl) {
-				if (hitResult.getType() != HitResult.Type.MISS) {
+				if (hitResult.getType() != HitResult.Type.field_1333) {
 					vec3d3 = hitResult.getPos();
 				}
 
-				HitResult hitResult2 = getEntityCollision(world, entity, vec3d2, vec3d3, boz, entityCollisionPredicate);
+				HitResult hitResult2 = getEntityCollision(world, entity, vec3d2, vec3d3, box, predicate);
 				if (hitResult2 != null) {
 					hitResult = hitResult2;
 				}
@@ -120,7 +113,7 @@ public final class ProjectileUtil {
 			}
 		}
 
-		return entity2 == null ? null : new EntityHitResult(entity2, vec3d3);
+		return entity2 == null ? null : new EntityHitResult(entity2, vec3d3, MathHelper.sqrt(e));
 	}
 
 	@Nullable
@@ -140,7 +133,7 @@ public final class ProjectileUtil {
 			}
 		}
 
-		return entity2 == null ? null : new EntityHitResult(entity2);
+		return entity2 == null ? null : new EntityHitResult(entity2, MathHelper.sqrt(e));
 	}
 
 	private static Set<Entity> getEntityAndRidingEntity(Entity entity) {
@@ -174,15 +167,15 @@ public final class ProjectileUtil {
 		entity.yaw = MathHelper.lerp(f, entity.prevYaw, entity.yaw);
 	}
 
-	public static Hand getHandPossiblyHolding(LivingEntity entity, Item item) {
-		return entity.getMainHandStack().getItem() == item ? Hand.MAIN_HAND : Hand.OFF_HAND;
+	public static Hand getHandPossiblyHolding(LivingEntity livingEntity, Item item) {
+		return livingEntity.getMainHandStack().getItem() == item ? Hand.field_5808 : Hand.field_5810;
 	}
 
 	public static ProjectileEntity createArrowProjectile(LivingEntity livingEntity, ItemStack itemStack, float f) {
-		ArrowItem arrowItem = (ArrowItem)(itemStack.getItem() instanceof ArrowItem ? itemStack.getItem() : Items.ARROW);
+		ArrowItem arrowItem = (ArrowItem)(itemStack.getItem() instanceof ArrowItem ? itemStack.getItem() : Items.field_8107);
 		ProjectileEntity projectileEntity = arrowItem.createArrow(livingEntity.world, itemStack, livingEntity);
 		projectileEntity.method_7435(livingEntity, f);
-		if (itemStack.getItem() == Items.TIPPED_ARROW && projectileEntity instanceof ArrowEntity) {
+		if (itemStack.getItem() == Items.field_8087 && projectileEntity instanceof ArrowEntity) {
 			((ArrowEntity)projectileEntity).initFromStack(itemStack);
 		}
 

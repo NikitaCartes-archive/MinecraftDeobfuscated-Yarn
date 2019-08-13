@@ -4,7 +4,7 @@ import java.util.Random;
 import javax.annotation.Nullable;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.LecternBlockEntity;
-import net.minecraft.container.NameableContainerFactory;
+import net.minecraft.container.NameableContainerProvider;
 import net.minecraft.entity.EntityContext;
 import net.minecraft.entity.ItemEntity;
 import net.minecraft.entity.player.PlayerEntity;
@@ -13,7 +13,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.stat.Stats;
-import net.minecraft.state.StateManager;
+import net.minecraft.state.StateFactory;
 import net.minecraft.state.property.BooleanProperty;
 import net.minecraft.state.property.DirectionProperty;
 import net.minecraft.state.property.Properties;
@@ -65,45 +65,45 @@ public class LecternBlock extends BlockWithEntity {
 	protected LecternBlock(Block.Settings settings) {
 		super(settings);
 		this.setDefaultState(
-			this.stateManager.getDefaultState().with(FACING, Direction.NORTH).with(POWERED, Boolean.valueOf(false)).with(HAS_BOOK, Boolean.valueOf(false))
+			this.stateFactory.getDefaultState().with(FACING, Direction.field_11043).with(POWERED, Boolean.valueOf(false)).with(HAS_BOOK, Boolean.valueOf(false))
 		);
 	}
 
 	@Override
-	public BlockRenderType getRenderType(BlockState state) {
-		return BlockRenderType.MODEL;
+	public BlockRenderType getRenderType(BlockState blockState) {
+		return BlockRenderType.field_11458;
 	}
 
 	@Override
-	public VoxelShape getCullingShape(BlockState state, BlockView view, BlockPos pos) {
+	public VoxelShape method_9571(BlockState blockState, BlockView blockView, BlockPos blockPos) {
 		return BASE_SHAPE;
 	}
 
 	@Override
-	public boolean hasSidedTransparency(BlockState state) {
+	public boolean hasSidedTransparency(BlockState blockState) {
 		return true;
 	}
 
 	@Override
-	public BlockState getPlacementState(ItemPlacementContext ctx) {
-		return this.getDefaultState().with(FACING, ctx.getPlayerFacing().getOpposite());
+	public BlockState getPlacementState(ItemPlacementContext itemPlacementContext) {
+		return this.getDefaultState().with(FACING, itemPlacementContext.getPlayerFacing().getOpposite());
 	}
 
 	@Override
-	public VoxelShape getCollisionShape(BlockState state, BlockView view, BlockPos pos, EntityContext context) {
+	public VoxelShape getCollisionShape(BlockState blockState, BlockView blockView, BlockPos blockPos, EntityContext entityContext) {
 		return COLLISION_SHAPE;
 	}
 
 	@Override
-	public VoxelShape getOutlineShape(BlockState state, BlockView view, BlockPos pos, EntityContext context) {
-		switch ((Direction)state.get(FACING)) {
-			case NORTH:
+	public VoxelShape getOutlineShape(BlockState blockState, BlockView blockView, BlockPos blockPos, EntityContext entityContext) {
+		switch ((Direction)blockState.get(FACING)) {
+			case field_11043:
 				return NORTH_SHAPE;
-			case SOUTH:
+			case field_11035:
 				return SOUTH_SHAPE;
-			case EAST:
+			case field_11034:
 				return EAST_SHAPE;
-			case WEST:
+			case field_11039:
 				return WEST_SHAPE;
 			default:
 				return BASE_SHAPE;
@@ -111,30 +111,30 @@ public class LecternBlock extends BlockWithEntity {
 	}
 
 	@Override
-	public BlockState rotate(BlockState state, BlockRotation rotation) {
-		return state.with(FACING, rotation.rotate(state.get(FACING)));
+	public BlockState rotate(BlockState blockState, BlockRotation blockRotation) {
+		return blockState.with(FACING, blockRotation.rotate(blockState.get(FACING)));
 	}
 
 	@Override
-	public BlockState mirror(BlockState state, BlockMirror mirror) {
-		return state.rotate(mirror.getRotation(state.get(FACING)));
+	public BlockState mirror(BlockState blockState, BlockMirror blockMirror) {
+		return blockState.rotate(blockMirror.getRotation(blockState.get(FACING)));
 	}
 
 	@Override
-	protected void appendProperties(StateManager.Builder<Block, BlockState> builder) {
+	protected void appendProperties(StateFactory.Builder<Block, BlockState> builder) {
 		builder.add(FACING, POWERED, HAS_BOOK);
 	}
 
 	@Nullable
 	@Override
-	public BlockEntity createBlockEntity(BlockView view) {
+	public BlockEntity createBlockEntity(BlockView blockView) {
 		return new LecternBlockEntity();
 	}
 
-	public static boolean putBookIfAbsent(World world, BlockPos pos, BlockState state, ItemStack book) {
-		if (!(Boolean)state.get(HAS_BOOK)) {
+	public static boolean putBookIfAbsent(World world, BlockPos blockPos, BlockState blockState, ItemStack itemStack) {
+		if (!(Boolean)blockState.get(HAS_BOOK)) {
 			if (!world.isClient) {
-				putBook(world, pos, state, book);
+				putBook(world, blockPos, blockState, itemStack);
 			}
 
 			return true;
@@ -143,68 +143,68 @@ public class LecternBlock extends BlockWithEntity {
 		}
 	}
 
-	private static void putBook(World world, BlockPos pos, BlockState state, ItemStack book) {
-		BlockEntity blockEntity = world.getBlockEntity(pos);
+	private static void putBook(World world, BlockPos blockPos, BlockState blockState, ItemStack itemStack) {
+		BlockEntity blockEntity = world.getBlockEntity(blockPos);
 		if (blockEntity instanceof LecternBlockEntity) {
 			LecternBlockEntity lecternBlockEntity = (LecternBlockEntity)blockEntity;
-			lecternBlockEntity.setBook(book.split(1));
-			setHasBook(world, pos, state, true);
-			world.playSound(null, pos, SoundEvents.ITEM_BOOK_PUT, SoundCategory.BLOCKS, 1.0F, 1.0F);
+			lecternBlockEntity.setBook(itemStack.split(1));
+			setHasBook(world, blockPos, blockState, true);
+			world.playSound(null, blockPos, SoundEvents.field_17482, SoundCategory.field_15245, 1.0F, 1.0F);
 		}
 	}
 
-	public static void setHasBook(World world, BlockPos pos, BlockState state, boolean hasBook) {
-		world.setBlockState(pos, state.with(POWERED, Boolean.valueOf(false)).with(HAS_BOOK, Boolean.valueOf(hasBook)), 3);
-		updateNeighborAlways(world, pos, state);
+	public static void setHasBook(World world, BlockPos blockPos, BlockState blockState, boolean bl) {
+		world.setBlockState(blockPos, blockState.with(POWERED, Boolean.valueOf(false)).with(HAS_BOOK, Boolean.valueOf(bl)), 3);
+		updateNeighborAlways(world, blockPos, blockState);
 	}
 
-	public static void setPowered(World world, BlockPos pos, BlockState state) {
-		setPowered(world, pos, state, true);
-		world.getBlockTickScheduler().schedule(pos, state.getBlock(), 2);
-		world.playLevelEvent(1043, pos, 0);
+	public static void setPowered(World world, BlockPos blockPos, BlockState blockState) {
+		setPowered(world, blockPos, blockState, true);
+		world.getBlockTickScheduler().schedule(blockPos, blockState.getBlock(), 2);
+		world.playLevelEvent(1043, blockPos, 0);
 	}
 
-	private static void setPowered(World world, BlockPos pos, BlockState state, boolean powered) {
-		world.setBlockState(pos, state.with(POWERED, Boolean.valueOf(powered)), 3);
-		updateNeighborAlways(world, pos, state);
+	private static void setPowered(World world, BlockPos blockPos, BlockState blockState, boolean bl) {
+		world.setBlockState(blockPos, blockState.with(POWERED, Boolean.valueOf(bl)), 3);
+		updateNeighborAlways(world, blockPos, blockState);
 	}
 
-	private static void updateNeighborAlways(World world, BlockPos pos, BlockState state) {
-		world.updateNeighborsAlways(pos.down(), state.getBlock());
+	private static void updateNeighborAlways(World world, BlockPos blockPos, BlockState blockState) {
+		world.updateNeighborsAlways(blockPos.down(), blockState.getBlock());
 	}
 
 	@Override
-	public void onScheduledTick(BlockState state, World world, BlockPos pos, Random random) {
+	public void onScheduledTick(BlockState blockState, World world, BlockPos blockPos, Random random) {
 		if (!world.isClient) {
-			setPowered(world, pos, state, false);
+			setPowered(world, blockPos, blockState, false);
 		}
 	}
 
 	@Override
-	public void onBlockRemoved(BlockState state, World world, BlockPos pos, BlockState newState, boolean moved) {
-		if (state.getBlock() != newState.getBlock()) {
-			if ((Boolean)state.get(HAS_BOOK)) {
-				this.dropBook(state, world, pos);
+	public void onBlockRemoved(BlockState blockState, World world, BlockPos blockPos, BlockState blockState2, boolean bl) {
+		if (blockState.getBlock() != blockState2.getBlock()) {
+			if ((Boolean)blockState.get(HAS_BOOK)) {
+				this.dropBook(blockState, world, blockPos);
 			}
 
-			if ((Boolean)state.get(POWERED)) {
-				world.updateNeighborsAlways(pos.down(), this);
+			if ((Boolean)blockState.get(POWERED)) {
+				world.updateNeighborsAlways(blockPos.down(), this);
 			}
 
-			super.onBlockRemoved(state, world, pos, newState, moved);
+			super.onBlockRemoved(blockState, world, blockPos, blockState2, bl);
 		}
 	}
 
-	private void dropBook(BlockState state, World world, BlockPos pos) {
-		BlockEntity blockEntity = world.getBlockEntity(pos);
+	private void dropBook(BlockState blockState, World world, BlockPos blockPos) {
+		BlockEntity blockEntity = world.getBlockEntity(blockPos);
 		if (blockEntity instanceof LecternBlockEntity) {
 			LecternBlockEntity lecternBlockEntity = (LecternBlockEntity)blockEntity;
-			Direction direction = state.get(FACING);
+			Direction direction = blockState.get(FACING);
 			ItemStack itemStack = lecternBlockEntity.getBook().copy();
 			float f = 0.25F * (float)direction.getOffsetX();
 			float g = 0.25F * (float)direction.getOffsetZ();
 			ItemEntity itemEntity = new ItemEntity(
-				world, (double)pos.getX() + 0.5 + (double)f, (double)(pos.getY() + 1), (double)pos.getZ() + 0.5 + (double)g, itemStack
+				world, (double)blockPos.getX() + 0.5 + (double)f, (double)(blockPos.getY() + 1), (double)blockPos.getZ() + 0.5 + (double)g, itemStack
 			);
 			itemEntity.setToDefaultPickupDelay();
 			world.spawnEntity(itemEntity);
@@ -213,29 +213,29 @@ public class LecternBlock extends BlockWithEntity {
 	}
 
 	@Override
-	public boolean emitsRedstonePower(BlockState state) {
+	public boolean emitsRedstonePower(BlockState blockState) {
 		return true;
 	}
 
 	@Override
-	public int getWeakRedstonePower(BlockState state, BlockView view, BlockPos pos, Direction facing) {
-		return state.get(POWERED) ? 15 : 0;
+	public int getWeakRedstonePower(BlockState blockState, BlockView blockView, BlockPos blockPos, Direction direction) {
+		return blockState.get(POWERED) ? 15 : 0;
 	}
 
 	@Override
-	public int getStrongRedstonePower(BlockState state, BlockView view, BlockPos pos, Direction facing) {
-		return facing == Direction.UP && state.get(POWERED) ? 15 : 0;
+	public int getStrongRedstonePower(BlockState blockState, BlockView blockView, BlockPos blockPos, Direction direction) {
+		return direction == Direction.field_11036 && blockState.get(POWERED) ? 15 : 0;
 	}
 
 	@Override
-	public boolean hasComparatorOutput(BlockState state) {
+	public boolean hasComparatorOutput(BlockState blockState) {
 		return true;
 	}
 
 	@Override
-	public int getComparatorOutput(BlockState state, World world, BlockPos pos) {
-		if ((Boolean)state.get(HAS_BOOK)) {
-			BlockEntity blockEntity = world.getBlockEntity(pos);
+	public int getComparatorOutput(BlockState blockState, World world, BlockPos blockPos) {
+		if ((Boolean)blockState.get(HAS_BOOK)) {
+			BlockEntity blockEntity = world.getBlockEntity(blockPos);
 			if (blockEntity instanceof LecternBlockEntity) {
 				return ((LecternBlockEntity)blockEntity).getComparatorOutput();
 			}
@@ -245,10 +245,10 @@ public class LecternBlock extends BlockWithEntity {
 	}
 
 	@Override
-	public boolean activate(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
-		if ((Boolean)state.get(HAS_BOOK)) {
+	public boolean activate(BlockState blockState, World world, BlockPos blockPos, PlayerEntity playerEntity, Hand hand, BlockHitResult blockHitResult) {
+		if ((Boolean)blockState.get(HAS_BOOK)) {
 			if (!world.isClient) {
-				this.openContainer(world, pos, player);
+				this.openContainer(world, blockPos, playerEntity);
 			}
 
 			return true;
@@ -259,20 +259,20 @@ public class LecternBlock extends BlockWithEntity {
 
 	@Nullable
 	@Override
-	public NameableContainerFactory createContainerFactory(BlockState state, World world, BlockPos pos) {
-		return !state.get(HAS_BOOK) ? null : super.createContainerFactory(state, world, pos);
+	public NameableContainerProvider createContainerProvider(BlockState blockState, World world, BlockPos blockPos) {
+		return !blockState.get(HAS_BOOK) ? null : super.createContainerProvider(blockState, world, blockPos);
 	}
 
-	private void openContainer(World world, BlockPos pos, PlayerEntity player) {
-		BlockEntity blockEntity = world.getBlockEntity(pos);
+	private void openContainer(World world, BlockPos blockPos, PlayerEntity playerEntity) {
+		BlockEntity blockEntity = world.getBlockEntity(blockPos);
 		if (blockEntity instanceof LecternBlockEntity) {
-			player.openContainer((LecternBlockEntity)blockEntity);
-			player.incrementStat(Stats.INTERACT_WITH_LECTERN);
+			playerEntity.openContainer((LecternBlockEntity)blockEntity);
+			playerEntity.incrementStat(Stats.field_17485);
 		}
 	}
 
 	@Override
-	public boolean canPlaceAtSide(BlockState world, BlockView view, BlockPos pos, BlockPlacementEnvironment env) {
+	public boolean canPlaceAtSide(BlockState blockState, BlockView blockView, BlockPos blockPos, BlockPlacementEnvironment blockPlacementEnvironment) {
 		return false;
 	}
 }

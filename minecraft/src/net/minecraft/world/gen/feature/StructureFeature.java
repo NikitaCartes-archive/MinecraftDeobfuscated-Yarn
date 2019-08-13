@@ -9,11 +9,11 @@ import java.util.function.Function;
 import javax.annotation.Nullable;
 import net.minecraft.structure.StructurePiece;
 import net.minecraft.structure.StructureStart;
-import net.minecraft.util.math.BlockBox;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
+import net.minecraft.util.math.MutableIntBoundingBox;
+import net.minecraft.world.BlockViewWithStructures;
 import net.minecraft.world.IWorld;
-import net.minecraft.world.StructureHolder;
 import net.minecraft.world.World;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.chunk.Chunk;
@@ -27,28 +27,28 @@ import org.apache.logging.log4j.Logger;
 public abstract class StructureFeature<C extends FeatureConfig> extends Feature<C> {
 	private static final Logger LOGGER = LogManager.getLogger();
 
-	public StructureFeature(Function<Dynamic<?>, ? extends C> configFactory) {
-		super(configFactory, false);
+	public StructureFeature(Function<Dynamic<?>, ? extends C> function) {
+		super(function, false);
 	}
 
 	@Override
-	public boolean generate(IWorld world, ChunkGenerator<? extends ChunkGeneratorConfig> generator, Random random, BlockPos pos, C config) {
-		if (!world.getLevelProperties().hasStructures()) {
+	public boolean generate(IWorld iWorld, ChunkGenerator<? extends ChunkGeneratorConfig> chunkGenerator, Random random, BlockPos blockPos, C featureConfig) {
+		if (!iWorld.getLevelProperties().hasStructures()) {
 			return false;
 		} else {
-			int i = pos.getX() >> 4;
-			int j = pos.getZ() >> 4;
+			int i = blockPos.getX() >> 4;
+			int j = blockPos.getZ() >> 4;
 			int k = i << 4;
 			int l = j << 4;
 			boolean bl = false;
-			LongIterator var11 = world.getChunk(i, j).getStructureReferences(this.getName()).iterator();
+			LongIterator var11 = iWorld.getChunk(i, j).getStructureReferences(this.getName()).iterator();
 
 			while (var11.hasNext()) {
 				Long long_ = (Long)var11.next();
 				ChunkPos chunkPos = new ChunkPos(long_);
-				StructureStart structureStart = world.getChunk(chunkPos.x, chunkPos.z).getStructureStart(this.getName());
+				StructureStart structureStart = iWorld.getChunk(chunkPos.x, chunkPos.z).getStructureStart(this.getName());
 				if (structureStart != null && structureStart != StructureStart.DEFAULT) {
-					structureStart.generateStructure(world, random, new BlockBox(k, l, k + 15, l + 15), new ChunkPos(i, j));
+					structureStart.generateStructure(iWorld, random, new MutableIntBoundingBox(k, l, k + 15, l + 15), new ChunkPos(i, j));
 					bl = true;
 				}
 			}
@@ -57,15 +57,15 @@ public abstract class StructureFeature<C extends FeatureConfig> extends Feature<
 		}
 	}
 
-	protected StructureStart isInsideStructure(IWorld world, BlockPos pos, boolean exact) {
-		for (StructureStart structureStart : this.getStructureStarts(world, pos.getX() >> 4, pos.getZ() >> 4)) {
-			if (structureStart.hasChildren() && structureStart.getBoundingBox().contains(pos)) {
-				if (!exact) {
+	protected StructureStart isInsideStructure(IWorld iWorld, BlockPos blockPos, boolean bl) {
+		for (StructureStart structureStart : this.getStructureStarts(iWorld, blockPos.getX() >> 4, blockPos.getZ() >> 4)) {
+			if (structureStart.hasChildren() && structureStart.getBoundingBox().contains(blockPos)) {
+				if (!bl) {
 					return structureStart;
 				}
 
 				for (StructurePiece structurePiece : structureStart.getChildren()) {
-					if (structurePiece.getBoundingBox().contains(pos)) {
+					if (structurePiece.getBoundingBox().contains(blockPos)) {
 						return structureStart;
 					}
 				}
@@ -84,9 +84,7 @@ public abstract class StructureFeature<C extends FeatureConfig> extends Feature<
 	}
 
 	@Nullable
-	public BlockPos locateStructure(
-		World world, ChunkGenerator<? extends ChunkGeneratorConfig> chunkGenerator, BlockPos blockPos, int i, boolean skipExistingChunks
-	) {
+	public BlockPos locateStructure(World world, ChunkGenerator<? extends ChunkGeneratorConfig> chunkGenerator, BlockPos blockPos, int i, boolean bl) {
 		if (!chunkGenerator.getBiomeSource().hasStructureFeature(this)) {
 			return null;
 		} else {
@@ -96,20 +94,20 @@ public abstract class StructureFeature<C extends FeatureConfig> extends Feature<
 
 			for (ChunkRandom chunkRandom = new ChunkRandom(); l <= i; l++) {
 				for (int m = -l; m <= l; m++) {
-					boolean bl = m == -l || m == l;
+					boolean bl2 = m == -l || m == l;
 
 					for (int n = -l; n <= l; n++) {
-						boolean bl2 = n == -l || n == l;
-						if (bl || bl2) {
+						boolean bl3 = n == -l || n == l;
+						if (bl2 || bl3) {
 							ChunkPos chunkPos = this.getStart(chunkGenerator, chunkRandom, j, k, m, n);
-							StructureStart structureStart = world.getChunk(chunkPos.x, chunkPos.z, ChunkStatus.STRUCTURE_STARTS).getStructureStart(this.getName());
+							StructureStart structureStart = world.getChunk(chunkPos.x, chunkPos.z, ChunkStatus.field_16423).getStructureStart(this.getName());
 							if (structureStart != null && structureStart.hasChildren()) {
-								if (skipExistingChunks && structureStart.isInExistingChunk()) {
+								if (bl && structureStart.isInExistingChunk()) {
 									structureStart.incrementReferences();
 									return structureStart.getPos();
 								}
 
-								if (!skipExistingChunks) {
+								if (!bl) {
 									return structureStart.getPos();
 								}
 							}
@@ -130,15 +128,15 @@ public abstract class StructureFeature<C extends FeatureConfig> extends Feature<
 		}
 	}
 
-	private List<StructureStart> getStructureStarts(IWorld world, int chunkX, int chunkZ) {
+	private List<StructureStart> getStructureStarts(IWorld iWorld, int i, int j) {
 		List<StructureStart> list = Lists.<StructureStart>newArrayList();
-		Chunk chunk = world.getChunk(chunkX, chunkZ, ChunkStatus.STRUCTURE_REFERENCES);
+		Chunk chunk = iWorld.getChunk(i, j, ChunkStatus.field_16422);
 		LongIterator longIterator = chunk.getStructureReferences(this.getName()).iterator();
 
 		while (longIterator.hasNext()) {
 			long l = longIterator.nextLong();
-			StructureHolder structureHolder = world.getChunk(ChunkPos.getPackedX(l), ChunkPos.getPackedZ(l), ChunkStatus.STRUCTURE_STARTS);
-			StructureStart structureStart = structureHolder.getStructureStart(this.getName());
+			BlockViewWithStructures blockViewWithStructures = iWorld.getChunk(ChunkPos.getPackedX(l), ChunkPos.getPackedZ(l), ChunkStatus.field_16423);
+			StructureStart structureStart = blockViewWithStructures.getStructureStart(this.getName());
 			if (structureStart != null) {
 				list.add(structureStart);
 			}
@@ -151,7 +149,7 @@ public abstract class StructureFeature<C extends FeatureConfig> extends Feature<
 		return new ChunkPos(i + k, j + l);
 	}
 
-	public abstract boolean shouldStartAt(ChunkGenerator<?> chunkGenerator, Random random, int chunkX, int chunkZ);
+	public abstract boolean shouldStartAt(ChunkGenerator<?> chunkGenerator, Random random, int i, int j);
 
 	public abstract StructureFeature.StructureStartFactory getStructureStartFactory();
 
@@ -160,6 +158,6 @@ public abstract class StructureFeature<C extends FeatureConfig> extends Feature<
 	public abstract int getRadius();
 
 	public interface StructureStartFactory {
-		StructureStart create(StructureFeature<?> feature, int x, int z, Biome biome, BlockBox bounds, int i, long l);
+		StructureStart create(StructureFeature<?> structureFeature, int i, int j, Biome biome, MutableIntBoundingBox mutableIntBoundingBox, int k, long l);
 	}
 }

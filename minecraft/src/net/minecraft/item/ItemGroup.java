@@ -16,86 +16,89 @@ public abstract class ItemGroup {
 		@Environment(EnvType.CLIENT)
 		@Override
 		public ItemStack createIcon() {
-			return new ItemStack(Blocks.BRICKS);
+			return new ItemStack(Blocks.field_10104);
 		}
 	}).setName("building_blocks");
 	public static final ItemGroup DECORATIONS = new ItemGroup(1, "decorations") {
 		@Environment(EnvType.CLIENT)
 		@Override
 		public ItemStack createIcon() {
-			return new ItemStack(Blocks.PEONY);
+			return new ItemStack(Blocks.field_10003);
 		}
 	};
 	public static final ItemGroup REDSTONE = new ItemGroup(2, "redstone") {
 		@Environment(EnvType.CLIENT)
 		@Override
 		public ItemStack createIcon() {
-			return new ItemStack(Items.REDSTONE);
+			return new ItemStack(Items.field_8725);
 		}
 	};
 	public static final ItemGroup TRANSPORTATION = new ItemGroup(3, "transportation") {
 		@Environment(EnvType.CLIENT)
 		@Override
 		public ItemStack createIcon() {
-			return new ItemStack(Blocks.POWERED_RAIL);
+			return new ItemStack(Blocks.field_10425);
 		}
 	};
 	public static final ItemGroup MISC = new ItemGroup(6, "misc") {
 		@Environment(EnvType.CLIENT)
 		@Override
 		public ItemStack createIcon() {
-			return new ItemStack(Items.LAVA_BUCKET);
+			return new ItemStack(Items.field_8187);
 		}
 	};
 	public static final ItemGroup SEARCH = (new ItemGroup(5, "search") {
 		@Environment(EnvType.CLIENT)
 		@Override
 		public ItemStack createIcon() {
-			return new ItemStack(Items.COMPASS);
+			return new ItemStack(Items.field_8251);
 		}
 	}).setTexture("item_search.png");
 	public static final ItemGroup FOOD = new ItemGroup(7, "food") {
 		@Environment(EnvType.CLIENT)
 		@Override
 		public ItemStack createIcon() {
-			return new ItemStack(Items.APPLE);
+			return new ItemStack(Items.field_8279);
 		}
 	};
 	public static final ItemGroup TOOLS = (new ItemGroup(8, "tools") {
-		@Environment(EnvType.CLIENT)
-		@Override
-		public ItemStack createIcon() {
-			return new ItemStack(Items.IRON_AXE);
-		}
-	}).setEnchantments(new EnchantmentTarget[]{EnchantmentTarget.ALL, EnchantmentTarget.DIGGER, EnchantmentTarget.FISHING_ROD, EnchantmentTarget.BREAKABLE});
+			@Environment(EnvType.CLIENT)
+			@Override
+			public ItemStack createIcon() {
+				return new ItemStack(Items.field_8475);
+			}
+		})
+		.setEnchantments(
+			new EnchantmentTarget[]{EnchantmentTarget.field_9075, EnchantmentTarget.field_9069, EnchantmentTarget.field_9072, EnchantmentTarget.field_9082}
+		);
 	public static final ItemGroup COMBAT = (new ItemGroup(9, "combat") {
 			@Environment(EnvType.CLIENT)
 			@Override
 			public ItemStack createIcon() {
-				return new ItemStack(Items.GOLDEN_SWORD);
+				return new ItemStack(Items.field_8845);
 			}
 		})
 		.setEnchantments(
 			new EnchantmentTarget[]{
-				EnchantmentTarget.ALL,
-				EnchantmentTarget.ARMOR,
-				EnchantmentTarget.ARMOR_FEET,
-				EnchantmentTarget.ARMOR_HEAD,
-				EnchantmentTarget.ARMOR_LEGS,
-				EnchantmentTarget.ARMOR_CHEST,
-				EnchantmentTarget.BOW,
-				EnchantmentTarget.WEAPON,
-				EnchantmentTarget.WEARABLE,
-				EnchantmentTarget.BREAKABLE,
-				EnchantmentTarget.TRIDENT,
-				EnchantmentTarget.CROSSBOW
+				EnchantmentTarget.field_9075,
+				EnchantmentTarget.field_9068,
+				EnchantmentTarget.field_9079,
+				EnchantmentTarget.field_9080,
+				EnchantmentTarget.field_9076,
+				EnchantmentTarget.field_9071,
+				EnchantmentTarget.field_9070,
+				EnchantmentTarget.field_9074,
+				EnchantmentTarget.field_9078,
+				EnchantmentTarget.field_9082,
+				EnchantmentTarget.field_9073,
+				EnchantmentTarget.field_9081
 			}
 		);
 	public static final ItemGroup BREWING = new ItemGroup(10, "brewing") {
 		@Environment(EnvType.CLIENT)
 		@Override
 		public ItemStack createIcon() {
-			return PotionUtil.setPotion(new ItemStack(Items.POTION), Potions.WATER);
+			return PotionUtil.setPotion(new ItemStack(Items.field_8574), Potions.field_8991);
 		}
 	};
 	public static final ItemGroup MATERIALS = MISC;
@@ -103,12 +106,12 @@ public abstract class ItemGroup {
 		@Environment(EnvType.CLIENT)
 		@Override
 		public ItemStack createIcon() {
-			return new ItemStack(Blocks.BOOKSHELF);
+			return new ItemStack(Blocks.field_10504);
 		}
 
 		@Environment(EnvType.CLIENT)
 		@Override
-		public void appendStacks(DefaultedList<ItemStack> stacks) {
+		public void appendStacks(DefaultedList<ItemStack> defaultedList) {
 			throw new RuntimeException("Implement exception client-side.");
 		}
 
@@ -122,7 +125,7 @@ public abstract class ItemGroup {
 		@Environment(EnvType.CLIENT)
 		@Override
 		public ItemStack createIcon() {
-			return new ItemStack(Blocks.CHEST);
+			return new ItemStack(Blocks.field_10034);
 		}
 	}).setTexture("inventory.png").setNoScrollbar().setNoTooltip();
 	private final int index;
@@ -134,11 +137,11 @@ public abstract class ItemGroup {
 	private EnchantmentTarget[] enchantments = new EnchantmentTarget[0];
 	private ItemStack icon;
 
-	public ItemGroup(int index, String id) {
-		this.index = index;
-		this.id = id;
+	public ItemGroup(int i, String string) {
+		this.index = i;
+		this.id = string;
 		this.icon = ItemStack.EMPTY;
-		GROUPS[index] = this;
+		GROUPS[i] = this;
 	}
 
 	@Environment(EnvType.CLIENT)
@@ -177,13 +180,13 @@ public abstract class ItemGroup {
 		return this.texture;
 	}
 
-	public ItemGroup setTexture(String texture) {
-		this.texture = texture;
+	public ItemGroup setTexture(String string) {
+		this.texture = string;
 		return this;
 	}
 
-	public ItemGroup setName(String name) {
-		this.name = name;
+	public ItemGroup setName(String string) {
+		this.name = string;
 		return this;
 	}
 
@@ -226,15 +229,15 @@ public abstract class ItemGroup {
 		return this.enchantments;
 	}
 
-	public ItemGroup setEnchantments(EnchantmentTarget... targets) {
-		this.enchantments = targets;
+	public ItemGroup setEnchantments(EnchantmentTarget... enchantmentTargets) {
+		this.enchantments = enchantmentTargets;
 		return this;
 	}
 
-	public boolean containsEnchantments(@Nullable EnchantmentTarget target) {
-		if (target != null) {
-			for (EnchantmentTarget enchantmentTarget : this.enchantments) {
-				if (enchantmentTarget == target) {
+	public boolean containsEnchantments(@Nullable EnchantmentTarget enchantmentTarget) {
+		if (enchantmentTarget != null) {
+			for (EnchantmentTarget enchantmentTarget2 : this.enchantments) {
+				if (enchantmentTarget2 == enchantmentTarget) {
 					return true;
 				}
 			}
@@ -244,9 +247,9 @@ public abstract class ItemGroup {
 	}
 
 	@Environment(EnvType.CLIENT)
-	public void appendStacks(DefaultedList<ItemStack> stacks) {
+	public void appendStacks(DefaultedList<ItemStack> defaultedList) {
 		for (Item item : Registry.ITEM) {
-			item.appendStacks(this, stacks);
+			item.appendStacks(this, defaultedList);
 		}
 	}
 }

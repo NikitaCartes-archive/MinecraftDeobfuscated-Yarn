@@ -11,15 +11,15 @@ import net.minecraft.world.gen.chunk.ChunkGenerator;
 import net.minecraft.world.gen.chunk.ChunkGeneratorConfig;
 
 public class GrassFeature extends Feature<GrassFeatureConfig> {
-	public GrassFeature(Function<Dynamic<?>, ? extends GrassFeatureConfig> configFactory) {
-		super(configFactory);
+	public GrassFeature(Function<Dynamic<?>, ? extends GrassFeatureConfig> function) {
+		super(function);
 	}
 
-	public boolean generate(
+	public boolean method_14080(
 		IWorld iWorld, ChunkGenerator<? extends ChunkGeneratorConfig> chunkGenerator, Random random, BlockPos blockPos, GrassFeatureConfig grassFeatureConfig
 	) {
 		for (BlockState blockState = iWorld.getBlockState(blockPos);
-			(blockState.isAir() || blockState.matches(BlockTags.LEAVES)) && blockPos.getY() > 0;
+			(blockState.isAir() || blockState.matches(BlockTags.field_15503)) && blockPos.getY() > 0;
 			blockState = iWorld.getBlockState(blockPos)
 		) {
 			blockPos = blockPos.down();

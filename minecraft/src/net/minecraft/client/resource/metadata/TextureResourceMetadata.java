@@ -9,9 +9,9 @@ public class TextureResourceMetadata {
 	private final boolean blur;
 	private final boolean clamp;
 
-	public TextureResourceMetadata(boolean blur, boolean bl) {
-		this.blur = blur;
-		this.clamp = bl;
+	public TextureResourceMetadata(boolean bl, boolean bl2) {
+		this.blur = bl;
+		this.clamp = bl2;
 	}
 
 	public boolean shouldBlur() {

@@ -20,32 +20,32 @@ public class BasicBakedModel implements BakedModel {
 	protected final List<BakedQuad> quads;
 	protected final Map<Direction, List<BakedQuad>> faceQuads;
 	protected final boolean usesAo;
-	protected final boolean hasDepth;
+	protected final boolean depthInGui;
 	protected final Sprite sprite;
 	protected final ModelTransformation transformation;
 	protected final ModelItemPropertyOverrideList itemPropertyOverrides;
 
 	public BasicBakedModel(
-		List<BakedQuad> quads,
-		Map<Direction, List<BakedQuad>> faceQuads,
-		boolean usesAo,
-		boolean is3dInGui,
+		List<BakedQuad> list,
+		Map<Direction, List<BakedQuad>> map,
+		boolean bl,
+		boolean bl2,
 		Sprite sprite,
-		ModelTransformation transformation,
-		ModelItemPropertyOverrideList itemPropertyOverrides
+		ModelTransformation modelTransformation,
+		ModelItemPropertyOverrideList modelItemPropertyOverrideList
 	) {
-		this.quads = quads;
-		this.faceQuads = faceQuads;
-		this.usesAo = usesAo;
-		this.hasDepth = is3dInGui;
+		this.quads = list;
+		this.faceQuads = map;
+		this.usesAo = bl;
+		this.depthInGui = bl2;
 		this.sprite = sprite;
-		this.transformation = transformation;
-		this.itemPropertyOverrides = itemPropertyOverrides;
+		this.transformation = modelTransformation;
+		this.itemPropertyOverrides = modelItemPropertyOverrideList;
 	}
 
 	@Override
-	public List<BakedQuad> getQuads(@Nullable BlockState state, @Nullable Direction face, Random random) {
-		return face == null ? this.quads : (List)this.faceQuads.get(face);
+	public List<BakedQuad> getQuads(@Nullable BlockState blockState, @Nullable Direction direction, Random random) {
+		return direction == null ? this.quads : (List)this.faceQuads.get(direction);
 	}
 
 	@Override
@@ -54,8 +54,8 @@ public class BasicBakedModel implements BakedModel {
 	}
 
 	@Override
-	public boolean hasDepth() {
-		return this.hasDepth;
+	public boolean hasDepthInGui() {
+		return this.depthInGui;
 	}
 
 	@Override
@@ -88,47 +88,47 @@ public class BasicBakedModel implements BakedModel {
 		private final boolean depthInGui;
 		private final ModelTransformation transformation;
 
-		public Builder(JsonUnbakedModel unbakedModel, ModelItemPropertyOverrideList itemPropertyOverrides) {
-			this(unbakedModel.useAmbientOcclusion(), unbakedModel.hasDepthInGui(), unbakedModel.getTransformations(), itemPropertyOverrides);
+		public Builder(JsonUnbakedModel jsonUnbakedModel, ModelItemPropertyOverrideList modelItemPropertyOverrideList) {
+			this(jsonUnbakedModel.useAmbientOcclusion(), jsonUnbakedModel.hasDepthInGui(), jsonUnbakedModel.getTransformations(), modelItemPropertyOverrideList);
 		}
 
-		public Builder(BlockState state, BakedModel bakedModel, Sprite sprite, Random random, long randomSeed) {
-			this(bakedModel.useAmbientOcclusion(), bakedModel.hasDepth(), bakedModel.getTransformation(), bakedModel.getItemPropertyOverrides());
+		public Builder(BlockState blockState, BakedModel bakedModel, Sprite sprite, Random random, long l) {
+			this(bakedModel.useAmbientOcclusion(), bakedModel.hasDepthInGui(), bakedModel.getTransformation(), bakedModel.getItemPropertyOverrides());
 			this.particleTexture = bakedModel.getSprite();
 
 			for (Direction direction : Direction.values()) {
-				random.setSeed(randomSeed);
+				random.setSeed(l);
 
-				for (BakedQuad bakedQuad : bakedModel.getQuads(state, direction, random)) {
+				for (BakedQuad bakedQuad : bakedModel.getQuads(blockState, direction, random)) {
 					this.addQuad(direction, new RetexturedBakedQuad(bakedQuad, sprite));
 				}
 			}
 
-			random.setSeed(randomSeed);
+			random.setSeed(l);
 
-			for (BakedQuad bakedQuad2 : bakedModel.getQuads(state, null, random)) {
+			for (BakedQuad bakedQuad2 : bakedModel.getQuads(blockState, null, random)) {
 				this.addQuad(new RetexturedBakedQuad(bakedQuad2, sprite));
 			}
 		}
 
-		private Builder(boolean usesAo, boolean depthInGui, ModelTransformation transformation, ModelItemPropertyOverrideList itemPropertyOverrides) {
+		private Builder(boolean bl, boolean bl2, ModelTransformation modelTransformation, ModelItemPropertyOverrideList modelItemPropertyOverrideList) {
 			for (Direction direction : Direction.values()) {
 				this.faceQuads.put(direction, Lists.newArrayList());
 			}
 
-			this.itemPropertyOverrides = itemPropertyOverrides;
-			this.usesAo = usesAo;
-			this.depthInGui = depthInGui;
-			this.transformation = transformation;
+			this.itemPropertyOverrides = modelItemPropertyOverrideList;
+			this.usesAo = bl;
+			this.depthInGui = bl2;
+			this.transformation = modelTransformation;
 		}
 
-		public BasicBakedModel.Builder addQuad(Direction side, BakedQuad quad) {
-			((List)this.faceQuads.get(side)).add(quad);
+		public BasicBakedModel.Builder addQuad(Direction direction, BakedQuad bakedQuad) {
+			((List)this.faceQuads.get(direction)).add(bakedQuad);
 			return this;
 		}
 
-		public BasicBakedModel.Builder addQuad(BakedQuad quad) {
-			this.quads.add(quad);
+		public BasicBakedModel.Builder addQuad(BakedQuad bakedQuad) {
+			this.quads.add(bakedQuad);
 			return this;
 		}
 

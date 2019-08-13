@@ -21,15 +21,15 @@ import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.Util;
+import net.minecraft.util.SystemUtil;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.biome.Biomes;
 import net.minecraft.world.gen.GenerationStep;
-import net.minecraft.world.gen.decorator.ChanceDecoratorConfig;
 import net.minecraft.world.gen.decorator.Decorator;
 import net.minecraft.world.gen.decorator.DecoratorConfig;
+import net.minecraft.world.gen.decorator.LakeDecoratorConfig;
 import net.minecraft.world.gen.feature.ConfiguredFeature;
 import net.minecraft.world.gen.feature.Feature;
 import net.minecraft.world.gen.feature.FeatureConfig;
@@ -47,90 +47,96 @@ import org.apache.logging.log4j.Logger;
 public class FlatChunkGeneratorConfig extends ChunkGeneratorConfig {
 	private static final Logger LOGGER = LogManager.getLogger();
 	private static final ConfiguredFeature<?> MINESHAFT = Biome.configureFeature(
-		Feature.MINESHAFT, new MineshaftFeatureConfig(0.004, MineshaftFeature.Type.NORMAL), Decorator.NOPE, DecoratorConfig.DEFAULT
+		Feature.MINESHAFT, new MineshaftFeatureConfig(0.004, MineshaftFeature.Type.field_13692), Decorator.field_14250, DecoratorConfig.DEFAULT
 	);
 	private static final ConfiguredFeature<?> VILLAGE = Biome.configureFeature(
-		Feature.VILLAGE, new VillageFeatureConfig("village/plains/town_centers", 6), Decorator.NOPE, DecoratorConfig.DEFAULT
+		Feature.VILLAGE, new VillageFeatureConfig("village/plains/town_centers", 6), Decorator.field_14250, DecoratorConfig.DEFAULT
 	);
 	private static final ConfiguredFeature<?> STRONGHOLD = Biome.configureFeature(
-		Feature.STRONGHOLD, FeatureConfig.DEFAULT, Decorator.NOPE, DecoratorConfig.DEFAULT
+		Feature.STRONGHOLD, FeatureConfig.DEFAULT, Decorator.field_14250, DecoratorConfig.DEFAULT
 	);
-	private static final ConfiguredFeature<?> SWAMP_HUT = Biome.configureFeature(Feature.SWAMP_HUT, FeatureConfig.DEFAULT, Decorator.NOPE, DecoratorConfig.DEFAULT);
+	private static final ConfiguredFeature<?> SWAMP_HUT = Biome.configureFeature(
+		Feature.SWAMP_HUT, FeatureConfig.DEFAULT, Decorator.field_14250, DecoratorConfig.DEFAULT
+	);
 	private static final ConfiguredFeature<?> DESERT_PYRAMID = Biome.configureFeature(
-		Feature.DESERT_PYRAMID, FeatureConfig.DEFAULT, Decorator.NOPE, DecoratorConfig.DEFAULT
+		Feature.DESERT_PYRAMID, FeatureConfig.DEFAULT, Decorator.field_14250, DecoratorConfig.DEFAULT
 	);
 	private static final ConfiguredFeature<?> JUNGLE_TEMPLE = Biome.configureFeature(
-		Feature.JUNGLE_TEMPLE, FeatureConfig.DEFAULT, Decorator.NOPE, DecoratorConfig.DEFAULT
+		Feature.JUNGLE_TEMPLE, FeatureConfig.DEFAULT, Decorator.field_14250, DecoratorConfig.DEFAULT
 	);
-	private static final ConfiguredFeature<?> IGLOO = Biome.configureFeature(Feature.IGLOO, FeatureConfig.DEFAULT, Decorator.NOPE, DecoratorConfig.DEFAULT);
+	private static final ConfiguredFeature<?> IGLOO = Biome.configureFeature(Feature.IGLOO, FeatureConfig.DEFAULT, Decorator.field_14250, DecoratorConfig.DEFAULT);
 	private static final ConfiguredFeature<?> SHIPWRECK = Biome.configureFeature(
-		Feature.SHIPWRECK, new ShipwreckFeatureConfig(false), Decorator.NOPE, DecoratorConfig.DEFAULT
+		Feature.SHIPWRECK, new ShipwreckFeatureConfig(false), Decorator.field_14250, DecoratorConfig.DEFAULT
 	);
 	private static final ConfiguredFeature<?> OCEAN_MONUMENT = Biome.configureFeature(
-		Feature.OCEAN_MONUMENT, FeatureConfig.DEFAULT, Decorator.NOPE, DecoratorConfig.DEFAULT
+		Feature.OCEAN_MONUMENT, FeatureConfig.DEFAULT, Decorator.field_14250, DecoratorConfig.DEFAULT
 	);
 	private static final ConfiguredFeature<?> WATER_LAKE = Biome.configureFeature(
-		Feature.LAKE, new LakeFeatureConfig(Blocks.WATER.getDefaultState()), Decorator.WATER_LAKE, new ChanceDecoratorConfig(4)
+		Feature.field_13573, new LakeFeatureConfig(Blocks.field_10382.getDefaultState()), Decorator.field_14242, new LakeDecoratorConfig(4)
 	);
 	private static final ConfiguredFeature<?> LAVA_LAKE = Biome.configureFeature(
-		Feature.LAKE, new LakeFeatureConfig(Blocks.LAVA.getDefaultState()), Decorator.LAVA_LAKE, new ChanceDecoratorConfig(80)
+		Feature.field_13573, new LakeFeatureConfig(Blocks.field_10164.getDefaultState()), Decorator.field_14237, new LakeDecoratorConfig(80)
 	);
-	private static final ConfiguredFeature<?> END_CITY = Biome.configureFeature(Feature.END_CITY, FeatureConfig.DEFAULT, Decorator.NOPE, DecoratorConfig.DEFAULT);
+	private static final ConfiguredFeature<?> END_CITY = Biome.configureFeature(
+		Feature.END_CITY, FeatureConfig.DEFAULT, Decorator.field_14250, DecoratorConfig.DEFAULT
+	);
 	private static final ConfiguredFeature<?> WOODLAND_MANSION = Biome.configureFeature(
-		Feature.WOODLAND_MANSION, FeatureConfig.DEFAULT, Decorator.NOPE, DecoratorConfig.DEFAULT
+		Feature.WOODLAND_MANSION, FeatureConfig.DEFAULT, Decorator.field_14250, DecoratorConfig.DEFAULT
 	);
 	private static final ConfiguredFeature<?> NETHER_BRIDGE = Biome.configureFeature(
-		Feature.NETHER_BRIDGE, FeatureConfig.DEFAULT, Decorator.NOPE, DecoratorConfig.DEFAULT
+		Feature.NETHER_BRIDGE, FeatureConfig.DEFAULT, Decorator.field_14250, DecoratorConfig.DEFAULT
 	);
 	private static final ConfiguredFeature<?> OCEAN_RUIN = Biome.configureFeature(
-		Feature.OCEAN_RUIN, new OceanRuinFeatureConfig(OceanRuinFeature.BiomeType.COLD, 0.3F, 0.1F), Decorator.NOPE, DecoratorConfig.DEFAULT
+		Feature.OCEAN_RUIN, new OceanRuinFeatureConfig(OceanRuinFeature.BiomeType.field_14528, 0.3F, 0.1F), Decorator.field_14250, DecoratorConfig.DEFAULT
 	);
 	private static final ConfiguredFeature<?> field_19182 = Biome.configureFeature(
-		Feature.PILLAGER_OUTPOST, new PillagerOutpostFeatureConfig(0.004), Decorator.NOPE, DecoratorConfig.DEFAULT
+		Feature.PILLAGER_OUTPOST, new PillagerOutpostFeatureConfig(0.004), Decorator.field_14250, DecoratorConfig.DEFAULT
 	);
-	public static final Map<ConfiguredFeature<?>, GenerationStep.Feature> FEATURE_TO_GENERATION_STEP = Util.make(
+	public static final Map<ConfiguredFeature<?>, GenerationStep.Feature> FEATURE_TO_GENERATION_STEP = SystemUtil.consume(
 		Maps.<ConfiguredFeature<?>, GenerationStep.Feature>newHashMap(), hashMap -> {
-			hashMap.put(MINESHAFT, GenerationStep.Feature.UNDERGROUND_STRUCTURES);
-			hashMap.put(VILLAGE, GenerationStep.Feature.SURFACE_STRUCTURES);
-			hashMap.put(STRONGHOLD, GenerationStep.Feature.UNDERGROUND_STRUCTURES);
-			hashMap.put(SWAMP_HUT, GenerationStep.Feature.SURFACE_STRUCTURES);
-			hashMap.put(DESERT_PYRAMID, GenerationStep.Feature.SURFACE_STRUCTURES);
-			hashMap.put(JUNGLE_TEMPLE, GenerationStep.Feature.SURFACE_STRUCTURES);
-			hashMap.put(IGLOO, GenerationStep.Feature.SURFACE_STRUCTURES);
-			hashMap.put(SHIPWRECK, GenerationStep.Feature.SURFACE_STRUCTURES);
-			hashMap.put(OCEAN_RUIN, GenerationStep.Feature.SURFACE_STRUCTURES);
-			hashMap.put(WATER_LAKE, GenerationStep.Feature.LOCAL_MODIFICATIONS);
-			hashMap.put(LAVA_LAKE, GenerationStep.Feature.LOCAL_MODIFICATIONS);
-			hashMap.put(END_CITY, GenerationStep.Feature.SURFACE_STRUCTURES);
-			hashMap.put(WOODLAND_MANSION, GenerationStep.Feature.SURFACE_STRUCTURES);
-			hashMap.put(NETHER_BRIDGE, GenerationStep.Feature.UNDERGROUND_STRUCTURES);
-			hashMap.put(OCEAN_MONUMENT, GenerationStep.Feature.SURFACE_STRUCTURES);
-			hashMap.put(field_19182, GenerationStep.Feature.SURFACE_STRUCTURES);
+			hashMap.put(MINESHAFT, GenerationStep.Feature.field_13172);
+			hashMap.put(VILLAGE, GenerationStep.Feature.field_13173);
+			hashMap.put(STRONGHOLD, GenerationStep.Feature.field_13172);
+			hashMap.put(SWAMP_HUT, GenerationStep.Feature.field_13173);
+			hashMap.put(DESERT_PYRAMID, GenerationStep.Feature.field_13173);
+			hashMap.put(JUNGLE_TEMPLE, GenerationStep.Feature.field_13173);
+			hashMap.put(IGLOO, GenerationStep.Feature.field_13173);
+			hashMap.put(SHIPWRECK, GenerationStep.Feature.field_13173);
+			hashMap.put(OCEAN_RUIN, GenerationStep.Feature.field_13173);
+			hashMap.put(WATER_LAKE, GenerationStep.Feature.field_13171);
+			hashMap.put(LAVA_LAKE, GenerationStep.Feature.field_13171);
+			hashMap.put(END_CITY, GenerationStep.Feature.field_13173);
+			hashMap.put(WOODLAND_MANSION, GenerationStep.Feature.field_13173);
+			hashMap.put(NETHER_BRIDGE, GenerationStep.Feature.field_13172);
+			hashMap.put(OCEAN_MONUMENT, GenerationStep.Feature.field_13173);
+			hashMap.put(field_19182, GenerationStep.Feature.field_13173);
 		}
 	);
-	public static final Map<String, ConfiguredFeature<?>[]> STRUCTURE_TO_FEATURES = Util.make(Maps.<String, ConfiguredFeature<?>[]>newHashMap(), hashMap -> {
-		hashMap.put("mineshaft", new ConfiguredFeature[]{MINESHAFT});
-		hashMap.put("village", new ConfiguredFeature[]{VILLAGE});
-		hashMap.put("stronghold", new ConfiguredFeature[]{STRONGHOLD});
-		hashMap.put("biome_1", new ConfiguredFeature[]{SWAMP_HUT, DESERT_PYRAMID, JUNGLE_TEMPLE, IGLOO, OCEAN_RUIN, SHIPWRECK});
-		hashMap.put("oceanmonument", new ConfiguredFeature[]{OCEAN_MONUMENT});
-		hashMap.put("lake", new ConfiguredFeature[]{WATER_LAKE});
-		hashMap.put("lava_lake", new ConfiguredFeature[]{LAVA_LAKE});
-		hashMap.put("endcity", new ConfiguredFeature[]{END_CITY});
-		hashMap.put("mansion", new ConfiguredFeature[]{WOODLAND_MANSION});
-		hashMap.put("fortress", new ConfiguredFeature[]{NETHER_BRIDGE});
-		hashMap.put("pillager_outpost", new ConfiguredFeature[]{field_19182});
-	});
-	public static final Map<ConfiguredFeature<?>, FeatureConfig> FEATURE_TO_FEATURE_CONFIG = Util.make(
+	public static final Map<String, ConfiguredFeature<?>[]> STRUCTURE_TO_FEATURES = SystemUtil.consume(
+		Maps.<String, ConfiguredFeature<?>[]>newHashMap(), hashMap -> {
+			hashMap.put("mineshaft", new ConfiguredFeature[]{MINESHAFT});
+			hashMap.put("village", new ConfiguredFeature[]{VILLAGE});
+			hashMap.put("stronghold", new ConfiguredFeature[]{STRONGHOLD});
+			hashMap.put("biome_1", new ConfiguredFeature[]{SWAMP_HUT, DESERT_PYRAMID, JUNGLE_TEMPLE, IGLOO, OCEAN_RUIN, SHIPWRECK});
+			hashMap.put("oceanmonument", new ConfiguredFeature[]{OCEAN_MONUMENT});
+			hashMap.put("lake", new ConfiguredFeature[]{WATER_LAKE});
+			hashMap.put("lava_lake", new ConfiguredFeature[]{LAVA_LAKE});
+			hashMap.put("endcity", new ConfiguredFeature[]{END_CITY});
+			hashMap.put("mansion", new ConfiguredFeature[]{WOODLAND_MANSION});
+			hashMap.put("fortress", new ConfiguredFeature[]{NETHER_BRIDGE});
+			hashMap.put("pillager_outpost", new ConfiguredFeature[]{field_19182});
+		}
+	);
+	public static final Map<ConfiguredFeature<?>, FeatureConfig> FEATURE_TO_FEATURE_CONFIG = SystemUtil.consume(
 		Maps.<ConfiguredFeature<?>, FeatureConfig>newHashMap(), hashMap -> {
-			hashMap.put(MINESHAFT, new MineshaftFeatureConfig(0.004, MineshaftFeature.Type.NORMAL));
+			hashMap.put(MINESHAFT, new MineshaftFeatureConfig(0.004, MineshaftFeature.Type.field_13692));
 			hashMap.put(VILLAGE, new VillageFeatureConfig("village/plains/town_centers", 6));
 			hashMap.put(STRONGHOLD, FeatureConfig.DEFAULT);
 			hashMap.put(SWAMP_HUT, FeatureConfig.DEFAULT);
 			hashMap.put(DESERT_PYRAMID, FeatureConfig.DEFAULT);
 			hashMap.put(JUNGLE_TEMPLE, FeatureConfig.DEFAULT);
 			hashMap.put(IGLOO, FeatureConfig.DEFAULT);
-			hashMap.put(OCEAN_RUIN, new OceanRuinFeatureConfig(OceanRuinFeature.BiomeType.COLD, 0.3F, 0.9F));
+			hashMap.put(OCEAN_RUIN, new OceanRuinFeatureConfig(OceanRuinFeature.BiomeType.field_14528, 0.3F, 0.9F));
 			hashMap.put(SHIPWRECK, new ShipwreckFeatureConfig(false));
 			hashMap.put(OCEAN_MONUMENT, FeatureConfig.DEFAULT);
 			hashMap.put(END_CITY, FeatureConfig.DEFAULT);
@@ -188,13 +194,13 @@ public class FlatChunkGeneratorConfig extends ChunkGeneratorConfig {
 		for (FlatChunkGeneratorLayer flatChunkGeneratorLayer : this.layers) {
 			for (int j = flatChunkGeneratorLayer.getStartY(); j < flatChunkGeneratorLayer.getStartY() + flatChunkGeneratorLayer.getThickness(); j++) {
 				BlockState blockState = flatChunkGeneratorLayer.getBlockState();
-				if (blockState.getBlock() != Blocks.AIR) {
+				if (blockState.getBlock() != Blocks.field_10124) {
 					this.hasNoTerrain = false;
 					this.layerBlocks[j] = blockState;
 				}
 			}
 
-			if (flatChunkGeneratorLayer.getBlockState().getBlock() == Blocks.AIR) {
+			if (flatChunkGeneratorLayer.getBlockState().getBlock() == Blocks.field_10124) {
 				i += flatChunkGeneratorLayer.getThickness();
 			} else {
 				this.groundHeight = this.groundHeight + flatChunkGeneratorLayer.getThickness() + i;
@@ -251,22 +257,22 @@ public class FlatChunkGeneratorConfig extends ChunkGeneratorConfig {
 
 	@Nullable
 	@Environment(EnvType.CLIENT)
-	private static FlatChunkGeneratorLayer parseLayerString(String string, int startY) {
+	private static FlatChunkGeneratorLayer parseLayerString(String string, int i) {
 		String[] strings = string.split("\\*", 2);
-		int i;
+		int j;
 		if (strings.length == 2) {
 			try {
-				i = Math.max(Integer.parseInt(strings[0]), 0);
+				j = Math.max(Integer.parseInt(strings[0]), 0);
 			} catch (NumberFormatException var9) {
 				LOGGER.error("Error while parsing flat world string => {}", var9.getMessage());
 				return null;
 			}
 		} else {
-			i = 1;
+			j = 1;
 		}
 
-		int j = Math.min(startY + i, 256);
-		int k = j - startY;
+		int k = Math.min(i + j, 256);
+		int l = k - i;
 
 		Block block;
 		try {
@@ -280,8 +286,8 @@ public class FlatChunkGeneratorConfig extends ChunkGeneratorConfig {
 			LOGGER.error("Error while parsing flat world string => Unknown block, {}", strings[strings.length - 1]);
 			return null;
 		} else {
-			FlatChunkGeneratorLayer flatChunkGeneratorLayer = new FlatChunkGeneratorLayer(k, block);
-			flatChunkGeneratorLayer.setStartY(startY);
+			FlatChunkGeneratorLayer flatChunkGeneratorLayer = new FlatChunkGeneratorLayer(l, block);
+			flatChunkGeneratorLayer.setStartY(i);
 			return flatChunkGeneratorLayer;
 		}
 	}
@@ -355,7 +361,7 @@ public class FlatChunkGeneratorConfig extends ChunkGeneratorConfig {
 	}
 
 	public static FlatChunkGeneratorConfig fromDynamic(Dynamic<?> dynamic) {
-		FlatChunkGeneratorConfig flatChunkGeneratorConfig = ChunkGeneratorType.FLAT.createSettings();
+		FlatChunkGeneratorConfig flatChunkGeneratorConfig = ChunkGeneratorType.field_12766.createSettings();
 		List<Pair<Integer, Block>> list = dynamic.get("layers")
 			.asList(dynamicx -> Pair.of(dynamicx.get("height").asInt(1), parseBlock(dynamicx.get("block").asString(""))));
 		if (list.stream().anyMatch(pair -> pair.getSecond() == null)) {
@@ -386,7 +392,7 @@ public class FlatChunkGeneratorConfig extends ChunkGeneratorConfig {
 		if (!iterator.hasNext()) {
 			return getDefaultConfig();
 		} else {
-			FlatChunkGeneratorConfig flatChunkGeneratorConfig = ChunkGeneratorType.FLAT.createSettings();
+			FlatChunkGeneratorConfig flatChunkGeneratorConfig = ChunkGeneratorType.field_12766.createSettings();
 			List<FlatChunkGeneratorLayer> list = parseLayersString((String)iterator.next());
 			if (list.isEmpty()) {
 				return getDefaultConfig();
@@ -394,7 +400,7 @@ public class FlatChunkGeneratorConfig extends ChunkGeneratorConfig {
 				flatChunkGeneratorConfig.getLayers().addAll(list);
 				flatChunkGeneratorConfig.updateLayerBlocks();
 				Biome biome = iterator.hasNext() ? Registry.BIOME.get(new Identifier((String)iterator.next())) : null;
-				flatChunkGeneratorConfig.setBiome(biome == null ? Biomes.PLAINS : biome);
+				flatChunkGeneratorConfig.setBiome(biome == null ? Biomes.field_9451 : biome);
 				if (iterator.hasNext()) {
 					String[] strings = ((String)iterator.next()).toLowerCase(Locale.ROOT).split(",");
 
@@ -424,9 +430,9 @@ public class FlatChunkGeneratorConfig extends ChunkGeneratorConfig {
 	}
 
 	@Environment(EnvType.CLIENT)
-	private void addStructure(String id) {
+	private void addStructure(String string) {
 		Map<String, String> map = Maps.<String, String>newHashMap();
-		this.structures.put(id, map);
+		this.structures.put(string, map);
 	}
 
 	@Environment(EnvType.CLIENT)
@@ -468,11 +474,11 @@ public class FlatChunkGeneratorConfig extends ChunkGeneratorConfig {
 	}
 
 	public static FlatChunkGeneratorConfig getDefaultConfig() {
-		FlatChunkGeneratorConfig flatChunkGeneratorConfig = ChunkGeneratorType.FLAT.createSettings();
-		flatChunkGeneratorConfig.setBiome(Biomes.PLAINS);
-		flatChunkGeneratorConfig.getLayers().add(new FlatChunkGeneratorLayer(1, Blocks.BEDROCK));
-		flatChunkGeneratorConfig.getLayers().add(new FlatChunkGeneratorLayer(2, Blocks.DIRT));
-		flatChunkGeneratorConfig.getLayers().add(new FlatChunkGeneratorLayer(1, Blocks.GRASS_BLOCK));
+		FlatChunkGeneratorConfig flatChunkGeneratorConfig = ChunkGeneratorType.field_12766.createSettings();
+		flatChunkGeneratorConfig.setBiome(Biomes.field_9451);
+		flatChunkGeneratorConfig.getLayers().add(new FlatChunkGeneratorLayer(1, Blocks.field_9987));
+		flatChunkGeneratorConfig.getLayers().add(new FlatChunkGeneratorLayer(2, Blocks.field_10566));
+		flatChunkGeneratorConfig.getLayers().add(new FlatChunkGeneratorLayer(1, Blocks.field_10219));
 		flatChunkGeneratorConfig.updateLayerBlocks();
 		flatChunkGeneratorConfig.getStructures().put("village", Maps.newHashMap());
 		return flatChunkGeneratorConfig;

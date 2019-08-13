@@ -10,12 +10,12 @@ import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.Lazy;
 
 public enum ArmorMaterials implements ArmorMaterial {
-	LEATHER("leather", 5, new int[]{1, 2, 3, 1}, 15, SoundEvents.ITEM_ARMOR_EQUIP_LEATHER, 0.0F, () -> Ingredient.ofItems(Items.LEATHER)),
-	CHAIN("chainmail", 15, new int[]{1, 4, 5, 2}, 12, SoundEvents.ITEM_ARMOR_EQUIP_CHAIN, 0.0F, () -> Ingredient.ofItems(Items.IRON_INGOT)),
-	IRON("iron", 15, new int[]{2, 5, 6, 2}, 9, SoundEvents.ITEM_ARMOR_EQUIP_IRON, 0.0F, () -> Ingredient.ofItems(Items.IRON_INGOT)),
-	GOLD("gold", 7, new int[]{1, 3, 5, 2}, 25, SoundEvents.ITEM_ARMOR_EQUIP_GOLD, 0.0F, () -> Ingredient.ofItems(Items.GOLD_INGOT)),
-	DIAMOND("diamond", 33, new int[]{3, 6, 8, 3}, 10, SoundEvents.ITEM_ARMOR_EQUIP_DIAMOND, 2.0F, () -> Ingredient.ofItems(Items.DIAMOND)),
-	TURTLE("turtle", 25, new int[]{2, 5, 6, 2}, 9, SoundEvents.ITEM_ARMOR_EQUIP_TURTLE, 0.0F, () -> Ingredient.ofItems(Items.SCUTE));
+	field_7897("leather", 5, new int[]{1, 2, 3, 1}, 15, SoundEvents.field_14581, 0.0F, () -> Ingredient.ofItems(Items.field_8745)),
+	CHAIN("chainmail", 15, new int[]{1, 4, 5, 2}, 12, SoundEvents.field_15191, 0.0F, () -> Ingredient.ofItems(Items.field_8620)),
+	field_7892("iron", 15, new int[]{2, 5, 6, 2}, 9, SoundEvents.field_14862, 0.0F, () -> Ingredient.ofItems(Items.field_8620)),
+	field_7895("gold", 7, new int[]{1, 3, 5, 2}, 25, SoundEvents.field_14761, 0.0F, () -> Ingredient.ofItems(Items.field_8695)),
+	field_7889("diamond", 33, new int[]{3, 6, 8, 3}, 10, SoundEvents.field_15103, 2.0F, () -> Ingredient.ofItems(Items.field_8477)),
+	field_7890("turtle", 25, new int[]{2, 5, 6, 2}, 9, SoundEvents.field_14684, 0.0F, () -> Ingredient.ofItems(Items.field_8161));
 
 	private static final int[] BASE_DURABILITY = new int[]{13, 15, 16, 11};
 	private final String name;
@@ -26,32 +26,24 @@ public enum ArmorMaterials implements ArmorMaterial {
 	private final float toughness;
 	private final Lazy<Ingredient> repairIngredientSupplier;
 
-	private ArmorMaterials(
-		String name,
-		int durabilityMultiplier,
-		int[] protectionAmounts,
-		int enchantability,
-		SoundEvent equipSound,
-		float toughness,
-		Supplier<Ingredient> ingredientSupplier
-	) {
-		this.name = name;
-		this.durabilityMultiplier = durabilityMultiplier;
-		this.protectionAmounts = protectionAmounts;
-		this.enchantability = enchantability;
-		this.equipSound = equipSound;
-		this.toughness = toughness;
-		this.repairIngredientSupplier = new Lazy<>(ingredientSupplier);
+	private ArmorMaterials(String string2, int j, int[] is, int k, SoundEvent soundEvent, float f, Supplier<Ingredient> supplier) {
+		this.name = string2;
+		this.durabilityMultiplier = j;
+		this.protectionAmounts = is;
+		this.enchantability = k;
+		this.equipSound = soundEvent;
+		this.toughness = f;
+		this.repairIngredientSupplier = new Lazy<>(supplier);
 	}
 
 	@Override
-	public int getDurability(EquipmentSlot slot) {
-		return BASE_DURABILITY[slot.getEntitySlotId()] * this.durabilityMultiplier;
+	public int getDurability(EquipmentSlot equipmentSlot) {
+		return BASE_DURABILITY[equipmentSlot.getEntitySlotId()] * this.durabilityMultiplier;
 	}
 
 	@Override
-	public int getProtectionAmount(EquipmentSlot slot) {
-		return this.protectionAmounts[slot.getEntitySlotId()];
+	public int getProtectionAmount(EquipmentSlot equipmentSlot) {
+		return this.protectionAmounts[equipmentSlot.getEntitySlotId()];
 	}
 
 	@Override

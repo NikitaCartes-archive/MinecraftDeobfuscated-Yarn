@@ -6,5 +6,5 @@ import net.fabricmc.api.Environment;
 
 @Environment(EnvType.CLIENT)
 public interface Searchable<T> {
-	List<T> findAll(String text);
+	List<T> findAll(String string);
 }

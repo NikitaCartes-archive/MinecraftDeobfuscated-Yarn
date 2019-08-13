@@ -26,54 +26,58 @@ public class ChanneledLightningCriterion implements Criterion<ChanneledLightning
 	}
 
 	@Override
-	public void beginTrackingCondition(PlayerAdvancementTracker manager, Criterion.ConditionsContainer<ChanneledLightningCriterion.Conditions> conditionsContainer) {
-		ChanneledLightningCriterion.Handler handler = (ChanneledLightningCriterion.Handler)this.handlers.get(manager);
+	public void beginTrackingCondition(
+		PlayerAdvancementTracker playerAdvancementTracker, Criterion.ConditionsContainer<ChanneledLightningCriterion.Conditions> conditionsContainer
+	) {
+		ChanneledLightningCriterion.Handler handler = (ChanneledLightningCriterion.Handler)this.handlers.get(playerAdvancementTracker);
 		if (handler == null) {
-			handler = new ChanneledLightningCriterion.Handler(manager);
-			this.handlers.put(manager, handler);
+			handler = new ChanneledLightningCriterion.Handler(playerAdvancementTracker);
+			this.handlers.put(playerAdvancementTracker, handler);
 		}
 
 		handler.addCondition(conditionsContainer);
 	}
 
 	@Override
-	public void endTrackingCondition(PlayerAdvancementTracker manager, Criterion.ConditionsContainer<ChanneledLightningCriterion.Conditions> conditionsContainer) {
-		ChanneledLightningCriterion.Handler handler = (ChanneledLightningCriterion.Handler)this.handlers.get(manager);
+	public void endTrackingCondition(
+		PlayerAdvancementTracker playerAdvancementTracker, Criterion.ConditionsContainer<ChanneledLightningCriterion.Conditions> conditionsContainer
+	) {
+		ChanneledLightningCriterion.Handler handler = (ChanneledLightningCriterion.Handler)this.handlers.get(playerAdvancementTracker);
 		if (handler != null) {
 			handler.removeCondition(conditionsContainer);
 			if (handler.isEmpty()) {
-				this.handlers.remove(manager);
+				this.handlers.remove(playerAdvancementTracker);
 			}
 		}
 	}
 
 	@Override
-	public void endTracking(PlayerAdvancementTracker tracker) {
-		this.handlers.remove(tracker);
+	public void endTracking(PlayerAdvancementTracker playerAdvancementTracker) {
+		this.handlers.remove(playerAdvancementTracker);
 	}
 
-	public ChanneledLightningCriterion.Conditions conditionsFromJson(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext) {
-		EntityPredicate[] entityPredicates = EntityPredicate.fromJsonArray(jsonObject.get("victims"));
+	public ChanneledLightningCriterion.Conditions method_8801(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext) {
+		EntityPredicate[] entityPredicates = EntityPredicate.deserializeAll(jsonObject.get("victims"));
 		return new ChanneledLightningCriterion.Conditions(entityPredicates);
 	}
 
-	public void trigger(ServerPlayerEntity player, Collection<? extends Entity> victims) {
-		ChanneledLightningCriterion.Handler handler = (ChanneledLightningCriterion.Handler)this.handlers.get(player.getAdvancementTracker());
+	public void handle(ServerPlayerEntity serverPlayerEntity, Collection<? extends Entity> collection) {
+		ChanneledLightningCriterion.Handler handler = (ChanneledLightningCriterion.Handler)this.handlers.get(serverPlayerEntity.getAdvancementManager());
 		if (handler != null) {
-			handler.handle(player, victims);
+			handler.handle(serverPlayerEntity, collection);
 		}
 	}
 
 	public static class Conditions extends AbstractCriterionConditions {
 		private final EntityPredicate[] victims;
 
-		public Conditions(EntityPredicate[] victims) {
+		public Conditions(EntityPredicate[] entityPredicates) {
 			super(ChanneledLightningCriterion.ID);
-			this.victims = victims;
+			this.victims = entityPredicates;
 		}
 
-		public static ChanneledLightningCriterion.Conditions create(EntityPredicate... victims) {
-			return new ChanneledLightningCriterion.Conditions(victims);
+		public static ChanneledLightningCriterion.Conditions create(EntityPredicate... entityPredicates) {
+			return new ChanneledLightningCriterion.Conditions(entityPredicates);
 		}
 
 		public boolean matches(ServerPlayerEntity serverPlayerEntity, Collection<? extends Entity> collection) {
@@ -107,8 +111,8 @@ public class ChanneledLightningCriterion implements Criterion<ChanneledLightning
 		private final PlayerAdvancementTracker manager;
 		private final Set<Criterion.ConditionsContainer<ChanneledLightningCriterion.Conditions>> conditions = Sets.<Criterion.ConditionsContainer<ChanneledLightningCriterion.Conditions>>newHashSet();
 
-		public Handler(PlayerAdvancementTracker manager) {
-			this.manager = manager;
+		public Handler(PlayerAdvancementTracker playerAdvancementTracker) {
+			this.manager = playerAdvancementTracker;
 		}
 
 		public boolean isEmpty() {

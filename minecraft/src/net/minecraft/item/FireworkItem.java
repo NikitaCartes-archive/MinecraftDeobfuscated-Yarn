@@ -28,59 +28,62 @@ public class FireworkItem extends Item {
 	}
 
 	@Override
-	public ActionResult useOnBlock(ItemUsageContext context) {
-		World world = context.getWorld();
+	public ActionResult useOnBlock(ItemUsageContext itemUsageContext) {
+		World world = itemUsageContext.getWorld();
 		if (!world.isClient) {
-			ItemStack itemStack = context.getStack();
-			Vec3d vec3d = context.getHitPos();
+			ItemStack itemStack = itemUsageContext.getStack();
+			Vec3d vec3d = itemUsageContext.getHitPos();
 			FireworkEntity fireworkEntity = new FireworkEntity(world, vec3d.x, vec3d.y, vec3d.z, itemStack);
 			world.spawnEntity(fireworkEntity);
 			itemStack.decrement(1);
 		}
 
-		return ActionResult.SUCCESS;
+		return ActionResult.field_5812;
 	}
 
 	@Override
-	public TypedActionResult<ItemStack> use(World world, PlayerEntity user, Hand hand) {
-		if (user.isFallFlying()) {
-			ItemStack itemStack = user.getStackInHand(hand);
+	public TypedActionResult<ItemStack> use(World world, PlayerEntity playerEntity, Hand hand) {
+		if (playerEntity.isFallFlying()) {
+			ItemStack itemStack = playerEntity.getStackInHand(hand);
 			if (!world.isClient) {
-				world.spawnEntity(new FireworkEntity(world, itemStack, user));
-				if (!user.abilities.creativeMode) {
+				world.spawnEntity(new FireworkEntity(world, itemStack, playerEntity));
+				if (!playerEntity.abilities.creativeMode) {
 					itemStack.decrement(1);
 				}
 			}
 
-			return new TypedActionResult<>(ActionResult.SUCCESS, user.getStackInHand(hand));
+			return new TypedActionResult<>(ActionResult.field_5812, playerEntity.getStackInHand(hand));
 		} else {
-			return new TypedActionResult<>(ActionResult.PASS, user.getStackInHand(hand));
+			return new TypedActionResult<>(ActionResult.field_5811, playerEntity.getStackInHand(hand));
 		}
 	}
 
 	@Environment(EnvType.CLIENT)
 	@Override
-	public void appendTooltip(ItemStack stack, @Nullable World world, List<Text> tooltip, TooltipContext context) {
-		CompoundTag compoundTag = stack.getSubTag("Fireworks");
+	public void appendTooltip(ItemStack itemStack, @Nullable World world, List<Text> list, TooltipContext tooltipContext) {
+		CompoundTag compoundTag = itemStack.getSubTag("Fireworks");
 		if (compoundTag != null) {
-			if (compoundTag.contains("Flight", 99)) {
-				tooltip.add(
-					new TranslatableText("item.minecraft.firework_rocket.flight").append(" ").append(String.valueOf(compoundTag.getByte("Flight"))).formatted(Formatting.GRAY)
+			if (compoundTag.containsKey("Flight", 99)) {
+				list.add(
+					new TranslatableText("item.minecraft.firework_rocket.flight")
+						.append(" ")
+						.append(String.valueOf(compoundTag.getByte("Flight")))
+						.formatted(Formatting.field_1080)
 				);
 			}
 
 			ListTag listTag = compoundTag.getList("Explosions", 10);
 			if (!listTag.isEmpty()) {
 				for (int i = 0; i < listTag.size(); i++) {
-					CompoundTag compoundTag2 = listTag.getCompound(i);
-					List<Text> list = Lists.<Text>newArrayList();
-					FireworkChargeItem.appendFireworkTooltip(compoundTag2, list);
-					if (!list.isEmpty()) {
-						for (int j = 1; j < list.size(); j++) {
-							list.set(j, new LiteralText("  ").append((Text)list.get(j)).formatted(Formatting.GRAY));
+					CompoundTag compoundTag2 = listTag.getCompoundTag(i);
+					List<Text> list2 = Lists.<Text>newArrayList();
+					FireworkChargeItem.appendFireworkTooltip(compoundTag2, list2);
+					if (!list2.isEmpty()) {
+						for (int j = 1; j < list2.size(); j++) {
+							list2.set(j, new LiteralText("  ").append((Text)list2.get(j)).formatted(Formatting.field_1080));
 						}
 
-						tooltip.addAll(list);
+						list.addAll(list2);
 					}
 				}
 			}
@@ -88,11 +91,11 @@ public class FireworkItem extends Item {
 	}
 
 	public static enum Type {
-		SMALL_BALL(0, "small_ball"),
-		LARGE_BALL(1, "large_ball"),
-		STAR(2, "star"),
-		CREEPER(3, "creeper"),
-		BURST(4, "burst");
+		field_7976(0, "small_ball"),
+		field_7977(1, "large_ball"),
+		field_7973(2, "star"),
+		field_7974(3, "creeper"),
+		field_7970(4, "burst");
 
 		private static final FireworkItem.Type[] TYPES = (FireworkItem.Type[])Arrays.stream(values())
 			.sorted(Comparator.comparingInt(type -> type.id))
@@ -100,9 +103,9 @@ public class FireworkItem extends Item {
 		private final int id;
 		private final String name;
 
-		private Type(int id, String name) {
-			this.id = id;
-			this.name = name;
+		private Type(int j, String string2) {
+			this.id = j;
+			this.name = string2;
 		}
 
 		public int getId() {
@@ -115,8 +118,8 @@ public class FireworkItem extends Item {
 		}
 
 		@Environment(EnvType.CLIENT)
-		public static FireworkItem.Type byId(int id) {
-			return id >= 0 && id < TYPES.length ? TYPES[id] : SMALL_BALL;
+		public static FireworkItem.Type byId(int i) {
+			return i >= 0 && i < TYPES.length ? TYPES[i] : field_7976;
 		}
 	}
 }

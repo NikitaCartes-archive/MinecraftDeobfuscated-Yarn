@@ -10,11 +10,11 @@ import net.minecraft.world.gen.chunk.ChunkGenerator;
 import net.minecraft.world.gen.chunk.ChunkGeneratorConfig;
 
 public class CactusFeature extends Feature<DefaultFeatureConfig> {
-	public CactusFeature(Function<Dynamic<?>, ? extends DefaultFeatureConfig> configFactory) {
-		super(configFactory);
+	public CactusFeature(Function<Dynamic<?>, ? extends DefaultFeatureConfig> function) {
+		super(function);
 	}
 
-	public boolean generate(
+	public boolean method_12853(
 		IWorld iWorld, ChunkGenerator<? extends ChunkGeneratorConfig> chunkGenerator, Random random, BlockPos blockPos, DefaultFeatureConfig defaultFeatureConfig
 	) {
 		for (int i = 0; i < 10; i++) {
@@ -23,8 +23,8 @@ public class CactusFeature extends Feature<DefaultFeatureConfig> {
 				int j = 1 + random.nextInt(random.nextInt(3) + 1);
 
 				for (int k = 0; k < j; k++) {
-					if (Blocks.CACTUS.getDefaultState().canPlaceAt(iWorld, blockPos2)) {
-						iWorld.setBlockState(blockPos2.up(k), Blocks.CACTUS.getDefaultState(), 2);
+					if (Blocks.field_10029.getDefaultState().canPlaceAt(iWorld, blockPos2)) {
+						iWorld.setBlockState(blockPos2.up(k), Blocks.field_10029.getDefaultState(), 2);
 					}
 				}
 			}

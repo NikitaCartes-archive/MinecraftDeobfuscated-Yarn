@@ -14,21 +14,21 @@ import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.CollisionView;
 import net.minecraft.world.Difficulty;
 import net.minecraft.world.IWorld;
 import net.minecraft.world.LightType;
+import net.minecraft.world.ViewableWorld;
 import net.minecraft.world.World;
 
 public abstract class HostileEntity extends MobEntityWithAi implements Monster {
-	protected HostileEntity(EntityType<? extends HostileEntity> type, World world) {
-		super(type, world);
+	protected HostileEntity(EntityType<? extends HostileEntity> entityType, World world) {
+		super(entityType, world);
 		this.experiencePoints = 5;
 	}
 
 	@Override
 	public SoundCategory getSoundCategory() {
-		return SoundCategory.HOSTILE;
+		return SoundCategory.field_15251;
 	}
 
 	@Override
@@ -48,48 +48,48 @@ public abstract class HostileEntity extends MobEntityWithAi implements Monster {
 	@Override
 	public void tick() {
 		super.tick();
-		if (!this.world.isClient && this.world.getDifficulty() == Difficulty.PEACEFUL) {
+		if (!this.world.isClient && this.world.getDifficulty() == Difficulty.field_5801) {
 			this.remove();
 		}
 	}
 
 	@Override
 	protected SoundEvent getSwimSound() {
-		return SoundEvents.ENTITY_HOSTILE_SWIM;
+		return SoundEvents.field_14630;
 	}
 
 	@Override
 	protected SoundEvent getSplashSound() {
-		return SoundEvents.ENTITY_HOSTILE_SPLASH;
+		return SoundEvents.field_14836;
 	}
 
 	@Override
-	public boolean damage(DamageSource source, float amount) {
-		return this.isInvulnerableTo(source) ? false : super.damage(source, amount);
+	public boolean damage(DamageSource damageSource, float f) {
+		return this.isInvulnerableTo(damageSource) ? false : super.damage(damageSource, f);
 	}
 
 	@Override
-	protected SoundEvent getHurtSound(DamageSource source) {
-		return SoundEvents.ENTITY_HOSTILE_HURT;
+	protected SoundEvent getHurtSound(DamageSource damageSource) {
+		return SoundEvents.field_14994;
 	}
 
 	@Override
 	protected SoundEvent getDeathSound() {
-		return SoundEvents.ENTITY_HOSTILE_DEATH;
+		return SoundEvents.field_14899;
 	}
 
 	@Override
-	protected SoundEvent getFallSound(int distance) {
-		return distance > 4 ? SoundEvents.ENTITY_HOSTILE_BIG_FALL : SoundEvents.ENTITY_HOSTILE_SMALL_FALL;
+	protected SoundEvent getFallSound(int i) {
+		return i > 4 ? SoundEvents.field_15157 : SoundEvents.field_14754;
 	}
 
 	@Override
-	public float getPathfindingFavor(BlockPos pos, CollisionView world) {
-		return 0.5F - world.getBrightness(pos);
+	public float getPathfindingFavor(BlockPos blockPos, ViewableWorld viewableWorld) {
+		return 0.5F - viewableWorld.getBrightness(blockPos);
 	}
 
 	public static boolean method_20679(IWorld iWorld, BlockPos blockPos, Random random) {
-		if (iWorld.getLightLevel(LightType.SKY, blockPos) > random.nextInt(32)) {
+		if (iWorld.getLightLevel(LightType.field_9284, blockPos) > random.nextInt(32)) {
 			return false;
 		} else {
 			int i = iWorld.getWorld().isThundering() ? iWorld.method_8603(blockPos, 10) : iWorld.getLightLevel(blockPos);
@@ -98,19 +98,19 @@ public abstract class HostileEntity extends MobEntityWithAi implements Monster {
 	}
 
 	public static boolean method_20680(EntityType<? extends HostileEntity> entityType, IWorld iWorld, SpawnType spawnType, BlockPos blockPos, Random random) {
-		return iWorld.getDifficulty() != Difficulty.PEACEFUL
+		return iWorld.getDifficulty() != Difficulty.field_5801
 			&& method_20679(iWorld, blockPos, random)
 			&& method_20636(entityType, iWorld, spawnType, blockPos, random);
 	}
 
 	public static boolean method_20681(EntityType<? extends HostileEntity> entityType, IWorld iWorld, SpawnType spawnType, BlockPos blockPos, Random random) {
-		return iWorld.getDifficulty() != Difficulty.PEACEFUL && method_20636(entityType, iWorld, spawnType, blockPos, random);
+		return iWorld.getDifficulty() != Difficulty.field_5801 && method_20636(entityType, iWorld, spawnType, blockPos, random);
 	}
 
 	@Override
 	protected void initAttributes() {
 		super.initAttributes();
-		this.getAttributes().register(EntityAttributes.ATTACK_DAMAGE);
+		this.getAttributeContainer().register(EntityAttributes.ATTACK_DAMAGE);
 	}
 
 	@Override
@@ -118,7 +118,7 @@ public abstract class HostileEntity extends MobEntityWithAi implements Monster {
 		return true;
 	}
 
-	public boolean isAngryAt(PlayerEntity player) {
+	public boolean isAngryAt(PlayerEntity playerEntity) {
 		return true;
 	}
 
@@ -127,7 +127,7 @@ public abstract class HostileEntity extends MobEntityWithAi implements Monster {
 		if (itemStack.getItem() instanceof RangedWeaponItem) {
 			Predicate<ItemStack> predicate = ((RangedWeaponItem)itemStack.getItem()).getHeldProjectiles();
 			ItemStack itemStack2 = RangedWeaponItem.getHeldProjectile(this, predicate);
-			return itemStack2.isEmpty() ? new ItemStack(Items.ARROW) : itemStack2;
+			return itemStack2.isEmpty() ? new ItemStack(Items.field_8107) : itemStack2;
 		} else {
 			return ItemStack.EMPTY;
 		}

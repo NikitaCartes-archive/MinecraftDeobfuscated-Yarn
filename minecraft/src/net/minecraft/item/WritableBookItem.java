@@ -20,32 +20,32 @@ public class WritableBookItem extends Item {
 	}
 
 	@Override
-	public ActionResult useOnBlock(ItemUsageContext context) {
-		World world = context.getWorld();
-		BlockPos blockPos = context.getBlockPos();
+	public ActionResult useOnBlock(ItemUsageContext itemUsageContext) {
+		World world = itemUsageContext.getWorld();
+		BlockPos blockPos = itemUsageContext.getBlockPos();
 		BlockState blockState = world.getBlockState(blockPos);
-		if (blockState.getBlock() == Blocks.LECTERN) {
-			return LecternBlock.putBookIfAbsent(world, blockPos, blockState, context.getStack()) ? ActionResult.SUCCESS : ActionResult.PASS;
+		if (blockState.getBlock() == Blocks.field_16330) {
+			return LecternBlock.putBookIfAbsent(world, blockPos, blockState, itemUsageContext.getStack()) ? ActionResult.field_5812 : ActionResult.field_5811;
 		} else {
-			return ActionResult.PASS;
+			return ActionResult.field_5811;
 		}
 	}
 
 	@Override
-	public TypedActionResult<ItemStack> use(World world, PlayerEntity user, Hand hand) {
-		ItemStack itemStack = user.getStackInHand(hand);
-		user.openEditBookScreen(itemStack, hand);
-		user.incrementStat(Stats.USED.getOrCreateStat(this));
-		return new TypedActionResult<>(ActionResult.SUCCESS, itemStack);
+	public TypedActionResult<ItemStack> use(World world, PlayerEntity playerEntity, Hand hand) {
+		ItemStack itemStack = playerEntity.getStackInHand(hand);
+		playerEntity.openEditBookScreen(itemStack, hand);
+		playerEntity.incrementStat(Stats.field_15372.getOrCreateStat(this));
+		return new TypedActionResult<>(ActionResult.field_5812, itemStack);
 	}
 
-	public static boolean isValid(@Nullable CompoundTag tag) {
-		if (tag == null) {
+	public static boolean isValid(@Nullable CompoundTag compoundTag) {
+		if (compoundTag == null) {
 			return false;
-		} else if (!tag.contains("pages", 9)) {
+		} else if (!compoundTag.containsKey("pages", 9)) {
 			return false;
 		} else {
-			ListTag listTag = tag.getList("pages", 8);
+			ListTag listTag = compoundTag.getList("pages", 8);
 
 			for (int i = 0; i < listTag.size(); i++) {
 				String string = listTag.getString(i);

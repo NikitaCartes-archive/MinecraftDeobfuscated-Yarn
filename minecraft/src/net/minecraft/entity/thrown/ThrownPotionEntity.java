@@ -53,11 +53,11 @@ public class ThrownPotionEntity extends ThrownEntity implements FlyingItemEntity
 	}
 
 	public ThrownPotionEntity(World world, LivingEntity livingEntity) {
-		super(EntityType.POTION, livingEntity, world);
+		super(EntityType.field_6045, livingEntity, world);
 	}
 
-	public ThrownPotionEntity(World world, double x, double y, double d) {
-		super(EntityType.POTION, x, y, d, world);
+	public ThrownPotionEntity(World world, double d, double e, double f) {
+		super(EntityType.field_6045, d, e, f, world);
 	}
 
 	@Override
@@ -68,12 +68,12 @@ public class ThrownPotionEntity extends ThrownEntity implements FlyingItemEntity
 	@Override
 	public ItemStack getStack() {
 		ItemStack itemStack = this.getDataTracker().get(ITEM_STACK);
-		if (itemStack.getItem() != Items.SPLASH_POTION && itemStack.getItem() != Items.LINGERING_POTION) {
+		if (itemStack.getItem() != Items.field_8436 && itemStack.getItem() != Items.field_8150) {
 			if (this.world != null) {
 				LOGGER.error("ThrownPotion entity {} has no item?!", this.getEntityId());
 			}
 
-			return new ItemStack(Items.SPLASH_POTION);
+			return new ItemStack(Items.field_8436);
 		} else {
 			return itemStack;
 		}
@@ -94,15 +94,15 @@ public class ThrownPotionEntity extends ThrownEntity implements FlyingItemEntity
 			ItemStack itemStack = this.getStack();
 			Potion potion = PotionUtil.getPotion(itemStack);
 			List<StatusEffectInstance> list = PotionUtil.getPotionEffects(itemStack);
-			boolean bl = potion == Potions.WATER && list.isEmpty();
-			if (hitResult.getType() == HitResult.Type.BLOCK && bl) {
+			boolean bl = potion == Potions.field_8991 && list.isEmpty();
+			if (hitResult.getType() == HitResult.Type.field_1332 && bl) {
 				BlockHitResult blockHitResult = (BlockHitResult)hitResult;
 				Direction direction = blockHitResult.getSide();
 				BlockPos blockPos = blockHitResult.getBlockPos().offset(direction);
 				this.extinguishFire(blockPos, direction);
 				this.extinguishFire(blockPos.offset(direction.getOpposite()), direction);
 
-				for (Direction direction2 : Direction.Type.HORIZONTAL) {
+				for (Direction direction2 : Direction.Type.field_11062) {
 					this.extinguishFire(blockPos.offset(direction2), direction2);
 				}
 			}
@@ -113,7 +113,7 @@ public class ThrownPotionEntity extends ThrownEntity implements FlyingItemEntity
 				if (this.isLingering()) {
 					this.applyLingeringPotion(itemStack, potion);
 				} else {
-					this.applySplashPotion(list, hitResult.getType() == HitResult.Type.ENTITY ? ((EntityHitResult)hitResult).getEntity() : null);
+					this.applySplashPotion(list, hitResult.getType() == HitResult.Type.field_1331 ? ((EntityHitResult)hitResult).getEntity() : null);
 				}
 			}
 
@@ -138,7 +138,7 @@ public class ThrownPotionEntity extends ThrownEntity implements FlyingItemEntity
 
 	private void applySplashPotion(List<StatusEffectInstance> list, @Nullable Entity entity) {
 		Box box = this.getBoundingBox().expand(4.0, 2.0, 4.0);
-		List<LivingEntity> list2 = this.world.getNonSpectatingEntities(LivingEntity.class, box);
+		List<LivingEntity> list2 = this.world.getEntities(LivingEntity.class, box);
 		if (!list2.isEmpty()) {
 			for (LivingEntity livingEntity : list2) {
 				if (livingEntity.isAffectedBySplashPotions()) {
@@ -156,7 +156,7 @@ public class ThrownPotionEntity extends ThrownEntity implements FlyingItemEntity
 							} else {
 								int i = (int)(e * (double)statusEffectInstance.getDuration() + 0.5);
 								if (i > 20) {
-									livingEntity.addStatusEffect(
+									livingEntity.addPotionEffect(
 										new StatusEffectInstance(
 											statusEffect, i, statusEffectInstance.getAmplifier(), statusEffectInstance.isAmbient(), statusEffectInstance.shouldShowParticles()
 										)
@@ -184,7 +184,7 @@ public class ThrownPotionEntity extends ThrownEntity implements FlyingItemEntity
 		}
 
 		CompoundTag compoundTag = itemStack.getTag();
-		if (compoundTag != null && compoundTag.contains("CustomPotionColor", 99)) {
+		if (compoundTag != null && compoundTag.containsKey("CustomPotionColor", 99)) {
 			areaEffectCloudEntity.setColor(compoundTag.getInt("CustomPotionColor"));
 		}
 
@@ -192,24 +192,24 @@ public class ThrownPotionEntity extends ThrownEntity implements FlyingItemEntity
 	}
 
 	private boolean isLingering() {
-		return this.getStack().getItem() == Items.LINGERING_POTION;
+		return this.getStack().getItem() == Items.field_8150;
 	}
 
 	private void extinguishFire(BlockPos blockPos, Direction direction) {
 		BlockState blockState = this.world.getBlockState(blockPos);
 		Block block = blockState.getBlock();
-		if (block == Blocks.FIRE) {
+		if (block == Blocks.field_10036) {
 			this.world.method_8506(null, blockPos.offset(direction), direction.getOpposite());
-		} else if (block == Blocks.CAMPFIRE && (Boolean)blockState.get(CampfireBlock.LIT)) {
+		} else if (block == Blocks.field_17350 && (Boolean)blockState.get(CampfireBlock.LIT)) {
 			this.world.playLevelEvent(null, 1009, blockPos, 0);
 			this.world.setBlockState(blockPos, blockState.with(CampfireBlock.LIT, Boolean.valueOf(false)));
 		}
 	}
 
 	@Override
-	public void readCustomDataFromTag(CompoundTag tag) {
-		super.readCustomDataFromTag(tag);
-		ItemStack itemStack = ItemStack.fromTag(tag.getCompound("Potion"));
+	public void readCustomDataFromTag(CompoundTag compoundTag) {
+		super.readCustomDataFromTag(compoundTag);
+		ItemStack itemStack = ItemStack.fromTag(compoundTag.getCompound("Potion"));
 		if (itemStack.isEmpty()) {
 			this.remove();
 		} else {
@@ -218,15 +218,15 @@ public class ThrownPotionEntity extends ThrownEntity implements FlyingItemEntity
 	}
 
 	@Override
-	public void writeCustomDataToTag(CompoundTag tag) {
-		super.writeCustomDataToTag(tag);
+	public void writeCustomDataToTag(CompoundTag compoundTag) {
+		super.writeCustomDataToTag(compoundTag);
 		ItemStack itemStack = this.getStack();
 		if (!itemStack.isEmpty()) {
-			tag.put("Potion", itemStack.toTag(new CompoundTag()));
+			compoundTag.put("Potion", itemStack.toTag(new CompoundTag()));
 		}
 	}
 
-	private static boolean doesWaterHurt(LivingEntity entityHit) {
-		return entityHit instanceof EndermanEntity || entityHit instanceof BlazeEntity;
+	private static boolean doesWaterHurt(LivingEntity livingEntity) {
+		return livingEntity instanceof EndermanEntity || livingEntity instanceof BlazeEntity;
 	}
 }

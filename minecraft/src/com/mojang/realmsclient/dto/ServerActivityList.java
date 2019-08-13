@@ -14,12 +14,12 @@ public class ServerActivityList extends ValueObject {
 	public long periodInMillis;
 	public List<ServerActivity> serverActivities = new ArrayList();
 
-	public static ServerActivityList parse(String json) {
+	public static ServerActivityList parse(String string) {
 		ServerActivityList serverActivityList = new ServerActivityList();
 		JsonParser jsonParser = new JsonParser();
 
 		try {
-			JsonElement jsonElement = jsonParser.parse(json);
+			JsonElement jsonElement = jsonParser.parse(string);
 			JsonObject jsonObject = jsonElement.getAsJsonObject();
 			serverActivityList.periodInMillis = JsonUtils.getLongOr("periodInMillis", jsonObject, -1L);
 			JsonElement jsonElement2 = jsonObject.get("playerActivityDto");

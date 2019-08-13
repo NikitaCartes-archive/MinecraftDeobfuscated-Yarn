@@ -7,7 +7,7 @@ import java.util.stream.IntStream;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.client.render.DiffuseLighting;
+import net.minecraft.client.render.GuiLighting;
 import net.minecraft.client.util.Untracker;
 import net.minecraft.client.util.math.Matrix4f;
 import org.lwjgl.opengl.GL;
@@ -67,11 +67,11 @@ public class GlStateManager {
 		ALPHA_TEST.capState.enable();
 	}
 
-	public static void alphaFunc(int func, float ref) {
-		if (func != ALPHA_TEST.func || ref != ALPHA_TEST.ref) {
-			ALPHA_TEST.func = func;
-			ALPHA_TEST.ref = ref;
-			GL11.glAlphaFunc(func, ref);
+	public static void alphaFunc(int i, float f) {
+		if (i != ALPHA_TEST.func || f != ALPHA_TEST.ref) {
+			ALPHA_TEST.func = i;
+			ALPHA_TEST.ref = f;
+			GL11.glAlphaFunc(i, f);
 		}
 	}
 
@@ -99,24 +99,24 @@ public class GlStateManager {
 		COLOR_MATERIAL.capState.disable();
 	}
 
-	public static void colorMaterial(int face, int mode) {
-		if (face != COLOR_MATERIAL.face || mode != COLOR_MATERIAL.mode) {
-			COLOR_MATERIAL.face = face;
-			COLOR_MATERIAL.mode = mode;
-			GL11.glColorMaterial(face, mode);
+	public static void colorMaterial(int i, int j) {
+		if (i != COLOR_MATERIAL.face || j != COLOR_MATERIAL.mode) {
+			COLOR_MATERIAL.face = i;
+			COLOR_MATERIAL.mode = j;
+			GL11.glColorMaterial(i, j);
 		}
 	}
 
-	public static void light(int light, int pname, FloatBuffer params) {
-		GL11.glLightfv(light, pname, params);
+	public static void light(int i, int j, FloatBuffer floatBuffer) {
+		GL11.glLightfv(i, j, floatBuffer);
 	}
 
-	public static void lightModel(int pname, FloatBuffer params) {
-		GL11.glLightModelfv(pname, params);
+	public static void lightModel(int i, FloatBuffer floatBuffer) {
+		GL11.glLightModelfv(i, floatBuffer);
 	}
 
-	public static void normal3f(float nx, float ny, float nz) {
-		GL11.glNormal3f(nx, ny, nz);
+	public static void normal3f(float f, float g, float h) {
+		GL11.glNormal3f(f, g, h);
 	}
 
 	public static void disableDepthTest() {
@@ -127,17 +127,17 @@ public class GlStateManager {
 		DEPTH.capState.enable();
 	}
 
-	public static void depthFunc(int func) {
-		if (func != DEPTH.func) {
-			DEPTH.func = func;
-			GL11.glDepthFunc(func);
+	public static void depthFunc(int i) {
+		if (i != DEPTH.func) {
+			DEPTH.func = i;
+			GL11.glDepthFunc(i);
 		}
 	}
 
-	public static void depthMask(boolean mask) {
-		if (mask != DEPTH.mask) {
-			DEPTH.mask = mask;
-			GL11.glDepthMask(mask);
+	public static void depthMask(boolean bl) {
+		if (bl != DEPTH.mask) {
+			DEPTH.mask = bl;
+			GL11.glDepthMask(bl);
 		}
 	}
 
@@ -153,11 +153,11 @@ public class GlStateManager {
 		blendFunc(sourceFactor.value, destFactor.value);
 	}
 
-	public static void blendFunc(int sfactor, int dfactor) {
-		if (sfactor != BLEND.sfactor || dfactor != BLEND.dfactor) {
-			BLEND.sfactor = sfactor;
-			BLEND.dfactor = dfactor;
-			GL11.glBlendFunc(sfactor, dfactor);
+	public static void blendFunc(int i, int j) {
+		if (i != BLEND.sfactor || j != BLEND.dfactor) {
+			BLEND.sfactor = i;
+			BLEND.dfactor = j;
+			GL11.glBlendFunc(i, j);
 		}
 	}
 
@@ -170,25 +170,25 @@ public class GlStateManager {
 		blendFuncSeparate(sourceFactor.value, destFactor.value, sourceFactor2.value, destFactor2.value);
 	}
 
-	public static void blendFuncSeparate(int sFactorRGB, int dFactorRGB, int sFactorAlpha, int dFactorAlpha) {
-		if (sFactorRGB != BLEND.sfactor || dFactorRGB != BLEND.dfactor || sFactorAlpha != BLEND.srcAlpha || dFactorAlpha != BLEND.dstAlpha) {
-			BLEND.sfactor = sFactorRGB;
-			BLEND.dfactor = dFactorRGB;
-			BLEND.srcAlpha = sFactorAlpha;
-			BLEND.dstAlpha = dFactorAlpha;
-			GLX.glBlendFuncSeparate(sFactorRGB, dFactorRGB, sFactorAlpha, dFactorAlpha);
+	public static void blendFuncSeparate(int i, int j, int k, int l) {
+		if (i != BLEND.sfactor || j != BLEND.dfactor || k != BLEND.srcAlpha || l != BLEND.dstAlpha) {
+			BLEND.sfactor = i;
+			BLEND.dfactor = j;
+			BLEND.srcAlpha = k;
+			BLEND.dstAlpha = l;
+			GLX.glBlendFuncSeparate(i, j, k, l);
 		}
 	}
 
-	public static void blendEquation(int mode) {
-		GL14.glBlendEquation(mode);
+	public static void blendEquation(int i) {
+		GL14.glBlendEquation(i);
 	}
 
-	public static void setupSolidRenderingTextureCombine(int color) {
-		COLOR_BUFFER.put(0, (float)(color >> 16 & 0xFF) / 255.0F);
-		COLOR_BUFFER.put(1, (float)(color >> 8 & 0xFF) / 255.0F);
-		COLOR_BUFFER.put(2, (float)(color >> 0 & 0xFF) / 255.0F);
-		COLOR_BUFFER.put(3, (float)(color >> 24 & 0xFF) / 255.0F);
+	public static void setupSolidRenderingTextureCombine(int i) {
+		COLOR_BUFFER.put(0, (float)(i >> 16 & 0xFF) / 255.0F);
+		COLOR_BUFFER.put(1, (float)(i >> 8 & 0xFF) / 255.0F);
+		COLOR_BUFFER.put(2, (float)(i >> 0 & 0xFF) / 255.0F);
+		COLOR_BUFFER.put(3, (float)(i >> 24 & 0xFF) / 255.0F);
 		texEnv(8960, 8705, COLOR_BUFFER);
 		texEnv(8960, 8704, 34160);
 		texEnv(8960, 34161, 7681);
@@ -296,11 +296,11 @@ public class GlStateManager {
 		POLY_OFFSET.capLine.disable();
 	}
 
-	public static void polygonOffset(float factor, float units) {
-		if (factor != POLY_OFFSET.factor || units != POLY_OFFSET.units) {
-			POLY_OFFSET.factor = factor;
-			POLY_OFFSET.units = units;
-			GL11.glPolygonOffset(factor, units);
+	public static void polygonOffset(float f, float g) {
+		if (f != POLY_OFFSET.factor || g != POLY_OFFSET.units) {
+			POLY_OFFSET.factor = f;
+			POLY_OFFSET.units = g;
+			GL11.glPolygonOffset(f, g);
 		}
 	}
 
@@ -345,13 +345,13 @@ public class GlStateManager {
 
 	private static GlStateManager.TexGenCoordState getTexGen(GlStateManager.TexCoord texCoord) {
 		switch (texCoord) {
-			case S:
+			case field_5154:
 				return TEX_GEN.s;
-			case T:
+			case field_5155:
 				return TEX_GEN.t;
-			case R:
+			case field_5156:
 				return TEX_GEN.r;
-			case Q:
+			case field_5157:
 				return TEX_GEN.q;
 			default:
 				return TEX_GEN.s;
@@ -411,19 +411,19 @@ public class GlStateManager {
 		}
 	}
 
-	public static void bindTexture(int texture) {
-		if (texture != TEXTURES[activeTexture].boundTexture) {
-			TEXTURES[activeTexture].boundTexture = texture;
-			GL11.glBindTexture(3553, texture);
+	public static void bindTexture(int i) {
+		if (i != TEXTURES[activeTexture].boundTexture) {
+			TEXTURES[activeTexture].boundTexture = i;
+			GL11.glBindTexture(3553, i);
 		}
 	}
 
-	public static void texImage2D(int target, int level, int internalFormat, int width, int height, int border, int format, int type, @Nullable IntBuffer pixels) {
-		GL11.glTexImage2D(target, level, internalFormat, width, height, border, format, type, pixels);
+	public static void texImage2D(int i, int j, int k, int l, int m, int n, int o, int p, @Nullable IntBuffer intBuffer) {
+		GL11.glTexImage2D(i, j, k, l, m, n, o, p, intBuffer);
 	}
 
-	public static void texSubImage2D(int target, int level, int xOffset, int yOffset, int width, int height, int format, int type, long pixels) {
-		GL11.glTexSubImage2D(target, level, xOffset, yOffset, width, height, format, type, pixels);
+	public static void texSubImage2D(int i, int j, int k, int l, int m, int n, int o, int p, long q) {
+		GL11.glTexSubImage2D(i, j, k, l, m, n, o, p, q);
 	}
 
 	public static void copyTexSubImage2D(int i, int j, int k, int l, int m, int n, int o, int p) {
@@ -458,10 +458,10 @@ public class GlStateManager {
 	}
 
 	public static void viewport(int i, int j, int k, int l) {
-		GlStateManager.Viewport.INSTANCE.x = i;
-		GlStateManager.Viewport.INSTANCE.y = j;
-		GlStateManager.Viewport.INSTANCE.width = k;
-		GlStateManager.Viewport.INSTANCE.height = l;
+		GlStateManager.Viewport.field_5169.x = i;
+		GlStateManager.Viewport.field_5169.y = j;
+		GlStateManager.Viewport.field_5169.width = k;
+		GlStateManager.Viewport.field_5169.height = l;
 		GL11.glViewport(i, j, k, l);
 	}
 
@@ -564,8 +564,8 @@ public class GlStateManager {
 		GL11.glOrtho(d, e, f, g, h, i);
 	}
 
-	public static void rotatef(float angle, float x, float y, float z) {
-		GL11.glRotatef(angle, x, y, z);
+	public static void rotatef(float f, float g, float h, float i) {
+		GL11.glRotatef(f, g, h, i);
 	}
 
 	public static void rotated(double d, double e, double f, double g) {
@@ -593,23 +593,23 @@ public class GlStateManager {
 	}
 
 	public static void multMatrix(Matrix4f matrix4f) {
-		matrix4f.writeToBuffer(MATRIX_BUFFER);
+		matrix4f.putIntoBuffer(MATRIX_BUFFER);
 		MATRIX_BUFFER.rewind();
 		GL11.glMultMatrixf(MATRIX_BUFFER);
 	}
 
-	public static void color4f(float red, float green, float blue, float alpha) {
-		if (red != COLOR.red || green != COLOR.green || blue != COLOR.blue || alpha != COLOR.alpha) {
-			COLOR.red = red;
-			COLOR.green = green;
-			COLOR.blue = blue;
-			COLOR.alpha = alpha;
-			GL11.glColor4f(red, green, blue, alpha);
+	public static void color4f(float f, float g, float h, float i) {
+		if (f != COLOR.red || g != COLOR.green || h != COLOR.blue || i != COLOR.alpha) {
+			COLOR.red = f;
+			COLOR.green = g;
+			COLOR.blue = h;
+			COLOR.alpha = i;
+			GL11.glColor4f(f, g, h, i);
 		}
 	}
 
-	public static void color3f(float red, float green, float blue) {
-		color4f(red, green, blue, 1.0F);
+	public static void color3f(float f, float g, float h) {
+		color4f(f, g, h, 1.0F);
 	}
 
 	public static void texCoord2f(float f, float g) {
@@ -675,8 +675,8 @@ public class GlStateManager {
 		GL11.glEnd();
 	}
 
-	public static void drawArrays(int mode, int first, int count) {
-		GL11.glDrawArrays(mode, first, count);
+	public static void drawArrays(int i, int j, int k) {
+		GL11.glDrawArrays(i, j, k);
 	}
 
 	public static void lineWidth(float f) {
@@ -703,8 +703,8 @@ public class GlStateManager {
 		return GL11.glGenLists(i);
 	}
 
-	public static void pixelStore(int pname, int param) {
-		GL11.glPixelStorei(pname, param);
+	public static void pixelStore(int i, int j) {
+		GL11.glPixelStorei(i, j);
 	}
 
 	public static void pixelTransfer(int i, float f) {
@@ -889,9 +889,9 @@ public class GlStateManager {
 
 	@Environment(EnvType.CLIENT)
 	public static enum FaceSides {
-		FRONT(1028),
-		BACK(1029),
-		FRONT_AND_BACK(1032);
+		field_5068(1028),
+		field_5070(1029),
+		field_5071(1032);
 
 		public final int glValue;
 
@@ -902,9 +902,9 @@ public class GlStateManager {
 
 	@Environment(EnvType.CLIENT)
 	public static enum FogMode {
-		LINEAR(9729),
-		EXP(2048),
-		EXP2(2049);
+		field_5095(9729),
+		field_5096(2048),
+		field_5097(2049);
 
 		public final int glValue;
 
@@ -927,22 +927,22 @@ public class GlStateManager {
 
 	@Environment(EnvType.CLIENT)
 	public static enum LogicOp {
-		AND(5377),
-		AND_INVERTED(5380),
-		AND_REVERSE(5378),
-		CLEAR(5376),
-		COPY(5379),
-		COPY_INVERTED(5388),
-		EQUIV(5385),
-		INVERT(5386),
-		NAND(5390),
-		NOOP(5381),
-		NOR(5384),
-		OR(5383),
-		OR_INVERTED(5389),
-		OR_REVERSE(5387),
-		SET(5391),
-		XOR(5382);
+		field_5120(5377),
+		field_5112(5380),
+		field_5117(5378),
+		field_5103(5376),
+		field_5118(5379),
+		field_5113(5388),
+		field_5119(5385),
+		field_5109(5386),
+		field_5114(5390),
+		field_5115(5381),
+		field_5104(5384),
+		field_5105(5383),
+		field_5116(5389),
+		field_5110(5387),
+		field_5107(5391),
+		field_5111(5382);
 
 		public final int glValue;
 
@@ -973,24 +973,24 @@ public class GlStateManager {
 
 	@Environment(EnvType.CLIENT)
 	public static enum RenderMode {
-		DEFAULT {
+		field_5127 {
 			@Override
 			public void begin() {
 				GlStateManager.disableAlphaTest();
 				GlStateManager.alphaFunc(519, 0.0F);
 				GlStateManager.disableLighting();
-				GlStateManager.lightModel(2899, DiffuseLighting.singletonBuffer(0.2F, 0.2F, 0.2F, 1.0F));
+				GlStateManager.lightModel(2899, GuiLighting.singletonBuffer(0.2F, 0.2F, 0.2F, 1.0F));
 
 				for (int i = 0; i < 8; i++) {
 					GlStateManager.disableLight(i);
-					GlStateManager.light(16384 + i, 4608, DiffuseLighting.singletonBuffer(0.0F, 0.0F, 0.0F, 1.0F));
-					GlStateManager.light(16384 + i, 4611, DiffuseLighting.singletonBuffer(0.0F, 0.0F, 1.0F, 0.0F));
+					GlStateManager.light(16384 + i, 4608, GuiLighting.singletonBuffer(0.0F, 0.0F, 0.0F, 1.0F));
+					GlStateManager.light(16384 + i, 4611, GuiLighting.singletonBuffer(0.0F, 0.0F, 1.0F, 0.0F));
 					if (i == 0) {
-						GlStateManager.light(16384 + i, 4609, DiffuseLighting.singletonBuffer(1.0F, 1.0F, 1.0F, 1.0F));
-						GlStateManager.light(16384 + i, 4610, DiffuseLighting.singletonBuffer(1.0F, 1.0F, 1.0F, 1.0F));
+						GlStateManager.light(16384 + i, 4609, GuiLighting.singletonBuffer(1.0F, 1.0F, 1.0F, 1.0F));
+						GlStateManager.light(16384 + i, 4610, GuiLighting.singletonBuffer(1.0F, 1.0F, 1.0F, 1.0F));
 					} else {
-						GlStateManager.light(16384 + i, 4609, DiffuseLighting.singletonBuffer(0.0F, 0.0F, 0.0F, 1.0F));
-						GlStateManager.light(16384 + i, 4610, DiffuseLighting.singletonBuffer(0.0F, 0.0F, 0.0F, 1.0F));
+						GlStateManager.light(16384 + i, 4609, GuiLighting.singletonBuffer(0.0F, 0.0F, 0.0F, 1.0F));
+						GlStateManager.light(16384 + i, 4610, GuiLighting.singletonBuffer(0.0F, 0.0F, 0.0F, 1.0F));
 					}
 				}
 
@@ -1010,7 +1010,7 @@ public class GlStateManager {
 				GlStateManager.fogDensity(1.0F);
 				GlStateManager.fogStart(0.0F);
 				GlStateManager.fogEnd(1.0F);
-				GlStateManager.fog(2918, DiffuseLighting.singletonBuffer(0.0F, 0.0F, 0.0F, 0.0F));
+				GlStateManager.fog(2918, GuiLighting.singletonBuffer(0.0F, 0.0F, 0.0F, 0.0F));
 				if (GL.getCapabilities().GL_NV_fog_distance) {
 					GlStateManager.fogi(2917, 34140);
 				}
@@ -1018,22 +1018,22 @@ public class GlStateManager {
 				GlStateManager.polygonOffset(0.0F, 0.0F);
 				GlStateManager.disableColorLogicOp();
 				GlStateManager.logicOp(5379);
-				GlStateManager.disableTexGen(GlStateManager.TexCoord.S);
-				GlStateManager.texGenMode(GlStateManager.TexCoord.S, 9216);
-				GlStateManager.texGenParam(GlStateManager.TexCoord.S, 9474, DiffuseLighting.singletonBuffer(1.0F, 0.0F, 0.0F, 0.0F));
-				GlStateManager.texGenParam(GlStateManager.TexCoord.S, 9217, DiffuseLighting.singletonBuffer(1.0F, 0.0F, 0.0F, 0.0F));
-				GlStateManager.disableTexGen(GlStateManager.TexCoord.T);
-				GlStateManager.texGenMode(GlStateManager.TexCoord.T, 9216);
-				GlStateManager.texGenParam(GlStateManager.TexCoord.T, 9474, DiffuseLighting.singletonBuffer(0.0F, 1.0F, 0.0F, 0.0F));
-				GlStateManager.texGenParam(GlStateManager.TexCoord.T, 9217, DiffuseLighting.singletonBuffer(0.0F, 1.0F, 0.0F, 0.0F));
-				GlStateManager.disableTexGen(GlStateManager.TexCoord.R);
-				GlStateManager.texGenMode(GlStateManager.TexCoord.R, 9216);
-				GlStateManager.texGenParam(GlStateManager.TexCoord.R, 9474, DiffuseLighting.singletonBuffer(0.0F, 0.0F, 0.0F, 0.0F));
-				GlStateManager.texGenParam(GlStateManager.TexCoord.R, 9217, DiffuseLighting.singletonBuffer(0.0F, 0.0F, 0.0F, 0.0F));
-				GlStateManager.disableTexGen(GlStateManager.TexCoord.Q);
-				GlStateManager.texGenMode(GlStateManager.TexCoord.Q, 9216);
-				GlStateManager.texGenParam(GlStateManager.TexCoord.Q, 9474, DiffuseLighting.singletonBuffer(0.0F, 0.0F, 0.0F, 0.0F));
-				GlStateManager.texGenParam(GlStateManager.TexCoord.Q, 9217, DiffuseLighting.singletonBuffer(0.0F, 0.0F, 0.0F, 0.0F));
+				GlStateManager.disableTexGen(GlStateManager.TexCoord.field_5154);
+				GlStateManager.texGenMode(GlStateManager.TexCoord.field_5154, 9216);
+				GlStateManager.texGenParam(GlStateManager.TexCoord.field_5154, 9474, GuiLighting.singletonBuffer(1.0F, 0.0F, 0.0F, 0.0F));
+				GlStateManager.texGenParam(GlStateManager.TexCoord.field_5154, 9217, GuiLighting.singletonBuffer(1.0F, 0.0F, 0.0F, 0.0F));
+				GlStateManager.disableTexGen(GlStateManager.TexCoord.field_5155);
+				GlStateManager.texGenMode(GlStateManager.TexCoord.field_5155, 9216);
+				GlStateManager.texGenParam(GlStateManager.TexCoord.field_5155, 9474, GuiLighting.singletonBuffer(0.0F, 1.0F, 0.0F, 0.0F));
+				GlStateManager.texGenParam(GlStateManager.TexCoord.field_5155, 9217, GuiLighting.singletonBuffer(0.0F, 1.0F, 0.0F, 0.0F));
+				GlStateManager.disableTexGen(GlStateManager.TexCoord.field_5156);
+				GlStateManager.texGenMode(GlStateManager.TexCoord.field_5156, 9216);
+				GlStateManager.texGenParam(GlStateManager.TexCoord.field_5156, 9474, GuiLighting.singletonBuffer(0.0F, 0.0F, 0.0F, 0.0F));
+				GlStateManager.texGenParam(GlStateManager.TexCoord.field_5156, 9217, GuiLighting.singletonBuffer(0.0F, 0.0F, 0.0F, 0.0F));
+				GlStateManager.disableTexGen(GlStateManager.TexCoord.field_5157);
+				GlStateManager.texGenMode(GlStateManager.TexCoord.field_5157, 9216);
+				GlStateManager.texGenParam(GlStateManager.TexCoord.field_5157, 9474, GuiLighting.singletonBuffer(0.0F, 0.0F, 0.0F, 0.0F));
+				GlStateManager.texGenParam(GlStateManager.TexCoord.field_5157, 9217, GuiLighting.singletonBuffer(0.0F, 0.0F, 0.0F, 0.0F));
 				GlStateManager.activeTexture(0);
 				GlStateManager.texParameter(3553, 10240, 9729);
 				GlStateManager.texParameter(3553, 10241, 9986);
@@ -1044,7 +1044,7 @@ public class GlStateManager {
 				GlStateManager.texParameter(3553, 33082, -1000);
 				GlStateManager.texParameter(3553, 34049, 0.0F);
 				GlStateManager.texEnv(8960, 8704, 8448);
-				GlStateManager.texEnv(8960, 8705, DiffuseLighting.singletonBuffer(0.0F, 0.0F, 0.0F, 0.0F));
+				GlStateManager.texEnv(8960, 8705, GuiLighting.singletonBuffer(0.0F, 0.0F, 0.0F, 0.0F));
 				GlStateManager.texEnv(8960, 34161, 8448);
 				GlStateManager.texEnv(8960, 34162, 8448);
 				GlStateManager.texEnv(8960, 34176, 5890);
@@ -1076,7 +1076,7 @@ public class GlStateManager {
 			public void end() {
 			}
 		},
-		PLAYER_SKIN {
+		field_5128 {
 			@Override
 			public void begin() {
 				GlStateManager.enableBlend();
@@ -1088,7 +1088,7 @@ public class GlStateManager {
 				GlStateManager.disableBlend();
 			}
 		},
-		TRANSPARENT_MODEL {
+		field_5125 {
 			@Override
 			public void begin() {
 				GlStateManager.color4f(1.0F, 1.0F, 1.0F, 0.15F);
@@ -1163,10 +1163,10 @@ public class GlStateManager {
 
 	@Environment(EnvType.CLIENT)
 	public static enum TexCoord {
-		S,
-		T,
-		R,
-		Q;
+		field_5154,
+		field_5155,
+		field_5156,
+		field_5157;
 	}
 
 	@Environment(EnvType.CLIENT)
@@ -1203,7 +1203,7 @@ public class GlStateManager {
 
 	@Environment(EnvType.CLIENT)
 	public static enum Viewport {
-		INSTANCE;
+		field_5169;
 
 		protected int x;
 		protected int y;

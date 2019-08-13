@@ -12,19 +12,19 @@ public class DyingPhase extends AbstractPhase {
 	private Vec3d field_7041;
 	private int ticks;
 
-	public DyingPhase(EnderDragonEntity dragon) {
-		super(dragon);
+	public DyingPhase(EnderDragonEntity enderDragonEntity) {
+		super(enderDragonEntity);
 	}
 
 	@Override
 	public void clientTick() {
 		if (this.ticks++ % 10 == 0) {
-			float f = (this.dragon.getRandom().nextFloat() - 0.5F) * 8.0F;
-			float g = (this.dragon.getRandom().nextFloat() - 0.5F) * 4.0F;
-			float h = (this.dragon.getRandom().nextFloat() - 0.5F) * 8.0F;
+			float f = (this.dragon.getRand().nextFloat() - 0.5F) * 8.0F;
+			float g = (this.dragon.getRand().nextFloat() - 0.5F) * 4.0F;
+			float h = (this.dragon.getRand().nextFloat() - 0.5F) * 8.0F;
 			this.dragon
 				.world
-				.addParticle(ParticleTypes.EXPLOSION_EMITTER, this.dragon.x + (double)f, this.dragon.y + 2.0 + (double)g, this.dragon.z + (double)h, 0.0, 0.0, 0.0);
+				.addParticle(ParticleTypes.field_11221, this.dragon.x + (double)f, this.dragon.y + 2.0 + (double)g, this.dragon.z + (double)h, 0.0, 0.0, 0.0);
 		}
 	}
 
@@ -32,7 +32,7 @@ public class DyingPhase extends AbstractPhase {
 	public void serverTick() {
 		this.ticks++;
 		if (this.field_7041 == null) {
-			BlockPos blockPos = this.dragon.world.getTopPosition(Heightmap.Type.MOTION_BLOCKING, EndPortalFeature.ORIGIN);
+			BlockPos blockPos = this.dragon.world.getTopPosition(Heightmap.Type.field_13197, EndPortalFeature.ORIGIN);
 			this.field_7041 = new Vec3d((double)blockPos.getX(), (double)blockPos.getY(), (double)blockPos.getZ());
 		}
 
@@ -63,6 +63,6 @@ public class DyingPhase extends AbstractPhase {
 
 	@Override
 	public PhaseType<DyingPhase> getType() {
-		return PhaseType.DYING;
+		return PhaseType.field_7068;
 	}
 }

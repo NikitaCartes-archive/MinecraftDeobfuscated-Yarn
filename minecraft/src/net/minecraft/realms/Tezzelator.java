@@ -14,40 +14,40 @@ public class Tezzelator {
 	}
 
 	public Tezzelator vertex(double d, double e, double f) {
-		t.getBuffer().vertex(d, e, f);
+		t.getBufferBuilder().vertex(d, e, f);
 		return this;
 	}
 
 	public void color(float f, float g, float h, float i) {
-		t.getBuffer().color(f, g, h, i);
+		t.getBufferBuilder().color(f, g, h, i);
 	}
 
 	public void tex2(short s, short t) {
-		Tezzelator.t.getBuffer().texture(s, t);
+		Tezzelator.t.getBufferBuilder().texture(s, t);
 	}
 
 	public void normal(float f, float g, float h) {
-		t.getBuffer().normal(f, g, h);
+		t.getBufferBuilder().normal(f, g, h);
 	}
 
 	public void begin(int i, RealmsVertexFormat realmsVertexFormat) {
-		t.getBuffer().begin(i, realmsVertexFormat.getVertexFormat());
+		t.getBufferBuilder().begin(i, realmsVertexFormat.getVertexFormat());
 	}
 
 	public void endVertex() {
-		t.getBuffer().next();
+		t.getBufferBuilder().next();
 	}
 
 	public void offset(double d, double e, double f) {
-		t.getBuffer().setOffset(d, e, f);
+		t.getBufferBuilder().setOffset(d, e, f);
 	}
 
 	public RealmsBufferBuilder color(int i, int j, int k, int l) {
-		return new RealmsBufferBuilder(t.getBuffer().color(i, j, k, l));
+		return new RealmsBufferBuilder(t.getBufferBuilder().color(i, j, k, l));
 	}
 
 	public Tezzelator tex(double d, double e) {
-		t.getBuffer().texture(d, e);
+		t.getBufferBuilder().texture(d, e);
 		return this;
 	}
 }

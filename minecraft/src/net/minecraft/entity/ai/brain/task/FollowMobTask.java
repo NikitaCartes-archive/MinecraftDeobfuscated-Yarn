@@ -16,35 +16,35 @@ public class FollowMobTask extends Task<LivingEntity> {
 	private final Predicate<LivingEntity> mobType;
 	private final float maxDistanceSquared;
 
-	public FollowMobTask(EntityCategory entityCategory, float maxDistance) {
-		this(livingEntity -> entityCategory.equals(livingEntity.getType().getCategory()), maxDistance);
+	public FollowMobTask(EntityCategory entityCategory, float f) {
+		this(livingEntity -> entityCategory.equals(livingEntity.getType().getCategory()), f);
 	}
 
-	public FollowMobTask(EntityType<?> entityType, float maxDistance) {
-		this(livingEntity -> entityType.equals(livingEntity.getType()), maxDistance);
+	public FollowMobTask(EntityType<?> entityType, float f) {
+		this(livingEntity -> entityType.equals(livingEntity.getType()), f);
 	}
 
-	public FollowMobTask(Predicate<LivingEntity> mobType, float maxDistance) {
-		super(ImmutableMap.of(MemoryModuleType.LOOK_TARGET, MemoryModuleState.VALUE_ABSENT, MemoryModuleType.VISIBLE_MOBS, MemoryModuleState.VALUE_PRESENT));
-		this.mobType = mobType;
-		this.maxDistanceSquared = maxDistance * maxDistance;
-	}
-
-	@Override
-	protected boolean shouldRun(ServerWorld world, LivingEntity entity) {
-		return ((List)entity.getBrain().getOptionalMemory(MemoryModuleType.VISIBLE_MOBS).get()).stream().anyMatch(this.mobType);
+	public FollowMobTask(Predicate<LivingEntity> predicate, float f) {
+		super(ImmutableMap.of(MemoryModuleType.field_18446, MemoryModuleState.field_18457, MemoryModuleType.field_18442, MemoryModuleState.field_18456));
+		this.mobType = predicate;
+		this.maxDistanceSquared = f * f;
 	}
 
 	@Override
-	protected void run(ServerWorld world, LivingEntity entity, long time) {
-		Brain<?> brain = entity.getBrain();
-		brain.getOptionalMemory(MemoryModuleType.VISIBLE_MOBS)
+	protected boolean shouldRun(ServerWorld serverWorld, LivingEntity livingEntity) {
+		return ((List)livingEntity.getBrain().getOptionalMemory(MemoryModuleType.field_18442).get()).stream().anyMatch(this.mobType);
+	}
+
+	@Override
+	protected void run(ServerWorld serverWorld, LivingEntity livingEntity, long l) {
+		Brain<?> brain = livingEntity.getBrain();
+		brain.getOptionalMemory(MemoryModuleType.field_18442)
 			.ifPresent(
 				list -> list.stream()
 						.filter(this.mobType)
-						.filter(livingEntity2 -> livingEntity2.squaredDistanceTo(entity) <= (double)this.maxDistanceSquared)
+						.filter(livingEntity2 -> livingEntity2.squaredDistanceTo(livingEntity) <= (double)this.maxDistanceSquared)
 						.findFirst()
-						.ifPresent(livingEntityx -> brain.putMemory(MemoryModuleType.LOOK_TARGET, new EntityPosWrapper(livingEntityx)))
+						.ifPresent(livingEntityxx -> brain.putMemory(MemoryModuleType.field_18446, new EntityPosWrapper(livingEntityxx)))
 			);
 	}
 }

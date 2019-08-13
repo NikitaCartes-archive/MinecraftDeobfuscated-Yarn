@@ -35,26 +35,26 @@ public class SpawnEggItem extends Item {
 	private final int secondaryColor;
 	private final EntityType<?> type;
 
-	public SpawnEggItem(EntityType<?> type, int primaryColor, int secondaryColor, Item.Settings settings) {
+	public SpawnEggItem(EntityType<?> entityType, int i, int j, Item.Settings settings) {
 		super(settings);
-		this.type = type;
-		this.primaryColor = primaryColor;
-		this.secondaryColor = secondaryColor;
-		SPAWN_EGGS.put(type, this);
+		this.type = entityType;
+		this.primaryColor = i;
+		this.secondaryColor = j;
+		SPAWN_EGGS.put(entityType, this);
 	}
 
 	@Override
-	public ActionResult useOnBlock(ItemUsageContext context) {
-		World world = context.getWorld();
+	public ActionResult useOnBlock(ItemUsageContext itemUsageContext) {
+		World world = itemUsageContext.getWorld();
 		if (world.isClient) {
-			return ActionResult.SUCCESS;
+			return ActionResult.field_5812;
 		} else {
-			ItemStack itemStack = context.getStack();
-			BlockPos blockPos = context.getBlockPos();
-			Direction direction = context.getSide();
+			ItemStack itemStack = itemUsageContext.getStack();
+			BlockPos blockPos = itemUsageContext.getBlockPos();
+			Direction direction = itemUsageContext.getSide();
 			BlockState blockState = world.getBlockState(blockPos);
 			Block block = blockState.getBlock();
-			if (block == Blocks.SPAWNER) {
+			if (block == Blocks.field_10260) {
 				BlockEntity blockEntity = world.getBlockEntity(blockPos);
 				if (blockEntity instanceof MobSpawnerBlockEntity) {
 					MobSpawnerLogic mobSpawnerLogic = ((MobSpawnerBlockEntity)blockEntity).getLogic();
@@ -63,7 +63,7 @@ public class SpawnEggItem extends Item {
 					blockEntity.markDirty();
 					world.updateListeners(blockPos, blockState, blockState, 3);
 					itemStack.decrement(1);
-					return ActionResult.SUCCESS;
+					return ActionResult.field_5812;
 				}
 			}
 
@@ -76,72 +76,78 @@ public class SpawnEggItem extends Item {
 
 			EntityType<?> entityType2 = this.getEntityType(itemStack.getTag());
 			if (entityType2.spawnFromItemStack(
-					world, itemStack, context.getPlayer(), blockPos2, SpawnType.SPAWN_EGG, true, !Objects.equals(blockPos, blockPos2) && direction == Direction.UP
+					world,
+					itemStack,
+					itemUsageContext.getPlayer(),
+					blockPos2,
+					SpawnType.field_16465,
+					true,
+					!Objects.equals(blockPos, blockPos2) && direction == Direction.field_11036
 				)
 				!= null) {
 				itemStack.decrement(1);
 			}
 
-			return ActionResult.SUCCESS;
+			return ActionResult.field_5812;
 		}
 	}
 
 	@Override
-	public TypedActionResult<ItemStack> use(World world, PlayerEntity user, Hand hand) {
-		ItemStack itemStack = user.getStackInHand(hand);
+	public TypedActionResult<ItemStack> use(World world, PlayerEntity playerEntity, Hand hand) {
+		ItemStack itemStack = playerEntity.getStackInHand(hand);
 		if (world.isClient) {
-			return new TypedActionResult<>(ActionResult.PASS, itemStack);
+			return new TypedActionResult<>(ActionResult.field_5811, itemStack);
 		} else {
-			HitResult hitResult = rayTrace(world, user, RayTraceContext.FluidHandling.SOURCE_ONLY);
-			if (hitResult.getType() != HitResult.Type.BLOCK) {
-				return new TypedActionResult<>(ActionResult.PASS, itemStack);
+			HitResult hitResult = rayTrace(world, playerEntity, RayTraceContext.FluidHandling.field_1345);
+			if (hitResult.getType() != HitResult.Type.field_1332) {
+				return new TypedActionResult<>(ActionResult.field_5811, itemStack);
 			} else {
 				BlockHitResult blockHitResult = (BlockHitResult)hitResult;
 				BlockPos blockPos = blockHitResult.getBlockPos();
 				if (!(world.getBlockState(blockPos).getBlock() instanceof FluidBlock)) {
-					return new TypedActionResult<>(ActionResult.PASS, itemStack);
-				} else if (world.canPlayerModifyAt(user, blockPos) && user.canPlaceOn(blockPos, blockHitResult.getSide(), itemStack)) {
+					return new TypedActionResult<>(ActionResult.field_5811, itemStack);
+				} else if (world.canPlayerModifyAt(playerEntity, blockPos) && playerEntity.canPlaceOn(blockPos, blockHitResult.getSide(), itemStack)) {
 					EntityType<?> entityType = this.getEntityType(itemStack.getTag());
-					if (entityType.spawnFromItemStack(world, itemStack, user, blockPos, SpawnType.SPAWN_EGG, false, false) == null) {
-						return new TypedActionResult<>(ActionResult.PASS, itemStack);
+					if (entityType.spawnFromItemStack(world, itemStack, playerEntity, blockPos, SpawnType.field_16465, false, false) == null) {
+						return new TypedActionResult<>(ActionResult.field_5811, itemStack);
 					} else {
-						if (!user.abilities.creativeMode) {
+						if (!playerEntity.abilities.creativeMode) {
 							itemStack.decrement(1);
 						}
 
-						user.incrementStat(Stats.USED.getOrCreateStat(this));
-						return new TypedActionResult<>(ActionResult.SUCCESS, itemStack);
+						playerEntity.incrementStat(Stats.field_15372.getOrCreateStat(this));
+						return new TypedActionResult<>(ActionResult.field_5812, itemStack);
 					}
 				} else {
-					return new TypedActionResult<>(ActionResult.FAIL, itemStack);
+					return new TypedActionResult<>(ActionResult.field_5814, itemStack);
 				}
 			}
 		}
 	}
 
-	public boolean isOfSameEntityType(@Nullable CompoundTag tag, EntityType<?> type) {
-		return Objects.equals(this.getEntityType(tag), type);
+	public boolean isOfSameEntityType(@Nullable CompoundTag compoundTag, EntityType<?> entityType) {
+		return Objects.equals(this.getEntityType(compoundTag), entityType);
 	}
 
 	@Environment(EnvType.CLIENT)
-	public int getColor(int num) {
-		return num == 0 ? this.primaryColor : this.secondaryColor;
+	public int getColor(int i) {
+		return i == 0 ? this.primaryColor : this.secondaryColor;
 	}
 
 	@Environment(EnvType.CLIENT)
-	public static SpawnEggItem forEntity(@Nullable EntityType<?> type) {
-		return (SpawnEggItem)SPAWN_EGGS.get(type);
+	public static SpawnEggItem forEntity(@Nullable EntityType<?> entityType) {
+		return (SpawnEggItem)SPAWN_EGGS.get(entityType);
 	}
 
 	public static Iterable<SpawnEggItem> getAll() {
 		return Iterables.unmodifiableIterable(SPAWN_EGGS.values());
 	}
 
-	public EntityType<?> getEntityType(@Nullable CompoundTag tag) {
-		if (tag != null && tag.contains("EntityTag", 10)) {
-			CompoundTag compoundTag = tag.getCompound("EntityTag");
-			if (compoundTag.contains("id", 8)) {
-				return (EntityType<?>)EntityType.get(compoundTag.getString("id")).orElse(this.type);
+	public EntityType<?> getEntityType(@Nullable CompoundTag compoundTag) {
+		if (compoundTag != null && compoundTag.containsKey("EntityTag", 10)) {
+			CompoundTag compoundTag2 = compoundTag.getCompound("EntityTag");
+			if (compoundTag2.containsKey("id", 8)) {
+				return (EntityType<?>)EntityType.get(compoundTag2.getString("id")).orElse(this.type);
 			}
 		}
 

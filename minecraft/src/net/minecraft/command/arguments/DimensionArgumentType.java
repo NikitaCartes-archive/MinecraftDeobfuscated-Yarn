@@ -20,21 +20,21 @@ import net.minecraft.util.registry.Registry;
 import net.minecraft.world.dimension.DimensionType;
 
 public class DimensionArgumentType implements ArgumentType<DimensionType> {
-	private static final Collection<String> EXAMPLES = (Collection<String>)Stream.of(DimensionType.OVERWORLD, DimensionType.THE_NETHER)
+	private static final Collection<String> EXAMPLES = (Collection<String>)Stream.of(DimensionType.field_13072, DimensionType.field_13076)
 		.map(dimensionType -> DimensionType.getId(dimensionType).toString())
 		.collect(Collectors.toList());
 	public static final DynamicCommandExceptionType INVALID_DIMENSION_EXCEPTION = new DynamicCommandExceptionType(
 		object -> new TranslatableText("argument.dimension.invalid", object)
 	);
 
-	public DimensionType parse(StringReader stringReader) throws CommandSyntaxException {
+	public DimensionType method_9287(StringReader stringReader) throws CommandSyntaxException {
 		Identifier identifier = Identifier.fromCommandInput(stringReader);
 		return (DimensionType)Registry.DIMENSION.getOrEmpty(identifier).orElseThrow(() -> INVALID_DIMENSION_EXCEPTION.create(identifier));
 	}
 
 	@Override
-	public <S> CompletableFuture<Suggestions> listSuggestions(CommandContext<S> context, SuggestionsBuilder builder) {
-		return CommandSource.suggestIdentifiers(Streams.stream(DimensionType.getAll()).map(DimensionType::getId), builder);
+	public <S> CompletableFuture<Suggestions> listSuggestions(CommandContext<S> commandContext, SuggestionsBuilder suggestionsBuilder) {
+		return CommandSource.suggestIdentifiers(Streams.stream(DimensionType.getAll()).map(DimensionType::getId), suggestionsBuilder);
 	}
 
 	@Override
@@ -46,7 +46,7 @@ public class DimensionArgumentType implements ArgumentType<DimensionType> {
 		return new DimensionArgumentType();
 	}
 
-	public static DimensionType getDimensionArgument(CommandContext<ServerCommandSource> context, String name) {
-		return context.getArgument(name, DimensionType.class);
+	public static DimensionType getDimensionArgument(CommandContext<ServerCommandSource> commandContext, String string) {
+		return commandContext.getArgument(string, DimensionType.class);
 	}
 }

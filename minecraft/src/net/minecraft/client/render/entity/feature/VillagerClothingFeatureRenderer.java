@@ -15,7 +15,7 @@ import net.minecraft.resource.Resource;
 import net.minecraft.resource.ResourceManager;
 import net.minecraft.resource.SynchronousResourceReloadListener;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.Util;
+import net.minecraft.util.SystemUtil;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.registry.DefaultedRegistry;
 import net.minecraft.util.registry.Registry;
@@ -28,7 +28,7 @@ import net.minecraft.village.VillagerType;
 public class VillagerClothingFeatureRenderer<T extends LivingEntity & VillagerDataContainer, M extends EntityModel<T> & ModelWithHat>
 	extends FeatureRenderer<T, M>
 	implements SynchronousResourceReloadListener {
-	private static final Int2ObjectMap<Identifier> LEVEL_TO_ID = Util.make(new Int2ObjectOpenHashMap<>(), int2ObjectOpenHashMap -> {
+	private static final Int2ObjectMap<Identifier> LEVEL_TO_ID = SystemUtil.consume(new Int2ObjectOpenHashMap<>(), int2ObjectOpenHashMap -> {
 		int2ObjectOpenHashMap.put(1, new Identifier("stone"));
 		int2ObjectOpenHashMap.put(2, new Identifier("iron"));
 		int2ObjectOpenHashMap.put(3, new Identifier("gold"));
@@ -47,22 +47,22 @@ public class VillagerClothingFeatureRenderer<T extends LivingEntity & VillagerDa
 		reloadableResourceManager.registerListener(this);
 	}
 
-	public void render(T livingEntity, float f, float g, float h, float i, float j, float k, float l) {
+	public void method_17151(T livingEntity, float f, float g, float h, float i, float j, float k, float l) {
 		if (!livingEntity.isInvisible()) {
 			VillagerData villagerData = livingEntity.getVillagerData();
 			VillagerType villagerType = villagerData.getType();
 			VillagerProfession villagerProfession = villagerData.getProfession();
 			VillagerResourceMetadata.HatType hatType = this.getHatType(this.villagerTypeToHat, "type", Registry.VILLAGER_TYPE, villagerType);
 			VillagerResourceMetadata.HatType hatType2 = this.getHatType(this.professionToHat, "profession", Registry.VILLAGER_PROFESSION, villagerProfession);
-			M entityModel = this.getContextModel();
+			M entityModel = this.getModel();
 			this.bindTexture(this.findTexture("type", Registry.VILLAGER_TYPE.getId(villagerType)));
 			entityModel.setHatVisible(
-				hatType2 == VillagerResourceMetadata.HatType.NONE
-					|| hatType2 == VillagerResourceMetadata.HatType.PARTIAL && hatType != VillagerResourceMetadata.HatType.FULL
+				hatType2 == VillagerResourceMetadata.HatType.field_17160
+					|| hatType2 == VillagerResourceMetadata.HatType.field_17161 && hatType != VillagerResourceMetadata.HatType.field_17162
 			);
 			entityModel.render(livingEntity, f, g, i, j, k, l);
 			entityModel.setHatVisible(true);
-			if (villagerProfession != VillagerProfession.NONE && !livingEntity.isBaby()) {
+			if (villagerProfession != VillagerProfession.field_17051 && !livingEntity.isBaby()) {
 				this.bindTexture(this.findTexture("profession", Registry.VILLAGER_PROFESSION.getId(villagerProfession)));
 				entityModel.render(livingEntity, f, g, i, j, k, l);
 				this.bindTexture(this.findTexture("profession_level", LEVEL_TO_ID.get(MathHelper.clamp(villagerData.getLevel(), 1, LEVEL_TO_ID.size()))));
@@ -76,23 +76,23 @@ public class VillagerClothingFeatureRenderer<T extends LivingEntity & VillagerDa
 		return true;
 	}
 
-	private Identifier findTexture(String keyType, Identifier keyId) {
-		return new Identifier(keyId.getNamespace(), "textures/entity/" + this.entityType + "/" + keyType + "/" + keyId.getPath() + ".png");
+	private Identifier findTexture(String string, Identifier identifier) {
+		return new Identifier(identifier.getNamespace(), "textures/entity/" + this.entityType + "/" + string + "/" + identifier.getPath() + ".png");
 	}
 
 	public <K> VillagerResourceMetadata.HatType getHatType(
-		Object2ObjectMap<K, VillagerResourceMetadata.HatType> hatLookUp, String keyType, DefaultedRegistry<K> registry, K key
+		Object2ObjectMap<K, VillagerResourceMetadata.HatType> object2ObjectMap, String string, DefaultedRegistry<K> defaultedRegistry, K object
 	) {
-		return (VillagerResourceMetadata.HatType)hatLookUp.computeIfAbsent(key, object2 -> {
+		return (VillagerResourceMetadata.HatType)object2ObjectMap.computeIfAbsent(object, object2 -> {
 			try {
-				Resource resource = this.resourceManager.getResource(this.findTexture(keyType, registry.getId(key)));
+				Resource resource = this.resourceManager.getResource(this.findTexture(string, defaultedRegistry.getId(object)));
 				Throwable var6 = null;
 
 				VillagerResourceMetadata.HatType var8;
 				try {
 					VillagerResourceMetadata villagerResourceMetadata = resource.getMetadata(VillagerResourceMetadata.READER);
 					if (villagerResourceMetadata == null) {
-						return VillagerResourceMetadata.HatType.NONE;
+						return VillagerResourceMetadata.HatType.field_17160;
 					}
 
 					var8 = villagerResourceMetadata.getHatType();
@@ -115,13 +115,13 @@ public class VillagerClothingFeatureRenderer<T extends LivingEntity & VillagerDa
 
 				return var8;
 			} catch (IOException var21) {
-				return VillagerResourceMetadata.HatType.NONE;
+				return VillagerResourceMetadata.HatType.field_17160;
 			}
 		});
 	}
 
 	@Override
-	public void apply(ResourceManager manager) {
+	public void apply(ResourceManager resourceManager) {
 		this.professionToHat.clear();
 		this.villagerTypeToHat.clear();
 	}

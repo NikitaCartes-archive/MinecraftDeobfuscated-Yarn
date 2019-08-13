@@ -21,7 +21,7 @@ public class ChunkBorderDebugRenderer implements DebugRenderer.Renderer {
 	public void render(long l) {
 		Camera camera = this.client.gameRenderer.getCamera();
 		Tessellator tessellator = Tessellator.getInstance();
-		BufferBuilder bufferBuilder = tessellator.getBuffer();
+		BufferBuilder bufferBuilder = tessellator.getBufferBuilder();
 		double d = camera.getPos().x;
 		double e = camera.getPos().y;
 		double f = camera.getPos().z;

@@ -6,7 +6,7 @@ import net.minecraft.block.entity.CommandBlockBlockEntity;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.resource.language.I18n;
-import net.minecraft.network.packet.c2s.play.UpdateCommandBlockC2SPacket;
+import net.minecraft.server.network.packet.UpdateCommandBlockC2SPacket;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.CommandBlockExecutor;
 
@@ -16,12 +16,12 @@ public class CommandBlockScreen extends AbstractCommandBlockScreen {
 	private ButtonWidget modeButton;
 	private ButtonWidget conditionalModeButton;
 	private ButtonWidget redstoneTriggerButton;
-	private CommandBlockBlockEntity.Type mode = CommandBlockBlockEntity.Type.REDSTONE;
+	private CommandBlockBlockEntity.Type mode = CommandBlockBlockEntity.Type.field_11924;
 	private boolean conditional;
 	private boolean autoActivate;
 
-	public CommandBlockScreen(CommandBlockBlockEntity blockEntity) {
-		this.blockEntity = blockEntity;
+	public CommandBlockScreen(CommandBlockBlockEntity commandBlockBlockEntity) {
+		this.blockEntity = commandBlockBlockEntity;
 	}
 
 	@Override
@@ -64,7 +64,7 @@ public class CommandBlockScreen extends AbstractCommandBlockScreen {
 		CommandBlockExecutor commandBlockExecutor = this.blockEntity.getCommandExecutor();
 		this.consoleCommandTextField.setText(commandBlockExecutor.getCommand());
 		this.trackingOutput = commandBlockExecutor.isTrackingOutput();
-		this.mode = this.blockEntity.getCommandBlockType();
+		this.mode = this.blockEntity.getType();
 		this.conditional = this.blockEntity.isConditionalCommandBlock();
 		this.autoActivate = this.blockEntity.isAuto();
 		this.updateTrackedOutput();
@@ -79,8 +79,8 @@ public class CommandBlockScreen extends AbstractCommandBlockScreen {
 	}
 
 	@Override
-	public void resize(MinecraftClient client, int width, int height) {
-		super.resize(client, width, height);
+	public void resize(MinecraftClient minecraftClient, int i, int j) {
+		super.resize(minecraftClient, i, j);
 		this.updateTrackedOutput();
 		this.updateMode();
 		this.updateConditionalMode();
@@ -93,15 +93,15 @@ public class CommandBlockScreen extends AbstractCommandBlockScreen {
 	}
 
 	@Override
-	protected void syncSettingsToServer(CommandBlockExecutor commandExecutor) {
+	protected void syncSettingsToServer(CommandBlockExecutor commandBlockExecutor) {
 		this.minecraft
 			.getNetworkHandler()
 			.sendPacket(
 				new UpdateCommandBlockC2SPacket(
-					new BlockPos(commandExecutor.getPos()),
+					new BlockPos(commandBlockExecutor.getPos()),
 					this.consoleCommandTextField.getText(),
 					this.mode,
-					commandExecutor.isTrackingOutput(),
+					commandBlockExecutor.isTrackingOutput(),
 					this.conditional,
 					this.autoActivate
 				)
@@ -110,27 +110,27 @@ public class CommandBlockScreen extends AbstractCommandBlockScreen {
 
 	private void updateMode() {
 		switch (this.mode) {
-			case SEQUENCE:
+			case field_11922:
 				this.modeButton.setMessage(I18n.translate("advMode.mode.sequence"));
 				break;
-			case AUTO:
+			case field_11923:
 				this.modeButton.setMessage(I18n.translate("advMode.mode.auto"));
 				break;
-			case REDSTONE:
+			case field_11924:
 				this.modeButton.setMessage(I18n.translate("advMode.mode.redstone"));
 		}
 	}
 
 	private void cycleType() {
 		switch (this.mode) {
-			case SEQUENCE:
-				this.mode = CommandBlockBlockEntity.Type.AUTO;
+			case field_11922:
+				this.mode = CommandBlockBlockEntity.Type.field_11923;
 				break;
-			case AUTO:
-				this.mode = CommandBlockBlockEntity.Type.REDSTONE;
+			case field_11923:
+				this.mode = CommandBlockBlockEntity.Type.field_11924;
 				break;
-			case REDSTONE:
-				this.mode = CommandBlockBlockEntity.Type.SEQUENCE;
+			case field_11924:
+				this.mode = CommandBlockBlockEntity.Type.field_11922;
 		}
 	}
 

@@ -9,27 +9,27 @@ public class ChunkTicketType<T> {
 	private final String name;
 	private final Comparator<T> argumentComparator;
 	private final long field_19348;
-	public static final ChunkTicketType<Unit> START = create("start", (unit, unit2) -> 0);
-	public static final ChunkTicketType<Unit> DRAGON = create("dragon", (unit, unit2) -> 0);
-	public static final ChunkTicketType<ChunkPos> PLAYER = create("player", Comparator.comparingLong(ChunkPos::toLong));
-	public static final ChunkTicketType<ChunkPos> FORCED = create("forced", Comparator.comparingLong(ChunkPos::toLong));
-	public static final ChunkTicketType<ChunkPos> LIGHT = create("light", Comparator.comparingLong(ChunkPos::toLong));
-	public static final ChunkTicketType<ColumnPos> PORTAL = create("portal", Comparator.comparingLong(ColumnPos::toLong));
-	public static final ChunkTicketType<Integer> POST_TELEPORT = method_20628("post_teleport", Integer::compareTo, 5);
-	public static final ChunkTicketType<ChunkPos> UNKNOWN = method_20628("unknown", Comparator.comparingLong(ChunkPos::toLong), 1);
+	public static final ChunkTicketType<Unit> field_14030 = create("start", (unit, unit2) -> 0);
+	public static final ChunkTicketType<Unit> field_17264 = create("dragon", (unit, unit2) -> 0);
+	public static final ChunkTicketType<ChunkPos> field_14033 = create("player", Comparator.comparingLong(ChunkPos::toLong));
+	public static final ChunkTicketType<ChunkPos> field_14031 = create("forced", Comparator.comparingLong(ChunkPos::toLong));
+	public static final ChunkTicketType<ChunkPos> field_19270 = create("light", Comparator.comparingLong(ChunkPos::toLong));
+	public static final ChunkTicketType<ColumnPos> field_19280 = create("portal", Comparator.comparingLong(ColumnPos::toLong));
+	public static final ChunkTicketType<Integer> field_19347 = method_20628("post_teleport", Integer::compareTo, 5);
+	public static final ChunkTicketType<ChunkPos> field_14032 = method_20628("unknown", Comparator.comparingLong(ChunkPos::toLong), 1);
 
-	public static <T> ChunkTicketType<T> create(String name, Comparator<T> comparator) {
-		return new ChunkTicketType<>(name, comparator, 0L);
+	public static <T> ChunkTicketType<T> create(String string, Comparator<T> comparator) {
+		return new ChunkTicketType<>(string, comparator, 0L);
 	}
 
 	public static <T> ChunkTicketType<T> method_20628(String string, Comparator<T> comparator, int i) {
 		return new ChunkTicketType<>(string, comparator, (long)i);
 	}
 
-	protected ChunkTicketType(String name, Comparator<T> comparator, long expiryTicks) {
-		this.name = name;
+	protected ChunkTicketType(String string, Comparator<T> comparator, long l) {
+		this.name = string;
 		this.argumentComparator = comparator;
-		this.field_19348 = expiryTicks;
+		this.field_19348 = l;
 	}
 
 	public String toString() {

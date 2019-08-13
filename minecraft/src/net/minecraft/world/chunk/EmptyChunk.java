@@ -11,7 +11,7 @@ import net.minecraft.entity.Entity;
 import net.minecraft.fluid.FluidState;
 import net.minecraft.fluid.Fluids;
 import net.minecraft.server.world.ChunkHolder;
-import net.minecraft.util.Util;
+import net.minecraft.util.SystemUtil;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
 import net.minecraft.util.math.ChunkPos;
@@ -21,26 +21,26 @@ import net.minecraft.world.biome.Biomes;
 import net.minecraft.world.chunk.light.LightingProvider;
 
 public class EmptyChunk extends WorldChunk {
-	private static final Biome[] BIOMES = Util.make(new Biome[256], biomes -> Arrays.fill(biomes, Biomes.PLAINS));
+	private static final Biome[] BIOMES = SystemUtil.consume(new Biome[256], biomes -> Arrays.fill(biomes, Biomes.field_9451));
 
 	public EmptyChunk(World world, ChunkPos chunkPos) {
 		super(world, chunkPos, BIOMES);
 	}
 
 	@Override
-	public BlockState getBlockState(BlockPos pos) {
-		return Blocks.VOID_AIR.getDefaultState();
+	public BlockState getBlockState(BlockPos blockPos) {
+		return Blocks.field_10243.getDefaultState();
 	}
 
 	@Nullable
 	@Override
-	public BlockState setBlockState(BlockPos pos, BlockState state, boolean bl) {
+	public BlockState setBlockState(BlockPos blockPos, BlockState blockState, boolean bl) {
 		return null;
 	}
 
 	@Override
-	public FluidState getFluidState(BlockPos pos) {
-		return Fluids.EMPTY.getDefaultState();
+	public FluidState getFluidState(BlockPos blockPos) {
+		return Fluids.field_15906.getDefaultState();
 	}
 
 	@Nullable
@@ -50,7 +50,7 @@ public class EmptyChunk extends WorldChunk {
 	}
 
 	@Override
-	public int getLuminance(BlockPos pos) {
+	public int getLuminance(BlockPos blockPos) {
 		return 0;
 	}
 
@@ -68,7 +68,7 @@ public class EmptyChunk extends WorldChunk {
 
 	@Nullable
 	@Override
-	public BlockEntity getBlockEntity(BlockPos pos, WorldChunk.CreationType creationType) {
+	public BlockEntity getBlockEntity(BlockPos blockPos, WorldChunk.CreationType creationType) {
 		return null;
 	}
 
@@ -77,7 +77,7 @@ public class EmptyChunk extends WorldChunk {
 	}
 
 	@Override
-	public void setBlockEntity(BlockPos pos, BlockEntity blockEntity) {
+	public void setBlockEntity(BlockPos blockPos, BlockEntity blockEntity) {
 	}
 
 	@Override
@@ -89,11 +89,11 @@ public class EmptyChunk extends WorldChunk {
 	}
 
 	@Override
-	public void getEntities(@Nullable Entity except, Box box, List<Entity> entityList, Predicate<? super Entity> predicate) {
+	public void appendEntities(@Nullable Entity entity, Box box, List<Entity> list, Predicate<? super Entity> predicate) {
 	}
 
 	@Override
-	public <T extends Entity> void getEntities(Class<? extends T> entityClass, Box box, List<T> result, Predicate<? super T> predicate) {
+	public <T extends Entity> void appendEntities(Class<? extends T> class_, Box box, List<T> list, Predicate<? super T> predicate) {
 	}
 
 	@Override
@@ -108,6 +108,6 @@ public class EmptyChunk extends WorldChunk {
 
 	@Override
 	public ChunkHolder.LevelType getLevelType() {
-		return ChunkHolder.LevelType.BORDER;
+		return ChunkHolder.LevelType.field_13876;
 	}
 }

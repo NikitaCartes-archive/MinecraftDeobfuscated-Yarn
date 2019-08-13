@@ -6,6 +6,7 @@ import java.util.List;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.client.network.packet.PaintingSpawnS2CPacket;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.decoration.AbstractDecorationEntity;
@@ -13,7 +14,6 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Items;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.Packet;
-import net.minecraft.network.packet.s2c.play.PaintingSpawnS2CPacket;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
@@ -29,12 +29,12 @@ public class PaintingEntity extends AbstractDecorationEntity {
 		super(entityType, world);
 	}
 
-	public PaintingEntity(World world, BlockPos pos, Direction direction) {
-		super(EntityType.PAINTING, world, pos);
+	public PaintingEntity(World world, BlockPos blockPos, Direction direction) {
+		super(EntityType.field_6120, world, blockPos);
 		List<PaintingMotive> list = Lists.<PaintingMotive>newArrayList();
 		int i = 0;
 
-		for (PaintingMotive paintingMotive : Registry.PAINTING_MOTIVE) {
+		for (PaintingMotive paintingMotive : Registry.MOTIVE) {
 			this.motive = paintingMotive;
 			this.setFacing(direction);
 			if (this.method_6888()) {
@@ -70,15 +70,15 @@ public class PaintingEntity extends AbstractDecorationEntity {
 	}
 
 	@Override
-	public void writeCustomDataToTag(CompoundTag tag) {
-		tag.putString("Motive", Registry.PAINTING_MOTIVE.getId(this.motive).toString());
-		super.writeCustomDataToTag(tag);
+	public void writeCustomDataToTag(CompoundTag compoundTag) {
+		compoundTag.putString("Motive", Registry.MOTIVE.getId(this.motive).toString());
+		super.writeCustomDataToTag(compoundTag);
 	}
 
 	@Override
-	public void readCustomDataFromTag(CompoundTag tag) {
-		this.motive = Registry.PAINTING_MOTIVE.get(Identifier.tryParse(tag.getString("Motive")));
-		super.readCustomDataFromTag(tag);
+	public void readCustomDataFromTag(CompoundTag compoundTag) {
+		this.motive = Registry.MOTIVE.get(Identifier.tryParse(compoundTag.getString("Motive")));
+		super.readCustomDataFromTag(compoundTag);
 	}
 
 	@Override
@@ -93,8 +93,8 @@ public class PaintingEntity extends AbstractDecorationEntity {
 
 	@Override
 	public void onBreak(@Nullable Entity entity) {
-		if (this.world.getGameRules().getBoolean(GameRules.DO_ENTITY_DROPS)) {
-			this.playSound(SoundEvents.ENTITY_PAINTING_BREAK, 1.0F, 1.0F);
+		if (this.world.getGameRules().getBoolean(GameRules.field_19393)) {
+			this.playSound(SoundEvents.field_14809, 1.0F, 1.0F);
 			if (entity instanceof PlayerEntity) {
 				PlayerEntity playerEntity = (PlayerEntity)entity;
 				if (playerEntity.abilities.creativeMode) {
@@ -102,25 +102,25 @@ public class PaintingEntity extends AbstractDecorationEntity {
 				}
 			}
 
-			this.dropItem(Items.PAINTING);
+			this.dropItem(Items.field_8892);
 		}
 	}
 
 	@Override
 	public void onPlace() {
-		this.playSound(SoundEvents.ENTITY_PAINTING_PLACE, 1.0F, 1.0F);
+		this.playSound(SoundEvents.field_14875, 1.0F, 1.0F);
 	}
 
 	@Override
-	public void refreshPositionAndAngles(double x, double y, double z, float yaw, float pitch) {
-		this.updatePosition(x, y, z);
+	public void setPositionAndAngles(double d, double e, double f, float g, float h) {
+		this.setPosition(d, e, f);
 	}
 
 	@Environment(EnvType.CLIENT)
 	@Override
-	public void updateTrackedPositionAndAngles(double x, double y, double z, float yaw, float pitch, int interpolationSteps, boolean interpolate) {
-		BlockPos blockPos = this.attachmentPos.add(x - this.x, y - this.y, z - this.z);
-		this.updatePosition((double)blockPos.getX(), (double)blockPos.getY(), (double)blockPos.getZ());
+	public void updateTrackedPositionAndAngles(double d, double e, double f, float g, float h, int i, boolean bl) {
+		BlockPos blockPos = this.blockPos.add(d - this.x, e - this.y, f - this.z);
+		this.setPosition((double)blockPos.getX(), (double)blockPos.getY(), (double)blockPos.getZ());
 	}
 
 	@Override

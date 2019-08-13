@@ -12,9 +12,9 @@ import com.mojang.brigadier.tree.CommandNode;
 import com.mojang.brigadier.tree.RootCommandNode;
 import java.util.Map;
 import java.util.function.Predicate;
+import net.minecraft.client.network.packet.CommandTreeS2CPacket;
 import net.minecraft.command.CommandException;
 import net.minecraft.command.suggestion.SuggestionProviders;
-import net.minecraft.network.packet.s2c.play.CommandTreeS2CPacket;
 import net.minecraft.server.dedicated.command.BanCommand;
 import net.minecraft.server.dedicated.command.BanIpCommand;
 import net.minecraft.server.dedicated.command.BanListCommand;
@@ -43,7 +43,7 @@ public class CommandManager {
 	private static final Logger LOGGER = LogManager.getLogger();
 	private final CommandDispatcher<ServerCommandSource> dispatcher = new CommandDispatcher<>();
 
-	public CommandManager(boolean isDedicatedServer) {
+	public CommandManager(boolean bl) {
 		AdvancementCommand.register(this.dispatcher);
 		ExecuteCommand.register(this.dispatcher);
 		BossBarCommand.register(this.dispatcher);
@@ -97,7 +97,7 @@ public class CommandManager {
 		TriggerCommand.register(this.dispatcher);
 		WeatherCommand.register(this.dispatcher);
 		WorldBorderCommand.register(this.dispatcher);
-		if (isDedicatedServer) {
+		if (bl) {
 			BanIpCommand.register(this.dispatcher);
 			BanListCommand.register(this.dispatcher);
 			BanCommand.register(this.dispatcher);
@@ -119,40 +119,42 @@ public class CommandManager {
 						"Ambiguity between arguments {} and {} with inputs: {}", this.dispatcher.getPath(commandNode2), this.dispatcher.getPath(commandNode3), collection
 					)
 			);
-		this.dispatcher.setConsumer((commandContext, bl, i) -> commandContext.getSource().onCommandComplete(commandContext, bl, i));
+		this.dispatcher.setConsumer((commandContext, blx, i) -> commandContext.getSource().onCommandComplete(commandContext, blx, i));
 	}
 
-	public int execute(ServerCommandSource commandSource, String command) {
-		StringReader stringReader = new StringReader(command);
+	public int execute(ServerCommandSource serverCommandSource, String string) {
+		StringReader stringReader = new StringReader(string);
 		if (stringReader.canRead() && stringReader.peek() == '/') {
 			stringReader.skip();
 		}
 
-		commandSource.getMinecraftServer().getProfiler().push(command);
+		serverCommandSource.getMinecraftServer().getProfiler().push(string);
 
 		byte var20;
 		try {
-			return this.dispatcher.execute(stringReader, commandSource);
+			return this.dispatcher.execute(stringReader, serverCommandSource);
 		} catch (CommandException var13) {
-			commandSource.sendError(var13.getTextMessage());
+			serverCommandSource.sendError(var13.getMessageText());
 			return 0;
 		} catch (CommandSyntaxException var14) {
-			commandSource.sendError(Texts.toText(var14.getRawMessage()));
+			serverCommandSource.sendError(Texts.toText(var14.getRawMessage()));
 			if (var14.getInput() != null && var14.getCursor() >= 0) {
 				int i = Math.min(var14.getInput().length(), var14.getCursor());
-				Text text = new LiteralText("").formatted(Formatting.GRAY).styled(style -> style.setClickEvent(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND, command)));
+				Text text = new LiteralText("")
+					.formatted(Formatting.field_1080)
+					.styled(style -> style.setClickEvent(new ClickEvent(ClickEvent.Action.field_11745, string)));
 				if (i > 10) {
 					text.append("...");
 				}
 
 				text.append(var14.getInput().substring(Math.max(0, i - 10), i));
 				if (i < var14.getInput().length()) {
-					Text text2 = new LiteralText(var14.getInput().substring(i)).formatted(new Formatting[]{Formatting.RED, Formatting.UNDERLINE});
+					Text text2 = new LiteralText(var14.getInput().substring(i)).formatted(new Formatting[]{Formatting.field_1061, Formatting.field_1073});
 					text.append(text2);
 				}
 
-				text.append(new TranslatableText("command.context.here").formatted(new Formatting[]{Formatting.RED, Formatting.ITALIC}));
-				commandSource.sendError(text);
+				text.append(new TranslatableText("command.context.here").formatted(new Formatting[]{Formatting.field_1061, Formatting.field_1056}));
+				serverCommandSource.sendError(text);
 			}
 
 			return 0;
@@ -171,32 +173,34 @@ public class CommandManager {
 				}
 			}
 
-			commandSource.sendError(new TranslatableText("command.failed").styled(style -> style.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, text3))));
+			serverCommandSource.sendError(
+				new TranslatableText("command.failed").styled(style -> style.setHoverEvent(new HoverEvent(HoverEvent.Action.field_11762, text3)))
+			);
 			var20 = 0;
 		} finally {
-			commandSource.getMinecraftServer().getProfiler().pop();
+			serverCommandSource.getMinecraftServer().getProfiler().pop();
 		}
 
 		return var20;
 	}
 
-	public void sendCommandTree(ServerPlayerEntity player) {
+	public void sendCommandTree(ServerPlayerEntity serverPlayerEntity) {
 		Map<CommandNode<ServerCommandSource>, CommandNode<CommandSource>> map = Maps.<CommandNode<ServerCommandSource>, CommandNode<CommandSource>>newHashMap();
 		RootCommandNode<CommandSource> rootCommandNode = new RootCommandNode<>();
 		map.put(this.dispatcher.getRoot(), rootCommandNode);
-		this.makeTreeForSource(this.dispatcher.getRoot(), rootCommandNode, player.getCommandSource(), map);
-		player.networkHandler.sendPacket(new CommandTreeS2CPacket(rootCommandNode));
+		this.makeTreeForSource(this.dispatcher.getRoot(), rootCommandNode, serverPlayerEntity.getCommandSource(), map);
+		serverPlayerEntity.networkHandler.sendPacket(new CommandTreeS2CPacket(rootCommandNode));
 	}
 
 	private void makeTreeForSource(
-		CommandNode<ServerCommandSource> tree,
-		CommandNode<CommandSource> result,
-		ServerCommandSource source,
-		Map<CommandNode<ServerCommandSource>, CommandNode<CommandSource>> resultNodes
+		CommandNode<ServerCommandSource> commandNode,
+		CommandNode<CommandSource> commandNode2,
+		ServerCommandSource serverCommandSource,
+		Map<CommandNode<ServerCommandSource>, CommandNode<CommandSource>> map
 	) {
-		for (CommandNode<ServerCommandSource> commandNode : tree.getChildren()) {
-			if (commandNode.canUse(source)) {
-				ArgumentBuilder<CommandSource, ?> argumentBuilder = commandNode.createBuilder();
+		for (CommandNode<ServerCommandSource> commandNode3 : commandNode.getChildren()) {
+			if (commandNode3.canUse(serverCommandSource)) {
+				ArgumentBuilder<CommandSource, ?> argumentBuilder = commandNode3.createBuilder();
 				argumentBuilder.requires(commandSource -> true);
 				if (argumentBuilder.getCommand() != null) {
 					argumentBuilder.executes(commandContext -> 0);
@@ -210,14 +214,14 @@ public class CommandManager {
 				}
 
 				if (argumentBuilder.getRedirect() != null) {
-					argumentBuilder.redirect((CommandNode<CommandSource>)resultNodes.get(argumentBuilder.getRedirect()));
+					argumentBuilder.redirect((CommandNode<CommandSource>)map.get(argumentBuilder.getRedirect()));
 				}
 
-				CommandNode<CommandSource> commandNode2 = argumentBuilder.build();
-				resultNodes.put(commandNode, commandNode2);
-				result.addChild(commandNode2);
-				if (!commandNode.getChildren().isEmpty()) {
-					this.makeTreeForSource(commandNode, commandNode2, source, resultNodes);
+				CommandNode<CommandSource> commandNode4 = argumentBuilder.build();
+				map.put(commandNode3, commandNode4);
+				commandNode2.addChild(commandNode4);
+				if (!commandNode3.getChildren().isEmpty()) {
+					this.makeTreeForSource(commandNode3, commandNode4, serverCommandSource, map);
 				}
 			}
 		}
@@ -227,8 +231,8 @@ public class CommandManager {
 		return LiteralArgumentBuilder.literal(string);
 	}
 
-	public static <T> RequiredArgumentBuilder<ServerCommandSource, T> argument(String name, ArgumentType<T> type) {
-		return RequiredArgumentBuilder.argument(name, type);
+	public static <T> RequiredArgumentBuilder<ServerCommandSource, T> argument(String string, ArgumentType<T> argumentType) {
+		return RequiredArgumentBuilder.argument(string, argumentType);
 	}
 
 	public static Predicate<String> getCommandValidator(CommandManager.CommandParser commandParser) {

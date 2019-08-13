@@ -25,21 +25,21 @@ public class ModelItemOverride {
 	private final Identifier modelId;
 	private final Map<Identifier, Float> minPropertyValues;
 
-	public ModelItemOverride(Identifier modelId, Map<Identifier, Float> minPropertyValues) {
-		this.modelId = modelId;
-		this.minPropertyValues = minPropertyValues;
+	public ModelItemOverride(Identifier identifier, Map<Identifier, Float> map) {
+		this.modelId = identifier;
+		this.minPropertyValues = map;
 	}
 
 	public Identifier getModelId() {
 		return this.modelId;
 	}
 
-	boolean matches(ItemStack stack, @Nullable World world, @Nullable LivingEntity entity) {
-		Item item = stack.getItem();
+	boolean matches(ItemStack itemStack, @Nullable World world, @Nullable LivingEntity livingEntity) {
+		Item item = itemStack.getItem();
 
 		for (Entry<Identifier, Float> entry : this.minPropertyValues.entrySet()) {
 			ItemPropertyGetter itemPropertyGetter = item.getPropertyGetter((Identifier)entry.getKey());
-			if (itemPropertyGetter == null || itemPropertyGetter.call(stack, world, entity) < (Float)entry.getValue()) {
+			if (itemPropertyGetter == null || itemPropertyGetter.call(itemStack, world, livingEntity) < (Float)entry.getValue()) {
 				return false;
 			}
 		}
@@ -52,18 +52,18 @@ public class ModelItemOverride {
 		protected Deserializer() {
 		}
 
-		public ModelItemOverride deserialize(JsonElement element, Type type, JsonDeserializationContext context) throws JsonParseException {
-			JsonObject jsonObject = element.getAsJsonObject();
+		public ModelItemOverride method_3475(JsonElement jsonElement, Type type, JsonDeserializationContext jsonDeserializationContext) throws JsonParseException {
+			JsonObject jsonObject = jsonElement.getAsJsonObject();
 			Identifier identifier = new Identifier(JsonHelper.getString(jsonObject, "model"));
 			Map<Identifier, Float> map = this.deserializeMinPropertyValues(jsonObject);
 			return new ModelItemOverride(identifier, map);
 		}
 
-		protected Map<Identifier, Float> deserializeMinPropertyValues(JsonObject object) {
+		protected Map<Identifier, Float> deserializeMinPropertyValues(JsonObject jsonObject) {
 			Map<Identifier, Float> map = Maps.<Identifier, Float>newLinkedHashMap();
-			JsonObject jsonObject = JsonHelper.getObject(object, "predicate");
+			JsonObject jsonObject2 = JsonHelper.getObject(jsonObject, "predicate");
 
-			for (Entry<String, JsonElement> entry : jsonObject.entrySet()) {
+			for (Entry<String, JsonElement> entry : jsonObject2.entrySet()) {
 				map.put(new Identifier((String)entry.getKey()), JsonHelper.asFloat((JsonElement)entry.getValue(), (String)entry.getKey()));
 			}
 

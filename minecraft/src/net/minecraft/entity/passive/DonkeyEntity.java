@@ -14,35 +14,37 @@ public class DonkeyEntity extends AbstractDonkeyEntity {
 	@Override
 	protected SoundEvent getAmbientSound() {
 		super.getAmbientSound();
-		return SoundEvents.ENTITY_DONKEY_AMBIENT;
+		return SoundEvents.field_15094;
 	}
 
 	@Override
 	protected SoundEvent getDeathSound() {
 		super.getDeathSound();
-		return SoundEvents.ENTITY_DONKEY_DEATH;
+		return SoundEvents.field_14827;
 	}
 
 	@Override
-	protected SoundEvent getHurtSound(DamageSource source) {
-		super.getHurtSound(source);
-		return SoundEvents.ENTITY_DONKEY_HURT;
+	protected SoundEvent getHurtSound(DamageSource damageSource) {
+		super.getHurtSound(damageSource);
+		return SoundEvents.field_14781;
 	}
 
 	@Override
-	public boolean canBreedWith(AnimalEntity other) {
-		if (other == this) {
+	public boolean canBreedWith(AnimalEntity animalEntity) {
+		if (animalEntity == this) {
 			return false;
 		} else {
-			return !(other instanceof DonkeyEntity) && !(other instanceof HorseEntity) ? false : this.canBreed() && ((HorseBaseEntity)other).canBreed();
+			return !(animalEntity instanceof DonkeyEntity) && !(animalEntity instanceof HorseEntity)
+				? false
+				: this.canBreed() && ((HorseBaseEntity)animalEntity).canBreed();
 		}
 	}
 
 	@Override
-	public PassiveEntity createChild(PassiveEntity mate) {
-		EntityType<? extends HorseBaseEntity> entityType = mate instanceof HorseEntity ? EntityType.MULE : EntityType.DONKEY;
+	public PassiveEntity createChild(PassiveEntity passiveEntity) {
+		EntityType<? extends HorseBaseEntity> entityType = passiveEntity instanceof HorseEntity ? EntityType.field_6057 : EntityType.field_6067;
 		HorseBaseEntity horseBaseEntity = entityType.create(this.world);
-		this.setChildAttributes(mate, horseBaseEntity);
+		this.setChildAttributes(passiveEntity, horseBaseEntity);
 		return horseBaseEntity;
 	}
 }

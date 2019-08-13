@@ -19,7 +19,7 @@ import net.minecraft.client.gui.widget.TextFieldWidget;
 import net.minecraft.client.gui.widget.ToggleButtonWidget;
 import net.minecraft.client.recipe.book.ClientRecipeBook;
 import net.minecraft.client.recipe.book.RecipeBookGroup;
-import net.minecraft.client.render.DiffuseLighting;
+import net.minecraft.client.render.GuiLighting;
 import net.minecraft.client.resource.language.I18n;
 import net.minecraft.client.resource.language.LanguageDefinition;
 import net.minecraft.client.resource.language.LanguageManager;
@@ -27,11 +27,11 @@ import net.minecraft.client.search.SearchManager;
 import net.minecraft.container.CraftingContainer;
 import net.minecraft.container.Slot;
 import net.minecraft.item.ItemStack;
-import net.minecraft.network.packet.c2s.play.RecipeBookDataC2SPacket;
 import net.minecraft.recipe.Ingredient;
 import net.minecraft.recipe.Recipe;
 import net.minecraft.recipe.RecipeFinder;
 import net.minecraft.recipe.RecipeGridAligner;
+import net.minecraft.server.network.packet.RecipeBookDataC2SPacket;
 import net.minecraft.util.Identifier;
 
 @Environment(EnvType.CLIENT)
@@ -54,23 +54,23 @@ public class RecipeBookWidget extends DrawableHelper implements Drawable, Elemen
 	private int cachedInvChangeCount;
 	private boolean field_3087;
 
-	public void initialize(int parentWidth, int parentHeight, MinecraftClient client, boolean isNarrow, CraftingContainer<?> craftingContainer) {
-		this.client = client;
-		this.parentWidth = parentWidth;
-		this.parentHeight = parentHeight;
+	public void initialize(int i, int j, MinecraftClient minecraftClient, boolean bl, CraftingContainer<?> craftingContainer) {
+		this.client = minecraftClient;
+		this.parentWidth = i;
+		this.parentHeight = j;
 		this.craftingContainer = craftingContainer;
-		client.player.container = craftingContainer;
-		this.recipeBook = client.player.getRecipeBook();
-		this.cachedInvChangeCount = client.player.inventory.getChangeCount();
+		minecraftClient.player.container = craftingContainer;
+		this.recipeBook = minecraftClient.player.getRecipeBook();
+		this.cachedInvChangeCount = minecraftClient.player.inventory.getChangeCount();
 		if (this.isOpen()) {
-			this.reset(isNarrow);
+			this.reset(bl);
 		}
 
-		client.keyboard.enableRepeatEvents(true);
+		minecraftClient.keyboard.enableRepeatEvents(true);
 	}
 
-	public void reset(boolean isNarrow) {
-		this.leftOffset = isNarrow ? 0 : 86;
+	public void reset(boolean bl) {
+		this.leftOffset = bl ? 0 : 86;
 		int i = (this.parentWidth - 147) / 2 - this.leftOffset;
 		int j = (this.parentHeight - 166) / 2;
 		this.recipeFinder.clear();
@@ -125,15 +125,15 @@ public class RecipeBookWidget extends DrawableHelper implements Drawable, Elemen
 		this.client.keyboard.enableRepeatEvents(false);
 	}
 
-	public int findLeftEdge(boolean narrow, int width, int containerWidth) {
-		int i;
-		if (this.isOpen() && !narrow) {
-			i = 177 + (width - containerWidth - 200) / 2;
+	public int findLeftEdge(boolean bl, int i, int j) {
+		int k;
+		if (this.isOpen() && !bl) {
+			k = 177 + (i - j - 200) / 2;
 		} else {
-			i = (width - containerWidth) / 2;
+			k = (i - j) / 2;
 		}
 
-		return i;
+		return k;
 	}
 
 	public void toggleOpen() {
@@ -144,9 +144,9 @@ public class RecipeBookWidget extends DrawableHelper implements Drawable, Elemen
 		return this.recipeBook.isGuiOpen();
 	}
 
-	protected void setOpen(boolean opened) {
-		this.recipeBook.setGuiOpen(opened);
-		if (!opened) {
+	protected void setOpen(boolean bl) {
+		this.recipeBook.setGuiOpen(bl);
+		if (!bl) {
 			this.recipesArea.hideAlternates();
 		}
 
@@ -162,7 +162,7 @@ public class RecipeBookWidget extends DrawableHelper implements Drawable, Elemen
 		}
 	}
 
-	private void refreshResults(boolean resetCurrentPage) {
+	private void refreshResults(boolean bl) {
 		List<RecipeResultCollection> list = this.recipeBook.getResultsForGroup(this.currentTab.getCategory());
 		list.forEach(
 			recipeResultCollection -> recipeResultCollection.computeCraftables(
@@ -171,7 +171,7 @@ public class RecipeBookWidget extends DrawableHelper implements Drawable, Elemen
 		);
 		List<RecipeResultCollection> list2 = Lists.<RecipeResultCollection>newArrayList(list);
 		list2.removeIf(recipeResultCollection -> !recipeResultCollection.isInitialized());
-		list2.removeIf(recipeResultCollection -> !recipeResultCollection.hasFittingRecipes());
+		list2.removeIf(recipeResultCollection -> !recipeResultCollection.hasFittableResults());
 		String string = this.searchField.getText();
 		if (!string.isEmpty()) {
 			ObjectSet<RecipeResultCollection> objectSet = new ObjectLinkedOpenHashSet<>(
@@ -181,10 +181,10 @@ public class RecipeBookWidget extends DrawableHelper implements Drawable, Elemen
 		}
 
 		if (this.recipeBook.isFilteringCraftable(this.craftingContainer)) {
-			list2.removeIf(recipeResultCollection -> !recipeResultCollection.hasCraftableRecipes());
+			list2.removeIf(recipeResultCollection -> !recipeResultCollection.hasCraftableResults());
 		}
 
-		this.recipesArea.setResults(list2, resetCurrentPage);
+		this.recipesArea.setResults(list2, bl);
 	}
 
 	private void refreshTabButtons() {
@@ -195,7 +195,7 @@ public class RecipeBookWidget extends DrawableHelper implements Drawable, Elemen
 
 		for (RecipeGroupButtonWidget recipeGroupButtonWidget : this.tabButtons) {
 			RecipeBookGroup recipeBookGroup = recipeGroupButtonWidget.getCategory();
-			if (recipeBookGroup == RecipeBookGroup.SEARCH || recipeBookGroup == RecipeBookGroup.FURNACE_SEARCH) {
+			if (recipeBookGroup == RecipeBookGroup.field_1809 || recipeBookGroup == RecipeBookGroup.field_1804) {
 				recipeGroupButtonWidget.visible = true;
 				recipeGroupButtonWidget.setPos(i, j + 27 * l++);
 			} else if (recipeGroupButtonWidget.hasKnownRecipes(this.recipeBook)) {
@@ -222,41 +222,41 @@ public class RecipeBookWidget extends DrawableHelper implements Drawable, Elemen
 	}
 
 	@Override
-	public void render(int mouseX, int mouseY, float delta) {
+	public void render(int i, int j, float f) {
 		if (this.isOpen()) {
-			DiffuseLighting.enableForItems();
+			GuiLighting.enableForItems();
 			GlStateManager.disableLighting();
 			GlStateManager.pushMatrix();
 			GlStateManager.translatef(0.0F, 0.0F, 100.0F);
 			this.client.getTextureManager().bindTexture(TEXTURE);
 			GlStateManager.color4f(1.0F, 1.0F, 1.0F, 1.0F);
-			int i = (this.parentWidth - 147) / 2 - this.leftOffset;
-			int j = (this.parentHeight - 166) / 2;
-			this.blit(i, j, 1, 1, 147, 166);
-			this.searchField.render(mouseX, mouseY, delta);
-			DiffuseLighting.disable();
+			int k = (this.parentWidth - 147) / 2 - this.leftOffset;
+			int l = (this.parentHeight - 166) / 2;
+			this.blit(k, l, 1, 1, 147, 166);
+			this.searchField.render(i, j, f);
+			GuiLighting.disable();
 
 			for (RecipeGroupButtonWidget recipeGroupButtonWidget : this.tabButtons) {
-				recipeGroupButtonWidget.render(mouseX, mouseY, delta);
+				recipeGroupButtonWidget.render(i, j, f);
 			}
 
-			this.toggleCraftableButton.render(mouseX, mouseY, delta);
-			this.recipesArea.draw(i, j, mouseX, mouseY, delta);
+			this.toggleCraftableButton.render(i, j, f);
+			this.recipesArea.draw(k, l, i, j, f);
 			GlStateManager.popMatrix();
 		}
 	}
 
-	public void drawTooltip(int left, int top, int mouseX, int mouseY) {
+	public void drawTooltip(int i, int j, int k, int l) {
 		if (this.isOpen()) {
-			this.recipesArea.drawTooltip(mouseX, mouseY);
+			this.recipesArea.drawTooltip(k, l);
 			if (this.toggleCraftableButton.isHovered()) {
 				String string = this.getCraftableButtonText();
 				if (this.client.currentScreen != null) {
-					this.client.currentScreen.renderTooltip(string, mouseX, mouseY);
+					this.client.currentScreen.renderTooltip(string, k, l);
 				}
 			}
 
-			this.drawGhostSlotTooltip(left, top, mouseX, mouseY);
+			this.drawGhostSlotTooltip(i, j, k, l);
 		}
 	}
 
@@ -281,14 +281,14 @@ public class RecipeBookWidget extends DrawableHelper implements Drawable, Elemen
 		}
 	}
 
-	public void drawGhostSlots(int left, int top, boolean isBig, float lastFrameDuration) {
-		this.ghostSlots.draw(this.client, left, top, isBig, lastFrameDuration);
+	public void drawGhostSlots(int i, int j, boolean bl, float f) {
+		this.ghostSlots.draw(this.client, i, j, bl, f);
 	}
 
 	@Override
-	public boolean mouseClicked(double mouseX, double mouseY, int button) {
+	public boolean mouseClicked(double d, double e, int i) {
 		if (this.isOpen() && !this.client.player.isSpectator()) {
-			if (this.recipesArea.mouseClicked(mouseX, mouseY, button, (this.parentWidth - 147) / 2 - this.leftOffset, (this.parentHeight - 166) / 2, 147, 166)) {
+			if (this.recipesArea.mouseClicked(d, e, i, (this.parentWidth - 147) / 2 - this.leftOffset, (this.parentHeight - 166) / 2, 147, 166)) {
 				Recipe<?> recipe = this.recipesArea.getLastClickedRecipe();
 				RecipeResultCollection recipeResultCollection = this.recipesArea.getLastClickedResults();
 				if (recipe != null && recipeResultCollection != null) {
@@ -304,9 +304,9 @@ public class RecipeBookWidget extends DrawableHelper implements Drawable, Elemen
 				}
 
 				return true;
-			} else if (this.searchField.mouseClicked(mouseX, mouseY, button)) {
+			} else if (this.searchField.mouseClicked(d, e, i)) {
 				return true;
-			} else if (this.toggleCraftableButton.mouseClicked(mouseX, mouseY, button)) {
+			} else if (this.toggleCraftableButton.mouseClicked(d, e, i)) {
 				boolean bl = this.toggleFilteringCraftable();
 				this.toggleCraftableButton.setToggled(bl);
 				this.sendBookDataPacket();
@@ -314,7 +314,7 @@ public class RecipeBookWidget extends DrawableHelper implements Drawable, Elemen
 				return true;
 			} else {
 				for (RecipeGroupButtonWidget recipeGroupButtonWidget : this.tabButtons) {
-					if (recipeGroupButtonWidget.mouseClicked(mouseX, mouseY, button)) {
+					if (recipeGroupButtonWidget.mouseClicked(d, e, i)) {
 						if (this.currentTab != recipeGroupButtonWidget) {
 							this.currentTab.setToggled(false);
 							this.currentTab = recipeGroupButtonWidget;
@@ -350,19 +350,19 @@ public class RecipeBookWidget extends DrawableHelper implements Drawable, Elemen
 	}
 
 	@Override
-	public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
+	public boolean keyPressed(int i, int j, int k) {
 		this.field_3087 = false;
 		if (!this.isOpen() || this.client.player.isSpectator()) {
 			return false;
-		} else if (keyCode == 256 && !this.isWide()) {
+		} else if (i == 256 && !this.isWide()) {
 			this.setOpen(false);
 			return true;
-		} else if (this.searchField.keyPressed(keyCode, scanCode, modifiers)) {
+		} else if (this.searchField.keyPressed(i, j, k)) {
 			this.refreshSearchResults();
 			return true;
-		} else if (this.searchField.isFocused() && this.searchField.isVisible() && keyCode != 256) {
+		} else if (this.searchField.isFocused() && this.searchField.isVisible() && i != 256) {
 			return true;
-		} else if (this.client.options.keyChat.matchesKey(keyCode, scanCode) && !this.searchField.isFocused()) {
+		} else if (this.client.options.keyChat.matchesKey(i, j) && !this.searchField.isFocused()) {
 			this.field_3087 = true;
 			this.searchField.method_1876(true);
 			return true;
@@ -372,27 +372,27 @@ public class RecipeBookWidget extends DrawableHelper implements Drawable, Elemen
 	}
 
 	@Override
-	public boolean keyReleased(int keyCode, int scanCode, int modifiers) {
+	public boolean keyReleased(int i, int j, int k) {
 		this.field_3087 = false;
-		return Element.super.keyReleased(keyCode, scanCode, modifiers);
+		return Element.super.keyReleased(i, j, k);
 	}
 
 	@Override
-	public boolean charTyped(char chr, int keyCode) {
+	public boolean charTyped(char c, int i) {
 		if (this.field_3087) {
 			return false;
 		} else if (!this.isOpen() || this.client.player.isSpectator()) {
 			return false;
-		} else if (this.searchField.charTyped(chr, keyCode)) {
+		} else if (this.searchField.charTyped(c, i)) {
 			this.refreshSearchResults();
 			return true;
 		} else {
-			return Element.super.charTyped(chr, keyCode);
+			return Element.super.charTyped(c, i);
 		}
 	}
 
 	@Override
-	public boolean isMouseOver(double mouseX, double mouseY) {
+	public boolean isMouseOver(double d, double e) {
 		return false;
 	}
 
@@ -409,7 +409,7 @@ public class RecipeBookWidget extends DrawableHelper implements Drawable, Elemen
 		if ("excitedze".equals(string)) {
 			LanguageManager languageManager = this.client.getLanguageManager();
 			LanguageDefinition languageDefinition = languageManager.getLanguage("en_pt");
-			if (languageManager.getLanguage().compareTo(languageDefinition) == 0) {
+			if (languageManager.getLanguage().method_4673(languageDefinition) == 0) {
 				return;
 			}
 
@@ -433,16 +433,16 @@ public class RecipeBookWidget extends DrawableHelper implements Drawable, Elemen
 	}
 
 	@Override
-	public void onRecipesDisplayed(List<Recipe<?>> recipes) {
-		for (Recipe<?> recipe : recipes) {
+	public void onRecipesDisplayed(List<Recipe<?>> list) {
+		for (Recipe<?> recipe : list) {
 			this.client.player.onRecipeDisplayed(recipe);
 		}
 	}
 
-	public void showGhostRecipe(Recipe<?> recipe, List<Slot> slots) {
+	public void showGhostRecipe(Recipe<?> recipe, List<Slot> list) {
 		ItemStack itemStack = recipe.getOutput();
 		this.ghostSlots.setRecipe(recipe);
-		this.ghostSlots.addSlot(Ingredient.ofStacks(itemStack), ((Slot)slots.get(0)).xPosition, ((Slot)slots.get(0)).yPosition);
+		this.ghostSlots.addSlot(Ingredient.ofStacks(itemStack), ((Slot)list.get(0)).xPosition, ((Slot)list.get(0)).yPosition);
 		this.alignRecipeToGrid(
 			this.craftingContainer.getCraftingWidth(),
 			this.craftingContainer.getCraftingHeight(),
@@ -454,11 +454,11 @@ public class RecipeBookWidget extends DrawableHelper implements Drawable, Elemen
 	}
 
 	@Override
-	public void acceptAlignedInput(Iterator<Ingredient> inputs, int slot, int amount, int gridX, int gridY) {
-		Ingredient ingredient = (Ingredient)inputs.next();
+	public void acceptAlignedInput(Iterator<Ingredient> iterator, int i, int j, int k, int l) {
+		Ingredient ingredient = (Ingredient)iterator.next();
 		if (!ingredient.isEmpty()) {
-			Slot slot2 = (Slot)this.craftingContainer.slots.get(slot);
-			this.ghostSlots.addSlot(ingredient, slot2.xPosition, slot2.yPosition);
+			Slot slot = (Slot)this.craftingContainer.slotList.get(i);
+			this.ghostSlots.addSlot(ingredient, slot.xPosition, slot.yPosition);
 		}
 	}
 

@@ -5,9 +5,9 @@ import net.fabricmc.api.Environment;
 
 @Environment(EnvType.CLIENT)
 public interface WindowEventHandler {
-	void onWindowFocusChanged(boolean focused);
+	void onWindowFocusChanged(boolean bl);
 
-	void updateDisplay(boolean respectFramerateLimit);
+	void updateDisplay(boolean bl);
 
 	void onResolutionChanged();
 }

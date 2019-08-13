@@ -1,6 +1,6 @@
 package net.minecraft.network;
 
 public enum NetworkSide {
-	SERVERBOUND,
-	CLIENTBOUND;
+	field_11941,
+	field_11942;
 }

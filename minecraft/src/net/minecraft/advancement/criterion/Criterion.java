@@ -9,23 +9,23 @@ import net.minecraft.util.Identifier;
 public interface Criterion<T extends CriterionConditions> {
 	Identifier getId();
 
-	void beginTrackingCondition(PlayerAdvancementTracker manager, Criterion.ConditionsContainer<T> conditionsContainer);
+	void beginTrackingCondition(PlayerAdvancementTracker playerAdvancementTracker, Criterion.ConditionsContainer<T> conditionsContainer);
 
-	void endTrackingCondition(PlayerAdvancementTracker manager, Criterion.ConditionsContainer<T> conditionsContainer);
+	void endTrackingCondition(PlayerAdvancementTracker playerAdvancementTracker, Criterion.ConditionsContainer<T> conditionsContainer);
 
-	void endTracking(PlayerAdvancementTracker tracker);
+	void endTracking(PlayerAdvancementTracker playerAdvancementTracker);
 
-	T conditionsFromJson(JsonObject obj, JsonDeserializationContext context);
+	T conditionsFromJson(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext);
 
 	public static class ConditionsContainer<T extends CriterionConditions> {
 		private final T conditions;
 		private final Advancement advancement;
 		private final String id;
 
-		public ConditionsContainer(T conditions, Advancement advancement, String id) {
-			this.conditions = conditions;
+		public ConditionsContainer(T criterionConditions, Advancement advancement, String string) {
+			this.conditions = criterionConditions;
 			this.advancement = advancement;
-			this.id = id;
+			this.id = string;
 		}
 
 		public T getConditions() {
@@ -36,11 +36,11 @@ public interface Criterion<T extends CriterionConditions> {
 			playerAdvancementTracker.grantCriterion(this.advancement, this.id);
 		}
 
-		public boolean equals(Object o) {
-			if (this == o) {
+		public boolean equals(Object object) {
+			if (this == object) {
 				return true;
-			} else if (o != null && this.getClass() == o.getClass()) {
-				Criterion.ConditionsContainer<?> conditionsContainer = (Criterion.ConditionsContainer<?>)o;
+			} else if (object != null && this.getClass() == object.getClass()) {
+				Criterion.ConditionsContainer<?> conditionsContainer = (Criterion.ConditionsContainer<?>)object;
 				if (!this.conditions.equals(conditionsContainer.conditions)) {
 					return false;
 				} else {

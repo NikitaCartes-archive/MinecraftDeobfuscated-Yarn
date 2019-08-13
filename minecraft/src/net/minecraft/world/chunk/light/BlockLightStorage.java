@@ -6,33 +6,33 @@ import net.minecraft.util.math.ChunkSectionPos;
 import net.minecraft.world.LightType;
 import net.minecraft.world.chunk.ChunkNibbleArray;
 import net.minecraft.world.chunk.ChunkProvider;
-import net.minecraft.world.chunk.ChunkToNibbleArrayMap;
+import net.minecraft.world.chunk.WorldNibbleStorage;
 
 public class BlockLightStorage extends LightStorage<BlockLightStorage.Data> {
 	protected BlockLightStorage(ChunkProvider chunkProvider) {
-		super(LightType.BLOCK, chunkProvider, new BlockLightStorage.Data(new Long2ObjectOpenHashMap<>()));
+		super(LightType.field_9282, chunkProvider, new BlockLightStorage.Data(new Long2ObjectOpenHashMap<>()));
 	}
 
 	@Override
-	protected int getLight(long blockPos) {
-		long l = ChunkSectionPos.fromGlobalPos(blockPos);
-		ChunkNibbleArray chunkNibbleArray = this.getLightArray(l, false);
+	protected int getLight(long l) {
+		long m = ChunkSectionPos.toChunkLong(l);
+		ChunkNibbleArray chunkNibbleArray = this.getDataForChunk(m, false);
 		return chunkNibbleArray == null
 			? 0
 			: chunkNibbleArray.get(
-				ChunkSectionPos.getLocalCoord(BlockPos.unpackLongX(blockPos)),
-				ChunkSectionPos.getLocalCoord(BlockPos.unpackLongY(blockPos)),
-				ChunkSectionPos.getLocalCoord(BlockPos.unpackLongZ(blockPos))
+				ChunkSectionPos.toLocalCoord(BlockPos.unpackLongX(l)),
+				ChunkSectionPos.toLocalCoord(BlockPos.unpackLongY(l)),
+				ChunkSectionPos.toLocalCoord(BlockPos.unpackLongZ(l))
 			);
 	}
 
-	public static final class Data extends ChunkToNibbleArrayMap<BlockLightStorage.Data> {
-		public Data(Long2ObjectOpenHashMap<ChunkNibbleArray> map) {
-			super(map);
+	public static final class Data extends WorldNibbleStorage<BlockLightStorage.Data> {
+		public Data(Long2ObjectOpenHashMap<ChunkNibbleArray> long2ObjectOpenHashMap) {
+			super(long2ObjectOpenHashMap);
 		}
 
-		public BlockLightStorage.Data copy() {
-			return new BlockLightStorage.Data(this.arrays.clone());
+		public BlockLightStorage.Data method_15443() {
+			return new BlockLightStorage.Data(this.arraysByChunk.clone());
 		}
 	}
 }

@@ -10,7 +10,7 @@ import net.minecraft.util.Identifier;
 
 @Environment(EnvType.CLIENT)
 public interface Texture {
-	void pushFilter(boolean bilinear, boolean mipmap);
+	void pushFilter(boolean bl, boolean bl2);
 
 	void popFilter();
 

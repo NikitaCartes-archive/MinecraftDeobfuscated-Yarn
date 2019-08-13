@@ -20,7 +20,7 @@ public class DispenserBlockEntity extends LootableContainerBlockEntity {
 	}
 
 	public DispenserBlockEntity() {
-		this(BlockEntityType.DISPENSER);
+		this(BlockEntityType.field_11887);
 	}
 
 	@Override
@@ -53,10 +53,10 @@ public class DispenserBlockEntity extends LootableContainerBlockEntity {
 		return i;
 	}
 
-	public int addToFirstFreeSlot(ItemStack stack) {
+	public int addToFirstFreeSlot(ItemStack itemStack) {
 		for (int i = 0; i < this.inventory.size(); i++) {
 			if (this.inventory.get(i).isEmpty()) {
-				this.setInvStack(i, stack);
+				this.setInvStack(i, itemStack);
 				return i;
 			}
 		}
@@ -70,22 +70,22 @@ public class DispenserBlockEntity extends LootableContainerBlockEntity {
 	}
 
 	@Override
-	public void fromTag(CompoundTag tag) {
-		super.fromTag(tag);
+	public void fromTag(CompoundTag compoundTag) {
+		super.fromTag(compoundTag);
 		this.inventory = DefaultedList.ofSize(this.getInvSize(), ItemStack.EMPTY);
-		if (!this.deserializeLootTable(tag)) {
-			Inventories.fromTag(tag, this.inventory);
+		if (!this.deserializeLootTable(compoundTag)) {
+			Inventories.fromTag(compoundTag, this.inventory);
 		}
 	}
 
 	@Override
-	public CompoundTag toTag(CompoundTag tag) {
-		super.toTag(tag);
-		if (!this.serializeLootTable(tag)) {
-			Inventories.toTag(tag, this.inventory);
+	public CompoundTag toTag(CompoundTag compoundTag) {
+		super.toTag(compoundTag);
+		if (!this.serializeLootTable(compoundTag)) {
+			Inventories.toTag(compoundTag, this.inventory);
 		}
 
-		return tag;
+		return compoundTag;
 	}
 
 	@Override
@@ -94,8 +94,8 @@ public class DispenserBlockEntity extends LootableContainerBlockEntity {
 	}
 
 	@Override
-	protected void setInvStackList(DefaultedList<ItemStack> list) {
-		this.inventory = list;
+	protected void setInvStackList(DefaultedList<ItemStack> defaultedList) {
+		this.inventory = defaultedList;
 	}
 
 	@Override

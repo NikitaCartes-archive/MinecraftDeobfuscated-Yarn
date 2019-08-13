@@ -43,8 +43,8 @@ public abstract class AbstractFurnaceBlockEntity extends LockableContainerBlockE
 	private int cookTimeTotal;
 	protected final PropertyDelegate propertyDelegate = new PropertyDelegate() {
 		@Override
-		public int get(int index) {
-			switch (index) {
+		public int get(int i) {
+			switch (i) {
 				case 0:
 					return AbstractFurnaceBlockEntity.this.burnTime;
 				case 1:
@@ -59,19 +59,19 @@ public abstract class AbstractFurnaceBlockEntity extends LockableContainerBlockE
 		}
 
 		@Override
-		public void set(int index, int value) {
-			switch (index) {
+		public void set(int i, int j) {
+			switch (i) {
 				case 0:
-					AbstractFurnaceBlockEntity.this.burnTime = value;
+					AbstractFurnaceBlockEntity.this.burnTime = j;
 					break;
 				case 1:
-					AbstractFurnaceBlockEntity.this.fuelTime = value;
+					AbstractFurnaceBlockEntity.this.fuelTime = j;
 					break;
 				case 2:
-					AbstractFurnaceBlockEntity.this.cookTime = value;
+					AbstractFurnaceBlockEntity.this.cookTime = j;
 					break;
 				case 3:
-					AbstractFurnaceBlockEntity.this.cookTimeTotal = value;
+					AbstractFurnaceBlockEntity.this.cookTimeTotal = j;
 			}
 		}
 
@@ -90,77 +90,77 @@ public abstract class AbstractFurnaceBlockEntity extends LockableContainerBlockE
 
 	public static Map<Item, Integer> createFuelTimeMap() {
 		Map<Item, Integer> map = Maps.<Item, Integer>newLinkedHashMap();
-		addFuel(map, Items.LAVA_BUCKET, 20000);
-		addFuel(map, Blocks.COAL_BLOCK, 16000);
-		addFuel(map, Items.BLAZE_ROD, 2400);
-		addFuel(map, Items.COAL, 1600);
-		addFuel(map, Items.CHARCOAL, 1600);
-		addFuel(map, ItemTags.LOGS, 300);
-		addFuel(map, ItemTags.PLANKS, 300);
-		addFuel(map, ItemTags.WOODEN_STAIRS, 300);
-		addFuel(map, ItemTags.WOODEN_SLABS, 150);
-		addFuel(map, ItemTags.WOODEN_TRAPDOORS, 300);
-		addFuel(map, ItemTags.WOODEN_PRESSURE_PLATES, 300);
-		addFuel(map, Blocks.OAK_FENCE, 300);
-		addFuel(map, Blocks.BIRCH_FENCE, 300);
-		addFuel(map, Blocks.SPRUCE_FENCE, 300);
-		addFuel(map, Blocks.JUNGLE_FENCE, 300);
-		addFuel(map, Blocks.DARK_OAK_FENCE, 300);
-		addFuel(map, Blocks.ACACIA_FENCE, 300);
-		addFuel(map, Blocks.OAK_FENCE_GATE, 300);
-		addFuel(map, Blocks.BIRCH_FENCE_GATE, 300);
-		addFuel(map, Blocks.SPRUCE_FENCE_GATE, 300);
-		addFuel(map, Blocks.JUNGLE_FENCE_GATE, 300);
-		addFuel(map, Blocks.DARK_OAK_FENCE_GATE, 300);
-		addFuel(map, Blocks.ACACIA_FENCE_GATE, 300);
-		addFuel(map, Blocks.NOTE_BLOCK, 300);
-		addFuel(map, Blocks.BOOKSHELF, 300);
-		addFuel(map, Blocks.LECTERN, 300);
-		addFuel(map, Blocks.JUKEBOX, 300);
-		addFuel(map, Blocks.CHEST, 300);
-		addFuel(map, Blocks.TRAPPED_CHEST, 300);
-		addFuel(map, Blocks.CRAFTING_TABLE, 300);
-		addFuel(map, Blocks.DAYLIGHT_DETECTOR, 300);
-		addFuel(map, ItemTags.BANNERS, 300);
-		addFuel(map, Items.BOW, 300);
-		addFuel(map, Items.FISHING_ROD, 300);
-		addFuel(map, Blocks.LADDER, 300);
-		addFuel(map, ItemTags.SIGNS, 200);
-		addFuel(map, Items.WOODEN_SHOVEL, 200);
-		addFuel(map, Items.WOODEN_SWORD, 200);
-		addFuel(map, Items.WOODEN_HOE, 200);
-		addFuel(map, Items.WOODEN_AXE, 200);
-		addFuel(map, Items.WOODEN_PICKAXE, 200);
-		addFuel(map, ItemTags.WOODEN_DOORS, 200);
-		addFuel(map, ItemTags.BOATS, 200);
-		addFuel(map, ItemTags.WOOL, 100);
-		addFuel(map, ItemTags.WOODEN_BUTTONS, 100);
-		addFuel(map, Items.STICK, 100);
-		addFuel(map, ItemTags.SAPLINGS, 100);
-		addFuel(map, Items.BOWL, 100);
-		addFuel(map, ItemTags.CARPETS, 67);
-		addFuel(map, Blocks.DRIED_KELP_BLOCK, 4001);
-		addFuel(map, Items.CROSSBOW, 300);
-		addFuel(map, Blocks.BAMBOO, 50);
-		addFuel(map, Blocks.DEAD_BUSH, 100);
-		addFuel(map, Blocks.SCAFFOLDING, 50);
-		addFuel(map, Blocks.LOOM, 300);
-		addFuel(map, Blocks.BARREL, 300);
-		addFuel(map, Blocks.CARTOGRAPHY_TABLE, 300);
-		addFuel(map, Blocks.FLETCHING_TABLE, 300);
-		addFuel(map, Blocks.SMITHING_TABLE, 300);
-		addFuel(map, Blocks.COMPOSTER, 300);
+		addFuel(map, Items.field_8187, 20000);
+		addFuel(map, Blocks.field_10381, 16000);
+		addFuel(map, Items.field_8894, 2400);
+		addFuel(map, Items.field_8713, 1600);
+		addFuel(map, Items.field_8665, 1600);
+		addFuel(map, ItemTags.field_15539, 300);
+		addFuel(map, ItemTags.field_15537, 300);
+		addFuel(map, ItemTags.field_15557, 300);
+		addFuel(map, ItemTags.field_15534, 150);
+		addFuel(map, ItemTags.field_15550, 300);
+		addFuel(map, ItemTags.field_15540, 300);
+		addFuel(map, Blocks.field_10620, 300);
+		addFuel(map, Blocks.field_10299, 300);
+		addFuel(map, Blocks.field_10020, 300);
+		addFuel(map, Blocks.field_10319, 300);
+		addFuel(map, Blocks.field_10132, 300);
+		addFuel(map, Blocks.field_10144, 300);
+		addFuel(map, Blocks.field_10188, 300);
+		addFuel(map, Blocks.field_10513, 300);
+		addFuel(map, Blocks.field_10291, 300);
+		addFuel(map, Blocks.field_10041, 300);
+		addFuel(map, Blocks.field_10196, 300);
+		addFuel(map, Blocks.field_10457, 300);
+		addFuel(map, Blocks.field_10179, 300);
+		addFuel(map, Blocks.field_10504, 300);
+		addFuel(map, Blocks.field_16330, 300);
+		addFuel(map, Blocks.field_10223, 300);
+		addFuel(map, Blocks.field_10034, 300);
+		addFuel(map, Blocks.field_10380, 300);
+		addFuel(map, Blocks.field_9980, 300);
+		addFuel(map, Blocks.field_10429, 300);
+		addFuel(map, ItemTags.field_15556, 300);
+		addFuel(map, Items.field_8102, 300);
+		addFuel(map, Items.field_8378, 300);
+		addFuel(map, Blocks.field_9983, 300);
+		addFuel(map, ItemTags.field_15533, 200);
+		addFuel(map, Items.field_8876, 200);
+		addFuel(map, Items.field_8091, 200);
+		addFuel(map, Items.field_8167, 200);
+		addFuel(map, Items.field_8406, 200);
+		addFuel(map, Items.field_8647, 200);
+		addFuel(map, ItemTags.field_15552, 200);
+		addFuel(map, ItemTags.field_15536, 200);
+		addFuel(map, ItemTags.field_15544, 100);
+		addFuel(map, ItemTags.field_15555, 100);
+		addFuel(map, Items.field_8600, 100);
+		addFuel(map, ItemTags.field_15528, 100);
+		addFuel(map, Items.field_8428, 100);
+		addFuel(map, ItemTags.field_15542, 67);
+		addFuel(map, Blocks.field_10342, 4001);
+		addFuel(map, Items.field_8399, 300);
+		addFuel(map, Blocks.field_10211, 50);
+		addFuel(map, Blocks.field_10428, 100);
+		addFuel(map, Blocks.field_16492, 50);
+		addFuel(map, Blocks.field_10083, 300);
+		addFuel(map, Blocks.field_16328, 300);
+		addFuel(map, Blocks.field_16336, 300);
+		addFuel(map, Blocks.field_16331, 300);
+		addFuel(map, Blocks.field_16329, 300);
+		addFuel(map, Blocks.field_17563, 300);
 		return map;
 	}
 
-	private static void addFuel(Map<Item, Integer> fuelTimes, Tag<Item> tag, int fuelTime) {
+	private static void addFuel(Map<Item, Integer> map, Tag<Item> tag, int i) {
 		for (Item item : tag.values()) {
-			fuelTimes.put(item, fuelTime);
+			map.put(item, i);
 		}
 	}
 
-	private static void addFuel(Map<Item, Integer> fuelTimes, ItemConvertible item, int fuelTime) {
-		fuelTimes.put(item.asItem(), fuelTime);
+	private static void addFuel(Map<Item, Integer> map, ItemConvertible itemConvertible, int i) {
+		map.put(itemConvertible.asItem(), i);
 	}
 
 	private boolean isBurning() {
@@ -168,40 +168,40 @@ public abstract class AbstractFurnaceBlockEntity extends LockableContainerBlockE
 	}
 
 	@Override
-	public void fromTag(CompoundTag tag) {
-		super.fromTag(tag);
+	public void fromTag(CompoundTag compoundTag) {
+		super.fromTag(compoundTag);
 		this.inventory = DefaultedList.ofSize(this.getInvSize(), ItemStack.EMPTY);
-		Inventories.fromTag(tag, this.inventory);
-		this.burnTime = tag.getShort("BurnTime");
-		this.cookTime = tag.getShort("CookTime");
-		this.cookTimeTotal = tag.getShort("CookTimeTotal");
+		Inventories.fromTag(compoundTag, this.inventory);
+		this.burnTime = compoundTag.getShort("BurnTime");
+		this.cookTime = compoundTag.getShort("CookTime");
+		this.cookTimeTotal = compoundTag.getShort("CookTimeTotal");
 		this.fuelTime = this.getFuelTime(this.inventory.get(1));
-		int i = tag.getShort("RecipesUsedSize");
+		int i = compoundTag.getShort("RecipesUsedSize");
 
 		for (int j = 0; j < i; j++) {
-			Identifier identifier = new Identifier(tag.getString("RecipeLocation" + j));
-			int k = tag.getInt("RecipeAmount" + j);
+			Identifier identifier = new Identifier(compoundTag.getString("RecipeLocation" + j));
+			int k = compoundTag.getInt("RecipeAmount" + j);
 			this.recipesUsed.put(identifier, k);
 		}
 	}
 
 	@Override
-	public CompoundTag toTag(CompoundTag tag) {
-		super.toTag(tag);
-		tag.putShort("BurnTime", (short)this.burnTime);
-		tag.putShort("CookTime", (short)this.cookTime);
-		tag.putShort("CookTimeTotal", (short)this.cookTimeTotal);
-		Inventories.toTag(tag, this.inventory);
-		tag.putShort("RecipesUsedSize", (short)this.recipesUsed.size());
+	public CompoundTag toTag(CompoundTag compoundTag) {
+		super.toTag(compoundTag);
+		compoundTag.putShort("BurnTime", (short)this.burnTime);
+		compoundTag.putShort("CookTime", (short)this.cookTime);
+		compoundTag.putShort("CookTimeTotal", (short)this.cookTimeTotal);
+		Inventories.toTag(compoundTag, this.inventory);
+		compoundTag.putShort("RecipesUsedSize", (short)this.recipesUsed.size());
 		int i = 0;
 
 		for (Entry<Identifier, Integer> entry : this.recipesUsed.entrySet()) {
-			tag.putString("RecipeLocation" + i, ((Identifier)entry.getKey()).toString());
-			tag.putInt("RecipeAmount" + i, (Integer)entry.getValue());
+			compoundTag.putString("RecipeLocation" + i, ((Identifier)entry.getKey()).toString());
+			compoundTag.putInt("RecipeAmount" + i, (Integer)entry.getValue());
 			i++;
 		}
 
-		return tag;
+		return compoundTag;
 	}
 
 	@Override
@@ -295,19 +295,19 @@ public abstract class AbstractFurnaceBlockEntity extends LockableContainerBlockE
 				this.setLastRecipe(recipe);
 			}
 
-			if (itemStack.getItem() == Blocks.WET_SPONGE.asItem() && !this.inventory.get(1).isEmpty() && this.inventory.get(1).getItem() == Items.BUCKET) {
-				this.inventory.set(1, new ItemStack(Items.WATER_BUCKET));
+			if (itemStack.getItem() == Blocks.field_10562.asItem() && !this.inventory.get(1).isEmpty() && this.inventory.get(1).getItem() == Items.field_8550) {
+				this.inventory.set(1, new ItemStack(Items.field_8705));
 			}
 
 			itemStack.decrement(1);
 		}
 	}
 
-	protected int getFuelTime(ItemStack fuel) {
-		if (fuel.isEmpty()) {
+	protected int getFuelTime(ItemStack itemStack) {
+		if (itemStack.isEmpty()) {
 			return 0;
 		} else {
-			Item item = fuel.getItem();
+			Item item = itemStack.getItem();
 			return (Integer)createFuelTimeMap().getOrDefault(item, 0);
 		}
 	}
@@ -316,29 +316,29 @@ public abstract class AbstractFurnaceBlockEntity extends LockableContainerBlockE
 		return (Integer)this.world.getRecipeManager().getFirstMatch(this.recipeType, this, this.world).map(AbstractCookingRecipe::getCookTime).orElse(200);
 	}
 
-	public static boolean canUseAsFuel(ItemStack stack) {
-		return createFuelTimeMap().containsKey(stack.getItem());
+	public static boolean canUseAsFuel(ItemStack itemStack) {
+		return createFuelTimeMap().containsKey(itemStack.getItem());
 	}
 
 	@Override
-	public int[] getInvAvailableSlots(Direction side) {
-		if (side == Direction.DOWN) {
+	public int[] getInvAvailableSlots(Direction direction) {
+		if (direction == Direction.field_11033) {
 			return BOTTOM_SLOTS;
 		} else {
-			return side == Direction.UP ? TOP_SLOTS : SIDE_SLOTS;
+			return direction == Direction.field_11036 ? TOP_SLOTS : SIDE_SLOTS;
 		}
 	}
 
 	@Override
-	public boolean canInsertInvStack(int slot, ItemStack stack, @Nullable Direction dir) {
-		return this.isValidInvStack(slot, stack);
+	public boolean canInsertInvStack(int i, ItemStack itemStack, @Nullable Direction direction) {
+		return this.isValidInvStack(i, itemStack);
 	}
 
 	@Override
-	public boolean canExtractInvStack(int slot, ItemStack stack, Direction dir) {
-		if (dir == Direction.DOWN && slot == 1) {
-			Item item = stack.getItem();
-			if (item != Items.WATER_BUCKET && item != Items.BUCKET) {
+	public boolean canExtractInvStack(int i, ItemStack itemStack, Direction direction) {
+		if (direction == Direction.field_11033 && i == 1) {
+			Item item = itemStack.getItem();
+			if (item != Items.field_8705 && item != Items.field_8550) {
 				return false;
 			}
 		}
@@ -363,30 +363,30 @@ public abstract class AbstractFurnaceBlockEntity extends LockableContainerBlockE
 	}
 
 	@Override
-	public ItemStack getInvStack(int slot) {
-		return this.inventory.get(slot);
+	public ItemStack getInvStack(int i) {
+		return this.inventory.get(i);
 	}
 
 	@Override
-	public ItemStack takeInvStack(int slot, int amount) {
-		return Inventories.splitStack(this.inventory, slot, amount);
+	public ItemStack takeInvStack(int i, int j) {
+		return Inventories.splitStack(this.inventory, i, j);
 	}
 
 	@Override
-	public ItemStack removeInvStack(int slot) {
-		return Inventories.removeStack(this.inventory, slot);
+	public ItemStack removeInvStack(int i) {
+		return Inventories.removeStack(this.inventory, i);
 	}
 
 	@Override
-	public void setInvStack(int slot, ItemStack stack) {
-		ItemStack itemStack = this.inventory.get(slot);
-		boolean bl = !stack.isEmpty() && stack.isItemEqualIgnoreDamage(itemStack) && ItemStack.areTagsEqual(stack, itemStack);
-		this.inventory.set(slot, stack);
-		if (stack.getCount() > this.getInvMaxStackAmount()) {
-			stack.setCount(this.getInvMaxStackAmount());
+	public void setInvStack(int i, ItemStack itemStack) {
+		ItemStack itemStack2 = this.inventory.get(i);
+		boolean bl = !itemStack.isEmpty() && itemStack.isItemEqualIgnoreDamage(itemStack2) && ItemStack.areTagsEqual(itemStack, itemStack2);
+		this.inventory.set(i, itemStack);
+		if (itemStack.getCount() > this.getInvMaxStackAmount()) {
+			itemStack.setCount(this.getInvMaxStackAmount());
 		}
 
-		if (slot == 0 && !bl) {
+		if (i == 0 && !bl) {
 			this.cookTimeTotal = this.getCookTime();
 			this.cookTime = 0;
 			this.markDirty();
@@ -394,21 +394,21 @@ public abstract class AbstractFurnaceBlockEntity extends LockableContainerBlockE
 	}
 
 	@Override
-	public boolean canPlayerUseInv(PlayerEntity player) {
+	public boolean canPlayerUseInv(PlayerEntity playerEntity) {
 		return this.world.getBlockEntity(this.pos) != this
 			? false
-			: player.squaredDistanceTo((double)this.pos.getX() + 0.5, (double)this.pos.getY() + 0.5, (double)this.pos.getZ() + 0.5) <= 64.0;
+			: playerEntity.squaredDistanceTo((double)this.pos.getX() + 0.5, (double)this.pos.getY() + 0.5, (double)this.pos.getZ() + 0.5) <= 64.0;
 	}
 
 	@Override
-	public boolean isValidInvStack(int slot, ItemStack stack) {
-		if (slot == 2) {
+	public boolean isValidInvStack(int i, ItemStack itemStack) {
+		if (i == 2) {
 			return false;
-		} else if (slot != 1) {
+		} else if (i != 1) {
 			return true;
 		} else {
-			ItemStack itemStack = this.inventory.get(1);
-			return canUseAsFuel(stack) || stack.getItem() == Items.BUCKET && itemStack.getItem() != Items.BUCKET;
+			ItemStack itemStack2 = this.inventory.get(1);
+			return canUseAsFuel(itemStack) || itemStack.getItem() == Items.field_8550 && itemStack2.getItem() != Items.field_8550;
 		}
 	}
 
@@ -431,39 +431,39 @@ public abstract class AbstractFurnaceBlockEntity extends LockableContainerBlockE
 	}
 
 	@Override
-	public void unlockLastRecipe(PlayerEntity player) {
+	public void unlockLastRecipe(PlayerEntity playerEntity) {
 	}
 
-	public void dropExperience(PlayerEntity player) {
+	public void dropExperience(PlayerEntity playerEntity) {
 		List<Recipe<?>> list = Lists.<Recipe<?>>newArrayList();
 
 		for (Entry<Identifier, Integer> entry : this.recipesUsed.entrySet()) {
-			player.world.getRecipeManager().get((Identifier)entry.getKey()).ifPresent(recipe -> {
+			playerEntity.world.getRecipeManager().get((Identifier)entry.getKey()).ifPresent(recipe -> {
 				list.add(recipe);
-				dropExperience(player, (Integer)entry.getValue(), ((AbstractCookingRecipe)recipe).getExperience());
+				dropExperience(playerEntity, (Integer)entry.getValue(), ((AbstractCookingRecipe)recipe).getExperience());
 			});
 		}
 
-		player.unlockRecipes(list);
+		playerEntity.unlockRecipes(list);
 		this.recipesUsed.clear();
 	}
 
-	private static void dropExperience(PlayerEntity player, int totalExperience, float experienceFraction) {
-		if (experienceFraction == 0.0F) {
-			totalExperience = 0;
-		} else if (experienceFraction < 1.0F) {
-			int i = MathHelper.floor((float)totalExperience * experienceFraction);
-			if (i < MathHelper.ceil((float)totalExperience * experienceFraction) && Math.random() < (double)((float)totalExperience * experienceFraction - (float)i)) {
-				i++;
+	private static void dropExperience(PlayerEntity playerEntity, int i, float f) {
+		if (f == 0.0F) {
+			i = 0;
+		} else if (f < 1.0F) {
+			int j = MathHelper.floor((float)i * f);
+			if (j < MathHelper.ceil((float)i * f) && Math.random() < (double)((float)i * f - (float)j)) {
+				j++;
 			}
 
-			totalExperience = i;
+			i = j;
 		}
 
-		while (totalExperience > 0) {
-			int i = ExperienceOrbEntity.roundToOrbSize(totalExperience);
-			totalExperience -= i;
-			player.world.spawnEntity(new ExperienceOrbEntity(player.world, player.x, player.y + 0.5, player.z + 0.5, i));
+		while (i > 0) {
+			int j = ExperienceOrbEntity.roundToOrbSize(i);
+			i -= j;
+			playerEntity.world.spawnEntity(new ExperienceOrbEntity(playerEntity.world, playerEntity.x, playerEntity.y + 0.5, playerEntity.z + 0.5, j));
 		}
 	}
 

@@ -12,8 +12,8 @@ import net.minecraft.entity.ai.pathing.Path;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.poi.PointOfInterestStorage;
-import net.minecraft.world.poi.PointOfInterestType;
+import net.minecraft.village.PointOfInterestStorage;
+import net.minecraft.village.PointOfInterestType;
 
 public class NearestBedSensor extends Sensor<MobEntity> {
 	private final Long2LongMap field_20295 = new Long2LongOpenHashMap();
@@ -26,10 +26,10 @@ public class NearestBedSensor extends Sensor<MobEntity> {
 
 	@Override
 	public Set<MemoryModuleType<?>> getOutputMemoryModules() {
-		return ImmutableSet.of(MemoryModuleType.NEAREST_BED);
+		return ImmutableSet.of(MemoryModuleType.field_19007);
 	}
 
-	protected void sense(ServerWorld serverWorld, MobEntity mobEntity) {
+	protected void method_21646(ServerWorld serverWorld, MobEntity mobEntity) {
 		if (mobEntity.isBaby()) {
 			this.field_20296 = 0;
 			this.field_20297 = serverWorld.getTime() + (long)serverWorld.getRandom().nextInt(20);
@@ -46,14 +46,14 @@ public class NearestBedSensor extends Sensor<MobEntity> {
 				}
 			};
 			Stream<BlockPos> stream = pointOfInterestStorage.method_21647(
-				PointOfInterestType.HOME.getCompletionCondition(), predicate, new BlockPos(mobEntity), 48, PointOfInterestStorage.OccupationStatus.ANY
+				PointOfInterestType.field_18517.getCompletionCondition(), predicate, new BlockPos(mobEntity), 48, PointOfInterestStorage.OccupationStatus.field_18489
 			);
-			Path path = mobEntity.getNavigation().method_21643(stream, PointOfInterestType.HOME.method_21648());
+			Path path = mobEntity.getNavigation().method_21643(stream, PointOfInterestType.field_18517.method_21648());
 			if (path != null && path.method_21655()) {
 				BlockPos blockPos = path.method_48();
 				Optional<PointOfInterestType> optional = pointOfInterestStorage.getType(blockPos);
 				if (optional.isPresent()) {
-					mobEntity.getBrain().putMemory(MemoryModuleType.NEAREST_BED, blockPos);
+					mobEntity.getBrain().putMemory(MemoryModuleType.field_19007, blockPos);
 				}
 			} else if (this.field_20296 < 5) {
 				this.field_20295.long2LongEntrySet().removeIf(entry -> entry.getLongValue() < this.field_20297);

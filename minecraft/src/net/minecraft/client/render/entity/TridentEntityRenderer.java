@@ -22,7 +22,7 @@ public class TridentEntityRenderer extends EntityRenderer<TridentEntity> {
 		super(entityRenderDispatcher);
 	}
 
-	public void render(TridentEntity tridentEntity, double d, double e, double f, float g, float h) {
+	public void method_4133(TridentEntity tridentEntity, double d, double e, double f, float g, float h) {
 		this.bindEntityTexture(tridentEntity);
 		GlStateManager.color4f(1.0F, 1.0F, 1.0F, 1.0F);
 		GlStateManager.pushMatrix();
@@ -37,7 +37,7 @@ public class TridentEntityRenderer extends EntityRenderer<TridentEntity> {
 		GlStateManager.enableLighting();
 	}
 
-	protected Identifier getTexture(TridentEntity tridentEntity) {
+	protected Identifier method_4134(TridentEntity tridentEntity) {
 		return SKIN;
 	}
 
@@ -45,7 +45,7 @@ public class TridentEntityRenderer extends EntityRenderer<TridentEntity> {
 		Entity entity = tridentEntity.getOwner();
 		if (entity != null && tridentEntity.isNoClip()) {
 			Tessellator tessellator = Tessellator.getInstance();
-			BufferBuilder bufferBuilder = tessellator.getBuffer();
+			BufferBuilder bufferBuilder = tessellator.getBufferBuilder();
 			double i = (double)(MathHelper.lerp(h * 0.5F, entity.yaw, entity.prevYaw) * (float) (Math.PI / 180.0));
 			double j = Math.cos(i);
 			double k = Math.sin(i);

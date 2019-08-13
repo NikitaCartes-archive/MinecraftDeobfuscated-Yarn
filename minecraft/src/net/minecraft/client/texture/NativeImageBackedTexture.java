@@ -36,9 +36,9 @@ public class NativeImageBackedTexture extends AbstractTexture implements AutoClo
 		return this.image;
 	}
 
-	public void setImage(NativeImage image) throws Exception {
+	public void setImage(NativeImage nativeImage) throws Exception {
 		this.image.close();
-		this.image = image;
+		this.image = nativeImage;
 	}
 
 	public void close() {

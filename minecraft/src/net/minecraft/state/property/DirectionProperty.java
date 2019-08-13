@@ -8,19 +8,19 @@ import java.util.stream.Collectors;
 import net.minecraft.util.math.Direction;
 
 public class DirectionProperty extends EnumProperty<Direction> {
-	protected DirectionProperty(String name, Collection<Direction> values) {
-		super(name, Direction.class, values);
+	protected DirectionProperty(String string, Collection<Direction> collection) {
+		super(string, Direction.class, collection);
 	}
 
-	public static DirectionProperty of(String name, Predicate<Direction> filter) {
-		return of(name, (Collection<Direction>)Arrays.stream(Direction.values()).filter(filter).collect(Collectors.toList()));
+	public static DirectionProperty of(String string, Predicate<Direction> predicate) {
+		return of(string, (Collection<Direction>)Arrays.stream(Direction.values()).filter(predicate).collect(Collectors.toList()));
 	}
 
-	public static DirectionProperty of(String name, Direction... values) {
-		return of(name, Lists.<Direction>newArrayList(values));
+	public static DirectionProperty of(String string, Direction... directions) {
+		return of(string, Lists.<Direction>newArrayList(directions));
 	}
 
-	public static DirectionProperty of(String name, Collection<Direction> values) {
-		return new DirectionProperty(name, values);
+	public static DirectionProperty of(String string, Collection<Direction> collection) {
+		return new DirectionProperty(string, collection);
 	}
 }

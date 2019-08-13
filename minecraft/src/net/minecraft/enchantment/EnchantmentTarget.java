@@ -15,11 +15,11 @@ import net.minecraft.item.SwordItem;
 import net.minecraft.item.TridentItem;
 
 public enum EnchantmentTarget {
-	ALL {
+	field_9075 {
 		@Override
 		public boolean isAcceptableItem(Item item) {
 			for (EnchantmentTarget enchantmentTarget : EnchantmentTarget.values()) {
-				if (enchantmentTarget != EnchantmentTarget.ALL && enchantmentTarget.isAcceptableItem(item)) {
+				if (enchantmentTarget != EnchantmentTarget.field_9075 && enchantmentTarget.isAcceptableItem(item)) {
 					return true;
 				}
 			}
@@ -27,80 +27,80 @@ public enum EnchantmentTarget {
 			return false;
 		}
 	},
-	ARMOR {
+	field_9068 {
 		@Override
 		public boolean isAcceptableItem(Item item) {
 			return item instanceof ArmorItem;
 		}
 	},
-	ARMOR_FEET {
+	field_9079 {
 		@Override
 		public boolean isAcceptableItem(Item item) {
-			return item instanceof ArmorItem && ((ArmorItem)item).getSlotType() == EquipmentSlot.FEET;
+			return item instanceof ArmorItem && ((ArmorItem)item).getSlotType() == EquipmentSlot.field_6166;
 		}
 	},
-	ARMOR_LEGS {
+	field_9076 {
 		@Override
 		public boolean isAcceptableItem(Item item) {
-			return item instanceof ArmorItem && ((ArmorItem)item).getSlotType() == EquipmentSlot.LEGS;
+			return item instanceof ArmorItem && ((ArmorItem)item).getSlotType() == EquipmentSlot.field_6172;
 		}
 	},
-	ARMOR_CHEST {
+	field_9071 {
 		@Override
 		public boolean isAcceptableItem(Item item) {
-			return item instanceof ArmorItem && ((ArmorItem)item).getSlotType() == EquipmentSlot.CHEST;
+			return item instanceof ArmorItem && ((ArmorItem)item).getSlotType() == EquipmentSlot.field_6174;
 		}
 	},
-	ARMOR_HEAD {
+	field_9080 {
 		@Override
 		public boolean isAcceptableItem(Item item) {
-			return item instanceof ArmorItem && ((ArmorItem)item).getSlotType() == EquipmentSlot.HEAD;
+			return item instanceof ArmorItem && ((ArmorItem)item).getSlotType() == EquipmentSlot.field_6169;
 		}
 	},
-	WEAPON {
+	field_9074 {
 		@Override
 		public boolean isAcceptableItem(Item item) {
 			return item instanceof SwordItem;
 		}
 	},
-	DIGGER {
+	field_9069 {
 		@Override
 		public boolean isAcceptableItem(Item item) {
 			return item instanceof MiningToolItem;
 		}
 	},
-	FISHING_ROD {
+	field_9072 {
 		@Override
 		public boolean isAcceptableItem(Item item) {
 			return item instanceof FishingRodItem;
 		}
 	},
-	TRIDENT {
+	field_9073 {
 		@Override
 		public boolean isAcceptableItem(Item item) {
 			return item instanceof TridentItem;
 		}
 	},
-	BREAKABLE {
+	field_9082 {
 		@Override
 		public boolean isAcceptableItem(Item item) {
 			return item.isDamageable();
 		}
 	},
-	BOW {
+	field_9070 {
 		@Override
 		public boolean isAcceptableItem(Item item) {
 			return item instanceof BowItem;
 		}
 	},
-	WEARABLE {
+	field_9078 {
 		@Override
 		public boolean isAcceptableItem(Item item) {
 			Block block = Block.getBlockFromItem(item);
 			return item instanceof ArmorItem || item instanceof ElytraItem || block instanceof AbstractSkullBlock || block instanceof PumpkinBlock;
 		}
 	},
-	CROSSBOW {
+	field_9081 {
 		@Override
 		public boolean isAcceptableItem(Item item) {
 			return item instanceof CrossbowItem;

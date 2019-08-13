@@ -23,21 +23,21 @@ public class LevelGeneratorType {
 	private boolean info;
 	private boolean customizable;
 
-	private LevelGeneratorType(int id, String name) {
-		this(id, name, name, 0);
+	private LevelGeneratorType(int i, String string) {
+		this(i, string, string, 0);
 	}
 
-	private LevelGeneratorType(int id, String name, int version) {
-		this(id, name, name, version);
+	private LevelGeneratorType(int i, String string, int j) {
+		this(i, string, string, j);
 	}
 
-	private LevelGeneratorType(int id, String name, String storedName, int version) {
-		this.name = name;
-		this.storedName = storedName;
-		this.version = version;
+	private LevelGeneratorType(int i, String string, String string2, int j) {
+		this.name = string;
+		this.storedName = string2;
+		this.version = j;
 		this.visible = true;
-		this.id = id;
-		TYPES[id] = this;
+		this.id = i;
+		TYPES[i] = this;
 	}
 
 	public String getName() {
@@ -62,8 +62,8 @@ public class LevelGeneratorType {
 		return this.version;
 	}
 
-	public LevelGeneratorType getTypeForVersion(int version) {
-		return this == DEFAULT && version == 0 ? DEFAULT_1_1 : this;
+	public LevelGeneratorType getTypeForVersion(int i) {
+		return this == DEFAULT && i == 0 ? DEFAULT_1_1 : this;
 	}
 
 	@Environment(EnvType.CLIENT)
@@ -71,13 +71,13 @@ public class LevelGeneratorType {
 		return this.customizable;
 	}
 
-	public LevelGeneratorType setCustomizable(boolean customizable) {
-		this.customizable = customizable;
+	public LevelGeneratorType setCustomizable(boolean bl) {
+		this.customizable = bl;
 		return this;
 	}
 
-	private LevelGeneratorType setVisible(boolean visible) {
-		this.visible = visible;
+	private LevelGeneratorType setVisible(boolean bl) {
+		this.visible = bl;
 		return this;
 	}
 
@@ -96,9 +96,9 @@ public class LevelGeneratorType {
 	}
 
 	@Nullable
-	public static LevelGeneratorType getTypeFromName(String name) {
+	public static LevelGeneratorType getTypeFromName(String string) {
 		for (LevelGeneratorType levelGeneratorType : TYPES) {
-			if (levelGeneratorType != null && levelGeneratorType.name.equalsIgnoreCase(name)) {
+			if (levelGeneratorType != null && levelGeneratorType.name.equalsIgnoreCase(string)) {
 				return levelGeneratorType;
 			}
 		}

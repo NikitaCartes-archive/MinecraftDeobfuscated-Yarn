@@ -6,11 +6,11 @@ import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.BlockPos;
 
 public class RunAroundAfterRaidTask extends FindWalkTargetTask {
-	public RunAroundAfterRaidTask(float walkSpeed) {
-		super(walkSpeed);
+	public RunAroundAfterRaidTask(float f) {
+		super(f);
 	}
 
-	protected boolean shouldRun(ServerWorld serverWorld, MobEntityWithAi mobEntityWithAi) {
+	protected boolean method_19989(ServerWorld serverWorld, MobEntityWithAi mobEntityWithAi) {
 		Raid raid = serverWorld.getRaidAt(new BlockPos(mobEntityWithAi));
 		return raid != null && raid.hasWon() && super.shouldRun(serverWorld, mobEntityWithAi);
 	}

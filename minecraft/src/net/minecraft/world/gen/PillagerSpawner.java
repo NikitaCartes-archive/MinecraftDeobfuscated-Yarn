@@ -14,8 +14,8 @@ import net.minecraft.world.biome.Biome;
 public class PillagerSpawner {
 	private int ticksUntilNextSpawn;
 
-	public int spawn(ServerWorld serverWorld, boolean spawnMonsters, boolean spawnAnimals) {
-		if (!spawnMonsters) {
+	public int spawn(ServerWorld serverWorld, boolean bl, boolean bl2) {
+		if (!bl) {
 			return 0;
 		} else {
 			Random random = serverWorld.random;
@@ -25,7 +25,7 @@ public class PillagerSpawner {
 			} else {
 				this.ticksUntilNextSpawn = this.ticksUntilNextSpawn + 12000 + random.nextInt(1200);
 				long l = serverWorld.getTimeOfDay() / 24000L;
-				if (l < 5L || !serverWorld.isDay()) {
+				if (l < 5L || !serverWorld.isDaylight()) {
 					return 0;
 				} else if (random.nextInt(5) != 0) {
 					return 0;
@@ -51,7 +51,7 @@ public class PillagerSpawner {
 							} else {
 								Biome biome = serverWorld.getBiome(mutable);
 								Biome.Category category = biome.getCategory();
-								if (category == Biome.Category.MUSHROOM) {
+								if (category == Biome.Category.field_9365) {
 									return 0;
 								} else {
 									int m = 0;
@@ -59,7 +59,7 @@ public class PillagerSpawner {
 
 									for (int o = 0; o < n; o++) {
 										m++;
-										mutable.setY(serverWorld.getTopPosition(Heightmap.Type.MOTION_BLOCKING_NO_LEAVES, mutable).getY());
+										mutable.setY(serverWorld.getTopPosition(Heightmap.Type.field_13203, mutable).getY());
 										if (o == 0) {
 											if (!this.spawnOneEntity(serverWorld, mutable, random, true)) {
 												break;
@@ -83,18 +83,18 @@ public class PillagerSpawner {
 	}
 
 	private boolean spawnOneEntity(World world, BlockPos blockPos, Random random, boolean bl) {
-		if (!PatrolEntity.method_20739(EntityType.PILLAGER, world, SpawnType.PATROL, blockPos, random)) {
+		if (!PatrolEntity.method_20739(EntityType.field_6105, world, SpawnType.field_16527, blockPos, random)) {
 			return false;
 		} else {
-			PatrolEntity patrolEntity = EntityType.PILLAGER.create(world);
+			PatrolEntity patrolEntity = EntityType.field_6105.create(world);
 			if (patrolEntity != null) {
 				if (bl) {
 					patrolEntity.setPatrolLeader(true);
 					patrolEntity.setRandomPatrolTarget();
 				}
 
-				patrolEntity.updatePosition((double)blockPos.getX(), (double)blockPos.getY(), (double)blockPos.getZ());
-				patrolEntity.initialize(world, world.getLocalDifficulty(blockPos), SpawnType.PATROL, null, null);
+				patrolEntity.setPosition((double)blockPos.getX(), (double)blockPos.getY(), (double)blockPos.getZ());
+				patrolEntity.initialize(world, world.getLocalDifficulty(blockPos), SpawnType.field_16527, null, null);
 				world.spawnEntity(patrolEntity);
 				return true;
 			} else {

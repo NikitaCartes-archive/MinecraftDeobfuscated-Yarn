@@ -13,11 +13,11 @@ import net.minecraft.world.chunk.Chunk;
 import net.minecraft.world.gen.ChunkRandom;
 
 public class FrozenOceanSurfaceBuilder extends SurfaceBuilder<TernarySurfaceConfig> {
-	protected static final BlockState PACKED_ICE = Blocks.PACKED_ICE.getDefaultState();
-	protected static final BlockState SNOW_BLOCK = Blocks.SNOW_BLOCK.getDefaultState();
-	private static final BlockState AIR = Blocks.AIR.getDefaultState();
-	private static final BlockState GRAVEL = Blocks.GRAVEL.getDefaultState();
-	private static final BlockState ICE = Blocks.ICE.getDefaultState();
+	protected static final BlockState PACKED_ICE = Blocks.field_10225.getDefaultState();
+	protected static final BlockState SNOW_BLOCK = Blocks.field_10491.getDefaultState();
+	private static final BlockState AIR = Blocks.field_10124.getDefaultState();
+	private static final BlockState GRAVEL = Blocks.field_10255.getDefaultState();
+	private static final BlockState ICE = Blocks.field_10295.getDefaultState();
 	private OctaveSimplexNoiseSampler field_15644;
 	private OctaveSimplexNoiseSampler field_15642;
 	private long seed;
@@ -26,7 +26,7 @@ public class FrozenOceanSurfaceBuilder extends SurfaceBuilder<TernarySurfaceConf
 		super(function);
 	}
 
-	public void generate(
+	public void method_15221(
 		Random random,
 		Chunk chunk,
 		Biome biome,
@@ -118,12 +118,12 @@ public class FrozenOceanSurfaceBuilder extends SurfaceBuilder<TernarySurfaceConf
 				} else if (t > 0) {
 					t--;
 					chunk.setBlockState(mutable, blockState3, false);
-					if (t == 0 && blockState3.getBlock() == Blocks.SAND && s > 1) {
+					if (t == 0 && blockState3.getBlock() == Blocks.field_10102 && s > 1) {
 						t = random.nextInt(4) + Math.max(0, x - 63);
-						blockState3 = blockState3.getBlock() == Blocks.RED_SAND ? Blocks.RED_SANDSTONE.getDefaultState() : Blocks.SANDSTONE.getDefaultState();
+						blockState3 = blockState3.getBlock() == Blocks.field_10534 ? Blocks.field_10344.getDefaultState() : Blocks.field_9979.getDefaultState();
 					}
 				}
-			} else if (blockState5.getBlock() == Blocks.PACKED_ICE && u <= v && x > w) {
+			} else if (blockState5.getBlock() == Blocks.field_10225 && u <= v && x > w) {
 				chunk.setBlockState(mutable, SNOW_BLOCK, false);
 				u++;
 			}
@@ -131,13 +131,13 @@ public class FrozenOceanSurfaceBuilder extends SurfaceBuilder<TernarySurfaceConf
 	}
 
 	@Override
-	public void initSeed(long seed) {
-		if (this.seed != seed || this.field_15644 == null || this.field_15642 == null) {
-			Random random = new ChunkRandom(seed);
+	public void initSeed(long l) {
+		if (this.seed != l || this.field_15644 == null || this.field_15642 == null) {
+			Random random = new ChunkRandom(l);
 			this.field_15644 = new OctaveSimplexNoiseSampler(random, 4);
 			this.field_15642 = new OctaveSimplexNoiseSampler(random, 1);
 		}
 
-		this.seed = seed;
+		this.seed = l;
 	}
 }

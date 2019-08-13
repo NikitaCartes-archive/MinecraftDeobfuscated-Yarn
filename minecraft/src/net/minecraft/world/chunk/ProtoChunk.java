@@ -45,7 +45,7 @@ public class ProtoChunk implements Chunk {
 	@Nullable
 	private volatile LightingProvider lightingProvider;
 	private final Map<Heightmap.Type, Heightmap> heightmaps = Maps.newEnumMap(Heightmap.Type.class);
-	private volatile ChunkStatus status = ChunkStatus.EMPTY;
+	private volatile ChunkStatus status = ChunkStatus.field_12798;
 	private final Map<BlockPos, BlockEntity> blockEntities = Maps.<BlockPos, BlockEntity>newHashMap();
 	private final Map<BlockPos, CompoundTag> blockEntityTags = Maps.<BlockPos, CompoundTag>newHashMap();
 	private final ChunkSection[] sections = new ChunkSection[16];
@@ -67,7 +67,7 @@ public class ProtoChunk implements Chunk {
 			upgradeData,
 			null,
 			new ChunkTickScheduler<>(block -> block == null || block.getDefaultState().isAir(), chunkPos),
-			new ChunkTickScheduler<>(fluid -> fluid == null || fluid == Fluids.EMPTY, chunkPos)
+			new ChunkTickScheduler<>(fluid -> fluid == null || fluid == Fluids.field_15906, chunkPos)
 		);
 	}
 
@@ -92,24 +92,28 @@ public class ProtoChunk implements Chunk {
 	}
 
 	@Override
-	public BlockState getBlockState(BlockPos pos) {
-		int i = pos.getY();
+	public BlockState getBlockState(BlockPos blockPos) {
+		int i = blockPos.getY();
 		if (World.isHeightInvalid(i)) {
-			return Blocks.VOID_AIR.getDefaultState();
+			return Blocks.field_10243.getDefaultState();
 		} else {
 			ChunkSection chunkSection = this.getSectionArray()[i >> 4];
-			return ChunkSection.isEmpty(chunkSection) ? Blocks.AIR.getDefaultState() : chunkSection.getBlockState(pos.getX() & 15, i & 15, pos.getZ() & 15);
+			return ChunkSection.isEmpty(chunkSection)
+				? Blocks.field_10124.getDefaultState()
+				: chunkSection.getBlockState(blockPos.getX() & 15, i & 15, blockPos.getZ() & 15);
 		}
 	}
 
 	@Override
-	public FluidState getFluidState(BlockPos pos) {
-		int i = pos.getY();
+	public FluidState getFluidState(BlockPos blockPos) {
+		int i = blockPos.getY();
 		if (World.isHeightInvalid(i)) {
-			return Fluids.EMPTY.getDefaultState();
+			return Fluids.field_15906.getDefaultState();
 		} else {
 			ChunkSection chunkSection = this.getSectionArray()[i >> 4];
-			return ChunkSection.isEmpty(chunkSection) ? Fluids.EMPTY.getDefaultState() : chunkSection.getFluidState(pos.getX() & 15, i & 15, pos.getZ() & 15);
+			return ChunkSection.isEmpty(chunkSection)
+				? Fluids.field_15906.getDefaultState()
+				: chunkSection.getFluidState(blockPos.getX() & 15, i & 15, blockPos.getZ() & 15);
 		}
 	}
 
@@ -128,43 +132,43 @@ public class ProtoChunk implements Chunk {
 		return shortLists;
 	}
 
-	public void addLightSource(short chunkSliceRel, int sectionY) {
-		this.addLightSource(joinBlockPos(chunkSliceRel, sectionY, this.pos));
+	public void addLightSource(short s, int i) {
+		this.addLightSource(joinBlockPos(s, i, this.pos));
 	}
 
-	public void addLightSource(BlockPos pos) {
-		this.lightSources.add(pos.toImmutable());
+	public void addLightSource(BlockPos blockPos) {
+		this.lightSources.add(blockPos.toImmutable());
 	}
 
 	@Nullable
 	@Override
-	public BlockState setBlockState(BlockPos pos, BlockState state, boolean bl) {
-		int i = pos.getX();
-		int j = pos.getY();
-		int k = pos.getZ();
+	public BlockState setBlockState(BlockPos blockPos, BlockState blockState, boolean bl) {
+		int i = blockPos.getX();
+		int j = blockPos.getY();
+		int k = blockPos.getZ();
 		if (j >= 0 && j < 256) {
-			if (this.sections[j >> 4] == WorldChunk.EMPTY_SECTION && state.getBlock() == Blocks.AIR) {
-				return state;
+			if (this.sections[j >> 4] == WorldChunk.EMPTY_SECTION && blockState.getBlock() == Blocks.field_10124) {
+				return blockState;
 			} else {
-				if (state.getLuminance() > 0) {
+				if (blockState.getLuminance() > 0) {
 					this.lightSources.add(new BlockPos((i & 15) + this.getPos().getStartX(), j, (k & 15) + this.getPos().getStartZ()));
 				}
 
 				ChunkSection chunkSection = this.getSection(j >> 4);
-				BlockState blockState = chunkSection.setBlockState(i & 15, j & 15, k & 15, state);
-				if (this.status.isAtLeast(ChunkStatus.FEATURES)
-					&& state != blockState
+				BlockState blockState2 = chunkSection.setBlockState(i & 15, j & 15, k & 15, blockState);
+				if (this.status.isAtLeast(ChunkStatus.field_12795)
+					&& blockState != blockState2
 					&& (
-						state.getOpacity(this, pos) != blockState.getOpacity(this, pos)
-							|| state.getLuminance() != blockState.getLuminance()
-							|| state.hasSidedTransparency()
+						blockState.getLightSubtracted(this, blockPos) != blockState2.getLightSubtracted(this, blockPos)
+							|| blockState.getLuminance() != blockState2.getLuminance()
 							|| blockState.hasSidedTransparency()
+							|| blockState2.hasSidedTransparency()
 					)) {
 					LightingProvider lightingProvider = this.getLightingProvider();
-					lightingProvider.checkBlock(pos);
+					lightingProvider.enqueueLightUpdate(blockPos);
 				}
 
-				EnumSet<Heightmap.Type> enumSet = this.getStatus().getHeightmapTypes();
+				EnumSet<Heightmap.Type> enumSet = this.getStatus().isSurfaceGenerated();
 				EnumSet<Heightmap.Type> enumSet2 = null;
 
 				for (Heightmap.Type type : enumSet) {
@@ -183,28 +187,28 @@ public class ProtoChunk implements Chunk {
 				}
 
 				for (Heightmap.Type typex : enumSet) {
-					((Heightmap)this.heightmaps.get(typex)).trackUpdate(i & 15, j, k & 15, state);
+					((Heightmap)this.heightmaps.get(typex)).trackUpdate(i & 15, j, k & 15, blockState);
 				}
 
-				return blockState;
+				return blockState2;
 			}
 		} else {
-			return Blocks.VOID_AIR.getDefaultState();
+			return Blocks.field_10243.getDefaultState();
 		}
 	}
 
-	public ChunkSection getSection(int y) {
-		if (this.sections[y] == WorldChunk.EMPTY_SECTION) {
-			this.sections[y] = new ChunkSection(y << 4);
+	public ChunkSection getSection(int i) {
+		if (this.sections[i] == WorldChunk.EMPTY_SECTION) {
+			this.sections[i] = new ChunkSection(i << 4);
 		}
 
-		return this.sections[y];
+		return this.sections[i];
 	}
 
 	@Override
-	public void setBlockEntity(BlockPos pos, BlockEntity blockEntity) {
-		blockEntity.setPos(pos);
-		this.blockEntities.put(pos, blockEntity);
+	public void setBlockEntity(BlockPos blockPos, BlockEntity blockEntity) {
+		blockEntity.setPos(blockPos);
+		this.blockEntities.put(blockPos, blockEntity);
 	}
 
 	@Override
@@ -216,16 +220,16 @@ public class ProtoChunk implements Chunk {
 
 	@Nullable
 	@Override
-	public BlockEntity getBlockEntity(BlockPos pos) {
-		return (BlockEntity)this.blockEntities.get(pos);
+	public BlockEntity getBlockEntity(BlockPos blockPos) {
+		return (BlockEntity)this.blockEntities.get(blockPos);
 	}
 
 	public Map<BlockPos, BlockEntity> getBlockEntities() {
 		return this.blockEntities;
 	}
 
-	public void addEntity(CompoundTag entityTag) {
-		this.entities.add(entityTag);
+	public void addEntity(CompoundTag compoundTag) {
+		this.entities.add(compoundTag);
 	}
 
 	@Override
@@ -240,8 +244,8 @@ public class ProtoChunk implements Chunk {
 	}
 
 	@Override
-	public void setBiomeArray(Biome[] biomeArray) {
-		this.biomeArray = biomeArray;
+	public void setBiomeArray(Biome[] biomes) {
+		this.biomeArray = biomes;
 	}
 
 	@Override
@@ -250,8 +254,8 @@ public class ProtoChunk implements Chunk {
 	}
 
 	@Override
-	public void setShouldSave(boolean shouldSave) {
-		this.shouldSave = shouldSave;
+	public void setShouldSave(boolean bl) {
+		this.shouldSave = bl;
 	}
 
 	@Override
@@ -286,8 +290,8 @@ public class ProtoChunk implements Chunk {
 	}
 
 	@Override
-	public void setHeightmap(Heightmap.Type type, long[] heightmap) {
-		this.getHeightmap(type).setTo(heightmap);
+	public void setHeightmap(Heightmap.Type type, long[] ls) {
+		this.getHeightmap(type).setTo(ls);
 	}
 
 	@Override
@@ -296,14 +300,14 @@ public class ProtoChunk implements Chunk {
 	}
 
 	@Override
-	public int sampleHeightmap(Heightmap.Type type, int x, int z) {
+	public int sampleHeightmap(Heightmap.Type type, int i, int j) {
 		Heightmap heightmap = (Heightmap)this.heightmaps.get(type);
 		if (heightmap == null) {
 			Heightmap.populateHeightmaps(this, EnumSet.of(type));
 			heightmap = (Heightmap)this.heightmaps.get(type);
 		}
 
-		return heightmap.get(x & 15, z & 15) - 1;
+		return heightmap.get(i & 15, j & 15) - 1;
 	}
 
 	@Override
@@ -312,18 +316,18 @@ public class ProtoChunk implements Chunk {
 	}
 
 	@Override
-	public void setLastSaveTime(long lastSaveTime) {
+	public void setLastSaveTime(long l) {
 	}
 
 	@Nullable
 	@Override
-	public StructureStart getStructureStart(String structure) {
-		return (StructureStart)this.structureStarts.get(structure);
+	public StructureStart getStructureStart(String string) {
+		return (StructureStart)this.structureStarts.get(string);
 	}
 
 	@Override
-	public void setStructureStart(String structure, StructureStart start) {
-		this.structureStarts.put(structure, start);
+	public void setStructureStart(String string, StructureStart structureStart) {
+		this.structureStarts.put(string, structureStart);
 		this.shouldSave = true;
 	}
 
@@ -340,13 +344,13 @@ public class ProtoChunk implements Chunk {
 	}
 
 	@Override
-	public LongSet getStructureReferences(String structure) {
-		return (LongSet)this.structureReferences.computeIfAbsent(structure, string -> new LongOpenHashSet());
+	public LongSet getStructureReferences(String string) {
+		return (LongSet)this.structureReferences.computeIfAbsent(string, stringx -> new LongOpenHashSet());
 	}
 
 	@Override
-	public void addStructureReference(String structure, long reference) {
-		((LongSet)this.structureReferences.computeIfAbsent(structure, string -> new LongOpenHashSet())).add(reference);
+	public void addStructureReference(String string, long l) {
+		((LongSet)this.structureReferences.computeIfAbsent(string, stringx -> new LongOpenHashSet())).add(l);
 		this.shouldSave = true;
 	}
 
@@ -356,27 +360,27 @@ public class ProtoChunk implements Chunk {
 	}
 
 	@Override
-	public void setStructureReferences(Map<String, LongSet> structureReferences) {
+	public void setStructureReferences(Map<String, LongSet> map) {
 		this.structureReferences.clear();
-		this.structureReferences.putAll(structureReferences);
+		this.structureReferences.putAll(map);
 		this.shouldSave = true;
 	}
 
-	public static short getPackedSectionRelative(BlockPos pos) {
-		int i = pos.getX();
-		int j = pos.getY();
-		int k = pos.getZ();
+	public static short getPackedSectionRelative(BlockPos blockPos) {
+		int i = blockPos.getX();
+		int j = blockPos.getY();
+		int k = blockPos.getZ();
 		int l = i & 15;
 		int m = j & 15;
 		int n = k & 15;
 		return (short)(l | m << 4 | n << 8);
 	}
 
-	public static BlockPos joinBlockPos(short sectionRel, int sectionY, ChunkPos chunkPos) {
-		int i = (sectionRel & 15) + (chunkPos.x << 4);
-		int j = (sectionRel >>> 4 & 15) + (sectionY << 4);
-		int k = (sectionRel >>> 8 & 15) + (chunkPos.z << 4);
-		return new BlockPos(i, j, k);
+	public static BlockPos joinBlockPos(short s, int i, ChunkPos chunkPos) {
+		int j = (s & 15) + (chunkPos.x << 4);
+		int k = (s >>> 4 & 15) + (i << 4);
+		int l = (s >>> 8 & 15) + (chunkPos.z << 4);
+		return new BlockPos(j, k, l);
 	}
 
 	@Override
@@ -396,11 +400,11 @@ public class ProtoChunk implements Chunk {
 		Chunk.getList(this.postProcessingLists, i).add(s);
 	}
 
-	public ChunkTickScheduler<Block> getBlockTickScheduler() {
+	public ChunkTickScheduler<Block> method_12303() {
 		return this.blockTickScheduler;
 	}
 
-	public ChunkTickScheduler<Fluid> getFluidTickScheduler() {
+	public ChunkTickScheduler<Fluid> method_12313() {
 		return this.fluidTickScheduler;
 	}
 
@@ -410,8 +414,8 @@ public class ProtoChunk implements Chunk {
 	}
 
 	@Override
-	public void setInhabitedTime(long inhabitedTime) {
-		this.inhabitedTime = inhabitedTime;
+	public void setInhabitedTime(long l) {
+		this.inhabitedTime = l;
 	}
 
 	@Override
@@ -429,8 +433,8 @@ public class ProtoChunk implements Chunk {
 	}
 
 	@Override
-	public CompoundTag getBlockEntityTagAt(BlockPos pos) {
-		return (CompoundTag)this.blockEntityTags.get(pos);
+	public CompoundTag getBlockEntityTagAt(BlockPos blockPos) {
+		return (CompoundTag)this.blockEntityTags.get(blockPos);
 	}
 
 	@Nullable
@@ -451,8 +455,8 @@ public class ProtoChunk implements Chunk {
 		return (BitSet)this.carvingMasks.computeIfAbsent(carver, carverx -> new BitSet(65536));
 	}
 
-	public void setCarvingMask(GenerationStep.Carver carver, BitSet mask) {
-		this.carvingMasks.put(carver, mask);
+	public void setCarvingMask(GenerationStep.Carver carver, BitSet bitSet) {
+		this.carvingMasks.put(carver, bitSet);
 	}
 
 	@Override
@@ -466,8 +470,8 @@ public class ProtoChunk implements Chunk {
 	}
 
 	@Override
-	public void setLightOn(boolean lightOn) {
-		this.isLightOn = lightOn;
+	public void setLightOn(boolean bl) {
+		this.isLightOn = bl;
 		this.setShouldSave(true);
 	}
 }

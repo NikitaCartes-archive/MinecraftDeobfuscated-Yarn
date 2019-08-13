@@ -13,9 +13,9 @@ import net.fabricmc.api.Environment;
 public interface ParentElement extends Element {
 	List<? extends Element> children();
 
-	default Optional<Element> hoveredElement(double mouseX, double mouseY) {
+	default Optional<Element> hoveredElement(double d, double e) {
 		for (Element element : this.children()) {
-			if (element.isMouseOver(mouseX, mouseY)) {
+			if (element.isMouseOver(d, e)) {
 				return Optional.of(element);
 			}
 		}
@@ -24,11 +24,11 @@ public interface ParentElement extends Element {
 	}
 
 	@Override
-	default boolean mouseClicked(double mouseX, double mouseY, int button) {
+	default boolean mouseClicked(double d, double e, int i) {
 		for (Element element : this.children()) {
-			if (element.mouseClicked(mouseX, mouseY, button)) {
+			if (element.mouseClicked(d, e, i)) {
 				this.setFocused(element);
-				if (button == 0) {
+				if (i == 0) {
 					this.setDragging(true);
 				}
 
@@ -40,44 +40,44 @@ public interface ParentElement extends Element {
 	}
 
 	@Override
-	default boolean mouseReleased(double mouseX, double mouseY, int button) {
+	default boolean mouseReleased(double d, double e, int i) {
 		this.setDragging(false);
-		return this.hoveredElement(mouseX, mouseY).filter(element -> element.mouseReleased(mouseX, mouseY, button)).isPresent();
+		return this.hoveredElement(d, e).filter(element -> element.mouseReleased(d, e, i)).isPresent();
 	}
 
 	@Override
-	default boolean mouseDragged(double mouseX, double mouseY, int button, double deltaX, double deltaY) {
-		return this.getFocused() != null && this.isDragging() && button == 0 ? this.getFocused().mouseDragged(mouseX, mouseY, button, deltaX, deltaY) : false;
+	default boolean mouseDragged(double d, double e, int i, double f, double g) {
+		return this.getFocused() != null && this.isDragging() && i == 0 ? this.getFocused().mouseDragged(d, e, i, f, g) : false;
 	}
 
 	boolean isDragging();
 
-	void setDragging(boolean dragging);
+	void setDragging(boolean bl);
 
 	@Override
-	default boolean mouseScrolled(double d, double e, double amount) {
-		return this.hoveredElement(d, e).filter(element -> element.mouseScrolled(d, e, amount)).isPresent();
+	default boolean mouseScrolled(double d, double e, double f) {
+		return this.hoveredElement(d, e).filter(element -> element.mouseScrolled(d, e, f)).isPresent();
 	}
 
 	@Override
-	default boolean keyPressed(int keyCode, int scanCode, int modifiers) {
-		return this.getFocused() != null && this.getFocused().keyPressed(keyCode, scanCode, modifiers);
+	default boolean keyPressed(int i, int j, int k) {
+		return this.getFocused() != null && this.getFocused().keyPressed(i, j, k);
 	}
 
 	@Override
-	default boolean keyReleased(int keyCode, int scanCode, int modifiers) {
-		return this.getFocused() != null && this.getFocused().keyReleased(keyCode, scanCode, modifiers);
+	default boolean keyReleased(int i, int j, int k) {
+		return this.getFocused() != null && this.getFocused().keyReleased(i, j, k);
 	}
 
 	@Override
-	default boolean charTyped(char chr, int keyCode) {
-		return this.getFocused() != null && this.getFocused().charTyped(chr, keyCode);
+	default boolean charTyped(char c, int i) {
+		return this.getFocused() != null && this.getFocused().charTyped(c, i);
 	}
 
 	@Nullable
 	Element getFocused();
 
-	void setFocused(@Nullable Element focused);
+	void setFocused(@Nullable Element element);
 
 	default void setInitialFocus(@Nullable Element element) {
 		this.setFocused(element);

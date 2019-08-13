@@ -15,8 +15,11 @@ import net.minecraft.item.Items;
 public class BeaconContainer extends Container {
 	private final Inventory paymentInv = new BasicInventory(1) {
 		@Override
-		public boolean isValidInvStack(int slot, ItemStack stack) {
-			return stack.getItem() == Items.EMERALD || stack.getItem() == Items.DIAMOND || stack.getItem() == Items.GOLD_INGOT || stack.getItem() == Items.IRON_INGOT;
+		public boolean isValidInvStack(int i, ItemStack itemStack) {
+			return itemStack.getItem() == Items.field_8687
+				|| itemStack.getItem() == Items.field_8477
+				|| itemStack.getItem() == Items.field_8695
+				|| itemStack.getItem() == Items.field_8620;
 		}
 
 		@Override
@@ -28,62 +31,62 @@ public class BeaconContainer extends Container {
 	private final BlockContext context;
 	private final PropertyDelegate propertyDelegate;
 
-	public BeaconContainer(int syncId, Inventory inventory) {
-		this(syncId, inventory, new ArrayPropertyDelegate(3), BlockContext.EMPTY);
+	public BeaconContainer(int i, Inventory inventory) {
+		this(i, inventory, new ArrayPropertyDelegate(3), BlockContext.EMPTY);
 	}
 
-	public BeaconContainer(int syncId, Inventory inventory, PropertyDelegate propertyDelegate, BlockContext blockContext) {
-		super(ContainerType.BEACON, syncId);
+	public BeaconContainer(int i, Inventory inventory, PropertyDelegate propertyDelegate, BlockContext blockContext) {
+		super(ContainerType.field_17330, i);
 		checkContainerDataCount(propertyDelegate, 3);
 		this.propertyDelegate = propertyDelegate;
 		this.context = blockContext;
 		this.paymentSlot = new BeaconContainer.SlotPayment(this.paymentInv, 0, 136, 110);
 		this.addSlot(this.paymentSlot);
 		this.addProperties(propertyDelegate);
-		int i = 36;
-		int j = 137;
+		int j = 36;
+		int k = 137;
 
-		for (int k = 0; k < 3; k++) {
-			for (int l = 0; l < 9; l++) {
-				this.addSlot(new Slot(inventory, l + k * 9 + 9, 36 + l * 18, 137 + k * 18));
+		for (int l = 0; l < 3; l++) {
+			for (int m = 0; m < 9; m++) {
+				this.addSlot(new Slot(inventory, m + l * 9 + 9, 36 + m * 18, 137 + l * 18));
 			}
 		}
 
-		for (int k = 0; k < 9; k++) {
-			this.addSlot(new Slot(inventory, k, 36 + k * 18, 195));
+		for (int l = 0; l < 9; l++) {
+			this.addSlot(new Slot(inventory, l, 36 + l * 18, 195));
 		}
 	}
 
 	@Override
-	public void close(PlayerEntity player) {
-		super.close(player);
-		if (!player.world.isClient) {
+	public void close(PlayerEntity playerEntity) {
+		super.close(playerEntity);
+		if (!playerEntity.world.isClient) {
 			ItemStack itemStack = this.paymentSlot.takeStack(this.paymentSlot.getMaxStackAmount());
 			if (!itemStack.isEmpty()) {
-				player.dropItem(itemStack, false);
+				playerEntity.dropItem(itemStack, false);
 			}
 		}
 	}
 
 	@Override
-	public boolean canUse(PlayerEntity player) {
-		return canUse(this.context, player, Blocks.BEACON);
+	public boolean canUse(PlayerEntity playerEntity) {
+		return canUse(this.context, playerEntity, Blocks.field_10327);
 	}
 
 	@Override
-	public void setProperty(int id, int value) {
-		super.setProperty(id, value);
+	public void setProperties(int i, int j) {
+		super.setProperties(i, j);
 		this.sendContentUpdates();
 	}
 
 	@Override
-	public ItemStack transferSlot(PlayerEntity player, int invSlot) {
+	public ItemStack transferSlot(PlayerEntity playerEntity, int i) {
 		ItemStack itemStack = ItemStack.EMPTY;
-		Slot slot = (Slot)this.slots.get(invSlot);
+		Slot slot = (Slot)this.slotList.get(i);
 		if (slot != null && slot.hasStack()) {
 			ItemStack itemStack2 = slot.getStack();
 			itemStack = itemStack2.copy();
-			if (invSlot == 0) {
+			if (i == 0) {
 				if (!this.insertItem(itemStack2, 1, 37, true)) {
 					return ItemStack.EMPTY;
 				}
@@ -93,11 +96,11 @@ public class BeaconContainer extends Container {
 				if (!this.insertItem(itemStack2, 0, 1, false)) {
 					return ItemStack.EMPTY;
 				}
-			} else if (invSlot >= 1 && invSlot < 28) {
+			} else if (i >= 1 && i < 28) {
 				if (!this.insertItem(itemStack2, 28, 37, false)) {
 					return ItemStack.EMPTY;
 				}
-			} else if (invSlot >= 28 && invSlot < 37) {
+			} else if (i >= 28 && i < 37) {
 				if (!this.insertItem(itemStack2, 1, 28, false)) {
 					return ItemStack.EMPTY;
 				}
@@ -115,7 +118,7 @@ public class BeaconContainer extends Container {
 				return ItemStack.EMPTY;
 			}
 
-			slot.onTakeItem(player, itemStack2);
+			slot.onTakeItem(playerEntity, itemStack2);
 		}
 
 		return itemStack;
@@ -138,10 +141,10 @@ public class BeaconContainer extends Container {
 		return StatusEffect.byRawId(this.propertyDelegate.get(2));
 	}
 
-	public void setEffects(int primaryEffectId, int secondaryEffectId) {
+	public void setEffects(int i, int j) {
 		if (this.paymentSlot.hasStack()) {
-			this.propertyDelegate.set(1, primaryEffectId);
-			this.propertyDelegate.set(2, secondaryEffectId);
+			this.propertyDelegate.set(1, i);
+			this.propertyDelegate.set(2, j);
 			this.paymentSlot.takeStack(1);
 		}
 	}
@@ -157,9 +160,9 @@ public class BeaconContainer extends Container {
 		}
 
 		@Override
-		public boolean canInsert(ItemStack stack) {
-			Item item = stack.getItem();
-			return item == Items.EMERALD || item == Items.DIAMOND || item == Items.GOLD_INGOT || item == Items.IRON_INGOT;
+		public boolean canInsert(ItemStack itemStack) {
+			Item item = itemStack.getItem();
+			return item == Items.field_8687 || item == Items.field_8477 || item == Items.field_8695 || item == Items.field_8620;
 		}
 
 		@Override

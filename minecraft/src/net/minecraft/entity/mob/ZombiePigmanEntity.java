@@ -25,16 +25,16 @@ import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.Hand;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.CollisionView;
 import net.minecraft.world.Difficulty;
 import net.minecraft.world.IWorld;
 import net.minecraft.world.LocalDifficulty;
+import net.minecraft.world.ViewableWorld;
 import net.minecraft.world.World;
 
 public class ZombiePigmanEntity extends ZombieEntity {
 	private static final UUID ATTACKING_SPEED_BOOST_UUID = UUID.fromString("49455A49-7EC5-45BA-B886-3B90B23A1718");
 	private static final EntityAttributeModifier ATTACKING_SPEED_BOOST = new EntityAttributeModifier(
-			ATTACKING_SPEED_BOOST_UUID, "Attacking speed boost", 0.05, EntityAttributeModifier.Operation.ADDITION
+			ATTACKING_SPEED_BOOST_UUID, "Attacking speed boost", 0.05, EntityAttributeModifier.Operation.field_6328
 		)
 		.setSerialize(false);
 	private int anger;
@@ -43,14 +43,14 @@ public class ZombiePigmanEntity extends ZombieEntity {
 
 	public ZombiePigmanEntity(EntityType<? extends ZombiePigmanEntity> entityType, World world) {
 		super(entityType, world);
-		this.setPathfindingPenalty(PathNodeType.LAVA, 8.0F);
+		this.setPathNodeTypeWeight(PathNodeType.field_14, 8.0F);
 	}
 
 	@Override
-	public void setAttacker(@Nullable LivingEntity attacker) {
-		super.setAttacker(attacker);
-		if (attacker != null) {
-			this.angerTarget = attacker.getUuid();
+	public void setAttacker(@Nullable LivingEntity livingEntity) {
+		super.setAttacker(livingEntity);
+		if (livingEntity != null) {
+			this.angerTarget = livingEntity.getUuid();
 		}
 	}
 
@@ -99,9 +99,7 @@ public class ZombiePigmanEntity extends ZombieEntity {
 		}
 
 		if (this.angrySoundDelay > 0 && --this.angrySoundDelay == 0) {
-			this.playSound(
-				SoundEvents.ENTITY_ZOMBIE_PIGMAN_ANGRY, this.getSoundVolume() * 2.0F, ((this.random.nextFloat() - this.random.nextFloat()) * 0.2F + 1.0F) * 1.8F
-			);
+			this.playSound(SoundEvents.field_14852, this.getSoundVolume() * 2.0F, ((this.random.nextFloat() - this.random.nextFloat()) * 0.2F + 1.0F) * 1.8F);
 		}
 
 		if (this.isAngry() && this.angerTarget != null && livingEntity == null) {
@@ -115,30 +113,30 @@ public class ZombiePigmanEntity extends ZombieEntity {
 	}
 
 	public static boolean method_20682(EntityType<ZombiePigmanEntity> entityType, IWorld iWorld, SpawnType spawnType, BlockPos blockPos, Random random) {
-		return iWorld.getDifficulty() != Difficulty.PEACEFUL;
+		return iWorld.getDifficulty() != Difficulty.field_5801;
 	}
 
 	@Override
-	public boolean canSpawn(CollisionView world) {
-		return world.intersectsEntities(this) && !world.intersectsFluid(this.getBoundingBox());
+	public boolean canSpawn(ViewableWorld viewableWorld) {
+		return viewableWorld.intersectsEntities(this) && !viewableWorld.intersectsFluid(this.getBoundingBox());
 	}
 
 	@Override
-	public void writeCustomDataToTag(CompoundTag tag) {
-		super.writeCustomDataToTag(tag);
-		tag.putShort("Anger", (short)this.anger);
+	public void writeCustomDataToTag(CompoundTag compoundTag) {
+		super.writeCustomDataToTag(compoundTag);
+		compoundTag.putShort("Anger", (short)this.anger);
 		if (this.angerTarget != null) {
-			tag.putString("HurtBy", this.angerTarget.toString());
+			compoundTag.putString("HurtBy", this.angerTarget.toString());
 		} else {
-			tag.putString("HurtBy", "");
+			compoundTag.putString("HurtBy", "");
 		}
 	}
 
 	@Override
-	public void readCustomDataFromTag(CompoundTag tag) {
-		super.readCustomDataFromTag(tag);
-		this.anger = tag.getShort("Anger");
-		String string = tag.getString("HurtBy");
+	public void readCustomDataFromTag(CompoundTag compoundTag) {
+		super.readCustomDataFromTag(compoundTag);
+		this.anger = compoundTag.getShort("Anger");
+		String string = compoundTag.getString("HurtBy");
 		if (!string.isEmpty()) {
 			this.angerTarget = UUID.fromString(string);
 			PlayerEntity playerEntity = this.world.getPlayerByUuid(this.angerTarget);
@@ -151,16 +149,16 @@ public class ZombiePigmanEntity extends ZombieEntity {
 	}
 
 	@Override
-	public boolean damage(DamageSource source, float amount) {
-		if (this.isInvulnerableTo(source)) {
+	public boolean damage(DamageSource damageSource, float f) {
+		if (this.isInvulnerableTo(damageSource)) {
 			return false;
 		} else {
-			Entity entity = source.getAttacker();
+			Entity entity = damageSource.getAttacker();
 			if (entity instanceof PlayerEntity && !((PlayerEntity)entity).isCreative() && this.canSee(entity)) {
 				this.method_20804(entity);
 			}
 
-			return super.damage(source, amount);
+			return super.damage(damageSource, f);
 		}
 	}
 
@@ -184,27 +182,27 @@ public class ZombiePigmanEntity extends ZombieEntity {
 
 	@Override
 	protected SoundEvent getAmbientSound() {
-		return SoundEvents.ENTITY_ZOMBIE_PIGMAN_AMBIENT;
+		return SoundEvents.field_14926;
 	}
 
 	@Override
-	protected SoundEvent getHurtSound(DamageSource source) {
-		return SoundEvents.ENTITY_ZOMBIE_PIGMAN_HURT;
+	protected SoundEvent getHurtSound(DamageSource damageSource) {
+		return SoundEvents.field_14710;
 	}
 
 	@Override
 	protected SoundEvent getDeathSound() {
-		return SoundEvents.ENTITY_ZOMBIE_PIGMAN_DEATH;
+		return SoundEvents.field_14743;
 	}
 
 	@Override
-	public boolean interactMob(PlayerEntity player, Hand hand) {
+	public boolean interactMob(PlayerEntity playerEntity, Hand hand) {
 		return false;
 	}
 
 	@Override
-	protected void initEquipment(LocalDifficulty difficulty) {
-		this.equipStack(EquipmentSlot.MAINHAND, new ItemStack(Items.GOLDEN_SWORD));
+	protected void initEquipment(LocalDifficulty localDifficulty) {
+		this.setEquippedStack(EquipmentSlot.field_6173, new ItemStack(Items.field_8845));
 	}
 
 	@Override
@@ -213,27 +211,27 @@ public class ZombiePigmanEntity extends ZombieEntity {
 	}
 
 	@Override
-	public boolean isAngryAt(PlayerEntity player) {
+	public boolean isAngryAt(PlayerEntity playerEntity) {
 		return this.isAngry();
 	}
 
 	static class AvoidZombiesGoal extends RevengeGoal {
-		public AvoidZombiesGoal(ZombiePigmanEntity pigman) {
-			super(pigman);
+		public AvoidZombiesGoal(ZombiePigmanEntity zombiePigmanEntity) {
+			super(zombiePigmanEntity);
 			this.setGroupRevenge(new Class[]{ZombieEntity.class});
 		}
 
 		@Override
-		protected void setMobEntityTarget(MobEntity mob, LivingEntity target) {
-			if (mob instanceof ZombiePigmanEntity && this.mob.canSee(target) && ((ZombiePigmanEntity)mob).method_20804(target)) {
-				mob.setTarget(target);
+		protected void setMobEntityTarget(MobEntity mobEntity, LivingEntity livingEntity) {
+			if (mobEntity instanceof ZombiePigmanEntity && this.mob.canSee(livingEntity) && ((ZombiePigmanEntity)mobEntity).method_20804(livingEntity)) {
+				mobEntity.setTarget(livingEntity);
 			}
 		}
 	}
 
 	static class FollowPlayerIfAngryGoal extends FollowTargetGoal<PlayerEntity> {
-		public FollowPlayerIfAngryGoal(ZombiePigmanEntity pigman) {
-			super(pigman, PlayerEntity.class, true);
+		public FollowPlayerIfAngryGoal(ZombiePigmanEntity zombiePigmanEntity) {
+			super(zombiePigmanEntity, PlayerEntity.class, true);
 		}
 
 		@Override

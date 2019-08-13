@@ -15,15 +15,15 @@ import net.minecraft.util.math.MathHelper;
 
 @Environment(EnvType.CLIENT)
 public abstract class MobEntityRenderer<T extends MobEntity, M extends EntityModel<T>> extends LivingEntityRenderer<T, M> {
-	public MobEntityRenderer(EntityRenderDispatcher renderManager, M model, float f) {
-		super(renderManager, model, f);
+	public MobEntityRenderer(EntityRenderDispatcher entityRenderDispatcher, M entityModel, float f) {
+		super(entityRenderDispatcher, entityModel, f);
 	}
 
-	protected boolean hasLabel(T mobEntity) {
-		return super.hasLabel(mobEntity) && (mobEntity.shouldRenderName() || mobEntity.hasCustomName() && mobEntity == this.renderManager.targetedEntity);
+	protected boolean method_4071(T mobEntity) {
+		return super.method_4055(mobEntity) && (mobEntity.shouldRenderName() || mobEntity.hasCustomName() && mobEntity == this.renderManager.targetedEntity);
 	}
 
-	public boolean isVisible(T mobEntity, VisibleRegion visibleRegion, double d, double e, double f) {
+	public boolean method_4068(T mobEntity, VisibleRegion visibleRegion, double d, double e, double f) {
 		if (super.isVisible(mobEntity, visibleRegion, d, e, f)) {
 			return true;
 		} else {
@@ -32,8 +32,8 @@ public abstract class MobEntityRenderer<T extends MobEntity, M extends EntityMod
 		}
 	}
 
-	public void render(T mobEntity, double d, double e, double f, float g, float h) {
-		super.render(mobEntity, d, e, f, g, h);
+	public void method_4072(T mobEntity, double d, double e, double f, float g, float h) {
+		super.method_4054(mobEntity, d, e, f, g, h);
 		if (!this.renderOutlines) {
 			this.method_4073(mobEntity, d, e, f, g, h);
 		}
@@ -44,7 +44,7 @@ public abstract class MobEntityRenderer<T extends MobEntity, M extends EntityMod
 		if (entity != null) {
 			e -= (1.6 - (double)mobEntity.getHeight()) * 0.5;
 			Tessellator tessellator = Tessellator.getInstance();
-			BufferBuilder bufferBuilder = tessellator.getBuffer();
+			BufferBuilder bufferBuilder = tessellator.getBufferBuilder();
 			double i = (double)(MathHelper.lerp(h * 0.5F, entity.yaw, entity.prevYaw) * (float) (Math.PI / 180.0));
 			double j = (double)(MathHelper.lerp(h * 0.5F, entity.pitch, entity.prevPitch) * (float) (Math.PI / 180.0));
 			double k = Math.cos(i);

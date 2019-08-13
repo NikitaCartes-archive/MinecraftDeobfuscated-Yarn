@@ -20,8 +20,8 @@ public class ExperienceCommand {
 		new TranslatableText("commands.experience.set.points.invalid")
 	);
 
-	public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
-		LiteralCommandNode<ServerCommandSource> literalCommandNode = dispatcher.register(
+	public static void register(CommandDispatcher<ServerCommandSource> commandDispatcher) {
+		LiteralCommandNode<ServerCommandSource> literalCommandNode = commandDispatcher.register(
 			CommandManager.literal("experience")
 				.requires(serverCommandSource -> serverCommandSource.hasPermissionLevel(2))
 				.then(
@@ -35,7 +35,7 @@ public class ExperienceCommand {
 													commandContext.getSource(),
 													EntityArgumentType.getPlayers(commandContext, "targets"),
 													IntegerArgumentType.getInteger(commandContext, "amount"),
-													ExperienceCommand.Component.POINTS
+													ExperienceCommand.Component.field_13644
 												)
 										)
 										.then(
@@ -45,7 +45,7 @@ public class ExperienceCommand {
 															commandContext.getSource(),
 															EntityArgumentType.getPlayers(commandContext, "targets"),
 															IntegerArgumentType.getInteger(commandContext, "amount"),
-															ExperienceCommand.Component.POINTS
+															ExperienceCommand.Component.field_13644
 														)
 												)
 										)
@@ -56,7 +56,7 @@ public class ExperienceCommand {
 															commandContext.getSource(),
 															EntityArgumentType.getPlayers(commandContext, "targets"),
 															IntegerArgumentType.getInteger(commandContext, "amount"),
-															ExperienceCommand.Component.LEVELS
+															ExperienceCommand.Component.field_13641
 														)
 												)
 										)
@@ -74,7 +74,7 @@ public class ExperienceCommand {
 													commandContext.getSource(),
 													EntityArgumentType.getPlayers(commandContext, "targets"),
 													IntegerArgumentType.getInteger(commandContext, "amount"),
-													ExperienceCommand.Component.POINTS
+													ExperienceCommand.Component.field_13644
 												)
 										)
 										.then(
@@ -84,7 +84,7 @@ public class ExperienceCommand {
 															commandContext.getSource(),
 															EntityArgumentType.getPlayers(commandContext, "targets"),
 															IntegerArgumentType.getInteger(commandContext, "amount"),
-															ExperienceCommand.Component.POINTS
+															ExperienceCommand.Component.field_13644
 														)
 												)
 										)
@@ -95,7 +95,7 @@ public class ExperienceCommand {
 															commandContext.getSource(),
 															EntityArgumentType.getPlayers(commandContext, "targets"),
 															IntegerArgumentType.getInteger(commandContext, "amount"),
-															ExperienceCommand.Component.LEVELS
+															ExperienceCommand.Component.field_13641
 														)
 												)
 										)
@@ -110,7 +110,7 @@ public class ExperienceCommand {
 									CommandManager.literal("points")
 										.executes(
 											commandContext -> executeQuery(
-													commandContext.getSource(), EntityArgumentType.getPlayer(commandContext, "targets"), ExperienceCommand.Component.POINTS
+													commandContext.getSource(), EntityArgumentType.getPlayer(commandContext, "targets"), ExperienceCommand.Component.field_13644
 												)
 										)
 								)
@@ -118,70 +118,76 @@ public class ExperienceCommand {
 									CommandManager.literal("levels")
 										.executes(
 											commandContext -> executeQuery(
-													commandContext.getSource(), EntityArgumentType.getPlayer(commandContext, "targets"), ExperienceCommand.Component.LEVELS
+													commandContext.getSource(), EntityArgumentType.getPlayer(commandContext, "targets"), ExperienceCommand.Component.field_13641
 												)
 										)
 								)
 						)
 				)
 		);
-		dispatcher.register(CommandManager.literal("xp").requires(serverCommandSource -> serverCommandSource.hasPermissionLevel(2)).redirect(literalCommandNode));
+		commandDispatcher.register(
+			CommandManager.literal("xp").requires(serverCommandSource -> serverCommandSource.hasPermissionLevel(2)).redirect(literalCommandNode)
+		);
 	}
 
-	private static int executeQuery(ServerCommandSource source, ServerPlayerEntity player, ExperienceCommand.Component component) {
-		int i = component.getter.applyAsInt(player);
-		source.sendFeedback(new TranslatableText("commands.experience.query." + component.name, player.getDisplayName(), i), false);
+	private static int executeQuery(ServerCommandSource serverCommandSource, ServerPlayerEntity serverPlayerEntity, ExperienceCommand.Component component) {
+		int i = component.getter.applyAsInt(serverPlayerEntity);
+		serverCommandSource.sendFeedback(new TranslatableText("commands.experience.query." + component.name, serverPlayerEntity.getDisplayName(), i), false);
 		return i;
 	}
 
-	private static int executeAdd(ServerCommandSource source, Collection<? extends ServerPlayerEntity> targets, int amount, ExperienceCommand.Component component) {
-		for (ServerPlayerEntity serverPlayerEntity : targets) {
-			component.adder.accept(serverPlayerEntity, amount);
+	private static int executeAdd(
+		ServerCommandSource serverCommandSource, Collection<? extends ServerPlayerEntity> collection, int i, ExperienceCommand.Component component
+	) {
+		for (ServerPlayerEntity serverPlayerEntity : collection) {
+			component.adder.accept(serverPlayerEntity, i);
 		}
 
-		if (targets.size() == 1) {
-			source.sendFeedback(
+		if (collection.size() == 1) {
+			serverCommandSource.sendFeedback(
 				new TranslatableText(
-					"commands.experience.add." + component.name + ".success.single", amount, ((ServerPlayerEntity)targets.iterator().next()).getDisplayName()
+					"commands.experience.add." + component.name + ".success.single", i, ((ServerPlayerEntity)collection.iterator().next()).getDisplayName()
 				),
 				true
 			);
 		} else {
-			source.sendFeedback(new TranslatableText("commands.experience.add." + component.name + ".success.multiple", amount, targets.size()), true);
+			serverCommandSource.sendFeedback(new TranslatableText("commands.experience.add." + component.name + ".success.multiple", i, collection.size()), true);
 		}
 
-		return targets.size();
+		return collection.size();
 	}
 
-	private static int executeSet(ServerCommandSource source, Collection<? extends ServerPlayerEntity> targets, int amount, ExperienceCommand.Component component) throws CommandSyntaxException {
-		int i = 0;
+	private static int executeSet(
+		ServerCommandSource serverCommandSource, Collection<? extends ServerPlayerEntity> collection, int i, ExperienceCommand.Component component
+	) throws CommandSyntaxException {
+		int j = 0;
 
-		for (ServerPlayerEntity serverPlayerEntity : targets) {
-			if (component.setter.test(serverPlayerEntity, amount)) {
-				i++;
+		for (ServerPlayerEntity serverPlayerEntity : collection) {
+			if (component.setter.test(serverPlayerEntity, i)) {
+				j++;
 			}
 		}
 
-		if (i == 0) {
+		if (j == 0) {
 			throw SET_POINT_INVALID_EXCEPTION.create();
 		} else {
-			if (targets.size() == 1) {
-				source.sendFeedback(
+			if (collection.size() == 1) {
+				serverCommandSource.sendFeedback(
 					new TranslatableText(
-						"commands.experience.set." + component.name + ".success.single", amount, ((ServerPlayerEntity)targets.iterator().next()).getDisplayName()
+						"commands.experience.set." + component.name + ".success.single", i, ((ServerPlayerEntity)collection.iterator().next()).getDisplayName()
 					),
 					true
 				);
 			} else {
-				source.sendFeedback(new TranslatableText("commands.experience.set." + component.name + ".success.multiple", amount, targets.size()), true);
+				serverCommandSource.sendFeedback(new TranslatableText("commands.experience.set." + component.name + ".success.multiple", i, collection.size()), true);
 			}
 
-			return targets.size();
+			return collection.size();
 		}
 	}
 
 	static enum Component {
-		POINTS("points", PlayerEntity::addExperience, (serverPlayerEntity, integer) -> {
+		field_13644("points", PlayerEntity::addExperience, (serverPlayerEntity, integer) -> {
 			if (integer >= serverPlayerEntity.getNextLevelExperience()) {
 				return false;
 			} else {
@@ -189,7 +195,7 @@ public class ExperienceCommand {
 				return true;
 			}
 		}, serverPlayerEntity -> MathHelper.floor(serverPlayerEntity.experienceProgress * (float)serverPlayerEntity.getNextLevelExperience())),
-		LEVELS("levels", ServerPlayerEntity::addExperienceLevels, (serverPlayerEntity, integer) -> {
+		field_13641("levels", ServerPlayerEntity::addExperienceLevels, (serverPlayerEntity, integer) -> {
 			serverPlayerEntity.setExperienceLevel(integer);
 			return true;
 		}, serverPlayerEntity -> serverPlayerEntity.experienceLevel);
@@ -200,12 +206,15 @@ public class ExperienceCommand {
 		private final ToIntFunction<ServerPlayerEntity> getter;
 
 		private Component(
-			String name, BiConsumer<ServerPlayerEntity, Integer> adder, BiPredicate<ServerPlayerEntity, Integer> setter, ToIntFunction<ServerPlayerEntity> getter
+			String string2,
+			BiConsumer<ServerPlayerEntity, Integer> biConsumer,
+			BiPredicate<ServerPlayerEntity, Integer> biPredicate,
+			ToIntFunction<ServerPlayerEntity> toIntFunction
 		) {
-			this.adder = adder;
-			this.name = name;
-			this.setter = setter;
-			this.getter = getter;
+			this.adder = biConsumer;
+			this.name = string2;
+			this.setter = biPredicate;
+			this.getter = toIntFunction;
 		}
 	}
 }

@@ -18,19 +18,19 @@ import net.minecraft.util.crash.CrashException;
 import net.minecraft.util.crash.CrashReport;
 import net.minecraft.util.crash.CrashReportSection;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.BlockRenderView;
+import net.minecraft.world.ExtendedBlockView;
 
 @Environment(EnvType.CLIENT)
 public class BlockRenderManager implements SynchronousResourceReloadListener {
 	private final BlockModels models;
-	private final BlockModelRenderer blockModelRenderer;
+	private final BlockModelRenderer renderer;
 	private final DynamicBlockRenderer dynamicRenderer = new DynamicBlockRenderer();
 	private final FluidRenderer fluidRenderer;
 	private final Random random = new Random();
 
-	public BlockRenderManager(BlockModels models, BlockColors blockColors) {
-		this.models = models;
-		this.blockModelRenderer = new BlockModelRenderer(blockColors);
+	public BlockRenderManager(BlockModels blockModels, BlockColors blockColors) {
+		this.models = blockModels;
+		this.renderer = new BlockModelRenderer(blockColors);
 		this.fluidRenderer = new FluidRenderer();
 	}
 
@@ -38,26 +38,26 @@ public class BlockRenderManager implements SynchronousResourceReloadListener {
 		return this.models;
 	}
 
-	public void tesselateDamage(BlockState state, BlockPos pos, Sprite sprite, BlockRenderView blockRenderView) {
-		if (state.getRenderType() == BlockRenderType.MODEL) {
-			BakedModel bakedModel = this.models.getModel(state);
-			long l = state.getRenderingSeed(pos);
-			BakedModel bakedModel2 = new BasicBakedModel.Builder(state, bakedModel, sprite, this.random, l).build();
-			this.blockModelRenderer.tesselate(blockRenderView, bakedModel2, state, pos, Tessellator.getInstance().getBuffer(), true, this.random, l);
+	public void tesselateDamage(BlockState blockState, BlockPos blockPos, Sprite sprite, ExtendedBlockView extendedBlockView) {
+		if (blockState.getRenderType() == BlockRenderType.field_11458) {
+			BakedModel bakedModel = this.models.getModel(blockState);
+			long l = blockState.getRenderingSeed(blockPos);
+			BakedModel bakedModel2 = new BasicBakedModel.Builder(blockState, bakedModel, sprite, this.random, l).build();
+			this.renderer.tesselate(extendedBlockView, bakedModel2, blockState, blockPos, Tessellator.getInstance().getBufferBuilder(), true, this.random, l);
 		}
 	}
 
-	public boolean tesselateBlock(BlockState blockState, BlockPos blockPos, BlockRenderView blockRenderView, BufferBuilder bufferBuilder, Random random) {
+	public boolean tesselateBlock(BlockState blockState, BlockPos blockPos, ExtendedBlockView extendedBlockView, BufferBuilder bufferBuilder, Random random) {
 		try {
 			BlockRenderType blockRenderType = blockState.getRenderType();
-			if (blockRenderType == BlockRenderType.INVISIBLE) {
+			if (blockRenderType == BlockRenderType.field_11455) {
 				return false;
 			} else {
 				switch (blockRenderType) {
-					case MODEL:
-						return this.blockModelRenderer
-							.tesselate(blockRenderView, this.getModel(blockState), blockState, blockPos, bufferBuilder, true, random, blockState.getRenderingSeed(blockPos));
-					case ENTITYBLOCK_ANIMATED:
+					case field_11458:
+						return this.renderer
+							.tesselate(extendedBlockView, this.getModel(blockState), blockState, blockPos, bufferBuilder, true, random, blockState.getRenderingSeed(blockPos));
+					case field_11456:
 						return false;
 					default:
 						return false;
@@ -71,9 +71,9 @@ public class BlockRenderManager implements SynchronousResourceReloadListener {
 		}
 	}
 
-	public boolean tesselateFluid(BlockPos blockPos, BlockRenderView blockRenderView, BufferBuilder bufferBuilder, FluidState fluidState) {
+	public boolean tesselateFluid(BlockPos blockPos, ExtendedBlockView extendedBlockView, BufferBuilder bufferBuilder, FluidState fluidState) {
 		try {
-			return this.fluidRenderer.tesselate(blockRenderView, blockPos, bufferBuilder, fluidState);
+			return this.fluidRenderer.tesselate(extendedBlockView, blockPos, bufferBuilder, fluidState);
 		} catch (Throwable var8) {
 			CrashReport crashReport = CrashReport.create(var8, "Tesselating liquid in world");
 			CrashReportSection crashReportSection = crashReport.addElement("Block being tesselated");
@@ -83,29 +83,29 @@ public class BlockRenderManager implements SynchronousResourceReloadListener {
 	}
 
 	public BlockModelRenderer getModelRenderer() {
-		return this.blockModelRenderer;
+		return this.renderer;
 	}
 
-	public BakedModel getModel(BlockState state) {
-		return this.models.getModel(state);
+	public BakedModel getModel(BlockState blockState) {
+		return this.models.getModel(blockState);
 	}
 
-	public void renderDynamic(BlockState state, float delta) {
-		BlockRenderType blockRenderType = state.getRenderType();
-		if (blockRenderType != BlockRenderType.INVISIBLE) {
+	public void renderDynamic(BlockState blockState, float f) {
+		BlockRenderType blockRenderType = blockState.getRenderType();
+		if (blockRenderType != BlockRenderType.field_11455) {
 			switch (blockRenderType) {
-				case MODEL:
-					BakedModel bakedModel = this.getModel(state);
-					this.blockModelRenderer.render(bakedModel, state, delta, true);
+				case field_11458:
+					BakedModel bakedModel = this.getModel(blockState);
+					this.renderer.render(bakedModel, blockState, f, true);
 					break;
-				case ENTITYBLOCK_ANIMATED:
-					this.dynamicRenderer.render(state.getBlock(), delta);
+				case field_11456:
+					this.dynamicRenderer.render(blockState.getBlock(), f);
 			}
 		}
 	}
 
 	@Override
-	public void apply(ResourceManager manager) {
+	public void apply(ResourceManager resourceManager) {
 		this.fluidRenderer.onResourceReload();
 	}
 }

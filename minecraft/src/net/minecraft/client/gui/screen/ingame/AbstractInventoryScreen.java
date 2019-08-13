@@ -16,7 +16,7 @@ import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.text.Text;
 
 @Environment(EnvType.CLIENT)
-public abstract class AbstractInventoryScreen<T extends Container> extends ContainerScreen<T> {
+public abstract class AbstractInventoryScreen<T extends Container> extends AbstractContainerScreen<T> {
 	protected boolean offsetGuiForEffects;
 
 	public AbstractInventoryScreen(T container, PlayerInventory playerInventory, Text text) {
@@ -31,24 +31,24 @@ public abstract class AbstractInventoryScreen<T extends Container> extends Conta
 
 	protected void method_2476() {
 		if (this.minecraft.player.getStatusEffects().isEmpty()) {
-			this.x = (this.width - this.containerWidth) / 2;
+			this.left = (this.width - this.containerWidth) / 2;
 			this.offsetGuiForEffects = false;
 		} else {
-			this.x = 160 + (this.width - this.containerWidth - 200) / 2;
+			this.left = 160 + (this.width - this.containerWidth - 200) / 2;
 			this.offsetGuiForEffects = true;
 		}
 	}
 
 	@Override
-	public void render(int mouseX, int mouseY, float delta) {
-		super.render(mouseX, mouseY, delta);
+	public void render(int i, int j, float f) {
+		super.render(i, j, f);
 		if (this.offsetGuiForEffects) {
-			this.drawStatusEffects();
+			this.drawPotionEffects();
 		}
 	}
 
-	private void drawStatusEffects() {
-		int i = this.x - 124;
+	private void drawPotionEffects() {
+		int i = this.left - 124;
 		Collection<StatusEffectInstance> collection = this.minecraft.player.getStatusEffects();
 		if (!collection.isEmpty()) {
 			GlStateManager.color4f(1.0F, 1.0F, 1.0F, 1.0F);
@@ -67,7 +67,7 @@ public abstract class AbstractInventoryScreen<T extends Container> extends Conta
 
 	private void method_18642(int i, int j, Iterable<StatusEffectInstance> iterable) {
 		this.minecraft.getTextureManager().bindTexture(BACKGROUND_TEXTURE);
-		int k = this.y;
+		int k = this.top;
 
 		for (StatusEffectInstance statusEffectInstance : iterable) {
 			GlStateManager.color4f(1.0F, 1.0F, 1.0F, 1.0F);
@@ -79,7 +79,7 @@ public abstract class AbstractInventoryScreen<T extends Container> extends Conta
 	private void method_18643(int i, int j, Iterable<StatusEffectInstance> iterable) {
 		this.minecraft.getTextureManager().bindTexture(SpriteAtlasTexture.STATUS_EFFECT_ATLAS_TEX);
 		StatusEffectSpriteManager statusEffectSpriteManager = this.minecraft.getStatusEffectSpriteManager();
-		int k = this.y;
+		int k = this.top;
 
 		for (StatusEffectInstance statusEffectInstance : iterable) {
 			StatusEffect statusEffect = statusEffectInstance.getEffectType();
@@ -89,7 +89,7 @@ public abstract class AbstractInventoryScreen<T extends Container> extends Conta
 	}
 
 	private void method_18644(int i, int j, Iterable<StatusEffectInstance> iterable) {
-		int k = this.y;
+		int k = this.top;
 
 		for (StatusEffectInstance statusEffectInstance : iterable) {
 			String string = I18n.translate(statusEffectInstance.getEffectType().getTranslationKey());

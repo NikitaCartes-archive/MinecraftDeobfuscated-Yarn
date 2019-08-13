@@ -9,7 +9,7 @@ import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.gui.widget.TextFieldWidget;
 import net.minecraft.client.resource.language.I18n;
 import net.minecraft.client.util.NarratorManager;
-import net.minecraft.network.packet.c2s.play.UpdateJigsawC2SPacket;
+import net.minecraft.server.network.packet.UpdateJigsawC2SPacket;
 import net.minecraft.util.Identifier;
 
 @Environment(EnvType.CLIENT)
@@ -20,9 +20,9 @@ public class JigsawBlockScreen extends Screen {
 	private TextFieldWidget finalStateField;
 	private ButtonWidget field_19103;
 
-	public JigsawBlockScreen(JigsawBlockEntity jigsaw) {
+	public JigsawBlockScreen(JigsawBlockEntity jigsawBlockEntity) {
 		super(NarratorManager.EMPTY);
-		this.jigsaw = jigsaw;
+		this.jigsaw = jigsawBlockEntity;
 	}
 
 	@Override
@@ -84,11 +84,11 @@ public class JigsawBlockScreen extends Screen {
 	}
 
 	@Override
-	public void resize(MinecraftClient client, int width, int height) {
+	public void resize(MinecraftClient minecraftClient, int i, int j) {
 		String string = this.attachmentTypeField.getText();
 		String string2 = this.targetPoolField.getText();
 		String string3 = this.finalStateField.getText();
-		this.init(client, width, height);
+		this.init(minecraftClient, i, j);
 		this.attachmentTypeField.setText(string);
 		this.targetPoolField.setText(string2);
 		this.finalStateField.setText(string3);
@@ -100,10 +100,10 @@ public class JigsawBlockScreen extends Screen {
 	}
 
 	@Override
-	public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
-		if (super.keyPressed(keyCode, scanCode, modifiers)) {
+	public boolean keyPressed(int i, int j, int k) {
+		if (super.keyPressed(i, j, k)) {
 			return true;
-		} else if (!this.field_19103.active || keyCode != 257 && keyCode != 335) {
+		} else if (!this.field_19103.active || i != 257 && i != 335) {
 			return false;
 		} else {
 			this.onDone();
@@ -112,14 +112,14 @@ public class JigsawBlockScreen extends Screen {
 	}
 
 	@Override
-	public void render(int mouseX, int mouseY, float delta) {
+	public void render(int i, int j, float f) {
 		this.renderBackground();
 		this.drawString(this.font, I18n.translate("jigsaw_block.target_pool"), this.width / 2 - 153, 30, 10526880);
-		this.targetPoolField.render(mouseX, mouseY, delta);
+		this.targetPoolField.render(i, j, f);
 		this.drawString(this.font, I18n.translate("jigsaw_block.attachement_type"), this.width / 2 - 153, 70, 10526880);
-		this.attachmentTypeField.render(mouseX, mouseY, delta);
+		this.attachmentTypeField.render(i, j, f);
 		this.drawString(this.font, I18n.translate("jigsaw_block.final_state"), this.width / 2 - 153, 110, 10526880);
-		this.finalStateField.render(mouseX, mouseY, delta);
-		super.render(mouseX, mouseY, delta);
+		this.finalStateField.render(i, j, f);
+		super.render(i, j, f);
 	}
 }

@@ -17,12 +17,12 @@ public class WolfBegGoal extends Goal {
 	private int timer;
 	private final TargetPredicate validPlayerPredicate;
 
-	public WolfBegGoal(WolfEntity wolf, float begDistance) {
-		this.wolf = wolf;
-		this.world = wolf.world;
-		this.begDistance = begDistance;
-		this.validPlayerPredicate = new TargetPredicate().setBaseMaxDistance((double)begDistance).includeInvulnerable().includeTeammates().ignoreEntityTargetRules();
-		this.setControls(EnumSet.of(Goal.Control.LOOK));
+	public WolfBegGoal(WolfEntity wolfEntity, float f) {
+		this.wolf = wolfEntity;
+		this.world = wolfEntity.world;
+		this.begDistance = f;
+		this.validPlayerPredicate = new TargetPredicate().setBaseMaxDistance((double)f).includeInvulnerable().includeTeammates().ignoreEntityTargetRules();
+		this.setControls(EnumSet.of(Goal.Control.field_18406));
 	}
 
 	@Override
@@ -43,7 +43,7 @@ public class WolfBegGoal extends Goal {
 	@Override
 	public void start() {
 		this.wolf.setBegging(true);
-		this.timer = 40 + this.wolf.getRandom().nextInt(40);
+		this.timer = 40 + this.wolf.getRand().nextInt(40);
 	}
 
 	@Override
@@ -60,10 +60,10 @@ public class WolfBegGoal extends Goal {
 		this.timer--;
 	}
 
-	private boolean isAttractive(PlayerEntity player) {
+	private boolean isAttractive(PlayerEntity playerEntity) {
 		for (Hand hand : Hand.values()) {
-			ItemStack itemStack = player.getStackInHand(hand);
-			if (this.wolf.isTamed() && itemStack.getItem() == Items.BONE) {
+			ItemStack itemStack = playerEntity.getStackInHand(hand);
+			if (this.wolf.isTamed() && itemStack.getItem() == Items.field_8606) {
 				return true;
 			}
 

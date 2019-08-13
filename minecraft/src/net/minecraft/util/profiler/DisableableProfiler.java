@@ -5,7 +5,7 @@ import java.util.function.IntSupplier;
 import java.util.function.Supplier;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.util.Util;
+import net.minecraft.util.SystemUtil;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -16,8 +16,8 @@ public class DisableableProfiler implements Profiler {
 	private final DisableableProfiler.ProfilerControllerImpl controller = new DisableableProfiler.ProfilerControllerImpl();
 	private final DisableableProfiler.ProfilerControllerImpl field_16271 = new DisableableProfiler.ProfilerControllerImpl();
 
-	public DisableableProfiler(IntSupplier tickSupplier) {
-		this.tickSupplier = tickSupplier;
+	public DisableableProfiler(IntSupplier intSupplier) {
+		this.tickSupplier = intSupplier;
 	}
 
 	public DisableableProfiler.ProfilerController getController() {
@@ -37,15 +37,15 @@ public class DisableableProfiler implements Profiler {
 	}
 
 	@Override
-	public void push(String location) {
-		this.controller.profiler.push(location);
-		this.field_16271.profiler.push(location);
+	public void push(String string) {
+		this.controller.profiler.push(string);
+		this.field_16271.profiler.push(string);
 	}
 
 	@Override
-	public void push(Supplier<String> locationGetter) {
-		this.controller.profiler.push(locationGetter);
-		this.field_16271.profiler.push(locationGetter);
+	public void push(Supplier<String> supplier) {
+		this.controller.profiler.push(supplier);
+		this.field_16271.profiler.push(supplier);
 	}
 
 	@Override
@@ -55,16 +55,16 @@ public class DisableableProfiler implements Profiler {
 	}
 
 	@Override
-	public void swap(String location) {
-		this.controller.profiler.swap(location);
-		this.field_16271.profiler.swap(location);
+	public void swap(String string) {
+		this.controller.profiler.swap(string);
+		this.field_16271.profiler.swap(string);
 	}
 
 	@Environment(EnvType.CLIENT)
 	@Override
-	public void swap(Supplier<String> locationGetter) {
-		this.controller.profiler.swap(locationGetter);
-		this.field_16271.profiler.swap(locationGetter);
+	public void swap(Supplier<String> supplier) {
+		this.controller.profiler.swap(supplier);
+		this.field_16271.profiler.swap(supplier);
 	}
 
 	public interface ProfilerController {
@@ -91,7 +91,7 @@ public class DisableableProfiler implements Profiler {
 
 		@Override
 		public ProfileResult disable() {
-			ProfileResult profileResult = this.profiler.getResult();
+			ProfileResult profileResult = this.profiler.getResults();
 			this.profiler = DummyProfiler.INSTANCE;
 			return profileResult;
 		}
@@ -99,13 +99,13 @@ public class DisableableProfiler implements Profiler {
 		@Environment(EnvType.CLIENT)
 		@Override
 		public ProfileResult getResults() {
-			return this.profiler.getResult();
+			return this.profiler.getResults();
 		}
 
 		@Override
 		public void enable() {
 			if (this.profiler == DummyProfiler.INSTANCE) {
-				this.profiler = new ProfilerSystem(Util.getMeasuringTimeNano(), DisableableProfiler.this.tickSupplier);
+				this.profiler = new ProfilerSystem(SystemUtil.getMeasuringTimeNano(), DisableableProfiler.this.tickSupplier);
 			}
 		}
 	}

@@ -15,8 +15,8 @@ public class CommandFunction {
 	private final CommandFunction.Element[] elements;
 	private final Identifier id;
 
-	public CommandFunction(Identifier id, CommandFunction.Element[] elements) {
-		this.id = id;
+	public CommandFunction(Identifier identifier, CommandFunction.Element[] elements) {
+		this.id = identifier;
 		this.elements = elements;
 	}
 
@@ -28,12 +28,12 @@ public class CommandFunction {
 		return this.elements;
 	}
 
-	public static CommandFunction create(Identifier id, CommandFunctionManager commandFunctionManager, List<String> fileLines) {
-		List<CommandFunction.Element> list = Lists.<CommandFunction.Element>newArrayListWithCapacity(fileLines.size());
+	public static CommandFunction create(Identifier identifier, CommandFunctionManager commandFunctionManager, List<String> list) {
+		List<CommandFunction.Element> list2 = Lists.<CommandFunction.Element>newArrayListWithCapacity(list.size());
 
-		for (int i = 0; i < fileLines.size(); i++) {
+		for (int i = 0; i < list.size(); i++) {
 			int j = i + 1;
-			String string = ((String)fileLines.get(i)).trim();
+			String string = ((String)list.get(i)).trim();
 			StringReader stringReader = new StringReader(string);
 			if (stringReader.canRead() && stringReader.peek() != '#') {
 				if (stringReader.peek() == '/') {
@@ -65,14 +65,14 @@ public class CommandFunction {
 						throw CommandSyntaxException.BUILT_IN_EXCEPTIONS.dispatcherUnknownArgument().createWithContext(parseResults.getReader());
 					}
 
-					list.add(new CommandFunction.CommandElement(parseResults));
+					list2.add(new CommandFunction.CommandElement(parseResults));
 				} catch (CommandSyntaxException var9) {
 					throw new IllegalArgumentException("Whilst parsing command on line " + j + ": " + var9.getMessage());
 				}
 			}
 		}
 
-		return new CommandFunction(id, (CommandFunction.Element[])list.toArray(new CommandFunction.Element[0]));
+		return new CommandFunction(identifier, (CommandFunction.Element[])list2.toArray(new CommandFunction.Element[0]));
 	}
 
 	public static class CommandElement implements CommandFunction.Element {
@@ -135,8 +135,8 @@ public class CommandFunction {
 		private boolean initialized;
 		private Optional<CommandFunction> function = Optional.empty();
 
-		public LazyContainer(@Nullable Identifier id) {
-			this.id = id;
+		public LazyContainer(@Nullable Identifier identifier) {
+			this.id = identifier;
 		}
 
 		public LazyContainer(CommandFunction commandFunction) {

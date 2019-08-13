@@ -46,40 +46,40 @@ public class LoomContainer extends Container {
 		}
 	};
 
-	public LoomContainer(int syncId, PlayerInventory playerInventory) {
-		this(syncId, playerInventory, BlockContext.EMPTY);
+	public LoomContainer(int i, PlayerInventory playerInventory) {
+		this(i, playerInventory, BlockContext.EMPTY);
 	}
 
-	public LoomContainer(int syncId, PlayerInventory playerInventory, BlockContext blockContext) {
-		super(ContainerType.LOOM, syncId);
+	public LoomContainer(int i, PlayerInventory playerInventory, BlockContext blockContext) {
+		super(ContainerType.field_17339, i);
 		this.context = blockContext;
 		this.bannerSlot = this.addSlot(new Slot(this.inputInventory, 0, 13, 26) {
 			@Override
-			public boolean canInsert(ItemStack stack) {
-				return stack.getItem() instanceof BannerItem;
+			public boolean canInsert(ItemStack itemStack) {
+				return itemStack.getItem() instanceof BannerItem;
 			}
 		});
 		this.dyeSlot = this.addSlot(new Slot(this.inputInventory, 1, 33, 26) {
 			@Override
-			public boolean canInsert(ItemStack stack) {
-				return stack.getItem() instanceof DyeItem;
+			public boolean canInsert(ItemStack itemStack) {
+				return itemStack.getItem() instanceof DyeItem;
 			}
 		});
 		this.patternSlot = this.addSlot(new Slot(this.inputInventory, 2, 23, 45) {
 			@Override
-			public boolean canInsert(ItemStack stack) {
-				return stack.getItem() instanceof BannerPatternItem;
+			public boolean canInsert(ItemStack itemStack) {
+				return itemStack.getItem() instanceof BannerPatternItem;
 			}
 		});
 		this.outputSlot = this.addSlot(
 			new Slot(this.outputInventory, 0, 143, 58) {
 				@Override
-				public boolean canInsert(ItemStack stack) {
+				public boolean canInsert(ItemStack itemStack) {
 					return false;
 				}
 
 				@Override
-				public ItemStack onTakeItem(PlayerEntity player, ItemStack stack) {
+				public ItemStack onTakeItem(PlayerEntity playerEntity, ItemStack itemStack) {
 					LoomContainer.this.bannerSlot.takeStack(1);
 					LoomContainer.this.dyeSlot.takeStack(1);
 					if (!LoomContainer.this.bannerSlot.hasStack() || !LoomContainer.this.dyeSlot.hasStack()) {
@@ -87,21 +87,21 @@ public class LoomContainer extends Container {
 					}
 
 					blockContext.run(
-						(BiConsumer<World, BlockPos>)((world, blockPos) -> world.playSound(null, blockPos, SoundEvents.UI_LOOM_TAKE_RESULT, SoundCategory.BLOCKS, 1.0F, 1.0F))
+						(BiConsumer<World, BlockPos>)((world, blockPos) -> world.playSound(null, blockPos, SoundEvents.field_15096, SoundCategory.field_15245, 1.0F, 1.0F))
 					);
-					return super.onTakeItem(player, stack);
+					return super.onTakeItem(playerEntity, itemStack);
 				}
 			}
 		);
 
-		for (int i = 0; i < 3; i++) {
-			for (int j = 0; j < 9; j++) {
-				this.addSlot(new Slot(playerInventory, j + i * 9 + 9, 8 + j * 18, 84 + i * 18));
+		for (int j = 0; j < 3; j++) {
+			for (int k = 0; k < 9; k++) {
+				this.addSlot(new Slot(playerInventory, k + j * 9 + 9, 8 + k * 18, 84 + j * 18));
 			}
 		}
 
-		for (int i = 0; i < 9; i++) {
-			this.addSlot(new Slot(playerInventory, i, 8 + i * 18, 142));
+		for (int j = 0; j < 9; j++) {
+			this.addSlot(new Slot(playerInventory, j, 8 + j * 18, 142));
 		}
 
 		this.addProperty(this.selectedPattern);
@@ -113,14 +113,14 @@ public class LoomContainer extends Container {
 	}
 
 	@Override
-	public boolean canUse(PlayerEntity player) {
-		return canUse(this.context, player, Blocks.LOOM);
+	public boolean canUse(PlayerEntity playerEntity) {
+		return canUse(this.context, playerEntity, Blocks.field_10083);
 	}
 
 	@Override
-	public boolean onButtonClick(PlayerEntity player, int id) {
-		if (id > 0 && id <= BannerPattern.field_18283) {
-			this.selectedPattern.set(id);
+	public boolean onButtonClick(PlayerEntity playerEntity, int i) {
+		if (i > 0 && i <= BannerPattern.field_18283) {
+			this.selectedPattern.set(i);
 			this.updateOutputSlot();
 			return true;
 		} else {
@@ -141,7 +141,7 @@ public class LoomContainer extends Container {
 				&& (this.selectedPattern.get() < BannerPattern.COUNT - 5 || !itemStack3.isEmpty())) {
 			if (!itemStack3.isEmpty() && itemStack3.getItem() instanceof BannerPatternItem) {
 				CompoundTag compoundTag = itemStack.getOrCreateSubTag("BlockEntityTag");
-				boolean bl = compoundTag.contains("Patterns", 9) && !itemStack.isEmpty() && compoundTag.getList("Patterns", 10).size() >= 6;
+				boolean bl = compoundTag.containsKey("Patterns", 9) && !itemStack.isEmpty() && compoundTag.getList("Patterns", 10).size() >= 6;
 				if (bl) {
 					this.selectedPattern.set(0);
 				} else {
@@ -158,24 +158,24 @@ public class LoomContainer extends Container {
 	}
 
 	@Environment(EnvType.CLIENT)
-	public void setInventoryChangeListener(Runnable inventoryChangeListener) {
-		this.inventoryChangeListener = inventoryChangeListener;
+	public void setInventoryChangeListener(Runnable runnable) {
+		this.inventoryChangeListener = runnable;
 	}
 
 	@Override
-	public ItemStack transferSlot(PlayerEntity player, int invSlot) {
+	public ItemStack transferSlot(PlayerEntity playerEntity, int i) {
 		ItemStack itemStack = ItemStack.EMPTY;
-		Slot slot = (Slot)this.slots.get(invSlot);
+		Slot slot = (Slot)this.slotList.get(i);
 		if (slot != null && slot.hasStack()) {
 			ItemStack itemStack2 = slot.getStack();
 			itemStack = itemStack2.copy();
-			if (invSlot == this.outputSlot.id) {
+			if (i == this.outputSlot.id) {
 				if (!this.insertItem(itemStack2, 4, 40, true)) {
 					return ItemStack.EMPTY;
 				}
 
 				slot.onStackChanged(itemStack2, itemStack);
-			} else if (invSlot != this.dyeSlot.id && invSlot != this.bannerSlot.id && invSlot != this.patternSlot.id) {
+			} else if (i != this.dyeSlot.id && i != this.bannerSlot.id && i != this.patternSlot.id) {
 				if (itemStack2.getItem() instanceof BannerItem) {
 					if (!this.insertItem(itemStack2, this.bannerSlot.id, this.bannerSlot.id + 1, false)) {
 						return ItemStack.EMPTY;
@@ -188,11 +188,11 @@ public class LoomContainer extends Container {
 					if (!this.insertItem(itemStack2, this.patternSlot.id, this.patternSlot.id + 1, false)) {
 						return ItemStack.EMPTY;
 					}
-				} else if (invSlot >= 4 && invSlot < 31) {
+				} else if (i >= 4 && i < 31) {
 					if (!this.insertItem(itemStack2, 31, 40, false)) {
 						return ItemStack.EMPTY;
 					}
-				} else if (invSlot >= 31 && invSlot < 40 && !this.insertItem(itemStack2, 4, 31, false)) {
+				} else if (i >= 31 && i < 40 && !this.insertItem(itemStack2, 4, 31, false)) {
 					return ItemStack.EMPTY;
 				}
 			} else if (!this.insertItem(itemStack2, 4, 40, false)) {
@@ -209,16 +209,16 @@ public class LoomContainer extends Container {
 				return ItemStack.EMPTY;
 			}
 
-			slot.onTakeItem(player, itemStack2);
+			slot.onTakeItem(playerEntity, itemStack2);
 		}
 
 		return itemStack;
 	}
 
 	@Override
-	public void close(PlayerEntity player) {
-		super.close(player);
-		this.context.run((BiConsumer<World, BlockPos>)((world, blockPos) -> this.dropInventory(player, player.world, this.inputInventory)));
+	public void close(PlayerEntity playerEntity) {
+		super.close(playerEntity);
+		this.context.run((BiConsumer<World, BlockPos>)((world, blockPos) -> this.dropInventory(playerEntity, playerEntity.world, this.inputInventory)));
 	}
 
 	private void updateOutputSlot() {
@@ -233,7 +233,7 @@ public class LoomContainer extends Container {
 				DyeColor dyeColor = ((DyeItem)itemStack2.getItem()).getColor();
 				CompoundTag compoundTag = itemStack3.getOrCreateSubTag("BlockEntityTag");
 				ListTag listTag;
-				if (compoundTag.contains("Patterns", 9)) {
+				if (compoundTag.containsKey("Patterns", 9)) {
 					listTag = compoundTag.getList("Patterns", 10);
 				} else {
 					listTag = new ListTag();

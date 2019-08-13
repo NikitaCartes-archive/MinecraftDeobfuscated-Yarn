@@ -11,10 +11,10 @@ public class FollowOwnerFlyingGoal extends FollowOwnerGoal {
 	}
 
 	@Override
-	protected boolean method_6263(BlockPos pos) {
-		BlockState blockState = this.world.getBlockState(pos);
-		return (blockState.hasSolidTopSurface(this.world, pos, this.tameable) || blockState.matches(BlockTags.LEAVES))
-			&& this.world.isAir(pos.up())
-			&& this.world.isAir(pos.up(2));
+	protected boolean method_6263(BlockPos blockPos) {
+		BlockState blockState = this.world.getBlockState(blockPos);
+		return (blockState.hasSolidTopSurface(this.world, blockPos, this.tameable) || blockState.matches(BlockTags.field_15503))
+			&& this.world.isAir(blockPos.up())
+			&& this.world.isAir(blockPos.up(2));
 	}
 }

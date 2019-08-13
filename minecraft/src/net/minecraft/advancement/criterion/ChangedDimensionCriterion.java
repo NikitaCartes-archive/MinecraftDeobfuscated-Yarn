@@ -26,42 +26,46 @@ public class ChangedDimensionCriterion implements Criterion<ChangedDimensionCrit
 	}
 
 	@Override
-	public void beginTrackingCondition(PlayerAdvancementTracker manager, Criterion.ConditionsContainer<ChangedDimensionCriterion.Conditions> conditionsContainer) {
-		ChangedDimensionCriterion.Handler handler = (ChangedDimensionCriterion.Handler)this.handlers.get(manager);
+	public void beginTrackingCondition(
+		PlayerAdvancementTracker playerAdvancementTracker, Criterion.ConditionsContainer<ChangedDimensionCriterion.Conditions> conditionsContainer
+	) {
+		ChangedDimensionCriterion.Handler handler = (ChangedDimensionCriterion.Handler)this.handlers.get(playerAdvancementTracker);
 		if (handler == null) {
-			handler = new ChangedDimensionCriterion.Handler(manager);
-			this.handlers.put(manager, handler);
+			handler = new ChangedDimensionCriterion.Handler(playerAdvancementTracker);
+			this.handlers.put(playerAdvancementTracker, handler);
 		}
 
 		handler.addCondition(conditionsContainer);
 	}
 
 	@Override
-	public void endTrackingCondition(PlayerAdvancementTracker manager, Criterion.ConditionsContainer<ChangedDimensionCriterion.Conditions> conditionsContainer) {
-		ChangedDimensionCriterion.Handler handler = (ChangedDimensionCriterion.Handler)this.handlers.get(manager);
+	public void endTrackingCondition(
+		PlayerAdvancementTracker playerAdvancementTracker, Criterion.ConditionsContainer<ChangedDimensionCriterion.Conditions> conditionsContainer
+	) {
+		ChangedDimensionCriterion.Handler handler = (ChangedDimensionCriterion.Handler)this.handlers.get(playerAdvancementTracker);
 		if (handler != null) {
 			handler.removeCondition(conditionsContainer);
 			if (handler.isEmpty()) {
-				this.handlers.remove(manager);
+				this.handlers.remove(playerAdvancementTracker);
 			}
 		}
 	}
 
 	@Override
-	public void endTracking(PlayerAdvancementTracker tracker) {
-		this.handlers.remove(tracker);
+	public void endTracking(PlayerAdvancementTracker playerAdvancementTracker) {
+		this.handlers.remove(playerAdvancementTracker);
 	}
 
-	public ChangedDimensionCriterion.Conditions conditionsFromJson(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext) {
+	public ChangedDimensionCriterion.Conditions method_8793(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext) {
 		DimensionType dimensionType = jsonObject.has("from") ? DimensionType.byId(new Identifier(JsonHelper.getString(jsonObject, "from"))) : null;
 		DimensionType dimensionType2 = jsonObject.has("to") ? DimensionType.byId(new Identifier(JsonHelper.getString(jsonObject, "to"))) : null;
 		return new ChangedDimensionCriterion.Conditions(dimensionType, dimensionType2);
 	}
 
-	public void trigger(ServerPlayerEntity player, DimensionType from, DimensionType to) {
-		ChangedDimensionCriterion.Handler handler = (ChangedDimensionCriterion.Handler)this.handlers.get(player.getAdvancementTracker());
+	public void handle(ServerPlayerEntity serverPlayerEntity, DimensionType dimensionType, DimensionType dimensionType2) {
+		ChangedDimensionCriterion.Handler handler = (ChangedDimensionCriterion.Handler)this.handlers.get(serverPlayerEntity.getAdvancementManager());
 		if (handler != null) {
-			handler.handle(from, to);
+			handler.handle(dimensionType, dimensionType2);
 		}
 	}
 
@@ -71,18 +75,18 @@ public class ChangedDimensionCriterion implements Criterion<ChangedDimensionCrit
 		@Nullable
 		private final DimensionType to;
 
-		public Conditions(@Nullable DimensionType from, @Nullable DimensionType to) {
+		public Conditions(@Nullable DimensionType dimensionType, @Nullable DimensionType dimensionType2) {
 			super(ChangedDimensionCriterion.ID);
-			this.from = from;
-			this.to = to;
+			this.from = dimensionType;
+			this.to = dimensionType2;
 		}
 
 		public static ChangedDimensionCriterion.Conditions to(DimensionType dimensionType) {
 			return new ChangedDimensionCriterion.Conditions(null, dimensionType);
 		}
 
-		public boolean matches(DimensionType from, DimensionType to) {
-			return this.from != null && this.from != from ? false : this.to == null || this.to == to;
+		public boolean matches(DimensionType dimensionType, DimensionType dimensionType2) {
+			return this.from != null && this.from != dimensionType ? false : this.to == null || this.to == dimensionType2;
 		}
 
 		@Override
@@ -104,8 +108,8 @@ public class ChangedDimensionCriterion implements Criterion<ChangedDimensionCrit
 		private final PlayerAdvancementTracker manager;
 		private final Set<Criterion.ConditionsContainer<ChangedDimensionCriterion.Conditions>> conditions = Sets.<Criterion.ConditionsContainer<ChangedDimensionCriterion.Conditions>>newHashSet();
 
-		public Handler(PlayerAdvancementTracker manager) {
-			this.manager = manager;
+		public Handler(PlayerAdvancementTracker playerAdvancementTracker) {
+			this.manager = playerAdvancementTracker;
 		}
 
 		public boolean isEmpty() {
@@ -120,11 +124,11 @@ public class ChangedDimensionCriterion implements Criterion<ChangedDimensionCrit
 			this.conditions.remove(conditionsContainer);
 		}
 
-		public void handle(DimensionType from, DimensionType to) {
+		public void handle(DimensionType dimensionType, DimensionType dimensionType2) {
 			List<Criterion.ConditionsContainer<ChangedDimensionCriterion.Conditions>> list = null;
 
 			for (Criterion.ConditionsContainer<ChangedDimensionCriterion.Conditions> conditionsContainer : this.conditions) {
-				if (conditionsContainer.getConditions().matches(from, to)) {
+				if (conditionsContainer.getConditions().matches(dimensionType, dimensionType2)) {
 					if (list == null) {
 						list = Lists.<Criterion.ConditionsContainer<ChangedDimensionCriterion.Conditions>>newArrayList();
 					}

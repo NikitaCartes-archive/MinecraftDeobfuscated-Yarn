@@ -17,15 +17,15 @@ public class ChestMinecartEntity extends StorageMinecartEntity {
 		super(entityType, world);
 	}
 
-	public ChestMinecartEntity(World world, double x, double y, double z) {
-		super(EntityType.CHEST_MINECART, x, y, z, world);
+	public ChestMinecartEntity(World world, double d, double e, double f) {
+		super(EntityType.field_6126, d, e, f, world);
 	}
 
 	@Override
 	public void dropItems(DamageSource damageSource) {
 		super.dropItems(damageSource);
-		if (this.world.getGameRules().getBoolean(GameRules.DO_ENTITY_DROPS)) {
-			this.dropItem(Blocks.CHEST);
+		if (this.world.getGameRules().getBoolean(GameRules.field_19393)) {
+			this.dropItem(Blocks.field_10034);
 		}
 	}
 
@@ -36,12 +36,12 @@ public class ChestMinecartEntity extends StorageMinecartEntity {
 
 	@Override
 	public AbstractMinecartEntity.Type getMinecartType() {
-		return AbstractMinecartEntity.Type.CHEST;
+		return AbstractMinecartEntity.Type.field_7678;
 	}
 
 	@Override
 	public BlockState getDefaultContainedBlock() {
-		return Blocks.CHEST.getDefaultState().with(ChestBlock.FACING, Direction.NORTH);
+		return Blocks.field_10034.getDefaultState().with(ChestBlock.FACING, Direction.field_11043);
 	}
 
 	@Override
@@ -50,7 +50,7 @@ public class ChestMinecartEntity extends StorageMinecartEntity {
 	}
 
 	@Override
-	public Container getContainer(int syncId, PlayerInventory playerInventory) {
-		return GenericContainer.createGeneric9x3(syncId, playerInventory, this);
+	public Container getContainer(int i, PlayerInventory playerInventory) {
+		return GenericContainer.createGeneric9x3(i, playerInventory, this);
 	}
 }

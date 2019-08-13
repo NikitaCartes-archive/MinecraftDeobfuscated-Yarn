@@ -6,11 +6,11 @@ import com.mojang.realmsclient.dto.RealmsServer;
 import com.mojang.realmsclient.dto.WorldTemplate;
 import com.mojang.realmsclient.dto.WorldTemplatePaginatedList;
 import com.mojang.realmsclient.exception.RealmsServiceException;
-import com.mojang.realmsclient.gui.RealmsConstants;
 import com.mojang.realmsclient.util.RealmsTasks;
 import com.mojang.realmsclient.util.RealmsTextureManager;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.class_4359;
 import net.minecraft.realms.Realms;
 import net.minecraft.realms.RealmsButton;
 import net.minecraft.realms.RealmsLabel;
@@ -43,37 +43,37 @@ public class RealmsResetWorldScreen extends RealmsScreenWithCallback<WorldTempla
 	private String resetTitle = null;
 	private int confirmationId = -1;
 
-	public RealmsResetWorldScreen(RealmsScreen lastScreen, RealmsServer serverData, RealmsScreen returnScreen) {
-		this.lastScreen = lastScreen;
-		this.serverData = serverData;
-		this.returnScreen = returnScreen;
+	public RealmsResetWorldScreen(RealmsScreen realmsScreen, RealmsServer realmsServer, RealmsScreen realmsScreen2) {
+		this.lastScreen = realmsScreen;
+		this.serverData = realmsServer;
+		this.returnScreen = realmsScreen2;
 	}
 
 	public RealmsResetWorldScreen(
-		RealmsScreen lastScreen, RealmsServer serverData, RealmsScreen returnScreen, String title, String subtitle, int subtitleColor, String buttonTitle
+		RealmsScreen realmsScreen, RealmsServer realmsServer, RealmsScreen realmsScreen2, String string, String string2, int i, String string3
 	) {
-		this(lastScreen, serverData, returnScreen);
-		this.title = title;
-		this.subtitle = subtitle;
-		this.subtitleColor = subtitleColor;
-		this.buttonTitle = buttonTitle;
+		this(realmsScreen, realmsServer, realmsScreen2);
+		this.title = string;
+		this.subtitle = string2;
+		this.subtitleColor = i;
+		this.buttonTitle = string3;
 	}
 
-	public void setConfirmationId(int confirmationId) {
-		this.confirmationId = confirmationId;
+	public void setConfirmationId(int i) {
+		this.confirmationId = i;
 	}
 
-	public void setSlot(int slot) {
-		this.slot = slot;
+	public void setSlot(int i) {
+		this.slot = i;
 	}
 
-	public void setResetTitle(String title) {
-		this.resetTitle = title;
+	public void setResetTitle(String string) {
+		this.resetTitle = string;
 	}
 
 	@Override
 	public void init() {
-		this.buttonsAdd(new RealmsButton(0, this.width() / 2 - 40, RealmsConstants.row(14) - 10, 80, 20, this.buttonTitle) {
+		this.buttonsAdd(new RealmsButton(0, this.width() / 2 - 40, class_4359.method_21072(14) - 10, 80, 20, this.buttonTitle) {
 			@Override
 			public void onPress() {
 				Realms.setScreen(RealmsResetWorldScreen.this.lastScreen);
@@ -104,7 +104,7 @@ public class RealmsResetWorldScreen extends RealmsScreenWithCallback<WorldTempla
 		this.buttonsAdd(
 			new RealmsResetWorldScreen.FrameButton(
 				this.frame(1),
-				RealmsConstants.row(0) + 10,
+				class_4359.method_21072(0) + 10,
 				getLocalizedString("mco.reset.world.generate"),
 				-1L,
 				"realms:textures/gui/realms/new_world.png",
@@ -119,7 +119,7 @@ public class RealmsResetWorldScreen extends RealmsScreenWithCallback<WorldTempla
 		this.buttonsAdd(
 			new RealmsResetWorldScreen.FrameButton(
 				this.frame(2),
-				RealmsConstants.row(0) + 10,
+				class_4359.method_21072(0) + 10,
 				getLocalizedString("mco.reset.world.upload"),
 				-1L,
 				"realms:textures/gui/realms/upload.png",
@@ -135,7 +135,7 @@ public class RealmsResetWorldScreen extends RealmsScreenWithCallback<WorldTempla
 		this.buttonsAdd(
 			new RealmsResetWorldScreen.FrameButton(
 				this.frame(3),
-				RealmsConstants.row(0) + 10,
+				class_4359.method_21072(0) + 10,
 				getLocalizedString("mco.reset.world.template"),
 				-1L,
 				"realms:textures/gui/realms/survival_spawn.png",
@@ -154,7 +154,7 @@ public class RealmsResetWorldScreen extends RealmsScreenWithCallback<WorldTempla
 		this.buttonsAdd(
 			new RealmsResetWorldScreen.FrameButton(
 				this.frame(1),
-				RealmsConstants.row(6) + 20,
+				class_4359.method_21072(6) + 20,
 				getLocalizedString("mco.reset.world.adventure"),
 				-1L,
 				"realms:textures/gui/realms/adventure.png",
@@ -173,7 +173,7 @@ public class RealmsResetWorldScreen extends RealmsScreenWithCallback<WorldTempla
 		this.buttonsAdd(
 			new RealmsResetWorldScreen.FrameButton(
 				this.frame(2),
-				RealmsConstants.row(6) + 20,
+				class_4359.method_21072(6) + 20,
 				getLocalizedString("mco.reset.world.experience"),
 				-1L,
 				"realms:textures/gui/realms/experience.png",
@@ -192,7 +192,7 @@ public class RealmsResetWorldScreen extends RealmsScreenWithCallback<WorldTempla
 		this.buttonsAdd(
 			new RealmsResetWorldScreen.FrameButton(
 				this.frame(3),
-				RealmsConstants.row(6) + 20,
+				class_4359.method_21072(6) + 20,
 				getLocalizedString("mco.reset.world.inspiration"),
 				-1L,
 				"realms:textures/gui/realms/inspiration.png",
@@ -217,18 +217,18 @@ public class RealmsResetWorldScreen extends RealmsScreenWithCallback<WorldTempla
 	}
 
 	@Override
-	public boolean keyPressed(int eventKey, int scancode, int mods) {
-		if (eventKey == 256) {
+	public boolean keyPressed(int i, int j, int k) {
+		if (i == 256) {
 			Realms.setScreen(this.lastScreen);
 			return true;
 		} else {
-			return super.keyPressed(eventKey, scancode, mods);
+			return super.keyPressed(i, j, k);
 		}
 	}
 
 	@Override
-	public boolean mouseClicked(double x, double y, int buttonNum) {
-		return super.mouseClicked(x, y, buttonNum);
+	public boolean mouseClicked(double d, double e, int i) {
+		return super.mouseClicked(d, e, i);
 	}
 
 	private int frame(int i) {
@@ -236,41 +236,39 @@ public class RealmsResetWorldScreen extends RealmsScreenWithCallback<WorldTempla
 	}
 
 	@Override
-	public void render(int xm, int ym, float a) {
+	public void render(int i, int j, float f) {
 		this.renderBackground();
 		this.titleLabel.render(this);
 		this.subtitleLabel.render(this);
-		super.render(xm, ym, a);
+		super.render(i, j, f);
 	}
 
-	private void drawFrame(
-		int x, int y, String text, long imageId, String image, RealmsResetWorldScreen.ResetType resetType, boolean hoveredOrFocused, boolean hovered
-	) {
-		if (imageId == -1L) {
-			bind(image);
+	private void drawFrame(int i, int j, String string, long l, String string2, RealmsResetWorldScreen.ResetType resetType, boolean bl, boolean bl2) {
+		if (l == -1L) {
+			bind(string2);
 		} else {
-			RealmsTextureManager.bindWorldTemplate(String.valueOf(imageId), image);
+			RealmsTextureManager.bindWorldTemplate(String.valueOf(l), string2);
 		}
 
-		if (hoveredOrFocused) {
+		if (bl) {
 			GlStateManager.color4f(0.56F, 0.56F, 0.56F, 1.0F);
 		} else {
 			GlStateManager.color4f(1.0F, 1.0F, 1.0F, 1.0F);
 		}
 
-		RealmsScreen.blit(x + 2, y + 14, 0.0F, 0.0F, 56, 56, 56, 56);
+		RealmsScreen.blit(i + 2, j + 14, 0.0F, 0.0F, 56, 56, 56, 56);
 		bind("realms:textures/gui/realms/slot_frame.png");
-		if (hoveredOrFocused) {
+		if (bl) {
 			GlStateManager.color4f(0.56F, 0.56F, 0.56F, 1.0F);
 		} else {
 			GlStateManager.color4f(1.0F, 1.0F, 1.0F, 1.0F);
 		}
 
-		RealmsScreen.blit(x, y + 12, 0.0F, 0.0F, 60, 60, 60, 60);
-		this.drawCenteredString(text, x + 30, y, hoveredOrFocused ? 10526880 : 16777215);
+		RealmsScreen.blit(i, j + 12, 0.0F, 0.0F, 60, 60, 60, 60);
+		this.drawCenteredString(string, i + 30, j, bl ? 10526880 : 16777215);
 	}
 
-	void callback(WorldTemplate worldTemplate) {
+	void method_21371(WorldTemplate worldTemplate) {
 		if (worldTemplate != null) {
 			if (this.slot == -1) {
 				this.resetWorldWithTemplate(worldTemplate);
@@ -299,16 +297,16 @@ public class RealmsResetWorldScreen extends RealmsScreenWithCallback<WorldTempla
 		this.switchSlot(this);
 	}
 
-	public void switchSlot(RealmsScreen screen) {
-		RealmsTasks.SwitchSlotTask switchSlotTask = new RealmsTasks.SwitchSlotTask(this.serverData.id, this.slot, screen, 100);
+	public void switchSlot(RealmsScreen realmsScreen) {
+		RealmsTasks.SwitchSlotTask switchSlotTask = new RealmsTasks.SwitchSlotTask(this.serverData.id, this.slot, realmsScreen, 100);
 		RealmsLongRunningMcoTaskScreen realmsLongRunningMcoTaskScreen = new RealmsLongRunningMcoTaskScreen(this.lastScreen, switchSlotTask);
 		realmsLongRunningMcoTaskScreen.start();
 		Realms.setScreen(realmsLongRunningMcoTaskScreen);
 	}
 
 	@Override
-	public void confirmResult(boolean result, int id) {
-		if (id == 100 && result) {
+	public void confirmResult(boolean bl, int i) {
+		if (i == 100 && bl) {
 			switch (this.typeToReset) {
 				case ADVENTURE:
 				case SURVIVAL_SPAWN:
@@ -327,7 +325,7 @@ public class RealmsResetWorldScreen extends RealmsScreenWithCallback<WorldTempla
 					return;
 			}
 		} else {
-			if (result) {
+			if (bl) {
 				Realms.setScreen(this.returnScreen);
 				if (this.confirmationId != -1) {
 					this.returnScreen.confirmResult(true, this.confirmationId);
@@ -336,8 +334,8 @@ public class RealmsResetWorldScreen extends RealmsScreenWithCallback<WorldTempla
 		}
 	}
 
-	public void resetWorldWithTemplate(WorldTemplate template) {
-		RealmsTasks.ResettingWorldTask resettingWorldTask = new RealmsTasks.ResettingWorldTask(this.serverData.id, this.returnScreen, template);
+	public void resetWorldWithTemplate(WorldTemplate worldTemplate) {
+		RealmsTasks.ResettingWorldTask resettingWorldTask = new RealmsTasks.ResettingWorldTask(this.serverData.id, this.returnScreen, worldTemplate);
 		if (this.resetTitle != null) {
 			resettingWorldTask.setResetTitle(this.resetTitle);
 		}
@@ -384,10 +382,10 @@ public class RealmsResetWorldScreen extends RealmsScreenWithCallback<WorldTempla
 		private final String image;
 		private final RealmsResetWorldScreen.ResetType resetType;
 
-		public FrameButton(int x, int y, String text, long imageId, String image, RealmsResetWorldScreen.ResetType resetType) {
-			super(100 + resetType.ordinal(), x, y, 60, 72, text);
-			this.imageId = imageId;
-			this.image = image;
+		public FrameButton(int i, int j, String string, long l, String string2, RealmsResetWorldScreen.ResetType resetType) {
+			super(100 + resetType.ordinal(), i, j, 60, 72, string);
+			this.imageId = l;
+			this.image = string2;
 			this.resetType = resetType;
 		}
 
@@ -397,12 +395,12 @@ public class RealmsResetWorldScreen extends RealmsScreenWithCallback<WorldTempla
 		}
 
 		@Override
-		public void render(int xm, int ym, float a) {
-			super.render(xm, ym, a);
+		public void render(int i, int j, float f) {
+			super.render(i, j, f);
 		}
 
 		@Override
-		public void renderButton(int mouseX, int mouseY, float a) {
+		public void renderButton(int i, int j, float f) {
 			RealmsResetWorldScreen.this.drawFrame(
 				this.x(),
 				this.y(),
@@ -411,7 +409,7 @@ public class RealmsResetWorldScreen extends RealmsScreenWithCallback<WorldTempla
 				this.image,
 				this.resetType,
 				this.getProxy().isHovered(),
-				this.getProxy().isMouseOver((double)mouseX, (double)mouseY)
+				this.getProxy().isMouseOver((double)i, (double)j)
 			);
 		}
 	}
@@ -433,10 +431,10 @@ public class RealmsResetWorldScreen extends RealmsScreenWithCallback<WorldTempla
 		int levelType;
 		boolean generateStructures;
 
-		public ResetWorldInfo(String seed, int levelType, boolean generateStructures) {
-			this.seed = seed;
-			this.levelType = levelType;
-			this.generateStructures = generateStructures;
+		public ResetWorldInfo(String string, int i, boolean bl) {
+			this.seed = string;
+			this.levelType = i;
+			this.generateStructures = bl;
 		}
 	}
 }

@@ -4,30 +4,30 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 
 public enum MessageType {
-	CHAT((byte)0, false),
-	SYSTEM((byte)1, true),
-	GAME_INFO((byte)2, true);
+	field_11737((byte)0, false),
+	field_11735((byte)1, true),
+	field_11733((byte)2, true);
 
 	private final byte id;
 	private final boolean interruptsNarration;
 
-	private MessageType(byte id, boolean interruptsNarration) {
-		this.id = id;
-		this.interruptsNarration = interruptsNarration;
+	private MessageType(byte b, boolean bl) {
+		this.id = b;
+		this.interruptsNarration = bl;
 	}
 
 	public byte getId() {
 		return this.id;
 	}
 
-	public static MessageType byId(byte id) {
+	public static MessageType byId(byte b) {
 		for (MessageType messageType : values()) {
-			if (id == messageType.id) {
+			if (b == messageType.id) {
 				return messageType;
 			}
 		}
 
-		return CHAT;
+		return field_11737;
 	}
 
 	@Environment(EnvType.CLIENT)

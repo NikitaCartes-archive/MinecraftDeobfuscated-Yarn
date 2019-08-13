@@ -4,8 +4,8 @@ import com.mojang.blaze3d.platform.GlStateManager;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.block.Block;
+import net.minecraft.block.BlockRenderLayer;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.render.entity.model.VillagerResemblingModel;
 import net.minecraft.client.render.item.ItemRenderer;
 import net.minecraft.client.render.model.json.ModelTransformation;
@@ -22,20 +22,20 @@ public class VillagerHeldItemFeatureRenderer<T extends LivingEntity> extends Fea
 		super(featureRendererContext);
 	}
 
-	public void render(T livingEntity, float f, float g, float h, float i, float j, float k, float l) {
-		ItemStack itemStack = livingEntity.getEquippedStack(EquipmentSlot.MAINHAND);
+	public void method_18147(T livingEntity, float f, float g, float h, float i, float j, float k, float l) {
+		ItemStack itemStack = livingEntity.getEquippedStack(EquipmentSlot.field_6173);
 		if (!itemStack.isEmpty()) {
 			Item item = itemStack.getItem();
 			Block block = Block.getBlockFromItem(item);
 			GlStateManager.pushMatrix();
-			boolean bl = this.itemRenderer.hasDepthInGui(itemStack) && block.getRenderLayer() == RenderLayer.TRANSLUCENT;
+			boolean bl = this.itemRenderer.hasDepthInGui(itemStack) && block.getRenderLayer() == BlockRenderLayer.field_9179;
 			if (bl) {
 				GlStateManager.depthMask(false);
 			}
 
 			GlStateManager.translatef(0.0F, 0.4F, -0.4F);
 			GlStateManager.rotatef(180.0F, 1.0F, 0.0F, 0.0F);
-			this.itemRenderer.renderHeldItem(itemStack, livingEntity, ModelTransformation.Type.GROUND, false);
+			this.itemRenderer.renderHeldItem(itemStack, livingEntity, ModelTransformation.Type.field_4318, false);
 			if (bl) {
 				GlStateManager.depthMask(true);
 			}

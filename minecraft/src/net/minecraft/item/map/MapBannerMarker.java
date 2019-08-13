@@ -5,9 +5,9 @@ import javax.annotation.Nullable;
 import net.minecraft.block.entity.BannerBlockEntity;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.NbtHelper;
 import net.minecraft.text.Text;
 import net.minecraft.util.DyeColor;
+import net.minecraft.util.TagHelper;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.BlockView;
 
@@ -17,16 +17,16 @@ public class MapBannerMarker {
 	@Nullable
 	private final Text name;
 
-	public MapBannerMarker(BlockPos pos, DyeColor dyeColor, @Nullable Text name) {
-		this.pos = pos;
+	public MapBannerMarker(BlockPos blockPos, DyeColor dyeColor, @Nullable Text text) {
+		this.pos = blockPos;
 		this.color = dyeColor;
-		this.name = name;
+		this.name = text;
 	}
 
-	public static MapBannerMarker fromNbt(CompoundTag tag) {
-		BlockPos blockPos = NbtHelper.toBlockPos(tag.getCompound("Pos"));
-		DyeColor dyeColor = DyeColor.byName(tag.getString("Color"), DyeColor.WHITE);
-		Text text = tag.contains("Name") ? Text.Serializer.fromJson(tag.getString("Name")) : null;
+	public static MapBannerMarker fromNbt(CompoundTag compoundTag) {
+		BlockPos blockPos = TagHelper.deserializeBlockPos(compoundTag.getCompound("Pos"));
+		DyeColor dyeColor = DyeColor.byName(compoundTag.getString("Color"), DyeColor.field_7952);
+		Text text = compoundTag.containsKey("Name") ? Text.Serializer.fromJson(compoundTag.getString("Name")) : null;
 		return new MapBannerMarker(blockPos, dyeColor, text);
 	}
 
@@ -49,39 +49,39 @@ public class MapBannerMarker {
 
 	public MapIcon.Type getIconType() {
 		switch (this.color) {
-			case WHITE:
-				return MapIcon.Type.BANNER_WHITE;
-			case ORANGE:
-				return MapIcon.Type.BANNER_ORANGE;
-			case MAGENTA:
-				return MapIcon.Type.BANNER_MAGENTA;
-			case LIGHT_BLUE:
-				return MapIcon.Type.BANNER_LIGHT_BLUE;
-			case YELLOW:
-				return MapIcon.Type.BANNER_YELLOW;
-			case LIME:
-				return MapIcon.Type.BANNER_LIME;
-			case PINK:
-				return MapIcon.Type.BANNER_PINK;
-			case GRAY:
-				return MapIcon.Type.BANNER_GRAY;
-			case LIGHT_GRAY:
-				return MapIcon.Type.BANNER_LIGHT_GRAY;
-			case CYAN:
-				return MapIcon.Type.BANNER_CYAN;
-			case PURPLE:
-				return MapIcon.Type.BANNER_PURPLE;
-			case BLUE:
-				return MapIcon.Type.BANNER_BLUE;
-			case BROWN:
-				return MapIcon.Type.BANNER_BROWN;
-			case GREEN:
-				return MapIcon.Type.BANNER_GREEN;
-			case RED:
-				return MapIcon.Type.BANNER_RED;
-			case BLACK:
+			case field_7952:
+				return MapIcon.Type.field_96;
+			case field_7946:
+				return MapIcon.Type.field_92;
+			case field_7958:
+				return MapIcon.Type.field_97;
+			case field_7951:
+				return MapIcon.Type.field_90;
+			case field_7947:
+				return MapIcon.Type.field_93;
+			case field_7961:
+				return MapIcon.Type.field_94;
+			case field_7954:
+				return MapIcon.Type.field_100;
+			case field_7944:
+				return MapIcon.Type.field_101;
+			case field_7967:
+				return MapIcon.Type.field_107;
+			case field_7955:
+				return MapIcon.Type.field_108;
+			case field_7945:
+				return MapIcon.Type.field_104;
+			case field_7966:
+				return MapIcon.Type.field_105;
+			case field_7957:
+				return MapIcon.Type.field_106;
+			case field_7942:
+				return MapIcon.Type.field_102;
+			case field_7964:
+				return MapIcon.Type.field_99;
+			case field_7963:
 			default:
-				return MapIcon.Type.BANNER_BLACK;
+				return MapIcon.Type.field_103;
 		}
 	}
 
@@ -90,11 +90,11 @@ public class MapBannerMarker {
 		return this.name;
 	}
 
-	public boolean equals(Object o) {
-		if (this == o) {
+	public boolean equals(Object object) {
+		if (this == object) {
 			return true;
-		} else if (o != null && this.getClass() == o.getClass()) {
-			MapBannerMarker mapBannerMarker = (MapBannerMarker)o;
+		} else if (object != null && this.getClass() == object.getClass()) {
+			MapBannerMarker mapBannerMarker = (MapBannerMarker)object;
 			return Objects.equals(this.pos, mapBannerMarker.pos) && this.color == mapBannerMarker.color && Objects.equals(this.name, mapBannerMarker.name);
 		} else {
 			return false;
@@ -107,7 +107,7 @@ public class MapBannerMarker {
 
 	public CompoundTag getNbt() {
 		CompoundTag compoundTag = new CompoundTag();
-		compoundTag.put("Pos", NbtHelper.fromBlockPos(this.pos));
+		compoundTag.put("Pos", TagHelper.serializeBlockPos(this.pos));
 		compoundTag.putString("Color", this.color.getName());
 		if (this.name != null) {
 			compoundTag.putString("Name", Text.Serializer.toJson(this.name));

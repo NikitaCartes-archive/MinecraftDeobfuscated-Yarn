@@ -9,13 +9,13 @@ import net.minecraft.util.math.Direction;
 import net.minecraft.world.IWorld;
 
 public class HayPileFeature extends AbstractPileFeature {
-	public HayPileFeature(Function<Dynamic<?>, ? extends DefaultFeatureConfig> configFactory) {
-		super(configFactory);
+	public HayPileFeature(Function<Dynamic<?>, ? extends DefaultFeatureConfig> function) {
+		super(function);
 	}
 
 	@Override
-	protected BlockState getPileBlockState(IWorld world) {
-		Direction.Axis axis = Direction.Axis.method_16699(world.getRandom());
-		return Blocks.HAY_BLOCK.getDefaultState().with(PillarBlock.AXIS, axis);
+	protected BlockState getPileBlockState(IWorld iWorld) {
+		Direction.Axis axis = Direction.Axis.method_16699(iWorld.getRandom());
+		return Blocks.field_10359.getDefaultState().with(PillarBlock.AXIS, axis);
 	}
 }

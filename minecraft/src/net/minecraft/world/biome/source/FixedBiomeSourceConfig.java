@@ -4,7 +4,7 @@ import net.minecraft.world.biome.Biome;
 import net.minecraft.world.biome.Biomes;
 
 public class FixedBiomeSourceConfig implements BiomeSourceConfig {
-	private Biome biome = Biomes.PLAINS;
+	private Biome biome = Biomes.field_9451;
 
 	public FixedBiomeSourceConfig setBiome(Biome biome) {
 		this.biome = biome;

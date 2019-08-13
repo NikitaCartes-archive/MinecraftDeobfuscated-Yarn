@@ -16,44 +16,42 @@ public class Box {
 	public final float zMax;
 	public String name;
 
-	public Box(ModelPart parent, int textureOffsetU, int textureOffsetV, float xMin, float yMin, float zMin, int xSize, int ySize, int zSize, float scale) {
-		this(parent, textureOffsetU, textureOffsetV, xMin, yMin, zMin, xSize, ySize, zSize, scale, parent.mirror);
+	public Box(Cuboid cuboid, int i, int j, float f, float g, float h, int k, int l, int m, float n) {
+		this(cuboid, i, j, f, g, h, k, l, m, n, cuboid.mirror);
 	}
 
-	public Box(
-		ModelPart parent, int textureOffsetU, int textureOffsetV, float xMin, float yMin, float zMin, int xSize, int ySize, int zSize, float scale, boolean flip
-	) {
-		this.xMin = xMin;
-		this.yMin = yMin;
-		this.zMin = zMin;
-		this.xMax = xMin + (float)xSize;
-		this.yMax = yMin + (float)ySize;
-		this.zMax = zMin + (float)zSize;
+	public Box(Cuboid cuboid, int i, int j, float f, float g, float h, int k, int l, int m, float n, boolean bl) {
+		this.xMin = f;
+		this.yMin = g;
+		this.zMin = h;
+		this.xMax = f + (float)k;
+		this.yMax = g + (float)l;
+		this.zMax = h + (float)m;
 		this.vertices = new Vertex[8];
 		this.polygons = new Quad[6];
-		float f = xMin + (float)xSize;
-		float g = yMin + (float)ySize;
-		float h = zMin + (float)zSize;
-		xMin -= scale;
-		yMin -= scale;
-		zMin -= scale;
-		f += scale;
-		g += scale;
-		h += scale;
-		if (flip) {
-			float i = f;
-			f = xMin;
-			xMin = i;
+		float o = f + (float)k;
+		float p = g + (float)l;
+		float q = h + (float)m;
+		f -= n;
+		g -= n;
+		h -= n;
+		o += n;
+		p += n;
+		q += n;
+		if (bl) {
+			float r = o;
+			o = f;
+			f = r;
 		}
 
-		Vertex vertex = new Vertex(xMin, yMin, zMin, 0.0F, 0.0F);
-		Vertex vertex2 = new Vertex(f, yMin, zMin, 0.0F, 8.0F);
-		Vertex vertex3 = new Vertex(f, g, zMin, 8.0F, 8.0F);
-		Vertex vertex4 = new Vertex(xMin, g, zMin, 8.0F, 0.0F);
-		Vertex vertex5 = new Vertex(xMin, yMin, h, 0.0F, 0.0F);
-		Vertex vertex6 = new Vertex(f, yMin, h, 0.0F, 8.0F);
-		Vertex vertex7 = new Vertex(f, g, h, 8.0F, 8.0F);
-		Vertex vertex8 = new Vertex(xMin, g, h, 8.0F, 0.0F);
+		Vertex vertex = new Vertex(f, g, h, 0.0F, 0.0F);
+		Vertex vertex2 = new Vertex(o, g, h, 0.0F, 8.0F);
+		Vertex vertex3 = new Vertex(o, p, h, 8.0F, 8.0F);
+		Vertex vertex4 = new Vertex(f, p, h, 8.0F, 0.0F);
+		Vertex vertex5 = new Vertex(f, g, q, 0.0F, 0.0F);
+		Vertex vertex6 = new Vertex(o, g, q, 0.0F, 8.0F);
+		Vertex vertex7 = new Vertex(o, p, q, 8.0F, 8.0F);
+		Vertex vertex8 = new Vertex(f, p, q, 8.0F, 0.0F);
 		this.vertices[0] = vertex;
 		this.vertices[1] = vertex2;
 		this.vertices[2] = vertex3;
@@ -63,74 +61,30 @@ public class Box {
 		this.vertices[6] = vertex7;
 		this.vertices[7] = vertex8;
 		this.polygons[0] = new Quad(
-			new Vertex[]{vertex6, vertex2, vertex3, vertex7},
-			textureOffsetU + zSize + xSize,
-			textureOffsetV + zSize,
-			textureOffsetU + zSize + xSize + zSize,
-			textureOffsetV + zSize + ySize,
-			parent.textureWidth,
-			parent.textureHeight
+			new Vertex[]{vertex6, vertex2, vertex3, vertex7}, i + m + k, j + m, i + m + k + m, j + m + l, cuboid.textureWidth, cuboid.textureHeight
 		);
-		this.polygons[1] = new Quad(
-			new Vertex[]{vertex, vertex5, vertex8, vertex4},
-			textureOffsetU,
-			textureOffsetV + zSize,
-			textureOffsetU + zSize,
-			textureOffsetV + zSize + ySize,
-			parent.textureWidth,
-			parent.textureHeight
-		);
-		this.polygons[2] = new Quad(
-			new Vertex[]{vertex6, vertex5, vertex, vertex2},
-			textureOffsetU + zSize,
-			textureOffsetV,
-			textureOffsetU + zSize + xSize,
-			textureOffsetV + zSize,
-			parent.textureWidth,
-			parent.textureHeight
-		);
-		this.polygons[3] = new Quad(
-			new Vertex[]{vertex3, vertex4, vertex8, vertex7},
-			textureOffsetU + zSize + xSize,
-			textureOffsetV + zSize,
-			textureOffsetU + zSize + xSize + xSize,
-			textureOffsetV,
-			parent.textureWidth,
-			parent.textureHeight
-		);
-		this.polygons[4] = new Quad(
-			new Vertex[]{vertex2, vertex, vertex4, vertex3},
-			textureOffsetU + zSize,
-			textureOffsetV + zSize,
-			textureOffsetU + zSize + xSize,
-			textureOffsetV + zSize + ySize,
-			parent.textureWidth,
-			parent.textureHeight
-		);
+		this.polygons[1] = new Quad(new Vertex[]{vertex, vertex5, vertex8, vertex4}, i, j + m, i + m, j + m + l, cuboid.textureWidth, cuboid.textureHeight);
+		this.polygons[2] = new Quad(new Vertex[]{vertex6, vertex5, vertex, vertex2}, i + m, j, i + m + k, j + m, cuboid.textureWidth, cuboid.textureHeight);
+		this.polygons[3] = new Quad(new Vertex[]{vertex3, vertex4, vertex8, vertex7}, i + m + k, j + m, i + m + k + k, j, cuboid.textureWidth, cuboid.textureHeight);
+		this.polygons[4] = new Quad(new Vertex[]{vertex2, vertex, vertex4, vertex3}, i + m, j + m, i + m + k, j + m + l, cuboid.textureWidth, cuboid.textureHeight);
 		this.polygons[5] = new Quad(
-			new Vertex[]{vertex5, vertex6, vertex7, vertex8},
-			textureOffsetU + zSize + xSize + zSize,
-			textureOffsetV + zSize,
-			textureOffsetU + zSize + xSize + zSize + xSize,
-			textureOffsetV + zSize + ySize,
-			parent.textureWidth,
-			parent.textureHeight
+			new Vertex[]{vertex5, vertex6, vertex7, vertex8}, i + m + k + m, j + m, i + m + k + m + k, j + m + l, cuboid.textureWidth, cuboid.textureHeight
 		);
-		if (flip) {
+		if (bl) {
 			for (Quad quad : this.polygons) {
 				quad.flip();
 			}
 		}
 	}
 
-	public void render(BufferBuilder bufferBuilder, float scale) {
+	public void render(BufferBuilder bufferBuilder, float f) {
 		for (Quad quad : this.polygons) {
-			quad.render(bufferBuilder, scale);
+			quad.render(bufferBuilder, f);
 		}
 	}
 
-	public Box setName(String name) {
-		this.name = name;
+	public Box setName(String string) {
+		this.name = string;
 		return this;
 	}
 }

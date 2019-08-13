@@ -13,15 +13,15 @@ public interface ResourceManager {
 	@Environment(EnvType.CLIENT)
 	Set<String> getAllNamespaces();
 
-	Resource getResource(Identifier id) throws IOException;
+	Resource getResource(Identifier identifier) throws IOException;
 
 	@Environment(EnvType.CLIENT)
-	boolean containsResource(Identifier id);
+	boolean containsResource(Identifier identifier);
 
-	List<Resource> getAllResources(Identifier id) throws IOException;
+	List<Resource> getAllResources(Identifier identifier) throws IOException;
 
-	Collection<Identifier> findResources(String resourceType, Predicate<String> pathPredicate);
+	Collection<Identifier> findResources(String string, Predicate<String> predicate);
 
 	@Environment(EnvType.CLIENT)
-	void addPack(ResourcePack pack);
+	void addPack(ResourcePack resourcePack);
 }

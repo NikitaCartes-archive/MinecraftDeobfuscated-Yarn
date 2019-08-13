@@ -10,11 +10,11 @@ public class EndPortalBlockEntity extends BlockEntity {
 	}
 
 	public EndPortalBlockEntity() {
-		this(BlockEntityType.END_PORTAL);
+		this(BlockEntityType.field_11898);
 	}
 
 	@Environment(EnvType.CLIENT)
 	public boolean shouldDrawSide(Direction direction) {
-		return direction == Direction.UP;
+		return direction == Direction.field_11036;
 	}
 }

@@ -12,12 +12,12 @@ public class EnderDragonPart extends Entity {
 	public final String name;
 	private final EntityDimensions partDimensions;
 
-	public EnderDragonPart(EnderDragonEntity owner, String name, float width, float height) {
-		super(owner.getType(), owner.world);
-		this.partDimensions = EntityDimensions.changing(width, height);
+	public EnderDragonPart(EnderDragonEntity enderDragonEntity, String string, float f, float g) {
+		super(enderDragonEntity.getType(), enderDragonEntity.world);
+		this.partDimensions = EntityDimensions.changing(f, g);
 		this.calculateDimensions();
-		this.owner = owner;
-		this.name = name;
+		this.owner = enderDragonEntity;
+		this.name = string;
 	}
 
 	@Override
@@ -25,11 +25,11 @@ public class EnderDragonPart extends Entity {
 	}
 
 	@Override
-	protected void readCustomDataFromTag(CompoundTag tag) {
+	protected void readCustomDataFromTag(CompoundTag compoundTag) {
 	}
 
 	@Override
-	protected void writeCustomDataToTag(CompoundTag tag) {
+	protected void writeCustomDataToTag(CompoundTag compoundTag) {
 	}
 
 	@Override
@@ -38,8 +38,8 @@ public class EnderDragonPart extends Entity {
 	}
 
 	@Override
-	public boolean damage(DamageSource source, float amount) {
-		return this.isInvulnerableTo(source) ? false : this.owner.damagePart(this, source, amount);
+	public boolean damage(DamageSource damageSource, float f) {
+		return this.isInvulnerableTo(damageSource) ? false : this.owner.damagePart(this, damageSource, f);
 	}
 
 	@Override
@@ -53,7 +53,7 @@ public class EnderDragonPart extends Entity {
 	}
 
 	@Override
-	public EntityDimensions getDimensions(EntityPose pose) {
+	public EntityDimensions getDimensions(EntityPose entityPose) {
 		return this.partDimensions;
 	}
 }

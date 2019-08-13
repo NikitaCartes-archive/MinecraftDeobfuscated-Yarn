@@ -10,10 +10,9 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.widget.ButtonWidget;
-import net.minecraft.client.gui.widget.PageTurnWidget;
 import net.minecraft.client.resource.language.I18n;
 import net.minecraft.client.util.NarratorManager;
-import net.minecraft.client.util.Texts;
+import net.minecraft.client.util.TextComponentUtil;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
@@ -37,7 +36,7 @@ public class BookScreen extends Screen {
 		}
 
 		@Override
-		public Text getLine(int line) {
+		public Text getLine(int i) {
 			return new LiteralText("");
 		}
 	};
@@ -46,35 +45,35 @@ public class BookScreen extends Screen {
 	private int pageIndex;
 	private List<Text> cachedPage = Collections.emptyList();
 	private int cachedPageIndex = -1;
+	private PageTurnWidget lastPageButton;
 	private PageTurnWidget nextPageButton;
-	private PageTurnWidget previousPageButton;
 	private final boolean pageTurnSound;
 
-	public BookScreen(BookScreen.Contents pageProvider) {
-		this(pageProvider, true);
+	public BookScreen(BookScreen.Contents contents) {
+		this(contents, true);
 	}
 
 	public BookScreen() {
 		this(EMPTY_PROVIDER, false);
 	}
 
-	private BookScreen(BookScreen.Contents contents, boolean playPageTurnSound) {
+	private BookScreen(BookScreen.Contents contents, boolean bl) {
 		super(NarratorManager.EMPTY);
 		this.contents = contents;
-		this.pageTurnSound = playPageTurnSound;
+		this.pageTurnSound = bl;
 	}
 
-	public void setPageProvider(BookScreen.Contents pageProvider) {
-		this.contents = pageProvider;
-		this.pageIndex = MathHelper.clamp(this.pageIndex, 0, pageProvider.getLineCount());
+	public void setPageProvider(BookScreen.Contents contents) {
+		this.contents = contents;
+		this.pageIndex = MathHelper.clamp(this.pageIndex, 0, contents.getLineCount());
 		this.updatePageButtons();
 		this.cachedPageIndex = -1;
 	}
 
-	public boolean setPage(int index) {
-		int i = MathHelper.clamp(index, 0, this.contents.getLineCount() - 1);
-		if (i != this.pageIndex) {
-			this.pageIndex = i;
+	public boolean setPage(int i) {
+		int j = MathHelper.clamp(i, 0, this.contents.getLineCount() - 1);
+		if (j != this.pageIndex) {
+			this.pageIndex = j;
 			this.updatePageButtons();
 			this.cachedPageIndex = -1;
 			return true;
@@ -83,8 +82,8 @@ public class BookScreen extends Screen {
 		}
 	}
 
-	protected boolean jumpToPage(int page) {
-		return this.setPage(page);
+	protected boolean jumpToPage(int i) {
+		return this.setPage(i);
 	}
 
 	@Override
@@ -100,8 +99,8 @@ public class BookScreen extends Screen {
 	protected void addPageButtons() {
 		int i = (this.width - 192) / 2;
 		int j = 2;
-		this.nextPageButton = this.addButton(new PageTurnWidget(i + 116, 159, true, buttonWidget -> this.goToNextPage(), this.pageTurnSound));
-		this.previousPageButton = this.addButton(new PageTurnWidget(i + 43, 159, false, buttonWidget -> this.goToPreviousPage(), this.pageTurnSound));
+		this.lastPageButton = this.addButton(new PageTurnWidget(i + 116, 159, true, buttonWidget -> this.goToNextPage(), this.pageTurnSound));
+		this.nextPageButton = this.addButton(new PageTurnWidget(i + 43, 159, false, buttonWidget -> this.goToPreviousPage(), this.pageTurnSound));
 		this.updatePageButtons();
 	}
 
@@ -126,21 +125,21 @@ public class BookScreen extends Screen {
 	}
 
 	private void updatePageButtons() {
-		this.nextPageButton.visible = this.pageIndex < this.getPageCount() - 1;
-		this.previousPageButton.visible = this.pageIndex > 0;
+		this.lastPageButton.visible = this.pageIndex < this.getPageCount() - 1;
+		this.nextPageButton.visible = this.pageIndex > 0;
 	}
 
 	@Override
-	public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
-		if (super.keyPressed(keyCode, scanCode, modifiers)) {
+	public boolean keyPressed(int i, int j, int k) {
+		if (super.keyPressed(i, j, k)) {
 			return true;
 		} else {
-			switch (keyCode) {
+			switch (i) {
 				case 266:
-					this.previousPageButton.onPress();
+					this.nextPageButton.onPress();
 					return true;
 				case 267:
-					this.nextPageButton.onPress();
+					this.lastPageButton.onPress();
 					return true;
 				default:
 					return false;
@@ -149,35 +148,35 @@ public class BookScreen extends Screen {
 	}
 
 	@Override
-	public void render(int mouseX, int mouseY, float delta) {
+	public void render(int i, int j, float f) {
 		this.renderBackground();
 		GlStateManager.color4f(1.0F, 1.0F, 1.0F, 1.0F);
 		this.minecraft.getTextureManager().bindTexture(BOOK_TEXTURE);
-		int i = (this.width - 192) / 2;
-		int j = 2;
-		this.blit(i, 2, 0, 0, 192, 192);
+		int k = (this.width - 192) / 2;
+		int l = 2;
+		this.blit(k, 2, 0, 0, 192, 192);
 		String string = I18n.translate("book.pageIndicator", this.pageIndex + 1, Math.max(this.getPageCount(), 1));
 		if (this.cachedPageIndex != this.pageIndex) {
 			Text text = this.contents.getLineOrDefault(this.pageIndex);
-			this.cachedPage = Texts.wrapLines(text, 114, this.font, true, true);
+			this.cachedPage = TextComponentUtil.wrapLines(text, 114, this.font, true, true);
 		}
 
 		this.cachedPageIndex = this.pageIndex;
-		int k = this.getStringWidth(string);
-		this.font.draw(string, (float)(i - k + 192 - 44), 18.0F, 0);
-		int l = Math.min(128 / 9, this.cachedPage.size());
+		int m = this.getStringWidth(string);
+		this.font.draw(string, (float)(k - m + 192 - 44), 18.0F, 0);
+		int n = Math.min(128 / 9, this.cachedPage.size());
 
-		for (int m = 0; m < l; m++) {
-			Text text2 = (Text)this.cachedPage.get(m);
-			this.font.draw(text2.asFormattedString(), (float)(i + 36), (float)(32 + m * 9), 0);
+		for (int o = 0; o < n; o++) {
+			Text text2 = (Text)this.cachedPage.get(o);
+			this.font.draw(text2.asFormattedString(), (float)(k + 36), (float)(32 + o * 9), 0);
 		}
 
-		Text text3 = this.getTextAt((double)mouseX, (double)mouseY);
+		Text text3 = this.getLineAt((double)i, (double)j);
 		if (text3 != null) {
-			this.renderComponentHoverEffect(text3, mouseX, mouseY);
+			this.renderComponentHoverEffect(text3, i, j);
 		}
 
-		super.render(mouseX, mouseY, delta);
+		super.render(i, j, f);
 	}
 
 	private int getStringWidth(String string) {
@@ -185,15 +184,15 @@ public class BookScreen extends Screen {
 	}
 
 	@Override
-	public boolean mouseClicked(double mouseX, double mouseY, int button) {
-		if (button == 0) {
-			Text text = this.getTextAt(mouseX, mouseY);
+	public boolean mouseClicked(double d, double e, int i) {
+		if (i == 0) {
+			Text text = this.getLineAt(d, e);
 			if (text != null && this.handleComponentClicked(text)) {
 				return true;
 			}
 		}
 
-		return super.mouseClicked(mouseX, mouseY, button);
+		return super.mouseClicked(d, e, i);
 	}
 
 	@Override
@@ -201,7 +200,7 @@ public class BookScreen extends Screen {
 		ClickEvent clickEvent = text.getStyle().getClickEvent();
 		if (clickEvent == null) {
 			return false;
-		} else if (clickEvent.getAction() == ClickEvent.Action.CHANGE_PAGE) {
+		} else if (clickEvent.getAction() == ClickEvent.Action.field_11748) {
 			String string = clickEvent.getValue();
 
 			try {
@@ -212,7 +211,7 @@ public class BookScreen extends Screen {
 			}
 		} else {
 			boolean bl = super.handleComponentClicked(text);
-			if (bl && clickEvent.getAction() == ClickEvent.Action.RUN_COMMAND) {
+			if (bl && clickEvent.getAction() == ClickEvent.Action.field_11750) {
 				this.minecraft.openScreen(null);
 			}
 
@@ -221,12 +220,12 @@ public class BookScreen extends Screen {
 	}
 
 	@Nullable
-	public Text getTextAt(double x, double y) {
+	public Text getLineAt(double d, double e) {
 		if (this.cachedPage == null) {
 			return null;
 		} else {
-			int i = MathHelper.floor(x - (double)((this.width - 192) / 2) - 36.0);
-			int j = MathHelper.floor(y - 2.0 - 30.0);
+			int i = MathHelper.floor(d - (double)((this.width - 192) / 2) - 36.0);
+			int j = MathHelper.floor(e - 2.0 - 30.0);
 			if (i >= 0 && j >= 0) {
 				int k = Math.min(128 / 9, this.cachedPage.size());
 				if (i <= 114 && j < 9 * k + k) {
@@ -255,8 +254,8 @@ public class BookScreen extends Screen {
 		}
 	}
 
-	public static List<String> readPages(CompoundTag tag) {
-		ListTag listTag = tag.getList("pages", 8).copy();
+	public static List<String> getLines(CompoundTag compoundTag) {
+		ListTag listTag = compoundTag.getList("pages", 8).method_10612();
 		Builder<String> builder = ImmutableList.builder();
 
 		for (int i = 0; i < listTag.size(); i++) {
@@ -270,18 +269,18 @@ public class BookScreen extends Screen {
 	public interface Contents {
 		int getLineCount();
 
-		Text getLine(int line);
+		Text getLine(int i);
 
-		default Text getLineOrDefault(int line) {
-			return (Text)(line >= 0 && line < this.getLineCount() ? this.getLine(line) : new LiteralText(""));
+		default Text getLineOrDefault(int i) {
+			return (Text)(i >= 0 && i < this.getLineCount() ? this.getLine(i) : new LiteralText(""));
 		}
 
-		static BookScreen.Contents create(ItemStack stack) {
-			Item item = stack.getItem();
-			if (item == Items.WRITTEN_BOOK) {
-				return new BookScreen.WrittenBookContents(stack);
+		static BookScreen.Contents create(ItemStack itemStack) {
+			Item item = itemStack.getItem();
+			if (item == Items.field_8360) {
+				return new BookScreen.WrittenBookContents(itemStack);
 			} else {
-				return (BookScreen.Contents)(item == Items.WRITABLE_BOOK ? new BookScreen.WritableBookContents(stack) : BookScreen.EMPTY_PROVIDER);
+				return (BookScreen.Contents)(item == Items.field_8674 ? new BookScreen.WritableBookContents(itemStack) : BookScreen.EMPTY_PROVIDER);
 			}
 		}
 	}
@@ -296,7 +295,7 @@ public class BookScreen extends Screen {
 
 		private static List<String> getLines(ItemStack itemStack) {
 			CompoundTag compoundTag = itemStack.getTag();
-			return (List<String>)(compoundTag != null ? BookScreen.readPages(compoundTag) : ImmutableList.of());
+			return (List<String>)(compoundTag != null ? BookScreen.getLines(compoundTag) : ImmutableList.of());
 		}
 
 		@Override
@@ -305,8 +304,8 @@ public class BookScreen extends Screen {
 		}
 
 		@Override
-		public Text getLine(int line) {
-			return new LiteralText((String)this.lines.get(line));
+		public Text getLine(int i) {
+			return new LiteralText((String)this.lines.get(i));
 		}
 	}
 
@@ -321,8 +320,8 @@ public class BookScreen extends Screen {
 		private static List<String> getLines(ItemStack itemStack) {
 			CompoundTag compoundTag = itemStack.getTag();
 			return (List<String>)(compoundTag != null && WrittenBookItem.isValid(compoundTag)
-				? BookScreen.readPages(compoundTag)
-				: ImmutableList.of(new TranslatableText("book.invalid.tag").formatted(Formatting.DARK_RED).asFormattedString()));
+				? BookScreen.getLines(compoundTag)
+				: ImmutableList.of(new TranslatableText("book.invalid.tag").formatted(Formatting.field_1079).asFormattedString()));
 		}
 
 		@Override
@@ -331,8 +330,8 @@ public class BookScreen extends Screen {
 		}
 
 		@Override
-		public Text getLine(int line) {
-			String string = (String)this.lines.get(line);
+		public Text getLine(int i) {
+			String string = (String)this.lines.get(i);
 
 			try {
 				Text text = Text.Serializer.fromJson(string);

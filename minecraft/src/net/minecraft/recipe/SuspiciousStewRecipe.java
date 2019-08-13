@@ -19,7 +19,7 @@ public class SuspiciousStewRecipe extends SpecialCraftingRecipe {
 		super(identifier);
 	}
 
-	public boolean matches(CraftingInventory craftingInventory, World world) {
+	public boolean method_17739(CraftingInventory craftingInventory, World world) {
 		boolean bl = false;
 		boolean bl2 = false;
 		boolean bl3 = false;
@@ -28,14 +28,14 @@ public class SuspiciousStewRecipe extends SpecialCraftingRecipe {
 		for (int i = 0; i < craftingInventory.getInvSize(); i++) {
 			ItemStack itemStack = craftingInventory.getInvStack(i);
 			if (!itemStack.isEmpty()) {
-				if (itemStack.getItem() == Blocks.BROWN_MUSHROOM.asItem() && !bl3) {
+				if (itemStack.getItem() == Blocks.field_10251.asItem() && !bl3) {
 					bl3 = true;
-				} else if (itemStack.getItem() == Blocks.RED_MUSHROOM.asItem() && !bl2) {
+				} else if (itemStack.getItem() == Blocks.field_10559.asItem() && !bl2) {
 					bl2 = true;
-				} else if (itemStack.getItem().isIn(ItemTags.SMALL_FLOWERS) && !bl) {
+				} else if (itemStack.getItem().isIn(ItemTags.field_15543) && !bl) {
 					bl = true;
 				} else {
-					if (itemStack.getItem() != Items.BOWL || bl4) {
+					if (itemStack.getItem() != Items.field_8428 || bl4) {
 						return false;
 					}
 
@@ -47,18 +47,18 @@ public class SuspiciousStewRecipe extends SpecialCraftingRecipe {
 		return bl && bl3 && bl2 && bl4;
 	}
 
-	public ItemStack craft(CraftingInventory craftingInventory) {
+	public ItemStack method_17738(CraftingInventory craftingInventory) {
 		ItemStack itemStack = ItemStack.EMPTY;
 
 		for (int i = 0; i < craftingInventory.getInvSize(); i++) {
 			ItemStack itemStack2 = craftingInventory.getInvStack(i);
-			if (!itemStack2.isEmpty() && itemStack2.getItem().isIn(ItemTags.SMALL_FLOWERS)) {
+			if (!itemStack2.isEmpty() && itemStack2.getItem().isIn(ItemTags.field_15543)) {
 				itemStack = itemStack2;
 				break;
 			}
 		}
 
-		ItemStack itemStack3 = new ItemStack(Items.SUSPICIOUS_STEW, 1);
+		ItemStack itemStack3 = new ItemStack(Items.field_8766, 1);
 		if (itemStack.getItem() instanceof BlockItem && ((BlockItem)itemStack.getItem()).getBlock() instanceof FlowerBlock) {
 			FlowerBlock flowerBlock = (FlowerBlock)((BlockItem)itemStack.getItem()).getBlock();
 			StatusEffect statusEffect = flowerBlock.getEffectInStew();
@@ -70,8 +70,8 @@ public class SuspiciousStewRecipe extends SpecialCraftingRecipe {
 
 	@Environment(EnvType.CLIENT)
 	@Override
-	public boolean fits(int width, int height) {
-		return width >= 2 && height >= 2;
+	public boolean fits(int i, int j) {
+		return i >= 2 && j >= 2;
 	}
 
 	@Override

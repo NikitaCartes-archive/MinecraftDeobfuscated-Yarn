@@ -16,22 +16,22 @@ public class WeightedPicker {
 		return i;
 	}
 
-	public static <T extends WeightedPicker.Entry> T getRandom(Random random, List<T> list, int weightSum) {
-		if (weightSum <= 0) {
+	public static <T extends WeightedPicker.Entry> T getRandom(Random random, List<T> list, int i) {
+		if (i <= 0) {
 			throw new IllegalArgumentException();
 		} else {
-			int i = random.nextInt(weightSum);
-			return getAt(list, i);
+			int j = random.nextInt(i);
+			return getAt(list, j);
 		}
 	}
 
-	public static <T extends WeightedPicker.Entry> T getAt(List<T> list, int pos) {
-		int i = 0;
+	public static <T extends WeightedPicker.Entry> T getAt(List<T> list, int i) {
+		int j = 0;
 
-		for (int j = list.size(); i < j; i++) {
-			T entry = (T)list.get(i);
-			pos -= entry.weight;
-			if (pos < 0) {
+		for (int k = list.size(); j < k; j++) {
+			T entry = (T)list.get(j);
+			i -= entry.weight;
+			if (i < 0) {
 				return entry;
 			}
 		}

@@ -8,10 +8,10 @@ import net.minecraft.item.ItemStack;
 
 @Environment(EnvType.CLIENT)
 enum AdvancementTabType {
-	ABOVE(0, 0, 28, 32, 8),
-	BELOW(84, 0, 28, 32, 8),
-	LEFT(0, 64, 32, 28, 5),
-	RIGHT(96, 64, 32, 28, 5);
+	field_2678(0, 0, 28, 32, 8),
+	field_2673(84, 0, 28, 32, 8),
+	field_2675(0, 64, 32, 28, 5),
+	field_2677(96, 64, 32, 28, 5);
 
 	private final int field_2674;
 	private final int field_2672;
@@ -31,53 +31,53 @@ enum AdvancementTabType {
 		return this.field_2669;
 	}
 
-	public void drawBackground(DrawableHelper drawable, int x, int y, boolean selected, int index) {
-		int i = this.field_2674;
-		if (index > 0) {
-			i += this.field_2671;
+	public void drawBackground(DrawableHelper drawableHelper, int i, int j, boolean bl, int k) {
+		int l = this.field_2674;
+		if (k > 0) {
+			l += this.field_2671;
 		}
 
-		if (index == this.field_2669 - 1) {
-			i += this.field_2671;
+		if (k == this.field_2669 - 1) {
+			l += this.field_2671;
 		}
 
-		int j = selected ? this.field_2672 + this.field_2670 : this.field_2672;
-		drawable.blit(x + this.method_2302(index), y + this.method_2305(index), i, j, this.field_2671, this.field_2670);
+		int m = bl ? this.field_2672 + this.field_2670 : this.field_2672;
+		drawableHelper.blit(i + this.method_2302(k), j + this.method_2305(k), l, m, this.field_2671, this.field_2670);
 	}
 
-	public void drawIcon(int x, int y, int index, ItemRenderer itemRenderer, ItemStack icon) {
-		int i = x + this.method_2302(index);
-		int j = y + this.method_2305(index);
+	public void drawIcon(int i, int j, int k, ItemRenderer itemRenderer, ItemStack itemStack) {
+		int l = i + this.method_2302(k);
+		int m = j + this.method_2305(k);
 		switch (this) {
-			case ABOVE:
-				i += 6;
-				j += 9;
+			case field_2678:
+				l += 6;
+				m += 9;
 				break;
-			case BELOW:
-				i += 6;
-				j += 6;
+			case field_2673:
+				l += 6;
+				m += 6;
 				break;
-			case LEFT:
-				i += 10;
-				j += 5;
+			case field_2675:
+				l += 10;
+				m += 5;
 				break;
-			case RIGHT:
-				i += 6;
-				j += 5;
+			case field_2677:
+				l += 6;
+				m += 5;
 		}
 
-		itemRenderer.renderGuiItem(null, icon, i, j);
+		itemRenderer.renderGuiItem(null, itemStack, l, m);
 	}
 
 	public int method_2302(int i) {
 		switch (this) {
-			case ABOVE:
+			case field_2678:
 				return (this.field_2671 + 4) * i;
-			case BELOW:
+			case field_2673:
 				return (this.field_2671 + 4) * i;
-			case LEFT:
+			case field_2675:
 				return -this.field_2671 + 4;
-			case RIGHT:
+			case field_2677:
 				return 248;
 			default:
 				throw new UnsupportedOperationException("Don't know what this tab type is!" + this);
@@ -86,13 +86,13 @@ enum AdvancementTabType {
 
 	public int method_2305(int i) {
 		switch (this) {
-			case ABOVE:
+			case field_2678:
 				return -this.field_2670 + 4;
-			case BELOW:
+			case field_2673:
 				return 136;
-			case LEFT:
+			case field_2675:
 				return this.field_2670 * i;
-			case RIGHT:
+			case field_2677:
 				return this.field_2670 * i;
 			default:
 				throw new UnsupportedOperationException("Don't know what this tab type is!" + this);

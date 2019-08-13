@@ -5,10 +5,10 @@ import com.google.gson.JsonNull;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonSyntaxException;
 import javax.annotation.Nullable;
-import net.minecraft.predicate.NumberRange;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.JsonHelper;
+import net.minecraft.util.NumberRange;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.world.biome.Biome;
@@ -31,62 +31,64 @@ public class LocationPredicate {
 	private final DimensionType dimension;
 
 	public LocationPredicate(
-		NumberRange.FloatRange x,
-		NumberRange.FloatRange y,
-		NumberRange.FloatRange z,
+		NumberRange.FloatRange floatRange,
+		NumberRange.FloatRange floatRange2,
+		NumberRange.FloatRange floatRange3,
 		@Nullable Biome biome,
-		@Nullable StructureFeature<?> feature,
-		@Nullable DimensionType dimension
+		@Nullable StructureFeature<?> structureFeature,
+		@Nullable DimensionType dimensionType
 	) {
-		this.x = x;
-		this.y = y;
-		this.z = z;
+		this.x = floatRange;
+		this.y = floatRange2;
+		this.z = floatRange3;
 		this.biome = biome;
-		this.feature = feature;
-		this.dimension = dimension;
+		this.feature = structureFeature;
+		this.dimension = dimensionType;
 	}
 
 	public static LocationPredicate biome(Biome biome) {
 		return new LocationPredicate(NumberRange.FloatRange.ANY, NumberRange.FloatRange.ANY, NumberRange.FloatRange.ANY, biome, null, null);
 	}
 
-	public static LocationPredicate dimension(DimensionType dimension) {
-		return new LocationPredicate(NumberRange.FloatRange.ANY, NumberRange.FloatRange.ANY, NumberRange.FloatRange.ANY, null, null, dimension);
+	public static LocationPredicate dimension(DimensionType dimensionType) {
+		return new LocationPredicate(NumberRange.FloatRange.ANY, NumberRange.FloatRange.ANY, NumberRange.FloatRange.ANY, null, null, dimensionType);
 	}
 
-	public static LocationPredicate feature(StructureFeature<?> feature) {
-		return new LocationPredicate(NumberRange.FloatRange.ANY, NumberRange.FloatRange.ANY, NumberRange.FloatRange.ANY, null, feature, null);
+	public static LocationPredicate feature(StructureFeature<?> structureFeature) {
+		return new LocationPredicate(NumberRange.FloatRange.ANY, NumberRange.FloatRange.ANY, NumberRange.FloatRange.ANY, null, structureFeature, null);
 	}
 
-	public boolean test(ServerWorld world, double x, double y, double z) {
-		return this.test(world, (float)x, (float)y, (float)z);
+	public boolean test(ServerWorld serverWorld, double d, double e, double f) {
+		return this.test(serverWorld, (float)d, (float)e, (float)f);
 	}
 
-	public boolean test(ServerWorld world, float x, float y, float z) {
-		if (!this.x.matches(x)) {
+	public boolean test(ServerWorld serverWorld, float f, float g, float h) {
+		if (!this.x.matches(f)) {
 			return false;
-		} else if (!this.y.matches(y)) {
+		} else if (!this.y.matches(g)) {
 			return false;
-		} else if (!this.z.matches(z)) {
+		} else if (!this.z.matches(h)) {
 			return false;
-		} else if (this.dimension != null && this.dimension != world.dimension.getType()) {
+		} else if (this.dimension != null && this.dimension != serverWorld.dimension.getType()) {
 			return false;
 		} else {
-			BlockPos blockPos = new BlockPos((double)x, (double)y, (double)z);
-			return this.biome != null && this.biome != world.getBiome(blockPos) ? false : this.feature == null || this.feature.isInsideStructure(world, blockPos);
+			BlockPos blockPos = new BlockPos((double)f, (double)g, (double)h);
+			return this.biome != null && this.biome != serverWorld.getBiome(blockPos)
+				? false
+				: this.feature == null || this.feature.isInsideStructure(serverWorld, blockPos);
 		}
 	}
 
-	public JsonElement toJson() {
+	public JsonElement serialize() {
 		if (this == ANY) {
 			return JsonNull.INSTANCE;
 		} else {
 			JsonObject jsonObject = new JsonObject();
 			if (!this.x.isDummy() || !this.y.isDummy() || !this.z.isDummy()) {
 				JsonObject jsonObject2 = new JsonObject();
-				jsonObject2.add("x", this.x.toJson());
-				jsonObject2.add("y", this.y.toJson());
-				jsonObject2.add("z", this.z.toJson());
+				jsonObject2.add("x", this.x.serialize());
+				jsonObject2.add("y", this.y.serialize());
+				jsonObject2.add("z", this.z.serialize());
 				jsonObject.add("position", jsonObject2);
 			}
 
@@ -106,9 +108,9 @@ public class LocationPredicate {
 		}
 	}
 
-	public static LocationPredicate fromJson(@Nullable JsonElement element) {
-		if (element != null && !element.isJsonNull()) {
-			JsonObject jsonObject = JsonHelper.asObject(element, "location");
+	public static LocationPredicate deserialize(@Nullable JsonElement jsonElement) {
+		if (jsonElement != null && !jsonElement.isJsonNull()) {
+			JsonObject jsonObject = JsonHelper.asObject(jsonElement, "location");
 			JsonObject jsonObject2 = JsonHelper.getObject(jsonObject, "position", new JsonObject());
 			NumberRange.FloatRange floatRange = NumberRange.FloatRange.fromJson(jsonObject2.get("x"));
 			NumberRange.FloatRange floatRange2 = NumberRange.FloatRange.fromJson(jsonObject2.get("y"));

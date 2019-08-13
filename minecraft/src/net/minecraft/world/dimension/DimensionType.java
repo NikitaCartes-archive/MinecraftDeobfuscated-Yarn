@@ -11,25 +11,25 @@ import net.minecraft.util.registry.Registry;
 import net.minecraft.world.World;
 
 public class DimensionType implements DynamicSerializable {
-	public static final DimensionType OVERWORLD = register("overworld", new DimensionType(1, "", "", OverworldDimension::new, true));
-	public static final DimensionType THE_NETHER = register("the_nether", new DimensionType(0, "_nether", "DIM-1", TheNetherDimension::new, false));
-	public static final DimensionType THE_END = register("the_end", new DimensionType(2, "_end", "DIM1", TheEndDimension::new, false));
+	public static final DimensionType field_13072 = register("overworld", new DimensionType(1, "", "", OverworldDimension::new, true));
+	public static final DimensionType field_13076 = register("the_nether", new DimensionType(0, "_nether", "DIM-1", TheNetherDimension::new, false));
+	public static final DimensionType field_13078 = register("the_end", new DimensionType(2, "_end", "DIM1", TheEndDimension::new, false));
 	private final int id;
 	private final String suffix;
 	private final String saveDir;
 	private final BiFunction<World, DimensionType, ? extends Dimension> factory;
 	private final boolean hasSkyLight;
 
-	private static DimensionType register(String id, DimensionType dimension) {
-		return Registry.register(Registry.DIMENSION, dimension.id, id, dimension);
+	private static DimensionType register(String string, DimensionType dimensionType) {
+		return Registry.register(Registry.DIMENSION, dimensionType.id, string, dimensionType);
 	}
 
-	protected DimensionType(int dimensionId, String suffix, String saveDir, BiFunction<World, DimensionType, ? extends Dimension> factory, boolean hasSkylight) {
-		this.id = dimensionId;
-		this.suffix = suffix;
-		this.saveDir = saveDir;
-		this.factory = factory;
-		this.hasSkyLight = hasSkylight;
+	protected DimensionType(int i, String string, String string2, BiFunction<World, DimensionType, ? extends Dimension> biFunction, boolean bl) {
+		this.id = i;
+		this.suffix = string;
+		this.saveDir = string2;
+		this.factory = biFunction;
+		this.hasSkyLight = bl;
 	}
 
 	public static DimensionType deserialize(Dynamic<?> dynamic) {
@@ -48,8 +48,8 @@ public class DimensionType implements DynamicSerializable {
 		return this.suffix;
 	}
 
-	public File getSaveDirectory(File root) {
-		return this.saveDir.isEmpty() ? root : new File(root, this.saveDir);
+	public File getFile(File file) {
+		return this.saveDir.isEmpty() ? file : new File(file, this.saveDir);
 	}
 
 	public Dimension create(World world) {
@@ -80,7 +80,7 @@ public class DimensionType implements DynamicSerializable {
 	}
 
 	@Override
-	public <T> T serialize(DynamicOps<T> ops) {
-		return ops.createString(Registry.DIMENSION.getId(this).toString());
+	public <T> T serialize(DynamicOps<T> dynamicOps) {
+		return dynamicOps.createString(Registry.DIMENSION.getId(this).toString());
 	}
 }

@@ -10,7 +10,7 @@ import java.util.function.Consumer;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.client.gl.Framebuffer;
+import net.minecraft.client.gl.GlFramebuffer;
 import net.minecraft.client.texture.NativeImage;
 import net.minecraft.resource.ResourceImpl;
 import net.minecraft.text.ClickEvent;
@@ -26,12 +26,12 @@ public class ScreenshotUtils {
 	private static final Logger LOGGER = LogManager.getLogger();
 	private static final DateFormat DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd_HH.mm.ss");
 
-	public static void method_1659(File file, int i, int j, Framebuffer framebuffer, Consumer<Text> consumer) {
-		method_1662(file, null, i, j, framebuffer, consumer);
+	public static void method_1659(File file, int i, int j, GlFramebuffer glFramebuffer, Consumer<Text> consumer) {
+		method_1662(file, null, i, j, glFramebuffer, consumer);
 	}
 
-	public static void method_1662(File file, @Nullable String string, int i, int j, Framebuffer framebuffer, Consumer<Text> consumer) {
-		NativeImage nativeImage = method_1663(i, j, framebuffer);
+	public static void method_1662(File file, @Nullable String string, int i, int j, GlFramebuffer glFramebuffer, Consumer<Text> consumer) {
+		NativeImage nativeImage = method_1663(i, j, glFramebuffer);
 		File file2 = new File(file, "screenshots");
 		file2.mkdir();
 		File file3;
@@ -47,8 +47,8 @@ public class ScreenshotUtils {
 					try {
 						nativeImage.writeFile(file3);
 						Text text = new LiteralText(file3.getName())
-							.formatted(Formatting.UNDERLINE)
-							.styled(style -> style.setClickEvent(new ClickEvent(ClickEvent.Action.OPEN_FILE, file3.getAbsolutePath())));
+							.formatted(Formatting.field_1073)
+							.styled(style -> style.setClickEvent(new ClickEvent(ClickEvent.Action.field_11746, file3.getAbsolutePath())));
 						consumer.accept(new TranslatableText("screenshot.success", text));
 					} catch (Exception var7x) {
 						LOGGER.warn("Couldn't save screenshot", (Throwable)var7x);
@@ -60,15 +60,15 @@ public class ScreenshotUtils {
 			);
 	}
 
-	public static NativeImage method_1663(int i, int j, Framebuffer framebuffer) {
+	public static NativeImage method_1663(int i, int j, GlFramebuffer glFramebuffer) {
 		if (GLX.isUsingFBOs()) {
-			i = framebuffer.textureWidth;
-			j = framebuffer.textureHeight;
+			i = glFramebuffer.texWidth;
+			j = glFramebuffer.texHeight;
 		}
 
 		NativeImage nativeImage = new NativeImage(i, j, false);
 		if (GLX.isUsingFBOs()) {
-			GlStateManager.bindTexture(framebuffer.colorAttachment);
+			GlStateManager.bindTexture(glFramebuffer.colorAttachment);
 			nativeImage.loadFromTextureImage(0, true);
 		} else {
 			nativeImage.loadFromMemory(true);
@@ -78,14 +78,14 @@ public class ScreenshotUtils {
 		return nativeImage;
 	}
 
-	private static File getScreenshotFilename(File directory) {
+	private static File getScreenshotFilename(File file) {
 		String string = DATE_FORMAT.format(new Date());
 		int i = 1;
 
 		while (true) {
-			File file = new File(directory, string + (i == 1 ? "" : "_" + i) + ".png");
-			if (!file.exists()) {
-				return file;
+			File file2 = new File(file, string + (i == 1 ? "" : "_" + i) + ".png");
+			if (!file2.exists()) {
+				return file2;
 			}
 
 			i++;

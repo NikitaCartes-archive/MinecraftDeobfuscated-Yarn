@@ -14,11 +14,11 @@ import net.minecraft.world.gen.chunk.ChunkGeneratorConfig;
 public class VinesFeature extends Feature<DefaultFeatureConfig> {
 	private static final Direction[] DIRECTIONS = Direction.values();
 
-	public VinesFeature(Function<Dynamic<?>, ? extends DefaultFeatureConfig> configFactory) {
-		super(configFactory);
+	public VinesFeature(Function<Dynamic<?>, ? extends DefaultFeatureConfig> function) {
+		super(function);
 	}
 
-	public boolean generate(
+	public boolean method_14201(
 		IWorld iWorld, ChunkGenerator<? extends ChunkGeneratorConfig> chunkGenerator, Random random, BlockPos blockPos, DefaultFeatureConfig defaultFeatureConfig
 	) {
 		BlockPos.Mutable mutable = new BlockPos.Mutable(blockPos);
@@ -29,8 +29,8 @@ public class VinesFeature extends Feature<DefaultFeatureConfig> {
 			mutable.setY(i);
 			if (iWorld.isAir(mutable)) {
 				for (Direction direction : DIRECTIONS) {
-					if (direction != Direction.DOWN && VineBlock.shouldConnectTo(iWorld, mutable, direction)) {
-						iWorld.setBlockState(mutable, Blocks.VINE.getDefaultState().with(VineBlock.getFacingProperty(direction), Boolean.valueOf(true)), 2);
+					if (direction != Direction.field_11033 && VineBlock.shouldConnectTo(iWorld, mutable, direction)) {
+						iWorld.setBlockState(mutable, Blocks.field_10597.getDefaultState().with(VineBlock.getFacingProperty(direction), Boolean.valueOf(true)), 2);
 						break;
 					}
 				}

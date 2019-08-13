@@ -10,17 +10,17 @@ public class Listener {
 	public static final Vec3d field_18905 = new Vec3d(0.0, 1.0, 0.0);
 	private float volume = 1.0F;
 
-	public void setPosition(Vec3d position) {
-		AL10.alListener3f(4100, (float)position.x, (float)position.y, (float)position.z);
+	public void setPosition(Vec3d vec3d) {
+		AL10.alListener3f(4100, (float)vec3d.x, (float)vec3d.y, (float)vec3d.z);
 	}
 
-	public void setOrientation(Vec3d from, Vec3d to) {
-		AL10.alListenerfv(4111, new float[]{(float)from.x, (float)from.y, (float)from.z, (float)to.x, (float)to.y, (float)to.z});
+	public void setOrientation(Vec3d vec3d, Vec3d vec3d2) {
+		AL10.alListenerfv(4111, new float[]{(float)vec3d.x, (float)vec3d.y, (float)vec3d.z, (float)vec3d2.x, (float)vec3d2.y, (float)vec3d2.z});
 	}
 
-	public void setVolume(float volume) {
-		AL10.alListenerf(4106, volume);
-		this.volume = volume;
+	public void setVolume(float f) {
+		AL10.alListenerf(4106, f);
+		this.volume = f;
 	}
 
 	public float getVolume() {

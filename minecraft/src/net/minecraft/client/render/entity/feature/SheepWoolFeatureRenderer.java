@@ -14,11 +14,11 @@ public class SheepWoolFeatureRenderer extends FeatureRenderer<SheepEntity, Sheep
 	private static final Identifier SKIN = new Identifier("textures/entity/sheep/sheep_fur.png");
 	private final SheepWoolEntityModel<SheepEntity> model = new SheepWoolEntityModel<>();
 
-	public SheepWoolFeatureRenderer(FeatureRendererContext<SheepEntity, SheepEntityModel<SheepEntity>> context) {
-		super(context);
+	public SheepWoolFeatureRenderer(FeatureRendererContext<SheepEntity, SheepEntityModel<SheepEntity>> featureRendererContext) {
+		super(featureRendererContext);
 	}
 
-	public void render(SheepEntity sheepEntity, float f, float g, float h, float i, float j, float k, float l) {
+	public void method_4198(SheepEntity sheepEntity, float f, float g, float h, float i, float j, float k, float l) {
 		if (!sheepEntity.isSheared() && !sheepEntity.isInvisible()) {
 			this.bindTexture(SKIN);
 			if (sheepEntity.hasCustomName() && "jeb_".equals(sheepEntity.getName().asString())) {
@@ -36,8 +36,8 @@ public class SheepWoolFeatureRenderer extends FeatureRenderer<SheepEntity, Sheep
 				GlStateManager.color3f(hs[0], hs[1], hs[2]);
 			}
 
-			this.getContextModel().copyStateTo(this.model);
-			this.model.animateModel(sheepEntity, f, g, h);
+			this.getModel().copyStateTo(this.model);
+			this.model.method_17118(sheepEntity, f, g, h);
 			this.model.render(sheepEntity, f, g, i, j, k, l);
 		}
 	}

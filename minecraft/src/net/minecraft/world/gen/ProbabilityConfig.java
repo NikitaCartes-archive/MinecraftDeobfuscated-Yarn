@@ -9,13 +9,13 @@ import net.minecraft.world.gen.feature.FeatureConfig;
 public class ProbabilityConfig implements CarverConfig, FeatureConfig {
 	public final float probability;
 
-	public ProbabilityConfig(float probability) {
-		this.probability = probability;
+	public ProbabilityConfig(float f) {
+		this.probability = f;
 	}
 
 	@Override
-	public <T> Dynamic<T> serialize(DynamicOps<T> ops) {
-		return new Dynamic<>(ops, ops.createMap(ImmutableMap.of(ops.createString("probability"), ops.createFloat(this.probability))));
+	public <T> Dynamic<T> serialize(DynamicOps<T> dynamicOps) {
+		return new Dynamic<>(dynamicOps, dynamicOps.createMap(ImmutableMap.of(dynamicOps.createString("probability"), dynamicOps.createFloat(this.probability))));
 	}
 
 	public static <T> ProbabilityConfig deserialize(Dynamic<T> dynamic) {

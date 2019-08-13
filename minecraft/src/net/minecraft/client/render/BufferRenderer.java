@@ -23,11 +23,11 @@ public class BufferRenderer {
 				int l = vertexFormatElement.getIndex();
 				byteBuffer.position(vertexFormat.getElementOffset(j));
 				switch (type) {
-					case POSITION:
+					case field_1633:
 						GlStateManager.vertexPointer(vertexFormatElement.getCount(), k, i, byteBuffer);
 						GlStateManager.enableClientState(32884);
 						break;
-					case UV:
+					case field_1636:
 						GLX.glClientActiveTexture(GLX.GL_TEXTURE0 + l);
 						GlStateManager.texCoordPointer(vertexFormatElement.getCount(), k, i, byteBuffer);
 						GlStateManager.enableClientState(32888);
@@ -37,7 +37,7 @@ public class BufferRenderer {
 						GlStateManager.colorPointer(vertexFormatElement.getCount(), k, i, byteBuffer);
 						GlStateManager.enableClientState(32886);
 						break;
-					case NORMAL:
+					case field_1635:
 						GlStateManager.normalPointer(k, i, byteBuffer);
 						GlStateManager.enableClientState(32885);
 				}
@@ -51,10 +51,10 @@ public class BufferRenderer {
 				VertexFormatElement.Type type2 = vertexFormatElement2.getType();
 				int l = vertexFormatElement2.getIndex();
 				switch (type2) {
-					case POSITION:
+					case field_1633:
 						GlStateManager.disableClientState(32884);
 						break;
-					case UV:
+					case field_1636:
 						GLX.glClientActiveTexture(GLX.GL_TEXTURE0 + l);
 						GlStateManager.disableClientState(32888);
 						GLX.glClientActiveTexture(GLX.GL_TEXTURE0);
@@ -63,7 +63,7 @@ public class BufferRenderer {
 						GlStateManager.disableClientState(32886);
 						GlStateManager.clearCurrentColor();
 						break;
-					case NORMAL:
+					case field_1635:
 						GlStateManager.disableClientState(32885);
 				}
 			}

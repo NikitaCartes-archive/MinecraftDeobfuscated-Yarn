@@ -14,8 +14,8 @@ public class ServerCommandOutput implements CommandOutput {
 	private final StringBuffer buffer = new StringBuffer();
 	private final MinecraftServer server;
 
-	public ServerCommandOutput(MinecraftServer server) {
-		this.server = server;
+	public ServerCommandOutput(MinecraftServer minecraftServer) {
+		this.server = minecraftServer;
 	}
 
 	public void clear() {
@@ -27,13 +27,13 @@ public class ServerCommandOutput implements CommandOutput {
 	}
 
 	public ServerCommandSource createReconCommandSource() {
-		ServerWorld serverWorld = this.server.getWorld(DimensionType.OVERWORLD);
+		ServerWorld serverWorld = this.server.getWorld(DimensionType.field_13072);
 		return new ServerCommandSource(this, new Vec3d(serverWorld.getSpawnPos()), Vec2f.ZERO, serverWorld, 4, "Recon", new LiteralText("Rcon"), this.server, null);
 	}
 
 	@Override
-	public void sendMessage(Text message) {
-		this.buffer.append(message.getString());
+	public void sendMessage(Text text) {
+		this.buffer.append(text.getString());
 	}
 
 	@Override

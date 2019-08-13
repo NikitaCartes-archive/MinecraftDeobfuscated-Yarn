@@ -35,9 +35,9 @@ import net.minecraft.advancement.criterion.Criterion;
 import net.minecraft.advancement.criterion.CriterionConditions;
 import net.minecraft.advancement.criterion.CriterionProgress;
 import net.minecraft.advancement.criterion.Criterions;
-import net.minecraft.datafixer.DataFixTypes;
-import net.minecraft.network.packet.s2c.play.AdvancementUpdateS2CPacket;
-import net.minecraft.network.packet.s2c.play.SelectAdvancementTabS2CPacket;
+import net.minecraft.client.network.packet.AdvancementUpdateS2CPacket;
+import net.minecraft.client.network.packet.SelectAdvancementTabS2CPacket;
+import net.minecraft.datafixers.DataFixTypes;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.TranslatableText;
@@ -66,15 +66,15 @@ public class PlayerAdvancementTracker {
 	private Advancement currentDisplayTab;
 	private boolean dirty = true;
 
-	public PlayerAdvancementTracker(MinecraftServer server, File advancementFile, ServerPlayerEntity owner) {
-		this.server = server;
-		this.advancementFile = advancementFile;
-		this.owner = owner;
+	public PlayerAdvancementTracker(MinecraftServer minecraftServer, File file, ServerPlayerEntity serverPlayerEntity) {
+		this.server = minecraftServer;
+		this.advancementFile = file;
+		this.owner = serverPlayerEntity;
 		this.load();
 	}
 
-	public void setOwner(ServerPlayerEntity owner) {
-		this.owner = owner;
+	public void setOwner(ServerPlayerEntity serverPlayerEntity) {
+		this.owner = serverPlayerEntity;
 	}
 
 	public void clearCriterions() {
@@ -139,7 +139,7 @@ public class PlayerAdvancementTracker {
 
 					dynamic = this.server
 						.getDataFixer()
-						.update(DataFixTypes.ADVANCEMENTS.getTypeReference(), dynamic, dynamic.get("DataVersion").asInt(0), SharedConstants.getGameVersion().getWorldVersion());
+						.update(DataFixTypes.field_19220.getTypeReference(), dynamic, dynamic.get("DataVersion").asInt(0), SharedConstants.getGameVersion().getWorldVersion());
 					dynamic = dynamic.remove("DataVersion");
 					Map<Identifier, AdvancementProgress> map = GSON.getAdapter(JSON_TYPE).fromJsonTree(dynamic.getValue());
 					if (map == null) {
@@ -248,11 +248,11 @@ public class PlayerAdvancementTracker {
 		}
 	}
 
-	public boolean grantCriterion(Advancement advancement, String criterion) {
+	public boolean grantCriterion(Advancement advancement, String string) {
 		boolean bl = false;
 		AdvancementProgress advancementProgress = this.getProgress(advancement);
 		boolean bl2 = advancementProgress.isDone();
-		if (advancementProgress.obtain(criterion)) {
+		if (advancementProgress.obtain(string)) {
 			this.endTrackingCompleted(advancement);
 			this.progressUpdates.add(advancement);
 			bl = true;
@@ -260,7 +260,7 @@ public class PlayerAdvancementTracker {
 				advancement.getRewards().apply(this.owner);
 				if (advancement.getDisplay() != null
 					&& advancement.getDisplay().shouldAnnounceToChat()
-					&& this.owner.world.getGameRules().getBoolean(GameRules.ANNOUNCE_ADVANCEMENTS)) {
+					&& this.owner.world.getGameRules().getBoolean(GameRules.field_19409)) {
 					this.server
 						.getPlayerManager()
 						.sendToAll(
@@ -277,10 +277,10 @@ public class PlayerAdvancementTracker {
 		return bl;
 	}
 
-	public boolean revokeCriterion(Advancement advancement, String criterion) {
+	public boolean revokeCriterion(Advancement advancement, String string) {
 		boolean bl = false;
 		AdvancementProgress advancementProgress = this.getProgress(advancement);
-		if (advancementProgress.reset(criterion)) {
+		if (advancementProgress.reset(string)) {
 			this.beginTracking(advancement);
 			this.progressUpdates.add(advancement);
 			bl = true;

@@ -7,19 +7,19 @@ import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.server.world.ServerWorld;
 
 public class LookAroundTask extends Task<MobEntity> {
-	public LookAroundTask(int minRunTime, int maxRunTime) {
-		super(ImmutableMap.of(MemoryModuleType.LOOK_TARGET, MemoryModuleState.VALUE_PRESENT), minRunTime, maxRunTime);
+	public LookAroundTask(int i, int j) {
+		super(ImmutableMap.of(MemoryModuleType.field_18446, MemoryModuleState.field_18456), i, j);
 	}
 
-	protected boolean shouldKeepRunning(ServerWorld serverWorld, MobEntity mobEntity, long l) {
-		return mobEntity.getBrain().getOptionalMemory(MemoryModuleType.LOOK_TARGET).filter(lookTarget -> lookTarget.isSeenBy(mobEntity)).isPresent();
+	protected boolean method_18967(ServerWorld serverWorld, MobEntity mobEntity, long l) {
+		return mobEntity.getBrain().getOptionalMemory(MemoryModuleType.field_18446).filter(lookTarget -> lookTarget.isSeenBy(mobEntity)).isPresent();
 	}
 
-	protected void finishRunning(ServerWorld serverWorld, MobEntity mobEntity, long l) {
-		mobEntity.getBrain().forget(MemoryModuleType.LOOK_TARGET);
+	protected void method_18968(ServerWorld serverWorld, MobEntity mobEntity, long l) {
+		mobEntity.getBrain().forget(MemoryModuleType.field_18446);
 	}
 
-	protected void keepRunning(ServerWorld serverWorld, MobEntity mobEntity, long l) {
-		mobEntity.getBrain().getOptionalMemory(MemoryModuleType.LOOK_TARGET).ifPresent(lookTarget -> mobEntity.getLookControl().lookAt(lookTarget.getPos()));
+	protected void method_18969(ServerWorld serverWorld, MobEntity mobEntity, long l) {
+		mobEntity.getBrain().getOptionalMemory(MemoryModuleType.field_18446).ifPresent(lookTarget -> mobEntity.getLookControl().lookAt(lookTarget.getPos()));
 	}
 }

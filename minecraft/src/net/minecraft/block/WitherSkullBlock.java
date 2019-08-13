@@ -27,55 +27,55 @@ public class WitherSkullBlock extends SkullBlock {
 	private static BlockPattern witherDispenserPattern;
 
 	protected WitherSkullBlock(Block.Settings settings) {
-		super(SkullBlock.Type.WITHER_SKELETON, settings);
+		super(SkullBlock.Type.field_11513, settings);
 	}
 
 	@Override
-	public void onPlaced(World world, BlockPos pos, BlockState state, @Nullable LivingEntity placer, ItemStack itemStack) {
-		super.onPlaced(world, pos, state, placer, itemStack);
-		BlockEntity blockEntity = world.getBlockEntity(pos);
+	public void onPlaced(World world, BlockPos blockPos, BlockState blockState, @Nullable LivingEntity livingEntity, ItemStack itemStack) {
+		super.onPlaced(world, blockPos, blockState, livingEntity, itemStack);
+		BlockEntity blockEntity = world.getBlockEntity(blockPos);
 		if (blockEntity instanceof SkullBlockEntity) {
-			onPlaced(world, pos, (SkullBlockEntity)blockEntity);
+			onPlaced(world, blockPos, (SkullBlockEntity)blockEntity);
 		}
 	}
 
-	public static void onPlaced(World world, BlockPos pos, SkullBlockEntity blockEntity) {
+	public static void onPlaced(World world, BlockPos blockPos, SkullBlockEntity skullBlockEntity) {
 		if (!world.isClient) {
-			Block block = blockEntity.getCachedState().getBlock();
-			boolean bl = block == Blocks.WITHER_SKELETON_SKULL || block == Blocks.WITHER_SKELETON_WALL_SKULL;
-			if (bl && pos.getY() >= 2 && world.getDifficulty() != Difficulty.PEACEFUL) {
+			Block block = skullBlockEntity.getCachedState().getBlock();
+			boolean bl = block == Blocks.field_10177 || block == Blocks.field_10101;
+			if (bl && blockPos.getY() >= 2 && world.getDifficulty() != Difficulty.field_5801) {
 				BlockPattern blockPattern = getWitherBossPattern();
-				BlockPattern.Result result = blockPattern.searchAround(world, pos);
+				BlockPattern.Result result = blockPattern.searchAround(world, blockPos);
 				if (result != null) {
 					for (int i = 0; i < blockPattern.getWidth(); i++) {
 						for (int j = 0; j < blockPattern.getHeight(); j++) {
 							CachedBlockPosition cachedBlockPosition = result.translate(i, j, 0);
-							world.setBlockState(cachedBlockPosition.getBlockPos(), Blocks.AIR.getDefaultState(), 2);
+							world.setBlockState(cachedBlockPosition.getBlockPos(), Blocks.field_10124.getDefaultState(), 2);
 							world.playLevelEvent(2001, cachedBlockPosition.getBlockPos(), Block.getRawIdFromState(cachedBlockPosition.getBlockState()));
 						}
 					}
 
-					WitherEntity witherEntity = EntityType.WITHER.create(world);
-					BlockPos blockPos = result.translate(1, 2, 0).getBlockPos();
-					witherEntity.refreshPositionAndAngles(
-						(double)blockPos.getX() + 0.5,
-						(double)blockPos.getY() + 0.55,
-						(double)blockPos.getZ() + 0.5,
-						result.getForwards().getAxis() == Direction.Axis.X ? 0.0F : 90.0F,
+					WitherEntity witherEntity = EntityType.field_6119.create(world);
+					BlockPos blockPos2 = result.translate(1, 2, 0).getBlockPos();
+					witherEntity.setPositionAndAngles(
+						(double)blockPos2.getX() + 0.5,
+						(double)blockPos2.getY() + 0.55,
+						(double)blockPos2.getZ() + 0.5,
+						result.getForwards().getAxis() == Direction.Axis.field_11048 ? 0.0F : 90.0F,
 						0.0F
 					);
-					witherEntity.field_6283 = result.getForwards().getAxis() == Direction.Axis.X ? 0.0F : 90.0F;
+					witherEntity.field_6283 = result.getForwards().getAxis() == Direction.Axis.field_11048 ? 0.0F : 90.0F;
 					witherEntity.method_6885();
 
-					for (ServerPlayerEntity serverPlayerEntity : world.getNonSpectatingEntities(ServerPlayerEntity.class, witherEntity.getBoundingBox().expand(50.0))) {
-						Criterions.SUMMONED_ENTITY.trigger(serverPlayerEntity, witherEntity);
+					for (ServerPlayerEntity serverPlayerEntity : world.getEntities(ServerPlayerEntity.class, witherEntity.getBoundingBox().expand(50.0))) {
+						Criterions.SUMMONED_ENTITY.handle(serverPlayerEntity, witherEntity);
 					}
 
 					world.spawnEntity(witherEntity);
 
 					for (int k = 0; k < blockPattern.getWidth(); k++) {
 						for (int l = 0; l < blockPattern.getHeight(); l++) {
-							world.updateNeighbors(result.translate(k, l, 0).getBlockPos(), Blocks.AIR);
+							world.updateNeighbors(result.translate(k, l, 0).getBlockPos(), Blocks.field_10124);
 						}
 					}
 				}
@@ -83,9 +83,9 @@ public class WitherSkullBlock extends SkullBlock {
 		}
 	}
 
-	public static boolean canDispense(World world, BlockPos pos, ItemStack stack) {
-		return stack.getItem() == Items.WITHER_SKELETON_SKULL && pos.getY() >= 2 && world.getDifficulty() != Difficulty.PEACEFUL && !world.isClient
-			? getWitherDispenserPattern().searchAround(world, pos) != null
+	public static boolean canDispense(World world, BlockPos blockPos, ItemStack itemStack) {
+		return itemStack.getItem() == Items.WITHER_SKELETON_SKULL && blockPos.getY() >= 2 && world.getDifficulty() != Difficulty.field_5801 && !world.isClient
+			? getWitherDispenserPattern().searchAround(world, blockPos) != null
 			: false;
 	}
 
@@ -93,13 +93,8 @@ public class WitherSkullBlock extends SkullBlock {
 		if (witherBossPattern == null) {
 			witherBossPattern = BlockPatternBuilder.start()
 				.aisle("^^^", "###", "~#~")
-				.where('#', CachedBlockPosition.matchesBlockState(BlockStatePredicate.forBlock(Blocks.SOUL_SAND)))
-				.where(
-					'^',
-					CachedBlockPosition.matchesBlockState(
-						BlockStatePredicate.forBlock(Blocks.WITHER_SKELETON_SKULL).or(BlockStatePredicate.forBlock(Blocks.WITHER_SKELETON_WALL_SKULL))
-					)
-				)
+				.where('#', CachedBlockPosition.matchesBlockState(BlockStatePredicate.forBlock(Blocks.field_10114)))
+				.where('^', CachedBlockPosition.matchesBlockState(BlockStatePredicate.forBlock(Blocks.field_10177).or(BlockStatePredicate.forBlock(Blocks.field_10101))))
 				.where('~', CachedBlockPosition.matchesBlockState(MaterialPredicate.create(Material.AIR)))
 				.build();
 		}
@@ -111,7 +106,7 @@ public class WitherSkullBlock extends SkullBlock {
 		if (witherDispenserPattern == null) {
 			witherDispenserPattern = BlockPatternBuilder.start()
 				.aisle("   ", "###", "~#~")
-				.where('#', CachedBlockPosition.matchesBlockState(BlockStatePredicate.forBlock(Blocks.SOUL_SAND)))
+				.where('#', CachedBlockPosition.matchesBlockState(BlockStatePredicate.forBlock(Blocks.field_10114)))
 				.where('~', CachedBlockPosition.matchesBlockState(MaterialPredicate.create(Material.AIR)))
 				.build();
 		}

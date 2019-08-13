@@ -41,7 +41,7 @@ public class RealmsLevelSummary implements Comparable<RealmsLevelSummary> {
 	}
 
 	public int compareTo(LevelSummary levelSummary) {
-		return this.levelSummary.compareTo(levelSummary);
+		return this.levelSummary.method_251(levelSummary);
 	}
 
 	public long getSizeOnDisk() {

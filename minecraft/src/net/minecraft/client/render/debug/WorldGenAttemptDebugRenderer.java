@@ -49,7 +49,7 @@ public class WorldGenAttemptDebugRenderer implements DebugRenderer.Renderer {
 		);
 		GlStateManager.disableTexture();
 		Tessellator tessellator = Tessellator.getInstance();
-		BufferBuilder bufferBuilder = tessellator.getBuffer();
+		BufferBuilder bufferBuilder = tessellator.getBufferBuilder();
 		bufferBuilder.begin(5, VertexFormats.POSITION_COLOR);
 
 		for (int i = 0; i < this.field_4640.size(); i++) {

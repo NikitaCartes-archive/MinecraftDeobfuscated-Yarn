@@ -19,53 +19,53 @@ public class LevelPrioritizedQueue<T> {
 	private final List<Long2ObjectLinkedOpenHashMap<List<Optional<T>>>> levelToPosToElements = (List<Long2ObjectLinkedOpenHashMap<List<Optional<T>>>>)IntStream.range(
 			0, LEVEL_COUNT
 		)
-		.mapToObj(i -> new Long2ObjectLinkedOpenHashMap())
+		.mapToObj(ix -> new Long2ObjectLinkedOpenHashMap())
 		.collect(Collectors.toList());
 	private volatile int firstNonEmptyLevel = LEVEL_COUNT;
 	private final String name;
 	private final LongSet chunkPositions = new LongOpenHashSet();
 	private final int maxSize;
 
-	public LevelPrioritizedQueue(String name, int maxSize) {
-		this.name = name;
-		this.maxSize = maxSize;
+	public LevelPrioritizedQueue(String string, int i) {
+		this.name = string;
+		this.maxSize = i;
 	}
 
-	protected void updateLevel(int fromLevel, ChunkPos pos, int toLevel) {
-		if (fromLevel < LEVEL_COUNT) {
+	protected void updateLevel(int i, ChunkPos chunkPos, int j) {
+		if (i < LEVEL_COUNT) {
 			Long2ObjectLinkedOpenHashMap<List<Optional<T>>> long2ObjectLinkedOpenHashMap = (Long2ObjectLinkedOpenHashMap<List<Optional<T>>>)this.levelToPosToElements
-				.get(fromLevel);
-			List<Optional<T>> list = long2ObjectLinkedOpenHashMap.remove(pos.toLong());
-			if (fromLevel == this.firstNonEmptyLevel) {
+				.get(i);
+			List<Optional<T>> list = long2ObjectLinkedOpenHashMap.remove(chunkPos.toLong());
+			if (i == this.firstNonEmptyLevel) {
 				while (this.firstNonEmptyLevel < LEVEL_COUNT && ((Long2ObjectLinkedOpenHashMap)this.levelToPosToElements.get(this.firstNonEmptyLevel)).isEmpty()) {
 					this.firstNonEmptyLevel++;
 				}
 			}
 
 			if (list != null && !list.isEmpty()) {
-				((List)((Long2ObjectLinkedOpenHashMap)this.levelToPosToElements.get(toLevel)).computeIfAbsent(pos.toLong(), l -> Lists.newArrayList())).addAll(list);
-				this.firstNonEmptyLevel = Math.min(this.firstNonEmptyLevel, toLevel);
+				((List)((Long2ObjectLinkedOpenHashMap)this.levelToPosToElements.get(j)).computeIfAbsent(chunkPos.toLong(), l -> Lists.newArrayList())).addAll(list);
+				this.firstNonEmptyLevel = Math.min(this.firstNonEmptyLevel, j);
 			}
 		}
 	}
 
-	protected void add(Optional<T> element, long pos, int level) {
-		((List)((Long2ObjectLinkedOpenHashMap)this.levelToPosToElements.get(level)).computeIfAbsent(pos, l -> Lists.newArrayList())).add(element);
-		this.firstNonEmptyLevel = Math.min(this.firstNonEmptyLevel, level);
+	protected void add(Optional<T> optional, long l, int i) {
+		((List)((Long2ObjectLinkedOpenHashMap)this.levelToPosToElements.get(i)).computeIfAbsent(l, lx -> Lists.newArrayList())).add(optional);
+		this.firstNonEmptyLevel = Math.min(this.firstNonEmptyLevel, i);
 	}
 
-	protected void clearPosition(long pos, boolean includePresent) {
+	protected void clearPosition(long l, boolean bl) {
 		for (Long2ObjectLinkedOpenHashMap<List<Optional<T>>> long2ObjectLinkedOpenHashMap : this.levelToPosToElements) {
-			List<Optional<T>> list = long2ObjectLinkedOpenHashMap.get(pos);
+			List<Optional<T>> list = long2ObjectLinkedOpenHashMap.get(l);
 			if (list != null) {
-				if (includePresent) {
+				if (bl) {
 					list.clear();
 				} else {
 					list.removeIf(optional -> !optional.isPresent());
 				}
 
 				if (list.isEmpty()) {
-					long2ObjectLinkedOpenHashMap.remove(pos);
+					long2ObjectLinkedOpenHashMap.remove(l);
 				}
 			}
 		}
@@ -74,11 +74,11 @@ public class LevelPrioritizedQueue<T> {
 			this.firstNonEmptyLevel++;
 		}
 
-		this.chunkPositions.remove(pos);
+		this.chunkPositions.remove(l);
 	}
 
-	private Runnable createPositionAdder(long pos) {
-		return () -> this.chunkPositions.add(pos);
+	private Runnable createPositionAdder(long l) {
+		return () -> this.chunkPositions.add(l);
 	}
 
 	@Nullable

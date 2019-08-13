@@ -18,18 +18,18 @@ public class SmallFireballEntity extends AbstractFireballEntity {
 		super(entityType, world);
 	}
 
-	public SmallFireballEntity(World world, LivingEntity owner, double velocityX, double velocityY, double velocityZ) {
-		super(EntityType.SMALL_FIREBALL, owner, velocityX, velocityY, velocityZ, world);
+	public SmallFireballEntity(World world, LivingEntity livingEntity, double d, double e, double f) {
+		super(EntityType.field_6049, livingEntity, d, e, f, world);
 	}
 
-	public SmallFireballEntity(World world, double x, double y, double z, double velocityX, double velocityY, double velocityZ) {
-		super(EntityType.SMALL_FIREBALL, x, y, z, velocityX, velocityY, velocityZ, world);
+	public SmallFireballEntity(World world, double d, double e, double f, double g, double h, double i) {
+		super(EntityType.field_6049, d, e, f, g, h, i, world);
 	}
 
 	@Override
 	protected void onCollision(HitResult hitResult) {
 		if (!this.world.isClient) {
-			if (hitResult.getType() == HitResult.Type.ENTITY) {
+			if (hitResult.getType() == HitResult.Type.field_1331) {
 				Entity entity = ((EntityHitResult)hitResult).getEntity();
 				if (!entity.isFireImmune()) {
 					int i = entity.method_20802();
@@ -41,11 +41,11 @@ public class SmallFireballEntity extends AbstractFireballEntity {
 						entity.method_20803(i);
 					}
 				}
-			} else if (this.owner == null || !(this.owner instanceof MobEntity) || this.world.getGameRules().getBoolean(GameRules.MOB_GRIEFING)) {
+			} else if (this.owner == null || !(this.owner instanceof MobEntity) || this.world.getGameRules().getBoolean(GameRules.field_19388)) {
 				BlockHitResult blockHitResult = (BlockHitResult)hitResult;
 				BlockPos blockPos = blockHitResult.getBlockPos().offset(blockHitResult.getSide());
 				if (this.world.isAir(blockPos)) {
-					this.world.setBlockState(blockPos, Blocks.FIRE.getDefaultState());
+					this.world.setBlockState(blockPos, Blocks.field_10036.getDefaultState());
 				}
 			}
 
@@ -59,7 +59,7 @@ public class SmallFireballEntity extends AbstractFireballEntity {
 	}
 
 	@Override
-	public boolean damage(DamageSource source, float amount) {
+	public boolean damage(DamageSource damageSource, float f) {
 		return false;
 	}
 }

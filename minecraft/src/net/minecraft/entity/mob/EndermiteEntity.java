@@ -46,7 +46,7 @@ public class EndermiteEntity extends HostileEntity {
 	}
 
 	@Override
-	protected float getActiveEyeHeight(EntityPose pose, EntityDimensions dimensions) {
+	protected float getActiveEyeHeight(EntityPose entityPose, EntityDimensions entityDimensions) {
 		return 0.1F;
 	}
 
@@ -65,36 +65,36 @@ public class EndermiteEntity extends HostileEntity {
 
 	@Override
 	protected SoundEvent getAmbientSound() {
-		return SoundEvents.ENTITY_ENDERMITE_AMBIENT;
+		return SoundEvents.field_15137;
 	}
 
 	@Override
-	protected SoundEvent getHurtSound(DamageSource source) {
-		return SoundEvents.ENTITY_ENDERMITE_HURT;
+	protected SoundEvent getHurtSound(DamageSource damageSource) {
+		return SoundEvents.field_14582;
 	}
 
 	@Override
 	protected SoundEvent getDeathSound() {
-		return SoundEvents.ENTITY_ENDERMITE_DEATH;
+		return SoundEvents.field_15230;
 	}
 
 	@Override
-	protected void playStepSound(BlockPos pos, BlockState state) {
-		this.playSound(SoundEvents.ENTITY_ENDERMITE_STEP, 0.15F, 1.0F);
+	protected void playStepSound(BlockPos blockPos, BlockState blockState) {
+		this.playSound(SoundEvents.field_14678, 0.15F, 1.0F);
 	}
 
 	@Override
-	public void readCustomDataFromTag(CompoundTag tag) {
-		super.readCustomDataFromTag(tag);
-		this.lifeTime = tag.getInt("Lifetime");
-		this.playerSpawned = tag.getBoolean("PlayerSpawned");
+	public void readCustomDataFromTag(CompoundTag compoundTag) {
+		super.readCustomDataFromTag(compoundTag);
+		this.lifeTime = compoundTag.getInt("Lifetime");
+		this.playerSpawned = compoundTag.getBoolean("PlayerSpawned");
 	}
 
 	@Override
-	public void writeCustomDataToTag(CompoundTag tag) {
-		super.writeCustomDataToTag(tag);
-		tag.putInt("Lifetime", this.lifeTime);
-		tag.putBoolean("PlayerSpawned", this.playerSpawned);
+	public void writeCustomDataToTag(CompoundTag compoundTag) {
+		super.writeCustomDataToTag(compoundTag);
+		compoundTag.putInt("Lifetime", this.lifeTime);
+		compoundTag.putBoolean("PlayerSpawned", this.playerSpawned);
 	}
 
 	@Override
@@ -104,9 +104,9 @@ public class EndermiteEntity extends HostileEntity {
 	}
 
 	@Override
-	public void setYaw(float yaw) {
-		this.yaw = yaw;
-		super.setYaw(yaw);
+	public void setYaw(float f) {
+		this.yaw = f;
+		super.setYaw(f);
 	}
 
 	@Override
@@ -118,8 +118,8 @@ public class EndermiteEntity extends HostileEntity {
 		return this.playerSpawned;
 	}
 
-	public void setPlayerSpawned(boolean playerSpawned) {
-		this.playerSpawned = playerSpawned;
+	public void setPlayerSpawned(boolean bl) {
+		this.playerSpawned = bl;
 	}
 
 	@Override
@@ -129,7 +129,7 @@ public class EndermiteEntity extends HostileEntity {
 			for (int i = 0; i < 2; i++) {
 				this.world
 					.addParticle(
-						ParticleTypes.PORTAL,
+						ParticleTypes.field_11214,
 						this.x + (this.random.nextDouble() - 0.5) * (double)this.getWidth(),
 						this.y + this.random.nextDouble() * (double)this.getHeight(),
 						this.z + (this.random.nextDouble() - 0.5) * (double)this.getWidth(),

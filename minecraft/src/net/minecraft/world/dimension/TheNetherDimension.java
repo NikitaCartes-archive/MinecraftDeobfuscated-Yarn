@@ -16,15 +16,15 @@ import net.minecraft.world.gen.chunk.ChunkGenerator;
 import net.minecraft.world.gen.chunk.ChunkGeneratorType;
 
 public class TheNetherDimension extends Dimension {
-	public TheNetherDimension(World world, DimensionType type) {
-		super(world, type);
+	public TheNetherDimension(World world, DimensionType dimensionType) {
+		super(world, dimensionType);
 		this.waterVaporizes = true;
 		this.isNether = true;
 	}
 
 	@Environment(EnvType.CLIENT)
 	@Override
-	public Vec3d getFogColor(float skyAngle, float tickDelta) {
+	public Vec3d getFogColor(float f, float g) {
 		return new Vec3d(0.2F, 0.03F, 0.03F);
 	}
 
@@ -40,11 +40,11 @@ public class TheNetherDimension extends Dimension {
 
 	@Override
 	public ChunkGenerator<?> createChunkGenerator() {
-		CavesChunkGeneratorConfig cavesChunkGeneratorConfig = ChunkGeneratorType.CAVES.createSettings();
-		cavesChunkGeneratorConfig.setDefaultBlock(Blocks.NETHERRACK.getDefaultState());
-		cavesChunkGeneratorConfig.setDefaultFluid(Blocks.LAVA.getDefaultState());
-		return ChunkGeneratorType.CAVES
-			.create(this.world, BiomeSourceType.FIXED.applyConfig(BiomeSourceType.FIXED.getConfig().setBiome(Biomes.NETHER)), cavesChunkGeneratorConfig);
+		CavesChunkGeneratorConfig cavesChunkGeneratorConfig = ChunkGeneratorType.field_12765.createSettings();
+		cavesChunkGeneratorConfig.setDefaultBlock(Blocks.field_10515.getDefaultState());
+		cavesChunkGeneratorConfig.setDefaultFluid(Blocks.field_10164.getDefaultState());
+		return ChunkGeneratorType.field_12765
+			.create(this.world, BiomeSourceType.FIXED.applyConfig(BiomeSourceType.FIXED.getConfig().setBiome(Biomes.field_9461)), cavesChunkGeneratorConfig);
 	}
 
 	@Override
@@ -54,18 +54,18 @@ public class TheNetherDimension extends Dimension {
 
 	@Nullable
 	@Override
-	public BlockPos getSpawningBlockInChunk(ChunkPos chunkPos, boolean checkMobSpawnValidity) {
+	public BlockPos getSpawningBlockInChunk(ChunkPos chunkPos, boolean bl) {
 		return null;
 	}
 
 	@Nullable
 	@Override
-	public BlockPos getTopSpawningBlockPosition(int x, int z, boolean checkMobSpawnValidity) {
+	public BlockPos getTopSpawningBlockPosition(int i, int j, boolean bl) {
 		return null;
 	}
 
 	@Override
-	public float getSkyAngle(long timeOfDay, float tickDelta) {
+	public float getSkyAngle(long l, float f) {
 		return 0.5F;
 	}
 
@@ -76,7 +76,7 @@ public class TheNetherDimension extends Dimension {
 
 	@Environment(EnvType.CLIENT)
 	@Override
-	public boolean isFogThick(int x, int z) {
+	public boolean shouldRenderFog(int i, int j) {
 		return true;
 	}
 
@@ -97,6 +97,6 @@ public class TheNetherDimension extends Dimension {
 
 	@Override
 	public DimensionType getType() {
-		return DimensionType.THE_NETHER;
+		return DimensionType.field_13076;
 	}
 }

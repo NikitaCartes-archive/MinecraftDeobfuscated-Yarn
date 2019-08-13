@@ -15,11 +15,11 @@ public class PolarBearEntityRenderer extends MobEntityRenderer<PolarBearEntity, 
 		super(entityRenderDispatcher, new PolarBearEntityModel<>(), 0.9F);
 	}
 
-	protected Identifier getTexture(PolarBearEntity polarBearEntity) {
+	protected Identifier method_4097(PolarBearEntity polarBearEntity) {
 		return SKIN;
 	}
 
-	protected void scale(PolarBearEntity polarBearEntity, float f) {
+	protected void method_4099(PolarBearEntity polarBearEntity, float f) {
 		GlStateManager.scalef(1.2F, 1.2F, 1.2F);
 		super.scale(polarBearEntity, f);
 	}

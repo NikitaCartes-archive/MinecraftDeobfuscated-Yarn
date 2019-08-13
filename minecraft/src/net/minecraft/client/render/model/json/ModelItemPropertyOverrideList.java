@@ -28,41 +28,41 @@ public class ModelItemPropertyOverrideList {
 	}
 
 	public ModelItemPropertyOverrideList(
-		ModelLoader modelLoader, JsonUnbakedModel unbakedModel, Function<Identifier, UnbakedModel> unbakedModelGetter, List<ModelItemOverride> overrides
+		ModelLoader modelLoader, JsonUnbakedModel jsonUnbakedModel, Function<Identifier, UnbakedModel> function, List<ModelItemOverride> list
 	) {
-		this.models = (List<BakedModel>)overrides.stream()
+		this.models = (List<BakedModel>)list.stream()
 			.map(
 				modelItemOverride -> {
-					UnbakedModel unbakedModelx = (UnbakedModel)unbakedModelGetter.apply(modelItemOverride.getModelId());
-					return Objects.equals(unbakedModelx, unbakedModel)
+					UnbakedModel unbakedModel = (UnbakedModel)function.apply(modelItemOverride.getModelId());
+					return Objects.equals(unbakedModel, jsonUnbakedModel)
 						? null
-						: modelLoader.bake(modelItemOverride.getModelId(), net.minecraft.client.render.model.ModelRotation.X0_Y0);
+						: modelLoader.bake(modelItemOverride.getModelId(), net.minecraft.client.render.model.ModelRotation.field_5350);
 				}
 			)
 			.collect(Collectors.toList());
 		Collections.reverse(this.models);
 
-		for (int i = overrides.size() - 1; i >= 0; i--) {
-			this.overrides.add(overrides.get(i));
+		for (int i = list.size() - 1; i >= 0; i--) {
+			this.overrides.add(list.get(i));
 		}
 	}
 
 	@Nullable
-	public BakedModel apply(BakedModel model, ItemStack stack, @Nullable World world, @Nullable LivingEntity entity) {
+	public BakedModel apply(BakedModel bakedModel, ItemStack itemStack, @Nullable World world, @Nullable LivingEntity livingEntity) {
 		if (!this.overrides.isEmpty()) {
 			for (int i = 0; i < this.overrides.size(); i++) {
 				ModelItemOverride modelItemOverride = (ModelItemOverride)this.overrides.get(i);
-				if (modelItemOverride.matches(stack, world, entity)) {
-					BakedModel bakedModel = (BakedModel)this.models.get(i);
-					if (bakedModel == null) {
-						return model;
+				if (modelItemOverride.matches(itemStack, world, livingEntity)) {
+					BakedModel bakedModel2 = (BakedModel)this.models.get(i);
+					if (bakedModel2 == null) {
+						return bakedModel;
 					}
 
-					return bakedModel;
+					return bakedModel2;
 				}
 			}
 		}
 
-		return model;
+		return bakedModel;
 	}
 }

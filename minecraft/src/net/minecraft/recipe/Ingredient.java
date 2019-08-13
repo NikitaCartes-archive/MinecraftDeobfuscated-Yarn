@@ -33,34 +33,34 @@ public final class Ingredient implements Predicate<ItemStack> {
 	private static final Predicate<? super Ingredient.Entry> NON_EMPTY = entry -> !entry.getStacks().stream().allMatch(ItemStack::isEmpty);
 	public static final Ingredient EMPTY = new Ingredient(Stream.empty());
 	private final Ingredient.Entry[] entries;
-	private ItemStack[] matchingStacks;
+	private ItemStack[] stackArray;
 	private IntList ids;
 
-	private Ingredient(Stream<? extends Ingredient.Entry> entries) {
-		this.entries = (Ingredient.Entry[])entries.filter(NON_EMPTY).toArray(Ingredient.Entry[]::new);
+	private Ingredient(Stream<? extends Ingredient.Entry> stream) {
+		this.entries = (Ingredient.Entry[])stream.filter(NON_EMPTY).toArray(Ingredient.Entry[]::new);
 	}
 
 	@Environment(EnvType.CLIENT)
-	public ItemStack[] getMatchingStacksClient() {
-		this.cacheMatchingStacks();
-		return this.matchingStacks;
+	public ItemStack[] getStackArray() {
+		this.createStackArray();
+		return this.stackArray;
 	}
 
-	private void cacheMatchingStacks() {
-		if (this.matchingStacks == null) {
-			this.matchingStacks = (ItemStack[])Arrays.stream(this.entries).flatMap(entry -> entry.getStacks().stream()).distinct().toArray(ItemStack[]::new);
+	private void createStackArray() {
+		if (this.stackArray == null) {
+			this.stackArray = (ItemStack[])Arrays.stream(this.entries).flatMap(entry -> entry.getStacks().stream()).distinct().toArray(ItemStack[]::new);
 		}
 	}
 
-	public boolean test(@Nullable ItemStack itemStack) {
+	public boolean method_8093(@Nullable ItemStack itemStack) {
 		if (itemStack == null) {
 			return false;
 		} else if (this.entries.length == 0) {
 			return itemStack.isEmpty();
 		} else {
-			this.cacheMatchingStacks();
+			this.createStackArray();
 
-			for (ItemStack itemStack2 : this.matchingStacks) {
+			for (ItemStack itemStack2 : this.stackArray) {
 				if (itemStack2.getItem() == itemStack.getItem()) {
 					return true;
 				}
@@ -72,10 +72,10 @@ public final class Ingredient implements Predicate<ItemStack> {
 
 	public IntList getIds() {
 		if (this.ids == null) {
-			this.cacheMatchingStacks();
-			this.ids = new IntArrayList(this.matchingStacks.length);
+			this.createStackArray();
+			this.ids = new IntArrayList(this.stackArray.length);
 
-			for (ItemStack itemStack : this.matchingStacks) {
+			for (ItemStack itemStack : this.stackArray) {
 				this.ids.add(RecipeFinder.getItemId(itemStack));
 			}
 
@@ -85,12 +85,12 @@ public final class Ingredient implements Predicate<ItemStack> {
 		return this.ids;
 	}
 
-	public void write(PacketByteBuf buf) {
-		this.cacheMatchingStacks();
-		buf.writeVarInt(this.matchingStacks.length);
+	public void write(PacketByteBuf packetByteBuf) {
+		this.createStackArray();
+		packetByteBuf.writeVarInt(this.stackArray.length);
 
-		for (int i = 0; i < this.matchingStacks.length; i++) {
-			buf.writeItemStack(this.matchingStacks[i]);
+		for (int i = 0; i < this.stackArray.length; i++) {
+			packetByteBuf.writeItemStack(this.stackArray[i]);
 		}
 	}
 
@@ -109,58 +109,58 @@ public final class Ingredient implements Predicate<ItemStack> {
 	}
 
 	public boolean isEmpty() {
-		return this.entries.length == 0 && (this.matchingStacks == null || this.matchingStacks.length == 0) && (this.ids == null || this.ids.isEmpty());
+		return this.entries.length == 0 && (this.stackArray == null || this.stackArray.length == 0) && (this.ids == null || this.ids.isEmpty());
 	}
 
-	private static Ingredient ofEntries(Stream<? extends Ingredient.Entry> entries) {
-		Ingredient ingredient = new Ingredient(entries);
+	private static Ingredient ofEntries(Stream<? extends Ingredient.Entry> stream) {
+		Ingredient ingredient = new Ingredient(stream);
 		return ingredient.entries.length == 0 ? EMPTY : ingredient;
 	}
 
-	public static Ingredient ofItems(ItemConvertible... items) {
-		return ofEntries(Arrays.stream(items).map(itemConvertible -> new Ingredient.StackEntry(new ItemStack(itemConvertible))));
+	public static Ingredient ofItems(ItemConvertible... itemConvertibles) {
+		return ofEntries(Arrays.stream(itemConvertibles).map(itemConvertible -> new Ingredient.StackEntry(new ItemStack(itemConvertible))));
 	}
 
 	@Environment(EnvType.CLIENT)
-	public static Ingredient ofStacks(ItemStack... stacks) {
-		return ofEntries(Arrays.stream(stacks).map(itemStack -> new Ingredient.StackEntry(itemStack)));
+	public static Ingredient ofStacks(ItemStack... itemStacks) {
+		return ofEntries(Arrays.stream(itemStacks).map(itemStack -> new Ingredient.StackEntry(itemStack)));
 	}
 
 	public static Ingredient fromTag(Tag<Item> tag) {
 		return ofEntries(Stream.of(new Ingredient.TagEntry(tag)));
 	}
 
-	public static Ingredient fromPacket(PacketByteBuf buf) {
-		int i = buf.readVarInt();
-		return ofEntries(Stream.generate(() -> new Ingredient.StackEntry(buf.readItemStack())).limit((long)i));
+	public static Ingredient fromPacket(PacketByteBuf packetByteBuf) {
+		int i = packetByteBuf.readVarInt();
+		return ofEntries(Stream.generate(() -> new Ingredient.StackEntry(packetByteBuf.readItemStack())).limit((long)i));
 	}
 
-	public static Ingredient fromJson(@Nullable JsonElement json) {
-		if (json == null || json.isJsonNull()) {
+	public static Ingredient fromJson(@Nullable JsonElement jsonElement) {
+		if (jsonElement == null || jsonElement.isJsonNull()) {
 			throw new JsonSyntaxException("Item cannot be null");
-		} else if (json.isJsonObject()) {
-			return ofEntries(Stream.of(entryFromJson(json.getAsJsonObject())));
-		} else if (json.isJsonArray()) {
-			JsonArray jsonArray = json.getAsJsonArray();
+		} else if (jsonElement.isJsonObject()) {
+			return ofEntries(Stream.of(entryFromJson(jsonElement.getAsJsonObject())));
+		} else if (jsonElement.isJsonArray()) {
+			JsonArray jsonArray = jsonElement.getAsJsonArray();
 			if (jsonArray.size() == 0) {
 				throw new JsonSyntaxException("Item array cannot be empty, at least one item must be defined");
 			} else {
-				return ofEntries(StreamSupport.stream(jsonArray.spliterator(), false).map(jsonElement -> entryFromJson(JsonHelper.asObject(jsonElement, "item"))));
+				return ofEntries(StreamSupport.stream(jsonArray.spliterator(), false).map(jsonElementx -> entryFromJson(JsonHelper.asObject(jsonElementx, "item"))));
 			}
 		} else {
 			throw new JsonSyntaxException("Expected item to be object or array of objects");
 		}
 	}
 
-	public static Ingredient.Entry entryFromJson(JsonObject json) {
-		if (json.has("item") && json.has("tag")) {
+	public static Ingredient.Entry entryFromJson(JsonObject jsonObject) {
+		if (jsonObject.has("item") && jsonObject.has("tag")) {
 			throw new JsonParseException("An ingredient entry is either a tag or an item, not both");
-		} else if (json.has("item")) {
-			Identifier identifier = new Identifier(JsonHelper.getString(json, "item"));
+		} else if (jsonObject.has("item")) {
+			Identifier identifier = new Identifier(JsonHelper.getString(jsonObject, "item"));
 			Item item = (Item)Registry.ITEM.getOrEmpty(identifier).orElseThrow(() -> new JsonSyntaxException("Unknown item '" + identifier + "'"));
 			return new Ingredient.StackEntry(new ItemStack(item));
-		} else if (json.has("tag")) {
-			Identifier identifier = new Identifier(JsonHelper.getString(json, "tag"));
+		} else if (jsonObject.has("tag")) {
+			Identifier identifier = new Identifier(JsonHelper.getString(jsonObject, "tag"));
 			Tag<Item> tag = ItemTags.getContainer().get(identifier);
 			if (tag == null) {
 				throw new JsonSyntaxException("Unknown item tag '" + identifier + "'");

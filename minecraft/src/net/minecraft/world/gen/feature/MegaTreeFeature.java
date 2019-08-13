@@ -5,8 +5,8 @@ import java.util.Random;
 import java.util.Set;
 import java.util.function.Function;
 import net.minecraft.block.BlockState;
-import net.minecraft.util.math.BlockBox;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.MutableIntBoundingBox;
 import net.minecraft.world.ModifiableTestableWorld;
 import net.minecraft.world.TestableWorld;
 
@@ -16,14 +16,12 @@ public abstract class MegaTreeFeature<T extends FeatureConfig> extends AbstractT
 	protected final BlockState leaves;
 	protected final int maxExtraHeight;
 
-	public MegaTreeFeature(
-		Function<Dynamic<?>, ? extends T> function, boolean emitNeighborBlockUpdates, int baseHeight, int maxExtraHeight, BlockState log, BlockState leaves
-	) {
-		super(function, emitNeighborBlockUpdates);
-		this.baseHeight = baseHeight;
-		this.maxExtraHeight = maxExtraHeight;
-		this.log = log;
-		this.leaves = leaves;
+	public MegaTreeFeature(Function<Dynamic<?>, ? extends T> function, boolean bl, int i, int j, BlockState blockState, BlockState blockState2) {
+		super(function, bl);
+		this.baseHeight = i;
+		this.maxExtraHeight = j;
+		this.log = blockState;
+		this.leaves = blockState2;
 	}
 
 	protected int getHeight(Random random) {
@@ -35,20 +33,20 @@ public abstract class MegaTreeFeature<T extends FeatureConfig> extends AbstractT
 		return i;
 	}
 
-	private boolean doesTreeFit(TestableWorld world, BlockPos pos, int height) {
+	private boolean doesTreeFit(TestableWorld testableWorld, BlockPos blockPos, int i) {
 		boolean bl = true;
-		if (pos.getY() >= 1 && pos.getY() + height + 1 <= 256) {
-			for (int i = 0; i <= 1 + height; i++) {
-				int j = 2;
-				if (i == 0) {
-					j = 1;
-				} else if (i >= 1 + height - 2) {
-					j = 2;
+		if (blockPos.getY() >= 1 && blockPos.getY() + i + 1 <= 256) {
+			for (int j = 0; j <= 1 + i; j++) {
+				int k = 2;
+				if (j == 0) {
+					k = 1;
+				} else if (j >= 1 + i - 2) {
+					k = 2;
 				}
 
-				for (int k = -j; k <= j && bl; k++) {
-					for (int l = -j; l <= j && bl; l++) {
-						if (pos.getY() + i < 0 || pos.getY() + i >= 256 || !canTreeReplace(world, pos.add(k, i, l))) {
+				for (int l = -k; l <= k && bl; l++) {
+					for (int m = -k; m <= k && bl; m++) {
+						if (blockPos.getY() + j < 0 || blockPos.getY() + j >= 256 || !canTreeReplace(testableWorld, blockPos.add(l, j, m))) {
 							bl = false;
 						}
 					}
@@ -61,49 +59,53 @@ public abstract class MegaTreeFeature<T extends FeatureConfig> extends AbstractT
 		}
 	}
 
-	private boolean replaceGround(ModifiableTestableWorld world, BlockPos pos) {
-		BlockPos blockPos = pos.down();
-		if (isNaturalDirtOrGrass(world, blockPos) && pos.getY() >= 2) {
-			this.setToDirt(world, blockPos);
-			this.setToDirt(world, blockPos.east());
-			this.setToDirt(world, blockPos.south());
-			this.setToDirt(world, blockPos.south().east());
+	private boolean replaceGround(ModifiableTestableWorld modifiableTestableWorld, BlockPos blockPos) {
+		BlockPos blockPos2 = blockPos.down();
+		if (isNaturalDirtOrGrass(modifiableTestableWorld, blockPos2) && blockPos.getY() >= 2) {
+			this.setToDirt(modifiableTestableWorld, blockPos2);
+			this.setToDirt(modifiableTestableWorld, blockPos2.east());
+			this.setToDirt(modifiableTestableWorld, blockPos2.south());
+			this.setToDirt(modifiableTestableWorld, blockPos2.south().east());
 			return true;
 		} else {
 			return false;
 		}
 	}
 
-	protected boolean checkTreeFitsAndReplaceGround(ModifiableTestableWorld world, BlockPos pos, int height) {
-		return this.doesTreeFit(world, pos, height) && this.replaceGround(world, pos);
+	protected boolean checkTreeFitsAndReplaceGround(ModifiableTestableWorld modifiableTestableWorld, BlockPos blockPos, int i) {
+		return this.doesTreeFit(modifiableTestableWorld, blockPos, i) && this.replaceGround(modifiableTestableWorld, blockPos);
 	}
 
-	protected void makeSquaredLeafLayer(ModifiableTestableWorld modifiableTestableWorld, BlockPos pos, int radius, BlockBox blockBox, Set<BlockPos> set) {
-		int i = radius * radius;
+	protected void makeSquaredLeafLayer(
+		ModifiableTestableWorld modifiableTestableWorld, BlockPos blockPos, int i, MutableIntBoundingBox mutableIntBoundingBox, Set<BlockPos> set
+	) {
+		int j = i * i;
 
-		for (int j = -radius; j <= radius + 1; j++) {
-			for (int k = -radius; k <= radius + 1; k++) {
-				int l = Math.min(Math.abs(j), Math.abs(j - 1));
+		for (int k = -i; k <= i + 1; k++) {
+			for (int l = -i; l <= i + 1; l++) {
 				int m = Math.min(Math.abs(k), Math.abs(k - 1));
-				if (l + m < 7 && l * l + m * m <= i) {
-					BlockPos blockPos = pos.add(j, 0, k);
-					if (isAirOrLeaves(modifiableTestableWorld, blockPos)) {
-						this.setBlockState(set, modifiableTestableWorld, blockPos, this.leaves, blockBox);
+				int n = Math.min(Math.abs(l), Math.abs(l - 1));
+				if (m + n < 7 && m * m + n * n <= j) {
+					BlockPos blockPos2 = blockPos.add(k, 0, l);
+					if (isAirOrLeaves(modifiableTestableWorld, blockPos2)) {
+						this.setBlockState(set, modifiableTestableWorld, blockPos2, this.leaves, mutableIntBoundingBox);
 					}
 				}
 			}
 		}
 	}
 
-	protected void makeRoundLeafLayer(ModifiableTestableWorld modifiableTestableWorld, BlockPos pos, int radius, BlockBox blockBox, Set<BlockPos> set) {
-		int i = radius * radius;
+	protected void makeRoundLeafLayer(
+		ModifiableTestableWorld modifiableTestableWorld, BlockPos blockPos, int i, MutableIntBoundingBox mutableIntBoundingBox, Set<BlockPos> set
+	) {
+		int j = i * i;
 
-		for (int j = -radius; j <= radius; j++) {
-			for (int k = -radius; k <= radius; k++) {
-				if (j * j + k * k <= i) {
-					BlockPos blockPos = pos.add(j, 0, k);
-					if (isAirOrLeaves(modifiableTestableWorld, blockPos)) {
-						this.setBlockState(set, modifiableTestableWorld, blockPos, this.leaves, blockBox);
+		for (int k = -i; k <= i; k++) {
+			for (int l = -i; l <= i; l++) {
+				if (k * k + l * l <= j) {
+					BlockPos blockPos2 = blockPos.add(k, 0, l);
+					if (isAirOrLeaves(modifiableTestableWorld, blockPos2)) {
+						this.setBlockState(set, modifiableTestableWorld, blockPos2, this.leaves, mutableIntBoundingBox);
 					}
 				}
 			}

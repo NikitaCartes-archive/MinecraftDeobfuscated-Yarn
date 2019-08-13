@@ -7,14 +7,14 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.util.Identifier;
 
 public class CampfireCookingRecipe extends AbstractCookingRecipe {
-	public CampfireCookingRecipe(Identifier id, String group, Ingredient input, ItemStack output, float experience, int cookTime) {
-		super(RecipeType.CAMPFIRE_COOKING, id, group, input, output, experience, cookTime);
+	public CampfireCookingRecipe(Identifier identifier, String string, Ingredient ingredient, ItemStack itemStack, float f, int i) {
+		super(RecipeType.CAMPFIRE_COOKING, identifier, string, ingredient, itemStack, f, i);
 	}
 
 	@Environment(EnvType.CLIENT)
 	@Override
 	public ItemStack getRecipeKindIcon() {
-		return new ItemStack(Blocks.CAMPFIRE);
+		return new ItemStack(Blocks.field_17350);
 	}
 
 	@Override

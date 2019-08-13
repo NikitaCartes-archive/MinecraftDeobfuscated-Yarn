@@ -18,41 +18,41 @@ public class PumpkinBlock extends GourdBlock {
 	}
 
 	@Override
-	public boolean activate(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
-		ItemStack itemStack = player.getStackInHand(hand);
-		if (itemStack.getItem() == Items.SHEARS) {
+	public boolean activate(BlockState blockState, World world, BlockPos blockPos, PlayerEntity playerEntity, Hand hand, BlockHitResult blockHitResult) {
+		ItemStack itemStack = playerEntity.getStackInHand(hand);
+		if (itemStack.getItem() == Items.field_8868) {
 			if (!world.isClient) {
-				Direction direction = hit.getSide();
-				Direction direction2 = direction.getAxis() == Direction.Axis.Y ? player.getHorizontalFacing().getOpposite() : direction;
-				world.playSound(null, pos, SoundEvents.BLOCK_PUMPKIN_CARVE, SoundCategory.BLOCKS, 1.0F, 1.0F);
-				world.setBlockState(pos, Blocks.CARVED_PUMPKIN.getDefaultState().with(CarvedPumpkinBlock.FACING, direction2), 11);
+				Direction direction = blockHitResult.getSide();
+				Direction direction2 = direction.getAxis() == Direction.Axis.field_11052 ? playerEntity.getHorizontalFacing().getOpposite() : direction;
+				world.playSound(null, blockPos, SoundEvents.field_14619, SoundCategory.field_15245, 1.0F, 1.0F);
+				world.setBlockState(blockPos, Blocks.field_10147.getDefaultState().with(CarvedPumpkinBlock.FACING, direction2), 11);
 				ItemEntity itemEntity = new ItemEntity(
 					world,
-					(double)pos.getX() + 0.5 + (double)direction2.getOffsetX() * 0.65,
-					(double)pos.getY() + 0.1,
-					(double)pos.getZ() + 0.5 + (double)direction2.getOffsetZ() * 0.65,
-					new ItemStack(Items.PUMPKIN_SEEDS, 4)
+					(double)blockPos.getX() + 0.5 + (double)direction2.getOffsetX() * 0.65,
+					(double)blockPos.getY() + 0.1,
+					(double)blockPos.getZ() + 0.5 + (double)direction2.getOffsetZ() * 0.65,
+					new ItemStack(Items.field_8706, 4)
 				);
 				itemEntity.setVelocity(
 					0.05 * (double)direction2.getOffsetX() + world.random.nextDouble() * 0.02, 0.05, 0.05 * (double)direction2.getOffsetZ() + world.random.nextDouble() * 0.02
 				);
 				world.spawnEntity(itemEntity);
-				itemStack.damage(1, player, playerEntity -> playerEntity.sendToolBreakStatus(hand));
+				itemStack.damage(1, playerEntity, playerEntityx -> playerEntityx.sendToolBreakStatus(hand));
 			}
 
 			return true;
 		} else {
-			return super.activate(state, world, pos, player, hand, hit);
+			return super.activate(blockState, world, blockPos, playerEntity, hand, blockHitResult);
 		}
 	}
 
 	@Override
 	public StemBlock getStem() {
-		return (StemBlock)Blocks.PUMPKIN_STEM;
+		return (StemBlock)Blocks.field_9984;
 	}
 
 	@Override
 	public AttachedStemBlock getAttachedStem() {
-		return (AttachedStemBlock)Blocks.ATTACHED_PUMPKIN_STEM;
+		return (AttachedStemBlock)Blocks.field_10331;
 	}
 }

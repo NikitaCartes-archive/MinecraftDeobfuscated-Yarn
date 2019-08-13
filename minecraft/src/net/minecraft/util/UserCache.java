@@ -61,8 +61,8 @@ public class UserCache {
 		}
 	};
 
-	public UserCache(GameProfileRepository profileRepository, File file) {
-		this.profileRepository = profileRepository;
+	public UserCache(GameProfileRepository gameProfileRepository, File file) {
+		this.profileRepository = gameProfileRepository;
 		this.cacheFile = file;
 		GsonBuilder gsonBuilder = new GsonBuilder();
 		gsonBuilder.registerTypeHierarchyAdapter(UserCache.Entry.class, new UserCache.JsonConverter());
@@ -70,31 +70,31 @@ public class UserCache {
 		this.load();
 	}
 
-	private static GameProfile findProfileByName(GameProfileRepository repository, String name) {
+	private static GameProfile findProfileByName(GameProfileRepository gameProfileRepository, String string) {
 		final GameProfile[] gameProfiles = new GameProfile[1];
 		ProfileLookupCallback profileLookupCallback = new ProfileLookupCallback() {
 			@Override
-			public void onProfileLookupSucceeded(GameProfile profile) {
-				gameProfiles[0] = profile;
+			public void onProfileLookupSucceeded(GameProfile gameProfile) {
+				gameProfiles[0] = gameProfile;
 			}
 
 			@Override
-			public void onProfileLookupFailed(GameProfile profile, Exception exception) {
+			public void onProfileLookupFailed(GameProfile gameProfile, Exception exception) {
 				gameProfiles[0] = null;
 			}
 		};
-		repository.findProfilesByNames(new String[]{name}, Agent.MINECRAFT, profileLookupCallback);
+		gameProfileRepository.findProfilesByNames(new String[]{string}, Agent.MINECRAFT, profileLookupCallback);
 		if (!shouldUseRemote() && gameProfiles[0] == null) {
-			UUID uUID = PlayerEntity.getUuidFromProfile(new GameProfile(null, name));
-			GameProfile gameProfile = new GameProfile(uUID, name);
+			UUID uUID = PlayerEntity.getUuidFromProfile(new GameProfile(null, string));
+			GameProfile gameProfile = new GameProfile(uUID, string);
 			profileLookupCallback.onProfileLookupSucceeded(gameProfile);
 		}
 
 		return gameProfiles[0];
 	}
 
-	public static void setUseRemote(boolean value) {
-		useRemote = value;
+	public static void setUseRemote(boolean bl) {
+		useRemote = bl;
 	}
 
 	private static boolean shouldUseRemote() {
@@ -105,8 +105,8 @@ public class UserCache {
 		this.add(gameProfile, null);
 	}
 
-	private void add(GameProfile profile, Date date) {
-		UUID uUID = profile.getId();
+	private void add(GameProfile gameProfile, Date date) {
+		UUID uUID = gameProfile.getId();
 		if (date == null) {
 			Calendar calendar = Calendar.getInstance();
 			calendar.setTime(new Date());
@@ -114,16 +114,16 @@ public class UserCache {
 			date = calendar.getTime();
 		}
 
-		UserCache.Entry entry = new UserCache.Entry(profile, date);
+		UserCache.Entry entry = new UserCache.Entry(gameProfile, date);
 		if (this.byUuid.containsKey(uUID)) {
 			UserCache.Entry entry2 = (UserCache.Entry)this.byUuid.get(uUID);
 			this.byName.remove(entry2.getProfile().getName().toLowerCase(Locale.ROOT));
-			this.byAccessTime.remove(profile);
+			this.byAccessTime.remove(gameProfile);
 		}
 
-		this.byName.put(profile.getName().toLowerCase(Locale.ROOT), entry);
+		this.byName.put(gameProfile.getName().toLowerCase(Locale.ROOT), entry);
 		this.byUuid.put(uUID, entry);
-		this.byAccessTime.addFirst(profile);
+		this.byAccessTime.addFirst(gameProfile);
 		this.save();
 	}
 
@@ -245,7 +245,7 @@ public class UserCache {
 		private JsonConverter() {
 		}
 
-		public JsonElement serialize(UserCache.Entry entry, Type type, JsonSerializationContext jsonSerializationContext) {
+		public JsonElement method_14522(UserCache.Entry entry, Type type, JsonSerializationContext jsonSerializationContext) {
 			JsonObject jsonObject = new JsonObject();
 			jsonObject.addProperty("name", entry.getProfile().getName());
 			UUID uUID = entry.getProfile().getId();
@@ -254,7 +254,7 @@ public class UserCache {
 			return jsonObject;
 		}
 
-		public UserCache.Entry deserialize(JsonElement jsonElement, Type type, JsonDeserializationContext jsonDeserializationContext) throws JsonParseException {
+		public UserCache.Entry method_14523(JsonElement jsonElement, Type type, JsonDeserializationContext jsonDeserializationContext) throws JsonParseException {
 			if (jsonElement.isJsonObject()) {
 				JsonObject jsonObject = jsonElement.getAsJsonObject();
 				JsonElement jsonElement2 = jsonObject.get("name");

@@ -16,11 +16,11 @@ public class GlyphAtlasTexture extends AbstractTexture implements Closeable {
 	private final boolean hasColor;
 	private final GlyphAtlasTexture.Slot rootSlot;
 
-	public GlyphAtlasTexture(Identifier id, boolean hasColor) {
-		this.id = id;
-		this.hasColor = hasColor;
+	public GlyphAtlasTexture(Identifier identifier, boolean bl) {
+		this.id = identifier;
+		this.hasColor = bl;
 		this.rootSlot = new GlyphAtlasTexture.Slot(0, 0, 256, 256);
-		TextureUtil.prepareImage(hasColor ? NativeImage.GLFormat.RGBA : NativeImage.GLFormat.INTENSITY, this.getGlId(), 256, 256);
+		TextureUtil.prepareImage(bl ? NativeImage.GLFormat.field_5012 : NativeImage.GLFormat.field_5016, this.getGlId(), 256, 256);
 	}
 
 	@Override
@@ -32,27 +32,27 @@ public class GlyphAtlasTexture extends AbstractTexture implements Closeable {
 	}
 
 	@Nullable
-	public GlyphRenderer getGlyphRenderer(RenderableGlyph glyph) {
-		if (glyph.hasColor() != this.hasColor) {
+	public GlyphRenderer getGlyphRenderer(RenderableGlyph renderableGlyph) {
+		if (renderableGlyph.hasColor() != this.hasColor) {
 			return null;
 		} else {
-			GlyphAtlasTexture.Slot slot = this.rootSlot.findSlotFor(glyph);
+			GlyphAtlasTexture.Slot slot = this.rootSlot.findSlotFor(renderableGlyph);
 			if (slot != null) {
 				this.bindTexture();
-				glyph.upload(slot.x, slot.y);
+				renderableGlyph.upload(slot.x, slot.y);
 				float f = 256.0F;
 				float g = 256.0F;
 				float h = 0.01F;
 				return new GlyphRenderer(
 					this.id,
 					((float)slot.x + 0.01F) / 256.0F,
-					((float)slot.x - 0.01F + (float)glyph.getWidth()) / 256.0F,
+					((float)slot.x - 0.01F + (float)renderableGlyph.getWidth()) / 256.0F,
 					((float)slot.y + 0.01F) / 256.0F,
-					((float)slot.y - 0.01F + (float)glyph.getHeight()) / 256.0F,
-					glyph.getXMin(),
-					glyph.getXMax(),
-					glyph.getYMin(),
-					glyph.getYMax()
+					((float)slot.y - 0.01F + (float)renderableGlyph.getHeight()) / 256.0F,
+					renderableGlyph.getXMin(),
+					renderableGlyph.getXMax(),
+					renderableGlyph.getYMin(),
+					renderableGlyph.getYMax()
 				);
 			} else {
 				return null;
@@ -82,19 +82,19 @@ public class GlyphAtlasTexture extends AbstractTexture implements Closeable {
 		}
 
 		@Nullable
-		GlyphAtlasTexture.Slot findSlotFor(RenderableGlyph glyph) {
+		GlyphAtlasTexture.Slot findSlotFor(RenderableGlyph renderableGlyph) {
 			if (this.subSlot1 != null && this.subSlot2 != null) {
-				GlyphAtlasTexture.Slot slot = this.subSlot1.findSlotFor(glyph);
+				GlyphAtlasTexture.Slot slot = this.subSlot1.findSlotFor(renderableGlyph);
 				if (slot == null) {
-					slot = this.subSlot2.findSlotFor(glyph);
+					slot = this.subSlot2.findSlotFor(renderableGlyph);
 				}
 
 				return slot;
 			} else if (this.isOccupied) {
 				return null;
 			} else {
-				int i = glyph.getWidth();
-				int j = glyph.getHeight();
+				int i = renderableGlyph.getWidth();
+				int j = renderableGlyph.getHeight();
 				if (i > this.width || j > this.height) {
 					return null;
 				} else if (i == this.width && j == this.height) {
@@ -111,7 +111,7 @@ public class GlyphAtlasTexture extends AbstractTexture implements Closeable {
 						this.subSlot2 = new GlyphAtlasTexture.Slot(this.x, this.y + j + 1, this.width, this.height - j - 1);
 					}
 
-					return this.subSlot1.findSlotFor(glyph);
+					return this.subSlot1.findSlotFor(renderableGlyph);
 				}
 			}
 		}

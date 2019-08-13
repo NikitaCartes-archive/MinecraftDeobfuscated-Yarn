@@ -12,9 +12,9 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.structure.Structure;
 import net.minecraft.structure.StructureManager;
 import net.minecraft.util.BlockRotation;
-import net.minecraft.util.math.BlockBox;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
+import net.minecraft.util.math.MutableIntBoundingBox;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.world.IWorld;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
@@ -26,8 +26,8 @@ public class FeaturePoolElement extends StructurePoolElement {
 	private final CompoundTag tag;
 
 	@Deprecated
-	public FeaturePoolElement(ConfiguredFeature<?> feature) {
-		this(feature, StructurePool.Projection.RIGID);
+	public FeaturePoolElement(ConfiguredFeature<?> configuredFeature) {
+		this(configuredFeature, StructurePool.Projection.field_16687);
 	}
 
 	public FeaturePoolElement(ConfiguredFeature<?> configuredFeature, StructurePool.Projection projection) {
@@ -55,22 +55,33 @@ public class FeaturePoolElement extends StructurePoolElement {
 	}
 
 	@Override
-	public List<Structure.StructureBlockInfo> getStructureBlockInfos(StructureManager structureManager, BlockPos pos, BlockRotation rotation, Random random) {
+	public List<Structure.StructureBlockInfo> getStructureBlockInfos(
+		StructureManager structureManager, BlockPos blockPos, BlockRotation blockRotation, Random random
+	) {
 		List<Structure.StructureBlockInfo> list = Lists.<Structure.StructureBlockInfo>newArrayList();
-		list.add(new Structure.StructureBlockInfo(pos, Blocks.JIGSAW.getDefaultState().with(JigsawBlock.FACING, Direction.DOWN), this.tag));
+		list.add(new Structure.StructureBlockInfo(blockPos, Blocks.field_16540.getDefaultState().with(JigsawBlock.FACING, Direction.field_11033), this.tag));
 		return list;
 	}
 
 	@Override
-	public BlockBox getBoundingBox(StructureManager structureManager, BlockPos pos, BlockRotation rotation) {
-		BlockPos blockPos = this.method_16601(structureManager, rotation);
-		return new BlockBox(pos.getX(), pos.getY(), pos.getZ(), pos.getX() + blockPos.getX(), pos.getY() + blockPos.getY(), pos.getZ() + blockPos.getZ());
+	public MutableIntBoundingBox getBoundingBox(StructureManager structureManager, BlockPos blockPos, BlockRotation blockRotation) {
+		BlockPos blockPos2 = this.method_16601(structureManager, blockRotation);
+		return new MutableIntBoundingBox(
+			blockPos.getX(),
+			blockPos.getY(),
+			blockPos.getZ(),
+			blockPos.getX() + blockPos2.getX(),
+			blockPos.getY() + blockPos2.getY(),
+			blockPos.getZ() + blockPos2.getZ()
+		);
 	}
 
 	@Override
-	public boolean generate(StructureManager structureManager, IWorld world, BlockPos pos, BlockRotation rotation, BlockBox boundingBox, Random random) {
-		ChunkGenerator<?> chunkGenerator = world.getChunkManager().getChunkGenerator();
-		return this.feature.generate(world, (ChunkGenerator<? extends ChunkGeneratorConfig>)chunkGenerator, random, pos);
+	public boolean generate(
+		StructureManager structureManager, IWorld iWorld, BlockPos blockPos, BlockRotation blockRotation, MutableIntBoundingBox mutableIntBoundingBox, Random random
+	) {
+		ChunkGenerator<?> chunkGenerator = iWorld.getChunkManager().getChunkGenerator();
+		return this.feature.generate(iWorld, (ChunkGenerator<? extends ChunkGeneratorConfig>)chunkGenerator, random, blockPos);
 	}
 
 	@Override
@@ -80,7 +91,7 @@ public class FeaturePoolElement extends StructurePoolElement {
 
 	@Override
 	public StructurePoolElementType getType() {
-		return StructurePoolElementType.FEATURE_POOL_ELEMENT;
+		return StructurePoolElementType.field_16971;
 	}
 
 	public String toString() {

@@ -1,10 +1,10 @@
 package net.minecraft.util.math;
 
 public enum AxisCycleDirection {
-	NONE {
+	field_10962 {
 		@Override
-		public int choose(int x, int y, int z, Direction.Axis axis) {
-			return axis.choose(x, y, z);
+		public int choose(int i, int j, int k, Direction.Axis axis) {
+			return axis.choose(i, j, k);
 		}
 
 		@Override
@@ -17,10 +17,10 @@ public enum AxisCycleDirection {
 			return this;
 		}
 	},
-	FORWARD {
+	field_10963 {
 		@Override
-		public int choose(int x, int y, int z, Direction.Axis axis) {
-			return axis.choose(z, x, y);
+		public int choose(int i, int j, int k, Direction.Axis axis) {
+			return axis.choose(k, i, j);
 		}
 
 		@Override
@@ -30,13 +30,13 @@ public enum AxisCycleDirection {
 
 		@Override
 		public AxisCycleDirection opposite() {
-			return BACKWARD;
+			return field_10965;
 		}
 	},
-	BACKWARD {
+	field_10965 {
 		@Override
-		public int choose(int x, int y, int z, Direction.Axis axis) {
-			return axis.choose(y, z, x);
+		public int choose(int i, int j, int k, Direction.Axis axis) {
+			return axis.choose(j, k, i);
 		}
 
 		@Override
@@ -46,7 +46,7 @@ public enum AxisCycleDirection {
 
 		@Override
 		public AxisCycleDirection opposite() {
-			return FORWARD;
+			return field_10963;
 		}
 	};
 
@@ -56,13 +56,13 @@ public enum AxisCycleDirection {
 	private AxisCycleDirection() {
 	}
 
-	public abstract int choose(int x, int y, int z, Direction.Axis axis);
+	public abstract int choose(int i, int j, int k, Direction.Axis axis);
 
 	public abstract Direction.Axis cycle(Direction.Axis axis);
 
 	public abstract AxisCycleDirection opposite();
 
-	public static AxisCycleDirection between(Direction.Axis from, Direction.Axis to) {
-		return VALUES[Math.floorMod(to.ordinal() - from.ordinal(), 3)];
+	public static AxisCycleDirection between(Direction.Axis axis, Direction.Axis axis2) {
+		return VALUES[Math.floorMod(axis2.ordinal() - axis.ordinal(), 3)];
 	}
 }

@@ -13,63 +13,63 @@ import net.minecraft.recipe.book.RecipeBook;
 
 @Environment(EnvType.CLIENT)
 public class RecipeResultCollection {
-	private final List<Recipe<?>> recipes = Lists.<Recipe<?>>newArrayList();
-	private final Set<Recipe<?>> craftableRecipes = Sets.<Recipe<?>>newHashSet();
-	private final Set<Recipe<?>> fittingRecipes = Sets.<Recipe<?>>newHashSet();
-	private final Set<Recipe<?>> unlockedRecipes = Sets.<Recipe<?>>newHashSet();
+	private final List<Recipe<?>> allRecipes = Lists.<Recipe<?>>newArrayList();
+	private final Set<Recipe<?>> craftableResults = Sets.<Recipe<?>>newHashSet();
+	private final Set<Recipe<?>> fittableResults = Sets.<Recipe<?>>newHashSet();
+	private final Set<Recipe<?>> allResults = Sets.<Recipe<?>>newHashSet();
 	private boolean field_3148 = true;
 
 	public boolean isInitialized() {
-		return !this.unlockedRecipes.isEmpty();
+		return !this.allResults.isEmpty();
 	}
 
 	public void initialize(RecipeBook recipeBook) {
-		for (Recipe<?> recipe : this.recipes) {
+		for (Recipe<?> recipe : this.allRecipes) {
 			if (recipeBook.contains(recipe)) {
-				this.unlockedRecipes.add(recipe);
+				this.allResults.add(recipe);
 			}
 		}
 	}
 
-	public void computeCraftables(RecipeFinder recipeFinder, int gridWidth, int gridHeight, RecipeBook recipeBook) {
-		for (int i = 0; i < this.recipes.size(); i++) {
-			Recipe<?> recipe = (Recipe<?>)this.recipes.get(i);
-			boolean bl = recipe.fits(gridWidth, gridHeight) && recipeBook.contains(recipe);
+	public void computeCraftables(RecipeFinder recipeFinder, int i, int j, RecipeBook recipeBook) {
+		for (int k = 0; k < this.allRecipes.size(); k++) {
+			Recipe<?> recipe = (Recipe<?>)this.allRecipes.get(k);
+			boolean bl = recipe.fits(i, j) && recipeBook.contains(recipe);
 			if (bl) {
-				this.fittingRecipes.add(recipe);
+				this.fittableResults.add(recipe);
 			} else {
-				this.fittingRecipes.remove(recipe);
+				this.fittableResults.remove(recipe);
 			}
 
 			if (bl && recipeFinder.findRecipe(recipe, null)) {
-				this.craftableRecipes.add(recipe);
+				this.craftableResults.add(recipe);
 			} else {
-				this.craftableRecipes.remove(recipe);
+				this.craftableResults.remove(recipe);
 			}
 		}
 	}
 
 	public boolean isCraftable(Recipe<?> recipe) {
-		return this.craftableRecipes.contains(recipe);
+		return this.craftableResults.contains(recipe);
 	}
 
-	public boolean hasCraftableRecipes() {
-		return !this.craftableRecipes.isEmpty();
+	public boolean hasCraftableResults() {
+		return !this.craftableResults.isEmpty();
 	}
 
-	public boolean hasFittingRecipes() {
-		return !this.fittingRecipes.isEmpty();
+	public boolean hasFittableResults() {
+		return !this.fittableResults.isEmpty();
 	}
 
 	public List<Recipe<?>> getAllRecipes() {
-		return this.recipes;
+		return this.allRecipes;
 	}
 
-	public List<Recipe<?>> getResults(boolean craftableOnly) {
+	public List<Recipe<?>> getResults(boolean bl) {
 		List<Recipe<?>> list = Lists.<Recipe<?>>newArrayList();
-		Set<Recipe<?>> set = craftableOnly ? this.craftableRecipes : this.fittingRecipes;
+		Set<Recipe<?>> set = bl ? this.craftableResults : this.fittableResults;
 
-		for (Recipe<?> recipe : this.recipes) {
+		for (Recipe<?> recipe : this.allRecipes) {
 			if (set.contains(recipe)) {
 				list.add(recipe);
 			}
@@ -78,11 +78,11 @@ public class RecipeResultCollection {
 		return list;
 	}
 
-	public List<Recipe<?>> getRecipes(boolean craftable) {
+	public List<Recipe<?>> getResultsExclusive(boolean bl) {
 		List<Recipe<?>> list = Lists.<Recipe<?>>newArrayList();
 
-		for (Recipe<?> recipe : this.recipes) {
-			if (this.fittingRecipes.contains(recipe) && this.craftableRecipes.contains(recipe) == craftable) {
+		for (Recipe<?> recipe : this.allRecipes) {
+			if (this.fittableResults.contains(recipe) && this.craftableResults.contains(recipe) == bl) {
 				list.add(recipe);
 			}
 		}
@@ -91,9 +91,9 @@ public class RecipeResultCollection {
 	}
 
 	public void addRecipe(Recipe<?> recipe) {
-		this.recipes.add(recipe);
+		this.allRecipes.add(recipe);
 		if (this.field_3148) {
-			ItemStack itemStack = ((Recipe)this.recipes.get(0)).getOutput();
+			ItemStack itemStack = ((Recipe)this.allRecipes.get(0)).getOutput();
 			ItemStack itemStack2 = recipe.getOutput();
 			this.field_3148 = ItemStack.areItemsEqualIgnoreDamage(itemStack, itemStack2) && ItemStack.areTagsEqual(itemStack, itemStack2);
 		}

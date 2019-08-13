@@ -21,15 +21,15 @@ public class Team extends AbstractTeam {
 	private Text suffix = new LiteralText("");
 	private boolean friendlyFire = true;
 	private boolean showFriendlyInvisibles = true;
-	private AbstractTeam.VisibilityRule nameTagVisibilityRule = AbstractTeam.VisibilityRule.ALWAYS;
-	private AbstractTeam.VisibilityRule deathMessageVisibilityRule = AbstractTeam.VisibilityRule.ALWAYS;
-	private Formatting color = Formatting.RESET;
-	private AbstractTeam.CollisionRule collisionRule = AbstractTeam.CollisionRule.ALWAYS;
+	private AbstractTeam.VisibilityRule nameTagVisibilityRule = AbstractTeam.VisibilityRule.field_1442;
+	private AbstractTeam.VisibilityRule deathMessageVisibilityRule = AbstractTeam.VisibilityRule.field_1442;
+	private Formatting color = Formatting.field_1070;
+	private AbstractTeam.CollisionRule collisionRule = AbstractTeam.CollisionRule.field_1437;
 
-	public Team(Scoreboard scoreboard, String name) {
+	public Team(Scoreboard scoreboard, String string) {
 		this.scoreboard = scoreboard;
-		this.name = name;
-		this.displayName = new LiteralText(name);
+		this.name = string;
+		this.displayName = new LiteralText(string);
 	}
 
 	@Override
@@ -45,10 +45,10 @@ public class Team extends AbstractTeam {
 		Text text = Texts.bracketed(
 			this.displayName
 				.deepCopy()
-				.styled(style -> style.setInsertion(this.name).setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new LiteralText(this.name))))
+				.styled(style -> style.setInsertion(this.name).setHoverEvent(new HoverEvent(HoverEvent.Action.field_11762, new LiteralText(this.name))))
 		);
 		Formatting formatting = this.getColor();
-		if (formatting != Formatting.RESET) {
+		if (formatting != Formatting.field_1070) {
 			text.formatted(formatting);
 		}
 
@@ -91,7 +91,7 @@ public class Team extends AbstractTeam {
 	public Text modifyText(Text text) {
 		Text text2 = new LiteralText("").append(this.prefix).append(text).append(this.suffix);
 		Formatting formatting = this.getColor();
-		if (formatting != Formatting.RESET) {
+		if (formatting != Formatting.field_1070) {
 			text2.formatted(formatting);
 		}
 
@@ -107,8 +107,8 @@ public class Team extends AbstractTeam {
 		return this.friendlyFire;
 	}
 
-	public void setFriendlyFireAllowed(boolean friendlyFire) {
-		this.friendlyFire = friendlyFire;
+	public void setFriendlyFireAllowed(boolean bl) {
+		this.friendlyFire = bl;
 		this.scoreboard.updateScoreboardTeam(this);
 	}
 
@@ -117,8 +117,8 @@ public class Team extends AbstractTeam {
 		return this.showFriendlyInvisibles;
 	}
 
-	public void setShowFriendlyInvisibles(boolean showFriendlyInvisible) {
-		this.showFriendlyInvisibles = showFriendlyInvisible;
+	public void setShowFriendlyInvisibles(boolean bl) {
+		this.showFriendlyInvisibles = bl;
 		this.scoreboard.updateScoreboardTeam(this);
 	}
 
@@ -171,8 +171,8 @@ public class Team extends AbstractTeam {
 		this.setShowFriendlyInvisibles((i & 2) > 0);
 	}
 
-	public void setColor(Formatting color) {
-		this.color = color;
+	public void setColor(Formatting formatting) {
+		this.color = formatting;
 		this.scoreboard.updateScoreboardTeam(this);
 	}
 

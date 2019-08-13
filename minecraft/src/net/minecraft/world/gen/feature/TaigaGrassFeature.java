@@ -12,21 +12,21 @@ import net.minecraft.world.gen.chunk.ChunkGenerator;
 import net.minecraft.world.gen.chunk.ChunkGeneratorConfig;
 
 public class TaigaGrassFeature extends Feature<DefaultFeatureConfig> {
-	public TaigaGrassFeature(Function<Dynamic<?>, ? extends DefaultFeatureConfig> configFactory) {
-		super(configFactory);
+	public TaigaGrassFeature(Function<Dynamic<?>, ? extends DefaultFeatureConfig> function) {
+		super(function);
 	}
 
 	public BlockState getGrass(Random random) {
-		return random.nextInt(5) > 0 ? Blocks.FERN.getDefaultState() : Blocks.GRASS.getDefaultState();
+		return random.nextInt(5) > 0 ? Blocks.field_10112.getDefaultState() : Blocks.field_10479.getDefaultState();
 	}
 
-	public boolean generate(
+	public boolean method_14061(
 		IWorld iWorld, ChunkGenerator<? extends ChunkGeneratorConfig> chunkGenerator, Random random, BlockPos blockPos, DefaultFeatureConfig defaultFeatureConfig
 	) {
 		BlockState blockState = this.getGrass(random);
 
 		for (BlockState blockState2 = iWorld.getBlockState(blockPos);
-			(blockState2.isAir() || blockState2.matches(BlockTags.LEAVES)) && blockPos.getY() > 0;
+			(blockState2.isAir() || blockState2.matches(BlockTags.field_15503)) && blockPos.getY() > 0;
 			blockState2 = iWorld.getBlockState(blockPos)
 		) {
 			blockPos = blockPos.down();

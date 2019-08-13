@@ -21,7 +21,7 @@ public class HuskEntity extends ZombieEntity {
 	}
 
 	public static boolean method_20677(EntityType<HuskEntity> entityType, IWorld iWorld, SpawnType spawnType, BlockPos blockPos, Random random) {
-		return method_20680(entityType, iWorld, spawnType, blockPos, random) && (spawnType == SpawnType.SPAWNER || iWorld.isSkyVisible(blockPos));
+		return method_20680(entityType, iWorld, spawnType, blockPos, random) && (spawnType == SpawnType.field_16469 || iWorld.isSkyVisible(blockPos));
 	}
 
 	@Override
@@ -31,30 +31,30 @@ public class HuskEntity extends ZombieEntity {
 
 	@Override
 	protected SoundEvent getAmbientSound() {
-		return SoundEvents.ENTITY_HUSK_AMBIENT;
+		return SoundEvents.field_14680;
 	}
 
 	@Override
-	protected SoundEvent getHurtSound(DamageSource source) {
-		return SoundEvents.ENTITY_HUSK_HURT;
+	protected SoundEvent getHurtSound(DamageSource damageSource) {
+		return SoundEvents.field_15196;
 	}
 
 	@Override
 	protected SoundEvent getDeathSound() {
-		return SoundEvents.ENTITY_HUSK_DEATH;
+		return SoundEvents.field_14892;
 	}
 
 	@Override
 	protected SoundEvent getStepSound() {
-		return SoundEvents.ENTITY_HUSK_STEP;
+		return SoundEvents.field_15046;
 	}
 
 	@Override
-	public boolean tryAttack(Entity target) {
-		boolean bl = super.tryAttack(target);
-		if (bl && this.getMainHandStack().isEmpty() && target instanceof LivingEntity) {
+	public boolean tryAttack(Entity entity) {
+		boolean bl = super.tryAttack(entity);
+		if (bl && this.getMainHandStack().isEmpty() && entity instanceof LivingEntity) {
 			float f = this.world.getLocalDifficulty(new BlockPos(this)).getLocalDifficulty();
-			((LivingEntity)target).addStatusEffect(new StatusEffectInstance(StatusEffects.HUNGER, 140 * (int)f));
+			((LivingEntity)entity).addPotionEffect(new StatusEffectInstance(StatusEffects.field_5903, 140 * (int)f));
 		}
 
 		return bl;
@@ -67,7 +67,7 @@ public class HuskEntity extends ZombieEntity {
 
 	@Override
 	protected void convertInWater() {
-		this.convertTo(EntityType.ZOMBIE);
+		this.convertTo(EntityType.field_6051);
 		this.world.playLevelEvent(null, 1041, new BlockPos(this), 0);
 	}
 

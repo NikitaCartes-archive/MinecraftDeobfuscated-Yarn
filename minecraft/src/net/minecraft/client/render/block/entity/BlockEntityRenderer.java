@@ -32,14 +32,14 @@ public abstract class BlockEntityRenderer<T extends BlockEntity> {
 	};
 	protected BlockEntityRenderDispatcher renderManager;
 
-	public void render(T entity, double xOffset, double yOffset, double zOffset, float tickDelta, int blockBreakStage) {
-		HitResult hitResult = this.renderManager.crosshairTarget;
-		if (entity instanceof Nameable
+	public void render(T blockEntity, double d, double e, double f, float g, int i) {
+		HitResult hitResult = this.renderManager.hitResult;
+		if (blockEntity instanceof Nameable
 			&& hitResult != null
-			&& hitResult.getType() == HitResult.Type.BLOCK
-			&& entity.getPos().equals(((BlockHitResult)hitResult).getBlockPos())) {
+			&& hitResult.getType() == HitResult.Type.field_1332
+			&& blockEntity.getPos().equals(((BlockHitResult)hitResult).getBlockPos())) {
 			this.disableLightmap(true);
-			this.renderName(entity, ((Nameable)entity).getDisplayName().asFormattedString(), xOffset, yOffset, zOffset, 12);
+			this.renderName(blockEntity, ((Nameable)blockEntity).getDisplayName().asFormattedString(), d, e, f, 12);
 			this.disableLightmap(false);
 		}
 	}
@@ -71,7 +71,7 @@ public abstract class BlockEntityRenderer<T extends BlockEntity> {
 	}
 
 	public TextRenderer getFontRenderer() {
-		return this.renderManager.getTextRenderer();
+		return this.renderManager.getFontRenderer();
 	}
 
 	public boolean method_3563(T blockEntity) {
@@ -79,7 +79,7 @@ public abstract class BlockEntityRenderer<T extends BlockEntity> {
 	}
 
 	protected void renderName(T blockEntity, String string, double d, double e, double f, int i) {
-		Camera camera = this.renderManager.camera;
+		Camera camera = this.renderManager.cameraEntity;
 		double g = blockEntity.getSquaredDistance(camera.getPos().x, camera.getPos().y, camera.getPos().z);
 		if (!(g > (double)(i * i))) {
 			float h = camera.getYaw();

@@ -37,11 +37,11 @@ public abstract class ArmorFeatureRenderer<T extends LivingEntity, M extends Bip
 		this.modelBody = bipedEntityModel2;
 	}
 
-	public void render(T livingEntity, float f, float g, float h, float i, float j, float k, float l) {
-		this.renderArmor(livingEntity, f, g, h, i, j, k, l, EquipmentSlot.CHEST);
-		this.renderArmor(livingEntity, f, g, h, i, j, k, l, EquipmentSlot.LEGS);
-		this.renderArmor(livingEntity, f, g, h, i, j, k, l, EquipmentSlot.FEET);
-		this.renderArmor(livingEntity, f, g, h, i, j, k, l, EquipmentSlot.HEAD);
+	public void method_17157(T livingEntity, float f, float g, float h, float i, float j, float k, float l) {
+		this.renderArmor(livingEntity, f, g, h, i, j, k, l, EquipmentSlot.field_6174);
+		this.renderArmor(livingEntity, f, g, h, i, j, k, l, EquipmentSlot.field_6172);
+		this.renderArmor(livingEntity, f, g, h, i, j, k, l, EquipmentSlot.field_6166);
+		this.renderArmor(livingEntity, f, g, h, i, j, k, l, EquipmentSlot.field_6169);
 	}
 
 	@Override
@@ -55,8 +55,8 @@ public abstract class ArmorFeatureRenderer<T extends LivingEntity, M extends Bip
 			ArmorItem armorItem = (ArmorItem)itemStack.getItem();
 			if (armorItem.getSlotType() == equipmentSlot) {
 				A bipedEntityModel = this.getArmor(equipmentSlot);
-				this.getContextModel().setAttributes(bipedEntityModel);
-				bipedEntityModel.animateModel(livingEntity, f, g, h);
+				this.getModel().setAttributes(bipedEntityModel);
+				bipedEntityModel.method_17086(livingEntity, f, g, h);
 				this.method_4170(bipedEntityModel, equipmentSlot);
 				boolean bl = this.isLegs(equipmentSlot);
 				this.bindTexture(this.getArmorTexture(armorItem, bl));
@@ -66,12 +66,12 @@ public abstract class ArmorFeatureRenderer<T extends LivingEntity, M extends Bip
 					float o = (float)(m >> 8 & 0xFF) / 255.0F;
 					float p = (float)(m & 0xFF) / 255.0F;
 					GlStateManager.color4f(this.red * n, this.green * o, this.blue * p, this.alpha);
-					bipedEntityModel.render(livingEntity, f, g, i, j, k, l);
+					bipedEntityModel.method_17088(livingEntity, f, g, i, j, k, l);
 					this.bindTexture(this.method_4174(armorItem, bl, "overlay"));
 				}
 
 				GlStateManager.color4f(this.red, this.green, this.blue, this.alpha);
-				bipedEntityModel.render(livingEntity, f, g, i, j, k, l);
+				bipedEntityModel.method_17088(livingEntity, f, g, i, j, k, l);
 				if (!this.ignoreGlint && itemStack.hasEnchantments()) {
 					renderEnchantedGlint(this::bindTexture, livingEntity, bipedEntityModel, f, g, h, i, j, k, l);
 				}
@@ -84,7 +84,7 @@ public abstract class ArmorFeatureRenderer<T extends LivingEntity, M extends Bip
 	}
 
 	private boolean isLegs(EquipmentSlot equipmentSlot) {
-		return equipmentSlot == EquipmentSlot.LEGS;
+		return equipmentSlot == EquipmentSlot.field_6172;
 	}
 
 	public static <T extends Entity> void renderEnchantedGlint(
@@ -126,8 +126,8 @@ public abstract class ArmorFeatureRenderer<T extends LivingEntity, M extends Bip
 		gameRenderer.setFogBlack(false);
 	}
 
-	private Identifier getArmorTexture(ArmorItem armor, boolean bl) {
-		return this.method_4174(armor, bl, null);
+	private Identifier getArmorTexture(ArmorItem armorItem, boolean bl) {
+		return this.method_4174(armorItem, bl, null);
 	}
 
 	private Identifier method_4174(ArmorItem armorItem, boolean bl, @Nullable String string) {

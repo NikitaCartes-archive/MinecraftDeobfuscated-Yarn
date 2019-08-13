@@ -17,16 +17,16 @@ public class RealmsResourcePackScreen extends RealmsScreen {
 	private final RealmsServerAddress serverAddress;
 	private final ReentrantLock connectLock;
 
-	public RealmsResourcePackScreen(RealmsScreen lastScreen, RealmsServerAddress serverAddress, ReentrantLock connectLock) {
-		this.lastScreen = lastScreen;
-		this.serverAddress = serverAddress;
-		this.connectLock = connectLock;
+	public RealmsResourcePackScreen(RealmsScreen realmsScreen, RealmsServerAddress realmsServerAddress, ReentrantLock reentrantLock) {
+		this.lastScreen = realmsScreen;
+		this.serverAddress = realmsServerAddress;
+		this.connectLock = reentrantLock;
 	}
 
 	@Override
-	public void confirmResult(boolean result, int id) {
+	public void confirmResult(boolean bl, int i) {
 		try {
-			if (!result) {
+			if (!bl) {
 				Realms.setScreen(this.lastScreen);
 			} else {
 				try {

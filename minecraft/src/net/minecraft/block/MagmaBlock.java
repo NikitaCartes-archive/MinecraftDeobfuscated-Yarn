@@ -15,10 +15,10 @@ import net.minecraft.sound.SoundEvents;
 import net.minecraft.tag.FluidTags;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
-import net.minecraft.world.BlockRenderView;
 import net.minecraft.world.BlockView;
-import net.minecraft.world.CollisionView;
+import net.minecraft.world.ExtendedBlockView;
 import net.minecraft.world.IWorld;
+import net.minecraft.world.ViewableWorld;
 import net.minecraft.world.World;
 
 public class MagmaBlock extends Block {
@@ -27,67 +27,69 @@ public class MagmaBlock extends Block {
 	}
 
 	@Override
-	public void onSteppedOn(World world, BlockPos pos, Entity entity) {
+	public void onSteppedOn(World world, BlockPos blockPos, Entity entity) {
 		if (!entity.isFireImmune() && entity instanceof LivingEntity && !EnchantmentHelper.hasFrostWalker((LivingEntity)entity)) {
 			entity.damage(DamageSource.HOT_FLOOR, 1.0F);
 		}
 
-		super.onSteppedOn(world, pos, entity);
+		super.onSteppedOn(world, blockPos, entity);
 	}
 
 	@Environment(EnvType.CLIENT)
 	@Override
-	public int getBlockBrightness(BlockState state, BlockRenderView view, BlockPos pos) {
+	public int getBlockBrightness(BlockState blockState, ExtendedBlockView extendedBlockView, BlockPos blockPos) {
 		return 15728880;
 	}
 
 	@Override
-	public void onScheduledTick(BlockState state, World world, BlockPos pos, Random random) {
-		BubbleColumnBlock.update(world, pos.up(), true);
+	public void onScheduledTick(BlockState blockState, World world, BlockPos blockPos, Random random) {
+		BubbleColumnBlock.update(world, blockPos.up(), true);
 	}
 
 	@Override
-	public BlockState getStateForNeighborUpdate(BlockState state, Direction facing, BlockState neighborState, IWorld world, BlockPos pos, BlockPos neighborPos) {
-		if (facing == Direction.UP && neighborState.getBlock() == Blocks.WATER) {
-			world.getBlockTickScheduler().schedule(pos, this, this.getTickRate(world));
+	public BlockState getStateForNeighborUpdate(
+		BlockState blockState, Direction direction, BlockState blockState2, IWorld iWorld, BlockPos blockPos, BlockPos blockPos2
+	) {
+		if (direction == Direction.field_11036 && blockState2.getBlock() == Blocks.field_10382) {
+			iWorld.getBlockTickScheduler().schedule(blockPos, this, this.getTickRate(iWorld));
 		}
 
-		return super.getStateForNeighborUpdate(state, facing, neighborState, world, pos, neighborPos);
+		return super.getStateForNeighborUpdate(blockState, direction, blockState2, iWorld, blockPos, blockPos2);
 	}
 
 	@Override
-	public void onRandomTick(BlockState state, World world, BlockPos pos, Random random) {
-		BlockPos blockPos = pos.up();
-		if (world.getFluidState(pos).matches(FluidTags.WATER)) {
+	public void onRandomTick(BlockState blockState, World world, BlockPos blockPos, Random random) {
+		BlockPos blockPos2 = blockPos.up();
+		if (world.getFluidState(blockPos).matches(FluidTags.field_15517)) {
 			world.playSound(
-				null, pos, SoundEvents.BLOCK_FIRE_EXTINGUISH, SoundCategory.BLOCKS, 0.5F, 2.6F + (world.random.nextFloat() - world.random.nextFloat()) * 0.8F
+				null, blockPos, SoundEvents.field_15102, SoundCategory.field_15245, 0.5F, 2.6F + (world.random.nextFloat() - world.random.nextFloat()) * 0.8F
 			);
 			if (world instanceof ServerWorld) {
 				((ServerWorld)world)
 					.spawnParticles(
-						ParticleTypes.LARGE_SMOKE, (double)blockPos.getX() + 0.5, (double)blockPos.getY() + 0.25, (double)blockPos.getZ() + 0.5, 8, 0.5, 0.25, 0.5, 0.0
+						ParticleTypes.field_11237, (double)blockPos2.getX() + 0.5, (double)blockPos2.getY() + 0.25, (double)blockPos2.getZ() + 0.5, 8, 0.5, 0.25, 0.5, 0.0
 					);
 			}
 		}
 	}
 
 	@Override
-	public int getTickRate(CollisionView world) {
+	public int getTickRate(ViewableWorld viewableWorld) {
 		return 20;
 	}
 
 	@Override
-	public void onBlockAdded(BlockState state, World world, BlockPos pos, BlockState oldState, boolean moved) {
-		world.getBlockTickScheduler().schedule(pos, this, this.getTickRate(world));
+	public void onBlockAdded(BlockState blockState, World world, BlockPos blockPos, BlockState blockState2, boolean bl) {
+		world.getBlockTickScheduler().schedule(blockPos, this, this.getTickRate(world));
 	}
 
 	@Override
-	public boolean allowsSpawning(BlockState state, BlockView view, BlockPos pos, EntityType<?> type) {
-		return type.isFireImmune();
+	public boolean allowsSpawning(BlockState blockState, BlockView blockView, BlockPos blockPos, EntityType<?> entityType) {
+		return entityType.isFireImmune();
 	}
 
 	@Override
-	public boolean shouldPostProcess(BlockState state, BlockView view, BlockPos pos) {
+	public boolean shouldPostProcess(BlockState blockState, BlockView blockView, BlockPos blockPos) {
 		return true;
 	}
 }

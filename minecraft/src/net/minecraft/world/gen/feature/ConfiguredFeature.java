@@ -15,31 +15,31 @@ public class ConfiguredFeature<FC extends FeatureConfig> {
 	public final Feature<FC> feature;
 	public final FC config;
 
-	public ConfiguredFeature(Feature<FC> feature, FC config) {
+	public ConfiguredFeature(Feature<FC> feature, FC featureConfig) {
 		this.feature = feature;
-		this.config = config;
+		this.config = featureConfig;
 	}
 
 	public ConfiguredFeature(Feature<FC> feature, Dynamic<?> dynamic) {
 		this(feature, feature.deserializeConfig(dynamic));
 	}
 
-	public <T> Dynamic<T> serialize(DynamicOps<T> ops) {
+	public <T> Dynamic<T> serialize(DynamicOps<T> dynamicOps) {
 		return new Dynamic<>(
-			ops,
-			ops.createMap(
+			dynamicOps,
+			dynamicOps.createMap(
 				ImmutableMap.of(
-					ops.createString("name"),
-					ops.createString(Registry.FEATURE.getId(this.feature).toString()),
-					ops.createString("config"),
-					this.config.serialize(ops).getValue()
+					dynamicOps.createString("name"),
+					dynamicOps.createString(Registry.FEATURE.getId(this.feature).toString()),
+					dynamicOps.createString("config"),
+					this.config.serialize(dynamicOps).getValue()
 				)
 			)
 		);
 	}
 
-	public boolean generate(IWorld world, ChunkGenerator<? extends ChunkGeneratorConfig> generator, Random random, BlockPos blockPos) {
-		return this.feature.generate(world, generator, random, blockPos, this.config);
+	public boolean generate(IWorld iWorld, ChunkGenerator<? extends ChunkGeneratorConfig> chunkGenerator, Random random, BlockPos blockPos) {
+		return this.feature.generate(iWorld, chunkGenerator, random, blockPos, this.config);
 	}
 
 	public static <T> ConfiguredFeature<?> deserialize(Dynamic<T> dynamic) {

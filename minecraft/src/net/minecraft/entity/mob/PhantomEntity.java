@@ -43,7 +43,7 @@ public class PhantomEntity extends FlyingEntity implements Monster {
 	private static final TrackedData<Integer> SIZE = DataTracker.registerData(PhantomEntity.class, TrackedDataHandlerRegistry.INTEGER);
 	private Vec3d field_7314 = Vec3d.ZERO;
 	private BlockPos field_7312 = BlockPos.ORIGIN;
-	private PhantomEntity.PhantomMovementType movementType = PhantomEntity.PhantomMovementType.CIRCLE;
+	private PhantomEntity.PhantomMovementType movementType = PhantomEntity.PhantomMovementType.field_7318;
 
 	public PhantomEntity(EntityType<? extends PhantomEntity> entityType, World world) {
 		super(entityType, world);
@@ -68,7 +68,7 @@ public class PhantomEntity extends FlyingEntity implements Monster {
 	@Override
 	protected void initAttributes() {
 		super.initAttributes();
-		this.getAttributes().register(EntityAttributes.ATTACK_DAMAGE);
+		this.getAttributeContainer().register(EntityAttributes.ATTACK_DAMAGE);
 	}
 
 	@Override
@@ -91,17 +91,17 @@ public class PhantomEntity extends FlyingEntity implements Monster {
 	}
 
 	@Override
-	protected float getActiveEyeHeight(EntityPose pose, EntityDimensions dimensions) {
-		return dimensions.height * 0.35F;
+	protected float getActiveEyeHeight(EntityPose entityPose, EntityDimensions entityDimensions) {
+		return entityDimensions.height * 0.35F;
 	}
 
 	@Override
-	public void onTrackedDataSet(TrackedData<?> data) {
-		if (SIZE.equals(data)) {
+	public void onTrackedDataSet(TrackedData<?> trackedData) {
+		if (SIZE.equals(trackedData)) {
 			this.onSizeChanged();
 		}
 
-		super.onTrackedDataSet(data);
+		super.onTrackedDataSet(trackedData);
 	}
 
 	@Override
@@ -116,7 +116,7 @@ public class PhantomEntity extends FlyingEntity implements Monster {
 						this.x,
 						this.y,
 						this.z,
-						SoundEvents.ENTITY_PHANTOM_FLAP,
+						SoundEvents.field_14869,
 						this.getSoundCategory(),
 						0.95F + this.random.nextFloat() * 0.05F,
 						0.95F + this.random.nextFloat() * 0.05F,
@@ -128,11 +128,11 @@ public class PhantomEntity extends FlyingEntity implements Monster {
 			float h = MathHelper.cos(this.yaw * (float) (Math.PI / 180.0)) * (1.3F + 0.21F * (float)i);
 			float j = MathHelper.sin(this.yaw * (float) (Math.PI / 180.0)) * (1.3F + 0.21F * (float)i);
 			float k = (0.3F + f * 0.45F) * ((float)i * 0.2F + 1.0F);
-			this.world.addParticle(ParticleTypes.MYCELIUM, this.x + (double)h, this.y + (double)k, this.z + (double)j, 0.0, 0.0, 0.0);
-			this.world.addParticle(ParticleTypes.MYCELIUM, this.x - (double)h, this.y + (double)k, this.z - (double)j, 0.0, 0.0, 0.0);
+			this.world.addParticle(ParticleTypes.field_11219, this.x + (double)h, this.y + (double)k, this.z + (double)j, 0.0, 0.0, 0.0);
+			this.world.addParticle(ParticleTypes.field_11219, this.x - (double)h, this.y + (double)k, this.z - (double)j, 0.0, 0.0, 0.0);
 		}
 
-		if (!this.world.isClient && this.world.getDifficulty() == Difficulty.PEACEFUL) {
+		if (!this.world.isClient && this.world.getDifficulty() == Difficulty.field_5801) {
 			this.remove();
 		}
 	}
@@ -152,55 +152,57 @@ public class PhantomEntity extends FlyingEntity implements Monster {
 	}
 
 	@Override
-	public EntityData initialize(IWorld world, LocalDifficulty difficulty, SpawnType spawnType, @Nullable EntityData entityData, @Nullable CompoundTag entityTag) {
+	public EntityData initialize(
+		IWorld iWorld, LocalDifficulty localDifficulty, SpawnType spawnType, @Nullable EntityData entityData, @Nullable CompoundTag compoundTag
+	) {
 		this.field_7312 = new BlockPos(this).up(5);
 		this.setPhantomSize(0);
-		return super.initialize(world, difficulty, spawnType, entityData, entityTag);
+		return super.initialize(iWorld, localDifficulty, spawnType, entityData, compoundTag);
 	}
 
 	@Override
-	public void readCustomDataFromTag(CompoundTag tag) {
-		super.readCustomDataFromTag(tag);
-		if (tag.contains("AX")) {
-			this.field_7312 = new BlockPos(tag.getInt("AX"), tag.getInt("AY"), tag.getInt("AZ"));
+	public void readCustomDataFromTag(CompoundTag compoundTag) {
+		super.readCustomDataFromTag(compoundTag);
+		if (compoundTag.containsKey("AX")) {
+			this.field_7312 = new BlockPos(compoundTag.getInt("AX"), compoundTag.getInt("AY"), compoundTag.getInt("AZ"));
 		}
 
-		this.setPhantomSize(tag.getInt("Size"));
+		this.setPhantomSize(compoundTag.getInt("Size"));
 	}
 
 	@Override
-	public void writeCustomDataToTag(CompoundTag tag) {
-		super.writeCustomDataToTag(tag);
-		tag.putInt("AX", this.field_7312.getX());
-		tag.putInt("AY", this.field_7312.getY());
-		tag.putInt("AZ", this.field_7312.getZ());
-		tag.putInt("Size", this.getPhantomSize());
+	public void writeCustomDataToTag(CompoundTag compoundTag) {
+		super.writeCustomDataToTag(compoundTag);
+		compoundTag.putInt("AX", this.field_7312.getX());
+		compoundTag.putInt("AY", this.field_7312.getY());
+		compoundTag.putInt("AZ", this.field_7312.getZ());
+		compoundTag.putInt("Size", this.getPhantomSize());
 	}
 
 	@Environment(EnvType.CLIENT)
 	@Override
-	public boolean shouldRender(double distance) {
+	public boolean shouldRenderAtDistance(double d) {
 		return true;
 	}
 
 	@Override
 	public SoundCategory getSoundCategory() {
-		return SoundCategory.HOSTILE;
+		return SoundCategory.field_15251;
 	}
 
 	@Override
 	protected SoundEvent getAmbientSound() {
-		return SoundEvents.ENTITY_PHANTOM_AMBIENT;
+		return SoundEvents.field_14813;
 	}
 
 	@Override
-	protected SoundEvent getHurtSound(DamageSource source) {
-		return SoundEvents.ENTITY_PHANTOM_HURT;
+	protected SoundEvent getHurtSound(DamageSource damageSource) {
+		return SoundEvents.field_15149;
 	}
 
 	@Override
 	protected SoundEvent getDeathSound() {
-		return SoundEvents.ENTITY_PHANTOM_DEATH;
+		return SoundEvents.field_14974;
 	}
 
 	@Override
@@ -214,14 +216,14 @@ public class PhantomEntity extends FlyingEntity implements Monster {
 	}
 
 	@Override
-	public boolean canTarget(EntityType<?> type) {
+	public boolean canTarget(EntityType<?> entityType) {
 		return true;
 	}
 
 	@Override
-	public EntityDimensions getDimensions(EntityPose pose) {
+	public EntityDimensions getDimensions(EntityPose entityPose) {
 		int i = this.getPhantomSize();
-		EntityDimensions entityDimensions = super.getDimensions(pose);
+		EntityDimensions entityDimensions = super.getDimensions(entityPose);
 		float f = (entityDimensions.width + 0.2F * (float)i) / entityDimensions.width;
 		return entityDimensions.scaled(f);
 	}
@@ -237,7 +239,7 @@ public class PhantomEntity extends FlyingEntity implements Monster {
 
 		@Override
 		public boolean canStart() {
-			return PhantomEntity.this.getTarget() == null || PhantomEntity.this.movementType == PhantomEntity.PhantomMovementType.CIRCLE;
+			return PhantomEntity.this.getTarget() == null || PhantomEntity.this.movementType == PhantomEntity.PhantomMovementType.field_7318;
 		}
 
 		@Override
@@ -312,7 +314,7 @@ public class PhantomEntity extends FlyingEntity implements Monster {
 			} else {
 				this.delay = 60;
 				List<PlayerEntity> list = PhantomEntity.this.world
-					.getPlayers(this.PLAYERS_IN_RANGE_PREDICATE, PhantomEntity.this, PhantomEntity.this.getBoundingBox().expand(16.0, 64.0, 16.0));
+					.getPlayersInBox(this.PLAYERS_IN_RANGE_PREDICATE, PhantomEntity.this, PhantomEntity.this.getBoundingBox().expand(16.0, 64.0, 16.0));
 				if (!list.isEmpty()) {
 					list.sort((playerEntityx, playerEntity2) -> playerEntityx.y > playerEntity2.y ? -1 : 1);
 
@@ -337,7 +339,7 @@ public class PhantomEntity extends FlyingEntity implements Monster {
 
 	abstract class MovementGoal extends Goal {
 		public MovementGoal() {
-			this.setControls(EnumSet.of(Goal.Control.MOVE));
+			this.setControls(EnumSet.of(Goal.Control.field_18405));
 		}
 
 		protected boolean method_7104() {
@@ -370,8 +372,8 @@ public class PhantomEntity extends FlyingEntity implements Monster {
 	class PhantomMoveControl extends MoveControl {
 		private float field_7331 = 0.1F;
 
-		public PhantomMoveControl(MobEntity owner) {
-			super(owner);
+		public PhantomMoveControl(MobEntity mobEntity) {
+			super(mobEntity);
 		}
 
 		@Override
@@ -414,8 +416,8 @@ public class PhantomEntity extends FlyingEntity implements Monster {
 	}
 
 	static enum PhantomMovementType {
-		CIRCLE,
-		SWOOP;
+		field_7318,
+		field_7317;
 	}
 
 	class StartAttackGoal extends Goal {
@@ -433,26 +435,26 @@ public class PhantomEntity extends FlyingEntity implements Monster {
 		@Override
 		public void start() {
 			this.field_7322 = 10;
-			PhantomEntity.this.movementType = PhantomEntity.PhantomMovementType.CIRCLE;
+			PhantomEntity.this.movementType = PhantomEntity.PhantomMovementType.field_7318;
 			this.method_7102();
 		}
 
 		@Override
 		public void stop() {
 			PhantomEntity.this.field_7312 = PhantomEntity.this.world
-				.getTopPosition(Heightmap.Type.MOTION_BLOCKING, PhantomEntity.this.field_7312)
+				.getTopPosition(Heightmap.Type.field_13197, PhantomEntity.this.field_7312)
 				.up(10 + PhantomEntity.this.random.nextInt(20));
 		}
 
 		@Override
 		public void tick() {
-			if (PhantomEntity.this.movementType == PhantomEntity.PhantomMovementType.CIRCLE) {
+			if (PhantomEntity.this.movementType == PhantomEntity.PhantomMovementType.field_7318) {
 				this.field_7322--;
 				if (this.field_7322 <= 0) {
-					PhantomEntity.this.movementType = PhantomEntity.PhantomMovementType.SWOOP;
+					PhantomEntity.this.movementType = PhantomEntity.PhantomMovementType.field_7317;
 					this.method_7102();
 					this.field_7322 = (8 + PhantomEntity.this.random.nextInt(4)) * 20;
-					PhantomEntity.this.playSound(SoundEvents.ENTITY_PHANTOM_SWOOP, 10.0F, 0.95F + PhantomEntity.this.random.nextFloat() * 0.1F);
+					PhantomEntity.this.playSound(SoundEvents.field_15238, 10.0F, 0.95F + PhantomEntity.this.random.nextFloat() * 0.1F);
 				}
 			}
 		}
@@ -473,7 +475,7 @@ public class PhantomEntity extends FlyingEntity implements Monster {
 
 		@Override
 		public boolean canStart() {
-			return PhantomEntity.this.getTarget() != null && PhantomEntity.this.movementType == PhantomEntity.PhantomMovementType.SWOOP;
+			return PhantomEntity.this.getTarget() != null && PhantomEntity.this.movementType == PhantomEntity.PhantomMovementType.field_7317;
 		}
 
 		@Override
@@ -513,7 +515,7 @@ public class PhantomEntity extends FlyingEntity implements Monster {
 		@Override
 		public void stop() {
 			PhantomEntity.this.setTarget(null);
-			PhantomEntity.this.movementType = PhantomEntity.PhantomMovementType.CIRCLE;
+			PhantomEntity.this.movementType = PhantomEntity.PhantomMovementType.field_7318;
 		}
 
 		@Override
@@ -522,10 +524,10 @@ public class PhantomEntity extends FlyingEntity implements Monster {
 			PhantomEntity.this.field_7314 = new Vec3d(livingEntity.x, livingEntity.y + (double)livingEntity.getHeight() * 0.5, livingEntity.z);
 			if (PhantomEntity.this.getBoundingBox().expand(0.2F).intersects(livingEntity.getBoundingBox())) {
 				PhantomEntity.this.tryAttack(livingEntity);
-				PhantomEntity.this.movementType = PhantomEntity.PhantomMovementType.CIRCLE;
+				PhantomEntity.this.movementType = PhantomEntity.PhantomMovementType.field_7318;
 				PhantomEntity.this.world.playLevelEvent(1039, new BlockPos(PhantomEntity.this), 0);
 			} else if (PhantomEntity.this.horizontalCollision || PhantomEntity.this.hurtTime > 0) {
-				PhantomEntity.this.movementType = PhantomEntity.PhantomMovementType.CIRCLE;
+				PhantomEntity.this.movementType = PhantomEntity.PhantomMovementType.field_7318;
 			}
 		}
 	}

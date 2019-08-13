@@ -9,13 +9,13 @@ public interface TooltipContext {
 
 	@Environment(EnvType.CLIENT)
 	public static enum Default implements TooltipContext {
-		NORMAL(false),
-		ADVANCED(true);
+		field_8934(false),
+		field_8935(true);
 
 		private final boolean advanced;
 
-		private Default(boolean advanced) {
-			this.advanced = advanced;
+		private Default(boolean bl) {
+			this.advanced = bl;
 		}
 
 		@Override

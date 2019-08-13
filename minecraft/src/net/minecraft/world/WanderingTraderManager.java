@@ -12,10 +12,10 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
+import net.minecraft.village.PointOfInterestStorage;
+import net.minecraft.village.PointOfInterestType;
 import net.minecraft.world.biome.Biomes;
 import net.minecraft.world.level.LevelProperties;
-import net.minecraft.world.poi.PointOfInterestStorage;
-import net.minecraft.world.poi.PointOfInterestType;
 
 public class WanderingTraderManager {
 	private final Random random = new Random();
@@ -24,10 +24,10 @@ public class WanderingTraderManager {
 	private int spawnDelay;
 	private int spawnChance;
 
-	public WanderingTraderManager(ServerWorld world) {
-		this.world = world;
+	public WanderingTraderManager(ServerWorld serverWorld) {
+		this.world = serverWorld;
 		this.field_17728 = 1200;
-		LevelProperties levelProperties = world.getLevelProperties();
+		LevelProperties levelProperties = serverWorld.getLevelProperties();
 		this.spawnDelay = levelProperties.getWanderingTraderSpawnDelay();
 		this.spawnChance = levelProperties.getWanderingTraderSpawnChance();
 		if (this.spawnDelay == 0 && this.spawnChance == 0) {
@@ -46,7 +46,7 @@ public class WanderingTraderManager {
 			levelProperties.setWanderingTraderSpawnDelay(this.spawnDelay);
 			if (this.spawnDelay <= 0) {
 				this.spawnDelay = 24000;
-				if (this.world.getGameRules().getBoolean(GameRules.DO_MOB_SPAWNING)) {
+				if (this.world.getGameRules().getBoolean(GameRules.field_19390)) {
 					int i = this.spawnChance;
 					this.spawnChance = MathHelper.clamp(this.spawnChance + 25, 25, 75);
 					levelProperties.setWanderingTraderSpawnChance(this.spawnChance);
@@ -71,16 +71,16 @@ public class WanderingTraderManager {
 			int i = 48;
 			PointOfInterestStorage pointOfInterestStorage = this.world.getPointOfInterestStorage();
 			Optional<BlockPos> optional = pointOfInterestStorage.getPosition(
-				PointOfInterestType.MEETING.getCompletionCondition(), blockPosx -> true, blockPos, 48, PointOfInterestStorage.OccupationStatus.ANY
+				PointOfInterestType.field_18518.getCompletionCondition(), blockPosx -> true, blockPos, 48, PointOfInterestStorage.OccupationStatus.field_18489
 			);
 			BlockPos blockPos2 = (BlockPos)optional.orElse(blockPos);
 			BlockPos blockPos3 = this.method_18017(blockPos2, 48);
 			if (blockPos3 != null) {
-				if (this.world.getBiome(blockPos3) == Biomes.THE_VOID) {
+				if (this.world.getBiome(blockPos3) == Biomes.field_9473) {
 					return false;
 				}
 
-				WanderingTraderEntity wanderingTraderEntity = EntityType.WANDERING_TRADER.spawn(this.world, null, null, null, blockPos3, SpawnType.EVENT, false, false);
+				WanderingTraderEntity wanderingTraderEntity = EntityType.field_17713.spawn(this.world, null, null, null, blockPos3, SpawnType.field_16467, false, false);
 				if (wanderingTraderEntity != null) {
 					for (int j = 0; j < 2; j++) {
 						this.method_18016(wanderingTraderEntity, 4);
@@ -89,7 +89,7 @@ public class WanderingTraderManager {
 					this.world.getLevelProperties().setWanderingTraderId(wanderingTraderEntity.getUuid());
 					wanderingTraderEntity.setDespawnDelay(48000);
 					wanderingTraderEntity.setWanderTarget(blockPos2);
-					wanderingTraderEntity.setPositionTarget(blockPos2, 16);
+					wanderingTraderEntity.setWalkTarget(blockPos2, 16);
 					return true;
 				}
 			}
@@ -101,7 +101,7 @@ public class WanderingTraderManager {
 	private void method_18016(WanderingTraderEntity wanderingTraderEntity, int i) {
 		BlockPos blockPos = this.method_18017(new BlockPos(wanderingTraderEntity), i);
 		if (blockPos != null) {
-			TraderLlamaEntity traderLlamaEntity = EntityType.TRADER_LLAMA.spawn(this.world, null, null, null, blockPos, SpawnType.EVENT, false, false);
+			TraderLlamaEntity traderLlamaEntity = EntityType.field_17714.spawn(this.world, null, null, null, blockPos, SpawnType.field_16467, false, false);
 			if (traderLlamaEntity != null) {
 				traderLlamaEntity.attachLeash(wanderingTraderEntity, true);
 			}
@@ -115,9 +115,9 @@ public class WanderingTraderManager {
 		for (int j = 0; j < 10; j++) {
 			int k = blockPos.getX() + this.random.nextInt(i * 2) - i;
 			int l = blockPos.getZ() + this.random.nextInt(i * 2) - i;
-			int m = this.world.getTop(Heightmap.Type.WORLD_SURFACE, k, l);
+			int m = this.world.getTop(Heightmap.Type.field_13202, k, l);
 			BlockPos blockPos3 = new BlockPos(k, m, l);
-			if (SpawnHelper.canSpawn(SpawnRestriction.Location.ON_GROUND, this.world, blockPos3, EntityType.WANDERING_TRADER)) {
+			if (SpawnHelper.canSpawn(SpawnRestriction.Location.field_6317, this.world, blockPos3, EntityType.field_17713)) {
 				blockPos2 = blockPos3;
 				break;
 			}

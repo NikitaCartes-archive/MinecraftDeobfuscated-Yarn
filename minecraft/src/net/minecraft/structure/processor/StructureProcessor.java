@@ -7,16 +7,16 @@ import net.minecraft.structure.Structure;
 import net.minecraft.structure.StructurePlacementData;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.registry.Registry;
-import net.minecraft.world.CollisionView;
+import net.minecraft.world.ViewableWorld;
 
 public abstract class StructureProcessor {
 	@Nullable
 	public abstract Structure.StructureBlockInfo process(
-		CollisionView world,
-		BlockPos pos,
+		ViewableWorld viewableWorld,
+		BlockPos blockPos,
 		Structure.StructureBlockInfo structureBlockInfo,
 		Structure.StructureBlockInfo structureBlockInfo2,
-		StructurePlacementData placementData
+		StructurePlacementData structurePlacementData
 	);
 
 	protected abstract StructureProcessorType getType();

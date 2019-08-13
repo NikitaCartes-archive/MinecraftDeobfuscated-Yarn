@@ -8,6 +8,7 @@ import java.util.Collections;
 import java.util.EnumSet;
 import java.util.Set;
 import javax.annotation.Nullable;
+import net.minecraft.client.network.packet.PlayerPositionLookS2CPacket;
 import net.minecraft.command.arguments.DefaultPosArgument;
 import net.minecraft.command.arguments.EntityAnchorArgumentType;
 import net.minecraft.command.arguments.EntityArgumentType;
@@ -16,7 +17,6 @@ import net.minecraft.command.arguments.RotationArgumentType;
 import net.minecraft.command.arguments.Vec3ArgumentType;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
-import net.minecraft.network.packet.s2c.play.PlayerPositionLookS2CPacket;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ChunkTicketType;
 import net.minecraft.server.world.ServerWorld;
@@ -28,8 +28,8 @@ import net.minecraft.util.math.Vec2f;
 import net.minecraft.util.math.Vec3d;
 
 public class TeleportCommand {
-	public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
-		LiteralCommandNode<ServerCommandSource> literalCommandNode = dispatcher.register(
+	public static void register(CommandDispatcher<ServerCommandSource> commandDispatcher) {
+		LiteralCommandNode<ServerCommandSource> literalCommandNode = commandDispatcher.register(
 			CommandManager.literal("teleport")
 				.requires(serverCommandSource -> serverCommandSource.hasPermissionLevel(2))
 				.then(
@@ -72,7 +72,7 @@ public class TeleportCommand {
 																	commandContext.getSource().getWorld(),
 																	Vec3ArgumentType.getPosArgument(commandContext, "location"),
 																	null,
-																	new TeleportCommand.LookTarget(EntityArgumentType.getEntity(commandContext, "facingEntity"), EntityAnchorArgumentType.EntityAnchor.FEET)
+																	new TeleportCommand.LookTarget(EntityArgumentType.getEntity(commandContext, "facingEntity"), EntityAnchorArgumentType.EntityAnchor.field_9853)
 																)
 														)
 														.then(
@@ -140,149 +140,151 @@ public class TeleportCommand {
 						)
 				)
 		);
-		dispatcher.register(CommandManager.literal("tp").requires(serverCommandSource -> serverCommandSource.hasPermissionLevel(2)).redirect(literalCommandNode));
+		commandDispatcher.register(
+			CommandManager.literal("tp").requires(serverCommandSource -> serverCommandSource.hasPermissionLevel(2)).redirect(literalCommandNode)
+		);
 	}
 
-	private static int execute(ServerCommandSource source, Collection<? extends Entity> targets, Entity destination) {
-		for (Entity entity : targets) {
+	private static int execute(ServerCommandSource serverCommandSource, Collection<? extends Entity> collection, Entity entity) {
+		for (Entity entity2 : collection) {
 			teleport(
-				source,
-				entity,
-				(ServerWorld)destination.world,
-				destination.x,
-				destination.y,
-				destination.z,
+				serverCommandSource,
+				entity2,
+				(ServerWorld)entity.world,
+				entity.x,
+				entity.y,
+				entity.z,
 				EnumSet.noneOf(PlayerPositionLookS2CPacket.Flag.class),
-				destination.yaw,
-				destination.pitch,
+				entity.yaw,
+				entity.pitch,
 				null
 			);
 		}
 
-		if (targets.size() == 1) {
-			source.sendFeedback(
-				new TranslatableText("commands.teleport.success.entity.single", ((Entity)targets.iterator().next()).getDisplayName(), destination.getDisplayName()), true
+		if (collection.size() == 1) {
+			serverCommandSource.sendFeedback(
+				new TranslatableText("commands.teleport.success.entity.single", ((Entity)collection.iterator().next()).getDisplayName(), entity.getDisplayName()), true
 			);
 		} else {
-			source.sendFeedback(new TranslatableText("commands.teleport.success.entity.multiple", targets.size(), destination.getDisplayName()), true);
+			serverCommandSource.sendFeedback(new TranslatableText("commands.teleport.success.entity.multiple", collection.size(), entity.getDisplayName()), true);
 		}
 
-		return targets.size();
+		return collection.size();
 	}
 
 	private static int execute(
-		ServerCommandSource source,
-		Collection<? extends Entity> targets,
-		ServerWorld world,
-		PosArgument location,
-		@Nullable PosArgument rotation,
-		@Nullable TeleportCommand.LookTarget facingLocation
+		ServerCommandSource serverCommandSource,
+		Collection<? extends Entity> collection,
+		ServerWorld serverWorld,
+		PosArgument posArgument,
+		@Nullable PosArgument posArgument2,
+		@Nullable TeleportCommand.LookTarget lookTarget
 	) throws CommandSyntaxException {
-		Vec3d vec3d = location.toAbsolutePos(source);
-		Vec2f vec2f = rotation == null ? null : rotation.toAbsoluteRotation(source);
+		Vec3d vec3d = posArgument.toAbsolutePos(serverCommandSource);
+		Vec2f vec2f = posArgument2 == null ? null : posArgument2.toAbsoluteRotation(serverCommandSource);
 		Set<PlayerPositionLookS2CPacket.Flag> set = EnumSet.noneOf(PlayerPositionLookS2CPacket.Flag.class);
-		if (location.isXRelative()) {
-			set.add(PlayerPositionLookS2CPacket.Flag.X);
+		if (posArgument.isXRelative()) {
+			set.add(PlayerPositionLookS2CPacket.Flag.field_12400);
 		}
 
-		if (location.isYRelative()) {
-			set.add(PlayerPositionLookS2CPacket.Flag.Y);
+		if (posArgument.isYRelative()) {
+			set.add(PlayerPositionLookS2CPacket.Flag.field_12398);
 		}
 
-		if (location.isZRelative()) {
-			set.add(PlayerPositionLookS2CPacket.Flag.Z);
+		if (posArgument.isZRelative()) {
+			set.add(PlayerPositionLookS2CPacket.Flag.field_12403);
 		}
 
-		if (rotation == null) {
-			set.add(PlayerPositionLookS2CPacket.Flag.X_ROT);
-			set.add(PlayerPositionLookS2CPacket.Flag.Y_ROT);
+		if (posArgument2 == null) {
+			set.add(PlayerPositionLookS2CPacket.Flag.field_12397);
+			set.add(PlayerPositionLookS2CPacket.Flag.field_12401);
 		} else {
-			if (rotation.isXRelative()) {
-				set.add(PlayerPositionLookS2CPacket.Flag.X_ROT);
+			if (posArgument2.isXRelative()) {
+				set.add(PlayerPositionLookS2CPacket.Flag.field_12397);
 			}
 
-			if (rotation.isYRelative()) {
-				set.add(PlayerPositionLookS2CPacket.Flag.Y_ROT);
+			if (posArgument2.isYRelative()) {
+				set.add(PlayerPositionLookS2CPacket.Flag.field_12401);
 			}
 		}
 
-		for (Entity entity : targets) {
-			if (rotation == null) {
-				teleport(source, entity, world, vec3d.x, vec3d.y, vec3d.z, set, entity.yaw, entity.pitch, facingLocation);
+		for (Entity entity : collection) {
+			if (posArgument2 == null) {
+				teleport(serverCommandSource, entity, serverWorld, vec3d.x, vec3d.y, vec3d.z, set, entity.yaw, entity.pitch, lookTarget);
 			} else {
-				teleport(source, entity, world, vec3d.x, vec3d.y, vec3d.z, set, vec2f.y, vec2f.x, facingLocation);
+				teleport(serverCommandSource, entity, serverWorld, vec3d.x, vec3d.y, vec3d.z, set, vec2f.y, vec2f.x, lookTarget);
 			}
 		}
 
-		if (targets.size() == 1) {
-			source.sendFeedback(
-				new TranslatableText("commands.teleport.success.location.single", ((Entity)targets.iterator().next()).getDisplayName(), vec3d.x, vec3d.y, vec3d.z), true
+		if (collection.size() == 1) {
+			serverCommandSource.sendFeedback(
+				new TranslatableText("commands.teleport.success.location.single", ((Entity)collection.iterator().next()).getDisplayName(), vec3d.x, vec3d.y, vec3d.z), true
 			);
 		} else {
-			source.sendFeedback(new TranslatableText("commands.teleport.success.location.multiple", targets.size(), vec3d.x, vec3d.y, vec3d.z), true);
+			serverCommandSource.sendFeedback(new TranslatableText("commands.teleport.success.location.multiple", collection.size(), vec3d.x, vec3d.y, vec3d.z), true);
 		}
 
-		return targets.size();
+		return collection.size();
 	}
 
 	private static void teleport(
-		ServerCommandSource source,
-		Entity target,
-		ServerWorld world,
-		double x,
-		double y,
-		double z,
-		Set<PlayerPositionLookS2CPacket.Flag> movementFlags,
-		float yaw,
-		float pitch,
-		@Nullable TeleportCommand.LookTarget facingLocation
+		ServerCommandSource serverCommandSource,
+		Entity entity,
+		ServerWorld serverWorld,
+		double d,
+		double e,
+		double f,
+		Set<PlayerPositionLookS2CPacket.Flag> set,
+		float g,
+		float h,
+		@Nullable TeleportCommand.LookTarget lookTarget
 	) {
-		if (target instanceof ServerPlayerEntity) {
-			ChunkPos chunkPos = new ChunkPos(new BlockPos(x, y, z));
-			world.getChunkManager().addTicket(ChunkTicketType.POST_TELEPORT, chunkPos, 1, target.getEntityId());
-			target.stopRiding();
-			if (((ServerPlayerEntity)target).isSleeping()) {
-				((ServerPlayerEntity)target).wakeUp(true, true, false);
+		if (entity instanceof ServerPlayerEntity) {
+			ChunkPos chunkPos = new ChunkPos(new BlockPos(d, e, f));
+			serverWorld.method_14178().addTicket(ChunkTicketType.field_19347, chunkPos, 1, entity.getEntityId());
+			entity.stopRiding();
+			if (((ServerPlayerEntity)entity).isSleeping()) {
+				((ServerPlayerEntity)entity).wakeUp(true, true, false);
 			}
 
-			if (world == target.world) {
-				((ServerPlayerEntity)target).networkHandler.teleportRequest(x, y, z, yaw, pitch, movementFlags);
+			if (serverWorld == entity.world) {
+				((ServerPlayerEntity)entity).networkHandler.teleportRequest(d, e, f, g, h, set);
 			} else {
-				((ServerPlayerEntity)target).teleport(world, x, y, z, yaw, pitch);
+				((ServerPlayerEntity)entity).teleport(serverWorld, d, e, f, g, h);
 			}
 
-			target.setHeadYaw(yaw);
+			entity.setHeadYaw(g);
 		} else {
-			float f = MathHelper.wrapDegrees(yaw);
-			float g = MathHelper.wrapDegrees(pitch);
-			g = MathHelper.clamp(g, -90.0F, 90.0F);
-			if (world == target.world) {
-				target.refreshPositionAndAngles(x, y, z, f, g);
-				target.setHeadYaw(f);
+			float i = MathHelper.wrapDegrees(g);
+			float j = MathHelper.wrapDegrees(h);
+			j = MathHelper.clamp(j, -90.0F, 90.0F);
+			if (serverWorld == entity.world) {
+				entity.setPositionAndAngles(d, e, f, i, j);
+				entity.setHeadYaw(i);
 			} else {
-				target.detach();
-				target.dimension = world.dimension.getType();
-				Entity entity = target;
-				target = target.getType().create(world);
-				if (target == null) {
+				entity.detach();
+				entity.dimension = serverWorld.dimension.getType();
+				Entity entity2 = entity;
+				entity = entity.getType().create(serverWorld);
+				if (entity == null) {
 					return;
 				}
 
-				target.copyFrom(entity);
-				target.refreshPositionAndAngles(x, y, z, f, g);
-				target.setHeadYaw(f);
-				world.method_18769(target);
-				entity.removed = true;
+				entity.copyFrom(entity2);
+				entity.setPositionAndAngles(d, e, f, i, j);
+				entity.setHeadYaw(i);
+				serverWorld.method_18769(entity);
+				entity2.removed = true;
 			}
 		}
 
-		if (facingLocation != null) {
-			facingLocation.look(source, target);
+		if (lookTarget != null) {
+			lookTarget.look(serverCommandSource, entity);
 		}
 
-		if (!(target instanceof LivingEntity) || !((LivingEntity)target).isFallFlying()) {
-			target.setVelocity(target.getVelocity().multiply(1.0, 0.0, 1.0));
-			target.onGround = true;
+		if (!(entity instanceof LivingEntity) || !((LivingEntity)entity).isFallFlying()) {
+			entity.setVelocity(entity.getVelocity().multiply(1.0, 0.0, 1.0));
+			entity.onGround = true;
 		}
 	}
 
@@ -303,15 +305,15 @@ public class TeleportCommand {
 			this.targetEntityAnchor = null;
 		}
 
-		public void look(ServerCommandSource source, Entity entity) {
+		public void look(ServerCommandSource serverCommandSource, Entity entity) {
 			if (this.targetEntity != null) {
 				if (entity instanceof ServerPlayerEntity) {
-					((ServerPlayerEntity)entity).method_14222(source.getEntityAnchor(), this.targetEntity, this.targetEntityAnchor);
+					((ServerPlayerEntity)entity).method_14222(serverCommandSource.getEntityAnchor(), this.targetEntity, this.targetEntityAnchor);
 				} else {
-					entity.lookAt(source.getEntityAnchor(), this.targetPos);
+					entity.lookAt(serverCommandSource.getEntityAnchor(), this.targetPos);
 				}
 			} else {
-				entity.lookAt(source.getEntityAnchor(), this.targetPos);
+				entity.lookAt(serverCommandSource.getEntityAnchor(), this.targetPos);
 			}
 		}
 	}

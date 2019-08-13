@@ -14,17 +14,17 @@ public class EndRaidTask extends Task<LivingEntity> {
 	}
 
 	@Override
-	protected boolean shouldRun(ServerWorld world, LivingEntity entity) {
-		return world.random.nextInt(20) == 0;
+	protected boolean shouldRun(ServerWorld serverWorld, LivingEntity livingEntity) {
+		return serverWorld.random.nextInt(20) == 0;
 	}
 
 	@Override
-	protected void run(ServerWorld world, LivingEntity entity, long time) {
-		Brain<?> brain = entity.getBrain();
-		Raid raid = world.getRaidAt(new BlockPos(entity));
+	protected void run(ServerWorld serverWorld, LivingEntity livingEntity, long l) {
+		Brain<?> brain = livingEntity.getBrain();
+		Raid raid = serverWorld.getRaidAt(new BlockPos(livingEntity));
 		if (raid == null || raid.hasStopped() || raid.hasLost()) {
-			brain.setDefaultActivity(Activity.IDLE);
-			brain.refreshActivities(world.getTimeOfDay(), world.getTime());
+			brain.setDefaultActivity(Activity.field_18595);
+			brain.refreshActivities(serverWorld.getTimeOfDay(), serverWorld.getTime());
 		}
 	}
 }

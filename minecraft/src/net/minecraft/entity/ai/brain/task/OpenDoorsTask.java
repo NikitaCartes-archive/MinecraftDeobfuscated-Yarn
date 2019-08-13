@@ -23,35 +23,35 @@ public class OpenDoorsTask extends Task<LivingEntity> {
 	public OpenDoorsTask() {
 		super(
 			ImmutableMap.of(
-				MemoryModuleType.PATH,
-				MemoryModuleState.VALUE_PRESENT,
-				MemoryModuleType.INTERACTABLE_DOORS,
-				MemoryModuleState.VALUE_PRESENT,
-				MemoryModuleType.OPENED_DOORS,
-				MemoryModuleState.REGISTERED
+				MemoryModuleType.field_18449,
+				MemoryModuleState.field_18456,
+				MemoryModuleType.field_18450,
+				MemoryModuleState.field_18456,
+				MemoryModuleType.field_20312,
+				MemoryModuleState.field_18458
 			)
 		);
 	}
 
 	@Override
-	protected void run(ServerWorld world, LivingEntity entity, long time) {
-		Brain<?> brain = entity.getBrain();
-		Path path = (Path)brain.getOptionalMemory(MemoryModuleType.PATH).get();
-		List<GlobalPos> list = (List<GlobalPos>)brain.getOptionalMemory(MemoryModuleType.INTERACTABLE_DOORS).get();
+	protected void run(ServerWorld serverWorld, LivingEntity livingEntity, long l) {
+		Brain<?> brain = livingEntity.getBrain();
+		Path path = (Path)brain.getOptionalMemory(MemoryModuleType.field_18449).get();
+		List<GlobalPos> list = (List<GlobalPos>)brain.getOptionalMemory(MemoryModuleType.field_18450).get();
 		List<BlockPos> list2 = (List<BlockPos>)path.getNodes()
 			.stream()
 			.map(pathNode -> new BlockPos(pathNode.x, pathNode.y, pathNode.z))
 			.collect(Collectors.toList());
-		Set<BlockPos> set = this.getDoorsOnPath(world, list, list2);
+		Set<BlockPos> set = this.getDoorsOnPath(serverWorld, list, list2);
 		int i = path.getCurrentNodeIndex() - 1;
-		this.method_21698(world, list2, set, i, entity, brain);
+		this.method_21698(serverWorld, list2, set, i, livingEntity, brain);
 	}
 
-	private Set<BlockPos> getDoorsOnPath(ServerWorld world, List<GlobalPos> doors, List<BlockPos> path) {
-		return (Set<BlockPos>)doors.stream()
-			.filter(globalPos -> globalPos.getDimension() == world.getDimension().getType())
+	private Set<BlockPos> getDoorsOnPath(ServerWorld serverWorld, List<GlobalPos> list, List<BlockPos> list2) {
+		return (Set<BlockPos>)list.stream()
+			.filter(globalPos -> globalPos.getDimension() == serverWorld.getDimension().getType())
 			.map(GlobalPos::getPos)
-			.filter(path::contains)
+			.filter(list2::contains)
 			.collect(Collectors.toSet());
 	}
 
@@ -60,14 +60,14 @@ public class OpenDoorsTask extends Task<LivingEntity> {
 			int j = list.indexOf(blockPos);
 			BlockState blockState = serverWorld.getBlockState(blockPos);
 			Block block = blockState.getBlock();
-			if (BlockTags.WOODEN_DOORS.contains(block) && block instanceof DoorBlock) {
+			if (BlockTags.field_15494.contains(block) && block instanceof DoorBlock) {
 				boolean bl = j >= i;
 				((DoorBlock)block).setOpen(serverWorld, blockPos, bl);
 				GlobalPos globalPos = GlobalPos.create(serverWorld.getDimension().getType(), blockPos);
-				if (!brain.getOptionalMemory(MemoryModuleType.OPENED_DOORS).isPresent() && bl) {
-					brain.putMemory(MemoryModuleType.OPENED_DOORS, Sets.<GlobalPos>newHashSet(globalPos));
+				if (!brain.getOptionalMemory(MemoryModuleType.field_20312).isPresent() && bl) {
+					brain.putMemory(MemoryModuleType.field_20312, Sets.<GlobalPos>newHashSet(globalPos));
 				} else {
-					brain.getOptionalMemory(MemoryModuleType.OPENED_DOORS).ifPresent(setx -> {
+					brain.getOptionalMemory(MemoryModuleType.field_20312).ifPresent(setx -> {
 						if (bl) {
 							setx.add(globalPos);
 						} else {
@@ -81,7 +81,7 @@ public class OpenDoorsTask extends Task<LivingEntity> {
 	}
 
 	public static void method_21697(ServerWorld serverWorld, List<BlockPos> list, int i, LivingEntity livingEntity, Brain<?> brain) {
-		brain.getOptionalMemory(MemoryModuleType.OPENED_DOORS).ifPresent(set -> {
+		brain.getOptionalMemory(MemoryModuleType.field_20312).ifPresent(set -> {
 			Iterator<GlobalPos> iterator = set.iterator();
 
 			while (iterator.hasNext()) {
@@ -93,7 +93,7 @@ public class OpenDoorsTask extends Task<LivingEntity> {
 				} else {
 					BlockState blockState = serverWorld.getBlockState(blockPos);
 					Block block = blockState.getBlock();
-					if (BlockTags.WOODEN_DOORS.contains(block) && block instanceof DoorBlock && j < i && blockPos.isWithinDistance(livingEntity.getPos(), 4.0)) {
+					if (BlockTags.field_15494.contains(block) && block instanceof DoorBlock && j < i && blockPos.isWithinDistance(livingEntity.getPos(), 4.0)) {
 						((DoorBlock)block).setOpen(serverWorld, blockPos, false);
 						iterator.remove();
 					}

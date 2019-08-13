@@ -5,8 +5,8 @@ import java.util.Random;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.model.Box;
-import net.minecraft.client.model.ModelPart;
-import net.minecraft.client.render.DiffuseLighting;
+import net.minecraft.client.model.Cuboid;
+import net.minecraft.client.render.GuiLighting;
 import net.minecraft.client.render.entity.EntityRenderDispatcher;
 import net.minecraft.client.render.entity.LivingEntityRenderer;
 import net.minecraft.client.render.entity.model.EntityModel;
@@ -24,18 +24,18 @@ public class StuckArrowsFeatureRenderer<T extends LivingEntity, M extends Entity
 		this.field_17153 = livingEntityRenderer.getRenderManager();
 	}
 
-	public void render(T livingEntity, float f, float g, float h, float i, float j, float k, float l) {
-		int m = livingEntity.getStuckArrowCount();
+	public void method_17158(T livingEntity, float f, float g, float h, float i, float j, float k, float l) {
+		int m = livingEntity.getStuckArrows();
 		if (m > 0) {
 			Entity entity = new ArrowEntity(livingEntity.world, livingEntity.x, livingEntity.y, livingEntity.z);
 			Random random = new Random((long)livingEntity.getEntityId());
-			DiffuseLighting.disable();
+			GuiLighting.disable();
 
 			for (int n = 0; n < m; n++) {
 				GlStateManager.pushMatrix();
-				ModelPart modelPart = this.getContextModel().getRandomCuboid(random);
-				Box box = (Box)modelPart.boxes.get(random.nextInt(modelPart.boxes.size()));
-				modelPart.applyTransform(0.0625F);
+				Cuboid cuboid = this.getModel().getRandomCuboid(random);
+				Box box = (Box)cuboid.boxes.get(random.nextInt(cuboid.boxes.size()));
+				cuboid.applyTransform(0.0625F);
 				float o = random.nextFloat();
 				float p = random.nextFloat();
 				float q = random.nextFloat();
@@ -61,7 +61,7 @@ public class StuckArrowsFeatureRenderer<T extends LivingEntity, M extends Entity
 				GlStateManager.popMatrix();
 			}
 
-			DiffuseLighting.enable();
+			GuiLighting.enable();
 		}
 	}
 

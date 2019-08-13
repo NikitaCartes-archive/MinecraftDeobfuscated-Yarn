@@ -34,8 +34,8 @@ import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
-import net.minecraft.world.CollisionView;
 import net.minecraft.world.SpawnHelper;
+import net.minecraft.world.ViewableWorld;
 import net.minecraft.world.World;
 
 public class IronGolemEntity extends GolemEntity {
@@ -82,13 +82,13 @@ public class IronGolemEntity extends GolemEntity {
 	}
 
 	@Override
-	protected int getNextAirUnderwater(int air) {
-		return air;
+	protected int getNextBreathInWater(int i) {
+		return i;
 	}
 
 	@Override
 	protected void pushAway(Entity entity) {
-		if (entity instanceof Monster && !(entity instanceof CreeperEntity) && this.getRandom().nextInt(20) == 0) {
+		if (entity instanceof Monster && !(entity instanceof CreeperEntity) && this.getRand().nextInt(20) == 0) {
 			this.setTarget((LivingEntity)entity);
 		}
 
@@ -114,9 +114,9 @@ public class IronGolemEntity extends GolemEntity {
 			if (!blockState.isAir()) {
 				this.world
 					.addParticle(
-						new BlockStateParticleEffect(ParticleTypes.BLOCK, blockState),
+						new BlockStateParticleEffect(ParticleTypes.field_11217, blockState),
 						this.x + ((double)this.random.nextFloat() - 0.5) * (double)this.getWidth(),
-						this.getBoundingBox().y1 + 0.1,
+						this.getBoundingBox().minY + 0.1,
 						this.z + ((double)this.random.nextFloat() - 0.5) * (double)this.getWidth(),
 						4.0 * ((double)this.random.nextFloat() - 0.5),
 						0.5,
@@ -127,52 +127,52 @@ public class IronGolemEntity extends GolemEntity {
 	}
 
 	@Override
-	public boolean canTarget(EntityType<?> type) {
-		if (this.isPlayerCreated() && type == EntityType.PLAYER) {
+	public boolean canTarget(EntityType<?> entityType) {
+		if (this.isPlayerCreated() && entityType == EntityType.field_6097) {
 			return false;
 		} else {
-			return type == EntityType.CREEPER ? false : super.canTarget(type);
+			return entityType == EntityType.field_6046 ? false : super.canTarget(entityType);
 		}
 	}
 
 	@Override
-	public void writeCustomDataToTag(CompoundTag tag) {
-		super.writeCustomDataToTag(tag);
-		tag.putBoolean("PlayerCreated", this.isPlayerCreated());
+	public void writeCustomDataToTag(CompoundTag compoundTag) {
+		super.writeCustomDataToTag(compoundTag);
+		compoundTag.putBoolean("PlayerCreated", this.isPlayerCreated());
 	}
 
 	@Override
-	public void readCustomDataFromTag(CompoundTag tag) {
-		super.readCustomDataFromTag(tag);
-		this.setPlayerCreated(tag.getBoolean("PlayerCreated"));
+	public void readCustomDataFromTag(CompoundTag compoundTag) {
+		super.readCustomDataFromTag(compoundTag);
+		this.setPlayerCreated(compoundTag.getBoolean("PlayerCreated"));
 	}
 
 	@Override
-	public boolean tryAttack(Entity target) {
+	public boolean tryAttack(Entity entity) {
 		this.field_6762 = 10;
 		this.world.sendEntityStatus(this, (byte)4);
-		boolean bl = target.damage(DamageSource.mob(this), (float)(7 + this.random.nextInt(15)));
+		boolean bl = entity.damage(DamageSource.mob(this), (float)(7 + this.random.nextInt(15)));
 		if (bl) {
-			target.setVelocity(target.getVelocity().add(0.0, 0.4F, 0.0));
-			this.dealDamage(this, target);
+			entity.setVelocity(entity.getVelocity().add(0.0, 0.4F, 0.0));
+			this.dealDamage(this, entity);
 		}
 
-		this.playSound(SoundEvents.ENTITY_IRON_GOLEM_ATTACK, 1.0F, 1.0F);
+		this.playSound(SoundEvents.field_14649, 1.0F, 1.0F);
 		return bl;
 	}
 
 	@Environment(EnvType.CLIENT)
 	@Override
-	public void handleStatus(byte status) {
-		if (status == 4) {
+	public void handleStatus(byte b) {
+		if (b == 4) {
 			this.field_6762 = 10;
-			this.playSound(SoundEvents.ENTITY_IRON_GOLEM_ATTACK, 1.0F, 1.0F);
-		} else if (status == 11) {
+			this.playSound(SoundEvents.field_14649, 1.0F, 1.0F);
+		} else if (b == 11) {
 			this.field_6759 = 400;
-		} else if (status == 34) {
+		} else if (b == 34) {
 			this.field_6759 = 0;
 		} else {
-			super.handleStatus(status);
+			super.handleStatus(b);
 		}
 	}
 
@@ -192,18 +192,18 @@ public class IronGolemEntity extends GolemEntity {
 	}
 
 	@Override
-	protected SoundEvent getHurtSound(DamageSource source) {
-		return SoundEvents.ENTITY_IRON_GOLEM_HURT;
+	protected SoundEvent getHurtSound(DamageSource damageSource) {
+		return SoundEvents.field_14959;
 	}
 
 	@Override
 	protected SoundEvent getDeathSound() {
-		return SoundEvents.ENTITY_IRON_GOLEM_DEATH;
+		return SoundEvents.field_15055;
 	}
 
 	@Override
-	protected void playStepSound(BlockPos pos, BlockState state) {
-		this.playSound(SoundEvents.ENTITY_IRON_GOLEM_STEP, 1.0F, 1.0F);
+	protected void playStepSound(BlockPos blockPos, BlockState blockState) {
+		this.playSound(SoundEvents.field_15233, 1.0F, 1.0F);
 	}
 
 	@Environment(EnvType.CLIENT)
@@ -215,9 +215,9 @@ public class IronGolemEntity extends GolemEntity {
 		return (this.dataTracker.get(IRON_GOLEM_FLAGS) & 1) != 0;
 	}
 
-	public void setPlayerCreated(boolean playerCreated) {
+	public void setPlayerCreated(boolean bl) {
 		byte b = this.dataTracker.get(IRON_GOLEM_FLAGS);
-		if (playerCreated) {
+		if (bl) {
 			this.dataTracker.set(IRON_GOLEM_FLAGS, (byte)(b | 1));
 		} else {
 			this.dataTracker.set(IRON_GOLEM_FLAGS, (byte)(b & -2));
@@ -225,27 +225,28 @@ public class IronGolemEntity extends GolemEntity {
 	}
 
 	@Override
-	public void onDeath(DamageSource source) {
-		super.onDeath(source);
+	public void onDeath(DamageSource damageSource) {
+		super.onDeath(damageSource);
 	}
 
 	@Override
-	public boolean canSpawn(CollisionView world) {
+	public boolean canSpawn(ViewableWorld viewableWorld) {
 		BlockPos blockPos = new BlockPos(this);
 		BlockPos blockPos2 = blockPos.down();
-		BlockState blockState = world.getBlockState(blockPos2);
-		if (!blockState.hasSolidTopSurface(world, blockPos2, this)) {
+		BlockState blockState = viewableWorld.getBlockState(blockPos2);
+		if (!blockState.hasSolidTopSurface(viewableWorld, blockPos2, this)) {
 			return false;
 		} else {
 			for (int i = 1; i < 3; i++) {
 				BlockPos blockPos3 = blockPos.up(i);
-				BlockState blockState2 = world.getBlockState(blockPos3);
-				if (!SpawnHelper.isClearForSpawn(world, blockPos3, blockState2, blockState2.getFluidState())) {
+				BlockState blockState2 = viewableWorld.getBlockState(blockPos3);
+				if (!SpawnHelper.isClearForSpawn(viewableWorld, blockPos3, blockState2, blockState2.getFluidState())) {
 					return false;
 				}
 			}
 
-			return SpawnHelper.isClearForSpawn(world, blockPos, world.getBlockState(blockPos), Fluids.EMPTY.getDefaultState()) && world.intersectsEntities(this);
+			return SpawnHelper.isClearForSpawn(viewableWorld, blockPos, viewableWorld.getBlockState(blockPos), Fluids.field_15906.getDefaultState())
+				&& viewableWorld.intersectsEntities(this);
 		}
 	}
 }

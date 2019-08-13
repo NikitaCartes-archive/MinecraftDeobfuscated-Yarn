@@ -23,11 +23,11 @@ import org.apache.logging.log4j.Logger;
 public class TextureFont implements Font {
 	private static final Logger LOGGER = LogManager.getLogger();
 	private final NativeImage image;
-	private final Char2ObjectMap<TextureFont.TextureFontGlyph> glyphs;
+	private final Char2ObjectMap<TextureFont.TextureFontGlyph> characterToGlyphMap;
 
-	public TextureFont(NativeImage image, Char2ObjectMap<TextureFont.TextureFontGlyph> glyphs) {
-		this.image = image;
-		this.glyphs = glyphs;
+	public TextureFont(NativeImage nativeImage, Char2ObjectMap<TextureFont.TextureFontGlyph> char2ObjectMap) {
+		this.image = nativeImage;
+		this.characterToGlyphMap = char2ObjectMap;
 	}
 
 	@Override
@@ -37,8 +37,8 @@ public class TextureFont implements Font {
 
 	@Nullable
 	@Override
-	public RenderableGlyph getGlyph(char character) {
-		return this.glyphs.get(character);
+	public RenderableGlyph getGlyph(char c) {
+		return this.characterToGlyphMap.get(c);
 	}
 
 	@Environment(EnvType.CLIENT)
@@ -48,21 +48,21 @@ public class TextureFont implements Font {
 		private final int height;
 		private final int ascent;
 
-		public Loader(Identifier id, int height, int ascent, List<String> chars) {
-			this.filename = new Identifier(id.getNamespace(), "textures/" + id.getPath());
-			this.chars = chars;
-			this.height = height;
-			this.ascent = ascent;
+		public Loader(Identifier identifier, int i, int j, List<String> list) {
+			this.filename = new Identifier(identifier.getNamespace(), "textures/" + identifier.getPath());
+			this.chars = list;
+			this.height = i;
+			this.ascent = j;
 		}
 
-		public static TextureFont.Loader fromJson(JsonObject json) {
-			int i = JsonHelper.getInt(json, "height", 8);
-			int j = JsonHelper.getInt(json, "ascent");
+		public static TextureFont.Loader fromJson(JsonObject jsonObject) {
+			int i = JsonHelper.getInt(jsonObject, "height", 8);
+			int j = JsonHelper.getInt(jsonObject, "ascent");
 			if (j > i) {
 				throw new JsonParseException("Ascent " + j + " higher than height " + i);
 			} else {
 				List<String> list = Lists.<String>newArrayList();
-				JsonArray jsonArray = JsonHelper.getArray(json, "chars");
+				JsonArray jsonArray = JsonHelper.getArray(jsonObject, "chars");
 
 				for (int k = 0; k < jsonArray.size(); k++) {
 					String string = JsonHelper.asString(jsonArray.get(k), "chars[" + k + "]");
@@ -78,7 +78,7 @@ public class TextureFont implements Font {
 				}
 
 				if (!list.isEmpty() && !((String)list.get(0)).isEmpty()) {
-					return new TextureFont.Loader(new Identifier(JsonHelper.getString(json, "file")), i, j, list);
+					return new TextureFont.Loader(new Identifier(JsonHelper.getString(jsonObject, "file")), i, j, list);
 				} else {
 					throw new JsonParseException("Expected to find data in chars, found none.");
 				}
@@ -87,14 +87,14 @@ public class TextureFont implements Font {
 
 		@Nullable
 		@Override
-		public Font load(ResourceManager manager) {
+		public Font load(ResourceManager resourceManager) {
 			try {
-				Resource resource = manager.getResource(this.filename);
+				Resource resource = resourceManager.getResource(this.filename);
 				Throwable var3 = null;
 
 				TextureFont var28;
 				try {
-					NativeImage nativeImage = NativeImage.read(NativeImage.Format.RGBA, resource.getInputStream());
+					NativeImage nativeImage = NativeImage.read(NativeImage.Format.field_4997, resource.getInputStream());
 					int i = nativeImage.getWidth();
 					int j = nativeImage.getHeight();
 					int k = i / ((String)this.chars.get(0)).length();
@@ -143,20 +143,20 @@ public class TextureFont implements Font {
 			}
 		}
 
-		private int findCharacterStartX(NativeImage image, int characterWidth, int characterHeight, int charPosX, int charPosY) {
-			int i;
-			for (i = characterWidth - 1; i >= 0; i--) {
-				int j = charPosX * characterWidth + i;
+		private int findCharacterStartX(NativeImage nativeImage, int i, int j, int k, int l) {
+			int m;
+			for (m = i - 1; m >= 0; m--) {
+				int n = k * i + m;
 
-				for (int k = 0; k < characterHeight; k++) {
-					int l = charPosY * characterHeight + k;
-					if (image.getPixelOpacity(j, l) != 0) {
-						return i + 1;
+				for (int o = 0; o < j; o++) {
+					int p = l * j + o;
+					if (nativeImage.getPixelOpacity(n, p) != 0) {
+						return m + 1;
 					}
 				}
 			}
 
-			return i + 1;
+			return m + 1;
 		}
 	}
 
@@ -171,15 +171,15 @@ public class TextureFont implements Font {
 		private final int advance;
 		private final int ascent;
 
-		private TextureFontGlyph(float scaleFactor, NativeImage image, int x, int y, int width, int height, int advance, int ascent) {
-			this.scaleFactor = scaleFactor;
-			this.image = image;
-			this.x = x;
-			this.y = y;
-			this.width = width;
-			this.height = height;
-			this.advance = advance;
-			this.ascent = ascent;
+		private TextureFontGlyph(float f, NativeImage nativeImage, int i, int j, int k, int l, int m, int n) {
+			this.scaleFactor = f;
+			this.image = nativeImage;
+			this.x = i;
+			this.y = j;
+			this.width = k;
+			this.height = l;
+			this.advance = m;
+			this.ascent = n;
 		}
 
 		@Override
@@ -208,8 +208,8 @@ public class TextureFont implements Font {
 		}
 
 		@Override
-		public void upload(int x, int y) {
-			this.image.upload(0, x, y, this.x, this.y, this.width, this.height, false);
+		public void upload(int i, int j) {
+			this.image.upload(0, i, j, this.x, this.y, this.width, this.height, false);
 		}
 
 		@Override

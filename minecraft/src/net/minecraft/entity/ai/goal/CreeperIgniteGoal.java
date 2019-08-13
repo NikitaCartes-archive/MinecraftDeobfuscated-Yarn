@@ -8,9 +8,9 @@ public class CreeperIgniteGoal extends Goal {
 	private final CreeperEntity creeper;
 	private LivingEntity target;
 
-	public CreeperIgniteGoal(CreeperEntity creeper) {
-		this.creeper = creeper;
-		this.setControls(EnumSet.of(Goal.Control.MOVE));
+	public CreeperIgniteGoal(CreeperEntity creeperEntity) {
+		this.creeper = creeperEntity;
+		this.setControls(EnumSet.of(Goal.Control.field_18405));
 	}
 
 	@Override

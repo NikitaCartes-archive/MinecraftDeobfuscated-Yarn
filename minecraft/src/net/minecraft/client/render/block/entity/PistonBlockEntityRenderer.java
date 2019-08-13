@@ -12,7 +12,7 @@ import net.minecraft.block.entity.PistonBlockEntity;
 import net.minecraft.block.enums.PistonType;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.BufferBuilder;
-import net.minecraft.client.render.DiffuseLighting;
+import net.minecraft.client.render.GuiLighting;
 import net.minecraft.client.render.Tessellator;
 import net.minecraft.client.render.VertexFormats;
 import net.minecraft.client.render.block.BlockModelRenderer;
@@ -25,14 +25,14 @@ import net.minecraft.world.World;
 public class PistonBlockEntityRenderer extends BlockEntityRenderer<PistonBlockEntity> {
 	private final BlockRenderManager manager = MinecraftClient.getInstance().getBlockRenderManager();
 
-	public void render(PistonBlockEntity pistonBlockEntity, double d, double e, double f, float g, int i) {
+	public void method_3576(PistonBlockEntity pistonBlockEntity, double d, double e, double f, float g, int i) {
 		BlockPos blockPos = pistonBlockEntity.getPos().offset(pistonBlockEntity.method_11506().getOpposite());
 		BlockState blockState = pistonBlockEntity.getPushedBlock();
 		if (!blockState.isAir() && !(pistonBlockEntity.getProgress(g) >= 1.0F)) {
 			Tessellator tessellator = Tessellator.getInstance();
-			BufferBuilder bufferBuilder = tessellator.getBuffer();
+			BufferBuilder bufferBuilder = tessellator.getBufferBuilder();
 			this.bindTexture(SpriteAtlasTexture.BLOCK_ATLAS_TEX);
-			DiffuseLighting.disable();
+			GuiLighting.disable();
 			GlStateManager.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA);
 			GlStateManager.enableBlend();
 			GlStateManager.disableCull();
@@ -50,12 +50,12 @@ public class PistonBlockEntityRenderer extends BlockEntityRenderer<PistonBlockEn
 				f - (double)blockPos.getZ() + (double)pistonBlockEntity.getRenderOffsetZ(g)
 			);
 			World world = this.getWorld();
-			if (blockState.getBlock() == Blocks.PISTON_HEAD && pistonBlockEntity.getProgress(g) <= 4.0F) {
+			if (blockState.getBlock() == Blocks.field_10379 && pistonBlockEntity.getProgress(g) <= 4.0F) {
 				blockState = blockState.with(PistonHeadBlock.SHORT, Boolean.valueOf(true));
 				this.method_3575(blockPos, blockState, bufferBuilder, world, false);
 			} else if (pistonBlockEntity.isSource() && !pistonBlockEntity.isExtending()) {
-				PistonType pistonType = blockState.getBlock() == Blocks.STICKY_PISTON ? PistonType.STICKY : PistonType.DEFAULT;
-				BlockState blockState2 = Blocks.PISTON_HEAD
+				PistonType pistonType = blockState.getBlock() == Blocks.field_10615 ? PistonType.field_12634 : PistonType.field_12637;
+				BlockState blockState2 = Blocks.field_10379
 					.getDefaultState()
 					.with(PistonHeadBlock.TYPE, pistonType)
 					.with(PistonHeadBlock.FACING, blockState.get(PistonBlock.FACING));
@@ -72,7 +72,7 @@ public class PistonBlockEntityRenderer extends BlockEntityRenderer<PistonBlockEn
 			bufferBuilder.setOffset(0.0, 0.0, 0.0);
 			tessellator.draw();
 			BlockModelRenderer.disableBrightnessCache();
-			DiffuseLighting.enable();
+			GuiLighting.enable();
 		}
 	}
 

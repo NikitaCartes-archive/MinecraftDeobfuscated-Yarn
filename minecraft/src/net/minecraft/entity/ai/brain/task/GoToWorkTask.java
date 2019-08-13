@@ -12,15 +12,15 @@ import net.minecraft.village.VillagerProfession;
 
 public class GoToWorkTask extends Task<VillagerEntity> {
 	public GoToWorkTask() {
-		super(ImmutableMap.of(MemoryModuleType.JOB_SITE, MemoryModuleState.VALUE_PRESENT));
+		super(ImmutableMap.of(MemoryModuleType.field_18439, MemoryModuleState.field_18456));
 	}
 
-	protected boolean shouldRun(ServerWorld serverWorld, VillagerEntity villagerEntity) {
-		return villagerEntity.getVillagerData().getProfession() == VillagerProfession.NONE;
+	protected boolean method_18987(ServerWorld serverWorld, VillagerEntity villagerEntity) {
+		return villagerEntity.getVillagerData().getProfession() == VillagerProfession.field_17051;
 	}
 
-	protected void run(ServerWorld serverWorld, VillagerEntity villagerEntity, long l) {
-		GlobalPos globalPos = (GlobalPos)villagerEntity.getBrain().getOptionalMemory(MemoryModuleType.JOB_SITE).get();
+	protected void method_18988(ServerWorld serverWorld, VillagerEntity villagerEntity, long l) {
+		GlobalPos globalPos = (GlobalPos)villagerEntity.getBrain().getOptionalMemory(MemoryModuleType.field_18439).get();
 		MinecraftServer minecraftServer = serverWorld.getServer();
 		minecraftServer.getWorld(globalPos.getDimension())
 			.getPointOfInterestStorage()

@@ -18,18 +18,18 @@ public class OtherClientPlayerEntity extends AbstractClientPlayerEntity {
 	}
 
 	@Override
-	public boolean shouldRender(double distance) {
-		double d = this.getBoundingBox().getAverageSideLength() * 10.0;
-		if (Double.isNaN(d)) {
-			d = 1.0;
+	public boolean shouldRenderAtDistance(double d) {
+		double e = this.getBoundingBox().averageDimension() * 10.0;
+		if (Double.isNaN(e)) {
+			e = 1.0;
 		}
 
-		d *= 64.0 * getRenderDistanceMultiplier();
-		return distance < d * d;
+		e *= 64.0 * getRenderDistanceMultiplier();
+		return d < e * e;
 	}
 
 	@Override
-	public boolean damage(DamageSource source, float amount) {
+	public boolean damage(DamageSource damageSource, float f) {
 		return true;
 	}
 
@@ -57,7 +57,7 @@ public class OtherClientPlayerEntity extends AbstractClientPlayerEntity {
 			this.yaw = (float)((double)this.yaw + MathHelper.wrapDegrees(this.field_6284 - (double)this.yaw) / (double)this.field_6210);
 			this.pitch = (float)((double)this.pitch + (this.field_6221 - (double)this.pitch) / (double)this.field_6210);
 			this.field_6210--;
-			this.updatePosition(d, e, f);
+			this.setPosition(d, e, f);
 			this.setRotation(this.yaw, this.pitch);
 		}
 
@@ -83,7 +83,7 @@ public class OtherClientPlayerEntity extends AbstractClientPlayerEntity {
 
 		this.field_7483 = this.field_7483 + (g - this.field_7483) * 0.4F;
 		this.world.getProfiler().push("push");
-		this.tickCramming();
+		this.tickPushing();
 		this.world.getProfiler().pop();
 	}
 
@@ -92,7 +92,7 @@ public class OtherClientPlayerEntity extends AbstractClientPlayerEntity {
 	}
 
 	@Override
-	public void sendMessage(Text message) {
-		MinecraftClient.getInstance().inGameHud.getChatHud().addMessage(message);
+	public void sendMessage(Text text) {
+		MinecraftClient.getInstance().inGameHud.getChatHud().addMessage(text);
 	}
 }

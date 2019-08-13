@@ -18,17 +18,19 @@ public class BiomeSourceType<C extends BiomeSourceConfig, T extends BiomeSource>
 	private final Function<C, T> biomeSource;
 	private final Supplier<C> config;
 
-	private static <C extends BiomeSourceConfig, T extends BiomeSource> BiomeSourceType<C, T> register(String id, Function<C, T> biomeSource, Supplier<C> config) {
-		return Registry.register(Registry.BIOME_SOURCE_TYPE, id, new BiomeSourceType<>(biomeSource, config));
+	private static <C extends BiomeSourceConfig, T extends BiomeSource> BiomeSourceType<C, T> register(
+		String string, Function<C, T> function, Supplier<C> supplier
+	) {
+		return Registry.register(Registry.BIOME_SOURCE_TYPE, string, new BiomeSourceType<>(function, supplier));
 	}
 
-	public BiomeSourceType(Function<C, T> biomeSource, Supplier<C> config) {
-		this.biomeSource = biomeSource;
-		this.config = config;
+	public BiomeSourceType(Function<C, T> function, Supplier<C> supplier) {
+		this.biomeSource = function;
+		this.config = supplier;
 	}
 
-	public T applyConfig(C config) {
-		return (T)this.biomeSource.apply(config);
+	public T applyConfig(C biomeSourceConfig) {
+		return (T)this.biomeSource.apply(biomeSourceConfig);
 	}
 
 	public C getConfig() {

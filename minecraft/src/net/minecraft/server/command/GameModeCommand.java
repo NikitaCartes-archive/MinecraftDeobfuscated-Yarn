@@ -13,12 +13,12 @@ import net.minecraft.world.GameMode;
 import net.minecraft.world.GameRules;
 
 public class GameModeCommand {
-	public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
+	public static void register(CommandDispatcher<ServerCommandSource> commandDispatcher) {
 		LiteralArgumentBuilder<ServerCommandSource> literalArgumentBuilder = CommandManager.literal("gamemode")
 			.requires(serverCommandSource -> serverCommandSource.hasPermissionLevel(2));
 
 		for (GameMode gameMode : GameMode.values()) {
-			if (gameMode != GameMode.NOT_SET) {
+			if (gameMode != GameMode.field_9218) {
 				literalArgumentBuilder.then(
 					CommandManager.literal(gameMode.getName())
 						.executes(commandContext -> execute(commandContext, Collections.singleton(commandContext.getSource().getPlayer()), gameMode))
@@ -30,29 +30,29 @@ public class GameModeCommand {
 			}
 		}
 
-		dispatcher.register(literalArgumentBuilder);
+		commandDispatcher.register(literalArgumentBuilder);
 	}
 
-	private static void setGameMode(ServerCommandSource source, ServerPlayerEntity player, GameMode gameMode) {
+	private static void setGameMode(ServerCommandSource serverCommandSource, ServerPlayerEntity serverPlayerEntity, GameMode gameMode) {
 		Text text = new TranslatableText("gameMode." + gameMode.getName());
-		if (source.getEntity() == player) {
-			source.sendFeedback(new TranslatableText("commands.gamemode.success.self", text), true);
+		if (serverCommandSource.getEntity() == serverPlayerEntity) {
+			serverCommandSource.sendFeedback(new TranslatableText("commands.gamemode.success.self", text), true);
 		} else {
-			if (source.getWorld().getGameRules().getBoolean(GameRules.SEND_COMMAND_FEEDBACK)) {
-				player.sendMessage(new TranslatableText("gameMode.changed", text));
+			if (serverCommandSource.getWorld().getGameRules().getBoolean(GameRules.field_19400)) {
+				serverPlayerEntity.sendMessage(new TranslatableText("gameMode.changed", text));
 			}
 
-			source.sendFeedback(new TranslatableText("commands.gamemode.success.other", player.getDisplayName(), text), true);
+			serverCommandSource.sendFeedback(new TranslatableText("commands.gamemode.success.other", serverPlayerEntity.getDisplayName(), text), true);
 		}
 	}
 
-	private static int execute(CommandContext<ServerCommandSource> context, Collection<ServerPlayerEntity> targets, GameMode gameMode) {
+	private static int execute(CommandContext<ServerCommandSource> commandContext, Collection<ServerPlayerEntity> collection, GameMode gameMode) {
 		int i = 0;
 
-		for (ServerPlayerEntity serverPlayerEntity : targets) {
+		for (ServerPlayerEntity serverPlayerEntity : collection) {
 			if (serverPlayerEntity.interactionManager.getGameMode() != gameMode) {
 				serverPlayerEntity.setGameMode(gameMode);
-				setGameMode(context.getSource(), serverPlayerEntity, gameMode);
+				setGameMode(commandContext.getSource(), serverPlayerEntity, gameMode);
 				i++;
 			}
 		}

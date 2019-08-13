@@ -24,7 +24,7 @@ public class RealmsUtil {
 	public static LoadingCache<String, GameProfile> gameProfileCache = CacheBuilder.newBuilder()
 		.expireAfterWrite(60L, TimeUnit.MINUTES)
 		.build(new CacheLoader<String, GameProfile>() {
-			public GameProfile load(String string) throws Exception {
+			public GameProfile method_21571(String string) throws Exception {
 				GameProfile gameProfile = RealmsUtil.sessionService.fillProfileProperties(new GameProfile(UUIDTypeAdapter.fromString(string), null), false);
 				if (gameProfile == null) {
 					throw new Exception("Couldn't get profile");
@@ -34,29 +34,29 @@ public class RealmsUtil {
 			}
 		});
 
-	public static String uuidToName(String uuid) throws Exception {
-		GameProfile gameProfile = gameProfileCache.get(uuid);
+	public static String uuidToName(String string) throws Exception {
+		GameProfile gameProfile = gameProfileCache.get(string);
 		return gameProfile.getName();
 	}
 
-	public static Map<Type, MinecraftProfileTexture> getTextures(String uuid) {
+	public static Map<Type, MinecraftProfileTexture> getTextures(String string) {
 		try {
-			GameProfile gameProfile = gameProfileCache.get(uuid);
+			GameProfile gameProfile = gameProfileCache.get(string);
 			return sessionService.getTextures(gameProfile, false);
 		} catch (Exception var2) {
 			return new HashMap();
 		}
 	}
 
-	public static void browseTo(String uri) {
-		Realms.openUri(uri);
+	public static void browseTo(String string) {
+		Realms.openUri(string);
 	}
 
-	public static String convertToAgePresentation(Long timeDiff) {
-		if (timeDiff < 0L) {
+	public static String convertToAgePresentation(Long long_) {
+		if (long_ < 0L) {
 			return "right now";
 		} else {
-			long l = timeDiff / 1000L;
+			long l = long_ / 1000L;
 			if (l < 60L) {
 				return (l == 1L ? "1 second" : l + " seconds") + " ago";
 			} else if (l < 3600L) {

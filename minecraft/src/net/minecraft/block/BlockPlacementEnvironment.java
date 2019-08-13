@@ -1,7 +1,7 @@
 package net.minecraft.block;
 
 public enum BlockPlacementEnvironment {
-	LAND,
-	WATER,
-	AIR;
+	field_50,
+	field_48,
+	field_51;
 }

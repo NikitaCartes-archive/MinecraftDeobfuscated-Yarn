@@ -24,27 +24,28 @@ public class EntityAttributes {
 		.setTracked(true);
 	public static final EntityAttribute ATTACK_DAMAGE = new ClampedEntityAttribute(null, "generic.attackDamage", 2.0, 0.0, 2048.0);
 	public static final EntityAttribute ATTACK_KNOCKBACK = new ClampedEntityAttribute(null, "generic.attackKnockback", 0.0, 0.0, 5.0);
-	public static final EntityAttribute ATTACK_SPEED = new ClampedEntityAttribute(null, "generic.attackSpeed", 4.0, 0.0, 1024.0).setTracked(true);
+	public static final EntityAttribute ATTACK_SPEED = new ClampedEntityAttribute(null, "generic.attackSpeed", 4.0, 0.1F, 1024.0).setTracked(true);
 	public static final EntityAttribute ARMOR = new ClampedEntityAttribute(null, "generic.armor", 0.0, 0.0, 30.0).setTracked(true);
 	public static final EntityAttribute ARMOR_TOUGHNESS = new ClampedEntityAttribute(null, "generic.armorToughness", 0.0, 0.0, 20.0).setTracked(true);
 	public static final EntityAttribute LUCK = new ClampedEntityAttribute(null, "generic.luck", 0.0, -1024.0, 1024.0).setTracked(true);
+	public static final EntityAttribute field_20339 = new ClampedEntityAttribute(null, "generic.attackReach", 3.0, 0.0, 6.0).setTracked(true);
 
-	public static ListTag toTag(AbstractEntityAttributeContainer container) {
+	public static ListTag toTag(AbstractEntityAttributeContainer abstractEntityAttributeContainer) {
 		ListTag listTag = new ListTag();
 
-		for (EntityAttributeInstance entityAttributeInstance : container.values()) {
+		for (EntityAttributeInstance entityAttributeInstance : abstractEntityAttributeContainer.values()) {
 			listTag.add(toTag(entityAttributeInstance));
 		}
 
 		return listTag;
 	}
 
-	private static CompoundTag toTag(EntityAttributeInstance instance) {
+	private static CompoundTag toTag(EntityAttributeInstance entityAttributeInstance) {
 		CompoundTag compoundTag = new CompoundTag();
-		EntityAttribute entityAttribute = instance.getAttribute();
+		EntityAttribute entityAttribute = entityAttributeInstance.getAttribute();
 		compoundTag.putString("Name", entityAttribute.getId());
-		compoundTag.putDouble("Base", instance.getBaseValue());
-		Collection<EntityAttributeModifier> collection = instance.getModifiers();
+		compoundTag.putDouble("Base", entityAttributeInstance.getBaseValue());
+		Collection<EntityAttributeModifier> collection = entityAttributeInstance.getModifiers();
 		if (collection != null && !collection.isEmpty()) {
 			ListTag listTag = new ListTag();
 
@@ -60,19 +61,19 @@ public class EntityAttributes {
 		return compoundTag;
 	}
 
-	public static CompoundTag toTag(EntityAttributeModifier modifier) {
+	public static CompoundTag toTag(EntityAttributeModifier entityAttributeModifier) {
 		CompoundTag compoundTag = new CompoundTag();
-		compoundTag.putString("Name", modifier.getName());
-		compoundTag.putDouble("Amount", modifier.getAmount());
-		compoundTag.putInt("Operation", modifier.getOperation().getId());
-		compoundTag.putUuid("UUID", modifier.getId());
+		compoundTag.putString("Name", entityAttributeModifier.getName());
+		compoundTag.putDouble("Amount", entityAttributeModifier.getAmount());
+		compoundTag.putInt("Operation", entityAttributeModifier.getOperation().getId());
+		compoundTag.putUuid("UUID", entityAttributeModifier.getId());
 		return compoundTag;
 	}
 
-	public static void fromTag(AbstractEntityAttributeContainer container, ListTag tag) {
-		for (int i = 0; i < tag.size(); i++) {
-			CompoundTag compoundTag = tag.getCompound(i);
-			EntityAttributeInstance entityAttributeInstance = container.get(compoundTag.getString("Name"));
+	public static void fromTag(AbstractEntityAttributeContainer abstractEntityAttributeContainer, ListTag listTag) {
+		for (int i = 0; i < listTag.size(); i++) {
+			CompoundTag compoundTag = listTag.getCompoundTag(i);
+			EntityAttributeInstance entityAttributeInstance = abstractEntityAttributeContainer.get(compoundTag.getString("Name"));
 			if (entityAttributeInstance == null) {
 				LOGGER.warn("Ignoring unknown attribute '{}'", compoundTag.getString("Name"));
 			} else {
@@ -81,32 +82,32 @@ public class EntityAttributes {
 		}
 	}
 
-	private static void fromTag(EntityAttributeInstance instance, CompoundTag tag) {
-		instance.setBaseValue(tag.getDouble("Base"));
-		if (tag.contains("Modifiers", 9)) {
-			ListTag listTag = tag.getList("Modifiers", 10);
+	private static void fromTag(EntityAttributeInstance entityAttributeInstance, CompoundTag compoundTag) {
+		entityAttributeInstance.setBaseValue(compoundTag.getDouble("Base"));
+		if (compoundTag.containsKey("Modifiers", 9)) {
+			ListTag listTag = compoundTag.getList("Modifiers", 10);
 
 			for (int i = 0; i < listTag.size(); i++) {
-				EntityAttributeModifier entityAttributeModifier = createFromTag(listTag.getCompound(i));
+				EntityAttributeModifier entityAttributeModifier = createFromTag(listTag.getCompoundTag(i));
 				if (entityAttributeModifier != null) {
-					EntityAttributeModifier entityAttributeModifier2 = instance.getModifier(entityAttributeModifier.getId());
+					EntityAttributeModifier entityAttributeModifier2 = entityAttributeInstance.getModifier(entityAttributeModifier.getId());
 					if (entityAttributeModifier2 != null) {
-						instance.removeModifier(entityAttributeModifier2);
+						entityAttributeInstance.removeModifier(entityAttributeModifier2);
 					}
 
-					instance.addModifier(entityAttributeModifier);
+					entityAttributeInstance.addModifier(entityAttributeModifier);
 				}
 			}
 		}
 	}
 
 	@Nullable
-	public static EntityAttributeModifier createFromTag(CompoundTag tag) {
-		UUID uUID = tag.getUuid("UUID");
+	public static EntityAttributeModifier createFromTag(CompoundTag compoundTag) {
+		UUID uUID = compoundTag.getUuid("UUID");
 
 		try {
-			EntityAttributeModifier.Operation operation = EntityAttributeModifier.Operation.fromId(tag.getInt("Operation"));
-			return new EntityAttributeModifier(uUID, tag.getString("Name"), tag.getDouble("Amount"), operation);
+			EntityAttributeModifier.Operation operation = EntityAttributeModifier.Operation.fromId(compoundTag.getInt("Operation"));
+			return new EntityAttributeModifier(uUID, compoundTag.getString("Name"), compoundTag.getDouble("Amount"), operation);
 		} catch (Exception var3) {
 			LOGGER.warn("Unable to create attribute: {}", var3.getMessage());
 			return null;

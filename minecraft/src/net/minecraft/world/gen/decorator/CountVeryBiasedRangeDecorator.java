@@ -12,7 +12,7 @@ public class CountVeryBiasedRangeDecorator extends SimpleDecorator<RangeDecorato
 		super(function);
 	}
 
-	public Stream<BlockPos> getPositions(Random random, RangeDecoratorConfig rangeDecoratorConfig, BlockPos blockPos) {
+	public Stream<BlockPos> method_15917(Random random, RangeDecoratorConfig rangeDecoratorConfig, BlockPos blockPos) {
 		return IntStream.range(0, rangeDecoratorConfig.count)
 			.mapToObj(
 				i -> {

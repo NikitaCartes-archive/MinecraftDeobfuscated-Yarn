@@ -14,21 +14,21 @@ public class StartRaidTask extends Task<LivingEntity> {
 	}
 
 	@Override
-	protected boolean shouldRun(ServerWorld world, LivingEntity entity) {
-		return world.random.nextInt(20) == 0;
+	protected boolean shouldRun(ServerWorld serverWorld, LivingEntity livingEntity) {
+		return serverWorld.random.nextInt(20) == 0;
 	}
 
 	@Override
-	protected void run(ServerWorld world, LivingEntity entity, long time) {
-		Brain<?> brain = entity.getBrain();
-		Raid raid = world.getRaidAt(new BlockPos(entity));
+	protected void run(ServerWorld serverWorld, LivingEntity livingEntity, long l) {
+		Brain<?> brain = livingEntity.getBrain();
+		Raid raid = serverWorld.getRaidAt(new BlockPos(livingEntity));
 		if (raid != null) {
 			if (raid.hasSpawned() && !raid.isPreRaid()) {
-				brain.setDefaultActivity(Activity.RAID);
-				brain.resetPossibleActivities(Activity.RAID);
+				brain.setDefaultActivity(Activity.field_19041);
+				brain.resetPossibleActivities(Activity.field_19041);
 			} else {
-				brain.setDefaultActivity(Activity.PRE_RAID);
-				brain.resetPossibleActivities(Activity.PRE_RAID);
+				brain.setDefaultActivity(Activity.field_19042);
+				brain.resetPossibleActivities(Activity.field_19042);
 			}
 		}
 	}

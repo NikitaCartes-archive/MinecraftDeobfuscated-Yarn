@@ -12,11 +12,11 @@ import net.minecraft.world.gen.decorator.CountDecoratorConfig;
 import net.minecraft.world.gen.decorator.Decorator;
 import net.minecraft.world.gen.decorator.DecoratorConfig;
 import net.minecraft.world.gen.decorator.RangeDecoratorConfig;
+import net.minecraft.world.gen.feature.BushFeatureConfig;
 import net.minecraft.world.gen.feature.Feature;
 import net.minecraft.world.gen.feature.FeatureConfig;
 import net.minecraft.world.gen.feature.NetherSpringFeatureConfig;
 import net.minecraft.world.gen.feature.OreFeatureConfig;
-import net.minecraft.world.gen.feature.SingleStateFeatureConfig;
 import net.minecraft.world.gen.feature.SpringFeatureConfig;
 import net.minecraft.world.gen.surfacebuilder.SurfaceBuilder;
 
@@ -24,9 +24,9 @@ public final class NetherBiome extends Biome {
 	protected NetherBiome() {
 		super(
 			new Biome.Settings()
-				.configureSurfaceBuilder(SurfaceBuilder.NETHER, SurfaceBuilder.NETHER_CONFIG)
+				.configureSurfaceBuilder(SurfaceBuilder.field_15693, SurfaceBuilder.NETHER_CONFIG)
 				.precipitation(Biome.Precipitation.NONE)
-				.category(Biome.Category.NETHER)
+				.category(Biome.Category.field_9366)
 				.depth(0.1F)
 				.scale(0.2F)
 				.temperature(2.0F)
@@ -36,72 +36,68 @@ public final class NetherBiome extends Biome {
 				.parent(null)
 		);
 		this.addStructureFeature(Feature.NETHER_BRIDGE, FeatureConfig.DEFAULT);
-		this.addCarver(GenerationStep.Carver.AIR, configureCarver(Carver.HELL_CAVE, new ProbabilityConfig(0.2F)));
+		this.addCarver(GenerationStep.Carver.field_13169, configureCarver(Carver.field_13297, new ProbabilityConfig(0.2F)));
 		this.addFeature(
-			GenerationStep.Feature.VEGETAL_DECORATION,
+			GenerationStep.Feature.field_13178,
 			configureFeature(
-				Feature.SPRING_FEATURE, new SpringFeatureConfig(Fluids.LAVA.getDefaultState()), Decorator.COUNT_VERY_BIASED_RANGE, new RangeDecoratorConfig(20, 8, 16, 256)
+				Feature.field_13513, new SpringFeatureConfig(Fluids.LAVA.getDefaultState()), Decorator.field_14266, new RangeDecoratorConfig(20, 8, 16, 256)
 			)
 		);
 		DefaultBiomeFeatures.addDefaultMushrooms(this);
 		this.addFeature(
-			GenerationStep.Feature.UNDERGROUND_DECORATION, configureFeature(Feature.NETHER_BRIDGE, FeatureConfig.DEFAULT, Decorator.NOPE, DecoratorConfig.DEFAULT)
+			GenerationStep.Feature.field_13177, configureFeature(Feature.NETHER_BRIDGE, FeatureConfig.DEFAULT, Decorator.field_14250, DecoratorConfig.DEFAULT)
 		);
 		this.addFeature(
-			GenerationStep.Feature.UNDERGROUND_DECORATION,
-			configureFeature(Feature.NETHER_SPRING, new NetherSpringFeatureConfig(false), Decorator.COUNT_RANGE, new RangeDecoratorConfig(8, 4, 8, 128))
+			GenerationStep.Feature.field_13177,
+			configureFeature(Feature.field_13563, new NetherSpringFeatureConfig(false), Decorator.field_14241, new RangeDecoratorConfig(8, 4, 8, 128))
 		);
 		this.addFeature(
-			GenerationStep.Feature.UNDERGROUND_DECORATION, configureFeature(Feature.HELL_FIRE, FeatureConfig.DEFAULT, Decorator.HELL_FIRE, new CountDecoratorConfig(10))
+			GenerationStep.Feature.field_13177, configureFeature(Feature.field_13523, FeatureConfig.DEFAULT, Decorator.field_14235, new CountDecoratorConfig(10))
 		);
 		this.addFeature(
-			GenerationStep.Feature.UNDERGROUND_DECORATION,
-			configureFeature(Feature.GLOWSTONE_BLOB, FeatureConfig.DEFAULT, Decorator.LIGHT_GEM_CHANCE, new CountDecoratorConfig(10))
+			GenerationStep.Feature.field_13177, configureFeature(Feature.field_13568, FeatureConfig.DEFAULT, Decorator.field_14256, new CountDecoratorConfig(10))
 		);
 		this.addFeature(
-			GenerationStep.Feature.UNDERGROUND_DECORATION,
-			configureFeature(Feature.GLOWSTONE_BLOB, FeatureConfig.DEFAULT, Decorator.COUNT_RANGE, new RangeDecoratorConfig(10, 0, 0, 128))
+			GenerationStep.Feature.field_13177,
+			configureFeature(Feature.field_13568, FeatureConfig.DEFAULT, Decorator.field_14241, new RangeDecoratorConfig(10, 0, 0, 128))
 		);
 		this.addFeature(
-			GenerationStep.Feature.UNDERGROUND_DECORATION,
+			GenerationStep.Feature.field_13177,
 			configureFeature(
-				Feature.BUSH,
-				new SingleStateFeatureConfig(Blocks.BROWN_MUSHROOM.getDefaultState()),
-				Decorator.CHANCE_RANGE,
-				new ChanceRangeDecoratorConfig(0.5F, 0, 0, 128)
+				Feature.field_13519, new BushFeatureConfig(Blocks.field_10251.getDefaultState()), Decorator.field_14248, new ChanceRangeDecoratorConfig(0.5F, 0, 0, 128)
 			)
 		);
 		this.addFeature(
-			GenerationStep.Feature.UNDERGROUND_DECORATION,
+			GenerationStep.Feature.field_13177,
 			configureFeature(
-				Feature.BUSH, new SingleStateFeatureConfig(Blocks.RED_MUSHROOM.getDefaultState()), Decorator.CHANCE_RANGE, new ChanceRangeDecoratorConfig(0.5F, 0, 0, 128)
+				Feature.field_13519, new BushFeatureConfig(Blocks.field_10559.getDefaultState()), Decorator.field_14248, new ChanceRangeDecoratorConfig(0.5F, 0, 0, 128)
 			)
 		);
 		this.addFeature(
-			GenerationStep.Feature.UNDERGROUND_DECORATION,
+			GenerationStep.Feature.field_13177,
 			configureFeature(
-				Feature.ORE,
-				new OreFeatureConfig(OreFeatureConfig.Target.NETHERRACK, Blocks.NETHER_QUARTZ_ORE.getDefaultState(), 14),
-				Decorator.COUNT_RANGE,
+				Feature.field_13517,
+				new OreFeatureConfig(OreFeatureConfig.Target.field_13727, Blocks.field_10213.getDefaultState(), 14),
+				Decorator.field_14241,
 				new RangeDecoratorConfig(16, 10, 20, 128)
 			)
 		);
 		this.addFeature(
-			GenerationStep.Feature.UNDERGROUND_DECORATION,
+			GenerationStep.Feature.field_13177,
 			configureFeature(
-				Feature.ORE,
-				new OreFeatureConfig(OreFeatureConfig.Target.NETHERRACK, Blocks.MAGMA_BLOCK.getDefaultState(), 33),
-				Decorator.MAGMA,
+				Feature.field_13517,
+				new OreFeatureConfig(OreFeatureConfig.Target.field_13727, Blocks.field_10092.getDefaultState(), 33),
+				Decorator.field_14244,
 				new CountDecoratorConfig(4)
 			)
 		);
 		this.addFeature(
-			GenerationStep.Feature.UNDERGROUND_DECORATION,
-			configureFeature(Feature.NETHER_SPRING, new NetherSpringFeatureConfig(true), Decorator.COUNT_RANGE, new RangeDecoratorConfig(16, 10, 20, 128))
+			GenerationStep.Feature.field_13177,
+			configureFeature(Feature.field_13563, new NetherSpringFeatureConfig(true), Decorator.field_14241, new RangeDecoratorConfig(16, 10, 20, 128))
 		);
-		this.addSpawn(EntityCategory.MONSTER, new Biome.SpawnEntry(EntityType.GHAST, 50, 4, 4));
-		this.addSpawn(EntityCategory.MONSTER, new Biome.SpawnEntry(EntityType.ZOMBIE_PIGMAN, 100, 4, 4));
-		this.addSpawn(EntityCategory.MONSTER, new Biome.SpawnEntry(EntityType.MAGMA_CUBE, 2, 4, 4));
-		this.addSpawn(EntityCategory.MONSTER, new Biome.SpawnEntry(EntityType.ENDERMAN, 1, 4, 4));
+		this.addSpawn(EntityCategory.field_6302, new Biome.SpawnEntry(EntityType.field_6107, 50, 4, 4));
+		this.addSpawn(EntityCategory.field_6302, new Biome.SpawnEntry(EntityType.field_6050, 100, 4, 4));
+		this.addSpawn(EntityCategory.field_6302, new Biome.SpawnEntry(EntityType.field_6102, 2, 4, 4));
+		this.addSpawn(EntityCategory.field_6302, new Biome.SpawnEntry(EntityType.field_6091, 1, 4, 4));
 	}
 }

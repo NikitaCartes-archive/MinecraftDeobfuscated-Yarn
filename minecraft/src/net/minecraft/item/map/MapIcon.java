@@ -14,11 +14,11 @@ public class MapIcon {
 	private byte rotation;
 	private final Text text;
 
-	public MapIcon(MapIcon.Type type, byte x, byte z, byte rotation, @Nullable Text text) {
+	public MapIcon(MapIcon.Type type, byte b, byte c, byte d, @Nullable Text text) {
 		this.type = type;
-		this.x = x;
-		this.z = z;
-		this.rotation = rotation;
+		this.x = b;
+		this.z = c;
+		this.rotation = d;
 		this.text = text;
 	}
 
@@ -53,13 +53,13 @@ public class MapIcon {
 		return this.text;
 	}
 
-	public boolean equals(Object o) {
-		if (this == o) {
+	public boolean equals(Object object) {
+		if (this == object) {
 			return true;
-		} else if (!(o instanceof MapIcon)) {
+		} else if (!(object instanceof MapIcon)) {
 			return false;
 		} else {
-			MapIcon mapIcon = (MapIcon)o;
+			MapIcon mapIcon = (MapIcon)object;
 			if (this.type != mapIcon.type) {
 				return false;
 			} else if (this.rotation != mapIcon.rotation) {
@@ -81,45 +81,45 @@ public class MapIcon {
 	}
 
 	public static enum Type {
-		PLAYER(false),
-		FRAME(true),
-		RED_MARKER(false),
-		BLUE_MARKER(false),
-		TARGET_X(true),
-		TARGET_POINT(true),
-		PLAYER_OFF_MAP(false),
-		PLAYER_OFF_LIMITS(false),
-		MANSION(true, 5393476),
-		MONUMENT(true, 3830373),
-		BANNER_WHITE(true),
-		BANNER_ORANGE(true),
-		BANNER_MAGENTA(true),
-		BANNER_LIGHT_BLUE(true),
-		BANNER_YELLOW(true),
-		BANNER_LIME(true),
-		BANNER_PINK(true),
-		BANNER_GRAY(true),
-		BANNER_LIGHT_GRAY(true),
-		BANNER_CYAN(true),
-		BANNER_PURPLE(true),
-		BANNER_BLUE(true),
-		BANNER_BROWN(true),
-		BANNER_GREEN(true),
-		BANNER_RED(true),
-		BANNER_BLACK(true),
-		RED_X(true);
+		field_91(false),
+		field_95(true),
+		field_89(false),
+		field_83(false),
+		field_84(true),
+		field_85(true),
+		field_86(false),
+		field_87(false),
+		field_88(true, 5393476),
+		field_98(true, 3830373),
+		field_96(true),
+		field_92(true),
+		field_97(true),
+		field_90(true),
+		field_93(true),
+		field_94(true),
+		field_100(true),
+		field_101(true),
+		field_107(true),
+		field_108(true),
+		field_104(true),
+		field_105(true),
+		field_106(true),
+		field_102(true),
+		field_99(true),
+		field_103(true),
+		field_110(true);
 
 		private final byte id = (byte)this.ordinal();
 		private final boolean alwaysRender;
 		private final int tintColor;
 
-		private Type(boolean renderNotHeld) {
-			this(renderNotHeld, -1);
+		private Type(boolean bl) {
+			this(bl, -1);
 		}
 
-		private Type(boolean alwaysRender, int tintColor) {
-			this.alwaysRender = alwaysRender;
-			this.tintColor = tintColor;
+		private Type(boolean bl, int j) {
+			this.alwaysRender = bl;
+			this.tintColor = j;
 		}
 
 		public byte getId() {
@@ -139,8 +139,8 @@ public class MapIcon {
 			return this.tintColor;
 		}
 
-		public static MapIcon.Type byId(byte id) {
-			return values()[MathHelper.clamp(id, 0, values().length - 1)];
+		public static MapIcon.Type byId(byte b) {
+			return values()[MathHelper.clamp(b, 0, values().length - 1)];
 		}
 	}
 }

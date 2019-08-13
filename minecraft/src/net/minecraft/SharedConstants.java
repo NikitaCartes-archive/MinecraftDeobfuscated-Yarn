@@ -8,7 +8,7 @@ import io.netty.util.ResourceLeakDetector.Level;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.command.TranslatableBuiltInExceptions;
-import net.minecraft.datafixer.schema.IdentifierNormalizingSchema;
+import net.minecraft.datafixers.schemas.SchemaIdentifierNormalize;
 
 public class SharedConstants {
 	public static final Level RESOURCE_LEAK_DETECTOR_DISABLED = Level.DISABLED;
@@ -16,14 +16,14 @@ public class SharedConstants {
 	public static final char[] INVALID_CHARS_LEVEL_NAME = new char[]{'/', '\n', '\r', '\t', '\u0000', '\f', '`', '?', '*', '\\', '<', '>', '|', '"', ':'};
 	private static GameVersion gameVersion;
 
-	public static boolean isValidChar(char chr) {
-		return chr != 167 && chr >= ' ' && chr != 127;
+	public static boolean isValidChar(char c) {
+		return c != 167 && c >= ' ' && c != 127;
 	}
 
-	public static String stripInvalidChars(String s) {
+	public static String stripInvalidChars(String string) {
 		StringBuilder stringBuilder = new StringBuilder();
 
-		for (char c : s.toCharArray()) {
+		for (char c : string.toCharArray()) {
 			if (isValidChar(c)) {
 				stringBuilder.append(c);
 			}
@@ -33,19 +33,19 @@ public class SharedConstants {
 	}
 
 	@Environment(EnvType.CLIENT)
-	public static String stripSupplementaryChars(String s) {
+	public static String stripSupplementaryChars(String string) {
 		StringBuilder stringBuilder = new StringBuilder();
 		int i = 0;
 
-		while (i < s.length()) {
-			int j = s.codePointAt(i);
+		while (i < string.length()) {
+			int j = string.codePointAt(i);
 			if (!Character.isSupplementaryCodePoint(j)) {
 				stringBuilder.appendCodePoint(j);
 			} else {
 				stringBuilder.append('�');
 			}
 
-			i = s.offsetByCodePoints(i, 1);
+			i = string.offsetByCodePoints(i, 1);
 		}
 
 		return stringBuilder.toString();
@@ -63,6 +63,6 @@ public class SharedConstants {
 		ResourceLeakDetector.setLevel(RESOURCE_LEAK_DETECTOR_DISABLED);
 		CommandSyntaxException.ENABLE_COMMAND_STACK_TRACES = false;
 		CommandSyntaxException.BUILT_IN_EXCEPTIONS = new TranslatableBuiltInExceptions();
-		NamespacedStringType.ENSURE_NAMESPACE = IdentifierNormalizingSchema::normalize;
+		NamespacedStringType.ENSURE_NAMESPACE = SchemaIdentifierNormalize::normalize;
 	}
 }

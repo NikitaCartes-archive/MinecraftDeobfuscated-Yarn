@@ -15,8 +15,8 @@ import net.minecraft.sound.SoundEvents;
 import net.minecraft.text.TranslatableText;
 
 public class GiveCommand {
-	public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
-		dispatcher.register(
+	public static void register(CommandDispatcher<ServerCommandSource> commandDispatcher) {
+		commandDispatcher.register(
 			CommandManager.literal("give")
 				.requires(serverCommandSource -> serverCommandSource.hasPermissionLevel(2))
 				.then(
@@ -47,14 +47,14 @@ public class GiveCommand {
 		);
 	}
 
-	private static int execute(ServerCommandSource source, ItemStackArgument item, Collection<ServerPlayerEntity> targets, int count) throws CommandSyntaxException {
-		for (ServerPlayerEntity serverPlayerEntity : targets) {
-			int i = count;
+	private static int execute(ServerCommandSource serverCommandSource, ItemStackArgument itemStackArgument, Collection<ServerPlayerEntity> collection, int i) throws CommandSyntaxException {
+		for (ServerPlayerEntity serverPlayerEntity : collection) {
+			int j = i;
 
-			while (i > 0) {
-				int j = Math.min(item.getItem().getMaxCount(), i);
-				i -= j;
-				ItemStack itemStack = item.createStack(j, false);
+			while (j > 0) {
+				int k = Math.min(itemStackArgument.getItem().getMaxCount(), j);
+				j -= k;
+				ItemStack itemStack = itemStackArgument.createStack(k, false);
 				boolean bl = serverPlayerEntity.inventory.insertStack(itemStack);
 				if (bl && itemStack.isEmpty()) {
 					itemStack.setCount(1);
@@ -69,10 +69,10 @@ public class GiveCommand {
 							serverPlayerEntity.x,
 							serverPlayerEntity.y,
 							serverPlayerEntity.z,
-							SoundEvents.ENTITY_ITEM_PICKUP,
+							SoundEvents.field_15197,
 							SoundCategory.PLAYERS,
 							0.2F,
-							((serverPlayerEntity.getRandom().nextFloat() - serverPlayerEntity.getRandom().nextFloat()) * 0.7F + 1.0F) * 2.0F
+							((serverPlayerEntity.getRand().nextFloat() - serverPlayerEntity.getRand().nextFloat()) * 0.7F + 1.0F) * 2.0F
 						);
 					serverPlayerEntity.playerContainer.sendContentUpdates();
 				} else {
@@ -85,17 +85,22 @@ public class GiveCommand {
 			}
 		}
 
-		if (targets.size() == 1) {
-			source.sendFeedback(
+		if (collection.size() == 1) {
+			serverCommandSource.sendFeedback(
 				new TranslatableText(
-					"commands.give.success.single", count, item.createStack(count, false).toHoverableText(), ((ServerPlayerEntity)targets.iterator().next()).getDisplayName()
+					"commands.give.success.single",
+					i,
+					itemStackArgument.createStack(i, false).toHoverableText(),
+					((ServerPlayerEntity)collection.iterator().next()).getDisplayName()
 				),
 				true
 			);
 		} else {
-			source.sendFeedback(new TranslatableText("commands.give.success.single", count, item.createStack(count, false).toHoverableText(), targets.size()), true);
+			serverCommandSource.sendFeedback(
+				new TranslatableText("commands.give.success.single", i, itemStackArgument.createStack(i, false).toHoverableText(), collection.size()), true
+			);
 		}
 
-		return targets.size();
+		return collection.size();
 	}
 }

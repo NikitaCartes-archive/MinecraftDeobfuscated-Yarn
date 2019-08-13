@@ -7,6 +7,7 @@ import java.util.Set;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.class_4459;
 import net.minecraft.entity.Entity;
 import net.minecraft.util.PacketByteBuf;
 import net.minecraft.util.math.BlockPos;
@@ -17,7 +18,7 @@ public class Path {
 	private PathNode[] field_57 = new PathNode[0];
 	private PathNode[] field_55 = new PathNode[0];
 	@Environment(EnvType.CLIENT)
-	private Set<TargetPathNode> field_20300;
+	private Set<class_4459> field_20300;
 	private int currentNodeIndex;
 	private final BlockPos field_20301;
 	private final float field_20302;
@@ -43,22 +44,22 @@ public class Path {
 		return !this.nodes.isEmpty() ? (PathNode)this.nodes.get(this.nodes.size() - 1) : null;
 	}
 
-	public PathNode getNode(int index) {
-		return (PathNode)this.nodes.get(index);
+	public PathNode getNode(int i) {
+		return (PathNode)this.nodes.get(i);
 	}
 
 	public List<PathNode> getNodes() {
 		return this.nodes;
 	}
 
-	public void setLength(int length) {
-		if (this.nodes.size() > length) {
-			this.nodes.subList(length, this.nodes.size()).clear();
+	public void setLength(int i) {
+		if (this.nodes.size() > i) {
+			this.nodes.subList(i, this.nodes.size()).clear();
 		}
 	}
 
-	public void setNode(int index, PathNode node) {
-		this.nodes.set(index, node);
+	public void setNode(int i, PathNode pathNode) {
+		this.nodes.set(i, pathNode);
 	}
 
 	public int getLength() {
@@ -69,12 +70,12 @@ public class Path {
 		return this.currentNodeIndex;
 	}
 
-	public void setCurrentNodeIndex(int index) {
-		this.currentNodeIndex = index;
+	public void setCurrentNodeIndex(int i) {
+		this.currentNodeIndex = i;
 	}
 
-	public Vec3d getNodePosition(Entity entity, int index) {
-		PathNode pathNode = (PathNode)this.nodes.get(index);
+	public Vec3d getNodePosition(Entity entity, int i) {
+		PathNode pathNode = (PathNode)this.nodes.get(i);
 		double d = (double)pathNode.x + (double)((int)(entity.getWidth() + 1.0F)) * 0.5;
 		double e = (double)pathNode.y;
 		double f = (double)pathNode.z + (double)((int)(entity.getWidth() + 1.0F)) * 0.5;
@@ -123,34 +124,34 @@ public class Path {
 	}
 
 	@Environment(EnvType.CLIENT)
-	public static Path fromBuffer(PacketByteBuf buffer) {
-		boolean bl = buffer.readBoolean();
-		int i = buffer.readInt();
-		int j = buffer.readInt();
-		Set<TargetPathNode> set = Sets.<TargetPathNode>newHashSet();
+	public static Path fromBuffer(PacketByteBuf packetByteBuf) {
+		boolean bl = packetByteBuf.readBoolean();
+		int i = packetByteBuf.readInt();
+		int j = packetByteBuf.readInt();
+		Set<class_4459> set = Sets.<class_4459>newHashSet();
 
 		for (int k = 0; k < j; k++) {
-			set.add(TargetPathNode.fromBuffer(buffer));
+			set.add(class_4459.method_21663(packetByteBuf));
 		}
 
-		BlockPos blockPos = new BlockPos(buffer.readInt(), buffer.readInt(), buffer.readInt());
+		BlockPos blockPos = new BlockPos(packetByteBuf.readInt(), packetByteBuf.readInt(), packetByteBuf.readInt());
 		List<PathNode> list = Lists.<PathNode>newArrayList();
-		int l = buffer.readInt();
+		int l = packetByteBuf.readInt();
 
 		for (int m = 0; m < l; m++) {
-			list.add(PathNode.fromBuffer(buffer));
+			list.add(PathNode.fromBuffer(packetByteBuf));
 		}
 
-		PathNode[] pathNodes = new PathNode[buffer.readInt()];
+		PathNode[] pathNodes = new PathNode[packetByteBuf.readInt()];
 
 		for (int n = 0; n < pathNodes.length; n++) {
-			pathNodes[n] = PathNode.fromBuffer(buffer);
+			pathNodes[n] = PathNode.fromBuffer(packetByteBuf);
 		}
 
-		PathNode[] pathNodes2 = new PathNode[buffer.readInt()];
+		PathNode[] pathNodes2 = new PathNode[packetByteBuf.readInt()];
 
 		for (int o = 0; o < pathNodes2.length; o++) {
-			pathNodes2[o] = PathNode.fromBuffer(buffer);
+			pathNodes2[o] = PathNode.fromBuffer(packetByteBuf);
 		}
 
 		Path path = new Path(list, blockPos, bl);

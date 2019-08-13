@@ -10,9 +10,9 @@ public class IdListPalette<T> implements Palette<T> {
 	private final IdList<T> idList;
 	private final T fallback;
 
-	public IdListPalette(IdList<T> idList, T defaultValue) {
+	public IdListPalette(IdList<T> idList, T object) {
 		this.idList = idList;
-		this.fallback = defaultValue;
+		this.fallback = object;
 	}
 
 	@Override
@@ -27,18 +27,18 @@ public class IdListPalette<T> implements Palette<T> {
 	}
 
 	@Override
-	public T getByIndex(int index) {
-		T object = this.idList.get(index);
+	public T getByIndex(int i) {
+		T object = this.idList.get(i);
 		return object == null ? this.fallback : object;
 	}
 
 	@Environment(EnvType.CLIENT)
 	@Override
-	public void fromPacket(PacketByteBuf buf) {
+	public void fromPacket(PacketByteBuf packetByteBuf) {
 	}
 
 	@Override
-	public void toPacket(PacketByteBuf buf) {
+	public void toPacket(PacketByteBuf packetByteBuf) {
 	}
 
 	@Override
@@ -47,6 +47,6 @@ public class IdListPalette<T> implements Palette<T> {
 	}
 
 	@Override
-	public void fromTag(ListTag tag) {
+	public void fromTag(ListTag listTag) {
 	}
 }

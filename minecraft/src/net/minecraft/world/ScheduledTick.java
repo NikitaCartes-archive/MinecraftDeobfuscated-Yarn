@@ -1,6 +1,7 @@
 package net.minecraft.world;
 
 import java.util.Comparator;
+import net.minecraft.util.TaskPriority;
 import net.minecraft.util.math.BlockPos;
 
 public class ScheduledTick<T> {
@@ -8,26 +9,26 @@ public class ScheduledTick<T> {
 	private final T object;
 	public final BlockPos pos;
 	public final long time;
-	public final TickPriority priority;
+	public final TaskPriority priority;
 	private final long id;
 
-	public ScheduledTick(BlockPos pos, T t) {
-		this(pos, t, 0L, TickPriority.NORMAL);
+	public ScheduledTick(BlockPos blockPos, T object) {
+		this(blockPos, object, 0L, TaskPriority.field_9314);
 	}
 
-	public ScheduledTick(BlockPos pos, T t, long time, TickPriority priority) {
+	public ScheduledTick(BlockPos blockPos, T object, long l, TaskPriority taskPriority) {
 		this.id = idCounter++;
-		this.pos = pos.toImmutable();
-		this.object = t;
-		this.time = time;
-		this.priority = priority;
+		this.pos = blockPos.toImmutable();
+		this.object = object;
+		this.time = l;
+		this.priority = taskPriority;
 	}
 
-	public boolean equals(Object o) {
-		if (!(o instanceof ScheduledTick)) {
+	public boolean equals(Object object) {
+		if (!(object instanceof ScheduledTick)) {
 			return false;
 		} else {
-			ScheduledTick<?> scheduledTick = (ScheduledTick<?>)o;
+			ScheduledTick<?> scheduledTick = (ScheduledTick<?>)object;
 			return this.pos.equals(scheduledTick.pos) && this.object == scheduledTick.object;
 		}
 	}

@@ -7,5 +7,5 @@ import net.minecraft.recipe.Recipe;
 
 @Environment(EnvType.CLIENT)
 public interface RecipeDisplayListener {
-	void onRecipesDisplayed(List<Recipe<?>> recipes);
+	void onRecipesDisplayed(List<Recipe<?>> list);
 }

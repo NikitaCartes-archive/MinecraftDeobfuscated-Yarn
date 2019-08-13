@@ -25,14 +25,14 @@ public class KnowledgeBookItem extends Item {
 	}
 
 	@Override
-	public TypedActionResult<ItemStack> use(World world, PlayerEntity user, Hand hand) {
-		ItemStack itemStack = user.getStackInHand(hand);
+	public TypedActionResult<ItemStack> use(World world, PlayerEntity playerEntity, Hand hand) {
+		ItemStack itemStack = playerEntity.getStackInHand(hand);
 		CompoundTag compoundTag = itemStack.getTag();
-		if (!user.abilities.creativeMode) {
-			user.setStackInHand(hand, ItemStack.EMPTY);
+		if (!playerEntity.abilities.creativeMode) {
+			playerEntity.setStackInHand(hand, ItemStack.EMPTY);
 		}
 
-		if (compoundTag != null && compoundTag.contains("Recipes", 9)) {
+		if (compoundTag != null && compoundTag.containsKey("Recipes", 9)) {
 			if (!world.isClient) {
 				ListTag listTag = compoundTag.getList("Recipes", 8);
 				List<Recipe<?>> list = Lists.<Recipe<?>>newArrayList();
@@ -43,20 +43,20 @@ public class KnowledgeBookItem extends Item {
 					Optional<? extends Recipe<?>> optional = recipeManager.get(new Identifier(string));
 					if (!optional.isPresent()) {
 						LOGGER.error("Invalid recipe: {}", string);
-						return new TypedActionResult<>(ActionResult.FAIL, itemStack);
+						return new TypedActionResult<>(ActionResult.field_5814, itemStack);
 					}
 
 					list.add(optional.get());
 				}
 
-				user.unlockRecipes(list);
-				user.incrementStat(Stats.USED.getOrCreateStat(this));
+				playerEntity.unlockRecipes(list);
+				playerEntity.incrementStat(Stats.field_15372.getOrCreateStat(this));
 			}
 
-			return new TypedActionResult<>(ActionResult.SUCCESS, itemStack);
+			return new TypedActionResult<>(ActionResult.field_5812, itemStack);
 		} else {
 			LOGGER.error("Tag not valid: {}", compoundTag);
-			return new TypedActionResult<>(ActionResult.FAIL, itemStack);
+			return new TypedActionResult<>(ActionResult.field_5814, itemStack);
 		}
 	}
 }

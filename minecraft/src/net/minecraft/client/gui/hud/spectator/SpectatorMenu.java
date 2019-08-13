@@ -20,7 +20,7 @@ public class SpectatorMenu {
 	private static final SpectatorMenuCommand DISABLED_NEXT_PAGE_COMMAND = new SpectatorMenu.ChangePageSpectatorMenuCommand(1, false);
 	public static final SpectatorMenuCommand BLANK_COMMAND = new SpectatorMenuCommand() {
 		@Override
-		public void use(SpectatorMenu menu) {
+		public void use(SpectatorMenu spectatorMenu) {
 		}
 
 		@Override
@@ -29,7 +29,7 @@ public class SpectatorMenu {
 		}
 
 		@Override
-		public void renderIcon(float brightness, int alpha) {
+		public void renderIcon(float f, int i) {
 		}
 
 		@Override
@@ -43,22 +43,22 @@ public class SpectatorMenu {
 	private int selectedSlot = -1;
 	private int page;
 
-	public SpectatorMenu(SpectatorMenuCloseCallback closeCallback) {
+	public SpectatorMenu(SpectatorMenuCloseCallback spectatorMenuCloseCallback) {
 		this.currentGroup = new RootSpectatorCommandGroup();
-		this.closeCallback = closeCallback;
+		this.closeCallback = spectatorMenuCloseCallback;
 	}
 
-	public SpectatorMenuCommand getCommand(int slot) {
-		int i = slot + this.page * 6;
-		if (this.page > 0 && slot == 0) {
+	public SpectatorMenuCommand getCommand(int i) {
+		int j = i + this.page * 6;
+		if (this.page > 0 && i == 0) {
 			return PREVIOUS_PAGE_COMMAND;
-		} else if (slot == 7) {
-			return i < this.currentGroup.getCommands().size() ? NEXT_PAGE_COMMAND : DISABLED_NEXT_PAGE_COMMAND;
-		} else if (slot == 8) {
+		} else if (i == 7) {
+			return j < this.currentGroup.getCommands().size() ? NEXT_PAGE_COMMAND : DISABLED_NEXT_PAGE_COMMAND;
+		} else if (i == 8) {
 			return CLOSE_COMMAND;
 		} else {
-			return i >= 0 && i < this.currentGroup.getCommands().size()
-				? MoreObjects.firstNonNull((SpectatorMenuCommand)this.currentGroup.getCommands().get(i), BLANK_COMMAND)
+			return j >= 0 && j < this.currentGroup.getCommands().size()
+				? MoreObjects.firstNonNull((SpectatorMenuCommand)this.currentGroup.getCommands().get(j), BLANK_COMMAND)
 				: BLANK_COMMAND;
 		}
 	}
@@ -81,13 +81,13 @@ public class SpectatorMenu {
 		return this.currentGroup;
 	}
 
-	public void useCommand(int slot) {
-		SpectatorMenuCommand spectatorMenuCommand = this.getCommand(slot);
+	public void setSelectedSlot(int i) {
+		SpectatorMenuCommand spectatorMenuCommand = this.getCommand(i);
 		if (spectatorMenuCommand != BLANK_COMMAND) {
-			if (this.selectedSlot == slot && spectatorMenuCommand.isEnabled()) {
+			if (this.selectedSlot == i && spectatorMenuCommand.isEnabled()) {
 				spectatorMenuCommand.use(this);
 			} else {
-				this.selectedSlot = slot;
+				this.selectedSlot = i;
 			}
 		}
 	}
@@ -100,9 +100,9 @@ public class SpectatorMenu {
 		return this.selectedSlot;
 	}
 
-	public void selectElement(SpectatorMenuCommandGroup group) {
+	public void selectElement(SpectatorMenuCommandGroup spectatorMenuCommandGroup) {
 		this.stateStack.add(this.getCurrentState());
-		this.currentGroup = group;
+		this.currentGroup = spectatorMenuCommandGroup;
 		this.selectedSlot = -1;
 		this.page = 0;
 	}
@@ -116,14 +116,14 @@ public class SpectatorMenu {
 		private final int direction;
 		private final boolean enabled;
 
-		public ChangePageSpectatorMenuCommand(int direction, boolean enabled) {
-			this.direction = direction;
-			this.enabled = enabled;
+		public ChangePageSpectatorMenuCommand(int i, boolean bl) {
+			this.direction = i;
+			this.enabled = bl;
 		}
 
 		@Override
-		public void use(SpectatorMenu menu) {
-			menu.page = menu.page + this.direction;
+		public void use(SpectatorMenu spectatorMenu) {
+			spectatorMenu.page = spectatorMenu.page + this.direction;
 		}
 
 		@Override
@@ -132,7 +132,7 @@ public class SpectatorMenu {
 		}
 
 		@Override
-		public void renderIcon(float brightness, int alpha) {
+		public void renderIcon(float f, int i) {
 			MinecraftClient.getInstance().getTextureManager().bindTexture(SpectatorHud.SPECTATOR_TEX);
 			if (this.direction < 0) {
 				DrawableHelper.blit(0, 0, 144.0F, 0.0F, 16, 16, 256, 256);
@@ -153,8 +153,8 @@ public class SpectatorMenu {
 		}
 
 		@Override
-		public void use(SpectatorMenu menu) {
-			menu.close();
+		public void use(SpectatorMenu spectatorMenu) {
+			spectatorMenu.close();
 		}
 
 		@Override
@@ -163,7 +163,7 @@ public class SpectatorMenu {
 		}
 
 		@Override
-		public void renderIcon(float brightness, int alpha) {
+		public void renderIcon(float f, int i) {
 			MinecraftClient.getInstance().getTextureManager().bindTexture(SpectatorHud.SPECTATOR_TEX);
 			DrawableHelper.blit(0, 0, 128.0F, 0.0F, 16, 16, 256, 256);
 		}

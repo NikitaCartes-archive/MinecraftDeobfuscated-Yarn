@@ -20,14 +20,14 @@ public class StringTag implements Tag {
 	}
 
 	@Override
-	public void write(DataOutput output) throws IOException {
-		output.writeUTF(this.value);
+	public void write(DataOutput dataOutput) throws IOException {
+		dataOutput.writeUTF(this.value);
 	}
 
 	@Override
-	public void read(DataInput input, int depth, PositionTracker positionTracker) throws IOException {
+	public void read(DataInput dataInput, int i, PositionTracker positionTracker) throws IOException {
 		positionTracker.add(288L);
-		this.value = input.readUTF();
+		this.value = dataInput.readUTF();
 		positionTracker.add((long)(16 * this.value.length()));
 	}
 
@@ -41,12 +41,12 @@ public class StringTag implements Tag {
 		return escape(this.value);
 	}
 
-	public StringTag copy() {
+	public StringTag method_10705() {
 		return new StringTag(this.value);
 	}
 
-	public boolean equals(Object o) {
-		return this == o ? true : o instanceof StringTag && Objects.equals(this.value, ((StringTag)o).value);
+	public boolean equals(Object object) {
+		return this == object ? true : object instanceof StringTag && Objects.equals(this.value, ((StringTag)object).value);
 	}
 
 	public int hashCode() {
@@ -59,19 +59,19 @@ public class StringTag implements Tag {
 	}
 
 	@Override
-	public Text toText(String indent, int depth) {
-		String string = escape(this.value);
-		String string2 = string.substring(0, 1);
-		Text text = new LiteralText(string.substring(1, string.length() - 1)).formatted(GREEN);
-		return new LiteralText(string2).append(text).append(string2);
+	public Text toText(String string, int i) {
+		String string2 = escape(this.value);
+		String string3 = string2.substring(0, 1);
+		Text text = new LiteralText(string2.substring(1, string2.length() - 1)).formatted(GREEN);
+		return new LiteralText(string3).append(text).append(string3);
 	}
 
-	public static String escape(String value) {
+	public static String escape(String string) {
 		StringBuilder stringBuilder = new StringBuilder(" ");
 		char c = 0;
 
-		for (int i = 0; i < value.length(); i++) {
-			char d = value.charAt(i);
+		for (int i = 0; i < string.length(); i++) {
+			char d = string.charAt(i);
 			if (d == '\\') {
 				stringBuilder.append('\\');
 			} else if (d == '"' || d == '\'') {

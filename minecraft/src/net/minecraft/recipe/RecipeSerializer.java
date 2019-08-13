@@ -37,15 +37,15 @@ public interface RecipeSerializer<T extends Recipe<?>> {
 	CookingRecipeSerializer<BlastingRecipe> BLASTING = register("blasting", new CookingRecipeSerializer<>(BlastingRecipe::new, 100));
 	CookingRecipeSerializer<SmokingRecipe> SMOKING = register("smoking", new CookingRecipeSerializer<>(SmokingRecipe::new, 100));
 	CookingRecipeSerializer<CampfireCookingRecipe> CAMPFIRE_COOKING = register("campfire_cooking", new CookingRecipeSerializer<>(CampfireCookingRecipe::new, 100));
-	RecipeSerializer<StonecuttingRecipe> STONECUTTING = register("stonecutting", new CuttingRecipe.Serializer<>(StonecuttingRecipe::new));
+	RecipeSerializer<StonecuttingRecipe> field_17640 = register("stonecutting", new CuttingRecipe.Serializer<>(StonecuttingRecipe::new));
 
-	T read(Identifier id, JsonObject json);
+	T read(Identifier identifier, JsonObject jsonObject);
 
-	T read(Identifier id, PacketByteBuf buf);
+	T read(Identifier identifier, PacketByteBuf packetByteBuf);
 
-	void write(PacketByteBuf buf, T recipe);
+	void write(PacketByteBuf packetByteBuf, T recipe);
 
-	static <S extends RecipeSerializer<T>, T extends Recipe<?>> S register(String id, S serializer) {
-		return Registry.register(Registry.RECIPE_SERIALIZER, id, serializer);
+	static <S extends RecipeSerializer<T>, T extends Recipe<?>> S register(String string, S recipeSerializer) {
+		return Registry.register(Registry.RECIPE_SERIALIZER, string, recipeSerializer);
 	}
 }

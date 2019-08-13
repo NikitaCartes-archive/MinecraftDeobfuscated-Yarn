@@ -5,14 +5,14 @@ import net.fabricmc.api.Environment;
 import net.minecraft.util.Formatting;
 
 public enum StatusEffectType {
-	BENEFICIAL(Formatting.BLUE),
-	HARMFUL(Formatting.RED),
-	NEUTRAL(Formatting.BLUE);
+	field_18271(Formatting.field_1078),
+	field_18272(Formatting.field_1061),
+	field_18273(Formatting.field_1078);
 
 	private final Formatting formatting;
 
-	private StatusEffectType(Formatting format) {
-		this.formatting = format;
+	private StatusEffectType(Formatting formatting) {
+		this.formatting = formatting;
 	}
 
 	@Environment(EnvType.CLIENT)

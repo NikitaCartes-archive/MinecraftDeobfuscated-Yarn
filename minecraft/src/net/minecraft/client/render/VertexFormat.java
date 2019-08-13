@@ -47,13 +47,13 @@ public class VertexFormat {
 			this.elements.add(vertexFormatElement);
 			this.offsets.add(this.size);
 			switch (vertexFormatElement.getType()) {
-				case NORMAL:
+				case field_1635:
 					this.offsetNormal = this.size;
 					break;
 				case COLOR:
 					this.offsetColor = this.size;
 					break;
-				case UV:
+				case field_1636:
 					this.offsetsUv.add(vertexFormatElement.getIndex(), this.size);
 			}
 
@@ -128,19 +128,19 @@ public class VertexFormat {
 		return this.elements.size();
 	}
 
-	public VertexFormatElement getElement(int index) {
-		return (VertexFormatElement)this.elements.get(index);
+	public VertexFormatElement getElement(int i) {
+		return (VertexFormatElement)this.elements.get(i);
 	}
 
-	public int getElementOffset(int element) {
-		return (Integer)this.offsets.get(element);
+	public int getElementOffset(int i) {
+		return (Integer)this.offsets.get(i);
 	}
 
-	public boolean equals(Object o) {
-		if (this == o) {
+	public boolean equals(Object object) {
+		if (this == object) {
 			return true;
-		} else if (o != null && this.getClass() == o.getClass()) {
-			VertexFormat vertexFormat = (VertexFormat)o;
+		} else if (object != null && this.getClass() == object.getClass()) {
+			VertexFormat vertexFormat = (VertexFormat)object;
 			if (this.size != vertexFormat.size) {
 				return false;
 			} else {

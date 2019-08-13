@@ -8,21 +8,21 @@ import net.minecraft.util.Formatting;
 
 public interface Tag {
 	String[] TYPES = new String[]{"END", "BYTE", "SHORT", "INT", "LONG", "FLOAT", "DOUBLE", "BYTE[]", "STRING", "LIST", "COMPOUND", "INT[]", "LONG[]"};
-	Formatting AQUA = Formatting.AQUA;
-	Formatting GREEN = Formatting.GREEN;
-	Formatting GOLD = Formatting.GOLD;
-	Formatting RED = Formatting.RED;
+	Formatting AQUA = Formatting.field_1075;
+	Formatting GREEN = Formatting.field_1060;
+	Formatting GOLD = Formatting.field_1065;
+	Formatting RED = Formatting.field_1061;
 
-	void write(DataOutput output) throws IOException;
+	void write(DataOutput dataOutput) throws IOException;
 
-	void read(DataInput input, int depth, PositionTracker positionTracker) throws IOException;
+	void read(DataInput dataInput, int i, PositionTracker positionTracker) throws IOException;
 
 	String toString();
 
 	byte getType();
 
-	static Tag createTag(byte id) {
-		switch (id) {
+	static Tag createTag(byte b) {
+		switch (b) {
 			case 0:
 				return new EndTag();
 			case 1:
@@ -54,8 +54,8 @@ public interface Tag {
 		}
 	}
 
-	static String idToString(int id) {
-		switch (id) {
+	static String idToString(int i) {
+		switch (i) {
 			case 0:
 				return "TAG_End";
 			case 1:
@@ -99,5 +99,5 @@ public interface Tag {
 		return this.toText("", 0);
 	}
 
-	Text toText(String indent, int depth);
+	Text toText(String string, int i);
 }

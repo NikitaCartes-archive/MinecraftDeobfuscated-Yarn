@@ -9,19 +9,19 @@ import net.minecraft.entity.EntityType;
 import net.minecraft.structure.OceanMonumentGenerator;
 import net.minecraft.structure.StructureManager;
 import net.minecraft.structure.StructureStart;
-import net.minecraft.util.math.BlockBox;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.math.Direction;
+import net.minecraft.util.math.MutableIntBoundingBox;
 import net.minecraft.world.IWorld;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.gen.ChunkRandom;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
 
 public class OceanMonumentFeature extends StructureFeature<DefaultFeatureConfig> {
-	private static final List<Biome.SpawnEntry> MONSTER_SPAWNS = Lists.<Biome.SpawnEntry>newArrayList(new Biome.SpawnEntry(EntityType.GUARDIAN, 1, 2, 4));
+	private static final List<Biome.SpawnEntry> MONSTER_SPAWNS = Lists.<Biome.SpawnEntry>newArrayList(new Biome.SpawnEntry(EntityType.field_6118, 1, 2, 4));
 
-	public OceanMonumentFeature(Function<Dynamic<?>, ? extends DefaultFeatureConfig> configFactory) {
-		super(configFactory);
+	public OceanMonumentFeature(Function<Dynamic<?>, ? extends DefaultFeatureConfig> function) {
+		super(function);
 	}
 
 	@Override
@@ -43,17 +43,17 @@ public class OceanMonumentFeature extends StructureFeature<DefaultFeatureConfig>
 	}
 
 	@Override
-	public boolean shouldStartAt(ChunkGenerator<?> chunkGenerator, Random random, int chunkX, int chunkZ) {
-		ChunkPos chunkPos = this.getStart(chunkGenerator, random, chunkX, chunkZ, 0, 0);
-		if (chunkX == chunkPos.x && chunkZ == chunkPos.z) {
-			for (Biome biome : chunkGenerator.getBiomeSource().getBiomesInArea(chunkX * 16 + 9, chunkZ * 16 + 9, 16)) {
+	public boolean shouldStartAt(ChunkGenerator<?> chunkGenerator, Random random, int i, int j) {
+		ChunkPos chunkPos = this.getStart(chunkGenerator, random, i, j, 0, 0);
+		if (i == chunkPos.x && j == chunkPos.z) {
+			for (Biome biome : chunkGenerator.getBiomeSource().getBiomesInArea(i * 16 + 9, j * 16 + 9, 16)) {
 				if (!chunkGenerator.hasStructure(biome, Feature.OCEAN_MONUMENT)) {
 					return false;
 				}
 			}
 
-			for (Biome biome2 : chunkGenerator.getBiomeSource().getBiomesInArea(chunkX * 16 + 9, chunkZ * 16 + 9, 29)) {
-				if (biome2.getCategory() != Biome.Category.OCEAN && biome2.getCategory() != Biome.Category.RIVER) {
+			for (Biome biome2 : chunkGenerator.getBiomeSource().getBiomesInArea(i * 16 + 9, j * 16 + 9, 29)) {
+				if (biome2.getCategory() != Biome.Category.field_9367 && biome2.getCategory() != Biome.Category.field_9369) {
 					return false;
 				}
 			}
@@ -87,32 +87,32 @@ public class OceanMonumentFeature extends StructureFeature<DefaultFeatureConfig>
 	public static class Start extends StructureStart {
 		private boolean field_13717;
 
-		public Start(StructureFeature<?> structureFeature, int chunkX, int chunkZ, Biome biome, BlockBox blockBox, int i, long l) {
-			super(structureFeature, chunkX, chunkZ, biome, blockBox, i, l);
+		public Start(StructureFeature<?> structureFeature, int i, int j, Biome biome, MutableIntBoundingBox mutableIntBoundingBox, int k, long l) {
+			super(structureFeature, i, j, biome, mutableIntBoundingBox, k, l);
 		}
 
 		@Override
-		public void initialize(ChunkGenerator<?> chunkGenerator, StructureManager structureManager, int x, int z, Biome biome) {
-			this.method_16588(x, z);
+		public void initialize(ChunkGenerator<?> chunkGenerator, StructureManager structureManager, int i, int j, Biome biome) {
+			this.method_16588(i, j);
 		}
 
-		private void method_16588(int chunkX, int chunkZ) {
-			int i = chunkX * 16 - 29;
-			int j = chunkZ * 16 - 29;
-			Direction direction = Direction.Type.HORIZONTAL.random(this.random);
-			this.children.add(new OceanMonumentGenerator.Base(this.random, i, j, direction));
+		private void method_16588(int i, int j) {
+			int k = i * 16 - 29;
+			int l = j * 16 - 29;
+			Direction direction = Direction.Type.field_11062.random(this.random);
+			this.children.add(new OceanMonumentGenerator.Base(this.random, k, l, direction));
 			this.setBoundingBoxFromChildren();
 			this.field_13717 = true;
 		}
 
 		@Override
-		public void generateStructure(IWorld world, Random random, BlockBox boundingBox, ChunkPos pos) {
+		public void generateStructure(IWorld iWorld, Random random, MutableIntBoundingBox mutableIntBoundingBox, ChunkPos chunkPos) {
 			if (!this.field_13717) {
 				this.children.clear();
 				this.method_16588(this.getChunkX(), this.getChunkZ());
 			}
 
-			super.generateStructure(world, random, boundingBox, pos);
+			super.generateStructure(iWorld, random, mutableIntBoundingBox, chunkPos);
 		}
 	}
 }

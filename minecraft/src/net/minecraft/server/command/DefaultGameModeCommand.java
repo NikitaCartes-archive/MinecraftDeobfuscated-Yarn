@@ -8,33 +8,33 @@ import net.minecraft.text.TranslatableText;
 import net.minecraft.world.GameMode;
 
 public class DefaultGameModeCommand {
-	public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
+	public static void register(CommandDispatcher<ServerCommandSource> commandDispatcher) {
 		LiteralArgumentBuilder<ServerCommandSource> literalArgumentBuilder = CommandManager.literal("defaultgamemode")
 			.requires(serverCommandSource -> serverCommandSource.hasPermissionLevel(2));
 
 		for (GameMode gameMode : GameMode.values()) {
-			if (gameMode != GameMode.NOT_SET) {
+			if (gameMode != GameMode.field_9218) {
 				literalArgumentBuilder.then(CommandManager.literal(gameMode.getName()).executes(commandContext -> execute(commandContext.getSource(), gameMode)));
 			}
 		}
 
-		dispatcher.register(literalArgumentBuilder);
+		commandDispatcher.register(literalArgumentBuilder);
 	}
 
-	private static int execute(ServerCommandSource source, GameMode defaultGameMode) {
+	private static int execute(ServerCommandSource serverCommandSource, GameMode gameMode) {
 		int i = 0;
-		MinecraftServer minecraftServer = source.getMinecraftServer();
-		minecraftServer.setDefaultGameMode(defaultGameMode);
+		MinecraftServer minecraftServer = serverCommandSource.getMinecraftServer();
+		minecraftServer.setDefaultGameMode(gameMode);
 		if (minecraftServer.shouldForceGameMode()) {
 			for (ServerPlayerEntity serverPlayerEntity : minecraftServer.getPlayerManager().getPlayerList()) {
-				if (serverPlayerEntity.interactionManager.getGameMode() != defaultGameMode) {
-					serverPlayerEntity.setGameMode(defaultGameMode);
+				if (serverPlayerEntity.interactionManager.getGameMode() != gameMode) {
+					serverPlayerEntity.setGameMode(gameMode);
 					i++;
 				}
 			}
 		}
 
-		source.sendFeedback(new TranslatableText("commands.defaultgamemode.success", defaultGameMode.getTranslatableName()), true);
+		serverCommandSource.sendFeedback(new TranslatableText("commands.defaultgamemode.success", gameMode.getTranslatableName()), true);
 		return i;
 	}
 }

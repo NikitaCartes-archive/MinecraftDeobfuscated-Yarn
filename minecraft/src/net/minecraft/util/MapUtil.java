@@ -6,21 +6,21 @@ import java.util.Map;
 import java.util.NoSuchElementException;
 
 public class MapUtil {
-	public static <K, V> Map<K, V> createMap(Iterable<K> keys, Iterable<V> values) {
-		return createMap(keys, values, Maps.<K, V>newLinkedHashMap());
+	public static <K, V> Map<K, V> createMap(Iterable<K> iterable, Iterable<V> iterable2) {
+		return createMap(iterable, iterable2, Maps.<K, V>newLinkedHashMap());
 	}
 
-	public static <K, V> Map<K, V> createMap(Iterable<K> keys, Iterable<V> values, Map<K, V> result) {
-		Iterator<V> iterator = values.iterator();
+	public static <K, V> Map<K, V> createMap(Iterable<K> iterable, Iterable<V> iterable2, Map<K, V> map) {
+		Iterator<V> iterator = iterable2.iterator();
 
-		for (K object : keys) {
-			result.put(object, iterator.next());
+		for (K object : iterable) {
+			map.put(object, iterator.next());
 		}
 
 		if (iterator.hasNext()) {
 			throw new NoSuchElementException();
 		} else {
-			return result;
+			return map;
 		}
 	}
 }

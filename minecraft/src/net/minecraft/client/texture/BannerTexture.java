@@ -21,10 +21,10 @@ public class BannerTexture extends AbstractTexture {
 	private final List<String> patternNames;
 	private final List<DyeColor> dyes;
 
-	public BannerTexture(Identifier filename, List<String> patternNames, List<DyeColor> dyes) {
-		this.filename = filename;
-		this.patternNames = patternNames;
-		this.dyes = dyes;
+	public BannerTexture(Identifier identifier, List<String> list, List<DyeColor> list2) {
+		this.filename = identifier;
+		this.patternNames = list;
+		this.dyes = list2;
 	}
 
 	@Override
@@ -50,10 +50,10 @@ public class BannerTexture extends AbstractTexture {
 							if (nativeImage3.getWidth() == nativeImage2.getWidth() && nativeImage3.getHeight() == nativeImage2.getHeight()) {
 								for (int k = 0; k < nativeImage3.getHeight(); k++) {
 									for (int l = 0; l < nativeImage3.getWidth(); l++) {
-										int m = nativeImage3.getPixelRgba(l, k);
+										int m = nativeImage3.getPixelRGBA(l, k);
 										if ((m & 0xFF000000) != 0) {
 											int n = (m & 0xFF) << 24 & 0xFF000000;
-											int o = nativeImage.getPixelRgba(l, k);
+											int o = nativeImage.getPixelRGBA(l, k);
 											int p = MathHelper.multiplyColors(o, j) & 16777215;
 											nativeImage2.blendPixel(l, k, n | p);
 										}

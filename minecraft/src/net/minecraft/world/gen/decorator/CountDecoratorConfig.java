@@ -7,13 +7,13 @@ import com.mojang.datafixers.types.DynamicOps;
 public class CountDecoratorConfig implements DecoratorConfig {
 	public final int count;
 
-	public CountDecoratorConfig(int count) {
-		this.count = count;
+	public CountDecoratorConfig(int i) {
+		this.count = i;
 	}
 
 	@Override
-	public <T> Dynamic<T> serialize(DynamicOps<T> ops) {
-		return new Dynamic<>(ops, ops.createMap(ImmutableMap.of(ops.createString("count"), ops.createInt(this.count))));
+	public <T> Dynamic<T> serialize(DynamicOps<T> dynamicOps) {
+		return new Dynamic<>(dynamicOps, dynamicOps.createMap(ImmutableMap.of(dynamicOps.createString("count"), dynamicOps.createInt(this.count))));
 	}
 
 	public static CountDecoratorConfig deserialize(Dynamic<?> dynamic) {

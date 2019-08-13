@@ -17,16 +17,16 @@ public class ChunkRenderTask implements Comparable<ChunkRenderTask> {
 	private final double squaredCameraDistance;
 	@Nullable
 	private ChunkRendererRegion region;
-	private BlockBufferBuilderStorage bufferBuilder;
+	private BlockLayeredBufferBuilder bufferBuilder;
 	private ChunkRenderData renderData;
-	private ChunkRenderTask.Stage stage = ChunkRenderTask.Stage.PENDING;
+	private ChunkRenderTask.Stage stage = ChunkRenderTask.Stage.field_4422;
 	private boolean cancelled;
 
-	public ChunkRenderTask(ChunkRenderer chunkRenderer, ChunkRenderTask.Mode mode, double squaredCameraDistance, @Nullable ChunkRendererRegion region) {
+	public ChunkRenderTask(ChunkRenderer chunkRenderer, ChunkRenderTask.Mode mode, double d, @Nullable ChunkRendererRegion chunkRendererRegion) {
 		this.chunkRenderer = chunkRenderer;
 		this.mode = mode;
-		this.squaredCameraDistance = squaredCameraDistance;
-		this.region = region;
+		this.squaredCameraDistance = d;
+		this.region = chunkRendererRegion;
 	}
 
 	public ChunkRenderTask.Stage getStage() {
@@ -48,16 +48,16 @@ public class ChunkRenderTask implements Comparable<ChunkRenderTask> {
 		return this.renderData;
 	}
 
-	public void setRenderData(ChunkRenderData renderData) {
-		this.renderData = renderData;
+	public void setRenderData(ChunkRenderData chunkRenderData) {
+		this.renderData = chunkRenderData;
 	}
 
-	public BlockBufferBuilderStorage getBufferBuilders() {
+	public BlockLayeredBufferBuilder getBufferBuilders() {
 		return this.bufferBuilder;
 	}
 
-	public void setBufferBuilders(BlockBufferBuilderStorage blockBufferBuilderStorage) {
-		this.bufferBuilder = blockBufferBuilderStorage;
+	public void setBufferBuilders(BlockLayeredBufferBuilder blockLayeredBufferBuilder) {
+		this.bufferBuilder = blockLayeredBufferBuilder;
 	}
 
 	public void setStage(ChunkRenderTask.Stage stage) {
@@ -75,12 +75,12 @@ public class ChunkRenderTask implements Comparable<ChunkRenderTask> {
 
 		try {
 			this.region = null;
-			if (this.mode == ChunkRenderTask.Mode.REBUILD_CHUNK && this.stage != ChunkRenderTask.Stage.DONE) {
+			if (this.mode == ChunkRenderTask.Mode.field_4426 && this.stage != ChunkRenderTask.Stage.field_4423) {
 				this.chunkRenderer.scheduleRebuild(false);
 			}
 
 			this.cancelled = true;
-			this.stage = ChunkRenderTask.Stage.DONE;
+			this.stage = ChunkRenderTask.Stage.field_4423;
 
 			for (Runnable runnable : this.completionActions) {
 				runnable.run();
@@ -90,13 +90,13 @@ public class ChunkRenderTask implements Comparable<ChunkRenderTask> {
 		}
 	}
 
-	public void addCompletionAction(Runnable action) {
+	public void addCompletionAction(Runnable runnable) {
 		this.lock.lock();
 
 		try {
-			this.completionActions.add(action);
+			this.completionActions.add(runnable);
 			if (this.cancelled) {
-				action.run();
+				runnable.run();
 			}
 		} finally {
 			this.lock.unlock();
@@ -115,7 +115,7 @@ public class ChunkRenderTask implements Comparable<ChunkRenderTask> {
 		return this.cancelled;
 	}
 
-	public int compareTo(ChunkRenderTask chunkRenderTask) {
+	public int method_3601(ChunkRenderTask chunkRenderTask) {
 		return Doubles.compare(this.squaredCameraDistance, chunkRenderTask.squaredCameraDistance);
 	}
 
@@ -125,15 +125,15 @@ public class ChunkRenderTask implements Comparable<ChunkRenderTask> {
 
 	@Environment(EnvType.CLIENT)
 	public static enum Mode {
-		REBUILD_CHUNK,
-		RESORT_TRANSPARENCY;
+		field_4426,
+		field_4427;
 	}
 
 	@Environment(EnvType.CLIENT)
 	public static enum Stage {
-		PENDING,
-		COMPILING,
-		UPLOADING,
-		DONE;
+		field_4422,
+		field_4424,
+		field_4421,
+		field_4423;
 	}
 }

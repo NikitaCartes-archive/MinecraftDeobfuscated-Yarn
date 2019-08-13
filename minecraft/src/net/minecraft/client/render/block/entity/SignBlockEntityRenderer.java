@@ -16,7 +16,7 @@ import net.minecraft.client.render.BufferBuilder;
 import net.minecraft.client.render.Tessellator;
 import net.minecraft.client.render.VertexFormats;
 import net.minecraft.client.render.entity.model.SignBlockEntityModel;
-import net.minecraft.client.util.Texts;
+import net.minecraft.client.util.TextComponentUtil;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.Direction;
@@ -31,7 +31,7 @@ public class SignBlockEntityRenderer extends BlockEntityRenderer<SignBlockEntity
 	private static final Identifier DARK_OAK_TEX = new Identifier("textures/entity/signs/dark_oak.png");
 	private final SignBlockEntityModel model = new SignBlockEntityModel();
 
-	public void render(SignBlockEntity signBlockEntity, double d, double e, double f, float g, int i) {
+	public void method_3582(SignBlockEntity signBlockEntity, double d, double e, double f, float g, int i) {
 		BlockState blockState = signBlockEntity.getCachedState();
 		GlStateManager.pushMatrix();
 		float h = 0.6666667F;
@@ -72,7 +72,7 @@ public class SignBlockEntityRenderer extends BlockEntityRenderer<SignBlockEntity
 		if (i < 0) {
 			for (int l = 0; l < 4; l++) {
 				String string = signBlockEntity.getTextBeingEditedOnRow(l, text -> {
-					List<Text> list = Texts.wrapLines(text, 90, textRenderer, false, true);
+					List<Text> list = TextComponentUtil.wrapLines(text, 90, textRenderer, false, true);
 					return list.isEmpty() ? "" : ((Text)list.get(0)).asFormattedString();
 				});
 				if (string != null) {
@@ -113,28 +113,28 @@ public class SignBlockEntityRenderer extends BlockEntityRenderer<SignBlockEntity
 	}
 
 	private Identifier getModelTexture(Block block) {
-		if (block == Blocks.OAK_SIGN || block == Blocks.OAK_WALL_SIGN) {
+		if (block == Blocks.field_10121 || block == Blocks.field_10187) {
 			return OAK_TEX;
-		} else if (block == Blocks.SPRUCE_SIGN || block == Blocks.SPRUCE_WALL_SIGN) {
+		} else if (block == Blocks.field_10411 || block == Blocks.field_10088) {
 			return SPRUCE_TEX;
-		} else if (block == Blocks.BIRCH_SIGN || block == Blocks.BIRCH_WALL_SIGN) {
+		} else if (block == Blocks.field_10231 || block == Blocks.field_10391) {
 			return BIRCH_TEX;
-		} else if (block == Blocks.ACACIA_SIGN || block == Blocks.ACACIA_WALL_SIGN) {
+		} else if (block == Blocks.field_10284 || block == Blocks.field_10401) {
 			return ACACIA_TEX;
-		} else if (block == Blocks.JUNGLE_SIGN || block == Blocks.JUNGLE_WALL_SIGN) {
+		} else if (block == Blocks.field_10544 || block == Blocks.field_10587) {
 			return JUNGLE_TEX;
 		} else {
-			return block != Blocks.DARK_OAK_SIGN && block != Blocks.DARK_OAK_WALL_SIGN ? OAK_TEX : DARK_OAK_TEX;
+			return block != Blocks.field_10330 && block != Blocks.field_10265 ? OAK_TEX : DARK_OAK_TEX;
 		}
 	}
 
 	private void method_16210(int i, int j, int k, int l) {
 		Tessellator tessellator = Tessellator.getInstance();
-		BufferBuilder bufferBuilder = tessellator.getBuffer();
+		BufferBuilder bufferBuilder = tessellator.getBufferBuilder();
 		GlStateManager.color4f(0.0F, 0.0F, 255.0F, 255.0F);
 		GlStateManager.disableTexture();
 		GlStateManager.enableColorLogicOp();
-		GlStateManager.logicOp(GlStateManager.LogicOp.OR_REVERSE);
+		GlStateManager.logicOp(GlStateManager.LogicOp.field_5110);
 		bufferBuilder.begin(7, VertexFormats.POSITION);
 		bufferBuilder.vertex((double)i, (double)l, 0.0).next();
 		bufferBuilder.vertex((double)k, (double)l, 0.0).next();

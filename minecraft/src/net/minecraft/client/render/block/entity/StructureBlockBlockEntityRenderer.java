@@ -17,13 +17,13 @@ import net.minecraft.world.BlockView;
 
 @Environment(EnvType.CLIENT)
 public class StructureBlockBlockEntityRenderer extends BlockEntityRenderer<StructureBlockBlockEntity> {
-	public void render(StructureBlockBlockEntity structureBlockBlockEntity, double d, double e, double f, float g, int i) {
+	public void method_3587(StructureBlockBlockEntity structureBlockBlockEntity, double d, double e, double f, float g, int i) {
 		if (MinecraftClient.getInstance().player.isCreativeLevelTwoOp() || MinecraftClient.getInstance().player.isSpectator()) {
 			super.render(structureBlockBlockEntity, d, e, f, g, i);
 			BlockPos blockPos = structureBlockBlockEntity.getOffset();
 			BlockPos blockPos2 = structureBlockBlockEntity.getSize();
 			if (blockPos2.getX() >= 1 && blockPos2.getY() >= 1 && blockPos2.getZ() >= 1) {
-				if (structureBlockBlockEntity.getMode() == StructureBlockMode.SAVE || structureBlockBlockEntity.getMode() == StructureBlockMode.LOAD) {
+				if (structureBlockBlockEntity.getMode() == StructureBlockMode.field_12695 || structureBlockBlockEntity.getMode() == StructureBlockMode.field_12697) {
 					double h = 0.01;
 					double j = (double)blockPos.getX();
 					double k = (double)blockPos.getZ();
@@ -32,11 +32,11 @@ public class StructureBlockBlockEntityRenderer extends BlockEntityRenderer<Struc
 					double n;
 					double o;
 					switch (structureBlockBlockEntity.getMirror()) {
-						case LEFT_RIGHT:
+						case field_11300:
 							n = (double)blockPos2.getX() + 0.02;
 							o = -((double)blockPos2.getZ() + 0.02);
 							break;
-						case FRONT_BACK:
+						case field_11301:
 							n = -((double)blockPos2.getX() + 0.02);
 							o = (double)blockPos2.getZ() + 0.02;
 							break;
@@ -50,19 +50,19 @@ public class StructureBlockBlockEntityRenderer extends BlockEntityRenderer<Struc
 					double r;
 					double s;
 					switch (structureBlockBlockEntity.getRotation()) {
-						case CLOCKWISE_90:
+						case field_11463:
 							p = d + (o < 0.0 ? j - 0.01 : j + 1.0 + 0.01);
 							q = f + (n < 0.0 ? k + 1.0 + 0.01 : k - 0.01);
 							r = p - o;
 							s = q + n;
 							break;
-						case CLOCKWISE_180:
+						case field_11464:
 							p = d + (n < 0.0 ? j - 0.01 : j + 1.0 + 0.01);
 							q = f + (o < 0.0 ? k - 0.01 : k + 1.0 + 0.01);
 							r = p - n;
 							s = q - o;
 							break;
-						case COUNTERCLOCKWISE_90:
+						case field_11465:
 							p = d + (o < 0.0 ? j + 1.0 + 0.01 : j - 0.01);
 							q = f + (n < 0.0 ? k - 0.01 : k + 1.0 + 0.01);
 							r = p + o;
@@ -79,7 +79,7 @@ public class StructureBlockBlockEntityRenderer extends BlockEntityRenderer<Struc
 					int u = 223;
 					int v = 127;
 					Tessellator tessellator = Tessellator.getInstance();
-					BufferBuilder bufferBuilder = tessellator.getBuffer();
+					BufferBuilder bufferBuilder = tessellator.getBufferBuilder();
 					GlStateManager.disableFog();
 					GlStateManager.disableLighting();
 					GlStateManager.disableTexture();
@@ -88,11 +88,11 @@ public class StructureBlockBlockEntityRenderer extends BlockEntityRenderer<Struc
 						GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO
 					);
 					this.disableLightmap(true);
-					if (structureBlockBlockEntity.getMode() == StructureBlockMode.SAVE || structureBlockBlockEntity.shouldShowBoundingBox()) {
+					if (structureBlockBlockEntity.getMode() == StructureBlockMode.field_12695 || structureBlockBlockEntity.shouldShowBoundingBox()) {
 						this.method_3586(tessellator, bufferBuilder, p, l, q, r, m, s, 255, 223, 127);
 					}
 
-					if (structureBlockBlockEntity.getMode() == StructureBlockMode.SAVE && structureBlockBlockEntity.shouldShowAir()) {
+					if (structureBlockBlockEntity.getMode() == StructureBlockMode.field_12695 && structureBlockBlockEntity.shouldShowAir()) {
 						this.method_3585(structureBlockBlockEntity, d, e, f, blockPos, tessellator, bufferBuilder, true);
 						this.method_3585(structureBlockBlockEntity, d, e, f, blockPos, tessellator, bufferBuilder, false);
 					}
@@ -128,7 +128,7 @@ public class StructureBlockBlockEntityRenderer extends BlockEntityRenderer<Struc
 		for (BlockPos blockPos4 : BlockPos.iterate(blockPos3, blockPos3.add(structureBlockBlockEntity.getSize()).add(-1, -1, -1))) {
 			BlockState blockState = blockView.getBlockState(blockPos4);
 			boolean bl2 = blockState.isAir();
-			boolean bl3 = blockState.getBlock() == Blocks.STRUCTURE_VOID;
+			boolean bl3 = blockState.getBlock() == Blocks.field_10369;
 			if (bl2 || bl3) {
 				float g = bl2 ? 0.05F : 0.0F;
 				double h = (double)((float)(blockPos4.getX() - blockPos2.getX()) + 0.45F) + d - (double)g;
@@ -138,11 +138,11 @@ public class StructureBlockBlockEntityRenderer extends BlockEntityRenderer<Struc
 				double l = (double)((float)(blockPos4.getY() - blockPos2.getY()) + 0.55F) + e + (double)g;
 				double m = (double)((float)(blockPos4.getZ() - blockPos2.getZ()) + 0.55F) + f + (double)g;
 				if (bl) {
-					WorldRenderer.drawBox(bufferBuilder, h, i, j, k, l, m, 0.0F, 0.0F, 0.0F, 1.0F);
+					WorldRenderer.buildBoxOutline(bufferBuilder, h, i, j, k, l, m, 0.0F, 0.0F, 0.0F, 1.0F);
 				} else if (bl2) {
-					WorldRenderer.drawBox(bufferBuilder, h, i, j, k, l, m, 0.5F, 0.5F, 1.0F, 1.0F);
+					WorldRenderer.buildBoxOutline(bufferBuilder, h, i, j, k, l, m, 0.5F, 0.5F, 1.0F, 1.0F);
 				} else {
-					WorldRenderer.drawBox(bufferBuilder, h, i, j, k, l, m, 1.0F, 0.25F, 0.25F, 1.0F);
+					WorldRenderer.buildBoxOutline(bufferBuilder, h, i, j, k, l, m, 1.0F, 0.25F, 0.25F, 1.0F);
 				}
 			}
 		}
@@ -175,7 +175,7 @@ public class StructureBlockBlockEntityRenderer extends BlockEntityRenderer<Struc
 		GlStateManager.lineWidth(1.0F);
 	}
 
-	public boolean method_3563(StructureBlockBlockEntity structureBlockBlockEntity) {
+	public boolean method_3588(StructureBlockBlockEntity structureBlockBlockEntity) {
 		return true;
 	}
 }

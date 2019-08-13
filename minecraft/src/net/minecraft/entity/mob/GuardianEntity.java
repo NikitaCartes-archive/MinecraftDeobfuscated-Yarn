@@ -38,9 +38,9 @@ import net.minecraft.tag.FluidTags;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
-import net.minecraft.world.CollisionView;
 import net.minecraft.world.Difficulty;
 import net.minecraft.world.IWorld;
+import net.minecraft.world.ViewableWorld;
 import net.minecraft.world.World;
 
 public class GuardianEntity extends HostileEntity {
@@ -74,8 +74,8 @@ public class GuardianEntity extends HostileEntity {
 		this.goalSelector.add(8, new LookAtEntityGoal(this, PlayerEntity.class, 8.0F));
 		this.goalSelector.add(8, new LookAtEntityGoal(this, GuardianEntity.class, 12.0F, 0.01F));
 		this.goalSelector.add(9, new LookAroundGoal(this));
-		this.wanderGoal.setControls(EnumSet.of(Goal.Control.MOVE, Goal.Control.LOOK));
-		goToWalkTargetGoal.setControls(EnumSet.of(Goal.Control.MOVE, Goal.Control.LOOK));
+		this.wanderGoal.setControls(EnumSet.of(Goal.Control.field_18405, Goal.Control.field_18406));
+		goToWalkTargetGoal.setControls(EnumSet.of(Goal.Control.field_18405, Goal.Control.field_18406));
 		this.targetSelector.add(1, new FollowTargetGoal(this, LivingEntity.class, 10, true, false, new GuardianEntity.GuardianTargetPredicate(this)));
 	}
 
@@ -114,16 +114,16 @@ public class GuardianEntity extends HostileEntity {
 		return this.dataTracker.get(SPIKES_RETRACTED);
 	}
 
-	private void setSpikesRetracted(boolean retracted) {
-		this.dataTracker.set(SPIKES_RETRACTED, retracted);
+	private void setSpikesRetracted(boolean bl) {
+		this.dataTracker.set(SPIKES_RETRACTED, bl);
 	}
 
 	public int getWarmupTime() {
 		return 80;
 	}
 
-	private void setBeamTarget(int progress) {
-		this.dataTracker.set(BEAM_TARGET_ID, progress);
+	private void setBeamTarget(int i) {
+		this.dataTracker.set(BEAM_TARGET_ID, i);
 	}
 
 	public boolean hasBeamTarget() {
@@ -152,9 +152,9 @@ public class GuardianEntity extends HostileEntity {
 	}
 
 	@Override
-	public void onTrackedDataSet(TrackedData<?> data) {
-		super.onTrackedDataSet(data);
-		if (BEAM_TARGET_ID.equals(data)) {
+	public void onTrackedDataSet(TrackedData<?> trackedData) {
+		super.onTrackedDataSet(trackedData);
+		if (BEAM_TARGET_ID.equals(trackedData)) {
 			this.beamTicks = 0;
 			this.cachedBeamTarget = null;
 		}
@@ -167,17 +167,17 @@ public class GuardianEntity extends HostileEntity {
 
 	@Override
 	protected SoundEvent getAmbientSound() {
-		return this.isInsideWaterOrBubbleColumn() ? SoundEvents.ENTITY_GUARDIAN_AMBIENT : SoundEvents.ENTITY_GUARDIAN_AMBIENT_LAND;
+		return this.isInsideWaterOrBubbleColumn() ? SoundEvents.field_14714 : SoundEvents.field_14968;
 	}
 
 	@Override
-	protected SoundEvent getHurtSound(DamageSource source) {
-		return this.isInsideWaterOrBubbleColumn() ? SoundEvents.ENTITY_GUARDIAN_HURT : SoundEvents.ENTITY_GUARDIAN_HURT_LAND;
+	protected SoundEvent getHurtSound(DamageSource damageSource) {
+		return this.isInsideWaterOrBubbleColumn() ? SoundEvents.field_14679 : SoundEvents.field_14758;
 	}
 
 	@Override
 	protected SoundEvent getDeathSound() {
-		return this.isInsideWaterOrBubbleColumn() ? SoundEvents.ENTITY_GUARDIAN_DEATH : SoundEvents.ENTITY_GUARDIAN_DEATH_LAND;
+		return this.isInsideWaterOrBubbleColumn() ? SoundEvents.field_15138 : SoundEvents.field_15232;
 	}
 
 	@Override
@@ -186,13 +186,15 @@ public class GuardianEntity extends HostileEntity {
 	}
 
 	@Override
-	protected float getActiveEyeHeight(EntityPose pose, EntityDimensions dimensions) {
-		return dimensions.height * 0.5F;
+	protected float getActiveEyeHeight(EntityPose entityPose, EntityDimensions entityDimensions) {
+		return entityDimensions.height * 0.5F;
 	}
 
 	@Override
-	public float getPathfindingFavor(BlockPos pos, CollisionView world) {
-		return world.getFluidState(pos).matches(FluidTags.WATER) ? 10.0F + world.getBrightness(pos) - 0.5F : super.getPathfindingFavor(pos, world);
+	public float getPathfindingFavor(BlockPos blockPos, ViewableWorld viewableWorld) {
+		return viewableWorld.getFluidState(blockPos).matches(FluidTags.field_15517)
+			? 10.0F + viewableWorld.getBrightness(blockPos) - 0.5F
+			: super.getPathfindingFavor(blockPos, viewableWorld);
 	}
 
 	@Override
@@ -200,14 +202,14 @@ public class GuardianEntity extends HostileEntity {
 		if (this.isAlive()) {
 			if (this.world.isClient) {
 				this.prevSpikesExtension = this.spikesExtension;
-				if (!this.isTouchingWater()) {
+				if (!this.isInsideWater()) {
 					this.spikesExtensionRate = 2.0F;
 					Vec3d vec3d = this.getVelocity();
 					if (vec3d.y > 0.0 && this.flopping && !this.isSilent()) {
 						this.world.playSound(this.x, this.y, this.z, this.getFlopSound(), this.getSoundCategory(), 1.0F, 1.0F, false);
 					}
 
-					this.flopping = vec3d.y < 0.0 && this.world.isTopSolid(new BlockPos(this).down(), this);
+					this.flopping = vec3d.y < 0.0 && this.world.doesBlockHaveSolidTopSurface(new BlockPos(this).down(), this);
 				} else if (this.areSpikesRetracted()) {
 					if (this.spikesExtensionRate < 0.5F) {
 						this.spikesExtensionRate = 4.0F;
@@ -228,13 +230,13 @@ public class GuardianEntity extends HostileEntity {
 					this.tailAngle = this.tailAngle + (1.0F - this.tailAngle) * 0.06F;
 				}
 
-				if (this.areSpikesRetracted() && this.isTouchingWater()) {
+				if (this.areSpikesRetracted() && this.isInsideWater()) {
 					Vec3d vec3d = this.getRotationVec(0.0F);
 
 					for (int i = 0; i < 2; i++) {
 						this.world
 							.addParticle(
-								ParticleTypes.BUBBLE,
+								ParticleTypes.field_11247,
 								this.x + (this.random.nextDouble() - 0.5) * (double)this.getWidth() - vec3d.x * 1.5,
 								this.y + this.random.nextDouble() * (double)this.getHeight() - vec3d.y * 1.5,
 								this.z + (this.random.nextDouble() - 0.5) * (double)this.getWidth() - vec3d.z * 1.5,
@@ -266,14 +268,14 @@ public class GuardianEntity extends HostileEntity {
 
 						while (j < h) {
 							j += 1.8 - d + this.random.nextDouble() * (1.7 - d);
-							this.world.addParticle(ParticleTypes.BUBBLE, this.x + e * j, this.y + f * j + (double)this.getStandingEyeHeight(), this.z + g * j, 0.0, 0.0, 0.0);
+							this.world.addParticle(ParticleTypes.field_11247, this.x + e * j, this.y + f * j + (double)this.getStandingEyeHeight(), this.z + g * j, 0.0, 0.0, 0.0);
 						}
 					}
 				}
 			}
 
 			if (this.isInsideWaterOrBubbleColumn()) {
-				this.setAir(300);
+				this.setBreath(300);
 			} else if (this.onGround) {
 				this.setVelocity(
 					this.getVelocity().add((double)((this.random.nextFloat() * 2.0F - 1.0F) * 0.4F), 0.5, (double)((this.random.nextFloat() * 2.0F - 1.0F) * 0.4F))
@@ -292,39 +294,39 @@ public class GuardianEntity extends HostileEntity {
 	}
 
 	protected SoundEvent getFlopSound() {
-		return SoundEvents.ENTITY_GUARDIAN_FLOP;
+		return SoundEvents.field_14584;
 	}
 
 	@Environment(EnvType.CLIENT)
-	public float getSpikesExtension(float tickDelta) {
-		return MathHelper.lerp(tickDelta, this.prevSpikesExtension, this.spikesExtension);
+	public float getSpikesExtension(float f) {
+		return MathHelper.lerp(f, this.prevSpikesExtension, this.spikesExtension);
 	}
 
 	@Environment(EnvType.CLIENT)
-	public float getTailAngle(float tickDelta) {
-		return MathHelper.lerp(tickDelta, this.prevTailAngle, this.tailAngle);
+	public float getTailAngle(float f) {
+		return MathHelper.lerp(f, this.prevTailAngle, this.tailAngle);
 	}
 
-	public float getBeamProgress(float tickDelta) {
-		return ((float)this.beamTicks + tickDelta) / (float)this.getWarmupTime();
+	public float getBeamProgress(float f) {
+		return ((float)this.beamTicks + f) / (float)this.getWarmupTime();
 	}
 
 	@Override
-	public boolean canSpawn(CollisionView world) {
-		return world.intersectsEntities(this);
+	public boolean canSpawn(ViewableWorld viewableWorld) {
+		return viewableWorld.intersectsEntities(this);
 	}
 
 	public static boolean method_20676(EntityType<? extends GuardianEntity> entityType, IWorld iWorld, SpawnType spawnType, BlockPos blockPos, Random random) {
 		return (random.nextInt(20) == 0 || !iWorld.method_8626(blockPos))
-			&& iWorld.getDifficulty() != Difficulty.PEACEFUL
-			&& (spawnType == SpawnType.SPAWNER || iWorld.getFluidState(blockPos).matches(FluidTags.WATER));
+			&& iWorld.getDifficulty() != Difficulty.field_5801
+			&& (spawnType == SpawnType.field_16469 || iWorld.getFluidState(blockPos).matches(FluidTags.field_15517));
 	}
 
 	@Override
-	public boolean damage(DamageSource source, float amount) {
-		if (!this.areSpikesRetracted() && !source.getMagic() && source.getSource() instanceof LivingEntity) {
-			LivingEntity livingEntity = (LivingEntity)source.getSource();
-			if (!source.isExplosive()) {
+	public boolean damage(DamageSource damageSource, float f) {
+		if (!this.areSpikesRetracted() && !damageSource.getMagic() && damageSource.getSource() instanceof LivingEntity) {
+			LivingEntity livingEntity = (LivingEntity)damageSource.getSource();
+			if (!damageSource.isExplosive()) {
 				livingEntity.damage(DamageSource.thorns(this), 2.0F);
 			}
 		}
@@ -333,7 +335,7 @@ public class GuardianEntity extends HostileEntity {
 			this.wanderGoal.ignoreChanceOnce();
 		}
 
-		return super.damage(source, amount);
+		return super.damage(damageSource, f);
 	}
 
 	@Override
@@ -342,16 +344,16 @@ public class GuardianEntity extends HostileEntity {
 	}
 
 	@Override
-	public void travel(Vec3d movementInput) {
-		if (this.canMoveVoluntarily() && this.isTouchingWater()) {
-			this.updateVelocity(0.1F, movementInput);
-			this.move(MovementType.SELF, this.getVelocity());
+	public void travel(Vec3d vec3d) {
+		if (this.canMoveVoluntarily() && this.isInsideWater()) {
+			this.updateVelocity(0.1F, vec3d);
+			this.move(MovementType.field_6308, this.getVelocity());
 			this.setVelocity(this.getVelocity().multiply(0.9));
 			if (!this.areSpikesRetracted() && this.getTarget() == null) {
 				this.setVelocity(this.getVelocity().add(0.0, -0.005, 0.0));
 			}
 		} else {
-			super.travel(movementInput);
+			super.travel(vec3d);
 		}
 	}
 
@@ -360,10 +362,10 @@ public class GuardianEntity extends HostileEntity {
 		private int beamTicks;
 		private final boolean elder;
 
-		public FireBeamGoal(GuardianEntity guardian) {
-			this.guardian = guardian;
-			this.elder = guardian instanceof ElderGuardianEntity;
-			this.setControls(EnumSet.of(Goal.Control.MOVE, Goal.Control.LOOK));
+		public FireBeamGoal(GuardianEntity guardianEntity) {
+			this.guardian = guardianEntity;
+			this.elder = guardianEntity instanceof ElderGuardianEntity;
+			this.setControls(EnumSet.of(Goal.Control.field_18405, Goal.Control.field_18406));
 		}
 
 		@Override
@@ -406,7 +408,7 @@ public class GuardianEntity extends HostileEntity {
 					this.guardian.world.sendEntityStatus(this.guardian, (byte)21);
 				} else if (this.beamTicks >= this.guardian.getWarmupTime()) {
 					float f = 1.0F;
-					if (this.guardian.world.getDifficulty() == Difficulty.HARD) {
+					if (this.guardian.world.getDifficulty() == Difficulty.field_5807) {
 						f += 2.0F;
 					}
 
@@ -427,14 +429,14 @@ public class GuardianEntity extends HostileEntity {
 	static class GuardianMoveControl extends MoveControl {
 		private final GuardianEntity guardian;
 
-		public GuardianMoveControl(GuardianEntity guardian) {
-			super(guardian);
-			this.guardian = guardian;
+		public GuardianMoveControl(GuardianEntity guardianEntity) {
+			super(guardianEntity);
+			this.guardian = guardianEntity;
 		}
 
 		@Override
 		public void tick() {
-			if (this.state == MoveControl.State.MOVE_TO && !this.guardian.getNavigation().isIdle()) {
+			if (this.state == MoveControl.State.field_6378 && !this.guardian.getNavigation().isIdle()) {
 				Vec3d vec3d = new Vec3d(this.targetX - this.guardian.x, this.targetY - this.guardian.y, this.targetZ - this.guardian.z);
 				double d = vec3d.length();
 				double e = vec3d.x / d;
@@ -476,11 +478,11 @@ public class GuardianEntity extends HostileEntity {
 	static class GuardianTargetPredicate implements Predicate<LivingEntity> {
 		private final GuardianEntity owner;
 
-		public GuardianTargetPredicate(GuardianEntity owner) {
-			this.owner = owner;
+		public GuardianTargetPredicate(GuardianEntity guardianEntity) {
+			this.owner = guardianEntity;
 		}
 
-		public boolean test(@Nullable LivingEntity livingEntity) {
+		public boolean method_7064(@Nullable LivingEntity livingEntity) {
 			return (livingEntity instanceof PlayerEntity || livingEntity instanceof SquidEntity) && livingEntity.squaredDistanceTo(this.owner) > 9.0;
 		}
 	}

@@ -7,7 +7,7 @@ import net.fabricmc.api.Environment;
 import net.minecraft.client.gui.widget.AbstractButtonWidget;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.resource.language.I18n;
-import net.minecraft.client.util.Texts;
+import net.minecraft.client.util.TextComponentUtil;
 import net.minecraft.text.ClickEvent;
 import net.minecraft.text.LiteralText;
 import net.minecraft.text.Text;
@@ -20,10 +20,10 @@ public class DeathScreen extends Screen {
 	private final Text message;
 	private final boolean isHardcore;
 
-	public DeathScreen(@Nullable Text message, boolean isHardcore) {
-		super(new TranslatableText(isHardcore ? "deathScreen.title.hardcore" : "deathScreen.title"));
-		this.message = message;
-		this.isHardcore = isHardcore;
+	public DeathScreen(@Nullable Text text, boolean bl) {
+		super(new TranslatableText(bl ? "deathScreen.title.hardcore" : "deathScreen.title"));
+		this.message = text;
+		this.isHardcore = bl;
 	}
 
 	@Override
@@ -96,7 +96,7 @@ public class DeathScreen extends Screen {
 	}
 
 	@Override
-	public void render(int mouseX, int mouseY, float delta) {
+	public void render(int i, int j, float f) {
 		this.fillGradient(0, 0, this.width, this.height, 1615855616, -1602211792);
 		GlStateManager.pushMatrix();
 		GlStateManager.scalef(2.0F, 2.0F, 2.0F);
@@ -107,16 +107,16 @@ public class DeathScreen extends Screen {
 		}
 
 		this.drawCenteredString(
-			this.font, I18n.translate("deathScreen.score") + ": " + Formatting.YELLOW + this.minecraft.player.getScore(), this.width / 2, 100, 16777215
+			this.font, I18n.translate("deathScreen.score") + ": " + Formatting.field_1054 + this.minecraft.player.getScore(), this.width / 2, 100, 16777215
 		);
-		if (this.message != null && mouseY > 85 && mouseY < 85 + 9) {
-			Text text = this.method_2164(mouseX);
+		if (this.message != null && j > 85 && j < 85 + 9) {
+			Text text = this.method_2164(i);
 			if (text != null && text.getStyle().getHoverEvent() != null) {
-				this.renderComponentHoverEffect(text, mouseX, mouseY);
+				this.renderComponentHoverEffect(text, i, j);
 			}
 		}
 
-		super.render(mouseX, mouseY, delta);
+		super.render(i, j, f);
 	}
 
 	@Nullable
@@ -130,7 +130,7 @@ public class DeathScreen extends Screen {
 			int m = k;
 			if (i >= k && i <= l) {
 				for (Text text : this.message) {
-					m += this.minecraft.textRenderer.getStringWidth(Texts.getRenderChatMessage(text.asString(), false));
+					m += this.minecraft.textRenderer.getStringWidth(TextComponentUtil.getRenderChatMessage(text.asString(), false));
 					if (m > i) {
 						return text;
 					}
@@ -144,16 +144,16 @@ public class DeathScreen extends Screen {
 	}
 
 	@Override
-	public boolean mouseClicked(double mouseX, double mouseY, int button) {
-		if (this.message != null && mouseY > 85.0 && mouseY < (double)(85 + 9)) {
-			Text text = this.method_2164((int)mouseX);
-			if (text != null && text.getStyle().getClickEvent() != null && text.getStyle().getClickEvent().getAction() == ClickEvent.Action.OPEN_URL) {
+	public boolean mouseClicked(double d, double e, int i) {
+		if (this.message != null && e > 85.0 && e < (double)(85 + 9)) {
+			Text text = this.method_2164((int)d);
+			if (text != null && text.getStyle().getClickEvent() != null && text.getStyle().getClickEvent().getAction() == ClickEvent.Action.field_11749) {
 				this.handleComponentClicked(text);
 				return false;
 			}
 		}
 
-		return super.mouseClicked(mouseX, mouseY, button);
+		return super.mouseClicked(d, e, i);
 	}
 
 	@Override

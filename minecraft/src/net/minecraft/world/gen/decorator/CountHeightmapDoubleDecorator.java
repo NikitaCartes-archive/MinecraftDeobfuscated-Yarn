@@ -17,13 +17,13 @@ public class CountHeightmapDoubleDecorator extends Decorator<CountDecoratorConfi
 		super(function);
 	}
 
-	public Stream<BlockPos> getPositions(
+	public Stream<BlockPos> method_15905(
 		IWorld iWorld, ChunkGenerator<? extends ChunkGeneratorConfig> chunkGenerator, Random random, CountDecoratorConfig countDecoratorConfig, BlockPos blockPos
 	) {
 		return IntStream.range(0, countDecoratorConfig.count).mapToObj(i -> {
 			int j = random.nextInt(16);
 			int k = random.nextInt(16);
-			int l = iWorld.getTopPosition(Heightmap.Type.MOTION_BLOCKING, blockPos.add(j, 0, k)).getY() * 2;
+			int l = iWorld.getTopPosition(Heightmap.Type.field_13197, blockPos.add(j, 0, k)).getY() * 2;
 			if (l <= 0) {
 				return null;
 			} else {

@@ -5,8 +5,8 @@ import net.minecraft.util.math.Vec3d;
 public abstract class HitResult {
 	protected final Vec3d pos;
 
-	protected HitResult(Vec3d pos) {
-		this.pos = pos;
+	protected HitResult(Vec3d vec3d) {
+		this.pos = vec3d;
 	}
 
 	public abstract HitResult.Type getType();
@@ -16,8 +16,8 @@ public abstract class HitResult {
 	}
 
 	public static enum Type {
-		MISS,
-		BLOCK,
-		ENTITY;
+		field_1333,
+		field_1332,
+		field_1331;
 	}
 }

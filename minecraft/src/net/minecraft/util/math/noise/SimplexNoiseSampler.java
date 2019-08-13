@@ -23,83 +23,83 @@ public class SimplexNoiseSampler {
 		{0, -1, -1}
 	};
 	private static final double sqrt3 = Math.sqrt(3.0);
-	private static final double SKEW_FACTOR_2D = 0.5 * (sqrt3 - 1.0);
-	private static final double UNSKEW_FACTOR_2D = (3.0 - sqrt3) / 6.0;
-	private final int[] permutations = new int[512];
-	public final double originX;
-	public final double originY;
-	public final double originZ;
+	private static final double field_15768 = 0.5 * (sqrt3 - 1.0);
+	private static final double field_15767 = (3.0 - sqrt3) / 6.0;
+	private final int[] field_15765 = new int[512];
+	public final double field_15763;
+	public final double field_15762;
+	public final double field_15761;
 
 	public SimplexNoiseSampler(Random random) {
-		this.originX = random.nextDouble() * 256.0;
-		this.originY = random.nextDouble() * 256.0;
-		this.originZ = random.nextDouble() * 256.0;
+		this.field_15763 = random.nextDouble() * 256.0;
+		this.field_15762 = random.nextDouble() * 256.0;
+		this.field_15761 = random.nextDouble() * 256.0;
 		int i = 0;
 
 		while (i < 256) {
-			this.permutations[i] = i++;
+			this.field_15765[i] = i++;
 		}
 
 		for (int ix = 0; ix < 256; ix++) {
 			int j = random.nextInt(256 - ix);
-			int k = this.permutations[ix];
-			this.permutations[ix] = this.permutations[j + ix];
-			this.permutations[j + ix] = k;
+			int k = this.field_15765[ix];
+			this.field_15765[ix] = this.field_15765[j + ix];
+			this.field_15765[j + ix] = k;
 		}
 	}
 
-	private int getGradient(int hash) {
-		return this.permutations[hash & 0xFF];
+	private int method_16456(int i) {
+		return this.field_15765[i & 0xFF];
 	}
 
-	protected static double dot(int[] gArr, double x, double y, double z) {
-		return (double)gArr[0] * x + (double)gArr[1] * y + (double)gArr[2] * z;
+	protected static double dot(int[] is, double d, double e, double f) {
+		return (double)is[0] * d + (double)is[1] * e + (double)is[2] * f;
 	}
 
-	private double grad(int hash, double x, double y, double z, double d) {
-		double e = d - x * x - y * y - z * z;
-		double f;
-		if (e < 0.0) {
-			f = 0.0;
+	private double method_16455(int i, double d, double e, double f, double g) {
+		double h = g - d * d - e * e - f * f;
+		double j;
+		if (h < 0.0) {
+			j = 0.0;
 		} else {
-			e *= e;
-			f = e * e * dot(gradients[hash], x, y, z);
+			h *= h;
+			j = h * h * dot(gradients[i], d, e, f);
 		}
 
-		return f;
+		return j;
 	}
 
-	public double sample(double x, double y) {
-		double d = (x + y) * SKEW_FACTOR_2D;
-		int i = MathHelper.floor(x + d);
-		int j = MathHelper.floor(y + d);
-		double e = (double)(i + j) * UNSKEW_FACTOR_2D;
-		double f = (double)i - e;
-		double g = (double)j - e;
-		double h = x - f;
-		double k = y - g;
-		int l;
-		int m;
-		if (h > k) {
-			l = 1;
-			m = 0;
+	public double sample(double d, double e) {
+		double f = (d + e) * field_15768;
+		int i = MathHelper.floor(d + f);
+		int j = MathHelper.floor(e + f);
+		double g = (double)(i + j) * field_15767;
+		double h = (double)i - g;
+		double k = (double)j - g;
+		double l = d - h;
+		double m = e - k;
+		int n;
+		int o;
+		if (l > m) {
+			n = 1;
+			o = 0;
 		} else {
-			l = 0;
-			m = 1;
+			n = 0;
+			o = 1;
 		}
 
-		double n = h - (double)l + UNSKEW_FACTOR_2D;
-		double o = k - (double)m + UNSKEW_FACTOR_2D;
-		double p = h - 1.0 + 2.0 * UNSKEW_FACTOR_2D;
-		double q = k - 1.0 + 2.0 * UNSKEW_FACTOR_2D;
-		int r = i & 0xFF;
-		int s = j & 0xFF;
-		int t = this.getGradient(r + this.getGradient(s)) % 12;
-		int u = this.getGradient(r + l + this.getGradient(s + m)) % 12;
-		int v = this.getGradient(r + 1 + this.getGradient(s + 1)) % 12;
-		double w = this.grad(t, h, k, 0.0, 0.5);
-		double z = this.grad(u, n, o, 0.0, 0.5);
-		double aa = this.grad(v, p, q, 0.0, 0.5);
-		return 70.0 * (w + z + aa);
+		double p = l - (double)n + field_15767;
+		double q = m - (double)o + field_15767;
+		double r = l - 1.0 + 2.0 * field_15767;
+		double s = m - 1.0 + 2.0 * field_15767;
+		int t = i & 0xFF;
+		int u = j & 0xFF;
+		int v = this.method_16456(t + this.method_16456(u)) % 12;
+		int w = this.method_16456(t + n + this.method_16456(u + o)) % 12;
+		int x = this.method_16456(t + 1 + this.method_16456(u + 1)) % 12;
+		double y = this.method_16455(v, l, m, 0.0, 0.5);
+		double z = this.method_16455(w, p, q, 0.0, 0.5);
+		double aa = this.method_16455(x, r, s, 0.0, 0.5);
+		return 70.0 * (y + z + aa);
 	}
 }

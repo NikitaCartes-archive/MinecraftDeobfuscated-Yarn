@@ -12,13 +12,13 @@ import net.minecraft.world.gen.chunk.ChunkGenerator;
 import net.minecraft.world.gen.chunk.ChunkGeneratorConfig;
 
 public class NetherSpringFeature extends Feature<NetherSpringFeatureConfig> {
-	private static final BlockState NETHERRACK = Blocks.NETHERRACK.getDefaultState();
+	private static final BlockState NETHERRACK = Blocks.field_10515.getDefaultState();
 
-	public NetherSpringFeature(Function<Dynamic<?>, ? extends NetherSpringFeatureConfig> configFactory) {
-		super(configFactory);
+	public NetherSpringFeature(Function<Dynamic<?>, ? extends NetherSpringFeatureConfig> function) {
+		super(function);
 	}
 
-	public boolean generate(
+	public boolean method_13555(
 		IWorld iWorld,
 		ChunkGenerator<? extends ChunkGeneratorConfig> chunkGenerator,
 		Random random,
@@ -73,7 +73,7 @@ public class NetherSpringFeature extends Feature<NetherSpringFeatureConfig> {
 			}
 
 			if (!netherSpringFeatureConfig.insideRock && i == 4 && j == 1 || i == 5) {
-				iWorld.setBlockState(blockPos, Blocks.LAVA.getDefaultState(), 2);
+				iWorld.setBlockState(blockPos, Blocks.field_10164.getDefaultState(), 2);
 				iWorld.getFluidTickScheduler().schedule(blockPos, Fluids.LAVA, 0);
 			}
 

@@ -17,7 +17,7 @@ public class LlamaSpitEntityRenderer extends EntityRenderer<LlamaSpitEntity> {
 		super(entityRenderDispatcher);
 	}
 
-	public void render(LlamaSpitEntity llamaSpitEntity, double d, double e, double f, float g, float h) {
+	public void method_4061(LlamaSpitEntity llamaSpitEntity, double d, double e, double f, float g, float h) {
 		GlStateManager.pushMatrix();
 		GlStateManager.translatef((float)d, (float)e + 0.15F, (float)f);
 		GlStateManager.rotatef(MathHelper.lerp(h, llamaSpitEntity.prevYaw, llamaSpitEntity.yaw) - 90.0F, 0.0F, 1.0F, 0.0F);
@@ -38,7 +38,7 @@ public class LlamaSpitEntityRenderer extends EntityRenderer<LlamaSpitEntity> {
 		super.render(llamaSpitEntity, d, e, f, g, h);
 	}
 
-	protected Identifier getTexture(LlamaSpitEntity llamaSpitEntity) {
+	protected Identifier method_4062(LlamaSpitEntity llamaSpitEntity) {
 		return SKIN;
 	}
 }

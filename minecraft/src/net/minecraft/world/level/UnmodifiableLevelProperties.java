@@ -21,8 +21,8 @@ public class UnmodifiableLevelProperties extends LevelProperties {
 	}
 
 	@Override
-	public CompoundTag cloneWorldTag(@Nullable CompoundTag playerTag) {
-		return this.properties.cloneWorldTag(playerTag);
+	public CompoundTag cloneWorldTag(@Nullable CompoundTag compoundTag) {
+		return this.properties.cloneWorldTag(compoundTag);
 	}
 
 	@Override
@@ -103,25 +103,25 @@ public class UnmodifiableLevelProperties extends LevelProperties {
 
 	@Environment(EnvType.CLIENT)
 	@Override
-	public void setSpawnX(int spawnX) {
+	public void setSpawnX(int i) {
 	}
 
 	@Environment(EnvType.CLIENT)
 	@Override
-	public void setSpawnY(int spawnY) {
+	public void setSpawnY(int i) {
 	}
 
 	@Environment(EnvType.CLIENT)
 	@Override
-	public void setSpawnZ(int spawnZ) {
+	public void setSpawnZ(int i) {
 	}
 
 	@Override
-	public void setTime(long time) {
+	public void setTime(long l) {
 	}
 
 	@Override
-	public void setTimeOfDay(long timeOfDay) {
+	public void setTimeOfDay(long l) {
 	}
 
 	@Override
@@ -129,27 +129,27 @@ public class UnmodifiableLevelProperties extends LevelProperties {
 	}
 
 	@Override
-	public void setLevelName(String levelName) {
+	public void setLevelName(String string) {
 	}
 
 	@Override
-	public void setVersion(int version) {
+	public void setVersion(int i) {
 	}
 
 	@Override
-	public void setThundering(boolean thundering) {
+	public void setThundering(boolean bl) {
 	}
 
 	@Override
-	public void setThunderTime(int thunderTime) {
+	public void setThunderTime(int i) {
 	}
 
 	@Override
-	public void setRaining(boolean raining) {
+	public void setRaining(boolean bl) {
 	}
 
 	@Override
-	public void setRainTime(int rainTime) {
+	public void setRainTime(int i) {
 	}
 
 	@Override
@@ -177,7 +177,7 @@ public class UnmodifiableLevelProperties extends LevelProperties {
 	}
 
 	@Override
-	public void setCommandsAllowed(boolean commandsAllowed) {
+	public void setCommandsAllowed(boolean bl) {
 	}
 
 	@Override
@@ -186,7 +186,7 @@ public class UnmodifiableLevelProperties extends LevelProperties {
 	}
 
 	@Override
-	public void setInitialized(boolean initialized) {
+	public void setInitialized(boolean bl) {
 	}
 
 	@Override
@@ -209,7 +209,7 @@ public class UnmodifiableLevelProperties extends LevelProperties {
 	}
 
 	@Override
-	public void setDifficultyLocked(boolean difficultyLocked) {
+	public void setDifficultyLocked(boolean bl) {
 	}
 
 	@Override
@@ -218,8 +218,8 @@ public class UnmodifiableLevelProperties extends LevelProperties {
 	}
 
 	@Override
-	public void setWorldData(DimensionType type, CompoundTag compoundTag) {
-		this.properties.setWorldData(type, compoundTag);
+	public void setWorldData(DimensionType dimensionType, CompoundTag compoundTag) {
+		this.properties.setWorldData(dimensionType, compoundTag);
 	}
 
 	@Override

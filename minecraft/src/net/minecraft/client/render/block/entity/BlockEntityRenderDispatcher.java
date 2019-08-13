@@ -28,7 +28,7 @@ import net.minecraft.block.entity.SkullBlockEntity;
 import net.minecraft.block.entity.StructureBlockBlockEntity;
 import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.render.Camera;
-import net.minecraft.client.render.DiffuseLighting;
+import net.minecraft.client.render.GuiLighting;
 import net.minecraft.client.render.entity.model.ShulkerEntityModel;
 import net.minecraft.client.texture.TextureManager;
 import net.minecraft.util.crash.CrashException;
@@ -42,14 +42,14 @@ import net.minecraft.world.World;
 public class BlockEntityRenderDispatcher {
 	private final Map<Class<? extends BlockEntity>, BlockEntityRenderer<? extends BlockEntity>> renderers = Maps.<Class<? extends BlockEntity>, BlockEntityRenderer<? extends BlockEntity>>newHashMap();
 	public static final BlockEntityRenderDispatcher INSTANCE = new BlockEntityRenderDispatcher();
-	private TextRenderer textRenderer;
+	private TextRenderer fontRenderer;
 	public static double renderOffsetX;
 	public static double renderOffsetY;
 	public static double renderOffsetZ;
 	public TextureManager textureManager;
 	public World world;
-	public Camera camera;
-	public HitResult crosshairTarget;
+	public Camera cameraEntity;
+	public HitResult hitResult;
 
 	private BlockEntityRenderDispatcher() {
 		this.renderers.put(SignBlockEntity.class, new SignBlockEntityRenderer());
@@ -91,52 +91,47 @@ public class BlockEntityRenderDispatcher {
 		return blockEntity == null ? null : this.get(blockEntity.getClass());
 	}
 
-	public void configure(World world, TextureManager textureManager, TextRenderer textRenderer, Camera camera, HitResult crosshairTarget) {
+	public void configure(World world, TextureManager textureManager, TextRenderer textRenderer, Camera camera, HitResult hitResult) {
 		if (this.world != world) {
 			this.setWorld(world);
 		}
 
 		this.textureManager = textureManager;
-		this.camera = camera;
-		this.textRenderer = textRenderer;
-		this.crosshairTarget = crosshairTarget;
+		this.cameraEntity = camera;
+		this.fontRenderer = textRenderer;
+		this.hitResult = hitResult;
 	}
 
-	public void render(BlockEntity blockEntity, float tickDelta, int blockBreakStage) {
-		if (blockEntity.getSquaredDistance(this.camera.getPos().x, this.camera.getPos().y, this.camera.getPos().z) < blockEntity.getSquaredRenderDistance()) {
-			DiffuseLighting.enable();
-			int i = this.world.getLightmapIndex(blockEntity.getPos(), 0);
-			int j = i % 65536;
-			int k = i / 65536;
-			GLX.glMultiTexCoord2f(GLX.GL_TEXTURE1, (float)j, (float)k);
+	public void render(BlockEntity blockEntity, float f, int i) {
+		if (blockEntity.getSquaredDistance(this.cameraEntity.getPos().x, this.cameraEntity.getPos().y, this.cameraEntity.getPos().z)
+			< blockEntity.getSquaredRenderDistance()) {
+			GuiLighting.enable();
+			int j = this.world.getLightmapIndex(blockEntity.getPos(), 0);
+			int k = j % 65536;
+			int l = j / 65536;
+			GLX.glMultiTexCoord2f(GLX.GL_TEXTURE1, (float)k, (float)l);
 			GlStateManager.color4f(1.0F, 1.0F, 1.0F, 1.0F);
 			BlockPos blockPos = blockEntity.getPos();
 			this.renderEntity(
-				blockEntity,
-				(double)blockPos.getX() - renderOffsetX,
-				(double)blockPos.getY() - renderOffsetY,
-				(double)blockPos.getZ() - renderOffsetZ,
-				tickDelta,
-				blockBreakStage,
-				false
+				blockEntity, (double)blockPos.getX() - renderOffsetX, (double)blockPos.getY() - renderOffsetY, (double)blockPos.getZ() - renderOffsetZ, f, i, false
 			);
 		}
 	}
 
-	public void renderEntity(BlockEntity blockEntity, double xOffset, double yOffset, double zOffset, float tickDelta) {
-		this.renderEntity(blockEntity, xOffset, yOffset, zOffset, tickDelta, -1, false);
+	public void renderEntity(BlockEntity blockEntity, double d, double e, double f, float g) {
+		this.renderEntity(blockEntity, d, e, f, g, -1, false);
 	}
 
 	public void renderEntity(BlockEntity blockEntity) {
 		this.renderEntity(blockEntity, 0.0, 0.0, 0.0, 0.0F, -1, true);
 	}
 
-	public void renderEntity(BlockEntity blockEntity, double xOffset, double yOffset, double zOffset, float tickDelta, int blockBreakStage, boolean bl) {
+	public void renderEntity(BlockEntity blockEntity, double d, double e, double f, float g, int i, boolean bl) {
 		BlockEntityRenderer<BlockEntity> blockEntityRenderer = this.get(blockEntity);
 		if (blockEntityRenderer != null) {
 			try {
 				if (bl || blockEntity.hasWorld() && blockEntity.getType().supports(blockEntity.getCachedState().getBlock())) {
-					blockEntityRenderer.render(blockEntity, xOffset, yOffset, zOffset, tickDelta, blockBreakStage);
+					blockEntityRenderer.render(blockEntity, d, e, f, g, i);
 				}
 			} catch (Throwable var15) {
 				CrashReport crashReport = CrashReport.create(var15, "Rendering Block Entity");
@@ -150,11 +145,11 @@ public class BlockEntityRenderDispatcher {
 	public void setWorld(@Nullable World world) {
 		this.world = world;
 		if (world == null) {
-			this.camera = null;
+			this.cameraEntity = null;
 		}
 	}
 
-	public TextRenderer getTextRenderer() {
-		return this.textRenderer;
+	public TextRenderer getFontRenderer() {
+		return this.fontRenderer;
 	}
 }

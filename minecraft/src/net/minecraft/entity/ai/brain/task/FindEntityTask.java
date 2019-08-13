@@ -22,64 +22,58 @@ public class FindEntityTask<E extends LivingEntity, T extends LivingEntity> exte
 	private final MemoryModuleType<T> targetModule;
 
 	public FindEntityTask(
-		EntityType<? extends T> entityType,
-		int maxDistance,
-		Predicate<E> shouldRunPredicate,
-		Predicate<T> predicate,
-		MemoryModuleType<T> targetModule,
-		float speed,
-		int completionRange
+		EntityType<? extends T> entityType, int i, Predicate<E> predicate, Predicate<T> predicate2, MemoryModuleType<T> memoryModuleType, float f, int j
 	) {
 		super(
 			ImmutableMap.of(
-				MemoryModuleType.LOOK_TARGET,
-				MemoryModuleState.REGISTERED,
-				MemoryModuleType.WALK_TARGET,
-				MemoryModuleState.VALUE_ABSENT,
-				targetModule,
-				MemoryModuleState.VALUE_ABSENT,
-				MemoryModuleType.VISIBLE_MOBS,
-				MemoryModuleState.VALUE_PRESENT
+				MemoryModuleType.field_18446,
+				MemoryModuleState.field_18458,
+				MemoryModuleType.field_18445,
+				MemoryModuleState.field_18457,
+				memoryModuleType,
+				MemoryModuleState.field_18457,
+				MemoryModuleType.field_18442,
+				MemoryModuleState.field_18456
 			)
 		);
 		this.entityType = entityType;
-		this.speed = speed;
-		this.maxSquaredDistance = maxDistance * maxDistance;
-		this.completionRange = completionRange;
-		this.predicate = predicate;
-		this.shouldRunPredicate = shouldRunPredicate;
-		this.targetModule = targetModule;
+		this.speed = f;
+		this.maxSquaredDistance = i * i;
+		this.completionRange = j;
+		this.predicate = predicate2;
+		this.shouldRunPredicate = predicate;
+		this.targetModule = memoryModuleType;
 	}
 
 	public static <T extends LivingEntity> FindEntityTask<LivingEntity, T> create(
-		EntityType<? extends T> entityType, int maxDistance, MemoryModuleType<T> targetModule, float speed, int completionRange
+		EntityType<? extends T> entityType, int i, MemoryModuleType<T> memoryModuleType, float f, int j
 	) {
-		return new FindEntityTask<>(entityType, maxDistance, livingEntity -> true, livingEntity -> true, targetModule, speed, completionRange);
+		return new FindEntityTask<>(entityType, i, livingEntity -> true, livingEntity -> true, memoryModuleType, f, j);
 	}
 
 	@Override
-	protected boolean shouldRun(ServerWorld world, E entity) {
-		return this.shouldRunPredicate.test(entity)
-			&& ((List)entity.getBrain().getOptionalMemory(MemoryModuleType.VISIBLE_MOBS).get())
+	protected boolean shouldRun(ServerWorld serverWorld, E livingEntity) {
+		return this.shouldRunPredicate.test(livingEntity)
+			&& ((List)livingEntity.getBrain().getOptionalMemory(MemoryModuleType.field_18442).get())
 				.stream()
-				.anyMatch(livingEntity -> this.entityType.equals(livingEntity.getType()) && this.predicate.test(livingEntity));
+				.anyMatch(livingEntityx -> this.entityType.equals(livingEntityx.getType()) && this.predicate.test(livingEntityx));
 	}
 
 	@Override
-	protected void run(ServerWorld world, E entity, long time) {
-		Brain<?> brain = entity.getBrain();
-		brain.getOptionalMemory(MemoryModuleType.VISIBLE_MOBS)
+	protected void run(ServerWorld serverWorld, E livingEntity, long l) {
+		Brain<?> brain = livingEntity.getBrain();
+		brain.getOptionalMemory(MemoryModuleType.field_18442)
 			.ifPresent(
 				list -> list.stream()
-						.filter(livingEntityx -> this.entityType.equals(livingEntityx.getType()))
-						.map(livingEntityx -> livingEntityx)
-						.filter(livingEntity2 -> livingEntity2.squaredDistanceTo(entity) <= (double)this.maxSquaredDistance)
+						.filter(livingEntityxx -> this.entityType.equals(livingEntityxx.getType()))
+						.map(livingEntityxx -> livingEntityxx)
+						.filter(livingEntity2 -> livingEntity2.squaredDistanceTo(livingEntity) <= (double)this.maxSquaredDistance)
 						.filter(this.predicate)
 						.findFirst()
-						.ifPresent(livingEntityx -> {
-							brain.putMemory(this.targetModule, (T)livingEntityx);
-							brain.putMemory(MemoryModuleType.LOOK_TARGET, new EntityPosWrapper(livingEntityx));
-							brain.putMemory(MemoryModuleType.WALK_TARGET, new WalkTarget(new EntityPosWrapper(livingEntityx), this.speed, this.completionRange));
+						.ifPresent(livingEntityxx -> {
+							brain.putMemory(this.targetModule, (T)livingEntityxx);
+							brain.putMemory(MemoryModuleType.field_18446, new EntityPosWrapper(livingEntityxx));
+							brain.putMemory(MemoryModuleType.field_18445, new WalkTarget(new EntityPosWrapper(livingEntityxx), this.speed, this.completionRange));
 						})
 			);
 	}

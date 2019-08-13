@@ -14,11 +14,11 @@ import net.minecraft.util.Identifier;
 public class EnderDragonEyesFeatureRenderer extends FeatureRenderer<EnderDragonEntity, DragonEntityModel> {
 	private static final Identifier SKIN = new Identifier("textures/entity/enderdragon/dragon_eyes.png");
 
-	public EnderDragonEyesFeatureRenderer(FeatureRendererContext<EnderDragonEntity, DragonEntityModel> context) {
-		super(context);
+	public EnderDragonEyesFeatureRenderer(FeatureRendererContext<EnderDragonEntity, DragonEntityModel> featureRendererContext) {
+		super(featureRendererContext);
 	}
 
-	public void render(EnderDragonEntity enderDragonEntity, float f, float g, float h, float i, float j, float k, float l) {
+	public void method_4183(EnderDragonEntity enderDragonEntity, float f, float g, float h, float i, float j, float k, float l) {
 		this.bindTexture(SKIN);
 		GlStateManager.enableBlend();
 		GlStateManager.disableAlphaTest();
@@ -33,7 +33,7 @@ public class EnderDragonEyesFeatureRenderer extends FeatureRenderer<EnderDragonE
 		GlStateManager.color4f(1.0F, 1.0F, 1.0F, 1.0F);
 		GameRenderer gameRenderer = MinecraftClient.getInstance().gameRenderer;
 		gameRenderer.setFogBlack(true);
-		this.getContextModel().render(enderDragonEntity, f, g, i, j, k, l);
+		this.getModel().method_17137(enderDragonEntity, f, g, i, j, k, l);
 		gameRenderer.setFogBlack(false);
 		this.applyLightmapCoordinates(enderDragonEntity);
 		GlStateManager.disableBlend();

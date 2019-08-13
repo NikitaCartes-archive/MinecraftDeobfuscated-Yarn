@@ -12,22 +12,22 @@ import net.minecraft.util.math.Direction;
 import net.minecraft.world.IWorld;
 
 public class CoralClawFeature extends CoralFeature {
-	public CoralClawFeature(Function<Dynamic<?>, ? extends DefaultFeatureConfig> configFactory) {
-		super(configFactory);
+	public CoralClawFeature(Function<Dynamic<?>, ? extends DefaultFeatureConfig> function) {
+		super(function);
 	}
 
 	@Override
-	protected boolean spawnCoral(IWorld world, Random random, BlockPos pos, BlockState state) {
-		if (!this.spawnCoralPiece(world, random, pos, state)) {
+	protected boolean spawnCoral(IWorld iWorld, Random random, BlockPos blockPos, BlockState blockState) {
+		if (!this.spawnCoralPiece(iWorld, random, blockPos, blockState)) {
 			return false;
 		} else {
-			Direction direction = Direction.Type.HORIZONTAL.random(random);
+			Direction direction = Direction.Type.field_11062.random(random);
 			int i = random.nextInt(2) + 2;
 			List<Direction> list = Lists.<Direction>newArrayList(direction, direction.rotateYClockwise(), direction.rotateYCounterclockwise());
 			Collections.shuffle(list, random);
 
 			for (Direction direction2 : list.subList(0, i)) {
-				BlockPos.Mutable mutable = new BlockPos.Mutable(pos);
+				BlockPos.Mutable mutable = new BlockPos.Mutable(blockPos);
 				int j = random.nextInt(2) + 1;
 				mutable.setOffset(direction2);
 				int k;
@@ -36,27 +36,27 @@ public class CoralClawFeature extends CoralFeature {
 					direction3 = direction;
 					k = random.nextInt(3) + 2;
 				} else {
-					mutable.setOffset(Direction.UP);
-					Direction[] directions = new Direction[]{direction2, Direction.UP};
+					mutable.setOffset(Direction.field_11036);
+					Direction[] directions = new Direction[]{direction2, Direction.field_11036};
 					direction3 = directions[random.nextInt(directions.length)];
 					k = random.nextInt(3) + 3;
 				}
 
-				for (int l = 0; l < j && this.spawnCoralPiece(world, random, mutable, state); l++) {
+				for (int l = 0; l < j && this.spawnCoralPiece(iWorld, random, mutable, blockState); l++) {
 					mutable.setOffset(direction3);
 				}
 
 				mutable.setOffset(direction3.getOpposite());
-				mutable.setOffset(Direction.UP);
+				mutable.setOffset(Direction.field_11036);
 
 				for (int l = 0; l < k; l++) {
 					mutable.setOffset(direction);
-					if (!this.spawnCoralPiece(world, random, mutable, state)) {
+					if (!this.spawnCoralPiece(iWorld, random, mutable, blockState)) {
 						break;
 					}
 
 					if (random.nextFloat() < 0.25F) {
-						mutable.setOffset(Direction.UP);
+						mutable.setOffset(Direction.field_11036);
 					}
 				}
 			}

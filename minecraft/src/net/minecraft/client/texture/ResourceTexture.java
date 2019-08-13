@@ -18,8 +18,8 @@ public class ResourceTexture extends AbstractTexture {
 	private static final Logger LOGGER = LogManager.getLogger();
 	protected final Identifier location;
 
-	public ResourceTexture(Identifier location) {
-		this.location = location;
+	public ResourceTexture(Identifier identifier) {
+		this.location = identifier;
 	}
 
 	@Override
@@ -68,16 +68,16 @@ public class ResourceTexture extends AbstractTexture {
 		private final NativeImage image;
 		private final IOException exception;
 
-		public TextureData(IOException exception) {
-			this.exception = exception;
+		public TextureData(IOException iOException) {
+			this.exception = iOException;
 			this.metadata = null;
 			this.image = null;
 		}
 
-		public TextureData(@Nullable TextureResourceMetadata metadata, NativeImage image) {
+		public TextureData(@Nullable TextureResourceMetadata textureResourceMetadata, NativeImage nativeImage) {
 			this.exception = null;
-			this.metadata = metadata;
-			this.image = image;
+			this.metadata = textureResourceMetadata;
+			this.image = nativeImage;
 		}
 
 		public static ResourceTexture.TextureData load(ResourceManager resourceManager, Identifier identifier) {

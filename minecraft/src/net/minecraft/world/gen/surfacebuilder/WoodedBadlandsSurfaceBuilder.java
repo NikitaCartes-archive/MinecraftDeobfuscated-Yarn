@@ -10,16 +10,16 @@ import net.minecraft.world.biome.Biome;
 import net.minecraft.world.chunk.Chunk;
 
 public class WoodedBadlandsSurfaceBuilder extends BadlandsSurfaceBuilder {
-	private static final BlockState WHITE_TERRACOTTA = Blocks.WHITE_TERRACOTTA.getDefaultState();
-	private static final BlockState ORANGE_TERRACOTTA = Blocks.ORANGE_TERRACOTTA.getDefaultState();
-	private static final BlockState TERRACOTTA = Blocks.TERRACOTTA.getDefaultState();
+	private static final BlockState WHITE_TERRACOTTA = Blocks.field_10611.getDefaultState();
+	private static final BlockState ORANGE_TERRACOTTA = Blocks.field_10184.getDefaultState();
+	private static final BlockState TERRACOTTA = Blocks.field_10415.getDefaultState();
 
 	public WoodedBadlandsSurfaceBuilder(Function<Dynamic<?>, ? extends TernarySurfaceConfig> function) {
 		super(function);
 	}
 
 	@Override
-	public void generate(
+	public void method_15208(
 		Random random,
 		Chunk chunk,
 		Biome biome,
@@ -54,7 +54,7 @@ public class WoodedBadlandsSurfaceBuilder extends BadlandsSurfaceBuilder {
 					if (q == -1) {
 						bl2 = false;
 						if (p <= 0) {
-							blockState3 = Blocks.AIR.getDefaultState();
+							blockState3 = Blocks.field_10124.getDefaultState();
 							blockState4 = blockState;
 						} else if (s >= l - 4 && s <= l + 1) {
 							blockState3 = WHITE_TERRACOTTA;
@@ -73,9 +73,9 @@ public class WoodedBadlandsSurfaceBuilder extends BadlandsSurfaceBuilder {
 							}
 						} else if (s > 86 + p * 2) {
 							if (bl) {
-								chunk.setBlockState(mutable, Blocks.COARSE_DIRT.getDefaultState(), false);
+								chunk.setBlockState(mutable, Blocks.field_10253.getDefaultState(), false);
 							} else {
-								chunk.setBlockState(mutable, Blocks.GRASS_BLOCK.getDefaultState(), false);
+								chunk.setBlockState(mutable, Blocks.field_10219.getDefaultState(), false);
 							}
 						} else if (s <= l + 3 + p) {
 							chunk.setBlockState(mutable, biome.getSurfaceConfig().getTopMaterial(), false);

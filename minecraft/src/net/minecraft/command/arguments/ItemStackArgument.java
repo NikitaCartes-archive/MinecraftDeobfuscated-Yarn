@@ -7,8 +7,8 @@ import javax.annotation.Nullable;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.NbtHelper;
 import net.minecraft.text.TranslatableText;
+import net.minecraft.util.TagHelper;
 import net.minecraft.util.registry.Registry;
 
 public class ItemStackArgument implements Predicate<ItemStack> {
@@ -19,26 +19,26 @@ public class ItemStackArgument implements Predicate<ItemStack> {
 	@Nullable
 	private final CompoundTag tag;
 
-	public ItemStackArgument(Item item, @Nullable CompoundTag tag) {
+	public ItemStackArgument(Item item, @Nullable CompoundTag compoundTag) {
 		this.item = item;
-		this.tag = tag;
+		this.tag = compoundTag;
 	}
 
 	public Item getItem() {
 		return this.item;
 	}
 
-	public boolean test(ItemStack itemStack) {
-		return itemStack.getItem() == this.item && NbtHelper.matches(this.tag, itemStack.getTag(), true);
+	public boolean method_9783(ItemStack itemStack) {
+		return itemStack.getItem() == this.item && TagHelper.areTagsEqual(this.tag, itemStack.getTag(), true);
 	}
 
-	public ItemStack createStack(int amount, boolean checkOverstack) throws CommandSyntaxException {
-		ItemStack itemStack = new ItemStack(this.item, amount);
+	public ItemStack createStack(int i, boolean bl) throws CommandSyntaxException {
+		ItemStack itemStack = new ItemStack(this.item, i);
 		if (this.tag != null) {
 			itemStack.setTag(this.tag);
 		}
 
-		if (checkOverstack && amount > itemStack.getMaxCount()) {
+		if (bl && i > itemStack.getMaxCount()) {
 			throw OVERSTACKED_EXCEPTION.create(Registry.ITEM.getId(this.item), itemStack.getMaxCount());
 		} else {
 			return itemStack;

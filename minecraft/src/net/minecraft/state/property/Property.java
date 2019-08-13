@@ -8,9 +8,9 @@ public interface Property<T extends Comparable<T>> {
 
 	Collection<T> getValues();
 
-	Class<T> getType();
+	Class<T> getValueType();
 
-	Optional<T> parse(String name);
+	Optional<T> getValue(String string);
 
-	String name(T value);
+	String getName(T comparable);
 }

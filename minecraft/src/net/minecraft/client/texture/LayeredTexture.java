@@ -18,8 +18,8 @@ public class LayeredTexture extends AbstractTexture {
 	private static final Logger LOGGER = LogManager.getLogger();
 	public final List<String> locations;
 
-	public LayeredTexture(String... locations) {
-		this.locations = Lists.<String>newArrayList(locations);
+	public LayeredTexture(String... strings) {
+		this.locations = Lists.<String>newArrayList(strings);
 		if (this.locations.isEmpty()) {
 			throw new IllegalStateException("Layered texture with no layers.");
 		}
@@ -50,7 +50,7 @@ public class LayeredTexture extends AbstractTexture {
 						try (NativeImage nativeImage2 = NativeImage.read(resource2.getInputStream())) {
 							for (int i = 0; i < nativeImage2.getHeight(); i++) {
 								for (int j = 0; j < nativeImage2.getWidth(); j++) {
-									nativeImage.blendPixel(j, i, nativeImage2.getPixelRgba(j, i));
+									nativeImage.blendPixel(j, i, nativeImage2.getPixelRGBA(j, i));
 								}
 							}
 						} catch (Throwable var91) {

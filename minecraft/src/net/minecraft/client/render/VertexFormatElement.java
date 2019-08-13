@@ -13,21 +13,21 @@ public class VertexFormatElement {
 	private final int index;
 	private final int count;
 
-	public VertexFormatElement(int index, VertexFormatElement.Format format, VertexFormatElement.Type type, int count) {
-		if (this.isValidType(index, type)) {
+	public VertexFormatElement(int i, VertexFormatElement.Format format, VertexFormatElement.Type type, int j) {
+		if (this.isValidType(i, type)) {
 			this.type = type;
 		} else {
 			LOGGER.warn("Multiple vertex elements of the same type other than UVs are not supported. Forcing type to UV.");
-			this.type = VertexFormatElement.Type.UV;
+			this.type = VertexFormatElement.Type.field_1636;
 		}
 
 		this.format = format;
-		this.index = index;
-		this.count = count;
+		this.index = i;
+		this.count = j;
 	}
 
-	private final boolean isValidType(int index, VertexFormatElement.Type type) {
-		return index == 0 || type == VertexFormatElement.Type.UV;
+	private final boolean isValidType(int i, VertexFormatElement.Type type) {
+		return i == 0 || type == VertexFormatElement.Type.field_1636;
 	}
 
 	public final VertexFormatElement.Format getFormat() {
@@ -55,14 +55,14 @@ public class VertexFormatElement {
 	}
 
 	public final boolean isPosition() {
-		return this.type == VertexFormatElement.Type.POSITION;
+		return this.type == VertexFormatElement.Type.field_1633;
 	}
 
-	public boolean equals(Object o) {
-		if (this == o) {
+	public boolean equals(Object object) {
+		if (this == object) {
 			return true;
-		} else if (o != null && this.getClass() == o.getClass()) {
-			VertexFormatElement vertexFormatElement = (VertexFormatElement)o;
+		} else if (object != null && this.getClass() == object.getClass()) {
+			VertexFormatElement vertexFormatElement = (VertexFormatElement)object;
 			if (this.count != vertexFormatElement.count) {
 				return false;
 			} else if (this.index != vertexFormatElement.index) {
@@ -84,22 +84,22 @@ public class VertexFormatElement {
 
 	@Environment(EnvType.CLIENT)
 	public static enum Format {
-		FLOAT(4, "Float", 5126),
+		field_1623(4, "Float", 5126),
 		UBYTE(1, "Unsigned Byte", 5121),
-		BYTE(1, "Byte", 5120),
+		field_1621(1, "Byte", 5120),
 		USHORT(2, "Unsigned Short", 5123),
-		SHORT(2, "Short", 5122),
+		field_1625(2, "Short", 5122),
 		UINT(4, "Unsigned Int", 5125),
-		INT(4, "Int", 5124);
+		field_1617(4, "Int", 5124);
 
 		private final int size;
 		private final String name;
 		private final int glId;
 
-		private Format(int size, String name, int glId) {
-			this.size = size;
-			this.name = name;
-			this.glId = glId;
+		private Format(int j, String string2, int k) {
+			this.size = j;
+			this.name = string2;
+			this.glId = k;
 		}
 
 		public int getSize() {
@@ -117,18 +117,18 @@ public class VertexFormatElement {
 
 	@Environment(EnvType.CLIENT)
 	public static enum Type {
-		POSITION("Position"),
-		NORMAL("Normal"),
+		field_1633("Position"),
+		field_1635("Normal"),
 		COLOR("Vertex Color"),
-		UV("UV"),
+		field_1636("UV"),
 		MATRIX("Bone Matrix"),
-		BLEND_WEIGHT("Blend Weight"),
-		PADDING("Padding");
+		field_1628("Blend Weight"),
+		field_1629("Padding");
 
 		private final String name;
 
-		private Type(String name) {
-			this.name = name;
+		private Type(String string2) {
+			this.name = string2;
 		}
 
 		public String getName() {

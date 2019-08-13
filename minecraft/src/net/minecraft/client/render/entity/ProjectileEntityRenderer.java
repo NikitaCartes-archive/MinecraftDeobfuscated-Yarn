@@ -15,7 +15,7 @@ public abstract class ProjectileEntityRenderer<T extends ProjectileEntity> exten
 		super(entityRenderDispatcher);
 	}
 
-	public void render(T projectileEntity, double d, double e, double f, float g, float h) {
+	public void method_3875(T projectileEntity, double d, double e, double f, float g, float h) {
 		this.bindEntityTexture(projectileEntity);
 		GlStateManager.color4f(1.0F, 1.0F, 1.0F, 1.0F);
 		GlStateManager.pushMatrix();
@@ -24,7 +24,7 @@ public abstract class ProjectileEntityRenderer<T extends ProjectileEntity> exten
 		GlStateManager.rotatef(MathHelper.lerp(h, projectileEntity.prevYaw, projectileEntity.yaw) - 90.0F, 0.0F, 1.0F, 0.0F);
 		GlStateManager.rotatef(MathHelper.lerp(h, projectileEntity.prevPitch, projectileEntity.pitch), 0.0F, 0.0F, 1.0F);
 		Tessellator tessellator = Tessellator.getInstance();
-		BufferBuilder bufferBuilder = tessellator.getBuffer();
+		BufferBuilder bufferBuilder = tessellator.getBufferBuilder();
 		int i = 0;
 		float j = 0.0F;
 		float k = 0.5F;
@@ -51,14 +51,14 @@ public abstract class ProjectileEntityRenderer<T extends ProjectileEntity> exten
 		}
 
 		GlStateManager.normal3f(0.05625F, 0.0F, 0.0F);
-		bufferBuilder.begin(7, VertexFormats.POSITION_TEXTURE);
+		bufferBuilder.begin(7, VertexFormats.POSITION_UV);
 		bufferBuilder.vertex(-7.0, -2.0, -2.0).texture(0.0, 0.15625).next();
 		bufferBuilder.vertex(-7.0, -2.0, 2.0).texture(0.15625, 0.15625).next();
 		bufferBuilder.vertex(-7.0, 2.0, 2.0).texture(0.15625, 0.3125).next();
 		bufferBuilder.vertex(-7.0, 2.0, -2.0).texture(0.0, 0.3125).next();
 		tessellator.draw();
 		GlStateManager.normal3f(-0.05625F, 0.0F, 0.0F);
-		bufferBuilder.begin(7, VertexFormats.POSITION_TEXTURE);
+		bufferBuilder.begin(7, VertexFormats.POSITION_UV);
 		bufferBuilder.vertex(-7.0, 2.0, -2.0).texture(0.0, 0.15625).next();
 		bufferBuilder.vertex(-7.0, 2.0, 2.0).texture(0.15625, 0.15625).next();
 		bufferBuilder.vertex(-7.0, -2.0, 2.0).texture(0.15625, 0.3125).next();
@@ -68,7 +68,7 @@ public abstract class ProjectileEntityRenderer<T extends ProjectileEntity> exten
 		for (int u = 0; u < 4; u++) {
 			GlStateManager.rotatef(90.0F, 1.0F, 0.0F, 0.0F);
 			GlStateManager.normal3f(0.0F, 0.0F, 0.05625F);
-			bufferBuilder.begin(7, VertexFormats.POSITION_TEXTURE);
+			bufferBuilder.begin(7, VertexFormats.POSITION_UV);
 			bufferBuilder.vertex(-8.0, -2.0, 0.0).texture(0.0, 0.0).next();
 			bufferBuilder.vertex(8.0, -2.0, 0.0).texture(0.5, 0.0).next();
 			bufferBuilder.vertex(8.0, 2.0, 0.0).texture(0.5, 0.15625).next();

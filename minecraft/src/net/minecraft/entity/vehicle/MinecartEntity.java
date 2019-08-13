@@ -10,19 +10,19 @@ public class MinecartEntity extends AbstractMinecartEntity {
 		super(entityType, world);
 	}
 
-	public MinecartEntity(World world, double x, double y, double z) {
-		super(EntityType.MINECART, world, x, y, z);
+	public MinecartEntity(World world, double d, double e, double f) {
+		super(EntityType.field_6096, world, d, e, f);
 	}
 
 	@Override
-	public boolean interact(PlayerEntity player, Hand hand) {
-		if (player.isSneaking()) {
+	public boolean interact(PlayerEntity playerEntity, Hand hand) {
+		if (playerEntity.isSneaking()) {
 			return false;
 		} else if (this.hasPassengers()) {
 			return true;
 		} else {
 			if (!this.world.isClient) {
-				player.startRiding(this);
+				playerEntity.startRiding(this);
 			}
 
 			return true;
@@ -30,8 +30,8 @@ public class MinecartEntity extends AbstractMinecartEntity {
 	}
 
 	@Override
-	public void onActivatorRail(int x, int y, int z, boolean powered) {
-		if (powered) {
+	public void onActivatorRail(int i, int j, int k, boolean bl) {
+		if (bl) {
 			if (this.hasPassengers()) {
 				this.removeAllPassengers();
 			}
@@ -47,6 +47,6 @@ public class MinecartEntity extends AbstractMinecartEntity {
 
 	@Override
 	public AbstractMinecartEntity.Type getMinecartType() {
-		return AbstractMinecartEntity.Type.RIDEABLE;
+		return AbstractMinecartEntity.Type.field_7674;
 	}
 }

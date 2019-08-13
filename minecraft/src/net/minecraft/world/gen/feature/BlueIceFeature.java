@@ -14,22 +14,22 @@ import net.minecraft.world.gen.chunk.ChunkGenerator;
 import net.minecraft.world.gen.chunk.ChunkGeneratorConfig;
 
 public class BlueIceFeature extends Feature<DefaultFeatureConfig> {
-	public BlueIceFeature(Function<Dynamic<?>, ? extends DefaultFeatureConfig> configFactory) {
-		super(configFactory);
+	public BlueIceFeature(Function<Dynamic<?>, ? extends DefaultFeatureConfig> function) {
+		super(function);
 	}
 
-	public boolean generate(
+	public boolean method_12818(
 		IWorld iWorld, ChunkGenerator<? extends ChunkGeneratorConfig> chunkGenerator, Random random, BlockPos blockPos, DefaultFeatureConfig defaultFeatureConfig
 	) {
 		if (blockPos.getY() > iWorld.getSeaLevel() - 1) {
 			return false;
-		} else if (iWorld.getBlockState(blockPos).getBlock() != Blocks.WATER && iWorld.getBlockState(blockPos.down()).getBlock() != Blocks.WATER) {
+		} else if (iWorld.getBlockState(blockPos).getBlock() != Blocks.field_10382 && iWorld.getBlockState(blockPos.down()).getBlock() != Blocks.field_10382) {
 			return false;
 		} else {
 			boolean bl = false;
 
 			for (Direction direction : Direction.values()) {
-				if (direction != Direction.DOWN && iWorld.getBlockState(blockPos.offset(direction)).getBlock() == Blocks.PACKED_ICE) {
+				if (direction != Direction.field_11033 && iWorld.getBlockState(blockPos.offset(direction)).getBlock() == Blocks.field_10225) {
 					bl = true;
 					break;
 				}
@@ -38,7 +38,7 @@ public class BlueIceFeature extends Feature<DefaultFeatureConfig> {
 			if (!bl) {
 				return false;
 			} else {
-				iWorld.setBlockState(blockPos, Blocks.BLUE_ICE.getDefaultState(), 2);
+				iWorld.setBlockState(blockPos, Blocks.field_10384.getDefaultState(), 2);
 
 				for (int i = 0; i < 200; i++) {
 					int j = random.nextInt(5) - random.nextInt(6);
@@ -51,11 +51,11 @@ public class BlueIceFeature extends Feature<DefaultFeatureConfig> {
 						BlockPos blockPos2 = blockPos.add(random.nextInt(k) - random.nextInt(k), j, random.nextInt(k) - random.nextInt(k));
 						BlockState blockState = iWorld.getBlockState(blockPos2);
 						Block block = blockState.getBlock();
-						if (blockState.getMaterial() == Material.AIR || block == Blocks.WATER || block == Blocks.PACKED_ICE || block == Blocks.ICE) {
+						if (blockState.getMaterial() == Material.AIR || block == Blocks.field_10382 || block == Blocks.field_10225 || block == Blocks.field_10295) {
 							for (Direction direction2 : Direction.values()) {
 								Block block2 = iWorld.getBlockState(blockPos2.offset(direction2)).getBlock();
-								if (block2 == Blocks.BLUE_ICE) {
-									iWorld.setBlockState(blockPos2, Blocks.BLUE_ICE.getDefaultState(), 2);
+								if (block2 == Blocks.field_10384) {
+									iWorld.setBlockState(blockPos2, Blocks.field_10384.getDefaultState(), 2);
 									break;
 								}
 							}

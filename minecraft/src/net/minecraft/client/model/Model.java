@@ -8,11 +8,11 @@ import net.fabricmc.api.Environment;
 
 @Environment(EnvType.CLIENT)
 public class Model {
-	public final List<ModelPart> cuboidList = Lists.<ModelPart>newArrayList();
+	public final List<Cuboid> cuboidList = Lists.<Cuboid>newArrayList();
 	public int textureWidth = 64;
 	public int textureHeight = 32;
 
-	public ModelPart getRandomCuboid(Random rand) {
-		return (ModelPart)this.cuboidList.get(rand.nextInt(this.cuboidList.size()));
+	public Cuboid getRandomCuboid(Random random) {
+		return (Cuboid)this.cuboidList.get(random.nextInt(this.cuboidList.size()));
 	}
 }

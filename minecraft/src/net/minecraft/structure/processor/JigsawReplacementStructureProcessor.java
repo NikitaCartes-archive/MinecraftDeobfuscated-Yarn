@@ -11,7 +11,7 @@ import net.minecraft.command.arguments.BlockArgumentParser;
 import net.minecraft.structure.Structure;
 import net.minecraft.structure.StructurePlacementData;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.CollisionView;
+import net.minecraft.world.ViewableWorld;
 
 public class JigsawReplacementStructureProcessor extends StructureProcessor {
 	public static final JigsawReplacementStructureProcessor INSTANCE = new JigsawReplacementStructureProcessor();
@@ -22,14 +22,14 @@ public class JigsawReplacementStructureProcessor extends StructureProcessor {
 	@Nullable
 	@Override
 	public Structure.StructureBlockInfo process(
-		CollisionView world,
-		BlockPos pos,
+		ViewableWorld viewableWorld,
+		BlockPos blockPos,
 		Structure.StructureBlockInfo structureBlockInfo,
 		Structure.StructureBlockInfo structureBlockInfo2,
-		StructurePlacementData placementData
+		StructurePlacementData structurePlacementData
 	) {
 		Block block = structureBlockInfo2.state.getBlock();
-		if (block != Blocks.JIGSAW) {
+		if (block != Blocks.field_16540) {
 			return structureBlockInfo2;
 		} else {
 			String string = structureBlockInfo2.tag.getString("final_state");
@@ -41,7 +41,7 @@ public class JigsawReplacementStructureProcessor extends StructureProcessor {
 				throw new RuntimeException(var10);
 			}
 
-			return blockArgumentParser.getBlockState().getBlock() == Blocks.STRUCTURE_VOID
+			return blockArgumentParser.getBlockState().getBlock() == Blocks.field_10369
 				? null
 				: new Structure.StructureBlockInfo(structureBlockInfo2.pos, blockArgumentParser.getBlockState(), null);
 		}
@@ -49,7 +49,7 @@ public class JigsawReplacementStructureProcessor extends StructureProcessor {
 
 	@Override
 	protected StructureProcessorType getType() {
-		return StructureProcessorType.JIGSAW_REPLACEMENT;
+		return StructureProcessorType.field_16991;
 	}
 
 	@Override

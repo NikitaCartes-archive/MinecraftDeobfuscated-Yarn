@@ -8,16 +8,16 @@ import net.minecraft.util.Identifier;
 public class FluidTags {
 	private static TagContainer<Fluid> container = new TagContainer<>(identifier -> Optional.empty(), "", false, "");
 	private static int latestVersion;
-	public static final Tag<Fluid> WATER = register("water");
-	public static final Tag<Fluid> LAVA = register("lava");
+	public static final Tag<Fluid> field_15517 = register("water");
+	public static final Tag<Fluid> field_15518 = register("lava");
 
-	public static void setContainer(TagContainer<Fluid> container) {
-		FluidTags.container = container;
+	public static void setContainer(TagContainer<Fluid> tagContainer) {
+		container = tagContainer;
 		latestVersion++;
 	}
 
-	private static Tag<Fluid> register(String id) {
-		return new FluidTags.CachingTag(new Identifier(id));
+	private static Tag<Fluid> register(String string) {
+		return new FluidTags.CachingTag(new Identifier(string));
 	}
 
 	public static class CachingTag extends Tag<Fluid> {
@@ -28,7 +28,7 @@ public class FluidTags {
 			super(identifier);
 		}
 
-		public boolean contains(Fluid fluid) {
+		public boolean method_15101(Fluid fluid) {
 			if (this.version != FluidTags.latestVersion) {
 				this.delegate = FluidTags.container.getOrCreate(this.getId());
 				this.version = FluidTags.latestVersion;

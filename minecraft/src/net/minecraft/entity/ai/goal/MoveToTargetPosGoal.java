@@ -3,7 +3,7 @@ package net.minecraft.entity.ai.goal;
 import java.util.EnumSet;
 import net.minecraft.entity.mob.MobEntityWithAi;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.CollisionView;
+import net.minecraft.world.ViewableWorld;
 
 public abstract class MoveToTargetPosGoal extends Goal {
 	protected final MobEntityWithAi mob;
@@ -17,17 +17,17 @@ public abstract class MoveToTargetPosGoal extends Goal {
 	private final int maxYDifference;
 	protected int lowestY;
 
-	public MoveToTargetPosGoal(MobEntityWithAi mob, double speed, int range) {
-		this(mob, speed, range, 1);
+	public MoveToTargetPosGoal(MobEntityWithAi mobEntityWithAi, double d, int i) {
+		this(mobEntityWithAi, d, i, 1);
 	}
 
-	public MoveToTargetPosGoal(MobEntityWithAi mob, double speed, int range, int maxYDifference) {
-		this.mob = mob;
-		this.speed = speed;
-		this.range = range;
+	public MoveToTargetPosGoal(MobEntityWithAi mobEntityWithAi, double d, int i, int j) {
+		this.mob = mobEntityWithAi;
+		this.speed = d;
+		this.range = i;
 		this.lowestY = 0;
-		this.maxYDifference = maxYDifference;
-		this.setControls(EnumSet.of(Goal.Control.MOVE, Goal.Control.JUMP));
+		this.maxYDifference = j;
+		this.setControls(EnumSet.of(Goal.Control.field_18405, Goal.Control.field_18407));
 	}
 
 	@Override
@@ -41,8 +41,8 @@ public abstract class MoveToTargetPosGoal extends Goal {
 		}
 	}
 
-	protected int getInterval(MobEntityWithAi mob) {
-		return 200 + mob.getRandom().nextInt(200);
+	protected int getInterval(MobEntityWithAi mobEntityWithAi) {
+		return 200 + mobEntityWithAi.getRand().nextInt(200);
 	}
 
 	@Override
@@ -54,7 +54,7 @@ public abstract class MoveToTargetPosGoal extends Goal {
 	public void start() {
 		this.startMovingToTarget();
 		this.tryingTime = 0;
-		this.safeWaitingTime = this.mob.getRandom().nextInt(this.mob.getRandom().nextInt(1200) + 1200) + 1200;
+		this.safeWaitingTime = this.mob.getRand().nextInt(this.mob.getRand().nextInt(1200) + 1200) + 1200;
 	}
 
 	protected void startMovingToTarget() {
@@ -114,5 +114,5 @@ public abstract class MoveToTargetPosGoal extends Goal {
 		return false;
 	}
 
-	protected abstract boolean isTargetPos(CollisionView world, BlockPos pos);
+	protected abstract boolean isTargetPos(ViewableWorld viewableWorld, BlockPos blockPos);
 }

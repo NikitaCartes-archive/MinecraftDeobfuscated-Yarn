@@ -10,10 +10,10 @@ public class AttackWithOwnerGoal extends TrackTargetGoal {
 	private LivingEntity attacking;
 	private int lastAttackTime;
 
-	public AttackWithOwnerGoal(TameableEntity tameable) {
-		super(tameable, false);
-		this.tameable = tameable;
-		this.setControls(EnumSet.of(Goal.Control.TARGET));
+	public AttackWithOwnerGoal(TameableEntity tameableEntity) {
+		super(tameableEntity, false);
+		this.tameable = tameableEntity;
+		this.setControls(EnumSet.of(Goal.Control.field_18408));
 	}
 
 	@Override

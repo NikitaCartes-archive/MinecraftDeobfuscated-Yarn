@@ -30,7 +30,7 @@ import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 
 public class ChickenEntity extends AnimalEntity {
-	private static final Ingredient BREEDING_INGREDIENT = Ingredient.ofItems(Items.WHEAT_SEEDS, Items.MELON_SEEDS, Items.PUMPKIN_SEEDS, Items.BEETROOT_SEEDS);
+	private static final Ingredient BREEDING_INGREDIENT = Ingredient.ofItems(Items.field_8317, Items.field_8188, Items.field_8706, Items.field_8309);
 	public float field_6741;
 	public float field_6743;
 	public float field_6738;
@@ -41,7 +41,7 @@ public class ChickenEntity extends AnimalEntity {
 
 	public ChickenEntity(EntityType<? extends ChickenEntity> entityType, World world) {
 		super(entityType, world);
-		this.setPathfindingPenalty(PathNodeType.WATER, 0.0F);
+		this.setPathNodeTypeWeight(PathNodeType.field_18, 0.0F);
 	}
 
 	@Override
@@ -57,8 +57,8 @@ public class ChickenEntity extends AnimalEntity {
 	}
 
 	@Override
-	protected float getActiveEyeHeight(EntityPose pose, EntityDimensions dimensions) {
-		return this.isBaby() ? dimensions.height * 0.85F : dimensions.height * 0.92F;
+	protected float getActiveEyeHeight(EntityPose entityPose, EntityDimensions entityDimensions) {
+		return this.isBaby() ? entityDimensions.height * 0.85F : entityDimensions.height * 0.92F;
 	}
 
 	@Override
@@ -87,83 +87,81 @@ public class ChickenEntity extends AnimalEntity {
 
 		this.field_6741 = this.field_6741 + this.field_6737 * 2.0F;
 		if (!this.world.isClient && this.isAlive() && !this.isBaby() && !this.hasJockey() && --this.eggLayTime <= 0) {
-			this.playSound(SoundEvents.ENTITY_CHICKEN_EGG, 1.0F, (this.random.nextFloat() - this.random.nextFloat()) * 0.2F + 1.0F);
-			this.dropItem(Items.EGG);
+			this.playSound(SoundEvents.field_15219, 1.0F, (this.random.nextFloat() - this.random.nextFloat()) * 0.2F + 1.0F);
+			this.dropItem(Items.field_8803);
 			this.eggLayTime = this.random.nextInt(6000) + 6000;
 		}
 	}
 
 	@Override
-	public void handleFallDamage(float fallDistance, float damageMultiplier) {
+	public void handleFallDamage(float f, float g) {
 	}
 
 	@Override
 	protected SoundEvent getAmbientSound() {
-		return SoundEvents.ENTITY_CHICKEN_AMBIENT;
+		return SoundEvents.field_14871;
 	}
 
 	@Override
-	protected SoundEvent getHurtSound(DamageSource source) {
-		return SoundEvents.ENTITY_CHICKEN_HURT;
+	protected SoundEvent getHurtSound(DamageSource damageSource) {
+		return SoundEvents.field_14601;
 	}
 
 	@Override
 	protected SoundEvent getDeathSound() {
-		return SoundEvents.ENTITY_CHICKEN_DEATH;
+		return SoundEvents.field_15140;
 	}
 
 	@Override
-	protected void playStepSound(BlockPos pos, BlockState state) {
-		this.playSound(SoundEvents.ENTITY_CHICKEN_STEP, 0.15F, 1.0F);
+	protected void playStepSound(BlockPos blockPos, BlockState blockState) {
+		this.playSound(SoundEvents.field_14685, 0.15F, 1.0F);
 	}
 
-	public ChickenEntity createChild(PassiveEntity passiveEntity) {
-		return EntityType.CHICKEN.create(this.world);
-	}
-
-	@Override
-	public boolean isBreedingItem(ItemStack stack) {
-		return BREEDING_INGREDIENT.test(stack);
+	public ChickenEntity method_6471(PassiveEntity passiveEntity) {
+		return EntityType.field_6132.create(this.world);
 	}
 
 	@Override
-	protected int getCurrentExperience(PlayerEntity player) {
-		return this.hasJockey() ? 10 : super.getCurrentExperience(player);
+	public boolean isBreedingItem(ItemStack itemStack) {
+		return BREEDING_INGREDIENT.method_8093(itemStack);
 	}
 
 	@Override
-	public void readCustomDataFromTag(CompoundTag tag) {
-		super.readCustomDataFromTag(tag);
-		this.jockey = tag.getBoolean("IsChickenJockey");
-		if (tag.contains("EggLayTime")) {
-			this.eggLayTime = tag.getInt("EggLayTime");
+	protected int getCurrentExperience(PlayerEntity playerEntity) {
+		return this.hasJockey() ? 10 : super.getCurrentExperience(playerEntity);
+	}
+
+	@Override
+	public void readCustomDataFromTag(CompoundTag compoundTag) {
+		super.readCustomDataFromTag(compoundTag);
+		this.jockey = compoundTag.getBoolean("IsChickenJockey");
+		if (compoundTag.containsKey("EggLayTime")) {
+			this.eggLayTime = compoundTag.getInt("EggLayTime");
 		}
 	}
 
 	@Override
-	public void writeCustomDataToTag(CompoundTag tag) {
-		super.writeCustomDataToTag(tag);
-		tag.putBoolean("IsChickenJockey", this.jockey);
-		tag.putInt("EggLayTime", this.eggLayTime);
+	public void writeCustomDataToTag(CompoundTag compoundTag) {
+		super.writeCustomDataToTag(compoundTag);
+		compoundTag.putBoolean("IsChickenJockey", this.jockey);
+		compoundTag.putInt("EggLayTime", this.eggLayTime);
 	}
 
 	@Override
-	public boolean canImmediatelyDespawn(double distanceSquared) {
+	public boolean canImmediatelyDespawn(double d) {
 		return this.hasJockey() && !this.hasPassengers();
 	}
 
 	@Override
-	public void updatePassengerPosition(Entity passenger) {
-		super.updatePassengerPosition(passenger);
+	public void updatePassengerPosition(Entity entity) {
+		super.updatePassengerPosition(entity);
 		float f = MathHelper.sin(this.field_6283 * (float) (Math.PI / 180.0));
 		float g = MathHelper.cos(this.field_6283 * (float) (Math.PI / 180.0));
 		float h = 0.1F;
 		float i = 0.0F;
-		passenger.updatePosition(
-			this.x + (double)(0.1F * f), this.y + (double)(this.getHeight() * 0.5F) + passenger.getHeightOffset() + 0.0, this.z - (double)(0.1F * g)
-		);
-		if (passenger instanceof LivingEntity) {
-			((LivingEntity)passenger).field_6283 = this.field_6283;
+		entity.setPosition(this.x + (double)(0.1F * f), this.y + (double)(this.getHeight() * 0.5F) + entity.getHeightOffset() + 0.0, this.z - (double)(0.1F * g));
+		if (entity instanceof LivingEntity) {
+			((LivingEntity)entity).field_6283 = this.field_6283;
 		}
 	}
 
@@ -171,7 +169,7 @@ public class ChickenEntity extends AnimalEntity {
 		return this.jockey;
 	}
 
-	public void setHasJockey(boolean hasJockey) {
-		this.jockey = hasJockey;
+	public void setHasJockey(boolean bl) {
+		this.jockey = bl;
 	}
 }

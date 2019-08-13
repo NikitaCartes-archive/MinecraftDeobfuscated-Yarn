@@ -2,9 +2,9 @@ package net.minecraft.fluid;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.block.BlockRenderLayer;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
-import net.minecraft.client.render.RenderLayer;
 import net.minecraft.item.Item;
 import net.minecraft.item.Items;
 import net.minecraft.util.math.BlockPos;
@@ -13,13 +13,13 @@ import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.util.shape.VoxelShapes;
 import net.minecraft.world.BlockView;
-import net.minecraft.world.CollisionView;
+import net.minecraft.world.ViewableWorld;
 
 public class EmptyFluid extends Fluid {
 	@Environment(EnvType.CLIENT)
 	@Override
-	public RenderLayer getRenderLayer() {
-		return RenderLayer.SOLID;
+	public BlockRenderLayer getRenderLayer() {
+		return BlockRenderLayer.field_9178;
 	}
 
 	@Override
@@ -28,17 +28,17 @@ public class EmptyFluid extends Fluid {
 	}
 
 	@Override
-	public boolean canBeReplacedWith(FluidState state, BlockView world, BlockPos pos, Fluid fluid, Direction direction) {
+	public boolean method_15777(FluidState fluidState, BlockView blockView, BlockPos blockPos, Fluid fluid, Direction direction) {
 		return true;
 	}
 
 	@Override
-	public Vec3d getVelocity(BlockView world, BlockPos pos, FluidState state) {
+	public Vec3d getVelocity(BlockView blockView, BlockPos blockPos, FluidState fluidState) {
 		return Vec3d.ZERO;
 	}
 
 	@Override
-	public int getTickRate(CollisionView collisionView) {
+	public int getTickRate(ViewableWorld viewableWorld) {
 		return 0;
 	}
 
@@ -53,7 +53,7 @@ public class EmptyFluid extends Fluid {
 	}
 
 	@Override
-	public float getHeight(FluidState state, BlockView world, BlockPos pos) {
+	public float getHeight(FluidState fluidState, BlockView blockView, BlockPos blockPos) {
 		return 0.0F;
 	}
 
@@ -63,22 +63,22 @@ public class EmptyFluid extends Fluid {
 	}
 
 	@Override
-	protected BlockState toBlockState(FluidState state) {
-		return Blocks.AIR.getDefaultState();
+	protected BlockState toBlockState(FluidState fluidState) {
+		return Blocks.field_10124.getDefaultState();
 	}
 
 	@Override
-	public boolean isStill(FluidState state) {
+	public boolean isStill(FluidState fluidState) {
 		return false;
 	}
 
 	@Override
-	public int getLevel(FluidState state) {
+	public int getLevel(FluidState fluidState) {
 		return 0;
 	}
 
 	@Override
-	public VoxelShape getShape(FluidState state, BlockView world, BlockPos pos) {
+	public VoxelShape getShape(FluidState fluidState, BlockView blockView, BlockPos blockPos) {
 		return VoxelShapes.empty();
 	}
 }

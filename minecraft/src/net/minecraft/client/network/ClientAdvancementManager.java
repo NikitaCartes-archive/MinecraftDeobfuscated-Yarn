@@ -10,9 +10,9 @@ import net.minecraft.advancement.Advancement;
 import net.minecraft.advancement.AdvancementManager;
 import net.minecraft.advancement.AdvancementProgress;
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.network.packet.AdvancementUpdateS2CPacket;
 import net.minecraft.client.toast.AdvancementToast;
-import net.minecraft.network.packet.c2s.play.AdvancementTabC2SPacket;
-import net.minecraft.network.packet.s2c.play.AdvancementUpdateS2CPacket;
+import net.minecraft.server.network.packet.AdvancementTabC2SPacket;
 import net.minecraft.util.Identifier;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -32,16 +32,16 @@ public class ClientAdvancementManager {
 		this.client = minecraftClient;
 	}
 
-	public void onAdvancements(AdvancementUpdateS2CPacket packet) {
-		if (packet.shouldClearCurrent()) {
+	public void onAdvancements(AdvancementUpdateS2CPacket advancementUpdateS2CPacket) {
+		if (advancementUpdateS2CPacket.shouldClearCurrent()) {
 			this.manager.clear();
 			this.advancementProgresses.clear();
 		}
 
-		this.manager.removeAll(packet.getAdvancementIdsToRemove());
-		this.manager.load(packet.getAdvancementsToEarn());
+		this.manager.removeAll(advancementUpdateS2CPacket.getAdvancementIdsToRemove());
+		this.manager.load(advancementUpdateS2CPacket.getAdvancementsToEarn());
 
-		for (Entry<Identifier, AdvancementProgress> entry : packet.getAdvancementsToProgress().entrySet()) {
+		for (Entry<Identifier, AdvancementProgress> entry : advancementUpdateS2CPacket.getAdvancementsToProgress().entrySet()) {
 			Advancement advancement = this.manager.get((Identifier)entry.getKey());
 			if (advancement != null) {
 				AdvancementProgress advancementProgress = (AdvancementProgress)entry.getValue();
@@ -51,7 +51,10 @@ public class ClientAdvancementManager {
 					this.listener.setProgress(advancement, advancementProgress);
 				}
 
-				if (!packet.shouldClearCurrent() && advancementProgress.isDone() && advancement.getDisplay() != null && advancement.getDisplay().shouldShowToast()) {
+				if (!advancementUpdateS2CPacket.shouldClearCurrent()
+					&& advancementProgress.isDone()
+					&& advancement.getDisplay() != null
+					&& advancement.getDisplay().shouldShowToast()) {
 					this.client.getToastManager().add(new AdvancementToast(advancement));
 				}
 			} else {
@@ -64,16 +67,16 @@ public class ClientAdvancementManager {
 		return this.manager;
 	}
 
-	public void selectTab(@Nullable Advancement tab, boolean local) {
+	public void selectTab(@Nullable Advancement advancement, boolean bl) {
 		ClientPlayNetworkHandler clientPlayNetworkHandler = this.client.getNetworkHandler();
-		if (clientPlayNetworkHandler != null && tab != null && local) {
-			clientPlayNetworkHandler.sendPacket(AdvancementTabC2SPacket.open(tab));
+		if (clientPlayNetworkHandler != null && advancement != null && bl) {
+			clientPlayNetworkHandler.sendPacket(AdvancementTabC2SPacket.open(advancement));
 		}
 
-		if (this.selectedTab != tab) {
-			this.selectedTab = tab;
+		if (this.selectedTab != advancement) {
+			this.selectedTab = advancement;
 			if (this.listener != null) {
-				this.listener.selectTab(tab);
+				this.listener.selectTab(advancement);
 			}
 		}
 	}

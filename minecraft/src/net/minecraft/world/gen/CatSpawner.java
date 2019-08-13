@@ -10,18 +10,18 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
+import net.minecraft.village.PointOfInterestStorage;
+import net.minecraft.village.PointOfInterestType;
 import net.minecraft.world.GameRules;
 import net.minecraft.world.SpawnHelper;
 import net.minecraft.world.World;
 import net.minecraft.world.gen.feature.Feature;
-import net.minecraft.world.poi.PointOfInterestStorage;
-import net.minecraft.world.poi.PointOfInterestType;
 
 public class CatSpawner {
 	private int ticksUntilNextSpawn;
 
-	public int spawn(ServerWorld serverWorld, boolean spawnMonsters, boolean spawnAnimals) {
-		if (spawnAnimals && serverWorld.getGameRules().getBoolean(GameRules.DO_MOB_SPAWNING)) {
+	public int spawn(ServerWorld serverWorld, boolean bl, boolean bl2) {
+		if (bl2 && serverWorld.getGameRules().getBoolean(GameRules.field_19390)) {
 			this.ticksUntilNextSpawn--;
 			if (this.ticksUntilNextSpawn > 0) {
 				return 0;
@@ -40,7 +40,7 @@ public class CatSpawner {
 					)) {
 						return 0;
 					} else {
-						if (SpawnHelper.canSpawn(SpawnRestriction.Location.ON_GROUND, serverWorld, blockPos, EntityType.CAT)) {
+						if (SpawnHelper.canSpawn(SpawnRestriction.Location.field_6317, serverWorld, blockPos, EntityType.field_16281)) {
 							if (serverWorld.isNearOccupiedPointOfInterest(blockPos, 2)) {
 								return this.spawnInHouse(serverWorld, blockPos);
 							}
@@ -59,32 +59,33 @@ public class CatSpawner {
 		}
 	}
 
-	private int spawnInHouse(ServerWorld world, BlockPos pos) {
+	private int spawnInHouse(ServerWorld serverWorld, BlockPos blockPos) {
 		int i = 48;
-		if (world.getPointOfInterestStorage().count(PointOfInterestType.HOME.getCompletionCondition(), pos, 48, PointOfInterestStorage.OccupationStatus.IS_OCCUPIED)
+		if (serverWorld.getPointOfInterestStorage()
+				.count(PointOfInterestType.field_18517.getCompletionCondition(), blockPos, 48, PointOfInterestStorage.OccupationStatus.field_18488)
 			> 4L) {
-			List<CatEntity> list = world.getNonSpectatingEntities(CatEntity.class, new Box(pos).expand(48.0, 8.0, 48.0));
+			List<CatEntity> list = serverWorld.getEntities(CatEntity.class, new Box(blockPos).expand(48.0, 8.0, 48.0));
 			if (list.size() < 5) {
-				return this.spawn(pos, world);
+				return this.spawn(blockPos, serverWorld);
 			}
 		}
 
 		return 0;
 	}
 
-	private int spawnInSwampHut(World world, BlockPos pos) {
+	private int spawnInSwampHut(World world, BlockPos blockPos) {
 		int i = 16;
-		List<CatEntity> list = world.getNonSpectatingEntities(CatEntity.class, new Box(pos).expand(16.0, 8.0, 16.0));
-		return list.size() < 1 ? this.spawn(pos, world) : 0;
+		List<CatEntity> list = world.getEntities(CatEntity.class, new Box(blockPos).expand(16.0, 8.0, 16.0));
+		return list.size() < 1 ? this.spawn(blockPos, world) : 0;
 	}
 
-	private int spawn(BlockPos pos, World world) {
-		CatEntity catEntity = EntityType.CAT.create(world);
+	private int spawn(BlockPos blockPos, World world) {
+		CatEntity catEntity = EntityType.field_16281.create(world);
 		if (catEntity == null) {
 			return 0;
 		} else {
-			catEntity.initialize(world, world.getLocalDifficulty(pos), SpawnType.NATURAL, null, null);
-			catEntity.refreshPositionAndAngles(pos, 0.0F, 0.0F);
+			catEntity.initialize(world, world.getLocalDifficulty(blockPos), SpawnType.field_16459, null, null);
+			catEntity.setPositionAndAngles(blockPos, 0.0F, 0.0F);
 			world.spawnEntity(catEntity);
 			return 1;
 		}

@@ -37,54 +37,54 @@ public class ZombieHorseEntity extends HorseBaseEntity {
 	@Override
 	protected SoundEvent getAmbientSound() {
 		super.getAmbientSound();
-		return SoundEvents.ENTITY_ZOMBIE_HORSE_AMBIENT;
+		return SoundEvents.field_15154;
 	}
 
 	@Override
 	protected SoundEvent getDeathSound() {
 		super.getDeathSound();
-		return SoundEvents.ENTITY_ZOMBIE_HORSE_DEATH;
+		return SoundEvents.field_14543;
 	}
 
 	@Override
-	protected SoundEvent getHurtSound(DamageSource source) {
-		super.getHurtSound(source);
-		return SoundEvents.ENTITY_ZOMBIE_HORSE_HURT;
+	protected SoundEvent getHurtSound(DamageSource damageSource) {
+		super.getHurtSound(damageSource);
+		return SoundEvents.field_15179;
 	}
 
 	@Nullable
 	@Override
-	public PassiveEntity createChild(PassiveEntity mate) {
-		return EntityType.ZOMBIE_HORSE.create(this.world);
+	public PassiveEntity createChild(PassiveEntity passiveEntity) {
+		return EntityType.field_6048.create(this.world);
 	}
 
 	@Override
-	public boolean interactMob(PlayerEntity player, Hand hand) {
-		ItemStack itemStack = player.getStackInHand(hand);
+	public boolean interactMob(PlayerEntity playerEntity, Hand hand) {
+		ItemStack itemStack = playerEntity.getStackInHand(hand);
 		if (itemStack.getItem() instanceof SpawnEggItem) {
-			return super.interactMob(player, hand);
+			return super.interactMob(playerEntity, hand);
 		} else if (!this.isTame()) {
 			return false;
 		} else if (this.isBaby()) {
-			return super.interactMob(player, hand);
-		} else if (player.isSneaking()) {
-			this.openInventory(player);
+			return super.interactMob(playerEntity, hand);
+		} else if (playerEntity.isSneaking()) {
+			this.openInventory(playerEntity);
 			return true;
 		} else if (this.hasPassengers()) {
-			return super.interactMob(player, hand);
+			return super.interactMob(playerEntity, hand);
 		} else {
 			if (!itemStack.isEmpty()) {
-				if (!this.isSaddled() && itemStack.getItem() == Items.SADDLE) {
-					this.openInventory(player);
+				if (!this.isSaddled() && itemStack.getItem() == Items.field_8175) {
+					this.openInventory(playerEntity);
 					return true;
 				}
 
-				if (itemStack.useOnEntity(player, this, hand)) {
+				if (itemStack.useOnEntity(playerEntity, this, hand)) {
 					return true;
 				}
 			}
 
-			this.putPlayerOnBack(player);
+			this.putPlayerOnBack(playerEntity);
 			return true;
 		}
 	}

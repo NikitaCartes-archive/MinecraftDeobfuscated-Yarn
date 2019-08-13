@@ -48,7 +48,7 @@ public class PlayerEntityRenderer extends LivingEntityRenderer<AbstractClientPla
 		this.addFeature(new TridentRiptideFeatureRenderer<>(this));
 	}
 
-	public void render(AbstractClientPlayerEntity abstractClientPlayerEntity, double d, double e, double f, float g, float h) {
+	public void method_4215(AbstractClientPlayerEntity abstractClientPlayerEntity, double d, double e, double f, float g, float h) {
 		if (!abstractClientPlayerEntity.isMainPlayer() || this.renderManager.camera.getFocusedEntity() == abstractClientPlayerEntity) {
 			double i = e;
 			if (abstractClientPlayerEntity.isInSneakingPose()) {
@@ -56,9 +56,9 @@ public class PlayerEntityRenderer extends LivingEntityRenderer<AbstractClientPla
 			}
 
 			this.setModelPose(abstractClientPlayerEntity);
-			GlStateManager.setProfile(GlStateManager.RenderMode.PLAYER_SKIN);
-			super.render(abstractClientPlayerEntity, d, i, f, g, h);
-			GlStateManager.unsetProfile(GlStateManager.RenderMode.PLAYER_SKIN);
+			GlStateManager.setProfile(GlStateManager.RenderMode.field_5128);
+			super.method_4054(abstractClientPlayerEntity, d, i, f, g, h);
+			GlStateManager.unsetProfile(GlStateManager.RenderMode.field_5128);
 		}
 	}
 
@@ -67,21 +67,21 @@ public class PlayerEntityRenderer extends LivingEntityRenderer<AbstractClientPla
 		if (abstractClientPlayerEntity.isSpectator()) {
 			playerEntityModel.setVisible(false);
 			playerEntityModel.head.visible = true;
-			playerEntityModel.helmet.visible = true;
+			playerEntityModel.headwear.visible = true;
 		} else {
 			ItemStack itemStack = abstractClientPlayerEntity.getMainHandStack();
 			ItemStack itemStack2 = abstractClientPlayerEntity.getOffHandStack();
 			playerEntityModel.setVisible(true);
-			playerEntityModel.helmet.visible = abstractClientPlayerEntity.isPartVisible(PlayerModelPart.HAT);
-			playerEntityModel.jacket.visible = abstractClientPlayerEntity.isPartVisible(PlayerModelPart.JACKET);
-			playerEntityModel.leftPantLeg.visible = abstractClientPlayerEntity.isPartVisible(PlayerModelPart.LEFT_PANTS_LEG);
-			playerEntityModel.rightPantLeg.visible = abstractClientPlayerEntity.isPartVisible(PlayerModelPart.RIGHT_PANTS_LEG);
-			playerEntityModel.leftSleeve.visible = abstractClientPlayerEntity.isPartVisible(PlayerModelPart.LEFT_SLEEVE);
-			playerEntityModel.rightSleeve.visible = abstractClientPlayerEntity.isPartVisible(PlayerModelPart.RIGHT_SLEEVE);
+			playerEntityModel.headwear.visible = abstractClientPlayerEntity.isSkinOverlayVisible(PlayerModelPart.field_7563);
+			playerEntityModel.bodyOverlay.visible = abstractClientPlayerEntity.isSkinOverlayVisible(PlayerModelPart.field_7564);
+			playerEntityModel.leftLegOverlay.visible = abstractClientPlayerEntity.isSkinOverlayVisible(PlayerModelPart.field_7566);
+			playerEntityModel.rightLegOverlay.visible = abstractClientPlayerEntity.isSkinOverlayVisible(PlayerModelPart.field_7565);
+			playerEntityModel.leftArmOverlay.visible = abstractClientPlayerEntity.isSkinOverlayVisible(PlayerModelPart.field_7568);
+			playerEntityModel.rightArmOverlay.visible = abstractClientPlayerEntity.isSkinOverlayVisible(PlayerModelPart.field_7570);
 			playerEntityModel.isSneaking = abstractClientPlayerEntity.isInSneakingPose();
-			BipedEntityModel.ArmPose armPose = this.method_4210(abstractClientPlayerEntity, itemStack, itemStack2, Hand.MAIN_HAND);
-			BipedEntityModel.ArmPose armPose2 = this.method_4210(abstractClientPlayerEntity, itemStack, itemStack2, Hand.OFF_HAND);
-			if (abstractClientPlayerEntity.getMainArm() == Arm.RIGHT) {
+			BipedEntityModel.ArmPose armPose = this.method_4210(abstractClientPlayerEntity, itemStack, itemStack2, Hand.field_5808);
+			BipedEntityModel.ArmPose armPose2 = this.method_4210(abstractClientPlayerEntity, itemStack, itemStack2, Hand.field_5810);
+			if (abstractClientPlayerEntity.getMainArm() == Arm.field_6183) {
 				playerEntityModel.rightArmPose = armPose;
 				playerEntityModel.leftArmPose = armPose2;
 			} else {
@@ -92,32 +92,34 @@ public class PlayerEntityRenderer extends LivingEntityRenderer<AbstractClientPla
 	}
 
 	private BipedEntityModel.ArmPose method_4210(AbstractClientPlayerEntity abstractClientPlayerEntity, ItemStack itemStack, ItemStack itemStack2, Hand hand) {
-		BipedEntityModel.ArmPose armPose = BipedEntityModel.ArmPose.EMPTY;
-		ItemStack itemStack3 = hand == Hand.MAIN_HAND ? itemStack : itemStack2;
+		BipedEntityModel.ArmPose armPose = BipedEntityModel.ArmPose.field_3409;
+		ItemStack itemStack3 = hand == Hand.field_5808 ? itemStack : itemStack2;
 		if (!itemStack3.isEmpty()) {
-			armPose = BipedEntityModel.ArmPose.ITEM;
-			if (abstractClientPlayerEntity.getItemUseTimeLeft() > 0) {
-				UseAction useAction = itemStack3.getUseAction();
-				if (useAction == UseAction.BLOCK) {
-					armPose = BipedEntityModel.ArmPose.BLOCK;
-				} else if (useAction == UseAction.BOW) {
-					armPose = BipedEntityModel.ArmPose.BOW_AND_ARROW;
-				} else if (useAction == UseAction.SPEAR) {
-					armPose = BipedEntityModel.ArmPose.THROW_SPEAR;
-				} else if (useAction == UseAction.CROSSBOW && hand == abstractClientPlayerEntity.getActiveHand()) {
-					armPose = BipedEntityModel.ArmPose.CROSSBOW_CHARGE;
-				}
-			} else {
-				boolean bl = itemStack.getItem() == Items.CROSSBOW;
-				boolean bl2 = CrossbowItem.isCharged(itemStack);
-				boolean bl3 = itemStack2.getItem() == Items.CROSSBOW;
-				boolean bl4 = CrossbowItem.isCharged(itemStack2);
-				if (bl && bl2) {
-					armPose = BipedEntityModel.ArmPose.CROSSBOW_HOLD;
+			armPose = BipedEntityModel.ArmPose.field_3410;
+			boolean bl = abstractClientPlayerEntity.isUsingItem() && itemStack3 == abstractClientPlayerEntity.getActiveItem();
+			boolean bl2 = !bl && hand == Hand.field_5810 && abstractClientPlayerEntity.method_6039();
+			if (!bl && !bl2) {
+				boolean bl3 = itemStack.getItem() == Items.field_8399;
+				boolean bl4 = CrossbowItem.isCharged(itemStack);
+				boolean bl5 = itemStack2.getItem() == Items.field_8399;
+				boolean bl6 = CrossbowItem.isCharged(itemStack2);
+				if (bl3 && bl4) {
+					armPose = BipedEntityModel.ArmPose.field_3408;
 				}
 
-				if (bl3 && bl4 && itemStack.getItem().getUseAction(itemStack) == UseAction.NONE) {
-					armPose = BipedEntityModel.ArmPose.CROSSBOW_HOLD;
+				if (bl5 && bl6 && itemStack.getItem().getUseAction(itemStack) == UseAction.field_8952) {
+					armPose = BipedEntityModel.ArmPose.field_3408;
+				}
+			} else {
+				UseAction useAction = itemStack3.getUseAction();
+				if (useAction == UseAction.field_8949) {
+					armPose = BipedEntityModel.ArmPose.field_3406;
+				} else if (useAction == UseAction.field_8953) {
+					armPose = BipedEntityModel.ArmPose.field_3403;
+				} else if (useAction == UseAction.field_8951) {
+					armPose = BipedEntityModel.ArmPose.field_3407;
+				} else if (useAction == UseAction.field_8947 && hand == abstractClientPlayerEntity.getActiveHand()) {
+					armPose = BipedEntityModel.ArmPose.field_3405;
 				}
 			}
 		}
@@ -125,16 +127,16 @@ public class PlayerEntityRenderer extends LivingEntityRenderer<AbstractClientPla
 		return armPose;
 	}
 
-	public Identifier getTexture(AbstractClientPlayerEntity abstractClientPlayerEntity) {
+	public Identifier method_4216(AbstractClientPlayerEntity abstractClientPlayerEntity) {
 		return abstractClientPlayerEntity.getSkinTexture();
 	}
 
-	protected void scale(AbstractClientPlayerEntity abstractClientPlayerEntity, float f) {
+	protected void method_4217(AbstractClientPlayerEntity abstractClientPlayerEntity, float f) {
 		float g = 0.9375F;
 		GlStateManager.scalef(0.9375F, 0.9375F, 0.9375F);
 	}
 
-	protected void renderLabel(AbstractClientPlayerEntity abstractClientPlayerEntity, double d, double e, double f, String string, double g) {
+	protected void method_4213(AbstractClientPlayerEntity abstractClientPlayerEntity, double d, double e, double f, String string, double g) {
 		if (g < 100.0) {
 			Scoreboard scoreboard = abstractClientPlayerEntity.getScoreboard();
 			ScoreboardObjective scoreboardObjective = scoreboard.getObjectiveForSlot(2);
@@ -158,11 +160,11 @@ public class PlayerEntityRenderer extends LivingEntityRenderer<AbstractClientPla
 		playerEntityModel.handSwingProgress = 0.0F;
 		playerEntityModel.isSneaking = false;
 		playerEntityModel.field_3396 = 0.0F;
-		playerEntityModel.setAngles(abstractClientPlayerEntity, 0.0F, 0.0F, 0.0F, 0.0F, 0.0F, 0.0625F);
+		playerEntityModel.method_17087(abstractClientPlayerEntity, 0.0F, 0.0F, 0.0F, 0.0F, 0.0F, 0.0625F);
 		playerEntityModel.rightArm.pitch = 0.0F;
 		playerEntityModel.rightArm.render(0.0625F);
-		playerEntityModel.rightSleeve.pitch = 0.0F;
-		playerEntityModel.rightSleeve.render(0.0625F);
+		playerEntityModel.rightArmOverlay.pitch = 0.0F;
+		playerEntityModel.rightArmOverlay.render(0.0625F);
 		GlStateManager.disableBlend();
 	}
 
@@ -176,15 +178,15 @@ public class PlayerEntityRenderer extends LivingEntityRenderer<AbstractClientPla
 		playerEntityModel.isSneaking = false;
 		playerEntityModel.handSwingProgress = 0.0F;
 		playerEntityModel.field_3396 = 0.0F;
-		playerEntityModel.setAngles(abstractClientPlayerEntity, 0.0F, 0.0F, 0.0F, 0.0F, 0.0F, 0.0625F);
+		playerEntityModel.method_17087(abstractClientPlayerEntity, 0.0F, 0.0F, 0.0F, 0.0F, 0.0F, 0.0625F);
 		playerEntityModel.leftArm.pitch = 0.0F;
 		playerEntityModel.leftArm.render(0.0625F);
-		playerEntityModel.leftSleeve.pitch = 0.0F;
-		playerEntityModel.leftSleeve.render(0.0625F);
+		playerEntityModel.leftArmOverlay.pitch = 0.0F;
+		playerEntityModel.leftArmOverlay.render(0.0625F);
 		GlStateManager.disableBlend();
 	}
 
-	protected void setupTransforms(AbstractClientPlayerEntity abstractClientPlayerEntity, float f, float g, float h) {
+	protected void method_4212(AbstractClientPlayerEntity abstractClientPlayerEntity, float f, float g, float h) {
 		float i = abstractClientPlayerEntity.method_6024(h);
 		if (abstractClientPlayerEntity.isFallFlying()) {
 			super.setupTransforms(abstractClientPlayerEntity, f, g, h);
@@ -205,7 +207,7 @@ public class PlayerEntityRenderer extends LivingEntityRenderer<AbstractClientPla
 			}
 		} else if (i > 0.0F) {
 			super.setupTransforms(abstractClientPlayerEntity, f, g, h);
-			float jx = abstractClientPlayerEntity.isTouchingWater() ? -90.0F - abstractClientPlayerEntity.pitch : -90.0F;
+			float jx = abstractClientPlayerEntity.isInsideWater() ? -90.0F - abstractClientPlayerEntity.pitch : -90.0F;
 			float kx = MathHelper.lerp(i, 0.0F, jx);
 			GlStateManager.rotatef(kx, 1.0F, 0.0F, 0.0F);
 			if (abstractClientPlayerEntity.isInSwimmingPose()) {

@@ -3,180 +3,194 @@ package net.minecraft.data.server;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import net.minecraft.item.Items;
-import net.minecraft.loot.ConstantLootTableRange;
-import net.minecraft.loot.LootPool;
-import net.minecraft.loot.LootTable;
-import net.minecraft.loot.LootTables;
-import net.minecraft.loot.UniformLootTableRange;
-import net.minecraft.loot.entry.ItemEntry;
-import net.minecraft.loot.function.SetCountLootFunction;
-import net.minecraft.loot.function.SetNbtLootFunction;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.Util;
+import net.minecraft.util.SystemUtil;
+import net.minecraft.world.loot.ConstantLootTableRange;
+import net.minecraft.world.loot.LootPool;
+import net.minecraft.world.loot.LootSupplier;
+import net.minecraft.world.loot.LootTables;
+import net.minecraft.world.loot.UniformLootTableRange;
+import net.minecraft.world.loot.entry.ItemEntry;
+import net.minecraft.world.loot.function.SetCountLootFunction;
+import net.minecraft.world.loot.function.SetNbtLootFunction;
 
-public class GiftLootTableGenerator implements Consumer<BiConsumer<Identifier, LootTable.Builder>> {
-	public void accept(BiConsumer<Identifier, LootTable.Builder> biConsumer) {
+public class GiftLootTableGenerator implements Consumer<BiConsumer<Identifier, LootSupplier.Builder>> {
+	public void method_20187(BiConsumer<Identifier, LootSupplier.Builder> biConsumer) {
 		biConsumer.accept(
-			LootTables.CAT_MORNING_GIFT_GAMEPLAY,
-			LootTable.builder()
+			LootTables.field_16216,
+			LootSupplier.builder()
 				.withPool(
 					LootPool.builder()
 						.withRolls(ConstantLootTableRange.create(1))
-						.withEntry(ItemEntry.builder(Items.RABBIT_HIDE).setWeight(10))
-						.withEntry(ItemEntry.builder(Items.RABBIT_FOOT).setWeight(10))
-						.withEntry(ItemEntry.builder(Items.CHICKEN).setWeight(10))
-						.withEntry(ItemEntry.builder(Items.FEATHER).setWeight(10))
-						.withEntry(ItemEntry.builder(Items.ROTTEN_FLESH).setWeight(10))
-						.withEntry(ItemEntry.builder(Items.STRING).setWeight(10))
-						.withEntry(ItemEntry.builder(Items.PHANTOM_MEMBRANE).setWeight(2))
+						.withEntry(ItemEntry.builder(Items.field_8245).setWeight(10))
+						.withEntry(ItemEntry.builder(Items.field_8073).setWeight(10))
+						.withEntry(ItemEntry.builder(Items.field_8726).setWeight(10))
+						.withEntry(ItemEntry.builder(Items.field_8153).setWeight(10))
+						.withEntry(ItemEntry.builder(Items.field_8511).setWeight(10))
+						.withEntry(ItemEntry.builder(Items.field_8276).setWeight(10))
+						.withEntry(ItemEntry.builder(Items.field_8614).setWeight(2))
 				)
 		);
 		biConsumer.accept(
-			LootTables.HERO_OF_THE_VILLAGE_ARMORER_GIFT_GAMEPLAY,
-			LootTable.builder()
+			LootTables.field_19062,
+			LootSupplier.builder()
 				.withPool(
 					LootPool.builder()
 						.withRolls(ConstantLootTableRange.create(1))
-						.withEntry(ItemEntry.builder(Items.CHAINMAIL_HELMET))
-						.withEntry(ItemEntry.builder(Items.CHAINMAIL_CHESTPLATE))
-						.withEntry(ItemEntry.builder(Items.CHAINMAIL_LEGGINGS))
-						.withEntry(ItemEntry.builder(Items.CHAINMAIL_BOOTS))
+						.withEntry(ItemEntry.builder(Items.field_8283))
+						.withEntry(ItemEntry.builder(Items.field_8873))
+						.withEntry(ItemEntry.builder(Items.field_8218))
+						.withEntry(ItemEntry.builder(Items.field_8313))
 				)
 		);
 		biConsumer.accept(
-			LootTables.HERO_OF_THE_VILLAGE_BUTCHER_GIFT_GAMEPLAY,
-			LootTable.builder()
+			LootTables.field_19063,
+			LootSupplier.builder()
 				.withPool(
 					LootPool.builder()
 						.withRolls(ConstantLootTableRange.create(1))
-						.withEntry(ItemEntry.builder(Items.COOKED_RABBIT))
-						.withEntry(ItemEntry.builder(Items.COOKED_CHICKEN))
-						.withEntry(ItemEntry.builder(Items.COOKED_PORKCHOP))
-						.withEntry(ItemEntry.builder(Items.COOKED_BEEF))
-						.withEntry(ItemEntry.builder(Items.COOKED_MUTTON))
+						.withEntry(ItemEntry.builder(Items.field_8752))
+						.withEntry(ItemEntry.builder(Items.field_8544))
+						.withEntry(ItemEntry.builder(Items.field_8261))
+						.withEntry(ItemEntry.builder(Items.field_8176))
+						.withEntry(ItemEntry.builder(Items.field_8347))
 				)
 		);
 		biConsumer.accept(
-			LootTables.HERO_OF_THE_VILLAGE_CARTOGRAPHER_GIFT_GAMEPLAY,
-			LootTable.builder()
-				.withPool(LootPool.builder().withRolls(ConstantLootTableRange.create(1)).withEntry(ItemEntry.builder(Items.MAP)).withEntry(ItemEntry.builder(Items.PAPER)))
-		);
-		biConsumer.accept(
-			LootTables.HERO_OF_THE_VILLAGE_CLERIC_GIFT_GAMEPLAY,
-			LootTable.builder()
+			LootTables.field_19064,
+			LootSupplier.builder()
 				.withPool(
 					LootPool.builder()
 						.withRolls(ConstantLootTableRange.create(1))
-						.withEntry(ItemEntry.builder(Items.REDSTONE))
-						.withEntry(ItemEntry.builder(Items.LAPIS_LAZULI))
+						.withEntry(ItemEntry.builder(Items.field_8895))
+						.withEntry(ItemEntry.builder(Items.field_8407))
 				)
 		);
 		biConsumer.accept(
-			LootTables.HERO_OF_THE_VILLAGE_FARMER_GIFT_GAMEPLAY,
-			LootTable.builder()
+			LootTables.field_19065,
+			LootSupplier.builder()
 				.withPool(
 					LootPool.builder()
 						.withRolls(ConstantLootTableRange.create(1))
-						.withEntry(ItemEntry.builder(Items.BREAD))
-						.withEntry(ItemEntry.builder(Items.PUMPKIN_PIE))
-						.withEntry(ItemEntry.builder(Items.COOKIE))
+						.withEntry(ItemEntry.builder(Items.field_8725))
+						.withEntry(ItemEntry.builder(Items.field_8759))
 				)
 		);
 		biConsumer.accept(
-			LootTables.HERO_OF_THE_VILLAGE_FISHERMAN_GIFT_GAMEPLAY,
-			LootTable.builder()
-				.withPool(LootPool.builder().withRolls(ConstantLootTableRange.create(1)).withEntry(ItemEntry.builder(Items.COD)).withEntry(ItemEntry.builder(Items.SALMON)))
-		);
-		biConsumer.accept(
-			LootTables.HERO_OF_THE_VILLAGE_FLETCHER_GIFT_GAMEPLAY,
-			LootTable.builder()
+			LootTables.field_19066,
+			LootSupplier.builder()
 				.withPool(
 					LootPool.builder()
 						.withRolls(ConstantLootTableRange.create(1))
-						.withEntry(ItemEntry.builder(Items.ARROW).setWeight(26))
+						.withEntry(ItemEntry.builder(Items.field_8229))
+						.withEntry(ItemEntry.builder(Items.field_8741))
+						.withEntry(ItemEntry.builder(Items.field_8423))
+				)
+		);
+		biConsumer.accept(
+			LootTables.field_19067,
+			LootSupplier.builder()
+				.withPool(
+					LootPool.builder()
+						.withRolls(ConstantLootTableRange.create(1))
+						.withEntry(ItemEntry.builder(Items.field_8429))
+						.withEntry(ItemEntry.builder(Items.field_8209))
+				)
+		);
+		biConsumer.accept(
+			LootTables.field_19068,
+			LootSupplier.builder()
+				.withPool(
+					LootPool.builder()
+						.withRolls(ConstantLootTableRange.create(1))
+						.withEntry(ItemEntry.builder(Items.field_8107).setWeight(26))
 						.withEntry(
-							ItemEntry.builder(Items.TIPPED_ARROW)
-								.withFunction(SetCountLootFunction.builder(UniformLootTableRange.between(0.0F, 1.0F)))
-								.withFunction(SetNbtLootFunction.builder(Util.make(new CompoundTag(), compoundTag -> compoundTag.putString("Potion", "minecraft:swiftness"))))
+							ItemEntry.builder(Items.field_8087)
+								.method_438(SetCountLootFunction.builder(UniformLootTableRange.between(0.0F, 1.0F)))
+								.method_438(SetNbtLootFunction.builder(SystemUtil.consume(new CompoundTag(), compoundTag -> compoundTag.putString("Potion", "minecraft:swiftness"))))
 						)
 						.withEntry(
-							ItemEntry.builder(Items.TIPPED_ARROW)
-								.withFunction(SetCountLootFunction.builder(UniformLootTableRange.between(0.0F, 1.0F)))
-								.withFunction(SetNbtLootFunction.builder(Util.make(new CompoundTag(), compoundTag -> compoundTag.putString("Potion", "minecraft:slowness"))))
+							ItemEntry.builder(Items.field_8087)
+								.method_438(SetCountLootFunction.builder(UniformLootTableRange.between(0.0F, 1.0F)))
+								.method_438(SetNbtLootFunction.builder(SystemUtil.consume(new CompoundTag(), compoundTag -> compoundTag.putString("Potion", "minecraft:slowness"))))
 						)
 						.withEntry(
-							ItemEntry.builder(Items.TIPPED_ARROW)
-								.withFunction(SetCountLootFunction.builder(UniformLootTableRange.between(0.0F, 1.0F)))
-								.withFunction(SetNbtLootFunction.builder(Util.make(new CompoundTag(), compoundTag -> compoundTag.putString("Potion", "minecraft:strength"))))
+							ItemEntry.builder(Items.field_8087)
+								.method_438(SetCountLootFunction.builder(UniformLootTableRange.between(0.0F, 1.0F)))
+								.method_438(SetNbtLootFunction.builder(SystemUtil.consume(new CompoundTag(), compoundTag -> compoundTag.putString("Potion", "minecraft:strength"))))
 						)
 						.withEntry(
-							ItemEntry.builder(Items.TIPPED_ARROW)
-								.withFunction(SetCountLootFunction.builder(UniformLootTableRange.between(0.0F, 1.0F)))
-								.withFunction(SetNbtLootFunction.builder(Util.make(new CompoundTag(), compoundTag -> compoundTag.putString("Potion", "minecraft:healing"))))
+							ItemEntry.builder(Items.field_8087)
+								.method_438(SetCountLootFunction.builder(UniformLootTableRange.between(0.0F, 1.0F)))
+								.method_438(SetNbtLootFunction.builder(SystemUtil.consume(new CompoundTag(), compoundTag -> compoundTag.putString("Potion", "minecraft:healing"))))
 						)
 						.withEntry(
-							ItemEntry.builder(Items.TIPPED_ARROW)
-								.withFunction(SetCountLootFunction.builder(UniformLootTableRange.between(0.0F, 1.0F)))
-								.withFunction(SetNbtLootFunction.builder(Util.make(new CompoundTag(), compoundTag -> compoundTag.putString("Potion", "minecraft:harming"))))
+							ItemEntry.builder(Items.field_8087)
+								.method_438(SetCountLootFunction.builder(UniformLootTableRange.between(0.0F, 1.0F)))
+								.method_438(SetNbtLootFunction.builder(SystemUtil.consume(new CompoundTag(), compoundTag -> compoundTag.putString("Potion", "minecraft:harming"))))
 						)
 						.withEntry(
-							ItemEntry.builder(Items.TIPPED_ARROW)
-								.withFunction(SetCountLootFunction.builder(UniformLootTableRange.between(0.0F, 1.0F)))
-								.withFunction(SetNbtLootFunction.builder(Util.make(new CompoundTag(), compoundTag -> compoundTag.putString("Potion", "minecraft:leaping"))))
+							ItemEntry.builder(Items.field_8087)
+								.method_438(SetCountLootFunction.builder(UniformLootTableRange.between(0.0F, 1.0F)))
+								.method_438(SetNbtLootFunction.builder(SystemUtil.consume(new CompoundTag(), compoundTag -> compoundTag.putString("Potion", "minecraft:leaping"))))
 						)
 						.withEntry(
-							ItemEntry.builder(Items.TIPPED_ARROW)
-								.withFunction(SetCountLootFunction.builder(UniformLootTableRange.between(0.0F, 1.0F)))
-								.withFunction(SetNbtLootFunction.builder(Util.make(new CompoundTag(), compoundTag -> compoundTag.putString("Potion", "minecraft:regeneration"))))
+							ItemEntry.builder(Items.field_8087)
+								.method_438(SetCountLootFunction.builder(UniformLootTableRange.between(0.0F, 1.0F)))
+								.method_438(SetNbtLootFunction.builder(SystemUtil.consume(new CompoundTag(), compoundTag -> compoundTag.putString("Potion", "minecraft:regeneration"))))
 						)
 						.withEntry(
-							ItemEntry.builder(Items.TIPPED_ARROW)
-								.withFunction(SetCountLootFunction.builder(UniformLootTableRange.between(0.0F, 1.0F)))
-								.withFunction(SetNbtLootFunction.builder(Util.make(new CompoundTag(), compoundTag -> compoundTag.putString("Potion", "minecraft:fire_resistance"))))
+							ItemEntry.builder(Items.field_8087)
+								.method_438(SetCountLootFunction.builder(UniformLootTableRange.between(0.0F, 1.0F)))
+								.method_438(
+									SetNbtLootFunction.builder(SystemUtil.consume(new CompoundTag(), compoundTag -> compoundTag.putString("Potion", "minecraft:fire_resistance")))
+								)
 						)
 						.withEntry(
-							ItemEntry.builder(Items.TIPPED_ARROW)
-								.withFunction(SetCountLootFunction.builder(UniformLootTableRange.between(0.0F, 1.0F)))
-								.withFunction(SetNbtLootFunction.builder(Util.make(new CompoundTag(), compoundTag -> compoundTag.putString("Potion", "minecraft:water_breathing"))))
+							ItemEntry.builder(Items.field_8087)
+								.method_438(SetCountLootFunction.builder(UniformLootTableRange.between(0.0F, 1.0F)))
+								.method_438(
+									SetNbtLootFunction.builder(SystemUtil.consume(new CompoundTag(), compoundTag -> compoundTag.putString("Potion", "minecraft:water_breathing")))
+								)
 						)
 						.withEntry(
-							ItemEntry.builder(Items.TIPPED_ARROW)
-								.withFunction(SetCountLootFunction.builder(UniformLootTableRange.between(0.0F, 1.0F)))
-								.withFunction(SetNbtLootFunction.builder(Util.make(new CompoundTag(), compoundTag -> compoundTag.putString("Potion", "minecraft:invisibility"))))
+							ItemEntry.builder(Items.field_8087)
+								.method_438(SetCountLootFunction.builder(UniformLootTableRange.between(0.0F, 1.0F)))
+								.method_438(SetNbtLootFunction.builder(SystemUtil.consume(new CompoundTag(), compoundTag -> compoundTag.putString("Potion", "minecraft:invisibility"))))
 						)
 						.withEntry(
-							ItemEntry.builder(Items.TIPPED_ARROW)
-								.withFunction(SetCountLootFunction.builder(UniformLootTableRange.between(0.0F, 1.0F)))
-								.withFunction(SetNbtLootFunction.builder(Util.make(new CompoundTag(), compoundTag -> compoundTag.putString("Potion", "minecraft:night_vision"))))
+							ItemEntry.builder(Items.field_8087)
+								.method_438(SetCountLootFunction.builder(UniformLootTableRange.between(0.0F, 1.0F)))
+								.method_438(SetNbtLootFunction.builder(SystemUtil.consume(new CompoundTag(), compoundTag -> compoundTag.putString("Potion", "minecraft:night_vision"))))
 						)
 						.withEntry(
-							ItemEntry.builder(Items.TIPPED_ARROW)
-								.withFunction(SetCountLootFunction.builder(UniformLootTableRange.between(0.0F, 1.0F)))
-								.withFunction(SetNbtLootFunction.builder(Util.make(new CompoundTag(), compoundTag -> compoundTag.putString("Potion", "minecraft:weakness"))))
+							ItemEntry.builder(Items.field_8087)
+								.method_438(SetCountLootFunction.builder(UniformLootTableRange.between(0.0F, 1.0F)))
+								.method_438(SetNbtLootFunction.builder(SystemUtil.consume(new CompoundTag(), compoundTag -> compoundTag.putString("Potion", "minecraft:weakness"))))
 						)
 						.withEntry(
-							ItemEntry.builder(Items.TIPPED_ARROW)
-								.withFunction(SetCountLootFunction.builder(UniformLootTableRange.between(0.0F, 1.0F)))
-								.withFunction(SetNbtLootFunction.builder(Util.make(new CompoundTag(), compoundTag -> compoundTag.putString("Potion", "minecraft:poison"))))
+							ItemEntry.builder(Items.field_8087)
+								.method_438(SetCountLootFunction.builder(UniformLootTableRange.between(0.0F, 1.0F)))
+								.method_438(SetNbtLootFunction.builder(SystemUtil.consume(new CompoundTag(), compoundTag -> compoundTag.putString("Potion", "minecraft:poison"))))
 						)
 				)
 		);
 		biConsumer.accept(
-			LootTables.HERO_OF_THE_VILLAGE_LEATHERWORKER_GIFT_GAMEPLAY,
-			LootTable.builder().withPool(LootPool.builder().withRolls(ConstantLootTableRange.create(1)).withEntry(ItemEntry.builder(Items.LEATHER)))
+			LootTables.field_19069,
+			LootSupplier.builder().withPool(LootPool.builder().withRolls(ConstantLootTableRange.create(1)).withEntry(ItemEntry.builder(Items.field_8745)))
 		);
 		biConsumer.accept(
-			LootTables.HERO_OF_THE_VILLAGE_LIBRARIAN_GIFT_GAMEPLAY,
-			LootTable.builder().withPool(LootPool.builder().withRolls(ConstantLootTableRange.create(1)).withEntry(ItemEntry.builder(Items.BOOK)))
+			LootTables.field_19070,
+			LootSupplier.builder().withPool(LootPool.builder().withRolls(ConstantLootTableRange.create(1)).withEntry(ItemEntry.builder(Items.field_8529)))
 		);
 		biConsumer.accept(
-			LootTables.HERO_OF_THE_VILLAGE_MASON_GIFT_GAMEPLAY,
-			LootTable.builder().withPool(LootPool.builder().withRolls(ConstantLootTableRange.create(1)).withEntry(ItemEntry.builder(Items.CLAY)))
+			LootTables.field_19071,
+			LootSupplier.builder().withPool(LootPool.builder().withRolls(ConstantLootTableRange.create(1)).withEntry(ItemEntry.builder(Items.CLAY)))
 		);
 		biConsumer.accept(
-			LootTables.HERO_OF_THE_VILLAGE_SHEPHERD_GIFT_GAMEPLAY,
-			LootTable.builder()
+			LootTables.field_19072,
+			LootSupplier.builder()
 				.withPool(
 					LootPool.builder()
 						.withRolls(ConstantLootTableRange.create(1))
@@ -199,26 +213,26 @@ public class GiftLootTableGenerator implements Consumer<BiConsumer<Identifier, L
 				)
 		);
 		biConsumer.accept(
-			LootTables.HERO_OF_THE_VILLAGE_TOOLSMITH_GIFT_GAMEPLAY,
-			LootTable.builder()
+			LootTables.field_19073,
+			LootSupplier.builder()
 				.withPool(
 					LootPool.builder()
 						.withRolls(ConstantLootTableRange.create(1))
-						.withEntry(ItemEntry.builder(Items.STONE_PICKAXE))
-						.withEntry(ItemEntry.builder(Items.STONE_AXE))
-						.withEntry(ItemEntry.builder(Items.STONE_HOE))
-						.withEntry(ItemEntry.builder(Items.STONE_SHOVEL))
+						.withEntry(ItemEntry.builder(Items.field_8387))
+						.withEntry(ItemEntry.builder(Items.field_8062))
+						.withEntry(ItemEntry.builder(Items.field_8431))
+						.withEntry(ItemEntry.builder(Items.field_8776))
 				)
 		);
 		biConsumer.accept(
-			LootTables.HERO_OF_THE_VILLAGE_WEAPONSMITH_GIFT_GAMEPLAY,
-			LootTable.builder()
+			LootTables.field_19074,
+			LootSupplier.builder()
 				.withPool(
 					LootPool.builder()
 						.withRolls(ConstantLootTableRange.create(1))
-						.withEntry(ItemEntry.builder(Items.STONE_AXE))
-						.withEntry(ItemEntry.builder(Items.GOLDEN_AXE))
-						.withEntry(ItemEntry.builder(Items.IRON_AXE))
+						.withEntry(ItemEntry.builder(Items.field_8062))
+						.withEntry(ItemEntry.builder(Items.field_8825))
+						.withEntry(ItemEntry.builder(Items.field_8475))
 				)
 		);
 	}

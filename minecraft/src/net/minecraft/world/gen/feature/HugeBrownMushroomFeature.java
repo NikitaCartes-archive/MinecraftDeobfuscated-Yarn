@@ -15,11 +15,11 @@ import net.minecraft.world.gen.chunk.ChunkGenerator;
 import net.minecraft.world.gen.chunk.ChunkGeneratorConfig;
 
 public class HugeBrownMushroomFeature extends Feature<PlantedFeatureConfig> {
-	public HugeBrownMushroomFeature(Function<Dynamic<?>, ? extends PlantedFeatureConfig> configFactory) {
-		super(configFactory);
+	public HugeBrownMushroomFeature(Function<Dynamic<?>, ? extends PlantedFeatureConfig> function) {
+		super(function);
 	}
 
-	public boolean generate(
+	public boolean method_13362(
 		IWorld iWorld, ChunkGenerator<? extends ChunkGeneratorConfig> chunkGenerator, Random random, BlockPos blockPos, PlantedFeatureConfig plantedFeatureConfig
 	) {
 		int i = random.nextInt(3) + 4;
@@ -30,7 +30,7 @@ public class HugeBrownMushroomFeature extends Feature<PlantedFeatureConfig> {
 		int j = blockPos.getY();
 		if (j >= 1 && j + i + 1 < 256) {
 			Block block = iWorld.getBlockState(blockPos.down()).getBlock();
-			if (!Block.isNaturalDirt(block) && block != Blocks.GRASS_BLOCK && block != Blocks.MYCELIUM) {
+			if (!Block.isNaturalDirt(block) && block != Blocks.field_10219 && block != Blocks.field_10402) {
 				return false;
 			} else {
 				BlockPos.Mutable mutable = new BlockPos.Mutable();
@@ -41,14 +41,14 @@ public class HugeBrownMushroomFeature extends Feature<PlantedFeatureConfig> {
 					for (int m = -l; m <= l; m++) {
 						for (int n = -l; n <= l; n++) {
 							BlockState blockState = iWorld.getBlockState(mutable.set(blockPos).setOffset(m, k, n));
-							if (!blockState.isAir() && !blockState.matches(BlockTags.LEAVES)) {
+							if (!blockState.isAir() && !blockState.matches(BlockTags.field_15503)) {
 								return false;
 							}
 						}
 					}
 				}
 
-				BlockState blockState2 = Blocks.BROWN_MUSHROOM_BLOCK
+				BlockState blockState2 = Blocks.field_10580
 					.getDefaultState()
 					.with(MushroomBlock.UP, Boolean.valueOf(true))
 					.with(MushroomBlock.DOWN, Boolean.valueOf(false));
@@ -82,13 +82,13 @@ public class HugeBrownMushroomFeature extends Feature<PlantedFeatureConfig> {
 					}
 				}
 
-				BlockState blockState3 = Blocks.MUSHROOM_STEM
+				BlockState blockState3 = Blocks.field_10556
 					.getDefaultState()
 					.with(MushroomBlock.UP, Boolean.valueOf(false))
 					.with(MushroomBlock.DOWN, Boolean.valueOf(false));
 
 				for (int nxx = 0; nxx < i; nxx++) {
-					mutable.set(blockPos).setOffset(Direction.UP, nxx);
+					mutable.set(blockPos).setOffset(Direction.field_11036, nxx);
 					if (!iWorld.getBlockState(mutable).isFullOpaque(iWorld, mutable)) {
 						if (plantedFeatureConfig.planted) {
 							iWorld.setBlockState(mutable, blockState3, 3);

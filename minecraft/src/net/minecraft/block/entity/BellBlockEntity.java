@@ -27,13 +27,13 @@ public class BellBlockEntity extends BlockEntity implements Tickable {
 	private int field_19158;
 
 	public BellBlockEntity() {
-		super(BlockEntityType.BELL);
+		super(BlockEntityType.field_16413);
 	}
 
 	@Override
 	public boolean onBlockAction(int i, int j) {
 		if (i == 1) {
-			this.notifyMemoriesOfBell();
+			this.method_20219();
 			this.field_19158 = 0;
 			this.lastSideHit = Direction.byId(j);
 			this.ringTicks = 0;
@@ -72,7 +72,7 @@ public class BellBlockEntity extends BlockEntity implements Tickable {
 	}
 
 	private void playResonateSound() {
-		this.world.playSound(null, this.getPos(), SoundEvents.BLOCK_BELL_RESONATE, SoundCategory.BLOCKS, 1.0F, 1.0F);
+		this.world.playSound(null, this.getPos(), SoundEvents.field_19167, SoundCategory.field_15245, 1.0F, 1.0F);
 	}
 
 	public void activate(Direction direction) {
@@ -87,18 +87,18 @@ public class BellBlockEntity extends BlockEntity implements Tickable {
 		this.world.addBlockAction(blockPos, this.getCachedState().getBlock(), 1, direction.getId());
 	}
 
-	private void notifyMemoriesOfBell() {
+	private void method_20219() {
 		BlockPos blockPos = this.getPos();
 		if (this.world.getTime() > this.field_19155 + 60L || this.field_19156 == null) {
 			this.field_19155 = this.world.getTime();
 			Box box = new Box(blockPos).expand(48.0);
-			this.field_19156 = this.world.getNonSpectatingEntities(LivingEntity.class, box);
+			this.field_19156 = this.world.getEntities(LivingEntity.class, box);
 		}
 
 		if (!this.world.isClient) {
 			for (LivingEntity livingEntity : this.field_19156) {
 				if (livingEntity.isAlive() && !livingEntity.removed && blockPos.isWithinDistance(livingEntity.getPos(), 32.0)) {
-					livingEntity.getBrain().putMemory(MemoryModuleType.HEARD_BELL_TIME, this.world.getTime());
+					livingEntity.getBrain().putMemory(MemoryModuleType.field_19009, this.world.getTime());
 				}
 			}
 		}
@@ -111,7 +111,7 @@ public class BellBlockEntity extends BlockEntity implements Tickable {
 			if (livingEntity.isAlive()
 				&& !livingEntity.removed
 				&& blockPos.isWithinDistance(livingEntity.getPos(), 32.0)
-				&& livingEntity.getType().isTaggedWith(EntityTypeTags.RAIDERS)) {
+				&& livingEntity.getType().isTaggedWith(EntityTypeTags.field_19168)) {
 				return true;
 			}
 		}
@@ -121,7 +121,7 @@ public class BellBlockEntity extends BlockEntity implements Tickable {
 
 	private void method_20521(World world) {
 		if (!world.isClient) {
-			this.field_19156.stream().filter(this::isRaiderEntity).forEach(this::glowEntity);
+			this.field_19156.stream().filter(this::method_20518).forEach(this::method_20520);
 		}
 	}
 
@@ -132,7 +132,7 @@ public class BellBlockEntity extends BlockEntity implements Tickable {
 			int i = (int)this.field_19156.stream().filter(livingEntity -> blockPos.isWithinDistance(livingEntity.getPos(), 48.0)).count();
 			this.field_19156
 				.stream()
-				.filter(this::isRaiderEntity)
+				.filter(this::method_20518)
 				.forEach(
 					livingEntity -> {
 						float f = 1.0F;
@@ -149,21 +149,21 @@ public class BellBlockEntity extends BlockEntity implements Tickable {
 							double h = (double)(atomicInteger.get() >> 16 & 0xFF) / 255.0;
 							double l = (double)(atomicInteger.get() >> 8 & 0xFF) / 255.0;
 							double m = (double)(atomicInteger.get() & 0xFF) / 255.0;
-							world.addParticle(ParticleTypes.ENTITY_EFFECT, d, (double)((float)blockPos.getY() + 0.5F), e, h, l, m);
+							world.addParticle(ParticleTypes.field_11226, d, (double)((float)blockPos.getY() + 0.5F), e, h, l, m);
 						}
 					}
 				);
 		}
 	}
 
-	private boolean isRaiderEntity(LivingEntity livingEntity) {
+	private boolean method_20518(LivingEntity livingEntity) {
 		return livingEntity.isAlive()
 			&& !livingEntity.removed
 			&& this.getPos().isWithinDistance(livingEntity.getPos(), 48.0)
-			&& livingEntity.getType().isTaggedWith(EntityTypeTags.RAIDERS);
+			&& livingEntity.getType().isTaggedWith(EntityTypeTags.field_19168);
 	}
 
-	private void glowEntity(LivingEntity livingEntity) {
-		livingEntity.addStatusEffect(new StatusEffectInstance(StatusEffects.GLOWING, 60));
+	private void method_20520(LivingEntity livingEntity) {
+		livingEntity.addPotionEffect(new StatusEffectInstance(StatusEffects.field_5912, 60));
 	}
 }

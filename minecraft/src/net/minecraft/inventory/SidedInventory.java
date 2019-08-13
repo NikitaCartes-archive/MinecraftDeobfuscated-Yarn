@@ -5,9 +5,9 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.util.math.Direction;
 
 public interface SidedInventory extends Inventory {
-	int[] getInvAvailableSlots(Direction side);
+	int[] getInvAvailableSlots(Direction direction);
 
-	boolean canInsertInvStack(int slot, ItemStack stack, @Nullable Direction dir);
+	boolean canInsertInvStack(int i, ItemStack itemStack, @Nullable Direction direction);
 
-	boolean canExtractInvStack(int slot, ItemStack stack, Direction dir);
+	boolean canExtractInvStack(int i, ItemStack itemStack, Direction direction);
 }

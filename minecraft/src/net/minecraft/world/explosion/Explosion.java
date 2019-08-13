@@ -22,8 +22,6 @@ import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.fluid.FluidState;
 import net.minecraft.item.ItemStack;
-import net.minecraft.loot.context.LootContext;
-import net.minecraft.loot.context.LootContextParameters;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundCategory;
@@ -35,6 +33,8 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.RayTraceContext;
 import net.minecraft.world.World;
+import net.minecraft.world.loot.context.LootContext;
+import net.minecraft.world.loot.context.LootContextParameters;
 
 public class Explosion {
 	private final boolean createFire;
@@ -51,45 +51,35 @@ public class Explosion {
 	private final Map<PlayerEntity, Vec3d> affectedPlayers = Maps.<PlayerEntity, Vec3d>newHashMap();
 
 	@Environment(EnvType.CLIENT)
-	public Explosion(World world, @Nullable Entity entity, double x, double y, double z, float power, List<BlockPos> affectedBlocks) {
-		this(world, entity, x, y, z, power, false, Explosion.DestructionType.DESTROY, affectedBlocks);
+	public Explosion(World world, @Nullable Entity entity, double d, double e, double f, float g, List<BlockPos> list) {
+		this(world, entity, d, e, f, g, false, Explosion.DestructionType.field_18687, list);
 	}
 
 	@Environment(EnvType.CLIENT)
 	public Explosion(
-		World world,
-		@Nullable Entity entity,
-		double x,
-		double y,
-		double z,
-		float power,
-		boolean createFire,
-		Explosion.DestructionType destructionType,
-		List<BlockPos> affectedBlocks
+		World world, @Nullable Entity entity, double d, double e, double f, float g, boolean bl, Explosion.DestructionType destructionType, List<BlockPos> list
 	) {
-		this(world, entity, x, y, z, power, createFire, destructionType);
-		this.affectedBlocks.addAll(affectedBlocks);
+		this(world, entity, d, e, f, g, bl, destructionType);
+		this.affectedBlocks.addAll(list);
 	}
 
-	public Explosion(
-		World world, @Nullable Entity entity, double x, double y, double z, float power, boolean createFire, Explosion.DestructionType blockDestructionType
-	) {
+	public Explosion(World world, @Nullable Entity entity, double d, double e, double f, float g, boolean bl, Explosion.DestructionType destructionType) {
 		this.world = world;
 		this.entity = entity;
-		this.power = power;
-		this.x = x;
-		this.y = y;
-		this.z = z;
-		this.createFire = createFire;
-		this.blockDestructionType = blockDestructionType;
+		this.power = g;
+		this.x = d;
+		this.y = e;
+		this.z = f;
+		this.createFire = bl;
+		this.blockDestructionType = destructionType;
 		this.damageSource = DamageSource.explosion(this);
 	}
 
-	public static float getExposure(Vec3d source, Entity entity) {
+	public static float getExposure(Vec3d vec3d, Entity entity) {
 		Box box = entity.getBoundingBox();
-		double d = 1.0 / ((box.x2 - box.x1) * 2.0 + 1.0);
-		double e = 1.0 / ((box.y2 - box.y1) * 2.0 + 1.0);
-		double f = 1.0 / ((box.z2 - box.z1) * 2.0 + 1.0);
+		double d = 1.0 / ((box.maxX - box.minX) * 2.0 + 1.0);
+		double e = 1.0 / ((box.maxY - box.minY) * 2.0 + 1.0);
+		double f = 1.0 / ((box.maxZ - box.minZ) * 2.0 + 1.0);
 		double g = (1.0 - Math.floor(1.0 / d) * d) / 2.0;
 		double h = (1.0 - Math.floor(1.0 / f) * f) / 2.0;
 		if (!(d < 0.0) && !(e < 0.0) && !(f < 0.0)) {
@@ -99,12 +89,14 @@ public class Explosion {
 			for (float k = 0.0F; k <= 1.0F; k = (float)((double)k + d)) {
 				for (float l = 0.0F; l <= 1.0F; l = (float)((double)l + e)) {
 					for (float m = 0.0F; m <= 1.0F; m = (float)((double)m + f)) {
-						double n = MathHelper.lerp((double)k, box.x1, box.x2);
-						double o = MathHelper.lerp((double)l, box.y1, box.y2);
-						double p = MathHelper.lerp((double)m, box.z1, box.z2);
-						Vec3d vec3d = new Vec3d(n + g, o, p + h);
-						if (entity.world.rayTrace(new RayTraceContext(vec3d, source, RayTraceContext.ShapeType.OUTLINE, RayTraceContext.FluidHandling.NONE, entity)).getType()
-							== HitResult.Type.MISS) {
+						double n = MathHelper.lerp((double)k, box.minX, box.maxX);
+						double o = MathHelper.lerp((double)l, box.minY, box.maxY);
+						double p = MathHelper.lerp((double)m, box.minZ, box.maxZ);
+						Vec3d vec3d2 = new Vec3d(n + g, o, p + h);
+						if (entity.world
+								.rayTrace(new RayTraceContext(vec3d2, vec3d, RayTraceContext.ShapeType.field_17559, RayTraceContext.FluidHandling.field_1348, entity))
+								.getType()
+							== HitResult.Type.field_1333) {
 							i++;
 						}
 
@@ -217,16 +209,16 @@ public class Explosion {
 				this.x,
 				this.y,
 				this.z,
-				SoundEvents.ENTITY_GENERIC_EXPLODE,
-				SoundCategory.BLOCKS,
+				SoundEvents.field_15152,
+				SoundCategory.field_15245,
 				4.0F,
 				(1.0F + (this.world.random.nextFloat() - this.world.random.nextFloat()) * 0.2F) * 0.7F
 			);
-		boolean bl2 = this.blockDestructionType != Explosion.DestructionType.NONE;
+		boolean bl2 = this.blockDestructionType != Explosion.DestructionType.field_18685;
 		if (!(this.power < 2.0F) && bl2) {
-			this.world.addParticle(ParticleTypes.EXPLOSION_EMITTER, this.x, this.y, this.z, 1.0, 0.0, 0.0);
+			this.world.addParticle(ParticleTypes.field_11221, this.x, this.y, this.z, 1.0, 0.0, 0.0);
 		} else {
-			this.world.addParticle(ParticleTypes.EXPLOSION, this.x, this.y, this.z, 1.0, 0.0, 0.0);
+			this.world.addParticle(ParticleTypes.field_11236, this.x, this.y, this.z, 1.0, 0.0, 0.0);
 		}
 
 		if (bl2) {
@@ -249,8 +241,8 @@ public class Explosion {
 					g *= k;
 					h *= k;
 					i *= k;
-					this.world.addParticle(ParticleTypes.POOF, (d + this.x) / 2.0, (e + this.y) / 2.0, (f + this.z) / 2.0, g, h, i);
-					this.world.addParticle(ParticleTypes.SMOKE, d, e, f, g, h, i);
+					this.world.addParticle(ParticleTypes.field_11203, (d + this.x) / 2.0, (e + this.y) / 2.0, (f + this.z) / 2.0, g, h, i);
+					this.world.addParticle(ParticleTypes.field_11251, d, e, f, g, h, i);
 				}
 
 				if (!blockState.isAir()) {
@@ -258,17 +250,17 @@ public class Explosion {
 						BlockEntity blockEntity = block.hasBlockEntity() ? this.world.getBlockEntity(blockPos) : null;
 						LootContext.Builder builder = new LootContext.Builder((ServerWorld)this.world)
 							.setRandom(this.world.random)
-							.put(LootContextParameters.POSITION, blockPos)
-							.put(LootContextParameters.TOOL, ItemStack.EMPTY)
-							.putNullable(LootContextParameters.BLOCK_ENTITY, blockEntity);
-						if (this.blockDestructionType == Explosion.DestructionType.DESTROY) {
-							builder.put(LootContextParameters.EXPLOSION_RADIUS, this.power);
+							.put(LootContextParameters.field_1232, blockPos)
+							.put(LootContextParameters.field_1229, ItemStack.EMPTY)
+							.putNullable(LootContextParameters.field_1228, blockEntity);
+						if (this.blockDestructionType == Explosion.DestructionType.field_18687) {
+							builder.put(LootContextParameters.field_1225, this.power);
 						}
 
 						Block.dropStacks(blockState, builder);
 					}
 
-					this.world.setBlockState(blockPos, Blocks.AIR.getDefaultState(), 3);
+					this.world.setBlockState(blockPos, Blocks.field_10124.getDefaultState(), 3);
 					block.onDestroyedByExplosion(this.world, blockPos, this);
 				}
 			}
@@ -279,7 +271,7 @@ public class Explosion {
 				if (this.world.getBlockState(blockPos).isAir()
 					&& this.world.getBlockState(blockPos.down()).isFullOpaque(this.world, blockPos.down())
 					&& this.random.nextInt(3) == 0) {
-					this.world.setBlockState(blockPos, Blocks.FIRE.getDefaultState());
+					this.world.setBlockState(blockPos, Blocks.field_10036.getDefaultState());
 				}
 			}
 		}
@@ -317,8 +309,8 @@ public class Explosion {
 	}
 
 	public static enum DestructionType {
-		NONE,
-		BREAK,
-		DESTROY;
+		field_18685,
+		field_18686,
+		field_18687;
 	}
 }

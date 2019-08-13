@@ -8,10 +8,10 @@ import net.fabricmc.api.Environment;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
+import net.minecraft.client.network.packet.BlockEntityUpdateS2CPacket;
 import net.minecraft.entity.Entity;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.NbtHelper;
-import net.minecraft.network.packet.s2c.play.BlockEntityUpdateS2CPacket;
+import net.minecraft.util.TagHelper;
 import net.minecraft.util.Tickable;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
@@ -39,33 +39,33 @@ public class EndGatewayBlockEntity extends EndPortalBlockEntity implements Ticka
 	private boolean exactTeleport;
 
 	public EndGatewayBlockEntity() {
-		super(BlockEntityType.END_GATEWAY);
+		super(BlockEntityType.field_11906);
 	}
 
 	@Override
-	public CompoundTag toTag(CompoundTag tag) {
-		super.toTag(tag);
-		tag.putLong("Age", this.age);
+	public CompoundTag toTag(CompoundTag compoundTag) {
+		super.toTag(compoundTag);
+		compoundTag.putLong("Age", this.age);
 		if (this.exitPortalPos != null) {
-			tag.put("ExitPortal", NbtHelper.fromBlockPos(this.exitPortalPos));
+			compoundTag.put("ExitPortal", TagHelper.serializeBlockPos(this.exitPortalPos));
 		}
 
 		if (this.exactTeleport) {
-			tag.putBoolean("ExactTeleport", this.exactTeleport);
+			compoundTag.putBoolean("ExactTeleport", this.exactTeleport);
 		}
 
-		return tag;
+		return compoundTag;
 	}
 
 	@Override
-	public void fromTag(CompoundTag tag) {
-		super.fromTag(tag);
-		this.age = tag.getLong("Age");
-		if (tag.contains("ExitPortal", 10)) {
-			this.exitPortalPos = NbtHelper.toBlockPos(tag.getCompound("ExitPortal"));
+	public void fromTag(CompoundTag compoundTag) {
+		super.fromTag(compoundTag);
+		this.age = compoundTag.getLong("Age");
+		if (compoundTag.containsKey("ExitPortal", 10)) {
+			this.exitPortalPos = TagHelper.deserializeBlockPos(compoundTag.getCompound("ExitPortal"));
 		}
 
-		this.exactTeleport = tag.getBoolean("ExactTeleport");
+		this.exactTeleport = compoundTag.getBoolean("ExactTeleport");
 	}
 
 	@Environment(EnvType.CLIENT)
@@ -82,7 +82,7 @@ public class EndGatewayBlockEntity extends EndPortalBlockEntity implements Ticka
 		if (bl2) {
 			this.teleportCooldown--;
 		} else if (!this.world.isClient) {
-			List<Entity> list = this.world.getNonSpectatingEntities(Entity.class, new Box(this.getPos()));
+			List<Entity> list = this.world.getEntities(Entity.class, new Box(this.getPos()));
 			if (!list.isEmpty()) {
 				this.tryTeleportingEntity((Entity)list.get(0));
 			}
@@ -106,13 +106,13 @@ public class EndGatewayBlockEntity extends EndPortalBlockEntity implements Ticka
 	}
 
 	@Environment(EnvType.CLIENT)
-	public float getRecentlyGeneratedBeamHeight(float tickDelta) {
-		return MathHelper.clamp(((float)this.age + tickDelta) / 200.0F, 0.0F, 1.0F);
+	public float getRecentlyGeneratedBeamHeight(float f) {
+		return MathHelper.clamp(((float)this.age + f) / 200.0F, 0.0F, 1.0F);
 	}
 
 	@Environment(EnvType.CLIENT)
-	public float getCooldownBeamHeight(float tickDelta) {
-		return 1.0F - MathHelper.clamp(((float)this.teleportCooldown - tickDelta) / 40.0F, 0.0F, 1.0F);
+	public float getCooldownBeamHeight(float f) {
+		return 1.0F - MathHelper.clamp(((float)this.teleportCooldown - f) / 40.0F, 0.0F, 1.0F);
 	}
 
 	@Nullable
@@ -184,7 +184,7 @@ public class EndGatewayBlockEntity extends EndPortalBlockEntity implements Ticka
 		if (this.exitPortalPos == null) {
 			this.exitPortalPos = new BlockPos(vec3d2.x + 0.5, 75.0, vec3d2.z + 0.5);
 			LOGGER.debug("Failed to find suitable block, settling on {}", this.exitPortalPos);
-			Feature.END_ISLAND
+			Feature.field_13574
 				.generate(
 					this.world,
 					(ChunkGenerator<? extends ChunkGeneratorConfig>)this.world.getChunkManager().getChunkGenerator(),
@@ -203,17 +203,17 @@ public class EndGatewayBlockEntity extends EndPortalBlockEntity implements Ticka
 		this.markDirty();
 	}
 
-	private static BlockPos findExitPortalPos(BlockView world, BlockPos pos, int searchRadius, boolean bl) {
-		BlockPos blockPos = null;
+	private static BlockPos findExitPortalPos(BlockView blockView, BlockPos blockPos, int i, boolean bl) {
+		BlockPos blockPos2 = null;
 
-		for (int i = -searchRadius; i <= searchRadius; i++) {
-			for (int j = -searchRadius; j <= searchRadius; j++) {
-				if (i != 0 || j != 0 || bl) {
-					for (int k = 255; k > (blockPos == null ? 0 : blockPos.getY()); k--) {
-						BlockPos blockPos2 = new BlockPos(pos.getX() + i, k, pos.getZ() + j);
-						BlockState blockState = world.getBlockState(blockPos2);
-						if (blockState.method_21743(world, blockPos2) && (bl || blockState.getBlock() != Blocks.BEDROCK)) {
-							blockPos = blockPos2;
+		for (int j = -i; j <= i; j++) {
+			for (int k = -i; k <= i; k++) {
+				if (j != 0 || k != 0 || bl) {
+					for (int l = 255; l > (blockPos2 == null ? 0 : blockPos2.getY()); l--) {
+						BlockPos blockPos3 = new BlockPos(blockPos.getX() + j, l, blockPos.getZ() + k);
+						BlockState blockState = blockView.getBlockState(blockPos3);
+						if (blockState.method_21743(blockView, blockPos3) && (bl || blockState.getBlock() != Blocks.field_9987)) {
+							blockPos2 = blockPos3;
 							break;
 						}
 					}
@@ -221,11 +221,11 @@ public class EndGatewayBlockEntity extends EndPortalBlockEntity implements Ticka
 			}
 		}
 
-		return blockPos == null ? pos : blockPos;
+		return blockPos2 == null ? blockPos : blockPos2;
 	}
 
-	private static WorldChunk getChunk(World world, Vec3d pos) {
-		return world.getChunk(MathHelper.floor(pos.x / 16.0), MathHelper.floor(pos.z / 16.0));
+	private static WorldChunk getChunk(World world, Vec3d vec3d) {
+		return world.method_8497(MathHelper.floor(vec3d.x / 16.0), MathHelper.floor(vec3d.z / 16.0));
 	}
 
 	@Nullable
@@ -241,7 +241,7 @@ public class EndGatewayBlockEntity extends EndPortalBlockEntity implements Ticka
 			BlockState blockState = worldChunk.getBlockState(blockPos4);
 			BlockPos blockPos5 = blockPos4.up();
 			BlockPos blockPos6 = blockPos4.up(2);
-			if (blockState.getBlock() == Blocks.END_STONE
+			if (blockState.getBlock() == Blocks.field_10471
 				&& !worldChunk.getBlockState(blockPos5).method_21743(worldChunk, blockPos5)
 				&& !worldChunk.getBlockState(blockPos6).method_21743(worldChunk, blockPos6)) {
 				double e = blockPos4.getSquaredDistance(0.0, 0.0, 0.0, true);
@@ -256,7 +256,7 @@ public class EndGatewayBlockEntity extends EndPortalBlockEntity implements Ticka
 	}
 
 	private void createPortal(BlockPos blockPos) {
-		Feature.END_GATEWAY
+		Feature.field_13564
 			.generate(
 				this.world,
 				(ChunkGenerator<? extends ChunkGeneratorConfig>)this.world.getChunkManager().getChunkGenerator(),

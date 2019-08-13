@@ -2,17 +2,15 @@ package net.minecraft.world.biome.layer;
 
 import net.minecraft.util.registry.Registry;
 import net.minecraft.world.biome.Biomes;
-import net.minecraft.world.biome.layer.type.SouthEastSamplingLayer;
-import net.minecraft.world.biome.layer.util.LayerRandomnessSource;
 
 public enum AddBambooJungleLayer implements SouthEastSamplingLayer {
-	INSTANCE;
+	field_16120;
 
-	private static final int JUNGLE_ID = Registry.BIOME.getRawId(Biomes.JUNGLE);
-	private static final int BAMBOO_JUNGLE_ID = Registry.BIOME.getRawId(Biomes.BAMBOO_JUNGLE);
+	private static final int JUNGLE_ID = Registry.BIOME.getRawId(Biomes.field_9417);
+	private static final int BAMBOO_JUNGLE_ID = Registry.BIOME.getRawId(Biomes.field_9440);
 
 	@Override
-	public int sample(LayerRandomnessSource context, int se) {
-		return context.nextInt(10) == 0 && se == JUNGLE_ID ? BAMBOO_JUNGLE_ID : se;
+	public int sample(LayerRandomnessSource layerRandomnessSource, int i) {
+		return layerRandomnessSource.nextInt(10) == 0 && i == JUNGLE_ID ? BAMBOO_JUNGLE_ID : i;
 	}
 }

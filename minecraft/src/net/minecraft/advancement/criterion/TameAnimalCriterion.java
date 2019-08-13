@@ -25,41 +25,45 @@ public class TameAnimalCriterion implements Criterion<TameAnimalCriterion.Condit
 	}
 
 	@Override
-	public void beginTrackingCondition(PlayerAdvancementTracker manager, Criterion.ConditionsContainer<TameAnimalCriterion.Conditions> conditionsContainer) {
-		TameAnimalCriterion.Handler handler = (TameAnimalCriterion.Handler)this.handlers.get(manager);
+	public void beginTrackingCondition(
+		PlayerAdvancementTracker playerAdvancementTracker, Criterion.ConditionsContainer<TameAnimalCriterion.Conditions> conditionsContainer
+	) {
+		TameAnimalCriterion.Handler handler = (TameAnimalCriterion.Handler)this.handlers.get(playerAdvancementTracker);
 		if (handler == null) {
-			handler = new TameAnimalCriterion.Handler(manager);
-			this.handlers.put(manager, handler);
+			handler = new TameAnimalCriterion.Handler(playerAdvancementTracker);
+			this.handlers.put(playerAdvancementTracker, handler);
 		}
 
 		handler.addCondition(conditionsContainer);
 	}
 
 	@Override
-	public void endTrackingCondition(PlayerAdvancementTracker manager, Criterion.ConditionsContainer<TameAnimalCriterion.Conditions> conditionsContainer) {
-		TameAnimalCriterion.Handler handler = (TameAnimalCriterion.Handler)this.handlers.get(manager);
+	public void endTrackingCondition(
+		PlayerAdvancementTracker playerAdvancementTracker, Criterion.ConditionsContainer<TameAnimalCriterion.Conditions> conditionsContainer
+	) {
+		TameAnimalCriterion.Handler handler = (TameAnimalCriterion.Handler)this.handlers.get(playerAdvancementTracker);
 		if (handler != null) {
 			handler.removeCondition(conditionsContainer);
 			if (handler.isEmpty()) {
-				this.handlers.remove(manager);
+				this.handlers.remove(playerAdvancementTracker);
 			}
 		}
 	}
 
 	@Override
-	public void endTracking(PlayerAdvancementTracker tracker) {
-		this.handlers.remove(tracker);
+	public void endTracking(PlayerAdvancementTracker playerAdvancementTracker) {
+		this.handlers.remove(playerAdvancementTracker);
 	}
 
-	public TameAnimalCriterion.Conditions conditionsFromJson(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext) {
-		EntityPredicate entityPredicate = EntityPredicate.fromJson(jsonObject.get("entity"));
+	public TameAnimalCriterion.Conditions method_9133(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext) {
+		EntityPredicate entityPredicate = EntityPredicate.deserialize(jsonObject.get("entity"));
 		return new TameAnimalCriterion.Conditions(entityPredicate);
 	}
 
-	public void trigger(ServerPlayerEntity player, AnimalEntity entity) {
-		TameAnimalCriterion.Handler handler = (TameAnimalCriterion.Handler)this.handlers.get(player.getAdvancementTracker());
+	public void handle(ServerPlayerEntity serverPlayerEntity, AnimalEntity animalEntity) {
+		TameAnimalCriterion.Handler handler = (TameAnimalCriterion.Handler)this.handlers.get(serverPlayerEntity.getAdvancementManager());
 		if (handler != null) {
-			handler.handle(player, entity);
+			handler.handle(serverPlayerEntity, animalEntity);
 		}
 	}
 
@@ -111,11 +115,11 @@ public class TameAnimalCriterion implements Criterion<TameAnimalCriterion.Condit
 			this.Conditions.remove(conditionsContainer);
 		}
 
-		public void handle(ServerPlayerEntity entity, AnimalEntity animalEntity) {
+		public void handle(ServerPlayerEntity serverPlayerEntity, AnimalEntity animalEntity) {
 			List<Criterion.ConditionsContainer<TameAnimalCriterion.Conditions>> list = null;
 
 			for (Criterion.ConditionsContainer<TameAnimalCriterion.Conditions> conditionsContainer : this.Conditions) {
-				if (conditionsContainer.getConditions().matches(entity, animalEntity)) {
+				if (conditionsContainer.getConditions().matches(serverPlayerEntity, animalEntity)) {
 					if (list == null) {
 						list = Lists.<Criterion.ConditionsContainer<TameAnimalCriterion.Conditions>>newArrayList();
 					}

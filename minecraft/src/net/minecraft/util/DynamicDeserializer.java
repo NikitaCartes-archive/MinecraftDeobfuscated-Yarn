@@ -10,16 +10,16 @@ public interface DynamicDeserializer<T> {
 
 	T deserialize(Dynamic<?> dynamic);
 
-	static <T, V, U extends DynamicDeserializer<V>> V deserialize(Dynamic<T> dynamic2, Registry<U> dynamic, String registry, V typeFieldName) {
-		U dynamicDeserializer = (U)dynamic.get(new Identifier(dynamic2.get(registry).asString("")));
-		V object;
+	static <T, V, U extends DynamicDeserializer<V>> V deserialize(Dynamic<T> dynamic, Registry<U> registry, String string, V object) {
+		U dynamicDeserializer = (U)registry.get(new Identifier(dynamic.get(string).asString("")));
+		V object2;
 		if (dynamicDeserializer != null) {
-			object = dynamicDeserializer.deserialize(dynamic2);
+			object2 = dynamicDeserializer.deserialize(dynamic);
 		} else {
-			LOGGER.error("Unknown type {}, replacing with {}", dynamic2.get(registry).asString(""), typeFieldName);
-			object = typeFieldName;
+			LOGGER.error("Unknown type {}, replacing with {}", dynamic.get(string).asString(""), object);
+			object2 = object;
 		}
 
-		return object;
+		return object2;
 	}
 }

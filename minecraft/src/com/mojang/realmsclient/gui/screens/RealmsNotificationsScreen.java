@@ -24,7 +24,7 @@ public class RealmsNotificationsScreen extends RealmsScreen {
 		RealmsDataFetcher.Task.PENDING_INVITE, RealmsDataFetcher.Task.TRIAL_AVAILABLE, RealmsDataFetcher.Task.UNREAD_NEWS
 	);
 
-	public RealmsNotificationsScreen(RealmsScreen lastScreen) {
+	public RealmsNotificationsScreen(RealmsScreen realmsScreen) {
 	}
 
 	@Override
@@ -85,55 +85,55 @@ public class RealmsNotificationsScreen extends RealmsScreen {
 	}
 
 	@Override
-	public void render(int xm, int ym, float a) {
+	public void render(int i, int j, float f) {
 		if (validClient) {
-			this.drawIcons(xm, ym);
+			this.drawIcons(i, j);
 		}
 
-		super.render(xm, ym, a);
+		super.render(i, j, f);
 	}
 
 	@Override
-	public boolean mouseClicked(double xm, double ym, int button) {
-		return super.mouseClicked(xm, ym, button);
+	public boolean mouseClicked(double d, double e, int i) {
+		return super.mouseClicked(d, e, i);
 	}
 
-	private void drawIcons(int xm, int ym) {
-		int i = this.numberOfPendingInvites;
-		int j = 24;
-		int k = this.height() / 4 + 48;
-		int l = this.width() / 2 + 80;
-		int m = k + 48 + 2;
-		int n = 0;
+	private void drawIcons(int i, int j) {
+		int k = this.numberOfPendingInvites;
+		int l = 24;
+		int m = this.height() / 4 + 48;
+		int n = this.width() / 2 + 80;
+		int o = m + 48 + 2;
+		int p = 0;
 		if (hasUnreadNews) {
 			RealmsScreen.bind("realms:textures/gui/realms/news_notification_mainscreen.png");
 			GlStateManager.color4f(1.0F, 1.0F, 1.0F, 1.0F);
 			GlStateManager.pushMatrix();
 			GlStateManager.scalef(0.4F, 0.4F, 0.4F);
-			RealmsScreen.blit((int)((double)(l + 2 - n) * 2.5), (int)((double)m * 2.5), 0.0F, 0.0F, 40, 40, 40, 40);
+			RealmsScreen.blit((int)((double)(n + 2 - p) * 2.5), (int)((double)o * 2.5), 0.0F, 0.0F, 40, 40, 40, 40);
 			GlStateManager.popMatrix();
-			n += 14;
+			p += 14;
 		}
 
-		if (i != 0) {
+		if (k != 0) {
 			RealmsScreen.bind("realms:textures/gui/realms/invite_icon.png");
 			GlStateManager.color4f(1.0F, 1.0F, 1.0F, 1.0F);
 			GlStateManager.pushMatrix();
-			RealmsScreen.blit(l - n, m - 6, 0.0F, 0.0F, 15, 25, 31, 25);
+			RealmsScreen.blit(n - p, o - 6, 0.0F, 0.0F, 15, 25, 31, 25);
 			GlStateManager.popMatrix();
-			n += 16;
+			p += 16;
 		}
 
 		if (trialAvailable) {
 			RealmsScreen.bind("realms:textures/gui/realms/trial_icon.png");
 			GlStateManager.color4f(1.0F, 1.0F, 1.0F, 1.0F);
 			GlStateManager.pushMatrix();
-			int o = 0;
+			int q = 0;
 			if ((System.currentTimeMillis() / 800L & 1L) == 1L) {
-				o = 8;
+				q = 8;
 			}
 
-			RealmsScreen.blit(l + 4 - n, m + 4, 0.0F, (float)o, 8, 8, 8, 16);
+			RealmsScreen.blit(n + 4 - p, o + 4, 0.0F, (float)q, 8, 8, 8, 16);
 			GlStateManager.popMatrix();
 		}
 	}

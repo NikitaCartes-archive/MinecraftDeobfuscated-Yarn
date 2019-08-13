@@ -13,16 +13,16 @@ public class TakeoffPhase extends AbstractPhase {
 	private Path field_7054;
 	private Vec3d field_7055;
 
-	public TakeoffPhase(EnderDragonEntity dragon) {
-		super(dragon);
+	public TakeoffPhase(EnderDragonEntity enderDragonEntity) {
+		super(enderDragonEntity);
 	}
 
 	@Override
 	public void serverTick() {
 		if (!this.field_7056 && this.field_7054 != null) {
-			BlockPos blockPos = this.dragon.world.getTopPosition(Heightmap.Type.MOTION_BLOCKING_NO_LEAVES, EndPortalFeature.ORIGIN);
+			BlockPos blockPos = this.dragon.world.getTopPosition(Heightmap.Type.field_13203, EndPortalFeature.ORIGIN);
 			if (!blockPos.isWithinDistance(this.dragon.getPos(), 10.0)) {
-				this.dragon.getPhaseManager().setPhase(PhaseType.HOLDING_PATTERN);
+				this.dragon.getPhaseManager().setPhase(PhaseType.field_7069);
 			}
 		} else {
 			this.field_7056 = false;
@@ -65,7 +65,7 @@ public class TakeoffPhase extends AbstractPhase {
 
 				double d;
 				do {
-					d = vec3d.y + (double)(this.dragon.getRandom().nextFloat() * 20.0F);
+					d = vec3d.y + (double)(this.dragon.getRand().nextFloat() * 20.0F);
 				} while (d < vec3d.y);
 
 				this.field_7055 = new Vec3d(vec3d.x, d, vec3d.z);
@@ -81,6 +81,6 @@ public class TakeoffPhase extends AbstractPhase {
 
 	@Override
 	public PhaseType<TakeoffPhase> getType() {
-		return PhaseType.TAKEOFF;
+		return PhaseType.field_7077;
 	}
 }

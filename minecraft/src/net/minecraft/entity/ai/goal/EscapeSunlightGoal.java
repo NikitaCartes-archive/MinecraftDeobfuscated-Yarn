@@ -17,25 +17,25 @@ public class EscapeSunlightGoal extends Goal {
 	private final double speed;
 	private final World world;
 
-	public EscapeSunlightGoal(MobEntityWithAi mob, double speed) {
-		this.mob = mob;
-		this.speed = speed;
-		this.world = mob.world;
-		this.setControls(EnumSet.of(Goal.Control.MOVE));
+	public EscapeSunlightGoal(MobEntityWithAi mobEntityWithAi, double d) {
+		this.mob = mobEntityWithAi;
+		this.speed = d;
+		this.world = mobEntityWithAi.world;
+		this.setControls(EnumSet.of(Goal.Control.field_18405));
 	}
 
 	@Override
 	public boolean canStart() {
 		if (this.mob.getTarget() != null) {
 			return false;
-		} else if (!this.world.isDay()) {
+		} else if (!this.world.isDaylight()) {
 			return false;
 		} else if (!this.mob.isOnFire()) {
 			return false;
-		} else if (!this.world.isSkyVisible(new BlockPos(this.mob.x, this.mob.getBoundingBox().y1, this.mob.z))) {
+		} else if (!this.world.isSkyVisible(new BlockPos(this.mob.x, this.mob.getBoundingBox().minY, this.mob.z))) {
 			return false;
 		} else {
-			return !this.mob.getEquippedStack(EquipmentSlot.HEAD).isEmpty() ? false : this.method_18250();
+			return !this.mob.getEquippedStack(EquipmentSlot.field_6169).isEmpty() ? false : this.method_18250();
 		}
 	}
 
@@ -63,8 +63,8 @@ public class EscapeSunlightGoal extends Goal {
 
 	@Nullable
 	protected Vec3d locateShadedPos() {
-		Random random = this.mob.getRandom();
-		BlockPos blockPos = new BlockPos(this.mob.x, this.mob.getBoundingBox().y1, this.mob.z);
+		Random random = this.mob.getRand();
+		BlockPos blockPos = new BlockPos(this.mob.x, this.mob.getBoundingBox().minY, this.mob.z);
 
 		for (int i = 0; i < 10; i++) {
 			BlockPos blockPos2 = blockPos.add(random.nextInt(20) - 10, random.nextInt(6) - 3, random.nextInt(20) - 10);

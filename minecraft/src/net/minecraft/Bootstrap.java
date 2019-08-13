@@ -36,7 +36,7 @@ public class Bootstrap {
 			} else {
 				FireBlock.registerDefaultFlammables();
 				ComposterBlock.registerDefaultCompostableItems();
-				if (EntityType.getId(EntityType.PLAYER) == null) {
+				if (EntityType.getId(EntityType.field_6097) == null) {
 					throw new IllegalStateException("Failed loading EntityTypes");
 				} else {
 					BrewingRecipeRegistry.registerDefaults();
@@ -49,12 +49,12 @@ public class Bootstrap {
 		}
 	}
 
-	private static <T> void collectMissingTranslations(Registry<T> registry, Function<T, String> keyExtractor, Set<String> translationKeys) {
+	private static <T> void collectMissingTranslations(Registry<T> registry, Function<T, String> function, Set<String> set) {
 		Language language = Language.getInstance();
 		registry.iterator().forEachRemaining(object -> {
-			String string = (String)keyExtractor.apply(object);
+			String string = (String)function.apply(object);
 			if (!language.hasTranslation(string)) {
-				translationKeys.add(string);
+				set.add(string);
 			}
 		});
 	}
@@ -89,7 +89,7 @@ public class Bootstrap {
 		}
 	}
 
-	public static void println(String str) {
-		SYSOUT.println(str);
+	public static void println(String string) {
+		SYSOUT.println(string);
 	}
 }

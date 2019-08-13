@@ -19,11 +19,11 @@ public class NbtCompoundTagArgumentType implements ArgumentType<CompoundTag> {
 		return new NbtCompoundTagArgumentType();
 	}
 
-	public static <S> CompoundTag getCompoundTag(CommandContext<S> context, String name) {
-		return context.getArgument(name, CompoundTag.class);
+	public static <S> CompoundTag getCompoundTag(CommandContext<S> commandContext, String string) {
+		return commandContext.getArgument(string, CompoundTag.class);
 	}
 
-	public CompoundTag parse(StringReader stringReader) throws CommandSyntaxException {
+	public CompoundTag method_9286(StringReader stringReader) throws CommandSyntaxException {
 		return new StringNbtReader(stringReader).parseCompoundTag();
 	}
 

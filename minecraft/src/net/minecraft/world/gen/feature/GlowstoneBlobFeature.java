@@ -11,19 +11,19 @@ import net.minecraft.world.gen.chunk.ChunkGenerator;
 import net.minecraft.world.gen.chunk.ChunkGeneratorConfig;
 
 public class GlowstoneBlobFeature extends Feature<DefaultFeatureConfig> {
-	public GlowstoneBlobFeature(Function<Dynamic<?>, ? extends DefaultFeatureConfig> configFactory) {
-		super(configFactory);
+	public GlowstoneBlobFeature(Function<Dynamic<?>, ? extends DefaultFeatureConfig> function) {
+		super(function);
 	}
 
-	public boolean generate(
+	public boolean method_13239(
 		IWorld iWorld, ChunkGenerator<? extends ChunkGeneratorConfig> chunkGenerator, Random random, BlockPos blockPos, DefaultFeatureConfig defaultFeatureConfig
 	) {
 		if (!iWorld.isAir(blockPos)) {
 			return false;
-		} else if (iWorld.getBlockState(blockPos.up()).getBlock() != Blocks.NETHERRACK) {
+		} else if (iWorld.getBlockState(blockPos.up()).getBlock() != Blocks.field_10515) {
 			return false;
 		} else {
-			iWorld.setBlockState(blockPos, Blocks.GLOWSTONE.getDefaultState(), 2);
+			iWorld.setBlockState(blockPos, Blocks.field_10171.getDefaultState(), 2);
 
 			for (int i = 0; i < 1500; i++) {
 				BlockPos blockPos2 = blockPos.add(random.nextInt(8) - random.nextInt(8), -random.nextInt(12), random.nextInt(8) - random.nextInt(8));
@@ -31,7 +31,7 @@ public class GlowstoneBlobFeature extends Feature<DefaultFeatureConfig> {
 					int j = 0;
 
 					for (Direction direction : Direction.values()) {
-						if (iWorld.getBlockState(blockPos2.offset(direction)).getBlock() == Blocks.GLOWSTONE) {
+						if (iWorld.getBlockState(blockPos2.offset(direction)).getBlock() == Blocks.field_10171) {
 							j++;
 						}
 
@@ -41,7 +41,7 @@ public class GlowstoneBlobFeature extends Feature<DefaultFeatureConfig> {
 					}
 
 					if (j == 1) {
-						iWorld.setBlockState(blockPos2, Blocks.GLOWSTONE.getDefaultState(), 2);
+						iWorld.setBlockState(blockPos2, Blocks.field_10171.getDefaultState(), 2);
 					}
 				}
 			}

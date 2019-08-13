@@ -48,7 +48,7 @@ public class ChestBlockEntity extends LootableContainerBlockEntity implements Ch
 	}
 
 	public ChestBlockEntity() {
-		this(BlockEntityType.CHEST);
+		this(BlockEntityType.field_11914);
 	}
 
 	@Override
@@ -73,22 +73,22 @@ public class ChestBlockEntity extends LootableContainerBlockEntity implements Ch
 	}
 
 	@Override
-	public void fromTag(CompoundTag tag) {
-		super.fromTag(tag);
+	public void fromTag(CompoundTag compoundTag) {
+		super.fromTag(compoundTag);
 		this.inventory = DefaultedList.ofSize(this.getInvSize(), ItemStack.EMPTY);
-		if (!this.deserializeLootTable(tag)) {
-			Inventories.fromTag(tag, this.inventory);
+		if (!this.deserializeLootTable(compoundTag)) {
+			Inventories.fromTag(compoundTag, this.inventory);
 		}
 	}
 
 	@Override
-	public CompoundTag toTag(CompoundTag tag) {
-		super.toTag(tag);
-		if (!this.serializeLootTable(tag)) {
-			Inventories.toTag(tag, this.inventory);
+	public CompoundTag toTag(CompoundTag compoundTag) {
+		super.toTag(compoundTag);
+		if (!this.serializeLootTable(compoundTag)) {
+			Inventories.toTag(compoundTag, this.inventory);
 		}
 
-		return tag;
+		return compoundTag;
 	}
 
 	@Override
@@ -101,7 +101,7 @@ public class ChestBlockEntity extends LootableContainerBlockEntity implements Ch
 		this.lastAnimationAngle = this.animationAngle;
 		float f = 0.1F;
 		if (this.viewerCount > 0 && this.animationAngle == 0.0F) {
-			this.playSound(SoundEvents.BLOCK_CHEST_OPEN);
+			this.playSound(SoundEvents.field_14982);
 		}
 
 		if (this.viewerCount == 0 && this.animationAngle > 0.0F || this.viewerCount > 0 && this.animationAngle < 1.0F) {
@@ -118,7 +118,7 @@ public class ChestBlockEntity extends LootableContainerBlockEntity implements Ch
 
 			float h = 0.5F;
 			if (this.animationAngle < 0.5F && g >= 0.5F) {
-				this.playSound(SoundEvents.BLOCK_CHEST_CLOSE);
+				this.playSound(SoundEvents.field_14823);
 			}
 
 			if (this.animationAngle < 0.0F) {
@@ -127,53 +127,53 @@ public class ChestBlockEntity extends LootableContainerBlockEntity implements Ch
 		}
 	}
 
-	public static int tickViewerCount(World world, LockableContainerBlockEntity blockEntity, int ticksOpen, int x, int y, int z, int viewerCount) {
-		if (!world.isClient && viewerCount != 0 && (ticksOpen + x + y + z) % 200 == 0) {
-			viewerCount = countViewers(world, blockEntity, x, y, z);
+	public static int tickViewerCount(World world, LockableContainerBlockEntity lockableContainerBlockEntity, int i, int j, int k, int l, int m) {
+		if (!world.isClient && m != 0 && (i + j + k + l) % 200 == 0) {
+			m = countViewers(world, lockableContainerBlockEntity, j, k, l);
 		}
 
-		return viewerCount;
+		return m;
 	}
 
-	public static int countViewers(World world, LockableContainerBlockEntity container, int ticksOpen, int x, int y) {
-		int i = 0;
+	public static int countViewers(World world, LockableContainerBlockEntity lockableContainerBlockEntity, int i, int j, int k) {
+		int l = 0;
 		float f = 5.0F;
 
-		for (PlayerEntity playerEntity : world.getNonSpectatingEntities(
+		for (PlayerEntity playerEntity : world.getEntities(
 			PlayerEntity.class,
 			new Box(
-				(double)((float)ticksOpen - 5.0F),
-				(double)((float)x - 5.0F),
-				(double)((float)y - 5.0F),
-				(double)((float)(ticksOpen + 1) + 5.0F),
-				(double)((float)(x + 1) + 5.0F),
-				(double)((float)(y + 1) + 5.0F)
+				(double)((float)i - 5.0F),
+				(double)((float)j - 5.0F),
+				(double)((float)k - 5.0F),
+				(double)((float)(i + 1) + 5.0F),
+				(double)((float)(j + 1) + 5.0F),
+				(double)((float)(k + 1) + 5.0F)
 			)
 		)) {
 			if (playerEntity.container instanceof GenericContainer) {
 				Inventory inventory = ((GenericContainer)playerEntity.container).getInventory();
-				if (inventory == container || inventory instanceof DoubleInventory && ((DoubleInventory)inventory).isPart(container)) {
-					i++;
+				if (inventory == lockableContainerBlockEntity || inventory instanceof DoubleInventory && ((DoubleInventory)inventory).isPart(lockableContainerBlockEntity)) {
+					l++;
 				}
 			}
 		}
 
-		return i;
+		return l;
 	}
 
 	private void playSound(SoundEvent soundEvent) {
 		ChestType chestType = this.getCachedState().get(ChestBlock.CHEST_TYPE);
-		if (chestType != ChestType.LEFT) {
+		if (chestType != ChestType.field_12574) {
 			double d = (double)this.pos.getX() + 0.5;
 			double e = (double)this.pos.getY() + 0.5;
 			double f = (double)this.pos.getZ() + 0.5;
-			if (chestType == ChestType.RIGHT) {
+			if (chestType == ChestType.field_12571) {
 				Direction direction = ChestBlock.getFacing(this.getCachedState());
 				d += (double)direction.getOffsetX() * 0.5;
 				f += (double)direction.getOffsetZ() * 0.5;
 			}
 
-			this.world.playSound(null, d, e, f, soundEvent, SoundCategory.BLOCKS, 0.5F, this.world.random.nextFloat() * 0.1F + 0.9F);
+			this.world.playSound(null, d, e, f, soundEvent, SoundCategory.field_15245, 0.5F, this.world.random.nextFloat() * 0.1F + 0.9F);
 		}
 	}
 
@@ -188,8 +188,8 @@ public class ChestBlockEntity extends LootableContainerBlockEntity implements Ch
 	}
 
 	@Override
-	public void onInvOpen(PlayerEntity player) {
-		if (!player.isSpectator()) {
+	public void onInvOpen(PlayerEntity playerEntity) {
+		if (!playerEntity.isSpectator()) {
 			if (this.viewerCount < 0) {
 				this.viewerCount = 0;
 			}
@@ -200,8 +200,8 @@ public class ChestBlockEntity extends LootableContainerBlockEntity implements Ch
 	}
 
 	@Override
-	public void onInvClose(PlayerEntity player) {
-		if (!player.isSpectator()) {
+	public void onInvClose(PlayerEntity playerEntity) {
+		if (!playerEntity.isSpectator()) {
 			this.viewerCount--;
 			this.onInvOpenOrClose();
 		}
@@ -221,8 +221,8 @@ public class ChestBlockEntity extends LootableContainerBlockEntity implements Ch
 	}
 
 	@Override
-	protected void setInvStackList(DefaultedList<ItemStack> list) {
-		this.inventory = list;
+	protected void setInvStackList(DefaultedList<ItemStack> defaultedList) {
+		this.inventory = defaultedList;
 	}
 
 	@Environment(EnvType.CLIENT)
@@ -231,10 +231,10 @@ public class ChestBlockEntity extends LootableContainerBlockEntity implements Ch
 		return MathHelper.lerp(f, this.lastAnimationAngle, this.animationAngle);
 	}
 
-	public static int getPlayersLookingInChestCount(BlockView world, BlockPos pos) {
-		BlockState blockState = world.getBlockState(pos);
+	public static int getPlayersLookingInChestCount(BlockView blockView, BlockPos blockPos) {
+		BlockState blockState = blockView.getBlockState(blockPos);
 		if (blockState.getBlock().hasBlockEntity()) {
-			BlockEntity blockEntity = world.getBlockEntity(pos);
+			BlockEntity blockEntity = blockView.getBlockEntity(blockPos);
 			if (blockEntity instanceof ChestBlockEntity) {
 				return ((ChestBlockEntity)blockEntity).viewerCount;
 			}
@@ -243,10 +243,10 @@ public class ChestBlockEntity extends LootableContainerBlockEntity implements Ch
 		return 0;
 	}
 
-	public static void copyInventory(ChestBlockEntity from, ChestBlockEntity to) {
-		DefaultedList<ItemStack> defaultedList = from.getInvStackList();
-		from.setInvStackList(to.getInvStackList());
-		to.setInvStackList(defaultedList);
+	public static void copyInventory(ChestBlockEntity chestBlockEntity, ChestBlockEntity chestBlockEntity2) {
+		DefaultedList<ItemStack> defaultedList = chestBlockEntity.getInvStackList();
+		chestBlockEntity.setInvStackList(chestBlockEntity2.getInvStackList());
+		chestBlockEntity2.setInvStackList(defaultedList);
 	}
 
 	@Override

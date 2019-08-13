@@ -20,17 +20,17 @@ import net.minecraft.item.BlockItem;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.NbtHelper;
+import net.minecraft.util.TagHelper;
 import org.apache.commons.lang3.StringUtils;
 
 @Environment(EnvType.CLIENT)
 public class HeadFeatureRenderer<T extends LivingEntity, M extends EntityModel<T> & ModelWithHead> extends FeatureRenderer<T, M> {
-	public HeadFeatureRenderer(FeatureRendererContext<T, M> context) {
-		super(context);
+	public HeadFeatureRenderer(FeatureRendererContext<T, M> featureRendererContext) {
+		super(featureRendererContext);
 	}
 
-	public void render(T livingEntity, float f, float g, float h, float i, float j, float k, float l) {
-		ItemStack itemStack = livingEntity.getEquippedStack(EquipmentSlot.HEAD);
+	public void method_17159(T livingEntity, float f, float g, float h, float i, float j, float k, float l) {
+		ItemStack itemStack = livingEntity.getEquippedStack(EquipmentSlot.field_6169);
 		if (!itemStack.isEmpty()) {
 			Item item = itemStack.getItem();
 			GlStateManager.pushMatrix();
@@ -47,7 +47,7 @@ public class HeadFeatureRenderer<T extends LivingEntity, M extends EntityModel<T
 				GlStateManager.translatef(0.0F, 16.0F * l, 0.0F);
 			}
 
-			this.getContextModel().setHeadAngle(0.0625F);
+			this.getModel().setHeadAngle(0.0625F);
 			GlStateManager.color4f(1.0F, 1.0F, 1.0F, 1.0F);
 			if (item instanceof BlockItem && ((BlockItem)item).getBlock() instanceof AbstractSkullBlock) {
 				float m = 1.1875F;
@@ -59,20 +59,20 @@ public class HeadFeatureRenderer<T extends LivingEntity, M extends EntityModel<T
 				GameProfile gameProfile = null;
 				if (itemStack.hasTag()) {
 					CompoundTag compoundTag = itemStack.getTag();
-					if (compoundTag.contains("SkullOwner", 10)) {
-						gameProfile = NbtHelper.toGameProfile(compoundTag.getCompound("SkullOwner"));
-					} else if (compoundTag.contains("SkullOwner", 8)) {
+					if (compoundTag.containsKey("SkullOwner", 10)) {
+						gameProfile = TagHelper.deserializeProfile(compoundTag.getCompound("SkullOwner"));
+					} else if (compoundTag.containsKey("SkullOwner", 8)) {
 						String string = compoundTag.getString("SkullOwner");
 						if (!StringUtils.isBlank(string)) {
 							gameProfile = SkullBlockEntity.loadProperties(new GameProfile(null, string));
-							compoundTag.put("SkullOwner", NbtHelper.fromGameProfile(new CompoundTag(), gameProfile));
+							compoundTag.put("SkullOwner", TagHelper.serializeProfile(new CompoundTag(), gameProfile));
 						}
 					}
 				}
 
 				SkullBlockEntityRenderer.INSTANCE
 					.render(-0.5F, 0.0F, -0.5F, null, 180.0F, ((AbstractSkullBlock)((BlockItem)item).getBlock()).getSkullType(), gameProfile, -1, f);
-			} else if (!(item instanceof ArmorItem) || ((ArmorItem)item).getSlotType() != EquipmentSlot.HEAD) {
+			} else if (!(item instanceof ArmorItem) || ((ArmorItem)item).getSlotType() != EquipmentSlot.field_6169) {
 				float mx = 0.625F;
 				GlStateManager.translatef(0.0F, -0.25F, 0.0F);
 				GlStateManager.rotatef(180.0F, 0.0F, 1.0F, 0.0F);
@@ -81,7 +81,7 @@ public class HeadFeatureRenderer<T extends LivingEntity, M extends EntityModel<T
 					GlStateManager.translatef(0.0F, 0.1875F, 0.0F);
 				}
 
-				MinecraftClient.getInstance().getHeldItemRenderer().renderItem(livingEntity, itemStack, ModelTransformation.Type.HEAD);
+				MinecraftClient.getInstance().getFirstPersonRenderer().renderItem(livingEntity, itemStack, ModelTransformation.Type.field_4316);
 			}
 
 			GlStateManager.popMatrix();

@@ -35,10 +35,10 @@ public class BlazeEntity extends HostileEntity {
 
 	public BlazeEntity(EntityType<? extends BlazeEntity> entityType, World world) {
 		super(entityType, world);
-		this.setPathfindingPenalty(PathNodeType.WATER, -1.0F);
-		this.setPathfindingPenalty(PathNodeType.LAVA, 8.0F);
-		this.setPathfindingPenalty(PathNodeType.DANGER_FIRE, 0.0F);
-		this.setPathfindingPenalty(PathNodeType.DAMAGE_FIRE, 0.0F);
+		this.setPathNodeTypeWeight(PathNodeType.field_18, -1.0F);
+		this.setPathNodeTypeWeight(PathNodeType.field_14, 8.0F);
+		this.setPathNodeTypeWeight(PathNodeType.field_9, 0.0F);
+		this.setPathNodeTypeWeight(PathNodeType.field_3, 0.0F);
 		this.experiencePoints = 10;
 	}
 
@@ -69,17 +69,17 @@ public class BlazeEntity extends HostileEntity {
 
 	@Override
 	protected SoundEvent getAmbientSound() {
-		return SoundEvents.ENTITY_BLAZE_AMBIENT;
+		return SoundEvents.field_14991;
 	}
 
 	@Override
-	protected SoundEvent getHurtSound(DamageSource source) {
-		return SoundEvents.ENTITY_BLAZE_HURT;
+	protected SoundEvent getHurtSound(DamageSource damageSource) {
+		return SoundEvents.field_14842;
 	}
 
 	@Override
 	protected SoundEvent getDeathSound() {
-		return SoundEvents.ENTITY_BLAZE_DEATH;
+		return SoundEvents.field_14580;
 	}
 
 	@Environment(EnvType.CLIENT)
@@ -106,7 +106,7 @@ public class BlazeEntity extends HostileEntity {
 						this.x + 0.5,
 						this.y + 0.5,
 						this.z + 0.5,
-						SoundEvents.ENTITY_BLAZE_BURN,
+						SoundEvents.field_14734,
 						this.getSoundCategory(),
 						1.0F + this.random.nextFloat(),
 						this.random.nextFloat() * 0.7F + 0.3F,
@@ -117,7 +117,7 @@ public class BlazeEntity extends HostileEntity {
 			for (int i = 0; i < 2; i++) {
 				this.world
 					.addParticle(
-						ParticleTypes.LARGE_SMOKE,
+						ParticleTypes.field_11237,
 						this.x + (this.random.nextDouble() - 0.5) * (double)this.getWidth(),
 						this.y + this.random.nextDouble() * (double)this.getHeight(),
 						this.z + (this.random.nextDouble() - 0.5) * (double)this.getWidth(),
@@ -133,7 +133,7 @@ public class BlazeEntity extends HostileEntity {
 
 	@Override
 	protected void mobTick() {
-		if (this.isWet()) {
+		if (this.isTouchingWater()) {
 			this.damage(DamageSource.DROWN, 1.0F);
 		}
 
@@ -156,7 +156,7 @@ public class BlazeEntity extends HostileEntity {
 	}
 
 	@Override
-	public void handleFallDamage(float fallDistance, float damageMultiplier) {
+	public void handleFallDamage(float f, float g) {
 	}
 
 	@Override
@@ -185,9 +185,9 @@ public class BlazeEntity extends HostileEntity {
 		private int field_7217;
 		private int field_19420;
 
-		public ShootFireballGoal(BlazeEntity blaze) {
-			this.blaze = blaze;
-			this.setControls(EnumSet.of(Goal.Control.MOVE, Goal.Control.LOOK));
+		public ShootFireballGoal(BlazeEntity blazeEntity) {
+			this.blaze = blazeEntity;
+			this.setControls(EnumSet.of(Goal.Control.field_18405, Goal.Control.field_18406));
 		}
 
 		@Override
@@ -233,7 +233,7 @@ public class BlazeEntity extends HostileEntity {
 					this.blaze.getMoveControl().moveTo(livingEntity.x, livingEntity.y, livingEntity.z, 1.0);
 				} else if (d < this.method_6995() * this.method_6995() && bl) {
 					double e = livingEntity.x - this.blaze.x;
-					double f = livingEntity.getBoundingBox().y1 + (double)(livingEntity.getHeight() / 2.0F) - (this.blaze.y + (double)(this.blaze.getHeight() / 2.0F));
+					double f = livingEntity.getBoundingBox().minY + (double)(livingEntity.getHeight() / 2.0F) - (this.blaze.y + (double)(this.blaze.getHeight() / 2.0F));
 					double g = livingEntity.z - this.blaze.z;
 					if (this.field_7217 <= 0) {
 						this.field_7218++;
@@ -254,7 +254,7 @@ public class BlazeEntity extends HostileEntity {
 
 							for (int i = 0; i < 1; i++) {
 								SmallFireballEntity smallFireballEntity = new SmallFireballEntity(
-									this.blaze.world, this.blaze, e + this.blaze.getRandom().nextGaussian() * (double)h, f, g + this.blaze.getRandom().nextGaussian() * (double)h
+									this.blaze.world, this.blaze, e + this.blaze.getRand().nextGaussian() * (double)h, f, g + this.blaze.getRand().nextGaussian() * (double)h
 								);
 								smallFireballEntity.y = this.blaze.y + (double)(this.blaze.getHeight() / 2.0F) + 0.5;
 								this.blaze.world.spawnEntity(smallFireballEntity);

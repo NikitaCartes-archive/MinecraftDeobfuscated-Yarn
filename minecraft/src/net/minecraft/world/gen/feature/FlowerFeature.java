@@ -10,11 +10,11 @@ import net.minecraft.world.gen.chunk.ChunkGenerator;
 import net.minecraft.world.gen.chunk.ChunkGeneratorConfig;
 
 public abstract class FlowerFeature extends Feature<DefaultFeatureConfig> {
-	public FlowerFeature(Function<Dynamic<?>, ? extends DefaultFeatureConfig> configFactory) {
-		super(configFactory, false);
+	public FlowerFeature(Function<Dynamic<?>, ? extends DefaultFeatureConfig> function) {
+		super(function, false);
 	}
 
-	public boolean generate(
+	public boolean method_13176(
 		IWorld iWorld, ChunkGenerator<? extends ChunkGeneratorConfig> chunkGenerator, Random random, BlockPos blockPos, DefaultFeatureConfig defaultFeatureConfig
 	) {
 		BlockState blockState = this.getFlowerToPlace(random, blockPos);
@@ -31,5 +31,5 @@ public abstract class FlowerFeature extends Feature<DefaultFeatureConfig> {
 		return i > 0;
 	}
 
-	public abstract BlockState getFlowerToPlace(Random random, BlockPos pos);
+	public abstract BlockState getFlowerToPlace(Random random, BlockPos blockPos);
 }

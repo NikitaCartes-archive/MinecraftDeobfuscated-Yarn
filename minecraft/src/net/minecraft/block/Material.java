@@ -108,24 +108,16 @@ public final class Material {
 	private final boolean solid;
 
 	public Material(
-		MaterialColor color,
-		boolean liquid,
-		boolean solid,
-		boolean blocksMovement,
-		boolean blocksLight,
-		boolean breakByHand,
-		boolean burnable,
-		boolean replaceable,
-		PistonBehavior pistonBehavior
+		MaterialColor materialColor, boolean bl, boolean bl2, boolean bl3, boolean bl4, boolean bl5, boolean bl6, boolean bl7, PistonBehavior pistonBehavior
 	) {
-		this.color = color;
-		this.liquid = liquid;
-		this.solid = solid;
-		this.blocksMovement = blocksMovement;
-		this.blocksLight = blocksLight;
-		this.breakByHand = breakByHand;
-		this.burnable = burnable;
-		this.replaceable = replaceable;
+		this.color = materialColor;
+		this.liquid = bl;
+		this.solid = bl2;
+		this.blocksMovement = bl3;
+		this.blocksLight = bl4;
+		this.breakByHand = bl5;
+		this.burnable = bl6;
+		this.replaceable = bl7;
 		this.pistonBehavior = pistonBehavior;
 	}
 
@@ -166,7 +158,7 @@ public final class Material {
 	}
 
 	public static class Builder {
-		private PistonBehavior pistonBehavior = PistonBehavior.NORMAL;
+		private PistonBehavior pistonBehavior = PistonBehavior.field_15974;
 		private boolean blocksMovement = true;
 		private boolean burnable;
 		private boolean breakByHand = true;
@@ -176,8 +168,8 @@ public final class Material {
 		private final MaterialColor color;
 		private boolean blocksLight = true;
 
-		public Builder(MaterialColor color) {
-			this.color = color;
+		public Builder(MaterialColor materialColor) {
+			this.color = materialColor;
 		}
 
 		public Material.Builder liquid() {
@@ -216,12 +208,12 @@ public final class Material {
 		}
 
 		protected Material.Builder destroyedByPiston() {
-			this.pistonBehavior = PistonBehavior.DESTROY;
+			this.pistonBehavior = PistonBehavior.field_15971;
 			return this;
 		}
 
 		protected Material.Builder blocksPistons() {
-			this.pistonBehavior = PistonBehavior.BLOCK;
+			this.pistonBehavior = PistonBehavior.field_15972;
 			return this;
 		}
 

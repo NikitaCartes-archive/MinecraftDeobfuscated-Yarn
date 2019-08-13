@@ -12,7 +12,7 @@ import net.minecraft.structure.Structure;
 import net.minecraft.structure.StructurePlacementData;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
-import net.minecraft.world.CollisionView;
+import net.minecraft.world.ViewableWorld;
 
 public class RuleStructureProcessor extends StructureProcessor {
 	private final ImmutableList<StructureProcessorRule> rules;
@@ -28,14 +28,14 @@ public class RuleStructureProcessor extends StructureProcessor {
 	@Nullable
 	@Override
 	public Structure.StructureBlockInfo process(
-		CollisionView world,
-		BlockPos pos,
+		ViewableWorld viewableWorld,
+		BlockPos blockPos,
 		Structure.StructureBlockInfo structureBlockInfo,
 		Structure.StructureBlockInfo structureBlockInfo2,
-		StructurePlacementData placementData
+		StructurePlacementData structurePlacementData
 	) {
 		Random random = new Random(MathHelper.hashCode(structureBlockInfo2.pos));
-		BlockState blockState = world.getBlockState(structureBlockInfo2.pos);
+		BlockState blockState = viewableWorld.getBlockState(structureBlockInfo2.pos);
 
 		for (StructureProcessorRule structureProcessorRule : this.rules) {
 			if (structureProcessorRule.test(structureBlockInfo2.state, blockState, random)) {
@@ -48,7 +48,7 @@ public class RuleStructureProcessor extends StructureProcessor {
 
 	@Override
 	protected StructureProcessorType getType() {
-		return StructureProcessorType.RULE;
+		return StructureProcessorType.field_16990;
 	}
 
 	@Override

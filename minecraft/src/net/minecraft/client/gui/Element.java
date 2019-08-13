@@ -5,42 +5,42 @@ import net.fabricmc.api.Environment;
 
 @Environment(EnvType.CLIENT)
 public interface Element {
-	default void mouseMoved(double mouseX, double mouseY) {
+	default void mouseMoved(double d, double e) {
 	}
 
-	default boolean mouseClicked(double mouseX, double mouseY, int button) {
+	default boolean mouseClicked(double d, double e, int i) {
 		return false;
 	}
 
-	default boolean mouseReleased(double mouseX, double mouseY, int button) {
+	default boolean mouseReleased(double d, double e, int i) {
 		return false;
 	}
 
-	default boolean mouseDragged(double mouseX, double mouseY, int button, double deltaX, double deltaY) {
+	default boolean mouseDragged(double d, double e, int i, double f, double g) {
 		return false;
 	}
 
-	default boolean mouseScrolled(double mouseX, double mouseY, double amount) {
+	default boolean mouseScrolled(double d, double e, double f) {
 		return false;
 	}
 
-	default boolean keyPressed(int keyCode, int scanCode, int modifiers) {
+	default boolean keyPressed(int i, int j, int k) {
 		return false;
 	}
 
-	default boolean keyReleased(int keyCode, int scanCode, int modifiers) {
+	default boolean keyReleased(int i, int j, int k) {
 		return false;
 	}
 
-	default boolean charTyped(char chr, int keyCode) {
+	default boolean charTyped(char c, int i) {
 		return false;
 	}
 
-	default boolean changeFocus(boolean lookForwards) {
+	default boolean changeFocus(boolean bl) {
 		return false;
 	}
 
-	default boolean isMouseOver(double mouseX, double mouseY) {
+	default boolean isMouseOver(double d, double e) {
 		return false;
 	}
 }

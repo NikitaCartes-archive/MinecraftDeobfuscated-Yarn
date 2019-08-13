@@ -19,10 +19,10 @@ import net.minecraft.world.Heightmap;
 
 public class StructurePool {
 	public static final StructurePool EMPTY = new StructurePool(
-		new Identifier("empty"), new Identifier("empty"), ImmutableList.of(), StructurePool.Projection.RIGID
+		new Identifier("empty"), new Identifier("empty"), ImmutableList.of(), StructurePool.Projection.field_16687
 	);
 	public static final StructurePool INVALID = new StructurePool(
-		new Identifier("invalid"), new Identifier("invalid"), ImmutableList.of(), StructurePool.Projection.RIGID
+		new Identifier("invalid"), new Identifier("invalid"), ImmutableList.of(), StructurePool.Projection.field_16687
 	);
 	private final Identifier id;
 	private final ImmutableList<Pair<StructurePoolElement, Integer>> elementCounts;
@@ -31,18 +31,18 @@ public class StructurePool {
 	private final StructurePool.Projection projection;
 	private int field_18707 = Integer.MIN_VALUE;
 
-	public StructurePool(Identifier id, Identifier terminatorsId, List<Pair<StructurePoolElement, Integer>> elementCounts, StructurePool.Projection projection) {
-		this.id = id;
-		this.elementCounts = ImmutableList.copyOf(elementCounts);
+	public StructurePool(Identifier identifier, Identifier identifier2, List<Pair<StructurePoolElement, Integer>> list, StructurePool.Projection projection) {
+		this.id = identifier;
+		this.elementCounts = ImmutableList.copyOf(list);
 		this.elements = Lists.<StructurePoolElement>newArrayList();
 
-		for (Pair<StructurePoolElement, Integer> pair : elementCounts) {
+		for (Pair<StructurePoolElement, Integer> pair : list) {
 			for (Integer integer = 0; integer < pair.getSecond(); integer = integer + 1) {
 				this.elements.add(pair.getFirst().setProjection(projection));
 			}
 		}
 
-		this.terminatorsId = terminatorsId;
+		this.terminatorsId = identifier2;
 		this.projection = projection;
 	}
 
@@ -50,7 +50,7 @@ public class StructurePool {
 		if (this.field_18707 == Integer.MIN_VALUE) {
 			this.field_18707 = this.elements
 				.stream()
-				.mapToInt(structurePoolElement -> structurePoolElement.getBoundingBox(structureManager, BlockPos.ORIGIN, BlockRotation.NONE).getBlockCountY())
+				.mapToInt(structurePoolElement -> structurePoolElement.getBoundingBox(structureManager, BlockPos.ORIGIN, BlockRotation.field_11467).getBlockCountY())
 				.max()
 				.orElse(0);
 		}
@@ -79,8 +79,8 @@ public class StructurePool {
 	}
 
 	public static enum Projection {
-		TERRAIN_MATCHING("terrain_matching", ImmutableList.of(new GravityStructureProcessor(Heightmap.Type.WORLD_SURFACE_WG, -1))),
-		RIGID("rigid", ImmutableList.of());
+		field_16686("terrain_matching", ImmutableList.of(new GravityStructureProcessor(Heightmap.Type.field_13194, -1))),
+		field_16687("rigid", ImmutableList.of());
 
 		private static final Map<String, StructurePool.Projection> PROJECTIONS_BY_ID = (Map<String, StructurePool.Projection>)Arrays.stream(values())
 			.collect(Collectors.toMap(StructurePool.Projection::getId, projection -> projection));
@@ -96,8 +96,8 @@ public class StructurePool {
 			return this.id;
 		}
 
-		public static StructurePool.Projection getById(String id) {
-			return (StructurePool.Projection)PROJECTIONS_BY_ID.get(id);
+		public static StructurePool.Projection getById(String string) {
+			return (StructurePool.Projection)PROJECTIONS_BY_ID.get(string);
 		}
 
 		public ImmutableList<StructureProcessor> getProcessors() {

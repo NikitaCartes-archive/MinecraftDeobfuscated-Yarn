@@ -13,33 +13,33 @@ public class ChorusFruitItem extends Item {
 	}
 
 	@Override
-	public ItemStack finishUsing(ItemStack stack, World world, LivingEntity user) {
-		ItemStack itemStack = super.finishUsing(stack, world, user);
+	public ItemStack finishUsing(ItemStack itemStack, World world, LivingEntity livingEntity) {
+		ItemStack itemStack2 = super.finishUsing(itemStack, world, livingEntity);
 		if (!world.isClient) {
-			double d = user.x;
-			double e = user.y;
-			double f = user.z;
+			double d = livingEntity.x;
+			double e = livingEntity.y;
+			double f = livingEntity.z;
 
 			for (int i = 0; i < 16; i++) {
-				double g = user.x + (user.getRandom().nextDouble() - 0.5) * 16.0;
-				double h = MathHelper.clamp(user.y + (double)(user.getRandom().nextInt(16) - 8), 0.0, (double)(world.getEffectiveHeight() - 1));
-				double j = user.z + (user.getRandom().nextDouble() - 0.5) * 16.0;
-				if (user.hasVehicle()) {
-					user.stopRiding();
+				double g = livingEntity.x + (livingEntity.getRand().nextDouble() - 0.5) * 16.0;
+				double h = MathHelper.clamp(livingEntity.y + (double)(livingEntity.getRand().nextInt(16) - 8), 0.0, (double)(world.getEffectiveHeight() - 1));
+				double j = livingEntity.z + (livingEntity.getRand().nextDouble() - 0.5) * 16.0;
+				if (livingEntity.hasVehicle()) {
+					livingEntity.stopRiding();
 				}
 
-				if (user.teleport(g, h, j, true)) {
-					world.playSound(null, d, e, f, SoundEvents.ITEM_CHORUS_FRUIT_TELEPORT, SoundCategory.PLAYERS, 1.0F, 1.0F);
-					user.playSound(SoundEvents.ITEM_CHORUS_FRUIT_TELEPORT, 1.0F, 1.0F);
+				if (livingEntity.teleport(g, h, j, true)) {
+					world.playSound(null, d, e, f, SoundEvents.field_14890, SoundCategory.PLAYERS, 1.0F, 1.0F);
+					livingEntity.playSound(SoundEvents.field_14890, 1.0F, 1.0F);
 					break;
 				}
 			}
 
-			if (user instanceof PlayerEntity) {
-				((PlayerEntity)user).getItemCooldownManager().set(this, 20);
+			if (livingEntity instanceof PlayerEntity) {
+				((PlayerEntity)livingEntity).getItemCooldownManager().set(this, 20);
 			}
 		}
 
-		return itemStack;
+		return itemStack2;
 	}
 }

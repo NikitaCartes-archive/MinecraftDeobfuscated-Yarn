@@ -17,12 +17,12 @@ import net.minecraft.item.Items;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
-import net.minecraft.state.StateManager;
+import net.minecraft.state.StateFactory;
 import net.minecraft.state.property.IntProperty;
 import net.minecraft.state.property.Properties;
 import net.minecraft.util.BooleanBiFunction;
 import net.minecraft.util.Hand;
-import net.minecraft.util.Util;
+import net.minecraft.util.SystemUtil;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
@@ -36,7 +36,7 @@ public class ComposterBlock extends Block implements InventoryProvider {
 	public static final IntProperty LEVEL = Properties.LEVEL_8;
 	public static final Object2FloatMap<ItemConvertible> ITEM_TO_LEVEL_INCREASE_CHANCE = new Object2FloatOpenHashMap<>();
 	public static final VoxelShape RAY_TRACE_SHAPE = VoxelShapes.fullCube();
-	private static final VoxelShape[] LEVEL_TO_COLLISION_SHAPE = Util.make(
+	private static final VoxelShape[] LEVEL_TO_COLLISION_SHAPE = SystemUtil.consume(
 		new VoxelShape[9],
 		voxelShapes -> {
 			for (int i = 0; i < 8; i++) {
@@ -68,32 +68,32 @@ public class ComposterBlock extends Block implements InventoryProvider {
 		registerCompostableItem(0.3F, Items.JUNGLE_SAPLING);
 		registerCompostableItem(0.3F, Items.ACACIA_SAPLING);
 		registerCompostableItem(0.3F, Items.DARK_OAK_SAPLING);
-		registerCompostableItem(0.3F, Items.BEETROOT_SEEDS);
-		registerCompostableItem(0.3F, Items.DRIED_KELP);
+		registerCompostableItem(0.3F, Items.field_8309);
+		registerCompostableItem(0.3F, Items.field_8551);
 		registerCompostableItem(0.3F, Items.GRASS);
 		registerCompostableItem(0.3F, Items.KELP);
-		registerCompostableItem(0.3F, Items.MELON_SEEDS);
-		registerCompostableItem(0.3F, Items.PUMPKIN_SEEDS);
+		registerCompostableItem(0.3F, Items.field_8188);
+		registerCompostableItem(0.3F, Items.field_8706);
 		registerCompostableItem(0.3F, Items.SEAGRASS);
-		registerCompostableItem(0.3F, Items.SWEET_BERRIES);
-		registerCompostableItem(0.3F, Items.WHEAT_SEEDS);
+		registerCompostableItem(0.3F, Items.field_16998);
+		registerCompostableItem(0.3F, Items.field_8317);
 		registerCompostableItem(0.5F, Items.DRIED_KELP_BLOCK);
 		registerCompostableItem(0.5F, Items.TALL_GRASS);
 		registerCompostableItem(0.5F, Items.CACTUS);
 		registerCompostableItem(0.5F, Items.SUGAR_CANE);
 		registerCompostableItem(0.5F, Items.VINE);
-		registerCompostableItem(0.5F, Items.MELON_SLICE);
+		registerCompostableItem(0.5F, Items.field_8497);
 		registerCompostableItem(0.65F, Items.SEA_PICKLE);
 		registerCompostableItem(0.65F, Items.LILY_PAD);
 		registerCompostableItem(0.65F, Items.PUMPKIN);
 		registerCompostableItem(0.65F, Items.CARVED_PUMPKIN);
 		registerCompostableItem(0.65F, Items.MELON);
-		registerCompostableItem(0.65F, Items.APPLE);
-		registerCompostableItem(0.65F, Items.BEETROOT);
-		registerCompostableItem(0.65F, Items.CARROT);
-		registerCompostableItem(0.65F, Items.COCOA_BEANS);
-		registerCompostableItem(0.65F, Items.POTATO);
-		registerCompostableItem(0.65F, Items.WHEAT);
+		registerCompostableItem(0.65F, Items.field_8279);
+		registerCompostableItem(0.65F, Items.field_8186);
+		registerCompostableItem(0.65F, Items.field_8179);
+		registerCompostableItem(0.65F, Items.field_8116);
+		registerCompostableItem(0.65F, Items.field_8567);
+		registerCompostableItem(0.65F, Items.field_8861);
 		registerCompostableItem(0.65F, Items.BROWN_MUSHROOM);
 		registerCompostableItem(0.65F, Items.RED_MUSHROOM);
 		registerCompostableItem(0.65F, Items.MUSHROOM_STEM);
@@ -119,36 +119,36 @@ public class ComposterBlock extends Block implements InventoryProvider {
 		registerCompostableItem(0.85F, Items.HAY_BLOCK);
 		registerCompostableItem(0.85F, Items.BROWN_MUSHROOM_BLOCK);
 		registerCompostableItem(0.85F, Items.RED_MUSHROOM_BLOCK);
-		registerCompostableItem(0.85F, Items.BREAD);
-		registerCompostableItem(0.85F, Items.BAKED_POTATO);
-		registerCompostableItem(0.85F, Items.COOKIE);
+		registerCompostableItem(0.85F, Items.field_8229);
+		registerCompostableItem(0.85F, Items.field_8512);
+		registerCompostableItem(0.85F, Items.field_8423);
 		registerCompostableItem(1.0F, Items.CAKE);
-		registerCompostableItem(1.0F, Items.PUMPKIN_PIE);
+		registerCompostableItem(1.0F, Items.field_8741);
 	}
 
-	private static void registerCompostableItem(float levelIncreaseChance, ItemConvertible item) {
-		ITEM_TO_LEVEL_INCREASE_CHANCE.put(item.asItem(), levelIncreaseChance);
+	private static void registerCompostableItem(float f, ItemConvertible itemConvertible) {
+		ITEM_TO_LEVEL_INCREASE_CHANCE.put(itemConvertible.asItem(), f);
 	}
 
 	public ComposterBlock(Block.Settings settings) {
 		super(settings);
-		this.setDefaultState(this.stateManager.getDefaultState().with(LEVEL, Integer.valueOf(0)));
+		this.setDefaultState(this.stateFactory.getDefaultState().with(LEVEL, Integer.valueOf(0)));
 	}
 
 	@Environment(EnvType.CLIENT)
-	public static void playEffects(World world, BlockPos pos, boolean fill) {
-		BlockState blockState = world.getBlockState(pos);
+	public static void playEffects(World world, BlockPos blockPos, boolean bl) {
+		BlockState blockState = world.getBlockState(blockPos);
 		world.playSound(
-			(double)pos.getX(),
-			(double)pos.getY(),
-			(double)pos.getZ(),
-			fill ? SoundEvents.BLOCK_COMPOSTER_FILL_SUCCESS : SoundEvents.BLOCK_COMPOSTER_FILL,
-			SoundCategory.BLOCKS,
+			(double)blockPos.getX(),
+			(double)blockPos.getY(),
+			(double)blockPos.getZ(),
+			bl ? SoundEvents.field_17608 : SoundEvents.field_17607,
+			SoundCategory.field_15245,
 			1.0F,
 			1.0F,
 			false
 		);
-		double d = blockState.getOutlineShape(world, pos).method_1102(Direction.Axis.Y, 0.5, 0.5) + 0.03125;
+		double d = blockState.getOutlineShape(world, blockPos).method_1102(Direction.Axis.field_11052, 0.5, 0.5) + 0.03125;
 		double e = 0.13125F;
 		double f = 0.7375F;
 		Random random = world.getRandom();
@@ -158,10 +158,10 @@ public class ComposterBlock extends Block implements InventoryProvider {
 			double h = random.nextGaussian() * 0.02;
 			double j = random.nextGaussian() * 0.02;
 			world.addParticle(
-				ParticleTypes.COMPOSTER,
-				(double)pos.getX() + 0.13125F + 0.7375F * (double)random.nextFloat(),
-				(double)pos.getY() + d + (double)random.nextFloat() * (1.0 - d),
-				(double)pos.getZ() + 0.13125F + 0.7375F * (double)random.nextFloat(),
+				ParticleTypes.field_17741,
+				(double)blockPos.getX() + 0.13125F + 0.7375F * (double)random.nextFloat(),
+				(double)blockPos.getY() + d + (double)random.nextFloat() * (1.0 - d),
+				(double)blockPos.getZ() + 0.13125F + 0.7375F * (double)random.nextFloat(),
 				g,
 				h,
 				j
@@ -170,36 +170,36 @@ public class ComposterBlock extends Block implements InventoryProvider {
 	}
 
 	@Override
-	public VoxelShape getOutlineShape(BlockState state, BlockView view, BlockPos pos, EntityContext context) {
-		return LEVEL_TO_COLLISION_SHAPE[state.get(LEVEL)];
+	public VoxelShape getOutlineShape(BlockState blockState, BlockView blockView, BlockPos blockPos, EntityContext entityContext) {
+		return LEVEL_TO_COLLISION_SHAPE[blockState.get(LEVEL)];
 	}
 
 	@Override
-	public VoxelShape getRayTraceShape(BlockState state, BlockView view, BlockPos pos) {
+	public VoxelShape getRayTraceShape(BlockState blockState, BlockView blockView, BlockPos blockPos) {
 		return RAY_TRACE_SHAPE;
 	}
 
 	@Override
-	public VoxelShape getCollisionShape(BlockState state, BlockView view, BlockPos pos, EntityContext context) {
+	public VoxelShape getCollisionShape(BlockState blockState, BlockView blockView, BlockPos blockPos, EntityContext entityContext) {
 		return LEVEL_TO_COLLISION_SHAPE[0];
 	}
 
 	@Override
-	public void onBlockAdded(BlockState state, World world, BlockPos pos, BlockState oldState, boolean moved) {
-		if ((Integer)state.get(LEVEL) == 7) {
-			world.getBlockTickScheduler().schedule(pos, state.getBlock(), 20);
+	public void onBlockAdded(BlockState blockState, World world, BlockPos blockPos, BlockState blockState2, boolean bl) {
+		if ((Integer)blockState.get(LEVEL) == 7) {
+			world.getBlockTickScheduler().schedule(blockPos, blockState.getBlock(), 20);
 		}
 	}
 
 	@Override
-	public boolean activate(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
-		int i = (Integer)state.get(LEVEL);
-		ItemStack itemStack = player.getStackInHand(hand);
+	public boolean activate(BlockState blockState, World world, BlockPos blockPos, PlayerEntity playerEntity, Hand hand, BlockHitResult blockHitResult) {
+		int i = (Integer)blockState.get(LEVEL);
+		ItemStack itemStack = playerEntity.getStackInHand(hand);
 		if (i < 8 && ITEM_TO_LEVEL_INCREASE_CHANCE.containsKey(itemStack.getItem())) {
 			if (i < 7 && !world.isClient) {
-				boolean bl = addToComposter(state, world, pos, itemStack);
-				world.playLevelEvent(1500, pos, bl ? 1 : 0);
-				if (!player.abilities.creativeMode) {
+				boolean bl = addToComposter(blockState, world, blockPos, itemStack);
+				world.playLevelEvent(1500, blockPos, bl ? 1 : 0);
+				if (!playerEntity.abilities.creativeMode) {
 					itemStack.decrement(1);
 				}
 			}
@@ -211,33 +211,35 @@ public class ComposterBlock extends Block implements InventoryProvider {
 				double d = (double)(world.random.nextFloat() * 0.7F) + 0.15F;
 				double e = (double)(world.random.nextFloat() * 0.7F) + 0.060000002F + 0.6;
 				double g = (double)(world.random.nextFloat() * 0.7F) + 0.15F;
-				ItemEntity itemEntity = new ItemEntity(world, (double)pos.getX() + d, (double)pos.getY() + e, (double)pos.getZ() + g, new ItemStack(Items.BONE_MEAL));
+				ItemEntity itemEntity = new ItemEntity(
+					world, (double)blockPos.getX() + d, (double)blockPos.getY() + e, (double)blockPos.getZ() + g, new ItemStack(Items.field_8324)
+				);
 				itemEntity.setToDefaultPickupDelay();
 				world.spawnEntity(itemEntity);
 			}
 
-			emptyComposter(state, world, pos);
-			world.playSound(null, pos, SoundEvents.BLOCK_COMPOSTER_EMPTY, SoundCategory.BLOCKS, 1.0F, 1.0F);
+			emptyComposter(blockState, world, blockPos);
+			world.playSound(null, blockPos, SoundEvents.field_17606, SoundCategory.field_15245, 1.0F, 1.0F);
 			return true;
 		} else {
 			return false;
 		}
 	}
 
-	private static void emptyComposter(BlockState state, IWorld world, BlockPos pos) {
-		world.setBlockState(pos, state.with(LEVEL, Integer.valueOf(0)), 3);
+	private static void emptyComposter(BlockState blockState, IWorld iWorld, BlockPos blockPos) {
+		iWorld.setBlockState(blockPos, blockState.with(LEVEL, Integer.valueOf(0)), 3);
 	}
 
-	private static boolean addToComposter(BlockState state, IWorld world, BlockPos pos, ItemStack item) {
-		int i = (Integer)state.get(LEVEL);
-		float f = ITEM_TO_LEVEL_INCREASE_CHANCE.getFloat(item.getItem());
-		if ((i != 0 || !(f > 0.0F)) && !(world.getRandom().nextDouble() < (double)f)) {
+	private static boolean addToComposter(BlockState blockState, IWorld iWorld, BlockPos blockPos, ItemStack itemStack) {
+		int i = (Integer)blockState.get(LEVEL);
+		float f = ITEM_TO_LEVEL_INCREASE_CHANCE.getFloat(itemStack.getItem());
+		if ((i != 0 || !(f > 0.0F)) && !(iWorld.getRandom().nextDouble() < (double)f)) {
 			return false;
 		} else {
 			int j = i + 1;
-			world.setBlockState(pos, state.with(LEVEL, Integer.valueOf(j)), 3);
+			iWorld.setBlockState(blockPos, blockState.with(LEVEL, Integer.valueOf(j)), 3);
 			if (j == 7) {
-				world.getBlockTickScheduler().schedule(pos, state.getBlock(), 20);
+				iWorld.getBlockTickScheduler().schedule(blockPos, blockState.getBlock(), 20);
 			}
 
 			return true;
@@ -245,42 +247,42 @@ public class ComposterBlock extends Block implements InventoryProvider {
 	}
 
 	@Override
-	public void onScheduledTick(BlockState state, World world, BlockPos pos, Random random) {
-		if ((Integer)state.get(LEVEL) == 7) {
-			world.setBlockState(pos, state.cycle(LEVEL), 3);
-			world.playSound(null, pos, SoundEvents.BLOCK_COMPOSTER_READY, SoundCategory.BLOCKS, 1.0F, 1.0F);
+	public void onScheduledTick(BlockState blockState, World world, BlockPos blockPos, Random random) {
+		if ((Integer)blockState.get(LEVEL) == 7) {
+			world.setBlockState(blockPos, blockState.cycle(LEVEL), 3);
+			world.playSound(null, blockPos, SoundEvents.field_17609, SoundCategory.field_15245, 1.0F, 1.0F);
 		}
 
-		super.onScheduledTick(state, world, pos, random);
+		super.onScheduledTick(blockState, world, blockPos, random);
 	}
 
 	@Override
-	public boolean hasComparatorOutput(BlockState state) {
+	public boolean hasComparatorOutput(BlockState blockState) {
 		return true;
 	}
 
 	@Override
-	public int getComparatorOutput(BlockState state, World world, BlockPos pos) {
-		return (Integer)state.get(LEVEL);
+	public int getComparatorOutput(BlockState blockState, World world, BlockPos blockPos) {
+		return (Integer)blockState.get(LEVEL);
 	}
 
 	@Override
-	protected void appendProperties(StateManager.Builder<Block, BlockState> builder) {
+	protected void appendProperties(StateFactory.Builder<Block, BlockState> builder) {
 		builder.add(LEVEL);
 	}
 
 	@Override
-	public boolean canPlaceAtSide(BlockState world, BlockView view, BlockPos pos, BlockPlacementEnvironment env) {
+	public boolean canPlaceAtSide(BlockState blockState, BlockView blockView, BlockPos blockPos, BlockPlacementEnvironment blockPlacementEnvironment) {
 		return false;
 	}
 
 	@Override
-	public SidedInventory getInventory(BlockState state, IWorld world, BlockPos pos) {
-		int i = (Integer)state.get(LEVEL);
+	public SidedInventory getInventory(BlockState blockState, IWorld iWorld, BlockPos blockPos) {
+		int i = (Integer)blockState.get(LEVEL);
 		if (i == 8) {
-			return new ComposterBlock.FullComposterInventory(state, world, pos, new ItemStack(Items.BONE_MEAL));
+			return new ComposterBlock.FullComposterInventory(blockState, iWorld, blockPos, new ItemStack(Items.field_8324));
 		} else {
-			return (SidedInventory)(i < 7 ? new ComposterBlock.ComposterInventory(state, world, pos) : new ComposterBlock.DummyInventory());
+			return (SidedInventory)(i < 7 ? new ComposterBlock.ComposterInventory(blockState, iWorld, blockPos) : new ComposterBlock.DummyInventory());
 		}
 	}
 
@@ -290,11 +292,11 @@ public class ComposterBlock extends Block implements InventoryProvider {
 		private final BlockPos pos;
 		private boolean dirty;
 
-		public ComposterInventory(BlockState state, IWorld world, BlockPos pos) {
+		public ComposterInventory(BlockState blockState, IWorld iWorld, BlockPos blockPos) {
 			super(1);
-			this.state = state;
-			this.world = world;
-			this.pos = pos;
+			this.state = blockState;
+			this.world = iWorld;
+			this.pos = blockPos;
 		}
 
 		@Override
@@ -303,17 +305,17 @@ public class ComposterBlock extends Block implements InventoryProvider {
 		}
 
 		@Override
-		public int[] getInvAvailableSlots(Direction side) {
-			return side == Direction.UP ? new int[]{0} : new int[0];
+		public int[] getInvAvailableSlots(Direction direction) {
+			return direction == Direction.field_11036 ? new int[]{0} : new int[0];
 		}
 
 		@Override
-		public boolean canInsertInvStack(int slot, ItemStack stack, @Nullable Direction dir) {
-			return !this.dirty && dir == Direction.UP && ComposterBlock.ITEM_TO_LEVEL_INCREASE_CHANCE.containsKey(stack.getItem());
+		public boolean canInsertInvStack(int i, ItemStack itemStack, @Nullable Direction direction) {
+			return !this.dirty && direction == Direction.field_11036 && ComposterBlock.ITEM_TO_LEVEL_INCREASE_CHANCE.containsKey(itemStack.getItem());
 		}
 
 		@Override
-		public boolean canExtractInvStack(int slot, ItemStack stack, Direction dir) {
+		public boolean canExtractInvStack(int i, ItemStack itemStack, Direction direction) {
 			return false;
 		}
 
@@ -334,17 +336,17 @@ public class ComposterBlock extends Block implements InventoryProvider {
 		}
 
 		@Override
-		public int[] getInvAvailableSlots(Direction side) {
+		public int[] getInvAvailableSlots(Direction direction) {
 			return new int[0];
 		}
 
 		@Override
-		public boolean canInsertInvStack(int slot, ItemStack stack, @Nullable Direction dir) {
+		public boolean canInsertInvStack(int i, ItemStack itemStack, @Nullable Direction direction) {
 			return false;
 		}
 
 		@Override
-		public boolean canExtractInvStack(int slot, ItemStack stack, Direction dir) {
+		public boolean canExtractInvStack(int i, ItemStack itemStack, Direction direction) {
 			return false;
 		}
 	}
@@ -355,11 +357,11 @@ public class ComposterBlock extends Block implements InventoryProvider {
 		private final BlockPos pos;
 		private boolean dirty;
 
-		public FullComposterInventory(BlockState state, IWorld world, BlockPos pos, ItemStack outputItem) {
-			super(outputItem);
-			this.state = state;
-			this.world = world;
-			this.pos = pos;
+		public FullComposterInventory(BlockState blockState, IWorld iWorld, BlockPos blockPos, ItemStack itemStack) {
+			super(itemStack);
+			this.state = blockState;
+			this.world = iWorld;
+			this.pos = blockPos;
 		}
 
 		@Override
@@ -368,18 +370,18 @@ public class ComposterBlock extends Block implements InventoryProvider {
 		}
 
 		@Override
-		public int[] getInvAvailableSlots(Direction side) {
-			return side == Direction.DOWN ? new int[]{0} : new int[0];
+		public int[] getInvAvailableSlots(Direction direction) {
+			return direction == Direction.field_11033 ? new int[]{0} : new int[0];
 		}
 
 		@Override
-		public boolean canInsertInvStack(int slot, ItemStack stack, @Nullable Direction dir) {
+		public boolean canInsertInvStack(int i, ItemStack itemStack, @Nullable Direction direction) {
 			return false;
 		}
 
 		@Override
-		public boolean canExtractInvStack(int slot, ItemStack stack, Direction dir) {
-			return !this.dirty && dir == Direction.DOWN && stack.getItem() == Items.BONE_MEAL;
+		public boolean canExtractInvStack(int i, ItemStack itemStack, Direction direction) {
+			return !this.dirty && direction == Direction.field_11033 && itemStack.getItem() == Items.field_8324;
 		}
 
 		@Override

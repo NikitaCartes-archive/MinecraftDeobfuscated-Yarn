@@ -7,7 +7,7 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.widget.ToggleButtonWidget;
-import net.minecraft.client.render.DiffuseLighting;
+import net.minecraft.client.render.GuiLighting;
 import net.minecraft.recipe.Recipe;
 import net.minecraft.recipe.book.RecipeBook;
 
@@ -15,7 +15,7 @@ import net.minecraft.recipe.book.RecipeBook;
 public class RecipeBookResults {
 	private final List<AnimatedResultButton> resultButtons = Lists.<AnimatedResultButton>newArrayListWithCapacity(20);
 	private AnimatedResultButton hoveredResultButton;
-	private final RecipeAlternativesWidget alternatesWidget = new RecipeAlternativesWidget();
+	private final RecipeAlternatesWidget alternatesWidget = new RecipeAlternatesWidget();
 	private MinecraftClient client;
 	private final List<RecipeDisplayListener> recipeDisplayListeners = Lists.<RecipeDisplayListener>newArrayList();
 	private List<RecipeResultCollection> resultCollections;
@@ -33,17 +33,17 @@ public class RecipeBookResults {
 		}
 	}
 
-	public void initialize(MinecraftClient minecraftClient, int parentLeft, int parentTop) {
+	public void initialize(MinecraftClient minecraftClient, int i, int j) {
 		this.client = minecraftClient;
 		this.recipeBook = minecraftClient.player.getRecipeBook();
 
-		for (int i = 0; i < this.resultButtons.size(); i++) {
-			((AnimatedResultButton)this.resultButtons.get(i)).setPos(parentLeft + 11 + 25 * (i % 5), parentTop + 31 + 25 * (i / 5));
+		for (int k = 0; k < this.resultButtons.size(); k++) {
+			((AnimatedResultButton)this.resultButtons.get(k)).setPos(i + 11 + 25 * (k % 5), j + 31 + 25 * (k / 5));
 		}
 
-		this.nextPageButton = new ToggleButtonWidget(parentLeft + 93, parentTop + 137, 12, 17, false);
+		this.nextPageButton = new ToggleButtonWidget(i + 93, j + 137, 12, 17, false);
 		this.nextPageButton.setTextureUV(1, 208, 13, 18, RecipeBookWidget.TEXTURE);
-		this.prevPageButton = new ToggleButtonWidget(parentLeft + 38, parentTop + 137, 12, 17, true);
+		this.prevPageButton = new ToggleButtonWidget(i + 38, j + 137, 12, 17, true);
 		this.prevPageButton.setTextureUV(1, 208, 13, 18, RecipeBookWidget.TEXTURE);
 	}
 
@@ -52,10 +52,10 @@ public class RecipeBookResults {
 		this.recipeDisplayListeners.add(recipeBookWidget);
 	}
 
-	public void setResults(List<RecipeResultCollection> list, boolean resetCurrentPage) {
+	public void setResults(List<RecipeResultCollection> list, boolean bl) {
 		this.resultCollections = list;
 		this.pageCount = (int)Math.ceil((double)list.size() / 20.0);
-		if (this.pageCount <= this.currentPage || resetCurrentPage) {
+		if (this.pageCount <= this.currentPage || bl) {
 			this.currentPage = 0;
 		}
 
@@ -84,26 +84,26 @@ public class RecipeBookResults {
 		this.prevPageButton.visible = this.pageCount > 1 && this.currentPage > 0;
 	}
 
-	public void draw(int left, int top, int mouseX, int mouseY, float delta) {
+	public void draw(int i, int j, int k, int l, float f) {
 		if (this.pageCount > 1) {
 			String string = this.currentPage + 1 + "/" + this.pageCount;
-			int i = this.client.textRenderer.getStringWidth(string);
-			this.client.textRenderer.draw(string, (float)(left - i / 2 + 73), (float)(top + 141), -1);
+			int m = this.client.textRenderer.getStringWidth(string);
+			this.client.textRenderer.draw(string, (float)(i - m / 2 + 73), (float)(j + 141), -1);
 		}
 
-		DiffuseLighting.disable();
+		GuiLighting.disable();
 		this.hoveredResultButton = null;
 
 		for (AnimatedResultButton animatedResultButton : this.resultButtons) {
-			animatedResultButton.render(mouseX, mouseY, delta);
+			animatedResultButton.render(k, l, f);
 			if (animatedResultButton.visible && animatedResultButton.isHovered()) {
 				this.hoveredResultButton = animatedResultButton;
 			}
 		}
 
-		this.prevPageButton.render(mouseX, mouseY, delta);
-		this.nextPageButton.render(mouseX, mouseY, delta);
-		this.alternatesWidget.render(mouseX, mouseY, delta);
+		this.prevPageButton.render(k, l, f);
+		this.nextPageButton.render(k, l, f);
+		this.alternatesWidget.render(k, l, f);
 	}
 
 	public void drawTooltip(int i, int j) {
@@ -126,11 +126,11 @@ public class RecipeBookResults {
 		this.alternatesWidget.setVisible(false);
 	}
 
-	public boolean mouseClicked(double mouseX, double mouseY, int button, int areaLeft, int areaTop, int areaWidth, int areaHeight) {
+	public boolean mouseClicked(double d, double e, int i, int j, int k, int l, int m) {
 		this.lastClickedRecipe = null;
 		this.resultCollection = null;
 		if (this.alternatesWidget.isVisible()) {
-			if (this.alternatesWidget.mouseClicked(mouseX, mouseY, button)) {
+			if (this.alternatesWidget.mouseClicked(d, e, i)) {
 				this.lastClickedRecipe = this.alternatesWidget.getLastClickedRecipe();
 				this.resultCollection = this.alternatesWidget.getResults();
 			} else {
@@ -138,29 +138,29 @@ public class RecipeBookResults {
 			}
 
 			return true;
-		} else if (this.nextPageButton.mouseClicked(mouseX, mouseY, button)) {
+		} else if (this.nextPageButton.mouseClicked(d, e, i)) {
 			this.currentPage++;
 			this.refreshResultButtons();
 			return true;
-		} else if (this.prevPageButton.mouseClicked(mouseX, mouseY, button)) {
+		} else if (this.prevPageButton.mouseClicked(d, e, i)) {
 			this.currentPage--;
 			this.refreshResultButtons();
 			return true;
 		} else {
 			for (AnimatedResultButton animatedResultButton : this.resultButtons) {
-				if (animatedResultButton.mouseClicked(mouseX, mouseY, button)) {
-					if (button == 0) {
+				if (animatedResultButton.mouseClicked(d, e, i)) {
+					if (i == 0) {
 						this.lastClickedRecipe = animatedResultButton.currentRecipe();
 						this.resultCollection = animatedResultButton.getResultCollection();
-					} else if (button == 1 && !this.alternatesWidget.isVisible() && !animatedResultButton.hasResults()) {
+					} else if (i == 1 && !this.alternatesWidget.isVisible() && !animatedResultButton.hasResults()) {
 						this.alternatesWidget
-							.showAlternativesForResult(
+							.showAlternatesForResult(
 								this.client,
 								animatedResultButton.getResultCollection(),
 								animatedResultButton.x,
 								animatedResultButton.y,
-								areaLeft + areaWidth / 2,
-								areaTop + 13 + areaHeight / 2,
+								j + l / 2,
+								k + 13 + m / 2,
 								(float)animatedResultButton.getWidth()
 							);
 					}

@@ -15,16 +15,22 @@ import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 
 @Environment(EnvType.CLIENT)
-public abstract class AbstractFurnaceScreen<T extends AbstractFurnaceContainer> extends ContainerScreen<T> implements RecipeBookProvider {
+public abstract class AbstractFurnaceScreen<T extends AbstractFurnaceContainer> extends AbstractContainerScreen<T> implements RecipeBookProvider {
 	private static final Identifier RECIPE_BUTTON_TEXTURE = new Identifier("textures/gui/recipe_button.png");
 	public final AbstractFurnaceRecipeBookScreen recipeBook;
 	private boolean narrow;
 	private final Identifier field_18975;
 
-	public AbstractFurnaceScreen(T container, AbstractFurnaceRecipeBookScreen recipeBook, PlayerInventory inventory, Text title, Identifier background) {
-		super(container, inventory, title);
-		this.recipeBook = recipeBook;
-		this.field_18975 = background;
+	public AbstractFurnaceScreen(
+		T abstractFurnaceContainer,
+		AbstractFurnaceRecipeBookScreen abstractFurnaceRecipeBookScreen,
+		PlayerInventory playerInventory,
+		Text text,
+		Identifier identifier
+	) {
+		super(abstractFurnaceContainer, playerInventory, text);
+		this.recipeBook = abstractFurnaceRecipeBookScreen;
+		this.field_18975 = identifier;
 	}
 
 	@Override
@@ -32,12 +38,12 @@ public abstract class AbstractFurnaceScreen<T extends AbstractFurnaceContainer> 
 		super.init();
 		this.narrow = this.width < 379;
 		this.recipeBook.initialize(this.width, this.height, this.minecraft, this.narrow, this.container);
-		this.x = this.recipeBook.findLeftEdge(this.narrow, this.width, this.containerWidth);
-		this.addButton(new TexturedButtonWidget(this.x + 20, this.height / 2 - 49, 20, 18, 0, 0, 19, RECIPE_BUTTON_TEXTURE, buttonWidget -> {
+		this.left = this.recipeBook.findLeftEdge(this.narrow, this.width, this.containerWidth);
+		this.addButton(new TexturedButtonWidget(this.left + 20, this.height / 2 - 49, 20, 18, 0, 0, 19, RECIPE_BUTTON_TEXTURE, buttonWidget -> {
 			this.recipeBook.reset(this.narrow);
 			this.recipeBook.toggleOpen();
-			this.x = this.recipeBook.findLeftEdge(this.narrow, this.width, this.containerWidth);
-			((TexturedButtonWidget)buttonWidget).setPos(this.x + 20, this.height / 2 - 49);
+			this.left = this.recipeBook.findLeftEdge(this.narrow, this.width, this.containerWidth);
+			((TexturedButtonWidget)buttonWidget).setPos(this.left + 20, this.height / 2 - 49);
 		}));
 	}
 
@@ -48,76 +54,73 @@ public abstract class AbstractFurnaceScreen<T extends AbstractFurnaceContainer> 
 	}
 
 	@Override
-	public void render(int mouseX, int mouseY, float delta) {
+	public void render(int i, int j, float f) {
 		this.renderBackground();
 		if (this.recipeBook.isOpen() && this.narrow) {
-			this.drawBackground(delta, mouseX, mouseY);
-			this.recipeBook.render(mouseX, mouseY, delta);
+			this.drawBackground(f, i, j);
+			this.recipeBook.render(i, j, f);
 		} else {
-			this.recipeBook.render(mouseX, mouseY, delta);
-			super.render(mouseX, mouseY, delta);
-			this.recipeBook.drawGhostSlots(this.x, this.y, true, delta);
+			this.recipeBook.render(i, j, f);
+			super.render(i, j, f);
+			this.recipeBook.drawGhostSlots(this.left, this.top, true, f);
 		}
 
-		this.drawMouseoverTooltip(mouseX, mouseY);
-		this.recipeBook.drawTooltip(this.x, this.y, mouseX, mouseY);
+		this.drawMouseoverTooltip(i, j);
+		this.recipeBook.drawTooltip(this.left, this.top, i, j);
 	}
 
 	@Override
-	protected void drawForeground(int mouseX, int mouseY) {
+	protected void drawForeground(int i, int j) {
 		String string = this.title.asFormattedString();
 		this.font.draw(string, (float)(this.containerWidth / 2 - this.font.getStringWidth(string) / 2), 6.0F, 4210752);
 		this.font.draw(this.playerInventory.getDisplayName().asFormattedString(), 8.0F, (float)(this.containerHeight - 96 + 2), 4210752);
 	}
 
 	@Override
-	protected void drawBackground(float delta, int mouseX, int mouseY) {
+	protected void drawBackground(float f, int i, int j) {
 		GlStateManager.color4f(1.0F, 1.0F, 1.0F, 1.0F);
 		this.minecraft.getTextureManager().bindTexture(this.field_18975);
-		int i = this.x;
-		int j = this.y;
-		this.blit(i, j, 0, 0, this.containerWidth, this.containerHeight);
+		int k = this.left;
+		int l = this.top;
+		this.blit(k, l, 0, 0, this.containerWidth, this.containerHeight);
 		if (this.container.isBurning()) {
-			int k = this.container.getFuelProgress();
-			this.blit(i + 56, j + 36 + 12 - k, 176, 12 - k, 14, k + 1);
+			int m = this.container.getFuelProgress();
+			this.blit(k + 56, l + 36 + 12 - m, 176, 12 - m, 14, m + 1);
 		}
 
-		int k = this.container.getCookProgress();
-		this.blit(i + 79, j + 34, 176, 14, k + 1, 16);
+		int m = this.container.getCookProgress();
+		this.blit(k + 79, l + 34, 176, 14, m + 1, 16);
 	}
 
 	@Override
-	public boolean mouseClicked(double mouseX, double mouseY, int button) {
-		if (this.recipeBook.mouseClicked(mouseX, mouseY, button)) {
+	public boolean mouseClicked(double d, double e, int i) {
+		if (this.recipeBook.mouseClicked(d, e, i)) {
 			return true;
 		} else {
-			return this.narrow && this.recipeBook.isOpen() ? true : super.mouseClicked(mouseX, mouseY, button);
+			return this.narrow && this.recipeBook.isOpen() ? true : super.mouseClicked(d, e, i);
 		}
 	}
 
 	@Override
-	protected void onMouseClick(Slot slot, int invSlot, int button, SlotActionType slotActionType) {
-		super.onMouseClick(slot, invSlot, button, slotActionType);
+	protected void onMouseClick(Slot slot, int i, int j, SlotActionType slotActionType) {
+		super.onMouseClick(slot, i, j, slotActionType);
 		this.recipeBook.slotClicked(slot);
 	}
 
 	@Override
-	public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
-		return this.recipeBook.keyPressed(keyCode, scanCode, modifiers) ? false : super.keyPressed(keyCode, scanCode, modifiers);
+	public boolean keyPressed(int i, int j, int k) {
+		return this.recipeBook.keyPressed(i, j, k) ? false : super.keyPressed(i, j, k);
 	}
 
 	@Override
-	protected boolean isClickOutsideBounds(double mouseX, double mouseY, int left, int top, int button) {
-		boolean bl = mouseX < (double)left
-			|| mouseY < (double)top
-			|| mouseX >= (double)(left + this.containerWidth)
-			|| mouseY >= (double)(top + this.containerHeight);
-		return this.recipeBook.isClickOutsideBounds(mouseX, mouseY, this.x, this.y, this.containerWidth, this.containerHeight, button) && bl;
+	protected boolean isClickOutsideBounds(double d, double e, int i, int j, int k) {
+		boolean bl = d < (double)i || e < (double)j || d >= (double)(i + this.containerWidth) || e >= (double)(j + this.containerHeight);
+		return this.recipeBook.isClickOutsideBounds(d, e, this.left, this.top, this.containerWidth, this.containerHeight, k) && bl;
 	}
 
 	@Override
-	public boolean charTyped(char chr, int keyCode) {
-		return this.recipeBook.charTyped(chr, keyCode) ? true : super.charTyped(chr, keyCode);
+	public boolean charTyped(char c, int i) {
+		return this.recipeBook.charTyped(c, i) ? true : super.charTyped(c, i);
 	}
 
 	@Override
@@ -126,7 +129,7 @@ public abstract class AbstractFurnaceScreen<T extends AbstractFurnaceContainer> 
 	}
 
 	@Override
-	public RecipeBookWidget getRecipeBookWidget() {
+	public RecipeBookWidget getRecipeBookGui() {
 		return this.recipeBook;
 	}
 

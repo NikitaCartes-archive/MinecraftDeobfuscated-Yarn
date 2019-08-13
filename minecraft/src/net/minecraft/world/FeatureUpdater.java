@@ -13,14 +13,14 @@ import java.util.Map;
 import javax.annotation.Nullable;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
-import net.minecraft.util.Util;
+import net.minecraft.util.SystemUtil;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.world.dimension.DimensionType;
 import net.minecraft.world.gen.feature.Feature;
 import net.minecraft.world.gen.feature.StructureFeature;
 
 public class FeatureUpdater {
-	private static final Map<String, String> OLD_TO_NEW = Util.make(Maps.<String, String>newHashMap(), hashMap -> {
+	private static final Map<String, String> OLD_TO_NEW = SystemUtil.consume(Maps.<String, String>newHashMap(), hashMap -> {
 		hashMap.put("Village", "Village");
 		hashMap.put("Mineshaft", "Mineshaft");
 		hashMap.put("Mansion", "Mansion");
@@ -33,7 +33,7 @@ public class FeatureUpdater {
 		hashMap.put("Fortress", "Fortress");
 		hashMap.put("EndCity", "EndCity");
 	});
-	private static final Map<String, String> ANCIENT_TO_OLD = Util.make(Maps.<String, String>newHashMap(), hashMap -> {
+	private static final Map<String, String> ANCIENT_TO_OLD = SystemUtil.consume(Maps.<String, String>newHashMap(), hashMap -> {
 		hashMap.put("Iglu", "Igloo");
 		hashMap.put("TeDP", "Desert_Pyramid");
 		hashMap.put("TeJP", "Jungle_Pyramid");
@@ -80,7 +80,7 @@ public class FeatureUpdater {
 
 		for (String string : this.field_17659) {
 			StructureFeature<?> structureFeature = (StructureFeature<?>)Feature.STRUCTURES.get(string.toLowerCase(Locale.ROOT));
-			if (!compoundTag4.contains(string, 12) && structureFeature != null) {
+			if (!compoundTag4.containsKey(string, 12) && structureFeature != null) {
 				int i = structureFeature.getRadius();
 				LongList longList = new LongArrayList();
 
@@ -102,19 +102,18 @@ public class FeatureUpdater {
 		return compoundTag;
 	}
 
-	private boolean needsUpdate(int chunkX, int chunkZ, String id) {
+	private boolean needsUpdate(int i, int j, String string) {
 		return !this.needsUpdate
 			? false
-			: this.featureIdToChunkTag.get(id) != null && ((ChunkUpdateState)this.updateStates.get(OLD_TO_NEW.get(id))).contains(ChunkPos.toLong(chunkX, chunkZ));
+			: this.featureIdToChunkTag.get(string) != null && ((ChunkUpdateState)this.updateStates.get(OLD_TO_NEW.get(string))).contains(ChunkPos.toLong(i, j));
 	}
 
-	private boolean needsUpdate(int chunkX, int chunkZ) {
+	private boolean needsUpdate(int i, int j) {
 		if (!this.needsUpdate) {
 			return false;
 		} else {
 			for (String string : this.field_17659) {
-				if (this.featureIdToChunkTag.get(string) != null
-					&& ((ChunkUpdateState)this.updateStates.get(OLD_TO_NEW.get(string))).isRemaining(ChunkPos.toLong(chunkX, chunkZ))) {
+				if (this.featureIdToChunkTag.get(string) != null && ((ChunkUpdateState)this.updateStates.get(OLD_TO_NEW.get(string))).isRemaining(ChunkPos.toLong(i, j))) {
 					return true;
 				}
 			}
@@ -165,7 +164,7 @@ public class FeatureUpdater {
 					long l = ChunkPos.toLong(compoundTag2.getInt("ChunkX"), compoundTag2.getInt("ChunkZ"));
 					ListTag listTag = compoundTag2.getList("Children", 10);
 					if (!listTag.isEmpty()) {
-						String string3 = listTag.getCompound(0).getString("id");
+						String string3 = listTag.getCompoundTag(0).getString("id");
 						String string4 = (String)ANCIENT_TO_OLD.get(string3);
 						if (string4 != null) {
 							compoundTag2.putString("id", string4);
@@ -196,16 +195,16 @@ public class FeatureUpdater {
 	}
 
 	public static FeatureUpdater create(DimensionType dimensionType, @Nullable PersistentStateManager persistentStateManager) {
-		if (dimensionType == DimensionType.OVERWORLD) {
+		if (dimensionType == DimensionType.field_13072) {
 			return new FeatureUpdater(
 				persistentStateManager,
 				ImmutableList.of("Monument", "Stronghold", "Village", "Mineshaft", "Temple", "Mansion"),
 				ImmutableList.of("Village", "Mineshaft", "Mansion", "Igloo", "Desert_Pyramid", "Jungle_Pyramid", "Swamp_Hut", "Stronghold", "Monument")
 			);
-		} else if (dimensionType == DimensionType.THE_NETHER) {
+		} else if (dimensionType == DimensionType.field_13076) {
 			List<String> list = ImmutableList.of("Fortress");
 			return new FeatureUpdater(persistentStateManager, list, list);
-		} else if (dimensionType == DimensionType.THE_END) {
+		} else if (dimensionType == DimensionType.field_13078) {
 			List<String> list = ImmutableList.of("EndCity");
 			return new FeatureUpdater(persistentStateManager, list, list);
 		} else {

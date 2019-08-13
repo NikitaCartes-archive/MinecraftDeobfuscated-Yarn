@@ -11,7 +11,6 @@ import net.minecraft.util.hit.HitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.RayTraceContext;
 
@@ -20,11 +19,11 @@ public class Camera {
 	private boolean ready;
 	private BlockView area;
 	private Entity focusedEntity;
-	private Vec3d pos = Vec3d.ZERO;
+	private net.minecraft.util.math.Vec3d pos = net.minecraft.util.math.Vec3d.ZERO;
 	private final BlockPos.Mutable blockPos = new BlockPos.Mutable();
-	private Vec3d horizontalPlane;
-	private Vec3d verticalPlane;
-	private Vec3d diagonalPlane;
+	private net.minecraft.util.math.Vec3d horizontalPlane;
+	private net.minecraft.util.math.Vec3d verticalPlane;
+	private net.minecraft.util.math.Vec3d diagonalPlane;
 	private float pitch;
 	private float yaw;
 	private boolean thirdPerson;
@@ -32,28 +31,28 @@ public class Camera {
 	private float cameraY;
 	private float lastCameraY;
 
-	public void update(BlockView area, Entity focusedEntity, boolean thirdPerson, boolean inverseView, float tickDelta) {
+	public void update(BlockView blockView, Entity entity, boolean bl, boolean bl2, float f) {
 		this.ready = true;
-		this.area = area;
-		this.focusedEntity = focusedEntity;
-		this.thirdPerson = thirdPerson;
-		this.inverseView = inverseView;
-		this.setRotation(focusedEntity.getYaw(tickDelta), focusedEntity.getPitch(tickDelta));
+		this.area = blockView;
+		this.focusedEntity = entity;
+		this.thirdPerson = bl;
+		this.inverseView = bl2;
+		this.setRotation(entity.getYaw(f), entity.getPitch(f));
 		this.setPos(
-			MathHelper.lerp((double)tickDelta, focusedEntity.prevX, focusedEntity.x),
-			MathHelper.lerp((double)tickDelta, focusedEntity.prevY, focusedEntity.y) + (double)MathHelper.lerp(tickDelta, this.lastCameraY, this.cameraY),
-			MathHelper.lerp((double)tickDelta, focusedEntity.prevZ, focusedEntity.z)
+			MathHelper.lerp((double)f, entity.prevX, entity.x),
+			MathHelper.lerp((double)f, entity.prevY, entity.y) + (double)MathHelper.lerp(f, this.lastCameraY, this.cameraY),
+			MathHelper.lerp((double)f, entity.prevZ, entity.z)
 		);
-		if (thirdPerson) {
-			if (inverseView) {
+		if (bl) {
+			if (bl2) {
 				this.yaw += 180.0F;
 				this.pitch = this.pitch + -this.pitch * 2.0F;
 				this.updateRotation();
 			}
 
 			this.moveBy(-this.clipToSpace(4.0), 0.0, 0.0);
-		} else if (focusedEntity instanceof LivingEntity && ((LivingEntity)focusedEntity).isSleeping()) {
-			Direction direction = ((LivingEntity)focusedEntity).getSleepingDirection();
+		} else if (entity instanceof LivingEntity && ((LivingEntity)entity).isSleeping()) {
+			Direction direction = ((LivingEntity)entity).getSleepingDirection();
 			this.setRotation(direction != null ? direction.asRotation() - 180.0F : 0.0F, 0.0F);
 			this.moveBy(0.0, 0.3, 0.0);
 		}
@@ -69,7 +68,7 @@ public class Camera {
 		}
 	}
 
-	private double clipToSpace(double desiredCameraDistance) {
+	private double clipToSpace(double d) {
 		for (int i = 0; i < 8; i++) {
 			float f = (float)((i & 1) * 2 - 1);
 			float g = (float)((i >> 1 & 1) * 2 - 1);
@@ -77,30 +76,30 @@ public class Camera {
 			f *= 0.1F;
 			g *= 0.1F;
 			h *= 0.1F;
-			Vec3d vec3d = this.pos.add((double)f, (double)g, (double)h);
-			Vec3d vec3d2 = new Vec3d(
-				this.pos.x - this.horizontalPlane.x * desiredCameraDistance + (double)f + (double)h,
-				this.pos.y - this.horizontalPlane.y * desiredCameraDistance + (double)g,
-				this.pos.z - this.horizontalPlane.z * desiredCameraDistance + (double)h
+			net.minecraft.util.math.Vec3d vec3d = this.pos.add((double)f, (double)g, (double)h);
+			net.minecraft.util.math.Vec3d vec3d2 = new net.minecraft.util.math.Vec3d(
+				this.pos.x - this.horizontalPlane.x * d + (double)f + (double)h,
+				this.pos.y - this.horizontalPlane.y * d + (double)g,
+				this.pos.z - this.horizontalPlane.z * d + (double)h
 			);
 			HitResult hitResult = this.area
-				.rayTrace(new RayTraceContext(vec3d, vec3d2, RayTraceContext.ShapeType.COLLIDER, RayTraceContext.FluidHandling.NONE, this.focusedEntity));
-			if (hitResult.getType() != HitResult.Type.MISS) {
-				double d = hitResult.getPos().distanceTo(this.pos);
-				if (d < desiredCameraDistance) {
-					desiredCameraDistance = d;
+				.rayTrace(new RayTraceContext(vec3d, vec3d2, RayTraceContext.ShapeType.field_17558, RayTraceContext.FluidHandling.field_1348, this.focusedEntity));
+			if (hitResult.getType() != HitResult.Type.field_1333) {
+				double e = hitResult.getPos().distanceTo(this.pos);
+				if (e < d) {
+					d = e;
 				}
 			}
 		}
 
-		return desiredCameraDistance;
+		return d;
 	}
 
-	protected void moveBy(double x, double y, double z) {
-		double d = this.horizontalPlane.x * x + this.verticalPlane.x * y + this.diagonalPlane.x * z;
-		double e = this.horizontalPlane.y * x + this.verticalPlane.y * y + this.diagonalPlane.y * z;
-		double f = this.horizontalPlane.z * x + this.verticalPlane.z * y + this.diagonalPlane.z * z;
-		this.setPos(new Vec3d(this.pos.x + d, this.pos.y + e, this.pos.z + f));
+	protected void moveBy(double d, double e, double f) {
+		double g = this.horizontalPlane.x * d + this.verticalPlane.x * e + this.diagonalPlane.x * f;
+		double h = this.horizontalPlane.y * d + this.verticalPlane.y * e + this.diagonalPlane.y * f;
+		double i = this.horizontalPlane.z * d + this.verticalPlane.z * e + this.diagonalPlane.z * f;
+		this.setPos(new net.minecraft.util.math.Vec3d(this.pos.x + g, this.pos.y + h, this.pos.z + i));
 	}
 
 	protected void updateRotation() {
@@ -110,27 +109,27 @@ public class Camera {
 		float i = MathHelper.sin(-this.pitch * (float) (Math.PI / 180.0));
 		float j = MathHelper.cos((-this.pitch + 90.0F) * (float) (Math.PI / 180.0));
 		float k = MathHelper.sin((-this.pitch + 90.0F) * (float) (Math.PI / 180.0));
-		this.horizontalPlane = new Vec3d((double)(f * h), (double)i, (double)(g * h));
-		this.verticalPlane = new Vec3d((double)(f * j), (double)k, (double)(g * j));
+		this.horizontalPlane = new net.minecraft.util.math.Vec3d((double)(f * h), (double)i, (double)(g * h));
+		this.verticalPlane = new net.minecraft.util.math.Vec3d((double)(f * j), (double)k, (double)(g * j));
 		this.diagonalPlane = this.horizontalPlane.crossProduct(this.verticalPlane).multiply(-1.0);
 	}
 
-	protected void setRotation(float yaw, float pitch) {
-		this.pitch = pitch;
-		this.yaw = yaw;
+	protected void setRotation(float f, float g) {
+		this.pitch = g;
+		this.yaw = f;
 		this.updateRotation();
 	}
 
-	protected void setPos(double x, double y, double z) {
-		this.setPos(new Vec3d(x, y, z));
+	protected void setPos(double d, double e, double f) {
+		this.setPos(new net.minecraft.util.math.Vec3d(d, e, f));
 	}
 
-	protected void setPos(Vec3d pos) {
-		this.pos = pos;
-		this.blockPos.set(pos.x, pos.y, pos.z);
+	protected void setPos(net.minecraft.util.math.Vec3d vec3d) {
+		this.pos = vec3d;
+		this.blockPos.set(vec3d.x, vec3d.y, vec3d.z);
 	}
 
-	public Vec3d getPos() {
+	public net.minecraft.util.math.Vec3d getPos() {
 		return this.pos;
 	}
 
@@ -160,20 +159,20 @@ public class Camera {
 
 	public FluidState getSubmergedFluidState() {
 		if (!this.ready) {
-			return Fluids.EMPTY.getDefaultState();
+			return Fluids.field_15906.getDefaultState();
 		} else {
 			FluidState fluidState = this.area.getFluidState(this.blockPos);
 			return !fluidState.isEmpty() && this.pos.y >= (double)((float)this.blockPos.getY() + fluidState.getHeight(this.area, this.blockPos))
-				? Fluids.EMPTY.getDefaultState()
+				? Fluids.field_15906.getDefaultState()
 				: fluidState;
 		}
 	}
 
-	public final Vec3d getHorizontalPlane() {
+	public final net.minecraft.util.math.Vec3d getHorizontalPlane() {
 		return this.horizontalPlane;
 	}
 
-	public final Vec3d getVerticalPlane() {
+	public final net.minecraft.util.math.Vec3d getVerticalPlane() {
 		return this.verticalPlane;
 	}
 

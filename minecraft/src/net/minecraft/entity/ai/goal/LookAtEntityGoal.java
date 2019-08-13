@@ -17,31 +17,31 @@ public class LookAtEntityGoal extends Goal {
 	protected final Class<? extends LivingEntity> targetType;
 	protected final TargetPredicate targetPredicate;
 
-	public LookAtEntityGoal(MobEntity mob, Class<? extends LivingEntity> targetType, float range) {
-		this(mob, targetType, range, 0.02F);
+	public LookAtEntityGoal(MobEntity mobEntity, Class<? extends LivingEntity> class_, float f) {
+		this(mobEntity, class_, f, 0.02F);
 	}
 
-	public LookAtEntityGoal(MobEntity mob, Class<? extends LivingEntity> targetType, float range, float chance) {
-		this.mob = mob;
-		this.targetType = targetType;
-		this.range = range;
-		this.chance = chance;
-		this.setControls(EnumSet.of(Goal.Control.LOOK));
-		if (targetType == PlayerEntity.class) {
+	public LookAtEntityGoal(MobEntity mobEntity, Class<? extends LivingEntity> class_, float f, float g) {
+		this.mob = mobEntity;
+		this.targetType = class_;
+		this.range = f;
+		this.chance = g;
+		this.setControls(EnumSet.of(Goal.Control.field_18406));
+		if (class_ == PlayerEntity.class) {
 			this.targetPredicate = new TargetPredicate()
-				.setBaseMaxDistance((double)range)
+				.setBaseMaxDistance((double)f)
 				.includeTeammates()
 				.includeInvulnerable()
 				.ignoreEntityTargetRules()
-				.setPredicate(livingEntity -> EntityPredicates.rides(mob).test(livingEntity));
+				.setPredicate(livingEntity -> EntityPredicates.rides(mobEntity).test(livingEntity));
 		} else {
-			this.targetPredicate = new TargetPredicate().setBaseMaxDistance((double)range).includeTeammates().includeInvulnerable().ignoreEntityTargetRules();
+			this.targetPredicate = new TargetPredicate().setBaseMaxDistance((double)f).includeTeammates().includeInvulnerable().ignoreEntityTargetRules();
 		}
 	}
 
 	@Override
 	public boolean canStart() {
-		if (this.mob.getRandom().nextFloat() >= this.chance) {
+		if (this.mob.getRand().nextFloat() >= this.chance) {
 			return false;
 		} else {
 			if (this.mob.getTarget() != null) {
@@ -79,7 +79,7 @@ public class LookAtEntityGoal extends Goal {
 
 	@Override
 	public void start() {
-		this.lookTime = 40 + this.mob.getRandom().nextInt(40);
+		this.lookTime = 40 + this.mob.getRand().nextInt(40);
 	}
 
 	@Override

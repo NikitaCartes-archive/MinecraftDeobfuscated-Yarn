@@ -49,9 +49,9 @@ public class SoundSystem {
 	private final List<ListenerSoundInstance> listeners = Lists.<ListenerSoundInstance>newArrayList();
 	private final List<Sound> preloadedSounds = Lists.<Sound>newArrayList();
 
-	public SoundSystem(SoundManager loader, GameOptions settings, ResourceManager resourceManager) {
-		this.loader = loader;
-		this.settings = settings;
+	public SoundSystem(SoundManager soundManager, GameOptions gameOptions, ResourceManager resourceManager) {
+		this.loader = soundManager;
+		this.settings = gameOptions;
 		this.soundLoader = new SoundLoader(resourceManager);
 	}
 
@@ -75,7 +75,7 @@ public class SoundSystem {
 			try {
 				this.soundEngine.init();
 				this.listener.init();
-				this.listener.setVolume(this.settings.getSoundVolume(SoundCategory.MASTER));
+				this.listener.setVolume(this.settings.getSoundVolume(SoundCategory.field_15250));
 				this.soundLoader.loadStatic(this.preloadedSounds).thenRun(this.preloadedSounds::clear);
 				this.started = true;
 				LOGGER.info(MARKER, "Sound engine started");
@@ -86,21 +86,21 @@ public class SoundSystem {
 	}
 
 	private float getSoundVolume(SoundCategory soundCategory) {
-		return soundCategory != null && soundCategory != SoundCategory.MASTER ? this.settings.getSoundVolume(soundCategory) : 1.0F;
+		return soundCategory != null && soundCategory != SoundCategory.field_15250 ? this.settings.getSoundVolume(soundCategory) : 1.0F;
 	}
 
-	public void updateSoundVolume(SoundCategory soundCategory, float volume) {
+	public void updateSoundVolume(SoundCategory soundCategory, float f) {
 		if (this.started) {
-			if (soundCategory == SoundCategory.MASTER) {
-				this.listener.setVolume(volume);
+			if (soundCategory == SoundCategory.field_15250) {
+				this.listener.setVolume(f);
 			} else {
 				this.sources.forEach((soundInstance, sourceManager) -> {
-					float f = this.getAdjustedVolume(soundInstance);
+					float fx = this.getAdjustedVolume(soundInstance);
 					sourceManager.run(source -> {
-						if (f <= 0.0F) {
+						if (fx <= 0.0F) {
 							source.stop();
 						} else {
-							source.setVolume(f);
+							source.setVolume(fx);
 						}
 					});
 				});
@@ -271,7 +271,7 @@ public class SoundSystem {
 						} else {
 							boolean bl2 = soundInstance.isRepeatable() && soundInstance.getRepeatDelay() == 0;
 							Vec3d vec3d = new Vec3d((double)soundInstance.getX(), (double)soundInstance.getY(), (double)soundInstance.getZ());
-							Channel.SourceManager sourceManager = this.channel.createSource(sound.isStreamed() ? SoundEngine.RunMode.STREAMING : SoundEngine.RunMode.STATIC);
+							Channel.SourceManager sourceManager = this.channel.createSource(sound.isStreamed() ? SoundEngine.RunMode.field_18353 : SoundEngine.RunMode.field_18352);
 							LOGGER.debug(MARKER, "Playing sound {} for event {}", sound.getIdentifier(), identifier);
 							this.soundEndTicks.put(soundInstance, this.ticks + 20);
 							this.sources.put(soundInstance, sourceManager);
@@ -279,7 +279,7 @@ public class SoundSystem {
 							sourceManager.run(source -> {
 								source.setPitch(i);
 								source.setVolume(h);
-								if (attenuationType == SoundInstance.AttenuationType.LINEAR) {
+								if (attenuationType == SoundInstance.AttenuationType.field_5476) {
 									source.setAttenuation(g);
 								} else {
 									source.disableAttenuation();
@@ -335,8 +335,8 @@ public class SoundSystem {
 		}
 	}
 
-	public void play(SoundInstance sound, int delay) {
-		this.startTicks.put(sound, this.ticks + delay);
+	public void play(SoundInstance soundInstance, int i) {
+		this.startTicks.put(soundInstance, this.ticks + i);
 	}
 
 	public void updateListenerPosition(Camera camera) {

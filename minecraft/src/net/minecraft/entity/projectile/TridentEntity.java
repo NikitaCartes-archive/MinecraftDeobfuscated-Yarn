@@ -27,7 +27,7 @@ import net.minecraft.world.World;
 
 public class TridentEntity extends ProjectileEntity {
 	private static final TrackedData<Byte> LOYALTY = DataTracker.registerData(TridentEntity.class, TrackedDataHandlerRegistry.BYTE);
-	private ItemStack tridentStack = new ItemStack(Items.TRIDENT);
+	private ItemStack tridentStack = new ItemStack(Items.field_8547);
 	private boolean dealtDamage;
 	public int field_7649;
 
@@ -35,15 +35,15 @@ public class TridentEntity extends ProjectileEntity {
 		super(entityType, world);
 	}
 
-	public TridentEntity(World world, LivingEntity owner, ItemStack item) {
-		super(EntityType.TRIDENT, owner, world);
-		this.tridentStack = item.copy();
-		this.dataTracker.set(LOYALTY, (byte)EnchantmentHelper.getLoyalty(item));
+	public TridentEntity(World world, LivingEntity livingEntity, ItemStack itemStack) {
+		super(EntityType.field_6127, livingEntity, world);
+		this.tridentStack = itemStack.copy();
+		this.dataTracker.set(LOYALTY, (byte)EnchantmentHelper.getLoyalty(itemStack));
 	}
 
 	@Environment(EnvType.CLIENT)
-	public TridentEntity(World world, double x, double y, double z) {
-		super(EntityType.TRIDENT, x, y, z, world);
+	public TridentEntity(World world, double d, double e, double f) {
+		super(EntityType.field_6127, d, e, f, world);
 	}
 
 	@Override
@@ -62,7 +62,7 @@ public class TridentEntity extends ProjectileEntity {
 		if ((this.dealtDamage || this.isNoClip()) && entity != null) {
 			int i = this.dataTracker.get(LOYALTY);
 			if (i > 0 && !this.isOwnerAlive()) {
-				if (!this.world.isClient && this.pickupType == ProjectileEntity.PickupPermission.ALLOWED) {
+				if (!this.world.isClient && this.pickupType == ProjectileEntity.PickupPermission.field_7593) {
 					this.dropStack(this.asItemStack(), 0.1F);
 				}
 
@@ -72,13 +72,13 @@ public class TridentEntity extends ProjectileEntity {
 				Vec3d vec3d = new Vec3d(entity.x - this.x, entity.y + (double)entity.getStandingEyeHeight() - this.y, entity.z - this.z);
 				this.y = this.y + vec3d.y * 0.015 * (double)i;
 				if (this.world.isClient) {
-					this.lastRenderY = this.y;
+					this.prevRenderY = this.y;
 				}
 
 				double d = 0.05 * (double)i;
 				this.setVelocity(this.getVelocity().multiply(0.95).add(vec3d.normalize().multiply(d)));
 				if (this.field_7649 == 0) {
-					this.playSound(SoundEvents.ITEM_TRIDENT_RETURN, 10.0F, 1.0F);
+					this.playSound(SoundEvents.field_14698, 10.0F, 1.0F);
 				}
 
 				this.field_7649++;
@@ -100,8 +100,8 @@ public class TridentEntity extends ProjectileEntity {
 
 	@Nullable
 	@Override
-	protected EntityHitResult getEntityCollision(Vec3d currentPosition, Vec3d nextPosition) {
-		return this.dealtDamage ? null : super.getEntityCollision(currentPosition, nextPosition);
+	protected EntityHitResult getEntityCollision(Vec3d vec3d, Vec3d vec3d2) {
+		return this.dealtDamage ? null : super.getEntityCollision(vec3d, vec3d2);
 	}
 
 	@Override
@@ -116,7 +116,7 @@ public class TridentEntity extends ProjectileEntity {
 		Entity entity2 = this.getOwner();
 		DamageSource damageSource = DamageSource.trident(this, (Entity)(entity2 == null ? this : entity2));
 		this.dealtDamage = true;
-		SoundEvent soundEvent = SoundEvents.ITEM_TRIDENT_HIT;
+		SoundEvent soundEvent = SoundEvents.field_15213;
 		if (entity.damage(damageSource, f) && entity instanceof LivingEntity) {
 			LivingEntity livingEntity2 = (LivingEntity)entity;
 			if (entity2 instanceof LivingEntity) {
@@ -137,7 +137,7 @@ public class TridentEntity extends ProjectileEntity {
 				);
 				lightningEntity.setChanneller(entity2 instanceof ServerPlayerEntity ? (ServerPlayerEntity)entity2 : null);
 				((ServerWorld)this.world).addLightning(lightningEntity);
-				soundEvent = SoundEvents.ITEM_TRIDENT_THUNDER;
+				soundEvent = SoundEvents.field_14896;
 				g = 5.0F;
 			}
 		}
@@ -146,40 +146,40 @@ public class TridentEntity extends ProjectileEntity {
 	}
 
 	@Override
-	protected SoundEvent getHitSound() {
-		return SoundEvents.ITEM_TRIDENT_HIT_GROUND;
+	protected SoundEvent getSound() {
+		return SoundEvents.field_15104;
 	}
 
 	@Override
-	public void onPlayerCollision(PlayerEntity player) {
+	public void onPlayerCollision(PlayerEntity playerEntity) {
 		Entity entity = this.getOwner();
-		if (entity == null || entity.getUuid() == player.getUuid()) {
-			super.onPlayerCollision(player);
+		if (entity == null || entity.getUuid() == playerEntity.getUuid()) {
+			super.onPlayerCollision(playerEntity);
 		}
 	}
 
 	@Override
-	public void readCustomDataFromTag(CompoundTag tag) {
-		super.readCustomDataFromTag(tag);
-		if (tag.contains("Trident", 10)) {
-			this.tridentStack = ItemStack.fromTag(tag.getCompound("Trident"));
+	public void readCustomDataFromTag(CompoundTag compoundTag) {
+		super.readCustomDataFromTag(compoundTag);
+		if (compoundTag.containsKey("Trident", 10)) {
+			this.tridentStack = ItemStack.fromTag(compoundTag.getCompound("Trident"));
 		}
 
-		this.dealtDamage = tag.getBoolean("DealtDamage");
+		this.dealtDamage = compoundTag.getBoolean("DealtDamage");
 		this.dataTracker.set(LOYALTY, (byte)EnchantmentHelper.getLoyalty(this.tridentStack));
 	}
 
 	@Override
-	public void writeCustomDataToTag(CompoundTag tag) {
-		super.writeCustomDataToTag(tag);
-		tag.put("Trident", this.tridentStack.toTag(new CompoundTag()));
-		tag.putBoolean("DealtDamage", this.dealtDamage);
+	public void writeCustomDataToTag(CompoundTag compoundTag) {
+		super.writeCustomDataToTag(compoundTag);
+		compoundTag.put("Trident", this.tridentStack.toTag(new CompoundTag()));
+		compoundTag.putBoolean("DealtDamage", this.dealtDamage);
 	}
 
 	@Override
 	protected void age() {
 		int i = this.dataTracker.get(LOYALTY);
-		if (this.pickupType != ProjectileEntity.PickupPermission.ALLOWED || i <= 0) {
+		if (this.pickupType != ProjectileEntity.PickupPermission.field_7593 || i <= 0) {
 			super.age();
 		}
 	}
@@ -191,7 +191,7 @@ public class TridentEntity extends ProjectileEntity {
 
 	@Environment(EnvType.CLIENT)
 	@Override
-	public boolean shouldRender(double cameraX, double cameraY, double cameraZ) {
+	public boolean shouldRenderFrom(double d, double e, double f) {
 		return true;
 	}
 }

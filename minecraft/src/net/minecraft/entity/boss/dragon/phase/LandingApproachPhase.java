@@ -16,13 +16,13 @@ public class LandingApproachPhase extends AbstractPhase {
 	private Path field_7047;
 	private Vec3d field_7048;
 
-	public LandingApproachPhase(EnderDragonEntity dragon) {
-		super(dragon);
+	public LandingApproachPhase(EnderDragonEntity enderDragonEntity) {
+		super(enderDragonEntity);
 	}
 
 	@Override
 	public PhaseType<LandingApproachPhase> getType() {
-		return PhaseType.LANDING_APPROACH;
+		return PhaseType.field_7071;
 	}
 
 	@Override
@@ -48,7 +48,7 @@ public class LandingApproachPhase extends AbstractPhase {
 	private void method_6844() {
 		if (this.field_7047 == null || this.field_7047.isFinished()) {
 			int i = this.dragon.method_6818();
-			BlockPos blockPos = this.dragon.world.getTopPosition(Heightmap.Type.MOTION_BLOCKING_NO_LEAVES, EndPortalFeature.ORIGIN);
+			BlockPos blockPos = this.dragon.world.getTopPosition(Heightmap.Type.field_13203, EndPortalFeature.ORIGIN);
 			PlayerEntity playerEntity = this.dragon
 				.world
 				.getClosestPlayer(PLAYERS_IN_RANGE_PREDICATE, (double)blockPos.getX(), (double)blockPos.getY(), (double)blockPos.getZ());
@@ -69,7 +69,7 @@ public class LandingApproachPhase extends AbstractPhase {
 
 		this.method_6845();
 		if (this.field_7047 != null && this.field_7047.isFinished()) {
-			this.dragon.getPhaseManager().setPhase(PhaseType.LANDING);
+			this.dragon.getPhaseManager().setPhase(PhaseType.field_7067);
 		}
 	}
 
@@ -82,7 +82,7 @@ public class LandingApproachPhase extends AbstractPhase {
 
 			double f;
 			do {
-				f = vec3d.y + (double)(this.dragon.getRandom().nextFloat() * 20.0F);
+				f = vec3d.y + (double)(this.dragon.getRand().nextFloat() * 20.0F);
 			} while (f < vec3d.y);
 
 			this.field_7048 = new Vec3d(d, f, e);

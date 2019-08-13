@@ -11,12 +11,12 @@ import net.minecraft.util.Identifier;
 import net.minecraft.world.World;
 
 public interface Recipe<C extends Inventory> {
-	boolean matches(C inv, World world);
+	boolean matches(C inventory, World world);
 
-	ItemStack craft(C inv);
+	ItemStack craft(C inventory);
 
 	@Environment(EnvType.CLIENT)
-	boolean fits(int width, int height);
+	boolean fits(int i, int j);
 
 	ItemStack getOutput();
 
@@ -48,7 +48,7 @@ public interface Recipe<C extends Inventory> {
 
 	@Environment(EnvType.CLIENT)
 	default ItemStack getRecipeKindIcon() {
-		return new ItemStack(Blocks.CRAFTING_TABLE);
+		return new ItemStack(Blocks.field_9980);
 	}
 
 	Identifier getId();

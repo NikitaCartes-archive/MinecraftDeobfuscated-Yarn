@@ -4,7 +4,7 @@ import com.mojang.blaze3d.platform.GlStateManager;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.render.BufferBuilder;
-import net.minecraft.client.render.DiffuseLighting;
+import net.minecraft.client.render.GuiLighting;
 import net.minecraft.client.render.Tessellator;
 import net.minecraft.client.render.VertexFormats;
 import net.minecraft.client.texture.SpriteAtlasTexture;
@@ -15,11 +15,11 @@ public interface ParticleTextureSheet {
 	ParticleTextureSheet TERRAIN_SHEET = new ParticleTextureSheet() {
 		@Override
 		public void begin(BufferBuilder bufferBuilder, TextureManager textureManager) {
-			DiffuseLighting.disable();
+			GuiLighting.disable();
 			GlStateManager.disableBlend();
 			GlStateManager.depthMask(true);
 			textureManager.bindTexture(SpriteAtlasTexture.BLOCK_ATLAS_TEX);
-			bufferBuilder.begin(7, VertexFormats.POSITION_TEXTURE_COLOR_LIGHT);
+			bufferBuilder.begin(7, VertexFormats.POSITION_UV_COLOR_LMAP);
 		}
 
 		@Override
@@ -34,11 +34,11 @@ public interface ParticleTextureSheet {
 	ParticleTextureSheet PARTICLE_SHEET_OPAQUE = new ParticleTextureSheet() {
 		@Override
 		public void begin(BufferBuilder bufferBuilder, TextureManager textureManager) {
-			DiffuseLighting.disable();
+			GuiLighting.disable();
 			GlStateManager.disableBlend();
 			GlStateManager.depthMask(true);
 			textureManager.bindTexture(SpriteAtlasTexture.PARTICLE_ATLAS_TEX);
-			bufferBuilder.begin(7, VertexFormats.POSITION_TEXTURE_COLOR_LIGHT);
+			bufferBuilder.begin(7, VertexFormats.POSITION_UV_COLOR_LMAP);
 		}
 
 		@Override
@@ -53,13 +53,13 @@ public interface ParticleTextureSheet {
 	ParticleTextureSheet PARTICLE_SHEET_TRANSLUCENT = new ParticleTextureSheet() {
 		@Override
 		public void begin(BufferBuilder bufferBuilder, TextureManager textureManager) {
-			DiffuseLighting.disable();
+			GuiLighting.disable();
 			GlStateManager.depthMask(false);
 			textureManager.bindTexture(SpriteAtlasTexture.PARTICLE_ATLAS_TEX);
 			GlStateManager.enableBlend();
 			GlStateManager.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA);
 			GlStateManager.alphaFunc(516, 0.003921569F);
-			bufferBuilder.begin(7, VertexFormats.POSITION_TEXTURE_COLOR_LIGHT);
+			bufferBuilder.begin(7, VertexFormats.POSITION_UV_COLOR_LMAP);
 		}
 
 		@Override
@@ -77,8 +77,8 @@ public interface ParticleTextureSheet {
 			GlStateManager.disableBlend();
 			GlStateManager.depthMask(true);
 			textureManager.bindTexture(SpriteAtlasTexture.PARTICLE_ATLAS_TEX);
-			DiffuseLighting.disable();
-			bufferBuilder.begin(7, VertexFormats.POSITION_TEXTURE_COLOR_LIGHT);
+			GuiLighting.disable();
+			bufferBuilder.begin(7, VertexFormats.POSITION_UV_COLOR_LMAP);
 		}
 
 		@Override

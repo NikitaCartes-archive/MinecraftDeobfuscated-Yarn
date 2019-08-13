@@ -2,17 +2,15 @@ package net.minecraft.world.biome.layer;
 
 import net.minecraft.util.registry.Registry;
 import net.minecraft.world.biome.Biomes;
-import net.minecraft.world.biome.layer.type.SouthEastSamplingLayer;
-import net.minecraft.world.biome.layer.util.LayerRandomnessSource;
 
 public enum AddSunflowerPlainsLayer implements SouthEastSamplingLayer {
-	INSTANCE;
+	field_16155;
 
-	private static final int PLAINS_ID = Registry.BIOME.getRawId(Biomes.PLAINS);
-	private static final int SUNFLOWER_PLAINS = Registry.BIOME.getRawId(Biomes.SUNFLOWER_PLAINS);
+	private static final int PLAINS_ID = Registry.BIOME.getRawId(Biomes.field_9451);
+	private static final int SUNFLOWER_PLAINS = Registry.BIOME.getRawId(Biomes.field_9455);
 
 	@Override
-	public int sample(LayerRandomnessSource context, int se) {
-		return context.nextInt(57) == 0 && se == PLAINS_ID ? SUNFLOWER_PLAINS : se;
+	public int sample(LayerRandomnessSource layerRandomnessSource, int i) {
+		return layerRandomnessSource.nextInt(57) == 0 && i == PLAINS_ID ? SUNFLOWER_PLAINS : i;
 	}
 }

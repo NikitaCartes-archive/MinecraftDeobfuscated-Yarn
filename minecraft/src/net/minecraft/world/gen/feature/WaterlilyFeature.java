@@ -11,11 +11,11 @@ import net.minecraft.world.gen.chunk.ChunkGenerator;
 import net.minecraft.world.gen.chunk.ChunkGeneratorConfig;
 
 public class WaterlilyFeature extends Feature<DefaultFeatureConfig> {
-	public WaterlilyFeature(Function<Dynamic<?>, ? extends DefaultFeatureConfig> configFactory) {
-		super(configFactory);
+	public WaterlilyFeature(Function<Dynamic<?>, ? extends DefaultFeatureConfig> function) {
+		super(function);
 	}
 
-	public boolean generate(
+	public boolean method_14202(
 		IWorld iWorld, ChunkGenerator<? extends ChunkGeneratorConfig> chunkGenerator, Random random, BlockPos blockPos, DefaultFeatureConfig defaultFeatureConfig
 	) {
 		BlockPos blockPos2 = blockPos;
@@ -31,7 +31,7 @@ public class WaterlilyFeature extends Feature<DefaultFeatureConfig> {
 
 		for (int i = 0; i < 10; i++) {
 			BlockPos blockPos4 = blockPos.add(random.nextInt(8) - random.nextInt(8), random.nextInt(4) - random.nextInt(4), random.nextInt(8) - random.nextInt(8));
-			BlockState blockState = Blocks.LILY_PAD.getDefaultState();
+			BlockState blockState = Blocks.field_10588.getDefaultState();
 			if (iWorld.isAir(blockPos4) && blockState.canPlaceAt(iWorld, blockPos4)) {
 				iWorld.setBlockState(blockPos4, blockState, 2);
 			}

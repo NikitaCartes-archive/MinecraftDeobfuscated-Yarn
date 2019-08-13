@@ -12,11 +12,11 @@ import net.minecraft.client.gui.screen.ingame.BlastFurnaceScreen;
 import net.minecraft.client.gui.screen.ingame.BrewingStandScreen;
 import net.minecraft.client.gui.screen.ingame.CartographyTableScreen;
 import net.minecraft.client.gui.screen.ingame.ContainerProvider;
+import net.minecraft.client.gui.screen.ingame.ContainerScreen54;
+import net.minecraft.client.gui.screen.ingame.ContainerScreen9;
 import net.minecraft.client.gui.screen.ingame.CraftingTableScreen;
 import net.minecraft.client.gui.screen.ingame.EnchantingScreen;
 import net.minecraft.client.gui.screen.ingame.FurnaceScreen;
-import net.minecraft.client.gui.screen.ingame.Generic3x3ContainerScreen;
-import net.minecraft.client.gui.screen.ingame.GenericContainerScreen;
 import net.minecraft.client.gui.screen.ingame.GrindstoneScreen;
 import net.minecraft.client.gui.screen.ingame.HopperScreen;
 import net.minecraft.client.gui.screen.ingame.LecternScreen;
@@ -38,28 +38,30 @@ public class Screens {
 	private static final Logger LOGGER = LogManager.getLogger();
 	private static final Map<ContainerType<?>, Screens.Provider<?, ?>> PROVIDERS = Maps.<ContainerType<?>, Screens.Provider<?, ?>>newHashMap();
 
-	public static <T extends Container> void open(@Nullable ContainerType<T> type, MinecraftClient client, int id, Text name) {
-		if (type == null) {
-			LOGGER.warn("Trying to open invalid screen with name: {}", name.getString());
+	public static <T extends Container> void open(@Nullable ContainerType<T> containerType, MinecraftClient minecraftClient, int i, Text text) {
+		if (containerType == null) {
+			LOGGER.warn("Trying to open invalid screen with name: {}", text.getString());
 		} else {
-			Screens.Provider<T, ?> provider = getProvider(type);
+			Screens.Provider<T, ?> provider = getProvider(containerType);
 			if (provider == null) {
-				LOGGER.warn("Failed to create screen for menu type: {}", Registry.CONTAINER.getId(type));
+				LOGGER.warn("Failed to create screen for menu type: {}", Registry.CONTAINER.getId(containerType));
 			} else {
-				provider.open(name, type, client, id);
+				provider.open(text, containerType, minecraftClient, i);
 			}
 		}
 	}
 
 	@Nullable
-	private static <T extends Container> Screens.Provider<T, ?> getProvider(ContainerType<T> type) {
-		return (Screens.Provider<T, ?>)PROVIDERS.get(type);
+	private static <T extends Container> Screens.Provider<T, ?> getProvider(ContainerType<T> containerType) {
+		return (Screens.Provider<T, ?>)PROVIDERS.get(containerType);
 	}
 
-	private static <M extends Container, U extends Screen & ContainerProvider<M>> void register(ContainerType<? extends M> type, Screens.Provider<M, U> provider) {
-		Screens.Provider<?, ?> provider2 = (Screens.Provider<?, ?>)PROVIDERS.put(type, provider);
+	private static <M extends Container, U extends Screen & ContainerProvider<M>> void register(
+		ContainerType<? extends M> containerType, Screens.Provider<M, U> provider
+	) {
+		Screens.Provider<?, ?> provider2 = (Screens.Provider<?, ?>)PROVIDERS.put(containerType, provider);
 		if (provider2 != null) {
-			throw new IllegalStateException("Duplicate registration for " + Registry.CONTAINER.getId(type));
+			throw new IllegalStateException("Duplicate registration for " + Registry.CONTAINER.getId(containerType));
 		}
 	}
 
@@ -77,37 +79,37 @@ public class Screens {
 	}
 
 	static {
-		register(ContainerType.GENERIC_9X1, GenericContainerScreen::new);
-		register(ContainerType.GENERIC_9X2, GenericContainerScreen::new);
-		register(ContainerType.GENERIC_9X3, GenericContainerScreen::new);
-		register(ContainerType.GENERIC_9X4, GenericContainerScreen::new);
-		register(ContainerType.GENERIC_9X5, GenericContainerScreen::new);
-		register(ContainerType.GENERIC_9X6, GenericContainerScreen::new);
-		register(ContainerType.GENERIC_3X3, Generic3x3ContainerScreen::new);
-		register(ContainerType.ANVIL, AnvilScreen::new);
-		register(ContainerType.BEACON, BeaconScreen::new);
-		register(ContainerType.BLAST_FURNACE, BlastFurnaceScreen::new);
-		register(ContainerType.BREWING_STAND, BrewingStandScreen::new);
-		register(ContainerType.CRAFTING, CraftingTableScreen::new);
-		register(ContainerType.ENCHANTMENT, EnchantingScreen::new);
-		register(ContainerType.FURNACE, FurnaceScreen::new);
-		register(ContainerType.GRINDSTONE, GrindstoneScreen::new);
-		register(ContainerType.HOPPER, HopperScreen::new);
-		register(ContainerType.LECTERN, LecternScreen::new);
-		register(ContainerType.LOOM, LoomScreen::new);
-		register(ContainerType.MERCHANT, MerchantScreen::new);
-		register(ContainerType.SHULKER_BOX, ShulkerBoxScreen::new);
-		register(ContainerType.SMOKER, SmokerScreen::new);
-		register(ContainerType.CARTOGRAPHY, CartographyTableScreen::new);
-		register(ContainerType.STONECUTTER, StonecutterScreen::new);
+		register(ContainerType.field_18664, ContainerScreen54::new);
+		register(ContainerType.field_18665, ContainerScreen54::new);
+		register(ContainerType.field_17326, ContainerScreen54::new);
+		register(ContainerType.field_18666, ContainerScreen54::new);
+		register(ContainerType.field_18667, ContainerScreen54::new);
+		register(ContainerType.field_17327, ContainerScreen54::new);
+		register(ContainerType.field_17328, ContainerScreen9::new);
+		register(ContainerType.field_17329, AnvilScreen::new);
+		register(ContainerType.field_17330, BeaconScreen::new);
+		register(ContainerType.field_17331, BlastFurnaceScreen::new);
+		register(ContainerType.field_17332, BrewingStandScreen::new);
+		register(ContainerType.field_17333, CraftingTableScreen::new);
+		register(ContainerType.field_17334, EnchantingScreen::new);
+		register(ContainerType.field_17335, FurnaceScreen::new);
+		register(ContainerType.field_17336, GrindstoneScreen::new);
+		register(ContainerType.field_17337, HopperScreen::new);
+		register(ContainerType.field_17338, LecternScreen::new);
+		register(ContainerType.field_17339, LoomScreen::new);
+		register(ContainerType.field_17340, MerchantScreen::new);
+		register(ContainerType.field_17341, ShulkerBoxScreen::new);
+		register(ContainerType.field_17342, SmokerScreen::new);
+		register(ContainerType.field_17343, CartographyTableScreen::new);
+		register(ContainerType.field_17625, StonecutterScreen::new);
 	}
 
 	@Environment(EnvType.CLIENT)
 	interface Provider<T extends Container, U extends Screen & ContainerProvider<T>> {
-		default void open(Text name, ContainerType<T> type, MinecraftClient client, int id) {
-			U screen = this.create(type.create(id, client.player.inventory), client.player.inventory, name);
-			client.player.container = screen.getContainer();
-			client.openScreen(screen);
+		default void open(Text text, ContainerType<T> containerType, MinecraftClient minecraftClient, int i) {
+			U screen = this.create(containerType.create(i, minecraftClient.player.inventory), minecraftClient.player.inventory, text);
+			minecraftClient.player.container = screen.getContainer();
+			minecraftClient.openScreen(screen);
 		}
 
 		U create(T container, PlayerInventory playerInventory, Text text);

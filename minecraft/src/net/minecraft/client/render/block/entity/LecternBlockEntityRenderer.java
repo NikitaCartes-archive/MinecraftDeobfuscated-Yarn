@@ -15,7 +15,7 @@ public class LecternBlockEntityRenderer extends BlockEntityRenderer<LecternBlock
 	private static final Identifier BOOK_TEXTURE = new Identifier("textures/entity/enchanting_table_book.png");
 	private final BookModel book = new BookModel();
 
-	public void render(LecternBlockEntity lecternBlockEntity, double d, double e, double f, float g, int i) {
+	public void method_17582(LecternBlockEntity lecternBlockEntity, double d, double e, double f, float g, int i) {
 		BlockState blockState = lecternBlockEntity.getCachedState();
 		if ((Boolean)blockState.get(LecternBlock.HAS_BOOK)) {
 			GlStateManager.pushMatrix();

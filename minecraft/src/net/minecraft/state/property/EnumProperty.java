@@ -16,17 +16,17 @@ public class EnumProperty<T extends Enum<T> & StringIdentifiable> extends Abstra
 	private final ImmutableSet<T> values;
 	private final Map<String, T> byName = Maps.<String, T>newHashMap();
 
-	protected EnumProperty(String name, Class<T> type, Collection<T> values) {
-		super(name, type);
-		this.values = ImmutableSet.copyOf(values);
+	protected EnumProperty(String string, Class<T> class_, Collection<T> collection) {
+		super(string, class_);
+		this.values = ImmutableSet.copyOf(collection);
 
-		for (T enum_ : values) {
-			String string = enum_.asString();
-			if (this.byName.containsKey(string)) {
-				throw new IllegalArgumentException("Multiple values have the same name '" + string + "'");
+		for (T enum_ : collection) {
+			String string2 = enum_.asString();
+			if (this.byName.containsKey(string2)) {
+				throw new IllegalArgumentException("Multiple values have the same name '" + string2 + "'");
 			}
 
-			this.byName.put(string, enum_);
+			this.byName.put(string2, enum_);
 		}
 	}
 
@@ -36,20 +36,20 @@ public class EnumProperty<T extends Enum<T> & StringIdentifiable> extends Abstra
 	}
 
 	@Override
-	public Optional<T> parse(String name) {
-		return Optional.ofNullable(this.byName.get(name));
+	public Optional<T> getValue(String string) {
+		return Optional.ofNullable(this.byName.get(string));
 	}
 
-	public String name(T enum_) {
+	public String method_11846(T enum_) {
 		return enum_.asString();
 	}
 
 	@Override
-	public boolean equals(Object o) {
-		if (this == o) {
+	public boolean equals(Object object) {
+		if (this == object) {
 			return true;
-		} else if (o instanceof EnumProperty && super.equals(o)) {
-			EnumProperty<?> enumProperty = (EnumProperty<?>)o;
+		} else if (object instanceof EnumProperty && super.equals(object)) {
+			EnumProperty<?> enumProperty = (EnumProperty<?>)object;
 			return this.values.equals(enumProperty.values) && this.byName.equals(enumProperty.byName);
 		} else {
 			return false;
@@ -63,19 +63,19 @@ public class EnumProperty<T extends Enum<T> & StringIdentifiable> extends Abstra
 		return 31 * i + this.byName.hashCode();
 	}
 
-	public static <T extends Enum<T> & StringIdentifiable> EnumProperty<T> of(String name, Class<T> type) {
-		return of(name, type, Predicates.alwaysTrue());
+	public static <T extends Enum<T> & StringIdentifiable> EnumProperty<T> of(String string, Class<T> class_) {
+		return of(string, class_, Predicates.alwaysTrue());
 	}
 
-	public static <T extends Enum<T> & StringIdentifiable> EnumProperty<T> of(String name, Class<T> type, Predicate<T> filter) {
-		return of(name, type, (Collection<T>)Arrays.stream(type.getEnumConstants()).filter(filter).collect(Collectors.toList()));
+	public static <T extends Enum<T> & StringIdentifiable> EnumProperty<T> of(String string, Class<T> class_, Predicate<T> predicate) {
+		return of(string, class_, (Collection<T>)Arrays.stream(class_.getEnumConstants()).filter(predicate).collect(Collectors.toList()));
 	}
 
-	public static <T extends Enum<T> & StringIdentifiable> EnumProperty<T> of(String name, Class<T> type, T... values) {
-		return of(name, type, Lists.<T>newArrayList(values));
+	public static <T extends Enum<T> & StringIdentifiable> EnumProperty<T> of(String string, Class<T> class_, T... enums) {
+		return of(string, class_, Lists.<T>newArrayList(enums));
 	}
 
-	public static <T extends Enum<T> & StringIdentifiable> EnumProperty<T> of(String name, Class<T> type, Collection<T> values) {
-		return new EnumProperty<>(name, type, values);
+	public static <T extends Enum<T> & StringIdentifiable> EnumProperty<T> of(String string, Class<T> class_, Collection<T> collection) {
+		return new EnumProperty<>(string, class_, collection);
 	}
 }

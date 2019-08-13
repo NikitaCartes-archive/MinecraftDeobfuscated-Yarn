@@ -16,32 +16,34 @@ import net.minecraft.util.math.Direction;
 public class ItemModelGenerator {
 	public static final List<String> LAYERS = Lists.<String>newArrayList("layer0", "layer1", "layer2", "layer3", "layer4");
 
-	public JsonUnbakedModel create(Function<Identifier, Sprite> textureGetter, JsonUnbakedModel blockModel) {
+	public JsonUnbakedModel create(Function<Identifier, Sprite> function, JsonUnbakedModel jsonUnbakedModel) {
 		Map<String, String> map = Maps.<String, String>newHashMap();
 		List<ModelElement> list = Lists.<ModelElement>newArrayList();
 
 		for (int i = 0; i < LAYERS.size(); i++) {
 			String string = (String)LAYERS.get(i);
-			if (!blockModel.textureExists(string)) {
+			if (!jsonUnbakedModel.textureExists(string)) {
 				break;
 			}
 
-			String string2 = blockModel.resolveTexture(string);
+			String string2 = jsonUnbakedModel.resolveTexture(string);
 			map.put(string, string2);
-			Sprite sprite = (Sprite)textureGetter.apply(new Identifier(string2));
+			Sprite sprite = (Sprite)function.apply(new Identifier(string2));
 			list.addAll(this.method_3480(i, string, sprite));
 		}
 
-		map.put("particle", blockModel.textureExists("particle") ? blockModel.resolveTexture("particle") : (String)map.get("layer0"));
-		JsonUnbakedModel jsonUnbakedModel = new JsonUnbakedModel(null, list, map, false, false, blockModel.getTransformations(), blockModel.getOverrides());
-		jsonUnbakedModel.id = blockModel.id;
-		return jsonUnbakedModel;
+		map.put("particle", jsonUnbakedModel.textureExists("particle") ? jsonUnbakedModel.resolveTexture("particle") : (String)map.get("layer0"));
+		JsonUnbakedModel jsonUnbakedModel2 = new JsonUnbakedModel(
+			null, list, map, false, false, jsonUnbakedModel.getTransformations(), jsonUnbakedModel.getOverrides()
+		);
+		jsonUnbakedModel2.id = jsonUnbakedModel.id;
+		return jsonUnbakedModel2;
 	}
 
 	private List<ModelElement> method_3480(int i, String string, Sprite sprite) {
 		Map<Direction, ModelElementFace> map = Maps.<Direction, ModelElementFace>newHashMap();
-		map.put(Direction.SOUTH, new ModelElementFace(null, i, string, new ModelElementTexture(new float[]{0.0F, 0.0F, 16.0F, 16.0F}, 0)));
-		map.put(Direction.NORTH, new ModelElementFace(null, i, string, new ModelElementTexture(new float[]{16.0F, 0.0F, 0.0F, 16.0F}, 0)));
+		map.put(Direction.field_11035, new ModelElementFace(null, i, string, new ModelElementTexture(new float[]{0.0F, 0.0F, 16.0F, 16.0F}, 0)));
+		map.put(Direction.field_11043, new ModelElementFace(null, i, string, new ModelElementTexture(new float[]{16.0F, 0.0F, 0.0F, 16.0F}, 0)));
 		List<ModelElement> list = Lists.<ModelElement>newArrayList();
 		list.add(new ModelElement(new Vector3f(0.0F, 0.0F, 7.5F), new Vector3f(16.0F, 16.0F, 8.5F), map, null, true));
 		list.addAll(this.method_3481(sprite, string, i));
@@ -232,10 +234,10 @@ public class ItemModelGenerator {
 
 	@Environment(EnvType.CLIENT)
 	static enum class_803 {
-		field_4281(Direction.UP, 0, -1),
-		field_4277(Direction.DOWN, 0, 1),
-		field_4278(Direction.EAST, -1, 0),
-		field_4283(Direction.WEST, 1, 0);
+		field_4281(Direction.field_11036, 0, -1),
+		field_4277(Direction.field_11033, 0, 1),
+		field_4278(Direction.field_11034, -1, 0),
+		field_4283(Direction.field_11039, 1, 0);
 
 		private final Direction field_4276;
 		private final int field_4280;

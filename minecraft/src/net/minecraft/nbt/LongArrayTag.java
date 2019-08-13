@@ -40,23 +40,23 @@ public class LongArrayTag extends AbstractListTag<LongTag> {
 	}
 
 	@Override
-	public void write(DataOutput output) throws IOException {
-		output.writeInt(this.value.length);
+	public void write(DataOutput dataOutput) throws IOException {
+		dataOutput.writeInt(this.value.length);
 
 		for (long l : this.value) {
-			output.writeLong(l);
+			dataOutput.writeLong(l);
 		}
 	}
 
 	@Override
-	public void read(DataInput input, int depth, PositionTracker positionTracker) throws IOException {
+	public void read(DataInput dataInput, int i, PositionTracker positionTracker) throws IOException {
 		positionTracker.add(192L);
-		int i = input.readInt();
-		positionTracker.add((long)(64 * i));
-		this.value = new long[i];
+		int j = dataInput.readInt();
+		positionTracker.add((long)(64 * j));
+		this.value = new long[j];
 
-		for (int j = 0; j < i; j++) {
-			this.value[j] = input.readLong();
+		for (int k = 0; k < j; k++) {
+			this.value[k] = dataInput.readLong();
 		}
 	}
 
@@ -80,14 +80,14 @@ public class LongArrayTag extends AbstractListTag<LongTag> {
 		return stringBuilder.append(']').toString();
 	}
 
-	public LongArrayTag copy() {
+	public LongArrayTag method_10618() {
 		long[] ls = new long[this.value.length];
 		System.arraycopy(this.value, 0, ls, 0, this.value.length);
 		return new LongArrayTag(ls);
 	}
 
-	public boolean equals(Object o) {
-		return this == o ? true : o instanceof LongArrayTag && Arrays.equals(this.value, ((LongArrayTag)o).value);
+	public boolean equals(Object object) {
+		return this == object ? true : object instanceof LongArrayTag && Arrays.equals(this.value, ((LongArrayTag)object).value);
 	}
 
 	public int hashCode() {
@@ -95,14 +95,14 @@ public class LongArrayTag extends AbstractListTag<LongTag> {
 	}
 
 	@Override
-	public Text toText(String indent, int depth) {
+	public Text toText(String string, int i) {
 		Text text = new LiteralText("L").formatted(RED);
 		Text text2 = new LiteralText("[").append(text).append(";");
 
-		for (int i = 0; i < this.value.length; i++) {
-			Text text3 = new LiteralText(String.valueOf(this.value[i])).formatted(GOLD);
+		for (int j = 0; j < this.value.length; j++) {
+			Text text3 = new LiteralText(String.valueOf(this.value[j])).formatted(GOLD);
 			text2.append(" ").append(text3).append(text);
-			if (i != this.value.length - 1) {
+			if (j != this.value.length - 1) {
 				text2.append(",");
 			}
 		}
@@ -119,24 +119,24 @@ public class LongArrayTag extends AbstractListTag<LongTag> {
 		return this.value.length;
 	}
 
-	public LongTag get(int i) {
+	public LongTag method_10616(int i) {
 		return new LongTag(this.value[i]);
 	}
 
-	public LongTag set(int i, LongTag longTag) {
+	public LongTag method_17810(int i, LongTag longTag) {
 		long l = this.value[i];
 		this.value[i] = longTag.getLong();
 		return new LongTag(l);
 	}
 
-	public void method_10531(int i, LongTag longTag) {
+	public void method_17812(int i, LongTag longTag) {
 		this.value = ArrayUtils.add(this.value, i, longTag.getLong());
 	}
 
 	@Override
-	public boolean setTag(int index, Tag tag) {
+	public boolean setTag(int i, Tag tag) {
 		if (tag instanceof AbstractNumberTag) {
-			this.value[index] = ((AbstractNumberTag)tag).getLong();
+			this.value[i] = ((AbstractNumberTag)tag).getLong();
 			return true;
 		} else {
 			return false;
@@ -144,16 +144,16 @@ public class LongArrayTag extends AbstractListTag<LongTag> {
 	}
 
 	@Override
-	public boolean addTag(int index, Tag tag) {
+	public boolean addTag(int i, Tag tag) {
 		if (tag instanceof AbstractNumberTag) {
-			this.value = ArrayUtils.add(this.value, index, ((AbstractNumberTag)tag).getLong());
+			this.value = ArrayUtils.add(this.value, i, ((AbstractNumberTag)tag).getLong());
 			return true;
 		} else {
 			return false;
 		}
 	}
 
-	public LongTag method_10536(int i) {
+	public LongTag method_17811(int i) {
 		long l = this.value[i];
 		this.value = ArrayUtils.remove(this.value, i);
 		return new LongTag(l);

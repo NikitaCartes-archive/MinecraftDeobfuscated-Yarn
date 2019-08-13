@@ -31,42 +31,46 @@ public class OnKilledCriterion implements Criterion<OnKilledCriterion.Conditions
 	}
 
 	@Override
-	public void beginTrackingCondition(PlayerAdvancementTracker manager, Criterion.ConditionsContainer<OnKilledCriterion.Conditions> conditionsContainer) {
-		OnKilledCriterion.Handler handler = (OnKilledCriterion.Handler)this.handlers.get(manager);
+	public void beginTrackingCondition(
+		PlayerAdvancementTracker playerAdvancementTracker, Criterion.ConditionsContainer<OnKilledCriterion.Conditions> conditionsContainer
+	) {
+		OnKilledCriterion.Handler handler = (OnKilledCriterion.Handler)this.handlers.get(playerAdvancementTracker);
 		if (handler == null) {
-			handler = new OnKilledCriterion.Handler(manager);
-			this.handlers.put(manager, handler);
+			handler = new OnKilledCriterion.Handler(playerAdvancementTracker);
+			this.handlers.put(playerAdvancementTracker, handler);
 		}
 
 		handler.addCondition(conditionsContainer);
 	}
 
 	@Override
-	public void endTrackingCondition(PlayerAdvancementTracker manager, Criterion.ConditionsContainer<OnKilledCriterion.Conditions> conditionsContainer) {
-		OnKilledCriterion.Handler handler = (OnKilledCriterion.Handler)this.handlers.get(manager);
+	public void endTrackingCondition(
+		PlayerAdvancementTracker playerAdvancementTracker, Criterion.ConditionsContainer<OnKilledCriterion.Conditions> conditionsContainer
+	) {
+		OnKilledCriterion.Handler handler = (OnKilledCriterion.Handler)this.handlers.get(playerAdvancementTracker);
 		if (handler != null) {
 			handler.removeCondition(conditionsContainer);
 			if (handler.isEmpty()) {
-				this.handlers.remove(manager);
+				this.handlers.remove(playerAdvancementTracker);
 			}
 		}
 	}
 
 	@Override
-	public void endTracking(PlayerAdvancementTracker tracker) {
-		this.handlers.remove(tracker);
+	public void endTracking(PlayerAdvancementTracker playerAdvancementTracker) {
+		this.handlers.remove(playerAdvancementTracker);
 	}
 
-	public OnKilledCriterion.Conditions conditionsFromJson(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext) {
+	public OnKilledCriterion.Conditions method_8989(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext) {
 		return new OnKilledCriterion.Conditions(
-			this.id, EntityPredicate.fromJson(jsonObject.get("entity")), DamageSourcePredicate.deserialize(jsonObject.get("killing_blow"))
+			this.id, EntityPredicate.deserialize(jsonObject.get("entity")), DamageSourcePredicate.deserialize(jsonObject.get("killing_blow"))
 		);
 	}
 
-	public void trigger(ServerPlayerEntity player, Entity entity, DamageSource source) {
-		OnKilledCriterion.Handler handler = (OnKilledCriterion.Handler)this.handlers.get(player.getAdvancementTracker());
+	public void handle(ServerPlayerEntity serverPlayerEntity, Entity entity, DamageSource damageSource) {
+		OnKilledCriterion.Handler handler = (OnKilledCriterion.Handler)this.handlers.get(serverPlayerEntity.getAdvancementManager());
 		if (handler != null) {
-			handler.handle(player, entity, source);
+			handler.handle(serverPlayerEntity, entity, damageSource);
 		}
 	}
 
@@ -74,10 +78,10 @@ public class OnKilledCriterion implements Criterion<OnKilledCriterion.Conditions
 		private final EntityPredicate entity;
 		private final DamageSourcePredicate killingBlow;
 
-		public Conditions(Identifier identifier, EntityPredicate entity, DamageSourcePredicate killingBlow) {
+		public Conditions(Identifier identifier, EntityPredicate entityPredicate, DamageSourcePredicate damageSourcePredicate) {
 			super(identifier);
-			this.entity = entity;
-			this.killingBlow = killingBlow;
+			this.entity = entityPredicate;
+			this.killingBlow = damageSourcePredicate;
 		}
 
 		public static OnKilledCriterion.Conditions createPlayerKilledEntity(EntityPredicate.Builder builder) {
@@ -96,8 +100,8 @@ public class OnKilledCriterion implements Criterion<OnKilledCriterion.Conditions
 			return new OnKilledCriterion.Conditions(Criterions.ENTITY_KILLED_PLAYER.id, EntityPredicate.ANY, DamageSourcePredicate.EMPTY);
 		}
 
-		public boolean test(ServerPlayerEntity player, Entity entity, DamageSource killingBlow) {
-			return !this.killingBlow.test(player, killingBlow) ? false : this.entity.test(player, entity);
+		public boolean test(ServerPlayerEntity serverPlayerEntity, Entity entity, DamageSource damageSource) {
+			return !this.killingBlow.test(serverPlayerEntity, damageSource) ? false : this.entity.test(serverPlayerEntity, entity);
 		}
 
 		@Override
@@ -113,8 +117,8 @@ public class OnKilledCriterion implements Criterion<OnKilledCriterion.Conditions
 		private final PlayerAdvancementTracker manager;
 		private final Set<Criterion.ConditionsContainer<OnKilledCriterion.Conditions>> conditions = Sets.<Criterion.ConditionsContainer<OnKilledCriterion.Conditions>>newHashSet();
 
-		public Handler(PlayerAdvancementTracker manager) {
-			this.manager = manager;
+		public Handler(PlayerAdvancementTracker playerAdvancementTracker) {
+			this.manager = playerAdvancementTracker;
 		}
 
 		public boolean isEmpty() {
@@ -129,11 +133,11 @@ public class OnKilledCriterion implements Criterion<OnKilledCriterion.Conditions
 			this.conditions.remove(conditionsContainer);
 		}
 
-		public void handle(ServerPlayerEntity player, Entity entity, DamageSource killingBlow) {
+		public void handle(ServerPlayerEntity serverPlayerEntity, Entity entity, DamageSource damageSource) {
 			List<Criterion.ConditionsContainer<OnKilledCriterion.Conditions>> list = null;
 
 			for (Criterion.ConditionsContainer<OnKilledCriterion.Conditions> conditionsContainer : this.conditions) {
-				if (conditionsContainer.getConditions().test(player, entity, killingBlow)) {
+				if (conditionsContainer.getConditions().test(serverPlayerEntity, entity, damageSource)) {
 					if (list == null) {
 						list = Lists.<Criterion.ConditionsContainer<OnKilledCriterion.Conditions>>newArrayList();
 					}

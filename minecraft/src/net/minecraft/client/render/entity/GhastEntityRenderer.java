@@ -16,11 +16,11 @@ public class GhastEntityRenderer extends MobEntityRenderer<GhastEntity, GhastEnt
 		super(entityRenderDispatcher, new GhastEntityModel<>(), 1.5F);
 	}
 
-	protected Identifier getTexture(GhastEntity ghastEntity) {
+	protected Identifier method_3972(GhastEntity ghastEntity) {
 		return ghastEntity.isShooting() ? ANGRY_SKIN : SKIN;
 	}
 
-	protected void scale(GhastEntity ghastEntity, float f) {
+	protected void method_3973(GhastEntity ghastEntity, float f) {
 		float g = 1.0F;
 		float h = 4.5F;
 		float i = 4.5F;

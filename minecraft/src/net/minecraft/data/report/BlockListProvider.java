@@ -11,10 +11,10 @@ import net.minecraft.block.BlockState;
 import net.minecraft.data.DataCache;
 import net.minecraft.data.DataGenerator;
 import net.minecraft.data.DataProvider;
-import net.minecraft.state.StateManager;
+import net.minecraft.state.StateFactory;
 import net.minecraft.state.property.Property;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.Util;
+import net.minecraft.util.SystemUtil;
 import net.minecraft.util.registry.Registry;
 
 public class BlockListProvider implements DataProvider {
@@ -32,15 +32,15 @@ public class BlockListProvider implements DataProvider {
 		for (Block block : Registry.BLOCK) {
 			Identifier identifier = Registry.BLOCK.getId(block);
 			JsonObject jsonObject2 = new JsonObject();
-			StateManager<Block, BlockState> stateManager = block.getStateManager();
-			if (!stateManager.getProperties().isEmpty()) {
+			StateFactory<Block, BlockState> stateFactory = block.getStateFactory();
+			if (!stateFactory.getProperties().isEmpty()) {
 				JsonObject jsonObject3 = new JsonObject();
 
-				for (Property<?> property : stateManager.getProperties()) {
+				for (Property<?> property : stateFactory.getProperties()) {
 					JsonArray jsonArray = new JsonArray();
 
 					for (Comparable<?> comparable : property.getValues()) {
-						jsonArray.add(Util.getValueAsString(property, comparable));
+						jsonArray.add(SystemUtil.getValueAsString(property, comparable));
 					}
 
 					jsonObject3.add(property.getName(), jsonArray);
@@ -51,12 +51,12 @@ public class BlockListProvider implements DataProvider {
 
 			JsonArray jsonArray2 = new JsonArray();
 
-			for (BlockState blockState : stateManager.getStates()) {
+			for (BlockState blockState : stateFactory.getStates()) {
 				JsonObject jsonObject4 = new JsonObject();
 				JsonObject jsonObject5 = new JsonObject();
 
-				for (Property<?> property2 : stateManager.getProperties()) {
-					jsonObject5.addProperty(property2.getName(), Util.getValueAsString(property2, blockState.get(property2)));
+				for (Property<?> property2 : stateFactory.getProperties()) {
+					jsonObject5.addProperty(property2.getName(), SystemUtil.getValueAsString(property2, blockState.get(property2)));
 				}
 
 				if (jsonObject5.size() > 0) {

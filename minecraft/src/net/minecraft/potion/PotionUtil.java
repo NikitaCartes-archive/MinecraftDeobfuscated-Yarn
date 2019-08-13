@@ -25,41 +25,41 @@ import net.minecraft.util.Pair;
 import net.minecraft.util.registry.Registry;
 
 public class PotionUtil {
-	public static List<StatusEffectInstance> getPotionEffects(ItemStack stack) {
-		return getPotionEffects(stack.getTag());
+	public static List<StatusEffectInstance> getPotionEffects(ItemStack itemStack) {
+		return getPotionEffects(itemStack.getTag());
 	}
 
-	public static List<StatusEffectInstance> getPotionEffects(Potion potion, Collection<StatusEffectInstance> custom) {
+	public static List<StatusEffectInstance> getPotionEffects(Potion potion, Collection<StatusEffectInstance> collection) {
 		List<StatusEffectInstance> list = Lists.<StatusEffectInstance>newArrayList();
 		list.addAll(potion.getEffects());
-		list.addAll(custom);
+		list.addAll(collection);
 		return list;
 	}
 
-	public static List<StatusEffectInstance> getPotionEffects(@Nullable CompoundTag tag) {
+	public static List<StatusEffectInstance> getPotionEffects(@Nullable CompoundTag compoundTag) {
 		List<StatusEffectInstance> list = Lists.<StatusEffectInstance>newArrayList();
-		list.addAll(getPotion(tag).getEffects());
-		getCustomPotionEffects(tag, list);
+		list.addAll(getPotion(compoundTag).getEffects());
+		getCustomPotionEffects(compoundTag, list);
 		return list;
 	}
 
-	public static List<StatusEffectInstance> getCustomPotionEffects(ItemStack stack) {
-		return getCustomPotionEffects(stack.getTag());
+	public static List<StatusEffectInstance> getCustomPotionEffects(ItemStack itemStack) {
+		return getCustomPotionEffects(itemStack.getTag());
 	}
 
-	public static List<StatusEffectInstance> getCustomPotionEffects(@Nullable CompoundTag tag) {
+	public static List<StatusEffectInstance> getCustomPotionEffects(@Nullable CompoundTag compoundTag) {
 		List<StatusEffectInstance> list = Lists.<StatusEffectInstance>newArrayList();
-		getCustomPotionEffects(tag, list);
+		getCustomPotionEffects(compoundTag, list);
 		return list;
 	}
 
-	public static void getCustomPotionEffects(@Nullable CompoundTag tag, List<StatusEffectInstance> list) {
-		if (tag != null && tag.contains("CustomPotionEffects", 9)) {
-			ListTag listTag = tag.getList("CustomPotionEffects", 10);
+	public static void getCustomPotionEffects(@Nullable CompoundTag compoundTag, List<StatusEffectInstance> list) {
+		if (compoundTag != null && compoundTag.containsKey("CustomPotionEffects", 9)) {
+			ListTag listTag = compoundTag.getList("CustomPotionEffects", 10);
 
 			for (int i = 0; i < listTag.size(); i++) {
-				CompoundTag compoundTag = listTag.getCompound(i);
-				StatusEffectInstance statusEffectInstance = StatusEffectInstance.fromTag(compoundTag);
+				CompoundTag compoundTag2 = listTag.getCompoundTag(i);
+				StatusEffectInstance statusEffectInstance = StatusEffectInstance.deserialize(compoundTag2);
 				if (statusEffectInstance != null) {
 					list.add(statusEffectInstance);
 				}
@@ -67,22 +67,22 @@ public class PotionUtil {
 		}
 	}
 
-	public static int getColor(ItemStack stack) {
-		CompoundTag compoundTag = stack.getTag();
-		if (compoundTag != null && compoundTag.contains("CustomPotionColor", 99)) {
+	public static int getColor(ItemStack itemStack) {
+		CompoundTag compoundTag = itemStack.getTag();
+		if (compoundTag != null && compoundTag.containsKey("CustomPotionColor", 99)) {
 			return compoundTag.getInt("CustomPotionColor");
 		} else {
-			return getPotion(stack) == Potions.EMPTY ? 16253176 : getColor(getPotionEffects(stack));
+			return getPotion(itemStack) == Potions.field_8984 ? 16253176 : getColor(getPotionEffects(itemStack));
 		}
 	}
 
 	public static int getColor(Potion potion) {
-		return potion == Potions.EMPTY ? 16253176 : getColor(potion.getEffects());
+		return potion == Potions.field_8984 ? 16253176 : getColor(potion.getEffects());
 	}
 
-	public static int getColor(Collection<StatusEffectInstance> effects) {
+	public static int getColor(Collection<StatusEffectInstance> collection) {
 		int i = 3694022;
-		if (effects.isEmpty()) {
+		if (collection.isEmpty()) {
 			return 3694022;
 		} else {
 			float f = 0.0F;
@@ -90,7 +90,7 @@ public class PotionUtil {
 			float h = 0.0F;
 			int j = 0;
 
-			for (StatusEffectInstance statusEffectInstance : effects) {
+			for (StatusEffectInstance statusEffectInstance : collection) {
 				if (statusEffectInstance.shouldShowParticles()) {
 					int k = statusEffectInstance.getEffectType().getColor();
 					int l = statusEffectInstance.getAmplifier() + 1;
@@ -112,47 +112,47 @@ public class PotionUtil {
 		}
 	}
 
-	public static Potion getPotion(ItemStack stack) {
-		return getPotion(stack.getTag());
+	public static Potion getPotion(ItemStack itemStack) {
+		return getPotion(itemStack.getTag());
 	}
 
-	public static Potion getPotion(@Nullable CompoundTag compound) {
-		return compound == null ? Potions.EMPTY : Potion.byId(compound.getString("Potion"));
+	public static Potion getPotion(@Nullable CompoundTag compoundTag) {
+		return compoundTag == null ? Potions.field_8984 : Potion.byId(compoundTag.getString("Potion"));
 	}
 
-	public static ItemStack setPotion(ItemStack stack, Potion potion) {
+	public static ItemStack setPotion(ItemStack itemStack, Potion potion) {
 		Identifier identifier = Registry.POTION.getId(potion);
-		if (potion == Potions.EMPTY) {
-			stack.removeSubTag("Potion");
+		if (potion == Potions.field_8984) {
+			itemStack.removeSubTag("Potion");
 		} else {
-			stack.getOrCreateTag().putString("Potion", identifier.toString());
+			itemStack.getOrCreateTag().putString("Potion", identifier.toString());
 		}
 
-		return stack;
+		return itemStack;
 	}
 
-	public static ItemStack setCustomPotionEffects(ItemStack stack, Collection<StatusEffectInstance> effects) {
-		if (effects.isEmpty()) {
-			return stack;
+	public static ItemStack setCustomPotionEffects(ItemStack itemStack, Collection<StatusEffectInstance> collection) {
+		if (collection.isEmpty()) {
+			return itemStack;
 		} else {
-			CompoundTag compoundTag = stack.getOrCreateTag();
+			CompoundTag compoundTag = itemStack.getOrCreateTag();
 			ListTag listTag = compoundTag.getList("CustomPotionEffects", 9);
 
-			for (StatusEffectInstance statusEffectInstance : effects) {
-				listTag.add(statusEffectInstance.toTag(new CompoundTag()));
+			for (StatusEffectInstance statusEffectInstance : collection) {
+				listTag.add(statusEffectInstance.serialize(new CompoundTag()));
 			}
 
 			compoundTag.put("CustomPotionEffects", listTag);
-			return stack;
+			return itemStack;
 		}
 	}
 
 	@Environment(EnvType.CLIENT)
-	public static void buildTooltip(ItemStack stack, List<Text> list, float f) {
-		List<StatusEffectInstance> list2 = getPotionEffects(stack);
+	public static void buildTooltip(ItemStack itemStack, List<Text> list, float f) {
+		List<StatusEffectInstance> list2 = getPotionEffects(itemStack);
 		List<Pair<String, EntityAttributeModifier>> list3 = Lists.<Pair<String, EntityAttributeModifier>>newArrayList();
 		if (list2.isEmpty()) {
-			list.add(new TranslatableText("effect.none").formatted(Formatting.GRAY));
+			list.add(new TranslatableText("effect.none").formatted(Formatting.field_1080));
 		} else {
 			for (StatusEffectInstance statusEffectInstance : list2) {
 				Text text = new TranslatableText(statusEffectInstance.getTranslationKey());
@@ -184,14 +184,14 @@ public class PotionUtil {
 
 		if (!list3.isEmpty()) {
 			list.add(new LiteralText(""));
-			list.add(new TranslatableText("potion.whenDrank").formatted(Formatting.DARK_PURPLE));
+			list.add(new TranslatableText("potion.whenDrank").formatted(Formatting.field_1064));
 
 			for (Pair<String, EntityAttributeModifier> pair : list3) {
 				EntityAttributeModifier entityAttributeModifier3 = pair.getRight();
 				double d = entityAttributeModifier3.getAmount();
 				double e;
-				if (entityAttributeModifier3.getOperation() != EntityAttributeModifier.Operation.MULTIPLY_BASE
-					&& entityAttributeModifier3.getOperation() != EntityAttributeModifier.Operation.MULTIPLY_TOTAL) {
+				if (entityAttributeModifier3.getOperation() != EntityAttributeModifier.Operation.field_6330
+					&& entityAttributeModifier3.getOperation() != EntityAttributeModifier.Operation.field_6331) {
 					e = entityAttributeModifier3.getAmount();
 				} else {
 					e = entityAttributeModifier3.getAmount() * 100.0;
@@ -204,7 +204,7 @@ public class PotionUtil {
 								ItemStack.MODIFIER_FORMAT.format(e),
 								new TranslatableText("attribute.name." + pair.getLeft())
 							)
-							.formatted(Formatting.BLUE)
+							.formatted(Formatting.field_1078)
 					);
 				} else if (d < 0.0) {
 					e *= -1.0;
@@ -214,7 +214,7 @@ public class PotionUtil {
 								ItemStack.MODIFIER_FORMAT.format(e),
 								new TranslatableText("attribute.name." + pair.getLeft())
 							)
-							.formatted(Formatting.RED)
+							.formatted(Formatting.field_1061)
 					);
 				}
 			}

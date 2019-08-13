@@ -23,9 +23,9 @@ public class LightmapTextureManager implements AutoCloseable {
 	private final GameRenderer worldRenderer;
 	private final MinecraftClient client;
 
-	public LightmapTextureManager(GameRenderer worldRenderer) {
-		this.worldRenderer = worldRenderer;
-		this.client = worldRenderer.getClient();
+	public LightmapTextureManager(GameRenderer gameRenderer) {
+		this.worldRenderer = gameRenderer;
+		this.client = gameRenderer.getClient();
 		this.texture = new NativeImageBackedTexture(16, 16, false);
 		this.textureIdentifier = this.client.getTextureManager().registerDynamicTexture("light_map", this.texture);
 		this.image = this.texture.getImage();
@@ -66,71 +66,67 @@ public class LightmapTextureManager implements AutoCloseable {
 		GlStateManager.activeTexture(GLX.GL_TEXTURE0);
 	}
 
-	public void update(float delta) {
+	public void update(float f) {
 		if (this.isDirty) {
 			this.client.getProfiler().push("lightTex");
 			World world = this.client.world;
 			if (world != null) {
-				float f = world.getAmbientLight(1.0F);
-				float g = f * 0.95F + 0.05F;
-				float h = this.client.player.method_3140();
-				float i;
-				if (this.client.player.hasStatusEffect(StatusEffects.NIGHT_VISION)) {
-					i = this.worldRenderer.getNightVisionStrength(this.client.player, delta);
-				} else if (h > 0.0F && this.client.player.hasStatusEffect(StatusEffects.CONDUIT_POWER)) {
-					i = h;
+				float g = world.getAmbientLight(1.0F);
+				float h = g * 0.95F + 0.05F;
+				float i = this.client.player.method_3140();
+				float j;
+				if (this.client.player.hasStatusEffect(StatusEffects.field_5925)) {
+					j = this.worldRenderer.getNightVisionStrength(this.client.player, f);
+				} else if (i > 0.0F && this.client.player.hasStatusEffect(StatusEffects.field_5927)) {
+					j = i;
 				} else {
-					i = 0.0F;
+					j = 0.0F;
 				}
 
-				for (int j = 0; j < 16; j++) {
-					for (int k = 0; k < 16; k++) {
-						float l = world.dimension.getLightLevelToBrightness()[j] * g;
-						float m = world.dimension.getLightLevelToBrightness()[k] * (this.prevFlicker * 0.1F + 1.5F);
+				for (int k = 0; k < 16; k++) {
+					for (int l = 0; l < 16; l++) {
+						float m = world.dimension.getLightLevelToBrightness()[k] * h;
+						float n = world.dimension.getLightLevelToBrightness()[l] * (this.prevFlicker * 0.1F + 1.5F);
 						if (world.getTicksSinceLightning() > 0) {
-							l = world.dimension.getLightLevelToBrightness()[j];
+							m = world.dimension.getLightLevelToBrightness()[k];
 						}
 
-						float n = l * (f * 0.65F + 0.35F);
-						float o = l * (f * 0.65F + 0.35F);
-						float r = m * ((m * 0.6F + 0.4F) * 0.6F + 0.4F);
-						float s = m * (m * m * 0.6F + 0.4F);
-						float t = n + m;
-						float u = o + r;
-						float v = l + s;
-						t = t * 0.96F + 0.03F;
+						float o = m * (g * 0.65F + 0.35F);
+						float p = m * (g * 0.65F + 0.35F);
+						float s = n * ((n * 0.6F + 0.4F) * 0.6F + 0.4F);
+						float t = n * (n * n * 0.6F + 0.4F);
+						float u = o + n;
+						float v = p + s;
+						float w = m + t;
 						u = u * 0.96F + 0.03F;
 						v = v * 0.96F + 0.03F;
-						if (this.worldRenderer.getSkyDarkness(delta) > 0.0F) {
-							float w = this.worldRenderer.getSkyDarkness(delta);
-							t = t * (1.0F - w) + t * 0.7F * w;
-							u = u * (1.0F - w) + u * 0.6F * w;
-							v = v * (1.0F - w) + v * 0.6F * w;
+						w = w * 0.96F + 0.03F;
+						if (this.worldRenderer.getSkyDarkness(f) > 0.0F) {
+							float x = this.worldRenderer.getSkyDarkness(f);
+							u = u * (1.0F - x) + u * 0.7F * x;
+							v = v * (1.0F - x) + v * 0.6F * x;
+							w = w * (1.0F - x) + w * 0.6F * x;
 						}
 
-						if (world.dimension.getType() == DimensionType.THE_END) {
-							t = 0.22F + m * 0.75F;
-							u = 0.28F + r * 0.75F;
-							v = 0.25F + s * 0.75F;
+						if (world.dimension.getType() == DimensionType.field_13078) {
+							u = 0.22F + n * 0.75F;
+							v = 0.28F + s * 0.75F;
+							w = 0.25F + t * 0.75F;
 						}
 
-						if (i > 0.0F) {
-							float w = 1.0F / t;
-							if (w > 1.0F / u) {
-								w = 1.0F / u;
+						if (j > 0.0F) {
+							float x = 1.0F / u;
+							if (x > 1.0F / v) {
+								x = 1.0F / v;
 							}
 
-							if (w > 1.0F / v) {
-								w = 1.0F / v;
+							if (x > 1.0F / w) {
+								x = 1.0F / w;
 							}
 
-							t = t * (1.0F - i) + t * w * i;
-							u = u * (1.0F - i) + u * w * i;
-							v = v * (1.0F - i) + v * w * i;
-						}
-
-						if (t > 1.0F) {
-							t = 1.0F;
+							u = u * (1.0F - j) + u * x * j;
+							v = v * (1.0F - j) + v * x * j;
+							w = w * (1.0F - j) + w * x * j;
 						}
 
 						if (u > 1.0F) {
@@ -141,23 +137,23 @@ public class LightmapTextureManager implements AutoCloseable {
 							v = 1.0F;
 						}
 
-						float wx = (float)this.client.options.gamma;
-						float x = 1.0F - t;
+						if (w > 1.0F) {
+							w = 1.0F;
+						}
+
+						float xx = (float)this.client.options.gamma;
 						float y = 1.0F - u;
 						float z = 1.0F - v;
-						x = 1.0F - x * x * x * x;
+						float aa = 1.0F - w;
 						y = 1.0F - y * y * y * y;
 						z = 1.0F - z * z * z * z;
-						t = t * (1.0F - wx) + x * wx;
-						u = u * (1.0F - wx) + y * wx;
-						v = v * (1.0F - wx) + z * wx;
-						t = t * 0.96F + 0.03F;
+						aa = 1.0F - aa * aa * aa * aa;
+						u = u * (1.0F - xx) + y * xx;
+						v = v * (1.0F - xx) + z * xx;
+						w = w * (1.0F - xx) + aa * xx;
 						u = u * 0.96F + 0.03F;
 						v = v * 0.96F + 0.03F;
-						if (t > 1.0F) {
-							t = 1.0F;
-						}
-
+						w = w * 0.96F + 0.03F;
 						if (u > 1.0F) {
 							u = 1.0F;
 						}
@@ -166,8 +162,8 @@ public class LightmapTextureManager implements AutoCloseable {
 							v = 1.0F;
 						}
 
-						if (t < 0.0F) {
-							t = 0.0F;
+						if (w > 1.0F) {
+							w = 1.0F;
 						}
 
 						if (u < 0.0F) {
@@ -178,11 +174,15 @@ public class LightmapTextureManager implements AutoCloseable {
 							v = 0.0F;
 						}
 
-						int aa = 255;
-						int ab = (int)(t * 255.0F);
+						if (w < 0.0F) {
+							w = 0.0F;
+						}
+
+						int ab = 255;
 						int ac = (int)(u * 255.0F);
 						int ad = (int)(v * 255.0F);
-						this.image.setPixelRgba(k, j, 0xFF000000 | ad << 16 | ac << 8 | ab);
+						int ae = (int)(w * 255.0F);
+						this.image.setPixelRGBA(l, k, 0xFF000000 | ae << 16 | ad << 8 | ac);
 					}
 				}
 

@@ -7,13 +7,13 @@ import net.minecraft.entity.mob.MobEntityWithAi;
 public class AvoidSunlightGoal extends Goal {
 	private final MobEntityWithAi mob;
 
-	public AvoidSunlightGoal(MobEntityWithAi mob) {
-		this.mob = mob;
+	public AvoidSunlightGoal(MobEntityWithAi mobEntityWithAi) {
+		this.mob = mobEntityWithAi;
 	}
 
 	@Override
 	public boolean canStart() {
-		return this.mob.world.isDay() && this.mob.getEquippedStack(EquipmentSlot.HEAD).isEmpty() && this.mob.getNavigation() instanceof MobNavigation;
+		return this.mob.world.isDaylight() && this.mob.getEquippedStack(EquipmentSlot.field_6169).isEmpty() && this.mob.getNavigation() instanceof MobNavigation;
 	}
 
 	@Override

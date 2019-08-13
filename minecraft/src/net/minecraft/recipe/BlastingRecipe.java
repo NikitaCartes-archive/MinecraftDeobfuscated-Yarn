@@ -7,14 +7,14 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.util.Identifier;
 
 public class BlastingRecipe extends AbstractCookingRecipe {
-	public BlastingRecipe(Identifier id, String group, Ingredient input, ItemStack output, float experience, int cookTime) {
-		super(RecipeType.BLASTING, id, group, input, output, experience, cookTime);
+	public BlastingRecipe(Identifier identifier, String string, Ingredient ingredient, ItemStack itemStack, float f, int i) {
+		super(RecipeType.BLASTING, identifier, string, ingredient, itemStack, f, i);
 	}
 
 	@Environment(EnvType.CLIENT)
 	@Override
 	public ItemStack getRecipeKindIcon() {
-		return new ItemStack(Blocks.BLAST_FURNACE);
+		return new ItemStack(Blocks.field_16333);
 	}
 
 	@Override

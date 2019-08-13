@@ -17,15 +17,15 @@ public class PendingInvite extends ValueObject {
 	public String worldOwnerUuid;
 	public Date date;
 
-	public static PendingInvite parse(JsonObject json) {
+	public static PendingInvite parse(JsonObject jsonObject) {
 		PendingInvite pendingInvite = new PendingInvite();
 
 		try {
-			pendingInvite.invitationId = JsonUtils.getStringOr("invitationId", json, "");
-			pendingInvite.worldName = JsonUtils.getStringOr("worldName", json, "");
-			pendingInvite.worldOwnerName = JsonUtils.getStringOr("worldOwnerName", json, "");
-			pendingInvite.worldOwnerUuid = JsonUtils.getStringOr("worldOwnerUuid", json, "");
-			pendingInvite.date = JsonUtils.getDateOr("date", json);
+			pendingInvite.invitationId = JsonUtils.getStringOr("invitationId", jsonObject, "");
+			pendingInvite.worldName = JsonUtils.getStringOr("worldName", jsonObject, "");
+			pendingInvite.worldOwnerName = JsonUtils.getStringOr("worldOwnerName", jsonObject, "");
+			pendingInvite.worldOwnerUuid = JsonUtils.getStringOr("worldOwnerUuid", jsonObject, "");
+			pendingInvite.date = JsonUtils.getDateOr("date", jsonObject);
 		} catch (Exception var3) {
 			LOGGER.error("Could not parse PendingInvite: " + var3.getMessage());
 		}

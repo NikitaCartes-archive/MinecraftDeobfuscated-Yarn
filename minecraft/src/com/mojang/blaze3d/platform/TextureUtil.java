@@ -31,34 +31,34 @@ public class TextureUtil {
 		GlStateManager.deleteTexture(i);
 	}
 
-	public static void prepareImage(int texture, int width, int height) {
-		prepareImage(NativeImage.GLFormat.RGBA, texture, 0, width, height);
+	public static void prepareImage(int i, int j, int k) {
+		prepareImage(NativeImage.GLFormat.field_5012, i, 0, j, k);
 	}
 
-	public static void prepareImage(NativeImage.GLFormat pixelFormat, int texture, int width, int height) {
-		prepareImage(pixelFormat, texture, 0, width, height);
+	public static void prepareImage(NativeImage.GLFormat gLFormat, int i, int j, int k) {
+		prepareImage(gLFormat, i, 0, j, k);
 	}
 
-	public static void prepareImage(int texture, int levels, int width, int height) {
-		prepareImage(NativeImage.GLFormat.RGBA, texture, levels, width, height);
+	public static void prepareImage(int i, int j, int k, int l) {
+		prepareImage(NativeImage.GLFormat.field_5012, i, j, k, l);
 	}
 
-	public static void prepareImage(NativeImage.GLFormat pixelFormat, int texture, int levels, int width, int height) {
-		bind(texture);
-		if (levels >= 0) {
-			GlStateManager.texParameter(3553, 33085, levels);
+	public static void prepareImage(NativeImage.GLFormat gLFormat, int i, int j, int k, int l) {
+		bind(i);
+		if (j >= 0) {
+			GlStateManager.texParameter(3553, 33085, j);
 			GlStateManager.texParameter(3553, 33082, 0);
-			GlStateManager.texParameter(3553, 33083, levels);
+			GlStateManager.texParameter(3553, 33083, j);
 			GlStateManager.texParameter(3553, 34049, 0.0F);
 		}
 
-		for (int i = 0; i <= levels; i++) {
-			GlStateManager.texImage2D(3553, i, pixelFormat.getGlConstant(), width >> i, height >> i, 0, 6408, 5121, null);
+		for (int m = 0; m <= j; m++) {
+			GlStateManager.texImage2D(3553, m, gLFormat.getGlConstant(), k >> m, l >> m, 0, 6408, 5121, null);
 		}
 	}
 
-	private static void bind(int texture) {
-		GlStateManager.bindTexture(texture);
+	private static void bind(int i) {
+		GlStateManager.bindTexture(i);
 	}
 
 	public static ByteBuffer readResource(InputStream inputStream) throws IOException {

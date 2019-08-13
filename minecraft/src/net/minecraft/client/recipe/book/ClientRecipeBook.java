@@ -30,8 +30,8 @@ public class ClientRecipeBook extends RecipeBook {
 	private final Map<RecipeBookGroup, List<RecipeResultCollection>> resultsByGroup = Maps.<RecipeBookGroup, List<RecipeResultCollection>>newHashMap();
 	private final List<RecipeResultCollection> orderedResults = Lists.<RecipeResultCollection>newArrayList();
 
-	public ClientRecipeBook(RecipeManager manager) {
-		this.manager = manager;
+	public ClientRecipeBook(RecipeManager recipeManager) {
+		this.manager = recipeManager;
 	}
 
 	public void reload() {
@@ -59,74 +59,72 @@ public class ClientRecipeBook extends RecipeBook {
 		}
 	}
 
-	private RecipeResultCollection addGroup(RecipeBookGroup group) {
+	private RecipeResultCollection addGroup(RecipeBookGroup recipeBookGroup) {
 		RecipeResultCollection recipeResultCollection = new RecipeResultCollection();
 		this.orderedResults.add(recipeResultCollection);
-		((List)this.resultsByGroup.computeIfAbsent(group, recipeBookGroup -> Lists.newArrayList())).add(recipeResultCollection);
-		if (group == RecipeBookGroup.FURNACE_BLOCKS || group == RecipeBookGroup.FURNACE_FOOD || group == RecipeBookGroup.FURNACE_MISC) {
-			this.addGroupResults(RecipeBookGroup.FURNACE_SEARCH, recipeResultCollection);
-		} else if (group == RecipeBookGroup.BLAST_FURNACE_BLOCKS || group == RecipeBookGroup.BLAST_FURNACE_MISC) {
-			this.addGroupResults(RecipeBookGroup.BLAST_FURNACE_SEARCH, recipeResultCollection);
-		} else if (group == RecipeBookGroup.SMOKER_FOOD) {
-			this.addGroupResults(RecipeBookGroup.SMOKER_SEARCH, recipeResultCollection);
-		} else if (group == RecipeBookGroup.STONECUTTER) {
-			this.addGroupResults(RecipeBookGroup.STONECUTTER, recipeResultCollection);
-		} else if (group == RecipeBookGroup.CAMPFIRE) {
-			this.addGroupResults(RecipeBookGroup.CAMPFIRE, recipeResultCollection);
+		((List)this.resultsByGroup.computeIfAbsent(recipeBookGroup, recipeBookGroupx -> Lists.newArrayList())).add(recipeResultCollection);
+		if (recipeBookGroup == RecipeBookGroup.field_1811 || recipeBookGroup == RecipeBookGroup.field_1808 || recipeBookGroup == RecipeBookGroup.field_1812) {
+			this.addGroupResults(RecipeBookGroup.field_1804, recipeResultCollection);
+		} else if (recipeBookGroup == RecipeBookGroup.field_17111 || recipeBookGroup == RecipeBookGroup.field_17112) {
+			this.addGroupResults(RecipeBookGroup.field_17110, recipeResultCollection);
+		} else if (recipeBookGroup == RecipeBookGroup.field_17114) {
+			this.addGroupResults(RecipeBookGroup.field_17113, recipeResultCollection);
+		} else if (recipeBookGroup == RecipeBookGroup.field_17764) {
+			this.addGroupResults(RecipeBookGroup.field_17764, recipeResultCollection);
+		} else if (recipeBookGroup == RecipeBookGroup.field_17765) {
+			this.addGroupResults(RecipeBookGroup.field_17765, recipeResultCollection);
 		} else {
-			this.addGroupResults(RecipeBookGroup.SEARCH, recipeResultCollection);
+			this.addGroupResults(RecipeBookGroup.field_1809, recipeResultCollection);
 		}
 
 		return recipeResultCollection;
 	}
 
-	private void addGroupResults(RecipeBookGroup group, RecipeResultCollection results) {
-		((List)this.resultsByGroup.computeIfAbsent(group, recipeBookGroup -> Lists.newArrayList())).add(results);
+	private void addGroupResults(RecipeBookGroup recipeBookGroup, RecipeResultCollection recipeResultCollection) {
+		((List)this.resultsByGroup.computeIfAbsent(recipeBookGroup, recipeBookGroupx -> Lists.newArrayList())).add(recipeResultCollection);
 	}
 
 	private static RecipeBookGroup getGroupForRecipe(Recipe<?> recipe) {
 		RecipeType<?> recipeType = recipe.getType();
 		if (recipeType == RecipeType.SMELTING) {
 			if (recipe.getOutput().getItem().isFood()) {
-				return RecipeBookGroup.FURNACE_FOOD;
+				return RecipeBookGroup.field_1808;
 			} else {
-				return recipe.getOutput().getItem() instanceof BlockItem ? RecipeBookGroup.FURNACE_BLOCKS : RecipeBookGroup.FURNACE_MISC;
+				return recipe.getOutput().getItem() instanceof BlockItem ? RecipeBookGroup.field_1811 : RecipeBookGroup.field_1812;
 			}
 		} else if (recipeType == RecipeType.BLASTING) {
-			return recipe.getOutput().getItem() instanceof BlockItem ? RecipeBookGroup.BLAST_FURNACE_BLOCKS : RecipeBookGroup.BLAST_FURNACE_MISC;
+			return recipe.getOutput().getItem() instanceof BlockItem ? RecipeBookGroup.field_17111 : RecipeBookGroup.field_17112;
 		} else if (recipeType == RecipeType.SMOKING) {
-			return RecipeBookGroup.SMOKER_FOOD;
-		} else if (recipeType == RecipeType.STONECUTTING) {
-			return RecipeBookGroup.STONECUTTER;
+			return RecipeBookGroup.field_17114;
+		} else if (recipeType == RecipeType.field_17641) {
+			return RecipeBookGroup.field_17764;
 		} else if (recipeType == RecipeType.CAMPFIRE_COOKING) {
-			return RecipeBookGroup.CAMPFIRE;
+			return RecipeBookGroup.field_17765;
 		} else {
 			ItemStack itemStack = recipe.getOutput();
 			ItemGroup itemGroup = itemStack.getItem().getGroup();
 			if (itemGroup == ItemGroup.BUILDING_BLOCKS) {
-				return RecipeBookGroup.BUILDING_BLOCKS;
+				return RecipeBookGroup.field_1806;
 			} else if (itemGroup == ItemGroup.TOOLS || itemGroup == ItemGroup.COMBAT) {
-				return RecipeBookGroup.EQUIPMENT;
+				return RecipeBookGroup.field_1813;
 			} else {
-				return itemGroup == ItemGroup.REDSTONE ? RecipeBookGroup.REDSTONE : RecipeBookGroup.MISC;
+				return itemGroup == ItemGroup.REDSTONE ? RecipeBookGroup.field_1803 : RecipeBookGroup.field_1810;
 			}
 		}
 	}
 
-	public static List<RecipeBookGroup> getGroupsForContainer(CraftingContainer<?> container) {
-		if (container instanceof CraftingTableContainer || container instanceof PlayerContainer) {
+	public static List<RecipeBookGroup> getGroupsForContainer(CraftingContainer<?> craftingContainer) {
+		if (craftingContainer instanceof CraftingTableContainer || craftingContainer instanceof PlayerContainer) {
 			return Lists.<RecipeBookGroup>newArrayList(
-				RecipeBookGroup.SEARCH, RecipeBookGroup.EQUIPMENT, RecipeBookGroup.BUILDING_BLOCKS, RecipeBookGroup.MISC, RecipeBookGroup.REDSTONE
+				RecipeBookGroup.field_1809, RecipeBookGroup.field_1813, RecipeBookGroup.field_1806, RecipeBookGroup.field_1810, RecipeBookGroup.field_1803
 			);
-		} else if (container instanceof FurnaceContainer) {
-			return Lists.<RecipeBookGroup>newArrayList(
-				RecipeBookGroup.FURNACE_SEARCH, RecipeBookGroup.FURNACE_FOOD, RecipeBookGroup.FURNACE_BLOCKS, RecipeBookGroup.FURNACE_MISC
-			);
-		} else if (container instanceof BlastFurnaceContainer) {
-			return Lists.<RecipeBookGroup>newArrayList(RecipeBookGroup.BLAST_FURNACE_SEARCH, RecipeBookGroup.BLAST_FURNACE_BLOCKS, RecipeBookGroup.BLAST_FURNACE_MISC);
+		} else if (craftingContainer instanceof FurnaceContainer) {
+			return Lists.<RecipeBookGroup>newArrayList(RecipeBookGroup.field_1804, RecipeBookGroup.field_1808, RecipeBookGroup.field_1811, RecipeBookGroup.field_1812);
+		} else if (craftingContainer instanceof BlastFurnaceContainer) {
+			return Lists.<RecipeBookGroup>newArrayList(RecipeBookGroup.field_17110, RecipeBookGroup.field_17111, RecipeBookGroup.field_17112);
 		} else {
-			return container instanceof SmokerContainer
-				? Lists.<RecipeBookGroup>newArrayList(RecipeBookGroup.SMOKER_SEARCH, RecipeBookGroup.SMOKER_FOOD)
+			return craftingContainer instanceof SmokerContainer
+				? Lists.<RecipeBookGroup>newArrayList(RecipeBookGroup.field_17113, RecipeBookGroup.field_17114)
 				: Lists.<RecipeBookGroup>newArrayList();
 		}
 	}
@@ -135,7 +133,7 @@ public class ClientRecipeBook extends RecipeBook {
 		return this.orderedResults;
 	}
 
-	public List<RecipeResultCollection> getResultsForGroup(RecipeBookGroup category) {
-		return (List<RecipeResultCollection>)this.resultsByGroup.getOrDefault(category, Collections.emptyList());
+	public List<RecipeResultCollection> getResultsForGroup(RecipeBookGroup recipeBookGroup) {
+		return (List<RecipeResultCollection>)this.resultsByGroup.getOrDefault(recipeBookGroup, Collections.emptyList());
 	}
 }

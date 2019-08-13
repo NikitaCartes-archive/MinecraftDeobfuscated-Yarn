@@ -26,11 +26,11 @@ public class MonitorTracker {
 		}
 	}
 
-	private void handleMonitorEvent(long monitor, int event) {
-		if (event == 262145) {
-			this.pointerToMonitorMap.put(monitor, this.monitorFactory.createMonitor(monitor));
-		} else if (event == 262146) {
-			this.pointerToMonitorMap.remove(monitor);
+	private void handleMonitorEvent(long l, int i) {
+		if (i == 262145) {
+			this.pointerToMonitorMap.put(l, this.monitorFactory.createMonitor(l));
+		} else if (i == 262146) {
+			this.pointerToMonitorMap.remove(l);
 		}
 	}
 
@@ -45,9 +45,9 @@ public class MonitorTracker {
 		if (l != 0L) {
 			return this.getMonitor(l);
 		} else {
-			int i = window.getX();
+			int i = window.getPositionY();
 			int j = i + window.getWidth();
-			int k = window.getY();
+			int k = window.getPositionX();
 			int m = k + window.getHeight();
 			int n = -1;
 			Monitor monitor = null;
@@ -74,11 +74,11 @@ public class MonitorTracker {
 		}
 	}
 
-	public static int clamp(int value, int min, int max) {
-		if (value < min) {
-			return min;
+	public static int clamp(int i, int j, int k) {
+		if (i < j) {
+			return j;
 		} else {
-			return value > max ? max : value;
+			return i > k ? k : i;
 		}
 	}
 

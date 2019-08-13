@@ -7,8 +7,8 @@ import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.CommandBlock;
+import net.minecraft.client.network.packet.BlockEntityUpdateS2CPacket;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.network.packet.s2c.play.BlockEntityUpdateS2CPacket;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.BlockPos;
@@ -71,26 +71,26 @@ public class CommandBlockBlockEntity extends BlockEntity {
 	};
 
 	public CommandBlockBlockEntity() {
-		super(BlockEntityType.COMMAND_BLOCK);
+		super(BlockEntityType.field_11904);
 	}
 
 	@Override
-	public CompoundTag toTag(CompoundTag tag) {
-		super.toTag(tag);
-		this.commandExecutor.serialize(tag);
-		tag.putBoolean("powered", this.isPowered());
-		tag.putBoolean("conditionMet", this.isConditionMet());
-		tag.putBoolean("auto", this.isAuto());
-		return tag;
+	public CompoundTag toTag(CompoundTag compoundTag) {
+		super.toTag(compoundTag);
+		this.commandExecutor.serialize(compoundTag);
+		compoundTag.putBoolean("powered", this.isPowered());
+		compoundTag.putBoolean("conditionMet", this.isConditionMet());
+		compoundTag.putBoolean("auto", this.isAuto());
+		return compoundTag;
 	}
 
 	@Override
-	public void fromTag(CompoundTag tag) {
-		super.fromTag(tag);
-		this.commandExecutor.deserialize(tag);
-		this.powered = tag.getBoolean("powered");
-		this.conditionMet = tag.getBoolean("conditionMet");
-		this.setAuto(tag.getBoolean("auto"));
+	public void fromTag(CompoundTag compoundTag) {
+		super.fromTag(compoundTag);
+		this.commandExecutor.deserialize(compoundTag);
+		this.powered = compoundTag.getBoolean("powered");
+		this.conditionMet = compoundTag.getBoolean("conditionMet");
+		this.setAuto(compoundTag.getBoolean("auto"));
 	}
 
 	@Nullable
@@ -129,7 +129,7 @@ public class CommandBlockBlockEntity extends BlockEntity {
 	public void setAuto(boolean bl) {
 		boolean bl2 = this.auto;
 		this.auto = bl;
-		if (!bl2 && bl && !this.powered && this.world != null && this.getCommandBlockType() != CommandBlockBlockEntity.Type.SEQUENCE) {
+		if (!bl2 && bl && !this.powered && this.world != null && this.getType() != CommandBlockBlockEntity.Type.field_11922) {
 			Block block = this.getCachedState().getBlock();
 			if (block instanceof CommandBlock) {
 				this.updateConditionMet();
@@ -161,18 +161,18 @@ public class CommandBlockBlockEntity extends BlockEntity {
 		return this.needsUpdatePacket;
 	}
 
-	public void setNeedsUpdatePacket(boolean needsUpdatePacket) {
-		this.needsUpdatePacket = needsUpdatePacket;
+	public void setNeedsUpdatePacket(boolean bl) {
+		this.needsUpdatePacket = bl;
 	}
 
-	public CommandBlockBlockEntity.Type getCommandBlockType() {
+	public CommandBlockBlockEntity.Type getType() {
 		Block block = this.getCachedState().getBlock();
-		if (block == Blocks.COMMAND_BLOCK) {
-			return CommandBlockBlockEntity.Type.REDSTONE;
-		} else if (block == Blocks.REPEATING_COMMAND_BLOCK) {
-			return CommandBlockBlockEntity.Type.AUTO;
+		if (block == Blocks.field_10525) {
+			return CommandBlockBlockEntity.Type.field_11924;
+		} else if (block == Blocks.field_10263) {
+			return CommandBlockBlockEntity.Type.field_11923;
 		} else {
-			return block == Blocks.CHAIN_COMMAND_BLOCK ? CommandBlockBlockEntity.Type.SEQUENCE : CommandBlockBlockEntity.Type.REDSTONE;
+			return block == Blocks.field_10395 ? CommandBlockBlockEntity.Type.field_11922 : CommandBlockBlockEntity.Type.field_11924;
 		}
 	}
 
@@ -182,14 +182,14 @@ public class CommandBlockBlockEntity extends BlockEntity {
 	}
 
 	@Override
-	public void cancelRemoval() {
+	public void validate() {
 		this.resetBlock();
-		super.cancelRemoval();
+		super.validate();
 	}
 
 	public static enum Type {
-		SEQUENCE,
-		AUTO,
-		REDSTONE;
+		field_11922,
+		field_11923,
+		field_11924;
 	}
 }

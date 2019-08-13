@@ -17,10 +17,10 @@ public class RevengeGoal extends TrackTargetGoal {
 	private final Class<?>[] noRevengeTypes;
 	private Class<?>[] noHelpTypes;
 
-	public RevengeGoal(MobEntityWithAi mob, Class<?>... noRevengeTypes) {
-		super(mob, true);
-		this.noRevengeTypes = noRevengeTypes;
-		this.setControls(EnumSet.of(Goal.Control.TARGET));
+	public RevengeGoal(MobEntityWithAi mobEntityWithAi, Class<?>... classs) {
+		super(mobEntityWithAi, true);
+		this.noRevengeTypes = classs;
+		this.setControls(EnumSet.of(Goal.Control.field_18408));
 	}
 
 	@Override
@@ -40,9 +40,9 @@ public class RevengeGoal extends TrackTargetGoal {
 		}
 	}
 
-	public RevengeGoal setGroupRevenge(Class<?>... noHelpTypes) {
+	public RevengeGoal setGroupRevenge(Class<?>... classs) {
 		this.groupRevenge = true;
-		this.noHelpTypes = noHelpTypes;
+		this.noHelpTypes = classs;
 		return this;
 	}
 
@@ -101,7 +101,7 @@ public class RevengeGoal extends TrackTargetGoal {
 		}
 	}
 
-	protected void setMobEntityTarget(MobEntity mob, LivingEntity target) {
-		mob.setTarget(target);
+	protected void setMobEntityTarget(MobEntity mobEntity, LivingEntity livingEntity) {
+		mobEntity.setTarget(livingEntity);
 	}
 }

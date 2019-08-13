@@ -24,8 +24,8 @@ public class AirBlockItem extends Item {
 
 	@Environment(EnvType.CLIENT)
 	@Override
-	public void appendTooltip(ItemStack stack, @Nullable World world, List<Text> tooltip, TooltipContext context) {
-		super.appendTooltip(stack, world, tooltip, context);
-		this.block.buildTooltip(stack, world, tooltip, context);
+	public void appendTooltip(ItemStack itemStack, @Nullable World world, List<Text> list, TooltipContext tooltipContext) {
+		super.appendTooltip(itemStack, world, list, tooltipContext);
+		this.block.buildTooltip(itemStack, world, list, tooltipContext);
 	}
 }

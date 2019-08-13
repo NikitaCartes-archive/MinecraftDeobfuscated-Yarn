@@ -2,6 +2,7 @@ package net.minecraft.entity.projectile;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.client.network.packet.EntitySpawnS2CPacket;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
@@ -10,7 +11,6 @@ import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.network.Packet;
-import net.minecraft.network.packet.s2c.play.EntitySpawnS2CPacket;
 import net.minecraft.particle.ParticleEffect;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.util.hit.HitResult;
@@ -28,37 +28,37 @@ public abstract class ExplosiveProjectileEntity extends Entity {
 	public double posY;
 	public double posZ;
 
-	protected ExplosiveProjectileEntity(EntityType<? extends ExplosiveProjectileEntity> type, World world) {
-		super(type, world);
+	protected ExplosiveProjectileEntity(EntityType<? extends ExplosiveProjectileEntity> entityType, World world) {
+		super(entityType, world);
 	}
 
 	public ExplosiveProjectileEntity(
-		EntityType<? extends ExplosiveProjectileEntity> type, double x, double y, double z, double directionX, double directionY, double directionZ, World world
+		EntityType<? extends ExplosiveProjectileEntity> entityType, double d, double e, double f, double g, double h, double i, World world
 	) {
-		this(type, world);
-		this.refreshPositionAndAngles(x, y, z, this.yaw, this.pitch);
-		this.updatePosition(x, y, z);
-		double d = (double)MathHelper.sqrt(directionX * directionX + directionY * directionY + directionZ * directionZ);
-		this.posX = directionX / d * 0.1;
-		this.posY = directionY / d * 0.1;
-		this.posZ = directionZ / d * 0.1;
+		this(entityType, world);
+		this.setPositionAndAngles(d, e, f, this.yaw, this.pitch);
+		this.setPosition(d, e, f);
+		double j = (double)MathHelper.sqrt(g * g + h * h + i * i);
+		this.posX = g / j * 0.1;
+		this.posY = h / j * 0.1;
+		this.posZ = i / j * 0.1;
 	}
 
 	public ExplosiveProjectileEntity(
-		EntityType<? extends ExplosiveProjectileEntity> type, LivingEntity owner, double directionX, double directionY, double directionZ, World world
+		EntityType<? extends ExplosiveProjectileEntity> entityType, LivingEntity livingEntity, double d, double e, double f, World world
 	) {
-		this(type, world);
-		this.owner = owner;
-		this.refreshPositionAndAngles(owner.x, owner.y, owner.z, owner.yaw, owner.pitch);
-		this.updatePosition(this.x, this.y, this.z);
+		this(entityType, world);
+		this.owner = livingEntity;
+		this.setPositionAndAngles(livingEntity.x, livingEntity.y, livingEntity.z, livingEntity.yaw, livingEntity.pitch);
+		this.setPosition(this.x, this.y, this.z);
 		this.setVelocity(Vec3d.ZERO);
-		directionX += this.random.nextGaussian() * 0.4;
-		directionY += this.random.nextGaussian() * 0.4;
-		directionZ += this.random.nextGaussian() * 0.4;
-		double d = (double)MathHelper.sqrt(directionX * directionX + directionY * directionY + directionZ * directionZ);
-		this.posX = directionX / d * 0.1;
-		this.posY = directionY / d * 0.1;
-		this.posZ = directionZ / d * 0.1;
+		d += this.random.nextGaussian() * 0.4;
+		e += this.random.nextGaussian() * 0.4;
+		f += this.random.nextGaussian() * 0.4;
+		double g = (double)MathHelper.sqrt(d * d + e * e + f * f);
+		this.posX = d / g * 0.1;
+		this.posY = e / g * 0.1;
+		this.posZ = f / g * 0.1;
 	}
 
 	@Override
@@ -67,14 +67,14 @@ public abstract class ExplosiveProjectileEntity extends Entity {
 
 	@Environment(EnvType.CLIENT)
 	@Override
-	public boolean shouldRender(double distance) {
-		double d = this.getBoundingBox().getAverageSideLength() * 4.0;
-		if (Double.isNaN(d)) {
-			d = 4.0;
+	public boolean shouldRenderAtDistance(double d) {
+		double e = this.getBoundingBox().averageDimension() * 4.0;
+		if (Double.isNaN(e)) {
+			e = 4.0;
 		}
 
-		d *= 64.0;
-		return distance < d * d;
+		e *= 64.0;
+		return d < e * e;
 	}
 
 	@Override
@@ -86,8 +86,8 @@ public abstract class ExplosiveProjectileEntity extends Entity {
 			}
 
 			this.ticks++;
-			HitResult hitResult = ProjectileUtil.getCollision(this, true, this.ticks >= 25, this.owner, RayTraceContext.ShapeType.COLLIDER);
-			if (hitResult.getType() != HitResult.Type.MISS) {
+			HitResult hitResult = ProjectileUtil.getCollision(this, true, this.ticks >= 25, this.owner, RayTraceContext.ShapeType.field_17558);
+			if (hitResult.getType() != HitResult.Type.field_1333) {
 				this.onCollision(hitResult);
 			}
 
@@ -97,10 +97,10 @@ public abstract class ExplosiveProjectileEntity extends Entity {
 			this.z = this.z + vec3d.z;
 			ProjectileUtil.method_7484(this, 0.2F);
 			float f = this.getDrag();
-			if (this.isTouchingWater()) {
+			if (this.isInsideWater()) {
 				for (int i = 0; i < 4; i++) {
 					float g = 0.25F;
-					this.world.addParticle(ParticleTypes.BUBBLE, this.x - vec3d.x * 0.25, this.y - vec3d.y * 0.25, this.z - vec3d.z * 0.25, vec3d.x, vec3d.y, vec3d.z);
+					this.world.addParticle(ParticleTypes.field_11247, this.x - vec3d.x * 0.25, this.y - vec3d.y * 0.25, this.z - vec3d.z * 0.25, vec3d.x, vec3d.y, vec3d.z);
 				}
 
 				f = 0.8F;
@@ -108,7 +108,7 @@ public abstract class ExplosiveProjectileEntity extends Entity {
 
 			this.setVelocity(vec3d.add(this.posX, this.posY, this.posZ).multiply((double)f));
 			this.world.addParticle(this.getParticleType(), this.x, this.y + 0.5, this.z, 0.0, 0.0, 0.0);
-			this.updatePosition(this.x, this.y, this.z);
+			this.setPosition(this.x, this.y, this.z);
 		} else {
 			this.remove();
 		}
@@ -119,7 +119,7 @@ public abstract class ExplosiveProjectileEntity extends Entity {
 	}
 
 	protected ParticleEffect getParticleType() {
-		return ParticleTypes.SMOKE;
+		return ParticleTypes.field_11251;
 	}
 
 	protected float getDrag() {
@@ -129,17 +129,17 @@ public abstract class ExplosiveProjectileEntity extends Entity {
 	protected abstract void onCollision(HitResult hitResult);
 
 	@Override
-	public void writeCustomDataToTag(CompoundTag tag) {
+	public void writeCustomDataToTag(CompoundTag compoundTag) {
 		Vec3d vec3d = this.getVelocity();
-		tag.put("direction", this.toListTag(new double[]{vec3d.x, vec3d.y, vec3d.z}));
-		tag.put("power", this.toListTag(new double[]{this.posX, this.posY, this.posZ}));
-		tag.putInt("life", this.life);
+		compoundTag.put("direction", this.toListTag(new double[]{vec3d.x, vec3d.y, vec3d.z}));
+		compoundTag.put("power", this.toListTag(new double[]{this.posX, this.posY, this.posZ}));
+		compoundTag.putInt("life", this.life);
 	}
 
 	@Override
-	public void readCustomDataFromTag(CompoundTag tag) {
-		if (tag.contains("power", 9)) {
-			ListTag listTag = tag.getList("power", 6);
+	public void readCustomDataFromTag(CompoundTag compoundTag) {
+		if (compoundTag.containsKey("power", 9)) {
+			ListTag listTag = compoundTag.getList("power", 6);
 			if (listTag.size() == 3) {
 				this.posX = listTag.getDouble(0);
 				this.posY = listTag.getDouble(1);
@@ -147,9 +147,9 @@ public abstract class ExplosiveProjectileEntity extends Entity {
 			}
 		}
 
-		this.life = tag.getInt("life");
-		if (tag.contains("direction", 9) && tag.getList("direction", 6).size() == 3) {
-			ListTag listTag = tag.getList("direction", 6);
+		this.life = compoundTag.getInt("life");
+		if (compoundTag.containsKey("direction", 9) && compoundTag.getList("direction", 6).size() == 3) {
+			ListTag listTag = compoundTag.getList("direction", 6);
 			this.setVelocity(listTag.getDouble(0), listTag.getDouble(1), listTag.getDouble(2));
 		} else {
 			this.remove();
@@ -167,19 +167,19 @@ public abstract class ExplosiveProjectileEntity extends Entity {
 	}
 
 	@Override
-	public boolean damage(DamageSource source, float amount) {
-		if (this.isInvulnerableTo(source)) {
+	public boolean damage(DamageSource damageSource, float f) {
+		if (this.isInvulnerableTo(damageSource)) {
 			return false;
 		} else {
 			this.scheduleVelocityUpdate();
-			if (source.getAttacker() != null) {
-				Vec3d vec3d = source.getAttacker().getRotationVector();
+			if (damageSource.getAttacker() != null) {
+				Vec3d vec3d = damageSource.getAttacker().getRotationVector();
 				this.setVelocity(vec3d);
 				this.posX = vec3d.x * 0.1;
 				this.posY = vec3d.y * 0.1;
 				this.posZ = vec3d.z * 0.1;
-				if (source.getAttacker() instanceof LivingEntity) {
-					this.owner = (LivingEntity)source.getAttacker();
+				if (damageSource.getAttacker() instanceof LivingEntity) {
+					this.owner = (LivingEntity)damageSource.getAttacker();
 				}
 
 				return true;

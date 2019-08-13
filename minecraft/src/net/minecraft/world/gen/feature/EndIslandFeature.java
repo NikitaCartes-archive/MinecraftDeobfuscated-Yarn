@@ -11,11 +11,11 @@ import net.minecraft.world.gen.chunk.ChunkGenerator;
 import net.minecraft.world.gen.chunk.ChunkGeneratorConfig;
 
 public class EndIslandFeature extends Feature<DefaultFeatureConfig> {
-	public EndIslandFeature(Function<Dynamic<?>, ? extends DefaultFeatureConfig> configFactory) {
-		super(configFactory);
+	public EndIslandFeature(Function<Dynamic<?>, ? extends DefaultFeatureConfig> function) {
+		super(function);
 	}
 
-	public boolean generate(
+	public boolean method_13110(
 		IWorld iWorld, ChunkGenerator<? extends ChunkGeneratorConfig> chunkGenerator, Random random, BlockPos blockPos, DefaultFeatureConfig defaultFeatureConfig
 	) {
 		float f = (float)(random.nextInt(3) + 4);
@@ -24,7 +24,7 @@ public class EndIslandFeature extends Feature<DefaultFeatureConfig> {
 			for (int j = MathHelper.floor(-f); j <= MathHelper.ceil(f); j++) {
 				for (int k = MathHelper.floor(-f); k <= MathHelper.ceil(f); k++) {
 					if ((float)(j * j + k * k) <= (f + 1.0F) * (f + 1.0F)) {
-						this.setBlockState(iWorld, blockPos.add(j, i, k), Blocks.END_STONE.getDefaultState());
+						this.setBlockState(iWorld, blockPos.add(j, i, k), Blocks.field_10471.getDefaultState());
 					}
 				}
 			}

@@ -14,9 +14,9 @@ public abstract class BossBar {
 	protected boolean dragonMusic;
 	protected boolean thickenFog;
 
-	public BossBar(UUID uuid, Text name, BossBar.Color color, BossBar.Style style) {
-		this.uuid = uuid;
-		this.name = name;
+	public BossBar(UUID uUID, Text text, BossBar.Color color, BossBar.Style style) {
+		this.uuid = uUID;
+		this.name = text;
 		this.color = color;
 		this.style = style;
 		this.percent = 1.0F;
@@ -30,16 +30,16 @@ public abstract class BossBar {
 		return this.name;
 	}
 
-	public void setName(Text name) {
-		this.name = name;
+	public void setName(Text text) {
+		this.name = text;
 	}
 
 	public float getPercent() {
 		return this.percent;
 	}
 
-	public void setPercent(float percentage) {
-		this.percent = percentage;
+	public void setPercent(float f) {
+		this.percent = f;
 	}
 
 	public BossBar.Color getColor() {
@@ -62,8 +62,8 @@ public abstract class BossBar {
 		return this.darkenSky;
 	}
 
-	public BossBar setDarkenSky(boolean darkenSky) {
-		this.darkenSky = darkenSky;
+	public BossBar setDarkenSky(boolean bl) {
+		this.darkenSky = bl;
 		return this;
 	}
 
@@ -71,13 +71,13 @@ public abstract class BossBar {
 		return this.dragonMusic;
 	}
 
-	public BossBar setDragonMusic(boolean dragonMusic) {
-		this.dragonMusic = dragonMusic;
+	public BossBar setDragonMusic(boolean bl) {
+		this.dragonMusic = bl;
 		return this;
 	}
 
-	public BossBar setThickenFog(boolean thickenFog) {
-		this.thickenFog = thickenFog;
+	public BossBar setThickenFog(boolean bl) {
+		this.thickenFog = bl;
 		return this;
 	}
 
@@ -86,20 +86,20 @@ public abstract class BossBar {
 	}
 
 	public static enum Color {
-		PINK("pink", Formatting.RED),
-		BLUE("blue", Formatting.BLUE),
-		RED("red", Formatting.DARK_RED),
-		GREEN("green", Formatting.GREEN),
-		YELLOW("yellow", Formatting.YELLOW),
-		PURPLE("purple", Formatting.DARK_BLUE),
-		WHITE("white", Formatting.WHITE);
+		field_5788("pink", Formatting.field_1061),
+		field_5780("blue", Formatting.field_1078),
+		field_5784("red", Formatting.field_1079),
+		field_5785("green", Formatting.field_1060),
+		field_5782("yellow", Formatting.field_1054),
+		field_5783("purple", Formatting.field_1058),
+		field_5786("white", Formatting.field_1068);
 
 		private final String name;
 		private final Formatting format;
 
-		private Color(String name, Formatting format) {
-			this.name = name;
-			this.format = format;
+		private Color(String string2, Formatting formatting) {
+			this.name = string2;
+			this.format = formatting;
 		}
 
 		public Formatting getTextFormat() {
@@ -110,42 +110,42 @@ public abstract class BossBar {
 			return this.name;
 		}
 
-		public static BossBar.Color byName(String name) {
+		public static BossBar.Color byName(String string) {
 			for (BossBar.Color color : values()) {
-				if (color.name.equals(name)) {
+				if (color.name.equals(string)) {
 					return color;
 				}
 			}
 
-			return WHITE;
+			return field_5786;
 		}
 	}
 
 	public static enum Style {
-		PROGRESS("progress"),
-		NOTCHED_6("notched_6"),
-		NOTCHED_10("notched_10"),
-		NOTCHED_12("notched_12"),
-		NOTCHED_20("notched_20");
+		field_5795("progress"),
+		field_5796("notched_6"),
+		field_5791("notched_10"),
+		field_5793("notched_12"),
+		field_5790("notched_20");
 
 		private final String name;
 
-		private Style(String name) {
-			this.name = name;
+		private Style(String string2) {
+			this.name = string2;
 		}
 
 		public String getName() {
 			return this.name;
 		}
 
-		public static BossBar.Style byName(String name) {
+		public static BossBar.Style byName(String string) {
 			for (BossBar.Style style : values()) {
-				if (style.name.equals(name)) {
+				if (style.name.equals(string)) {
 					return style;
 				}
 			}
 
-			return PROGRESS;
+			return field_5795;
 		}
 	}
 }

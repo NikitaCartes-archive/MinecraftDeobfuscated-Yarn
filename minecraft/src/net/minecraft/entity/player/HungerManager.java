@@ -21,9 +21,9 @@ public class HungerManager {
 		this.foodSaturationLevel = 5.0F;
 	}
 
-	public void add(int food, float f) {
-		this.foodLevel = Math.min(food + this.foodLevel, 20);
-		this.foodSaturationLevel = Math.min(this.foodSaturationLevel + (float)food * f * 2.0F, (float)this.foodLevel);
+	public void add(int i, float f) {
+		this.foodLevel = Math.min(i + this.foodLevel, 20);
+		this.foodSaturationLevel = Math.min(this.foodSaturationLevel + (float)i * f * 2.0F, (float)this.foodLevel);
 	}
 
 	public void eat(Item item, ItemStack itemStack) {
@@ -40,12 +40,12 @@ public class HungerManager {
 			this.exhaustion -= 4.0F;
 			if (this.foodSaturationLevel > 0.0F) {
 				this.foodSaturationLevel = Math.max(this.foodSaturationLevel - 1.0F, 0.0F);
-			} else if (difficulty != Difficulty.PEACEFUL) {
+			} else if (difficulty != Difficulty.field_5801) {
 				this.foodLevel = Math.max(this.foodLevel - 1, 0);
 			}
 		}
 
-		boolean bl = playerEntity.world.getGameRules().getBoolean(GameRules.NATURAL_REGENERATION);
+		boolean bl = playerEntity.world.getGameRules().getBoolean(GameRules.field_19395);
 		if (bl && this.foodSaturationLevel > 0.0F && playerEntity.canFoodHeal() && this.foodLevel >= 20) {
 			this.foodStarvationTimer++;
 			if (this.foodStarvationTimer >= 10) {
@@ -64,7 +64,7 @@ public class HungerManager {
 		} else if (this.foodLevel <= 0) {
 			this.foodStarvationTimer++;
 			if (this.foodStarvationTimer >= 80) {
-				if (playerEntity.getHealth() > 10.0F || difficulty == Difficulty.HARD || playerEntity.getHealth() > 1.0F && difficulty == Difficulty.NORMAL) {
+				if (playerEntity.getHealth() > 10.0F || difficulty == Difficulty.field_5807 || playerEntity.getHealth() > 1.0F && difficulty == Difficulty.field_5802) {
 					playerEntity.damage(DamageSource.STARVE, 1.0F);
 				}
 
@@ -76,7 +76,7 @@ public class HungerManager {
 	}
 
 	public void deserialize(CompoundTag compoundTag) {
-		if (compoundTag.contains("foodLevel", 99)) {
+		if (compoundTag.containsKey("foodLevel", 99)) {
 			this.foodLevel = compoundTag.getInt("foodLevel");
 			this.foodStarvationTimer = compoundTag.getInt("foodTickTimer");
 			this.foodSaturationLevel = compoundTag.getFloat("foodSaturationLevel");
@@ -99,20 +99,20 @@ public class HungerManager {
 		return this.foodLevel < 20;
 	}
 
-	public void addExhaustion(float exhaustion) {
-		this.exhaustion = Math.min(this.exhaustion + exhaustion, 40.0F);
+	public void addExhaustion(float f) {
+		this.exhaustion = Math.min(this.exhaustion + f, 40.0F);
 	}
 
 	public float getSaturationLevel() {
 		return this.foodSaturationLevel;
 	}
 
-	public void setFoodLevel(int foodLevel) {
-		this.foodLevel = foodLevel;
+	public void setFoodLevel(int i) {
+		this.foodLevel = i;
 	}
 
 	@Environment(EnvType.CLIENT)
-	public void setSaturationLevelClient(float saturationLevel) {
-		this.foodSaturationLevel = saturationLevel;
+	public void setSaturationLevelClient(float f) {
+		this.foodSaturationLevel = f;
 	}
 }

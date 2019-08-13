@@ -33,8 +33,8 @@ public class MapRenderer implements AutoCloseable {
 		this.getMapTexture(mapState).updateTexture();
 	}
 
-	public void draw(MapState mapState, boolean hidePlayerSpecific) {
-		this.getMapTexture(mapState).draw(hidePlayerSpecific);
+	public void draw(MapState mapState, boolean bl) {
+		this.getMapTexture(mapState).draw(bl);
 	}
 
 	private MapRenderer.MapTexture getMapTexture(MapState mapState) {
@@ -61,8 +61,8 @@ public class MapRenderer implements AutoCloseable {
 	}
 
 	@Nullable
-	public MapState getState(@Nullable MapRenderer.MapTexture texture) {
-		return texture != null ? texture.mapState : null;
+	public MapState getState(@Nullable MapRenderer.MapTexture mapTexture) {
+		return mapTexture != null ? mapTexture.mapState : null;
 	}
 
 	public void close() {
@@ -87,9 +87,9 @@ public class MapRenderer implements AutoCloseable {
 					int k = j + i * 128;
 					int l = this.mapState.colors[k] & 255;
 					if (l / 4 == 0) {
-						this.texture.getImage().setPixelRgba(j, i, (k + k / 128 & 1) * 8 + 16 << 24);
+						this.texture.getImage().setPixelRGBA(j, i, (k + k / 128 & 1) * 8 + 16 << 24);
 					} else {
-						this.texture.getImage().setPixelRgba(j, i, MaterialColor.COLORS[l / 4].getRenderColor(l & 3));
+						this.texture.getImage().setPixelRGBA(j, i, MaterialColor.COLORS[l / 4].getRenderColor(l & 3));
 					}
 				}
 			}
@@ -97,11 +97,11 @@ public class MapRenderer implements AutoCloseable {
 			this.texture.upload();
 		}
 
-		private void draw(boolean hidePlayerSpecific) {
+		private void draw(boolean bl) {
 			int i = 0;
 			int j = 0;
 			Tessellator tessellator = Tessellator.getInstance();
-			BufferBuilder bufferBuilder = tessellator.getBuffer();
+			BufferBuilder bufferBuilder = tessellator.getBufferBuilder();
 			float f = 0.0F;
 			MapRenderer.this.textureManager.bindTexture(this.id);
 			GlStateManager.enableBlend();
@@ -109,7 +109,7 @@ public class MapRenderer implements AutoCloseable {
 				GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ZERO, GlStateManager.DestFactor.ONE
 			);
 			GlStateManager.disableAlphaTest();
-			bufferBuilder.begin(7, VertexFormats.POSITION_TEXTURE);
+			bufferBuilder.begin(7, VertexFormats.POSITION_UV);
 			bufferBuilder.vertex(0.0, 128.0, -0.01F).texture(0.0, 1.0).next();
 			bufferBuilder.vertex(128.0, 128.0, -0.01F).texture(1.0, 1.0).next();
 			bufferBuilder.vertex(128.0, 0.0, -0.01F).texture(1.0, 0.0).next();
@@ -120,7 +120,7 @@ public class MapRenderer implements AutoCloseable {
 			int k = 0;
 
 			for (MapIcon mapIcon : this.mapState.icons.values()) {
-				if (!hidePlayerSpecific || mapIcon.isAlwaysRendered()) {
+				if (!bl || mapIcon.isAlwaysRendered()) {
 					MapRenderer.this.textureManager.bindTexture(MapRenderer.MAP_ICONS_TEXTURE);
 					GlStateManager.pushMatrix();
 					GlStateManager.translatef(0.0F + (float)mapIcon.getX() / 2.0F + 64.0F, 0.0F + (float)mapIcon.getZ() / 2.0F + 64.0F, -0.02F);
@@ -132,7 +132,7 @@ public class MapRenderer implements AutoCloseable {
 					float h = (float)(b / 16 + 0) / 16.0F;
 					float l = (float)(b % 16 + 1) / 16.0F;
 					float m = (float)(b / 16 + 1) / 16.0F;
-					bufferBuilder.begin(7, VertexFormats.POSITION_TEXTURE);
+					bufferBuilder.begin(7, VertexFormats.POSITION_UV);
 					GlStateManager.color4f(1.0F, 1.0F, 1.0F, 1.0F);
 					float n = -0.001F;
 					bufferBuilder.vertex(-1.0, 1.0, (double)((float)k * -0.001F)).texture((double)g, (double)h).next();

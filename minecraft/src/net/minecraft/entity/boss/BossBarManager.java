@@ -14,23 +14,23 @@ public class BossBarManager {
 	private final MinecraftServer server;
 	private final Map<Identifier, CommandBossBar> commandBossBars = Maps.<Identifier, CommandBossBar>newHashMap();
 
-	public BossBarManager(MinecraftServer server) {
-		this.server = server;
+	public BossBarManager(MinecraftServer minecraftServer) {
+		this.server = minecraftServer;
 	}
 
 	@Nullable
-	public CommandBossBar get(Identifier id) {
-		return (CommandBossBar)this.commandBossBars.get(id);
+	public CommandBossBar get(Identifier identifier) {
+		return (CommandBossBar)this.commandBossBars.get(identifier);
 	}
 
-	public CommandBossBar add(Identifier id, Text displayName) {
-		CommandBossBar commandBossBar = new CommandBossBar(id, displayName);
-		this.commandBossBars.put(id, commandBossBar);
+	public CommandBossBar add(Identifier identifier, Text text) {
+		CommandBossBar commandBossBar = new CommandBossBar(identifier, text);
+		this.commandBossBars.put(identifier, commandBossBar);
 		return commandBossBar;
 	}
 
-	public void remove(CommandBossBar bossBar) {
-		this.commandBossBars.remove(bossBar.getId());
+	public void remove(CommandBossBar commandBossBar) {
+		this.commandBossBars.remove(commandBossBar.getId());
 	}
 
 	public Collection<Identifier> getIds() {
@@ -51,22 +51,22 @@ public class BossBarManager {
 		return compoundTag;
 	}
 
-	public void fromTag(CompoundTag tag) {
-		for (String string : tag.getKeys()) {
+	public void fromTag(CompoundTag compoundTag) {
+		for (String string : compoundTag.getKeys()) {
 			Identifier identifier = new Identifier(string);
-			this.commandBossBars.put(identifier, CommandBossBar.fromTag(tag.getCompound(string), identifier));
+			this.commandBossBars.put(identifier, CommandBossBar.fromTag(compoundTag.getCompound(string), identifier));
 		}
 	}
 
-	public void onPlayerConnect(ServerPlayerEntity player) {
+	public void onPlayerConnect(ServerPlayerEntity serverPlayerEntity) {
 		for (CommandBossBar commandBossBar : this.commandBossBars.values()) {
-			commandBossBar.onPlayerConnect(player);
+			commandBossBar.onPlayerConnect(serverPlayerEntity);
 		}
 	}
 
-	public void onPlayerDisconnenct(ServerPlayerEntity player) {
+	public void onPlayerDisconnenct(ServerPlayerEntity serverPlayerEntity) {
 		for (CommandBossBar commandBossBar : this.commandBossBars.values()) {
-			commandBossBar.onPlayerDisconnect(player);
+			commandBossBar.onPlayerDisconnect(serverPlayerEntity);
 		}
 	}
 }

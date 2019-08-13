@@ -6,20 +6,20 @@ import net.fabricmc.api.Environment;
 
 public interface ReadableProfiler extends Profiler {
 	@Override
-	void push(String location);
+	void push(String string);
 
 	@Override
-	void push(Supplier<String> locationGetter);
+	void push(Supplier<String> supplier);
 
 	@Override
 	void pop();
 
 	@Override
-	void swap(String location);
+	void swap(String string);
 
 	@Environment(EnvType.CLIENT)
 	@Override
-	void swap(Supplier<String> locationGetter);
+	void swap(Supplier<String> supplier);
 
-	ProfileResult getResult();
+	ProfileResult getResults();
 }

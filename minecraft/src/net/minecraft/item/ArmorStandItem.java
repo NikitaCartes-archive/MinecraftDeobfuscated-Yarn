@@ -21,13 +21,13 @@ public class ArmorStandItem extends Item {
 	}
 
 	@Override
-	public ActionResult useOnBlock(ItemUsageContext context) {
-		Direction direction = context.getSide();
-		if (direction == Direction.DOWN) {
-			return ActionResult.FAIL;
+	public ActionResult useOnBlock(ItemUsageContext itemUsageContext) {
+		Direction direction = itemUsageContext.getSide();
+		if (direction == Direction.field_11033) {
+			return ActionResult.field_5814;
 		} else {
-			World world = context.getWorld();
-			ItemPlacementContext itemPlacementContext = new ItemPlacementContext(context);
+			World world = itemUsageContext.getWorld();
+			ItemPlacementContext itemPlacementContext = new ItemPlacementContext(itemUsageContext);
 			BlockPos blockPos = itemPlacementContext.getBlockPos();
 			BlockPos blockPos2 = blockPos.up();
 			if (itemPlacementContext.canPlace() && world.getBlockState(blockPos2).canReplace(itemPlacementContext)) {
@@ -36,39 +36,39 @@ public class ArmorStandItem extends Item {
 				double f = (double)blockPos.getZ();
 				List<Entity> list = world.getEntities(null, new Box(d, e, f, d + 1.0, e + 2.0, f + 1.0));
 				if (!list.isEmpty()) {
-					return ActionResult.FAIL;
+					return ActionResult.field_5814;
 				} else {
-					ItemStack itemStack = context.getStack();
+					ItemStack itemStack = itemUsageContext.getStack();
 					if (!world.isClient) {
-						world.removeBlock(blockPos, false);
-						world.removeBlock(blockPos2, false);
+						world.clearBlockState(blockPos, false);
+						world.clearBlockState(blockPos2, false);
 						ArmorStandEntity armorStandEntity = new ArmorStandEntity(world, d + 0.5, e, f + 0.5);
-						float g = (float)MathHelper.floor((MathHelper.wrapDegrees(context.getPlayerYaw() - 180.0F) + 22.5F) / 45.0F) * 45.0F;
-						armorStandEntity.refreshPositionAndAngles(d + 0.5, e, f + 0.5, g, 0.0F);
+						float g = (float)MathHelper.floor((MathHelper.wrapDegrees(itemUsageContext.getPlayerYaw() - 180.0F) + 22.5F) / 45.0F) * 45.0F;
+						armorStandEntity.setPositionAndAngles(d + 0.5, e, f + 0.5, g, 0.0F);
 						this.setRotations(armorStandEntity, world.random);
-						EntityType.loadFromEntityTag(world, context.getPlayer(), armorStandEntity, itemStack.getTag());
+						EntityType.loadFromEntityTag(world, itemUsageContext.getPlayer(), armorStandEntity, itemStack.getTag());
 						world.spawnEntity(armorStandEntity);
-						world.playSound(null, armorStandEntity.x, armorStandEntity.y, armorStandEntity.z, SoundEvents.ENTITY_ARMOR_STAND_PLACE, SoundCategory.BLOCKS, 0.75F, 0.8F);
+						world.playSound(null, armorStandEntity.x, armorStandEntity.y, armorStandEntity.z, SoundEvents.field_14969, SoundCategory.field_15245, 0.75F, 0.8F);
 					}
 
 					itemStack.decrement(1);
-					return ActionResult.SUCCESS;
+					return ActionResult.field_5812;
 				}
 			} else {
-				return ActionResult.FAIL;
+				return ActionResult.field_5814;
 			}
 		}
 	}
 
-	private void setRotations(ArmorStandEntity stand, Random random) {
-		EulerAngle eulerAngle = stand.getHeadRotation();
+	private void setRotations(ArmorStandEntity armorStandEntity, Random random) {
+		EulerAngle eulerAngle = armorStandEntity.getHeadRotation();
 		float f = random.nextFloat() * 5.0F;
 		float g = random.nextFloat() * 20.0F - 10.0F;
 		EulerAngle eulerAngle2 = new EulerAngle(eulerAngle.getPitch() + f, eulerAngle.getYaw() + g, eulerAngle.getRoll());
-		stand.setHeadRotation(eulerAngle2);
-		eulerAngle = stand.getBodyRotation();
+		armorStandEntity.setHeadRotation(eulerAngle2);
+		eulerAngle = armorStandEntity.getBodyRotation();
 		f = random.nextFloat() * 10.0F - 5.0F;
 		eulerAngle2 = new EulerAngle(eulerAngle.getPitch(), eulerAngle.getYaw() + f, eulerAngle.getRoll());
-		stand.setBodyRotation(eulerAngle2);
+		armorStandEntity.setBodyRotation(eulerAngle2);
 	}
 }

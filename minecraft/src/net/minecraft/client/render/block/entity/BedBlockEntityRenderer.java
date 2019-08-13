@@ -22,7 +22,7 @@ public class BedBlockEntityRenderer extends BlockEntityRenderer<BedBlockEntity> 
 		.toArray(Identifier[]::new);
 	private final BedEntityModel model = new BedEntityModel();
 
-	public void render(BedBlockEntity bedBlockEntity, double d, double e, double f, float g, int i) {
+	public void method_3557(BedBlockEntity bedBlockEntity, double d, double e, double f, float g, int i) {
 		if (i >= 0) {
 			this.bindTexture(DESTROY_STAGE_TEXTURES[i]);
 			GlStateManager.matrixMode(5890);
@@ -39,10 +39,10 @@ public class BedBlockEntityRenderer extends BlockEntityRenderer<BedBlockEntity> 
 
 		if (bedBlockEntity.hasWorld()) {
 			BlockState blockState = bedBlockEntity.getCachedState();
-			this.method_3558(blockState.get(BedBlock.PART) == BedPart.HEAD, d, e, f, blockState.get(BedBlock.FACING));
+			this.method_3558(blockState.get(BedBlock.PART) == BedPart.field_12560, d, e, f, blockState.get(BedBlock.FACING));
 		} else {
-			this.method_3558(true, d, e, f, Direction.SOUTH);
-			this.method_3558(false, d, e, f - 1.0, Direction.SOUTH);
+			this.method_3558(true, d, e, f, Direction.field_11035);
+			this.method_3558(false, d, e, f - 1.0, Direction.field_11035);
 		}
 
 		if (i >= 0) {

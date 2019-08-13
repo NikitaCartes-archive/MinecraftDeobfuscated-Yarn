@@ -14,55 +14,55 @@ public class SystemToast implements Toast {
 	private long startTime;
 	private boolean justUpdated;
 
-	public SystemToast(SystemToast.Type type, Text title, @Nullable Text description) {
+	public SystemToast(SystemToast.Type type, Text text, @Nullable Text text2) {
 		this.type = type;
-		this.title = title.getString();
-		this.description = description == null ? null : description.getString();
+		this.title = text.getString();
+		this.description = text2 == null ? null : text2.getString();
 	}
 
 	@Override
-	public Toast.Visibility draw(ToastManager manager, long currentTime) {
+	public Toast.Visibility draw(ToastManager toastManager, long l) {
 		if (this.justUpdated) {
-			this.startTime = currentTime;
+			this.startTime = l;
 			this.justUpdated = false;
 		}
 
-		manager.getGame().getTextureManager().bindTexture(TOASTS_TEX);
+		toastManager.getGame().getTextureManager().bindTexture(TOASTS_TEX);
 		GlStateManager.color3f(1.0F, 1.0F, 1.0F);
-		manager.blit(0, 0, 0, 64, 160, 32);
+		toastManager.blit(0, 0, 0, 64, 160, 32);
 		if (this.description == null) {
-			manager.getGame().textRenderer.draw(this.title, 18.0F, 12.0F, -256);
+			toastManager.getGame().textRenderer.draw(this.title, 18.0F, 12.0F, -256);
 		} else {
-			manager.getGame().textRenderer.draw(this.title, 18.0F, 7.0F, -256);
-			manager.getGame().textRenderer.draw(this.description, 18.0F, 18.0F, -1);
+			toastManager.getGame().textRenderer.draw(this.title, 18.0F, 7.0F, -256);
+			toastManager.getGame().textRenderer.draw(this.description, 18.0F, 18.0F, -1);
 		}
 
-		return currentTime - this.startTime < 5000L ? Toast.Visibility.SHOW : Toast.Visibility.HIDE;
+		return l - this.startTime < 5000L ? Toast.Visibility.field_2210 : Toast.Visibility.field_2209;
 	}
 
-	public void setContent(Text title, @Nullable Text description) {
-		this.title = title.getString();
-		this.description = description == null ? null : description.getString();
+	public void setContent(Text text, @Nullable Text text2) {
+		this.title = text.getString();
+		this.description = text2 == null ? null : text2.getString();
 		this.justUpdated = true;
 	}
 
-	public SystemToast.Type getType() {
+	public SystemToast.Type method_1989() {
 		return this.type;
 	}
 
-	public static void show(ToastManager toastManager, SystemToast.Type type, Text title, @Nullable Text description) {
+	public static void show(ToastManager toastManager, SystemToast.Type type, Text text, @Nullable Text text2) {
 		SystemToast systemToast = toastManager.getToast(SystemToast.class, type);
 		if (systemToast == null) {
-			toastManager.add(new SystemToast(type, title, description));
+			toastManager.add(new SystemToast(type, text, text2));
 		} else {
-			systemToast.setContent(title, description);
+			systemToast.setContent(text, text2);
 		}
 	}
 
 	@Environment(EnvType.CLIENT)
 	public static enum Type {
-		TUTORIAL_HINT,
-		NARRATOR_TOGGLE,
-		WORLD_BACKUP;
+		field_2218,
+		field_2219,
+		field_2220;
 	}
 }

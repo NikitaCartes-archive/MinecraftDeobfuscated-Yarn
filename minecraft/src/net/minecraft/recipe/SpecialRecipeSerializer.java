@@ -13,16 +13,16 @@ public class SpecialRecipeSerializer<T extends Recipe<?>> implements RecipeSeria
 	}
 
 	@Override
-	public T read(Identifier id, JsonObject json) {
-		return (T)this.id.apply(id);
+	public T read(Identifier identifier, JsonObject jsonObject) {
+		return (T)this.id.apply(identifier);
 	}
 
 	@Override
-	public T read(Identifier id, PacketByteBuf buf) {
-		return (T)this.id.apply(id);
+	public T read(Identifier identifier, PacketByteBuf packetByteBuf) {
+		return (T)this.id.apply(identifier);
 	}
 
 	@Override
-	public void write(PacketByteBuf buf, T recipe) {
+	public void write(PacketByteBuf packetByteBuf, T recipe) {
 	}
 }

@@ -10,26 +10,28 @@ import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.LootableContainerBlockEntity;
 import net.minecraft.block.entity.MobSpawnerBlockEntity;
 import net.minecraft.entity.EntityType;
-import net.minecraft.loot.LootTables;
 import net.minecraft.structure.StructurePiece;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.world.IWorld;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
 import net.minecraft.world.gen.chunk.ChunkGeneratorConfig;
+import net.minecraft.world.loot.LootTables;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 public class DungeonFeature extends Feature<DefaultFeatureConfig> {
 	private static final Logger LOGGER = LogManager.getLogger();
-	private static final EntityType<?>[] MOB_SPAWNER_ENTITIES = new EntityType[]{EntityType.SKELETON, EntityType.ZOMBIE, EntityType.ZOMBIE, EntityType.SPIDER};
-	private static final BlockState AIR = Blocks.CAVE_AIR.getDefaultState();
+	private static final EntityType<?>[] MOB_SPAWNER_ENTITIES = new EntityType[]{
+		EntityType.field_6137, EntityType.field_6051, EntityType.field_6051, EntityType.field_6079
+	};
+	private static final BlockState AIR = Blocks.field_10543.getDefaultState();
 
-	public DungeonFeature(Function<Dynamic<?>, ? extends DefaultFeatureConfig> configFactory) {
-		super(configFactory);
+	public DungeonFeature(Function<Dynamic<?>, ? extends DefaultFeatureConfig> function) {
+		super(function);
 	}
 
-	public boolean generate(
+	public boolean method_13548(
 		IWorld iWorld, ChunkGenerator<? extends ChunkGeneratorConfig> chunkGenerator, Random random, BlockPos blockPos, DefaultFeatureConfig defaultFeatureConfig
 	) {
 		int i = 3;
@@ -70,16 +72,16 @@ public class DungeonFeature extends Feature<DefaultFeatureConfig> {
 					for (int u = p; u <= q; u++) {
 						BlockPos blockPos2x = blockPos.add(s, t, u);
 						if (s != k && t != -1 && u != p && s != l && t != 4 && u != q) {
-							if (iWorld.getBlockState(blockPos2x).getBlock() != Blocks.CHEST) {
+							if (iWorld.getBlockState(blockPos2x).getBlock() != Blocks.field_10034) {
 								iWorld.setBlockState(blockPos2x, AIR, 2);
 							}
 						} else if (blockPos2x.getY() >= 0 && !iWorld.getBlockState(blockPos2x.down()).getMaterial().isSolid()) {
 							iWorld.setBlockState(blockPos2x, AIR, 2);
-						} else if (iWorld.getBlockState(blockPos2x).getMaterial().isSolid() && iWorld.getBlockState(blockPos2x).getBlock() != Blocks.CHEST) {
+						} else if (iWorld.getBlockState(blockPos2x).getMaterial().isSolid() && iWorld.getBlockState(blockPos2x).getBlock() != Blocks.field_10034) {
 							if (t == -1 && random.nextInt(4) != 0) {
-								iWorld.setBlockState(blockPos2x, Blocks.MOSSY_COBBLESTONE.getDefaultState(), 2);
+								iWorld.setBlockState(blockPos2x, Blocks.field_9989.getDefaultState(), 2);
 							} else {
-								iWorld.setBlockState(blockPos2x, Blocks.COBBLESTONE.getDefaultState(), 2);
+								iWorld.setBlockState(blockPos2x, Blocks.field_10445.getDefaultState(), 2);
 							}
 						}
 					}
@@ -95,22 +97,22 @@ public class DungeonFeature extends Feature<DefaultFeatureConfig> {
 					if (iWorld.isAir(blockPos3)) {
 						int x = 0;
 
-						for (Direction direction : Direction.Type.HORIZONTAL) {
+						for (Direction direction : Direction.Type.field_11062) {
 							if (iWorld.getBlockState(blockPos3.offset(direction)).getMaterial().isSolid()) {
 								x++;
 							}
 						}
 
 						if (x == 1) {
-							iWorld.setBlockState(blockPos3, StructurePiece.method_14916(iWorld, blockPos3, Blocks.CHEST.getDefaultState()), 2);
-							LootableContainerBlockEntity.setLootTable(iWorld, random, blockPos3, LootTables.SIMPLE_DUNGEON_CHEST);
+							iWorld.setBlockState(blockPos3, StructurePiece.method_14916(iWorld, blockPos3, Blocks.field_10034.getDefaultState()), 2);
+							LootableContainerBlockEntity.setLootTable(iWorld, random, blockPos3, LootTables.field_356);
 							break;
 						}
 					}
 				}
 			}
 
-			iWorld.setBlockState(blockPos, Blocks.SPAWNER.getDefaultState(), 2);
+			iWorld.setBlockState(blockPos, Blocks.field_10260.getDefaultState(), 2);
 			BlockEntity blockEntity = iWorld.getBlockEntity(blockPos);
 			if (blockEntity instanceof MobSpawnerBlockEntity) {
 				((MobSpawnerBlockEntity)blockEntity).getLogic().setEntityId(this.getMobSpawnerEntity(random));

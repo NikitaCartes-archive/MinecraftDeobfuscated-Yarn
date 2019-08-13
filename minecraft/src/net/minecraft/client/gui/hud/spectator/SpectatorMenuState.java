@@ -11,15 +11,15 @@ public class SpectatorMenuState {
 	private final List<SpectatorMenuCommand> commands;
 	private final int selectedSlot;
 
-	public SpectatorMenuState(SpectatorMenuCommandGroup group, List<SpectatorMenuCommand> commands, int selectedSlot) {
-		this.group = group;
-		this.commands = commands;
-		this.selectedSlot = selectedSlot;
+	public SpectatorMenuState(SpectatorMenuCommandGroup spectatorMenuCommandGroup, List<SpectatorMenuCommand> list, int i) {
+		this.group = spectatorMenuCommandGroup;
+		this.commands = list;
+		this.selectedSlot = i;
 	}
 
-	public SpectatorMenuCommand getCommand(int slot) {
-		return slot >= 0 && slot < this.commands.size()
-			? MoreObjects.firstNonNull((SpectatorMenuCommand)this.commands.get(slot), SpectatorMenu.BLANK_COMMAND)
+	public SpectatorMenuCommand getCommand(int i) {
+		return i >= 0 && i < this.commands.size()
+			? MoreObjects.firstNonNull((SpectatorMenuCommand)this.commands.get(i), SpectatorMenu.BLANK_COMMAND)
 			: SpectatorMenu.BLANK_COMMAND;
 	}
 

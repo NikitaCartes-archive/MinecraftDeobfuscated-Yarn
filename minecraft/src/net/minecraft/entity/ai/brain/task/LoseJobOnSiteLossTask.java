@@ -10,19 +10,19 @@ import net.minecraft.village.VillagerProfession;
 
 public class LoseJobOnSiteLossTask extends Task<VillagerEntity> {
 	public LoseJobOnSiteLossTask() {
-		super(ImmutableMap.of(MemoryModuleType.JOB_SITE, MemoryModuleState.VALUE_ABSENT));
+		super(ImmutableMap.of(MemoryModuleType.field_18439, MemoryModuleState.field_18457));
 	}
 
-	protected boolean shouldRun(ServerWorld serverWorld, VillagerEntity villagerEntity) {
+	protected boolean method_20449(ServerWorld serverWorld, VillagerEntity villagerEntity) {
 		VillagerData villagerData = villagerEntity.getVillagerData();
-		return villagerData.getProfession() != VillagerProfession.NONE
-			&& villagerData.getProfession() != VillagerProfession.NITWIT
+		return villagerData.getProfession() != VillagerProfession.field_17051
+			&& villagerData.getProfession() != VillagerProfession.field_17062
 			&& villagerEntity.getExperience() == 0
 			&& villagerData.getLevel() <= 1;
 	}
 
-	protected void run(ServerWorld serverWorld, VillagerEntity villagerEntity, long l) {
-		villagerEntity.setVillagerData(villagerEntity.getVillagerData().withProfession(VillagerProfession.NONE));
+	protected void method_20450(ServerWorld serverWorld, VillagerEntity villagerEntity, long l) {
+		villagerEntity.setVillagerData(villagerEntity.getVillagerData().withProfession(VillagerProfession.field_17051));
 		villagerEntity.reinitializeBrain(serverWorld);
 	}
 }

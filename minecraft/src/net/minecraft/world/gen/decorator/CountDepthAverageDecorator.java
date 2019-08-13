@@ -12,7 +12,7 @@ public class CountDepthAverageDecorator extends SimpleDecorator<CountDepthDecora
 		super(function);
 	}
 
-	public Stream<BlockPos> getPositions(Random random, CountDepthDecoratorConfig countDepthDecoratorConfig, BlockPos blockPos) {
+	public Stream<BlockPos> method_15907(Random random, CountDepthDecoratorConfig countDepthDecoratorConfig, BlockPos blockPos) {
 		int i = countDepthDecoratorConfig.count;
 		int j = countDepthDecoratorConfig.baseline;
 		int k = countDepthDecoratorConfig.spread;

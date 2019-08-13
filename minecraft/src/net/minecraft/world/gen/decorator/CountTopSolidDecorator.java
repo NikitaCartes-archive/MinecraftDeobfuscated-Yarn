@@ -16,13 +16,13 @@ public class CountTopSolidDecorator extends Decorator<CountDecoratorConfig> {
 		super(function);
 	}
 
-	public Stream<BlockPos> getPositions(
+	public Stream<BlockPos> method_15914(
 		IWorld iWorld, ChunkGenerator<? extends ChunkGeneratorConfig> chunkGenerator, Random random, CountDecoratorConfig countDecoratorConfig, BlockPos blockPos
 	) {
 		return IntStream.range(0, countDecoratorConfig.count).mapToObj(i -> {
 			int j = random.nextInt(16) + blockPos.getX();
 			int k = random.nextInt(16) + blockPos.getZ();
-			return new BlockPos(j, iWorld.getTop(Heightmap.Type.OCEAN_FLOOR_WG, j, k), k);
+			return new BlockPos(j, iWorld.getTop(Heightmap.Type.field_13195, j, k), k);
 		});
 	}
 }

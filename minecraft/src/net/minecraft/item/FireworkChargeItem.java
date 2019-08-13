@@ -20,52 +20,52 @@ public class FireworkChargeItem extends Item {
 
 	@Environment(EnvType.CLIENT)
 	@Override
-	public void appendTooltip(ItemStack stack, @Nullable World world, List<Text> tooltip, TooltipContext context) {
-		CompoundTag compoundTag = stack.getSubTag("Explosion");
+	public void appendTooltip(ItemStack itemStack, @Nullable World world, List<Text> list, TooltipContext tooltipContext) {
+		CompoundTag compoundTag = itemStack.getSubTag("Explosion");
 		if (compoundTag != null) {
-			appendFireworkTooltip(compoundTag, tooltip);
+			appendFireworkTooltip(compoundTag, list);
 		}
 	}
 
 	@Environment(EnvType.CLIENT)
-	public static void appendFireworkTooltip(CompoundTag tag, List<Text> tooltip) {
-		FireworkItem.Type type = FireworkItem.Type.byId(tag.getByte("Type"));
-		tooltip.add(new TranslatableText("item.minecraft.firework_star.shape." + type.getName()).formatted(Formatting.GRAY));
-		int[] is = tag.getIntArray("Colors");
+	public static void appendFireworkTooltip(CompoundTag compoundTag, List<Text> list) {
+		FireworkItem.Type type = FireworkItem.Type.byId(compoundTag.getByte("Type"));
+		list.add(new TranslatableText("item.minecraft.firework_star.shape." + type.getName()).formatted(Formatting.field_1080));
+		int[] is = compoundTag.getIntArray("Colors");
 		if (is.length > 0) {
-			tooltip.add(appendColors(new LiteralText("").formatted(Formatting.GRAY), is));
+			list.add(appendColors(new LiteralText("").formatted(Formatting.field_1080), is));
 		}
 
-		int[] js = tag.getIntArray("FadeColors");
+		int[] js = compoundTag.getIntArray("FadeColors");
 		if (js.length > 0) {
-			tooltip.add(appendColors(new TranslatableText("item.minecraft.firework_star.fade_to").append(" ").formatted(Formatting.GRAY), js));
+			list.add(appendColors(new TranslatableText("item.minecraft.firework_star.fade_to").append(" ").formatted(Formatting.field_1080), js));
 		}
 
-		if (tag.getBoolean("Trail")) {
-			tooltip.add(new TranslatableText("item.minecraft.firework_star.trail").formatted(Formatting.GRAY));
+		if (compoundTag.getBoolean("Trail")) {
+			list.add(new TranslatableText("item.minecraft.firework_star.trail").formatted(Formatting.field_1080));
 		}
 
-		if (tag.getBoolean("Flicker")) {
-			tooltip.add(new TranslatableText("item.minecraft.firework_star.flicker").formatted(Formatting.GRAY));
+		if (compoundTag.getBoolean("Flicker")) {
+			list.add(new TranslatableText("item.minecraft.firework_star.flicker").formatted(Formatting.field_1080));
 		}
 	}
 
 	@Environment(EnvType.CLIENT)
-	private static Text appendColors(Text line, int[] colors) {
-		for (int i = 0; i < colors.length; i++) {
+	private static Text appendColors(Text text, int[] is) {
+		for (int i = 0; i < is.length; i++) {
 			if (i > 0) {
-				line.append(", ");
+				text.append(", ");
 			}
 
-			line.append(getColorText(colors[i]));
+			text.append(getColorText(is[i]));
 		}
 
-		return line;
+		return text;
 	}
 
 	@Environment(EnvType.CLIENT)
-	private static Text getColorText(int color) {
-		DyeColor dyeColor = DyeColor.byFireworkColor(color);
+	private static Text getColorText(int i) {
+		DyeColor dyeColor = DyeColor.byFireworkColor(i);
 		return dyeColor == null
 			? new TranslatableText("item.minecraft.firework_star.custom_color")
 			: new TranslatableText("item.minecraft.firework_star." + dyeColor.getName());

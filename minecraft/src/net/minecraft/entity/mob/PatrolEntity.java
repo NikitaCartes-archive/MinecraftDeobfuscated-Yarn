@@ -11,7 +11,7 @@ import net.minecraft.entity.ai.goal.Goal;
 import net.minecraft.entity.ai.pathing.EntityNavigation;
 import net.minecraft.entity.raid.Raid;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.NbtHelper;
+import net.minecraft.util.TagHelper;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.Heightmap;
@@ -25,8 +25,8 @@ public abstract class PatrolEntity extends HostileEntity {
 	private boolean patrolLeader;
 	private boolean patrolling;
 
-	protected PatrolEntity(EntityType<? extends PatrolEntity> type, World world) {
-		super(type, world);
+	protected PatrolEntity(EntityType<? extends PatrolEntity> entityType, World world) {
+		super(entityType, world);
 	}
 
 	@Override
@@ -36,25 +36,25 @@ public abstract class PatrolEntity extends HostileEntity {
 	}
 
 	@Override
-	public void writeCustomDataToTag(CompoundTag tag) {
-		super.writeCustomDataToTag(tag);
+	public void writeCustomDataToTag(CompoundTag compoundTag) {
+		super.writeCustomDataToTag(compoundTag);
 		if (this.patrolTarget != null) {
-			tag.put("PatrolTarget", NbtHelper.fromBlockPos(this.patrolTarget));
+			compoundTag.put("PatrolTarget", TagHelper.serializeBlockPos(this.patrolTarget));
 		}
 
-		tag.putBoolean("PatrolLeader", this.patrolLeader);
-		tag.putBoolean("Patrolling", this.patrolling);
+		compoundTag.putBoolean("PatrolLeader", this.patrolLeader);
+		compoundTag.putBoolean("Patrolling", this.patrolling);
 	}
 
 	@Override
-	public void readCustomDataFromTag(CompoundTag tag) {
-		super.readCustomDataFromTag(tag);
-		if (tag.contains("PatrolTarget")) {
-			this.patrolTarget = NbtHelper.toBlockPos(tag.getCompound("PatrolTarget"));
+	public void readCustomDataFromTag(CompoundTag compoundTag) {
+		super.readCustomDataFromTag(compoundTag);
+		if (compoundTag.containsKey("PatrolTarget")) {
+			this.patrolTarget = TagHelper.deserializeBlockPos(compoundTag.getCompound("PatrolTarget"));
 		}
 
-		this.patrolLeader = tag.getBoolean("PatrolLeader");
-		this.patrolling = tag.getBoolean("Patrolling");
+		this.patrolLeader = compoundTag.getBoolean("PatrolLeader");
+		this.patrolling = compoundTag.getBoolean("Patrolling");
 	}
 
 	@Override
@@ -68,34 +68,40 @@ public abstract class PatrolEntity extends HostileEntity {
 
 	@Nullable
 	@Override
-	public EntityData initialize(IWorld world, LocalDifficulty difficulty, SpawnType spawnType, @Nullable EntityData entityData, @Nullable CompoundTag entityTag) {
-		if (spawnType != SpawnType.PATROL && spawnType != SpawnType.EVENT && spawnType != SpawnType.STRUCTURE && this.random.nextFloat() < 0.06F && this.canLead()) {
+	public EntityData initialize(
+		IWorld iWorld, LocalDifficulty localDifficulty, SpawnType spawnType, @Nullable EntityData entityData, @Nullable CompoundTag compoundTag
+	) {
+		if (spawnType != SpawnType.field_16527
+			&& spawnType != SpawnType.field_16467
+			&& spawnType != SpawnType.field_16474
+			&& this.random.nextFloat() < 0.06F
+			&& this.canLead()) {
 			this.patrolLeader = true;
 		}
 
 		if (this.isPatrolLeader()) {
-			this.equipStack(EquipmentSlot.HEAD, Raid.getOminousBanner());
-			this.setEquipmentDropChance(EquipmentSlot.HEAD, 2.0F);
+			this.setEquippedStack(EquipmentSlot.field_6169, Raid.getOminousBanner());
+			this.setEquipmentDropChance(EquipmentSlot.field_6169, 2.0F);
 		}
 
-		if (spawnType == SpawnType.PATROL) {
+		if (spawnType == SpawnType.field_16527) {
 			this.patrolling = true;
 		}
 
-		return super.initialize(world, difficulty, spawnType, entityData, entityTag);
+		return super.initialize(iWorld, localDifficulty, spawnType, entityData, compoundTag);
 	}
 
 	public static boolean method_20739(EntityType<? extends PatrolEntity> entityType, IWorld iWorld, SpawnType spawnType, BlockPos blockPos, Random random) {
-		return iWorld.getLightLevel(LightType.BLOCK, blockPos) > 8 ? false : method_20681(entityType, iWorld, spawnType, blockPos, random);
+		return iWorld.getLightLevel(LightType.field_9282, blockPos) > 8 ? false : method_20681(entityType, iWorld, spawnType, blockPos, random);
 	}
 
 	@Override
-	public boolean canImmediatelyDespawn(double distanceSquared) {
-		return !this.patrolling || distanceSquared > 16384.0;
+	public boolean canImmediatelyDespawn(double d) {
+		return !this.patrolling || d > 16384.0;
 	}
 
-	public void setPatrolTarget(BlockPos targetPos) {
-		this.patrolTarget = targetPos;
+	public void setPatrolTarget(BlockPos blockPos) {
+		this.patrolTarget = blockPos;
 		this.patrolling = true;
 	}
 
@@ -107,8 +113,8 @@ public abstract class PatrolEntity extends HostileEntity {
 		return this.patrolTarget != null;
 	}
 
-	public void setPatrolLeader(boolean patrolLeader) {
-		this.patrolLeader = patrolLeader;
+	public void setPatrolLeader(boolean bl) {
+		this.patrolLeader = bl;
 		this.patrolling = true;
 	}
 
@@ -134,11 +140,11 @@ public abstract class PatrolEntity extends HostileEntity {
 		private final double leaderSpeed;
 		private final double fellowSpeed;
 
-		public PatrolGoal(T actor, double leaderSpeed, double fellowSpeed) {
-			this.actor = actor;
-			this.leaderSpeed = leaderSpeed;
-			this.fellowSpeed = fellowSpeed;
-			this.setControls(EnumSet.of(Goal.Control.MOVE));
+		public PatrolGoal(T patrolEntity, double d, double e) {
+			this.actor = patrolEntity;
+			this.leaderSpeed = d;
+			this.fellowSpeed = e;
+			this.setControls(EnumSet.of(Goal.Control.field_18405));
 		}
 
 		@Override
@@ -168,7 +174,7 @@ public abstract class PatrolEntity extends HostileEntity {
 					vec3d = vec3d3.rotateY(90.0F).multiply(0.4).add(vec3d);
 					Vec3d vec3d4 = vec3d.subtract(vec3d2).normalize().multiply(10.0).add(vec3d2);
 					BlockPos blockPos = new BlockPos(vec3d4);
-					blockPos = this.actor.world.getTopPosition(Heightmap.Type.MOTION_BLOCKING_NO_LEAVES, blockPos);
+					blockPos = this.actor.world.getTopPosition(Heightmap.Type.field_13203, blockPos);
 					if (!entityNavigation.startMovingTo((double)blockPos.getX(), (double)blockPos.getY(), (double)blockPos.getZ(), bl ? this.fellowSpeed : this.leaderSpeed)) {
 						this.wander();
 					} else if (bl) {
@@ -183,10 +189,10 @@ public abstract class PatrolEntity extends HostileEntity {
 		}
 
 		private void wander() {
-			Random random = this.actor.getRandom();
+			Random random = this.actor.getRand();
 			BlockPos blockPos = this.actor
 				.world
-				.getTopPosition(Heightmap.Type.MOTION_BLOCKING_NO_LEAVES, new BlockPos(this.actor).add(-8 + random.nextInt(16), 0, -8 + random.nextInt(16)));
+				.getTopPosition(Heightmap.Type.field_13203, new BlockPos(this.actor).add(-8 + random.nextInt(16), 0, -8 + random.nextInt(16)));
 			this.actor.getNavigation().startMovingTo((double)blockPos.getX(), (double)blockPos.getY(), (double)blockPos.getZ(), this.leaderSpeed);
 		}
 	}

@@ -9,8 +9,8 @@ import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
 
 public class KickCommand {
-	public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
-		dispatcher.register(
+	public static void register(CommandDispatcher<ServerCommandSource> commandDispatcher) {
+		commandDispatcher.register(
 			CommandManager.literal("kick")
 				.requires(serverCommandSource -> serverCommandSource.hasPermissionLevel(3))
 				.then(
@@ -32,12 +32,12 @@ public class KickCommand {
 		);
 	}
 
-	private static int execute(ServerCommandSource source, Collection<ServerPlayerEntity> targets, Text reason) {
-		for (ServerPlayerEntity serverPlayerEntity : targets) {
-			serverPlayerEntity.networkHandler.disconnect(reason);
-			source.sendFeedback(new TranslatableText("commands.kick.success", serverPlayerEntity.getDisplayName(), reason), true);
+	private static int execute(ServerCommandSource serverCommandSource, Collection<ServerPlayerEntity> collection, Text text) {
+		for (ServerPlayerEntity serverPlayerEntity : collection) {
+			serverPlayerEntity.networkHandler.disconnect(text);
+			serverCommandSource.sendFeedback(new TranslatableText("commands.kick.success", serverPlayerEntity.getDisplayName(), text), true);
 		}
 
-		return targets.size();
+		return collection.size();
 	}
 }

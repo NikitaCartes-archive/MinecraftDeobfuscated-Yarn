@@ -44,24 +44,24 @@ public class BakedQuadFactory {
 	};
 
 	public BakedQuad bake(
-		Vector3f from,
-		Vector3f to,
-		ModelElementFace face,
-		Sprite texture,
-		Direction side,
-		ModelBakeSettings settings,
-		@Nullable net.minecraft.client.render.model.json.ModelRotation rotation,
-		boolean shade
+		Vector3f vector3f,
+		Vector3f vector3f2,
+		ModelElementFace modelElementFace,
+		Sprite sprite,
+		Direction direction,
+		ModelBakeSettings modelBakeSettings,
+		@Nullable net.minecraft.client.render.model.json.ModelRotation modelRotation,
+		boolean bl
 	) {
-		ModelElementTexture modelElementTexture = face.textureData;
-		if (settings.isShaded()) {
-			modelElementTexture = this.uvLock(face.textureData, side, settings.getRotation());
+		ModelElementTexture modelElementTexture = modelElementFace.textureData;
+		if (modelBakeSettings.isUvLocked()) {
+			modelElementTexture = this.uvLock(modelElementFace.textureData, direction, modelBakeSettings.getRotation());
 		}
 
 		float[] fs = new float[modelElementTexture.uvs.length];
 		System.arraycopy(modelElementTexture.uvs, 0, fs, 0, fs.length);
-		float f = (float)texture.getWidth() / (texture.getMaxU() - texture.getMinU());
-		float g = (float)texture.getHeight() / (texture.getMaxV() - texture.getMinV());
+		float f = (float)sprite.getWidth() / (sprite.getMaxU() - sprite.getMinU());
+		float g = (float)sprite.getHeight() / (sprite.getMaxV() - sprite.getMinV());
 		float h = 4.0F / Math.max(g, f);
 		float i = (modelElementTexture.uvs[0] + modelElementTexture.uvs[0] + modelElementTexture.uvs[2] + modelElementTexture.uvs[2]) / 4.0F;
 		float j = (modelElementTexture.uvs[1] + modelElementTexture.uvs[1] + modelElementTexture.uvs[3] + modelElementTexture.uvs[3]) / 4.0F;
@@ -69,14 +69,14 @@ public class BakedQuadFactory {
 		modelElementTexture.uvs[2] = MathHelper.lerp(h, modelElementTexture.uvs[2], i);
 		modelElementTexture.uvs[1] = MathHelper.lerp(h, modelElementTexture.uvs[1], j);
 		modelElementTexture.uvs[3] = MathHelper.lerp(h, modelElementTexture.uvs[3], j);
-		int[] is = this.method_3458(modelElementTexture, texture, side, this.method_3459(from, to), settings.getRotation(), rotation, shade);
-		Direction direction = method_3467(is);
+		int[] is = this.method_3458(modelElementTexture, sprite, direction, this.method_3459(vector3f, vector3f2), modelBakeSettings.getRotation(), modelRotation, bl);
+		Direction direction2 = method_3467(is);
 		System.arraycopy(fs, 0, modelElementTexture.uvs, 0, fs.length);
-		if (rotation == null) {
-			this.method_3462(is, direction);
+		if (modelRotation == null) {
+			this.method_3462(is, direction2);
 		}
 
-		return new BakedQuad(is, face.tintIndex, direction, texture);
+		return new BakedQuad(is, modelElementFace.tintIndex, direction2, sprite);
 	}
 
 	private ModelElementTexture uvLock(ModelElementTexture modelElementTexture, Direction direction, ModelRotation modelRotation) {
@@ -109,15 +109,15 @@ public class BakedQuadFactory {
 
 	private float method_3456(Direction direction) {
 		switch (direction) {
-			case DOWN:
+			case field_11033:
 				return 0.5F;
-			case UP:
+			case field_11036:
 				return 1.0F;
-			case NORTH:
-			case SOUTH:
+			case field_11043:
+			case field_11035:
 				return 0.8F;
-			case WEST:
-			case EAST:
+			case field_11039:
+			case field_11034:
 				return 0.6F;
 			default:
 				return 1.0F;
@@ -161,8 +161,8 @@ public class BakedQuadFactory {
 		is[l + 1] = Float.floatToRawIntBits(vector3f.getY());
 		is[l + 2] = Float.floatToRawIntBits(vector3f.getZ());
 		is[l + 3] = k;
-		is[l + 4] = Float.floatToRawIntBits(sprite.getFrameU((double)modelElementTexture.getU(j)));
-		is[l + 4 + 1] = Float.floatToRawIntBits(sprite.getFrameV((double)modelElementTexture.getV(j)));
+		is[l + 4] = Float.floatToRawIntBits(sprite.getU((double)modelElementTexture.getU(j)));
+		is[l + 4 + 1] = Float.floatToRawIntBits(sprite.getV((double)modelElementTexture.getV(j)));
 	}
 
 	private void method_3463(Vector3f vector3f, @Nullable net.minecraft.client.render.model.json.ModelRotation modelRotation) {
@@ -170,15 +170,15 @@ public class BakedQuadFactory {
 			Vector3f vector3f2;
 			Vector3f vector3f3;
 			switch (modelRotation.axis) {
-				case X:
+				case field_11048:
 					vector3f2 = new Vector3f(1.0F, 0.0F, 0.0F);
 					vector3f3 = new Vector3f(0.0F, 1.0F, 1.0F);
 					break;
-				case Y:
+				case field_11052:
 					vector3f2 = new Vector3f(0.0F, 1.0F, 0.0F);
 					vector3f3 = new Vector3f(1.0F, 0.0F, 1.0F);
 					break;
-				case Z:
+				case field_11051:
 					vector3f2 = new Vector3f(0.0F, 0.0F, 1.0F);
 					vector3f3 = new Vector3f(1.0F, 1.0F, 0.0F);
 					break;
@@ -204,7 +204,7 @@ public class BakedQuadFactory {
 	}
 
 	public int method_3455(Vector3f vector3f, Direction direction, int i, ModelRotation modelRotation) {
-		if (modelRotation == ModelRotation.X0_Y0) {
+		if (modelRotation == ModelRotation.field_5350) {
 			return i;
 		} else {
 			this.method_3464(vector3f, new Vector3f(0.5F, 0.5F, 0.5F), modelRotation.getQuaternion(), new Vector3f(1.0F, 1.0F, 1.0F));
@@ -215,7 +215,7 @@ public class BakedQuadFactory {
 	private void method_3464(Vector3f vector3f, Vector3f vector3f2, Quaternion quaternion, Vector3f vector3f3) {
 		Vector4f vector4f = new Vector4f(vector3f.getX() - vector3f2.getX(), vector3f.getY() - vector3f2.getY(), vector3f.getZ() - vector3f2.getZ(), 1.0F);
 		vector4f.method_4959(quaternion);
-		vector4f.multiplyComponentwise(vector3f3);
+		vector4f.multiply(vector3f3);
 		vector3f.set(vector4f.getX() + vector3f2.getX(), vector4f.getY() + vector3f2.getY(), vector4f.getZ() + vector3f2.getZ());
 	}
 
@@ -243,7 +243,7 @@ public class BakedQuadFactory {
 			}
 		}
 
-		return direction == null ? Direction.UP : direction;
+		return direction == null ? Direction.field_11036 : direction;
 	}
 
 	private void method_3462(int[] is, Direction direction) {
@@ -304,7 +304,7 @@ public class BakedQuadFactory {
 				float p = Float.intBitsToFloat(js[o]);
 				float q = Float.intBitsToFloat(js[o + 1]);
 				float r = Float.intBitsToFloat(js[o + 2]);
-				if (MathHelper.approximatelyEquals(hx, p) && MathHelper.approximatelyEquals(l, q) && MathHelper.approximatelyEquals(m, r)) {
+				if (MathHelper.equalsApproximate(hx, p) && MathHelper.equalsApproximate(l, q) && MathHelper.equalsApproximate(m, r)) {
 					is[k + 4] = js[o + 4];
 					is[k + 4 + 1] = js[o + 4 + 1];
 				}
@@ -321,102 +321,102 @@ public class BakedQuadFactory {
 	}
 
 	static {
-		method_3466(ModelRotation.X0_Y0, Direction.DOWN, field_4258);
-		method_3466(ModelRotation.X0_Y0, Direction.EAST, field_4258);
-		method_3466(ModelRotation.X0_Y0, Direction.NORTH, field_4258);
-		method_3466(ModelRotation.X0_Y0, Direction.SOUTH, field_4258);
-		method_3466(ModelRotation.X0_Y0, Direction.UP, field_4258);
-		method_3466(ModelRotation.X0_Y0, Direction.WEST, field_4258);
-		method_3466(ModelRotation.X0_Y90, Direction.EAST, field_4258);
-		method_3466(ModelRotation.X0_Y90, Direction.NORTH, field_4258);
-		method_3466(ModelRotation.X0_Y90, Direction.SOUTH, field_4258);
-		method_3466(ModelRotation.X0_Y90, Direction.WEST, field_4258);
-		method_3466(ModelRotation.X0_Y180, Direction.EAST, field_4258);
-		method_3466(ModelRotation.X0_Y180, Direction.NORTH, field_4258);
-		method_3466(ModelRotation.X0_Y180, Direction.SOUTH, field_4258);
-		method_3466(ModelRotation.X0_Y180, Direction.WEST, field_4258);
-		method_3466(ModelRotation.X0_Y270, Direction.EAST, field_4258);
-		method_3466(ModelRotation.X0_Y270, Direction.NORTH, field_4258);
-		method_3466(ModelRotation.X0_Y270, Direction.SOUTH, field_4258);
-		method_3466(ModelRotation.X0_Y270, Direction.WEST, field_4258);
-		method_3466(ModelRotation.X90_Y0, Direction.DOWN, field_4258);
-		method_3466(ModelRotation.X90_Y0, Direction.SOUTH, field_4258);
-		method_3466(ModelRotation.X90_Y90, Direction.DOWN, field_4258);
-		method_3466(ModelRotation.X90_Y180, Direction.DOWN, field_4258);
-		method_3466(ModelRotation.X90_Y180, Direction.NORTH, field_4258);
-		method_3466(ModelRotation.X90_Y270, Direction.DOWN, field_4258);
-		method_3466(ModelRotation.X180_Y0, Direction.DOWN, field_4258);
-		method_3466(ModelRotation.X180_Y0, Direction.UP, field_4258);
-		method_3466(ModelRotation.X270_Y0, Direction.SOUTH, field_4258);
-		method_3466(ModelRotation.X270_Y0, Direction.UP, field_4258);
-		method_3466(ModelRotation.X270_Y90, Direction.UP, field_4258);
-		method_3466(ModelRotation.X270_Y180, Direction.NORTH, field_4258);
-		method_3466(ModelRotation.X270_Y180, Direction.UP, field_4258);
-		method_3466(ModelRotation.X270_Y270, Direction.UP, field_4258);
-		method_3466(ModelRotation.X0_Y270, Direction.UP, field_4261);
-		method_3466(ModelRotation.X0_Y90, Direction.DOWN, field_4261);
-		method_3466(ModelRotation.X90_Y0, Direction.WEST, field_4261);
-		method_3466(ModelRotation.X90_Y90, Direction.WEST, field_4261);
-		method_3466(ModelRotation.X90_Y180, Direction.WEST, field_4261);
-		method_3466(ModelRotation.X90_Y270, Direction.NORTH, field_4261);
-		method_3466(ModelRotation.X90_Y270, Direction.SOUTH, field_4261);
-		method_3466(ModelRotation.X90_Y270, Direction.WEST, field_4261);
-		method_3466(ModelRotation.X180_Y90, Direction.UP, field_4261);
-		method_3466(ModelRotation.X180_Y270, Direction.DOWN, field_4261);
-		method_3466(ModelRotation.X270_Y0, Direction.EAST, field_4261);
-		method_3466(ModelRotation.X270_Y90, Direction.EAST, field_4261);
-		method_3466(ModelRotation.X270_Y90, Direction.NORTH, field_4261);
-		method_3466(ModelRotation.X270_Y90, Direction.SOUTH, field_4261);
-		method_3466(ModelRotation.X270_Y180, Direction.EAST, field_4261);
-		method_3466(ModelRotation.X270_Y270, Direction.EAST, field_4261);
-		method_3466(ModelRotation.X0_Y180, Direction.DOWN, field_4262);
-		method_3466(ModelRotation.X0_Y180, Direction.UP, field_4262);
-		method_3466(ModelRotation.X90_Y0, Direction.NORTH, field_4262);
-		method_3466(ModelRotation.X90_Y0, Direction.UP, field_4262);
-		method_3466(ModelRotation.X90_Y90, Direction.UP, field_4262);
-		method_3466(ModelRotation.X90_Y180, Direction.SOUTH, field_4262);
-		method_3466(ModelRotation.X90_Y180, Direction.UP, field_4262);
-		method_3466(ModelRotation.X90_Y270, Direction.UP, field_4262);
-		method_3466(ModelRotation.X180_Y0, Direction.EAST, field_4262);
-		method_3466(ModelRotation.X180_Y0, Direction.NORTH, field_4262);
-		method_3466(ModelRotation.X180_Y0, Direction.SOUTH, field_4262);
-		method_3466(ModelRotation.X180_Y0, Direction.WEST, field_4262);
-		method_3466(ModelRotation.X180_Y90, Direction.EAST, field_4262);
-		method_3466(ModelRotation.X180_Y90, Direction.NORTH, field_4262);
-		method_3466(ModelRotation.X180_Y90, Direction.SOUTH, field_4262);
-		method_3466(ModelRotation.X180_Y90, Direction.WEST, field_4262);
-		method_3466(ModelRotation.X180_Y180, Direction.DOWN, field_4262);
-		method_3466(ModelRotation.X180_Y180, Direction.EAST, field_4262);
-		method_3466(ModelRotation.X180_Y180, Direction.NORTH, field_4262);
-		method_3466(ModelRotation.X180_Y180, Direction.SOUTH, field_4262);
-		method_3466(ModelRotation.X180_Y180, Direction.UP, field_4262);
-		method_3466(ModelRotation.X180_Y180, Direction.WEST, field_4262);
-		method_3466(ModelRotation.X180_Y270, Direction.EAST, field_4262);
-		method_3466(ModelRotation.X180_Y270, Direction.NORTH, field_4262);
-		method_3466(ModelRotation.X180_Y270, Direction.SOUTH, field_4262);
-		method_3466(ModelRotation.X180_Y270, Direction.WEST, field_4262);
-		method_3466(ModelRotation.X270_Y0, Direction.DOWN, field_4262);
-		method_3466(ModelRotation.X270_Y0, Direction.NORTH, field_4262);
-		method_3466(ModelRotation.X270_Y90, Direction.DOWN, field_4262);
-		method_3466(ModelRotation.X270_Y180, Direction.DOWN, field_4262);
-		method_3466(ModelRotation.X270_Y180, Direction.SOUTH, field_4262);
-		method_3466(ModelRotation.X270_Y270, Direction.DOWN, field_4262);
-		method_3466(ModelRotation.X0_Y90, Direction.UP, field_4263);
-		method_3466(ModelRotation.X0_Y270, Direction.DOWN, field_4263);
-		method_3466(ModelRotation.X90_Y0, Direction.EAST, field_4263);
-		method_3466(ModelRotation.X90_Y90, Direction.EAST, field_4263);
-		method_3466(ModelRotation.X90_Y90, Direction.NORTH, field_4263);
-		method_3466(ModelRotation.X90_Y90, Direction.SOUTH, field_4263);
-		method_3466(ModelRotation.X90_Y180, Direction.EAST, field_4263);
-		method_3466(ModelRotation.X90_Y270, Direction.EAST, field_4263);
-		method_3466(ModelRotation.X270_Y0, Direction.WEST, field_4263);
-		method_3466(ModelRotation.X180_Y90, Direction.DOWN, field_4263);
-		method_3466(ModelRotation.X180_Y270, Direction.UP, field_4263);
-		method_3466(ModelRotation.X270_Y90, Direction.WEST, field_4263);
-		method_3466(ModelRotation.X270_Y180, Direction.WEST, field_4263);
-		method_3466(ModelRotation.X270_Y270, Direction.NORTH, field_4263);
-		method_3466(ModelRotation.X270_Y270, Direction.SOUTH, field_4263);
-		method_3466(ModelRotation.X270_Y270, Direction.WEST, field_4263);
+		method_3466(ModelRotation.field_5350, Direction.field_11033, field_4258);
+		method_3466(ModelRotation.field_5350, Direction.field_11034, field_4258);
+		method_3466(ModelRotation.field_5350, Direction.field_11043, field_4258);
+		method_3466(ModelRotation.field_5350, Direction.field_11035, field_4258);
+		method_3466(ModelRotation.field_5350, Direction.field_11036, field_4258);
+		method_3466(ModelRotation.field_5350, Direction.field_11039, field_4258);
+		method_3466(ModelRotation.field_5366, Direction.field_11034, field_4258);
+		method_3466(ModelRotation.field_5366, Direction.field_11043, field_4258);
+		method_3466(ModelRotation.field_5366, Direction.field_11035, field_4258);
+		method_3466(ModelRotation.field_5366, Direction.field_11039, field_4258);
+		method_3466(ModelRotation.field_5355, Direction.field_11034, field_4258);
+		method_3466(ModelRotation.field_5355, Direction.field_11043, field_4258);
+		method_3466(ModelRotation.field_5355, Direction.field_11035, field_4258);
+		method_3466(ModelRotation.field_5355, Direction.field_11039, field_4258);
+		method_3466(ModelRotation.field_5347, Direction.field_11034, field_4258);
+		method_3466(ModelRotation.field_5347, Direction.field_11043, field_4258);
+		method_3466(ModelRotation.field_5347, Direction.field_11035, field_4258);
+		method_3466(ModelRotation.field_5347, Direction.field_11039, field_4258);
+		method_3466(ModelRotation.field_5351, Direction.field_11033, field_4258);
+		method_3466(ModelRotation.field_5351, Direction.field_11035, field_4258);
+		method_3466(ModelRotation.field_5360, Direction.field_11033, field_4258);
+		method_3466(ModelRotation.field_5367, Direction.field_11033, field_4258);
+		method_3466(ModelRotation.field_5367, Direction.field_11043, field_4258);
+		method_3466(ModelRotation.field_5354, Direction.field_11033, field_4258);
+		method_3466(ModelRotation.field_5358, Direction.field_11033, field_4258);
+		method_3466(ModelRotation.field_5358, Direction.field_11036, field_4258);
+		method_3466(ModelRotation.field_5353, Direction.field_11035, field_4258);
+		method_3466(ModelRotation.field_5353, Direction.field_11036, field_4258);
+		method_3466(ModelRotation.field_5349, Direction.field_11036, field_4258);
+		method_3466(ModelRotation.field_5361, Direction.field_11043, field_4258);
+		method_3466(ModelRotation.field_5361, Direction.field_11036, field_4258);
+		method_3466(ModelRotation.field_5352, Direction.field_11036, field_4258);
+		method_3466(ModelRotation.field_5347, Direction.field_11036, field_4261);
+		method_3466(ModelRotation.field_5366, Direction.field_11033, field_4261);
+		method_3466(ModelRotation.field_5351, Direction.field_11039, field_4261);
+		method_3466(ModelRotation.field_5360, Direction.field_11039, field_4261);
+		method_3466(ModelRotation.field_5367, Direction.field_11039, field_4261);
+		method_3466(ModelRotation.field_5354, Direction.field_11043, field_4261);
+		method_3466(ModelRotation.field_5354, Direction.field_11035, field_4261);
+		method_3466(ModelRotation.field_5354, Direction.field_11039, field_4261);
+		method_3466(ModelRotation.field_5348, Direction.field_11036, field_4261);
+		method_3466(ModelRotation.field_5359, Direction.field_11033, field_4261);
+		method_3466(ModelRotation.field_5353, Direction.field_11034, field_4261);
+		method_3466(ModelRotation.field_5349, Direction.field_11034, field_4261);
+		method_3466(ModelRotation.field_5349, Direction.field_11043, field_4261);
+		method_3466(ModelRotation.field_5349, Direction.field_11035, field_4261);
+		method_3466(ModelRotation.field_5361, Direction.field_11034, field_4261);
+		method_3466(ModelRotation.field_5352, Direction.field_11034, field_4261);
+		method_3466(ModelRotation.field_5355, Direction.field_11033, field_4262);
+		method_3466(ModelRotation.field_5355, Direction.field_11036, field_4262);
+		method_3466(ModelRotation.field_5351, Direction.field_11043, field_4262);
+		method_3466(ModelRotation.field_5351, Direction.field_11036, field_4262);
+		method_3466(ModelRotation.field_5360, Direction.field_11036, field_4262);
+		method_3466(ModelRotation.field_5367, Direction.field_11035, field_4262);
+		method_3466(ModelRotation.field_5367, Direction.field_11036, field_4262);
+		method_3466(ModelRotation.field_5354, Direction.field_11036, field_4262);
+		method_3466(ModelRotation.field_5358, Direction.field_11034, field_4262);
+		method_3466(ModelRotation.field_5358, Direction.field_11043, field_4262);
+		method_3466(ModelRotation.field_5358, Direction.field_11035, field_4262);
+		method_3466(ModelRotation.field_5358, Direction.field_11039, field_4262);
+		method_3466(ModelRotation.field_5348, Direction.field_11034, field_4262);
+		method_3466(ModelRotation.field_5348, Direction.field_11043, field_4262);
+		method_3466(ModelRotation.field_5348, Direction.field_11035, field_4262);
+		method_3466(ModelRotation.field_5348, Direction.field_11039, field_4262);
+		method_3466(ModelRotation.field_5356, Direction.field_11033, field_4262);
+		method_3466(ModelRotation.field_5356, Direction.field_11034, field_4262);
+		method_3466(ModelRotation.field_5356, Direction.field_11043, field_4262);
+		method_3466(ModelRotation.field_5356, Direction.field_11035, field_4262);
+		method_3466(ModelRotation.field_5356, Direction.field_11036, field_4262);
+		method_3466(ModelRotation.field_5356, Direction.field_11039, field_4262);
+		method_3466(ModelRotation.field_5359, Direction.field_11034, field_4262);
+		method_3466(ModelRotation.field_5359, Direction.field_11043, field_4262);
+		method_3466(ModelRotation.field_5359, Direction.field_11035, field_4262);
+		method_3466(ModelRotation.field_5359, Direction.field_11039, field_4262);
+		method_3466(ModelRotation.field_5353, Direction.field_11033, field_4262);
+		method_3466(ModelRotation.field_5353, Direction.field_11043, field_4262);
+		method_3466(ModelRotation.field_5349, Direction.field_11033, field_4262);
+		method_3466(ModelRotation.field_5361, Direction.field_11033, field_4262);
+		method_3466(ModelRotation.field_5361, Direction.field_11035, field_4262);
+		method_3466(ModelRotation.field_5352, Direction.field_11033, field_4262);
+		method_3466(ModelRotation.field_5366, Direction.field_11036, field_4263);
+		method_3466(ModelRotation.field_5347, Direction.field_11033, field_4263);
+		method_3466(ModelRotation.field_5351, Direction.field_11034, field_4263);
+		method_3466(ModelRotation.field_5360, Direction.field_11034, field_4263);
+		method_3466(ModelRotation.field_5360, Direction.field_11043, field_4263);
+		method_3466(ModelRotation.field_5360, Direction.field_11035, field_4263);
+		method_3466(ModelRotation.field_5367, Direction.field_11034, field_4263);
+		method_3466(ModelRotation.field_5354, Direction.field_11034, field_4263);
+		method_3466(ModelRotation.field_5353, Direction.field_11039, field_4263);
+		method_3466(ModelRotation.field_5348, Direction.field_11033, field_4263);
+		method_3466(ModelRotation.field_5359, Direction.field_11036, field_4263);
+		method_3466(ModelRotation.field_5349, Direction.field_11039, field_4263);
+		method_3466(ModelRotation.field_5361, Direction.field_11039, field_4263);
+		method_3466(ModelRotation.field_5352, Direction.field_11043, field_4263);
+		method_3466(ModelRotation.field_5352, Direction.field_11035, field_4263);
+		method_3466(ModelRotation.field_5352, Direction.field_11039, field_4263);
 	}
 
 	@Environment(EnvType.CLIENT)

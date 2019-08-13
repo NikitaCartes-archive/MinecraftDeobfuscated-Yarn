@@ -20,23 +20,23 @@ public class EndCrystalItem extends Item {
 	}
 
 	@Override
-	public ActionResult useOnBlock(ItemUsageContext context) {
-		World world = context.getWorld();
-		BlockPos blockPos = context.getBlockPos();
+	public ActionResult useOnBlock(ItemUsageContext itemUsageContext) {
+		World world = itemUsageContext.getWorld();
+		BlockPos blockPos = itemUsageContext.getBlockPos();
 		BlockState blockState = world.getBlockState(blockPos);
-		if (blockState.getBlock() != Blocks.OBSIDIAN && blockState.getBlock() != Blocks.BEDROCK) {
-			return ActionResult.FAIL;
+		if (blockState.getBlock() != Blocks.field_10540 && blockState.getBlock() != Blocks.field_9987) {
+			return ActionResult.field_5814;
 		} else {
 			BlockPos blockPos2 = blockPos.up();
 			if (!world.isAir(blockPos2)) {
-				return ActionResult.FAIL;
+				return ActionResult.field_5814;
 			} else {
 				double d = (double)blockPos2.getX();
 				double e = (double)blockPos2.getY();
 				double f = (double)blockPos2.getZ();
 				List<Entity> list = world.getEntities(null, new Box(d, e, f, d + 1.0, e + 2.0, f + 1.0));
 				if (!list.isEmpty()) {
-					return ActionResult.FAIL;
+					return ActionResult.field_5814;
 				} else {
 					if (!world.isClient) {
 						EnderCrystalEntity enderCrystalEntity = new EnderCrystalEntity(world, d + 0.5, e, f + 0.5);
@@ -48,8 +48,8 @@ public class EndCrystalItem extends Item {
 						}
 					}
 
-					context.getStack().decrement(1);
-					return ActionResult.SUCCESS;
+					itemUsageContext.getStack().decrement(1);
+					return ActionResult.field_5812;
 				}
 			}
 		}
@@ -57,7 +57,7 @@ public class EndCrystalItem extends Item {
 
 	@Environment(EnvType.CLIENT)
 	@Override
-	public boolean hasEnchantmentGlint(ItemStack stack) {
+	public boolean hasEnchantmentGlint(ItemStack itemStack) {
 		return true;
 	}
 }

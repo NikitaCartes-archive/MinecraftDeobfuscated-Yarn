@@ -10,8 +10,8 @@ import net.minecraft.structure.Structure;
 import net.minecraft.structure.StructureManager;
 import net.minecraft.util.BlockRotation;
 import net.minecraft.util.DynamicDeserializer;
-import net.minecraft.util.math.BlockBox;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.MutableIntBoundingBox;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.world.IWorld;
 
@@ -20,7 +20,7 @@ public class ListPoolElement extends StructurePoolElement {
 
 	@Deprecated
 	public ListPoolElement(List<StructurePoolElement> list) {
-		this(list, StructurePool.Projection.RIGID);
+		this(list, StructurePool.Projection.field_16687);
 	}
 
 	public ListPoolElement(List<StructurePoolElement> list, StructurePool.Projection projection) {
@@ -45,26 +45,30 @@ public class ListPoolElement extends StructurePoolElement {
 	}
 
 	@Override
-	public List<Structure.StructureBlockInfo> getStructureBlockInfos(StructureManager structureManager, BlockPos pos, BlockRotation rotation, Random random) {
-		return ((StructurePoolElement)this.elements.get(0)).getStructureBlockInfos(structureManager, pos, rotation, random);
+	public List<Structure.StructureBlockInfo> getStructureBlockInfos(
+		StructureManager structureManager, BlockPos blockPos, BlockRotation blockRotation, Random random
+	) {
+		return ((StructurePoolElement)this.elements.get(0)).getStructureBlockInfos(structureManager, blockPos, blockRotation, random);
 	}
 
 	@Override
-	public BlockBox getBoundingBox(StructureManager structureManager, BlockPos pos, BlockRotation rotation) {
-		BlockBox blockBox = BlockBox.empty();
+	public MutableIntBoundingBox getBoundingBox(StructureManager structureManager, BlockPos blockPos, BlockRotation blockRotation) {
+		MutableIntBoundingBox mutableIntBoundingBox = MutableIntBoundingBox.empty();
 
 		for (StructurePoolElement structurePoolElement : this.elements) {
-			BlockBox blockBox2 = structurePoolElement.getBoundingBox(structureManager, pos, rotation);
-			blockBox.encompass(blockBox2);
+			MutableIntBoundingBox mutableIntBoundingBox2 = structurePoolElement.getBoundingBox(structureManager, blockPos, blockRotation);
+			mutableIntBoundingBox.setFrom(mutableIntBoundingBox2);
 		}
 
-		return blockBox;
+		return mutableIntBoundingBox;
 	}
 
 	@Override
-	public boolean generate(StructureManager structureManager, IWorld world, BlockPos pos, BlockRotation rotation, BlockBox boundingBox, Random random) {
+	public boolean generate(
+		StructureManager structureManager, IWorld iWorld, BlockPos blockPos, BlockRotation blockRotation, MutableIntBoundingBox mutableIntBoundingBox, Random random
+	) {
 		for (StructurePoolElement structurePoolElement : this.elements) {
-			if (!structurePoolElement.generate(structureManager, world, pos, rotation, boundingBox, random)) {
+			if (!structurePoolElement.generate(structureManager, iWorld, blockPos, blockRotation, mutableIntBoundingBox, random)) {
 				return false;
 			}
 		}
@@ -74,7 +78,7 @@ public class ListPoolElement extends StructurePoolElement {
 
 	@Override
 	public StructurePoolElementType getType() {
-		return StructurePoolElementType.LIST_POOL_ELEMENT;
+		return StructurePoolElementType.field_16974;
 	}
 
 	@Override

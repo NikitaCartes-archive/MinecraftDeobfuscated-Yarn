@@ -12,37 +12,37 @@ public class SuspiciousStewItem extends Item {
 		super(settings);
 	}
 
-	public static void addEffectToStew(ItemStack stew, StatusEffect effect, int duration) {
-		CompoundTag compoundTag = stew.getOrCreateTag();
+	public static void addEffectToStew(ItemStack itemStack, StatusEffect statusEffect, int i) {
+		CompoundTag compoundTag = itemStack.getOrCreateTag();
 		ListTag listTag = compoundTag.getList("Effects", 9);
 		CompoundTag compoundTag2 = new CompoundTag();
-		compoundTag2.putByte("EffectId", (byte)StatusEffect.getRawId(effect));
-		compoundTag2.putInt("EffectDuration", duration);
+		compoundTag2.putByte("EffectId", (byte)StatusEffect.getRawId(statusEffect));
+		compoundTag2.putInt("EffectDuration", i);
 		listTag.add(compoundTag2);
 		compoundTag.put("Effects", listTag);
 	}
 
 	@Override
-	public ItemStack finishUsing(ItemStack stack, World world, LivingEntity user) {
-		super.finishUsing(stack, world, user);
-		CompoundTag compoundTag = stack.getTag();
-		if (compoundTag != null && compoundTag.contains("Effects", 9)) {
+	public ItemStack finishUsing(ItemStack itemStack, World world, LivingEntity livingEntity) {
+		super.finishUsing(itemStack, world, livingEntity);
+		CompoundTag compoundTag = itemStack.getTag();
+		if (compoundTag != null && compoundTag.containsKey("Effects", 9)) {
 			ListTag listTag = compoundTag.getList("Effects", 10);
 
 			for (int i = 0; i < listTag.size(); i++) {
 				int j = 160;
-				CompoundTag compoundTag2 = listTag.getCompound(i);
-				if (compoundTag2.contains("EffectDuration", 3)) {
+				CompoundTag compoundTag2 = listTag.getCompoundTag(i);
+				if (compoundTag2.containsKey("EffectDuration", 3)) {
 					j = compoundTag2.getInt("EffectDuration");
 				}
 
 				StatusEffect statusEffect = StatusEffect.byRawId(compoundTag2.getByte("EffectId"));
 				if (statusEffect != null) {
-					user.addStatusEffect(new StatusEffectInstance(statusEffect, j));
+					livingEntity.addPotionEffect(new StatusEffectInstance(statusEffect, j));
 				}
 			}
 		}
 
-		return new ItemStack(Items.BOWL);
+		return new ItemStack(Items.field_8428);
 	}
 }

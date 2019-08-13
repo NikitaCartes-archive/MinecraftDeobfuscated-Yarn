@@ -16,11 +16,11 @@ public class SquidEntityRenderer extends MobEntityRenderer<SquidEntity, SquidEnt
 		super(entityRenderDispatcher, new SquidEntityModel<>(), 0.7F);
 	}
 
-	protected Identifier getTexture(SquidEntity squidEntity) {
+	protected Identifier method_4127(SquidEntity squidEntity) {
 		return SKIN;
 	}
 
-	protected void setupTransforms(SquidEntity squidEntity, float f, float g, float h) {
+	protected void method_4126(SquidEntity squidEntity, float f, float g, float h) {
 		float i = MathHelper.lerp(h, squidEntity.field_6905, squidEntity.field_6907);
 		float j = MathHelper.lerp(h, squidEntity.field_6906, squidEntity.field_6903);
 		GlStateManager.translatef(0.0F, 0.5F, 0.0F);
@@ -30,7 +30,7 @@ public class SquidEntityRenderer extends MobEntityRenderer<SquidEntity, SquidEnt
 		GlStateManager.translatef(0.0F, -1.2F, 0.0F);
 	}
 
-	protected float getAnimationProgress(SquidEntity squidEntity, float f) {
+	protected float method_4125(SquidEntity squidEntity, float f) {
 		return MathHelper.lerp(f, squidEntity.field_6900, squidEntity.field_6904);
 	}
 }

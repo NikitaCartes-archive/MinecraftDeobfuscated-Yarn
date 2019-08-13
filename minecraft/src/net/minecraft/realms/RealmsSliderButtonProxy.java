@@ -20,8 +20,8 @@ public class RealmsSliderButtonProxy extends SliderWidget implements RealmsAbstr
 	}
 
 	@Override
-	public void active(boolean enabled) {
-		this.active = enabled;
+	public void active(boolean bl) {
+		this.active = bl;
 	}
 
 	@Override
@@ -30,13 +30,13 @@ public class RealmsSliderButtonProxy extends SliderWidget implements RealmsAbstr
 	}
 
 	@Override
-	public void setVisible(boolean visible) {
-		this.visible = visible;
+	public void setVisible(boolean bl) {
+		this.visible = bl;
 	}
 
 	@Override
-	public void setMessage(String value) {
-		super.setMessage(value);
+	public void setMessage(String string) {
+		super.setMessage(string);
 	}
 
 	@Override
@@ -49,13 +49,13 @@ public class RealmsSliderButtonProxy extends SliderWidget implements RealmsAbstr
 	}
 
 	@Override
-	public void onClick(double mouseX, double mouseY) {
-		this.button.onClick(mouseX, mouseY);
+	public void onClick(double d, double e) {
+		this.button.onClick(d, e);
 	}
 
 	@Override
-	public void onRelease(double mouseX, double mouseY) {
-		this.button.onRelease(mouseX, mouseY);
+	public void onRelease(double d, double e) {
+		this.button.onRelease(d, e);
 	}
 
 	@Override
@@ -78,8 +78,8 @@ public class RealmsSliderButtonProxy extends SliderWidget implements RealmsAbstr
 	}
 
 	@Override
-	public void renderBg(MinecraftClient client, int mouseX, int mouseY) {
-		super.renderBg(client, mouseX, mouseY);
+	public void renderBg(MinecraftClient minecraftClient, int i, int j) {
+		super.renderBg(minecraftClient, i, j);
 	}
 
 	public RealmsSliderButton getButton() {
@@ -87,8 +87,8 @@ public class RealmsSliderButtonProxy extends SliderWidget implements RealmsAbstr
 	}
 
 	@Override
-	public int getYImage(boolean isHovered) {
-		return this.button.getYImage(isHovered);
+	public int getYImage(boolean bl) {
+		return this.button.getYImage(bl);
 	}
 
 	public int getSuperYImage(boolean bl) {

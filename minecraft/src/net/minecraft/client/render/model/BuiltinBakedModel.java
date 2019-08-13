@@ -18,14 +18,14 @@ public class BuiltinBakedModel implements BakedModel {
 	private final ModelItemPropertyOverrideList itemPropertyOverrides;
 	private final Sprite sprite;
 
-	public BuiltinBakedModel(ModelTransformation transformation, ModelItemPropertyOverrideList itemPropertyOverrides, Sprite sprite) {
-		this.transformation = transformation;
-		this.itemPropertyOverrides = itemPropertyOverrides;
+	public BuiltinBakedModel(ModelTransformation modelTransformation, ModelItemPropertyOverrideList modelItemPropertyOverrideList, Sprite sprite) {
+		this.transformation = modelTransformation;
+		this.itemPropertyOverrides = modelItemPropertyOverrideList;
 		this.sprite = sprite;
 	}
 
 	@Override
-	public List<BakedQuad> getQuads(@Nullable BlockState state, @Nullable Direction face, Random random) {
+	public List<BakedQuad> getQuads(@Nullable BlockState blockState, @Nullable Direction direction, Random random) {
 		return Collections.emptyList();
 	}
 
@@ -35,7 +35,7 @@ public class BuiltinBakedModel implements BakedModel {
 	}
 
 	@Override
-	public boolean hasDepth() {
+	public boolean hasDepthInGui() {
 		return true;
 	}
 

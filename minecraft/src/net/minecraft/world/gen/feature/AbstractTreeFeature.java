@@ -14,9 +14,9 @@ import net.minecraft.block.Material;
 import net.minecraft.state.property.Properties;
 import net.minecraft.structure.Structure;
 import net.minecraft.tag.BlockTags;
-import net.minecraft.util.math.BlockBox;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
+import net.minecraft.util.math.MutableIntBoundingBox;
 import net.minecraft.util.shape.BitSetVoxelSet;
 import net.minecraft.util.shape.VoxelSet;
 import net.minecraft.world.IWorld;
@@ -27,83 +27,85 @@ import net.minecraft.world.gen.chunk.ChunkGenerator;
 import net.minecraft.world.gen.chunk.ChunkGeneratorConfig;
 
 public abstract class AbstractTreeFeature<T extends FeatureConfig> extends Feature<T> {
-	public AbstractTreeFeature(Function<Dynamic<?>, ? extends T> configFactory, boolean emitNeighborBlockUpdates) {
-		super(configFactory, emitNeighborBlockUpdates);
+	public AbstractTreeFeature(Function<Dynamic<?>, ? extends T> function, boolean bl) {
+		super(function, bl);
 	}
 
-	protected static boolean canTreeReplace(TestableWorld world, BlockPos pos) {
-		return world.testBlockState(
-			pos,
+	protected static boolean canTreeReplace(TestableWorld testableWorld, BlockPos blockPos) {
+		return testableWorld.testBlockState(
+			blockPos,
 			blockState -> {
 				Block block = blockState.getBlock();
 				return blockState.isAir()
-					|| blockState.matches(BlockTags.LEAVES)
-					|| block == Blocks.GRASS_BLOCK
+					|| blockState.matches(BlockTags.field_15503)
+					|| block == Blocks.field_10219
 					|| Block.isNaturalDirt(block)
-					|| block.matches(BlockTags.LOGS)
-					|| block.matches(BlockTags.SAPLINGS)
-					|| block == Blocks.VINE;
+					|| block.matches(BlockTags.field_15475)
+					|| block.matches(BlockTags.field_15462)
+					|| block == Blocks.field_10597;
 			}
 		);
 	}
 
-	protected static boolean isAir(TestableWorld world, BlockPos pos) {
-		return world.testBlockState(pos, BlockState::isAir);
+	protected static boolean isAir(TestableWorld testableWorld, BlockPos blockPos) {
+		return testableWorld.testBlockState(blockPos, BlockState::isAir);
 	}
 
-	protected static boolean isNaturalDirt(TestableWorld world, BlockPos pos) {
-		return world.testBlockState(pos, blockState -> Block.isNaturalDirt(blockState.getBlock()));
+	protected static boolean isNaturalDirt(TestableWorld testableWorld, BlockPos blockPos) {
+		return testableWorld.testBlockState(blockPos, blockState -> Block.isNaturalDirt(blockState.getBlock()));
 	}
 
-	protected static boolean isWater(TestableWorld world, BlockPos pos) {
-		return world.testBlockState(pos, blockState -> blockState.getBlock() == Blocks.WATER);
+	protected static boolean isWater(TestableWorld testableWorld, BlockPos blockPos) {
+		return testableWorld.testBlockState(blockPos, blockState -> blockState.getBlock() == Blocks.field_10382);
 	}
 
-	protected static boolean isLeaves(TestableWorld world, BlockPos pos) {
-		return world.testBlockState(pos, blockState -> blockState.matches(BlockTags.LEAVES));
+	protected static boolean isLeaves(TestableWorld testableWorld, BlockPos blockPos) {
+		return testableWorld.testBlockState(blockPos, blockState -> blockState.matches(BlockTags.field_15503));
 	}
 
-	protected static boolean isAirOrLeaves(TestableWorld world, BlockPos pos) {
-		return world.testBlockState(pos, blockState -> blockState.isAir() || blockState.matches(BlockTags.LEAVES));
+	protected static boolean isAirOrLeaves(TestableWorld testableWorld, BlockPos blockPos) {
+		return testableWorld.testBlockState(blockPos, blockState -> blockState.isAir() || blockState.matches(BlockTags.field_15503));
 	}
 
-	protected static boolean isNaturalDirtOrGrass(TestableWorld world, BlockPos pos) {
-		return world.testBlockState(pos, blockState -> {
+	protected static boolean isNaturalDirtOrGrass(TestableWorld testableWorld, BlockPos blockPos) {
+		return testableWorld.testBlockState(blockPos, blockState -> {
 			Block block = blockState.getBlock();
-			return Block.isNaturalDirt(block) || block == Blocks.GRASS_BLOCK;
+			return Block.isNaturalDirt(block) || block == Blocks.field_10219;
 		});
 	}
 
-	protected static boolean isDirtOrGrass(TestableWorld world, BlockPos pos) {
-		return world.testBlockState(pos, blockState -> {
+	protected static boolean isDirtOrGrass(TestableWorld testableWorld, BlockPos blockPos) {
+		return testableWorld.testBlockState(blockPos, blockState -> {
 			Block block = blockState.getBlock();
-			return Block.isNaturalDirt(block) || block == Blocks.GRASS_BLOCK || block == Blocks.FARMLAND;
+			return Block.isNaturalDirt(block) || block == Blocks.field_10219 || block == Blocks.field_10362;
 		});
 	}
 
-	protected static boolean isReplaceablePlant(TestableWorld world, BlockPos pos) {
-		return world.testBlockState(pos, blockState -> {
+	protected static boolean isReplaceablePlant(TestableWorld testableWorld, BlockPos blockPos) {
+		return testableWorld.testBlockState(blockPos, blockState -> {
 			Material material = blockState.getMaterial();
 			return material == Material.REPLACEABLE_PLANT;
 		});
 	}
 
-	protected void setToDirt(ModifiableTestableWorld world, BlockPos pos) {
-		if (!isNaturalDirt(world, pos)) {
-			this.setBlockState(world, pos, Blocks.DIRT.getDefaultState());
+	protected void setToDirt(ModifiableTestableWorld modifiableTestableWorld, BlockPos blockPos) {
+		if (!isNaturalDirt(modifiableTestableWorld, blockPos)) {
+			this.setBlockState(modifiableTestableWorld, blockPos, Blocks.field_10566.getDefaultState());
 		}
 	}
 
 	@Override
-	protected void setBlockState(ModifiableWorld world, BlockPos pos, BlockState state) {
-		this.setBlockStateWithoutUpdatingNeighbors(world, pos, state);
+	protected void setBlockState(ModifiableWorld modifiableWorld, BlockPos blockPos, BlockState blockState) {
+		this.setBlockStateWithoutUpdatingNeighbors(modifiableWorld, blockPos, blockState);
 	}
 
-	protected final void setBlockState(Set<BlockPos> logPositions, ModifiableWorld world, BlockPos pos, BlockState state, BlockBox blockBox) {
-		this.setBlockStateWithoutUpdatingNeighbors(world, pos, state);
-		blockBox.encompass(new BlockBox(pos, pos));
-		if (BlockTags.LOGS.contains(state.getBlock())) {
-			logPositions.add(pos.toImmutable());
+	protected final void setBlockState(
+		Set<BlockPos> set, ModifiableWorld modifiableWorld, BlockPos blockPos, BlockState blockState, MutableIntBoundingBox mutableIntBoundingBox
+	) {
+		this.setBlockStateWithoutUpdatingNeighbors(modifiableWorld, blockPos, blockState);
+		mutableIntBoundingBox.setFrom(new MutableIntBoundingBox(blockPos, blockPos));
+		if (BlockTags.field_15475.contains(blockState.getBlock())) {
+			set.add(blockPos.toImmutable());
 		}
 	}
 
@@ -116,11 +118,11 @@ public abstract class AbstractTreeFeature<T extends FeatureConfig> extends Featu
 	}
 
 	@Override
-	public final boolean generate(IWorld world, ChunkGenerator<? extends ChunkGeneratorConfig> generator, Random random, BlockPos pos, T config) {
+	public final boolean generate(IWorld iWorld, ChunkGenerator<? extends ChunkGeneratorConfig> chunkGenerator, Random random, BlockPos blockPos, T featureConfig) {
 		Set<BlockPos> set = Sets.<BlockPos>newHashSet();
-		BlockBox blockBox = BlockBox.empty();
-		boolean bl = this.generate(set, world, random, pos, blockBox);
-		if (blockBox.minX > blockBox.maxX) {
+		MutableIntBoundingBox mutableIntBoundingBox = MutableIntBoundingBox.empty();
+		boolean bl = this.generate(set, iWorld, random, blockPos, mutableIntBoundingBox);
+		if (mutableIntBoundingBox.minX > mutableIntBoundingBox.maxX) {
 			return false;
 		} else {
 			List<Set<BlockPos>> list = Lists.<Set<BlockPos>>newArrayList();
@@ -130,24 +132,34 @@ public abstract class AbstractTreeFeature<T extends FeatureConfig> extends Featu
 				list.add(Sets.newHashSet());
 			}
 
-			VoxelSet voxelSet = new BitSetVoxelSet(blockBox.getBlockCountX(), blockBox.getBlockCountY(), blockBox.getBlockCountZ());
+			VoxelSet voxelSet = new BitSetVoxelSet(
+				mutableIntBoundingBox.getBlockCountX(), mutableIntBoundingBox.getBlockCountY(), mutableIntBoundingBox.getBlockCountZ()
+			);
 
 			try (BlockPos.PooledMutable pooledMutable = BlockPos.PooledMutable.get()) {
 				if (bl && !set.isEmpty()) {
-					for (BlockPos blockPos : Lists.newArrayList(set)) {
-						if (blockBox.contains(blockPos)) {
-							voxelSet.set(blockPos.getX() - blockBox.minX, blockPos.getY() - blockBox.minY, blockPos.getZ() - blockBox.minZ, true, true);
+					for (BlockPos blockPos2 : Lists.newArrayList(set)) {
+						if (mutableIntBoundingBox.contains(blockPos2)) {
+							voxelSet.set(
+								blockPos2.getX() - mutableIntBoundingBox.minX, blockPos2.getY() - mutableIntBoundingBox.minY, blockPos2.getZ() - mutableIntBoundingBox.minZ, true, true
+							);
 						}
 
 						for (Direction direction : Direction.values()) {
-							pooledMutable.set(blockPos).setOffset(direction);
+							pooledMutable.method_10114(blockPos2).method_10118(direction);
 							if (!set.contains(pooledMutable)) {
-								BlockState blockState = world.getBlockState(pooledMutable);
+								BlockState blockState = iWorld.getBlockState(pooledMutable);
 								if (blockState.contains(Properties.DISTANCE_1_7)) {
 									((Set)list.get(0)).add(pooledMutable.toImmutable());
-									this.setBlockStateWithoutUpdatingNeighbors(world, pooledMutable, blockState.with(Properties.DISTANCE_1_7, Integer.valueOf(1)));
-									if (blockBox.contains(pooledMutable)) {
-										voxelSet.set(pooledMutable.getX() - blockBox.minX, pooledMutable.getY() - blockBox.minY, pooledMutable.getZ() - blockBox.minZ, true, true);
+									this.setBlockStateWithoutUpdatingNeighbors(iWorld, pooledMutable, blockState.with(Properties.DISTANCE_1_7, Integer.valueOf(1)));
+									if (mutableIntBoundingBox.contains(pooledMutable)) {
+										voxelSet.set(
+											pooledMutable.getX() - mutableIntBoundingBox.minX,
+											pooledMutable.getY() - mutableIntBoundingBox.minY,
+											pooledMutable.getZ() - mutableIntBoundingBox.minZ,
+											true,
+											true
+										);
 									}
 								}
 							}
@@ -159,22 +171,30 @@ public abstract class AbstractTreeFeature<T extends FeatureConfig> extends Featu
 					Set<BlockPos> set2 = (Set<BlockPos>)list.get(k - 1);
 					Set<BlockPos> set3 = (Set<BlockPos>)list.get(k);
 
-					for (BlockPos blockPos2 : set2) {
-						if (blockBox.contains(blockPos2)) {
-							voxelSet.set(blockPos2.getX() - blockBox.minX, blockPos2.getY() - blockBox.minY, blockPos2.getZ() - blockBox.minZ, true, true);
+					for (BlockPos blockPos3 : set2) {
+						if (mutableIntBoundingBox.contains(blockPos3)) {
+							voxelSet.set(
+								blockPos3.getX() - mutableIntBoundingBox.minX, blockPos3.getY() - mutableIntBoundingBox.minY, blockPos3.getZ() - mutableIntBoundingBox.minZ, true, true
+							);
 						}
 
 						for (Direction direction2 : Direction.values()) {
-							pooledMutable.set(blockPos2).setOffset(direction2);
+							pooledMutable.method_10114(blockPos3).method_10118(direction2);
 							if (!set2.contains(pooledMutable) && !set3.contains(pooledMutable)) {
-								BlockState blockState2 = world.getBlockState(pooledMutable);
+								BlockState blockState2 = iWorld.getBlockState(pooledMutable);
 								if (blockState2.contains(Properties.DISTANCE_1_7)) {
 									int l = (Integer)blockState2.get(Properties.DISTANCE_1_7);
 									if (l > k + 1) {
 										BlockState blockState3 = blockState2.with(Properties.DISTANCE_1_7, Integer.valueOf(k + 1));
-										this.setBlockStateWithoutUpdatingNeighbors(world, pooledMutable, blockState3);
-										if (blockBox.contains(pooledMutable)) {
-											voxelSet.set(pooledMutable.getX() - blockBox.minX, pooledMutable.getY() - blockBox.minY, pooledMutable.getZ() - blockBox.minZ, true, true);
+										this.setBlockStateWithoutUpdatingNeighbors(iWorld, pooledMutable, blockState3);
+										if (mutableIntBoundingBox.contains(pooledMutable)) {
+											voxelSet.set(
+												pooledMutable.getX() - mutableIntBoundingBox.minX,
+												pooledMutable.getY() - mutableIntBoundingBox.minY,
+												pooledMutable.getZ() - mutableIntBoundingBox.minZ,
+												true,
+												true
+											);
 										}
 
 										set3.add(pooledMutable.toImmutable());
@@ -186,10 +206,12 @@ public abstract class AbstractTreeFeature<T extends FeatureConfig> extends Featu
 				}
 			}
 
-			Structure.method_20532(world, 3, voxelSet, blockBox.minX, blockBox.minY, blockBox.minZ);
+			Structure.method_20532(iWorld, 3, voxelSet, mutableIntBoundingBox.minX, mutableIntBoundingBox.minY, mutableIntBoundingBox.minZ);
 			return bl;
 		}
 	}
 
-	protected abstract boolean generate(Set<BlockPos> logPositions, ModifiableTestableWorld world, Random random, BlockPos pos, BlockBox blockBox);
+	protected abstract boolean generate(
+		Set<BlockPos> set, ModifiableTestableWorld modifiableTestableWorld, Random random, BlockPos blockPos, MutableIntBoundingBox mutableIntBoundingBox
+	);
 }

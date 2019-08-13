@@ -9,8 +9,8 @@ import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Formatting;
 
 public class SeedCommand {
-	public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
-		dispatcher.register(
+	public static void register(CommandDispatcher<ServerCommandSource> commandDispatcher) {
+		commandDispatcher.register(
 			CommandManager.literal("seed")
 				.requires(serverCommandSource -> serverCommandSource.getMinecraftServer().isSinglePlayer() || serverCommandSource.hasPermissionLevel(2))
 				.executes(
@@ -19,8 +19,8 @@ public class SeedCommand {
 						Text text = Texts.bracketed(
 							new LiteralText(String.valueOf(l))
 								.styled(
-									style -> style.setColor(Formatting.GREEN)
-											.setClickEvent(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND, String.valueOf(l)))
+									style -> style.setColor(Formatting.field_1060)
+											.setClickEvent(new ClickEvent(ClickEvent.Action.field_11745, String.valueOf(l)))
 											.setInsertion(String.valueOf(l))
 								)
 						);

@@ -78,13 +78,13 @@ public class FileDownload {
 		"LPT9"
 	};
 
-	public long contentLength(String downloadLink) {
+	public long contentLength(String string) {
 		CloseableHttpClient closeableHttpClient = null;
 		HttpGet httpGet = null;
 
 		long var5;
 		try {
-			httpGet = new HttpGet(downloadLink);
+			httpGet = new HttpGet(string);
 			closeableHttpClient = HttpClientBuilder.create().setDefaultRequestConfig(this.requestConfig).build();
 			CloseableHttpResponse closeableHttpResponse = closeableHttpClient.execute(httpGet);
 			return Long.parseLong(closeableHttpResponse.getFirstHeader("Content-Length").getValue());
@@ -110,9 +110,9 @@ public class FileDownload {
 
 	public void download(
 		WorldDownload worldDownload,
-		String worldName,
+		String string,
 		RealmsDownloadLatestWorldScreen.DownloadStatus downloadStatus,
-		RealmsAnvilLevelStorageSource levelStorageSource
+		RealmsAnvilLevelStorageSource realmsAnvilLevelStorageSource
 	) {
 		if (this.currentThread == null) {
 			this.currentThread = new Thread() {
@@ -128,7 +128,7 @@ public class FileDownload {
 						if (httpResponse.getStatusLine().getStatusCode() == 200) {
 							OutputStream outputStream2 = new FileOutputStream(FileDownload.this.tempFile);
 							FileDownload.ProgressListener progressListener = FileDownload.this.new ProgressListener(
-								worldName.trim(), FileDownload.this.tempFile, levelStorageSource, downloadStatus, worldDownload
+								string.trim(), FileDownload.this.tempFile, realmsAnvilLevelStorageSource, downloadStatus, worldDownload
 							);
 							FileDownload.DownloadCountingOutputStream downloadCountingOutputStream2 = FileDownload.this.new DownloadCountingOutputStream(outputStream2);
 							downloadCountingOutputStream2.setListener(progressListener);
@@ -221,35 +221,35 @@ public class FileDownload {
 		return this.extracting;
 	}
 
-	public static String findAvailableFolderName(String folder) {
-		folder = folder.replaceAll("[\\./\"]", "_");
+	public static String findAvailableFolderName(String string) {
+		string = string.replaceAll("[\\./\"]", "_");
 
-		for (String string : INVALID_FILE_NAMES) {
-			if (folder.equalsIgnoreCase(string)) {
-				folder = "_" + folder + "_";
+		for (String string2 : INVALID_FILE_NAMES) {
+			if (string.equalsIgnoreCase(string2)) {
+				string = "_" + string + "_";
 			}
 		}
 
-		return folder;
+		return string;
 	}
 
-	private void untarGzipArchive(String name, File file, RealmsAnvilLevelStorageSource levelStorageSource) throws IOException {
+	private void untarGzipArchive(String string, File file, RealmsAnvilLevelStorageSource realmsAnvilLevelStorageSource) throws IOException {
 		Pattern pattern = Pattern.compile(".*-([0-9]+)$");
 		int i = 1;
 
 		for (char c : RealmsSharedConstants.ILLEGAL_FILE_CHARACTERS) {
-			name = name.replace(c, '_');
+			string = string.replace(c, '_');
 		}
 
-		if (StringUtils.isEmpty(name)) {
-			name = "Realm";
+		if (StringUtils.isEmpty(string)) {
+			string = "Realm";
 		}
 
-		name = findAvailableFolderName(name);
+		string = findAvailableFolderName(string);
 
 		try {
-			for (RealmsLevelSummary realmsLevelSummary : levelStorageSource.getLevelList()) {
-				if (realmsLevelSummary.getLevelId().toLowerCase(Locale.ROOT).startsWith(name.toLowerCase(Locale.ROOT))) {
+			for (RealmsLevelSummary realmsLevelSummary : realmsAnvilLevelStorageSource.getLevelList()) {
+				if (realmsLevelSummary.getLevelId().toLowerCase(Locale.ROOT).startsWith(string.toLowerCase(Locale.ROOT))) {
 					Matcher matcher = pattern.matcher(realmsLevelSummary.getLevelId());
 					if (matcher.matches()) {
 						if (Integer.valueOf(matcher.group(1)) > i) {
@@ -266,18 +266,18 @@ public class FileDownload {
 			return;
 		}
 
-		String string;
-		if (levelStorageSource.isNewLevelIdAcceptable(name) && i <= 1) {
-			string = name;
+		String string2;
+		if (realmsAnvilLevelStorageSource.isNewLevelIdAcceptable(string) && i <= 1) {
+			string2 = string;
 		} else {
-			string = name + (i == 1 ? "" : "-" + i);
-			if (!levelStorageSource.isNewLevelIdAcceptable(string)) {
+			string2 = string + (i == 1 ? "" : "-" + i);
+			if (!realmsAnvilLevelStorageSource.isNewLevelIdAcceptable(string2)) {
 				boolean bl = false;
 
 				while (!bl) {
 					i++;
-					string = name + (i == 1 ? "" : "-" + i);
-					if (levelStorageSource.isNewLevelIdAcceptable(string)) {
+					string2 = string + (i == 1 ? "" : "-" + i);
+					if (realmsAnvilLevelStorageSource.isNewLevelIdAcceptable(string2)) {
 						bl = true;
 					}
 				}
@@ -295,7 +295,7 @@ public class FileDownload {
 				tarArchiveEntry != null;
 				tarArchiveEntry = tarArchiveInputStream.getNextTarEntry()
 			) {
-				File file3 = new File(file2, tarArchiveEntry.getName().replace("world", string));
+				File file3 = new File(file2, tarArchiveEntry.getName().replace("world", string2));
 				if (tarArchiveEntry.isDirectory()) {
 					file3.mkdirs();
 				} else {
@@ -324,10 +324,10 @@ public class FileDownload {
 				file.delete();
 			}
 
-			levelStorageSource.renameLevel(string, string.trim());
-			File file4 = new File(file2, string + File.separator + "level.dat");
+			realmsAnvilLevelStorageSource.renameLevel(string2, string2.trim());
+			File file4 = new File(file2, string2 + File.separator + "level.dat");
 			Realms.deletePlayerTag(file4);
-			this.resourcePackPath = new File(file2, string + File.separator + "resources.zip");
+			this.resourcePackPath = new File(file2, string2 + File.separator + "resources.zip");
 		}
 	}
 
@@ -335,17 +335,17 @@ public class FileDownload {
 	class DownloadCountingOutputStream extends CountingOutputStream {
 		private ActionListener listener;
 
-		public DownloadCountingOutputStream(OutputStream out) {
-			super(out);
+		public DownloadCountingOutputStream(OutputStream outputStream) {
+			super(outputStream);
 		}
 
-		public void setListener(ActionListener listener) {
-			this.listener = listener;
+		public void setListener(ActionListener actionListener) {
+			this.listener = actionListener;
 		}
 
 		@Override
-		protected void afterWrite(int n) throws IOException {
-			super.afterWrite(n);
+		protected void afterWrite(int i) throws IOException {
+			super.afterWrite(i);
 			if (this.listener != null) {
 				this.listener.actionPerformed(new ActionEvent(this, 0, null));
 			}
@@ -361,21 +361,21 @@ public class FileDownload {
 		private final WorldDownload worldDownload;
 
 		private ProgressListener(
-			String worldName,
-			File tempFile,
-			RealmsAnvilLevelStorageSource levelStorageSource,
+			String string,
+			File file,
+			RealmsAnvilLevelStorageSource realmsAnvilLevelStorageSource,
 			RealmsDownloadLatestWorldScreen.DownloadStatus downloadStatus,
 			WorldDownload worldDownload
 		) {
-			this.worldName = worldName;
-			this.tempFile = tempFile;
-			this.levelStorageSource = levelStorageSource;
+			this.worldName = string;
+			this.tempFile = file;
+			this.levelStorageSource = realmsAnvilLevelStorageSource;
 			this.downloadStatus = downloadStatus;
 			this.worldDownload = worldDownload;
 		}
 
-		public void actionPerformed(ActionEvent e) {
-			this.downloadStatus.bytesWritten = ((FileDownload.DownloadCountingOutputStream)e.getSource()).getByteCount();
+		public void actionPerformed(ActionEvent actionEvent) {
+			this.downloadStatus.bytesWritten = ((FileDownload.DownloadCountingOutputStream)actionEvent.getSource()).getByteCount();
 			if (this.downloadStatus.bytesWritten >= this.downloadStatus.totalBytes && !FileDownload.this.cancelled && !FileDownload.this.error) {
 				try {
 					FileDownload.this.extracting = true;
@@ -394,14 +394,14 @@ public class FileDownload {
 		private final RealmsDownloadLatestWorldScreen.DownloadStatus downloadStatus;
 		private final WorldDownload worldDownload;
 
-		private ResourcePackProgressListener(File tempFile, RealmsDownloadLatestWorldScreen.DownloadStatus downloadStatus, WorldDownload worldDownload) {
-			this.tempFile = tempFile;
+		private ResourcePackProgressListener(File file, RealmsDownloadLatestWorldScreen.DownloadStatus downloadStatus, WorldDownload worldDownload) {
+			this.tempFile = file;
 			this.downloadStatus = downloadStatus;
 			this.worldDownload = worldDownload;
 		}
 
-		public void actionPerformed(ActionEvent e) {
-			this.downloadStatus.bytesWritten = ((FileDownload.DownloadCountingOutputStream)e.getSource()).getByteCount();
+		public void actionPerformed(ActionEvent actionEvent) {
+			this.downloadStatus.bytesWritten = ((FileDownload.DownloadCountingOutputStream)actionEvent.getSource()).getByteCount();
 			if (this.downloadStatus.bytesWritten >= this.downloadStatus.totalBytes && !FileDownload.this.cancelled) {
 				try {
 					String string = Hashing.sha1().hashBytes(Files.toByteArray(this.tempFile)).toString();

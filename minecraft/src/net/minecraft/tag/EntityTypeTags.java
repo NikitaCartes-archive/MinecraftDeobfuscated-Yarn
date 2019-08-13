@@ -8,11 +8,11 @@ import net.minecraft.util.Identifier;
 public class EntityTypeTags {
 	private static TagContainer<EntityType<?>> container = new TagContainer<>(identifier -> Optional.empty(), "", false, "");
 	private static int latestVersion;
-	public static final Tag<EntityType<?>> SKELETONS = register("skeletons");
-	public static final Tag<EntityType<?>> RAIDERS = register("raiders");
+	public static final Tag<EntityType<?>> field_15507 = register("skeletons");
+	public static final Tag<EntityType<?>> field_19168 = register("raiders");
 
-	public static void setContainer(TagContainer<EntityType<?>> container) {
-		EntityTypeTags.container = container;
+	public static void setContainer(TagContainer<EntityType<?>> tagContainer) {
+		container = tagContainer;
 		latestVersion++;
 	}
 
@@ -20,8 +20,8 @@ public class EntityTypeTags {
 		return container;
 	}
 
-	private static Tag<EntityType<?>> register(String id) {
-		return new EntityTypeTags.CachingTag(new Identifier(id));
+	private static Tag<EntityType<?>> register(String string) {
+		return new EntityTypeTags.CachingTag(new Identifier(string));
 	}
 
 	public static class CachingTag extends Tag<EntityType<?>> {
@@ -32,7 +32,7 @@ public class EntityTypeTags {
 			super(identifier);
 		}
 
-		public boolean contains(EntityType<?> entityType) {
+		public boolean method_15084(EntityType<?> entityType) {
 			if (this.version != EntityTypeTags.latestVersion) {
 				this.delegate = EntityTypeTags.container.getOrCreate(this.getId());
 				this.version = EntityTypeTags.latestVersion;

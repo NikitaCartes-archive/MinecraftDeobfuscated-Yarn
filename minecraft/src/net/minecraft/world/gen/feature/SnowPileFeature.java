@@ -7,12 +7,12 @@ import net.minecraft.block.Blocks;
 import net.minecraft.world.IWorld;
 
 public class SnowPileFeature extends AbstractPileFeature {
-	public SnowPileFeature(Function<Dynamic<?>, ? extends DefaultFeatureConfig> configFactory) {
-		super(configFactory);
+	public SnowPileFeature(Function<Dynamic<?>, ? extends DefaultFeatureConfig> function) {
+		super(function);
 	}
 
 	@Override
-	protected BlockState getPileBlockState(IWorld world) {
-		return Blocks.SNOW_BLOCK.getDefaultState();
+	protected BlockState getPileBlockState(IWorld iWorld) {
+		return Blocks.field_10491.getDefaultState();
 	}
 }

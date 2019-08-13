@@ -30,13 +30,13 @@ public class WitherSkullEntity extends ExplosiveProjectileEntity {
 		super(entityType, world);
 	}
 
-	public WitherSkullEntity(World world, LivingEntity owner, double directionX, double directionY, double directionZ) {
-		super(EntityType.WITHER_SKULL, owner, directionX, directionY, directionZ, world);
+	public WitherSkullEntity(World world, LivingEntity livingEntity, double d, double e, double f) {
+		super(EntityType.field_6130, livingEntity, d, e, f, world);
 	}
 
 	@Environment(EnvType.CLIENT)
-	public WitherSkullEntity(World world, double x, double y, double z, double directionX, double directionY, double directionZ) {
-		super(EntityType.WITHER_SKULL, x, y, z, directionX, directionY, directionZ, world);
+	public WitherSkullEntity(World world, double d, double e, double f, double g, double h, double i) {
+		super(EntityType.field_6130, d, e, f, g, h, i, world);
 	}
 
 	@Override
@@ -50,14 +50,16 @@ public class WitherSkullEntity extends ExplosiveProjectileEntity {
 	}
 
 	@Override
-	public float getEffectiveExplosionResistance(Explosion explosion, BlockView world, BlockPos pos, BlockState blockState, FluidState fluidState, float max) {
-		return this.isCharged() && WitherEntity.canDestroy(blockState) ? Math.min(0.8F, max) : max;
+	public float getEffectiveExplosionResistance(
+		Explosion explosion, BlockView blockView, BlockPos blockPos, BlockState blockState, FluidState fluidState, float f
+	) {
+		return this.isCharged() && WitherEntity.canDestroy(blockState) ? Math.min(0.8F, f) : f;
 	}
 
 	@Override
 	protected void onCollision(HitResult hitResult) {
 		if (!this.world.isClient) {
-			if (hitResult.getType() == HitResult.Type.ENTITY) {
+			if (hitResult.getType() == HitResult.Type.field_1331) {
 				Entity entity = ((EntityHitResult)hitResult).getEntity();
 				if (this.owner != null) {
 					if (entity.damage(DamageSource.mob(this.owner), 8.0F)) {
@@ -73,21 +75,21 @@ public class WitherSkullEntity extends ExplosiveProjectileEntity {
 
 				if (entity instanceof LivingEntity) {
 					int i = 0;
-					if (this.world.getDifficulty() == Difficulty.NORMAL) {
+					if (this.world.getDifficulty() == Difficulty.field_5802) {
 						i = 10;
-					} else if (this.world.getDifficulty() == Difficulty.HARD) {
+					} else if (this.world.getDifficulty() == Difficulty.field_5807) {
 						i = 40;
 					}
 
 					if (i > 0) {
-						((LivingEntity)entity).addStatusEffect(new StatusEffectInstance(StatusEffects.WITHER, 20 * i, 1));
+						((LivingEntity)entity).addPotionEffect(new StatusEffectInstance(StatusEffects.field_5920, 20 * i, 1));
 					}
 				}
 			}
 
-			Explosion.DestructionType destructionType = this.world.getGameRules().getBoolean(GameRules.MOB_GRIEFING)
-				? Explosion.DestructionType.DESTROY
-				: Explosion.DestructionType.NONE;
+			Explosion.DestructionType destructionType = this.world.getGameRules().getBoolean(GameRules.field_19388)
+				? Explosion.DestructionType.field_18687
+				: Explosion.DestructionType.field_18685;
 			this.world.createExplosion(this, this.x, this.y, this.z, 1.0F, false, destructionType);
 			this.remove();
 		}
@@ -99,7 +101,7 @@ public class WitherSkullEntity extends ExplosiveProjectileEntity {
 	}
 
 	@Override
-	public boolean damage(DamageSource source, float amount) {
+	public boolean damage(DamageSource damageSource, float f) {
 		return false;
 	}
 
@@ -112,8 +114,8 @@ public class WitherSkullEntity extends ExplosiveProjectileEntity {
 		return this.dataTracker.get(CHARGED);
 	}
 
-	public void setCharged(boolean charged) {
-		this.dataTracker.set(CHARGED, charged);
+	public void setCharged(boolean bl) {
+		this.dataTracker.set(CHARGED, bl);
 	}
 
 	@Override

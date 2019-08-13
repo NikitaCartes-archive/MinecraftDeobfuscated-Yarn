@@ -24,17 +24,18 @@ public class EntityDataObject implements DataCommandObject {
 	private static final SimpleCommandExceptionType INVALID_ENTITY_EXCEPTION = new SimpleCommandExceptionType(new TranslatableText("commands.data.entity.invalid"));
 	public static final Function<String, DataCommand.ObjectType> field_13800 = string -> new DataCommand.ObjectType() {
 			@Override
-			public DataCommandObject getObject(CommandContext<ServerCommandSource> context) throws CommandSyntaxException {
-				return new EntityDataObject(EntityArgumentType.getEntity(context, string));
+			public DataCommandObject getObject(CommandContext<ServerCommandSource> commandContext) throws CommandSyntaxException {
+				return new EntityDataObject(EntityArgumentType.getEntity(commandContext, string));
 			}
 
 			@Override
 			public ArgumentBuilder<ServerCommandSource, ?> addArgumentsToBuilder(
-				ArgumentBuilder<ServerCommandSource, ?> argument, Function<ArgumentBuilder<ServerCommandSource, ?>, ArgumentBuilder<ServerCommandSource, ?>> argumentAdder
+				ArgumentBuilder<ServerCommandSource, ?> argumentBuilder,
+				Function<ArgumentBuilder<ServerCommandSource, ?>, ArgumentBuilder<ServerCommandSource, ?>> function
 			) {
-				return argument.then(
+				return argumentBuilder.then(
 					CommandManager.literal("entity")
-						.then((ArgumentBuilder<ServerCommandSource, ?>)argumentAdder.apply(CommandManager.argument(string, EntityArgumentType.entity())))
+						.then((ArgumentBuilder<ServerCommandSource, ?>)function.apply(CommandManager.argument(string, EntityArgumentType.entity())))
 				);
 			}
 		};
@@ -45,12 +46,12 @@ public class EntityDataObject implements DataCommandObject {
 	}
 
 	@Override
-	public void setTag(CompoundTag tag) throws CommandSyntaxException {
+	public void setTag(CompoundTag compoundTag) throws CommandSyntaxException {
 		if (this.field_13801 instanceof PlayerEntity) {
 			throw INVALID_ENTITY_EXCEPTION.create();
 		} else {
 			UUID uUID = this.field_13801.getUuid();
-			this.field_13801.fromTag(tag);
+			this.field_13801.fromTag(compoundTag);
 			this.field_13801.setUuid(uUID);
 		}
 	}
@@ -61,17 +62,17 @@ public class EntityDataObject implements DataCommandObject {
 	}
 
 	@Override
-	public Text feedbackModify() {
+	public Text getModifiedFeedback() {
 		return new TranslatableText("commands.data.entity.modified", this.field_13801.getDisplayName());
 	}
 
 	@Override
-	public Text feedbackQuery(Tag tag) {
+	public Text getQueryFeedback(Tag tag) {
 		return new TranslatableText("commands.data.entity.query", this.field_13801.getDisplayName(), tag.toText());
 	}
 
 	@Override
-	public Text feedbackGet(NbtPathArgumentType.NbtPath nbtPath, double scale, int result) {
-		return new TranslatableText("commands.data.entity.get", nbtPath, this.field_13801.getDisplayName(), String.format(Locale.ROOT, "%.2f", scale), result);
+	public Text getGetFeedback(NbtPathArgumentType.NbtPath nbtPath, double d, int i) {
+		return new TranslatableText("commands.data.entity.get", nbtPath, this.field_13801.getDisplayName(), String.format(Locale.ROOT, "%.2f", d), i);
 	}
 }

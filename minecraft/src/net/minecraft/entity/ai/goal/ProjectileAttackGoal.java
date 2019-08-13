@@ -18,22 +18,22 @@ public class ProjectileAttackGoal extends Goal {
 	private final float maxShootRange;
 	private final float squaredMaxShootRange;
 
-	public ProjectileAttackGoal(RangedAttackMob mob, double mobSpeed, int intervalTicks, float maxShootRange) {
-		this(mob, mobSpeed, intervalTicks, intervalTicks, maxShootRange);
+	public ProjectileAttackGoal(RangedAttackMob rangedAttackMob, double d, int i, float f) {
+		this(rangedAttackMob, d, i, i, f);
 	}
 
-	public ProjectileAttackGoal(RangedAttackMob mob, double mobSpeed, int minIntervalTicks, int maxIntervalTicks, float maxShootRange) {
-		if (!(mob instanceof LivingEntity)) {
+	public ProjectileAttackGoal(RangedAttackMob rangedAttackMob, double d, int i, int j, float f) {
+		if (!(rangedAttackMob instanceof LivingEntity)) {
 			throw new IllegalArgumentException("ArrowAttackGoal requires Mob implements RangedAttackMob");
 		} else {
-			this.owner = mob;
-			this.mob = (MobEntity)mob;
-			this.mobSpeed = mobSpeed;
-			this.field_6578 = minIntervalTicks;
-			this.field_6577 = maxIntervalTicks;
-			this.maxShootRange = maxShootRange;
-			this.squaredMaxShootRange = maxShootRange * maxShootRange;
-			this.setControls(EnumSet.of(Goal.Control.MOVE, Goal.Control.LOOK));
+			this.owner = rangedAttackMob;
+			this.mob = (MobEntity)rangedAttackMob;
+			this.mobSpeed = d;
+			this.field_6578 = i;
+			this.field_6577 = j;
+			this.maxShootRange = f;
+			this.squaredMaxShootRange = f * f;
+			this.setControls(EnumSet.of(Goal.Control.field_18405, Goal.Control.field_18406));
 		}
 	}
 
@@ -62,7 +62,7 @@ public class ProjectileAttackGoal extends Goal {
 
 	@Override
 	public void tick() {
-		double d = this.mob.squaredDistanceTo(this.target.x, this.target.getBoundingBox().y1, this.target.z);
+		double d = this.mob.squaredDistanceTo(this.target.x, this.target.getBoundingBox().minY, this.target.z);
 		boolean bl = this.mob.getVisibilityCache().canSee(this.target);
 		if (bl) {
 			this.field_6579++;

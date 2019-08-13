@@ -7,5 +7,5 @@ import net.minecraft.text.Text;
 
 @Environment(EnvType.CLIENT)
 public interface ClientChatListener {
-	void onChatMessage(MessageType messageType, Text message);
+	void onChatMessage(MessageType messageType, Text text);
 }

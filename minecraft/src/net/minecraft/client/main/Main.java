@@ -26,8 +26,8 @@ import net.minecraft.client.util.Session;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.server.integrated.IntegratedServer;
 import net.minecraft.util.JsonHelper;
+import net.minecraft.util.SystemUtil;
 import net.minecraft.util.UncaughtExceptionLogger;
-import net.minecraft.util.Util;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -35,7 +35,7 @@ import org.apache.logging.log4j.Logger;
 public class Main {
 	private static final Logger LOGGER = LogManager.getLogger();
 
-	public static void main(String[] args) {
+	public static void main(String[] strings) {
 		OptionParser optionParser = new OptionParser();
 		optionParser.allowsUnrecognizedOptions();
 		optionParser.accepts("demo");
@@ -50,7 +50,7 @@ public class Main {
 		OptionSpec<Integer> optionSpec7 = optionParser.accepts("proxyPort").withRequiredArg().defaultsTo("8080").ofType(Integer.class);
 		OptionSpec<String> optionSpec8 = optionParser.accepts("proxyUser").withRequiredArg();
 		OptionSpec<String> optionSpec9 = optionParser.accepts("proxyPass").withRequiredArg();
-		OptionSpec<String> optionSpec10 = optionParser.accepts("username").withRequiredArg().defaultsTo("Player" + Util.getMeasuringTimeMs() % 1000L);
+		OptionSpec<String> optionSpec10 = optionParser.accepts("username").withRequiredArg().defaultsTo("Player" + SystemUtil.getMeasuringTimeMs() % 1000L);
 		OptionSpec<String> optionSpec11 = optionParser.accepts("uuid").withRequiredArg();
 		OptionSpec<String> optionSpec12 = optionParser.accepts("accessToken").withRequiredArg().required();
 		OptionSpec<String> optionSpec13 = optionParser.accepts("version").withRequiredArg().required();
@@ -64,7 +64,7 @@ public class Main {
 		OptionSpec<String> optionSpec21 = optionParser.accepts("userType").withRequiredArg().defaultsTo("legacy");
 		OptionSpec<String> optionSpec22 = optionParser.accepts("versionType").withRequiredArg().defaultsTo("release");
 		OptionSpec<String> optionSpec23 = optionParser.nonOptions();
-		OptionSet optionSet = optionParser.parse(args);
+		OptionSet optionSet = optionParser.parse(strings);
 		List<String> list = optionSet.valuesOf(optionSpec23);
 		if (!list.isEmpty()) {
 			System.out.println("Completely ignored arguments: " + list);
@@ -129,7 +129,7 @@ public class Main {
 		thread.setUncaughtExceptionHandler(new UncaughtExceptionLogger(LOGGER));
 		Runtime.getRuntime().addShutdownHook(thread);
 		Thread.currentThread().setName("Client thread");
-		new MinecraftClient(runArgs).run();
+		new MinecraftClient(runArgs).start();
 	}
 
 	private static OptionalInt method_21612(@Nullable Integer integer) {
@@ -152,8 +152,8 @@ public class Main {
 		}
 	}
 
-	private static boolean isNotNullOrEmpty(String s) {
-		return s != null && !s.isEmpty();
+	private static boolean isNotNullOrEmpty(String string) {
+		return string != null && !string.isEmpty();
 	}
 
 	static {

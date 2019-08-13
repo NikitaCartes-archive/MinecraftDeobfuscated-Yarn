@@ -7,17 +7,17 @@ public class DoubleInventory implements Inventory {
 	private final Inventory first;
 	private final Inventory second;
 
-	public DoubleInventory(Inventory first, Inventory second) {
-		if (first == null) {
-			first = second;
+	public DoubleInventory(Inventory inventory, Inventory inventory2) {
+		if (inventory == null) {
+			inventory = inventory2;
 		}
 
-		if (second == null) {
-			second = first;
+		if (inventory2 == null) {
+			inventory2 = inventory;
 		}
 
-		this.first = first;
-		this.second = second;
+		this.first = inventory;
+		this.second = inventory2;
 	}
 
 	@Override
@@ -35,26 +35,26 @@ public class DoubleInventory implements Inventory {
 	}
 
 	@Override
-	public ItemStack getInvStack(int slot) {
-		return slot >= this.first.getInvSize() ? this.second.getInvStack(slot - this.first.getInvSize()) : this.first.getInvStack(slot);
+	public ItemStack getInvStack(int i) {
+		return i >= this.first.getInvSize() ? this.second.getInvStack(i - this.first.getInvSize()) : this.first.getInvStack(i);
 	}
 
 	@Override
-	public ItemStack takeInvStack(int slot, int amount) {
-		return slot >= this.first.getInvSize() ? this.second.takeInvStack(slot - this.first.getInvSize(), amount) : this.first.takeInvStack(slot, amount);
+	public ItemStack takeInvStack(int i, int j) {
+		return i >= this.first.getInvSize() ? this.second.takeInvStack(i - this.first.getInvSize(), j) : this.first.takeInvStack(i, j);
 	}
 
 	@Override
-	public ItemStack removeInvStack(int slot) {
-		return slot >= this.first.getInvSize() ? this.second.removeInvStack(slot - this.first.getInvSize()) : this.first.removeInvStack(slot);
+	public ItemStack removeInvStack(int i) {
+		return i >= this.first.getInvSize() ? this.second.removeInvStack(i - this.first.getInvSize()) : this.first.removeInvStack(i);
 	}
 
 	@Override
-	public void setInvStack(int slot, ItemStack stack) {
-		if (slot >= this.first.getInvSize()) {
-			this.second.setInvStack(slot - this.first.getInvSize(), stack);
+	public void setInvStack(int i, ItemStack itemStack) {
+		if (i >= this.first.getInvSize()) {
+			this.second.setInvStack(i - this.first.getInvSize(), itemStack);
 		} else {
-			this.first.setInvStack(slot, stack);
+			this.first.setInvStack(i, itemStack);
 		}
 	}
 
@@ -70,25 +70,25 @@ public class DoubleInventory implements Inventory {
 	}
 
 	@Override
-	public boolean canPlayerUseInv(PlayerEntity player) {
-		return this.first.canPlayerUseInv(player) && this.second.canPlayerUseInv(player);
+	public boolean canPlayerUseInv(PlayerEntity playerEntity) {
+		return this.first.canPlayerUseInv(playerEntity) && this.second.canPlayerUseInv(playerEntity);
 	}
 
 	@Override
-	public void onInvOpen(PlayerEntity player) {
-		this.first.onInvOpen(player);
-		this.second.onInvOpen(player);
+	public void onInvOpen(PlayerEntity playerEntity) {
+		this.first.onInvOpen(playerEntity);
+		this.second.onInvOpen(playerEntity);
 	}
 
 	@Override
-	public void onInvClose(PlayerEntity player) {
-		this.first.onInvClose(player);
-		this.second.onInvClose(player);
+	public void onInvClose(PlayerEntity playerEntity) {
+		this.first.onInvClose(playerEntity);
+		this.second.onInvClose(playerEntity);
 	}
 
 	@Override
-	public boolean isValidInvStack(int slot, ItemStack stack) {
-		return slot >= this.first.getInvSize() ? this.second.isValidInvStack(slot - this.first.getInvSize(), stack) : this.first.isValidInvStack(slot, stack);
+	public boolean isValidInvStack(int i, ItemStack itemStack) {
+		return i >= this.first.getInvSize() ? this.second.isValidInvStack(i - this.first.getInvSize(), itemStack) : this.first.isValidInvStack(i, itemStack);
 	}
 
 	@Override

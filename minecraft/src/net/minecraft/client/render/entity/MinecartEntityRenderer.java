@@ -24,7 +24,7 @@ public class MinecartEntityRenderer<T extends AbstractMinecartEntity> extends En
 		this.field_4673 = 0.7F;
 	}
 
-	public void render(T abstractMinecartEntity, double d, double e, double f, float g, float h) {
+	public void method_4063(T abstractMinecartEntity, double d, double e, double f, float g, float h) {
 		GlStateManager.pushMatrix();
 		this.bindEntityTexture(abstractMinecartEntity);
 		long l = (long)abstractMinecartEntity.getEntityId() * 493286711L;
@@ -33,9 +33,9 @@ public class MinecartEntityRenderer<T extends AbstractMinecartEntity> extends En
 		float j = (((float)(l >> 20 & 7L) + 0.5F) / 8.0F - 0.5F) * 0.004F;
 		float k = (((float)(l >> 24 & 7L) + 0.5F) / 8.0F - 0.5F) * 0.004F;
 		GlStateManager.translatef(i, j, k);
-		double m = MathHelper.lerp((double)h, abstractMinecartEntity.lastRenderX, abstractMinecartEntity.x);
-		double n = MathHelper.lerp((double)h, abstractMinecartEntity.lastRenderY, abstractMinecartEntity.y);
-		double o = MathHelper.lerp((double)h, abstractMinecartEntity.lastRenderZ, abstractMinecartEntity.z);
+		double m = MathHelper.lerp((double)h, abstractMinecartEntity.prevRenderX, abstractMinecartEntity.x);
+		double n = MathHelper.lerp((double)h, abstractMinecartEntity.prevRenderY, abstractMinecartEntity.y);
+		double o = MathHelper.lerp((double)h, abstractMinecartEntity.prevRenderZ, abstractMinecartEntity.z);
 		double p = 0.3F;
 		Vec3d vec3d = abstractMinecartEntity.method_7508(m, n, o);
 		float q = MathHelper.lerp(h, abstractMinecartEntity.prevPitch, abstractMinecartEntity.pitch);
@@ -81,7 +81,7 @@ public class MinecartEntityRenderer<T extends AbstractMinecartEntity> extends En
 		}
 
 		BlockState blockState = abstractMinecartEntity.getContainedBlock();
-		if (blockState.getRenderType() != BlockRenderType.INVISIBLE) {
+		if (blockState.getRenderType() != BlockRenderType.field_11455) {
 			GlStateManager.pushMatrix();
 			this.bindTexture(SpriteAtlasTexture.BLOCK_ATLAS_TEX);
 			float u = 0.75F;
@@ -104,13 +104,13 @@ public class MinecartEntityRenderer<T extends AbstractMinecartEntity> extends En
 		super.render(abstractMinecartEntity, d, e, f, g, h);
 	}
 
-	protected Identifier getTexture(T abstractMinecartEntity) {
+	protected Identifier method_4065(T abstractMinecartEntity) {
 		return SKIN;
 	}
 
-	protected void renderBlock(T entity, float delta, BlockState state) {
+	protected void renderBlock(T abstractMinecartEntity, float f, BlockState blockState) {
 		GlStateManager.pushMatrix();
-		MinecraftClient.getInstance().getBlockRenderManager().renderDynamic(state, entity.getBrightnessAtEyes());
+		MinecraftClient.getInstance().getBlockRenderManager().renderDynamic(blockState, abstractMinecartEntity.getBrightnessAtEyes());
 		GlStateManager.popMatrix();
 	}
 }

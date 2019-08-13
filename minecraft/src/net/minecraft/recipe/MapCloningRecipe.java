@@ -13,21 +13,21 @@ public class MapCloningRecipe extends SpecialCraftingRecipe {
 		super(identifier);
 	}
 
-	public boolean matches(CraftingInventory craftingInventory, World world) {
+	public boolean method_17715(CraftingInventory craftingInventory, World world) {
 		int i = 0;
 		ItemStack itemStack = ItemStack.EMPTY;
 
 		for (int j = 0; j < craftingInventory.getInvSize(); j++) {
 			ItemStack itemStack2 = craftingInventory.getInvStack(j);
 			if (!itemStack2.isEmpty()) {
-				if (itemStack2.getItem() == Items.FILLED_MAP) {
+				if (itemStack2.getItem() == Items.field_8204) {
 					if (!itemStack.isEmpty()) {
 						return false;
 					}
 
 					itemStack = itemStack2;
 				} else {
-					if (itemStack2.getItem() != Items.MAP) {
+					if (itemStack2.getItem() != Items.field_8895) {
 						return false;
 					}
 
@@ -39,21 +39,21 @@ public class MapCloningRecipe extends SpecialCraftingRecipe {
 		return !itemStack.isEmpty() && i > 0;
 	}
 
-	public ItemStack craft(CraftingInventory craftingInventory) {
+	public ItemStack method_17714(CraftingInventory craftingInventory) {
 		int i = 0;
 		ItemStack itemStack = ItemStack.EMPTY;
 
 		for (int j = 0; j < craftingInventory.getInvSize(); j++) {
 			ItemStack itemStack2 = craftingInventory.getInvStack(j);
 			if (!itemStack2.isEmpty()) {
-				if (itemStack2.getItem() == Items.FILLED_MAP) {
+				if (itemStack2.getItem() == Items.field_8204) {
 					if (!itemStack.isEmpty()) {
 						return ItemStack.EMPTY;
 					}
 
 					itemStack = itemStack2;
 				} else {
-					if (itemStack2.getItem() != Items.MAP) {
+					if (itemStack2.getItem() != Items.field_8895) {
 						return ItemStack.EMPTY;
 					}
 
@@ -73,8 +73,8 @@ public class MapCloningRecipe extends SpecialCraftingRecipe {
 
 	@Environment(EnvType.CLIENT)
 	@Override
-	public boolean fits(int width, int height) {
-		return width >= 3 && height >= 3;
+	public boolean fits(int i, int j) {
+		return i >= 3 && j >= 3;
 	}
 
 	@Override

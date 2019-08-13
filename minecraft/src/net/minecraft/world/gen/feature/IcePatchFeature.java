@@ -11,20 +11,20 @@ import net.minecraft.world.gen.chunk.ChunkGenerator;
 import net.minecraft.world.gen.chunk.ChunkGeneratorConfig;
 
 public class IcePatchFeature extends Feature<IcePatchFeatureConfig> {
-	private final Block ICE = Blocks.PACKED_ICE;
+	private final Block ICE = Blocks.field_10225;
 
-	public IcePatchFeature(Function<Dynamic<?>, ? extends IcePatchFeatureConfig> configFactory) {
-		super(configFactory);
+	public IcePatchFeature(Function<Dynamic<?>, ? extends IcePatchFeatureConfig> function) {
+		super(function);
 	}
 
-	public boolean generate(
+	public boolean method_13385(
 		IWorld iWorld, ChunkGenerator<? extends ChunkGeneratorConfig> chunkGenerator, Random random, BlockPos blockPos, IcePatchFeatureConfig icePatchFeatureConfig
 	) {
 		while (iWorld.isAir(blockPos) && blockPos.getY() > 2) {
 			blockPos = blockPos.down();
 		}
 
-		if (iWorld.getBlockState(blockPos).getBlock() != Blocks.SNOW_BLOCK) {
+		if (iWorld.getBlockState(blockPos).getBlock() != Blocks.field_10491) {
 			return false;
 		} else {
 			int i = random.nextInt(icePatchFeatureConfig.radius) + 2;
@@ -38,7 +38,7 @@ public class IcePatchFeature extends Feature<IcePatchFeatureConfig> {
 						for (int o = blockPos.getY() - 1; o <= blockPos.getY() + 1; o++) {
 							BlockPos blockPos2 = new BlockPos(k, o, l);
 							Block block = iWorld.getBlockState(blockPos2).getBlock();
-							if (Block.isNaturalDirt(block) || block == Blocks.SNOW_BLOCK || block == Blocks.ICE) {
+							if (Block.isNaturalDirt(block) || block == Blocks.field_10491 || block == Blocks.field_10295) {
 								iWorld.setBlockState(blockPos2, this.ICE.getDefaultState(), 2);
 							}
 						}

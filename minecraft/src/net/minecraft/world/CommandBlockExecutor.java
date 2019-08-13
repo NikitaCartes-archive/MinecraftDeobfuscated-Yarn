@@ -34,8 +34,8 @@ public abstract class CommandBlockExecutor implements CommandOutput {
 		return this.successCount;
 	}
 
-	public void setSuccessCount(int successCount) {
-		this.successCount = successCount;
+	public void setSuccessCount(int i) {
+		this.successCount = i;
 	}
 
 	public Text getLastOutput() {
@@ -62,15 +62,15 @@ public abstract class CommandBlockExecutor implements CommandOutput {
 	public void deserialize(CompoundTag compoundTag) {
 		this.command = compoundTag.getString("Command");
 		this.successCount = compoundTag.getInt("SuccessCount");
-		if (compoundTag.contains("CustomName", 8)) {
+		if (compoundTag.containsKey("CustomName", 8)) {
 			this.customName = Text.Serializer.fromJson(compoundTag.getString("CustomName"));
 		}
 
-		if (compoundTag.contains("TrackOutput", 1)) {
+		if (compoundTag.containsKey("TrackOutput", 1)) {
 			this.trackOutput = compoundTag.getBoolean("TrackOutput");
 		}
 
-		if (compoundTag.contains("LastOutput", 8) && this.trackOutput) {
+		if (compoundTag.containsKey("LastOutput", 8) && this.trackOutput) {
 			try {
 				this.lastOutput = Text.Serializer.fromJson(compoundTag.getString("LastOutput"));
 			} catch (Throwable var3) {
@@ -80,11 +80,11 @@ public abstract class CommandBlockExecutor implements CommandOutput {
 			this.lastOutput = null;
 		}
 
-		if (compoundTag.contains("UpdateLastExecution")) {
+		if (compoundTag.containsKey("UpdateLastExecution")) {
 			this.updateLastExecution = compoundTag.getBoolean("UpdateLastExecution");
 		}
 
-		if (this.updateLastExecution && compoundTag.contains("LastExecution")) {
+		if (this.updateLastExecution && compoundTag.containsKey("LastExecution")) {
 			this.lastExecution = compoundTag.getLong("LastExecution");
 		} else {
 			this.lastExecution = -1L;
@@ -142,14 +142,14 @@ public abstract class CommandBlockExecutor implements CommandOutput {
 		return this.customName;
 	}
 
-	public void setCustomName(Text customName) {
-		this.customName = customName;
+	public void setCustomName(Text text) {
+		this.customName = text;
 	}
 
 	@Override
-	public void sendMessage(Text message) {
+	public void sendMessage(Text text) {
 		if (this.trackOutput) {
-			this.lastOutput = new LiteralText("[" + DATE_FORMAT.format(new Date()) + "] ").append(message);
+			this.lastOutput = new LiteralText("[" + DATE_FORMAT.format(new Date()) + "] ").append(text);
 			this.markDirty();
 		}
 	}
@@ -158,12 +158,12 @@ public abstract class CommandBlockExecutor implements CommandOutput {
 
 	public abstract void markDirty();
 
-	public void setLastOutput(@Nullable Text lastOutput) {
-		this.lastOutput = lastOutput;
+	public void setLastOutput(@Nullable Text text) {
+		this.lastOutput = text;
 	}
 
-	public void shouldTrackOutput(boolean trackOutput) {
-		this.trackOutput = trackOutput;
+	public void shouldTrackOutput(boolean bl) {
+		this.trackOutput = bl;
 	}
 
 	@Environment(EnvType.CLIENT)
@@ -171,12 +171,12 @@ public abstract class CommandBlockExecutor implements CommandOutput {
 		return this.trackOutput;
 	}
 
-	public boolean interact(PlayerEntity player) {
-		if (!player.isCreativeLevelTwoOp()) {
+	public boolean interact(PlayerEntity playerEntity) {
+		if (!playerEntity.isCreativeLevelTwoOp()) {
 			return false;
 		} else {
-			if (player.getEntityWorld().isClient) {
-				player.openCommandBlockMinecartScreen(this);
+			if (playerEntity.getEntityWorld().isClient) {
+				playerEntity.openCommandBlockMinecartScreen(this);
 			}
 
 			return true;
@@ -190,7 +190,7 @@ public abstract class CommandBlockExecutor implements CommandOutput {
 
 	@Override
 	public boolean sendCommandFeedback() {
-		return this.getWorld().getGameRules().getBoolean(GameRules.SEND_COMMAND_FEEDBACK) && this.trackOutput;
+		return this.getWorld().getGameRules().getBoolean(GameRules.field_19400) && this.trackOutput;
 	}
 
 	@Override
@@ -200,6 +200,6 @@ public abstract class CommandBlockExecutor implements CommandOutput {
 
 	@Override
 	public boolean shouldBroadcastConsoleToOps() {
-		return this.getWorld().getGameRules().getBoolean(GameRules.COMMAND_BLOCK_OUTPUT);
+		return this.getWorld().getGameRules().getBoolean(GameRules.field_19394);
 	}
 }

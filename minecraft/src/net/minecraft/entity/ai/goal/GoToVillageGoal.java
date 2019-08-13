@@ -3,7 +3,7 @@ package net.minecraft.entity.ai.goal;
 import java.util.EnumSet;
 import java.util.Random;
 import javax.annotation.Nullable;
-import net.minecraft.entity.ai.TargetFinder;
+import net.minecraft.entity.ai.PathfindingUtil;
 import net.minecraft.entity.ai.pathing.EntityNavigation;
 import net.minecraft.entity.mob.MobEntityWithAi;
 import net.minecraft.server.world.ServerWorld;
@@ -18,19 +18,19 @@ public class GoToVillageGoal extends Goal {
 	@Nullable
 	private BlockPos targetPosition;
 
-	public GoToVillageGoal(MobEntityWithAi mob, int searchRange) {
-		this.mob = mob;
-		this.searchRange = searchRange;
-		this.setControls(EnumSet.of(Goal.Control.MOVE));
+	public GoToVillageGoal(MobEntityWithAi mobEntityWithAi, int i) {
+		this.mob = mobEntityWithAi;
+		this.searchRange = i;
+		this.setControls(EnumSet.of(Goal.Control.field_18405));
 	}
 
 	@Override
 	public boolean canStart() {
 		if (this.mob.hasPassengers()) {
 			return false;
-		} else if (this.mob.world.isDay()) {
+		} else if (this.mob.world.isDaylight()) {
 			return false;
-		} else if (this.mob.getRandom().nextInt(this.searchRange) != 0) {
+		} else if (this.mob.getRand().nextInt(this.searchRange) != 0) {
 			return false;
 		} else {
 			ServerWorld serverWorld = (ServerWorld)this.mob.world;
@@ -38,7 +38,7 @@ public class GoToVillageGoal extends Goal {
 			if (!serverWorld.isNearOccupiedPointOfInterest(blockPos, 6)) {
 				return false;
 			} else {
-				Vec3d vec3d = TargetFinder.findGroundTarget(
+				Vec3d vec3d = PathfindingUtil.findTargetStraight(
 					this.mob, 15, 7, blockPosx -> (double)(-serverWorld.getOccupiedPointOfInterestDistance(ChunkSectionPos.from(blockPosx)))
 				);
 				this.targetPosition = vec3d == null ? null : new BlockPos(vec3d);
@@ -63,7 +63,7 @@ public class GoToVillageGoal extends Goal {
 				vec3d = vec3d3.multiply(0.4).add(vec3d);
 				Vec3d vec3d4 = vec3d.subtract(vec3d2).normalize().multiply(10.0).add(vec3d2);
 				BlockPos blockPos = new BlockPos(vec3d4);
-				blockPos = this.mob.world.getTopPosition(Heightmap.Type.MOTION_BLOCKING_NO_LEAVES, blockPos);
+				blockPos = this.mob.world.getTopPosition(Heightmap.Type.field_13203, blockPos);
 				if (!entityNavigation.startMovingTo((double)blockPos.getX(), (double)blockPos.getY(), (double)blockPos.getZ(), 1.0)) {
 					this.findOtherWaypoint();
 				}
@@ -72,10 +72,10 @@ public class GoToVillageGoal extends Goal {
 	}
 
 	private void findOtherWaypoint() {
-		Random random = this.mob.getRandom();
+		Random random = this.mob.getRand();
 		BlockPos blockPos = this.mob
 			.world
-			.getTopPosition(Heightmap.Type.MOTION_BLOCKING_NO_LEAVES, new BlockPos(this.mob).add(-8 + random.nextInt(16), 0, -8 + random.nextInt(16)));
+			.getTopPosition(Heightmap.Type.field_13203, new BlockPos(this.mob).add(-8 + random.nextInt(16), 0, -8 + random.nextInt(16)));
 		this.mob.getNavigation().startMovingTo((double)blockPos.getX(), (double)blockPos.getY(), (double)blockPos.getZ(), 1.0);
 	}
 }
