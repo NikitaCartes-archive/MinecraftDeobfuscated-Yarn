@@ -5,6 +5,7 @@ import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
 import net.minecraft.nbt.ListTag;
+import net.minecraft.util.TaskPriority;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.world.chunk.Chunk;
@@ -15,16 +16,16 @@ public class ChunkTickScheduler<T> implements TickScheduler<T> {
 	private final ChunkPos pos;
 	private final ShortList[] scheduledPositions = new ShortList[16];
 
-	public ChunkTickScheduler(Predicate<T> shouldExclude, ChunkPos chunkPos) {
-		this(shouldExclude, chunkPos, new ListTag());
+	public ChunkTickScheduler(Predicate<T> predicate, ChunkPos chunkPos) {
+		this(predicate, chunkPos, new ListTag());
 	}
 
-	public ChunkTickScheduler(Predicate<T> shouldExclude, ChunkPos chunkPos, ListTag listTag) {
-		this.shouldExclude = shouldExclude;
+	public ChunkTickScheduler(Predicate<T> predicate, ChunkPos chunkPos, ListTag listTag) {
+		this.shouldExclude = predicate;
 		this.pos = chunkPos;
 
 		for (int i = 0; i < listTag.size(); i++) {
-			ListTag listTag2 = listTag.getList(i);
+			ListTag listTag2 = listTag.getListTag(i);
 
 			for (int j = 0; j < listTag2.size(); j++) {
 				Chunk.getList(this.scheduledPositions, i).add(listTag2.getShort(j));
@@ -36,12 +37,12 @@ public class ChunkTickScheduler<T> implements TickScheduler<T> {
 		return ChunkSerializer.toNbt(this.scheduledPositions);
 	}
 
-	public void tick(TickScheduler<T> scheduler, Function<BlockPos, T> dataMapper) {
+	public void tick(TickScheduler<T> tickScheduler, Function<BlockPos, T> function) {
 		for (int i = 0; i < this.scheduledPositions.length; i++) {
 			if (this.scheduledPositions[i] != null) {
 				for (Short short_ : this.scheduledPositions[i]) {
 					BlockPos blockPos = ProtoChunk.joinBlockPos(short_, i, this.pos);
-					scheduler.schedule(blockPos, (T)dataMapper.apply(blockPos), 0);
+					tickScheduler.schedule(blockPos, (T)function.apply(blockPos), 0);
 				}
 
 				this.scheduledPositions[i].clear();
@@ -50,17 +51,17 @@ public class ChunkTickScheduler<T> implements TickScheduler<T> {
 	}
 
 	@Override
-	public boolean isScheduled(BlockPos pos, T object) {
+	public boolean isScheduled(BlockPos blockPos, T object) {
 		return false;
 	}
 
 	@Override
-	public void schedule(BlockPos pos, T object, int delay, TickPriority priority) {
-		Chunk.getList(this.scheduledPositions, pos.getY() >> 4).add(ProtoChunk.getPackedSectionRelative(pos));
+	public void schedule(BlockPos blockPos, T object, int i, TaskPriority taskPriority) {
+		Chunk.getList(this.scheduledPositions, blockPos.getY() >> 4).add(ProtoChunk.getPackedSectionRelative(blockPos));
 	}
 
 	@Override
-	public boolean isTicking(BlockPos pos, T object) {
+	public boolean isTicking(BlockPos blockPos, T object) {
 		return false;
 	}
 

@@ -7,17 +7,17 @@ import net.minecraft.structure.EndCityGenerator;
 import net.minecraft.structure.StructureManager;
 import net.minecraft.structure.StructureStart;
 import net.minecraft.util.BlockRotation;
-import net.minecraft.util.math.BlockBox;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
+import net.minecraft.util.math.MutableIntBoundingBox;
 import net.minecraft.world.Heightmap;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.gen.ChunkRandom;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
 
 public class EndCityFeature extends StructureFeature<DefaultFeatureConfig> {
-	public EndCityFeature(Function<Dynamic<?>, ? extends DefaultFeatureConfig> configFactory) {
-		super(configFactory);
+	public EndCityFeature(Function<Dynamic<?>, ? extends DefaultFeatureConfig> function) {
+		super(function);
 	}
 
 	@Override
@@ -39,15 +39,15 @@ public class EndCityFeature extends StructureFeature<DefaultFeatureConfig> {
 	}
 
 	@Override
-	public boolean shouldStartAt(ChunkGenerator<?> chunkGenerator, Random random, int chunkX, int chunkZ) {
-		ChunkPos chunkPos = this.getStart(chunkGenerator, random, chunkX, chunkZ, 0, 0);
-		if (chunkX == chunkPos.x && chunkZ == chunkPos.z) {
-			Biome biome = chunkGenerator.getBiomeSource().getBiome(new BlockPos((chunkX << 4) + 9, 0, (chunkZ << 4) + 9));
+	public boolean shouldStartAt(ChunkGenerator<?> chunkGenerator, Random random, int i, int j) {
+		ChunkPos chunkPos = this.getStart(chunkGenerator, random, i, j, 0, 0);
+		if (i == chunkPos.x && j == chunkPos.z) {
+			Biome biome = chunkGenerator.getBiomeSource().getBiome(new BlockPos((i << 4) + 9, 0, (j << 4) + 9));
 			if (!chunkGenerator.hasStructure(biome, Feature.END_CITY)) {
 				return false;
 			} else {
-				int i = getGenerationHeight(chunkX, chunkZ, chunkGenerator);
-				return i >= 60;
+				int k = getGenerationHeight(i, j, chunkGenerator);
+				return k >= 60;
 			}
 		} else {
 			return false;
@@ -69,40 +69,40 @@ public class EndCityFeature extends StructureFeature<DefaultFeatureConfig> {
 		return 8;
 	}
 
-	private static int getGenerationHeight(int chunkX, int chunkZ, ChunkGenerator<?> chunkGenerator) {
-		Random random = new Random((long)(chunkX + chunkZ * 10387313));
+	private static int getGenerationHeight(int i, int j, ChunkGenerator<?> chunkGenerator) {
+		Random random = new Random((long)(i + j * 10387313));
 		BlockRotation blockRotation = BlockRotation.values()[random.nextInt(BlockRotation.values().length)];
-		int i = 5;
-		int j = 5;
+		int k = 5;
+		int l = 5;
 		if (blockRotation == BlockRotation.CLOCKWISE_90) {
-			i = -5;
+			k = -5;
 		} else if (blockRotation == BlockRotation.CLOCKWISE_180) {
-			i = -5;
-			j = -5;
+			k = -5;
+			l = -5;
 		} else if (blockRotation == BlockRotation.COUNTERCLOCKWISE_90) {
-			j = -5;
+			l = -5;
 		}
 
-		int k = (chunkX << 4) + 7;
-		int l = (chunkZ << 4) + 7;
-		int m = chunkGenerator.getHeightInGround(k, l, Heightmap.Type.WORLD_SURFACE_WG);
-		int n = chunkGenerator.getHeightInGround(k, l + j, Heightmap.Type.WORLD_SURFACE_WG);
-		int o = chunkGenerator.getHeightInGround(k + i, l, Heightmap.Type.WORLD_SURFACE_WG);
-		int p = chunkGenerator.getHeightInGround(k + i, l + j, Heightmap.Type.WORLD_SURFACE_WG);
-		return Math.min(Math.min(m, n), Math.min(o, p));
+		int m = (i << 4) + 7;
+		int n = (j << 4) + 7;
+		int o = chunkGenerator.getHeightInGround(m, n, Heightmap.Type.WORLD_SURFACE_WG);
+		int p = chunkGenerator.getHeightInGround(m, n + l, Heightmap.Type.WORLD_SURFACE_WG);
+		int q = chunkGenerator.getHeightInGround(m + k, n, Heightmap.Type.WORLD_SURFACE_WG);
+		int r = chunkGenerator.getHeightInGround(m + k, n + l, Heightmap.Type.WORLD_SURFACE_WG);
+		return Math.min(Math.min(o, p), Math.min(q, r));
 	}
 
 	public static class Start extends StructureStart {
-		public Start(StructureFeature<?> structureFeature, int chunkX, int chunkZ, Biome biome, BlockBox blockBox, int i, long l) {
-			super(structureFeature, chunkX, chunkZ, biome, blockBox, i, l);
+		public Start(StructureFeature<?> structureFeature, int i, int j, Biome biome, MutableIntBoundingBox mutableIntBoundingBox, int k, long l) {
+			super(structureFeature, i, j, biome, mutableIntBoundingBox, k, l);
 		}
 
 		@Override
-		public void initialize(ChunkGenerator<?> chunkGenerator, StructureManager structureManager, int x, int z, Biome biome) {
+		public void initialize(ChunkGenerator<?> chunkGenerator, StructureManager structureManager, int i, int j, Biome biome) {
 			BlockRotation blockRotation = BlockRotation.values()[this.random.nextInt(BlockRotation.values().length)];
-			int i = EndCityFeature.getGenerationHeight(x, z, chunkGenerator);
-			if (i >= 60) {
-				BlockPos blockPos = new BlockPos(x * 16 + 8, i, z * 16 + 8);
+			int k = EndCityFeature.getGenerationHeight(i, j, chunkGenerator);
+			if (k >= 60) {
+				BlockPos blockPos = new BlockPos(i * 16 + 8, k, j * 16 + 8);
 				EndCityGenerator.addPieces(structureManager, blockPos, blockRotation, this.children, this.random);
 				this.setBoundingBoxFromChildren();
 			}

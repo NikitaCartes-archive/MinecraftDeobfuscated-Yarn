@@ -29,9 +29,9 @@ public enum TutorialStep {
 		return this.name;
 	}
 
-	public static TutorialStep byName(String name) {
+	public static TutorialStep byName(String string) {
 		for (TutorialStep tutorialStep : values()) {
-			if (tutorialStep.name.equals(name)) {
+			if (tutorialStep.name.equals(string)) {
 				return tutorialStep;
 			}
 		}

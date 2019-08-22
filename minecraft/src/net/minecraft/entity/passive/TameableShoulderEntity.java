@@ -8,15 +8,15 @@ import net.minecraft.world.World;
 public abstract class TameableShoulderEntity extends TameableEntity {
 	private int ticks;
 
-	protected TameableShoulderEntity(EntityType<? extends TameableShoulderEntity> type, World world) {
-		super(type, world);
+	protected TameableShoulderEntity(EntityType<? extends TameableShoulderEntity> entityType, World world) {
+		super(entityType, world);
 	}
 
-	public boolean mountOnto(ServerPlayerEntity player) {
+	public boolean mountOnto(ServerPlayerEntity serverPlayerEntity) {
 		CompoundTag compoundTag = new CompoundTag();
 		compoundTag.putString("id", this.getSavedEntityId());
 		this.toTag(compoundTag);
-		if (player.addShoulderEntity(compoundTag)) {
+		if (serverPlayerEntity.addShoulderEntity(compoundTag)) {
 			this.remove();
 			return true;
 		} else {

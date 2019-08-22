@@ -19,47 +19,47 @@ public class ZombieVillagerEntityModel<T extends ZombieEntity> extends BipedEnti
 		if (bl) {
 			this.head = new ModelPart(this, 0, 0);
 			this.head.addCuboid(-4.0F, -10.0F, -4.0F, 8, 8, 8, f);
-			this.torso = new ModelPart(this, 16, 16);
-			this.torso.addCuboid(-4.0F, 0.0F, -2.0F, 8, 12, 4, f + 0.1F);
+			this.body = new ModelPart(this, 16, 16);
+			this.body.addCuboid(-4.0F, 0.0F, -2.0F, 8, 12, 4, f + 0.1F);
 			this.rightLeg = new ModelPart(this, 0, 16);
-			this.rightLeg.setPivot(-2.0F, 12.0F, 0.0F);
+			this.rightLeg.setRotationPoint(-2.0F, 12.0F, 0.0F);
 			this.rightLeg.addCuboid(-2.0F, 0.0F, -2.0F, 4, 12, 4, f + 0.1F);
 			this.leftLeg = new ModelPart(this, 0, 16);
 			this.leftLeg.mirror = true;
-			this.leftLeg.setPivot(2.0F, 12.0F, 0.0F);
+			this.leftLeg.setRotationPoint(2.0F, 12.0F, 0.0F);
 			this.leftLeg.addCuboid(-2.0F, 0.0F, -2.0F, 4, 12, 4, f + 0.1F);
 		} else {
 			this.head = new ModelPart(this, 0, 0);
 			this.head.setTextureOffset(0, 0).addCuboid(-4.0F, -10.0F, -4.0F, 8, 10, 8, f);
 			this.head.setTextureOffset(24, 0).addCuboid(-1.0F, -3.0F, -6.0F, 2, 4, 2, f);
-			this.helmet = new ModelPart(this, 32, 0);
-			this.helmet.addCuboid(-4.0F, -10.0F, -4.0F, 8, 10, 8, f + 0.5F);
+			this.headwear = new ModelPart(this, 32, 0);
+			this.headwear.addCuboid(-4.0F, -10.0F, -4.0F, 8, 10, 8, f + 0.5F);
 			this.hat = new ModelPart(this);
 			this.hat.setTextureOffset(30, 47).addCuboid(-8.0F, -8.0F, -6.0F, 16, 16, 1, f);
 			this.hat.pitch = (float) (-Math.PI / 2);
-			this.helmet.addChild(this.hat);
-			this.torso = new ModelPart(this, 16, 20);
-			this.torso.addCuboid(-4.0F, 0.0F, -3.0F, 8, 12, 6, f);
-			this.torso.setTextureOffset(0, 38).addCuboid(-4.0F, 0.0F, -3.0F, 8, 18, 6, f + 0.05F);
+			this.headwear.addChild(this.hat);
+			this.body = new ModelPart(this, 16, 20);
+			this.body.addCuboid(-4.0F, 0.0F, -3.0F, 8, 12, 6, f);
+			this.body.setTextureOffset(0, 38).addCuboid(-4.0F, 0.0F, -3.0F, 8, 18, 6, f + 0.05F);
 			this.rightArm = new ModelPart(this, 44, 22);
 			this.rightArm.addCuboid(-3.0F, -2.0F, -2.0F, 4, 12, 4, f);
-			this.rightArm.setPivot(-5.0F, 2.0F, 0.0F);
+			this.rightArm.setRotationPoint(-5.0F, 2.0F, 0.0F);
 			this.leftArm = new ModelPart(this, 44, 22);
 			this.leftArm.mirror = true;
 			this.leftArm.addCuboid(-1.0F, -2.0F, -2.0F, 4, 12, 4, f);
-			this.leftArm.setPivot(5.0F, 2.0F, 0.0F);
+			this.leftArm.setRotationPoint(5.0F, 2.0F, 0.0F);
 			this.rightLeg = new ModelPart(this, 0, 22);
-			this.rightLeg.setPivot(-2.0F, 12.0F, 0.0F);
+			this.rightLeg.setRotationPoint(-2.0F, 12.0F, 0.0F);
 			this.rightLeg.addCuboid(-2.0F, 0.0F, -2.0F, 4, 12, 4, f);
 			this.leftLeg = new ModelPart(this, 0, 22);
 			this.leftLeg.mirror = true;
-			this.leftLeg.setPivot(2.0F, 12.0F, 0.0F);
+			this.leftLeg.setRotationPoint(2.0F, 12.0F, 0.0F);
 			this.leftLeg.addCuboid(-2.0F, 0.0F, -2.0F, 4, 12, 4, f);
 		}
 	}
 
-	public void setAngles(T zombieEntity, float f, float g, float h, float i, float j, float k) {
-		super.setAngles(zombieEntity, f, g, h, i, j, k);
+	public void method_17135(T zombieEntity, float f, float g, float h, float i, float j, float k) {
+		super.method_17087(zombieEntity, f, g, h, i, j, k);
 		float l = MathHelper.sin(this.handSwingProgress * (float) Math.PI);
 		float m = MathHelper.sin((1.0F - (1.0F - this.handSwingProgress) * (1.0F - this.handSwingProgress)) * (float) Math.PI);
 		this.rightArm.roll = 0.0F;
@@ -78,9 +78,9 @@ public class ZombieVillagerEntityModel<T extends ZombieEntity> extends BipedEnti
 	}
 
 	@Override
-	public void setHatVisible(boolean visible) {
-		this.head.visible = visible;
-		this.helmet.visible = visible;
-		this.hat.visible = visible;
+	public void setHatVisible(boolean bl) {
+		this.head.visible = bl;
+		this.headwear.visible = bl;
+		this.hat.visible = bl;
 	}
 }

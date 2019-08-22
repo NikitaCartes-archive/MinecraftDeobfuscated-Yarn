@@ -1,7 +1,7 @@
 package net.minecraft.client.model;
 
 import com.google.common.collect.Lists;
-import com.mojang.blaze3d.platform.GlStateManager;
+import com.mojang.blaze3d.systems.RenderSystem;
 import java.util.List;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
@@ -15,54 +15,54 @@ public class ModelPart {
 	public float textureHeight = 32.0F;
 	private int textureOffsetU;
 	private int textureOffsetV;
-	public float pivotX;
-	public float pivotY;
-	public float pivotZ;
+	public float rotationPointX;
+	public float rotationPointY;
+	public float rotationPointZ;
 	public float pitch;
 	public float yaw;
 	public float roll;
 	private boolean compiled;
-	private int list;
+	private int renderList;
 	public boolean mirror;
 	public boolean visible = true;
 	public boolean field_3664;
-	public final List<Box> boxes = Lists.<Box>newArrayList();
+	public final List<Cuboid> cuboids = Lists.<Cuboid>newArrayList();
 	public List<ModelPart> children;
 	public final String name;
 	public float x;
 	public float y;
 	public float z;
 
-	public ModelPart(Model owner, String name) {
-		owner.cuboidList.add(this);
-		this.name = name;
-		this.setTextureSize(owner.textureWidth, owner.textureHeight);
+	public ModelPart(Model model, String string) {
+		model.cuboidList.add(this);
+		this.name = string;
+		this.setTextureSize(model.textureWidth, model.textureHeight);
 	}
 
 	public ModelPart(Model model) {
 		this(model, null);
 	}
 
-	public ModelPart(Model model, int textureOffsetU, int textureOffsetV) {
+	public ModelPart(Model model, int i, int j) {
 		this(model);
-		this.setTextureOffset(textureOffsetU, textureOffsetV);
+		this.setTextureOffset(i, j);
 	}
 
-	public void copyPositionAndRotation(ModelPart modelPart) {
+	public void copyRotation(ModelPart modelPart) {
 		this.pitch = modelPart.pitch;
 		this.yaw = modelPart.yaw;
 		this.roll = modelPart.roll;
-		this.pivotX = modelPart.pivotX;
-		this.pivotY = modelPart.pivotY;
-		this.pivotZ = modelPart.pivotZ;
+		this.rotationPointX = modelPart.rotationPointX;
+		this.rotationPointY = modelPart.rotationPointY;
+		this.rotationPointZ = modelPart.rotationPointZ;
 	}
 
-	public void addChild(ModelPart part) {
+	public void addChild(ModelPart modelPart) {
 		if (this.children == null) {
 			this.children = Lists.<ModelPart>newArrayList();
 		}
 
-		this.children.add(part);
+		this.children.add(modelPart);
 	}
 
 	public void removeChild(ModelPart modelPart) {
@@ -71,170 +71,170 @@ public class ModelPart {
 		}
 	}
 
-	public ModelPart setTextureOffset(int textureOffsetU, int textureOffsetV) {
-		this.textureOffsetU = textureOffsetU;
-		this.textureOffsetV = textureOffsetV;
+	public ModelPart setTextureOffset(int i, int j) {
+		this.textureOffsetU = i;
+		this.textureOffsetV = j;
 		return this;
 	}
 
-	public ModelPart addCuboid(String name, float x, float y, float z, int sizeX, int sizeY, int sizeZ, float extra, int textureOffsetU, int textureOffsetV) {
-		name = this.name + "." + name;
-		this.setTextureOffset(textureOffsetU, textureOffsetV);
-		this.boxes.add(new Box(this, this.textureOffsetU, this.textureOffsetV, x, y, z, sizeX, sizeY, sizeZ, extra).setName(name));
+	public ModelPart addCuboid(String string, float f, float g, float h, int i, int j, int k, float l, int m, int n) {
+		string = this.name + "." + string;
+		this.setTextureOffset(m, n);
+		this.cuboids.add(new Cuboid(this, this.textureOffsetU, this.textureOffsetV, f, g, h, i, j, k, l).setName(string));
 		return this;
 	}
 
-	public ModelPart addCuboid(float x, float y, float z, int sizeX, int sizeY, int sizeZ) {
-		this.boxes.add(new Box(this, this.textureOffsetU, this.textureOffsetV, x, y, z, sizeX, sizeY, sizeZ, 0.0F));
+	public ModelPart addCuboid(float f, float g, float h, int i, int j, int k) {
+		this.cuboids.add(new Cuboid(this, this.textureOffsetU, this.textureOffsetV, f, g, h, i, j, k, 0.0F));
 		return this;
 	}
 
-	public ModelPart addCuboid(float x, float y, float z, int sizeX, int sizeY, int sizeZ, boolean mirror) {
-		this.boxes.add(new Box(this, this.textureOffsetU, this.textureOffsetV, x, y, z, sizeX, sizeY, sizeZ, 0.0F, mirror));
+	public ModelPart addCuboid(float f, float g, float h, int i, int j, int k, boolean bl) {
+		this.cuboids.add(new Cuboid(this, this.textureOffsetU, this.textureOffsetV, f, g, h, i, j, k, 0.0F, bl));
 		return this;
 	}
 
-	public void addCuboid(float x, float y, float z, int sizeX, int sizeY, int sizeZ, float extra) {
-		this.boxes.add(new Box(this, this.textureOffsetU, this.textureOffsetV, x, y, z, sizeX, sizeY, sizeZ, extra));
+	public void addCuboid(float f, float g, float h, int i, int j, int k, float l) {
+		this.cuboids.add(new Cuboid(this, this.textureOffsetU, this.textureOffsetV, f, g, h, i, j, k, l));
 	}
 
-	public void addCuboid(float x, float y, float z, int sizeX, int sizeY, int sizeZ, float extra, boolean mirror) {
-		this.boxes.add(new Box(this, this.textureOffsetU, this.textureOffsetV, x, y, z, sizeX, sizeY, sizeZ, extra, mirror));
+	public void addCuboid(float f, float g, float h, int i, int j, int k, float l, boolean bl) {
+		this.cuboids.add(new Cuboid(this, this.textureOffsetU, this.textureOffsetV, f, g, h, i, j, k, l, bl));
 	}
 
-	public void setPivot(float x, float y, float z) {
-		this.pivotX = x;
-		this.pivotY = y;
-		this.pivotZ = z;
+	public void setRotationPoint(float f, float g, float h) {
+		this.rotationPointX = f;
+		this.rotationPointY = g;
+		this.rotationPointZ = h;
 	}
 
-	public void render(float scale) {
+	public void render(float f) {
 		if (!this.field_3664) {
 			if (this.visible) {
 				if (!this.compiled) {
-					this.compile(scale);
+					this.compile(f);
 				}
 
-				GlStateManager.pushMatrix();
-				GlStateManager.translatef(this.x, this.y, this.z);
+				RenderSystem.pushMatrix();
+				RenderSystem.translatef(this.x, this.y, this.z);
 				if (this.pitch != 0.0F || this.yaw != 0.0F || this.roll != 0.0F) {
-					GlStateManager.pushMatrix();
-					GlStateManager.translatef(this.pivotX * scale, this.pivotY * scale, this.pivotZ * scale);
+					RenderSystem.pushMatrix();
+					RenderSystem.translatef(this.rotationPointX * f, this.rotationPointY * f, this.rotationPointZ * f);
 					if (this.roll != 0.0F) {
-						GlStateManager.rotatef(this.roll * (180.0F / (float)Math.PI), 0.0F, 0.0F, 1.0F);
+						RenderSystem.rotatef(this.roll * (180.0F / (float)Math.PI), 0.0F, 0.0F, 1.0F);
 					}
 
 					if (this.yaw != 0.0F) {
-						GlStateManager.rotatef(this.yaw * (180.0F / (float)Math.PI), 0.0F, 1.0F, 0.0F);
+						RenderSystem.rotatef(this.yaw * (180.0F / (float)Math.PI), 0.0F, 1.0F, 0.0F);
 					}
 
 					if (this.pitch != 0.0F) {
-						GlStateManager.rotatef(this.pitch * (180.0F / (float)Math.PI), 1.0F, 0.0F, 0.0F);
+						RenderSystem.rotatef(this.pitch * (180.0F / (float)Math.PI), 1.0F, 0.0F, 0.0F);
 					}
 
-					GlStateManager.callList(this.list);
+					RenderSystem.callList(this.renderList);
 					if (this.children != null) {
 						for (int i = 0; i < this.children.size(); i++) {
-							((ModelPart)this.children.get(i)).render(scale);
+							((ModelPart)this.children.get(i)).render(f);
 						}
 					}
 
-					GlStateManager.popMatrix();
-				} else if (this.pivotX == 0.0F && this.pivotY == 0.0F && this.pivotZ == 0.0F) {
-					GlStateManager.callList(this.list);
+					RenderSystem.popMatrix();
+				} else if (this.rotationPointX == 0.0F && this.rotationPointY == 0.0F && this.rotationPointZ == 0.0F) {
+					RenderSystem.callList(this.renderList);
 					if (this.children != null) {
 						for (int i = 0; i < this.children.size(); i++) {
-							((ModelPart)this.children.get(i)).render(scale);
+							((ModelPart)this.children.get(i)).render(f);
 						}
 					}
 				} else {
-					GlStateManager.pushMatrix();
-					GlStateManager.translatef(this.pivotX * scale, this.pivotY * scale, this.pivotZ * scale);
-					GlStateManager.callList(this.list);
+					RenderSystem.pushMatrix();
+					RenderSystem.translatef(this.rotationPointX * f, this.rotationPointY * f, this.rotationPointZ * f);
+					RenderSystem.callList(this.renderList);
 					if (this.children != null) {
 						for (int i = 0; i < this.children.size(); i++) {
-							((ModelPart)this.children.get(i)).render(scale);
+							((ModelPart)this.children.get(i)).render(f);
 						}
 					}
 
-					GlStateManager.popMatrix();
+					RenderSystem.popMatrix();
 				}
 
-				GlStateManager.popMatrix();
+				RenderSystem.popMatrix();
 			}
 		}
 	}
 
-	public void method_2852(float scale) {
+	public void method_2852(float f) {
 		if (!this.field_3664) {
 			if (this.visible) {
 				if (!this.compiled) {
-					this.compile(scale);
+					this.compile(f);
 				}
 
-				GlStateManager.pushMatrix();
-				GlStateManager.translatef(this.pivotX * scale, this.pivotY * scale, this.pivotZ * scale);
+				RenderSystem.pushMatrix();
+				RenderSystem.translatef(this.rotationPointX * f, this.rotationPointY * f, this.rotationPointZ * f);
 				if (this.yaw != 0.0F) {
-					GlStateManager.rotatef(this.yaw * (180.0F / (float)Math.PI), 0.0F, 1.0F, 0.0F);
+					RenderSystem.rotatef(this.yaw * (180.0F / (float)Math.PI), 0.0F, 1.0F, 0.0F);
 				}
 
 				if (this.pitch != 0.0F) {
-					GlStateManager.rotatef(this.pitch * (180.0F / (float)Math.PI), 1.0F, 0.0F, 0.0F);
+					RenderSystem.rotatef(this.pitch * (180.0F / (float)Math.PI), 1.0F, 0.0F, 0.0F);
 				}
 
 				if (this.roll != 0.0F) {
-					GlStateManager.rotatef(this.roll * (180.0F / (float)Math.PI), 0.0F, 0.0F, 1.0F);
+					RenderSystem.rotatef(this.roll * (180.0F / (float)Math.PI), 0.0F, 0.0F, 1.0F);
 				}
 
-				GlStateManager.callList(this.list);
-				GlStateManager.popMatrix();
+				RenderSystem.callList(this.renderList);
+				RenderSystem.popMatrix();
 			}
 		}
 	}
 
-	public void applyTransform(float scale) {
+	public void applyTransform(float f) {
 		if (!this.field_3664) {
 			if (this.visible) {
 				if (!this.compiled) {
-					this.compile(scale);
+					this.compile(f);
 				}
 
 				if (this.pitch != 0.0F || this.yaw != 0.0F || this.roll != 0.0F) {
-					GlStateManager.translatef(this.pivotX * scale, this.pivotY * scale, this.pivotZ * scale);
+					RenderSystem.translatef(this.rotationPointX * f, this.rotationPointY * f, this.rotationPointZ * f);
 					if (this.roll != 0.0F) {
-						GlStateManager.rotatef(this.roll * (180.0F / (float)Math.PI), 0.0F, 0.0F, 1.0F);
+						RenderSystem.rotatef(this.roll * (180.0F / (float)Math.PI), 0.0F, 0.0F, 1.0F);
 					}
 
 					if (this.yaw != 0.0F) {
-						GlStateManager.rotatef(this.yaw * (180.0F / (float)Math.PI), 0.0F, 1.0F, 0.0F);
+						RenderSystem.rotatef(this.yaw * (180.0F / (float)Math.PI), 0.0F, 1.0F, 0.0F);
 					}
 
 					if (this.pitch != 0.0F) {
-						GlStateManager.rotatef(this.pitch * (180.0F / (float)Math.PI), 1.0F, 0.0F, 0.0F);
+						RenderSystem.rotatef(this.pitch * (180.0F / (float)Math.PI), 1.0F, 0.0F, 0.0F);
 					}
-				} else if (this.pivotX != 0.0F || this.pivotY != 0.0F || this.pivotZ != 0.0F) {
-					GlStateManager.translatef(this.pivotX * scale, this.pivotY * scale, this.pivotZ * scale);
+				} else if (this.rotationPointX != 0.0F || this.rotationPointY != 0.0F || this.rotationPointZ != 0.0F) {
+					RenderSystem.translatef(this.rotationPointX * f, this.rotationPointY * f, this.rotationPointZ * f);
 				}
 			}
 		}
 	}
 
-	private void compile(float scale) {
-		this.list = GlAllocationUtils.genLists(1);
-		GlStateManager.newList(this.list, 4864);
-		BufferBuilder bufferBuilder = Tessellator.getInstance().getBuffer();
+	private void compile(float f) {
+		this.renderList = GlAllocationUtils.genLists(1);
+		RenderSystem.newList(this.renderList, 4864);
+		BufferBuilder bufferBuilder = Tessellator.getInstance().getBufferBuilder();
 
-		for (int i = 0; i < this.boxes.size(); i++) {
-			((Box)this.boxes.get(i)).render(bufferBuilder, scale);
+		for (int i = 0; i < this.cuboids.size(); i++) {
+			((Cuboid)this.cuboids.get(i)).render(bufferBuilder, f);
 		}
 
-		GlStateManager.endList();
+		RenderSystem.endList();
 		this.compiled = true;
 	}
 
-	public ModelPart setTextureSize(int width, int height) {
-		this.textureWidth = (float)width;
-		this.textureHeight = (float)height;
+	public ModelPart setTextureSize(int i, int j) {
+		this.textureWidth = (float)i;
+		this.textureHeight = (float)j;
 		return this;
 	}
 }

@@ -24,11 +24,11 @@ public class RecipeBook {
 	protected boolean smokerGuiOpen;
 	protected boolean smokerFilteringCraftable;
 
-	public void copyFrom(RecipeBook book) {
+	public void copyFrom(RecipeBook recipeBook) {
 		this.recipes.clear();
 		this.toBeDisplayed.clear();
-		this.recipes.addAll(book.recipes);
-		this.toBeDisplayed.addAll(book.toBeDisplayed);
+		this.recipes.addAll(recipeBook.recipes);
+		this.toBeDisplayed.addAll(recipeBook.toBeDisplayed);
 	}
 
 	public void add(Recipe<?> recipe) {
@@ -37,8 +37,8 @@ public class RecipeBook {
 		}
 	}
 
-	protected void add(Identifier id) {
-		this.recipes.add(id);
+	protected void add(Identifier identifier) {
+		this.recipes.add(identifier);
 	}
 
 	public boolean contains(@Nullable Recipe<?> recipe) {
@@ -50,9 +50,9 @@ public class RecipeBook {
 		this.remove(recipe.getId());
 	}
 
-	protected void remove(Identifier id) {
-		this.recipes.remove(id);
-		this.toBeDisplayed.remove(id);
+	protected void remove(Identifier identifier) {
+		this.recipes.remove(identifier);
+		this.toBeDisplayed.remove(identifier);
 	}
 
 	@Environment(EnvType.CLIENT)
@@ -68,8 +68,8 @@ public class RecipeBook {
 		this.display(recipe.getId());
 	}
 
-	protected void display(Identifier id) {
-		this.toBeDisplayed.add(id);
+	protected void display(Identifier identifier) {
+		this.toBeDisplayed.add(identifier);
 	}
 
 	@Environment(EnvType.CLIENT)
@@ -77,18 +77,18 @@ public class RecipeBook {
 		return this.guiOpen;
 	}
 
-	public void setGuiOpen(boolean guiOpen) {
-		this.guiOpen = guiOpen;
+	public void setGuiOpen(boolean bl) {
+		this.guiOpen = bl;
 	}
 
 	@Environment(EnvType.CLIENT)
-	public boolean isFilteringCraftable(CraftingContainer<?> container) {
-		if (container instanceof FurnaceContainer) {
+	public boolean isFilteringCraftable(CraftingContainer<?> craftingContainer) {
+		if (craftingContainer instanceof FurnaceContainer) {
 			return this.furnaceFilteringCraftable;
-		} else if (container instanceof BlastFurnaceContainer) {
+		} else if (craftingContainer instanceof BlastFurnaceContainer) {
 			return this.blastFurnaceFilteringCraftable;
 		} else {
-			return container instanceof SmokerContainer ? this.smokerFilteringCraftable : this.filteringCraftable;
+			return craftingContainer instanceof SmokerContainer ? this.smokerFilteringCraftable : this.filteringCraftable;
 		}
 	}
 
@@ -97,8 +97,8 @@ public class RecipeBook {
 		return this.filteringCraftable;
 	}
 
-	public void setFilteringCraftable(boolean filteringCraftable) {
-		this.filteringCraftable = filteringCraftable;
+	public void setFilteringCraftable(boolean bl) {
+		this.filteringCraftable = bl;
 	}
 
 	@Environment(EnvType.CLIENT)
@@ -106,8 +106,8 @@ public class RecipeBook {
 		return this.furnaceGuiOpen;
 	}
 
-	public void setFurnaceGuiOpen(boolean furnaceGuiOpen) {
-		this.furnaceGuiOpen = furnaceGuiOpen;
+	public void setFurnaceGuiOpen(boolean bl) {
+		this.furnaceGuiOpen = bl;
 	}
 
 	@Environment(EnvType.CLIENT)
@@ -115,8 +115,8 @@ public class RecipeBook {
 		return this.furnaceFilteringCraftable;
 	}
 
-	public void setFurnaceFilteringCraftable(boolean furnaceFilteringCraftable) {
-		this.furnaceFilteringCraftable = furnaceFilteringCraftable;
+	public void setFurnaceFilteringCraftable(boolean bl) {
+		this.furnaceFilteringCraftable = bl;
 	}
 
 	@Environment(EnvType.CLIENT)
@@ -124,8 +124,8 @@ public class RecipeBook {
 		return this.blastFurnaceGuiOpen;
 	}
 
-	public void setBlastFurnaceGuiOpen(boolean blastFurnaceGuiOpen) {
-		this.blastFurnaceGuiOpen = blastFurnaceGuiOpen;
+	public void setBlastFurnaceGuiOpen(boolean bl) {
+		this.blastFurnaceGuiOpen = bl;
 	}
 
 	@Environment(EnvType.CLIENT)
@@ -133,8 +133,8 @@ public class RecipeBook {
 		return this.blastFurnaceFilteringCraftable;
 	}
 
-	public void setBlastFurnaceFilteringCraftable(boolean blastFurnaceFilteringCraftable) {
-		this.blastFurnaceFilteringCraftable = blastFurnaceFilteringCraftable;
+	public void setBlastFurnaceFilteringCraftable(boolean bl) {
+		this.blastFurnaceFilteringCraftable = bl;
 	}
 
 	@Environment(EnvType.CLIENT)
@@ -142,8 +142,8 @@ public class RecipeBook {
 		return this.smokerGuiOpen;
 	}
 
-	public void setSmokerGuiOpen(boolean smokerGuiOpen) {
-		this.smokerGuiOpen = smokerGuiOpen;
+	public void setSmokerGuiOpen(boolean bl) {
+		this.smokerGuiOpen = bl;
 	}
 
 	@Environment(EnvType.CLIENT)
@@ -151,7 +151,7 @@ public class RecipeBook {
 		return this.smokerFilteringCraftable;
 	}
 
-	public void setSmokerFilteringCraftable(boolean smokerFilteringCraftable) {
-		this.smokerFilteringCraftable = smokerFilteringCraftable;
+	public void setSmokerFilteringCraftable(boolean bl) {
+		this.smokerFilteringCraftable = bl;
 	}
 }

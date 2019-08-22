@@ -17,15 +17,15 @@ public class EatGrassGoal extends Goal {
 	private final World world;
 	private int timer;
 
-	public EatGrassGoal(MobEntity mob) {
-		this.mob = mob;
-		this.world = mob.world;
+	public EatGrassGoal(MobEntity mobEntity) {
+		this.mob = mobEntity;
+		this.world = mobEntity.world;
 		this.setControls(EnumSet.of(Goal.Control.MOVE, Goal.Control.LOOK, Goal.Control.JUMP));
 	}
 
 	@Override
 	public boolean canStart() {
-		if (this.mob.getRandom().nextInt(this.mob.isBaby() ? 50 : 1000) != 0) {
+		if (this.mob.getRand().nextInt(this.mob.isBaby() ? 50 : 1000) != 0) {
 			return false;
 		} else {
 			BlockPos blockPos = new BlockPos(this.mob);

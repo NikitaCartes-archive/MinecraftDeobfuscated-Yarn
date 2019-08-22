@@ -1,7 +1,7 @@
 package net.minecraft.item.map;
 
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.NbtHelper;
+import net.minecraft.util.TagHelper;
 import net.minecraft.util.math.BlockPos;
 
 public class MapFrameMarker {
@@ -9,22 +9,22 @@ public class MapFrameMarker {
 	private final int rotation;
 	private final int entityId;
 
-	public MapFrameMarker(BlockPos pos, int rotation, int entityId) {
-		this.pos = pos;
-		this.rotation = rotation;
-		this.entityId = entityId;
+	public MapFrameMarker(BlockPos blockPos, int i, int j) {
+		this.pos = blockPos;
+		this.rotation = i;
+		this.entityId = j;
 	}
 
-	public static MapFrameMarker fromTag(CompoundTag tag) {
-		BlockPos blockPos = NbtHelper.toBlockPos(tag.getCompound("Pos"));
-		int i = tag.getInt("Rotation");
-		int j = tag.getInt("EntityId");
+	public static MapFrameMarker fromTag(CompoundTag compoundTag) {
+		BlockPos blockPos = TagHelper.deserializeBlockPos(compoundTag.getCompound("Pos"));
+		int i = compoundTag.getInt("Rotation");
+		int j = compoundTag.getInt("EntityId");
 		return new MapFrameMarker(blockPos, i, j);
 	}
 
 	public CompoundTag toTag() {
 		CompoundTag compoundTag = new CompoundTag();
-		compoundTag.put("Pos", NbtHelper.fromBlockPos(this.pos));
+		compoundTag.put("Pos", TagHelper.serializeBlockPos(this.pos));
 		compoundTag.putInt("Rotation", this.rotation);
 		compoundTag.putInt("EntityId", this.entityId);
 		return compoundTag;
@@ -46,7 +46,7 @@ public class MapFrameMarker {
 		return getKey(this.pos);
 	}
 
-	public static String getKey(BlockPos pos) {
-		return "frame-" + pos.getX() + "," + pos.getY() + "," + pos.getZ();
+	public static String getKey(BlockPos blockPos) {
+		return "frame-" + blockPos.getX() + "," + blockPos.getY() + "," + blockPos.getZ();
 	}
 }

@@ -1,7 +1,6 @@
 package net.minecraft.world.biome;
 
 import com.google.common.collect.Lists;
-import net.minecraft.class_3267;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.fluid.Fluids;
@@ -18,11 +17,13 @@ import net.minecraft.world.gen.decorator.CountExtraChanceDecoratorConfig;
 import net.minecraft.world.gen.decorator.Decorator;
 import net.minecraft.world.gen.decorator.DecoratorConfig;
 import net.minecraft.world.gen.decorator.DungeonDecoratorConfig;
+import net.minecraft.world.gen.decorator.LakeDecoratorConfig;
 import net.minecraft.world.gen.decorator.NoiseHeightmapDecoratorConfig;
 import net.minecraft.world.gen.decorator.RangeDecoratorConfig;
 import net.minecraft.world.gen.decorator.TopSolidHeightmapNoiseBiasedDecoratorConfig;
 import net.minecraft.world.gen.feature.BoulderFeatureConfig;
 import net.minecraft.world.gen.feature.BuriedTreasureFeatureConfig;
+import net.minecraft.world.gen.feature.BushFeatureConfig;
 import net.minecraft.world.gen.feature.DiskFeatureConfig;
 import net.minecraft.world.gen.feature.DoublePlantFeatureConfig;
 import net.minecraft.world.gen.feature.EmeraldOreFeatureConfig;
@@ -44,7 +45,6 @@ import net.minecraft.world.gen.feature.RandomRandomFeatureConfig;
 import net.minecraft.world.gen.feature.SeagrassFeatureConfig;
 import net.minecraft.world.gen.feature.ShipwreckFeatureConfig;
 import net.minecraft.world.gen.feature.SimpleBlockFeatureConfig;
-import net.minecraft.world.gen.feature.SingleStateFeatureConfig;
 import net.minecraft.world.gen.feature.SpringFeatureConfig;
 import net.minecraft.world.gen.feature.VillageFeatureConfig;
 
@@ -112,18 +112,18 @@ public class DefaultBiomeFeatures {
 	public static void addDefaultLakes(Biome biome) {
 		biome.addFeature(
 			GenerationStep.Feature.LOCAL_MODIFICATIONS,
-			Biome.configureFeature(Feature.LAKE, new LakeFeatureConfig(Blocks.WATER.getDefaultState()), Decorator.WATER_LAKE, new ChanceDecoratorConfig(4))
+			Biome.configureFeature(Feature.LAKE, new LakeFeatureConfig(Blocks.WATER.getDefaultState()), Decorator.WATER_LAKE, new LakeDecoratorConfig(4))
 		);
 		biome.addFeature(
 			GenerationStep.Feature.LOCAL_MODIFICATIONS,
-			Biome.configureFeature(Feature.LAKE, new LakeFeatureConfig(Blocks.LAVA.getDefaultState()), Decorator.LAVA_LAKE, new ChanceDecoratorConfig(80))
+			Biome.configureFeature(Feature.LAKE, new LakeFeatureConfig(Blocks.LAVA.getDefaultState()), Decorator.LAVA_LAKE, new LakeDecoratorConfig(80))
 		);
 	}
 
 	public static void addDesertLakes(Biome biome) {
 		biome.addFeature(
 			GenerationStep.Feature.LOCAL_MODIFICATIONS,
-			Biome.configureFeature(Feature.LAKE, new LakeFeatureConfig(Blocks.LAVA.getDefaultState()), Decorator.LAVA_LAKE, new ChanceDecoratorConfig(80))
+			Biome.configureFeature(Feature.LAKE, new LakeFeatureConfig(Blocks.LAVA.getDefaultState()), Decorator.LAVA_LAKE, new LakeDecoratorConfig(80))
 		);
 	}
 
@@ -342,7 +342,7 @@ public class DefaultBiomeFeatures {
 	public static void addSweetBerryBushesSnowy(Biome biome) {
 		biome.addFeature(
 			GenerationStep.Feature.VEGETAL_DECORATION,
-			Biome.configureFeature(Feature.SWEET_BERRY_BUSH, FeatureConfig.DEFAULT, Decorator.CHANCE_HEIGHTMAP_DOUBLE, new class_3267(12))
+			Biome.configureFeature(Feature.SWEET_BERRY_BUSH, FeatureConfig.DEFAULT, Decorator.CHANCE_HEIGHTMAP_DOUBLE, new ChanceDecoratorConfig(12))
 		);
 	}
 
@@ -697,17 +697,14 @@ public class DefaultBiomeFeatures {
 		biome.addFeature(
 			GenerationStep.Feature.VEGETAL_DECORATION,
 			Biome.configureFeature(
-				Feature.BUSH,
-				new SingleStateFeatureConfig(Blocks.BROWN_MUSHROOM.getDefaultState()),
-				Decorator.COUNT_CHANCE_HEIGHTMAP,
-				new CountChanceDecoratorConfig(8, 0.25F)
+				Feature.BUSH, new BushFeatureConfig(Blocks.BROWN_MUSHROOM.getDefaultState()), Decorator.COUNT_CHANCE_HEIGHTMAP, new CountChanceDecoratorConfig(8, 0.25F)
 			)
 		);
 		biome.addFeature(
 			GenerationStep.Feature.VEGETAL_DECORATION,
 			Biome.configureFeature(
 				Feature.BUSH,
-				new SingleStateFeatureConfig(Blocks.RED_MUSHROOM.getDefaultState()),
+				new BushFeatureConfig(Blocks.RED_MUSHROOM.getDefaultState()),
 				Decorator.COUNT_CHANCE_HEIGHTMAP_DOUBLE,
 				new CountChanceDecoratorConfig(8, 0.125F)
 			)
@@ -727,17 +724,14 @@ public class DefaultBiomeFeatures {
 		biome.addFeature(
 			GenerationStep.Feature.VEGETAL_DECORATION,
 			Biome.configureFeature(
-				Feature.BUSH,
-				new SingleStateFeatureConfig(Blocks.BROWN_MUSHROOM.getDefaultState()),
-				Decorator.COUNT_CHANCE_HEIGHTMAP,
-				new CountChanceDecoratorConfig(1, 0.25F)
+				Feature.BUSH, new BushFeatureConfig(Blocks.BROWN_MUSHROOM.getDefaultState()), Decorator.COUNT_CHANCE_HEIGHTMAP, new CountChanceDecoratorConfig(1, 0.25F)
 			)
 		);
 		biome.addFeature(
 			GenerationStep.Feature.VEGETAL_DECORATION,
 			Biome.configureFeature(
 				Feature.BUSH,
-				new SingleStateFeatureConfig(Blocks.RED_MUSHROOM.getDefaultState()),
+				new BushFeatureConfig(Blocks.RED_MUSHROOM.getDefaultState()),
 				Decorator.COUNT_CHANCE_HEIGHTMAP_DOUBLE,
 				new CountChanceDecoratorConfig(1, 0.125F)
 			)
@@ -787,17 +781,14 @@ public class DefaultBiomeFeatures {
 		biome.addFeature(
 			GenerationStep.Feature.VEGETAL_DECORATION,
 			Biome.configureFeature(
-				Feature.BUSH,
-				new SingleStateFeatureConfig(Blocks.BROWN_MUSHROOM.getDefaultState()),
-				Decorator.COUNT_CHANCE_HEIGHTMAP,
-				new CountChanceDecoratorConfig(3, 0.25F)
+				Feature.BUSH, new BushFeatureConfig(Blocks.BROWN_MUSHROOM.getDefaultState()), Decorator.COUNT_CHANCE_HEIGHTMAP, new CountChanceDecoratorConfig(3, 0.25F)
 			)
 		);
 		biome.addFeature(
 			GenerationStep.Feature.VEGETAL_DECORATION,
 			Biome.configureFeature(
 				Feature.BUSH,
-				new SingleStateFeatureConfig(Blocks.RED_MUSHROOM.getDefaultState()),
+				new BushFeatureConfig(Blocks.RED_MUSHROOM.getDefaultState()),
 				Decorator.COUNT_CHANCE_HEIGHTMAP_DOUBLE,
 				new CountChanceDecoratorConfig(3, 0.125F)
 			)
@@ -833,17 +824,14 @@ public class DefaultBiomeFeatures {
 		biome.addFeature(
 			GenerationStep.Feature.VEGETAL_DECORATION,
 			Biome.configureFeature(
-				Feature.BUSH,
-				new SingleStateFeatureConfig(Blocks.BROWN_MUSHROOM.getDefaultState()),
-				Decorator.COUNT_CHANCE_HEIGHTMAP,
-				new CountChanceDecoratorConfig(1, 0.25F)
+				Feature.BUSH, new BushFeatureConfig(Blocks.BROWN_MUSHROOM.getDefaultState()), Decorator.COUNT_CHANCE_HEIGHTMAP, new CountChanceDecoratorConfig(1, 0.25F)
 			)
 		);
 		biome.addFeature(
 			GenerationStep.Feature.VEGETAL_DECORATION,
 			Biome.configureFeature(
 				Feature.BUSH,
-				new SingleStateFeatureConfig(Blocks.RED_MUSHROOM.getDefaultState()),
+				new BushFeatureConfig(Blocks.RED_MUSHROOM.getDefaultState()),
 				Decorator.COUNT_CHANCE_HEIGHTMAP_DOUBLE,
 				new CountChanceDecoratorConfig(1, 0.125F)
 			)
@@ -866,13 +854,13 @@ public class DefaultBiomeFeatures {
 		biome.addFeature(
 			GenerationStep.Feature.VEGETAL_DECORATION,
 			Biome.configureFeature(
-				Feature.BUSH, new SingleStateFeatureConfig(Blocks.BROWN_MUSHROOM.getDefaultState()), Decorator.CHANCE_HEIGHTMAP_DOUBLE, new class_3267(4)
+				Feature.BUSH, new BushFeatureConfig(Blocks.BROWN_MUSHROOM.getDefaultState()), Decorator.CHANCE_HEIGHTMAP_DOUBLE, new ChanceDecoratorConfig(4)
 			)
 		);
 		biome.addFeature(
 			GenerationStep.Feature.VEGETAL_DECORATION,
 			Biome.configureFeature(
-				Feature.BUSH, new SingleStateFeatureConfig(Blocks.RED_MUSHROOM.getDefaultState()), Decorator.CHANCE_HEIGHTMAP_DOUBLE, new class_3267(8)
+				Feature.BUSH, new BushFeatureConfig(Blocks.RED_MUSHROOM.getDefaultState()), Decorator.CHANCE_HEIGHTMAP_DOUBLE, new ChanceDecoratorConfig(8)
 			)
 		);
 	}
@@ -884,7 +872,7 @@ public class DefaultBiomeFeatures {
 		);
 		biome.addFeature(
 			GenerationStep.Feature.VEGETAL_DECORATION,
-			Biome.configureFeature(Feature.PUMPKIN, FeatureConfig.DEFAULT, Decorator.CHANCE_HEIGHTMAP_DOUBLE, new class_3267(32))
+			Biome.configureFeature(Feature.PUMPKIN, FeatureConfig.DEFAULT, Decorator.CHANCE_HEIGHTMAP_DOUBLE, new ChanceDecoratorConfig(32))
 		);
 	}
 
@@ -895,7 +883,7 @@ public class DefaultBiomeFeatures {
 		);
 		biome.addFeature(
 			GenerationStep.Feature.VEGETAL_DECORATION,
-			Biome.configureFeature(Feature.PUMPKIN, FeatureConfig.DEFAULT, Decorator.CHANCE_HEIGHTMAP_DOUBLE, new class_3267(32))
+			Biome.configureFeature(Feature.PUMPKIN, FeatureConfig.DEFAULT, Decorator.CHANCE_HEIGHTMAP_DOUBLE, new ChanceDecoratorConfig(32))
 		);
 		biome.addFeature(
 			GenerationStep.Feature.VEGETAL_DECORATION,
@@ -921,7 +909,7 @@ public class DefaultBiomeFeatures {
 		);
 		biome.addFeature(
 			GenerationStep.Feature.VEGETAL_DECORATION,
-			Biome.configureFeature(Feature.PUMPKIN, FeatureConfig.DEFAULT, Decorator.CHANCE_HEIGHTMAP_DOUBLE, new class_3267(32))
+			Biome.configureFeature(Feature.PUMPKIN, FeatureConfig.DEFAULT, Decorator.CHANCE_HEIGHTMAP_DOUBLE, new ChanceDecoratorConfig(32))
 		);
 		biome.addFeature(
 			GenerationStep.Feature.VEGETAL_DECORATION,
@@ -936,25 +924,25 @@ public class DefaultBiomeFeatures {
 		);
 		biome.addFeature(
 			GenerationStep.Feature.VEGETAL_DECORATION,
-			Biome.configureFeature(Feature.PUMPKIN, FeatureConfig.DEFAULT, Decorator.CHANCE_HEIGHTMAP_DOUBLE, new class_3267(32))
+			Biome.configureFeature(Feature.PUMPKIN, FeatureConfig.DEFAULT, Decorator.CHANCE_HEIGHTMAP_DOUBLE, new ChanceDecoratorConfig(32))
 		);
 	}
 
 	public static void addDesertFeatures(Biome biome) {
 		biome.addFeature(
 			GenerationStep.Feature.SURFACE_STRUCTURES,
-			Biome.configureFeature(Feature.DESERT_WELL, FeatureConfig.DEFAULT, Decorator.CHANCE_HEIGHTMAP, new class_3267(1000))
+			Biome.configureFeature(Feature.DESERT_WELL, FeatureConfig.DEFAULT, Decorator.CHANCE_HEIGHTMAP, new ChanceDecoratorConfig(1000))
 		);
 		biome.addFeature(
 			GenerationStep.Feature.UNDERGROUND_DECORATION,
-			Biome.configureFeature(Feature.FOSSIL, FeatureConfig.DEFAULT, Decorator.CHANCE_PASSTHROUGH, new class_3267(64))
+			Biome.configureFeature(Feature.FOSSIL, FeatureConfig.DEFAULT, Decorator.CHANCE_PASSTHROUGH, new ChanceDecoratorConfig(64))
 		);
 	}
 
 	public static void addFossils(Biome biome) {
 		biome.addFeature(
 			GenerationStep.Feature.UNDERGROUND_DECORATION,
-			Biome.configureFeature(Feature.FOSSIL, FeatureConfig.DEFAULT, Decorator.CHANCE_PASSTHROUGH, new class_3267(64))
+			Biome.configureFeature(Feature.FOSSIL, FeatureConfig.DEFAULT, Decorator.CHANCE_PASSTHROUGH, new ChanceDecoratorConfig(64))
 		);
 	}
 
@@ -1031,11 +1019,11 @@ public class DefaultBiomeFeatures {
 	public static void addIcebergs(Biome biome) {
 		biome.addFeature(
 			GenerationStep.Feature.LOCAL_MODIFICATIONS,
-			Biome.configureFeature(Feature.ICEBERG, new IcebergFeatureConfig(Blocks.PACKED_ICE.getDefaultState()), Decorator.ICEBERG, new class_3267(16))
+			Biome.configureFeature(Feature.ICEBERG, new IcebergFeatureConfig(Blocks.PACKED_ICE.getDefaultState()), Decorator.ICEBERG, new ChanceDecoratorConfig(16))
 		);
 		biome.addFeature(
 			GenerationStep.Feature.LOCAL_MODIFICATIONS,
-			Biome.configureFeature(Feature.ICEBERG, new IcebergFeatureConfig(Blocks.BLUE_ICE.getDefaultState()), Decorator.ICEBERG, new class_3267(200))
+			Biome.configureFeature(Feature.ICEBERG, new IcebergFeatureConfig(Blocks.BLUE_ICE.getDefaultState()), Decorator.ICEBERG, new ChanceDecoratorConfig(200))
 		);
 	}
 

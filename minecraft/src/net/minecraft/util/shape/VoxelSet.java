@@ -11,31 +11,39 @@ public abstract class VoxelSet {
 	protected final int ySize;
 	protected final int zSize;
 
-	protected VoxelSet(int xSize, int ySize, int zSize) {
-		this.xSize = xSize;
-		this.ySize = ySize;
-		this.zSize = zSize;
+	protected VoxelSet(int i, int j, int k) {
+		this.xSize = i;
+		this.ySize = j;
+		this.zSize = k;
 	}
 
-	public boolean inBoundsAndContains(AxisCycleDirection cycle, int x, int y, int z) {
-		return this.inBoundsAndContains(cycle.choose(x, y, z, Direction.Axis.X), cycle.choose(x, y, z, Direction.Axis.Y), cycle.choose(x, y, z, Direction.Axis.Z));
+	public boolean inBoundsAndContains(AxisCycleDirection axisCycleDirection, int i, int j, int k) {
+		return this.inBoundsAndContains(
+			axisCycleDirection.choose(i, j, k, Direction.Axis.X),
+			axisCycleDirection.choose(i, j, k, Direction.Axis.Y),
+			axisCycleDirection.choose(i, j, k, Direction.Axis.Z)
+		);
 	}
 
-	public boolean inBoundsAndContains(int x, int y, int z) {
-		if (x < 0 || y < 0 || z < 0) {
+	public boolean inBoundsAndContains(int i, int j, int k) {
+		if (i < 0 || j < 0 || k < 0) {
 			return false;
 		} else {
-			return x < this.xSize && y < this.ySize && z < this.zSize ? this.contains(x, y, z) : false;
+			return i < this.xSize && j < this.ySize && k < this.zSize ? this.contains(i, j, k) : false;
 		}
 	}
 
-	public boolean contains(AxisCycleDirection cycle, int x, int y, int z) {
-		return this.contains(cycle.choose(x, y, z, Direction.Axis.X), cycle.choose(x, y, z, Direction.Axis.Y), cycle.choose(x, y, z, Direction.Axis.Z));
+	public boolean contains(AxisCycleDirection axisCycleDirection, int i, int j, int k) {
+		return this.contains(
+			axisCycleDirection.choose(i, j, k, Direction.Axis.X),
+			axisCycleDirection.choose(i, j, k, Direction.Axis.Y),
+			axisCycleDirection.choose(i, j, k, Direction.Axis.Z)
+		);
 	}
 
-	public abstract boolean contains(int x, int y, int z);
+	public abstract boolean contains(int i, int j, int k);
 
-	public abstract void set(int x, int y, int z, boolean resize, boolean included);
+	public abstract void set(int i, int j, int k, boolean bl, boolean bl2);
 
 	public boolean isEmpty() {
 		for (Direction.Axis axis : AXES) {
@@ -123,11 +131,11 @@ public abstract class VoxelSet {
 	}
 
 	@Environment(EnvType.CLIENT)
-	private void forEachEdge(VoxelSet.class_253 arg, AxisCycleDirection direction, boolean bl) {
-		AxisCycleDirection axisCycleDirection = direction.opposite();
-		int i = this.getSize(axisCycleDirection.cycle(Direction.Axis.X));
-		int j = this.getSize(axisCycleDirection.cycle(Direction.Axis.Y));
-		int k = this.getSize(axisCycleDirection.cycle(Direction.Axis.Z));
+	private void forEachEdge(VoxelSet.class_253 arg, AxisCycleDirection axisCycleDirection, boolean bl) {
+		AxisCycleDirection axisCycleDirection2 = axisCycleDirection.opposite();
+		int i = this.getSize(axisCycleDirection2.cycle(Direction.Axis.X));
+		int j = this.getSize(axisCycleDirection2.cycle(Direction.Axis.Y));
+		int k = this.getSize(axisCycleDirection2.cycle(Direction.Axis.Z));
 
 		for (int l = 0; l <= i; l++) {
 			for (int m = 0; m <= j; m++) {
@@ -139,7 +147,7 @@ public abstract class VoxelSet {
 
 					for (int r = 0; r <= 1; r++) {
 						for (int s = 0; s <= 1; s++) {
-							if (this.inBoundsAndContains(axisCycleDirection, l + r - 1, m + s - 1, o)) {
+							if (this.inBoundsAndContains(axisCycleDirection2, l + r - 1, m + s - 1, o)) {
 								p++;
 								q ^= r ^ s;
 							}
@@ -153,22 +161,22 @@ public abstract class VoxelSet {
 							}
 						} else {
 							arg.consume(
-								axisCycleDirection.choose(l, m, o, Direction.Axis.X),
-								axisCycleDirection.choose(l, m, o, Direction.Axis.Y),
-								axisCycleDirection.choose(l, m, o, Direction.Axis.Z),
-								axisCycleDirection.choose(l, m, o + 1, Direction.Axis.X),
-								axisCycleDirection.choose(l, m, o + 1, Direction.Axis.Y),
-								axisCycleDirection.choose(l, m, o + 1, Direction.Axis.Z)
+								axisCycleDirection2.choose(l, m, o, Direction.Axis.X),
+								axisCycleDirection2.choose(l, m, o, Direction.Axis.Y),
+								axisCycleDirection2.choose(l, m, o, Direction.Axis.Z),
+								axisCycleDirection2.choose(l, m, o + 1, Direction.Axis.X),
+								axisCycleDirection2.choose(l, m, o + 1, Direction.Axis.Y),
+								axisCycleDirection2.choose(l, m, o + 1, Direction.Axis.Z)
 							);
 						}
 					} else if (n != -1) {
 						arg.consume(
-							axisCycleDirection.choose(l, m, n, Direction.Axis.X),
-							axisCycleDirection.choose(l, m, n, Direction.Axis.Y),
-							axisCycleDirection.choose(l, m, n, Direction.Axis.Z),
-							axisCycleDirection.choose(l, m, o, Direction.Axis.X),
-							axisCycleDirection.choose(l, m, o, Direction.Axis.Y),
-							axisCycleDirection.choose(l, m, o, Direction.Axis.Z)
+							axisCycleDirection2.choose(l, m, n, Direction.Axis.X),
+							axisCycleDirection2.choose(l, m, n, Direction.Axis.Y),
+							axisCycleDirection2.choose(l, m, n, Direction.Axis.Z),
+							axisCycleDirection2.choose(l, m, o, Direction.Axis.X),
+							axisCycleDirection2.choose(l, m, o, Direction.Axis.Y),
+							axisCycleDirection2.choose(l, m, o, Direction.Axis.Z)
 						);
 						n = -1;
 					}
@@ -177,9 +185,9 @@ public abstract class VoxelSet {
 		}
 	}
 
-	protected boolean isColumnFull(int minZ, int maxZ, int x, int y) {
-		for (int i = minZ; i < maxZ; i++) {
-			if (!this.inBoundsAndContains(x, y, i)) {
+	protected boolean isColumnFull(int i, int j, int k, int l) {
+		for (int m = i; m < j; m++) {
+			if (!this.inBoundsAndContains(k, l, m)) {
 				return false;
 			}
 		}
@@ -187,15 +195,15 @@ public abstract class VoxelSet {
 		return true;
 	}
 
-	protected void setColumn(int minZ, int maxZ, int x, int y, boolean included) {
-		for (int i = minZ; i < maxZ; i++) {
-			this.set(x, y, i, false, included);
+	protected void setColumn(int i, int j, int k, int l, boolean bl) {
+		for (int m = i; m < j; m++) {
+			this.set(k, l, m, false, bl);
 		}
 	}
 
-	protected boolean isRectangleFull(int minX, int maxX, int minZ, int maxZ, int y) {
-		for (int i = minX; i < maxX; i++) {
-			if (!this.isColumnFull(minZ, maxZ, i, y)) {
+	protected boolean isRectangleFull(int i, int j, int k, int l, int m) {
+		for (int n = i; n < j; n++) {
+			if (!this.isColumnFull(k, l, n, m)) {
 				return false;
 			}
 		}
@@ -203,7 +211,7 @@ public abstract class VoxelSet {
 		return true;
 	}
 
-	public void forEachBox(VoxelSet.class_253 consumer, boolean largest) {
+	public void forEachBox(VoxelSet.class_253 arg, boolean bl) {
 		VoxelSet voxelSet = new BitSetVoxelSet(this);
 
 		for (int i = 0; i <= this.xSize; i++) {
@@ -212,12 +220,12 @@ public abstract class VoxelSet {
 
 				for (int l = 0; l <= this.zSize; l++) {
 					if (voxelSet.inBoundsAndContains(i, j, l)) {
-						if (largest) {
+						if (bl) {
 							if (k == -1) {
 								k = l;
 							}
 						} else {
-							consumer.consume(i, j, l, i + 1, j + 1, l + 1);
+							arg.consume(i, j, l, i + 1, j + 1, l + 1);
 						}
 					} else if (k != -1) {
 						int m = i;
@@ -252,7 +260,7 @@ public abstract class VoxelSet {
 							p++;
 						}
 
-						consumer.consume(m, o, k, n + 1, p + 1, l);
+						arg.consume(m, o, k, n + 1, p + 1, l);
 						k = -1;
 					}
 				}

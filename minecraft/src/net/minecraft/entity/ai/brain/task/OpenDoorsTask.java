@@ -34,24 +34,24 @@ public class OpenDoorsTask extends Task<LivingEntity> {
 	}
 
 	@Override
-	protected void run(ServerWorld world, LivingEntity entity, long time) {
-		Brain<?> brain = entity.getBrain();
+	protected void run(ServerWorld serverWorld, LivingEntity livingEntity, long l) {
+		Brain<?> brain = livingEntity.getBrain();
 		Path path = (Path)brain.getOptionalMemory(MemoryModuleType.PATH).get();
 		List<GlobalPos> list = (List<GlobalPos>)brain.getOptionalMemory(MemoryModuleType.INTERACTABLE_DOORS).get();
 		List<BlockPos> list2 = (List<BlockPos>)path.getNodes()
 			.stream()
 			.map(pathNode -> new BlockPos(pathNode.x, pathNode.y, pathNode.z))
 			.collect(Collectors.toList());
-		Set<BlockPos> set = this.getDoorsOnPath(world, list, list2);
+		Set<BlockPos> set = this.getDoorsOnPath(serverWorld, list, list2);
 		int i = path.getCurrentNodeIndex() - 1;
-		this.method_21698(world, list2, set, i, entity, brain);
+		this.method_21698(serverWorld, list2, set, i, livingEntity, brain);
 	}
 
-	private Set<BlockPos> getDoorsOnPath(ServerWorld world, List<GlobalPos> doors, List<BlockPos> path) {
-		return (Set<BlockPos>)doors.stream()
-			.filter(globalPos -> globalPos.getDimension() == world.getDimension().getType())
+	private Set<BlockPos> getDoorsOnPath(ServerWorld serverWorld, List<GlobalPos> list, List<BlockPos> list2) {
+		return (Set<BlockPos>)list.stream()
+			.filter(globalPos -> globalPos.getDimension() == serverWorld.getDimension().getType())
 			.map(GlobalPos::getPos)
-			.filter(path::contains)
+			.filter(list2::contains)
 			.collect(Collectors.toSet());
 	}
 

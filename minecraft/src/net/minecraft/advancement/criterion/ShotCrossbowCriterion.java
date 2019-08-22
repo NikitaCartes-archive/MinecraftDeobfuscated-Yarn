@@ -26,41 +26,45 @@ public class ShotCrossbowCriterion implements Criterion<ShotCrossbowCriterion.Co
 	}
 
 	@Override
-	public void beginTrackingCondition(PlayerAdvancementTracker manager, Criterion.ConditionsContainer<ShotCrossbowCriterion.Conditions> conditionsContainer) {
-		ShotCrossbowCriterion.Handler handler = (ShotCrossbowCriterion.Handler)this.handlers.get(manager);
+	public void beginTrackingCondition(
+		PlayerAdvancementTracker playerAdvancementTracker, Criterion.ConditionsContainer<ShotCrossbowCriterion.Conditions> conditionsContainer
+	) {
+		ShotCrossbowCriterion.Handler handler = (ShotCrossbowCriterion.Handler)this.handlers.get(playerAdvancementTracker);
 		if (handler == null) {
-			handler = new ShotCrossbowCriterion.Handler(manager);
-			this.handlers.put(manager, handler);
+			handler = new ShotCrossbowCriterion.Handler(playerAdvancementTracker);
+			this.handlers.put(playerAdvancementTracker, handler);
 		}
 
 		handler.add(conditionsContainer);
 	}
 
 	@Override
-	public void endTrackingCondition(PlayerAdvancementTracker manager, Criterion.ConditionsContainer<ShotCrossbowCriterion.Conditions> conditionsContainer) {
-		ShotCrossbowCriterion.Handler handler = (ShotCrossbowCriterion.Handler)this.handlers.get(manager);
+	public void endTrackingCondition(
+		PlayerAdvancementTracker playerAdvancementTracker, Criterion.ConditionsContainer<ShotCrossbowCriterion.Conditions> conditionsContainer
+	) {
+		ShotCrossbowCriterion.Handler handler = (ShotCrossbowCriterion.Handler)this.handlers.get(playerAdvancementTracker);
 		if (handler != null) {
 			handler.remove(conditionsContainer);
 			if (handler.isEmpty()) {
-				this.handlers.remove(manager);
+				this.handlers.remove(playerAdvancementTracker);
 			}
 		}
 	}
 
 	@Override
-	public void endTracking(PlayerAdvancementTracker tracker) {
-		this.handlers.remove(tracker);
+	public void endTracking(PlayerAdvancementTracker playerAdvancementTracker) {
+		this.handlers.remove(playerAdvancementTracker);
 	}
 
-	public ShotCrossbowCriterion.Conditions conditionsFromJson(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext) {
-		ItemPredicate itemPredicate = ItemPredicate.fromJson(jsonObject.get("item"));
+	public ShotCrossbowCriterion.Conditions method_9114(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext) {
+		ItemPredicate itemPredicate = ItemPredicate.deserialize(jsonObject.get("item"));
 		return new ShotCrossbowCriterion.Conditions(itemPredicate);
 	}
 
-	public void trigger(ServerPlayerEntity player, ItemStack stack) {
-		ShotCrossbowCriterion.Handler handler = (ShotCrossbowCriterion.Handler)this.handlers.get(player.getAdvancementTracker());
+	public void trigger(ServerPlayerEntity serverPlayerEntity, ItemStack itemStack) {
+		ShotCrossbowCriterion.Handler handler = (ShotCrossbowCriterion.Handler)this.handlers.get(serverPlayerEntity.getAdvancementManager());
 		if (handler != null) {
-			handler.trigger(stack);
+			handler.trigger(itemStack);
 		}
 	}
 
@@ -83,7 +87,7 @@ public class ShotCrossbowCriterion implements Criterion<ShotCrossbowCriterion.Co
 		@Override
 		public JsonElement toJson() {
 			JsonObject jsonObject = new JsonObject();
-			jsonObject.add("item", this.item.toJson());
+			jsonObject.add("item", this.item.serialize());
 			return jsonObject;
 		}
 	}

@@ -5,8 +5,13 @@ import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.util.math.MathHelper;
 
 public class FlightMoveControl extends MoveControl {
-	public FlightMoveControl(MobEntity mobEntity) {
+	private final int field_20349;
+	private final boolean field_20350;
+
+	public FlightMoveControl(MobEntity mobEntity, int i, boolean bl) {
 		super(mobEntity);
+		this.field_20349 = i;
+		this.field_20350 = bl;
 	}
 
 	@Override
@@ -25,7 +30,7 @@ public class FlightMoveControl extends MoveControl {
 			}
 
 			float h = (float)(MathHelper.atan2(f, d) * 180.0F / (float)Math.PI) - 90.0F;
-			this.entity.yaw = this.changeAngle(this.entity.yaw, h, 10.0F);
+			this.entity.yaw = this.changeAngle(this.entity.yaw, h, 90.0F);
 			float i;
 			if (this.entity.onGround) {
 				i = (float)(this.speed * this.entity.getAttributeInstance(EntityAttributes.MOVEMENT_SPEED).getValue());
@@ -36,10 +41,13 @@ public class FlightMoveControl extends MoveControl {
 			this.entity.setMovementSpeed(i);
 			double j = (double)MathHelper.sqrt(d * d + f * f);
 			float k = (float)(-(MathHelper.atan2(e, j) * 180.0F / (float)Math.PI));
-			this.entity.pitch = this.changeAngle(this.entity.pitch, k, 10.0F);
+			this.entity.pitch = this.changeAngle(this.entity.pitch, k, (float)this.field_20349);
 			this.entity.setUpwardSpeed(e > 0.0 ? i : -i);
 		} else {
-			this.entity.setNoGravity(false);
+			if (!this.field_20350) {
+				this.entity.setNoGravity(false);
+			}
+
 			this.entity.setUpwardSpeed(0.0F);
 			this.entity.setForwardSpeed(0.0F);
 		}

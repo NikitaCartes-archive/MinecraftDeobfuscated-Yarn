@@ -1,7 +1,7 @@
 package net.minecraft.client.gui.screen.world;
 
 import com.google.common.hash.Hashing;
-import com.mojang.blaze3d.platform.GlStateManager;
+import com.mojang.blaze3d.systems.RenderSystem;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStream;
@@ -36,7 +36,7 @@ import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.Util;
+import net.minecraft.util.SystemUtil;
 import net.minecraft.world.WorldSaveHandler;
 import net.minecraft.world.level.LevelProperties;
 import net.minecraft.world.level.storage.LevelStorage;
@@ -48,7 +48,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 @Environment(EnvType.CLIENT)
-public class WorldListWidget extends AlwaysSelectedEntryListWidget<WorldListWidget.Entry> {
+public class WorldListWidget extends AlwaysSelectedEntryListWidget<WorldListWidget.LevelItem> {
 	private static final Logger LOGGER = LogManager.getLogger();
 	private static final DateFormat DATE_FORMAT = new SimpleDateFormat();
 	private static final Identifier UNKNOWN_SERVER_LOCATION = new Identifier("textures/misc/unknown_server.png");
@@ -58,29 +58,29 @@ public class WorldListWidget extends AlwaysSelectedEntryListWidget<WorldListWidg
 	private List<LevelSummary> levels;
 
 	public WorldListWidget(
-		SelectWorldScreen parent,
-		MinecraftClient client,
-		int width,
-		int height,
-		int top,
-		int bottom,
-		int itemHeight,
-		Supplier<String> searchFilter,
-		@Nullable WorldListWidget list
+		SelectWorldScreen selectWorldScreen,
+		MinecraftClient minecraftClient,
+		int i,
+		int j,
+		int k,
+		int l,
+		int m,
+		Supplier<String> supplier,
+		@Nullable WorldListWidget worldListWidget
 	) {
-		super(client, width, height, top, bottom, itemHeight);
-		this.parent = parent;
-		if (list != null) {
-			this.levels = list.levels;
+		super(minecraftClient, i, j, k, l, m);
+		this.parent = selectWorldScreen;
+		if (worldListWidget != null) {
+			this.levels = worldListWidget.levels;
 		}
 
-		this.filter(searchFilter, false);
+		this.filter(supplier, false);
 	}
 
-	public void filter(Supplier<String> filter, boolean load) {
+	public void filter(Supplier<String> supplier, boolean bl) {
 		this.clearEntries();
 		LevelStorage levelStorage = this.minecraft.getLevelStorage();
-		if (this.levels == null || load) {
+		if (this.levels == null || bl) {
 			try {
 				this.levels = levelStorage.getLevelList();
 			} catch (LevelStorageException var7) {
@@ -92,11 +92,11 @@ public class WorldListWidget extends AlwaysSelectedEntryListWidget<WorldListWidg
 			Collections.sort(this.levels);
 		}
 
-		String string = ((String)filter.get()).toLowerCase(Locale.ROOT);
+		String string = ((String)supplier.get()).toLowerCase(Locale.ROOT);
 
 		for (LevelSummary levelSummary : this.levels) {
 			if (levelSummary.getDisplayName().toLowerCase(Locale.ROOT).contains(string) || levelSummary.getName().toLowerCase(Locale.ROOT).contains(string)) {
-				this.addEntry(new WorldListWidget.Entry(this, levelSummary, this.minecraft.getLevelStorage()));
+				this.addEntry(new WorldListWidget.LevelItem(this, levelSummary, this.minecraft.getLevelStorage()));
 			}
 		}
 	}
@@ -116,10 +116,10 @@ public class WorldListWidget extends AlwaysSelectedEntryListWidget<WorldListWidg
 		return this.parent.getFocused() == this;
 	}
 
-	public void setSelected(@Nullable WorldListWidget.Entry entry) {
-		super.setSelected(entry);
-		if (entry != null) {
-			LevelSummary levelSummary = entry.level;
+	public void method_20157(@Nullable WorldListWidget.LevelItem levelItem) {
+		super.setSelected(levelItem);
+		if (levelItem != null) {
+			LevelSummary levelSummary = levelItem.level;
 			NarratorManager.INSTANCE
 				.narrate(
 					new TranslatableText(
@@ -144,7 +144,7 @@ public class WorldListWidget extends AlwaysSelectedEntryListWidget<WorldListWidg
 		this.parent.worldSelected(true);
 	}
 
-	public Optional<WorldListWidget.Entry> method_20159() {
+	public Optional<WorldListWidget.LevelItem> method_20159() {
 		return Optional.ofNullable(this.getSelected());
 	}
 
@@ -153,7 +153,7 @@ public class WorldListWidget extends AlwaysSelectedEntryListWidget<WorldListWidg
 	}
 
 	@Environment(EnvType.CLIENT)
-	public final class Entry extends AlwaysSelectedEntryListWidget.Entry<WorldListWidget.Entry> implements AutoCloseable {
+	public final class LevelItem extends AlwaysSelectedEntryListWidget.Entry<WorldListWidget.LevelItem> implements AutoCloseable {
 		private final MinecraftClient client;
 		private final SelectWorldScreen screen;
 		private final LevelSummary level;
@@ -163,12 +163,12 @@ public class WorldListWidget extends AlwaysSelectedEntryListWidget<WorldListWidg
 		private final NativeImageBackedTexture icon;
 		private long time;
 
-		public Entry(WorldListWidget levelList, LevelSummary level, LevelStorage levelStorage) {
-			this.screen = levelList.getParent();
-			this.level = level;
+		public LevelItem(WorldListWidget worldListWidget2, LevelSummary levelSummary, LevelStorage levelStorage) {
+			this.screen = worldListWidget2.getParent();
+			this.level = levelSummary;
 			this.client = MinecraftClient.getInstance();
-			this.iconLocation = new Identifier("worlds/" + Hashing.sha1().hashUnencodedChars(level.getName()) + "/icon");
-			this.iconFile = levelStorage.resolveFile(level.getName(), "icon.png");
+			this.iconLocation = new Identifier("worlds/" + Hashing.sha1().hashUnencodedChars(levelSummary.getName()) + "/icon");
+			this.iconFile = levelStorage.resolveFile(levelSummary.getName(), "icon.png");
 			if (!this.iconFile.isFile()) {
 				this.iconFile = null;
 			}
@@ -212,15 +212,15 @@ public class WorldListWidget extends AlwaysSelectedEntryListWidget<WorldListWidg
 			this.client.textRenderer.draw(string, (float)(k + 32 + 3), (float)(j + 1), 16777215);
 			this.client.textRenderer.draw(string2, (float)(k + 32 + 3), (float)(j + 9 + 3), 8421504);
 			this.client.textRenderer.draw(string3, (float)(k + 32 + 3), (float)(j + 9 + 9 + 3), 8421504);
-			GlStateManager.color4f(1.0F, 1.0F, 1.0F, 1.0F);
+			RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
 			this.client.getTextureManager().bindTexture(this.icon != null ? this.iconLocation : WorldListWidget.UNKNOWN_SERVER_LOCATION);
-			GlStateManager.enableBlend();
+			RenderSystem.enableBlend();
 			DrawableHelper.blit(k, j, 0.0F, 0.0F, 32, 32, 32, 32);
-			GlStateManager.disableBlend();
+			RenderSystem.disableBlend();
 			if (this.client.options.touchscreen || bl) {
 				this.client.getTextureManager().bindTexture(WorldListWidget.WORLD_SELECTION_LOCATION);
 				DrawableHelper.fill(k, j, k + 32, j + 32, -1601138544);
-				GlStateManager.color4f(1.0F, 1.0F, 1.0F, 1.0F);
+				RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
 				int p = n - k;
 				int q = p < 32 ? 32 : 0;
 				if (this.level.isDifferentVersion()) {
@@ -259,17 +259,17 @@ public class WorldListWidget extends AlwaysSelectedEntryListWidget<WorldListWidg
 		}
 
 		@Override
-		public boolean mouseClicked(double mouseX, double mouseY, int button) {
-			WorldListWidget.this.setSelected(this);
+		public boolean mouseClicked(double d, double e, int i) {
+			WorldListWidget.this.method_20157(this);
 			this.screen.worldSelected(WorldListWidget.this.method_20159().isPresent());
-			if (mouseX - (double)WorldListWidget.this.getRowLeft() <= 32.0) {
+			if (d - (double)WorldListWidget.this.getRowLeft() <= 32.0) {
 				this.play();
 				return true;
-			} else if (Util.getMeasuringTimeMs() - this.time < 250L) {
+			} else if (SystemUtil.getMeasuringTimeMs() - this.time < 250L) {
 				this.play();
 				return true;
 			} else {
-				this.time = Util.getMeasuringTimeMs();
+				this.time = SystemUtil.getMeasuringTimeMs();
 				return false;
 			}
 		}

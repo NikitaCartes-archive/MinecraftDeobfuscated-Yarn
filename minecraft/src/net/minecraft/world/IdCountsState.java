@@ -14,23 +14,23 @@ public class IdCountsState extends PersistentState {
 	}
 
 	@Override
-	public void fromTag(CompoundTag tag) {
+	public void fromTag(CompoundTag compoundTag) {
 		this.idCounts.clear();
 
-		for (String string : tag.getKeys()) {
-			if (tag.contains(string, 99)) {
-				this.idCounts.put(string, tag.getInt(string));
+		for (String string : compoundTag.getKeys()) {
+			if (compoundTag.containsKey(string, 99)) {
+				this.idCounts.put(string, compoundTag.getInt(string));
 			}
 		}
 	}
 
 	@Override
-	public CompoundTag toTag(CompoundTag tag) {
+	public CompoundTag toTag(CompoundTag compoundTag) {
 		for (Entry<String> entry : this.idCounts.object2IntEntrySet()) {
-			tag.putInt((String)entry.getKey(), entry.getIntValue());
+			compoundTag.putInt((String)entry.getKey(), entry.getIntValue());
 		}
 
-		return tag;
+		return compoundTag;
 	}
 
 	public int getNextMapId() {

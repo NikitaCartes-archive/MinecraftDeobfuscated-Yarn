@@ -12,11 +12,11 @@ import net.minecraft.structure.PoolStructurePiece;
 import net.minecraft.structure.StructurePiece;
 import net.minecraft.structure.StructureStart;
 import net.minecraft.structure.pool.StructurePool;
-import net.minecraft.util.Util;
-import net.minecraft.util.math.BlockBox;
+import net.minecraft.util.SystemUtil;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.math.MutableIntBoundingBox;
 import net.minecraft.util.math.noise.NoiseSampler;
 import net.minecraft.util.math.noise.OctavePerlinNoiseSampler;
 import net.minecraft.util.math.noise.OctaveSimplexNoiseSampler;
@@ -32,7 +32,7 @@ import net.minecraft.world.gen.feature.Feature;
 import net.minecraft.world.gen.feature.StructureFeature;
 
 public abstract class SurfaceChunkGenerator<T extends ChunkGeneratorConfig> extends ChunkGenerator<T> {
-	private static final float[] field_16649 = Util.make(new float[13824], fs -> {
+	private static final float[] field_16649 = SystemUtil.consume(new float[13824], fs -> {
 		for (int i = 0; i < 24; i++) {
 			for (int j = 0; j < 24; j++) {
 				for (int k = 0; k < 24; k++) {
@@ -55,85 +55,83 @@ public abstract class SurfaceChunkGenerator<T extends ChunkGeneratorConfig> exte
 	protected final BlockState defaultBlock;
 	protected final BlockState defaultFluid;
 
-	public SurfaceChunkGenerator(
-		IWorld world, BiomeSource biomeSource, int verticalNoiseResolution, int horizontalNoiseResolution, int worldHeight, T config, boolean useSimplexNoise
-	) {
-		super(world, biomeSource, config);
-		this.verticalNoiseResolution = horizontalNoiseResolution;
-		this.horizontalNoiseResolution = verticalNoiseResolution;
-		this.defaultBlock = config.getDefaultBlock();
-		this.defaultFluid = config.getDefaultFluid();
+	public SurfaceChunkGenerator(IWorld iWorld, BiomeSource biomeSource, int i, int j, int k, T chunkGeneratorConfig, boolean bl) {
+		super(iWorld, biomeSource, chunkGeneratorConfig);
+		this.verticalNoiseResolution = j;
+		this.horizontalNoiseResolution = i;
+		this.defaultBlock = chunkGeneratorConfig.getDefaultBlock();
+		this.defaultFluid = chunkGeneratorConfig.getDefaultFluid();
 		this.noiseSizeX = 16 / this.horizontalNoiseResolution;
-		this.noiseSizeY = worldHeight / this.verticalNoiseResolution;
+		this.noiseSizeY = k / this.verticalNoiseResolution;
 		this.noiseSizeZ = 16 / this.horizontalNoiseResolution;
 		this.random = new ChunkRandom(this.seed);
 		this.field_16574 = new OctavePerlinNoiseSampler(this.random, 16);
 		this.field_16581 = new OctavePerlinNoiseSampler(this.random, 16);
 		this.field_16575 = new OctavePerlinNoiseSampler(this.random, 8);
-		this.surfaceDepthNoise = (NoiseSampler)(useSimplexNoise ? new OctaveSimplexNoiseSampler(this.random, 4) : new OctavePerlinNoiseSampler(this.random, 4));
+		this.surfaceDepthNoise = (NoiseSampler)(bl ? new OctaveSimplexNoiseSampler(this.random, 4) : new OctavePerlinNoiseSampler(this.random, 4));
 	}
 
-	private double sampleNoise(int x, int y, int z, double d, double e, double f, double g) {
+	private double sampleNoise(int i, int j, int k, double d, double e, double f, double g) {
 		double h = 0.0;
-		double i = 0.0;
-		double j = 0.0;
-		double k = 1.0;
+		double l = 0.0;
+		double m = 0.0;
+		double n = 1.0;
 
-		for (int l = 0; l < 16; l++) {
-			double m = OctavePerlinNoiseSampler.maintainPrecision((double)x * d * k);
-			double n = OctavePerlinNoiseSampler.maintainPrecision((double)y * e * k);
-			double o = OctavePerlinNoiseSampler.maintainPrecision((double)z * d * k);
-			double p = e * k;
-			h += this.field_16574.getOctave(l).sample(m, n, o, p, (double)y * p) / k;
-			i += this.field_16581.getOctave(l).sample(m, n, o, p, (double)y * p) / k;
-			if (l < 8) {
-				j += this.field_16575
-						.getOctave(l)
+		for (int o = 0; o < 16; o++) {
+			double p = OctavePerlinNoiseSampler.maintainPrecision((double)i * d * n);
+			double q = OctavePerlinNoiseSampler.maintainPrecision((double)j * e * n);
+			double r = OctavePerlinNoiseSampler.maintainPrecision((double)k * d * n);
+			double s = e * n;
+			h += this.field_16574.getOctave(o).sample(p, q, r, s, (double)j * s) / n;
+			l += this.field_16581.getOctave(o).sample(p, q, r, s, (double)j * s) / n;
+			if (o < 8) {
+				m += this.field_16575
+						.getOctave(o)
 						.sample(
-							OctavePerlinNoiseSampler.maintainPrecision((double)x * f * k),
-							OctavePerlinNoiseSampler.maintainPrecision((double)y * g * k),
-							OctavePerlinNoiseSampler.maintainPrecision((double)z * f * k),
-							g * k,
-							(double)y * g * k
+							OctavePerlinNoiseSampler.maintainPrecision((double)i * f * n),
+							OctavePerlinNoiseSampler.maintainPrecision((double)j * g * n),
+							OctavePerlinNoiseSampler.maintainPrecision((double)k * f * n),
+							g * n,
+							(double)j * g * n
 						)
-					/ k;
+					/ n;
 			}
 
-			k /= 2.0;
+			n /= 2.0;
 		}
 
-		return MathHelper.clampedLerp(h / 512.0, i / 512.0, (j / 10.0 + 1.0) / 2.0);
+		return MathHelper.clampedLerp(h / 512.0, l / 512.0, (m / 10.0 + 1.0) / 2.0);
 	}
 
-	protected double[] sampleNoiseColumn(int x, int z) {
+	protected double[] sampleNoiseColumn(int i, int j) {
 		double[] ds = new double[this.noiseSizeY + 1];
-		this.sampleNoiseColumn(ds, x, z);
+		this.sampleNoiseColumn(ds, i, j);
 		return ds;
 	}
 
-	protected void sampleNoiseColumn(double[] buffer, int x, int z, double d, double e, double f, double g, int i, int j) {
-		double[] ds = this.computeNoiseRange(x, z);
-		double h = ds[0];
-		double k = ds[1];
-		double l = this.method_16409();
-		double m = this.method_16410();
+	protected void sampleNoiseColumn(double[] ds, int i, int j, double d, double e, double f, double g, int k, int l) {
+		double[] es = this.computeNoiseRange(i, j);
+		double h = es[0];
+		double m = es[1];
+		double n = this.method_16409();
+		double o = this.method_16410();
 
-		for (int n = 0; n < this.getNoiseSizeY(); n++) {
-			double o = this.sampleNoise(x, n, z, d, e, f, g);
-			o -= this.computeNoiseFalloff(h, k, n);
-			if ((double)n > l) {
-				o = MathHelper.clampedLerp(o, (double)j, ((double)n - l) / (double)i);
-			} else if ((double)n < m) {
-				o = MathHelper.clampedLerp(o, -30.0, (m - (double)n) / (m - 1.0));
+		for (int p = 0; p < this.getNoiseSizeY(); p++) {
+			double q = this.sampleNoise(i, p, j, d, e, f, g);
+			q -= this.computeNoiseFalloff(h, m, p);
+			if ((double)p > n) {
+				q = MathHelper.clampedLerp(q, (double)l, ((double)p - n) / (double)k);
+			} else if ((double)p < o) {
+				q = MathHelper.clampedLerp(q, -30.0, (o - (double)p) / (o - 1.0));
 			}
 
-			buffer[n] = o;
+			ds[p] = q;
 		}
 	}
 
-	protected abstract double[] computeNoiseRange(int x, int z);
+	protected abstract double[] computeNoiseRange(int i, int j);
 
-	protected abstract double computeNoiseFalloff(double depth, double scale, int y);
+	protected abstract double computeNoiseFalloff(double d, double e, int i);
 
 	protected double method_16409() {
 		return (double)(this.getNoiseSizeY() - 4);
@@ -144,42 +142,42 @@ public abstract class SurfaceChunkGenerator<T extends ChunkGeneratorConfig> exte
 	}
 
 	@Override
-	public int getHeightOnGround(int x, int z, Heightmap.Type heightmapType) {
-		int i = Math.floorDiv(x, this.horizontalNoiseResolution);
-		int j = Math.floorDiv(z, this.horizontalNoiseResolution);
-		int k = Math.floorMod(x, this.horizontalNoiseResolution);
-		int l = Math.floorMod(z, this.horizontalNoiseResolution);
-		double d = (double)k / (double)this.horizontalNoiseResolution;
-		double e = (double)l / (double)this.horizontalNoiseResolution;
+	public int getHeightOnGround(int i, int j, Heightmap.Type type) {
+		int k = Math.floorDiv(i, this.horizontalNoiseResolution);
+		int l = Math.floorDiv(j, this.horizontalNoiseResolution);
+		int m = Math.floorMod(i, this.horizontalNoiseResolution);
+		int n = Math.floorMod(j, this.horizontalNoiseResolution);
+		double d = (double)m / (double)this.horizontalNoiseResolution;
+		double e = (double)n / (double)this.horizontalNoiseResolution;
 		double[][] ds = new double[][]{
-			this.sampleNoiseColumn(i, j), this.sampleNoiseColumn(i, j + 1), this.sampleNoiseColumn(i + 1, j), this.sampleNoiseColumn(i + 1, j + 1)
+			this.sampleNoiseColumn(k, l), this.sampleNoiseColumn(k, l + 1), this.sampleNoiseColumn(k + 1, l), this.sampleNoiseColumn(k + 1, l + 1)
 		};
-		int m = this.getSeaLevel();
+		int o = this.getSeaLevel();
 
-		for (int n = this.noiseSizeY - 1; n >= 0; n--) {
-			double f = ds[0][n];
-			double g = ds[1][n];
-			double h = ds[2][n];
-			double o = ds[3][n];
-			double p = ds[0][n + 1];
-			double q = ds[1][n + 1];
-			double r = ds[2][n + 1];
-			double s = ds[3][n + 1];
+		for (int p = this.noiseSizeY - 1; p >= 0; p--) {
+			double f = ds[0][p];
+			double g = ds[1][p];
+			double h = ds[2][p];
+			double q = ds[3][p];
+			double r = ds[0][p + 1];
+			double s = ds[1][p + 1];
+			double t = ds[2][p + 1];
+			double u = ds[3][p + 1];
 
-			for (int t = this.verticalNoiseResolution - 1; t >= 0; t--) {
-				double u = (double)t / (double)this.verticalNoiseResolution;
-				double v = MathHelper.lerp3(u, d, e, f, p, h, r, g, q, o, s);
-				int w = n * this.verticalNoiseResolution + t;
-				if (v > 0.0 || w < m) {
+			for (int v = this.verticalNoiseResolution - 1; v >= 0; v--) {
+				double w = (double)v / (double)this.verticalNoiseResolution;
+				double x = MathHelper.lerp3(w, d, e, f, r, h, t, g, s, q, u);
+				int y = p * this.verticalNoiseResolution + v;
+				if (x > 0.0 || y < o) {
 					BlockState blockState;
-					if (v > 0.0) {
+					if (x > 0.0) {
 						blockState = this.defaultBlock;
 					} else {
 						blockState = this.defaultFluid;
 					}
 
-					if (heightmapType.getBlockPredicate().test(blockState)) {
-						return w + 1;
+					if (type.getBlockPredicate().test(blockState)) {
+						return y + 1;
 					}
 				}
 			}
@@ -188,7 +186,7 @@ public abstract class SurfaceChunkGenerator<T extends ChunkGeneratorConfig> exte
 		return 0;
 	}
 
-	protected abstract void sampleNoiseColumn(double[] buffer, int x, int z);
+	protected abstract void sampleNoiseColumn(double[] ds, int i, int j);
 
 	public int getNoiseSizeY() {
 		return this.noiseSizeY + 1;
@@ -251,7 +249,7 @@ public abstract class SurfaceChunkGenerator<T extends ChunkGeneratorConfig> exte
 	}
 
 	@Override
-	public void populateNoise(IWorld world, Chunk chunk) {
+	public void populateNoise(IWorld iWorld, Chunk chunk) {
 		int i = this.getSeaLevel();
 		ObjectList<PoolStructurePiece> objectList = new ObjectArrayList<>(10);
 		ObjectList<JigsawJunction> objectList2 = new ObjectArrayList<>(32);
@@ -268,7 +266,7 @@ public abstract class SurfaceChunkGenerator<T extends ChunkGeneratorConfig> exte
 			while (longIterator.hasNext()) {
 				long n = longIterator.nextLong();
 				ChunkPos chunkPos2 = new ChunkPos(n);
-				Chunk chunk2 = world.getChunk(chunkPos2.x, chunkPos2.z);
+				Chunk chunk2 = iWorld.getChunk(chunkPos2.x, chunkPos2.z);
 				StructureStart structureStart = chunk2.getStructureStart(string);
 				if (structureStart != null && structureStart.hasChildren()) {
 					for (StructurePiece structurePiece : structureStart.getChildren()) {
@@ -359,10 +357,10 @@ public abstract class SurfaceChunkGenerator<T extends ChunkGeneratorConfig> exte
 
 								while (objectListIterator.hasNext()) {
 									PoolStructurePiece poolStructurePiece2 = (PoolStructurePiece)objectListIterator.next();
-									BlockBox blockBox = poolStructurePiece2.getBoundingBox();
-									int as = Math.max(0, Math.max(blockBox.minX - ah, ah - blockBox.maxX));
-									int at = y - (blockBox.minY + poolStructurePiece2.getGroundLevelDelta());
-									int au = Math.max(0, Math.max(blockBox.minZ - an, an - blockBox.maxZ));
+									MutableIntBoundingBox mutableIntBoundingBox = poolStructurePiece2.getBoundingBox();
+									int as = Math.max(0, Math.max(mutableIntBoundingBox.minX - ah, ah - mutableIntBoundingBox.maxX));
+									int at = y - (mutableIntBoundingBox.minY + poolStructurePiece2.getGroundLevelDelta());
+									int au = Math.max(0, Math.max(mutableIntBoundingBox.minZ - an, an - mutableIntBoundingBox.maxZ));
 									ar += method_16572(as, at, au) * 0.8;
 								}
 

@@ -9,13 +9,13 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.biome.Biome;
 
 public class PlainFlowerFeature extends FlowerFeature {
-	public PlainFlowerFeature(Function<Dynamic<?>, ? extends DefaultFeatureConfig> configFactory) {
-		super(configFactory);
+	public PlainFlowerFeature(Function<Dynamic<?>, ? extends DefaultFeatureConfig> function) {
+		super(function);
 	}
 
 	@Override
-	public BlockState getFlowerToPlace(Random random, BlockPos pos) {
-		double d = Biome.FOLIAGE_NOISE.sample((double)pos.getX() / 200.0, (double)pos.getZ() / 200.0);
+	public BlockState getFlowerToPlace(Random random, BlockPos blockPos) {
+		double d = Biome.FOLIAGE_NOISE.sample((double)blockPos.getX() / 200.0, (double)blockPos.getZ() / 200.0);
 		if (d < -0.8) {
 			int i = random.nextInt(4);
 			switch (i) {

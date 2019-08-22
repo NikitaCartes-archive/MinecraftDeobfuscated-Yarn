@@ -19,16 +19,16 @@ public class BowAttackGoal<T extends HostileEntity & RangedAttackMob> extends Go
 	private boolean field_6571;
 	private int field_6568 = -1;
 
-	public BowAttackGoal(T actor, double speed, int attackInterval, float range) {
-		this.actor = actor;
-		this.speed = speed;
-		this.attackInterval = attackInterval;
-		this.squaredRange = range * range;
+	public BowAttackGoal(T hostileEntity, double d, int i, float f) {
+		this.actor = hostileEntity;
+		this.speed = d;
+		this.attackInterval = i;
+		this.squaredRange = f * f;
 		this.setControls(EnumSet.of(Goal.Control.MOVE, Goal.Control.LOOK));
 	}
 
-	public void setAttackInterval(int attackInterval) {
-		this.attackInterval = attackInterval;
+	public void setAttackInterval(int i) {
+		this.attackInterval = i;
 	}
 
 	@Override
@@ -64,7 +64,7 @@ public class BowAttackGoal<T extends HostileEntity & RangedAttackMob> extends Go
 	public void tick() {
 		LivingEntity livingEntity = this.actor.getTarget();
 		if (livingEntity != null) {
-			double d = this.actor.squaredDistanceTo(livingEntity.x, livingEntity.getBoundingBox().y1, livingEntity.z);
+			double d = this.actor.squaredDistanceTo(livingEntity.x, livingEntity.getBoundingBox().minY, livingEntity.z);
 			boolean bl = this.actor.getVisibilityCache().canSee(livingEntity);
 			boolean bl2 = this.field_6572 > 0;
 			if (bl != bl2) {
@@ -86,11 +86,11 @@ public class BowAttackGoal<T extends HostileEntity & RangedAttackMob> extends Go
 			}
 
 			if (this.field_6568 >= 20) {
-				if ((double)this.actor.getRandom().nextFloat() < 0.3) {
+				if ((double)this.actor.getRand().nextFloat() < 0.3) {
 					this.field_6573 = !this.field_6573;
 				}
 
-				if ((double)this.actor.getRandom().nextFloat() < 0.3) {
+				if ((double)this.actor.getRand().nextFloat() < 0.3) {
 					this.field_6571 = !this.field_6571;
 				}
 

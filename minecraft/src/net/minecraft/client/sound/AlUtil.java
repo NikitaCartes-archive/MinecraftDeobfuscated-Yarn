@@ -13,8 +13,8 @@ import org.lwjgl.openal.ALC10;
 public class AlUtil {
 	private static final Logger LOGGER = LogManager.getLogger();
 
-	private static String getErrorMessage(int errorCode) {
-		switch (errorCode) {
+	private static String getErrorMessage(int i) {
+		switch (i) {
 			case 40961:
 				return "Invalid name parameter.";
 			case 40962:
@@ -30,18 +30,18 @@ public class AlUtil {
 		}
 	}
 
-	static boolean checkErrors(String sectionName) {
+	static boolean checkErrors(String string) {
 		int i = AL10.alGetError();
 		if (i != 0) {
-			LOGGER.error("{}: {}", sectionName, getErrorMessage(i));
+			LOGGER.error("{}: {}", string, getErrorMessage(i));
 			return true;
 		} else {
 			return false;
 		}
 	}
 
-	private static String getAlcErrorMessage(int errorCode) {
-		switch (errorCode) {
+	private static String getAlcErrorMessage(int i) {
+		switch (i) {
 			case 40961:
 				return "Invalid device.";
 			case 40962:
@@ -57,20 +57,20 @@ public class AlUtil {
 		}
 	}
 
-	static boolean checkAlcErrors(long deviceHandle, String sectionName) {
-		int i = ALC10.alcGetError(deviceHandle);
+	static boolean checkAlcErrors(long l, String string) {
+		int i = ALC10.alcGetError(l);
 		if (i != 0) {
-			LOGGER.error("{}{}: {}", sectionName, deviceHandle, getAlcErrorMessage(i));
+			LOGGER.error("{}{}: {}", string, l, getAlcErrorMessage(i));
 			return true;
 		} else {
 			return false;
 		}
 	}
 
-	static int getFormatId(AudioFormat format) {
-		Encoding encoding = format.getEncoding();
-		int i = format.getChannels();
-		int j = format.getSampleSizeInBits();
+	static int getFormatId(AudioFormat audioFormat) {
+		Encoding encoding = audioFormat.getEncoding();
+		int i = audioFormat.getChannels();
+		int j = audioFormat.getSampleSizeInBits();
 		if (encoding.equals(Encoding.PCM_UNSIGNED) || encoding.equals(Encoding.PCM_SIGNED)) {
 			if (i == 1) {
 				if (j == 8) {
@@ -91,6 +91,6 @@ public class AlUtil {
 			}
 		}
 
-		throw new IllegalArgumentException("Invalid audio format: " + format);
+		throw new IllegalArgumentException("Invalid audio format: " + audioFormat);
 	}
 }

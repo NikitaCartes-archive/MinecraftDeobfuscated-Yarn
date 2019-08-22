@@ -1,10 +1,11 @@
 package net.minecraft.client.render.block.entity;
 
-import com.mojang.blaze3d.platform.GlStateManager;
+import com.mojang.blaze3d.systems.RenderSystem;
 import java.nio.FloatBuffer;
 import java.util.Random;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.class_4493;
 import net.minecraft.block.entity.EndPortalBlockEntity;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.BufferBuilder;
@@ -13,7 +14,7 @@ import net.minecraft.client.render.Tessellator;
 import net.minecraft.client.render.VertexFormats;
 import net.minecraft.client.util.GlAllocationUtils;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.Util;
+import net.minecraft.util.SystemUtil;
 import net.minecraft.util.math.Direction;
 
 @Environment(EnvType.CLIENT)
@@ -25,11 +26,11 @@ public class EndPortalBlockEntityRenderer extends BlockEntityRenderer<EndPortalB
 	private static final FloatBuffer field_4404 = GlAllocationUtils.allocateFloatBuffer(16);
 	private final FloatBuffer field_4403 = GlAllocationUtils.allocateFloatBuffer(16);
 
-	public void render(EndPortalBlockEntity endPortalBlockEntity, double d, double e, double f, float g, int i) {
-		GlStateManager.disableLighting();
+	public void method_3591(EndPortalBlockEntity endPortalBlockEntity, double d, double e, double f, float g, int i) {
+		RenderSystem.disableLighting();
 		RANDOM.setSeed(31100L);
-		GlStateManager.getMatrix(2982, field_4408);
-		GlStateManager.getMatrix(2983, field_4404);
+		RenderSystem.getMatrix(2982, field_4408);
+		RenderSystem.getMatrix(2983, field_4404);
 		double h = d * d + e * e + f * f;
 		int j = this.method_3592(h);
 		float k = this.method_3594();
@@ -37,13 +38,13 @@ public class EndPortalBlockEntityRenderer extends BlockEntityRenderer<EndPortalB
 		GameRenderer gameRenderer = MinecraftClient.getInstance().gameRenderer;
 
 		for (int l = 0; l < j; l++) {
-			GlStateManager.pushMatrix();
+			RenderSystem.pushMatrix();
 			float m = 2.0F / (float)(18 - l);
 			if (l == 0) {
 				this.bindTexture(SKY_TEX);
 				m = 0.15F;
-				GlStateManager.enableBlend();
-				GlStateManager.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA);
+				RenderSystem.enableBlend();
+				RenderSystem.blendFunc(class_4493.class_4535.SRC_ALPHA, class_4493.class_4534.ONE_MINUS_SRC_ALPHA);
 			}
 
 			if (l >= 1) {
@@ -53,33 +54,33 @@ public class EndPortalBlockEntityRenderer extends BlockEntityRenderer<EndPortalB
 			}
 
 			if (l == 1) {
-				GlStateManager.enableBlend();
-				GlStateManager.blendFunc(GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ONE);
+				RenderSystem.enableBlend();
+				RenderSystem.blendFunc(class_4493.class_4535.ONE, class_4493.class_4534.ONE);
 			}
 
-			GlStateManager.texGenMode(GlStateManager.TexCoord.S, 9216);
-			GlStateManager.texGenMode(GlStateManager.TexCoord.T, 9216);
-			GlStateManager.texGenMode(GlStateManager.TexCoord.R, 9216);
-			GlStateManager.texGenParam(GlStateManager.TexCoord.S, 9474, this.method_3593(1.0F, 0.0F, 0.0F, 0.0F));
-			GlStateManager.texGenParam(GlStateManager.TexCoord.T, 9474, this.method_3593(0.0F, 1.0F, 0.0F, 0.0F));
-			GlStateManager.texGenParam(GlStateManager.TexCoord.R, 9474, this.method_3593(0.0F, 0.0F, 1.0F, 0.0F));
-			GlStateManager.enableTexGen(GlStateManager.TexCoord.S);
-			GlStateManager.enableTexGen(GlStateManager.TexCoord.T);
-			GlStateManager.enableTexGen(GlStateManager.TexCoord.R);
-			GlStateManager.popMatrix();
-			GlStateManager.matrixMode(5890);
-			GlStateManager.pushMatrix();
-			GlStateManager.loadIdentity();
-			GlStateManager.translatef(0.5F, 0.5F, 0.0F);
-			GlStateManager.scalef(0.5F, 0.5F, 1.0F);
+			RenderSystem.texGenMode(class_4493.TexCoord.S, 9216);
+			RenderSystem.texGenMode(class_4493.TexCoord.T, 9216);
+			RenderSystem.texGenMode(class_4493.TexCoord.R, 9216);
+			RenderSystem.texGenParam(class_4493.TexCoord.S, 9474, this.method_3593(1.0F, 0.0F, 0.0F, 0.0F));
+			RenderSystem.texGenParam(class_4493.TexCoord.T, 9474, this.method_3593(0.0F, 1.0F, 0.0F, 0.0F));
+			RenderSystem.texGenParam(class_4493.TexCoord.R, 9474, this.method_3593(0.0F, 0.0F, 1.0F, 0.0F));
+			RenderSystem.enableTexGen(class_4493.TexCoord.S);
+			RenderSystem.enableTexGen(class_4493.TexCoord.T);
+			RenderSystem.enableTexGen(class_4493.TexCoord.R);
+			RenderSystem.popMatrix();
+			RenderSystem.matrixMode(5890);
+			RenderSystem.pushMatrix();
+			RenderSystem.loadIdentity();
+			RenderSystem.translatef(0.5F, 0.5F, 0.0F);
+			RenderSystem.scalef(0.5F, 0.5F, 1.0F);
 			float n = (float)(l + 1);
-			GlStateManager.translatef(17.0F / n, (2.0F + n / 1.5F) * ((float)(Util.getMeasuringTimeMs() % 800000L) / 800000.0F), 0.0F);
-			GlStateManager.rotatef((n * n * 4321.0F + n * 9.0F) * 2.0F, 0.0F, 0.0F, 1.0F);
-			GlStateManager.scalef(4.5F - n / 4.0F, 4.5F - n / 4.0F, 1.0F);
-			GlStateManager.multMatrix(field_4404);
-			GlStateManager.multMatrix(field_4408);
+			RenderSystem.translatef(17.0F / n, (2.0F + n / 1.5F) * ((float)(SystemUtil.getMeasuringTimeMs() % 800000L) / 800000.0F), 0.0F);
+			RenderSystem.rotatef((n * n * 4321.0F + n * 9.0F) * 2.0F, 0.0F, 0.0F, 1.0F);
+			RenderSystem.scalef(4.5F - n / 4.0F, 4.5F - n / 4.0F, 1.0F);
+			RenderSystem.multMatrix(field_4404);
+			RenderSystem.multMatrix(field_4408);
 			Tessellator tessellator = Tessellator.getInstance();
-			BufferBuilder bufferBuilder = tessellator.getBuffer();
+			BufferBuilder bufferBuilder = tessellator.getBufferBuilder();
 			bufferBuilder.begin(7, VertexFormats.POSITION_COLOR);
 			float o = (RANDOM.nextFloat() * 0.5F + 0.1F) * m;
 			float p = (RANDOM.nextFloat() * 0.5F + 0.4F) * m;
@@ -127,16 +128,16 @@ public class EndPortalBlockEntityRenderer extends BlockEntityRenderer<EndPortalB
 			}
 
 			tessellator.draw();
-			GlStateManager.popMatrix();
-			GlStateManager.matrixMode(5888);
+			RenderSystem.popMatrix();
+			RenderSystem.matrixMode(5888);
 			this.bindTexture(SKY_TEX);
 		}
 
-		GlStateManager.disableBlend();
-		GlStateManager.disableTexGen(GlStateManager.TexCoord.S);
-		GlStateManager.disableTexGen(GlStateManager.TexCoord.T);
-		GlStateManager.disableTexGen(GlStateManager.TexCoord.R);
-		GlStateManager.enableLighting();
+		RenderSystem.disableBlend();
+		RenderSystem.disableTexGen(class_4493.TexCoord.S);
+		RenderSystem.disableTexGen(class_4493.TexCoord.T);
+		RenderSystem.disableTexGen(class_4493.TexCoord.R);
+		RenderSystem.enableLighting();
 		if (bl) {
 			gameRenderer.setFogBlack(false);
 		}

@@ -12,7 +12,7 @@ import net.minecraft.block.entity.BannerPattern;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.util.DyeColor;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.Util;
+import net.minecraft.util.SystemUtil;
 
 @Environment(EnvType.CLIENT)
 public class TextureCache {
@@ -48,30 +48,30 @@ public class TextureCache {
 		}
 
 		@Nullable
-		public Identifier get(String cacheKey, List<BannerPattern> patterns, List<DyeColor> colors) {
-			if (cacheKey.isEmpty()) {
+		public Identifier get(String string, List<BannerPattern> list, List<DyeColor> list2) {
+			if (string.isEmpty()) {
 				return null;
-			} else if (!patterns.isEmpty() && !colors.isEmpty()) {
-				cacheKey = this.id + cacheKey;
-				TextureCache.Entry entry = (TextureCache.Entry)this.cacheMap.get(cacheKey);
+			} else if (!list.isEmpty() && !list2.isEmpty()) {
+				string = this.id + string;
+				TextureCache.Entry entry = (TextureCache.Entry)this.cacheMap.get(string);
 				if (entry == null) {
 					if (this.cacheMap.size() >= 256 && !this.removeOldEntries()) {
 						return TextureCache.DEFAULT_BANNER;
 					}
 
-					List<String> list = Lists.<String>newArrayList();
+					List<String> list3 = Lists.<String>newArrayList();
 
-					for (BannerPattern bannerPattern : patterns) {
-						list.add(this.baseDir + bannerPattern.getName() + ".png");
+					for (BannerPattern bannerPattern : list) {
+						list3.add(this.baseDir + bannerPattern.getName() + ".png");
 					}
 
 					entry = new TextureCache.Entry();
-					entry.filename = new Identifier(cacheKey);
-					MinecraftClient.getInstance().getTextureManager().registerTexture(entry.filename, new BannerTexture(this.filename, list, colors));
-					this.cacheMap.put(cacheKey, entry);
+					entry.filename = new Identifier(string);
+					MinecraftClient.getInstance().getTextureManager().registerTexture(entry.filename, new BannerTexture(this.filename, list3, list2));
+					this.cacheMap.put(string, entry);
 				}
 
-				entry.lastRequestTimeMillis = Util.getMeasuringTimeMs();
+				entry.lastRequestTimeMillis = SystemUtil.getMeasuringTimeMs();
 				return entry.filename;
 			} else {
 				return MissingSprite.getMissingSpriteId();
@@ -79,7 +79,7 @@ public class TextureCache {
 		}
 
 		private boolean removeOldEntries() {
-			long l = Util.getMeasuringTimeMs();
+			long l = SystemUtil.getMeasuringTimeMs();
 			Iterator<String> iterator = this.cacheMap.keySet().iterator();
 
 			while (iterator.hasNext()) {

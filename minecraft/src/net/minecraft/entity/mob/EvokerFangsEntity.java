@@ -4,13 +4,13 @@ import java.util.UUID;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.client.network.packet.EntitySpawnS2CPacket;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.Packet;
-import net.minecraft.network.packet.s2c.play.EntitySpawnS2CPacket;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundEvents;
@@ -28,21 +28,21 @@ public class EvokerFangsEntity extends Entity {
 		super(entityType, world);
 	}
 
-	public EvokerFangsEntity(World world, double x, double y, double z, float f, int warmup, LivingEntity owner) {
+	public EvokerFangsEntity(World world, double d, double e, double f, float g, int i, LivingEntity livingEntity) {
 		this(EntityType.EVOKER_FANGS, world);
-		this.warmup = warmup;
-		this.setOwner(owner);
-		this.yaw = f * (180.0F / (float)Math.PI);
-		this.updatePosition(x, y, z);
+		this.warmup = i;
+		this.setOwner(livingEntity);
+		this.yaw = g * (180.0F / (float)Math.PI);
+		this.setPosition(d, e, f);
 	}
 
 	@Override
 	protected void initDataTracker() {
 	}
 
-	public void setOwner(@Nullable LivingEntity owner) {
-		this.owner = owner;
-		this.ownerUuid = owner == null ? null : owner.getUuid();
+	public void setOwner(@Nullable LivingEntity livingEntity) {
+		this.owner = livingEntity;
+		this.ownerUuid = livingEntity == null ? null : livingEntity.getUuid();
 	}
 
 	@Nullable
@@ -58,18 +58,18 @@ public class EvokerFangsEntity extends Entity {
 	}
 
 	@Override
-	protected void readCustomDataFromTag(CompoundTag tag) {
-		this.warmup = tag.getInt("Warmup");
-		if (tag.containsUuid("OwnerUUID")) {
-			this.ownerUuid = tag.getUuid("OwnerUUID");
+	protected void readCustomDataFromTag(CompoundTag compoundTag) {
+		this.warmup = compoundTag.getInt("Warmup");
+		if (compoundTag.hasUuid("OwnerUUID")) {
+			this.ownerUuid = compoundTag.getUuid("OwnerUUID");
 		}
 	}
 
 	@Override
-	protected void writeCustomDataToTag(CompoundTag tag) {
-		tag.putInt("Warmup", this.warmup);
+	protected void writeCustomDataToTag(CompoundTag compoundTag) {
+		compoundTag.putInt("Warmup", this.warmup);
 		if (this.ownerUuid != null) {
-			tag.putUuid("OwnerUUID", this.ownerUuid);
+			compoundTag.putUuid("OwnerUUID", this.ownerUuid);
 		}
 	}
 
@@ -93,7 +93,7 @@ public class EvokerFangsEntity extends Entity {
 			}
 		} else if (--this.warmup < 0) {
 			if (this.warmup == -8) {
-				for (LivingEntity livingEntity : this.world.getNonSpectatingEntities(LivingEntity.class, this.getBoundingBox().expand(0.2, 0.0, 0.2))) {
+				for (LivingEntity livingEntity : this.world.getEntities(LivingEntity.class, this.getBoundingBox().expand(0.2, 0.0, 0.2))) {
 					this.damage(livingEntity);
 				}
 			}
@@ -109,26 +109,26 @@ public class EvokerFangsEntity extends Entity {
 		}
 	}
 
-	private void damage(LivingEntity target) {
-		LivingEntity livingEntity = this.getOwner();
-		if (target.isAlive() && !target.isInvulnerable() && target != livingEntity) {
-			if (livingEntity == null) {
-				target.damage(DamageSource.MAGIC, 6.0F);
+	private void damage(LivingEntity livingEntity) {
+		LivingEntity livingEntity2 = this.getOwner();
+		if (livingEntity.isAlive() && !livingEntity.isInvulnerable() && livingEntity != livingEntity2) {
+			if (livingEntity2 == null) {
+				livingEntity.damage(DamageSource.MAGIC, 6.0F);
 			} else {
-				if (livingEntity.isTeammate(target)) {
+				if (livingEntity2.isTeammate(livingEntity)) {
 					return;
 				}
 
-				target.damage(DamageSource.magic(this, livingEntity), 6.0F);
+				livingEntity.damage(DamageSource.magic(this, livingEntity2), 6.0F);
 			}
 		}
 	}
 
 	@Environment(EnvType.CLIENT)
 	@Override
-	public void handleStatus(byte status) {
-		super.handleStatus(status);
-		if (status == 4) {
+	public void handleStatus(byte b) {
+		super.handleStatus(b);
+		if (b == 4) {
 			this.hasAttacked = true;
 			if (!this.isSilent()) {
 				this.world
@@ -138,12 +138,12 @@ public class EvokerFangsEntity extends Entity {
 	}
 
 	@Environment(EnvType.CLIENT)
-	public float getAnimationProgress(float tickDelta) {
+	public float getAnimationProgress(float f) {
 		if (!this.hasAttacked) {
 			return 0.0F;
 		} else {
 			int i = this.ticksLeft - 2;
-			return i <= 0 ? 1.0F : 1.0F - ((float)i - tickDelta) / 20.0F;
+			return i <= 0 ? 1.0F : 1.0F - ((float)i - f) / 20.0F;
 		}
 	}
 

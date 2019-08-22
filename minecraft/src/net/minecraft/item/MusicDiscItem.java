@@ -25,25 +25,25 @@ public class MusicDiscItem extends Item {
 	private final int comparatorOutput;
 	private final SoundEvent sound;
 
-	protected MusicDiscItem(int comparatorOutput, SoundEvent sound, Item.Settings settings) {
+	protected MusicDiscItem(int i, SoundEvent soundEvent, Item.Settings settings) {
 		super(settings);
-		this.comparatorOutput = comparatorOutput;
-		this.sound = sound;
+		this.comparatorOutput = i;
+		this.sound = soundEvent;
 		MUSIC_DISCS.put(this.sound, this);
 	}
 
 	@Override
-	public ActionResult useOnBlock(ItemUsageContext context) {
-		World world = context.getWorld();
-		BlockPos blockPos = context.getBlockPos();
+	public ActionResult useOnBlock(ItemUsageContext itemUsageContext) {
+		World world = itemUsageContext.getWorld();
+		BlockPos blockPos = itemUsageContext.getBlockPos();
 		BlockState blockState = world.getBlockState(blockPos);
 		if (blockState.getBlock() == Blocks.JUKEBOX && !(Boolean)blockState.get(JukeboxBlock.HAS_RECORD)) {
-			ItemStack itemStack = context.getStack();
+			ItemStack itemStack = itemUsageContext.getStack();
 			if (!world.isClient) {
 				((JukeboxBlock)Blocks.JUKEBOX).setRecord(world, blockPos, blockState, itemStack);
 				world.playLevelEvent(null, 1010, blockPos, Item.getRawId(this));
 				itemStack.decrement(1);
-				PlayerEntity playerEntity = context.getPlayer();
+				PlayerEntity playerEntity = itemUsageContext.getPlayer();
 				if (playerEntity != null) {
 					playerEntity.incrementStat(Stats.PLAY_RECORD);
 				}
@@ -61,8 +61,8 @@ public class MusicDiscItem extends Item {
 
 	@Environment(EnvType.CLIENT)
 	@Override
-	public void appendTooltip(ItemStack stack, @Nullable World world, List<Text> tooltip, TooltipContext context) {
-		tooltip.add(this.getDescription().formatted(Formatting.GRAY));
+	public void appendTooltip(ItemStack itemStack, @Nullable World world, List<Text> list, TooltipContext tooltipContext) {
+		list.add(this.getDescription().formatted(Formatting.GRAY));
 	}
 
 	@Environment(EnvType.CLIENT)
@@ -72,8 +72,8 @@ public class MusicDiscItem extends Item {
 
 	@Nullable
 	@Environment(EnvType.CLIENT)
-	public static MusicDiscItem bySound(SoundEvent sound) {
-		return (MusicDiscItem)MUSIC_DISCS.get(sound);
+	public static MusicDiscItem bySound(SoundEvent soundEvent) {
+		return (MusicDiscItem)MUSIC_DISCS.get(soundEvent);
 	}
 
 	@Environment(EnvType.CLIENT)

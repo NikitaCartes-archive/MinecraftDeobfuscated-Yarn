@@ -14,12 +14,12 @@ public class EmptyProfileResult implements ProfileResult {
 
 	@Environment(EnvType.CLIENT)
 	@Override
-	public List<ProfilerTiming> getTimings(String parentPath) {
+	public List<ProfilerTiming> getTimings(String string) {
 		return Collections.emptyList();
 	}
 
 	@Override
-	public boolean save(File file) {
+	public boolean saveToFile(File file) {
 		return false;
 	}
 
@@ -41,10 +41,5 @@ public class EmptyProfileResult implements ProfileResult {
 	@Override
 	public int getEndTick() {
 		return 0;
-	}
-
-	@Override
-	public String getTimingTreeString() {
-		return "";
 	}
 }

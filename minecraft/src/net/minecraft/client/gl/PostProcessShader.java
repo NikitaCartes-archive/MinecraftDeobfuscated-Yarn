@@ -1,7 +1,7 @@
 package net.minecraft.client.gl;
 
 import com.google.common.collect.Lists;
-import com.mojang.blaze3d.platform.GlStateManager;
+import com.mojang.blaze3d.systems.RenderSystem;
 import java.io.IOException;
 import java.util.List;
 import net.fabricmc.api.EnvType;
@@ -16,53 +16,53 @@ import net.minecraft.resource.ResourceManager;
 @Environment(EnvType.CLIENT)
 public class PostProcessShader implements AutoCloseable {
 	private final JsonGlProgram program;
-	public final Framebuffer input;
-	public final Framebuffer output;
+	public final GlFramebuffer input;
+	public final GlFramebuffer output;
 	private final List<Object> samplerValues = Lists.<Object>newArrayList();
 	private final List<String> samplerNames = Lists.<String>newArrayList();
 	private final List<Integer> samplerWidths = Lists.<Integer>newArrayList();
 	private final List<Integer> samplerHeights = Lists.<Integer>newArrayList();
 	private Matrix4f projectionMatrix;
 
-	public PostProcessShader(ResourceManager resourceManager, String programName, Framebuffer input, Framebuffer output) throws IOException {
-		this.program = new JsonGlProgram(resourceManager, programName);
-		this.input = input;
-		this.output = output;
+	public PostProcessShader(ResourceManager resourceManager, String string, GlFramebuffer glFramebuffer, GlFramebuffer glFramebuffer2) throws IOException {
+		this.program = new JsonGlProgram(resourceManager, string);
+		this.input = glFramebuffer;
+		this.output = glFramebuffer2;
 	}
 
 	public void close() {
 		this.program.close();
 	}
 
-	public void addAuxTarget(String name, Object target, int width, int height) {
-		this.samplerNames.add(this.samplerNames.size(), name);
-		this.samplerValues.add(this.samplerValues.size(), target);
-		this.samplerWidths.add(this.samplerWidths.size(), width);
-		this.samplerHeights.add(this.samplerHeights.size(), height);
+	public void addAuxTarget(String string, Object object, int i, int j) {
+		this.samplerNames.add(this.samplerNames.size(), string);
+		this.samplerValues.add(this.samplerValues.size(), object);
+		this.samplerWidths.add(this.samplerWidths.size(), i);
+		this.samplerHeights.add(this.samplerHeights.size(), j);
 	}
 
 	private void setGlState() {
-		GlStateManager.color4f(1.0F, 1.0F, 1.0F, 1.0F);
-		GlStateManager.disableBlend();
-		GlStateManager.disableDepthTest();
-		GlStateManager.disableAlphaTest();
-		GlStateManager.disableFog();
-		GlStateManager.disableLighting();
-		GlStateManager.disableColorMaterial();
-		GlStateManager.enableTexture();
-		GlStateManager.bindTexture(0);
+		RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
+		RenderSystem.disableBlend();
+		RenderSystem.disableDepthTest();
+		RenderSystem.disableAlphaTest();
+		RenderSystem.disableFog();
+		RenderSystem.disableLighting();
+		RenderSystem.disableColorMaterial();
+		RenderSystem.enableTexture();
+		RenderSystem.bindTexture(0);
 	}
 
-	public void setProjectionMatrix(Matrix4f projectionMatrix) {
-		this.projectionMatrix = projectionMatrix;
+	public void setProjectionMatrix(Matrix4f matrix4f) {
+		this.projectionMatrix = matrix4f;
 	}
 
-	public void render(float time) {
+	public void render(float f) {
 		this.setGlState();
 		this.input.endWrite();
-		float f = (float)this.output.textureWidth;
-		float g = (float)this.output.textureHeight;
-		GlStateManager.viewport(0, 0, (int)f, (int)g);
+		float g = (float)this.output.texWidth;
+		float h = (float)this.output.texHeight;
+		RenderSystem.viewport(0, 0, (int)g, (int)h);
 		this.program.bindSampler("DiffuseSampler", this.input);
 
 		for (int i = 0; i < this.samplerValues.size(); i++) {
@@ -73,9 +73,9 @@ public class PostProcessShader implements AutoCloseable {
 		}
 
 		this.program.getUniformByNameOrDummy("ProjMat").set(this.projectionMatrix);
-		this.program.getUniformByNameOrDummy("InSize").set((float)this.input.textureWidth, (float)this.input.textureHeight);
-		this.program.getUniformByNameOrDummy("OutSize").set(f, g);
-		this.program.getUniformByNameOrDummy("Time").set(time);
+		this.program.getUniformByNameOrDummy("InSize").set((float)this.input.texWidth, (float)this.input.texHeight);
+		this.program.getUniformByNameOrDummy("OutSize").set(g, h);
+		this.program.getUniformByNameOrDummy("Time").set(f);
 		MinecraftClient minecraftClient = MinecraftClient.getInstance();
 		this.program
 			.getUniformByNameOrDummy("ScreenSize")
@@ -83,25 +83,25 @@ public class PostProcessShader implements AutoCloseable {
 		this.program.enable();
 		this.output.clear(MinecraftClient.IS_SYSTEM_MAC);
 		this.output.beginWrite(false);
-		GlStateManager.depthMask(false);
-		GlStateManager.colorMask(true, true, true, true);
+		RenderSystem.depthMask(false);
+		RenderSystem.colorMask(true, true, true, true);
 		Tessellator tessellator = Tessellator.getInstance();
-		BufferBuilder bufferBuilder = tessellator.getBuffer();
+		BufferBuilder bufferBuilder = tessellator.getBufferBuilder();
 		bufferBuilder.begin(7, VertexFormats.POSITION_COLOR);
 		bufferBuilder.vertex(0.0, 0.0, 500.0).color(255, 255, 255, 255).next();
-		bufferBuilder.vertex((double)f, 0.0, 500.0).color(255, 255, 255, 255).next();
-		bufferBuilder.vertex((double)f, (double)g, 500.0).color(255, 255, 255, 255).next();
-		bufferBuilder.vertex(0.0, (double)g, 500.0).color(255, 255, 255, 255).next();
+		bufferBuilder.vertex((double)g, 0.0, 500.0).color(255, 255, 255, 255).next();
+		bufferBuilder.vertex((double)g, (double)h, 500.0).color(255, 255, 255, 255).next();
+		bufferBuilder.vertex(0.0, (double)h, 500.0).color(255, 255, 255, 255).next();
 		tessellator.draw();
-		GlStateManager.depthMask(true);
-		GlStateManager.colorMask(true, true, true, true);
+		RenderSystem.depthMask(true);
+		RenderSystem.colorMask(true, true, true, true);
 		this.program.disable();
 		this.output.endWrite();
 		this.input.endRead();
 
 		for (Object object : this.samplerValues) {
-			if (object instanceof Framebuffer) {
-				((Framebuffer)object).endRead();
+			if (object instanceof GlFramebuffer) {
+				((GlFramebuffer)object).endRead();
 			}
 		}
 	}

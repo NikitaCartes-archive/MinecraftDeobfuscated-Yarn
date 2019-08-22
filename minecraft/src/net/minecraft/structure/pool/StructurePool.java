@@ -31,18 +31,18 @@ public class StructurePool {
 	private final StructurePool.Projection projection;
 	private int field_18707 = Integer.MIN_VALUE;
 
-	public StructurePool(Identifier id, Identifier terminatorsId, List<Pair<StructurePoolElement, Integer>> elementCounts, StructurePool.Projection projection) {
-		this.id = id;
-		this.elementCounts = ImmutableList.copyOf(elementCounts);
+	public StructurePool(Identifier identifier, Identifier identifier2, List<Pair<StructurePoolElement, Integer>> list, StructurePool.Projection projection) {
+		this.id = identifier;
+		this.elementCounts = ImmutableList.copyOf(list);
 		this.elements = Lists.<StructurePoolElement>newArrayList();
 
-		for (Pair<StructurePoolElement, Integer> pair : elementCounts) {
+		for (Pair<StructurePoolElement, Integer> pair : list) {
 			for (Integer integer = 0; integer < pair.getSecond(); integer = integer + 1) {
 				this.elements.add(pair.getFirst().setProjection(projection));
 			}
 		}
 
-		this.terminatorsId = terminatorsId;
+		this.terminatorsId = identifier2;
 		this.projection = projection;
 	}
 
@@ -96,8 +96,8 @@ public class StructurePool {
 			return this.id;
 		}
 
-		public static StructurePool.Projection getById(String id) {
-			return (StructurePool.Projection)PROJECTIONS_BY_ID.get(id);
+		public static StructurePool.Projection getById(String string) {
+			return (StructurePool.Projection)PROJECTIONS_BY_ID.get(string);
 		}
 
 		public ImmutableList<StructureProcessor> getProcessors() {

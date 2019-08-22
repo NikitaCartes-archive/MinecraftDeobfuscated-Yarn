@@ -1,6 +1,6 @@
 package net.minecraft.client.render.entity;
 
-import com.mojang.blaze3d.platform.GlStateManager;
+import com.mojang.blaze3d.systems.RenderSystem;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.render.item.ItemRenderer;
@@ -18,36 +18,36 @@ public class FireworkEntityRenderer extends EntityRenderer<FireworkEntity> {
 		this.itemRenderer = itemRenderer;
 	}
 
-	public void render(FireworkEntity fireworkEntity, double d, double e, double f, float g, float h) {
-		GlStateManager.pushMatrix();
-		GlStateManager.translatef((float)d, (float)e, (float)f);
-		GlStateManager.enableRescaleNormal();
-		GlStateManager.rotatef(-this.renderManager.cameraYaw, 0.0F, 1.0F, 0.0F);
-		GlStateManager.rotatef((float)(this.renderManager.gameOptions.perspective == 2 ? -1 : 1) * this.renderManager.cameraPitch, 1.0F, 0.0F, 0.0F);
+	public void method_3968(FireworkEntity fireworkEntity, double d, double e, double f, float g, float h) {
+		RenderSystem.pushMatrix();
+		RenderSystem.translatef((float)d, (float)e, (float)f);
+		RenderSystem.enableRescaleNormal();
+		RenderSystem.rotatef(-this.renderManager.cameraYaw, 0.0F, 1.0F, 0.0F);
+		RenderSystem.rotatef((float)(this.renderManager.gameOptions.perspective == 2 ? -1 : 1) * this.renderManager.cameraPitch, 1.0F, 0.0F, 0.0F);
 		if (fireworkEntity.wasShotAtAngle()) {
-			GlStateManager.rotatef(90.0F, 1.0F, 0.0F, 0.0F);
+			RenderSystem.rotatef(90.0F, 1.0F, 0.0F, 0.0F);
 		} else {
-			GlStateManager.rotatef(180.0F, 0.0F, 1.0F, 0.0F);
+			RenderSystem.rotatef(180.0F, 0.0F, 1.0F, 0.0F);
 		}
 
 		this.bindTexture(SpriteAtlasTexture.BLOCK_ATLAS_TEX);
 		if (this.renderOutlines) {
-			GlStateManager.enableColorMaterial();
-			GlStateManager.setupSolidRenderingTextureCombine(this.getOutlineColor(fireworkEntity));
+			RenderSystem.enableColorMaterial();
+			RenderSystem.setupSolidRenderingTextureCombine(this.getOutlineColor(fireworkEntity));
 		}
 
 		this.itemRenderer.renderItem(fireworkEntity.getStack(), ModelTransformation.Type.GROUND);
 		if (this.renderOutlines) {
-			GlStateManager.tearDownSolidRenderingTextureCombine();
-			GlStateManager.disableColorMaterial();
+			RenderSystem.tearDownSolidRenderingTextureCombine();
+			RenderSystem.disableColorMaterial();
 		}
 
-		GlStateManager.disableRescaleNormal();
-		GlStateManager.popMatrix();
+		RenderSystem.disableRescaleNormal();
+		RenderSystem.popMatrix();
 		super.render(fireworkEntity, d, e, f, g, h);
 	}
 
-	protected Identifier getTexture(FireworkEntity fireworkEntity) {
+	protected Identifier method_3969(FireworkEntity fireworkEntity) {
 		return SpriteAtlasTexture.BLOCK_ATLAS_TEX;
 	}
 }

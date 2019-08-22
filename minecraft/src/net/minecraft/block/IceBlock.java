@@ -4,7 +4,6 @@ import java.util.Random;
 import javax.annotation.Nullable;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.piston.PistonBehavior;
-import net.minecraft.client.render.RenderLayer;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.enchantment.Enchantments;
 import net.minecraft.entity.EntityType;
@@ -21,49 +20,51 @@ public class IceBlock extends TransparentBlock {
 	}
 
 	@Override
-	public RenderLayer getRenderLayer() {
-		return RenderLayer.TRANSLUCENT;
+	public BlockRenderLayer getRenderLayer() {
+		return BlockRenderLayer.TRANSLUCENT;
 	}
 
 	@Override
-	public void afterBreak(World world, PlayerEntity player, BlockPos pos, BlockState state, @Nullable BlockEntity blockEntity, ItemStack stack) {
-		super.afterBreak(world, player, pos, state, blockEntity, stack);
-		if (EnchantmentHelper.getLevel(Enchantments.SILK_TOUCH, stack) == 0) {
+	public void afterBreak(
+		World world, PlayerEntity playerEntity, BlockPos blockPos, BlockState blockState, @Nullable BlockEntity blockEntity, ItemStack itemStack
+	) {
+		super.afterBreak(world, playerEntity, blockPos, blockState, blockEntity, itemStack);
+		if (EnchantmentHelper.getLevel(Enchantments.SILK_TOUCH, itemStack) == 0) {
 			if (world.dimension.doesWaterVaporize()) {
-				world.removeBlock(pos, false);
+				world.clearBlockState(blockPos, false);
 				return;
 			}
 
-			Material material = world.getBlockState(pos.down()).getMaterial();
+			Material material = world.getBlockState(blockPos.down()).getMaterial();
 			if (material.blocksMovement() || material.isLiquid()) {
-				world.setBlockState(pos, Blocks.WATER.getDefaultState());
+				world.setBlockState(blockPos, Blocks.WATER.getDefaultState());
 			}
 		}
 	}
 
 	@Override
-	public void onScheduledTick(BlockState state, World world, BlockPos pos, Random random) {
-		if (world.getLightLevel(LightType.BLOCK, pos) > 11 - state.getOpacity(world, pos)) {
-			this.melt(state, world, pos);
+	public void onScheduledTick(BlockState blockState, World world, BlockPos blockPos, Random random) {
+		if (world.getLightLevel(LightType.BLOCK, blockPos) > 11 - blockState.getLightSubtracted(world, blockPos)) {
+			this.melt(blockState, world, blockPos);
 		}
 	}
 
-	protected void melt(BlockState state, World world, BlockPos pos) {
+	protected void melt(BlockState blockState, World world, BlockPos blockPos) {
 		if (world.dimension.doesWaterVaporize()) {
-			world.removeBlock(pos, false);
+			world.clearBlockState(blockPos, false);
 		} else {
-			world.setBlockState(pos, Blocks.WATER.getDefaultState());
-			world.updateNeighbor(pos, Blocks.WATER, pos);
+			world.setBlockState(blockPos, Blocks.WATER.getDefaultState());
+			world.updateNeighbor(blockPos, Blocks.WATER, blockPos);
 		}
 	}
 
 	@Override
-	public PistonBehavior getPistonBehavior(BlockState state) {
+	public PistonBehavior getPistonBehavior(BlockState blockState) {
 		return PistonBehavior.NORMAL;
 	}
 
 	@Override
-	public boolean allowsSpawning(BlockState state, BlockView view, BlockPos pos, EntityType<?> type) {
-		return type == EntityType.POLAR_BEAR;
+	public boolean allowsSpawning(BlockState blockState, BlockView blockView, BlockPos blockPos, EntityType<?> entityType) {
+		return entityType == EntityType.POLAR_BEAR;
 	}
 }

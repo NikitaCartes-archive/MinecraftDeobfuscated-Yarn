@@ -1,10 +1,11 @@
 package net.minecraft.client.gui.widget;
 
-import com.mojang.blaze3d.platform.GlStateManager;
+import com.mojang.blaze3d.systems.RenderSystem;
 import java.util.Collections;
 import java.util.List;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.class_4493;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.AbstractParentElement;
 import net.minecraft.client.gui.Drawable;
@@ -36,24 +37,24 @@ public abstract class ListWidget extends AbstractParentElement implements Drawab
 	protected int headerHeight;
 	private boolean scrolling;
 
-	public ListWidget(MinecraftClient client, int width, int height, int top, int bottom, int itemHeight) {
-		this.minecraft = client;
-		this.width = width;
-		this.height = height;
-		this.field_2166 = top;
-		this.field_2165 = bottom;
-		this.itemHeight = itemHeight;
+	public ListWidget(MinecraftClient minecraftClient, int i, int j, int k, int l, int m) {
+		this.minecraft = minecraftClient;
+		this.width = i;
+		this.height = j;
+		this.field_2166 = k;
+		this.field_2165 = l;
+		this.itemHeight = m;
 		this.field_2180 = 0;
-		this.field_2181 = width;
+		this.field_2181 = i;
 	}
 
-	public void updateSize(int width, int height, int y, int bottom) {
-		this.width = width;
-		this.height = height;
-		this.field_2166 = y;
-		this.field_2165 = bottom;
+	public void updateSize(int i, int j, int k, int l) {
+		this.width = i;
+		this.height = j;
+		this.field_2166 = k;
+		this.field_2165 = l;
 		this.field_2180 = 0;
-		this.field_2181 = width;
+		this.field_2181 = i;
 	}
 
 	public void setRenderSelection(boolean bl) {
@@ -83,11 +84,11 @@ public abstract class ListWidget extends AbstractParentElement implements Drawab
 		return Collections.emptyList();
 	}
 
-	protected boolean selectItem(int index, int button, double mouseX, double mouseY) {
+	protected boolean selectItem(int i, int j, double d, double e) {
 		return true;
 	}
 
-	protected abstract boolean isSelectedItem(int index);
+	protected abstract boolean isSelectedItem(int i);
 
 	protected int getMaxPosition() {
 		return this.getItemCount() * this.itemHeight + this.headerHeight;
@@ -95,10 +96,10 @@ public abstract class ListWidget extends AbstractParentElement implements Drawab
 
 	protected abstract void renderBackground();
 
-	protected void updateItemPosition(int index, int i, int j, float f) {
+	protected void updateItemPosition(int i, int j, int k, float f) {
 	}
 
-	protected abstract void renderItem(int index, int y, int i, int j, int k, int l, float f);
+	protected abstract void renderItem(int i, int j, int k, int l, int m, int n, float f);
 
 	protected void renderHeader(int i, int j, Tessellator tessellator) {
 	}
@@ -134,35 +135,35 @@ public abstract class ListWidget extends AbstractParentElement implements Drawab
 		return (int)this.field_2175;
 	}
 
-	public boolean isMouseInList(double mouseX, double mouseY) {
-		return mouseY >= (double)this.field_2166 && mouseY <= (double)this.field_2165 && mouseX >= (double)this.field_2180 && mouseX <= (double)this.field_2181;
+	public boolean isMouseInList(double d, double e) {
+		return e >= (double)this.field_2166 && e <= (double)this.field_2165 && d >= (double)this.field_2180 && d <= (double)this.field_2181;
 	}
 
 	public int getScrollBottom() {
 		return (int)this.field_2175 - this.height - this.headerHeight;
 	}
 
-	public void scroll(int amount) {
-		this.field_2175 += (double)amount;
+	public void scroll(int i) {
+		this.field_2175 += (double)i;
 		this.capYPosition();
 		this.yDrag = -2;
 	}
 
 	@Override
-	public void render(int mouseX, int mouseY, float delta) {
+	public void render(int i, int j, float f) {
 		if (this.visible) {
 			this.renderBackground();
-			int i = this.getScrollbarPosition();
-			int j = i + 6;
+			int k = this.getScrollbarPosition();
+			int l = k + 6;
 			this.capYPosition();
-			GlStateManager.disableLighting();
-			GlStateManager.disableFog();
+			RenderSystem.disableLighting();
+			RenderSystem.disableFog();
 			Tessellator tessellator = Tessellator.getInstance();
-			BufferBuilder bufferBuilder = tessellator.getBuffer();
+			BufferBuilder bufferBuilder = tessellator.getBufferBuilder();
 			this.minecraft.getTextureManager().bindTexture(DrawableHelper.BACKGROUND_LOCATION);
-			GlStateManager.color4f(1.0F, 1.0F, 1.0F, 1.0F);
-			float f = 32.0F;
-			bufferBuilder.begin(7, VertexFormats.POSITION_TEXTURE_COLOR);
+			RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
+			float g = 32.0F;
+			bufferBuilder.begin(7, VertexFormats.POSITION_UV_COLOR);
 			bufferBuilder.vertex((double)this.field_2180, (double)this.field_2165, 0.0)
 				.texture((double)((float)this.field_2180 / 32.0F), (double)((float)(this.field_2165 + (int)this.field_2175) / 32.0F))
 				.color(32, 32, 32, 255)
@@ -180,70 +181,70 @@ public abstract class ListWidget extends AbstractParentElement implements Drawab
 				.color(32, 32, 32, 255)
 				.next();
 			tessellator.draw();
-			int k = this.field_2180 + this.width / 2 - this.getRowWidth() / 2 + 2;
-			int l = this.field_2166 + 4 - (int)this.field_2175;
+			int m = this.field_2180 + this.width / 2 - this.getRowWidth() / 2 + 2;
+			int n = this.field_2166 + 4 - (int)this.field_2175;
 			if (this.renderHeader) {
-				this.renderHeader(k, l, tessellator);
+				this.renderHeader(m, n, tessellator);
 			}
 
-			this.renderList(k, l, mouseX, mouseY, delta);
-			GlStateManager.disableDepthTest();
+			this.renderList(m, n, i, j, f);
+			RenderSystem.disableDepthTest();
 			this.renderHoleBackground(0, this.field_2166, 255, 255);
 			this.renderHoleBackground(this.field_2165, this.height, 255, 255);
-			GlStateManager.enableBlend();
-			GlStateManager.blendFuncSeparate(
-				GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ZERO, GlStateManager.DestFactor.ONE
+			RenderSystem.enableBlend();
+			RenderSystem.blendFuncSeparate(
+				class_4493.class_4535.SRC_ALPHA, class_4493.class_4534.ONE_MINUS_SRC_ALPHA, class_4493.class_4535.ZERO, class_4493.class_4534.ONE
 			);
-			GlStateManager.disableAlphaTest();
-			GlStateManager.shadeModel(7425);
-			GlStateManager.disableTexture();
-			int m = 4;
-			bufferBuilder.begin(7, VertexFormats.POSITION_TEXTURE_COLOR);
+			RenderSystem.disableAlphaTest();
+			RenderSystem.shadeModel(7425);
+			RenderSystem.disableTexture();
+			int o = 4;
+			bufferBuilder.begin(7, VertexFormats.POSITION_UV_COLOR);
 			bufferBuilder.vertex((double)this.field_2180, (double)(this.field_2166 + 4), 0.0).texture(0.0, 1.0).color(0, 0, 0, 0).next();
 			bufferBuilder.vertex((double)this.field_2181, (double)(this.field_2166 + 4), 0.0).texture(1.0, 1.0).color(0, 0, 0, 0).next();
 			bufferBuilder.vertex((double)this.field_2181, (double)this.field_2166, 0.0).texture(1.0, 0.0).color(0, 0, 0, 255).next();
 			bufferBuilder.vertex((double)this.field_2180, (double)this.field_2166, 0.0).texture(0.0, 0.0).color(0, 0, 0, 255).next();
 			tessellator.draw();
-			bufferBuilder.begin(7, VertexFormats.POSITION_TEXTURE_COLOR);
+			bufferBuilder.begin(7, VertexFormats.POSITION_UV_COLOR);
 			bufferBuilder.vertex((double)this.field_2180, (double)this.field_2165, 0.0).texture(0.0, 1.0).color(0, 0, 0, 255).next();
 			bufferBuilder.vertex((double)this.field_2181, (double)this.field_2165, 0.0).texture(1.0, 1.0).color(0, 0, 0, 255).next();
 			bufferBuilder.vertex((double)this.field_2181, (double)(this.field_2165 - 4), 0.0).texture(1.0, 0.0).color(0, 0, 0, 0).next();
 			bufferBuilder.vertex((double)this.field_2180, (double)(this.field_2165 - 4), 0.0).texture(0.0, 0.0).color(0, 0, 0, 0).next();
 			tessellator.draw();
-			int n = this.getMaxScroll();
-			if (n > 0) {
-				int o = (int)((float)((this.field_2165 - this.field_2166) * (this.field_2165 - this.field_2166)) / (float)this.getMaxPosition());
-				o = MathHelper.clamp(o, 32, this.field_2165 - this.field_2166 - 8);
-				int p = (int)this.field_2175 * (this.field_2165 - this.field_2166 - o) / n + this.field_2166;
-				if (p < this.field_2166) {
-					p = this.field_2166;
+			int p = this.getMaxScroll();
+			if (p > 0) {
+				int q = (int)((float)((this.field_2165 - this.field_2166) * (this.field_2165 - this.field_2166)) / (float)this.getMaxPosition());
+				q = MathHelper.clamp(q, 32, this.field_2165 - this.field_2166 - 8);
+				int r = (int)this.field_2175 * (this.field_2165 - this.field_2166 - q) / p + this.field_2166;
+				if (r < this.field_2166) {
+					r = this.field_2166;
 				}
 
-				bufferBuilder.begin(7, VertexFormats.POSITION_TEXTURE_COLOR);
-				bufferBuilder.vertex((double)i, (double)this.field_2165, 0.0).texture(0.0, 1.0).color(0, 0, 0, 255).next();
-				bufferBuilder.vertex((double)j, (double)this.field_2165, 0.0).texture(1.0, 1.0).color(0, 0, 0, 255).next();
-				bufferBuilder.vertex((double)j, (double)this.field_2166, 0.0).texture(1.0, 0.0).color(0, 0, 0, 255).next();
-				bufferBuilder.vertex((double)i, (double)this.field_2166, 0.0).texture(0.0, 0.0).color(0, 0, 0, 255).next();
+				bufferBuilder.begin(7, VertexFormats.POSITION_UV_COLOR);
+				bufferBuilder.vertex((double)k, (double)this.field_2165, 0.0).texture(0.0, 1.0).color(0, 0, 0, 255).next();
+				bufferBuilder.vertex((double)l, (double)this.field_2165, 0.0).texture(1.0, 1.0).color(0, 0, 0, 255).next();
+				bufferBuilder.vertex((double)l, (double)this.field_2166, 0.0).texture(1.0, 0.0).color(0, 0, 0, 255).next();
+				bufferBuilder.vertex((double)k, (double)this.field_2166, 0.0).texture(0.0, 0.0).color(0, 0, 0, 255).next();
 				tessellator.draw();
-				bufferBuilder.begin(7, VertexFormats.POSITION_TEXTURE_COLOR);
-				bufferBuilder.vertex((double)i, (double)(p + o), 0.0).texture(0.0, 1.0).color(128, 128, 128, 255).next();
-				bufferBuilder.vertex((double)j, (double)(p + o), 0.0).texture(1.0, 1.0).color(128, 128, 128, 255).next();
-				bufferBuilder.vertex((double)j, (double)p, 0.0).texture(1.0, 0.0).color(128, 128, 128, 255).next();
-				bufferBuilder.vertex((double)i, (double)p, 0.0).texture(0.0, 0.0).color(128, 128, 128, 255).next();
+				bufferBuilder.begin(7, VertexFormats.POSITION_UV_COLOR);
+				bufferBuilder.vertex((double)k, (double)(r + q), 0.0).texture(0.0, 1.0).color(128, 128, 128, 255).next();
+				bufferBuilder.vertex((double)l, (double)(r + q), 0.0).texture(1.0, 1.0).color(128, 128, 128, 255).next();
+				bufferBuilder.vertex((double)l, (double)r, 0.0).texture(1.0, 0.0).color(128, 128, 128, 255).next();
+				bufferBuilder.vertex((double)k, (double)r, 0.0).texture(0.0, 0.0).color(128, 128, 128, 255).next();
 				tessellator.draw();
-				bufferBuilder.begin(7, VertexFormats.POSITION_TEXTURE_COLOR);
-				bufferBuilder.vertex((double)i, (double)(p + o - 1), 0.0).texture(0.0, 1.0).color(192, 192, 192, 255).next();
-				bufferBuilder.vertex((double)(j - 1), (double)(p + o - 1), 0.0).texture(1.0, 1.0).color(192, 192, 192, 255).next();
-				bufferBuilder.vertex((double)(j - 1), (double)p, 0.0).texture(1.0, 0.0).color(192, 192, 192, 255).next();
-				bufferBuilder.vertex((double)i, (double)p, 0.0).texture(0.0, 0.0).color(192, 192, 192, 255).next();
+				bufferBuilder.begin(7, VertexFormats.POSITION_UV_COLOR);
+				bufferBuilder.vertex((double)k, (double)(r + q - 1), 0.0).texture(0.0, 1.0).color(192, 192, 192, 255).next();
+				bufferBuilder.vertex((double)(l - 1), (double)(r + q - 1), 0.0).texture(1.0, 1.0).color(192, 192, 192, 255).next();
+				bufferBuilder.vertex((double)(l - 1), (double)r, 0.0).texture(1.0, 0.0).color(192, 192, 192, 255).next();
+				bufferBuilder.vertex((double)k, (double)r, 0.0).texture(0.0, 0.0).color(192, 192, 192, 255).next();
 				tessellator.draw();
 			}
 
-			this.renderDecorations(mouseX, mouseY);
-			GlStateManager.enableTexture();
-			GlStateManager.shadeModel(7424);
-			GlStateManager.enableAlphaTest();
-			GlStateManager.disableBlend();
+			this.renderDecorations(i, j);
+			RenderSystem.enableTexture();
+			RenderSystem.shadeModel(7424);
+			RenderSystem.enableAlphaTest();
+			RenderSystem.disableBlend();
 		}
 	}
 
@@ -252,18 +253,18 @@ public abstract class ListWidget extends AbstractParentElement implements Drawab
 	}
 
 	@Override
-	public boolean mouseClicked(double mouseX, double mouseY, int button) {
-		this.updateScrollingState(mouseX, mouseY, button);
-		if (this.isVisible() && this.isMouseInList(mouseX, mouseY)) {
-			int i = this.getItemAtPosition(mouseX, mouseY);
-			if (i == -1 && button == 0) {
+	public boolean mouseClicked(double d, double e, int i) {
+		this.updateScrollingState(d, e, i);
+		if (this.isVisible() && this.isMouseInList(d, e)) {
+			int j = this.getItemAtPosition(d, e);
+			if (j == -1 && i == 0) {
 				this.clickedHeader(
-					(int)(mouseX - (double)(this.field_2180 + this.width / 2 - this.getRowWidth() / 2)), (int)(mouseY - (double)this.field_2166) + (int)this.field_2175 - 4
+					(int)(d - (double)(this.field_2180 + this.width / 2 - this.getRowWidth() / 2)), (int)(e - (double)this.field_2166) + (int)this.field_2175 - 4
 				);
 				return true;
-			} else if (i != -1 && this.selectItem(i, button, mouseX, mouseY)) {
-				if (this.children().size() > i) {
-					this.setFocused((Element)this.children().get(i));
+			} else if (j != -1 && this.selectItem(j, i, d, e)) {
+				if (this.children().size() > j) {
+					this.setFocused((Element)this.children().get(j));
 				}
 
 				this.setDragging(true);
@@ -277,37 +278,37 @@ public abstract class ListWidget extends AbstractParentElement implements Drawab
 	}
 
 	@Override
-	public boolean mouseReleased(double mouseX, double mouseY, int button) {
+	public boolean mouseReleased(double d, double e, int i) {
 		if (this.getFocused() != null) {
-			this.getFocused().mouseReleased(mouseX, mouseY, button);
+			this.getFocused().mouseReleased(d, e, i);
 		}
 
 		return false;
 	}
 
 	@Override
-	public boolean mouseDragged(double mouseX, double mouseY, int button, double deltaX, double deltaY) {
-		if (super.mouseDragged(mouseX, mouseY, button, deltaX, deltaY)) {
+	public boolean mouseDragged(double d, double e, int i, double f, double g) {
+		if (super.mouseDragged(d, e, i, f, g)) {
 			return true;
-		} else if (this.isVisible() && button == 0 && this.scrolling) {
-			if (mouseY < (double)this.field_2166) {
+		} else if (this.isVisible() && i == 0 && this.scrolling) {
+			if (e < (double)this.field_2166) {
 				this.field_2175 = 0.0;
-			} else if (mouseY > (double)this.field_2165) {
+			} else if (e > (double)this.field_2165) {
 				this.field_2175 = (double)this.getMaxScroll();
 			} else {
-				double d = (double)this.getMaxScroll();
-				if (d < 1.0) {
-					d = 1.0;
+				double h = (double)this.getMaxScroll();
+				if (h < 1.0) {
+					h = 1.0;
 				}
 
-				int i = (int)((float)((this.field_2165 - this.field_2166) * (this.field_2165 - this.field_2166)) / (float)this.getMaxPosition());
-				i = MathHelper.clamp(i, 32, this.field_2165 - this.field_2166 - 8);
-				double e = d / (double)(this.field_2165 - this.field_2166 - i);
-				if (e < 1.0) {
-					e = 1.0;
+				int j = (int)((float)((this.field_2165 - this.field_2166) * (this.field_2165 - this.field_2166)) / (float)this.getMaxPosition());
+				j = MathHelper.clamp(j, 32, this.field_2165 - this.field_2166 - 8);
+				double k = h / (double)(this.field_2165 - this.field_2166 - j);
+				if (k < 1.0) {
+					k = 1.0;
 				}
 
-				this.field_2175 += deltaY * e;
+				this.field_2175 += g * k;
 				this.capYPosition();
 			}
 
@@ -318,25 +319,25 @@ public abstract class ListWidget extends AbstractParentElement implements Drawab
 	}
 
 	@Override
-	public boolean mouseScrolled(double d, double e, double amount) {
+	public boolean mouseScrolled(double d, double e, double f) {
 		if (!this.isVisible()) {
 			return false;
 		} else {
-			this.field_2175 = this.field_2175 - amount * (double)this.itemHeight / 2.0;
+			this.field_2175 = this.field_2175 - f * (double)this.itemHeight / 2.0;
 			return true;
 		}
 	}
 
 	@Override
-	public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
+	public boolean keyPressed(int i, int j, int k) {
 		if (!this.isVisible()) {
 			return false;
-		} else if (super.keyPressed(keyCode, scanCode, modifiers)) {
+		} else if (super.keyPressed(i, j, k)) {
 			return true;
-		} else if (keyCode == 264) {
+		} else if (i == 264) {
 			this.moveSelection(1);
 			return true;
-		} else if (keyCode == 265) {
+		} else if (i == 265) {
 			this.moveSelection(-1);
 			return true;
 		} else {
@@ -348,54 +349,54 @@ public abstract class ListWidget extends AbstractParentElement implements Drawab
 	}
 
 	@Override
-	public boolean charTyped(char chr, int keyCode) {
-		return !this.isVisible() ? false : super.charTyped(chr, keyCode);
+	public boolean charTyped(char c, int i) {
+		return !this.isVisible() ? false : super.charTyped(c, i);
 	}
 
 	@Override
-	public boolean isMouseOver(double mouseX, double mouseY) {
-		return this.isMouseInList(mouseX, mouseY);
+	public boolean isMouseOver(double d, double e) {
+		return this.isMouseInList(d, e);
 	}
 
 	public int getRowWidth() {
 		return 220;
 	}
 
-	protected void renderList(int x, int y, int mouseX, int mouseY, float f) {
-		int i = this.getItemCount();
+	protected void renderList(int i, int j, int k, int l, float f) {
+		int m = this.getItemCount();
 		Tessellator tessellator = Tessellator.getInstance();
-		BufferBuilder bufferBuilder = tessellator.getBuffer();
+		BufferBuilder bufferBuilder = tessellator.getBufferBuilder();
 
-		for (int j = 0; j < i; j++) {
-			int k = y + j * this.itemHeight + this.headerHeight;
-			int l = this.itemHeight - 4;
-			if (k > this.field_2165 || k + l < this.field_2166) {
-				this.updateItemPosition(j, x, k, f);
+		for (int n = 0; n < m; n++) {
+			int o = j + n * this.itemHeight + this.headerHeight;
+			int p = this.itemHeight - 4;
+			if (o > this.field_2165 || o + p < this.field_2166) {
+				this.updateItemPosition(n, i, o, f);
 			}
 
-			if (this.renderSelection && this.isSelectedItem(j)) {
-				int m = this.field_2180 + this.width / 2 - this.getRowWidth() / 2;
-				int n = this.field_2180 + this.width / 2 + this.getRowWidth() / 2;
-				GlStateManager.disableTexture();
+			if (this.renderSelection && this.isSelectedItem(n)) {
+				int q = this.field_2180 + this.width / 2 - this.getRowWidth() / 2;
+				int r = this.field_2180 + this.width / 2 + this.getRowWidth() / 2;
+				RenderSystem.disableTexture();
 				float g = this.isFocused() ? 1.0F : 0.5F;
-				GlStateManager.color4f(g, g, g, 1.0F);
+				RenderSystem.color4f(g, g, g, 1.0F);
 				bufferBuilder.begin(7, VertexFormats.POSITION);
-				bufferBuilder.vertex((double)m, (double)(k + l + 2), 0.0).next();
-				bufferBuilder.vertex((double)n, (double)(k + l + 2), 0.0).next();
-				bufferBuilder.vertex((double)n, (double)(k - 2), 0.0).next();
-				bufferBuilder.vertex((double)m, (double)(k - 2), 0.0).next();
+				bufferBuilder.vertex((double)q, (double)(o + p + 2), 0.0).next();
+				bufferBuilder.vertex((double)r, (double)(o + p + 2), 0.0).next();
+				bufferBuilder.vertex((double)r, (double)(o - 2), 0.0).next();
+				bufferBuilder.vertex((double)q, (double)(o - 2), 0.0).next();
 				tessellator.draw();
-				GlStateManager.color4f(0.0F, 0.0F, 0.0F, 1.0F);
+				RenderSystem.color4f(0.0F, 0.0F, 0.0F, 1.0F);
 				bufferBuilder.begin(7, VertexFormats.POSITION);
-				bufferBuilder.vertex((double)(m + 1), (double)(k + l + 1), 0.0).next();
-				bufferBuilder.vertex((double)(n - 1), (double)(k + l + 1), 0.0).next();
-				bufferBuilder.vertex((double)(n - 1), (double)(k - 1), 0.0).next();
-				bufferBuilder.vertex((double)(m + 1), (double)(k - 1), 0.0).next();
+				bufferBuilder.vertex((double)(q + 1), (double)(o + p + 1), 0.0).next();
+				bufferBuilder.vertex((double)(r - 1), (double)(o + p + 1), 0.0).next();
+				bufferBuilder.vertex((double)(r - 1), (double)(o - 1), 0.0).next();
+				bufferBuilder.vertex((double)(q + 1), (double)(o - 1), 0.0).next();
 				tessellator.draw();
-				GlStateManager.enableTexture();
+				RenderSystem.enableTexture();
 			}
 
-			this.renderItem(j, x, k, l, mouseX, mouseY, f);
+			this.renderItem(n, i, o, p, k, l, f);
 		}
 	}
 
@@ -409,11 +410,11 @@ public abstract class ListWidget extends AbstractParentElement implements Drawab
 
 	protected void renderHoleBackground(int i, int j, int k, int l) {
 		Tessellator tessellator = Tessellator.getInstance();
-		BufferBuilder bufferBuilder = tessellator.getBuffer();
+		BufferBuilder bufferBuilder = tessellator.getBufferBuilder();
 		this.minecraft.getTextureManager().bindTexture(DrawableHelper.BACKGROUND_LOCATION);
-		GlStateManager.color4f(1.0F, 1.0F, 1.0F, 1.0F);
+		RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
 		float f = 32.0F;
-		bufferBuilder.begin(7, VertexFormats.POSITION_TEXTURE_COLOR);
+		bufferBuilder.begin(7, VertexFormats.POSITION_UV_COLOR);
 		bufferBuilder.vertex((double)this.field_2180, (double)j, 0.0).texture(0.0, (double)((float)j / 32.0F)).color(64, 64, 64, l).next();
 		bufferBuilder.vertex((double)(this.field_2180 + this.width), (double)j, 0.0)
 			.texture((double)((float)this.width / 32.0F), (double)((float)j / 32.0F))
@@ -427,9 +428,9 @@ public abstract class ListWidget extends AbstractParentElement implements Drawab
 		tessellator.draw();
 	}
 
-	public void setLeftPos(int x) {
-		this.field_2180 = x;
-		this.field_2181 = x + this.width;
+	public void setLeftPos(int i) {
+		this.field_2180 = i;
+		this.field_2181 = i + this.width;
 	}
 
 	public int getItemHeight() {

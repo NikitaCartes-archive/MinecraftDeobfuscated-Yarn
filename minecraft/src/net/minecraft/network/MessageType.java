@@ -11,18 +11,18 @@ public enum MessageType {
 	private final byte id;
 	private final boolean interruptsNarration;
 
-	private MessageType(byte id, boolean interruptsNarration) {
-		this.id = id;
-		this.interruptsNarration = interruptsNarration;
+	private MessageType(byte b, boolean bl) {
+		this.id = b;
+		this.interruptsNarration = bl;
 	}
 
 	public byte getId() {
 		return this.id;
 	}
 
-	public static MessageType byId(byte id) {
+	public static MessageType byId(byte b) {
 		for (MessageType messageType : values()) {
-			if (id == messageType.id) {
+			if (b == messageType.id) {
 				return messageType;
 			}
 		}

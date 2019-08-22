@@ -30,21 +30,21 @@ public class DamageTracker {
 	public void setFallDeathSuffix() {
 		this.clearFallDeathSuffix();
 		if (this.entity.isClimbing()) {
-			Block block = this.entity.world.getBlockState(new BlockPos(this.entity.x, this.entity.getBoundingBox().y1, this.entity.z)).getBlock();
+			Block block = this.entity.world.getBlockState(new BlockPos(this.entity.x, this.entity.getBoundingBox().minY, this.entity.z)).getBlock();
 			if (block == Blocks.LADDER) {
 				this.fallDeathSuffix = "ladder";
 			} else if (block == Blocks.VINE) {
 				this.fallDeathSuffix = "vines";
 			}
-		} else if (this.entity.isTouchingWater()) {
+		} else if (this.entity.isInsideWater()) {
 			this.fallDeathSuffix = "water";
 		}
 	}
 
-	public void onDamage(DamageSource damageSource, float originalHealth, float f) {
+	public void onDamage(DamageSource damageSource, float f, float g) {
 		this.update();
 		this.setFallDeathSuffix();
-		DamageRecord damageRecord = new DamageRecord(damageSource, this.entity.age, originalHealth, f, this.fallDeathSuffix, this.entity.fallDistance);
+		DamageRecord damageRecord = new DamageRecord(damageSource, this.entity.age, f, g, this.fallDeathSuffix, this.entity.fallDistance);
 		this.recentDamage.add(damageRecord);
 		this.ageOnLastDamage = this.entity.age;
 		this.hasDamage = true;

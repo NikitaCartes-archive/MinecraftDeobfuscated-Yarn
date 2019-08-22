@@ -7,8 +7,8 @@ import net.minecraft.entity.Entity;
 import net.minecraft.text.TranslatableText;
 
 public class KillCommand {
-	public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
-		dispatcher.register(
+	public static void register(CommandDispatcher<ServerCommandSource> commandDispatcher) {
+		commandDispatcher.register(
 			CommandManager.literal("kill")
 				.requires(serverCommandSource -> serverCommandSource.hasPermissionLevel(2))
 				.then(
@@ -18,17 +18,17 @@ public class KillCommand {
 		);
 	}
 
-	private static int execute(ServerCommandSource source, Collection<? extends Entity> targets) {
-		for (Entity entity : targets) {
+	private static int execute(ServerCommandSource serverCommandSource, Collection<? extends Entity> collection) {
+		for (Entity entity : collection) {
 			entity.kill();
 		}
 
-		if (targets.size() == 1) {
-			source.sendFeedback(new TranslatableText("commands.kill.success.single", ((Entity)targets.iterator().next()).getDisplayName()), true);
+		if (collection.size() == 1) {
+			serverCommandSource.sendFeedback(new TranslatableText("commands.kill.success.single", ((Entity)collection.iterator().next()).getDisplayName()), true);
 		} else {
-			source.sendFeedback(new TranslatableText("commands.kill.success.multiple", targets.size()), true);
+			serverCommandSource.sendFeedback(new TranslatableText("commands.kill.success.multiple", collection.size()), true);
 		}
 
-		return targets.size();
+		return collection.size();
 	}
 }

@@ -7,7 +7,6 @@ import com.mojang.realmsclient.dto.RealmsNews;
 import com.mojang.realmsclient.dto.RealmsServer;
 import com.mojang.realmsclient.dto.RealmsServerPlayerLists;
 import com.mojang.realmsclient.util.RealmsPersistence;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -58,12 +57,12 @@ public class RealmsDataFetcher {
 		}
 	}
 
-	public synchronized void initWithSpecificTaskList(List<RealmsDataFetcher.Task> tasks) {
+	public synchronized void initWithSpecificTaskList(List<RealmsDataFetcher.Task> list) {
 		if (this.stopped) {
 			this.stopped = false;
 			this.cancelTasks();
 
-			for (RealmsDataFetcher.Task task : tasks) {
+			for (RealmsDataFetcher.Task task : list) {
 				this.fetchStatus.put(task, false);
 				switch (task) {
 					case SERVER_LIST:
@@ -168,11 +167,11 @@ public class RealmsDataFetcher {
 		}
 	}
 
-	private synchronized void setServers(List<RealmsServer> newServers) {
+	private synchronized void setServers(List<RealmsServer> list) {
 		int i = 0;
 
 		for (RealmsServer realmsServer : this.removedServers) {
-			if (newServers.remove(realmsServer)) {
+			if (list.remove(realmsServer)) {
 				i++;
 			}
 		}
@@ -181,16 +180,16 @@ public class RealmsDataFetcher {
 			this.removedServers.clear();
 		}
 
-		this.servers = newServers;
+		this.servers = list;
 	}
 
-	public synchronized void removeItem(RealmsServer server) {
-		this.servers.remove(server);
-		this.removedServers.add(server);
+	public synchronized void removeItem(RealmsServer realmsServer) {
+		this.servers.remove(realmsServer);
+		this.removedServers.add(realmsServer);
 	}
 
-	private void sort(List<RealmsServer> servers) {
-		Collections.sort(servers, new RealmsServer.McoServerComparator(Realms.getName()));
+	private void sort(List<RealmsServer> list) {
+		list.sort(new RealmsServer.McoServerComparator(Realms.getName()));
 	}
 
 	private boolean isActive() {

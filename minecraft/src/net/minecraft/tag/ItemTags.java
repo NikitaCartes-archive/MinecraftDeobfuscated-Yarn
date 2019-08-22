@@ -41,6 +41,8 @@ public class ItemTags {
 	public static final Tag<Item> SMALL_FLOWERS = register("small_flowers");
 	public static final Tag<Item> BEDS = register("beds");
 	public static final Tag<Item> FENCES = register("fences");
+	public static final Tag<Item> TALL_FLOWERS = register("tall_flowers");
+	public static final Tag<Item> FLOWERS = register("flowers");
 	public static final Tag<Item> BOATS = register("boats");
 	public static final Tag<Item> FISHES = register("fishes");
 	public static final Tag<Item> SIGNS = register("signs");
@@ -48,8 +50,8 @@ public class ItemTags {
 	public static final Tag<Item> COALS = register("coals");
 	public static final Tag<Item> ARROWS = register("arrows");
 
-	public static void setContainer(TagContainer<Item> container) {
-		ItemTags.container = container;
+	public static void setContainer(TagContainer<Item> tagContainer) {
+		container = tagContainer;
 		latestVersion++;
 	}
 
@@ -57,8 +59,8 @@ public class ItemTags {
 		return container;
 	}
 
-	private static Tag<Item> register(String id) {
-		return new ItemTags.CachingTag(new Identifier(id));
+	private static Tag<Item> register(String string) {
+		return new ItemTags.CachingTag(new Identifier(string));
 	}
 
 	public static class CachingTag extends Tag<Item> {
@@ -69,7 +71,7 @@ public class ItemTags {
 			super(identifier);
 		}
 
-		public boolean contains(Item item) {
+		public boolean method_15109(Item item) {
 			if (this.version != ItemTags.latestVersion) {
 				this.delegate = ItemTags.container.getOrCreate(this.getId());
 				this.version = ItemTags.latestVersion;

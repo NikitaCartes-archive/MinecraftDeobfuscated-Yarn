@@ -1,8 +1,9 @@
 package net.minecraft.client.render.debug;
 
-import com.mojang.blaze3d.platform.GlStateManager;
+import com.mojang.blaze3d.systems.RenderSystem;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.class_4493;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.BufferBuilder;
 import net.minecraft.client.render.Camera;
@@ -28,15 +29,15 @@ public class HeightmapDebugRenderer implements DebugRenderer.Renderer {
 		double d = camera.getPos().x;
 		double e = camera.getPos().y;
 		double f = camera.getPos().z;
-		GlStateManager.pushMatrix();
-		GlStateManager.enableBlend();
-		GlStateManager.blendFuncSeparate(
-			GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO
+		RenderSystem.pushMatrix();
+		RenderSystem.enableBlend();
+		RenderSystem.blendFuncSeparate(
+			class_4493.class_4535.SRC_ALPHA, class_4493.class_4534.ONE_MINUS_SRC_ALPHA, class_4493.class_4535.ONE, class_4493.class_4534.ZERO
 		);
-		GlStateManager.disableTexture();
+		RenderSystem.disableTexture();
 		BlockPos blockPos = new BlockPos(camera.getPos().x, 0.0, camera.getPos().z);
 		Tessellator tessellator = Tessellator.getInstance();
-		BufferBuilder bufferBuilder = tessellator.getBuffer();
+		BufferBuilder bufferBuilder = tessellator.getBufferBuilder();
 		bufferBuilder.begin(5, VertexFormats.POSITION_COLOR);
 
 		for (BlockPos blockPos2 : BlockPos.iterate(blockPos.add(-40, 0, -40), blockPos.add(40, 0, 40))) {
@@ -73,7 +74,7 @@ public class HeightmapDebugRenderer implements DebugRenderer.Renderer {
 		}
 
 		tessellator.draw();
-		GlStateManager.enableTexture();
-		GlStateManager.popMatrix();
+		RenderSystem.enableTexture();
+		RenderSystem.popMatrix();
 	}
 }

@@ -10,8 +10,8 @@ import net.minecraft.world.gen.ChunkRandom;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
 
 public abstract class AbstractTempleFeature<C extends FeatureConfig> extends StructureFeature<C> {
-	public AbstractTempleFeature(Function<Dynamic<?>, ? extends C> configFactory) {
-		super(configFactory);
+	public AbstractTempleFeature(Function<Dynamic<?>, ? extends C> function) {
+		super(function);
 	}
 
 	@Override
@@ -33,10 +33,10 @@ public abstract class AbstractTempleFeature<C extends FeatureConfig> extends Str
 	}
 
 	@Override
-	public boolean shouldStartAt(ChunkGenerator<?> chunkGenerator, Random random, int chunkX, int chunkZ) {
-		ChunkPos chunkPos = this.getStart(chunkGenerator, random, chunkX, chunkZ, 0, 0);
-		if (chunkX == chunkPos.x && chunkZ == chunkPos.z) {
-			Biome biome = chunkGenerator.getBiomeSource().getBiome(new BlockPos(chunkX * 16 + 9, 0, chunkZ * 16 + 9));
+	public boolean shouldStartAt(ChunkGenerator<?> chunkGenerator, Random random, int i, int j) {
+		ChunkPos chunkPos = this.getStart(chunkGenerator, random, i, j, 0, 0);
+		if (i == chunkPos.x && j == chunkPos.z) {
+			Biome biome = chunkGenerator.getBiomeSource().getBiome(new BlockPos(i * 16 + 9, 0, j * 16 + 9));
 			if (chunkGenerator.hasStructure(biome, this)) {
 				return true;
 			}

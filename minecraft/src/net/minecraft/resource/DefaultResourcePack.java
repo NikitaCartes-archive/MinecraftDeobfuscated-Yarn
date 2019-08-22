@@ -31,18 +31,18 @@ import java.util.function.Predicate;
 import javax.annotation.Nullable;
 import net.minecraft.resource.metadata.ResourceMetadataReader;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.Util;
+import net.minecraft.util.SystemUtil;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 public class DefaultResourcePack implements ResourcePack {
-	public static Path resourcePath;
+	public static Path RESOURCE_PATH;
 	private static final Logger LOGGER = LogManager.getLogger();
-	public static Class<?> resourceClass;
-	private static final Map<ResourceType, FileSystem> typeToFileSystem = Util.make(Maps.<ResourceType, FileSystem>newHashMap(), hashMap -> {
+	public static Class<?> RESOURCE_CLASS;
+	private static final Map<ResourceType, FileSystem> typeToFileSystem = SystemUtil.consume(Maps.<ResourceType, FileSystem>newHashMap(), hashMap -> {
 		synchronized (DefaultResourcePack.class) {
 			for (ResourceType resourceType : ResourceType.values()) {
-				URL uRL = DefaultResourcePack.class.getResource("/" + resourceType.getDirectory() + "/.mcassetsroot");
+				URL uRL = DefaultResourcePack.class.getResource("/" + resourceType.getName() + "/.mcassetsroot");
 
 				try {
 					URI uRI = uRL.toURI();
@@ -64,50 +64,50 @@ public class DefaultResourcePack implements ResourcePack {
 	});
 	public final Set<String> namespaces;
 
-	public DefaultResourcePack(String... namespaces) {
-		this.namespaces = ImmutableSet.copyOf(namespaces);
+	public DefaultResourcePack(String... strings) {
+		this.namespaces = ImmutableSet.copyOf(strings);
 	}
 
 	@Override
-	public InputStream openRoot(String fileName) throws IOException {
-		if (!fileName.contains("/") && !fileName.contains("\\")) {
-			if (resourcePath != null) {
-				Path path = resourcePath.resolve(fileName);
+	public InputStream openRoot(String string) throws IOException {
+		if (!string.contains("/") && !string.contains("\\")) {
+			if (RESOURCE_PATH != null) {
+				Path path = RESOURCE_PATH.resolve(string);
 				if (Files.exists(path, new LinkOption[0])) {
 					return Files.newInputStream(path);
 				}
 			}
 
-			return this.getInputStream(fileName);
+			return this.getInputStream(string);
 		} else {
 			throw new IllegalArgumentException("Root resources can only be filenames, not paths (no / allowed!)");
 		}
 	}
 
 	@Override
-	public InputStream open(ResourceType type, Identifier id) throws IOException {
-		InputStream inputStream = this.findInputStream(type, id);
+	public InputStream open(ResourceType resourceType, Identifier identifier) throws IOException {
+		InputStream inputStream = this.findInputStream(resourceType, identifier);
 		if (inputStream != null) {
 			return inputStream;
 		} else {
-			throw new FileNotFoundException(id.getPath());
+			throw new FileNotFoundException(identifier.getPath());
 		}
 	}
 
 	@Override
-	public Collection<Identifier> findResources(ResourceType type, String namespace, int maxDepth, Predicate<String> pathFilter) {
+	public Collection<Identifier> findResources(ResourceType resourceType, String string, int i, Predicate<String> predicate) {
 		Set<Identifier> set = Sets.<Identifier>newHashSet();
-		if (resourcePath != null) {
+		if (RESOURCE_PATH != null) {
 			try {
-				set.addAll(this.getIdentifiers(maxDepth, "minecraft", resourcePath.resolve(type.getDirectory()).resolve("minecraft"), namespace, pathFilter));
+				set.addAll(this.getIdentifiers(i, "minecraft", RESOURCE_PATH.resolve(resourceType.getName()).resolve("minecraft"), string, predicate));
 			} catch (IOException var14) {
 			}
 
-			if (type == ResourceType.CLIENT_RESOURCES) {
+			if (resourceType == ResourceType.CLIENT_RESOURCES) {
 				Enumeration<URL> enumeration = null;
 
 				try {
-					enumeration = resourceClass.getClassLoader().getResources(type.getDirectory() + "/minecraft");
+					enumeration = RESOURCE_CLASS.getClassLoader().getResources(resourceType.getName() + "/minecraft");
 				} catch (IOException var13) {
 				}
 
@@ -115,7 +115,7 @@ public class DefaultResourcePack implements ResourcePack {
 					try {
 						URI uRI = ((URL)enumeration.nextElement()).toURI();
 						if ("file".equals(uRI.getScheme())) {
-							set.addAll(this.getIdentifiers(maxDepth, "minecraft", Paths.get(uRI), namespace, pathFilter));
+							set.addAll(this.getIdentifiers(i, "minecraft", Paths.get(uRI), string, predicate));
 						}
 					} catch (IOException | URISyntaxException var12) {
 					}
@@ -124,7 +124,7 @@ public class DefaultResourcePack implements ResourcePack {
 		}
 
 		try {
-			URL uRL = DefaultResourcePack.class.getResource("/" + type.getDirectory() + "/.mcassetsroot");
+			URL uRL = DefaultResourcePack.class.getResource("/" + resourceType.getName() + "/.mcassetsroot");
 			if (uRL == null) {
 				LOGGER.error("Couldn't find .mcassetsroot, cannot load vanilla resources");
 				return set;
@@ -138,10 +138,10 @@ public class DefaultResourcePack implements ResourcePack {
 				}
 
 				Path path = Paths.get(uRL2.toURI());
-				set.addAll(this.getIdentifiers(maxDepth, "minecraft", path, namespace, pathFilter));
+				set.addAll(this.getIdentifiers(i, "minecraft", path, string, predicate));
 			} else if ("jar".equals(uRI.getScheme())) {
-				Path path2 = ((FileSystem)typeToFileSystem.get(type)).getPath("/" + type.getDirectory() + "/minecraft");
-				set.addAll(this.getIdentifiers(maxDepth, "minecraft", path2, namespace, pathFilter));
+				Path path2 = ((FileSystem)typeToFileSystem.get(resourceType)).getPath("/" + resourceType.getName() + "/minecraft");
+				set.addAll(this.getIdentifiers(i, "minecraft", path2, string, predicate));
 			} else {
 				LOGGER.error("Unsupported scheme {} trying to list vanilla resources (NYI?)", uRI);
 			}
@@ -153,14 +153,14 @@ public class DefaultResourcePack implements ResourcePack {
 		return set;
 	}
 
-	private Collection<Identifier> getIdentifiers(int maxDepth, String namespace, Path path, String searchLocation, Predicate<String> pathFilter) throws IOException {
+	private Collection<Identifier> getIdentifiers(int i, String string, Path path, String string2, Predicate<String> predicate) throws IOException {
 		List<Identifier> list = Lists.<Identifier>newArrayList();
-		Iterator<Path> iterator = Files.walk(path.resolve(searchLocation), maxDepth, new FileVisitOption[0]).iterator();
+		Iterator<Path> iterator = Files.walk(path.resolve(string2), i, new FileVisitOption[0]).iterator();
 
 		while (iterator.hasNext()) {
 			Path path2 = (Path)iterator.next();
-			if (!path2.endsWith(".mcmeta") && Files.isRegularFile(path2, new LinkOption[0]) && pathFilter.test(path2.getFileName().toString())) {
-				list.add(new Identifier(namespace, path.relativize(path2).toString().replaceAll("\\\\", "/")));
+			if (!path2.endsWith(".mcmeta") && Files.isRegularFile(path2, new LinkOption[0]) && predicate.test(path2.getFileName().toString())) {
+				list.add(new Identifier(string, path.relativize(path2).toString().replaceAll("\\\\", "/")));
 			}
 		}
 
@@ -168,10 +168,10 @@ public class DefaultResourcePack implements ResourcePack {
 	}
 
 	@Nullable
-	protected InputStream findInputStream(ResourceType type, Identifier id) {
-		String string = method_20729(type, id);
-		if (resourcePath != null) {
-			Path path = resourcePath.resolve(type.getDirectory() + "/" + id.getNamespace() + "/" + id.getPath());
+	protected InputStream findInputStream(ResourceType resourceType, Identifier identifier) {
+		String string = method_20729(resourceType, identifier);
+		if (RESOURCE_PATH != null) {
+			Path path = RESOURCE_PATH.resolve(resourceType.getName() + "/" + identifier.getNamespace() + "/" + identifier.getPath());
 			if (Files.exists(path, new LinkOption[0])) {
 				try {
 					return Files.newInputStream(path);
@@ -189,7 +189,7 @@ public class DefaultResourcePack implements ResourcePack {
 	}
 
 	private static String method_20729(ResourceType resourceType, Identifier identifier) {
-		return "/" + resourceType.getDirectory() + "/" + identifier.getNamespace() + "/" + identifier.getPath();
+		return "/" + resourceType.getName() + "/" + identifier.getNamespace() + "/" + identifier.getPath();
 	}
 
 	private static boolean method_20728(String string, @Nullable URL uRL) throws IOException {
@@ -197,15 +197,15 @@ public class DefaultResourcePack implements ResourcePack {
 	}
 
 	@Nullable
-	protected InputStream getInputStream(String path) {
-		return DefaultResourcePack.class.getResourceAsStream("/" + path);
+	protected InputStream getInputStream(String string) {
+		return DefaultResourcePack.class.getResourceAsStream("/" + string);
 	}
 
 	@Override
-	public boolean contains(ResourceType type, Identifier id) {
-		String string = method_20729(type, id);
-		if (resourcePath != null) {
-			Path path = resourcePath.resolve(type.getDirectory() + "/" + id.getNamespace() + "/" + id.getPath());
+	public boolean contains(ResourceType resourceType, Identifier identifier) {
+		String string = method_20729(resourceType, identifier);
+		if (RESOURCE_PATH != null) {
+			Path path = RESOURCE_PATH.resolve(resourceType.getName() + "/" + identifier.getNamespace() + "/" + identifier.getPath());
 			if (Files.exists(path, new LinkOption[0])) {
 				return true;
 			}
@@ -220,20 +220,20 @@ public class DefaultResourcePack implements ResourcePack {
 	}
 
 	@Override
-	public Set<String> getNamespaces(ResourceType type) {
+	public Set<String> getNamespaces(ResourceType resourceType) {
 		return this.namespaces;
 	}
 
 	@Nullable
 	@Override
-	public <T> T parseMetadata(ResourceMetadataReader<T> metaReader) throws IOException {
+	public <T> T parseMetadata(ResourceMetadataReader<T> resourceMetadataReader) throws IOException {
 		try {
 			InputStream inputStream = this.openRoot("pack.mcmeta");
 			Throwable var3 = null;
 
 			Object var4;
 			try {
-				var4 = AbstractFileResourcePack.parseMetadata(metaReader, inputStream);
+				var4 = AbstractFileResourcePack.parseMetadata(resourceMetadataReader, inputStream);
 			} catch (Throwable var14) {
 				var3 = var14;
 				throw var14;

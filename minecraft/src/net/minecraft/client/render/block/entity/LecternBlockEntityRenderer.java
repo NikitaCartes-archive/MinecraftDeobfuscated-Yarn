@@ -1,6 +1,6 @@
 package net.minecraft.client.render.block.entity;
 
-import com.mojang.blaze3d.platform.GlStateManager;
+import com.mojang.blaze3d.systems.RenderSystem;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.block.BlockState;
@@ -15,19 +15,19 @@ public class LecternBlockEntityRenderer extends BlockEntityRenderer<LecternBlock
 	private static final Identifier BOOK_TEXTURE = new Identifier("textures/entity/enchanting_table_book.png");
 	private final BookModel book = new BookModel();
 
-	public void render(LecternBlockEntity lecternBlockEntity, double d, double e, double f, float g, int i) {
+	public void method_17582(LecternBlockEntity lecternBlockEntity, double d, double e, double f, float g, int i) {
 		BlockState blockState = lecternBlockEntity.getCachedState();
 		if ((Boolean)blockState.get(LecternBlock.HAS_BOOK)) {
-			GlStateManager.pushMatrix();
-			GlStateManager.translatef((float)d + 0.5F, (float)e + 1.0F + 0.0625F, (float)f + 0.5F);
+			RenderSystem.pushMatrix();
+			RenderSystem.translatef((float)d + 0.5F, (float)e + 1.0F + 0.0625F, (float)f + 0.5F);
 			float h = ((Direction)blockState.get(LecternBlock.FACING)).rotateYClockwise().asRotation();
-			GlStateManager.rotatef(-h, 0.0F, 1.0F, 0.0F);
-			GlStateManager.rotatef(67.5F, 0.0F, 0.0F, 1.0F);
-			GlStateManager.translatef(0.0F, -0.125F, 0.0F);
+			RenderSystem.rotatef(-h, 0.0F, 1.0F, 0.0F);
+			RenderSystem.rotatef(67.5F, 0.0F, 0.0F, 1.0F);
+			RenderSystem.translatef(0.0F, -0.125F, 0.0F);
 			this.bindTexture(BOOK_TEXTURE);
-			GlStateManager.enableCull();
+			RenderSystem.enableCull();
 			this.book.render(0.0F, 0.1F, 0.9F, 1.2F, 0.0F, 0.0625F);
-			GlStateManager.popMatrix();
+			RenderSystem.popMatrix();
 		}
 	}
 }

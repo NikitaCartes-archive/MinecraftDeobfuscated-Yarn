@@ -2,7 +2,7 @@ package net.minecraft.entity.ai.goal;
 
 import java.util.EnumSet;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.ai.TargetFinder;
+import net.minecraft.entity.ai.PathfindingUtil;
 import net.minecraft.entity.passive.HorseBaseEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.math.Vec3d;
@@ -14,16 +14,16 @@ public class HorseBondWithPlayerGoal extends Goal {
 	private double targetY;
 	private double targetZ;
 
-	public HorseBondWithPlayerGoal(HorseBaseEntity horse, double speed) {
-		this.horse = horse;
-		this.speed = speed;
+	public HorseBondWithPlayerGoal(HorseBaseEntity horseBaseEntity, double d) {
+		this.horse = horseBaseEntity;
+		this.speed = d;
 		this.setControls(EnumSet.of(Goal.Control.MOVE));
 	}
 
 	@Override
 	public boolean canStart() {
 		if (!this.horse.isTame() && this.horse.hasPassengers()) {
-			Vec3d vec3d = TargetFinder.findTarget(this.horse, 5, 4);
+			Vec3d vec3d = PathfindingUtil.findTarget(this.horse, 5, 4);
 			if (vec3d == null) {
 				return false;
 			} else {
@@ -49,7 +49,7 @@ public class HorseBondWithPlayerGoal extends Goal {
 
 	@Override
 	public void tick() {
-		if (!this.horse.isTame() && this.horse.getRandom().nextInt(50) == 0) {
+		if (!this.horse.isTame() && this.horse.getRand().nextInt(50) == 0) {
 			Entity entity = (Entity)this.horse.getPassengerList().get(0);
 			if (entity == null) {
 				return;
@@ -58,7 +58,7 @@ public class HorseBondWithPlayerGoal extends Goal {
 			if (entity instanceof PlayerEntity) {
 				int i = this.horse.getTemper();
 				int j = this.horse.getMaxTemper();
-				if (j > 0 && this.horse.getRandom().nextInt(j) < i) {
+				if (j > 0 && this.horse.getRand().nextInt(j) < i) {
 					this.horse.bondWithPlayer((PlayerEntity)entity);
 					return;
 				}

@@ -2,6 +2,7 @@ package net.minecraft.entity.ai.goal;
 
 import java.util.EnumSet;
 import net.minecraft.entity.ai.TargetPredicate;
+import net.minecraft.entity.ai.pathing.BirdNavigation;
 import net.minecraft.entity.ai.pathing.MobNavigation;
 import net.minecraft.entity.mob.MobEntityWithAi;
 import net.minecraft.entity.player.PlayerEntity;
@@ -28,17 +29,17 @@ public class TemptGoal extends Goal {
 	private final Ingredient food;
 	private final boolean canBeScared;
 
-	public TemptGoal(MobEntityWithAi mob, double speed, Ingredient food, boolean canBeScared) {
-		this(mob, speed, canBeScared, food);
+	public TemptGoal(MobEntityWithAi mobEntityWithAi, double d, Ingredient ingredient, boolean bl) {
+		this(mobEntityWithAi, d, bl, ingredient);
 	}
 
-	public TemptGoal(MobEntityWithAi mob, double speed, boolean canBeScared, Ingredient food) {
-		this.mob = mob;
-		this.speed = speed;
-		this.food = food;
-		this.canBeScared = canBeScared;
+	public TemptGoal(MobEntityWithAi mobEntityWithAi, double d, boolean bl, Ingredient ingredient) {
+		this.mob = mobEntityWithAi;
+		this.speed = d;
+		this.food = ingredient;
+		this.canBeScared = bl;
 		this.setControls(EnumSet.of(Goal.Control.MOVE, Goal.Control.LOOK));
-		if (!(mob.getNavigation() instanceof MobNavigation)) {
+		if (!(mobEntityWithAi.getNavigation() instanceof MobNavigation) && !(mobEntityWithAi.getNavigation() instanceof BirdNavigation)) {
 			throw new IllegalArgumentException("Unsupported mob type for TemptGoal");
 		}
 	}
@@ -54,8 +55,8 @@ public class TemptGoal extends Goal {
 		}
 	}
 
-	protected boolean isTempedBy(ItemStack stack) {
-		return this.food.test(stack);
+	protected boolean isTempedBy(ItemStack itemStack) {
+		return this.food.method_8093(itemStack);
 	}
 
 	@Override

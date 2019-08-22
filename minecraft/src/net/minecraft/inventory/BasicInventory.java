@@ -15,14 +15,14 @@ public class BasicInventory implements Inventory, RecipeInputProvider {
 	private final DefaultedList<ItemStack> stackList;
 	private List<InventoryListener> listeners;
 
-	public BasicInventory(int size) {
-		this.size = size;
-		this.stackList = DefaultedList.ofSize(size, ItemStack.EMPTY);
+	public BasicInventory(int i) {
+		this.size = i;
+		this.stackList = DefaultedList.ofSize(i, ItemStack.EMPTY);
 	}
 
-	public BasicInventory(ItemStack... items) {
-		this.size = items.length;
-		this.stackList = DefaultedList.copyOf(ItemStack.EMPTY, items);
+	public BasicInventory(ItemStack... itemStacks) {
+		this.size = itemStacks.length;
+		this.stackList = DefaultedList.copyOf(ItemStack.EMPTY, itemStacks);
 	}
 
 	public void addListener(InventoryListener inventoryListener) {
@@ -38,13 +38,13 @@ public class BasicInventory implements Inventory, RecipeInputProvider {
 	}
 
 	@Override
-	public ItemStack getInvStack(int slot) {
-		return slot >= 0 && slot < this.stackList.size() ? this.stackList.get(slot) : ItemStack.EMPTY;
+	public ItemStack getInvStack(int i) {
+		return i >= 0 && i < this.stackList.size() ? this.stackList.get(i) : ItemStack.EMPTY;
 	}
 
 	@Override
-	public ItemStack takeInvStack(int slot, int amount) {
-		ItemStack itemStack = Inventories.splitStack(this.stackList, slot, amount);
+	public ItemStack takeInvStack(int i, int j) {
+		ItemStack itemStack = Inventories.splitStack(this.stackList, i, j);
 		if (!itemStack.isEmpty()) {
 			this.markDirty();
 		}
@@ -52,16 +52,16 @@ public class BasicInventory implements Inventory, RecipeInputProvider {
 		return itemStack;
 	}
 
-	public ItemStack poll(Item item, int count) {
+	public ItemStack poll(Item item, int i) {
 		ItemStack itemStack = new ItemStack(item, 0);
 
-		for (int i = this.size - 1; i >= 0; i--) {
-			ItemStack itemStack2 = this.getInvStack(i);
+		for (int j = this.size - 1; j >= 0; j--) {
+			ItemStack itemStack2 = this.getInvStack(j);
 			if (itemStack2.getItem().equals(item)) {
-				int j = count - itemStack.getCount();
-				ItemStack itemStack3 = itemStack2.split(j);
+				int k = i - itemStack.getCount();
+				ItemStack itemStack3 = itemStack2.split(k);
 				itemStack.increment(itemStack3.getCount());
-				if (itemStack.getCount() == count) {
+				if (itemStack.getCount() == i) {
 					break;
 				}
 			}
@@ -86,21 +86,21 @@ public class BasicInventory implements Inventory, RecipeInputProvider {
 	}
 
 	@Override
-	public ItemStack removeInvStack(int slot) {
-		ItemStack itemStack = this.stackList.get(slot);
+	public ItemStack removeInvStack(int i) {
+		ItemStack itemStack = this.stackList.get(i);
 		if (itemStack.isEmpty()) {
 			return ItemStack.EMPTY;
 		} else {
-			this.stackList.set(slot, ItemStack.EMPTY);
+			this.stackList.set(i, ItemStack.EMPTY);
 			return itemStack;
 		}
 	}
 
 	@Override
-	public void setInvStack(int slot, ItemStack stack) {
-		this.stackList.set(slot, stack);
-		if (!stack.isEmpty() && stack.getCount() > this.getInvMaxStackAmount()) {
-			stack.setCount(this.getInvMaxStackAmount());
+	public void setInvStack(int i, ItemStack itemStack) {
+		this.stackList.set(i, itemStack);
+		if (!itemStack.isEmpty() && itemStack.getCount() > this.getInvMaxStackAmount()) {
+			itemStack.setCount(this.getInvMaxStackAmount());
 		}
 
 		this.markDirty();
@@ -132,7 +132,7 @@ public class BasicInventory implements Inventory, RecipeInputProvider {
 	}
 
 	@Override
-	public boolean canPlayerUseInv(PlayerEntity player) {
+	public boolean canPlayerUseInv(PlayerEntity playerEntity) {
 		return true;
 	}
 

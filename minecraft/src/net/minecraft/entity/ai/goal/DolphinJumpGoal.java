@@ -15,14 +15,14 @@ public class DolphinJumpGoal extends DiveJumpingGoal {
 	private final int chance;
 	private boolean field_6473;
 
-	public DolphinJumpGoal(DolphinEntity dolphin, int chance) {
-		this.dolphin = dolphin;
-		this.chance = chance;
+	public DolphinJumpGoal(DolphinEntity dolphinEntity, int i) {
+		this.dolphin = dolphinEntity;
+		this.chance = i;
 	}
 
 	@Override
 	public boolean canStart() {
-		if (this.dolphin.getRandom().nextInt(this.chance) != 0) {
+		if (this.dolphin.getRand().nextInt(this.chance) != 0) {
 			return false;
 		} else {
 			Direction direction = this.dolphin.getMovementDirection();
@@ -31,7 +31,7 @@ public class DolphinJumpGoal extends DiveJumpingGoal {
 			BlockPos blockPos = new BlockPos(this.dolphin);
 
 			for (int k : field_6474) {
-				if (!this.isWater(blockPos, i, j, k) || !this.isAirAbove(blockPos, i, j, k)) {
+				if (!this.isWater(blockPos, i, j, k) || !this.isAir(blockPos, i, j, k)) {
 					return false;
 				}
 			}
@@ -40,21 +40,19 @@ public class DolphinJumpGoal extends DiveJumpingGoal {
 		}
 	}
 
-	private boolean isWater(BlockPos pos, int xOffset, int zOffset, int multiplier) {
-		BlockPos blockPos = pos.add(xOffset * multiplier, 0, zOffset * multiplier);
-		return this.dolphin.world.getFluidState(blockPos).matches(FluidTags.WATER) && !this.dolphin.world.getBlockState(blockPos).getMaterial().blocksMovement();
+	private boolean isWater(BlockPos blockPos, int i, int j, int k) {
+		BlockPos blockPos2 = blockPos.add(i * k, 0, j * k);
+		return this.dolphin.world.getFluidState(blockPos2).matches(FluidTags.WATER) && !this.dolphin.world.getBlockState(blockPos2).getMaterial().blocksMovement();
 	}
 
-	private boolean isAirAbove(BlockPos pos, int xOffset, int zOffset, int multiplier) {
-		return this.dolphin.world.getBlockState(pos.add(xOffset * multiplier, 1, zOffset * multiplier)).isAir()
-			&& this.dolphin.world.getBlockState(pos.add(xOffset * multiplier, 2, zOffset * multiplier)).isAir();
+	private boolean isAir(BlockPos blockPos, int i, int j, int k) {
+		return this.dolphin.world.getBlockState(blockPos.add(i * k, 1, j * k)).isAir() && this.dolphin.world.getBlockState(blockPos.add(i * k, 2, j * k)).isAir();
 	}
 
 	@Override
 	public boolean shouldContinue() {
 		double d = this.dolphin.getVelocity().y;
-		return (!(d * d < 0.03F) || this.dolphin.pitch == 0.0F || !(Math.abs(this.dolphin.pitch) < 10.0F) || !this.dolphin.isTouchingWater())
-			&& !this.dolphin.onGround;
+		return (!(d * d < 0.03F) || this.dolphin.pitch == 0.0F || !(Math.abs(this.dolphin.pitch) < 10.0F) || !this.dolphin.isInsideWater()) && !this.dolphin.onGround;
 	}
 
 	@Override

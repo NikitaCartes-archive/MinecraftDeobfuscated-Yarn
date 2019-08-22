@@ -53,29 +53,29 @@ public class ShovelItem extends MiningToolItem {
 		ImmutableMap.of(Blocks.GRASS_BLOCK, Blocks.GRASS_PATH.getDefaultState())
 	);
 
-	public ShovelItem(ToolMaterial material, float attackDamage, float attackSpeed, Item.Settings settings) {
-		super(attackDamage, attackSpeed, material, EFFECTIVE_BLOCKS, settings);
+	public ShovelItem(ToolMaterial toolMaterial, float f, float g, Item.Settings settings) {
+		super(f, g, toolMaterial, EFFECTIVE_BLOCKS, settings);
 	}
 
 	@Override
-	public boolean isEffectiveOn(BlockState state) {
-		Block block = state.getBlock();
+	public boolean isEffectiveOn(BlockState blockState) {
+		Block block = blockState.getBlock();
 		return block == Blocks.SNOW || block == Blocks.SNOW_BLOCK;
 	}
 
 	@Override
-	public ActionResult useOnBlock(ItemUsageContext context) {
-		World world = context.getWorld();
-		BlockPos blockPos = context.getBlockPos();
-		if (context.getSide() != Direction.DOWN && world.getBlockState(blockPos.up()).isAir()) {
+	public ActionResult useOnBlock(ItemUsageContext itemUsageContext) {
+		World world = itemUsageContext.getWorld();
+		BlockPos blockPos = itemUsageContext.getBlockPos();
+		if (itemUsageContext.getSide() != Direction.DOWN && world.getBlockState(blockPos.up()).isAir()) {
 			BlockState blockState = (BlockState)PATH_BLOCKSTATES.get(world.getBlockState(blockPos).getBlock());
 			if (blockState != null) {
-				PlayerEntity playerEntity = context.getPlayer();
+				PlayerEntity playerEntity = itemUsageContext.getPlayer();
 				world.playSound(playerEntity, blockPos, SoundEvents.ITEM_SHOVEL_FLATTEN, SoundCategory.BLOCKS, 1.0F, 1.0F);
 				if (!world.isClient) {
 					world.setBlockState(blockPos, blockState, 11);
 					if (playerEntity != null) {
-						context.getStack().damage(1, playerEntity, p -> p.sendToolBreakStatus(context.getHand()));
+						itemUsageContext.getStack().damage(1, playerEntity, playerEntityx -> playerEntityx.sendToolBreakStatus(itemUsageContext.getHand()));
 					}
 				}
 

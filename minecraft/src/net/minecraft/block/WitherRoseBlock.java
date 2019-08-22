@@ -19,30 +19,30 @@ import net.minecraft.world.Difficulty;
 import net.minecraft.world.World;
 
 public class WitherRoseBlock extends FlowerBlock {
-	public WitherRoseBlock(StatusEffect effect, Block.Settings settings) {
-		super(effect, 8, settings);
+	public WitherRoseBlock(StatusEffect statusEffect, Block.Settings settings) {
+		super(statusEffect, 8, settings);
 	}
 
 	@Override
-	protected boolean canPlantOnTop(BlockState floor, BlockView view, BlockPos pos) {
-		Block block = floor.getBlock();
-		return super.canPlantOnTop(floor, view, pos) || block == Blocks.NETHERRACK || block == Blocks.SOUL_SAND;
+	protected boolean canPlantOnTop(BlockState blockState, BlockView blockView, BlockPos blockPos) {
+		Block block = blockState.getBlock();
+		return super.canPlantOnTop(blockState, blockView, blockPos) || block == Blocks.NETHERRACK || block == Blocks.SOUL_SAND;
 	}
 
 	@Environment(EnvType.CLIENT)
 	@Override
-	public void randomDisplayTick(BlockState state, World world, BlockPos pos, Random random) {
-		VoxelShape voxelShape = this.getOutlineShape(state, world, pos, EntityContext.absent());
+	public void randomDisplayTick(BlockState blockState, World world, BlockPos blockPos, Random random) {
+		VoxelShape voxelShape = this.getOutlineShape(blockState, world, blockPos, EntityContext.absent());
 		Vec3d vec3d = voxelShape.getBoundingBox().getCenter();
-		double d = (double)pos.getX() + vec3d.x;
-		double e = (double)pos.getZ() + vec3d.z;
+		double d = (double)blockPos.getX() + vec3d.x;
+		double e = (double)blockPos.getZ() + vec3d.z;
 
 		for (int i = 0; i < 3; i++) {
 			if (random.nextBoolean()) {
 				world.addParticle(
 					ParticleTypes.SMOKE,
 					d + (double)(random.nextFloat() / 5.0F),
-					(double)pos.getY() + (0.5 - (double)random.nextFloat()),
+					(double)blockPos.getY() + (0.5 - (double)random.nextFloat()),
 					e + (double)(random.nextFloat() / 5.0F),
 					0.0,
 					0.0,
@@ -53,7 +53,7 @@ public class WitherRoseBlock extends FlowerBlock {
 	}
 
 	@Override
-	public void onEntityCollision(BlockState state, World world, BlockPos pos, Entity entity) {
+	public void onEntityCollision(BlockState blockState, World world, BlockPos blockPos, Entity entity) {
 		if (!world.isClient && world.getDifficulty() != Difficulty.PEACEFUL) {
 			if (entity instanceof LivingEntity) {
 				LivingEntity livingEntity = (LivingEntity)entity;

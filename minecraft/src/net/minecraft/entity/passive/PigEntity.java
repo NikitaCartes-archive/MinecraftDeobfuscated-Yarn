@@ -83,14 +83,14 @@ public class PigEntity extends AnimalEntity {
 	}
 
 	@Override
-	public void onTrackedDataSet(TrackedData<?> data) {
-		if (field_6815.equals(data) && this.world.isClient) {
+	public void onTrackedDataSet(TrackedData<?> trackedData) {
+		if (field_6815.equals(trackedData) && this.world.isClient) {
 			this.field_6814 = true;
 			this.field_6812 = 0;
 			this.field_6813 = this.dataTracker.get(field_6815);
 		}
 
-		super.onTrackedDataSet(data);
+		super.onTrackedDataSet(trackedData);
 	}
 
 	@Override
@@ -101,15 +101,15 @@ public class PigEntity extends AnimalEntity {
 	}
 
 	@Override
-	public void writeCustomDataToTag(CompoundTag tag) {
-		super.writeCustomDataToTag(tag);
-		tag.putBoolean("Saddle", this.isSaddled());
+	public void writeCustomDataToTag(CompoundTag compoundTag) {
+		super.writeCustomDataToTag(compoundTag);
+		compoundTag.putBoolean("Saddle", this.isSaddled());
 	}
 
 	@Override
-	public void readCustomDataFromTag(CompoundTag tag) {
-		super.readCustomDataFromTag(tag);
-		this.setSaddled(tag.getBoolean("Saddle"));
+	public void readCustomDataFromTag(CompoundTag compoundTag) {
+		super.readCustomDataFromTag(compoundTag);
+		this.setSaddled(compoundTag.getBoolean("Saddle"));
 	}
 
 	@Override
@@ -118,7 +118,7 @@ public class PigEntity extends AnimalEntity {
 	}
 
 	@Override
-	protected SoundEvent getHurtSound(DamageSource source) {
+	protected SoundEvent getHurtSound(DamageSource damageSource) {
 		return SoundEvents.ENTITY_PIG_HURT;
 	}
 
@@ -128,25 +128,25 @@ public class PigEntity extends AnimalEntity {
 	}
 
 	@Override
-	protected void playStepSound(BlockPos pos, BlockState state) {
+	protected void playStepSound(BlockPos blockPos, BlockState blockState) {
 		this.playSound(SoundEvents.ENTITY_PIG_STEP, 0.15F, 1.0F);
 	}
 
 	@Override
-	public boolean interactMob(PlayerEntity player, Hand hand) {
-		if (!super.interactMob(player, hand)) {
-			ItemStack itemStack = player.getStackInHand(hand);
+	public boolean interactMob(PlayerEntity playerEntity, Hand hand) {
+		if (!super.interactMob(playerEntity, hand)) {
+			ItemStack itemStack = playerEntity.getStackInHand(hand);
 			if (itemStack.getItem() == Items.NAME_TAG) {
-				itemStack.useOnEntity(player, this, hand);
+				itemStack.useOnEntity(playerEntity, this, hand);
 				return true;
 			} else if (this.isSaddled() && !this.hasPassengers()) {
 				if (!this.world.isClient) {
-					player.startRiding(this);
+					playerEntity.startRiding(this);
 				}
 
 				return true;
 			} else if (itemStack.getItem() == Items.SADDLE) {
-				itemStack.useOnEntity(player, this, hand);
+				itemStack.useOnEntity(playerEntity, this, hand);
 				return true;
 			} else {
 				return false;
@@ -168,8 +168,8 @@ public class PigEntity extends AnimalEntity {
 		return this.dataTracker.get(SADDLED);
 	}
 
-	public void setSaddled(boolean saddled) {
-		if (saddled) {
+	public void setSaddled(boolean bl) {
+		if (bl) {
 			this.dataTracker.set(SADDLED, true);
 		} else {
 			this.dataTracker.set(SADDLED, false);
@@ -177,10 +177,10 @@ public class PigEntity extends AnimalEntity {
 	}
 
 	@Override
-	public void onStruckByLightning(LightningEntity lightning) {
+	public void onStruckByLightning(LightningEntity lightningEntity) {
 		ZombiePigmanEntity zombiePigmanEntity = EntityType.ZOMBIE_PIGMAN.create(this.world);
 		zombiePigmanEntity.equipStack(EquipmentSlot.MAINHAND, new ItemStack(Items.GOLDEN_SWORD));
-		zombiePigmanEntity.refreshPositionAndAngles(this.x, this.y, this.z, this.yaw, this.pitch);
+		zombiePigmanEntity.setPositionAndAngles(this.x, this.y, this.z, this.yaw, this.pitch);
 		zombiePigmanEntity.setAiDisabled(this.isAiDisabled());
 		if (this.hasCustomName()) {
 			zombiePigmanEntity.setCustomName(this.getCustomName());
@@ -192,7 +192,7 @@ public class PigEntity extends AnimalEntity {
 	}
 
 	@Override
-	public void travel(Vec3d movementInput) {
+	public void travel(Vec3d vec3d) {
 		if (this.isAlive()) {
 			Entity entity = this.getPassengerList().isEmpty() ? null : (Entity)this.getPassengerList().get(0);
 			if (this.hasPassengers() && this.canBeControlledByRider()) {
@@ -200,10 +200,10 @@ public class PigEntity extends AnimalEntity {
 				this.prevYaw = this.yaw;
 				this.pitch = entity.pitch * 0.5F;
 				this.setRotation(this.yaw, this.pitch);
-				this.field_6283 = this.yaw;
+				this.bodyYaw = this.yaw;
 				this.headYaw = this.yaw;
 				this.stepHeight = 1.0F;
-				this.field_6281 = this.getMovementSpeed() * 0.1F;
+				this.flyingSpeed = this.getMovementSpeed() * 0.1F;
 				if (this.field_6814 && this.field_6812++ > this.field_6813) {
 					this.field_6814 = false;
 				}
@@ -232,8 +232,8 @@ public class PigEntity extends AnimalEntity {
 				this.limbAngle = this.limbAngle + this.limbDistance;
 			} else {
 				this.stepHeight = 0.5F;
-				this.field_6281 = 0.02F;
-				super.travel(movementInput);
+				this.flyingSpeed = 0.02F;
+				super.travel(vec3d);
 			}
 		}
 	}
@@ -244,18 +244,18 @@ public class PigEntity extends AnimalEntity {
 		} else {
 			this.field_6814 = true;
 			this.field_6812 = 0;
-			this.field_6813 = this.getRandom().nextInt(841) + 140;
+			this.field_6813 = this.getRand().nextInt(841) + 140;
 			this.getDataTracker().set(field_6815, this.field_6813);
 			return true;
 		}
 	}
 
-	public PigEntity createChild(PassiveEntity passiveEntity) {
+	public PigEntity method_6574(PassiveEntity passiveEntity) {
 		return EntityType.PIG.create(this.world);
 	}
 
 	@Override
-	public boolean isBreedingItem(ItemStack stack) {
-		return BREEDING_INGREDIENT.test(stack);
+	public boolean isBreedingItem(ItemStack itemStack) {
+		return BREEDING_INGREDIENT.method_8093(itemStack);
 	}
 }

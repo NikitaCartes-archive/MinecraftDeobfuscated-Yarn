@@ -25,60 +25,60 @@ public class SpiderEntityModel<T extends Entity> extends EntityModel<T> {
 		int i = 15;
 		this.field_3583 = new ModelPart(this, 32, 4);
 		this.field_3583.addCuboid(-4.0F, -4.0F, -8.0F, 8, 8, 8, 0.0F);
-		this.field_3583.setPivot(0.0F, 15.0F, -3.0F);
+		this.field_3583.setRotationPoint(0.0F, 15.0F, -3.0F);
 		this.field_3585 = new ModelPart(this, 0, 0);
 		this.field_3585.addCuboid(-3.0F, -3.0F, -3.0F, 6, 6, 6, 0.0F);
-		this.field_3585.setPivot(0.0F, 15.0F, 0.0F);
+		this.field_3585.setRotationPoint(0.0F, 15.0F, 0.0F);
 		this.field_3584 = new ModelPart(this, 0, 12);
 		this.field_3584.addCuboid(-5.0F, -4.0F, -6.0F, 10, 8, 12, 0.0F);
-		this.field_3584.setPivot(0.0F, 15.0F, 9.0F);
+		this.field_3584.setRotationPoint(0.0F, 15.0F, 9.0F);
 		this.field_3580 = new ModelPart(this, 18, 0);
 		this.field_3580.addCuboid(-15.0F, -1.0F, -1.0F, 16, 2, 2, 0.0F);
-		this.field_3580.setPivot(-4.0F, 15.0F, 2.0F);
+		this.field_3580.setRotationPoint(-4.0F, 15.0F, 2.0F);
 		this.field_3578 = new ModelPart(this, 18, 0);
 		this.field_3578.addCuboid(-1.0F, -1.0F, -1.0F, 16, 2, 2, 0.0F);
-		this.field_3578.setPivot(4.0F, 15.0F, 2.0F);
+		this.field_3578.setRotationPoint(4.0F, 15.0F, 2.0F);
 		this.field_3586 = new ModelPart(this, 18, 0);
 		this.field_3586.addCuboid(-15.0F, -1.0F, -1.0F, 16, 2, 2, 0.0F);
-		this.field_3586.setPivot(-4.0F, 15.0F, 1.0F);
+		this.field_3586.setRotationPoint(-4.0F, 15.0F, 1.0F);
 		this.field_3577 = new ModelPart(this, 18, 0);
 		this.field_3577.addCuboid(-1.0F, -1.0F, -1.0F, 16, 2, 2, 0.0F);
-		this.field_3577.setPivot(4.0F, 15.0F, 1.0F);
+		this.field_3577.setRotationPoint(4.0F, 15.0F, 1.0F);
 		this.field_3579 = new ModelPart(this, 18, 0);
 		this.field_3579.addCuboid(-15.0F, -1.0F, -1.0F, 16, 2, 2, 0.0F);
-		this.field_3579.setPivot(-4.0F, 15.0F, 0.0F);
+		this.field_3579.setRotationPoint(-4.0F, 15.0F, 0.0F);
 		this.field_3581 = new ModelPart(this, 18, 0);
 		this.field_3581.addCuboid(-1.0F, -1.0F, -1.0F, 16, 2, 2, 0.0F);
-		this.field_3581.setPivot(4.0F, 15.0F, 0.0F);
+		this.field_3581.setRotationPoint(4.0F, 15.0F, 0.0F);
 		this.field_3576 = new ModelPart(this, 18, 0);
 		this.field_3576.addCuboid(-15.0F, -1.0F, -1.0F, 16, 2, 2, 0.0F);
-		this.field_3576.setPivot(-4.0F, 15.0F, -1.0F);
+		this.field_3576.setRotationPoint(-4.0F, 15.0F, -1.0F);
 		this.field_3582 = new ModelPart(this, 18, 0);
 		this.field_3582.addCuboid(-1.0F, -1.0F, -1.0F, 16, 2, 2, 0.0F);
-		this.field_3582.setPivot(4.0F, 15.0F, -1.0F);
+		this.field_3582.setRotationPoint(4.0F, 15.0F, -1.0F);
 	}
 
 	@Override
-	public void render(T entity, float limbAngle, float limbDistance, float age, float headYaw, float headPitch, float scale) {
-		this.setAngles(entity, limbAngle, limbDistance, age, headYaw, headPitch, scale);
-		this.field_3583.render(scale);
-		this.field_3585.render(scale);
-		this.field_3584.render(scale);
-		this.field_3580.render(scale);
-		this.field_3578.render(scale);
-		this.field_3586.render(scale);
-		this.field_3577.render(scale);
-		this.field_3579.render(scale);
-		this.field_3581.render(scale);
-		this.field_3576.render(scale);
-		this.field_3582.render(scale);
+	public void render(T entity, float f, float g, float h, float i, float j, float k) {
+		this.setAngles(entity, f, g, h, i, j, k);
+		this.field_3583.render(k);
+		this.field_3585.render(k);
+		this.field_3584.render(k);
+		this.field_3580.render(k);
+		this.field_3578.render(k);
+		this.field_3586.render(k);
+		this.field_3577.render(k);
+		this.field_3579.render(k);
+		this.field_3581.render(k);
+		this.field_3576.render(k);
+		this.field_3582.render(k);
 	}
 
 	@Override
-	public void setAngles(T entity, float limbAngle, float limbDistance, float age, float headYaw, float headPitch, float scale) {
-		this.field_3583.yaw = headYaw * (float) (Math.PI / 180.0);
-		this.field_3583.pitch = headPitch * (float) (Math.PI / 180.0);
-		float f = (float) (Math.PI / 4);
+	public void setAngles(T entity, float f, float g, float h, float i, float j, float k) {
+		this.field_3583.yaw = i * (float) (Math.PI / 180.0);
+		this.field_3583.pitch = j * (float) (Math.PI / 180.0);
+		float l = (float) (Math.PI / 4);
 		this.field_3580.roll = (float) (-Math.PI / 4);
 		this.field_3578.roll = (float) (Math.PI / 4);
 		this.field_3586.roll = -0.58119464F;
@@ -87,8 +87,8 @@ public class SpiderEntityModel<T extends Entity> extends EntityModel<T> {
 		this.field_3581.roll = 0.58119464F;
 		this.field_3576.roll = (float) (-Math.PI / 4);
 		this.field_3582.roll = (float) (Math.PI / 4);
-		float g = -0.0F;
-		float h = (float) (Math.PI / 8);
+		float m = -0.0F;
+		float n = (float) (Math.PI / 8);
 		this.field_3580.yaw = (float) (Math.PI / 4);
 		this.field_3578.yaw = (float) (-Math.PI / 4);
 		this.field_3586.yaw = (float) (Math.PI / 8);
@@ -97,29 +97,29 @@ public class SpiderEntityModel<T extends Entity> extends EntityModel<T> {
 		this.field_3581.yaw = (float) (Math.PI / 8);
 		this.field_3576.yaw = (float) (-Math.PI / 4);
 		this.field_3582.yaw = (float) (Math.PI / 4);
-		float i = -(MathHelper.cos(limbAngle * 0.6662F * 2.0F + 0.0F) * 0.4F) * limbDistance;
-		float j = -(MathHelper.cos(limbAngle * 0.6662F * 2.0F + (float) Math.PI) * 0.4F) * limbDistance;
-		float k = -(MathHelper.cos(limbAngle * 0.6662F * 2.0F + (float) (Math.PI / 2)) * 0.4F) * limbDistance;
-		float l = -(MathHelper.cos(limbAngle * 0.6662F * 2.0F + (float) (Math.PI * 3.0 / 2.0)) * 0.4F) * limbDistance;
-		float m = Math.abs(MathHelper.sin(limbAngle * 0.6662F + 0.0F) * 0.4F) * limbDistance;
-		float n = Math.abs(MathHelper.sin(limbAngle * 0.6662F + (float) Math.PI) * 0.4F) * limbDistance;
-		float o = Math.abs(MathHelper.sin(limbAngle * 0.6662F + (float) (Math.PI / 2)) * 0.4F) * limbDistance;
-		float p = Math.abs(MathHelper.sin(limbAngle * 0.6662F + (float) (Math.PI * 3.0 / 2.0)) * 0.4F) * limbDistance;
-		this.field_3580.yaw += i;
-		this.field_3578.yaw += -i;
-		this.field_3586.yaw += j;
-		this.field_3577.yaw += -j;
-		this.field_3579.yaw += k;
-		this.field_3581.yaw += -k;
-		this.field_3576.yaw += l;
-		this.field_3582.yaw += -l;
-		this.field_3580.roll += m;
-		this.field_3578.roll += -m;
-		this.field_3586.roll += n;
-		this.field_3577.roll += -n;
-		this.field_3579.roll += o;
-		this.field_3581.roll += -o;
-		this.field_3576.roll += p;
-		this.field_3582.roll += -p;
+		float o = -(MathHelper.cos(f * 0.6662F * 2.0F + 0.0F) * 0.4F) * g;
+		float p = -(MathHelper.cos(f * 0.6662F * 2.0F + (float) Math.PI) * 0.4F) * g;
+		float q = -(MathHelper.cos(f * 0.6662F * 2.0F + (float) (Math.PI / 2)) * 0.4F) * g;
+		float r = -(MathHelper.cos(f * 0.6662F * 2.0F + (float) (Math.PI * 3.0 / 2.0)) * 0.4F) * g;
+		float s = Math.abs(MathHelper.sin(f * 0.6662F + 0.0F) * 0.4F) * g;
+		float t = Math.abs(MathHelper.sin(f * 0.6662F + (float) Math.PI) * 0.4F) * g;
+		float u = Math.abs(MathHelper.sin(f * 0.6662F + (float) (Math.PI / 2)) * 0.4F) * g;
+		float v = Math.abs(MathHelper.sin(f * 0.6662F + (float) (Math.PI * 3.0 / 2.0)) * 0.4F) * g;
+		this.field_3580.yaw += o;
+		this.field_3578.yaw += -o;
+		this.field_3586.yaw += p;
+		this.field_3577.yaw += -p;
+		this.field_3579.yaw += q;
+		this.field_3581.yaw += -q;
+		this.field_3576.yaw += r;
+		this.field_3582.yaw += -r;
+		this.field_3580.roll += s;
+		this.field_3578.roll += -s;
+		this.field_3586.roll += t;
+		this.field_3577.roll += -t;
+		this.field_3579.roll += u;
+		this.field_3581.roll += -u;
+		this.field_3576.roll += v;
+		this.field_3582.roll += -v;
 	}
 }

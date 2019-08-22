@@ -4,7 +4,7 @@ import javax.annotation.Nullable;
 import net.minecraft.block.LecternBlock;
 import net.minecraft.container.Container;
 import net.minecraft.container.LecternContainer;
-import net.minecraft.container.NameableContainerFactory;
+import net.minecraft.container.NameableContainerProvider;
 import net.minecraft.container.PropertyDelegate;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
@@ -25,7 +25,7 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec2f;
 import net.minecraft.util.math.Vec3d;
 
-public class LecternBlockEntity extends BlockEntity implements Clearable, NameableContainerFactory {
+public class LecternBlockEntity extends BlockEntity implements Clearable, NameableContainerProvider {
 	private final Inventory inventory = new Inventory() {
 		@Override
 		public int getInvSize() {
@@ -38,14 +38,14 @@ public class LecternBlockEntity extends BlockEntity implements Clearable, Nameab
 		}
 
 		@Override
-		public ItemStack getInvStack(int slot) {
-			return slot == 0 ? LecternBlockEntity.this.book : ItemStack.EMPTY;
+		public ItemStack getInvStack(int i) {
+			return i == 0 ? LecternBlockEntity.this.book : ItemStack.EMPTY;
 		}
 
 		@Override
-		public ItemStack takeInvStack(int slot, int amount) {
-			if (slot == 0) {
-				ItemStack itemStack = LecternBlockEntity.this.book.split(amount);
+		public ItemStack takeInvStack(int i, int j) {
+			if (i == 0) {
+				ItemStack itemStack = LecternBlockEntity.this.book.split(j);
 				if (LecternBlockEntity.this.book.isEmpty()) {
 					LecternBlockEntity.this.onBookRemoved();
 				}
@@ -57,8 +57,8 @@ public class LecternBlockEntity extends BlockEntity implements Clearable, Nameab
 		}
 
 		@Override
-		public ItemStack removeInvStack(int slot) {
-			if (slot == 0) {
+		public ItemStack removeInvStack(int i) {
+			if (i == 0) {
 				ItemStack itemStack = LecternBlockEntity.this.book;
 				LecternBlockEntity.this.book = ItemStack.EMPTY;
 				LecternBlockEntity.this.onBookRemoved();
@@ -69,7 +69,7 @@ public class LecternBlockEntity extends BlockEntity implements Clearable, Nameab
 		}
 
 		@Override
-		public void setInvStack(int slot, ItemStack stack) {
+		public void setInvStack(int i, ItemStack itemStack) {
 		}
 
 		@Override
@@ -83,11 +83,11 @@ public class LecternBlockEntity extends BlockEntity implements Clearable, Nameab
 		}
 
 		@Override
-		public boolean canPlayerUseInv(PlayerEntity player) {
+		public boolean canPlayerUseInv(PlayerEntity playerEntity) {
 			if (LecternBlockEntity.this.world.getBlockEntity(LecternBlockEntity.this.pos) != LecternBlockEntity.this) {
 				return false;
 			} else {
-				return player.squaredDistanceTo(
+				return playerEntity.squaredDistanceTo(
 							(double)LecternBlockEntity.this.pos.getX() + 0.5, (double)LecternBlockEntity.this.pos.getY() + 0.5, (double)LecternBlockEntity.this.pos.getZ() + 0.5
 						)
 						> 64.0
@@ -97,7 +97,7 @@ public class LecternBlockEntity extends BlockEntity implements Clearable, Nameab
 		}
 
 		@Override
-		public boolean isValidInvStack(int slot, ItemStack stack) {
+		public boolean isValidInvStack(int i, ItemStack itemStack) {
 			return false;
 		}
 
@@ -107,14 +107,14 @@ public class LecternBlockEntity extends BlockEntity implements Clearable, Nameab
 	};
 	private final PropertyDelegate propertyDelegate = new PropertyDelegate() {
 		@Override
-		public int get(int index) {
-			return index == 0 ? LecternBlockEntity.this.currentPage : 0;
+		public int get(int i) {
+			return i == 0 ? LecternBlockEntity.this.currentPage : 0;
 		}
 
 		@Override
-		public void set(int index, int value) {
-			if (index == 0) {
-				LecternBlockEntity.this.setCurrentPage(value);
+		public void set(int i, int j) {
+			if (i == 0) {
+				LecternBlockEntity.this.setCurrentPage(j);
 			}
 		}
 
@@ -140,8 +140,8 @@ public class LecternBlockEntity extends BlockEntity implements Clearable, Nameab
 		return item == Items.WRITABLE_BOOK || item == Items.WRITTEN_BOOK;
 	}
 
-	public void setBook(ItemStack book) {
-		this.setBook(book, null);
+	public void setBook(ItemStack itemStack) {
+		this.setBook(itemStack, null);
 	}
 
 	private void onBookRemoved() {
@@ -150,17 +150,17 @@ public class LecternBlockEntity extends BlockEntity implements Clearable, Nameab
 		LecternBlock.setHasBook(this.getWorld(), this.getPos(), this.getCachedState(), false);
 	}
 
-	public void setBook(ItemStack book, @Nullable PlayerEntity player) {
-		this.book = this.resolveBook(book, player);
+	public void setBook(ItemStack itemStack, @Nullable PlayerEntity playerEntity) {
+		this.book = this.resolveBook(itemStack, playerEntity);
 		this.currentPage = 0;
 		this.pageCount = WrittenBookItem.getPageCount(this.book);
 		this.markDirty();
 	}
 
-	private void setCurrentPage(int currentPage) {
-		int i = MathHelper.clamp(currentPage, 0, this.pageCount - 1);
-		if (i != this.currentPage) {
-			this.currentPage = i;
+	private void setCurrentPage(int i) {
+		int j = MathHelper.clamp(i, 0, this.pageCount - 1);
+		if (j != this.currentPage) {
+			this.currentPage = j;
 			this.markDirty();
 			LecternBlock.setPowered(this.getWorld(), this.getPos(), this.getCachedState());
 		}
@@ -175,27 +175,27 @@ public class LecternBlockEntity extends BlockEntity implements Clearable, Nameab
 		return MathHelper.floor(f * 14.0F) + (this.hasBook() ? 1 : 0);
 	}
 
-	private ItemStack resolveBook(ItemStack book, @Nullable PlayerEntity player) {
-		if (this.world instanceof ServerWorld && book.getItem() == Items.WRITTEN_BOOK) {
-			WrittenBookItem.resolve(book, this.getCommandSource(player), player);
+	private ItemStack resolveBook(ItemStack itemStack, @Nullable PlayerEntity playerEntity) {
+		if (this.world instanceof ServerWorld && itemStack.getItem() == Items.WRITTEN_BOOK) {
+			WrittenBookItem.resolve(itemStack, this.getCommandSource(playerEntity), playerEntity);
 		}
 
-		return book;
+		return itemStack;
 	}
 
-	private ServerCommandSource getCommandSource(@Nullable PlayerEntity player) {
+	private ServerCommandSource getCommandSource(@Nullable PlayerEntity playerEntity) {
 		String string;
 		Text text;
-		if (player == null) {
+		if (playerEntity == null) {
 			string = "Lectern";
 			text = new LiteralText("Lectern");
 		} else {
-			string = player.getName().getString();
-			text = player.getDisplayName();
+			string = playerEntity.getName().getString();
+			text = playerEntity.getDisplayName();
 		}
 
 		Vec3d vec3d = new Vec3d((double)this.pos.getX() + 0.5, (double)this.pos.getY() + 0.5, (double)this.pos.getZ() + 0.5);
-		return new ServerCommandSource(CommandOutput.DUMMY, vec3d, Vec2f.ZERO, (ServerWorld)this.world, 2, string, text, this.world.getServer(), player);
+		return new ServerCommandSource(CommandOutput.DUMMY, vec3d, Vec2f.ZERO, (ServerWorld)this.world, 2, string, text, this.world.getServer(), playerEntity);
 	}
 
 	@Override
@@ -204,27 +204,27 @@ public class LecternBlockEntity extends BlockEntity implements Clearable, Nameab
 	}
 
 	@Override
-	public void fromTag(CompoundTag tag) {
-		super.fromTag(tag);
-		if (tag.contains("Book", 10)) {
-			this.book = this.resolveBook(ItemStack.fromTag(tag.getCompound("Book")), null);
+	public void fromTag(CompoundTag compoundTag) {
+		super.fromTag(compoundTag);
+		if (compoundTag.containsKey("Book", 10)) {
+			this.book = this.resolveBook(ItemStack.fromTag(compoundTag.getCompound("Book")), null);
 		} else {
 			this.book = ItemStack.EMPTY;
 		}
 
 		this.pageCount = WrittenBookItem.getPageCount(this.book);
-		this.currentPage = MathHelper.clamp(tag.getInt("Page"), 0, this.pageCount - 1);
+		this.currentPage = MathHelper.clamp(compoundTag.getInt("Page"), 0, this.pageCount - 1);
 	}
 
 	@Override
-	public CompoundTag toTag(CompoundTag tag) {
-		super.toTag(tag);
+	public CompoundTag toTag(CompoundTag compoundTag) {
+		super.toTag(compoundTag);
 		if (!this.getBook().isEmpty()) {
-			tag.put("Book", this.getBook().toTag(new CompoundTag()));
-			tag.putInt("Page", this.currentPage);
+			compoundTag.put("Book", this.getBook().toTag(new CompoundTag()));
+			compoundTag.putInt("Page", this.currentPage);
 		}
 
-		return tag;
+		return compoundTag;
 	}
 
 	@Override
@@ -233,8 +233,8 @@ public class LecternBlockEntity extends BlockEntity implements Clearable, Nameab
 	}
 
 	@Override
-	public Container createMenu(int syncId, PlayerInventory playerInventory, PlayerEntity playerEntity) {
-		return new LecternContainer(syncId, this.inventory, this.propertyDelegate);
+	public Container createMenu(int i, PlayerInventory playerInventory, PlayerEntity playerEntity) {
+		return new LecternContainer(i, this.inventory, this.propertyDelegate);
 	}
 
 	@Override

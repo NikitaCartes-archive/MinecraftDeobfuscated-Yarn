@@ -11,8 +11,8 @@ public class ExplosionEmitterParticle extends NoRenderParticle {
 	private int age_;
 	private final int maxAge_ = 8;
 
-	private ExplosionEmitterParticle(World world, double x, double y, double z) {
-		super(world, x, y, z, 0.0, 0.0, 0.0);
+	private ExplosionEmitterParticle(World world, double d, double e, double f) {
+		super(world, d, e, f, 0.0, 0.0, 0.0);
 	}
 
 	@Override
@@ -32,7 +32,7 @@ public class ExplosionEmitterParticle extends NoRenderParticle {
 
 	@Environment(EnvType.CLIENT)
 	public static class Factory implements ParticleFactory<DefaultParticleType> {
-		public Particle createParticle(DefaultParticleType defaultParticleType, World world, double d, double e, double f, double g, double h, double i) {
+		public Particle method_3037(DefaultParticleType defaultParticleType, World world, double d, double e, double f, double g, double h, double i) {
 			return new ExplosionEmitterParticle(world, d, e, f);
 		}
 	}

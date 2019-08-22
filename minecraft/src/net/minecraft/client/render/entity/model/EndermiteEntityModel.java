@@ -19,7 +19,7 @@ public class EndermiteEntityModel<T extends Entity> extends EntityModel<T> {
 		for (int i = 0; i < this.field_3368.length; i++) {
 			this.field_3368[i] = new ModelPart(this, field_3369[i][0], field_3369[i][1]);
 			this.field_3368[i].addCuboid((float)field_3366[i][0] * -0.5F, 0.0F, (float)field_3366[i][2] * -0.5F, field_3366[i][0], field_3366[i][1], field_3366[i][2]);
-			this.field_3368[i].setPivot(0.0F, (float)(24 - field_3366[i][1]), f);
+			this.field_3368[i].setRotationPoint(0.0F, (float)(24 - field_3366[i][1]), f);
 			if (i < this.field_3368.length - 1) {
 				f += (float)(field_3366[i][2] + field_3366[i + 1][2]) * 0.5F;
 			}
@@ -27,19 +27,19 @@ public class EndermiteEntityModel<T extends Entity> extends EntityModel<T> {
 	}
 
 	@Override
-	public void render(T entity, float limbAngle, float limbDistance, float age, float headYaw, float headPitch, float scale) {
-		this.setAngles(entity, limbAngle, limbDistance, age, headYaw, headPitch, scale);
+	public void render(T entity, float f, float g, float h, float i, float j, float k) {
+		this.setAngles(entity, f, g, h, i, j, k);
 
 		for (ModelPart modelPart : this.field_3368) {
-			modelPart.render(scale);
+			modelPart.render(k);
 		}
 	}
 
 	@Override
-	public void setAngles(T entity, float limbAngle, float limbDistance, float age, float headYaw, float headPitch, float scale) {
-		for (int i = 0; i < this.field_3368.length; i++) {
-			this.field_3368[i].yaw = MathHelper.cos(age * 0.9F + (float)i * 0.15F * (float) Math.PI) * (float) Math.PI * 0.01F * (float)(1 + Math.abs(i - 2));
-			this.field_3368[i].pivotX = MathHelper.sin(age * 0.9F + (float)i * 0.15F * (float) Math.PI) * (float) Math.PI * 0.1F * (float)Math.abs(i - 2);
+	public void setAngles(T entity, float f, float g, float h, float i, float j, float k) {
+		for (int l = 0; l < this.field_3368.length; l++) {
+			this.field_3368[l].yaw = MathHelper.cos(h * 0.9F + (float)l * 0.15F * (float) Math.PI) * (float) Math.PI * 0.01F * (float)(1 + Math.abs(l - 2));
+			this.field_3368[l].rotationPointX = MathHelper.sin(h * 0.9F + (float)l * 0.15F * (float) Math.PI) * (float) Math.PI * 0.1F * (float)Math.abs(l - 2);
 		}
 	}
 }

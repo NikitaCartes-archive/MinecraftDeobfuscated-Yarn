@@ -19,18 +19,18 @@ public class ThrownEggEntity extends ThrownItemEntity {
 		super(entityType, world);
 	}
 
-	public ThrownEggEntity(World world, LivingEntity thrower) {
-		super(EntityType.EGG, thrower, world);
+	public ThrownEggEntity(World world, LivingEntity livingEntity) {
+		super(EntityType.EGG, livingEntity, world);
 	}
 
-	public ThrownEggEntity(World world, double x, double y, double z) {
-		super(EntityType.EGG, x, y, z, world);
+	public ThrownEggEntity(World world, double d, double e, double f) {
+		super(EntityType.EGG, d, e, f, world);
 	}
 
 	@Environment(EnvType.CLIENT)
 	@Override
-	public void handleStatus(byte status) {
-		if (status == 3) {
+	public void handleStatus(byte b) {
+		if (b == 3) {
 			double d = 0.08;
 
 			for (int i = 0; i < 8; i++) {
@@ -64,7 +64,7 @@ public class ThrownEggEntity extends ThrownItemEntity {
 				for (int j = 0; j < i; j++) {
 					ChickenEntity chickenEntity = EntityType.CHICKEN.create(this.world);
 					chickenEntity.setBreedingAge(-24000);
-					chickenEntity.refreshPositionAndAngles(this.x, this.y, this.z, this.yaw, 0.0F);
+					chickenEntity.setPositionAndAngles(this.x, this.y, this.z, this.yaw, 0.0F);
 					this.world.spawnEntity(chickenEntity);
 				}
 			}

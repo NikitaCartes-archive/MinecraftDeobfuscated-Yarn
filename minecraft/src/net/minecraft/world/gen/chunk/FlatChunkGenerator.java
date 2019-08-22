@@ -34,8 +34,8 @@ public class FlatChunkGenerator extends ChunkGenerator<FlatChunkGeneratorConfig>
 	private final PhantomSpawner phantomSpawner = new PhantomSpawner();
 	private final CatSpawner catSpawner = new CatSpawner();
 
-	public FlatChunkGenerator(IWorld world, BiomeSource biomeSource, FlatChunkGeneratorConfig config) {
-		super(world, biomeSource, config);
+	public FlatChunkGenerator(IWorld iWorld, BiomeSource biomeSource, FlatChunkGeneratorConfig flatChunkGeneratorConfig) {
+		super(iWorld, biomeSource, flatChunkGeneratorConfig);
 		this.biome = this.getBiome();
 	}
 
@@ -119,12 +119,12 @@ public class FlatChunkGenerator extends ChunkGenerator<FlatChunkGeneratorConfig>
 	}
 
 	@Override
-	protected Biome getDecorationBiome(ChunkRegion region, BlockPos pos) {
+	protected Biome getDecorationBiome(ChunkRegion chunkRegion, BlockPos blockPos) {
 		return this.biome;
 	}
 
 	@Override
-	public void populateNoise(IWorld world, Chunk chunk) {
+	public void populateNoise(IWorld iWorld, Chunk chunk) {
 		BlockState[] blockStates = this.config.getLayerBlocks();
 		BlockPos.Mutable mutable = new BlockPos.Mutable();
 		Heightmap heightmap = chunk.getHeightmap(Heightmap.Type.OCEAN_FLOOR_WG);
@@ -145,13 +145,13 @@ public class FlatChunkGenerator extends ChunkGenerator<FlatChunkGeneratorConfig>
 	}
 
 	@Override
-	public int getHeightOnGround(int x, int z, Heightmap.Type heightmapType) {
+	public int getHeightOnGround(int i, int j, Heightmap.Type type) {
 		BlockState[] blockStates = this.config.getLayerBlocks();
 
-		for (int i = blockStates.length - 1; i >= 0; i--) {
-			BlockState blockState = blockStates[i];
-			if (blockState != null && heightmapType.getBlockPredicate().test(blockState)) {
-				return i + 1;
+		for (int k = blockStates.length - 1; k >= 0; k--) {
+			BlockState blockState = blockStates[k];
+			if (blockState != null && type.getBlockPredicate().test(blockState)) {
+				return k + 1;
 			}
 		}
 
@@ -159,9 +159,9 @@ public class FlatChunkGenerator extends ChunkGenerator<FlatChunkGeneratorConfig>
 	}
 
 	@Override
-	public void spawnEntities(ServerWorld world, boolean spawnMonsters, boolean spawnAnimals) {
-		this.phantomSpawner.spawn(world, spawnMonsters, spawnAnimals);
-		this.catSpawner.spawn(world, spawnMonsters, spawnAnimals);
+	public void spawnEntities(ServerWorld serverWorld, boolean bl, boolean bl2) {
+		this.phantomSpawner.spawn(serverWorld, bl, bl2);
+		this.catSpawner.spawn(serverWorld, bl, bl2);
 	}
 
 	@Override
@@ -177,10 +177,8 @@ public class FlatChunkGenerator extends ChunkGenerator<FlatChunkGeneratorConfig>
 
 	@Nullable
 	@Override
-	public BlockPos locateStructure(World world, String id, BlockPos center, int radius, boolean skipExistingChunks) {
-		return !this.config.getStructures().keySet().contains(id.toLowerCase(Locale.ROOT))
-			? null
-			: super.locateStructure(world, id, center, radius, skipExistingChunks);
+	public BlockPos locateStructure(World world, String string, BlockPos blockPos, int i, boolean bl) {
+		return !this.config.getStructures().keySet().contains(string.toLowerCase(Locale.ROOT)) ? null : super.locateStructure(world, string, blockPos, i, bl);
 	}
 
 	class FlatChunkGeneratorBiome extends Biome {

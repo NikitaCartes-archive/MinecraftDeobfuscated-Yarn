@@ -6,33 +6,33 @@ public class OctaveSimplexNoiseSampler implements NoiseSampler {
 	private final SimplexNoiseSampler[] octaveSamplers;
 	private final int octaveCount;
 
-	public OctaveSimplexNoiseSampler(Random random, int octaveCount) {
-		this.octaveCount = octaveCount;
-		this.octaveSamplers = new SimplexNoiseSampler[octaveCount];
+	public OctaveSimplexNoiseSampler(Random random, int i) {
+		this.octaveCount = i;
+		this.octaveSamplers = new SimplexNoiseSampler[i];
 
-		for (int i = 0; i < octaveCount; i++) {
-			this.octaveSamplers[i] = new SimplexNoiseSampler(random);
+		for (int j = 0; j < i; j++) {
+			this.octaveSamplers[j] = new SimplexNoiseSampler(random);
 		}
 	}
 
-	public double sample(double x, double y) {
-		return this.sample(x, y, false);
+	public double sample(double d, double e) {
+		return this.sample(d, e, false);
 	}
 
-	public double sample(double x, double y, boolean bl) {
-		double d = 0.0;
-		double e = 1.0;
+	public double sample(double d, double e, boolean bl) {
+		double f = 0.0;
+		double g = 1.0;
 
 		for (int i = 0; i < this.octaveCount; i++) {
-			d += this.octaveSamplers[i].sample(x * e + (bl ? this.octaveSamplers[i].originX : 0.0), y * e + (bl ? this.octaveSamplers[i].originY : 0.0)) / e;
-			e /= 2.0;
+			f += this.octaveSamplers[i].sample(d * g + (bl ? this.octaveSamplers[i].originX : 0.0), e * g + (bl ? this.octaveSamplers[i].originY : 0.0)) / g;
+			g /= 2.0;
 		}
 
-		return d;
+		return f;
 	}
 
 	@Override
-	public double sample(double x, double y, double d, double e) {
-		return this.sample(x, y, true) * 0.55;
+	public double sample(double d, double e, double f, double g) {
+		return this.sample(d, e, true) * 0.55;
 	}
 }

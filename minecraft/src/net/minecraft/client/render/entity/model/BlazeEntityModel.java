@@ -22,45 +22,45 @@ public class BlazeEntityModel<T extends Entity> extends EntityModel<T> {
 	}
 
 	@Override
-	public void render(T entity, float limbAngle, float limbDistance, float age, float headYaw, float headPitch, float scale) {
-		this.setAngles(entity, limbAngle, limbDistance, age, headYaw, headPitch, scale);
-		this.field_3329.render(scale);
+	public void render(T entity, float f, float g, float h, float i, float j, float k) {
+		this.setAngles(entity, f, g, h, i, j, k);
+		this.field_3329.render(k);
 
 		for (ModelPart modelPart : this.field_3328) {
-			modelPart.render(scale);
+			modelPart.render(k);
 		}
 	}
 
 	@Override
-	public void setAngles(T entity, float limbAngle, float limbDistance, float age, float headYaw, float headPitch, float scale) {
-		float f = age * (float) Math.PI * -0.1F;
+	public void setAngles(T entity, float f, float g, float h, float i, float j, float k) {
+		float l = h * (float) Math.PI * -0.1F;
 
-		for (int i = 0; i < 4; i++) {
-			this.field_3328[i].pivotY = -2.0F + MathHelper.cos(((float)(i * 2) + age) * 0.25F);
-			this.field_3328[i].pivotX = MathHelper.cos(f) * 9.0F;
-			this.field_3328[i].pivotZ = MathHelper.sin(f) * 9.0F;
-			f++;
+		for (int m = 0; m < 4; m++) {
+			this.field_3328[m].rotationPointY = -2.0F + MathHelper.cos(((float)(m * 2) + h) * 0.25F);
+			this.field_3328[m].rotationPointX = MathHelper.cos(l) * 9.0F;
+			this.field_3328[m].rotationPointZ = MathHelper.sin(l) * 9.0F;
+			l++;
 		}
 
-		f = (float) (Math.PI / 4) + age * (float) Math.PI * 0.03F;
+		l = (float) (Math.PI / 4) + h * (float) Math.PI * 0.03F;
 
-		for (int i = 4; i < 8; i++) {
-			this.field_3328[i].pivotY = 2.0F + MathHelper.cos(((float)(i * 2) + age) * 0.25F);
-			this.field_3328[i].pivotX = MathHelper.cos(f) * 7.0F;
-			this.field_3328[i].pivotZ = MathHelper.sin(f) * 7.0F;
-			f++;
+		for (int m = 4; m < 8; m++) {
+			this.field_3328[m].rotationPointY = 2.0F + MathHelper.cos(((float)(m * 2) + h) * 0.25F);
+			this.field_3328[m].rotationPointX = MathHelper.cos(l) * 7.0F;
+			this.field_3328[m].rotationPointZ = MathHelper.sin(l) * 7.0F;
+			l++;
 		}
 
-		f = 0.47123894F + age * (float) Math.PI * -0.05F;
+		l = 0.47123894F + h * (float) Math.PI * -0.05F;
 
-		for (int i = 8; i < 12; i++) {
-			this.field_3328[i].pivotY = 11.0F + MathHelper.cos(((float)i * 1.5F + age) * 0.5F);
-			this.field_3328[i].pivotX = MathHelper.cos(f) * 5.0F;
-			this.field_3328[i].pivotZ = MathHelper.sin(f) * 5.0F;
-			f++;
+		for (int m = 8; m < 12; m++) {
+			this.field_3328[m].rotationPointY = 11.0F + MathHelper.cos(((float)m * 1.5F + h) * 0.5F);
+			this.field_3328[m].rotationPointX = MathHelper.cos(l) * 5.0F;
+			this.field_3328[m].rotationPointZ = MathHelper.sin(l) * 5.0F;
+			l++;
 		}
 
-		this.field_3329.yaw = headYaw * (float) (Math.PI / 180.0);
-		this.field_3329.pitch = headPitch * (float) (Math.PI / 180.0);
+		this.field_3329.yaw = i * (float) (Math.PI / 180.0);
+		this.field_3329.pitch = j * (float) (Math.PI / 180.0);
 	}
 }

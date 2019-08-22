@@ -16,7 +16,7 @@ public class HeightmapNoiseBiasedDecorator extends Decorator<TopSolidHeightmapNo
 		super(function);
 	}
 
-	public Stream<BlockPos> getPositions(
+	public Stream<BlockPos> method_15943(
 		IWorld iWorld,
 		ChunkGenerator<? extends ChunkGeneratorConfig> chunkGenerator,
 		Random random,

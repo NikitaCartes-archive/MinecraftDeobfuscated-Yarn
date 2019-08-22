@@ -4,7 +4,7 @@ import net.minecraft.entity.EntityContext;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.stat.Stats;
-import net.minecraft.state.StateManager;
+import net.minecraft.state.StateFactory;
 import net.minecraft.state.property.IntProperty;
 import net.minecraft.state.property.Properties;
 import net.minecraft.util.Hand;
@@ -13,8 +13,8 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.world.BlockView;
-import net.minecraft.world.CollisionView;
 import net.minecraft.world.IWorld;
+import net.minecraft.world.ViewableWorld;
 import net.minecraft.world.World;
 
 public class CakeBlock extends Block {
@@ -31,35 +31,35 @@ public class CakeBlock extends Block {
 
 	protected CakeBlock(Block.Settings settings) {
 		super(settings);
-		this.setDefaultState(this.stateManager.getDefaultState().with(BITES, Integer.valueOf(0)));
+		this.setDefaultState(this.stateFactory.getDefaultState().with(BITES, Integer.valueOf(0)));
 	}
 
 	@Override
-	public VoxelShape getOutlineShape(BlockState state, BlockView view, BlockPos pos, EntityContext context) {
-		return BITES_TO_SHAPE[state.get(BITES)];
+	public VoxelShape getOutlineShape(BlockState blockState, BlockView blockView, BlockPos blockPos, EntityContext entityContext) {
+		return BITES_TO_SHAPE[blockState.get(BITES)];
 	}
 
 	@Override
-	public boolean activate(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
+	public boolean activate(BlockState blockState, World world, BlockPos blockPos, PlayerEntity playerEntity, Hand hand, BlockHitResult blockHitResult) {
 		if (!world.isClient) {
-			return this.tryEat(world, pos, state, player);
+			return this.tryEat(world, blockPos, blockState, playerEntity);
 		} else {
-			ItemStack itemStack = player.getStackInHand(hand);
-			return this.tryEat(world, pos, state, player) || itemStack.isEmpty();
+			ItemStack itemStack = playerEntity.getStackInHand(hand);
+			return this.tryEat(world, blockPos, blockState, playerEntity) || itemStack.isEmpty();
 		}
 	}
 
-	private boolean tryEat(IWorld world, BlockPos pos, BlockState state, PlayerEntity player) {
-		if (!player.canConsume(false)) {
+	private boolean tryEat(IWorld iWorld, BlockPos blockPos, BlockState blockState, PlayerEntity playerEntity) {
+		if (!playerEntity.canConsume(false)) {
 			return false;
 		} else {
-			player.incrementStat(Stats.EAT_CAKE_SLICE);
-			player.getHungerManager().add(2, 0.1F);
-			int i = (Integer)state.get(BITES);
+			playerEntity.incrementStat(Stats.EAT_CAKE_SLICE);
+			playerEntity.getHungerManager().add(2, 0.1F);
+			int i = (Integer)blockState.get(BITES);
 			if (i < 6) {
-				world.setBlockState(pos, state.with(BITES, Integer.valueOf(i + 1)), 3);
+				iWorld.setBlockState(blockPos, blockState.with(BITES, Integer.valueOf(i + 1)), 3);
 			} else {
-				world.removeBlock(pos, false);
+				iWorld.clearBlockState(blockPos, false);
 			}
 
 			return true;
@@ -67,34 +67,36 @@ public class CakeBlock extends Block {
 	}
 
 	@Override
-	public BlockState getStateForNeighborUpdate(BlockState state, Direction facing, BlockState neighborState, IWorld world, BlockPos pos, BlockPos neighborPos) {
-		return facing == Direction.DOWN && !state.canPlaceAt(world, pos)
+	public BlockState getStateForNeighborUpdate(
+		BlockState blockState, Direction direction, BlockState blockState2, IWorld iWorld, BlockPos blockPos, BlockPos blockPos2
+	) {
+		return direction == Direction.DOWN && !blockState.canPlaceAt(iWorld, blockPos)
 			? Blocks.AIR.getDefaultState()
-			: super.getStateForNeighborUpdate(state, facing, neighborState, world, pos, neighborPos);
+			: super.getStateForNeighborUpdate(blockState, direction, blockState2, iWorld, blockPos, blockPos2);
 	}
 
 	@Override
-	public boolean canPlaceAt(BlockState state, CollisionView world, BlockPos pos) {
-		return world.getBlockState(pos.down()).getMaterial().isSolid();
+	public boolean canPlaceAt(BlockState blockState, ViewableWorld viewableWorld, BlockPos blockPos) {
+		return viewableWorld.getBlockState(blockPos.down()).getMaterial().isSolid();
 	}
 
 	@Override
-	protected void appendProperties(StateManager.Builder<Block, BlockState> builder) {
+	protected void appendProperties(StateFactory.Builder<Block, BlockState> builder) {
 		builder.add(BITES);
 	}
 
 	@Override
-	public int getComparatorOutput(BlockState state, World world, BlockPos pos) {
-		return (7 - (Integer)state.get(BITES)) * 2;
+	public int getComparatorOutput(BlockState blockState, World world, BlockPos blockPos) {
+		return (7 - (Integer)blockState.get(BITES)) * 2;
 	}
 
 	@Override
-	public boolean hasComparatorOutput(BlockState state) {
+	public boolean hasComparatorOutput(BlockState blockState) {
 		return true;
 	}
 
 	@Override
-	public boolean canPlaceAtSide(BlockState world, BlockView view, BlockPos pos, BlockPlacementEnvironment env) {
+	public boolean canPlaceAtSide(BlockState blockState, BlockView blockView, BlockPos blockPos, BlockPlacementEnvironment blockPlacementEnvironment) {
 		return false;
 	}
 }

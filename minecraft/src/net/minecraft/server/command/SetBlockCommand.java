@@ -13,14 +13,14 @@ import net.minecraft.command.arguments.BlockStateArgumentType;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Clearable;
-import net.minecraft.util.math.BlockBox;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.MutableIntBoundingBox;
 
 public class SetBlockCommand {
 	private static final SimpleCommandExceptionType FAILED_EXCEPTION = new SimpleCommandExceptionType(new TranslatableText("commands.setblock.failed"));
 
-	public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
-		dispatcher.register(
+	public static void register(CommandDispatcher<ServerCommandSource> commandDispatcher) {
+		commandDispatcher.register(
 			CommandManager.literal("setblock")
 				.requires(serverCommandSource -> serverCommandSource.hasPermissionLevel(2))
 				.then(
@@ -78,27 +78,31 @@ public class SetBlockCommand {
 	}
 
 	private static int execute(
-		ServerCommandSource source, BlockPos pos, BlockStateArgument block, SetBlockCommand.Mode mode, @Nullable Predicate<CachedBlockPosition> condition
+		ServerCommandSource serverCommandSource,
+		BlockPos blockPos,
+		BlockStateArgument blockStateArgument,
+		SetBlockCommand.Mode mode,
+		@Nullable Predicate<CachedBlockPosition> predicate
 	) throws CommandSyntaxException {
-		ServerWorld serverWorld = source.getWorld();
-		if (condition != null && !condition.test(new CachedBlockPosition(serverWorld, pos, true))) {
+		ServerWorld serverWorld = serverCommandSource.getWorld();
+		if (predicate != null && !predicate.test(new CachedBlockPosition(serverWorld, blockPos, true))) {
 			throw FAILED_EXCEPTION.create();
 		} else {
 			boolean bl;
 			if (mode == SetBlockCommand.Mode.DESTROY) {
-				serverWorld.breakBlock(pos, true);
-				bl = !block.getBlockState().isAir();
+				serverWorld.breakBlock(blockPos, true);
+				bl = !blockStateArgument.getBlockState().isAir();
 			} else {
-				BlockEntity blockEntity = serverWorld.getBlockEntity(pos);
+				BlockEntity blockEntity = serverWorld.getBlockEntity(blockPos);
 				Clearable.clear(blockEntity);
 				bl = true;
 			}
 
-			if (bl && !block.setBlockState(serverWorld, pos, 2)) {
+			if (bl && !blockStateArgument.setBlockState(serverWorld, blockPos, 2)) {
 				throw FAILED_EXCEPTION.create();
 			} else {
-				serverWorld.updateNeighbors(pos, block.getBlockState().getBlock());
-				source.sendFeedback(new TranslatableText("commands.setblock.success", pos.getX(), pos.getY(), pos.getZ()), true);
+				serverWorld.updateNeighbors(blockPos, blockStateArgument.getBlockState().getBlock());
+				serverCommandSource.sendFeedback(new TranslatableText("commands.setblock.success", blockPos.getX(), blockPos.getY(), blockPos.getZ()), true);
 				return 1;
 			}
 		}
@@ -106,7 +110,7 @@ public class SetBlockCommand {
 
 	public interface Filter {
 		@Nullable
-		BlockStateArgument filter(BlockBox box, BlockPos pos, BlockStateArgument block, ServerWorld world);
+		BlockStateArgument filter(MutableIntBoundingBox mutableIntBoundingBox, BlockPos blockPos, BlockStateArgument blockStateArgument, ServerWorld serverWorld);
 	}
 
 	public static enum Mode {

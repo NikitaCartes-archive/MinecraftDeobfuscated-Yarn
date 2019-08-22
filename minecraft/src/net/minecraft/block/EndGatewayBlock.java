@@ -17,30 +17,30 @@ public class EndGatewayBlock extends BlockWithEntity {
 	}
 
 	@Override
-	public BlockEntity createBlockEntity(BlockView view) {
+	public BlockEntity createBlockEntity(BlockView blockView) {
 		return new EndGatewayBlockEntity();
 	}
 
 	@Environment(EnvType.CLIENT)
 	@Override
-	public void randomDisplayTick(BlockState state, World world, BlockPos pos, Random random) {
-		BlockEntity blockEntity = world.getBlockEntity(pos);
+	public void randomDisplayTick(BlockState blockState, World world, BlockPos blockPos, Random random) {
+		BlockEntity blockEntity = world.getBlockEntity(blockPos);
 		if (blockEntity instanceof EndGatewayBlockEntity) {
 			int i = ((EndGatewayBlockEntity)blockEntity).getDrawnSidesCount();
 
 			for (int j = 0; j < i; j++) {
-				double d = (double)((float)pos.getX() + random.nextFloat());
-				double e = (double)((float)pos.getY() + random.nextFloat());
-				double f = (double)((float)pos.getZ() + random.nextFloat());
+				double d = (double)((float)blockPos.getX() + random.nextFloat());
+				double e = (double)((float)blockPos.getY() + random.nextFloat());
+				double f = (double)((float)blockPos.getZ() + random.nextFloat());
 				double g = ((double)random.nextFloat() - 0.5) * 0.5;
 				double h = ((double)random.nextFloat() - 0.5) * 0.5;
 				double k = ((double)random.nextFloat() - 0.5) * 0.5;
 				int l = random.nextInt(2) * 2 - 1;
 				if (random.nextBoolean()) {
-					f = (double)pos.getZ() + 0.5 + 0.25 * (double)l;
+					f = (double)blockPos.getZ() + 0.5 + 0.25 * (double)l;
 					k = (double)(random.nextFloat() * 2.0F * (float)l);
 				} else {
-					d = (double)pos.getX() + 0.5 + 0.25 * (double)l;
+					d = (double)blockPos.getX() + 0.5 + 0.25 * (double)l;
 					g = (double)(random.nextFloat() * 2.0F * (float)l);
 				}
 
@@ -51,7 +51,7 @@ public class EndGatewayBlock extends BlockWithEntity {
 
 	@Environment(EnvType.CLIENT)
 	@Override
-	public ItemStack getPickStack(BlockView world, BlockPos pos, BlockState state) {
+	public ItemStack getPickStack(BlockView blockView, BlockPos blockPos, BlockState blockState) {
 		return ItemStack.EMPTY;
 	}
 }

@@ -6,9 +6,9 @@ import java.util.Set;
 import java.util.function.Function;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
-import net.minecraft.util.math.BlockBox;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
+import net.minecraft.util.math.MutableIntBoundingBox;
 import net.minecraft.world.ModifiableTestableWorld;
 import net.minecraft.world.ModifiableWorld;
 
@@ -16,32 +16,34 @@ public class SavannaTreeFeature extends AbstractTreeFeature<DefaultFeatureConfig
 	private static final BlockState LOG = Blocks.ACACIA_LOG.getDefaultState();
 	private static final BlockState LEAVES = Blocks.ACACIA_LEAVES.getDefaultState();
 
-	public SavannaTreeFeature(Function<Dynamic<?>, ? extends DefaultFeatureConfig> configFactory, boolean emitNeighborBlockUpdates) {
-		super(configFactory, emitNeighborBlockUpdates);
+	public SavannaTreeFeature(Function<Dynamic<?>, ? extends DefaultFeatureConfig> function, boolean bl) {
+		super(function, bl);
 	}
 
 	@Override
-	public boolean generate(Set<BlockPos> logPositions, ModifiableTestableWorld world, Random random, BlockPos pos, BlockBox blockBox) {
+	public boolean generate(
+		Set<BlockPos> set, ModifiableTestableWorld modifiableTestableWorld, Random random, BlockPos blockPos, MutableIntBoundingBox mutableIntBoundingBox
+	) {
 		int i = random.nextInt(3) + random.nextInt(3) + 5;
 		boolean bl = true;
-		if (pos.getY() >= 1 && pos.getY() + i + 1 <= 256) {
-			for (int j = pos.getY(); j <= pos.getY() + 1 + i; j++) {
+		if (blockPos.getY() >= 1 && blockPos.getY() + i + 1 <= 256) {
+			for (int j = blockPos.getY(); j <= blockPos.getY() + 1 + i; j++) {
 				int k = 1;
-				if (j == pos.getY()) {
+				if (j == blockPos.getY()) {
 					k = 0;
 				}
 
-				if (j >= pos.getY() + 1 + i - 2) {
+				if (j >= blockPos.getY() + 1 + i - 2) {
 					k = 2;
 				}
 
 				BlockPos.Mutable mutable = new BlockPos.Mutable();
 
-				for (int l = pos.getX() - k; l <= pos.getX() + k && bl; l++) {
-					for (int m = pos.getZ() - k; m <= pos.getZ() + k && bl; m++) {
+				for (int l = blockPos.getX() - k; l <= blockPos.getX() + k && bl; l++) {
+					for (int m = blockPos.getZ() - k; m <= blockPos.getZ() + k && bl; m++) {
 						if (j < 0 || j >= 256) {
 							bl = false;
-						} else if (!canTreeReplace(world, mutable.set(l, j, m))) {
+						} else if (!canTreeReplace(modifiableTestableWorld, mutable.set(l, j, m))) {
 							bl = false;
 						}
 					}
@@ -50,54 +52,54 @@ public class SavannaTreeFeature extends AbstractTreeFeature<DefaultFeatureConfig
 
 			if (!bl) {
 				return false;
-			} else if (isNaturalDirtOrGrass(world, pos.down()) && pos.getY() < 256 - i - 1) {
-				this.setToDirt(world, pos.down());
+			} else if (isNaturalDirtOrGrass(modifiableTestableWorld, blockPos.down()) && blockPos.getY() < 256 - i - 1) {
+				this.setToDirt(modifiableTestableWorld, blockPos.down());
 				Direction direction = Direction.Type.HORIZONTAL.random(random);
 				int kx = i - random.nextInt(4) - 1;
 				int n = 3 - random.nextInt(3);
-				int l = pos.getX();
-				int mx = pos.getZ();
+				int l = blockPos.getX();
+				int mx = blockPos.getZ();
 				int o = 0;
 
 				for (int p = 0; p < i; p++) {
-					int q = pos.getY() + p;
+					int q = blockPos.getY() + p;
 					if (p >= kx && n > 0) {
 						l += direction.getOffsetX();
 						mx += direction.getOffsetZ();
 						n--;
 					}
 
-					BlockPos blockPos = new BlockPos(l, q, mx);
-					if (isAirOrLeaves(world, blockPos)) {
-						this.addLog(logPositions, world, blockPos, blockBox);
+					BlockPos blockPos2 = new BlockPos(l, q, mx);
+					if (isAirOrLeaves(modifiableTestableWorld, blockPos2)) {
+						this.addLog(set, modifiableTestableWorld, blockPos2, mutableIntBoundingBox);
 						o = q;
 					}
 				}
 
-				BlockPos blockPos2 = new BlockPos(l, o, mx);
+				BlockPos blockPos3 = new BlockPos(l, o, mx);
 
 				for (int qx = -3; qx <= 3; qx++) {
 					for (int r = -3; r <= 3; r++) {
 						if (Math.abs(qx) != 3 || Math.abs(r) != 3) {
-							this.addLeaves(logPositions, world, blockPos2.add(qx, 0, r), blockBox);
+							this.addLeaves(set, modifiableTestableWorld, blockPos3.add(qx, 0, r), mutableIntBoundingBox);
 						}
 					}
 				}
 
-				blockPos2 = blockPos2.up();
+				blockPos3 = blockPos3.up();
 
 				for (int qx = -1; qx <= 1; qx++) {
 					for (int rx = -1; rx <= 1; rx++) {
-						this.addLeaves(logPositions, world, blockPos2.add(qx, 0, rx), blockBox);
+						this.addLeaves(set, modifiableTestableWorld, blockPos3.add(qx, 0, rx), mutableIntBoundingBox);
 					}
 				}
 
-				this.addLeaves(logPositions, world, blockPos2.east(2), blockBox);
-				this.addLeaves(logPositions, world, blockPos2.west(2), blockBox);
-				this.addLeaves(logPositions, world, blockPos2.south(2), blockBox);
-				this.addLeaves(logPositions, world, blockPos2.north(2), blockBox);
-				l = pos.getX();
-				mx = pos.getZ();
+				this.addLeaves(set, modifiableTestableWorld, blockPos3.east(2), mutableIntBoundingBox);
+				this.addLeaves(set, modifiableTestableWorld, blockPos3.west(2), mutableIntBoundingBox);
+				this.addLeaves(set, modifiableTestableWorld, blockPos3.south(2), mutableIntBoundingBox);
+				this.addLeaves(set, modifiableTestableWorld, blockPos3.north(2), mutableIntBoundingBox);
+				l = blockPos.getX();
+				mx = blockPos.getZ();
 				Direction direction2 = Direction.Type.HORIZONTAL.random(random);
 				if (direction2 != direction) {
 					int qx = kx - random.nextInt(2) - 1;
@@ -106,12 +108,12 @@ public class SavannaTreeFeature extends AbstractTreeFeature<DefaultFeatureConfig
 
 					for (int s = qx; s < i && rx > 0; rx--) {
 						if (s >= 1) {
-							int t = pos.getY() + s;
+							int t = blockPos.getY() + s;
 							l += direction2.getOffsetX();
 							mx += direction2.getOffsetZ();
-							BlockPos blockPos3 = new BlockPos(l, t, mx);
-							if (isAirOrLeaves(world, blockPos3)) {
-								this.addLog(logPositions, world, blockPos3, blockBox);
+							BlockPos blockPos4 = new BlockPos(l, t, mx);
+							if (isAirOrLeaves(modifiableTestableWorld, blockPos4)) {
+								this.addLog(set, modifiableTestableWorld, blockPos4, mutableIntBoundingBox);
 								o = t;
 							}
 						}
@@ -120,21 +122,21 @@ public class SavannaTreeFeature extends AbstractTreeFeature<DefaultFeatureConfig
 					}
 
 					if (o > 0) {
-						BlockPos blockPos4 = new BlockPos(l, o, mx);
+						BlockPos blockPos5 = new BlockPos(l, o, mx);
 
 						for (int t = -2; t <= 2; t++) {
 							for (int u = -2; u <= 2; u++) {
 								if (Math.abs(t) != 2 || Math.abs(u) != 2) {
-									this.addLeaves(logPositions, world, blockPos4.add(t, 0, u), blockBox);
+									this.addLeaves(set, modifiableTestableWorld, blockPos5.add(t, 0, u), mutableIntBoundingBox);
 								}
 							}
 						}
 
-						blockPos4 = blockPos4.up();
+						blockPos5 = blockPos5.up();
 
 						for (int t = -1; t <= 1; t++) {
 							for (int ux = -1; ux <= 1; ux++) {
-								this.addLeaves(logPositions, world, blockPos4.add(t, 0, ux), blockBox);
+								this.addLeaves(set, modifiableTestableWorld, blockPos5.add(t, 0, ux), mutableIntBoundingBox);
 							}
 						}
 					}
@@ -149,13 +151,13 @@ public class SavannaTreeFeature extends AbstractTreeFeature<DefaultFeatureConfig
 		}
 	}
 
-	private void addLog(Set<BlockPos> logPositions, ModifiableWorld world, BlockPos pos, BlockBox blockBox) {
-		this.setBlockState(logPositions, world, pos, LOG, blockBox);
+	private void addLog(Set<BlockPos> set, ModifiableWorld modifiableWorld, BlockPos blockPos, MutableIntBoundingBox mutableIntBoundingBox) {
+		this.setBlockState(set, modifiableWorld, blockPos, LOG, mutableIntBoundingBox);
 	}
 
-	private void addLeaves(Set<BlockPos> set, ModifiableTestableWorld modifiableTestableWorld, BlockPos blockPos, BlockBox blockBox) {
+	private void addLeaves(Set<BlockPos> set, ModifiableTestableWorld modifiableTestableWorld, BlockPos blockPos, MutableIntBoundingBox mutableIntBoundingBox) {
 		if (isAirOrLeaves(modifiableTestableWorld, blockPos)) {
-			this.setBlockState(set, modifiableTestableWorld, blockPos, LEAVES, blockBox);
+			this.setBlockState(set, modifiableTestableWorld, blockPos, LEAVES, mutableIntBoundingBox);
 		}
 	}
 }

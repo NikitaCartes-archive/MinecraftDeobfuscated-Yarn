@@ -10,22 +10,22 @@ import net.minecraft.world.World;
 public class FireSmokeParticle extends SpriteBillboardParticle {
 	private final SpriteProvider field_17868;
 
-	protected FireSmokeParticle(World world, double x, double y, double z, double d, double e, double f, float g, SpriteProvider spriteProvider) {
-		super(world, x, y, z, 0.0, 0.0, 0.0);
+	protected FireSmokeParticle(World world, double d, double e, double f, double g, double h, double i, float j, SpriteProvider spriteProvider) {
+		super(world, d, e, f, 0.0, 0.0, 0.0);
 		this.field_17868 = spriteProvider;
 		this.velocityX *= 0.1F;
 		this.velocityY *= 0.1F;
 		this.velocityZ *= 0.1F;
-		this.velocityX += d;
-		this.velocityY += e;
-		this.velocityZ += f;
-		float h = (float)(Math.random() * 0.3F);
-		this.colorRed = h;
-		this.colorGreen = h;
-		this.colorBlue = h;
-		this.scale *= 0.75F * g;
+		this.velocityX += g;
+		this.velocityY += h;
+		this.velocityZ += i;
+		float k = (float)(Math.random() * 0.3F);
+		this.colorRed = k;
+		this.colorGreen = k;
+		this.colorBlue = k;
+		this.scale *= 0.75F * j;
 		this.maxAge = (int)(8.0 / (Math.random() * 0.8 + 0.2));
-		this.maxAge = (int)((float)this.maxAge * g);
+		this.maxAge = (int)((float)this.maxAge * j);
 		this.maxAge = Math.max(this.maxAge, 1);
 		this.setSpriteForAge(spriteProvider);
 	}
@@ -36,8 +36,8 @@ public class FireSmokeParticle extends SpriteBillboardParticle {
 	}
 
 	@Override
-	public float getSize(float tickDelta) {
-		return this.scale * MathHelper.clamp(((float)this.age + tickDelta) / (float)this.maxAge * 32.0F, 0.0F, 1.0F);
+	public float getSize(float f) {
+		return this.scale * MathHelper.clamp(((float)this.age + f) / (float)this.maxAge * 32.0F, 0.0F, 1.0F);
 	}
 
 	@Override
@@ -74,7 +74,7 @@ public class FireSmokeParticle extends SpriteBillboardParticle {
 			this.field_17869 = spriteProvider;
 		}
 
-		public Particle createParticle(DefaultParticleType defaultParticleType, World world, double d, double e, double f, double g, double h, double i) {
+		public Particle method_3101(DefaultParticleType defaultParticleType, World world, double d, double e, double f, double g, double h, double i) {
 			return new FireSmokeParticle(world, d, e, f, g, h, i, 1.0F, this.field_17869);
 		}
 	}

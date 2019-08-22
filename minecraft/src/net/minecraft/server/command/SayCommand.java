@@ -6,8 +6,8 @@ import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
 
 public class SayCommand {
-	public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
-		dispatcher.register(
+	public static void register(CommandDispatcher<ServerCommandSource> commandDispatcher) {
+		commandDispatcher.register(
 			CommandManager.literal("say")
 				.requires(serverCommandSource -> serverCommandSource.hasPermissionLevel(2))
 				.then(

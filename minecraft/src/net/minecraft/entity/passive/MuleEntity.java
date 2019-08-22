@@ -24,8 +24,8 @@ public class MuleEntity extends AbstractDonkeyEntity {
 	}
 
 	@Override
-	protected SoundEvent getHurtSound(DamageSource source) {
-		super.getHurtSound(source);
+	protected SoundEvent getHurtSound(DamageSource damageSource) {
+		super.getHurtSound(damageSource);
 		return SoundEvents.ENTITY_MULE_HURT;
 	}
 

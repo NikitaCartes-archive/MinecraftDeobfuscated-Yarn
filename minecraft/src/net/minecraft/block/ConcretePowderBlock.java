@@ -11,35 +11,37 @@ import net.minecraft.world.World;
 public class ConcretePowderBlock extends FallingBlock {
 	private final BlockState hardenedState;
 
-	public ConcretePowderBlock(Block hardened, Block.Settings settings) {
+	public ConcretePowderBlock(Block block, Block.Settings settings) {
 		super(settings);
-		this.hardenedState = hardened.getDefaultState();
+		this.hardenedState = block.getDefaultState();
 	}
 
 	@Override
-	public void onLanding(World world, BlockPos pos, BlockState fallingBlockState, BlockState currentStateInPos) {
-		if (hardensIn(currentStateInPos)) {
-			world.setBlockState(pos, this.hardenedState, 3);
+	public void onLanding(World world, BlockPos blockPos, BlockState blockState, BlockState blockState2) {
+		if (hardensIn(blockState2)) {
+			world.setBlockState(blockPos, this.hardenedState, 3);
 		}
 	}
 
 	@Override
-	public BlockState getPlacementState(ItemPlacementContext ctx) {
-		BlockView blockView = ctx.getWorld();
-		BlockPos blockPos = ctx.getBlockPos();
-		return !hardensIn(blockView.getBlockState(blockPos)) && !hardensOnAnySide(blockView, blockPos) ? super.getPlacementState(ctx) : this.hardenedState;
+	public BlockState getPlacementState(ItemPlacementContext itemPlacementContext) {
+		BlockView blockView = itemPlacementContext.getWorld();
+		BlockPos blockPos = itemPlacementContext.getBlockPos();
+		return !hardensIn(blockView.getBlockState(blockPos)) && !hardensOnAnySide(blockView, blockPos)
+			? super.getPlacementState(itemPlacementContext)
+			: this.hardenedState;
 	}
 
-	private static boolean hardensOnAnySide(BlockView view, BlockPos pos) {
+	private static boolean hardensOnAnySide(BlockView blockView, BlockPos blockPos) {
 		boolean bl = false;
-		BlockPos.Mutable mutable = new BlockPos.Mutable(pos);
+		BlockPos.Mutable mutable = new BlockPos.Mutable(blockPos);
 
 		for (Direction direction : Direction.values()) {
-			BlockState blockState = view.getBlockState(mutable);
+			BlockState blockState = blockView.getBlockState(mutable);
 			if (direction != Direction.DOWN || hardensIn(blockState)) {
-				mutable.set(pos).setOffset(direction);
-				blockState = view.getBlockState(mutable);
-				if (hardensIn(blockState) && !blockState.isSideSolidFullSquare(view, pos, direction.getOpposite())) {
+				mutable.set(blockPos).setOffset(direction);
+				blockState = blockView.getBlockState(mutable);
+				if (hardensIn(blockState) && !blockState.isSideSolidFullSquare(blockView, blockPos, direction.getOpposite())) {
 					bl = true;
 					break;
 				}
@@ -49,12 +51,16 @@ public class ConcretePowderBlock extends FallingBlock {
 		return bl;
 	}
 
-	private static boolean hardensIn(BlockState state) {
-		return state.getFluidState().matches(FluidTags.WATER);
+	private static boolean hardensIn(BlockState blockState) {
+		return blockState.getFluidState().matches(FluidTags.WATER);
 	}
 
 	@Override
-	public BlockState getStateForNeighborUpdate(BlockState state, Direction facing, BlockState neighborState, IWorld world, BlockPos pos, BlockPos neighborPos) {
-		return hardensOnAnySide(world, pos) ? this.hardenedState : super.getStateForNeighborUpdate(state, facing, neighborState, world, pos, neighborPos);
+	public BlockState getStateForNeighborUpdate(
+		BlockState blockState, Direction direction, BlockState blockState2, IWorld iWorld, BlockPos blockPos, BlockPos blockPos2
+	) {
+		return hardensOnAnySide(iWorld, blockPos)
+			? this.hardenedState
+			: super.getStateForNeighborUpdate(blockState, direction, blockState2, iWorld, blockPos, blockPos2);
 	}
 }

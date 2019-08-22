@@ -23,10 +23,10 @@ public class EntityAttributeInstanceImpl implements EntityAttributeInstance {
 	private boolean needsRefresh = true;
 	private double cachedValue;
 
-	public EntityAttributeInstanceImpl(AbstractEntityAttributeContainer container, EntityAttribute attribute) {
-		this.container = container;
-		this.attribute = attribute;
-		this.baseValue = attribute.getDefaultValue();
+	public EntityAttributeInstanceImpl(AbstractEntityAttributeContainer abstractEntityAttributeContainer, EntityAttribute entityAttribute) {
+		this.container = abstractEntityAttributeContainer;
+		this.attribute = entityAttribute;
+		this.baseValue = entityAttribute.getDefaultValue();
 
 		for (EntityAttributeModifier.Operation operation : EntityAttributeModifier.Operation.values()) {
 			this.modifiersByOperation.put(operation, Sets.newHashSet());
@@ -44,9 +44,9 @@ public class EntityAttributeInstanceImpl implements EntityAttributeInstance {
 	}
 
 	@Override
-	public void setBaseValue(double baseValue) {
-		if (baseValue != this.getBaseValue()) {
-			this.baseValue = baseValue;
+	public void setBaseValue(double d) {
+		if (d != this.getBaseValue()) {
+			this.baseValue = d;
 			this.invalidateCache();
 		}
 	}
@@ -69,24 +69,25 @@ public class EntityAttributeInstanceImpl implements EntityAttributeInstance {
 
 	@Nullable
 	@Override
-	public EntityAttributeModifier getModifier(UUID uuid) {
-		return (EntityAttributeModifier)this.modifiersByUuid.get(uuid);
+	public EntityAttributeModifier getModifier(UUID uUID) {
+		return (EntityAttributeModifier)this.modifiersByUuid.get(uUID);
 	}
 
 	@Override
-	public boolean hasModifier(EntityAttributeModifier modifier) {
-		return this.modifiersByUuid.get(modifier.getId()) != null;
+	public boolean hasModifier(EntityAttributeModifier entityAttributeModifier) {
+		return this.modifiersByUuid.get(entityAttributeModifier.getId()) != null;
 	}
 
 	@Override
-	public void addModifier(EntityAttributeModifier modifier) {
-		if (this.getModifier(modifier.getId()) != null) {
+	public void addModifier(EntityAttributeModifier entityAttributeModifier) {
+		if (this.getModifier(entityAttributeModifier.getId()) != null) {
 			throw new IllegalArgumentException("Modifier is already applied on this attribute!");
 		} else {
-			Set<EntityAttributeModifier> set = (Set<EntityAttributeModifier>)this.modifiersByName.computeIfAbsent(modifier.getName(), string -> Sets.newHashSet());
-			((Set)this.modifiersByOperation.get(modifier.getOperation())).add(modifier);
-			set.add(modifier);
-			this.modifiersByUuid.put(modifier.getId(), modifier);
+			Set<EntityAttributeModifier> set = (Set<EntityAttributeModifier>)this.modifiersByName
+				.computeIfAbsent(entityAttributeModifier.getName(), string -> Sets.newHashSet());
+			((Set)this.modifiersByOperation.get(entityAttributeModifier.getOperation())).add(entityAttributeModifier);
+			set.add(entityAttributeModifier);
+			this.modifiersByUuid.put(entityAttributeModifier.getId(), entityAttributeModifier);
 			this.invalidateCache();
 		}
 	}
@@ -97,26 +98,26 @@ public class EntityAttributeInstanceImpl implements EntityAttributeInstance {
 	}
 
 	@Override
-	public void removeModifier(EntityAttributeModifier modifier) {
+	public void removeModifier(EntityAttributeModifier entityAttributeModifier) {
 		for (EntityAttributeModifier.Operation operation : EntityAttributeModifier.Operation.values()) {
-			((Set)this.modifiersByOperation.get(operation)).remove(modifier);
+			((Set)this.modifiersByOperation.get(operation)).remove(entityAttributeModifier);
 		}
 
-		Set<EntityAttributeModifier> set = (Set<EntityAttributeModifier>)this.modifiersByName.get(modifier.getName());
+		Set<EntityAttributeModifier> set = (Set<EntityAttributeModifier>)this.modifiersByName.get(entityAttributeModifier.getName());
 		if (set != null) {
-			set.remove(modifier);
+			set.remove(entityAttributeModifier);
 			if (set.isEmpty()) {
-				this.modifiersByName.remove(modifier.getName());
+				this.modifiersByName.remove(entityAttributeModifier.getName());
 			}
 		}
 
-		this.modifiersByUuid.remove(modifier.getId());
+		this.modifiersByUuid.remove(entityAttributeModifier.getId());
 		this.invalidateCache();
 	}
 
 	@Override
-	public void removeModifier(UUID uuid) {
-		EntityAttributeModifier entityAttributeModifier = this.getModifier(uuid);
+	public void removeModifier(UUID uUID) {
+		EntityAttributeModifier entityAttributeModifier = this.getModifier(uUID);
 		if (entityAttributeModifier != null) {
 			this.removeModifier(entityAttributeModifier);
 		}

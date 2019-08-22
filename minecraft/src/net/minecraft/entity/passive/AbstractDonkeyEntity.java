@@ -20,8 +20,8 @@ import net.minecraft.world.World;
 public abstract class AbstractDonkeyEntity extends HorseBaseEntity {
 	private static final TrackedData<Boolean> CHEST = DataTracker.registerData(AbstractDonkeyEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
 
-	protected AbstractDonkeyEntity(EntityType<? extends AbstractDonkeyEntity> type, World world) {
-		super(type, world);
+	protected AbstractDonkeyEntity(EntityType<? extends AbstractDonkeyEntity> entityType, World world) {
+		super(entityType, world);
 		this.field_6964 = false;
 	}
 
@@ -43,8 +43,8 @@ public abstract class AbstractDonkeyEntity extends HorseBaseEntity {
 		return this.dataTracker.get(CHEST);
 	}
 
-	public void setHasChest(boolean hasChest) {
-		this.dataTracker.set(CHEST, hasChest);
+	public void setHasChest(boolean bl) {
+		this.dataTracker.set(CHEST, bl);
 	}
 
 	@Override
@@ -76,39 +76,39 @@ public abstract class AbstractDonkeyEntity extends HorseBaseEntity {
 	}
 
 	@Override
-	public void writeCustomDataToTag(CompoundTag tag) {
-		super.writeCustomDataToTag(tag);
-		tag.putBoolean("ChestedHorse", this.hasChest());
+	public void writeCustomDataToTag(CompoundTag compoundTag) {
+		super.writeCustomDataToTag(compoundTag);
+		compoundTag.putBoolean("ChestedHorse", this.hasChest());
 		if (this.hasChest()) {
 			ListTag listTag = new ListTag();
 
 			for (int i = 2; i < this.items.getInvSize(); i++) {
 				ItemStack itemStack = this.items.getInvStack(i);
 				if (!itemStack.isEmpty()) {
-					CompoundTag compoundTag = new CompoundTag();
-					compoundTag.putByte("Slot", (byte)i);
-					itemStack.toTag(compoundTag);
-					listTag.add(compoundTag);
+					CompoundTag compoundTag2 = new CompoundTag();
+					compoundTag2.putByte("Slot", (byte)i);
+					itemStack.toTag(compoundTag2);
+					listTag.add(compoundTag2);
 				}
 			}
 
-			tag.put("Items", listTag);
+			compoundTag.put("Items", listTag);
 		}
 	}
 
 	@Override
-	public void readCustomDataFromTag(CompoundTag tag) {
-		super.readCustomDataFromTag(tag);
-		this.setHasChest(tag.getBoolean("ChestedHorse"));
+	public void readCustomDataFromTag(CompoundTag compoundTag) {
+		super.readCustomDataFromTag(compoundTag);
+		this.setHasChest(compoundTag.getBoolean("ChestedHorse"));
 		if (this.hasChest()) {
-			ListTag listTag = tag.getList("Items", 10);
+			ListTag listTag = compoundTag.getList("Items", 10);
 			this.method_6721();
 
 			for (int i = 0; i < listTag.size(); i++) {
-				CompoundTag compoundTag = listTag.getCompound(i);
-				int j = compoundTag.getByte("Slot") & 255;
+				CompoundTag compoundTag2 = listTag.getCompoundTag(i);
+				int j = compoundTag2.getByte("Slot") & 255;
 				if (j >= 2 && j < this.items.getInvSize()) {
-					this.items.setInvStack(j, ItemStack.fromTag(compoundTag));
+					this.items.setInvStack(j, ItemStack.fromTag(compoundTag2));
 				}
 			}
 		}
@@ -117,46 +117,46 @@ public abstract class AbstractDonkeyEntity extends HorseBaseEntity {
 	}
 
 	@Override
-	public boolean equip(int slot, ItemStack item) {
-		if (slot == 499) {
-			if (this.hasChest() && item.isEmpty()) {
+	public boolean equip(int i, ItemStack itemStack) {
+		if (i == 499) {
+			if (this.hasChest() && itemStack.isEmpty()) {
 				this.setHasChest(false);
 				this.method_6721();
 				return true;
 			}
 
-			if (!this.hasChest() && item.getItem() == Blocks.CHEST.asItem()) {
+			if (!this.hasChest() && itemStack.getItem() == Blocks.CHEST.asItem()) {
 				this.setHasChest(true);
 				this.method_6721();
 				return true;
 			}
 		}
 
-		return super.equip(slot, item);
+		return super.equip(i, itemStack);
 	}
 
 	@Override
-	public boolean interactMob(PlayerEntity player, Hand hand) {
-		ItemStack itemStack = player.getStackInHand(hand);
+	public boolean interactMob(PlayerEntity playerEntity, Hand hand) {
+		ItemStack itemStack = playerEntity.getStackInHand(hand);
 		if (itemStack.getItem() instanceof SpawnEggItem) {
-			return super.interactMob(player, hand);
+			return super.interactMob(playerEntity, hand);
 		} else {
 			if (!this.isBaby()) {
-				if (this.isTame() && player.isSneaking()) {
-					this.openInventory(player);
+				if (this.isTame() && playerEntity.method_21823()) {
+					this.openInventory(playerEntity);
 					return true;
 				}
 
 				if (this.hasPassengers()) {
-					return super.interactMob(player, hand);
+					return super.interactMob(playerEntity, hand);
 				}
 			}
 
 			if (!itemStack.isEmpty()) {
-				boolean bl = this.receiveFood(player, itemStack);
+				boolean bl = this.receiveFood(playerEntity, itemStack);
 				if (!bl) {
 					if (!this.isTame() || itemStack.getItem() == Items.NAME_TAG) {
-						if (itemStack.useOnEntity(player, this, hand)) {
+						if (itemStack.useOnEntity(playerEntity, this, hand)) {
 							return true;
 						} else {
 							this.playAngrySound();
@@ -172,13 +172,13 @@ public abstract class AbstractDonkeyEntity extends HorseBaseEntity {
 					}
 
 					if (!this.isBaby() && !this.isSaddled() && itemStack.getItem() == Items.SADDLE) {
-						this.openInventory(player);
+						this.openInventory(playerEntity);
 						return true;
 					}
 				}
 
 				if (bl) {
-					if (!player.abilities.creativeMode) {
+					if (!playerEntity.abilities.creativeMode) {
 						itemStack.decrement(1);
 					}
 
@@ -187,9 +187,9 @@ public abstract class AbstractDonkeyEntity extends HorseBaseEntity {
 			}
 
 			if (this.isBaby()) {
-				return super.interactMob(player, hand);
+				return super.interactMob(playerEntity, hand);
 			} else {
-				this.putPlayerOnBack(player);
+				this.putPlayerOnBack(playerEntity);
 				return true;
 			}
 		}

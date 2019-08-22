@@ -36,9 +36,11 @@ public class BucketItem extends Item {
 	}
 
 	@Override
-	public TypedActionResult<ItemStack> use(World world, PlayerEntity user, Hand hand) {
-		ItemStack itemStack = user.getStackInHand(hand);
-		HitResult hitResult = rayTrace(world, user, this.fluid == Fluids.EMPTY ? RayTraceContext.FluidHandling.SOURCE_ONLY : RayTraceContext.FluidHandling.NONE);
+	public TypedActionResult<ItemStack> use(World world, PlayerEntity playerEntity, Hand hand) {
+		ItemStack itemStack = playerEntity.getStackInHand(hand);
+		HitResult hitResult = rayTrace(
+			world, playerEntity, this.fluid == Fluids.EMPTY ? RayTraceContext.FluidHandling.SOURCE_ONLY : RayTraceContext.FluidHandling.NONE
+		);
 		if (hitResult.getType() == HitResult.Type.MISS) {
 			return new TypedActionResult<>(ActionResult.PASS, itemStack);
 		} else if (hitResult.getType() != HitResult.Type.BLOCK) {
@@ -46,18 +48,18 @@ public class BucketItem extends Item {
 		} else {
 			BlockHitResult blockHitResult = (BlockHitResult)hitResult;
 			BlockPos blockPos = blockHitResult.getBlockPos();
-			if (!world.canPlayerModifyAt(user, blockPos) || !user.canPlaceOn(blockPos, blockHitResult.getSide(), itemStack)) {
+			if (!world.canPlayerModifyAt(playerEntity, blockPos) || !playerEntity.canPlaceOn(blockPos, blockHitResult.getSide(), itemStack)) {
 				return new TypedActionResult<>(ActionResult.FAIL, itemStack);
 			} else if (this.fluid == Fluids.EMPTY) {
 				BlockState blockState = world.getBlockState(blockPos);
 				if (blockState.getBlock() instanceof FluidDrainable) {
 					Fluid fluid = ((FluidDrainable)blockState.getBlock()).tryDrainFluid(world, blockPos, blockState);
 					if (fluid != Fluids.EMPTY) {
-						user.incrementStat(Stats.USED.getOrCreateStat(this));
-						user.playSound(fluid.matches(FluidTags.LAVA) ? SoundEvents.ITEM_BUCKET_FILL_LAVA : SoundEvents.ITEM_BUCKET_FILL, 1.0F, 1.0F);
-						ItemStack itemStack2 = this.getFilledStack(itemStack, user, fluid.getBucketItem());
+						playerEntity.incrementStat(Stats.USED.getOrCreateStat(this));
+						playerEntity.playSound(fluid.matches(FluidTags.LAVA) ? SoundEvents.ITEM_BUCKET_FILL_LAVA : SoundEvents.ITEM_BUCKET_FILL, 1.0F, 1.0F);
+						ItemStack itemStack2 = this.getFilledStack(itemStack, playerEntity, fluid.getBucketItem());
 						if (!world.isClient) {
-							Criterions.FILLED_BUCKET.trigger((ServerPlayerEntity)user, new ItemStack(fluid.getBucketItem()));
+							Criterions.FILLED_BUCKET.handle((ServerPlayerEntity)playerEntity, new ItemStack(fluid.getBucketItem()));
 						}
 
 						return new TypedActionResult<>(ActionResult.SUCCESS, itemStack2);
@@ -70,14 +72,14 @@ public class BucketItem extends Item {
 				BlockPos blockPos2 = blockState.getBlock() instanceof FluidFillable && this.fluid == Fluids.WATER
 					? blockPos
 					: blockHitResult.getBlockPos().offset(blockHitResult.getSide());
-				if (this.placeFluid(user, world, blockPos2, blockHitResult)) {
+				if (this.placeFluid(playerEntity, world, blockPos2, blockHitResult)) {
 					this.onEmptied(world, itemStack, blockPos2);
-					if (user instanceof ServerPlayerEntity) {
-						Criterions.PLACED_BLOCK.trigger((ServerPlayerEntity)user, blockPos2, itemStack);
+					if (playerEntity instanceof ServerPlayerEntity) {
+						Criterions.PLACED_BLOCK.handle((ServerPlayerEntity)playerEntity, blockPos2, itemStack);
 					}
 
-					user.incrementStat(Stats.USED.getOrCreateStat(this));
-					return new TypedActionResult<>(ActionResult.SUCCESS, this.getEmptiedStack(itemStack, user));
+					playerEntity.incrementStat(Stats.USED.getOrCreateStat(this));
+					return new TypedActionResult<>(ActionResult.SUCCESS, this.getEmptiedStack(itemStack, playerEntity));
 				} else {
 					return new TypedActionResult<>(ActionResult.FAIL, itemStack);
 				}
@@ -85,75 +87,80 @@ public class BucketItem extends Item {
 		}
 	}
 
-	protected ItemStack getEmptiedStack(ItemStack stack, PlayerEntity player) {
-		return !player.abilities.creativeMode ? new ItemStack(Items.BUCKET) : stack;
+	protected ItemStack getEmptiedStack(ItemStack itemStack, PlayerEntity playerEntity) {
+		return !playerEntity.abilities.creativeMode ? new ItemStack(Items.BUCKET) : itemStack;
 	}
 
-	public void onEmptied(World world, ItemStack stack, BlockPos pos) {
+	public void onEmptied(World world, ItemStack itemStack, BlockPos blockPos) {
 	}
 
-	private ItemStack getFilledStack(ItemStack stack, PlayerEntity player, Item filledBucket) {
-		if (player.abilities.creativeMode) {
-			return stack;
+	private ItemStack getFilledStack(ItemStack itemStack, PlayerEntity playerEntity, Item item) {
+		if (playerEntity.abilities.creativeMode) {
+			return itemStack;
 		} else {
-			stack.decrement(1);
-			if (stack.isEmpty()) {
-				return new ItemStack(filledBucket);
+			itemStack.decrement(1);
+			if (itemStack.isEmpty()) {
+				return new ItemStack(item);
 			} else {
-				if (!player.inventory.insertStack(new ItemStack(filledBucket))) {
-					player.dropItem(new ItemStack(filledBucket), false);
+				if (!playerEntity.inventory.insertStack(new ItemStack(item))) {
+					playerEntity.dropItem(new ItemStack(item), false);
 				}
 
-				return stack;
+				return itemStack;
 			}
 		}
 	}
 
-	public boolean placeFluid(@Nullable PlayerEntity player, World world, BlockPos pos, @Nullable BlockHitResult hitResult) {
+	public boolean placeFluid(@Nullable PlayerEntity playerEntity, World world, BlockPos blockPos, @Nullable BlockHitResult blockHitResult) {
 		if (!(this.fluid instanceof BaseFluid)) {
 			return false;
 		} else {
-			BlockState blockState = world.getBlockState(pos);
+			BlockState blockState = world.getBlockState(blockPos);
 			Material material = blockState.getMaterial();
 			boolean bl = !material.isSolid();
 			boolean bl2 = material.isReplaceable();
-			if (world.isAir(pos)
+			if (world.isAir(blockPos)
 				|| bl
 				|| bl2
-				|| blockState.getBlock() instanceof FluidFillable && ((FluidFillable)blockState.getBlock()).canFillWithFluid(world, pos, blockState, this.fluid)) {
+				|| blockState.getBlock() instanceof FluidFillable && ((FluidFillable)blockState.getBlock()).canFillWithFluid(world, blockPos, blockState, this.fluid)) {
 				if (world.dimension.doesWaterVaporize() && this.fluid.matches(FluidTags.WATER)) {
-					int i = pos.getX();
-					int j = pos.getY();
-					int k = pos.getZ();
+					int i = blockPos.getX();
+					int j = blockPos.getY();
+					int k = blockPos.getZ();
 					world.playSound(
-						player, pos, SoundEvents.BLOCK_FIRE_EXTINGUISH, SoundCategory.BLOCKS, 0.5F, 2.6F + (world.random.nextFloat() - world.random.nextFloat()) * 0.8F
+						playerEntity,
+						blockPos,
+						SoundEvents.BLOCK_FIRE_EXTINGUISH,
+						SoundCategory.BLOCKS,
+						0.5F,
+						2.6F + (world.random.nextFloat() - world.random.nextFloat()) * 0.8F
 					);
 
 					for (int l = 0; l < 8; l++) {
 						world.addParticle(ParticleTypes.LARGE_SMOKE, (double)i + Math.random(), (double)j + Math.random(), (double)k + Math.random(), 0.0, 0.0, 0.0);
 					}
 				} else if (blockState.getBlock() instanceof FluidFillable && this.fluid == Fluids.WATER) {
-					if (((FluidFillable)blockState.getBlock()).tryFillWithFluid(world, pos, blockState, ((BaseFluid)this.fluid).getStill(false))) {
-						this.playEmptyingSound(player, world, pos);
+					if (((FluidFillable)blockState.getBlock()).tryFillWithFluid(world, blockPos, blockState, ((BaseFluid)this.fluid).getStill(false))) {
+						this.playEmptyingSound(playerEntity, world, blockPos);
 					}
 				} else {
 					if (!world.isClient && (bl || bl2) && !material.isLiquid()) {
-						world.breakBlock(pos, true);
+						world.breakBlock(blockPos, true);
 					}
 
-					this.playEmptyingSound(player, world, pos);
-					world.setBlockState(pos, this.fluid.getDefaultState().getBlockState(), 11);
+					this.playEmptyingSound(playerEntity, world, blockPos);
+					world.setBlockState(blockPos, this.fluid.getDefaultState().getBlockState(), 11);
 				}
 
 				return true;
 			} else {
-				return hitResult == null ? false : this.placeFluid(player, world, hitResult.getBlockPos().offset(hitResult.getSide()), null);
+				return blockHitResult == null ? false : this.placeFluid(playerEntity, world, blockHitResult.getBlockPos().offset(blockHitResult.getSide()), null);
 			}
 		}
 	}
 
-	protected void playEmptyingSound(@Nullable PlayerEntity player, IWorld world, BlockPos pos) {
+	protected void playEmptyingSound(@Nullable PlayerEntity playerEntity, IWorld iWorld, BlockPos blockPos) {
 		SoundEvent soundEvent = this.fluid.matches(FluidTags.LAVA) ? SoundEvents.ITEM_BUCKET_EMPTY_LAVA : SoundEvents.ITEM_BUCKET_EMPTY;
-		world.playSound(player, pos, soundEvent, SoundCategory.BLOCKS, 1.0F, 1.0F);
+		iWorld.playSound(playerEntity, blockPos, soundEvent, SoundCategory.BLOCKS, 1.0F, 1.0F);
 	}
 }

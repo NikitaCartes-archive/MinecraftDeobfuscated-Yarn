@@ -26,7 +26,7 @@ public class FrozenOceanSurfaceBuilder extends SurfaceBuilder<TernarySurfaceConf
 		super(function);
 	}
 
-	public void generate(
+	public void method_15221(
 		Random random,
 		Chunk chunk,
 		Biome biome,
@@ -131,13 +131,13 @@ public class FrozenOceanSurfaceBuilder extends SurfaceBuilder<TernarySurfaceConf
 	}
 
 	@Override
-	public void initSeed(long seed) {
-		if (this.seed != seed || this.field_15644 == null || this.field_15642 == null) {
-			Random random = new ChunkRandom(seed);
+	public void initSeed(long l) {
+		if (this.seed != l || this.field_15644 == null || this.field_15642 == null) {
+			Random random = new ChunkRandom(l);
 			this.field_15644 = new OctaveSimplexNoiseSampler(random, 4);
 			this.field_15642 = new OctaveSimplexNoiseSampler(random, 1);
 		}
 
-		this.seed = seed;
+		this.seed = l;
 	}
 }

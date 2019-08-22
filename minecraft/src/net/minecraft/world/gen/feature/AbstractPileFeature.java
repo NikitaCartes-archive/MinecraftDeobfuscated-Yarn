@@ -12,11 +12,11 @@ import net.minecraft.world.gen.chunk.ChunkGenerator;
 import net.minecraft.world.gen.chunk.ChunkGeneratorConfig;
 
 public abstract class AbstractPileFeature extends Feature<DefaultFeatureConfig> {
-	public AbstractPileFeature(Function<Dynamic<?>, ? extends DefaultFeatureConfig> configFactory) {
-		super(configFactory);
+	public AbstractPileFeature(Function<Dynamic<?>, ? extends DefaultFeatureConfig> function) {
+		super(function);
 	}
 
-	public boolean generate(
+	public boolean method_16709(
 		IWorld iWorld, ChunkGenerator<? extends ChunkGeneratorConfig> chunkGenerator, Random random, BlockPos blockPos, DefaultFeatureConfig defaultFeatureConfig
 	) {
 		if (blockPos.getY() < 5) {
@@ -39,17 +39,17 @@ public abstract class AbstractPileFeature extends Feature<DefaultFeatureConfig> 
 		}
 	}
 
-	private boolean canPlacePileBlock(IWorld world, BlockPos pos, Random random) {
-		BlockPos blockPos = pos.down();
-		BlockState blockState = world.getBlockState(blockPos);
-		return blockState.getBlock() == Blocks.GRASS_PATH ? random.nextBoolean() : blockState.isSideSolidFullSquare(world, blockPos, Direction.UP);
+	private boolean canPlacePileBlock(IWorld iWorld, BlockPos blockPos, Random random) {
+		BlockPos blockPos2 = blockPos.down();
+		BlockState blockState = iWorld.getBlockState(blockPos2);
+		return blockState.getBlock() == Blocks.GRASS_PATH ? random.nextBoolean() : blockState.isSideSolidFullSquare(iWorld, blockPos2, Direction.UP);
 	}
 
-	private void addPileBlock(IWorld world, BlockPos pos, Random random) {
-		if (world.isAir(pos) && this.canPlacePileBlock(world, pos, random)) {
-			world.setBlockState(pos, this.getPileBlockState(world), 4);
+	private void addPileBlock(IWorld iWorld, BlockPos blockPos, Random random) {
+		if (iWorld.isAir(blockPos) && this.canPlacePileBlock(iWorld, blockPos, random)) {
+			iWorld.setBlockState(blockPos, this.getPileBlockState(iWorld), 4);
 		}
 	}
 
-	protected abstract BlockState getPileBlockState(IWorld world);
+	protected abstract BlockState getPileBlockState(IWorld iWorld);
 }

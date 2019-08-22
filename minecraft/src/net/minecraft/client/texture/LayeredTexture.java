@@ -1,12 +1,12 @@
 package net.minecraft.client.texture;
 
 import com.google.common.collect.Lists;
-import com.mojang.blaze3d.platform.TextureUtil;
 import java.io.IOException;
 import java.util.Iterator;
 import java.util.List;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.class_4536;
 import net.minecraft.resource.Resource;
 import net.minecraft.resource.ResourceManager;
 import net.minecraft.util.Identifier;
@@ -18,8 +18,8 @@ public class LayeredTexture extends AbstractTexture {
 	private static final Logger LOGGER = LogManager.getLogger();
 	public final List<String> locations;
 
-	public LayeredTexture(String... locations) {
-		this.locations = Lists.<String>newArrayList(locations);
+	public LayeredTexture(String... strings) {
+		this.locations = Lists.<String>newArrayList(strings);
 		if (this.locations.isEmpty()) {
 			throw new IllegalStateException("Layered texture with no layers.");
 		}
@@ -37,7 +37,7 @@ public class LayeredTexture extends AbstractTexture {
 			try (NativeImage nativeImage = NativeImage.read(resource.getInputStream())) {
 				while (true) {
 					if (!iterator.hasNext()) {
-						TextureUtil.prepareImage(this.getGlId(), nativeImage.getWidth(), nativeImage.getHeight());
+						class_4536.prepareImage(this.getGlId(), nativeImage.getWidth(), nativeImage.getHeight());
 						nativeImage.upload(0, 0, 0, false);
 						break;
 					}
@@ -50,7 +50,7 @@ public class LayeredTexture extends AbstractTexture {
 						try (NativeImage nativeImage2 = NativeImage.read(resource2.getInputStream())) {
 							for (int i = 0; i < nativeImage2.getHeight(); i++) {
 								for (int j = 0; j < nativeImage2.getWidth(); j++) {
-									nativeImage.blendPixel(j, i, nativeImage2.getPixelRgba(j, i));
+									nativeImage.blendPixel(j, i, nativeImage2.getPixelRGBA(j, i));
 								}
 							}
 						} catch (Throwable var91) {

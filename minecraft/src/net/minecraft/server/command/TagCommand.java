@@ -16,8 +16,8 @@ public class TagCommand {
 	private static final SimpleCommandExceptionType ADD_FAILED_EXCEPTION = new SimpleCommandExceptionType(new TranslatableText("commands.tag.add.failed"));
 	private static final SimpleCommandExceptionType REMOVE_FAILED_EXCEPTION = new SimpleCommandExceptionType(new TranslatableText("commands.tag.remove.failed"));
 
-	public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
-		dispatcher.register(
+	public static void register(CommandDispatcher<ServerCommandSource> commandDispatcher) {
+		commandDispatcher.register(
 			CommandManager.literal("tag")
 				.requires(serverCommandSource -> serverCommandSource.hasPermissionLevel(2))
 				.then(
@@ -57,21 +57,21 @@ public class TagCommand {
 		);
 	}
 
-	private static Collection<String> getTags(Collection<? extends Entity> entities) {
+	private static Collection<String> getTags(Collection<? extends Entity> collection) {
 		Set<String> set = Sets.<String>newHashSet();
 
-		for (Entity entity : entities) {
+		for (Entity entity : collection) {
 			set.addAll(entity.getScoreboardTags());
 		}
 
 		return set;
 	}
 
-	private static int executeAdd(ServerCommandSource source, Collection<? extends Entity> targets, String tag) throws CommandSyntaxException {
+	private static int executeAdd(ServerCommandSource serverCommandSource, Collection<? extends Entity> collection, String string) throws CommandSyntaxException {
 		int i = 0;
 
-		for (Entity entity : targets) {
-			if (entity.addScoreboardTag(tag)) {
+		for (Entity entity : collection) {
+			if (entity.addScoreboardTag(string)) {
 				i++;
 			}
 		}
@@ -79,21 +79,23 @@ public class TagCommand {
 		if (i == 0) {
 			throw ADD_FAILED_EXCEPTION.create();
 		} else {
-			if (targets.size() == 1) {
-				source.sendFeedback(new TranslatableText("commands.tag.add.success.single", tag, ((Entity)targets.iterator().next()).getDisplayName()), true);
+			if (collection.size() == 1) {
+				serverCommandSource.sendFeedback(
+					new TranslatableText("commands.tag.add.success.single", string, ((Entity)collection.iterator().next()).getDisplayName()), true
+				);
 			} else {
-				source.sendFeedback(new TranslatableText("commands.tag.add.success.multiple", tag, targets.size()), true);
+				serverCommandSource.sendFeedback(new TranslatableText("commands.tag.add.success.multiple", string, collection.size()), true);
 			}
 
 			return i;
 		}
 	}
 
-	private static int executeRemove(ServerCommandSource source, Collection<? extends Entity> targets, String tag) throws CommandSyntaxException {
+	private static int executeRemove(ServerCommandSource serverCommandSource, Collection<? extends Entity> collection, String string) throws CommandSyntaxException {
 		int i = 0;
 
-		for (Entity entity : targets) {
-			if (entity.removeScoreboardTag(tag)) {
+		for (Entity entity : collection) {
+			if (entity.removeScoreboardTag(string)) {
 				i++;
 			}
 		}
@@ -101,34 +103,38 @@ public class TagCommand {
 		if (i == 0) {
 			throw REMOVE_FAILED_EXCEPTION.create();
 		} else {
-			if (targets.size() == 1) {
-				source.sendFeedback(new TranslatableText("commands.tag.remove.success.single", tag, ((Entity)targets.iterator().next()).getDisplayName()), true);
+			if (collection.size() == 1) {
+				serverCommandSource.sendFeedback(
+					new TranslatableText("commands.tag.remove.success.single", string, ((Entity)collection.iterator().next()).getDisplayName()), true
+				);
 			} else {
-				source.sendFeedback(new TranslatableText("commands.tag.remove.success.multiple", tag, targets.size()), true);
+				serverCommandSource.sendFeedback(new TranslatableText("commands.tag.remove.success.multiple", string, collection.size()), true);
 			}
 
 			return i;
 		}
 	}
 
-	private static int executeList(ServerCommandSource source, Collection<? extends Entity> targets) {
+	private static int executeList(ServerCommandSource serverCommandSource, Collection<? extends Entity> collection) {
 		Set<String> set = Sets.<String>newHashSet();
 
-		for (Entity entity : targets) {
+		for (Entity entity : collection) {
 			set.addAll(entity.getScoreboardTags());
 		}
 
-		if (targets.size() == 1) {
-			Entity entity2 = (Entity)targets.iterator().next();
+		if (collection.size() == 1) {
+			Entity entity2 = (Entity)collection.iterator().next();
 			if (set.isEmpty()) {
-				source.sendFeedback(new TranslatableText("commands.tag.list.single.empty", entity2.getDisplayName()), false);
+				serverCommandSource.sendFeedback(new TranslatableText("commands.tag.list.single.empty", entity2.getDisplayName()), false);
 			} else {
-				source.sendFeedback(new TranslatableText("commands.tag.list.single.success", entity2.getDisplayName(), set.size(), Texts.joinOrdered(set)), false);
+				serverCommandSource.sendFeedback(
+					new TranslatableText("commands.tag.list.single.success", entity2.getDisplayName(), set.size(), Texts.joinOrdered(set)), false
+				);
 			}
 		} else if (set.isEmpty()) {
-			source.sendFeedback(new TranslatableText("commands.tag.list.multiple.empty", targets.size()), false);
+			serverCommandSource.sendFeedback(new TranslatableText("commands.tag.list.multiple.empty", collection.size()), false);
 		} else {
-			source.sendFeedback(new TranslatableText("commands.tag.list.multiple.success", targets.size(), set.size(), Texts.joinOrdered(set)), false);
+			serverCommandSource.sendFeedback(new TranslatableText("commands.tag.list.multiple.success", collection.size(), set.size(), Texts.joinOrdered(set)), false);
 		}
 
 		return set.size();

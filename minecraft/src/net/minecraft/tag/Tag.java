@@ -16,46 +16,35 @@ import java.util.function.Function;
 import javax.annotation.Nullable;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.JsonHelper;
+import net.minecraft.util.SystemUtil;
 
-/**
- * A tag is a set of objects.
- * 
- * <p>Tags simplifies reference to multiple objects, especially for
- * predicate (testing against) purposes.
- * 
- * <p>A tag is immutable by design. It has a builder, which is a mutable
- * equivalent.
- * 
- * <p>Its entries' iteration may be ordered
- * or unordered, depending on the configuration from the tag builder.
- */
 public class Tag<T> {
 	private final Identifier id;
 	private final Set<T> values;
 	private final Collection<Tag.Entry<T>> entries;
 
-	public Tag(Identifier id) {
-		this.id = id;
+	public Tag(Identifier identifier) {
+		this.id = identifier;
 		this.values = Collections.emptySet();
 		this.entries = Collections.emptyList();
 	}
 
-	public Tag(Identifier id, Collection<Tag.Entry<T>> entries, boolean ordered) {
-		this.id = id;
-		this.values = (Set<T>)(ordered ? Sets.<T>newLinkedHashSet() : Sets.<T>newHashSet());
-		this.entries = entries;
+	public Tag(Identifier identifier, Collection<Tag.Entry<T>> collection, boolean bl) {
+		this.id = identifier;
+		this.values = (Set<T>)(bl ? Sets.<T>newLinkedHashSet() : Sets.<T>newHashSet());
+		this.entries = collection;
 
-		for (Tag.Entry<T> entry : entries) {
+		for (Tag.Entry<T> entry : collection) {
 			entry.build(this.values);
 		}
 	}
 
-	public JsonObject toJson(Function<T, Identifier> idGetter) {
+	public JsonObject toJson(Function<T, Identifier> function) {
 		JsonObject jsonObject = new JsonObject();
 		JsonArray jsonArray = new JsonArray();
 
 		for (Tag.Entry<T> entry : this.entries) {
-			entry.toJson(jsonArray, idGetter);
+			entry.toJson(jsonArray, function);
 		}
 
 		jsonObject.addProperty("replace", false);
@@ -63,8 +52,8 @@ public class Tag<T> {
 		return jsonObject;
 	}
 
-	public boolean contains(T entry) {
-		return this.values.contains(entry);
+	public boolean contains(T object) {
+		return this.values.contains(object);
 	}
 
 	public Collection<T> values() {
@@ -225,7 +214,7 @@ public class Tag<T> {
 		@Override
 		public void build(Collection<T> collection) {
 			if (this.tag == null) {
-				throw new IllegalStateException("Cannot build unresolved tag entry");
+				throw (IllegalStateException)SystemUtil.method_22320((T)(new IllegalStateException("Cannot build unresolved tag entry")));
 			} else {
 				collection.addAll(this.tag.values());
 			}

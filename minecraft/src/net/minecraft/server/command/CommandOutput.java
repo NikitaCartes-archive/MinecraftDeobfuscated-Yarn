@@ -5,7 +5,7 @@ import net.minecraft.text.Text;
 public interface CommandOutput {
 	CommandOutput DUMMY = new CommandOutput() {
 		@Override
-		public void sendMessage(Text message) {
+		public void sendMessage(Text text) {
 		}
 
 		@Override
@@ -24,7 +24,7 @@ public interface CommandOutput {
 		}
 	};
 
-	void sendMessage(Text message);
+	void sendMessage(Text text);
 
 	boolean sendCommandFeedback();
 

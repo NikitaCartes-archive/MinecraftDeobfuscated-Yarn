@@ -10,8 +10,8 @@ import net.minecraft.text.TranslatableText;
 import net.minecraft.util.math.BlockPos;
 
 public class SpawnPointCommand {
-	public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
-		dispatcher.register(
+	public static void register(CommandDispatcher<ServerCommandSource> commandDispatcher) {
+		commandDispatcher.register(
 			CommandManager.literal("spawnpoint")
 				.requires(serverCommandSource -> serverCommandSource.hasPermissionLevel(2))
 				.executes(
@@ -38,22 +38,28 @@ public class SpawnPointCommand {
 		);
 	}
 
-	private static int execute(ServerCommandSource source, Collection<ServerPlayerEntity> targets, BlockPos pos) {
-		for (ServerPlayerEntity serverPlayerEntity : targets) {
-			serverPlayerEntity.setPlayerSpawn(pos, true);
+	private static int execute(ServerCommandSource serverCommandSource, Collection<ServerPlayerEntity> collection, BlockPos blockPos) {
+		for (ServerPlayerEntity serverPlayerEntity : collection) {
+			serverPlayerEntity.setPlayerSpawn(blockPos, true);
 		}
 
-		if (targets.size() == 1) {
-			source.sendFeedback(
+		if (collection.size() == 1) {
+			serverCommandSource.sendFeedback(
 				new TranslatableText(
-					"commands.spawnpoint.success.single", pos.getX(), pos.getY(), pos.getZ(), ((ServerPlayerEntity)targets.iterator().next()).getDisplayName()
+					"commands.spawnpoint.success.single",
+					blockPos.getX(),
+					blockPos.getY(),
+					blockPos.getZ(),
+					((ServerPlayerEntity)collection.iterator().next()).getDisplayName()
 				),
 				true
 			);
 		} else {
-			source.sendFeedback(new TranslatableText("commands.spawnpoint.success.multiple", pos.getX(), pos.getY(), pos.getZ(), targets.size()), true);
+			serverCommandSource.sendFeedback(
+				new TranslatableText("commands.spawnpoint.success.multiple", blockPos.getX(), blockPos.getY(), blockPos.getZ(), collection.size()), true
+			);
 		}
 
-		return targets.size();
+		return collection.size();
 	}
 }

@@ -8,9 +8,9 @@ import com.google.gson.JsonSyntaxException;
 import java.util.Map;
 import javax.annotation.Nullable;
 import net.minecraft.enchantment.Enchantment;
-import net.minecraft.predicate.NumberRange;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.JsonHelper;
+import net.minecraft.util.NumberRange;
 import net.minecraft.util.registry.Registry;
 
 public class EnchantmentPredicate {
@@ -60,14 +60,14 @@ public class EnchantmentPredicate {
 				jsonObject.addProperty("enchantment", Registry.ENCHANTMENT.getId(this.enchantment).toString());
 			}
 
-			jsonObject.add("levels", this.levels.toJson());
+			jsonObject.add("levels", this.levels.serialize());
 			return jsonObject;
 		}
 	}
 
-	public static EnchantmentPredicate deserialize(@Nullable JsonElement el) {
-		if (el != null && !el.isJsonNull()) {
-			JsonObject jsonObject = JsonHelper.asObject(el, "enchantment");
+	public static EnchantmentPredicate deserialize(@Nullable JsonElement jsonElement) {
+		if (jsonElement != null && !jsonElement.isJsonNull()) {
+			JsonObject jsonObject = JsonHelper.asObject(jsonElement, "enchantment");
 			Enchantment enchantment = null;
 			if (jsonObject.has("enchantment")) {
 				Identifier identifier = new Identifier(JsonHelper.getString(jsonObject, "enchantment"));
@@ -83,9 +83,9 @@ public class EnchantmentPredicate {
 		}
 	}
 
-	public static EnchantmentPredicate[] deserializeAll(@Nullable JsonElement el) {
-		if (el != null && !el.isJsonNull()) {
-			JsonArray jsonArray = JsonHelper.asArray(el, "enchantments");
+	public static EnchantmentPredicate[] deserializeAll(@Nullable JsonElement jsonElement) {
+		if (jsonElement != null && !jsonElement.isJsonNull()) {
+			JsonArray jsonArray = JsonHelper.asArray(jsonElement, "enchantments");
 			EnchantmentPredicate[] enchantmentPredicates = new EnchantmentPredicate[jsonArray.size()];
 
 			for (int i = 0; i < enchantmentPredicates.length; i++) {

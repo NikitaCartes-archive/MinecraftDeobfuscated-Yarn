@@ -14,16 +14,16 @@ import net.minecraft.server.world.ServerWorld;
 
 public class NearestPlayersSensor extends Sensor<LivingEntity> {
 	@Override
-	protected void sense(ServerWorld world, LivingEntity entity) {
-		List<PlayerEntity> list = (List<PlayerEntity>)world.getPlayers()
+	protected void sense(ServerWorld serverWorld, LivingEntity livingEntity) {
+		List<PlayerEntity> list = (List<PlayerEntity>)serverWorld.getPlayers()
 			.stream()
 			.filter(EntityPredicates.EXCEPT_SPECTATOR)
-			.filter(serverPlayerEntity -> entity.squaredDistanceTo(serverPlayerEntity) < 256.0)
-			.sorted(Comparator.comparingDouble(entity::squaredDistanceTo))
+			.filter(serverPlayerEntity -> livingEntity.squaredDistanceTo(serverPlayerEntity) < 256.0)
+			.sorted(Comparator.comparingDouble(livingEntity::squaredDistanceTo))
 			.collect(Collectors.toList());
-		Brain<?> brain = entity.getBrain();
+		Brain<?> brain = livingEntity.getBrain();
 		brain.putMemory(MemoryModuleType.NEAREST_PLAYERS, list);
-		brain.setMemory(MemoryModuleType.NEAREST_VISIBLE_PLAYER, list.stream().filter(entity::canSee).findFirst());
+		brain.setMemory(MemoryModuleType.NEAREST_VISIBLE_PLAYER, list.stream().filter(livingEntity::canSee).findFirst());
 	}
 
 	@Override

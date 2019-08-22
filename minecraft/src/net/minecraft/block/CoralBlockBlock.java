@@ -14,30 +14,32 @@ import net.minecraft.world.World;
 public class CoralBlockBlock extends Block {
 	private final Block deadCoralBlock;
 
-	public CoralBlockBlock(Block deadCoralBlock, Block.Settings settings) {
+	public CoralBlockBlock(Block block, Block.Settings settings) {
 		super(settings);
-		this.deadCoralBlock = deadCoralBlock;
+		this.deadCoralBlock = block;
 	}
 
 	@Override
-	public void onScheduledTick(BlockState state, World world, BlockPos pos, Random random) {
-		if (!this.isInWater(world, pos)) {
-			world.setBlockState(pos, this.deadCoralBlock.getDefaultState(), 2);
+	public void onScheduledTick(BlockState blockState, World world, BlockPos blockPos, Random random) {
+		if (!this.isInWater(world, blockPos)) {
+			world.setBlockState(blockPos, this.deadCoralBlock.getDefaultState(), 2);
 		}
 	}
 
 	@Override
-	public BlockState getStateForNeighborUpdate(BlockState state, Direction facing, BlockState neighborState, IWorld world, BlockPos pos, BlockPos neighborPos) {
-		if (!this.isInWater(world, pos)) {
-			world.getBlockTickScheduler().schedule(pos, this, 60 + world.getRandom().nextInt(40));
+	public BlockState getStateForNeighborUpdate(
+		BlockState blockState, Direction direction, BlockState blockState2, IWorld iWorld, BlockPos blockPos, BlockPos blockPos2
+	) {
+		if (!this.isInWater(iWorld, blockPos)) {
+			iWorld.getBlockTickScheduler().schedule(blockPos, this, 60 + iWorld.getRandom().nextInt(40));
 		}
 
-		return super.getStateForNeighborUpdate(state, facing, neighborState, world, pos, neighborPos);
+		return super.getStateForNeighborUpdate(blockState, direction, blockState2, iWorld, blockPos, blockPos2);
 	}
 
-	protected boolean isInWater(BlockView world, BlockPos pos) {
+	protected boolean isInWater(BlockView blockView, BlockPos blockPos) {
 		for (Direction direction : Direction.values()) {
-			FluidState fluidState = world.getFluidState(pos.offset(direction));
+			FluidState fluidState = blockView.getFluidState(blockPos.offset(direction));
 			if (fluidState.matches(FluidTags.WATER)) {
 				return true;
 			}
@@ -48,9 +50,11 @@ public class CoralBlockBlock extends Block {
 
 	@Nullable
 	@Override
-	public BlockState getPlacementState(ItemPlacementContext ctx) {
-		if (!this.isInWater(ctx.getWorld(), ctx.getBlockPos())) {
-			ctx.getWorld().getBlockTickScheduler().schedule(ctx.getBlockPos(), this, 60 + ctx.getWorld().getRandom().nextInt(40));
+	public BlockState getPlacementState(ItemPlacementContext itemPlacementContext) {
+		if (!this.isInWater(itemPlacementContext.getWorld(), itemPlacementContext.getBlockPos())) {
+			itemPlacementContext.getWorld()
+				.getBlockTickScheduler()
+				.schedule(itemPlacementContext.getBlockPos(), this, 60 + itemPlacementContext.getWorld().getRandom().nextInt(40));
 		}
 
 		return this.getDefaultState();

@@ -18,9 +18,9 @@ public enum Difficulty {
 	private final int id;
 	private final String name;
 
-	private Difficulty(int id, String name) {
-		this.id = id;
-		this.name = name;
+	private Difficulty(int j, String string2) {
+		this.id = j;
+		this.name = string2;
 	}
 
 	public int getId() {
@@ -31,14 +31,14 @@ public enum Difficulty {
 		return new TranslatableText("options.difficulty." + this.name);
 	}
 
-	public static Difficulty byOrdinal(int ordinal) {
-		return BY_NAME[ordinal % BY_NAME.length];
+	public static Difficulty byOrdinal(int i) {
+		return BY_NAME[i % BY_NAME.length];
 	}
 
 	@Nullable
-	public static Difficulty byName(String name) {
+	public static Difficulty byName(String string) {
 		for (Difficulty difficulty : values()) {
-			if (difficulty.name.equals(name)) {
+			if (difficulty.name.equals(string)) {
 				return difficulty;
 			}
 		}

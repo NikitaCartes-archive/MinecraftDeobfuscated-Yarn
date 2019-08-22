@@ -15,11 +15,11 @@ import net.minecraft.world.gen.chunk.ChunkGenerator;
 import net.minecraft.world.gen.chunk.ChunkGeneratorConfig;
 
 public class IcebergFeature extends Feature<IcebergFeatureConfig> {
-	public IcebergFeature(Function<Dynamic<?>, ? extends IcebergFeatureConfig> configFactory) {
-		super(configFactory);
+	public IcebergFeature(Function<Dynamic<?>, ? extends IcebergFeatureConfig> function) {
+		super(function);
 	}
 
-	public boolean generate(
+	public boolean method_13423(
 		IWorld iWorld, ChunkGenerator<? extends ChunkGeneratorConfig> chunkGenerator, Random random, BlockPos blockPos, IcebergFeatureConfig icebergFeatureConfig
 	) {
 		blockPos = new BlockPos(blockPos.getX(), iWorld.getSeaLevel(), blockPos.getZ());

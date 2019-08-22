@@ -13,67 +13,67 @@ public abstract class Task<E extends LivingEntity> {
 	private final int minRunTime;
 	private final int maxRunTime;
 
-	public Task(Map<MemoryModuleType<?>, MemoryModuleState> requiredMemoryState) {
-		this(requiredMemoryState, 60);
+	public Task(Map<MemoryModuleType<?>, MemoryModuleState> map) {
+		this(map, 60);
 	}
 
-	public Task(Map<MemoryModuleType<?>, MemoryModuleState> requiredMemoryState, int runTime) {
-		this(requiredMemoryState, runTime, runTime);
+	public Task(Map<MemoryModuleType<?>, MemoryModuleState> map, int i) {
+		this(map, i, i);
 	}
 
-	public Task(Map<MemoryModuleType<?>, MemoryModuleState> requiredMemoryState, int minRunTime, int maxRunTime) {
-		this.minRunTime = minRunTime;
-		this.maxRunTime = maxRunTime;
-		this.requiredMemoryState = requiredMemoryState;
+	public Task(Map<MemoryModuleType<?>, MemoryModuleState> map, int i, int j) {
+		this.minRunTime = i;
+		this.maxRunTime = j;
+		this.requiredMemoryState = map;
 	}
 
 	public Task.Status getStatus() {
 		return this.status;
 	}
 
-	public final boolean tryStarting(ServerWorld world, E entity, long time) {
-		if (this.hasRequiredMemoryState(entity) && this.shouldRun(world, entity)) {
+	public final boolean tryStarting(ServerWorld serverWorld, E livingEntity, long l) {
+		if (this.hasRequiredMemoryState(livingEntity) && this.shouldRun(serverWorld, livingEntity)) {
 			this.status = Task.Status.RUNNING;
-			int i = this.minRunTime + world.getRandom().nextInt(this.maxRunTime + 1 - this.minRunTime);
-			this.endTime = time + (long)i;
-			this.run(world, entity, time);
+			int i = this.minRunTime + serverWorld.getRandom().nextInt(this.maxRunTime + 1 - this.minRunTime);
+			this.endTime = l + (long)i;
+			this.run(serverWorld, livingEntity, l);
 			return true;
 		} else {
 			return false;
 		}
 	}
 
-	protected void run(ServerWorld world, E entity, long time) {
+	protected void run(ServerWorld serverWorld, E livingEntity, long l) {
 	}
 
-	public final void tick(ServerWorld world, E entity, long time) {
-		if (!this.isTimeLimitExceeded(time) && this.shouldKeepRunning(world, entity, time)) {
-			this.keepRunning(world, entity, time);
+	public final void tick(ServerWorld serverWorld, E livingEntity, long l) {
+		if (!this.isTimeLimitExceeded(l) && this.shouldKeepRunning(serverWorld, livingEntity, l)) {
+			this.keepRunning(serverWorld, livingEntity, l);
 		} else {
-			this.stop(world, entity, time);
+			this.stop(serverWorld, livingEntity, l);
 		}
 	}
 
-	protected void keepRunning(ServerWorld world, E entity, long time) {
+	protected void keepRunning(ServerWorld serverWorld, E livingEntity, long l) {
 	}
 
-	public final void stop(ServerWorld world, E entity, long time) {
+	public final void stop(ServerWorld serverWorld, E livingEntity, long l) {
 		this.status = Task.Status.STOPPED;
-		this.finishRunning(world, entity, time);
+		this.finishRunning(serverWorld, livingEntity, l);
 	}
 
-	protected void finishRunning(ServerWorld world, E entity, long time) {
+	protected void finishRunning(ServerWorld serverWorld, E livingEntity, long l) {
 	}
 
-	protected boolean shouldKeepRunning(ServerWorld world, E entity, long time) {
+	protected boolean shouldKeepRunning(ServerWorld serverWorld, E livingEntity, long l) {
 		return false;
 	}
 
-	protected boolean isTimeLimitExceeded(long time) {
-		return time > this.endTime;
+	protected boolean isTimeLimitExceeded(long l) {
+		return l > this.endTime;
 	}
 
-	protected boolean shouldRun(ServerWorld world, E entity) {
+	protected boolean shouldRun(ServerWorld serverWorld, E livingEntity) {
 		return true;
 	}
 
@@ -81,11 +81,11 @@ public abstract class Task<E extends LivingEntity> {
 		return this.getClass().getSimpleName();
 	}
 
-	private boolean hasRequiredMemoryState(E entity) {
+	private boolean hasRequiredMemoryState(E livingEntity) {
 		return this.requiredMemoryState.entrySet().stream().allMatch(entry -> {
 			MemoryModuleType<?> memoryModuleType = (MemoryModuleType<?>)entry.getKey();
 			MemoryModuleState memoryModuleState = (MemoryModuleState)entry.getValue();
-			return entity.getBrain().isMemoryInState(memoryModuleType, memoryModuleState);
+			return livingEntity.getBrain().isMemoryInState(memoryModuleType, memoryModuleState);
 		});
 	}
 

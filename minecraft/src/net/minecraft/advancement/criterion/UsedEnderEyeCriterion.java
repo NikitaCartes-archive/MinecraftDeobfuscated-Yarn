@@ -9,9 +9,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import net.minecraft.advancement.PlayerAdvancementTracker;
-import net.minecraft.predicate.NumberRange;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.NumberRange;
 import net.minecraft.util.math.BlockPos;
 
 public class UsedEnderEyeCriterion implements Criterion<UsedEnderEyeCriterion.Conditions> {
@@ -24,42 +24,46 @@ public class UsedEnderEyeCriterion implements Criterion<UsedEnderEyeCriterion.Co
 	}
 
 	@Override
-	public void beginTrackingCondition(PlayerAdvancementTracker manager, Criterion.ConditionsContainer<UsedEnderEyeCriterion.Conditions> conditionsContainer) {
-		UsedEnderEyeCriterion.Handler handler = (UsedEnderEyeCriterion.Handler)this.handlers.get(manager);
+	public void beginTrackingCondition(
+		PlayerAdvancementTracker playerAdvancementTracker, Criterion.ConditionsContainer<UsedEnderEyeCriterion.Conditions> conditionsContainer
+	) {
+		UsedEnderEyeCriterion.Handler handler = (UsedEnderEyeCriterion.Handler)this.handlers.get(playerAdvancementTracker);
 		if (handler == null) {
-			handler = new UsedEnderEyeCriterion.Handler(manager);
-			this.handlers.put(manager, handler);
+			handler = new UsedEnderEyeCriterion.Handler(playerAdvancementTracker);
+			this.handlers.put(playerAdvancementTracker, handler);
 		}
 
 		handler.addCondition(conditionsContainer);
 	}
 
 	@Override
-	public void endTrackingCondition(PlayerAdvancementTracker manager, Criterion.ConditionsContainer<UsedEnderEyeCriterion.Conditions> conditionsContainer) {
-		UsedEnderEyeCriterion.Handler handler = (UsedEnderEyeCriterion.Handler)this.handlers.get(manager);
+	public void endTrackingCondition(
+		PlayerAdvancementTracker playerAdvancementTracker, Criterion.ConditionsContainer<UsedEnderEyeCriterion.Conditions> conditionsContainer
+	) {
+		UsedEnderEyeCriterion.Handler handler = (UsedEnderEyeCriterion.Handler)this.handlers.get(playerAdvancementTracker);
 		if (handler != null) {
 			handler.removeCondition(conditionsContainer);
 			if (handler.isEmpty()) {
-				this.handlers.remove(manager);
+				this.handlers.remove(playerAdvancementTracker);
 			}
 		}
 	}
 
 	@Override
-	public void endTracking(PlayerAdvancementTracker tracker) {
-		this.handlers.remove(tracker);
+	public void endTracking(PlayerAdvancementTracker playerAdvancementTracker) {
+		this.handlers.remove(playerAdvancementTracker);
 	}
 
-	public UsedEnderEyeCriterion.Conditions conditionsFromJson(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext) {
+	public UsedEnderEyeCriterion.Conditions method_9156(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext) {
 		NumberRange.FloatRange floatRange = NumberRange.FloatRange.fromJson(jsonObject.get("distance"));
 		return new UsedEnderEyeCriterion.Conditions(floatRange);
 	}
 
-	public void trigger(ServerPlayerEntity player, BlockPos strongholdPos) {
-		UsedEnderEyeCriterion.Handler handler = (UsedEnderEyeCriterion.Handler)this.handlers.get(player.getAdvancementTracker());
+	public void handle(ServerPlayerEntity serverPlayerEntity, BlockPos blockPos) {
+		UsedEnderEyeCriterion.Handler handler = (UsedEnderEyeCriterion.Handler)this.handlers.get(serverPlayerEntity.getAdvancementManager());
 		if (handler != null) {
-			double d = player.x - (double)strongholdPos.getX();
-			double e = player.z - (double)strongholdPos.getZ();
+			double d = serverPlayerEntity.x - (double)blockPos.getX();
+			double e = serverPlayerEntity.z - (double)blockPos.getZ();
 			handler.handle(d * d + e * e);
 		}
 	}

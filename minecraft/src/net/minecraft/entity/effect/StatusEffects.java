@@ -87,20 +87,20 @@ public class StatusEffects {
 	public static final StatusEffect DOLPHINS_GRACE = register(30, "dolphins_grace", new StatusEffect(StatusEffectType.BENEFICIAL, 8954814));
 	public static final StatusEffect BAD_OMEN = register(31, "bad_omen", new StatusEffect(StatusEffectType.NEUTRAL, 745784) {
 		@Override
-		public boolean canApplyUpdateEffect(int duration, int amplifier) {
+		public boolean canApplyUpdateEffect(int i, int j) {
 			return true;
 		}
 
 		@Override
-		public void applyUpdateEffect(LivingEntity entity, int amplifier) {
-			if (entity instanceof ServerPlayerEntity && !entity.isSpectator()) {
-				ServerPlayerEntity serverPlayerEntity = (ServerPlayerEntity)entity;
+		public void applyUpdateEffect(LivingEntity livingEntity, int i) {
+			if (livingEntity instanceof ServerPlayerEntity && !livingEntity.isSpectator()) {
+				ServerPlayerEntity serverPlayerEntity = (ServerPlayerEntity)livingEntity;
 				ServerWorld serverWorld = serverPlayerEntity.getServerWorld();
 				if (serverWorld.getDifficulty() == Difficulty.PEACEFUL) {
 					return;
 				}
 
-				if (serverWorld.isNearOccupiedPointOfInterest(new BlockPos(entity))) {
+				if (serverWorld.isNearOccupiedPointOfInterest(new BlockPos(livingEntity))) {
 					serverWorld.getRaidManager().startRaid(serverPlayerEntity);
 				}
 			}
@@ -108,7 +108,7 @@ public class StatusEffects {
 	});
 	public static final StatusEffect HERO_OF_THE_VILLAGE = register(32, "hero_of_the_village", new StatusEffect(StatusEffectType.BENEFICIAL, 4521796));
 
-	private static StatusEffect register(int rawId, String id, StatusEffect entry) {
-		return Registry.register(Registry.STATUS_EFFECT, rawId, id, entry);
+	private static StatusEffect register(int i, String string, StatusEffect statusEffect) {
+		return Registry.register(Registry.MOB_EFFECT, i, string, statusEffect);
 	}
 }

@@ -7,11 +7,11 @@ import javax.annotation.Nullable;
 import net.minecraft.structure.processor.StructureProcessor;
 import net.minecraft.util.BlockMirror;
 import net.minecraft.util.BlockRotation;
-import net.minecraft.util.Util;
-import net.minecraft.util.math.BlockBox;
+import net.minecraft.util.SystemUtil;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.math.MutableIntBoundingBox;
 
 public class StructurePlacementData {
 	private BlockMirror mirror = BlockMirror.NONE;
@@ -21,7 +21,7 @@ public class StructurePlacementData {
 	@Nullable
 	private ChunkPos chunkPosition;
 	@Nullable
-	private BlockBox boundingBox;
+	private MutableIntBoundingBox boundingBox;
 	private boolean placeFluids = true;
 	@Nullable
 	private Random random;
@@ -58,8 +58,8 @@ public class StructurePlacementData {
 		return this;
 	}
 
-	public StructurePlacementData setPosition(BlockPos position) {
-		this.position = position;
+	public StructurePlacementData setPosition(BlockPos blockPos) {
+		this.position = blockPos;
 		return this;
 	}
 
@@ -68,13 +68,13 @@ public class StructurePlacementData {
 		return this;
 	}
 
-	public StructurePlacementData setChunkPosition(ChunkPos chunkPosition) {
-		this.chunkPosition = chunkPosition;
+	public StructurePlacementData setChunkPosition(ChunkPos chunkPos) {
+		this.chunkPosition = chunkPos;
 		return this;
 	}
 
-	public StructurePlacementData setBoundingBox(BlockBox boundingBox) {
-		this.boundingBox = boundingBox;
+	public StructurePlacementData setBoundingBox(MutableIntBoundingBox mutableIntBoundingBox) {
+		this.boundingBox = mutableIntBoundingBox;
 		return this;
 	}
 
@@ -93,13 +93,13 @@ public class StructurePlacementData {
 		return this;
 	}
 
-	public StructurePlacementData addProcessor(StructureProcessor processor) {
-		this.processors.add(processor);
+	public StructurePlacementData addProcessor(StructureProcessor structureProcessor) {
+		this.processors.add(structureProcessor);
 		return this;
 	}
 
-	public StructurePlacementData removeProcessor(StructureProcessor processor) {
-		this.processors.remove(processor);
+	public StructurePlacementData removeProcessor(StructureProcessor structureProcessor) {
+		this.processors.remove(structureProcessor);
 		return this;
 	}
 
@@ -115,11 +115,11 @@ public class StructurePlacementData {
 		return this.position;
 	}
 
-	public Random getRandom(@Nullable BlockPos pos) {
+	public Random getRandom(@Nullable BlockPos blockPos) {
 		if (this.random != null) {
 			return this.random;
 		} else {
-			return pos == null ? new Random(Util.getMeasuringTimeMs()) : new Random(MathHelper.hashCode(pos));
+			return blockPos == null ? new Random(SystemUtil.getMeasuringTimeMs()) : new Random(MathHelper.hashCode(blockPos));
 		}
 	}
 
@@ -128,7 +128,7 @@ public class StructurePlacementData {
 	}
 
 	@Nullable
-	public BlockBox method_15124() {
+	public MutableIntBoundingBox method_15124() {
 		if (this.boundingBox == null && this.chunkPosition != null) {
 			this.method_15132();
 		}
@@ -165,13 +165,13 @@ public class StructurePlacementData {
 	}
 
 	@Nullable
-	private BlockBox method_15117(@Nullable ChunkPos chunkPos) {
+	private MutableIntBoundingBox method_15117(@Nullable ChunkPos chunkPos) {
 		if (chunkPos == null) {
 			return this.boundingBox;
 		} else {
 			int i = chunkPos.x * 16;
 			int j = chunkPos.z * 16;
-			return new BlockBox(i, 0, j, i + 16 - 1, 255, j + 16 - 1);
+			return new MutableIntBoundingBox(i, 0, j, i + 16 - 1, 255, j + 16 - 1);
 		}
 	}
 }

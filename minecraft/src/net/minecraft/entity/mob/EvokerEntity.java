@@ -73,8 +73,8 @@ public class EvokerEntity extends SpellcastingIllagerEntity {
 	}
 
 	@Override
-	public void readCustomDataFromTag(CompoundTag tag) {
-		super.readCustomDataFromTag(tag);
+	public void readCustomDataFromTag(CompoundTag compoundTag) {
+		super.readCustomDataFromTag(compoundTag);
 	}
 
 	@Override
@@ -83,8 +83,8 @@ public class EvokerEntity extends SpellcastingIllagerEntity {
 	}
 
 	@Override
-	public void writeCustomDataToTag(CompoundTag tag) {
-		super.writeCustomDataToTag(tag);
+	public void writeCustomDataToTag(CompoundTag compoundTag) {
+		super.writeCustomDataToTag(compoundTag);
 	}
 
 	@Override
@@ -98,18 +98,18 @@ public class EvokerEntity extends SpellcastingIllagerEntity {
 	}
 
 	@Override
-	public boolean isTeammate(Entity other) {
-		if (other == null) {
+	public boolean isTeammate(Entity entity) {
+		if (entity == null) {
 			return false;
-		} else if (other == this) {
+		} else if (entity == this) {
 			return true;
-		} else if (super.isTeammate(other)) {
+		} else if (super.isTeammate(entity)) {
 			return true;
-		} else if (other instanceof VexEntity) {
-			return this.isTeammate(((VexEntity)other).getOwner());
+		} else if (entity instanceof VexEntity) {
+			return this.isTeammate(((VexEntity)entity).getOwner());
 		} else {
-			return other instanceof LivingEntity && ((LivingEntity)other).getGroup() == EntityGroup.ILLAGER
-				? this.getScoreboardTeam() == null && other.getScoreboardTeam() == null
+			return entity instanceof LivingEntity && ((LivingEntity)entity).getGroup() == EntityGroup.ILLAGER
+				? this.getScoreboardTeam() == null && entity.getScoreboardTeam() == null
 				: false;
 		}
 	}
@@ -125,12 +125,12 @@ public class EvokerEntity extends SpellcastingIllagerEntity {
 	}
 
 	@Override
-	protected SoundEvent getHurtSound(DamageSource source) {
+	protected SoundEvent getHurtSound(DamageSource damageSource) {
 		return SoundEvents.ENTITY_EVOKER_HURT;
 	}
 
-	private void setWololoTarget(@Nullable SheepEntity sheep) {
-		this.wololoTarget = sheep;
+	private void setWololoTarget(@Nullable SheepEntity sheepEntity) {
+		this.wololoTarget = sheepEntity;
 	}
 
 	@Nullable
@@ -144,7 +144,7 @@ public class EvokerEntity extends SpellcastingIllagerEntity {
 	}
 
 	@Override
-	public void addBonusForWave(int wave, boolean unused) {
+	public void addBonusForWave(int i, boolean bl) {
 	}
 
 	class ConjureFangsGoal extends SpellcastingIllagerEntity.CastSpellGoal {
@@ -186,10 +186,10 @@ public class EvokerEntity extends SpellcastingIllagerEntity {
 			}
 		}
 
-		private void conjureFangs(double x, double z, double maxY, double y, float f, int warmup) {
-			BlockPos blockPos = new BlockPos(x, y, z);
+		private void conjureFangs(double d, double e, double f, double g, float h, int i) {
+			BlockPos blockPos = new BlockPos(d, g, e);
 			boolean bl = false;
-			double d = 0.0;
+			double j = 0.0;
 
 			do {
 				BlockPos blockPos2 = blockPos.down();
@@ -199,7 +199,7 @@ public class EvokerEntity extends SpellcastingIllagerEntity {
 						BlockState blockState2 = EvokerEntity.this.world.getBlockState(blockPos);
 						VoxelShape voxelShape = blockState2.getCollisionShape(EvokerEntity.this.world, blockPos);
 						if (!voxelShape.isEmpty()) {
-							d = voxelShape.getMaximum(Direction.Axis.Y);
+							j = voxelShape.getMaximum(Direction.Axis.Y);
 						}
 					}
 
@@ -208,10 +208,10 @@ public class EvokerEntity extends SpellcastingIllagerEntity {
 				}
 
 				blockPos = blockPos.down();
-			} while (blockPos.getY() >= MathHelper.floor(maxY) - 1);
+			} while (blockPos.getY() >= MathHelper.floor(f) - 1);
 
 			if (bl) {
-				EvokerEntity.this.world.spawnEntity(new EvokerFangsEntity(EvokerEntity.this.world, x, (double)blockPos.getY() + d, z, f, warmup, EvokerEntity.this));
+				EvokerEntity.this.world.spawnEntity(new EvokerFangsEntity(EvokerEntity.this.world, d, (double)blockPos.getY() + j, e, h, i, EvokerEntity.this));
 			}
 		}
 
@@ -280,7 +280,7 @@ public class EvokerEntity extends SpellcastingIllagerEntity {
 			for (int i = 0; i < 3; i++) {
 				BlockPos blockPos = new BlockPos(EvokerEntity.this).add(-2 + EvokerEntity.this.random.nextInt(5), 1, -2 + EvokerEntity.this.random.nextInt(5));
 				VexEntity vexEntity = EntityType.VEX.create(EvokerEntity.this.world);
-				vexEntity.refreshPositionAndAngles(blockPos, 0.0F, 0.0F);
+				vexEntity.setPositionAndAngles(blockPos, 0.0F, 0.0F);
 				vexEntity.initialize(EvokerEntity.this.world, EvokerEntity.this.world.getLocalDifficulty(blockPos), SpawnType.MOB_SUMMONED, null, null);
 				vexEntity.setOwner(EvokerEntity.this);
 				vexEntity.setBounds(blockPos);

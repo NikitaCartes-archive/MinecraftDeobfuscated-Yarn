@@ -10,7 +10,7 @@ public class StopPanickingTask extends Task<VillagerEntity> {
 		super(ImmutableMap.of());
 	}
 
-	protected void run(ServerWorld serverWorld, VillagerEntity villagerEntity, long l) {
+	protected void method_20645(ServerWorld serverWorld, VillagerEntity villagerEntity, long l) {
 		boolean bl = PanicTask.wasHurt(villagerEntity) || PanicTask.isHostileNearby(villagerEntity) || wasHurtByNearbyEntity(villagerEntity);
 		if (!bl) {
 			villagerEntity.getBrain().forget(MemoryModuleType.HURT_BY);
@@ -19,10 +19,10 @@ public class StopPanickingTask extends Task<VillagerEntity> {
 		}
 	}
 
-	private static boolean wasHurtByNearbyEntity(VillagerEntity entity) {
-		return entity.getBrain()
+	private static boolean wasHurtByNearbyEntity(VillagerEntity villagerEntity) {
+		return villagerEntity.getBrain()
 			.getOptionalMemory(MemoryModuleType.HURT_BY_ENTITY)
-			.filter(livingEntity -> livingEntity.squaredDistanceTo(entity) <= 36.0)
+			.filter(livingEntity -> livingEntity.squaredDistanceTo(villagerEntity) <= 36.0)
 			.isPresent();
 	}
 }

@@ -38,54 +38,52 @@ public class FilledMapItem extends NetworkSyncedItem {
 		super(settings);
 	}
 
-	public static ItemStack createMap(World world, int x, int z, byte scale, boolean showIcons, boolean unlimitedTracking) {
+	public static ItemStack createMap(World world, int i, int j, byte b, boolean bl, boolean bl2) {
 		ItemStack itemStack = new ItemStack(Items.FILLED_MAP);
-		createMapState(itemStack, world, x, z, scale, showIcons, unlimitedTracking, world.dimension.getType());
+		createMapState(itemStack, world, i, j, b, bl, bl2, world.dimension.getType());
 		return itemStack;
 	}
 
 	@Nullable
-	public static MapState getMapState(ItemStack stack, World world) {
-		return world.getMapState(getMapName(getMapId(stack)));
+	public static MapState getMapState(ItemStack itemStack, World world) {
+		return world.getMapState(getMapName(getMapId(itemStack)));
 	}
 
 	@Nullable
-	public static MapState getOrCreateMapState(ItemStack map, World world) {
-		MapState mapState = getMapState(map, world);
+	public static MapState getOrCreateMapState(ItemStack itemStack, World world) {
+		MapState mapState = getMapState(itemStack, world);
 		if (mapState == null && !world.isClient) {
 			mapState = createMapState(
-				map, world, world.getLevelProperties().getSpawnX(), world.getLevelProperties().getSpawnZ(), 3, false, false, world.dimension.getType()
+				itemStack, world, world.getLevelProperties().getSpawnX(), world.getLevelProperties().getSpawnZ(), 3, false, false, world.dimension.getType()
 			);
 		}
 
 		return mapState;
 	}
 
-	public static int getMapId(ItemStack stack) {
-		CompoundTag compoundTag = stack.getTag();
-		return compoundTag != null && compoundTag.contains("map", 99) ? compoundTag.getInt("map") : 0;
+	public static int getMapId(ItemStack itemStack) {
+		CompoundTag compoundTag = itemStack.getTag();
+		return compoundTag != null && compoundTag.containsKey("map", 99) ? compoundTag.getInt("map") : 0;
 	}
 
-	private static MapState createMapState(
-		ItemStack stack, World world, int x, int z, int scale, boolean showIcons, boolean unlimitedTracking, DimensionType dimension
-	) {
-		int i = world.getNextMapId();
-		MapState mapState = new MapState(getMapName(i));
-		mapState.init(x, z, scale, showIcons, unlimitedTracking, dimension);
+	private static MapState createMapState(ItemStack itemStack, World world, int i, int j, int k, boolean bl, boolean bl2, DimensionType dimensionType) {
+		int l = world.getNextMapId();
+		MapState mapState = new MapState(getMapName(l));
+		mapState.init(i, j, k, bl, bl2, dimensionType);
 		world.putMapState(mapState);
-		stack.getOrCreateTag().putInt("map", i);
+		itemStack.getOrCreateTag().putInt("map", l);
 		return mapState;
 	}
 
-	public static String getMapName(int mapId) {
-		return "map_" + mapId;
+	public static String getMapName(int i) {
+		return "map_" + i;
 	}
 
-	public void updateColors(World world, Entity entity, MapState state) {
-		if (world.dimension.getType() == state.dimension && entity instanceof PlayerEntity) {
-			int i = 1 << state.scale;
-			int j = state.xCenter;
-			int k = state.zCenter;
+	public void updateColors(World world, Entity entity, MapState mapState) {
+		if (world.dimension.getType() == mapState.dimension && entity instanceof PlayerEntity) {
+			int i = 1 << mapState.scale;
+			int j = mapState.xCenter;
+			int k = mapState.zCenter;
 			int l = MathHelper.floor(entity.x - (double)j) / i + 64;
 			int m = MathHelper.floor(entity.z - (double)k) / i + 64;
 			int n = 128 / i;
@@ -93,7 +91,7 @@ public class FilledMapItem extends NetworkSyncedItem {
 				n /= 2;
 			}
 
-			MapState.PlayerUpdateTracker playerUpdateTracker = state.getPlayerSyncData((PlayerEntity)entity);
+			MapState.PlayerUpdateTracker playerUpdateTracker = mapState.getPlayerSyncData((PlayerEntity)entity);
 			playerUpdateTracker.field_131++;
 			boolean bl = false;
 
@@ -158,7 +156,7 @@ public class FilledMapItem extends NetworkSyncedItem {
 												}
 											}
 
-											state.removeBanner(world, chunkPos.getStartX() + y + u, chunkPos.getStartZ() + z + v);
+											mapState.removeBanner(world, chunkPos.getStartX() + y + u, chunkPos.getStartZ() + z + v);
 											e += (double)aa / (double)(i * i);
 											multiset.add(blockState.getTopMaterialColor(world, mutable));
 										}
@@ -191,11 +189,11 @@ public class FilledMapItem extends NetworkSyncedItem {
 
 								d = e;
 								if (p >= 0 && q * q + r * r < n * n && (!bl2 || (o + p & 1) != 0)) {
-									byte b = state.colors[o + p * 128];
+									byte b = mapState.colors[o + p * 128];
 									byte c = (byte)(materialColor.id * 4 + y);
 									if (b != c) {
-										state.colors[o + p * 128] = c;
-										state.markDirty(o, p);
+										mapState.colors[o + p * 128] = c;
+										mapState.markDirty(o, p);
 										bl = true;
 									}
 								}
@@ -207,17 +205,17 @@ public class FilledMapItem extends NetworkSyncedItem {
 		}
 	}
 
-	private BlockState getFluidStateIfVisible(World world, BlockState state, BlockPos pos) {
-		FluidState fluidState = state.getFluidState();
-		return !fluidState.isEmpty() && !state.isSideSolidFullSquare(world, pos, Direction.UP) ? fluidState.getBlockState() : state;
+	private BlockState getFluidStateIfVisible(World world, BlockState blockState, BlockPos blockPos) {
+		FluidState fluidState = blockState.getFluidState();
+		return !fluidState.isEmpty() && !blockState.isSideSolidFullSquare(world, blockPos, Direction.UP) ? fluidState.getBlockState() : blockState;
 	}
 
-	private static boolean hasPositiveDepth(Biome[] biomes, int scale, int x, int z) {
-		return biomes[x * scale + z * scale * 128 * scale].getDepth() >= 0.0F;
+	private static boolean hasPositiveDepth(Biome[] biomes, int i, int j, int k) {
+		return biomes[j * i + k * i * 128 * i].getDepth() >= 0.0F;
 	}
 
-	public static void fillExplorationMap(World world, ItemStack map) {
-		MapState mapState = getOrCreateMapState(map, world);
+	public static void fillExplorationMap(World world, ItemStack itemStack) {
+		MapState mapState = getOrCreateMapState(itemStack, world);
 		if (mapState != null) {
 			if (world.dimension.getType() == mapState.dimension) {
 				int i = 1 << mapState.scale;
@@ -303,16 +301,16 @@ public class FilledMapItem extends NetworkSyncedItem {
 	}
 
 	@Override
-	public void inventoryTick(ItemStack stack, World world, Entity entity, int slot, boolean selected) {
+	public void inventoryTick(ItemStack itemStack, World world, Entity entity, int i, boolean bl) {
 		if (!world.isClient) {
-			MapState mapState = getOrCreateMapState(stack, world);
+			MapState mapState = getOrCreateMapState(itemStack, world);
 			if (mapState != null) {
 				if (entity instanceof PlayerEntity) {
 					PlayerEntity playerEntity = (PlayerEntity)entity;
-					mapState.update(playerEntity, stack);
+					mapState.update(playerEntity, itemStack);
 				}
 
-				if (!mapState.locked && (selected || entity instanceof PlayerEntity && ((PlayerEntity)entity).getOffHandStack() == stack)) {
+				if (!mapState.locked && (bl || entity instanceof PlayerEntity && ((PlayerEntity)entity).getOffHandStack() == itemStack)) {
 					this.updateColors(world, entity, mapState);
 				}
 			}
@@ -321,28 +319,28 @@ public class FilledMapItem extends NetworkSyncedItem {
 
 	@Nullable
 	@Override
-	public Packet<?> createSyncPacket(ItemStack stack, World world, PlayerEntity player) {
-		return getOrCreateMapState(stack, world).getPlayerMarkerPacket(stack, world, player);
+	public Packet<?> createSyncPacket(ItemStack itemStack, World world, PlayerEntity playerEntity) {
+		return getOrCreateMapState(itemStack, world).getPlayerMarkerPacket(itemStack, world, playerEntity);
 	}
 
 	@Override
-	public void onCraft(ItemStack stack, World world, PlayerEntity player) {
-		CompoundTag compoundTag = stack.getTag();
-		if (compoundTag != null && compoundTag.contains("map_scale_direction", 99)) {
-			scale(stack, world, compoundTag.getInt("map_scale_direction"));
+	public void onCraft(ItemStack itemStack, World world, PlayerEntity playerEntity) {
+		CompoundTag compoundTag = itemStack.getTag();
+		if (compoundTag != null && compoundTag.containsKey("map_scale_direction", 99)) {
+			scale(itemStack, world, compoundTag.getInt("map_scale_direction"));
 			compoundTag.remove("map_scale_direction");
 		}
 	}
 
-	protected static void scale(ItemStack map, World world, int amount) {
-		MapState mapState = getOrCreateMapState(map, world);
+	protected static void scale(ItemStack itemStack, World world, int i) {
+		MapState mapState = getOrCreateMapState(itemStack, world);
 		if (mapState != null) {
 			createMapState(
-				map,
+				itemStack,
 				world,
 				mapState.xCenter,
 				mapState.zCenter,
-				MathHelper.clamp(mapState.scale + amount, 0, 4),
+				MathHelper.clamp(mapState.scale + i, 0, 4),
 				mapState.showIcons,
 				mapState.unlimitedTracking,
 				mapState.dimension
@@ -351,13 +349,13 @@ public class FilledMapItem extends NetworkSyncedItem {
 	}
 
 	@Nullable
-	public static ItemStack copyMap(World world, ItemStack stack) {
-		MapState mapState = getOrCreateMapState(stack, world);
+	public static ItemStack copyMap(World world, ItemStack itemStack) {
+		MapState mapState = getOrCreateMapState(itemStack, world);
 		if (mapState != null) {
-			ItemStack itemStack = stack.copy();
-			MapState mapState2 = createMapState(itemStack, world, 0, 0, mapState.scale, mapState.showIcons, mapState.unlimitedTracking, mapState.dimension);
+			ItemStack itemStack2 = itemStack.copy();
+			MapState mapState2 = createMapState(itemStack2, world, 0, 0, mapState.scale, mapState.showIcons, mapState.unlimitedTracking, mapState.dimension);
 			mapState2.copyFrom(mapState);
-			return itemStack;
+			return itemStack2;
 		} else {
 			return null;
 		}
@@ -365,27 +363,27 @@ public class FilledMapItem extends NetworkSyncedItem {
 
 	@Environment(EnvType.CLIENT)
 	@Override
-	public void appendTooltip(ItemStack stack, @Nullable World world, List<Text> tooltip, TooltipContext context) {
-		MapState mapState = world == null ? null : getOrCreateMapState(stack, world);
+	public void appendTooltip(ItemStack itemStack, @Nullable World world, List<Text> list, TooltipContext tooltipContext) {
+		MapState mapState = world == null ? null : getOrCreateMapState(itemStack, world);
 		if (mapState != null && mapState.locked) {
-			tooltip.add(new TranslatableText("filled_map.locked", getMapId(stack)).formatted(Formatting.GRAY));
+			list.add(new TranslatableText("filled_map.locked", getMapId(itemStack)).formatted(Formatting.GRAY));
 		}
 
-		if (context.isAdvanced()) {
+		if (tooltipContext.isAdvanced()) {
 			if (mapState != null) {
-				tooltip.add(new TranslatableText("filled_map.id", getMapId(stack)).formatted(Formatting.GRAY));
-				tooltip.add(new TranslatableText("filled_map.scale", 1 << mapState.scale).formatted(Formatting.GRAY));
-				tooltip.add(new TranslatableText("filled_map.level", mapState.scale, 4).formatted(Formatting.GRAY));
+				list.add(new TranslatableText("filled_map.id", getMapId(itemStack)).formatted(Formatting.GRAY));
+				list.add(new TranslatableText("filled_map.scale", 1 << mapState.scale).formatted(Formatting.GRAY));
+				list.add(new TranslatableText("filled_map.level", mapState.scale, 4).formatted(Formatting.GRAY));
 			} else {
-				tooltip.add(new TranslatableText("filled_map.unknown").formatted(Formatting.GRAY));
+				list.add(new TranslatableText("filled_map.unknown").formatted(Formatting.GRAY));
 			}
 		}
 	}
 
 	@Environment(EnvType.CLIENT)
-	public static int getMapColor(ItemStack stack) {
-		CompoundTag compoundTag = stack.getSubTag("display");
-		if (compoundTag != null && compoundTag.contains("MapColor", 99)) {
+	public static int getMapColor(ItemStack itemStack) {
+		CompoundTag compoundTag = itemStack.getSubTag("display");
+		if (compoundTag != null && compoundTag.containsKey("MapColor", 99)) {
 			int i = compoundTag.getInt("MapColor");
 			return 0xFF000000 | i & 16777215;
 		} else {
@@ -394,17 +392,17 @@ public class FilledMapItem extends NetworkSyncedItem {
 	}
 
 	@Override
-	public ActionResult useOnBlock(ItemUsageContext context) {
-		BlockState blockState = context.getWorld().getBlockState(context.getBlockPos());
+	public ActionResult useOnBlock(ItemUsageContext itemUsageContext) {
+		BlockState blockState = itemUsageContext.getWorld().getBlockState(itemUsageContext.getBlockPos());
 		if (blockState.matches(BlockTags.BANNERS)) {
-			if (!context.world.isClient) {
-				MapState mapState = getOrCreateMapState(context.getStack(), context.getWorld());
-				mapState.addBanner(context.getWorld(), context.getBlockPos());
+			if (!itemUsageContext.world.isClient) {
+				MapState mapState = getOrCreateMapState(itemUsageContext.getStack(), itemUsageContext.getWorld());
+				mapState.addBanner(itemUsageContext.getWorld(), itemUsageContext.getBlockPos());
 			}
 
 			return ActionResult.SUCCESS;
 		} else {
-			return super.useOnBlock(context);
+			return super.useOnBlock(itemUsageContext);
 		}
 	}
 }

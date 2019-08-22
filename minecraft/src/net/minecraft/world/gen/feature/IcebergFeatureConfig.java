@@ -9,13 +9,15 @@ import net.minecraft.block.Blocks;
 public class IcebergFeatureConfig implements FeatureConfig {
 	public final BlockState state;
 
-	public IcebergFeatureConfig(BlockState state) {
-		this.state = state;
+	public IcebergFeatureConfig(BlockState blockState) {
+		this.state = blockState;
 	}
 
 	@Override
-	public <T> Dynamic<T> serialize(DynamicOps<T> ops) {
-		return new Dynamic<>(ops, ops.createMap(ImmutableMap.of(ops.createString("state"), BlockState.serialize(ops, this.state).getValue())));
+	public <T> Dynamic<T> serialize(DynamicOps<T> dynamicOps) {
+		return new Dynamic<>(
+			dynamicOps, dynamicOps.createMap(ImmutableMap.of(dynamicOps.createString("state"), BlockState.serialize(dynamicOps, this.state).getValue()))
+		);
 	}
 
 	public static <T> IcebergFeatureConfig deserialize(Dynamic<T> dynamic) {

@@ -38,16 +38,16 @@ public class TraderLlamaEntity extends LlamaEntity {
 	}
 
 	@Override
-	public void writeCustomDataToTag(CompoundTag tag) {
-		super.writeCustomDataToTag(tag);
-		tag.putInt("DespawnDelay", this.despawnDelay);
+	public void writeCustomDataToTag(CompoundTag compoundTag) {
+		super.writeCustomDataToTag(compoundTag);
+		compoundTag.putInt("DespawnDelay", this.despawnDelay);
 	}
 
 	@Override
-	public void readCustomDataFromTag(CompoundTag tag) {
-		super.readCustomDataFromTag(tag);
-		if (tag.contains("DespawnDelay", 99)) {
-			this.despawnDelay = tag.getInt("DespawnDelay");
+	public void readCustomDataFromTag(CompoundTag compoundTag) {
+		super.readCustomDataFromTag(compoundTag);
+		if (compoundTag.containsKey("DespawnDelay", 99)) {
+			this.despawnDelay = compoundTag.getInt("DespawnDelay");
 		}
 	}
 
@@ -59,10 +59,10 @@ public class TraderLlamaEntity extends LlamaEntity {
 	}
 
 	@Override
-	protected void putPlayerOnBack(PlayerEntity player) {
+	protected void putPlayerOnBack(PlayerEntity playerEntity) {
 		Entity entity = this.getHoldingEntity();
 		if (!(entity instanceof WanderingTraderEntity)) {
-			super.putPlayerOnBack(player);
+			super.putPlayerOnBack(playerEntity);
 		}
 	}
 
@@ -98,8 +98,10 @@ public class TraderLlamaEntity extends LlamaEntity {
 
 	@Nullable
 	@Override
-	public EntityData initialize(IWorld world, LocalDifficulty difficulty, SpawnType spawnType, @Nullable EntityData entityData, @Nullable CompoundTag entityTag) {
-		EntityData entityData2 = super.initialize(world, difficulty, spawnType, entityData, entityTag);
+	public EntityData initialize(
+		IWorld iWorld, LocalDifficulty localDifficulty, SpawnType spawnType, @Nullable EntityData entityData, @Nullable CompoundTag compoundTag
+	) {
+		EntityData entityData2 = super.initialize(iWorld, localDifficulty, spawnType, entityData, compoundTag);
 		if (spawnType == SpawnType.EVENT) {
 			this.setBreedingAge(0);
 		}
@@ -112,9 +114,9 @@ public class TraderLlamaEntity extends LlamaEntity {
 		private LivingEntity offender;
 		private int traderLastAttackedTime;
 
-		public DefendTraderGoal(LlamaEntity llama) {
-			super(llama, false);
-			this.llama = llama;
+		public DefendTraderGoal(LlamaEntity llamaEntity) {
+			super(llamaEntity, false);
+			this.llama = llamaEntity;
 			this.setControls(EnumSet.of(Goal.Control.TARGET));
 		}
 

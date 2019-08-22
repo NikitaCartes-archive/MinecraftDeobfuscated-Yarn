@@ -3,6 +3,7 @@ package net.minecraft.resource;
 import com.google.common.collect.Lists;
 import java.io.ByteArrayOutputStream;
 import java.io.FileNotFoundException;
+import java.io.FilterInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.PrintStream;
@@ -22,13 +23,13 @@ public class NamespaceResourceManager implements ResourceManager {
 	protected final List<ResourcePack> packList = Lists.<ResourcePack>newArrayList();
 	private final ResourceType type;
 
-	public NamespaceResourceManager(ResourceType type) {
-		this.type = type;
+	public NamespaceResourceManager(ResourceType resourceType) {
+		this.type = resourceType;
 	}
 
 	@Override
-	public void addPack(ResourcePack pack) {
-		this.packList.add(pack);
+	public void addPack(ResourcePack resourcePack) {
+		this.packList.add(resourcePack);
 	}
 
 	@Environment(EnvType.CLIENT)
@@ -38,39 +39,39 @@ public class NamespaceResourceManager implements ResourceManager {
 	}
 
 	@Override
-	public Resource getResource(Identifier id) throws IOException {
-		this.validate(id);
+	public Resource getResource(Identifier identifier) throws IOException {
+		this.validate(identifier);
 		ResourcePack resourcePack = null;
-		Identifier identifier = getMetadataPath(id);
+		Identifier identifier2 = getMetadataPath(identifier);
 
 		for (int i = this.packList.size() - 1; i >= 0; i--) {
 			ResourcePack resourcePack2 = (ResourcePack)this.packList.get(i);
-			if (resourcePack == null && resourcePack2.contains(this.type, identifier)) {
+			if (resourcePack == null && resourcePack2.contains(this.type, identifier2)) {
 				resourcePack = resourcePack2;
 			}
 
-			if (resourcePack2.contains(this.type, id)) {
+			if (resourcePack2.contains(this.type, identifier)) {
 				InputStream inputStream = null;
 				if (resourcePack != null) {
-					inputStream = this.open(identifier, resourcePack);
+					inputStream = this.open(identifier2, resourcePack);
 				}
 
-				return new ResourceImpl(resourcePack2.getName(), id, this.open(id, resourcePack2), inputStream);
+				return new ResourceImpl(resourcePack2.getName(), identifier, this.open(identifier, resourcePack2), inputStream);
 			}
 		}
 
-		throw new FileNotFoundException(id.toString());
+		throw new FileNotFoundException(identifier.toString());
 	}
 
 	@Environment(EnvType.CLIENT)
 	@Override
-	public boolean containsResource(Identifier id) {
-		if (!this.isPathAbsolute(id)) {
+	public boolean containsResource(Identifier identifier) {
+		if (!this.isPathAbsolute(identifier)) {
 			return false;
 		} else {
 			for (int i = this.packList.size() - 1; i >= 0; i--) {
 				ResourcePack resourcePack = (ResourcePack)this.packList.get(i);
-				if (resourcePack.contains(this.type, id)) {
+				if (resourcePack.contains(this.type, identifier)) {
 					return true;
 				}
 			}
@@ -79,71 +80,70 @@ public class NamespaceResourceManager implements ResourceManager {
 		}
 	}
 
-	protected InputStream open(Identifier id, ResourcePack pack) throws IOException {
-		InputStream inputStream = pack.open(this.type, id);
-		return (InputStream)(LOGGER.isDebugEnabled() ? new NamespaceResourceManager.DebugInputStream(inputStream, id, pack.getName()) : inputStream);
+	protected InputStream open(Identifier identifier, ResourcePack resourcePack) throws IOException {
+		InputStream inputStream = resourcePack.open(this.type, identifier);
+		return (InputStream)(LOGGER.isDebugEnabled() ? new NamespaceResourceManager.DebugInputStream(inputStream, identifier, resourcePack.getName()) : inputStream);
 	}
 
-	private void validate(Identifier id) throws IOException {
-		if (!this.isPathAbsolute(id)) {
-			throw new IOException("Invalid relative path to resource: " + id);
+	private void validate(Identifier identifier) throws IOException {
+		if (!this.isPathAbsolute(identifier)) {
+			throw new IOException("Invalid relative path to resource: " + identifier);
 		}
 	}
 
-	private boolean isPathAbsolute(Identifier id) {
-		return !id.getPath().contains("..");
+	private boolean isPathAbsolute(Identifier identifier) {
+		return !identifier.getPath().contains("..");
 	}
 
 	@Override
-	public List<Resource> getAllResources(Identifier id) throws IOException {
-		this.validate(id);
+	public List<Resource> getAllResources(Identifier identifier) throws IOException {
+		this.validate(identifier);
 		List<Resource> list = Lists.<Resource>newArrayList();
-		Identifier identifier = getMetadataPath(id);
+		Identifier identifier2 = getMetadataPath(identifier);
 
 		for (ResourcePack resourcePack : this.packList) {
-			if (resourcePack.contains(this.type, id)) {
-				InputStream inputStream = resourcePack.contains(this.type, identifier) ? this.open(identifier, resourcePack) : null;
-				list.add(new ResourceImpl(resourcePack.getName(), id, this.open(id, resourcePack), inputStream));
+			if (resourcePack.contains(this.type, identifier)) {
+				InputStream inputStream = resourcePack.contains(this.type, identifier2) ? this.open(identifier2, resourcePack) : null;
+				list.add(new ResourceImpl(resourcePack.getName(), identifier, this.open(identifier, resourcePack), inputStream));
 			}
 		}
 
 		if (list.isEmpty()) {
-			throw new FileNotFoundException(id.toString());
+			throw new FileNotFoundException(identifier.toString());
 		} else {
 			return list;
 		}
 	}
 
 	@Override
-	public Collection<Identifier> findResources(String resourceType, Predicate<String> pathPredicate) {
+	public Collection<Identifier> findResources(String string, Predicate<String> predicate) {
 		List<Identifier> list = Lists.<Identifier>newArrayList();
 
 		for (ResourcePack resourcePack : this.packList) {
-			list.addAll(resourcePack.findResources(this.type, resourceType, Integer.MAX_VALUE, pathPredicate));
+			list.addAll(resourcePack.findResources(this.type, string, Integer.MAX_VALUE, predicate));
 		}
 
 		Collections.sort(list);
 		return list;
 	}
 
-	static Identifier getMetadataPath(Identifier id) {
-		return new Identifier(id.getNamespace(), id.getPath() + ".mcmeta");
+	static Identifier getMetadataPath(Identifier identifier) {
+		return new Identifier(identifier.getNamespace(), identifier.getPath() + ".mcmeta");
 	}
 
-	static class DebugInputStream extends InputStream {
-		private final InputStream parent;
+	static class DebugInputStream extends FilterInputStream {
 		private final String leakMessage;
 		private boolean closed;
 
-		public DebugInputStream(InputStream parent, Identifier id, String packName) {
-			this.parent = parent;
+		public DebugInputStream(InputStream inputStream, Identifier identifier, String string) {
+			super(inputStream);
 			ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
 			new Exception().printStackTrace(new PrintStream(byteArrayOutputStream));
-			this.leakMessage = "Leaked resource: '" + id + "' loaded from pack: '" + packName + "'\n" + byteArrayOutputStream;
+			this.leakMessage = "Leaked resource: '" + identifier + "' loaded from pack: '" + string + "'\n" + byteArrayOutputStream;
 		}
 
 		public void close() throws IOException {
-			this.parent.close();
+			super.close();
 			this.closed = true;
 		}
 
@@ -153,10 +153,6 @@ public class NamespaceResourceManager implements ResourceManager {
 			}
 
 			super.finalize();
-		}
-
-		public int read() throws IOException {
-			return this.parent.read();
 		}
 	}
 }

@@ -6,18 +6,18 @@ import net.minecraft.item.ArmorItem;
 import net.minecraft.item.ItemStack;
 
 public class UnbreakingEnchantment extends Enchantment {
-	protected UnbreakingEnchantment(Enchantment.Weight weight, EquipmentSlot... slotTypes) {
-		super(weight, EnchantmentTarget.BREAKABLE, slotTypes);
+	protected UnbreakingEnchantment(Enchantment.Weight weight, EquipmentSlot... equipmentSlots) {
+		super(weight, EnchantmentTarget.BREAKABLE, equipmentSlots);
 	}
 
 	@Override
-	public int getMinimumPower(int level) {
-		return 5 + (level - 1) * 8;
+	public int getMinimumPower(int i) {
+		return 5 + (i - 1) * 8;
 	}
 
 	@Override
-	public int getMaximumPower(int level) {
-		return super.getMinimumPower(level) + 50;
+	public int getMaximumPower(int i) {
+		return super.getMinimumPower(i) + 50;
 	}
 
 	@Override
@@ -26,11 +26,11 @@ public class UnbreakingEnchantment extends Enchantment {
 	}
 
 	@Override
-	public boolean isAcceptableItem(ItemStack stack) {
-		return stack.isDamageable() ? true : super.isAcceptableItem(stack);
+	public boolean isAcceptableItem(ItemStack itemStack) {
+		return itemStack.isDamageable() ? true : super.isAcceptableItem(itemStack);
 	}
 
-	public static boolean shouldPreventDamage(ItemStack item, int level, Random random) {
-		return item.getItem() instanceof ArmorItem && random.nextFloat() < 0.6F ? false : random.nextInt(level + 1) > 0;
+	public static boolean shouldPreventDamage(ItemStack itemStack, int i, Random random) {
+		return itemStack.getItem() instanceof ArmorItem && random.nextFloat() < 0.6F ? false : random.nextInt(i + 1) > 0;
 	}
 }

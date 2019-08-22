@@ -48,48 +48,48 @@ public class IntegratedServer extends MinecraftServer {
 	private UUID localPlayerUuid;
 
 	public IntegratedServer(
-		MinecraftClient client,
-		String levelName,
-		String displayName,
+		MinecraftClient minecraftClient,
+		String string,
+		String string2,
 		LevelInfo levelInfo,
-		YggdrasilAuthenticationService authService,
-		MinecraftSessionService sessionService,
-		GameProfileRepository profileRepo,
+		YggdrasilAuthenticationService yggdrasilAuthenticationService,
+		MinecraftSessionService minecraftSessionService,
+		GameProfileRepository gameProfileRepository,
 		UserCache userCache,
 		WorldGenerationProgressListenerFactory worldGenerationProgressListenerFactory
 	) {
 		super(
-			new File(client.runDirectory, "saves"),
-			client.getNetworkProxy(),
-			client.getDataFixer(),
+			new File(minecraftClient.runDirectory, "saves"),
+			minecraftClient.getNetworkProxy(),
+			minecraftClient.getDataFixer(),
 			new CommandManager(false),
-			authService,
-			sessionService,
-			profileRepo,
+			yggdrasilAuthenticationService,
+			minecraftSessionService,
+			gameProfileRepository,
 			userCache,
 			worldGenerationProgressListenerFactory,
-			levelName
+			string
 		);
-		this.setUserName(client.getSession().getUsername());
-		this.setServerName(displayName);
-		this.setDemo(client.isDemo());
+		this.setUserName(minecraftClient.getSession().getUsername());
+		this.setServerName(string2);
+		this.setDemo(minecraftClient.isDemo());
 		this.setBonusChest(levelInfo.hasBonusChest());
 		this.setWorldHeight(256);
 		this.setPlayerManager(new IntegratedPlayerManager(this));
-		this.client = client;
+		this.client = minecraftClient;
 		this.levelInfo = this.isDemo() ? MinecraftServer.DEMO_LEVEL_INFO : levelInfo;
 	}
 
 	@Override
-	public void loadWorld(String name, String serverName, long seed, LevelGeneratorType generatorType, JsonElement generatorSettings) {
-		this.upgradeWorld(name);
-		WorldSaveHandler worldSaveHandler = this.getLevelStorage().createSaveHandler(name, this);
+	public void loadWorld(String string, String string2, long l, LevelGeneratorType levelGeneratorType, JsonElement jsonElement) {
+		this.upgradeWorld(string);
+		WorldSaveHandler worldSaveHandler = this.getLevelStorage().createSaveHandler(string, this);
 		this.loadWorldResourcePack(this.getLevelName(), worldSaveHandler);
 		LevelProperties levelProperties = worldSaveHandler.readProperties();
 		if (levelProperties == null) {
-			levelProperties = new LevelProperties(this.levelInfo, serverName);
+			levelProperties = new LevelProperties(this.levelInfo, string2);
 		} else {
-			levelProperties.setLevelName(serverName);
+			levelProperties.setLevelName(string2);
 		}
 
 		this.loadWorldDataPacks(worldSaveHandler.getWorldDir(), levelProperties);
@@ -223,17 +223,17 @@ public class IntegratedServer extends MinecraftServer {
 	}
 
 	@Override
-	public boolean openToLan(GameMode gameMode, boolean cheatsAllowed, int port) {
+	public boolean openToLan(GameMode gameMode, boolean bl, int i) {
 		try {
-			this.getNetworkIo().bind(null, port);
-			LOGGER.info("Started serving on {}", port);
-			this.lanPort = port;
-			this.lanPinger = new LanServerPinger(this.getServerMotd(), port + "");
+			this.getNetworkIo().bind(null, i);
+			LOGGER.info("Started serving on {}", i);
+			this.lanPort = i;
+			this.lanPinger = new LanServerPinger(this.getServerMotd(), i + "");
 			this.lanPinger.start();
 			this.getPlayerManager().setGameMode(gameMode);
-			this.getPlayerManager().setCheatsAllowed(cheatsAllowed);
-			int i = this.getPermissionLevel(this.client.player.getGameProfile());
-			this.client.player.setClientPermissionLevel(i);
+			this.getPlayerManager().setCheatsAllowed(bl);
+			int j = this.getPermissionLevel(this.client.player.getGameProfile());
+			this.client.player.setClientPermissionLevel(j);
 
 			for (ServerPlayerEntity serverPlayerEntity : this.getPlayerManager().getPlayerList()) {
 				this.getCommandManager().sendCommandTree(serverPlayerEntity);
@@ -256,7 +256,7 @@ public class IntegratedServer extends MinecraftServer {
 
 	@Override
 	public void stop(boolean bl) {
-		this.submitAndJoin(() -> {
+		this.executeSync(() -> {
 			for (ServerPlayerEntity serverPlayerEntity : Lists.newArrayList(this.getPlayerManager().getPlayerList())) {
 				if (!serverPlayerEntity.getUuid().equals(this.localPlayerUuid)) {
 					this.getPlayerManager().remove(serverPlayerEntity);
@@ -301,12 +301,12 @@ public class IntegratedServer extends MinecraftServer {
 		return 2;
 	}
 
-	public void setLocalPlayerUuid(UUID localPlayerUuid) {
-		this.localPlayerUuid = localPlayerUuid;
+	public void setLocalPlayerUuid(UUID uUID) {
+		this.localPlayerUuid = uUID;
 	}
 
 	@Override
-	public boolean isOwner(GameProfile profile) {
-		return profile.getName().equalsIgnoreCase(this.getUserName());
+	public boolean isOwner(GameProfile gameProfile) {
+		return gameProfile.getName().equalsIgnoreCase(this.getUserName());
 	}
 }

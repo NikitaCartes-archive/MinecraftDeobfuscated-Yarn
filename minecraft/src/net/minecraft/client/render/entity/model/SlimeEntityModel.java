@@ -1,6 +1,6 @@
 package net.minecraft.client.render.entity.model;
 
-import com.mojang.blaze3d.platform.GlStateManager;
+import com.mojang.blaze3d.systems.RenderSystem;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.model.ModelPart;
@@ -33,14 +33,14 @@ public class SlimeEntityModel<T extends Entity> extends EntityModel<T> {
 	}
 
 	@Override
-	public void render(T entity, float limbAngle, float limbDistance, float age, float headYaw, float headPitch, float scale) {
-		this.setAngles(entity, limbAngle, limbDistance, age, headYaw, headPitch, scale);
-		GlStateManager.translatef(0.0F, 0.001F, 0.0F);
-		this.field_3571.render(scale);
+	public void render(T entity, float f, float g, float h, float i, float j, float k) {
+		this.setAngles(entity, f, g, h, i, j, k);
+		RenderSystem.translatef(0.0F, 0.001F, 0.0F);
+		this.field_3571.render(k);
 		if (this.field_3573 != null) {
-			this.field_3573.render(scale);
-			this.field_3572.render(scale);
-			this.field_3570.render(scale);
+			this.field_3573.render(k);
+			this.field_3572.render(k);
+			this.field_3570.render(k);
 		}
 	}
 }

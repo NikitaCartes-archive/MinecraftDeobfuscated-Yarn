@@ -21,15 +21,15 @@ public class PathNode {
 	public float field_43;
 	public PathNodeType type = PathNodeType.BLOCKED;
 
-	public PathNode(int x, int y, int z) {
-		this.x = x;
-		this.y = y;
-		this.z = z;
-		this.hashCode = hash(x, y, z);
+	public PathNode(int i, int j, int k) {
+		this.x = i;
+		this.y = j;
+		this.z = k;
+		this.hashCode = calculateHashCode(i, j, k);
 	}
 
-	public PathNode copyWithNewPosition(int x, int y, int z) {
-		PathNode pathNode = new PathNode(x, y, z);
+	public PathNode copyWithNewPosition(int i, int j, int k) {
+		PathNode pathNode = new PathNode(i, j, k);
 		pathNode.heapIndex = this.heapIndex;
 		pathNode.field_36 = this.field_36;
 		pathNode.field_34 = this.field_34;
@@ -42,21 +42,21 @@ public class PathNode {
 		return pathNode;
 	}
 
-	public static int hash(int x, int y, int z) {
-		return y & 0xFF | (x & 32767) << 8 | (z & 32767) << 24 | (x < 0 ? Integer.MIN_VALUE : 0) | (z < 0 ? 32768 : 0);
+	public static int calculateHashCode(int i, int j, int k) {
+		return j & 0xFF | (i & 32767) << 8 | (k & 32767) << 24 | (i < 0 ? Integer.MIN_VALUE : 0) | (k < 0 ? 32768 : 0);
 	}
 
-	public float getDistance(PathNode node) {
-		float f = (float)(node.x - this.x);
-		float g = (float)(node.y - this.y);
-		float h = (float)(node.z - this.z);
+	public float distance(PathNode pathNode) {
+		float f = (float)(pathNode.x - this.x);
+		float g = (float)(pathNode.y - this.y);
+		float h = (float)(pathNode.z - this.z);
 		return MathHelper.sqrt(f * f + g * g + h * h);
 	}
 
-	public float getSquaredDistance(PathNode node) {
-		float f = (float)(node.x - this.x);
-		float g = (float)(node.y - this.y);
-		float h = (float)(node.z - this.z);
+	public float distanceSquared(PathNode pathNode) {
+		float f = (float)(pathNode.x - this.x);
+		float g = (float)(pathNode.y - this.y);
+		float h = (float)(pathNode.z - this.z);
 		return f * f + g * g + h * h;
 	}
 
@@ -79,11 +79,11 @@ public class PathNode {
 		return new BlockPos(this.x, this.y, this.z);
 	}
 
-	public boolean equals(Object o) {
-		if (!(o instanceof PathNode)) {
+	public boolean equals(Object object) {
+		if (!(object instanceof PathNode)) {
 			return false;
 		} else {
-			PathNode pathNode = (PathNode)o;
+			PathNode pathNode = (PathNode)object;
 			return this.hashCode == pathNode.hashCode && this.x == pathNode.x && this.y == pathNode.y && this.z == pathNode.z;
 		}
 	}
@@ -101,13 +101,13 @@ public class PathNode {
 	}
 
 	@Environment(EnvType.CLIENT)
-	public static PathNode fromBuffer(PacketByteBuf buffer) {
-		PathNode pathNode = new PathNode(buffer.readInt(), buffer.readInt(), buffer.readInt());
-		pathNode.field_46 = buffer.readFloat();
-		pathNode.field_43 = buffer.readFloat();
-		pathNode.field_42 = buffer.readBoolean();
-		pathNode.type = PathNodeType.values()[buffer.readInt()];
-		pathNode.heapWeight = buffer.readFloat();
+	public static PathNode fromBuffer(PacketByteBuf packetByteBuf) {
+		PathNode pathNode = new PathNode(packetByteBuf.readInt(), packetByteBuf.readInt(), packetByteBuf.readInt());
+		pathNode.field_46 = packetByteBuf.readFloat();
+		pathNode.field_43 = packetByteBuf.readFloat();
+		pathNode.field_42 = packetByteBuf.readBoolean();
+		pathNode.type = PathNodeType.values()[packetByteBuf.readInt()];
+		pathNode.heapWeight = packetByteBuf.readFloat();
 		return pathNode;
 	}
 }

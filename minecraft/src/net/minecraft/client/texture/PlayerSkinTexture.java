@@ -1,6 +1,5 @@
 package net.minecraft.client.texture;
 
-import com.mojang.blaze3d.platform.TextureUtil;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -11,6 +10,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.class_4536;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.resource.ResourceManager;
 import net.minecraft.util.Identifier;
@@ -33,15 +33,15 @@ public class PlayerSkinTexture extends ResourceTexture {
 	private Thread downloadThread;
 	private volatile boolean field_5215;
 
-	public PlayerSkinTexture(@Nullable File cacheFile, String url, Identifier fallbackSkin, @Nullable ImageFilter filter) {
-		super(fallbackSkin);
-		this.cacheFile = cacheFile;
-		this.url = url;
-		this.filter = filter;
+	public PlayerSkinTexture(@Nullable File file, String string, Identifier identifier, @Nullable ImageFilter imageFilter) {
+		super(identifier);
+		this.cacheFile = file;
+		this.url = string;
+		this.filter = imageFilter;
 	}
 
 	private void method_4531(NativeImage nativeImage) {
-		TextureUtil.prepareImage(this.getGlId(), nativeImage.getWidth(), nativeImage.getHeight());
+		class_4536.prepareImage(this.getGlId(), nativeImage.getWidth(), nativeImage.getHeight());
 		nativeImage.upload(0, 0, 0, false);
 	}
 

@@ -10,6 +10,7 @@ import net.fabricmc.api.Environment;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
+import net.minecraft.client.network.packet.BlockEntityUpdateS2CPacket;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.effect.StatusEffectInstance;
@@ -17,12 +18,11 @@ import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.entity.mob.Monster;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.NbtHelper;
-import net.minecraft.network.packet.s2c.play.BlockEntityUpdateS2CPacket;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
+import net.minecraft.util.TagHelper;
 import net.minecraft.util.Tickable;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
@@ -51,23 +51,23 @@ public class ConduitBlockEntity extends BlockEntity implements Tickable {
 	}
 
 	@Override
-	public void fromTag(CompoundTag tag) {
-		super.fromTag(tag);
-		if (tag.contains("target_uuid")) {
-			this.targetUuid = NbtHelper.toUuid(tag.getCompound("target_uuid"));
+	public void fromTag(CompoundTag compoundTag) {
+		super.fromTag(compoundTag);
+		if (compoundTag.containsKey("target_uuid")) {
+			this.targetUuid = TagHelper.deserializeUuid(compoundTag.getCompound("target_uuid"));
 		} else {
 			this.targetUuid = null;
 		}
 	}
 
 	@Override
-	public CompoundTag toTag(CompoundTag tag) {
-		super.toTag(tag);
+	public CompoundTag toTag(CompoundTag compoundTag) {
+		super.toTag(compoundTag);
 		if (this.targetEntity != null) {
-			tag.put("target_uuid", NbtHelper.fromUuid(this.targetEntity.getUuid()));
+			compoundTag.put("target_uuid", TagHelper.serializeUuid(this.targetEntity.getUuid()));
 		}
 
-		return tag;
+		return compoundTag;
 	}
 
 	@Nullable
@@ -158,10 +158,10 @@ public class ConduitBlockEntity extends BlockEntity implements Tickable {
 		Box box = new Box((double)k, (double)l, (double)m, (double)(k + 1), (double)(l + 1), (double)(m + 1))
 			.expand((double)j)
 			.stretch(0.0, (double)this.world.getHeight(), 0.0);
-		List<PlayerEntity> list = this.world.getNonSpectatingEntities(PlayerEntity.class, box);
+		List<PlayerEntity> list = this.world.getEntities(PlayerEntity.class, box);
 		if (!list.isEmpty()) {
 			for (PlayerEntity playerEntity : list) {
-				if (this.pos.isWithinDistance(new BlockPos(playerEntity), (double)j) && playerEntity.isTouchingWaterOrRain()) {
+				if (this.pos.isWithinDistance(new BlockPos(playerEntity), (double)j) && playerEntity.isInsideWaterOrRain()) {
 					playerEntity.addStatusEffect(new StatusEffectInstance(StatusEffects.CONDUIT_POWER, 260, 0, true, true));
 				}
 			}
@@ -178,7 +178,7 @@ public class ConduitBlockEntity extends BlockEntity implements Tickable {
 			this.targetUuid = null;
 		} else if (this.targetEntity == null) {
 			List<LivingEntity> list = this.world
-				.getEntities(LivingEntity.class, this.getAttackZone(), livingEntityx -> livingEntityx instanceof Monster && livingEntityx.isTouchingWaterOrRain());
+				.getEntities(LivingEntity.class, this.getAttackZone(), livingEntityx -> livingEntityx instanceof Monster && livingEntityx.isInsideWaterOrRain());
 			if (!list.isEmpty()) {
 				this.targetEntity = (LivingEntity)list.get(this.world.random.nextInt(list.size()));
 			}
@@ -258,21 +258,21 @@ public class ConduitBlockEntity extends BlockEntity implements Tickable {
 		return this.eyeOpen;
 	}
 
-	private void setActive(boolean active) {
-		if (active != this.active) {
-			this.playSound(active ? SoundEvents.BLOCK_CONDUIT_ACTIVATE : SoundEvents.BLOCK_CONDUIT_DEACTIVATE);
+	private void setActive(boolean bl) {
+		if (bl != this.active) {
+			this.playSound(bl ? SoundEvents.BLOCK_CONDUIT_ACTIVATE : SoundEvents.BLOCK_CONDUIT_DEACTIVATE);
 		}
 
-		this.active = active;
+		this.active = bl;
 	}
 
-	private void setEyeOpen(boolean eyeOpen) {
-		this.eyeOpen = eyeOpen;
+	private void setEyeOpen(boolean bl) {
+		this.eyeOpen = bl;
 	}
 
 	@Environment(EnvType.CLIENT)
-	public float getRotation(float tickDelta) {
-		return (this.ticksActive + tickDelta) * -0.0375F;
+	public float getRotation(float f) {
+		return (this.ticksActive + f) * -0.0375F;
 	}
 
 	public void playSound(SoundEvent soundEvent) {

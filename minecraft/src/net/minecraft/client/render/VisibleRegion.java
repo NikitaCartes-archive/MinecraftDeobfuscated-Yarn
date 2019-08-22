@@ -6,7 +6,7 @@ import net.minecraft.util.math.Box;
 
 @Environment(EnvType.CLIENT)
 public interface VisibleRegion {
-	boolean intersects(Box boundingBox);
+	boolean intersects(Box box);
 
-	void setOrigin(double x, double y, double z);
+	void setOrigin(double d, double e, double f);
 }

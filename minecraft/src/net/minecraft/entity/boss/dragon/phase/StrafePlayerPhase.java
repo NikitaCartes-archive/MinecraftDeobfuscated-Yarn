@@ -20,8 +20,8 @@ public class StrafePlayerPhase extends AbstractPhase {
 	private LivingEntity field_7062;
 	private boolean field_7058;
 
-	public StrafePlayerPhase(EnderDragonEntity dragon) {
-		super(dragon);
+	public StrafePlayerPhase(EnderDragonEntity enderDragonEntity) {
+		super(enderDragonEntity);
 	}
 
 	@Override
@@ -68,7 +68,7 @@ public class StrafePlayerPhase extends AbstractPhase {
 						double q = this.field_7062.z - n;
 						this.dragon.world.playLevelEvent(null, 1017, new BlockPos(this.dragon), 0);
 						DragonFireballEntity dragonFireballEntity = new DragonFireballEntity(this.dragon.world, this.dragon, o, p, q);
-						dragonFireballEntity.refreshPositionAndAngles(l, m, n, 0.0F, 0.0F);
+						dragonFireballEntity.setPositionAndAngles(l, m, n, 0.0F, 0.0F);
 						this.dragon.world.spawnEntity(dragonFireballEntity);
 						this.field_7060 = 0;
 						if (this.field_7059 != null) {
@@ -92,7 +92,7 @@ public class StrafePlayerPhase extends AbstractPhase {
 		if (this.field_7059 == null || this.field_7059.isFinished()) {
 			int i = this.dragon.method_6818();
 			int j = i;
-			if (this.dragon.getRandom().nextInt(8) == 0) {
+			if (this.dragon.getRand().nextInt(8) == 0) {
 				this.field_7058 = !this.field_7058;
 				j = i + 6;
 			}
@@ -132,7 +132,7 @@ public class StrafePlayerPhase extends AbstractPhase {
 
 			double f;
 			do {
-				f = vec3d.y + (double)(this.dragon.getRandom().nextFloat() * 20.0F);
+				f = vec3d.y + (double)(this.dragon.getRand().nextFloat() * 20.0F);
 			} while (f < vec3d.y);
 
 			this.field_7057 = new Vec3d(d, f, e);

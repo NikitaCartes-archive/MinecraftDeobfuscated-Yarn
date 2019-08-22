@@ -8,12 +8,12 @@ import net.minecraft.text.Text;
 
 public class EndTag implements Tag {
 	@Override
-	public void read(DataInput input, int depth, PositionTracker positionTracker) throws IOException {
+	public void read(DataInput dataInput, int i, PositionTracker positionTracker) throws IOException {
 		positionTracker.add(64L);
 	}
 
 	@Override
-	public void write(DataOutput output) throws IOException {
+	public void write(DataOutput dataOutput) throws IOException {
 	}
 
 	@Override
@@ -26,17 +26,17 @@ public class EndTag implements Tag {
 		return "END";
 	}
 
-	public EndTag copy() {
+	public EndTag method_10586() {
 		return new EndTag();
 	}
 
 	@Override
-	public Text toText(String indent, int depth) {
+	public Text toText(String string, int i) {
 		return new LiteralText("");
 	}
 
-	public boolean equals(Object o) {
-		return o instanceof EndTag;
+	public boolean equals(Object object) {
+		return object instanceof EndTag;
 	}
 
 	public int hashCode() {

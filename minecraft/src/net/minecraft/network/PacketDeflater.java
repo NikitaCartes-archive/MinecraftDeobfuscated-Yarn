@@ -16,7 +16,7 @@ public class PacketDeflater extends MessageToByteEncoder<ByteBuf> {
 		this.deflater = new Deflater();
 	}
 
-	protected void encode(ChannelHandlerContext channelHandlerContext, ByteBuf byteBuf, ByteBuf byteBuf2) throws Exception {
+	protected void method_10741(ChannelHandlerContext channelHandlerContext, ByteBuf byteBuf, ByteBuf byteBuf2) throws Exception {
 		int i = byteBuf.readableBytes();
 		PacketByteBuf packetByteBuf = new PacketByteBuf(byteBuf2);
 		if (i < this.compressionThreshold) {
@@ -38,7 +38,7 @@ public class PacketDeflater extends MessageToByteEncoder<ByteBuf> {
 		}
 	}
 
-	public void setCompressionThreshold(int compressionThreshold) {
-		this.compressionThreshold = compressionThreshold;
+	public void setCompressionThreshold(int i) {
+		this.compressionThreshold = i;
 	}
 }

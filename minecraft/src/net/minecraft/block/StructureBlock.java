@@ -8,7 +8,7 @@ import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemPlacementContext;
 import net.minecraft.item.ItemStack;
-import net.minecraft.state.StateManager;
+import net.minecraft.state.StateFactory;
 import net.minecraft.state.property.EnumProperty;
 import net.minecraft.state.property.Properties;
 import net.minecraft.util.Hand;
@@ -25,71 +25,71 @@ public class StructureBlock extends BlockWithEntity {
 	}
 
 	@Override
-	public BlockEntity createBlockEntity(BlockView view) {
+	public BlockEntity createBlockEntity(BlockView blockView) {
 		return new StructureBlockBlockEntity();
 	}
 
 	@Override
-	public boolean activate(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
-		BlockEntity blockEntity = world.getBlockEntity(pos);
-		return blockEntity instanceof StructureBlockBlockEntity ? ((StructureBlockBlockEntity)blockEntity).openScreen(player) : false;
+	public boolean activate(BlockState blockState, World world, BlockPos blockPos, PlayerEntity playerEntity, Hand hand, BlockHitResult blockHitResult) {
+		BlockEntity blockEntity = world.getBlockEntity(blockPos);
+		return blockEntity instanceof StructureBlockBlockEntity ? ((StructureBlockBlockEntity)blockEntity).openScreen(playerEntity) : false;
 	}
 
 	@Override
-	public void onPlaced(World world, BlockPos pos, BlockState state, @Nullable LivingEntity placer, ItemStack itemStack) {
+	public void onPlaced(World world, BlockPos blockPos, BlockState blockState, @Nullable LivingEntity livingEntity, ItemStack itemStack) {
 		if (!world.isClient) {
-			if (placer != null) {
-				BlockEntity blockEntity = world.getBlockEntity(pos);
+			if (livingEntity != null) {
+				BlockEntity blockEntity = world.getBlockEntity(blockPos);
 				if (blockEntity instanceof StructureBlockBlockEntity) {
-					((StructureBlockBlockEntity)blockEntity).setAuthor(placer);
+					((StructureBlockBlockEntity)blockEntity).setAuthor(livingEntity);
 				}
 			}
 		}
 	}
 
 	@Override
-	public BlockRenderType getRenderType(BlockState state) {
+	public BlockRenderType getRenderType(BlockState blockState) {
 		return BlockRenderType.MODEL;
 	}
 
 	@Override
-	public BlockState getPlacementState(ItemPlacementContext ctx) {
+	public BlockState getPlacementState(ItemPlacementContext itemPlacementContext) {
 		return this.getDefaultState().with(MODE, StructureBlockMode.DATA);
 	}
 
 	@Override
-	protected void appendProperties(StateManager.Builder<Block, BlockState> builder) {
+	protected void appendProperties(StateFactory.Builder<Block, BlockState> builder) {
 		builder.add(MODE);
 	}
 
 	@Override
-	public void neighborUpdate(BlockState state, World world, BlockPos pos, Block block, BlockPos neighborPos, boolean moved) {
+	public void neighborUpdate(BlockState blockState, World world, BlockPos blockPos, Block block, BlockPos blockPos2, boolean bl) {
 		if (!world.isClient) {
-			BlockEntity blockEntity = world.getBlockEntity(pos);
+			BlockEntity blockEntity = world.getBlockEntity(blockPos);
 			if (blockEntity instanceof StructureBlockBlockEntity) {
 				StructureBlockBlockEntity structureBlockBlockEntity = (StructureBlockBlockEntity)blockEntity;
-				boolean bl = world.isReceivingRedstonePower(pos);
-				boolean bl2 = structureBlockBlockEntity.isPowered();
-				if (bl && !bl2) {
+				boolean bl2 = world.isReceivingRedstonePower(blockPos);
+				boolean bl3 = structureBlockBlockEntity.isPowered();
+				if (bl2 && !bl3) {
 					structureBlockBlockEntity.setPowered(true);
 					this.doAction(structureBlockBlockEntity);
-				} else if (!bl && bl2) {
+				} else if (!bl2 && bl3) {
 					structureBlockBlockEntity.setPowered(false);
 				}
 			}
 		}
 	}
 
-	private void doAction(StructureBlockBlockEntity blockEntity) {
-		switch (blockEntity.getMode()) {
+	private void doAction(StructureBlockBlockEntity structureBlockBlockEntity) {
+		switch (structureBlockBlockEntity.getMode()) {
 			case SAVE:
-				blockEntity.saveStructure(false);
+				structureBlockBlockEntity.saveStructure(false);
 				break;
 			case LOAD:
-				blockEntity.loadStructure(false);
+				structureBlockBlockEntity.loadStructure(false);
 				break;
 			case CORNER:
-				blockEntity.unloadStructure();
+				structureBlockBlockEntity.unloadStructure();
 			case DATA:
 		}
 	}

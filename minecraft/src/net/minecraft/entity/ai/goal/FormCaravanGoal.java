@@ -12,9 +12,9 @@ public class FormCaravanGoal extends Goal {
 	private double speed;
 	private int counter;
 
-	public FormCaravanGoal(LlamaEntity llama, double speed) {
-		this.llama = llama;
-		this.speed = speed;
+	public FormCaravanGoal(LlamaEntity llamaEntity, double d) {
+		this.llama = llamaEntity;
+		this.speed = d;
 		this.setControls(EnumSet.of(Goal.Control.MOVE));
 	}
 
@@ -112,11 +112,11 @@ public class FormCaravanGoal extends Goal {
 		}
 	}
 
-	private boolean canFollow(LlamaEntity llama, int length) {
-		if (length > 8) {
+	private boolean canFollow(LlamaEntity llamaEntity, int i) {
+		if (i > 8) {
 			return false;
-		} else if (llama.isFollowing()) {
-			return llama.getFollowing().isLeashed() ? true : this.canFollow(llama.getFollowing(), ++length);
+		} else if (llamaEntity.isFollowing()) {
+			return llamaEntity.getFollowing().isLeashed() ? true : this.canFollow(llamaEntity.getFollowing(), ++i);
 		} else {
 			return false;
 		}

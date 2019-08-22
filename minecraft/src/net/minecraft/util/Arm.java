@@ -11,8 +11,8 @@ public enum Arm {
 
 	private final Text optionName;
 
-	private Arm(Text optionName) {
-		this.optionName = optionName;
+	private Arm(Text text) {
+		this.optionName = text;
 	}
 
 	@Environment(EnvType.CLIENT)

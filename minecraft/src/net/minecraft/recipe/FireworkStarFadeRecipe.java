@@ -19,7 +19,7 @@ public class FireworkStarFadeRecipe extends SpecialCraftingRecipe {
 		super(identifier);
 	}
 
-	public boolean matches(CraftingInventory craftingInventory, World world) {
+	public boolean method_17711(CraftingInventory craftingInventory, World world) {
 		boolean bl = false;
 		boolean bl2 = false;
 
@@ -29,7 +29,7 @@ public class FireworkStarFadeRecipe extends SpecialCraftingRecipe {
 				if (itemStack.getItem() instanceof DyeItem) {
 					bl = true;
 				} else {
-					if (!INPUT_STAR.test(itemStack)) {
+					if (!INPUT_STAR.method_8093(itemStack)) {
 						return false;
 					}
 
@@ -45,7 +45,7 @@ public class FireworkStarFadeRecipe extends SpecialCraftingRecipe {
 		return bl2 && bl;
 	}
 
-	public ItemStack craft(CraftingInventory craftingInventory) {
+	public ItemStack method_17710(CraftingInventory craftingInventory) {
 		List<Integer> list = Lists.<Integer>newArrayList();
 		ItemStack itemStack = null;
 
@@ -54,7 +54,7 @@ public class FireworkStarFadeRecipe extends SpecialCraftingRecipe {
 			Item item = itemStack2.getItem();
 			if (item instanceof DyeItem) {
 				list.add(((DyeItem)item).getColor().getFireworkColor());
-			} else if (INPUT_STAR.test(itemStack2)) {
+			} else if (INPUT_STAR.method_8093(itemStack2)) {
 				itemStack = itemStack2.copy();
 				itemStack.setCount(1);
 			}
@@ -70,8 +70,8 @@ public class FireworkStarFadeRecipe extends SpecialCraftingRecipe {
 
 	@Environment(EnvType.CLIENT)
 	@Override
-	public boolean fits(int width, int height) {
-		return width * height >= 2;
+	public boolean fits(int i, int j) {
+		return i * j >= 2;
 	}
 
 	@Override

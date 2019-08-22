@@ -11,7 +11,7 @@ import net.minecraft.util.math.MathHelper;
 
 @Environment(EnvType.CLIENT)
 public class DoubleOption extends Option {
-	protected final float step;
+	protected final float interval;
 	protected final double min;
 	protected double max;
 	private final Function<GameOptions, Double> getter;
@@ -19,26 +19,26 @@ public class DoubleOption extends Option {
 	private final BiFunction<GameOptions, DoubleOption, String> displayStringGetter;
 
 	public DoubleOption(
-		String key,
-		double min,
-		double max,
-		float step,
-		Function<GameOptions, Double> getter,
-		BiConsumer<GameOptions, Double> setter,
-		BiFunction<GameOptions, DoubleOption, String> displayStringGetter
+		String string,
+		double d,
+		double e,
+		float f,
+		Function<GameOptions, Double> function,
+		BiConsumer<GameOptions, Double> biConsumer,
+		BiFunction<GameOptions, DoubleOption, String> biFunction
 	) {
-		super(key);
-		this.min = min;
-		this.max = max;
-		this.step = step;
-		this.getter = getter;
-		this.setter = setter;
-		this.displayStringGetter = displayStringGetter;
+		super(string);
+		this.min = d;
+		this.max = e;
+		this.interval = f;
+		this.getter = function;
+		this.setter = biConsumer;
+		this.displayStringGetter = biFunction;
 	}
 
 	@Override
-	public AbstractButtonWidget createButton(GameOptions options, int x, int y, int width) {
-		return new GameOptionSliderWidget(options, x, y, width, 20, this);
+	public AbstractButtonWidget createButton(GameOptions gameOptions, int i, int j, int k) {
+		return new GameOptionSliderWidget(gameOptions, i, j, k, 20, this);
 	}
 
 	public double method_18611(double d) {
@@ -50,8 +50,8 @@ public class DoubleOption extends Option {
 	}
 
 	private double method_18618(double d) {
-		if (this.step > 0.0F) {
-			d = (double)(this.step * (float)Math.round(d / (double)this.step));
+		if (this.interval > 0.0F) {
+			d = (double)(this.interval * (float)Math.round(d / (double)this.interval));
 		}
 
 		return MathHelper.clamp(d, this.min, this.max);
@@ -65,19 +65,19 @@ public class DoubleOption extends Option {
 		return this.max;
 	}
 
-	public void setMax(float max) {
-		this.max = (double)max;
+	public void setMax(float f) {
+		this.max = (double)f;
 	}
 
-	public void set(GameOptions options, double value) {
-		this.setter.accept(options, value);
+	public void set(GameOptions gameOptions, double d) {
+		this.setter.accept(gameOptions, d);
 	}
 
-	public double get(GameOptions options) {
-		return (Double)this.getter.apply(options);
+	public double get(GameOptions gameOptions) {
+		return (Double)this.getter.apply(gameOptions);
 	}
 
-	public String getDisplayString(GameOptions options) {
-		return (String)this.displayStringGetter.apply(options, this);
+	public String getDisplayString(GameOptions gameOptions) {
+		return (String)this.displayStringGetter.apply(gameOptions, this);
 	}
 }

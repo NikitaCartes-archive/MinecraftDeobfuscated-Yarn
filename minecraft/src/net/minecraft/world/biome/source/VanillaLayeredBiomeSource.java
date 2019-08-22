@@ -10,13 +10,14 @@ import net.minecraft.block.BlockState;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.biome.Biomes;
+import net.minecraft.world.biome.layer.BiomeLayerSampler;
 import net.minecraft.world.biome.layer.BiomeLayers;
 import net.minecraft.world.gen.chunk.OverworldChunkGeneratorConfig;
 import net.minecraft.world.gen.feature.StructureFeature;
 import net.minecraft.world.level.LevelProperties;
 
 public class VanillaLayeredBiomeSource extends BiomeSource {
-	private final BiomeLayerSampler biomeSampler;
+	private final BiomeLayerSampler noiseLayer;
 	private final BiomeLayerSampler biomeLayer;
 	private final Biome[] biomes = new Biome[]{
 		Biomes.OCEAN,
@@ -87,64 +88,64 @@ public class VanillaLayeredBiomeSource extends BiomeSource {
 		Biomes.MODIFIED_BADLANDS_PLATEAU
 	};
 
-	public VanillaLayeredBiomeSource(VanillaLayeredBiomeSourceConfig config) {
-		LevelProperties levelProperties = config.getLevelProperties();
-		OverworldChunkGeneratorConfig overworldChunkGeneratorConfig = config.getGeneratorSettings();
+	public VanillaLayeredBiomeSource(VanillaLayeredBiomeSourceConfig vanillaLayeredBiomeSourceConfig) {
+		LevelProperties levelProperties = vanillaLayeredBiomeSourceConfig.getLevelProperties();
+		OverworldChunkGeneratorConfig overworldChunkGeneratorConfig = vanillaLayeredBiomeSourceConfig.getGeneratorSettings();
 		BiomeLayerSampler[] biomeLayerSamplers = BiomeLayers.build(levelProperties.getSeed(), levelProperties.getGeneratorType(), overworldChunkGeneratorConfig);
-		this.biomeSampler = biomeLayerSamplers[0];
+		this.noiseLayer = biomeLayerSamplers[0];
 		this.biomeLayer = biomeLayerSamplers[1];
 	}
 
 	@Override
-	public Biome getBiome(int x, int z) {
-		return this.biomeLayer.sample(x, z);
+	public Biome getBiome(int i, int j) {
+		return this.biomeLayer.sample(i, j);
 	}
 
 	@Override
-	public Biome getBiomeForNoiseGen(int x, int z) {
-		return this.biomeSampler.sample(x, z);
+	public Biome getBiomeForNoiseGen(int i, int j) {
+		return this.noiseLayer.sample(i, j);
 	}
 
 	@Override
-	public Biome[] sampleBiomes(int x, int z, int width, int height, boolean bl) {
-		return this.biomeLayer.sample(x, z, width, height);
+	public Biome[] sampleBiomes(int i, int j, int k, int l, boolean bl) {
+		return this.biomeLayer.sample(i, j, k, l);
 	}
 
 	@Override
-	public Set<Biome> getBiomesInArea(int x, int z, int radius) {
-		int i = x - radius >> 2;
-		int j = z - radius >> 2;
-		int k = x + radius >> 2;
-		int l = z + radius >> 2;
-		int m = k - i + 1;
-		int n = l - j + 1;
+	public Set<Biome> getBiomesInArea(int i, int j, int k) {
+		int l = i - k >> 2;
+		int m = j - k >> 2;
+		int n = i + k >> 2;
+		int o = j + k >> 2;
+		int p = n - l + 1;
+		int q = o - m + 1;
 		Set<Biome> set = Sets.<Biome>newHashSet();
-		Collections.addAll(set, this.biomeSampler.sample(i, j, m, n));
+		Collections.addAll(set, this.noiseLayer.sample(l, m, p, q));
 		return set;
 	}
 
 	@Nullable
 	@Override
-	public BlockPos locateBiome(int x, int z, int radius, List<Biome> biomes, Random random) {
-		int i = x - radius >> 2;
-		int j = z - radius >> 2;
-		int k = x + radius >> 2;
-		int l = z + radius >> 2;
-		int m = k - i + 1;
-		int n = l - j + 1;
-		Biome[] biomes2 = this.biomeSampler.sample(i, j, m, n);
+	public BlockPos locateBiome(int i, int j, int k, List<Biome> list, Random random) {
+		int l = i - k >> 2;
+		int m = j - k >> 2;
+		int n = i + k >> 2;
+		int o = j + k >> 2;
+		int p = n - l + 1;
+		int q = o - m + 1;
+		Biome[] biomes = this.noiseLayer.sample(l, m, p, q);
 		BlockPos blockPos = null;
-		int o = 0;
+		int r = 0;
 
-		for (int p = 0; p < m * n; p++) {
-			int q = i + p % m << 2;
-			int r = j + p / m << 2;
-			if (biomes.contains(biomes2[p])) {
-				if (blockPos == null || random.nextInt(o + 1) == 0) {
-					blockPos = new BlockPos(q, 0, r);
+		for (int s = 0; s < p * q; s++) {
+			int t = l + s % p << 2;
+			int u = m + s / p << 2;
+			if (list.contains(biomes[s])) {
+				if (blockPos == null || random.nextInt(r + 1) == 0) {
+					blockPos = new BlockPos(t, 0, u);
 				}
 
-				o++;
+				r++;
 			}
 		}
 
@@ -152,10 +153,10 @@ public class VanillaLayeredBiomeSource extends BiomeSource {
 	}
 
 	@Override
-	public boolean hasStructureFeature(StructureFeature<?> feature) {
-		return (Boolean)this.structureFeatures.computeIfAbsent(feature, structureFeature -> {
+	public boolean hasStructureFeature(StructureFeature<?> structureFeature) {
+		return (Boolean)this.structureFeatures.computeIfAbsent(structureFeature, structureFeaturex -> {
 			for (Biome biome : this.biomes) {
-				if (biome.hasStructureFeature(structureFeature)) {
+				if (biome.hasStructureFeature(structureFeaturex)) {
 					return true;
 				}
 			}

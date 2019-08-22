@@ -78,20 +78,9 @@ public class ClientWorld extends World {
 	private final Map<String, MapState> mapStates = Maps.<String, MapState>newHashMap();
 
 	public ClientWorld(
-		ClientPlayNetworkHandler clientPlayNetworkHandler,
-		LevelInfo levelInfo,
-		DimensionType dimensionType,
-		int chunkLoadDistance,
-		Profiler profiler,
-		WorldRenderer worldRenderer
+		ClientPlayNetworkHandler clientPlayNetworkHandler, LevelInfo levelInfo, DimensionType dimensionType, int i, Profiler profiler, WorldRenderer worldRenderer
 	) {
-		super(
-			new LevelProperties(levelInfo, "MpServer"),
-			dimensionType,
-			(world, dimension) -> new ClientChunkManager((ClientWorld)world, chunkLoadDistance),
-			profiler,
-			true
-		);
+		super(new LevelProperties(levelInfo, "MpServer"), dimensionType, (world, dimension) -> new ClientChunkManager((ClientWorld)world, i), profiler, true);
 		this.netHandler = clientPlayNetworkHandler;
 		this.worldRenderer = worldRenderer;
 		this.setSpawnPos(new BlockPos(8, 64, 8));
@@ -157,10 +146,10 @@ public class ClientWorld extends World {
 	}
 
 	public void tickEntity(Entity entity) {
-		if (entity instanceof PlayerEntity || this.getChunkManager().shouldTickEntity(entity)) {
-			entity.lastRenderX = entity.x;
-			entity.lastRenderY = entity.y;
-			entity.lastRenderZ = entity.z;
+		if (entity instanceof PlayerEntity || this.method_2935().shouldTickEntity(entity)) {
+			entity.prevRenderX = entity.x;
+			entity.prevRenderY = entity.y;
+			entity.prevRenderZ = entity.z;
 			entity.prevYaw = entity.yaw;
 			entity.prevPitch = entity.pitch;
 			if (entity.updateNeeded || entity.isSpectator()) {
@@ -179,24 +168,24 @@ public class ClientWorld extends World {
 		}
 	}
 
-	public void tickPassenger(Entity entity, Entity passenger) {
-		if (passenger.removed || passenger.getVehicle() != entity) {
-			passenger.stopRiding();
-		} else if (passenger instanceof PlayerEntity || this.getChunkManager().shouldTickEntity(passenger)) {
-			passenger.lastRenderX = passenger.x;
-			passenger.lastRenderY = passenger.y;
-			passenger.lastRenderZ = passenger.z;
-			passenger.prevYaw = passenger.yaw;
-			passenger.prevPitch = passenger.pitch;
-			if (passenger.updateNeeded) {
-				passenger.age++;
-				passenger.tickRiding();
+	public void tickPassenger(Entity entity, Entity entity2) {
+		if (entity2.removed || entity2.getVehicle() != entity) {
+			entity2.stopRiding();
+		} else if (entity2 instanceof PlayerEntity || this.method_2935().shouldTickEntity(entity2)) {
+			entity2.prevRenderX = entity2.x;
+			entity2.prevRenderY = entity2.y;
+			entity2.prevRenderZ = entity2.z;
+			entity2.prevYaw = entity2.yaw;
+			entity2.prevPitch = entity2.pitch;
+			if (entity2.updateNeeded) {
+				entity2.age++;
+				entity2.tickRiding();
 			}
 
-			this.checkChunk(passenger);
-			if (passenger.updateNeeded) {
-				for (Entity entity2 : passenger.getPassengerList()) {
-					this.tickPassenger(passenger, entity2);
+			this.checkChunk(entity2);
+			if (entity2.updateNeeded) {
+				for (Entity entity3 : entity2.getPassengerList()) {
+					this.tickPassenger(entity2, entity3);
 				}
 			}
 		}
@@ -209,26 +198,26 @@ public class ClientWorld extends World {
 		int k = MathHelper.floor(entity.z / 16.0);
 		if (!entity.updateNeeded || entity.chunkX != i || entity.chunkY != j || entity.chunkZ != k) {
 			if (entity.updateNeeded && this.isChunkLoaded(entity.chunkX, entity.chunkZ)) {
-				this.getChunk(entity.chunkX, entity.chunkZ).remove(entity, entity.chunkY);
+				this.method_8497(entity.chunkX, entity.chunkZ).remove(entity, entity.chunkY);
 			}
 
 			if (!entity.teleportRequested() && !this.isChunkLoaded(i, k)) {
 				entity.updateNeeded = false;
 			} else {
-				this.getChunk(i, k).addEntity(entity);
+				this.method_8497(i, k).addEntity(entity);
 			}
 		}
 
 		this.getProfiler().pop();
 	}
 
-	public void unloadBlockEntities(WorldChunk chunk) {
-		this.unloadedBlockEntities.addAll(chunk.getBlockEntities().values());
-		this.chunkManager.getLightingProvider().setLightEnabled(chunk.getPos(), false);
+	public void unloadBlockEntities(WorldChunk worldChunk) {
+		this.unloadedBlockEntities.addAll(worldChunk.getBlockEntities().values());
+		this.chunkManager.getLightingProvider().suppressLight(worldChunk.getPos(), false);
 	}
 
 	@Override
-	public boolean isChunkLoaded(int chunkX, int chunkZ) {
+	public boolean isChunkLoaded(int i, int j) {
 		return true;
 	}
 
@@ -264,23 +253,23 @@ public class ClientWorld extends World {
 		return this.regularEntities.size();
 	}
 
-	public void addLightning(LightningEntity lightning) {
-		this.globalEntities.add(lightning);
+	public void addLightning(LightningEntity lightningEntity) {
+		this.globalEntities.add(lightningEntity);
 	}
 
-	public void addPlayer(int id, AbstractClientPlayerEntity player) {
-		this.addEntityPrivate(id, player);
-		this.players.add(player);
+	public void addPlayer(int i, AbstractClientPlayerEntity abstractClientPlayerEntity) {
+		this.addEntityPrivate(i, abstractClientPlayerEntity);
+		this.players.add(abstractClientPlayerEntity);
 	}
 
-	public void addEntity(int id, Entity entity) {
-		this.addEntityPrivate(id, entity);
+	public void addEntity(int i, Entity entity) {
+		this.addEntityPrivate(i, entity);
 	}
 
-	private void addEntityPrivate(int id, Entity entity) {
-		this.removeEntity(id);
-		this.regularEntities.put(id, entity);
-		this.getChunkManager().getChunk(MathHelper.floor(entity.x / 16.0), MathHelper.floor(entity.z / 16.0), ChunkStatus.FULL, true).addEntity(entity);
+	private void addEntityPrivate(int i, Entity entity) {
+		this.removeEntity(i);
+		this.regularEntities.put(i, entity);
+		this.method_2935().method_2857(MathHelper.floor(entity.x / 16.0), MathHelper.floor(entity.z / 16.0), ChunkStatus.FULL, true).addEntity(entity);
 	}
 
 	public void removeEntity(int i) {
@@ -294,27 +283,27 @@ public class ClientWorld extends World {
 	private void finishRemovingEntity(Entity entity) {
 		entity.detach();
 		if (entity.updateNeeded) {
-			this.getChunk(entity.chunkX, entity.chunkZ).remove(entity);
+			this.method_8497(entity.chunkX, entity.chunkZ).remove(entity);
 		}
 
 		this.players.remove(entity);
 	}
 
-	public void addEntitiesToChunk(WorldChunk chunk) {
+	public void addEntitiesToChunk(WorldChunk worldChunk) {
 		for (Entry<Entity> entry : this.regularEntities.int2ObjectEntrySet()) {
 			Entity entity = (Entity)entry.getValue();
 			int i = MathHelper.floor(entity.x / 16.0);
 			int j = MathHelper.floor(entity.z / 16.0);
-			if (i == chunk.getPos().x && j == chunk.getPos().z) {
-				chunk.addEntity(entity);
+			if (i == worldChunk.getPos().x && j == worldChunk.getPos().z) {
+				worldChunk.addEntity(entity);
 			}
 		}
 	}
 
 	@Nullable
 	@Override
-	public Entity getEntityById(int id) {
-		return this.regularEntities.get(id);
+	public Entity getEntityById(int i) {
+		return this.regularEntities.get(i);
 	}
 
 	public void setBlockStateWithoutNeighborUpdates(BlockPos blockPos, BlockState blockState) {
@@ -326,8 +315,8 @@ public class ClientWorld extends World {
 		this.netHandler.getConnection().disconnect(new TranslatableText("multiplayer.status.quitting"));
 	}
 
-	public void doRandomBlockDisplayTicks(int xCenter, int yCenter, int i) {
-		int j = 32;
+	public void doRandomBlockDisplayTicks(int i, int j, int k) {
+		int l = 32;
 		Random random = new Random();
 		ItemStack itemStack = this.client.player.getMainHandStack();
 		boolean bl = this.client.interactionManager.getCurrentGameMode() == GameMode.CREATIVE
@@ -335,73 +324,80 @@ public class ClientWorld extends World {
 			&& itemStack.getItem() == Blocks.BARRIER.asItem();
 		BlockPos.Mutable mutable = new BlockPos.Mutable();
 
-		for (int k = 0; k < 667; k++) {
-			this.randomBlockDisplayTick(xCenter, yCenter, i, 16, random, bl, mutable);
-			this.randomBlockDisplayTick(xCenter, yCenter, i, 32, random, bl, mutable);
+		for (int m = 0; m < 667; m++) {
+			this.randomBlockDisplayTick(i, j, k, 16, random, bl, mutable);
+			this.randomBlockDisplayTick(i, j, k, 32, random, bl, mutable);
 		}
 	}
 
-	public void randomBlockDisplayTick(int xCenter, int yCenter, int zCenter, int radius, Random random, boolean spawnBarrierParticles, BlockPos.Mutable pos) {
-		int i = xCenter + this.random.nextInt(radius) - this.random.nextInt(radius);
-		int j = yCenter + this.random.nextInt(radius) - this.random.nextInt(radius);
-		int k = zCenter + this.random.nextInt(radius) - this.random.nextInt(radius);
-		pos.set(i, j, k);
-		BlockState blockState = this.getBlockState(pos);
-		blockState.getBlock().randomDisplayTick(blockState, this, pos, random);
-		FluidState fluidState = this.getFluidState(pos);
+	public void randomBlockDisplayTick(int i, int j, int k, int l, Random random, boolean bl, BlockPos.Mutable mutable) {
+		int m = i + this.random.nextInt(l) - this.random.nextInt(l);
+		int n = j + this.random.nextInt(l) - this.random.nextInt(l);
+		int o = k + this.random.nextInt(l) - this.random.nextInt(l);
+		mutable.set(m, n, o);
+		BlockState blockState = this.getBlockState(mutable);
+		blockState.getBlock().randomDisplayTick(blockState, this, mutable, random);
+		FluidState fluidState = this.getFluidState(mutable);
 		if (!fluidState.isEmpty()) {
-			fluidState.randomDisplayTick(this, pos, random);
+			fluidState.randomDisplayTick(this, mutable, random);
 			ParticleEffect particleEffect = fluidState.getParticle();
 			if (particleEffect != null && this.random.nextInt(10) == 0) {
-				boolean bl = blockState.isSideSolidFullSquare(this, pos, Direction.DOWN);
-				BlockPos blockPos = pos.down();
-				this.addParticle(blockPos, this.getBlockState(blockPos), particleEffect, bl);
+				boolean bl2 = blockState.isSideSolidFullSquare(this, mutable, Direction.DOWN);
+				BlockPos blockPos = mutable.down();
+				this.addParticle(blockPos, this.getBlockState(blockPos), particleEffect, bl2);
 			}
 		}
 
-		if (spawnBarrierParticles && blockState.getBlock() == Blocks.BARRIER) {
-			this.addParticle(ParticleTypes.BARRIER, (double)((float)i + 0.5F), (double)((float)j + 0.5F), (double)((float)k + 0.5F), 0.0, 0.0, 0.0);
+		if (bl && blockState.getBlock() == Blocks.BARRIER) {
+			this.addParticle(ParticleTypes.BARRIER, (double)((float)m + 0.5F), (double)((float)n + 0.5F), (double)((float)o + 0.5F), 0.0, 0.0, 0.0);
 		}
 	}
 
-	private void addParticle(BlockPos pos, BlockState state, ParticleEffect parameters, boolean bl) {
-		if (state.getFluidState().isEmpty()) {
-			VoxelShape voxelShape = state.getCollisionShape(this, pos);
+	private void addParticle(BlockPos blockPos, BlockState blockState, ParticleEffect particleEffect, boolean bl) {
+		if (blockState.getFluidState().isEmpty()) {
+			VoxelShape voxelShape = blockState.getCollisionShape(this, blockPos);
 			double d = voxelShape.getMaximum(Direction.Axis.Y);
 			if (d < 1.0) {
 				if (bl) {
-					this.addParticle((double)pos.getX(), (double)(pos.getX() + 1), (double)pos.getZ(), (double)(pos.getZ() + 1), (double)(pos.getY() + 1) - 0.05, parameters);
+					this.addParticle(
+						(double)blockPos.getX(),
+						(double)(blockPos.getX() + 1),
+						(double)blockPos.getZ(),
+						(double)(blockPos.getZ() + 1),
+						(double)(blockPos.getY() + 1) - 0.05,
+						particleEffect
+					);
 				}
-			} else if (!state.matches(BlockTags.IMPERMEABLE)) {
+			} else if (!blockState.matches(BlockTags.IMPERMEABLE)) {
 				double e = voxelShape.getMinimum(Direction.Axis.Y);
 				if (e > 0.0) {
-					this.addParticle(pos, parameters, voxelShape, (double)pos.getY() + e - 0.05);
+					this.addParticle(blockPos, particleEffect, voxelShape, (double)blockPos.getY() + e - 0.05);
 				} else {
-					BlockPos blockPos = pos.down();
-					BlockState blockState = this.getBlockState(blockPos);
-					VoxelShape voxelShape2 = blockState.getCollisionShape(this, blockPos);
+					BlockPos blockPos2 = blockPos.down();
+					BlockState blockState2 = this.getBlockState(blockPos2);
+					VoxelShape voxelShape2 = blockState2.getCollisionShape(this, blockPos2);
 					double f = voxelShape2.getMaximum(Direction.Axis.Y);
-					if (f < 1.0 && blockState.getFluidState().isEmpty()) {
-						this.addParticle(pos, parameters, voxelShape, (double)pos.getY() - 0.05);
+					if (f < 1.0 && blockState2.getFluidState().isEmpty()) {
+						this.addParticle(blockPos, particleEffect, voxelShape, (double)blockPos.getY() - 0.05);
 					}
 				}
 			}
 		}
 	}
 
-	private void addParticle(BlockPos pos, ParticleEffect parameters, VoxelShape shape, double y) {
+	private void addParticle(BlockPos blockPos, ParticleEffect particleEffect, VoxelShape voxelShape, double d) {
 		this.addParticle(
-			(double)pos.getX() + shape.getMinimum(Direction.Axis.X),
-			(double)pos.getX() + shape.getMaximum(Direction.Axis.X),
-			(double)pos.getZ() + shape.getMinimum(Direction.Axis.Z),
-			(double)pos.getZ() + shape.getMaximum(Direction.Axis.Z),
-			y,
-			parameters
+			(double)blockPos.getX() + voxelShape.getMinimum(Direction.Axis.X),
+			(double)blockPos.getX() + voxelShape.getMaximum(Direction.Axis.X),
+			(double)blockPos.getZ() + voxelShape.getMinimum(Direction.Axis.Z),
+			(double)blockPos.getZ() + voxelShape.getMaximum(Direction.Axis.Z),
+			d,
+			particleEffect
 		);
 	}
 
-	private void addParticle(double minX, double maxX, double minZ, double maxZ, double y, ParticleEffect parameters) {
-		this.addParticle(parameters, MathHelper.lerp(this.random.nextDouble(), minX, maxX), y, MathHelper.lerp(this.random.nextDouble(), minZ, maxZ), 0.0, 0.0, 0.0);
+	private void addParticle(double d, double e, double f, double g, double h, ParticleEffect particleEffect) {
+		this.addParticle(particleEffect, MathHelper.lerp(this.random.nextDouble(), d, e), h, MathHelper.lerp(this.random.nextDouble(), f, g), 0.0, 0.0, 0.0);
 	}
 
 	public void finishRemovingEntities() {
@@ -418,8 +414,8 @@ public class ClientWorld extends World {
 	}
 
 	@Override
-	public CrashReportSection addDetailsToCrashReport(CrashReport report) {
-		CrashReportSection crashReportSection = super.addDetailsToCrashReport(report);
+	public CrashReportSection addDetailsToCrashReport(CrashReport crashReport) {
+		CrashReportSection crashReportSection = super.addDetailsToCrashReport(crashReport);
 		crashReportSection.add("Server brand", (CrashCallable<String>)(() -> this.client.player.getServerBrand()));
 		crashReportSection.add(
 			"Server type", (CrashCallable<String>)(() -> this.client.getServer() == null ? "Non-integrated multiplayer server" : "Integrated singleplayer server")
@@ -428,42 +424,38 @@ public class ClientWorld extends World {
 	}
 
 	@Override
-	public void playSound(@Nullable PlayerEntity player, double x, double y, double z, SoundEvent sound, SoundCategory category, float volume, float pitch) {
-		if (player == this.client.player) {
-			this.playSound(x, y, z, sound, category, volume, pitch, false);
+	public void playSound(@Nullable PlayerEntity playerEntity, double d, double e, double f, SoundEvent soundEvent, SoundCategory soundCategory, float g, float h) {
+		if (playerEntity == this.client.player) {
+			this.playSound(d, e, f, soundEvent, soundCategory, g, h, false);
 		}
 	}
 
 	@Override
-	public void playSoundFromEntity(
-		@Nullable PlayerEntity playerEntity, Entity entity, SoundEvent soundEvent, SoundCategory soundCategory, float volume, float pitch
-	) {
+	public void playSoundFromEntity(@Nullable PlayerEntity playerEntity, Entity entity, SoundEvent soundEvent, SoundCategory soundCategory, float f, float g) {
 		if (playerEntity == this.client.player) {
 			this.client.getSoundManager().play(new EntityTrackingSoundInstance(soundEvent, soundCategory, entity));
 		}
 	}
 
-	public void playSound(BlockPos pos, SoundEvent sound, SoundCategory category, float volume, float pitch, boolean useDistance) {
-		this.playSound((double)pos.getX() + 0.5, (double)pos.getY() + 0.5, (double)pos.getZ() + 0.5, sound, category, volume, pitch, useDistance);
+	public void playSound(BlockPos blockPos, SoundEvent soundEvent, SoundCategory soundCategory, float f, float g, boolean bl) {
+		this.playSound((double)blockPos.getX() + 0.5, (double)blockPos.getY() + 0.5, (double)blockPos.getZ() + 0.5, soundEvent, soundCategory, f, g, bl);
 	}
 
 	@Override
-	public void playSound(double x, double y, double z, SoundEvent sound, SoundCategory soundCategory, float f, float g, boolean bl) {
-		double d = this.client.gameRenderer.getCamera().getPos().squaredDistanceTo(x, y, z);
-		PositionedSoundInstance positionedSoundInstance = new PositionedSoundInstance(sound, soundCategory, f, g, (float)x, (float)y, (float)z);
-		if (bl && d > 100.0) {
-			double e = Math.sqrt(d) / 40.0;
-			this.client.getSoundManager().play(positionedSoundInstance, (int)(e * 20.0));
+	public void playSound(double d, double e, double f, SoundEvent soundEvent, SoundCategory soundCategory, float g, float h, boolean bl) {
+		double i = this.client.gameRenderer.getCamera().getPos().squaredDistanceTo(d, e, f);
+		PositionedSoundInstance positionedSoundInstance = new PositionedSoundInstance(soundEvent, soundCategory, g, h, (float)d, (float)e, (float)f);
+		if (bl && i > 100.0) {
+			double j = Math.sqrt(i) / 40.0;
+			this.client.getSoundManager().play(positionedSoundInstance, (int)(j * 20.0));
 		} else {
 			this.client.getSoundManager().play(positionedSoundInstance);
 		}
 	}
 
 	@Override
-	public void addFireworkParticle(double x, double y, double z, double velocityX, double velocityY, double velocityZ, @Nullable CompoundTag tag) {
-		this.client
-			.particleManager
-			.addParticle(new FireworksSparkParticle.FireworkParticle(this, x, y, z, velocityX, velocityY, velocityZ, this.client.particleManager, tag));
+	public void addFireworkParticle(double d, double e, double f, double g, double h, double i, @Nullable CompoundTag compoundTag) {
+		this.client.particleManager.addParticle(new FireworksSparkParticle.FireworkParticle(this, d, e, f, g, h, i, this.client.particleManager, compoundTag));
 	}
 
 	@Override
@@ -481,15 +473,15 @@ public class ClientWorld extends World {
 	}
 
 	@Override
-	public void setTimeOfDay(long time) {
-		if (time < 0L) {
-			time = -time;
+	public void setTimeOfDay(long l) {
+		if (l < 0L) {
+			l = -l;
 			this.getGameRules().get(GameRules.DO_DAYLIGHT_CYCLE).set(false, null);
 		} else {
 			this.getGameRules().get(GameRules.DO_DAYLIGHT_CYCLE).set(true, null);
 		}
 
-		super.setTimeOfDay(time);
+		super.setTimeOfDay(l);
 	}
 
 	@Override
@@ -502,14 +494,14 @@ public class ClientWorld extends World {
 		return DummyClientTickScheduler.get();
 	}
 
-	public ClientChunkManager getChunkManager() {
+	public ClientChunkManager method_2935() {
 		return (ClientChunkManager)super.getChunkManager();
 	}
 
 	@Nullable
 	@Override
-	public MapState getMapState(String id) {
-		return (MapState)this.mapStates.get(id);
+	public MapState getMapState(String string) {
+		return (MapState)this.mapStates.get(string);
 	}
 
 	@Override
@@ -533,64 +525,62 @@ public class ClientWorld extends World {
 	}
 
 	@Override
-	public void updateListeners(BlockPos pos, BlockState oldState, BlockState newState, int flags) {
-		this.worldRenderer.updateBlock(this, pos, oldState, newState, flags);
+	public void updateListeners(BlockPos blockPos, BlockState blockState, BlockState blockState2, int i) {
+		this.worldRenderer.updateBlock(this, blockPos, blockState, blockState2, i);
 	}
 
 	@Override
-	public void checkBlockRerender(BlockPos pos, BlockState old, BlockState updated) {
-		this.worldRenderer.method_21596(pos, old, updated);
+	public void scheduleBlockRender(BlockPos blockPos, BlockState blockState, BlockState blockState2) {
+		this.worldRenderer.method_21596(blockPos, blockState, blockState2);
 	}
 
-	public void scheduleBlockRenders(int x, int y, int z) {
-		this.worldRenderer.scheduleBlockRenders(x, y, z);
-	}
-
-	@Override
-	public void setBlockBreakingInfo(int entityId, BlockPos pos, int progress) {
-		this.worldRenderer.setBlockBreakingInfo(entityId, pos, progress);
+	public void scheduleBlockRenders(int i, int j, int k) {
+		this.worldRenderer.scheduleBlockRenders(i, j, k);
 	}
 
 	@Override
-	public void playGlobalEvent(int type, BlockPos pos, int data) {
-		this.worldRenderer.playGlobalEvent(type, pos, data);
+	public void setBlockBreakingProgress(int i, BlockPos blockPos, int j) {
+		this.worldRenderer.setBlockBreakingProgress(i, blockPos, j);
 	}
 
 	@Override
-	public void playLevelEvent(@Nullable PlayerEntity player, int eventId, BlockPos blockPos, int data) {
+	public void playGlobalEvent(int i, BlockPos blockPos, int j) {
+		this.worldRenderer.playGlobalEvent(i, blockPos, j);
+	}
+
+	@Override
+	public void playLevelEvent(@Nullable PlayerEntity playerEntity, int i, BlockPos blockPos, int j) {
 		try {
-			this.worldRenderer.playLevelEvent(player, eventId, blockPos, data);
+			this.worldRenderer.playLevelEvent(playerEntity, i, blockPos, j);
 		} catch (Throwable var8) {
 			CrashReport crashReport = CrashReport.create(var8, "Playing level event");
 			CrashReportSection crashReportSection = crashReport.addElement("Level event being played");
 			crashReportSection.add("Block coordinates", CrashReportSection.createPositionString(blockPos));
-			crashReportSection.add("Event source", player);
-			crashReportSection.add("Event type", eventId);
-			crashReportSection.add("Event data", data);
+			crashReportSection.add("Event source", playerEntity);
+			crashReportSection.add("Event type", i);
+			crashReportSection.add("Event data", j);
 			throw new CrashException(crashReport);
 		}
 	}
 
 	@Override
-	public void addParticle(ParticleEffect parameters, double x, double y, double z, double velocityX, double velocityY, double velocityZ) {
-		this.worldRenderer.addParticle(parameters, parameters.getType().shouldAlwaysSpawn(), x, y, z, velocityX, velocityY, velocityZ);
+	public void addParticle(ParticleEffect particleEffect, double d, double e, double f, double g, double h, double i) {
+		this.worldRenderer.addParticle(particleEffect, particleEffect.getType().shouldAlwaysSpawn(), d, e, f, g, h, i);
 	}
 
 	@Override
-	public void addParticle(ParticleEffect parameters, boolean alwaysSpawn, double x, double y, double z, double velocityX, double velocityY, double velocityZ) {
-		this.worldRenderer.addParticle(parameters, parameters.getType().shouldAlwaysSpawn() || alwaysSpawn, x, y, z, velocityX, velocityY, velocityZ);
+	public void addParticle(ParticleEffect particleEffect, boolean bl, double d, double e, double f, double g, double h, double i) {
+		this.worldRenderer.addParticle(particleEffect, particleEffect.getType().shouldAlwaysSpawn() || bl, d, e, f, g, h, i);
 	}
 
 	@Override
-	public void addImportantParticle(ParticleEffect parameters, double x, double y, double z, double velocityX, double velocityY, double velocityZ) {
-		this.worldRenderer.addParticle(parameters, false, true, x, y, z, velocityX, velocityY, velocityZ);
+	public void addImportantParticle(ParticleEffect particleEffect, double d, double e, double f, double g, double h, double i) {
+		this.worldRenderer.addParticle(particleEffect, false, true, d, e, f, g, h, i);
 	}
 
 	@Override
-	public void addImportantParticle(
-		ParticleEffect parameters, boolean alwaysSpawn, double x, double y, double z, double velocityX, double velocityY, double velocityZ
-	) {
-		this.worldRenderer.addParticle(parameters, parameters.getType().shouldAlwaysSpawn() || alwaysSpawn, true, x, y, z, velocityX, velocityY, velocityZ);
+	public void addImportantParticle(ParticleEffect particleEffect, boolean bl, double d, double e, double f, double g, double h, double i) {
+		this.worldRenderer.addParticle(particleEffect, particleEffect.getType().shouldAlwaysSpawn() || bl, true, d, e, f, g, h, i);
 	}
 
 	@Override

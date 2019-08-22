@@ -15,49 +15,49 @@ import java.util.function.Predicate;
 import javax.annotation.Nullable;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.InvalidIdentifierException;
-import net.minecraft.util.Util;
+import net.minecraft.util.SystemUtil;
 import org.apache.commons.io.filefilter.DirectoryFileFilter;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 public class DirectoryResourcePack extends AbstractFileResourcePack {
 	private static final Logger LOGGER = LogManager.getLogger();
-	private static final boolean IS_WINDOWS = Util.getOperatingSystem() == Util.OperatingSystem.WINDOWS;
+	private static final boolean IS_WINDOWS = SystemUtil.getOperatingSystem() == SystemUtil.OperatingSystem.WINDOWS;
 	private static final CharMatcher BACKSLASH_MATCHER = CharMatcher.is('\\');
 
 	public DirectoryResourcePack(File file) {
 		super(file);
 	}
 
-	public static boolean isValidPath(File file, String filename) throws IOException {
-		String string = file.getCanonicalPath();
+	public static boolean isValidPath(File file, String string) throws IOException {
+		String string2 = file.getCanonicalPath();
 		if (IS_WINDOWS) {
-			string = BACKSLASH_MATCHER.replaceFrom(string, '/');
+			string2 = BACKSLASH_MATCHER.replaceFrom(string2, '/');
 		}
 
-		return string.endsWith(filename);
+		return string2.endsWith(string);
 	}
 
 	@Override
-	protected InputStream openFile(String name) throws IOException {
-		File file = this.getFile(name);
+	protected InputStream openFile(String string) throws IOException {
+		File file = this.getFile(string);
 		if (file == null) {
-			throw new ResourceNotFoundException(this.base, name);
+			throw new ResourceNotFoundException(this.base, string);
 		} else {
 			return new FileInputStream(file);
 		}
 	}
 
 	@Override
-	protected boolean containsFile(String name) {
-		return this.getFile(name) != null;
+	protected boolean containsFile(String string) {
+		return this.getFile(string) != null;
 	}
 
 	@Nullable
-	private File getFile(String name) {
+	private File getFile(String string) {
 		try {
-			File file = new File(this.base, name);
-			if (file.isFile() && isValidPath(file, name)) {
+			File file = new File(this.base, string);
+			if (file.isFile() && isValidPath(file, string)) {
 				return file;
 			}
 		} catch (IOException var3) {
@@ -67,9 +67,9 @@ public class DirectoryResourcePack extends AbstractFileResourcePack {
 	}
 
 	@Override
-	public Set<String> getNamespaces(ResourceType type) {
+	public Set<String> getNamespaces(ResourceType resourceType) {
 		Set<String> set = Sets.<String>newHashSet();
-		File file = new File(this.base, type.getDirectory());
+		File file = new File(this.base, resourceType.getName());
 		File[] files = file.listFiles(DirectoryFileFilter.DIRECTORY);
 		if (files != null) {
 			for (File file2 : files) {
@@ -89,28 +89,28 @@ public class DirectoryResourcePack extends AbstractFileResourcePack {
 	}
 
 	@Override
-	public Collection<Identifier> findResources(ResourceType type, String namespace, int maxDepth, Predicate<String> pathFilter) {
-		File file = new File(this.base, type.getDirectory());
+	public Collection<Identifier> findResources(ResourceType resourceType, String string, int i, Predicate<String> predicate) {
+		File file = new File(this.base, resourceType.getName());
 		List<Identifier> list = Lists.<Identifier>newArrayList();
 
-		for (String string : this.getNamespaces(type)) {
-			this.findFiles(new File(new File(file, string), namespace), maxDepth, string, list, namespace + "/", pathFilter);
+		for (String string2 : this.getNamespaces(resourceType)) {
+			this.findFiles(new File(new File(file, string2), string), i, string2, list, string + "/", predicate);
 		}
 
 		return list;
 	}
 
-	private void findFiles(File file, int maxDepth, String namespace, List<Identifier> found, String prefix, Predicate<String> pathFilter) {
+	private void findFiles(File file, int i, String string, List<Identifier> list, String string2, Predicate<String> predicate) {
 		File[] files = file.listFiles();
 		if (files != null) {
 			for (File file2 : files) {
 				if (file2.isDirectory()) {
-					if (maxDepth > 0) {
-						this.findFiles(file2, maxDepth - 1, namespace, found, prefix + file2.getName() + "/", pathFilter);
+					if (i > 0) {
+						this.findFiles(file2, i - 1, string, list, string2 + file2.getName() + "/", predicate);
 					}
-				} else if (!file2.getName().endsWith(".mcmeta") && pathFilter.test(file2.getName())) {
+				} else if (!file2.getName().endsWith(".mcmeta") && predicate.test(file2.getName())) {
 					try {
-						found.add(new Identifier(namespace, prefix + file2.getName()));
+						list.add(new Identifier(string, string2 + file2.getName()));
 					} catch (InvalidIdentifierException var13) {
 						LOGGER.error(var13.getMessage());
 					}

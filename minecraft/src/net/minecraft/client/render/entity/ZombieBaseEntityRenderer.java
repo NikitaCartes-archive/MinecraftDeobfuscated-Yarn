@@ -16,11 +16,11 @@ public abstract class ZombieBaseEntityRenderer<T extends ZombieEntity, M extends
 		this.addFeature(new ArmorBipedFeatureRenderer<>(this, zombieEntityModel2, zombieEntityModel3));
 	}
 
-	protected Identifier getTexture(ZombieEntity zombieEntity) {
+	protected Identifier method_4163(ZombieEntity zombieEntity) {
 		return SKIN;
 	}
 
-	protected void setupTransforms(T zombieEntity, float f, float g, float h) {
+	protected void method_17144(T zombieEntity, float f, float g, float h) {
 		if (zombieEntity.isConvertingInWater()) {
 			g += (float)(Math.cos((double)zombieEntity.age * 3.25) * Math.PI * 0.25);
 		}

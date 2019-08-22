@@ -13,7 +13,7 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 import net.minecraft.SharedConstants;
-import net.minecraft.util.Util;
+import net.minecraft.util.SystemUtil;
 import org.apache.commons.io.IOUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -28,9 +28,9 @@ public class ProfileResultImpl implements ProfileResult {
 	private final int endTick;
 	private final int field_19383;
 
-	public ProfileResultImpl(Map<String, Long> timings, Map<String, Long> map, long l, int i, long m, int j) {
-		this.timings = timings;
-		this.field_19382 = map;
+	public ProfileResultImpl(Map<String, Long> map, Map<String, Long> map2, long l, int i, long m, int j) {
+		this.timings = map;
+		this.field_19382 = map2;
 		this.startTime = l;
 		this.startTick = i;
 		this.endTime = m;
@@ -39,21 +39,21 @@ public class ProfileResultImpl implements ProfileResult {
 	}
 
 	@Override
-	public List<ProfilerTiming> getTimings(String parentPath) {
-		String string = parentPath;
+	public List<ProfilerTiming> getTimings(String string) {
+		String string2 = string;
 		long l = this.timings.containsKey("root") ? (Long)this.timings.get("root") : 0L;
-		long m = (Long)this.timings.getOrDefault(parentPath, -1L);
-		long n = (Long)this.field_19382.getOrDefault(parentPath, 0L);
+		long m = (Long)this.timings.getOrDefault(string, -1L);
+		long n = (Long)this.field_19382.getOrDefault(string, 0L);
 		List<ProfilerTiming> list = Lists.<ProfilerTiming>newArrayList();
-		if (!parentPath.isEmpty()) {
-			parentPath = parentPath + '\u001e';
+		if (!string.isEmpty()) {
+			string = string + '\u001e';
 		}
 
 		long o = 0L;
 
-		for (String string2 : this.timings.keySet()) {
-			if (string2.length() > parentPath.length() && string2.startsWith(parentPath) && string2.indexOf(30, parentPath.length() + 1) < 0) {
-				o += this.timings.get(string2);
+		for (String string3 : this.timings.keySet()) {
+			if (string3.length() > string.length() && string3.startsWith(string) && string3.indexOf(30, string.length() + 1) < 0) {
+				o += this.timings.get(string3);
 			}
 		}
 
@@ -69,19 +69,19 @@ public class ProfileResultImpl implements ProfileResult {
 		Set<String> set = Sets.<String>newHashSet(this.timings.keySet());
 		set.addAll(this.field_19382.keySet());
 
-		for (String string3 : set) {
-			if (string3.length() > parentPath.length() && string3.startsWith(parentPath) && string3.indexOf(30, parentPath.length() + 1) < 0) {
-				long p = (Long)this.timings.getOrDefault(string3, 0L);
+		for (String string4 : set) {
+			if (string4.length() > string.length() && string4.startsWith(string) && string4.indexOf(30, string.length() + 1) < 0) {
+				long p = (Long)this.timings.getOrDefault(string4, 0L);
 				double d = (double)p * 100.0 / (double)o;
 				double e = (double)p * 100.0 / (double)l;
-				String string4 = string3.substring(parentPath.length());
-				long q = (Long)this.field_19382.getOrDefault(string3, 0L);
-				list.add(new ProfilerTiming(string4, d, e, q));
+				String string5 = string4.substring(string.length());
+				long q = (Long)this.field_19382.getOrDefault(string4, 0L);
+				list.add(new ProfilerTiming(string5, d, e, q));
 			}
 		}
 
-		for (String string3x : this.timings.keySet()) {
-			this.timings.put(string3x, (Long)this.timings.get(string3x) * 999L / 1000L);
+		for (String string4x : this.timings.keySet()) {
+			this.timings.put(string4x, (Long)this.timings.get(string4x) * 999L / 1000L);
 		}
 
 		if ((float)o > f) {
@@ -89,7 +89,7 @@ public class ProfileResultImpl implements ProfileResult {
 		}
 
 		Collections.sort(list);
-		list.add(0, new ProfilerTiming(string, 100.0, (double)o * 100.0 / (double)l, n));
+		list.add(0, new ProfilerTiming(string2, 100.0, (double)o * 100.0 / (double)l, n));
 		return list;
 	}
 
@@ -114,7 +114,7 @@ public class ProfileResultImpl implements ProfileResult {
 	}
 
 	@Override
-	public boolean save(File file) {
+	public boolean saveToFile(File file) {
 		file.getParentFile().mkdirs();
 		Writer writer = null;
 
@@ -133,17 +133,17 @@ public class ProfileResultImpl implements ProfileResult {
 		return var4;
 	}
 
-	protected String asString(long timeSpan, int tickSpan) {
+	protected String asString(long l, int i) {
 		StringBuilder stringBuilder = new StringBuilder();
 		stringBuilder.append("---- Minecraft Profiler Results ----\n");
 		stringBuilder.append("// ");
 		stringBuilder.append(generateWittyComment());
 		stringBuilder.append("\n\n");
 		stringBuilder.append("Version: ").append(SharedConstants.getGameVersion().getId()).append('\n');
-		stringBuilder.append("Time span: ").append(timeSpan / 1000000L).append(" ms\n");
-		stringBuilder.append("Tick span: ").append(tickSpan).append(" ticks\n");
+		stringBuilder.append("Time span: ").append(l / 1000000L).append(" ms\n");
+		stringBuilder.append("Tick span: ").append(i).append(" ticks\n");
 		stringBuilder.append("// This is approximately ")
-			.append(String.format(Locale.ROOT, "%.2f", (float)tickSpan / ((float)timeSpan / 1.0E9F)))
+			.append(String.format(Locale.ROOT, "%.2f", (float)i / ((float)l / 1.0E9F)))
 			.append(" ticks per second. It should be ")
 			.append(20)
 			.append(" ticks per second\n\n");
@@ -153,25 +153,18 @@ public class ProfileResultImpl implements ProfileResult {
 		return stringBuilder.toString();
 	}
 
-	@Override
-	public String getTimingTreeString() {
-		StringBuilder stringBuilder = new StringBuilder();
-		this.appendTiming(0, "root", stringBuilder);
-		return stringBuilder.toString();
-	}
-
-	private void appendTiming(int level, String name, StringBuilder sb) {
-		List<ProfilerTiming> list = this.getTimings(name);
+	private void appendTiming(int i, String string, StringBuilder stringBuilder) {
+		List<ProfilerTiming> list = this.getTimings(string);
 		if (list.size() >= 3) {
-			for (int i = 1; i < list.size(); i++) {
-				ProfilerTiming profilerTiming = (ProfilerTiming)list.get(i);
-				sb.append(String.format("[%02d] ", level));
+			for (int j = 1; j < list.size(); j++) {
+				ProfilerTiming profilerTiming = (ProfilerTiming)list.get(j);
+				stringBuilder.append(String.format("[%02d] ", i));
 
-				for (int j = 0; j < level; j++) {
-					sb.append("|   ");
+				for (int k = 0; k < i; k++) {
+					stringBuilder.append("|   ");
 				}
 
-				sb.append(profilerTiming.name)
+				stringBuilder.append(profilerTiming.name)
 					.append('(')
 					.append(profilerTiming.field_19384)
 					.append('/')
@@ -184,9 +177,9 @@ public class ProfileResultImpl implements ProfileResult {
 					.append("%\n");
 				if (!"unspecified".equals(profilerTiming.name)) {
 					try {
-						this.appendTiming(level + 1, name + '\u001e' + profilerTiming.name, sb);
+						this.appendTiming(i + 1, string + '\u001e' + profilerTiming.name, stringBuilder);
 					} catch (Exception var8) {
-						sb.append("[[ EXCEPTION ").append(var8).append(" ]]");
+						stringBuilder.append("[[ EXCEPTION ").append(var8).append(" ]]");
 					}
 				}
 			}
@@ -212,7 +205,7 @@ public class ProfileResultImpl implements ProfileResult {
 		};
 
 		try {
-			return strings[(int)(Util.getMeasuringTimeNano() % (long)strings.length)];
+			return strings[(int)(SystemUtil.getMeasuringTimeNano() % (long)strings.length)];
 		} catch (Throwable var2) {
 			return "Witty comment unavailable :(";
 		}

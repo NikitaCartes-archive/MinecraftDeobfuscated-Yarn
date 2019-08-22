@@ -7,35 +7,35 @@ import net.minecraft.text.TranslatableText;
 import net.minecraft.world.GameRules;
 
 public class GameRuleCommand {
-	public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
+	public static void register(CommandDispatcher<ServerCommandSource> commandDispatcher) {
 		final LiteralArgumentBuilder<ServerCommandSource> literalArgumentBuilder = CommandManager.literal("gamerule")
-			.requires(source -> source.hasPermissionLevel(2));
-		GameRules.forEachType(
+			.requires(serverCommandSource -> serverCommandSource.hasPermissionLevel(2));
+		GameRules.forEach(
 			new GameRules.RuleConsumer() {
 				@Override
-				public <T extends GameRules.Rule<T>> void accept(GameRules.RuleKey<T> key, GameRules.RuleType<T> type) {
+				public <T extends GameRules.Rule<T>> void accept(GameRules.RuleKey<T> ruleKey, GameRules.RuleType<T> ruleType) {
 					literalArgumentBuilder.then(
-						CommandManager.literal(key.getName())
-							.executes(context -> GameRuleCommand.executeQuery(context.getSource(), key))
-							.then(type.argument("value").executes(context -> GameRuleCommand.executeSet(context, key)))
+						CommandManager.literal(ruleKey.getName())
+							.executes(commandContext -> GameRuleCommand.executeQuery(commandContext.getSource(), ruleKey))
+							.then(ruleType.argument("value").executes(commandContext -> GameRuleCommand.executeSet(commandContext, ruleKey)))
 					);
 				}
 			}
 		);
-		dispatcher.register(literalArgumentBuilder);
+		commandDispatcher.register(literalArgumentBuilder);
 	}
 
-	private static <T extends GameRules.Rule<T>> int executeSet(CommandContext<ServerCommandSource> context, GameRules.RuleKey<T> key) {
-		ServerCommandSource serverCommandSource = context.getSource();
-		T rule = serverCommandSource.getMinecraftServer().getGameRules().get(key);
-		rule.set(context, "value");
-		serverCommandSource.sendFeedback(new TranslatableText("commands.gamerule.set", key.getName(), rule.toString()), true);
+	private static <T extends GameRules.Rule<T>> int executeSet(CommandContext<ServerCommandSource> commandContext, GameRules.RuleKey<T> ruleKey) {
+		ServerCommandSource serverCommandSource = commandContext.getSource();
+		T rule = serverCommandSource.getMinecraftServer().getGameRules().get(ruleKey);
+		rule.set(commandContext, "value");
+		serverCommandSource.sendFeedback(new TranslatableText("commands.gamerule.set", ruleKey.getName(), rule.toString()), true);
 		return rule.toCommandResult();
 	}
 
-	private static <T extends GameRules.Rule<T>> int executeQuery(ServerCommandSource source, GameRules.RuleKey<T> key) {
-		T rule = source.getMinecraftServer().getGameRules().get(key);
-		source.sendFeedback(new TranslatableText("commands.gamerule.query", key.getName(), rule.toString()), false);
+	private static <T extends GameRules.Rule<T>> int executeQuery(ServerCommandSource serverCommandSource, GameRules.RuleKey<T> ruleKey) {
+		T rule = serverCommandSource.getMinecraftServer().getGameRules().get(ruleKey);
+		serverCommandSource.sendFeedback(new TranslatableText("commands.gamerule.query", ruleKey.getName(), rule.toString()), false);
 		return rule.toCommandResult();
 	}
 }

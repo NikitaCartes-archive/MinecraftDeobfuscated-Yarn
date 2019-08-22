@@ -7,7 +7,7 @@ import net.fabricmc.api.Environment;
 import net.minecraft.entity.EntityContext;
 import net.minecraft.item.ItemPlacementContext;
 import net.minecraft.particle.DustParticleEffect;
-import net.minecraft.state.StateManager;
+import net.minecraft.state.StateFactory;
 import net.minecraft.state.property.BooleanProperty;
 import net.minecraft.state.property.DirectionProperty;
 import net.minecraft.util.BlockMirror;
@@ -16,8 +16,8 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.world.BlockView;
-import net.minecraft.world.CollisionView;
 import net.minecraft.world.IWorld;
+import net.minecraft.world.ViewableWorld;
 import net.minecraft.world.World;
 
 public class WallRedstoneTorchBlock extends RedstoneTorchBlock {
@@ -26,7 +26,7 @@ public class WallRedstoneTorchBlock extends RedstoneTorchBlock {
 
 	protected WallRedstoneTorchBlock(Block.Settings settings) {
 		super(settings);
-		this.setDefaultState(this.stateManager.getDefaultState().with(FACING, Direction.NORTH).with(LIT_2, Boolean.valueOf(true)));
+		this.setDefaultState(this.stateFactory.getDefaultState().with(FACING, Direction.NORTH).with(LIT_2, Boolean.valueOf(true)));
 	}
 
 	@Override
@@ -35,63 +35,65 @@ public class WallRedstoneTorchBlock extends RedstoneTorchBlock {
 	}
 
 	@Override
-	public VoxelShape getOutlineShape(BlockState state, BlockView view, BlockPos pos, EntityContext context) {
-		return WallTorchBlock.getBoundingShape(state);
+	public VoxelShape getOutlineShape(BlockState blockState, BlockView blockView, BlockPos blockPos, EntityContext entityContext) {
+		return WallTorchBlock.getBoundingShape(blockState);
 	}
 
 	@Override
-	public boolean canPlaceAt(BlockState state, CollisionView world, BlockPos pos) {
-		return Blocks.WALL_TORCH.canPlaceAt(state, world, pos);
+	public boolean canPlaceAt(BlockState blockState, ViewableWorld viewableWorld, BlockPos blockPos) {
+		return Blocks.WALL_TORCH.canPlaceAt(blockState, viewableWorld, blockPos);
 	}
 
 	@Override
-	public BlockState getStateForNeighborUpdate(BlockState state, Direction facing, BlockState neighborState, IWorld world, BlockPos pos, BlockPos neighborPos) {
-		return Blocks.WALL_TORCH.getStateForNeighborUpdate(state, facing, neighborState, world, pos, neighborPos);
+	public BlockState getStateForNeighborUpdate(
+		BlockState blockState, Direction direction, BlockState blockState2, IWorld iWorld, BlockPos blockPos, BlockPos blockPos2
+	) {
+		return Blocks.WALL_TORCH.getStateForNeighborUpdate(blockState, direction, blockState2, iWorld, blockPos, blockPos2);
 	}
 
 	@Nullable
 	@Override
-	public BlockState getPlacementState(ItemPlacementContext ctx) {
-		BlockState blockState = Blocks.WALL_TORCH.getPlacementState(ctx);
+	public BlockState getPlacementState(ItemPlacementContext itemPlacementContext) {
+		BlockState blockState = Blocks.WALL_TORCH.getPlacementState(itemPlacementContext);
 		return blockState == null ? null : this.getDefaultState().with(FACING, blockState.get(FACING));
 	}
 
 	@Environment(EnvType.CLIENT)
 	@Override
-	public void randomDisplayTick(BlockState state, World world, BlockPos pos, Random random) {
-		if ((Boolean)state.get(LIT_2)) {
-			Direction direction = ((Direction)state.get(FACING)).getOpposite();
+	public void randomDisplayTick(BlockState blockState, World world, BlockPos blockPos, Random random) {
+		if ((Boolean)blockState.get(LIT_2)) {
+			Direction direction = ((Direction)blockState.get(FACING)).getOpposite();
 			double d = 0.27;
-			double e = (double)pos.getX() + 0.5 + (random.nextDouble() - 0.5) * 0.2 + 0.27 * (double)direction.getOffsetX();
-			double f = (double)pos.getY() + 0.7 + (random.nextDouble() - 0.5) * 0.2 + 0.22;
-			double g = (double)pos.getZ() + 0.5 + (random.nextDouble() - 0.5) * 0.2 + 0.27 * (double)direction.getOffsetZ();
+			double e = (double)blockPos.getX() + 0.5 + (random.nextDouble() - 0.5) * 0.2 + 0.27 * (double)direction.getOffsetX();
+			double f = (double)blockPos.getY() + 0.7 + (random.nextDouble() - 0.5) * 0.2 + 0.22;
+			double g = (double)blockPos.getZ() + 0.5 + (random.nextDouble() - 0.5) * 0.2 + 0.27 * (double)direction.getOffsetZ();
 			world.addParticle(DustParticleEffect.RED, e, f, g, 0.0, 0.0, 0.0);
 		}
 	}
 
 	@Override
-	protected boolean shouldUnpower(World world, BlockPos pos, BlockState state) {
-		Direction direction = ((Direction)state.get(FACING)).getOpposite();
-		return world.isEmittingRedstonePower(pos.offset(direction), direction);
+	protected boolean shouldUnpower(World world, BlockPos blockPos, BlockState blockState) {
+		Direction direction = ((Direction)blockState.get(FACING)).getOpposite();
+		return world.isEmittingRedstonePower(blockPos.offset(direction), direction);
 	}
 
 	@Override
-	public int getWeakRedstonePower(BlockState state, BlockView view, BlockPos pos, Direction facing) {
-		return state.get(LIT_2) && state.get(FACING) != facing ? 15 : 0;
+	public int getWeakRedstonePower(BlockState blockState, BlockView blockView, BlockPos blockPos, Direction direction) {
+		return blockState.get(LIT_2) && blockState.get(FACING) != direction ? 15 : 0;
 	}
 
 	@Override
-	public BlockState rotate(BlockState state, BlockRotation rotation) {
-		return Blocks.WALL_TORCH.rotate(state, rotation);
+	public BlockState rotate(BlockState blockState, BlockRotation blockRotation) {
+		return Blocks.WALL_TORCH.rotate(blockState, blockRotation);
 	}
 
 	@Override
-	public BlockState mirror(BlockState state, BlockMirror mirror) {
-		return Blocks.WALL_TORCH.mirror(state, mirror);
+	public BlockState mirror(BlockState blockState, BlockMirror blockMirror) {
+		return Blocks.WALL_TORCH.mirror(blockState, blockMirror);
 	}
 
 	@Override
-	protected void appendProperties(StateManager.Builder<Block, BlockState> builder) {
+	protected void appendProperties(StateFactory.Builder<Block, BlockState> builder) {
 		builder.add(FACING, LIT_2);
 	}
 }

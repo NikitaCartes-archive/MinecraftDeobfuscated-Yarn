@@ -27,42 +27,46 @@ public class PlayerHurtEntityCriterion implements Criterion<PlayerHurtEntityCrit
 	}
 
 	@Override
-	public void beginTrackingCondition(PlayerAdvancementTracker manager, Criterion.ConditionsContainer<PlayerHurtEntityCriterion.Conditions> conditionsContainer) {
-		PlayerHurtEntityCriterion.Handler handler = (PlayerHurtEntityCriterion.Handler)this.handlers.get(manager);
+	public void beginTrackingCondition(
+		PlayerAdvancementTracker playerAdvancementTracker, Criterion.ConditionsContainer<PlayerHurtEntityCriterion.Conditions> conditionsContainer
+	) {
+		PlayerHurtEntityCriterion.Handler handler = (PlayerHurtEntityCriterion.Handler)this.handlers.get(playerAdvancementTracker);
 		if (handler == null) {
-			handler = new PlayerHurtEntityCriterion.Handler(manager);
-			this.handlers.put(manager, handler);
+			handler = new PlayerHurtEntityCriterion.Handler(playerAdvancementTracker);
+			this.handlers.put(playerAdvancementTracker, handler);
 		}
 
 		handler.addCondition(conditionsContainer);
 	}
 
 	@Override
-	public void endTrackingCondition(PlayerAdvancementTracker manager, Criterion.ConditionsContainer<PlayerHurtEntityCriterion.Conditions> conditionsContainer) {
-		PlayerHurtEntityCriterion.Handler handler = (PlayerHurtEntityCriterion.Handler)this.handlers.get(manager);
+	public void endTrackingCondition(
+		PlayerAdvancementTracker playerAdvancementTracker, Criterion.ConditionsContainer<PlayerHurtEntityCriterion.Conditions> conditionsContainer
+	) {
+		PlayerHurtEntityCriterion.Handler handler = (PlayerHurtEntityCriterion.Handler)this.handlers.get(playerAdvancementTracker);
 		if (handler != null) {
 			handler.removeCondition(conditionsContainer);
 			if (handler.isEmpty()) {
-				this.handlers.remove(manager);
+				this.handlers.remove(playerAdvancementTracker);
 			}
 		}
 	}
 
 	@Override
-	public void endTracking(PlayerAdvancementTracker tracker) {
-		this.handlers.remove(tracker);
+	public void endTracking(PlayerAdvancementTracker playerAdvancementTracker) {
+		this.handlers.remove(playerAdvancementTracker);
 	}
 
-	public PlayerHurtEntityCriterion.Conditions conditionsFromJson(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext) {
+	public PlayerHurtEntityCriterion.Conditions method_9098(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext) {
 		DamagePredicate damagePredicate = DamagePredicate.deserialize(jsonObject.get("damage"));
-		EntityPredicate entityPredicate = EntityPredicate.fromJson(jsonObject.get("entity"));
+		EntityPredicate entityPredicate = EntityPredicate.deserialize(jsonObject.get("entity"));
 		return new PlayerHurtEntityCriterion.Conditions(damagePredicate, entityPredicate);
 	}
 
-	public void trigger(ServerPlayerEntity player, Entity entity, DamageSource source, float dealt, float taken, boolean blocked) {
-		PlayerHurtEntityCriterion.Handler handler = (PlayerHurtEntityCriterion.Handler)this.handlers.get(player.getAdvancementTracker());
+	public void handle(ServerPlayerEntity serverPlayerEntity, Entity entity, DamageSource damageSource, float f, float g, boolean bl) {
+		PlayerHurtEntityCriterion.Handler handler = (PlayerHurtEntityCriterion.Handler)this.handlers.get(serverPlayerEntity.getAdvancementManager());
 		if (handler != null) {
-			handler.handle(player, entity, source, dealt, taken, blocked);
+			handler.handle(serverPlayerEntity, entity, damageSource, f, g, bl);
 		}
 	}
 
@@ -70,18 +74,18 @@ public class PlayerHurtEntityCriterion implements Criterion<PlayerHurtEntityCrit
 		private final DamagePredicate damage;
 		private final EntityPredicate entity;
 
-		public Conditions(DamagePredicate damage, EntityPredicate entity) {
+		public Conditions(DamagePredicate damagePredicate, EntityPredicate entityPredicate) {
 			super(PlayerHurtEntityCriterion.ID);
-			this.damage = damage;
-			this.entity = entity;
+			this.damage = damagePredicate;
+			this.entity = entityPredicate;
 		}
 
 		public static PlayerHurtEntityCriterion.Conditions create(DamagePredicate.Builder builder) {
 			return new PlayerHurtEntityCriterion.Conditions(builder.build(), EntityPredicate.ANY);
 		}
 
-		public boolean matches(ServerPlayerEntity player, Entity entity, DamageSource source, float dealt, float taken, boolean blocked) {
-			return !this.damage.test(player, source, dealt, taken, blocked) ? false : this.entity.test(player, entity);
+		public boolean matches(ServerPlayerEntity serverPlayerEntity, Entity entity, DamageSource damageSource, float f, float g, boolean bl) {
+			return !this.damage.test(serverPlayerEntity, damageSource, f, g, bl) ? false : this.entity.test(serverPlayerEntity, entity);
 		}
 
 		@Override
@@ -97,8 +101,8 @@ public class PlayerHurtEntityCriterion implements Criterion<PlayerHurtEntityCrit
 		private final PlayerAdvancementTracker manager;
 		private final Set<Criterion.ConditionsContainer<PlayerHurtEntityCriterion.Conditions>> conditions = Sets.<Criterion.ConditionsContainer<PlayerHurtEntityCriterion.Conditions>>newHashSet();
 
-		public Handler(PlayerAdvancementTracker manager) {
-			this.manager = manager;
+		public Handler(PlayerAdvancementTracker playerAdvancementTracker) {
+			this.manager = playerAdvancementTracker;
 		}
 
 		public boolean isEmpty() {
@@ -113,11 +117,11 @@ public class PlayerHurtEntityCriterion implements Criterion<PlayerHurtEntityCrit
 			this.conditions.remove(conditionsContainer);
 		}
 
-		public void handle(ServerPlayerEntity player, Entity entity, DamageSource source, float dealt, float taken, boolean blocked) {
+		public void handle(ServerPlayerEntity serverPlayerEntity, Entity entity, DamageSource damageSource, float f, float g, boolean bl) {
 			List<Criterion.ConditionsContainer<PlayerHurtEntityCriterion.Conditions>> list = null;
 
 			for (Criterion.ConditionsContainer<PlayerHurtEntityCriterion.Conditions> conditionsContainer : this.conditions) {
-				if (conditionsContainer.getConditions().matches(player, entity, source, dealt, taken, blocked)) {
+				if (conditionsContainer.getConditions().matches(serverPlayerEntity, entity, damageSource, f, g, bl)) {
 					if (list == null) {
 						list = Lists.<Criterion.ConditionsContainer<PlayerHurtEntityCriterion.Conditions>>newArrayList();
 					}

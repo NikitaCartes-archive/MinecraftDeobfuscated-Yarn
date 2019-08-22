@@ -26,8 +26,8 @@ public class TriggerCommand {
 		new TranslatableText("commands.trigger.failed.invalid")
 	);
 
-	public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
-		dispatcher.register(
+	public static void register(CommandDispatcher<ServerCommandSource> commandDispatcher) {
+		commandDispatcher.register(
 			CommandManager.literal("trigger")
 				.then(
 					CommandManager.argument("objective", ObjectiveArgumentType.objective())
@@ -67,11 +67,11 @@ public class TriggerCommand {
 		);
 	}
 
-	public static CompletableFuture<Suggestions> suggestObjectives(ServerCommandSource source, SuggestionsBuilder suggestionsBuilder) {
-		Entity entity = source.getEntity();
+	public static CompletableFuture<Suggestions> suggestObjectives(ServerCommandSource serverCommandSource, SuggestionsBuilder suggestionsBuilder) {
+		Entity entity = serverCommandSource.getEntity();
 		List<String> list = Lists.<String>newArrayList();
 		if (entity != null) {
-			Scoreboard scoreboard = source.getMinecraftServer().getScoreboard();
+			Scoreboard scoreboard = serverCommandSource.getMinecraftServer().getScoreboard();
 			String string = entity.getEntityName();
 
 			for (ScoreboardObjective scoreboardObjective : scoreboard.getObjectives()) {
@@ -87,22 +87,22 @@ public class TriggerCommand {
 		return CommandSource.suggestMatching(list, suggestionsBuilder);
 	}
 
-	private static int executeAdd(ServerCommandSource source, ScoreboardPlayerScore score, int value) {
-		score.incrementScore(value);
-		source.sendFeedback(new TranslatableText("commands.trigger.add.success", score.getObjective().toHoverableText(), value), true);
-		return score.getScore();
+	private static int executeAdd(ServerCommandSource serverCommandSource, ScoreboardPlayerScore scoreboardPlayerScore, int i) {
+		scoreboardPlayerScore.incrementScore(i);
+		serverCommandSource.sendFeedback(new TranslatableText("commands.trigger.add.success", scoreboardPlayerScore.getObjective().toHoverableText(), i), true);
+		return scoreboardPlayerScore.getScore();
 	}
 
-	private static int executeSet(ServerCommandSource serverCommandSource, ScoreboardPlayerScore scoreboardPlayerScore, int value) {
-		scoreboardPlayerScore.setScore(value);
-		serverCommandSource.sendFeedback(new TranslatableText("commands.trigger.set.success", scoreboardPlayerScore.getObjective().toHoverableText(), value), true);
-		return value;
+	private static int executeSet(ServerCommandSource serverCommandSource, ScoreboardPlayerScore scoreboardPlayerScore, int i) {
+		scoreboardPlayerScore.setScore(i);
+		serverCommandSource.sendFeedback(new TranslatableText("commands.trigger.set.success", scoreboardPlayerScore.getObjective().toHoverableText(), i), true);
+		return i;
 	}
 
-	private static int executeSimple(ServerCommandSource source, ScoreboardPlayerScore score) {
-		score.incrementScore(1);
-		source.sendFeedback(new TranslatableText("commands.trigger.simple.success", score.getObjective().toHoverableText()), true);
-		return score.getScore();
+	private static int executeSimple(ServerCommandSource serverCommandSource, ScoreboardPlayerScore scoreboardPlayerScore) {
+		scoreboardPlayerScore.incrementScore(1);
+		serverCommandSource.sendFeedback(new TranslatableText("commands.trigger.simple.success", scoreboardPlayerScore.getObjective().toHoverableText()), true);
+		return scoreboardPlayerScore.getScore();
 	}
 
 	private static ScoreboardPlayerScore getScore(ServerPlayerEntity serverPlayerEntity, ScoreboardObjective scoreboardObjective) throws CommandSyntaxException {

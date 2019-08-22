@@ -25,13 +25,13 @@ public abstract class AbstractSoundInstance implements SoundInstance {
 	protected boolean field_18935;
 	protected boolean looping;
 
-	protected AbstractSoundInstance(SoundEvent sound, SoundCategory category) {
-		this(sound.getId(), category);
+	protected AbstractSoundInstance(SoundEvent soundEvent, SoundCategory soundCategory) {
+		this(soundEvent.getId(), soundCategory);
 	}
 
-	protected AbstractSoundInstance(Identifier soundId, SoundCategory category) {
-		this.id = soundId;
-		this.category = category;
+	protected AbstractSoundInstance(Identifier identifier, SoundCategory soundCategory) {
+		this.id = identifier;
+		this.category = soundCategory;
 	}
 
 	@Override
@@ -45,7 +45,7 @@ public abstract class AbstractSoundInstance implements SoundInstance {
 		if (this.soundSet == null) {
 			this.sound = SoundManager.MISSING_SOUND;
 		} else {
-			this.sound = this.soundSet.getSound();
+			this.sound = this.soundSet.method_4887();
 		}
 
 		return this.soundSet;

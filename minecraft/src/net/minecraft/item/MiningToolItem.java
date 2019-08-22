@@ -17,38 +17,38 @@ public class MiningToolItem extends ToolItem {
 	protected final float attackDamage;
 	protected final float attackSpeed;
 
-	protected MiningToolItem(float attackDamage, float attackSpeed, ToolMaterial material, Set<Block> effectiveBlocks, Item.Settings settings) {
-		super(material, settings);
-		this.effectiveBlocks = effectiveBlocks;
-		this.miningSpeed = material.getMiningSpeed();
-		this.attackDamage = attackDamage + material.getAttackDamage();
-		this.attackSpeed = attackSpeed;
+	protected MiningToolItem(float f, float g, ToolMaterial toolMaterial, Set<Block> set, Item.Settings settings) {
+		super(toolMaterial, settings);
+		this.effectiveBlocks = set;
+		this.miningSpeed = toolMaterial.getMiningSpeed();
+		this.attackDamage = f + toolMaterial.getAttackDamage();
+		this.attackSpeed = g;
 	}
 
 	@Override
-	public float getMiningSpeed(ItemStack stack, BlockState state) {
-		return this.effectiveBlocks.contains(state.getBlock()) ? this.miningSpeed : 1.0F;
+	public float getMiningSpeed(ItemStack itemStack, BlockState blockState) {
+		return this.effectiveBlocks.contains(blockState.getBlock()) ? this.miningSpeed : 1.0F;
 	}
 
 	@Override
-	public boolean postHit(ItemStack stack, LivingEntity target, LivingEntity attacker) {
-		stack.damage(2, attacker, e -> e.sendEquipmentBreakStatus(EquipmentSlot.MAINHAND));
+	public boolean postHit(ItemStack itemStack, LivingEntity livingEntity, LivingEntity livingEntity2) {
+		itemStack.damage(2, livingEntity2, livingEntityx -> livingEntityx.sendEquipmentBreakStatus(EquipmentSlot.MAINHAND));
 		return true;
 	}
 
 	@Override
-	public boolean postMine(ItemStack stack, World world, BlockState state, BlockPos pos, LivingEntity miner) {
-		if (!world.isClient && state.getHardness(world, pos) != 0.0F) {
-			stack.damage(1, miner, e -> e.sendEquipmentBreakStatus(EquipmentSlot.MAINHAND));
+	public boolean postMine(ItemStack itemStack, World world, BlockState blockState, BlockPos blockPos, LivingEntity livingEntity) {
+		if (!world.isClient && blockState.getHardness(world, blockPos) != 0.0F) {
+			itemStack.damage(1, livingEntity, livingEntityx -> livingEntityx.sendEquipmentBreakStatus(EquipmentSlot.MAINHAND));
 		}
 
 		return true;
 	}
 
 	@Override
-	public Multimap<String, EntityAttributeModifier> getModifiers(EquipmentSlot slot) {
-		Multimap<String, EntityAttributeModifier> multimap = super.getModifiers(slot);
-		if (slot == EquipmentSlot.MAINHAND) {
+	public Multimap<String, EntityAttributeModifier> getModifiers(EquipmentSlot equipmentSlot) {
+		Multimap<String, EntityAttributeModifier> multimap = super.getModifiers(equipmentSlot);
+		if (equipmentSlot == EquipmentSlot.MAINHAND) {
 			multimap.put(
 				EntityAttributes.ATTACK_DAMAGE.getId(),
 				new EntityAttributeModifier(ATTACK_DAMAGE_MODIFIER_UUID, "Tool modifier", (double)this.attackDamage, EntityAttributeModifier.Operation.ADDITION)

@@ -1,6 +1,6 @@
 package net.minecraft.client.render.entity;
 
-import com.mojang.blaze3d.platform.GlStateManager;
+import com.mojang.blaze3d.systems.RenderSystem;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
@@ -21,26 +21,26 @@ public class CatEntityRenderer extends MobEntityRenderer<CatEntity, CatEntityMod
 	}
 
 	@Nullable
-	protected Identifier getTexture(CatEntity catEntity) {
+	protected Identifier method_4078(CatEntity catEntity) {
 		return catEntity.getTexture();
 	}
 
-	protected void scale(CatEntity catEntity, float f) {
+	protected void method_4079(CatEntity catEntity, float f) {
 		super.scale(catEntity, f);
-		GlStateManager.scalef(0.8F, 0.8F, 0.8F);
+		RenderSystem.scalef(0.8F, 0.8F, 0.8F);
 	}
 
-	protected void setupTransforms(CatEntity catEntity, float f, float g, float h) {
+	protected void method_16045(CatEntity catEntity, float f, float g, float h) {
 		super.setupTransforms(catEntity, f, g, h);
 		float i = catEntity.getSleepAnimation(h);
 		if (i > 0.0F) {
-			GlStateManager.translatef(0.4F * i, 0.15F * i, 0.1F * i);
-			GlStateManager.rotatef(MathHelper.lerpAngleDegrees(i, 0.0F, 90.0F), 0.0F, 0.0F, 1.0F);
+			RenderSystem.translatef(0.4F * i, 0.15F * i, 0.1F * i);
+			RenderSystem.rotatef(MathHelper.lerpAngleDegrees(i, 0.0F, 90.0F), 0.0F, 0.0F, 1.0F);
 			BlockPos blockPos = new BlockPos(catEntity);
 
-			for (PlayerEntity playerEntity : catEntity.world.getNonSpectatingEntities(PlayerEntity.class, new Box(blockPos).expand(2.0, 2.0, 2.0))) {
+			for (PlayerEntity playerEntity : catEntity.world.getEntities(PlayerEntity.class, new Box(blockPos).expand(2.0, 2.0, 2.0))) {
 				if (playerEntity.isSleeping()) {
-					GlStateManager.translatef(0.15F * i, 0.0F, 0.0F);
+					RenderSystem.translatef(0.15F * i, 0.0F, 0.0F);
 					break;
 				}
 			}

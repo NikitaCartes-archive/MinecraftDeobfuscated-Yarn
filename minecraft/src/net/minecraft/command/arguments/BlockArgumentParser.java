@@ -21,7 +21,7 @@ import net.minecraft.block.BlockState;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.StringNbtReader;
 import net.minecraft.server.command.CommandSource;
-import net.minecraft.state.StateManager;
+import net.minecraft.state.StateFactory;
 import net.minecraft.state.property.Property;
 import net.minecraft.tag.BlockTags;
 import net.minecraft.tag.Tag;
@@ -55,7 +55,7 @@ public class BlockArgumentParser {
 	private final Map<Property<?>, Comparable<?>> blockProperties = Maps.<Property<?>, Comparable<?>>newHashMap();
 	private final Map<String, String> tagProperties = Maps.<String, String>newHashMap();
 	private Identifier blockId = new Identifier("");
-	private StateManager<Block, BlockState> stateFactory;
+	private StateFactory<Block, BlockState> stateFactory;
 	private BlockState blockState;
 	@Nullable
 	private CompoundTag data;
@@ -63,9 +63,9 @@ public class BlockArgumentParser {
 	private int cursorPos;
 	private Function<SuggestionsBuilder, CompletableFuture<Suggestions>> suggestions = SUGGEST_DEFAULT;
 
-	public BlockArgumentParser(StringReader reader, boolean allowTag) {
-		this.reader = reader;
-		this.allowTag = allowTag;
+	public BlockArgumentParser(StringReader stringReader, boolean bl) {
+		this.reader = stringReader;
+		this.allowTag = bl;
 	}
 
 	public Map<Property<?>, Comparable<?>> getBlockProperties() {
@@ -87,7 +87,7 @@ public class BlockArgumentParser {
 		return this.tagId;
 	}
 
-	public BlockArgumentParser parse(boolean allowNbt) throws CommandSyntaxException {
+	public BlockArgumentParser parse(boolean bl) throws CommandSyntaxException {
 		this.suggestions = this::suggestBlockOrTagId;
 		if (this.reader.canRead() && this.reader.peek() == '#') {
 			this.parseTagId();
@@ -105,7 +105,7 @@ public class BlockArgumentParser {
 			}
 		}
 
-		if (allowNbt && this.reader.canRead() && this.reader.peek() == '{') {
+		if (bl && this.reader.canRead() && this.reader.peek() == '{') {
 			this.suggestions = SUGGEST_DEFAULT;
 			this.parseSnbt();
 		}
@@ -147,7 +147,7 @@ public class BlockArgumentParser {
 			Tag<Block> tag = BlockTags.getContainer().get(this.tagId);
 			if (tag != null) {
 				for (Block block : tag.values()) {
-					for (Property<?> property : block.getStateManager().getProperties()) {
+					for (Property<?> property : block.getStateFactory().getProperties()) {
 						if (!this.tagProperties.containsKey(property.getName()) && property.getName().startsWith(string)) {
 							suggestionsBuilder.suggest(property.getName() + '=');
 						}
@@ -211,7 +211,7 @@ public class BlockArgumentParser {
 			if (comparable instanceof Integer) {
 				suggestionsBuilder.suggest((Integer)comparable);
 			} else {
-				suggestionsBuilder.suggest(property.name(comparable));
+				suggestionsBuilder.suggest(property.getName(comparable));
 			}
 		}
 
@@ -224,13 +224,13 @@ public class BlockArgumentParser {
 			Tag<Block> tag = BlockTags.getContainer().get(this.tagId);
 			if (tag != null) {
 				for (Block block : tag.values()) {
-					Property<?> property = block.getStateManager().getProperty(string);
+					Property<?> property = block.getStateFactory().getProperty(string);
 					if (property != null) {
 						suggestPropertyValues(suggestionsBuilder, property);
 					}
 
 					if (!bl) {
-						for (Property<?> property2 : block.getStateManager().getProperties()) {
+						for (Property<?> property2 : block.getStateFactory().getProperties()) {
 							if (!this.tagProperties.containsKey(property2.getName())) {
 								bl = true;
 								break;
@@ -257,7 +257,7 @@ public class BlockArgumentParser {
 				boolean bl2 = false;
 
 				for (Block block : tag.values()) {
-					bl |= !block.getStateManager().getProperties().isEmpty();
+					bl |= !block.getStateFactory().getProperties().isEmpty();
 					bl2 |= block.hasBlockEntity();
 					if (bl && bl2) {
 						break;
@@ -279,7 +279,7 @@ public class BlockArgumentParser {
 
 	private CompletableFuture<Suggestions> suggestSnbtOrBlockProperties(SuggestionsBuilder suggestionsBuilder) {
 		if (suggestionsBuilder.getRemaining().isEmpty()) {
-			if (!this.blockState.getBlock().getStateManager().getProperties().isEmpty()) {
+			if (!this.blockState.getBlock().getStateFactory().getProperties().isEmpty()) {
 				suggestionsBuilder.suggest(String.valueOf('['));
 			}
 
@@ -311,7 +311,7 @@ public class BlockArgumentParser {
 			this.reader.setCursor(i);
 			return INVALID_BLOCK_ID_EXCEPTION.createWithContext(this.reader, this.blockId.toString());
 		});
-		this.stateFactory = block.getStateManager();
+		this.stateFactory = block.getStateFactory();
 		this.blockState = block.getDefaultState();
 	}
 
@@ -437,7 +437,7 @@ public class BlockArgumentParser {
 	}
 
 	private <T extends Comparable<T>> void parsePropertyValue(Property<T> property, String string, int i) throws CommandSyntaxException {
-		Optional<T> optional = property.parse(string);
+		Optional<T> optional = property.getValue(string);
 		if (optional.isPresent()) {
 			this.blockState = this.blockState.with(property, (Comparable)optional.get());
 			this.blockProperties.put(property, optional.get());
@@ -471,7 +471,7 @@ public class BlockArgumentParser {
 	private static <T extends Comparable<T>> void stringifyProperty(StringBuilder stringBuilder, Property<T> property, Comparable<?> comparable) {
 		stringBuilder.append(property.getName());
 		stringBuilder.append('=');
-		stringBuilder.append(property.name((T)comparable));
+		stringBuilder.append(property.getName((T)comparable));
 	}
 
 	public CompletableFuture<Suggestions> getSuggestions(SuggestionsBuilder suggestionsBuilder) {

@@ -8,33 +8,33 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.registry.Registry;
 
 public class Potion {
-	private final String baseName;
-	private final ImmutableList<StatusEffectInstance> effects;
+	private final String name;
+	private final ImmutableList<StatusEffectInstance> effectList;
 
-	public static Potion byId(String id) {
-		return Registry.POTION.get(Identifier.tryParse(id));
+	public static Potion byId(String string) {
+		return Registry.POTION.get(Identifier.tryParse(string));
 	}
 
-	public Potion(StatusEffectInstance... effects) {
-		this(null, effects);
+	public Potion(StatusEffectInstance... statusEffectInstances) {
+		this(null, statusEffectInstances);
 	}
 
-	public Potion(@Nullable String baseName, StatusEffectInstance... effects) {
-		this.baseName = baseName;
-		this.effects = ImmutableList.copyOf(effects);
+	public Potion(@Nullable String string, StatusEffectInstance... statusEffectInstances) {
+		this.name = string;
+		this.effectList = ImmutableList.copyOf(statusEffectInstances);
 	}
 
-	public String finishTranslationKey(String prefix) {
-		return prefix + (this.baseName == null ? Registry.POTION.getId(this).getPath() : this.baseName);
+	public String getName(String string) {
+		return string + (this.name == null ? Registry.POTION.getId(this).getPath() : this.name);
 	}
 
 	public List<StatusEffectInstance> getEffects() {
-		return this.effects;
+		return this.effectList;
 	}
 
 	public boolean hasInstantEffect() {
-		if (!this.effects.isEmpty()) {
-			for (StatusEffectInstance statusEffectInstance : this.effects) {
+		if (!this.effectList.isEmpty()) {
+			for (StatusEffectInstance statusEffectInstance : this.effectList) {
 				if (statusEffectInstance.getEffectType().isInstant()) {
 					return true;
 				}

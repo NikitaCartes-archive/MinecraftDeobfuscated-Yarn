@@ -47,11 +47,11 @@ public class DamageSourcePredicate {
 		this.sourceEntity = entityPredicate2;
 	}
 
-	public boolean test(ServerPlayerEntity player, DamageSource damageSource) {
-		return this.test(player.getServerWorld(), new Vec3d(player.x, player.y, player.z), damageSource);
+	public boolean test(ServerPlayerEntity serverPlayerEntity, DamageSource damageSource) {
+		return this.test(serverPlayerEntity.getServerWorld(), new Vec3d(serverPlayerEntity.x, serverPlayerEntity.y, serverPlayerEntity.z), damageSource);
 	}
 
-	public boolean test(ServerWorld world, Vec3d pos, DamageSource damageSource) {
+	public boolean test(ServerWorld serverWorld, Vec3d vec3d, DamageSource damageSource) {
 		if (this == EMPTY) {
 			return true;
 		} else if (this.isProjectile != null && this.isProjectile != damageSource.isProjectile()) {
@@ -60,7 +60,7 @@ public class DamageSourcePredicate {
 			return false;
 		} else if (this.bypassesArmor != null && this.bypassesArmor != damageSource.bypassesArmor()) {
 			return false;
-		} else if (this.bypassesInvulnerability != null && this.bypassesInvulnerability != damageSource.isOutOfWorld()) {
+		} else if (this.bypassesInvulnerability != null && this.bypassesInvulnerability != damageSource.doesDamageToCreative()) {
 			return false;
 		} else if (this.bypassesMagic != null && this.bypassesMagic != damageSource.isUnblockable()) {
 			return false;
@@ -71,13 +71,15 @@ public class DamageSourcePredicate {
 		} else if (this.isLightning != null && this.isLightning != (damageSource == DamageSource.LIGHTNING_BOLT)) {
 			return false;
 		} else {
-			return !this.directEntity.test(world, pos, damageSource.getSource()) ? false : this.sourceEntity.test(world, pos, damageSource.getAttacker());
+			return !this.directEntity.test(serverWorld, vec3d, damageSource.getSource())
+				? false
+				: this.sourceEntity.test(serverWorld, vec3d, damageSource.getAttacker());
 		}
 	}
 
-	public static DamageSourcePredicate deserialize(@Nullable JsonElement element) {
-		if (element != null && !element.isJsonNull()) {
-			JsonObject jsonObject = JsonHelper.asObject(element, "damage type");
+	public static DamageSourcePredicate deserialize(@Nullable JsonElement jsonElement) {
+		if (jsonElement != null && !jsonElement.isJsonNull()) {
+			JsonObject jsonObject = JsonHelper.asObject(jsonElement, "damage type");
 			Boolean boolean_ = getBoolean(jsonObject, "is_projectile");
 			Boolean boolean2 = getBoolean(jsonObject, "is_explosion");
 			Boolean boolean3 = getBoolean(jsonObject, "bypasses_armor");
@@ -86,8 +88,8 @@ public class DamageSourcePredicate {
 			Boolean boolean6 = getBoolean(jsonObject, "is_fire");
 			Boolean boolean7 = getBoolean(jsonObject, "is_magic");
 			Boolean boolean8 = getBoolean(jsonObject, "is_lightning");
-			EntityPredicate entityPredicate = EntityPredicate.fromJson(jsonObject.get("direct_entity"));
-			EntityPredicate entityPredicate2 = EntityPredicate.fromJson(jsonObject.get("source_entity"));
+			EntityPredicate entityPredicate = EntityPredicate.deserialize(jsonObject.get("direct_entity"));
+			EntityPredicate entityPredicate2 = EntityPredicate.deserialize(jsonObject.get("source_entity"));
 			return new DamageSourcePredicate(boolean_, boolean2, boolean3, boolean4, boolean5, boolean6, boolean7, boolean8, entityPredicate, entityPredicate2);
 		} else {
 			return EMPTY;
@@ -95,8 +97,8 @@ public class DamageSourcePredicate {
 	}
 
 	@Nullable
-	private static Boolean getBoolean(JsonObject obj, String name) {
-		return obj.has(name) ? JsonHelper.getBoolean(obj, name) : null;
+	private static Boolean getBoolean(JsonObject jsonObject, String string) {
+		return jsonObject.has(string) ? JsonHelper.getBoolean(jsonObject, string) : null;
 	}
 
 	public JsonElement serialize() {
@@ -118,9 +120,9 @@ public class DamageSourcePredicate {
 		}
 	}
 
-	private void addProperty(JsonObject json, String key, @Nullable Boolean boolean_) {
+	private void addProperty(JsonObject jsonObject, String string, @Nullable Boolean boolean_) {
 		if (boolean_ != null) {
-			json.addProperty(key, boolean_);
+			jsonObject.addProperty(string, boolean_);
 		}
 	}
 

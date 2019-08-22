@@ -1,6 +1,6 @@
 package net.minecraft.client.render.entity;
 
-import com.mojang.blaze3d.platform.GlStateManager;
+import com.mojang.blaze3d.systems.RenderSystem;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.render.entity.feature.CreeperChargeFeatureRenderer;
@@ -18,7 +18,7 @@ public class CreeperEntityRenderer extends MobEntityRenderer<CreeperEntity, Cree
 		this.addFeature(new CreeperChargeFeatureRenderer(this));
 	}
 
-	protected void scale(CreeperEntity creeperEntity, float f) {
+	protected void method_3900(CreeperEntity creeperEntity, float f) {
 		float g = creeperEntity.getClientFuseTime(f);
 		float h = 1.0F + MathHelper.sin(g * 100.0F) * g * 0.01F;
 		g = MathHelper.clamp(g, 0.0F, 1.0F);
@@ -26,10 +26,10 @@ public class CreeperEntityRenderer extends MobEntityRenderer<CreeperEntity, Cree
 		g *= g;
 		float i = (1.0F + g * 0.4F) * h;
 		float j = (1.0F + g * 0.1F) / h;
-		GlStateManager.scalef(i, j, i);
+		RenderSystem.scalef(i, j, i);
 	}
 
-	protected int getOverlayColor(CreeperEntity creeperEntity, float f, float g) {
+	protected int method_3898(CreeperEntity creeperEntity, float f, float g) {
 		float h = creeperEntity.getClientFuseTime(g);
 		if ((int)(h * 10.0F) % 2 == 0) {
 			return 0;
@@ -40,7 +40,7 @@ public class CreeperEntityRenderer extends MobEntityRenderer<CreeperEntity, Cree
 		}
 	}
 
-	protected Identifier getTexture(CreeperEntity creeperEntity) {
+	protected Identifier method_3899(CreeperEntity creeperEntity) {
 		return SKIN;
 	}
 }

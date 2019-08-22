@@ -22,12 +22,12 @@ public class LlamaSpitEntityModel<T extends Entity> extends EntityModel<T> {
 		this.field_3433.setTextureOffset(0, 0).addCuboid(2.0F, 0.0F, 0.0F, 2, 2, 2, f);
 		this.field_3433.setTextureOffset(0, 0).addCuboid(0.0F, 2.0F, 0.0F, 2, 2, 2, f);
 		this.field_3433.setTextureOffset(0, 0).addCuboid(0.0F, 0.0F, 2.0F, 2, 2, 2, f);
-		this.field_3433.setPivot(0.0F, 0.0F, 0.0F);
+		this.field_3433.setRotationPoint(0.0F, 0.0F, 0.0F);
 	}
 
 	@Override
-	public void render(T entity, float limbAngle, float limbDistance, float age, float headYaw, float headPitch, float scale) {
-		this.setAngles(entity, limbAngle, limbDistance, age, headYaw, headPitch, scale);
-		this.field_3433.render(scale);
+	public void render(T entity, float f, float g, float h, float i, float j, float k) {
+		this.setAngles(entity, f, g, h, i, j, k);
+		this.field_3433.render(k);
 	}
 }

@@ -12,8 +12,8 @@ import net.minecraft.world.World;
 public class CurrentDownParticle extends SpriteBillboardParticle {
 	private float field_3897;
 
-	private CurrentDownParticle(World world, double x, double y, double z) {
-		super(world, x, y, z);
+	private CurrentDownParticle(World world, double d, double e, double f) {
+		super(world, d, e, f);
 		this.maxAge = (int)(Math.random() * 60.0) + 30;
 		this.collidesWithWorld = false;
 		this.velocityX = 0.0;
@@ -59,7 +59,7 @@ public class CurrentDownParticle extends SpriteBillboardParticle {
 			this.field_17890 = spriteProvider;
 		}
 
-		public Particle createParticle(DefaultParticleType defaultParticleType, World world, double d, double e, double f, double g, double h, double i) {
+		public Particle method_3114(DefaultParticleType defaultParticleType, World world, double d, double e, double f, double g, double h, double i) {
 			CurrentDownParticle currentDownParticle = new CurrentDownParticle(world, d, e, f);
 			currentDownParticle.setSprite(this.field_17890);
 			return currentDownParticle;

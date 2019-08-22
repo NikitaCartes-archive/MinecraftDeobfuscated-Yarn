@@ -7,16 +7,16 @@ import javax.annotation.Nullable;
 import net.minecraft.structure.Structure;
 import net.minecraft.structure.StructurePlacementData;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.CollisionView;
 import net.minecraft.world.Heightmap;
+import net.minecraft.world.ViewableWorld;
 
 public class GravityStructureProcessor extends StructureProcessor {
 	private final Heightmap.Type heightmap;
 	private final int offset;
 
-	public GravityStructureProcessor(Heightmap.Type heightmap, int offset) {
-		this.heightmap = heightmap;
-		this.offset = offset;
+	public GravityStructureProcessor(Heightmap.Type type, int i) {
+		this.heightmap = type;
+		this.offset = i;
 	}
 
 	public GravityStructureProcessor(Dynamic<?> dynamic) {
@@ -26,13 +26,13 @@ public class GravityStructureProcessor extends StructureProcessor {
 	@Nullable
 	@Override
 	public Structure.StructureBlockInfo process(
-		CollisionView world,
-		BlockPos pos,
+		ViewableWorld viewableWorld,
+		BlockPos blockPos,
 		Structure.StructureBlockInfo structureBlockInfo,
 		Structure.StructureBlockInfo structureBlockInfo2,
-		StructurePlacementData placementData
+		StructurePlacementData structurePlacementData
 	) {
-		int i = world.getTop(this.heightmap, structureBlockInfo2.pos.getX(), structureBlockInfo2.pos.getZ()) + this.offset;
+		int i = viewableWorld.getTop(this.heightmap, structureBlockInfo2.pos.getX(), structureBlockInfo2.pos.getZ()) + this.offset;
 		int j = structureBlockInfo.pos.getY();
 		return new Structure.StructureBlockInfo(
 			new BlockPos(structureBlockInfo2.pos.getX(), i + j, structureBlockInfo2.pos.getZ()), structureBlockInfo2.state, structureBlockInfo2.tag

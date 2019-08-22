@@ -108,7 +108,7 @@ public abstract class ItemGroup {
 
 		@Environment(EnvType.CLIENT)
 		@Override
-		public void appendStacks(DefaultedList<ItemStack> stacks) {
+		public void appendStacks(DefaultedList<ItemStack> defaultedList) {
 			throw new RuntimeException("Implement exception client-side.");
 		}
 
@@ -134,11 +134,11 @@ public abstract class ItemGroup {
 	private EnchantmentTarget[] enchantments = new EnchantmentTarget[0];
 	private ItemStack icon;
 
-	public ItemGroup(int index, String id) {
-		this.index = index;
-		this.id = id;
+	public ItemGroup(int i, String string) {
+		this.index = i;
+		this.id = string;
 		this.icon = ItemStack.EMPTY;
-		GROUPS[index] = this;
+		GROUPS[i] = this;
 	}
 
 	@Environment(EnvType.CLIENT)
@@ -177,13 +177,13 @@ public abstract class ItemGroup {
 		return this.texture;
 	}
 
-	public ItemGroup setTexture(String texture) {
-		this.texture = texture;
+	public ItemGroup setTexture(String string) {
+		this.texture = string;
 		return this;
 	}
 
-	public ItemGroup setName(String name) {
-		this.name = name;
+	public ItemGroup setName(String string) {
+		this.name = string;
 		return this;
 	}
 
@@ -226,15 +226,15 @@ public abstract class ItemGroup {
 		return this.enchantments;
 	}
 
-	public ItemGroup setEnchantments(EnchantmentTarget... targets) {
-		this.enchantments = targets;
+	public ItemGroup setEnchantments(EnchantmentTarget... enchantmentTargets) {
+		this.enchantments = enchantmentTargets;
 		return this;
 	}
 
-	public boolean containsEnchantments(@Nullable EnchantmentTarget target) {
-		if (target != null) {
-			for (EnchantmentTarget enchantmentTarget : this.enchantments) {
-				if (enchantmentTarget == target) {
+	public boolean containsEnchantments(@Nullable EnchantmentTarget enchantmentTarget) {
+		if (enchantmentTarget != null) {
+			for (EnchantmentTarget enchantmentTarget2 : this.enchantments) {
+				if (enchantmentTarget2 == enchantmentTarget) {
 					return true;
 				}
 			}
@@ -244,9 +244,9 @@ public abstract class ItemGroup {
 	}
 
 	@Environment(EnvType.CLIENT)
-	public void appendStacks(DefaultedList<ItemStack> stacks) {
+	public void appendStacks(DefaultedList<ItemStack> defaultedList) {
 		for (Item item : Registry.ITEM) {
-			item.appendStacks(this, stacks);
+			item.appendStacks(this, defaultedList);
 		}
 	}
 }

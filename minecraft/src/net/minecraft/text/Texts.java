@@ -21,60 +21,60 @@ public class Texts {
 		}
 	}
 
-	public static Text parse(@Nullable ServerCommandSource source, Text text, @Nullable Entity sender, int depth) throws CommandSyntaxException {
-		if (depth > 100) {
+	public static Text parse(@Nullable ServerCommandSource serverCommandSource, Text text, @Nullable Entity entity, int i) throws CommandSyntaxException {
+		if (i > 100) {
 			return text;
 		} else {
-			depth++;
-			Text text2 = text instanceof ParsableText ? ((ParsableText)text).parse(source, sender, depth) : text.copy();
+			i++;
+			Text text2 = text instanceof ParsableText ? ((ParsableText)text).parse(serverCommandSource, entity, i) : text.copy();
 
 			for (Text text3 : text.getSiblings()) {
-				text2.append(parse(source, text3, sender, depth));
+				text2.append(parse(serverCommandSource, text3, entity, i));
 			}
 
 			return setStyleIfAbsent(text2, text.getStyle());
 		}
 	}
 
-	public static Text toText(GameProfile profile) {
-		if (profile.getName() != null) {
-			return new LiteralText(profile.getName());
+	public static Text toText(GameProfile gameProfile) {
+		if (gameProfile.getName() != null) {
+			return new LiteralText(gameProfile.getName());
 		} else {
-			return profile.getId() != null ? new LiteralText(profile.getId().toString()) : new LiteralText("(unknown)");
+			return gameProfile.getId() != null ? new LiteralText(gameProfile.getId().toString()) : new LiteralText("(unknown)");
 		}
 	}
 
-	public static Text joinOrdered(Collection<String> strings) {
-		return joinOrdered(strings, string -> new LiteralText(string).formatted(Formatting.GREEN));
+	public static Text joinOrdered(Collection<String> collection) {
+		return joinOrdered(collection, string -> new LiteralText(string).formatted(Formatting.GREEN));
 	}
 
-	public static <T extends Comparable<T>> Text joinOrdered(Collection<T> elements, Function<T, Text> transformer) {
-		if (elements.isEmpty()) {
+	public static <T extends Comparable<T>> Text joinOrdered(Collection<T> collection, Function<T, Text> function) {
+		if (collection.isEmpty()) {
 			return new LiteralText("");
-		} else if (elements.size() == 1) {
-			return (Text)transformer.apply(elements.iterator().next());
+		} else if (collection.size() == 1) {
+			return (Text)function.apply(collection.iterator().next());
 		} else {
-			List<T> list = Lists.<T>newArrayList(elements);
+			List<T> list = Lists.<T>newArrayList(collection);
 			list.sort(Comparable::compareTo);
-			return join(elements, transformer);
+			return join(collection, function);
 		}
 	}
 
-	public static <T> Text join(Collection<T> elements, Function<T, Text> transformer) {
-		if (elements.isEmpty()) {
+	public static <T> Text join(Collection<T> collection, Function<T, Text> function) {
+		if (collection.isEmpty()) {
 			return new LiteralText("");
-		} else if (elements.size() == 1) {
-			return (Text)transformer.apply(elements.iterator().next());
+		} else if (collection.size() == 1) {
+			return (Text)function.apply(collection.iterator().next());
 		} else {
 			Text text = new LiteralText("");
 			boolean bl = true;
 
-			for (T object : elements) {
+			for (T object : collection) {
 				if (!bl) {
 					text.append(new LiteralText(", ").formatted(Formatting.GRAY));
 				}
 
-				text.append((Text)transformer.apply(object));
+				text.append((Text)function.apply(object));
 				bl = false;
 			}
 

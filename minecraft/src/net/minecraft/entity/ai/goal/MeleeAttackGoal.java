@@ -22,10 +22,10 @@ public class MeleeAttackGoal extends Goal {
 	protected final int field_6504 = 20;
 	private long field_19200;
 
-	public MeleeAttackGoal(MobEntityWithAi mob, double speed, boolean pauseWhenMobIdle) {
-		this.mob = mob;
-		this.speed = speed;
-		this.field_6502 = pauseWhenMobIdle;
+	public MeleeAttackGoal(MobEntityWithAi mobEntityWithAi, double d, boolean bl) {
+		this.mob = mobEntityWithAi;
+		this.speed = d;
+		this.field_6502 = bl;
 		this.setControls(EnumSet.of(Goal.Control.MOVE, Goal.Control.LOOK));
 	}
 
@@ -45,7 +45,7 @@ public class MeleeAttackGoal extends Goal {
 				this.field_6509 = this.mob.getNavigation().findPathTo(livingEntity, 0);
 				return this.field_6509 != null
 					? true
-					: this.getSquaredMaxAttackDistance(livingEntity) >= this.mob.squaredDistanceTo(livingEntity.x, livingEntity.getBoundingBox().y1, livingEntity.z);
+					: this.getSquaredMaxAttackDistance(livingEntity) >= this.mob.squaredDistanceTo(livingEntity.x, livingEntity.getBoundingBox().minY, livingEntity.z);
 			}
 		}
 	}
@@ -88,19 +88,19 @@ public class MeleeAttackGoal extends Goal {
 	public void tick() {
 		LivingEntity livingEntity = this.mob.getTarget();
 		this.mob.getLookControl().lookAt(livingEntity, 30.0F, 30.0F);
-		double d = this.mob.squaredDistanceTo(livingEntity.x, livingEntity.getBoundingBox().y1, livingEntity.z);
+		double d = this.mob.squaredDistanceTo(livingEntity.x, livingEntity.getBoundingBox().minY, livingEntity.z);
 		this.field_6501--;
 		if ((this.field_6502 || this.mob.getVisibilityCache().canSee(livingEntity))
 			&& this.field_6501 <= 0
 			&& (
 				this.targetX == 0.0 && this.targetY == 0.0 && this.targetZ == 0.0
 					|| livingEntity.squaredDistanceTo(this.targetX, this.targetY, this.targetZ) >= 1.0
-					|| this.mob.getRandom().nextFloat() < 0.05F
+					|| this.mob.getRand().nextFloat() < 0.05F
 			)) {
 			this.targetX = livingEntity.x;
-			this.targetY = livingEntity.getBoundingBox().y1;
+			this.targetY = livingEntity.getBoundingBox().minY;
 			this.targetZ = livingEntity.z;
-			this.field_6501 = 4 + this.mob.getRandom().nextInt(7);
+			this.field_6501 = 4 + this.mob.getRand().nextInt(7);
 			if (d > 1024.0) {
 				this.field_6501 += 10;
 			} else if (d > 256.0) {
@@ -116,16 +116,16 @@ public class MeleeAttackGoal extends Goal {
 		this.attack(livingEntity, d);
 	}
 
-	protected void attack(LivingEntity target, double squaredDistance) {
-		double d = this.getSquaredMaxAttackDistance(target);
-		if (squaredDistance <= d && this.ticksUntilAttack <= 0) {
+	protected void attack(LivingEntity livingEntity, double d) {
+		double e = this.getSquaredMaxAttackDistance(livingEntity);
+		if (d <= e && this.ticksUntilAttack <= 0) {
 			this.ticksUntilAttack = 20;
 			this.mob.swingHand(Hand.MAIN_HAND);
-			this.mob.tryAttack(target);
+			this.mob.tryAttack(livingEntity);
 		}
 	}
 
-	protected double getSquaredMaxAttackDistance(LivingEntity entity) {
-		return (double)(this.mob.getWidth() * 2.0F * this.mob.getWidth() * 2.0F + entity.getWidth());
+	protected double getSquaredMaxAttackDistance(LivingEntity livingEntity) {
+		return (double)(this.mob.getWidth() * 2.0F * this.mob.getWidth() * 2.0F + livingEntity.getWidth());
 	}
 }

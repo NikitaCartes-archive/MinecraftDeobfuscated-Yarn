@@ -4,7 +4,6 @@ import com.google.common.collect.Maps;
 import java.util.Map;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.client.render.RenderLayer;
 import net.minecraft.entity.EntityContext;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.BlockItem;
@@ -25,45 +24,45 @@ public class FlowerPotBlock extends Block {
 	protected static final VoxelShape SHAPE = Block.createCuboidShape(5.0, 0.0, 5.0, 11.0, 6.0, 11.0);
 	private final Block content;
 
-	public FlowerPotBlock(Block content, Block.Settings settings) {
+	public FlowerPotBlock(Block block, Block.Settings settings) {
 		super(settings);
-		this.content = content;
-		CONTENT_TO_POTTED.put(content, this);
+		this.content = block;
+		CONTENT_TO_POTTED.put(block, this);
 	}
 
 	@Override
-	public VoxelShape getOutlineShape(BlockState state, BlockView view, BlockPos pos, EntityContext context) {
+	public VoxelShape getOutlineShape(BlockState blockState, BlockView blockView, BlockPos blockPos, EntityContext entityContext) {
 		return SHAPE;
 	}
 
 	@Override
-	public BlockRenderType getRenderType(BlockState state) {
+	public BlockRenderType getRenderType(BlockState blockState) {
 		return BlockRenderType.MODEL;
 	}
 
 	@Override
-	public boolean activate(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
-		ItemStack itemStack = player.getStackInHand(hand);
+	public boolean activate(BlockState blockState, World world, BlockPos blockPos, PlayerEntity playerEntity, Hand hand, BlockHitResult blockHitResult) {
+		ItemStack itemStack = playerEntity.getStackInHand(hand);
 		Item item = itemStack.getItem();
 		Block block = item instanceof BlockItem ? (Block)CONTENT_TO_POTTED.getOrDefault(((BlockItem)item).getBlock(), Blocks.AIR) : Blocks.AIR;
 		boolean bl = block == Blocks.AIR;
 		boolean bl2 = this.content == Blocks.AIR;
 		if (bl != bl2) {
 			if (bl2) {
-				world.setBlockState(pos, block.getDefaultState(), 3);
-				player.incrementStat(Stats.POT_FLOWER);
-				if (!player.abilities.creativeMode) {
+				world.setBlockState(blockPos, block.getDefaultState(), 3);
+				playerEntity.incrementStat(Stats.POT_FLOWER);
+				if (!playerEntity.abilities.creativeMode) {
 					itemStack.decrement(1);
 				}
 			} else {
 				ItemStack itemStack2 = new ItemStack(this.content);
 				if (itemStack.isEmpty()) {
-					player.setStackInHand(hand, itemStack2);
-				} else if (!player.giveItemStack(itemStack2)) {
-					player.dropItem(itemStack2, false);
+					playerEntity.setStackInHand(hand, itemStack2);
+				} else if (!playerEntity.giveItemStack(itemStack2)) {
+					playerEntity.dropItem(itemStack2, false);
 				}
 
-				world.setBlockState(pos, Blocks.FLOWER_POT.getDefaultState(), 3);
+				world.setBlockState(blockPos, Blocks.FLOWER_POT.getDefaultState(), 3);
 			}
 		}
 
@@ -72,20 +71,22 @@ public class FlowerPotBlock extends Block {
 
 	@Environment(EnvType.CLIENT)
 	@Override
-	public ItemStack getPickStack(BlockView world, BlockPos pos, BlockState state) {
-		return this.content == Blocks.AIR ? super.getPickStack(world, pos, state) : new ItemStack(this.content);
+	public ItemStack getPickStack(BlockView blockView, BlockPos blockPos, BlockState blockState) {
+		return this.content == Blocks.AIR ? super.getPickStack(blockView, blockPos, blockState) : new ItemStack(this.content);
 	}
 
 	@Override
-	public BlockState getStateForNeighborUpdate(BlockState state, Direction facing, BlockState neighborState, IWorld world, BlockPos pos, BlockPos neighborPos) {
-		return facing == Direction.DOWN && !state.canPlaceAt(world, pos)
+	public BlockState getStateForNeighborUpdate(
+		BlockState blockState, Direction direction, BlockState blockState2, IWorld iWorld, BlockPos blockPos, BlockPos blockPos2
+	) {
+		return direction == Direction.DOWN && !blockState.canPlaceAt(iWorld, blockPos)
 			? Blocks.AIR.getDefaultState()
-			: super.getStateForNeighborUpdate(state, facing, neighborState, world, pos, neighborPos);
+			: super.getStateForNeighborUpdate(blockState, direction, blockState2, iWorld, blockPos, blockPos2);
 	}
 
 	@Override
-	public RenderLayer getRenderLayer() {
-		return RenderLayer.CUTOUT;
+	public BlockRenderLayer getRenderLayer() {
+		return BlockRenderLayer.CUTOUT;
 	}
 
 	public Block getContent() {

@@ -13,8 +13,8 @@ public class VertexFormatElement {
 	private final int index;
 	private final int count;
 
-	public VertexFormatElement(int index, VertexFormatElement.Format format, VertexFormatElement.Type type, int count) {
-		if (this.isValidType(index, type)) {
+	public VertexFormatElement(int i, VertexFormatElement.Format format, VertexFormatElement.Type type, int j) {
+		if (this.isValidType(i, type)) {
 			this.type = type;
 		} else {
 			LOGGER.warn("Multiple vertex elements of the same type other than UVs are not supported. Forcing type to UV.");
@@ -22,12 +22,12 @@ public class VertexFormatElement {
 		}
 
 		this.format = format;
-		this.index = index;
-		this.count = count;
+		this.index = i;
+		this.count = j;
 	}
 
-	private final boolean isValidType(int index, VertexFormatElement.Type type) {
-		return index == 0 || type == VertexFormatElement.Type.UV;
+	private final boolean isValidType(int i, VertexFormatElement.Type type) {
+		return i == 0 || type == VertexFormatElement.Type.UV;
 	}
 
 	public final VertexFormatElement.Format getFormat() {
@@ -58,11 +58,11 @@ public class VertexFormatElement {
 		return this.type == VertexFormatElement.Type.POSITION;
 	}
 
-	public boolean equals(Object o) {
-		if (this == o) {
+	public boolean equals(Object object) {
+		if (this == object) {
 			return true;
-		} else if (o != null && this.getClass() == o.getClass()) {
-			VertexFormatElement vertexFormatElement = (VertexFormatElement)o;
+		} else if (object != null && this.getClass() == object.getClass()) {
+			VertexFormatElement vertexFormatElement = (VertexFormatElement)object;
 			if (this.count != vertexFormatElement.count) {
 				return false;
 			} else if (this.index != vertexFormatElement.index) {
@@ -96,10 +96,10 @@ public class VertexFormatElement {
 		private final String name;
 		private final int glId;
 
-		private Format(int size, String name, int glId) {
-			this.size = size;
-			this.name = name;
-			this.glId = glId;
+		private Format(int j, String string2, int k) {
+			this.size = j;
+			this.name = string2;
+			this.glId = k;
 		}
 
 		public int getSize() {
@@ -127,8 +127,8 @@ public class VertexFormatElement {
 
 		private final String name;
 
-		private Type(String name) {
-			this.name = name;
+		private Type(String string2) {
+			this.name = string2;
 		}
 
 		public String getName() {

@@ -9,11 +9,11 @@ import net.minecraft.world.gen.chunk.ChunkGenerator;
 import net.minecraft.world.gen.chunk.ChunkGeneratorConfig;
 
 public class RandomBooleanFeature extends Feature<RandomBooleanFeatureConfig> {
-	public RandomBooleanFeature(Function<Dynamic<?>, ? extends RandomBooleanFeatureConfig> configFactory) {
-		super(configFactory);
+	public RandomBooleanFeature(Function<Dynamic<?>, ? extends RandomBooleanFeatureConfig> function) {
+		super(function);
 	}
 
-	public boolean generate(
+	public boolean method_13679(
 		IWorld iWorld,
 		ChunkGenerator<? extends ChunkGeneratorConfig> chunkGenerator,
 		Random random,

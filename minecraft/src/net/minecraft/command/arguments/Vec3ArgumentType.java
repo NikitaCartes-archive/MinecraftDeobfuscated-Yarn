@@ -23,46 +23,46 @@ public class Vec3ArgumentType implements ArgumentType<PosArgument> {
 	public static final SimpleCommandExceptionType MIXED_COORDINATE_EXCEPTION = new SimpleCommandExceptionType(new TranslatableText("argument.pos.mixed"));
 	private final boolean centerIntegers;
 
-	public Vec3ArgumentType(boolean centerIntegers) {
-		this.centerIntegers = centerIntegers;
+	public Vec3ArgumentType(boolean bl) {
+		this.centerIntegers = bl;
 	}
 
 	public static Vec3ArgumentType vec3() {
 		return new Vec3ArgumentType(true);
 	}
 
-	public static Vec3ArgumentType vec3(boolean centerIntegers) {
-		return new Vec3ArgumentType(centerIntegers);
+	public static Vec3ArgumentType vec3(boolean bl) {
+		return new Vec3ArgumentType(bl);
 	}
 
-	public static Vec3d getVec3(CommandContext<ServerCommandSource> context, String name) throws CommandSyntaxException {
-		return context.<PosArgument>getArgument(name, PosArgument.class).toAbsolutePos(context.getSource());
+	public static Vec3d getVec3(CommandContext<ServerCommandSource> commandContext, String string) throws CommandSyntaxException {
+		return commandContext.<PosArgument>getArgument(string, PosArgument.class).toAbsolutePos(commandContext.getSource());
 	}
 
 	public static PosArgument getPosArgument(CommandContext<ServerCommandSource> commandContext, String string) {
 		return commandContext.getArgument(string, PosArgument.class);
 	}
 
-	public PosArgument parse(StringReader stringReader) throws CommandSyntaxException {
+	public PosArgument method_9738(StringReader stringReader) throws CommandSyntaxException {
 		return (PosArgument)(stringReader.canRead() && stringReader.peek() == '^'
 			? LookingPosArgument.parse(stringReader)
 			: DefaultPosArgument.parse(stringReader, this.centerIntegers));
 	}
 
 	@Override
-	public <S> CompletableFuture<Suggestions> listSuggestions(CommandContext<S> context, SuggestionsBuilder builder) {
-		if (!(context.getSource() instanceof CommandSource)) {
+	public <S> CompletableFuture<Suggestions> listSuggestions(CommandContext<S> commandContext, SuggestionsBuilder suggestionsBuilder) {
+		if (!(commandContext.getSource() instanceof CommandSource)) {
 			return Suggestions.empty();
 		} else {
-			String string = builder.getRemaining();
+			String string = suggestionsBuilder.getRemaining();
 			Collection<CommandSource.RelativePosition> collection;
 			if (!string.isEmpty() && string.charAt(0) == '^') {
 				collection = Collections.singleton(CommandSource.RelativePosition.ZERO_LOCAL);
 			} else {
-				collection = ((CommandSource)context.getSource()).getPositionSuggestions();
+				collection = ((CommandSource)commandContext.getSource()).getPositionSuggestions();
 			}
 
-			return CommandSource.suggestPositions(string, collection, builder, CommandManager.getCommandValidator(this::parse));
+			return CommandSource.suggestPositions(string, collection, suggestionsBuilder, CommandManager.getCommandValidator(this::method_9738));
 		}
 	}
 

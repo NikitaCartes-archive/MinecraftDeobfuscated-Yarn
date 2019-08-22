@@ -30,22 +30,24 @@ public abstract class AbstractSignBlock extends BlockWithEntity implements Water
 	}
 
 	@Override
-	public BlockState getStateForNeighborUpdate(BlockState state, Direction facing, BlockState neighborState, IWorld world, BlockPos pos, BlockPos neighborPos) {
-		if ((Boolean)state.get(WATERLOGGED)) {
-			world.getFluidTickScheduler().schedule(pos, Fluids.WATER, Fluids.WATER.getTickRate(world));
+	public BlockState getStateForNeighborUpdate(
+		BlockState blockState, Direction direction, BlockState blockState2, IWorld iWorld, BlockPos blockPos, BlockPos blockPos2
+	) {
+		if ((Boolean)blockState.get(WATERLOGGED)) {
+			iWorld.getFluidTickScheduler().schedule(blockPos, Fluids.WATER, Fluids.WATER.getTickRate(iWorld));
 		}
 
-		return super.getStateForNeighborUpdate(state, facing, neighborState, world, pos, neighborPos);
+		return super.getStateForNeighborUpdate(blockState, direction, blockState2, iWorld, blockPos, blockPos2);
 	}
 
 	@Override
-	public VoxelShape getOutlineShape(BlockState state, BlockView view, BlockPos pos, EntityContext context) {
+	public VoxelShape getOutlineShape(BlockState blockState, BlockView blockView, BlockPos blockPos, EntityContext entityContext) {
 		return SHAPE;
 	}
 
 	@Environment(EnvType.CLIENT)
 	@Override
-	public boolean hasBlockEntityBreakingRender(BlockState state) {
+	public boolean hasBlockEntityBreakingRender(BlockState blockState) {
 		return true;
 	}
 
@@ -55,27 +57,27 @@ public abstract class AbstractSignBlock extends BlockWithEntity implements Water
 	}
 
 	@Override
-	public BlockEntity createBlockEntity(BlockView view) {
+	public BlockEntity createBlockEntity(BlockView blockView) {
 		return new SignBlockEntity();
 	}
 
 	@Override
-	public boolean activate(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
+	public boolean activate(BlockState blockState, World world, BlockPos blockPos, PlayerEntity playerEntity, Hand hand, BlockHitResult blockHitResult) {
 		if (world.isClient) {
 			return true;
 		} else {
-			BlockEntity blockEntity = world.getBlockEntity(pos);
+			BlockEntity blockEntity = world.getBlockEntity(blockPos);
 			if (blockEntity instanceof SignBlockEntity) {
 				SignBlockEntity signBlockEntity = (SignBlockEntity)blockEntity;
-				ItemStack itemStack = player.getStackInHand(hand);
-				if (itemStack.getItem() instanceof DyeItem && player.abilities.allowModifyWorld) {
+				ItemStack itemStack = playerEntity.getStackInHand(hand);
+				if (itemStack.getItem() instanceof DyeItem && playerEntity.abilities.allowModifyWorld) {
 					boolean bl = signBlockEntity.setTextColor(((DyeItem)itemStack.getItem()).getColor());
-					if (bl && !player.isCreative()) {
+					if (bl && !playerEntity.isCreative()) {
 						itemStack.decrement(1);
 					}
 				}
 
-				return signBlockEntity.onActivate(player);
+				return signBlockEntity.onActivate(playerEntity);
 			} else {
 				return false;
 			}
@@ -83,7 +85,7 @@ public abstract class AbstractSignBlock extends BlockWithEntity implements Water
 	}
 
 	@Override
-	public FluidState getFluidState(BlockState state) {
-		return state.get(WATERLOGGED) ? Fluids.WATER.getStill(false) : super.getFluidState(state);
+	public FluidState getFluidState(BlockState blockState) {
+		return blockState.get(WATERLOGGED) ? Fluids.WATER.getStill(false) : super.getFluidState(blockState);
 	}
 }

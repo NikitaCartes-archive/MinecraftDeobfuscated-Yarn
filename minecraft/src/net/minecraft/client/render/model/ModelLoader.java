@@ -45,11 +45,11 @@ import net.minecraft.client.texture.SpriteAtlasTexture;
 import net.minecraft.client.util.ModelIdentifier;
 import net.minecraft.resource.Resource;
 import net.minecraft.resource.ResourceManager;
-import net.minecraft.state.StateManager;
+import net.minecraft.state.StateFactory;
 import net.minecraft.state.property.BooleanProperty;
 import net.minecraft.state.property.Property;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.Util;
+import net.minecraft.util.SystemUtil;
 import net.minecraft.util.profiler.Profiler;
 import net.minecraft.util.registry.Registry;
 import org.apache.commons.io.IOUtils;
@@ -108,17 +108,17 @@ public class ModelLoader {
 	private static final Map<String, String> BUILTIN_MODEL_DEFINITIONS = Maps.<String, String>newHashMap(ImmutableMap.of("missing", MISSING_DEFINITION));
 	private static final Splitter COMMA_SPLITTER = Splitter.on(',');
 	private static final Splitter KEY_VALUE_SPLITTER = Splitter.on('=').limit(2);
-	public static final JsonUnbakedModel GENERATION_MARKER = Util.make(
+	public static final JsonUnbakedModel GENERATION_MARKER = SystemUtil.consume(
 		JsonUnbakedModel.deserialize("{}"), jsonUnbakedModel -> jsonUnbakedModel.id = "generation marker"
 	);
-	public static final JsonUnbakedModel BLOCK_ENTITY_MARKER = Util.make(
+	public static final JsonUnbakedModel BLOCK_ENTITY_MARKER = SystemUtil.consume(
 		JsonUnbakedModel.deserialize("{}"), jsonUnbakedModel -> jsonUnbakedModel.id = "block entity marker"
 	);
-	private static final StateManager<Block, BlockState> ITEM_FRAME_STATE_FACTORY = new StateManager.Builder<Block, BlockState>(Blocks.AIR)
+	private static final StateFactory<Block, BlockState> ITEM_FRAME_STATE_FACTORY = new StateFactory.Builder<Block, BlockState>(Blocks.AIR)
 		.add(BooleanProperty.of("map"))
 		.build(BlockState::new);
 	private static final ItemModelGenerator ITEM_MODEL_GENERATOR = new ItemModelGenerator();
-	private static final Map<Identifier, StateManager<Block, BlockState>> STATIC_DEFINITIONS = ImmutableMap.of(
+	private static final Map<Identifier, StateFactory<Block, BlockState>> STATIC_DEFINITIONS = ImmutableMap.of(
 		new Identifier("item_frame"), ITEM_FRAME_STATE_FACTORY
 	);
 	private final ResourceManager resourceManager;
@@ -132,13 +132,13 @@ public class ModelLoader {
 	private final Map<Identifier, BakedModel> bakedModels = Maps.<Identifier, BakedModel>newHashMap();
 	private final SpriteAtlasTexture.Data spriteAtlasData;
 	private int field_20273 = 1;
-	private final Object2IntMap<BlockState> field_20274 = Util.make(
+	private final Object2IntMap<BlockState> field_20274 = SystemUtil.consume(
 		new Object2IntOpenHashMap<>(), object2IntOpenHashMap -> object2IntOpenHashMap.defaultReturnValue(-1)
 	);
 
-	public ModelLoader(ResourceManager resourceManager, SpriteAtlasTexture spriteAtlas, BlockColors blockColors, Profiler profiler) {
+	public ModelLoader(ResourceManager resourceManager, SpriteAtlasTexture spriteAtlasTexture, BlockColors blockColors, Profiler profiler) {
 		this.resourceManager = resourceManager;
-		this.spriteAtlas = spriteAtlas;
+		this.spriteAtlas = spriteAtlasTexture;
 		this.field_20272 = blockColors;
 		profiler.push("missing_model");
 
@@ -152,12 +152,12 @@ public class ModelLoader {
 
 		profiler.swap("static_definitions");
 		STATIC_DEFINITIONS.forEach(
-			(identifier, stateManager) -> stateManager.getStates().forEach(blockState -> this.addModel(BlockModels.getModelId(identifier, blockState)))
+			(identifier, stateFactory) -> stateFactory.getStates().forEach(blockState -> this.addModel(BlockModels.getModelId(identifier, blockState)))
 		);
 		profiler.swap("blocks");
 
 		for (Block block : Registry.BLOCK) {
-			block.getStateManager().getStates().forEach(blockState -> this.addModel(BlockModels.getModelId(blockState)));
+			block.getStateFactory().getStates().forEach(blockState -> this.addModel(BlockModels.getModelId(blockState)));
 		}
 
 		profiler.swap("items");
@@ -202,29 +202,29 @@ public class ModelLoader {
 		profiler.pop();
 	}
 
-	private static Predicate<BlockState> stateKeyToPredicate(StateManager<Block, BlockState> stateFactory, String key) {
+	private static Predicate<BlockState> stateKeyToPredicate(StateFactory<Block, BlockState> stateFactory, String string) {
 		Map<Property<?>, Comparable<?>> map = Maps.<Property<?>, Comparable<?>>newHashMap();
 
-		for (String string : COMMA_SPLITTER.split(key)) {
-			Iterator<String> iterator = KEY_VALUE_SPLITTER.split(string).iterator();
+		for (String string2 : COMMA_SPLITTER.split(string)) {
+			Iterator<String> iterator = KEY_VALUE_SPLITTER.split(string2).iterator();
 			if (iterator.hasNext()) {
-				String string2 = (String)iterator.next();
-				Property<?> property = stateFactory.getProperty(string2);
+				String string3 = (String)iterator.next();
+				Property<?> property = stateFactory.getProperty(string3);
 				if (property != null && iterator.hasNext()) {
-					String string3 = (String)iterator.next();
-					Comparable<?> comparable = getPropertyValue((Property<Comparable<?>>)property, string3);
+					String string4 = (String)iterator.next();
+					Comparable<?> comparable = getPropertyValue((Property<Comparable<?>>)property, string4);
 					if (comparable == null) {
-						throw new RuntimeException("Unknown value: '" + string3 + "' for blockstate property: '" + string2 + "' " + property.getValues());
+						throw new RuntimeException("Unknown value: '" + string4 + "' for blockstate property: '" + string3 + "' " + property.getValues());
 					}
 
 					map.put(property, comparable);
-				} else if (!string2.isEmpty()) {
-					throw new RuntimeException("Unknown blockstate property: '" + string2 + "'");
+				} else if (!string3.isEmpty()) {
+					throw new RuntimeException("Unknown blockstate property: '" + string3 + "'");
 				}
 			}
 		}
 
-		Block block = stateFactory.getOwner();
+		Block block = stateFactory.getBaseObject();
 		return blockState -> {
 			if (blockState != null && block == blockState.getBlock()) {
 				for (Entry<Property<?>, Comparable<?>> entry : map.entrySet()) {
@@ -242,63 +242,63 @@ public class ModelLoader {
 
 	@Nullable
 	static <T extends Comparable<T>> T getPropertyValue(Property<T> property, String string) {
-		return (T)property.parse(string).orElse(null);
+		return (T)property.getValue(string).orElse(null);
 	}
 
-	public UnbakedModel getOrLoadModel(Identifier id) {
-		if (this.unbakedModels.containsKey(id)) {
-			return (UnbakedModel)this.unbakedModels.get(id);
-		} else if (this.modelsToLoad.contains(id)) {
-			throw new IllegalStateException("Circular reference while loading " + id);
+	public UnbakedModel getOrLoadModel(Identifier identifier) {
+		if (this.unbakedModels.containsKey(identifier)) {
+			return (UnbakedModel)this.unbakedModels.get(identifier);
+		} else if (this.modelsToLoad.contains(identifier)) {
+			throw new IllegalStateException("Circular reference while loading " + identifier);
 		} else {
-			this.modelsToLoad.add(id);
+			this.modelsToLoad.add(identifier);
 			UnbakedModel unbakedModel = (UnbakedModel)this.unbakedModels.get(MISSING);
 
 			while (!this.modelsToLoad.isEmpty()) {
-				Identifier identifier = (Identifier)this.modelsToLoad.iterator().next();
+				Identifier identifier2 = (Identifier)this.modelsToLoad.iterator().next();
 
 				try {
-					if (!this.unbakedModels.containsKey(identifier)) {
-						this.loadModel(identifier);
+					if (!this.unbakedModels.containsKey(identifier2)) {
+						this.loadModel(identifier2);
 					}
 				} catch (ModelLoader.ModelLoaderException var9) {
 					LOGGER.warn(var9.getMessage());
-					this.unbakedModels.put(identifier, unbakedModel);
+					this.unbakedModels.put(identifier2, unbakedModel);
 				} catch (Exception var10) {
-					LOGGER.warn("Unable to load model: '{}' referenced from: {}: {}", identifier, id, var10);
-					this.unbakedModels.put(identifier, unbakedModel);
+					LOGGER.warn("Unable to load model: '{}' referenced from: {}: {}", identifier2, identifier, var10);
+					this.unbakedModels.put(identifier2, unbakedModel);
 				} finally {
-					this.modelsToLoad.remove(identifier);
+					this.modelsToLoad.remove(identifier2);
 				}
 			}
 
-			return (UnbakedModel)this.unbakedModels.getOrDefault(id, unbakedModel);
+			return (UnbakedModel)this.unbakedModels.getOrDefault(identifier, unbakedModel);
 		}
 	}
 
-	private void loadModel(Identifier id) throws Exception {
-		if (!(id instanceof ModelIdentifier)) {
-			this.putModel(id, this.loadModelFromJson(id));
+	private void loadModel(Identifier identifier) throws Exception {
+		if (!(identifier instanceof ModelIdentifier)) {
+			this.putModel(identifier, this.loadModelFromJson(identifier));
 		} else {
-			ModelIdentifier modelIdentifier = (ModelIdentifier)id;
+			ModelIdentifier modelIdentifier = (ModelIdentifier)identifier;
 			if (Objects.equals(modelIdentifier.getVariant(), "inventory")) {
-				Identifier identifier = new Identifier(id.getNamespace(), "item/" + id.getPath());
-				JsonUnbakedModel jsonUnbakedModel = this.loadModelFromJson(identifier);
+				Identifier identifier2 = new Identifier(identifier.getNamespace(), "item/" + identifier.getPath());
+				JsonUnbakedModel jsonUnbakedModel = this.loadModelFromJson(identifier2);
 				this.putModel(modelIdentifier, jsonUnbakedModel);
-				this.unbakedModels.put(identifier, jsonUnbakedModel);
+				this.unbakedModels.put(identifier2, jsonUnbakedModel);
 			} else {
-				Identifier identifier = new Identifier(id.getNamespace(), id.getPath());
-				StateManager<Block, BlockState> stateManager = (StateManager<Block, BlockState>)Optional.ofNullable(STATIC_DEFINITIONS.get(identifier))
-					.orElseGet(() -> Registry.BLOCK.get(identifier).getStateManager());
-				this.variantMapDeserializationContext.setStateFactory(stateManager);
-				List<Property<?>> list = ImmutableList.copyOf(this.field_20272.method_21592(stateManager.getOwner()));
-				ImmutableList<BlockState> immutableList = stateManager.getStates();
+				Identifier identifier2 = new Identifier(identifier.getNamespace(), identifier.getPath());
+				StateFactory<Block, BlockState> stateFactory = (StateFactory<Block, BlockState>)Optional.ofNullable(STATIC_DEFINITIONS.get(identifier2))
+					.orElseGet(() -> Registry.BLOCK.get(identifier2).getStateFactory());
+				this.variantMapDeserializationContext.setStateFactory(stateFactory);
+				List<Property<?>> list = ImmutableList.copyOf(this.field_20272.method_21592(stateFactory.getBaseObject()));
+				ImmutableList<BlockState> immutableList = stateFactory.getStates();
 				Map<ModelIdentifier, BlockState> map = Maps.<ModelIdentifier, BlockState>newHashMap();
 				immutableList.forEach(blockState -> {
-					BlockState var10000 = (BlockState)map.put(BlockModels.getModelId(identifier, blockState), blockState);
+					BlockState var10000 = (BlockState)map.put(BlockModels.getModelId(identifier2, blockState), blockState);
 				});
 				Map<BlockState, Pair<UnbakedModel, Supplier<ModelLoader.class_4455>>> map2 = Maps.<BlockState, Pair<UnbakedModel, Supplier<ModelLoader.class_4455>>>newHashMap();
-				Identifier identifier2 = new Identifier(id.getNamespace(), "blockstates/" + id.getPath() + ".json");
+				Identifier identifier3 = new Identifier(identifier.getNamespace(), "blockstates/" + identifier.getPath() + ".json");
 				UnbakedModel unbakedModel = (UnbakedModel)this.unbakedModels.get(MISSING);
 				ModelLoader.class_4455 lv = new ModelLoader.class_4455(ImmutableList.of(unbakedModel), ImmutableList.of());
 				Pair<UnbakedModel, Supplier<ModelLoader.class_4455>> pair = Pair.of(unbakedModel, () -> lv);
@@ -307,7 +307,7 @@ public class ModelLoader {
 					List<Pair<String, ModelVariantMap>> list2;
 					try {
 						list2 = (List<Pair<String, ModelVariantMap>>)this.resourceManager
-							.getAllResources(identifier2)
+							.getAllResources(identifier3)
 							.stream()
 							.map(
 								resource -> {
@@ -350,7 +350,7 @@ public class ModelLoader {
 							)
 							.collect(Collectors.toList());
 					} catch (IOException var25) {
-						LOGGER.warn("Exception loading blockstate definition: {}: {}", identifier2, var25);
+						LOGGER.warn("Exception loading blockstate definition: {}: {}", identifier3, var25);
 						return;
 					}
 
@@ -376,7 +376,7 @@ public class ModelLoader {
 								(string, weightedUnbakedModel) -> {
 									try {
 										immutableList.stream()
-											.filter(stateKeyToPredicate(stateManager, string))
+											.filter(stateKeyToPredicate(stateFactory, string))
 											.forEach(
 												blockState -> {
 													Pair<UnbakedModel, Supplier<ModelLoader.class_4455>> pair2xx = (Pair<UnbakedModel, Supplier<ModelLoader.class_4455>>)map4.put(
@@ -395,7 +395,7 @@ public class ModelLoader {
 									} catch (Exception var12x) {
 										LOGGER.warn(
 											"Exception loading blockstate definition: '{}' in resourcepack: '{}' for variant: '{}': {}",
-											identifier2,
+											identifier3,
 											pair2.getFirst(),
 											string,
 											var12x.getMessage()
@@ -408,13 +408,13 @@ public class ModelLoader {
 				} catch (ModelLoader.ModelLoaderException var26) {
 					throw var26;
 				} catch (Exception var27) {
-					throw new ModelLoader.ModelLoaderException(String.format("Exception loading blockstate definition: '%s': %s", identifier2, var27));
+					throw new ModelLoader.ModelLoaderException(String.format("Exception loading blockstate definition: '%s': %s", identifier3, var27));
 				} finally {
 					Map<ModelLoader.class_4455, Set<BlockState>> map6 = Maps.<ModelLoader.class_4455, Set<BlockState>>newHashMap();
 					map.forEach((modelIdentifierx, blockState) -> {
 						Pair<UnbakedModel, Supplier<ModelLoader.class_4455>> pair2x = (Pair<UnbakedModel, Supplier<ModelLoader.class_4455>>)map2.get(blockState);
 						if (pair2x == null) {
-							LOGGER.warn("Exception loading blockstate definition: '{}' missing model for variant: '{}'", identifier2, modelIdentifierx);
+							LOGGER.warn("Exception loading blockstate definition: '{}' missing model for variant: '{}'", identifier3, modelIdentifierx);
 							pair2x = pair;
 						}
 
@@ -447,15 +447,15 @@ public class ModelLoader {
 		}
 	}
 
-	private void putModel(Identifier id, UnbakedModel unbakedModel) {
-		this.unbakedModels.put(id, unbakedModel);
+	private void putModel(Identifier identifier, UnbakedModel unbakedModel) {
+		this.unbakedModels.put(identifier, unbakedModel);
 		this.modelsToLoad.addAll(unbakedModel.getModelDependencies());
 	}
 
-	private void addModel(ModelIdentifier modelId) {
-		UnbakedModel unbakedModel = this.getOrLoadModel(modelId);
-		this.unbakedModels.put(modelId, unbakedModel);
-		this.modelsToBake.put(modelId, unbakedModel);
+	private void addModel(ModelIdentifier modelIdentifier) {
+		UnbakedModel unbakedModel = this.getOrLoadModel(modelIdentifier);
+		this.unbakedModels.put(modelIdentifier, unbakedModel);
+		this.modelsToBake.put(modelIdentifier, unbakedModel);
 	}
 
 	private void method_21603(Iterable<BlockState> iterable) {
@@ -464,8 +464,8 @@ public class ModelLoader {
 	}
 
 	@Nullable
-	public BakedModel bake(Identifier identifier, ModelBakeSettings settings) {
-		Triple<Identifier, ModelRotation, Boolean> triple = Triple.of(identifier, settings.getRotation(), settings.isShaded());
+	public BakedModel bake(Identifier identifier, ModelBakeSettings modelBakeSettings) {
+		Triple<Identifier, ModelRotation, Boolean> triple = Triple.of(identifier, modelBakeSettings.getRotation(), modelBakeSettings.isUvLocked());
 		if (this.bakedModelCache.containsKey(triple)) {
 			return (BakedModel)this.bakedModelCache.get(triple);
 		} else {
@@ -473,23 +473,24 @@ public class ModelLoader {
 			if (unbakedModel instanceof JsonUnbakedModel) {
 				JsonUnbakedModel jsonUnbakedModel = (JsonUnbakedModel)unbakedModel;
 				if (jsonUnbakedModel.getRootModel() == GENERATION_MARKER) {
-					return ITEM_MODEL_GENERATOR.create(this.spriteAtlas::getSprite, jsonUnbakedModel).bake(this, jsonUnbakedModel, this.spriteAtlas::getSprite, settings);
+					return ITEM_MODEL_GENERATOR.create(this.spriteAtlas::getSprite, jsonUnbakedModel)
+						.bake(this, jsonUnbakedModel, this.spriteAtlas::getSprite, modelBakeSettings);
 				}
 			}
 
-			BakedModel bakedModel = unbakedModel.bake(this, this.spriteAtlas::getSprite, settings);
+			BakedModel bakedModel = unbakedModel.bake(this, this.spriteAtlas::getSprite, modelBakeSettings);
 			this.bakedModelCache.put(triple, bakedModel);
 			return bakedModel;
 		}
 	}
 
-	private JsonUnbakedModel loadModelFromJson(Identifier id) throws IOException {
+	private JsonUnbakedModel loadModelFromJson(Identifier identifier) throws IOException {
 		Reader reader = null;
 		Resource resource = null;
 
 		JsonUnbakedModel jsonUnbakedModel;
 		try {
-			String string = id.getPath();
+			String string = identifier.getPath();
 			if ("builtin/generated".equals(string)) {
 				return GENERATION_MARKER;
 			}
@@ -499,17 +500,17 @@ public class ModelLoader {
 					String string2 = string.substring("builtin/".length());
 					String string3 = (String)BUILTIN_MODEL_DEFINITIONS.get(string2);
 					if (string3 == null) {
-						throw new FileNotFoundException(id.toString());
+						throw new FileNotFoundException(identifier.toString());
 					}
 
 					reader = new StringReader(string3);
 				} else {
-					resource = this.resourceManager.getResource(new Identifier(id.getNamespace(), "models/" + id.getPath() + ".json"));
+					resource = this.resourceManager.getResource(new Identifier(identifier.getNamespace(), "models/" + identifier.getPath() + ".json"));
 					reader = new InputStreamReader(resource.getInputStream(), StandardCharsets.UTF_8);
 				}
 
 				jsonUnbakedModel = JsonUnbakedModel.deserialize(reader);
-				jsonUnbakedModel.id = id.toString();
+				jsonUnbakedModel.id = identifier.toString();
 				return jsonUnbakedModel;
 			}
 
@@ -563,10 +564,10 @@ public class ModelLoader {
 		}
 
 		public static ModelLoader.class_4455 method_21607(BlockState blockState, MultipartUnbakedModel multipartUnbakedModel, Collection<Property<?>> collection) {
-			StateManager<Block, BlockState> stateManager = blockState.getBlock().getStateManager();
+			StateFactory<Block, BlockState> stateFactory = blockState.getBlock().getStateFactory();
 			List<UnbakedModel> list = (List<UnbakedModel>)multipartUnbakedModel.getComponents()
 				.stream()
-				.filter(multipartModelComponent -> multipartModelComponent.getPredicate(stateManager).test(blockState))
+				.filter(multipartModelComponent -> multipartModelComponent.getPredicate(stateFactory).test(blockState))
 				.map(MultipartModelComponent::getModel)
 				.collect(ImmutableList.toImmutableList());
 			List<Object> list2 = method_21609(blockState, collection);

@@ -1,6 +1,5 @@
 package net.minecraft.world.storage;
 
-import com.google.common.collect.Lists;
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.ByteArrayInputStream;
@@ -9,220 +8,216 @@ import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.File;
 import java.io.IOException;
-import java.io.RandomAccessFile;
-import java.util.List;
-import java.util.zip.DeflaterOutputStream;
-import java.util.zip.GZIPInputStream;
-import java.util.zip.InflaterInputStream;
+import java.nio.ByteBuffer;
+import java.nio.IntBuffer;
+import java.nio.channels.FileChannel;
+import java.nio.file.Path;
+import java.nio.file.StandardOpenOption;
 import javax.annotation.Nullable;
-import net.minecraft.util.Util;
+import net.minecraft.class_4485;
+import net.minecraft.class_4486;
+import net.minecraft.util.SystemUtil;
 import net.minecraft.util.math.ChunkPos;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 public class RegionFile implements AutoCloseable {
-	private static final byte[] EMPTY_SECTOR = new byte[4096];
-	private final RandomAccessFile file;
-	private final int[] offsets = new int[1024];
-	private final int[] chunkTimestamps = new int[1024];
-	private final List<Boolean> sectorFree;
+	private static final Logger field_20434 = LogManager.getLogger();
+	private static final ByteBuffer field_20435 = ByteBuffer.allocateDirect(1);
+	private final FileChannel field_20436;
+	private final class_4486 field_20437;
+	private final ByteBuffer field_20438 = ByteBuffer.allocateDirect(8192);
+	private final IntBuffer field_20439;
+	private final IntBuffer field_20440;
+	private final class_4485 field_20441 = new class_4485();
 
 	public RegionFile(File file) throws IOException {
-		this.file = new RandomAccessFile(file, "rw");
-		if (this.file.length() < 4096L) {
-			this.file.write(EMPTY_SECTOR);
-			this.file.write(EMPTY_SECTOR);
-		}
+		this(file.toPath(), class_4486.field_20443);
+	}
 
-		if ((this.file.length() & 4095L) != 0L) {
-			for (int i = 0; (long)i < (this.file.length() & 4095L); i++) {
-				this.file.write(0);
+	public RegionFile(Path path, class_4486 arg) throws IOException {
+		this.field_20437 = arg;
+		this.field_20439 = this.field_20438.asIntBuffer();
+		this.field_20439.limit(1024);
+		this.field_20438.position(4096);
+		this.field_20440 = this.field_20438.asIntBuffer();
+		this.field_20436 = FileChannel.open(path, StandardOpenOption.CREATE, StandardOpenOption.READ, StandardOpenOption.WRITE);
+		this.field_20441.method_21868(0, 2);
+		this.field_20438.position(0);
+		int i = this.field_20436.read(this.field_20438, 0L);
+		if (i != -1) {
+			if (i != 8192) {
+				field_20434.warn("Region file {} has truncated header: {}", path, i);
 			}
-		}
 
-		int i = (int)this.file.length() / 4096;
-		this.sectorFree = Lists.<Boolean>newArrayListWithCapacity(i);
-
-		for (int j = 0; j < i; j++) {
-			this.sectorFree.add(true);
-		}
-
-		this.sectorFree.set(0, false);
-		this.sectorFree.set(1, false);
-		this.file.seek(0L);
-
-		for (int j = 0; j < 1024; j++) {
-			int k = this.file.readInt();
-			this.offsets[j] = k;
-			if (k != 0 && (k >> 8) + (k & 0xFF) <= this.sectorFree.size()) {
-				for (int l = 0; l < (k & 0xFF); l++) {
-					this.sectorFree.set((k >> 8) + l, false);
+			for (int j = 0; j < 1024; j++) {
+				int k = this.field_20439.get(j);
+				if (k != 0) {
+					int l = method_21878(k);
+					int m = method_21871(k);
+					this.field_20441.method_21868(l, m);
 				}
 			}
-		}
-
-		for (int jx = 0; jx < 1024; jx++) {
-			int k = this.file.readInt();
-			this.chunkTimestamps[jx] = k;
 		}
 	}
 
 	@Nullable
-	public synchronized DataInputStream getChunkDataInputStream(ChunkPos pos) throws IOException {
-		int i = this.getSectorData(pos);
+	public synchronized DataInputStream method_21873(ChunkPos chunkPos) throws IOException {
+		int i = this.getOffset(chunkPos);
 		if (i == 0) {
 			return null;
 		} else {
-			int j = i >> 8;
-			int k = i & 0xFF;
-			if (j + k > this.sectorFree.size()) {
+			int j = method_21878(i);
+			int k = method_21871(i);
+			int l = k * 4096;
+			ByteBuffer byteBuffer = ByteBuffer.allocate(l);
+			this.field_20436.read(byteBuffer, (long)(j * 4096));
+			byteBuffer.flip();
+			if (byteBuffer.remaining() < 5) {
+				field_20434.error("Chunk {} header is truncated: expected {} but read {}", chunkPos, l, byteBuffer.remaining());
 				return null;
 			} else {
-				this.file.seek((long)(j * 4096));
-				int l = this.file.readInt();
-				if (l > 4096 * k) {
-					return null;
-				} else if (l <= 0) {
+				int m = byteBuffer.getInt();
+				byte b = byteBuffer.get();
+				if (m == 0) {
+					field_20434.warn("Chunk {} is allocated, but stream is missing", chunkPos);
 					return null;
 				} else {
-					byte b = this.file.readByte();
-					if (b == 1) {
-						byte[] bs = new byte[l - 1];
-						this.file.read(bs);
-						return new DataInputStream(new BufferedInputStream(new GZIPInputStream(new ByteArrayInputStream(bs))));
-					} else if (b == 2) {
-						byte[] bs = new byte[l - 1];
-						this.file.read(bs);
-						return new DataInputStream(new BufferedInputStream(new InflaterInputStream(new ByteArrayInputStream(bs))));
-					} else {
+					int n = m - 1;
+					if (n > byteBuffer.remaining()) {
+						field_20434.error("Chunk {} stream is truncated: expected {} but read {}", chunkPos, n, byteBuffer.remaining());
 						return null;
+					} else if (n < 0) {
+						field_20434.error("Declared size {} of chunk {} is negative", m, chunkPos);
+						return null;
+					} else {
+						class_4486 lv = class_4486.method_21883(b);
+						if (lv == null) {
+							field_20434.error("Chunk {} has invalid chunk stream version {}", chunkPos, b);
+							return null;
+						} else {
+							return new DataInputStream(new BufferedInputStream(lv.method_21885(method_21876(byteBuffer, n))));
+						}
 					}
 				}
 			}
 		}
 	}
 
-	public boolean isChunkPresent(ChunkPos pos) {
-		int i = this.getSectorData(pos);
+	private static ByteArrayInputStream method_21876(ByteBuffer byteBuffer, int i) {
+		return new ByteArrayInputStream(byteBuffer.array(), byteBuffer.position(), i);
+	}
+
+	private int method_21872(int i, int j) {
+		return i << 8 | j;
+	}
+
+	private static int method_21871(int i) {
+		return i & 0xFF;
+	}
+
+	private static int method_21878(int i) {
+		return i >> 8;
+	}
+
+	private static int method_21880(int i) {
+		return (i + 4096 - 1) / 4096;
+	}
+
+	public boolean method_21879(ChunkPos chunkPos) {
+		int i = this.getOffset(chunkPos);
 		if (i == 0) {
 			return false;
 		} else {
-			int j = i >> 8;
-			int k = i & 0xFF;
-			if (j + k > this.sectorFree.size()) {
-				return false;
-			} else {
-				try {
-					this.file.seek((long)(j * 4096));
-					int l = this.file.readInt();
-					return l > 4096 * k ? false : l > 0;
-				} catch (IOException var6) {
+			int j = method_21878(i);
+			int k = method_21871(i);
+			ByteBuffer byteBuffer = ByteBuffer.allocate(5);
+
+			try {
+				this.field_20436.read(byteBuffer, (long)(j * 4096));
+				byteBuffer.flip();
+				if (byteBuffer.remaining() != 5) {
 					return false;
-				}
-			}
-		}
-	}
-
-	public DataOutputStream getChunkDataOutputStream(ChunkPos chunkPos) {
-		return new DataOutputStream(new BufferedOutputStream(new DeflaterOutputStream(new RegionFile.ChunkBuffer(chunkPos))));
-	}
-
-	protected synchronized void write(ChunkPos chunkPos, byte[] bs, int i) throws IOException {
-		int j = this.getSectorData(chunkPos);
-		int k = j >> 8;
-		int l = j & 0xFF;
-		int m = (i + 5) / 4096 + 1;
-		if (m >= 256) {
-			throw new RuntimeException(String.format("Too big to save, %d > 1048576", i));
-		} else {
-			if (k != 0 && l == m) {
-				this.write(k, bs, i);
-			} else {
-				for (int n = 0; n < l; n++) {
-					this.sectorFree.set(k + n, true);
-				}
-
-				int n = this.sectorFree.indexOf(true);
-				int o = 0;
-				if (n != -1) {
-					for (int p = n; p < this.sectorFree.size(); p++) {
-						if (o != 0) {
-							if ((Boolean)this.sectorFree.get(p)) {
-								o++;
-							} else {
-								o = 0;
-							}
-						} else if ((Boolean)this.sectorFree.get(p)) {
-							n = p;
-							o = 1;
-						}
-
-						if (o >= m) {
-							break;
-						}
-					}
-				}
-
-				if (o >= m) {
-					k = n;
-					this.setOffset(chunkPos, n << 8 | m);
-
-					for (int p = 0; p < m; p++) {
-						this.sectorFree.set(k + p, false);
-					}
-
-					this.write(k, bs, i);
 				} else {
-					this.file.seek(this.file.length());
-					k = this.sectorFree.size();
-
-					for (int p = 0; p < m; p++) {
-						this.file.write(EMPTY_SECTOR);
-						this.sectorFree.add(false);
+					int l = byteBuffer.getInt();
+					int m = byteBuffer.get();
+					if (!class_4486.method_21887(m)) {
+						return false;
+					} else if (l == 0) {
+						return false;
+					} else {
+						int n = l - 1;
+						return n >= 0 && n <= 4096 * k;
 					}
-
-					this.write(k, bs, i);
-					this.setOffset(chunkPos, k << 8 | m);
 				}
+			} catch (IOException var9) {
+				return false;
 			}
-
-			this.setTimestamp(chunkPos, (int)(Util.getEpochTimeMs() / 1000L));
 		}
 	}
 
-	private void write(int sectorNumber, byte[] data, int i) throws IOException {
-		this.file.seek((long)(sectorNumber * 4096));
-		this.file.writeInt(i + 1);
-		this.file.writeByte(2);
-		this.file.write(data, 0, i);
+	public DataOutputStream method_21881(ChunkPos chunkPos) throws IOException {
+		return new DataOutputStream(new BufferedOutputStream(this.field_20437.method_21886(new RegionFile.ChunkBuffer(chunkPos))));
 	}
 
-	private int getSectorData(ChunkPos pos) {
-		return this.offsets[this.getIndex(pos)];
+	protected synchronized void method_21874(ChunkPos chunkPos, ByteBuffer byteBuffer) throws IOException {
+		int i = getPackedRegionRelativePosition(chunkPos);
+		int j = this.field_20439.get(i);
+		int k = method_21878(j);
+		int l = method_21871(j);
+		int m = method_21880(byteBuffer.remaining());
+		if (m >= 256) {
+			throw new RuntimeException(String.format("Too big to save, %d > 1048576", byteBuffer.remaining()));
+		} else {
+			int n = this.field_20441.method_21867(m);
+			this.field_20436.write(byteBuffer, (long)(n * 4096));
+			int o = (int)(SystemUtil.getEpochTimeMs() / 1000L);
+			this.field_20439.put(i, this.method_21872(n, m));
+			this.field_20440.put(i, o);
+			this.method_21870();
+			if (k != 0) {
+				this.field_20441.method_21869(k, l);
+			}
+		}
 	}
 
-	public boolean hasChunk(ChunkPos pos) {
-		return this.getSectorData(pos) != 0;
+	private void method_21870() throws IOException {
+		this.field_20438.position(0);
+		this.field_20436.write(this.field_20438, 0L);
 	}
 
-	private void setOffset(ChunkPos chunkPos, int i) throws IOException {
-		int j = this.getIndex(chunkPos);
-		this.offsets[j] = i;
-		this.file.seek((long)(j * 4));
-		this.file.writeInt(i);
+	private int getOffset(ChunkPos chunkPos) {
+		return this.field_20439.get(getPackedRegionRelativePosition(chunkPos));
 	}
 
-	private int getIndex(ChunkPos pos) {
-		return pos.getRegionRelativeX() + pos.getRegionRelativeZ() * 32;
+	public boolean hasChunk(ChunkPos chunkPos) {
+		return this.getOffset(chunkPos) != 0;
 	}
 
-	private void setTimestamp(ChunkPos chunkPos, int i) throws IOException {
-		int j = this.getIndex(chunkPos);
-		this.chunkTimestamps[j] = i;
-		this.file.seek((long)(4096 + j * 4));
-		this.file.writeInt(i);
+	private static int getPackedRegionRelativePosition(ChunkPos chunkPos) {
+		return chunkPos.getRegionRelativeX() + chunkPos.getRegionRelativeZ() * 32;
 	}
 
 	public void close() throws IOException {
-		this.file.close();
+		try {
+			this.method_21877();
+		} finally {
+			try {
+				this.method_21870();
+			} finally {
+				this.field_20436.close();
+			}
+		}
+	}
+
+	private void method_21877() throws IOException {
+		int i = (int)this.field_20436.size();
+		int j = method_21880(i) * 4096;
+		if (i != j) {
+			ByteBuffer byteBuffer = field_20435.duplicate();
+			byteBuffer.position(0);
+			this.field_20436.write(byteBuffer, (long)(j - 1));
+		}
 	}
 
 	class ChunkBuffer extends ByteArrayOutputStream {
@@ -230,11 +225,18 @@ public class RegionFile implements AutoCloseable {
 
 		public ChunkBuffer(ChunkPos chunkPos) {
 			super(8096);
+			super.write(0);
+			super.write(0);
+			super.write(0);
+			super.write(0);
+			super.write(RegionFile.this.field_20437.method_21882());
 			this.pos = chunkPos;
 		}
 
 		public void close() throws IOException {
-			RegionFile.this.write(this.pos, this.buf, this.count);
+			ByteBuffer byteBuffer = ByteBuffer.wrap(this.buf, 0, this.count);
+			byteBuffer.putInt(0, this.count - 5 + 1);
+			RegionFile.this.method_21874(this.pos, byteBuffer);
 		}
 	}
 }

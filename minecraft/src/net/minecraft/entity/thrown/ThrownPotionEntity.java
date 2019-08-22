@@ -56,8 +56,8 @@ public class ThrownPotionEntity extends ThrownEntity implements FlyingItemEntity
 		super(EntityType.POTION, livingEntity, world);
 	}
 
-	public ThrownPotionEntity(World world, double x, double y, double d) {
-		super(EntityType.POTION, x, y, d, world);
+	public ThrownPotionEntity(World world, double d, double e, double f) {
+		super(EntityType.POTION, d, e, f, world);
 	}
 
 	@Override
@@ -138,7 +138,7 @@ public class ThrownPotionEntity extends ThrownEntity implements FlyingItemEntity
 
 	private void applySplashPotion(List<StatusEffectInstance> list, @Nullable Entity entity) {
 		Box box = this.getBoundingBox().expand(4.0, 2.0, 4.0);
-		List<LivingEntity> list2 = this.world.getNonSpectatingEntities(LivingEntity.class, box);
+		List<LivingEntity> list2 = this.world.getEntities(LivingEntity.class, box);
 		if (!list2.isEmpty()) {
 			for (LivingEntity livingEntity : list2) {
 				if (livingEntity.isAffectedBySplashPotions()) {
@@ -184,7 +184,7 @@ public class ThrownPotionEntity extends ThrownEntity implements FlyingItemEntity
 		}
 
 		CompoundTag compoundTag = itemStack.getTag();
-		if (compoundTag != null && compoundTag.contains("CustomPotionColor", 99)) {
+		if (compoundTag != null && compoundTag.containsKey("CustomPotionColor", 99)) {
 			areaEffectCloudEntity.setColor(compoundTag.getInt("CustomPotionColor"));
 		}
 
@@ -207,9 +207,9 @@ public class ThrownPotionEntity extends ThrownEntity implements FlyingItemEntity
 	}
 
 	@Override
-	public void readCustomDataFromTag(CompoundTag tag) {
-		super.readCustomDataFromTag(tag);
-		ItemStack itemStack = ItemStack.fromTag(tag.getCompound("Potion"));
+	public void readCustomDataFromTag(CompoundTag compoundTag) {
+		super.readCustomDataFromTag(compoundTag);
+		ItemStack itemStack = ItemStack.fromTag(compoundTag.getCompound("Potion"));
 		if (itemStack.isEmpty()) {
 			this.remove();
 		} else {
@@ -218,15 +218,15 @@ public class ThrownPotionEntity extends ThrownEntity implements FlyingItemEntity
 	}
 
 	@Override
-	public void writeCustomDataToTag(CompoundTag tag) {
-		super.writeCustomDataToTag(tag);
+	public void writeCustomDataToTag(CompoundTag compoundTag) {
+		super.writeCustomDataToTag(compoundTag);
 		ItemStack itemStack = this.getStack();
 		if (!itemStack.isEmpty()) {
-			tag.put("Potion", itemStack.toTag(new CompoundTag()));
+			compoundTag.put("Potion", itemStack.toTag(new CompoundTag()));
 		}
 	}
 
-	private static boolean doesWaterHurt(LivingEntity entityHit) {
-		return entityHit instanceof EndermanEntity || entityHit instanceof BlazeEntity;
+	private static boolean doesWaterHurt(LivingEntity livingEntity) {
+		return livingEntity instanceof EndermanEntity || livingEntity instanceof BlazeEntity;
 	}
 }

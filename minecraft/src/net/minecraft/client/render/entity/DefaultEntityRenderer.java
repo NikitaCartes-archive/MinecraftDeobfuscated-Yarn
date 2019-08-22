@@ -1,6 +1,6 @@
 package net.minecraft.client.render.entity;
 
-import com.mojang.blaze3d.platform.GlStateManager;
+import com.mojang.blaze3d.systems.RenderSystem;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
@@ -14,11 +14,11 @@ public class DefaultEntityRenderer extends EntityRenderer<Entity> {
 	}
 
 	@Override
-	public void render(Entity entity, double x, double y, double z, float yaw, float tickDelta) {
-		GlStateManager.pushMatrix();
-		renderBox(entity.getBoundingBox(), x - entity.lastRenderX, y - entity.lastRenderY, z - entity.lastRenderZ);
-		GlStateManager.popMatrix();
-		super.render(entity, x, y, z, yaw, tickDelta);
+	public void render(Entity entity, double d, double e, double f, float g, float h) {
+		RenderSystem.pushMatrix();
+		renderBox(entity.getBoundingBox(), d - entity.prevRenderX, e - entity.prevRenderY, f - entity.prevRenderZ);
+		RenderSystem.popMatrix();
+		super.render(entity, d, e, f, g, h);
 	}
 
 	@Nullable

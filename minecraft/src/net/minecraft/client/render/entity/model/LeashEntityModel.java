@@ -18,19 +18,19 @@ public class LeashEntityModel<T extends Entity> extends EntityModel<T> {
 		this.textureHeight = l;
 		this.field_3431 = new ModelPart(this, i, j);
 		this.field_3431.addCuboid(-3.0F, -6.0F, -3.0F, 6, 8, 6, 0.0F);
-		this.field_3431.setPivot(0.0F, 0.0F, 0.0F);
+		this.field_3431.setRotationPoint(0.0F, 0.0F, 0.0F);
 	}
 
 	@Override
-	public void render(T entity, float limbAngle, float limbDistance, float age, float headYaw, float headPitch, float scale) {
-		this.setAngles(entity, limbAngle, limbDistance, age, headYaw, headPitch, scale);
-		this.field_3431.render(scale);
+	public void render(T entity, float f, float g, float h, float i, float j, float k) {
+		this.setAngles(entity, f, g, h, i, j, k);
+		this.field_3431.render(k);
 	}
 
 	@Override
-	public void setAngles(T entity, float limbAngle, float limbDistance, float age, float headYaw, float headPitch, float scale) {
-		super.setAngles(entity, limbAngle, limbDistance, age, headYaw, headPitch, scale);
-		this.field_3431.yaw = headYaw * (float) (Math.PI / 180.0);
-		this.field_3431.pitch = headPitch * (float) (Math.PI / 180.0);
+	public void setAngles(T entity, float f, float g, float h, float i, float j, float k) {
+		super.setAngles(entity, f, g, h, i, j, k);
+		this.field_3431.yaw = i * (float) (Math.PI / 180.0);
+		this.field_3431.pitch = j * (float) (Math.PI / 180.0);
 	}
 }

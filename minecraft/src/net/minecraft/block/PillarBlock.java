@@ -1,7 +1,7 @@
 package net.minecraft.block;
 
 import net.minecraft.item.ItemPlacementContext;
-import net.minecraft.state.StateManager;
+import net.minecraft.state.StateFactory;
 import net.minecraft.state.property.EnumProperty;
 import net.minecraft.state.property.Properties;
 import net.minecraft.util.BlockRotation;
@@ -16,30 +16,30 @@ public class PillarBlock extends Block {
 	}
 
 	@Override
-	public BlockState rotate(BlockState state, BlockRotation rotation) {
-		switch (rotation) {
+	public BlockState rotate(BlockState blockState, BlockRotation blockRotation) {
+		switch (blockRotation) {
 			case COUNTERCLOCKWISE_90:
 			case CLOCKWISE_90:
-				switch ((Direction.Axis)state.get(AXIS)) {
+				switch ((Direction.Axis)blockState.get(AXIS)) {
 					case X:
-						return state.with(AXIS, Direction.Axis.Z);
+						return blockState.with(AXIS, Direction.Axis.Z);
 					case Z:
-						return state.with(AXIS, Direction.Axis.X);
+						return blockState.with(AXIS, Direction.Axis.X);
 					default:
-						return state;
+						return blockState;
 				}
 			default:
-				return state;
+				return blockState;
 		}
 	}
 
 	@Override
-	protected void appendProperties(StateManager.Builder<Block, BlockState> builder) {
+	protected void appendProperties(StateFactory.Builder<Block, BlockState> builder) {
 		builder.add(AXIS);
 	}
 
 	@Override
-	public BlockState getPlacementState(ItemPlacementContext ctx) {
-		return this.getDefaultState().with(AXIS, ctx.getSide().getAxis());
+	public BlockState getPlacementState(ItemPlacementContext itemPlacementContext) {
+		return this.getDefaultState().with(AXIS, itemPlacementContext.getSide().getAxis());
 	}
 }

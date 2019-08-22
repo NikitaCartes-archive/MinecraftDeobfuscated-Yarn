@@ -45,9 +45,10 @@ import net.minecraft.structure.StructureFeatures;
 import net.minecraft.structure.StructurePieceType;
 import net.minecraft.structure.pool.StructurePoolElementType;
 import net.minecraft.structure.processor.StructureProcessorType;
-import net.minecraft.structure.rule.RuleTestType;
+import net.minecraft.structure.rule.RuleTest;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.IndexedIterable;
+import net.minecraft.village.PointOfInterestType;
 import net.minecraft.village.VillagerProfession;
 import net.minecraft.village.VillagerType;
 import net.minecraft.world.biome.Biome;
@@ -61,7 +62,6 @@ import net.minecraft.world.gen.decorator.Decorator;
 import net.minecraft.world.gen.feature.Feature;
 import net.minecraft.world.gen.feature.StructureFeature;
 import net.minecraft.world.gen.surfacebuilder.SurfaceBuilder;
-import net.minecraft.world.poi.PointOfInterestType;
 import org.apache.commons.lang3.Validate;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -72,7 +72,7 @@ public abstract class Registry<T> implements IndexedIterable<T> {
 	public static final MutableRegistry<MutableRegistry<?>> REGISTRIES = new SimpleRegistry<>();
 	public static final Registry<SoundEvent> SOUND_EVENT = create("sound_event", () -> SoundEvents.ENTITY_ITEM_PICKUP);
 	public static final DefaultedRegistry<Fluid> FLUID = create("fluid", "empty", () -> Fluids.EMPTY);
-	public static final Registry<StatusEffect> STATUS_EFFECT = create("mob_effect", () -> StatusEffects.LUCK);
+	public static final Registry<StatusEffect> MOB_EFFECT = create("mob_effect", () -> StatusEffects.LUCK);
 	public static final DefaultedRegistry<Block> BLOCK = create("block", "air", () -> Blocks.AIR);
 	public static final Registry<Enchantment> ENCHANTMENT = create("enchantment", () -> Enchantments.FORTUNE);
 	public static final DefaultedRegistry<EntityType<?>> ENTITY_TYPE = create("entity_type", "pig", () -> EntityType.PIG);
@@ -85,25 +85,22 @@ public abstract class Registry<T> implements IndexedIterable<T> {
 	public static final Registry<Biome> BIOME = create("biome", () -> Biomes.DEFAULT);
 	public static final Registry<ParticleType<? extends ParticleEffect>> PARTICLE_TYPE = create("particle_type", () -> ParticleTypes.BLOCK);
 	public static final Registry<BiomeSourceType<?, ?>> BIOME_SOURCE_TYPE = create("biome_source_type", () -> BiomeSourceType.VANILLA_LAYERED);
-	public static final Registry<BlockEntityType<?>> BLOCK_ENTITY = create("block_entity_type", () -> BlockEntityType.FURNACE);
+	public static final Registry<BlockEntityType<?>> BLOCK_ENTITY_TYPE = create("block_entity_type", () -> BlockEntityType.FURNACE);
 	public static final Registry<ChunkGeneratorType<?, ?>> CHUNK_GENERATOR_TYPE = create("chunk_generator_type", () -> ChunkGeneratorType.FLAT);
-	public static final Registry<DimensionType> DIMENSION = create("dimension_type", () -> DimensionType.OVERWORLD);
-	/**
-	 * The painting motive (theme, motif) registry
-	 */
-	public static final DefaultedRegistry<PaintingMotive> PAINTING_MOTIVE = create("motive", "kebab", () -> PaintingMotive.KEBAB);
+	public static final Registry<DimensionType> DIMENSION_TYPE = create("dimension_type", () -> DimensionType.OVERWORLD);
+	public static final DefaultedRegistry<PaintingMotive> MOTIVE = create("motive", "kebab", () -> PaintingMotive.KEBAB);
 	public static final Registry<Identifier> CUSTOM_STAT = create("custom_stat", () -> Stats.JUMP);
 	public static final DefaultedRegistry<ChunkStatus> CHUNK_STATUS = create("chunk_status", "empty", () -> ChunkStatus.EMPTY);
 	public static final Registry<StructureFeature<?>> STRUCTURE_FEATURE = create("structure_feature", () -> StructureFeatures.MINESHAFT);
-	public static final Registry<StructurePieceType> STRUCTURE_PIECE = create("structure_piece", () -> StructurePieceType.MINESHAFT_ROOM);
-	public static final Registry<RuleTestType> RULE_TEST = create("rule_test", () -> RuleTestType.ALWAYS_TRUE);
+	public static final Registry<StructurePieceType> STRUCTURE_PIECE = create("structure_piece", () -> StructurePieceType.MSROOM);
+	public static final Registry<RuleTest> RULE_TEST = create("rule_test", () -> RuleTest.ALWAYS_TRUE);
 	public static final Registry<StructureProcessorType> STRUCTURE_PROCESSOR = create("structure_processor", () -> StructureProcessorType.BLOCK_IGNORE);
 	public static final Registry<StructurePoolElementType> STRUCTURE_POOL_ELEMENT = create(
 		"structure_pool_element", () -> StructurePoolElementType.EMPTY_POOL_ELEMENT
 	);
-	public static final Registry<ContainerType<?>> CONTAINER = create("menu", () -> ContainerType.ANVIL);
+	public static final Registry<ContainerType<?>> MENU = create("menu", () -> ContainerType.ANVIL);
 	public static final Registry<RecipeType<?>> RECIPE_TYPE = create("recipe_type", () -> RecipeType.CRAFTING);
-	public static final Registry<RecipeSerializer<?>> RECIPE_SERIALIZER = create("recipe_serializer", () -> RecipeSerializer.SHAPELESS);
+	public static final Registry<RecipeSerializer<?>> RECIPE_SERIALIZER = create("recipe_serializer", () -> RecipeSerializer.CRAFTING_SHAPELESS);
 	public static final Registry<StatType<?>> STAT_TYPE = create("stat_type", () -> Stats.USED);
 	public static final DefaultedRegistry<VillagerType> VILLAGER_TYPE = create("villager_type", "plains", () -> VillagerType.PLAINS);
 	public static final DefaultedRegistry<VillagerProfession> VILLAGER_PROFESSION = create("villager_profession", "none", () -> VillagerProfession.NONE);
@@ -115,29 +112,29 @@ public abstract class Registry<T> implements IndexedIterable<T> {
 	public static final Registry<Schedule> SCHEDULE = create("schedule", () -> Schedule.EMPTY);
 	public static final Registry<Activity> ACTIVITY = create("activity", () -> Activity.IDLE);
 
-	private static <T> Registry<T> create(String id, Supplier<T> supplier) {
-		return putDefaultEntry(id, new SimpleRegistry<>(), supplier);
+	private static <T> Registry<T> create(String string, Supplier<T> supplier) {
+		return putDefaultEntry(string, new SimpleRegistry<>(), supplier);
 	}
 
-	private static <T> DefaultedRegistry<T> create(String string, String string2, Supplier<T> defaultEntry) {
-		return putDefaultEntry(string, new DefaultedRegistry<>(string2), defaultEntry);
+	private static <T> DefaultedRegistry<T> create(String string, String string2, Supplier<T> supplier) {
+		return putDefaultEntry(string, new DefaultedRegistry<>(string2), supplier);
 	}
 
-	private static <T, R extends MutableRegistry<T>> R putDefaultEntry(String id, R mutableRegistry, Supplier<T> supplier) {
-		Identifier identifier = new Identifier(id);
+	private static <T, R extends MutableRegistry<T>> R putDefaultEntry(String string, R mutableRegistry, Supplier<T> supplier) {
+		Identifier identifier = new Identifier(string);
 		DEFAULT_ENTRIES.put(identifier, supplier);
 		return REGISTRIES.add(identifier, mutableRegistry);
 	}
 
 	@Nullable
-	public abstract Identifier getId(T entry);
+	public abstract Identifier getId(T object);
 
-	public abstract int getRawId(@Nullable T entry);
+	public abstract int getRawId(@Nullable T object);
 
 	@Nullable
-	public abstract T get(@Nullable Identifier id);
+	public abstract T get(@Nullable Identifier identifier);
 
-	public abstract Optional<T> getOrEmpty(@Nullable Identifier id);
+	public abstract Optional<T> getOrEmpty(@Nullable Identifier identifier);
 
 	public abstract Set<Identifier> getIds();
 
@@ -149,18 +146,18 @@ public abstract class Registry<T> implements IndexedIterable<T> {
 	}
 
 	@Environment(EnvType.CLIENT)
-	public abstract boolean containsId(Identifier id);
+	public abstract boolean containsId(Identifier identifier);
 
-	public static <T> T register(Registry<? super T> registry, String id, T entry) {
-		return register(registry, new Identifier(id), entry);
+	public static <T> T register(Registry<? super T> registry, String string, T object) {
+		return register(registry, new Identifier(string), object);
 	}
 
-	public static <T> T register(Registry<? super T> registry, Identifier id, T entry) {
-		return ((MutableRegistry)registry).add(id, entry);
+	public static <T> T register(Registry<? super T> registry, Identifier identifier, T object) {
+		return ((MutableRegistry)registry).add(identifier, object);
 	}
 
-	public static <T> T register(Registry<? super T> registry, int rawId, String id, T entry) {
-		return ((MutableRegistry)registry).set(rawId, new Identifier(id), entry);
+	public static <T> T register(Registry<? super T> registry, int i, String string, T object) {
+		return ((MutableRegistry)registry).set(i, new Identifier(string), object);
 	}
 
 	static {

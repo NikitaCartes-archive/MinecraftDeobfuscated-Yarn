@@ -1,11 +1,11 @@
 package net.minecraft.client.texture;
 
-import com.mojang.blaze3d.platform.GlStateManager;
-import com.mojang.blaze3d.platform.TextureUtil;
+import com.mojang.blaze3d.systems.RenderSystem;
 import java.io.IOException;
 import java.util.List;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.class_4536;
 import net.minecraft.resource.Resource;
 import net.minecraft.resource.ResourceManager;
 import net.minecraft.util.DyeColor;
@@ -21,10 +21,10 @@ public class BannerTexture extends AbstractTexture {
 	private final List<String> patternNames;
 	private final List<DyeColor> dyes;
 
-	public BannerTexture(Identifier filename, List<String> patternNames, List<DyeColor> dyes) {
-		this.filename = filename;
-		this.patternNames = patternNames;
-		this.dyes = dyes;
+	public BannerTexture(Identifier identifier, List<String> list, List<DyeColor> list2) {
+		this.filename = identifier;
+		this.patternNames = list;
+		this.dyes = list2;
 	}
 
 	@Override
@@ -50,10 +50,10 @@ public class BannerTexture extends AbstractTexture {
 							if (nativeImage3.getWidth() == nativeImage2.getWidth() && nativeImage3.getHeight() == nativeImage2.getHeight()) {
 								for (int k = 0; k < nativeImage3.getHeight(); k++) {
 									for (int l = 0; l < nativeImage3.getWidth(); l++) {
-										int m = nativeImage3.getPixelRgba(l, k);
+										int m = nativeImage3.getPixelRGBA(l, k);
 										if ((m & 0xFF000000) != 0) {
 											int n = (m & 0xFF) << 24 & 0xFF000000;
-											int o = nativeImage.getPixelRgba(l, k);
+											int o = nativeImage.getPixelRGBA(l, k);
 											int p = MathHelper.multiplyColors(o, j) & 16777215;
 											nativeImage2.blendPixel(l, k, n | p);
 										}
@@ -79,10 +79,10 @@ public class BannerTexture extends AbstractTexture {
 					}
 				}
 
-				TextureUtil.prepareImage(this.getGlId(), nativeImage2.getWidth(), nativeImage2.getHeight());
-				GlStateManager.pixelTransfer(3357, Float.MAX_VALUE);
+				class_4536.prepareImage(this.getGlId(), nativeImage2.getWidth(), nativeImage2.getHeight());
+				RenderSystem.pixelTransfer(3357, Float.MAX_VALUE);
 				nativeImage2.upload(0, 0, 0, false);
-				GlStateManager.pixelTransfer(3357, 0.0F);
+				RenderSystem.pixelTransfer(3357, 0.0F);
 			} catch (Throwable var148) {
 				var3 = var148;
 				throw var148;

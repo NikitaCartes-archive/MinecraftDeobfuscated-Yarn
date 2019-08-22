@@ -5,7 +5,7 @@ import net.minecraft.util.Identifier;
 
 @FunctionalInterface
 public interface TimerCallback<T> {
-	void call(T server, Timer<T> events, long time);
+	void call(T object, Timer<T> timer, long l);
 
 	public abstract static class Serializer<T, C extends TimerCallback<T>> {
 		private final Identifier id;
@@ -24,8 +24,8 @@ public interface TimerCallback<T> {
 			return this.callbackClass;
 		}
 
-		public abstract void serialize(CompoundTag tag, C callback);
+		public abstract void serialize(CompoundTag compoundTag, C timerCallback);
 
-		public abstract C deserialize(CompoundTag tag);
+		public abstract C deserialize(CompoundTag compoundTag);
 	}
 }

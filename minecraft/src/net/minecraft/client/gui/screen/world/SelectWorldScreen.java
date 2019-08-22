@@ -21,14 +21,14 @@ public class SelectWorldScreen extends Screen {
 	protected TextFieldWidget searchBox;
 	private WorldListWidget levelList;
 
-	public SelectWorldScreen(Screen parent) {
+	public SelectWorldScreen(Screen screen) {
 		super(new TranslatableText("selectWorld.title"));
-		this.parent = parent;
+		this.parent = screen;
 	}
 
 	@Override
-	public boolean mouseScrolled(double d, double e, double amount) {
-		return super.mouseScrolled(d, e, amount);
+	public boolean mouseScrolled(double d, double e, double f) {
+		return super.mouseScrolled(d, e, f);
 	}
 
 	@Override
@@ -51,7 +51,7 @@ public class SelectWorldScreen extends Screen {
 				150,
 				20,
 				I18n.translate("selectWorld.select"),
-				buttonWidget -> this.levelList.method_20159().ifPresent(WorldListWidget.Entry::play)
+				buttonWidget -> this.levelList.method_20159().ifPresent(WorldListWidget.LevelItem::play)
 			)
 		);
 		this.addButton(
@@ -66,7 +66,7 @@ public class SelectWorldScreen extends Screen {
 				72,
 				20,
 				I18n.translate("selectWorld.edit"),
-				buttonWidget -> this.levelList.method_20159().ifPresent(WorldListWidget.Entry::edit)
+				buttonWidget -> this.levelList.method_20159().ifPresent(WorldListWidget.LevelItem::edit)
 			)
 		);
 		this.deleteButton = this.addButton(
@@ -76,7 +76,7 @@ public class SelectWorldScreen extends Screen {
 				72,
 				20,
 				I18n.translate("selectWorld.delete"),
-				buttonWidget -> this.levelList.method_20159().ifPresent(WorldListWidget.Entry::delete)
+				buttonWidget -> this.levelList.method_20159().ifPresent(WorldListWidget.LevelItem::delete)
 			)
 		);
 		this.recreateButton = this.addButton(
@@ -86,7 +86,7 @@ public class SelectWorldScreen extends Screen {
 				72,
 				20,
 				I18n.translate("selectWorld.recreate"),
-				buttonWidget -> this.levelList.method_20159().ifPresent(WorldListWidget.Entry::recreate)
+				buttonWidget -> this.levelList.method_20159().ifPresent(WorldListWidget.LevelItem::recreate)
 			)
 		);
 		this.addButton(
@@ -97,42 +97,42 @@ public class SelectWorldScreen extends Screen {
 	}
 
 	@Override
-	public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
-		return super.keyPressed(keyCode, scanCode, modifiers) ? true : this.searchBox.keyPressed(keyCode, scanCode, modifiers);
+	public boolean keyPressed(int i, int j, int k) {
+		return super.keyPressed(i, j, k) ? true : this.searchBox.keyPressed(i, j, k);
 	}
 
 	@Override
-	public boolean charTyped(char chr, int keyCode) {
-		return this.searchBox.charTyped(chr, keyCode);
+	public boolean charTyped(char c, int i) {
+		return this.searchBox.charTyped(c, i);
 	}
 
 	@Override
-	public void render(int mouseX, int mouseY, float delta) {
+	public void render(int i, int j, float f) {
 		this.tooltipText = null;
-		this.levelList.render(mouseX, mouseY, delta);
-		this.searchBox.render(mouseX, mouseY, delta);
+		this.levelList.render(i, j, f);
+		this.searchBox.render(i, j, f);
 		this.drawCenteredString(this.font, this.title.asFormattedString(), this.width / 2, 8, 16777215);
-		super.render(mouseX, mouseY, delta);
+		super.render(i, j, f);
 		if (this.tooltipText != null) {
-			this.renderTooltip(Lists.<String>newArrayList(Splitter.on("\n").split(this.tooltipText)), mouseX, mouseY);
+			this.renderTooltip(Lists.<String>newArrayList(Splitter.on("\n").split(this.tooltipText)), i, j);
 		}
 	}
 
-	public void setTooltip(String value) {
-		this.tooltipText = value;
+	public void setTooltip(String string) {
+		this.tooltipText = string;
 	}
 
-	public void worldSelected(boolean active) {
-		this.selectButton.active = active;
-		this.deleteButton.active = active;
-		this.editButton.active = active;
-		this.recreateButton.active = active;
+	public void worldSelected(boolean bl) {
+		this.selectButton.active = bl;
+		this.deleteButton.active = bl;
+		this.editButton.active = bl;
+		this.recreateButton.active = bl;
 	}
 
 	@Override
 	public void removed() {
 		if (this.levelList != null) {
-			this.levelList.children().forEach(WorldListWidget.Entry::close);
+			this.levelList.children().forEach(WorldListWidget.LevelItem::close);
 		}
 	}
 }

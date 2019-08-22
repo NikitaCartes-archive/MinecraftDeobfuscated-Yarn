@@ -2,7 +2,7 @@ package net.minecraft.server;
 
 import javax.annotation.Nullable;
 import net.minecraft.text.TranslatableText;
-import net.minecraft.util.Util;
+import net.minecraft.util.SystemUtil;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.chunk.ChunkStatus;
@@ -16,25 +16,25 @@ public class WorldGenerationProgressLogger implements WorldGenerationProgressLis
 	private long startTime;
 	private long nextMessageTime = Long.MAX_VALUE;
 
-	public WorldGenerationProgressLogger(int radius) {
-		int i = radius * 2 + 1;
-		this.totalCount = i * i;
+	public WorldGenerationProgressLogger(int i) {
+		int j = i * 2 + 1;
+		this.totalCount = j * j;
 	}
 
 	@Override
-	public void start(ChunkPos spawnPos) {
-		this.nextMessageTime = Util.getMeasuringTimeMs();
+	public void start(ChunkPos chunkPos) {
+		this.nextMessageTime = SystemUtil.getMeasuringTimeMs();
 		this.startTime = this.nextMessageTime;
 	}
 
 	@Override
-	public void setChunkStatus(ChunkPos pos, @Nullable ChunkStatus status) {
-		if (status == ChunkStatus.FULL) {
+	public void setChunkStatus(ChunkPos chunkPos, @Nullable ChunkStatus chunkStatus) {
+		if (chunkStatus == ChunkStatus.FULL) {
 			this.generatedCount++;
 		}
 
 		int i = this.getProgressPercentage();
-		if (Util.getMeasuringTimeMs() > this.nextMessageTime) {
+		if (SystemUtil.getMeasuringTimeMs() > this.nextMessageTime) {
 			this.nextMessageTime += 500L;
 			LOGGER.info(new TranslatableText("menu.preparingSpawn", MathHelper.clamp(i, 0, 100)).getString());
 		}
@@ -42,7 +42,7 @@ public class WorldGenerationProgressLogger implements WorldGenerationProgressLis
 
 	@Override
 	public void stop() {
-		LOGGER.info("Time elapsed: {} ms", Util.getMeasuringTimeMs() - this.startTime);
+		LOGGER.info("Time elapsed: {} ms", SystemUtil.getMeasuringTimeMs() - this.startTime);
 		this.nextMessageTime = Long.MAX_VALUE;
 	}
 

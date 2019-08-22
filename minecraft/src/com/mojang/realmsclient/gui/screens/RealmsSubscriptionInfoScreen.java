@@ -4,7 +4,6 @@ import com.mojang.realmsclient.client.RealmsClient;
 import com.mojang.realmsclient.dto.RealmsServer;
 import com.mojang.realmsclient.dto.Subscription;
 import com.mojang.realmsclient.exception.RealmsServiceException;
-import com.mojang.realmsclient.gui.RealmsConstants;
 import com.mojang.realmsclient.util.RealmsUtil;
 import java.io.IOException;
 import java.text.DateFormat;
@@ -14,6 +13,7 @@ import java.util.Locale;
 import java.util.TimeZone;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.class_4359;
 import net.minecraft.realms.Realms;
 import net.minecraft.realms.RealmsButton;
 import net.minecraft.realms.RealmsScreen;
@@ -38,10 +38,10 @@ public class RealmsSubscriptionInfoScreen extends RealmsScreen {
 	private Subscription.SubscriptionType type;
 	private final String PURCHASE_LINK = "https://account.mojang.com/buy/realms";
 
-	public RealmsSubscriptionInfoScreen(RealmsScreen lastScreen, RealmsServer serverData, RealmsScreen mainScreen) {
-		this.lastScreen = lastScreen;
-		this.serverData = serverData;
-		this.mainScreen = mainScreen;
+	public RealmsSubscriptionInfoScreen(RealmsScreen realmsScreen, RealmsServer realmsServer, RealmsScreen realmsScreen2) {
+		this.lastScreen = realmsScreen;
+		this.serverData = realmsServer;
+		this.mainScreen = realmsScreen2;
 		this.subscriptionTitle = getLocalizedString("mco.configure.world.subscription.title");
 		this.subscriptionStartLabelText = getLocalizedString("mco.configure.world.subscription.start");
 		this.timeLeftLabelText = getLocalizedString("mco.configure.world.subscription.timeleft");
@@ -54,7 +54,7 @@ public class RealmsSubscriptionInfoScreen extends RealmsScreen {
 		Realms.narrateNow(this.subscriptionTitle, this.subscriptionStartLabelText, this.startDate, this.timeLeftLabelText, this.daysLeftPresentation(this.daysLeft));
 		this.setKeyboardHandlerSendRepeatsToGui(true);
 		this.buttonsAdd(
-			new RealmsButton(2, this.width() / 2 - 100, RealmsConstants.row(6), getLocalizedString("mco.configure.world.subscription.extend")) {
+			new RealmsButton(2, this.width() / 2 - 100, class_4359.method_21072(6), getLocalizedString("mco.configure.world.subscription.extend")) {
 				@Override
 				public void onPress() {
 					String string = "https://account.mojang.com/buy/realms?sid="
@@ -66,29 +66,29 @@ public class RealmsSubscriptionInfoScreen extends RealmsScreen {
 				}
 			}
 		);
-		this.buttonsAdd(new RealmsButton(0, this.width() / 2 - 100, RealmsConstants.row(12), getLocalizedString("gui.back")) {
+		this.buttonsAdd(new RealmsButton(0, this.width() / 2 - 100, class_4359.method_21072(12), getLocalizedString("gui.back")) {
 			@Override
 			public void onPress() {
 				Realms.setScreen(RealmsSubscriptionInfoScreen.this.lastScreen);
 			}
 		});
 		if (this.serverData.expired) {
-			this.buttonsAdd(new RealmsButton(1, this.width() / 2 - 100, RealmsConstants.row(10), getLocalizedString("mco.configure.world.delete.button")) {
+			this.buttonsAdd(new RealmsButton(1, this.width() / 2 - 100, class_4359.method_21072(10), getLocalizedString("mco.configure.world.delete.button")) {
 				@Override
 				public void onPress() {
 					String string = RealmsScreen.getLocalizedString("mco.configure.world.delete.question.line1");
 					String string2 = RealmsScreen.getLocalizedString("mco.configure.world.delete.question.line2");
-					Realms.setScreen(new RealmsLongConfirmationScreen(RealmsSubscriptionInfoScreen.this, RealmsLongConfirmationScreen.Type.Warning, string, string2, true, 1));
+					Realms.setScreen(new RealmsLongConfirmationScreen(RealmsSubscriptionInfoScreen.this, RealmsLongConfirmationScreen.Type.WARNING, string, string2, true, 1));
 				}
 			});
 		}
 	}
 
-	private void getSubscription(long worldId) {
+	private void getSubscription(long l) {
 		RealmsClient realmsClient = RealmsClient.createRealmsClient();
 
 		try {
-			Subscription subscription = realmsClient.subscriptionFor(worldId);
+			Subscription subscription = realmsClient.subscriptionFor(l);
 			this.daysLeft = subscription.daysLeft;
 			this.startDate = this.localPresentation(subscription.startDate);
 			this.type = subscription.type;
@@ -101,8 +101,8 @@ public class RealmsSubscriptionInfoScreen extends RealmsScreen {
 	}
 
 	@Override
-	public void confirmResult(boolean result, int id) {
-		if (id == 1 && result) {
+	public void confirmResult(boolean bl, int i) {
+		if (i == 1 && bl) {
 			(new Thread("Realms-delete-realm") {
 				public void run() {
 					try {
@@ -124,9 +124,9 @@ public class RealmsSubscriptionInfoScreen extends RealmsScreen {
 		Realms.setScreen(this);
 	}
 
-	private String localPresentation(long cetTime) {
+	private String localPresentation(long l) {
 		Calendar calendar = new GregorianCalendar(TimeZone.getDefault());
-		calendar.setTimeInMillis(cetTime);
+		calendar.setTimeInMillis(l);
 		return DateFormat.getDateTimeInstance().format(calendar.getTime());
 	}
 
@@ -136,57 +136,57 @@ public class RealmsSubscriptionInfoScreen extends RealmsScreen {
 	}
 
 	@Override
-	public boolean keyPressed(int eventKey, int scancode, int mods) {
-		if (eventKey == 256) {
+	public boolean keyPressed(int i, int j, int k) {
+		if (i == 256) {
 			Realms.setScreen(this.lastScreen);
 			return true;
 		} else {
-			return super.keyPressed(eventKey, scancode, mods);
+			return super.keyPressed(i, j, k);
 		}
 	}
 
 	@Override
-	public void render(int xm, int ym, float a) {
+	public void render(int i, int j, float f) {
 		this.renderBackground();
-		int i = this.width() / 2 - 100;
+		int k = this.width() / 2 - 100;
 		this.drawCenteredString(this.subscriptionTitle, this.width() / 2, 17, 16777215);
-		this.drawString(this.subscriptionStartLabelText, i, RealmsConstants.row(0), 10526880);
-		this.drawString(this.startDate, i, RealmsConstants.row(1), 16777215);
+		this.drawString(this.subscriptionStartLabelText, k, class_4359.method_21072(0), 10526880);
+		this.drawString(this.startDate, k, class_4359.method_21072(1), 16777215);
 		if (this.type == Subscription.SubscriptionType.NORMAL) {
-			this.drawString(this.timeLeftLabelText, i, RealmsConstants.row(3), 10526880);
+			this.drawString(this.timeLeftLabelText, k, class_4359.method_21072(3), 10526880);
 		} else if (this.type == Subscription.SubscriptionType.RECURRING) {
-			this.drawString(this.daysLeftLabelText, i, RealmsConstants.row(3), 10526880);
+			this.drawString(this.daysLeftLabelText, k, class_4359.method_21072(3), 10526880);
 		}
 
-		this.drawString(this.daysLeftPresentation(this.daysLeft), i, RealmsConstants.row(4), 16777215);
-		super.render(xm, ym, a);
+		this.drawString(this.daysLeftPresentation(this.daysLeft), k, class_4359.method_21072(4), 16777215);
+		super.render(i, j, f);
 	}
 
-	private String daysLeftPresentation(int daysLeft) {
-		if (daysLeft == -1 && this.serverData.expired) {
+	private String daysLeftPresentation(int i) {
+		if (i == -1 && this.serverData.expired) {
 			return getLocalizedString("mco.configure.world.subscription.expired");
-		} else if (daysLeft <= 1) {
+		} else if (i <= 1) {
 			return getLocalizedString("mco.configure.world.subscription.less_than_a_day");
 		} else {
-			int i = daysLeft / 30;
-			int j = daysLeft % 30;
+			int j = i / 30;
+			int k = i % 30;
 			StringBuilder stringBuilder = new StringBuilder();
-			if (i > 0) {
-				stringBuilder.append(i).append(" ");
-				if (i == 1) {
+			if (j > 0) {
+				stringBuilder.append(j).append(" ");
+				if (j == 1) {
 					stringBuilder.append(getLocalizedString("mco.configure.world.subscription.month").toLowerCase(Locale.ROOT));
 				} else {
 					stringBuilder.append(getLocalizedString("mco.configure.world.subscription.months").toLowerCase(Locale.ROOT));
 				}
 			}
 
-			if (j > 0) {
+			if (k > 0) {
 				if (stringBuilder.length() > 0) {
 					stringBuilder.append(", ");
 				}
 
-				stringBuilder.append(j).append(" ");
-				if (j == 1) {
+				stringBuilder.append(k).append(" ");
+				if (k == 1) {
 					stringBuilder.append(getLocalizedString("mco.configure.world.subscription.day").toLowerCase(Locale.ROOT));
 				} else {
 					stringBuilder.append(getLocalizedString("mco.configure.world.subscription.days").toLowerCase(Locale.ROOT));

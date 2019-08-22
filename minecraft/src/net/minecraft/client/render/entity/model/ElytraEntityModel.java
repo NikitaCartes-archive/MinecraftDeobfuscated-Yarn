@@ -1,6 +1,6 @@
 package net.minecraft.client.render.entity.model;
 
-import com.mojang.blaze3d.platform.GlStateManager;
+import com.mojang.blaze3d.systems.RenderSystem;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.model.ModelPart;
@@ -20,23 +20,23 @@ public class ElytraEntityModel<T extends LivingEntity> extends EntityModel<T> {
 		this.field_3364.addCuboid(0.0F, 0.0F, 0.0F, 10, 20, 2, 1.0F);
 	}
 
-	public void render(T livingEntity, float f, float g, float h, float i, float j, float k) {
-		GlStateManager.disableRescaleNormal();
-		GlStateManager.disableCull();
+	public void method_17078(T livingEntity, float f, float g, float h, float i, float j, float k) {
+		RenderSystem.disableRescaleNormal();
+		RenderSystem.disableCull();
 		if (livingEntity.isBaby()) {
-			GlStateManager.pushMatrix();
-			GlStateManager.scalef(0.5F, 0.5F, 0.5F);
-			GlStateManager.translatef(0.0F, 1.5F, -0.1F);
+			RenderSystem.pushMatrix();
+			RenderSystem.scalef(0.5F, 0.5F, 0.5F);
+			RenderSystem.translatef(0.0F, 1.5F, -0.1F);
 			this.field_3365.render(k);
 			this.field_3364.render(k);
-			GlStateManager.popMatrix();
+			RenderSystem.popMatrix();
 		} else {
 			this.field_3365.render(k);
 			this.field_3364.render(k);
 		}
 	}
 
-	public void setAngles(T livingEntity, float f, float g, float h, float i, float j, float k) {
+	public void method_17079(T livingEntity, float f, float g, float h, float i, float j, float k) {
 		super.setAngles(livingEntity, f, g, h, i, j, k);
 		float l = (float) (Math.PI / 12);
 		float m = (float) (-Math.PI / 12);
@@ -59,8 +59,8 @@ public class ElytraEntityModel<T extends LivingEntity> extends EntityModel<T> {
 			o = 0.08726646F;
 		}
 
-		this.field_3365.pivotX = 5.0F;
-		this.field_3365.pivotY = n;
+		this.field_3365.rotationPointX = 5.0F;
+		this.field_3365.rotationPointY = n;
 		if (livingEntity instanceof AbstractClientPlayerEntity) {
 			AbstractClientPlayerEntity abstractClientPlayerEntity = (AbstractClientPlayerEntity)livingEntity;
 			abstractClientPlayerEntity.elytraPitch = (float)((double)abstractClientPlayerEntity.elytraPitch + (double)(l - abstractClientPlayerEntity.elytraPitch) * 0.1);
@@ -75,9 +75,9 @@ public class ElytraEntityModel<T extends LivingEntity> extends EntityModel<T> {
 			this.field_3365.yaw = o;
 		}
 
-		this.field_3364.pivotX = -this.field_3365.pivotX;
+		this.field_3364.rotationPointX = -this.field_3365.rotationPointX;
 		this.field_3364.yaw = -this.field_3365.yaw;
-		this.field_3364.pivotY = this.field_3365.pivotY;
+		this.field_3364.rotationPointY = this.field_3365.rotationPointY;
 		this.field_3364.pitch = this.field_3365.pitch;
 		this.field_3364.roll = -this.field_3365.roll;
 	}

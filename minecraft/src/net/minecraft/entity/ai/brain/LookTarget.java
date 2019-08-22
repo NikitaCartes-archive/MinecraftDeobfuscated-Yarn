@@ -9,5 +9,5 @@ public interface LookTarget {
 
 	Vec3d getPos();
 
-	boolean isSeenBy(LivingEntity entity);
+	boolean isSeenBy(LivingEntity livingEntity);
 }

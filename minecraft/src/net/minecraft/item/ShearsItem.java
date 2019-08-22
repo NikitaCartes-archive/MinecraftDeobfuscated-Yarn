@@ -15,13 +15,13 @@ public class ShearsItem extends Item {
 	}
 
 	@Override
-	public boolean postMine(ItemStack stack, World world, BlockState state, BlockPos pos, LivingEntity miner) {
+	public boolean postMine(ItemStack itemStack, World world, BlockState blockState, BlockPos blockPos, LivingEntity livingEntity) {
 		if (!world.isClient) {
-			stack.damage(1, miner, e -> e.sendEquipmentBreakStatus(EquipmentSlot.MAINHAND));
+			itemStack.damage(1, livingEntity, livingEntityx -> livingEntityx.sendEquipmentBreakStatus(EquipmentSlot.MAINHAND));
 		}
 
-		Block block = state.getBlock();
-		return !state.matches(BlockTags.LEAVES)
+		Block block = blockState.getBlock();
+		return !blockState.matches(BlockTags.LEAVES)
 				&& block != Blocks.COBWEB
 				&& block != Blocks.GRASS
 				&& block != Blocks.FERN
@@ -29,23 +29,23 @@ public class ShearsItem extends Item {
 				&& block != Blocks.VINE
 				&& block != Blocks.TRIPWIRE
 				&& !block.matches(BlockTags.WOOL)
-			? super.postMine(stack, world, state, pos, miner)
+			? super.postMine(itemStack, world, blockState, blockPos, livingEntity)
 			: true;
 	}
 
 	@Override
-	public boolean isEffectiveOn(BlockState state) {
-		Block block = state.getBlock();
+	public boolean isEffectiveOn(BlockState blockState) {
+		Block block = blockState.getBlock();
 		return block == Blocks.COBWEB || block == Blocks.REDSTONE_WIRE || block == Blocks.TRIPWIRE;
 	}
 
 	@Override
-	public float getMiningSpeed(ItemStack stack, BlockState state) {
-		Block block = state.getBlock();
-		if (block == Blocks.COBWEB || state.matches(BlockTags.LEAVES)) {
+	public float getMiningSpeed(ItemStack itemStack, BlockState blockState) {
+		Block block = blockState.getBlock();
+		if (block == Blocks.COBWEB || blockState.matches(BlockTags.LEAVES)) {
 			return 15.0F;
 		} else {
-			return block.matches(BlockTags.WOOL) ? 5.0F : super.getMiningSpeed(stack, state);
+			return block.matches(BlockTags.WOOL) ? 5.0F : super.getMiningSpeed(itemStack, blockState);
 		}
 	}
 }

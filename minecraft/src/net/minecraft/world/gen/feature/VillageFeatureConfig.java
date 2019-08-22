@@ -9,17 +9,22 @@ public class VillageFeatureConfig implements FeatureConfig {
 	public final Identifier startPool;
 	public final int size;
 
-	public VillageFeatureConfig(String startPool, int size) {
-		this.startPool = new Identifier(startPool);
-		this.size = size;
+	public VillageFeatureConfig(String string, int i) {
+		this.startPool = new Identifier(string);
+		this.size = i;
 	}
 
 	@Override
-	public <T> Dynamic<T> serialize(DynamicOps<T> ops) {
+	public <T> Dynamic<T> serialize(DynamicOps<T> dynamicOps) {
 		return new Dynamic<>(
-			ops,
-			ops.createMap(
-				ImmutableMap.of(ops.createString("start_pool"), ops.createString(this.startPool.toString()), ops.createString("size"), ops.createInt(this.size))
+			dynamicOps,
+			dynamicOps.createMap(
+				ImmutableMap.of(
+					dynamicOps.createString("start_pool"),
+					dynamicOps.createString(this.startPool.toString()),
+					dynamicOps.createString("size"),
+					dynamicOps.createInt(this.size)
+				)
 			)
 		);
 	}

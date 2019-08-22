@@ -17,41 +17,41 @@ public class FileNameUtil {
 	private static final Pattern RESERVED_WINDOWS_NAMES = Pattern.compile(".*\\.|(?:COM|CLOCK\\$|CON|PRN|AUX|NUL|COM[1-9]|LPT[1-9])(?:\\..*)?", 2);
 
 	@Environment(EnvType.CLIENT)
-	public static String getNextUniqueName(Path path, String name, String extension) throws IOException {
+	public static String getNextUniqueName(Path path, String string, String string2) throws IOException {
 		for (char c : SharedConstants.INVALID_CHARS_LEVEL_NAME) {
-			name = name.replace(c, '_');
+			string = string.replace(c, '_');
 		}
 
-		name = name.replaceAll("[./\"]", "_");
-		if (RESERVED_WINDOWS_NAMES.matcher(name).matches()) {
-			name = "_" + name + "_";
+		string = string.replaceAll("[./\"]", "_");
+		if (RESERVED_WINDOWS_NAMES.matcher(string).matches()) {
+			string = "_" + string + "_";
 		}
 
-		Matcher matcher = field_18956.matcher(name);
+		Matcher matcher = field_18956.matcher(string);
 		int i = 0;
 		if (matcher.matches()) {
-			name = matcher.group("name");
+			string = matcher.group("name");
 			i = Integer.parseInt(matcher.group("count"));
 		}
 
-		if (name.length() > 255 - extension.length()) {
-			name = name.substring(0, 255 - extension.length());
+		if (string.length() > 255 - string2.length()) {
+			string = string.substring(0, 255 - string2.length());
 		}
 
 		while (true) {
-			String string = name;
+			String string3 = string;
 			if (i != 0) {
-				String string2 = " (" + i + ")";
-				int j = 255 - string2.length();
-				if (name.length() > j) {
-					string = name.substring(0, j);
+				String string4 = " (" + i + ")";
+				int j = 255 - string4.length();
+				if (string.length() > j) {
+					string3 = string.substring(0, j);
 				}
 
-				string = string + string2;
+				string3 = string3 + string4;
 			}
 
-			string = string + extension;
-			Path path2 = path.resolve(string);
+			string3 = string3 + string2;
+			Path path2 = path.resolve(string3);
 
 			try {
 				Path path3 = Files.createDirectory(path2);

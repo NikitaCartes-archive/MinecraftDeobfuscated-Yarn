@@ -14,15 +14,15 @@ public class VoidStartPlatformFeature extends Feature<DefaultFeatureConfig> {
 	private static final BlockPos field_19241 = new BlockPos(8, 3, 8);
 	private static final ChunkPos field_19242 = new ChunkPos(field_19241);
 
-	public VoidStartPlatformFeature(Function<Dynamic<?>, ? extends DefaultFeatureConfig> configFactory) {
-		super(configFactory);
+	public VoidStartPlatformFeature(Function<Dynamic<?>, ? extends DefaultFeatureConfig> function) {
+		super(function);
 	}
 
 	private static int method_20403(int i, int j, int k, int l) {
 		return Math.max(Math.abs(i - k), Math.abs(j - l));
 	}
 
-	public boolean generate(
+	public boolean method_14165(
 		IWorld iWorld, ChunkGenerator<? extends ChunkGeneratorConfig> chunkGenerator, Random random, BlockPos blockPos, DefaultFeatureConfig defaultFeatureConfig
 	) {
 		ChunkPos chunkPos = new ChunkPos(blockPos);

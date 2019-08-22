@@ -32,14 +32,19 @@ public class EntityEquipmentPredicate {
 	private final ItemPredicate offhand;
 
 	public EntityEquipmentPredicate(
-		ItemPredicate head, ItemPredicate chest, ItemPredicate legs, ItemPredicate feet, ItemPredicate mainhand, ItemPredicate itemPredicate
+		ItemPredicate itemPredicate,
+		ItemPredicate itemPredicate2,
+		ItemPredicate itemPredicate3,
+		ItemPredicate itemPredicate4,
+		ItemPredicate itemPredicate5,
+		ItemPredicate itemPredicate6
 	) {
-		this.head = head;
-		this.chest = chest;
-		this.legs = legs;
-		this.feet = feet;
-		this.mainhand = mainhand;
-		this.offhand = itemPredicate;
+		this.head = itemPredicate;
+		this.chest = itemPredicate2;
+		this.legs = itemPredicate3;
+		this.feet = itemPredicate4;
+		this.mainhand = itemPredicate5;
+		this.offhand = itemPredicate6;
 	}
 
 	public boolean test(@Nullable Entity entity) {
@@ -68,12 +73,12 @@ public class EntityEquipmentPredicate {
 	public static EntityEquipmentPredicate deserialize(@Nullable JsonElement jsonElement) {
 		if (jsonElement != null && !jsonElement.isJsonNull()) {
 			JsonObject jsonObject = JsonHelper.asObject(jsonElement, "equipment");
-			ItemPredicate itemPredicate = ItemPredicate.fromJson(jsonObject.get("head"));
-			ItemPredicate itemPredicate2 = ItemPredicate.fromJson(jsonObject.get("chest"));
-			ItemPredicate itemPredicate3 = ItemPredicate.fromJson(jsonObject.get("legs"));
-			ItemPredicate itemPredicate4 = ItemPredicate.fromJson(jsonObject.get("feet"));
-			ItemPredicate itemPredicate5 = ItemPredicate.fromJson(jsonObject.get("mainhand"));
-			ItemPredicate itemPredicate6 = ItemPredicate.fromJson(jsonObject.get("offhand"));
+			ItemPredicate itemPredicate = ItemPredicate.deserialize(jsonObject.get("head"));
+			ItemPredicate itemPredicate2 = ItemPredicate.deserialize(jsonObject.get("chest"));
+			ItemPredicate itemPredicate3 = ItemPredicate.deserialize(jsonObject.get("legs"));
+			ItemPredicate itemPredicate4 = ItemPredicate.deserialize(jsonObject.get("feet"));
+			ItemPredicate itemPredicate5 = ItemPredicate.deserialize(jsonObject.get("mainhand"));
+			ItemPredicate itemPredicate6 = ItemPredicate.deserialize(jsonObject.get("offhand"));
 			return new EntityEquipmentPredicate(itemPredicate, itemPredicate2, itemPredicate3, itemPredicate4, itemPredicate5, itemPredicate6);
 		} else {
 			return ANY;
@@ -85,12 +90,12 @@ public class EntityEquipmentPredicate {
 			return JsonNull.INSTANCE;
 		} else {
 			JsonObject jsonObject = new JsonObject();
-			jsonObject.add("head", this.head.toJson());
-			jsonObject.add("chest", this.chest.toJson());
-			jsonObject.add("legs", this.legs.toJson());
-			jsonObject.add("feet", this.feet.toJson());
-			jsonObject.add("mainhand", this.mainhand.toJson());
-			jsonObject.add("offhand", this.offhand.toJson());
+			jsonObject.add("head", this.head.serialize());
+			jsonObject.add("chest", this.chest.serialize());
+			jsonObject.add("legs", this.legs.serialize());
+			jsonObject.add("feet", this.feet.serialize());
+			jsonObject.add("mainhand", this.mainhand.serialize());
+			jsonObject.add("offhand", this.offhand.serialize());
 			return jsonObject;
 		}
 	}

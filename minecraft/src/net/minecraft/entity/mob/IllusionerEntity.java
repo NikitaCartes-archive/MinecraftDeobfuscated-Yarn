@@ -83,9 +83,11 @@ public class IllusionerEntity extends SpellcastingIllagerEntity implements Range
 	}
 
 	@Override
-	public EntityData initialize(IWorld world, LocalDifficulty difficulty, SpawnType spawnType, @Nullable EntityData entityData, @Nullable CompoundTag entityTag) {
+	public EntityData initialize(
+		IWorld iWorld, LocalDifficulty localDifficulty, SpawnType spawnType, @Nullable EntityData entityData, @Nullable CompoundTag compoundTag
+	) {
 		this.equipStack(EquipmentSlot.MAINHAND, new ItemStack(Items.BOW));
-		return super.initialize(world, difficulty, spawnType, entityData, entityTag);
+		return super.initialize(iWorld, localDifficulty, spawnType, entityData, compoundTag);
 	}
 
 	@Override
@@ -136,7 +138,7 @@ public class IllusionerEntity extends SpellcastingIllagerEntity implements Range
 				}
 
 				this.world.playSound(this.x, this.y, this.z, SoundEvents.ENTITY_ILLUSIONER_MIRROR_MOVE, this.getSoundCategory(), 1.0F, 1.0F, false);
-			} else if (this.hurtTime == this.field_6254 - 1) {
+			} else if (this.hurtTime == this.maxHurtTime - 1) {
 				this.field_7296 = 3;
 
 				for (int k = 0; k < 4; k++) {
@@ -170,12 +172,12 @@ public class IllusionerEntity extends SpellcastingIllagerEntity implements Range
 	}
 
 	@Override
-	public boolean isTeammate(Entity other) {
-		if (super.isTeammate(other)) {
+	public boolean isTeammate(Entity entity) {
+		if (super.isTeammate(entity)) {
 			return true;
 		} else {
-			return other instanceof LivingEntity && ((LivingEntity)other).getGroup() == EntityGroup.ILLAGER
-				? this.getScoreboardTeam() == null && other.getScoreboardTeam() == null
+			return entity instanceof LivingEntity && ((LivingEntity)entity).getGroup() == EntityGroup.ILLAGER
+				? this.getScoreboardTeam() == null && entity.getScoreboardTeam() == null
 				: false;
 		}
 	}
@@ -191,7 +193,7 @@ public class IllusionerEntity extends SpellcastingIllagerEntity implements Range
 	}
 
 	@Override
-	protected SoundEvent getHurtSound(DamageSource source) {
+	protected SoundEvent getHurtSound(DamageSource damageSource) {
 		return SoundEvents.ENTITY_ILLUSIONER_HURT;
 	}
 
@@ -201,19 +203,19 @@ public class IllusionerEntity extends SpellcastingIllagerEntity implements Range
 	}
 
 	@Override
-	public void addBonusForWave(int wave, boolean unused) {
+	public void addBonusForWave(int i, boolean bl) {
 	}
 
 	@Override
-	public void attack(LivingEntity target, float f) {
+	public void attack(LivingEntity livingEntity, float f) {
 		ItemStack itemStack = this.getArrowType(this.getStackInHand(ProjectileUtil.getHandPossiblyHolding(this, Items.BOW)));
 		ProjectileEntity projectileEntity = ProjectileUtil.createArrowProjectile(this, itemStack, f);
-		double d = target.x - this.x;
-		double e = target.getBoundingBox().y1 + (double)(target.getHeight() / 3.0F) - projectileEntity.y;
-		double g = target.z - this.z;
+		double d = livingEntity.x - this.x;
+		double e = livingEntity.getBoundingBox().minY + (double)(livingEntity.getHeight() / 3.0F) - projectileEntity.y;
+		double g = livingEntity.z - this.z;
 		double h = (double)MathHelper.sqrt(d * d + g * g);
 		projectileEntity.setVelocity(d, e + h * 0.2F, g, 1.6F, (float)(14 - this.world.getDifficulty().getId() * 4));
-		this.playSound(SoundEvents.ENTITY_SKELETON_SHOOT, 1.0F, 1.0F / (this.getRandom().nextFloat() * 0.4F + 0.8F));
+		this.playSound(SoundEvents.ENTITY_SKELETON_SHOOT, 1.0F, 1.0F / (this.getRand().nextFloat() * 0.4F + 0.8F));
 		this.world.spawnEntity(projectileEntity);
 	}
 

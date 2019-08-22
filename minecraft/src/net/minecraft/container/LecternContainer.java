@@ -11,12 +11,12 @@ public class LecternContainer extends Container {
 	private final Inventory inventory;
 	private final PropertyDelegate propertyDelegate;
 
-	public LecternContainer(int syncId) {
-		this(syncId, new BasicInventory(1), new ArrayPropertyDelegate(1));
+	public LecternContainer(int i) {
+		this(i, new BasicInventory(1), new ArrayPropertyDelegate(1));
 	}
 
-	public LecternContainer(int syncId, Inventory inventory, PropertyDelegate propertyDelegate) {
-		super(ContainerType.LECTERN, syncId);
+	public LecternContainer(int i, Inventory inventory, PropertyDelegate propertyDelegate) {
+		super(ContainerType.LECTERN, i);
 		checkContainerSize(inventory, 1);
 		checkContainerDataCount(propertyDelegate, 1);
 		this.inventory = inventory;
@@ -32,32 +32,32 @@ public class LecternContainer extends Container {
 	}
 
 	@Override
-	public boolean onButtonClick(PlayerEntity player, int id) {
-		if (id >= 100) {
-			int i = id - 100;
-			this.setProperty(0, i);
+	public boolean onButtonClick(PlayerEntity playerEntity, int i) {
+		if (i >= 100) {
+			int j = i - 100;
+			this.setProperties(0, j);
 			return true;
 		} else {
-			switch (id) {
+			switch (i) {
 				case 1: {
-					int i = this.propertyDelegate.get(0);
-					this.setProperty(0, i - 1);
+					int j = this.propertyDelegate.get(0);
+					this.setProperties(0, j - 1);
 					return true;
 				}
 				case 2: {
-					int i = this.propertyDelegate.get(0);
-					this.setProperty(0, i + 1);
+					int j = this.propertyDelegate.get(0);
+					this.setProperties(0, j + 1);
 					return true;
 				}
 				case 3:
-					if (!player.canModifyWorld()) {
+					if (!playerEntity.canModifyWorld()) {
 						return false;
 					}
 
 					ItemStack itemStack = this.inventory.removeInvStack(0);
 					this.inventory.markDirty();
-					if (!player.inventory.insertStack(itemStack)) {
-						player.dropItem(itemStack, false);
+					if (!playerEntity.inventory.insertStack(itemStack)) {
+						playerEntity.dropItem(itemStack, false);
 					}
 
 					return true;
@@ -68,14 +68,14 @@ public class LecternContainer extends Container {
 	}
 
 	@Override
-	public void setProperty(int id, int value) {
-		super.setProperty(id, value);
+	public void setProperties(int i, int j) {
+		super.setProperties(i, j);
 		this.sendContentUpdates();
 	}
 
 	@Override
-	public boolean canUse(PlayerEntity player) {
-		return this.inventory.canPlayerUseInv(player);
+	public boolean canUse(PlayerEntity playerEntity) {
+		return this.inventory.canPlayerUseInv(playerEntity);
 	}
 
 	@Environment(EnvType.CLIENT)

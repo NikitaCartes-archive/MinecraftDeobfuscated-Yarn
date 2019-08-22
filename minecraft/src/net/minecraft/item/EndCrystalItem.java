@@ -20,9 +20,9 @@ public class EndCrystalItem extends Item {
 	}
 
 	@Override
-	public ActionResult useOnBlock(ItemUsageContext context) {
-		World world = context.getWorld();
-		BlockPos blockPos = context.getBlockPos();
+	public ActionResult useOnBlock(ItemUsageContext itemUsageContext) {
+		World world = itemUsageContext.getWorld();
+		BlockPos blockPos = itemUsageContext.getBlockPos();
 		BlockState blockState = world.getBlockState(blockPos);
 		if (blockState.getBlock() != Blocks.OBSIDIAN && blockState.getBlock() != Blocks.BEDROCK) {
 			return ActionResult.FAIL;
@@ -48,7 +48,7 @@ public class EndCrystalItem extends Item {
 						}
 					}
 
-					context.getStack().decrement(1);
+					itemUsageContext.getStack().decrement(1);
 					return ActionResult.SUCCESS;
 				}
 			}
@@ -57,7 +57,7 @@ public class EndCrystalItem extends Item {
 
 	@Environment(EnvType.CLIENT)
 	@Override
-	public boolean hasEnchantmentGlint(ItemStack stack) {
+	public boolean hasEnchantmentGlint(ItemStack itemStack) {
 		return true;
 	}
 }

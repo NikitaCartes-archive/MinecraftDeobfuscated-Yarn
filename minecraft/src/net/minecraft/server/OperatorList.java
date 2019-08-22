@@ -31,7 +31,7 @@ public class OperatorList extends ServerConfigList<GameProfile, OperatorEntry> {
 		return operatorEntry != null ? operatorEntry.canBypassPlayerLimit() : false;
 	}
 
-	protected String toString(GameProfile gameProfile) {
+	protected String method_14619(GameProfile gameProfile) {
 		return gameProfile.getId().toString();
 	}
 }

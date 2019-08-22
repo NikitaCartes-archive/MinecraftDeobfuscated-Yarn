@@ -1,10 +1,11 @@
 package net.minecraft.client.render.debug;
 
 import com.google.common.collect.Lists;
-import com.mojang.blaze3d.platform.GlStateManager;
+import com.mojang.blaze3d.systems.RenderSystem;
 import java.util.Collection;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.class_4493;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.Camera;
 import net.minecraft.util.math.BlockPos;
@@ -14,26 +15,26 @@ public class RaidCenterDebugRenderer implements DebugRenderer.Renderer {
 	private final MinecraftClient client;
 	private Collection<BlockPos> raidCenters = Lists.<BlockPos>newArrayList();
 
-	public RaidCenterDebugRenderer(MinecraftClient client) {
-		this.client = client;
+	public RaidCenterDebugRenderer(MinecraftClient minecraftClient) {
+		this.client = minecraftClient;
 	}
 
-	public void setRaidCenters(Collection<BlockPos> centers) {
-		this.raidCenters = centers;
+	public void setRaidCenters(Collection<BlockPos> collection) {
+		this.raidCenters = collection;
 	}
 
 	@Override
 	public void render(long l) {
-		GlStateManager.pushMatrix();
-		GlStateManager.enableBlend();
-		GlStateManager.blendFuncSeparate(
-			GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO
+		RenderSystem.pushMatrix();
+		RenderSystem.enableBlend();
+		RenderSystem.blendFuncSeparate(
+			class_4493.class_4535.SRC_ALPHA, class_4493.class_4534.ONE_MINUS_SRC_ALPHA, class_4493.class_4535.ONE, class_4493.class_4534.ZERO
 		);
-		GlStateManager.disableTexture();
+		RenderSystem.disableTexture();
 		this.drawRaidCenters();
-		GlStateManager.enableTexture();
-		GlStateManager.disableBlend();
-		GlStateManager.popMatrix();
+		RenderSystem.enableTexture();
+		RenderSystem.disableBlend();
+		RenderSystem.popMatrix();
 	}
 
 	private void drawRaidCenters() {

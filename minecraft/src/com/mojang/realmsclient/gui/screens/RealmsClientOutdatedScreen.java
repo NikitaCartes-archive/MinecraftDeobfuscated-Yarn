@@ -1,8 +1,8 @@
 package com.mojang.realmsclient.gui.screens;
 
-import com.mojang.realmsclient.gui.RealmsConstants;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.class_4359;
 import net.minecraft.realms.Realms;
 import net.minecraft.realms.RealmsButton;
 import net.minecraft.realms.RealmsScreen;
@@ -12,14 +12,14 @@ public class RealmsClientOutdatedScreen extends RealmsScreen {
 	private final RealmsScreen lastScreen;
 	private final boolean outdated;
 
-	public RealmsClientOutdatedScreen(RealmsScreen lastScreen, boolean outdated) {
-		this.lastScreen = lastScreen;
-		this.outdated = outdated;
+	public RealmsClientOutdatedScreen(RealmsScreen realmsScreen, boolean bl) {
+		this.lastScreen = realmsScreen;
+		this.outdated = bl;
 	}
 
 	@Override
 	public void init() {
-		this.buttonsAdd(new RealmsButton(0, this.width() / 2 - 100, RealmsConstants.row(12), getLocalizedString("gui.back")) {
+		this.buttonsAdd(new RealmsButton(0, this.width() / 2 - 100, class_4359.method_21072(12), getLocalizedString("gui.back")) {
 			@Override
 			public void onPress() {
 				Realms.setScreen(RealmsClientOutdatedScreen.this.lastScreen);
@@ -28,24 +28,24 @@ public class RealmsClientOutdatedScreen extends RealmsScreen {
 	}
 
 	@Override
-	public void render(int xm, int ym, float a) {
+	public void render(int i, int j, float f) {
 		this.renderBackground();
 		String string = getLocalizedString(this.outdated ? "mco.client.outdated.title" : "mco.client.incompatible.title");
-		this.drawCenteredString(string, this.width() / 2, RealmsConstants.row(3), 16711680);
-		int i = this.outdated ? 2 : 3;
+		this.drawCenteredString(string, this.width() / 2, class_4359.method_21072(3), 16711680);
+		int k = this.outdated ? 2 : 3;
 
-		for (int j = 0; j < i; j++) {
-			String string2 = getLocalizedString((this.outdated ? "mco.client.outdated.msg.line" : "mco.client.incompatible.msg.line") + (j + 1));
-			this.drawCenteredString(string2, this.width() / 2, RealmsConstants.row(5) + j * 12, 16777215);
+		for (int l = 0; l < k; l++) {
+			String string2 = getLocalizedString((this.outdated ? "mco.client.outdated.msg.line" : "mco.client.incompatible.msg.line") + (l + 1));
+			this.drawCenteredString(string2, this.width() / 2, class_4359.method_21072(5) + l * 12, 16777215);
 		}
 
-		super.render(xm, ym, a);
+		super.render(i, j, f);
 	}
 
 	@Override
-	public boolean keyPressed(int eventKey, int scancode, int mods) {
-		if (eventKey != 257 && eventKey != 335 && eventKey != 256) {
-			return super.keyPressed(eventKey, scancode, mods);
+	public boolean keyPressed(int i, int j, int k) {
+		if (i != 257 && i != 335 && i != 256) {
+			return super.keyPressed(i, j, k);
 		} else {
 			Realms.setScreen(this.lastScreen);
 			return true;

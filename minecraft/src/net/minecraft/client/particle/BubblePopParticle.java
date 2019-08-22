@@ -9,14 +9,14 @@ import net.minecraft.world.World;
 public class BubblePopParticle extends SpriteBillboardParticle {
 	private final SpriteProvider field_17787;
 
-	private BubblePopParticle(World world, double x, double y, double z, double velocityX, double velocityY, double velocityZ, SpriteProvider spriteProvider) {
-		super(world, x, y, z);
+	private BubblePopParticle(World world, double d, double e, double f, double g, double h, double i, SpriteProvider spriteProvider) {
+		super(world, d, e, f);
 		this.field_17787 = spriteProvider;
 		this.maxAge = 4;
 		this.gravityStrength = 0.008F;
-		this.velocityX = velocityX;
-		this.velocityY = velocityY;
-		this.velocityZ = velocityZ;
+		this.velocityX = g;
+		this.velocityY = h;
+		this.velocityZ = i;
 		this.setSpriteForAge(spriteProvider);
 	}
 
@@ -47,7 +47,7 @@ public class BubblePopParticle extends SpriteBillboardParticle {
 			this.field_17788 = spriteProvider;
 		}
 
-		public Particle createParticle(DefaultParticleType defaultParticleType, World world, double d, double e, double f, double g, double h, double i) {
+		public Particle method_3016(DefaultParticleType defaultParticleType, World world, double d, double e, double f, double g, double h, double i) {
 			return new BubblePopParticle(world, d, e, f, g, h, i, this.field_17788);
 		}
 	}

@@ -14,8 +14,8 @@ import net.minecraft.world.biome.Biome;
 public class PillagerSpawner {
 	private int ticksUntilNextSpawn;
 
-	public int spawn(ServerWorld serverWorld, boolean spawnMonsters, boolean spawnAnimals) {
-		if (!spawnMonsters) {
+	public int spawn(ServerWorld serverWorld, boolean bl, boolean bl2) {
+		if (!bl) {
 			return 0;
 		} else {
 			Random random = serverWorld.random;
@@ -25,7 +25,7 @@ public class PillagerSpawner {
 			} else {
 				this.ticksUntilNextSpawn = this.ticksUntilNextSpawn + 12000 + random.nextInt(1200);
 				long l = serverWorld.getTimeOfDay() / 24000L;
-				if (l < 5L || !serverWorld.isDay()) {
+				if (l < 5L || !serverWorld.isDaylight()) {
 					return 0;
 				} else if (random.nextInt(5) != 0) {
 					return 0;
@@ -93,7 +93,7 @@ public class PillagerSpawner {
 					patrolEntity.setRandomPatrolTarget();
 				}
 
-				patrolEntity.updatePosition((double)blockPos.getX(), (double)blockPos.getY(), (double)blockPos.getZ());
+				patrolEntity.setPosition((double)blockPos.getX(), (double)blockPos.getY(), (double)blockPos.getZ());
 				patrolEntity.initialize(world, world.getLocalDifficulty(blockPos), SpawnType.PATROL, null, null);
 				world.spawnEntity(patrolEntity);
 				return true;

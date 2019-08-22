@@ -19,18 +19,14 @@ public class BiMapPalette<T> implements Palette<T> {
 	private final int indexBits;
 
 	public BiMapPalette(
-		IdList<T> idList,
-		int indexBits,
-		PaletteResizeListener<T> resizeHandler,
-		Function<CompoundTag, T> elementDeserializer,
-		Function<T, CompoundTag> elementSerializer
+		IdList<T> idList, int i, PaletteResizeListener<T> paletteResizeListener, Function<CompoundTag, T> function, Function<T, CompoundTag> function2
 	) {
 		this.idList = idList;
-		this.indexBits = indexBits;
-		this.resizeHandler = resizeHandler;
-		this.elementDeserializer = elementDeserializer;
-		this.elementSerializer = elementSerializer;
-		this.map = new Int2ObjectBiMap<>(1 << indexBits);
+		this.indexBits = i;
+		this.resizeHandler = paletteResizeListener;
+		this.elementDeserializer = function;
+		this.elementSerializer = function2;
+		this.map = new Int2ObjectBiMap<>(1 << i);
 	}
 
 	@Override
@@ -53,28 +49,28 @@ public class BiMapPalette<T> implements Palette<T> {
 
 	@Nullable
 	@Override
-	public T getByIndex(int index) {
-		return this.map.get(index);
+	public T getByIndex(int i) {
+		return this.map.get(i);
 	}
 
 	@Environment(EnvType.CLIENT)
 	@Override
-	public void fromPacket(PacketByteBuf buf) {
+	public void fromPacket(PacketByteBuf packetByteBuf) {
 		this.map.clear();
-		int i = buf.readVarInt();
+		int i = packetByteBuf.readVarInt();
 
 		for (int j = 0; j < i; j++) {
-			this.map.add(this.idList.get(buf.readVarInt()));
+			this.map.add(this.idList.get(packetByteBuf.readVarInt()));
 		}
 	}
 
 	@Override
-	public void toPacket(PacketByteBuf buf) {
+	public void toPacket(PacketByteBuf packetByteBuf) {
 		int i = this.getIndexBits();
-		buf.writeVarInt(i);
+		packetByteBuf.writeVarInt(i);
 
 		for (int j = 0; j < i; j++) {
-			buf.writeVarInt(this.idList.getId(this.map.get(j)));
+			packetByteBuf.writeVarInt(this.idList.getId(this.map.get(j)));
 		}
 	}
 
@@ -94,17 +90,17 @@ public class BiMapPalette<T> implements Palette<T> {
 	}
 
 	@Override
-	public void fromTag(ListTag tag) {
+	public void fromTag(ListTag listTag) {
 		this.map.clear();
 
-		for (int i = 0; i < tag.size(); i++) {
-			this.map.add((T)this.elementDeserializer.apply(tag.getCompound(i)));
+		for (int i = 0; i < listTag.size(); i++) {
+			this.map.add((T)this.elementDeserializer.apply(listTag.getCompoundTag(i)));
 		}
 	}
 
-	public void toTag(ListTag tag) {
+	public void toTag(ListTag listTag) {
 		for (int i = 0; i < this.getIndexBits(); i++) {
-			tag.add(this.elementSerializer.apply(this.map.get(i)));
+			listTag.add(this.elementSerializer.apply(this.map.get(i)));
 		}
 	}
 }

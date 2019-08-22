@@ -17,14 +17,14 @@ public class IntTag extends AbstractNumberTag {
 	}
 
 	@Override
-	public void write(DataOutput output) throws IOException {
-		output.writeInt(this.value);
+	public void write(DataOutput dataOutput) throws IOException {
+		dataOutput.writeInt(this.value);
 	}
 
 	@Override
-	public void read(DataInput input, int depth, PositionTracker positionTracker) throws IOException {
+	public void read(DataInput dataInput, int i, PositionTracker positionTracker) throws IOException {
 		positionTracker.add(96L);
-		this.value = input.readInt();
+		this.value = dataInput.readInt();
 	}
 
 	@Override
@@ -37,12 +37,12 @@ public class IntTag extends AbstractNumberTag {
 		return String.valueOf(this.value);
 	}
 
-	public IntTag copy() {
+	public IntTag method_10592() {
 		return new IntTag(this.value);
 	}
 
-	public boolean equals(Object o) {
-		return this == o ? true : o instanceof IntTag && this.value == ((IntTag)o).value;
+	public boolean equals(Object object) {
+		return this == object ? true : object instanceof IntTag && this.value == ((IntTag)object).value;
 	}
 
 	public int hashCode() {
@@ -50,7 +50,7 @@ public class IntTag extends AbstractNumberTag {
 	}
 
 	@Override
-	public Text toText(String indent, int depth) {
+	public Text toText(String string, int i) {
 		return new LiteralText(String.valueOf(this.value)).formatted(GOLD);
 	}
 

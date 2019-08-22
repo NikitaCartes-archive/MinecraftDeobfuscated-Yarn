@@ -24,20 +24,20 @@ public abstract class AbstractFurnaceContainer extends CraftingContainer<Invento
 	private final RecipeType<? extends AbstractCookingRecipe> recipeType;
 
 	protected AbstractFurnaceContainer(
-		ContainerType<?> containerType, RecipeType<? extends AbstractCookingRecipe> recipeType, int syncId, PlayerInventory playerInventory
+		ContainerType<?> containerType, RecipeType<? extends AbstractCookingRecipe> recipeType, int i, PlayerInventory playerInventory
 	) {
-		this(containerType, recipeType, syncId, playerInventory, new BasicInventory(3), new ArrayPropertyDelegate(4));
+		this(containerType, recipeType, i, playerInventory, new BasicInventory(3), new ArrayPropertyDelegate(4));
 	}
 
 	protected AbstractFurnaceContainer(
 		ContainerType<?> containerType,
 		RecipeType<? extends AbstractCookingRecipe> recipeType,
-		int syncId,
+		int i,
 		PlayerInventory playerInventory,
 		Inventory inventory,
 		PropertyDelegate propertyDelegate
 	) {
-		super(containerType, syncId);
+		super(containerType, i);
 		this.recipeType = recipeType;
 		checkContainerSize(inventory, 3);
 		checkContainerDataCount(propertyDelegate, 4);
@@ -48,14 +48,14 @@ public abstract class AbstractFurnaceContainer extends CraftingContainer<Invento
 		this.addSlot(new FurnaceFuelSlot(this, inventory, 1, 56, 53));
 		this.addSlot(new FurnaceOutputSlot(playerInventory.player, inventory, 2, 116, 35));
 
-		for (int i = 0; i < 3; i++) {
-			for (int j = 0; j < 9; j++) {
-				this.addSlot(new Slot(playerInventory, j + i * 9 + 9, 8 + j * 18, 84 + i * 18));
+		for (int j = 0; j < 3; j++) {
+			for (int k = 0; k < 9; k++) {
+				this.addSlot(new Slot(playerInventory, k + j * 9 + 9, 8 + k * 18, 84 + j * 18));
 			}
 		}
 
-		for (int i = 0; i < 9; i++) {
-			this.addSlot(new Slot(playerInventory, i, 8 + i * 18, 142));
+		for (int j = 0; j < 9; j++) {
+			this.addSlot(new Slot(playerInventory, j, 8 + j * 18, 142));
 		}
 
 		this.addProperties(propertyDelegate);
@@ -105,24 +105,24 @@ public abstract class AbstractFurnaceContainer extends CraftingContainer<Invento
 	}
 
 	@Override
-	public boolean canUse(PlayerEntity player) {
-		return this.inventory.canPlayerUseInv(player);
+	public boolean canUse(PlayerEntity playerEntity) {
+		return this.inventory.canPlayerUseInv(playerEntity);
 	}
 
 	@Override
-	public ItemStack transferSlot(PlayerEntity player, int invSlot) {
+	public ItemStack transferSlot(PlayerEntity playerEntity, int i) {
 		ItemStack itemStack = ItemStack.EMPTY;
-		Slot slot = (Slot)this.slots.get(invSlot);
+		Slot slot = (Slot)this.slotList.get(i);
 		if (slot != null && slot.hasStack()) {
 			ItemStack itemStack2 = slot.getStack();
 			itemStack = itemStack2.copy();
-			if (invSlot == 2) {
+			if (i == 2) {
 				if (!this.insertItem(itemStack2, 3, 39, true)) {
 					return ItemStack.EMPTY;
 				}
 
 				slot.onStackChanged(itemStack2, itemStack);
-			} else if (invSlot != 1 && invSlot != 0) {
+			} else if (i != 1 && i != 0) {
 				if (this.isSmeltable(itemStack2)) {
 					if (!this.insertItem(itemStack2, 0, 1, false)) {
 						return ItemStack.EMPTY;
@@ -131,11 +131,11 @@ public abstract class AbstractFurnaceContainer extends CraftingContainer<Invento
 					if (!this.insertItem(itemStack2, 1, 2, false)) {
 						return ItemStack.EMPTY;
 					}
-				} else if (invSlot >= 3 && invSlot < 30) {
+				} else if (i >= 3 && i < 30) {
 					if (!this.insertItem(itemStack2, 30, 39, false)) {
 						return ItemStack.EMPTY;
 					}
-				} else if (invSlot >= 30 && invSlot < 39 && !this.insertItem(itemStack2, 3, 30, false)) {
+				} else if (i >= 30 && i < 39 && !this.insertItem(itemStack2, 3, 30, false)) {
 					return ItemStack.EMPTY;
 				}
 			} else if (!this.insertItem(itemStack2, 3, 39, false)) {
@@ -152,7 +152,7 @@ public abstract class AbstractFurnaceContainer extends CraftingContainer<Invento
 				return ItemStack.EMPTY;
 			}
 
-			slot.onTakeItem(player, itemStack2);
+			slot.onTakeItem(playerEntity, itemStack2);
 		}
 
 		return itemStack;

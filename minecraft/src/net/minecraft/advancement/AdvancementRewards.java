@@ -14,9 +14,6 @@ import java.util.List;
 import javax.annotation.Nullable;
 import net.minecraft.entity.ItemEntity;
 import net.minecraft.item.ItemStack;
-import net.minecraft.loot.context.LootContext;
-import net.minecraft.loot.context.LootContextParameters;
-import net.minecraft.loot.context.LootContextTypes;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.function.CommandFunction;
 import net.minecraft.server.network.ServerPlayerEntity;
@@ -25,6 +22,9 @@ import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.JsonHelper;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.loot.context.LootContext;
+import net.minecraft.world.loot.context.LootContextParameters;
+import net.minecraft.world.loot.context.LootContextTypes;
 
 public class AdvancementRewards {
 	public static final AdvancementRewards NONE = new AdvancementRewards(0, new Identifier[0], new Identifier[0], CommandFunction.LazyContainer.EMPTY);
@@ -33,10 +33,10 @@ public class AdvancementRewards {
 	private final Identifier[] recipes;
 	private final CommandFunction.LazyContainer function;
 
-	public AdvancementRewards(int experience, Identifier[] loot, Identifier[] recipes, CommandFunction.LazyContainer lazyContainer) {
-		this.experience = experience;
-		this.loot = loot;
-		this.recipes = recipes;
+	public AdvancementRewards(int i, Identifier[] identifiers, Identifier[] identifiers2, CommandFunction.LazyContainer lazyContainer) {
+		this.experience = i;
+		this.loot = identifiers;
+		this.recipes = identifiers2;
 		this.function = lazyContainer;
 	}
 
@@ -45,7 +45,7 @@ public class AdvancementRewards {
 		LootContext lootContext = new LootContext.Builder(serverPlayerEntity.getServerWorld())
 			.put(LootContextParameters.THIS_ENTITY, serverPlayerEntity)
 			.put(LootContextParameters.POSITION, new BlockPos(serverPlayerEntity))
-			.setRandom(serverPlayerEntity.getRandom())
+			.setRandom(serverPlayerEntity.getRand())
 			.build(LootContextTypes.ADVANCEMENT_REWARD);
 		boolean bl = false;
 
@@ -61,7 +61,7 @@ public class AdvancementRewards {
 							SoundEvents.ENTITY_ITEM_PICKUP,
 							SoundCategory.PLAYERS,
 							0.2F,
-							((serverPlayerEntity.getRandom().nextFloat() - serverPlayerEntity.getRandom().nextFloat()) * 0.7F + 1.0F) * 2.0F
+							((serverPlayerEntity.getRand().nextFloat() - serverPlayerEntity.getRand().nextFloat()) * 0.7F + 1.0F) * 2.0F
 						);
 					bl = true;
 				} else {
@@ -146,21 +146,21 @@ public class AdvancementRewards {
 		@Nullable
 		private Identifier function;
 
-		public static AdvancementRewards.Builder experience(int experience) {
-			return new AdvancementRewards.Builder().setExperience(experience);
+		public static AdvancementRewards.Builder experience(int i) {
+			return new AdvancementRewards.Builder().setExperience(i);
 		}
 
-		public AdvancementRewards.Builder setExperience(int experience) {
-			this.experience += experience;
+		public AdvancementRewards.Builder setExperience(int i) {
+			this.experience += i;
 			return this;
 		}
 
-		public static AdvancementRewards.Builder recipe(Identifier recipe) {
-			return new AdvancementRewards.Builder().addRecipe(recipe);
+		public static AdvancementRewards.Builder recipe(Identifier identifier) {
+			return new AdvancementRewards.Builder().addRecipe(identifier);
 		}
 
-		public AdvancementRewards.Builder addRecipe(Identifier recipe) {
-			this.recipes.add(recipe);
+		public AdvancementRewards.Builder addRecipe(Identifier identifier) {
+			this.recipes.add(identifier);
 			return this;
 		}
 
@@ -175,7 +175,7 @@ public class AdvancementRewards {
 	}
 
 	public static class Deserializer implements JsonDeserializer<AdvancementRewards> {
-		public AdvancementRewards deserialize(JsonElement jsonElement, Type type, JsonDeserializationContext jsonDeserializationContext) throws JsonParseException {
+		public AdvancementRewards method_754(JsonElement jsonElement, Type type, JsonDeserializationContext jsonDeserializationContext) throws JsonParseException {
 			JsonObject jsonObject = JsonHelper.asObject(jsonElement, "rewards");
 			int i = JsonHelper.getInt(jsonObject, "experience", 0);
 			JsonArray jsonArray = JsonHelper.getArray(jsonObject, "loot", new JsonArray());

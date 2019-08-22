@@ -34,8 +34,8 @@ public class MapExtendingRecipe extends ShapedRecipe {
 	}
 
 	@Override
-	public boolean matches(CraftingInventory craftingInventory, World world) {
-		if (!super.matches(craftingInventory, world)) {
+	public boolean method_17728(CraftingInventory craftingInventory, World world) {
+		if (!super.method_17728(craftingInventory, world)) {
 			return false;
 		} else {
 			ItemStack itemStack = ItemStack.EMPTY;
@@ -60,9 +60,9 @@ public class MapExtendingRecipe extends ShapedRecipe {
 		}
 	}
 
-	private boolean matches(MapState state) {
-		if (state.icons != null) {
-			for (MapIcon mapIcon : state.icons.values()) {
+	private boolean matches(MapState mapState) {
+		if (mapState.icons != null) {
+			for (MapIcon mapIcon : mapState.icons.values()) {
 				if (mapIcon.getType() == MapIcon.Type.MANSION || mapIcon.getType() == MapIcon.Type.MONUMENT) {
 					return true;
 				}
@@ -73,7 +73,7 @@ public class MapExtendingRecipe extends ShapedRecipe {
 	}
 
 	@Override
-	public ItemStack craft(CraftingInventory craftingInventory) {
+	public ItemStack method_17727(CraftingInventory craftingInventory) {
 		ItemStack itemStack = ItemStack.EMPTY;
 
 		for (int i = 0; i < craftingInventory.getInvSize() && itemStack.isEmpty(); i++) {

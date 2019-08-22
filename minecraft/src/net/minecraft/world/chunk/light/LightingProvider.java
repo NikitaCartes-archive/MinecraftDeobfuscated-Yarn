@@ -16,24 +16,24 @@ public class LightingProvider implements LightingView {
 	@Nullable
 	private final ChunkLightProvider<?, ?> skyLightProvider;
 
-	public LightingProvider(ChunkProvider chunkProvider, boolean hasBlockLight, boolean hasSkyLight) {
-		this.blockLightProvider = hasBlockLight ? new ChunkBlockLightProvider(chunkProvider) : null;
-		this.skyLightProvider = hasSkyLight ? new ChunkSkyLightProvider(chunkProvider) : null;
+	public LightingProvider(ChunkProvider chunkProvider, boolean bl, boolean bl2) {
+		this.blockLightProvider = bl ? new ChunkBlockLightProvider(chunkProvider) : null;
+		this.skyLightProvider = bl2 ? new ChunkSkyLightProvider(chunkProvider) : null;
 	}
 
-	public void checkBlock(BlockPos pos) {
+	public void enqueueLightUpdate(BlockPos blockPos) {
 		if (this.blockLightProvider != null) {
-			this.blockLightProvider.checkBlock(pos);
+			this.blockLightProvider.queueLightCheck(blockPos);
 		}
 
 		if (this.skyLightProvider != null) {
-			this.skyLightProvider.checkBlock(pos);
+			this.skyLightProvider.queueLightCheck(blockPos);
 		}
 	}
 
-	public void addLightSource(BlockPos pos, int level) {
+	public void method_15560(BlockPos blockPos, int i) {
 		if (this.blockLightProvider != null) {
-			this.blockLightProvider.method_15514(pos, level);
+			this.blockLightProvider.method_15514(blockPos, i);
 		}
 	}
 
@@ -41,38 +41,38 @@ public class LightingProvider implements LightingView {
 		return this.skyLightProvider != null && this.skyLightProvider.hasUpdates() ? true : this.blockLightProvider != null && this.blockLightProvider.hasUpdates();
 	}
 
-	public int doLightUpdates(int maxUpdateCount, boolean doSkylight, boolean skipEdgeLightPropagation) {
+	public int doLightUpdates(int i, boolean bl, boolean bl2) {
 		if (this.blockLightProvider != null && this.skyLightProvider != null) {
-			int i = maxUpdateCount / 2;
-			int j = this.blockLightProvider.doLightUpdates(i, doSkylight, skipEdgeLightPropagation);
-			int k = maxUpdateCount - i + j;
-			int l = this.skyLightProvider.doLightUpdates(k, doSkylight, skipEdgeLightPropagation);
-			return j == 0 && l > 0 ? this.blockLightProvider.doLightUpdates(l, doSkylight, skipEdgeLightPropagation) : l;
+			int j = i / 2;
+			int k = this.blockLightProvider.doLightUpdates(j, bl, bl2);
+			int l = i - j + k;
+			int m = this.skyLightProvider.doLightUpdates(l, bl, bl2);
+			return k == 0 && m > 0 ? this.blockLightProvider.doLightUpdates(m, bl, bl2) : m;
 		} else if (this.blockLightProvider != null) {
-			return this.blockLightProvider.doLightUpdates(maxUpdateCount, doSkylight, skipEdgeLightPropagation);
+			return this.blockLightProvider.doLightUpdates(i, bl, bl2);
 		} else {
-			return this.skyLightProvider != null ? this.skyLightProvider.doLightUpdates(maxUpdateCount, doSkylight, skipEdgeLightPropagation) : maxUpdateCount;
+			return this.skyLightProvider != null ? this.skyLightProvider.doLightUpdates(i, bl, bl2) : i;
 		}
 	}
 
 	@Override
-	public void updateSectionStatus(ChunkSectionPos pos, boolean status) {
+	public void updateSectionStatus(ChunkSectionPos chunkSectionPos, boolean bl) {
 		if (this.blockLightProvider != null) {
-			this.blockLightProvider.updateSectionStatus(pos, status);
+			this.blockLightProvider.updateSectionStatus(chunkSectionPos, bl);
 		}
 
 		if (this.skyLightProvider != null) {
-			this.skyLightProvider.updateSectionStatus(pos, status);
+			this.skyLightProvider.updateSectionStatus(chunkSectionPos, bl);
 		}
 	}
 
-	public void setLightEnabled(ChunkPos pos, boolean lightEnabled) {
+	public void suppressLight(ChunkPos chunkPos, boolean bl) {
 		if (this.blockLightProvider != null) {
-			this.blockLightProvider.method_15512(pos, lightEnabled);
+			this.blockLightProvider.method_15512(chunkPos, bl);
 		}
 
 		if (this.skyLightProvider != null) {
-			this.skyLightProvider.method_15512(pos, lightEnabled);
+			this.skyLightProvider.method_15512(chunkPos, bl);
 		}
 	}
 
@@ -100,10 +100,10 @@ public class LightingProvider implements LightingView {
 	public void queueData(LightType lightType, ChunkSectionPos chunkSectionPos, @Nullable ChunkNibbleArray chunkNibbleArray) {
 		if (lightType == LightType.BLOCK) {
 			if (this.blockLightProvider != null) {
-				this.blockLightProvider.setLightArray(chunkSectionPos.asLong(), chunkNibbleArray);
+				this.blockLightProvider.setSection(chunkSectionPos.asLong(), chunkNibbleArray);
 			}
 		} else if (this.skyLightProvider != null) {
-			this.skyLightProvider.setLightArray(chunkSectionPos.asLong(), chunkNibbleArray);
+			this.skyLightProvider.setSection(chunkSectionPos.asLong(), chunkNibbleArray);
 		}
 	}
 

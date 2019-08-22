@@ -16,19 +16,19 @@ public class ShulkerBulletEntityModel<T extends Entity> extends EntityModel<T> {
 		this.field_3556.setTextureOffset(0, 0).addCuboid(-4.0F, -4.0F, -1.0F, 8, 8, 2, 0.0F);
 		this.field_3556.setTextureOffset(0, 10).addCuboid(-1.0F, -4.0F, -4.0F, 2, 8, 8, 0.0F);
 		this.field_3556.setTextureOffset(20, 0).addCuboid(-4.0F, -1.0F, -4.0F, 8, 2, 8, 0.0F);
-		this.field_3556.setPivot(0.0F, 0.0F, 0.0F);
+		this.field_3556.setRotationPoint(0.0F, 0.0F, 0.0F);
 	}
 
 	@Override
-	public void render(T entity, float limbAngle, float limbDistance, float age, float headYaw, float headPitch, float scale) {
-		this.setAngles(entity, limbAngle, limbDistance, age, headYaw, headPitch, scale);
-		this.field_3556.render(scale);
+	public void render(T entity, float f, float g, float h, float i, float j, float k) {
+		this.setAngles(entity, f, g, h, i, j, k);
+		this.field_3556.render(k);
 	}
 
 	@Override
-	public void setAngles(T entity, float limbAngle, float limbDistance, float age, float headYaw, float headPitch, float scale) {
-		super.setAngles(entity, limbAngle, limbDistance, age, headYaw, headPitch, scale);
-		this.field_3556.yaw = headYaw * (float) (Math.PI / 180.0);
-		this.field_3556.pitch = headPitch * (float) (Math.PI / 180.0);
+	public void setAngles(T entity, float f, float g, float h, float i, float j, float k) {
+		super.setAngles(entity, f, g, h, i, j, k);
+		this.field_3556.yaw = i * (float) (Math.PI / 180.0);
+		this.field_3556.pitch = j * (float) (Math.PI / 180.0);
 	}
 }

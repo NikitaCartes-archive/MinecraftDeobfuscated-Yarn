@@ -10,16 +10,16 @@ import net.minecraft.world.IWorld;
 
 public interface Waterloggable extends FluidDrainable, FluidFillable {
 	@Override
-	default boolean canFillWithFluid(BlockView view, BlockPos pos, BlockState state, Fluid fluid) {
-		return !(Boolean)state.get(Properties.WATERLOGGED) && fluid == Fluids.WATER;
+	default boolean canFillWithFluid(BlockView blockView, BlockPos blockPos, BlockState blockState, Fluid fluid) {
+		return !(Boolean)blockState.get(Properties.WATERLOGGED) && fluid == Fluids.WATER;
 	}
 
 	@Override
-	default boolean tryFillWithFluid(IWorld world, BlockPos pos, BlockState state, FluidState fluidState) {
-		if (!(Boolean)state.get(Properties.WATERLOGGED) && fluidState.getFluid() == Fluids.WATER) {
-			if (!world.isClient()) {
-				world.setBlockState(pos, state.with(Properties.WATERLOGGED, Boolean.valueOf(true)), 3);
-				world.getFluidTickScheduler().schedule(pos, fluidState.getFluid(), fluidState.getFluid().getTickRate(world));
+	default boolean tryFillWithFluid(IWorld iWorld, BlockPos blockPos, BlockState blockState, FluidState fluidState) {
+		if (!(Boolean)blockState.get(Properties.WATERLOGGED) && fluidState.getFluid() == Fluids.WATER) {
+			if (!iWorld.isClient()) {
+				iWorld.setBlockState(blockPos, blockState.with(Properties.WATERLOGGED, Boolean.valueOf(true)), 3);
+				iWorld.getFluidTickScheduler().schedule(blockPos, fluidState.getFluid(), fluidState.getFluid().getTickRate(iWorld));
 			}
 
 			return true;
@@ -29,9 +29,9 @@ public interface Waterloggable extends FluidDrainable, FluidFillable {
 	}
 
 	@Override
-	default Fluid tryDrainFluid(IWorld world, BlockPos pos, BlockState state) {
-		if ((Boolean)state.get(Properties.WATERLOGGED)) {
-			world.setBlockState(pos, state.with(Properties.WATERLOGGED, Boolean.valueOf(false)), 3);
+	default Fluid tryDrainFluid(IWorld iWorld, BlockPos blockPos, BlockState blockState) {
+		if ((Boolean)blockState.get(Properties.WATERLOGGED)) {
+			iWorld.setBlockState(blockPos, blockState.with(Properties.WATERLOGGED, Boolean.valueOf(false)), 3);
 			return Fluids.WATER;
 		} else {
 			return Fluids.EMPTY;

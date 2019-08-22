@@ -12,7 +12,7 @@ public class EmeraldOreDecorator extends SimpleDecorator<NopeDecoratorConfig> {
 		super(function);
 	}
 
-	public Stream<BlockPos> getPositions(Random random, NopeDecoratorConfig nopeDecoratorConfig, BlockPos blockPos) {
+	public Stream<BlockPos> method_15922(Random random, NopeDecoratorConfig nopeDecoratorConfig, BlockPos blockPos) {
 		int i = 3 + random.nextInt(6);
 		return IntStream.range(0, i).mapToObj(ix -> {
 			int j = random.nextInt(16);

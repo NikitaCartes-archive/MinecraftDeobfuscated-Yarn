@@ -21,10 +21,10 @@ public class RealmsPersistence {
 		}
 	}
 
-	public static void writeFile(RealmsPersistence.RealmsPersistenceData data) {
+	public static void writeFile(RealmsPersistence.RealmsPersistenceData realmsPersistenceData) {
 		File file = new File(Realms.getGameDirectoryPath(), "realms_persistence.json");
 		Gson gson = new Gson();
-		String string = gson.toJson(data);
+		String string = gson.toJson(realmsPersistenceData);
 
 		try {
 			FileUtils.writeStringToFile(file, string);
@@ -35,7 +35,7 @@ public class RealmsPersistence {
 	@Environment(EnvType.CLIENT)
 	public static class RealmsPersistenceData {
 		public String newsLink;
-		public boolean hasUnreadNews = false;
+		public boolean hasUnreadNews;
 
 		private RealmsPersistenceData() {
 		}

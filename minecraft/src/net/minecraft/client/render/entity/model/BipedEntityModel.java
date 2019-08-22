@@ -1,6 +1,6 @@
 package net.minecraft.client.render.entity.model;
 
-import com.mojang.blaze3d.platform.GlStateManager;
+import com.mojang.blaze3d.systems.RenderSystem;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.model.ModelPart;
@@ -13,8 +13,8 @@ import net.minecraft.util.math.MathHelper;
 @Environment(EnvType.CLIENT)
 public class BipedEntityModel<T extends LivingEntity> extends EntityModel<T> implements ModelWithArms, ModelWithHead {
 	public ModelPart head;
-	public ModelPart helmet;
-	public ModelPart torso;
+	public ModelPart headwear;
+	public ModelPart body;
 	public ModelPart rightArm;
 	public ModelPart leftArm;
 	public ModelPart rightLeg;
@@ -23,7 +23,7 @@ public class BipedEntityModel<T extends LivingEntity> extends EntityModel<T> imp
 	public BipedEntityModel.ArmPose rightArmPose = BipedEntityModel.ArmPose.EMPTY;
 	public boolean isSneaking;
 	public float field_3396;
-	private float field_3393;
+	private float itemUsedTime;
 
 	public BipedEntityModel() {
 		this(0.0F);
@@ -33,77 +33,77 @@ public class BipedEntityModel<T extends LivingEntity> extends EntityModel<T> imp
 		this(f, 0.0F, 64, 32);
 	}
 
-	public BipedEntityModel(float scale, float f, int textureWidth, int i) {
-		this.textureWidth = textureWidth;
-		this.textureHeight = i;
+	public BipedEntityModel(float f, float g, int i, int j) {
+		this.textureWidth = i;
+		this.textureHeight = j;
 		this.head = new ModelPart(this, 0, 0);
-		this.head.addCuboid(-4.0F, -8.0F, -4.0F, 8, 8, 8, scale);
-		this.head.setPivot(0.0F, 0.0F + f, 0.0F);
-		this.helmet = new ModelPart(this, 32, 0);
-		this.helmet.addCuboid(-4.0F, -8.0F, -4.0F, 8, 8, 8, scale + 0.5F);
-		this.helmet.setPivot(0.0F, 0.0F + f, 0.0F);
-		this.torso = new ModelPart(this, 16, 16);
-		this.torso.addCuboid(-4.0F, 0.0F, -2.0F, 8, 12, 4, scale);
-		this.torso.setPivot(0.0F, 0.0F + f, 0.0F);
+		this.head.addCuboid(-4.0F, -8.0F, -4.0F, 8, 8, 8, f);
+		this.head.setRotationPoint(0.0F, 0.0F + g, 0.0F);
+		this.headwear = new ModelPart(this, 32, 0);
+		this.headwear.addCuboid(-4.0F, -8.0F, -4.0F, 8, 8, 8, f + 0.5F);
+		this.headwear.setRotationPoint(0.0F, 0.0F + g, 0.0F);
+		this.body = new ModelPart(this, 16, 16);
+		this.body.addCuboid(-4.0F, 0.0F, -2.0F, 8, 12, 4, f);
+		this.body.setRotationPoint(0.0F, 0.0F + g, 0.0F);
 		this.rightArm = new ModelPart(this, 40, 16);
-		this.rightArm.addCuboid(-3.0F, -2.0F, -2.0F, 4, 12, 4, scale);
-		this.rightArm.setPivot(-5.0F, 2.0F + f, 0.0F);
+		this.rightArm.addCuboid(-3.0F, -2.0F, -2.0F, 4, 12, 4, f);
+		this.rightArm.setRotationPoint(-5.0F, 2.0F + g, 0.0F);
 		this.leftArm = new ModelPart(this, 40, 16);
 		this.leftArm.mirror = true;
-		this.leftArm.addCuboid(-1.0F, -2.0F, -2.0F, 4, 12, 4, scale);
-		this.leftArm.setPivot(5.0F, 2.0F + f, 0.0F);
+		this.leftArm.addCuboid(-1.0F, -2.0F, -2.0F, 4, 12, 4, f);
+		this.leftArm.setRotationPoint(5.0F, 2.0F + g, 0.0F);
 		this.rightLeg = new ModelPart(this, 0, 16);
-		this.rightLeg.addCuboid(-2.0F, 0.0F, -2.0F, 4, 12, 4, scale);
-		this.rightLeg.setPivot(-1.9F, 12.0F + f, 0.0F);
+		this.rightLeg.addCuboid(-2.0F, 0.0F, -2.0F, 4, 12, 4, f);
+		this.rightLeg.setRotationPoint(-1.9F, 12.0F + g, 0.0F);
 		this.leftLeg = new ModelPart(this, 0, 16);
 		this.leftLeg.mirror = true;
-		this.leftLeg.addCuboid(-2.0F, 0.0F, -2.0F, 4, 12, 4, scale);
-		this.leftLeg.setPivot(1.9F, 12.0F + f, 0.0F);
+		this.leftLeg.addCuboid(-2.0F, 0.0F, -2.0F, 4, 12, 4, f);
+		this.leftLeg.setRotationPoint(1.9F, 12.0F + g, 0.0F);
 	}
 
-	public void render(T livingEntity, float f, float g, float h, float i, float j, float k) {
-		this.setAngles(livingEntity, f, g, h, i, j, k);
-		GlStateManager.pushMatrix();
-		if (this.child) {
+	public void method_17088(T livingEntity, float f, float g, float h, float i, float j, float k) {
+		this.method_17087(livingEntity, f, g, h, i, j, k);
+		RenderSystem.pushMatrix();
+		if (this.isChild) {
 			float l = 2.0F;
-			GlStateManager.scalef(0.75F, 0.75F, 0.75F);
-			GlStateManager.translatef(0.0F, 16.0F * k, 0.0F);
+			RenderSystem.scalef(0.75F, 0.75F, 0.75F);
+			RenderSystem.translatef(0.0F, 16.0F * k, 0.0F);
 			this.head.render(k);
-			GlStateManager.popMatrix();
-			GlStateManager.pushMatrix();
-			GlStateManager.scalef(0.5F, 0.5F, 0.5F);
-			GlStateManager.translatef(0.0F, 24.0F * k, 0.0F);
-			this.torso.render(k);
+			RenderSystem.popMatrix();
+			RenderSystem.pushMatrix();
+			RenderSystem.scalef(0.5F, 0.5F, 0.5F);
+			RenderSystem.translatef(0.0F, 24.0F * k, 0.0F);
+			this.body.render(k);
 			this.rightArm.render(k);
 			this.leftArm.render(k);
 			this.rightLeg.render(k);
 			this.leftLeg.render(k);
-			this.helmet.render(k);
+			this.headwear.render(k);
 		} else {
 			if (livingEntity.isInSneakingPose()) {
-				GlStateManager.translatef(0.0F, 0.2F, 0.0F);
+				RenderSystem.translatef(0.0F, 0.2F, 0.0F);
 			}
 
 			this.head.render(k);
-			this.torso.render(k);
+			this.body.render(k);
 			this.rightArm.render(k);
 			this.leftArm.render(k);
 			this.rightLeg.render(k);
 			this.leftLeg.render(k);
-			this.helmet.render(k);
+			this.headwear.render(k);
 		}
 
-		GlStateManager.popMatrix();
+		RenderSystem.popMatrix();
 	}
 
-	public void animateModel(T livingEntity, float f, float g, float h) {
-		this.field_3396 = livingEntity.method_6024(h);
-		this.field_3393 = (float)livingEntity.getItemUseTime();
+	public void method_17086(T livingEntity, float f, float g, float h) {
+		this.field_3396 = livingEntity.getLeaningPitch(h);
+		this.itemUsedTime = (float)livingEntity.getItemUseTime();
 		super.animateModel(livingEntity, f, g, h);
 	}
 
-	public void setAngles(T livingEntity, float f, float g, float h, float i, float j, float k) {
-		boolean bl = livingEntity.method_6003() > 4;
+	public void method_17087(T livingEntity, float f, float g, float h, float i, float j, float k) {
+		boolean bl = livingEntity.getRoll() > 4;
 		boolean bl2 = livingEntity.isInSwimmingPose();
 		this.head.yaw = i * (float) (Math.PI / 180.0);
 		if (bl) {
@@ -118,11 +118,11 @@ public class BipedEntityModel<T extends LivingEntity> extends EntityModel<T> imp
 			this.head.pitch = j * (float) (Math.PI / 180.0);
 		}
 
-		this.torso.yaw = 0.0F;
-		this.rightArm.pivotZ = 0.0F;
-		this.rightArm.pivotX = -5.0F;
-		this.leftArm.pivotZ = 0.0F;
-		this.leftArm.pivotX = 5.0F;
+		this.body.yaw = 0.0F;
+		this.rightArm.rotationPointZ = 0.0F;
+		this.rightArm.rotationPointX = -5.0F;
+		this.leftArm.rotationPointZ = 0.0F;
+		this.leftArm.rotationPointX = 5.0F;
 		float l = 1.0F;
 		if (bl) {
 			l = (float)livingEntity.getVelocity().lengthSquared();
@@ -144,7 +144,7 @@ public class BipedEntityModel<T extends LivingEntity> extends EntityModel<T> imp
 		this.leftLeg.yaw = 0.0F;
 		this.rightLeg.roll = 0.0F;
 		this.leftLeg.roll = 0.0F;
-		if (this.riding) {
+		if (this.isRiding) {
 			this.rightArm.pitch += (float) (-Math.PI / 5);
 			this.leftArm.pitch += (float) (-Math.PI / 5);
 			this.rightLeg.pitch = -1.4137167F;
@@ -199,18 +199,18 @@ public class BipedEntityModel<T extends LivingEntity> extends EntityModel<T> imp
 			Arm arm = this.getPreferredArm(livingEntity);
 			ModelPart modelPart = this.getArm(arm);
 			float m = this.handSwingProgress;
-			this.torso.yaw = MathHelper.sin(MathHelper.sqrt(m) * (float) (Math.PI * 2)) * 0.2F;
+			this.body.yaw = MathHelper.sin(MathHelper.sqrt(m) * (float) (Math.PI * 2)) * 0.2F;
 			if (arm == Arm.LEFT) {
-				this.torso.yaw *= -1.0F;
+				this.body.yaw *= -1.0F;
 			}
 
-			this.rightArm.pivotZ = MathHelper.sin(this.torso.yaw) * 5.0F;
-			this.rightArm.pivotX = -MathHelper.cos(this.torso.yaw) * 5.0F;
-			this.leftArm.pivotZ = -MathHelper.sin(this.torso.yaw) * 5.0F;
-			this.leftArm.pivotX = MathHelper.cos(this.torso.yaw) * 5.0F;
-			this.rightArm.yaw = this.rightArm.yaw + this.torso.yaw;
-			this.leftArm.yaw = this.leftArm.yaw + this.torso.yaw;
-			this.leftArm.pitch = this.leftArm.pitch + this.torso.yaw;
+			this.rightArm.rotationPointZ = MathHelper.sin(this.body.yaw) * 5.0F;
+			this.rightArm.rotationPointX = -MathHelper.cos(this.body.yaw) * 5.0F;
+			this.leftArm.rotationPointZ = -MathHelper.sin(this.body.yaw) * 5.0F;
+			this.leftArm.rotationPointX = MathHelper.cos(this.body.yaw) * 5.0F;
+			this.rightArm.yaw = this.rightArm.yaw + this.body.yaw;
+			this.leftArm.yaw = this.leftArm.yaw + this.body.yaw;
+			this.leftArm.pitch = this.leftArm.pitch + this.body.yaw;
 			m = 1.0F - this.handSwingProgress;
 			m *= m;
 			m *= m;
@@ -218,26 +218,26 @@ public class BipedEntityModel<T extends LivingEntity> extends EntityModel<T> imp
 			float n = MathHelper.sin(m * (float) Math.PI);
 			float o = MathHelper.sin(this.handSwingProgress * (float) Math.PI) * -(this.head.pitch - 0.7F) * 0.75F;
 			modelPart.pitch = (float)((double)modelPart.pitch - ((double)n * 1.2 + (double)o));
-			modelPart.yaw = modelPart.yaw + this.torso.yaw * 2.0F;
+			modelPart.yaw = modelPart.yaw + this.body.yaw * 2.0F;
 			modelPart.roll = modelPart.roll + MathHelper.sin(this.handSwingProgress * (float) Math.PI) * -0.4F;
 		}
 
 		if (this.isSneaking) {
-			this.torso.pitch = 0.5F;
+			this.body.pitch = 0.5F;
 			this.rightArm.pitch += 0.4F;
 			this.leftArm.pitch += 0.4F;
-			this.rightLeg.pivotZ = 4.0F;
-			this.leftLeg.pivotZ = 4.0F;
-			this.rightLeg.pivotY = 9.0F;
-			this.leftLeg.pivotY = 9.0F;
-			this.head.pivotY = 1.0F;
+			this.rightLeg.rotationPointZ = 4.0F;
+			this.leftLeg.rotationPointZ = 4.0F;
+			this.rightLeg.rotationPointY = 9.0F;
+			this.leftLeg.rotationPointY = 9.0F;
+			this.head.rotationPointY = 1.0F;
 		} else {
-			this.torso.pitch = 0.0F;
-			this.rightLeg.pivotZ = 0.1F;
-			this.leftLeg.pivotZ = 0.1F;
-			this.rightLeg.pivotY = 12.0F;
-			this.leftLeg.pivotY = 12.0F;
-			this.head.pivotY = 0.0F;
+			this.body.pitch = 0.0F;
+			this.rightLeg.rotationPointZ = 0.1F;
+			this.leftLeg.rotationPointZ = 0.1F;
+			this.rightLeg.rotationPointY = 12.0F;
+			this.leftLeg.rotationPointY = 12.0F;
+			this.head.rotationPointY = 0.0F;
 		}
 
 		this.rightArm.roll = this.rightArm.roll + MathHelper.cos(h * 0.09F) * 0.05F + 0.05F;
@@ -263,14 +263,14 @@ public class BipedEntityModel<T extends LivingEntity> extends EntityModel<T> imp
 			this.rightArm.yaw = -0.8F;
 			this.rightArm.pitch = -0.97079635F;
 			this.leftArm.pitch = -0.97079635F;
-			float q = MathHelper.clamp(this.field_3393, 0.0F, p);
+			float q = MathHelper.clamp(this.itemUsedTime, 0.0F, p);
 			this.leftArm.yaw = MathHelper.lerp(q / p, 0.4F, 0.85F);
 			this.leftArm.pitch = MathHelper.lerp(q / p, this.leftArm.pitch, (float) (-Math.PI / 2));
 		} else if (this.leftArmPose == BipedEntityModel.ArmPose.CROSSBOW_CHARGE) {
 			this.leftArm.yaw = 0.8F;
 			this.rightArm.pitch = -0.97079635F;
 			this.leftArm.pitch = -0.97079635F;
-			float q = MathHelper.clamp(this.field_3393, 0.0F, p);
+			float q = MathHelper.clamp(this.itemUsedTime, 0.0F, p);
 			this.rightArm.yaw = MathHelper.lerp(q / p, -0.4F, -0.85F);
 			this.rightArm.pitch = MathHelper.lerp(q / p, this.rightArm.pitch, (float) (-Math.PI / 2));
 		}
@@ -321,7 +321,7 @@ public class BipedEntityModel<T extends LivingEntity> extends EntityModel<T> imp
 			this.rightLeg.pitch = MathHelper.lerp(this.field_3396, this.rightLeg.pitch, 0.3F * MathHelper.cos(f * 0.33333334F));
 		}
 
-		this.helmet.copyPositionAndRotation(this.head);
+		this.headwear.copyRotation(this.head);
 	}
 
 	protected float method_2804(float f, float g, float h) {
@@ -348,14 +348,14 @@ public class BipedEntityModel<T extends LivingEntity> extends EntityModel<T> imp
 		bipedEntityModel.isSneaking = this.isSneaking;
 	}
 
-	public void setVisible(boolean visible) {
-		this.head.visible = visible;
-		this.helmet.visible = visible;
-		this.torso.visible = visible;
-		this.rightArm.visible = visible;
-		this.leftArm.visible = visible;
-		this.rightLeg.visible = visible;
-		this.leftLeg.visible = visible;
+	public void setVisible(boolean bl) {
+		this.head.visible = bl;
+		this.headwear.visible = bl;
+		this.body.visible = bl;
+		this.rightArm.visible = bl;
+		this.leftArm.visible = bl;
+		this.rightLeg.visible = bl;
+		this.leftLeg.visible = bl;
 	}
 
 	@Override
@@ -372,9 +372,9 @@ public class BipedEntityModel<T extends LivingEntity> extends EntityModel<T> imp
 		return this.head;
 	}
 
-	protected Arm getPreferredArm(T entity) {
-		Arm arm = entity.getMainArm();
-		return entity.preferredHand == Hand.MAIN_HAND ? arm : arm.getOpposite();
+	protected Arm getPreferredArm(T livingEntity) {
+		Arm arm = livingEntity.getMainArm();
+		return livingEntity.preferredHand == Hand.MAIN_HAND ? arm : arm.getOpposite();
 	}
 
 	@Environment(EnvType.CLIENT)

@@ -25,14 +25,14 @@ import java.util.zip.ZipOutputStream;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.datafixer.DataFixTypes;
+import net.minecraft.datafixers.DataFixTypes;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.NbtHelper;
 import net.minecraft.nbt.NbtIo;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.FileNameUtil;
 import net.minecraft.util.ProgressListener;
+import net.minecraft.util.TagHelper;
 import net.minecraft.world.WorldSaveHandler;
 import net.minecraft.world.level.LevelProperties;
 import org.apache.commons.lang3.StringUtils;
@@ -58,17 +58,17 @@ public class LevelStorage {
 	private final Path backupsDirectory;
 	private final DataFixer dataFixer;
 
-	public LevelStorage(Path savesDirectory, Path backupsDirectory, DataFixer dataFixer) {
+	public LevelStorage(Path path, Path path2, DataFixer dataFixer) {
 		this.dataFixer = dataFixer;
 
 		try {
-			Files.createDirectories(Files.exists(savesDirectory, new LinkOption[0]) ? savesDirectory.toRealPath() : savesDirectory);
+			Files.createDirectories(Files.exists(path, new LinkOption[0]) ? path.toRealPath() : path);
 		} catch (IOException var5) {
 			throw new RuntimeException(var5);
 		}
 
-		this.savesDirectory = savesDirectory;
-		this.backupsDirectory = backupsDirectory;
+		this.savesDirectory = path;
+		this.backupsDirectory = path2;
 	}
 
 	@Environment(EnvType.CLIENT)
@@ -109,21 +109,21 @@ public class LevelStorage {
 		return 19133;
 	}
 
-	public WorldSaveHandler createSaveHandler(String name, @Nullable MinecraftServer server) {
-		return createSaveHandler(this.savesDirectory, this.dataFixer, name, server);
+	public WorldSaveHandler createSaveHandler(String string, @Nullable MinecraftServer minecraftServer) {
+		return createSaveHandler(this.savesDirectory, this.dataFixer, string, minecraftServer);
 	}
 
-	protected static WorldSaveHandler createSaveHandler(Path savesDirectory, DataFixer dataFixer, String name, @Nullable MinecraftServer server) {
-		return new WorldSaveHandler(savesDirectory.toFile(), name, server, dataFixer);
+	protected static WorldSaveHandler createSaveHandler(Path path, DataFixer dataFixer, String string, @Nullable MinecraftServer minecraftServer) {
+		return new WorldSaveHandler(path.toFile(), string, minecraftServer, dataFixer);
 	}
 
-	public boolean requiresConversion(String name) {
-		LevelProperties levelProperties = this.getLevelProperties(name);
+	public boolean requiresConversion(String string) {
+		LevelProperties levelProperties = this.getLevelProperties(string);
 		return levelProperties != null && levelProperties.getVersion() != this.getCurrentVersion();
 	}
 
-	public boolean convertLevel(String name, ProgressListener progressListener) {
-		return AnvilLevelStorage.convertLevel(this.savesDirectory, this.dataFixer, name, progressListener);
+	public boolean convertLevel(String string, ProgressListener progressListener) {
+		return AnvilLevelStorage.convertLevel(this.savesDirectory, this.dataFixer, string, progressListener);
 	}
 
 	@Nullable
@@ -132,8 +132,8 @@ public class LevelStorage {
 	}
 
 	@Nullable
-	protected static LevelProperties getLevelProperties(Path savesDirectory, DataFixer dataFixer, String name) {
-		File file = new File(savesDirectory.toFile(), name);
+	protected static LevelProperties getLevelProperties(Path path, DataFixer dataFixer, String string) {
+		File file = new File(path.toFile(), string);
 		if (!file.exists()) {
 			return null;
 		} else {
@@ -155,10 +155,10 @@ public class LevelStorage {
 		try {
 			CompoundTag compoundTag = NbtIo.readCompressed(new FileInputStream(file));
 			CompoundTag compoundTag2 = compoundTag.getCompound("Data");
-			CompoundTag compoundTag3 = compoundTag2.contains("Player", 10) ? compoundTag2.getCompound("Player") : null;
+			CompoundTag compoundTag3 = compoundTag2.containsKey("Player", 10) ? compoundTag2.getCompound("Player") : null;
 			compoundTag2.remove("Player");
-			int i = compoundTag2.contains("DataVersion", 99) ? compoundTag2.getInt("DataVersion") : -1;
-			return new LevelProperties(NbtHelper.update(dataFixer, DataFixTypes.LEVEL, compoundTag2, i), dataFixer, i, compoundTag3);
+			int i = compoundTag2.containsKey("DataVersion", 99) ? compoundTag2.getInt("DataVersion") : -1;
+			return new LevelProperties(TagHelper.update(dataFixer, DataFixTypes.LEVEL, compoundTag2, i), dataFixer, i, compoundTag3);
 		} catch (Exception var6) {
 			LOGGER.error("Exception reading {}", file, var6);
 			return null;
@@ -166,15 +166,15 @@ public class LevelStorage {
 	}
 
 	@Environment(EnvType.CLIENT)
-	public void renameLevel(String name, String newName) {
-		File file = new File(this.savesDirectory.toFile(), name);
+	public void renameLevel(String string, String string2) {
+		File file = new File(this.savesDirectory.toFile(), string);
 		if (file.exists()) {
 			File file2 = new File(file, "level.dat");
 			if (file2.exists()) {
 				try {
 					CompoundTag compoundTag = NbtIo.readCompressed(new FileInputStream(file2));
 					CompoundTag compoundTag2 = compoundTag.getCompound("Data");
-					compoundTag2.putString("LevelName", newName);
+					compoundTag2.putString("LevelName", string2);
 					NbtIo.writeCompressed(compoundTag, new FileOutputStream(file2));
 				} catch (Exception var7) {
 					var7.printStackTrace();
@@ -196,12 +196,12 @@ public class LevelStorage {
 	}
 
 	@Environment(EnvType.CLIENT)
-	public boolean deleteLevel(String name) {
-		File file = new File(this.savesDirectory.toFile(), name);
+	public boolean deleteLevel(String string) {
+		File file = new File(this.savesDirectory.toFile(), string);
 		if (!file.exists()) {
 			return true;
 		} else {
-			LOGGER.info("Deleting level {}", name);
+			LOGGER.info("Deleting level {}", string);
 
 			for (int i = 1; i <= 5; i++) {
 				LOGGER.info("Attempt {}...", i);
@@ -241,8 +241,8 @@ public class LevelStorage {
 	}
 
 	@Environment(EnvType.CLIENT)
-	public boolean levelExists(String name) {
-		return Files.isDirectory(this.savesDirectory.resolve(name), new LinkOption[0]);
+	public boolean levelExists(String string) {
+		return Files.isDirectory(this.savesDirectory.resolve(string), new LinkOption[0]);
 	}
 
 	@Environment(EnvType.CLIENT)
@@ -265,9 +265,9 @@ public class LevelStorage {
 	}
 
 	@Environment(EnvType.CLIENT)
-	public long backupLevel(String name) throws IOException {
-		final Path path = this.resolvePath(name);
-		String string = LocalDateTime.now().format(TIME_FORMATTER) + "_" + name;
+	public long backupLevel(String string) throws IOException {
+		final Path path = this.resolvePath(string);
+		String string2 = LocalDateTime.now().format(TIME_FORMATTER) + "_" + string;
 		Path path2 = this.getBackupsDirectory();
 
 		try {
@@ -276,14 +276,14 @@ public class LevelStorage {
 			throw new RuntimeException(var18);
 		}
 
-		Path path3 = path2.resolve(FileNameUtil.getNextUniqueName(path2, string, ".zip"));
+		Path path3 = path2.resolve(FileNameUtil.getNextUniqueName(path2, string2, ".zip"));
 		final ZipOutputStream zipOutputStream = new ZipOutputStream(new BufferedOutputStream(Files.newOutputStream(path3)));
 		Throwable var7 = null;
 
 		try {
-			final Path path4 = Paths.get(name);
+			final Path path4 = Paths.get(string);
 			Files.walkFileTree(path, new SimpleFileVisitor<Path>() {
-				public FileVisitResult visitFile(Path path, BasicFileAttributes basicFileAttributes) throws IOException {
+				public FileVisitResult method_246(Path path, BasicFileAttributes basicFileAttributes) throws IOException {
 					String string = path4.resolve(path.relativize(path)).toString().replace('\\', '/');
 					ZipEntry zipEntry = new ZipEntry(string);
 					zipOutputStream.putNextEntry(zipEntry);

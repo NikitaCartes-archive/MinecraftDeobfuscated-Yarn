@@ -24,7 +24,7 @@ public class TrackIronGolemTargetGoal extends TrackTargetGoal {
 	public boolean canStart() {
 		Box box = this.golem.getBoundingBox().expand(10.0, 8.0, 10.0);
 		List<LivingEntity> list = this.golem.world.getTargets(VillagerEntity.class, this.field_19340, this.golem, box);
-		List<PlayerEntity> list2 = this.golem.world.getPlayers(this.field_19340, this.golem, box);
+		List<PlayerEntity> list2 = this.golem.world.getPlayersInBox(this.field_19340, this.golem, box);
 
 		for (LivingEntity livingEntity : list) {
 			VillagerEntity villagerEntity = (VillagerEntity)livingEntity;

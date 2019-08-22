@@ -23,11 +23,11 @@ public class BoneMealItem extends Item {
 	}
 
 	@Override
-	public ActionResult useOnBlock(ItemUsageContext context) {
-		World world = context.getWorld();
-		BlockPos blockPos = context.getBlockPos();
-		BlockPos blockPos2 = blockPos.offset(context.getSide());
-		if (useOnFertilizable(context.getStack(), world, blockPos)) {
+	public ActionResult useOnBlock(ItemUsageContext itemUsageContext) {
+		World world = itemUsageContext.getWorld();
+		BlockPos blockPos = itemUsageContext.getBlockPos();
+		BlockPos blockPos2 = blockPos.offset(itemUsageContext.getSide());
+		if (useOnFertilizable(itemUsageContext.getStack(), world, blockPos)) {
 			if (!world.isClient) {
 				world.playLevelEvent(2005, blockPos, 0);
 			}
@@ -35,8 +35,8 @@ public class BoneMealItem extends Item {
 			return ActionResult.SUCCESS;
 		} else {
 			BlockState blockState = world.getBlockState(blockPos);
-			boolean bl = blockState.isSideSolidFullSquare(world, blockPos, context.getSide());
-			if (bl && useOnGround(context.getStack(), world, blockPos2, context.getSide())) {
+			boolean bl = blockState.isSideSolidFullSquare(world, blockPos, itemUsageContext.getSide());
+			if (bl && useOnGround(itemUsageContext.getStack(), world, blockPos2, itemUsageContext.getSide())) {
 				if (!world.isClient) {
 					world.playLevelEvent(2005, blockPos2, 0);
 				}
@@ -48,17 +48,17 @@ public class BoneMealItem extends Item {
 		}
 	}
 
-	public static boolean useOnFertilizable(ItemStack stack, World world, BlockPos pos) {
-		BlockState blockState = world.getBlockState(pos);
+	public static boolean useOnFertilizable(ItemStack itemStack, World world, BlockPos blockPos) {
+		BlockState blockState = world.getBlockState(blockPos);
 		if (blockState.getBlock() instanceof Fertilizable) {
 			Fertilizable fertilizable = (Fertilizable)blockState.getBlock();
-			if (fertilizable.isFertilizable(world, pos, blockState, world.isClient)) {
+			if (fertilizable.isFertilizable(world, blockPos, blockState, world.isClient)) {
 				if (!world.isClient) {
-					if (fertilizable.canGrow(world, world.random, pos, blockState)) {
-						fertilizable.grow(world, world.random, pos, blockState);
+					if (fertilizable.canGrow(world, world.random, blockPos, blockState)) {
+						fertilizable.grow(world, world.random, blockPos, blockState);
 					}
 
-					stack.decrement(1);
+					itemStack.decrement(1);
 				}
 
 				return true;
@@ -68,7 +68,7 @@ public class BoneMealItem extends Item {
 		return false;
 	}
 
-	public static boolean useOnGround(ItemStack stack, World world, BlockPos blockPos, @Nullable Direction facing) {
+	public static boolean useOnGround(ItemStack itemStack, World world, BlockPos blockPos, @Nullable Direction direction) {
 		if (world.getBlockState(blockPos).getBlock() == Blocks.WATER && world.getFluidState(blockPos).getLevel() == 8) {
 			if (!world.isClient) {
 				label79:
@@ -86,8 +86,8 @@ public class BoneMealItem extends Item {
 					}
 
 					if (biome == Biomes.WARM_OCEAN || biome == Biomes.DEEP_WARM_OCEAN) {
-						if (i == 0 && facing != null && facing.getAxis().isHorizontal()) {
-							blockState = BlockTags.WALL_CORALS.getRandom(world.random).getDefaultState().with(DeadCoralWallFanBlock.FACING, facing);
+						if (i == 0 && direction != null && direction.getAxis().isHorizontal()) {
+							blockState = BlockTags.WALL_CORALS.getRandom(world.random).getDefaultState().with(DeadCoralWallFanBlock.FACING, direction);
 						} else if (RANDOM.nextInt(4) == 0) {
 							blockState = BlockTags.UNDERWATER_BONEMEALS.getRandom(RANDOM).getDefaultState();
 						}
@@ -109,7 +109,7 @@ public class BoneMealItem extends Item {
 					}
 				}
 
-				stack.decrement(1);
+				itemStack.decrement(1);
 			}
 
 			return true;
@@ -119,22 +119,22 @@ public class BoneMealItem extends Item {
 	}
 
 	@Environment(EnvType.CLIENT)
-	public static void createParticles(IWorld world, BlockPos pos, int count) {
-		if (count == 0) {
-			count = 15;
+	public static void createParticles(IWorld iWorld, BlockPos blockPos, int i) {
+		if (i == 0) {
+			i = 15;
 		}
 
-		BlockState blockState = world.getBlockState(pos);
+		BlockState blockState = iWorld.getBlockState(blockPos);
 		if (!blockState.isAir()) {
-			for (int i = 0; i < count; i++) {
+			for (int j = 0; j < i; j++) {
 				double d = RANDOM.nextGaussian() * 0.02;
 				double e = RANDOM.nextGaussian() * 0.02;
 				double f = RANDOM.nextGaussian() * 0.02;
-				world.addParticle(
+				iWorld.addParticle(
 					ParticleTypes.HAPPY_VILLAGER,
-					(double)((float)pos.getX() + RANDOM.nextFloat()),
-					(double)pos.getY() + (double)RANDOM.nextFloat() * blockState.getOutlineShape(world, pos).getMaximum(Direction.Axis.Y),
-					(double)((float)pos.getZ() + RANDOM.nextFloat()),
+					(double)((float)blockPos.getX() + RANDOM.nextFloat()),
+					(double)blockPos.getY() + (double)RANDOM.nextFloat() * blockState.getOutlineShape(iWorld, blockPos).getMaximum(Direction.Axis.Y),
+					(double)((float)blockPos.getZ() + RANDOM.nextFloat()),
 					d,
 					e,
 					f

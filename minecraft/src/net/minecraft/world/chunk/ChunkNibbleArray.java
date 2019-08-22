@@ -1,6 +1,7 @@
 package net.minecraft.world.chunk;
 
 import javax.annotation.Nullable;
+import net.minecraft.util.SystemUtil;
 
 public class ChunkNibbleArray {
 	@Nullable
@@ -12,7 +13,7 @@ public class ChunkNibbleArray {
 	public ChunkNibbleArray(byte[] bs) {
 		this.byteArray = bs;
 		if (bs.length != 2048) {
-			throw new IllegalArgumentException("ChunkNibbleArrays should be 2048 bytes not: " + bs.length);
+			throw (IllegalArgumentException)SystemUtil.method_22320(new IllegalArgumentException("ChunkNibbleArrays should be 2048 bytes not: " + bs.length));
 		}
 	}
 
@@ -20,16 +21,16 @@ public class ChunkNibbleArray {
 		this.byteArray = new byte[i];
 	}
 
-	public int get(int x, int y, int z) {
-		return this.get(this.getIndex(x, y, z));
+	public int get(int i, int j, int k) {
+		return this.get(this.getIndex(i, j, k));
 	}
 
-	public void set(int x, int y, int z, int value) {
-		this.set(this.getIndex(x, y, z), value);
+	public void set(int i, int j, int k, int l) {
+		this.set(this.getIndex(i, j, k), l);
 	}
 
-	protected int getIndex(int x, int y, int z) {
-		return y << 8 | z << 4 | x;
+	protected int getIndex(int i, int j, int k) {
+		return j << 8 | k << 4 | i;
 	}
 
 	private int get(int i) {
@@ -41,25 +42,25 @@ public class ChunkNibbleArray {
 		}
 	}
 
-	private void set(int index, int value) {
+	private void set(int i, int j) {
 		if (this.byteArray == null) {
 			this.byteArray = new byte[2048];
 		}
 
-		int i = this.divideByTwo(index);
-		if (this.isEven(index)) {
-			this.byteArray[i] = (byte)(this.byteArray[i] & 240 | value & 15);
+		int k = this.divideByTwo(i);
+		if (this.isEven(i)) {
+			this.byteArray[k] = (byte)(this.byteArray[k] & 240 | j & 15);
 		} else {
-			this.byteArray[i] = (byte)(this.byteArray[i] & 15 | (value & 15) << 4);
+			this.byteArray[k] = (byte)(this.byteArray[k] & 15 | (j & 15) << 4);
 		}
 	}
 
-	private boolean isEven(int n) {
-		return (n & 1) == 0;
+	private boolean isEven(int i) {
+		return (i & 1) == 0;
 	}
 
-	private int divideByTwo(int n) {
-		return n >> 1;
+	private int divideByTwo(int i) {
+		return i >> 1;
 	}
 
 	public byte[] asByteArray() {

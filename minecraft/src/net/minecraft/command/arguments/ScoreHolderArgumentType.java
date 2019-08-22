@@ -43,25 +43,25 @@ public class ScoreHolderArgumentType implements ArgumentType<ScoreHolderArgument
 	);
 	private final boolean multiple;
 
-	public ScoreHolderArgumentType(boolean multiple) {
-		this.multiple = multiple;
+	public ScoreHolderArgumentType(boolean bl) {
+		this.multiple = bl;
 	}
 
-	public static String getScoreHolder(CommandContext<ServerCommandSource> context, String name) throws CommandSyntaxException {
-		return (String)getScoreHolders(context, name).iterator().next();
+	public static String getScoreHolder(CommandContext<ServerCommandSource> commandContext, String string) throws CommandSyntaxException {
+		return (String)getScoreHolders(commandContext, string).iterator().next();
 	}
 
-	public static Collection<String> getScoreHolders(CommandContext<ServerCommandSource> context, String name) throws CommandSyntaxException {
-		return getScoreHolders(context, name, Collections::emptyList);
+	public static Collection<String> getScoreHolders(CommandContext<ServerCommandSource> commandContext, String string) throws CommandSyntaxException {
+		return getScoreHolders(commandContext, string, Collections::emptyList);
 	}
 
-	public static Collection<String> getScoreboardScoreHolders(CommandContext<ServerCommandSource> context, String name) throws CommandSyntaxException {
-		return getScoreHolders(context, name, context.getSource().getMinecraftServer().getScoreboard()::getKnownPlayers);
+	public static Collection<String> getScoreboardScoreHolders(CommandContext<ServerCommandSource> commandContext, String string) throws CommandSyntaxException {
+		return getScoreHolders(commandContext, string, commandContext.getSource().getMinecraftServer().getScoreboard()::getKnownPlayers);
 	}
 
-	public static Collection<String> getScoreHolders(CommandContext<ServerCommandSource> context, String name, Supplier<Collection<String>> players) throws CommandSyntaxException {
-		Collection<String> collection = context.<ScoreHolderArgumentType.ScoreHolder>getArgument(name, ScoreHolderArgumentType.ScoreHolder.class)
-			.getNames(context.getSource(), players);
+	public static Collection<String> getScoreHolders(CommandContext<ServerCommandSource> commandContext, String string, Supplier<Collection<String>> supplier) throws CommandSyntaxException {
+		Collection<String> collection = commandContext.<ScoreHolderArgumentType.ScoreHolder>getArgument(string, ScoreHolderArgumentType.ScoreHolder.class)
+			.getNames(commandContext.getSource(), supplier);
 		if (collection.isEmpty()) {
 			throw EntityArgumentType.ENTITY_NOT_FOUND_EXCEPTION.create();
 		} else {
@@ -77,7 +77,7 @@ public class ScoreHolderArgumentType implements ArgumentType<ScoreHolderArgument
 		return new ScoreHolderArgumentType(true);
 	}
 
-	public ScoreHolderArgumentType.ScoreHolder parse(StringReader stringReader) throws CommandSyntaxException {
+	public ScoreHolderArgumentType.ScoreHolder method_9453(StringReader stringReader) throws CommandSyntaxException {
 		if (stringReader.canRead() && stringReader.peek() == '@') {
 			EntitySelectorReader entitySelectorReader = new EntitySelectorReader(stringReader);
 			EntitySelector entitySelector = entitySelectorReader.read();
@@ -117,7 +117,7 @@ public class ScoreHolderArgumentType implements ArgumentType<ScoreHolderArgument
 
 	@FunctionalInterface
 	public interface ScoreHolder {
-		Collection<String> getNames(ServerCommandSource source, Supplier<Collection<String>> supplier) throws CommandSyntaxException;
+		Collection<String> getNames(ServerCommandSource serverCommandSource, Supplier<Collection<String>> supplier) throws CommandSyntaxException;
 	}
 
 	public static class SelectorScoreHolder implements ScoreHolderArgumentType.ScoreHolder {
@@ -128,8 +128,8 @@ public class ScoreHolderArgumentType implements ArgumentType<ScoreHolderArgument
 		}
 
 		@Override
-		public Collection<String> getNames(ServerCommandSource source, Supplier<Collection<String>> supplier) throws CommandSyntaxException {
-			List<? extends Entity> list = this.selector.getEntities(source);
+		public Collection<String> getNames(ServerCommandSource serverCommandSource, Supplier<Collection<String>> supplier) throws CommandSyntaxException {
+			List<? extends Entity> list = this.selector.getEntities(serverCommandSource);
 			if (list.isEmpty()) {
 				throw EntityArgumentType.ENTITY_NOT_FOUND_EXCEPTION.create();
 			} else {
@@ -145,7 +145,7 @@ public class ScoreHolderArgumentType implements ArgumentType<ScoreHolderArgument
 	}
 
 	public static class Serializer implements ArgumentSerializer<ScoreHolderArgumentType> {
-		public void toPacket(ScoreHolderArgumentType scoreHolderArgumentType, PacketByteBuf packetByteBuf) {
+		public void method_9461(ScoreHolderArgumentType scoreHolderArgumentType, PacketByteBuf packetByteBuf) {
 			byte b = 0;
 			if (scoreHolderArgumentType.multiple) {
 				b = (byte)(b | 1);
@@ -154,13 +154,13 @@ public class ScoreHolderArgumentType implements ArgumentType<ScoreHolderArgument
 			packetByteBuf.writeByte(b);
 		}
 
-		public ScoreHolderArgumentType fromPacket(PacketByteBuf packetByteBuf) {
+		public ScoreHolderArgumentType method_9460(PacketByteBuf packetByteBuf) {
 			byte b = packetByteBuf.readByte();
 			boolean bl = (b & 1) != 0;
 			return new ScoreHolderArgumentType(bl);
 		}
 
-		public void toJson(ScoreHolderArgumentType scoreHolderArgumentType, JsonObject jsonObject) {
+		public void method_9459(ScoreHolderArgumentType scoreHolderArgumentType, JsonObject jsonObject) {
 			jsonObject.addProperty("amount", scoreHolderArgumentType.multiple ? "multiple" : "single");
 		}
 	}

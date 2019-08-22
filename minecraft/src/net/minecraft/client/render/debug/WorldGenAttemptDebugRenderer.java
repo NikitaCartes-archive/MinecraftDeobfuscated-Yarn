@@ -1,10 +1,11 @@
 package net.minecraft.client.render.debug;
 
 import com.google.common.collect.Lists;
-import com.mojang.blaze3d.platform.GlStateManager;
+import com.mojang.blaze3d.systems.RenderSystem;
 import java.util.List;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.class_4493;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.BufferBuilder;
 import net.minecraft.client.render.Camera;
@@ -42,14 +43,14 @@ public class WorldGenAttemptDebugRenderer implements DebugRenderer.Renderer {
 		double d = camera.getPos().x;
 		double e = camera.getPos().y;
 		double f = camera.getPos().z;
-		GlStateManager.pushMatrix();
-		GlStateManager.enableBlend();
-		GlStateManager.blendFuncSeparate(
-			GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO
+		RenderSystem.pushMatrix();
+		RenderSystem.enableBlend();
+		RenderSystem.blendFuncSeparate(
+			class_4493.class_4535.SRC_ALPHA, class_4493.class_4534.ONE_MINUS_SRC_ALPHA, class_4493.class_4535.ONE, class_4493.class_4534.ZERO
 		);
-		GlStateManager.disableTexture();
+		RenderSystem.disableTexture();
 		Tessellator tessellator = Tessellator.getInstance();
-		BufferBuilder bufferBuilder = tessellator.getBuffer();
+		BufferBuilder bufferBuilder = tessellator.getBufferBuilder();
 		bufferBuilder.begin(5, VertexFormats.POSITION_COLOR);
 
 		for (int i = 0; i < this.field_4640.size(); i++) {
@@ -72,7 +73,7 @@ public class WorldGenAttemptDebugRenderer implements DebugRenderer.Renderer {
 		}
 
 		tessellator.draw();
-		GlStateManager.enableTexture();
-		GlStateManager.popMatrix();
+		RenderSystem.enableTexture();
+		RenderSystem.popMatrix();
 	}
 }

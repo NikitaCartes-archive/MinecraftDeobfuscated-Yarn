@@ -16,26 +16,28 @@ import net.minecraft.util.math.Direction;
 public class ItemModelGenerator {
 	public static final List<String> LAYERS = Lists.<String>newArrayList("layer0", "layer1", "layer2", "layer3", "layer4");
 
-	public JsonUnbakedModel create(Function<Identifier, Sprite> textureGetter, JsonUnbakedModel blockModel) {
+	public JsonUnbakedModel create(Function<Identifier, Sprite> function, JsonUnbakedModel jsonUnbakedModel) {
 		Map<String, String> map = Maps.<String, String>newHashMap();
 		List<ModelElement> list = Lists.<ModelElement>newArrayList();
 
 		for (int i = 0; i < LAYERS.size(); i++) {
 			String string = (String)LAYERS.get(i);
-			if (!blockModel.textureExists(string)) {
+			if (!jsonUnbakedModel.textureExists(string)) {
 				break;
 			}
 
-			String string2 = blockModel.resolveTexture(string);
+			String string2 = jsonUnbakedModel.resolveTexture(string);
 			map.put(string, string2);
-			Sprite sprite = (Sprite)textureGetter.apply(new Identifier(string2));
+			Sprite sprite = (Sprite)function.apply(new Identifier(string2));
 			list.addAll(this.method_3480(i, string, sprite));
 		}
 
-		map.put("particle", blockModel.textureExists("particle") ? blockModel.resolveTexture("particle") : (String)map.get("layer0"));
-		JsonUnbakedModel jsonUnbakedModel = new JsonUnbakedModel(null, list, map, false, false, blockModel.getTransformations(), blockModel.getOverrides());
-		jsonUnbakedModel.id = blockModel.id;
-		return jsonUnbakedModel;
+		map.put("particle", jsonUnbakedModel.textureExists("particle") ? jsonUnbakedModel.resolveTexture("particle") : (String)map.get("layer0"));
+		JsonUnbakedModel jsonUnbakedModel2 = new JsonUnbakedModel(
+			null, list, map, false, false, jsonUnbakedModel.getTransformations(), jsonUnbakedModel.getOverrides()
+		);
+		jsonUnbakedModel2.id = jsonUnbakedModel.id;
+		return jsonUnbakedModel2;
 	}
 
 	private List<ModelElement> method_3480(int i, String string, Sprite sprite) {
@@ -69,7 +71,7 @@ public class ItemModelGenerator {
 			float u = (float)lv.method_3486();
 			ItemModelGenerator.class_803 lv2 = lv.method_3484();
 			switch (lv2) {
-				case field_4281:
+				case UP:
 					m = s;
 					h = s;
 					k = n = t + 1.0F;
@@ -78,7 +80,7 @@ public class ItemModelGenerator {
 					l = u;
 					p = u + 1.0F;
 					break;
-				case field_4277:
+				case DOWN:
 					o = u;
 					p = u + 1.0F;
 					m = s;
@@ -87,7 +89,7 @@ public class ItemModelGenerator {
 					j = u + 1.0F;
 					l = u + 1.0F;
 					break;
-				case field_4278:
+				case LEFT:
 					m = u;
 					h = u;
 					k = u;
@@ -96,7 +98,7 @@ public class ItemModelGenerator {
 					j = s;
 					l = o = t + 1.0F;
 					break;
-				case field_4283:
+				case RIGHT:
 					m = u;
 					n = u + 1.0F;
 					h = u + 1.0F;
@@ -119,16 +121,16 @@ public class ItemModelGenerator {
 			Map<Direction, ModelElementFace> map = Maps.<Direction, ModelElementFace>newHashMap();
 			map.put(lv2.method_3488(), new ModelElementFace(null, i, string, new ModelElementTexture(new float[]{m, o, n, p}, 0)));
 			switch (lv2) {
-				case field_4281:
+				case UP:
 					list.add(new ModelElement(new Vector3f(h, j, 7.5F), new Vector3f(k, j, 8.5F), map, null, true));
 					break;
-				case field_4277:
+				case DOWN:
 					list.add(new ModelElement(new Vector3f(h, l, 7.5F), new Vector3f(k, l, 8.5F), map, null, true));
 					break;
-				case field_4278:
+				case LEFT:
 					list.add(new ModelElement(new Vector3f(h, j, 7.5F), new Vector3f(h, l, 8.5F), map, null, true));
 					break;
-				case field_4283:
+				case RIGHT:
 					list.add(new ModelElement(new Vector3f(k, j, 7.5F), new Vector3f(k, l, 8.5F), map, null, true));
 			}
 		}
@@ -145,10 +147,10 @@ public class ItemModelGenerator {
 			for (int l = 0; l < j; l++) {
 				for (int m = 0; m < i; m++) {
 					boolean bl = !this.method_3477(sprite, k, m, l, i, j);
-					this.method_3476(ItemModelGenerator.class_803.field_4281, list, sprite, k, m, l, i, j, bl);
-					this.method_3476(ItemModelGenerator.class_803.field_4277, list, sprite, k, m, l, i, j, bl);
-					this.method_3476(ItemModelGenerator.class_803.field_4278, list, sprite, k, m, l, i, j, bl);
-					this.method_3476(ItemModelGenerator.class_803.field_4283, list, sprite, k, m, l, i, j, bl);
+					this.method_3476(ItemModelGenerator.class_803.UP, list, sprite, k, m, l, i, j, bl);
+					this.method_3476(ItemModelGenerator.class_803.DOWN, list, sprite, k, m, l, i, j, bl);
+					this.method_3476(ItemModelGenerator.class_803.LEFT, list, sprite, k, m, l, i, j, bl);
+					this.method_3476(ItemModelGenerator.class_803.RIGHT, list, sprite, k, m, l, i, j, bl);
 				}
 			}
 		}
@@ -232,10 +234,10 @@ public class ItemModelGenerator {
 
 	@Environment(EnvType.CLIENT)
 	static enum class_803 {
-		field_4281(Direction.UP, 0, -1),
-		field_4277(Direction.DOWN, 0, 1),
-		field_4278(Direction.EAST, -1, 0),
-		field_4283(Direction.WEST, 1, 0);
+		UP(Direction.UP, 0, -1),
+		DOWN(Direction.DOWN, 0, 1),
+		LEFT(Direction.EAST, -1, 0),
+		RIGHT(Direction.WEST, 1, 0);
 
 		private final Direction field_4276;
 		private final int field_4280;
@@ -260,7 +262,7 @@ public class ItemModelGenerator {
 		}
 
 		private boolean method_3491() {
-			return this == field_4277 || this == field_4281;
+			return this == DOWN || this == UP;
 		}
 	}
 }

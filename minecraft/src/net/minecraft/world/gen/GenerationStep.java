@@ -13,8 +13,8 @@ public class GenerationStep {
 			.collect(Collectors.toMap(GenerationStep.Carver::getName, carver -> carver));
 		private final String name;
 
-		private Carver(String name) {
-			this.name = name;
+		private Carver(String string2) {
+			this.name = string2;
 		}
 
 		public String getName() {
@@ -36,8 +36,8 @@ public class GenerationStep {
 			.collect(Collectors.toMap(GenerationStep.Feature::getName, feature -> feature));
 		private final String name;
 
-		private Feature(String name) {
-			this.name = name;
+		private Feature(String string2) {
+			this.name = string2;
 		}
 
 		public String getName() {

@@ -58,88 +58,76 @@ public class UnderwaterCaveCarver extends CaveCarver {
 	}
 
 	@Override
-	protected boolean isRegionUncarvable(Chunk chunk, int mainChunkX, int mainChunkZ, int relMinX, int relMaxX, int minY, int maxY, int relMinZ, int relMaxZ) {
+	protected boolean isRegionUncarvable(Chunk chunk, int i, int j, int k, int l, int m, int n, int o, int p) {
 		return false;
 	}
 
 	@Override
 	protected boolean carveAtPoint(
 		Chunk chunk,
-		BitSet mask,
+		BitSet bitSet,
 		Random random,
-		BlockPos.Mutable pos1,
-		BlockPos.Mutable pos2,
-		BlockPos.Mutable pos3,
-		int seaLevel,
-		int mainChunkX,
-		int mainChunkZ,
-		int x,
-		int z,
-		int relativeX,
-		int y,
-		int relativeZ,
+		BlockPos.Mutable mutable,
+		BlockPos.Mutable mutable2,
+		BlockPos.Mutable mutable3,
+		int i,
+		int j,
+		int k,
+		int l,
+		int m,
+		int n,
+		int o,
+		int p,
 		AtomicBoolean atomicBoolean
 	) {
-		return carveAtPoint(this, chunk, mask, random, pos1, seaLevel, mainChunkX, mainChunkZ, x, z, relativeX, y, relativeZ);
+		return carveAtPoint(this, chunk, bitSet, random, mutable, i, j, k, l, m, n, o, p);
 	}
 
 	protected static boolean carveAtPoint(
-		Carver<?> carver,
-		Chunk chunk,
-		BitSet mask,
-		Random random,
-		BlockPos.Mutable pos,
-		int seaLevel,
-		int mainChunkX,
-		int mainChunkZ,
-		int x,
-		int z,
-		int relativeX,
-		int y,
-		int relativeZ
+		Carver<?> carver, Chunk chunk, BitSet bitSet, Random random, BlockPos.Mutable mutable, int i, int j, int k, int l, int m, int n, int o, int p
 	) {
-		if (y >= seaLevel) {
+		if (o >= i) {
 			return false;
 		} else {
-			int i = relativeX | relativeZ << 4 | y << 8;
-			if (mask.get(i)) {
+			int q = n | p << 4 | o << 8;
+			if (bitSet.get(q)) {
 				return false;
 			} else {
-				mask.set(i);
-				pos.set(x, y, z);
-				BlockState blockState = chunk.getBlockState(pos);
+				bitSet.set(q);
+				mutable.set(l, o, m);
+				BlockState blockState = chunk.getBlockState(mutable);
 				if (!carver.canAlwaysCarveBlock(blockState)) {
 					return false;
-				} else if (y == 10) {
+				} else if (o == 10) {
 					float f = random.nextFloat();
 					if ((double)f < 0.25) {
-						chunk.setBlockState(pos, Blocks.MAGMA_BLOCK.getDefaultState(), false);
-						chunk.getBlockTickScheduler().schedule(pos, Blocks.MAGMA_BLOCK, 0);
+						chunk.setBlockState(mutable, Blocks.MAGMA_BLOCK.getDefaultState(), false);
+						chunk.getBlockTickScheduler().schedule(mutable, Blocks.MAGMA_BLOCK, 0);
 					} else {
-						chunk.setBlockState(pos, Blocks.OBSIDIAN.getDefaultState(), false);
+						chunk.setBlockState(mutable, Blocks.OBSIDIAN.getDefaultState(), false);
 					}
 
 					return true;
-				} else if (y < 10) {
-					chunk.setBlockState(pos, Blocks.LAVA.getDefaultState(), false);
+				} else if (o < 10) {
+					chunk.setBlockState(mutable, Blocks.LAVA.getDefaultState(), false);
 					return false;
 				} else {
 					boolean bl = false;
 
 					for (Direction direction : Direction.Type.HORIZONTAL) {
-						int j = x + direction.getOffsetX();
-						int k = z + direction.getOffsetZ();
-						if (j >> 4 != mainChunkX || k >> 4 != mainChunkZ || chunk.getBlockState(pos.set(j, y, k)).isAir()) {
-							chunk.setBlockState(pos, WATER.getBlockState(), false);
-							chunk.getFluidTickScheduler().schedule(pos, WATER.getFluid(), 0);
+						int r = l + direction.getOffsetX();
+						int s = m + direction.getOffsetZ();
+						if (r >> 4 != j || s >> 4 != k || chunk.getBlockState(mutable.set(r, o, s)).isAir()) {
+							chunk.setBlockState(mutable, WATER.getBlockState(), false);
+							chunk.getFluidTickScheduler().schedule(mutable, WATER.getFluid(), 0);
 							bl = true;
 							break;
 						}
 					}
 
-					pos.set(x, y, z);
+					mutable.set(l, o, m);
 					if (!bl) {
-						chunk.setBlockState(pos, WATER.getBlockState(), false);
+						chunk.setBlockState(mutable, WATER.getBlockState(), false);
 						return true;
 					} else {
 						return true;

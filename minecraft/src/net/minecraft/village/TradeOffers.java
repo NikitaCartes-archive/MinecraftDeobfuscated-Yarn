@@ -36,14 +36,14 @@ import net.minecraft.potion.PotionUtil;
 import net.minecraft.recipe.BrewingRecipeRegistry;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.DyeColor;
-import net.minecraft.util.Util;
+import net.minecraft.util.SystemUtil;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.world.World;
 
 public class TradeOffers {
-	public static final Map<VillagerProfession, Int2ObjectMap<TradeOffers.Factory[]>> PROFESSION_TO_LEVELED_TRADE = Util.make(
+	public static final Map<VillagerProfession, Int2ObjectMap<TradeOffers.Factory[]>> PROFESSION_TO_LEVELED_TRADE = SystemUtil.consume(
 		Maps.<VillagerProfession, Int2ObjectMap<TradeOffers.Factory[]>>newHashMap(),
 		hashMap -> {
 			hashMap.put(
@@ -680,11 +680,11 @@ public class TradeOffers {
 		private final int experience;
 		private final float multiplier;
 
-		public BuyForOneEmeraldFactory(ItemConvertible itemConvertible, int price, int maxUses, int experience) {
+		public BuyForOneEmeraldFactory(ItemConvertible itemConvertible, int i, int j, int k) {
 			this.buy = itemConvertible.asItem();
-			this.price = price;
-			this.maxUses = maxUses;
-			this.experience = experience;
+			this.price = i;
+			this.maxUses = j;
+			this.experience = k;
 			this.multiplier = 0.05F;
 		}
 
@@ -698,8 +698,8 @@ public class TradeOffers {
 	static class EnchantBookFactory implements TradeOffers.Factory {
 		private final int experience;
 
-		public EnchantBookFactory(int experience) {
-			this.experience = experience;
+		public EnchantBookFactory(int i) {
+			this.experience = i;
 		}
 
 		@Override
@@ -735,18 +735,18 @@ public class TradeOffers {
 		private final int experience;
 		private final float multiplier;
 
-		public ProcessItemFactory(ItemConvertible itemConvertible, int secondCount, Item sellItem, int sellCount, int maxUses, int experience) {
-			this(itemConvertible, secondCount, 1, sellItem, sellCount, maxUses, experience);
+		public ProcessItemFactory(ItemConvertible itemConvertible, int i, Item item, int j, int k, int l) {
+			this(itemConvertible, i, 1, item, j, k, l);
 		}
 
-		public ProcessItemFactory(ItemConvertible itemConvertible, int secondCount, int price, Item sellItem, int sellCount, int maxUses, int experience) {
+		public ProcessItemFactory(ItemConvertible itemConvertible, int i, int j, Item item, int k, int l, int m) {
 			this.secondBuy = new ItemStack(itemConvertible);
-			this.secondCount = secondCount;
-			this.price = price;
-			this.sell = new ItemStack(sellItem);
-			this.sellCount = sellCount;
-			this.maxUses = maxUses;
-			this.experience = experience;
+			this.secondCount = i;
+			this.price = j;
+			this.sell = new ItemStack(item);
+			this.sellCount = k;
+			this.maxUses = l;
+			this.experience = m;
 			this.multiplier = 0.05F;
 		}
 
@@ -770,15 +770,15 @@ public class TradeOffers {
 		private final int maxUses;
 		private final int experience;
 
-		public SellDyedArmorFactory(Item item, int price) {
-			this(item, price, 12, 1);
+		public SellDyedArmorFactory(Item item, int i) {
+			this(item, i, 12, 1);
 		}
 
-		public SellDyedArmorFactory(Item item, int price, int maxUses, int experience) {
+		public SellDyedArmorFactory(Item item, int i, int j, int k) {
 			this.sell = item;
-			this.price = price;
-			this.maxUses = maxUses;
-			this.experience = experience;
+			this.price = i;
+			this.maxUses = j;
+			this.experience = k;
 		}
 
 		@Override
@@ -814,16 +814,16 @@ public class TradeOffers {
 		private final int experience;
 		private final float multiplier;
 
-		public SellEnchantedToolFactory(Item item, int basePrice, int maxUses, int experience) {
-			this(item, basePrice, maxUses, experience, 0.05F);
+		public SellEnchantedToolFactory(Item item, int i, int j, int k) {
+			this(item, i, j, k, 0.05F);
 		}
 
-		public SellEnchantedToolFactory(Item item, int basePrice, int maxUses, int experience, float multiplier) {
+		public SellEnchantedToolFactory(Item item, int i, int j, int k, float f) {
 			this.tool = new ItemStack(item);
-			this.basePrice = basePrice;
-			this.maxUses = maxUses;
-			this.experience = experience;
-			this.multiplier = multiplier;
+			this.basePrice = i;
+			this.maxUses = j;
+			this.experience = k;
+			this.multiplier = f;
 		}
 
 		@Override
@@ -860,13 +860,13 @@ public class TradeOffers {
 			this(itemStack, i, j, k, l, 0.05F);
 		}
 
-		public SellItemFactory(ItemStack itemStack, int price, int count, int maxUses, int experience, float multiplier) {
+		public SellItemFactory(ItemStack itemStack, int i, int j, int k, int l, float f) {
 			this.sell = itemStack;
-			this.price = price;
-			this.count = count;
-			this.maxUses = maxUses;
-			this.experience = experience;
-			this.multiplier = multiplier;
+			this.price = i;
+			this.count = j;
+			this.maxUses = k;
+			this.experience = l;
+			this.multiplier = f;
 		}
 
 		@Override
@@ -884,12 +884,12 @@ public class TradeOffers {
 		private final int maxUses;
 		private final int experience;
 
-		public SellMapFactory(int price, String structure, MapIcon.Type iconType, int maxUses, int experience) {
-			this.price = price;
-			this.structure = structure;
-			this.iconType = iconType;
-			this.maxUses = maxUses;
-			this.experience = experience;
+		public SellMapFactory(int i, String string, MapIcon.Type type, int j, int k) {
+			this.price = i;
+			this.structure = string;
+			this.iconType = type;
+			this.maxUses = j;
+			this.experience = k;
 		}
 
 		@Nullable
@@ -919,14 +919,14 @@ public class TradeOffers {
 		private final int secondCount;
 		private final float priceMultiplier;
 
-		public SellPotionHoldingItemFactory(Item arrow, int secondCount, Item tippedArrow, int sellCount, int price, int maxUses, int experience) {
-			this.sell = new ItemStack(tippedArrow);
-			this.price = price;
-			this.maxUses = maxUses;
-			this.experience = experience;
-			this.secondBuy = arrow;
-			this.secondCount = secondCount;
-			this.sellCount = sellCount;
+		public SellPotionHoldingItemFactory(Item item, int i, Item item2, int j, int k, int l, int m) {
+			this.sell = new ItemStack(item2);
+			this.price = k;
+			this.maxUses = l;
+			this.experience = m;
+			this.secondBuy = item;
+			this.secondCount = i;
+			this.sellCount = j;
 			this.priceMultiplier = 0.05F;
 		}
 
@@ -949,10 +949,10 @@ public class TradeOffers {
 		final int experience;
 		private final float multiplier;
 
-		public SellSuspiciousStewFactory(StatusEffect statusEffect, int duration, int experience) {
+		public SellSuspiciousStewFactory(StatusEffect statusEffect, int i, int j) {
 			this.effect = statusEffect;
-			this.duration = duration;
-			this.experience = experience;
+			this.duration = i;
+			this.experience = j;
 			this.multiplier = 0.05F;
 		}
 
@@ -971,14 +971,14 @@ public class TradeOffers {
 		private final int maxUses;
 		private final int experience;
 
-		public TypeAwareBuyForOneEmeraldFactory(int i, int j, int experience, Map<VillagerType, Item> map) {
+		public TypeAwareBuyForOneEmeraldFactory(int i, int j, int k, Map<VillagerType, Item> map) {
 			Registry.VILLAGER_TYPE.stream().filter(villagerType -> !map.containsKey(villagerType)).findAny().ifPresent(villagerType -> {
 				throw new IllegalStateException("Missing trade for villager type: " + Registry.VILLAGER_TYPE.getId(villagerType));
 			});
 			this.map = map;
 			this.count = i;
 			this.maxUses = j;
-			this.experience = experience;
+			this.experience = k;
 		}
 
 		@Nullable

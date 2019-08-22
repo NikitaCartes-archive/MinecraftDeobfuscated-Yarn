@@ -55,28 +55,28 @@ public class UnderwaterRavineCarver extends RavineCarver {
 	}
 
 	@Override
-	protected boolean isRegionUncarvable(Chunk chunk, int mainChunkX, int mainChunkZ, int relMinX, int relMaxX, int minY, int maxY, int relMinZ, int relMaxZ) {
+	protected boolean isRegionUncarvable(Chunk chunk, int i, int j, int k, int l, int m, int n, int o, int p) {
 		return false;
 	}
 
 	@Override
 	protected boolean carveAtPoint(
 		Chunk chunk,
-		BitSet mask,
+		BitSet bitSet,
 		Random random,
-		BlockPos.Mutable pos1,
-		BlockPos.Mutable pos2,
-		BlockPos.Mutable pos3,
-		int seaLevel,
-		int mainChunkX,
-		int mainChunkZ,
-		int x,
-		int z,
-		int relativeX,
-		int y,
-		int relativeZ,
+		BlockPos.Mutable mutable,
+		BlockPos.Mutable mutable2,
+		BlockPos.Mutable mutable3,
+		int i,
+		int j,
+		int k,
+		int l,
+		int m,
+		int n,
+		int o,
+		int p,
 		AtomicBoolean atomicBoolean
 	) {
-		return UnderwaterCaveCarver.carveAtPoint(this, chunk, mask, random, pos1, seaLevel, mainChunkX, mainChunkZ, x, z, relativeX, y, relativeZ);
+		return UnderwaterCaveCarver.carveAtPoint(this, chunk, bitSet, random, mutable, i, j, k, l, m, n, o, p);
 	}
 }

@@ -5,17 +5,17 @@ import com.mojang.brigadier.arguments.IntegerArgumentType;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import java.util.Collection;
 import java.util.Locale;
+import net.minecraft.client.network.packet.TitleS2CPacket;
 import net.minecraft.command.arguments.EntityArgumentType;
 import net.minecraft.command.arguments.TextArgumentType;
-import net.minecraft.network.packet.s2c.play.TitleS2CPacket;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.Text;
 import net.minecraft.text.Texts;
 import net.minecraft.text.TranslatableText;
 
 public class TitleCommand {
-	public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
-		dispatcher.register(
+	public static void register(CommandDispatcher<ServerCommandSource> commandDispatcher) {
+		commandDispatcher.register(
 			CommandManager.literal("title")
 				.requires(serverCommandSource -> serverCommandSource.hasPermissionLevel(2))
 				.then(
@@ -113,54 +113,60 @@ public class TitleCommand {
 		return collection.size();
 	}
 
-	private static int executeReset(ServerCommandSource source, Collection<ServerPlayerEntity> targets) {
+	private static int executeReset(ServerCommandSource serverCommandSource, Collection<ServerPlayerEntity> collection) {
 		TitleS2CPacket titleS2CPacket = new TitleS2CPacket(TitleS2CPacket.Action.RESET, null);
 
-		for (ServerPlayerEntity serverPlayerEntity : targets) {
+		for (ServerPlayerEntity serverPlayerEntity : collection) {
 			serverPlayerEntity.networkHandler.sendPacket(titleS2CPacket);
 		}
 
-		if (targets.size() == 1) {
-			source.sendFeedback(new TranslatableText("commands.title.reset.single", ((ServerPlayerEntity)targets.iterator().next()).getDisplayName()), true);
+		if (collection.size() == 1) {
+			serverCommandSource.sendFeedback(
+				new TranslatableText("commands.title.reset.single", ((ServerPlayerEntity)collection.iterator().next()).getDisplayName()), true
+			);
 		} else {
-			source.sendFeedback(new TranslatableText("commands.title.reset.multiple", targets.size()), true);
+			serverCommandSource.sendFeedback(new TranslatableText("commands.title.reset.multiple", collection.size()), true);
 		}
 
-		return targets.size();
+		return collection.size();
 	}
 
-	private static int executeTitle(ServerCommandSource source, Collection<ServerPlayerEntity> targets, Text title, TitleS2CPacket.Action type) throws CommandSyntaxException {
-		for (ServerPlayerEntity serverPlayerEntity : targets) {
-			serverPlayerEntity.networkHandler.sendPacket(new TitleS2CPacket(type, Texts.parse(source, title, serverPlayerEntity, 0)));
+	private static int executeTitle(ServerCommandSource serverCommandSource, Collection<ServerPlayerEntity> collection, Text text, TitleS2CPacket.Action action) throws CommandSyntaxException {
+		for (ServerPlayerEntity serverPlayerEntity : collection) {
+			serverPlayerEntity.networkHandler.sendPacket(new TitleS2CPacket(action, Texts.parse(serverCommandSource, text, serverPlayerEntity, 0)));
 		}
 
-		if (targets.size() == 1) {
-			source.sendFeedback(
+		if (collection.size() == 1) {
+			serverCommandSource.sendFeedback(
 				new TranslatableText(
-					"commands.title.show." + type.name().toLowerCase(Locale.ROOT) + ".single", ((ServerPlayerEntity)targets.iterator().next()).getDisplayName()
+					"commands.title.show." + action.name().toLowerCase(Locale.ROOT) + ".single", ((ServerPlayerEntity)collection.iterator().next()).getDisplayName()
 				),
 				true
 			);
 		} else {
-			source.sendFeedback(new TranslatableText("commands.title.show." + type.name().toLowerCase(Locale.ROOT) + ".multiple", targets.size()), true);
+			serverCommandSource.sendFeedback(
+				new TranslatableText("commands.title.show." + action.name().toLowerCase(Locale.ROOT) + ".multiple", collection.size()), true
+			);
 		}
 
-		return targets.size();
+		return collection.size();
 	}
 
-	private static int executeTimes(ServerCommandSource source, Collection<ServerPlayerEntity> targets, int fadeIn, int stay, int fadeOut) {
-		TitleS2CPacket titleS2CPacket = new TitleS2CPacket(fadeIn, stay, fadeOut);
+	private static int executeTimes(ServerCommandSource serverCommandSource, Collection<ServerPlayerEntity> collection, int i, int j, int k) {
+		TitleS2CPacket titleS2CPacket = new TitleS2CPacket(i, j, k);
 
-		for (ServerPlayerEntity serverPlayerEntity : targets) {
+		for (ServerPlayerEntity serverPlayerEntity : collection) {
 			serverPlayerEntity.networkHandler.sendPacket(titleS2CPacket);
 		}
 
-		if (targets.size() == 1) {
-			source.sendFeedback(new TranslatableText("commands.title.times.single", ((ServerPlayerEntity)targets.iterator().next()).getDisplayName()), true);
+		if (collection.size() == 1) {
+			serverCommandSource.sendFeedback(
+				new TranslatableText("commands.title.times.single", ((ServerPlayerEntity)collection.iterator().next()).getDisplayName()), true
+			);
 		} else {
-			source.sendFeedback(new TranslatableText("commands.title.times.multiple", targets.size()), true);
+			serverCommandSource.sendFeedback(new TranslatableText("commands.title.times.multiple", collection.size()), true);
 		}
 
-		return targets.size();
+		return collection.size();
 	}
 }

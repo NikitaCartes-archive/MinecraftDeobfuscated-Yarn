@@ -13,10 +13,10 @@ public enum AdvancementFrame {
 	private final int texV;
 	private final Formatting titleFormat;
 
-	private AdvancementFrame(String id, int texV, Formatting titleFormat) {
-		this.id = id;
-		this.texV = texV;
-		this.titleFormat = titleFormat;
+	private AdvancementFrame(String string2, int j, Formatting formatting) {
+		this.id = string2;
+		this.texV = j;
+		this.titleFormat = formatting;
 	}
 
 	public String getId() {
@@ -28,14 +28,14 @@ public enum AdvancementFrame {
 		return this.texV;
 	}
 
-	public static AdvancementFrame forName(String name) {
+	public static AdvancementFrame forName(String string) {
 		for (AdvancementFrame advancementFrame : values()) {
-			if (advancementFrame.id.equals(name)) {
+			if (advancementFrame.id.equals(string)) {
 				return advancementFrame;
 			}
 		}
 
-		throw new IllegalArgumentException("Unknown frame type '" + name + "'");
+		throw new IllegalArgumentException("Unknown frame type '" + string + "'");
 	}
 
 	public Formatting getTitleFormat() {

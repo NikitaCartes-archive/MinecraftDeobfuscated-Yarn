@@ -12,23 +12,23 @@ import net.minecraft.world.World;
 public class CloudParticle extends SpriteBillboardParticle {
 	private final SpriteProvider field_17862;
 
-	private CloudParticle(World world, double x, double y, double z, double d, double e, double f, SpriteProvider spriteProvider) {
-		super(world, x, y, z, 0.0, 0.0, 0.0);
+	private CloudParticle(World world, double d, double e, double f, double g, double h, double i, SpriteProvider spriteProvider) {
+		super(world, d, e, f, 0.0, 0.0, 0.0);
 		this.field_17862 = spriteProvider;
-		float g = 2.5F;
+		float j = 2.5F;
 		this.velocityX *= 0.1F;
 		this.velocityY *= 0.1F;
 		this.velocityZ *= 0.1F;
-		this.velocityX += d;
-		this.velocityY += e;
-		this.velocityZ += f;
-		float h = 1.0F - (float)(Math.random() * 0.3F);
-		this.colorRed = h;
-		this.colorGreen = h;
-		this.colorBlue = h;
+		this.velocityX += g;
+		this.velocityY += h;
+		this.velocityZ += i;
+		float k = 1.0F - (float)(Math.random() * 0.3F);
+		this.colorRed = k;
+		this.colorGreen = k;
+		this.colorBlue = k;
 		this.scale *= 1.875F;
-		int i = (int)(8.0 / (Math.random() * 0.8 + 0.3));
-		this.maxAge = (int)Math.max((float)i * 2.5F, 1.0F);
+		int l = (int)(8.0 / (Math.random() * 0.8 + 0.3));
+		this.maxAge = (int)Math.max((float)l * 2.5F, 1.0F);
 		this.collidesWithWorld = false;
 		this.setSpriteForAge(spriteProvider);
 	}
@@ -39,8 +39,8 @@ public class CloudParticle extends SpriteBillboardParticle {
 	}
 
 	@Override
-	public float getSize(float tickDelta) {
-		return this.scale * MathHelper.clamp(((float)this.age + tickDelta) / (float)this.maxAge * 32.0F, 0.0F, 1.0F);
+	public float getSize(float f) {
+		return this.scale * MathHelper.clamp(((float)this.age + f) / (float)this.maxAge * 32.0F, 0.0F, 1.0F);
 	}
 
 	@Override
@@ -59,8 +59,8 @@ public class CloudParticle extends SpriteBillboardParticle {
 			PlayerEntity playerEntity = this.world.getClosestPlayer(this.x, this.y, this.z, 2.0, false);
 			if (playerEntity != null) {
 				Box box = playerEntity.getBoundingBox();
-				if (this.y > box.y1) {
-					this.y = this.y + (box.y1 - this.y) * 0.2;
+				if (this.y > box.minY) {
+					this.y = this.y + (box.minY - this.y) * 0.2;
 					this.velocityY = this.velocityY + (playerEntity.getVelocity().y - this.velocityY) * 0.2;
 					this.setPos(this.x, this.y, this.z);
 				}
@@ -81,7 +81,7 @@ public class CloudParticle extends SpriteBillboardParticle {
 			this.field_17863 = spriteProvider;
 		}
 
-		public Particle createParticle(DefaultParticleType defaultParticleType, World world, double d, double e, double f, double g, double h, double i) {
+		public Particle method_3088(DefaultParticleType defaultParticleType, World world, double d, double e, double f, double g, double h, double i) {
 			return new CloudParticle(world, d, e, f, g, h, i, this.field_17863);
 		}
 	}
@@ -94,7 +94,7 @@ public class CloudParticle extends SpriteBillboardParticle {
 			this.field_17864 = spriteProvider;
 		}
 
-		public Particle createParticle(DefaultParticleType defaultParticleType, World world, double d, double e, double f, double g, double h, double i) {
+		public Particle method_3089(DefaultParticleType defaultParticleType, World world, double d, double e, double f, double g, double h, double i) {
 			Particle particle = new CloudParticle(world, d, e, f, g, h, i, this.field_17864);
 			particle.setColor(200.0F, 50.0F, 120.0F);
 			particle.setColorAlpha(0.4F);

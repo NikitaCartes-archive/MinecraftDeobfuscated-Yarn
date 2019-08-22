@@ -16,23 +16,23 @@ public class StructureVoidBlock extends Block {
 	}
 
 	@Override
-	public BlockRenderType getRenderType(BlockState state) {
+	public BlockRenderType getRenderType(BlockState blockState) {
 		return BlockRenderType.INVISIBLE;
 	}
 
 	@Override
-	public VoxelShape getOutlineShape(BlockState state, BlockView view, BlockPos pos, EntityContext context) {
+	public VoxelShape getOutlineShape(BlockState blockState, BlockView blockView, BlockPos blockPos, EntityContext entityContext) {
 		return SHAPE;
 	}
 
 	@Environment(EnvType.CLIENT)
 	@Override
-	public float getAmbientOcclusionLightLevel(BlockState state, BlockView view, BlockPos pos) {
+	public float getAmbientOcclusionLightLevel(BlockState blockState, BlockView blockView, BlockPos blockPos) {
 		return 1.0F;
 	}
 
 	@Override
-	public PistonBehavior getPistonBehavior(BlockState state) {
+	public PistonBehavior getPistonBehavior(BlockState blockState) {
 		return PistonBehavior.DESTROY;
 	}
 }

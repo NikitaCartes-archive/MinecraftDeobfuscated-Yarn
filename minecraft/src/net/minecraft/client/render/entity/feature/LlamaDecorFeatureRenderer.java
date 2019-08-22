@@ -30,11 +30,11 @@ public class LlamaDecorFeatureRenderer extends FeatureRenderer<LlamaEntity, Llam
 	private static final Identifier TRADER_LLAMA_DECOR = new Identifier("textures/entity/llama/decor/trader_llama.png");
 	private final LlamaEntityModel<LlamaEntity> model = new LlamaEntityModel<>(0.5F);
 
-	public LlamaDecorFeatureRenderer(FeatureRendererContext<LlamaEntity, LlamaEntityModel<LlamaEntity>> context) {
-		super(context);
+	public LlamaDecorFeatureRenderer(FeatureRendererContext<LlamaEntity, LlamaEntityModel<LlamaEntity>> featureRendererContext) {
+		super(featureRendererContext);
 	}
 
-	public void render(LlamaEntity llamaEntity, float f, float g, float h, float i, float j, float k, float l) {
+	public void method_4191(LlamaEntity llamaEntity, float f, float g, float h, float i, float j, float k, float l) {
 		DyeColor dyeColor = llamaEntity.getCarpetColor();
 		if (dyeColor != null) {
 			this.bindTexture(LLAMA_DECOR[dyeColor.getId()]);
@@ -46,8 +46,8 @@ public class LlamaDecorFeatureRenderer extends FeatureRenderer<LlamaEntity, Llam
 			this.bindTexture(TRADER_LLAMA_DECOR);
 		}
 
-		this.getContextModel().copyStateTo(this.model);
-		this.model.render(llamaEntity, f, g, i, j, k, l);
+		this.getModel().copyStateTo(this.model);
+		this.model.method_17100(llamaEntity, f, g, i, j, k, l);
 	}
 
 	@Override

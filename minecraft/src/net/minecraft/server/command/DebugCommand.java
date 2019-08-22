@@ -36,8 +36,8 @@ public class DebugCommand {
 		.findFirst()
 		.orElse(null);
 
-	public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
-		dispatcher.register(
+	public static void register(CommandDispatcher<ServerCommandSource> commandDispatcher) {
+		commandDispatcher.register(
 			CommandManager.literal("debug")
 				.requires(serverCommandSource -> serverCommandSource.hasPermissionLevel(3))
 				.then(CommandManager.literal("start").executes(commandContext -> executeStart(commandContext.getSource())))
@@ -46,30 +46,30 @@ public class DebugCommand {
 		);
 	}
 
-	private static int executeStart(ServerCommandSource source) throws CommandSyntaxException {
-		MinecraftServer minecraftServer = source.getMinecraftServer();
+	private static int executeStart(ServerCommandSource serverCommandSource) throws CommandSyntaxException {
+		MinecraftServer minecraftServer = serverCommandSource.getMinecraftServer();
 		DisableableProfiler disableableProfiler = minecraftServer.getProfiler();
 		if (disableableProfiler.getController().isEnabled()) {
 			throw ALREADYRUNNING_EXCEPTION.create();
 		} else {
 			minecraftServer.enableProfiler();
-			source.sendFeedback(new TranslatableText("commands.debug.started", "Started the debug profiler. Type '/debug stop' to stop it."), true);
+			serverCommandSource.sendFeedback(new TranslatableText("commands.debug.started", "Started the debug profiler. Type '/debug stop' to stop it."), true);
 			return 0;
 		}
 	}
 
-	private static int executeStop(ServerCommandSource source) throws CommandSyntaxException {
-		MinecraftServer minecraftServer = source.getMinecraftServer();
+	private static int executeStop(ServerCommandSource serverCommandSource) throws CommandSyntaxException {
+		MinecraftServer minecraftServer = serverCommandSource.getMinecraftServer();
 		DisableableProfiler disableableProfiler = minecraftServer.getProfiler();
 		if (!disableableProfiler.getController().isEnabled()) {
 			throw NORUNNING_EXCPETION.create();
 		} else {
 			ProfileResult profileResult = disableableProfiler.getController().disable();
 			File file = new File(minecraftServer.getFile("debug"), "profile-results-" + new SimpleDateFormat("yyyy-MM-dd_HH.mm.ss").format(new Date()) + ".txt");
-			profileResult.save(file);
+			profileResult.saveToFile(file);
 			float f = (float)profileResult.getTimeSpan() / 1.0E9F;
 			float g = (float)profileResult.getTickSpan() / f;
-			source.sendFeedback(
+			serverCommandSource.sendFeedback(
 				new TranslatableText("commands.debug.stopped", String.format(Locale.ROOT, "%.2f", f), profileResult.getTickSpan(), String.format("%.2f", g)), true
 			);
 			return MathHelper.floor(g);

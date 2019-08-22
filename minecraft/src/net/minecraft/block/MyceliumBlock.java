@@ -14,14 +14,14 @@ public class MyceliumBlock extends SpreadableBlock {
 
 	@Environment(EnvType.CLIENT)
 	@Override
-	public void randomDisplayTick(BlockState state, World world, BlockPos pos, Random random) {
-		super.randomDisplayTick(state, world, pos, random);
+	public void randomDisplayTick(BlockState blockState, World world, BlockPos blockPos, Random random) {
+		super.randomDisplayTick(blockState, world, blockPos, random);
 		if (random.nextInt(10) == 0) {
 			world.addParticle(
 				ParticleTypes.MYCELIUM,
-				(double)((float)pos.getX() + random.nextFloat()),
-				(double)((float)pos.getY() + 1.1F),
-				(double)((float)pos.getZ() + random.nextFloat()),
+				(double)((float)blockPos.getX() + random.nextFloat()),
+				(double)((float)blockPos.getY() + 1.1F),
+				(double)((float)blockPos.getZ() + random.nextFloat()),
 				0.0,
 				0.0,
 				0.0

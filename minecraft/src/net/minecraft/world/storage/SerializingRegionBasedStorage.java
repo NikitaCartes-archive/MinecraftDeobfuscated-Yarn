@@ -18,11 +18,12 @@ import java.util.function.BooleanSupplier;
 import java.util.function.Function;
 import javax.annotation.Nullable;
 import net.minecraft.SharedConstants;
-import net.minecraft.datafixer.DataFixTypes;
-import net.minecraft.datafixer.NbtOps;
+import net.minecraft.datafixers.DataFixTypes;
+import net.minecraft.datafixers.NbtOps;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.util.DynamicSerializable;
+import net.minecraft.util.SystemUtil;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.math.ChunkSectionPos;
 import net.minecraft.world.World;
@@ -39,40 +40,40 @@ public class SerializingRegionBasedStorage<R extends DynamicSerializable> extend
 	private final DataFixTypes dataFixType;
 
 	public SerializingRegionBasedStorage(
-		File directory, BiFunction<Runnable, Dynamic<?>, R> deserializer, Function<Runnable, R> factory, DataFixer dataFixer, DataFixTypes dataFixType
+		File file, BiFunction<Runnable, Dynamic<?>, R> biFunction, Function<Runnable, R> function, DataFixer dataFixer, DataFixTypes dataFixTypes
 	) {
-		super(directory);
-		this.deserializer = deserializer;
-		this.factory = factory;
+		super(file);
+		this.deserializer = biFunction;
+		this.factory = function;
 		this.dataFixer = dataFixer;
-		this.dataFixType = dataFixType;
+		this.dataFixType = dataFixTypes;
 	}
 
-	protected void tick(BooleanSupplier shouldKeepTicking) {
-		while (!this.unsavedElements.isEmpty() && shouldKeepTicking.getAsBoolean()) {
+	protected void tick(BooleanSupplier booleanSupplier) {
+		while (!this.unsavedElements.isEmpty() && booleanSupplier.getAsBoolean()) {
 			ChunkPos chunkPos = ChunkSectionPos.from(this.unsavedElements.firstLong()).toChunkPos();
 			this.method_20370(chunkPos);
 		}
 	}
 
 	@Nullable
-	protected Optional<R> getIfLoaded(long pos) {
-		return this.loadedElements.get(pos);
+	protected Optional<R> getIfLoaded(long l) {
+		return this.loadedElements.get(l);
 	}
 
-	protected Optional<R> get(long pos) {
-		ChunkSectionPos chunkSectionPos = ChunkSectionPos.from(pos);
+	protected Optional<R> get(long l) {
+		ChunkSectionPos chunkSectionPos = ChunkSectionPos.from(l);
 		if (this.isPosInvalid(chunkSectionPos)) {
 			return Optional.empty();
 		} else {
-			Optional<R> optional = this.getIfLoaded(pos);
+			Optional<R> optional = this.getIfLoaded(l);
 			if (optional != null) {
 				return optional;
 			} else {
 				this.loadDataAt(chunkSectionPos.toChunkPos());
-				optional = this.getIfLoaded(pos);
+				optional = this.getIfLoaded(l);
 				if (optional == null) {
-					throw new IllegalStateException();
+					throw (IllegalStateException)SystemUtil.method_22320(new IllegalStateException());
 				} else {
 					return optional;
 				}
@@ -80,17 +81,17 @@ public class SerializingRegionBasedStorage<R extends DynamicSerializable> extend
 		}
 	}
 
-	protected boolean isPosInvalid(ChunkSectionPos pos) {
-		return World.isHeightInvalid(ChunkSectionPos.getWorldCoord(pos.getSectionY()));
+	protected boolean isPosInvalid(ChunkSectionPos chunkSectionPos) {
+		return World.isHeightInvalid(ChunkSectionPos.fromChunkCoord(chunkSectionPos.getChunkY()));
 	}
 
-	protected R getOrCreate(long pos) {
-		Optional<R> optional = this.get(pos);
+	protected R getOrCreate(long l) {
+		Optional<R> optional = this.get(l);
 		if (optional.isPresent()) {
 			return (R)optional.get();
 		} else {
-			R dynamicSerializable = (R)this.factory.apply((Runnable)() -> this.onUpdate(pos));
-			this.loadedElements.put(pos, Optional.of(dynamicSerializable));
+			R dynamicSerializable = (R)this.factory.apply((Runnable)() -> this.onUpdate(l));
+			this.loadedElements.put(l, Optional.of(dynamicSerializable));
 			return dynamicSerializable;
 		}
 	}
@@ -177,15 +178,15 @@ public class SerializingRegionBasedStorage<R extends DynamicSerializable> extend
 		);
 	}
 
-	protected void onLoad(long pos) {
+	protected void onLoad(long l) {
 	}
 
-	protected void onUpdate(long pos) {
-		Optional<R> optional = this.loadedElements.get(pos);
+	protected void onUpdate(long l) {
+		Optional<R> optional = this.loadedElements.get(l);
 		if (optional != null && optional.isPresent()) {
-			this.unsavedElements.add(pos);
+			this.unsavedElements.add(l);
 		} else {
-			LOGGER.warn("No data for position: {}", ChunkSectionPos.from(pos));
+			LOGGER.warn("No data for position: {}", ChunkSectionPos.from(l));
 		}
 	}
 

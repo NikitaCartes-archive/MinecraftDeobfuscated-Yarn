@@ -25,41 +25,45 @@ public class SummonedEntityCriterion implements Criterion<SummonedEntityCriterio
 	}
 
 	@Override
-	public void beginTrackingCondition(PlayerAdvancementTracker manager, Criterion.ConditionsContainer<SummonedEntityCriterion.Conditions> conditionsContainer) {
-		SummonedEntityCriterion.Handler handler = (SummonedEntityCriterion.Handler)this.handlers.get(manager);
+	public void beginTrackingCondition(
+		PlayerAdvancementTracker playerAdvancementTracker, Criterion.ConditionsContainer<SummonedEntityCriterion.Conditions> conditionsContainer
+	) {
+		SummonedEntityCriterion.Handler handler = (SummonedEntityCriterion.Handler)this.handlers.get(playerAdvancementTracker);
 		if (handler == null) {
-			handler = new SummonedEntityCriterion.Handler(manager);
-			this.handlers.put(manager, handler);
+			handler = new SummonedEntityCriterion.Handler(playerAdvancementTracker);
+			this.handlers.put(playerAdvancementTracker, handler);
 		}
 
 		handler.addCondition(conditionsContainer);
 	}
 
 	@Override
-	public void endTrackingCondition(PlayerAdvancementTracker manager, Criterion.ConditionsContainer<SummonedEntityCriterion.Conditions> conditionsContainer) {
-		SummonedEntityCriterion.Handler handler = (SummonedEntityCriterion.Handler)this.handlers.get(manager);
+	public void endTrackingCondition(
+		PlayerAdvancementTracker playerAdvancementTracker, Criterion.ConditionsContainer<SummonedEntityCriterion.Conditions> conditionsContainer
+	) {
+		SummonedEntityCriterion.Handler handler = (SummonedEntityCriterion.Handler)this.handlers.get(playerAdvancementTracker);
 		if (handler != null) {
 			handler.removeCondition(conditionsContainer);
 			if (handler.isEmpty()) {
-				this.handlers.remove(manager);
+				this.handlers.remove(playerAdvancementTracker);
 			}
 		}
 	}
 
 	@Override
-	public void endTracking(PlayerAdvancementTracker tracker) {
-		this.handlers.remove(tracker);
+	public void endTracking(PlayerAdvancementTracker playerAdvancementTracker) {
+		this.handlers.remove(playerAdvancementTracker);
 	}
 
-	public SummonedEntityCriterion.Conditions conditionsFromJson(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext) {
-		EntityPredicate entityPredicate = EntityPredicate.fromJson(jsonObject.get("entity"));
+	public SummonedEntityCriterion.Conditions method_9123(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext) {
+		EntityPredicate entityPredicate = EntityPredicate.deserialize(jsonObject.get("entity"));
 		return new SummonedEntityCriterion.Conditions(entityPredicate);
 	}
 
-	public void trigger(ServerPlayerEntity player, Entity entity) {
-		SummonedEntityCriterion.Handler handler = (SummonedEntityCriterion.Handler)this.handlers.get(player.getAdvancementTracker());
+	public void handle(ServerPlayerEntity serverPlayerEntity, Entity entity) {
+		SummonedEntityCriterion.Handler handler = (SummonedEntityCriterion.Handler)this.handlers.get(serverPlayerEntity.getAdvancementManager());
 		if (handler != null) {
-			handler.handle(player, entity);
+			handler.handle(serverPlayerEntity, entity);
 		}
 	}
 

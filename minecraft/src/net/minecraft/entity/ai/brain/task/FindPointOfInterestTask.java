@@ -5,39 +5,39 @@ import it.unimi.dsi.fastutil.longs.Long2LongMap;
 import it.unimi.dsi.fastutil.longs.Long2LongOpenHashMap;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
+import net.minecraft.client.network.DebugRendererInfoManager;
 import net.minecraft.entity.ai.brain.MemoryModuleState;
 import net.minecraft.entity.ai.brain.MemoryModuleType;
 import net.minecraft.entity.ai.pathing.Path;
 import net.minecraft.entity.mob.MobEntityWithAi;
-import net.minecraft.server.network.DebugInfoSender;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.GlobalPos;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.poi.PointOfInterestStorage;
-import net.minecraft.world.poi.PointOfInterestType;
+import net.minecraft.village.PointOfInterestStorage;
+import net.minecraft.village.PointOfInterestType;
 
 public class FindPointOfInterestTask extends Task<MobEntityWithAi> {
 	private final PointOfInterestType poiType;
 	private final MemoryModuleType<GlobalPos> field_20287;
 	private final boolean onlyRunIfChild;
-	private long positionExpireTimeLimit;
+	private long lastRunTime;
 	private final Long2LongMap field_19289 = new Long2LongOpenHashMap();
 	private int field_19290;
 
-	public FindPointOfInterestTask(PointOfInterestType poiType, MemoryModuleType<GlobalPos> targetMemoryModule, boolean onlyRunIfChild) {
-		super(ImmutableMap.of(targetMemoryModule, MemoryModuleState.VALUE_ABSENT));
-		this.poiType = poiType;
-		this.field_20287 = targetMemoryModule;
-		this.onlyRunIfChild = onlyRunIfChild;
+	public FindPointOfInterestTask(PointOfInterestType pointOfInterestType, MemoryModuleType<GlobalPos> memoryModuleType, boolean bl) {
+		super(ImmutableMap.of(memoryModuleType, MemoryModuleState.VALUE_ABSENT));
+		this.poiType = pointOfInterestType;
+		this.field_20287 = memoryModuleType;
+		this.onlyRunIfChild = bl;
 	}
 
-	protected boolean shouldRun(ServerWorld serverWorld, MobEntityWithAi mobEntityWithAi) {
-		return this.onlyRunIfChild && mobEntityWithAi.isBaby() ? false : serverWorld.getTime() - this.positionExpireTimeLimit >= 20L;
+	protected boolean method_20816(ServerWorld serverWorld, MobEntityWithAi mobEntityWithAi) {
+		return this.onlyRunIfChild && mobEntityWithAi.isBaby() ? false : serverWorld.getTime() - this.lastRunTime >= 20L;
 	}
 
-	protected void run(ServerWorld serverWorld, MobEntityWithAi mobEntityWithAi, long l) {
+	protected void method_20817(ServerWorld serverWorld, MobEntityWithAi mobEntityWithAi, long l) {
 		this.field_19290 = 0;
-		this.positionExpireTimeLimit = serverWorld.getTime() + (long)serverWorld.getRandom().nextInt(20);
+		this.lastRunTime = serverWorld.getTime() + (long)serverWorld.getRandom().nextInt(20);
 		PointOfInterestStorage pointOfInterestStorage = serverWorld.getPointOfInterestStorage();
 		Predicate<BlockPos> predicate = blockPosx -> {
 			long lx = blockPosx.asLong();
@@ -46,7 +46,7 @@ public class FindPointOfInterestTask extends Task<MobEntityWithAi> {
 			} else if (++this.field_19290 >= 5) {
 				return false;
 			} else {
-				this.field_19289.put(lx, this.positionExpireTimeLimit + 40L);
+				this.field_19289.put(lx, this.lastRunTime + 40L);
 				return true;
 			}
 		};
@@ -59,10 +59,10 @@ public class FindPointOfInterestTask extends Task<MobEntityWithAi> {
 			pointOfInterestStorage.getType(blockPos).ifPresent(pointOfInterestType -> {
 				pointOfInterestStorage.getPosition(this.poiType.getCompletionCondition(), blockPos2 -> blockPos2.equals(blockPos), blockPos, 1);
 				mobEntityWithAi.getBrain().putMemory(this.field_20287, GlobalPos.create(serverWorld.getDimension().getType(), blockPos));
-				DebugInfoSender.sendPointOfInterest(serverWorld, blockPos);
+				DebugRendererInfoManager.sendPointOfInterest(serverWorld, blockPos);
 			});
 		} else if (this.field_19290 < 5) {
-			this.field_19289.long2LongEntrySet().removeIf(entry -> entry.getLongValue() < this.positionExpireTimeLimit);
+			this.field_19289.long2LongEntrySet().removeIf(entry -> entry.getLongValue() < this.lastRunTime);
 		}
 	}
 }

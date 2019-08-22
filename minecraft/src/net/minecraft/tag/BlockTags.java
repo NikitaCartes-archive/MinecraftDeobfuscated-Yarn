@@ -41,6 +41,8 @@ public class BlockTags {
 	public static final Tag<Block> SMALL_FLOWERS = register("small_flowers");
 	public static final Tag<Block> BEDS = register("beds");
 	public static final Tag<Block> FENCES = register("fences");
+	public static final Tag<Block> TALL_FLOWERS = register("tall_flowers");
+	public static final Tag<Block> FLOWERS = register("flowers");
 	public static final Tag<Block> FLOWER_POTS = register("flower_pots");
 	public static final Tag<Block> ENDERMAN_HOLDABLE = register("enderman_holdable");
 	public static final Tag<Block> ICE = register("ice");
@@ -58,9 +60,12 @@ public class BlockTags {
 	public static final Tag<Block> SIGNS = register("signs");
 	public static final Tag<Block> DRAGON_IMMUNE = register("dragon_immune");
 	public static final Tag<Block> WITHER_IMMUNE = register("wither_immune");
+	public static final Tag<Block> BEEHIVES = register("beehives");
+	public static final Tag<Block> CROPS = register("crops");
+	public static final Tag<Block> BEE_GROWABLES = register("bee_growables");
 
-	public static void setContainer(TagContainer<Block> container) {
-		BlockTags.container = container;
+	public static void setContainer(TagContainer<Block> tagContainer) {
+		container = tagContainer;
 		latestVersion++;
 	}
 
@@ -68,8 +73,8 @@ public class BlockTags {
 		return container;
 	}
 
-	private static Tag<Block> register(String id) {
-		return new BlockTags.CachingTag(new Identifier(id));
+	private static Tag<Block> register(String string) {
+		return new BlockTags.CachingTag(new Identifier(string));
 	}
 
 	static class CachingTag extends Tag<Block> {
@@ -80,7 +85,7 @@ public class BlockTags {
 			super(identifier);
 		}
 
-		public boolean contains(Block block) {
+		public boolean method_15076(Block block) {
 			if (this.version != BlockTags.latestVersion) {
 				this.delegate = BlockTags.container.getOrCreate(this.getId());
 				this.version = BlockTags.latestVersion;

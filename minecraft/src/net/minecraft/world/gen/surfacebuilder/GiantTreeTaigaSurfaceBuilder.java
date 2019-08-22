@@ -12,7 +12,7 @@ public class GiantTreeTaigaSurfaceBuilder extends SurfaceBuilder<TernarySurfaceC
 		super(function);
 	}
 
-	public void generate(
+	public void method_15220(
 		Random random,
 		Chunk chunk,
 		Biome biome,

@@ -8,15 +8,18 @@ public class CountChanceDecoratorConfig implements DecoratorConfig {
 	public final int count;
 	public final float chance;
 
-	public CountChanceDecoratorConfig(int count, float chance) {
-		this.count = count;
-		this.chance = chance;
+	public CountChanceDecoratorConfig(int i, float f) {
+		this.count = i;
+		this.chance = f;
 	}
 
 	@Override
-	public <T> Dynamic<T> serialize(DynamicOps<T> ops) {
+	public <T> Dynamic<T> serialize(DynamicOps<T> dynamicOps) {
 		return new Dynamic<>(
-			ops, ops.createMap(ImmutableMap.of(ops.createString("count"), ops.createInt(this.count), ops.createString("chance"), ops.createFloat(this.chance)))
+			dynamicOps,
+			dynamicOps.createMap(
+				ImmutableMap.of(dynamicOps.createString("count"), dynamicOps.createInt(this.count), dynamicOps.createString("chance"), dynamicOps.createFloat(this.chance))
+			)
 		);
 	}
 

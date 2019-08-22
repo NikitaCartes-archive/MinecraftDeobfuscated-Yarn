@@ -117,8 +117,8 @@ public class MovementTutorialStepHandler implements TutorialStepHandler {
 	}
 
 	@Override
-	public void onMouseUpdate(double deltaX, double deltaY) {
-		if (Math.abs(deltaX) > 0.01 || Math.abs(deltaY) > 0.01) {
+	public void onMouseUpdate(double d, double e) {
+		if (Math.abs(d) > 0.01 || Math.abs(e) > 0.01) {
 			this.lookedAroundLastTick = true;
 		}
 	}

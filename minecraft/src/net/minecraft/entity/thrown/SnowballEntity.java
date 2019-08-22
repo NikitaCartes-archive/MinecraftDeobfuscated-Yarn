@@ -22,12 +22,12 @@ public class SnowballEntity extends ThrownItemEntity {
 		super(entityType, world);
 	}
 
-	public SnowballEntity(World world, LivingEntity owner) {
-		super(EntityType.SNOWBALL, owner, world);
+	public SnowballEntity(World world, LivingEntity livingEntity) {
+		super(EntityType.SNOWBALL, livingEntity, world);
 	}
 
-	public SnowballEntity(World world, double x, double y, double z) {
-		super(EntityType.SNOWBALL, x, y, z, world);
+	public SnowballEntity(World world, double d, double e, double f) {
+		super(EntityType.SNOWBALL, d, e, f, world);
 	}
 
 	@Override
@@ -43,8 +43,8 @@ public class SnowballEntity extends ThrownItemEntity {
 
 	@Environment(EnvType.CLIENT)
 	@Override
-	public void handleStatus(byte status) {
-		if (status == 3) {
+	public void handleStatus(byte b) {
+		if (b == 3) {
 			ParticleEffect particleEffect = this.getParticleParameters();
 
 			for (int i = 0; i < 8; i++) {

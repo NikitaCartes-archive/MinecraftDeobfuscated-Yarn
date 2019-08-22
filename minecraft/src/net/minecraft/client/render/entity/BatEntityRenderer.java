@@ -1,6 +1,6 @@
 package net.minecraft.client.render.entity;
 
-import com.mojang.blaze3d.platform.GlStateManager;
+import com.mojang.blaze3d.systems.RenderSystem;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.render.entity.model.BatEntityModel;
@@ -16,19 +16,19 @@ public class BatEntityRenderer extends MobEntityRenderer<BatEntity, BatEntityMod
 		super(entityRenderDispatcher, new BatEntityModel(), 0.25F);
 	}
 
-	protected Identifier getTexture(BatEntity batEntity) {
+	protected Identifier method_3883(BatEntity batEntity) {
 		return SKIN;
 	}
 
-	protected void scale(BatEntity batEntity, float f) {
-		GlStateManager.scalef(0.35F, 0.35F, 0.35F);
+	protected void method_3884(BatEntity batEntity, float f) {
+		RenderSystem.scalef(0.35F, 0.35F, 0.35F);
 	}
 
-	protected void setupTransforms(BatEntity batEntity, float f, float g, float h) {
+	protected void method_3882(BatEntity batEntity, float f, float g, float h) {
 		if (batEntity.isRoosting()) {
-			GlStateManager.translatef(0.0F, -0.1F, 0.0F);
+			RenderSystem.translatef(0.0F, -0.1F, 0.0F);
 		} else {
-			GlStateManager.translatef(0.0F, MathHelper.cos(f * 0.3F) * 0.1F, 0.0F);
+			RenderSystem.translatef(0.0F, MathHelper.cos(f * 0.3F) * 0.1F, 0.0F);
 		}
 
 		super.setupTransforms(batEntity, f, g, h);

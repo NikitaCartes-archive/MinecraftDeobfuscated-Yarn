@@ -1,6 +1,6 @@
 package net.minecraft.client.gui.widget;
 
-import com.mojang.blaze3d.platform.GlStateManager;
+import com.mojang.blaze3d.systems.RenderSystem;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
@@ -10,8 +10,8 @@ import net.minecraft.client.resource.language.I18n;
 public class LockButtonWidget extends ButtonWidget {
 	private boolean locked;
 
-	public LockButtonWidget(int x, int y, ButtonWidget.PressAction action) {
-		super(x, y, 20, 20, I18n.translate("narrator.button.difficulty_lock"), action);
+	public LockButtonWidget(int i, int j, ButtonWidget.PressAction pressAction) {
+		super(i, j, 20, 20, I18n.translate("narrator.button.difficulty_lock"), pressAction);
 	}
 
 	@Override
@@ -25,14 +25,14 @@ public class LockButtonWidget extends ButtonWidget {
 		return this.locked;
 	}
 
-	public void setLocked(boolean locked) {
-		this.locked = locked;
+	public void setLocked(boolean bl) {
+		this.locked = bl;
 	}
 
 	@Override
-	public void renderButton(int mouseX, int mouseY, float delta) {
+	public void renderButton(int i, int j, float f) {
 		MinecraftClient.getInstance().getTextureManager().bindTexture(ButtonWidget.WIDGETS_LOCATION);
-		GlStateManager.color4f(1.0F, 1.0F, 1.0F, 1.0F);
+		RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
 		LockButtonWidget.IconLocation iconLocation;
 		if (!this.active) {
 			iconLocation = this.locked ? LockButtonWidget.IconLocation.LOCKED_DISABLED : LockButtonWidget.IconLocation.UNLOCKED_DISABLED;

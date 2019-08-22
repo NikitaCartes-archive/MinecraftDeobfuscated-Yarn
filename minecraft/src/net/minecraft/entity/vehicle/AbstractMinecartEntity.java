@@ -10,6 +10,7 @@ import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.PoweredRailBlock;
 import net.minecraft.block.enums.RailShape;
+import net.minecraft.client.network.packet.EntitySpawnS2CPacket;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.MovementType;
@@ -22,11 +23,10 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.NbtHelper;
 import net.minecraft.network.Packet;
-import net.minecraft.network.packet.s2c.play.EntitySpawnS2CPacket;
 import net.minecraft.predicate.entity.EntityPredicates;
 import net.minecraft.tag.BlockTags;
+import net.minecraft.util.TagHelper;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Direction;
@@ -68,35 +68,35 @@ public abstract class AbstractMinecartEntity extends Entity {
 	@Environment(EnvType.CLIENT)
 	private double field_7656;
 
-	protected AbstractMinecartEntity(EntityType<?> type, World world) {
-		super(type, world);
+	protected AbstractMinecartEntity(EntityType<?> entityType, World world) {
+		super(entityType, world);
 		this.inanimate = true;
 	}
 
-	protected AbstractMinecartEntity(EntityType<?> type, World world, double x, double y, double z) {
-		this(type, world);
-		this.updatePosition(x, y, z);
+	protected AbstractMinecartEntity(EntityType<?> entityType, World world, double d, double e, double f) {
+		this(entityType, world);
+		this.setPosition(d, e, f);
 		this.setVelocity(Vec3d.ZERO);
-		this.prevX = x;
-		this.prevY = y;
-		this.prevZ = z;
+		this.prevX = d;
+		this.prevY = e;
+		this.prevZ = f;
 	}
 
-	public static AbstractMinecartEntity create(World world, double x, double y, double z, AbstractMinecartEntity.Type type) {
+	public static AbstractMinecartEntity create(World world, double d, double e, double f, AbstractMinecartEntity.Type type) {
 		if (type == AbstractMinecartEntity.Type.CHEST) {
-			return new ChestMinecartEntity(world, x, y, z);
+			return new ChestMinecartEntity(world, d, e, f);
 		} else if (type == AbstractMinecartEntity.Type.FURNACE) {
-			return new FurnaceMinecartEntity(world, x, y, z);
+			return new FurnaceMinecartEntity(world, d, e, f);
 		} else if (type == AbstractMinecartEntity.Type.TNT) {
-			return new TntMinecartEntity(world, x, y, z);
+			return new TntMinecartEntity(world, d, e, f);
 		} else if (type == AbstractMinecartEntity.Type.SPAWNER) {
-			return new SpawnerMinecartEntity(world, x, y, z);
+			return new SpawnerMinecartEntity(world, d, e, f);
 		} else if (type == AbstractMinecartEntity.Type.HOPPER) {
-			return new HopperMinecartEntity(world, x, y, z);
+			return new HopperMinecartEntity(world, d, e, f);
 		} else {
 			return (AbstractMinecartEntity)(type == AbstractMinecartEntity.Type.COMMAND_BLOCK
-				? new CommandBlockMinecartEntity(world, x, y, z)
-				: new MinecartEntity(world, x, y, z));
+				? new CommandBlockMinecartEntity(world, d, e, f)
+				: new MinecartEntity(world, d, e, f));
 		}
 	}
 
@@ -117,8 +117,8 @@ public abstract class AbstractMinecartEntity extends Entity {
 
 	@Nullable
 	@Override
-	public Box getHardCollisionBox(Entity collidingEntity) {
-		return collidingEntity.isPushable() ? collidingEntity.getBoundingBox() : null;
+	public Box getHardCollisionBox(Entity entity) {
+		return entity.isPushable() ? entity.getBoundingBox() : null;
 	}
 
 	@Override
@@ -132,23 +132,23 @@ public abstract class AbstractMinecartEntity extends Entity {
 	}
 
 	@Override
-	public boolean damage(DamageSource source, float amount) {
+	public boolean damage(DamageSource damageSource, float f) {
 		if (this.world.isClient || this.removed) {
 			return true;
-		} else if (this.isInvulnerableTo(source)) {
+		} else if (this.isInvulnerableTo(damageSource)) {
 			return false;
 		} else {
 			this.setDamageWobbleSide(-this.getDamageWobbleSide());
 			this.setDamageWobbleTicks(10);
 			this.scheduleVelocityUpdate();
-			this.setDamageWobbleStrength(this.getDamageWobbleStrength() + amount * 10.0F);
-			boolean bl = source.getAttacker() instanceof PlayerEntity && ((PlayerEntity)source.getAttacker()).abilities.creativeMode;
+			this.setDamageWobbleStrength(this.getDamageWobbleStrength() + f * 10.0F);
+			boolean bl = damageSource.getAttacker() instanceof PlayerEntity && ((PlayerEntity)damageSource.getAttacker()).abilities.creativeMode;
 			if (bl || this.getDamageWobbleStrength() > 40.0F) {
 				this.removeAllPassengers();
 				if (bl && !this.hasCustomName()) {
 					this.remove();
 				} else {
-					this.dropItems(source);
+					this.dropItems(damageSource);
 				}
 			}
 
@@ -200,7 +200,7 @@ public abstract class AbstractMinecartEntity extends Entity {
 			this.destroy();
 		}
 
-		this.tickNetherPortal();
+		this.tickPortal();
 		if (this.world.isClient) {
 			if (this.field_7669 > 0) {
 				double d = this.x + (this.field_7665 - this.x) / (double)this.field_7669;
@@ -210,10 +210,10 @@ public abstract class AbstractMinecartEntity extends Entity {
 				this.yaw = (float)((double)this.yaw + g / (double)this.field_7669);
 				this.pitch = (float)((double)this.pitch + (this.field_7657 - (double)this.pitch) / (double)this.field_7669);
 				this.field_7669--;
-				this.updatePosition(d, e, f);
+				this.setPosition(d, e, f);
 				this.setRotation(this.yaw, this.pitch);
 			} else {
-				this.updatePosition(this.x, this.y, this.z);
+				this.setPosition(this.x, this.y, this.z);
 				this.setRotation(this.yaw, this.pitch);
 			}
 		} else {
@@ -292,7 +292,7 @@ public abstract class AbstractMinecartEntity extends Entity {
 		return 0.4;
 	}
 
-	public void onActivatorRail(int x, int y, int z, boolean powered) {
+	public void onActivatorRail(int i, int j, int k, boolean bl) {
 	}
 
 	protected void method_7512() {
@@ -397,15 +397,15 @@ public abstract class AbstractMinecartEntity extends Entity {
 
 		this.x = l + e * p;
 		this.z = m + f * p;
-		this.updatePosition(this.x, this.y, this.z);
+		this.setPosition(this.x, this.y, this.z);
 		double q = this.hasPassengers() ? 0.75 : 1.0;
 		double r = this.method_7504();
 		vec3d2 = this.getVelocity();
 		this.move(MovementType.SELF, new Vec3d(MathHelper.clamp(q * vec3d2.x, -r, r), 0.0, MathHelper.clamp(q * vec3d2.z, -r, r)));
 		if (is[0][1] != 0 && MathHelper.floor(this.x) - blockPos.getX() == is[0][0] && MathHelper.floor(this.z) - blockPos.getZ() == is[0][2]) {
-			this.updatePosition(this.x, this.y + (double)is[0][1], this.z);
+			this.setPosition(this.x, this.y + (double)is[0][1], this.z);
 		} else if (is[1][1] != 0 && MathHelper.floor(this.x) - blockPos.getX() == is[1][0] && MathHelper.floor(this.z) - blockPos.getZ() == is[1][2]) {
-			this.updatePosition(this.x, this.y + (double)is[1][1], this.z);
+			this.setPosition(this.x, this.y + (double)is[1][1], this.z);
 		}
 
 		this.method_7525();
@@ -418,7 +418,7 @@ public abstract class AbstractMinecartEntity extends Entity {
 				this.setVelocity(vec3d5.multiply((t + s) / t, 1.0, (t + s) / t));
 			}
 
-			this.updatePosition(this.x, vec3d4.y, this.z);
+			this.setPosition(this.x, vec3d4.y, this.z);
 		}
 
 		int u = MathHelper.floor(this.x);
@@ -567,19 +567,19 @@ public abstract class AbstractMinecartEntity extends Entity {
 	}
 
 	@Override
-	protected void readCustomDataFromTag(CompoundTag tag) {
-		if (tag.getBoolean("CustomDisplayTile")) {
-			this.setCustomBlock(NbtHelper.toBlockState(tag.getCompound("DisplayState")));
-			this.setCustomBlockOffset(tag.getInt("DisplayOffset"));
+	protected void readCustomDataFromTag(CompoundTag compoundTag) {
+		if (compoundTag.getBoolean("CustomDisplayTile")) {
+			this.setCustomBlock(TagHelper.deserializeBlockState(compoundTag.getCompound("DisplayState")));
+			this.setCustomBlockOffset(compoundTag.getInt("DisplayOffset"));
 		}
 	}
 
 	@Override
-	protected void writeCustomDataToTag(CompoundTag tag) {
+	protected void writeCustomDataToTag(CompoundTag compoundTag) {
 		if (this.hasCustomBlock()) {
-			tag.putBoolean("CustomDisplayTile", true);
-			tag.put("DisplayState", NbtHelper.fromBlockState(this.getContainedBlock()));
-			tag.putInt("DisplayOffset", this.getBlockOffset());
+			compoundTag.putBoolean("CustomDisplayTile", true);
+			compoundTag.put("DisplayState", TagHelper.serializeBlockState(this.getContainedBlock()));
+			compoundTag.putInt("DisplayOffset", this.getBlockOffset());
 		}
 	}
 
@@ -651,22 +651,22 @@ public abstract class AbstractMinecartEntity extends Entity {
 
 	@Environment(EnvType.CLIENT)
 	@Override
-	public void updateTrackedPositionAndAngles(double x, double y, double z, float yaw, float pitch, int interpolationSteps, boolean interpolate) {
-		this.field_7665 = x;
-		this.field_7666 = y;
-		this.field_7662 = z;
-		this.field_7659 = (double)yaw;
-		this.field_7657 = (double)pitch;
-		this.field_7669 = interpolationSteps + 2;
+	public void updateTrackedPositionAndAngles(double d, double e, double f, float g, float h, int i, boolean bl) {
+		this.field_7665 = d;
+		this.field_7666 = e;
+		this.field_7662 = f;
+		this.field_7659 = (double)g;
+		this.field_7657 = (double)h;
+		this.field_7669 = i + 2;
 		this.setVelocity(this.field_7658, this.field_7655, this.field_7656);
 	}
 
 	@Environment(EnvType.CLIENT)
 	@Override
-	public void setVelocityClient(double x, double y, double z) {
-		this.field_7658 = x;
-		this.field_7655 = y;
-		this.field_7656 = z;
+	public void setVelocityClient(double d, double e, double f) {
+		this.field_7658 = d;
+		this.field_7655 = e;
+		this.field_7656 = f;
 		this.setVelocity(this.field_7658, this.field_7655, this.field_7656);
 	}
 
@@ -678,16 +678,16 @@ public abstract class AbstractMinecartEntity extends Entity {
 		return this.dataTracker.get(DAMAGE_WOBBLE_STRENGTH);
 	}
 
-	public void setDamageWobbleTicks(int wobbleTicks) {
-		this.dataTracker.set(DAMAGE_WOBBLE_TICKS, wobbleTicks);
+	public void setDamageWobbleTicks(int i) {
+		this.dataTracker.set(DAMAGE_WOBBLE_TICKS, i);
 	}
 
 	public int getDamageWobbleTicks() {
 		return this.dataTracker.get(DAMAGE_WOBBLE_TICKS);
 	}
 
-	public void setDamageWobbleSide(int wobbleSide) {
-		this.dataTracker.set(DAMAGE_WOBBLE_SIDE, wobbleSide);
+	public void setDamageWobbleSide(int i) {
+		this.dataTracker.set(DAMAGE_WOBBLE_SIDE, i);
 	}
 
 	public int getDamageWobbleSide() {

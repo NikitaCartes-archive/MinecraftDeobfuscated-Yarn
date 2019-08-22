@@ -3,6 +3,7 @@ package net.minecraft.entity;
 import java.util.Map.Entry;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.client.network.packet.ExperienceOrbSpawnS2CPacket;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.enchantment.Enchantments;
 import net.minecraft.entity.damage.DamageSource;
@@ -10,7 +11,6 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.Packet;
-import net.minecraft.network.packet.s2c.play.ExperienceOrbSpawnS2CPacket;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.tag.FluidTags;
 import net.minecraft.util.math.BlockPos;
@@ -27,12 +27,12 @@ public class ExperienceOrbEntity extends Entity {
 	private PlayerEntity target;
 	private int field_6160;
 
-	public ExperienceOrbEntity(World world, double x, double y, double z, int amount) {
+	public ExperienceOrbEntity(World world, double d, double e, double f, int i) {
 		this(EntityType.EXPERIENCE_ORB, world);
-		this.updatePosition(x, y, z);
+		this.setPosition(d, e, f);
 		this.yaw = (float)(this.random.nextDouble() * 360.0);
 		this.setVelocity((this.random.nextDouble() * 0.2F - 0.1F) * 2.0, this.random.nextDouble() * 0.2 * 2.0, (this.random.nextDouble() * 0.2F - 0.1F) * 2.0);
-		this.amount = amount;
+		this.amount = i;
 	}
 
 	public ExperienceOrbEntity(EntityType<? extends ExperienceOrbEntity> entityType, World world) {
@@ -88,7 +88,7 @@ public class ExperienceOrbEntity extends Entity {
 		}
 
 		if (!this.world.doesNotCollide(this.getBoundingBox())) {
-			this.pushOutOfBlocks(this.x, (this.getBoundingBox().y1 + this.getBoundingBox().y2) / 2.0, this.z);
+			this.pushOutOfBlocks(this.x, (this.getBoundingBox().minY + this.getBoundingBox().maxY) / 2.0, this.z);
 		}
 
 		double d = 8.0;
@@ -116,7 +116,7 @@ public class ExperienceOrbEntity extends Entity {
 		this.move(MovementType.SELF, this.getVelocity());
 		float g = 0.98F;
 		if (this.onGround) {
-			g = this.world.getBlockState(new BlockPos(this.x, this.getBoundingBox().y1 - 1.0, this.z)).getBlock().getSlipperiness() * 0.98F;
+			g = this.world.getBlockState(new BlockPos(this.x, this.getBoundingBox().minY - 1.0, this.z)).getBlock().getSlipperiness() * 0.98F;
 		}
 
 		this.setVelocity(this.getVelocity().multiply((double)g, 0.98, (double)g));
@@ -141,17 +141,17 @@ public class ExperienceOrbEntity extends Entity {
 	}
 
 	@Override
-	protected void burn(int time) {
-		this.damage(DamageSource.IN_FIRE, (float)time);
+	protected void burn(int i) {
+		this.damage(DamageSource.IN_FIRE, (float)i);
 	}
 
 	@Override
-	public boolean damage(DamageSource source, float amount) {
-		if (this.isInvulnerableTo(source)) {
+	public boolean damage(DamageSource damageSource, float f) {
+		if (this.isInvulnerableTo(damageSource)) {
 			return false;
 		} else {
 			this.scheduleVelocityUpdate();
-			this.health = (int)((float)this.health - amount);
+			this.health = (int)((float)this.health - f);
 			if (this.health <= 0) {
 				this.remove();
 			}
@@ -161,26 +161,26 @@ public class ExperienceOrbEntity extends Entity {
 	}
 
 	@Override
-	public void writeCustomDataToTag(CompoundTag tag) {
-		tag.putShort("Health", (short)this.health);
-		tag.putShort("Age", (short)this.orbAge);
-		tag.putShort("Value", (short)this.amount);
+	public void writeCustomDataToTag(CompoundTag compoundTag) {
+		compoundTag.putShort("Health", (short)this.health);
+		compoundTag.putShort("Age", (short)this.orbAge);
+		compoundTag.putShort("Value", (short)this.amount);
 	}
 
 	@Override
-	public void readCustomDataFromTag(CompoundTag tag) {
-		this.health = tag.getShort("Health");
-		this.orbAge = tag.getShort("Age");
-		this.amount = tag.getShort("Value");
+	public void readCustomDataFromTag(CompoundTag compoundTag) {
+		this.health = compoundTag.getShort("Health");
+		this.orbAge = compoundTag.getShort("Age");
+		this.amount = compoundTag.getShort("Value");
 	}
 
 	@Override
-	public void onPlayerCollision(PlayerEntity player) {
+	public void onPlayerCollision(PlayerEntity playerEntity) {
 		if (!this.world.isClient) {
-			if (this.pickupDelay == 0 && player.experiencePickUpDelay == 0) {
-				player.experiencePickUpDelay = 2;
-				player.sendPickup(this, 1);
-				Entry<EquipmentSlot, ItemStack> entry = EnchantmentHelper.getRandomEnchantedEquipment(Enchantments.MENDING, player);
+			if (this.pickupDelay == 0 && playerEntity.experiencePickUpDelay == 0) {
+				playerEntity.experiencePickUpDelay = 2;
+				playerEntity.sendPickup(this, 1);
+				Entry<EquipmentSlot, ItemStack> entry = EnchantmentHelper.getRandomEnchantedEquipment(Enchantments.MENDING, playerEntity);
 				if (entry != null) {
 					ItemStack itemStack = (ItemStack)entry.getValue();
 					if (!itemStack.isEmpty() && itemStack.isDamaged()) {
@@ -191,7 +191,7 @@ public class ExperienceOrbEntity extends Entity {
 				}
 
 				if (this.amount > 0) {
-					player.addExperience(this.amount);
+					playerEntity.addExperience(this.amount);
 				}
 
 				this.remove();
@@ -199,12 +199,12 @@ public class ExperienceOrbEntity extends Entity {
 		}
 	}
 
-	private int getMendingRepairCost(int repairAmount) {
-		return repairAmount / 2;
+	private int getMendingRepairCost(int i) {
+		return i / 2;
 	}
 
-	private int getMendingRepairAmount(int experienceAmount) {
-		return experienceAmount * 2;
+	private int getMendingRepairAmount(int i) {
+		return i * 2;
 	}
 
 	public int getExperienceAmount() {
@@ -236,27 +236,27 @@ public class ExperienceOrbEntity extends Entity {
 		}
 	}
 
-	public static int roundToOrbSize(int value) {
-		if (value >= 2477) {
+	public static int roundToOrbSize(int i) {
+		if (i >= 2477) {
 			return 2477;
-		} else if (value >= 1237) {
+		} else if (i >= 1237) {
 			return 1237;
-		} else if (value >= 617) {
+		} else if (i >= 617) {
 			return 617;
-		} else if (value >= 307) {
+		} else if (i >= 307) {
 			return 307;
-		} else if (value >= 149) {
+		} else if (i >= 149) {
 			return 149;
-		} else if (value >= 73) {
+		} else if (i >= 73) {
 			return 73;
-		} else if (value >= 37) {
+		} else if (i >= 37) {
 			return 37;
-		} else if (value >= 17) {
+		} else if (i >= 17) {
 			return 17;
-		} else if (value >= 7) {
+		} else if (i >= 7) {
 			return 7;
 		} else {
-			return value >= 3 ? 3 : 1;
+			return i >= 3 ? 3 : 1;
 		}
 	}
 

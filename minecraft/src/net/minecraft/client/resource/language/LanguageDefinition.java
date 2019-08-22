@@ -11,10 +11,10 @@ public class LanguageDefinition implements Language, Comparable<LanguageDefiniti
 	private final String region;
 	private final boolean rightToLeft;
 
-	public LanguageDefinition(String code, String name, String region, boolean bl) {
-		this.code = code;
-		this.name = name;
-		this.region = region;
+	public LanguageDefinition(String string, String string2, String string3, boolean bl) {
+		this.code = string;
+		this.name = string2;
+		this.region = string3;
 		this.rightToLeft = bl;
 	}
 
@@ -41,11 +41,11 @@ public class LanguageDefinition implements Language, Comparable<LanguageDefiniti
 		return String.format("%s (%s)", this.region, this.name);
 	}
 
-	public boolean equals(Object o) {
-		if (this == o) {
+	public boolean equals(Object object) {
+		if (this == object) {
 			return true;
 		} else {
-			return !(o instanceof LanguageDefinition) ? false : this.code.equals(((LanguageDefinition)o).code);
+			return !(object instanceof LanguageDefinition) ? false : this.code.equals(((LanguageDefinition)object).code);
 		}
 	}
 
@@ -53,7 +53,7 @@ public class LanguageDefinition implements Language, Comparable<LanguageDefiniti
 		return this.code.hashCode();
 	}
 
-	public int compareTo(LanguageDefinition languageDefinition) {
+	public int method_4673(LanguageDefinition languageDefinition) {
 		return this.code.compareTo(languageDefinition.code);
 	}
 }

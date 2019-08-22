@@ -1,6 +1,6 @@
 package net.minecraft.client.render.entity.feature;
 
-import com.mojang.blaze3d.platform.GlStateManager;
+import com.mojang.blaze3d.systems.RenderSystem;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
@@ -13,47 +13,47 @@ import net.minecraft.util.Arm;
 
 @Environment(EnvType.CLIENT)
 public class HeldItemFeatureRenderer<T extends LivingEntity, M extends EntityModel<T> & ModelWithArms> extends FeatureRenderer<T, M> {
-	public HeldItemFeatureRenderer(FeatureRendererContext<T, M> context) {
-		super(context);
+	public HeldItemFeatureRenderer(FeatureRendererContext<T, M> featureRendererContext) {
+		super(featureRendererContext);
 	}
 
-	public void render(T livingEntity, float f, float g, float h, float i, float j, float k, float l) {
+	public void method_17162(T livingEntity, float f, float g, float h, float i, float j, float k, float l) {
 		boolean bl = livingEntity.getMainArm() == Arm.RIGHT;
 		ItemStack itemStack = bl ? livingEntity.getOffHandStack() : livingEntity.getMainHandStack();
 		ItemStack itemStack2 = bl ? livingEntity.getMainHandStack() : livingEntity.getOffHandStack();
 		if (!itemStack.isEmpty() || !itemStack2.isEmpty()) {
-			GlStateManager.pushMatrix();
-			if (this.getContextModel().child) {
+			RenderSystem.pushMatrix();
+			if (this.getModel().isChild) {
 				float m = 0.5F;
-				GlStateManager.translatef(0.0F, 0.75F, 0.0F);
-				GlStateManager.scalef(0.5F, 0.5F, 0.5F);
+				RenderSystem.translatef(0.0F, 0.75F, 0.0F);
+				RenderSystem.scalef(0.5F, 0.5F, 0.5F);
 			}
 
 			this.method_4192(livingEntity, itemStack2, ModelTransformation.Type.THIRD_PERSON_RIGHT_HAND, Arm.RIGHT);
 			this.method_4192(livingEntity, itemStack, ModelTransformation.Type.THIRD_PERSON_LEFT_HAND, Arm.LEFT);
-			GlStateManager.popMatrix();
+			RenderSystem.popMatrix();
 		}
 	}
 
 	private void method_4192(LivingEntity livingEntity, ItemStack itemStack, ModelTransformation.Type type, Arm arm) {
 		if (!itemStack.isEmpty()) {
-			GlStateManager.pushMatrix();
+			RenderSystem.pushMatrix();
 			this.method_4193(arm);
 			if (livingEntity.isInSneakingPose()) {
-				GlStateManager.translatef(0.0F, 0.2F, 0.0F);
+				RenderSystem.translatef(0.0F, 0.2F, 0.0F);
 			}
 
-			GlStateManager.rotatef(-90.0F, 1.0F, 0.0F, 0.0F);
-			GlStateManager.rotatef(180.0F, 0.0F, 1.0F, 0.0F);
+			RenderSystem.rotatef(-90.0F, 1.0F, 0.0F, 0.0F);
+			RenderSystem.rotatef(180.0F, 0.0F, 1.0F, 0.0F);
 			boolean bl = arm == Arm.LEFT;
-			GlStateManager.translatef((float)(bl ? -1 : 1) / 16.0F, 0.125F, -0.625F);
-			MinecraftClient.getInstance().getHeldItemRenderer().renderItemFromSide(livingEntity, itemStack, type, bl);
-			GlStateManager.popMatrix();
+			RenderSystem.translatef((float)(bl ? -1 : 1) / 16.0F, 0.125F, -0.625F);
+			MinecraftClient.getInstance().getFirstPersonRenderer().renderItemFromSide(livingEntity, itemStack, type, bl);
+			RenderSystem.popMatrix();
 		}
 	}
 
 	protected void method_4193(Arm arm) {
-		this.getContextModel().setArmAngle(0.0625F, arm);
+		this.getModel().setArmAngle(0.0625F, arm);
 	}
 
 	@Override

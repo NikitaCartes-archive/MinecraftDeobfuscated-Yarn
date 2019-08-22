@@ -21,7 +21,7 @@ public class EndermanEntityRenderer extends MobEntityRenderer<EndermanEntity, En
 		this.addFeature(new EndermanBlockFeatureRenderer(this));
 	}
 
-	public void render(EndermanEntity endermanEntity, double d, double e, double f, float g, float h) {
+	public void method_3911(EndermanEntity endermanEntity, double d, double e, double f, float g, float h) {
 		BlockState blockState = endermanEntity.getCarriedBlock();
 		EndermanEntityModel<EndermanEntity> endermanEntityModel = this.getModel();
 		endermanEntityModel.carryingBlock = blockState != null;
@@ -32,10 +32,10 @@ public class EndermanEntityRenderer extends MobEntityRenderer<EndermanEntity, En
 			f += this.random.nextGaussian() * 0.02;
 		}
 
-		super.render(endermanEntity, d, e, f, g, h);
+		super.method_4072(endermanEntity, d, e, f, g, h);
 	}
 
-	protected Identifier getTexture(EndermanEntity endermanEntity) {
+	protected Identifier method_3912(EndermanEntity endermanEntity) {
 		return SKIN;
 	}
 }

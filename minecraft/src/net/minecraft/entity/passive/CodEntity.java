@@ -29,7 +29,7 @@ public class CodEntity extends SchoolingFishEntity {
 	}
 
 	@Override
-	protected SoundEvent getHurtSound(DamageSource source) {
+	protected SoundEvent getHurtSound(DamageSource damageSource) {
 		return SoundEvents.ENTITY_COD_HURT;
 	}
 

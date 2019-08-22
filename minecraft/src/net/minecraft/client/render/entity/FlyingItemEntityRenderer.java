@@ -1,6 +1,6 @@
 package net.minecraft.client.render.entity;
 
-import com.mojang.blaze3d.platform.GlStateManager;
+import com.mojang.blaze3d.systems.RenderSystem;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.render.item.ItemRenderer;
@@ -15,10 +15,10 @@ public class FlyingItemEntityRenderer<T extends Entity & FlyingItemEntity> exten
 	private final ItemRenderer item;
 	private final float scale;
 
-	public FlyingItemEntityRenderer(EntityRenderDispatcher renderManager, ItemRenderer itemRenderer, float scale) {
-		super(renderManager);
+	public FlyingItemEntityRenderer(EntityRenderDispatcher entityRenderDispatcher, ItemRenderer itemRenderer, float f) {
+		super(entityRenderDispatcher);
 		this.item = itemRenderer;
-		this.scale = scale;
+		this.scale = f;
 	}
 
 	public FlyingItemEntityRenderer(EntityRenderDispatcher entityRenderDispatcher, ItemRenderer itemRenderer) {
@@ -26,29 +26,29 @@ public class FlyingItemEntityRenderer<T extends Entity & FlyingItemEntity> exten
 	}
 
 	@Override
-	public void render(T entity, double x, double y, double z, float yaw, float tickDelta) {
-		GlStateManager.pushMatrix();
-		GlStateManager.translatef((float)x, (float)y, (float)z);
-		GlStateManager.enableRescaleNormal();
-		GlStateManager.scalef(this.scale, this.scale, this.scale);
-		GlStateManager.rotatef(-this.renderManager.cameraYaw, 0.0F, 1.0F, 0.0F);
-		GlStateManager.rotatef((float)(this.renderManager.gameOptions.perspective == 2 ? -1 : 1) * this.renderManager.cameraPitch, 1.0F, 0.0F, 0.0F);
-		GlStateManager.rotatef(180.0F, 0.0F, 1.0F, 0.0F);
+	public void render(T entity, double d, double e, double f, float g, float h) {
+		RenderSystem.pushMatrix();
+		RenderSystem.translatef((float)d, (float)e, (float)f);
+		RenderSystem.enableRescaleNormal();
+		RenderSystem.scalef(this.scale, this.scale, this.scale);
+		RenderSystem.rotatef(-this.renderManager.cameraYaw, 0.0F, 1.0F, 0.0F);
+		RenderSystem.rotatef((float)(this.renderManager.gameOptions.perspective == 2 ? -1 : 1) * this.renderManager.cameraPitch, 1.0F, 0.0F, 0.0F);
+		RenderSystem.rotatef(180.0F, 0.0F, 1.0F, 0.0F);
 		this.bindTexture(SpriteAtlasTexture.BLOCK_ATLAS_TEX);
 		if (this.renderOutlines) {
-			GlStateManager.enableColorMaterial();
-			GlStateManager.setupSolidRenderingTextureCombine(this.getOutlineColor(entity));
+			RenderSystem.enableColorMaterial();
+			RenderSystem.setupSolidRenderingTextureCombine(this.getOutlineColor(entity));
 		}
 
 		this.item.renderItem(entity.getStack(), ModelTransformation.Type.GROUND);
 		if (this.renderOutlines) {
-			GlStateManager.tearDownSolidRenderingTextureCombine();
-			GlStateManager.disableColorMaterial();
+			RenderSystem.tearDownSolidRenderingTextureCombine();
+			RenderSystem.disableColorMaterial();
 		}
 
-		GlStateManager.disableRescaleNormal();
-		GlStateManager.popMatrix();
-		super.render(entity, x, y, z, yaw, tickDelta);
+		RenderSystem.disableRescaleNormal();
+		RenderSystem.popMatrix();
+		super.render(entity, d, e, f, g, h);
 	}
 
 	@Override

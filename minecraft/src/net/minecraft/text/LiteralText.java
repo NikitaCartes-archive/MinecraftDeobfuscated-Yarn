@@ -16,19 +16,19 @@ public class LiteralText extends BaseText {
 		return this.string;
 	}
 
-	public LiteralText copy() {
+	public LiteralText method_10992() {
 		return new LiteralText(this.string);
 	}
 
 	@Override
-	public boolean equals(Object o) {
-		if (this == o) {
+	public boolean equals(Object object) {
+		if (this == object) {
 			return true;
-		} else if (!(o instanceof LiteralText)) {
+		} else if (!(object instanceof LiteralText)) {
 			return false;
 		} else {
-			LiteralText literalText = (LiteralText)o;
-			return this.string.equals(literalText.getRawString()) && super.equals(o);
+			LiteralText literalText = (LiteralText)object;
+			return this.string.equals(literalText.getRawString()) && super.equals(object);
 		}
 	}
 

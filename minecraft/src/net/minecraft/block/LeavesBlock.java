@@ -3,11 +3,10 @@ package net.minecraft.block;
 import java.util.Random;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.client.render.RenderLayer;
 import net.minecraft.entity.EntityType;
 import net.minecraft.item.ItemPlacementContext;
 import net.minecraft.particle.ParticleTypes;
-import net.minecraft.state.StateManager;
+import net.minecraft.state.StateFactory;
 import net.minecraft.state.property.BooleanProperty;
 import net.minecraft.state.property.IntProperty;
 import net.minecraft.state.property.Properties;
@@ -25,77 +24,79 @@ public class LeavesBlock extends Block {
 
 	public LeavesBlock(Block.Settings settings) {
 		super(settings);
-		this.setDefaultState(this.stateManager.getDefaultState().with(DISTANCE, Integer.valueOf(7)).with(PERSISTENT, Boolean.valueOf(false)));
+		this.setDefaultState(this.stateFactory.getDefaultState().with(DISTANCE, Integer.valueOf(7)).with(PERSISTENT, Boolean.valueOf(false)));
 	}
 
 	@Override
-	public boolean hasRandomTicks(BlockState state) {
-		return (Integer)state.get(DISTANCE) == 7 && !(Boolean)state.get(PERSISTENT);
+	public boolean hasRandomTicks(BlockState blockState) {
+		return (Integer)blockState.get(DISTANCE) == 7 && !(Boolean)blockState.get(PERSISTENT);
 	}
 
 	@Override
-	public void onRandomTick(BlockState state, World world, BlockPos pos, Random random) {
-		if (!(Boolean)state.get(PERSISTENT) && (Integer)state.get(DISTANCE) == 7) {
-			dropStacks(state, world, pos);
-			world.removeBlock(pos, false);
+	public void onRandomTick(BlockState blockState, World world, BlockPos blockPos, Random random) {
+		if (!(Boolean)blockState.get(PERSISTENT) && (Integer)blockState.get(DISTANCE) == 7) {
+			dropStacks(blockState, world, blockPos);
+			world.clearBlockState(blockPos, false);
 		}
 	}
 
 	@Override
-	public void onScheduledTick(BlockState state, World world, BlockPos pos, Random random) {
-		world.setBlockState(pos, updateDistanceFromLogs(state, world, pos), 3);
+	public void onScheduledTick(BlockState blockState, World world, BlockPos blockPos, Random random) {
+		world.setBlockState(blockPos, updateDistanceFromLogs(blockState, world, blockPos), 3);
 	}
 
 	@Override
-	public int getOpacity(BlockState state, BlockView view, BlockPos pos) {
+	public int getLightSubtracted(BlockState blockState, BlockView blockView, BlockPos blockPos) {
 		return 1;
 	}
 
 	@Override
-	public BlockState getStateForNeighborUpdate(BlockState state, Direction facing, BlockState neighborState, IWorld world, BlockPos pos, BlockPos neighborPos) {
-		int i = getDistanceFromLog(neighborState) + 1;
-		if (i != 1 || (Integer)state.get(DISTANCE) != i) {
-			world.getBlockTickScheduler().schedule(pos, this, 1);
+	public BlockState getStateForNeighborUpdate(
+		BlockState blockState, Direction direction, BlockState blockState2, IWorld iWorld, BlockPos blockPos, BlockPos blockPos2
+	) {
+		int i = getDistanceFromLog(blockState2) + 1;
+		if (i != 1 || (Integer)blockState.get(DISTANCE) != i) {
+			iWorld.getBlockTickScheduler().schedule(blockPos, this, 1);
 		}
 
-		return state;
+		return blockState;
 	}
 
-	private static BlockState updateDistanceFromLogs(BlockState state, IWorld world, BlockPos pos) {
+	private static BlockState updateDistanceFromLogs(BlockState blockState, IWorld iWorld, BlockPos blockPos) {
 		int i = 7;
 
 		try (BlockPos.PooledMutable pooledMutable = BlockPos.PooledMutable.get()) {
 			for (Direction direction : Direction.values()) {
-				pooledMutable.set(pos).setOffset(direction);
-				i = Math.min(i, getDistanceFromLog(world.getBlockState(pooledMutable)) + 1);
+				pooledMutable.method_10114(blockPos).method_10118(direction);
+				i = Math.min(i, getDistanceFromLog(iWorld.getBlockState(pooledMutable)) + 1);
 				if (i == 1) {
 					break;
 				}
 			}
 		}
 
-		return state.with(DISTANCE, Integer.valueOf(i));
+		return blockState.with(DISTANCE, Integer.valueOf(i));
 	}
 
-	private static int getDistanceFromLog(BlockState state) {
-		if (BlockTags.LOGS.contains(state.getBlock())) {
+	private static int getDistanceFromLog(BlockState blockState) {
+		if (BlockTags.LOGS.contains(blockState.getBlock())) {
 			return 0;
 		} else {
-			return state.getBlock() instanceof LeavesBlock ? (Integer)state.get(DISTANCE) : 7;
+			return blockState.getBlock() instanceof LeavesBlock ? (Integer)blockState.get(DISTANCE) : 7;
 		}
 	}
 
 	@Environment(EnvType.CLIENT)
 	@Override
-	public void randomDisplayTick(BlockState state, World world, BlockPos pos, Random random) {
-		if (world.hasRain(pos.up())) {
+	public void randomDisplayTick(BlockState blockState, World world, BlockPos blockPos, Random random) {
+		if (world.hasRain(blockPos.up())) {
 			if (random.nextInt(15) == 1) {
-				BlockPos blockPos = pos.down();
-				BlockState blockState = world.getBlockState(blockPos);
-				if (!blockState.isOpaque() || !blockState.isSideSolidFullSquare(world, blockPos, Direction.UP)) {
-					double d = (double)((float)pos.getX() + random.nextFloat());
-					double e = (double)pos.getY() - 0.05;
-					double f = (double)((float)pos.getZ() + random.nextFloat());
+				BlockPos blockPos2 = blockPos.down();
+				BlockState blockState2 = world.getBlockState(blockPos2);
+				if (!blockState2.isOpaque() || !blockState2.isSideSolidFullSquare(world, blockPos2, Direction.UP)) {
+					double d = (double)((float)blockPos.getX() + random.nextFloat());
+					double e = (double)blockPos.getY() - 0.05;
+					double f = (double)((float)blockPos.getZ() + random.nextFloat());
 					world.addParticle(ParticleTypes.DRIPPING_WATER, d, e, f, 0.0, 0.0, 0.0);
 				}
 			}
@@ -103,37 +104,39 @@ public class LeavesBlock extends Block {
 	}
 
 	@Environment(EnvType.CLIENT)
-	public static void setRenderingMode(boolean fancy) {
-		LeavesBlock.fancy = fancy;
+	public static void setRenderingMode(boolean bl) {
+		fancy = bl;
 	}
 
 	@Override
-	public boolean isOpaque(BlockState state) {
+	public boolean isOpaque(BlockState blockState) {
 		return false;
 	}
 
 	@Override
-	public RenderLayer getRenderLayer() {
-		return fancy ? RenderLayer.CUTOUT_MIPPED : RenderLayer.SOLID;
+	public BlockRenderLayer getRenderLayer() {
+		return fancy ? BlockRenderLayer.CUTOUT_MIPPED : BlockRenderLayer.SOLID;
 	}
 
 	@Override
-	public boolean canSuffocate(BlockState state, BlockView view, BlockPos pos) {
+	public boolean canSuffocate(BlockState blockState, BlockView blockView, BlockPos blockPos) {
 		return false;
 	}
 
 	@Override
-	public boolean allowsSpawning(BlockState state, BlockView view, BlockPos pos, EntityType<?> type) {
-		return type == EntityType.OCELOT || type == EntityType.PARROT;
+	public boolean allowsSpawning(BlockState blockState, BlockView blockView, BlockPos blockPos, EntityType<?> entityType) {
+		return entityType == EntityType.OCELOT || entityType == EntityType.PARROT;
 	}
 
 	@Override
-	protected void appendProperties(StateManager.Builder<Block, BlockState> builder) {
+	protected void appendProperties(StateFactory.Builder<Block, BlockState> builder) {
 		builder.add(DISTANCE, PERSISTENT);
 	}
 
 	@Override
-	public BlockState getPlacementState(ItemPlacementContext ctx) {
-		return updateDistanceFromLogs(this.getDefaultState().with(PERSISTENT, Boolean.valueOf(true)), ctx.getWorld(), ctx.getBlockPos());
+	public BlockState getPlacementState(ItemPlacementContext itemPlacementContext) {
+		return updateDistanceFromLogs(
+			this.getDefaultState().with(PERSISTENT, Boolean.valueOf(true)), itemPlacementContext.getWorld(), itemPlacementContext.getBlockPos()
+		);
 	}
 }

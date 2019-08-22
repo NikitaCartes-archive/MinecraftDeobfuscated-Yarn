@@ -13,15 +13,13 @@ public class FoodComponent {
 	private final boolean snack;
 	private final List<Pair<StatusEffectInstance, Float>> statusEffects;
 
-	private FoodComponent(
-		int hunger, float saturationModifier, boolean meat, boolean alwaysEdible, boolean snack, List<Pair<StatusEffectInstance, Float>> statusEffects
-	) {
-		this.hunger = hunger;
-		this.saturationModifier = saturationModifier;
-		this.meat = meat;
-		this.alwaysEdible = alwaysEdible;
-		this.snack = snack;
-		this.statusEffects = statusEffects;
+	private FoodComponent(int i, float f, boolean bl, boolean bl2, boolean bl3, List<Pair<StatusEffectInstance, Float>> list) {
+		this.hunger = i;
+		this.saturationModifier = f;
+		this.meat = bl;
+		this.alwaysEdible = bl2;
+		this.snack = bl3;
+		this.statusEffects = list;
 	}
 
 	public int getHunger() {
@@ -56,13 +54,13 @@ public class FoodComponent {
 		private boolean snack;
 		private final List<Pair<StatusEffectInstance, Float>> statusEffects = Lists.<Pair<StatusEffectInstance, Float>>newArrayList();
 
-		public FoodComponent.Builder hunger(int hunger) {
-			this.hunger = hunger;
+		public FoodComponent.Builder hunger(int i) {
+			this.hunger = i;
 			return this;
 		}
 
-		public FoodComponent.Builder saturationModifier(float saturationModifier) {
-			this.saturationModifier = saturationModifier;
+		public FoodComponent.Builder saturationModifier(float f) {
+			this.saturationModifier = f;
 			return this;
 		}
 
@@ -81,8 +79,8 @@ public class FoodComponent {
 			return this;
 		}
 
-		public FoodComponent.Builder statusEffect(StatusEffectInstance effect, float chance) {
-			this.statusEffects.add(Pair.of(effect, chance));
+		public FoodComponent.Builder statusEffect(StatusEffectInstance statusEffectInstance, float f) {
+			this.statusEffects.add(Pair.of(statusEffectInstance, f));
 			return this;
 		}
 

@@ -14,7 +14,7 @@ import net.minecraft.world.chunk.ChunkNibbleArray;
 import net.minecraft.world.chunk.ChunkProvider;
 
 public final class ChunkSkyLightProvider extends ChunkLightProvider<SkyLightStorage.Data, SkyLightStorage> {
-	private static final Direction[] DIRECTIONS = Direction.values();
+	private static final Direction[] DIRECTIONS_SKYLIGHT = Direction.values();
 	private static final Direction[] HORIZONTAL_DIRECTIONS = new Direction[]{Direction.NORTH, Direction.SOUTH, Direction.WEST, Direction.EAST};
 
 	public ChunkSkyLightProvider(ChunkProvider chunkProvider) {
@@ -22,203 +22,203 @@ public final class ChunkSkyLightProvider extends ChunkLightProvider<SkyLightStor
 	}
 
 	@Override
-	protected int getPropagatedLevel(long sourceId, long targetId, int level) {
-		if (targetId == Long.MAX_VALUE) {
+	protected int getPropagatedLevel(long l, long m, int i) {
+		if (m == Long.MAX_VALUE) {
 			return 15;
 		} else {
-			if (sourceId == Long.MAX_VALUE) {
-				if (!this.lightStorage.method_15565(targetId)) {
+			if (l == Long.MAX_VALUE) {
+				if (!this.lightStorage.method_15565(m)) {
 					return 15;
 				}
 
-				level = 0;
+				i = 0;
 			}
 
-			if (level >= 15) {
-				return level;
+			if (i >= 15) {
+				return i;
 			} else {
 				AtomicInteger atomicInteger = new AtomicInteger();
-				BlockState blockState = this.method_20479(targetId, atomicInteger);
+				BlockState blockState = this.method_20479(m, atomicInteger);
 				if (atomicInteger.get() >= 15) {
 					return 15;
 				} else {
-					int i = BlockPos.unpackLongX(sourceId);
-					int j = BlockPos.unpackLongY(sourceId);
-					int k = BlockPos.unpackLongZ(sourceId);
-					int l = BlockPos.unpackLongX(targetId);
-					int m = BlockPos.unpackLongY(targetId);
-					int n = BlockPos.unpackLongZ(targetId);
-					boolean bl = i == l && k == n;
-					int o = Integer.signum(l - i);
-					int p = Integer.signum(m - j);
-					int q = Integer.signum(n - k);
+					int j = BlockPos.unpackLongX(l);
+					int k = BlockPos.unpackLongY(l);
+					int n = BlockPos.unpackLongZ(l);
+					int o = BlockPos.unpackLongX(m);
+					int p = BlockPos.unpackLongY(m);
+					int q = BlockPos.unpackLongZ(m);
+					boolean bl = j == o && n == q;
+					int r = Integer.signum(o - j);
+					int s = Integer.signum(p - k);
+					int t = Integer.signum(q - n);
 					Direction direction;
-					if (sourceId == Long.MAX_VALUE) {
+					if (l == Long.MAX_VALUE) {
 						direction = Direction.DOWN;
 					} else {
-						direction = Direction.fromVector(o, p, q);
+						direction = Direction.fromVector(r, s, t);
 					}
 
-					BlockState blockState2 = this.method_20479(sourceId, null);
+					BlockState blockState2 = this.method_20479(l, null);
 					if (direction != null) {
-						VoxelShape voxelShape = this.method_20710(blockState2, sourceId, direction);
-						VoxelShape voxelShape2 = this.method_20710(blockState, targetId, direction.getOpposite());
+						VoxelShape voxelShape = this.method_20710(blockState2, l, direction);
+						VoxelShape voxelShape2 = this.method_20710(blockState, m, direction.getOpposite());
 						if (VoxelShapes.method_20713(voxelShape, voxelShape2)) {
 							return 15;
 						}
 					} else {
-						VoxelShape voxelShape = this.method_20710(blockState2, sourceId, Direction.DOWN);
+						VoxelShape voxelShape = this.method_20710(blockState2, l, Direction.DOWN);
 						if (VoxelShapes.method_20713(voxelShape, VoxelShapes.empty())) {
 							return 15;
 						}
 
-						int r = bl ? -1 : 0;
-						Direction direction2 = Direction.fromVector(o, r, q);
+						int u = bl ? -1 : 0;
+						Direction direction2 = Direction.fromVector(r, u, t);
 						if (direction2 == null) {
 							return 15;
 						}
 
-						VoxelShape voxelShape3 = this.method_20710(blockState, targetId, direction2.getOpposite());
+						VoxelShape voxelShape3 = this.method_20710(blockState, m, direction2.getOpposite());
 						if (VoxelShapes.method_20713(VoxelShapes.empty(), voxelShape3)) {
 							return 15;
 						}
 					}
 
-					boolean bl2 = sourceId == Long.MAX_VALUE || bl && j > m;
-					return bl2 && level == 0 && atomicInteger.get() == 0 ? 0 : level + Math.max(1, atomicInteger.get());
+					boolean bl2 = l == Long.MAX_VALUE || bl && k > p;
+					return bl2 && i == 0 && atomicInteger.get() == 0 ? 0 : i + Math.max(1, atomicInteger.get());
 				}
 			}
 		}
 	}
 
 	@Override
-	protected void propagateLevel(long id, int level, boolean decrease) {
-		long l = ChunkSectionPos.fromGlobalPos(id);
-		int i = BlockPos.unpackLongY(id);
-		int j = ChunkSectionPos.getLocalCoord(i);
-		int k = ChunkSectionPos.getSectionCoord(i);
-		int m;
-		if (j != 0) {
-			m = 0;
+	protected void updateNeighborsRecursively(long l, int i, boolean bl) {
+		long m = ChunkSectionPos.toChunkLong(l);
+		int j = BlockPos.unpackLongY(l);
+		int k = ChunkSectionPos.toLocalCoord(j);
+		int n = ChunkSectionPos.toChunkCoord(j);
+		int o;
+		if (k != 0) {
+			o = 0;
 		} else {
-			int n = 0;
+			int p = 0;
 
-			while (!this.lightStorage.hasLight(ChunkSectionPos.offset(l, 0, -n - 1, 0)) && this.lightStorage.isAboveMinimumHeight(k - n - 1)) {
-				n++;
+			while (!this.lightStorage.hasChunk(ChunkSectionPos.offsetPacked(m, 0, -p - 1, 0)) && this.lightStorage.isAboveMinimumHeight(n - p - 1)) {
+				p++;
 			}
 
-			m = n;
+			o = p;
 		}
 
-		long o = BlockPos.add(id, 0, -1 - m * 16, 0);
-		long p = ChunkSectionPos.fromGlobalPos(o);
-		if (l == p || this.lightStorage.hasLight(p)) {
-			this.propagateLevel(id, o, level, decrease);
+		long q = BlockPos.add(l, 0, -1 - o * 16, 0);
+		long r = ChunkSectionPos.toChunkLong(q);
+		if (m == r || this.lightStorage.hasChunk(r)) {
+			this.updateRecursively(l, q, i, bl);
 		}
 
-		long q = BlockPos.offset(id, Direction.UP);
-		long r = ChunkSectionPos.fromGlobalPos(q);
-		if (l == r || this.lightStorage.hasLight(r)) {
-			this.propagateLevel(id, q, level, decrease);
+		long s = BlockPos.offset(l, Direction.UP);
+		long t = ChunkSectionPos.toChunkLong(s);
+		if (m == t || this.lightStorage.hasChunk(t)) {
+			this.updateRecursively(l, s, i, bl);
 		}
 
 		for (Direction direction : HORIZONTAL_DIRECTIONS) {
-			int s = 0;
+			int u = 0;
 
 			do {
-				long t = BlockPos.add(id, direction.getOffsetX(), -s, direction.getOffsetZ());
-				long u = ChunkSectionPos.fromGlobalPos(t);
-				if (l == u) {
-					this.propagateLevel(id, t, level, decrease);
+				long v = BlockPos.add(l, direction.getOffsetX(), -u, direction.getOffsetZ());
+				long w = ChunkSectionPos.toChunkLong(v);
+				if (m == w) {
+					this.updateRecursively(l, v, i, bl);
 					break;
 				}
 
-				if (this.lightStorage.hasLight(u)) {
-					this.propagateLevel(id, t, level, decrease);
+				if (this.lightStorage.hasChunk(w)) {
+					this.updateRecursively(l, v, i, bl);
 				}
-			} while (++s > m * 16);
+			} while (++u > o * 16);
 		}
 	}
 
 	@Override
-	protected int recalculateLevel(long id, long excludedId, int maxLevel) {
-		int i = maxLevel;
-		if (Long.MAX_VALUE != excludedId) {
-			int j = this.getPropagatedLevel(Long.MAX_VALUE, id, 0);
-			if (maxLevel > j) {
-				i = j;
+	protected int getMergedLevel(long l, long m, int i) {
+		int j = i;
+		if (Long.MAX_VALUE != m) {
+			int k = this.getPropagatedLevel(Long.MAX_VALUE, l, 0);
+			if (i > k) {
+				j = k;
 			}
 
-			if (i == 0) {
-				return i;
+			if (j == 0) {
+				return j;
 			}
 		}
 
-		long l = ChunkSectionPos.fromGlobalPos(id);
-		ChunkNibbleArray chunkNibbleArray = this.lightStorage.getLightArray(l, true);
+		long n = ChunkSectionPos.toChunkLong(l);
+		ChunkNibbleArray chunkNibbleArray = this.lightStorage.getDataForChunk(n, true);
 
-		for (Direction direction : DIRECTIONS) {
-			long m = BlockPos.offset(id, direction);
-			long n = ChunkSectionPos.fromGlobalPos(m);
+		for (Direction direction : DIRECTIONS_SKYLIGHT) {
+			long o = BlockPos.offset(l, direction);
+			long p = ChunkSectionPos.toChunkLong(o);
 			ChunkNibbleArray chunkNibbleArray2;
-			if (l == n) {
+			if (n == p) {
 				chunkNibbleArray2 = chunkNibbleArray;
 			} else {
-				chunkNibbleArray2 = this.lightStorage.getLightArray(n, true);
+				chunkNibbleArray2 = this.lightStorage.getDataForChunk(p, true);
 			}
 
 			if (chunkNibbleArray2 != null) {
-				if (m != excludedId) {
-					int k = this.getPropagatedLevel(m, id, this.getCurrentLevelFromArray(chunkNibbleArray2, m));
-					if (i > k) {
-						i = k;
+				if (o != m) {
+					int q = this.getPropagatedLevel(o, l, this.getCurrentLevelFromArray(chunkNibbleArray2, o));
+					if (j > q) {
+						j = q;
 					}
 
-					if (i == 0) {
-						return i;
+					if (j == 0) {
+						return j;
 					}
 				}
 			} else if (direction != Direction.DOWN) {
-				for (m = BlockPos.removeChunkSectionLocalY(m); !this.lightStorage.hasLight(n) && !this.lightStorage.method_15568(n); m = BlockPos.add(m, 0, 16, 0)) {
-					n = ChunkSectionPos.offset(n, Direction.UP);
+				for (o = BlockPos.removeChunkSectionLocalY(o); !this.lightStorage.hasChunk(p) && !this.lightStorage.method_15568(p); o = BlockPos.add(o, 0, 16, 0)) {
+					p = ChunkSectionPos.offsetPacked(p, Direction.UP);
 				}
 
-				ChunkNibbleArray chunkNibbleArray3 = this.lightStorage.getLightArray(n, true);
-				if (m != excludedId) {
-					int o;
+				ChunkNibbleArray chunkNibbleArray3 = this.lightStorage.getDataForChunk(p, true);
+				if (o != m) {
+					int r;
 					if (chunkNibbleArray3 != null) {
-						o = this.getPropagatedLevel(m, id, this.getCurrentLevelFromArray(chunkNibbleArray3, m));
+						r = this.getPropagatedLevel(o, l, this.getCurrentLevelFromArray(chunkNibbleArray3, o));
 					} else {
-						o = this.lightStorage.method_15566(n) ? 0 : 15;
+						r = this.lightStorage.method_15566(p) ? 0 : 15;
 					}
 
-					if (i > o) {
-						i = o;
+					if (j > r) {
+						j = r;
 					}
 
-					if (i == 0) {
-						return i;
+					if (j == 0) {
+						return j;
 					}
 				}
 			}
 		}
 
-		return i;
+		return j;
 	}
 
 	@Override
-	protected void resetLevel(long id) {
+	protected void fullyUpdate(long l) {
 		this.lightStorage.updateAll();
-		long l = ChunkSectionPos.fromGlobalPos(id);
-		if (this.lightStorage.hasLight(l)) {
-			super.resetLevel(id);
+		long m = ChunkSectionPos.toChunkLong(l);
+		if (this.lightStorage.hasChunk(m)) {
+			super.fullyUpdate(l);
 		} else {
-			for (id = BlockPos.removeChunkSectionLocalY(id); !this.lightStorage.hasLight(l) && !this.lightStorage.method_15568(l); id = BlockPos.add(id, 0, 16, 0)) {
-				l = ChunkSectionPos.offset(l, Direction.UP);
+			for (l = BlockPos.removeChunkSectionLocalY(l); !this.lightStorage.hasChunk(m) && !this.lightStorage.method_15568(m); l = BlockPos.add(l, 0, 16, 0)) {
+				m = ChunkSectionPos.offsetPacked(m, Direction.UP);
 			}
 
-			if (this.lightStorage.hasLight(l)) {
-				super.resetLevel(id);
+			if (this.lightStorage.hasChunk(m)) {
+				super.fullyUpdate(l);
 			}
 		}
 	}

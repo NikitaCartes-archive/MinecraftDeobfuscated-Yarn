@@ -1,10 +1,11 @@
 package net.minecraft.client.render.debug;
 
-import com.mojang.blaze3d.platform.GlStateManager;
+import com.mojang.blaze3d.systems.RenderSystem;
 import it.unimi.dsi.fastutil.longs.LongOpenHashSet;
 import it.unimi.dsi.fastutil.longs.LongSet;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.class_4493;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.Camera;
 import net.minecraft.util.math.BlockPos;
@@ -25,12 +26,12 @@ public class SkyLightDebugRenderer implements DebugRenderer.Renderer {
 	public void render(long l) {
 		Camera camera = this.client.gameRenderer.getCamera();
 		World world = this.client.world;
-		GlStateManager.pushMatrix();
-		GlStateManager.enableBlend();
-		GlStateManager.blendFuncSeparate(
-			GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO
+		RenderSystem.pushMatrix();
+		RenderSystem.enableBlend();
+		RenderSystem.blendFuncSeparate(
+			class_4493.class_4535.SRC_ALPHA, class_4493.class_4534.ONE_MINUS_SRC_ALPHA, class_4493.class_4535.ONE, class_4493.class_4534.ZERO
 		);
-		GlStateManager.disableTexture();
+		RenderSystem.disableTexture();
 		BlockPos blockPos = new BlockPos(camera.getPos());
 		LongSet longSet = new LongOpenHashSet();
 
@@ -38,13 +39,13 @@ public class SkyLightDebugRenderer implements DebugRenderer.Renderer {
 			int i = world.getLightLevel(LightType.SKY, blockPos2);
 			float f = (float)(15 - i) / 15.0F * 0.5F + 0.16F;
 			int j = MathHelper.hsvToRgb(f, 0.9F, 0.9F);
-			long m = ChunkSectionPos.fromGlobalPos(blockPos2.asLong());
+			long m = ChunkSectionPos.toChunkLong(blockPos2.asLong());
 			if (longSet.add(m)) {
 				DebugRenderer.method_19429(
 					world.getChunkManager().getLightingProvider().method_15564(LightType.SKY, ChunkSectionPos.from(m)),
-					(double)(ChunkSectionPos.getX(m) * 16 + 8),
-					(double)(ChunkSectionPos.getY(m) * 16 + 8),
-					(double)(ChunkSectionPos.getZ(m) * 16 + 8),
+					(double)(ChunkSectionPos.unpackLongX(m) * 16 + 8),
+					(double)(ChunkSectionPos.unpackLongY(m) * 16 + 8),
+					(double)(ChunkSectionPos.unpackLongZ(m) * 16 + 8),
 					16711680,
 					0.3F
 				);
@@ -55,7 +56,7 @@ public class SkyLightDebugRenderer implements DebugRenderer.Renderer {
 			}
 		}
 
-		GlStateManager.enableTexture();
-		GlStateManager.popMatrix();
+		RenderSystem.enableTexture();
+		RenderSystem.popMatrix();
 	}
 }

@@ -1,6 +1,6 @@
 package net.minecraft.client.render.entity;
 
-import com.mojang.blaze3d.platform.GlStateManager;
+import com.mojang.blaze3d.systems.RenderSystem;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.render.entity.model.LeashEntityModel;
@@ -16,31 +16,31 @@ public class LeashKnotEntityRenderer extends EntityRenderer<LeadKnotEntity> {
 		super(entityRenderDispatcher);
 	}
 
-	public void render(LeadKnotEntity leadKnotEntity, double d, double e, double f, float g, float h) {
-		GlStateManager.pushMatrix();
-		GlStateManager.disableCull();
-		GlStateManager.translatef((float)d, (float)e, (float)f);
+	public void method_4035(LeadKnotEntity leadKnotEntity, double d, double e, double f, float g, float h) {
+		RenderSystem.pushMatrix();
+		RenderSystem.disableCull();
+		RenderSystem.translatef((float)d, (float)e, (float)f);
 		float i = 0.0625F;
-		GlStateManager.enableRescaleNormal();
-		GlStateManager.scalef(-1.0F, -1.0F, 1.0F);
-		GlStateManager.enableAlphaTest();
+		RenderSystem.enableRescaleNormal();
+		RenderSystem.scalef(-1.0F, -1.0F, 1.0F);
+		RenderSystem.enableAlphaTest();
 		this.bindEntityTexture(leadKnotEntity);
 		if (this.renderOutlines) {
-			GlStateManager.enableColorMaterial();
-			GlStateManager.setupSolidRenderingTextureCombine(this.getOutlineColor(leadKnotEntity));
+			RenderSystem.enableColorMaterial();
+			RenderSystem.setupSolidRenderingTextureCombine(this.getOutlineColor(leadKnotEntity));
 		}
 
 		this.model.render(leadKnotEntity, 0.0F, 0.0F, 0.0F, 0.0F, 0.0F, 0.0625F);
 		if (this.renderOutlines) {
-			GlStateManager.tearDownSolidRenderingTextureCombine();
-			GlStateManager.disableColorMaterial();
+			RenderSystem.tearDownSolidRenderingTextureCombine();
+			RenderSystem.disableColorMaterial();
 		}
 
-		GlStateManager.popMatrix();
+		RenderSystem.popMatrix();
 		super.render(leadKnotEntity, d, e, f, g, h);
 	}
 
-	protected Identifier getTexture(LeadKnotEntity leadKnotEntity) {
+	protected Identifier method_4036(LeadKnotEntity leadKnotEntity) {
 		return SKIN;
 	}
 }

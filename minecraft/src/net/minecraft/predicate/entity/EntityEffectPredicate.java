@@ -13,9 +13,9 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.effect.StatusEffect;
 import net.minecraft.entity.effect.StatusEffectInstance;
-import net.minecraft.predicate.NumberRange;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.JsonHelper;
+import net.minecraft.util.NumberRange;
 import net.minecraft.util.registry.Registry;
 
 public class EntityEffectPredicate {
@@ -69,7 +69,7 @@ public class EntityEffectPredicate {
 
 			for (Entry<String, JsonElement> entry : jsonObject.entrySet()) {
 				Identifier identifier = new Identifier((String)entry.getKey());
-				StatusEffect statusEffect = (StatusEffect)Registry.STATUS_EFFECT
+				StatusEffect statusEffect = (StatusEffect)Registry.MOB_EFFECT
 					.getOrEmpty(identifier)
 					.orElseThrow(() -> new JsonSyntaxException("Unknown effect '" + identifier + "'"));
 				EntityEffectPredicate.EffectData effectData = EntityEffectPredicate.EffectData.deserialize(
@@ -91,7 +91,7 @@ public class EntityEffectPredicate {
 			JsonObject jsonObject = new JsonObject();
 
 			for (Entry<StatusEffect, EntityEffectPredicate.EffectData> entry : this.effects.entrySet()) {
-				jsonObject.add(Registry.STATUS_EFFECT.getId((StatusEffect)entry.getKey()).toString(), ((EntityEffectPredicate.EffectData)entry.getValue()).serialize());
+				jsonObject.add(Registry.MOB_EFFECT.getId((StatusEffect)entry.getKey()).toString(), ((EntityEffectPredicate.EffectData)entry.getValue()).serialize());
 			}
 
 			return jsonObject;
@@ -106,11 +106,11 @@ public class EntityEffectPredicate {
 		@Nullable
 		private final Boolean visible;
 
-		public EffectData(NumberRange.IntRange amplifier, NumberRange.IntRange duration, @Nullable Boolean ambient, @Nullable Boolean boolean_) {
-			this.amplifier = amplifier;
-			this.duration = duration;
-			this.ambient = ambient;
-			this.visible = boolean_;
+		public EffectData(NumberRange.IntRange intRange, NumberRange.IntRange intRange2, @Nullable Boolean boolean_, @Nullable Boolean boolean2) {
+			this.amplifier = intRange;
+			this.duration = intRange2;
+			this.ambient = boolean_;
+			this.visible = boolean2;
 		}
 
 		public EffectData() {
@@ -133,18 +133,18 @@ public class EntityEffectPredicate {
 
 		public JsonElement serialize() {
 			JsonObject jsonObject = new JsonObject();
-			jsonObject.add("amplifier", this.amplifier.toJson());
-			jsonObject.add("duration", this.duration.toJson());
+			jsonObject.add("amplifier", this.amplifier.serialize());
+			jsonObject.add("duration", this.duration.serialize());
 			jsonObject.addProperty("ambient", this.ambient);
 			jsonObject.addProperty("visible", this.visible);
 			return jsonObject;
 		}
 
-		public static EntityEffectPredicate.EffectData deserialize(JsonObject json) {
-			NumberRange.IntRange intRange = NumberRange.IntRange.fromJson(json.get("amplifier"));
-			NumberRange.IntRange intRange2 = NumberRange.IntRange.fromJson(json.get("duration"));
-			Boolean boolean_ = json.has("ambient") ? JsonHelper.getBoolean(json, "ambient") : null;
-			Boolean boolean2 = json.has("visible") ? JsonHelper.getBoolean(json, "visible") : null;
+		public static EntityEffectPredicate.EffectData deserialize(JsonObject jsonObject) {
+			NumberRange.IntRange intRange = NumberRange.IntRange.fromJson(jsonObject.get("amplifier"));
+			NumberRange.IntRange intRange2 = NumberRange.IntRange.fromJson(jsonObject.get("duration"));
+			Boolean boolean_ = jsonObject.has("ambient") ? JsonHelper.getBoolean(jsonObject, "ambient") : null;
+			Boolean boolean2 = jsonObject.has("visible") ? JsonHelper.getBoolean(jsonObject, "visible") : null;
 			return new EntityEffectPredicate.EffectData(intRange, intRange2, boolean_, boolean2);
 		}
 	}

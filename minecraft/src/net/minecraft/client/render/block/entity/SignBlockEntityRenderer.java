@@ -1,9 +1,10 @@
 package net.minecraft.client.render.block.entity;
 
-import com.mojang.blaze3d.platform.GlStateManager;
+import com.mojang.blaze3d.systems.RenderSystem;
 import java.util.List;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.class_4493;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
@@ -16,7 +17,7 @@ import net.minecraft.client.render.BufferBuilder;
 import net.minecraft.client.render.Tessellator;
 import net.minecraft.client.render.VertexFormats;
 import net.minecraft.client.render.entity.model.SignBlockEntityModel;
-import net.minecraft.client.util.Texts;
+import net.minecraft.client.util.TextComponentUtil;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.Direction;
@@ -31,48 +32,48 @@ public class SignBlockEntityRenderer extends BlockEntityRenderer<SignBlockEntity
 	private static final Identifier DARK_OAK_TEX = new Identifier("textures/entity/signs/dark_oak.png");
 	private final SignBlockEntityModel model = new SignBlockEntityModel();
 
-	public void render(SignBlockEntity signBlockEntity, double d, double e, double f, float g, int i) {
+	public void method_3582(SignBlockEntity signBlockEntity, double d, double e, double f, float g, int i) {
 		BlockState blockState = signBlockEntity.getCachedState();
-		GlStateManager.pushMatrix();
+		RenderSystem.pushMatrix();
 		float h = 0.6666667F;
 		if (blockState.getBlock() instanceof SignBlock) {
-			GlStateManager.translatef((float)d + 0.5F, (float)e + 0.5F, (float)f + 0.5F);
-			GlStateManager.rotatef(-((float)((Integer)blockState.get(SignBlock.ROTATION) * 360) / 16.0F), 0.0F, 1.0F, 0.0F);
+			RenderSystem.translatef((float)d + 0.5F, (float)e + 0.5F, (float)f + 0.5F);
+			RenderSystem.rotatef(-((float)((Integer)blockState.get(SignBlock.ROTATION) * 360) / 16.0F), 0.0F, 1.0F, 0.0F);
 			this.model.getSignpostModel().visible = true;
 		} else {
-			GlStateManager.translatef((float)d + 0.5F, (float)e + 0.5F, (float)f + 0.5F);
-			GlStateManager.rotatef(-((Direction)blockState.get(WallSignBlock.FACING)).asRotation(), 0.0F, 1.0F, 0.0F);
-			GlStateManager.translatef(0.0F, -0.3125F, -0.4375F);
+			RenderSystem.translatef((float)d + 0.5F, (float)e + 0.5F, (float)f + 0.5F);
+			RenderSystem.rotatef(-((Direction)blockState.get(WallSignBlock.FACING)).asRotation(), 0.0F, 1.0F, 0.0F);
+			RenderSystem.translatef(0.0F, -0.3125F, -0.4375F);
 			this.model.getSignpostModel().visible = false;
 		}
 
 		if (i >= 0) {
 			this.bindTexture(DESTROY_STAGE_TEXTURES[i]);
-			GlStateManager.matrixMode(5890);
-			GlStateManager.pushMatrix();
-			GlStateManager.scalef(4.0F, 2.0F, 1.0F);
-			GlStateManager.translatef(0.0625F, 0.0625F, 0.0625F);
-			GlStateManager.matrixMode(5888);
+			RenderSystem.matrixMode(5890);
+			RenderSystem.pushMatrix();
+			RenderSystem.scalef(4.0F, 2.0F, 1.0F);
+			RenderSystem.translatef(0.0625F, 0.0625F, 0.0625F);
+			RenderSystem.matrixMode(5888);
 		} else {
 			this.bindTexture(this.getModelTexture(blockState.getBlock()));
 		}
 
-		GlStateManager.enableRescaleNormal();
-		GlStateManager.pushMatrix();
-		GlStateManager.scalef(0.6666667F, -0.6666667F, -0.6666667F);
+		RenderSystem.enableRescaleNormal();
+		RenderSystem.pushMatrix();
+		RenderSystem.scalef(0.6666667F, -0.6666667F, -0.6666667F);
 		this.model.render();
-		GlStateManager.popMatrix();
+		RenderSystem.popMatrix();
 		TextRenderer textRenderer = this.getFontRenderer();
 		float j = 0.010416667F;
-		GlStateManager.translatef(0.0F, 0.33333334F, 0.046666667F);
-		GlStateManager.scalef(0.010416667F, -0.010416667F, 0.010416667F);
-		GlStateManager.normal3f(0.0F, 0.0F, -0.010416667F);
-		GlStateManager.depthMask(false);
+		RenderSystem.translatef(0.0F, 0.33333334F, 0.046666667F);
+		RenderSystem.scalef(0.010416667F, -0.010416667F, 0.010416667F);
+		RenderSystem.normal3f(0.0F, 0.0F, -0.010416667F);
+		RenderSystem.depthMask(false);
 		int k = signBlockEntity.getTextColor().getSignColor();
 		if (i < 0) {
 			for (int l = 0; l < 4; l++) {
 				String string = signBlockEntity.getTextBeingEditedOnRow(l, text -> {
-					List<Text> list = Texts.wrapLines(text, 90, textRenderer, false, true);
+					List<Text> list = TextComponentUtil.wrapLines(text, 90, textRenderer, false, true);
 					return list.isEmpty() ? "" : ((Text)list.get(0)).asFormattedString();
 				});
 				if (string != null) {
@@ -102,13 +103,13 @@ public class SignBlockEntityRenderer extends BlockEntityRenderer<SignBlockEntity
 			}
 		}
 
-		GlStateManager.depthMask(true);
-		GlStateManager.color4f(1.0F, 1.0F, 1.0F, 1.0F);
-		GlStateManager.popMatrix();
+		RenderSystem.depthMask(true);
+		RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
+		RenderSystem.popMatrix();
 		if (i >= 0) {
-			GlStateManager.matrixMode(5890);
-			GlStateManager.popMatrix();
-			GlStateManager.matrixMode(5888);
+			RenderSystem.matrixMode(5890);
+			RenderSystem.popMatrix();
+			RenderSystem.matrixMode(5888);
 		}
 	}
 
@@ -130,18 +131,18 @@ public class SignBlockEntityRenderer extends BlockEntityRenderer<SignBlockEntity
 
 	private void method_16210(int i, int j, int k, int l) {
 		Tessellator tessellator = Tessellator.getInstance();
-		BufferBuilder bufferBuilder = tessellator.getBuffer();
-		GlStateManager.color4f(0.0F, 0.0F, 255.0F, 255.0F);
-		GlStateManager.disableTexture();
-		GlStateManager.enableColorLogicOp();
-		GlStateManager.logicOp(GlStateManager.LogicOp.OR_REVERSE);
+		BufferBuilder bufferBuilder = tessellator.getBufferBuilder();
+		RenderSystem.color4f(0.0F, 0.0F, 255.0F, 255.0F);
+		RenderSystem.disableTexture();
+		RenderSystem.enableColorLogicOp();
+		RenderSystem.logicOp(class_4493.LogicOp.OR_REVERSE);
 		bufferBuilder.begin(7, VertexFormats.POSITION);
 		bufferBuilder.vertex((double)i, (double)l, 0.0).next();
 		bufferBuilder.vertex((double)k, (double)l, 0.0).next();
 		bufferBuilder.vertex((double)k, (double)j, 0.0).next();
 		bufferBuilder.vertex((double)i, (double)j, 0.0).next();
 		tessellator.draw();
-		GlStateManager.disableColorLogicOp();
-		GlStateManager.enableTexture();
+		RenderSystem.disableColorLogicOp();
+		RenderSystem.enableTexture();
 	}
 }

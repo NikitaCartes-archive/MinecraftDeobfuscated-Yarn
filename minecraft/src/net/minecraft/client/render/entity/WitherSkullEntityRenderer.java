@@ -1,6 +1,6 @@
 package net.minecraft.client.render.entity;
 
-import com.mojang.blaze3d.platform.GlStateManager;
+import com.mojang.blaze3d.systems.RenderSystem;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.render.entity.model.SkullEntityModel;
@@ -32,33 +32,33 @@ public class WitherSkullEntityRenderer extends EntityRenderer<WitherSkullEntity>
 		return f + h * i;
 	}
 
-	public void render(WitherSkullEntity witherSkullEntity, double d, double e, double f, float g, float h) {
-		GlStateManager.pushMatrix();
-		GlStateManager.disableCull();
+	public void method_4159(WitherSkullEntity witherSkullEntity, double d, double e, double f, float g, float h) {
+		RenderSystem.pushMatrix();
+		RenderSystem.disableCull();
 		float i = this.method_4158(witherSkullEntity.prevYaw, witherSkullEntity.yaw, h);
 		float j = MathHelper.lerp(h, witherSkullEntity.prevPitch, witherSkullEntity.pitch);
-		GlStateManager.translatef((float)d, (float)e, (float)f);
+		RenderSystem.translatef((float)d, (float)e, (float)f);
 		float k = 0.0625F;
-		GlStateManager.enableRescaleNormal();
-		GlStateManager.scalef(-1.0F, -1.0F, 1.0F);
-		GlStateManager.enableAlphaTest();
+		RenderSystem.enableRescaleNormal();
+		RenderSystem.scalef(-1.0F, -1.0F, 1.0F);
+		RenderSystem.enableAlphaTest();
 		this.bindEntityTexture(witherSkullEntity);
 		if (this.renderOutlines) {
-			GlStateManager.enableColorMaterial();
-			GlStateManager.setupSolidRenderingTextureCombine(this.getOutlineColor(witherSkullEntity));
+			RenderSystem.enableColorMaterial();
+			RenderSystem.setupSolidRenderingTextureCombine(this.getOutlineColor(witherSkullEntity));
 		}
 
 		this.model.render(0.0F, 0.0F, 0.0F, i, j, 0.0625F);
 		if (this.renderOutlines) {
-			GlStateManager.tearDownSolidRenderingTextureCombine();
-			GlStateManager.disableColorMaterial();
+			RenderSystem.tearDownSolidRenderingTextureCombine();
+			RenderSystem.disableColorMaterial();
 		}
 
-		GlStateManager.popMatrix();
+		RenderSystem.popMatrix();
 		super.render(witherSkullEntity, d, e, f, g, h);
 	}
 
-	protected Identifier getTexture(WitherSkullEntity witherSkullEntity) {
+	protected Identifier method_4160(WitherSkullEntity witherSkullEntity) {
 		return witherSkullEntity.isCharged() ? INVINCIBLE_SKIN : SKIN;
 	}
 }

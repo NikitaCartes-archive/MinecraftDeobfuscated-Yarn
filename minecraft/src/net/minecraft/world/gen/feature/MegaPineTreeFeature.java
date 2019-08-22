@@ -6,9 +6,9 @@ import java.util.Set;
 import java.util.function.Function;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
-import net.minecraft.util.math.BlockBox;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.math.MutableIntBoundingBox;
 import net.minecraft.world.ModifiableTestableWorld;
 
 public class MegaPineTreeFeature extends MegaTreeFeature<DefaultFeatureConfig> {
@@ -23,62 +23,66 @@ public class MegaPineTreeFeature extends MegaTreeFeature<DefaultFeatureConfig> {
 	}
 
 	@Override
-	public boolean generate(Set<BlockPos> logPositions, ModifiableTestableWorld world, Random random, BlockPos pos, BlockBox blockBox) {
+	public boolean generate(
+		Set<BlockPos> set, ModifiableTestableWorld modifiableTestableWorld, Random random, BlockPos blockPos, MutableIntBoundingBox mutableIntBoundingBox
+	) {
 		int i = this.getHeight(random);
-		if (!this.checkTreeFitsAndReplaceGround(world, pos, i)) {
+		if (!this.checkTreeFitsAndReplaceGround(modifiableTestableWorld, blockPos, i)) {
 			return false;
 		} else {
-			this.makeTopLeaves(world, pos.getX(), pos.getZ(), pos.getY() + i, 0, random, blockBox, logPositions);
+			this.makeTopLeaves(modifiableTestableWorld, blockPos.getX(), blockPos.getZ(), blockPos.getY() + i, 0, random, mutableIntBoundingBox, set);
 
 			for (int j = 0; j < i; j++) {
-				if (isAirOrLeaves(world, pos.up(j))) {
-					this.setBlockState(logPositions, world, pos.up(j), this.log, blockBox);
+				if (isAirOrLeaves(modifiableTestableWorld, blockPos.up(j))) {
+					this.setBlockState(set, modifiableTestableWorld, blockPos.up(j), this.log, mutableIntBoundingBox);
 				}
 
 				if (j < i - 1) {
-					if (isAirOrLeaves(world, pos.add(1, j, 0))) {
-						this.setBlockState(logPositions, world, pos.add(1, j, 0), this.log, blockBox);
+					if (isAirOrLeaves(modifiableTestableWorld, blockPos.add(1, j, 0))) {
+						this.setBlockState(set, modifiableTestableWorld, blockPos.add(1, j, 0), this.log, mutableIntBoundingBox);
 					}
 
-					if (isAirOrLeaves(world, pos.add(1, j, 1))) {
-						this.setBlockState(logPositions, world, pos.add(1, j, 1), this.log, blockBox);
+					if (isAirOrLeaves(modifiableTestableWorld, blockPos.add(1, j, 1))) {
+						this.setBlockState(set, modifiableTestableWorld, blockPos.add(1, j, 1), this.log, mutableIntBoundingBox);
 					}
 
-					if (isAirOrLeaves(world, pos.add(0, j, 1))) {
-						this.setBlockState(logPositions, world, pos.add(0, j, 1), this.log, blockBox);
+					if (isAirOrLeaves(modifiableTestableWorld, blockPos.add(0, j, 1))) {
+						this.setBlockState(set, modifiableTestableWorld, blockPos.add(0, j, 1), this.log, mutableIntBoundingBox);
 					}
 				}
 			}
 
-			this.replaceGround(world, random, pos);
+			this.replaceGround(modifiableTestableWorld, random, blockPos);
 			return true;
 		}
 	}
 
-	private void makeTopLeaves(ModifiableTestableWorld modifiableTestableWorld, int i, int j, int k, int l, Random random, BlockBox blockBox, Set<BlockPos> set) {
+	private void makeTopLeaves(
+		ModifiableTestableWorld modifiableTestableWorld, int i, int j, int k, int l, Random random, MutableIntBoundingBox mutableIntBoundingBox, Set<BlockPos> set
+	) {
 		int m = random.nextInt(5) + (this.field_13677 ? this.baseHeight : 3);
 		int n = 0;
 
 		for (int o = k - m; o <= k; o++) {
 			int p = k - o;
 			int q = l + MathHelper.floor((float)p / (float)m * 3.5F);
-			this.makeSquaredLeafLayer(modifiableTestableWorld, new BlockPos(i, o, j), q + (p > 0 && q == n && (o & 1) == 0 ? 1 : 0), blockBox, set);
+			this.makeSquaredLeafLayer(modifiableTestableWorld, new BlockPos(i, o, j), q + (p > 0 && q == n && (o & 1) == 0 ? 1 : 0), mutableIntBoundingBox, set);
 			n = q;
 		}
 	}
 
-	public void replaceGround(ModifiableTestableWorld world, Random random, BlockPos pos) {
-		this.replaceGroundNear(world, pos.west().north());
-		this.replaceGroundNear(world, pos.east(2).north());
-		this.replaceGroundNear(world, pos.west().south(2));
-		this.replaceGroundNear(world, pos.east(2).south(2));
+	public void replaceGround(ModifiableTestableWorld modifiableTestableWorld, Random random, BlockPos blockPos) {
+		this.replaceGroundNear(modifiableTestableWorld, blockPos.west().north());
+		this.replaceGroundNear(modifiableTestableWorld, blockPos.east(2).north());
+		this.replaceGroundNear(modifiableTestableWorld, blockPos.west().south(2));
+		this.replaceGroundNear(modifiableTestableWorld, blockPos.east(2).south(2));
 
 		for (int i = 0; i < 5; i++) {
 			int j = random.nextInt(64);
 			int k = j % 8;
 			int l = j / 8;
 			if (k == 0 || k == 7 || l == 0 || l == 7) {
-				this.replaceGroundNear(world, pos.add(-3 + k, 0, -3 + l));
+				this.replaceGroundNear(modifiableTestableWorld, blockPos.add(-3 + k, 0, -3 + l));
 			}
 		}
 	}

@@ -14,10 +14,10 @@ import java.util.Set;
 import net.minecraft.advancement.PlayerAdvancementTracker;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
-import net.minecraft.predicate.NumberRange;
 import net.minecraft.predicate.entity.EntityPredicate;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.NumberRange;
 
 public class KilledByCrossbowCriterion implements Criterion<KilledByCrossbowCriterion.Conditions> {
 	private static final Identifier ID = new Identifier("killed_by_crossbow");
@@ -29,42 +29,46 @@ public class KilledByCrossbowCriterion implements Criterion<KilledByCrossbowCrit
 	}
 
 	@Override
-	public void beginTrackingCondition(PlayerAdvancementTracker manager, Criterion.ConditionsContainer<KilledByCrossbowCriterion.Conditions> conditionsContainer) {
-		KilledByCrossbowCriterion.Handler handler = (KilledByCrossbowCriterion.Handler)this.handlers.get(manager);
+	public void beginTrackingCondition(
+		PlayerAdvancementTracker playerAdvancementTracker, Criterion.ConditionsContainer<KilledByCrossbowCriterion.Conditions> conditionsContainer
+	) {
+		KilledByCrossbowCriterion.Handler handler = (KilledByCrossbowCriterion.Handler)this.handlers.get(playerAdvancementTracker);
 		if (handler == null) {
-			handler = new KilledByCrossbowCriterion.Handler(manager);
-			this.handlers.put(manager, handler);
+			handler = new KilledByCrossbowCriterion.Handler(playerAdvancementTracker);
+			this.handlers.put(playerAdvancementTracker, handler);
 		}
 
 		handler.add(conditionsContainer);
 	}
 
 	@Override
-	public void endTrackingCondition(PlayerAdvancementTracker manager, Criterion.ConditionsContainer<KilledByCrossbowCriterion.Conditions> conditionsContainer) {
-		KilledByCrossbowCriterion.Handler handler = (KilledByCrossbowCriterion.Handler)this.handlers.get(manager);
+	public void endTrackingCondition(
+		PlayerAdvancementTracker playerAdvancementTracker, Criterion.ConditionsContainer<KilledByCrossbowCriterion.Conditions> conditionsContainer
+	) {
+		KilledByCrossbowCriterion.Handler handler = (KilledByCrossbowCriterion.Handler)this.handlers.get(playerAdvancementTracker);
 		if (handler != null) {
 			handler.remove(conditionsContainer);
 			if (handler.isEmpty()) {
-				this.handlers.remove(manager);
+				this.handlers.remove(playerAdvancementTracker);
 			}
 		}
 	}
 
 	@Override
-	public void endTracking(PlayerAdvancementTracker tracker) {
-		this.handlers.remove(tracker);
+	public void endTracking(PlayerAdvancementTracker playerAdvancementTracker) {
+		this.handlers.remove(playerAdvancementTracker);
 	}
 
-	public KilledByCrossbowCriterion.Conditions conditionsFromJson(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext) {
-		EntityPredicate[] entityPredicates = EntityPredicate.fromJsonArray(jsonObject.get("victims"));
+	public KilledByCrossbowCriterion.Conditions method_8979(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext) {
+		EntityPredicate[] entityPredicates = EntityPredicate.deserializeAll(jsonObject.get("victims"));
 		NumberRange.IntRange intRange = NumberRange.IntRange.fromJson(jsonObject.get("unique_entity_types"));
 		return new KilledByCrossbowCriterion.Conditions(entityPredicates, intRange);
 	}
 
-	public void trigger(ServerPlayerEntity player, Collection<Entity> victims, int amount) {
-		KilledByCrossbowCriterion.Handler handler = (KilledByCrossbowCriterion.Handler)this.handlers.get(player.getAdvancementTracker());
+	public void trigger(ServerPlayerEntity serverPlayerEntity, Collection<Entity> collection, int i) {
+		KilledByCrossbowCriterion.Handler handler = (KilledByCrossbowCriterion.Handler)this.handlers.get(serverPlayerEntity.getAdvancementManager());
 		if (handler != null) {
-			handler.trigger(player, victims, amount);
+			handler.trigger(serverPlayerEntity, collection, i);
 		}
 	}
 
@@ -72,9 +76,9 @@ public class KilledByCrossbowCriterion implements Criterion<KilledByCrossbowCrit
 		private final EntityPredicate[] victims;
 		private final NumberRange.IntRange uniqueEntityTypes;
 
-		public Conditions(EntityPredicate[] victims, NumberRange.IntRange intRange) {
+		public Conditions(EntityPredicate[] entityPredicates, NumberRange.IntRange intRange) {
 			super(KilledByCrossbowCriterion.ID);
-			this.victims = victims;
+			this.victims = entityPredicates;
 			this.uniqueEntityTypes = intRange;
 		}
 
@@ -94,9 +98,9 @@ public class KilledByCrossbowCriterion implements Criterion<KilledByCrossbowCrit
 			return new KilledByCrossbowCriterion.Conditions(entityPredicates, intRange);
 		}
 
-		public boolean matches(ServerPlayerEntity player, Collection<Entity> victims, int i) {
+		public boolean matches(ServerPlayerEntity serverPlayerEntity, Collection<Entity> collection, int i) {
 			if (this.victims.length > 0) {
-				List<Entity> list = Lists.<Entity>newArrayList(victims);
+				List<Entity> list = Lists.<Entity>newArrayList(collection);
 
 				for (EntityPredicate entityPredicate : this.victims) {
 					boolean bl = false;
@@ -104,7 +108,7 @@ public class KilledByCrossbowCriterion implements Criterion<KilledByCrossbowCrit
 
 					while (iterator.hasNext()) {
 						Entity entity = (Entity)iterator.next();
-						if (entityPredicate.test(player, entity)) {
+						if (entityPredicate.test(serverPlayerEntity, entity)) {
 							iterator.remove();
 							bl = true;
 							break;
@@ -122,7 +126,7 @@ public class KilledByCrossbowCriterion implements Criterion<KilledByCrossbowCrit
 			} else {
 				Set<EntityType<?>> set = Sets.<EntityType<?>>newHashSet();
 
-				for (Entity entity2 : victims) {
+				for (Entity entity2 : collection) {
 					set.add(entity2.getType());
 				}
 
@@ -134,7 +138,7 @@ public class KilledByCrossbowCriterion implements Criterion<KilledByCrossbowCrit
 		public JsonElement toJson() {
 			JsonObject jsonObject = new JsonObject();
 			jsonObject.add("victims", EntityPredicate.serializeAll(this.victims));
-			jsonObject.add("unique_entity_types", this.uniqueEntityTypes.toJson());
+			jsonObject.add("unique_entity_types", this.uniqueEntityTypes.serialize());
 			return jsonObject;
 		}
 	}
@@ -143,8 +147,8 @@ public class KilledByCrossbowCriterion implements Criterion<KilledByCrossbowCrit
 		private final PlayerAdvancementTracker manager;
 		private final Set<Criterion.ConditionsContainer<KilledByCrossbowCriterion.Conditions>> conditions = Sets.<Criterion.ConditionsContainer<KilledByCrossbowCriterion.Conditions>>newHashSet();
 
-		public Handler(PlayerAdvancementTracker manager) {
-			this.manager = manager;
+		public Handler(PlayerAdvancementTracker playerAdvancementTracker) {
+			this.manager = playerAdvancementTracker;
 		}
 
 		public boolean isEmpty() {
@@ -159,11 +163,11 @@ public class KilledByCrossbowCriterion implements Criterion<KilledByCrossbowCrit
 			this.conditions.remove(conditionsContainer);
 		}
 
-		public void trigger(ServerPlayerEntity player, Collection<Entity> victims, int i) {
+		public void trigger(ServerPlayerEntity serverPlayerEntity, Collection<Entity> collection, int i) {
 			List<Criterion.ConditionsContainer<KilledByCrossbowCriterion.Conditions>> list = null;
 
 			for (Criterion.ConditionsContainer<KilledByCrossbowCriterion.Conditions> conditionsContainer : this.conditions) {
-				if (conditionsContainer.getConditions().matches(player, victims, i)) {
+				if (conditionsContainer.getConditions().matches(serverPlayerEntity, collection, i)) {
 					if (list == null) {
 						list = Lists.<Criterion.ConditionsContainer<KilledByCrossbowCriterion.Conditions>>newArrayList();
 					}

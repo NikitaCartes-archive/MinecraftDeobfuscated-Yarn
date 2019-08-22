@@ -19,8 +19,8 @@ public class HoldingPatternPhase extends AbstractPhase {
 	private Vec3d field_7045;
 	private boolean field_7044;
 
-	public HoldingPatternPhase(EnderDragonEntity dragon) {
-		super(dragon);
+	public HoldingPatternPhase(EnderDragonEntity enderDragonEntity) {
+		super(enderDragonEntity);
 	}
 
 	@Override
@@ -52,7 +52,7 @@ public class HoldingPatternPhase extends AbstractPhase {
 		if (this.field_7043 != null && this.field_7043.isFinished()) {
 			BlockPos blockPos = this.dragon.world.getTopPosition(Heightmap.Type.MOTION_BLOCKING_NO_LEAVES, new BlockPos(EndPortalFeature.ORIGIN));
 			int i = this.dragon.getFight() == null ? 0 : this.dragon.getFight().getAliveEndCrystals();
-			if (this.dragon.getRandom().nextInt(i + 3) == 0) {
+			if (this.dragon.getRand().nextInt(i + 3) == 0) {
 				this.dragon.getPhaseManager().setPhase(PhaseType.LANDING_APPROACH);
 				return;
 			}
@@ -67,7 +67,7 @@ public class HoldingPatternPhase extends AbstractPhase {
 
 			if (playerEntity != null
 				&& !playerEntity.abilities.invulnerable
-				&& (this.dragon.getRandom().nextInt(MathHelper.abs((int)d) + 2) == 0 || this.dragon.getRandom().nextInt(i + 2) == 0)) {
+				&& (this.dragon.getRand().nextInt(MathHelper.abs((int)d) + 2) == 0 || this.dragon.getRand().nextInt(i + 2) == 0)) {
 				this.method_6843(playerEntity);
 				return;
 			}
@@ -76,7 +76,7 @@ public class HoldingPatternPhase extends AbstractPhase {
 		if (this.field_7043 == null || this.field_7043.isFinished()) {
 			int j = this.dragon.method_6818();
 			int ix = j;
-			if (this.dragon.getRandom().nextInt(8) == 0) {
+			if (this.dragon.getRand().nextInt(8) == 0) {
 				this.field_7044 = !this.field_7044;
 				ix = j + 6;
 			}
@@ -121,7 +121,7 @@ public class HoldingPatternPhase extends AbstractPhase {
 
 			double f;
 			do {
-				f = vec3d.y + (double)(this.dragon.getRandom().nextFloat() * 20.0F);
+				f = vec3d.y + (double)(this.dragon.getRand().nextFloat() * 20.0F);
 			} while (f < vec3d.y);
 
 			this.field_7045 = new Vec3d(d, f, e);
@@ -129,9 +129,9 @@ public class HoldingPatternPhase extends AbstractPhase {
 	}
 
 	@Override
-	public void crystalDestroyed(EnderCrystalEntity crystal, BlockPos pos, DamageSource source, @Nullable PlayerEntity player) {
-		if (player != null && !player.abilities.invulnerable) {
-			this.method_6843(player);
+	public void crystalDestroyed(EnderCrystalEntity enderCrystalEntity, BlockPos blockPos, DamageSource damageSource, @Nullable PlayerEntity playerEntity) {
+		if (playerEntity != null && !playerEntity.abilities.invulnerable) {
+			this.method_6843(playerEntity);
 		}
 	}
 }

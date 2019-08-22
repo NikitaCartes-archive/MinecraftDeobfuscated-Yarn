@@ -31,7 +31,6 @@ import net.minecraft.data.server.recipe.SingleItemRecipeJsonFactory;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemConvertible;
 import net.minecraft.item.Items;
-import net.minecraft.predicate.NumberRange;
 import net.minecraft.predicate.item.ItemPredicate;
 import net.minecraft.recipe.CookingRecipeSerializer;
 import net.minecraft.recipe.Ingredient;
@@ -39,6 +38,7 @@ import net.minecraft.recipe.RecipeSerializer;
 import net.minecraft.tag.ItemTags;
 import net.minecraft.tag.Tag;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.NumberRange;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -286,6 +286,14 @@ public class RecipesProvider implements DataProvider {
 			.pattern("GSG")
 			.pattern("OOO")
 			.criterion("has_nether_star", this.method_10426(Items.NETHER_STAR))
+			.offerTo(consumer);
+		ShapedRecipeJsonFactory.create(Blocks.BEE_HIVE)
+			.input('P', ItemTags.PLANKS)
+			.input('H', Items.HONEYCOMB)
+			.pattern("PPP")
+			.pattern("HHH")
+			.pattern("PPP")
+			.criterion("has_honeycomb", this.method_10426(Items.HONEYCOMB))
 			.offerTo(consumer);
 		ShapelessRecipeJsonFactory.create(Items.BEETROOT_SOUP)
 			.input(Items.BOWL)
@@ -3573,7 +3581,16 @@ public class RecipesProvider implements DataProvider {
 			.pattern("##")
 			.criterion("has_string", this.method_10426(Items.STRING))
 			.offerTo(consumer, "white_wool_from_string");
-		ShapelessRecipeJsonFactory.create(Items.SUGAR).input(Blocks.SUGAR_CANE).criterion("has_reeds", this.method_10426(Blocks.SUGAR_CANE)).offerTo(consumer);
+		ShapelessRecipeJsonFactory.create(Items.SUGAR)
+			.input(Blocks.SUGAR_CANE)
+			.group("sugar")
+			.criterion("has_reeds", this.method_10426(Blocks.SUGAR_CANE))
+			.offerTo(consumer, "sugar_from_sugar_cane");
+		ShapelessRecipeJsonFactory.create(Items.SUGAR, 3)
+			.input(Items.HONEY_BOTTLE)
+			.group("sugar")
+			.criterion("has_honey_bottle", this.method_10426(Items.HONEY_BOTTLE))
+			.offerTo(consumer, "sugar_from_honey_bottle");
 		ShapedRecipeJsonFactory.create(Blocks.TNT)
 			.input('#', Ingredient.ofItems(Blocks.SAND, Blocks.RED_SAND))
 			.input('X', Items.GUNPOWDER)

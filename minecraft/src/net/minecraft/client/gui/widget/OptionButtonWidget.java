@@ -8,8 +8,8 @@ import net.minecraft.client.options.Option;
 public class OptionButtonWidget extends ButtonWidget {
 	private final Option option;
 
-	public OptionButtonWidget(int x, int y, int width, int height, Option option, String text, ButtonWidget.PressAction pressAction) {
-		super(x, y, width, height, text, pressAction);
+	public OptionButtonWidget(int i, int j, int k, int l, Option option, String string, ButtonWidget.PressAction pressAction) {
+		super(i, j, k, l, string, pressAction);
 		this.option = option;
 	}
 }

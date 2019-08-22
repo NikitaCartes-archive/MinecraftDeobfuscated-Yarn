@@ -75,32 +75,32 @@ public class Style {
 		}
 
 		@Override
-		public Style setColor(Formatting color) {
+		public Style setColor(Formatting formatting) {
 			throw new UnsupportedOperationException();
 		}
 
 		@Override
-		public Style setBold(Boolean bold) {
+		public Style setBold(Boolean boolean_) {
 			throw new UnsupportedOperationException();
 		}
 
 		@Override
-		public Style setItalic(Boolean italic) {
+		public Style setItalic(Boolean boolean_) {
 			throw new UnsupportedOperationException();
 		}
 
 		@Override
-		public Style setStrikethrough(Boolean strikethrough) {
+		public Style setStrikethrough(Boolean boolean_) {
 			throw new UnsupportedOperationException();
 		}
 
 		@Override
-		public Style setUnderline(Boolean underline) {
+		public Style setUnderline(Boolean boolean_) {
 			throw new UnsupportedOperationException();
 		}
 
 		@Override
-		public Style setObfuscated(Boolean obfuscated) {
+		public Style setObfuscated(Boolean boolean_) {
 			throw new UnsupportedOperationException();
 		}
 
@@ -110,12 +110,12 @@ public class Style {
 		}
 
 		@Override
-		public Style setHoverEvent(HoverEvent clickEvent) {
+		public Style setHoverEvent(HoverEvent hoverEvent) {
 			throw new UnsupportedOperationException();
 		}
 
 		@Override
-		public Style setParent(Style parent) {
+		public Style setParent(Style style) {
 			throw new UnsupportedOperationException();
 		}
 
@@ -192,33 +192,33 @@ public class Style {
 		return this.insertion == null ? this.getParent().getInsertion() : this.insertion;
 	}
 
-	public Style setColor(Formatting color) {
-		this.color = color;
+	public Style setColor(Formatting formatting) {
+		this.color = formatting;
 		return this;
 	}
 
-	public Style setBold(Boolean bold) {
-		this.bold = bold;
+	public Style setBold(Boolean boolean_) {
+		this.bold = boolean_;
 		return this;
 	}
 
-	public Style setItalic(Boolean italic) {
-		this.italic = italic;
+	public Style setItalic(Boolean boolean_) {
+		this.italic = boolean_;
 		return this;
 	}
 
-	public Style setStrikethrough(Boolean strikethrough) {
-		this.strikethrough = strikethrough;
+	public Style setStrikethrough(Boolean boolean_) {
+		this.strikethrough = boolean_;
 		return this;
 	}
 
-	public Style setUnderline(Boolean underline) {
-		this.underline = underline;
+	public Style setUnderline(Boolean boolean_) {
+		this.underline = boolean_;
 		return this;
 	}
 
-	public Style setObfuscated(Boolean obfuscated) {
-		this.obfuscated = obfuscated;
+	public Style setObfuscated(Boolean boolean_) {
+		this.obfuscated = boolean_;
 		return this;
 	}
 
@@ -227,18 +227,18 @@ public class Style {
 		return this;
 	}
 
-	public Style setHoverEvent(HoverEvent clickEvent) {
-		this.hoverEvent = clickEvent;
+	public Style setHoverEvent(HoverEvent hoverEvent) {
+		this.hoverEvent = hoverEvent;
 		return this;
 	}
 
-	public Style setInsertion(String insertion) {
-		this.insertion = insertion;
+	public Style setInsertion(String string) {
+		this.insertion = string;
 		return this;
 	}
 
-	public Style setParent(Style parent) {
-		this.parent = parent;
+	public Style setParent(Style style) {
+		this.parent = style;
 		return this;
 	}
 
@@ -301,13 +301,13 @@ public class Style {
 			+ '}';
 	}
 
-	public boolean equals(Object obj) {
-		if (this == obj) {
+	public boolean equals(Object object) {
+		if (this == object) {
 			return true;
-		} else if (!(obj instanceof Style)) {
+		} else if (!(object instanceof Style)) {
 			return false;
 		} else {
-			Style style = (Style)obj;
+			Style style = (Style)object;
 			return this.isBold() == style.isBold()
 				&& this.getColor() == style.getColor()
 				&& this.isItalic() == style.isItalic()
@@ -357,7 +357,7 @@ public class Style {
 
 	public static class Serializer implements JsonDeserializer<Style>, JsonSerializer<Style> {
 		@Nullable
-		public Style deserialize(JsonElement jsonElement, Type type, JsonDeserializationContext jsonDeserializationContext) throws JsonParseException {
+		public Style method_10991(JsonElement jsonElement, Type type, JsonDeserializationContext jsonDeserializationContext) throws JsonParseException {
 			if (jsonElement.isJsonObject()) {
 				Style style = new Style();
 				JsonObject jsonObject = jsonElement.getAsJsonObject();
@@ -420,7 +420,7 @@ public class Style {
 		}
 
 		@Nullable
-		public JsonElement serialize(Style style, Type type, JsonSerializationContext jsonSerializationContext) {
+		public JsonElement method_10990(Style style, Type type, JsonSerializationContext jsonSerializationContext) {
 			if (style.isEmpty()) {
 				return null;
 			} else {

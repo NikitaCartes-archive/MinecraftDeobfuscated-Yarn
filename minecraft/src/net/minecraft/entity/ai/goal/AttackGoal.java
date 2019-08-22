@@ -11,9 +11,9 @@ public class AttackGoal extends Goal {
 	private LivingEntity target;
 	private int cooldown;
 
-	public AttackGoal(MobEntity mob) {
-		this.mob = mob;
-		this.world = mob.world;
+	public AttackGoal(MobEntity mobEntity) {
+		this.mob = mobEntity;
+		this.world = mobEntity.world;
 		this.setControls(EnumSet.of(Goal.Control.MOVE, Goal.Control.LOOK));
 	}
 
@@ -47,7 +47,7 @@ public class AttackGoal extends Goal {
 	public void tick() {
 		this.mob.getLookControl().lookAt(this.target, 30.0F, 30.0F);
 		double d = (double)(this.mob.getWidth() * 2.0F * this.mob.getWidth() * 2.0F);
-		double e = this.mob.squaredDistanceTo(this.target.x, this.target.getBoundingBox().y1, this.target.z);
+		double e = this.mob.squaredDistanceTo(this.target.x, this.target.getBoundingBox().minY, this.target.z);
 		double f = 0.8;
 		if (e > d && e < 16.0) {
 			f = 1.33;

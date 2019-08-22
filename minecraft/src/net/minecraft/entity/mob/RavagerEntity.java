@@ -39,8 +39,8 @@ import net.minecraft.util.math.Box;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.BlockView;
-import net.minecraft.world.CollisionView;
 import net.minecraft.world.GameRules;
+import net.minecraft.world.ViewableWorld;
 import net.minecraft.world.World;
 
 public class RavagerEntity extends RaiderEntity {
@@ -91,19 +91,19 @@ public class RavagerEntity extends RaiderEntity {
 	}
 
 	@Override
-	public void writeCustomDataToTag(CompoundTag tag) {
-		super.writeCustomDataToTag(tag);
-		tag.putInt("AttackTick", this.attackTick);
-		tag.putInt("StunTick", this.stunTick);
-		tag.putInt("RoarTick", this.roarTick);
+	public void writeCustomDataToTag(CompoundTag compoundTag) {
+		super.writeCustomDataToTag(compoundTag);
+		compoundTag.putInt("AttackTick", this.attackTick);
+		compoundTag.putInt("StunTick", this.stunTick);
+		compoundTag.putInt("RoarTick", this.roarTick);
 	}
 
 	@Override
-	public void readCustomDataFromTag(CompoundTag tag) {
-		super.readCustomDataFromTag(tag);
-		this.attackTick = tag.getInt("AttackTick");
-		this.stunTick = tag.getInt("StunTick");
-		this.roarTick = tag.getInt("RoarTick");
+	public void readCustomDataFromTag(CompoundTag compoundTag) {
+		super.readCustomDataFromTag(compoundTag);
+		this.attackTick = compoundTag.getInt("AttackTick");
+		this.stunTick = compoundTag.getInt("StunTick");
+		this.roarTick = compoundTag.getInt("RoarTick");
 	}
 
 	@Override
@@ -154,7 +154,12 @@ public class RavagerEntity extends RaiderEntity {
 				Box box = this.getBoundingBox().expand(0.2);
 
 				for (BlockPos blockPos : BlockPos.iterate(
-					MathHelper.floor(box.x1), MathHelper.floor(box.y1), MathHelper.floor(box.z1), MathHelper.floor(box.x2), MathHelper.floor(box.y2), MathHelper.floor(box.z2)
+					MathHelper.floor(box.minX),
+					MathHelper.floor(box.minY),
+					MathHelper.floor(box.minZ),
+					MathHelper.floor(box.maxX),
+					MathHelper.floor(box.maxY),
+					MathHelper.floor(box.maxZ)
 				)) {
 					BlockState blockState = this.world.getBlockState(blockPos);
 					Block block = blockState.getBlock();
@@ -192,9 +197,9 @@ public class RavagerEntity extends RaiderEntity {
 
 	private void spawnStunnedParticles() {
 		if (this.random.nextInt(6) == 0) {
-			double d = this.x - (double)this.getWidth() * Math.sin((double)(this.field_6283 * (float) (Math.PI / 180.0))) + (this.random.nextDouble() * 0.6 - 0.3);
+			double d = this.x - (double)this.getWidth() * Math.sin((double)(this.bodyYaw * (float) (Math.PI / 180.0))) + (this.random.nextDouble() * 0.6 - 0.3);
 			double e = this.y + (double)this.getHeight() - 0.3;
-			double f = this.z + (double)this.getWidth() * Math.cos((double)(this.field_6283 * (float) (Math.PI / 180.0))) + (this.random.nextDouble() * 0.6 - 0.3);
+			double f = this.z + (double)this.getWidth() * Math.cos((double)(this.bodyYaw * (float) (Math.PI / 180.0))) + (this.random.nextDouble() * 0.6 - 0.3);
 			this.world.addParticle(ParticleTypes.ENTITY_EFFECT, d, e, f, 0.4980392156862745, 0.5137254901960784, 0.5725490196078431);
 		}
 	}
@@ -210,18 +215,18 @@ public class RavagerEntity extends RaiderEntity {
 	}
 
 	@Override
-	protected void knockback(LivingEntity target) {
+	protected void knockback(LivingEntity livingEntity) {
 		if (this.roarTick == 0) {
 			if (this.random.nextDouble() < 0.5) {
 				this.stunTick = 40;
 				this.playSound(SoundEvents.ENTITY_RAVAGER_STUNNED, 1.0F, 1.0F);
 				this.world.sendEntityStatus(this, (byte)39);
-				target.pushAwayFrom(this);
+				livingEntity.pushAwayFrom(this);
 			} else {
-				this.knockBack(target);
+				this.knockBack(livingEntity);
 			}
 
-			target.velocityModified = true;
+			livingEntity.velocityModified = true;
 		}
 	}
 
@@ -255,15 +260,15 @@ public class RavagerEntity extends RaiderEntity {
 
 	@Environment(EnvType.CLIENT)
 	@Override
-	public void handleStatus(byte status) {
-		if (status == 4) {
+	public void handleStatus(byte b) {
+		if (b == 4) {
 			this.attackTick = 10;
 			this.playSound(SoundEvents.ENTITY_RAVAGER_ATTACK, 1.0F, 1.0F);
-		} else if (status == 39) {
+		} else if (b == 39) {
 			this.stunTick = 40;
 		}
 
-		super.handleStatus(status);
+		super.handleStatus(b);
 	}
 
 	@Environment(EnvType.CLIENT)
@@ -282,11 +287,11 @@ public class RavagerEntity extends RaiderEntity {
 	}
 
 	@Override
-	public boolean tryAttack(Entity target) {
+	public boolean tryAttack(Entity entity) {
 		this.attackTick = 10;
 		this.world.sendEntityStatus(this, (byte)4);
 		this.playSound(SoundEvents.ENTITY_RAVAGER_ATTACK, 1.0F, 1.0F);
-		return super.tryAttack(target);
+		return super.tryAttack(entity);
 	}
 
 	@Nullable
@@ -296,7 +301,7 @@ public class RavagerEntity extends RaiderEntity {
 	}
 
 	@Override
-	protected SoundEvent getHurtSound(DamageSource source) {
+	protected SoundEvent getHurtSound(DamageSource damageSource) {
 		return SoundEvents.ENTITY_RAVAGER_HURT;
 	}
 
@@ -306,17 +311,17 @@ public class RavagerEntity extends RaiderEntity {
 	}
 
 	@Override
-	protected void playStepSound(BlockPos pos, BlockState state) {
+	protected void playStepSound(BlockPos blockPos, BlockState blockState) {
 		this.playSound(SoundEvents.ENTITY_RAVAGER_STEP, 0.15F, 1.0F);
 	}
 
 	@Override
-	public boolean canSpawn(CollisionView world) {
-		return !world.intersectsFluid(this.getBoundingBox());
+	public boolean canSpawn(ViewableWorld viewableWorld) {
+		return !viewableWorld.intersectsFluid(this.getBoundingBox());
 	}
 
 	@Override
-	public void addBonusForWave(int wave, boolean unused) {
+	public void addBonusForWave(int i, boolean bl) {
 	}
 
 	@Override
@@ -330,15 +335,15 @@ public class RavagerEntity extends RaiderEntity {
 		}
 
 		@Override
-		protected double getSquaredMaxAttackDistance(LivingEntity entity) {
+		protected double getSquaredMaxAttackDistance(LivingEntity livingEntity) {
 			float f = RavagerEntity.this.getWidth() - 0.1F;
-			return (double)(f * 2.0F * f * 2.0F + entity.getWidth());
+			return (double)(f * 2.0F * f * 2.0F + livingEntity.getWidth());
 		}
 	}
 
 	static class class_1586 extends MobNavigation {
-		public class_1586(MobEntity world, World world2) {
-			super(world, world2);
+		public class_1586(MobEntity mobEntity, World world) {
+			super(mobEntity, world);
 		}
 
 		@Override

@@ -7,9 +7,9 @@ import net.fabricmc.api.Environment;
 import net.minecraft.advancement.criterion.Criterions;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
+import net.minecraft.client.network.packet.EntitySpawnGlobalS2CPacket;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.Packet;
-import net.minecraft.network.packet.s2c.play.EntitySpawnGlobalS2CPacket;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
@@ -27,14 +27,14 @@ public class LightningEntity extends Entity {
 	@Nullable
 	private ServerPlayerEntity channeller;
 
-	public LightningEntity(World world, double x, double y, double z, boolean cosmetic) {
+	public LightningEntity(World world, double d, double e, double f, boolean bl) {
 		super(EntityType.LIGHTNING_BOLT, world);
 		this.ignoreCameraFrustum = true;
-		this.refreshPositionAndAngles(x, y, z, 0.0F, 0.0F);
+		this.setPositionAndAngles(d, e, f, 0.0F, 0.0F);
 		this.ambientTick = 2;
 		this.seed = this.random.nextLong();
 		this.remainingActions = this.random.nextInt(3) + 1;
-		this.cosmetic = cosmetic;
+		this.cosmetic = bl;
 		Difficulty difficulty = world.getDifficulty();
 		if (difficulty == Difficulty.NORMAL || difficulty == Difficulty.HARD) {
 			this.spawnFire(4);
@@ -46,8 +46,8 @@ public class LightningEntity extends Entity {
 		return SoundCategory.WEATHER;
 	}
 
-	public void setChanneller(@Nullable ServerPlayerEntity channeller) {
-		this.channeller = channeller;
+	public void setChanneller(@Nullable ServerPlayerEntity serverPlayerEntity) {
+		this.channeller = serverPlayerEntity;
 	}
 
 	@Override
@@ -74,7 +74,7 @@ public class LightningEntity extends Entity {
 
 		if (this.ambientTick >= 0) {
 			if (this.world.isClient) {
-				this.world.setLightningTicksLeft(2);
+				this.world.setTicksSinceLightning(2);
 			} else if (!this.cosmetic) {
 				double d = 3.0;
 				List<Entity> list = this.world
@@ -85,13 +85,13 @@ public class LightningEntity extends Entity {
 				}
 
 				if (this.channeller != null) {
-					Criterions.CHANNELED_LIGHTNING.trigger(this.channeller, list);
+					Criterions.CHANNELED_LIGHTNING.handle(this.channeller, list);
 				}
 			}
 		}
 	}
 
-	private void spawnFire(int spreadAttempts) {
+	private void spawnFire(int i) {
 		if (!this.cosmetic && !this.world.isClient && this.world.getGameRules().getBoolean(GameRules.DO_FIRE_TICK)) {
 			BlockState blockState = Blocks.FIRE.getDefaultState();
 			BlockPos blockPos = new BlockPos(this);
@@ -99,7 +99,7 @@ public class LightningEntity extends Entity {
 				this.world.setBlockState(blockPos, blockState);
 			}
 
-			for (int i = 0; i < spreadAttempts; i++) {
+			for (int j = 0; j < i; j++) {
 				BlockPos blockPos2 = blockPos.add(this.random.nextInt(3) - 1, this.random.nextInt(3) - 1, this.random.nextInt(3) - 1);
 				if (this.world.getBlockState(blockPos2).isAir() && blockState.canPlaceAt(this.world, blockPos2)) {
 					this.world.setBlockState(blockPos2, blockState);
@@ -110,9 +110,9 @@ public class LightningEntity extends Entity {
 
 	@Environment(EnvType.CLIENT)
 	@Override
-	public boolean shouldRender(double distance) {
-		double d = 64.0 * getRenderDistanceMultiplier();
-		return distance < d * d;
+	public boolean shouldRenderAtDistance(double d) {
+		double e = 64.0 * getRenderDistanceMultiplier();
+		return d < e * e;
 	}
 
 	@Override
@@ -120,11 +120,11 @@ public class LightningEntity extends Entity {
 	}
 
 	@Override
-	protected void readCustomDataFromTag(CompoundTag tag) {
+	protected void readCustomDataFromTag(CompoundTag compoundTag) {
 	}
 
 	@Override
-	protected void writeCustomDataToTag(CompoundTag tag) {
+	protected void writeCustomDataToTag(CompoundTag compoundTag) {
 	}
 
 	@Override

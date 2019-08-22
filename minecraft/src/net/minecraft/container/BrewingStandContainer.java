@@ -20,8 +20,8 @@ public class BrewingStandContainer extends Container {
 	private final PropertyDelegate propertyDelegate;
 	private final Slot ingredientSlot;
 
-	public BrewingStandContainer(int syncId, PlayerInventory playerInventory) {
-		this(syncId, playerInventory, new BasicInventory(5), new ArrayPropertyDelegate(2));
+	public BrewingStandContainer(int i, PlayerInventory playerInventory) {
+		this(i, playerInventory, new BasicInventory(5), new ArrayPropertyDelegate(2));
 	}
 
 	public BrewingStandContainer(int i, PlayerInventory playerInventory, Inventory inventory, PropertyDelegate propertyDelegate) {
@@ -49,19 +49,23 @@ public class BrewingStandContainer extends Container {
 	}
 
 	@Override
-	public boolean canUse(PlayerEntity player) {
-		return this.inventory.canPlayerUseInv(player);
+	public boolean canUse(PlayerEntity playerEntity) {
+		return this.inventory.canPlayerUseInv(playerEntity);
 	}
 
 	@Override
-	public ItemStack transferSlot(PlayerEntity player, int invSlot) {
+	public ItemStack transferSlot(PlayerEntity playerEntity, int i) {
 		ItemStack itemStack = ItemStack.EMPTY;
-		Slot slot = (Slot)this.slots.get(invSlot);
+		Slot slot = (Slot)this.slotList.get(i);
 		if (slot != null && slot.hasStack()) {
 			ItemStack itemStack2 = slot.getStack();
 			itemStack = itemStack2.copy();
-			if ((invSlot < 0 || invSlot > 2) && invSlot != 3 && invSlot != 4) {
-				if (this.ingredientSlot.canInsert(itemStack2)) {
+			if ((i < 0 || i > 2) && i != 3 && i != 4) {
+				if (BrewingStandContainer.SlotFuel.matches(itemStack)) {
+					if (this.insertItem(itemStack2, 4, 5, false) || this.ingredientSlot.canInsert(itemStack2) && !this.insertItem(itemStack2, 3, 4, false)) {
+						return ItemStack.EMPTY;
+					}
+				} else if (this.ingredientSlot.canInsert(itemStack2)) {
 					if (!this.insertItem(itemStack2, 3, 4, false)) {
 						return ItemStack.EMPTY;
 					}
@@ -69,15 +73,11 @@ public class BrewingStandContainer extends Container {
 					if (!this.insertItem(itemStack2, 0, 3, false)) {
 						return ItemStack.EMPTY;
 					}
-				} else if (BrewingStandContainer.SlotFuel.matches(itemStack)) {
-					if (!this.insertItem(itemStack2, 4, 5, false)) {
-						return ItemStack.EMPTY;
-					}
-				} else if (invSlot >= 5 && invSlot < 32) {
+				} else if (i >= 5 && i < 32) {
 					if (!this.insertItem(itemStack2, 32, 41, false)) {
 						return ItemStack.EMPTY;
 					}
-				} else if (invSlot >= 32 && invSlot < 41) {
+				} else if (i >= 32 && i < 41) {
 					if (!this.insertItem(itemStack2, 5, 32, false)) {
 						return ItemStack.EMPTY;
 					}
@@ -102,7 +102,7 @@ public class BrewingStandContainer extends Container {
 				return ItemStack.EMPTY;
 			}
 
-			slot.onTakeItem(player, itemStack2);
+			slot.onTakeItem(playerEntity, itemStack2);
 		}
 
 		return itemStack;
@@ -119,13 +119,13 @@ public class BrewingStandContainer extends Container {
 	}
 
 	static class SlotFuel extends Slot {
-		public SlotFuel(Inventory invSlot, int xPosition, int i, int j) {
-			super(invSlot, xPosition, i, j);
+		public SlotFuel(Inventory inventory, int i, int j, int k) {
+			super(inventory, i, j, k);
 		}
 
 		@Override
-		public boolean canInsert(ItemStack stack) {
-			return matches(stack);
+		public boolean canInsert(ItemStack itemStack) {
+			return matches(itemStack);
 		}
 
 		public static boolean matches(ItemStack itemStack) {
@@ -139,13 +139,13 @@ public class BrewingStandContainer extends Container {
 	}
 
 	static class SlotIngredient extends Slot {
-		public SlotIngredient(Inventory invSlot, int xPosition, int i, int j) {
-			super(invSlot, xPosition, i, j);
+		public SlotIngredient(Inventory inventory, int i, int j, int k) {
+			super(inventory, i, j, k);
 		}
 
 		@Override
-		public boolean canInsert(ItemStack stack) {
-			return BrewingRecipeRegistry.isValidIngredient(stack);
+		public boolean canInsert(ItemStack itemStack) {
+			return BrewingRecipeRegistry.isValidIngredient(itemStack);
 		}
 
 		@Override
@@ -155,13 +155,13 @@ public class BrewingStandContainer extends Container {
 	}
 
 	static class SlotPotion extends Slot {
-		public SlotPotion(Inventory invSlot, int xPosition, int i, int j) {
-			super(invSlot, xPosition, i, j);
+		public SlotPotion(Inventory inventory, int i, int j, int k) {
+			super(inventory, i, j, k);
 		}
 
 		@Override
-		public boolean canInsert(ItemStack stack) {
-			return matches(stack);
+		public boolean canInsert(ItemStack itemStack) {
+			return matches(itemStack);
 		}
 
 		@Override
@@ -170,14 +170,14 @@ public class BrewingStandContainer extends Container {
 		}
 
 		@Override
-		public ItemStack onTakeItem(PlayerEntity player, ItemStack stack) {
-			Potion potion = PotionUtil.getPotion(stack);
-			if (player instanceof ServerPlayerEntity) {
-				Criterions.BREWED_POTION.trigger((ServerPlayerEntity)player, potion);
+		public ItemStack onTakeItem(PlayerEntity playerEntity, ItemStack itemStack) {
+			Potion potion = PotionUtil.getPotion(itemStack);
+			if (playerEntity instanceof ServerPlayerEntity) {
+				Criterions.BREWED_POTION.handle((ServerPlayerEntity)playerEntity, potion);
 			}
 
-			super.onTakeItem(player, stack);
-			return stack;
+			super.onTakeItem(playerEntity, itemStack);
+			return itemStack;
 		}
 
 		public static boolean matches(ItemStack itemStack) {

@@ -14,17 +14,17 @@ public class StatHandler {
 		this.statMap.defaultReturnValue(0);
 	}
 
-	public void increaseStat(PlayerEntity player, Stat<?> stat, int value) {
-		this.setStat(player, stat, this.getStat(stat) + value);
+	public void increaseStat(PlayerEntity playerEntity, Stat<?> stat, int i) {
+		this.setStat(playerEntity, stat, this.getStat(stat) + i);
 	}
 
-	public void setStat(PlayerEntity player, Stat<?> stat, int value) {
-		this.statMap.put(stat, value);
+	public void setStat(PlayerEntity playerEntity, Stat<?> stat, int i) {
+		this.statMap.put(stat, i);
 	}
 
 	@Environment(EnvType.CLIENT)
-	public <T> int getStat(StatType<T> type, T stat) {
-		return type.hasStat(stat) ? this.getStat(type.getOrCreateStat(stat)) : 0;
+	public <T> int getStat(StatType<T> statType, T object) {
+		return statType.hasStat(object) ? this.getStat(statType.getOrCreateStat(object)) : 0;
 	}
 
 	public int getStat(Stat<?> stat) {

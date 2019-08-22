@@ -16,32 +16,32 @@ import net.minecraft.world.Heightmap;
 public class SeekSkyTask extends Task<LivingEntity> {
 	private final float speed;
 
-	public SeekSkyTask(float speed) {
+	public SeekSkyTask(float f) {
 		super(ImmutableMap.of(MemoryModuleType.WALK_TARGET, MemoryModuleState.VALUE_ABSENT));
-		this.speed = speed;
+		this.speed = f;
 	}
 
 	@Override
-	protected void run(ServerWorld world, LivingEntity entity, long time) {
-		Optional<Vec3d> optional = Optional.ofNullable(this.findNearbySky(world, entity));
+	protected void run(ServerWorld serverWorld, LivingEntity livingEntity, long l) {
+		Optional<Vec3d> optional = Optional.ofNullable(this.findNearbySky(serverWorld, livingEntity));
 		if (optional.isPresent()) {
-			entity.getBrain().setMemory(MemoryModuleType.WALK_TARGET, optional.map(vec3d -> new WalkTarget(vec3d, this.speed, 0)));
+			livingEntity.getBrain().setMemory(MemoryModuleType.WALK_TARGET, optional.map(vec3d -> new WalkTarget(vec3d, this.speed, 0)));
 		}
 	}
 
 	@Override
-	protected boolean shouldRun(ServerWorld world, LivingEntity entity) {
-		return !world.isSkyVisible(new BlockPos(entity.x, entity.getBoundingBox().y1, entity.z));
+	protected boolean shouldRun(ServerWorld serverWorld, LivingEntity livingEntity) {
+		return !serverWorld.isSkyVisible(new BlockPos(livingEntity.x, livingEntity.getBoundingBox().minY, livingEntity.z));
 	}
 
 	@Nullable
-	private Vec3d findNearbySky(ServerWorld world, LivingEntity entity) {
-		Random random = entity.getRandom();
-		BlockPos blockPos = new BlockPos(entity.x, entity.getBoundingBox().y1, entity.z);
+	private Vec3d findNearbySky(ServerWorld serverWorld, LivingEntity livingEntity) {
+		Random random = livingEntity.getRand();
+		BlockPos blockPos = new BlockPos(livingEntity.x, livingEntity.getBoundingBox().minY, livingEntity.z);
 
 		for (int i = 0; i < 10; i++) {
 			BlockPos blockPos2 = blockPos.add(random.nextInt(20) - 10, random.nextInt(6) - 3, random.nextInt(20) - 10);
-			if (isSkyVisible(world, entity)) {
+			if (isSkyVisible(serverWorld, livingEntity)) {
 				return new Vec3d((double)blockPos2.getX(), (double)blockPos2.getY(), (double)blockPos2.getZ());
 			}
 		}
@@ -49,7 +49,8 @@ public class SeekSkyTask extends Task<LivingEntity> {
 		return null;
 	}
 
-	public static boolean isSkyVisible(ServerWorld world, LivingEntity from) {
-		return world.isSkyVisible(new BlockPos(from)) && (double)world.getTopPosition(Heightmap.Type.MOTION_BLOCKING, new BlockPos(from)).getY() <= from.y;
+	public static boolean isSkyVisible(ServerWorld serverWorld, LivingEntity livingEntity) {
+		return serverWorld.isSkyVisible(new BlockPos(livingEntity))
+			&& (double)serverWorld.getTopPosition(Heightmap.Type.MOTION_BLOCKING, new BlockPos(livingEntity)).getY() <= livingEntity.y;
 	}
 }

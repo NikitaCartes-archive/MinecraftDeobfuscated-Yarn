@@ -24,65 +24,67 @@ public class SeagrassBlock extends PlantBlock implements Fertilizable, FluidFill
 	}
 
 	@Override
-	public VoxelShape getOutlineShape(BlockState state, BlockView view, BlockPos pos, EntityContext context) {
+	public VoxelShape getOutlineShape(BlockState blockState, BlockView blockView, BlockPos blockPos, EntityContext entityContext) {
 		return SHAPE;
 	}
 
 	@Override
-	protected boolean canPlantOnTop(BlockState floor, BlockView view, BlockPos pos) {
-		return floor.isSideSolidFullSquare(view, pos, Direction.UP) && floor.getBlock() != Blocks.MAGMA_BLOCK;
+	protected boolean canPlantOnTop(BlockState blockState, BlockView blockView, BlockPos blockPos) {
+		return blockState.isSideSolidFullSquare(blockView, blockPos, Direction.UP) && blockState.getBlock() != Blocks.MAGMA_BLOCK;
 	}
 
 	@Nullable
 	@Override
-	public BlockState getPlacementState(ItemPlacementContext ctx) {
-		FluidState fluidState = ctx.getWorld().getFluidState(ctx.getBlockPos());
-		return fluidState.matches(FluidTags.WATER) && fluidState.getLevel() == 8 ? super.getPlacementState(ctx) : null;
+	public BlockState getPlacementState(ItemPlacementContext itemPlacementContext) {
+		FluidState fluidState = itemPlacementContext.getWorld().getFluidState(itemPlacementContext.getBlockPos());
+		return fluidState.matches(FluidTags.WATER) && fluidState.getLevel() == 8 ? super.getPlacementState(itemPlacementContext) : null;
 	}
 
 	@Override
-	public BlockState getStateForNeighborUpdate(BlockState state, Direction facing, BlockState neighborState, IWorld world, BlockPos pos, BlockPos neighborPos) {
-		BlockState blockState = super.getStateForNeighborUpdate(state, facing, neighborState, world, pos, neighborPos);
-		if (!blockState.isAir()) {
-			world.getFluidTickScheduler().schedule(pos, Fluids.WATER, Fluids.WATER.getTickRate(world));
+	public BlockState getStateForNeighborUpdate(
+		BlockState blockState, Direction direction, BlockState blockState2, IWorld iWorld, BlockPos blockPos, BlockPos blockPos2
+	) {
+		BlockState blockState3 = super.getStateForNeighborUpdate(blockState, direction, blockState2, iWorld, blockPos, blockPos2);
+		if (!blockState3.isAir()) {
+			iWorld.getFluidTickScheduler().schedule(blockPos, Fluids.WATER, Fluids.WATER.getTickRate(iWorld));
 		}
 
-		return blockState;
+		return blockState3;
 	}
 
 	@Override
-	public boolean isFertilizable(BlockView world, BlockPos pos, BlockState state, boolean isClient) {
+	public boolean isFertilizable(BlockView blockView, BlockPos blockPos, BlockState blockState, boolean bl) {
 		return true;
 	}
 
 	@Override
-	public boolean canGrow(World world, Random random, BlockPos pos, BlockState state) {
+	public boolean canGrow(World world, Random random, BlockPos blockPos, BlockState blockState) {
 		return true;
 	}
 
 	@Override
-	public FluidState getFluidState(BlockState state) {
+	public FluidState getFluidState(BlockState blockState) {
 		return Fluids.WATER.getStill(false);
 	}
 
 	@Override
-	public void grow(World world, Random random, BlockPos pos, BlockState state) {
-		BlockState blockState = Blocks.TALL_SEAGRASS.getDefaultState();
-		BlockState blockState2 = blockState.with(TallSeagrassBlock.HALF, DoubleBlockHalf.UPPER);
-		BlockPos blockPos = pos.up();
-		if (world.getBlockState(blockPos).getBlock() == Blocks.WATER) {
-			world.setBlockState(pos, blockState, 2);
+	public void grow(World world, Random random, BlockPos blockPos, BlockState blockState) {
+		BlockState blockState2 = Blocks.TALL_SEAGRASS.getDefaultState();
+		BlockState blockState3 = blockState2.with(TallSeagrassBlock.HALF, DoubleBlockHalf.UPPER);
+		BlockPos blockPos2 = blockPos.up();
+		if (world.getBlockState(blockPos2).getBlock() == Blocks.WATER) {
 			world.setBlockState(blockPos, blockState2, 2);
+			world.setBlockState(blockPos2, blockState3, 2);
 		}
 	}
 
 	@Override
-	public boolean canFillWithFluid(BlockView view, BlockPos pos, BlockState state, Fluid fluid) {
+	public boolean canFillWithFluid(BlockView blockView, BlockPos blockPos, BlockState blockState, Fluid fluid) {
 		return false;
 	}
 
 	@Override
-	public boolean tryFillWithFluid(IWorld world, BlockPos pos, BlockState state, FluidState fluidState) {
+	public boolean tryFillWithFluid(IWorld iWorld, BlockPos blockPos, BlockState blockState, FluidState fluidState) {
 		return false;
 	}
 }

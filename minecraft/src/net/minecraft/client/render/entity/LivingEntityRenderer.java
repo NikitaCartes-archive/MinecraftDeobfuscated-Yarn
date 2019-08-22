@@ -1,12 +1,12 @@
 package net.minecraft.client.render.entity;
 
 import com.google.common.collect.Lists;
-import com.mojang.blaze3d.platform.GLX;
-import com.mojang.blaze3d.platform.GlStateManager;
+import com.mojang.blaze3d.systems.RenderSystem;
 import java.nio.FloatBuffer;
 import java.util.List;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.class_4493;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.network.ClientPlayerEntity;
 import net.minecraft.client.render.entity.feature.FeatureRenderer;
@@ -19,7 +19,7 @@ import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.scoreboard.AbstractTeam;
 import net.minecraft.util.Formatting;
-import net.minecraft.util.Util;
+import net.minecraft.util.SystemUtil;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
 import org.apache.logging.log4j.LogManager;
@@ -28,17 +28,19 @@ import org.apache.logging.log4j.Logger;
 @Environment(EnvType.CLIENT)
 public abstract class LivingEntityRenderer<T extends LivingEntity, M extends EntityModel<T>> extends EntityRenderer<T> implements FeatureRendererContext<T, M> {
 	private static final Logger LOGGER = LogManager.getLogger();
-	private static final NativeImageBackedTexture colorOverlayTexture = Util.make(new NativeImageBackedTexture(16, 16, false), nativeImageBackedTexture -> {
-		nativeImageBackedTexture.getImage().untrack();
+	private static final NativeImageBackedTexture colorOverlayTexture = SystemUtil.consume(
+		new NativeImageBackedTexture(16, 16, false), nativeImageBackedTexture -> {
+			nativeImageBackedTexture.getImage().untrack();
 
-		for (int i = 0; i < 16; i++) {
-			for (int j = 0; j < 16; j++) {
-				nativeImageBackedTexture.getImage().setPixelRgba(j, i, -1);
+			for (int i = 0; i < 16; i++) {
+				for (int j = 0; j < 16; j++) {
+					nativeImageBackedTexture.getImage().setPixelRGBA(j, i, -1);
+				}
 			}
-		}
 
-		nativeImageBackedTexture.upload();
-	});
+			nativeImageBackedTexture.upload();
+		}
+	);
 	protected M model;
 	protected final FloatBuffer colorOverlayBuffer = GlAllocationUtils.allocateFloatBuffer(4);
 	protected final List<FeatureRenderer<T, M>> features = Lists.<FeatureRenderer<T, M>>newArrayList();
@@ -50,8 +52,8 @@ public abstract class LivingEntityRenderer<T extends LivingEntity, M extends Ent
 		this.field_4673 = f;
 	}
 
-	protected final boolean addFeature(FeatureRenderer<T, M> feature) {
-		return this.features.add(feature);
+	protected final boolean addFeature(FeatureRenderer<T, M> featureRenderer) {
+		return this.features.add(featureRenderer);
 	}
 
 	@Override
@@ -59,20 +61,20 @@ public abstract class LivingEntityRenderer<T extends LivingEntity, M extends Ent
 		return this.model;
 	}
 
-	public void render(T livingEntity, double d, double e, double f, float g, float h) {
-		GlStateManager.pushMatrix();
-		GlStateManager.disableCull();
+	public void method_4054(T livingEntity, double d, double e, double f, float g, float h) {
+		RenderSystem.pushMatrix();
+		RenderSystem.disableCull();
 		this.model.handSwingProgress = this.getHandSwingProgress(livingEntity, h);
-		this.model.riding = livingEntity.hasVehicle();
-		this.model.child = livingEntity.isBaby();
+		this.model.isRiding = livingEntity.hasVehicle();
+		this.model.isChild = livingEntity.isBaby();
 
 		try {
-			float i = MathHelper.lerpAngleDegrees(h, livingEntity.field_6220, livingEntity.field_6283);
+			float i = MathHelper.lerpAngleDegrees(h, livingEntity.prevBodyYaw, livingEntity.bodyYaw);
 			float j = MathHelper.lerpAngleDegrees(h, livingEntity.prevHeadYaw, livingEntity.headYaw);
 			float k = j - i;
 			if (livingEntity.hasVehicle() && livingEntity.getVehicle() instanceof LivingEntity) {
 				LivingEntity livingEntity2 = (LivingEntity)livingEntity.getVehicle();
-				i = MathHelper.lerpAngleDegrees(h, livingEntity2.field_6220, livingEntity2.field_6283);
+				i = MathHelper.lerpAngleDegrees(h, livingEntity2.prevBodyYaw, livingEntity2.bodyYaw);
 				k = j - i;
 				float l = MathHelper.wrapDegrees(k);
 				if (l < -85.0F) {
@@ -93,7 +95,7 @@ public abstract class LivingEntityRenderer<T extends LivingEntity, M extends Ent
 
 			float m = MathHelper.lerp(h, livingEntity.prevPitch, livingEntity.pitch);
 			this.method_4048(livingEntity, d, e, f);
-			float lx = this.getAnimationProgress(livingEntity, h);
+			float lx = this.getAge(livingEntity, h);
 			this.setupTransforms(livingEntity, lx, i, h);
 			float n = this.scaleAndTranslate(livingEntity, h);
 			float o = 0.0F;
@@ -110,13 +112,13 @@ public abstract class LivingEntityRenderer<T extends LivingEntity, M extends Ent
 				}
 			}
 
-			GlStateManager.enableAlphaTest();
+			RenderSystem.enableAlphaTest();
 			this.model.animateModel(livingEntity, p, o, h);
 			this.model.setAngles(livingEntity, p, o, lx, k, m, n);
 			if (this.renderOutlines) {
 				boolean bl = this.beforeOutlineRender(livingEntity);
-				GlStateManager.enableColorMaterial();
-				GlStateManager.setupSolidRenderingTextureCombine(this.getOutlineColor(livingEntity));
+				RenderSystem.enableColorMaterial();
+				RenderSystem.setupSolidRenderingTextureCombine(this.getOutlineColor(livingEntity));
 				if (!this.disableOutlineRender) {
 					this.render(livingEntity, p, o, lx, k, m, n);
 				}
@@ -125,8 +127,8 @@ public abstract class LivingEntityRenderer<T extends LivingEntity, M extends Ent
 					this.renderFeatures(livingEntity, p, o, h, lx, k, m, n);
 				}
 
-				GlStateManager.tearDownSolidRenderingTextureCombine();
-				GlStateManager.disableColorMaterial();
+				RenderSystem.tearDownSolidRenderingTextureCombine();
+				RenderSystem.disableColorMaterial();
 				if (bl) {
 					this.afterOutlineRender();
 				}
@@ -137,64 +139,64 @@ public abstract class LivingEntityRenderer<T extends LivingEntity, M extends Ent
 					this.disableOverlayColor();
 				}
 
-				GlStateManager.depthMask(true);
+				RenderSystem.depthMask(true);
 				if (!livingEntity.isSpectator()) {
 					this.renderFeatures(livingEntity, p, o, h, lx, k, m, n);
 				}
 			}
 
-			GlStateManager.disableRescaleNormal();
+			RenderSystem.disableRescaleNormal();
 		} catch (Exception var19) {
 			LOGGER.error("Couldn't render entity", (Throwable)var19);
 		}
 
-		GlStateManager.activeTexture(GLX.GL_TEXTURE1);
-		GlStateManager.enableTexture();
-		GlStateManager.activeTexture(GLX.GL_TEXTURE0);
-		GlStateManager.enableCull();
-		GlStateManager.popMatrix();
+		RenderSystem.activeTexture(33985);
+		RenderSystem.enableTexture();
+		RenderSystem.activeTexture(33984);
+		RenderSystem.enableCull();
+		RenderSystem.popMatrix();
 		super.render(livingEntity, d, e, f, g, h);
 	}
 
-	public float scaleAndTranslate(T entity, float tickDelta) {
-		GlStateManager.enableRescaleNormal();
-		GlStateManager.scalef(-1.0F, -1.0F, 1.0F);
-		this.scale(entity, tickDelta);
-		float f = 0.0625F;
-		GlStateManager.translatef(0.0F, -1.501F, 0.0F);
+	public float scaleAndTranslate(T livingEntity, float f) {
+		RenderSystem.enableRescaleNormal();
+		RenderSystem.scalef(-1.0F, -1.0F, 1.0F);
+		this.scale(livingEntity, f);
+		float g = 0.0625F;
+		RenderSystem.translatef(0.0F, -1.501F, 0.0F);
 		return 0.0625F;
 	}
 
 	protected boolean beforeOutlineRender(T livingEntity) {
-		GlStateManager.disableLighting();
-		GlStateManager.activeTexture(GLX.GL_TEXTURE1);
-		GlStateManager.disableTexture();
-		GlStateManager.activeTexture(GLX.GL_TEXTURE0);
+		RenderSystem.disableLighting();
+		RenderSystem.activeTexture(33985);
+		RenderSystem.disableTexture();
+		RenderSystem.activeTexture(33984);
 		return true;
 	}
 
 	protected void afterOutlineRender() {
-		GlStateManager.enableLighting();
-		GlStateManager.activeTexture(GLX.GL_TEXTURE1);
-		GlStateManager.enableTexture();
-		GlStateManager.activeTexture(GLX.GL_TEXTURE0);
+		RenderSystem.enableLighting();
+		RenderSystem.activeTexture(33985);
+		RenderSystem.enableTexture();
+		RenderSystem.activeTexture(33984);
 	}
 
-	protected void render(T entity, float limbAngle, float limbDistance, float age, float headYaw, float headPitch, float scale) {
-		boolean bl = this.method_4056(entity);
-		boolean bl2 = !bl && !entity.isInvisibleTo(MinecraftClient.getInstance().player);
+	protected void render(T livingEntity, float f, float g, float h, float i, float j, float k) {
+		boolean bl = this.method_4056(livingEntity);
+		boolean bl2 = !bl && !livingEntity.canSeePlayer(MinecraftClient.getInstance().player);
 		if (bl || bl2) {
-			if (!this.bindEntityTexture(entity)) {
+			if (!this.bindEntityTexture(livingEntity)) {
 				return;
 			}
 
 			if (bl2) {
-				GlStateManager.setProfile(GlStateManager.RenderMode.TRANSPARENT_MODEL);
+				class_4493.method_21967(class_4493.RenderMode.TRANSPARENT_MODEL);
 			}
 
-			this.model.render(entity, limbAngle, limbDistance, age, headYaw, headPitch, scale);
+			this.model.render(livingEntity, f, g, h, i, j, k);
 			if (bl2) {
-				GlStateManager.unsetProfile(GlStateManager.RenderMode.TRANSPARENT_MODEL);
+				class_4493.method_21994(class_4493.RenderMode.TRANSPARENT_MODEL);
 			}
 		}
 	}
@@ -207,114 +209,114 @@ public abstract class LivingEntityRenderer<T extends LivingEntity, M extends Ent
 		return this.applyOverlayColor(livingEntity, f, true);
 	}
 
-	protected boolean applyOverlayColor(T entity, float tickDelta, boolean hasHurtOverlay) {
-		float f = entity.getBrightnessAtEyes();
-		int i = this.getOverlayColor(entity, f, tickDelta);
-		boolean bl = (i >> 24 & 0xFF) > 0;
-		boolean bl2 = entity.hurtTime > 0 || entity.deathTime > 0;
-		if (!bl && !bl2) {
+	protected boolean applyOverlayColor(T livingEntity, float f, boolean bl) {
+		float g = livingEntity.getBrightnessAtEyes();
+		int i = this.getOverlayColor(livingEntity, g, f);
+		boolean bl2 = (i >> 24 & 0xFF) > 0;
+		boolean bl3 = livingEntity.hurtTime > 0 || livingEntity.deathTime > 0;
+		if (!bl2 && !bl3) {
 			return false;
-		} else if (!bl && !hasHurtOverlay) {
+		} else if (!bl2 && !bl) {
 			return false;
 		} else {
-			GlStateManager.activeTexture(GLX.GL_TEXTURE0);
-			GlStateManager.enableTexture();
-			GlStateManager.texEnv(8960, 8704, GLX.GL_COMBINE);
-			GlStateManager.texEnv(8960, GLX.GL_COMBINE_RGB, 8448);
-			GlStateManager.texEnv(8960, GLX.GL_SOURCE0_RGB, GLX.GL_TEXTURE0);
-			GlStateManager.texEnv(8960, GLX.GL_SOURCE1_RGB, GLX.GL_PRIMARY_COLOR);
-			GlStateManager.texEnv(8960, GLX.GL_OPERAND0_RGB, 768);
-			GlStateManager.texEnv(8960, GLX.GL_OPERAND1_RGB, 768);
-			GlStateManager.texEnv(8960, GLX.GL_COMBINE_ALPHA, 7681);
-			GlStateManager.texEnv(8960, GLX.GL_SOURCE0_ALPHA, GLX.GL_TEXTURE0);
-			GlStateManager.texEnv(8960, GLX.GL_OPERAND0_ALPHA, 770);
-			GlStateManager.activeTexture(GLX.GL_TEXTURE1);
-			GlStateManager.enableTexture();
-			GlStateManager.texEnv(8960, 8704, GLX.GL_COMBINE);
-			GlStateManager.texEnv(8960, GLX.GL_COMBINE_RGB, GLX.GL_INTERPOLATE);
-			GlStateManager.texEnv(8960, GLX.GL_SOURCE0_RGB, GLX.GL_CONSTANT);
-			GlStateManager.texEnv(8960, GLX.GL_SOURCE1_RGB, GLX.GL_PREVIOUS);
-			GlStateManager.texEnv(8960, GLX.GL_SOURCE2_RGB, GLX.GL_CONSTANT);
-			GlStateManager.texEnv(8960, GLX.GL_OPERAND0_RGB, 768);
-			GlStateManager.texEnv(8960, GLX.GL_OPERAND1_RGB, 768);
-			GlStateManager.texEnv(8960, GLX.GL_OPERAND2_RGB, 770);
-			GlStateManager.texEnv(8960, GLX.GL_COMBINE_ALPHA, 7681);
-			GlStateManager.texEnv(8960, GLX.GL_SOURCE0_ALPHA, GLX.GL_PREVIOUS);
-			GlStateManager.texEnv(8960, GLX.GL_OPERAND0_ALPHA, 770);
+			RenderSystem.activeTexture(33984);
+			RenderSystem.enableTexture();
+			RenderSystem.texEnv(8960, 8704, 34160);
+			RenderSystem.texEnv(8960, 34161, 8448);
+			RenderSystem.texEnv(8960, 34176, 33984);
+			RenderSystem.texEnv(8960, 34177, 34167);
+			RenderSystem.texEnv(8960, 34192, 768);
+			RenderSystem.texEnv(8960, 34193, 768);
+			RenderSystem.texEnv(8960, 34162, 7681);
+			RenderSystem.texEnv(8960, 34184, 33984);
+			RenderSystem.texEnv(8960, 34200, 770);
+			RenderSystem.activeTexture(33985);
+			RenderSystem.enableTexture();
+			RenderSystem.texEnv(8960, 8704, 34160);
+			RenderSystem.texEnv(8960, 34161, 34165);
+			RenderSystem.texEnv(8960, 34176, 34166);
+			RenderSystem.texEnv(8960, 34177, 34168);
+			RenderSystem.texEnv(8960, 34178, 34166);
+			RenderSystem.texEnv(8960, 34192, 768);
+			RenderSystem.texEnv(8960, 34193, 768);
+			RenderSystem.texEnv(8960, 34194, 770);
+			RenderSystem.texEnv(8960, 34162, 7681);
+			RenderSystem.texEnv(8960, 34184, 34168);
+			RenderSystem.texEnv(8960, 34200, 770);
 			this.colorOverlayBuffer.position(0);
-			if (bl2) {
+			if (bl3) {
 				this.colorOverlayBuffer.put(1.0F);
 				this.colorOverlayBuffer.put(0.0F);
 				this.colorOverlayBuffer.put(0.0F);
 				this.colorOverlayBuffer.put(0.3F);
 			} else {
-				float g = (float)(i >> 24 & 0xFF) / 255.0F;
-				float h = (float)(i >> 16 & 0xFF) / 255.0F;
-				float j = (float)(i >> 8 & 0xFF) / 255.0F;
-				float k = (float)(i & 0xFF) / 255.0F;
-				this.colorOverlayBuffer.put(h);
+				float h = (float)(i >> 24 & 0xFF) / 255.0F;
+				float j = (float)(i >> 16 & 0xFF) / 255.0F;
+				float k = (float)(i >> 8 & 0xFF) / 255.0F;
+				float l = (float)(i & 0xFF) / 255.0F;
 				this.colorOverlayBuffer.put(j);
 				this.colorOverlayBuffer.put(k);
-				this.colorOverlayBuffer.put(1.0F - g);
+				this.colorOverlayBuffer.put(l);
+				this.colorOverlayBuffer.put(1.0F - h);
 			}
 
 			this.colorOverlayBuffer.flip();
-			GlStateManager.texEnv(8960, 8705, this.colorOverlayBuffer);
-			GlStateManager.activeTexture(GLX.GL_TEXTURE2);
-			GlStateManager.enableTexture();
-			GlStateManager.bindTexture(colorOverlayTexture.getGlId());
-			GlStateManager.texEnv(8960, 8704, GLX.GL_COMBINE);
-			GlStateManager.texEnv(8960, GLX.GL_COMBINE_RGB, 8448);
-			GlStateManager.texEnv(8960, GLX.GL_SOURCE0_RGB, GLX.GL_PREVIOUS);
-			GlStateManager.texEnv(8960, GLX.GL_SOURCE1_RGB, GLX.GL_TEXTURE1);
-			GlStateManager.texEnv(8960, GLX.GL_OPERAND0_RGB, 768);
-			GlStateManager.texEnv(8960, GLX.GL_OPERAND1_RGB, 768);
-			GlStateManager.texEnv(8960, GLX.GL_COMBINE_ALPHA, 7681);
-			GlStateManager.texEnv(8960, GLX.GL_SOURCE0_ALPHA, GLX.GL_PREVIOUS);
-			GlStateManager.texEnv(8960, GLX.GL_OPERAND0_ALPHA, 770);
-			GlStateManager.activeTexture(GLX.GL_TEXTURE0);
+			RenderSystem.texEnv(8960, 8705, this.colorOverlayBuffer);
+			RenderSystem.activeTexture(33986);
+			RenderSystem.enableTexture();
+			RenderSystem.bindTexture(colorOverlayTexture.getGlId());
+			RenderSystem.texEnv(8960, 8704, 34160);
+			RenderSystem.texEnv(8960, 34161, 8448);
+			RenderSystem.texEnv(8960, 34176, 34168);
+			RenderSystem.texEnv(8960, 34177, 33985);
+			RenderSystem.texEnv(8960, 34192, 768);
+			RenderSystem.texEnv(8960, 34193, 768);
+			RenderSystem.texEnv(8960, 34162, 7681);
+			RenderSystem.texEnv(8960, 34184, 34168);
+			RenderSystem.texEnv(8960, 34200, 770);
+			RenderSystem.activeTexture(33984);
 			return true;
 		}
 	}
 
 	protected void disableOverlayColor() {
-		GlStateManager.activeTexture(GLX.GL_TEXTURE0);
-		GlStateManager.enableTexture();
-		GlStateManager.texEnv(8960, 8704, GLX.GL_COMBINE);
-		GlStateManager.texEnv(8960, GLX.GL_COMBINE_RGB, 8448);
-		GlStateManager.texEnv(8960, GLX.GL_SOURCE0_RGB, GLX.GL_TEXTURE0);
-		GlStateManager.texEnv(8960, GLX.GL_SOURCE1_RGB, GLX.GL_PRIMARY_COLOR);
-		GlStateManager.texEnv(8960, GLX.GL_OPERAND0_RGB, 768);
-		GlStateManager.texEnv(8960, GLX.GL_OPERAND1_RGB, 768);
-		GlStateManager.texEnv(8960, GLX.GL_COMBINE_ALPHA, 8448);
-		GlStateManager.texEnv(8960, GLX.GL_SOURCE0_ALPHA, GLX.GL_TEXTURE0);
-		GlStateManager.texEnv(8960, GLX.GL_SOURCE1_ALPHA, GLX.GL_PRIMARY_COLOR);
-		GlStateManager.texEnv(8960, GLX.GL_OPERAND0_ALPHA, 770);
-		GlStateManager.texEnv(8960, GLX.GL_OPERAND1_ALPHA, 770);
-		GlStateManager.activeTexture(GLX.GL_TEXTURE1);
-		GlStateManager.texEnv(8960, 8704, GLX.GL_COMBINE);
-		GlStateManager.texEnv(8960, GLX.GL_COMBINE_RGB, 8448);
-		GlStateManager.texEnv(8960, GLX.GL_OPERAND0_RGB, 768);
-		GlStateManager.texEnv(8960, GLX.GL_OPERAND1_RGB, 768);
-		GlStateManager.texEnv(8960, GLX.GL_SOURCE0_RGB, 5890);
-		GlStateManager.texEnv(8960, GLX.GL_SOURCE1_RGB, GLX.GL_PREVIOUS);
-		GlStateManager.texEnv(8960, GLX.GL_COMBINE_ALPHA, 8448);
-		GlStateManager.texEnv(8960, GLX.GL_OPERAND0_ALPHA, 770);
-		GlStateManager.texEnv(8960, GLX.GL_SOURCE0_ALPHA, 5890);
-		GlStateManager.color4f(1.0F, 1.0F, 1.0F, 1.0F);
-		GlStateManager.activeTexture(GLX.GL_TEXTURE2);
-		GlStateManager.disableTexture();
-		GlStateManager.bindTexture(0);
-		GlStateManager.texEnv(8960, 8704, GLX.GL_COMBINE);
-		GlStateManager.texEnv(8960, GLX.GL_COMBINE_RGB, 8448);
-		GlStateManager.texEnv(8960, GLX.GL_OPERAND0_RGB, 768);
-		GlStateManager.texEnv(8960, GLX.GL_OPERAND1_RGB, 768);
-		GlStateManager.texEnv(8960, GLX.GL_SOURCE0_RGB, 5890);
-		GlStateManager.texEnv(8960, GLX.GL_SOURCE1_RGB, GLX.GL_PREVIOUS);
-		GlStateManager.texEnv(8960, GLX.GL_COMBINE_ALPHA, 8448);
-		GlStateManager.texEnv(8960, GLX.GL_OPERAND0_ALPHA, 770);
-		GlStateManager.texEnv(8960, GLX.GL_SOURCE0_ALPHA, 5890);
-		GlStateManager.activeTexture(GLX.GL_TEXTURE0);
+		RenderSystem.activeTexture(33984);
+		RenderSystem.enableTexture();
+		RenderSystem.texEnv(8960, 8704, 34160);
+		RenderSystem.texEnv(8960, 34161, 8448);
+		RenderSystem.texEnv(8960, 34176, 33984);
+		RenderSystem.texEnv(8960, 34177, 34167);
+		RenderSystem.texEnv(8960, 34192, 768);
+		RenderSystem.texEnv(8960, 34193, 768);
+		RenderSystem.texEnv(8960, 34162, 8448);
+		RenderSystem.texEnv(8960, 34184, 33984);
+		RenderSystem.texEnv(8960, 34185, 34167);
+		RenderSystem.texEnv(8960, 34200, 770);
+		RenderSystem.texEnv(8960, 34201, 770);
+		RenderSystem.activeTexture(33985);
+		RenderSystem.texEnv(8960, 8704, 34160);
+		RenderSystem.texEnv(8960, 34161, 8448);
+		RenderSystem.texEnv(8960, 34192, 768);
+		RenderSystem.texEnv(8960, 34193, 768);
+		RenderSystem.texEnv(8960, 34176, 5890);
+		RenderSystem.texEnv(8960, 34177, 34168);
+		RenderSystem.texEnv(8960, 34162, 8448);
+		RenderSystem.texEnv(8960, 34200, 770);
+		RenderSystem.texEnv(8960, 34184, 5890);
+		RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
+		RenderSystem.activeTexture(33986);
+		RenderSystem.disableTexture();
+		RenderSystem.bindTexture(0);
+		RenderSystem.texEnv(8960, 8704, 34160);
+		RenderSystem.texEnv(8960, 34161, 8448);
+		RenderSystem.texEnv(8960, 34192, 768);
+		RenderSystem.texEnv(8960, 34193, 768);
+		RenderSystem.texEnv(8960, 34176, 5890);
+		RenderSystem.texEnv(8960, 34177, 34168);
+		RenderSystem.texEnv(8960, 34162, 8448);
+		RenderSystem.texEnv(8960, 34200, 770);
+		RenderSystem.texEnv(8960, 34184, 5890);
+		RenderSystem.activeTexture(33984);
 	}
 
 	protected void method_4048(T livingEntity, double d, double e, double f) {
@@ -322,12 +324,12 @@ public abstract class LivingEntityRenderer<T extends LivingEntity, M extends Ent
 			Direction direction = livingEntity.getSleepingDirection();
 			if (direction != null) {
 				float g = livingEntity.getEyeHeight(EntityPose.STANDING) - 0.1F;
-				GlStateManager.translatef((float)d - (float)direction.getOffsetX() * g, (float)e, (float)f - (float)direction.getOffsetZ() * g);
+				RenderSystem.translatef((float)d - (float)direction.getOffsetX() * g, (float)e, (float)f - (float)direction.getOffsetZ() * g);
 				return;
 			}
 		}
 
-		GlStateManager.translatef((float)d, (float)e, (float)f);
+		RenderSystem.translatef((float)d, (float)e, (float)f);
 	}
 
 	private static float method_18656(Direction direction) {
@@ -345,62 +347,58 @@ public abstract class LivingEntityRenderer<T extends LivingEntity, M extends Ent
 		}
 	}
 
-	protected void setupTransforms(T entity, float pitch, float yaw, float delta) {
-		EntityPose entityPose = entity.getPose();
+	protected void setupTransforms(T livingEntity, float f, float g, float h) {
+		EntityPose entityPose = livingEntity.getPose();
 		if (entityPose != EntityPose.SLEEPING) {
-			GlStateManager.rotatef(180.0F - yaw, 0.0F, 1.0F, 0.0F);
+			RenderSystem.rotatef(180.0F - g, 0.0F, 1.0F, 0.0F);
 		}
 
-		if (entity.deathTime > 0) {
-			float f = ((float)entity.deathTime + delta - 1.0F) / 20.0F * 1.6F;
-			f = MathHelper.sqrt(f);
-			if (f > 1.0F) {
-				f = 1.0F;
+		if (livingEntity.deathTime > 0) {
+			float i = ((float)livingEntity.deathTime + h - 1.0F) / 20.0F * 1.6F;
+			i = MathHelper.sqrt(i);
+			if (i > 1.0F) {
+				i = 1.0F;
 			}
 
-			GlStateManager.rotatef(f * this.getLyingAngle(entity), 0.0F, 0.0F, 1.0F);
-		} else if (entity.isUsingRiptide()) {
-			GlStateManager.rotatef(-90.0F - entity.pitch, 1.0F, 0.0F, 0.0F);
-			GlStateManager.rotatef(((float)entity.age + delta) * -75.0F, 0.0F, 1.0F, 0.0F);
+			RenderSystem.rotatef(i * this.getLyingAngle(livingEntity), 0.0F, 0.0F, 1.0F);
+		} else if (livingEntity.isUsingRiptide()) {
+			RenderSystem.rotatef(-90.0F - livingEntity.pitch, 1.0F, 0.0F, 0.0F);
+			RenderSystem.rotatef(((float)livingEntity.age + h) * -75.0F, 0.0F, 1.0F, 0.0F);
 		} else if (entityPose == EntityPose.SLEEPING) {
-			Direction direction = entity.getSleepingDirection();
-			GlStateManager.rotatef(direction != null ? method_18656(direction) : yaw, 0.0F, 1.0F, 0.0F);
-			GlStateManager.rotatef(this.getLyingAngle(entity), 0.0F, 0.0F, 1.0F);
-			GlStateManager.rotatef(270.0F, 0.0F, 1.0F, 0.0F);
-		} else if (entity.hasCustomName() || entity instanceof PlayerEntity) {
-			String string = Formatting.strip(entity.getName().getString());
+			Direction direction = livingEntity.getSleepingDirection();
+			RenderSystem.rotatef(direction != null ? method_18656(direction) : g, 0.0F, 1.0F, 0.0F);
+			RenderSystem.rotatef(this.getLyingAngle(livingEntity), 0.0F, 0.0F, 1.0F);
+			RenderSystem.rotatef(270.0F, 0.0F, 1.0F, 0.0F);
+		} else if (livingEntity.hasCustomName() || livingEntity instanceof PlayerEntity) {
+			String string = Formatting.strip(livingEntity.getName().getString());
 			if (string != null
 				&& ("Dinnerbone".equals(string) || "Grumm".equals(string))
-				&& (!(entity instanceof PlayerEntity) || ((PlayerEntity)entity).isPartVisible(PlayerModelPart.CAPE))) {
-				GlStateManager.translatef(0.0F, entity.getHeight() + 0.1F, 0.0F);
-				GlStateManager.rotatef(180.0F, 0.0F, 0.0F, 1.0F);
+				&& (!(livingEntity instanceof PlayerEntity) || ((PlayerEntity)livingEntity).isSkinOverlayVisible(PlayerModelPart.CAPE))) {
+				RenderSystem.translatef(0.0F, livingEntity.getHeight() + 0.1F, 0.0F);
+				RenderSystem.rotatef(180.0F, 0.0F, 0.0F, 1.0F);
 			}
 		}
 	}
 
-	protected float getHandSwingProgress(T entity, float tickDelta) {
-		return entity.getHandSwingProgress(tickDelta);
+	protected float getHandSwingProgress(T livingEntity, float f) {
+		return livingEntity.getHandSwingProgress(f);
 	}
 
-	/**
-	 * This value is passed to other methods when calculating angles for animation.
-	 * It's typically just the sum of the entity's age (in ticks) and the passed in tickDelta.
-	 */
-	protected float getAnimationProgress(T entity, float tickDelta) {
-		return (float)entity.age + tickDelta;
+	protected float getAge(T livingEntity, float f) {
+		return (float)livingEntity.age + f;
 	}
 
-	protected void renderFeatures(T entity, float limbAngle, float limbDistance, float tickDelta, float age, float headYaw, float headPitch, float scale) {
+	protected void renderFeatures(T livingEntity, float f, float g, float h, float i, float j, float k, float l) {
 		for (FeatureRenderer<T, M> featureRenderer : this.features) {
-			boolean bl = this.applyOverlayColor(entity, tickDelta, featureRenderer.hasHurtOverlay());
-			featureRenderer.render(entity, limbAngle, limbDistance, tickDelta, age, headYaw, headPitch, scale);
+			boolean bl = this.applyOverlayColor(livingEntity, h, featureRenderer.hasHurtOverlay());
+			featureRenderer.render(livingEntity, f, g, h, i, j, k, l);
 			if (bl) {
 				this.disableOverlayColor();
 			}
 		}
 	}
 
-	protected float getLyingAngle(T entity) {
+	protected float getLyingAngle(T livingEntity) {
 		return 90.0F;
 	}
 
@@ -408,24 +406,24 @@ public abstract class LivingEntityRenderer<T extends LivingEntity, M extends Ent
 		return 0;
 	}
 
-	protected void scale(T entity, float tickDelta) {
+	protected void scale(T livingEntity, float f) {
 	}
 
-	public void renderLabelIfPresent(T livingEntity, double d, double e, double f) {
-		if (this.hasLabel(livingEntity)) {
+	public void method_4041(T livingEntity, double d, double e, double f) {
+		if (this.method_4055(livingEntity)) {
 			double g = livingEntity.squaredDistanceTo(this.renderManager.camera.getPos());
-			float h = livingEntity.isInSneakingPose() ? 32.0F : 64.0F;
+			float h = livingEntity.method_21751() ? 32.0F : 64.0F;
 			if (!(g >= (double)(h * h))) {
 				String string = livingEntity.getDisplayName().asFormattedString();
-				GlStateManager.alphaFunc(516, 0.1F);
+				RenderSystem.alphaFunc(516, 0.1F);
 				this.renderLabel(livingEntity, d, e, f, string, g);
 			}
 		}
 	}
 
-	protected boolean hasLabel(T livingEntity) {
+	protected boolean method_4055(T livingEntity) {
 		ClientPlayerEntity clientPlayerEntity = MinecraftClient.getInstance().player;
-		boolean bl = !livingEntity.isInvisibleTo(clientPlayerEntity);
+		boolean bl = !livingEntity.canSeePlayer(clientPlayerEntity);
 		if (livingEntity != clientPlayerEntity) {
 			AbstractTeam abstractTeam = livingEntity.getScoreboardTeam();
 			AbstractTeam abstractTeam2 = clientPlayerEntity.getScoreboardTeam();

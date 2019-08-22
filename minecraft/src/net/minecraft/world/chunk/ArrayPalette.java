@@ -18,12 +18,12 @@ public class ArrayPalette<T> implements Palette<T> {
 	private final int indexBits;
 	private int size;
 
-	public ArrayPalette(IdList<T> idList, int integer, PaletteResizeListener<T> resizeListener, Function<CompoundTag, T> valueDeserializer) {
+	public ArrayPalette(IdList<T> idList, int i, PaletteResizeListener<T> paletteResizeListener, Function<CompoundTag, T> function) {
 		this.idList = idList;
-		this.array = (T[])(new Object[1 << integer]);
-		this.indexBits = integer;
-		this.resizeListener = resizeListener;
-		this.valueDeserializer = valueDeserializer;
+		this.array = (T[])(new Object[1 << i]);
+		this.indexBits = i;
+		this.resizeListener = paletteResizeListener;
+		this.valueDeserializer = function;
 	}
 
 	@Override
@@ -51,26 +51,26 @@ public class ArrayPalette<T> implements Palette<T> {
 
 	@Nullable
 	@Override
-	public T getByIndex(int index) {
-		return index >= 0 && index < this.size ? this.array[index] : null;
+	public T getByIndex(int i) {
+		return i >= 0 && i < this.size ? this.array[i] : null;
 	}
 
 	@Environment(EnvType.CLIENT)
 	@Override
-	public void fromPacket(PacketByteBuf buf) {
-		this.size = buf.readVarInt();
+	public void fromPacket(PacketByteBuf packetByteBuf) {
+		this.size = packetByteBuf.readVarInt();
 
 		for (int i = 0; i < this.size; i++) {
-			this.array[i] = this.idList.get(buf.readVarInt());
+			this.array[i] = this.idList.get(packetByteBuf.readVarInt());
 		}
 	}
 
 	@Override
-	public void toPacket(PacketByteBuf buf) {
-		buf.writeVarInt(this.size);
+	public void toPacket(PacketByteBuf packetByteBuf) {
+		packetByteBuf.writeVarInt(this.size);
 
 		for (int i = 0; i < this.size; i++) {
-			buf.writeVarInt(this.idList.getId(this.array[i]));
+			packetByteBuf.writeVarInt(this.idList.getId(this.array[i]));
 		}
 	}
 
@@ -90,11 +90,11 @@ public class ArrayPalette<T> implements Palette<T> {
 	}
 
 	@Override
-	public void fromTag(ListTag tag) {
-		for (int i = 0; i < tag.size(); i++) {
-			this.array[i] = (T)this.valueDeserializer.apply(tag.getCompound(i));
+	public void fromTag(ListTag listTag) {
+		for (int i = 0; i < listTag.size(); i++) {
+			this.array[i] = (T)this.valueDeserializer.apply(listTag.getCompoundTag(i));
 		}
 
-		this.size = tag.size();
+		this.size = listTag.size();
 	}
 }

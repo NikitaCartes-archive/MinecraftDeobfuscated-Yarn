@@ -8,7 +8,7 @@ import net.minecraft.client.gui.widget.AbstractButtonWidget;
 import net.minecraft.client.resource.language.I18n;
 import net.minecraft.client.util.NarratorManager;
 import net.minecraft.client.util.Window;
-import net.minecraft.util.Util;
+import net.minecraft.util.SystemUtil;
 import net.minecraft.util.math.MathHelper;
 
 @Environment(EnvType.CLIENT)
@@ -272,7 +272,7 @@ public abstract class Option {
 			gameOptions.forceUnicodeFont = boolean_;
 			MinecraftClient minecraftClient = MinecraftClient.getInstance();
 			if (minecraftClient.getFontManager() != null) {
-				minecraftClient.getFontManager().setForceUnicodeFont(gameOptions.forceUnicodeFont, Util.getServerWorkerExecutor(), minecraftClient);
+				minecraftClient.getFontManager().setForceUnicodeFont(gameOptions.forceUnicodeFont, SystemUtil.getServerWorkerExecutor(), minecraftClient);
 			}
 		}
 	);
@@ -310,11 +310,11 @@ public abstract class Option {
 	);
 	private final String key;
 
-	public Option(String key) {
-		this.key = key;
+	public Option(String string) {
+		this.key = string;
 	}
 
-	public abstract AbstractButtonWidget createButton(GameOptions options, int x, int y, int width);
+	public abstract AbstractButtonWidget createButton(GameOptions gameOptions, int i, int j, int k);
 
 	public String getDisplayPrefix() {
 		return I18n.translate(this.key) + ": ";

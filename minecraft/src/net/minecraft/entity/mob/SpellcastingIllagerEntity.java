@@ -21,8 +21,8 @@ public abstract class SpellcastingIllagerEntity extends IllagerEntity {
 	protected int spellTicks;
 	private SpellcastingIllagerEntity.Spell spell = SpellcastingIllagerEntity.Spell.NONE;
 
-	protected SpellcastingIllagerEntity(EntityType<? extends SpellcastingIllagerEntity> type, World world) {
-		super(type, world);
+	protected SpellcastingIllagerEntity(EntityType<? extends SpellcastingIllagerEntity> entityType, World world) {
+		super(entityType, world);
 	}
 
 	@Override
@@ -32,15 +32,15 @@ public abstract class SpellcastingIllagerEntity extends IllagerEntity {
 	}
 
 	@Override
-	public void readCustomDataFromTag(CompoundTag tag) {
-		super.readCustomDataFromTag(tag);
-		this.spellTicks = tag.getInt("SpellTicks");
+	public void readCustomDataFromTag(CompoundTag compoundTag) {
+		super.readCustomDataFromTag(compoundTag);
+		this.spellTicks = compoundTag.getInt("SpellTicks");
 	}
 
 	@Override
-	public void writeCustomDataToTag(CompoundTag tag) {
-		super.writeCustomDataToTag(tag);
-		tag.putInt("SpellTicks", this.spellTicks);
+	public void writeCustomDataToTag(CompoundTag compoundTag) {
+		super.writeCustomDataToTag(compoundTag);
+		compoundTag.putInt("SpellTicks", this.spellTicks);
 	}
 
 	@Environment(EnvType.CLIENT)
@@ -82,7 +82,7 @@ public abstract class SpellcastingIllagerEntity extends IllagerEntity {
 			double d = spell.particleVelocity[0];
 			double e = spell.particleVelocity[1];
 			double f = spell.particleVelocity[2];
-			float g = this.field_6283 * (float) (Math.PI / 180.0) + MathHelper.cos((float)this.age * 0.6662F) * 0.25F;
+			float g = this.bodyYaw * (float) (Math.PI / 180.0) + MathHelper.cos((float)this.age * 0.6662F) * 0.25F;
 			float h = MathHelper.cos(g);
 			float i = MathHelper.sin(g);
 			this.world.addParticle(ParticleTypes.ENTITY_EFFECT, this.x + (double)h * 0.6, this.y + 1.8, this.z + (double)i * 0.6, d, e, f);
@@ -203,14 +203,14 @@ public abstract class SpellcastingIllagerEntity extends IllagerEntity {
 		private final int id;
 		private final double[] particleVelocity;
 
-		private Spell(int id, double particleVelocityX, double particleVelocityY, double particleVelocityZ) {
-			this.id = id;
-			this.particleVelocity = new double[]{particleVelocityX, particleVelocityY, particleVelocityZ};
+		private Spell(int j, double d, double e, double f) {
+			this.id = j;
+			this.particleVelocity = new double[]{d, e, f};
 		}
 
-		public static SpellcastingIllagerEntity.Spell byId(int id) {
+		public static SpellcastingIllagerEntity.Spell byId(int i) {
 			for (SpellcastingIllagerEntity.Spell spell : values()) {
-				if (id == spell.id) {
+				if (i == spell.id) {
 					return spell;
 				}
 			}

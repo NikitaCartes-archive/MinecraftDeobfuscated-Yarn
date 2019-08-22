@@ -3,7 +3,7 @@ package net.minecraft.client.gui.hud.spectator;
 import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.minecraft.MinecraftProfileTexture;
 import com.mojang.authlib.minecraft.MinecraftProfileTexture.Type;
-import com.mojang.blaze3d.platform.GlStateManager;
+import com.mojang.blaze3d.systems.RenderSystem;
 import java.util.Map;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
@@ -11,7 +11,7 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawableHelper;
 import net.minecraft.client.util.DefaultSkinHelper;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.network.packet.c2s.play.SpectatorTeleportC2SPacket;
+import net.minecraft.server.network.packet.SpectatorTeleportC2SPacket;
 import net.minecraft.text.LiteralText;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
@@ -33,7 +33,7 @@ public class TeleportToSpecificPlayerSpectatorCommand implements SpectatorMenuCo
 	}
 
 	@Override
-	public void use(SpectatorMenu menu) {
+	public void use(SpectatorMenu spectatorMenu) {
 		MinecraftClient.getInstance().getNetworkHandler().sendPacket(new SpectatorTeleportC2SPacket(this.gameProfile.getId()));
 	}
 
@@ -43,9 +43,9 @@ public class TeleportToSpecificPlayerSpectatorCommand implements SpectatorMenuCo
 	}
 
 	@Override
-	public void renderIcon(float brightness, int alpha) {
+	public void renderIcon(float f, int i) {
 		MinecraftClient.getInstance().getTextureManager().bindTexture(this.skinId);
-		GlStateManager.color4f(1.0F, 1.0F, 1.0F, (float)alpha / 255.0F);
+		RenderSystem.color4f(1.0F, 1.0F, 1.0F, (float)i / 255.0F);
 		DrawableHelper.blit(2, 2, 12, 12, 8.0F, 8.0F, 8, 8, 64, 64);
 		DrawableHelper.blit(2, 2, 12, 12, 40.0F, 8.0F, 8, 8, 64, 64);
 	}

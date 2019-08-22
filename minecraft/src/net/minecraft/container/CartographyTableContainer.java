@@ -21,6 +21,7 @@ import net.minecraft.world.World;
 public class CartographyTableContainer extends Container {
 	private final BlockContext context;
 	private boolean currentlyTakingItem;
+	private long field_20382;
 	public final Inventory inventory = new BasicInventory(2) {
 		@Override
 		public void markDirty() {
@@ -36,85 +37,85 @@ public class CartographyTableContainer extends Container {
 		}
 	};
 
-	public CartographyTableContainer(int syncId, PlayerInventory inventory) {
-		this(syncId, inventory, BlockContext.EMPTY);
+	public CartographyTableContainer(int i, PlayerInventory playerInventory) {
+		this(i, playerInventory, BlockContext.EMPTY);
 	}
 
-	public CartographyTableContainer(int syncId, PlayerInventory inventory, BlockContext context) {
-		super(ContainerType.CARTOGRAPHY, syncId);
-		this.context = context;
+	public CartographyTableContainer(int i, PlayerInventory playerInventory, BlockContext blockContext) {
+		super(ContainerType.CARTOGRAPHY_TABLE, i);
+		this.context = blockContext;
 		this.addSlot(new Slot(this.inventory, 0, 15, 15) {
 			@Override
-			public boolean canInsert(ItemStack stack) {
-				return stack.getItem() == Items.FILLED_MAP;
+			public boolean canInsert(ItemStack itemStack) {
+				return itemStack.getItem() == Items.FILLED_MAP;
 			}
 		});
 		this.addSlot(new Slot(this.inventory, 1, 15, 52) {
 			@Override
-			public boolean canInsert(ItemStack stack) {
-				Item item = stack.getItem();
+			public boolean canInsert(ItemStack itemStack) {
+				Item item = itemStack.getItem();
 				return item == Items.PAPER || item == Items.MAP || item == Items.GLASS_PANE;
 			}
 		});
-		this.addSlot(
-			new Slot(this.resultSlot, 2, 145, 39) {
-				@Override
-				public boolean canInsert(ItemStack stack) {
-					return false;
-				}
-
-				@Override
-				public ItemStack takeStack(int amount) {
-					ItemStack itemStack = super.takeStack(amount);
-					ItemStack itemStack2 = (ItemStack)context.run((BiFunction)((world, blockPos) -> {
-						if (!CartographyTableContainer.this.currentlyTakingItem && CartographyTableContainer.this.inventory.getInvStack(1).getItem() == Items.GLASS_PANE) {
-							ItemStack itemStack2x = FilledMapItem.copyMap(world, CartographyTableContainer.this.inventory.getInvStack(0));
-							if (itemStack2x != null) {
-								itemStack2x.setCount(1);
-								return itemStack2x;
-							}
-						}
-
-						return itemStack;
-					})).orElse(itemStack);
-					CartographyTableContainer.this.inventory.takeInvStack(0, 1);
-					CartographyTableContainer.this.inventory.takeInvStack(1, 1);
-					return itemStack2;
-				}
-
-				@Override
-				protected void onCrafted(ItemStack stack, int amount) {
-					this.takeStack(amount);
-					super.onCrafted(stack, amount);
-				}
-
-				@Override
-				public ItemStack onTakeItem(PlayerEntity player, ItemStack stack) {
-					stack.getItem().onCraft(stack, player.world, player);
-					context.run(
-						(BiConsumer<World, BlockPos>)((world, blockPos) -> world.playSound(
-								null, blockPos, SoundEvents.UI_CARTOGRAPHY_TABLE_TAKE_RESULT, SoundCategory.BLOCKS, 1.0F, 1.0F
-							))
-					);
-					return super.onTakeItem(player, stack);
-				}
+		this.addSlot(new Slot(this.resultSlot, 2, 145, 39) {
+			@Override
+			public boolean canInsert(ItemStack itemStack) {
+				return false;
 			}
-		);
 
-		for (int i = 0; i < 3; i++) {
-			for (int j = 0; j < 9; j++) {
-				this.addSlot(new Slot(inventory, j + i * 9 + 9, 8 + j * 18, 84 + i * 18));
+			@Override
+			public ItemStack takeStack(int i) {
+				ItemStack itemStack = super.takeStack(i);
+				ItemStack itemStack2 = (ItemStack)blockContext.run((BiFunction)((world, blockPos) -> {
+					if (!CartographyTableContainer.this.currentlyTakingItem && CartographyTableContainer.this.inventory.getInvStack(1).getItem() == Items.GLASS_PANE) {
+						ItemStack itemStack2x = FilledMapItem.copyMap(world, CartographyTableContainer.this.inventory.getInvStack(0));
+						if (itemStack2x != null) {
+							itemStack2x.setCount(1);
+							return itemStack2x;
+						}
+					}
+
+					return itemStack;
+				})).orElse(itemStack);
+				CartographyTableContainer.this.inventory.takeInvStack(0, 1);
+				CartographyTableContainer.this.inventory.takeInvStack(1, 1);
+				return itemStack2;
+			}
+
+			@Override
+			protected void onCrafted(ItemStack itemStack, int i) {
+				this.takeStack(i);
+				super.onCrafted(itemStack, i);
+			}
+
+			@Override
+			public ItemStack onTakeItem(PlayerEntity playerEntity, ItemStack itemStack) {
+				itemStack.getItem().onCraft(itemStack, playerEntity.world, playerEntity);
+				blockContext.run((BiConsumer<World, BlockPos>)((world, blockPos) -> {
+					long l = world.getTime();
+					if (CartographyTableContainer.this.field_20382 != l) {
+						world.playSound(null, blockPos, SoundEvents.UI_CARTOGRAPHY_TABLE_TAKE_RESULT, SoundCategory.BLOCKS, 1.0F, 1.0F);
+						CartographyTableContainer.this.field_20382 = l;
+					}
+				}));
+				return super.onTakeItem(playerEntity, itemStack);
+			}
+		});
+
+		for (int j = 0; j < 3; j++) {
+			for (int k = 0; k < 9; k++) {
+				this.addSlot(new Slot(playerInventory, k + j * 9 + 9, 8 + k * 18, 84 + j * 18));
 			}
 		}
 
-		for (int i = 0; i < 9; i++) {
-			this.addSlot(new Slot(inventory, i, 8 + i * 18, 142));
+		for (int j = 0; j < 9; j++) {
+			this.addSlot(new Slot(playerInventory, j, 8 + j * 18, 142));
 		}
 	}
 
 	@Override
-	public boolean canUse(PlayerEntity player) {
-		return canUse(this.context, player, Blocks.CARTOGRAPHY_TABLE);
+	public boolean canUse(PlayerEntity playerEntity) {
+		return canUse(this.context, playerEntity, Blocks.CARTOGRAPHY_TABLE);
 	}
 
 	@Override
@@ -131,34 +132,34 @@ public class CartographyTableContainer extends Container {
 		}
 	}
 
-	private void updateResult(ItemStack map, ItemStack item, ItemStack oldResult) {
+	private void updateResult(ItemStack itemStack, ItemStack itemStack2, ItemStack itemStack3) {
 		this.context.run((BiConsumer<World, BlockPos>)((world, blockPos) -> {
-			Item itemx = item.getItem();
-			MapState mapState = FilledMapItem.getMapState(map, world);
+			Item item = itemStack2.getItem();
+			MapState mapState = FilledMapItem.getMapState(itemStack, world);
 			if (mapState != null) {
 				ItemStack itemStack4;
-				if (itemx == Items.PAPER && !mapState.locked && mapState.scale < 4) {
-					itemStack4 = map.copy();
+				if (item == Items.PAPER && !mapState.locked && mapState.scale < 4) {
+					itemStack4 = itemStack.copy();
 					itemStack4.setCount(1);
 					itemStack4.getOrCreateTag().putInt("map_scale_direction", 1);
 					this.sendContentUpdates();
-				} else if (itemx == Items.GLASS_PANE && !mapState.locked) {
-					itemStack4 = map.copy();
+				} else if (item == Items.GLASS_PANE && !mapState.locked) {
+					itemStack4 = itemStack.copy();
 					itemStack4.setCount(1);
 					this.sendContentUpdates();
 				} else {
-					if (itemx != Items.MAP) {
+					if (item != Items.MAP) {
 						this.resultSlot.removeInvStack(2);
 						this.sendContentUpdates();
 						return;
 					}
 
-					itemStack4 = map.copy();
+					itemStack4 = itemStack.copy();
 					itemStack4.setCount(2);
 					this.sendContentUpdates();
 				}
 
-				if (!ItemStack.areEqualIgnoreDamage(itemStack4, oldResult)) {
+				if (!ItemStack.areEqualIgnoreDamage(itemStack4, itemStack3)) {
 					this.resultSlot.setInvStack(2, itemStack4);
 					this.sendContentUpdates();
 				}
@@ -167,20 +168,20 @@ public class CartographyTableContainer extends Container {
 	}
 
 	@Override
-	public boolean canInsertIntoSlot(ItemStack stack, Slot slot) {
-		return false;
+	public boolean canInsertIntoSlot(ItemStack itemStack, Slot slot) {
+		return slot.inventory != this.resultSlot && super.canInsertIntoSlot(itemStack, slot);
 	}
 
 	@Override
-	public ItemStack transferSlot(PlayerEntity player, int invSlot) {
+	public ItemStack transferSlot(PlayerEntity playerEntity, int i) {
 		ItemStack itemStack = ItemStack.EMPTY;
-		Slot slot = (Slot)this.slots.get(invSlot);
+		Slot slot = (Slot)this.slotList.get(i);
 		if (slot != null && slot.hasStack()) {
 			ItemStack itemStack2 = slot.getStack();
 			ItemStack itemStack3 = itemStack2;
 			Item item = itemStack2.getItem();
 			itemStack = itemStack2.copy();
-			if (invSlot == 2) {
+			if (i == 2) {
 				if (this.inventory.getInvStack(1).getItem() == Items.GLASS_PANE) {
 					itemStack3 = (ItemStack)this.context.run((BiFunction)((world, blockPos) -> {
 						ItemStack itemStack2x = FilledMapItem.copyMap(world, this.inventory.getInvStack(0));
@@ -193,23 +194,23 @@ public class CartographyTableContainer extends Container {
 					})).orElse(itemStack2);
 				}
 
-				item.onCraft(itemStack3, player.world, player);
+				item.onCraft(itemStack3, playerEntity.world, playerEntity);
 				if (!this.insertItem(itemStack3, 3, 39, true)) {
 					return ItemStack.EMPTY;
 				}
 
 				slot.onStackChanged(itemStack3, itemStack);
-			} else if (invSlot != 1 && invSlot != 0) {
+			} else if (i != 1 && i != 0) {
 				if (item == Items.FILLED_MAP) {
 					if (!this.insertItem(itemStack2, 0, 1, false)) {
 						return ItemStack.EMPTY;
 					}
 				} else if (item != Items.PAPER && item != Items.MAP && item != Items.GLASS_PANE) {
-					if (invSlot >= 3 && invSlot < 30) {
+					if (i >= 3 && i < 30) {
 						if (!this.insertItem(itemStack2, 30, 39, false)) {
 							return ItemStack.EMPTY;
 						}
-					} else if (invSlot >= 30 && invSlot < 39 && !this.insertItem(itemStack2, 3, 30, false)) {
+					} else if (i >= 30 && i < 39 && !this.insertItem(itemStack2, 3, 30, false)) {
 						return ItemStack.EMPTY;
 					}
 				} else if (!this.insertItem(itemStack2, 1, 2, false)) {
@@ -229,7 +230,7 @@ public class CartographyTableContainer extends Container {
 			}
 
 			this.currentlyTakingItem = true;
-			slot.onTakeItem(player, itemStack3);
+			slot.onTakeItem(playerEntity, itemStack3);
 			this.currentlyTakingItem = false;
 			this.sendContentUpdates();
 		}
@@ -238,9 +239,9 @@ public class CartographyTableContainer extends Container {
 	}
 
 	@Override
-	public void close(PlayerEntity player) {
-		super.close(player);
+	public void close(PlayerEntity playerEntity) {
+		super.close(playerEntity);
 		this.resultSlot.removeInvStack(2);
-		this.context.run((BiConsumer<World, BlockPos>)((world, blockPos) -> this.dropInventory(player, player.world, this.inventory)));
+		this.context.run((BiConsumer<World, BlockPos>)((world, blockPos) -> this.dropInventory(playerEntity, playerEntity.world, this.inventory)));
 	}
 }

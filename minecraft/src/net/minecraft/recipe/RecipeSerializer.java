@@ -6,8 +6,8 @@ import net.minecraft.util.PacketByteBuf;
 import net.minecraft.util.registry.Registry;
 
 public interface RecipeSerializer<T extends Recipe<?>> {
-	RecipeSerializer<ShapedRecipe> SHAPED = register("crafting_shaped", new ShapedRecipe.Serializer());
-	RecipeSerializer<ShapelessRecipe> SHAPELESS = register("crafting_shapeless", new ShapelessRecipe.Serializer());
+	RecipeSerializer<ShapedRecipe> CRAFTING_SHAPED = register("crafting_shaped", new ShapedRecipe.Serializer());
+	RecipeSerializer<ShapelessRecipe> CRAFTING_SHAPELESS = register("crafting_shapeless", new ShapelessRecipe.Serializer());
 	SpecialRecipeSerializer<ArmorDyeRecipe> ARMOR_DYE = register("crafting_special_armordye", new SpecialRecipeSerializer<>(ArmorDyeRecipe::new));
 	SpecialRecipeSerializer<BookCloningRecipe> BOOK_CLONING = register("crafting_special_bookcloning", new SpecialRecipeSerializer<>(BookCloningRecipe::new));
 	SpecialRecipeSerializer<MapCloningRecipe> MAP_CLONING = register("crafting_special_mapcloning", new SpecialRecipeSerializer<>(MapCloningRecipe::new));
@@ -39,13 +39,13 @@ public interface RecipeSerializer<T extends Recipe<?>> {
 	CookingRecipeSerializer<CampfireCookingRecipe> CAMPFIRE_COOKING = register("campfire_cooking", new CookingRecipeSerializer<>(CampfireCookingRecipe::new, 100));
 	RecipeSerializer<StonecuttingRecipe> STONECUTTING = register("stonecutting", new CuttingRecipe.Serializer<>(StonecuttingRecipe::new));
 
-	T read(Identifier id, JsonObject json);
+	T read(Identifier identifier, JsonObject jsonObject);
 
-	T read(Identifier id, PacketByteBuf buf);
+	T read(Identifier identifier, PacketByteBuf packetByteBuf);
 
-	void write(PacketByteBuf buf, T recipe);
+	void write(PacketByteBuf packetByteBuf, T recipe);
 
-	static <S extends RecipeSerializer<T>, T extends Recipe<?>> S register(String id, S serializer) {
-		return Registry.register(Registry.RECIPE_SERIALIZER, id, serializer);
+	static <S extends RecipeSerializer<T>, T extends Recipe<?>> S register(String string, S recipeSerializer) {
+		return Registry.register(Registry.RECIPE_SERIALIZER, string, recipeSerializer);
 	}
 }

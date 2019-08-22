@@ -1,11 +1,10 @@
 package com.mojang.realmsclient.client;
 
+import com.google.common.collect.Lists;
 import com.mojang.realmsclient.dto.RegionPingResult;
 import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.net.SocketAddress;
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import net.fabricmc.api.EnvType;
@@ -18,28 +17,24 @@ public class Ping {
 			ping(region.endpoint);
 		}
 
-		List<RegionPingResult> list = new ArrayList();
+		List<RegionPingResult> list = Lists.<RegionPingResult>newArrayList();
 
 		for (Ping.Region region2 : regions) {
 			list.add(new RegionPingResult(region2.name, ping(region2.endpoint)));
 		}
 
-		Collections.sort(list, new Comparator<RegionPingResult>() {
-			public int compare(RegionPingResult regionPingResult, RegionPingResult regionPingResult2) {
-				return regionPingResult.ping() - regionPingResult2.ping();
-			}
-		});
+		list.sort(Comparator.comparingInt(RegionPingResult::ping));
 		return list;
 	}
 
-	private static int ping(String host) {
+	private static int ping(String string) {
 		int i = 700;
 		long l = 0L;
 		Socket socket = null;
 
 		for (int j = 0; j < 5; j++) {
 			try {
-				SocketAddress socketAddress = new InetSocketAddress(host, 80);
+				SocketAddress socketAddress = new InetSocketAddress(string, 80);
 				socket = new Socket();
 				long m = now();
 				socket.connect(socketAddress, 700);
@@ -85,9 +80,9 @@ public class Ping {
 		private final String name;
 		private final String endpoint;
 
-		private Region(String name, String endpoint) {
-			this.name = name;
-			this.endpoint = endpoint;
+		private Region(String string2, String string3) {
+			this.name = string2;
+			this.endpoint = string3;
 		}
 	}
 }

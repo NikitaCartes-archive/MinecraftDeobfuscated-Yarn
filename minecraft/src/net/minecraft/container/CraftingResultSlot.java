@@ -13,41 +13,41 @@ public class CraftingResultSlot extends Slot {
 	private final PlayerEntity player;
 	private int amount;
 
-	public CraftingResultSlot(PlayerEntity player, CraftingInventory craftingInv, Inventory inventory, int invSlot, int xPosition, int yPosition) {
-		super(inventory, invSlot, xPosition, yPosition);
-		this.player = player;
-		this.craftingInv = craftingInv;
+	public CraftingResultSlot(PlayerEntity playerEntity, CraftingInventory craftingInventory, Inventory inventory, int i, int j, int k) {
+		super(inventory, i, j, k);
+		this.player = playerEntity;
+		this.craftingInv = craftingInventory;
 	}
 
 	@Override
-	public boolean canInsert(ItemStack stack) {
+	public boolean canInsert(ItemStack itemStack) {
 		return false;
 	}
 
 	@Override
-	public ItemStack takeStack(int amount) {
+	public ItemStack takeStack(int i) {
 		if (this.hasStack()) {
-			this.amount = this.amount + Math.min(amount, this.getStack().getCount());
+			this.amount = this.amount + Math.min(i, this.getStack().getCount());
 		}
 
-		return super.takeStack(amount);
+		return super.takeStack(i);
 	}
 
 	@Override
-	protected void onCrafted(ItemStack stack, int amount) {
-		this.amount += amount;
-		this.onCrafted(stack);
+	protected void onCrafted(ItemStack itemStack, int i) {
+		this.amount += i;
+		this.onCrafted(itemStack);
 	}
 
 	@Override
-	protected void onTake(int amount) {
-		this.amount += amount;
+	protected void onTake(int i) {
+		this.amount += i;
 	}
 
 	@Override
-	protected void onCrafted(ItemStack stack) {
+	protected void onCrafted(ItemStack itemStack) {
 		if (this.amount > 0) {
-			stack.onCraft(this.player.world, this.player, this.amount);
+			itemStack.onCraft(this.player.world, this.player, this.amount);
 		}
 
 		if (this.inventory instanceof RecipeUnlocker) {
@@ -58,30 +58,30 @@ public class CraftingResultSlot extends Slot {
 	}
 
 	@Override
-	public ItemStack onTakeItem(PlayerEntity player, ItemStack stack) {
-		this.onCrafted(stack);
-		DefaultedList<ItemStack> defaultedList = player.world.getRecipeManager().getRemainingStacks(RecipeType.CRAFTING, this.craftingInv, player.world);
+	public ItemStack onTakeItem(PlayerEntity playerEntity, ItemStack itemStack) {
+		this.onCrafted(itemStack);
+		DefaultedList<ItemStack> defaultedList = playerEntity.world.getRecipeManager().getRemainingStacks(RecipeType.CRAFTING, this.craftingInv, playerEntity.world);
 
 		for (int i = 0; i < defaultedList.size(); i++) {
-			ItemStack itemStack = this.craftingInv.getInvStack(i);
-			ItemStack itemStack2 = defaultedList.get(i);
-			if (!itemStack.isEmpty()) {
+			ItemStack itemStack2 = this.craftingInv.getInvStack(i);
+			ItemStack itemStack3 = defaultedList.get(i);
+			if (!itemStack2.isEmpty()) {
 				this.craftingInv.takeInvStack(i, 1);
-				itemStack = this.craftingInv.getInvStack(i);
+				itemStack2 = this.craftingInv.getInvStack(i);
 			}
 
-			if (!itemStack2.isEmpty()) {
-				if (itemStack.isEmpty()) {
-					this.craftingInv.setInvStack(i, itemStack2);
-				} else if (ItemStack.areItemsEqualIgnoreDamage(itemStack, itemStack2) && ItemStack.areTagsEqual(itemStack, itemStack2)) {
-					itemStack2.increment(itemStack.getCount());
-					this.craftingInv.setInvStack(i, itemStack2);
-				} else if (!this.player.inventory.insertStack(itemStack2)) {
-					this.player.dropItem(itemStack2, false);
+			if (!itemStack3.isEmpty()) {
+				if (itemStack2.isEmpty()) {
+					this.craftingInv.setInvStack(i, itemStack3);
+				} else if (ItemStack.areItemsEqualIgnoreDamage(itemStack2, itemStack3) && ItemStack.areTagsEqual(itemStack2, itemStack3)) {
+					itemStack3.increment(itemStack2.getCount());
+					this.craftingInv.setInvStack(i, itemStack3);
+				} else if (!this.player.inventory.insertStack(itemStack3)) {
+					this.player.dropItem(itemStack3, false);
 				}
 			}
 		}
 
-		return stack;
+		return itemStack;
 	}
 }

@@ -76,7 +76,7 @@ public class ArmorStandEntity extends LivingEntity {
 
 	public ArmorStandEntity(World world, double d, double e, double f) {
 		this(EntityType.ARMOR_STAND, world);
-		this.updatePosition(d, e, f);
+		this.setPosition(d, e, f);
 	}
 
 	@Override
@@ -85,7 +85,7 @@ public class ArmorStandEntity extends LivingEntity {
 		double e = this.y;
 		double f = this.z;
 		super.calculateDimensions();
-		this.updatePosition(d, e, f);
+		this.setPosition(d, e, f);
 	}
 
 	private boolean canClip() {
@@ -120,132 +120,132 @@ public class ArmorStandEntity extends LivingEntity {
 	}
 
 	@Override
-	public ItemStack getEquippedStack(EquipmentSlot slot) {
-		switch (slot.getType()) {
+	public ItemStack getEquippedStack(EquipmentSlot equipmentSlot) {
+		switch (equipmentSlot.getType()) {
 			case HAND:
-				return this.heldItems.get(slot.getEntitySlotId());
+				return this.heldItems.get(equipmentSlot.getEntitySlotId());
 			case ARMOR:
-				return this.armorItems.get(slot.getEntitySlotId());
+				return this.armorItems.get(equipmentSlot.getEntitySlotId());
 			default:
 				return ItemStack.EMPTY;
 		}
 	}
 
 	@Override
-	public void equipStack(EquipmentSlot slot, ItemStack stack) {
-		switch (slot.getType()) {
+	public void equipStack(EquipmentSlot equipmentSlot, ItemStack itemStack) {
+		switch (equipmentSlot.getType()) {
 			case HAND:
-				this.onEquipStack(stack);
-				this.heldItems.set(slot.getEntitySlotId(), stack);
+				this.onEquipStack(itemStack);
+				this.heldItems.set(equipmentSlot.getEntitySlotId(), itemStack);
 				break;
 			case ARMOR:
-				this.onEquipStack(stack);
-				this.armorItems.set(slot.getEntitySlotId(), stack);
+				this.onEquipStack(itemStack);
+				this.armorItems.set(equipmentSlot.getEntitySlotId(), itemStack);
 		}
 	}
 
 	@Override
-	public boolean equip(int slot, ItemStack item) {
+	public boolean equip(int i, ItemStack itemStack) {
 		EquipmentSlot equipmentSlot;
-		if (slot == 98) {
+		if (i == 98) {
 			equipmentSlot = EquipmentSlot.MAINHAND;
-		} else if (slot == 99) {
+		} else if (i == 99) {
 			equipmentSlot = EquipmentSlot.OFFHAND;
-		} else if (slot == 100 + EquipmentSlot.HEAD.getEntitySlotId()) {
+		} else if (i == 100 + EquipmentSlot.HEAD.getEntitySlotId()) {
 			equipmentSlot = EquipmentSlot.HEAD;
-		} else if (slot == 100 + EquipmentSlot.CHEST.getEntitySlotId()) {
+		} else if (i == 100 + EquipmentSlot.CHEST.getEntitySlotId()) {
 			equipmentSlot = EquipmentSlot.CHEST;
-		} else if (slot == 100 + EquipmentSlot.LEGS.getEntitySlotId()) {
+		} else if (i == 100 + EquipmentSlot.LEGS.getEntitySlotId()) {
 			equipmentSlot = EquipmentSlot.LEGS;
 		} else {
-			if (slot != 100 + EquipmentSlot.FEET.getEntitySlotId()) {
+			if (i != 100 + EquipmentSlot.FEET.getEntitySlotId()) {
 				return false;
 			}
 
 			equipmentSlot = EquipmentSlot.FEET;
 		}
 
-		if (!item.isEmpty() && !MobEntity.canEquipmentSlotContain(equipmentSlot, item) && equipmentSlot != EquipmentSlot.HEAD) {
+		if (!itemStack.isEmpty() && !MobEntity.canEquipmentSlotContain(equipmentSlot, itemStack) && equipmentSlot != EquipmentSlot.HEAD) {
 			return false;
 		} else {
-			this.equipStack(equipmentSlot, item);
+			this.equipStack(equipmentSlot, itemStack);
 			return true;
 		}
 	}
 
 	@Override
-	public boolean canPickUp(ItemStack stack) {
-		EquipmentSlot equipmentSlot = MobEntity.getPreferredEquipmentSlot(stack);
+	public boolean canPickUp(ItemStack itemStack) {
+		EquipmentSlot equipmentSlot = MobEntity.getPreferredEquipmentSlot(itemStack);
 		return this.getEquippedStack(equipmentSlot).isEmpty() && !this.method_6915(equipmentSlot);
 	}
 
 	@Override
-	public void writeCustomDataToTag(CompoundTag tag) {
-		super.writeCustomDataToTag(tag);
+	public void writeCustomDataToTag(CompoundTag compoundTag) {
+		super.writeCustomDataToTag(compoundTag);
 		ListTag listTag = new ListTag();
 
 		for (ItemStack itemStack : this.armorItems) {
-			CompoundTag compoundTag = new CompoundTag();
+			CompoundTag compoundTag2 = new CompoundTag();
 			if (!itemStack.isEmpty()) {
-				itemStack.toTag(compoundTag);
+				itemStack.toTag(compoundTag2);
 			}
 
-			listTag.add(compoundTag);
+			listTag.add(compoundTag2);
 		}
 
-		tag.put("ArmorItems", listTag);
+		compoundTag.put("ArmorItems", listTag);
 		ListTag listTag2 = new ListTag();
 
 		for (ItemStack itemStack2 : this.heldItems) {
-			CompoundTag compoundTag2 = new CompoundTag();
+			CompoundTag compoundTag3 = new CompoundTag();
 			if (!itemStack2.isEmpty()) {
-				itemStack2.toTag(compoundTag2);
+				itemStack2.toTag(compoundTag3);
 			}
 
-			listTag2.add(compoundTag2);
+			listTag2.add(compoundTag3);
 		}
 
-		tag.put("HandItems", listTag2);
-		tag.putBoolean("Invisible", this.isInvisible());
-		tag.putBoolean("Small", this.isSmall());
-		tag.putBoolean("ShowArms", this.shouldShowArms());
-		tag.putInt("DisabledSlots", this.disabledSlots);
-		tag.putBoolean("NoBasePlate", this.shouldHideBasePlate());
+		compoundTag.put("HandItems", listTag2);
+		compoundTag.putBoolean("Invisible", this.isInvisible());
+		compoundTag.putBoolean("Small", this.isSmall());
+		compoundTag.putBoolean("ShowArms", this.shouldShowArms());
+		compoundTag.putInt("DisabledSlots", this.disabledSlots);
+		compoundTag.putBoolean("NoBasePlate", this.shouldHideBasePlate());
 		if (this.isMarker()) {
-			tag.putBoolean("Marker", this.isMarker());
+			compoundTag.putBoolean("Marker", this.isMarker());
 		}
 
-		tag.put("Pose", this.serializePose());
+		compoundTag.put("Pose", this.serializePose());
 	}
 
 	@Override
-	public void readCustomDataFromTag(CompoundTag tag) {
-		super.readCustomDataFromTag(tag);
-		if (tag.contains("ArmorItems", 9)) {
-			ListTag listTag = tag.getList("ArmorItems", 10);
+	public void readCustomDataFromTag(CompoundTag compoundTag) {
+		super.readCustomDataFromTag(compoundTag);
+		if (compoundTag.containsKey("ArmorItems", 9)) {
+			ListTag listTag = compoundTag.getList("ArmorItems", 10);
 
 			for (int i = 0; i < this.armorItems.size(); i++) {
-				this.armorItems.set(i, ItemStack.fromTag(listTag.getCompound(i)));
+				this.armorItems.set(i, ItemStack.fromTag(listTag.getCompoundTag(i)));
 			}
 		}
 
-		if (tag.contains("HandItems", 9)) {
-			ListTag listTag = tag.getList("HandItems", 10);
+		if (compoundTag.containsKey("HandItems", 9)) {
+			ListTag listTag = compoundTag.getList("HandItems", 10);
 
 			for (int i = 0; i < this.heldItems.size(); i++) {
-				this.heldItems.set(i, ItemStack.fromTag(listTag.getCompound(i)));
+				this.heldItems.set(i, ItemStack.fromTag(listTag.getCompoundTag(i)));
 			}
 		}
 
-		this.setInvisible(tag.getBoolean("Invisible"));
-		this.setSmall(tag.getBoolean("Small"));
-		this.setShowArms(tag.getBoolean("ShowArms"));
-		this.disabledSlots = tag.getInt("DisabledSlots");
-		this.setHideBasePlate(tag.getBoolean("NoBasePlate"));
-		this.setMarker(tag.getBoolean("Marker"));
+		this.setInvisible(compoundTag.getBoolean("Invisible"));
+		this.setSmall(compoundTag.getBoolean("Small"));
+		this.setShowArms(compoundTag.getBoolean("ShowArms"));
+		this.disabledSlots = compoundTag.getInt("DisabledSlots");
+		this.setHideBasePlate(compoundTag.getBoolean("NoBasePlate"));
+		this.setMarker(compoundTag.getBoolean("Marker"));
 		this.noClip = !this.canClip();
-		CompoundTag compoundTag = tag.getCompound("Pose");
-		this.deserializePose(compoundTag);
+		CompoundTag compoundTag2 = compoundTag.getCompound("Pose");
+		this.deserializePose(compoundTag2);
 	}
 
 	private void deserializePose(CompoundTag compoundTag) {
@@ -314,17 +314,17 @@ public class ArmorStandEntity extends LivingEntity {
 	}
 
 	@Override
-	public ActionResult interactAt(PlayerEntity player, Vec3d hitPos, Hand hand) {
-		ItemStack itemStack = player.getStackInHand(hand);
+	public ActionResult interactAt(PlayerEntity playerEntity, Vec3d vec3d, Hand hand) {
+		ItemStack itemStack = playerEntity.getStackInHand(hand);
 		if (this.isMarker() || itemStack.getItem() == Items.NAME_TAG) {
 			return ActionResult.PASS;
-		} else if (!this.world.isClient && !player.isSpectator()) {
+		} else if (!this.world.isClient && !playerEntity.isSpectator()) {
 			EquipmentSlot equipmentSlot = MobEntity.getPreferredEquipmentSlot(itemStack);
 			if (itemStack.isEmpty()) {
-				EquipmentSlot equipmentSlot2 = this.method_6916(hitPos);
+				EquipmentSlot equipmentSlot2 = this.method_6916(vec3d);
 				EquipmentSlot equipmentSlot3 = this.method_6915(equipmentSlot2) ? equipmentSlot : equipmentSlot2;
 				if (this.hasStackEquipped(equipmentSlot3)) {
-					this.method_6904(player, equipmentSlot3, itemStack, hand);
+					this.method_6904(playerEntity, equipmentSlot3, itemStack, hand);
 				}
 			} else {
 				if (this.method_6915(equipmentSlot)) {
@@ -335,7 +335,7 @@ public class ArmorStandEntity extends LivingEntity {
 					return ActionResult.FAIL;
 				}
 
-				this.method_6904(player, equipmentSlot, itemStack, hand);
+				this.method_6904(playerEntity, equipmentSlot, itemStack, hand);
 			}
 
 			return ActionResult.SUCCESS;
@@ -390,38 +390,38 @@ public class ArmorStandEntity extends LivingEntity {
 	}
 
 	@Override
-	public boolean damage(DamageSource source, float amount) {
+	public boolean damage(DamageSource damageSource, float f) {
 		if (this.world.isClient || this.removed) {
 			return false;
-		} else if (DamageSource.OUT_OF_WORLD.equals(source)) {
+		} else if (DamageSource.OUT_OF_WORLD.equals(damageSource)) {
 			this.remove();
 			return false;
-		} else if (this.isInvulnerableTo(source) || this.field_7111 || this.isMarker()) {
+		} else if (this.isInvulnerableTo(damageSource) || this.field_7111 || this.isMarker()) {
 			return false;
-		} else if (source.isExplosive()) {
-			this.method_6908(source);
+		} else if (damageSource.isExplosive()) {
+			this.method_6908(damageSource);
 			this.remove();
 			return false;
-		} else if (DamageSource.IN_FIRE.equals(source)) {
+		} else if (DamageSource.IN_FIRE.equals(damageSource)) {
 			if (this.isOnFire()) {
-				this.method_6905(source, 0.15F);
+				this.method_6905(damageSource, 0.15F);
 			} else {
 				this.setOnFireFor(5);
 			}
 
 			return false;
-		} else if (DamageSource.ON_FIRE.equals(source) && this.getHealth() > 0.5F) {
-			this.method_6905(source, 4.0F);
+		} else if (DamageSource.ON_FIRE.equals(damageSource) && this.getHealth() > 0.5F) {
+			this.method_6905(damageSource, 4.0F);
 			return false;
 		} else {
-			boolean bl = source.getSource() instanceof ProjectileEntity;
-			boolean bl2 = bl && ((ProjectileEntity)source.getSource()).getPierceLevel() > 0;
-			boolean bl3 = "player".equals(source.getName());
+			boolean bl = damageSource.getSource() instanceof ProjectileEntity;
+			boolean bl2 = bl && ((ProjectileEntity)damageSource.getSource()).getPierceLevel() > 0;
+			boolean bl3 = "player".equals(damageSource.getName());
 			if (!bl3 && !bl) {
 				return false;
-			} else if (source.getAttacker() instanceof PlayerEntity && !((PlayerEntity)source.getAttacker()).abilities.allowModifyWorld) {
+			} else if (damageSource.getAttacker() instanceof PlayerEntity && !((PlayerEntity)damageSource.getAttacker()).abilities.allowModifyWorld) {
 				return false;
-			} else if (source.isSourceCreativePlayer()) {
+			} else if (damageSource.isSourceCreativePlayer()) {
 				this.method_6920();
 				this.method_6898();
 				this.remove();
@@ -432,7 +432,7 @@ public class ArmorStandEntity extends LivingEntity {
 					this.world.sendEntityStatus(this, (byte)32);
 					this.field_7112 = l;
 				} else {
-					this.method_6924(source);
+					this.method_6924(damageSource);
 					this.method_6898();
 					this.remove();
 				}
@@ -444,27 +444,27 @@ public class ArmorStandEntity extends LivingEntity {
 
 	@Environment(EnvType.CLIENT)
 	@Override
-	public void handleStatus(byte status) {
-		if (status == 32) {
+	public void handleStatus(byte b) {
+		if (b == 32) {
 			if (this.world.isClient) {
 				this.world.playSound(this.x, this.y, this.z, SoundEvents.ENTITY_ARMOR_STAND_HIT, this.getSoundCategory(), 0.3F, 1.0F, false);
 				this.field_7112 = this.world.getTime();
 			}
 		} else {
-			super.handleStatus(status);
+			super.handleStatus(b);
 		}
 	}
 
 	@Environment(EnvType.CLIENT)
 	@Override
-	public boolean shouldRender(double distance) {
-		double d = this.getBoundingBox().getAverageSideLength() * 4.0;
-		if (Double.isNaN(d) || d == 0.0) {
-			d = 4.0;
+	public boolean shouldRenderAtDistance(double d) {
+		double e = this.getBoundingBox().averageDimension() * 4.0;
+		if (Double.isNaN(e) || e == 0.0) {
+			e = 4.0;
 		}
 
-		d *= 64.0;
-		return distance < d * d;
+		e *= 64.0;
+		return d < e * e;
 	}
 
 	private void method_6898() {
@@ -526,15 +526,15 @@ public class ArmorStandEntity extends LivingEntity {
 	}
 
 	@Override
-	protected float turnHead(float yaw, float headRotation) {
-		this.field_6220 = this.prevYaw;
-		this.field_6283 = this.yaw;
+	protected float turnHead(float f, float g) {
+		this.prevBodyYaw = this.prevYaw;
+		this.bodyYaw = this.yaw;
 		return 0.0F;
 	}
 
 	@Override
-	protected float getActiveEyeHeight(EntityPose pose, EntityDimensions dimensions) {
-		return dimensions.height * (this.isBaby() ? 0.5F : 0.9F);
+	protected float getActiveEyeHeight(EntityPose entityPose, EntityDimensions entityDimensions) {
+		return entityDimensions.height * (this.isBaby() ? 0.5F : 0.9F);
 	}
 
 	@Override
@@ -543,22 +543,22 @@ public class ArmorStandEntity extends LivingEntity {
 	}
 
 	@Override
-	public void travel(Vec3d movementInput) {
+	public void travel(Vec3d vec3d) {
 		if (this.canClip()) {
-			super.travel(movementInput);
+			super.travel(vec3d);
 		}
 	}
 
 	@Override
-	public void setYaw(float yaw) {
-		this.field_6220 = this.prevYaw = yaw;
-		this.prevHeadYaw = this.headYaw = yaw;
+	public void setYaw(float f) {
+		this.prevBodyYaw = this.prevYaw = f;
+		this.prevHeadYaw = this.headYaw = f;
 	}
 
 	@Override
-	public void setHeadYaw(float headYaw) {
-		this.field_6220 = this.prevYaw = headYaw;
-		this.prevHeadYaw = this.headYaw = headYaw;
+	public void setHeadYaw(float f) {
+		this.prevBodyYaw = this.prevYaw = f;
+		this.prevHeadYaw = this.headYaw = f;
 	}
 
 	@Override
@@ -601,9 +601,9 @@ public class ArmorStandEntity extends LivingEntity {
 	}
 
 	@Override
-	public void setInvisible(boolean invisible) {
-		this.field_7111 = invisible;
-		super.setInvisible(invisible);
+	public void setInvisible(boolean bl) {
+		this.field_7111 = bl;
+		super.setInvisible(bl);
 	}
 
 	@Override
@@ -658,14 +658,14 @@ public class ArmorStandEntity extends LivingEntity {
 		return (this.dataTracker.get(ARMOR_STAND_FLAGS) & 16) != 0;
 	}
 
-	private byte setBitField(byte value, int bitField, boolean set) {
-		if (set) {
-			value = (byte)(value | bitField);
+	private byte setBitField(byte b, int i, boolean bl) {
+		if (bl) {
+			b = (byte)(b | i);
 		} else {
-			value = (byte)(value & ~bitField);
+			b = (byte)(b & ~i);
 		}
 
-		return value;
+		return b;
 	}
 
 	public void setHeadRotation(EulerAngle eulerAngle) {
@@ -737,13 +737,13 @@ public class ArmorStandEntity extends LivingEntity {
 	}
 
 	@Override
-	protected SoundEvent getFallSound(int distance) {
+	protected SoundEvent getFallSound(int i) {
 		return SoundEvents.ENTITY_ARMOR_STAND_FALL;
 	}
 
 	@Nullable
 	@Override
-	protected SoundEvent getHurtSound(DamageSource source) {
+	protected SoundEvent getHurtSound(DamageSource damageSource) {
 		return SoundEvents.ENTITY_ARMOR_STAND_HIT;
 	}
 
@@ -754,7 +754,7 @@ public class ArmorStandEntity extends LivingEntity {
 	}
 
 	@Override
-	public void onStruckByLightning(LightningEntity lightning) {
+	public void onStruckByLightning(LightningEntity lightningEntity) {
 	}
 
 	@Override
@@ -763,13 +763,13 @@ public class ArmorStandEntity extends LivingEntity {
 	}
 
 	@Override
-	public void onTrackedDataSet(TrackedData<?> data) {
-		if (ARMOR_STAND_FLAGS.equals(data)) {
+	public void onTrackedDataSet(TrackedData<?> trackedData) {
+		if (ARMOR_STAND_FLAGS.equals(trackedData)) {
 			this.calculateDimensions();
 			this.inanimate = !this.isMarker();
 		}
 
-		super.onTrackedDataSet(data);
+		super.onTrackedDataSet(trackedData);
 	}
 
 	@Override
@@ -778,7 +778,7 @@ public class ArmorStandEntity extends LivingEntity {
 	}
 
 	@Override
-	public EntityDimensions getDimensions(EntityPose pose) {
+	public EntityDimensions getDimensions(EntityPose entityPose) {
 		float f = this.isMarker() ? 0.0F : (this.isBaby() ? 0.5F : 1.0F);
 		return this.getType().getDimensions().scaled(f);
 	}

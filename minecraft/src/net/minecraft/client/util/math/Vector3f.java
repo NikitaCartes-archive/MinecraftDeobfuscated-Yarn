@@ -19,19 +19,19 @@ public final class Vector3f {
 	}
 
 	@Environment(EnvType.CLIENT)
-	public Vector3f(float x, float y, float z) {
-		this.components = new float[]{x, y, z};
+	public Vector3f(float f, float g, float h) {
+		this.components = new float[]{f, g, h};
 	}
 
 	public Vector3f(Vec3d vec3d) {
 		this.components = new float[]{(float)vec3d.x, (float)vec3d.y, (float)vec3d.z};
 	}
 
-	public boolean equals(Object o) {
-		if (this == o) {
+	public boolean equals(Object object) {
+		if (this == object) {
 			return true;
-		} else if (o != null && this.getClass() == o.getClass()) {
-			Vector3f vector3f = (Vector3f)o;
+		} else if (object != null && this.getClass() == object.getClass()) {
+			Vector3f vector3f = (Vector3f)object;
 			return Arrays.equals(this.components, vector3f.components);
 		} else {
 			return false;
@@ -55,54 +55,54 @@ public final class Vector3f {
 	}
 
 	@Environment(EnvType.CLIENT)
-	public void scale(float scale) {
+	public void scale(float f) {
 		for (int i = 0; i < 3; i++) {
-			this.components[i] = this.components[i] * scale;
+			this.components[i] = this.components[i] * f;
 		}
 	}
 
 	@Environment(EnvType.CLIENT)
-	private static float clampFloat(float v, float min, float max) {
-		if (v < min) {
-			return min;
+	private static float clampFloat(float f, float g, float h) {
+		if (f < g) {
+			return g;
 		} else {
-			return v > max ? max : v;
+			return f > h ? h : f;
 		}
 	}
 
 	@Environment(EnvType.CLIENT)
-	public void clamp(float min, float max) {
-		this.components[0] = clampFloat(this.components[0], min, max);
-		this.components[1] = clampFloat(this.components[1], min, max);
-		this.components[2] = clampFloat(this.components[2], min, max);
+	public void clamp(float f, float g) {
+		this.components[0] = clampFloat(this.components[0], f, g);
+		this.components[1] = clampFloat(this.components[1], f, g);
+		this.components[2] = clampFloat(this.components[2], f, g);
 	}
 
-	public void set(float x, float y, float z) {
-		this.components[0] = x;
-		this.components[1] = y;
-		this.components[2] = z;
-	}
-
-	@Environment(EnvType.CLIENT)
-	public void add(float x, float y, float z) {
-		this.components[0] = this.components[0] + x;
-		this.components[1] = this.components[1] + y;
-		this.components[2] = this.components[2] + z;
+	public void set(float f, float g, float h) {
+		this.components[0] = f;
+		this.components[1] = g;
+		this.components[2] = h;
 	}
 
 	@Environment(EnvType.CLIENT)
-	public void subtract(Vector3f other) {
+	public void add(float f, float g, float h) {
+		this.components[0] = this.components[0] + f;
+		this.components[1] = this.components[1] + g;
+		this.components[2] = this.components[2] + h;
+	}
+
+	@Environment(EnvType.CLIENT)
+	public void subtract(Vector3f vector3f) {
 		for (int i = 0; i < 3; i++) {
-			this.components[i] = this.components[i] - other.components[i];
+			this.components[i] = this.components[i] - vector3f.components[i];
 		}
 	}
 
 	@Environment(EnvType.CLIENT)
-	public float dot(Vector3f other) {
+	public float dot(Vector3f vector3f) {
 		float f = 0.0F;
 
 		for (int i = 0; i < 3; i++) {
-			f += this.components[i] * other.components[i];
+			f += this.components[i] * vector3f.components[i];
 		}
 
 		return f;
@@ -122,13 +122,13 @@ public final class Vector3f {
 	}
 
 	@Environment(EnvType.CLIENT)
-	public void cross(Vector3f vector) {
+	public void cross(Vector3f vector3f) {
 		float f = this.components[0];
 		float g = this.components[1];
 		float h = this.components[2];
-		float i = vector.getX();
-		float j = vector.getY();
-		float k = vector.getZ();
+		float i = vector3f.getX();
+		float j = vector3f.getY();
+		float k = vector3f.getZ();
 		this.components[0] = g * k - h * j;
 		this.components[1] = h * i - f * k;
 		this.components[2] = f * j - g * i;
@@ -136,10 +136,10 @@ public final class Vector3f {
 
 	public void method_19262(Quaternion quaternion) {
 		Quaternion quaternion2 = new Quaternion(quaternion);
-		quaternion2.hamiltonProduct(new Quaternion(this.getX(), this.getY(), this.getZ(), 0.0F));
+		quaternion2.copyFrom(new Quaternion(this.getX(), this.getY(), this.getZ(), 0.0F));
 		Quaternion quaternion3 = new Quaternion(quaternion);
-		quaternion3.conjugate();
-		quaternion2.hamiltonProduct(quaternion3);
-		this.set(quaternion2.getB(), quaternion2.getC(), quaternion2.getD());
+		quaternion3.reverse();
+		quaternion2.copyFrom(quaternion3);
+		this.set(quaternion2.getX(), quaternion2.getY(), quaternion2.getZ());
 	}
 }

@@ -9,8 +9,8 @@ import javax.annotation.Nullable;
 import net.minecraft.SharedConstants;
 import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
-import net.minecraft.datafixer.Schemas;
-import net.minecraft.datafixer.TypeReferences;
+import net.minecraft.datafixers.Schemas;
+import net.minecraft.datafixers.TypeReferences;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.registry.Registry;
 import org.apache.logging.log4j.LogManager;
@@ -193,13 +193,16 @@ public class BlockEntityType<T extends BlockEntity> {
 	public static final BlockEntityType<CampfireBlockEntity> CAMPFIRE = create(
 		"campfire", BlockEntityType.Builder.create(CampfireBlockEntity::new, Blocks.CAMPFIRE)
 	);
+	public static final BlockEntityType<BeeHiveBlockEntity> BEEHIVE = create(
+		"beehive", BlockEntityType.Builder.create(BeeHiveBlockEntity::new, Blocks.BEE_NEST, Blocks.BEE_HIVE)
+	);
 	private final Supplier<? extends T> supplier;
 	private final Set<Block> blocks;
 	private final Type<?> type;
 
 	@Nullable
 	public static Identifier getId(BlockEntityType<?> blockEntityType) {
-		return Registry.BLOCK_ENTITY.getId(blockEntityType);
+		return Registry.BLOCK_ENTITY_TYPE.getId(blockEntityType);
 	}
 
 	private static <T extends BlockEntity> BlockEntityType<T> create(String string, BlockEntityType.Builder<T> builder) {
@@ -209,24 +212,23 @@ public class BlockEntityType<T extends BlockEntity> {
 			type = Schemas.getFixer()
 				.getSchema(DataFixUtils.makeKey(SharedConstants.getGameVersion().getWorldVersion()))
 				.getChoiceType(TypeReferences.BLOCK_ENTITY, string);
-		} catch (IllegalStateException var4) {
+		} catch (IllegalArgumentException var4) {
+			LOGGER.error("No data fixer registered for block entity {}", string);
 			if (SharedConstants.isDevelopment) {
 				throw var4;
 			}
-
-			LOGGER.warn("No data fixer registered for block entity {}", string);
 		}
 
 		if (builder.blocks.isEmpty()) {
 			LOGGER.warn("Block entity type {} requires at least one valid block to be defined!", string);
 		}
 
-		return Registry.register(Registry.BLOCK_ENTITY, string, builder.build(type));
+		return Registry.register(Registry.BLOCK_ENTITY_TYPE, string, builder.build(type));
 	}
 
-	public BlockEntityType(Supplier<? extends T> supplier, Set<Block> blocks, Type<?> type) {
+	public BlockEntityType(Supplier<? extends T> supplier, Set<Block> set, Type<?> type) {
 		this.supplier = supplier;
-		this.blocks = blocks;
+		this.blocks = set;
 		this.type = type;
 	}
 
@@ -243,9 +245,9 @@ public class BlockEntityType<T extends BlockEntity> {
 		private final Supplier<? extends T> supplier;
 		private final Set<Block> blocks;
 
-		private Builder(Supplier<? extends T> supplier, Set<Block> blocks) {
+		private Builder(Supplier<? extends T> supplier, Set<Block> set) {
 			this.supplier = supplier;
-			this.blocks = blocks;
+			this.blocks = set;
 		}
 
 		public static <T extends BlockEntity> BlockEntityType.Builder<T> create(Supplier<? extends T> supplier, Block... blocks) {

@@ -19,24 +19,24 @@ public class FireworkRocketRecipe extends SpecialCraftingRecipe {
 		super(identifier);
 	}
 
-	public boolean matches(CraftingInventory craftingInventory, World world) {
+	public boolean method_17709(CraftingInventory craftingInventory, World world) {
 		boolean bl = false;
 		int i = 0;
 
 		for (int j = 0; j < craftingInventory.getInvSize(); j++) {
 			ItemStack itemStack = craftingInventory.getInvStack(j);
 			if (!itemStack.isEmpty()) {
-				if (PAPER.test(itemStack)) {
+				if (PAPER.method_8093(itemStack)) {
 					if (bl) {
 						return false;
 					}
 
 					bl = true;
-				} else if (DURATION_MODIFIER.test(itemStack)) {
+				} else if (DURATION_MODIFIER.method_8093(itemStack)) {
 					if (++i > 3) {
 						return false;
 					}
-				} else if (!FIREWORK_STAR.test(itemStack)) {
+				} else if (!FIREWORK_STAR.method_8093(itemStack)) {
 					return false;
 				}
 			}
@@ -45,7 +45,7 @@ public class FireworkRocketRecipe extends SpecialCraftingRecipe {
 		return bl && i >= 1;
 	}
 
-	public ItemStack craft(CraftingInventory craftingInventory) {
+	public ItemStack method_17708(CraftingInventory craftingInventory) {
 		ItemStack itemStack = new ItemStack(Items.FIREWORK_ROCKET, 3);
 		CompoundTag compoundTag = itemStack.getOrCreateSubTag("Fireworks");
 		ListTag listTag = new ListTag();
@@ -54,9 +54,9 @@ public class FireworkRocketRecipe extends SpecialCraftingRecipe {
 		for (int j = 0; j < craftingInventory.getInvSize(); j++) {
 			ItemStack itemStack2 = craftingInventory.getInvStack(j);
 			if (!itemStack2.isEmpty()) {
-				if (DURATION_MODIFIER.test(itemStack2)) {
+				if (DURATION_MODIFIER.method_8093(itemStack2)) {
 					i++;
-				} else if (FIREWORK_STAR.test(itemStack2)) {
+				} else if (FIREWORK_STAR.method_8093(itemStack2)) {
 					CompoundTag compoundTag2 = itemStack2.getSubTag("Explosion");
 					if (compoundTag2 != null) {
 						listTag.add(compoundTag2);
@@ -75,8 +75,8 @@ public class FireworkRocketRecipe extends SpecialCraftingRecipe {
 
 	@Environment(EnvType.CLIENT)
 	@Override
-	public boolean fits(int width, int height) {
-		return width * height >= 2;
+	public boolean fits(int i, int j) {
+		return i * j >= 2;
 	}
 
 	@Override

@@ -1,9 +1,9 @@
 package net.minecraft.client.render.entity.feature;
 
-import com.mojang.blaze3d.platform.GLX;
-import com.mojang.blaze3d.platform.GlStateManager;
+import com.mojang.blaze3d.systems.RenderSystem;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.class_4493;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.GameRenderer;
 import net.minecraft.client.render.entity.model.SpiderEntityModel;
@@ -14,39 +14,39 @@ import net.minecraft.util.Identifier;
 public class SpiderEyesFeatureRenderer<T extends Entity, M extends SpiderEntityModel<T>> extends FeatureRenderer<T, M> {
 	private static final Identifier SKIN = new Identifier("textures/entity/spider_eyes.png");
 
-	public SpiderEyesFeatureRenderer(FeatureRendererContext<T, M> context) {
-		super(context);
+	public SpiderEyesFeatureRenderer(FeatureRendererContext<T, M> featureRendererContext) {
+		super(featureRendererContext);
 	}
 
 	@Override
 	public void render(T entity, float f, float g, float h, float i, float j, float k, float l) {
 		this.bindTexture(SKIN);
-		GlStateManager.enableBlend();
-		GlStateManager.disableAlphaTest();
-		GlStateManager.blendFunc(GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ONE);
+		RenderSystem.enableBlend();
+		RenderSystem.disableAlphaTest();
+		RenderSystem.blendFunc(class_4493.class_4535.ONE, class_4493.class_4534.ONE);
 		if (entity.isInvisible()) {
-			GlStateManager.depthMask(false);
+			RenderSystem.depthMask(false);
 		} else {
-			GlStateManager.depthMask(true);
+			RenderSystem.depthMask(true);
 		}
 
 		int m = 61680;
 		int n = m % 65536;
 		int o = m / 65536;
-		GLX.glMultiTexCoord2f(GLX.GL_TEXTURE1, (float)n, (float)o);
-		GlStateManager.color4f(1.0F, 1.0F, 1.0F, 1.0F);
+		RenderSystem.glMultiTexCoord2f(33985, (float)n, (float)o);
+		RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
 		GameRenderer gameRenderer = MinecraftClient.getInstance().gameRenderer;
 		gameRenderer.setFogBlack(true);
-		this.getContextModel().render(entity, f, g, i, j, k, l);
+		this.getModel().render(entity, f, g, i, j, k, l);
 		gameRenderer.setFogBlack(false);
 		m = entity.getLightmapCoordinates();
 		n = m % 65536;
 		o = m / 65536;
-		GLX.glMultiTexCoord2f(GLX.GL_TEXTURE1, (float)n, (float)o);
+		RenderSystem.glMultiTexCoord2f(33985, (float)n, (float)o);
 		this.applyLightmapCoordinates(entity);
-		GlStateManager.depthMask(true);
-		GlStateManager.disableBlend();
-		GlStateManager.enableAlphaTest();
+		RenderSystem.depthMask(true);
+		RenderSystem.disableBlend();
+		RenderSystem.enableAlphaTest();
 	}
 
 	@Override

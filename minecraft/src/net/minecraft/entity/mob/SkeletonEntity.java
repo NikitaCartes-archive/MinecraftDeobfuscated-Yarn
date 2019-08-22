@@ -19,7 +19,7 @@ public class SkeletonEntity extends AbstractSkeletonEntity {
 	}
 
 	@Override
-	protected SoundEvent getHurtSound(DamageSource source) {
+	protected SoundEvent getHurtSound(DamageSource damageSource) {
 		return SoundEvents.ENTITY_SKELETON_HURT;
 	}
 
@@ -34,9 +34,9 @@ public class SkeletonEntity extends AbstractSkeletonEntity {
 	}
 
 	@Override
-	protected void dropEquipment(DamageSource source, int lootingMultiplier, boolean allowDrops) {
-		super.dropEquipment(source, lootingMultiplier, allowDrops);
-		Entity entity = source.getAttacker();
+	protected void dropEquipment(DamageSource damageSource, int i, boolean bl) {
+		super.dropEquipment(damageSource, i, bl);
+		Entity entity = damageSource.getAttacker();
 		if (entity instanceof CreeperEntity) {
 			CreeperEntity creeperEntity = (CreeperEntity)entity;
 			if (creeperEntity.shouldDropHead()) {

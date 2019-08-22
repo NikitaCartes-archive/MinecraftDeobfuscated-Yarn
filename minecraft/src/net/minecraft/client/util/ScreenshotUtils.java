@@ -1,7 +1,6 @@
 package net.minecraft.client.util;
 
-import com.mojang.blaze3d.platform.GLX;
-import com.mojang.blaze3d.platform.GlStateManager;
+import com.mojang.blaze3d.systems.RenderSystem;
 import java.io.File;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -10,7 +9,7 @@ import java.util.function.Consumer;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.client.gl.Framebuffer;
+import net.minecraft.client.gl.GlFramebuffer;
 import net.minecraft.client.texture.NativeImage;
 import net.minecraft.resource.ResourceImpl;
 import net.minecraft.text.ClickEvent;
@@ -26,12 +25,12 @@ public class ScreenshotUtils {
 	private static final Logger LOGGER = LogManager.getLogger();
 	private static final DateFormat DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd_HH.mm.ss");
 
-	public static void method_1659(File file, int i, int j, Framebuffer framebuffer, Consumer<Text> consumer) {
-		method_1662(file, null, i, j, framebuffer, consumer);
+	public static void method_1659(File file, int i, int j, GlFramebuffer glFramebuffer, Consumer<Text> consumer) {
+		method_1662(file, null, i, j, glFramebuffer, consumer);
 	}
 
-	public static void method_1662(File file, @Nullable String string, int i, int j, Framebuffer framebuffer, Consumer<Text> consumer) {
-		NativeImage nativeImage = method_1663(i, j, framebuffer);
+	public static void method_1662(File file, @Nullable String string, int i, int j, GlFramebuffer glFramebuffer, Consumer<Text> consumer) {
+		NativeImage nativeImage = method_1663(i, j, glFramebuffer);
 		File file2 = new File(file, "screenshots");
 		file2.mkdir();
 		File file3;
@@ -60,32 +59,24 @@ public class ScreenshotUtils {
 			);
 	}
 
-	public static NativeImage method_1663(int i, int j, Framebuffer framebuffer) {
-		if (GLX.isUsingFBOs()) {
-			i = framebuffer.textureWidth;
-			j = framebuffer.textureHeight;
-		}
-
+	public static NativeImage method_1663(int i, int j, GlFramebuffer glFramebuffer) {
+		i = glFramebuffer.texWidth;
+		j = glFramebuffer.texHeight;
 		NativeImage nativeImage = new NativeImage(i, j, false);
-		if (GLX.isUsingFBOs()) {
-			GlStateManager.bindTexture(framebuffer.colorAttachment);
-			nativeImage.loadFromTextureImage(0, true);
-		} else {
-			nativeImage.loadFromMemory(true);
-		}
-
+		RenderSystem.bindTexture(glFramebuffer.colorAttachment);
+		nativeImage.loadFromTextureImage(0, true);
 		nativeImage.method_4319();
 		return nativeImage;
 	}
 
-	private static File getScreenshotFilename(File directory) {
+	private static File getScreenshotFilename(File file) {
 		String string = DATE_FORMAT.format(new Date());
 		int i = 1;
 
 		while (true) {
-			File file = new File(directory, string + (i == 1 ? "" : "_" + i) + ".png");
-			if (!file.exists()) {
-				return file;
+			File file2 = new File(file, string + (i == 1 ? "" : "_" + i) + ".png");
+			if (!file2.exists()) {
+				return file2;
 			}
 
 			i++;

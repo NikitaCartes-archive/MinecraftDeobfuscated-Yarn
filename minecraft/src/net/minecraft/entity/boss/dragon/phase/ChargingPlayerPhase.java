@@ -11,8 +11,8 @@ public class ChargingPlayerPhase extends AbstractPhase {
 	private Vec3d target;
 	private int field_7037;
 
-	public ChargingPlayerPhase(EnderDragonEntity dragon) {
-		super(dragon);
+	public ChargingPlayerPhase(EnderDragonEntity enderDragonEntity) {
+		super(enderDragonEntity);
 	}
 
 	@Override
@@ -36,8 +36,8 @@ public class ChargingPlayerPhase extends AbstractPhase {
 		this.field_7037 = 0;
 	}
 
-	public void setTarget(Vec3d target) {
-		this.target = target;
+	public void setTarget(Vec3d vec3d) {
+		this.target = vec3d;
 	}
 
 	@Override

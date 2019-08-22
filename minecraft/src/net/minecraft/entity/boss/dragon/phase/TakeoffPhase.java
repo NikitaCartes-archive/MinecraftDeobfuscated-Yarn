@@ -13,8 +13,8 @@ public class TakeoffPhase extends AbstractPhase {
 	private Path field_7054;
 	private Vec3d field_7055;
 
-	public TakeoffPhase(EnderDragonEntity dragon) {
-		super(dragon);
+	public TakeoffPhase(EnderDragonEntity enderDragonEntity) {
+		super(enderDragonEntity);
 	}
 
 	@Override
@@ -65,7 +65,7 @@ public class TakeoffPhase extends AbstractPhase {
 
 				double d;
 				do {
-					d = vec3d.y + (double)(this.dragon.getRandom().nextFloat() * 20.0F);
+					d = vec3d.y + (double)(this.dragon.getRand().nextFloat() * 20.0F);
 				} while (d < vec3d.y);
 
 				this.field_7055 = new Vec3d(vec3d.x, d, vec3d.z);

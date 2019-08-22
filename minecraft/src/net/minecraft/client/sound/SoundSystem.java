@@ -47,11 +47,12 @@ public class SoundSystem {
 	private final Map<SoundInstance, Integer> startTicks = Maps.<SoundInstance, Integer>newHashMap();
 	private final Map<SoundInstance, Integer> soundEndTicks = Maps.<SoundInstance, Integer>newHashMap();
 	private final List<ListenerSoundInstance> listeners = Lists.<ListenerSoundInstance>newArrayList();
+	private final List<TickableSoundInstance> field_20532 = Lists.<TickableSoundInstance>newArrayList();
 	private final List<Sound> preloadedSounds = Lists.<Sound>newArrayList();
 
-	public SoundSystem(SoundManager loader, GameOptions settings, ResourceManager resourceManager) {
-		this.loader = loader;
-		this.settings = settings;
+	public SoundSystem(SoundManager soundManager, GameOptions gameOptions, ResourceManager resourceManager) {
+		this.loader = soundManager;
+		this.settings = gameOptions;
 		this.soundLoader = new SoundLoader(resourceManager);
 	}
 
@@ -89,18 +90,18 @@ public class SoundSystem {
 		return soundCategory != null && soundCategory != SoundCategory.MASTER ? this.settings.getSoundVolume(soundCategory) : 1.0F;
 	}
 
-	public void updateSoundVolume(SoundCategory soundCategory, float volume) {
+	public void updateSoundVolume(SoundCategory soundCategory, float f) {
 		if (this.started) {
 			if (soundCategory == SoundCategory.MASTER) {
-				this.listener.setVolume(volume);
+				this.listener.setVolume(f);
 			} else {
 				this.sources.forEach((soundInstance, sourceManager) -> {
-					float f = this.getAdjustedVolume(soundInstance);
+					float fx = this.getAdjustedVolume(soundInstance);
 					sourceManager.run(source -> {
-						if (f <= 0.0F) {
+						if (fx <= 0.0F) {
 							source.stop();
 						} else {
-							source.setVolume(f);
+							source.setVolume(fx);
 						}
 					});
 				});
@@ -136,6 +137,7 @@ public class SoundSystem {
 			this.tickingSounds.clear();
 			this.sounds.clear();
 			this.soundEndTicks.clear();
+			this.field_20532.clear();
 		}
 	}
 
@@ -157,6 +159,8 @@ public class SoundSystem {
 
 	private void tick() {
 		this.ticks++;
+		this.field_20532.forEach(this::play);
+		this.field_20532.clear();
 
 		for (TickableSoundInstance tickableSoundInstance : this.tickingSounds) {
 			tickableSoundInstance.tick();
@@ -311,6 +315,10 @@ public class SoundSystem {
 		}
 	}
 
+	public void method_22139(TickableSoundInstance tickableSoundInstance) {
+		this.field_20532.add(tickableSoundInstance);
+	}
+
 	public void addPreloadedSound(Sound sound) {
 		this.preloadedSounds.add(sound);
 	}
@@ -335,8 +343,8 @@ public class SoundSystem {
 		}
 	}
 
-	public void play(SoundInstance sound, int delay) {
-		this.startTicks.put(sound, this.ticks + delay);
+	public void play(SoundInstance soundInstance, int i) {
+		this.startTicks.put(soundInstance, this.ticks + i);
 	}
 
 	public void updateListenerPosition(Camera camera) {

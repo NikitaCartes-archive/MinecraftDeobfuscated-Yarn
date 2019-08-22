@@ -7,23 +7,23 @@ import java.util.Map;
 import java.util.stream.Collectors;
 import javax.annotation.Nullable;
 import net.minecraft.advancement.criterion.Criterions;
+import net.minecraft.client.network.DebugRendererInfoManager;
+import net.minecraft.client.network.packet.EntityStatusS2CPacket;
 import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
-import net.minecraft.network.packet.s2c.play.EntityStatusS2CPacket;
-import net.minecraft.server.network.DebugInfoSender;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.stat.Stats;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
+import net.minecraft.village.PointOfInterest;
+import net.minecraft.village.PointOfInterestStorage;
+import net.minecraft.village.PointOfInterestType;
 import net.minecraft.world.GameRules;
 import net.minecraft.world.PersistentState;
 import net.minecraft.world.dimension.Dimension;
 import net.minecraft.world.dimension.DimensionType;
-import net.minecraft.world.poi.PointOfInterest;
-import net.minecraft.world.poi.PointOfInterestStorage;
-import net.minecraft.world.poi.PointOfInterestType;
 
 public class RaidManager extends PersistentState {
 	private final Map<Integer, Raid> raids = Maps.<Integer, Raid>newHashMap();
@@ -31,15 +31,15 @@ public class RaidManager extends PersistentState {
 	private int nextAvailableId;
 	private int currentTime;
 
-	public RaidManager(ServerWorld world) {
-		super(nameFor(world.dimension));
-		this.world = world;
+	public RaidManager(ServerWorld serverWorld) {
+		super(nameFor(serverWorld.dimension));
+		this.world = serverWorld;
 		this.nextAvailableId = 1;
 		this.markDirty();
 	}
 
-	public Raid getRaid(int id) {
-		return (Raid)this.raids.get(id);
+	public Raid getRaid(int i) {
+		return (Raid)this.raids.get(i);
 	}
 
 	public void tick() {
@@ -64,30 +64,30 @@ public class RaidManager extends PersistentState {
 			this.markDirty();
 		}
 
-		DebugInfoSender.sendRaids(this.world, this.raids.values());
+		DebugRendererInfoManager.sendRaids(this.world, this.raids.values());
 	}
 
-	public static boolean isValidRaiderFor(RaiderEntity raider, Raid raid) {
-		return raider != null && raid != null && raid.getWorld() != null
-			? raider.isAlive()
-				&& raider.canJoinRaid()
-				&& raider.getDespawnCounter() <= 2400
-				&& raider.world.getDimension().getType() == raid.getWorld().getDimension().getType()
+	public static boolean isValidRaiderFor(RaiderEntity raiderEntity, Raid raid) {
+		return raiderEntity != null && raid != null && raid.getWorld() != null
+			? raiderEntity.isAlive()
+				&& raiderEntity.canJoinRaid()
+				&& raiderEntity.getDespawnCounter() <= 2400
+				&& raiderEntity.world.getDimension().getType() == raid.getWorld().getDimension().getType()
 			: false;
 	}
 
 	@Nullable
-	public Raid startRaid(ServerPlayerEntity player) {
-		if (player.isSpectator()) {
+	public Raid startRaid(ServerPlayerEntity serverPlayerEntity) {
+		if (serverPlayerEntity.isSpectator()) {
 			return null;
 		} else if (this.world.getGameRules().getBoolean(GameRules.DISABLE_RAIDS)) {
 			return null;
 		} else {
-			DimensionType dimensionType = player.world.getDimension().getType();
+			DimensionType dimensionType = serverPlayerEntity.world.getDimension().getType();
 			if (dimensionType == DimensionType.THE_NETHER) {
 				return null;
 			} else {
-				BlockPos blockPos = new BlockPos(player);
+				BlockPos blockPos = new BlockPos(serverPlayerEntity);
 				List<PointOfInterest> list = (List<PointOfInterest>)this.world
 					.getPointOfInterestStorage()
 					.get(PointOfInterestType.ALWAYS_TRUE, blockPos, 64, PointOfInterestStorage.OccupationStatus.IS_OCCUPIED)
@@ -109,7 +109,7 @@ public class RaidManager extends PersistentState {
 					blockPos3 = blockPos;
 				}
 
-				Raid raid = this.getOrCreateRaid(player.getServerWorld(), blockPos3);
+				Raid raid = this.getOrCreateRaid(serverPlayerEntity.getServerWorld(), blockPos3);
 				boolean bl = false;
 				if (!raid.hasStarted()) {
 					if (!this.raids.containsKey(raid.getRaidId())) {
@@ -120,16 +120,16 @@ public class RaidManager extends PersistentState {
 				} else if (raid.getBadOmenLevel() < raid.getMaxAcceptableBadOmenLevel()) {
 					bl = true;
 				} else {
-					player.removeStatusEffect(StatusEffects.BAD_OMEN);
-					player.networkHandler.sendPacket(new EntityStatusS2CPacket(player, (byte)43));
+					serverPlayerEntity.tryRemoveStatusEffect(StatusEffects.BAD_OMEN);
+					serverPlayerEntity.networkHandler.sendPacket(new EntityStatusS2CPacket(serverPlayerEntity, (byte)43));
 				}
 
 				if (bl) {
-					raid.start(player);
-					player.networkHandler.sendPacket(new EntityStatusS2CPacket(player, (byte)43));
+					raid.start(serverPlayerEntity);
+					serverPlayerEntity.networkHandler.sendPacket(new EntityStatusS2CPacket(serverPlayerEntity, (byte)43));
 					if (!raid.hasSpawned()) {
-						player.incrementStat(Stats.RAID_TRIGGER);
-						Criterions.VOLUNTARY_EXILE.trigger(player);
+						serverPlayerEntity.incrementStat(Stats.RAID_TRIGGER);
+						Criterions.VOLUNTARY_EXILE.handle(serverPlayerEntity);
 					}
 				}
 
@@ -139,38 +139,38 @@ public class RaidManager extends PersistentState {
 		}
 	}
 
-	private Raid getOrCreateRaid(ServerWorld world, BlockPos pos) {
-		Raid raid = world.getRaidAt(pos);
-		return raid != null ? raid : new Raid(this.nextId(), world, pos);
+	private Raid getOrCreateRaid(ServerWorld serverWorld, BlockPos blockPos) {
+		Raid raid = serverWorld.getRaidAt(blockPos);
+		return raid != null ? raid : new Raid(this.nextId(), serverWorld, blockPos);
 	}
 
 	@Override
-	public void fromTag(CompoundTag tag) {
-		this.nextAvailableId = tag.getInt("NextAvailableID");
-		this.currentTime = tag.getInt("Tick");
-		ListTag listTag = tag.getList("Raids", 10);
+	public void fromTag(CompoundTag compoundTag) {
+		this.nextAvailableId = compoundTag.getInt("NextAvailableID");
+		this.currentTime = compoundTag.getInt("Tick");
+		ListTag listTag = compoundTag.getList("Raids", 10);
 
 		for (int i = 0; i < listTag.size(); i++) {
-			CompoundTag compoundTag = listTag.getCompound(i);
-			Raid raid = new Raid(this.world, compoundTag);
+			CompoundTag compoundTag2 = listTag.getCompoundTag(i);
+			Raid raid = new Raid(this.world, compoundTag2);
 			this.raids.put(raid.getRaidId(), raid);
 		}
 	}
 
 	@Override
-	public CompoundTag toTag(CompoundTag tag) {
-		tag.putInt("NextAvailableID", this.nextAvailableId);
-		tag.putInt("Tick", this.currentTime);
+	public CompoundTag toTag(CompoundTag compoundTag) {
+		compoundTag.putInt("NextAvailableID", this.nextAvailableId);
+		compoundTag.putInt("Tick", this.currentTime);
 		ListTag listTag = new ListTag();
 
 		for (Raid raid : this.raids.values()) {
-			CompoundTag compoundTag = new CompoundTag();
-			raid.toTag(compoundTag);
-			listTag.add(compoundTag);
+			CompoundTag compoundTag2 = new CompoundTag();
+			raid.toTag(compoundTag2);
+			listTag.add(compoundTag2);
 		}
 
-		tag.put("Raids", listTag);
-		return tag;
+		compoundTag.put("Raids", listTag);
+		return compoundTag;
 	}
 
 	public static String nameFor(Dimension dimension) {
@@ -182,12 +182,12 @@ public class RaidManager extends PersistentState {
 	}
 
 	@Nullable
-	public Raid getRaidAt(BlockPos pos, int i) {
+	public Raid getRaidAt(BlockPos blockPos, int i) {
 		Raid raid = null;
 		double d = (double)i;
 
 		for (Raid raid2 : this.raids.values()) {
-			double e = raid2.getCenter().getSquaredDistance(pos);
+			double e = raid2.getCenter().getSquaredDistance(blockPos);
 			if (raid2.isActive() && e < d) {
 				raid = raid2;
 				d = e;

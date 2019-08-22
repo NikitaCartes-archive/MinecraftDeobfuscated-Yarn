@@ -10,7 +10,7 @@ public class GravelBlock extends FallingBlock {
 
 	@Environment(EnvType.CLIENT)
 	@Override
-	public int getColor(BlockState state) {
+	public int getColor(BlockState blockState) {
 		return -8356741;
 	}
 }

@@ -3,18 +3,18 @@ package net.minecraft.enchantment;
 import net.minecraft.entity.EquipmentSlot;
 
 public class MendingEnchantment extends Enchantment {
-	public MendingEnchantment(Enchantment.Weight weight, EquipmentSlot... slotTypes) {
-		super(weight, EnchantmentTarget.BREAKABLE, slotTypes);
+	public MendingEnchantment(Enchantment.Weight weight, EquipmentSlot... equipmentSlots) {
+		super(weight, EnchantmentTarget.BREAKABLE, equipmentSlots);
 	}
 
 	@Override
-	public int getMinimumPower(int level) {
-		return level * 25;
+	public int getMinimumPower(int i) {
+		return i * 25;
 	}
 
 	@Override
-	public int getMaximumPower(int level) {
-		return this.getMinimumPower(level) + 50;
+	public int getMaximumPower(int i) {
+		return this.getMinimumPower(i) + 50;
 	}
 
 	@Override

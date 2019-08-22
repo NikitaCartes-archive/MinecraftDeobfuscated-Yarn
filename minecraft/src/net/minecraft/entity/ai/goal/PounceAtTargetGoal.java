@@ -10,9 +10,9 @@ public class PounceAtTargetGoal extends Goal {
 	private LivingEntity target;
 	private final float velocity;
 
-	public PounceAtTargetGoal(MobEntity rmob, float velocity) {
-		this.mob = rmob;
-		this.velocity = velocity;
+	public PounceAtTargetGoal(MobEntity mobEntity, float f) {
+		this.mob = mobEntity;
+		this.velocity = f;
 		this.setControls(EnumSet.of(Goal.Control.JUMP, Goal.Control.MOVE));
 	}
 
@@ -29,7 +29,7 @@ public class PounceAtTargetGoal extends Goal {
 				if (d < 4.0 || d > 16.0) {
 					return false;
 				} else {
-					return !this.mob.onGround ? false : this.mob.getRandom().nextInt(5) == 0;
+					return !this.mob.onGround ? false : this.mob.getRand().nextInt(5) == 0;
 				}
 			}
 		}

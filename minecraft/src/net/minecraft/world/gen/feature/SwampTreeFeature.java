@@ -8,8 +8,8 @@ import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.VineBlock;
 import net.minecraft.state.property.BooleanProperty;
-import net.minecraft.util.math.BlockBox;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.MutableIntBoundingBox;
 import net.minecraft.world.Heightmap;
 import net.minecraft.world.ModifiableTestableWorld;
 
@@ -17,35 +17,37 @@ public class SwampTreeFeature extends AbstractTreeFeature<DefaultFeatureConfig> 
 	private static final BlockState LOG = Blocks.OAK_LOG.getDefaultState();
 	private static final BlockState LEAVES = Blocks.OAK_LEAVES.getDefaultState();
 
-	public SwampTreeFeature(Function<Dynamic<?>, ? extends DefaultFeatureConfig> configFactory) {
-		super(configFactory, false);
+	public SwampTreeFeature(Function<Dynamic<?>, ? extends DefaultFeatureConfig> function) {
+		super(function, false);
 	}
 
 	@Override
-	public boolean generate(Set<BlockPos> logPositions, ModifiableTestableWorld world, Random random, BlockPos pos, BlockBox blockBox) {
+	public boolean generate(
+		Set<BlockPos> set, ModifiableTestableWorld modifiableTestableWorld, Random random, BlockPos blockPos, MutableIntBoundingBox mutableIntBoundingBox
+	) {
 		int i = random.nextInt(4) + 5;
-		pos = world.getTopPosition(Heightmap.Type.OCEAN_FLOOR, pos);
+		blockPos = modifiableTestableWorld.getTopPosition(Heightmap.Type.OCEAN_FLOOR, blockPos);
 		boolean bl = true;
-		if (pos.getY() >= 1 && pos.getY() + i + 1 <= 256) {
-			for (int j = pos.getY(); j <= pos.getY() + 1 + i; j++) {
+		if (blockPos.getY() >= 1 && blockPos.getY() + i + 1 <= 256) {
+			for (int j = blockPos.getY(); j <= blockPos.getY() + 1 + i; j++) {
 				int k = 1;
-				if (j == pos.getY()) {
+				if (j == blockPos.getY()) {
 					k = 0;
 				}
 
-				if (j >= pos.getY() + 1 + i - 2) {
+				if (j >= blockPos.getY() + 1 + i - 2) {
 					k = 3;
 				}
 
 				BlockPos.Mutable mutable = new BlockPos.Mutable();
 
-				for (int l = pos.getX() - k; l <= pos.getX() + k && bl; l++) {
-					for (int m = pos.getZ() - k; m <= pos.getZ() + k && bl; m++) {
+				for (int l = blockPos.getX() - k; l <= blockPos.getX() + k && bl; l++) {
+					for (int m = blockPos.getZ() - k; m <= blockPos.getZ() + k && bl; m++) {
 						if (j >= 0 && j < 256) {
 							mutable.set(l, j, m);
-							if (!isAirOrLeaves(world, mutable)) {
-								if (isWater(world, mutable)) {
-									if (j > pos.getY()) {
+							if (!isAirOrLeaves(modifiableTestableWorld, mutable)) {
+								if (isWater(modifiableTestableWorld, mutable)) {
+									if (j > blockPos.getY()) {
 										bl = false;
 									}
 								} else {
@@ -61,22 +63,22 @@ public class SwampTreeFeature extends AbstractTreeFeature<DefaultFeatureConfig> 
 
 			if (!bl) {
 				return false;
-			} else if (isNaturalDirtOrGrass(world, pos.down()) && pos.getY() < 256 - i - 1) {
-				this.setToDirt(world, pos.down());
+			} else if (isNaturalDirtOrGrass(modifiableTestableWorld, blockPos.down()) && blockPos.getY() < 256 - i - 1) {
+				this.setToDirt(modifiableTestableWorld, blockPos.down());
 
-				for (int j = pos.getY() - 3 + i; j <= pos.getY() + i; j++) {
-					int kx = j - (pos.getY() + i);
+				for (int j = blockPos.getY() - 3 + i; j <= blockPos.getY() + i; j++) {
+					int kx = j - (blockPos.getY() + i);
 					int n = 2 - kx / 2;
 
-					for (int l = pos.getX() - n; l <= pos.getX() + n; l++) {
-						int mx = l - pos.getX();
+					for (int l = blockPos.getX() - n; l <= blockPos.getX() + n; l++) {
+						int mx = l - blockPos.getX();
 
-						for (int o = pos.getZ() - n; o <= pos.getZ() + n; o++) {
-							int p = o - pos.getZ();
+						for (int o = blockPos.getZ() - n; o <= blockPos.getZ() + n; o++) {
+							int p = o - blockPos.getZ();
 							if (Math.abs(mx) != n || Math.abs(p) != n || random.nextInt(2) != 0 && kx != 0) {
-								BlockPos blockPos = new BlockPos(l, j, o);
-								if (isAirOrLeaves(world, blockPos) || isReplaceablePlant(world, blockPos)) {
-									this.setBlockState(logPositions, world, blockPos, LEAVES, blockBox);
+								BlockPos blockPos2 = new BlockPos(l, j, o);
+								if (isAirOrLeaves(modifiableTestableWorld, blockPos2) || isReplaceablePlant(modifiableTestableWorld, blockPos2)) {
+									this.setBlockState(set, modifiableTestableWorld, blockPos2, LEAVES, mutableIntBoundingBox);
 								}
 							}
 						}
@@ -84,39 +86,39 @@ public class SwampTreeFeature extends AbstractTreeFeature<DefaultFeatureConfig> 
 				}
 
 				for (int j = 0; j < i; j++) {
-					BlockPos blockPos2 = pos.up(j);
-					if (isAirOrLeaves(world, blockPos2) || isWater(world, blockPos2)) {
-						this.setBlockState(logPositions, world, blockPos2, LOG, blockBox);
+					BlockPos blockPos3 = blockPos.up(j);
+					if (isAirOrLeaves(modifiableTestableWorld, blockPos3) || isWater(modifiableTestableWorld, blockPos3)) {
+						this.setBlockState(set, modifiableTestableWorld, blockPos3, LOG, mutableIntBoundingBox);
 					}
 				}
 
-				for (int jx = pos.getY() - 3 + i; jx <= pos.getY() + i; jx++) {
-					int kx = jx - (pos.getY() + i);
+				for (int jx = blockPos.getY() - 3 + i; jx <= blockPos.getY() + i; jx++) {
+					int kx = jx - (blockPos.getY() + i);
 					int n = 2 - kx / 2;
 					BlockPos.Mutable mutable2 = new BlockPos.Mutable();
 
-					for (int mx = pos.getX() - n; mx <= pos.getX() + n; mx++) {
-						for (int ox = pos.getZ() - n; ox <= pos.getZ() + n; ox++) {
+					for (int mx = blockPos.getX() - n; mx <= blockPos.getX() + n; mx++) {
+						for (int ox = blockPos.getZ() - n; ox <= blockPos.getZ() + n; ox++) {
 							mutable2.set(mx, jx, ox);
-							if (isLeaves(world, mutable2)) {
-								BlockPos blockPos3 = mutable2.west();
-								BlockPos blockPos = mutable2.east();
-								BlockPos blockPos4 = mutable2.north();
-								BlockPos blockPos5 = mutable2.south();
-								if (random.nextInt(4) == 0 && isAir(world, blockPos3)) {
-									this.makeVines(world, blockPos3, VineBlock.EAST);
+							if (isLeaves(modifiableTestableWorld, mutable2)) {
+								BlockPos blockPos4 = mutable2.west();
+								BlockPos blockPos2 = mutable2.east();
+								BlockPos blockPos5 = mutable2.north();
+								BlockPos blockPos6 = mutable2.south();
+								if (random.nextInt(4) == 0 && isAir(modifiableTestableWorld, blockPos4)) {
+									this.makeVines(modifiableTestableWorld, blockPos4, VineBlock.EAST);
 								}
 
-								if (random.nextInt(4) == 0 && isAir(world, blockPos)) {
-									this.makeVines(world, blockPos, VineBlock.WEST);
+								if (random.nextInt(4) == 0 && isAir(modifiableTestableWorld, blockPos2)) {
+									this.makeVines(modifiableTestableWorld, blockPos2, VineBlock.WEST);
 								}
 
-								if (random.nextInt(4) == 0 && isAir(world, blockPos4)) {
-									this.makeVines(world, blockPos4, VineBlock.SOUTH);
+								if (random.nextInt(4) == 0 && isAir(modifiableTestableWorld, blockPos5)) {
+									this.makeVines(modifiableTestableWorld, blockPos5, VineBlock.SOUTH);
 								}
 
-								if (random.nextInt(4) == 0 && isAir(world, blockPos5)) {
-									this.makeVines(world, blockPos5, VineBlock.NORTH);
+								if (random.nextInt(4) == 0 && isAir(modifiableTestableWorld, blockPos6)) {
+									this.makeVines(modifiableTestableWorld, blockPos6, VineBlock.NORTH);
 								}
 							}
 						}
@@ -132,13 +134,13 @@ public class SwampTreeFeature extends AbstractTreeFeature<DefaultFeatureConfig> 
 		}
 	}
 
-	private void makeVines(ModifiableTestableWorld world, BlockPos pos, BooleanProperty directionProperty) {
-		BlockState blockState = Blocks.VINE.getDefaultState().with(directionProperty, Boolean.valueOf(true));
-		this.setBlockState(world, pos, blockState);
+	private void makeVines(ModifiableTestableWorld modifiableTestableWorld, BlockPos blockPos, BooleanProperty booleanProperty) {
+		BlockState blockState = Blocks.VINE.getDefaultState().with(booleanProperty, Boolean.valueOf(true));
+		this.setBlockState(modifiableTestableWorld, blockPos, blockState);
 		int i = 4;
 
-		for (BlockPos var6 = pos.down(); isAir(world, var6) && i > 0; i--) {
-			this.setBlockState(world, var6, blockState);
+		for (BlockPos var6 = blockPos.down(); isAir(modifiableTestableWorld, var6) && i > 0; i--) {
+			this.setBlockState(modifiableTestableWorld, var6, blockState);
 			var6 = var6.down();
 		}
 	}

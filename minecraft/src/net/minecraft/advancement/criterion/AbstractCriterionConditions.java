@@ -5,8 +5,8 @@ import net.minecraft.util.Identifier;
 public class AbstractCriterionConditions implements CriterionConditions {
 	private final Identifier id;
 
-	public AbstractCriterionConditions(Identifier id) {
-		this.id = id;
+	public AbstractCriterionConditions(Identifier identifier) {
+		this.id = identifier;
 	}
 
 	@Override

@@ -12,12 +12,12 @@ import net.minecraft.entity.passive.SnowGolemEntity;
 import net.minecraft.item.ItemPlacementContext;
 import net.minecraft.predicate.block.BlockStatePredicate;
 import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.state.StateManager;
+import net.minecraft.state.StateFactory;
 import net.minecraft.state.property.DirectionProperty;
 import net.minecraft.util.MaterialPredicate;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
-import net.minecraft.world.CollisionView;
+import net.minecraft.world.ViewableWorld;
 import net.minecraft.world.World;
 
 public class CarvedPumpkinBlock extends HorizontalFacingBlock {
@@ -35,22 +35,23 @@ public class CarvedPumpkinBlock extends HorizontalFacingBlock {
 
 	protected CarvedPumpkinBlock(Block.Settings settings) {
 		super(settings);
-		this.setDefaultState(this.stateManager.getDefaultState().with(FACING, Direction.NORTH));
+		this.setDefaultState(this.stateFactory.getDefaultState().with(FACING, Direction.NORTH));
 	}
 
 	@Override
-	public void onBlockAdded(BlockState state, World world, BlockPos pos, BlockState oldState, boolean moved) {
-		if (oldState.getBlock() != state.getBlock()) {
-			this.trySpawnEntity(world, pos);
+	public void onBlockAdded(BlockState blockState, World world, BlockPos blockPos, BlockState blockState2, boolean bl) {
+		if (blockState2.getBlock() != blockState.getBlock()) {
+			this.trySpawnEntity(world, blockPos);
 		}
 	}
 
-	public boolean canDispense(CollisionView world, BlockPos pos) {
-		return this.getSnowGolemDispenserPattern().searchAround(world, pos) != null || this.getIronGolemDispenserPattern().searchAround(world, pos) != null;
+	public boolean canDispense(ViewableWorld viewableWorld, BlockPos blockPos) {
+		return this.getSnowGolemDispenserPattern().searchAround(viewableWorld, blockPos) != null
+			|| this.getIronGolemDispenserPattern().searchAround(viewableWorld, blockPos) != null;
 	}
 
-	private void trySpawnEntity(World world, BlockPos pos) {
-		BlockPattern.Result result = this.getSnowGolemPattern().searchAround(world, pos);
+	private void trySpawnEntity(World world, BlockPos blockPos) {
+		BlockPattern.Result result = this.getSnowGolemPattern().searchAround(world, blockPos);
 		if (result != null) {
 			for (int i = 0; i < this.getSnowGolemPattern().getHeight(); i++) {
 				CachedBlockPosition cachedBlockPosition = result.translate(0, i, 0);
@@ -59,12 +60,12 @@ public class CarvedPumpkinBlock extends HorizontalFacingBlock {
 			}
 
 			SnowGolemEntity snowGolemEntity = EntityType.SNOW_GOLEM.create(world);
-			BlockPos blockPos = result.translate(0, 2, 0).getBlockPos();
-			snowGolemEntity.refreshPositionAndAngles((double)blockPos.getX() + 0.5, (double)blockPos.getY() + 0.05, (double)blockPos.getZ() + 0.5, 0.0F, 0.0F);
+			BlockPos blockPos2 = result.translate(0, 2, 0).getBlockPos();
+			snowGolemEntity.setPositionAndAngles((double)blockPos2.getX() + 0.5, (double)blockPos2.getY() + 0.05, (double)blockPos2.getZ() + 0.5, 0.0F, 0.0F);
 			world.spawnEntity(snowGolemEntity);
 
-			for (ServerPlayerEntity serverPlayerEntity : world.getNonSpectatingEntities(ServerPlayerEntity.class, snowGolemEntity.getBoundingBox().expand(5.0))) {
-				Criterions.SUMMONED_ENTITY.trigger(serverPlayerEntity, snowGolemEntity);
+			for (ServerPlayerEntity serverPlayerEntity : world.getEntities(ServerPlayerEntity.class, snowGolemEntity.getBoundingBox().expand(5.0))) {
+				Criterions.SUMMONED_ENTITY.handle(serverPlayerEntity, snowGolemEntity);
 			}
 
 			for (int j = 0; j < this.getSnowGolemPattern().getHeight(); j++) {
@@ -72,7 +73,7 @@ public class CarvedPumpkinBlock extends HorizontalFacingBlock {
 				world.updateNeighbors(cachedBlockPosition2.getBlockPos(), Blocks.AIR);
 			}
 		} else {
-			result = this.getIronGolemPattern().searchAround(world, pos);
+			result = this.getIronGolemPattern().searchAround(world, blockPos);
 			if (result != null) {
 				for (int i = 0; i < this.getIronGolemPattern().getWidth(); i++) {
 					for (int k = 0; k < this.getIronGolemPattern().getHeight(); k++) {
@@ -82,14 +83,14 @@ public class CarvedPumpkinBlock extends HorizontalFacingBlock {
 					}
 				}
 
-				BlockPos blockPos2 = result.translate(1, 2, 0).getBlockPos();
+				BlockPos blockPos3 = result.translate(1, 2, 0).getBlockPos();
 				IronGolemEntity ironGolemEntity = EntityType.IRON_GOLEM.create(world);
 				ironGolemEntity.setPlayerCreated(true);
-				ironGolemEntity.refreshPositionAndAngles((double)blockPos2.getX() + 0.5, (double)blockPos2.getY() + 0.05, (double)blockPos2.getZ() + 0.5, 0.0F, 0.0F);
+				ironGolemEntity.setPositionAndAngles((double)blockPos3.getX() + 0.5, (double)blockPos3.getY() + 0.05, (double)blockPos3.getZ() + 0.5, 0.0F, 0.0F);
 				world.spawnEntity(ironGolemEntity);
 
-				for (ServerPlayerEntity serverPlayerEntity : world.getNonSpectatingEntities(ServerPlayerEntity.class, ironGolemEntity.getBoundingBox().expand(5.0))) {
-					Criterions.SUMMONED_ENTITY.trigger(serverPlayerEntity, ironGolemEntity);
+				for (ServerPlayerEntity serverPlayerEntity : world.getEntities(ServerPlayerEntity.class, ironGolemEntity.getBoundingBox().expand(5.0))) {
+					Criterions.SUMMONED_ENTITY.handle(serverPlayerEntity, ironGolemEntity);
 				}
 
 				for (int j = 0; j < this.getIronGolemPattern().getWidth(); j++) {
@@ -103,12 +104,12 @@ public class CarvedPumpkinBlock extends HorizontalFacingBlock {
 	}
 
 	@Override
-	public BlockState getPlacementState(ItemPlacementContext ctx) {
-		return this.getDefaultState().with(FACING, ctx.getPlayerFacing().getOpposite());
+	public BlockState getPlacementState(ItemPlacementContext itemPlacementContext) {
+		return this.getDefaultState().with(FACING, itemPlacementContext.getPlayerFacing().getOpposite());
 	}
 
 	@Override
-	protected void appendProperties(StateManager.Builder<Block, BlockState> builder) {
+	protected void appendProperties(StateFactory.Builder<Block, BlockState> builder) {
 		builder.add(FACING);
 	}
 

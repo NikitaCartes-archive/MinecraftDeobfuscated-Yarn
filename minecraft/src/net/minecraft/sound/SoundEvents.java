@@ -54,6 +54,17 @@ public class SoundEvents {
 	public static final SoundEvent BLOCK_BEACON_AMBIENT = register("block.beacon.ambient");
 	public static final SoundEvent BLOCK_BEACON_DEACTIVATE = register("block.beacon.deactivate");
 	public static final SoundEvent BLOCK_BEACON_POWER_SELECT = register("block.beacon.power_select");
+	public static final SoundEvent ENTITY_BEE_DEATH = register("entity.bee.death");
+	public static final SoundEvent ENTITY_BEE_HURT = register("entity.bee.hurt");
+	public static final SoundEvent ENTITY_BEE_LOOP_AGGRESSIVE = register("entity.bee.loop_aggressive");
+	public static final SoundEvent ENTITY_BEE_LOOP = register("entity.bee.loop");
+	public static final SoundEvent ENTITY_BEE_STING = register("entity.bee.sting");
+	public static final SoundEvent ENTITY_BEE_POLLINATE = register("entity.bee.pollinate");
+	public static final SoundEvent BLOCK_BEEHIVE_DRIP = register("block.beehive.drip");
+	public static final SoundEvent BLOCK_BEEHIVE_ENTER = register("block.beehive.enter");
+	public static final SoundEvent BLOCK_BEEHIVE_EXIT = register("block.beehive.exit");
+	public static final SoundEvent BLOCK_BEEHIVE_SHEAR = register("block.beehive.shear");
+	public static final SoundEvent BLOCK_BEEHIVE_WORK = register("block.beehive.work");
 	public static final SoundEvent BLOCK_BELL_USE = register("block.bell.use");
 	public static final SoundEvent BLOCK_BELL_RESONATE = register("block.bell.resonate");
 	public static final SoundEvent ENTITY_BLAZE_AMBIENT = register("entity.blaze.ambient");
@@ -294,6 +305,7 @@ public class SoundEvents {
 	public static final SoundEvent ENTITY_GUARDIAN_HURT = register("entity.guardian.hurt");
 	public static final SoundEvent ENTITY_GUARDIAN_HURT_LAND = register("entity.guardian.hurt_land");
 	public static final SoundEvent ITEM_HOE_TILL = register("item.hoe.till");
+	public static final SoundEvent ITEM_HONEY_BOTTLE_DRINK = register("item.honey_bottle.drink");
 	public static final SoundEvent ENTITY_HORSE_AMBIENT = register("entity.horse.ambient");
 	public static final SoundEvent ENTITY_HORSE_ANGRY = register("entity.horse.angry");
 	public static final SoundEvent ENTITY_HORSE_ARMOR = register("entity.horse.armor");
@@ -800,7 +812,7 @@ public class SoundEvents {
 	public static final SoundEvent ENTITY_ZOMBIE_VILLAGER_HURT = register("entity.zombie_villager.hurt");
 	public static final SoundEvent ENTITY_ZOMBIE_VILLAGER_STEP = register("entity.zombie_villager.step");
 
-	private static SoundEvent register(String id) {
-		return Registry.register(Registry.SOUND_EVENT, id, new SoundEvent(new Identifier(id)));
+	private static SoundEvent register(String string) {
+		return Registry.register(Registry.SOUND_EVENT, string, new SoundEvent(new Identifier(string)));
 	}
 }

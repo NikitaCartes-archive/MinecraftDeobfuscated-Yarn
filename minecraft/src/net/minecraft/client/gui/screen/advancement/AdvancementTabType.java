@@ -31,42 +31,42 @@ enum AdvancementTabType {
 		return this.field_2669;
 	}
 
-	public void drawBackground(DrawableHelper drawable, int x, int y, boolean selected, int index) {
-		int i = this.field_2674;
-		if (index > 0) {
-			i += this.field_2671;
+	public void drawBackground(DrawableHelper drawableHelper, int i, int j, boolean bl, int k) {
+		int l = this.field_2674;
+		if (k > 0) {
+			l += this.field_2671;
 		}
 
-		if (index == this.field_2669 - 1) {
-			i += this.field_2671;
+		if (k == this.field_2669 - 1) {
+			l += this.field_2671;
 		}
 
-		int j = selected ? this.field_2672 + this.field_2670 : this.field_2672;
-		drawable.blit(x + this.method_2302(index), y + this.method_2305(index), i, j, this.field_2671, this.field_2670);
+		int m = bl ? this.field_2672 + this.field_2670 : this.field_2672;
+		drawableHelper.blit(i + this.method_2302(k), j + this.method_2305(k), l, m, this.field_2671, this.field_2670);
 	}
 
-	public void drawIcon(int x, int y, int index, ItemRenderer itemRenderer, ItemStack icon) {
-		int i = x + this.method_2302(index);
-		int j = y + this.method_2305(index);
+	public void drawIcon(int i, int j, int k, ItemRenderer itemRenderer, ItemStack itemStack) {
+		int l = i + this.method_2302(k);
+		int m = j + this.method_2305(k);
 		switch (this) {
 			case ABOVE:
-				i += 6;
-				j += 9;
+				l += 6;
+				m += 9;
 				break;
 			case BELOW:
-				i += 6;
-				j += 6;
+				l += 6;
+				m += 6;
 				break;
 			case LEFT:
-				i += 10;
-				j += 5;
+				l += 10;
+				m += 5;
 				break;
 			case RIGHT:
-				i += 6;
-				j += 5;
+				l += 6;
+				m += 5;
 		}
 
-		itemRenderer.renderGuiItem(null, icon, i, j);
+		itemRenderer.renderGuiItem(null, itemStack, l, m);
 	}
 
 	public int method_2302(int i) {

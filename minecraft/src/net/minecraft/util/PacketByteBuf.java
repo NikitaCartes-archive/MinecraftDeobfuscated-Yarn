@@ -117,21 +117,21 @@ public class PacketByteBuf extends ByteBuf {
 	}
 
 	@Environment(EnvType.CLIENT)
-	public long[] readLongArray(@Nullable long[] toArray, int i) {
+	public long[] readLongArray(@Nullable long[] ls, int i) {
 		int j = this.readVarInt();
-		if (toArray == null || toArray.length != j) {
+		if (ls == null || ls.length != j) {
 			if (j > i) {
 				throw new DecoderException("LongArray with size " + j + " is bigger than allowed " + i);
 			}
 
-			toArray = new long[j];
+			ls = new long[j];
 		}
 
-		for (int k = 0; k < toArray.length; k++) {
-			toArray[k] = this.readLong();
+		for (int k = 0; k < ls.length; k++) {
+			ls[k] = this.readLong();
 		}
 
-		return toArray;
+		return ls;
 	}
 
 	public BlockPos readBlockPos() {

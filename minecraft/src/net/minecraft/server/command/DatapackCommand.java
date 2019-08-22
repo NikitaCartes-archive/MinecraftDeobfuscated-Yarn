@@ -8,8 +8,8 @@ import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.exceptions.DynamicCommandExceptionType;
 import com.mojang.brigadier.suggestion.SuggestionProvider;
 import java.util.List;
-import net.minecraft.resource.ResourcePackManager;
-import net.minecraft.resource.ResourcePackProfile;
+import net.minecraft.resource.ResourcePackContainer;
+import net.minecraft.resource.ResourcePackContainerManager;
 import net.minecraft.text.Texts;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.world.dimension.DimensionType;
@@ -29,9 +29,9 @@ public class DatapackCommand {
 			commandContext.getSource()
 				.getMinecraftServer()
 				.getDataPackContainerManager()
-				.getEnabledProfiles()
+				.getEnabledContainers()
 				.stream()
-				.map(ResourcePackProfile::getName)
+				.map(ResourcePackContainer::getName)
 				.map(StringArgumentType::escapeIfRequired),
 			suggestionsBuilder
 		);
@@ -39,15 +39,15 @@ public class DatapackCommand {
 			commandContext.getSource()
 				.getMinecraftServer()
 				.getDataPackContainerManager()
-				.getDisabledProfiles()
+				.getDisabledContainers()
 				.stream()
-				.map(ResourcePackProfile::getName)
+				.map(ResourcePackContainer::getName)
 				.map(StringArgumentType::escapeIfRequired),
 			suggestionsBuilder
 		);
 
-	public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
-		dispatcher.register(
+	public static void register(CommandDispatcher<ServerCommandSource> commandDispatcher) {
+		commandDispatcher.register(
 			CommandManager.literal("datapack")
 				.requires(serverCommandSource -> serverCommandSource.hasPermissionLevel(2))
 				.then(
@@ -59,8 +59,8 @@ public class DatapackCommand {
 									commandContext -> executeEnable(
 											commandContext.getSource(),
 											getPackContainer(commandContext, "name", true),
-											(list, resourcePackProfile) -> resourcePackProfile.getInitialPosition()
-													.insert(list, resourcePackProfile, resourcePackProfilex -> resourcePackProfilex, false)
+											(list, resourcePackContainer) -> resourcePackContainer.getInitialPosition()
+													.insert(list, resourcePackContainer, resourcePackContainerx -> resourcePackContainerx, false)
 										)
 								)
 								.then(
@@ -72,7 +72,7 @@ public class DatapackCommand {
 													commandContext -> executeEnable(
 															commandContext.getSource(),
 															getPackContainer(commandContext, "name", true),
-															(list, resourcePackProfile) -> list.add(list.indexOf(getPackContainer(commandContext, "existing", false)) + 1, resourcePackProfile)
+															(list, resourcePackContainer) -> list.add(list.indexOf(getPackContainer(commandContext, "existing", false)) + 1, resourcePackContainer)
 														)
 												)
 										)
@@ -86,7 +86,7 @@ public class DatapackCommand {
 													commandContext -> executeEnable(
 															commandContext.getSource(),
 															getPackContainer(commandContext, "name", true),
-															(list, resourcePackProfile) -> list.add(list.indexOf(getPackContainer(commandContext, "existing", false)), resourcePackProfile)
+															(list, resourcePackContainer) -> list.add(list.indexOf(getPackContainer(commandContext, "existing", false)), resourcePackContainer)
 														)
 												)
 										)
@@ -99,7 +99,7 @@ public class DatapackCommand {
 									CommandManager.literal("first")
 										.executes(
 											commandContext -> executeEnable(
-													commandContext.getSource(), getPackContainer(commandContext, "name", true), (list, resourcePackProfile) -> list.add(0, resourcePackProfile)
+													commandContext.getSource(), getPackContainer(commandContext, "name", true), (list, resourcePackContainer) -> list.add(0, resourcePackContainer)
 												)
 										)
 								)
@@ -122,93 +122,97 @@ public class DatapackCommand {
 		);
 	}
 
-	private static int executeEnable(ServerCommandSource source, ResourcePackProfile container, DatapackCommand.PackAdder packAdder) throws CommandSyntaxException {
-		ResourcePackManager<ResourcePackProfile> resourcePackManager = source.getMinecraftServer().getDataPackContainerManager();
-		List<ResourcePackProfile> list = Lists.<ResourcePackProfile>newArrayList(resourcePackManager.getEnabledProfiles());
-		packAdder.apply(list, container);
-		resourcePackManager.setEnabledProfiles(list);
-		LevelProperties levelProperties = source.getMinecraftServer().getWorld(DimensionType.OVERWORLD).getLevelProperties();
+	private static int executeEnable(ServerCommandSource serverCommandSource, ResourcePackContainer resourcePackContainer, DatapackCommand.PackAdder packAdder) throws CommandSyntaxException {
+		ResourcePackContainerManager<ResourcePackContainer> resourcePackContainerManager = serverCommandSource.getMinecraftServer().getDataPackContainerManager();
+		List<ResourcePackContainer> list = Lists.<ResourcePackContainer>newArrayList(resourcePackContainerManager.getEnabledContainers());
+		packAdder.apply(list, resourcePackContainer);
+		resourcePackContainerManager.setEnabled(list);
+		LevelProperties levelProperties = serverCommandSource.getMinecraftServer().getWorld(DimensionType.OVERWORLD).getLevelProperties();
 		levelProperties.getEnabledDataPacks().clear();
-		resourcePackManager.getEnabledProfiles().forEach(resourcePackProfile -> levelProperties.getEnabledDataPacks().add(resourcePackProfile.getName()));
-		levelProperties.getDisabledDataPacks().remove(container.getName());
-		source.sendFeedback(new TranslatableText("commands.datapack.enable.success", container.getInformationText(true)), true);
-		source.getMinecraftServer().reload();
-		return resourcePackManager.getEnabledProfiles().size();
+		resourcePackContainerManager.getEnabledContainers()
+			.forEach(resourcePackContainerx -> levelProperties.getEnabledDataPacks().add(resourcePackContainerx.getName()));
+		levelProperties.getDisabledDataPacks().remove(resourcePackContainer.getName());
+		serverCommandSource.sendFeedback(new TranslatableText("commands.datapack.enable.success", resourcePackContainer.getInformationText(true)), true);
+		serverCommandSource.getMinecraftServer().reload();
+		return resourcePackContainerManager.getEnabledContainers().size();
 	}
 
-	private static int executeDisable(ServerCommandSource source, ResourcePackProfile container) {
-		ResourcePackManager<ResourcePackProfile> resourcePackManager = source.getMinecraftServer().getDataPackContainerManager();
-		List<ResourcePackProfile> list = Lists.<ResourcePackProfile>newArrayList(resourcePackManager.getEnabledProfiles());
-		list.remove(container);
-		resourcePackManager.setEnabledProfiles(list);
-		LevelProperties levelProperties = source.getMinecraftServer().getWorld(DimensionType.OVERWORLD).getLevelProperties();
+	private static int executeDisable(ServerCommandSource serverCommandSource, ResourcePackContainer resourcePackContainer) {
+		ResourcePackContainerManager<ResourcePackContainer> resourcePackContainerManager = serverCommandSource.getMinecraftServer().getDataPackContainerManager();
+		List<ResourcePackContainer> list = Lists.<ResourcePackContainer>newArrayList(resourcePackContainerManager.getEnabledContainers());
+		list.remove(resourcePackContainer);
+		resourcePackContainerManager.setEnabled(list);
+		LevelProperties levelProperties = serverCommandSource.getMinecraftServer().getWorld(DimensionType.OVERWORLD).getLevelProperties();
 		levelProperties.getEnabledDataPacks().clear();
-		resourcePackManager.getEnabledProfiles().forEach(resourcePackProfile -> levelProperties.getEnabledDataPacks().add(resourcePackProfile.getName()));
-		levelProperties.getDisabledDataPacks().add(container.getName());
-		source.sendFeedback(new TranslatableText("commands.datapack.disable.success", container.getInformationText(true)), true);
-		source.getMinecraftServer().reload();
-		return resourcePackManager.getEnabledProfiles().size();
+		resourcePackContainerManager.getEnabledContainers()
+			.forEach(resourcePackContainerx -> levelProperties.getEnabledDataPacks().add(resourcePackContainerx.getName()));
+		levelProperties.getDisabledDataPacks().add(resourcePackContainer.getName());
+		serverCommandSource.sendFeedback(new TranslatableText("commands.datapack.disable.success", resourcePackContainer.getInformationText(true)), true);
+		serverCommandSource.getMinecraftServer().reload();
+		return resourcePackContainerManager.getEnabledContainers().size();
 	}
 
-	private static int executeList(ServerCommandSource source) {
-		return executeListEnabled(source) + executeListAvailable(source);
+	private static int executeList(ServerCommandSource serverCommandSource) {
+		return executeListEnabled(serverCommandSource) + executeListAvailable(serverCommandSource);
 	}
 
-	private static int executeListAvailable(ServerCommandSource source) {
-		ResourcePackManager<ResourcePackProfile> resourcePackManager = source.getMinecraftServer().getDataPackContainerManager();
-		if (resourcePackManager.getDisabledProfiles().isEmpty()) {
-			source.sendFeedback(new TranslatableText("commands.datapack.list.available.none"), false);
+	private static int executeListAvailable(ServerCommandSource serverCommandSource) {
+		ResourcePackContainerManager<ResourcePackContainer> resourcePackContainerManager = serverCommandSource.getMinecraftServer().getDataPackContainerManager();
+		if (resourcePackContainerManager.getDisabledContainers().isEmpty()) {
+			serverCommandSource.sendFeedback(new TranslatableText("commands.datapack.list.available.none"), false);
 		} else {
-			source.sendFeedback(
+			serverCommandSource.sendFeedback(
 				new TranslatableText(
 					"commands.datapack.list.available.success",
-					resourcePackManager.getDisabledProfiles().size(),
-					Texts.join(resourcePackManager.getDisabledProfiles(), resourcePackProfile -> resourcePackProfile.getInformationText(false))
+					resourcePackContainerManager.getDisabledContainers().size(),
+					Texts.join(resourcePackContainerManager.getDisabledContainers(), resourcePackContainer -> resourcePackContainer.getInformationText(false))
 				),
 				false
 			);
 		}
 
-		return resourcePackManager.getDisabledProfiles().size();
+		return resourcePackContainerManager.getDisabledContainers().size();
 	}
 
-	private static int executeListEnabled(ServerCommandSource source) {
-		ResourcePackManager<ResourcePackProfile> resourcePackManager = source.getMinecraftServer().getDataPackContainerManager();
-		if (resourcePackManager.getEnabledProfiles().isEmpty()) {
-			source.sendFeedback(new TranslatableText("commands.datapack.list.enabled.none"), false);
+	private static int executeListEnabled(ServerCommandSource serverCommandSource) {
+		ResourcePackContainerManager<ResourcePackContainer> resourcePackContainerManager = serverCommandSource.getMinecraftServer().getDataPackContainerManager();
+		if (resourcePackContainerManager.getEnabledContainers().isEmpty()) {
+			serverCommandSource.sendFeedback(new TranslatableText("commands.datapack.list.enabled.none"), false);
 		} else {
-			source.sendFeedback(
+			serverCommandSource.sendFeedback(
 				new TranslatableText(
 					"commands.datapack.list.enabled.success",
-					resourcePackManager.getEnabledProfiles().size(),
-					Texts.join(resourcePackManager.getEnabledProfiles(), resourcePackProfile -> resourcePackProfile.getInformationText(true))
+					resourcePackContainerManager.getEnabledContainers().size(),
+					Texts.join(resourcePackContainerManager.getEnabledContainers(), resourcePackContainer -> resourcePackContainer.getInformationText(true))
 				),
 				false
 			);
 		}
 
-		return resourcePackManager.getEnabledProfiles().size();
+		return resourcePackContainerManager.getEnabledContainers().size();
 	}
 
-	private static ResourcePackProfile getPackContainer(CommandContext<ServerCommandSource> context, String name, boolean enable) throws CommandSyntaxException {
-		String string = StringArgumentType.getString(context, name);
-		ResourcePackManager<ResourcePackProfile> resourcePackManager = context.getSource().getMinecraftServer().getDataPackContainerManager();
-		ResourcePackProfile resourcePackProfile = resourcePackManager.getProfile(string);
-		if (resourcePackProfile == null) {
-			throw UNKNOWN_DATAPACK_EXCEPTION.create(string);
+	private static ResourcePackContainer getPackContainer(CommandContext<ServerCommandSource> commandContext, String string, boolean bl) throws CommandSyntaxException {
+		String string2 = StringArgumentType.getString(commandContext, string);
+		ResourcePackContainerManager<ResourcePackContainer> resourcePackContainerManager = commandContext.getSource()
+			.getMinecraftServer()
+			.getDataPackContainerManager();
+		ResourcePackContainer resourcePackContainer = resourcePackContainerManager.getContainer(string2);
+		if (resourcePackContainer == null) {
+			throw UNKNOWN_DATAPACK_EXCEPTION.create(string2);
 		} else {
-			boolean bl = resourcePackManager.getEnabledProfiles().contains(resourcePackProfile);
-			if (enable && bl) {
-				throw ALREADY_ENABLED_EXCEPTION.create(string);
-			} else if (!enable && !bl) {
-				throw ALREADY_DISABLED_EXCEPTION.create(string);
+			boolean bl2 = resourcePackContainerManager.getEnabledContainers().contains(resourcePackContainer);
+			if (bl && bl2) {
+				throw ALREADY_ENABLED_EXCEPTION.create(string2);
+			} else if (!bl && !bl2) {
+				throw ALREADY_DISABLED_EXCEPTION.create(string2);
 			} else {
-				return resourcePackProfile;
+				return resourcePackContainer;
 			}
 		}
 	}
 
 	interface PackAdder {
-		void apply(List<ResourcePackProfile> list, ResourcePackProfile resourcePackProfile) throws CommandSyntaxException;
+		void apply(List<ResourcePackContainer> list, ResourcePackContainer resourcePackContainer) throws CommandSyntaxException;
 	}
 }

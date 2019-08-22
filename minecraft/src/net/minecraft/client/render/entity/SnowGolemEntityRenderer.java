@@ -16,7 +16,7 @@ public class SnowGolemEntityRenderer extends MobEntityRenderer<SnowGolemEntity, 
 		this.addFeature(new SnowmanPumpkinFeatureRenderer(this));
 	}
 
-	protected Identifier getTexture(SnowGolemEntity snowGolemEntity) {
+	protected Identifier method_4122(SnowGolemEntity snowGolemEntity) {
 		return SKIN;
 	}
 }

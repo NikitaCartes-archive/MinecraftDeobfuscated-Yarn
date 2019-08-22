@@ -20,8 +20,8 @@ import net.minecraft.world.SpawnHelper;
 public class PhantomSpawner {
 	private int ticksUntilNextSpawn;
 
-	public int spawn(ServerWorld serverWorld, boolean spawnMonsters, boolean spawnAnimals) {
-		if (!spawnMonsters) {
+	public int spawn(ServerWorld serverWorld, boolean bl, boolean bl2) {
+		if (!bl) {
 			return 0;
 		} else {
 			Random random = serverWorld.random;
@@ -54,7 +54,7 @@ public class PhantomSpawner {
 
 											for (int m = 0; m < l; m++) {
 												PhantomEntity phantomEntity = EntityType.PHANTOM.create(serverWorld);
-												phantomEntity.refreshPositionAndAngles(blockPos2, 0.0F, 0.0F);
+												phantomEntity.setPositionAndAngles(blockPos2, 0.0F, 0.0F);
 												entityData = phantomEntity.initialize(serverWorld, localDifficulty, SpawnType.NATURAL, entityData, null);
 												serverWorld.spawnEntity(phantomEntity);
 											}

@@ -8,29 +8,29 @@ public class RandomBooleanFeatureConfig implements FeatureConfig {
 	public final ConfiguredFeature<?> featureTrue;
 	public final ConfiguredFeature<?> featureFalse;
 
-	public RandomBooleanFeatureConfig(ConfiguredFeature<?> featureTrue, ConfiguredFeature<?> featureFalse) {
-		this.featureTrue = featureTrue;
-		this.featureFalse = featureFalse;
+	public RandomBooleanFeatureConfig(ConfiguredFeature<?> configuredFeature, ConfiguredFeature<?> configuredFeature2) {
+		this.featureTrue = configuredFeature;
+		this.featureFalse = configuredFeature2;
 	}
 
-	public RandomBooleanFeatureConfig(Feature<?> featureTrue, FeatureConfig featureConfigTrue, Feature<?> featureFalse, FeatureConfig featureConfig) {
-		this(configure(featureTrue, featureConfigTrue), configure(featureFalse, featureConfig));
+	public RandomBooleanFeatureConfig(Feature<?> feature, FeatureConfig featureConfig, Feature<?> feature2, FeatureConfig featureConfig2) {
+		this(configure(feature, featureConfig), configure(feature2, featureConfig2));
 	}
 
-	private static <FC extends FeatureConfig> ConfiguredFeature<FC> configure(Feature<FC> feature, FeatureConfig config) {
-		return new ConfiguredFeature<>(feature, (FC)config);
+	private static <FC extends FeatureConfig> ConfiguredFeature<FC> configure(Feature<FC> feature, FeatureConfig featureConfig) {
+		return new ConfiguredFeature<>(feature, (FC)featureConfig);
 	}
 
 	@Override
-	public <T> Dynamic<T> serialize(DynamicOps<T> ops) {
+	public <T> Dynamic<T> serialize(DynamicOps<T> dynamicOps) {
 		return new Dynamic<>(
-			ops,
-			ops.createMap(
+			dynamicOps,
+			dynamicOps.createMap(
 				ImmutableMap.of(
-					ops.createString("feature_true"),
-					this.featureTrue.serialize(ops).getValue(),
-					ops.createString("feature_false"),
-					this.featureFalse.serialize(ops).getValue()
+					dynamicOps.createString("feature_true"),
+					this.featureTrue.serialize(dynamicOps).getValue(),
+					dynamicOps.createString("feature_false"),
+					this.featureFalse.serialize(dynamicOps).getValue()
 				)
 			)
 		);

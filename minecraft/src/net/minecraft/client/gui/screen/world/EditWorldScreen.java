@@ -18,7 +18,7 @@ import net.minecraft.client.toast.ToastManager;
 import net.minecraft.text.LiteralText;
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
-import net.minecraft.util.Util;
+import net.minecraft.util.SystemUtil;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.level.LevelProperties;
 import net.minecraft.world.level.storage.LevelStorage;
@@ -31,10 +31,10 @@ public class EditWorldScreen extends Screen {
 	private TextFieldWidget levelNameTextField;
 	private final String levelName;
 
-	public EditWorldScreen(BooleanConsumer callback, String levelName) {
+	public EditWorldScreen(BooleanConsumer booleanConsumer, String string) {
 		super(new TranslatableText("selectWorld.edit.title"));
-		this.callback = callback;
-		this.levelName = levelName;
+		this.callback = booleanConsumer;
+		this.levelName = string;
 	}
 
 	@Override
@@ -54,7 +54,7 @@ public class EditWorldScreen extends Screen {
 		);
 		this.addButton(new ButtonWidget(this.width / 2 - 100, this.height / 4 + 48 + 5, 200, 20, I18n.translate("selectWorld.edit.openFolder"), buttonWidgetx -> {
 			LevelStorage levelStoragex = this.minecraft.getLevelStorage();
-			Util.getOperatingSystem().open(levelStoragex.resolveFile(this.levelName, "icon.png").getParentFile());
+			SystemUtil.getOperatingSystem().open(levelStoragex.resolveFile(this.levelName, "icon.png").getParentFile());
 		}));
 		this.addButton(new ButtonWidget(this.width / 2 - 100, this.height / 4 + 72 + 5, 200, 20, I18n.translate("selectWorld.edit.backup"), buttonWidgetx -> {
 			LevelStorage levelStoragex = this.minecraft.getLevelStorage();
@@ -71,7 +71,7 @@ public class EditWorldScreen extends Screen {
 				throw new RuntimeException(var5);
 			}
 
-			Util.getOperatingSystem().open(path.toFile());
+			SystemUtil.getOperatingSystem().open(path.toFile());
 		}));
 		this.addButton(
 			new ButtonWidget(
@@ -107,9 +107,9 @@ public class EditWorldScreen extends Screen {
 	}
 
 	@Override
-	public void resize(MinecraftClient client, int width, int height) {
+	public void resize(MinecraftClient minecraftClient, int i, int j) {
 		String string = this.levelNameTextField.getText();
-		this.init(client, width, height);
+		this.init(minecraftClient, i, j);
 		this.levelNameTextField.setText(string);
 	}
 
@@ -124,13 +124,13 @@ public class EditWorldScreen extends Screen {
 		this.callback.accept(true);
 	}
 
-	public static void backupLevel(LevelStorage level, String name) {
+	public static void backupLevel(LevelStorage levelStorage, String string) {
 		ToastManager toastManager = MinecraftClient.getInstance().getToastManager();
 		long l = 0L;
 		IOException iOException = null;
 
 		try {
-			l = level.backupLevel(name);
+			l = levelStorage.backupLevel(string);
 		} catch (IOException var8) {
 			iOException = var8;
 		}
@@ -141,7 +141,7 @@ public class EditWorldScreen extends Screen {
 			text = new TranslatableText("selectWorld.edit.backupFailed");
 			text2 = new LiteralText(iOException.getMessage());
 		} else {
-			text = new TranslatableText("selectWorld.edit.backupCreated", name);
+			text = new TranslatableText("selectWorld.edit.backupCreated", string);
 			text2 = new TranslatableText("selectWorld.edit.backupSize", MathHelper.ceil((double)l / 1048576.0));
 		}
 
@@ -149,11 +149,11 @@ public class EditWorldScreen extends Screen {
 	}
 
 	@Override
-	public void render(int mouseX, int mouseY, float delta) {
+	public void render(int i, int j, float f) {
 		this.renderBackground();
 		this.drawCenteredString(this.font, this.title.asFormattedString(), this.width / 2, 20, 16777215);
 		this.drawString(this.font, I18n.translate("selectWorld.enterName"), this.width / 2 - 100, 40, 10526880);
-		this.levelNameTextField.render(mouseX, mouseY, delta);
-		super.render(mouseX, mouseY, delta);
+		this.levelNameTextField.render(i, j, f);
+		super.render(i, j, f);
 	}
 }

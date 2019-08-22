@@ -4,6 +4,7 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.mojang.authlib.properties.PropertyMap;
 import com.mojang.authlib.properties.PropertyMap.Serializer;
+import com.mojang.blaze3d.systems.RenderSystem;
 import java.io.File;
 import java.net.Authenticator;
 import java.net.InetSocketAddress;
@@ -19,6 +20,7 @@ import joptsimple.OptionSet;
 import joptsimple.OptionSpec;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.class_4491;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.RunArgs;
 import net.minecraft.client.WindowSettings;
@@ -26,8 +28,9 @@ import net.minecraft.client.util.Session;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.server.integrated.IntegratedServer;
 import net.minecraft.util.JsonHelper;
+import net.minecraft.util.SystemUtil;
 import net.minecraft.util.UncaughtExceptionLogger;
-import net.minecraft.util.Util;
+import net.minecraft.util.crash.CrashReport;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -35,7 +38,7 @@ import org.apache.logging.log4j.Logger;
 public class Main {
 	private static final Logger LOGGER = LogManager.getLogger();
 
-	public static void main(String[] args) {
+	public static void main(String[] strings) {
 		OptionParser optionParser = new OptionParser();
 		optionParser.allowsUnrecognizedOptions();
 		optionParser.accepts("demo");
@@ -50,7 +53,7 @@ public class Main {
 		OptionSpec<Integer> optionSpec7 = optionParser.accepts("proxyPort").withRequiredArg().defaultsTo("8080").ofType(Integer.class);
 		OptionSpec<String> optionSpec8 = optionParser.accepts("proxyUser").withRequiredArg();
 		OptionSpec<String> optionSpec9 = optionParser.accepts("proxyPass").withRequiredArg();
-		OptionSpec<String> optionSpec10 = optionParser.accepts("username").withRequiredArg().defaultsTo("Player" + Util.getMeasuringTimeMs() % 1000L);
+		OptionSpec<String> optionSpec10 = optionParser.accepts("username").withRequiredArg().defaultsTo("Player" + SystemUtil.getMeasuringTimeMs() % 1000L);
 		OptionSpec<String> optionSpec11 = optionParser.accepts("uuid").withRequiredArg();
 		OptionSpec<String> optionSpec12 = optionParser.accepts("accessToken").withRequiredArg().required();
 		OptionSpec<String> optionSpec13 = optionParser.accepts("version").withRequiredArg().required();
@@ -64,7 +67,7 @@ public class Main {
 		OptionSpec<String> optionSpec21 = optionParser.accepts("userType").withRequiredArg().defaultsTo("legacy");
 		OptionSpec<String> optionSpec22 = optionParser.accepts("versionType").withRequiredArg().defaultsTo("release");
 		OptionSpec<String> optionSpec23 = optionParser.nonOptions();
-		OptionSet optionSet = optionParser.parse(args);
+		OptionSet optionSet = optionParser.parse(strings);
 		List<String> list = optionSet.valuesOf(optionSpec23);
 		if (!list.isEmpty()) {
 			System.out.println("Completely ignored arguments: " + list);
@@ -75,7 +78,7 @@ public class Main {
 		if (string != null) {
 			try {
 				proxy = new Proxy(Type.SOCKS, new InetSocketAddress(string, getOption(optionSet, optionSpec7)));
-			} catch (Exception var52) {
+			} catch (Exception var66) {
 			}
 		}
 
@@ -128,8 +131,56 @@ public class Main {
 		};
 		thread.setUncaughtExceptionHandler(new UncaughtExceptionLogger(LOGGER));
 		Runtime.getRuntime().addShutdownHook(thread);
-		Thread.currentThread().setName("Client thread");
-		new MinecraftClient(runArgs).run();
+		new class_4491();
+		final MinecraftClient minecraftClient = new MinecraftClient(runArgs);
+		Thread.currentThread().setName("Render thread");
+		RenderSystem.initRenderThread();
+
+		try {
+			minecraftClient.init();
+		} catch (Throwable var65) {
+			CrashReport crashReport = CrashReport.create(var65, "Initializing game");
+			crashReport.addElement("Initialization");
+			minecraftClient.printCrashReport(minecraftClient.populateCrashReport(crashReport));
+			return;
+		}
+
+		Thread thread2;
+		if (minecraftClient.method_22107()) {
+			thread2 = new Thread("Client thread") {
+				public void run() {
+					try {
+						RenderSystem.initClientThread();
+						minecraftClient.start();
+					} catch (Throwable var2) {
+						Main.LOGGER.error("Exception in client thread", var2);
+					}
+				}
+			};
+			thread2.start();
+
+			while (minecraftClient.method_22108()) {
+			}
+		} else {
+			thread2 = null;
+
+			try {
+				minecraftClient.start();
+			} catch (Throwable var64) {
+				LOGGER.error("Unhandled game exception", var64);
+			}
+		}
+
+		try {
+			minecraftClient.scheduleStop();
+			if (thread2 != null) {
+				thread2.join();
+			}
+		} catch (InterruptedException var62) {
+			LOGGER.error("Exception during client thread shutdown", (Throwable)var62);
+		} finally {
+			minecraftClient.stop();
+		}
 	}
 
 	private static OptionalInt method_21612(@Nullable Integer integer) {
@@ -152,8 +203,8 @@ public class Main {
 		}
 	}
 
-	private static boolean isNotNullOrEmpty(String s) {
-		return s != null && !s.isEmpty();
+	private static boolean isNotNullOrEmpty(String string) {
+		return string != null && !string.isEmpty();
 	}
 
 	static {

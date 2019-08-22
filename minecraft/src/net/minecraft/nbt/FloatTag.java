@@ -18,14 +18,14 @@ public class FloatTag extends AbstractNumberTag {
 	}
 
 	@Override
-	public void write(DataOutput output) throws IOException {
-		output.writeFloat(this.value);
+	public void write(DataOutput dataOutput) throws IOException {
+		dataOutput.writeFloat(this.value);
 	}
 
 	@Override
-	public void read(DataInput input, int depth, PositionTracker positionTracker) throws IOException {
+	public void read(DataInput dataInput, int i, PositionTracker positionTracker) throws IOException {
 		positionTracker.add(96L);
-		this.value = input.readFloat();
+		this.value = dataInput.readFloat();
 	}
 
 	@Override
@@ -38,12 +38,12 @@ public class FloatTag extends AbstractNumberTag {
 		return this.value + "f";
 	}
 
-	public FloatTag copy() {
+	public FloatTag method_10587() {
 		return new FloatTag(this.value);
 	}
 
-	public boolean equals(Object o) {
-		return this == o ? true : o instanceof FloatTag && this.value == ((FloatTag)o).value;
+	public boolean equals(Object object) {
+		return this == object ? true : object instanceof FloatTag && this.value == ((FloatTag)object).value;
 	}
 
 	public int hashCode() {
@@ -51,7 +51,7 @@ public class FloatTag extends AbstractNumberTag {
 	}
 
 	@Override
-	public Text toText(String indent, int depth) {
+	public Text toText(String string, int i) {
 		Text text = new LiteralText("f").formatted(RED);
 		return new LiteralText(String.valueOf(this.value)).append(text).formatted(GOLD);
 	}

@@ -3,17 +3,17 @@ package net.minecraft.enchantment;
 import net.minecraft.entity.EquipmentSlot;
 
 public class FlameEnchantment extends Enchantment {
-	public FlameEnchantment(Enchantment.Weight weight, EquipmentSlot... slotTypes) {
-		super(weight, EnchantmentTarget.BOW, slotTypes);
+	public FlameEnchantment(Enchantment.Weight weight, EquipmentSlot... equipmentSlots) {
+		super(weight, EnchantmentTarget.BOW, equipmentSlots);
 	}
 
 	@Override
-	public int getMinimumPower(int level) {
+	public int getMinimumPower(int i) {
 		return 20;
 	}
 
 	@Override
-	public int getMaximumPower(int level) {
+	public int getMaximumPower(int i) {
 		return 50;
 	}
 

@@ -4,6 +4,7 @@ import java.util.UUID;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.block.Material;
+import net.minecraft.client.network.packet.EntitySpawnS2CPacket;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.ProjectileUtil;
@@ -11,7 +12,6 @@ import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.passive.LlamaEntity;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.Packet;
-import net.minecraft.network.packet.s2c.play.EntitySpawnS2CPacket;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.util.hit.EntityHitResult;
 import net.minecraft.util.hit.HitResult;
@@ -28,27 +28,27 @@ public class LlamaSpitEntity extends Entity implements Projectile {
 		super(entityType, world);
 	}
 
-	public LlamaSpitEntity(World world, LlamaEntity owner) {
+	public LlamaSpitEntity(World world, LlamaEntity llamaEntity) {
 		this(EntityType.LLAMA_SPIT, world);
-		this.owner = owner;
-		this.updatePosition(
-			owner.x - (double)(owner.getWidth() + 1.0F) * 0.5 * (double)MathHelper.sin(owner.field_6283 * (float) (Math.PI / 180.0)),
-			owner.y + (double)owner.getStandingEyeHeight() - 0.1F,
-			owner.z + (double)(owner.getWidth() + 1.0F) * 0.5 * (double)MathHelper.cos(owner.field_6283 * (float) (Math.PI / 180.0))
+		this.owner = llamaEntity;
+		this.setPosition(
+			llamaEntity.x - (double)(llamaEntity.getWidth() + 1.0F) * 0.5 * (double)MathHelper.sin(llamaEntity.bodyYaw * (float) (Math.PI / 180.0)),
+			llamaEntity.y + (double)llamaEntity.getStandingEyeHeight() - 0.1F,
+			llamaEntity.z + (double)(llamaEntity.getWidth() + 1.0F) * 0.5 * (double)MathHelper.cos(llamaEntity.bodyYaw * (float) (Math.PI / 180.0))
 		);
 	}
 
 	@Environment(EnvType.CLIENT)
-	public LlamaSpitEntity(World world, double x, double y, double z, double velocityX, double velocityY, double velocityZ) {
+	public LlamaSpitEntity(World world, double d, double e, double f, double g, double h, double i) {
 		this(EntityType.LLAMA_SPIT, world);
-		this.updatePosition(x, y, z);
+		this.setPosition(d, e, f);
 
-		for (int i = 0; i < 7; i++) {
-			double d = 0.4 + 0.1 * (double)i;
-			world.addParticle(ParticleTypes.SPIT, x, y, z, velocityX * d, velocityY, velocityZ * d);
+		for (int j = 0; j < 7; j++) {
+			double k = 0.4 + 0.1 * (double)j;
+			world.addParticle(ParticleTypes.SPIT, d, e, f, g * k, h, i * k);
 		}
 
-		this.setVelocity(velocityX, velocityY, velocityZ);
+		this.setVelocity(g, h, i);
 	}
 
 	@Override
@@ -103,38 +103,34 @@ public class LlamaSpitEntity extends Entity implements Projectile {
 				this.setVelocity(this.getVelocity().add(0.0, -0.06F, 0.0));
 			}
 
-			this.updatePosition(this.x, this.y, this.z);
+			this.setPosition(this.x, this.y, this.z);
 		}
 	}
 
 	@Environment(EnvType.CLIENT)
 	@Override
-	public void setVelocityClient(double x, double y, double z) {
-		this.setVelocity(x, y, z);
+	public void setVelocityClient(double d, double e, double f) {
+		this.setVelocity(d, e, f);
 		if (this.prevPitch == 0.0F && this.prevYaw == 0.0F) {
-			float f = MathHelper.sqrt(x * x + z * z);
-			this.pitch = (float)(MathHelper.atan2(y, (double)f) * 180.0F / (float)Math.PI);
-			this.yaw = (float)(MathHelper.atan2(x, z) * 180.0F / (float)Math.PI);
+			float g = MathHelper.sqrt(d * d + f * f);
+			this.pitch = (float)(MathHelper.atan2(e, (double)g) * 180.0F / (float)Math.PI);
+			this.yaw = (float)(MathHelper.atan2(d, f) * 180.0F / (float)Math.PI);
 			this.prevPitch = this.pitch;
 			this.prevYaw = this.yaw;
-			this.refreshPositionAndAngles(this.x, this.y, this.z, this.yaw, this.pitch);
+			this.setPositionAndAngles(this.x, this.y, this.z, this.yaw, this.pitch);
 		}
 	}
 
 	@Override
-	public void setVelocity(double x, double y, double z, float speed, float divergence) {
-		Vec3d vec3d = new Vec3d(x, y, z)
+	public void setVelocity(double d, double e, double f, float g, float h) {
+		Vec3d vec3d = new Vec3d(d, e, f)
 			.normalize()
-			.add(
-				this.random.nextGaussian() * 0.0075F * (double)divergence,
-				this.random.nextGaussian() * 0.0075F * (double)divergence,
-				this.random.nextGaussian() * 0.0075F * (double)divergence
-			)
-			.multiply((double)speed);
+			.add(this.random.nextGaussian() * 0.0075F * (double)h, this.random.nextGaussian() * 0.0075F * (double)h, this.random.nextGaussian() * 0.0075F * (double)h)
+			.multiply((double)g);
 		this.setVelocity(vec3d);
-		float f = MathHelper.sqrt(squaredHorizontalLength(vec3d));
-		this.yaw = (float)(MathHelper.atan2(vec3d.x, z) * 180.0F / (float)Math.PI);
-		this.pitch = (float)(MathHelper.atan2(vec3d.y, (double)f) * 180.0F / (float)Math.PI);
+		float i = MathHelper.sqrt(squaredHorizontalLength(vec3d));
+		this.yaw = (float)(MathHelper.atan2(vec3d.x, f) * 180.0F / (float)Math.PI);
+		this.pitch = (float)(MathHelper.atan2(vec3d.y, (double)i) * 180.0F / (float)Math.PI);
 		this.prevYaw = this.yaw;
 		this.prevPitch = this.pitch;
 	}
@@ -153,27 +149,27 @@ public class LlamaSpitEntity extends Entity implements Projectile {
 	}
 
 	@Override
-	protected void readCustomDataFromTag(CompoundTag tag) {
-		if (tag.contains("Owner", 10)) {
-			this.tag = tag.getCompound("Owner");
+	protected void readCustomDataFromTag(CompoundTag compoundTag) {
+		if (compoundTag.containsKey("Owner", 10)) {
+			this.tag = compoundTag.getCompound("Owner");
 		}
 	}
 
 	@Override
-	protected void writeCustomDataToTag(CompoundTag tag) {
+	protected void writeCustomDataToTag(CompoundTag compoundTag) {
 		if (this.owner != null) {
-			CompoundTag compoundTag = new CompoundTag();
+			CompoundTag compoundTag2 = new CompoundTag();
 			UUID uUID = this.owner.getUuid();
-			compoundTag.putUuid("OwnerUUID", uUID);
-			tag.put("Owner", compoundTag);
+			compoundTag2.putUuid("OwnerUUID", uUID);
+			compoundTag.put("Owner", compoundTag2);
 		}
 	}
 
 	private void readTag() {
-		if (this.tag != null && this.tag.containsUuid("OwnerUUID")) {
+		if (this.tag != null && this.tag.hasUuid("OwnerUUID")) {
 			UUID uUID = this.tag.getUuid("OwnerUUID");
 
-			for (LlamaEntity llamaEntity : this.world.getNonSpectatingEntities(LlamaEntity.class, this.getBoundingBox().expand(15.0))) {
+			for (LlamaEntity llamaEntity : this.world.getEntities(LlamaEntity.class, this.getBoundingBox().expand(15.0))) {
 				if (llamaEntity.getUuid().equals(uUID)) {
 					this.owner = llamaEntity;
 					break;

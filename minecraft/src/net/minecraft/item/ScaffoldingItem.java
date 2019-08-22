@@ -4,9 +4,9 @@ import javax.annotation.Nullable;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.ScaffoldingBlock;
+import net.minecraft.client.network.packet.ChatMessageS2CPacket;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.network.MessageType;
-import net.minecraft.network.packet.s2c.play.ChatMessageS2CPacket;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Formatting;
@@ -21,19 +21,19 @@ public class ScaffoldingItem extends BlockItem {
 
 	@Nullable
 	@Override
-	public ItemPlacementContext getPlacementContext(ItemPlacementContext context) {
-		BlockPos blockPos = context.getBlockPos();
-		World world = context.getWorld();
+	public ItemPlacementContext getPlacementContext(ItemPlacementContext itemPlacementContext) {
+		BlockPos blockPos = itemPlacementContext.getBlockPos();
+		World world = itemPlacementContext.getWorld();
 		BlockState blockState = world.getBlockState(blockPos);
 		Block block = this.getBlock();
 		if (blockState.getBlock() != block) {
-			return ScaffoldingBlock.calculateDistance(world, blockPos) == 7 ? null : context;
+			return ScaffoldingBlock.calculateDistance(world, blockPos) == 7 ? null : itemPlacementContext;
 		} else {
 			Direction direction;
-			if (context.shouldCancelInteraction()) {
-				direction = context.method_17699() ? context.getSide().getOpposite() : context.getSide();
+			if (itemPlacementContext.isPlayerSneaking()) {
+				direction = itemPlacementContext.method_17699() ? itemPlacementContext.getSide().getOpposite() : itemPlacementContext.getSide();
 			} else {
-				direction = context.getSide() == Direction.UP ? context.getPlayerFacing() : Direction.UP;
+				direction = itemPlacementContext.getSide() == Direction.UP ? itemPlacementContext.getPlayerFacing() : Direction.UP;
 			}
 
 			int i = 0;
@@ -41,7 +41,7 @@ public class ScaffoldingItem extends BlockItem {
 
 			while (i < 7) {
 				if (!world.isClient && !World.isValid(mutable)) {
-					PlayerEntity playerEntity = context.getPlayer();
+					PlayerEntity playerEntity = itemPlacementContext.getPlayer();
 					int j = world.getHeight();
 					if (playerEntity instanceof ServerPlayerEntity && mutable.getY() >= j) {
 						ChatMessageS2CPacket chatMessageS2CPacket = new ChatMessageS2CPacket(
@@ -54,8 +54,8 @@ public class ScaffoldingItem extends BlockItem {
 
 				blockState = world.getBlockState(mutable);
 				if (blockState.getBlock() != this.getBlock()) {
-					if (blockState.canReplace(context)) {
-						return ItemPlacementContext.offset(context, mutable, direction);
+					if (blockState.canReplace(itemPlacementContext)) {
+						return ItemPlacementContext.offset(itemPlacementContext, mutable, direction);
 					}
 					break;
 				}

@@ -6,7 +6,7 @@ import net.fabricmc.api.Environment;
 import net.minecraft.entity.EntityContext;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
-import net.minecraft.state.StateManager;
+import net.minecraft.state.StateFactory;
 import net.minecraft.state.property.IntProperty;
 import net.minecraft.state.property.Properties;
 import net.minecraft.util.math.BlockPos;
@@ -25,38 +25,38 @@ public class NetherWartBlock extends PlantBlock {
 
 	protected NetherWartBlock(Block.Settings settings) {
 		super(settings);
-		this.setDefaultState(this.stateManager.getDefaultState().with(AGE, Integer.valueOf(0)));
+		this.setDefaultState(this.stateFactory.getDefaultState().with(AGE, Integer.valueOf(0)));
 	}
 
 	@Override
-	public VoxelShape getOutlineShape(BlockState state, BlockView view, BlockPos pos, EntityContext context) {
-		return AGE_TO_SHAPE[state.get(AGE)];
+	public VoxelShape getOutlineShape(BlockState blockState, BlockView blockView, BlockPos blockPos, EntityContext entityContext) {
+		return AGE_TO_SHAPE[blockState.get(AGE)];
 	}
 
 	@Override
-	protected boolean canPlantOnTop(BlockState floor, BlockView view, BlockPos pos) {
-		return floor.getBlock() == Blocks.SOUL_SAND;
+	protected boolean canPlantOnTop(BlockState blockState, BlockView blockView, BlockPos blockPos) {
+		return blockState.getBlock() == Blocks.SOUL_SAND;
 	}
 
 	@Override
-	public void onScheduledTick(BlockState state, World world, BlockPos pos, Random random) {
-		int i = (Integer)state.get(AGE);
+	public void onScheduledTick(BlockState blockState, World world, BlockPos blockPos, Random random) {
+		int i = (Integer)blockState.get(AGE);
 		if (i < 3 && random.nextInt(10) == 0) {
-			state = state.with(AGE, Integer.valueOf(i + 1));
-			world.setBlockState(pos, state, 2);
+			blockState = blockState.with(AGE, Integer.valueOf(i + 1));
+			world.setBlockState(blockPos, blockState, 2);
 		}
 
-		super.onScheduledTick(state, world, pos, random);
+		super.onScheduledTick(blockState, world, blockPos, random);
 	}
 
 	@Environment(EnvType.CLIENT)
 	@Override
-	public ItemStack getPickStack(BlockView world, BlockPos pos, BlockState state) {
+	public ItemStack getPickStack(BlockView blockView, BlockPos blockPos, BlockState blockState) {
 		return new ItemStack(Items.NETHER_WART);
 	}
 
 	@Override
-	protected void appendProperties(StateManager.Builder<Block, BlockState> builder) {
+	protected void appendProperties(StateFactory.Builder<Block, BlockState> builder) {
 		builder.add(AGE);
 	}
 }

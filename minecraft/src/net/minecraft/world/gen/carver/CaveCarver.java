@@ -9,15 +9,15 @@ import net.minecraft.world.chunk.Chunk;
 import net.minecraft.world.gen.ProbabilityConfig;
 
 public class CaveCarver extends Carver<ProbabilityConfig> {
-	public CaveCarver(Function<Dynamic<?>, ? extends ProbabilityConfig> configDeserializer, int heightLimit) {
-		super(configDeserializer, heightLimit);
+	public CaveCarver(Function<Dynamic<?>, ? extends ProbabilityConfig> function, int i) {
+		super(function, i);
 	}
 
-	public boolean shouldCarve(Random random, int i, int j, ProbabilityConfig probabilityConfig) {
+	public boolean method_12676(Random random, int i, int j, ProbabilityConfig probabilityConfig) {
 		return random.nextFloat() <= probabilityConfig.probability;
 	}
 
-	public boolean carve(Chunk chunk, Random random, int i, int j, int k, int l, int m, BitSet bitSet, ProbabilityConfig probabilityConfig) {
+	public boolean method_12673(Chunk chunk, Random random, int i, int j, int k, int l, int m, BitSet bitSet, ProbabilityConfig probabilityConfig) {
 		int n = (this.getBranchFactor() * 2 - 1) * 16;
 		int o = random.nextInt(random.nextInt(random.nextInt(this.getMaxCaveCount()) + 1) + 1);
 
@@ -67,101 +67,53 @@ public class CaveCarver extends Carver<ProbabilityConfig> {
 		return random.nextInt(random.nextInt(120) + 8);
 	}
 
-	protected void carveCave(
-		Chunk chunk, long seed, int seaLevel, int mainChunkX, int mainChunkZ, double x, double y, double z, float width, double heightWidthRatio, BitSet mask
-	) {
-		double d = 1.5 + (double)(MathHelper.sin((float) (Math.PI / 2)) * width);
-		double e = d * heightWidthRatio;
-		this.carveRegion(chunk, seed, seaLevel, mainChunkX, mainChunkZ, x + 1.0, y, z, d, e, mask);
+	protected void carveCave(Chunk chunk, long l, int i, int j, int k, double d, double e, double f, float g, double h, BitSet bitSet) {
+		double m = 1.5 + (double)(MathHelper.sin((float) (Math.PI / 2)) * g);
+		double n = m * h;
+		this.carveRegion(chunk, l, i, j, k, d + 1.0, e, f, m, n, bitSet);
 	}
 
 	protected void carveTunnels(
-		Chunk chunk,
-		long seed,
-		int seaLevel,
-		int mainChunkX,
-		int mainChunkZ,
-		double x,
-		double y,
-		double z,
-		float baseWidth,
-		float xzAngle,
-		float yAngle,
-		int currentBranch,
-		int height,
-		double heightWidthRatio,
-		BitSet mask
+		Chunk chunk, long l, int i, int j, int k, double d, double e, double f, float g, float h, float m, int n, int o, double p, BitSet bitSet
 	) {
-		Random random = new Random(seed);
-		int i = random.nextInt(height / 2) + height / 4;
+		Random random = new Random(l);
+		int q = random.nextInt(o / 2) + o / 4;
 		boolean bl = random.nextInt(6) == 0;
-		float f = 0.0F;
-		float g = 0.0F;
+		float r = 0.0F;
+		float s = 0.0F;
 
-		for (int j = currentBranch; j < height; j++) {
-			double d = 1.5 + (double)(MathHelper.sin((float) Math.PI * (float)j / (float)height) * baseWidth);
-			double e = d * heightWidthRatio;
-			float h = MathHelper.cos(yAngle);
-			x += (double)(MathHelper.cos(xzAngle) * h);
-			y += (double)MathHelper.sin(yAngle);
-			z += (double)(MathHelper.sin(xzAngle) * h);
-			yAngle *= bl ? 0.92F : 0.7F;
-			yAngle += g * 0.1F;
-			xzAngle += f * 0.1F;
-			g *= 0.9F;
-			f *= 0.75F;
-			g += (random.nextFloat() - random.nextFloat()) * random.nextFloat() * 2.0F;
-			f += (random.nextFloat() - random.nextFloat()) * random.nextFloat() * 4.0F;
-			if (j == i && baseWidth > 1.0F) {
-				this.carveTunnels(
-					chunk,
-					random.nextLong(),
-					seaLevel,
-					mainChunkX,
-					mainChunkZ,
-					x,
-					y,
-					z,
-					random.nextFloat() * 0.5F + 0.5F,
-					xzAngle - (float) (Math.PI / 2),
-					yAngle / 3.0F,
-					j,
-					height,
-					1.0,
-					mask
-				);
-				this.carveTunnels(
-					chunk,
-					random.nextLong(),
-					seaLevel,
-					mainChunkX,
-					mainChunkZ,
-					x,
-					y,
-					z,
-					random.nextFloat() * 0.5F + 0.5F,
-					xzAngle + (float) (Math.PI / 2),
-					yAngle / 3.0F,
-					j,
-					height,
-					1.0,
-					mask
-				);
+		for (int t = n; t < o; t++) {
+			double u = 1.5 + (double)(MathHelper.sin((float) Math.PI * (float)t / (float)o) * g);
+			double v = u * p;
+			float w = MathHelper.cos(m);
+			d += (double)(MathHelper.cos(h) * w);
+			e += (double)MathHelper.sin(m);
+			f += (double)(MathHelper.sin(h) * w);
+			m *= bl ? 0.92F : 0.7F;
+			m += s * 0.1F;
+			h += r * 0.1F;
+			s *= 0.9F;
+			r *= 0.75F;
+			s += (random.nextFloat() - random.nextFloat()) * random.nextFloat() * 2.0F;
+			r += (random.nextFloat() - random.nextFloat()) * random.nextFloat() * 4.0F;
+			if (t == q && g > 1.0F) {
+				this.carveTunnels(chunk, random.nextLong(), i, j, k, d, e, f, random.nextFloat() * 0.5F + 0.5F, h - (float) (Math.PI / 2), m / 3.0F, t, o, 1.0, bitSet);
+				this.carveTunnels(chunk, random.nextLong(), i, j, k, d, e, f, random.nextFloat() * 0.5F + 0.5F, h + (float) (Math.PI / 2), m / 3.0F, t, o, 1.0, bitSet);
 				return;
 			}
 
 			if (random.nextInt(4) != 0) {
-				if (!this.canCarveBranch(mainChunkX, mainChunkZ, x, z, j, height, baseWidth)) {
+				if (!this.canCarveBranch(j, k, d, f, t, o, g)) {
 					return;
 				}
 
-				this.carveRegion(chunk, seed, seaLevel, mainChunkX, mainChunkZ, x, y, z, d, e, mask);
+				this.carveRegion(chunk, l, i, j, k, d, e, f, u, v, bitSet);
 			}
 		}
 	}
 
 	@Override
-	protected boolean isPositionExcluded(double scaledRelativeX, double scaledRelativeY, double scaledRelativeZ, int y) {
-		return scaledRelativeY <= -0.7 || scaledRelativeX * scaledRelativeX + scaledRelativeY * scaledRelativeY + scaledRelativeZ * scaledRelativeZ >= 1.0;
+	protected boolean isPositionExcluded(double d, double e, double f, int i) {
+		return e <= -0.7 || d * d + e * e + f * f >= 1.0;
 	}
 }

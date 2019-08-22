@@ -62,16 +62,16 @@ public class CraftPlanksTutorialStepHandler implements TutorialStepHandler {
 	}
 
 	@Override
-	public void onSlotUpdate(ItemStack stack) {
-		Item item = stack.getItem();
+	public void onSlotUpdate(ItemStack itemStack) {
+		Item item = itemStack.getItem();
 		if (ItemTags.PLANKS.contains(item)) {
 			this.manager.setStep(TutorialStep.NONE);
 		}
 	}
 
-	public static boolean hasCrafted(ClientPlayerEntity player, Tag<Item> tag) {
+	public static boolean hasCrafted(ClientPlayerEntity clientPlayerEntity, Tag<Item> tag) {
 		for (Item item : tag.values()) {
-			if (player.getStatHandler().getStat(Stats.CRAFTED.getOrCreateStat(item)) > 0) {
+			if (clientPlayerEntity.getStats().getStat(Stats.CRAFTED.getOrCreateStat(item)) > 0) {
 				return true;
 			}
 		}

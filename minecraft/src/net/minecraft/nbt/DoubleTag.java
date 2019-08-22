@@ -18,14 +18,14 @@ public class DoubleTag extends AbstractNumberTag {
 	}
 
 	@Override
-	public void write(DataOutput output) throws IOException {
-		output.writeDouble(this.value);
+	public void write(DataOutput dataOutput) throws IOException {
+		dataOutput.writeDouble(this.value);
 	}
 
 	@Override
-	public void read(DataInput input, int depth, PositionTracker positionTracker) throws IOException {
+	public void read(DataInput dataInput, int i, PositionTracker positionTracker) throws IOException {
 		positionTracker.add(128L);
-		this.value = input.readDouble();
+		this.value = dataInput.readDouble();
 	}
 
 	@Override
@@ -38,12 +38,12 @@ public class DoubleTag extends AbstractNumberTag {
 		return this.value + "d";
 	}
 
-	public DoubleTag copy() {
+	public DoubleTag method_10585() {
 		return new DoubleTag(this.value);
 	}
 
-	public boolean equals(Object o) {
-		return this == o ? true : o instanceof DoubleTag && this.value == ((DoubleTag)o).value;
+	public boolean equals(Object object) {
+		return this == object ? true : object instanceof DoubleTag && this.value == ((DoubleTag)object).value;
 	}
 
 	public int hashCode() {
@@ -52,7 +52,7 @@ public class DoubleTag extends AbstractNumberTag {
 	}
 
 	@Override
-	public Text toText(String indent, int depth) {
+	public Text toText(String string, int i) {
 		Text text = new LiteralText("d").formatted(RED);
 		return new LiteralText(String.valueOf(this.value)).append(text).formatted(GOLD);
 	}

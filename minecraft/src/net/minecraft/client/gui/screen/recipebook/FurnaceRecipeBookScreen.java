@@ -14,8 +14,8 @@ public class FurnaceRecipeBookScreen extends AbstractFurnaceRecipeBookScreen {
 	}
 
 	@Override
-	protected void setFilteringCraftable(boolean filteringCraftable) {
-		this.recipeBook.setFurnaceFilteringCraftable(filteringCraftable);
+	protected void setFilteringCraftable(boolean bl) {
+		this.recipeBook.setFurnaceFilteringCraftable(bl);
 	}
 
 	@Override
@@ -24,8 +24,8 @@ public class FurnaceRecipeBookScreen extends AbstractFurnaceRecipeBookScreen {
 	}
 
 	@Override
-	protected void setGuiOpen(boolean opened) {
-		this.recipeBook.setFurnaceGuiOpen(opened);
+	protected void setGuiOpen(boolean bl) {
+		this.recipeBook.setFurnaceGuiOpen(bl);
 	}
 
 	@Override

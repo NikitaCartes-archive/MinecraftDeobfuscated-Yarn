@@ -12,18 +12,18 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.World;
 
 public class FrostWalkerEnchantment extends Enchantment {
-	public FrostWalkerEnchantment(Enchantment.Weight weight, EquipmentSlot... slotTypes) {
-		super(weight, EnchantmentTarget.ARMOR_FEET, slotTypes);
+	public FrostWalkerEnchantment(Enchantment.Weight weight, EquipmentSlot... equipmentSlots) {
+		super(weight, EnchantmentTarget.ARMOR_FEET, equipmentSlots);
 	}
 
 	@Override
-	public int getMinimumPower(int level) {
-		return level * 10;
+	public int getMinimumPower(int i) {
+		return i * 10;
 	}
 
 	@Override
-	public int getMaximumPower(int level) {
-		return this.getMinimumPower(level) + 15;
+	public int getMaximumPower(int i) {
+		return this.getMinimumPower(i) + 15;
 	}
 
 	@Override
@@ -36,14 +36,14 @@ public class FrostWalkerEnchantment extends Enchantment {
 		return 2;
 	}
 
-	public static void freezeWater(LivingEntity entity, World world, BlockPos blockPos, int level) {
-		if (entity.onGround) {
+	public static void freezeWater(LivingEntity livingEntity, World world, BlockPos blockPos, int i) {
+		if (livingEntity.onGround) {
 			BlockState blockState = Blocks.FROSTED_ICE.getDefaultState();
-			float f = (float)Math.min(16, 2 + level);
+			float f = (float)Math.min(16, 2 + i);
 			BlockPos.Mutable mutable = new BlockPos.Mutable();
 
 			for (BlockPos blockPos2 : BlockPos.iterate(blockPos.add((double)(-f), -1.0, (double)(-f)), blockPos.add((double)f, -1.0, (double)f))) {
-				if (blockPos2.isWithinDistance(entity.getPos(), (double)f)) {
+				if (blockPos2.isWithinDistance(livingEntity.getPos(), (double)f)) {
 					mutable.set(blockPos2.getX(), blockPos2.getY() + 1, blockPos2.getZ());
 					BlockState blockState2 = world.getBlockState(mutable);
 					if (blockState2.isAir()) {
@@ -53,7 +53,7 @@ public class FrostWalkerEnchantment extends Enchantment {
 							&& blockState.canPlaceAt(world, blockPos2)
 							&& world.canPlace(blockState, blockPos2, EntityContext.absent())) {
 							world.setBlockState(blockPos2, blockState);
-							world.getBlockTickScheduler().schedule(blockPos2, Blocks.FROSTED_ICE, MathHelper.nextInt(entity.getRandom(), 60, 120));
+							world.getBlockTickScheduler().schedule(blockPos2, Blocks.FROSTED_ICE, MathHelper.nextInt(livingEntity.getRand(), 60, 120));
 						}
 					}
 				}
@@ -62,7 +62,7 @@ public class FrostWalkerEnchantment extends Enchantment {
 	}
 
 	@Override
-	public boolean differs(Enchantment other) {
-		return super.differs(other) && other != Enchantments.DEPTH_STRIDER;
+	public boolean differs(Enchantment enchantment) {
+		return super.differs(enchantment) && enchantment != Enchantments.DEPTH_STRIDER;
 	}
 }

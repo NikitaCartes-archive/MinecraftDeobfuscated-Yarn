@@ -3,7 +3,7 @@ package net.minecraft.client.gui.screen;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import com.google.gson.JsonSyntaxException;
-import com.mojang.blaze3d.platform.GlStateManager;
+import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import java.io.File;
 import java.net.URI;
@@ -23,7 +23,7 @@ import net.minecraft.client.gui.Element;
 import net.minecraft.client.gui.widget.AbstractButtonWidget;
 import net.minecraft.client.item.TooltipContext;
 import net.minecraft.client.render.BufferBuilder;
-import net.minecraft.client.render.DiffuseLighting;
+import net.minecraft.client.render.GuiLighting;
 import net.minecraft.client.render.Tessellator;
 import net.minecraft.client.render.VertexFormats;
 import net.minecraft.client.render.item.ItemRenderer;
@@ -36,7 +36,7 @@ import net.minecraft.text.ClickEvent;
 import net.minecraft.text.HoverEvent;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
-import net.minecraft.util.Util;
+import net.minecraft.util.SystemUtil;
 import net.minecraft.util.crash.CrashCallable;
 import net.minecraft.util.crash.CrashException;
 import net.minecraft.util.crash.CrashReport;
@@ -57,11 +57,11 @@ public abstract class Screen extends AbstractParentElement implements Drawable {
 	public int height;
 	protected final List<AbstractButtonWidget> buttons = Lists.<AbstractButtonWidget>newArrayList();
 	public boolean passEvents;
-	public TextRenderer font;
+	protected TextRenderer font;
 	private URI clickedLink;
 
-	protected Screen(Text title) {
-		this.title = title;
+	protected Screen(Text text) {
+		this.title = text;
 	}
 
 	public Text getTitle() {
@@ -73,18 +73,18 @@ public abstract class Screen extends AbstractParentElement implements Drawable {
 	}
 
 	@Override
-	public void render(int mouseX, int mouseY, float delta) {
-		for (int i = 0; i < this.buttons.size(); i++) {
-			((AbstractButtonWidget)this.buttons.get(i)).render(mouseX, mouseY, delta);
+	public void render(int i, int j, float f) {
+		for (int k = 0; k < this.buttons.size(); k++) {
+			((AbstractButtonWidget)this.buttons.get(k)).render(i, j, f);
 		}
 	}
 
 	@Override
-	public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
-		if (keyCode == 256 && this.shouldCloseOnEsc()) {
+	public boolean keyPressed(int i, int j, int k) {
+		if (i == 256 && this.shouldCloseOnEsc()) {
 			this.onClose();
 			return true;
-		} else if (keyCode == 258) {
+		} else if (i == 258) {
 			boolean bl = !hasShiftDown();
 			if (!this.changeFocus(bl)) {
 				this.changeFocus(bl);
@@ -92,7 +92,7 @@ public abstract class Screen extends AbstractParentElement implements Drawable {
 
 			return true;
 		} else {
-			return super.keyPressed(keyCode, scanCode, modifiers);
+			return super.keyPressed(i, j, k);
 		}
 	}
 
@@ -104,18 +104,18 @@ public abstract class Screen extends AbstractParentElement implements Drawable {
 		this.minecraft.openScreen(null);
 	}
 
-	protected <T extends AbstractButtonWidget> T addButton(T button) {
-		this.buttons.add(button);
-		this.children.add(button);
-		return button;
+	protected <T extends AbstractButtonWidget> T addButton(T abstractButtonWidget) {
+		this.buttons.add(abstractButtonWidget);
+		this.children.add(abstractButtonWidget);
+		return abstractButtonWidget;
 	}
 
-	protected void renderTooltip(ItemStack stack, int x, int y) {
-		this.renderTooltip(this.getTooltipFromItem(stack), x, y);
+	protected void renderTooltip(ItemStack itemStack, int i, int j) {
+		this.renderTooltip(this.getTooltipFromItem(itemStack), i, j);
 	}
 
-	public List<String> getTooltipFromItem(ItemStack stack) {
-		List<Text> list = stack.getTooltip(
+	public List<String> getTooltipFromItem(ItemStack itemStack) {
+		List<Text> list = itemStack.getTooltip(
 			this.minecraft.player, this.minecraft.options.advancedItemTooltips ? TooltipContext.Default.ADVANCED : TooltipContext.Default.NORMAL
 		);
 		List<String> list2 = Lists.<String>newArrayList();
@@ -127,77 +127,77 @@ public abstract class Screen extends AbstractParentElement implements Drawable {
 		return list2;
 	}
 
-	public void renderTooltip(String text, int x, int y) {
-		this.renderTooltip(Arrays.asList(text), x, y);
+	public void renderTooltip(String string, int i, int j) {
+		this.renderTooltip(Arrays.asList(string), i, j);
 	}
 
-	public void renderTooltip(List<String> text, int x, int y) {
-		if (!text.isEmpty()) {
-			GlStateManager.disableRescaleNormal();
-			DiffuseLighting.disable();
-			GlStateManager.disableLighting();
-			GlStateManager.disableDepthTest();
-			int i = 0;
+	public void renderTooltip(List<String> list, int i, int j) {
+		if (!list.isEmpty()) {
+			RenderSystem.disableRescaleNormal();
+			GuiLighting.disable();
+			RenderSystem.disableLighting();
+			RenderSystem.disableDepthTest();
+			int k = 0;
 
-			for (String string : text) {
-				int j = this.font.getStringWidth(string);
-				if (j > i) {
-					i = j;
+			for (String string : list) {
+				int l = this.font.getStringWidth(string);
+				if (l > k) {
+					k = l;
 				}
 			}
 
-			int k = x + 12;
-			int l = y - 12;
-			int m = 8;
-			if (text.size() > 1) {
-				m += 2 + (text.size() - 1) * 10;
+			int m = i + 12;
+			int n = j - 12;
+			int o = 8;
+			if (list.size() > 1) {
+				o += 2 + (list.size() - 1) * 10;
 			}
 
-			if (k + i > this.width) {
-				k -= 28 + i;
+			if (m + k > this.width) {
+				m -= 28 + k;
 			}
 
-			if (l + m + 6 > this.height) {
-				l = this.height - m - 6;
+			if (n + o + 6 > this.height) {
+				n = this.height - o - 6;
 			}
 
 			this.blitOffset = 300;
 			this.itemRenderer.zOffset = 300.0F;
-			int n = -267386864;
-			this.fillGradient(k - 3, l - 4, k + i + 3, l - 3, -267386864, -267386864);
-			this.fillGradient(k - 3, l + m + 3, k + i + 3, l + m + 4, -267386864, -267386864);
-			this.fillGradient(k - 3, l - 3, k + i + 3, l + m + 3, -267386864, -267386864);
-			this.fillGradient(k - 4, l - 3, k - 3, l + m + 3, -267386864, -267386864);
-			this.fillGradient(k + i + 3, l - 3, k + i + 4, l + m + 3, -267386864, -267386864);
-			int o = 1347420415;
-			int p = 1344798847;
-			this.fillGradient(k - 3, l - 3 + 1, k - 3 + 1, l + m + 3 - 1, 1347420415, 1344798847);
-			this.fillGradient(k + i + 2, l - 3 + 1, k + i + 3, l + m + 3 - 1, 1347420415, 1344798847);
-			this.fillGradient(k - 3, l - 3, k + i + 3, l - 3 + 1, 1347420415, 1347420415);
-			this.fillGradient(k - 3, l + m + 2, k + i + 3, l + m + 3, 1344798847, 1344798847);
+			int p = -267386864;
+			this.fillGradient(m - 3, n - 4, m + k + 3, n - 3, -267386864, -267386864);
+			this.fillGradient(m - 3, n + o + 3, m + k + 3, n + o + 4, -267386864, -267386864);
+			this.fillGradient(m - 3, n - 3, m + k + 3, n + o + 3, -267386864, -267386864);
+			this.fillGradient(m - 4, n - 3, m - 3, n + o + 3, -267386864, -267386864);
+			this.fillGradient(m + k + 3, n - 3, m + k + 4, n + o + 3, -267386864, -267386864);
+			int q = 1347420415;
+			int r = 1344798847;
+			this.fillGradient(m - 3, n - 3 + 1, m - 3 + 1, n + o + 3 - 1, 1347420415, 1344798847);
+			this.fillGradient(m + k + 2, n - 3 + 1, m + k + 3, n + o + 3 - 1, 1347420415, 1344798847);
+			this.fillGradient(m - 3, n - 3, m + k + 3, n - 3 + 1, 1347420415, 1347420415);
+			this.fillGradient(m - 3, n + o + 2, m + k + 3, n + o + 3, 1344798847, 1344798847);
 
-			for (int q = 0; q < text.size(); q++) {
-				String string2 = (String)text.get(q);
-				this.font.drawWithShadow(string2, (float)k, (float)l, -1);
-				if (q == 0) {
-					l += 2;
+			for (int s = 0; s < list.size(); s++) {
+				String string2 = (String)list.get(s);
+				this.font.drawWithShadow(string2, (float)m, (float)n, -1);
+				if (s == 0) {
+					n += 2;
 				}
 
-				l += 10;
+				n += 10;
 			}
 
 			this.blitOffset = 0;
 			this.itemRenderer.zOffset = 0.0F;
-			GlStateManager.enableLighting();
-			GlStateManager.enableDepthTest();
-			DiffuseLighting.enable();
-			GlStateManager.enableRescaleNormal();
+			RenderSystem.enableLighting();
+			RenderSystem.enableDepthTest();
+			GuiLighting.enable();
+			RenderSystem.enableRescaleNormal();
 		}
 	}
 
-	protected void renderComponentHoverEffect(Text component, int x, int y) {
-		if (component != null && component.getStyle().getHoverEvent() != null) {
-			HoverEvent hoverEvent = component.getStyle().getHoverEvent();
+	protected void renderComponentHoverEffect(Text text, int i, int j) {
+		if (text != null && text.getStyle().getHoverEvent() != null) {
+			HoverEvent hoverEvent = text.getStyle().getHoverEvent();
 			if (hoverEvent.getAction() == HoverEvent.Action.SHOW_ITEM) {
 				ItemStack itemStack = ItemStack.EMPTY;
 
@@ -210,40 +210,40 @@ public abstract class Screen extends AbstractParentElement implements Drawable {
 				}
 
 				if (itemStack.isEmpty()) {
-					this.renderTooltip(Formatting.RED + "Invalid Item!", x, y);
+					this.renderTooltip(Formatting.RED + "Invalid Item!", i, j);
 				} else {
-					this.renderTooltip(itemStack, x, y);
+					this.renderTooltip(itemStack, i, j);
 				}
 			} else if (hoverEvent.getAction() == HoverEvent.Action.SHOW_ENTITY) {
 				if (this.minecraft.options.advancedItemTooltips) {
 					try {
 						CompoundTag compoundTag = StringNbtReader.parse(hoverEvent.getValue().getString());
 						List<String> list = Lists.<String>newArrayList();
-						Text text = Text.Serializer.fromJson(compoundTag.getString("name"));
-						if (text != null) {
-							list.add(text.asFormattedString());
+						Text text2 = Text.Serializer.fromJson(compoundTag.getString("name"));
+						if (text2 != null) {
+							list.add(text2.asFormattedString());
 						}
 
-						if (compoundTag.contains("type", 8)) {
+						if (compoundTag.containsKey("type", 8)) {
 							String string = compoundTag.getString("type");
 							list.add("Type: " + string);
 						}
 
 						list.add(compoundTag.getString("id"));
-						this.renderTooltip(list, x, y);
+						this.renderTooltip(list, i, j);
 					} catch (CommandSyntaxException | JsonSyntaxException var9) {
-						this.renderTooltip(Formatting.RED + "Invalid Entity!", x, y);
+						this.renderTooltip(Formatting.RED + "Invalid Entity!", i, j);
 					}
 				}
 			} else if (hoverEvent.getAction() == HoverEvent.Action.SHOW_TEXT) {
-				this.renderTooltip(this.minecraft.textRenderer.wrapStringToWidthAsList(hoverEvent.getValue().asFormattedString(), Math.max(this.width / 2, 200)), x, y);
+				this.renderTooltip(this.minecraft.textRenderer.wrapStringToWidthAsList(hoverEvent.getValue().asFormattedString(), Math.max(this.width / 2, 200)), i, j);
 			}
 
-			GlStateManager.disableLighting();
+			RenderSystem.disableLighting();
 		}
 	}
 
-	protected void insertText(String text, boolean override) {
+	protected void insertText(String string, boolean bl) {
 	}
 
 	public boolean handleComponentClicked(Text text) {
@@ -299,33 +299,33 @@ public abstract class Screen extends AbstractParentElement implements Drawable {
 		}
 	}
 
-	public void sendMessage(String message) {
-		this.sendMessage(message, true);
+	public void sendMessage(String string) {
+		this.sendMessage(string, true);
 	}
 
-	public void sendMessage(String message, boolean toHud) {
-		if (toHud) {
-			this.minecraft.inGameHud.getChatHud().addToMessageHistory(message);
+	public void sendMessage(String string, boolean bl) {
+		if (bl) {
+			this.minecraft.inGameHud.getChatHud().addToMessageHistory(string);
 		}
 
-		this.minecraft.player.sendChatMessage(message);
+		this.minecraft.player.sendChatMessage(string);
 	}
 
-	public void init(MinecraftClient client, int width, int height) {
-		this.minecraft = client;
-		this.itemRenderer = client.getItemRenderer();
-		this.font = client.textRenderer;
-		this.width = width;
-		this.height = height;
+	public void init(MinecraftClient minecraftClient, int i, int j) {
+		this.minecraft = minecraftClient;
+		this.itemRenderer = minecraftClient.getItemRenderer();
+		this.font = minecraftClient.textRenderer;
+		this.width = i;
+		this.height = j;
 		this.buttons.clear();
 		this.children.clear();
 		this.setFocused(null);
 		this.init();
 	}
 
-	public void setSize(int width, int height) {
-		this.width = width;
-		this.height = height;
+	public void setSize(int i, int j) {
+		this.width = i;
+		this.height = j;
 	}
 
 	@Override
@@ -346,30 +346,30 @@ public abstract class Screen extends AbstractParentElement implements Drawable {
 		this.renderBackground(0);
 	}
 
-	public void renderBackground(int alpha) {
+	public void renderBackground(int i) {
 		if (this.minecraft.world != null) {
 			this.fillGradient(0, 0, this.width, this.height, -1072689136, -804253680);
 		} else {
-			this.renderDirtBackground(alpha);
+			this.renderDirtBackground(i);
 		}
 	}
 
-	public void renderDirtBackground(int alpha) {
-		GlStateManager.disableLighting();
-		GlStateManager.disableFog();
+	public void renderDirtBackground(int i) {
+		RenderSystem.disableLighting();
+		RenderSystem.disableFog();
 		Tessellator tessellator = Tessellator.getInstance();
-		BufferBuilder bufferBuilder = tessellator.getBuffer();
+		BufferBuilder bufferBuilder = tessellator.getBufferBuilder();
 		this.minecraft.getTextureManager().bindTexture(BACKGROUND_LOCATION);
-		GlStateManager.color4f(1.0F, 1.0F, 1.0F, 1.0F);
+		RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
 		float f = 32.0F;
-		bufferBuilder.begin(7, VertexFormats.POSITION_TEXTURE_COLOR);
-		bufferBuilder.vertex(0.0, (double)this.height, 0.0).texture(0.0, (double)((float)this.height / 32.0F + (float)alpha)).color(64, 64, 64, 255).next();
+		bufferBuilder.begin(7, VertexFormats.POSITION_UV_COLOR);
+		bufferBuilder.vertex(0.0, (double)this.height, 0.0).texture(0.0, (double)((float)this.height / 32.0F + (float)i)).color(64, 64, 64, 255).next();
 		bufferBuilder.vertex((double)this.width, (double)this.height, 0.0)
-			.texture((double)((float)this.width / 32.0F), (double)((float)this.height / 32.0F + (float)alpha))
+			.texture((double)((float)this.width / 32.0F), (double)((float)this.height / 32.0F + (float)i))
 			.color(64, 64, 64, 255)
 			.next();
-		bufferBuilder.vertex((double)this.width, 0.0, 0.0).texture((double)((float)this.width / 32.0F), (double)alpha).color(64, 64, 64, 255).next();
-		bufferBuilder.vertex(0.0, 0.0, 0.0).texture(0.0, (double)alpha).color(64, 64, 64, 255).next();
+		bufferBuilder.vertex((double)this.width, 0.0, 0.0).texture((double)((float)this.width / 32.0F), (double)i).color(64, 64, 64, 255).next();
+		bufferBuilder.vertex(0.0, 0.0, 0.0).texture(0.0, (double)i).color(64, 64, 64, 255).next();
 		tessellator.draw();
 	}
 
@@ -377,8 +377,8 @@ public abstract class Screen extends AbstractParentElement implements Drawable {
 		return true;
 	}
 
-	private void confirmLink(boolean open) {
-		if (open) {
+	private void confirmLink(boolean bl) {
+		if (bl) {
 			this.openLink(this.clickedLink);
 		}
 
@@ -386,8 +386,8 @@ public abstract class Screen extends AbstractParentElement implements Drawable {
 		this.minecraft.openScreen(this);
 	}
 
-	private void openLink(URI link) {
-		Util.getOperatingSystem().open(link);
+	private void openLink(URI uRI) {
+		SystemUtil.getOperatingSystem().open(uRI);
 	}
 
 	public static boolean hasControlDown() {
@@ -408,51 +408,49 @@ public abstract class Screen extends AbstractParentElement implements Drawable {
 			|| InputUtil.isKeyPressed(MinecraftClient.getInstance().window.getHandle(), 346);
 	}
 
-	public static boolean isCut(int code) {
-		return code == 88 && hasControlDown() && !hasShiftDown() && !hasAltDown();
+	public static boolean isCut(int i) {
+		return i == 88 && hasControlDown() && !hasShiftDown() && !hasAltDown();
 	}
 
-	public static boolean isPaste(int code) {
-		return code == 86 && hasControlDown() && !hasShiftDown() && !hasAltDown();
+	public static boolean isPaste(int i) {
+		return i == 86 && hasControlDown() && !hasShiftDown() && !hasAltDown();
 	}
 
-	public static boolean isCopy(int code) {
-		return code == 67 && hasControlDown() && !hasShiftDown() && !hasAltDown();
+	public static boolean isCopy(int i) {
+		return i == 67 && hasControlDown() && !hasShiftDown() && !hasAltDown();
 	}
 
-	public static boolean isSelectAll(int code) {
-		return code == 65 && hasControlDown() && !hasShiftDown() && !hasAltDown();
+	public static boolean isSelectAll(int i) {
+		return i == 65 && hasControlDown() && !hasShiftDown() && !hasAltDown();
 	}
 
-	public void resize(MinecraftClient client, int width, int height) {
-		this.init(client, width, height);
+	public void resize(MinecraftClient minecraftClient, int i, int j) {
+		this.init(minecraftClient, i, j);
 	}
 
-	public static void wrapScreenError(Runnable task, String errorTitle, String screenName) {
+	public static void wrapScreenError(Runnable runnable, String string, String string2) {
 		try {
-			task.run();
+			runnable.run();
 		} catch (Throwable var6) {
-			CrashReport crashReport = CrashReport.create(var6, errorTitle);
+			CrashReport crashReport = CrashReport.create(var6, string);
 			CrashReportSection crashReportSection = crashReport.addElement("Affected screen");
-			crashReportSection.add("Screen name", (CrashCallable<String>)(() -> screenName));
+			crashReportSection.add("Screen name", (CrashCallable<String>)(() -> string2));
 			throw new CrashException(crashReport);
 		}
 	}
 
-	protected boolean isValidCharacterForName(String name, char character, int cursorPos) {
-		int i = name.indexOf(58);
-		int j = name.indexOf(47);
-		if (character == ':') {
-			return (j == -1 || cursorPos <= j) && i == -1;
+	protected boolean isValidCharacterForName(String string, char c, int i) {
+		int j = string.indexOf(58);
+		int k = string.indexOf(47);
+		if (c == ':') {
+			return (k == -1 || i <= k) && j == -1;
 		} else {
-			return character == '/'
-				? cursorPos > i
-				: character == '_' || character == '-' || character >= 'a' && character <= 'z' || character >= '0' && character <= '9' || character == '.';
+			return c == '/' ? i > j : c == '_' || c == '-' || c >= 'a' && c <= 'z' || c >= '0' && c <= '9' || c == '.';
 		}
 	}
 
 	@Override
-	public boolean isMouseOver(double mouseX, double mouseY) {
+	public boolean isMouseOver(double d, double e) {
 		return true;
 	}
 }

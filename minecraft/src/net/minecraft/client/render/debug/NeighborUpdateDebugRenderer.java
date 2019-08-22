@@ -3,13 +3,14 @@ package net.minecraft.client.render.debug;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Ordering;
 import com.google.common.collect.Sets;
-import com.mojang.blaze3d.platform.GlStateManager;
+import com.mojang.blaze3d.systems.RenderSystem;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 import java.util.Map.Entry;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.class_4493;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.Camera;
 import net.minecraft.client.render.WorldRenderer;
@@ -47,13 +48,13 @@ public class NeighborUpdateDebugRenderer implements DebugRenderer.Renderer {
 		double d = camera.getPos().x;
 		double e = camera.getPos().y;
 		double f = camera.getPos().z;
-		GlStateManager.enableBlend();
-		GlStateManager.blendFuncSeparate(
-			GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO
+		RenderSystem.enableBlend();
+		RenderSystem.blendFuncSeparate(
+			class_4493.class_4535.SRC_ALPHA, class_4493.class_4534.ONE_MINUS_SRC_ALPHA, class_4493.class_4535.ONE, class_4493.class_4534.ZERO
 		);
-		GlStateManager.lineWidth(2.0F);
-		GlStateManager.disableTexture();
-		GlStateManager.depthMask(false);
+		RenderSystem.lineWidth(2.0F);
+		RenderSystem.disableTexture();
+		RenderSystem.depthMask(false);
 		int i = 200;
 		double g = 0.0025;
 		Set<BlockPos> set = Sets.<BlockPos>newHashSet();
@@ -95,8 +96,8 @@ public class NeighborUpdateDebugRenderer implements DebugRenderer.Renderer {
 			DebugRenderer.method_3711(String.valueOf(integer2), blockPos2.getX(), blockPos2.getY(), blockPos2.getZ(), -1);
 		}
 
-		GlStateManager.depthMask(true);
-		GlStateManager.enableTexture();
-		GlStateManager.disableBlend();
+		RenderSystem.depthMask(true);
+		RenderSystem.enableTexture();
+		RenderSystem.disableBlend();
 	}
 }

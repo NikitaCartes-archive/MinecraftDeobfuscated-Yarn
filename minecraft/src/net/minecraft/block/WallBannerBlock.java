@@ -5,7 +5,7 @@ import com.google.common.collect.Maps;
 import java.util.Map;
 import net.minecraft.entity.EntityContext;
 import net.minecraft.item.ItemPlacementContext;
-import net.minecraft.state.StateManager;
+import net.minecraft.state.StateFactory;
 import net.minecraft.state.property.DirectionProperty;
 import net.minecraft.util.BlockMirror;
 import net.minecraft.util.BlockRotation;
@@ -14,8 +14,8 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.world.BlockView;
-import net.minecraft.world.CollisionView;
 import net.minecraft.world.IWorld;
+import net.minecraft.world.ViewableWorld;
 
 public class WallBannerBlock extends AbstractBannerBlock {
 	public static final DirectionProperty FACING = HorizontalFacingBlock.FACING;
@@ -34,7 +34,7 @@ public class WallBannerBlock extends AbstractBannerBlock {
 
 	public WallBannerBlock(DyeColor dyeColor, Block.Settings settings) {
 		super(dyeColor, settings);
-		this.setDefaultState(this.stateManager.getDefaultState().with(FACING, Direction.NORTH));
+		this.setDefaultState(this.stateFactory.getDefaultState().with(FACING, Direction.NORTH));
 	}
 
 	@Override
@@ -43,34 +43,36 @@ public class WallBannerBlock extends AbstractBannerBlock {
 	}
 
 	@Override
-	public boolean canPlaceAt(BlockState state, CollisionView world, BlockPos pos) {
-		return world.getBlockState(pos.offset(((Direction)state.get(FACING)).getOpposite())).getMaterial().isSolid();
+	public boolean canPlaceAt(BlockState blockState, ViewableWorld viewableWorld, BlockPos blockPos) {
+		return viewableWorld.getBlockState(blockPos.offset(((Direction)blockState.get(FACING)).getOpposite())).getMaterial().isSolid();
 	}
 
 	@Override
-	public BlockState getStateForNeighborUpdate(BlockState state, Direction facing, BlockState neighborState, IWorld world, BlockPos pos, BlockPos neighborPos) {
-		return facing == ((Direction)state.get(FACING)).getOpposite() && !state.canPlaceAt(world, pos)
+	public BlockState getStateForNeighborUpdate(
+		BlockState blockState, Direction direction, BlockState blockState2, IWorld iWorld, BlockPos blockPos, BlockPos blockPos2
+	) {
+		return direction == ((Direction)blockState.get(FACING)).getOpposite() && !blockState.canPlaceAt(iWorld, blockPos)
 			? Blocks.AIR.getDefaultState()
-			: super.getStateForNeighborUpdate(state, facing, neighborState, world, pos, neighborPos);
+			: super.getStateForNeighborUpdate(blockState, direction, blockState2, iWorld, blockPos, blockPos2);
 	}
 
 	@Override
-	public VoxelShape getOutlineShape(BlockState state, BlockView view, BlockPos pos, EntityContext context) {
-		return (VoxelShape)FACING_TO_SHAPE.get(state.get(FACING));
+	public VoxelShape getOutlineShape(BlockState blockState, BlockView blockView, BlockPos blockPos, EntityContext entityContext) {
+		return (VoxelShape)FACING_TO_SHAPE.get(blockState.get(FACING));
 	}
 
 	@Override
-	public BlockState getPlacementState(ItemPlacementContext ctx) {
+	public BlockState getPlacementState(ItemPlacementContext itemPlacementContext) {
 		BlockState blockState = this.getDefaultState();
-		CollisionView collisionView = ctx.getWorld();
-		BlockPos blockPos = ctx.getBlockPos();
-		Direction[] directions = ctx.getPlacementDirections();
+		ViewableWorld viewableWorld = itemPlacementContext.getWorld();
+		BlockPos blockPos = itemPlacementContext.getBlockPos();
+		Direction[] directions = itemPlacementContext.getPlacementDirections();
 
 		for (Direction direction : directions) {
 			if (direction.getAxis().isHorizontal()) {
 				Direction direction2 = direction.getOpposite();
 				blockState = blockState.with(FACING, direction2);
-				if (blockState.canPlaceAt(collisionView, blockPos)) {
+				if (blockState.canPlaceAt(viewableWorld, blockPos)) {
 					return blockState;
 				}
 			}
@@ -80,17 +82,17 @@ public class WallBannerBlock extends AbstractBannerBlock {
 	}
 
 	@Override
-	public BlockState rotate(BlockState state, BlockRotation rotation) {
-		return state.with(FACING, rotation.rotate(state.get(FACING)));
+	public BlockState rotate(BlockState blockState, BlockRotation blockRotation) {
+		return blockState.with(FACING, blockRotation.rotate(blockState.get(FACING)));
 	}
 
 	@Override
-	public BlockState mirror(BlockState state, BlockMirror mirror) {
-		return state.rotate(mirror.getRotation(state.get(FACING)));
+	public BlockState mirror(BlockState blockState, BlockMirror blockMirror) {
+		return blockState.rotate(blockMirror.getRotation(blockState.get(FACING)));
 	}
 
 	@Override
-	protected void appendProperties(StateManager.Builder<Block, BlockState> builder) {
+	protected void appendProperties(StateFactory.Builder<Block, BlockState> builder) {
 		builder.add(FACING);
 	}
 }

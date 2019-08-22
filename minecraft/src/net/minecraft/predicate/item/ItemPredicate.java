@@ -19,11 +19,11 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.potion.Potion;
 import net.minecraft.potion.PotionUtil;
 import net.minecraft.predicate.NbtPredicate;
-import net.minecraft.predicate.NumberRange;
 import net.minecraft.tag.ItemTags;
 import net.minecraft.tag.Tag;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.JsonHelper;
+import net.minecraft.util.NumberRange;
 import net.minecraft.util.registry.Registry;
 
 public class ItemPredicate {
@@ -52,38 +52,38 @@ public class ItemPredicate {
 	public ItemPredicate(
 		@Nullable Tag<Item> tag,
 		@Nullable Item item,
-		NumberRange.IntRange count,
-		NumberRange.IntRange durability,
-		EnchantmentPredicate[] enchantments,
+		NumberRange.IntRange intRange,
+		NumberRange.IntRange intRange2,
+		EnchantmentPredicate[] enchantmentPredicates,
 		@Nullable Potion potion,
 		NbtPredicate nbtPredicate
 	) {
 		this.tag = tag;
 		this.item = item;
-		this.count = count;
-		this.durability = durability;
-		this.enchantments = enchantments;
+		this.count = intRange;
+		this.durability = intRange2;
+		this.enchantments = enchantmentPredicates;
 		this.potion = potion;
 		this.nbt = nbtPredicate;
 	}
 
-	public boolean test(ItemStack stack) {
+	public boolean test(ItemStack itemStack) {
 		if (this == ANY) {
 			return true;
-		} else if (this.tag != null && !this.tag.contains(stack.getItem())) {
+		} else if (this.tag != null && !this.tag.contains(itemStack.getItem())) {
 			return false;
-		} else if (this.item != null && stack.getItem() != this.item) {
+		} else if (this.item != null && itemStack.getItem() != this.item) {
 			return false;
-		} else if (!this.count.test(stack.getCount())) {
+		} else if (!this.count.test(itemStack.getCount())) {
 			return false;
-		} else if (!this.durability.isDummy() && !stack.isDamageable()) {
+		} else if (!this.durability.isDummy() && !itemStack.isDamageable()) {
 			return false;
-		} else if (!this.durability.test(stack.getMaxDamage() - stack.getDamage())) {
+		} else if (!this.durability.test(itemStack.getMaxDamage() - itemStack.getDamage())) {
 			return false;
-		} else if (!this.nbt.test(stack)) {
+		} else if (!this.nbt.test(itemStack)) {
 			return false;
 		} else {
-			Map<Enchantment, Integer> map = EnchantmentHelper.getEnchantments(stack);
+			Map<Enchantment, Integer> map = EnchantmentHelper.getEnchantments(itemStack);
 
 			for (int i = 0; i < this.enchantments.length; i++) {
 				if (!this.enchantments[i].test(map)) {
@@ -91,20 +91,20 @@ public class ItemPredicate {
 				}
 			}
 
-			Potion potion = PotionUtil.getPotion(stack);
+			Potion potion = PotionUtil.getPotion(itemStack);
 			return this.potion == null || this.potion == potion;
 		}
 	}
 
-	public static ItemPredicate fromJson(@Nullable JsonElement el) {
-		if (el != null && !el.isJsonNull()) {
-			JsonObject jsonObject = JsonHelper.asObject(el, "item");
+	public static ItemPredicate deserialize(@Nullable JsonElement jsonElement) {
+		if (jsonElement != null && !jsonElement.isJsonNull()) {
+			JsonObject jsonObject = JsonHelper.asObject(jsonElement, "item");
 			NumberRange.IntRange intRange = NumberRange.IntRange.fromJson(jsonObject.get("count"));
 			NumberRange.IntRange intRange2 = NumberRange.IntRange.fromJson(jsonObject.get("durability"));
 			if (jsonObject.has("data")) {
 				throw new JsonParseException("Disallowed data tag found");
 			} else {
-				NbtPredicate nbtPredicate = NbtPredicate.fromJson(jsonObject.get("nbt"));
+				NbtPredicate nbtPredicate = NbtPredicate.deserialize(jsonObject.get("nbt"));
 				Item item = null;
 				if (jsonObject.has("item")) {
 					Identifier identifier = new Identifier(JsonHelper.getString(jsonObject, "item"));
@@ -134,7 +134,7 @@ public class ItemPredicate {
 		}
 	}
 
-	public JsonElement toJson() {
+	public JsonElement serialize() {
 		if (this == ANY) {
 			return JsonNull.INSTANCE;
 		} else {
@@ -147,9 +147,9 @@ public class ItemPredicate {
 				jsonObject.addProperty("tag", this.tag.getId().toString());
 			}
 
-			jsonObject.add("count", this.count.toJson());
-			jsonObject.add("durability", this.durability.toJson());
-			jsonObject.add("nbt", this.nbt.toJson());
+			jsonObject.add("count", this.count.serialize());
+			jsonObject.add("durability", this.durability.serialize());
+			jsonObject.add("nbt", this.nbt.serialize());
 			if (this.enchantments.length > 0) {
 				JsonArray jsonArray = new JsonArray();
 
@@ -168,13 +168,13 @@ public class ItemPredicate {
 		}
 	}
 
-	public static ItemPredicate[] deserializeAll(@Nullable JsonElement el) {
-		if (el != null && !el.isJsonNull()) {
-			JsonArray jsonArray = JsonHelper.asArray(el, "items");
+	public static ItemPredicate[] deserializeAll(@Nullable JsonElement jsonElement) {
+		if (jsonElement != null && !jsonElement.isJsonNull()) {
+			JsonArray jsonArray = JsonHelper.asArray(jsonElement, "items");
 			ItemPredicate[] itemPredicates = new ItemPredicate[jsonArray.size()];
 
 			for (int i = 0; i < itemPredicates.length; i++) {
-				itemPredicates[i] = fromJson(jsonArray.get(i));
+				itemPredicates[i] = deserialize(jsonArray.get(i));
 			}
 
 			return itemPredicates;
@@ -217,8 +217,8 @@ public class ItemPredicate {
 			return this;
 		}
 
-		public ItemPredicate.Builder nbt(CompoundTag nbt) {
-			this.nbt = new NbtPredicate(nbt);
+		public ItemPredicate.Builder nbt(CompoundTag compoundTag) {
+			this.nbt = new NbtPredicate(compoundTag);
 			return this;
 		}
 

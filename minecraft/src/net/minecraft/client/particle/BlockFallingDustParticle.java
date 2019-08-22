@@ -17,16 +17,16 @@ public class BlockFallingDustParticle extends SpriteBillboardParticle {
 	private final float field_3809;
 	private final SpriteProvider field_17808;
 
-	private BlockFallingDustParticle(World world, double x, double y, double z, float colorRed, float colorGreen, float colorBlue, SpriteProvider spriteProvider) {
-		super(world, x, y, z);
+	private BlockFallingDustParticle(World world, double d, double e, double f, float g, float h, float i, SpriteProvider spriteProvider) {
+		super(world, d, e, f);
 		this.field_17808 = spriteProvider;
-		this.colorRed = colorRed;
-		this.colorGreen = colorGreen;
-		this.colorBlue = colorBlue;
-		float f = 0.9F;
+		this.colorRed = g;
+		this.colorGreen = h;
+		this.colorBlue = i;
+		float j = 0.9F;
 		this.scale *= 0.67499995F;
-		int i = (int)(32.0 / (Math.random() * 0.8 + 0.2));
-		this.maxAge = (int)Math.max((float)i * 0.9F, 1.0F);
+		int k = (int)(32.0 / (Math.random() * 0.8 + 0.2));
+		this.maxAge = (int)Math.max((float)k * 0.9F, 1.0F);
 		this.setSpriteForAge(spriteProvider);
 		this.field_3809 = ((float)Math.random() - 0.5F) * 0.1F;
 		this.angle = (float)Math.random() * (float) (Math.PI * 2);
@@ -38,8 +38,8 @@ public class BlockFallingDustParticle extends SpriteBillboardParticle {
 	}
 
 	@Override
-	public float getSize(float tickDelta) {
-		return this.scale * MathHelper.clamp(((float)this.age + tickDelta) / (float)this.maxAge * 32.0F, 0.0F, 1.0F);
+	public float getSize(float f) {
+		return this.scale * MathHelper.clamp(((float)this.age + f) / (float)this.maxAge * 32.0F, 0.0F, 1.0F);
 	}
 
 	@Override
@@ -72,7 +72,7 @@ public class BlockFallingDustParticle extends SpriteBillboardParticle {
 		}
 
 		@Nullable
-		public Particle createParticle(BlockStateParticleEffect blockStateParticleEffect, World world, double d, double e, double f, double g, double h, double i) {
+		public Particle method_3033(BlockStateParticleEffect blockStateParticleEffect, World world, double d, double e, double f, double g, double h, double i) {
 			BlockState blockState = blockStateParticleEffect.getBlockState();
 			if (!blockState.isAir() && blockState.getRenderType() == BlockRenderType.INVISIBLE) {
 				return null;

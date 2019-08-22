@@ -2,13 +2,14 @@ package net.minecraft.client.render.debug;
 
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableMap.Builder;
-import com.mojang.blaze3d.platform.GlStateManager;
+import com.mojang.blaze3d.systems.RenderSystem;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.concurrent.CompletableFuture;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.class_4493;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.Camera;
 import net.minecraft.client.world.ClientChunkManager;
@@ -16,7 +17,7 @@ import net.minecraft.client.world.ClientWorld;
 import net.minecraft.server.integrated.IntegratedServer;
 import net.minecraft.server.world.ServerChunkManager;
 import net.minecraft.server.world.ServerWorld;
-import net.minecraft.util.Util;
+import net.minecraft.util.SystemUtil;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.world.chunk.WorldChunk;
 import net.minecraft.world.dimension.DimensionType;
@@ -35,7 +36,7 @@ public class ChunkLoadingDebugRenderer implements DebugRenderer.Renderer {
 
 	@Override
 	public void render(long l) {
-		double d = (double)Util.getMeasuringTimeNano();
+		double d = (double)SystemUtil.getMeasuringTimeNano();
 		if (d - this.lastUpdateTime > 3.0E9) {
 			this.lastUpdateTime = d;
 			IntegratedServer integratedServer = this.client.getServer();
@@ -47,14 +48,14 @@ public class ChunkLoadingDebugRenderer implements DebugRenderer.Renderer {
 		}
 
 		if (this.serverData != null) {
-			GlStateManager.disableFog();
-			GlStateManager.enableBlend();
-			GlStateManager.blendFuncSeparate(
-				GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO
+			RenderSystem.disableFog();
+			RenderSystem.enableBlend();
+			RenderSystem.blendFuncSeparate(
+				class_4493.class_4535.SRC_ALPHA, class_4493.class_4534.ONE_MINUS_SRC_ALPHA, class_4493.class_4535.ONE, class_4493.class_4534.ZERO
 			);
-			GlStateManager.lineWidth(2.0F);
-			GlStateManager.disableTexture();
-			GlStateManager.depthMask(false);
+			RenderSystem.lineWidth(2.0F);
+			RenderSystem.disableTexture();
+			RenderSystem.depthMask(false);
 			Map<ChunkPos, String> map = (Map<ChunkPos, String>)this.serverData.field_4514.getNow(null);
 			double e = this.client.gameRenderer.getCamera().getPos().y * 0.85;
 
@@ -74,10 +75,10 @@ public class ChunkLoadingDebugRenderer implements DebugRenderer.Renderer {
 				}
 			}
 
-			GlStateManager.depthMask(true);
-			GlStateManager.enableTexture();
-			GlStateManager.disableBlend();
-			GlStateManager.enableFog();
+			RenderSystem.depthMask(true);
+			RenderSystem.enableTexture();
+			RenderSystem.disableBlend();
+			RenderSystem.enableFog();
 		}
 	}
 
@@ -100,7 +101,7 @@ public class ChunkLoadingDebugRenderer implements DebugRenderer.Renderer {
 			int i = (int)camera.getPos().x >> 4;
 			int j = (int)camera.getPos().z >> 4;
 			Builder<ChunkPos, String> builder = ImmutableMap.builder();
-			ClientChunkManager clientChunkManager = clientWorld.getChunkManager();
+			ClientChunkManager clientChunkManager = clientWorld.method_2935();
 
 			for (int k = i - 12; k <= i + 12; k++) {
 				for (int l = j - 12; l <= j + 12; l++) {
@@ -120,9 +121,9 @@ public class ChunkLoadingDebugRenderer implements DebugRenderer.Renderer {
 			}
 
 			this.field_4515 = builder.build();
-			this.field_4514 = integratedServer.submit(() -> {
+			this.field_4514 = integratedServer.executeFuture(() -> {
 				Builder<ChunkPos, String> builderx = ImmutableMap.builder();
-				ServerChunkManager serverChunkManager = serverWorld.getChunkManager();
+				ServerChunkManager serverChunkManager = serverWorld.method_14178();
 
 				for (int kx = i - 12; kx <= i + 12; kx++) {
 					for (int lx = j - 12; lx <= j + 12; lx++) {

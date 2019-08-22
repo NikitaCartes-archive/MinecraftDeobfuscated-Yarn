@@ -3,8 +3,8 @@ package net.minecraft.block.entity;
 import javax.annotation.Nullable;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
+import net.minecraft.client.network.packet.BlockEntityUpdateS2CPacket;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.network.packet.s2c.play.BlockEntityUpdateS2CPacket;
 import net.minecraft.util.Tickable;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.MobSpawnerEntry;
@@ -14,8 +14,8 @@ import net.minecraft.world.World;
 public class MobSpawnerBlockEntity extends BlockEntity implements Tickable {
 	private final MobSpawnerLogic logic = new MobSpawnerLogic() {
 		@Override
-		public void sendStatus(int status) {
-			MobSpawnerBlockEntity.this.world.addBlockAction(MobSpawnerBlockEntity.this.pos, Blocks.SPAWNER, status, 0);
+		public void sendStatus(int i) {
+			MobSpawnerBlockEntity.this.world.addBlockAction(MobSpawnerBlockEntity.this.pos, Blocks.SPAWNER, i, 0);
 		}
 
 		@Override
@@ -29,8 +29,8 @@ public class MobSpawnerBlockEntity extends BlockEntity implements Tickable {
 		}
 
 		@Override
-		public void setSpawnEntry(MobSpawnerEntry spawnEntry) {
-			super.setSpawnEntry(spawnEntry);
+		public void setSpawnEntry(MobSpawnerEntry mobSpawnerEntry) {
+			super.setSpawnEntry(mobSpawnerEntry);
 			if (this.getWorld() != null) {
 				BlockState blockState = this.getWorld().getBlockState(this.getPos());
 				this.getWorld().updateListeners(MobSpawnerBlockEntity.this.pos, blockState, blockState, 4);
@@ -43,16 +43,16 @@ public class MobSpawnerBlockEntity extends BlockEntity implements Tickable {
 	}
 
 	@Override
-	public void fromTag(CompoundTag tag) {
-		super.fromTag(tag);
-		this.logic.deserialize(tag);
+	public void fromTag(CompoundTag compoundTag) {
+		super.fromTag(compoundTag);
+		this.logic.deserialize(compoundTag);
 	}
 
 	@Override
-	public CompoundTag toTag(CompoundTag tag) {
-		super.toTag(tag);
-		this.logic.serialize(tag);
-		return tag;
+	public CompoundTag toTag(CompoundTag compoundTag) {
+		super.toTag(compoundTag);
+		this.logic.serialize(compoundTag);
+		return compoundTag;
 	}
 
 	@Override

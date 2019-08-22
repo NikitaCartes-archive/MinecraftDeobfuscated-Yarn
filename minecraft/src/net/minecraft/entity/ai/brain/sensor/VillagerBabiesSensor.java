@@ -17,19 +17,19 @@ public class VillagerBabiesSensor extends Sensor<LivingEntity> {
 	}
 
 	@Override
-	protected void sense(ServerWorld world, LivingEntity entity) {
-		entity.getBrain().putMemory(MemoryModuleType.VISIBLE_VILLAGER_BABIES, this.getVisibleVillagerBabies(entity));
+	protected void sense(ServerWorld serverWorld, LivingEntity livingEntity) {
+		livingEntity.getBrain().putMemory(MemoryModuleType.VISIBLE_VILLAGER_BABIES, this.getVisibleVillagerBabies(livingEntity));
 	}
 
-	private List<LivingEntity> getVisibleVillagerBabies(LivingEntity entities) {
-		return (List<LivingEntity>)this.getVisibleMobs(entities).stream().filter(this::isVillagerBaby).collect(Collectors.toList());
+	private List<LivingEntity> getVisibleVillagerBabies(LivingEntity livingEntity) {
+		return (List<LivingEntity>)this.getVisibleMobs(livingEntity).stream().filter(this::isVillagerBaby).collect(Collectors.toList());
 	}
 
-	private boolean isVillagerBaby(LivingEntity entity) {
-		return entity.getType() == EntityType.VILLAGER && entity.isBaby();
+	private boolean isVillagerBaby(LivingEntity livingEntity) {
+		return livingEntity.getType() == EntityType.VILLAGER && livingEntity.isBaby();
 	}
 
-	private List<LivingEntity> getVisibleMobs(LivingEntity entity) {
-		return (List<LivingEntity>)entity.getBrain().getOptionalMemory(MemoryModuleType.VISIBLE_MOBS).orElse(Lists.newArrayList());
+	private List<LivingEntity> getVisibleMobs(LivingEntity livingEntity) {
+		return (List<LivingEntity>)livingEntity.getBrain().getOptionalMemory(MemoryModuleType.VISIBLE_MOBS).orElse(Lists.newArrayList());
 	}
 }

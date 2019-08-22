@@ -22,8 +22,8 @@ import net.minecraft.util.crash.CrashReport;
 import net.minecraft.util.crash.CrashReportSection;
 
 public class NbtIo {
-	public static CompoundTag readCompressed(InputStream stream) throws IOException {
-		DataInputStream dataInputStream = new DataInputStream(new BufferedInputStream(new GZIPInputStream(stream)));
+	public static CompoundTag readCompressed(InputStream inputStream) throws IOException {
+		DataInputStream dataInputStream = new DataInputStream(new BufferedInputStream(new GZIPInputStream(inputStream)));
 		Throwable var2 = null;
 
 		CompoundTag var3;
@@ -49,12 +49,12 @@ public class NbtIo {
 		return var3;
 	}
 
-	public static void writeCompressed(CompoundTag tag, OutputStream stream) throws IOException {
-		DataOutputStream dataOutputStream = new DataOutputStream(new BufferedOutputStream(new GZIPOutputStream(stream)));
+	public static void writeCompressed(CompoundTag compoundTag, OutputStream outputStream) throws IOException {
+		DataOutputStream dataOutputStream = new DataOutputStream(new BufferedOutputStream(new GZIPOutputStream(outputStream)));
 		Throwable var3 = null;
 
 		try {
-			write(tag, dataOutputStream);
+			write(compoundTag, dataOutputStream);
 		} catch (Throwable var12) {
 			var3 = var12;
 			throw var12;
@@ -74,13 +74,13 @@ public class NbtIo {
 	}
 
 	@Environment(EnvType.CLIENT)
-	public static void safeWrite(CompoundTag tag, File file) throws IOException {
+	public static void safeWrite(CompoundTag compoundTag, File file) throws IOException {
 		File file2 = new File(file.getAbsolutePath() + "_tmp");
 		if (file2.exists()) {
 			file2.delete();
 		}
 
-		write(tag, file2);
+		write(compoundTag, file2);
 		if (file.exists()) {
 			file.delete();
 		}
@@ -93,11 +93,11 @@ public class NbtIo {
 	}
 
 	@Environment(EnvType.CLIENT)
-	public static void write(CompoundTag tag, File file) throws IOException {
+	public static void write(CompoundTag compoundTag, File file) throws IOException {
 		DataOutputStream dataOutputStream = new DataOutputStream(new FileOutputStream(file));
 
 		try {
-			write(tag, dataOutputStream);
+			write(compoundTag, dataOutputStream);
 		} finally {
 			dataOutputStream.close();
 		}
@@ -122,12 +122,12 @@ public class NbtIo {
 		}
 	}
 
-	public static CompoundTag read(DataInputStream stream) throws IOException {
-		return read(stream, PositionTracker.DEFAULT);
+	public static CompoundTag read(DataInputStream dataInputStream) throws IOException {
+		return read(dataInputStream, PositionTracker.DEFAULT);
 	}
 
-	public static CompoundTag read(DataInput input, PositionTracker trakcer) throws IOException {
-		Tag tag = read(input, 0, trakcer);
+	public static CompoundTag read(DataInput dataInput, PositionTracker positionTracker) throws IOException {
+		Tag tag = read(dataInput, 0, positionTracker);
 		if (tag instanceof CompoundTag) {
 			return (CompoundTag)tag;
 		} else {
@@ -135,28 +135,28 @@ public class NbtIo {
 		}
 	}
 
-	public static void write(CompoundTag tag, DataOutput output) throws IOException {
-		write((Tag)tag, output);
+	public static void write(CompoundTag compoundTag, DataOutput dataOutput) throws IOException {
+		write((Tag)compoundTag, dataOutput);
 	}
 
-	private static void write(Tag tag, DataOutput output) throws IOException {
-		output.writeByte(tag.getType());
+	private static void write(Tag tag, DataOutput dataOutput) throws IOException {
+		dataOutput.writeByte(tag.getType());
 		if (tag.getType() != 0) {
-			output.writeUTF("");
-			tag.write(output);
+			dataOutput.writeUTF("");
+			tag.write(dataOutput);
 		}
 	}
 
-	private static Tag read(DataInput input, int depth, PositionTracker tracker) throws IOException {
-		byte b = input.readByte();
+	private static Tag read(DataInput dataInput, int i, PositionTracker positionTracker) throws IOException {
+		byte b = dataInput.readByte();
 		if (b == 0) {
 			return new EndTag();
 		} else {
-			input.readUTF();
+			dataInput.readUTF();
 			Tag tag = Tag.createTag(b);
 
 			try {
-				tag.read(input, depth, tracker);
+				tag.read(dataInput, i, positionTracker);
 				return tag;
 			} catch (IOException var8) {
 				CrashReport crashReport = CrashReport.create(var8, "Loading NBT data");

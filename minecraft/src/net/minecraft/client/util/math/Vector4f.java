@@ -13,15 +13,15 @@ public class Vector4f {
 		this.components = new float[4];
 	}
 
-	public Vector4f(float x, float y, float z, float w) {
-		this.components = new float[]{x, y, z, w};
+	public Vector4f(float f, float g, float h, float i) {
+		this.components = new float[]{f, g, h, i};
 	}
 
-	public boolean equals(Object o) {
-		if (this == o) {
+	public boolean equals(Object object) {
+		if (this == object) {
 			return true;
-		} else if (o != null && this.getClass() == o.getClass()) {
-			Vector4f vector4f = (Vector4f)o;
+		} else if (object != null && this.getClass() == object.getClass()) {
+			Vector4f vector4f = (Vector4f)object;
 			return Arrays.equals(this.components, vector4f.components);
 		} else {
 			return false;
@@ -48,25 +48,25 @@ public class Vector4f {
 		return this.components[3];
 	}
 
-	public void multiplyComponentwise(Vector3f vector) {
-		this.components[0] = this.components[0] * vector.getX();
-		this.components[1] = this.components[1] * vector.getY();
-		this.components[2] = this.components[2] * vector.getZ();
+	public void multiply(Vector3f vector3f) {
+		this.components[0] = this.components[0] * vector3f.getX();
+		this.components[1] = this.components[1] * vector3f.getY();
+		this.components[2] = this.components[2] * vector3f.getZ();
 	}
 
-	public void set(float x, float y, float z, float w) {
-		this.components[0] = x;
-		this.components[1] = y;
-		this.components[2] = z;
-		this.components[3] = w;
+	public void set(float f, float g, float h, float i) {
+		this.components[0] = f;
+		this.components[1] = g;
+		this.components[2] = h;
+		this.components[3] = i;
 	}
 
 	public void method_4959(Quaternion quaternion) {
 		Quaternion quaternion2 = new Quaternion(quaternion);
-		quaternion2.hamiltonProduct(new Quaternion(this.getX(), this.getY(), this.getZ(), 0.0F));
+		quaternion2.copyFrom(new Quaternion(this.getX(), this.getY(), this.getZ(), 0.0F));
 		Quaternion quaternion3 = new Quaternion(quaternion);
-		quaternion3.conjugate();
-		quaternion2.hamiltonProduct(quaternion3);
-		this.set(quaternion2.getB(), quaternion2.getC(), quaternion2.getD(), this.getW());
+		quaternion3.reverse();
+		quaternion2.copyFrom(quaternion3);
+		this.set(quaternion2.getX(), quaternion2.getY(), quaternion2.getZ(), this.getW());
 	}
 }

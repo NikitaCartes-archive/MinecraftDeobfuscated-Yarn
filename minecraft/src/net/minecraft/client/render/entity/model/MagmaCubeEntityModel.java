@@ -31,18 +31,18 @@ public class MagmaCubeEntityModel<T extends SlimeEntity> extends EntityModel<T> 
 		this.field_3428.addCuboid(-2.0F, 18.0F, -2.0F, 4, 4, 4);
 	}
 
-	public void animateModel(T slimeEntity, float f, float g, float h) {
+	public void method_17098(T slimeEntity, float f, float g, float h) {
 		float i = MathHelper.lerp(h, slimeEntity.lastStretch, slimeEntity.stretch);
 		if (i < 0.0F) {
 			i = 0.0F;
 		}
 
 		for (int j = 0; j < this.field_3427.length; j++) {
-			this.field_3427[j].pivotY = (float)(-(4 - j)) * i * 1.7F;
+			this.field_3427[j].rotationPointY = (float)(-(4 - j)) * i * 1.7F;
 		}
 	}
 
-	public void render(T slimeEntity, float f, float g, float h, float i, float j, float k) {
+	public void method_17099(T slimeEntity, float f, float g, float h, float i, float j, float k) {
 		this.setAngles(slimeEntity, f, g, h, i, j, k);
 		this.field_3428.render(k);
 

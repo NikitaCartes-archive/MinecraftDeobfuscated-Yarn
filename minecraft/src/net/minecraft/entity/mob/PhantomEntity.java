@@ -91,17 +91,17 @@ public class PhantomEntity extends FlyingEntity implements Monster {
 	}
 
 	@Override
-	protected float getActiveEyeHeight(EntityPose pose, EntityDimensions dimensions) {
-		return dimensions.height * 0.35F;
+	protected float getActiveEyeHeight(EntityPose entityPose, EntityDimensions entityDimensions) {
+		return entityDimensions.height * 0.35F;
 	}
 
 	@Override
-	public void onTrackedDataSet(TrackedData<?> data) {
-		if (SIZE.equals(data)) {
+	public void onTrackedDataSet(TrackedData<?> trackedData) {
+		if (SIZE.equals(trackedData)) {
 			this.onSizeChanged();
 		}
 
-		super.onTrackedDataSet(data);
+		super.onTrackedDataSet(trackedData);
 	}
 
 	@Override
@@ -152,34 +152,36 @@ public class PhantomEntity extends FlyingEntity implements Monster {
 	}
 
 	@Override
-	public EntityData initialize(IWorld world, LocalDifficulty difficulty, SpawnType spawnType, @Nullable EntityData entityData, @Nullable CompoundTag entityTag) {
+	public EntityData initialize(
+		IWorld iWorld, LocalDifficulty localDifficulty, SpawnType spawnType, @Nullable EntityData entityData, @Nullable CompoundTag compoundTag
+	) {
 		this.field_7312 = new BlockPos(this).up(5);
 		this.setPhantomSize(0);
-		return super.initialize(world, difficulty, spawnType, entityData, entityTag);
+		return super.initialize(iWorld, localDifficulty, spawnType, entityData, compoundTag);
 	}
 
 	@Override
-	public void readCustomDataFromTag(CompoundTag tag) {
-		super.readCustomDataFromTag(tag);
-		if (tag.contains("AX")) {
-			this.field_7312 = new BlockPos(tag.getInt("AX"), tag.getInt("AY"), tag.getInt("AZ"));
+	public void readCustomDataFromTag(CompoundTag compoundTag) {
+		super.readCustomDataFromTag(compoundTag);
+		if (compoundTag.containsKey("AX")) {
+			this.field_7312 = new BlockPos(compoundTag.getInt("AX"), compoundTag.getInt("AY"), compoundTag.getInt("AZ"));
 		}
 
-		this.setPhantomSize(tag.getInt("Size"));
+		this.setPhantomSize(compoundTag.getInt("Size"));
 	}
 
 	@Override
-	public void writeCustomDataToTag(CompoundTag tag) {
-		super.writeCustomDataToTag(tag);
-		tag.putInt("AX", this.field_7312.getX());
-		tag.putInt("AY", this.field_7312.getY());
-		tag.putInt("AZ", this.field_7312.getZ());
-		tag.putInt("Size", this.getPhantomSize());
+	public void writeCustomDataToTag(CompoundTag compoundTag) {
+		super.writeCustomDataToTag(compoundTag);
+		compoundTag.putInt("AX", this.field_7312.getX());
+		compoundTag.putInt("AY", this.field_7312.getY());
+		compoundTag.putInt("AZ", this.field_7312.getZ());
+		compoundTag.putInt("Size", this.getPhantomSize());
 	}
 
 	@Environment(EnvType.CLIENT)
 	@Override
-	public boolean shouldRender(double distance) {
+	public boolean shouldRenderAtDistance(double d) {
 		return true;
 	}
 
@@ -194,7 +196,7 @@ public class PhantomEntity extends FlyingEntity implements Monster {
 	}
 
 	@Override
-	protected SoundEvent getHurtSound(DamageSource source) {
+	protected SoundEvent getHurtSound(DamageSource damageSource) {
 		return SoundEvents.ENTITY_PHANTOM_HURT;
 	}
 
@@ -214,14 +216,14 @@ public class PhantomEntity extends FlyingEntity implements Monster {
 	}
 
 	@Override
-	public boolean canTarget(EntityType<?> type) {
+	public boolean canTarget(EntityType<?> entityType) {
 		return true;
 	}
 
 	@Override
-	public EntityDimensions getDimensions(EntityPose pose) {
+	public EntityDimensions getDimensions(EntityPose entityPose) {
 		int i = this.getPhantomSize();
-		EntityDimensions entityDimensions = super.getDimensions(pose);
+		EntityDimensions entityDimensions = super.getDimensions(entityPose);
 		float f = (entityDimensions.width + 0.2F * (float)i) / entityDimensions.width;
 		return entityDimensions.scaled(f);
 	}
@@ -312,7 +314,7 @@ public class PhantomEntity extends FlyingEntity implements Monster {
 			} else {
 				this.delay = 60;
 				List<PlayerEntity> list = PhantomEntity.this.world
-					.getPlayers(this.PLAYERS_IN_RANGE_PREDICATE, PhantomEntity.this, PhantomEntity.this.getBoundingBox().expand(16.0, 64.0, 16.0));
+					.getPlayersInBox(this.PLAYERS_IN_RANGE_PREDICATE, PhantomEntity.this, PhantomEntity.this.getBoundingBox().expand(16.0, 64.0, 16.0));
 				if (!list.isEmpty()) {
 					list.sort((playerEntityx, playerEntity2) -> playerEntityx.y > playerEntity2.y ? -1 : 1);
 
@@ -352,8 +354,8 @@ public class PhantomEntity extends FlyingEntity implements Monster {
 
 		@Override
 		public void tick() {
-			PhantomEntity.this.headYaw = PhantomEntity.this.field_6283;
-			PhantomEntity.this.field_6283 = PhantomEntity.this.yaw;
+			PhantomEntity.this.headYaw = PhantomEntity.this.bodyYaw;
+			PhantomEntity.this.bodyYaw = PhantomEntity.this.yaw;
 		}
 	}
 
@@ -370,8 +372,8 @@ public class PhantomEntity extends FlyingEntity implements Monster {
 	class PhantomMoveControl extends MoveControl {
 		private float field_7331 = 0.1F;
 
-		public PhantomMoveControl(MobEntity owner) {
-			super(owner);
+		public PhantomMoveControl(MobEntity mobEntity) {
+			super(mobEntity);
 		}
 
 		@Override
@@ -395,7 +397,7 @@ public class PhantomEntity extends FlyingEntity implements Monster {
 			float l = MathHelper.wrapDegrees(PhantomEntity.this.yaw + 90.0F);
 			float m = MathHelper.wrapDegrees(k * (180.0F / (float)Math.PI));
 			PhantomEntity.this.yaw = MathHelper.method_15388(l, m, 4.0F) - 90.0F;
-			PhantomEntity.this.field_6283 = PhantomEntity.this.yaw;
+			PhantomEntity.this.bodyYaw = PhantomEntity.this.yaw;
 			if (MathHelper.angleBetween(j, PhantomEntity.this.yaw) < 3.0F) {
 				this.field_7331 = MathHelper.method_15348(this.field_7331, 1.8F, 0.005F * (1.8F / this.field_7331));
 			} else {

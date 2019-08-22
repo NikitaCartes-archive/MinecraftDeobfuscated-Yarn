@@ -14,7 +14,7 @@ import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.block.piston.PistonBehavior;
-import net.minecraft.container.NameableContainerFactory;
+import net.minecraft.container.NameableContainerProvider;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityContext;
 import net.minecraft.entity.EntityType;
@@ -22,11 +22,10 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.fluid.FluidState;
 import net.minecraft.item.ItemPlacementContext;
 import net.minecraft.item.ItemStack;
-import net.minecraft.loot.context.LootContext;
 import net.minecraft.sound.BlockSoundGroup;
-import net.minecraft.state.AbstractState;
-import net.minecraft.state.State;
-import net.minecraft.state.StateManager;
+import net.minecraft.state.AbstractPropertyContainer;
+import net.minecraft.state.PropertyContainer;
+import net.minecraft.state.StateFactory;
 import net.minecraft.state.property.Property;
 import net.minecraft.tag.Tag;
 import net.minecraft.util.BlockMirror;
@@ -40,21 +39,22 @@ import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.util.shape.VoxelShapes;
-import net.minecraft.world.BlockRenderView;
 import net.minecraft.world.BlockView;
-import net.minecraft.world.CollisionView;
 import net.minecraft.world.EmptyBlockView;
+import net.minecraft.world.ExtendedBlockView;
 import net.minecraft.world.IWorld;
+import net.minecraft.world.ViewableWorld;
 import net.minecraft.world.World;
+import net.minecraft.world.loot.context.LootContext;
 
-public class BlockState extends AbstractState<Block, BlockState> implements State<BlockState> {
+public class BlockState extends AbstractPropertyContainer<Block, BlockState> implements PropertyContainer<BlockState> {
 	@Nullable
 	private BlockState.ShapeCache shapeCache;
 	private final int luminance;
 	private final boolean hasSidedTransparency;
 
-	public BlockState(Block block, ImmutableMap<Property<?>, Comparable<?>> propertyMap) {
-		super(block, propertyMap);
+	public BlockState(Block block, ImmutableMap<Property<?>, Comparable<?>> immutableMap) {
+		super(block, immutableMap);
 		this.luminance = block.getLuminance(this);
 		this.hasSidedTransparency = block.hasSidedTransparency(this);
 	}
@@ -73,22 +73,22 @@ public class BlockState extends AbstractState<Block, BlockState> implements Stat
 		return this.getBlock().getMaterial(this);
 	}
 
-	public boolean allowsSpawning(BlockView view, BlockPos pos, EntityType<?> type) {
-		return this.getBlock().allowsSpawning(this, view, pos, type);
+	public boolean allowsSpawning(BlockView blockView, BlockPos blockPos, EntityType<?> entityType) {
+		return this.getBlock().allowsSpawning(this, blockView, blockPos, entityType);
 	}
 
-	public boolean isTranslucent(BlockView view, BlockPos pos) {
-		return this.shapeCache != null ? this.shapeCache.translucent : this.getBlock().isTranslucent(this, view, pos);
+	public boolean isTranslucent(BlockView blockView, BlockPos blockPos) {
+		return this.shapeCache != null ? this.shapeCache.translucent : this.getBlock().isTranslucent(this, blockView, blockPos);
 	}
 
-	public int getOpacity(BlockView view, BlockPos pos) {
-		return this.shapeCache != null ? this.shapeCache.lightSubtracted : this.getBlock().getOpacity(this, view, pos);
+	public int getLightSubtracted(BlockView blockView, BlockPos blockPos) {
+		return this.shapeCache != null ? this.shapeCache.lightSubtracted : this.getBlock().getLightSubtracted(this, blockView, blockPos);
 	}
 
-	public VoxelShape getCullingFace(BlockView view, BlockPos pos, Direction facing) {
+	public VoxelShape getCullShape(BlockView blockView, BlockPos blockPos, Direction direction) {
 		return this.shapeCache != null && this.shapeCache.shapes != null
-			? this.shapeCache.shapes[facing.ordinal()]
-			: VoxelShapes.method_16344(this.getCullingShape(view, pos), facing);
+			? this.shapeCache.shapes[direction.ordinal()]
+			: VoxelShapes.method_16344(this.method_11615(blockView, blockPos), direction);
 	}
 
 	public boolean method_17900() {
@@ -107,16 +107,16 @@ public class BlockState extends AbstractState<Block, BlockState> implements Stat
 		return this.getBlock().isAir(this);
 	}
 
-	public MaterialColor getTopMaterialColor(BlockView view, BlockPos pos) {
-		return this.getBlock().getMapColor(this, view, pos);
+	public MaterialColor getTopMaterialColor(BlockView blockView, BlockPos blockPos) {
+		return this.getBlock().getMapColor(this, blockView, blockPos);
 	}
 
-	public BlockState rotate(BlockRotation rotation) {
-		return this.getBlock().rotate(this, rotation);
+	public BlockState rotate(BlockRotation blockRotation) {
+		return this.getBlock().rotate(this, blockRotation);
 	}
 
-	public BlockState mirror(BlockMirror mirror) {
-		return this.getBlock().mirror(this, mirror);
+	public BlockState mirror(BlockMirror blockMirror) {
+		return this.getBlock().mirror(this, blockMirror);
 	}
 
 	@Environment(EnvType.CLIENT)
@@ -129,53 +129,53 @@ public class BlockState extends AbstractState<Block, BlockState> implements Stat
 	}
 
 	@Environment(EnvType.CLIENT)
-	public int getBlockBrightness(BlockRenderView view, BlockPos pos) {
-		return this.getBlock().getBlockBrightness(this, view, pos);
+	public int getBlockBrightness(ExtendedBlockView extendedBlockView, BlockPos blockPos) {
+		return this.getBlock().getBlockBrightness(this, extendedBlockView, blockPos);
 	}
 
 	@Environment(EnvType.CLIENT)
-	public float getAmbientOcclusionLightLevel(BlockView view, BlockPos pos) {
-		return this.getBlock().getAmbientOcclusionLightLevel(this, view, pos);
+	public float getAmbientOcclusionLightLevel(BlockView blockView, BlockPos blockPos) {
+		return this.getBlock().getAmbientOcclusionLightLevel(this, blockView, blockPos);
 	}
 
-	public boolean isSimpleFullBlock(BlockView view, BlockPos pos) {
-		return this.getBlock().isSimpleFullBlock(this, view, pos);
+	public boolean isSimpleFullBlock(BlockView blockView, BlockPos blockPos) {
+		return this.getBlock().isSimpleFullBlock(this, blockView, blockPos);
 	}
 
 	public boolean emitsRedstonePower() {
 		return this.getBlock().emitsRedstonePower(this);
 	}
 
-	public int getWeakRedstonePower(BlockView view, BlockPos pos, Direction facing) {
-		return this.getBlock().getWeakRedstonePower(this, view, pos, facing);
+	public int getWeakRedstonePower(BlockView blockView, BlockPos blockPos, Direction direction) {
+		return this.getBlock().getWeakRedstonePower(this, blockView, blockPos, direction);
 	}
 
 	public boolean hasComparatorOutput() {
 		return this.getBlock().hasComparatorOutput(this);
 	}
 
-	public int getComparatorOutput(World world, BlockPos pos) {
-		return this.getBlock().getComparatorOutput(this, world, pos);
+	public int getComparatorOutput(World world, BlockPos blockPos) {
+		return this.getBlock().getComparatorOutput(this, world, blockPos);
 	}
 
-	public float getHardness(BlockView view, BlockPos pos) {
-		return this.getBlock().getHardness(this, view, pos);
+	public float getHardness(BlockView blockView, BlockPos blockPos) {
+		return this.getBlock().getHardness(this, blockView, blockPos);
 	}
 
-	public float calcBlockBreakingDelta(PlayerEntity player, BlockView view, BlockPos pos) {
-		return this.getBlock().calcBlockBreakingDelta(this, player, view, pos);
+	public float calcBlockBreakingDelta(PlayerEntity playerEntity, BlockView blockView, BlockPos blockPos) {
+		return this.getBlock().calcBlockBreakingDelta(this, playerEntity, blockView, blockPos);
 	}
 
-	public int getStrongRedstonePower(BlockView view, BlockPos pos, Direction facing) {
-		return this.getBlock().getStrongRedstonePower(this, view, pos, facing);
+	public int getStrongRedstonePower(BlockView blockView, BlockPos blockPos, Direction direction) {
+		return this.getBlock().getStrongRedstonePower(this, blockView, blockPos, direction);
 	}
 
 	public PistonBehavior getPistonBehavior() {
 		return this.getBlock().getPistonBehavior(this);
 	}
 
-	public boolean isFullOpaque(BlockView view, BlockPos pos) {
-		return this.shapeCache != null ? this.shapeCache.fullOpaque : this.getBlock().isFullOpaque(this, view, pos);
+	public boolean isFullOpaque(BlockView blockView, BlockPos blockPos) {
+		return this.shapeCache != null ? this.shapeCache.fullOpaque : this.getBlock().isFullOpaque(this, blockView, blockPos);
 	}
 
 	public boolean isOpaque() {
@@ -183,121 +183,121 @@ public class BlockState extends AbstractState<Block, BlockState> implements Stat
 	}
 
 	@Environment(EnvType.CLIENT)
-	public boolean isSideInvisible(BlockState neighbor, Direction facing) {
-		return this.getBlock().isSideInvisible(this, neighbor, facing);
+	public boolean isSideInvisible(BlockState blockState, Direction direction) {
+		return this.getBlock().isSideInvisible(this, blockState, direction);
 	}
 
-	public VoxelShape getOutlineShape(BlockView view, BlockPos pos) {
-		return this.getOutlineShape(view, pos, EntityContext.absent());
+	public VoxelShape getOutlineShape(BlockView blockView, BlockPos blockPos) {
+		return this.getOutlineShape(blockView, blockPos, EntityContext.absent());
 	}
 
-	public VoxelShape getOutlineShape(BlockView view, BlockPos pos, EntityContext context) {
-		return this.getBlock().getOutlineShape(this, view, pos, context);
+	public VoxelShape getOutlineShape(BlockView blockView, BlockPos blockPos, EntityContext entityContext) {
+		return this.getBlock().getOutlineShape(this, blockView, blockPos, entityContext);
 	}
 
-	public VoxelShape getCollisionShape(BlockView view, BlockPos pos) {
-		return this.shapeCache != null ? this.shapeCache.collisionShape : this.getCollisionShape(view, pos, EntityContext.absent());
+	public VoxelShape getCollisionShape(BlockView blockView, BlockPos blockPos) {
+		return this.shapeCache != null ? this.shapeCache.collisionShape : this.getCollisionShape(blockView, blockPos, EntityContext.absent());
 	}
 
-	public VoxelShape getCollisionShape(BlockView view, BlockPos pos, EntityContext context) {
-		return this.getBlock().getCollisionShape(this, view, pos, context);
+	public VoxelShape getCollisionShape(BlockView blockView, BlockPos blockPos, EntityContext entityContext) {
+		return this.getBlock().getCollisionShape(this, blockView, blockPos, entityContext);
 	}
 
-	public VoxelShape getCullingShape(BlockView view, BlockPos pos) {
-		return this.getBlock().getCullingShape(this, view, pos);
+	public VoxelShape method_11615(BlockView blockView, BlockPos blockPos) {
+		return this.getBlock().method_9571(this, blockView, blockPos);
 	}
 
-	public VoxelShape getRayTraceShape(BlockView view, BlockPos pos) {
-		return this.getBlock().getRayTraceShape(this, view, pos);
+	public VoxelShape getRayTraceShape(BlockView blockView, BlockPos blockPos) {
+		return this.getBlock().getRayTraceShape(this, blockView, blockPos);
 	}
 
-	public final boolean hasSolidTopSurface(BlockView view, BlockPos pos, Entity entity) {
-		return Block.isFaceFullSquare(this.getCollisionShape(view, pos, EntityContext.of(entity)), Direction.UP);
+	public final boolean hasSolidTopSurface(BlockView blockView, BlockPos blockPos, Entity entity) {
+		return Block.isFaceFullSquare(this.getCollisionShape(blockView, blockPos, EntityContext.of(entity)), Direction.UP);
 	}
 
-	public Vec3d getOffsetPos(BlockView view, BlockPos pos) {
-		return this.getBlock().getOffsetPos(this, view, pos);
+	public Vec3d getOffsetPos(BlockView blockView, BlockPos blockPos) {
+		return this.getBlock().getOffsetPos(this, blockView, blockPos);
 	}
 
-	public boolean onBlockAction(World world, BlockPos pos, int type, int data) {
-		return this.getBlock().onBlockAction(this, world, pos, type, data);
+	public boolean onBlockAction(World world, BlockPos blockPos, int i, int j) {
+		return this.getBlock().onBlockAction(this, world, blockPos, i, j);
 	}
 
-	public void neighborUpdate(World world, BlockPos pos, Block neighborBlock, BlockPos neighborPos, boolean bl) {
-		this.getBlock().neighborUpdate(this, world, pos, neighborBlock, neighborPos, bl);
+	public void neighborUpdate(World world, BlockPos blockPos, Block block, BlockPos blockPos2, boolean bl) {
+		this.getBlock().neighborUpdate(this, world, blockPos, block, blockPos2, bl);
 	}
 
-	public void updateNeighborStates(IWorld world, BlockPos pos, int flags) {
-		this.getBlock().updateNeighborStates(this, world, pos, flags);
+	public void updateNeighborStates(IWorld iWorld, BlockPos blockPos, int i) {
+		this.getBlock().updateNeighborStates(this, iWorld, blockPos, i);
 	}
 
-	public void method_11637(IWorld world, BlockPos pos, int flags) {
-		this.getBlock().method_9517(this, world, pos, flags);
+	public void method_11637(IWorld iWorld, BlockPos blockPos, int i) {
+		this.getBlock().method_9517(this, iWorld, blockPos, i);
 	}
 
-	public void onBlockAdded(World world, BlockPos pos, BlockState oldState, boolean moved) {
-		this.getBlock().onBlockAdded(this, world, pos, oldState, moved);
+	public void onBlockAdded(World world, BlockPos blockPos, BlockState blockState, boolean bl) {
+		this.getBlock().onBlockAdded(this, world, blockPos, blockState, bl);
 	}
 
-	public void onBlockRemoved(World world, BlockPos pos, BlockState newState, boolean moved) {
-		this.getBlock().onBlockRemoved(this, world, pos, newState, moved);
+	public void onBlockRemoved(World world, BlockPos blockPos, BlockState blockState, boolean bl) {
+		this.getBlock().onBlockRemoved(this, world, blockPos, blockState, bl);
 	}
 
-	public void scheduledTick(World world, BlockPos pos, Random rnd) {
-		this.getBlock().onScheduledTick(this, world, pos, rnd);
+	public void scheduledTick(World world, BlockPos blockPos, Random random) {
+		this.getBlock().onScheduledTick(this, world, blockPos, random);
 	}
 
-	public void onRandomTick(World world, BlockPos pos, Random rnd) {
-		this.getBlock().onRandomTick(this, world, pos, rnd);
+	public void onRandomTick(World world, BlockPos blockPos, Random random) {
+		this.getBlock().onRandomTick(this, world, blockPos, random);
 	}
 
-	public void onEntityCollision(World world, BlockPos pos, Entity entity) {
-		this.getBlock().onEntityCollision(this, world, pos, entity);
+	public void onEntityCollision(World world, BlockPos blockPos, Entity entity) {
+		this.getBlock().onEntityCollision(this, world, blockPos, entity);
 	}
 
-	public void onStacksDropped(World world, BlockPos pos, ItemStack stack) {
-		this.getBlock().onStacksDropped(this, world, pos, stack);
+	public void onStacksDropped(World world, BlockPos blockPos, ItemStack itemStack) {
+		this.getBlock().onStacksDropped(this, world, blockPos, itemStack);
 	}
 
 	public List<ItemStack> getDroppedStacks(LootContext.Builder builder) {
 		return this.getBlock().getDroppedStacks(this, builder);
 	}
 
-	public boolean activate(World world, PlayerEntity player, Hand hand, BlockHitResult hit) {
-		return this.getBlock().activate(this, world, hit.getBlockPos(), player, hand, hit);
+	public boolean activate(World world, PlayerEntity playerEntity, Hand hand, BlockHitResult blockHitResult) {
+		return this.getBlock().activate(this, world, blockHitResult.getBlockPos(), playerEntity, hand, blockHitResult);
 	}
 
-	public void onBlockBreakStart(World world, BlockPos pos, PlayerEntity player) {
-		this.getBlock().onBlockBreakStart(this, world, pos, player);
+	public void onBlockBreakStart(World world, BlockPos blockPos, PlayerEntity playerEntity) {
+		this.getBlock().onBlockBreakStart(this, world, blockPos, playerEntity);
 	}
 
-	public boolean canSuffocate(BlockView view, BlockPos pos) {
-		return this.getBlock().canSuffocate(this, view, pos);
+	public boolean canSuffocate(BlockView blockView, BlockPos blockPos) {
+		return this.getBlock().canSuffocate(this, blockView, blockPos);
 	}
 
-	public BlockState getStateForNeighborUpdate(Direction facing, BlockState neighborState, IWorld world, BlockPos pos, BlockPos neighborPos) {
-		return this.getBlock().getStateForNeighborUpdate(this, facing, neighborState, world, pos, neighborPos);
+	public BlockState getStateForNeighborUpdate(Direction direction, BlockState blockState, IWorld iWorld, BlockPos blockPos, BlockPos blockPos2) {
+		return this.getBlock().getStateForNeighborUpdate(this, direction, blockState, iWorld, blockPos, blockPos2);
 	}
 
-	public boolean canPlaceAtSide(BlockView view, BlockPos pos, BlockPlacementEnvironment env) {
-		return this.getBlock().canPlaceAtSide(this, view, pos, env);
+	public boolean canPlaceAtSide(BlockView blockView, BlockPos blockPos, BlockPlacementEnvironment blockPlacementEnvironment) {
+		return this.getBlock().canPlaceAtSide(this, blockView, blockPos, blockPlacementEnvironment);
 	}
 
-	public boolean canReplace(ItemPlacementContext ctx) {
-		return this.getBlock().canReplace(this, ctx);
+	public boolean canReplace(ItemPlacementContext itemPlacementContext) {
+		return this.getBlock().canReplace(this, itemPlacementContext);
 	}
 
-	public boolean canPlaceAt(CollisionView world, BlockPos pos) {
-		return this.getBlock().canPlaceAt(this, world, pos);
+	public boolean canPlaceAt(ViewableWorld viewableWorld, BlockPos blockPos) {
+		return this.getBlock().canPlaceAt(this, viewableWorld, blockPos);
 	}
 
-	public boolean shouldPostProcess(BlockView view, BlockPos pos) {
-		return this.getBlock().shouldPostProcess(this, view, pos);
+	public boolean shouldPostProcess(BlockView blockView, BlockPos blockPos) {
+		return this.getBlock().shouldPostProcess(this, blockView, blockPos);
 	}
 
 	@Nullable
-	public NameableContainerFactory createContainerFactory(World world, BlockPos pos) {
-		return this.getBlock().createContainerFactory(this, world, pos);
+	public NameableContainerProvider createContainerProvider(World world, BlockPos blockPos) {
+		return this.getBlock().createContainerProvider(this, world, blockPos);
 	}
 
 	public boolean matches(Tag<Block> tag) {
@@ -313,44 +313,46 @@ public class BlockState extends AbstractState<Block, BlockState> implements Stat
 	}
 
 	@Environment(EnvType.CLIENT)
-	public long getRenderingSeed(BlockPos pos) {
-		return this.getBlock().getRenderingSeed(this, pos);
+	public long getRenderingSeed(BlockPos blockPos) {
+		return this.getBlock().getRenderingSeed(this, blockPos);
 	}
 
 	public BlockSoundGroup getSoundGroup() {
 		return this.getBlock().getSoundGroup(this);
 	}
 
-	public void onProjectileHit(World world, BlockState state, BlockHitResult hitResult, Entity projectile) {
-		this.getBlock().onProjectileHit(world, state, hitResult, projectile);
+	public void onProjectileHit(World world, BlockState blockState, BlockHitResult blockHitResult, Entity entity) {
+		this.getBlock().onProjectileHit(world, blockState, blockHitResult, entity);
 	}
 
-	public boolean isSideSolidFullSquare(BlockView world, BlockPos pos, Direction direction) {
-		return this.shapeCache != null ? this.shapeCache.solidFullSquare[direction.ordinal()] : Block.isSideSolidFullSquare(this, world, pos, direction);
+	public boolean isSideSolidFullSquare(BlockView blockView, BlockPos blockPos, Direction direction) {
+		return this.shapeCache != null ? this.shapeCache.solidFullSquare[direction.ordinal()] : Block.isSideSolidFullSquare(this, blockView, blockPos, direction);
 	}
 
 	public boolean method_21743(BlockView blockView, BlockPos blockPos) {
-		return this.shapeCache != null ? this.shapeCache.shapeIsFullCube : Block.isShapeFullCube(this.getCollisionShape(blockView, blockPos));
+		return this.shapeCache != null ? this.shapeCache.field_20337 : Block.isShapeFullCube(this.getCollisionShape(blockView, blockPos));
 	}
 
-	public static <T> Dynamic<T> serialize(DynamicOps<T> ops, BlockState state) {
-		ImmutableMap<Property<?>, Comparable<?>> immutableMap = state.getEntries();
+	public static <T> Dynamic<T> serialize(DynamicOps<T> dynamicOps, BlockState blockState) {
+		ImmutableMap<Property<?>, Comparable<?>> immutableMap = blockState.getEntries();
 		T object;
 		if (immutableMap.isEmpty()) {
-			object = ops.createMap(ImmutableMap.of(ops.createString("Name"), ops.createString(Registry.BLOCK.getId(state.getBlock()).toString())));
+			object = dynamicOps.createMap(
+				ImmutableMap.of(dynamicOps.createString("Name"), dynamicOps.createString(Registry.BLOCK.getId(blockState.getBlock()).toString()))
+			);
 		} else {
-			object = ops.createMap(
+			object = dynamicOps.createMap(
 				ImmutableMap.of(
-					ops.createString("Name"),
-					ops.createString(Registry.BLOCK.getId(state.getBlock()).toString()),
-					ops.createString("Properties"),
-					ops.createMap(
+					dynamicOps.createString("Name"),
+					dynamicOps.createString(Registry.BLOCK.getId(blockState.getBlock()).toString()),
+					dynamicOps.createString("Properties"),
+					dynamicOps.createMap(
 						(Map<T, T>)immutableMap.entrySet()
 							.stream()
 							.map(
 								entry -> Pair.of(
-										ops.createString(((Property)entry.getKey()).getName()),
-										ops.createString(State.nameValue((Property<T>)entry.getKey(), (Comparable<?>)entry.getValue()))
+										dynamicOps.createString(((Property)entry.getKey()).getName()),
+										dynamicOps.createString(PropertyContainer.getValueAsString((Property<T>)entry.getKey(), (Comparable<?>)entry.getValue()))
 									)
 							)
 							.collect(Collectors.toMap(Pair::getFirst, Pair::getSecond))
@@ -359,20 +361,20 @@ public class BlockState extends AbstractState<Block, BlockState> implements Stat
 			);
 		}
 
-		return new Dynamic<>(ops, object);
+		return new Dynamic<>(dynamicOps, object);
 	}
 
 	public static <T> BlockState deserialize(Dynamic<T> dynamic) {
 		Block block = Registry.BLOCK.get(new Identifier((String)dynamic.getElement("Name").flatMap(dynamic.getOps()::getStringValue).orElse("minecraft:air")));
 		Map<String, String> map = dynamic.get("Properties").asMap(dynamicx -> dynamicx.asString(""), dynamicx -> dynamicx.asString(""));
 		BlockState blockState = block.getDefaultState();
-		StateManager<Block, BlockState> stateManager = block.getStateManager();
+		StateFactory<Block, BlockState> stateFactory = block.getStateFactory();
 
 		for (Entry<String, String> entry : map.entrySet()) {
 			String string = (String)entry.getKey();
-			Property<?> property = stateManager.getProperty(string);
+			Property<?> property = stateFactory.getProperty(string);
 			if (property != null) {
-				blockState = State.tryRead(blockState, property, string, dynamic.toString(), (String)entry.getValue());
+				blockState = PropertyContainer.deserialize(blockState, property, string, dynamic.toString(), (String)entry.getValue());
 			}
 		}
 
@@ -389,35 +391,35 @@ public class BlockState extends AbstractState<Block, BlockState> implements Stat
 		private final VoxelShape collisionShape;
 		private final boolean field_17651;
 		private final boolean[] solidFullSquare;
-		private final boolean shapeIsFullCube;
+		private final boolean field_20337;
 
-		private ShapeCache(BlockState state) {
-			Block block = state.getBlock();
-			this.opaque = block.isOpaque(state);
-			this.fullOpaque = block.isFullOpaque(state, EmptyBlockView.INSTANCE, BlockPos.ORIGIN);
-			this.translucent = block.isTranslucent(state, EmptyBlockView.INSTANCE, BlockPos.ORIGIN);
-			this.lightSubtracted = block.getOpacity(state, EmptyBlockView.INSTANCE, BlockPos.ORIGIN);
-			if (!state.isOpaque()) {
+		private ShapeCache(BlockState blockState) {
+			Block block = blockState.getBlock();
+			this.opaque = block.isOpaque(blockState);
+			this.fullOpaque = block.isFullOpaque(blockState, EmptyBlockView.INSTANCE, BlockPos.ORIGIN);
+			this.translucent = block.isTranslucent(blockState, EmptyBlockView.INSTANCE, BlockPos.ORIGIN);
+			this.lightSubtracted = block.getLightSubtracted(blockState, EmptyBlockView.INSTANCE, BlockPos.ORIGIN);
+			if (!blockState.isOpaque()) {
 				this.shapes = null;
 			} else {
 				this.shapes = new VoxelShape[DIRECTIONS.length];
-				VoxelShape voxelShape = block.getCullingShape(state, EmptyBlockView.INSTANCE, BlockPos.ORIGIN);
+				VoxelShape voxelShape = block.method_9571(blockState, EmptyBlockView.INSTANCE, BlockPos.ORIGIN);
 
 				for (Direction direction : DIRECTIONS) {
 					this.shapes[direction.ordinal()] = VoxelShapes.method_16344(voxelShape, direction);
 				}
 			}
 
-			this.collisionShape = block.getCollisionShape(state, EmptyBlockView.INSTANCE, BlockPos.ORIGIN, EntityContext.absent());
+			this.collisionShape = block.getCollisionShape(blockState, EmptyBlockView.INSTANCE, BlockPos.ORIGIN, EntityContext.absent());
 			this.field_17651 = Arrays.stream(Direction.Axis.values())
 				.anyMatch(axis -> this.collisionShape.getMinimum(axis) < 0.0 || this.collisionShape.getMaximum(axis) > 1.0);
 			this.solidFullSquare = new boolean[6];
 
 			for (Direction direction2 : DIRECTIONS) {
-				this.solidFullSquare[direction2.ordinal()] = Block.isSideSolidFullSquare(state, EmptyBlockView.INSTANCE, BlockPos.ORIGIN, direction2);
+				this.solidFullSquare[direction2.ordinal()] = Block.isSideSolidFullSquare(blockState, EmptyBlockView.INSTANCE, BlockPos.ORIGIN, direction2);
 			}
 
-			this.shapeIsFullCube = Block.isShapeFullCube(state.getCollisionShape(EmptyBlockView.INSTANCE, BlockPos.ORIGIN));
+			this.field_20337 = Block.isShapeFullCube(blockState.getCollisionShape(EmptyBlockView.INSTANCE, BlockPos.ORIGIN));
 		}
 	}
 }

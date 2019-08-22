@@ -9,7 +9,7 @@ import net.minecraft.advancement.criterion.Criterions;
 import net.minecraft.block.BedBlock;
 import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
-import net.minecraft.datafixer.NbtOps;
+import net.minecraft.datafixers.NbtOps;
 import net.minecraft.entity.EntityData;
 import net.minecraft.entity.EntityInteraction;
 import net.minecraft.entity.EntityType;
@@ -64,46 +64,46 @@ public class ZombieVillagerEntity extends ZombieEntity implements VillagerDataCo
 	}
 
 	@Override
-	public void writeCustomDataToTag(CompoundTag tag) {
-		super.writeCustomDataToTag(tag);
-		tag.put("VillagerData", this.getVillagerData().serialize(NbtOps.INSTANCE));
+	public void writeCustomDataToTag(CompoundTag compoundTag) {
+		super.writeCustomDataToTag(compoundTag);
+		compoundTag.put("VillagerData", this.getVillagerData().serialize(NbtOps.INSTANCE));
 		if (this.offerData != null) {
-			tag.put("Offers", this.offerData);
+			compoundTag.put("Offers", this.offerData);
 		}
 
 		if (this.field_20299 != null) {
-			tag.put("Gossips", this.field_20299);
+			compoundTag.put("Gossips", this.field_20299);
 		}
 
-		tag.putInt("ConversionTime", this.isConverting() ? this.conversionTimer : -1);
+		compoundTag.putInt("ConversionTime", this.isConverting() ? this.conversionTimer : -1);
 		if (this.converter != null) {
-			tag.putUuid("ConversionPlayer", this.converter);
+			compoundTag.putUuid("ConversionPlayer", this.converter);
 		}
 
-		tag.putInt("Xp", this.xp);
+		compoundTag.putInt("Xp", this.xp);
 	}
 
 	@Override
-	public void readCustomDataFromTag(CompoundTag tag) {
-		super.readCustomDataFromTag(tag);
-		if (tag.contains("VillagerData", 10)) {
-			this.setVillagerData(new VillagerData(new Dynamic<>(NbtOps.INSTANCE, tag.get("VillagerData"))));
+	public void readCustomDataFromTag(CompoundTag compoundTag) {
+		super.readCustomDataFromTag(compoundTag);
+		if (compoundTag.containsKey("VillagerData", 10)) {
+			this.setVillagerData(new VillagerData(new Dynamic<>(NbtOps.INSTANCE, compoundTag.getTag("VillagerData"))));
 		}
 
-		if (tag.contains("Offers", 10)) {
-			this.offerData = tag.getCompound("Offers");
+		if (compoundTag.containsKey("Offers", 10)) {
+			this.offerData = compoundTag.getCompound("Offers");
 		}
 
-		if (tag.contains("Gossips", 10)) {
-			this.field_20299 = tag.getList("Gossips", 10);
+		if (compoundTag.containsKey("Gossips", 10)) {
+			this.field_20299 = compoundTag.getList("Gossips", 10);
 		}
 
-		if (tag.contains("ConversionTime", 99) && tag.getInt("ConversionTime") > -1) {
-			this.setConverting(tag.containsUuid("ConversionPlayer") ? tag.getUuid("ConversionPlayer") : null, tag.getInt("ConversionTime"));
+		if (compoundTag.containsKey("ConversionTime", 99) && compoundTag.getInt("ConversionTime") > -1) {
+			this.setConverting(compoundTag.hasUuid("ConversionPlayer") ? compoundTag.getUuid("ConversionPlayer") : null, compoundTag.getInt("ConversionTime"));
 		}
 
-		if (tag.contains("Xp", 3)) {
-			this.xp = tag.getInt("Xp");
+		if (compoundTag.containsKey("Xp", 3)) {
+			this.xp = compoundTag.getInt("Xp");
 		}
 	}
 
@@ -121,15 +121,15 @@ public class ZombieVillagerEntity extends ZombieEntity implements VillagerDataCo
 	}
 
 	@Override
-	public boolean interactMob(PlayerEntity player, Hand hand) {
-		ItemStack itemStack = player.getStackInHand(hand);
+	public boolean interactMob(PlayerEntity playerEntity, Hand hand) {
+		ItemStack itemStack = playerEntity.getStackInHand(hand);
 		if (itemStack.getItem() == Items.GOLDEN_APPLE && this.hasStatusEffect(StatusEffects.WEAKNESS)) {
-			if (!player.abilities.creativeMode) {
+			if (!playerEntity.abilities.creativeMode) {
 				itemStack.decrement(1);
 			}
 
 			if (!this.world.isClient) {
-				this.setConverting(player.getUuid(), this.random.nextInt(2401) + 3600);
+				this.setConverting(playerEntity.getUuid(), this.random.nextInt(2401) + 3600);
 			}
 
 			return true;
@@ -144,7 +144,7 @@ public class ZombieVillagerEntity extends ZombieEntity implements VillagerDataCo
 	}
 
 	@Override
-	public boolean canImmediatelyDespawn(double distanceSquared) {
+	public boolean canImmediatelyDespawn(double d) {
 		return !this.isConverting();
 	}
 
@@ -152,19 +152,19 @@ public class ZombieVillagerEntity extends ZombieEntity implements VillagerDataCo
 		return this.getDataTracker().get(CONVERTING);
 	}
 
-	private void setConverting(@Nullable UUID uuid, int delay) {
-		this.converter = uuid;
-		this.conversionTimer = delay;
+	private void setConverting(@Nullable UUID uUID, int i) {
+		this.converter = uUID;
+		this.conversionTimer = i;
 		this.getDataTracker().set(CONVERTING, true);
-		this.removeStatusEffect(StatusEffects.WEAKNESS);
-		this.addStatusEffect(new StatusEffectInstance(StatusEffects.STRENGTH, delay, Math.min(this.world.getDifficulty().getId() - 1, 0)));
+		this.tryRemoveStatusEffect(StatusEffects.WEAKNESS);
+		this.addStatusEffect(new StatusEffectInstance(StatusEffects.STRENGTH, i, Math.min(this.world.getDifficulty().getId() - 1, 0)));
 		this.world.sendEntityStatus(this, (byte)16);
 	}
 
 	@Environment(EnvType.CLIENT)
 	@Override
-	public void handleStatus(byte status) {
-		if (status == 16) {
+	public void handleStatus(byte b) {
+		if (b == 16) {
 			if (!this.isSilent()) {
 				this.world
 					.playSound(
@@ -179,12 +179,12 @@ public class ZombieVillagerEntity extends ZombieEntity implements VillagerDataCo
 					);
 			}
 		} else {
-			super.handleStatus(status);
+			super.handleStatus(b);
 		}
 	}
 
-	private void finishConversion(ServerWorld world) {
-		VillagerEntity villagerEntity = EntityType.VILLAGER.create(world);
+	private void finishConversion(ServerWorld serverWorld) {
+		VillagerEntity villagerEntity = EntityType.VILLAGER.create(serverWorld);
 		villagerEntity.copyPositionAndRotation(this);
 		villagerEntity.setVillagerData(this.getVillagerData());
 		if (this.field_20299 != null) {
@@ -196,7 +196,7 @@ public class ZombieVillagerEntity extends ZombieEntity implements VillagerDataCo
 		}
 
 		villagerEntity.setExperience(this.xp);
-		villagerEntity.initialize(world, world.getLocalDifficulty(new BlockPos(villagerEntity)), SpawnType.CONVERSION, null, null);
+		villagerEntity.initialize(serverWorld, serverWorld.getLocalDifficulty(new BlockPos(villagerEntity)), SpawnType.CONVERSION, null, null);
 		if (this.isBaby()) {
 			villagerEntity.setBreedingAge(-24000);
 		}
@@ -208,17 +208,17 @@ public class ZombieVillagerEntity extends ZombieEntity implements VillagerDataCo
 			villagerEntity.setCustomNameVisible(this.isCustomNameVisible());
 		}
 
-		world.spawnEntity(villagerEntity);
+		serverWorld.spawnEntity(villagerEntity);
 		if (this.converter != null) {
-			PlayerEntity playerEntity = world.getPlayerByUuid(this.converter);
+			PlayerEntity playerEntity = serverWorld.getPlayerByUuid(this.converter);
 			if (playerEntity instanceof ServerPlayerEntity) {
-				Criterions.CURED_ZOMBIE_VILLAGER.trigger((ServerPlayerEntity)playerEntity, this, villagerEntity);
-				world.handleInteraction(EntityInteraction.ZOMBIE_VILLAGER_CURED, playerEntity, villagerEntity);
+				Criterions.CURED_ZOMBIE_VILLAGER.handle((ServerPlayerEntity)playerEntity, this, villagerEntity);
+				serverWorld.handleInteraction(EntityInteraction.ZOMBIE_VILLAGER_CURED, playerEntity, villagerEntity);
 			}
 		}
 
 		villagerEntity.addStatusEffect(new StatusEffectInstance(StatusEffects.NAUSEA, 200, 0));
-		world.playLevelEvent(null, 1027, new BlockPos(this), 0);
+		serverWorld.playLevelEvent(null, 1027, new BlockPos(this), 0);
 	}
 
 	private int getConversionRate() {
@@ -257,7 +257,7 @@ public class ZombieVillagerEntity extends ZombieEntity implements VillagerDataCo
 	}
 
 	@Override
-	public SoundEvent getHurtSound(DamageSource source) {
+	public SoundEvent getHurtSound(DamageSource damageSource) {
 		return SoundEvents.ENTITY_ZOMBIE_VILLAGER_HURT;
 	}
 
@@ -276,8 +276,8 @@ public class ZombieVillagerEntity extends ZombieEntity implements VillagerDataCo
 		return ItemStack.EMPTY;
 	}
 
-	public void setOfferData(CompoundTag offerTag) {
-		this.offerData = offerTag;
+	public void setOfferData(CompoundTag compoundTag) {
+		this.offerData = compoundTag;
 	}
 
 	public void method_21649(Tag tag) {
@@ -286,18 +286,20 @@ public class ZombieVillagerEntity extends ZombieEntity implements VillagerDataCo
 
 	@Nullable
 	@Override
-	public EntityData initialize(IWorld world, LocalDifficulty difficulty, SpawnType spawnType, @Nullable EntityData entityData, @Nullable CompoundTag entityTag) {
-		this.setVillagerData(this.getVillagerData().withType(VillagerType.forBiome(world.getBiome(new BlockPos(this)))));
-		return super.initialize(world, difficulty, spawnType, entityData, entityTag);
+	public EntityData initialize(
+		IWorld iWorld, LocalDifficulty localDifficulty, SpawnType spawnType, @Nullable EntityData entityData, @Nullable CompoundTag compoundTag
+	) {
+		this.setVillagerData(this.getVillagerData().withType(VillagerType.forBiome(iWorld.getBiome(new BlockPos(this)))));
+		return super.initialize(iWorld, localDifficulty, spawnType, entityData, compoundTag);
 	}
 
-	public void setVillagerData(VillagerData data) {
-		VillagerData villagerData = this.getVillagerData();
-		if (villagerData.getProfession() != data.getProfession()) {
+	public void setVillagerData(VillagerData villagerData) {
+		VillagerData villagerData2 = this.getVillagerData();
+		if (villagerData2.getProfession() != villagerData.getProfession()) {
 			this.offerData = null;
 		}
 
-		this.dataTracker.set(VILLAGER_DATA, data);
+		this.dataTracker.set(VILLAGER_DATA, villagerData);
 	}
 
 	@Override
@@ -305,7 +307,7 @@ public class ZombieVillagerEntity extends ZombieEntity implements VillagerDataCo
 		return this.dataTracker.get(VILLAGER_DATA);
 	}
 
-	public void setXp(int xp) {
-		this.xp = xp;
+	public void setXp(int i) {
+		this.xp = i;
 	}
 }

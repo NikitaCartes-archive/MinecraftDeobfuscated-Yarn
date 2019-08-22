@@ -7,16 +7,16 @@ public enum BlockMirror {
 	LEFT_RIGHT,
 	FRONT_BACK;
 
-	public int mirror(int rotation, int fullTurn) {
-		int i = fullTurn / 2;
-		int j = rotation > i ? rotation - fullTurn : rotation;
+	public int mirror(int i, int j) {
+		int k = j / 2;
+		int l = i > k ? i - j : i;
 		switch (this) {
 			case FRONT_BACK:
-				return (fullTurn - j) % fullTurn;
+				return (j - l) % j;
 			case LEFT_RIGHT:
-				return (i - j + fullTurn) % fullTurn;
+				return (k - l + j) % j;
 			default:
-				return rotation;
+				return i;
 		}
 	}
 

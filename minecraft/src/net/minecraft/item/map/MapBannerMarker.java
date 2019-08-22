@@ -5,9 +5,9 @@ import javax.annotation.Nullable;
 import net.minecraft.block.entity.BannerBlockEntity;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.NbtHelper;
 import net.minecraft.text.Text;
 import net.minecraft.util.DyeColor;
+import net.minecraft.util.TagHelper;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.BlockView;
 
@@ -17,16 +17,16 @@ public class MapBannerMarker {
 	@Nullable
 	private final Text name;
 
-	public MapBannerMarker(BlockPos pos, DyeColor dyeColor, @Nullable Text name) {
-		this.pos = pos;
+	public MapBannerMarker(BlockPos blockPos, DyeColor dyeColor, @Nullable Text text) {
+		this.pos = blockPos;
 		this.color = dyeColor;
-		this.name = name;
+		this.name = text;
 	}
 
-	public static MapBannerMarker fromNbt(CompoundTag tag) {
-		BlockPos blockPos = NbtHelper.toBlockPos(tag.getCompound("Pos"));
-		DyeColor dyeColor = DyeColor.byName(tag.getString("Color"), DyeColor.WHITE);
-		Text text = tag.contains("Name") ? Text.Serializer.fromJson(tag.getString("Name")) : null;
+	public static MapBannerMarker fromNbt(CompoundTag compoundTag) {
+		BlockPos blockPos = TagHelper.deserializeBlockPos(compoundTag.getCompound("Pos"));
+		DyeColor dyeColor = DyeColor.byName(compoundTag.getString("Color"), DyeColor.WHITE);
+		Text text = compoundTag.containsKey("Name") ? Text.Serializer.fromJson(compoundTag.getString("Name")) : null;
 		return new MapBannerMarker(blockPos, dyeColor, text);
 	}
 
@@ -90,11 +90,11 @@ public class MapBannerMarker {
 		return this.name;
 	}
 
-	public boolean equals(Object o) {
-		if (this == o) {
+	public boolean equals(Object object) {
+		if (this == object) {
 			return true;
-		} else if (o != null && this.getClass() == o.getClass()) {
-			MapBannerMarker mapBannerMarker = (MapBannerMarker)o;
+		} else if (object != null && this.getClass() == object.getClass()) {
+			MapBannerMarker mapBannerMarker = (MapBannerMarker)object;
 			return Objects.equals(this.pos, mapBannerMarker.pos) && this.color == mapBannerMarker.color && Objects.equals(this.name, mapBannerMarker.name);
 		} else {
 			return false;
@@ -107,7 +107,7 @@ public class MapBannerMarker {
 
 	public CompoundTag getNbt() {
 		CompoundTag compoundTag = new CompoundTag();
-		compoundTag.put("Pos", NbtHelper.fromBlockPos(this.pos));
+		compoundTag.put("Pos", TagHelper.serializeBlockPos(this.pos));
 		compoundTag.putString("Color", this.color.getName());
 		if (this.name != null) {
 			compoundTag.putString("Name", Text.Serializer.toJson(this.name));

@@ -9,11 +9,11 @@ import net.minecraft.world.gen.chunk.ChunkGenerator;
 import net.minecraft.world.gen.chunk.ChunkGeneratorConfig;
 
 public class EmeraldOreFeature extends Feature<EmeraldOreFeatureConfig> {
-	public EmeraldOreFeature(Function<Dynamic<?>, ? extends EmeraldOreFeatureConfig> configFactory) {
-		super(configFactory);
+	public EmeraldOreFeature(Function<Dynamic<?>, ? extends EmeraldOreFeatureConfig> function) {
+		super(function);
 	}
 
-	public boolean generate(
+	public boolean method_13811(
 		IWorld iWorld,
 		ChunkGenerator<? extends ChunkGeneratorConfig> chunkGenerator,
 		Random random,

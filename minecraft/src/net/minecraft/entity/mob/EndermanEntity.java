@@ -35,21 +35,21 @@ import net.minecraft.entity.data.TrackedDataHandlerRegistry;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.NbtHelper;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.tag.BlockTags;
+import net.minecraft.util.TagHelper;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.hit.HitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
-import net.minecraft.world.CollisionView;
 import net.minecraft.world.GameRules;
 import net.minecraft.world.IWorld;
 import net.minecraft.world.RayTraceContext;
+import net.minecraft.world.ViewableWorld;
 import net.minecraft.world.World;
 
 public class EndermanEntity extends HostileEntity {
@@ -70,7 +70,7 @@ public class EndermanEntity extends HostileEntity {
 	public EndermanEntity(EntityType<? extends EndermanEntity> entityType, World world) {
 		super(entityType, world);
 		this.stepHeight = 1.0F;
-		this.setPathfindingPenalty(PathNodeType.WATER, -1.0F);
+		this.setPathNodeTypeWeight(PathNodeType.WATER, -1.0F);
 	}
 
 	@Override
@@ -98,10 +98,10 @@ public class EndermanEntity extends HostileEntity {
 	}
 
 	@Override
-	public void setTarget(@Nullable LivingEntity target) {
-		super.setTarget(target);
+	public void setTarget(@Nullable LivingEntity livingEntity) {
+		super.setTarget(livingEntity);
 		EntityAttributeInstance entityAttributeInstance = this.getAttributeInstance(EntityAttributes.MOVEMENT_SPEED);
-		if (target == null) {
+		if (livingEntity == null) {
 			this.ageWhenTargetSet = 0;
 			this.dataTracker.set(ANGRY, false);
 			entityAttributeInstance.removeModifier(ATTACKING_SPEED_BOOST);
@@ -132,29 +132,29 @@ public class EndermanEntity extends HostileEntity {
 	}
 
 	@Override
-	public void onTrackedDataSet(TrackedData<?> data) {
-		if (ANGRY.equals(data) && this.isAngry() && this.world.isClient) {
+	public void onTrackedDataSet(TrackedData<?> trackedData) {
+		if (ANGRY.equals(trackedData) && this.isAngry() && this.world.isClient) {
 			this.playAngrySound();
 		}
 
-		super.onTrackedDataSet(data);
+		super.onTrackedDataSet(trackedData);
 	}
 
 	@Override
-	public void writeCustomDataToTag(CompoundTag tag) {
-		super.writeCustomDataToTag(tag);
+	public void writeCustomDataToTag(CompoundTag compoundTag) {
+		super.writeCustomDataToTag(compoundTag);
 		BlockState blockState = this.getCarriedBlock();
 		if (blockState != null) {
-			tag.put("carriedBlockState", NbtHelper.fromBlockState(blockState));
+			compoundTag.put("carriedBlockState", TagHelper.serializeBlockState(blockState));
 		}
 	}
 
 	@Override
-	public void readCustomDataFromTag(CompoundTag tag) {
-		super.readCustomDataFromTag(tag);
+	public void readCustomDataFromTag(CompoundTag compoundTag) {
+		super.readCustomDataFromTag(compoundTag);
 		BlockState blockState = null;
-		if (tag.contains("carriedBlockState", 10)) {
-			blockState = NbtHelper.toBlockState(tag.getCompound("carriedBlockState"));
+		if (compoundTag.containsKey("carriedBlockState", 10)) {
+			blockState = TagHelper.deserializeBlockState(compoundTag.getCompound("carriedBlockState"));
 			if (blockState.isAir()) {
 				blockState = null;
 			}
@@ -163,24 +163,26 @@ public class EndermanEntity extends HostileEntity {
 		this.setCarriedBlock(blockState);
 	}
 
-	private boolean isPlayerStaring(PlayerEntity player) {
-		ItemStack itemStack = player.inventory.armor.get(3);
+	private boolean isPlayerStaring(PlayerEntity playerEntity) {
+		ItemStack itemStack = playerEntity.inventory.armor.get(3);
 		if (itemStack.getItem() == Blocks.CARVED_PUMPKIN.asItem()) {
 			return false;
 		} else {
-			Vec3d vec3d = player.getRotationVec(1.0F).normalize();
+			Vec3d vec3d = playerEntity.getRotationVec(1.0F).normalize();
 			Vec3d vec3d2 = new Vec3d(
-				this.x - player.x, this.getBoundingBox().y1 + (double)this.getStandingEyeHeight() - (player.y + (double)player.getStandingEyeHeight()), this.z - player.z
+				this.x - playerEntity.x,
+				this.getBoundingBox().minY + (double)this.getStandingEyeHeight() - (playerEntity.y + (double)playerEntity.getStandingEyeHeight()),
+				this.z - playerEntity.z
 			);
 			double d = vec3d2.length();
 			vec3d2 = vec3d2.normalize();
 			double e = vec3d.dotProduct(vec3d2);
-			return e > 1.0 - 0.025 / d ? player.canSee(this) : false;
+			return e > 1.0 - 0.025 / d ? playerEntity.canSee(this) : false;
 		}
 	}
 
 	@Override
-	protected float getActiveEyeHeight(EntityPose pose, EntityDimensions dimensions) {
+	protected float getActiveEyeHeight(EntityPose entityPose, EntityDimensions entityDimensions) {
 		return 2.55F;
 	}
 
@@ -207,11 +209,11 @@ public class EndermanEntity extends HostileEntity {
 
 	@Override
 	protected void mobTick() {
-		if (this.isWet()) {
+		if (this.isTouchingWater()) {
 			this.damage(DamageSource.DROWN, 1.0F);
 		}
 
-		if (this.world.isDay() && this.age >= this.ageWhenTargetSet + 600) {
+		if (this.world.isDaylight() && this.age >= this.ageWhenTargetSet + 600) {
 			float f = this.getBrightnessAtEyes();
 			if (f > 0.5F && this.world.isSkyVisible(new BlockPos(this)) && this.random.nextFloat() * 30.0F < (f - 0.4F) * 2.0F) {
 				this.setTarget(null);
@@ -229,11 +231,9 @@ public class EndermanEntity extends HostileEntity {
 		return this.teleport(d, e, f);
 	}
 
-	private boolean teleportTo(Entity targetEntity) {
+	private boolean teleportTo(Entity entity) {
 		Vec3d vec3d = new Vec3d(
-			this.x - targetEntity.x,
-			this.getBoundingBox().y1 + (double)(this.getHeight() / 2.0F) - targetEntity.y + (double)targetEntity.getStandingEyeHeight(),
-			this.z - targetEntity.z
+			this.x - entity.x, this.getBoundingBox().minY + (double)(this.getHeight() / 2.0F) - entity.y + (double)entity.getStandingEyeHeight(), this.z - entity.z
 		);
 		vec3d = vec3d.normalize();
 		double d = 16.0;
@@ -243,8 +243,8 @@ public class EndermanEntity extends HostileEntity {
 		return this.teleport(e, f, g);
 	}
 
-	private boolean teleport(double x, double y, double z) {
-		BlockPos.Mutable mutable = new BlockPos.Mutable(x, y, z);
+	private boolean teleport(double d, double e, double f) {
+		BlockPos.Mutable mutable = new BlockPos.Mutable(d, e, f);
 
 		while (mutable.getY() > 0 && !this.world.getBlockState(mutable).getMaterial().blocksMovement()) {
 			mutable.setOffset(Direction.DOWN);
@@ -253,7 +253,7 @@ public class EndermanEntity extends HostileEntity {
 		if (!this.world.getBlockState(mutable).getMaterial().blocksMovement()) {
 			return false;
 		} else {
-			boolean bl = this.teleport(x, y, z, true);
+			boolean bl = this.teleport(d, e, f, true);
 			if (bl) {
 				this.world.playSound(null, this.prevX, this.prevY, this.prevZ, SoundEvents.ENTITY_ENDERMAN_TELEPORT, this.getSoundCategory(), 1.0F, 1.0F);
 				this.playSound(SoundEvents.ENTITY_ENDERMAN_TELEPORT, 1.0F, 1.0F);
@@ -269,7 +269,7 @@ public class EndermanEntity extends HostileEntity {
 	}
 
 	@Override
-	protected SoundEvent getHurtSound(DamageSource source) {
+	protected SoundEvent getHurtSound(DamageSource damageSource) {
 		return SoundEvents.ENTITY_ENDERMAN_HURT;
 	}
 
@@ -279,8 +279,8 @@ public class EndermanEntity extends HostileEntity {
 	}
 
 	@Override
-	protected void dropEquipment(DamageSource source, int lootingMultiplier, boolean allowDrops) {
-		super.dropEquipment(source, lootingMultiplier, allowDrops);
+	protected void dropEquipment(DamageSource damageSource, int i, boolean bl) {
+		super.dropEquipment(damageSource, i, bl);
 		BlockState blockState = this.getCarriedBlock();
 		if (blockState != null) {
 			this.dropItem(blockState.getBlock());
@@ -297,12 +297,12 @@ public class EndermanEntity extends HostileEntity {
 	}
 
 	@Override
-	public boolean damage(DamageSource source, float amount) {
-		if (this.isInvulnerableTo(source)) {
+	public boolean damage(DamageSource damageSource, float f) {
+		if (this.isInvulnerableTo(damageSource)) {
 			return false;
-		} else if (!(source instanceof ProjectileDamageSource) && source != DamageSource.FIREWORKS) {
-			boolean bl = super.damage(source, amount);
-			if (source.bypassesArmor() && this.random.nextInt(10) != 0) {
+		} else if (!(damageSource instanceof ProjectileDamageSource) && damageSource != DamageSource.FIREWORKS) {
+			boolean bl = super.damage(damageSource, f);
+			if (damageSource.bypassesArmor() && this.random.nextInt(10) != 0) {
 				this.teleportRandomly();
 			}
 
@@ -325,8 +325,8 @@ public class EndermanEntity extends HostileEntity {
 	static class ChasePlayerGoal extends Goal {
 		private final EndermanEntity enderman;
 
-		public ChasePlayerGoal(EndermanEntity enderman) {
-			this.enderman = enderman;
+		public ChasePlayerGoal(EndermanEntity endermanEntity) {
+			this.enderman = endermanEntity;
 			this.setControls(EnumSet.of(Goal.Control.JUMP, Goal.Control.MOVE));
 		}
 
@@ -350,8 +350,8 @@ public class EndermanEntity extends HostileEntity {
 	static class PickUpBlockGoal extends Goal {
 		private final EndermanEntity enderman;
 
-		public PickUpBlockGoal(EndermanEntity enderman) {
-			this.enderman = enderman;
+		public PickUpBlockGoal(EndermanEntity endermanEntity) {
+			this.enderman = endermanEntity;
 		}
 
 		@Override
@@ -359,13 +359,13 @@ public class EndermanEntity extends HostileEntity {
 			if (this.enderman.getCarriedBlock() != null) {
 				return false;
 			} else {
-				return !this.enderman.world.getGameRules().getBoolean(GameRules.MOB_GRIEFING) ? false : this.enderman.getRandom().nextInt(20) == 0;
+				return !this.enderman.world.getGameRules().getBoolean(GameRules.MOB_GRIEFING) ? false : this.enderman.getRand().nextInt(20) == 0;
 			}
 		}
 
 		@Override
 		public void tick() {
-			Random random = this.enderman.getRandom();
+			Random random = this.enderman.getRand();
 			World world = this.enderman.world;
 			int i = MathHelper.floor(this.enderman.x - 2.0 + random.nextDouble() * 4.0);
 			int j = MathHelper.floor(this.enderman.y + random.nextDouble() * 3.0);
@@ -381,7 +381,7 @@ public class EndermanEntity extends HostileEntity {
 			boolean bl = blockHitResult.getType() != HitResult.Type.MISS && blockHitResult.getBlockPos().equals(blockPos);
 			if (block.matches(BlockTags.ENDERMAN_HOLDABLE) && bl) {
 				this.enderman.setCarriedBlock(blockState);
-				world.removeBlock(blockPos, false);
+				world.clearBlockState(blockPos, false);
 			}
 		}
 	}
@@ -389,8 +389,8 @@ public class EndermanEntity extends HostileEntity {
 	static class PlaceBlockGoal extends Goal {
 		private final EndermanEntity enderman;
 
-		public PlaceBlockGoal(EndermanEntity enderman) {
-			this.enderman = enderman;
+		public PlaceBlockGoal(EndermanEntity endermanEntity) {
+			this.enderman = endermanEntity;
 		}
 
 		@Override
@@ -398,13 +398,13 @@ public class EndermanEntity extends HostileEntity {
 			if (this.enderman.getCarriedBlock() == null) {
 				return false;
 			} else {
-				return !this.enderman.world.getGameRules().getBoolean(GameRules.MOB_GRIEFING) ? false : this.enderman.getRandom().nextInt(2000) == 0;
+				return !this.enderman.world.getGameRules().getBoolean(GameRules.MOB_GRIEFING) ? false : this.enderman.getRand().nextInt(2000) == 0;
 			}
 		}
 
 		@Override
 		public void tick() {
-			Random random = this.enderman.getRandom();
+			Random random = this.enderman.getRand();
 			IWorld iWorld = this.enderman.world;
 			int i = MathHelper.floor(this.enderman.x - 1.0 + random.nextDouble() * 2.0);
 			int j = MathHelper.floor(this.enderman.y + random.nextDouble() * 2.0);
@@ -421,9 +421,9 @@ public class EndermanEntity extends HostileEntity {
 		}
 
 		private boolean method_7033(
-			CollisionView collisionView, BlockPos blockPos, BlockState blockState, BlockState blockState2, BlockState blockState3, BlockPos blockPos2
+			ViewableWorld viewableWorld, BlockPos blockPos, BlockState blockState, BlockState blockState2, BlockState blockState3, BlockPos blockPos2
 		) {
-			return blockState2.isAir() && !blockState3.isAir() && blockState3.method_21743(collisionView, blockPos2) && blockState.canPlaceAt(collisionView, blockPos);
+			return blockState2.isAir() && !blockState3.isAir() && blockState3.method_21743(viewableWorld, blockPos2) && blockState.canPlaceAt(viewableWorld, blockPos);
 		}
 	}
 
@@ -435,12 +435,12 @@ public class EndermanEntity extends HostileEntity {
 		private final TargetPredicate staringPlayerPredicate;
 		private final TargetPredicate validTargetPredicate = new TargetPredicate().includeHidden();
 
-		public TeleportTowardsPlayerGoal(EndermanEntity enderman) {
-			super(enderman, PlayerEntity.class, false);
-			this.enderman = enderman;
+		public TeleportTowardsPlayerGoal(EndermanEntity endermanEntity) {
+			super(endermanEntity, PlayerEntity.class, false);
+			this.enderman = endermanEntity;
 			this.staringPlayerPredicate = new TargetPredicate()
 				.setBaseMaxDistance(this.getFollowRange())
-				.setPredicate(playerEntity -> enderman.isPlayerStaring((PlayerEntity)playerEntity));
+				.setPredicate(livingEntity -> endermanEntity.isPlayerStaring((PlayerEntity)livingEntity));
 		}
 
 		@Override

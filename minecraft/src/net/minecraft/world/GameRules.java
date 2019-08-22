@@ -14,8 +14,8 @@ import java.util.function.BiConsumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
 import javax.annotation.Nullable;
+import net.minecraft.client.network.packet.EntityStatusS2CPacket;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.network.packet.s2c.play.EntityStatusS2CPacket;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
@@ -25,7 +25,7 @@ import org.apache.logging.log4j.Logger;
 
 public class GameRules {
 	private static final Logger LOGGER = LogManager.getLogger();
-	private static final Map<GameRules.RuleKey<?>, GameRules.RuleType<?>> RULE_TYPES = Maps.newTreeMap(Comparator.comparing(key -> key.name));
+	private static final Map<GameRules.RuleKey<?>, GameRules.RuleType<?>> RULES = Maps.newTreeMap(Comparator.comparing(ruleKey -> ruleKey.name));
 	public static final GameRules.RuleKey<GameRules.BooleanRule> DO_FIRE_TICK = register("doFireTick", GameRules.BooleanRule.of(true));
 	public static final GameRules.RuleKey<GameRules.BooleanRule> MOB_GRIEFING = register("mobGriefing", GameRules.BooleanRule.of(true));
 	public static final GameRules.RuleKey<GameRules.BooleanRule> KEEP_INVENTORY = register("keepInventory", GameRules.BooleanRule.of(false));
@@ -41,10 +41,10 @@ public class GameRules {
 	public static final GameRules.RuleKey<GameRules.IntRule> RANDOM_TICK_SPEED = register("randomTickSpeed", GameRules.IntRule.of(3));
 	public static final GameRules.RuleKey<GameRules.BooleanRule> SEND_COMMAND_FEEDBACK = register("sendCommandFeedback", GameRules.BooleanRule.of(true));
 	public static final GameRules.RuleKey<GameRules.BooleanRule> REDUCED_DEBUG_INFO = register(
-		"reducedDebugInfo", GameRules.BooleanRule.of(false, (server, rule) -> {
-			byte b = (byte)(rule.get() ? 22 : 23);
+		"reducedDebugInfo", GameRules.BooleanRule.of(false, (minecraftServer, booleanRule) -> {
+			byte b = (byte)(booleanRule.get() ? 22 : 23);
 
-			for (ServerPlayerEntity serverPlayerEntity : server.getPlayerManager().getPlayerList()) {
+			for (ServerPlayerEntity serverPlayerEntity : minecraftServer.getPlayerManager().getPlayerList()) {
 				serverPlayerEntity.networkHandler.sendPacket(new EntityStatusS2CPacket(serverPlayerEntity, b));
 			}
 		})
@@ -60,79 +60,81 @@ public class GameRules {
 	public static final GameRules.RuleKey<GameRules.IntRule> MAX_COMMAND_CHAIN_LENGTH = register("maxCommandChainLength", GameRules.IntRule.of(65536));
 	public static final GameRules.RuleKey<GameRules.BooleanRule> ANNOUNCE_ADVANCEMENTS = register("announceAdvancements", GameRules.BooleanRule.of(true));
 	public static final GameRules.RuleKey<GameRules.BooleanRule> DISABLE_RAIDS = register("disableRaids", GameRules.BooleanRule.of(false));
-	private final Map<GameRules.RuleKey<?>, GameRules.Rule<?>> rules = (Map<GameRules.RuleKey<?>, GameRules.Rule<?>>)RULE_TYPES.entrySet()
+	private final Map<GameRules.RuleKey<?>, GameRules.Rule<?>> rules = (Map<GameRules.RuleKey<?>, GameRules.Rule<?>>)RULES.entrySet()
 		.stream()
-		.collect(ImmutableMap.toImmutableMap(Entry::getKey, e -> ((GameRules.RuleType)e.getValue()).newRule()));
+		.collect(ImmutableMap.toImmutableMap(Entry::getKey, entry -> ((GameRules.RuleType)entry.getValue()).newRule()));
 
-	private static <T extends GameRules.Rule<T>> GameRules.RuleKey<T> register(String name, GameRules.RuleType<T> type) {
-		GameRules.RuleKey<T> ruleKey = new GameRules.RuleKey<>(name);
-		GameRules.RuleType<?> ruleType = (GameRules.RuleType<?>)RULE_TYPES.put(ruleKey, type);
-		if (ruleType != null) {
-			throw new IllegalStateException("Duplicate game rule registration for " + name);
+	private static <T extends GameRules.Rule<T>> GameRules.RuleKey<T> register(String string, GameRules.RuleType<T> ruleType) {
+		GameRules.RuleKey<T> ruleKey = new GameRules.RuleKey<>(string);
+		GameRules.RuleType<?> ruleType2 = (GameRules.RuleType<?>)RULES.put(ruleKey, ruleType);
+		if (ruleType2 != null) {
+			throw new IllegalStateException("Duplicate game rule registration for " + string);
 		} else {
 			return ruleKey;
 		}
 	}
 
-	public <T extends GameRules.Rule<T>> T get(GameRules.RuleKey<T> key) {
-		return (T)this.rules.get(key);
+	public <T extends GameRules.Rule<T>> T get(GameRules.RuleKey<T> ruleKey) {
+		return (T)this.rules.get(ruleKey);
 	}
 
 	public CompoundTag toNbt() {
 		CompoundTag compoundTag = new CompoundTag();
-		this.rules.forEach((key, rule) -> compoundTag.putString(key.name, rule.valueToString()));
+		this.rules.forEach((ruleKey, rule) -> compoundTag.putString(ruleKey.name, rule.valueToString()));
 		return compoundTag;
 	}
 
-	public void load(CompoundTag nbt) {
-		this.rules.forEach((key, rule) -> rule.setFromString(nbt.getString(key.name)));
+	public void fromNbt(CompoundTag compoundTag) {
+		this.rules.forEach((ruleKey, rule) -> rule.setFromString(compoundTag.getString(ruleKey.name)));
 	}
 
-	public static void forEachType(GameRules.RuleConsumer action) {
-		RULE_TYPES.forEach((key, type) -> accept(action, key, type));
+	public static void forEach(GameRules.RuleConsumer ruleConsumer) {
+		RULES.forEach((ruleKey, ruleType) -> consumeTyped(ruleConsumer, ruleKey, ruleType));
 	}
 
-	private static <T extends GameRules.Rule<T>> void accept(GameRules.RuleConsumer consumer, GameRules.RuleKey<?> key, GameRules.RuleType<?> type) {
-		consumer.accept(key, type);
+	private static <T extends GameRules.Rule<T>> void consumeTyped(
+		GameRules.RuleConsumer ruleConsumer, GameRules.RuleKey<?> ruleKey, GameRules.RuleType<?> ruleType
+	) {
+		ruleConsumer.accept(ruleKey, ruleType);
 	}
 
-	public boolean getBoolean(GameRules.RuleKey<GameRules.BooleanRule> rule) {
-		return this.get(rule).get();
+	public boolean getBoolean(GameRules.RuleKey<GameRules.BooleanRule> ruleKey) {
+		return this.get(ruleKey).get();
 	}
 
-	public int getInt(GameRules.RuleKey<GameRules.IntRule> rule) {
-		return this.get(rule).get();
+	public int getInt(GameRules.RuleKey<GameRules.IntRule> ruleKey) {
+		return this.get(ruleKey).get();
 	}
 
 	public static class BooleanRule extends GameRules.Rule<GameRules.BooleanRule> {
 		private boolean value;
 
-		private static GameRules.RuleType<GameRules.BooleanRule> of(boolean value, BiConsumer<MinecraftServer, GameRules.BooleanRule> notifier) {
-			return new GameRules.RuleType<>(BoolArgumentType::bool, type -> new GameRules.BooleanRule(type, value), notifier);
+		private static GameRules.RuleType<GameRules.BooleanRule> of(boolean bl, BiConsumer<MinecraftServer, GameRules.BooleanRule> biConsumer) {
+			return new GameRules.RuleType<>(BoolArgumentType::bool, ruleType -> new GameRules.BooleanRule(ruleType, bl), biConsumer);
 		}
 
-		private static GameRules.RuleType<GameRules.BooleanRule> of(boolean value) {
-			return of(value, (server, rule) -> {
+		private static GameRules.RuleType<GameRules.BooleanRule> of(boolean bl) {
+			return of(bl, (minecraftServer, booleanRule) -> {
 			});
 		}
 
-		public BooleanRule(GameRules.RuleType<GameRules.BooleanRule> type, boolean value) {
-			super(type);
-			this.value = value;
+		public BooleanRule(GameRules.RuleType<GameRules.BooleanRule> ruleType, boolean bl) {
+			super(ruleType);
+			this.value = bl;
 		}
 
 		@Override
-		protected void setFromArgument(CommandContext<ServerCommandSource> context, String name) {
-			this.value = BoolArgumentType.getBool(context, name);
+		protected void setFromArgument(CommandContext<ServerCommandSource> commandContext, String string) {
+			this.value = BoolArgumentType.getBool(commandContext, string);
 		}
 
 		public boolean get() {
 			return this.value;
 		}
 
-		public void set(boolean value, @Nullable MinecraftServer server) {
-			this.value = value;
-			this.notify(server);
+		public void set(boolean bl, @Nullable MinecraftServer minecraftServer) {
+			this.value = bl;
+			this.notify(minecraftServer);
 		}
 
 		@Override
@@ -141,8 +143,8 @@ public class GameRules {
 		}
 
 		@Override
-		protected void setFromString(String value) {
-			this.value = Boolean.parseBoolean(value);
+		protected void setFromString(String string) {
+			this.value = Boolean.parseBoolean(string);
 		}
 
 		@Override
@@ -150,7 +152,7 @@ public class GameRules {
 			return this.value ? 1 : 0;
 		}
 
-		protected GameRules.BooleanRule getThis() {
+		protected GameRules.BooleanRule method_20761() {
 			return this;
 		}
 	}
@@ -158,23 +160,23 @@ public class GameRules {
 	public static class IntRule extends GameRules.Rule<GameRules.IntRule> {
 		private int value;
 
-		private static GameRules.RuleType<GameRules.IntRule> of(int value, BiConsumer<MinecraftServer, GameRules.IntRule> notifier) {
-			return new GameRules.RuleType<>(IntegerArgumentType::integer, type -> new GameRules.IntRule(type, value), notifier);
+		private static GameRules.RuleType<GameRules.IntRule> of(int i, BiConsumer<MinecraftServer, GameRules.IntRule> biConsumer) {
+			return new GameRules.RuleType<>(IntegerArgumentType::integer, ruleType -> new GameRules.IntRule(ruleType, i), biConsumer);
 		}
 
-		private static GameRules.RuleType<GameRules.IntRule> of(int value) {
-			return of(value, (server, rule) -> {
+		private static GameRules.RuleType<GameRules.IntRule> of(int i) {
+			return of(i, (minecraftServer, intRule) -> {
 			});
 		}
 
-		public IntRule(GameRules.RuleType<GameRules.IntRule> rule, int value) {
-			super(rule);
-			this.value = value;
+		public IntRule(GameRules.RuleType<GameRules.IntRule> ruleType, int i) {
+			super(ruleType);
+			this.value = i;
 		}
 
 		@Override
-		protected void setFromArgument(CommandContext<ServerCommandSource> context, String name) {
-			this.value = IntegerArgumentType.getInteger(context, name);
+		protected void setFromArgument(CommandContext<ServerCommandSource> commandContext, String string) {
+			this.value = IntegerArgumentType.getInteger(commandContext, string);
 		}
 
 		public int get() {
@@ -187,8 +189,8 @@ public class GameRules {
 		}
 
 		@Override
-		protected void setFromString(String value) {
-			this.value = parseInt(value);
+		protected void setFromString(String string) {
+			this.value = parseInt(string);
 		}
 
 		private static int parseInt(String string) {
@@ -208,7 +210,7 @@ public class GameRules {
 			return this.value;
 		}
 
-		protected GameRules.IntRule getThis() {
+		protected GameRules.IntRule method_20770() {
 			return this;
 		}
 	}
@@ -216,24 +218,24 @@ public class GameRules {
 	public abstract static class Rule<T extends GameRules.Rule<T>> {
 		private final GameRules.RuleType<T> type;
 
-		public Rule(GameRules.RuleType<T> type) {
-			this.type = type;
+		public Rule(GameRules.RuleType<T> ruleType) {
+			this.type = ruleType;
 		}
 
-		protected abstract void setFromArgument(CommandContext<ServerCommandSource> context, String name);
+		protected abstract void setFromArgument(CommandContext<ServerCommandSource> commandContext, String string);
 
-		public void set(CommandContext<ServerCommandSource> context, String name) {
-			this.setFromArgument(context, name);
-			this.notify(context.getSource().getMinecraftServer());
+		public void set(CommandContext<ServerCommandSource> commandContext, String string) {
+			this.setFromArgument(commandContext, string);
+			this.notify(commandContext.getSource().getMinecraftServer());
 		}
 
-		protected void notify(@Nullable MinecraftServer server) {
-			if (server != null) {
-				this.type.notifier.accept(server, this.getThis());
+		protected void notify(@Nullable MinecraftServer minecraftServer) {
+			if (minecraftServer != null) {
+				this.type.notifier.accept(minecraftServer, this.getThis());
 			}
 		}
 
-		protected abstract void setFromString(String value);
+		protected abstract void setFromString(String string);
 
 		protected abstract String valueToString();
 
@@ -248,22 +250,22 @@ public class GameRules {
 
 	@FunctionalInterface
 	public interface RuleConsumer {
-		<T extends GameRules.Rule<T>> void accept(GameRules.RuleKey<T> key, GameRules.RuleType<T> type);
+		<T extends GameRules.Rule<T>> void accept(GameRules.RuleKey<T> ruleKey, GameRules.RuleType<T> ruleType);
 	}
 
 	public static final class RuleKey<T extends GameRules.Rule<T>> {
 		private final String name;
 
-		public RuleKey(String name) {
-			this.name = name;
+		public RuleKey(String string) {
+			this.name = string;
 		}
 
 		public String toString() {
 			return this.name;
 		}
 
-		public boolean equals(Object obj) {
-			return this == obj ? true : obj instanceof GameRules.RuleKey && ((GameRules.RuleKey)obj).name.equals(this.name);
+		public boolean equals(Object object) {
+			return this == object ? true : object instanceof GameRules.RuleKey && ((GameRules.RuleKey)object).name.equals(this.name);
 		}
 
 		public int hashCode() {
@@ -280,14 +282,14 @@ public class GameRules {
 		private final Function<GameRules.RuleType<T>, T> factory;
 		private final BiConsumer<MinecraftServer, T> notifier;
 
-		private RuleType(Supplier<ArgumentType<?>> argumentType, Function<GameRules.RuleType<T>, T> factory, BiConsumer<MinecraftServer, T> notifier) {
-			this.argumentType = argumentType;
-			this.factory = factory;
-			this.notifier = notifier;
+		private RuleType(Supplier<ArgumentType<?>> supplier, Function<GameRules.RuleType<T>, T> function, BiConsumer<MinecraftServer, T> biConsumer) {
+			this.argumentType = supplier;
+			this.factory = function;
+			this.notifier = biConsumer;
 		}
 
-		public RequiredArgumentBuilder<ServerCommandSource, ?> argument(String name) {
-			return CommandManager.argument(name, (ArgumentType<T>)this.argumentType.get());
+		public RequiredArgumentBuilder<ServerCommandSource, ?> argument(String string) {
+			return CommandManager.argument(string, (ArgumentType<T>)this.argumentType.get());
 		}
 
 		public T newRule() {

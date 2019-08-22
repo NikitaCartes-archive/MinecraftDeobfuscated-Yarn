@@ -53,21 +53,21 @@ public class NetworkEncryptionUtils {
 		}
 	}
 
-	public static byte[] generateServerId(String baseServerId, PublicKey publicKey, SecretKey secretKey) {
+	public static byte[] generateServerId(String string, PublicKey publicKey, SecretKey secretKey) {
 		try {
-			return hash("SHA-1", baseServerId.getBytes("ISO_8859_1"), secretKey.getEncoded(), publicKey.getEncoded());
+			return hash("SHA-1", string.getBytes("ISO_8859_1"), secretKey.getEncoded(), publicKey.getEncoded());
 		} catch (UnsupportedEncodingException var4) {
 			var4.printStackTrace();
 			return null;
 		}
 	}
 
-	private static byte[] hash(String algorithm, byte[]... data) {
+	private static byte[] hash(String string, byte[]... bs) {
 		try {
-			MessageDigest messageDigest = MessageDigest.getInstance(algorithm);
+			MessageDigest messageDigest = MessageDigest.getInstance(string);
 
-			for (byte[] bs : data) {
-				messageDigest.update(bs);
+			for (byte[] cs : bs) {
+				messageDigest.update(cs);
 			}
 
 			return messageDigest.digest();
@@ -90,22 +90,22 @@ public class NetworkEncryptionUtils {
 		return null;
 	}
 
-	public static SecretKey decryptSecretKey(PrivateKey privateKey, byte[] encryptedSecretKey) {
-		return new SecretKeySpec(decrypt(privateKey, encryptedSecretKey), "AES");
+	public static SecretKey decryptSecretKey(PrivateKey privateKey, byte[] bs) {
+		return new SecretKeySpec(decrypt(privateKey, bs), "AES");
 	}
 
 	@Environment(EnvType.CLIENT)
-	public static byte[] encrypt(Key key, byte[] data) {
-		return crypt(1, key, data);
+	public static byte[] encrypt(Key key, byte[] bs) {
+		return crypt(1, key, bs);
 	}
 
-	public static byte[] decrypt(Key key, byte[] data) {
-		return crypt(2, key, data);
+	public static byte[] decrypt(Key key, byte[] bs) {
+		return crypt(2, key, bs);
 	}
 
-	private static byte[] crypt(int opMode, Key key, byte[] data) {
+	private static byte[] crypt(int i, Key key, byte[] bs) {
 		try {
-			return crypt(opMode, key.getAlgorithm(), key).doFinal(data);
+			return crypt(i, key.getAlgorithm(), key).doFinal(bs);
 		} catch (IllegalBlockSizeException var4) {
 			var4.printStackTrace();
 		} catch (BadPaddingException var5) {
@@ -116,10 +116,10 @@ public class NetworkEncryptionUtils {
 		return null;
 	}
 
-	private static Cipher crypt(int opMode, String algorithm, Key key) {
+	private static Cipher crypt(int i, String string, Key key) {
 		try {
-			Cipher cipher = Cipher.getInstance(algorithm);
-			cipher.init(opMode, key);
+			Cipher cipher = Cipher.getInstance(string);
+			cipher.init(i, key);
 			return cipher;
 		} catch (InvalidKeyException var4) {
 			var4.printStackTrace();
@@ -133,10 +133,10 @@ public class NetworkEncryptionUtils {
 		return null;
 	}
 
-	public static Cipher cipherFromKey(int opMode, Key key) {
+	public static Cipher cipherFromKey(int i, Key key) {
 		try {
 			Cipher cipher = Cipher.getInstance("AES/CFB8/NoPadding");
-			cipher.init(opMode, key, new IvParameterSpec(key.getEncoded()));
+			cipher.init(i, key, new IvParameterSpec(key.getEncoded()));
 			return cipher;
 		} catch (GeneralSecurityException var3) {
 			throw new RuntimeException(var3);

@@ -22,8 +22,8 @@ import net.minecraft.util.math.Vec3d;
 public class SummonCommand {
 	private static final SimpleCommandExceptionType FAILED_EXCEPTION = new SimpleCommandExceptionType(new TranslatableText("commands.summon.failed"));
 
-	public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
-		dispatcher.register(
+	public static void register(CommandDispatcher<ServerCommandSource> commandDispatcher) {
+		commandDispatcher.register(
 			CommandManager.literal("summon")
 				.requires(serverCommandSource -> serverCommandSource.hasPermissionLevel(2))
 				.then(
@@ -66,28 +66,29 @@ public class SummonCommand {
 		);
 	}
 
-	private static int execute(ServerCommandSource source, Identifier entity, Vec3d pos, CompoundTag nbt, boolean initialize) throws CommandSyntaxException {
-		CompoundTag compoundTag = nbt.copy();
-		compoundTag.putString("id", entity.toString());
-		if (EntityType.getId(EntityType.LIGHTNING_BOLT).equals(entity)) {
-			LightningEntity lightningEntity = new LightningEntity(source.getWorld(), pos.x, pos.y, pos.z, false);
-			source.getWorld().addLightning(lightningEntity);
-			source.sendFeedback(new TranslatableText("commands.summon.success", lightningEntity.getDisplayName()), true);
+	private static int execute(ServerCommandSource serverCommandSource, Identifier identifier, Vec3d vec3d, CompoundTag compoundTag, boolean bl) throws CommandSyntaxException {
+		CompoundTag compoundTag2 = compoundTag.method_10553();
+		compoundTag2.putString("id", identifier.toString());
+		if (EntityType.getId(EntityType.LIGHTNING_BOLT).equals(identifier)) {
+			LightningEntity lightningEntity = new LightningEntity(serverCommandSource.getWorld(), vec3d.x, vec3d.y, vec3d.z, false);
+			serverCommandSource.getWorld().addLightning(lightningEntity);
+			serverCommandSource.sendFeedback(new TranslatableText("commands.summon.success", lightningEntity.getDisplayName()), true);
 			return 1;
 		} else {
-			ServerWorld serverWorld = source.getWorld();
-			Entity entity2 = EntityType.loadEntityWithPassengers(compoundTag, serverWorld, entityx -> {
-				entityx.refreshPositionAndAngles(pos.x, pos.y, pos.z, entityx.yaw, entityx.pitch);
+			ServerWorld serverWorld = serverCommandSource.getWorld();
+			Entity entity = EntityType.loadEntityWithPassengers(compoundTag2, serverWorld, entityx -> {
+				entityx.setPositionAndAngles(vec3d.x, vec3d.y, vec3d.z, entityx.yaw, entityx.pitch);
 				return !serverWorld.method_18768(entityx) ? null : entityx;
 			});
-			if (entity2 == null) {
+			if (entity == null) {
 				throw FAILED_EXCEPTION.create();
 			} else {
-				if (initialize && entity2 instanceof MobEntity) {
-					((MobEntity)entity2).initialize(source.getWorld(), source.getWorld().getLocalDifficulty(new BlockPos(entity2)), SpawnType.COMMAND, null, null);
+				if (bl && entity instanceof MobEntity) {
+					((MobEntity)entity)
+						.initialize(serverCommandSource.getWorld(), serverCommandSource.getWorld().getLocalDifficulty(new BlockPos(entity)), SpawnType.COMMAND, null, null);
 				}
 
-				source.sendFeedback(new TranslatableText("commands.summon.success", entity2.getDisplayName()), true);
+				serverCommandSource.sendFeedback(new TranslatableText("commands.summon.success", entity.getDisplayName()), true);
 				return 1;
 			}
 		}

@@ -1,8 +1,9 @@
 package net.minecraft.client.render.block.entity;
 
-import com.mojang.blaze3d.platform.GlStateManager;
+import com.mojang.blaze3d.systems.RenderSystem;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.class_4493;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.entity.StructureBlockBlockEntity;
@@ -17,7 +18,7 @@ import net.minecraft.world.BlockView;
 
 @Environment(EnvType.CLIENT)
 public class StructureBlockBlockEntityRenderer extends BlockEntityRenderer<StructureBlockBlockEntity> {
-	public void render(StructureBlockBlockEntity structureBlockBlockEntity, double d, double e, double f, float g, int i) {
+	public void method_3587(StructureBlockBlockEntity structureBlockBlockEntity, double d, double e, double f, float g, int i) {
 		if (MinecraftClient.getInstance().player.isCreativeLevelTwoOp() || MinecraftClient.getInstance().player.isSpectator()) {
 			super.render(structureBlockBlockEntity, d, e, f, g, i);
 			BlockPos blockPos = structureBlockBlockEntity.getOffset();
@@ -79,13 +80,13 @@ public class StructureBlockBlockEntityRenderer extends BlockEntityRenderer<Struc
 					int u = 223;
 					int v = 127;
 					Tessellator tessellator = Tessellator.getInstance();
-					BufferBuilder bufferBuilder = tessellator.getBuffer();
-					GlStateManager.disableFog();
-					GlStateManager.disableLighting();
-					GlStateManager.disableTexture();
-					GlStateManager.enableBlend();
-					GlStateManager.blendFuncSeparate(
-						GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO
+					BufferBuilder bufferBuilder = tessellator.getBufferBuilder();
+					RenderSystem.disableFog();
+					RenderSystem.disableLighting();
+					RenderSystem.disableTexture();
+					RenderSystem.enableBlend();
+					RenderSystem.blendFuncSeparate(
+						class_4493.class_4535.SRC_ALPHA, class_4493.class_4534.ONE_MINUS_SRC_ALPHA, class_4493.class_4535.ONE, class_4493.class_4534.ZERO
 					);
 					this.disableLightmap(true);
 					if (structureBlockBlockEntity.getMode() == StructureBlockMode.SAVE || structureBlockBlockEntity.shouldShowBoundingBox()) {
@@ -98,12 +99,12 @@ public class StructureBlockBlockEntityRenderer extends BlockEntityRenderer<Struc
 					}
 
 					this.disableLightmap(false);
-					GlStateManager.lineWidth(1.0F);
-					GlStateManager.enableLighting();
-					GlStateManager.enableTexture();
-					GlStateManager.enableDepthTest();
-					GlStateManager.depthMask(true);
-					GlStateManager.enableFog();
+					RenderSystem.lineWidth(1.0F);
+					RenderSystem.enableLighting();
+					RenderSystem.enableTexture();
+					RenderSystem.enableDepthTest();
+					RenderSystem.depthMask(true);
+					RenderSystem.enableFog();
 				}
 			}
 		}
@@ -119,7 +120,7 @@ public class StructureBlockBlockEntityRenderer extends BlockEntityRenderer<Struc
 		BufferBuilder bufferBuilder,
 		boolean bl
 	) {
-		GlStateManager.lineWidth(bl ? 3.0F : 1.0F);
+		RenderSystem.lineWidth(bl ? 3.0F : 1.0F);
 		bufferBuilder.begin(3, VertexFormats.POSITION_COLOR);
 		BlockView blockView = structureBlockBlockEntity.getWorld();
 		BlockPos blockPos2 = structureBlockBlockEntity.getPos();
@@ -138,11 +139,11 @@ public class StructureBlockBlockEntityRenderer extends BlockEntityRenderer<Struc
 				double l = (double)((float)(blockPos4.getY() - blockPos2.getY()) + 0.55F) + e + (double)g;
 				double m = (double)((float)(blockPos4.getZ() - blockPos2.getZ()) + 0.55F) + f + (double)g;
 				if (bl) {
-					WorldRenderer.drawBox(bufferBuilder, h, i, j, k, l, m, 0.0F, 0.0F, 0.0F, 1.0F);
+					WorldRenderer.buildBoxOutline(bufferBuilder, h, i, j, k, l, m, 0.0F, 0.0F, 0.0F, 1.0F);
 				} else if (bl2) {
-					WorldRenderer.drawBox(bufferBuilder, h, i, j, k, l, m, 0.5F, 0.5F, 1.0F, 1.0F);
+					WorldRenderer.buildBoxOutline(bufferBuilder, h, i, j, k, l, m, 0.5F, 0.5F, 1.0F, 1.0F);
 				} else {
-					WorldRenderer.drawBox(bufferBuilder, h, i, j, k, l, m, 1.0F, 0.25F, 0.25F, 1.0F);
+					WorldRenderer.buildBoxOutline(bufferBuilder, h, i, j, k, l, m, 1.0F, 0.25F, 0.25F, 1.0F);
 				}
 			}
 		}
@@ -151,7 +152,7 @@ public class StructureBlockBlockEntityRenderer extends BlockEntityRenderer<Struc
 	}
 
 	private void method_3586(Tessellator tessellator, BufferBuilder bufferBuilder, double d, double e, double f, double g, double h, double i, int j, int k, int l) {
-		GlStateManager.lineWidth(2.0F);
+		RenderSystem.lineWidth(2.0F);
 		bufferBuilder.begin(3, VertexFormats.POSITION_COLOR);
 		bufferBuilder.vertex(d, e, f).color((float)k, (float)k, (float)k, 0.0F).next();
 		bufferBuilder.vertex(d, e, f).color(k, k, k, j).next();
@@ -172,10 +173,10 @@ public class StructureBlockBlockEntityRenderer extends BlockEntityRenderer<Struc
 		bufferBuilder.vertex(g, e, f).color(k, k, k, j).next();
 		bufferBuilder.vertex(g, e, f).color((float)k, (float)k, (float)k, 0.0F).next();
 		tessellator.draw();
-		GlStateManager.lineWidth(1.0F);
+		RenderSystem.lineWidth(1.0F);
 	}
 
-	public boolean method_3563(StructureBlockBlockEntity structureBlockBlockEntity) {
+	public boolean method_3588(StructureBlockBlockEntity structureBlockBlockEntity) {
 		return true;
 	}
 }

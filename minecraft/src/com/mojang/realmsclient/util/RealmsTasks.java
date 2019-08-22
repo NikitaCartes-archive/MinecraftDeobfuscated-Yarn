@@ -35,9 +35,9 @@ import org.apache.logging.log4j.Logger;
 public class RealmsTasks {
 	private static final Logger LOGGER = LogManager.getLogger();
 
-	private static void pause(int seconds) {
+	private static void pause(int i) {
 		try {
-			Thread.sleep((long)(seconds * 1000));
+			Thread.sleep((long)(i * 1000));
 		} catch (InterruptedException var2) {
 			LOGGER.error("", (Throwable)var2);
 		}
@@ -48,9 +48,9 @@ public class RealmsTasks {
 		private final RealmsServer serverData;
 		private final RealmsConfigureWorldScreen configureScreen;
 
-		public CloseServerTask(RealmsServer realmsServer, RealmsConfigureWorldScreen configureWorldScreen) {
+		public CloseServerTask(RealmsServer realmsServer, RealmsConfigureWorldScreen realmsConfigureWorldScreen) {
 			this.serverData = realmsServer;
-			this.configureScreen = configureWorldScreen;
+			this.configureScreen = realmsConfigureWorldScreen;
 		}
 
 		public void run() {
@@ -95,11 +95,11 @@ public class RealmsTasks {
 		private final RealmsScreen lastScreen;
 		private final String downloadName;
 
-		public DownloadTask(long worldId, int slot, String downloadName, RealmsScreen lastScreen) {
-			this.worldId = worldId;
-			this.slot = slot;
-			this.lastScreen = lastScreen;
-			this.downloadName = downloadName;
+		public DownloadTask(long l, int i, String string, RealmsScreen realmsScreen) {
+			this.worldId = l;
+			this.slot = i;
+			this.lastScreen = realmsScreen;
+			this.downloadName = string;
 		}
 
 		public void run() {
@@ -156,11 +156,11 @@ public class RealmsTasks {
 		private final boolean join;
 		private final RealmsScreen mainScreen;
 
-		public OpenServerTask(RealmsServer realmsServer, RealmsScreen returnScreen, RealmsScreen mainScreen, boolean join) {
+		public OpenServerTask(RealmsServer realmsServer, RealmsScreen realmsScreen, RealmsScreen realmsScreen2, boolean bl) {
 			this.serverData = realmsServer;
-			this.returnScreen = returnScreen;
-			this.join = join;
-			this.mainScreen = mainScreen;
+			this.returnScreen = realmsScreen;
+			this.join = bl;
+			this.mainScreen = realmsScreen2;
 		}
 
 		public void run() {
@@ -210,9 +210,9 @@ public class RealmsTasks {
 		private final RealmsConnect realmsConnect;
 		private final RealmsServerAddress a;
 
-		public RealmsConnectTask(RealmsScreen lastScreen, RealmsServerAddress address) {
-			this.a = address;
-			this.realmsConnect = new RealmsConnect(lastScreen);
+		public RealmsConnectTask(RealmsScreen realmsScreen, RealmsServerAddress realmsServerAddress) {
+			this.a = realmsServerAddress;
+			this.realmsConnect = new RealmsConnect(realmsScreen);
 		}
 
 		public void run() {
@@ -240,11 +240,11 @@ public class RealmsTasks {
 		private final RealmsMainScreen mainScreen;
 		private final ReentrantLock connectLock;
 
-		public RealmsGetServerDetailsTask(RealmsMainScreen mainScreen, RealmsScreen lastScreen, RealmsServer server, ReentrantLock connectLock) {
-			this.lastScreen = lastScreen;
-			this.mainScreen = mainScreen;
-			this.server = server;
-			this.connectLock = connectLock;
+		public RealmsGetServerDetailsTask(RealmsMainScreen realmsMainScreen, RealmsScreen realmsScreen, RealmsServer realmsServer, ReentrantLock reentrantLock) {
+			this.lastScreen = realmsScreen;
+			this.mainScreen = realmsMainScreen;
+			this.server = realmsServer;
+			this.connectLock = reentrantLock;
 		}
 
 		public void run() {
@@ -315,7 +315,7 @@ public class RealmsTasks {
 						Realms.setScreen(
 							new RealmsLongConfirmationScreen(
 								new RealmsResourcePackScreen(this.lastScreen, realmsServerAddress, this.connectLock),
-								RealmsLongConfirmationScreen.Type.Info,
+								RealmsLongConfirmationScreen.Type.INFO,
 								string,
 								string2,
 								true,
@@ -335,9 +335,9 @@ public class RealmsTasks {
 			}
 		}
 
-		private void sleep(int sleepTimeSeconds) {
+		private void sleep(int i) {
 			try {
-				Thread.sleep((long)(sleepTimeSeconds * 1000));
+				Thread.sleep((long)(i * 1000));
 			} catch (InterruptedException var3) {
 				RealmsTasks.LOGGER.warn(var3.getLocalizedMessage());
 			}
@@ -355,30 +355,30 @@ public class RealmsTasks {
 		private int confirmationId = -1;
 		private String title = RealmsScreen.getLocalizedString("mco.reset.world.resetting.screen.title");
 
-		public ResettingWorldTask(long serverId, RealmsScreen lastScreen, WorldTemplate worldTemplate) {
+		public ResettingWorldTask(long l, RealmsScreen realmsScreen, WorldTemplate worldTemplate) {
 			this.seed = null;
 			this.worldTemplate = worldTemplate;
 			this.levelType = -1;
 			this.generateStructures = true;
-			this.serverId = serverId;
-			this.lastScreen = lastScreen;
+			this.serverId = l;
+			this.lastScreen = realmsScreen;
 		}
 
-		public ResettingWorldTask(long serverId, RealmsScreen lastScreen, String seed, int levelType, boolean generateStructures) {
-			this.seed = seed;
+		public ResettingWorldTask(long l, RealmsScreen realmsScreen, String string, int i, boolean bl) {
+			this.seed = string;
 			this.worldTemplate = null;
-			this.levelType = levelType;
-			this.generateStructures = generateStructures;
-			this.serverId = serverId;
-			this.lastScreen = lastScreen;
+			this.levelType = i;
+			this.generateStructures = bl;
+			this.serverId = l;
+			this.lastScreen = realmsScreen;
 		}
 
-		public void setConfirmationId(int confirmationId) {
-			this.confirmationId = confirmationId;
+		public void setConfirmationId(int i) {
+			this.confirmationId = i;
 		}
 
-		public void setResetTitle(String title) {
-			this.title = title;
+		public void setResetTitle(String string) {
+			this.title = string;
 		}
 
 		public void run() {
@@ -435,10 +435,10 @@ public class RealmsTasks {
 		private final long worldId;
 		private final RealmsConfigureWorldScreen lastScreen;
 
-		public RestoreTask(Backup backup, long worldId, RealmsConfigureWorldScreen lastScreen) {
+		public RestoreTask(Backup backup, long l, RealmsConfigureWorldScreen realmsConfigureWorldScreen) {
 			this.backup = backup;
-			this.worldId = worldId;
-			this.lastScreen = lastScreen;
+			this.worldId = l;
+			this.lastScreen = realmsConfigureWorldScreen;
 		}
 
 		public void run() {
@@ -494,10 +494,10 @@ public class RealmsTasks {
 		private final WorldTemplate worldTemplate;
 		private final RealmsConfigureWorldScreen lastScreen;
 
-		public SwitchMinigameTask(long worldId, WorldTemplate worldTemplate, RealmsConfigureWorldScreen lastScreen) {
-			this.worldId = worldId;
+		public SwitchMinigameTask(long l, WorldTemplate worldTemplate, RealmsConfigureWorldScreen realmsConfigureWorldScreen) {
+			this.worldId = l;
 			this.worldTemplate = worldTemplate;
-			this.lastScreen = lastScreen;
+			this.lastScreen = realmsConfigureWorldScreen;
 		}
 
 		public void run() {
@@ -540,11 +540,11 @@ public class RealmsTasks {
 		private final RealmsConfirmResultListener listener;
 		private final int confirmId;
 
-		public SwitchSlotTask(long worldId, int slot, RealmsConfirmResultListener listener, int confirmId) {
-			this.worldId = worldId;
-			this.slot = slot;
-			this.listener = listener;
-			this.confirmId = confirmId;
+		public SwitchSlotTask(long l, int i, RealmsConfirmResultListener realmsConfirmResultListener, int j) {
+			this.worldId = l;
+			this.slot = i;
+			this.listener = realmsConfirmResultListener;
+			this.confirmId = j;
 		}
 
 		public void run() {
@@ -586,10 +586,10 @@ public class RealmsTasks {
 		private final String motd;
 		private final RealmsMainScreen lastScreen;
 
-		public TrialCreationTask(String name, String motd, RealmsMainScreen lastScreen) {
-			this.name = name;
-			this.motd = motd;
-			this.lastScreen = lastScreen;
+		public TrialCreationTask(String string, String string2, RealmsMainScreen realmsMainScreen) {
+			this.name = string;
+			this.motd = string2;
+			this.lastScreen = realmsMainScreen;
 		}
 
 		public void run() {
@@ -639,11 +639,11 @@ public class RealmsTasks {
 		private final long worldId;
 		private final RealmsScreen lastScreen;
 
-		public WorldCreationTask(long worldId, String name, String motd, RealmsScreen lastScreen) {
-			this.worldId = worldId;
-			this.name = name;
-			this.motd = motd;
-			this.lastScreen = lastScreen;
+		public WorldCreationTask(long l, String string, String string2, RealmsScreen realmsScreen) {
+			this.worldId = l;
+			this.name = string;
+			this.motd = string2;
+			this.lastScreen = realmsScreen;
 		}
 
 		public void run() {

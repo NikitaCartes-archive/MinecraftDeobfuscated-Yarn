@@ -9,7 +9,7 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.particle.DustParticleEffect;
-import net.minecraft.state.StateManager;
+import net.minecraft.state.StateFactory;
 import net.minecraft.state.property.BooleanProperty;
 import net.minecraft.util.Hand;
 import net.minecraft.util.hit.BlockHitResult;
@@ -26,77 +26,77 @@ public class RedstoneOreBlock extends Block {
 	}
 
 	@Override
-	public int getLuminance(BlockState state) {
-		return state.get(LIT) ? super.getLuminance(state) : 0;
+	public int getLuminance(BlockState blockState) {
+		return blockState.get(LIT) ? super.getLuminance(blockState) : 0;
 	}
 
 	@Override
-	public void onBlockBreakStart(BlockState state, World world, BlockPos pos, PlayerEntity player) {
-		light(state, world, pos);
-		super.onBlockBreakStart(state, world, pos, player);
+	public void onBlockBreakStart(BlockState blockState, World world, BlockPos blockPos, PlayerEntity playerEntity) {
+		light(blockState, world, blockPos);
+		super.onBlockBreakStart(blockState, world, blockPos, playerEntity);
 	}
 
 	@Override
-	public void onSteppedOn(World world, BlockPos pos, Entity entity) {
-		light(world.getBlockState(pos), world, pos);
-		super.onSteppedOn(world, pos, entity);
+	public void onSteppedOn(World world, BlockPos blockPos, Entity entity) {
+		light(world.getBlockState(blockPos), world, blockPos);
+		super.onSteppedOn(world, blockPos, entity);
 	}
 
 	@Override
-	public boolean activate(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
-		light(state, world, pos);
-		return super.activate(state, world, pos, player, hand, hit);
+	public boolean activate(BlockState blockState, World world, BlockPos blockPos, PlayerEntity playerEntity, Hand hand, BlockHitResult blockHitResult) {
+		light(blockState, world, blockPos);
+		return super.activate(blockState, world, blockPos, playerEntity, hand, blockHitResult);
 	}
 
-	private static void light(BlockState state, World world, BlockPos pos) {
-		spawnParticles(world, pos);
-		if (!(Boolean)state.get(LIT)) {
-			world.setBlockState(pos, state.with(LIT, Boolean.valueOf(true)), 3);
+	private static void light(BlockState blockState, World world, BlockPos blockPos) {
+		spawnParticles(world, blockPos);
+		if (!(Boolean)blockState.get(LIT)) {
+			world.setBlockState(blockPos, blockState.with(LIT, Boolean.valueOf(true)), 3);
 		}
 	}
 
 	@Override
-	public void onScheduledTick(BlockState state, World world, BlockPos pos, Random random) {
-		if ((Boolean)state.get(LIT)) {
-			world.setBlockState(pos, state.with(LIT, Boolean.valueOf(false)), 3);
+	public void onScheduledTick(BlockState blockState, World world, BlockPos blockPos, Random random) {
+		if ((Boolean)blockState.get(LIT)) {
+			world.setBlockState(blockPos, blockState.with(LIT, Boolean.valueOf(false)), 3);
 		}
 	}
 
 	@Override
-	public void onStacksDropped(BlockState state, World world, BlockPos pos, ItemStack stack) {
-		super.onStacksDropped(state, world, pos, stack);
-		if (EnchantmentHelper.getLevel(Enchantments.SILK_TOUCH, stack) == 0) {
+	public void onStacksDropped(BlockState blockState, World world, BlockPos blockPos, ItemStack itemStack) {
+		super.onStacksDropped(blockState, world, blockPos, itemStack);
+		if (EnchantmentHelper.getLevel(Enchantments.SILK_TOUCH, itemStack) == 0) {
 			int i = 1 + world.random.nextInt(5);
-			this.dropExperience(world, pos, i);
+			this.dropExperience(world, blockPos, i);
 		}
 	}
 
 	@Environment(EnvType.CLIENT)
 	@Override
-	public void randomDisplayTick(BlockState state, World world, BlockPos pos, Random random) {
-		if ((Boolean)state.get(LIT)) {
-			spawnParticles(world, pos);
+	public void randomDisplayTick(BlockState blockState, World world, BlockPos blockPos, Random random) {
+		if ((Boolean)blockState.get(LIT)) {
+			spawnParticles(world, blockPos);
 		}
 	}
 
-	private static void spawnParticles(World world, BlockPos pos) {
+	private static void spawnParticles(World world, BlockPos blockPos) {
 		double d = 0.5625;
 		Random random = world.random;
 
 		for (Direction direction : Direction.values()) {
-			BlockPos blockPos = pos.offset(direction);
-			if (!world.getBlockState(blockPos).isFullOpaque(world, blockPos)) {
+			BlockPos blockPos2 = blockPos.offset(direction);
+			if (!world.getBlockState(blockPos2).isFullOpaque(world, blockPos2)) {
 				Direction.Axis axis = direction.getAxis();
 				double e = axis == Direction.Axis.X ? 0.5 + 0.5625 * (double)direction.getOffsetX() : (double)random.nextFloat();
 				double f = axis == Direction.Axis.Y ? 0.5 + 0.5625 * (double)direction.getOffsetY() : (double)random.nextFloat();
 				double g = axis == Direction.Axis.Z ? 0.5 + 0.5625 * (double)direction.getOffsetZ() : (double)random.nextFloat();
-				world.addParticle(DustParticleEffect.RED, (double)pos.getX() + e, (double)pos.getY() + f, (double)pos.getZ() + g, 0.0, 0.0, 0.0);
+				world.addParticle(DustParticleEffect.RED, (double)blockPos.getX() + e, (double)blockPos.getY() + f, (double)blockPos.getZ() + g, 0.0, 0.0, 0.0);
 			}
 		}
 	}
 
 	@Override
-	protected void appendProperties(StateManager.Builder<Block, BlockState> builder) {
+	protected void appendProperties(StateFactory.Builder<Block, BlockState> builder) {
 		builder.add(LIT);
 	}
 }

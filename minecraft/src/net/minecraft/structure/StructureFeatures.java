@@ -5,8 +5,8 @@ import javax.annotation.Nullable;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.math.BlockBox;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.MutableIntBoundingBox;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.biome.source.BiomeSource;
@@ -34,16 +34,18 @@ public class StructureFeatures {
 	public static final StructureFeature<?> SHIPWRECK = register("Shipwreck", Feature.SHIPWRECK);
 	public static final StructureFeature<?> VILLAGE = register("Village", Feature.VILLAGE);
 
-	private static StructureFeature<?> register(String name, StructureFeature<?> feature) {
-		return Registry.register(Registry.STRUCTURE_FEATURE, name.toLowerCase(Locale.ROOT), feature);
+	private static StructureFeature<?> register(String string, StructureFeature<?> structureFeature) {
+		return Registry.register(Registry.STRUCTURE_FEATURE, string.toLowerCase(Locale.ROOT), structureFeature);
 	}
 
 	public static void initialize() {
 	}
 
 	@Nullable
-	public static StructureStart readStructureStart(ChunkGenerator<?> chunkGenerator, StructureManager structureManager, BiomeSource biomeSource, CompoundTag tag) {
-		String string = tag.getString("id");
+	public static StructureStart readStructureStart(
+		ChunkGenerator<?> chunkGenerator, StructureManager structureManager, BiomeSource biomeSource, CompoundTag compoundTag
+	) {
+		String string = compoundTag.getString("id");
 		if ("INVALID".equals(string)) {
 			return StructureStart.DEFAULT;
 		} else {
@@ -52,36 +54,40 @@ public class StructureFeatures {
 				LOGGER.error("Unknown feature id: {}", string);
 				return null;
 			} else {
-				int i = tag.getInt("ChunkX");
-				int j = tag.getInt("ChunkZ");
-				Biome biome = tag.contains("biome")
-					? Registry.BIOME.get(new Identifier(tag.getString("biome")))
+				int i = compoundTag.getInt("ChunkX");
+				int j = compoundTag.getInt("ChunkZ");
+				int k = compoundTag.getInt("references");
+				Biome biome = compoundTag.containsKey("biome")
+					? Registry.BIOME.get(new Identifier(compoundTag.getString("biome")))
 					: biomeSource.getBiome(new BlockPos((i << 4) + 9, 0, (j << 4) + 9));
-				BlockBox blockBox = tag.contains("BB") ? new BlockBox(tag.getIntArray("BB")) : BlockBox.empty();
-				ListTag listTag = tag.getList("Children", 10);
+				MutableIntBoundingBox mutableIntBoundingBox = compoundTag.containsKey("BB")
+					? new MutableIntBoundingBox(compoundTag.getIntArray("BB"))
+					: MutableIntBoundingBox.empty();
+				ListTag listTag = compoundTag.getList("Children", 10);
 
 				try {
-					StructureStart structureStart = structureFeature.getStructureStartFactory().create(structureFeature, i, j, biome, blockBox, 0, chunkGenerator.getSeed());
+					StructureStart structureStart = structureFeature.getStructureStartFactory()
+						.create(structureFeature, i, j, biome, mutableIntBoundingBox, k, chunkGenerator.getSeed());
 
-					for (int k = 0; k < listTag.size(); k++) {
-						CompoundTag compoundTag = listTag.getCompound(k);
-						String string2 = compoundTag.getString("id");
+					for (int l = 0; l < listTag.size(); l++) {
+						CompoundTag compoundTag2 = listTag.getCompoundTag(l);
+						String string2 = compoundTag2.getString("id");
 						StructurePieceType structurePieceType = Registry.STRUCTURE_PIECE.get(new Identifier(string2.toLowerCase(Locale.ROOT)));
 						if (structurePieceType == null) {
 							LOGGER.error("Unknown structure piece id: {}", string2);
 						} else {
 							try {
-								StructurePiece structurePiece = structurePieceType.load(structureManager, compoundTag);
+								StructurePiece structurePiece = structurePieceType.load(structureManager, compoundTag2);
 								structureStart.children.add(structurePiece);
-							} catch (Exception var17) {
-								LOGGER.error("Exception loading structure piece with id {}", string2, var17);
+							} catch (Exception var18) {
+								LOGGER.error("Exception loading structure piece with id {}", string2, var18);
 							}
 						}
 					}
 
 					return structureStart;
-				} catch (Exception var18) {
-					LOGGER.error("Failed Start with id {}", string, var18);
+				} catch (Exception var19) {
+					LOGGER.error("Failed Start with id {}", string, var19);
 					return null;
 				}
 			}

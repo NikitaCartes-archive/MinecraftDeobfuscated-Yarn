@@ -2,12 +2,13 @@ package net.minecraft.client.render.debug;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
-import com.mojang.blaze3d.platform.GlStateManager;
+import com.mojang.blaze3d.systems.RenderSystem;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.class_4493;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.BufferBuilder;
 import net.minecraft.client.render.Camera;
@@ -42,15 +43,15 @@ public class CaveDebugRenderer implements DebugRenderer.Renderer {
 		double d = camera.getPos().x;
 		double e = camera.getPos().y;
 		double f = camera.getPos().z;
-		GlStateManager.pushMatrix();
-		GlStateManager.enableBlend();
-		GlStateManager.blendFuncSeparate(
-			GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO
+		RenderSystem.pushMatrix();
+		RenderSystem.enableBlend();
+		RenderSystem.blendFuncSeparate(
+			class_4493.class_4535.SRC_ALPHA, class_4493.class_4534.ONE_MINUS_SRC_ALPHA, class_4493.class_4535.ONE, class_4493.class_4534.ZERO
 		);
-		GlStateManager.disableTexture();
+		RenderSystem.disableTexture();
 		BlockPos blockPos = new BlockPos(camera.getPos().x, 0.0, camera.getPos().z);
 		Tessellator tessellator = Tessellator.getInstance();
-		BufferBuilder bufferBuilder = tessellator.getBuffer();
+		BufferBuilder bufferBuilder = tessellator.getBufferBuilder();
 		bufferBuilder.begin(5, VertexFormats.POSITION_COLOR);
 
 		for (Entry<BlockPos, BlockPos> entry : this.field_4507.entrySet()) {
@@ -96,8 +97,8 @@ public class CaveDebugRenderer implements DebugRenderer.Renderer {
 		}
 
 		tessellator.draw();
-		GlStateManager.enableDepthTest();
-		GlStateManager.enableTexture();
-		GlStateManager.popMatrix();
+		RenderSystem.enableDepthTest();
+		RenderSystem.enableTexture();
+		RenderSystem.popMatrix();
 	}
 }

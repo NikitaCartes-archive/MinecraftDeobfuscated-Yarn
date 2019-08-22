@@ -36,8 +36,8 @@ public class RealmsVertexFormatElement {
 		return this.v.hashCode();
 	}
 
-	public boolean equals(Object o) {
-		return this.v.equals(o);
+	public boolean equals(Object object) {
+		return this.v.equals(object);
 	}
 
 	public String toString() {

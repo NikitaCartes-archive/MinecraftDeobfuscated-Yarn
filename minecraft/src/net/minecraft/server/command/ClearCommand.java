@@ -21,8 +21,8 @@ public class ClearCommand {
 		object -> new TranslatableText("clear.failed.multiple", object)
 	);
 
-	public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
-		dispatcher.register(
+	public static void register(CommandDispatcher<ServerCommandSource> commandDispatcher) {
+		commandDispatcher.register(
 			CommandManager.literal("clear")
 				.requires(serverCommandSource -> serverCommandSource.hasPermissionLevel(2))
 				.executes(commandContext -> execute(commandContext.getSource(), Collections.singleton(commandContext.getSource().getPlayer()), itemStack -> true, -1))
@@ -55,35 +55,39 @@ public class ClearCommand {
 		);
 	}
 
-	private static int execute(ServerCommandSource source, Collection<ServerPlayerEntity> targets, Predicate<ItemStack> item, int maxCount) throws CommandSyntaxException {
-		int i = 0;
+	private static int execute(ServerCommandSource serverCommandSource, Collection<ServerPlayerEntity> collection, Predicate<ItemStack> predicate, int i) throws CommandSyntaxException {
+		int j = 0;
 
-		for (ServerPlayerEntity serverPlayerEntity : targets) {
-			i += serverPlayerEntity.inventory.method_7369(item, maxCount);
+		for (ServerPlayerEntity serverPlayerEntity : collection) {
+			j += serverPlayerEntity.inventory.method_7369(predicate, i);
 			serverPlayerEntity.container.sendContentUpdates();
 			serverPlayerEntity.method_14241();
 		}
 
-		if (i == 0) {
-			if (targets.size() == 1) {
-				throw FAILED_SINGLE_EXCEPTION.create(((ServerPlayerEntity)targets.iterator().next()).getName().asFormattedString());
+		if (j == 0) {
+			if (collection.size() == 1) {
+				throw FAILED_SINGLE_EXCEPTION.create(((ServerPlayerEntity)collection.iterator().next()).getName().asFormattedString());
 			} else {
-				throw FAILED_MULTIPLE_EXCEPTION.create(targets.size());
+				throw FAILED_MULTIPLE_EXCEPTION.create(collection.size());
 			}
 		} else {
-			if (maxCount == 0) {
-				if (targets.size() == 1) {
-					source.sendFeedback(new TranslatableText("commands.clear.test.single", i, ((ServerPlayerEntity)targets.iterator().next()).getDisplayName()), true);
+			if (i == 0) {
+				if (collection.size() == 1) {
+					serverCommandSource.sendFeedback(
+						new TranslatableText("commands.clear.test.single", j, ((ServerPlayerEntity)collection.iterator().next()).getDisplayName()), true
+					);
 				} else {
-					source.sendFeedback(new TranslatableText("commands.clear.test.multiple", i, targets.size()), true);
+					serverCommandSource.sendFeedback(new TranslatableText("commands.clear.test.multiple", j, collection.size()), true);
 				}
-			} else if (targets.size() == 1) {
-				source.sendFeedback(new TranslatableText("commands.clear.success.single", i, ((ServerPlayerEntity)targets.iterator().next()).getDisplayName()), true);
+			} else if (collection.size() == 1) {
+				serverCommandSource.sendFeedback(
+					new TranslatableText("commands.clear.success.single", j, ((ServerPlayerEntity)collection.iterator().next()).getDisplayName()), true
+				);
 			} else {
-				source.sendFeedback(new TranslatableText("commands.clear.success.multiple", i, targets.size()), true);
+				serverCommandSource.sendFeedback(new TranslatableText("commands.clear.success.multiple", j, collection.size()), true);
 			}
 
-			return i;
+			return j;
 		}
 	}
 }

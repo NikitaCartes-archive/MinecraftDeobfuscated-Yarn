@@ -1,6 +1,6 @@
 package net.minecraft.client.render.entity.feature;
 
-import com.mojang.blaze3d.platform.GlStateManager;
+import com.mojang.blaze3d.systems.RenderSystem;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.model.Model;
@@ -14,23 +14,23 @@ public class TridentRiptideFeatureRenderer<T extends LivingEntity> extends Featu
 	public static final Identifier TEXTURE = new Identifier("textures/entity/trident_riptide.png");
 	private final TridentRiptideFeatureRenderer.TridentRiptideModel model = new TridentRiptideFeatureRenderer.TridentRiptideModel();
 
-	public TridentRiptideFeatureRenderer(FeatureRendererContext<T, PlayerEntityModel<T>> context) {
-		super(context);
+	public TridentRiptideFeatureRenderer(FeatureRendererContext<T, PlayerEntityModel<T>> featureRendererContext) {
+		super(featureRendererContext);
 	}
 
-	public void render(T livingEntity, float f, float g, float h, float i, float j, float k, float l) {
+	public void method_4203(T livingEntity, float f, float g, float h, float i, float j, float k, float l) {
 		if (livingEntity.isUsingRiptide()) {
-			GlStateManager.color4f(1.0F, 1.0F, 1.0F, 1.0F);
+			RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
 			this.bindTexture(TEXTURE);
 
 			for (int m = 0; m < 3; m++) {
-				GlStateManager.pushMatrix();
-				GlStateManager.rotatef(i * (float)(-(45 + m * 5)), 0.0F, 1.0F, 0.0F);
+				RenderSystem.pushMatrix();
+				RenderSystem.rotatef(i * (float)(-(45 + m * 5)), 0.0F, 1.0F, 0.0F);
 				float n = 0.75F * (float)m;
-				GlStateManager.scalef(n, n, n);
-				GlStateManager.translatef(0.0F, -0.2F + 0.6F * (float)m, 0.0F);
+				RenderSystem.scalef(n, n, n);
+				RenderSystem.translatef(0.0F, -0.2F + 0.6F * (float)m, 0.0F);
 				this.model.method_17166(f, g, i, j, k, l);
-				GlStateManager.popMatrix();
+				RenderSystem.popMatrix();
 			}
 		}
 	}

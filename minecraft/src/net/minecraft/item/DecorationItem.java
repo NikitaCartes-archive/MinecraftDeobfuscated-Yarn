@@ -14,22 +14,22 @@ import net.minecraft.world.World;
 public class DecorationItem extends Item {
 	private final EntityType<? extends AbstractDecorationEntity> entityType;
 
-	public DecorationItem(EntityType<? extends AbstractDecorationEntity> type, Item.Settings settings) {
+	public DecorationItem(EntityType<? extends AbstractDecorationEntity> entityType, Item.Settings settings) {
 		super(settings);
-		this.entityType = type;
+		this.entityType = entityType;
 	}
 
 	@Override
-	public ActionResult useOnBlock(ItemUsageContext context) {
-		BlockPos blockPos = context.getBlockPos();
-		Direction direction = context.getSide();
+	public ActionResult useOnBlock(ItemUsageContext itemUsageContext) {
+		BlockPos blockPos = itemUsageContext.getBlockPos();
+		Direction direction = itemUsageContext.getSide();
 		BlockPos blockPos2 = blockPos.offset(direction);
-		PlayerEntity playerEntity = context.getPlayer();
-		ItemStack itemStack = context.getStack();
+		PlayerEntity playerEntity = itemUsageContext.getPlayer();
+		ItemStack itemStack = itemUsageContext.getStack();
 		if (playerEntity != null && !this.canPlaceOn(playerEntity, direction, itemStack, blockPos2)) {
 			return ActionResult.FAIL;
 		} else {
-			World world = context.getWorld();
+			World world = itemUsageContext.getWorld();
 			AbstractDecorationEntity abstractDecorationEntity;
 			if (this.entityType == EntityType.PAINTING) {
 				abstractDecorationEntity = new PaintingEntity(world, blockPos2, direction);
@@ -59,7 +59,7 @@ public class DecorationItem extends Item {
 		}
 	}
 
-	protected boolean canPlaceOn(PlayerEntity player, Direction side, ItemStack stack, BlockPos pos) {
-		return !side.getAxis().isVertical() && player.canPlaceOn(pos, side, stack);
+	protected boolean canPlaceOn(PlayerEntity playerEntity, Direction direction, ItemStack itemStack, BlockPos blockPos) {
+		return !direction.getAxis().isVertical() && playerEntity.canPlaceOn(blockPos, direction, itemStack);
 	}
 }

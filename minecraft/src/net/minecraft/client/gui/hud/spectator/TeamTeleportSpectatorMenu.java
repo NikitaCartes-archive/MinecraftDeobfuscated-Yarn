@@ -1,7 +1,7 @@
 package net.minecraft.client.gui.hud.spectator;
 
 import com.google.common.collect.Lists;
-import com.mojang.blaze3d.platform.GlStateManager;
+import com.mojang.blaze3d.systems.RenderSystem;
 import java.util.List;
 import java.util.Random;
 import net.fabricmc.api.EnvType;
@@ -41,8 +41,8 @@ public class TeamTeleportSpectatorMenu implements SpectatorMenuCommandGroup, Spe
 	}
 
 	@Override
-	public void use(SpectatorMenu menu) {
-		menu.selectElement(this);
+	public void use(SpectatorMenu spectatorMenu) {
+		spectatorMenu.selectElement(this);
 	}
 
 	@Override
@@ -51,7 +51,7 @@ public class TeamTeleportSpectatorMenu implements SpectatorMenuCommandGroup, Spe
 	}
 
 	@Override
-	public void renderIcon(float brightness, int alpha) {
+	public void renderIcon(float f, int i) {
 		MinecraftClient.getInstance().getTextureManager().bindTexture(SpectatorHud.SPECTATOR_TEX);
 		DrawableHelper.blit(0, 0, 16.0F, 0.0F, 16, 16, 256, 256);
 	}
@@ -94,8 +94,8 @@ public class TeamTeleportSpectatorMenu implements SpectatorMenuCommandGroup, Spe
 		}
 
 		@Override
-		public void use(SpectatorMenu menu) {
-			menu.selectElement(new TeleportSpectatorMenu(this.scoreboardEntries));
+		public void use(SpectatorMenu spectatorMenu) {
+			spectatorMenu.selectElement(new TeleportSpectatorMenu(this.scoreboardEntries));
 		}
 
 		@Override
@@ -104,17 +104,17 @@ public class TeamTeleportSpectatorMenu implements SpectatorMenuCommandGroup, Spe
 		}
 
 		@Override
-		public void renderIcon(float brightness, int alpha) {
+		public void renderIcon(float f, int i) {
 			Integer integer = this.team.getColor().getColorValue();
 			if (integer != null) {
-				float f = (float)(integer >> 16 & 0xFF) / 255.0F;
-				float g = (float)(integer >> 8 & 0xFF) / 255.0F;
-				float h = (float)(integer & 0xFF) / 255.0F;
-				DrawableHelper.fill(1, 1, 15, 15, MathHelper.packRgb(f * brightness, g * brightness, h * brightness) | alpha << 24);
+				float g = (float)(integer >> 16 & 0xFF) / 255.0F;
+				float h = (float)(integer >> 8 & 0xFF) / 255.0F;
+				float j = (float)(integer & 0xFF) / 255.0F;
+				DrawableHelper.fill(1, 1, 15, 15, MathHelper.packRgb(g * f, h * f, j * f) | i << 24);
 			}
 
 			MinecraftClient.getInstance().getTextureManager().bindTexture(this.skinId);
-			GlStateManager.color4f(brightness, brightness, brightness, (float)alpha / 255.0F);
+			RenderSystem.color4f(f, f, f, (float)i / 255.0F);
 			DrawableHelper.blit(2, 2, 12, 12, 8.0F, 8.0F, 8, 8, 64, 64);
 			DrawableHelper.blit(2, 2, 12, 12, 40.0F, 8.0F, 8, 8, 64, 64);
 		}
