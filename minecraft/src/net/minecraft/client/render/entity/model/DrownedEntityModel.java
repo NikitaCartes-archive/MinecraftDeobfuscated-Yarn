@@ -12,21 +12,21 @@ import net.minecraft.util.math.MathHelper;
 
 @Environment(EnvType.CLIENT)
 public class DrownedEntityModel<T extends ZombieEntity> extends ZombieEntityModel<T> {
-	public DrownedEntityModel(float scale, float f, int textureWidth, int i) {
-		super(scale, f, textureWidth, i);
+	public DrownedEntityModel(float f, float g, int i, int j) {
+		super(f, g, i, j);
 		this.rightArm = new ModelPart(this, 32, 48);
-		this.rightArm.addCuboid(-3.0F, -2.0F, -2.0F, 4, 12, 4, scale);
-		this.rightArm.setPivot(-5.0F, 2.0F + f, 0.0F);
+		this.rightArm.addCuboid(-3.0F, -2.0F, -2.0F, 4, 12, 4, f);
+		this.rightArm.setRotationPoint(-5.0F, 2.0F + g, 0.0F);
 		this.rightLeg = new ModelPart(this, 16, 48);
-		this.rightLeg.addCuboid(-2.0F, 0.0F, -2.0F, 4, 12, 4, scale);
-		this.rightLeg.setPivot(-1.9F, 12.0F + f, 0.0F);
+		this.rightLeg.addCuboid(-2.0F, 0.0F, -2.0F, 4, 12, 4, f);
+		this.rightLeg.setRotationPoint(-1.9F, 12.0F + g, 0.0F);
 	}
 
 	public DrownedEntityModel(float f, boolean bl) {
 		super(f, 0.0F, 64, bl ? 32 : 64);
 	}
 
-	public void animateModel(T zombieEntity, float f, float g, float h) {
+	public void method_17077(T zombieEntity, float f, float g, float h) {
 		this.rightArmPose = BipedEntityModel.ArmPose.EMPTY;
 		this.leftArmPose = BipedEntityModel.ArmPose.EMPTY;
 		ItemStack itemStack = zombieEntity.getStackInHand(Hand.MAIN_HAND);
@@ -38,11 +38,11 @@ public class DrownedEntityModel<T extends ZombieEntity> extends ZombieEntityMode
 			}
 		}
 
-		super.animateModel(zombieEntity, f, g, h);
+		super.method_17086(zombieEntity, f, g, h);
 	}
 
-	public void setAngles(T zombieEntity, float f, float g, float h, float i, float j, float k) {
-		super.setAngles(zombieEntity, f, g, h, i, j, k);
+	public void method_17134(T zombieEntity, float f, float g, float h, float i, float j, float k) {
+		super.method_17791(zombieEntity, f, g, h, i, j, k);
 		if (this.leftArmPose == BipedEntityModel.ArmPose.THROW_SPEAR) {
 			this.leftArm.pitch = this.leftArm.pitch * 0.5F - (float) Math.PI;
 			this.leftArm.yaw = 0.0F;

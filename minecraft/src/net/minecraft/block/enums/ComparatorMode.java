@@ -8,8 +8,8 @@ public enum ComparatorMode implements StringIdentifiable {
 
 	private final String name;
 
-	private ComparatorMode(String name) {
-		this.name = name;
+	private ComparatorMode(String string2) {
+		this.name = string2;
 	}
 
 	public String toString() {

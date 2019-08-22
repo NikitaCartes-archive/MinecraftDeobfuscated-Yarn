@@ -15,11 +15,13 @@ public class ScoreboardObjective {
 	private Text displayName;
 	private ScoreboardCriterion.RenderType renderType;
 
-	public ScoreboardObjective(Scoreboard scoreboard, String name, ScoreboardCriterion criterion, Text displayName, ScoreboardCriterion.RenderType renderType) {
+	public ScoreboardObjective(
+		Scoreboard scoreboard, String string, ScoreboardCriterion scoreboardCriterion, Text text, ScoreboardCriterion.RenderType renderType
+	) {
 		this.scoreboard = scoreboard;
-		this.name = name;
-		this.criterion = criterion;
-		this.displayName = displayName;
+		this.name = string;
+		this.criterion = scoreboardCriterion;
+		this.displayName = text;
 		this.renderType = renderType;
 	}
 
@@ -46,8 +48,8 @@ public class ScoreboardObjective {
 		);
 	}
 
-	public void setDisplayName(Text name) {
-		this.displayName = name;
+	public void setDisplayName(Text text) {
+		this.displayName = text;
 		this.scoreboard.updateExistingObjective(this);
 	}
 

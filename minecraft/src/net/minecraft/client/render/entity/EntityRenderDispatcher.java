@@ -1,8 +1,7 @@
 package net.minecraft.client.render.entity;
 
 import com.google.common.collect.Maps;
-import com.mojang.blaze3d.platform.GLX;
-import com.mojang.blaze3d.platform.GlStateManager;
+import com.mojang.blaze3d.systems.RenderSystem;
 import java.util.Map;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
@@ -71,6 +70,7 @@ import net.minecraft.entity.mob.ZombieHorseEntity;
 import net.minecraft.entity.mob.ZombiePigmanEntity;
 import net.minecraft.entity.mob.ZombieVillagerEntity;
 import net.minecraft.entity.passive.BatEntity;
+import net.minecraft.entity.passive.BeeEntity;
 import net.minecraft.entity.passive.CatEntity;
 import net.minecraft.entity.passive.ChickenEntity;
 import net.minecraft.entity.passive.CodEntity;
@@ -210,6 +210,7 @@ public class EntityRenderDispatcher {
 		this.register(PandaEntity.class, new PandaEntityRenderer(this));
 		this.register(CatEntity.class, new CatEntityRenderer(this));
 		this.register(FoxEntity.class, new FoxEntityRenderer(this));
+		this.register(BeeEntity.class, new BeeEntityRenderer(this));
 		this.register(EnderDragonEntity.class, new EnderDragonEntityRenderer(this));
 		this.register(EnderCrystalEntity.class, new EnderCrystalEntityRenderer(this));
 		this.register(WitherEntity.class, new WitherEntityRenderer(this));
@@ -258,10 +259,10 @@ public class EntityRenderDispatcher {
 		this.modelRenderers.put("slim", new PlayerEntityRenderer(this, true));
 	}
 
-	public void setRenderPosition(double x, double d, double e) {
-		this.renderPosX = x;
-		this.renderPosY = d;
-		this.renderPosZ = e;
+	public void setRenderPosition(double d, double e, double f) {
+		this.renderPosX = d;
+		this.renderPosY = e;
+		this.renderPosZ = f;
 	}
 
 	public <T extends Entity, U extends EntityRenderer<T>> U getRenderer(Class<? extends Entity> class_) {
@@ -285,11 +286,11 @@ public class EntityRenderDispatcher {
 		}
 	}
 
-	public void configure(World world, TextRenderer textRenderer, Camera camera, Entity targetedEntity, GameOptions gameOptions) {
+	public void configure(World world, TextRenderer textRenderer, Camera camera, Entity entity, GameOptions gameOptions) {
 		this.world = world;
 		this.gameOptions = gameOptions;
 		this.camera = camera;
-		this.targetedEntity = targetedEntity;
+		this.targetedEntity = entity;
 		this.textRenderer = textRenderer;
 		if (camera.getFocusedEntity() instanceof LivingEntity && ((LivingEntity)camera.getFocusedEntity()).isSleeping()) {
 			Direction direction = ((LivingEntity)camera.getFocusedEntity()).getSleepingDirection();
@@ -311,12 +312,12 @@ public class EntityRenderDispatcher {
 		return this.renderShadows;
 	}
 
-	public void setRenderShadows(boolean value) {
-		this.renderShadows = value;
+	public void setRenderShadows(boolean bl) {
+		this.renderShadows = bl;
 	}
 
-	public void setRenderHitboxes(boolean value) {
-		this.renderHitboxes = value;
+	public void setRenderHitboxes(boolean bl) {
+		this.renderHitboxes = bl;
 	}
 
 	public boolean shouldRenderHitboxes() {
@@ -332,17 +333,17 @@ public class EntityRenderDispatcher {
 		return entityRenderer != null && entityRenderer.isVisible(entity, visibleRegion, d, e, f);
 	}
 
-	public void render(Entity entity, float tickDelta, boolean bl) {
+	public void render(Entity entity, float f, boolean bl) {
 		if (entity.age == 0) {
-			entity.lastRenderX = entity.x;
-			entity.lastRenderY = entity.y;
-			entity.lastRenderZ = entity.z;
+			entity.prevRenderX = entity.x;
+			entity.prevRenderY = entity.y;
+			entity.prevRenderZ = entity.z;
 		}
 
-		double d = MathHelper.lerp((double)tickDelta, entity.lastRenderX, entity.x);
-		double e = MathHelper.lerp((double)tickDelta, entity.lastRenderY, entity.y);
-		double f = MathHelper.lerp((double)tickDelta, entity.lastRenderZ, entity.z);
-		float g = MathHelper.lerp(tickDelta, entity.prevYaw, entity.yaw);
+		double d = MathHelper.lerp((double)f, entity.prevRenderX, entity.x);
+		double e = MathHelper.lerp((double)f, entity.prevRenderY, entity.y);
+		double g = MathHelper.lerp((double)f, entity.prevRenderZ, entity.z);
+		float h = MathHelper.lerp(f, entity.prevYaw, entity.yaw);
 		int i = entity.getLightmapCoordinates();
 		if (entity.isOnFire()) {
 			i = 15728880;
@@ -350,12 +351,12 @@ public class EntityRenderDispatcher {
 
 		int j = i % 65536;
 		int k = i / 65536;
-		GLX.glMultiTexCoord2f(GLX.GL_TEXTURE1, (float)j, (float)k);
-		GlStateManager.color4f(1.0F, 1.0F, 1.0F, 1.0F);
-		this.render(entity, d - this.renderPosX, e - this.renderPosY, f - this.renderPosZ, g, tickDelta, bl);
+		RenderSystem.glMultiTexCoord2f(33985, (float)j, (float)k);
+		RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
+		this.render(entity, d - this.renderPosX, e - this.renderPosY, g - this.renderPosZ, h, f, bl);
 	}
 
-	public void render(Entity entity, double x, double y, double z, float yaw, float tickDelta, boolean forceHideHitbox) {
+	public void render(Entity entity, double d, double e, double f, float g, float h, boolean bl) {
 		EntityRenderer<Entity> entityRenderer = null;
 
 		try {
@@ -363,22 +364,22 @@ public class EntityRenderDispatcher {
 			if (entityRenderer != null && this.textureManager != null) {
 				try {
 					entityRenderer.setRenderOutlines(this.renderOutlines);
-					entityRenderer.render(entity, x, y, z, yaw, tickDelta);
+					entityRenderer.render(entity, d, e, f, g, h);
 				} catch (Throwable var17) {
 					throw new CrashException(CrashReport.create(var17, "Rendering entity in world"));
 				}
 
 				try {
 					if (!this.renderOutlines) {
-						entityRenderer.postRender(entity, x, y, z, yaw, tickDelta);
+						entityRenderer.postRender(entity, d, e, f, g, h);
 					}
 				} catch (Throwable var18) {
 					throw new CrashException(CrashReport.create(var18, "Post-rendering entity in world"));
 				}
 
-				if (this.renderHitboxes && !entity.isInvisible() && !forceHideHitbox && !MinecraftClient.getInstance().hasReducedDebugInfo()) {
+				if (this.renderHitboxes && !entity.isInvisible() && !bl && !MinecraftClient.getInstance().hasReducedDebugInfo()) {
 					try {
-						this.renderHitbox(entity, x, y, z, yaw, tickDelta);
+						this.renderHitbox(entity, d, e, f, g, h);
 					} catch (Throwable var16) {
 						throw new CrashException(CrashReport.create(var16, "Rendering entity hitbox in world"));
 					}
@@ -390,23 +391,23 @@ public class EntityRenderDispatcher {
 			entity.populateCrashReport(crashReportSection);
 			CrashReportSection crashReportSection2 = crashReport.addElement("Renderer details");
 			crashReportSection2.add("Assigned renderer", entityRenderer);
-			crashReportSection2.add("Location", CrashReportSection.createPositionString(x, y, z));
-			crashReportSection2.add("Rotation", yaw);
-			crashReportSection2.add("Delta", tickDelta);
+			crashReportSection2.add("Location", CrashReportSection.createPositionString(d, e, f));
+			crashReportSection2.add("Rotation", g);
+			crashReportSection2.add("Delta", h);
 			throw new CrashException(crashReport);
 		}
 	}
 
 	public void renderSecondPass(Entity entity, float f) {
 		if (entity.age == 0) {
-			entity.lastRenderX = entity.x;
-			entity.lastRenderY = entity.y;
-			entity.lastRenderZ = entity.z;
+			entity.prevRenderX = entity.x;
+			entity.prevRenderY = entity.y;
+			entity.prevRenderZ = entity.z;
 		}
 
-		double d = MathHelper.lerp((double)f, entity.lastRenderX, entity.x);
-		double e = MathHelper.lerp((double)f, entity.lastRenderY, entity.y);
-		double g = MathHelper.lerp((double)f, entity.lastRenderZ, entity.z);
+		double d = MathHelper.lerp((double)f, entity.prevRenderX, entity.x);
+		double e = MathHelper.lerp((double)f, entity.prevRenderY, entity.y);
+		double g = MathHelper.lerp((double)f, entity.prevRenderZ, entity.z);
 		float h = MathHelper.lerp(f, entity.prevYaw, entity.yaw);
 		int i = entity.getLightmapCoordinates();
 		if (entity.isOnFire()) {
@@ -415,8 +416,8 @@ public class EntityRenderDispatcher {
 
 		int j = i % 65536;
 		int k = i / 65536;
-		GLX.glMultiTexCoord2f(GLX.GL_TEXTURE1, (float)j, (float)k);
-		GlStateManager.color4f(1.0F, 1.0F, 1.0F, 1.0F);
+		RenderSystem.glMultiTexCoord2f(33985, (float)j, (float)k);
+		RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
 		EntityRenderer<Entity> entityRenderer = this.getRenderer(entity);
 		if (entityRenderer != null && this.textureManager != null) {
 			entityRenderer.renderSecondPass(entity, d - this.renderPosX, e - this.renderPosY, g - this.renderPosZ, h, f);
@@ -424,20 +425,20 @@ public class EntityRenderDispatcher {
 	}
 
 	private void renderHitbox(Entity entity, double d, double e, double f, float g, float h) {
-		GlStateManager.depthMask(false);
-		GlStateManager.disableTexture();
-		GlStateManager.disableLighting();
-		GlStateManager.disableCull();
-		GlStateManager.disableBlend();
+		RenderSystem.depthMask(false);
+		RenderSystem.disableTexture();
+		RenderSystem.disableLighting();
+		RenderSystem.disableCull();
+		RenderSystem.disableBlend();
 		float i = entity.getWidth() / 2.0F;
 		Box box = entity.getBoundingBox();
 		WorldRenderer.drawBoxOutline(
-			box.x1 - entity.x + d,
-			box.y1 - entity.y + e,
-			box.z1 - entity.z + f,
-			box.x2 - entity.x + d,
-			box.y2 - entity.y + e,
-			box.z2 - entity.z + f,
+			box.minX - entity.x + d,
+			box.minY - entity.y + e,
+			box.minZ - entity.z + f,
+			box.maxX - entity.x + d,
+			box.maxY - entity.y + e,
+			box.maxZ - entity.z + f,
 			1.0F,
 			1.0F,
 			1.0F,
@@ -450,12 +451,12 @@ public class EntityRenderDispatcher {
 				double l = (enderDragonPart.z - enderDragonPart.prevZ) * (double)h;
 				Box box2 = enderDragonPart.getBoundingBox();
 				WorldRenderer.drawBoxOutline(
-					box2.x1 - this.renderPosX + j,
-					box2.y1 - this.renderPosY + k,
-					box2.z1 - this.renderPosZ + l,
-					box2.x2 - this.renderPosX + j,
-					box2.y2 - this.renderPosY + k,
-					box2.z2 - this.renderPosZ + l,
+					box2.minX - this.renderPosX + j,
+					box2.minY - this.renderPosY + k,
+					box2.minZ - this.renderPosZ + l,
+					box2.maxX - this.renderPosX + j,
+					box2.maxY - this.renderPosY + k,
+					box2.maxZ - this.renderPosZ + l,
 					0.25F,
 					1.0F,
 					0.0F,
@@ -481,17 +482,17 @@ public class EntityRenderDispatcher {
 		}
 
 		Tessellator tessellator = Tessellator.getInstance();
-		BufferBuilder bufferBuilder = tessellator.getBuffer();
+		BufferBuilder bufferBuilder = tessellator.getBufferBuilder();
 		Vec3d vec3d = entity.getRotationVec(h);
 		bufferBuilder.begin(3, VertexFormats.POSITION_COLOR);
 		bufferBuilder.vertex(d, e + (double)entity.getStandingEyeHeight(), f).color(0, 0, 255, 255).next();
 		bufferBuilder.vertex(d + vec3d.x * 2.0, e + (double)entity.getStandingEyeHeight() + vec3d.y * 2.0, f + vec3d.z * 2.0).color(0, 0, 255, 255).next();
 		tessellator.draw();
-		GlStateManager.enableTexture();
-		GlStateManager.enableLighting();
-		GlStateManager.enableCull();
-		GlStateManager.disableBlend();
-		GlStateManager.depthMask(true);
+		RenderSystem.enableTexture();
+		RenderSystem.enableLighting();
+		RenderSystem.enableCull();
+		RenderSystem.disableBlend();
+		RenderSystem.depthMask(true);
 	}
 
 	public void setWorld(@Nullable World world) {
@@ -501,15 +502,15 @@ public class EntityRenderDispatcher {
 		}
 	}
 
-	public double getSquaredDistanceToCamera(double x, double y, double z) {
-		return this.camera.getPos().squaredDistanceTo(x, y, z);
+	public double squaredDistanceToCamera(double d, double e, double f) {
+		return this.camera.getPos().squaredDistanceTo(d, e, f);
 	}
 
 	public TextRenderer getTextRenderer() {
 		return this.textRenderer;
 	}
 
-	public void setRenderOutlines(boolean renderOutlines) {
-		this.renderOutlines = renderOutlines;
+	public void setRenderOutlines(boolean bl) {
+		this.renderOutlines = bl;
 	}
 }

@@ -13,8 +13,8 @@ public class Tessellator {
 		return INSTANCE;
 	}
 
-	public Tessellator(int bufferCapacity) {
-		this.buffer = new BufferBuilder(bufferCapacity);
+	public Tessellator(int i) {
+		this.buffer = new BufferBuilder(i);
 	}
 
 	public void draw() {
@@ -22,7 +22,7 @@ public class Tessellator {
 		this.renderer.draw(this.buffer);
 	}
 
-	public BufferBuilder getBuffer() {
+	public BufferBuilder getBufferBuilder() {
 		return this.buffer;
 	}
 }

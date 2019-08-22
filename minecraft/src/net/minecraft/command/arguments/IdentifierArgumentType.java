@@ -46,11 +46,11 @@ public class IdentifierArgumentType implements ArgumentType<Identifier> {
 		return (Recipe<?>)recipeManager.get(identifier).orElseThrow(() -> UNKNOWN_RECIPE_EXCEPTION.create(identifier));
 	}
 
-	public static Identifier getIdentifier(CommandContext<ServerCommandSource> context, String name) {
-		return context.getArgument(name, Identifier.class);
+	public static Identifier getIdentifier(CommandContext<ServerCommandSource> commandContext, String string) {
+		return commandContext.getArgument(string, Identifier.class);
 	}
 
-	public Identifier parse(StringReader stringReader) throws CommandSyntaxException {
+	public Identifier method_9446(StringReader stringReader) throws CommandSyntaxException {
 		return Identifier.fromCommandInput(stringReader);
 	}
 

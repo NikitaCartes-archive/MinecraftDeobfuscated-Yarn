@@ -9,14 +9,14 @@ public class AbsorptionStatusEffect extends StatusEffect {
 	}
 
 	@Override
-	public void method_5562(LivingEntity livingEntity, AbstractEntityAttributeContainer abstractEntityAttributeContainer, int i) {
+	public void onRemoved(LivingEntity livingEntity, AbstractEntityAttributeContainer abstractEntityAttributeContainer, int i) {
 		livingEntity.setAbsorptionAmount(livingEntity.getAbsorptionAmount() - (float)(4 * (i + 1)));
-		super.method_5562(livingEntity, abstractEntityAttributeContainer, i);
+		super.onRemoved(livingEntity, abstractEntityAttributeContainer, i);
 	}
 
 	@Override
-	public void method_5555(LivingEntity livingEntity, AbstractEntityAttributeContainer abstractEntityAttributeContainer, int i) {
+	public void onApplied(LivingEntity livingEntity, AbstractEntityAttributeContainer abstractEntityAttributeContainer, int i) {
 		livingEntity.setAbsorptionAmount(livingEntity.getAbsorptionAmount() + (float)(4 * (i + 1)));
-		super.method_5555(livingEntity, abstractEntityAttributeContainer, i);
+		super.onApplied(livingEntity, abstractEntityAttributeContainer, i);
 	}
 }

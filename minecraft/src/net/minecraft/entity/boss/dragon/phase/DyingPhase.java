@@ -12,16 +12,16 @@ public class DyingPhase extends AbstractPhase {
 	private Vec3d field_7041;
 	private int ticks;
 
-	public DyingPhase(EnderDragonEntity dragon) {
-		super(dragon);
+	public DyingPhase(EnderDragonEntity enderDragonEntity) {
+		super(enderDragonEntity);
 	}
 
 	@Override
 	public void clientTick() {
 		if (this.ticks++ % 10 == 0) {
-			float f = (this.dragon.getRandom().nextFloat() - 0.5F) * 8.0F;
-			float g = (this.dragon.getRandom().nextFloat() - 0.5F) * 4.0F;
-			float h = (this.dragon.getRandom().nextFloat() - 0.5F) * 8.0F;
+			float f = (this.dragon.getRand().nextFloat() - 0.5F) * 8.0F;
+			float g = (this.dragon.getRand().nextFloat() - 0.5F) * 4.0F;
+			float h = (this.dragon.getRand().nextFloat() - 0.5F) * 8.0F;
 			this.dragon
 				.world
 				.addParticle(ParticleTypes.EXPLOSION_EMITTER, this.dragon.x + (double)f, this.dragon.y + 2.0 + (double)g, this.dragon.z + (double)h, 0.0, 0.0, 0.0);

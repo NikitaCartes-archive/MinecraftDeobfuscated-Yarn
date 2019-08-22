@@ -14,21 +14,21 @@ public class EmptyMapItem extends NetworkSyncedItem {
 	}
 
 	@Override
-	public TypedActionResult<ItemStack> use(World world, PlayerEntity user, Hand hand) {
-		ItemStack itemStack = FilledMapItem.createMap(world, MathHelper.floor(user.x), MathHelper.floor(user.z), (byte)0, true, false);
-		ItemStack itemStack2 = user.getStackInHand(hand);
-		if (!user.abilities.creativeMode) {
+	public TypedActionResult<ItemStack> use(World world, PlayerEntity playerEntity, Hand hand) {
+		ItemStack itemStack = FilledMapItem.createMap(world, MathHelper.floor(playerEntity.x), MathHelper.floor(playerEntity.z), (byte)0, true, false);
+		ItemStack itemStack2 = playerEntity.getStackInHand(hand);
+		if (!playerEntity.abilities.creativeMode) {
 			itemStack2.decrement(1);
 		}
 
 		if (itemStack2.isEmpty()) {
 			return new TypedActionResult<>(ActionResult.SUCCESS, itemStack);
 		} else {
-			if (!user.inventory.insertStack(itemStack.copy())) {
-				user.dropItem(itemStack, false);
+			if (!playerEntity.inventory.insertStack(itemStack.copy())) {
+				playerEntity.dropItem(itemStack, false);
 			}
 
-			user.incrementStat(Stats.USED.getOrCreateStat(this));
+			playerEntity.incrementStat(Stats.USED.getOrCreateStat(this));
 			return new TypedActionResult<>(ActionResult.SUCCESS, itemStack2);
 		}
 	}

@@ -10,8 +10,8 @@ public enum AdvancementObtainedStatus {
 
 	private final int spriteIndex;
 
-	private AdvancementObtainedStatus(int spriteIndex) {
-		this.spriteIndex = spriteIndex;
+	private AdvancementObtainedStatus(int j) {
+		this.spriteIndex = j;
 	}
 
 	public int getSpriteIndex() {

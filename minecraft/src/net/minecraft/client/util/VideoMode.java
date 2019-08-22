@@ -71,11 +71,11 @@ public final class VideoMode {
 		return this.refreshRate;
 	}
 
-	public boolean equals(Object o) {
-		if (this == o) {
+	public boolean equals(Object object) {
+		if (this == object) {
 			return true;
-		} else if (o != null && this.getClass() == o.getClass()) {
-			VideoMode videoMode = (VideoMode)o;
+		} else if (object != null && this.getClass() == object.getClass()) {
+			VideoMode videoMode = (VideoMode)object;
 			return this.width == videoMode.width
 				&& this.height == videoMode.height
 				&& this.redBits == videoMode.redBits

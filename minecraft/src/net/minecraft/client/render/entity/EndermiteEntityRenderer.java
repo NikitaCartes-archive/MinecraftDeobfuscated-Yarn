@@ -14,11 +14,11 @@ public class EndermiteEntityRenderer extends MobEntityRenderer<EndermiteEntity, 
 		super(entityRenderDispatcher, new EndermiteEntityModel<>(), 0.3F);
 	}
 
-	protected float getLyingAngle(EndermiteEntity endermiteEntity) {
+	protected float method_3919(EndermiteEntity endermiteEntity) {
 		return 180.0F;
 	}
 
-	protected Identifier getTexture(EndermiteEntity endermiteEntity) {
+	protected Identifier method_3920(EndermiteEntity endermiteEntity) {
 		return SKIN;
 	}
 }

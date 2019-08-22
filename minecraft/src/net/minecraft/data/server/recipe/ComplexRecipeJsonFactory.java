@@ -10,18 +10,18 @@ import net.minecraft.util.Identifier;
 public class ComplexRecipeJsonFactory {
 	private final SpecialRecipeSerializer<?> serializer;
 
-	public ComplexRecipeJsonFactory(SpecialRecipeSerializer<?> serializer) {
-		this.serializer = serializer;
+	public ComplexRecipeJsonFactory(SpecialRecipeSerializer<?> specialRecipeSerializer) {
+		this.serializer = specialRecipeSerializer;
 	}
 
-	public static ComplexRecipeJsonFactory create(SpecialRecipeSerializer<?> serializer) {
-		return new ComplexRecipeJsonFactory(serializer);
+	public static ComplexRecipeJsonFactory create(SpecialRecipeSerializer<?> specialRecipeSerializer) {
+		return new ComplexRecipeJsonFactory(specialRecipeSerializer);
 	}
 
-	public void offerTo(Consumer<RecipeJsonProvider> exporter, String recipeId) {
-		exporter.accept(new RecipeJsonProvider() {
+	public void offerTo(Consumer<RecipeJsonProvider> consumer, String string) {
+		consumer.accept(new RecipeJsonProvider() {
 			@Override
-			public void serialize(JsonObject json) {
+			public void serialize(JsonObject jsonObject) {
 			}
 
 			@Override
@@ -31,7 +31,7 @@ public class ComplexRecipeJsonFactory {
 
 			@Override
 			public Identifier getRecipeId() {
-				return new Identifier(recipeId);
+				return new Identifier(string);
 			}
 
 			@Nullable

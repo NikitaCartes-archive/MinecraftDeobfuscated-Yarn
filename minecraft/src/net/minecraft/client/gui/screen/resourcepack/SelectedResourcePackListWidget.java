@@ -7,7 +7,7 @@ import net.minecraft.text.TranslatableText;
 
 @Environment(EnvType.CLIENT)
 public class SelectedResourcePackListWidget extends ResourcePackListWidget {
-	public SelectedResourcePackListWidget(MinecraftClient client, int width, int height) {
-		super(client, width, height, new TranslatableText("resourcePack.selected.title"));
+	public SelectedResourcePackListWidget(MinecraftClient minecraftClient, int i, int j) {
+		super(minecraftClient, i, j, new TranslatableText("resourcePack.selected.title"));
 	}
 }

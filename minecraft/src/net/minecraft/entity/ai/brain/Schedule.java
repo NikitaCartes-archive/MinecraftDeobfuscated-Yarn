@@ -27,8 +27,8 @@ public class Schedule {
 		.build();
 	private final Map<Activity, ScheduleRule> scheduleRules = Maps.<Activity, ScheduleRule>newHashMap();
 
-	protected static ScheduleBuilder register(String id) {
-		Schedule schedule = Registry.register(Registry.SCHEDULE, id, new Schedule());
+	protected static ScheduleBuilder register(String string) {
+		Schedule schedule = Registry.register(Registry.SCHEDULE, string, new Schedule());
 		return new ScheduleBuilder(schedule);
 	}
 
@@ -51,11 +51,11 @@ public class Schedule {
 			.collect(Collectors.toList());
 	}
 
-	public Activity getActivityForTime(int time) {
+	public Activity getActivityForTime(int i) {
 		return (Activity)this.scheduleRules
 			.entrySet()
 			.stream()
-			.max(Comparator.comparingDouble(entry -> (double)((ScheduleRule)entry.getValue()).getPriority(time)))
+			.max(Comparator.comparingDouble(entry -> (double)((ScheduleRule)entry.getValue()).getPriority(i)))
 			.map(Entry::getKey)
 			.orElse(Activity.IDLE);
 	}

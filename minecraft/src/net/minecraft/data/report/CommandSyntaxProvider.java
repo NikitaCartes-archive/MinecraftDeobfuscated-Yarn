@@ -16,7 +16,7 @@ import net.minecraft.command.arguments.ArgumentTypes;
 import net.minecraft.data.DataCache;
 import net.minecraft.data.DataGenerator;
 import net.minecraft.data.DataProvider;
-import net.minecraft.datafixer.Schemas;
+import net.minecraft.datafixers.Schemas;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.WorldGenerationProgressLogger;
 import net.minecraft.server.command.ServerCommandSource;

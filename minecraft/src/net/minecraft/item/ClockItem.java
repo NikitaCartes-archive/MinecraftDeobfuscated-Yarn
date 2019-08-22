@@ -22,9 +22,9 @@ public class ClockItem extends Item {
 
 			@Environment(EnvType.CLIENT)
 			@Override
-			public float call(ItemStack stack, @Nullable World world, @Nullable LivingEntity user) {
-				boolean bl = user != null;
-				Entity entity = (Entity)(bl ? user : stack.getFrame());
+			public float call(ItemStack itemStack, @Nullable World world, @Nullable LivingEntity livingEntity) {
+				boolean bl = livingEntity != null;
+				Entity entity = (Entity)(bl ? livingEntity : itemStack.getFrame());
 				if (world == null && entity != null) {
 					world = entity.world;
 				}
@@ -45,12 +45,12 @@ public class ClockItem extends Item {
 			}
 
 			@Environment(EnvType.CLIENT)
-			private double getTime(World world, double skyAngle) {
+			private double getTime(World world, double d) {
 				if (world.getTime() != this.lastTick) {
 					this.lastTick = world.getTime();
-					double d = skyAngle - this.time;
-					d = MathHelper.floorMod(d + 0.5, 1.0) - 0.5;
-					this.step += d * 0.1;
+					double e = d - this.time;
+					e = MathHelper.floorMod(e + 0.5, 1.0) - 0.5;
+					this.step += e * 0.1;
 					this.step *= 0.9;
 					this.time = MathHelper.floorMod(this.time + this.step, 1.0);
 				}

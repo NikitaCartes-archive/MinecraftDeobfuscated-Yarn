@@ -2,24 +2,25 @@ package net.minecraft.entity.ai.pathing;
 
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
+import net.minecraft.class_4459;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.BlockView;
-import net.minecraft.world.CollisionView;
+import net.minecraft.world.ViewableWorld;
 
 public abstract class PathNodeMaker {
-	protected CollisionView blockView;
+	protected ViewableWorld blockView;
 	protected MobEntity entity;
 	protected final Int2ObjectMap<PathNode> pathNodeCache = new Int2ObjectOpenHashMap<>();
 	protected int field_31;
 	protected int field_30;
 	protected int field_28;
-	protected boolean canEnterOpenDoors;
-	protected boolean canOpenDoors;
-	protected boolean canSwim;
+	protected boolean entersOpenDoors;
+	protected boolean pathsThroughDoors;
+	protected boolean swims;
 
-	public void init(CollisionView collisionView, MobEntity mobEntity) {
-		this.blockView = collisionView;
+	public void init(ViewableWorld viewableWorld, MobEntity mobEntity) {
+		this.blockView = viewableWorld;
 		this.entity = mobEntity;
 		this.pathNodeCache.clear();
 		this.field_31 = MathHelper.floor(mobEntity.getWidth() + 1.0F);
@@ -32,43 +33,41 @@ public abstract class PathNodeMaker {
 		this.entity = null;
 	}
 
-	protected PathNode getNode(int x, int y, int z) {
-		return this.pathNodeCache.computeIfAbsent(PathNode.hash(x, y, z), l -> new PathNode(x, y, z));
+	protected PathNode getPathNode(int i, int j, int k) {
+		return this.pathNodeCache.computeIfAbsent(PathNode.calculateHashCode(i, j, k), l -> new PathNode(i, j, k));
 	}
 
 	public abstract PathNode getStart();
 
-	public abstract TargetPathNode getNode(double x, double y, double z);
+	public abstract class_4459 getPathNode(double d, double e, double f);
 
-	public abstract int getSuccessors(PathNode[] successors, PathNode node);
+	public abstract int getPathNodes(PathNode[] pathNodes, PathNode pathNode);
 
-	public abstract PathNodeType getNodeType(
-		BlockView world, int x, int y, int z, MobEntity mob, int sizeX, int sizeY, int sizeZ, boolean canOpenDoors, boolean canEnterOpenDoors
-	);
+	public abstract PathNodeType getPathNodeType(BlockView blockView, int i, int j, int k, MobEntity mobEntity, int l, int m, int n, boolean bl, boolean bl2);
 
-	public abstract PathNodeType getNodeType(BlockView world, int x, int y, int z);
+	public abstract PathNodeType getPathNodeType(BlockView blockView, int i, int j, int k);
 
-	public void setCanEnterOpenDoors(boolean canEnterOpenDoors) {
-		this.canEnterOpenDoors = canEnterOpenDoors;
+	public void setCanEnterOpenDoors(boolean bl) {
+		this.entersOpenDoors = bl;
 	}
 
-	public void setCanOpenDoors(boolean canOpenDoors) {
-		this.canOpenDoors = canOpenDoors;
+	public void setCanPathThroughDoors(boolean bl) {
+		this.pathsThroughDoors = bl;
 	}
 
-	public void setCanSwim(boolean canSwim) {
-		this.canSwim = canSwim;
+	public void setCanSwim(boolean bl) {
+		this.swims = bl;
 	}
 
 	public boolean canEnterOpenDoors() {
-		return this.canEnterOpenDoors;
+		return this.entersOpenDoors;
 	}
 
-	public boolean canOpenDoors() {
-		return this.canOpenDoors;
+	public boolean canPathThroughDoors() {
+		return this.pathsThroughDoors;
 	}
 
 	public boolean canSwim() {
-		return this.canSwim;
+		return this.swims;
 	}
 }

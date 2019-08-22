@@ -10,11 +10,11 @@ public class Rect2i {
 	private int width;
 	private int height;
 
-	public Rect2i(int x, int y, int width, int height) {
-		this.x = x;
-		this.y = y;
-		this.width = width;
-		this.height = height;
+	public Rect2i(int i, int j, int k, int l) {
+		this.x = i;
+		this.y = j;
+		this.width = k;
+		this.height = l;
 	}
 
 	public int getX() {
@@ -33,7 +33,7 @@ public class Rect2i {
 		return this.height;
 	}
 
-	public boolean contains(int x, int y) {
-		return x >= this.x && x <= this.x + this.width && y >= this.y && y <= this.y + this.height;
+	public boolean contains(int i, int j) {
+		return i >= this.x && i <= this.x + this.width && j >= this.y && j <= this.y + this.height;
 	}
 }

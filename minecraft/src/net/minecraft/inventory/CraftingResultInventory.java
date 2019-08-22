@@ -28,23 +28,23 @@ public class CraftingResultInventory implements Inventory, RecipeUnlocker {
 	}
 
 	@Override
-	public ItemStack getInvStack(int slot) {
+	public ItemStack getInvStack(int i) {
 		return this.stack.get(0);
 	}
 
 	@Override
-	public ItemStack takeInvStack(int slot, int amount) {
+	public ItemStack takeInvStack(int i, int j) {
 		return Inventories.removeStack(this.stack, 0);
 	}
 
 	@Override
-	public ItemStack removeInvStack(int slot) {
+	public ItemStack removeInvStack(int i) {
 		return Inventories.removeStack(this.stack, 0);
 	}
 
 	@Override
-	public void setInvStack(int slot, ItemStack stack) {
-		this.stack.set(0, stack);
+	public void setInvStack(int i, ItemStack itemStack) {
+		this.stack.set(0, itemStack);
 	}
 
 	@Override
@@ -52,7 +52,7 @@ public class CraftingResultInventory implements Inventory, RecipeUnlocker {
 	}
 
 	@Override
-	public boolean canPlayerUseInv(PlayerEntity player) {
+	public boolean canPlayerUseInv(PlayerEntity playerEntity) {
 		return true;
 	}
 

@@ -14,18 +14,22 @@ public class ImpossibleCriterion implements Criterion<ImpossibleCriterion.Condit
 	}
 
 	@Override
-	public void beginTrackingCondition(PlayerAdvancementTracker manager, Criterion.ConditionsContainer<ImpossibleCriterion.Conditions> conditionsContainer) {
+	public void beginTrackingCondition(
+		PlayerAdvancementTracker playerAdvancementTracker, Criterion.ConditionsContainer<ImpossibleCriterion.Conditions> conditionsContainer
+	) {
 	}
 
 	@Override
-	public void endTrackingCondition(PlayerAdvancementTracker manager, Criterion.ConditionsContainer<ImpossibleCriterion.Conditions> conditionsContainer) {
+	public void endTrackingCondition(
+		PlayerAdvancementTracker playerAdvancementTracker, Criterion.ConditionsContainer<ImpossibleCriterion.Conditions> conditionsContainer
+	) {
 	}
 
 	@Override
-	public void endTracking(PlayerAdvancementTracker tracker) {
+	public void endTracking(PlayerAdvancementTracker playerAdvancementTracker) {
 	}
 
-	public ImpossibleCriterion.Conditions conditionsFromJson(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext) {
+	public ImpossibleCriterion.Conditions method_8949(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext) {
 		return new ImpossibleCriterion.Conditions();
 	}
 

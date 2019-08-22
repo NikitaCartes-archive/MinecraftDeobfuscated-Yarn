@@ -8,9 +8,9 @@ public class ClickEvent {
 	private final ClickEvent.Action action;
 	private final String value;
 
-	public ClickEvent(ClickEvent.Action action, String value) {
+	public ClickEvent(ClickEvent.Action action, String string) {
 		this.action = action;
-		this.value = value;
+		this.value = string;
 	}
 
 	public ClickEvent.Action getAction() {
@@ -21,11 +21,11 @@ public class ClickEvent {
 		return this.value;
 	}
 
-	public boolean equals(Object obj) {
-		if (this == obj) {
+	public boolean equals(Object object) {
+		if (this == object) {
 			return true;
-		} else if (obj != null && this.getClass() == obj.getClass()) {
-			ClickEvent clickEvent = (ClickEvent)obj;
+		} else if (object != null && this.getClass() == object.getClass()) {
+			ClickEvent clickEvent = (ClickEvent)object;
 			if (this.action != clickEvent.action) {
 				return false;
 			} else {
@@ -53,13 +53,13 @@ public class ClickEvent {
 		CHANGE_PAGE("change_page", true);
 
 		private static final Map<String, ClickEvent.Action> BY_NAME = (Map<String, ClickEvent.Action>)Arrays.stream(values())
-			.collect(Collectors.toMap(ClickEvent.Action::getName, a -> a));
+			.collect(Collectors.toMap(ClickEvent.Action::getName, action -> action));
 		private final boolean userDefinable;
 		private final String name;
 
-		private Action(String name, boolean userDefinable) {
-			this.name = name;
-			this.userDefinable = userDefinable;
+		private Action(String string2, boolean bl) {
+			this.name = string2;
+			this.userDefinable = bl;
 		}
 
 		public boolean isUserDefinable() {
@@ -70,8 +70,8 @@ public class ClickEvent {
 			return this.name;
 		}
 
-		public static ClickEvent.Action byName(String name) {
-			return (ClickEvent.Action)BY_NAME.get(name);
+		public static ClickEvent.Action byName(String string) {
+			return (ClickEvent.Action)BY_NAME.get(string);
 		}
 	}
 }

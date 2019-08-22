@@ -3,17 +3,17 @@ package net.minecraft.enchantment;
 import net.minecraft.entity.EquipmentSlot;
 
 public class QuickChargeEnchantment extends Enchantment {
-	public QuickChargeEnchantment(Enchantment.Weight weight, EquipmentSlot... slot) {
-		super(weight, EnchantmentTarget.CROSSBOW, slot);
+	public QuickChargeEnchantment(Enchantment.Weight weight, EquipmentSlot... equipmentSlots) {
+		super(weight, EnchantmentTarget.CROSSBOW, equipmentSlots);
 	}
 
 	@Override
-	public int getMinimumPower(int level) {
-		return 12 + (level - 1) * 20;
+	public int getMinimumPower(int i) {
+		return 12 + (i - 1) * 20;
 	}
 
 	@Override
-	public int getMaximumPower(int level) {
+	public int getMaximumPower(int i) {
 		return 50;
 	}
 

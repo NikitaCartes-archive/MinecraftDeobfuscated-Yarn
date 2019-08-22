@@ -385,6 +385,11 @@ public class BlockTagsProvider extends AbstractTagProvider<Block> {
 				Blocks.JIGSAW,
 				Blocks.MOVING_PISTON
 			);
+		this.method_10512(BlockTags.TALL_FLOWERS).add(Blocks.SUNFLOWER, Blocks.LILAC, Blocks.PEONY, Blocks.ROSE_BUSH);
+		this.method_10512(BlockTags.FLOWERS).add(BlockTags.SMALL_FLOWERS).add(BlockTags.TALL_FLOWERS);
+		this.method_10512(BlockTags.BEEHIVES).add(Blocks.BEE_NEST, Blocks.BEE_HIVE);
+		this.method_10512(BlockTags.CROPS).add(Blocks.BEETROOTS, Blocks.CARROTS, Blocks.POTATOES, Blocks.WHEAT, Blocks.MELON_STEM, Blocks.PUMPKIN_STEM);
+		this.method_10512(BlockTags.BEE_GROWABLES).add(BlockTags.CROPS).add(Blocks.SWEET_BERRY_BUSH);
 	}
 
 	@Override

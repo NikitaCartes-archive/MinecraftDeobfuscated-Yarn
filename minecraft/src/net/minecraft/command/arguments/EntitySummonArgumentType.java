@@ -23,8 +23,8 @@ public class EntitySummonArgumentType implements ArgumentType<Identifier> {
 		return new EntitySummonArgumentType();
 	}
 
-	public static Identifier getEntitySummon(CommandContext<ServerCommandSource> context, String name) throws CommandSyntaxException {
-		return validate(context.getArgument(name, Identifier.class));
+	public static Identifier getEntitySummon(CommandContext<ServerCommandSource> commandContext, String string) throws CommandSyntaxException {
+		return validate(commandContext.getArgument(string, Identifier.class));
 	}
 
 	private static Identifier validate(Identifier identifier) throws CommandSyntaxException {
@@ -32,7 +32,7 @@ public class EntitySummonArgumentType implements ArgumentType<Identifier> {
 		return identifier;
 	}
 
-	public Identifier parse(StringReader stringReader) throws CommandSyntaxException {
+	public Identifier method_9325(StringReader stringReader) throws CommandSyntaxException {
 		return validate(Identifier.fromCommandInput(stringReader));
 	}
 

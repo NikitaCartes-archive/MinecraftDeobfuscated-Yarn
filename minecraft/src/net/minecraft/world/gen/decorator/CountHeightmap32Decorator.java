@@ -17,7 +17,7 @@ public class CountHeightmap32Decorator extends Decorator<CountDecoratorConfig> {
 		super(function);
 	}
 
-	public Stream<BlockPos> getPositions(
+	public Stream<BlockPos> method_15909(
 		IWorld iWorld, ChunkGenerator<? extends ChunkGeneratorConfig> chunkGenerator, Random random, CountDecoratorConfig countDecoratorConfig, BlockPos blockPos
 	) {
 		return IntStream.range(0, countDecoratorConfig.count).mapToObj(i -> {

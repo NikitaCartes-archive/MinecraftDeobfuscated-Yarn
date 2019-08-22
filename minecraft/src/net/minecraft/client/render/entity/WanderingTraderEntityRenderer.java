@@ -1,6 +1,6 @@
 package net.minecraft.client.render.entity;
 
-import com.mojang.blaze3d.platform.GlStateManager;
+import com.mojang.blaze3d.systems.RenderSystem;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.render.entity.feature.HeadFeatureRenderer;
@@ -19,12 +19,12 @@ public class WanderingTraderEntityRenderer extends MobEntityRenderer<WanderingTr
 		this.addFeature(new VillagerHeldItemFeatureRenderer<>(this));
 	}
 
-	protected Identifier getTexture(WanderingTraderEntity wanderingTraderEntity) {
+	protected Identifier method_18045(WanderingTraderEntity wanderingTraderEntity) {
 		return TEXTURE;
 	}
 
-	protected void scale(WanderingTraderEntity wanderingTraderEntity, float f) {
+	protected void method_18046(WanderingTraderEntity wanderingTraderEntity, float f) {
 		float g = 0.9375F;
-		GlStateManager.scalef(0.9375F, 0.9375F, 0.9375F);
+		RenderSystem.scalef(0.9375F, 0.9375F, 0.9375F);
 	}
 }

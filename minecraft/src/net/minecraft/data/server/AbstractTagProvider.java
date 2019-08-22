@@ -32,8 +32,8 @@ public abstract class AbstractTagProvider<T> implements DataProvider {
 	protected final Registry<T> registry;
 	protected final Map<Tag<T>, Tag.Builder<T>> field_11481 = Maps.<Tag<T>, Tag.Builder<T>>newLinkedHashMap();
 
-	protected AbstractTagProvider(DataGenerator root, Registry<T> registry) {
-		this.root = root;
+	protected AbstractTagProvider(DataGenerator dataGenerator, Registry<T> registry) {
+		this.root = dataGenerator;
 		this.registry = registry;
 	}
 

@@ -16,22 +16,31 @@ public class EnderPearlItem extends Item {
 	}
 
 	@Override
-	public TypedActionResult<ItemStack> use(World world, PlayerEntity user, Hand hand) {
-		ItemStack itemStack = user.getStackInHand(hand);
-		if (!user.abilities.creativeMode) {
+	public TypedActionResult<ItemStack> use(World world, PlayerEntity playerEntity, Hand hand) {
+		ItemStack itemStack = playerEntity.getStackInHand(hand);
+		if (!playerEntity.abilities.creativeMode) {
 			itemStack.decrement(1);
 		}
 
-		world.playSound(null, user.x, user.y, user.z, SoundEvents.ENTITY_ENDER_PEARL_THROW, SoundCategory.NEUTRAL, 0.5F, 0.4F / (RANDOM.nextFloat() * 0.4F + 0.8F));
-		user.getItemCooldownManager().set(this, 20);
+		world.playSound(
+			null,
+			playerEntity.x,
+			playerEntity.y,
+			playerEntity.z,
+			SoundEvents.ENTITY_ENDER_PEARL_THROW,
+			SoundCategory.NEUTRAL,
+			0.5F,
+			0.4F / (RANDOM.nextFloat() * 0.4F + 0.8F)
+		);
+		playerEntity.getItemCooldownManager().set(this, 20);
 		if (!world.isClient) {
-			ThrownEnderpearlEntity thrownEnderpearlEntity = new ThrownEnderpearlEntity(world, user);
+			ThrownEnderpearlEntity thrownEnderpearlEntity = new ThrownEnderpearlEntity(world, playerEntity);
 			thrownEnderpearlEntity.setItem(itemStack);
-			thrownEnderpearlEntity.setProperties(user, user.pitch, user.yaw, 0.0F, 1.5F, 1.0F);
+			thrownEnderpearlEntity.setProperties(playerEntity, playerEntity.pitch, playerEntity.yaw, 0.0F, 1.5F, 1.0F);
 			world.spawnEntity(thrownEnderpearlEntity);
 		}
 
-		user.incrementStat(Stats.USED.getOrCreateStat(this));
+		playerEntity.incrementStat(Stats.USED.getOrCreateStat(this));
 		return new TypedActionResult<>(ActionResult.SUCCESS, itemStack);
 	}
 }

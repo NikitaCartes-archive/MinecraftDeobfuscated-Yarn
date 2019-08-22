@@ -6,7 +6,7 @@ import net.minecraft.block.entity.CommandBlockBlockEntity;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.resource.language.I18n;
-import net.minecraft.network.packet.c2s.play.UpdateCommandBlockC2SPacket;
+import net.minecraft.server.network.packet.UpdateCommandBlockC2SPacket;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.CommandBlockExecutor;
 
@@ -20,8 +20,8 @@ public class CommandBlockScreen extends AbstractCommandBlockScreen {
 	private boolean conditional;
 	private boolean autoActivate;
 
-	public CommandBlockScreen(CommandBlockBlockEntity blockEntity) {
-		this.blockEntity = blockEntity;
+	public CommandBlockScreen(CommandBlockBlockEntity commandBlockBlockEntity) {
+		this.blockEntity = commandBlockBlockEntity;
 	}
 
 	@Override
@@ -64,7 +64,7 @@ public class CommandBlockScreen extends AbstractCommandBlockScreen {
 		CommandBlockExecutor commandBlockExecutor = this.blockEntity.getCommandExecutor();
 		this.consoleCommandTextField.setText(commandBlockExecutor.getCommand());
 		this.trackingOutput = commandBlockExecutor.isTrackingOutput();
-		this.mode = this.blockEntity.getCommandBlockType();
+		this.mode = this.blockEntity.getType();
 		this.conditional = this.blockEntity.isConditionalCommandBlock();
 		this.autoActivate = this.blockEntity.isAuto();
 		this.updateTrackedOutput();
@@ -79,8 +79,8 @@ public class CommandBlockScreen extends AbstractCommandBlockScreen {
 	}
 
 	@Override
-	public void resize(MinecraftClient client, int width, int height) {
-		super.resize(client, width, height);
+	public void resize(MinecraftClient minecraftClient, int i, int j) {
+		super.resize(minecraftClient, i, j);
 		this.updateTrackedOutput();
 		this.updateMode();
 		this.updateConditionalMode();
@@ -93,15 +93,15 @@ public class CommandBlockScreen extends AbstractCommandBlockScreen {
 	}
 
 	@Override
-	protected void syncSettingsToServer(CommandBlockExecutor commandExecutor) {
+	protected void syncSettingsToServer(CommandBlockExecutor commandBlockExecutor) {
 		this.minecraft
 			.getNetworkHandler()
 			.sendPacket(
 				new UpdateCommandBlockC2SPacket(
-					new BlockPos(commandExecutor.getPos()),
+					new BlockPos(commandBlockExecutor.getPos()),
 					this.consoleCommandTextField.getText(),
 					this.mode,
-					commandExecutor.isTrackingOutput(),
+					commandBlockExecutor.isTrackingOutput(),
 					this.conditional,
 					this.autoActivate
 				)

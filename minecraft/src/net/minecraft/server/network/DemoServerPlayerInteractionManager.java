@@ -1,9 +1,9 @@
 package net.minecraft.server.network;
 
+import net.minecraft.client.network.packet.GameStateChangeS2CPacket;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
-import net.minecraft.network.packet.c2s.play.PlayerActionC2SPacket;
-import net.minecraft.network.packet.s2c.play.GameStateChangeS2CPacket;
+import net.minecraft.server.network.packet.PlayerActionC2SPacket;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.ActionResult;
@@ -77,22 +77,22 @@ public class DemoServerPlayerInteractionManager extends ServerPlayerInteractionM
 	}
 
 	@Override
-	public ActionResult interactItem(PlayerEntity player, World world, ItemStack stack, Hand hand) {
+	public ActionResult interactItem(PlayerEntity playerEntity, World world, ItemStack itemStack, Hand hand) {
 		if (this.demoEnded) {
 			this.sendDemoReminder();
 			return ActionResult.PASS;
 		} else {
-			return super.interactItem(player, world, stack, hand);
+			return super.interactItem(playerEntity, world, itemStack, hand);
 		}
 	}
 
 	@Override
-	public ActionResult interactBlock(PlayerEntity player, World world, ItemStack stack, Hand hand, BlockHitResult hitResult) {
+	public ActionResult interactBlock(PlayerEntity playerEntity, World world, ItemStack itemStack, Hand hand, BlockHitResult blockHitResult) {
 		if (this.demoEnded) {
 			this.sendDemoReminder();
 			return ActionResult.PASS;
 		} else {
-			return super.interactBlock(player, world, stack, hand, hitResult);
+			return super.interactBlock(playerEntity, world, itemStack, hand, blockHitResult);
 		}
 	}
 }

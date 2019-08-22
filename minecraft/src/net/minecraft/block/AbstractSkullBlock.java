@@ -9,19 +9,19 @@ import net.minecraft.world.BlockView;
 public abstract class AbstractSkullBlock extends BlockWithEntity {
 	private final SkullBlock.SkullType type;
 
-	public AbstractSkullBlock(SkullBlock.SkullType type, Block.Settings settings) {
+	public AbstractSkullBlock(SkullBlock.SkullType skullType, Block.Settings settings) {
 		super(settings);
-		this.type = type;
+		this.type = skullType;
 	}
 
 	@Environment(EnvType.CLIENT)
 	@Override
-	public boolean hasBlockEntityBreakingRender(BlockState state) {
+	public boolean hasBlockEntityBreakingRender(BlockState blockState) {
 		return true;
 	}
 
 	@Override
-	public BlockEntity createBlockEntity(BlockView view) {
+	public BlockEntity createBlockEntity(BlockView blockView) {
 		return new SkullBlockEntity();
 	}
 

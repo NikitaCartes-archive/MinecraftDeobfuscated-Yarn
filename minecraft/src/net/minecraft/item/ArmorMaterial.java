@@ -7,9 +7,9 @@ import net.minecraft.recipe.Ingredient;
 import net.minecraft.sound.SoundEvent;
 
 public interface ArmorMaterial {
-	int getDurability(EquipmentSlot slot);
+	int getDurability(EquipmentSlot equipmentSlot);
 
-	int getProtectionAmount(EquipmentSlot slot);
+	int getProtectionAmount(EquipmentSlot equipmentSlot);
 
 	int getEnchantability();
 

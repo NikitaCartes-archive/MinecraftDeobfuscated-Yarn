@@ -5,24 +5,24 @@ import com.mojang.datafixers.types.DynamicOps;
 import java.util.Random;
 import net.minecraft.block.BlockState;
 
-public class AlwaysTrueRuleTest extends RuleTest {
+public class AlwaysTrueRuleTest extends AbstractRuleTest {
 	public static final AlwaysTrueRuleTest INSTANCE = new AlwaysTrueRuleTest();
 
 	private AlwaysTrueRuleTest() {
 	}
 
 	@Override
-	public boolean test(BlockState state, Random random) {
+	public boolean test(BlockState blockState, Random random) {
 		return true;
 	}
 
 	@Override
-	protected RuleTestType getType() {
-		return RuleTestType.ALWAYS_TRUE;
+	protected RuleTest getRuleTest() {
+		return RuleTest.ALWAYS_TRUE;
 	}
 
 	@Override
-	protected <T> Dynamic<T> serialize(DynamicOps<T> ops) {
-		return new Dynamic<>(ops, ops.emptyMap());
+	protected <T> Dynamic<T> serialize(DynamicOps<T> dynamicOps) {
+		return new Dynamic<>(dynamicOps, dynamicOps.emptyMap());
 	}
 }

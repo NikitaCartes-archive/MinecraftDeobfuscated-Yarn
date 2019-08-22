@@ -1,8 +1,9 @@
 package net.minecraft.client.render.entity;
 
-import com.mojang.blaze3d.platform.GlStateManager;
+import com.mojang.blaze3d.systems.RenderSystem;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.class_4493;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.client.MinecraftClient;
@@ -16,7 +17,7 @@ public class TntMinecartEntityRenderer extends MinecartEntityRenderer<TntMinecar
 		super(entityRenderDispatcher);
 	}
 
-	protected void renderBlock(TntMinecartEntity tntMinecartEntity, float f, BlockState blockState) {
+	protected void method_4137(TntMinecartEntity tntMinecartEntity, float f, BlockState blockState) {
 		int i = tntMinecartEntity.getFuseTicks();
 		if (i > -1 && (float)i - f + 1.0F < 10.0F) {
 			float g = 1.0F - ((float)i - f + 1.0F) / 10.0F;
@@ -24,24 +25,24 @@ public class TntMinecartEntityRenderer extends MinecartEntityRenderer<TntMinecar
 			g *= g;
 			g *= g;
 			float h = 1.0F + g * 0.3F;
-			GlStateManager.scalef(h, h, h);
+			RenderSystem.scalef(h, h, h);
 		}
 
 		super.renderBlock(tntMinecartEntity, f, blockState);
 		if (i > -1 && i / 5 % 2 == 0) {
 			BlockRenderManager blockRenderManager = MinecraftClient.getInstance().getBlockRenderManager();
-			GlStateManager.disableTexture();
-			GlStateManager.disableLighting();
-			GlStateManager.enableBlend();
-			GlStateManager.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.DST_ALPHA);
-			GlStateManager.color4f(1.0F, 1.0F, 1.0F, (1.0F - ((float)i - f + 1.0F) / 100.0F) * 0.8F);
-			GlStateManager.pushMatrix();
+			RenderSystem.disableTexture();
+			RenderSystem.disableLighting();
+			RenderSystem.enableBlend();
+			RenderSystem.blendFunc(class_4493.class_4535.SRC_ALPHA, class_4493.class_4534.DST_ALPHA);
+			RenderSystem.color4f(1.0F, 1.0F, 1.0F, (1.0F - ((float)i - f + 1.0F) / 100.0F) * 0.8F);
+			RenderSystem.pushMatrix();
 			blockRenderManager.renderDynamic(Blocks.TNT.getDefaultState(), 1.0F);
-			GlStateManager.popMatrix();
-			GlStateManager.color4f(1.0F, 1.0F, 1.0F, 1.0F);
-			GlStateManager.disableBlend();
-			GlStateManager.enableLighting();
-			GlStateManager.enableTexture();
+			RenderSystem.popMatrix();
+			RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
+			RenderSystem.disableBlend();
+			RenderSystem.enableLighting();
+			RenderSystem.enableTexture();
 		}
 	}
 }

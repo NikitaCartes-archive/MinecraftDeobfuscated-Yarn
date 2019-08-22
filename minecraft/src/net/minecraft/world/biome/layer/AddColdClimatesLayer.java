@@ -1,21 +1,18 @@
 package net.minecraft.world.biome.layer;
 
-import net.minecraft.world.biome.layer.type.SouthEastSamplingLayer;
-import net.minecraft.world.biome.layer.util.LayerRandomnessSource;
-
 public enum AddColdClimatesLayer implements SouthEastSamplingLayer {
 	INSTANCE;
 
 	@Override
-	public int sample(LayerRandomnessSource context, int se) {
-		if (BiomeLayers.isShallowOcean(se)) {
-			return se;
+	public int sample(LayerRandomnessSource layerRandomnessSource, int i) {
+		if (BiomeLayers.isShallowOcean(i)) {
+			return i;
 		} else {
-			int i = context.nextInt(6);
-			if (i == 0) {
+			int j = layerRandomnessSource.nextInt(6);
+			if (j == 0) {
 				return 4;
 			} else {
-				return i == 1 ? 3 : 1;
+				return j == 1 ? 3 : 1;
 			}
 		}
 	}

@@ -14,11 +14,11 @@ import net.minecraft.world.gen.chunk.ChunkGeneratorConfig;
 public class NetherSpringFeature extends Feature<NetherSpringFeatureConfig> {
 	private static final BlockState NETHERRACK = Blocks.NETHERRACK.getDefaultState();
 
-	public NetherSpringFeature(Function<Dynamic<?>, ? extends NetherSpringFeatureConfig> configFactory) {
-		super(configFactory);
+	public NetherSpringFeature(Function<Dynamic<?>, ? extends NetherSpringFeatureConfig> function) {
+		super(function);
 	}
 
-	public boolean generate(
+	public boolean method_13555(
 		IWorld iWorld,
 		ChunkGenerator<? extends ChunkGeneratorConfig> chunkGenerator,
 		Random random,

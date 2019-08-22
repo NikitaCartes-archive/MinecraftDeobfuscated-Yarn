@@ -7,9 +7,9 @@ import net.minecraft.world.LightType;
 
 public interface ChunkProvider {
 	@Nullable
-	BlockView getChunk(int chunkX, int chunkZ);
+	BlockView getChunk(int i, int j);
 
-	default void onLightUpdate(LightType type, ChunkSectionPos chunkSectionPos) {
+	default void onLightUpdate(LightType lightType, ChunkSectionPos chunkSectionPos) {
 	}
 
 	BlockView getWorld();

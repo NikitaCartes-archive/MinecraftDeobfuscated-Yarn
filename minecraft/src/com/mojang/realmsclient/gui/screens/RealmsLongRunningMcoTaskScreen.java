@@ -2,9 +2,9 @@ package com.mojang.realmsclient.gui.screens;
 
 import com.mojang.realmsclient.exception.RealmsDefaultUncaughtExceptionHandler;
 import com.mojang.realmsclient.gui.LongRunningTask;
-import com.mojang.realmsclient.gui.RealmsConstants;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.class_4359;
 import net.minecraft.realms.Realms;
 import net.minecraft.realms.RealmsButton;
 import net.minecraft.realms.RealmsScreen;
@@ -48,11 +48,11 @@ public class RealmsLongRunningMcoTaskScreen extends RealmsScreen {
 		"▄ ▅ ▆ ▇ █ ▇ ▆ ▅ ▄ ▃ _"
 	};
 
-	public RealmsLongRunningMcoTaskScreen(RealmsScreen lastScreen, LongRunningTask task) {
-		this.lastScreen = lastScreen;
-		this.task = task;
-		task.setScreen(this);
-		this.taskThread = task;
+	public RealmsLongRunningMcoTaskScreen(RealmsScreen realmsScreen, LongRunningTask longRunningTask) {
+		this.lastScreen = realmsScreen;
+		this.task = longRunningTask;
+		longRunningTask.setScreen(this);
+		this.taskThread = longRunningTask;
 	}
 
 	public void start() {
@@ -70,19 +70,19 @@ public class RealmsLongRunningMcoTaskScreen extends RealmsScreen {
 	}
 
 	@Override
-	public boolean keyPressed(int eventKey, int scancode, int mods) {
-		if (eventKey == 256) {
+	public boolean keyPressed(int i, int j, int k) {
+		if (i == 256) {
 			this.cancelOrBackButtonClicked();
 			return true;
 		} else {
-			return super.keyPressed(eventKey, scancode, mods);
+			return super.keyPressed(i, j, k);
 		}
 	}
 
 	@Override
 	public void init() {
 		this.task.init();
-		this.buttonsAdd(new RealmsButton(666, this.width() / 2 - 106, RealmsConstants.row(12), 212, 20, getLocalizedString("gui.cancel")) {
+		this.buttonsAdd(new RealmsButton(666, this.width() / 2 - 106, class_4359.method_21072(12), 212, 20, getLocalizedString("gui.cancel")) {
 			@Override
 			public void onPress() {
 				RealmsLongRunningMcoTaskScreen.this.cancelOrBackButtonClicked();
@@ -97,18 +97,18 @@ public class RealmsLongRunningMcoTaskScreen extends RealmsScreen {
 	}
 
 	@Override
-	public void render(int xm, int ym, float a) {
+	public void render(int i, int j, float f) {
 		this.renderBackground();
-		this.drawCenteredString(this.title, this.width() / 2, RealmsConstants.row(3), 16777215);
+		this.drawCenteredString(this.title, this.width() / 2, class_4359.method_21072(3), 16777215);
 		if (!this.error) {
-			this.drawCenteredString(symbols[this.animTicks % symbols.length], this.width() / 2, RealmsConstants.row(8), 8421504);
+			this.drawCenteredString(symbols[this.animTicks % symbols.length], this.width() / 2, class_4359.method_21072(8), 8421504);
 		}
 
 		if (this.error) {
-			this.drawCenteredString(this.errorMessage, this.width() / 2, RealmsConstants.row(8), 16711680);
+			this.drawCenteredString(this.errorMessage, this.width() / 2, class_4359.method_21072(8), 16711680);
 		}
 
-		super.render(xm, ym, a);
+		super.render(i, j, f);
 	}
 
 	public void method_21290(String string) {
@@ -124,8 +124,8 @@ public class RealmsLongRunningMcoTaskScreen extends RealmsScreen {
 		});
 	}
 
-	public void setTitle(String title) {
-		this.title = title;
+	public void setTitle(String string) {
+		this.title = string;
 	}
 
 	public boolean aborted() {

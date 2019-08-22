@@ -22,7 +22,7 @@ public class GrassColormapResourceSupplier extends SinglePreparationResourceRelo
 		}
 	}
 
-	protected void apply(int[] is, ResourceManager resourceManager, Profiler profiler) {
+	protected void method_18661(int[] is, ResourceManager resourceManager, Profiler profiler) {
 		GrassColors.setColorMap(is);
 	}
 }

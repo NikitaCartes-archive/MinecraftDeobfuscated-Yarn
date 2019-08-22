@@ -14,14 +14,12 @@ public class ConfiguredSurfaceBuilder<SC extends SurfaceConfig> {
 		this.config = surfaceConfig;
 	}
 
-	public void generate(
-		Random random, Chunk chunk, Biome biome, int i, int j, int k, double d, BlockState defaultBlock, BlockState defaultFluid, int l, long seed
-	) {
-		this.surfaceBuilder.generate(random, chunk, biome, i, j, k, d, defaultBlock, defaultFluid, l, seed, this.config);
+	public void generate(Random random, Chunk chunk, Biome biome, int i, int j, int k, double d, BlockState blockState, BlockState blockState2, int l, long m) {
+		this.surfaceBuilder.generate(random, chunk, biome, i, j, k, d, blockState, blockState2, l, m, this.config);
 	}
 
-	public void initSeed(long seed) {
-		this.surfaceBuilder.initSeed(seed);
+	public void initSeed(long l) {
+		this.surfaceBuilder.initSeed(l);
 	}
 
 	public SC getConfig() {

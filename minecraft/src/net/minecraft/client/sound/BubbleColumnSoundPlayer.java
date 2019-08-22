@@ -16,8 +16,8 @@ public class BubbleColumnSoundPlayer implements ClientPlayerTickable {
 	private boolean hasPlayedForCurrentColumn;
 	private boolean firstTick = true;
 
-	public BubbleColumnSoundPlayer(ClientPlayerEntity player) {
-		this.player = player;
+	public BubbleColumnSoundPlayer(ClientPlayerEntity clientPlayerEntity) {
+		this.player = clientPlayerEntity;
 	}
 
 	@Override

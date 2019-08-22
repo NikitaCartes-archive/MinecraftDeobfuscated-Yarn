@@ -13,12 +13,12 @@ public class CookingRecipeSerializer<T extends AbstractCookingRecipe> implements
 	private final int cookingTime;
 	private final CookingRecipeSerializer.RecipeFactory<T> recipeFactory;
 
-	public CookingRecipeSerializer(CookingRecipeSerializer.RecipeFactory<T> recipeFactory, int cookingTime) {
-		this.cookingTime = cookingTime;
+	public CookingRecipeSerializer(CookingRecipeSerializer.RecipeFactory<T> recipeFactory, int i) {
+		this.cookingTime = i;
 		this.recipeFactory = recipeFactory;
 	}
 
-	public T read(Identifier identifier, JsonObject jsonObject) {
+	public T method_17736(Identifier identifier, JsonObject jsonObject) {
 		String string = JsonHelper.getString(jsonObject, "group", "");
 		JsonElement jsonElement = (JsonElement)(JsonHelper.hasArray(jsonObject, "ingredient")
 			? JsonHelper.getArray(jsonObject, "ingredient")
@@ -34,7 +34,7 @@ public class CookingRecipeSerializer<T extends AbstractCookingRecipe> implements
 		return this.recipeFactory.create(identifier, string, ingredient, itemStack, f, i);
 	}
 
-	public T read(Identifier identifier, PacketByteBuf packetByteBuf) {
+	public T method_17737(Identifier identifier, PacketByteBuf packetByteBuf) {
 		String string = packetByteBuf.readString(32767);
 		Ingredient ingredient = Ingredient.fromPacket(packetByteBuf);
 		ItemStack itemStack = packetByteBuf.readItemStack();
@@ -43,7 +43,7 @@ public class CookingRecipeSerializer<T extends AbstractCookingRecipe> implements
 		return this.recipeFactory.create(identifier, string, ingredient, itemStack, f, i);
 	}
 
-	public void write(PacketByteBuf packetByteBuf, T abstractCookingRecipe) {
+	public void method_17735(PacketByteBuf packetByteBuf, T abstractCookingRecipe) {
 		packetByteBuf.writeString(abstractCookingRecipe.group);
 		abstractCookingRecipe.input.write(packetByteBuf);
 		packetByteBuf.writeItemStack(abstractCookingRecipe.output);
@@ -52,6 +52,6 @@ public class CookingRecipeSerializer<T extends AbstractCookingRecipe> implements
 	}
 
 	interface RecipeFactory<T extends AbstractCookingRecipe> {
-		T create(Identifier id, String group, Ingredient input, ItemStack output, float experience, int cookTime);
+		T create(Identifier identifier, String string, Ingredient ingredient, ItemStack itemStack, float f, int i);
 	}
 }

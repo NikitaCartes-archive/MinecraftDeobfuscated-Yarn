@@ -1,23 +1,20 @@
 package net.minecraft.world.biome.layer;
 
-import net.minecraft.world.biome.layer.type.CrossSamplingLayer;
-import net.minecraft.world.biome.layer.util.LayerRandomnessSource;
-
 public enum SmoothenShorelineLayer implements CrossSamplingLayer {
 	INSTANCE;
 
 	@Override
-	public int sample(LayerRandomnessSource context, int n, int e, int s, int w, int center) {
-		boolean bl = e == w;
-		boolean bl2 = n == s;
+	public int sample(LayerRandomnessSource layerRandomnessSource, int i, int j, int k, int l, int m) {
+		boolean bl = j == l;
+		boolean bl2 = i == k;
 		if (bl == bl2) {
 			if (bl) {
-				return context.nextInt(2) == 0 ? w : n;
+				return layerRandomnessSource.nextInt(2) == 0 ? l : i;
 			} else {
-				return center;
+				return m;
 			}
 		} else {
-			return bl ? w : n;
+			return bl ? l : i;
 		}
 	}
 }

@@ -8,21 +8,21 @@ public class ChunkUpdateState extends PersistentState {
 	private LongSet all = new LongOpenHashSet();
 	private LongSet remaining = new LongOpenHashSet();
 
-	public ChunkUpdateState(String key) {
-		super(key);
+	public ChunkUpdateState(String string) {
+		super(string);
 	}
 
 	@Override
-	public void fromTag(CompoundTag tag) {
-		this.all = new LongOpenHashSet(tag.getLongArray("All"));
-		this.remaining = new LongOpenHashSet(tag.getLongArray("Remaining"));
+	public void fromTag(CompoundTag compoundTag) {
+		this.all = new LongOpenHashSet(compoundTag.getLongArray("All"));
+		this.remaining = new LongOpenHashSet(compoundTag.getLongArray("Remaining"));
 	}
 
 	@Override
-	public CompoundTag toTag(CompoundTag tag) {
-		tag.putLongArray("All", this.all.toLongArray());
-		tag.putLongArray("Remaining", this.remaining.toLongArray());
-		return tag;
+	public CompoundTag toTag(CompoundTag compoundTag) {
+		compoundTag.putLongArray("All", this.all.toLongArray());
+		compoundTag.putLongArray("Remaining", this.remaining.toLongArray());
+		return compoundTag;
 	}
 
 	public void add(long l) {

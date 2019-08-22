@@ -5,7 +5,6 @@ import java.util.Random;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Function;
 import java.util.stream.Stream;
-import net.minecraft.class_3267;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.world.IWorld;
@@ -37,13 +36,17 @@ public abstract class Decorator<DC extends DecoratorConfig> {
 		"noise_heightmap_double", new NoiseHeightmapDoubleDecorator(NoiseHeightmapDecoratorConfig::deserialize)
 	);
 	public static final Decorator<NopeDecoratorConfig> NOPE = register("nope", new NopeDecorator(NopeDecoratorConfig::deserialize));
-	public static final Decorator<class_3267> CHANCE_HEIGHTMAP = register("chance_heightmap", new ChanceHeightmapDecorator(class_3267::method_14415));
-	public static final Decorator<class_3267> CHANCE_HEIGHTMAP_DOUBLE = register(
-		"chance_heightmap_double", new ChanceHeightmapDoubleDecorator(class_3267::method_14415)
+	public static final Decorator<ChanceDecoratorConfig> CHANCE_HEIGHTMAP = register(
+		"chance_heightmap", new ChanceHeightmapDecorator(ChanceDecoratorConfig::deserialize)
 	);
-	public static final Decorator<class_3267> CHANCE_PASSTHROUGH = register("chance_passthrough", new ChancePassthroughDecorator(class_3267::method_14415));
-	public static final Decorator<class_3267> CHANCE_TOP_SOLID_HEIGHTMAP = register(
-		"chance_top_solid_heightmap", new ChanceTopSolidHeightmapDecorator(class_3267::method_14415)
+	public static final Decorator<ChanceDecoratorConfig> CHANCE_HEIGHTMAP_DOUBLE = register(
+		"chance_heightmap_double", new ChanceHeightmapDoubleDecorator(ChanceDecoratorConfig::deserialize)
+	);
+	public static final Decorator<ChanceDecoratorConfig> CHANCE_PASSTHROUGH = register(
+		"chance_passthrough", new ChancePassthroughDecorator(ChanceDecoratorConfig::deserialize)
+	);
+	public static final Decorator<ChanceDecoratorConfig> CHANCE_TOP_SOLID_HEIGHTMAP = register(
+		"chance_top_solid_heightmap", new ChanceTopSolidHeightmapDecorator(ChanceDecoratorConfig::deserialize)
 	);
 	public static final Decorator<CountExtraChanceDecoratorConfig> COUNT_EXTRA_HEIGHTMAP = register(
 		"count_extra_heightmap", new CountExtraHeightmapDecorator(CountExtraChanceDecoratorConfig::deserialize)
@@ -86,11 +89,11 @@ public abstract class Decorator<DC extends DecoratorConfig> {
 	public static final Decorator<CountDecoratorConfig> HELL_FIRE = register("hell_fire", new HellFireDecorator(CountDecoratorConfig::deserialize));
 	public static final Decorator<CountDecoratorConfig> MAGMA = register("magma", new MagmaDecorator(CountDecoratorConfig::deserialize));
 	public static final Decorator<NopeDecoratorConfig> EMERALD_ORE = register("emerald_ore", new EmeraldOreDecorator(NopeDecoratorConfig::deserialize));
-	public static final Decorator<ChanceDecoratorConfig> LAVA_LAKE = register("lava_lake", new LavaLakeDecorator(ChanceDecoratorConfig::deserialize));
-	public static final Decorator<ChanceDecoratorConfig> WATER_LAKE = register("water_lake", new WaterLakeDecorator(ChanceDecoratorConfig::deserialize));
+	public static final Decorator<LakeDecoratorConfig> LAVA_LAKE = register("lava_lake", new LakeLakeDecorator(LakeDecoratorConfig::deserialize));
+	public static final Decorator<LakeDecoratorConfig> WATER_LAKE = register("water_lake", new WaterLakeDecorator(LakeDecoratorConfig::deserialize));
 	public static final Decorator<DungeonDecoratorConfig> DUNGEONS = register("dungeons", new DungeonsDecorator(DungeonDecoratorConfig::deserialize));
 	public static final Decorator<NopeDecoratorConfig> DARK_OAK_TREE = register("dark_oak_tree", new DarkOakTreeDecorator(NopeDecoratorConfig::deserialize));
-	public static final Decorator<class_3267> ICEBERG = register("iceberg", new IcebergDecorator(class_3267::method_14415));
+	public static final Decorator<ChanceDecoratorConfig> ICEBERG = register("iceberg", new IcebergDecorator(ChanceDecoratorConfig::deserialize));
 	public static final Decorator<CountDecoratorConfig> LIGHT_GEM_CHANCE = register(
 		"light_gem_chance", new LightGemChanceDecorator(CountDecoratorConfig::deserialize)
 	);
@@ -99,12 +102,12 @@ public abstract class Decorator<DC extends DecoratorConfig> {
 	public static final Decorator<NopeDecoratorConfig> END_GATEWAY = register("end_gateway", new EndGatewayDecorator(NopeDecoratorConfig::deserialize));
 	private final Function<Dynamic<?>, ? extends DC> configDeserializer;
 
-	private static <T extends DecoratorConfig, G extends Decorator<T>> G register(String registryName, G decorator) {
-		return Registry.register(Registry.DECORATOR, registryName, decorator);
+	private static <T extends DecoratorConfig, G extends Decorator<T>> G register(String string, G decorator) {
+		return Registry.register(Registry.DECORATOR, string, decorator);
 	}
 
-	public Decorator(Function<Dynamic<?>, ? extends DC> configDeserializer) {
-		this.configDeserializer = configDeserializer;
+	public Decorator(Function<Dynamic<?>, ? extends DC> function) {
+		this.configDeserializer = function;
 	}
 
 	public DC deserialize(Dynamic<?> dynamic) {
@@ -112,22 +115,24 @@ public abstract class Decorator<DC extends DecoratorConfig> {
 	}
 
 	protected <FC extends FeatureConfig> boolean generate(
-		IWorld world,
-		ChunkGenerator<? extends ChunkGeneratorConfig> generator,
+		IWorld iWorld,
+		ChunkGenerator<? extends ChunkGeneratorConfig> chunkGenerator,
 		Random random,
-		BlockPos pos,
+		BlockPos blockPos,
 		DC decoratorConfig,
 		ConfiguredFeature<FC> configuredFeature
 	) {
 		AtomicBoolean atomicBoolean = new AtomicBoolean(false);
-		this.getPositions(world, generator, random, decoratorConfig, pos).forEach(blockPos -> {
-			boolean bl = configuredFeature.generate(world, generator, random, blockPos);
+		this.getPositions(iWorld, chunkGenerator, random, decoratorConfig, blockPos).forEach(blockPosx -> {
+			boolean bl = configuredFeature.generate(iWorld, chunkGenerator, random, blockPosx);
 			atomicBoolean.set(atomicBoolean.get() || bl);
 		});
 		return atomicBoolean.get();
 	}
 
-	public abstract Stream<BlockPos> getPositions(IWorld world, ChunkGenerator<? extends ChunkGeneratorConfig> generator, Random random, DC config, BlockPos pos);
+	public abstract Stream<BlockPos> getPositions(
+		IWorld iWorld, ChunkGenerator<? extends ChunkGeneratorConfig> chunkGenerator, Random random, DC decoratorConfig, BlockPos blockPos
+	);
 
 	public String toString() {
 		return this.getClass().getSimpleName() + "@" + Integer.toHexString(this.hashCode());

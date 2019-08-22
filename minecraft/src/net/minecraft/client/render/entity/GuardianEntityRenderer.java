@@ -1,9 +1,9 @@
 package net.minecraft.client.render.entity;
 
-import com.mojang.blaze3d.platform.GLX;
-import com.mojang.blaze3d.platform.GlStateManager;
+import com.mojang.blaze3d.systems.RenderSystem;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.class_4493;
 import net.minecraft.client.render.BufferBuilder;
 import net.minecraft.client.render.Tessellator;
 import net.minecraft.client.render.VertexFormats;
@@ -29,8 +29,8 @@ public class GuardianEntityRenderer extends MobEntityRenderer<GuardianEntity, Gu
 		super(entityRenderDispatcher, new GuardianEntityModel(), f);
 	}
 
-	public boolean isVisible(GuardianEntity guardianEntity, VisibleRegion visibleRegion, double d, double e, double f) {
-		if (super.isVisible(guardianEntity, visibleRegion, d, e, f)) {
+	public boolean method_3978(GuardianEntity guardianEntity, VisibleRegion visibleRegion, double d, double e, double f) {
+		if (super.method_4068(guardianEntity, visibleRegion, d, e, f)) {
 			return true;
 		} else {
 			if (guardianEntity.hasBeamTarget()) {
@@ -48,37 +48,35 @@ public class GuardianEntityRenderer extends MobEntityRenderer<GuardianEntity, Gu
 		}
 	}
 
-	private Vec3d fromLerpedPosition(LivingEntity entity, double yOffset, float delta) {
-		double d = MathHelper.lerp((double)delta, entity.lastRenderX, entity.x);
-		double e = MathHelper.lerp((double)delta, entity.lastRenderY, entity.y) + yOffset;
-		double f = MathHelper.lerp((double)delta, entity.lastRenderZ, entity.z);
-		return new Vec3d(d, e, f);
+	private Vec3d fromLerpedPosition(LivingEntity livingEntity, double d, float f) {
+		double e = MathHelper.lerp((double)f, livingEntity.prevRenderX, livingEntity.x);
+		double g = MathHelper.lerp((double)f, livingEntity.prevRenderY, livingEntity.y) + d;
+		double h = MathHelper.lerp((double)f, livingEntity.prevRenderZ, livingEntity.z);
+		return new Vec3d(e, g, h);
 	}
 
-	public void render(GuardianEntity guardianEntity, double d, double e, double f, float g, float h) {
-		super.render(guardianEntity, d, e, f, g, h);
+	public void method_3977(GuardianEntity guardianEntity, double d, double e, double f, float g, float h) {
+		super.method_4072(guardianEntity, d, e, f, g, h);
 		LivingEntity livingEntity = guardianEntity.getBeamTarget();
 		if (livingEntity != null) {
 			float i = guardianEntity.getBeamProgress(h);
 			Tessellator tessellator = Tessellator.getInstance();
-			BufferBuilder bufferBuilder = tessellator.getBuffer();
+			BufferBuilder bufferBuilder = tessellator.getBufferBuilder();
 			this.bindTexture(EXPLOSION_BEAM_TEX);
-			GlStateManager.texParameter(3553, 10242, 10497);
-			GlStateManager.texParameter(3553, 10243, 10497);
-			GlStateManager.disableLighting();
-			GlStateManager.disableCull();
-			GlStateManager.disableBlend();
-			GlStateManager.depthMask(true);
+			RenderSystem.texParameter(3553, 10242, 10497);
+			RenderSystem.texParameter(3553, 10243, 10497);
+			RenderSystem.disableLighting();
+			RenderSystem.disableCull();
+			RenderSystem.disableBlend();
+			RenderSystem.depthMask(true);
 			float j = 240.0F;
-			GLX.glMultiTexCoord2f(GLX.GL_TEXTURE1, 240.0F, 240.0F);
-			GlStateManager.blendFuncSeparate(
-				GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO
-			);
+			RenderSystem.glMultiTexCoord2f(33985, 240.0F, 240.0F);
+			RenderSystem.blendFuncSeparate(class_4493.class_4535.SRC_ALPHA, class_4493.class_4534.ONE, class_4493.class_4535.ONE, class_4493.class_4534.ZERO);
 			float k = (float)guardianEntity.world.getTime() + h;
 			float l = k * 0.5F % 1.0F;
 			float m = guardianEntity.getStandingEyeHeight();
-			GlStateManager.pushMatrix();
-			GlStateManager.translatef((float)d, (float)e + m, (float)f);
+			RenderSystem.pushMatrix();
+			RenderSystem.translatef((float)d, (float)e + m, (float)f);
 			Vec3d vec3d = this.fromLerpedPosition(livingEntity, (double)livingEntity.getHeight() * 0.5, h);
 			Vec3d vec3d2 = this.fromLerpedPosition(guardianEntity, (double)m, h);
 			Vec3d vec3d3 = vec3d.subtract(vec3d2);
@@ -86,11 +84,11 @@ public class GuardianEntityRenderer extends MobEntityRenderer<GuardianEntity, Gu
 			vec3d3 = vec3d3.normalize();
 			float o = (float)Math.acos(vec3d3.y);
 			float p = (float)Math.atan2(vec3d3.z, vec3d3.x);
-			GlStateManager.rotatef(((float) (Math.PI / 2) - p) * (180.0F / (float)Math.PI), 0.0F, 1.0F, 0.0F);
-			GlStateManager.rotatef(o * (180.0F / (float)Math.PI), 1.0F, 0.0F, 0.0F);
+			RenderSystem.rotatef(((float) (Math.PI / 2) - p) * (180.0F / (float)Math.PI), 0.0F, 1.0F, 0.0F);
+			RenderSystem.rotatef(o * (180.0F / (float)Math.PI), 1.0F, 0.0F, 0.0F);
 			int q = 1;
 			double r = (double)k * 0.05 * -1.5;
-			bufferBuilder.begin(7, VertexFormats.POSITION_TEXTURE_COLOR);
+			bufferBuilder.begin(7, VertexFormats.POSITION_UV_COLOR);
 			float s = i * i;
 			int t = 64 + (int)(s * 191.0F);
 			int u = 32 + (int)(s * 191.0F);
@@ -135,11 +133,11 @@ public class GuardianEntityRenderer extends MobEntityRenderer<GuardianEntity, Gu
 			bufferBuilder.vertex(ae, n, af).texture(1.0, at).color(t, u, v, 255).next();
 			bufferBuilder.vertex(ac, n, ad).texture(0.5, at).color(t, u, v, 255).next();
 			tessellator.draw();
-			GlStateManager.popMatrix();
+			RenderSystem.popMatrix();
 		}
 	}
 
-	protected Identifier getTexture(GuardianEntity guardianEntity) {
+	protected Identifier method_3976(GuardianEntity guardianEntity) {
 		return SKIN;
 	}
 }

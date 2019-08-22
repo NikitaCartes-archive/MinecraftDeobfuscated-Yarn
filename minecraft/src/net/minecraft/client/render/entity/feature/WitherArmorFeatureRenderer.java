@@ -1,8 +1,9 @@
 package net.minecraft.client.render.entity.feature;
 
-import com.mojang.blaze3d.platform.GlStateManager;
+import com.mojang.blaze3d.systems.RenderSystem;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.class_4493;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.GameRenderer;
 import net.minecraft.client.render.entity.model.WitherEntityModel;
@@ -15,38 +16,38 @@ public class WitherArmorFeatureRenderer extends FeatureRenderer<WitherEntity, Wi
 	private static final Identifier SKIN = new Identifier("textures/entity/wither/wither_armor.png");
 	private final WitherEntityModel<WitherEntity> model = new WitherEntityModel<>(0.5F);
 
-	public WitherArmorFeatureRenderer(FeatureRendererContext<WitherEntity, WitherEntityModel<WitherEntity>> context) {
-		super(context);
+	public WitherArmorFeatureRenderer(FeatureRendererContext<WitherEntity, WitherEntityModel<WitherEntity>> featureRendererContext) {
+		super(featureRendererContext);
 	}
 
-	public void render(WitherEntity witherEntity, float f, float g, float h, float i, float j, float k, float l) {
+	public void method_4207(WitherEntity witherEntity, float f, float g, float h, float i, float j, float k, float l) {
 		if (witherEntity.isAtHalfHealth()) {
-			GlStateManager.depthMask(!witherEntity.isInvisible());
+			RenderSystem.depthMask(!witherEntity.isInvisible());
 			this.bindTexture(SKIN);
-			GlStateManager.matrixMode(5890);
-			GlStateManager.loadIdentity();
+			RenderSystem.matrixMode(5890);
+			RenderSystem.loadIdentity();
 			float m = (float)witherEntity.age + h;
 			float n = MathHelper.cos(m * 0.02F) * 3.0F;
 			float o = m * 0.01F;
-			GlStateManager.translatef(n, o, 0.0F);
-			GlStateManager.matrixMode(5888);
-			GlStateManager.enableBlend();
+			RenderSystem.translatef(n, o, 0.0F);
+			RenderSystem.matrixMode(5888);
+			RenderSystem.enableBlend();
 			float p = 0.5F;
-			GlStateManager.color4f(0.5F, 0.5F, 0.5F, 1.0F);
-			GlStateManager.disableLighting();
-			GlStateManager.blendFunc(GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ONE);
-			this.model.animateModel(witherEntity, f, g, h);
-			this.getContextModel().copyStateTo(this.model);
+			RenderSystem.color4f(0.5F, 0.5F, 0.5F, 1.0F);
+			RenderSystem.disableLighting();
+			RenderSystem.blendFunc(class_4493.class_4535.ONE, class_4493.class_4534.ONE);
+			this.model.method_17128(witherEntity, f, g, h);
+			this.getModel().copyStateTo(this.model);
 			GameRenderer gameRenderer = MinecraftClient.getInstance().gameRenderer;
 			gameRenderer.setFogBlack(true);
-			this.model.render(witherEntity, f, g, i, j, k, l);
+			this.model.method_17129(witherEntity, f, g, i, j, k, l);
 			gameRenderer.setFogBlack(false);
-			GlStateManager.matrixMode(5890);
-			GlStateManager.loadIdentity();
-			GlStateManager.matrixMode(5888);
-			GlStateManager.enableLighting();
-			GlStateManager.disableBlend();
-			GlStateManager.depthMask(true);
+			RenderSystem.matrixMode(5890);
+			RenderSystem.loadIdentity();
+			RenderSystem.matrixMode(5888);
+			RenderSystem.enableLighting();
+			RenderSystem.disableBlend();
+			RenderSystem.depthMask(true);
 		}
 	}
 

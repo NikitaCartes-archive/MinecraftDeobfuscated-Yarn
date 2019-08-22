@@ -8,14 +8,19 @@ public class HeightmapRangeDecoratorConfig implements DecoratorConfig {
 	public final int min;
 	public final int max;
 
-	public HeightmapRangeDecoratorConfig(int min, int max) {
-		this.min = min;
-		this.max = max;
+	public HeightmapRangeDecoratorConfig(int i, int j) {
+		this.min = i;
+		this.max = j;
 	}
 
 	@Override
-	public <T> Dynamic<T> serialize(DynamicOps<T> ops) {
-		return new Dynamic<>(ops, ops.createMap(ImmutableMap.of(ops.createString("min"), ops.createInt(this.min), ops.createString("max"), ops.createInt(this.max))));
+	public <T> Dynamic<T> serialize(DynamicOps<T> dynamicOps) {
+		return new Dynamic<>(
+			dynamicOps,
+			dynamicOps.createMap(
+				ImmutableMap.of(dynamicOps.createString("min"), dynamicOps.createInt(this.min), dynamicOps.createString("max"), dynamicOps.createInt(this.max))
+			)
+		);
 	}
 
 	public static HeightmapRangeDecoratorConfig deserialize(Dynamic<?> dynamic) {

@@ -13,17 +13,17 @@ import net.minecraft.structure.pool.StructurePoolElement;
 import net.minecraft.structure.processor.BlockRotStructureProcessor;
 import net.minecraft.util.BlockRotation;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.math.BlockBox;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.MutableIntBoundingBox;
 import net.minecraft.world.gen.ChunkRandom;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
 
 public class PillagerOutpostGenerator {
 	public static void addPieces(
-		ChunkGenerator<?> chunkGenerator, StructureManager structureManager, BlockPos pos, List<StructurePiece> pieces, ChunkRandom random
+		ChunkGenerator<?> chunkGenerator, StructureManager structureManager, BlockPos blockPos, List<StructurePiece> list, ChunkRandom chunkRandom
 	) {
 		StructurePoolBasedGenerator.addPieces(
-			new Identifier("pillager_outpost/base_plates"), 7, PillagerOutpostGenerator.Piece::new, chunkGenerator, structureManager, pos, pieces, random
+			new Identifier("pillager_outpost/base_plates"), 7, PillagerOutpostGenerator.Piece::new, chunkGenerator, structureManager, blockPos, list, chunkRandom
 		);
 	}
 
@@ -85,12 +85,19 @@ public class PillagerOutpostGenerator {
 	}
 
 	public static class Piece extends PoolStructurePiece {
-		public Piece(StructureManager manager, StructurePoolElement element, BlockPos pos, int groundLevelDelta, BlockRotation rotation, BlockBox boundingBox) {
-			super(StructurePieceType.PILLAGER_OUTPOST, manager, element, pos, groundLevelDelta, rotation, boundingBox);
+		public Piece(
+			StructureManager structureManager,
+			StructurePoolElement structurePoolElement,
+			BlockPos blockPos,
+			int i,
+			BlockRotation blockRotation,
+			MutableIntBoundingBox mutableIntBoundingBox
+		) {
+			super(StructurePieceType.PCP, structureManager, structurePoolElement, blockPos, i, blockRotation, mutableIntBoundingBox);
 		}
 
-		public Piece(StructureManager manager, CompoundTag tag) {
-			super(manager, tag, StructurePieceType.PILLAGER_OUTPOST);
+		public Piece(StructureManager structureManager, CompoundTag compoundTag) {
+			super(structureManager, compoundTag, StructurePieceType.PCP);
 		}
 	}
 }

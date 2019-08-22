@@ -26,32 +26,24 @@ public enum ArmorMaterials implements ArmorMaterial {
 	private final float toughness;
 	private final Lazy<Ingredient> repairIngredientSupplier;
 
-	private ArmorMaterials(
-		String name,
-		int durabilityMultiplier,
-		int[] protectionAmounts,
-		int enchantability,
-		SoundEvent equipSound,
-		float toughness,
-		Supplier<Ingredient> ingredientSupplier
-	) {
-		this.name = name;
-		this.durabilityMultiplier = durabilityMultiplier;
-		this.protectionAmounts = protectionAmounts;
-		this.enchantability = enchantability;
-		this.equipSound = equipSound;
-		this.toughness = toughness;
-		this.repairIngredientSupplier = new Lazy<>(ingredientSupplier);
+	private ArmorMaterials(String string2, int j, int[] is, int k, SoundEvent soundEvent, float f, Supplier<Ingredient> supplier) {
+		this.name = string2;
+		this.durabilityMultiplier = j;
+		this.protectionAmounts = is;
+		this.enchantability = k;
+		this.equipSound = soundEvent;
+		this.toughness = f;
+		this.repairIngredientSupplier = new Lazy<>(supplier);
 	}
 
 	@Override
-	public int getDurability(EquipmentSlot slot) {
-		return BASE_DURABILITY[slot.getEntitySlotId()] * this.durabilityMultiplier;
+	public int getDurability(EquipmentSlot equipmentSlot) {
+		return BASE_DURABILITY[equipmentSlot.getEntitySlotId()] * this.durabilityMultiplier;
 	}
 
 	@Override
-	public int getProtectionAmount(EquipmentSlot slot) {
-		return this.protectionAmounts[slot.getEntitySlotId()];
+	public int getProtectionAmount(EquipmentSlot equipmentSlot) {
+		return this.protectionAmounts[equipmentSlot.getEntitySlotId()];
 	}
 
 	@Override

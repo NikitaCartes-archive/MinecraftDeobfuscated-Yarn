@@ -31,14 +31,14 @@ public class ThrownEnderpearlEntity extends ThrownItemEntity {
 		super(entityType, world);
 	}
 
-	public ThrownEnderpearlEntity(World world, LivingEntity owner) {
-		super(EntityType.ENDER_PEARL, owner, world);
-		this.owner = owner;
+	public ThrownEnderpearlEntity(World world, LivingEntity livingEntity) {
+		super(EntityType.ENDER_PEARL, livingEntity, world);
+		this.owner = livingEntity;
 	}
 
 	@Environment(EnvType.CLIENT)
-	public ThrownEnderpearlEntity(World world, double x, double y, double z) {
-		super(EntityType.ENDER_PEARL, x, y, z, world);
+	public ThrownEnderpearlEntity(World world, double d, double e, double f) {
+		super(EntityType.ENDER_PEARL, d, e, f, world);
 	}
 
 	@Override
@@ -65,7 +65,7 @@ public class ThrownEnderpearlEntity extends ThrownItemEntity {
 				EndGatewayBlockEntity endGatewayBlockEntity = (EndGatewayBlockEntity)blockEntity;
 				if (livingEntity != null) {
 					if (livingEntity instanceof ServerPlayerEntity) {
-						Criterions.ENTER_BLOCK.trigger((ServerPlayerEntity)livingEntity, this.world.getBlockState(blockPos));
+						Criterions.ENTER_BLOCK.handle((ServerPlayerEntity)livingEntity, this.world.getBlockState(blockPos));
 					}
 
 					endGatewayBlockEntity.tryTeleportingEntity(livingEntity);
@@ -90,7 +90,7 @@ public class ThrownEnderpearlEntity extends ThrownItemEntity {
 					if (this.random.nextFloat() < 0.05F && this.world.getGameRules().getBoolean(GameRules.DO_MOB_SPAWNING)) {
 						EndermiteEntity endermiteEntity = EntityType.ENDERMITE.create(this.world);
 						endermiteEntity.setPlayerSpawned(true);
-						endermiteEntity.refreshPositionAndAngles(livingEntity.x, livingEntity.y, livingEntity.z, livingEntity.yaw, livingEntity.pitch);
+						endermiteEntity.setPositionAndAngles(livingEntity.x, livingEntity.y, livingEntity.z, livingEntity.yaw, livingEntity.pitch);
 						this.world.spawnEntity(endermiteEntity);
 					}
 
@@ -123,11 +123,11 @@ public class ThrownEnderpearlEntity extends ThrownItemEntity {
 
 	@Nullable
 	@Override
-	public Entity changeDimension(DimensionType newDimension) {
-		if (this.owner.dimension != newDimension) {
+	public Entity changeDimension(DimensionType dimensionType) {
+		if (this.owner.dimension != dimensionType) {
 			this.owner = null;
 		}
 
-		return super.changeDimension(newDimension);
+		return super.changeDimension(dimensionType);
 	}
 }

@@ -59,8 +59,8 @@ public class MemoryModuleType<U> {
 		return this.factory;
 	}
 
-	private static <U extends DynamicSerializable> MemoryModuleType<U> register(String id, Optional<Function<Dynamic<?>, U>> factory) {
-		return Registry.register(Registry.MEMORY_MODULE_TYPE, new Identifier(id), new MemoryModuleType<>(factory));
+	private static <U extends DynamicSerializable> MemoryModuleType<U> register(String string, Optional<Function<Dynamic<?>, U>> optional) {
+		return Registry.register(Registry.MEMORY_MODULE_TYPE, new Identifier(string), new MemoryModuleType<>(optional));
 	}
 
 	private static <U> MemoryModuleType<U> method_20738(String string) {

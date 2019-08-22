@@ -8,7 +8,6 @@ import net.minecraft.entity.SpawnType;
 import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.fluid.Fluid;
-import net.minecraft.loot.LootTables;
 import net.minecraft.particle.ParticleEffect;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.sound.SoundEvent;
@@ -18,10 +17,11 @@ import net.minecraft.tag.Tag;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
-import net.minecraft.world.CollisionView;
 import net.minecraft.world.Difficulty;
 import net.minecraft.world.IWorld;
+import net.minecraft.world.ViewableWorld;
 import net.minecraft.world.World;
+import net.minecraft.world.loot.LootTables;
 
 public class MagmaCubeEntity extends SlimeEntity {
 	public MagmaCubeEntity(EntityType<? extends MagmaCubeEntity> entityType, World world) {
@@ -39,14 +39,14 @@ public class MagmaCubeEntity extends SlimeEntity {
 	}
 
 	@Override
-	public boolean canSpawn(CollisionView world) {
-		return world.intersectsEntities(this) && !world.intersectsFluid(this.getBoundingBox());
+	public boolean canSpawn(ViewableWorld viewableWorld) {
+		return viewableWorld.intersectsEntities(this) && !viewableWorld.intersectsFluid(this.getBoundingBox());
 	}
 
 	@Override
-	protected void setSize(int size, boolean heal) {
-		super.setSize(size, heal);
-		this.getAttributeInstance(EntityAttributes.ARMOR).setBaseValue((double)(size * 3));
+	protected void setSize(int i, boolean bl) {
+		super.setSize(i, bl);
+		this.getAttributeInstance(EntityAttributes.ARMOR).setBaseValue((double)(i * 3));
 	}
 
 	@Environment(EnvType.CLIENT)
@@ -93,18 +93,18 @@ public class MagmaCubeEntity extends SlimeEntity {
 	}
 
 	@Override
-	protected void swimUpward(Tag<Fluid> fluid) {
-		if (fluid == FluidTags.LAVA) {
+	protected void swimUpward(Tag<Fluid> tag) {
+		if (tag == FluidTags.LAVA) {
 			Vec3d vec3d = this.getVelocity();
 			this.setVelocity(vec3d.x, (double)(0.22F + (float)this.getSize() * 0.05F), vec3d.z);
 			this.velocityDirty = true;
 		} else {
-			super.swimUpward(fluid);
+			super.swimUpward(tag);
 		}
 	}
 
 	@Override
-	public void handleFallDamage(float fallDistance, float damageMultiplier) {
+	public void handleFallDamage(float f, float g) {
 	}
 
 	@Override
@@ -118,7 +118,7 @@ public class MagmaCubeEntity extends SlimeEntity {
 	}
 
 	@Override
-	protected SoundEvent getHurtSound(DamageSource source) {
+	protected SoundEvent getHurtSound(DamageSource damageSource) {
 		return this.isSmall() ? SoundEvents.ENTITY_MAGMA_CUBE_HURT_SMALL : SoundEvents.ENTITY_MAGMA_CUBE_HURT;
 	}
 

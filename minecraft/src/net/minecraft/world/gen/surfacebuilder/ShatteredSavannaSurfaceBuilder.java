@@ -12,7 +12,7 @@ public class ShatteredSavannaSurfaceBuilder extends SurfaceBuilder<TernarySurfac
 		super(function);
 	}
 
-	public void generate(
+	public void method_15308(
 		Random random,
 		Chunk chunk,
 		Biome biome,

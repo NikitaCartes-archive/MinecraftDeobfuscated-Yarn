@@ -25,14 +25,14 @@ public class KnowledgeBookItem extends Item {
 	}
 
 	@Override
-	public TypedActionResult<ItemStack> use(World world, PlayerEntity user, Hand hand) {
-		ItemStack itemStack = user.getStackInHand(hand);
+	public TypedActionResult<ItemStack> use(World world, PlayerEntity playerEntity, Hand hand) {
+		ItemStack itemStack = playerEntity.getStackInHand(hand);
 		CompoundTag compoundTag = itemStack.getTag();
-		if (!user.abilities.creativeMode) {
-			user.setStackInHand(hand, ItemStack.EMPTY);
+		if (!playerEntity.abilities.creativeMode) {
+			playerEntity.setStackInHand(hand, ItemStack.EMPTY);
 		}
 
-		if (compoundTag != null && compoundTag.contains("Recipes", 9)) {
+		if (compoundTag != null && compoundTag.containsKey("Recipes", 9)) {
 			if (!world.isClient) {
 				ListTag listTag = compoundTag.getList("Recipes", 8);
 				List<Recipe<?>> list = Lists.<Recipe<?>>newArrayList();
@@ -49,8 +49,8 @@ public class KnowledgeBookItem extends Item {
 					list.add(optional.get());
 				}
 
-				user.unlockRecipes(list);
-				user.incrementStat(Stats.USED.getOrCreateStat(this));
+				playerEntity.unlockRecipes(list);
+				playerEntity.incrementStat(Stats.USED.getOrCreateStat(this));
 			}
 
 			return new TypedActionResult<>(ActionResult.SUCCESS, itemStack);

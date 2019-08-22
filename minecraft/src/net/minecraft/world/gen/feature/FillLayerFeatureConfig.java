@@ -10,17 +10,22 @@ public class FillLayerFeatureConfig implements FeatureConfig {
 	public final int height;
 	public final BlockState state;
 
-	public FillLayerFeatureConfig(int height, BlockState state) {
-		this.height = height;
-		this.state = state;
+	public FillLayerFeatureConfig(int i, BlockState blockState) {
+		this.height = i;
+		this.state = blockState;
 	}
 
 	@Override
-	public <T> Dynamic<T> serialize(DynamicOps<T> ops) {
+	public <T> Dynamic<T> serialize(DynamicOps<T> dynamicOps) {
 		return new Dynamic<>(
-			ops,
-			ops.createMap(
-				ImmutableMap.of(ops.createString("height"), ops.createInt(this.height), ops.createString("state"), BlockState.serialize(ops, this.state).getValue())
+			dynamicOps,
+			dynamicOps.createMap(
+				ImmutableMap.of(
+					dynamicOps.createString("height"),
+					dynamicOps.createInt(this.height),
+					dynamicOps.createString("state"),
+					BlockState.serialize(dynamicOps, this.state).getValue()
+				)
 			)
 		);
 	}

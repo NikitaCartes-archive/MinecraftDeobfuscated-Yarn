@@ -63,32 +63,32 @@ public class ScoreboardCriterion {
 	private final boolean readOnly;
 	private final ScoreboardCriterion.RenderType criterionType;
 
-	public ScoreboardCriterion(String name) {
-		this(name, false, ScoreboardCriterion.RenderType.INTEGER);
+	public ScoreboardCriterion(String string) {
+		this(string, false, ScoreboardCriterion.RenderType.INTEGER);
 	}
 
-	protected ScoreboardCriterion(String name, boolean readOnly, ScoreboardCriterion.RenderType renderType) {
-		this.name = name;
-		this.readOnly = readOnly;
+	protected ScoreboardCriterion(String string, boolean bl, ScoreboardCriterion.RenderType renderType) {
+		this.name = string;
+		this.readOnly = bl;
 		this.criterionType = renderType;
-		OBJECTIVES.put(name, this);
+		OBJECTIVES.put(string, this);
 	}
 
-	public static Optional<ScoreboardCriterion> createStatCriterion(String name) {
-		if (OBJECTIVES.containsKey(name)) {
-			return Optional.of(OBJECTIVES.get(name));
+	public static Optional<ScoreboardCriterion> createStatCriterion(String string) {
+		if (OBJECTIVES.containsKey(string)) {
+			return Optional.of(OBJECTIVES.get(string));
 		} else {
-			int i = name.indexOf(58);
+			int i = string.indexOf(58);
 			return i < 0
 				? Optional.empty()
 				: Registry.STAT_TYPE
-					.getOrEmpty(Identifier.splitOn(name.substring(0, i), '.'))
-					.flatMap(statType -> createStatCriterion(statType, Identifier.splitOn(name.substring(i + 1), '.')));
+					.getOrEmpty(Identifier.splitOn(string.substring(0, i), '.'))
+					.flatMap(statType -> createStatCriterion(statType, Identifier.splitOn(string.substring(i + 1), '.')));
 		}
 	}
 
-	private static <T> Optional<ScoreboardCriterion> createStatCriterion(StatType<T> statType, Identifier id) {
-		return statType.getRegistry().getOrEmpty(id).map(statType::getOrCreateStat);
+	private static <T> Optional<ScoreboardCriterion> createStatCriterion(StatType<T> statType, Identifier identifier) {
+		return statType.getRegistry().getOrEmpty(identifier).map(statType::getOrCreateStat);
 	}
 
 	public String getName() {
@@ -110,16 +110,16 @@ public class ScoreboardCriterion {
 		private final String name;
 		private static final Map<String, ScoreboardCriterion.RenderType> CRITERION_TYPES;
 
-		private RenderType(String name) {
-			this.name = name;
+		private RenderType(String string2) {
+			this.name = string2;
 		}
 
 		public String getName() {
 			return this.name;
 		}
 
-		public static ScoreboardCriterion.RenderType getType(String name) {
-			return (ScoreboardCriterion.RenderType)CRITERION_TYPES.getOrDefault(name, INTEGER);
+		public static ScoreboardCriterion.RenderType getType(String string) {
+			return (ScoreboardCriterion.RenderType)CRITERION_TYPES.getOrDefault(string, INTEGER);
 		}
 
 		static {

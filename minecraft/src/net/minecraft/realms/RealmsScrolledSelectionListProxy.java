@@ -20,13 +20,13 @@ public class RealmsScrolledSelectionListProxy extends ListWidget {
 	}
 
 	@Override
-	public boolean selectItem(int index, int button, double mouseX, double mouseY) {
-		return this.realmsScrolledSelectionList.selectItem(index, button, mouseX, mouseY);
+	public boolean selectItem(int i, int j, double d, double e) {
+		return this.realmsScrolledSelectionList.selectItem(i, j, d, e);
 	}
 
 	@Override
-	public boolean isSelectedItem(int index) {
-		return this.realmsScrolledSelectionList.isSelectedItem(index);
+	public boolean isSelectedItem(int i) {
+		return this.realmsScrolledSelectionList.isSelectedItem(i);
 	}
 
 	@Override
@@ -35,8 +35,8 @@ public class RealmsScrolledSelectionListProxy extends ListWidget {
 	}
 
 	@Override
-	public void renderItem(int index, int y, int i, int j, int k, int l, float f) {
-		this.realmsScrolledSelectionList.renderItem(index, y, i, j, k, l);
+	public void renderItem(int i, int j, int k, int l, int m, int n, float f) {
+		this.realmsScrolledSelectionList.renderItem(i, j, k, l, m, n);
 	}
 
 	public int getWidth() {
@@ -54,22 +54,22 @@ public class RealmsScrolledSelectionListProxy extends ListWidget {
 	}
 
 	@Override
-	public boolean mouseScrolled(double d, double e, double amount) {
-		return this.realmsScrolledSelectionList.mouseScrolled(d, e, amount) ? true : super.mouseScrolled(d, e, amount);
+	public boolean mouseScrolled(double d, double e, double f) {
+		return this.realmsScrolledSelectionList.mouseScrolled(d, e, f) ? true : super.mouseScrolled(d, e, f);
 	}
 
 	@Override
-	public boolean mouseClicked(double mouseX, double mouseY, int button) {
-		return this.realmsScrolledSelectionList.mouseClicked(mouseX, mouseY, button) ? true : super.mouseClicked(mouseX, mouseY, button);
+	public boolean mouseClicked(double d, double e, int i) {
+		return this.realmsScrolledSelectionList.mouseClicked(d, e, i) ? true : super.mouseClicked(d, e, i);
 	}
 
 	@Override
-	public boolean mouseReleased(double mouseX, double mouseY, int button) {
-		return this.realmsScrolledSelectionList.mouseReleased(mouseX, mouseY, button);
+	public boolean mouseReleased(double d, double e, int i) {
+		return this.realmsScrolledSelectionList.mouseReleased(d, e, i);
 	}
 
 	@Override
-	public boolean mouseDragged(double mouseX, double mouseY, int button, double deltaX, double deltaY) {
-		return this.realmsScrolledSelectionList.mouseDragged(mouseX, mouseY, button, deltaX, deltaY);
+	public boolean mouseDragged(double d, double e, int i, double f, double g) {
+		return this.realmsScrolledSelectionList.mouseDragged(d, e, i, f, g);
 	}
 }

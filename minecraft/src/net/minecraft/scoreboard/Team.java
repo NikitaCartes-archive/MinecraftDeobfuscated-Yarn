@@ -27,10 +27,10 @@ public class Team extends AbstractTeam {
 	private Formatting color = Formatting.RESET;
 	private AbstractTeam.CollisionRule collisionRule = AbstractTeam.CollisionRule.ALWAYS;
 
-	public Team(Scoreboard scoreboard, String name) {
+	public Team(Scoreboard scoreboard, String string) {
 		this.scoreboard = scoreboard;
-		this.name = name;
-		this.displayName = new LiteralText(name);
+		this.name = string;
+		this.displayName = new LiteralText(string);
 	}
 
 	@Override
@@ -108,8 +108,8 @@ public class Team extends AbstractTeam {
 		return this.friendlyFire;
 	}
 
-	public void setFriendlyFireAllowed(boolean friendlyFire) {
-		this.friendlyFire = friendlyFire;
+	public void setFriendlyFireAllowed(boolean bl) {
+		this.friendlyFire = bl;
 		this.scoreboard.updateScoreboardTeam(this);
 	}
 
@@ -118,8 +118,8 @@ public class Team extends AbstractTeam {
 		return this.showFriendlyInvisibles;
 	}
 
-	public void setShowFriendlyInvisibles(boolean showFriendlyInvisible) {
-		this.showFriendlyInvisibles = showFriendlyInvisible;
+	public void setShowFriendlyInvisibles(boolean bl) {
+		this.showFriendlyInvisibles = bl;
 		this.scoreboard.updateScoreboardTeam(this);
 	}
 
@@ -172,8 +172,8 @@ public class Team extends AbstractTeam {
 		this.setShowFriendlyInvisibles((i & 2) > 0);
 	}
 
-	public void setColor(Formatting color) {
-		this.color = color;
+	public void setColor(Formatting formatting) {
+		this.color = formatting;
 		this.scoreboard.updateScoreboardTeam(this);
 	}
 

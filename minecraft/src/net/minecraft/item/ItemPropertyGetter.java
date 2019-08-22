@@ -8,5 +8,5 @@ import net.minecraft.world.World;
 
 public interface ItemPropertyGetter {
 	@Environment(EnvType.CLIENT)
-	float call(ItemStack stack, @Nullable World world, @Nullable LivingEntity entity);
+	float call(ItemStack itemStack, @Nullable World world, @Nullable LivingEntity livingEntity);
 }

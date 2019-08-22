@@ -12,10 +12,10 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
+import net.minecraft.village.PointOfInterestStorage;
+import net.minecraft.village.PointOfInterestType;
 import net.minecraft.world.biome.Biomes;
 import net.minecraft.world.level.LevelProperties;
-import net.minecraft.world.poi.PointOfInterestStorage;
-import net.minecraft.world.poi.PointOfInterestType;
 
 public class WanderingTraderManager {
 	private final Random random = new Random();
@@ -24,10 +24,10 @@ public class WanderingTraderManager {
 	private int spawnDelay;
 	private int spawnChance;
 
-	public WanderingTraderManager(ServerWorld world) {
-		this.world = world;
+	public WanderingTraderManager(ServerWorld serverWorld) {
+		this.world = serverWorld;
 		this.field_17728 = 1200;
-		LevelProperties levelProperties = world.getLevelProperties();
+		LevelProperties levelProperties = serverWorld.getLevelProperties();
 		this.spawnDelay = levelProperties.getWanderingTraderSpawnDelay();
 		this.spawnChance = levelProperties.getWanderingTraderSpawnChance();
 		if (this.spawnDelay == 0 && this.spawnChance == 0) {
@@ -89,7 +89,7 @@ public class WanderingTraderManager {
 					this.world.getLevelProperties().setWanderingTraderId(wanderingTraderEntity.getUuid());
 					wanderingTraderEntity.setDespawnDelay(48000);
 					wanderingTraderEntity.setWanderTarget(blockPos2);
-					wanderingTraderEntity.setPositionTarget(blockPos2, 16);
+					wanderingTraderEntity.setWalkTarget(blockPos2, 16);
 					return true;
 				}
 			}

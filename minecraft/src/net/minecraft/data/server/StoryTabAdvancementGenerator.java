@@ -21,7 +21,7 @@ import net.minecraft.world.dimension.DimensionType;
 import net.minecraft.world.gen.feature.Feature;
 
 public class StoryTabAdvancementGenerator implements Consumer<Consumer<Advancement>> {
-	public void accept(Consumer<Advancement> consumer) {
+	public void method_10347(Consumer<Advancement> consumer) {
 		Advancement advancement = Advancement.Task.create()
 			.display(
 				Blocks.GRASS_BLOCK,

@@ -1,7 +1,6 @@
 package net.minecraft.client.render.entity;
 
-import com.mojang.blaze3d.platform.GLX;
-import com.mojang.blaze3d.platform.GlStateManager;
+import com.mojang.blaze3d.systems.RenderSystem;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.render.BufferBuilder;
@@ -22,22 +21,22 @@ public class TridentEntityRenderer extends EntityRenderer<TridentEntity> {
 		super(entityRenderDispatcher);
 	}
 
-	public void render(TridentEntity tridentEntity, double d, double e, double f, float g, float h) {
+	public void method_4133(TridentEntity tridentEntity, double d, double e, double f, float g, float h) {
 		this.bindEntityTexture(tridentEntity);
-		GlStateManager.color4f(1.0F, 1.0F, 1.0F, 1.0F);
-		GlStateManager.pushMatrix();
-		GlStateManager.disableLighting();
-		GlStateManager.translatef((float)d, (float)e, (float)f);
-		GlStateManager.rotatef(MathHelper.lerp(h, tridentEntity.prevYaw, tridentEntity.yaw) - 90.0F, 0.0F, 1.0F, 0.0F);
-		GlStateManager.rotatef(MathHelper.lerp(h, tridentEntity.prevPitch, tridentEntity.pitch) + 90.0F, 0.0F, 0.0F, 1.0F);
+		RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
+		RenderSystem.pushMatrix();
+		RenderSystem.disableLighting();
+		RenderSystem.translatef((float)d, (float)e, (float)f);
+		RenderSystem.rotatef(MathHelper.lerp(h, tridentEntity.prevYaw, tridentEntity.yaw) - 90.0F, 0.0F, 1.0F, 0.0F);
+		RenderSystem.rotatef(MathHelper.lerp(h, tridentEntity.prevPitch, tridentEntity.pitch) + 90.0F, 0.0F, 0.0F, 1.0F);
 		this.model.renderItem();
-		GlStateManager.popMatrix();
+		RenderSystem.popMatrix();
 		this.method_4131(tridentEntity, d, e, f, g, h);
 		super.render(tridentEntity, d, e, f, g, h);
-		GlStateManager.enableLighting();
+		RenderSystem.enableLighting();
 	}
 
-	protected Identifier getTexture(TridentEntity tridentEntity) {
+	protected Identifier method_4134(TridentEntity tridentEntity) {
 		return SKIN;
 	}
 
@@ -45,7 +44,7 @@ public class TridentEntityRenderer extends EntityRenderer<TridentEntity> {
 		Entity entity = tridentEntity.getOwner();
 		if (entity != null && tridentEntity.isNoClip()) {
 			Tessellator tessellator = Tessellator.getInstance();
-			BufferBuilder bufferBuilder = tessellator.getBuffer();
+			BufferBuilder bufferBuilder = tessellator.getBufferBuilder();
 			double i = (double)(MathHelper.lerp(h * 0.5F, entity.yaw, entity.prevYaw) * (float) (Math.PI / 180.0));
 			double j = Math.cos(i);
 			double k = Math.sin(i);
@@ -64,10 +63,10 @@ public class TridentEntityRenderer extends EntityRenderer<TridentEntity> {
 			int x = tridentEntity.getEntityId() + tridentEntity.age;
 			double y = (double)((float)x + h) * -0.1;
 			double z = Math.min(0.5, w / 30.0);
-			GlStateManager.disableTexture();
-			GlStateManager.disableLighting();
-			GlStateManager.disableCull();
-			GLX.glMultiTexCoord2f(GLX.GL_TEXTURE1, 255.0F, 255.0F);
+			RenderSystem.disableTexture();
+			RenderSystem.disableLighting();
+			RenderSystem.disableCull();
+			RenderSystem.glMultiTexCoord2f(33985, 255.0F, 255.0F);
 			bufferBuilder.begin(5, VertexFormats.POSITION_COLOR);
 			int aa = 37;
 			int ab = 7 - x % 7;
@@ -113,9 +112,9 @@ public class TridentEntityRenderer extends EntityRenderer<TridentEntity> {
 			}
 
 			tessellator.draw();
-			GlStateManager.enableLighting();
-			GlStateManager.enableTexture();
-			GlStateManager.enableCull();
+			RenderSystem.enableLighting();
+			RenderSystem.enableTexture();
+			RenderSystem.enableCull();
 		}
 	}
 }

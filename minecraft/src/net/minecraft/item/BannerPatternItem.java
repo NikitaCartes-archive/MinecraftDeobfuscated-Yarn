@@ -14,9 +14,9 @@ import net.minecraft.world.World;
 public class BannerPatternItem extends Item {
 	private final BannerPattern pattern;
 
-	public BannerPatternItem(BannerPattern pattern, Item.Settings settings) {
+	public BannerPatternItem(BannerPattern bannerPattern, Item.Settings settings) {
 		super(settings);
-		this.pattern = pattern;
+		this.pattern = bannerPattern;
 	}
 
 	public BannerPattern getPattern() {
@@ -25,8 +25,8 @@ public class BannerPatternItem extends Item {
 
 	@Environment(EnvType.CLIENT)
 	@Override
-	public void appendTooltip(ItemStack stack, @Nullable World world, List<Text> tooltip, TooltipContext context) {
-		tooltip.add(this.getDescription().formatted(Formatting.GRAY));
+	public void appendTooltip(ItemStack itemStack, @Nullable World world, List<Text> list, TooltipContext tooltipContext) {
+		list.add(this.getDescription().formatted(Formatting.GRAY));
 	}
 
 	@Environment(EnvType.CLIENT)

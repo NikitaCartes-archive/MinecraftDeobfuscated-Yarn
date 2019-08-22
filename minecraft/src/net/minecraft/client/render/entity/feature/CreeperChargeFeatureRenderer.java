@@ -1,8 +1,9 @@
 package net.minecraft.client.render.entity.feature;
 
-import com.mojang.blaze3d.platform.GlStateManager;
+import com.mojang.blaze3d.systems.RenderSystem;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.class_4493;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.GameRenderer;
 import net.minecraft.client.render.entity.model.CreeperEntityModel;
@@ -14,36 +15,36 @@ public class CreeperChargeFeatureRenderer extends FeatureRenderer<CreeperEntity,
 	private static final Identifier SKIN = new Identifier("textures/entity/creeper/creeper_armor.png");
 	private final CreeperEntityModel<CreeperEntity> model = new CreeperEntityModel<>(2.0F);
 
-	public CreeperChargeFeatureRenderer(FeatureRendererContext<CreeperEntity, CreeperEntityModel<CreeperEntity>> context) {
-		super(context);
+	public CreeperChargeFeatureRenderer(FeatureRendererContext<CreeperEntity, CreeperEntityModel<CreeperEntity>> featureRendererContext) {
+		super(featureRendererContext);
 	}
 
-	public void render(CreeperEntity creeperEntity, float f, float g, float h, float i, float j, float k, float l) {
+	public void method_4178(CreeperEntity creeperEntity, float f, float g, float h, float i, float j, float k, float l) {
 		if (creeperEntity.isCharged()) {
 			boolean bl = creeperEntity.isInvisible();
-			GlStateManager.depthMask(!bl);
+			RenderSystem.depthMask(!bl);
 			this.bindTexture(SKIN);
-			GlStateManager.matrixMode(5890);
-			GlStateManager.loadIdentity();
+			RenderSystem.matrixMode(5890);
+			RenderSystem.loadIdentity();
 			float m = (float)creeperEntity.age + h;
-			GlStateManager.translatef(m * 0.01F, m * 0.01F, 0.0F);
-			GlStateManager.matrixMode(5888);
-			GlStateManager.enableBlend();
+			RenderSystem.translatef(m * 0.01F, m * 0.01F, 0.0F);
+			RenderSystem.matrixMode(5888);
+			RenderSystem.enableBlend();
 			float n = 0.5F;
-			GlStateManager.color4f(0.5F, 0.5F, 0.5F, 1.0F);
-			GlStateManager.disableLighting();
-			GlStateManager.blendFunc(GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ONE);
-			this.getContextModel().copyStateTo(this.model);
+			RenderSystem.color4f(0.5F, 0.5F, 0.5F, 1.0F);
+			RenderSystem.disableLighting();
+			RenderSystem.blendFunc(class_4493.class_4535.ONE, class_4493.class_4534.ONE);
+			this.getModel().copyStateTo(this.model);
 			GameRenderer gameRenderer = MinecraftClient.getInstance().gameRenderer;
 			gameRenderer.setFogBlack(true);
 			this.model.render(creeperEntity, f, g, i, j, k, l);
 			gameRenderer.setFogBlack(false);
-			GlStateManager.matrixMode(5890);
-			GlStateManager.loadIdentity();
-			GlStateManager.matrixMode(5888);
-			GlStateManager.enableLighting();
-			GlStateManager.disableBlend();
-			GlStateManager.depthMask(true);
+			RenderSystem.matrixMode(5890);
+			RenderSystem.loadIdentity();
+			RenderSystem.matrixMode(5888);
+			RenderSystem.enableLighting();
+			RenderSystem.disableBlend();
+			RenderSystem.depthMask(true);
 		}
 	}
 

@@ -7,8 +7,8 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.util.Identifier;
 
 public class SmeltingRecipe extends AbstractCookingRecipe {
-	public SmeltingRecipe(Identifier id, String group, Ingredient input, ItemStack output, float experience, int cookTime) {
-		super(RecipeType.SMELTING, id, group, input, output, experience, cookTime);
+	public SmeltingRecipe(Identifier identifier, String string, Ingredient ingredient, ItemStack itemStack, float f, int i) {
+		super(RecipeType.SMELTING, identifier, string, ingredient, itemStack, f, i);
 	}
 
 	@Environment(EnvType.CLIENT)

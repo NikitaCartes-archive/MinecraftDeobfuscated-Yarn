@@ -55,12 +55,12 @@ public class GuardianEntityModel extends EntityModel<GuardianEntity> {
 		this.field_3378[1].addChild(this.field_3378[2]);
 	}
 
-	public void render(GuardianEntity guardianEntity, float f, float g, float h, float i, float j, float k) {
-		this.setAngles(guardianEntity, f, g, h, i, j, k);
+	public void method_17082(GuardianEntity guardianEntity, float f, float g, float h, float i, float j, float k) {
+		this.method_17083(guardianEntity, f, g, h, i, j, k);
 		this.field_3379.render(k);
 	}
 
-	public void setAngles(GuardianEntity guardianEntity, float f, float g, float h, float i, float j, float k) {
+	public void method_17083(GuardianEntity guardianEntity, float f, float g, float h, float i, float j, float k) {
 		float l = h - (float)guardianEntity.age;
 		this.field_3379.yaw = i * (float) (Math.PI / 180.0);
 		this.field_3379.pitch = j * (float) (Math.PI / 180.0);
@@ -70,12 +70,12 @@ public class GuardianEntityModel extends EntityModel<GuardianEntity> {
 			this.field_3380[n].pitch = (float) Math.PI * field_17131[n];
 			this.field_3380[n].yaw = (float) Math.PI * field_17132[n];
 			this.field_3380[n].roll = (float) Math.PI * field_17133[n];
-			this.field_3380[n].pivotX = field_17134[n] * (1.0F + MathHelper.cos(h * 1.5F + (float)n) * 0.01F - m);
-			this.field_3380[n].pivotY = 16.0F + field_17135[n] * (1.0F + MathHelper.cos(h * 1.5F + (float)n) * 0.01F - m);
-			this.field_3380[n].pivotZ = field_17136[n] * (1.0F + MathHelper.cos(h * 1.5F + (float)n) * 0.01F - m);
+			this.field_3380[n].rotationPointX = field_17134[n] * (1.0F + MathHelper.cos(h * 1.5F + (float)n) * 0.01F - m);
+			this.field_3380[n].rotationPointY = 16.0F + field_17135[n] * (1.0F + MathHelper.cos(h * 1.5F + (float)n) * 0.01F - m);
+			this.field_3380[n].rotationPointZ = field_17136[n] * (1.0F + MathHelper.cos(h * 1.5F + (float)n) * 0.01F - m);
 		}
 
-		this.field_3381.pivotZ = -8.25F;
+		this.field_3381.rotationPointZ = -8.25F;
 		Entity entity = MinecraftClient.getInstance().getCameraEntity();
 		if (guardianEntity.hasBeamTarget()) {
 			entity = guardianEntity.getBeamTarget();
@@ -86,28 +86,28 @@ public class GuardianEntityModel extends EntityModel<GuardianEntity> {
 			Vec3d vec3d2 = guardianEntity.getCameraPosVec(0.0F);
 			double d = vec3d.y - vec3d2.y;
 			if (d > 0.0) {
-				this.field_3381.pivotY = 0.0F;
+				this.field_3381.rotationPointY = 0.0F;
 			} else {
-				this.field_3381.pivotY = 1.0F;
+				this.field_3381.rotationPointY = 1.0F;
 			}
 
 			Vec3d vec3d3 = guardianEntity.getRotationVec(0.0F);
 			vec3d3 = new Vec3d(vec3d3.x, 0.0, vec3d3.z);
 			Vec3d vec3d4 = new Vec3d(vec3d2.x - vec3d.x, 0.0, vec3d2.z - vec3d.z).normalize().rotateY((float) (Math.PI / 2));
 			double e = vec3d3.dotProduct(vec3d4);
-			this.field_3381.pivotX = MathHelper.sqrt((float)Math.abs(e)) * 2.0F * (float)Math.signum(e);
+			this.field_3381.rotationPointX = MathHelper.sqrt((float)Math.abs(e)) * 2.0F * (float)Math.signum(e);
 		}
 
 		this.field_3381.visible = true;
 		float o = guardianEntity.getSpikesExtension(l);
 		this.field_3378[0].yaw = MathHelper.sin(o) * (float) Math.PI * 0.05F;
 		this.field_3378[1].yaw = MathHelper.sin(o) * (float) Math.PI * 0.1F;
-		this.field_3378[1].pivotX = -1.5F;
-		this.field_3378[1].pivotY = 0.5F;
-		this.field_3378[1].pivotZ = 14.0F;
+		this.field_3378[1].rotationPointX = -1.5F;
+		this.field_3378[1].rotationPointY = 0.5F;
+		this.field_3378[1].rotationPointZ = 14.0F;
 		this.field_3378[2].yaw = MathHelper.sin(o) * (float) Math.PI * 0.15F;
-		this.field_3378[2].pivotX = 0.5F;
-		this.field_3378[2].pivotY = 0.5F;
-		this.field_3378[2].pivotZ = 6.0F;
+		this.field_3378[2].rotationPointX = 0.5F;
+		this.field_3378[2].rotationPointY = 0.5F;
+		this.field_3378[2].rotationPointZ = 6.0F;
 	}
 }

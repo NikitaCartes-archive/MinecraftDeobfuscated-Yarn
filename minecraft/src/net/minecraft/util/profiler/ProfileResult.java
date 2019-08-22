@@ -7,9 +7,9 @@ import net.fabricmc.api.Environment;
 
 public interface ProfileResult {
 	@Environment(EnvType.CLIENT)
-	List<ProfilerTiming> getTimings(String parentPath);
+	List<ProfilerTiming> getTimings(String string);
 
-	boolean save(File file);
+	boolean saveToFile(File file);
 
 	long getStartTime();
 
@@ -26,8 +26,6 @@ public interface ProfileResult {
 	default int getTickSpan() {
 		return this.getEndTick() - this.getStartTick();
 	}
-
-	String getTimingTreeString();
 
 	static String method_21721(String string) {
 		return string.replace('\u001e', '.');

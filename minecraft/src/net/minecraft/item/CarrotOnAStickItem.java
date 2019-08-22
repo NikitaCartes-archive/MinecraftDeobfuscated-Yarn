@@ -14,15 +14,15 @@ public class CarrotOnAStickItem extends Item {
 	}
 
 	@Override
-	public TypedActionResult<ItemStack> use(World world, PlayerEntity user, Hand hand) {
-		ItemStack itemStack = user.getStackInHand(hand);
+	public TypedActionResult<ItemStack> use(World world, PlayerEntity playerEntity, Hand hand) {
+		ItemStack itemStack = playerEntity.getStackInHand(hand);
 		if (world.isClient) {
 			return new TypedActionResult<>(ActionResult.PASS, itemStack);
 		} else {
-			if (user.hasVehicle() && user.getVehicle() instanceof PigEntity) {
-				PigEntity pigEntity = (PigEntity)user.getVehicle();
+			if (playerEntity.hasVehicle() && playerEntity.getVehicle() instanceof PigEntity) {
+				PigEntity pigEntity = (PigEntity)playerEntity.getVehicle();
 				if (itemStack.getMaxDamage() - itemStack.getDamage() >= 7 && pigEntity.method_6577()) {
-					itemStack.damage(7, user, p -> p.sendToolBreakStatus(hand));
+					itemStack.damage(7, playerEntity, playerEntityx -> playerEntityx.sendToolBreakStatus(hand));
 					if (itemStack.isEmpty()) {
 						ItemStack itemStack2 = new ItemStack(Items.FISHING_ROD);
 						itemStack2.setTag(itemStack.getTag());
@@ -33,7 +33,7 @@ public class CarrotOnAStickItem extends Item {
 				}
 			}
 
-			user.incrementStat(Stats.USED.getOrCreateStat(this));
+			playerEntity.incrementStat(Stats.USED.getOrCreateStat(this));
 			return new TypedActionResult<>(ActionResult.PASS, itemStack);
 		}
 	}

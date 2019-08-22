@@ -32,28 +32,21 @@ public class AdvancementDisplay {
 	private float yPos;
 
 	public AdvancementDisplay(
-		ItemStack icon,
-		Text title,
-		Text description,
-		@Nullable Identifier background,
-		AdvancementFrame frame,
-		boolean showToast,
-		boolean announceToChat,
-		boolean hidden
+		ItemStack itemStack, Text text, Text text2, @Nullable Identifier identifier, AdvancementFrame advancementFrame, boolean bl, boolean bl2, boolean bl3
 	) {
-		this.title = title;
-		this.description = description;
-		this.icon = icon;
-		this.background = background;
-		this.frame = frame;
-		this.showToast = showToast;
-		this.announceToChat = announceToChat;
-		this.hidden = hidden;
+		this.title = text;
+		this.description = text2;
+		this.icon = itemStack;
+		this.background = identifier;
+		this.frame = advancementFrame;
+		this.showToast = bl;
+		this.announceToChat = bl2;
+		this.hidden = bl3;
 	}
 
-	public void setPosition(float xPos, float yPos) {
-		this.xPos = xPos;
-		this.yPos = yPos;
+	public void setPosition(float f, float g) {
+		this.xPos = f;
+		this.yPos = g;
 	}
 
 	public Text getTitle() {
@@ -102,16 +95,16 @@ public class AdvancementDisplay {
 		return this.hidden;
 	}
 
-	public static AdvancementDisplay fromJson(JsonObject obj, JsonDeserializationContext context) {
-		Text text = JsonHelper.deserialize(obj, "title", context, Text.class);
-		Text text2 = JsonHelper.deserialize(obj, "description", context, Text.class);
+	public static AdvancementDisplay fromJson(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext) {
+		Text text = JsonHelper.deserialize(jsonObject, "title", jsonDeserializationContext, Text.class);
+		Text text2 = JsonHelper.deserialize(jsonObject, "description", jsonDeserializationContext, Text.class);
 		if (text != null && text2 != null) {
-			ItemStack itemStack = iconFromJson(JsonHelper.getObject(obj, "icon"));
-			Identifier identifier = obj.has("background") ? new Identifier(JsonHelper.getString(obj, "background")) : null;
-			AdvancementFrame advancementFrame = obj.has("frame") ? AdvancementFrame.forName(JsonHelper.getString(obj, "frame")) : AdvancementFrame.TASK;
-			boolean bl = JsonHelper.getBoolean(obj, "show_toast", true);
-			boolean bl2 = JsonHelper.getBoolean(obj, "announce_to_chat", true);
-			boolean bl3 = JsonHelper.getBoolean(obj, "hidden", false);
+			ItemStack itemStack = iconFromJson(JsonHelper.getObject(jsonObject, "icon"));
+			Identifier identifier = jsonObject.has("background") ? new Identifier(JsonHelper.getString(jsonObject, "background")) : null;
+			AdvancementFrame advancementFrame = jsonObject.has("frame") ? AdvancementFrame.forName(JsonHelper.getString(jsonObject, "frame")) : AdvancementFrame.TASK;
+			boolean bl = JsonHelper.getBoolean(jsonObject, "show_toast", true);
+			boolean bl2 = JsonHelper.getBoolean(jsonObject, "announce_to_chat", true);
+			boolean bl3 = JsonHelper.getBoolean(jsonObject, "hidden", false);
 			return new AdvancementDisplay(itemStack, text, text2, identifier, advancementFrame, bl, bl2, bl3);
 		} else {
 			throw new JsonSyntaxException("Both title and description must be set");
@@ -168,17 +161,17 @@ public class AdvancementDisplay {
 		packetByteBuf.writeFloat(this.yPos);
 	}
 
-	public static AdvancementDisplay fromPacket(PacketByteBuf buf) {
-		Text text = buf.readText();
-		Text text2 = buf.readText();
-		ItemStack itemStack = buf.readItemStack();
-		AdvancementFrame advancementFrame = buf.readEnumConstant(AdvancementFrame.class);
-		int i = buf.readInt();
-		Identifier identifier = (i & 1) != 0 ? buf.readIdentifier() : null;
+	public static AdvancementDisplay fromPacket(PacketByteBuf packetByteBuf) {
+		Text text = packetByteBuf.readText();
+		Text text2 = packetByteBuf.readText();
+		ItemStack itemStack = packetByteBuf.readItemStack();
+		AdvancementFrame advancementFrame = packetByteBuf.readEnumConstant(AdvancementFrame.class);
+		int i = packetByteBuf.readInt();
+		Identifier identifier = (i & 1) != 0 ? packetByteBuf.readIdentifier() : null;
 		boolean bl = (i & 2) != 0;
 		boolean bl2 = (i & 4) != 0;
 		AdvancementDisplay advancementDisplay = new AdvancementDisplay(itemStack, text, text2, identifier, advancementFrame, bl, false, bl2);
-		advancementDisplay.setPosition(buf.readFloat(), buf.readFloat());
+		advancementDisplay.setPosition(packetByteBuf.readFloat(), packetByteBuf.readFloat());
 		return advancementDisplay;
 	}
 

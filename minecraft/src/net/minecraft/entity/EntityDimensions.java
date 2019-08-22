@@ -5,26 +5,26 @@ public class EntityDimensions {
 	public final float height;
 	public final boolean fixed;
 
-	public EntityDimensions(float width, float height, boolean fixed) {
-		this.width = width;
-		this.height = height;
-		this.fixed = fixed;
+	public EntityDimensions(float f, float g, boolean bl) {
+		this.width = f;
+		this.height = g;
+		this.fixed = bl;
 	}
 
-	public EntityDimensions scaled(float ratio) {
-		return this.scaled(ratio, ratio);
+	public EntityDimensions scaled(float f) {
+		return this.scaled(f, f);
 	}
 
-	public EntityDimensions scaled(float widthRatio, float heightRatio) {
-		return !this.fixed && (widthRatio != 1.0F || heightRatio != 1.0F) ? changing(this.width * widthRatio, this.height * heightRatio) : this;
+	public EntityDimensions scaled(float f, float g) {
+		return !this.fixed && (f != 1.0F || g != 1.0F) ? changing(this.width * f, this.height * g) : this;
 	}
 
-	public static EntityDimensions changing(float width, float height) {
-		return new EntityDimensions(width, height, false);
+	public static EntityDimensions changing(float f, float g) {
+		return new EntityDimensions(f, g, false);
 	}
 
-	public static EntityDimensions fixed(float width, float height) {
-		return new EntityDimensions(width, height, true);
+	public static EntityDimensions fixed(float f, float g) {
+		return new EntityDimensions(f, g, true);
 	}
 
 	public String toString() {

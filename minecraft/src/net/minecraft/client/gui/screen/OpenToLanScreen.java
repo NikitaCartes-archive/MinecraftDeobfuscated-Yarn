@@ -17,9 +17,9 @@ public class OpenToLanScreen extends Screen {
 	private String gameMode = "survival";
 	private boolean allowCommands;
 
-	public OpenToLanScreen(Screen parent) {
+	public OpenToLanScreen(Screen screen) {
 		super(new TranslatableText("lanServer.title"));
-		this.parent = parent;
+		this.parent = screen;
 	}
 
 	@Override
@@ -65,10 +65,10 @@ public class OpenToLanScreen extends Screen {
 	}
 
 	@Override
-	public void render(int mouseX, int mouseY, float delta) {
+	public void render(int i, int j, float f) {
 		this.renderBackground();
 		this.drawCenteredString(this.font, this.title.asFormattedString(), this.width / 2, 50, 16777215);
 		this.drawCenteredString(this.font, I18n.translate("lanServer.otherPlayers"), this.width / 2, 82, 16777215);
-		super.render(mouseX, mouseY, delta);
+		super.render(i, j, f);
 	}
 }

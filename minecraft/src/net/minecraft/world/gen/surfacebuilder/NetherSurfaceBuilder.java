@@ -23,7 +23,7 @@ public class NetherSurfaceBuilder extends SurfaceBuilder<TernarySurfaceConfig> {
 		super(function);
 	}
 
-	public void generate(
+	public void method_15300(
 		Random random,
 		Chunk chunk,
 		Biome biome,
@@ -94,11 +94,11 @@ public class NetherSurfaceBuilder extends SurfaceBuilder<TernarySurfaceConfig> {
 	}
 
 	@Override
-	public void initSeed(long seed) {
-		if (this.seed != seed || this.noise == null) {
-			this.noise = new OctavePerlinNoiseSampler(new ChunkRandom(seed), 4);
+	public void initSeed(long l) {
+		if (this.seed != l || this.noise == null) {
+			this.noise = new OctavePerlinNoiseSampler(new ChunkRandom(l), 4);
 		}
 
-		this.seed = seed;
+		this.seed = l;
 	}
 }

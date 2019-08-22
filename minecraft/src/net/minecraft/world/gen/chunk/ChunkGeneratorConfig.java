@@ -100,12 +100,12 @@ public class ChunkGeneratorConfig {
 		return this.defaultFluid;
 	}
 
-	public void setDefaultBlock(BlockState state) {
-		this.defaultBlock = state;
+	public void setDefaultBlock(BlockState blockState) {
+		this.defaultBlock = blockState;
 	}
 
-	public void setDefaultFluid(BlockState state) {
-		this.defaultFluid = state;
+	public void setDefaultFluid(BlockState blockState) {
+		this.defaultFluid = blockState;
 	}
 
 	public int getMaxY() {

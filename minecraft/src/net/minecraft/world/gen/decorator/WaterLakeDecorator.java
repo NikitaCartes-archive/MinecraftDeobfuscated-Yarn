@@ -9,15 +9,15 @@ import net.minecraft.world.IWorld;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
 import net.minecraft.world.gen.chunk.ChunkGeneratorConfig;
 
-public class WaterLakeDecorator extends Decorator<ChanceDecoratorConfig> {
-	public WaterLakeDecorator(Function<Dynamic<?>, ? extends ChanceDecoratorConfig> function) {
+public class WaterLakeDecorator extends Decorator<LakeDecoratorConfig> {
+	public WaterLakeDecorator(Function<Dynamic<?>, ? extends LakeDecoratorConfig> function) {
 		super(function);
 	}
 
-	public Stream<BlockPos> getPositions(
-		IWorld iWorld, ChunkGenerator<? extends ChunkGeneratorConfig> chunkGenerator, Random random, ChanceDecoratorConfig chanceDecoratorConfig, BlockPos blockPos
+	public Stream<BlockPos> method_15930(
+		IWorld iWorld, ChunkGenerator<? extends ChunkGeneratorConfig> chunkGenerator, Random random, LakeDecoratorConfig lakeDecoratorConfig, BlockPos blockPos
 	) {
-		if (random.nextInt(chanceDecoratorConfig.chance) == 0) {
+		if (random.nextInt(lakeDecoratorConfig.chance) == 0) {
 			int i = random.nextInt(16);
 			int j = random.nextInt(chunkGenerator.getMaxY());
 			int k = random.nextInt(16);

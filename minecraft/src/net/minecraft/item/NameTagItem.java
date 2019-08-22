@@ -11,15 +11,15 @@ public class NameTagItem extends Item {
 	}
 
 	@Override
-	public boolean useOnEntity(ItemStack stack, PlayerEntity user, LivingEntity entity, Hand hand) {
-		if (stack.hasCustomName() && !(entity instanceof PlayerEntity)) {
-			if (entity.isAlive()) {
-				entity.setCustomName(stack.getName());
-				if (entity instanceof MobEntity) {
-					((MobEntity)entity).setPersistent();
+	public boolean useOnEntity(ItemStack itemStack, PlayerEntity playerEntity, LivingEntity livingEntity, Hand hand) {
+		if (itemStack.hasCustomName() && !(livingEntity instanceof PlayerEntity)) {
+			if (livingEntity.isAlive()) {
+				livingEntity.setCustomName(itemStack.getName());
+				if (livingEntity instanceof MobEntity) {
+					((MobEntity)livingEntity).setPersistent();
 				}
 
-				stack.decrement(1);
+				itemStack.decrement(1);
 			}
 
 			return true;

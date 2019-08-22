@@ -1,6 +1,6 @@
 package net.minecraft.client.render.entity;
 
-import com.mojang.blaze3d.platform.GlStateManager;
+import com.mojang.blaze3d.systems.RenderSystem;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.render.entity.model.PolarBearEntityModel;
@@ -15,12 +15,12 @@ public class PolarBearEntityRenderer extends MobEntityRenderer<PolarBearEntity, 
 		super(entityRenderDispatcher, new PolarBearEntityModel<>(), 0.9F);
 	}
 
-	protected Identifier getTexture(PolarBearEntity polarBearEntity) {
+	protected Identifier method_4097(PolarBearEntity polarBearEntity) {
 		return SKIN;
 	}
 
-	protected void scale(PolarBearEntity polarBearEntity, float f) {
-		GlStateManager.scalef(1.2F, 1.2F, 1.2F);
+	protected void method_4099(PolarBearEntity polarBearEntity, float f) {
+		RenderSystem.scalef(1.2F, 1.2F, 1.2F);
 		super.scale(polarBearEntity, f);
 	}
 }

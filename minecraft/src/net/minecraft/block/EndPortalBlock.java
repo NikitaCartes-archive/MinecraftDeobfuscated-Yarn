@@ -25,24 +25,24 @@ public class EndPortalBlock extends BlockWithEntity {
 	}
 
 	@Override
-	public BlockEntity createBlockEntity(BlockView view) {
+	public BlockEntity createBlockEntity(BlockView blockView) {
 		return new EndPortalBlockEntity();
 	}
 
 	@Override
-	public VoxelShape getOutlineShape(BlockState state, BlockView view, BlockPos pos, EntityContext context) {
+	public VoxelShape getOutlineShape(BlockState blockState, BlockView blockView, BlockPos blockPos, EntityContext entityContext) {
 		return SHAPE;
 	}
 
 	@Override
-	public void onEntityCollision(BlockState state, World world, BlockPos pos, Entity entity) {
+	public void onEntityCollision(BlockState blockState, World world, BlockPos blockPos, Entity entity) {
 		if (!world.isClient
 			&& !entity.hasVehicle()
 			&& !entity.hasPassengers()
 			&& entity.canUsePortals()
 			&& VoxelShapes.matchesAnywhere(
-				VoxelShapes.cuboid(entity.getBoundingBox().offset((double)(-pos.getX()), (double)(-pos.getY()), (double)(-pos.getZ()))),
-				state.getOutlineShape(world, pos),
+				VoxelShapes.cuboid(entity.getBoundingBox().offset((double)(-blockPos.getX()), (double)(-blockPos.getY()), (double)(-blockPos.getZ()))),
+				blockState.getOutlineShape(world, blockPos),
 				BooleanBiFunction.AND
 			)) {
 			entity.changeDimension(world.dimension.getType() == DimensionType.THE_END ? DimensionType.OVERWORLD : DimensionType.THE_END);
@@ -51,10 +51,10 @@ public class EndPortalBlock extends BlockWithEntity {
 
 	@Environment(EnvType.CLIENT)
 	@Override
-	public void randomDisplayTick(BlockState state, World world, BlockPos pos, Random random) {
-		double d = (double)((float)pos.getX() + random.nextFloat());
-		double e = (double)((float)pos.getY() + 0.8F);
-		double f = (double)((float)pos.getZ() + random.nextFloat());
+	public void randomDisplayTick(BlockState blockState, World world, BlockPos blockPos, Random random) {
+		double d = (double)((float)blockPos.getX() + random.nextFloat());
+		double e = (double)((float)blockPos.getY() + 0.8F);
+		double f = (double)((float)blockPos.getZ() + random.nextFloat());
 		double g = 0.0;
 		double h = 0.0;
 		double i = 0.0;
@@ -63,7 +63,7 @@ public class EndPortalBlock extends BlockWithEntity {
 
 	@Environment(EnvType.CLIENT)
 	@Override
-	public ItemStack getPickStack(BlockView world, BlockPos pos, BlockState state) {
+	public ItemStack getPickStack(BlockView blockView, BlockPos blockPos, BlockState blockState) {
 		return ItemStack.EMPTY;
 	}
 }

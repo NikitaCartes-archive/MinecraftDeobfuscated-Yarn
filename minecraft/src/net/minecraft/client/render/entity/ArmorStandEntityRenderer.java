@@ -1,6 +1,6 @@
 package net.minecraft.client.render.entity;
 
-import com.mojang.blaze3d.platform.GlStateManager;
+import com.mojang.blaze3d.systems.RenderSystem;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.render.entity.feature.ArmorBipedFeatureRenderer;
@@ -25,28 +25,28 @@ public class ArmorStandEntityRenderer extends LivingEntityRenderer<ArmorStandEnt
 		this.addFeature(new HeadFeatureRenderer<>(this));
 	}
 
-	protected Identifier getTexture(ArmorStandEntity armorStandEntity) {
+	protected Identifier method_3880(ArmorStandEntity armorStandEntity) {
 		return SKIN;
 	}
 
-	protected void setupTransforms(ArmorStandEntity armorStandEntity, float f, float g, float h) {
-		GlStateManager.rotatef(180.0F - g, 0.0F, 1.0F, 0.0F);
+	protected void method_3877(ArmorStandEntity armorStandEntity, float f, float g, float h) {
+		RenderSystem.rotatef(180.0F - g, 0.0F, 1.0F, 0.0F);
 		float i = (float)(armorStandEntity.world.getTime() - armorStandEntity.field_7112) + h;
 		if (i < 5.0F) {
-			GlStateManager.rotatef(MathHelper.sin(i / 1.5F * (float) Math.PI) * 3.0F, 0.0F, 1.0F, 0.0F);
+			RenderSystem.rotatef(MathHelper.sin(i / 1.5F * (float) Math.PI) * 3.0F, 0.0F, 1.0F, 0.0F);
 		}
 	}
 
-	protected boolean hasLabel(ArmorStandEntity armorStandEntity) {
+	protected boolean method_3878(ArmorStandEntity armorStandEntity) {
 		return armorStandEntity.isCustomNameVisible();
 	}
 
-	public void render(ArmorStandEntity armorStandEntity, double d, double e, double f, float g, float h) {
+	public void method_3876(ArmorStandEntity armorStandEntity, double d, double e, double f, float g, float h) {
 		if (armorStandEntity.isMarker()) {
 			this.disableOutlineRender = true;
 		}
 
-		super.render(armorStandEntity, d, e, f, g, h);
+		super.method_4054(armorStandEntity, d, e, f, g, h);
 		if (armorStandEntity.isMarker()) {
 			this.disableOutlineRender = false;
 		}

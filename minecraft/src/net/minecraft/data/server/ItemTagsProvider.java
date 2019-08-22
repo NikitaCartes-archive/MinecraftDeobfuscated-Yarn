@@ -57,6 +57,8 @@ public class ItemTagsProvider extends AbstractTagProvider<Item> {
 		this.copy(BlockTags.SMALL_FLOWERS, ItemTags.SMALL_FLOWERS);
 		this.copy(BlockTags.BEDS, ItemTags.BEDS);
 		this.copy(BlockTags.FENCES, ItemTags.FENCES);
+		this.copy(BlockTags.TALL_FLOWERS, ItemTags.TALL_FLOWERS);
+		this.copy(BlockTags.FLOWERS, ItemTags.FLOWERS);
 		this.method_10512(ItemTags.BANNERS)
 			.add(
 				Items.WHITE_BANNER,

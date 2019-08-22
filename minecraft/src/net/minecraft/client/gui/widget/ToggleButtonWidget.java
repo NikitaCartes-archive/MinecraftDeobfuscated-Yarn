@@ -1,6 +1,6 @@
 package net.minecraft.client.gui.widget;
 
-import com.mojang.blaze3d.platform.GlStateManager;
+import com.mojang.blaze3d.systems.RenderSystem;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
@@ -15,48 +15,48 @@ public class ToggleButtonWidget extends AbstractButtonWidget {
 	protected int pressedUOffset;
 	protected int hoverVOffset;
 
-	public ToggleButtonWidget(int x, int y, int width, int height, boolean toggled) {
-		super(x, y, width, height, "");
-		this.toggled = toggled;
+	public ToggleButtonWidget(int i, int j, int k, int l, boolean bl) {
+		super(i, j, k, l, "");
+		this.toggled = bl;
 	}
 
-	public void setTextureUV(int u, int v, int pressedUOffset, int hoverVOffset, Identifier texture) {
-		this.u = u;
-		this.v = v;
-		this.pressedUOffset = pressedUOffset;
-		this.hoverVOffset = hoverVOffset;
-		this.texture = texture;
+	public void setTextureUV(int i, int j, int k, int l, Identifier identifier) {
+		this.u = i;
+		this.v = j;
+		this.pressedUOffset = k;
+		this.hoverVOffset = l;
+		this.texture = identifier;
 	}
 
-	public void setToggled(boolean toggled) {
-		this.toggled = toggled;
+	public void setToggled(boolean bl) {
+		this.toggled = bl;
 	}
 
 	public boolean isToggled() {
 		return this.toggled;
 	}
 
-	public void setPos(int x, int y) {
-		this.x = x;
-		this.y = y;
+	public void setPos(int i, int j) {
+		this.x = i;
+		this.y = j;
 	}
 
 	@Override
-	public void renderButton(int mouseX, int mouseY, float delta) {
+	public void renderButton(int i, int j, float f) {
 		MinecraftClient minecraftClient = MinecraftClient.getInstance();
 		minecraftClient.getTextureManager().bindTexture(this.texture);
-		GlStateManager.disableDepthTest();
-		int i = this.u;
-		int j = this.v;
+		RenderSystem.disableDepthTest();
+		int k = this.u;
+		int l = this.v;
 		if (this.toggled) {
-			i += this.pressedUOffset;
+			k += this.pressedUOffset;
 		}
 
 		if (this.isHovered()) {
-			j += this.hoverVOffset;
+			l += this.hoverVOffset;
 		}
 
-		this.blit(this.x, this.y, i, j, this.width, this.height);
-		GlStateManager.enableDepthTest();
+		this.blit(this.x, this.y, k, l, this.width, this.height);
+		RenderSystem.enableDepthTest();
 	}
 }

@@ -22,13 +22,13 @@ public enum PathNodeType {
 	BREACH(4.0F),
 	LEAVES(-1.0F);
 
-	private final float defaultPenalty;
+	private final float weight;
 
 	private PathNodeType(float f) {
-		this.defaultPenalty = f;
+		this.weight = f;
 	}
 
-	public float getDefaultPenalty() {
-		return this.defaultPenalty;
+	public float getWeight() {
+		return this.weight;
 	}
 }

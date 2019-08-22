@@ -5,17 +5,13 @@ import net.minecraft.network.listener.PacketListener;
 import net.minecraft.util.PacketByteBuf;
 
 public interface Packet<T extends PacketListener> {
-	void read(PacketByteBuf buf) throws IOException;
+	void read(PacketByteBuf packetByteBuf) throws IOException;
 
-	void write(PacketByteBuf buf) throws IOException;
+	void write(PacketByteBuf packetByteBuf) throws IOException;
 
-	void apply(T listener);
+	void apply(T packetListener);
 
-	/**
-	 * Returns whether a throwable in writing of this packet allows the
-	 * connection to simply skip the packet's sending than disconnecting.
-	 */
-	default boolean isWritingErrorSkippable() {
+	default boolean isErrorFatal() {
 		return false;
 	}
 }

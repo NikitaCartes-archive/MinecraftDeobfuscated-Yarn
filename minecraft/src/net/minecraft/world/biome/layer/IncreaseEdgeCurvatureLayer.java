@@ -1,59 +1,56 @@
 package net.minecraft.world.biome.layer;
 
-import net.minecraft.world.biome.layer.type.DiagonalCrossSamplingLayer;
-import net.minecraft.world.biome.layer.util.LayerRandomnessSource;
-
 public enum IncreaseEdgeCurvatureLayer implements DiagonalCrossSamplingLayer {
 	INSTANCE;
 
 	@Override
-	public int sample(LayerRandomnessSource context, int sw, int se, int ne, int nw, int center) {
-		if (!BiomeLayers.isShallowOcean(center)
-			|| BiomeLayers.isShallowOcean(nw) && BiomeLayers.isShallowOcean(ne) && BiomeLayers.isShallowOcean(sw) && BiomeLayers.isShallowOcean(se)) {
-			if (!BiomeLayers.isShallowOcean(center)
-				&& (BiomeLayers.isShallowOcean(nw) || BiomeLayers.isShallowOcean(sw) || BiomeLayers.isShallowOcean(ne) || BiomeLayers.isShallowOcean(se))
-				&& context.nextInt(5) == 0) {
-				if (BiomeLayers.isShallowOcean(nw)) {
-					return center == 4 ? 4 : nw;
+	public int sample(LayerRandomnessSource layerRandomnessSource, int i, int j, int k, int l, int m) {
+		if (!BiomeLayers.isShallowOcean(m)
+			|| BiomeLayers.isShallowOcean(l) && BiomeLayers.isShallowOcean(k) && BiomeLayers.isShallowOcean(i) && BiomeLayers.isShallowOcean(j)) {
+			if (!BiomeLayers.isShallowOcean(m)
+				&& (BiomeLayers.isShallowOcean(l) || BiomeLayers.isShallowOcean(i) || BiomeLayers.isShallowOcean(k) || BiomeLayers.isShallowOcean(j))
+				&& layerRandomnessSource.nextInt(5) == 0) {
+				if (BiomeLayers.isShallowOcean(l)) {
+					return m == 4 ? 4 : l;
 				}
 
-				if (BiomeLayers.isShallowOcean(sw)) {
-					return center == 4 ? 4 : sw;
+				if (BiomeLayers.isShallowOcean(i)) {
+					return m == 4 ? 4 : i;
 				}
 
-				if (BiomeLayers.isShallowOcean(ne)) {
-					return center == 4 ? 4 : ne;
+				if (BiomeLayers.isShallowOcean(k)) {
+					return m == 4 ? 4 : k;
 				}
 
-				if (BiomeLayers.isShallowOcean(se)) {
-					return center == 4 ? 4 : se;
+				if (BiomeLayers.isShallowOcean(j)) {
+					return m == 4 ? 4 : j;
 				}
 			}
 
-			return center;
+			return m;
 		} else {
-			int i = 1;
-			int j = 1;
-			if (!BiomeLayers.isShallowOcean(nw) && context.nextInt(i++) == 0) {
-				j = nw;
+			int n = 1;
+			int o = 1;
+			if (!BiomeLayers.isShallowOcean(l) && layerRandomnessSource.nextInt(n++) == 0) {
+				o = l;
 			}
 
-			if (!BiomeLayers.isShallowOcean(ne) && context.nextInt(i++) == 0) {
-				j = ne;
+			if (!BiomeLayers.isShallowOcean(k) && layerRandomnessSource.nextInt(n++) == 0) {
+				o = k;
 			}
 
-			if (!BiomeLayers.isShallowOcean(sw) && context.nextInt(i++) == 0) {
-				j = sw;
+			if (!BiomeLayers.isShallowOcean(i) && layerRandomnessSource.nextInt(n++) == 0) {
+				o = i;
 			}
 
-			if (!BiomeLayers.isShallowOcean(se) && context.nextInt(i++) == 0) {
-				j = se;
+			if (!BiomeLayers.isShallowOcean(j) && layerRandomnessSource.nextInt(n++) == 0) {
+				o = j;
 			}
 
-			if (context.nextInt(3) == 0) {
-				return j;
+			if (layerRandomnessSource.nextInt(3) == 0) {
+				return o;
 			} else {
-				return j == 4 ? 4 : center;
+				return o == 4 ? 4 : m;
 			}
 		}
 	}

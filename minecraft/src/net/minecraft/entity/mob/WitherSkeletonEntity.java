@@ -27,7 +27,7 @@ import net.minecraft.world.World;
 public class WitherSkeletonEntity extends AbstractSkeletonEntity {
 	public WitherSkeletonEntity(EntityType<? extends WitherSkeletonEntity> entityType, World world) {
 		super(entityType, world);
-		this.setPathfindingPenalty(PathNodeType.LAVA, 8.0F);
+		this.setPathNodeTypeWeight(PathNodeType.LAVA, 8.0F);
 	}
 
 	@Override
@@ -36,7 +36,7 @@ public class WitherSkeletonEntity extends AbstractSkeletonEntity {
 	}
 
 	@Override
-	protected SoundEvent getHurtSound(DamageSource source) {
+	protected SoundEvent getHurtSound(DamageSource damageSource) {
 		return SoundEvents.ENTITY_WITHER_SKELETON_HURT;
 	}
 
@@ -51,9 +51,9 @@ public class WitherSkeletonEntity extends AbstractSkeletonEntity {
 	}
 
 	@Override
-	protected void dropEquipment(DamageSource source, int lootingMultiplier, boolean allowDrops) {
-		super.dropEquipment(source, lootingMultiplier, allowDrops);
-		Entity entity = source.getAttacker();
+	protected void dropEquipment(DamageSource damageSource, int i, boolean bl) {
+		super.dropEquipment(damageSource, i, bl);
+		Entity entity = damageSource.getAttacker();
 		if (entity instanceof CreeperEntity) {
 			CreeperEntity creeperEntity = (CreeperEntity)entity;
 			if (creeperEntity.shouldDropHead()) {
@@ -64,35 +64,37 @@ public class WitherSkeletonEntity extends AbstractSkeletonEntity {
 	}
 
 	@Override
-	protected void initEquipment(LocalDifficulty difficulty) {
+	protected void initEquipment(LocalDifficulty localDifficulty) {
 		this.equipStack(EquipmentSlot.MAINHAND, new ItemStack(Items.STONE_SWORD));
 	}
 
 	@Override
-	protected void updateEnchantments(LocalDifficulty difficulty) {
+	protected void updateEnchantments(LocalDifficulty localDifficulty) {
 	}
 
 	@Nullable
 	@Override
-	public EntityData initialize(IWorld world, LocalDifficulty difficulty, SpawnType spawnType, @Nullable EntityData entityData, @Nullable CompoundTag entityTag) {
-		EntityData entityData2 = super.initialize(world, difficulty, spawnType, entityData, entityTag);
+	public EntityData initialize(
+		IWorld iWorld, LocalDifficulty localDifficulty, SpawnType spawnType, @Nullable EntityData entityData, @Nullable CompoundTag compoundTag
+	) {
+		EntityData entityData2 = super.initialize(iWorld, localDifficulty, spawnType, entityData, compoundTag);
 		this.getAttributeInstance(EntityAttributes.ATTACK_DAMAGE).setBaseValue(4.0);
 		this.updateAttackType();
 		return entityData2;
 	}
 
 	@Override
-	protected float getActiveEyeHeight(EntityPose pose, EntityDimensions dimensions) {
+	protected float getActiveEyeHeight(EntityPose entityPose, EntityDimensions entityDimensions) {
 		return 2.1F;
 	}
 
 	@Override
-	public boolean tryAttack(Entity target) {
-		if (!super.tryAttack(target)) {
+	public boolean tryAttack(Entity entity) {
+		if (!super.tryAttack(entity)) {
 			return false;
 		} else {
-			if (target instanceof LivingEntity) {
-				((LivingEntity)target).addStatusEffect(new StatusEffectInstance(StatusEffects.WITHER, 200));
+			if (entity instanceof LivingEntity) {
+				((LivingEntity)entity).addStatusEffect(new StatusEffectInstance(StatusEffects.WITHER, 200));
 			}
 
 			return true;
@@ -100,14 +102,14 @@ public class WitherSkeletonEntity extends AbstractSkeletonEntity {
 	}
 
 	@Override
-	protected ProjectileEntity createArrowProjectile(ItemStack arrow, float f) {
-		ProjectileEntity projectileEntity = super.createArrowProjectile(arrow, f);
+	protected ProjectileEntity createArrowProjectile(ItemStack itemStack, float f) {
+		ProjectileEntity projectileEntity = super.createArrowProjectile(itemStack, f);
 		projectileEntity.setOnFireFor(100);
 		return projectileEntity;
 	}
 
 	@Override
-	public boolean canHaveStatusEffect(StatusEffectInstance effect) {
-		return effect.getEffectType() == StatusEffects.WITHER ? false : super.canHaveStatusEffect(effect);
+	public boolean canHaveStatusEffect(StatusEffectInstance statusEffectInstance) {
+		return statusEffectInstance.getEffectType() == StatusEffects.WITHER ? false : super.canHaveStatusEffect(statusEffectInstance);
 	}
 }

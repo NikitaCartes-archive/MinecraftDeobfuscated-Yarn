@@ -20,24 +20,24 @@ public class DimensionType implements DynamicSerializable {
 	private final BiFunction<World, DimensionType, ? extends Dimension> factory;
 	private final boolean hasSkyLight;
 
-	private static DimensionType register(String id, DimensionType dimension) {
-		return Registry.register(Registry.DIMENSION, dimension.id, id, dimension);
+	private static DimensionType register(String string, DimensionType dimensionType) {
+		return Registry.register(Registry.DIMENSION_TYPE, dimensionType.id, string, dimensionType);
 	}
 
-	protected DimensionType(int dimensionId, String suffix, String saveDir, BiFunction<World, DimensionType, ? extends Dimension> factory, boolean hasSkylight) {
-		this.id = dimensionId;
-		this.suffix = suffix;
-		this.saveDir = saveDir;
-		this.factory = factory;
-		this.hasSkyLight = hasSkylight;
+	protected DimensionType(int i, String string, String string2, BiFunction<World, DimensionType, ? extends Dimension> biFunction, boolean bl) {
+		this.id = i;
+		this.suffix = string;
+		this.saveDir = string2;
+		this.factory = biFunction;
+		this.hasSkyLight = bl;
 	}
 
 	public static DimensionType deserialize(Dynamic<?> dynamic) {
-		return Registry.DIMENSION.get(new Identifier(dynamic.asString("")));
+		return Registry.DIMENSION_TYPE.get(new Identifier(dynamic.asString("")));
 	}
 
 	public static Iterable<DimensionType> getAll() {
-		return Registry.DIMENSION;
+		return Registry.DIMENSION_TYPE;
 	}
 
 	public int getRawId() {
@@ -48,8 +48,8 @@ public class DimensionType implements DynamicSerializable {
 		return this.suffix;
 	}
 
-	public File getSaveDirectory(File root) {
-		return this.saveDir.isEmpty() ? root : new File(root, this.saveDir);
+	public File getFile(File file) {
+		return this.saveDir.isEmpty() ? file : new File(file, this.saveDir);
 	}
 
 	public Dimension create(World world) {
@@ -62,17 +62,17 @@ public class DimensionType implements DynamicSerializable {
 
 	@Nullable
 	public static DimensionType byRawId(int i) {
-		return Registry.DIMENSION.get(i - -1);
+		return Registry.DIMENSION_TYPE.get(i - -1);
 	}
 
 	@Nullable
 	public static DimensionType byId(Identifier identifier) {
-		return Registry.DIMENSION.get(identifier);
+		return Registry.DIMENSION_TYPE.get(identifier);
 	}
 
 	@Nullable
 	public static Identifier getId(DimensionType dimensionType) {
-		return Registry.DIMENSION.getId(dimensionType);
+		return Registry.DIMENSION_TYPE.getId(dimensionType);
 	}
 
 	public boolean hasSkyLight() {
@@ -80,7 +80,7 @@ public class DimensionType implements DynamicSerializable {
 	}
 
 	@Override
-	public <T> T serialize(DynamicOps<T> ops) {
-		return ops.createString(Registry.DIMENSION.getId(this).toString());
+	public <T> T serialize(DynamicOps<T> dynamicOps) {
+		return dynamicOps.createString(Registry.DIMENSION_TYPE.getId(this).toString());
 	}
 }

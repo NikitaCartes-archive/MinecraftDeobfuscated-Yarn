@@ -10,8 +10,8 @@ public enum Attachment implements StringIdentifiable {
 
 	private final String name;
 
-	private Attachment(String name) {
-		this.name = name;
+	private Attachment(String string2) {
+		this.name = string2;
 	}
 
 	@Override

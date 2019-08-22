@@ -1,6 +1,6 @@
 package net.minecraft.client.render.entity;
 
-import com.mojang.blaze3d.platform.GlStateManager;
+import com.mojang.blaze3d.systems.RenderSystem;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.render.BufferBuilder;
@@ -15,15 +15,15 @@ import net.minecraft.util.math.MathHelper;
 
 @Environment(EnvType.CLIENT)
 public abstract class MobEntityRenderer<T extends MobEntity, M extends EntityModel<T>> extends LivingEntityRenderer<T, M> {
-	public MobEntityRenderer(EntityRenderDispatcher renderManager, M model, float f) {
-		super(renderManager, model, f);
+	public MobEntityRenderer(EntityRenderDispatcher entityRenderDispatcher, M entityModel, float f) {
+		super(entityRenderDispatcher, entityModel, f);
 	}
 
-	protected boolean hasLabel(T mobEntity) {
-		return super.hasLabel(mobEntity) && (mobEntity.shouldRenderName() || mobEntity.hasCustomName() && mobEntity == this.renderManager.targetedEntity);
+	protected boolean method_4071(T mobEntity) {
+		return super.method_4055(mobEntity) && (mobEntity.shouldRenderName() || mobEntity.hasCustomName() && mobEntity == this.renderManager.targetedEntity);
 	}
 
-	public boolean isVisible(T mobEntity, VisibleRegion visibleRegion, double d, double e, double f) {
+	public boolean method_4068(T mobEntity, VisibleRegion visibleRegion, double d, double e, double f) {
 		if (super.isVisible(mobEntity, visibleRegion, d, e, f)) {
 			return true;
 		} else {
@@ -32,8 +32,8 @@ public abstract class MobEntityRenderer<T extends MobEntity, M extends EntityMod
 		}
 	}
 
-	public void render(T mobEntity, double d, double e, double f, float g, float h) {
-		super.render(mobEntity, d, e, f, g, h);
+	public void method_4072(T mobEntity, double d, double e, double f, float g, float h) {
+		super.method_4054(mobEntity, d, e, f, g, h);
 		if (!this.renderOutlines) {
 			this.method_4073(mobEntity, d, e, f, g, h);
 		}
@@ -44,7 +44,7 @@ public abstract class MobEntityRenderer<T extends MobEntity, M extends EntityMod
 		if (entity != null) {
 			e -= (1.6 - (double)mobEntity.getHeight()) * 0.5;
 			Tessellator tessellator = Tessellator.getInstance();
-			BufferBuilder bufferBuilder = tessellator.getBuffer();
+			BufferBuilder bufferBuilder = tessellator.getBufferBuilder();
 			double i = (double)(MathHelper.lerp(h * 0.5F, entity.yaw, entity.prevYaw) * (float) (Math.PI / 180.0));
 			double j = (double)(MathHelper.lerp(h * 0.5F, entity.pitch, entity.prevPitch) * (float) (Math.PI / 180.0));
 			double k = Math.cos(i);
@@ -62,7 +62,7 @@ public abstract class MobEntityRenderer<T extends MobEntity, M extends EntityMod
 				- m * 0.5
 				- 0.25;
 			double q = MathHelper.lerp((double)h, entity.prevZ, entity.z) - l * 0.7 + k * 0.5 * n;
-			double r = (double)(MathHelper.lerp(h, mobEntity.field_6283, mobEntity.field_6220) * (float) (Math.PI / 180.0)) + (Math.PI / 2);
+			double r = (double)(MathHelper.lerp(h, mobEntity.bodyYaw, mobEntity.prevBodyYaw) * (float) (Math.PI / 180.0)) + (Math.PI / 2);
 			k = Math.cos(r) * (double)mobEntity.getWidth() * 0.4;
 			l = Math.sin(r) * (double)mobEntity.getWidth() * 0.4;
 			double s = MathHelper.lerp((double)h, mobEntity.prevX, mobEntity.x) + k;
@@ -73,9 +73,9 @@ public abstract class MobEntityRenderer<T extends MobEntity, M extends EntityMod
 			double v = (double)((float)(o - s));
 			double w = (double)((float)(p - t));
 			double x = (double)((float)(q - u));
-			GlStateManager.disableTexture();
-			GlStateManager.disableLighting();
-			GlStateManager.disableCull();
+			RenderSystem.disableTexture();
+			RenderSystem.disableLighting();
+			RenderSystem.disableCull();
 			int y = 24;
 			double z = 0.025;
 			bufferBuilder.begin(5, VertexFormats.POSITION_COLOR);
@@ -128,9 +128,9 @@ public abstract class MobEntityRenderer<T extends MobEntity, M extends EntityMod
 			}
 
 			tessellator.draw();
-			GlStateManager.enableLighting();
-			GlStateManager.enableTexture();
-			GlStateManager.enableCull();
+			RenderSystem.enableLighting();
+			RenderSystem.enableTexture();
+			RenderSystem.enableCull();
 		}
 	}
 }

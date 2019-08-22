@@ -8,21 +8,21 @@ import net.minecraft.client.options.GameOptions;
 public class KeyboardInput extends Input {
 	private final GameOptions settings;
 
-	public KeyboardInput(GameOptions settings) {
-		this.settings = settings;
+	public KeyboardInput(GameOptions gameOptions) {
+		this.settings = gameOptions;
 	}
 
 	@Override
-	public void tick(boolean bl, boolean bl2) {
+	public void tick(boolean bl) {
 		this.pressingForward = this.settings.keyForward.isPressed();
 		this.pressingBack = this.settings.keyBack.isPressed();
 		this.pressingLeft = this.settings.keyLeft.isPressed();
 		this.pressingRight = this.settings.keyRight.isPressed();
-		this.movementForward = this.pressingForward == this.pressingBack ? 0.0F : (float)(this.pressingForward ? 1 : -1);
-		this.movementSideways = this.pressingLeft == this.pressingRight ? 0.0F : (float)(this.pressingLeft ? 1 : -1);
+		this.movementForward = this.pressingForward == this.pressingBack ? 0.0F : (this.pressingForward ? 1.0F : -1.0F);
+		this.movementSideways = this.pressingLeft == this.pressingRight ? 0.0F : (this.pressingLeft ? 1.0F : -1.0F);
 		this.jumping = this.settings.keyJump.isPressed();
 		this.sneaking = this.settings.keySneak.isPressed();
-		if (!bl2 && (this.sneaking || bl)) {
+		if (bl) {
 			this.movementSideways = (float)((double)this.movementSideways * 0.3);
 			this.movementForward = (float)((double)this.movementForward * 0.3);
 		}

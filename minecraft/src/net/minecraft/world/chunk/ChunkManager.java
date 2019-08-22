@@ -14,8 +14,8 @@ import net.minecraft.world.gen.chunk.ChunkGenerator;
 
 public abstract class ChunkManager implements ChunkProvider, AutoCloseable {
 	@Nullable
-	public WorldChunk getWorldChunk(int chunkX, int chunkZ, boolean create) {
-		return (WorldChunk)this.getChunk(chunkX, chunkZ, ChunkStatus.FULL, create);
+	public WorldChunk getWorldChunk(int i, int j, boolean bl) {
+		return (WorldChunk)this.getChunk(i, j, ChunkStatus.FULL, bl);
 	}
 
 	@Nullable
@@ -25,21 +25,21 @@ public abstract class ChunkManager implements ChunkProvider, AutoCloseable {
 
 	@Nullable
 	@Override
-	public BlockView getChunk(int chunkX, int chunkZ) {
-		return this.getChunk(chunkX, chunkZ, ChunkStatus.EMPTY, false);
+	public BlockView getChunk(int i, int j) {
+		return this.getChunk(i, j, ChunkStatus.EMPTY, false);
 	}
 
-	public boolean isChunkLoaded(int x, int z) {
-		return this.getChunk(x, z, ChunkStatus.FULL, false) != null;
+	public boolean isChunkLoaded(int i, int j) {
+		return this.getChunk(i, j, ChunkStatus.FULL, false) != null;
 	}
 
 	@Nullable
-	public abstract Chunk getChunk(int x, int z, ChunkStatus leastStatus, boolean create);
+	public abstract Chunk getChunk(int i, int j, ChunkStatus chunkStatus, boolean bl);
 
 	@Environment(EnvType.CLIENT)
-	public abstract void tick(BooleanSupplier shouldKeepTicking);
+	public abstract void tick(BooleanSupplier booleanSupplier);
 
-	public abstract String getDebugString();
+	public abstract String getStatus();
 
 	public abstract ChunkGenerator<?> getChunkGenerator();
 
@@ -48,21 +48,21 @@ public abstract class ChunkManager implements ChunkProvider, AutoCloseable {
 
 	public abstract LightingProvider getLightingProvider();
 
-	public void setMobSpawnOptions(boolean spawnMonsters, boolean spawnAnimals) {
+	public void setMobSpawnOptions(boolean bl, boolean bl2) {
 	}
 
-	public void setChunkForced(ChunkPos pos, boolean forced) {
+	public void setChunkForced(ChunkPos chunkPos, boolean bl) {
 	}
 
 	public boolean shouldTickEntity(Entity entity) {
 		return true;
 	}
 
-	public boolean shouldTickChunk(ChunkPos pos) {
+	public boolean shouldTickChunk(ChunkPos chunkPos) {
 		return true;
 	}
 
-	public boolean shouldTickBlock(BlockPos pos) {
+	public boolean shouldTickBlock(BlockPos blockPos) {
 		return true;
 	}
 }

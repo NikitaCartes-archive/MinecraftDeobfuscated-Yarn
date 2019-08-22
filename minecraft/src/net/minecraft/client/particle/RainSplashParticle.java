@@ -9,8 +9,8 @@ import net.minecraft.world.World;
 
 @Environment(EnvType.CLIENT)
 public class RainSplashParticle extends SpriteBillboardParticle {
-	protected RainSplashParticle(World world, double x, double d, double e) {
-		super(world, x, d, e, 0.0, 0.0, 0.0);
+	protected RainSplashParticle(World world, double d, double e, double f) {
+		super(world, d, e, f, 0.0, 0.0, 0.0);
 		this.velocityX *= 0.3F;
 		this.velocityY = Math.random() * 0.2F + 0.1F;
 		this.velocityZ *= 0.3F;
@@ -68,7 +68,7 @@ public class RainSplashParticle extends SpriteBillboardParticle {
 			this.field_17891 = spriteProvider;
 		}
 
-		public Particle createParticle(DefaultParticleType defaultParticleType, World world, double d, double e, double f, double g, double h, double i) {
+		public Particle method_3116(DefaultParticleType defaultParticleType, World world, double d, double e, double f, double g, double h, double i) {
 			RainSplashParticle rainSplashParticle = new RainSplashParticle(world, d, e, f);
 			rainSplashParticle.setSprite(this.field_17891);
 			return rainSplashParticle;

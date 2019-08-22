@@ -1,11 +1,12 @@
 package net.minecraft.client.render.debug;
 
-import com.mojang.blaze3d.platform.GlStateManager;
+import com.mojang.blaze3d.systems.RenderSystem;
 import java.util.Optional;
 import java.util.function.Predicate;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.class_4503;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.render.BufferBuilder;
@@ -27,7 +28,7 @@ public class DebugRenderer {
 	public final DebugRenderer.Renderer waterDebugRenderer;
 	public final DebugRenderer.Renderer chunkBorderDebugRenderer;
 	public final DebugRenderer.Renderer heightmapDebugRenderer;
-	public final DebugRenderer.Renderer collisionDebugRenderer;
+	public final DebugRenderer.Renderer voxelDebugRenderer;
 	public final DebugRenderer.Renderer neighborUpdateDebugRenderer;
 	public final CaveDebugRenderer caveDebugRenderer;
 	public final StructureDebugRenderer structureDebugRenderer;
@@ -35,9 +36,10 @@ public class DebugRenderer {
 	public final DebugRenderer.Renderer worldGenAttemptDebugRenderer;
 	public final DebugRenderer.Renderer blockOutlineDebugRenderer;
 	public final DebugRenderer.Renderer chunkLoadingDebugRenderer;
-	public final VillageDebugRenderer villageDebugRenderer;
+	public final PointOfInterestDebugRenderer pointsOfInterestDebugRenderer;
 	public final RaidCenterDebugRenderer raidCenterDebugRenderer;
 	public final GoalSelectorDebugRenderer goalSelectorDebugRenderer;
+	public final class_4503 field_20519;
 	private boolean showChunkBorder;
 
 	public DebugRenderer(MinecraftClient minecraftClient) {
@@ -45,7 +47,7 @@ public class DebugRenderer {
 		this.waterDebugRenderer = new WaterDebugRenderer(minecraftClient);
 		this.chunkBorderDebugRenderer = new ChunkBorderDebugRenderer(minecraftClient);
 		this.heightmapDebugRenderer = new HeightmapDebugRenderer(minecraftClient);
-		this.collisionDebugRenderer = new CollisionDebugRenderer(minecraftClient);
+		this.voxelDebugRenderer = new VoxelDebugRenderer(minecraftClient);
 		this.neighborUpdateDebugRenderer = new NeighborUpdateDebugRenderer(minecraftClient);
 		this.caveDebugRenderer = new CaveDebugRenderer(minecraftClient);
 		this.structureDebugRenderer = new StructureDebugRenderer(minecraftClient);
@@ -53,9 +55,10 @@ public class DebugRenderer {
 		this.worldGenAttemptDebugRenderer = new WorldGenAttemptDebugRenderer(minecraftClient);
 		this.blockOutlineDebugRenderer = new BlockOutlineDebugRenderer(minecraftClient);
 		this.chunkLoadingDebugRenderer = new ChunkLoadingDebugRenderer(minecraftClient);
-		this.villageDebugRenderer = new VillageDebugRenderer(minecraftClient);
+		this.pointsOfInterestDebugRenderer = new PointOfInterestDebugRenderer(minecraftClient);
 		this.raidCenterDebugRenderer = new RaidCenterDebugRenderer(minecraftClient);
 		this.goalSelectorDebugRenderer = new GoalSelectorDebugRenderer(minecraftClient);
+		this.field_20519 = new class_4503();
 	}
 
 	public void method_20413() {
@@ -63,7 +66,7 @@ public class DebugRenderer {
 		this.waterDebugRenderer.method_20414();
 		this.chunkBorderDebugRenderer.method_20414();
 		this.heightmapDebugRenderer.method_20414();
-		this.collisionDebugRenderer.method_20414();
+		this.voxelDebugRenderer.method_20414();
 		this.neighborUpdateDebugRenderer.method_20414();
 		this.caveDebugRenderer.method_20414();
 		this.structureDebugRenderer.method_20414();
@@ -71,13 +74,10 @@ public class DebugRenderer {
 		this.worldGenAttemptDebugRenderer.method_20414();
 		this.blockOutlineDebugRenderer.method_20414();
 		this.chunkLoadingDebugRenderer.method_20414();
-		this.villageDebugRenderer.method_20414();
+		this.pointsOfInterestDebugRenderer.method_20414();
 		this.raidCenterDebugRenderer.method_20414();
 		this.goalSelectorDebugRenderer.method_20414();
-	}
-
-	public boolean shouldRender() {
-		return this.showChunkBorder;
+		this.field_20519.method_20414();
 	}
 
 	public boolean toggleShowChunkBorder() {
@@ -89,6 +89,8 @@ public class DebugRenderer {
 		if (this.showChunkBorder && !MinecraftClient.getInstance().hasReducedDebugInfo()) {
 			this.chunkBorderDebugRenderer.render(l);
 		}
+
+		this.field_20519.render(l);
 	}
 
 	public static Optional<Entity> method_19694(@Nullable Entity entity, int i) {
@@ -129,12 +131,12 @@ public class DebugRenderer {
 	}
 
 	public static void method_19695(Box box, float f, float g, float h, float i) {
-		method_19692(box.x1, box.y1, box.z1, box.x2, box.y2, box.z2, f, g, h, i);
+		method_19692(box.minX, box.minY, box.minZ, box.maxX, box.maxY, box.maxZ, f, g, h, i);
 	}
 
 	public static void method_19692(double d, double e, double f, double g, double h, double i, float j, float k, float l, float m) {
 		Tessellator tessellator = Tessellator.getInstance();
-		BufferBuilder bufferBuilder = tessellator.getBuffer();
+		BufferBuilder bufferBuilder = tessellator.getBufferBuilder();
 		bufferBuilder.begin(5, VertexFormats.POSITION_COLOR);
 		WorldRenderer.buildBox(bufferBuilder, d, e, f, g, h, i, j, k, l, m);
 		tessellator.draw();
@@ -160,28 +162,28 @@ public class DebugRenderer {
 			double j = camera.getPos().x;
 			double k = camera.getPos().y;
 			double l = camera.getPos().z;
-			GlStateManager.pushMatrix();
-			GlStateManager.translatef((float)(d - j), (float)(e - k) + 0.07F, (float)(f - l));
-			GlStateManager.normal3f(0.0F, 1.0F, 0.0F);
-			GlStateManager.scalef(g, -g, g);
+			RenderSystem.pushMatrix();
+			RenderSystem.translatef((float)(d - j), (float)(e - k) + 0.07F, (float)(f - l));
+			RenderSystem.normal3f(0.0F, 1.0F, 0.0F);
+			RenderSystem.scalef(g, -g, g);
 			EntityRenderDispatcher entityRenderDispatcher = minecraftClient.getEntityRenderManager();
-			GlStateManager.rotatef(-entityRenderDispatcher.cameraYaw, 0.0F, 1.0F, 0.0F);
-			GlStateManager.rotatef(-entityRenderDispatcher.cameraPitch, 1.0F, 0.0F, 0.0F);
-			GlStateManager.enableTexture();
+			RenderSystem.rotatef(-entityRenderDispatcher.cameraYaw, 0.0F, 1.0F, 0.0F);
+			RenderSystem.rotatef(-entityRenderDispatcher.cameraPitch, 1.0F, 0.0F, 0.0F);
+			RenderSystem.enableTexture();
 			if (bl2) {
-				GlStateManager.disableDepthTest();
+				RenderSystem.disableDepthTest();
 			} else {
-				GlStateManager.enableDepthTest();
+				RenderSystem.enableDepthTest();
 			}
 
-			GlStateManager.depthMask(true);
-			GlStateManager.scalef(-1.0F, 1.0F, 1.0F);
+			RenderSystem.depthMask(true);
+			RenderSystem.scalef(-1.0F, 1.0F, 1.0F);
 			float m = bl ? (float)(-textRenderer.getStringWidth(string)) / 2.0F : 0.0F;
 			m -= h / g;
 			textRenderer.draw(string, m, 0.0F, i);
-			GlStateManager.color4f(1.0F, 1.0F, 1.0F, 1.0F);
-			GlStateManager.enableDepthTest();
-			GlStateManager.popMatrix();
+			RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
+			RenderSystem.enableDepthTest();
+			RenderSystem.popMatrix();
 		}
 	}
 

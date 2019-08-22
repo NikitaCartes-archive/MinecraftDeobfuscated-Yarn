@@ -1,9 +1,10 @@
 package net.minecraft.client.render.block.entity;
 
-import com.mojang.blaze3d.platform.GlStateManager;
+import com.mojang.blaze3d.systems.RenderSystem;
 import java.util.Random;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.class_4493;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.PistonBlock;
@@ -12,7 +13,7 @@ import net.minecraft.block.entity.PistonBlockEntity;
 import net.minecraft.block.enums.PistonType;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.BufferBuilder;
-import net.minecraft.client.render.DiffuseLighting;
+import net.minecraft.client.render.GuiLighting;
 import net.minecraft.client.render.Tessellator;
 import net.minecraft.client.render.VertexFormats;
 import net.minecraft.client.render.block.BlockModelRenderer;
@@ -25,21 +26,21 @@ import net.minecraft.world.World;
 public class PistonBlockEntityRenderer extends BlockEntityRenderer<PistonBlockEntity> {
 	private final BlockRenderManager manager = MinecraftClient.getInstance().getBlockRenderManager();
 
-	public void render(PistonBlockEntity pistonBlockEntity, double d, double e, double f, float g, int i) {
+	public void method_3576(PistonBlockEntity pistonBlockEntity, double d, double e, double f, float g, int i) {
 		BlockPos blockPos = pistonBlockEntity.getPos().offset(pistonBlockEntity.method_11506().getOpposite());
 		BlockState blockState = pistonBlockEntity.getPushedBlock();
 		if (!blockState.isAir() && !(pistonBlockEntity.getProgress(g) >= 1.0F)) {
 			Tessellator tessellator = Tessellator.getInstance();
-			BufferBuilder bufferBuilder = tessellator.getBuffer();
+			BufferBuilder bufferBuilder = tessellator.getBufferBuilder();
 			this.bindTexture(SpriteAtlasTexture.BLOCK_ATLAS_TEX);
-			DiffuseLighting.disable();
-			GlStateManager.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA);
-			GlStateManager.enableBlend();
-			GlStateManager.disableCull();
+			GuiLighting.disable();
+			RenderSystem.blendFunc(class_4493.class_4535.SRC_ALPHA, class_4493.class_4534.ONE_MINUS_SRC_ALPHA);
+			RenderSystem.enableBlend();
+			RenderSystem.disableCull();
 			if (MinecraftClient.isAmbientOcclusionEnabled()) {
-				GlStateManager.shadeModel(7425);
+				RenderSystem.shadeModel(7425);
 			} else {
-				GlStateManager.shadeModel(7424);
+				RenderSystem.shadeModel(7424);
 			}
 
 			BlockModelRenderer.enableBrightnessCache();
@@ -72,7 +73,7 @@ public class PistonBlockEntityRenderer extends BlockEntityRenderer<PistonBlockEn
 			bufferBuilder.setOffset(0.0, 0.0, 0.0);
 			tessellator.draw();
 			BlockModelRenderer.disableBrightnessCache();
-			DiffuseLighting.enable();
+			GuiLighting.enable();
 		}
 	}
 

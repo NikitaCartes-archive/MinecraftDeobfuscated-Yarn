@@ -10,7 +10,7 @@ import net.minecraft.network.MessageType;
 import net.minecraft.text.LiteralText;
 
 @Environment(EnvType.CLIENT)
-class RepeatedNarrator {
+public class RepeatedNarrator {
 	final Duration repeatDelay;
 	private final float permitsPerSecond;
 	final AtomicReference<RepeatedNarrator.class_4283> params;

@@ -16,7 +16,7 @@ public class HeightmapRangeDecorator extends Decorator<HeightmapRangeDecoratorCo
 		super(function);
 	}
 
-	public Stream<BlockPos> getPositions(
+	public Stream<BlockPos> method_15945(
 		IWorld iWorld,
 		ChunkGenerator<? extends ChunkGeneratorConfig> chunkGenerator,
 		Random random,

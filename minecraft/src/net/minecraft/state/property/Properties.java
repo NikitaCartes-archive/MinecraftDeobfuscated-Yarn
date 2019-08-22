@@ -60,7 +60,7 @@ public class Properties {
 	public static final DirectionProperty FACING = DirectionProperty.of(
 		"facing", Direction.NORTH, Direction.EAST, Direction.SOUTH, Direction.WEST, Direction.UP, Direction.DOWN
 	);
-	public static final DirectionProperty HOPPER_FACING = DirectionProperty.of("facing", (Predicate<Direction>)(facing -> facing != Direction.UP));
+	public static final DirectionProperty HOPPER_FACING = DirectionProperty.of("facing", (Predicate<Direction>)(direction -> direction != Direction.UP));
 	public static final DirectionProperty HORIZONTAL_FACING = DirectionProperty.of("facing", Direction.Type.HORIZONTAL);
 	public static final EnumProperty<WallMountLocation> WALL_MOUNT_LOCATION = EnumProperty.of("face", WallMountLocation.class);
 	public static final EnumProperty<Attachment> ATTACHMENT = EnumProperty.of("attachment", Attachment.class);
@@ -74,7 +74,10 @@ public class Properties {
 	public static final EnumProperty<RailShape> STRAIGHT_RAIL_SHAPE = EnumProperty.of(
 		"shape",
 		RailShape.class,
-		(Predicate)(shape -> shape != RailShape.NORTH_EAST && shape != RailShape.NORTH_WEST && shape != RailShape.SOUTH_EAST && shape != RailShape.SOUTH_WEST)
+		(Predicate)(railShape -> railShape != RailShape.NORTH_EAST
+				&& railShape != RailShape.NORTH_WEST
+				&& railShape != RailShape.SOUTH_EAST
+				&& railShape != RailShape.SOUTH_WEST)
 	);
 	public static final IntProperty AGE_1 = IntProperty.of("age", 0, 1);
 	public static final IntProperty AGE_2 = IntProperty.of("age", 0, 2);
@@ -92,6 +95,7 @@ public class Properties {
 	public static final IntProperty LEVEL_3 = IntProperty.of("level", 0, 3);
 	public static final IntProperty LEVEL_8 = IntProperty.of("level", 0, 8);
 	public static final IntProperty LEVEL_1_8 = IntProperty.of("level", 1, 8);
+	public static final IntProperty HONEY_LEVEL = IntProperty.of("honey_level", 0, 5);
 	public static final IntProperty LEVEL_15 = IntProperty.of("level", 0, 15);
 	public static final IntProperty MOISTURE = IntProperty.of("moisture", 0, 7);
 	public static final IntProperty NOTE = IntProperty.of("note", 0, 24);

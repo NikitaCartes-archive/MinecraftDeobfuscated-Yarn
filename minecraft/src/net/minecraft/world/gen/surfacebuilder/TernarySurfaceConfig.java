@@ -9,10 +9,10 @@ public class TernarySurfaceConfig implements SurfaceConfig {
 	private final BlockState underMaterial;
 	private final BlockState underwaterMaterial;
 
-	public TernarySurfaceConfig(BlockState topMaterial, BlockState underMaterial, BlockState underwaterMaterial) {
-		this.topMaterial = topMaterial;
-		this.underMaterial = underMaterial;
-		this.underwaterMaterial = underwaterMaterial;
+	public TernarySurfaceConfig(BlockState blockState, BlockState blockState2, BlockState blockState3) {
+		this.topMaterial = blockState;
+		this.underMaterial = blockState2;
+		this.underwaterMaterial = blockState3;
 	}
 
 	@Override

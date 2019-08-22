@@ -8,18 +8,21 @@ public class SeagrassFeatureConfig implements FeatureConfig {
 	public final int count;
 	public final double tallSeagrassProbability;
 
-	public SeagrassFeatureConfig(int count, double tallSeagrassProbability) {
-		this.count = count;
-		this.tallSeagrassProbability = tallSeagrassProbability;
+	public SeagrassFeatureConfig(int i, double d) {
+		this.count = i;
+		this.tallSeagrassProbability = d;
 	}
 
 	@Override
-	public <T> Dynamic<T> serialize(DynamicOps<T> ops) {
+	public <T> Dynamic<T> serialize(DynamicOps<T> dynamicOps) {
 		return new Dynamic<>(
-			ops,
-			ops.createMap(
+			dynamicOps,
+			dynamicOps.createMap(
 				ImmutableMap.of(
-					ops.createString("count"), ops.createInt(this.count), ops.createString("tall_seagrass_probability"), ops.createDouble(this.tallSeagrassProbability)
+					dynamicOps.createString("count"),
+					dynamicOps.createInt(this.count),
+					dynamicOps.createString("tall_seagrass_probability"),
+					dynamicOps.createDouble(this.tallSeagrassProbability)
 				)
 			)
 		);

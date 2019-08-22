@@ -17,7 +17,7 @@ public class CountChanceHeightmapDoubleDecorator extends Decorator<CountChanceDe
 		super(function);
 	}
 
-	public Stream<BlockPos> getPositions(
+	public Stream<BlockPos> method_15899(
 		IWorld iWorld,
 		ChunkGenerator<? extends ChunkGeneratorConfig> chunkGenerator,
 		Random random,

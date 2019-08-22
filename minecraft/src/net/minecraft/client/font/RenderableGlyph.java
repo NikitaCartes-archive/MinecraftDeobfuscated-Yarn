@@ -9,7 +9,7 @@ public interface RenderableGlyph extends Glyph {
 
 	int getHeight();
 
-	void upload(int x, int y);
+	void upload(int i, int j);
 
 	boolean hasColor();
 

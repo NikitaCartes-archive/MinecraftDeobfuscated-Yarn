@@ -15,12 +15,12 @@ public class RealmsServerAddress extends ValueObject {
 	public String resourcePackUrl;
 	public String resourcePackHash;
 
-	public static RealmsServerAddress parse(String json) {
+	public static RealmsServerAddress parse(String string) {
 		JsonParser jsonParser = new JsonParser();
 		RealmsServerAddress realmsServerAddress = new RealmsServerAddress();
 
 		try {
-			JsonObject jsonObject = jsonParser.parse(json).getAsJsonObject();
+			JsonObject jsonObject = jsonParser.parse(string).getAsJsonObject();
 			realmsServerAddress.address = JsonUtils.getStringOr("address", jsonObject, null);
 			realmsServerAddress.resourcePackUrl = JsonUtils.getStringOr("resourcePackUrl", jsonObject, null);
 			realmsServerAddress.resourcePackHash = JsonUtils.getStringOr("resourcePackHash", jsonObject, null);

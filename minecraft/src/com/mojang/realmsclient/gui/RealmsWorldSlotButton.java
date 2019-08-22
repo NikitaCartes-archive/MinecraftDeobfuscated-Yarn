@@ -1,12 +1,11 @@
 package com.mojang.realmsclient.gui;
 
-import com.mojang.blaze3d.platform.GlStateManager;
+import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.realmsclient.dto.RealmsServer;
 import com.mojang.realmsclient.dto.RealmsWorldOptions;
 import com.mojang.realmsclient.util.RealmsTextureManager;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
-import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
@@ -26,26 +25,18 @@ public class RealmsWorldSlotButton extends RealmsButton {
 	private RealmsWorldSlotButton.State state;
 
 	public RealmsWorldSlotButton(
-		int x,
-		int y,
-		int width,
-		int height,
-		Supplier<RealmsServer> serverDataProvider,
-		Consumer<String> toolTipSetter,
-		int id,
-		int slotIndex,
-		RealmsWorldSlotButton.Listener listener
+		int i, int j, int k, int l, Supplier<RealmsServer> supplier, Consumer<String> consumer, int m, int n, RealmsWorldSlotButton.Listener listener
 	) {
-		super(id, x, y, width, height, "");
-		this.serverDataProvider = serverDataProvider;
-		this.slotIndex = slotIndex;
-		this.toolTipSetter = toolTipSetter;
+		super(m, i, j, k, l, "");
+		this.serverDataProvider = supplier;
+		this.slotIndex = n;
+		this.toolTipSetter = consumer;
 		this.listener = listener;
 	}
 
 	@Override
-	public void render(int xm, int ym, float a) {
-		super.render(xm, ym, a);
+	public void render(int i, int j, float f) {
+		super.render(i, j, f);
 	}
 
 	@Override
@@ -115,14 +106,14 @@ public class RealmsWorldSlotButton extends RealmsButton {
 	}
 
 	@Override
-	public void renderButton(int mouseX, int mouseY, float a) {
+	public void renderButton(int i, int j, float f) {
 		if (this.state != null) {
 			RealmsButtonProxy realmsButtonProxy = this.getProxy();
 			this.drawSlotFrame(
 				realmsButtonProxy.x,
 				realmsButtonProxy.y,
-				mouseX,
-				mouseY,
+				i,
+				j,
 				this.state.isCurrentlyActiveSlot,
 				this.state.slotName,
 				this.slotIndex,
@@ -137,59 +128,59 @@ public class RealmsWorldSlotButton extends RealmsButton {
 	}
 
 	private void drawSlotFrame(
-		int x,
-		int y,
-		int xm,
-		int ym,
-		boolean currentlyActiveSlot,
-		String text,
 		int i,
-		long imageId,
-		@Nullable String image,
-		boolean empty,
-		boolean minigame,
+		int j,
+		int k,
+		int l,
+		boolean bl,
+		String string,
+		int m,
+		long n,
+		@Nullable String string2,
+		boolean bl2,
+		boolean bl3,
 		RealmsWorldSlotButton.Action action,
-		@Nullable String actionPrompt
+		@Nullable String string3
 	) {
-		boolean bl = this.getProxy().isHovered();
-		if (this.getProxy().isMouseOver((double)xm, (double)ym) && actionPrompt != null) {
-			this.toolTipSetter.accept(actionPrompt);
+		boolean bl4 = this.getProxy().isHovered();
+		if (this.getProxy().isMouseOver((double)k, (double)l) && string3 != null) {
+			this.toolTipSetter.accept(string3);
 		}
 
-		if (minigame) {
-			RealmsTextureManager.bindWorldTemplate(String.valueOf(imageId), image);
-		} else if (empty) {
+		if (bl3) {
+			RealmsTextureManager.bindWorldTemplate(String.valueOf(n), string2);
+		} else if (bl2) {
 			Realms.bind("realms:textures/gui/realms/empty_frame.png");
-		} else if (image != null && imageId != -1L) {
-			RealmsTextureManager.bindWorldTemplate(String.valueOf(imageId), image);
-		} else if (i == 1) {
+		} else if (string2 != null && n != -1L) {
+			RealmsTextureManager.bindWorldTemplate(String.valueOf(n), string2);
+		} else if (m == 1) {
 			Realms.bind("textures/gui/title/background/panorama_0.png");
-		} else if (i == 2) {
+		} else if (m == 2) {
 			Realms.bind("textures/gui/title/background/panorama_2.png");
-		} else if (i == 3) {
+		} else if (m == 3) {
 			Realms.bind("textures/gui/title/background/panorama_3.png");
 		}
 
-		if (currentlyActiveSlot) {
+		if (bl) {
 			float f = 0.85F + 0.15F * RealmsMth.cos((float)this.animTick * 0.2F);
-			GlStateManager.color4f(f, f, f, 1.0F);
+			RenderSystem.color4f(f, f, f, 1.0F);
 		} else {
-			GlStateManager.color4f(0.56F, 0.56F, 0.56F, 1.0F);
+			RenderSystem.color4f(0.56F, 0.56F, 0.56F, 1.0F);
 		}
 
-		RealmsScreen.blit(x + 3, y + 3, 0.0F, 0.0F, 74, 74, 74, 74);
+		RealmsScreen.blit(i + 3, j + 3, 0.0F, 0.0F, 74, 74, 74, 74);
 		Realms.bind("realms:textures/gui/realms/slot_frame.png");
-		boolean bl2 = bl && action != RealmsWorldSlotButton.Action.NOTHING;
-		if (bl2) {
-			GlStateManager.color4f(1.0F, 1.0F, 1.0F, 1.0F);
-		} else if (currentlyActiveSlot) {
-			GlStateManager.color4f(0.8F, 0.8F, 0.8F, 1.0F);
+		boolean bl5 = bl4 && action != RealmsWorldSlotButton.Action.NOTHING;
+		if (bl5) {
+			RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
+		} else if (bl) {
+			RenderSystem.color4f(0.8F, 0.8F, 0.8F, 1.0F);
 		} else {
-			GlStateManager.color4f(0.56F, 0.56F, 0.56F, 1.0F);
+			RenderSystem.color4f(0.56F, 0.56F, 0.56F, 1.0F);
 		}
 
-		RealmsScreen.blit(x, y, 0.0F, 0.0F, 80, 80, 80, 80);
-		this.drawCenteredString(text, x + 40, y + 66, 16777215);
+		RealmsScreen.blit(i, j, 0.0F, 0.0F, 80, 80, 80, 80);
+		this.drawCenteredString(string, i + 40, j + 66, 16777215);
 	}
 
 	@Override
@@ -206,7 +197,7 @@ public class RealmsWorldSlotButton extends RealmsButton {
 
 	@Environment(EnvType.CLIENT)
 	public interface Listener {
-		void onSlotClick(int slotIndex, @Nonnull RealmsWorldSlotButton.Action action, boolean minigame, boolean empty);
+		void onSlotClick(int i, RealmsWorldSlotButton.Action action, boolean bl, boolean bl2);
 	}
 
 	@Environment(EnvType.CLIENT)
@@ -220,24 +211,15 @@ public class RealmsWorldSlotButton extends RealmsButton {
 		public final RealmsWorldSlotButton.Action action;
 		final String actionPrompt;
 
-		State(
-			boolean isCurrentlyActiveSlot,
-			String slotName,
-			long imageId,
-			@Nullable String image,
-			boolean empty,
-			boolean minigame,
-			@Nonnull RealmsWorldSlotButton.Action action,
-			@Nullable String actionPrompt
-		) {
-			this.isCurrentlyActiveSlot = isCurrentlyActiveSlot;
-			this.slotName = slotName;
-			this.imageId = imageId;
-			this.image = image;
-			this.empty = empty;
-			this.minigame = minigame;
+		State(boolean bl, String string, long l, @Nullable String string2, boolean bl2, boolean bl3, RealmsWorldSlotButton.Action action, @Nullable String string3) {
+			this.isCurrentlyActiveSlot = bl;
+			this.slotName = string;
+			this.imageId = l;
+			this.image = string2;
+			this.empty = bl2;
+			this.minigame = bl3;
 			this.action = action;
-			this.actionPrompt = actionPrompt;
+			this.actionPrompt = string3;
 		}
 	}
 }

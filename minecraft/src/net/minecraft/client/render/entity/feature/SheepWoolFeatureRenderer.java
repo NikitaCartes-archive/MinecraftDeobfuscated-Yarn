@@ -1,6 +1,6 @@
 package net.minecraft.client.render.entity.feature;
 
-import com.mojang.blaze3d.platform.GlStateManager;
+import com.mojang.blaze3d.systems.RenderSystem;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.render.entity.model.SheepEntityModel;
@@ -14,11 +14,11 @@ public class SheepWoolFeatureRenderer extends FeatureRenderer<SheepEntity, Sheep
 	private static final Identifier SKIN = new Identifier("textures/entity/sheep/sheep_fur.png");
 	private final SheepWoolEntityModel<SheepEntity> model = new SheepWoolEntityModel<>();
 
-	public SheepWoolFeatureRenderer(FeatureRendererContext<SheepEntity, SheepEntityModel<SheepEntity>> context) {
-		super(context);
+	public SheepWoolFeatureRenderer(FeatureRendererContext<SheepEntity, SheepEntityModel<SheepEntity>> featureRendererContext) {
+		super(featureRendererContext);
 	}
 
-	public void render(SheepEntity sheepEntity, float f, float g, float h, float i, float j, float k, float l) {
+	public void method_4198(SheepEntity sheepEntity, float f, float g, float h, float i, float j, float k, float l) {
 		if (!sheepEntity.isSheared() && !sheepEntity.isInvisible()) {
 			this.bindTexture(SKIN);
 			if (sheepEntity.hasCustomName() && "jeb_".equals(sheepEntity.getName().asString())) {
@@ -30,14 +30,14 @@ public class SheepWoolFeatureRenderer extends FeatureRenderer<SheepEntity, Sheep
 				float r = ((float)(sheepEntity.age % 25) + h) / 25.0F;
 				float[] fs = SheepEntity.getRgbColor(DyeColor.byId(p));
 				float[] gs = SheepEntity.getRgbColor(DyeColor.byId(q));
-				GlStateManager.color3f(fs[0] * (1.0F - r) + gs[0] * r, fs[1] * (1.0F - r) + gs[1] * r, fs[2] * (1.0F - r) + gs[2] * r);
+				RenderSystem.color3f(fs[0] * (1.0F - r) + gs[0] * r, fs[1] * (1.0F - r) + gs[1] * r, fs[2] * (1.0F - r) + gs[2] * r);
 			} else {
 				float[] hs = SheepEntity.getRgbColor(sheepEntity.getColor());
-				GlStateManager.color3f(hs[0], hs[1], hs[2]);
+				RenderSystem.color3f(hs[0], hs[1], hs[2]);
 			}
 
-			this.getContextModel().copyStateTo(this.model);
-			this.model.animateModel(sheepEntity, f, g, h);
+			this.getModel().copyStateTo(this.model);
+			this.model.method_17118(sheepEntity, f, g, h);
 			this.model.render(sheepEntity, f, g, i, j, k, l);
 		}
 	}

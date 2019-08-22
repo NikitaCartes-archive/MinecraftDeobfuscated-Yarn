@@ -10,11 +10,11 @@ import net.minecraft.entity.ai.brain.MemoryModuleState;
 import net.minecraft.entity.ai.brain.MemoryModuleType;
 
 public class RandomTask<E extends LivingEntity> extends CompositeTask<E> {
-	public RandomTask(List<Pair<Task<? super E>, Integer>> tasks) {
-		this(ImmutableMap.of(), tasks);
+	public RandomTask(List<Pair<Task<? super E>, Integer>> list) {
+		this(ImmutableMap.of(), list);
 	}
 
-	public RandomTask(Map<MemoryModuleType<?>, MemoryModuleState> requiredMemoryState, List<Pair<Task<? super E>, Integer>> tasks) {
-		super(requiredMemoryState, ImmutableSet.of(), CompositeTask.Order.SHUFFLED, CompositeTask.RunMode.RUN_ONE, tasks);
+	public RandomTask(Map<MemoryModuleType<?>, MemoryModuleState> map, List<Pair<Task<? super E>, Integer>> list) {
+		super(map, ImmutableSet.of(), CompositeTask.Order.SHUFFLED, CompositeTask.RunMode.RUN_ONE, list);
 	}
 }

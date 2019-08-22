@@ -8,10 +8,10 @@ public class HorseArmorItem extends Item {
 	private final int bonus;
 	private final String entityTexture;
 
-	public HorseArmorItem(int bonus, String name, Item.Settings settings) {
+	public HorseArmorItem(int i, String string, Item.Settings settings) {
 		super(settings);
-		this.bonus = bonus;
-		this.entityTexture = "textures/entity/horse/armor/horse_armor_" + name + ".png";
+		this.bonus = i;
+		this.entityTexture = "textures/entity/horse/armor/horse_armor_" + string + ".png";
 	}
 
 	@Environment(EnvType.CLIENT)

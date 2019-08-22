@@ -5,6 +5,7 @@ import java.util.UUID;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.client.network.packet.EntitySpawnS2CPacket;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.data.DataTracker;
 import net.minecraft.entity.data.TrackedData;
@@ -14,14 +15,13 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.NbtHelper;
 import net.minecraft.network.Packet;
-import net.minecraft.network.packet.s2c.play.EntitySpawnS2CPacket;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.stat.Stats;
 import net.minecraft.tag.FluidTags;
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
+import net.minecraft.util.TagHelper;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
@@ -41,16 +41,16 @@ public class ItemEntity extends Entity {
 		super(entityType, world);
 	}
 
-	public ItemEntity(World world, double x, double y, double z) {
+	public ItemEntity(World world, double d, double e, double f) {
 		this(EntityType.ITEM, world);
-		this.updatePosition(x, y, z);
+		this.setPosition(d, e, f);
 		this.yaw = this.random.nextFloat() * 360.0F;
 		this.setVelocity(this.random.nextDouble() * 0.2 - 0.1, 0.2, this.random.nextDouble() * 0.2 - 0.1);
 	}
 
-	public ItemEntity(World world, double x, double y, double z, ItemStack stack) {
-		this(world, x, y, z);
-		this.setStack(stack);
+	public ItemEntity(World world, double d, double e, double f, ItemStack itemStack) {
+		this(world, d, e, f);
+		this.setStack(itemStack);
 	}
 
 	@Override
@@ -88,7 +88,7 @@ public class ItemEntity extends Entity {
 			} else {
 				this.noClip = !this.world.doesNotCollide(this);
 				if (this.noClip) {
-					this.pushOutOfBlocks(this.x, (this.getBoundingBox().y1 + this.getBoundingBox().y2) / 2.0, this.z);
+					this.pushOutOfBlocks(this.x, (this.getBoundingBox().minY + this.getBoundingBox().maxY) / 2.0, this.z);
 				}
 			}
 
@@ -96,7 +96,7 @@ public class ItemEntity extends Entity {
 				this.move(MovementType.SELF, this.getVelocity());
 				float f = 0.98F;
 				if (this.onGround) {
-					f = this.world.getBlockState(new BlockPos(this.x, this.getBoundingBox().y1 - 1.0, this.z)).getBlock().getSlipperiness() * 0.98F;
+					f = this.world.getBlockState(new BlockPos(this.x, this.getBoundingBox().minY - 1.0, this.z)).getBlock().getSlipperiness() * 0.98F;
 				}
 
 				this.setVelocity(this.getVelocity().multiply((double)f, 0.98, (double)f));
@@ -164,17 +164,17 @@ public class ItemEntity extends Entity {
 		return this.isAlive() && this.pickupDelay != 32767 && this.age != -32768 && this.age < 6000 && itemStack.getCount() < itemStack.getMaxCount();
 	}
 
-	private void tryMerge(ItemEntity other) {
+	private void tryMerge(ItemEntity itemEntity) {
 		ItemStack itemStack = this.getStack();
-		ItemStack itemStack2 = other.getStack();
+		ItemStack itemStack2 = itemEntity.getStack();
 		if (itemStack2.getItem() == itemStack.getItem()) {
 			if (itemStack2.getCount() + itemStack.getCount() <= itemStack2.getMaxCount()) {
 				if (!(itemStack2.hasTag() ^ itemStack.hasTag())) {
 					if (!itemStack2.hasTag() || itemStack2.getTag().equals(itemStack.getTag())) {
 						if (itemStack2.getCount() < itemStack.getCount()) {
-							merge(this, itemStack, other, itemStack2);
+							merge(this, itemStack, itemEntity, itemStack2);
 						} else {
-							merge(other, itemStack2, this, itemStack);
+							merge(itemEntity, itemStack2, this, itemStack);
 						}
 					}
 				}
@@ -182,17 +182,17 @@ public class ItemEntity extends Entity {
 		}
 	}
 
-	private static void merge(ItemEntity targetEntity, ItemStack targetStack, ItemEntity sourceEntity, ItemStack sourceStack) {
-		int i = Math.min(targetStack.getMaxCount() - targetStack.getCount(), sourceStack.getCount());
-		ItemStack itemStack = targetStack.copy();
-		itemStack.increment(i);
-		targetEntity.setStack(itemStack);
-		sourceStack.decrement(i);
-		sourceEntity.setStack(sourceStack);
-		targetEntity.pickupDelay = Math.max(targetEntity.pickupDelay, sourceEntity.pickupDelay);
-		targetEntity.age = Math.min(targetEntity.age, sourceEntity.age);
-		if (sourceStack.isEmpty()) {
-			sourceEntity.remove();
+	private static void merge(ItemEntity itemEntity, ItemStack itemStack, ItemEntity itemEntity2, ItemStack itemStack2) {
+		int i = Math.min(itemStack.getMaxCount() - itemStack.getCount(), itemStack2.getCount());
+		ItemStack itemStack3 = itemStack.copy();
+		itemStack3.increment(i);
+		itemEntity.setStack(itemStack3);
+		itemStack2.decrement(i);
+		itemEntity2.setStack(itemStack2);
+		itemEntity.pickupDelay = Math.max(itemEntity.pickupDelay, itemEntity2.pickupDelay);
+		itemEntity.age = Math.min(itemEntity.age, itemEntity2.age);
+		if (itemStack2.isEmpty()) {
+			itemEntity2.remove();
 		}
 	}
 
@@ -201,19 +201,19 @@ public class ItemEntity extends Entity {
 	}
 
 	@Override
-	protected void burn(int time) {
-		this.damage(DamageSource.IN_FIRE, (float)time);
+	protected void burn(int i) {
+		this.damage(DamageSource.IN_FIRE, (float)i);
 	}
 
 	@Override
-	public boolean damage(DamageSource source, float amount) {
-		if (this.isInvulnerableTo(source)) {
+	public boolean damage(DamageSource damageSource, float f) {
+		if (this.isInvulnerableTo(damageSource)) {
 			return false;
-		} else if (!this.getStack().isEmpty() && this.getStack().getItem() == Items.NETHER_STAR && source.isExplosive()) {
+		} else if (!this.getStack().isEmpty() && this.getStack().getItem() == Items.NETHER_STAR && damageSource.isExplosive()) {
 			return false;
 		} else {
 			this.scheduleVelocityUpdate();
-			this.health = (int)((float)this.health - amount);
+			this.health = (int)((float)this.health - f);
 			if (this.health <= 0) {
 				this.remove();
 			}
@@ -223,62 +223,62 @@ public class ItemEntity extends Entity {
 	}
 
 	@Override
-	public void writeCustomDataToTag(CompoundTag tag) {
-		tag.putShort("Health", (short)this.health);
-		tag.putShort("Age", (short)this.age);
-		tag.putShort("PickupDelay", (short)this.pickupDelay);
+	public void writeCustomDataToTag(CompoundTag compoundTag) {
+		compoundTag.putShort("Health", (short)this.health);
+		compoundTag.putShort("Age", (short)this.age);
+		compoundTag.putShort("PickupDelay", (short)this.pickupDelay);
 		if (this.getThrower() != null) {
-			tag.put("Thrower", NbtHelper.fromUuid(this.getThrower()));
+			compoundTag.put("Thrower", TagHelper.serializeUuid(this.getThrower()));
 		}
 
 		if (this.getOwner() != null) {
-			tag.put("Owner", NbtHelper.fromUuid(this.getOwner()));
+			compoundTag.put("Owner", TagHelper.serializeUuid(this.getOwner()));
 		}
 
 		if (!this.getStack().isEmpty()) {
-			tag.put("Item", this.getStack().toTag(new CompoundTag()));
+			compoundTag.put("Item", this.getStack().toTag(new CompoundTag()));
 		}
 	}
 
 	@Override
-	public void readCustomDataFromTag(CompoundTag tag) {
-		this.health = tag.getShort("Health");
-		this.age = tag.getShort("Age");
-		if (tag.contains("PickupDelay")) {
-			this.pickupDelay = tag.getShort("PickupDelay");
+	public void readCustomDataFromTag(CompoundTag compoundTag) {
+		this.health = compoundTag.getShort("Health");
+		this.age = compoundTag.getShort("Age");
+		if (compoundTag.containsKey("PickupDelay")) {
+			this.pickupDelay = compoundTag.getShort("PickupDelay");
 		}
 
-		if (tag.contains("Owner", 10)) {
-			this.owner = NbtHelper.toUuid(tag.getCompound("Owner"));
+		if (compoundTag.containsKey("Owner", 10)) {
+			this.owner = TagHelper.deserializeUuid(compoundTag.getCompound("Owner"));
 		}
 
-		if (tag.contains("Thrower", 10)) {
-			this.thrower = NbtHelper.toUuid(tag.getCompound("Thrower"));
+		if (compoundTag.containsKey("Thrower", 10)) {
+			this.thrower = TagHelper.deserializeUuid(compoundTag.getCompound("Thrower"));
 		}
 
-		CompoundTag compoundTag = tag.getCompound("Item");
-		this.setStack(ItemStack.fromTag(compoundTag));
+		CompoundTag compoundTag2 = compoundTag.getCompound("Item");
+		this.setStack(ItemStack.fromTag(compoundTag2));
 		if (this.getStack().isEmpty()) {
 			this.remove();
 		}
 	}
 
 	@Override
-	public void onPlayerCollision(PlayerEntity player) {
+	public void onPlayerCollision(PlayerEntity playerEntity) {
 		if (!this.world.isClient) {
 			ItemStack itemStack = this.getStack();
 			Item item = itemStack.getItem();
 			int i = itemStack.getCount();
 			if (this.pickupDelay == 0
-				&& (this.owner == null || 6000 - this.age <= 200 || this.owner.equals(player.getUuid()))
-				&& player.inventory.insertStack(itemStack)) {
-				player.sendPickup(this, i);
+				&& (this.owner == null || 6000 - this.age <= 200 || this.owner.equals(playerEntity.getUuid()))
+				&& playerEntity.inventory.insertStack(itemStack)) {
+				playerEntity.sendPickup(this, i);
 				if (itemStack.isEmpty()) {
 					this.remove();
 					itemStack.setCount(i);
 				}
 
-				player.increaseStat(Stats.PICKED_UP.getOrCreateStat(item), i);
+				playerEntity.increaseStat(Stats.PICKED_UP.getOrCreateStat(item), i);
 			}
 		}
 	}
@@ -296,8 +296,8 @@ public class ItemEntity extends Entity {
 
 	@Nullable
 	@Override
-	public Entity changeDimension(DimensionType newDimension) {
-		Entity entity = super.changeDimension(newDimension);
+	public Entity changeDimension(DimensionType dimensionType) {
+		Entity entity = super.changeDimension(dimensionType);
 		if (!this.world.isClient && entity instanceof ItemEntity) {
 			((ItemEntity)entity).tryMerge();
 		}
@@ -309,8 +309,8 @@ public class ItemEntity extends Entity {
 		return this.getDataTracker().get(STACK);
 	}
 
-	public void setStack(ItemStack stack) {
-		this.getDataTracker().set(STACK, stack);
+	public void setStack(ItemStack itemStack) {
+		this.getDataTracker().set(STACK, itemStack);
 	}
 
 	@Nullable
@@ -318,8 +318,8 @@ public class ItemEntity extends Entity {
 		return this.owner;
 	}
 
-	public void setOwner(@Nullable UUID uuid) {
-		this.owner = uuid;
+	public void setOwner(@Nullable UUID uUID) {
+		this.owner = uUID;
 	}
 
 	@Nullable
@@ -327,8 +327,8 @@ public class ItemEntity extends Entity {
 		return this.thrower;
 	}
 
-	public void setThrower(@Nullable UUID uuid) {
-		this.thrower = uuid;
+	public void setThrower(@Nullable UUID uUID) {
+		this.thrower = uUID;
 	}
 
 	@Environment(EnvType.CLIENT)
@@ -348,8 +348,8 @@ public class ItemEntity extends Entity {
 		this.pickupDelay = 32767;
 	}
 
-	public void setPickupDelay(int pickupDelay) {
-		this.pickupDelay = pickupDelay;
+	public void setPickupDelay(int i) {
+		this.pickupDelay = i;
 	}
 
 	public boolean cannotPickup() {

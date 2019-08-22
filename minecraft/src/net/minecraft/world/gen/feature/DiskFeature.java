@@ -11,11 +11,11 @@ import net.minecraft.world.gen.chunk.ChunkGenerator;
 import net.minecraft.world.gen.chunk.ChunkGeneratorConfig;
 
 public class DiskFeature extends Feature<DiskFeatureConfig> {
-	public DiskFeature(Function<Dynamic<?>, ? extends DiskFeatureConfig> configFactory) {
-		super(configFactory);
+	public DiskFeature(Function<Dynamic<?>, ? extends DiskFeatureConfig> function) {
+		super(function);
 	}
 
-	public boolean generate(
+	public boolean method_13005(
 		IWorld iWorld, ChunkGenerator<? extends ChunkGeneratorConfig> chunkGenerator, Random random, BlockPos blockPos, DiskFeatureConfig diskFeatureConfig
 	) {
 		if (!iWorld.getFluidState(blockPos).matches(FluidTags.WATER)) {

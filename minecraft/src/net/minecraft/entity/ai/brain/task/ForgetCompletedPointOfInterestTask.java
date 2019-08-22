@@ -13,30 +13,30 @@ import net.minecraft.server.world.ServerWorld;
 import net.minecraft.tag.BlockTags;
 import net.minecraft.util.GlobalPos;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.poi.PointOfInterestType;
+import net.minecraft.village.PointOfInterestType;
 
 public class ForgetCompletedPointOfInterestTask extends Task<LivingEntity> {
 	private final MemoryModuleType<GlobalPos> memoryModule;
 	private final Predicate<PointOfInterestType> condition;
 
-	public ForgetCompletedPointOfInterestTask(PointOfInterestType poiType, MemoryModuleType<GlobalPos> memoryModule) {
-		super(ImmutableMap.of(memoryModule, MemoryModuleState.VALUE_PRESENT));
-		this.condition = poiType.getCompletionCondition();
-		this.memoryModule = memoryModule;
+	public ForgetCompletedPointOfInterestTask(PointOfInterestType pointOfInterestType, MemoryModuleType<GlobalPos> memoryModuleType) {
+		super(ImmutableMap.of(memoryModuleType, MemoryModuleState.VALUE_PRESENT));
+		this.condition = pointOfInterestType.getCompletionCondition();
+		this.memoryModule = memoryModuleType;
 	}
 
 	@Override
-	protected boolean shouldRun(ServerWorld world, LivingEntity entity) {
-		GlobalPos globalPos = (GlobalPos)entity.getBrain().getOptionalMemory(this.memoryModule).get();
-		return Objects.equals(world.getDimension().getType(), globalPos.getDimension()) && globalPos.getPos().isWithinDistance(entity.getPos(), 5.0);
+	protected boolean shouldRun(ServerWorld serverWorld, LivingEntity livingEntity) {
+		GlobalPos globalPos = (GlobalPos)livingEntity.getBrain().getOptionalMemory(this.memoryModule).get();
+		return Objects.equals(serverWorld.getDimension().getType(), globalPos.getDimension()) && globalPos.getPos().isWithinDistance(livingEntity.getPos(), 5.0);
 	}
 
 	@Override
-	protected void run(ServerWorld world, LivingEntity entity, long time) {
-		Brain<?> brain = entity.getBrain();
+	protected void run(ServerWorld serverWorld, LivingEntity livingEntity, long l) {
+		Brain<?> brain = livingEntity.getBrain();
 		GlobalPos globalPos = (GlobalPos)brain.getOptionalMemory(this.memoryModule).get();
-		ServerWorld serverWorld = world.getServer().getWorld(globalPos.getDimension());
-		if (this.method_20499(serverWorld, globalPos.getPos()) || this.method_20500(serverWorld, globalPos.getPos(), entity)) {
+		ServerWorld serverWorld2 = serverWorld.getServer().getWorld(globalPos.getDimension());
+		if (this.method_20499(serverWorld2, globalPos.getPos()) || this.method_20500(serverWorld2, globalPos.getPos(), livingEntity)) {
 			brain.forget(this.memoryModule);
 		}
 	}

@@ -13,57 +13,57 @@ public final class Quaternion {
 		this.components[4] = 1.0F;
 	}
 
-	public Quaternion(float b, float c, float d, float a) {
+	public Quaternion(float f, float g, float h, float i) {
 		this.components = new float[4];
-		this.components[0] = b;
-		this.components[1] = c;
-		this.components[2] = d;
-		this.components[3] = a;
+		this.components[0] = f;
+		this.components[1] = g;
+		this.components[2] = h;
+		this.components[3] = i;
 	}
 
-	public Quaternion(Vector3f axis, float rotationAngle, boolean degrees) {
-		if (degrees) {
-			rotationAngle *= (float) (Math.PI / 180.0);
+	public Quaternion(Vector3f vector3f, float f, boolean bl) {
+		if (bl) {
+			f *= (float) (Math.PI / 180.0);
 		}
 
-		float f = sin(rotationAngle / 2.0F);
+		float g = sin(f / 2.0F);
 		this.components = new float[4];
-		this.components[0] = axis.getX() * f;
-		this.components[1] = axis.getY() * f;
-		this.components[2] = axis.getZ() * f;
-		this.components[3] = cos(rotationAngle / 2.0F);
+		this.components[0] = vector3f.getX() * g;
+		this.components[1] = vector3f.getY() * g;
+		this.components[2] = vector3f.getZ() * g;
+		this.components[3] = cos(f / 2.0F);
 	}
 
 	@Environment(EnvType.CLIENT)
-	public Quaternion(float x, float y, float z, boolean degrees) {
-		if (degrees) {
-			x *= (float) (Math.PI / 180.0);
-			y *= (float) (Math.PI / 180.0);
-			z *= (float) (Math.PI / 180.0);
+	public Quaternion(float f, float g, float h, boolean bl) {
+		if (bl) {
+			f *= (float) (Math.PI / 180.0);
+			g *= (float) (Math.PI / 180.0);
+			h *= (float) (Math.PI / 180.0);
 		}
 
-		float f = sin(0.5F * x);
-		float g = cos(0.5F * x);
-		float h = sin(0.5F * y);
-		float i = cos(0.5F * y);
-		float j = sin(0.5F * z);
-		float k = cos(0.5F * z);
+		float i = sin(0.5F * f);
+		float j = cos(0.5F * f);
+		float k = sin(0.5F * g);
+		float l = cos(0.5F * g);
+		float m = sin(0.5F * h);
+		float n = cos(0.5F * h);
 		this.components = new float[4];
-		this.components[0] = f * i * k + g * h * j;
-		this.components[1] = g * h * k - f * i * j;
-		this.components[2] = f * h * k + g * i * j;
-		this.components[3] = g * i * k - f * h * j;
+		this.components[0] = i * l * n + j * k * m;
+		this.components[1] = j * k * n - i * l * m;
+		this.components[2] = i * k * n + j * l * m;
+		this.components[3] = j * l * n - i * k * m;
 	}
 
-	public Quaternion(Quaternion other) {
-		this.components = Arrays.copyOf(other.components, 4);
+	public Quaternion(Quaternion quaternion) {
+		this.components = Arrays.copyOf(quaternion.components, 4);
 	}
 
-	public boolean equals(Object o) {
-		if (this == o) {
+	public boolean equals(Object object) {
+		if (this == object) {
 			return true;
-		} else if (o != null && this.getClass() == o.getClass()) {
-			Quaternion quaternion = (Quaternion)o;
+		} else if (object != null && this.getClass() == object.getClass()) {
+			Quaternion quaternion = (Quaternion)object;
 			return Arrays.equals(this.components, quaternion.components);
 		} else {
 			return false;
@@ -76,55 +76,55 @@ public final class Quaternion {
 
 	public String toString() {
 		StringBuilder stringBuilder = new StringBuilder();
-		stringBuilder.append("Quaternion[").append(this.getA()).append(" + ");
-		stringBuilder.append(this.getB()).append("i + ");
-		stringBuilder.append(this.getC()).append("j + ");
-		stringBuilder.append(this.getD()).append("k]");
+		stringBuilder.append("Quaternion[").append(this.getW()).append(" + ");
+		stringBuilder.append(this.getX()).append("i + ");
+		stringBuilder.append(this.getY()).append("j + ");
+		stringBuilder.append(this.getZ()).append("k]");
 		return stringBuilder.toString();
 	}
 
-	public float getB() {
+	public float getX() {
 		return this.components[0];
 	}
 
-	public float getC() {
+	public float getY() {
 		return this.components[1];
 	}
 
-	public float getD() {
+	public float getZ() {
 		return this.components[2];
 	}
 
-	public float getA() {
+	public float getW() {
 		return this.components[3];
 	}
 
-	public void hamiltonProduct(Quaternion other) {
-		float f = this.getB();
-		float g = this.getC();
-		float h = this.getD();
-		float i = this.getA();
-		float j = other.getB();
-		float k = other.getC();
-		float l = other.getD();
-		float m = other.getA();
+	public void copyFrom(Quaternion quaternion) {
+		float f = this.getX();
+		float g = this.getY();
+		float h = this.getZ();
+		float i = this.getW();
+		float j = quaternion.getX();
+		float k = quaternion.getY();
+		float l = quaternion.getZ();
+		float m = quaternion.getW();
 		this.components[0] = i * j + f * m + g * l - h * k;
 		this.components[1] = i * k - f * l + g * m + h * j;
 		this.components[2] = i * l + f * k - g * j + h * m;
 		this.components[3] = i * m - f * j - g * k - h * l;
 	}
 
-	public void conjugate() {
+	public void reverse() {
 		this.components[0] = -this.components[0];
 		this.components[1] = -this.components[1];
 		this.components[2] = -this.components[2];
 	}
 
-	private static float cos(float value) {
-		return (float)Math.cos((double)value);
+	private static float cos(float f) {
+		return (float)Math.cos((double)f);
 	}
 
-	private static float sin(float value) {
-		return (float)Math.sin((double)value);
+	private static float sin(float f) {
+		return (float)Math.sin((double)f);
 	}
 }

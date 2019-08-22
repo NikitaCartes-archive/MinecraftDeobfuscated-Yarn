@@ -72,31 +72,31 @@ public class AxeItem extends MiningToolItem {
 		.put(Blocks.SPRUCE_LOG, Blocks.STRIPPED_SPRUCE_LOG)
 		.build();
 
-	protected AxeItem(ToolMaterial material, float attackDamage, float attackSpeed, Item.Settings settings) {
-		super(attackDamage, attackSpeed, material, EFFECTIVE_BLOCKS, settings);
+	protected AxeItem(ToolMaterial toolMaterial, float f, float g, Item.Settings settings) {
+		super(f, g, toolMaterial, EFFECTIVE_BLOCKS, settings);
 	}
 
 	@Override
-	public float getMiningSpeed(ItemStack stack, BlockState state) {
-		Material material = state.getMaterial();
+	public float getMiningSpeed(ItemStack itemStack, BlockState blockState) {
+		Material material = blockState.getMaterial();
 		return material != Material.WOOD && material != Material.PLANT && material != Material.REPLACEABLE_PLANT && material != Material.BAMBOO
-			? super.getMiningSpeed(stack, state)
+			? super.getMiningSpeed(itemStack, blockState)
 			: this.miningSpeed;
 	}
 
 	@Override
-	public ActionResult useOnBlock(ItemUsageContext context) {
-		World world = context.getWorld();
-		BlockPos blockPos = context.getBlockPos();
+	public ActionResult useOnBlock(ItemUsageContext itemUsageContext) {
+		World world = itemUsageContext.getWorld();
+		BlockPos blockPos = itemUsageContext.getBlockPos();
 		BlockState blockState = world.getBlockState(blockPos);
 		Block block = (Block)STRIPPED_BLOCKS.get(blockState.getBlock());
 		if (block != null) {
-			PlayerEntity playerEntity = context.getPlayer();
+			PlayerEntity playerEntity = itemUsageContext.getPlayer();
 			world.playSound(playerEntity, blockPos, SoundEvents.ITEM_AXE_STRIP, SoundCategory.BLOCKS, 1.0F, 1.0F);
 			if (!world.isClient) {
 				world.setBlockState(blockPos, block.getDefaultState().with(PillarBlock.AXIS, blockState.get(PillarBlock.AXIS)), 11);
 				if (playerEntity != null) {
-					context.getStack().damage(1, playerEntity, p -> p.sendToolBreakStatus(context.getHand()));
+					itemUsageContext.getStack().damage(1, playerEntity, playerEntityx -> playerEntityx.sendToolBreakStatus(itemUsageContext.getHand()));
 				}
 			}
 

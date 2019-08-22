@@ -31,14 +31,14 @@ public class MobEffectArgumentType implements ArgumentType<StatusEffect> {
 		return commandContext.getArgument(string, StatusEffect.class);
 	}
 
-	public StatusEffect parse(StringReader stringReader) throws CommandSyntaxException {
+	public StatusEffect method_9348(StringReader stringReader) throws CommandSyntaxException {
 		Identifier identifier = Identifier.fromCommandInput(stringReader);
-		return (StatusEffect)Registry.STATUS_EFFECT.getOrEmpty(identifier).orElseThrow(() -> INVALID_EFFECT_EXCEPTION.create(identifier));
+		return (StatusEffect)Registry.MOB_EFFECT.getOrEmpty(identifier).orElseThrow(() -> INVALID_EFFECT_EXCEPTION.create(identifier));
 	}
 
 	@Override
-	public <S> CompletableFuture<Suggestions> listSuggestions(CommandContext<S> context, SuggestionsBuilder builder) {
-		return CommandSource.suggestIdentifiers(Registry.STATUS_EFFECT.getIds(), builder);
+	public <S> CompletableFuture<Suggestions> listSuggestions(CommandContext<S> commandContext, SuggestionsBuilder suggestionsBuilder) {
+		return CommandSource.suggestIdentifiers(Registry.MOB_EFFECT.getIds(), suggestionsBuilder);
 	}
 
 	@Override

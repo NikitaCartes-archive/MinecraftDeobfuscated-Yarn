@@ -1,6 +1,6 @@
 package net.minecraft.client.texture;
 
-import com.mojang.blaze3d.platform.GlStateManager;
+import com.mojang.blaze3d.systems.RenderSystem;
 import java.io.IOException;
 import java.util.concurrent.Executor;
 import net.fabricmc.api.EnvType;
@@ -10,7 +10,7 @@ import net.minecraft.util.Identifier;
 
 @Environment(EnvType.CLIENT)
 public interface Texture {
-	void pushFilter(boolean bilinear, boolean mipmap);
+	void pushFilter(boolean bl, boolean bl2);
 
 	void popFilter();
 
@@ -19,7 +19,7 @@ public interface Texture {
 	int getGlId();
 
 	default void bindTexture() {
-		GlStateManager.bindTexture(this.getGlId());
+		RenderSystem.bindTexture(this.getGlId());
 	}
 
 	default void registerTexture(TextureManager textureManager, ResourceManager resourceManager, Identifier identifier, Executor executor) {

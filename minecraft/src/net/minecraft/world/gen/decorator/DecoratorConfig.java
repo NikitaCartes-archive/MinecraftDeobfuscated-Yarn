@@ -6,5 +6,5 @@ import com.mojang.datafixers.types.DynamicOps;
 public interface DecoratorConfig {
 	NopeDecoratorConfig DEFAULT = new NopeDecoratorConfig();
 
-	<T> Dynamic<T> serialize(DynamicOps<T> ops);
+	<T> Dynamic<T> serialize(DynamicOps<T> dynamicOps);
 }

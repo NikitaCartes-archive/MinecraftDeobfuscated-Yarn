@@ -42,25 +42,25 @@ public class EntityArgumentType implements ArgumentType<EntitySelector> {
 	private final boolean singleTarget;
 	private final boolean playersOnly;
 
-	protected EntityArgumentType(boolean singleTarget, boolean playersOnly) {
-		this.singleTarget = singleTarget;
-		this.playersOnly = playersOnly;
+	protected EntityArgumentType(boolean bl, boolean bl2) {
+		this.singleTarget = bl;
+		this.playersOnly = bl2;
 	}
 
 	public static EntityArgumentType entity() {
 		return new EntityArgumentType(true, false);
 	}
 
-	public static Entity getEntity(CommandContext<ServerCommandSource> context, String name) throws CommandSyntaxException {
-		return context.<EntitySelector>getArgument(name, EntitySelector.class).getEntity(context.getSource());
+	public static Entity getEntity(CommandContext<ServerCommandSource> commandContext, String string) throws CommandSyntaxException {
+		return commandContext.<EntitySelector>getArgument(string, EntitySelector.class).getEntity(commandContext.getSource());
 	}
 
 	public static EntityArgumentType entities() {
 		return new EntityArgumentType(false, false);
 	}
 
-	public static Collection<? extends Entity> getEntities(CommandContext<ServerCommandSource> context, String name) throws CommandSyntaxException {
-		Collection<? extends Entity> collection = getOptionalEntities(context, name);
+	public static Collection<? extends Entity> getEntities(CommandContext<ServerCommandSource> commandContext, String string) throws CommandSyntaxException {
+		Collection<? extends Entity> collection = getOptionalEntities(commandContext, string);
 		if (collection.isEmpty()) {
 			throw ENTITY_NOT_FOUND_EXCEPTION.create();
 		} else {
@@ -97,7 +97,7 @@ public class EntityArgumentType implements ArgumentType<EntitySelector> {
 		}
 	}
 
-	public EntitySelector parse(StringReader stringReader) throws CommandSyntaxException {
+	public EntitySelector method_9318(StringReader stringReader) throws CommandSyntaxException {
 		int i = 0;
 		EntitySelectorReader entitySelectorReader = new EntitySelectorReader(stringReader);
 		EntitySelector entitySelector = entitySelectorReader.read();
@@ -118,11 +118,11 @@ public class EntityArgumentType implements ArgumentType<EntitySelector> {
 	}
 
 	@Override
-	public <S> CompletableFuture<Suggestions> listSuggestions(CommandContext<S> context, SuggestionsBuilder builder) {
-		if (context.getSource() instanceof CommandSource) {
-			StringReader stringReader = new StringReader(builder.getInput());
-			stringReader.setCursor(builder.getStart());
-			CommandSource commandSource = (CommandSource)context.getSource();
+	public <S> CompletableFuture<Suggestions> listSuggestions(CommandContext<S> commandContext, SuggestionsBuilder suggestionsBuilder) {
+		if (commandContext.getSource() instanceof CommandSource) {
+			StringReader stringReader = new StringReader(suggestionsBuilder.getInput());
+			stringReader.setCursor(suggestionsBuilder.getStart());
+			CommandSource commandSource = (CommandSource)commandContext.getSource();
 			EntitySelectorReader entitySelectorReader = new EntitySelectorReader(stringReader, commandSource.hasPermissionLevel(2));
 
 			try {
@@ -130,10 +130,10 @@ public class EntityArgumentType implements ArgumentType<EntitySelector> {
 			} catch (CommandSyntaxException var7) {
 			}
 
-			return entitySelectorReader.listSuggestions(builder, suggestionsBuilder -> {
+			return entitySelectorReader.listSuggestions(suggestionsBuilder, suggestionsBuilderx -> {
 				Collection<String> collection = commandSource.getPlayerNames();
 				Iterable<String> iterable = (Iterable<String>)(this.playersOnly ? collection : Iterables.concat(collection, commandSource.getEntitySuggestions()));
-				CommandSource.suggestMatching(iterable, suggestionsBuilder);
+				CommandSource.suggestMatching(iterable, suggestionsBuilderx);
 			});
 		} else {
 			return Suggestions.empty();
@@ -146,7 +146,7 @@ public class EntityArgumentType implements ArgumentType<EntitySelector> {
 	}
 
 	public static class Serializer implements ArgumentSerializer<EntityArgumentType> {
-		public void toPacket(EntityArgumentType entityArgumentType, PacketByteBuf packetByteBuf) {
+		public void method_9320(EntityArgumentType entityArgumentType, PacketByteBuf packetByteBuf) {
 			byte b = 0;
 			if (entityArgumentType.singleTarget) {
 				b = (byte)(b | 1);
@@ -159,12 +159,12 @@ public class EntityArgumentType implements ArgumentType<EntitySelector> {
 			packetByteBuf.writeByte(b);
 		}
 
-		public EntityArgumentType fromPacket(PacketByteBuf packetByteBuf) {
+		public EntityArgumentType method_9321(PacketByteBuf packetByteBuf) {
 			byte b = packetByteBuf.readByte();
 			return new EntityArgumentType((b & 1) != 0, (b & 2) != 0);
 		}
 
-		public void toJson(EntityArgumentType entityArgumentType, JsonObject jsonObject) {
+		public void method_9319(EntityArgumentType entityArgumentType, JsonObject jsonObject) {
 			jsonObject.addProperty("amount", entityArgumentType.singleTarget ? "single" : "multiple");
 			jsonObject.addProperty("type", entityArgumentType.playersOnly ? "players" : "entities");
 		}

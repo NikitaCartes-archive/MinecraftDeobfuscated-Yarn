@@ -4,12 +4,12 @@ import java.util.function.Function;
 import java.util.function.Supplier;
 
 public class KeybindText extends BaseText {
-	public static Function<String, Supplier<String>> i18n = key -> () -> key;
+	public static Function<String, Supplier<String>> i18n = string -> () -> string;
 	private final String key;
 	private Supplier<String> name;
 
-	public KeybindText(String key) {
-		this.key = key;
+	public KeybindText(String string) {
+		this.key = string;
 	}
 
 	@Override
@@ -21,19 +21,19 @@ public class KeybindText extends BaseText {
 		return (String)this.name.get();
 	}
 
-	public KeybindText copy() {
+	public KeybindText method_10902() {
 		return new KeybindText(this.key);
 	}
 
 	@Override
-	public boolean equals(Object o) {
-		if (this == o) {
+	public boolean equals(Object object) {
+		if (this == object) {
 			return true;
-		} else if (!(o instanceof KeybindText)) {
+		} else if (!(object instanceof KeybindText)) {
 			return false;
 		} else {
-			KeybindText keybindText = (KeybindText)o;
-			return this.key.equals(keybindText.key) && super.equals(o);
+			KeybindText keybindText = (KeybindText)object;
+			return this.key.equals(keybindText.key) && super.equals(object);
 		}
 	}
 

@@ -14,7 +14,7 @@ public class BlazeEntityRenderer extends MobEntityRenderer<BlazeEntity, BlazeEnt
 		super(entityRenderDispatcher, new BlazeEntityModel<>(), 0.5F);
 	}
 
-	protected Identifier getTexture(BlazeEntity blazeEntity) {
+	protected Identifier method_3881(BlazeEntity blazeEntity) {
 		return SKIN;
 	}
 }

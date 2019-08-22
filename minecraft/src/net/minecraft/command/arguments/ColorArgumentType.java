@@ -28,11 +28,11 @@ public class ColorArgumentType implements ArgumentType<Formatting> {
 		return new ColorArgumentType();
 	}
 
-	public static Formatting getColor(CommandContext<ServerCommandSource> context, String name) {
-		return context.getArgument(name, Formatting.class);
+	public static Formatting getColor(CommandContext<ServerCommandSource> commandContext, String string) {
+		return commandContext.getArgument(string, Formatting.class);
 	}
 
-	public Formatting parse(StringReader stringReader) throws CommandSyntaxException {
+	public Formatting method_9279(StringReader stringReader) throws CommandSyntaxException {
 		String string = stringReader.readUnquotedString();
 		Formatting formatting = Formatting.byName(string);
 		if (formatting != null && !formatting.isModifier()) {
@@ -43,8 +43,8 @@ public class ColorArgumentType implements ArgumentType<Formatting> {
 	}
 
 	@Override
-	public <S> CompletableFuture<Suggestions> listSuggestions(CommandContext<S> context, SuggestionsBuilder builder) {
-		return CommandSource.suggestMatching(Formatting.getNames(true, false), builder);
+	public <S> CompletableFuture<Suggestions> listSuggestions(CommandContext<S> commandContext, SuggestionsBuilder suggestionsBuilder) {
+		return CommandSource.suggestMatching(Formatting.getNames(true, false), suggestionsBuilder);
 	}
 
 	@Override

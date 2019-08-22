@@ -1,10 +1,10 @@
 package net.minecraft.client.texture;
 
-import com.mojang.blaze3d.platform.TextureUtil;
 import java.io.IOException;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.class_4536;
 import net.minecraft.resource.ResourceManager;
 
 @Environment(EnvType.CLIENT)
@@ -13,13 +13,13 @@ public class NativeImageBackedTexture extends AbstractTexture implements AutoClo
 
 	public NativeImageBackedTexture(NativeImage nativeImage) {
 		this.image = nativeImage;
-		TextureUtil.prepareImage(this.getGlId(), this.image.getWidth(), this.image.getHeight());
+		class_4536.prepareImage(this.getGlId(), this.image.getWidth(), this.image.getHeight());
 		this.upload();
 	}
 
 	public NativeImageBackedTexture(int i, int j, boolean bl) {
 		this.image = new NativeImage(i, j, bl);
-		TextureUtil.prepareImage(this.getGlId(), this.image.getWidth(), this.image.getHeight());
+		class_4536.prepareImage(this.getGlId(), this.image.getWidth(), this.image.getHeight());
 	}
 
 	@Override
@@ -36,9 +36,9 @@ public class NativeImageBackedTexture extends AbstractTexture implements AutoClo
 		return this.image;
 	}
 
-	public void setImage(NativeImage image) throws Exception {
+	public void setImage(NativeImage nativeImage) throws Exception {
 		this.image.close();
-		this.image = image;
+		this.image = nativeImage;
 	}
 
 	public void close() {

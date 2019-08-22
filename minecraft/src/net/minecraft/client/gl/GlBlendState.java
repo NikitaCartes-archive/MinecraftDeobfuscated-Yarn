@@ -1,6 +1,6 @@
 package net.minecraft.client.gl;
 
-import com.mojang.blaze3d.platform.GlStateManager;
+import com.mojang.blaze3d.systems.RenderSystem;
 import java.util.Locale;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
@@ -16,26 +16,26 @@ public class GlBlendState {
 	private final boolean separateBlend;
 	private final boolean blendDisabled;
 
-	private GlBlendState(boolean separateBlend, boolean blendDisabled, int srcRgb, int dstRgb, int srcAlpha, int dstAlpha, int func) {
-		this.separateBlend = separateBlend;
-		this.srcRgb = srcRgb;
-		this.dstRgb = dstRgb;
-		this.srcAlpha = srcAlpha;
-		this.dstAlpha = dstAlpha;
-		this.blendDisabled = blendDisabled;
-		this.func = func;
+	private GlBlendState(boolean bl, boolean bl2, int i, int j, int k, int l, int m) {
+		this.separateBlend = bl;
+		this.srcRgb = i;
+		this.dstRgb = j;
+		this.srcAlpha = k;
+		this.dstAlpha = l;
+		this.blendDisabled = bl2;
+		this.func = m;
 	}
 
 	public GlBlendState() {
 		this(false, true, 1, 0, 1, 0, 32774);
 	}
 
-	public GlBlendState(int srcRgb, int dstRgb, int func) {
-		this(false, false, srcRgb, dstRgb, srcRgb, dstRgb, func);
+	public GlBlendState(int i, int j, int k) {
+		this(false, false, i, j, i, j, k);
 	}
 
-	public GlBlendState(int srcRgb, int dstRgb, int srcAlpha, int dstAlpha, int func) {
-		this(true, false, srcRgb, dstRgb, srcAlpha, dstAlpha, func);
+	public GlBlendState(int i, int j, int k, int l, int m) {
+		this(true, false, i, j, k, l, m);
 	}
 
 	public void enable() {
@@ -43,29 +43,29 @@ public class GlBlendState {
 			if (activeBlendState == null || this.blendDisabled != activeBlendState.isBlendDisabled()) {
 				activeBlendState = this;
 				if (this.blendDisabled) {
-					GlStateManager.disableBlend();
+					RenderSystem.disableBlend();
 					return;
 				}
 
-				GlStateManager.enableBlend();
+				RenderSystem.enableBlend();
 			}
 
-			GlStateManager.blendEquation(this.func);
+			RenderSystem.blendEquation(this.func);
 			if (this.separateBlend) {
-				GlStateManager.blendFuncSeparate(this.srcRgb, this.dstRgb, this.srcAlpha, this.dstAlpha);
+				RenderSystem.blendFuncSeparate(this.srcRgb, this.dstRgb, this.srcAlpha, this.dstAlpha);
 			} else {
-				GlStateManager.blendFunc(this.srcRgb, this.dstRgb);
+				RenderSystem.blendFunc(this.srcRgb, this.dstRgb);
 			}
 		}
 	}
 
-	public boolean equals(Object o) {
-		if (this == o) {
+	public boolean equals(Object object) {
+		if (this == object) {
 			return true;
-		} else if (!(o instanceof GlBlendState)) {
+		} else if (!(object instanceof GlBlendState)) {
 			return false;
 		} else {
-			GlBlendState glBlendState = (GlBlendState)o;
+			GlBlendState glBlendState = (GlBlendState)object;
 			if (this.func != glBlendState.func) {
 				return false;
 			} else if (this.dstAlpha != glBlendState.dstAlpha) {

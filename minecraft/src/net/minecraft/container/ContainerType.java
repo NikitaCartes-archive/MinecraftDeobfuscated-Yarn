@@ -27,12 +27,12 @@ public class ContainerType<T extends Container> {
 	public static final ContainerType<MerchantContainer> MERCHANT = register("merchant", MerchantContainer::new);
 	public static final ContainerType<ShulkerBoxContainer> SHULKER_BOX = register("shulker_box", ShulkerBoxContainer::new);
 	public static final ContainerType<SmokerContainer> SMOKER = register("smoker", SmokerContainer::new);
-	public static final ContainerType<CartographyTableContainer> CARTOGRAPHY = register("cartography", CartographyTableContainer::new);
+	public static final ContainerType<CartographyTableContainer> CARTOGRAPHY_TABLE = register("cartography_table", CartographyTableContainer::new);
 	public static final ContainerType<StonecutterContainer> STONECUTTER = register("stonecutter", StonecutterContainer::new);
 	private final ContainerType.Factory<T> factory;
 
-	private static <T extends Container> ContainerType<T> register(String id, ContainerType.Factory<T> factory) {
-		return Registry.register(Registry.CONTAINER, id, new ContainerType<>(factory));
+	private static <T extends Container> ContainerType<T> register(String string, ContainerType.Factory<T> factory) {
+		return Registry.register(Registry.MENU, string, new ContainerType<>(factory));
 	}
 
 	private ContainerType(ContainerType.Factory<T> factory) {
@@ -40,12 +40,12 @@ public class ContainerType<T extends Container> {
 	}
 
 	@Environment(EnvType.CLIENT)
-	public T create(int syncId, PlayerInventory playerInventory) {
-		return this.factory.create(syncId, playerInventory);
+	public T create(int i, PlayerInventory playerInventory) {
+		return this.factory.create(i, playerInventory);
 	}
 
 	interface Factory<T extends Container> {
 		@Environment(EnvType.CLIENT)
-		T create(int syncId, PlayerInventory playerInventory);
+		T create(int i, PlayerInventory playerInventory);
 	}
 }

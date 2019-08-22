@@ -21,33 +21,33 @@ public class BookModel extends Model {
 		this.rightBlock = new ModelPart(this).setTextureOffset(12, 10).addCuboid(0.0F, -4.0F, -0.01F, 5, 8, 1);
 		this.leftPage = new ModelPart(this).setTextureOffset(24, 10).addCuboid(0.0F, -4.0F, 0.0F, 5, 8, 0);
 		this.rightPage = new ModelPart(this).setTextureOffset(24, 10).addCuboid(0.0F, -4.0F, 0.0F, 5, 8, 0);
-		this.leftCover.setPivot(0.0F, 0.0F, -1.0F);
-		this.rightCover.setPivot(0.0F, 0.0F, 1.0F);
+		this.leftCover.setRotationPoint(0.0F, 0.0F, -1.0F);
+		this.rightCover.setRotationPoint(0.0F, 0.0F, 1.0F);
 		this.spine.yaw = (float) (Math.PI / 2);
 	}
 
-	public void render(float ticks, float leftPageAngle, float rightPageAngle, float pageTurningSpeed, float f, float g) {
-		this.setPageAngles(ticks, leftPageAngle, rightPageAngle, pageTurningSpeed, f, g);
-		this.leftCover.render(g);
-		this.rightCover.render(g);
-		this.spine.render(g);
-		this.leftBlock.render(g);
-		this.rightBlock.render(g);
-		this.leftPage.render(g);
-		this.rightPage.render(g);
+	public void render(float f, float g, float h, float i, float j, float k) {
+		this.setPageAngles(f, g, h, i, j, k);
+		this.leftCover.render(k);
+		this.rightCover.render(k);
+		this.spine.render(k);
+		this.leftBlock.render(k);
+		this.rightBlock.render(k);
+		this.leftPage.render(k);
+		this.rightPage.render(k);
 	}
 
-	private void setPageAngles(float ticks, float leftPageAngle, float rightPageAngle, float pageTurningSpeed, float f, float g) {
-		float h = (MathHelper.sin(ticks * 0.02F) * 0.1F + 1.25F) * pageTurningSpeed;
-		this.leftCover.yaw = (float) Math.PI + h;
-		this.rightCover.yaw = -h;
-		this.leftBlock.yaw = h;
-		this.rightBlock.yaw = -h;
-		this.leftPage.yaw = h - h * 2.0F * leftPageAngle;
-		this.rightPage.yaw = h - h * 2.0F * rightPageAngle;
-		this.leftBlock.pivotX = MathHelper.sin(h);
-		this.rightBlock.pivotX = MathHelper.sin(h);
-		this.leftPage.pivotX = MathHelper.sin(h);
-		this.rightPage.pivotX = MathHelper.sin(h);
+	private void setPageAngles(float f, float g, float h, float i, float j, float k) {
+		float l = (MathHelper.sin(f * 0.02F) * 0.1F + 1.25F) * i;
+		this.leftCover.yaw = (float) Math.PI + l;
+		this.rightCover.yaw = -l;
+		this.leftBlock.yaw = l;
+		this.rightBlock.yaw = -l;
+		this.leftPage.yaw = l - l * 2.0F * g;
+		this.rightPage.yaw = l - l * 2.0F * h;
+		this.leftBlock.rotationPointX = MathHelper.sin(l);
+		this.rightBlock.rotationPointX = MathHelper.sin(l);
+		this.leftPage.rotationPointX = MathHelper.sin(l);
+		this.rightPage.rotationPointX = MathHelper.sin(l);
 	}
 }

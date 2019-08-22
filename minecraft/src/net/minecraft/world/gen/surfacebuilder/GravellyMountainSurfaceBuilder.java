@@ -12,7 +12,7 @@ public class GravellyMountainSurfaceBuilder extends SurfaceBuilder<TernarySurfac
 		super(function);
 	}
 
-	public void generate(
+	public void method_15245(
 		Random random,
 		Chunk chunk,
 		Biome biome,

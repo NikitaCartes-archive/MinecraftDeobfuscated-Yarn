@@ -9,9 +9,9 @@ public interface RealmsAbstractButtonProxy<T extends AbstractRealmsButton<?>> {
 
 	boolean active();
 
-	void active(boolean enabled);
+	void active(boolean bl);
 
 	boolean isVisible();
 
-	void setVisible(boolean visible);
+	void setVisible(boolean bl);
 }

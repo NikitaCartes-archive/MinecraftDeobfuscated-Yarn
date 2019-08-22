@@ -7,9 +7,9 @@ import net.minecraft.block.BlockState;
 
 public class JungleTreeFeature extends OakTreeFeature {
 	public JungleTreeFeature(
-		Function<Dynamic<?>, ? extends DefaultFeatureConfig> function, boolean bl, int height, BlockState log, BlockState leaves, boolean bl2
+		Function<Dynamic<?>, ? extends DefaultFeatureConfig> function, boolean bl, int i, BlockState blockState, BlockState blockState2, boolean bl2
 	) {
-		super(function, bl, height, log, leaves, bl2);
+		super(function, bl, i, blockState, blockState2, bl2);
 	}
 
 	@Override

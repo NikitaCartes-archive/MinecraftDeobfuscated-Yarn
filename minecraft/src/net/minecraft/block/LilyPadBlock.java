@@ -18,21 +18,21 @@ public class LilyPadBlock extends PlantBlock {
 	}
 
 	@Override
-	public void onEntityCollision(BlockState state, World world, BlockPos pos, Entity entity) {
-		super.onEntityCollision(state, world, pos, entity);
+	public void onEntityCollision(BlockState blockState, World world, BlockPos blockPos, Entity entity) {
+		super.onEntityCollision(blockState, world, blockPos, entity);
 		if (entity instanceof BoatEntity) {
-			world.breakBlock(new BlockPos(pos), true);
+			world.breakBlock(new BlockPos(blockPos), true);
 		}
 	}
 
 	@Override
-	public VoxelShape getOutlineShape(BlockState state, BlockView view, BlockPos pos, EntityContext context) {
+	public VoxelShape getOutlineShape(BlockState blockState, BlockView blockView, BlockPos blockPos, EntityContext entityContext) {
 		return SHAPE;
 	}
 
 	@Override
-	protected boolean canPlantOnTop(BlockState floor, BlockView view, BlockPos pos) {
-		FluidState fluidState = view.getFluidState(pos);
-		return fluidState.getFluid() == Fluids.WATER || floor.getMaterial() == Material.ICE;
+	protected boolean canPlantOnTop(BlockState blockState, BlockView blockView, BlockPos blockPos) {
+		FluidState fluidState = blockView.getFluidState(blockPos);
+		return fluidState.getFluid() == Fluids.WATER || blockState.getMaterial() == Material.ICE;
 	}
 }
