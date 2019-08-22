@@ -8,8 +8,8 @@ import java.util.Random;
 import java.util.Set;
 import java.util.function.Function;
 import net.minecraft.block.BlockState;
-import net.minecraft.util.math.BlockBox;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.MutableIntBoundingBox;
 import net.minecraft.world.ModifiableTestableWorld;
 import net.minecraft.world.TestableWorld;
 import net.minecraft.world.gen.feature.AbstractTreeFeature;
@@ -76,7 +76,7 @@ extends AbstractTreeFeature<T> {
         return this.doesTreeFit(modifiableTestableWorld, blockPos, i) && this.replaceGround(modifiableTestableWorld, blockPos);
     }
 
-    protected void makeSquaredLeafLayer(ModifiableTestableWorld modifiableTestableWorld, BlockPos blockPos, int i, BlockBox blockBox, Set<BlockPos> set) {
+    protected void makeSquaredLeafLayer(ModifiableTestableWorld modifiableTestableWorld, BlockPos blockPos, int i, MutableIntBoundingBox mutableIntBoundingBox, Set<BlockPos> set) {
         int j = i * i;
         for (int k = -i; k <= i + 1; ++k) {
             for (int l = -i; l <= i + 1; ++l) {
@@ -84,18 +84,18 @@ extends AbstractTreeFeature<T> {
                 int n;
                 int m = Math.min(Math.abs(k), Math.abs(k - 1));
                 if (m + (n = Math.min(Math.abs(l), Math.abs(l - 1))) >= 7 || m * m + n * n > j || !MegaTreeFeature.isAirOrLeaves(modifiableTestableWorld, blockPos2 = blockPos.add(k, 0, l))) continue;
-                this.setBlockState(set, modifiableTestableWorld, blockPos2, this.leaves, blockBox);
+                this.setBlockState(set, modifiableTestableWorld, blockPos2, this.leaves, mutableIntBoundingBox);
             }
         }
     }
 
-    protected void makeRoundLeafLayer(ModifiableTestableWorld modifiableTestableWorld, BlockPos blockPos, int i, BlockBox blockBox, Set<BlockPos> set) {
+    protected void makeRoundLeafLayer(ModifiableTestableWorld modifiableTestableWorld, BlockPos blockPos, int i, MutableIntBoundingBox mutableIntBoundingBox, Set<BlockPos> set) {
         int j = i * i;
         for (int k = -i; k <= i; ++k) {
             for (int l = -i; l <= i; ++l) {
                 BlockPos blockPos2;
                 if (k * k + l * l > j || !MegaTreeFeature.isAirOrLeaves(modifiableTestableWorld, blockPos2 = blockPos.add(k, 0, l))) continue;
-                this.setBlockState(set, modifiableTestableWorld, blockPos2, this.leaves, blockBox);
+                this.setBlockState(set, modifiableTestableWorld, blockPos2, this.leaves, mutableIntBoundingBox);
             }
         }
     }

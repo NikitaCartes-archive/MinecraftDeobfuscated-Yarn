@@ -3,7 +3,7 @@
  */
 package net.minecraft.client.texture;
 
-import com.mojang.blaze3d.platform.GlStateManager;
+import com.mojang.blaze3d.systems.RenderSystem;
 import java.io.IOException;
 import java.util.concurrent.Executor;
 import net.fabricmc.api.EnvType;
@@ -23,7 +23,7 @@ public interface Texture {
     public int getGlId();
 
     default public void bindTexture() {
-        GlStateManager.bindTexture(this.getGlId());
+        RenderSystem.bindTexture(this.getGlId());
     }
 
     default public void registerTexture(TextureManager textureManager, ResourceManager resourceManager, Identifier identifier, Executor executor) {

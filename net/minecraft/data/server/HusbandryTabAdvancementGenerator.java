@@ -20,12 +20,12 @@ import net.minecraft.entity.EntityType;
 import net.minecraft.entity.passive.CatEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.Items;
-import net.minecraft.predicate.NumberRange;
 import net.minecraft.predicate.entity.EntityPredicate;
 import net.minecraft.predicate.item.ItemPredicate;
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.NumberRange;
 import net.minecraft.util.registry.Registry;
 
 public class HusbandryTabAdvancementGenerator
@@ -35,8 +35,7 @@ implements Consumer<Consumer<Advancement>> {
     private static final Item[] field_11297 = new Item[]{Items.COD_BUCKET, Items.TROPICAL_FISH_BUCKET, Items.PUFFERFISH_BUCKET, Items.SALMON_BUCKET};
     private static final Item[] field_11298 = new Item[]{Items.APPLE, Items.MUSHROOM_STEW, Items.BREAD, Items.PORKCHOP, Items.COOKED_PORKCHOP, Items.GOLDEN_APPLE, Items.ENCHANTED_GOLDEN_APPLE, Items.COD, Items.SALMON, Items.TROPICAL_FISH, Items.PUFFERFISH, Items.COOKED_COD, Items.COOKED_SALMON, Items.COOKIE, Items.MELON_SLICE, Items.BEEF, Items.COOKED_BEEF, Items.CHICKEN, Items.COOKED_CHICKEN, Items.ROTTEN_FLESH, Items.SPIDER_EYE, Items.CARROT, Items.POTATO, Items.BAKED_POTATO, Items.POISONOUS_POTATO, Items.GOLDEN_CARROT, Items.PUMPKIN_PIE, Items.RABBIT, Items.COOKED_RABBIT, Items.RABBIT_STEW, Items.MUTTON, Items.COOKED_MUTTON, Items.CHORUS_FRUIT, Items.BEETROOT, Items.BEETROOT_SOUP, Items.DRIED_KELP, Items.SUSPICIOUS_STEW, Items.SWEET_BERRIES};
 
-    @Override
-    public void accept(Consumer<Advancement> consumer) {
+    public void method_10338(Consumer<Advancement> consumer) {
         Advancement advancement = Advancement.Task.create().display(Blocks.HAY_BLOCK, (Text)new TranslatableText("advancements.husbandry.root.title", new Object[0]), (Text)new TranslatableText("advancements.husbandry.root.description", new Object[0]), new Identifier("textures/gui/advancements/backgrounds/husbandry.png"), AdvancementFrame.TASK, false, false, false).criterion("consumed_item", ConsumeItemCriterion.Conditions.any()).build(consumer, "husbandry/root");
         Advancement advancement2 = Advancement.Task.create().parent(advancement).display(Items.WHEAT, (Text)new TranslatableText("advancements.husbandry.plant_seed.title", new Object[0]), (Text)new TranslatableText("advancements.husbandry.plant_seed.description", new Object[0]), null, AdvancementFrame.TASK, true, true, false).criteriaMerger(CriteriaMerger.OR).criterion("wheat", PlacedBlockCriterion.Conditions.block(Blocks.WHEAT)).criterion("pumpkin_stem", PlacedBlockCriterion.Conditions.block(Blocks.PUMPKIN_STEM)).criterion("melon_stem", PlacedBlockCriterion.Conditions.block(Blocks.MELON_STEM)).criterion("beetroots", PlacedBlockCriterion.Conditions.block(Blocks.BEETROOTS)).criterion("nether_wart", PlacedBlockCriterion.Conditions.block(Blocks.NETHER_WART)).build(consumer, "husbandry/plant_seed");
         Advancement advancement3 = Advancement.Task.create().parent(advancement).display(Items.WHEAT, (Text)new TranslatableText("advancements.husbandry.breed_an_animal.title", new Object[0]), (Text)new TranslatableText("advancements.husbandry.breed_an_animal.description", new Object[0]), null, AdvancementFrame.TASK, true, true, false).criteriaMerger(CriteriaMerger.OR).criterion("bred", BredAnimalsCriterion.Conditions.any()).build(consumer, "husbandry/breed_an_animal");
@@ -84,7 +83,7 @@ implements Consumer<Consumer<Advancement>> {
 
     @Override
     public /* synthetic */ void accept(Object object) {
-        this.accept((Consumer)object);
+        this.method_10338((Consumer)object);
     }
 }
 

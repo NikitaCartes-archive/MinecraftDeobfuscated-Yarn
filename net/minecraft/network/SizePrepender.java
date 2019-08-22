@@ -12,8 +12,7 @@ import net.minecraft.util.PacketByteBuf;
 @ChannelHandler.Sharable
 public class SizePrepender
 extends MessageToByteEncoder<ByteBuf> {
-    @Override
-    protected void encode(ChannelHandlerContext channelHandlerContext, ByteBuf byteBuf, ByteBuf byteBuf2) throws Exception {
+    protected void method_10840(ChannelHandlerContext channelHandlerContext, ByteBuf byteBuf, ByteBuf byteBuf2) throws Exception {
         int i = byteBuf.readableBytes();
         int j = PacketByteBuf.getVarIntSizeBytes(i);
         if (j > 3) {
@@ -27,7 +26,7 @@ extends MessageToByteEncoder<ByteBuf> {
 
     @Override
     protected /* synthetic */ void encode(ChannelHandlerContext channelHandlerContext, Object object, ByteBuf byteBuf) throws Exception {
-        this.encode(channelHandlerContext, (ByteBuf)object, byteBuf);
+        this.method_10840(channelHandlerContext, (ByteBuf)object, byteBuf);
     }
 }
 

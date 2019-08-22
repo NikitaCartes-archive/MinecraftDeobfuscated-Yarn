@@ -35,19 +35,17 @@ extends EntityModel<T> {
         this.field_3428.addCuboid(-2.0f, 18.0f, -2.0f, 4, 4, 4);
     }
 
-    @Override
-    public void animateModel(T slimeEntity, float f, float g, float h) {
+    public void method_17098(T slimeEntity, float f, float g, float h) {
         float i = MathHelper.lerp(h, ((SlimeEntity)slimeEntity).lastStretch, ((SlimeEntity)slimeEntity).stretch);
         if (i < 0.0f) {
             i = 0.0f;
         }
         for (int j = 0; j < this.field_3427.length; ++j) {
-            this.field_3427[j].pivotY = (float)(-(4 - j)) * i * 1.7f;
+            this.field_3427[j].rotationPointY = (float)(-(4 - j)) * i * 1.7f;
         }
     }
 
-    @Override
-    public void render(T slimeEntity, float f, float g, float h, float i, float j, float k) {
+    public void method_17099(T slimeEntity, float f, float g, float h, float i, float j, float k) {
         this.setAngles(slimeEntity, f, g, h, i, j, k);
         this.field_3428.render(k);
         for (ModelPart modelPart : this.field_3427) {
@@ -57,7 +55,7 @@ extends EntityModel<T> {
 
     @Override
     public /* synthetic */ void render(Entity entity, float f, float g, float h, float i, float j, float k) {
-        this.render((T)((SlimeEntity)entity), f, g, h, i, j, k);
+        this.method_17099((SlimeEntity)entity, f, g, h, i, j, k);
     }
 }
 

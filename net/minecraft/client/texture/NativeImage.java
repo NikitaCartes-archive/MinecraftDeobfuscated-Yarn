@@ -3,8 +3,7 @@
  */
 package net.minecraft.client.texture;
 
-import com.mojang.blaze3d.platform.GlStateManager;
-import com.mojang.blaze3d.platform.TextureUtil;
+import com.mojang.blaze3d.systems.RenderSystem;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -12,7 +11,6 @@ import java.nio.ByteBuffer;
 import java.nio.IntBuffer;
 import java.nio.channels.SeekableByteChannel;
 import java.nio.channels.WritableByteChannel;
-import java.nio.file.FileSystems;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
@@ -22,6 +20,7 @@ import java.util.EnumSet;
 import java.util.Set;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.class_4536;
 import net.minecraft.client.util.Untracker;
 import org.apache.commons.io.IOUtils;
 import org.jetbrains.annotations.Nullable;
@@ -81,7 +80,7 @@ implements AutoCloseable {
     public static NativeImage read(@Nullable Format format, InputStream inputStream) throws IOException {
         ByteBuffer byteBuffer = null;
         try {
-            byteBuffer = TextureUtil.readResource(inputStream);
+            byteBuffer = class_4536.readResource(inputStream);
             byteBuffer.rewind();
             NativeImage nativeImage = NativeImage.read(format, byteBuffer);
             return nativeImage;
@@ -117,21 +116,21 @@ implements AutoCloseable {
 
     private static void setTextureClamp(boolean bl) {
         if (bl) {
-            GlStateManager.texParameter(3553, 10242, 10496);
-            GlStateManager.texParameter(3553, 10243, 10496);
+            RenderSystem.texParameter(3553, 10242, 10496);
+            RenderSystem.texParameter(3553, 10243, 10496);
         } else {
-            GlStateManager.texParameter(3553, 10242, 10497);
-            GlStateManager.texParameter(3553, 10243, 10497);
+            RenderSystem.texParameter(3553, 10242, 10497);
+            RenderSystem.texParameter(3553, 10243, 10497);
         }
     }
 
     private static void setTextureFilter(boolean bl, boolean bl2) {
         if (bl) {
-            GlStateManager.texParameter(3553, 10241, bl2 ? 9987 : 9729);
-            GlStateManager.texParameter(3553, 10240, 9729);
+            RenderSystem.texParameter(3553, 10241, bl2 ? 9987 : 9729);
+            RenderSystem.texParameter(3553, 10240, 9729);
         } else {
-            GlStateManager.texParameter(3553, 10241, bl2 ? 9986 : 9728);
-            GlStateManager.texParameter(3553, 10240, 9728);
+            RenderSystem.texParameter(3553, 10241, bl2 ? 9986 : 9728);
+            RenderSystem.texParameter(3553, 10240, 9728);
         }
     }
 
@@ -165,7 +164,7 @@ implements AutoCloseable {
         return this.format;
     }
 
-    public int getPixelRgba(int i, int j) {
+    public int getPixelRGBA(int i, int j) {
         if (this.format != Format.RGBA) {
             throw new IllegalArgumentException(String.format("getPixelRGBA only works on RGBA images; have %s", new Object[]{this.format}));
         }
@@ -176,7 +175,7 @@ implements AutoCloseable {
         return MemoryUtil.memIntBuffer(this.pointer, this.sizeBytes).get(i + j * this.width);
     }
 
-    public void setPixelRgba(int i, int j, int k) {
+    public void setPixelRGBA(int i, int j, int k) {
         if (this.format != Format.RGBA) {
             throw new IllegalArgumentException(String.format("getPixelRGBA only works on RGBA images; have %s", new Object[]{this.format}));
         }
@@ -201,7 +200,7 @@ implements AutoCloseable {
         if (this.format != Format.RGBA) {
             throw new UnsupportedOperationException("Can only call blendPixel with RGBA format");
         }
-        int l = this.getPixelRgba(i, j);
+        int l = this.getPixelRGBA(i, j);
         float f = (float)(k >> 24 & 0xFF) / 255.0f;
         float g = (float)(k >> 16 & 0xFF) / 255.0f;
         float h = (float)(k >> 8 & 0xFF) / 255.0f;
@@ -232,7 +231,7 @@ implements AutoCloseable {
         int y = (int)(u * 255.0f);
         int z = (int)(v * 255.0f);
         int aa = (int)(w * 255.0f);
-        this.setPixelRgba(i, j, x << 24 | y << 16 | z << 8 | aa << 0);
+        this.setPixelRGBA(i, j, x << 24 | y << 16 | z << 8 | aa << 0);
     }
 
     @Deprecated
@@ -245,7 +244,7 @@ implements AutoCloseable {
         for (int i = 0; i < this.getHeight(); ++i) {
             for (int j = 0; j < this.getWidth(); ++j) {
                 int p;
-                int k = this.getPixelRgba(j, i);
+                int k = this.getPixelRGBA(j, i);
                 int l = k >> 24 & 0xFF;
                 int m = k >> 16 & 0xFF;
                 int n = k >> 8 & 0xFF;
@@ -269,43 +268,27 @@ implements AutoCloseable {
         NativeImage.setTextureFilter(bl, bl3);
         NativeImage.setTextureClamp(bl2);
         if (n == this.getWidth()) {
-            GlStateManager.pixelStore(3314, 0);
+            RenderSystem.pixelStore(3314, 0);
         } else {
-            GlStateManager.pixelStore(3314, this.getWidth());
+            RenderSystem.pixelStore(3314, this.getWidth());
         }
-        GlStateManager.pixelStore(3316, l);
-        GlStateManager.pixelStore(3315, m);
+        RenderSystem.pixelStore(3316, l);
+        RenderSystem.pixelStore(3315, m);
         this.format.setUnpackAlignment();
-        GlStateManager.texSubImage2D(3553, i, j, k, n, o, this.format.getPixelDataFormat(), 5121, this.pointer);
+        RenderSystem.texSubImage2D(3553, i, j, k, n, o, this.format.getPixelDataFormat(), 5121, this.pointer);
     }
 
     public void loadFromTextureImage(int i, boolean bl) {
         this.checkAllocated();
         this.format.setPackAlignment();
-        GlStateManager.getTexImage(3553, i, this.format.getPixelDataFormat(), 5121, this.pointer);
+        RenderSystem.getTexImage(3553, i, this.format.getPixelDataFormat(), 5121, this.pointer);
         if (bl && this.format.hasAlphaChannel()) {
             for (int j = 0; j < this.getHeight(); ++j) {
                 for (int k = 0; k < this.getWidth(); ++k) {
-                    this.setPixelRgba(k, j, this.getPixelRgba(k, j) | 255 << this.format.getAlphaChannelOffset());
+                    this.setPixelRGBA(k, j, this.getPixelRGBA(k, j) | 255 << this.format.getAlphaChannelOffset());
                 }
             }
         }
-    }
-
-    public void loadFromMemory(boolean bl) {
-        this.checkAllocated();
-        this.format.setPackAlignment();
-        if (bl) {
-            GlStateManager.pixelTransfer(3357, Float.MAX_VALUE);
-        }
-        GlStateManager.readPixels(0, 0, this.width, this.height, this.format.getPixelDataFormat(), 5121, this.pointer);
-        if (bl) {
-            GlStateManager.pixelTransfer(3357, 0.0f);
-        }
-    }
-
-    public void writeFile(String string) throws IOException {
-        this.writeFile(FileSystems.getDefault().getPath(string, new String[0]));
     }
 
     public void writeFile(File file) throws IOException {
@@ -366,7 +349,7 @@ implements AutoCloseable {
     public void fillRect(int i, int j, int k, int l, int m) {
         for (int n = j; n < j + l; ++n) {
             for (int o = i; o < i + k; ++o) {
-                this.setPixelRgba(o, n, m);
+                this.setPixelRGBA(o, n, m);
             }
         }
     }
@@ -376,8 +359,8 @@ implements AutoCloseable {
             for (int p = 0; p < m; ++p) {
                 int q = bl ? m - 1 - p : p;
                 int r = bl2 ? n - 1 - o : o;
-                int s = this.getPixelRgba(i + p, j + o);
-                this.setPixelRgba(i + k + q, j + l + r, s);
+                int s = this.getPixelRGBA(i + p, j + o);
+                this.setPixelRGBA(i + k + q, j + l + r, s);
             }
         }
     }
@@ -465,11 +448,11 @@ implements AutoCloseable {
         }
 
         public void setPackAlignment() {
-            GlStateManager.pixelStore(3333, this.getChannelCount());
+            RenderSystem.pixelStore(3333, this.getChannelCount());
         }
 
         public void setUnpackAlignment() {
-            GlStateManager.pixelStore(3317, this.getChannelCount());
+            RenderSystem.pixelStore(3317, this.getChannelCount());
         }
 
         public int getPixelDataFormat() {
@@ -526,7 +509,7 @@ implements AutoCloseable {
             this.glConstant = j;
         }
 
-        public int getGlConstant() {
+        int getGlConstant() {
             return this.glConstant;
         }
     }

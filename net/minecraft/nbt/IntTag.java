@@ -44,8 +44,7 @@ extends AbstractNumberTag {
         return String.valueOf(this.value);
     }
 
-    @Override
-    public IntTag copy() {
+    public IntTag method_10592() {
         return new IntTag(this.value);
     }
 
@@ -102,7 +101,7 @@ extends AbstractNumberTag {
 
     @Override
     public /* synthetic */ Tag copy() {
-        return this.copy();
+        return this.method_10592();
     }
 }
 

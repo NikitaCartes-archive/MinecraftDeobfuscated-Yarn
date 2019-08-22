@@ -3,7 +3,7 @@
  */
 package net.minecraft.client.render.entity;
 
-import com.mojang.blaze3d.platform.GlStateManager;
+import com.mojang.blaze3d.systems.RenderSystem;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.render.entity.EntityRenderDispatcher;
@@ -23,21 +23,18 @@ extends MobEntityRenderer<WitchEntity, WitchEntityModel<WitchEntity>> {
         this.addFeature(new WitchHeldItemFeatureRenderer<WitchEntity>(this));
     }
 
-    @Override
-    public void render(WitchEntity witchEntity, double d, double e, double f, float g, float h) {
+    public void method_4155(WitchEntity witchEntity, double d, double e, double f, float g, float h) {
         ((WitchEntityModel)this.model).method_2840(!witchEntity.getMainHandStack().isEmpty());
-        super.render(witchEntity, d, e, f, g, h);
+        super.method_4072(witchEntity, d, e, f, g, h);
     }
 
-    @Override
-    protected Identifier getTexture(WitchEntity witchEntity) {
+    protected Identifier method_4154(WitchEntity witchEntity) {
         return SKIN;
     }
 
-    @Override
-    protected void scale(WitchEntity witchEntity, float f) {
+    protected void method_4157(WitchEntity witchEntity, float f) {
         float g = 0.9375f;
-        GlStateManager.scalef(0.9375f, 0.9375f, 0.9375f);
+        RenderSystem.scalef(0.9375f, 0.9375f, 0.9375f);
     }
 }
 

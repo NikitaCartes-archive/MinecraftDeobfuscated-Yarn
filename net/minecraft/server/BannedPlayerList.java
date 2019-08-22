@@ -36,14 +36,13 @@ extends ServerConfigList<GameProfile, BannedPlayerEntry> {
         return strings;
     }
 
-    @Override
-    protected String toString(GameProfile gameProfile) {
+    protected String method_14649(GameProfile gameProfile) {
         return gameProfile.getId().toString();
     }
 
     @Override
     protected /* synthetic */ String toString(Object object) {
-        return this.toString((GameProfile)object);
+        return this.method_14649((GameProfile)object);
     }
 }
 

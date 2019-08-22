@@ -105,7 +105,7 @@ implements RangedAttackMob {
         this.setStrength(compoundTag.getInt("Strength"));
         super.readCustomDataFromTag(compoundTag);
         this.setVariant(compoundTag.getInt("Variant"));
-        if (compoundTag.contains("DecorItem", 10)) {
+        if (compoundTag.containsKey("DecorItem", 10)) {
             this.items.setInvStack(1, ItemStack.fromTag(compoundTag.getCompound("DecorItem")));
         }
         this.updateSaddle();
@@ -162,10 +162,10 @@ implements RangedAttackMob {
         if (!this.hasPassenger(entity)) {
             return;
         }
-        float f = MathHelper.cos(this.field_6283 * ((float)Math.PI / 180));
-        float g = MathHelper.sin(this.field_6283 * ((float)Math.PI / 180));
+        float f = MathHelper.cos(this.bodyYaw * ((float)Math.PI / 180));
+        float g = MathHelper.sin(this.bodyYaw * ((float)Math.PI / 180));
         float h = 0.3f;
-        entity.updatePosition(this.x + (double)(0.3f * g), this.y + this.getMountedHeightOffset() + entity.getHeightOffset(), this.z - (double)(0.3f * f));
+        entity.setPosition(this.x + (double)(0.3f * g), this.y + this.getMountedHeightOffset() + entity.getHeightOffset(), this.z - (double)(0.3f * f));
     }
 
     @Override
@@ -349,8 +349,7 @@ implements RangedAttackMob {
         return animalEntity != this && animalEntity instanceof LlamaEntity && this.canBreed() && ((LlamaEntity)animalEntity).canBreed();
     }
 
-    @Override
-    public LlamaEntity createChild(PassiveEntity passiveEntity) {
+    public LlamaEntity method_6804(PassiveEntity passiveEntity) {
         LlamaEntity llamaEntity = this.createChild();
         this.setChildAttributes(passiveEntity, llamaEntity);
         LlamaEntity llamaEntity2 = (LlamaEntity)passiveEntity;
@@ -370,7 +369,7 @@ implements RangedAttackMob {
     private void spitAt(LivingEntity livingEntity) {
         LlamaSpitEntity llamaSpitEntity = new LlamaSpitEntity(this.world, this);
         double d = livingEntity.x - this.x;
-        double e = livingEntity.getBoundingBox().y1 + (double)(livingEntity.getHeight() / 3.0f) - llamaSpitEntity.y;
+        double e = livingEntity.getBoundingBox().minY + (double)(livingEntity.getHeight() / 3.0f) - llamaSpitEntity.y;
         double f = livingEntity.z - this.z;
         float g = MathHelper.sqrt(d * d + f * f) * 0.2f;
         llamaSpitEntity.setVelocity(d, e + (double)g, f, 1.5f, 10.0f);
@@ -453,7 +452,7 @@ implements RangedAttackMob {
 
     @Override
     public /* synthetic */ PassiveEntity createChild(PassiveEntity passiveEntity) {
-        return this.createChild(passiveEntity);
+        return this.method_6804(passiveEntity);
     }
 
     static class ChaseWolvesGoal

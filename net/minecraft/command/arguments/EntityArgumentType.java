@@ -91,8 +91,7 @@ implements ArgumentType<EntitySelector> {
         return list;
     }
 
-    @Override
-    public EntitySelector parse(StringReader stringReader) throws CommandSyntaxException {
+    public EntitySelector method_9318(StringReader stringReader) throws CommandSyntaxException {
         boolean i = false;
         EntitySelectorReader entitySelectorReader = new EntitySelectorReader(stringReader);
         EntitySelector entitySelector = entitySelectorReader.read();
@@ -139,13 +138,12 @@ implements ArgumentType<EntitySelector> {
 
     @Override
     public /* synthetic */ Object parse(StringReader stringReader) throws CommandSyntaxException {
-        return this.parse(stringReader);
+        return this.method_9318(stringReader);
     }
 
     public static class Serializer
     implements ArgumentSerializer<EntityArgumentType> {
-        @Override
-        public void toPacket(EntityArgumentType entityArgumentType, PacketByteBuf packetByteBuf) {
+        public void method_9320(EntityArgumentType entityArgumentType, PacketByteBuf packetByteBuf) {
             byte b = 0;
             if (entityArgumentType.singleTarget) {
                 b = (byte)(b | 1);
@@ -156,21 +154,19 @@ implements ArgumentType<EntitySelector> {
             packetByteBuf.writeByte(b);
         }
 
-        @Override
-        public EntityArgumentType fromPacket(PacketByteBuf packetByteBuf) {
+        public EntityArgumentType method_9321(PacketByteBuf packetByteBuf) {
             byte b = packetByteBuf.readByte();
             return new EntityArgumentType((b & 1) != 0, (b & 2) != 0);
         }
 
-        @Override
-        public void toJson(EntityArgumentType entityArgumentType, JsonObject jsonObject) {
+        public void method_9319(EntityArgumentType entityArgumentType, JsonObject jsonObject) {
             jsonObject.addProperty("amount", entityArgumentType.singleTarget ? "single" : "multiple");
             jsonObject.addProperty("type", entityArgumentType.playersOnly ? "players" : "entities");
         }
 
         @Override
         public /* synthetic */ ArgumentType fromPacket(PacketByteBuf packetByteBuf) {
-            return this.fromPacket(packetByteBuf);
+            return this.method_9321(packetByteBuf);
         }
     }
 }

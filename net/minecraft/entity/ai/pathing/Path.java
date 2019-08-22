@@ -11,9 +11,9 @@ import java.util.List;
 import java.util.Set;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.class_4459;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.ai.pathing.PathNode;
-import net.minecraft.entity.ai.pathing.TargetPathNode;
 import net.minecraft.util.PacketByteBuf;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
@@ -24,7 +24,7 @@ public class Path {
     private PathNode[] field_57 = new PathNode[0];
     private PathNode[] field_55 = new PathNode[0];
     @Environment(value=EnvType.CLIENT)
-    private Set<TargetPathNode> field_20300;
+    private Set<class_4459> field_20300;
     private int currentNodeIndex;
     private final BlockPos field_20301;
     private final float field_20302;
@@ -135,9 +135,9 @@ public class Path {
         boolean bl = packetByteBuf.readBoolean();
         int i = packetByteBuf.readInt();
         int j = packetByteBuf.readInt();
-        HashSet<TargetPathNode> set = Sets.newHashSet();
+        HashSet<class_4459> set = Sets.newHashSet();
         for (int k = 0; k < j; ++k) {
-            set.add(TargetPathNode.fromBuffer(packetByteBuf));
+            set.add(class_4459.method_21663(packetByteBuf));
         }
         BlockPos blockPos = new BlockPos(packetByteBuf.readInt(), packetByteBuf.readInt(), packetByteBuf.readInt());
         ArrayList<PathNode> list = Lists.newArrayList();

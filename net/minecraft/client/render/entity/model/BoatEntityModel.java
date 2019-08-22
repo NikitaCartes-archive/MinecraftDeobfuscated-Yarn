@@ -3,7 +3,7 @@
  */
 package net.minecraft.client.render.entity.model;
 
-import com.mojang.blaze3d.platform.GlStateManager;
+import com.mojang.blaze3d.systems.RenderSystem;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.model.ModelPart;
@@ -31,35 +31,34 @@ extends EntityModel<BoatEntity> {
         int l = 4;
         int m = 28;
         this.body[0].addCuboid(-14.0f, -9.0f, -3.0f, 28, 16, 3, 0.0f);
-        this.body[0].setPivot(0.0f, 3.0f, 1.0f);
+        this.body[0].setRotationPoint(0.0f, 3.0f, 1.0f);
         this.body[1].addCuboid(-13.0f, -7.0f, -1.0f, 18, 6, 2, 0.0f);
-        this.body[1].setPivot(-15.0f, 4.0f, 4.0f);
+        this.body[1].setRotationPoint(-15.0f, 4.0f, 4.0f);
         this.body[2].addCuboid(-8.0f, -7.0f, -1.0f, 16, 6, 2, 0.0f);
-        this.body[2].setPivot(15.0f, 4.0f, 0.0f);
+        this.body[2].setRotationPoint(15.0f, 4.0f, 0.0f);
         this.body[3].addCuboid(-14.0f, -7.0f, -1.0f, 28, 6, 2, 0.0f);
-        this.body[3].setPivot(0.0f, 4.0f, -9.0f);
+        this.body[3].setRotationPoint(0.0f, 4.0f, -9.0f);
         this.body[4].addCuboid(-14.0f, -7.0f, -1.0f, 28, 6, 2, 0.0f);
-        this.body[4].setPivot(0.0f, 4.0f, 9.0f);
+        this.body[4].setRotationPoint(0.0f, 4.0f, 9.0f);
         this.body[0].pitch = 1.5707964f;
         this.body[1].yaw = 4.712389f;
         this.body[2].yaw = 1.5707964f;
         this.body[3].yaw = (float)Math.PI;
         this.paddles[0] = this.makePaddle(true);
-        this.paddles[0].setPivot(3.0f, -5.0f, 9.0f);
+        this.paddles[0].setRotationPoint(3.0f, -5.0f, 9.0f);
         this.paddles[1] = this.makePaddle(false);
-        this.paddles[1].setPivot(3.0f, -5.0f, -9.0f);
+        this.paddles[1].setRotationPoint(3.0f, -5.0f, -9.0f);
         this.paddles[1].yaw = (float)Math.PI;
         this.paddles[0].roll = 0.19634955f;
         this.paddles[1].roll = 0.19634955f;
         this.field_3326 = new ModelPart(this, 0, 0).setTextureSize(128, 64);
         this.field_3326.addCuboid(-14.0f, -9.0f, -3.0f, 28, 16, 3, 0.0f);
-        this.field_3326.setPivot(0.0f, -3.0f, 1.0f);
+        this.field_3326.setRotationPoint(0.0f, -3.0f, 1.0f);
         this.field_3326.pitch = 1.5707964f;
     }
 
-    @Override
-    public void render(BoatEntity boatEntity, float f, float g, float h, float i, float j, float k) {
-        GlStateManager.rotatef(90.0f, 0.0f, 1.0f, 0.0f);
+    public void method_17071(BoatEntity boatEntity, float f, float g, float h, float i, float j, float k) {
+        RenderSystem.rotatef(90.0f, 0.0f, 1.0f, 0.0f);
         this.setAngles(boatEntity, f, g, h, i, j, k);
         for (int l = 0; l < 5; ++l) {
             this.body[l].render(k);
@@ -69,10 +68,10 @@ extends EntityModel<BoatEntity> {
     }
 
     public void renderPass(Entity entity, float f, float g, float h, float i, float j, float k) {
-        GlStateManager.rotatef(90.0f, 0.0f, 1.0f, 0.0f);
-        GlStateManager.colorMask(false, false, false, false);
+        RenderSystem.rotatef(90.0f, 0.0f, 1.0f, 0.0f);
+        RenderSystem.colorMask(false, false, false, false);
         this.field_3326.render(k);
-        GlStateManager.colorMask(true, true, true, true);
+        RenderSystem.colorMask(true, true, true, true);
     }
 
     protected ModelPart makePaddle(boolean bl) {
@@ -99,7 +98,7 @@ extends EntityModel<BoatEntity> {
 
     @Override
     public /* synthetic */ void render(Entity entity, float f, float g, float h, float i, float j, float k) {
-        this.render((BoatEntity)entity, f, g, h, i, j, k);
+        this.method_17071((BoatEntity)entity, f, g, h, i, j, k);
     }
 }
 

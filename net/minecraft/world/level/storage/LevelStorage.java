@@ -31,14 +31,14 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.datafixer.DataFixTypes;
+import net.minecraft.datafixers.DataFixTypes;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.NbtHelper;
 import net.minecraft.nbt.NbtIo;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.FileNameUtil;
 import net.minecraft.util.ProgressListener;
+import net.minecraft.util.TagHelper;
 import net.minecraft.world.WorldSaveHandler;
 import net.minecraft.world.level.LevelProperties;
 import net.minecraft.world.level.storage.AnvilLevelStorage;
@@ -143,10 +143,10 @@ public class LevelStorage {
         try {
             CompoundTag compoundTag = NbtIo.readCompressed(new FileInputStream(file));
             CompoundTag compoundTag2 = compoundTag.getCompound("Data");
-            CompoundTag compoundTag3 = compoundTag2.contains("Player", 10) ? compoundTag2.getCompound("Player") : null;
+            CompoundTag compoundTag3 = compoundTag2.containsKey("Player", 10) ? compoundTag2.getCompound("Player") : null;
             compoundTag2.remove("Player");
-            int i = compoundTag2.contains("DataVersion", 99) ? compoundTag2.getInt("DataVersion") : -1;
-            return new LevelProperties(NbtHelper.update(dataFixer, DataFixTypes.LEVEL, compoundTag2, i), dataFixer, i, compoundTag3);
+            int i = compoundTag2.containsKey("DataVersion", 99) ? compoundTag2.getInt("DataVersion") : -1;
+            return new LevelProperties(TagHelper.update(dataFixer, DataFixTypes.LEVEL, compoundTag2, i), dataFixer, i, compoundTag3);
         } catch (Exception exception) {
             LOGGER.error("Exception reading {}", (Object)file, (Object)exception);
             return null;
@@ -260,8 +260,7 @@ public class LevelStorage {
             final Path path4 = Paths.get(string, new String[0]);
             Files.walkFileTree(path, (FileVisitor<? super Path>)new SimpleFileVisitor<Path>(){
 
-                @Override
-                public FileVisitResult visitFile(Path path2, BasicFileAttributes basicFileAttributes) throws IOException {
+                public FileVisitResult method_246(Path path2, BasicFileAttributes basicFileAttributes) throws IOException {
                     String string = path4.resolve(path.relativize(path2)).toString().replace('\\', '/');
                     ZipEntry zipEntry = new ZipEntry(string);
                     zipOutputStream.putNextEntry(zipEntry);
@@ -272,7 +271,7 @@ public class LevelStorage {
 
                 @Override
                 public /* synthetic */ FileVisitResult visitFile(Object object, BasicFileAttributes basicFileAttributes) throws IOException {
-                    return this.visitFile((Path)object, basicFileAttributes);
+                    return this.method_246((Path)object, basicFileAttributes);
                 }
             });
         }

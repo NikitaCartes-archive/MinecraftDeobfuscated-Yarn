@@ -35,13 +35,13 @@ import net.minecraft.data.server.recipe.SingleItemRecipeJsonFactory;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemConvertible;
 import net.minecraft.item.Items;
-import net.minecraft.predicate.NumberRange;
 import net.minecraft.predicate.item.ItemPredicate;
 import net.minecraft.recipe.CookingRecipeSerializer;
 import net.minecraft.recipe.Ingredient;
 import net.minecraft.recipe.RecipeSerializer;
 import net.minecraft.tag.ItemTags;
 import net.minecraft.tag.Tag;
+import net.minecraft.util.NumberRange;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -105,7 +105,7 @@ implements DataProvider {
     }
 
     /*
-     * Opcode count of 15344 triggered aggressive code reduction.  Override with --aggressivesizethreshold.
+     * Opcode count of 15385 triggered aggressive code reduction.  Override with --aggressivesizethreshold.
      */
     private void generate(Consumer<RecipeJsonProvider> consumer) {
         ShapedRecipeJsonFactory.create(Blocks.ACACIA_WOOD, 3).input(Character.valueOf('#'), Blocks.ACACIA_LOG).pattern("##").pattern("##").group("bark").criterion("has_log", this.method_10426(Blocks.ACACIA_LOG)).offerTo(consumer);
@@ -126,6 +126,7 @@ implements DataProvider {
         ShapedRecipeJsonFactory.create(Items.ARROW, 4).input(Character.valueOf('#'), Items.STICK).input(Character.valueOf('X'), Items.FLINT).input(Character.valueOf('Y'), Items.FEATHER).pattern("X").pattern("#").pattern("Y").criterion("has_feather", this.method_10426(Items.FEATHER)).criterion("has_flint", this.method_10426(Items.FLINT)).offerTo(consumer);
         ShapedRecipeJsonFactory.create(Blocks.BARREL, 1).input(Character.valueOf('P'), ItemTags.PLANKS).input(Character.valueOf('S'), ItemTags.WOODEN_SLABS).pattern("PSP").pattern("P P").pattern("PSP").criterion("has_planks", this.method_10420(ItemTags.PLANKS)).criterion("has_wood_slab", this.method_10420(ItemTags.WOODEN_SLABS)).offerTo(consumer);
         ShapedRecipeJsonFactory.create(Blocks.BEACON).input(Character.valueOf('S'), Items.NETHER_STAR).input(Character.valueOf('G'), Blocks.GLASS).input(Character.valueOf('O'), Blocks.OBSIDIAN).pattern("GGG").pattern("GSG").pattern("OOO").criterion("has_nether_star", this.method_10426(Items.NETHER_STAR)).offerTo(consumer);
+        ShapedRecipeJsonFactory.create(Blocks.BEE_HIVE).input(Character.valueOf('P'), ItemTags.PLANKS).input(Character.valueOf('H'), Items.HONEYCOMB).pattern("PPP").pattern("HHH").pattern("PPP").criterion("has_honeycomb", this.method_10426(Items.HONEYCOMB)).offerTo(consumer);
         ShapelessRecipeJsonFactory.create(Items.BEETROOT_SOUP).input(Items.BOWL).input(Items.BEETROOT, 6).criterion("has_beetroot", this.method_10426(Items.BEETROOT)).offerTo(consumer);
         ShapedRecipeJsonFactory.create(Blocks.BIRCH_WOOD, 3).input(Character.valueOf('#'), Blocks.BIRCH_LOG).pattern("##").pattern("##").group("bark").criterion("has_log", this.method_10426(Blocks.BIRCH_LOG)).offerTo(consumer);
         ShapedRecipeJsonFactory.create(Items.BIRCH_BOAT).input(Character.valueOf('#'), Blocks.BIRCH_PLANKS).pattern("# #").pattern("###").group("boat").criterion("in_water", this.method_10422(Blocks.WATER)).offerTo(consumer);
@@ -587,7 +588,8 @@ implements DataProvider {
         ShapedRecipeJsonFactory.create(Blocks.COBBLESTONE_STAIRS, 4).input(Character.valueOf('#'), Blocks.COBBLESTONE).pattern("#  ").pattern("## ").pattern("###").criterion("has_cobblestone", this.method_10426(Blocks.COBBLESTONE)).offerTo(consumer);
         ShapedRecipeJsonFactory.create(Items.STONE_SWORD).input(Character.valueOf('#'), Items.STICK).input(Character.valueOf('X'), Blocks.COBBLESTONE).pattern("X").pattern("X").pattern("#").criterion("has_cobblestone", this.method_10426(Blocks.COBBLESTONE)).offerTo(consumer);
         ShapedRecipeJsonFactory.create(Blocks.WHITE_WOOL).input(Character.valueOf('#'), Items.STRING).pattern("##").pattern("##").criterion("has_string", this.method_10426(Items.STRING)).offerTo(consumer, "white_wool_from_string");
-        ShapelessRecipeJsonFactory.create(Items.SUGAR).input(Blocks.SUGAR_CANE).criterion("has_reeds", this.method_10426(Blocks.SUGAR_CANE)).offerTo(consumer);
+        ShapelessRecipeJsonFactory.create(Items.SUGAR).input(Blocks.SUGAR_CANE).group("sugar").criterion("has_reeds", this.method_10426(Blocks.SUGAR_CANE)).offerTo(consumer, "sugar_from_sugar_cane");
+        ShapelessRecipeJsonFactory.create(Items.SUGAR, 3).input(Items.HONEY_BOTTLE).group("sugar").criterion("has_honey_bottle", this.method_10426(Items.HONEY_BOTTLE)).offerTo(consumer, "sugar_from_honey_bottle");
         ShapedRecipeJsonFactory.create(Blocks.TNT).input(Character.valueOf('#'), Ingredient.ofItems(Blocks.SAND, Blocks.RED_SAND)).input(Character.valueOf('X'), Items.GUNPOWDER).pattern("X#X").pattern("#X#").pattern("X#X").criterion("has_gunpowder", this.method_10426(Items.GUNPOWDER)).offerTo(consumer);
         ShapedRecipeJsonFactory.create(Items.TNT_MINECART).input(Character.valueOf('A'), Blocks.TNT).input(Character.valueOf('B'), Items.MINECART).pattern("A").pattern("B").criterion("has_minecart", this.method_10426(Items.MINECART)).offerTo(consumer);
         ShapedRecipeJsonFactory.create(Blocks.TORCH, 4).input(Character.valueOf('#'), Items.STICK).input(Character.valueOf('X'), Ingredient.ofItems(Items.COAL, Items.CHARCOAL)).pattern("X").pattern("#").criterion("has_stone_pickaxe", this.method_10426(Items.STONE_PICKAXE)).offerTo(consumer);

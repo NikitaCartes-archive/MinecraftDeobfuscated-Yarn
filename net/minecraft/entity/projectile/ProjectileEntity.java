@@ -13,6 +13,8 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.advancement.criterion.Criterions;
 import net.minecraft.block.BlockState;
+import net.minecraft.client.network.packet.EntitySpawnS2CPacket;
+import net.minecraft.client.network.packet.GameStateChangeS2CPacket;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.enchantment.Enchantments;
 import net.minecraft.entity.Entity;
@@ -30,16 +32,14 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.projectile.Projectile;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.NbtHelper;
 import net.minecraft.network.Packet;
-import net.minecraft.network.packet.s2c.play.EntitySpawnS2CPacket;
-import net.minecraft.network.packet.s2c.play.GameStateChangeS2CPacket;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.TagHelper;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.hit.EntityHitResult;
 import net.minecraft.util.hit.HitResult;
@@ -70,7 +70,7 @@ implements Projectile {
     private int field_7577;
     private double damage = 2.0;
     private int field_7575;
-    private SoundEvent sound = this.getHitSound();
+    private SoundEvent sound = this.getSound();
     private IntOpenHashSet piercedEntities;
     private List<Entity> piercingKilledEntities;
 
@@ -80,7 +80,7 @@ implements Projectile {
 
     protected ProjectileEntity(EntityType<? extends ProjectileEntity> entityType, double d, double e, double f, World world) {
         this(entityType, world);
-        this.updatePosition(d, e, f);
+        this.setPosition(d, e, f);
     }
 
     protected ProjectileEntity(EntityType<? extends ProjectileEntity> entityType, LivingEntity livingEntity, World world) {
@@ -97,8 +97,8 @@ implements Projectile {
 
     @Override
     @Environment(value=EnvType.CLIENT)
-    public boolean shouldRender(double d) {
-        double e = this.getBoundingBox().getAverageSideLength() * 10.0;
+    public boolean shouldRenderAtDistance(double d) {
+        double e = this.getBoundingBox().averageDimension() * 10.0;
         if (Double.isNaN(e)) {
             e = 1.0;
         }
@@ -135,7 +135,7 @@ implements Projectile {
     @Override
     @Environment(value=EnvType.CLIENT)
     public void updateTrackedPositionAndAngles(double d, double e, double f, float g, float h, int i, boolean bl) {
-        this.updatePosition(d, e, f);
+        this.setPosition(d, e, f);
         this.setRotation(g, h);
     }
 
@@ -149,7 +149,7 @@ implements Projectile {
             this.yaw = (float)(MathHelper.atan2(d, f) * 57.2957763671875);
             this.prevPitch = this.pitch;
             this.prevYaw = this.yaw;
-            this.refreshPositionAndAngles(this.x, this.y, this.z, this.yaw, this.pitch);
+            this.setPositionAndAngles(this.x, this.y, this.z, this.yaw, this.pitch);
             this.life = 0;
         }
     }
@@ -179,7 +179,7 @@ implements Projectile {
         if (this.shake > 0) {
             --this.shake;
         }
-        if (this.isTouchingWaterOrRain()) {
+        if (this.isInsideWaterOrRain()) {
             this.extinguish();
         }
         if (this.inGround && !bl) {
@@ -253,7 +253,7 @@ implements Projectile {
         this.yaw = MathHelper.lerp(0.2f, this.prevYaw, this.yaw);
         float j = 0.99f;
         float k = 0.05f;
-        if (this.isTouchingWater()) {
+        if (this.isInsideWater()) {
             for (int l = 0; l < 4; ++l) {
                 float m = 0.25f;
                 this.world.addParticle(ParticleTypes.BUBBLE, this.x - d * 0.25, this.y - e * 0.25, this.z - g * 0.25, d, e, g);
@@ -265,7 +265,7 @@ implements Projectile {
             Vec3d vec3d4 = this.getVelocity();
             this.setVelocity(vec3d4.x, vec3d4.y - (double)0.05f, vec3d4.z);
         }
-        this.updatePosition(this.x, this.y, this.z);
+        this.setPosition(this.x, this.y, this.z);
         this.checkBlockCollision();
     }
 
@@ -351,7 +351,7 @@ implements Projectile {
                 Vec3d vec3d;
                 LivingEntity livingEntity = (LivingEntity)entity;
                 if (!this.world.isClient && this.getPierceLevel() <= 0) {
-                    livingEntity.setStuckArrowCount(livingEntity.getStuckArrowCount() + 1);
+                    livingEntity.setStuckArrows(livingEntity.getStuckArrows() + 1);
                 }
                 if (this.field_7575 > 0 && (vec3d = this.getVelocity().multiply(1.0, 0.0, 1.0).normalize().multiply((double)this.field_7575 * 0.6)).lengthSquared() > 0.0) {
                     livingEntity.addVelocity(vec3d.x, 0.1, vec3d.z);
@@ -395,7 +395,7 @@ implements Projectile {
         }
     }
 
-    protected SoundEvent getHitSound() {
+    protected SoundEvent getSound() {
         return SoundEvents.ENTITY_ARROW_HIT;
     }
 
@@ -415,7 +415,7 @@ implements Projectile {
     public void writeCustomDataToTag(CompoundTag compoundTag) {
         compoundTag.putShort("life", (short)this.life);
         if (this.inBlockState != null) {
-            compoundTag.put("inBlockState", NbtHelper.fromBlockState(this.inBlockState));
+            compoundTag.put("inBlockState", TagHelper.serializeBlockState(this.inBlockState));
         }
         compoundTag.putByte("shake", (byte)this.shake);
         compoundTag.putByte("inGround", (byte)(this.inGround ? 1 : 0));
@@ -433,26 +433,26 @@ implements Projectile {
     @Override
     public void readCustomDataFromTag(CompoundTag compoundTag) {
         this.life = compoundTag.getShort("life");
-        if (compoundTag.contains("inBlockState", 10)) {
-            this.inBlockState = NbtHelper.toBlockState(compoundTag.getCompound("inBlockState"));
+        if (compoundTag.containsKey("inBlockState", 10)) {
+            this.inBlockState = TagHelper.deserializeBlockState(compoundTag.getCompound("inBlockState"));
         }
         this.shake = compoundTag.getByte("shake") & 0xFF;
         boolean bl = this.inGround = compoundTag.getByte("inGround") == 1;
-        if (compoundTag.contains("damage", 99)) {
+        if (compoundTag.containsKey("damage", 99)) {
             this.damage = compoundTag.getDouble("damage");
         }
-        if (compoundTag.contains("pickup", 99)) {
+        if (compoundTag.containsKey("pickup", 99)) {
             this.pickupType = PickupPermission.fromOrdinal(compoundTag.getByte("pickup"));
-        } else if (compoundTag.contains("player", 99)) {
+        } else if (compoundTag.containsKey("player", 99)) {
             this.pickupType = compoundTag.getBoolean("player") ? PickupPermission.ALLOWED : PickupPermission.DISALLOWED;
         }
         this.setCritical(compoundTag.getBoolean("crit"));
         this.setPierceLevel(compoundTag.getByte("PierceLevel"));
-        if (compoundTag.containsUuid("OwnerUUID")) {
+        if (compoundTag.hasUuid("OwnerUUID")) {
             this.ownerUuid = compoundTag.getUuid("OwnerUUID");
         }
-        if (compoundTag.contains("SoundEvent", 8)) {
-            this.sound = Registry.SOUND_EVENT.getOrEmpty(new Identifier(compoundTag.getString("SoundEvent"))).orElse(this.getHitSound());
+        if (compoundTag.containsKey("SoundEvent", 8)) {
+            this.sound = Registry.SOUND_EVENT.getOrEmpty(new Identifier(compoundTag.getString("SoundEvent"))).orElse(this.getSound());
         }
         this.setShotFromCrossbow(compoundTag.getBoolean("ShotFromCrossbow"));
     }

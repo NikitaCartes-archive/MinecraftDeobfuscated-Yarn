@@ -41,7 +41,7 @@ implements ModelBakeSettings {
     }
 
     @Override
-    public boolean isShaded() {
+    public boolean isUvLocked() {
         return this.uvLock;
     }
 
@@ -75,8 +75,7 @@ implements ModelBakeSettings {
     @Environment(value=EnvType.CLIENT)
     public static class Deserializer
     implements JsonDeserializer<ModelVariant> {
-        @Override
-        public ModelVariant deserialize(JsonElement jsonElement, Type type, JsonDeserializationContext jsonDeserializationContext) throws JsonParseException {
+        public ModelVariant method_3513(JsonElement jsonElement, Type type, JsonDeserializationContext jsonDeserializationContext) throws JsonParseException {
             JsonObject jsonObject = jsonElement.getAsJsonObject();
             Identifier identifier = this.deserializeModel(jsonObject);
             ModelRotation modelRotation = this.deserializeRotation(jsonObject);
@@ -113,7 +112,7 @@ implements ModelBakeSettings {
 
         @Override
         public /* synthetic */ Object deserialize(JsonElement jsonElement, Type type, JsonDeserializationContext jsonDeserializationContext) throws JsonParseException {
-            return this.deserialize(jsonElement, type, jsonDeserializationContext);
+            return this.method_3513(jsonElement, type, jsonDeserializationContext);
         }
     }
 }

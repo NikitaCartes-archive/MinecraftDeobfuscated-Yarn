@@ -50,7 +50,7 @@ extends ArrowItem {
 
     @Override
     public String getTranslationKey(ItemStack itemStack) {
-        return PotionUtil.getPotion(itemStack).finishTranslationKey(this.getTranslationKey() + ".effect.");
+        return PotionUtil.getPotion(itemStack).getName(this.getTranslationKey() + ".effect.");
     }
 }
 

@@ -50,7 +50,7 @@ implements SoundInstance {
     @Override
     public WeightedSoundSet getSoundSet(SoundManager soundManager) {
         this.soundSet = soundManager.get(this.id);
-        this.sound = this.soundSet == null ? SoundManager.MISSING_SOUND : this.soundSet.getSound();
+        this.sound = this.soundSet == null ? SoundManager.MISSING_SOUND : this.soundSet.method_4887();
         return this.soundSet;
     }
 

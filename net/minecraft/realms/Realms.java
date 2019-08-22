@@ -28,7 +28,7 @@ import net.minecraft.realms.RealmsScreen;
 import net.minecraft.realms.RepeatedNarrator;
 import net.minecraft.text.LiteralText;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.Util;
+import net.minecraft.util.SystemUtil;
 import net.minecraft.world.GameMode;
 
 @Environment(value=EnvType.CLIENT)
@@ -60,7 +60,7 @@ public class Realms {
     }
 
     public static long currentTimeMillis() {
-        return Util.getMeasuringTimeMs();
+        return SystemUtil.getMeasuringTimeMs();
     }
 
     public static String getSessionId() {
@@ -80,7 +80,7 @@ public class Realms {
     }
 
     public static <V> CompletableFuture<V> execute(Supplier<V> supplier) {
-        return MinecraftClient.getInstance().submit(supplier);
+        return MinecraftClient.getInstance().executeFuture(supplier);
     }
 
     public static void execute(Runnable runnable) {
@@ -152,7 +152,7 @@ public class Realms {
     }
 
     public static void openUri(String string) {
-        Util.getOperatingSystem().open(string);
+        SystemUtil.getOperatingSystem().open(string);
     }
 
     public static void setClipboard(String string) {

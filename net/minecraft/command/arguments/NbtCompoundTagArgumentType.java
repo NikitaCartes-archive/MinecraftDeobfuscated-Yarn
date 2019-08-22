@@ -27,8 +27,7 @@ implements ArgumentType<CompoundTag> {
         return commandContext.getArgument(string, CompoundTag.class);
     }
 
-    @Override
-    public CompoundTag parse(StringReader stringReader) throws CommandSyntaxException {
+    public CompoundTag method_9286(StringReader stringReader) throws CommandSyntaxException {
         return new StringNbtReader(stringReader).parseCompoundTag();
     }
 
@@ -39,7 +38,7 @@ implements ArgumentType<CompoundTag> {
 
     @Override
     public /* synthetic */ Object parse(StringReader stringReader) throws CommandSyntaxException {
-        return this.parse(stringReader);
+        return this.method_9286(stringReader);
     }
 }
 

@@ -3,20 +3,21 @@
  */
 package net.minecraft.server.network;
 
+import java.util.Objects;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.CommandBlock;
 import net.minecraft.block.JigsawBlock;
 import net.minecraft.block.StructureBlock;
 import net.minecraft.block.entity.BlockEntity;
-import net.minecraft.container.NameableContainerFactory;
+import net.minecraft.client.network.packet.BlockPlayerActionS2CPacket;
+import net.minecraft.client.network.packet.PlayerListS2CPacket;
+import net.minecraft.container.NameableContainerProvider;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.ItemUsageContext;
-import net.minecraft.network.packet.c2s.play.PlayerActionC2SPacket;
-import net.minecraft.network.packet.s2c.play.PlayerActionResponseS2CPacket;
-import net.minecraft.network.packet.s2c.play.PlayerListS2CPacket;
 import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.server.network.packet.PlayerActionC2SPacket;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
@@ -90,7 +91,7 @@ public class ServerPlayerInteractionManager {
         } else if (this.field_14003) {
             BlockState blockState = this.world.getBlockState(this.field_20327);
             if (blockState.isAir()) {
-                this.world.setBlockBreakingInfo(this.player.getEntityId(), this.field_20327, -1);
+                this.world.setBlockBreakingProgress(this.player.getEntityId(), this.field_20327, -1);
                 this.field_20331 = -1;
                 this.field_14003 = false;
             } else {
@@ -104,7 +105,7 @@ public class ServerPlayerInteractionManager {
         float f = blockState.calcBlockBreakingDelta(this.player, this.player.world, blockPos) * (float)(i + 1);
         int j = (int)(f * 10.0f);
         if (j != this.field_20331) {
-            this.world.setBlockBreakingInfo(this.player.getEntityId(), blockPos, j);
+            this.world.setBlockBreakingProgress(this.player.getEntityId(), blockPos, j);
             this.field_20331 = j;
         }
         return f;
@@ -116,28 +117,28 @@ public class ServerPlayerInteractionManager {
         double d = this.player.x - ((double)blockPos.getX() + 0.5);
         double g = d * d + (e = this.player.y - ((double)blockPos.getY() + 0.5) + 1.5) * e + (f = this.player.z - ((double)blockPos.getZ() + 0.5)) * f;
         if (g > 36.0) {
-            this.player.networkHandler.sendPacket(new PlayerActionResponseS2CPacket(blockPos, this.world.getBlockState(blockPos), action, false));
+            this.player.networkHandler.sendPacket(new BlockPlayerActionS2CPacket(blockPos, this.world.getBlockState(blockPos), action, false, "too far"));
             return;
         }
         if (blockPos.getY() >= i) {
-            this.player.networkHandler.sendPacket(new PlayerActionResponseS2CPacket(blockPos, this.world.getBlockState(blockPos), action, false));
+            this.player.networkHandler.sendPacket(new BlockPlayerActionS2CPacket(blockPos, this.world.getBlockState(blockPos), action, false, "too high"));
             return;
         }
         if (action == PlayerActionC2SPacket.Action.START_DESTROY_BLOCK) {
             if (!this.world.canPlayerModifyAt(this.player, blockPos)) {
-                this.player.networkHandler.sendPacket(new PlayerActionResponseS2CPacket(blockPos, this.world.getBlockState(blockPos), action, false));
+                this.player.networkHandler.sendPacket(new BlockPlayerActionS2CPacket(blockPos, this.world.getBlockState(blockPos), action, false, "may not interact"));
                 return;
             }
             if (this.isCreative()) {
                 if (!this.world.method_8506(null, blockPos, direction)) {
-                    this.method_21717(blockPos, action);
+                    this.method_21717(blockPos, action, "creative destroy");
                 } else {
-                    this.player.networkHandler.sendPacket(new PlayerActionResponseS2CPacket(blockPos, this.world.getBlockState(blockPos), action, true));
+                    this.player.networkHandler.sendPacket(new BlockPlayerActionS2CPacket(blockPos, this.world.getBlockState(blockPos), action, true, "fire put out"));
                 }
                 return;
             }
             if (this.player.method_21701(this.world, blockPos, this.gameMode)) {
-                this.player.networkHandler.sendPacket(new PlayerActionResponseS2CPacket(blockPos, this.world.getBlockState(blockPos), action, false));
+                this.player.networkHandler.sendPacket(new BlockPlayerActionS2CPacket(blockPos, this.world.getBlockState(blockPos), action, false, "block action restricted"));
                 return;
             }
             this.world.method_8506(null, blockPos, direction);
@@ -149,13 +150,16 @@ public class ServerPlayerInteractionManager {
                 h = blockState.calcBlockBreakingDelta(this.player, this.player.world, blockPos);
             }
             if (!blockState.isAir() && h >= 1.0f) {
-                this.method_21717(blockPos, action);
+                this.method_21717(blockPos, action, "insta mine");
             } else {
+                if (this.field_14003) {
+                    this.player.networkHandler.sendPacket(new BlockPlayerActionS2CPacket(this.field_20327, this.world.getBlockState(this.field_20327), PlayerActionC2SPacket.Action.START_DESTROY_BLOCK, false, "abort destroying since another started (client insta mine, server disagreed)"));
+                }
                 this.field_14003 = true;
-                this.field_20327 = blockPos;
+                this.field_20327 = blockPos.toImmutable();
                 int j = (int)(h * 10.0f);
-                this.world.setBlockBreakingInfo(this.player.getEntityId(), blockPos, j);
-                this.player.networkHandler.sendPacket(new PlayerActionResponseS2CPacket(blockPos, this.world.getBlockState(blockPos), action, true));
+                this.world.setBlockBreakingProgress(this.player.getEntityId(), blockPos, j);
+                this.player.networkHandler.sendPacket(new BlockPlayerActionS2CPacket(blockPos, this.world.getBlockState(blockPos), action, true, "actual start of destroying"));
                 this.field_20331 = j;
             }
         } else if (action == PlayerActionC2SPacket.Action.STOP_DESTROY_BLOCK) {
@@ -166,8 +170,8 @@ public class ServerPlayerInteractionManager {
                     float l = blockState.calcBlockBreakingDelta(this.player, this.player.world, blockPos) * (float)(k + 1);
                     if (l >= 0.7f) {
                         this.field_14003 = false;
-                        this.world.setBlockBreakingInfo(this.player.getEntityId(), blockPos, -1);
-                        this.method_21717(blockPos, action);
+                        this.world.setBlockBreakingProgress(this.player.getEntityId(), blockPos, -1);
+                        this.method_21717(blockPos, action, "destroyed");
                         return;
                     }
                     if (!this.field_20328) {
@@ -178,19 +182,24 @@ public class ServerPlayerInteractionManager {
                     }
                 }
             }
-            this.player.networkHandler.sendPacket(new PlayerActionResponseS2CPacket(blockPos, this.world.getBlockState(blockPos), action, true));
+            this.player.networkHandler.sendPacket(new BlockPlayerActionS2CPacket(blockPos, this.world.getBlockState(blockPos), action, true, "stopped destroying"));
         } else if (action == PlayerActionC2SPacket.Action.ABORT_DESTROY_BLOCK) {
             this.field_14003 = false;
-            this.world.setBlockBreakingInfo(this.player.getEntityId(), this.field_20327, -1);
-            this.player.networkHandler.sendPacket(new PlayerActionResponseS2CPacket(blockPos, this.world.getBlockState(blockPos), action, true));
+            if (!Objects.equals(this.field_20327, blockPos)) {
+                field_20325.warn("Mismatch in destroy block pos: " + this.field_20327 + " " + blockPos);
+                this.world.setBlockBreakingProgress(this.player.getEntityId(), this.field_20327, -1);
+                this.player.networkHandler.sendPacket(new BlockPlayerActionS2CPacket(this.field_20327, this.world.getBlockState(this.field_20327), action, true, "aborted mismatched destroying"));
+            }
+            this.world.setBlockBreakingProgress(this.player.getEntityId(), blockPos, -1);
+            this.player.networkHandler.sendPacket(new BlockPlayerActionS2CPacket(blockPos, this.world.getBlockState(blockPos), action, true, "aborted destroying"));
         }
     }
 
-    public void method_21717(BlockPos blockPos, PlayerActionC2SPacket.Action action) {
+    public void method_21717(BlockPos blockPos, PlayerActionC2SPacket.Action action, String string) {
         if (this.tryBreakBlock(blockPos)) {
-            this.player.networkHandler.sendPacket(new PlayerActionResponseS2CPacket(blockPos, this.world.getBlockState(blockPos), action, true));
+            this.player.networkHandler.sendPacket(new BlockPlayerActionS2CPacket(blockPos, this.world.getBlockState(blockPos), action, true, string));
         } else {
-            this.player.networkHandler.sendPacket(new PlayerActionResponseS2CPacket(blockPos, this.world.getBlockState(blockPos), action, false));
+            this.player.networkHandler.sendPacket(new BlockPlayerActionS2CPacket(blockPos, this.world.getBlockState(blockPos), action, false, string));
         }
     }
 
@@ -209,7 +218,7 @@ public class ServerPlayerInteractionManager {
             return false;
         }
         block.onBreak(this.world, blockPos, blockState, this.player);
-        boolean bl = this.world.removeBlock(blockPos, false);
+        boolean bl = this.world.clearBlockState(blockPos, false);
         if (bl) {
             block.onBroken(this.world, blockPos, blockState);
         }
@@ -246,7 +255,7 @@ public class ServerPlayerInteractionManager {
         playerEntity.setStackInHand(hand, itemStack2);
         if (this.isCreative()) {
             itemStack2.setCount(i);
-            if (itemStack2.isDamageable()) {
+            if (itemStack2.isDamageable() && itemStack2.getDamage() != j) {
                 itemStack2.setDamage(j);
             }
         }
@@ -264,15 +273,15 @@ public class ServerPlayerInteractionManager {
         BlockPos blockPos = blockHitResult.getBlockPos();
         BlockState blockState = world.getBlockState(blockPos);
         if (this.gameMode == GameMode.SPECTATOR) {
-            NameableContainerFactory nameableContainerFactory = blockState.createContainerFactory(world, blockPos);
-            if (nameableContainerFactory != null) {
-                playerEntity.openContainer(nameableContainerFactory);
+            NameableContainerProvider nameableContainerProvider = blockState.createContainerProvider(world, blockPos);
+            if (nameableContainerProvider != null) {
+                playerEntity.openContainer(nameableContainerProvider);
                 return ActionResult.SUCCESS;
             }
             return ActionResult.PASS;
         }
         boolean bl = !playerEntity.getMainHandStack().isEmpty() || !playerEntity.getOffHandStack().isEmpty();
-        boolean bl3 = bl2 = playerEntity.isSneaking() && bl;
+        boolean bl3 = bl2 = playerEntity.method_21823() && bl;
         if (!bl2 && blockState.activate(world, playerEntity, hand, blockHitResult)) {
             return ActionResult.SUCCESS;
         }

@@ -23,7 +23,7 @@ import net.minecraft.client.toast.ToastManager;
 import net.minecraft.text.BaseText;
 import net.minecraft.text.LiteralText;
 import net.minecraft.text.TranslatableText;
-import net.minecraft.util.Util;
+import net.minecraft.util.SystemUtil;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.level.LevelProperties;
 import net.minecraft.world.level.storage.LevelStorage;
@@ -58,7 +58,7 @@ extends Screen {
         }));
         this.addButton(new ButtonWidget(this.width / 2 - 100, this.height / 4 + 48 + 5, 200, 20, I18n.translate("selectWorld.edit.openFolder", new Object[0]), buttonWidget -> {
             LevelStorage levelStorage = this.minecraft.getLevelStorage();
-            Util.getOperatingSystem().open(levelStorage.resolveFile(this.levelName, "icon.png").getParentFile());
+            SystemUtil.getOperatingSystem().open(levelStorage.resolveFile(this.levelName, "icon.png").getParentFile());
         }));
         this.addButton(new ButtonWidget(this.width / 2 - 100, this.height / 4 + 72 + 5, 200, 20, I18n.translate("selectWorld.edit.backup", new Object[0]), buttonWidget -> {
             LevelStorage levelStorage = this.minecraft.getLevelStorage();
@@ -73,7 +73,7 @@ extends Screen {
             } catch (IOException iOException) {
                 throw new RuntimeException(iOException);
             }
-            Util.getOperatingSystem().open(path.toFile());
+            SystemUtil.getOperatingSystem().open(path.toFile());
         }));
         this.addButton(new ButtonWidget(this.width / 2 - 100, this.height / 4 + 120 + 5, 200, 20, I18n.translate("selectWorld.edit.optimize", new Object[0]), buttonWidget -> this.minecraft.openScreen(new BackupPromptScreen(this, (bl, bl2) -> {
             if (bl) {

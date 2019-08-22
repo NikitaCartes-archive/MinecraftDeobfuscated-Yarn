@@ -104,7 +104,7 @@ implements RangedAttackMob {
     @Override
     public void writeCustomDataToTag(CompoundTag compoundTag) {
         super.writeCustomDataToTag(compoundTag);
-        compoundTag.putInt("Invul", this.getInvulnerableTimer());
+        compoundTag.putInt("Invul", this.getInvulTimer());
     }
 
     @Override
@@ -185,7 +185,7 @@ implements RangedAttackMob {
                 this.sideHeadYaws[i] = this.getNextAngle(this.sideHeadYaws[i], n, 10.0f);
                 continue;
             }
-            this.sideHeadYaws[i] = this.getNextAngle(this.sideHeadYaws[i], this.field_6283, 10.0f);
+            this.sideHeadYaws[i] = this.getNextAngle(this.sideHeadYaws[i], this.bodyYaw, 10.0f);
         }
         boolean bl = this.isAtHalfHealth();
         for (j = 0; j < 3; ++j) {
@@ -196,7 +196,7 @@ implements RangedAttackMob {
             if (!bl || this.world.random.nextInt(4) != 0) continue;
             this.world.addParticle(ParticleTypes.ENTITY_EFFECT, p + this.random.nextGaussian() * (double)0.3f, q + this.random.nextGaussian() * (double)0.3f, r + this.random.nextGaussian() * (double)0.3f, 0.7f, 0.7f, 0.5);
         }
-        if (this.getInvulnerableTimer() > 0) {
+        if (this.getInvulTimer() > 0) {
             for (j = 0; j < 3; ++j) {
                 this.world.addParticle(ParticleTypes.ENTITY_EFFECT, this.x + this.random.nextGaussian(), this.y + (double)(this.random.nextFloat() * 3.3f), this.z + this.random.nextGaussian(), 0.7f, 0.7f, 0.9f);
             }
@@ -207,8 +207,8 @@ implements RangedAttackMob {
     protected void mobTick() {
         int j;
         int i;
-        if (this.getInvulnerableTimer() > 0) {
-            int i2 = this.getInvulnerableTimer() - 1;
+        if (this.getInvulTimer() > 0) {
+            int i2 = this.getInvulTimer() - 1;
             if (i2 <= 0) {
                 Explosion.DestructionType destructionType = this.world.getGameRules().getBoolean(GameRules.MOB_GRIEFING) ? Explosion.DestructionType.DESTROY : Explosion.DestructionType.NONE;
                 this.world.createExplosion(this, this.x, this.y + (double)this.getStandingEyeHeight(), this.z, 7.0f, false, destructionType);
@@ -333,7 +333,7 @@ implements RangedAttackMob {
         if (i <= 0) {
             return this.x;
         }
-        float f = (this.field_6283 + (float)(180 * (i - 1))) * ((float)Math.PI / 180);
+        float f = (this.bodyYaw + (float)(180 * (i - 1))) * ((float)Math.PI / 180);
         float g = MathHelper.cos(f);
         return this.x + (double)g * 1.3;
     }
@@ -349,7 +349,7 @@ implements RangedAttackMob {
         if (i <= 0) {
             return this.z;
         }
-        float f = (this.field_6283 + (float)(180 * (i - 1))) * ((float)Math.PI / 180);
+        float f = (this.bodyYaw + (float)(180 * (i - 1))) * ((float)Math.PI / 180);
         float g = MathHelper.sin(f);
         return this.z + (double)g * 1.3;
     }
@@ -401,7 +401,7 @@ implements RangedAttackMob {
         if (damageSource == DamageSource.DROWN || damageSource.getAttacker() instanceof WitherEntity) {
             return false;
         }
-        if (this.getInvulnerableTimer() > 0 && damageSource != DamageSource.OUT_OF_WORLD) {
+        if (this.getInvulTimer() > 0 && damageSource != DamageSource.OUT_OF_WORLD) {
             return false;
         }
         if (this.isAtHalfHealth() && (entity = damageSource.getSource()) instanceof ProjectileEntity) {
@@ -470,7 +470,7 @@ implements RangedAttackMob {
         return this.sideHeadPitches[i];
     }
 
-    public int getInvulnerableTimer() {
+    public int getInvulTimer() {
         return this.dataTracker.get(INVUL_TIMER);
     }
 
@@ -521,7 +521,7 @@ implements RangedAttackMob {
 
         @Override
         public boolean canStart() {
-            return WitherEntity.this.getInvulnerableTimer() > 0;
+            return WitherEntity.this.getInvulTimer() > 0;
         }
     }
 }

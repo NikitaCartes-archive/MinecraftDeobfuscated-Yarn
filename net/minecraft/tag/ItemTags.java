@@ -46,6 +46,8 @@ public class ItemTags {
     public static final Tag<Item> SMALL_FLOWERS;
     public static final Tag<Item> BEDS;
     public static final Tag<Item> FENCES;
+    public static final Tag<Item> TALL_FLOWERS;
+    public static final Tag<Item> FLOWERS;
     public static final Tag<Item> BOATS;
     public static final Tag<Item> FISHES;
     public static final Tag<Item> SIGNS;
@@ -100,6 +102,8 @@ public class ItemTags {
         SMALL_FLOWERS = ItemTags.register("small_flowers");
         BEDS = ItemTags.register("beds");
         FENCES = ItemTags.register("fences");
+        TALL_FLOWERS = ItemTags.register("tall_flowers");
+        FLOWERS = ItemTags.register("flowers");
         BOATS = ItemTags.register("boats");
         FISHES = ItemTags.register("fishes");
         SIGNS = ItemTags.register("signs");
@@ -117,8 +121,7 @@ public class ItemTags {
             super(identifier);
         }
 
-        @Override
-        public boolean contains(Item item) {
+        public boolean method_15109(Item item) {
             if (this.version != latestVersion) {
                 this.delegate = container.getOrCreate(this.getId());
                 this.version = latestVersion;

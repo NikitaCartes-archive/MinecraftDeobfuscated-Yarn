@@ -39,8 +39,7 @@ public class FluidTags {
             super(identifier);
         }
 
-        @Override
-        public boolean contains(Fluid fluid) {
+        public boolean method_15101(Fluid fluid) {
             if (this.version != latestVersion) {
                 this.delegate = container.getOrCreate(this.getId());
                 this.version = latestVersion;

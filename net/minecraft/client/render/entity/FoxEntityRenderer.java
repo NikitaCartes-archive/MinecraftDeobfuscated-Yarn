@@ -3,7 +3,7 @@
  */
 package net.minecraft.client.render.entity;
 
-import com.mojang.blaze3d.platform.GlStateManager;
+import com.mojang.blaze3d.systems.RenderSystem;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.render.entity.EntityRenderDispatcher;
@@ -28,17 +28,15 @@ extends MobEntityRenderer<FoxEntity, FoxEntityModel<FoxEntity>> {
         this.addFeature(new FoxHeldItemFeatureRenderer(this));
     }
 
-    @Override
-    protected void setupTransforms(FoxEntity foxEntity, float f, float g, float h) {
+    protected void method_18334(FoxEntity foxEntity, float f, float g, float h) {
         super.setupTransforms(foxEntity, f, g, h);
         if (foxEntity.isChasing() || foxEntity.isWalking()) {
-            GlStateManager.rotatef(-MathHelper.lerp(h, foxEntity.prevPitch, foxEntity.pitch), 1.0f, 0.0f, 0.0f);
+            RenderSystem.rotatef(-MathHelper.lerp(h, foxEntity.prevPitch, foxEntity.pitch), 1.0f, 0.0f, 0.0f);
         }
     }
 
-    @Override
     @Nullable
-    protected Identifier getTexture(FoxEntity foxEntity) {
+    protected Identifier method_18333(FoxEntity foxEntity) {
         if (foxEntity.getFoxType() == FoxEntity.Type.RED) {
             return foxEntity.isSleeping() ? SLEEPING_SKIN : SKIN;
         }

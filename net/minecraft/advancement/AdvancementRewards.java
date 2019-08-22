@@ -16,9 +16,6 @@ import java.util.Arrays;
 import java.util.List;
 import net.minecraft.entity.ItemEntity;
 import net.minecraft.item.ItemStack;
-import net.minecraft.loot.context.LootContext;
-import net.minecraft.loot.context.LootContextParameters;
-import net.minecraft.loot.context.LootContextTypes;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.function.CommandFunction;
 import net.minecraft.server.network.ServerPlayerEntity;
@@ -27,6 +24,9 @@ import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.JsonHelper;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.loot.context.LootContext;
+import net.minecraft.world.loot.context.LootContextParameters;
+import net.minecraft.world.loot.context.LootContextTypes;
 import org.jetbrains.annotations.Nullable;
 
 public class AdvancementRewards {
@@ -45,12 +45,12 @@ public class AdvancementRewards {
 
     public void apply(ServerPlayerEntity serverPlayerEntity) {
         serverPlayerEntity.addExperience(this.experience);
-        LootContext lootContext = new LootContext.Builder(serverPlayerEntity.getServerWorld()).put(LootContextParameters.THIS_ENTITY, serverPlayerEntity).put(LootContextParameters.POSITION, new BlockPos(serverPlayerEntity)).setRandom(serverPlayerEntity.getRandom()).build(LootContextTypes.ADVANCEMENT_REWARD);
+        LootContext lootContext = new LootContext.Builder(serverPlayerEntity.getServerWorld()).put(LootContextParameters.THIS_ENTITY, serverPlayerEntity).put(LootContextParameters.POSITION, new BlockPos(serverPlayerEntity)).setRandom(serverPlayerEntity.getRand()).build(LootContextTypes.ADVANCEMENT_REWARD);
         boolean bl = false;
         for (Identifier identifier : this.loot) {
             for (ItemStack itemStack : serverPlayerEntity.server.getLootManager().getSupplier(identifier).getDrops(lootContext)) {
                 if (serverPlayerEntity.giveItemStack(itemStack)) {
-                    serverPlayerEntity.world.playSound(null, serverPlayerEntity.x, serverPlayerEntity.y, serverPlayerEntity.z, SoundEvents.ENTITY_ITEM_PICKUP, SoundCategory.PLAYERS, 0.2f, ((serverPlayerEntity.getRandom().nextFloat() - serverPlayerEntity.getRandom().nextFloat()) * 0.7f + 1.0f) * 2.0f);
+                    serverPlayerEntity.world.playSound(null, serverPlayerEntity.x, serverPlayerEntity.y, serverPlayerEntity.z, SoundEvents.ENTITY_ITEM_PICKUP, SoundCategory.PLAYERS, 0.2f, ((serverPlayerEntity.getRand().nextFloat() - serverPlayerEntity.getRand().nextFloat()) * 0.7f + 1.0f) * 2.0f);
                     bl = true;
                     continue;
                 }
@@ -135,8 +135,7 @@ public class AdvancementRewards {
 
     public static class Deserializer
     implements JsonDeserializer<AdvancementRewards> {
-        @Override
-        public AdvancementRewards deserialize(JsonElement jsonElement, Type type, JsonDeserializationContext jsonDeserializationContext) throws JsonParseException {
+        public AdvancementRewards method_754(JsonElement jsonElement, Type type, JsonDeserializationContext jsonDeserializationContext) throws JsonParseException {
             JsonObject jsonObject = JsonHelper.asObject(jsonElement, "rewards");
             int i = JsonHelper.getInt(jsonObject, "experience", 0);
             JsonArray jsonArray = JsonHelper.getArray(jsonObject, "loot", new JsonArray());
@@ -155,7 +154,7 @@ public class AdvancementRewards {
 
         @Override
         public /* synthetic */ Object deserialize(JsonElement jsonElement, Type type, JsonDeserializationContext jsonDeserializationContext) throws JsonParseException {
-            return this.deserialize(jsonElement, type, jsonDeserializationContext);
+            return this.method_754(jsonElement, type, jsonDeserializationContext);
         }
     }
 }

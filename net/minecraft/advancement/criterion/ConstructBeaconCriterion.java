@@ -17,9 +17,9 @@ import net.minecraft.advancement.criterion.AbstractCriterionConditions;
 import net.minecraft.advancement.criterion.Criterion;
 import net.minecraft.advancement.criterion.CriterionConditions;
 import net.minecraft.block.entity.BeaconBlockEntity;
-import net.minecraft.predicate.NumberRange;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.NumberRange;
 
 public class ConstructBeaconCriterion
 implements Criterion<Conditions> {
@@ -57,14 +57,13 @@ implements Criterion<Conditions> {
         this.handlers.remove(playerAdvancementTracker);
     }
 
-    @Override
-    public Conditions conditionsFromJson(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext) {
+    public Conditions method_8811(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext) {
         NumberRange.IntRange intRange = NumberRange.IntRange.fromJson(jsonObject.get("level"));
         return new Conditions(intRange);
     }
 
-    public void trigger(ServerPlayerEntity serverPlayerEntity, BeaconBlockEntity beaconBlockEntity) {
-        Handler handler = this.handlers.get(serverPlayerEntity.getAdvancementTracker());
+    public void handle(ServerPlayerEntity serverPlayerEntity, BeaconBlockEntity beaconBlockEntity) {
+        Handler handler = this.handlers.get(serverPlayerEntity.getAdvancementManager());
         if (handler != null) {
             handler.handle(beaconBlockEntity);
         }
@@ -72,7 +71,7 @@ implements Criterion<Conditions> {
 
     @Override
     public /* synthetic */ CriterionConditions conditionsFromJson(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext) {
-        return this.conditionsFromJson(jsonObject, jsonDeserializationContext);
+        return this.method_8811(jsonObject, jsonDeserializationContext);
     }
 
     static class Handler {
@@ -132,7 +131,7 @@ implements Criterion<Conditions> {
         @Override
         public JsonElement toJson() {
             JsonObject jsonObject = new JsonObject();
-            jsonObject.add("level", this.level.toJson());
+            jsonObject.add("level", this.level.serialize());
             return jsonObject;
         }
     }

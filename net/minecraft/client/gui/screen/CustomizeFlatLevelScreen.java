@@ -3,7 +3,7 @@
  */
 package net.minecraft.client.gui.screen;
 
-import com.mojang.blaze3d.platform.GlStateManager;
+import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.datafixers.Dynamic;
 import java.util.List;
 import net.fabricmc.api.EnvType;
@@ -18,10 +18,10 @@ import net.minecraft.client.gui.screen.world.CreateWorldScreen;
 import net.minecraft.client.gui.widget.AlwaysSelectedEntryListWidget;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.gui.widget.EntryListWidget;
-import net.minecraft.client.render.DiffuseLighting;
+import net.minecraft.client.render.GuiLighting;
 import net.minecraft.client.resource.language.I18n;
 import net.minecraft.client.util.NarratorManager;
-import net.minecraft.datafixer.NbtOps;
+import net.minecraft.datafixers.NbtOps;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
@@ -77,7 +77,7 @@ extends Screen {
             int i = this.layers.children().indexOf(this.layers.getSelected());
             int j = list.size() - i - 1;
             list.remove(j);
-            this.layers.setSelected(list.isEmpty() ? null : (SuperflatLayersListWidget.SuperflatLayerItem)this.layers.children().get(Math.min(i, list.size() - 1)));
+            this.layers.method_20094(list.isEmpty() ? null : (SuperflatLayersListWidget.SuperflatLayerItem)this.layers.children().get(Math.min(i, list.size() - 1)));
             this.config.updateLayerBlocks();
             this.method_2145();
         }));
@@ -131,8 +131,7 @@ extends Screen {
             }
         }
 
-        @Override
-        public void setSelected(@Nullable SuperflatLayerItem superflatLayerItem) {
+        public void method_20094(@Nullable SuperflatLayerItem superflatLayerItem) {
             FlatChunkGeneratorLayer flatChunkGeneratorLayer;
             Item item;
             super.setSelected(superflatLayerItem);
@@ -165,13 +164,13 @@ extends Screen {
             }
             List list = this.children();
             if (i >= 0 && i < list.size()) {
-                this.setSelected((SuperflatLayerItem)list.get(i));
+                this.method_20094((SuperflatLayerItem)list.get(i));
             }
         }
 
         @Override
         public /* synthetic */ void setSelected(@Nullable EntryListWidget.Entry entry) {
-            this.setSelected((SuperflatLayerItem)entry);
+            this.method_20094((SuperflatLayerItem)entry);
         }
 
         @Environment(value=EnvType.CLIENT)
@@ -204,7 +203,7 @@ extends Screen {
             @Override
             public boolean mouseClicked(double d, double e, int i) {
                 if (i == 0) {
-                    SuperflatLayersListWidget.this.setSelected(this);
+                    SuperflatLayersListWidget.this.method_20094(this);
                     CustomizeFlatLevelScreen.this.method_2145();
                     return true;
                 }
@@ -213,17 +212,17 @@ extends Screen {
 
             private void method_19375(int i, int j, ItemStack itemStack) {
                 this.method_19373(i + 1, j + 1);
-                GlStateManager.enableRescaleNormal();
+                RenderSystem.enableRescaleNormal();
                 if (!itemStack.isEmpty()) {
-                    DiffuseLighting.enableForItems();
+                    GuiLighting.enableForItems();
                     CustomizeFlatLevelScreen.this.itemRenderer.renderGuiItemIcon(itemStack, i + 2, j + 2);
-                    DiffuseLighting.disable();
+                    GuiLighting.disable();
                 }
-                GlStateManager.disableRescaleNormal();
+                RenderSystem.disableRescaleNormal();
             }
 
             private void method_19373(int i, int j) {
-                GlStateManager.color4f(1.0f, 1.0f, 1.0f, 1.0f);
+                RenderSystem.color4f(1.0f, 1.0f, 1.0f, 1.0f);
                 SuperflatLayersListWidget.this.minecraft.getTextureManager().bindTexture(DrawableHelper.STATS_ICON_LOCATION);
                 DrawableHelper.blit(i, j, CustomizeFlatLevelScreen.this.blitOffset, 0.0f, 0.0f, 18, 18, 128, 128);
             }

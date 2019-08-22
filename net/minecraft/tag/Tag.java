@@ -18,6 +18,7 @@ import java.util.Set;
 import java.util.function.Function;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.JsonHelper;
+import net.minecraft.util.SystemUtil;
 import org.jetbrains.annotations.Nullable;
 
 public class Tag<T> {
@@ -99,7 +100,7 @@ public class Tag<T> {
         @Override
         public void build(Collection<T> collection) {
             if (this.tag == null) {
-                throw new IllegalStateException("Cannot build unresolved tag entry");
+                throw SystemUtil.method_22320(new IllegalStateException("Cannot build unresolved tag entry"));
             }
             collection.addAll(this.tag.values());
         }

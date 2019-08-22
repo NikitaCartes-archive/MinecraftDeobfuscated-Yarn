@@ -9,7 +9,7 @@ public enum EntityPose {
     SLEEPING,
     SWIMMING,
     SPIN_ATTACK,
-    SNEAKING,
+    CROUCHING,
     DYING;
 
 }

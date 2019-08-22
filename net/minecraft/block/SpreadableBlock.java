@@ -12,7 +12,7 @@ import net.minecraft.block.SnowyBlock;
 import net.minecraft.tag.FluidTags;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
-import net.minecraft.world.CollisionView;
+import net.minecraft.world.ViewableWorld;
 import net.minecraft.world.World;
 import net.minecraft.world.chunk.light.ChunkLightProvider;
 
@@ -22,19 +22,19 @@ extends SnowyBlock {
         super(settings);
     }
 
-    private static boolean canSurvive(BlockState blockState, CollisionView collisionView, BlockPos blockPos) {
+    private static boolean canSurvive(BlockState blockState, ViewableWorld viewableWorld, BlockPos blockPos) {
         BlockPos blockPos2 = blockPos.up();
-        BlockState blockState2 = collisionView.getBlockState(blockPos2);
+        BlockState blockState2 = viewableWorld.getBlockState(blockPos2);
         if (blockState2.getBlock() == Blocks.SNOW && blockState2.get(SnowBlock.LAYERS) == 1) {
             return true;
         }
-        int i = ChunkLightProvider.method_20049(collisionView, blockState, blockPos, blockState2, blockPos2, Direction.UP, blockState2.getOpacity(collisionView, blockPos2));
-        return i < collisionView.getMaxLightLevel();
+        int i = ChunkLightProvider.method_20049(viewableWorld, blockState, blockPos, blockState2, blockPos2, Direction.UP, blockState2.getLightSubtracted(viewableWorld, blockPos2));
+        return i < viewableWorld.getMaxLightLevel();
     }
 
-    private static boolean canSpread(BlockState blockState, CollisionView collisionView, BlockPos blockPos) {
+    private static boolean canSpread(BlockState blockState, ViewableWorld viewableWorld, BlockPos blockPos) {
         BlockPos blockPos2 = blockPos.up();
-        return SpreadableBlock.canSurvive(blockState, collisionView, blockPos) && !collisionView.getFluidState(blockPos2).matches(FluidTags.WATER);
+        return SpreadableBlock.canSurvive(blockState, viewableWorld, blockPos) && !viewableWorld.getFluidState(blockPos2).matches(FluidTags.WATER);
     }
 
     @Override

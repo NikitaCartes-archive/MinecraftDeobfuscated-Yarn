@@ -312,7 +312,7 @@ extends Screen {
         if (bl) {
             this.chatField.setText(string);
         } else {
-            this.chatField.write(string);
+            this.chatField.addText(string);
         }
     }
 
@@ -532,7 +532,7 @@ extends Screen {
             ChatScreen.this.completingSuggestion = true;
             ChatScreen.this.setText(suggestion.apply(this.input));
             int i = suggestion.getRange().getStart() + suggestion.getText().length();
-            ChatScreen.this.chatField.setSelectionStart(i);
+            ChatScreen.this.chatField.setCursor(i);
             ChatScreen.this.chatField.method_1884(i);
             this.select(this.selection);
             ChatScreen.this.completingSuggestion = false;

@@ -3,7 +3,7 @@
  */
 package net.minecraft.client.render.entity.feature;
 
-import com.mojang.blaze3d.platform.GlStateManager;
+import com.mojang.blaze3d.systems.RenderSystem;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.render.entity.feature.FeatureRenderer;
@@ -23,16 +23,15 @@ extends FeatureRenderer<T, DrownedEntityModel<T>> {
         super(featureRendererContext);
     }
 
-    @Override
-    public void render(T zombieEntity, float f, float g, float h, float i, float j, float k, float l) {
+    public void method_4182(T zombieEntity, float f, float g, float h, float i, float j, float k, float l) {
         if (((Entity)zombieEntity).isInvisible()) {
             return;
         }
-        ((DrownedEntityModel)this.getContextModel()).setAttributes(this.model);
-        this.model.animateModel(zombieEntity, f, g, h);
-        GlStateManager.color4f(1.0f, 1.0f, 1.0f, 1.0f);
+        ((DrownedEntityModel)this.getModel()).setAttributes(this.model);
+        this.model.method_17077(zombieEntity, f, g, h);
+        RenderSystem.color4f(1.0f, 1.0f, 1.0f, 1.0f);
         this.bindTexture(SKIN);
-        this.model.render(zombieEntity, f, g, i, j, k, l);
+        this.model.method_17088(zombieEntity, f, g, i, j, k, l);
     }
 
     @Override

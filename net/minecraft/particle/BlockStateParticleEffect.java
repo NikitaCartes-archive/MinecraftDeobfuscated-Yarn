@@ -19,25 +19,23 @@ public class BlockStateParticleEffect
 implements ParticleEffect {
     public static final ParticleEffect.Factory<BlockStateParticleEffect> PARAMETERS_FACTORY = new ParticleEffect.Factory<BlockStateParticleEffect>(){
 
-        @Override
-        public BlockStateParticleEffect read(ParticleType<BlockStateParticleEffect> particleType, StringReader stringReader) throws CommandSyntaxException {
+        public BlockStateParticleEffect method_10279(ParticleType<BlockStateParticleEffect> particleType, StringReader stringReader) throws CommandSyntaxException {
             stringReader.expect(' ');
             return new BlockStateParticleEffect(particleType, new BlockArgumentParser(stringReader, false).parse(false).getBlockState());
         }
 
-        @Override
-        public BlockStateParticleEffect read(ParticleType<BlockStateParticleEffect> particleType, PacketByteBuf packetByteBuf) {
+        public BlockStateParticleEffect method_10280(ParticleType<BlockStateParticleEffect> particleType, PacketByteBuf packetByteBuf) {
             return new BlockStateParticleEffect(particleType, Block.STATE_IDS.get(packetByteBuf.readVarInt()));
         }
 
         @Override
         public /* synthetic */ ParticleEffect read(ParticleType particleType, PacketByteBuf packetByteBuf) {
-            return this.read(particleType, packetByteBuf);
+            return this.method_10280(particleType, packetByteBuf);
         }
 
         @Override
         public /* synthetic */ ParticleEffect read(ParticleType particleType, StringReader stringReader) throws CommandSyntaxException {
-            return this.read(particleType, stringReader);
+            return this.method_10279(particleType, stringReader);
         }
     };
     private final ParticleType<BlockStateParticleEffect> type;

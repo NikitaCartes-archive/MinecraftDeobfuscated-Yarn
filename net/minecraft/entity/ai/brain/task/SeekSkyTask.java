@@ -36,13 +36,13 @@ extends Task<LivingEntity> {
 
     @Override
     protected boolean shouldRun(ServerWorld serverWorld, LivingEntity livingEntity) {
-        return !serverWorld.isSkyVisible(new BlockPos(livingEntity.x, livingEntity.getBoundingBox().y1, livingEntity.z));
+        return !serverWorld.isSkyVisible(new BlockPos(livingEntity.x, livingEntity.getBoundingBox().minY, livingEntity.z));
     }
 
     @Nullable
     private Vec3d findNearbySky(ServerWorld serverWorld, LivingEntity livingEntity) {
-        Random random = livingEntity.getRandom();
-        BlockPos blockPos = new BlockPos(livingEntity.x, livingEntity.getBoundingBox().y1, livingEntity.z);
+        Random random = livingEntity.getRand();
+        BlockPos blockPos = new BlockPos(livingEntity.x, livingEntity.getBoundingBox().minY, livingEntity.z);
         for (int i = 0; i < 10; ++i) {
             BlockPos blockPos2 = blockPos.add(random.nextInt(20) - 10, random.nextInt(6) - 3, random.nextInt(20) - 10);
             if (!SeekSkyTask.isSkyVisible(serverWorld, livingEntity)) continue;

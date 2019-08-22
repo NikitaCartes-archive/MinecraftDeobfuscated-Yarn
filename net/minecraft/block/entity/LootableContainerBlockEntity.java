@@ -12,16 +12,16 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.inventory.Inventories;
 import net.minecraft.item.ItemStack;
-import net.minecraft.loot.LootTable;
-import net.minecraft.loot.context.LootContext;
-import net.minecraft.loot.context.LootContextParameters;
-import net.minecraft.loot.context.LootContextTypes;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.DefaultedList;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.BlockView;
+import net.minecraft.world.loot.LootSupplier;
+import net.minecraft.world.loot.context.LootContext;
+import net.minecraft.world.loot.context.LootContextParameters;
+import net.minecraft.world.loot.context.LootContextTypes;
 import org.jetbrains.annotations.Nullable;
 
 public abstract class LootableContainerBlockEntity
@@ -42,7 +42,7 @@ extends LockableContainerBlockEntity {
     }
 
     protected boolean deserializeLootTable(CompoundTag compoundTag) {
-        if (compoundTag.contains("LootTable", 8)) {
+        if (compoundTag.containsKey("LootTable", 8)) {
             this.lootTableId = new Identifier(compoundTag.getString("LootTable"));
             this.lootTableSeed = compoundTag.getLong("LootTableSeed");
             return true;
@@ -63,13 +63,13 @@ extends LockableContainerBlockEntity {
 
     public void checkLootInteraction(@Nullable PlayerEntity playerEntity) {
         if (this.lootTableId != null && this.world.getServer() != null) {
-            LootTable lootTable = this.world.getServer().getLootManager().getSupplier(this.lootTableId);
+            LootSupplier lootSupplier = this.world.getServer().getLootManager().getSupplier(this.lootTableId);
             this.lootTableId = null;
             LootContext.Builder builder = new LootContext.Builder((ServerWorld)this.world).put(LootContextParameters.POSITION, new BlockPos(this.pos)).setRandom(this.lootTableSeed);
             if (playerEntity != null) {
                 builder.setLuck(playerEntity.getLuck()).put(LootContextParameters.THIS_ENTITY, playerEntity);
             }
-            lootTable.supplyInventory(this, builder.build(LootContextTypes.CHEST));
+            lootSupplier.supplyInventory(this, builder.build(LootContextTypes.CHEST));
         }
     }
 

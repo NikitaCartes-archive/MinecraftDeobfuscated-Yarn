@@ -15,9 +15,9 @@ import net.minecraft.structure.processor.BlockRotStructureProcessor;
 import net.minecraft.util.BlockMirror;
 import net.minecraft.util.BlockRotation;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.math.BlockBox;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
+import net.minecraft.util.math.MutableIntBoundingBox;
 import net.minecraft.world.Heightmap;
 import net.minecraft.world.IWorld;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
@@ -50,8 +50,7 @@ extends Feature<DefaultFeatureConfig> {
         super(function);
     }
 
-    @Override
-    public boolean generate(IWorld iWorld, ChunkGenerator<? extends ChunkGeneratorConfig> chunkGenerator, Random random, BlockPos blockPos, DefaultFeatureConfig defaultFeatureConfig) {
+    public boolean method_13236(IWorld iWorld, ChunkGenerator<? extends ChunkGeneratorConfig> chunkGenerator, Random random, BlockPos blockPos, DefaultFeatureConfig defaultFeatureConfig) {
         int m;
         Random random2 = iWorld.getRandom();
         BlockRotation[] blockRotations = BlockRotation.values();
@@ -61,8 +60,8 @@ extends Feature<DefaultFeatureConfig> {
         Structure structure = structureManager.getStructureOrBlank(FOSSILS[i]);
         Structure structure2 = structureManager.getStructureOrBlank(COAL_FOSSILS[i]);
         ChunkPos chunkPos = new ChunkPos(blockPos);
-        BlockBox blockBox = new BlockBox(chunkPos.getStartX(), 0, chunkPos.getStartZ(), chunkPos.getEndX(), 256, chunkPos.getEndZ());
-        StructurePlacementData structurePlacementData = new StructurePlacementData().setRotation(blockRotation).setBoundingBox(blockBox).setRandom(random2).addProcessor(BlockIgnoreStructureProcessor.IGNORE_AIR_AND_STRUCTURE_BLOCKS);
+        MutableIntBoundingBox mutableIntBoundingBox = new MutableIntBoundingBox(chunkPos.getStartX(), 0, chunkPos.getStartZ(), chunkPos.getEndX(), 256, chunkPos.getEndZ());
+        StructurePlacementData structurePlacementData = new StructurePlacementData().setRotation(blockRotation).setBoundingBox(mutableIntBoundingBox).setRandom(random2).addProcessor(BlockIgnoreStructureProcessor.IGNORE_AIR_AND_STRUCTURE_BLOCKS);
         BlockPos blockPos2 = structure.method_15166(blockRotation);
         int j = random2.nextInt(16 - blockPos2.getX());
         int k = random2.nextInt(16 - blockPos2.getZ());

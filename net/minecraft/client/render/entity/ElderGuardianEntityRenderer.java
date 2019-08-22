@@ -3,7 +3,7 @@
  */
 package net.minecraft.client.render.entity;
 
-import com.mojang.blaze3d.platform.GlStateManager;
+import com.mojang.blaze3d.systems.RenderSystem;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.render.entity.EntityRenderDispatcher;
@@ -21,13 +21,12 @@ extends GuardianEntityRenderer {
         super(entityRenderDispatcher, 1.2f);
     }
 
-    @Override
-    protected void scale(GuardianEntity guardianEntity, float f) {
-        GlStateManager.scalef(ElderGuardianEntity.field_17492, ElderGuardianEntity.field_17492, ElderGuardianEntity.field_17492);
+    protected void method_3910(GuardianEntity guardianEntity, float f) {
+        RenderSystem.scalef(ElderGuardianEntity.field_17492, ElderGuardianEntity.field_17492, ElderGuardianEntity.field_17492);
     }
 
     @Override
-    protected Identifier getTexture(GuardianEntity guardianEntity) {
+    protected Identifier method_3976(GuardianEntity guardianEntity) {
         return SKIN;
     }
 }

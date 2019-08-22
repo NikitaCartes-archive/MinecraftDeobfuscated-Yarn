@@ -3,10 +3,10 @@
  */
 package net.minecraft.client.gui.screen.ingame;
 
-import com.mojang.blaze3d.platform.GlStateManager;
+import com.mojang.blaze3d.systems.RenderSystem;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.client.gui.screen.ingame.ContainerScreen;
+import net.minecraft.client.gui.screen.ingame.AbstractContainerScreen;
 import net.minecraft.client.gui.screen.ingame.InventoryScreen;
 import net.minecraft.container.HorseContainer;
 import net.minecraft.entity.passive.AbstractDonkeyEntity;
@@ -17,7 +17,7 @@ import net.minecraft.util.Identifier;
 
 @Environment(value=EnvType.CLIENT)
 public class HorseScreen
-extends ContainerScreen<HorseContainer> {
+extends AbstractContainerScreen<HorseContainer> {
     private static final Identifier TEXTURE = new Identifier("textures/gui/container/horse.png");
     private final HorseBaseEntity entity;
     private float mouseX;
@@ -38,7 +38,7 @@ extends ContainerScreen<HorseContainer> {
     @Override
     protected void drawBackground(float f, int i, int j) {
         AbstractDonkeyEntity abstractDonkeyEntity;
-        GlStateManager.color4f(1.0f, 1.0f, 1.0f, 1.0f);
+        RenderSystem.color4f(1.0f, 1.0f, 1.0f, 1.0f);
         this.minecraft.getTextureManager().bindTexture(TEXTURE);
         int k = (this.width - this.containerWidth) / 2;
         int l = (this.height - this.containerHeight) / 2;

@@ -74,7 +74,7 @@ implements TutorialStepHandler {
 
     public static boolean hasCrafted(ClientPlayerEntity clientPlayerEntity, Tag<Item> tag) {
         for (Item item : tag.values()) {
-            if (clientPlayerEntity.getStatHandler().getStat(Stats.CRAFTED.getOrCreateStat(item)) <= 0) continue;
+            if (clientPlayerEntity.getStats().getStat(Stats.CRAFTED.getOrCreateStat(item)) <= 0) continue;
             return true;
         }
         return false;

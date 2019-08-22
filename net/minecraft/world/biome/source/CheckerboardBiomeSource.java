@@ -17,17 +17,17 @@ import org.jetbrains.annotations.Nullable;
 
 public class CheckerboardBiomeSource
 extends BiomeSource {
-    private final Biome[] biomeArray;
+    private final Biome[] biomes;
     private final int gridSize;
 
     public CheckerboardBiomeSource(CheckerboardBiomeSourceConfig checkerboardBiomeSourceConfig) {
-        this.biomeArray = checkerboardBiomeSourceConfig.getBiomes();
+        this.biomes = checkerboardBiomeSourceConfig.getBiomes();
         this.gridSize = checkerboardBiomeSourceConfig.getSize() + 4;
     }
 
     @Override
     public Biome getBiome(int i, int j) {
-        return this.biomeArray[Math.abs(((i >> this.gridSize) + (j >> this.gridSize)) % this.biomeArray.length)];
+        return this.biomes[Math.abs(((i >> this.gridSize) + (j >> this.gridSize)) % this.biomes.length)];
     }
 
     @Override
@@ -36,8 +36,8 @@ extends BiomeSource {
         for (int m = 0; m < l; ++m) {
             for (int n = 0; n < k; ++n) {
                 Biome biome;
-                int o = Math.abs(((i + m >> this.gridSize) + (j + n >> this.gridSize)) % this.biomeArray.length);
-                biomes[m * k + n] = biome = this.biomeArray[o];
+                int o = Math.abs(((i + m >> this.gridSize) + (j + n >> this.gridSize)) % this.biomes.length);
+                biomes[m * k + n] = biome = this.biomes[o];
             }
         }
         return biomes;
@@ -52,7 +52,7 @@ extends BiomeSource {
     @Override
     public boolean hasStructureFeature(StructureFeature<?> structureFeature2) {
         return this.structureFeatures.computeIfAbsent(structureFeature2, structureFeature -> {
-            for (Biome biome : this.biomeArray) {
+            for (Biome biome : this.biomes) {
                 if (!biome.hasStructureFeature(structureFeature)) continue;
                 return true;
             }
@@ -63,7 +63,7 @@ extends BiomeSource {
     @Override
     public Set<BlockState> getTopMaterials() {
         if (this.topMaterials.isEmpty()) {
-            for (Biome biome : this.biomeArray) {
+            for (Biome biome : this.biomes) {
                 this.topMaterials.add(biome.getSurfaceConfig().getTopMaterial());
             }
         }
@@ -72,7 +72,7 @@ extends BiomeSource {
 
     @Override
     public Set<Biome> getBiomesInArea(int i, int j, int k) {
-        return Sets.newHashSet(this.biomeArray);
+        return Sets.newHashSet(this.biomes);
     }
 }
 

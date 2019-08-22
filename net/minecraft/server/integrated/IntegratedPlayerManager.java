@@ -27,7 +27,7 @@ extends PlayerManager {
 
     @Override
     protected void savePlayerData(ServerPlayerEntity serverPlayerEntity) {
-        if (serverPlayerEntity.getName().getString().equals(this.getServer().getUserName())) {
+        if (serverPlayerEntity.getName().getString().equals(this.method_4811().getUserName())) {
             this.userData = serverPlayerEntity.toTag(new CompoundTag());
         }
         super.savePlayerData(serverPlayerEntity);
@@ -35,14 +35,13 @@ extends PlayerManager {
 
     @Override
     public Text checkCanJoin(SocketAddress socketAddress, GameProfile gameProfile) {
-        if (gameProfile.getName().equalsIgnoreCase(this.getServer().getUserName()) && this.getPlayer(gameProfile.getName()) != null) {
+        if (gameProfile.getName().equalsIgnoreCase(this.method_4811().getUserName()) && this.getPlayer(gameProfile.getName()) != null) {
             return new TranslatableText("multiplayer.disconnect.name_taken", new Object[0]);
         }
         return super.checkCanJoin(socketAddress, gameProfile);
     }
 
-    @Override
-    public IntegratedServer getServer() {
+    public IntegratedServer method_4811() {
         return (IntegratedServer)super.getServer();
     }
 
@@ -53,7 +52,7 @@ extends PlayerManager {
 
     @Override
     public /* synthetic */ MinecraftServer getServer() {
-        return this.getServer();
+        return this.method_4811();
     }
 }
 

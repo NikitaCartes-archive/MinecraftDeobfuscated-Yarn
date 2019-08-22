@@ -44,8 +44,8 @@ import net.minecraft.util.math.Box;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.BlockView;
-import net.minecraft.world.CollisionView;
 import net.minecraft.world.GameRules;
+import net.minecraft.world.ViewableWorld;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
 
@@ -163,7 +163,7 @@ extends RaiderEntity {
         if (this.horizontalCollision && this.world.getGameRules().getBoolean(GameRules.MOB_GRIEFING)) {
             boolean bl = false;
             Box box = this.getBoundingBox().expand(0.2);
-            for (BlockPos blockPos : BlockPos.iterate(MathHelper.floor(box.x1), MathHelper.floor(box.y1), MathHelper.floor(box.z1), MathHelper.floor(box.x2), MathHelper.floor(box.y2), MathHelper.floor(box.z2))) {
+            for (BlockPos blockPos : BlockPos.iterate(MathHelper.floor(box.minX), MathHelper.floor(box.minY), MathHelper.floor(box.minZ), MathHelper.floor(box.maxX), MathHelper.floor(box.maxY), MathHelper.floor(box.maxZ))) {
                 BlockState blockState = this.world.getBlockState(blockPos);
                 Block block = blockState.getBlock();
                 if (!(block instanceof LeavesBlock)) continue;
@@ -194,9 +194,9 @@ extends RaiderEntity {
 
     private void spawnStunnedParticles() {
         if (this.random.nextInt(6) == 0) {
-            double d = this.x - (double)this.getWidth() * Math.sin(this.field_6283 * ((float)Math.PI / 180)) + (this.random.nextDouble() * 0.6 - 0.3);
+            double d = this.x - (double)this.getWidth() * Math.sin(this.bodyYaw * ((float)Math.PI / 180)) + (this.random.nextDouble() * 0.6 - 0.3);
             double e = this.y + (double)this.getHeight() - 0.3;
-            double f = this.z + (double)this.getWidth() * Math.cos(this.field_6283 * ((float)Math.PI / 180)) + (this.random.nextDouble() * 0.6 - 0.3);
+            double f = this.z + (double)this.getWidth() * Math.cos(this.bodyYaw * ((float)Math.PI / 180)) + (this.random.nextDouble() * 0.6 - 0.3);
             this.world.addParticle(ParticleTypes.ENTITY_EFFECT, d, e, f, 0.4980392156862745, 0.5137254901960784, 0.5725490196078431);
         }
     }
@@ -312,8 +312,8 @@ extends RaiderEntity {
     }
 
     @Override
-    public boolean canSpawn(CollisionView collisionView) {
-        return !collisionView.intersectsFluid(this.getBoundingBox());
+    public boolean canSpawn(ViewableWorld viewableWorld) {
+        return !viewableWorld.intersectsFluid(this.getBoundingBox());
     }
 
     @Override

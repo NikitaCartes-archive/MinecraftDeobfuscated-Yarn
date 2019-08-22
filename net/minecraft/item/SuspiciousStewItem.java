@@ -33,13 +33,13 @@ extends Item {
     public ItemStack finishUsing(ItemStack itemStack, World world, LivingEntity livingEntity) {
         super.finishUsing(itemStack, world, livingEntity);
         CompoundTag compoundTag = itemStack.getTag();
-        if (compoundTag != null && compoundTag.contains("Effects", 9)) {
+        if (compoundTag != null && compoundTag.containsKey("Effects", 9)) {
             ListTag listTag = compoundTag.getList("Effects", 10);
             for (int i = 0; i < listTag.size(); ++i) {
                 StatusEffect statusEffect;
                 int j = 160;
-                CompoundTag compoundTag2 = listTag.getCompound(i);
-                if (compoundTag2.contains("EffectDuration", 3)) {
+                CompoundTag compoundTag2 = listTag.getCompoundTag(i);
+                if (compoundTag2.containsKey("EffectDuration", 3)) {
                     j = compoundTag2.getInt("EffectDuration");
                 }
                 if ((statusEffect = StatusEffect.byRawId(compoundTag2.getByte("EffectId"))) == null) continue;

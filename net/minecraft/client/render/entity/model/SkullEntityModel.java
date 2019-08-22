@@ -22,7 +22,7 @@ extends Model {
         this.textureHeight = l;
         this.skull = new ModelPart(this, i, j);
         this.skull.addCuboid(-4.0f, -8.0f, -4.0f, 8, 8, 8, 0.0f);
-        this.skull.setPivot(0.0f, 0.0f, 0.0f);
+        this.skull.setRotationPoint(0.0f, 0.0f, 0.0f);
     }
 
     public void render(float f, float g, float h, float i, float j, float k) {

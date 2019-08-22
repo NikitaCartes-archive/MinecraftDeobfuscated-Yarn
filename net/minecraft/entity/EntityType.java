@@ -12,8 +12,8 @@ import java.util.stream.Stream;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.SharedConstants;
-import net.minecraft.datafixer.Schemas;
-import net.minecraft.datafixer.TypeReferences;
+import net.minecraft.datafixers.Schemas;
+import net.minecraft.datafixers.TypeReferences;
 import net.minecraft.entity.AreaEffectCloudEntity;
 import net.minecraft.entity.EnderEyeEntity;
 import net.minecraft.entity.Entity;
@@ -69,6 +69,7 @@ import net.minecraft.entity.mob.ZombieHorseEntity;
 import net.minecraft.entity.mob.ZombiePigmanEntity;
 import net.minecraft.entity.mob.ZombieVillagerEntity;
 import net.minecraft.entity.passive.BatEntity;
+import net.minecraft.entity.passive.BeeEntity;
 import net.minecraft.entity.passive.CatEntity;
 import net.minecraft.entity.passive.ChickenEntity;
 import net.minecraft.entity.passive.CodEntity;
@@ -130,7 +131,7 @@ import net.minecraft.tag.Tag;
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.Util;
+import net.minecraft.util.SystemUtil;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Direction;
@@ -138,7 +139,7 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.util.shape.VoxelShapes;
-import net.minecraft.world.CollisionView;
+import net.minecraft.world.ViewableWorld;
 import net.minecraft.world.World;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -150,6 +151,7 @@ public class EntityType<T extends Entity> {
     public static final EntityType<ArmorStandEntity> ARMOR_STAND = EntityType.register("armor_stand", Builder.create(ArmorStandEntity::new, EntityCategory.MISC).setDimensions(0.5f, 1.975f));
     public static final EntityType<ArrowEntity> ARROW = EntityType.register("arrow", Builder.create(ArrowEntity::new, EntityCategory.MISC).setDimensions(0.5f, 0.5f));
     public static final EntityType<BatEntity> BAT = EntityType.register("bat", Builder.create(BatEntity::new, EntityCategory.AMBIENT).setDimensions(0.5f, 0.9f));
+    public static final EntityType<BeeEntity> BEE = EntityType.register("bee", Builder.create(BeeEntity::new, EntityCategory.CREATURE).setDimensions(0.7f, 0.7f));
     public static final EntityType<BlazeEntity> BLAZE = EntityType.register("blaze", Builder.create(BlazeEntity::new, EntityCategory.MONSTER).makeFireImmune().setDimensions(0.6f, 1.8f));
     public static final EntityType<BoatEntity> BOAT = EntityType.register("boat", Builder.create(BoatEntity::new, EntityCategory.MISC).setDimensions(1.375f, 0.5625f));
     public static final EntityType<CatEntity> CAT = EntityType.register("cat", Builder.create(CatEntity::new, EntityCategory.CREATURE).setDimensions(0.6f, 0.7f));
@@ -304,16 +306,16 @@ public class EntityType<T extends Entity> {
             return null;
         }
         if (bl) {
-            ((Entity)entity).updatePosition((double)blockPos.getX() + 0.5, blockPos.getY() + 1, (double)blockPos.getZ() + 0.5);
+            ((Entity)entity).setPosition((double)blockPos.getX() + 0.5, blockPos.getY() + 1, (double)blockPos.getZ() + 0.5);
             d = EntityType.getOriginY(world, blockPos, bl2, ((Entity)entity).getBoundingBox());
         } else {
             d = 0.0;
         }
-        ((Entity)entity).refreshPositionAndAngles((double)blockPos.getX() + 0.5, (double)blockPos.getY() + d, (double)blockPos.getZ() + 0.5, MathHelper.wrapDegrees(world.random.nextFloat() * 360.0f), 0.0f);
+        ((Entity)entity).setPositionAndAngles((double)blockPos.getX() + 0.5, (double)blockPos.getY() + d, (double)blockPos.getZ() + 0.5, MathHelper.wrapDegrees(world.random.nextFloat() * 360.0f), 0.0f);
         if (entity instanceof MobEntity) {
             MobEntity mobEntity = (MobEntity)entity;
             mobEntity.headYaw = mobEntity.yaw;
-            mobEntity.field_6283 = mobEntity.yaw;
+            mobEntity.bodyYaw = mobEntity.yaw;
             mobEntity.initialize(world, world.getLocalDifficulty(new BlockPos(mobEntity)), spawnType, null, compoundTag);
             mobEntity.playAmbientSound();
         }
@@ -324,17 +326,17 @@ public class EntityType<T extends Entity> {
         return entity;
     }
 
-    protected static double getOriginY(CollisionView collisionView, BlockPos blockPos, boolean bl, Box box) {
+    protected static double getOriginY(ViewableWorld viewableWorld, BlockPos blockPos, boolean bl, Box box) {
         Box box2 = new Box(blockPos);
         if (bl) {
             box2 = box2.stretch(0.0, -1.0, 0.0);
         }
-        Stream<VoxelShape> stream = collisionView.getCollisions(null, box2, Collections.emptySet());
+        Stream<VoxelShape> stream = viewableWorld.getCollisionShapes(null, box2, Collections.emptySet());
         return 1.0 + VoxelShapes.calculateMaxOffset(Direction.Axis.Y, box, stream, bl ? -2.0 : -1.0);
     }
 
     public static void loadFromEntityTag(World world, @Nullable PlayerEntity playerEntity, @Nullable Entity entity, @Nullable CompoundTag compoundTag) {
-        if (compoundTag == null || !compoundTag.contains("EntityTag", 10)) {
+        if (compoundTag == null || !compoundTag.containsKey("EntityTag", 10)) {
             return;
         }
         MinecraftServer minecraftServer = world.getServer();
@@ -373,7 +375,7 @@ public class EntityType<T extends Entity> {
 
     public String getTranslationKey() {
         if (this.translationKey == null) {
-            this.translationKey = Util.createTranslationKey("entity", Registry.ENTITY_TYPE.getId(this));
+            this.translationKey = SystemUtil.createTranslationKey("entity", Registry.ENTITY_TYPE.getId(this));
         }
         return this.translationKey;
     }
@@ -413,7 +415,7 @@ public class EntityType<T extends Entity> {
     }
 
     public static Optional<Entity> getEntityFromTag(CompoundTag compoundTag, World world) {
-        return Util.ifPresentOrElse(EntityType.fromTag(compoundTag).map(entityType -> entityType.create(world)), entity -> entity.fromTag(compoundTag), () -> LOGGER.warn("Skipping Entity with id {}", (Object)compoundTag.getString("id")));
+        return SystemUtil.ifPresentOrElse(EntityType.fromTag(compoundTag).map(entityType -> entityType.create(world)), entity -> entity.fromTag(compoundTag), () -> LOGGER.warn("Skipping Entity with id {}", (Object)compoundTag.getString("id")));
     }
 
     @Nullable
@@ -438,10 +440,10 @@ public class EntityType<T extends Entity> {
     @Nullable
     public static Entity loadEntityWithPassengers(CompoundTag compoundTag, World world, Function<Entity, Entity> function) {
         return EntityType.loadEntityFromTag(compoundTag, world).map(function).map(entity -> {
-            if (compoundTag.contains("Passengers", 9)) {
+            if (compoundTag.containsKey("Passengers", 9)) {
                 ListTag listTag = compoundTag.getList("Passengers", 10);
                 for (int i = 0; i < listTag.size(); ++i) {
-                    Entity entity2 = EntityType.loadEntityWithPassengers(listTag.getCompound(i), world, function);
+                    Entity entity2 = EntityType.loadEntityWithPassengers(listTag.getCompoundTag(i), world, function);
                     if (entity2 == null) continue;
                     entity2.startRiding((Entity)entity, true);
                 }

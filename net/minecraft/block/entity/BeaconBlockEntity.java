@@ -15,23 +15,23 @@ import net.minecraft.advancement.criterion.Criterions;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
-import net.minecraft.block.Stainable;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.BlockEntityType;
 import net.minecraft.block.entity.LockableContainerBlockEntity;
+import net.minecraft.client.block.ColoredBlock;
+import net.minecraft.client.network.packet.BlockEntityUpdateS2CPacket;
 import net.minecraft.container.BeaconContainer;
 import net.minecraft.container.BlockContext;
 import net.minecraft.container.Container;
-import net.minecraft.container.NameableContainerFactory;
+import net.minecraft.container.ContainerLock;
+import net.minecraft.container.NameableContainerProvider;
 import net.minecraft.container.PropertyDelegate;
 import net.minecraft.entity.effect.StatusEffect;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
-import net.minecraft.inventory.ContainerLock;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.network.packet.s2c.play.BlockEntityUpdateS2CPacket;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvent;
@@ -46,13 +46,13 @@ import org.jetbrains.annotations.Nullable;
 
 public class BeaconBlockEntity
 extends BlockEntity
-implements NameableContainerFactory,
+implements NameableContainerProvider,
 Tickable {
     public static final StatusEffect[][] EFFECTS_BY_LEVEL = new StatusEffect[][]{{StatusEffects.SPEED, StatusEffects.HASTE}, {StatusEffects.RESISTANCE, StatusEffects.JUMP_BOOST}, {StatusEffects.STRENGTH}, {StatusEffects.REGENERATION}};
     private static final Set<StatusEffect> EFFECTS = Arrays.stream(EFFECTS_BY_LEVEL).flatMap(Arrays::stream).collect(Collectors.toSet());
     private List<BeamSegment> beamSegments = Lists.newArrayList();
     private List<BeamSegment> field_19178 = Lists.newArrayList();
-    private int level = 0;
+    private int level;
     private int field_19179 = -1;
     @Nullable
     private StatusEffect primary;
@@ -60,7 +60,7 @@ Tickable {
     private StatusEffect secondary;
     @Nullable
     private Text customName;
-    private ContainerLock lock = ContainerLock.EMPTY;
+    private ContainerLock lock = ContainerLock.NONE;
     private final PropertyDelegate propertyDelegate = new PropertyDelegate(){
 
         @Override
@@ -134,8 +134,8 @@ Tickable {
                     block17: {
                         blockState = this.world.getBlockState(blockPos);
                         block = blockState.getBlock();
-                        if (!(block instanceof Stainable)) break block16;
-                        fs = ((Stainable)((Object)block)).getColor().getColorComponents();
+                        if (!(block instanceof ColoredBlock)) break block16;
+                        fs = ((ColoredBlock)((Object)block)).getColor().getColorComponents();
                         if (this.field_19178.size() > 1) break block17;
                         beamSegment = new BeamSegment(fs);
                         this.field_19178.add(beamSegment);
@@ -150,7 +150,7 @@ Tickable {
                     }
                     break block18;
                 }
-                if (beamSegment != null && (blockState.getOpacity(this.world, blockPos) < 15 || block == Blocks.BEDROCK)) {
+                if (beamSegment != null && (blockState.getLightSubtracted(this.world, blockPos) < 15 || block == Blocks.BEDROCK)) {
                     beamSegment.increaseHeight();
                 } else {
                     this.field_19178.clear();
@@ -180,8 +180,8 @@ Tickable {
                 boolean bl3 = bl2 = this.level > 0;
                 if (!bl && bl2) {
                     this.playSound(SoundEvents.BLOCK_BEACON_ACTIVATE);
-                    for (ServerPlayerEntity serverPlayerEntity : this.world.getNonSpectatingEntities(ServerPlayerEntity.class, new Box(i, j, k, i, j - 4, k).expand(10.0, 5.0, 10.0))) {
-                        Criterions.CONSTRUCT_BEACON.trigger(serverPlayerEntity, this);
+                    for (ServerPlayerEntity serverPlayerEntity : this.world.getEntities(ServerPlayerEntity.class, new Box(i, j, k, i, j - 4, k).expand(10.0, 5.0, 10.0))) {
+                        Criterions.CONSTRUCT_BEACON.handle(serverPlayerEntity, this);
                     }
                 } else if (bl && !bl2) {
                     this.playSound(SoundEvents.BLOCK_BEACON_DEACTIVATE);
@@ -210,9 +210,9 @@ Tickable {
     }
 
     @Override
-    public void markRemoved() {
+    public void invalidate() {
         this.playSound(SoundEvents.BLOCK_BEACON_DEACTIVATE);
-        super.markRemoved();
+        super.invalidate();
     }
 
     private void applyPlayerEffects() {
@@ -226,7 +226,7 @@ Tickable {
         }
         int j = (9 + this.level * 2) * 20;
         Box box = new Box(this.pos).expand(d).stretch(0.0, this.world.getHeight(), 0.0);
-        List<PlayerEntity> list = this.world.getNonSpectatingEntities(PlayerEntity.class, box);
+        List<PlayerEntity> list = this.world.getEntities(PlayerEntity.class, box);
         for (PlayerEntity playerEntity : list) {
             playerEntity.addStatusEffect(new StatusEffectInstance(this.primary, j, i, true, true));
         }
@@ -278,10 +278,10 @@ Tickable {
         super.fromTag(compoundTag);
         this.primary = BeaconBlockEntity.getPotionEffectById(compoundTag.getInt("Primary"));
         this.secondary = BeaconBlockEntity.getPotionEffectById(compoundTag.getInt("Secondary"));
-        if (compoundTag.contains("CustomName", 8)) {
+        if (compoundTag.containsKey("CustomName", 8)) {
             this.customName = Text.Serializer.fromJson(compoundTag.getString("CustomName"));
         }
-        this.lock = ContainerLock.fromTag(compoundTag);
+        this.lock = ContainerLock.deserialize(compoundTag);
     }
 
     @Override
@@ -293,7 +293,7 @@ Tickable {
         if (this.customName != null) {
             compoundTag.putString("CustomName", Text.Serializer.toJson(this.customName));
         }
-        this.lock.toTag(compoundTag);
+        this.lock.serialize(compoundTag);
         return compoundTag;
     }
 

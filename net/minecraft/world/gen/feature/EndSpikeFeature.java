@@ -46,8 +46,7 @@ extends Feature<EndSpikeFeatureConfig> {
         return CACHE.getUnchecked(l);
     }
 
-    @Override
-    public boolean generate(IWorld iWorld, ChunkGenerator<? extends ChunkGeneratorConfig> chunkGenerator, Random random, BlockPos blockPos, EndSpikeFeatureConfig endSpikeFeatureConfig) {
+    public boolean method_15887(IWorld iWorld, ChunkGenerator<? extends ChunkGeneratorConfig> chunkGenerator, Random random, BlockPos blockPos, EndSpikeFeatureConfig endSpikeFeatureConfig) {
         List<Spike> list = endSpikeFeatureConfig.getSpikes();
         if (list.isEmpty()) {
             list = EndSpikeFeature.getSpikes(iWorld);
@@ -62,7 +61,7 @@ extends Feature<EndSpikeFeatureConfig> {
     private void generateSpike(IWorld iWorld, Random random, EndSpikeFeatureConfig endSpikeFeatureConfig, Spike spike) {
         int i = spike.getRadius();
         for (BlockPos blockPos : BlockPos.iterate(new BlockPos(spike.getCenterX() - i, 0, spike.getCenterZ() - i), new BlockPos(spike.getCenterX() + i, spike.getHeight() + 10, spike.getCenterZ() + i))) {
-            if (blockPos.isWithinDistance(new BlockPos(spike.getCenterX(), blockPos.getY(), spike.getCenterZ()), (double)i) && blockPos.getY() < spike.getHeight()) {
+            if (blockPos.getSquaredDistance(spike.getCenterX(), blockPos.getY(), spike.getCenterZ(), false) <= (double)(i * i + 1) && blockPos.getY() < spike.getHeight()) {
                 this.setBlockState(iWorld, blockPos, Blocks.OBSIDIAN.getDefaultState());
                 continue;
             }
@@ -93,7 +92,7 @@ extends Feature<EndSpikeFeatureConfig> {
         EnderCrystalEntity enderCrystalEntity = EntityType.END_CRYSTAL.create(iWorld.getWorld());
         enderCrystalEntity.setBeamTarget(endSpikeFeatureConfig.getPos());
         enderCrystalEntity.setInvulnerable(endSpikeFeatureConfig.isCrystalInvulerable());
-        enderCrystalEntity.refreshPositionAndAngles((float)spike.getCenterX() + 0.5f, spike.getHeight() + 1, (float)spike.getCenterZ() + 0.5f, random.nextFloat() * 360.0f, 0.0f);
+        enderCrystalEntity.setPositionAndAngles((float)spike.getCenterX() + 0.5f, spike.getHeight() + 1, (float)spike.getCenterZ() + 0.5f, random.nextFloat() * 360.0f, 0.0f);
         iWorld.spawnEntity(enderCrystalEntity);
         this.setBlockState(iWorld, new BlockPos(spike.getCenterX(), spike.getHeight(), spike.getCenterZ()), Blocks.BEDROCK.getDefaultState());
     }
@@ -103,8 +102,7 @@ extends Feature<EndSpikeFeatureConfig> {
         private SpikeCache() {
         }
 
-        @Override
-        public List<Spike> load(Long long_) {
+        public List<Spike> method_14507(Long long_) {
             List list = IntStream.range(0, 10).boxed().collect(Collectors.toList());
             Collections.shuffle(list, new Random(long_));
             ArrayList<Spike> list2 = Lists.newArrayList();
@@ -122,7 +120,7 @@ extends Feature<EndSpikeFeatureConfig> {
 
         @Override
         public /* synthetic */ Object load(Object object) throws Exception {
-            return this.load((Long)object);
+            return this.method_14507((Long)object);
         }
     }
 

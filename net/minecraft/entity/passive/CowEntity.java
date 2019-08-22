@@ -96,8 +96,7 @@ extends AnimalEntity {
         return super.interactMob(playerEntity, hand);
     }
 
-    @Override
-    public CowEntity createChild(PassiveEntity passiveEntity) {
+    public CowEntity method_6483(PassiveEntity passiveEntity) {
         return EntityType.COW.create(this.world);
     }
 
@@ -111,7 +110,7 @@ extends AnimalEntity {
 
     @Override
     public /* synthetic */ PassiveEntity createChild(PassiveEntity passiveEntity) {
-        return this.createChild(passiveEntity);
+        return this.method_6483(passiveEntity);
     }
 }
 

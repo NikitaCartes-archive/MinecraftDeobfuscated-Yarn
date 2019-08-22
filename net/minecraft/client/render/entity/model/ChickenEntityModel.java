@@ -3,7 +3,7 @@
  */
 package net.minecraft.client.render.entity.model;
 
-import com.mojang.blaze3d.platform.GlStateManager;
+import com.mojang.blaze3d.systems.RenderSystem;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.model.ModelPart;
@@ -27,50 +27,50 @@ extends EntityModel<T> {
         int i = 16;
         this.head = new ModelPart(this, 0, 0);
         this.head.addCuboid(-2.0f, -6.0f, -2.0f, 4, 6, 3, 0.0f);
-        this.head.setPivot(0.0f, 15.0f, -4.0f);
+        this.head.setRotationPoint(0.0f, 15.0f, -4.0f);
         this.field_3340 = new ModelPart(this, 14, 0);
         this.field_3340.addCuboid(-2.0f, -4.0f, -4.0f, 4, 2, 2, 0.0f);
-        this.field_3340.setPivot(0.0f, 15.0f, -4.0f);
+        this.field_3340.setRotationPoint(0.0f, 15.0f, -4.0f);
         this.field_3342 = new ModelPart(this, 14, 4);
         this.field_3342.addCuboid(-1.0f, -2.0f, -3.0f, 2, 2, 2, 0.0f);
-        this.field_3342.setPivot(0.0f, 15.0f, -4.0f);
+        this.field_3342.setRotationPoint(0.0f, 15.0f, -4.0f);
         this.field_3346 = new ModelPart(this, 0, 9);
         this.field_3346.addCuboid(-3.0f, -4.0f, -3.0f, 6, 8, 6, 0.0f);
-        this.field_3346.setPivot(0.0f, 16.0f, 0.0f);
+        this.field_3346.setRotationPoint(0.0f, 16.0f, 0.0f);
         this.field_3345 = new ModelPart(this, 26, 0);
         this.field_3345.addCuboid(-1.0f, 0.0f, -3.0f, 3, 5, 3);
-        this.field_3345.setPivot(-2.0f, 19.0f, 1.0f);
+        this.field_3345.setRotationPoint(-2.0f, 19.0f, 1.0f);
         this.field_3343 = new ModelPart(this, 26, 0);
         this.field_3343.addCuboid(-1.0f, 0.0f, -3.0f, 3, 5, 3);
-        this.field_3343.setPivot(1.0f, 19.0f, 1.0f);
+        this.field_3343.setRotationPoint(1.0f, 19.0f, 1.0f);
         this.field_3341 = new ModelPart(this, 24, 13);
         this.field_3341.addCuboid(0.0f, 0.0f, -3.0f, 1, 4, 6);
-        this.field_3341.setPivot(-4.0f, 13.0f, 0.0f);
+        this.field_3341.setRotationPoint(-4.0f, 13.0f, 0.0f);
         this.field_3347 = new ModelPart(this, 24, 13);
         this.field_3347.addCuboid(-1.0f, 0.0f, -3.0f, 1, 4, 6);
-        this.field_3347.setPivot(4.0f, 13.0f, 0.0f);
+        this.field_3347.setRotationPoint(4.0f, 13.0f, 0.0f);
     }
 
     @Override
     public void render(T entity, float f, float g, float h, float i, float j, float k) {
         this.setAngles(entity, f, g, h, i, j, k);
-        if (this.child) {
+        if (this.isChild) {
             float l = 2.0f;
-            GlStateManager.pushMatrix();
-            GlStateManager.translatef(0.0f, 5.0f * k, 2.0f * k);
+            RenderSystem.pushMatrix();
+            RenderSystem.translatef(0.0f, 5.0f * k, 2.0f * k);
             this.head.render(k);
             this.field_3340.render(k);
             this.field_3342.render(k);
-            GlStateManager.popMatrix();
-            GlStateManager.pushMatrix();
-            GlStateManager.scalef(0.5f, 0.5f, 0.5f);
-            GlStateManager.translatef(0.0f, 24.0f * k, 0.0f);
+            RenderSystem.popMatrix();
+            RenderSystem.pushMatrix();
+            RenderSystem.scalef(0.5f, 0.5f, 0.5f);
+            RenderSystem.translatef(0.0f, 24.0f * k, 0.0f);
             this.field_3346.render(k);
             this.field_3345.render(k);
             this.field_3343.render(k);
             this.field_3341.render(k);
             this.field_3347.render(k);
-            GlStateManager.popMatrix();
+            RenderSystem.popMatrix();
         } else {
             this.head.render(k);
             this.field_3340.render(k);

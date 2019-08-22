@@ -72,12 +72,12 @@ extends Item {
         if (compoundTag == null) {
             return;
         }
-        if (compoundTag.contains("Flight", 99)) {
+        if (compoundTag.containsKey("Flight", 99)) {
             list.add(new TranslatableText("item.minecraft.firework_rocket.flight", new Object[0]).append(" ").append(String.valueOf(compoundTag.getByte("Flight"))).formatted(Formatting.GRAY));
         }
         if (!(listTag = compoundTag.getList("Explosions", 10)).isEmpty()) {
             for (int i = 0; i < listTag.size(); ++i) {
-                CompoundTag compoundTag2 = listTag.getCompound(i);
+                CompoundTag compoundTag2 = listTag.getCompoundTag(i);
                 ArrayList<Text> list2 = Lists.newArrayList();
                 FireworkChargeItem.appendFireworkTooltip(compoundTag2, list2);
                 if (list2.isEmpty()) continue;

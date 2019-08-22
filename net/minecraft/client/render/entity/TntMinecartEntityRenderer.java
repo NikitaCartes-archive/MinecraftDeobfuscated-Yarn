@@ -3,11 +3,12 @@
  */
 package net.minecraft.client.render.entity;
 
-import com.mojang.blaze3d.platform.GlStateManager;
+import com.mojang.blaze3d.systems.RenderSystem;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
+import net.minecraft.class_4493;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.block.BlockRenderManager;
 import net.minecraft.client.render.entity.EntityRenderDispatcher;
@@ -22,8 +23,7 @@ extends MinecartEntityRenderer<TntMinecartEntity> {
         super(entityRenderDispatcher);
     }
 
-    @Override
-    protected void renderBlock(TntMinecartEntity tntMinecartEntity, float f, BlockState blockState) {
+    protected void method_4137(TntMinecartEntity tntMinecartEntity, float f, BlockState blockState) {
         int i = tntMinecartEntity.getFuseTicks();
         if (i > -1 && (float)i - f + 1.0f < 10.0f) {
             float g = 1.0f - ((float)i - f + 1.0f) / 10.0f;
@@ -31,23 +31,23 @@ extends MinecartEntityRenderer<TntMinecartEntity> {
             g *= g;
             g *= g;
             float h = 1.0f + g * 0.3f;
-            GlStateManager.scalef(h, h, h);
+            RenderSystem.scalef(h, h, h);
         }
         super.renderBlock(tntMinecartEntity, f, blockState);
         if (i > -1 && i / 5 % 2 == 0) {
             BlockRenderManager blockRenderManager = MinecraftClient.getInstance().getBlockRenderManager();
-            GlStateManager.disableTexture();
-            GlStateManager.disableLighting();
-            GlStateManager.enableBlend();
-            GlStateManager.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.DST_ALPHA);
-            GlStateManager.color4f(1.0f, 1.0f, 1.0f, (1.0f - ((float)i - f + 1.0f) / 100.0f) * 0.8f);
-            GlStateManager.pushMatrix();
+            RenderSystem.disableTexture();
+            RenderSystem.disableLighting();
+            RenderSystem.enableBlend();
+            RenderSystem.blendFunc(class_4493.class_4535.SRC_ALPHA, class_4493.class_4534.DST_ALPHA);
+            RenderSystem.color4f(1.0f, 1.0f, 1.0f, (1.0f - ((float)i - f + 1.0f) / 100.0f) * 0.8f);
+            RenderSystem.pushMatrix();
             blockRenderManager.renderDynamic(Blocks.TNT.getDefaultState(), 1.0f);
-            GlStateManager.popMatrix();
-            GlStateManager.color4f(1.0f, 1.0f, 1.0f, 1.0f);
-            GlStateManager.disableBlend();
-            GlStateManager.enableLighting();
-            GlStateManager.enableTexture();
+            RenderSystem.popMatrix();
+            RenderSystem.color4f(1.0f, 1.0f, 1.0f, 1.0f);
+            RenderSystem.disableBlend();
+            RenderSystem.enableLighting();
+            RenderSystem.enableTexture();
         }
     }
 }

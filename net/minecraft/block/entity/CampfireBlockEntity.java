@@ -8,11 +8,11 @@ import java.util.Random;
 import net.minecraft.block.CampfireBlock;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.BlockEntityType;
+import net.minecraft.client.network.packet.BlockEntityUpdateS2CPacket;
 import net.minecraft.inventory.BasicInventory;
 import net.minecraft.inventory.Inventories;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.network.packet.s2c.play.BlockEntityUpdateS2CPacket;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.recipe.CampfireCookingRecipe;
 import net.minecraft.recipe.RecipeType;
@@ -111,11 +111,11 @@ Tickable {
         super.fromTag(compoundTag);
         this.itemsBeingCooked.clear();
         Inventories.fromTag(compoundTag, this.itemsBeingCooked);
-        if (compoundTag.contains("CookingTimes", 11)) {
+        if (compoundTag.containsKey("CookingTimes", 11)) {
             is = compoundTag.getIntArray("CookingTimes");
             System.arraycopy(is, 0, this.cookingTimes, 0, Math.min(this.cookingTotalTimes.length, is.length));
         }
-        if (compoundTag.contains("CookingTotalTimes", 11)) {
+        if (compoundTag.containsKey("CookingTotalTimes", 11)) {
             is = compoundTag.getIntArray("CookingTotalTimes");
             System.arraycopy(is, 0, this.cookingTotalTimes, 0, Math.min(this.cookingTotalTimes.length, is.length));
         }

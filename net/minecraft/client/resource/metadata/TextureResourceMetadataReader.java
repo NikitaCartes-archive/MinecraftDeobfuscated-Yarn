@@ -13,8 +13,7 @@ import net.minecraft.util.JsonHelper;
 @Environment(value=EnvType.CLIENT)
 public class TextureResourceMetadataReader
 implements ResourceMetadataReader<TextureResourceMetadata> {
-    @Override
-    public TextureResourceMetadata fromJson(JsonObject jsonObject) {
+    public TextureResourceMetadata method_4698(JsonObject jsonObject) {
         boolean bl = JsonHelper.getBoolean(jsonObject, "blur", false);
         boolean bl2 = JsonHelper.getBoolean(jsonObject, "clamp", false);
         return new TextureResourceMetadata(bl, bl2);
@@ -27,7 +26,7 @@ implements ResourceMetadataReader<TextureResourceMetadata> {
 
     @Override
     public /* synthetic */ Object fromJson(JsonObject jsonObject) {
-        return this.fromJson(jsonObject);
+        return this.method_4698(jsonObject);
     }
 }
 

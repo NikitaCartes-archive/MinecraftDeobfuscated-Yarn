@@ -18,7 +18,7 @@ public abstract class FeatureRenderer<T extends Entity, M extends EntityModel<T>
         this.context = featureRendererContext;
     }
 
-    public M getContextModel() {
+    public M getModel() {
         return this.context.getModel();
     }
 

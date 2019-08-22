@@ -12,10 +12,10 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.NbtHelper;
 import net.minecraft.nbt.StringNbtReader;
 import net.minecraft.nbt.Tag;
 import net.minecraft.util.JsonHelper;
+import net.minecraft.util.TagHelper;
 import org.jetbrains.annotations.Nullable;
 
 public class NbtPredicate {
@@ -45,17 +45,17 @@ public class NbtPredicate {
         if (tag == null) {
             return this == ANY;
         }
-        return this.tag == null || NbtHelper.matches(this.tag, tag, true);
+        return this.tag == null || TagHelper.areTagsEqual(this.tag, tag, true);
     }
 
-    public JsonElement toJson() {
+    public JsonElement serialize() {
         if (this == ANY || this.tag == null) {
             return JsonNull.INSTANCE;
         }
         return new JsonPrimitive(this.tag.toString());
     }
 
-    public static NbtPredicate fromJson(@Nullable JsonElement jsonElement) {
+    public static NbtPredicate deserialize(@Nullable JsonElement jsonElement) {
         CompoundTag compoundTag;
         if (jsonElement == null || jsonElement.isJsonNull()) {
             return ANY;

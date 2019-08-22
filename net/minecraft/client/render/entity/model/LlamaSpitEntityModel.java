@@ -27,7 +27,7 @@ extends EntityModel<T> {
         this.field_3433.setTextureOffset(0, 0).addCuboid(2.0f, 0.0f, 0.0f, 2, 2, 2, f);
         this.field_3433.setTextureOffset(0, 0).addCuboid(0.0f, 2.0f, 0.0f, 2, 2, 2, f);
         this.field_3433.setTextureOffset(0, 0).addCuboid(0.0f, 0.0f, 2.0f, 2, 2, 2, f);
-        this.field_3433.setPivot(0.0f, 0.0f, 0.0f);
+        this.field_3433.setRotationPoint(0.0f, 0.0f, 0.0f);
     }
 
     @Override

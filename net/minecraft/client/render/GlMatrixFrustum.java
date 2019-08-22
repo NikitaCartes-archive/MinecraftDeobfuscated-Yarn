@@ -3,7 +3,7 @@
  */
 package net.minecraft.client.render;
 
-import com.mojang.blaze3d.platform.GlStateManager;
+import com.mojang.blaze3d.systems.RenderSystem;
 import java.nio.FloatBuffer;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
@@ -36,8 +36,8 @@ extends Frustum {
         this.projectionMatrixBuffer.clear();
         this.modelviewMatrixBuffer.clear();
         this.field_4493.clear();
-        GlStateManager.getMatrix(2983, this.projectionMatrixBuffer);
-        GlStateManager.getMatrix(2982, this.modelviewMatrixBuffer);
+        RenderSystem.getMatrix(2983, this.projectionMatrixBuffer);
+        RenderSystem.getMatrix(2982, this.modelviewMatrixBuffer);
         float[] fs = this.projectionMatrix;
         float[] gs = this.modelViewMatrix;
         this.projectionMatrixBuffer.flip().limit(16);

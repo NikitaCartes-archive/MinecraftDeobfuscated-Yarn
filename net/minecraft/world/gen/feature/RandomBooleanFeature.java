@@ -19,8 +19,7 @@ extends Feature<RandomBooleanFeatureConfig> {
         super(function);
     }
 
-    @Override
-    public boolean generate(IWorld iWorld, ChunkGenerator<? extends ChunkGeneratorConfig> chunkGenerator, Random random, BlockPos blockPos, RandomBooleanFeatureConfig randomBooleanFeatureConfig) {
+    public boolean method_13679(IWorld iWorld, ChunkGenerator<? extends ChunkGeneratorConfig> chunkGenerator, Random random, BlockPos blockPos, RandomBooleanFeatureConfig randomBooleanFeatureConfig) {
         boolean bl = random.nextBoolean();
         if (bl) {
             return randomBooleanFeatureConfig.featureTrue.generate(iWorld, chunkGenerator, random, blockPos);

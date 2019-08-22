@@ -6,14 +6,14 @@ package net.minecraft.block;
 import java.util.Random;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockPlacementEnvironment;
+import net.minecraft.block.BlockRenderLayer;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.Material;
-import net.minecraft.client.render.RenderLayer;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityContext;
 import net.minecraft.entity.damage.DamageSource;
-import net.minecraft.state.StateManager;
+import net.minecraft.state.StateFactory;
 import net.minecraft.state.property.IntProperty;
 import net.minecraft.state.property.Properties;
 import net.minecraft.tag.FluidTags;
@@ -21,8 +21,8 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.world.BlockView;
-import net.minecraft.world.CollisionView;
 import net.minecraft.world.IWorld;
+import net.minecraft.world.ViewableWorld;
 import net.minecraft.world.World;
 
 public class CactusBlock
@@ -33,7 +33,7 @@ extends Block {
 
     protected CactusBlock(Block.Settings settings) {
         super(settings);
-        this.setDefaultState((BlockState)((BlockState)this.stateManager.getDefaultState()).with(AGE, 0));
+        this.setDefaultState((BlockState)((BlockState)this.stateFactory.getDefaultState()).with(AGE, 0));
     }
 
     @Override
@@ -88,15 +88,15 @@ extends Block {
     }
 
     @Override
-    public boolean canPlaceAt(BlockState blockState, CollisionView collisionView, BlockPos blockPos) {
+    public boolean canPlaceAt(BlockState blockState, ViewableWorld viewableWorld, BlockPos blockPos) {
         for (Direction direction : Direction.Type.HORIZONTAL) {
-            BlockState blockState2 = collisionView.getBlockState(blockPos.offset(direction));
+            BlockState blockState2 = viewableWorld.getBlockState(blockPos.offset(direction));
             Material material = blockState2.getMaterial();
-            if (!material.isSolid() && !collisionView.getFluidState(blockPos.offset(direction)).matches(FluidTags.LAVA)) continue;
+            if (!material.isSolid() && !viewableWorld.getFluidState(blockPos.offset(direction)).matches(FluidTags.LAVA)) continue;
             return false;
         }
-        Block block = collisionView.getBlockState(blockPos.down()).getBlock();
-        return (block == Blocks.CACTUS || block == Blocks.SAND || block == Blocks.RED_SAND) && !collisionView.getBlockState(blockPos.up()).getMaterial().isLiquid();
+        Block block = viewableWorld.getBlockState(blockPos.down()).getBlock();
+        return (block == Blocks.CACTUS || block == Blocks.SAND || block == Blocks.RED_SAND) && !viewableWorld.getBlockState(blockPos.up()).getMaterial().isLiquid();
     }
 
     @Override
@@ -105,12 +105,12 @@ extends Block {
     }
 
     @Override
-    public RenderLayer getRenderLayer() {
-        return RenderLayer.CUTOUT;
+    public BlockRenderLayer getRenderLayer() {
+        return BlockRenderLayer.CUTOUT;
     }
 
     @Override
-    protected void appendProperties(StateManager.Builder<Block, BlockState> builder) {
+    protected void appendProperties(StateFactory.Builder<Block, BlockState> builder) {
         builder.add(AGE);
     }
 

@@ -26,11 +26,11 @@ extends SpriteAtlasHolder {
 
     @Override
     protected Iterable<Identifier> getSprites() {
-        return Iterables.concat(Registry.PAINTING_MOTIVE.getIds(), Collections.singleton(PAINTING_BACK_ID));
+        return Iterables.concat(Registry.MOTIVE.getIds(), Collections.singleton(PAINTING_BACK_ID));
     }
 
     public Sprite getPaintingSprite(PaintingMotive paintingMotive) {
-        return this.getSprite(Registry.PAINTING_MOTIVE.getId(paintingMotive));
+        return this.getSprite(Registry.MOTIVE.getId(paintingMotive));
     }
 
     public Sprite getBackSprite() {

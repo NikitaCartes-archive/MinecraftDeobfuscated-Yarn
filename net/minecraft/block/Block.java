@@ -15,6 +15,7 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.block.BlockEntityProvider;
 import net.minecraft.block.BlockPlacementEnvironment;
+import net.minecraft.block.BlockRenderLayer;
 import net.minecraft.block.BlockRenderType;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
@@ -24,8 +25,8 @@ import net.minecraft.block.MaterialColor;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.piston.PistonBehavior;
 import net.minecraft.client.item.TooltipContext;
-import net.minecraft.client.render.RenderLayer;
-import net.minecraft.container.NameableContainerFactory;
+import net.minecraft.client.network.DebugRendererInfoManager;
+import net.minecraft.container.NameableContainerProvider;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityContext;
 import net.minecraft.entity.EntityType;
@@ -41,16 +42,10 @@ import net.minecraft.item.ItemConvertible;
 import net.minecraft.item.ItemGroup;
 import net.minecraft.item.ItemPlacementContext;
 import net.minecraft.item.ItemStack;
-import net.minecraft.loot.LootTable;
-import net.minecraft.loot.LootTables;
-import net.minecraft.loot.context.LootContext;
-import net.minecraft.loot.context.LootContextParameters;
-import net.minecraft.loot.context.LootContextTypes;
-import net.minecraft.server.network.DebugInfoSender;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.BlockSoundGroup;
 import net.minecraft.stat.Stats;
-import net.minecraft.state.StateManager;
+import net.minecraft.state.StateFactory;
 import net.minecraft.tag.BlockTags;
 import net.minecraft.tag.FluidTags;
 import net.minecraft.tag.Tag;
@@ -64,7 +59,7 @@ import net.minecraft.util.DyeColor;
 import net.minecraft.util.Hand;
 import net.minecraft.util.IdList;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.Util;
+import net.minecraft.util.SystemUtil;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
@@ -73,13 +68,18 @@ import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.util.shape.VoxelShapes;
-import net.minecraft.world.BlockRenderView;
 import net.minecraft.world.BlockView;
-import net.minecraft.world.CollisionView;
+import net.minecraft.world.ExtendedBlockView;
 import net.minecraft.world.GameRules;
 import net.minecraft.world.IWorld;
+import net.minecraft.world.ViewableWorld;
 import net.minecraft.world.World;
 import net.minecraft.world.explosion.Explosion;
+import net.minecraft.world.loot.LootSupplier;
+import net.minecraft.world.loot.LootTables;
+import net.minecraft.world.loot.context.LootContext;
+import net.minecraft.world.loot.context.LootContextParameters;
+import net.minecraft.world.loot.context.LootContextTypes;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.Nullable;
@@ -91,14 +91,13 @@ implements ItemConvertible {
     private static final Direction[] FACINGS = new Direction[]{Direction.WEST, Direction.EAST, Direction.NORTH, Direction.SOUTH, Direction.DOWN, Direction.UP};
     private static final LoadingCache<VoxelShape, Boolean> FULL_CUBE_SHAPE_CACHE = CacheBuilder.newBuilder().maximumSize(512L).weakKeys().build(new CacheLoader<VoxelShape, Boolean>(){
 
-        @Override
-        public Boolean load(VoxelShape voxelShape) {
+        public Boolean method_20516(VoxelShape voxelShape) {
             return !VoxelShapes.matchesAnywhere(VoxelShapes.fullCube(), voxelShape, BooleanBiFunction.NOT_SAME);
         }
 
         @Override
         public /* synthetic */ Object load(Object object) throws Exception {
-            return this.load((VoxelShape)object);
+            return this.method_20516((VoxelShape)object);
         }
     });
     private static final VoxelShape SOLID_MEDIUM_SQUARE_SHAPE = VoxelShapes.combineAndSimplify(VoxelShapes.fullCube(), Block.createCuboidShape(2.0, 0.0, 2.0, 14.0, 16.0, 14.0), BooleanBiFunction.ONLY_FIRST);
@@ -111,7 +110,7 @@ implements ItemConvertible {
     protected final Material material;
     protected final MaterialColor materialColor;
     private final float slipperiness;
-    protected final StateManager<Block, BlockState> stateManager;
+    protected final StateFactory<Block, BlockState> stateFactory;
     private BlockState defaultState;
     protected final boolean collidable;
     private final boolean dynamicBounds;
@@ -154,7 +153,7 @@ implements ItemConvertible {
 
     public static BlockState pushEntitiesUpBeforeBlockChange(BlockState blockState, BlockState blockState2, World world, BlockPos blockPos) {
         VoxelShape voxelShape = VoxelShapes.combine(blockState.getCollisionShape(world, blockPos), blockState2.getCollisionShape(world, blockPos), BooleanBiFunction.ONLY_SECOND).offset(blockPos.getX(), blockPos.getY(), blockPos.getZ());
-        List<Entity> list = world.getEntities(null, voxelShape.getBoundingBox());
+        List<Entity> list = world.getEntities((Entity)null, voxelShape.getBoundingBox());
         for (Entity entity : list) {
             double d = VoxelShapes.calculateMaxOffset(Direction.Axis.Y, entity.getBoundingBox().offset(0.0, 1.0, 0.0), Stream.of(voxelShape), -1.0);
             entity.requestTeleport(entity.x, entity.y + 1.0 + d, entity.z);
@@ -195,7 +194,7 @@ implements ItemConvertible {
     public void updateNeighborStates(BlockState blockState, IWorld iWorld, BlockPos blockPos, int i) {
         try (BlockPos.PooledMutable pooledMutable = BlockPos.PooledMutable.get();){
             for (Direction direction : FACINGS) {
-                pooledMutable.set(blockPos).setOffset(direction);
+                pooledMutable.method_10114(blockPos).method_10118(direction);
                 BlockState blockState2 = iWorld.getBlockState(pooledMutable);
                 BlockState blockState3 = blockState2.getStateForNeighborUpdate(direction.getOpposite(), blockState, iWorld, pooledMutable, blockPos);
                 Block.replaceBlock(blockState2, blockState3, iWorld, pooledMutable, i);
@@ -249,7 +248,7 @@ implements ItemConvertible {
     }
 
     public Block(Settings settings) {
-        StateManager.Builder<Block, BlockState> builder = new StateManager.Builder<Block, BlockState>(this);
+        StateFactory.Builder<Block, BlockState> builder = new StateFactory.Builder<Block, BlockState>(this);
         this.appendProperties(builder);
         this.material = settings.material;
         this.materialColor = settings.materialColor;
@@ -262,11 +261,11 @@ implements ItemConvertible {
         this.slipperiness = settings.slipperiness;
         this.dynamicBounds = settings.dynamicBounds;
         this.dropTableId = settings.dropTableId;
-        this.stateManager = builder.build(BlockState::new);
-        this.setDefaultState(this.stateManager.getDefaultState());
+        this.stateFactory = builder.build(BlockState::new);
+        this.setDefaultState(this.stateFactory.getDefaultState());
     }
 
-    public static boolean cannotConnect(Block block) {
+    public static boolean canConnect(Block block) {
         return block instanceof LeavesBlock || block == Blocks.BARRIER || block == Blocks.CARVED_PUMPKIN || block == Blocks.JACK_O_LANTERN || block == Blocks.MELON || block == Blocks.PUMPKIN;
     }
 
@@ -332,8 +331,8 @@ implements ItemConvertible {
 
     @Deprecated
     @Environment(value=EnvType.CLIENT)
-    public int getBlockBrightness(BlockState blockState, BlockRenderView blockRenderView, BlockPos blockPos) {
-        return blockRenderView.getLightmapIndex(blockPos, blockState.getLuminance());
+    public int getBlockBrightness(BlockState blockState, ExtendedBlockView extendedBlockView, BlockPos blockPos) {
+        return extendedBlockView.getLightmapIndex(blockPos, blockState.getLuminance());
     }
 
     @Environment(value=EnvType.CLIENT)
@@ -350,8 +349,8 @@ implements ItemConvertible {
             if (b != 127) {
                 return b != 0;
             }
-            VoxelShape voxelShape = blockState.getCullingFace(blockView, blockPos, direction);
-            VoxelShape voxelShape2 = blockState2.getCullingFace(blockView, blockPos2, direction.getOpposite());
+            VoxelShape voxelShape = blockState.getCullShape(blockView, blockPos, direction);
+            VoxelShape voxelShape2 = blockState2.getCullShape(blockView, blockPos2, direction.getOpposite());
             boolean bl = VoxelShapes.matchesAnywhere(voxelShape, voxelShape2, BooleanBiFunction.ONLY_FIRST);
             if (object2ByteLinkedOpenHashMap.size() == 200) {
                 object2ByteLinkedOpenHashMap.removeLastByte();
@@ -364,7 +363,7 @@ implements ItemConvertible {
 
     @Deprecated
     public boolean isOpaque(BlockState blockState) {
-        return this.collidable && this.getRenderLayer() == RenderLayer.SOLID;
+        return this.collidable && this.getRenderLayer() == BlockRenderLayer.SOLID;
     }
 
     @Deprecated
@@ -384,7 +383,7 @@ implements ItemConvertible {
     }
 
     @Deprecated
-    public VoxelShape getCullingShape(BlockState blockState, BlockView blockView, BlockPos blockPos) {
+    public VoxelShape method_9571(BlockState blockState, BlockView blockView, BlockPos blockPos) {
         return blockState.getOutlineShape(blockView, blockPos);
     }
 
@@ -393,14 +392,14 @@ implements ItemConvertible {
         return VoxelShapes.empty();
     }
 
-    public static boolean topCoversMediumSquare(BlockView blockView, BlockPos blockPos) {
+    public static boolean isSolidMediumSquare(BlockView blockView, BlockPos blockPos) {
         BlockState blockState = blockView.getBlockState(blockPos);
         return !blockState.matches(BlockTags.LEAVES) && !VoxelShapes.matchesAnywhere(blockState.getCollisionShape(blockView, blockPos).getFace(Direction.UP), SOLID_MEDIUM_SQUARE_SHAPE, BooleanBiFunction.ONLY_SECOND);
     }
 
-    public static boolean isSolidSmallSquare(CollisionView collisionView, BlockPos blockPos, Direction direction) {
-        BlockState blockState = collisionView.getBlockState(blockPos);
-        return !blockState.matches(BlockTags.LEAVES) && !VoxelShapes.matchesAnywhere(blockState.getCollisionShape(collisionView, blockPos).getFace(direction), SOLID_SMALL_SQUARE_SHAPE, BooleanBiFunction.ONLY_SECOND);
+    public static boolean isSolidSmallSquare(ViewableWorld viewableWorld, BlockPos blockPos, Direction direction) {
+        BlockState blockState = viewableWorld.getBlockState(blockPos);
+        return !blockState.matches(BlockTags.LEAVES) && !VoxelShapes.matchesAnywhere(blockState.getCollisionShape(viewableWorld, blockPos).getFace(direction), SOLID_SMALL_SQUARE_SHAPE, BooleanBiFunction.ONLY_SECOND);
     }
 
     public static boolean isSideSolidFullSquare(BlockState blockState, BlockView blockView, BlockPos blockPos, Direction direction) {
@@ -419,7 +418,7 @@ implements ItemConvertible {
     @Deprecated
     public final boolean isFullOpaque(BlockState blockState, BlockView blockView, BlockPos blockPos) {
         if (blockState.isOpaque()) {
-            return Block.isShapeFullCube(blockState.getCullingShape(blockView, blockPos));
+            return Block.isShapeFullCube(blockState.method_11615(blockView, blockPos));
         }
         return false;
     }
@@ -429,7 +428,7 @@ implements ItemConvertible {
     }
 
     @Deprecated
-    public int getOpacity(BlockState blockState, BlockView blockView, BlockPos blockPos) {
+    public int getLightSubtracted(BlockState blockState, BlockView blockView, BlockPos blockPos) {
         if (blockState.isFullOpaque(blockView, blockPos)) {
             return blockView.getMaxLightLevel();
         }
@@ -459,16 +458,16 @@ implements ItemConvertible {
 
     @Deprecated
     public void neighborUpdate(BlockState blockState, World world, BlockPos blockPos, Block block, BlockPos blockPos2, boolean bl) {
-        DebugInfoSender.sendNeighborUpdate(world, blockPos);
+        DebugRendererInfoManager.sendNeighborUpdate(world, blockPos);
     }
 
-    public int getTickRate(CollisionView collisionView) {
+    public int getTickRate(ViewableWorld viewableWorld) {
         return 10;
     }
 
     @Nullable
     @Deprecated
-    public NameableContainerFactory createContainerFactory(BlockState blockState, World world, BlockPos blockPos) {
+    public NameableContainerProvider createContainerProvider(BlockState blockState, World world, BlockPos blockPos) {
         return null;
     }
 
@@ -513,8 +512,8 @@ implements ItemConvertible {
         }
         LootContext lootContext = builder.put(LootContextParameters.BLOCK_STATE, blockState).build(LootContextTypes.BLOCK);
         ServerWorld serverWorld = lootContext.getWorld();
-        LootTable lootTable = serverWorld.getServer().getLootManager().getSupplier(identifier);
-        return lootTable.getDrops(lootContext);
+        LootSupplier lootSupplier = serverWorld.getServer().getLootManager().getSupplier(identifier);
+        return lootSupplier.getDrops(lootContext);
     }
 
     public static List<ItemStack> getDroppedStacks(BlockState blockState, ServerWorld serverWorld, BlockPos blockPos, @Nullable BlockEntity blockEntity) {
@@ -585,12 +584,12 @@ implements ItemConvertible {
     public void onDestroyedByExplosion(World world, BlockPos blockPos, Explosion explosion) {
     }
 
-    public RenderLayer getRenderLayer() {
-        return RenderLayer.SOLID;
+    public BlockRenderLayer getRenderLayer() {
+        return BlockRenderLayer.SOLID;
     }
 
     @Deprecated
-    public boolean canPlaceAt(BlockState blockState, CollisionView collisionView, BlockPos blockPos) {
+    public boolean canPlaceAt(BlockState blockState, ViewableWorld viewableWorld, BlockPos blockPos) {
         return true;
     }
 
@@ -650,7 +649,7 @@ implements ItemConvertible {
 
     public String getTranslationKey() {
         if (this.translationKey == null) {
-            this.translationKey = Util.createTranslationKey("block", Registry.BLOCK.getId(this));
+            this.translationKey = SystemUtil.createTranslationKey("block", Registry.BLOCK.getId(this));
         }
         return this.translationKey;
     }
@@ -710,7 +709,7 @@ implements ItemConvertible {
         world.playLevelEvent(playerEntity, 2001, blockPos, Block.getRawIdFromState(blockState));
     }
 
-    public void rainTick(World world, BlockPos blockPos) {
+    public void onRainTick(World world, BlockPos blockPos) {
     }
 
     public boolean shouldDropItemsOnExplosion(Explosion explosion) {
@@ -727,11 +726,11 @@ implements ItemConvertible {
         return 0;
     }
 
-    protected void appendProperties(StateManager.Builder<Block, BlockState> builder) {
+    protected void appendProperties(StateFactory.Builder<Block, BlockState> builder) {
     }
 
-    public StateManager<Block, BlockState> getStateManager() {
-        return this.stateManager;
+    public StateFactory<Block, BlockState> getStateFactory() {
+        return this.stateFactory;
     }
 
     protected final void setDefaultState(BlockState blockState) {

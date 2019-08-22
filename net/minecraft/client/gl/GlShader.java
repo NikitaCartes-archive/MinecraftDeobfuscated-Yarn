@@ -4,13 +4,13 @@
 package net.minecraft.client.gl;
 
 import com.google.common.collect.Maps;
-import com.mojang.blaze3d.platform.GLX;
-import com.mojang.blaze3d.platform.TextureUtil;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Map;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.class_4493;
+import net.minecraft.class_4536;
 import net.minecraft.client.gl.GlProgram;
 import org.apache.commons.lang3.StringUtils;
 
@@ -29,13 +29,13 @@ public class GlShader {
 
     public void attachTo(GlProgram glProgram) {
         ++this.refCount;
-        GLX.glAttachShader(glProgram.getProgramRef(), this.shaderRef);
+        class_4493.method_22016(glProgram.getProgramRef(), this.shaderRef);
     }
 
     public void release() {
         --this.refCount;
         if (this.refCount <= 0) {
-            GLX.glDeleteShader(this.shaderRef);
+            class_4493.method_22029(this.shaderRef);
             this.shaderType.getLoadedShaders().remove(this.name);
         }
     }
@@ -45,15 +45,15 @@ public class GlShader {
     }
 
     public static GlShader createFromResource(Type type, String string, InputStream inputStream) throws IOException {
-        String string2 = TextureUtil.readResourceAsString(inputStream);
+        String string2 = class_4536.readResourceAsString(inputStream);
         if (string2 == null) {
             throw new IOException("Could not load program " + type.getName());
         }
-        int i = GLX.glCreateShader(type.getGlType());
-        GLX.glShaderSource(i, string2);
-        GLX.glCompileShader(i);
-        if (GLX.glGetShaderi(i, GLX.GL_COMPILE_STATUS) == 0) {
-            String string3 = StringUtils.trim(GLX.glGetShaderInfoLog(i, 32768));
+        int i = class_4493.method_22035(type.getGlType());
+        class_4493.method_21961(i, string2);
+        class_4493.method_22041(i);
+        if (class_4493.method_22023(i, 35713) == 0) {
+            String string3 = StringUtils.trim(class_4493.method_22049(i, 32768));
             throw new IOException("Couldn't compile " + type.getName() + " program: " + string3);
         }
         GlShader glShader = new GlShader(type, i, string);
@@ -63,8 +63,8 @@ public class GlShader {
 
     @Environment(value=EnvType.CLIENT)
     public static enum Type {
-        VERTEX("vertex", ".vsh", GLX.GL_VERTEX_SHADER),
-        FRAGMENT("fragment", ".fsh", GLX.GL_FRAGMENT_SHADER);
+        VERTEX("vertex", ".vsh", 35633),
+        FRAGMENT("fragment", ".fsh", 35632);
 
         private final String name;
         private final String fileExtension;

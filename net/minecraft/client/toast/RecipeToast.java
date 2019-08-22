@@ -4,11 +4,11 @@
 package net.minecraft.client.toast;
 
 import com.google.common.collect.Lists;
-import com.mojang.blaze3d.platform.GlStateManager;
+import com.mojang.blaze3d.systems.RenderSystem;
 import java.util.List;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.client.render.DiffuseLighting;
+import net.minecraft.client.render.GuiLighting;
 import net.minecraft.client.resource.language.I18n;
 import net.minecraft.client.toast.Toast;
 import net.minecraft.client.toast.ToastManager;
@@ -36,17 +36,17 @@ implements Toast {
             return Toast.Visibility.HIDE;
         }
         toastManager.getGame().getTextureManager().bindTexture(TOASTS_TEX);
-        GlStateManager.color3f(1.0f, 1.0f, 1.0f);
+        RenderSystem.color3f(1.0f, 1.0f, 1.0f);
         toastManager.blit(0, 0, 0, 32, 160, 32);
         toastManager.getGame().textRenderer.draw(I18n.translate("recipe.toast.title", new Object[0]), 30.0f, 7.0f, -11534256);
         toastManager.getGame().textRenderer.draw(I18n.translate("recipe.toast.description", new Object[0]), 30.0f, 18.0f, -16777216);
-        DiffuseLighting.enableForItems();
+        GuiLighting.enableForItems();
         Recipe<?> recipe = this.recipes.get((int)(l / (5000L / (long)this.recipes.size()) % (long)this.recipes.size()));
         ItemStack itemStack = recipe.getRecipeKindIcon();
-        GlStateManager.pushMatrix();
-        GlStateManager.scalef(0.6f, 0.6f, 1.0f);
+        RenderSystem.pushMatrix();
+        RenderSystem.scalef(0.6f, 0.6f, 1.0f);
         toastManager.getGame().getItemRenderer().renderGuiItem(null, itemStack, 3, 3);
-        GlStateManager.popMatrix();
+        RenderSystem.popMatrix();
         toastManager.getGame().getItemRenderer().renderGuiItem(null, recipe.getOutput(), 8, 8);
         return l - this.startTime >= 5000L ? Toast.Visibility.HIDE : Toast.Visibility.SHOW;
     }

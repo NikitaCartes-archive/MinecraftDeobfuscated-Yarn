@@ -44,8 +44,7 @@ extends AbstractNumberTag {
         return this.value + "b";
     }
 
-    @Override
-    public ByteTag copy() {
+    public ByteTag method_10530() {
         return new ByteTag(this.value);
     }
 
@@ -103,7 +102,7 @@ extends AbstractNumberTag {
 
     @Override
     public /* synthetic */ Tag copy() {
-        return this.copy();
+        return this.method_10530();
     }
 }
 

@@ -16,9 +16,9 @@ import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.BlockView;
-import net.minecraft.world.CollisionView;
 import net.minecraft.world.GameRules;
 import net.minecraft.world.IWorld;
+import net.minecraft.world.ViewableWorld;
 import net.minecraft.world.World;
 import net.minecraft.world.chunk.Chunk;
 import net.minecraft.world.chunk.ChunkStatus;
@@ -84,7 +84,7 @@ extends MoveToTargetPosGoal {
         World world = this.stepAndDestroyMob.world;
         BlockPos blockPos = new BlockPos(this.stepAndDestroyMob);
         BlockPos blockPos2 = this.tweakToProperPos(blockPos, world);
-        Random random = this.stepAndDestroyMob.getRandom();
+        Random random = this.stepAndDestroyMob.getRand();
         if (this.hasReached() && blockPos2 != null) {
             double d;
             Vec3d vec3d;
@@ -104,7 +104,7 @@ extends MoveToTargetPosGoal {
                 }
             }
             if (this.counter > 60) {
-                world.removeBlock(blockPos2, false);
+                world.clearBlockState(blockPos2, false);
                 if (!world.isClient) {
                     for (int i = 0; i < 20; ++i) {
                         d = random.nextGaussian() * 0.02;
@@ -133,8 +133,8 @@ extends MoveToTargetPosGoal {
     }
 
     @Override
-    protected boolean isTargetPos(CollisionView collisionView, BlockPos blockPos) {
-        Chunk chunk = collisionView.getChunk(blockPos.getX() >> 4, blockPos.getZ() >> 4, ChunkStatus.FULL, false);
+    protected boolean isTargetPos(ViewableWorld viewableWorld, BlockPos blockPos) {
+        Chunk chunk = viewableWorld.getChunk(blockPos.getX() >> 4, blockPos.getZ() >> 4, ChunkStatus.FULL, false);
         if (chunk != null) {
             return chunk.getBlockState(blockPos).getBlock() == this.targetBlock && chunk.getBlockState(blockPos.up()).isAir() && chunk.getBlockState(blockPos.up(2)).isAir();
         }

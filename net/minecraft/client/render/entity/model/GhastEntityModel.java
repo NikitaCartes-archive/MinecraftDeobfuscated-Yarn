@@ -3,7 +3,7 @@
  */
 package net.minecraft.client.render.entity.model;
 
-import com.mojang.blaze3d.platform.GlStateManager;
+import com.mojang.blaze3d.systems.RenderSystem;
 import java.util.Random;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
@@ -22,7 +22,7 @@ extends EntityModel<T> {
         int i = -16;
         this.field_3373 = new ModelPart(this, 0, 0);
         this.field_3373.addCuboid(-8.0f, -8.0f, -8.0f, 16, 16, 16);
-        this.field_3373.pivotY += 8.0f;
+        this.field_3373.rotationPointY += 8.0f;
         Random random = new Random(1660L);
         for (int j = 0; j < this.field_3372.length; ++j) {
             this.field_3372[j] = new ModelPart(this, 0, 0);
@@ -30,9 +30,9 @@ extends EntityModel<T> {
             float g = ((float)(j / 3) / 2.0f * 2.0f - 1.0f) * 5.0f;
             int k = random.nextInt(7) + 8;
             this.field_3372[j].addCuboid(-1.0f, 0.0f, -1.0f, 2, k, 2);
-            this.field_3372[j].pivotX = f;
-            this.field_3372[j].pivotZ = g;
-            this.field_3372[j].pivotY = 15.0f;
+            this.field_3372[j].rotationPointX = f;
+            this.field_3372[j].rotationPointZ = g;
+            this.field_3372[j].rotationPointY = 15.0f;
         }
     }
 
@@ -46,13 +46,13 @@ extends EntityModel<T> {
     @Override
     public void render(T entity, float f, float g, float h, float i, float j, float k) {
         this.setAngles(entity, f, g, h, i, j, k);
-        GlStateManager.pushMatrix();
-        GlStateManager.translatef(0.0f, 0.6f, 0.0f);
+        RenderSystem.pushMatrix();
+        RenderSystem.translatef(0.0f, 0.6f, 0.0f);
         this.field_3373.render(k);
         for (ModelPart modelPart : this.field_3372) {
             modelPart.render(k);
         }
-        GlStateManager.popMatrix();
+        RenderSystem.popMatrix();
     }
 }
 

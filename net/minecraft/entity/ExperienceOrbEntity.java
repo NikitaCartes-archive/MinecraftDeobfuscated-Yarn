@@ -6,6 +6,7 @@ package net.minecraft.entity;
 import java.util.Map;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.client.network.packet.ExperienceOrbSpawnS2CPacket;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.enchantment.Enchantments;
 import net.minecraft.entity.Entity;
@@ -17,7 +18,6 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.Packet;
-import net.minecraft.network.packet.s2c.play.ExperienceOrbSpawnS2CPacket;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.tag.FluidTags;
 import net.minecraft.util.math.BlockPos;
@@ -37,7 +37,7 @@ extends Entity {
 
     public ExperienceOrbEntity(World world, double d, double e, double f, int i) {
         this((EntityType<? extends ExperienceOrbEntity>)EntityType.EXPERIENCE_ORB, world);
-        this.updatePosition(d, e, f);
+        this.setPosition(d, e, f);
         this.yaw = (float)(this.random.nextDouble() * 360.0);
         this.setVelocity((this.random.nextDouble() * (double)0.2f - (double)0.1f) * 2.0, this.random.nextDouble() * 0.2 * 2.0, (this.random.nextDouble() * (double)0.2f - (double)0.1f) * 2.0);
         this.amount = i;
@@ -91,7 +91,7 @@ extends Entity {
             this.playSound(SoundEvents.ENTITY_GENERIC_BURN, 0.4f, 2.0f + this.random.nextFloat() * 0.4f);
         }
         if (!this.world.doesNotCollide(this.getBoundingBox())) {
-            this.pushOutOfBlocks(this.x, (this.getBoundingBox().y1 + this.getBoundingBox().y2) / 2.0, this.z);
+            this.pushOutOfBlocks(this.x, (this.getBoundingBox().minY + this.getBoundingBox().maxY) / 2.0, this.z);
         }
         double d = 8.0;
         if (this.field_6160 < this.renderTicks - 20 + this.getEntityId() % 100) {
@@ -110,7 +110,7 @@ extends Entity {
         this.move(MovementType.SELF, this.getVelocity());
         float g = 0.98f;
         if (this.onGround) {
-            g = this.world.getBlockState(new BlockPos(this.x, this.getBoundingBox().y1 - 1.0, this.z)).getBlock().getSlipperiness() * 0.98f;
+            g = this.world.getBlockState(new BlockPos(this.x, this.getBoundingBox().minY - 1.0, this.z)).getBlock().getSlipperiness() * 0.98f;
         }
         this.setVelocity(this.getVelocity().multiply(g, 0.98, g));
         if (this.onGround) {

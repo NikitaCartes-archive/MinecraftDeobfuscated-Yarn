@@ -29,8 +29,7 @@ implements ArgumentType<PosArgument> {
         return commandContext.getArgument(string, PosArgument.class);
     }
 
-    @Override
-    public PosArgument parse(StringReader stringReader) throws CommandSyntaxException {
+    public PosArgument method_9718(StringReader stringReader) throws CommandSyntaxException {
         int i = stringReader.getCursor();
         if (!stringReader.canRead()) {
             throw INCOMPLETE_ROTATION_EXCEPTION.createWithContext(stringReader);
@@ -52,7 +51,7 @@ implements ArgumentType<PosArgument> {
 
     @Override
     public /* synthetic */ Object parse(StringReader stringReader) throws CommandSyntaxException {
-        return this.parse(stringReader);
+        return this.method_9718(stringReader);
     }
 }
 

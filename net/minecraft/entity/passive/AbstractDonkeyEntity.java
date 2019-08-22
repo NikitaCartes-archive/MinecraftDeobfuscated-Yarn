@@ -108,7 +108,7 @@ extends HorseBaseEntity {
             ListTag listTag = compoundTag.getList("Items", 10);
             this.method_6721();
             for (int i = 0; i < listTag.size(); ++i) {
-                CompoundTag compoundTag2 = listTag.getCompound(i);
+                CompoundTag compoundTag2 = listTag.getCompoundTag(i);
                 int j = compoundTag2.getByte("Slot") & 0xFF;
                 if (j < 2 || j >= this.items.getInvSize()) continue;
                 this.items.setInvStack(j, ItemStack.fromTag(compoundTag2));
@@ -141,7 +141,7 @@ extends HorseBaseEntity {
             return super.interactMob(playerEntity, hand);
         }
         if (!this.isBaby()) {
-            if (this.isTame() && playerEntity.isSneaking()) {
+            if (this.isTame() && playerEntity.method_21823()) {
                 this.openInventory(playerEntity);
                 return true;
             }

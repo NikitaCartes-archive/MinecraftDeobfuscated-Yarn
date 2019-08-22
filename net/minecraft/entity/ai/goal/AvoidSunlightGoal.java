@@ -18,7 +18,7 @@ extends Goal {
 
     @Override
     public boolean canStart() {
-        return this.mob.world.isDay() && this.mob.getEquippedStack(EquipmentSlot.HEAD).isEmpty() && this.mob.getNavigation() instanceof MobNavigation;
+        return this.mob.world.isDaylight() && this.mob.getEquippedStack(EquipmentSlot.HEAD).isEmpty() && this.mob.getNavigation() instanceof MobNavigation;
     }
 
     @Override

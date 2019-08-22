@@ -34,8 +34,7 @@ implements ArgumentType<ParticleEffect> {
         return commandContext.getArgument(string, ParticleEffect.class);
     }
 
-    @Override
-    public ParticleEffect parse(StringReader stringReader) throws CommandSyntaxException {
+    public ParticleEffect method_9416(StringReader stringReader) throws CommandSyntaxException {
         return ParticleArgumentType.readParameters(stringReader);
     }
 
@@ -61,7 +60,7 @@ implements ArgumentType<ParticleEffect> {
 
     @Override
     public /* synthetic */ Object parse(StringReader stringReader) throws CommandSyntaxException {
-        return this.parse(stringReader);
+        return this.method_9416(stringReader);
     }
 }
 

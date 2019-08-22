@@ -30,13 +30,11 @@ extends Task<MobEntity> {
         this.walkSpeed = f;
     }
 
-    @Override
-    protected boolean shouldRun(ServerWorld serverWorld, MobEntity mobEntity) {
+    protected boolean method_19971(ServerWorld serverWorld, MobEntity mobEntity) {
         return mobEntity.isBaby() && this.shouldStartJumping(serverWorld, mobEntity);
     }
 
-    @Override
-    protected void run(ServerWorld serverWorld, MobEntity mobEntity, long l) {
+    protected void method_19972(ServerWorld serverWorld, MobEntity mobEntity, long l) {
         super.run(serverWorld, mobEntity, l);
         this.getNearestBed(mobEntity).ifPresent(blockPos -> {
             this.bedPos = blockPos;
@@ -47,8 +45,7 @@ extends Task<MobEntity> {
         });
     }
 
-    @Override
-    protected void finishRunning(ServerWorld serverWorld, MobEntity mobEntity, long l) {
+    protected void method_19976(ServerWorld serverWorld, MobEntity mobEntity, long l) {
         super.finishRunning(serverWorld, mobEntity, l);
         this.bedPos = null;
         this.ticksOutOfBedUntilStopped = 0;
@@ -56,8 +53,7 @@ extends Task<MobEntity> {
         this.ticksToNextJump = 0;
     }
 
-    @Override
-    protected boolean shouldKeepRunning(ServerWorld serverWorld, MobEntity mobEntity, long l) {
+    protected boolean method_19978(ServerWorld serverWorld, MobEntity mobEntity, long l) {
         return mobEntity.isBaby() && this.bedPos != null && this.isBedAt(serverWorld, this.bedPos) && !this.isBedGoneTooLong(serverWorld, mobEntity) && !this.isDoneJumping(serverWorld, mobEntity);
     }
 
@@ -66,8 +62,7 @@ extends Task<MobEntity> {
         return false;
     }
 
-    @Override
-    protected void keepRunning(ServerWorld serverWorld, MobEntity mobEntity, long l) {
+    protected void method_19980(ServerWorld serverWorld, MobEntity mobEntity, long l) {
         if (!this.isAboveBed(serverWorld, mobEntity)) {
             --this.ticksOutOfBedUntilStopped;
             return;
@@ -119,12 +114,12 @@ extends Task<MobEntity> {
 
     @Override
     protected /* synthetic */ boolean shouldKeepRunning(ServerWorld serverWorld, LivingEntity livingEntity, long l) {
-        return this.shouldKeepRunning(serverWorld, (MobEntity)livingEntity, l);
+        return this.method_19978(serverWorld, (MobEntity)livingEntity, l);
     }
 
     @Override
     protected /* synthetic */ void finishRunning(ServerWorld serverWorld, LivingEntity livingEntity, long l) {
-        this.finishRunning(serverWorld, (MobEntity)livingEntity, l);
+        this.method_19976(serverWorld, (MobEntity)livingEntity, l);
     }
 }
 

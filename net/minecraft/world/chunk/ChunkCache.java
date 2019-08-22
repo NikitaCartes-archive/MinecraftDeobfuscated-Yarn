@@ -12,9 +12,9 @@ import net.minecraft.fluid.Fluids;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.shape.VoxelShape;
-import net.minecraft.world.CollisionView;
 import net.minecraft.world.Heightmap;
 import net.minecraft.world.LightType;
+import net.minecraft.world.ViewableWorld;
 import net.minecraft.world.World;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.border.WorldBorder;
@@ -25,7 +25,7 @@ import net.minecraft.world.dimension.Dimension;
 import org.jetbrains.annotations.Nullable;
 
 public class ChunkCache
-implements CollisionView {
+implements ViewableWorld {
     protected final int minX;
     protected final int minZ;
     protected final Chunk[][] chunks;

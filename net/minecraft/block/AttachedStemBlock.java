@@ -19,7 +19,7 @@ import net.minecraft.entity.EntityContext;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
-import net.minecraft.state.StateManager;
+import net.minecraft.state.StateFactory;
 import net.minecraft.state.property.DirectionProperty;
 import net.minecraft.util.BlockMirror;
 import net.minecraft.util.BlockRotation;
@@ -37,7 +37,7 @@ extends PlantBlock {
 
     protected AttachedStemBlock(GourdBlock gourdBlock, Block.Settings settings) {
         super(settings);
-        this.setDefaultState((BlockState)((BlockState)this.stateManager.getDefaultState()).with(FACING, Direction.NORTH));
+        this.setDefaultState((BlockState)((BlockState)this.stateFactory.getDefaultState()).with(FACING, Direction.NORTH));
         this.gourdBlock = gourdBlock;
     }
 
@@ -87,7 +87,7 @@ extends PlantBlock {
     }
 
     @Override
-    protected void appendProperties(StateManager.Builder<Block, BlockState> builder) {
+    protected void appendProperties(StateFactory.Builder<Block, BlockState> builder) {
         builder.add(FACING);
     }
 }

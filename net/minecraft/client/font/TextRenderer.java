@@ -7,7 +7,7 @@ import com.google.common.collect.Lists;
 import com.ibm.icu.text.ArabicShaping;
 import com.ibm.icu.text.ArabicShapingException;
 import com.ibm.icu.text.Bidi;
-import com.mojang.blaze3d.platform.GlStateManager;
+import com.mojang.blaze3d.systems.RenderSystem;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -50,12 +50,12 @@ implements AutoCloseable {
     }
 
     public int drawWithShadow(String string, float f, float g, int i) {
-        GlStateManager.enableAlphaTest();
+        RenderSystem.enableAlphaTest();
         return this.draw(string, f, g, i, true);
     }
 
     public int draw(String string, float f, float g, int i) {
-        GlStateManager.enableAlphaTest();
+        RenderSystem.enableAlphaTest();
         return this.draw(string, f, g, i, false);
     }
 
@@ -96,9 +96,9 @@ implements AutoCloseable {
         float o = l;
         float p = (float)(i >> 24 & 0xFF) / 255.0f;
         Tessellator tessellator = Tessellator.getInstance();
-        BufferBuilder bufferBuilder = tessellator.getBuffer();
+        BufferBuilder bufferBuilder = tessellator.getBufferBuilder();
         Identifier identifier = null;
-        bufferBuilder.begin(7, VertexFormats.POSITION_TEXTURE_COLOR);
+        bufferBuilder.begin(7, VertexFormats.POSITION_UV_COLOR);
         boolean bl2 = false;
         boolean bl3 = false;
         boolean bl4 = false;
@@ -149,7 +149,7 @@ implements AutoCloseable {
                 if (identifier != identifier2) {
                     tessellator.draw();
                     this.textureManager.bindTexture(identifier2);
-                    bufferBuilder.begin(7, VertexFormats.POSITION_TEXTURE_COLOR);
+                    bufferBuilder.begin(7, VertexFormats.POSITION_UV_COLOR);
                     identifier = identifier2;
                 }
                 s = bl3 ? glyph.getBoldOffset() : 0.0f;
@@ -168,13 +168,13 @@ implements AutoCloseable {
         }
         tessellator.draw();
         if (!list.isEmpty()) {
-            GlStateManager.disableTexture();
+            RenderSystem.disableTexture();
             bufferBuilder.begin(7, VertexFormats.POSITION_COLOR);
             for (Rectangle rectangle : list) {
                 rectangle.draw(bufferBuilder);
             }
             tessellator.draw();
-            GlStateManager.enableTexture();
+            RenderSystem.enableTexture();
         }
         return f;
     }
@@ -262,12 +262,12 @@ implements AutoCloseable {
         return string;
     }
 
-    public void drawTrimmed(String string, int i, int j, int k, int l) {
+    public void drawStringBounded(String string, int i, int j, int k, int l) {
         string = this.trimEndNewlines(string);
-        this.drawWrapped(string, i, j, k, l);
+        this.renderStringBounded(string, i, j, k, l);
     }
 
-    private void drawWrapped(String string, int i, int j, int k, int l) {
+    private void renderStringBounded(String string, int i, int j, int k, int l) {
         List<String> list = this.wrapStringToWidthAsList(string, k);
         for (String string2 : list) {
             float f = i;

@@ -17,7 +17,7 @@ import net.minecraft.entity.passive.VillagerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.GlobalPos;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.poi.PointOfInterestType;
+import net.minecraft.village.PointOfInterestType;
 
 public class VillagerBreedTask
 extends Task<VillagerEntity> {
@@ -27,28 +27,24 @@ extends Task<VillagerEntity> {
         super(ImmutableMap.of(MemoryModuleType.BREED_TARGET, MemoryModuleState.VALUE_PRESENT, MemoryModuleType.VISIBLE_MOBS, MemoryModuleState.VALUE_PRESENT), 350, 350);
     }
 
-    @Override
-    protected boolean shouldRun(ServerWorld serverWorld, VillagerEntity villagerEntity) {
+    protected boolean method_19571(ServerWorld serverWorld, VillagerEntity villagerEntity) {
         return this.method_18972(villagerEntity);
     }
 
-    @Override
-    protected boolean shouldKeepRunning(ServerWorld serverWorld, VillagerEntity villagerEntity, long l) {
+    protected boolean method_18973(ServerWorld serverWorld, VillagerEntity villagerEntity, long l) {
         return l <= this.field_18368 && this.method_18972(villagerEntity);
     }
 
-    @Override
-    protected void run(ServerWorld serverWorld, VillagerEntity villagerEntity, long l) {
+    protected void method_18974(ServerWorld serverWorld, VillagerEntity villagerEntity, long l) {
         VillagerEntity villagerEntity2 = this.method_19570(villagerEntity);
         LookTargetUtil.lookAtAndWalkTowardsEachOther(villagerEntity, villagerEntity2);
         serverWorld.sendEntityStatus(villagerEntity2, (byte)18);
         serverWorld.sendEntityStatus(villagerEntity, (byte)18);
-        int i = 275 + villagerEntity.getRandom().nextInt(50);
+        int i = 275 + villagerEntity.getRand().nextInt(50);
         this.field_18368 = l + (long)i;
     }
 
-    @Override
-    protected void keepRunning(ServerWorld serverWorld, VillagerEntity villagerEntity, long l) {
+    protected void method_18975(ServerWorld serverWorld, VillagerEntity villagerEntity, long l) {
         VillagerEntity villagerEntity2 = this.method_19570(villagerEntity);
         if (villagerEntity.squaredDistanceTo(villagerEntity2) > 5.0) {
             return;
@@ -58,7 +54,7 @@ extends Task<VillagerEntity> {
             villagerEntity.eatForBreeding();
             villagerEntity2.eatForBreeding();
             this.method_20643(serverWorld, villagerEntity, villagerEntity2);
-        } else if (villagerEntity.getRandom().nextInt(35) == 0) {
+        } else if (villagerEntity.getRand().nextInt(35) == 0) {
             serverWorld.sendEntityStatus(villagerEntity2, (byte)12);
             serverWorld.sendEntityStatus(villagerEntity, (byte)12);
         }
@@ -79,8 +75,7 @@ extends Task<VillagerEntity> {
         }
     }
 
-    @Override
-    protected void finishRunning(ServerWorld serverWorld, VillagerEntity villagerEntity, long l) {
+    protected void method_18976(ServerWorld serverWorld, VillagerEntity villagerEntity, long l) {
         villagerEntity.getBrain().forget(MemoryModuleType.BREED_TARGET);
     }
 
@@ -107,14 +102,14 @@ extends Task<VillagerEntity> {
     }
 
     private Optional<VillagerEntity> method_18970(VillagerEntity villagerEntity, VillagerEntity villagerEntity2) {
-        VillagerEntity villagerEntity3 = villagerEntity.createChild(villagerEntity2);
+        VillagerEntity villagerEntity3 = villagerEntity.method_7225(villagerEntity2);
         if (villagerEntity3 == null) {
             return Optional.empty();
         }
         villagerEntity.setBreedingAge(6000);
         villagerEntity2.setBreedingAge(6000);
         villagerEntity3.setBreedingAge(-24000);
-        villagerEntity3.refreshPositionAndAngles(villagerEntity.x, villagerEntity.y, villagerEntity.z, 0.0f, 0.0f);
+        villagerEntity3.setPositionAndAngles(villagerEntity.x, villagerEntity.y, villagerEntity.z, 0.0f, 0.0f);
         villagerEntity.world.spawnEntity(villagerEntity3);
         villagerEntity.world.sendEntityStatus(villagerEntity3, (byte)12);
         return Optional.of(villagerEntity3);
@@ -127,22 +122,22 @@ extends Task<VillagerEntity> {
 
     @Override
     protected /* synthetic */ boolean shouldKeepRunning(ServerWorld serverWorld, LivingEntity livingEntity, long l) {
-        return this.shouldKeepRunning(serverWorld, (VillagerEntity)livingEntity, l);
+        return this.method_18973(serverWorld, (VillagerEntity)livingEntity, l);
     }
 
     @Override
     protected /* synthetic */ void finishRunning(ServerWorld serverWorld, LivingEntity livingEntity, long l) {
-        this.finishRunning(serverWorld, (VillagerEntity)livingEntity, l);
+        this.method_18976(serverWorld, (VillagerEntity)livingEntity, l);
     }
 
     @Override
     protected /* synthetic */ void keepRunning(ServerWorld serverWorld, LivingEntity livingEntity, long l) {
-        this.keepRunning(serverWorld, (VillagerEntity)livingEntity, l);
+        this.method_18975(serverWorld, (VillagerEntity)livingEntity, l);
     }
 
     @Override
     protected /* synthetic */ void run(ServerWorld serverWorld, LivingEntity livingEntity, long l) {
-        this.run(serverWorld, (VillagerEntity)livingEntity, l);
+        this.method_18974(serverWorld, (VillagerEntity)livingEntity, l);
     }
 }
 

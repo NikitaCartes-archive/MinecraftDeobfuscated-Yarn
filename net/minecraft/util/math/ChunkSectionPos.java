@@ -26,7 +26,7 @@ extends Vec3i {
     }
 
     public static ChunkSectionPos from(BlockPos blockPos) {
-        return new ChunkSectionPos(ChunkSectionPos.getSectionCoord(blockPos.getX()), ChunkSectionPos.getSectionCoord(blockPos.getY()), ChunkSectionPos.getSectionCoord(blockPos.getZ()));
+        return new ChunkSectionPos(ChunkSectionPos.toChunkCoord(blockPos.getX()), ChunkSectionPos.toChunkCoord(blockPos.getY()), ChunkSectionPos.toChunkCoord(blockPos.getZ()));
     }
 
     public static ChunkSectionPos from(ChunkPos chunkPos, int i) {
@@ -34,98 +34,98 @@ extends Vec3i {
     }
 
     public static ChunkSectionPos from(Entity entity) {
-        return new ChunkSectionPos(ChunkSectionPos.getSectionCoord(MathHelper.floor(entity.x)), ChunkSectionPos.getSectionCoord(MathHelper.floor(entity.y)), ChunkSectionPos.getSectionCoord(MathHelper.floor(entity.z)));
+        return new ChunkSectionPos(ChunkSectionPos.toChunkCoord(MathHelper.floor(entity.x)), ChunkSectionPos.toChunkCoord(MathHelper.floor(entity.y)), ChunkSectionPos.toChunkCoord(MathHelper.floor(entity.z)));
     }
 
     public static ChunkSectionPos from(long l) {
-        return new ChunkSectionPos(ChunkSectionPos.getX(l), ChunkSectionPos.getY(l), ChunkSectionPos.getZ(l));
+        return new ChunkSectionPos(ChunkSectionPos.unpackLongX(l), ChunkSectionPos.unpackLongY(l), ChunkSectionPos.unpackLongZ(l));
     }
 
-    public static long offset(long l, Direction direction) {
-        return ChunkSectionPos.offset(l, direction.getOffsetX(), direction.getOffsetY(), direction.getOffsetZ());
+    public static long offsetPacked(long l, Direction direction) {
+        return ChunkSectionPos.offsetPacked(l, direction.getOffsetX(), direction.getOffsetY(), direction.getOffsetZ());
     }
 
-    public static long offset(long l, int i, int j, int k) {
-        return ChunkSectionPos.asLong(ChunkSectionPos.getX(l) + i, ChunkSectionPos.getY(l) + j, ChunkSectionPos.getZ(l) + k);
+    public static long offsetPacked(long l, int i, int j, int k) {
+        return ChunkSectionPos.asLong(ChunkSectionPos.unpackLongX(l) + i, ChunkSectionPos.unpackLongY(l) + j, ChunkSectionPos.unpackLongZ(l) + k);
     }
 
-    public static int getSectionCoord(int i) {
+    public static int toChunkCoord(int i) {
         return i >> 4;
     }
 
-    public static int getLocalCoord(int i) {
+    public static int toLocalCoord(int i) {
         return i & 0xF;
     }
 
-    public static short getPackedLocalPos(BlockPos blockPos) {
-        int i = ChunkSectionPos.getLocalCoord(blockPos.getX());
-        int j = ChunkSectionPos.getLocalCoord(blockPos.getY());
-        int k = ChunkSectionPos.getLocalCoord(blockPos.getZ());
+    public static short packToShort(BlockPos blockPos) {
+        int i = ChunkSectionPos.toLocalCoord(blockPos.getX());
+        int j = ChunkSectionPos.toLocalCoord(blockPos.getY());
+        int k = ChunkSectionPos.toLocalCoord(blockPos.getZ());
         return (short)(i << 8 | k << 4 | j);
     }
 
-    public static int getWorldCoord(int i) {
+    public static int fromChunkCoord(int i) {
         return i << 4;
     }
 
-    public static int getX(long l) {
+    public static int unpackLongX(long l) {
         return (int)(l << 0 >> 42);
     }
 
-    public static int getY(long l) {
+    public static int unpackLongY(long l) {
         return (int)(l << 44 >> 44);
     }
 
-    public static int getZ(long l) {
+    public static int unpackLongZ(long l) {
         return (int)(l << 22 >> 42);
     }
 
-    public int getSectionX() {
+    public int getChunkX() {
         return this.getX();
     }
 
-    public int getSectionY() {
+    public int getChunkY() {
         return this.getY();
     }
 
-    public int getSectionZ() {
+    public int getChunkZ() {
         return this.getZ();
     }
 
     public int getMinX() {
-        return this.getSectionX() << 4;
+        return this.getChunkX() << 4;
     }
 
     public int getMinY() {
-        return this.getSectionY() << 4;
+        return this.getChunkY() << 4;
     }
 
     public int getMinZ() {
-        return this.getSectionZ() << 4;
+        return this.getChunkZ() << 4;
     }
 
     public int getMaxX() {
-        return (this.getSectionX() << 4) + 15;
+        return (this.getChunkX() << 4) + 15;
     }
 
     public int getMaxY() {
-        return (this.getSectionY() << 4) + 15;
+        return (this.getChunkY() << 4) + 15;
     }
 
     public int getMaxZ() {
-        return (this.getSectionZ() << 4) + 15;
+        return (this.getChunkZ() << 4) + 15;
     }
 
-    public static long fromGlobalPos(long l) {
-        return ChunkSectionPos.asLong(ChunkSectionPos.getSectionCoord(BlockPos.unpackLongX(l)), ChunkSectionPos.getSectionCoord(BlockPos.unpackLongY(l)), ChunkSectionPos.getSectionCoord(BlockPos.unpackLongZ(l)));
+    public static long toChunkLong(long l) {
+        return ChunkSectionPos.asLong(ChunkSectionPos.toChunkCoord(BlockPos.unpackLongX(l)), ChunkSectionPos.toChunkCoord(BlockPos.unpackLongY(l)), ChunkSectionPos.toChunkCoord(BlockPos.unpackLongZ(l)));
     }
 
-    public static long withZeroZ(long l) {
+    public static long toLightStorageIndex(long l) {
         return l & 0xFFFFFFFFFFF00000L;
     }
 
     public BlockPos getMinPos() {
-        return new BlockPos(ChunkSectionPos.getWorldCoord(this.getSectionX()), ChunkSectionPos.getWorldCoord(this.getSectionY()), ChunkSectionPos.getWorldCoord(this.getSectionZ()));
+        return new BlockPos(ChunkSectionPos.fromChunkCoord(this.getChunkX()), ChunkSectionPos.fromChunkCoord(this.getChunkY()), ChunkSectionPos.fromChunkCoord(this.getChunkZ()));
     }
 
     public BlockPos getCenterPos() {
@@ -134,7 +134,7 @@ extends Vec3i {
     }
 
     public ChunkPos toChunkPos() {
-        return new ChunkPos(this.getSectionX(), this.getSectionZ());
+        return new ChunkPos(this.getChunkX(), this.getChunkZ());
     }
 
     public static long asLong(int i, int j, int k) {
@@ -145,7 +145,7 @@ extends Vec3i {
     }
 
     public long asLong() {
-        return ChunkSectionPos.asLong(this.getSectionX(), this.getSectionY(), this.getSectionZ());
+        return ChunkSectionPos.asLong(this.getChunkX(), this.getChunkY(), this.getChunkZ());
     }
 
     public Stream<BlockPos> streamBlocks() {
@@ -153,9 +153,9 @@ extends Vec3i {
     }
 
     public static Stream<ChunkSectionPos> stream(ChunkSectionPos chunkSectionPos, int i) {
-        int j = chunkSectionPos.getSectionX();
-        int k = chunkSectionPos.getSectionY();
-        int l = chunkSectionPos.getSectionZ();
+        int j = chunkSectionPos.getChunkX();
+        int k = chunkSectionPos.getChunkY();
+        int l = chunkSectionPos.getChunkZ();
         return ChunkSectionPos.stream(j - i, k - i, l - i, j + i, k + i, l + i);
     }
 

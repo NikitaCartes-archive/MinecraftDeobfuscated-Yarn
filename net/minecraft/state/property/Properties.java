@@ -92,6 +92,7 @@ public class Properties {
     public static final IntProperty LEVEL_3 = IntProperty.of("level", 0, 3);
     public static final IntProperty LEVEL_8 = IntProperty.of("level", 0, 8);
     public static final IntProperty LEVEL_1_8 = IntProperty.of("level", 1, 8);
+    public static final IntProperty HONEY_LEVEL = IntProperty.of("honey_level", 0, 5);
     public static final IntProperty LEVEL_15 = IntProperty.of("level", 0, 15);
     public static final IntProperty MOISTURE = IntProperty.of("moisture", 0, 7);
     public static final IntProperty NOTE = IntProperty.of("note", 0, 24);

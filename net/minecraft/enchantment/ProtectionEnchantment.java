@@ -14,11 +14,11 @@ import net.minecraft.util.math.MathHelper;
 
 public class ProtectionEnchantment
 extends Enchantment {
-    public final Type protectionType;
+    public final Type type;
 
     public ProtectionEnchantment(Enchantment.Weight weight, Type type, EquipmentSlot ... equipmentSlots) {
         super(weight, EnchantmentTarget.ARMOR, equipmentSlots);
-        this.protectionType = type;
+        this.type = type;
         if (type == Type.FALL) {
             this.type = EnchantmentTarget.ARMOR_FEET;
         }
@@ -26,12 +26,12 @@ extends Enchantment {
 
     @Override
     public int getMinimumPower(int i) {
-        return this.protectionType.getBasePower() + (i - 1) * this.protectionType.getPowerPerLevel();
+        return this.type.getBasePower() + (i - 1) * this.type.getPowerPerLevel();
     }
 
     @Override
     public int getMaximumPower(int i) {
-        return this.getMinimumPower(i) + this.protectionType.getPowerPerLevel();
+        return this.getMinimumPower(i) + this.type.getPowerPerLevel();
     }
 
     @Override
@@ -41,22 +41,22 @@ extends Enchantment {
 
     @Override
     public int getProtectionAmount(int i, DamageSource damageSource) {
-        if (damageSource.isOutOfWorld()) {
+        if (damageSource.doesDamageToCreative()) {
             return 0;
         }
-        if (this.protectionType == Type.ALL) {
+        if (this.type == Type.ALL) {
             return i;
         }
-        if (this.protectionType == Type.FIRE && damageSource.isFire()) {
+        if (this.type == Type.FIRE && damageSource.isFire()) {
             return i * 2;
         }
-        if (this.protectionType == Type.FALL && damageSource == DamageSource.FALL) {
+        if (this.type == Type.FALL && damageSource == DamageSource.FALL) {
             return i * 3;
         }
-        if (this.protectionType == Type.EXPLOSION && damageSource.isExplosive()) {
+        if (this.type == Type.EXPLOSION && damageSource.isExplosive()) {
             return i * 2;
         }
-        if (this.protectionType == Type.PROJECTILE && damageSource.isProjectile()) {
+        if (this.type == Type.PROJECTILE && damageSource.isProjectile()) {
             return i * 2;
         }
         return 0;
@@ -66,10 +66,10 @@ extends Enchantment {
     public boolean differs(Enchantment enchantment) {
         if (enchantment instanceof ProtectionEnchantment) {
             ProtectionEnchantment protectionEnchantment = (ProtectionEnchantment)enchantment;
-            if (this.protectionType == protectionEnchantment.protectionType) {
+            if (this.type == protectionEnchantment.type) {
                 return false;
             }
-            return this.protectionType == Type.FALL || protectionEnchantment.protectionType == Type.FALL;
+            return this.type == Type.FALL || protectionEnchantment.type == Type.FALL;
         }
         return super.differs(enchantment);
     }

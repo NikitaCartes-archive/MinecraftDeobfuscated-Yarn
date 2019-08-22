@@ -95,7 +95,7 @@ extends IllagerEntity {
             double d = spell.particleVelocity[0];
             double e = spell.particleVelocity[1];
             double f = spell.particleVelocity[2];
-            float g = this.field_6283 * ((float)Math.PI / 180) + MathHelper.cos((float)this.age * 0.6662f) * 0.25f;
+            float g = this.bodyYaw * ((float)Math.PI / 180) + MathHelper.cos((float)this.age * 0.6662f) * 0.25f;
             float h = MathHelper.cos(g);
             float i = MathHelper.sin(g);
             this.world.addParticle(ParticleTypes.ENTITY_EFFECT, this.x + (double)h * 0.6, this.y + 1.8, this.z + (double)i * 0.6, d, e, f);

@@ -23,8 +23,8 @@ extends ShapedRecipe {
     }
 
     @Override
-    public boolean matches(CraftingInventory craftingInventory, World world) {
-        if (!super.matches(craftingInventory, world)) {
+    public boolean method_17728(CraftingInventory craftingInventory, World world) {
+        if (!super.method_17728(craftingInventory, world)) {
             return false;
         }
         ItemStack itemStack = ItemStack.EMPTY;
@@ -57,7 +57,7 @@ extends ShapedRecipe {
     }
 
     @Override
-    public ItemStack craft(CraftingInventory craftingInventory) {
+    public ItemStack method_17727(CraftingInventory craftingInventory) {
         ItemStack itemStack = ItemStack.EMPTY;
         for (int i = 0; i < craftingInventory.getInvSize() && itemStack.isEmpty(); ++i) {
             ItemStack itemStack2 = craftingInventory.getInvStack(i);

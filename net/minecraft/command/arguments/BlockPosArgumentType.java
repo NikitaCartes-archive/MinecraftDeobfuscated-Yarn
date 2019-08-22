@@ -50,8 +50,7 @@ implements ArgumentType<PosArgument> {
         return commandContext.getArgument(string, PosArgument.class).toAbsoluteBlockPos(commandContext.getSource());
     }
 
-    @Override
-    public PosArgument parse(StringReader stringReader) throws CommandSyntaxException {
+    public PosArgument method_9699(StringReader stringReader) throws CommandSyntaxException {
         if (stringReader.canRead() && stringReader.peek() == '^') {
             return LookingPosArgument.parse(stringReader);
         }
@@ -63,7 +62,7 @@ implements ArgumentType<PosArgument> {
         if (commandContext.getSource() instanceof CommandSource) {
             String string = suggestionsBuilder.getRemaining();
             Collection<CommandSource.RelativePosition> collection = !string.isEmpty() && string.charAt(0) == '^' ? Collections.singleton(CommandSource.RelativePosition.ZERO_LOCAL) : ((CommandSource)commandContext.getSource()).getBlockPositionSuggestions();
-            return CommandSource.suggestPositions(string, collection, suggestionsBuilder, CommandManager.getCommandValidator(this::parse));
+            return CommandSource.suggestPositions(string, collection, suggestionsBuilder, CommandManager.getCommandValidator(this::method_9699));
         }
         return Suggestions.empty();
     }
@@ -75,7 +74,7 @@ implements ArgumentType<PosArgument> {
 
     @Override
     public /* synthetic */ Object parse(StringReader stringReader) throws CommandSyntaxException {
-        return this.parse(stringReader);
+        return this.method_9699(stringReader);
     }
 }
 

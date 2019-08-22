@@ -70,8 +70,7 @@ extends SpriteBillboardParticle {
             this.field_17813 = spriteProvider;
         }
 
-        @Override
-        public Particle createParticle(DefaultParticleType defaultParticleType, World world, double d, double e, double f, double g, double h, double i) {
+        public Particle method_3034(DefaultParticleType defaultParticleType, World world, double d, double e, double f, double g, double h, double i) {
             EmotionParticle emotionParticle = new EmotionParticle(world, d, e + 0.5, f);
             emotionParticle.setSprite(this.field_17813);
             emotionParticle.setColor(1.0f, 1.0f, 1.0f);
@@ -88,8 +87,7 @@ extends SpriteBillboardParticle {
             this.field_17814 = spriteProvider;
         }
 
-        @Override
-        public Particle createParticle(DefaultParticleType defaultParticleType, World world, double d, double e, double f, double g, double h, double i) {
+        public Particle method_3035(DefaultParticleType defaultParticleType, World world, double d, double e, double f, double g, double h, double i) {
             EmotionParticle emotionParticle = new EmotionParticle(world, d, e, f);
             emotionParticle.setSprite(this.field_17814);
             return emotionParticle;

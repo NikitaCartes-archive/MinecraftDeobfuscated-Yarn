@@ -42,9 +42,9 @@ import net.minecraft.tag.FluidTags;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
-import net.minecraft.world.CollisionView;
 import net.minecraft.world.Difficulty;
 import net.minecraft.world.IWorld;
+import net.minecraft.world.ViewableWorld;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
 
@@ -194,11 +194,11 @@ extends HostileEntity {
     }
 
     @Override
-    public float getPathfindingFavor(BlockPos blockPos, CollisionView collisionView) {
-        if (collisionView.getFluidState(blockPos).matches(FluidTags.WATER)) {
-            return 10.0f + collisionView.getBrightness(blockPos) - 0.5f;
+    public float getPathfindingFavor(BlockPos blockPos, ViewableWorld viewableWorld) {
+        if (viewableWorld.getFluidState(blockPos).matches(FluidTags.WATER)) {
+            return 10.0f + viewableWorld.getBrightness(blockPos) - 0.5f;
         }
-        return super.getPathfindingFavor(blockPos, collisionView);
+        return super.getPathfindingFavor(blockPos, viewableWorld);
     }
 
     @Override
@@ -207,20 +207,20 @@ extends HostileEntity {
             if (this.world.isClient) {
                 Vec3d vec3d;
                 this.prevSpikesExtension = this.spikesExtension;
-                if (!this.isTouchingWater()) {
+                if (!this.isInsideWater()) {
                     this.spikesExtensionRate = 2.0f;
                     vec3d = this.getVelocity();
                     if (vec3d.y > 0.0 && this.flopping && !this.isSilent()) {
                         this.world.playSound(this.x, this.y, this.z, this.getFlopSound(), this.getSoundCategory(), 1.0f, 1.0f, false);
                     }
-                    this.flopping = vec3d.y < 0.0 && this.world.isTopSolid(new BlockPos(this).down(), this);
+                    this.flopping = vec3d.y < 0.0 && this.world.doesBlockHaveSolidTopSurface(new BlockPos(this).down(), this);
                 } else {
                     this.spikesExtensionRate = this.areSpikesRetracted() ? (this.spikesExtensionRate < 0.5f ? 4.0f : (this.spikesExtensionRate += (0.5f - this.spikesExtensionRate) * 0.1f)) : (this.spikesExtensionRate += (0.125f - this.spikesExtensionRate) * 0.2f);
                 }
                 this.spikesExtension += this.spikesExtensionRate;
                 this.prevTailAngle = this.tailAngle;
                 this.tailAngle = !this.isInsideWaterOrBubbleColumn() ? this.random.nextFloat() : (this.areSpikesRetracted() ? (this.tailAngle += (0.0f - this.tailAngle) * 0.25f) : (this.tailAngle += (1.0f - this.tailAngle) * 0.06f));
-                if (this.areSpikesRetracted() && this.isTouchingWater()) {
+                if (this.areSpikesRetracted() && this.isInsideWater()) {
                     vec3d = this.getRotationVec(0.0f);
                     for (int i = 0; i < 2; ++i) {
                         this.world.addParticle(ParticleTypes.BUBBLE, this.x + (this.random.nextDouble() - 0.5) * (double)this.getWidth() - vec3d.x * 1.5, this.y + this.random.nextDouble() * (double)this.getHeight() - vec3d.y * 1.5, this.z + (this.random.nextDouble() - 0.5) * (double)this.getWidth() - vec3d.z * 1.5, 0.0, 0.0, 0.0);
@@ -250,7 +250,7 @@ extends HostileEntity {
                 }
             }
             if (this.isInsideWaterOrBubbleColumn()) {
-                this.setAir(300);
+                this.setBreath(300);
             } else if (this.onGround) {
                 this.setVelocity(this.getVelocity().add((this.random.nextFloat() * 2.0f - 1.0f) * 0.4f, 0.5, (this.random.nextFloat() * 2.0f - 1.0f) * 0.4f));
                 this.yaw = this.random.nextFloat() * 360.0f;
@@ -283,8 +283,8 @@ extends HostileEntity {
     }
 
     @Override
-    public boolean canSpawn(CollisionView collisionView) {
-        return collisionView.intersectsEntities(this);
+    public boolean canSpawn(ViewableWorld viewableWorld) {
+        return viewableWorld.intersectsEntities(this);
     }
 
     public static boolean method_20676(EntityType<? extends GuardianEntity> entityType, IWorld iWorld, SpawnType spawnType, BlockPos blockPos, Random random) {
@@ -312,7 +312,7 @@ extends HostileEntity {
 
     @Override
     public void travel(Vec3d vec3d) {
-        if (this.canMoveVoluntarily() && this.isTouchingWater()) {
+        if (this.canMoveVoluntarily() && this.isInsideWater()) {
             this.updateVelocity(0.1f, vec3d);
             this.move(MovementType.SELF, this.getVelocity());
             this.setVelocity(this.getVelocity().multiply(0.9));
@@ -346,7 +346,7 @@ extends HostileEntity {
             double f = vec3d.y / d;
             double g = vec3d.z / d;
             float h = (float)(MathHelper.atan2(vec3d.z, vec3d.x) * 57.2957763671875) - 90.0f;
-            this.guardian.field_6283 = this.guardian.yaw = this.changeAngle(this.guardian.yaw, h, 90.0f);
+            this.guardian.bodyYaw = this.guardian.yaw = this.changeAngle(this.guardian.yaw, h, 90.0f);
             float i = (float)(this.speed * this.guardian.getAttributeInstance(EntityAttributes.MOVEMENT_SPEED).getValue());
             float j = MathHelper.lerp(0.125f, this.guardian.getMovementSpeed(), i);
             this.guardian.setMovementSpeed(j);
@@ -447,14 +447,13 @@ extends HostileEntity {
             this.owner = guardianEntity;
         }
 
-        @Override
-        public boolean test(@Nullable LivingEntity livingEntity) {
+        public boolean method_7064(@Nullable LivingEntity livingEntity) {
             return (livingEntity instanceof PlayerEntity || livingEntity instanceof SquidEntity) && livingEntity.squaredDistanceTo(this.owner) > 9.0;
         }
 
         @Override
         public /* synthetic */ boolean test(@Nullable Object object) {
-            return this.test((LivingEntity)object);
+            return this.method_7064((LivingEntity)object);
         }
     }
 }

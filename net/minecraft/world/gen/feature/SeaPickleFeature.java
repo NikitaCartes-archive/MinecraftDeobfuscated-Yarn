@@ -22,8 +22,7 @@ extends Feature<SeaPickleFeatureConfig> {
         super(function);
     }
 
-    @Override
-    public boolean generate(IWorld iWorld, ChunkGenerator<?> chunkGenerator, Random random, BlockPos blockPos, SeaPickleFeatureConfig seaPickleFeatureConfig) {
+    public boolean method_13876(IWorld iWorld, ChunkGenerator<?> chunkGenerator, Random random, BlockPos blockPos, SeaPickleFeatureConfig seaPickleFeatureConfig) {
         int i = 0;
         for (int j = 0; j < seaPickleFeatureConfig.count; ++j) {
             int k = random.nextInt(8) - random.nextInt(8);

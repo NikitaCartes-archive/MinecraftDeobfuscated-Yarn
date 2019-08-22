@@ -7,6 +7,7 @@ import java.util.Optional;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.block.Blocks;
+import net.minecraft.client.network.packet.GuiSlotUpdateS2CPacket;
 import net.minecraft.container.BlockContext;
 import net.minecraft.container.ContainerType;
 import net.minecraft.container.CraftingContainer;
@@ -18,7 +19,6 @@ import net.minecraft.inventory.CraftingInventory;
 import net.minecraft.inventory.CraftingResultInventory;
 import net.minecraft.inventory.Inventory;
 import net.minecraft.item.ItemStack;
-import net.minecraft.network.packet.s2c.play.ContainerSlotUpdateS2CPacket;
 import net.minecraft.recipe.CraftingRecipe;
 import net.minecraft.recipe.Recipe;
 import net.minecraft.recipe.RecipeFinder;
@@ -71,7 +71,7 @@ extends CraftingContainer<CraftingInventory> {
             itemStack = craftingRecipe.craft(craftingInventory);
         }
         craftingResultInventory.setInvStack(0, itemStack);
-        serverPlayerEntity.networkHandler.sendPacket(new ContainerSlotUpdateS2CPacket(i, 0, itemStack));
+        serverPlayerEntity.networkHandler.sendPacket(new GuiSlotUpdateS2CPacket(i, 0, itemStack));
     }
 
     @Override
@@ -109,7 +109,7 @@ extends CraftingContainer<CraftingInventory> {
     @Override
     public ItemStack transferSlot(PlayerEntity playerEntity, int i) {
         ItemStack itemStack = ItemStack.EMPTY;
-        Slot slot = (Slot)this.slots.get(i);
+        Slot slot = (Slot)this.slotList.get(i);
         if (slot != null && slot.hasStack()) {
             ItemStack itemStack2 = slot.getStack();
             itemStack = itemStack2.copy();
@@ -119,7 +119,7 @@ extends CraftingContainer<CraftingInventory> {
                     return ItemStack.EMPTY;
                 }
                 slot.onStackChanged(itemStack2, itemStack);
-            } else if (i >= 10 && i < 37 ? !this.insertItem(itemStack2, 37, 46, false) : (i >= 37 && i < 46 ? !this.insertItem(itemStack2, 10, 37, false) : !this.insertItem(itemStack2, 10, 46, false))) {
+            } else if (i >= 10 && i < 46 ? !this.insertItem(itemStack2, 1, 10, false) && (i < 37 ? !this.insertItem(itemStack2, 37, 46, false) : !this.insertItem(itemStack2, 10, 37, false)) : !this.insertItem(itemStack2, 10, 46, false)) {
                 return ItemStack.EMPTY;
             }
             if (itemStack2.isEmpty()) {

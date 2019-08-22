@@ -27,7 +27,7 @@ implements TypeAdapterFactory {
         }
         final HashMap<String, T> map = Maps.newHashMap();
         for (T object : class_.getEnumConstants()) {
-            map.put(this.getKey(object), object);
+            map.put(this.toString(object), object);
         }
         return new TypeAdapter<T>(){
 
@@ -36,7 +36,7 @@ implements TypeAdapterFactory {
                 if (object == null) {
                     jsonWriter.nullValue();
                 } else {
-                    jsonWriter.value(LowercaseEnumTypeAdapterFactory.this.getKey(object));
+                    jsonWriter.value(LowercaseEnumTypeAdapterFactory.this.toString(object));
                 }
             }
 
@@ -52,7 +52,7 @@ implements TypeAdapterFactory {
         };
     }
 
-    private String getKey(Object object) {
+    private String toString(Object object) {
         if (object instanceof Enum) {
             return ((Enum)object).name().toLowerCase(Locale.ROOT);
         }

@@ -14,7 +14,6 @@ import net.minecraft.block.ChestBlock;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.SpawnType;
 import net.minecraft.entity.mob.IllagerEntity;
-import net.minecraft.loot.LootTables;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.structure.SimpleStructurePiece;
 import net.minecraft.structure.Structure;
@@ -26,10 +25,11 @@ import net.minecraft.util.BlockMirror;
 import net.minecraft.util.BlockRotation;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Pair;
-import net.minecraft.util.math.BlockBox;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
+import net.minecraft.util.math.MutableIntBoundingBox;
 import net.minecraft.world.IWorld;
+import net.minecraft.world.loot.LootTables;
 import org.jetbrains.annotations.Nullable;
 
 public class WoodlandMansionGenerator {
@@ -948,7 +948,7 @@ public class WoodlandMansionGenerator {
         }
 
         @Override
-        protected void handleMetadata(String string, BlockPos blockPos, IWorld iWorld, Random random, BlockBox blockBox) {
+        protected void handleMetadata(String string, BlockPos blockPos, IWorld iWorld, Random random, MutableIntBoundingBox mutableIntBoundingBox) {
             if (string.startsWith("Chest")) {
                 BlockRotation blockRotation = this.placementData.getRotation();
                 BlockState blockState = Blocks.CHEST.getDefaultState();
@@ -961,7 +961,7 @@ public class WoodlandMansionGenerator {
                 } else if ("ChestNorth".equals(string)) {
                     blockState = (BlockState)blockState.with(ChestBlock.FACING, blockRotation.rotate(Direction.NORTH));
                 }
-                this.addChest(iWorld, blockBox, random, blockPos, LootTables.WOODLAND_MANSION_CHEST, blockState);
+                this.addChest(iWorld, mutableIntBoundingBox, random, blockPos, LootTables.WOODLAND_MANSION_CHEST, blockState);
             } else {
                 IllagerEntity illagerEntity;
                 switch (string) {
@@ -978,7 +978,7 @@ public class WoodlandMansionGenerator {
                     }
                 }
                 illagerEntity.setPersistent();
-                illagerEntity.refreshPositionAndAngles(blockPos, 0.0f, 0.0f);
+                illagerEntity.setPositionAndAngles(blockPos, 0.0f, 0.0f);
                 illagerEntity.initialize(iWorld, iWorld.getLocalDifficulty(new BlockPos(illagerEntity)), SpawnType.STRUCTURE, null, null);
                 iWorld.spawnEntity(illagerEntity);
                 iWorld.setBlockState(blockPos, Blocks.AIR.getDefaultState(), 2);

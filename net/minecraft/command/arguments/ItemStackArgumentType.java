@@ -23,8 +23,7 @@ implements ArgumentType<ItemStackArgument> {
         return new ItemStackArgumentType();
     }
 
-    @Override
-    public ItemStackArgument parse(StringReader stringReader) throws CommandSyntaxException {
+    public ItemStackArgument method_9778(StringReader stringReader) throws CommandSyntaxException {
         ItemStringReader itemStringReader = new ItemStringReader(stringReader, false).consume();
         return new ItemStackArgument(itemStringReader.getItem(), itemStringReader.getTag());
     }
@@ -53,7 +52,7 @@ implements ArgumentType<ItemStackArgument> {
 
     @Override
     public /* synthetic */ Object parse(StringReader stringReader) throws CommandSyntaxException {
-        return this.parse(stringReader);
+        return this.method_9778(stringReader);
     }
 }
 

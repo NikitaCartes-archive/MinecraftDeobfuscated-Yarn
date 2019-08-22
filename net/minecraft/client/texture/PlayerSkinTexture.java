@@ -3,7 +3,6 @@
  */
 package net.minecraft.client.texture;
 
-import com.mojang.blaze3d.platform.TextureUtil;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -13,6 +12,7 @@ import java.net.URL;
 import java.util.concurrent.atomic.AtomicInteger;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.class_4536;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.texture.ImageFilter;
 import net.minecraft.client.texture.NativeImage;
@@ -48,7 +48,7 @@ extends ResourceTexture {
     }
 
     private void method_4531(NativeImage nativeImage) {
-        TextureUtil.prepareImage(this.getGlId(), nativeImage.getWidth(), nativeImage.getHeight());
+        class_4536.prepareImage(this.getGlId(), nativeImage.getWidth(), nativeImage.getHeight());
         nativeImage.upload(0, 0, 0, false);
     }
 

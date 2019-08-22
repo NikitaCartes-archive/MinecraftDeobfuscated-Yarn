@@ -39,23 +39,23 @@ extends EntityModel<T> {
         int m;
         float l = h * (float)Math.PI * -0.1f;
         for (m = 0; m < 4; ++m) {
-            this.field_3328[m].pivotY = -2.0f + MathHelper.cos(((float)(m * 2) + h) * 0.25f);
-            this.field_3328[m].pivotX = MathHelper.cos(l) * 9.0f;
-            this.field_3328[m].pivotZ = MathHelper.sin(l) * 9.0f;
+            this.field_3328[m].rotationPointY = -2.0f + MathHelper.cos(((float)(m * 2) + h) * 0.25f);
+            this.field_3328[m].rotationPointX = MathHelper.cos(l) * 9.0f;
+            this.field_3328[m].rotationPointZ = MathHelper.sin(l) * 9.0f;
             l += 1.5707964f;
         }
         l = 0.7853982f + h * (float)Math.PI * 0.03f;
         for (m = 4; m < 8; ++m) {
-            this.field_3328[m].pivotY = 2.0f + MathHelper.cos(((float)(m * 2) + h) * 0.25f);
-            this.field_3328[m].pivotX = MathHelper.cos(l) * 7.0f;
-            this.field_3328[m].pivotZ = MathHelper.sin(l) * 7.0f;
+            this.field_3328[m].rotationPointY = 2.0f + MathHelper.cos(((float)(m * 2) + h) * 0.25f);
+            this.field_3328[m].rotationPointX = MathHelper.cos(l) * 7.0f;
+            this.field_3328[m].rotationPointZ = MathHelper.sin(l) * 7.0f;
             l += 1.5707964f;
         }
         l = 0.47123894f + h * (float)Math.PI * -0.05f;
         for (m = 8; m < 12; ++m) {
-            this.field_3328[m].pivotY = 11.0f + MathHelper.cos(((float)m * 1.5f + h) * 0.5f);
-            this.field_3328[m].pivotX = MathHelper.cos(l) * 5.0f;
-            this.field_3328[m].pivotZ = MathHelper.sin(l) * 5.0f;
+            this.field_3328[m].rotationPointY = 11.0f + MathHelper.cos(((float)m * 1.5f + h) * 0.5f);
+            this.field_3328[m].rotationPointX = MathHelper.cos(l) * 5.0f;
+            this.field_3328[m].rotationPointZ = MathHelper.sin(l) * 5.0f;
             l += 1.5707964f;
         }
         this.field_3329.yaw = i * ((float)Math.PI / 180);

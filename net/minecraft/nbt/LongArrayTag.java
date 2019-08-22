@@ -82,8 +82,7 @@ extends AbstractListTag<LongTag> {
         return stringBuilder.append(']').toString();
     }
 
-    @Override
-    public LongArrayTag copy() {
+    public LongArrayTag method_10618() {
         long[] ls = new long[this.value.length];
         System.arraycopy(this.value, 0, ls, 0, this.value.length);
         return new LongArrayTag(ls);
@@ -125,19 +124,17 @@ extends AbstractListTag<LongTag> {
         return this.value.length;
     }
 
-    @Override
-    public LongTag get(int i) {
+    public LongTag method_10616(int i) {
         return new LongTag(this.value[i]);
     }
 
-    @Override
-    public LongTag set(int i, LongTag longTag) {
+    public LongTag method_17810(int i, LongTag longTag) {
         long l = this.value[i];
         this.value[i] = longTag.getLong();
         return new LongTag(l);
     }
 
-    public void method_10531(int i, LongTag longTag) {
+    public void method_17812(int i, LongTag longTag) {
         this.value = ArrayUtils.add(this.value, i, longTag.getLong());
     }
 
@@ -159,7 +156,7 @@ extends AbstractListTag<LongTag> {
         return false;
     }
 
-    public LongTag method_10536(int i) {
+    public LongTag method_17811(int i) {
         long l = this.value[i];
         this.value = ArrayUtils.remove(this.value, i);
         return new LongTag(l);
@@ -171,43 +168,43 @@ extends AbstractListTag<LongTag> {
     }
 
     @Override
-    public /* synthetic */ Tag remove(int i) {
-        return this.method_10536(i);
+    public /* synthetic */ Tag method_10536(int i) {
+        return this.method_17811(i);
     }
 
     @Override
-    public /* synthetic */ void add(int i, Tag tag) {
-        this.method_10531(i, (LongTag)tag);
+    public /* synthetic */ void method_10531(int i, Tag tag) {
+        this.method_17812(i, (LongTag)tag);
     }
 
     @Override
-    public /* synthetic */ Tag set(int i, Tag tag) {
-        return this.set(i, (LongTag)tag);
+    public /* synthetic */ Tag method_10606(int i, Tag tag) {
+        return this.method_17810(i, (LongTag)tag);
     }
 
     @Override
     public /* synthetic */ Tag copy() {
-        return this.copy();
+        return this.method_10618();
     }
 
     @Override
     public /* synthetic */ Object remove(int i) {
-        return this.method_10536(i);
+        return this.method_17811(i);
     }
 
     @Override
     public /* synthetic */ void add(int i, Object object) {
-        this.method_10531(i, (LongTag)object);
+        this.method_17812(i, (LongTag)object);
     }
 
     @Override
     public /* synthetic */ Object set(int i, Object object) {
-        return this.set(i, (LongTag)object);
+        return this.method_17810(i, (LongTag)object);
     }
 
     @Override
     public /* synthetic */ Object get(int i) {
-        return this.get(i);
+        return this.method_10616(i);
     }
 }
 

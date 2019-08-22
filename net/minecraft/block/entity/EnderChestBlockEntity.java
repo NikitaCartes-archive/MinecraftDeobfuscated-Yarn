@@ -75,9 +75,9 @@ Tickable {
     }
 
     @Override
-    public void markRemoved() {
+    public void invalidate() {
         this.resetBlock();
-        super.markRemoved();
+        super.invalidate();
     }
 
     public void onOpen() {

@@ -38,8 +38,7 @@ implements ArgumentType<String> {
         return team;
     }
 
-    @Override
-    public String parse(StringReader stringReader) throws CommandSyntaxException {
+    public String method_9483(StringReader stringReader) throws CommandSyntaxException {
         return stringReader.readUnquotedString();
     }
 
@@ -58,7 +57,7 @@ implements ArgumentType<String> {
 
     @Override
     public /* synthetic */ Object parse(StringReader stringReader) throws CommandSyntaxException {
-        return this.parse(stringReader);
+        return this.method_9483(stringReader);
     }
 }
 

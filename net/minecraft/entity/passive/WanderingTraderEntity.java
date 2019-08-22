@@ -32,13 +32,13 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.NbtHelper;
 import net.minecraft.potion.PotionUtil;
 import net.minecraft.potion.Potions;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.stat.Stats;
 import net.minecraft.util.Hand;
+import net.minecraft.util.TagHelper;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.village.TradeOffer;
@@ -61,8 +61,8 @@ extends AbstractTraderEntity {
     @Override
     protected void initGoals() {
         this.goalSelector.add(0, new SwimGoal(this));
-        this.goalSelector.add(0, new HoldInHandsGoal<WanderingTraderEntity>(this, PotionUtil.setPotion(new ItemStack(Items.POTION), Potions.INVISIBILITY), SoundEvents.ENTITY_WANDERING_TRADER_DISAPPEARED, wanderingTraderEntity -> !this.world.isDay() && !wanderingTraderEntity.isInvisible()));
-        this.goalSelector.add(0, new HoldInHandsGoal<WanderingTraderEntity>(this, new ItemStack(Items.MILK_BUCKET), SoundEvents.ENTITY_WANDERING_TRADER_REAPPEARED, wanderingTraderEntity -> this.world.isDay() && wanderingTraderEntity.isInvisible()));
+        this.goalSelector.add(0, new HoldInHandsGoal<WanderingTraderEntity>(this, PotionUtil.setPotion(new ItemStack(Items.POTION), Potions.INVISIBILITY), SoundEvents.ENTITY_WANDERING_TRADER_DISAPPEARED, wanderingTraderEntity -> !this.world.isDaylight() && !wanderingTraderEntity.isInvisible()));
+        this.goalSelector.add(0, new HoldInHandsGoal<WanderingTraderEntity>(this, new ItemStack(Items.MILK_BUCKET), SoundEvents.ENTITY_WANDERING_TRADER_REAPPEARED, wanderingTraderEntity -> this.world.isDaylight() && wanderingTraderEntity.isInvisible()));
         this.goalSelector.add(1, new StopFollowingCustomerGoal(this));
         this.goalSelector.add(1, new FleeEntityGoal<ZombieEntity>(this, ZombieEntity.class, 8.0f, 0.5, 0.5));
         this.goalSelector.add(1, new FleeEntityGoal<EvokerEntity>(this, EvokerEntity.class, 12.0f, 0.5, 0.5));
@@ -137,18 +137,18 @@ extends AbstractTraderEntity {
         super.writeCustomDataToTag(compoundTag);
         compoundTag.putInt("DespawnDelay", this.despawnDelay);
         if (this.wanderTarget != null) {
-            compoundTag.put("WanderTarget", NbtHelper.fromBlockPos(this.wanderTarget));
+            compoundTag.put("WanderTarget", TagHelper.serializeBlockPos(this.wanderTarget));
         }
     }
 
     @Override
     public void readCustomDataFromTag(CompoundTag compoundTag) {
         super.readCustomDataFromTag(compoundTag);
-        if (compoundTag.contains("DespawnDelay", 99)) {
+        if (compoundTag.containsKey("DespawnDelay", 99)) {
             this.despawnDelay = compoundTag.getInt("DespawnDelay");
         }
-        if (compoundTag.contains("WanderTarget")) {
-            this.wanderTarget = NbtHelper.toBlockPos(compoundTag.getCompound("WanderTarget"));
+        if (compoundTag.containsKey("WanderTarget")) {
+            this.wanderTarget = TagHelper.deserializeBlockPos(compoundTag.getCompound("WanderTarget"));
         }
         this.setBreedingAge(Math.max(0, this.getBreedingAge()));
     }

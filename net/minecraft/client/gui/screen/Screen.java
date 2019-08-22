@@ -6,7 +6,7 @@ package net.minecraft.client.gui.screen;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import com.google.gson.JsonSyntaxException;
-import com.mojang.blaze3d.platform.GlStateManager;
+import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import java.io.File;
 import java.net.URI;
@@ -27,7 +27,7 @@ import net.minecraft.client.gui.screen.ConfirmChatLinkScreen;
 import net.minecraft.client.gui.widget.AbstractButtonWidget;
 import net.minecraft.client.item.TooltipContext;
 import net.minecraft.client.render.BufferBuilder;
-import net.minecraft.client.render.DiffuseLighting;
+import net.minecraft.client.render.GuiLighting;
 import net.minecraft.client.render.Tessellator;
 import net.minecraft.client.render.VertexFormats;
 import net.minecraft.client.render.item.ItemRenderer;
@@ -39,7 +39,7 @@ import net.minecraft.text.ClickEvent;
 import net.minecraft.text.HoverEvent;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
-import net.minecraft.util.Util;
+import net.minecraft.util.SystemUtil;
 import net.minecraft.util.crash.CrashException;
 import net.minecraft.util.crash.CrashReport;
 import net.minecraft.util.crash.CrashReportSection;
@@ -137,10 +137,10 @@ implements Drawable {
         if (list.isEmpty()) {
             return;
         }
-        GlStateManager.disableRescaleNormal();
-        DiffuseLighting.disable();
-        GlStateManager.disableLighting();
-        GlStateManager.disableDepthTest();
+        RenderSystem.disableRescaleNormal();
+        GuiLighting.disable();
+        RenderSystem.disableLighting();
+        RenderSystem.disableDepthTest();
         int k = 0;
         for (String string : list) {
             l = this.font.getStringWidth(string);
@@ -184,10 +184,10 @@ implements Drawable {
         }
         this.blitOffset = 0;
         this.itemRenderer.zOffset = 0.0f;
-        GlStateManager.enableLighting();
-        GlStateManager.enableDepthTest();
-        DiffuseLighting.enable();
-        GlStateManager.enableRescaleNormal();
+        RenderSystem.enableLighting();
+        RenderSystem.enableDepthTest();
+        GuiLighting.enable();
+        RenderSystem.enableRescaleNormal();
     }
 
     protected void renderComponentHoverEffect(Text text, int i, int j) {
@@ -219,7 +219,7 @@ implements Drawable {
                     if (text2 != null) {
                         list.add(text2.asFormattedString());
                     }
-                    if (compoundTag.contains("type", 8)) {
+                    if (compoundTag.containsKey("type", 8)) {
                         String string = compoundTag.getString("type");
                         list.add("Type: " + string);
                     }
@@ -232,7 +232,7 @@ implements Drawable {
         } else if (hoverEvent.getAction() == HoverEvent.Action.SHOW_TEXT) {
             this.renderTooltip(this.minecraft.textRenderer.wrapStringToWidthAsList(hoverEvent.getValue().asFormattedString(), Math.max(this.width / 2, 200)), i, j);
         }
-        GlStateManager.disableLighting();
+        RenderSystem.disableLighting();
     }
 
     protected void insertText(String string, boolean bl) {
@@ -342,14 +342,14 @@ implements Drawable {
     }
 
     public void renderDirtBackground(int i) {
-        GlStateManager.disableLighting();
-        GlStateManager.disableFog();
+        RenderSystem.disableLighting();
+        RenderSystem.disableFog();
         Tessellator tessellator = Tessellator.getInstance();
-        BufferBuilder bufferBuilder = tessellator.getBuffer();
+        BufferBuilder bufferBuilder = tessellator.getBufferBuilder();
         this.minecraft.getTextureManager().bindTexture(BACKGROUND_LOCATION);
-        GlStateManager.color4f(1.0f, 1.0f, 1.0f, 1.0f);
+        RenderSystem.color4f(1.0f, 1.0f, 1.0f, 1.0f);
         float f = 32.0f;
-        bufferBuilder.begin(7, VertexFormats.POSITION_TEXTURE_COLOR);
+        bufferBuilder.begin(7, VertexFormats.POSITION_UV_COLOR);
         bufferBuilder.vertex(0.0, this.height, 0.0).texture(0.0, (float)this.height / 32.0f + (float)i).color(64, 64, 64, 255).next();
         bufferBuilder.vertex(this.width, this.height, 0.0).texture((float)this.width / 32.0f, (float)this.height / 32.0f + (float)i).color(64, 64, 64, 255).next();
         bufferBuilder.vertex(this.width, 0.0, 0.0).texture((float)this.width / 32.0f, (double)i).color(64, 64, 64, 255).next();
@@ -370,7 +370,7 @@ implements Drawable {
     }
 
     private void openLink(URI uRI) {
-        Util.getOperatingSystem().open(uRI);
+        SystemUtil.getOperatingSystem().open(uRI);
     }
 
     public static boolean hasControlDown() {

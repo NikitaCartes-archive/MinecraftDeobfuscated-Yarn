@@ -325,9 +325,8 @@ public class Style {
     public static class Serializer
     implements JsonDeserializer<Style>,
     JsonSerializer<Style> {
-        @Override
         @Nullable
-        public Style deserialize(JsonElement jsonElement, Type type, JsonDeserializationContext jsonDeserializationContext) throws JsonParseException {
+        public Style method_10991(JsonElement jsonElement, Type type, JsonDeserializationContext jsonDeserializationContext) throws JsonParseException {
             if (jsonElement.isJsonObject()) {
                 String string;
                 JsonObject jsonObject2;
@@ -380,9 +379,8 @@ public class Style {
             return null;
         }
 
-        @Override
         @Nullable
-        public JsonElement serialize(Style style, Type type, JsonSerializationContext jsonSerializationContext) {
+        public JsonElement method_10990(Style style, Type type, JsonSerializationContext jsonSerializationContext) {
             JsonObject jsonObject2;
             if (style.isEmpty()) {
                 return null;
@@ -427,13 +425,13 @@ public class Style {
         @Override
         @Nullable
         public /* synthetic */ JsonElement serialize(Object object, Type type, JsonSerializationContext jsonSerializationContext) {
-            return this.serialize((Style)object, type, jsonSerializationContext);
+            return this.method_10990((Style)object, type, jsonSerializationContext);
         }
 
         @Override
         @Nullable
         public /* synthetic */ Object deserialize(JsonElement jsonElement, Type type, JsonDeserializationContext jsonDeserializationContext) throws JsonParseException {
-            return this.deserialize(jsonElement, type, jsonDeserializationContext);
+            return this.method_10991(jsonElement, type, jsonDeserializationContext);
         }
     }
 }

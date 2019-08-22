@@ -33,8 +33,7 @@ implements ArgumentType<Enchantment> {
         return commandContext.getArgument(string, Enchantment.class);
     }
 
-    @Override
-    public Enchantment parse(StringReader stringReader) throws CommandSyntaxException {
+    public Enchantment method_9335(StringReader stringReader) throws CommandSyntaxException {
         Identifier identifier = Identifier.fromCommandInput(stringReader);
         return Registry.ENCHANTMENT.getOrEmpty(identifier).orElseThrow(() -> UNKNOWN_ENCHANTMENT_EXCEPTION.create(identifier));
     }
@@ -51,7 +50,7 @@ implements ArgumentType<Enchantment> {
 
     @Override
     public /* synthetic */ Object parse(StringReader stringReader) throws CommandSyntaxException {
-        return this.parse(stringReader);
+        return this.method_9335(stringReader);
     }
 }
 

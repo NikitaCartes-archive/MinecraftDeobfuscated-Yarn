@@ -4,7 +4,7 @@
 package net.minecraft.client.render.entity;
 
 import com.google.common.collect.Maps;
-import com.mojang.blaze3d.platform.GlStateManager;
+import com.mojang.blaze3d.systems.RenderSystem;
 import java.util.Map;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
@@ -14,14 +14,14 @@ import net.minecraft.client.render.entity.feature.PandaHeldItemFeatureRenderer;
 import net.minecraft.client.render.entity.model.PandaEntityModel;
 import net.minecraft.entity.passive.PandaEntity;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.Util;
+import net.minecraft.util.SystemUtil;
 import net.minecraft.util.math.MathHelper;
 import org.jetbrains.annotations.Nullable;
 
 @Environment(value=EnvType.CLIENT)
 public class PandaEntityRenderer
 extends MobEntityRenderer<PandaEntity, PandaEntityModel<PandaEntity>> {
-    private static final Map<PandaEntity.Gene, Identifier> SKIN_MAP = Util.make(Maps.newEnumMap(PandaEntity.Gene.class), enumMap -> {
+    private static final Map<PandaEntity.Gene, Identifier> SKIN_MAP = SystemUtil.consume(Maps.newEnumMap(PandaEntity.Gene.class), enumMap -> {
         enumMap.put(PandaEntity.Gene.NORMAL, new Identifier("textures/entity/panda/panda.png"));
         enumMap.put(PandaEntity.Gene.LAZY, new Identifier("textures/entity/panda/lazy_panda.png"));
         enumMap.put(PandaEntity.Gene.WORRIED, new Identifier("textures/entity/panda/worried_panda.png"));
@@ -36,14 +36,12 @@ extends MobEntityRenderer<PandaEntity, PandaEntityModel<PandaEntity>> {
         this.addFeature(new PandaHeldItemFeatureRenderer(this));
     }
 
-    @Override
     @Nullable
-    protected Identifier getTexture(PandaEntity pandaEntity) {
+    protected Identifier method_4083(PandaEntity pandaEntity) {
         return SKIN_MAP.getOrDefault((Object)pandaEntity.getProductGene(), SKIN_MAP.get((Object)PandaEntity.Gene.NORMAL));
     }
 
-    @Override
-    protected void setupTransforms(PandaEntity pandaEntity, float f, float g, float h) {
+    protected void method_4085(PandaEntity pandaEntity, float f, float g, float h) {
         float r;
         float k;
         super.setupTransforms(pandaEntity, f, g, h);
@@ -57,50 +55,50 @@ extends MobEntityRenderer<PandaEntity, PandaEntityModel<PandaEntity>> {
                 float m = (float)(90 * i) / 7.0f;
                 float n = (float)(90 * j) / 7.0f;
                 float o = this.method_4086(m, n, j, h, 8.0f);
-                GlStateManager.translatef(0.0f, (l + 0.2f) * (o / 90.0f), 0.0f);
-                GlStateManager.rotatef(-o, 1.0f, 0.0f, 0.0f);
+                RenderSystem.translatef(0.0f, (l + 0.2f) * (o / 90.0f), 0.0f);
+                RenderSystem.rotatef(-o, 1.0f, 0.0f, 0.0f);
             } else if (i < 16) {
                 float m = ((float)i - 8.0f) / 7.0f;
                 float n = 90.0f + 90.0f * m;
                 float p = 90.0f + 90.0f * ((float)j - 8.0f) / 7.0f;
                 float o = this.method_4086(n, p, j, h, 16.0f);
-                GlStateManager.translatef(0.0f, l + 0.2f + (l - 0.2f) * (o - 90.0f) / 90.0f, 0.0f);
-                GlStateManager.rotatef(-o, 1.0f, 0.0f, 0.0f);
+                RenderSystem.translatef(0.0f, l + 0.2f + (l - 0.2f) * (o - 90.0f) / 90.0f, 0.0f);
+                RenderSystem.rotatef(-o, 1.0f, 0.0f, 0.0f);
             } else if ((float)i < 24.0f) {
                 float m = ((float)i - 16.0f) / 7.0f;
                 float n = 180.0f + 90.0f * m;
                 float p = 180.0f + 90.0f * ((float)j - 16.0f) / 7.0f;
                 float o = this.method_4086(n, p, j, h, 24.0f);
-                GlStateManager.translatef(0.0f, l + l * (270.0f - o) / 90.0f, 0.0f);
-                GlStateManager.rotatef(-o, 1.0f, 0.0f, 0.0f);
+                RenderSystem.translatef(0.0f, l + l * (270.0f - o) / 90.0f, 0.0f);
+                RenderSystem.rotatef(-o, 1.0f, 0.0f, 0.0f);
             } else if (i < 32) {
                 float m = ((float)i - 24.0f) / 7.0f;
                 float n = 270.0f + 90.0f * m;
                 float p = 270.0f + 90.0f * ((float)j - 24.0f) / 7.0f;
                 float o = this.method_4086(n, p, j, h, 32.0f);
-                GlStateManager.translatef(0.0f, l * ((360.0f - o) / 90.0f), 0.0f);
-                GlStateManager.rotatef(-o, 1.0f, 0.0f, 0.0f);
+                RenderSystem.translatef(0.0f, l * ((360.0f - o) / 90.0f), 0.0f);
+                RenderSystem.rotatef(-o, 1.0f, 0.0f, 0.0f);
             }
         } else {
-            GlStateManager.rotatef(0.0f, 1.0f, 0.0f, 0.0f);
+            RenderSystem.rotatef(0.0f, 1.0f, 0.0f, 0.0f);
         }
         float q = pandaEntity.getScaredAnimationProgress(h);
         if (q > 0.0f) {
-            GlStateManager.translatef(0.0f, 0.8f * q, 0.0f);
-            GlStateManager.rotatef(MathHelper.lerp(q, pandaEntity.pitch, pandaEntity.pitch + 90.0f), 1.0f, 0.0f, 0.0f);
-            GlStateManager.translatef(0.0f, -1.0f * q, 0.0f);
+            RenderSystem.translatef(0.0f, 0.8f * q, 0.0f);
+            RenderSystem.rotatef(MathHelper.lerp(q, pandaEntity.pitch, pandaEntity.pitch + 90.0f), 1.0f, 0.0f, 0.0f);
+            RenderSystem.translatef(0.0f, -1.0f * q, 0.0f);
             if (pandaEntity.method_6524()) {
                 float r2 = (float)(Math.cos((double)pandaEntity.age * 1.25) * Math.PI * (double)0.05f);
-                GlStateManager.rotatef(r2, 0.0f, 1.0f, 0.0f);
+                RenderSystem.rotatef(r2, 0.0f, 1.0f, 0.0f);
                 if (pandaEntity.isBaby()) {
-                    GlStateManager.translatef(0.0f, 0.8f, 0.55f);
+                    RenderSystem.translatef(0.0f, 0.8f, 0.55f);
                 }
             }
         }
         if ((r = pandaEntity.getLieOnBackAnimationProgress(h)) > 0.0f) {
             k = pandaEntity.isBaby() ? 0.5f : 1.3f;
-            GlStateManager.translatef(0.0f, k * r, 0.0f);
-            GlStateManager.rotatef(MathHelper.lerp(r, pandaEntity.pitch, pandaEntity.pitch + 180.0f), 1.0f, 0.0f, 0.0f);
+            RenderSystem.translatef(0.0f, k * r, 0.0f);
+            RenderSystem.rotatef(MathHelper.lerp(r, pandaEntity.pitch, pandaEntity.pitch + 180.0f), 1.0f, 0.0f, 0.0f);
         }
     }
 

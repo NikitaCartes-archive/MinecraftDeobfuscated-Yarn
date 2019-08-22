@@ -21,7 +21,7 @@ extends AbstractMinecartEntity {
 
     @Override
     public boolean interact(PlayerEntity playerEntity, Hand hand) {
-        if (playerEntity.isSneaking()) {
+        if (playerEntity.method_21823()) {
             return false;
         }
         if (this.hasPassengers()) {

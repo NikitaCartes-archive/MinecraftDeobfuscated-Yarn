@@ -40,7 +40,7 @@ extends Block {
         super.onStacksDropped(blockState, world, blockPos, itemStack);
         if (!world.isClient && world.getGameRules().getBoolean(GameRules.DO_TILE_DROPS) && EnchantmentHelper.getLevel(Enchantments.SILK_TOUCH, itemStack) == 0) {
             SilverfishEntity silverfishEntity = EntityType.SILVERFISH.create(world);
-            silverfishEntity.refreshPositionAndAngles((double)blockPos.getX() + 0.5, blockPos.getY(), (double)blockPos.getZ() + 0.5, 0.0f, 0.0f);
+            silverfishEntity.setPositionAndAngles((double)blockPos.getX() + 0.5, blockPos.getY(), (double)blockPos.getZ() + 0.5, 0.0f, 0.0f);
             world.spawnEntity(silverfishEntity);
             silverfishEntity.playSpawnEffects();
         }

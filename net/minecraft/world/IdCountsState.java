@@ -21,7 +21,7 @@ extends PersistentState {
     public void fromTag(CompoundTag compoundTag) {
         this.idCounts.clear();
         for (String string : compoundTag.getKeys()) {
-            if (!compoundTag.contains(string, 99)) continue;
+            if (!compoundTag.containsKey(string, 99)) continue;
             this.idCounts.put(string, compoundTag.getInt(string));
         }
     }

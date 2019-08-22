@@ -47,8 +47,7 @@ implements Comparable<Vec3i> {
         return (this.getY() + this.getZ() * 31) * 31 + this.getX();
     }
 
-    @Override
-    public int compareTo(Vec3i vec3i) {
+    public int method_10265(Vec3i vec3i) {
         if (this.getY() == vec3i.getY()) {
             if (this.getZ() == vec3i.getZ()) {
                 return this.getX() - vec3i.getX();
@@ -111,7 +110,7 @@ implements Comparable<Vec3i> {
 
     @Override
     public /* synthetic */ int compareTo(Object object) {
-        return this.compareTo((Vec3i)object);
+        return this.method_10265((Vec3i)object);
     }
 }
 

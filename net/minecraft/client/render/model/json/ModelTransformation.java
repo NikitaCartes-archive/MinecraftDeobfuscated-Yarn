@@ -8,7 +8,7 @@ import com.google.gson.JsonDeserializer;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
-import com.mojang.blaze3d.platform.GlStateManager;
+import com.mojang.blaze3d.systems.RenderSystem;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.render.model.json.Transformation;
@@ -37,7 +37,7 @@ public class ModelTransformation {
     public final Transformation fixed;
 
     private ModelTransformation() {
-        this(Transformation.IDENTITY, Transformation.IDENTITY, Transformation.IDENTITY, Transformation.IDENTITY, Transformation.IDENTITY, Transformation.IDENTITY, Transformation.IDENTITY, Transformation.IDENTITY);
+        this(Transformation.NONE, Transformation.NONE, Transformation.NONE, Transformation.NONE, Transformation.NONE, Transformation.NONE, Transformation.NONE, Transformation.NONE);
     }
 
     public ModelTransformation(ModelTransformation modelTransformation) {
@@ -67,11 +67,11 @@ public class ModelTransformation {
     }
 
     public static void applyGl(Transformation transformation, boolean bl) {
-        if (transformation == Transformation.IDENTITY) {
+        if (transformation == Transformation.NONE) {
             return;
         }
         int i = bl ? -1 : 1;
-        GlStateManager.translatef((float)i * (globalTranslationX + transformation.translation.getX()), globalTranslationY + transformation.translation.getY(), globalTranslationZ + transformation.translation.getZ());
+        RenderSystem.translatef((float)i * (globalTranslationX + transformation.translation.getX()), globalTranslationY + transformation.translation.getY(), globalTranslationZ + transformation.translation.getZ());
         float f = globalRotationX + transformation.rotation.getX();
         float g = globalRotationY + transformation.rotation.getY();
         float h = globalRotationZ + transformation.rotation.getZ();
@@ -79,8 +79,8 @@ public class ModelTransformation {
             g = -g;
             h = -h;
         }
-        GlStateManager.multMatrix(new Matrix4f(new Quaternion(f, g, h, true)));
-        GlStateManager.scalef(globalScaleOffsetX + transformation.scale.getX(), globalScaleOffsetY + transformation.scale.getY(), globalScaleOffsetZ + transformation.scale.getZ());
+        RenderSystem.multMatrix(new Matrix4f(new Quaternion(f, g, h, true)));
+        RenderSystem.scalef(globalScaleOffsetX + transformation.scale.getX(), globalScaleOffsetY + transformation.scale.getY(), globalScaleOffsetZ + transformation.scale.getZ());
     }
 
     public Transformation getTransformation(Type type) {
@@ -110,11 +110,11 @@ public class ModelTransformation {
                 return this.fixed;
             }
         }
-        return Transformation.IDENTITY;
+        return Transformation.NONE;
     }
 
     public boolean isTransformationDefined(Type type) {
-        return this.getTransformation(type) != Transformation.IDENTITY;
+        return this.getTransformation(type) != Transformation.NONE;
     }
 
     @Environment(value=EnvType.CLIENT)
@@ -123,17 +123,16 @@ public class ModelTransformation {
         protected Deserializer() {
         }
 
-        @Override
-        public ModelTransformation deserialize(JsonElement jsonElement, java.lang.reflect.Type type, JsonDeserializationContext jsonDeserializationContext) throws JsonParseException {
+        public ModelTransformation method_3505(JsonElement jsonElement, java.lang.reflect.Type type, JsonDeserializationContext jsonDeserializationContext) throws JsonParseException {
             JsonObject jsonObject = jsonElement.getAsJsonObject();
             Transformation transformation = this.parseModelTransformation(jsonDeserializationContext, jsonObject, "thirdperson_righthand");
             Transformation transformation2 = this.parseModelTransformation(jsonDeserializationContext, jsonObject, "thirdperson_lefthand");
-            if (transformation2 == Transformation.IDENTITY) {
+            if (transformation2 == Transformation.NONE) {
                 transformation2 = transformation;
             }
             Transformation transformation3 = this.parseModelTransformation(jsonDeserializationContext, jsonObject, "firstperson_righthand");
             Transformation transformation4 = this.parseModelTransformation(jsonDeserializationContext, jsonObject, "firstperson_lefthand");
-            if (transformation4 == Transformation.IDENTITY) {
+            if (transformation4 == Transformation.NONE) {
                 transformation4 = transformation3;
             }
             Transformation transformation5 = this.parseModelTransformation(jsonDeserializationContext, jsonObject, "head");
@@ -147,12 +146,12 @@ public class ModelTransformation {
             if (jsonObject.has(string)) {
                 return (Transformation)jsonDeserializationContext.deserialize(jsonObject.get(string), (java.lang.reflect.Type)((Object)Transformation.class));
             }
-            return Transformation.IDENTITY;
+            return Transformation.NONE;
         }
 
         @Override
         public /* synthetic */ Object deserialize(JsonElement jsonElement, java.lang.reflect.Type type, JsonDeserializationContext jsonDeserializationContext) throws JsonParseException {
-            return this.deserialize(jsonElement, type, jsonDeserializationContext);
+            return this.method_3505(jsonElement, type, jsonDeserializationContext);
         }
     }
 

@@ -32,18 +32,18 @@ import net.minecraft.client.render.model.json.ModelVariantMap;
 import net.minecraft.client.render.model.json.MultipartModelComponent;
 import net.minecraft.client.render.model.json.WeightedUnbakedModel;
 import net.minecraft.client.texture.Sprite;
-import net.minecraft.state.StateManager;
+import net.minecraft.state.StateFactory;
 import net.minecraft.util.Identifier;
 import org.jetbrains.annotations.Nullable;
 
 @Environment(value=EnvType.CLIENT)
 public class MultipartUnbakedModel
 implements UnbakedModel {
-    private final StateManager<Block, BlockState> stateFactory;
+    private final StateFactory<Block, BlockState> stateFactory;
     private final List<MultipartModelComponent> components;
 
-    public MultipartUnbakedModel(StateManager<Block, BlockState> stateManager, List<MultipartModelComponent> list) {
-        this.stateFactory = stateManager;
+    public MultipartUnbakedModel(StateFactory<Block, BlockState> stateFactory, List<MultipartModelComponent> list) {
+        this.stateFactory = stateFactory;
         this.components = list;
     }
 
@@ -105,8 +105,7 @@ implements UnbakedModel {
             this.context = deserializationContext;
         }
 
-        @Override
-        public MultipartUnbakedModel deserialize(JsonElement jsonElement, Type type, JsonDeserializationContext jsonDeserializationContext) throws JsonParseException {
+        public MultipartUnbakedModel method_3523(JsonElement jsonElement, Type type, JsonDeserializationContext jsonDeserializationContext) throws JsonParseException {
             return new MultipartUnbakedModel(this.context.getStateFactory(), this.deserializeComponents(jsonDeserializationContext, jsonElement.getAsJsonArray()));
         }
 
@@ -120,7 +119,7 @@ implements UnbakedModel {
 
         @Override
         public /* synthetic */ Object deserialize(JsonElement jsonElement, Type type, JsonDeserializationContext jsonDeserializationContext) throws JsonParseException {
-            return this.deserialize(jsonElement, type, jsonDeserializationContext);
+            return this.method_3523(jsonElement, type, jsonDeserializationContext);
         }
     }
 }

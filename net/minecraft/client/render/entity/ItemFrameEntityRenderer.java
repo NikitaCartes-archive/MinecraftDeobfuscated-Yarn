@@ -3,11 +3,11 @@
  */
 package net.minecraft.client.render.entity;
 
-import com.mojang.blaze3d.platform.GlStateManager;
+import com.mojang.blaze3d.systems.RenderSystem;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.render.DiffuseLighting;
+import net.minecraft.client.render.GuiLighting;
 import net.minecraft.client.render.block.BlockRenderManager;
 import net.minecraft.client.render.entity.EntityRenderDispatcher;
 import net.minecraft.client.render.entity.EntityRenderer;
@@ -39,51 +39,49 @@ extends EntityRenderer<ItemFrameEntity> {
         this.itemRenderer = itemRenderer;
     }
 
-    @Override
-    public void render(ItemFrameEntity itemFrameEntity, double d, double e, double f, float g, float h) {
-        GlStateManager.pushMatrix();
+    public void method_3994(ItemFrameEntity itemFrameEntity, double d, double e, double f, float g, float h) {
+        RenderSystem.pushMatrix();
         BlockPos blockPos = itemFrameEntity.getDecorationBlockPos();
         double i = (double)blockPos.getX() - itemFrameEntity.x + d;
         double j = (double)blockPos.getY() - itemFrameEntity.y + e;
         double k = (double)blockPos.getZ() - itemFrameEntity.z + f;
-        GlStateManager.translated(i + 0.5, j + 0.5, k + 0.5);
-        GlStateManager.rotatef(itemFrameEntity.pitch, 1.0f, 0.0f, 0.0f);
-        GlStateManager.rotatef(180.0f - itemFrameEntity.yaw, 0.0f, 1.0f, 0.0f);
+        RenderSystem.translated(i + 0.5, j + 0.5, k + 0.5);
+        RenderSystem.rotatef(itemFrameEntity.pitch, 1.0f, 0.0f, 0.0f);
+        RenderSystem.rotatef(180.0f - itemFrameEntity.yaw, 0.0f, 1.0f, 0.0f);
         this.renderManager.textureManager.bindTexture(SpriteAtlasTexture.BLOCK_ATLAS_TEX);
         BlockRenderManager blockRenderManager = this.client.getBlockRenderManager();
         BakedModelManager bakedModelManager = blockRenderManager.getModels().getModelManager();
         ModelIdentifier modelIdentifier = itemFrameEntity.getHeldItemStack().getItem() == Items.FILLED_MAP ? MAP_FRAME : NORMAL_FRAME;
-        GlStateManager.pushMatrix();
-        GlStateManager.translatef(-0.5f, -0.5f, -0.5f);
+        RenderSystem.pushMatrix();
+        RenderSystem.translatef(-0.5f, -0.5f, -0.5f);
         if (this.renderOutlines) {
-            GlStateManager.enableColorMaterial();
-            GlStateManager.setupSolidRenderingTextureCombine(this.getOutlineColor(itemFrameEntity));
+            RenderSystem.enableColorMaterial();
+            RenderSystem.setupSolidRenderingTextureCombine(this.getOutlineColor(itemFrameEntity));
         }
         blockRenderManager.getModelRenderer().render(bakedModelManager.getModel(modelIdentifier), 1.0f, 1.0f, 1.0f, 1.0f);
         if (this.renderOutlines) {
-            GlStateManager.tearDownSolidRenderingTextureCombine();
-            GlStateManager.disableColorMaterial();
+            RenderSystem.tearDownSolidRenderingTextureCombine();
+            RenderSystem.disableColorMaterial();
         }
-        GlStateManager.popMatrix();
-        GlStateManager.enableLighting();
+        RenderSystem.popMatrix();
+        RenderSystem.enableLighting();
         if (itemFrameEntity.getHeldItemStack().getItem() == Items.FILLED_MAP) {
-            GlStateManager.pushLightingAttributes();
-            DiffuseLighting.enable();
+            RenderSystem.pushLightingAttributes();
+            GuiLighting.enable();
         }
-        GlStateManager.translatef(0.0f, 0.0f, 0.4375f);
+        RenderSystem.translatef(0.0f, 0.0f, 0.4375f);
         this.renderItem(itemFrameEntity);
         if (itemFrameEntity.getHeldItemStack().getItem() == Items.FILLED_MAP) {
-            DiffuseLighting.disable();
-            GlStateManager.popAttributes();
+            GuiLighting.disable();
+            RenderSystem.popAttributes();
         }
-        GlStateManager.enableLighting();
-        GlStateManager.popMatrix();
-        this.renderLabelIfPresent(itemFrameEntity, d + (double)((float)itemFrameEntity.getHorizontalFacing().getOffsetX() * 0.3f), e - 0.25, f + (double)((float)itemFrameEntity.getHorizontalFacing().getOffsetZ() * 0.3f));
+        RenderSystem.enableLighting();
+        RenderSystem.popMatrix();
+        this.method_3995(itemFrameEntity, d + (double)((float)itemFrameEntity.getHorizontalFacing().getOffsetX() * 0.3f), e - 0.25, f + (double)((float)itemFrameEntity.getHorizontalFacing().getOffsetZ() * 0.3f));
     }
 
-    @Override
     @Nullable
-    protected Identifier getTexture(ItemFrameEntity itemFrameEntity) {
+    protected Identifier method_3993(ItemFrameEntity itemFrameEntity) {
         return null;
     }
 
@@ -92,37 +90,36 @@ extends EntityRenderer<ItemFrameEntity> {
         if (itemStack.isEmpty()) {
             return;
         }
-        GlStateManager.pushMatrix();
+        RenderSystem.pushMatrix();
         boolean bl = itemStack.getItem() == Items.FILLED_MAP;
         int i = bl ? itemFrameEntity.getRotation() % 4 * 2 : itemFrameEntity.getRotation();
-        GlStateManager.rotatef((float)i * 360.0f / 8.0f, 0.0f, 0.0f, 1.0f);
+        RenderSystem.rotatef((float)i * 360.0f / 8.0f, 0.0f, 0.0f, 1.0f);
         if (bl) {
-            GlStateManager.disableLighting();
+            RenderSystem.disableLighting();
             this.renderManager.textureManager.bindTexture(MAP_BACKGROUND_TEX);
-            GlStateManager.rotatef(180.0f, 0.0f, 0.0f, 1.0f);
+            RenderSystem.rotatef(180.0f, 0.0f, 0.0f, 1.0f);
             float f = 0.0078125f;
-            GlStateManager.scalef(0.0078125f, 0.0078125f, 0.0078125f);
-            GlStateManager.translatef(-64.0f, -64.0f, 0.0f);
+            RenderSystem.scalef(0.0078125f, 0.0078125f, 0.0078125f);
+            RenderSystem.translatef(-64.0f, -64.0f, 0.0f);
             MapState mapState = FilledMapItem.getOrCreateMapState(itemStack, itemFrameEntity.world);
-            GlStateManager.translatef(0.0f, 0.0f, -1.0f);
+            RenderSystem.translatef(0.0f, 0.0f, -1.0f);
             if (mapState != null) {
                 this.client.gameRenderer.getMapRenderer().draw(mapState, true);
             }
         } else {
-            GlStateManager.scalef(0.5f, 0.5f, 0.5f);
+            RenderSystem.scalef(0.5f, 0.5f, 0.5f);
             this.itemRenderer.renderItem(itemStack, ModelTransformation.Type.FIXED);
         }
-        GlStateManager.popMatrix();
+        RenderSystem.popMatrix();
     }
 
-    @Override
-    protected void renderLabelIfPresent(ItemFrameEntity itemFrameEntity, double d, double e, double f) {
+    protected void method_3995(ItemFrameEntity itemFrameEntity, double d, double e, double f) {
         float h;
         if (!MinecraftClient.isHudEnabled() || itemFrameEntity.getHeldItemStack().isEmpty() || !itemFrameEntity.getHeldItemStack().hasCustomName() || this.renderManager.targetedEntity != itemFrameEntity) {
             return;
         }
         double g = itemFrameEntity.squaredDistanceTo(this.renderManager.camera.getPos());
-        float f2 = h = itemFrameEntity.isInSneakingPose() ? 32.0f : 64.0f;
+        float f2 = h = itemFrameEntity.method_21751() ? 32.0f : 64.0f;
         if (g >= (double)(h * h)) {
             return;
         }

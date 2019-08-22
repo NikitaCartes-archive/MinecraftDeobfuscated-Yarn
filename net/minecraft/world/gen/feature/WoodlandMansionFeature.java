@@ -15,9 +15,9 @@ import net.minecraft.structure.StructurePiece;
 import net.minecraft.structure.StructureStart;
 import net.minecraft.structure.WoodlandMansionGenerator;
 import net.minecraft.util.BlockRotation;
-import net.minecraft.util.math.BlockBox;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
+import net.minecraft.util.math.MutableIntBoundingBox;
 import net.minecraft.world.Heightmap;
 import net.minecraft.world.IWorld;
 import net.minecraft.world.biome.Biome;
@@ -81,8 +81,8 @@ extends StructureFeature<DefaultFeatureConfig> {
 
     public static class Start
     extends StructureStart {
-        public Start(StructureFeature<?> structureFeature, int i, int j, Biome biome, BlockBox blockBox, int k, long l) {
-            super(structureFeature, i, j, biome, blockBox, k, l);
+        public Start(StructureFeature<?> structureFeature, int i, int j, Biome biome, MutableIntBoundingBox mutableIntBoundingBox, int k, long l) {
+            super(structureFeature, i, j, biome, mutableIntBoundingBox, k, l);
         }
 
         @Override
@@ -116,11 +116,11 @@ extends StructureFeature<DefaultFeatureConfig> {
         }
 
         @Override
-        public void generateStructure(IWorld iWorld, Random random, BlockBox blockBox, ChunkPos chunkPos) {
-            super.generateStructure(iWorld, random, blockBox, chunkPos);
+        public void generateStructure(IWorld iWorld, Random random, MutableIntBoundingBox mutableIntBoundingBox, ChunkPos chunkPos) {
+            super.generateStructure(iWorld, random, mutableIntBoundingBox, chunkPos);
             int i = this.boundingBox.minY;
-            for (int j = blockBox.minX; j <= blockBox.maxX; ++j) {
-                for (int k = blockBox.minZ; k <= blockBox.maxZ; ++k) {
+            for (int j = mutableIntBoundingBox.minX; j <= mutableIntBoundingBox.maxX; ++j) {
+                for (int k = mutableIntBoundingBox.minZ; k <= mutableIntBoundingBox.maxZ; ++k) {
                     BlockPos blockPos2;
                     BlockPos blockPos = new BlockPos(j, i, k);
                     if (iWorld.isAir(blockPos) || !this.boundingBox.contains(blockPos)) continue;

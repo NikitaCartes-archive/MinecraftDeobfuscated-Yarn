@@ -27,8 +27,8 @@ import net.minecraft.structure.processor.StructureProcessor;
 import net.minecraft.util.BlockRotation;
 import net.minecraft.util.DynamicDeserializer;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.math.BlockBox;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.MutableIntBoundingBox;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.world.IWorld;
 
@@ -80,28 +80,28 @@ extends StructurePoolElement {
     }
 
     @Override
-    public BlockBox getBoundingBox(StructureManager structureManager, BlockPos blockPos, BlockRotation blockRotation) {
+    public MutableIntBoundingBox getBoundingBox(StructureManager structureManager, BlockPos blockPos, BlockRotation blockRotation) {
         Structure structure = structureManager.getStructureOrBlank(this.location);
         return structure.calculateBoundingBox(new StructurePlacementData().setRotation(blockRotation), blockPos);
     }
 
     @Override
-    public boolean generate(StructureManager structureManager, IWorld iWorld, BlockPos blockPos, BlockRotation blockRotation, BlockBox blockBox, Random random) {
+    public boolean generate(StructureManager structureManager, IWorld iWorld, BlockPos blockPos, BlockRotation blockRotation, MutableIntBoundingBox mutableIntBoundingBox, Random random) {
         StructurePlacementData structurePlacementData;
         Structure structure = structureManager.getStructureOrBlank(this.location);
-        if (structure.method_15172(iWorld, blockPos, structurePlacementData = this.method_16616(blockRotation, blockBox), 18)) {
+        if (structure.method_15172(iWorld, blockPos, structurePlacementData = this.method_16616(blockRotation, mutableIntBoundingBox), 18)) {
             List<Structure.StructureBlockInfo> list = Structure.process(iWorld, blockPos, structurePlacementData, this.method_16614(structureManager, blockPos, blockRotation, false));
             for (Structure.StructureBlockInfo structureBlockInfo : list) {
-                this.method_16756(iWorld, structureBlockInfo, blockPos, blockRotation, random, blockBox);
+                this.method_16756(iWorld, structureBlockInfo, blockPos, blockRotation, random, mutableIntBoundingBox);
             }
             return true;
         }
         return false;
     }
 
-    protected StructurePlacementData method_16616(BlockRotation blockRotation, BlockBox blockBox) {
+    protected StructurePlacementData method_16616(BlockRotation blockRotation, MutableIntBoundingBox mutableIntBoundingBox) {
         StructurePlacementData structurePlacementData = new StructurePlacementData();
-        structurePlacementData.setBoundingBox(blockBox);
+        structurePlacementData.setBoundingBox(mutableIntBoundingBox);
         structurePlacementData.setRotation(blockRotation);
         structurePlacementData.method_15131(true);
         structurePlacementData.setIgnoreEntities(false);

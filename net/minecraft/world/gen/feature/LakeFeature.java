@@ -29,8 +29,7 @@ extends Feature<LakeFeatureConfig> {
         super(function);
     }
 
-    @Override
-    public boolean generate(IWorld iWorld, ChunkGenerator<? extends ChunkGeneratorConfig> chunkGenerator, Random random, BlockPos blockPos, LakeFeatureConfig lakeFeatureConfig) {
+    public boolean method_13471(IWorld iWorld, ChunkGenerator<? extends ChunkGeneratorConfig> chunkGenerator, Random random, BlockPos blockPos, LakeFeatureConfig lakeFeatureConfig) {
         int t;
         int j;
         while (blockPos.getY() > 5 && iWorld.isAir(blockPos)) {

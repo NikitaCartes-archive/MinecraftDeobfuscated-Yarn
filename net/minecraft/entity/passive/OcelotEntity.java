@@ -11,6 +11,7 @@ import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityData;
+import net.minecraft.entity.EntityPose;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.SpawnType;
@@ -47,9 +48,9 @@ import net.minecraft.sound.SoundEvents;
 import net.minecraft.tag.BlockTags;
 import net.minecraft.util.Hand;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.CollisionView;
 import net.minecraft.world.IWorld;
 import net.minecraft.world.LocalDifficulty;
+import net.minecraft.world.ViewableWorld;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
 
@@ -111,17 +112,17 @@ extends AnimalEntity {
         if (this.getMoveControl().isMoving()) {
             double d = this.getMoveControl().getSpeed();
             if (d == 0.6) {
-                this.setSneaking(true);
+                this.setPose(EntityPose.CROUCHING);
                 this.setSprinting(false);
             } else if (d == 1.33) {
-                this.setSneaking(false);
+                this.setPose(EntityPose.STANDING);
                 this.setSprinting(true);
             } else {
-                this.setSneaking(false);
+                this.setPose(EntityPose.STANDING);
                 this.setSprinting(false);
             }
         } else {
-            this.setSneaking(false);
+            this.setPose(EntityPose.STANDING);
             this.setSprinting(false);
         }
     }
@@ -231,14 +232,13 @@ extends AnimalEntity {
         }
     }
 
-    @Override
-    public OcelotEntity createChild(PassiveEntity passiveEntity) {
+    public OcelotEntity method_16104(PassiveEntity passiveEntity) {
         return EntityType.OCELOT.create(this.world);
     }
 
     @Override
     public boolean isBreedingItem(ItemStack itemStack) {
-        return TAMING_INGREDIENT.test(itemStack);
+        return TAMING_INGREDIENT.method_8093(itemStack);
     }
 
     public static boolean method_20666(EntityType<OcelotEntity> entityType, IWorld iWorld, SpawnType spawnType, BlockPos blockPos, Random random) {
@@ -246,13 +246,13 @@ extends AnimalEntity {
     }
 
     @Override
-    public boolean canSpawn(CollisionView collisionView) {
-        if (collisionView.intersectsEntities(this) && !collisionView.intersectsFluid(this.getBoundingBox())) {
-            BlockPos blockPos = new BlockPos(this.x, this.getBoundingBox().y1, this.z);
-            if (blockPos.getY() < collisionView.getSeaLevel()) {
+    public boolean canSpawn(ViewableWorld viewableWorld) {
+        if (viewableWorld.intersectsEntities(this) && !viewableWorld.intersectsFluid(this.getBoundingBox())) {
+            BlockPos blockPos = new BlockPos(this.x, this.getBoundingBox().minY, this.z);
+            if (blockPos.getY() < viewableWorld.getSeaLevel()) {
                 return false;
             }
-            BlockState blockState = collisionView.getBlockState(blockPos.down());
+            BlockState blockState = viewableWorld.getBlockState(blockPos.down());
             Block block = blockState.getBlock();
             if (block == Blocks.GRASS_BLOCK || blockState.matches(BlockTags.LEAVES)) {
                 return true;
@@ -264,7 +264,7 @@ extends AnimalEntity {
     protected void spawnKittens() {
         for (int i = 0; i < 2; ++i) {
             OcelotEntity ocelotEntity = EntityType.OCELOT.create(this.world);
-            ocelotEntity.refreshPositionAndAngles(this.x, this.y, this.z, this.yaw, 0.0f);
+            ocelotEntity.setPositionAndAngles(this.x, this.y, this.z, this.yaw, 0.0f);
             ocelotEntity.setBreedingAge(-24000);
             this.world.spawnEntity(ocelotEntity);
         }
@@ -282,7 +282,7 @@ extends AnimalEntity {
 
     @Override
     public /* synthetic */ PassiveEntity createChild(PassiveEntity passiveEntity) {
-        return this.createChild(passiveEntity);
+        return this.method_16104(passiveEntity);
     }
 
     static class OcelotTemptGoal

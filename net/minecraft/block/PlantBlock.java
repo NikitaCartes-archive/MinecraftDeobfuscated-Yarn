@@ -4,14 +4,15 @@
 package net.minecraft.block;
 
 import net.minecraft.block.Block;
+import net.minecraft.block.BlockPlacementEnvironment;
+import net.minecraft.block.BlockRenderLayer;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
-import net.minecraft.client.render.RenderLayer;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.world.BlockView;
-import net.minecraft.world.CollisionView;
 import net.minecraft.world.IWorld;
+import net.minecraft.world.ViewableWorld;
 
 public class PlantBlock
 extends Block {
@@ -33,19 +34,27 @@ extends Block {
     }
 
     @Override
-    public boolean canPlaceAt(BlockState blockState, CollisionView collisionView, BlockPos blockPos) {
+    public boolean canPlaceAt(BlockState blockState, ViewableWorld viewableWorld, BlockPos blockPos) {
         BlockPos blockPos2 = blockPos.down();
-        return this.canPlantOnTop(collisionView.getBlockState(blockPos2), collisionView, blockPos2);
+        return this.canPlantOnTop(viewableWorld.getBlockState(blockPos2), viewableWorld, blockPos2);
     }
 
     @Override
-    public RenderLayer getRenderLayer() {
-        return RenderLayer.CUTOUT;
+    public BlockRenderLayer getRenderLayer() {
+        return BlockRenderLayer.CUTOUT;
     }
 
     @Override
     public boolean isTranslucent(BlockState blockState, BlockView blockView, BlockPos blockPos) {
         return true;
+    }
+
+    @Override
+    public boolean canPlaceAtSide(BlockState blockState, BlockView blockView, BlockPos blockPos, BlockPlacementEnvironment blockPlacementEnvironment) {
+        if (blockPlacementEnvironment == BlockPlacementEnvironment.AIR && !this.collidable) {
+            return true;
+        }
+        return super.canPlaceAtSide(blockState, blockView, blockPos, blockPlacementEnvironment);
     }
 }
 

@@ -7,26 +7,26 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.network.ClientConnection;
 import net.minecraft.network.listener.ServerHandshakePacketListener;
-import net.minecraft.network.packet.c2s.handshake.HandshakeC2SPacket;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.network.ServerLoginNetworkHandler;
+import net.minecraft.server.network.packet.HandshakeC2SPacket;
 import net.minecraft.text.Text;
 
 @Environment(value=EnvType.CLIENT)
 public class IntegratedServerHandshakeNetworkHandler
 implements ServerHandshakePacketListener {
     private final MinecraftServer server;
-    private final ClientConnection connection;
+    private final ClientConnection client;
 
     public IntegratedServerHandshakeNetworkHandler(MinecraftServer minecraftServer, ClientConnection clientConnection) {
         this.server = minecraftServer;
-        this.connection = clientConnection;
+        this.client = clientConnection;
     }
 
     @Override
     public void onHandshake(HandshakeC2SPacket handshakeC2SPacket) {
-        this.connection.setState(handshakeC2SPacket.getIntendedState());
-        this.connection.setPacketListener(new ServerLoginNetworkHandler(this.server, this.connection));
+        this.client.setState(handshakeC2SPacket.getIntendedState());
+        this.client.setPacketListener(new ServerLoginNetworkHandler(this.server, this.client));
     }
 
     @Override
@@ -35,7 +35,7 @@ implements ServerHandshakePacketListener {
 
     @Override
     public ClientConnection getConnection() {
-        return this.connection;
+        return this.client;
     }
 }
 

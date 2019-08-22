@@ -3,7 +3,7 @@
  */
 package net.minecraft.client.render.entity.feature;
 
-import com.mojang.blaze3d.platform.GlStateManager;
+import com.mojang.blaze3d.systems.RenderSystem;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.network.AbstractClientPlayerEntity;
@@ -23,23 +23,22 @@ extends FeatureRenderer<AbstractClientPlayerEntity, PlayerEntityModel<AbstractCl
         super(featureRendererContext);
     }
 
-    @Override
-    public void render(AbstractClientPlayerEntity abstractClientPlayerEntity, float f, float g, float h, float i, float j, float k, float l) {
-        if (!abstractClientPlayerEntity.canRenderCapeTexture() || abstractClientPlayerEntity.isInvisible() || !abstractClientPlayerEntity.isPartVisible(PlayerModelPart.CAPE) || abstractClientPlayerEntity.getCapeTexture() == null) {
+    public void method_4177(AbstractClientPlayerEntity abstractClientPlayerEntity, float f, float g, float h, float i, float j, float k, float l) {
+        if (!abstractClientPlayerEntity.canRenderCapeTexture() || abstractClientPlayerEntity.isInvisible() || !abstractClientPlayerEntity.isSkinOverlayVisible(PlayerModelPart.CAPE) || abstractClientPlayerEntity.getCapeTexture() == null) {
             return;
         }
         ItemStack itemStack = abstractClientPlayerEntity.getEquippedStack(EquipmentSlot.CHEST);
         if (itemStack.getItem() == Items.ELYTRA) {
             return;
         }
-        GlStateManager.color4f(1.0f, 1.0f, 1.0f, 1.0f);
+        RenderSystem.color4f(1.0f, 1.0f, 1.0f, 1.0f);
         this.bindTexture(abstractClientPlayerEntity.getCapeTexture());
-        GlStateManager.pushMatrix();
-        GlStateManager.translatef(0.0f, 0.0f, 0.125f);
+        RenderSystem.pushMatrix();
+        RenderSystem.translatef(0.0f, 0.0f, 0.125f);
         double d = MathHelper.lerp((double)h, abstractClientPlayerEntity.field_7524, abstractClientPlayerEntity.field_7500) - MathHelper.lerp((double)h, abstractClientPlayerEntity.prevX, abstractClientPlayerEntity.x);
         double e = MathHelper.lerp((double)h, abstractClientPlayerEntity.field_7502, abstractClientPlayerEntity.field_7521) - MathHelper.lerp((double)h, abstractClientPlayerEntity.prevY, abstractClientPlayerEntity.y);
         double m = MathHelper.lerp((double)h, abstractClientPlayerEntity.field_7522, abstractClientPlayerEntity.field_7499) - MathHelper.lerp((double)h, abstractClientPlayerEntity.prevZ, abstractClientPlayerEntity.z);
-        float n = abstractClientPlayerEntity.field_6220 + (abstractClientPlayerEntity.field_6283 - abstractClientPlayerEntity.field_6220);
+        float n = abstractClientPlayerEntity.prevBodyYaw + (abstractClientPlayerEntity.bodyYaw - abstractClientPlayerEntity.prevBodyYaw);
         double o = MathHelper.sin(n * ((float)Math.PI / 180));
         double p = -MathHelper.cos(n * ((float)Math.PI / 180));
         float q = (float)e * 10.0f;
@@ -56,12 +55,12 @@ extends FeatureRenderer<AbstractClientPlayerEntity, PlayerEntityModel<AbstractCl
         if (abstractClientPlayerEntity.isInSneakingPose()) {
             q += 25.0f;
         }
-        GlStateManager.rotatef(6.0f + r / 2.0f + q, 1.0f, 0.0f, 0.0f);
-        GlStateManager.rotatef(s / 2.0f, 0.0f, 0.0f, 1.0f);
-        GlStateManager.rotatef(-s / 2.0f, 0.0f, 1.0f, 0.0f);
-        GlStateManager.rotatef(180.0f, 0.0f, 1.0f, 0.0f);
-        ((PlayerEntityModel)this.getContextModel()).renderCape(0.0625f);
-        GlStateManager.popMatrix();
+        RenderSystem.rotatef(6.0f + r / 2.0f + q, 1.0f, 0.0f, 0.0f);
+        RenderSystem.rotatef(s / 2.0f, 0.0f, 0.0f, 1.0f);
+        RenderSystem.rotatef(-s / 2.0f, 0.0f, 1.0f, 0.0f);
+        RenderSystem.rotatef(180.0f, 0.0f, 1.0f, 0.0f);
+        ((PlayerEntityModel)this.getModel()).renderCape(0.0625f);
+        RenderSystem.popMatrix();
     }
 
     @Override

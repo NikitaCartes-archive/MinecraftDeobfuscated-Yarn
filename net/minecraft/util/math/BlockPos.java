@@ -268,14 +268,13 @@ implements DynamicSerializable {
                 this.pos = new Mutable();
             }
 
-            @Override
-            protected BlockPos computeNext() {
+            protected BlockPos method_10106() {
                 return this.iterator.step() ? this.pos.set(this.iterator.getX(), this.iterator.getY(), this.iterator.getZ()) : (BlockPos)this.endOfData();
             }
 
             @Override
             protected /* synthetic */ Object computeNext() {
-                return this.computeNext();
+                return this.method_10106();
             }
         };
     }
@@ -330,45 +329,38 @@ implements DynamicSerializable {
                 PooledMutable pooledMutable;
                 if (!POOL.isEmpty() && (pooledMutable = POOL.remove(POOL.size() - 1)) != null && pooledMutable.free) {
                     pooledMutable.free = false;
-                    pooledMutable.set(i, j, k);
+                    pooledMutable.method_10113(i, j, k);
                     return pooledMutable;
                 }
             }
             return new PooledMutable(i, j, k);
         }
 
-        @Override
-        public PooledMutable set(int i, int j, int k) {
+        public PooledMutable method_10113(int i, int j, int k) {
             return (PooledMutable)super.set(i, j, k);
         }
 
-        @Override
-        public PooledMutable set(Entity entity) {
+        public PooledMutable method_10110(Entity entity) {
             return (PooledMutable)super.set(entity);
         }
 
-        @Override
-        public PooledMutable set(double d, double e, double f) {
+        public PooledMutable method_10112(double d, double e, double f) {
             return (PooledMutable)super.set(d, e, f);
         }
 
-        @Override
-        public PooledMutable set(Vec3i vec3i) {
+        public PooledMutable method_10114(Vec3i vec3i) {
             return (PooledMutable)super.set(vec3i);
         }
 
-        @Override
-        public PooledMutable setOffset(Direction direction) {
+        public PooledMutable method_10118(Direction direction) {
             return (PooledMutable)super.setOffset(direction);
         }
 
-        @Override
-        public PooledMutable setOffset(Direction direction, int i) {
+        public PooledMutable method_10116(Direction direction, int i) {
             return (PooledMutable)super.setOffset(direction, i);
         }
 
-        @Override
-        public PooledMutable setOffset(int i, int j, int k) {
+        public PooledMutable method_10108(int i, int j, int k) {
             return (PooledMutable)super.setOffset(i, j, k);
         }
 
@@ -388,37 +380,37 @@ implements DynamicSerializable {
 
         @Override
         public /* synthetic */ Mutable setOffset(int i, int j, int k) {
-            return this.setOffset(i, j, k);
+            return this.method_10108(i, j, k);
         }
 
         @Override
         public /* synthetic */ Mutable setOffset(Direction direction, int i) {
-            return this.setOffset(direction, i);
+            return this.method_10116(direction, i);
         }
 
         @Override
         public /* synthetic */ Mutable setOffset(Direction direction) {
-            return this.setOffset(direction);
+            return this.method_10118(direction);
         }
 
         @Override
         public /* synthetic */ Mutable set(Vec3i vec3i) {
-            return this.set(vec3i);
+            return this.method_10114(vec3i);
         }
 
         @Override
         public /* synthetic */ Mutable set(double d, double e, double f) {
-            return this.set(d, e, f);
+            return this.method_10112(d, e, f);
         }
 
         @Override
         public /* synthetic */ Mutable set(Entity entity) {
-            return this.set(entity);
+            return this.method_10110(entity);
         }
 
         @Override
         public /* synthetic */ Mutable set(int i, int j, int k) {
-            return this.set(i, j, k);
+            return this.method_10113(i, j, k);
         }
     }
 

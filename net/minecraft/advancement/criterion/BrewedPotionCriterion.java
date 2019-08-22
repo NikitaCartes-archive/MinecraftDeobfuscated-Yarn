@@ -60,8 +60,7 @@ implements Criterion<Conditions> {
         this.handlers.remove(playerAdvancementTracker);
     }
 
-    @Override
-    public Conditions conditionsFromJson(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext) {
+    public Conditions method_8785(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext) {
         Potion potion = null;
         if (jsonObject.has("potion")) {
             Identifier identifier = new Identifier(JsonHelper.getString(jsonObject, "potion"));
@@ -70,8 +69,8 @@ implements Criterion<Conditions> {
         return new Conditions(potion);
     }
 
-    public void trigger(ServerPlayerEntity serverPlayerEntity, Potion potion) {
-        Handler handler = this.handlers.get(serverPlayerEntity.getAdvancementTracker());
+    public void handle(ServerPlayerEntity serverPlayerEntity, Potion potion) {
+        Handler handler = this.handlers.get(serverPlayerEntity.getAdvancementManager());
         if (handler != null) {
             handler.handle(potion);
         }
@@ -79,7 +78,7 @@ implements Criterion<Conditions> {
 
     @Override
     public /* synthetic */ CriterionConditions conditionsFromJson(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext) {
-        return this.conditionsFromJson(jsonObject, jsonDeserializationContext);
+        return this.method_8785(jsonObject, jsonDeserializationContext);
     }
 
     static class Handler {

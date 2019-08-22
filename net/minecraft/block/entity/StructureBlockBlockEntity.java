@@ -18,10 +18,10 @@ import net.minecraft.block.StructureBlock;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.BlockEntityType;
 import net.minecraft.block.enums.StructureBlockMode;
+import net.minecraft.client.network.packet.BlockEntityUpdateS2CPacket;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.network.packet.s2c.play.BlockEntityUpdateS2CPacket;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.structure.Structure;
 import net.minecraft.structure.StructureManager;
@@ -32,10 +32,10 @@ import net.minecraft.util.BlockRotation;
 import net.minecraft.util.ChatUtil;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.InvalidIdentifierException;
-import net.minecraft.util.Util;
-import net.minecraft.util.math.BlockBox;
+import net.minecraft.util.SystemUtil;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.math.MutableIntBoundingBox;
 import org.jetbrains.annotations.Nullable;
 
 public class StructureBlockBlockEntity
@@ -116,7 +116,7 @@ extends BlockEntity {
         this.powered = compoundTag.getBoolean("powered");
         this.showAir = compoundTag.getBoolean("showair");
         this.showBoundingBox = compoundTag.getBoolean("showboundingbox");
-        this.integrity = compoundTag.contains("integrity") ? compoundTag.getFloat("integrity") : 1.0f;
+        this.integrity = compoundTag.containsKey("integrity") ? compoundTag.getFloat("integrity") : 1.0f;
         this.seed = compoundTag.getLong("seed");
         this.updateBlockMode();
     }
@@ -157,6 +157,10 @@ extends BlockEntity {
         return this.structureName == null ? "" : this.structureName.toString();
     }
 
+    public String method_21865() {
+        return this.structureName == null ? "" : this.structureName.getPath();
+    }
+
     public boolean hasStructureName() {
         return this.structureName != null;
     }
@@ -173,7 +177,6 @@ extends BlockEntity {
         this.author = livingEntity.getName().getString();
     }
 
-    @Environment(value=EnvType.CLIENT)
     public BlockPos getOffset() {
         return this.offset;
     }
@@ -182,7 +185,6 @@ extends BlockEntity {
         this.offset = blockPos;
     }
 
-    @Environment(value=EnvType.CLIENT)
     public BlockPos getSize() {
         return this.size;
     }
@@ -291,10 +293,10 @@ extends BlockEntity {
         if (list2.size() < 1) {
             return false;
         }
-        BlockBox blockBox = this.makeBoundingBox(blockPos, list2);
-        if (blockBox.maxX - blockBox.minX > 1 && blockBox.maxY - blockBox.minY > 1 && blockBox.maxZ - blockBox.minZ > 1) {
-            this.offset = new BlockPos(blockBox.minX - blockPos.getX() + 1, blockBox.minY - blockPos.getY() + 1, blockBox.minZ - blockPos.getZ() + 1);
-            this.size = new BlockPos(blockBox.maxX - blockBox.minX - 1, blockBox.maxY - blockBox.minY - 1, blockBox.maxZ - blockBox.minZ - 1);
+        MutableIntBoundingBox mutableIntBoundingBox = this.makeBoundingBox(blockPos, list2);
+        if (mutableIntBoundingBox.maxX - mutableIntBoundingBox.minX > 1 && mutableIntBoundingBox.maxY - mutableIntBoundingBox.minY > 1 && mutableIntBoundingBox.maxZ - mutableIntBoundingBox.minZ > 1) {
+            this.offset = new BlockPos(mutableIntBoundingBox.minX - blockPos.getX() + 1, mutableIntBoundingBox.minY - blockPos.getY() + 1, mutableIntBoundingBox.minZ - blockPos.getZ() + 1);
+            this.size = new BlockPos(mutableIntBoundingBox.maxX - mutableIntBoundingBox.minX - 1, mutableIntBoundingBox.maxY - mutableIntBoundingBox.minY - 1, mutableIntBoundingBox.maxZ - mutableIntBoundingBox.minZ - 1);
             this.markDirty();
             BlockState blockState = this.world.getBlockState(blockPos);
             this.world.updateListeners(blockPos, blockState, blockState, 3);
@@ -319,34 +321,34 @@ extends BlockEntity {
         return list;
     }
 
-    private BlockBox makeBoundingBox(BlockPos blockPos, List<StructureBlockBlockEntity> list) {
-        BlockBox blockBox;
+    private MutableIntBoundingBox makeBoundingBox(BlockPos blockPos, List<StructureBlockBlockEntity> list) {
+        MutableIntBoundingBox mutableIntBoundingBox;
         if (list.size() > 1) {
             BlockPos blockPos2 = list.get(0).getPos();
-            blockBox = new BlockBox(blockPos2, blockPos2);
+            mutableIntBoundingBox = new MutableIntBoundingBox(blockPos2, blockPos2);
         } else {
-            blockBox = new BlockBox(blockPos, blockPos);
+            mutableIntBoundingBox = new MutableIntBoundingBox(blockPos, blockPos);
         }
         for (StructureBlockBlockEntity structureBlockBlockEntity : list) {
             BlockPos blockPos3 = structureBlockBlockEntity.getPos();
-            if (blockPos3.getX() < blockBox.minX) {
-                blockBox.minX = blockPos3.getX();
-            } else if (blockPos3.getX() > blockBox.maxX) {
-                blockBox.maxX = blockPos3.getX();
+            if (blockPos3.getX() < mutableIntBoundingBox.minX) {
+                mutableIntBoundingBox.minX = blockPos3.getX();
+            } else if (blockPos3.getX() > mutableIntBoundingBox.maxX) {
+                mutableIntBoundingBox.maxX = blockPos3.getX();
             }
-            if (blockPos3.getY() < blockBox.minY) {
-                blockBox.minY = blockPos3.getY();
-            } else if (blockPos3.getY() > blockBox.maxY) {
-                blockBox.maxY = blockPos3.getY();
+            if (blockPos3.getY() < mutableIntBoundingBox.minY) {
+                mutableIntBoundingBox.minY = blockPos3.getY();
+            } else if (blockPos3.getY() > mutableIntBoundingBox.maxY) {
+                mutableIntBoundingBox.maxY = blockPos3.getY();
             }
-            if (blockPos3.getZ() < blockBox.minZ) {
-                blockBox.minZ = blockPos3.getZ();
+            if (blockPos3.getZ() < mutableIntBoundingBox.minZ) {
+                mutableIntBoundingBox.minZ = blockPos3.getZ();
                 continue;
             }
-            if (blockPos3.getZ() <= blockBox.maxZ) continue;
-            blockBox.maxZ = blockPos3.getZ();
+            if (blockPos3.getZ() <= mutableIntBoundingBox.maxZ) continue;
+            mutableIntBoundingBox.maxZ = blockPos3.getZ();
         }
-        return blockBox;
+        return mutableIntBoundingBox;
     }
 
     public boolean saveStructure() {
@@ -384,20 +386,16 @@ extends BlockEntity {
 
     private static Random createRandom(long l) {
         if (l == 0L) {
-            return new Random(Util.getMeasuringTimeMs());
+            return new Random(SystemUtil.getMeasuringTimeMs());
         }
         return new Random(l);
     }
 
     public boolean loadStructure(boolean bl) {
-        BlockPos blockPos3;
-        boolean bl2;
         Structure structure;
         if (this.mode != StructureBlockMode.LOAD || this.world.isClient || this.structureName == null) {
             return false;
         }
-        BlockPos blockPos = this.getPos();
-        BlockPos blockPos2 = blockPos.add(this.offset);
         ServerWorld serverWorld = (ServerWorld)this.world;
         StructureManager structureManager = serverWorld.getStructureManager();
         try {
@@ -408,11 +406,18 @@ extends BlockEntity {
         if (structure == null) {
             return false;
         }
+        return this.method_21864(bl, structure);
+    }
+
+    public boolean method_21864(boolean bl, Structure structure) {
+        BlockPos blockPos2;
+        boolean bl2;
+        BlockPos blockPos = this.getPos();
         if (!ChatUtil.isEmpty(structure.getAuthor())) {
             this.author = structure.getAuthor();
         }
-        if (!(bl2 = this.size.equals(blockPos3 = structure.getSize()))) {
-            this.size = blockPos3;
+        if (!(bl2 = this.size.equals(blockPos2 = structure.getSize()))) {
+            this.size = blockPos2;
             this.markDirty();
             BlockState blockState = this.world.getBlockState(blockPos);
             this.world.updateListeners(blockPos, blockState, blockState, 3);
@@ -422,7 +427,8 @@ extends BlockEntity {
             if (this.integrity < 1.0f) {
                 structurePlacementData.clearProcessors().addProcessor(new BlockRotStructureProcessor(MathHelper.clamp(this.integrity, 0.0f, 1.0f))).setRandom(StructureBlockBlockEntity.createRandom(this.seed));
             }
-            structure.place(this.world, blockPos2, structurePlacementData);
+            BlockPos blockPos3 = blockPos.add(this.offset);
+            structure.place(this.world, blockPos3, structurePlacementData);
             return true;
         }
         return false;

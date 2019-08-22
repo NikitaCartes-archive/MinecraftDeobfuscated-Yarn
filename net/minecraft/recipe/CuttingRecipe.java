@@ -88,8 +88,7 @@ implements Recipe<Inventory> {
             this.field_17648 = arg;
         }
 
-        @Override
-        public T read(Identifier identifier, JsonObject jsonObject) {
+        public T method_17881(Identifier identifier, JsonObject jsonObject) {
             String string = JsonHelper.getString(jsonObject, "group", "");
             Ingredient ingredient = JsonHelper.hasArray(jsonObject, "ingredient") ? Ingredient.fromJson(JsonHelper.getArray(jsonObject, "ingredient")) : Ingredient.fromJson(JsonHelper.getObject(jsonObject, "ingredient"));
             String string2 = JsonHelper.getString(jsonObject, "result");
@@ -98,16 +97,14 @@ implements Recipe<Inventory> {
             return this.field_17648.create(identifier, string, ingredient, itemStack);
         }
 
-        @Override
-        public T read(Identifier identifier, PacketByteBuf packetByteBuf) {
+        public T method_17882(Identifier identifier, PacketByteBuf packetByteBuf) {
             String string = packetByteBuf.readString(Short.MAX_VALUE);
             Ingredient ingredient = Ingredient.fromPacket(packetByteBuf);
             ItemStack itemStack = packetByteBuf.readItemStack();
             return this.field_17648.create(identifier, string, ingredient, itemStack);
         }
 
-        @Override
-        public void write(PacketByteBuf packetByteBuf, T cuttingRecipe) {
+        public void method_17880(PacketByteBuf packetByteBuf, T cuttingRecipe) {
             packetByteBuf.writeString(((CuttingRecipe)cuttingRecipe).group);
             ((CuttingRecipe)cuttingRecipe).input.write(packetByteBuf);
             packetByteBuf.writeItemStack(((CuttingRecipe)cuttingRecipe).output);
@@ -115,12 +112,12 @@ implements Recipe<Inventory> {
 
         @Override
         public /* synthetic */ Recipe read(Identifier identifier, PacketByteBuf packetByteBuf) {
-            return this.read(identifier, packetByteBuf);
+            return this.method_17882(identifier, packetByteBuf);
         }
 
         @Override
         public /* synthetic */ Recipe read(Identifier identifier, JsonObject jsonObject) {
-            return this.read(identifier, jsonObject);
+            return this.method_17881(identifier, jsonObject);
         }
 
         static interface class_3974<T extends CuttingRecipe> {

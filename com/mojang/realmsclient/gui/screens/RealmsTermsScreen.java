@@ -7,13 +7,13 @@ import com.mojang.realmsclient.RealmsMainScreen;
 import com.mojang.realmsclient.client.RealmsClient;
 import com.mojang.realmsclient.dto.RealmsServer;
 import com.mojang.realmsclient.exception.RealmsServiceException;
-import com.mojang.realmsclient.gui.RealmsConstants;
 import com.mojang.realmsclient.gui.screens.RealmsLongRunningMcoTaskScreen;
 import com.mojang.realmsclient.util.RealmsTasks;
 import com.mojang.realmsclient.util.RealmsUtil;
 import java.util.concurrent.locks.ReentrantLock;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.class_4359;
 import net.minecraft.realms.Realms;
 import net.minecraft.realms.RealmsButton;
 import net.minecraft.realms.RealmsScreen;
@@ -43,7 +43,7 @@ extends RealmsScreen {
         int i = this.width() / 4;
         int j = this.width() / 4 - 2;
         int k = this.width() / 2 + 4;
-        this.agreeButton = new RealmsButton(1, i, RealmsConstants.row(12), j, 20, RealmsTermsScreen.getLocalizedString("mco.terms.buttons.agree")){
+        this.agreeButton = new RealmsButton(1, i, class_4359.method_21072(12), j, 20, RealmsTermsScreen.getLocalizedString("mco.terms.buttons.agree")){
 
             @Override
             public void onPress() {
@@ -51,7 +51,7 @@ extends RealmsScreen {
             }
         };
         this.buttonsAdd(this.agreeButton);
-        this.buttonsAdd(new RealmsButton(2, k, RealmsConstants.row(12), j, 20, RealmsTermsScreen.getLocalizedString("mco.terms.buttons.disagree")){
+        this.buttonsAdd(new RealmsButton(2, k, class_4359.method_21072(12), j, 20, RealmsTermsScreen.getLocalizedString("mco.terms.buttons.disagree")){
 
             @Override
             public void onPress() {
@@ -100,18 +100,18 @@ extends RealmsScreen {
     public void render(int i, int j, float f) {
         this.renderBackground();
         this.drawCenteredString(RealmsTermsScreen.getLocalizedString("mco.terms.title"), this.width() / 2, 17, 0xFFFFFF);
-        this.drawString(RealmsTermsScreen.getLocalizedString("mco.terms.sentence.1"), this.width() / 2 - 120, RealmsConstants.row(5), 0xFFFFFF);
+        this.drawString(RealmsTermsScreen.getLocalizedString("mco.terms.sentence.1"), this.width() / 2 - 120, class_4359.method_21072(5), 0xFFFFFF);
         int k = this.fontWidth(RealmsTermsScreen.getLocalizedString("mco.terms.sentence.1"));
         int l = this.width() / 2 - 121 + k;
-        int m = RealmsConstants.row(5);
+        int m = class_4359.method_21072(5);
         int n = l + this.fontWidth("mco.terms.sentence.2") + 1;
         int o = m + 1 + this.fontLineHeight();
         if (l <= i && i <= n && m <= j && j <= o) {
             this.onLink = true;
-            this.drawString(" " + RealmsTermsScreen.getLocalizedString("mco.terms.sentence.2"), this.width() / 2 - 120 + k, RealmsConstants.row(5), 7107012);
+            this.drawString(" " + RealmsTermsScreen.getLocalizedString("mco.terms.sentence.2"), this.width() / 2 - 120 + k, class_4359.method_21072(5), 7107012);
         } else {
             this.onLink = false;
-            this.drawString(" " + RealmsTermsScreen.getLocalizedString("mco.terms.sentence.2"), this.width() / 2 - 120 + k, RealmsConstants.row(5), 0x3366BB);
+            this.drawString(" " + RealmsTermsScreen.getLocalizedString("mco.terms.sentence.2"), this.width() / 2 - 120 + k, class_4359.method_21072(5), 0x3366BB);
         }
         super.render(i, j, f);
     }

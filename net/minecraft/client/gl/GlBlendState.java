@@ -3,7 +3,7 @@
  */
 package net.minecraft.client.gl;
 
-import com.mojang.blaze3d.platform.GlStateManager;
+import com.mojang.blaze3d.systems.RenderSystem;
 import java.util.Locale;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
@@ -48,16 +48,16 @@ public class GlBlendState {
         if (activeBlendState == null || this.blendDisabled != activeBlendState.isBlendDisabled()) {
             activeBlendState = this;
             if (this.blendDisabled) {
-                GlStateManager.disableBlend();
+                RenderSystem.disableBlend();
                 return;
             }
-            GlStateManager.enableBlend();
+            RenderSystem.enableBlend();
         }
-        GlStateManager.blendEquation(this.func);
+        RenderSystem.blendEquation(this.func);
         if (this.separateBlend) {
-            GlStateManager.blendFuncSeparate(this.srcRgb, this.dstRgb, this.srcAlpha, this.dstAlpha);
+            RenderSystem.blendFuncSeparate(this.srcRgb, this.dstRgb, this.srcAlpha, this.dstAlpha);
         } else {
-            GlStateManager.blendFunc(this.srcRgb, this.dstRgb);
+            RenderSystem.blendFunc(this.srcRgb, this.dstRgb);
         }
     }
 

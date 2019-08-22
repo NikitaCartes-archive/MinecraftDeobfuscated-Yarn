@@ -4,11 +4,12 @@
 package net.minecraft.client.render.entity.feature;
 
 import com.google.common.collect.Maps;
-import com.mojang.blaze3d.platform.GlStateManager;
+import com.mojang.blaze3d.systems.RenderSystem;
 import java.util.Map;
 import java.util.function.Consumer;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.class_4493;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.GameRenderer;
 import net.minecraft.client.render.entity.feature.FeatureRenderer;
@@ -43,8 +44,7 @@ extends FeatureRenderer<T, M> {
         this.modelBody = bipedEntityModel2;
     }
 
-    @Override
-    public void render(T livingEntity, float f, float g, float h, float i, float j, float k, float l) {
+    public void method_17157(T livingEntity, float f, float g, float h, float i, float j, float k, float l) {
         this.renderArmor(livingEntity, f, g, h, i, j, k, l, EquipmentSlot.CHEST);
         this.renderArmor(livingEntity, f, g, h, i, j, k, l, EquipmentSlot.LEGS);
         this.renderArmor(livingEntity, f, g, h, i, j, k, l, EquipmentSlot.FEET);
@@ -66,8 +66,8 @@ extends FeatureRenderer<T, M> {
             return;
         }
         A bipedEntityModel = this.getArmor(equipmentSlot);
-        ((BipedEntityModel)this.getContextModel()).setAttributes(bipedEntityModel);
-        ((BipedEntityModel)bipedEntityModel).animateModel(livingEntity, f, g, h);
+        ((BipedEntityModel)this.getModel()).setAttributes(bipedEntityModel);
+        ((BipedEntityModel)bipedEntityModel).method_17086(livingEntity, f, g, h);
         this.method_4170(bipedEntityModel, equipmentSlot);
         boolean bl = this.isLegs(equipmentSlot);
         this.bindTexture(this.getArmorTexture(armorItem, bl));
@@ -76,12 +76,12 @@ extends FeatureRenderer<T, M> {
             float n = (float)(m >> 16 & 0xFF) / 255.0f;
             float o = (float)(m >> 8 & 0xFF) / 255.0f;
             float p = (float)(m & 0xFF) / 255.0f;
-            GlStateManager.color4f(this.red * n, this.green * o, this.blue * p, this.alpha);
-            ((BipedEntityModel)bipedEntityModel).render(livingEntity, f, g, i, j, k, l);
+            RenderSystem.color4f(this.red * n, this.green * o, this.blue * p, this.alpha);
+            ((BipedEntityModel)bipedEntityModel).method_17088(livingEntity, f, g, i, j, k, l);
             this.bindTexture(this.method_4174(armorItem, bl, "overlay"));
         }
-        GlStateManager.color4f(this.red, this.green, this.blue, this.alpha);
-        ((BipedEntityModel)bipedEntityModel).render(livingEntity, f, g, i, j, k, l);
+        RenderSystem.color4f(this.red, this.green, this.blue, this.alpha);
+        ((BipedEntityModel)bipedEntityModel).method_17088(livingEntity, f, g, i, j, k, l);
         if (!this.ignoreGlint && itemStack.hasEnchantments()) {
             ArmorFeatureRenderer.renderEnchantedGlint(this::bindTexture, livingEntity, bipedEntityModel, f, g, h, i, j, k, l);
         }
@@ -100,33 +100,33 @@ extends FeatureRenderer<T, M> {
         consumer.accept(SKIN);
         GameRenderer gameRenderer = MinecraftClient.getInstance().gameRenderer;
         gameRenderer.setFogBlack(true);
-        GlStateManager.enableBlend();
-        GlStateManager.depthFunc(514);
-        GlStateManager.depthMask(false);
+        RenderSystem.enableBlend();
+        RenderSystem.depthFunc(514);
+        RenderSystem.depthMask(false);
         float n = 0.5f;
-        GlStateManager.color4f(0.5f, 0.5f, 0.5f, 1.0f);
+        RenderSystem.color4f(0.5f, 0.5f, 0.5f, 1.0f);
         for (int o = 0; o < 2; ++o) {
-            GlStateManager.disableLighting();
-            GlStateManager.blendFunc(GlStateManager.SourceFactor.SRC_COLOR, GlStateManager.DestFactor.ONE);
+            RenderSystem.disableLighting();
+            RenderSystem.blendFunc(class_4493.class_4535.SRC_COLOR, class_4493.class_4534.ONE);
             float p = 0.76f;
-            GlStateManager.color4f(0.38f, 0.19f, 0.608f, 1.0f);
-            GlStateManager.matrixMode(5890);
-            GlStateManager.loadIdentity();
+            RenderSystem.color4f(0.38f, 0.19f, 0.608f, 1.0f);
+            RenderSystem.matrixMode(5890);
+            RenderSystem.loadIdentity();
             float q = 0.33333334f;
-            GlStateManager.scalef(0.33333334f, 0.33333334f, 0.33333334f);
-            GlStateManager.rotatef(30.0f - (float)o * 60.0f, 0.0f, 0.0f, 1.0f);
-            GlStateManager.translatef(0.0f, m * (0.001f + (float)o * 0.003f) * 20.0f, 0.0f);
-            GlStateManager.matrixMode(5888);
+            RenderSystem.scalef(0.33333334f, 0.33333334f, 0.33333334f);
+            RenderSystem.rotatef(30.0f - (float)o * 60.0f, 0.0f, 0.0f, 1.0f);
+            RenderSystem.translatef(0.0f, m * (0.001f + (float)o * 0.003f) * 20.0f, 0.0f);
+            RenderSystem.matrixMode(5888);
             entityModel.render(entity, f, g, i, j, k, l);
-            GlStateManager.blendFunc(GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO);
+            RenderSystem.blendFunc(class_4493.class_4535.ONE, class_4493.class_4534.ZERO);
         }
-        GlStateManager.matrixMode(5890);
-        GlStateManager.loadIdentity();
-        GlStateManager.matrixMode(5888);
-        GlStateManager.enableLighting();
-        GlStateManager.depthMask(true);
-        GlStateManager.depthFunc(515);
-        GlStateManager.disableBlend();
+        RenderSystem.matrixMode(5890);
+        RenderSystem.loadIdentity();
+        RenderSystem.matrixMode(5888);
+        RenderSystem.enableLighting();
+        RenderSystem.depthMask(true);
+        RenderSystem.depthFunc(515);
+        RenderSystem.disableBlend();
         gameRenderer.setFogBlack(false);
     }
 

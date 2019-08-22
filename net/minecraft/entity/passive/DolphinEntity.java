@@ -19,7 +19,8 @@ import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.ItemEntity;
 import net.minecraft.entity.MovementType;
 import net.minecraft.entity.SpawnType;
-import net.minecraft.entity.ai.TargetFinder;
+import net.minecraft.entity.WaterCreatureEntity;
+import net.minecraft.entity.ai.PathfindingUtil;
 import net.minecraft.entity.ai.TargetPredicate;
 import net.minecraft.entity.ai.control.DolphinLookControl;
 import net.minecraft.entity.ai.control.MoveControl;
@@ -45,7 +46,6 @@ import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.entity.mob.GuardianEntity;
 import net.minecraft.entity.mob.MobEntity;
-import net.minecraft.entity.mob.WaterCreatureEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundTag;
@@ -71,7 +71,7 @@ extends WaterCreatureEntity {
     private static final TrackedData<Boolean> HAS_FISH = DataTracker.registerData(DolphinEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
     private static final TrackedData<Integer> MOISTNESS = DataTracker.registerData(DolphinEntity.class, TrackedDataHandlerRegistry.INTEGER);
     private static final TargetPredicate CLOSE_PLAYER_PREDICATE = new TargetPredicate().setBaseMaxDistance(10.0).includeTeammates().includeInvulnerable().includeHidden();
-    public static final Predicate<ItemEntity> CAN_TAKE = itemEntity -> !itemEntity.cannotPickup() && itemEntity.isAlive() && itemEntity.isTouchingWater();
+    public static final Predicate<ItemEntity> CAN_TAKE = itemEntity -> !itemEntity.cannotPickup() && itemEntity.isAlive() && itemEntity.isInsideWater();
 
     public DolphinEntity(EntityType<? extends DolphinEntity> entityType, World world) {
         super((EntityType<? extends WaterCreatureEntity>)entityType, world);
@@ -83,7 +83,7 @@ extends WaterCreatureEntity {
     @Override
     @Nullable
     public EntityData initialize(IWorld iWorld, LocalDifficulty localDifficulty, SpawnType spawnType, @Nullable EntityData entityData, @Nullable CompoundTag compoundTag) {
-        this.setAir(this.getMaxAir());
+        this.setBreath(this.getMaxBreath());
         this.pitch = 0.0f;
         return super.initialize(iWorld, localDifficulty, spawnType, entityData, compoundTag);
     }
@@ -94,7 +94,7 @@ extends WaterCreatureEntity {
     }
 
     @Override
-    protected void tickWaterBreathingAir(int i) {
+    protected void tickBreath(int i) {
     }
 
     public void setTreasurePos(BlockPos blockPos) {
@@ -192,13 +192,13 @@ extends WaterCreatureEntity {
     }
 
     @Override
-    public int getMaxAir() {
+    public int getMaxBreath() {
         return 4800;
     }
 
     @Override
-    protected int getNextAirOnLand(int i) {
-        return this.getMaxAir();
+    protected int getNextBreathInAir(int i) {
+        return this.getMaxBreath();
     }
 
     @Override
@@ -247,7 +247,7 @@ extends WaterCreatureEntity {
         if (this.isAiDisabled()) {
             return;
         }
-        if (this.isWet()) {
+        if (this.isTouchingWater()) {
             this.setMoistness(2400);
         } else {
             this.setMoistness(this.getMoistness() - 1);
@@ -261,7 +261,7 @@ extends WaterCreatureEntity {
                 this.velocityDirty = true;
             }
         }
-        if (this.world.isClient && this.isTouchingWater() && this.getVelocity().lengthSquared() > 0.03) {
+        if (this.world.isClient && this.isInsideWater() && this.getVelocity().lengthSquared() > 0.03) {
             Vec3d vec3d = this.getRotationVec(0.0f);
             float f = MathHelper.cos(this.yaw * ((float)Math.PI / 180)) * 0.3f;
             float g = MathHelper.sin(this.yaw * ((float)Math.PI / 180)) * 0.3f;
@@ -327,7 +327,7 @@ extends WaterCreatureEntity {
     @Override
     @Nullable
     protected SoundEvent getAmbientSound() {
-        return this.isTouchingWater() ? SoundEvents.ENTITY_DOLPHIN_AMBIENT_WATER : SoundEvents.ENTITY_DOLPHIN_AMBIENT;
+        return this.isInsideWater() ? SoundEvents.ENTITY_DOLPHIN_AMBIENT_WATER : SoundEvents.ENTITY_DOLPHIN_AMBIENT;
     }
 
     @Override
@@ -350,7 +350,7 @@ extends WaterCreatureEntity {
 
     @Override
     public void travel(Vec3d vec3d) {
-        if (this.canMoveVoluntarily() && this.isTouchingWater()) {
+        if (this.canMoveVoluntarily() && this.isInsideWater()) {
             this.updateVelocity(this.getMovementSpeed(), vec3d);
             this.move(MovementType.SELF, this.getVelocity());
             this.setVelocity(this.getVelocity().multiply(0.9));
@@ -384,13 +384,13 @@ extends WaterCreatureEntity {
 
         @Override
         public boolean canStart() {
-            return this.dolphin.hasFish() && this.dolphin.getAir() >= 100;
+            return this.dolphin.hasFish() && this.dolphin.getBreath() >= 100;
         }
 
         @Override
         public boolean shouldContinue() {
             BlockPos blockPos = this.dolphin.getTreasurePos();
-            return !new BlockPos((double)blockPos.getX(), this.dolphin.y, (double)blockPos.getZ()).isWithinDistance(this.dolphin.getPos(), 4.0) && !this.field_6753 && this.dolphin.getAir() >= 100;
+            return !new BlockPos((double)blockPos.getX(), this.dolphin.y, (double)blockPos.getZ()).isWithinDistance(this.dolphin.getPos(), 4.0) && !this.field_6753 && this.dolphin.getBreath() >= 100;
         }
 
         /*
@@ -431,12 +431,12 @@ extends WaterCreatureEntity {
             World world = this.dolphin.world;
             if (this.dolphin.isCloseToTarget() || this.dolphin.getNavigation().isIdle()) {
                 BlockPos blockPos2;
-                Vec3d vec3d = TargetFinder.method_6377(this.dolphin, 16, 1, new Vec3d(blockPos.getX(), blockPos.getY(), blockPos.getZ()), 0.3926991f);
+                Vec3d vec3d = PathfindingUtil.method_6377(this.dolphin, 16, 1, new Vec3d(blockPos.getX(), blockPos.getY(), blockPos.getZ()), 0.3926991f);
                 if (vec3d == null) {
-                    vec3d = TargetFinder.method_6373(this.dolphin, 8, 4, new Vec3d(blockPos.getX(), blockPos.getY(), blockPos.getZ()));
+                    vec3d = PathfindingUtil.method_6373(this.dolphin, 8, 4, new Vec3d(blockPos.getX(), blockPos.getY(), blockPos.getZ()));
                 }
                 if (!(vec3d == null || world.getFluidState(blockPos2 = new BlockPos(vec3d)).matches(FluidTags.WATER) && world.getBlockState(blockPos2).canPlaceAtSide(world, blockPos2, BlockPlacementEnvironment.WATER))) {
-                    vec3d = TargetFinder.method_6373(this.dolphin, 8, 5, new Vec3d(blockPos.getX(), blockPos.getY(), blockPos.getZ()));
+                    vec3d = PathfindingUtil.method_6373(this.dolphin, 8, 5, new Vec3d(blockPos.getX(), blockPos.getY(), blockPos.getZ()));
                 }
                 if (vec3d == null) {
                     this.field_6753 = true;
@@ -577,7 +577,7 @@ extends WaterCreatureEntity {
 
         @Override
         public void tick() {
-            if (this.dolphin.isTouchingWater()) {
+            if (this.dolphin.isInsideWater()) {
                 this.dolphin.setVelocity(this.dolphin.getVelocity().add(0.0, 0.005, 0.0));
             }
             if (this.state != MoveControl.State.MOVE_TO || this.dolphin.getNavigation().isIdle()) {
@@ -596,10 +596,10 @@ extends WaterCreatureEntity {
                 return;
             }
             float h = (float)(MathHelper.atan2(f, d) * 57.2957763671875) - 90.0f;
-            this.dolphin.field_6283 = this.dolphin.yaw = this.changeAngle(this.dolphin.yaw, h, 10.0f);
+            this.dolphin.bodyYaw = this.dolphin.yaw = this.changeAngle(this.dolphin.yaw, h, 10.0f);
             this.dolphin.headYaw = this.dolphin.yaw;
             float i = (float)(this.speed * this.dolphin.getAttributeInstance(EntityAttributes.MOVEMENT_SPEED).getValue());
-            if (this.dolphin.isTouchingWater()) {
+            if (this.dolphin.isInsideWater()) {
                 this.dolphin.setMovementSpeed(i * 0.02f);
                 float j = -((float)(MathHelper.atan2(e, MathHelper.sqrt(d * d + f * f)) * 57.2957763671875));
                 j = MathHelper.clamp(MathHelper.wrapDegrees(j), -85.0f, 85.0f);

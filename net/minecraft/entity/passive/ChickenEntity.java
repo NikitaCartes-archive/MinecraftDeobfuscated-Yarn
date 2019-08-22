@@ -48,7 +48,7 @@ extends AnimalEntity {
 
     public ChickenEntity(EntityType<? extends ChickenEntity> entityType, World world) {
         super((EntityType<? extends AnimalEntity>)entityType, world);
-        this.setPathfindingPenalty(PathNodeType.WATER, 0.0f);
+        this.setPathNodeTypeWeight(PathNodeType.WATER, 0.0f);
     }
 
     @Override
@@ -122,14 +122,13 @@ extends AnimalEntity {
         this.playSound(SoundEvents.ENTITY_CHICKEN_STEP, 0.15f, 1.0f);
     }
 
-    @Override
-    public ChickenEntity createChild(PassiveEntity passiveEntity) {
+    public ChickenEntity method_6471(PassiveEntity passiveEntity) {
         return EntityType.CHICKEN.create(this.world);
     }
 
     @Override
     public boolean isBreedingItem(ItemStack itemStack) {
-        return BREEDING_INGREDIENT.test(itemStack);
+        return BREEDING_INGREDIENT.method_8093(itemStack);
     }
 
     @Override
@@ -144,7 +143,7 @@ extends AnimalEntity {
     public void readCustomDataFromTag(CompoundTag compoundTag) {
         super.readCustomDataFromTag(compoundTag);
         this.jockey = compoundTag.getBoolean("IsChickenJockey");
-        if (compoundTag.contains("EggLayTime")) {
+        if (compoundTag.containsKey("EggLayTime")) {
             this.eggLayTime = compoundTag.getInt("EggLayTime");
         }
     }
@@ -164,13 +163,13 @@ extends AnimalEntity {
     @Override
     public void updatePassengerPosition(Entity entity) {
         super.updatePassengerPosition(entity);
-        float f = MathHelper.sin(this.field_6283 * ((float)Math.PI / 180));
-        float g = MathHelper.cos(this.field_6283 * ((float)Math.PI / 180));
+        float f = MathHelper.sin(this.bodyYaw * ((float)Math.PI / 180));
+        float g = MathHelper.cos(this.bodyYaw * ((float)Math.PI / 180));
         float h = 0.1f;
         float i = 0.0f;
-        entity.updatePosition(this.x + (double)(0.1f * f), this.y + (double)(this.getHeight() * 0.5f) + entity.getHeightOffset() + 0.0, this.z - (double)(0.1f * g));
+        entity.setPosition(this.x + (double)(0.1f * f), this.y + (double)(this.getHeight() * 0.5f) + entity.getHeightOffset() + 0.0, this.z - (double)(0.1f * g));
         if (entity instanceof LivingEntity) {
-            ((LivingEntity)entity).field_6283 = this.field_6283;
+            ((LivingEntity)entity).bodyYaw = this.bodyYaw;
         }
     }
 
@@ -184,7 +183,7 @@ extends AnimalEntity {
 
     @Override
     public /* synthetic */ PassiveEntity createChild(PassiveEntity passiveEntity) {
-        return this.createChild(passiveEntity);
+        return this.method_6471(passiveEntity);
     }
 }
 

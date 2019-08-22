@@ -32,8 +32,7 @@ extends SurfaceBuilder<TernarySurfaceConfig> {
         super(function);
     }
 
-    @Override
-    public void generate(Random random, Chunk chunk, Biome biome, int i, int j, int k, double d, BlockState blockState, BlockState blockState2, int l, long m, TernarySurfaceConfig ternarySurfaceConfig) {
+    public void method_15221(Random random, Chunk chunk, Biome biome, int i, int j, int k, double d, BlockState blockState, BlockState blockState2, int l, long m, TernarySurfaceConfig ternarySurfaceConfig) {
         double e = 0.0;
         double f = 0.0;
         BlockPos.Mutable mutable = new BlockPos.Mutable();

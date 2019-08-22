@@ -3,8 +3,7 @@
  */
 package net.minecraft.client.render;
 
-import com.mojang.blaze3d.platform.GLX;
-import com.mojang.blaze3d.platform.GlStateManager;
+import com.mojang.blaze3d.systems.RenderSystem;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
@@ -49,27 +48,27 @@ implements AutoCloseable {
     }
 
     public void disable() {
-        GlStateManager.activeTexture(GLX.GL_TEXTURE1);
-        GlStateManager.disableTexture();
-        GlStateManager.activeTexture(GLX.GL_TEXTURE0);
+        RenderSystem.activeTexture(33985);
+        RenderSystem.disableTexture();
+        RenderSystem.activeTexture(33984);
     }
 
     public void enable() {
-        GlStateManager.activeTexture(GLX.GL_TEXTURE1);
-        GlStateManager.matrixMode(5890);
-        GlStateManager.loadIdentity();
+        RenderSystem.activeTexture(33985);
+        RenderSystem.matrixMode(5890);
+        RenderSystem.loadIdentity();
         float f = 0.00390625f;
-        GlStateManager.scalef(0.00390625f, 0.00390625f, 0.00390625f);
-        GlStateManager.translatef(8.0f, 8.0f, 8.0f);
-        GlStateManager.matrixMode(5888);
+        RenderSystem.scalef(0.00390625f, 0.00390625f, 0.00390625f);
+        RenderSystem.translatef(8.0f, 8.0f, 8.0f);
+        RenderSystem.matrixMode(5888);
         this.client.getTextureManager().bindTexture(this.textureIdentifier);
-        GlStateManager.texParameter(3553, 10241, 9729);
-        GlStateManager.texParameter(3553, 10240, 9729);
-        GlStateManager.texParameter(3553, 10242, 10496);
-        GlStateManager.texParameter(3553, 10243, 10496);
-        GlStateManager.color4f(1.0f, 1.0f, 1.0f, 1.0f);
-        GlStateManager.enableTexture();
-        GlStateManager.activeTexture(GLX.GL_TEXTURE0);
+        RenderSystem.texParameter(3553, 10241, 9729);
+        RenderSystem.texParameter(3553, 10240, 9729);
+        RenderSystem.texParameter(3553, 10242, 10496);
+        RenderSystem.texParameter(3553, 10243, 10496);
+        RenderSystem.color4f(1.0f, 1.0f, 1.0f, 1.0f);
+        RenderSystem.enableTexture();
+        RenderSystem.activeTexture(33984);
     }
 
     public void update(float f) {
@@ -172,7 +171,7 @@ implements AutoCloseable {
                 int ac = (int)(u * 255.0f);
                 int ad = (int)(v * 255.0f);
                 int ae = (int)(w * 255.0f);
-                this.image.setPixelRgba(l, k, 0xFF000000 | ae << 16 | ad << 8 | ac);
+                this.image.setPixelRGBA(l, k, 0xFF000000 | ae << 16 | ad << 8 | ac);
             }
         }
         this.texture.upload();

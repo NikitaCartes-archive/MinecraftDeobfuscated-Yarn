@@ -4,16 +4,16 @@
 package net.minecraft.client.toast;
 
 import com.google.common.collect.Queues;
-import com.mojang.blaze3d.platform.GlStateManager;
+import com.mojang.blaze3d.systems.RenderSystem;
 import java.util.Arrays;
 import java.util.Deque;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawableHelper;
-import net.minecraft.client.render.DiffuseLighting;
+import net.minecraft.client.render.GuiLighting;
 import net.minecraft.client.toast.Toast;
-import net.minecraft.util.Util;
+import net.minecraft.util.SystemUtil;
 import net.minecraft.util.math.MathHelper;
 import org.jetbrains.annotations.Nullable;
 
@@ -32,7 +32,7 @@ extends DrawableHelper {
         if (this.client.options.hudHidden) {
             return;
         }
-        DiffuseLighting.disable();
+        GuiLighting.disable();
         for (int i = 0; i < this.visibleEntries.length; ++i) {
             Entry<?> entry = this.visibleEntries[i];
             if (entry != null && entry.draw(this.client.window.getScaledWidth(), i)) {
@@ -96,7 +96,7 @@ extends DrawableHelper {
         }
 
         public boolean draw(int i, int j) {
-            long l = Util.getMeasuringTimeMs();
+            long l = SystemUtil.getMeasuringTimeMs();
             if (this.field_2243 == -1L) {
                 this.field_2243 = l;
                 this.visibility.playSound(this.field_2245.client.getSoundManager());
@@ -104,10 +104,10 @@ extends DrawableHelper {
             if (this.visibility == Toast.Visibility.SHOW && l - this.field_2243 <= 600L) {
                 this.field_2242 = l;
             }
-            GlStateManager.pushMatrix();
-            GlStateManager.translatef((float)i - 160.0f * this.getDissapearProgress(l), j * 32, 500 + j);
+            RenderSystem.pushMatrix();
+            RenderSystem.translatef((float)i - 160.0f * this.getDissapearProgress(l), j * 32, 500 + j);
             Toast.Visibility visibility = this.instance.draw(this.field_2245, l - this.field_2242);
-            GlStateManager.popMatrix();
+            RenderSystem.popMatrix();
             if (visibility != this.visibility) {
                 this.field_2243 = l - (long)((int)((1.0f - this.getDissapearProgress(l)) * 600.0f));
                 this.visibility = visibility;

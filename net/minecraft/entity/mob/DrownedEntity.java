@@ -12,8 +12,8 @@ import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.MovementType;
 import net.minecraft.entity.SpawnType;
+import net.minecraft.entity.ai.PathfindingUtil;
 import net.minecraft.entity.ai.RangedAttackMob;
-import net.minecraft.entity.ai.TargetFinder;
 import net.minecraft.entity.ai.control.MoveControl;
 import net.minecraft.entity.ai.goal.FollowTargetGoal;
 import net.minecraft.entity.ai.goal.Goal;
@@ -47,10 +47,10 @@ import net.minecraft.util.Hand;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
-import net.minecraft.world.CollisionView;
 import net.minecraft.world.Difficulty;
 import net.minecraft.world.IWorld;
 import net.minecraft.world.LocalDifficulty;
+import net.minecraft.world.ViewableWorld;
 import net.minecraft.world.World;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.biome.Biomes;
@@ -67,7 +67,7 @@ implements RangedAttackMob {
         super((EntityType<? extends ZombieEntity>)entityType, world);
         this.stepHeight = 1.0f;
         this.moveControl = new DrownedMoveControl(this);
-        this.setPathfindingPenalty(PathNodeType.WATER, 0.0f);
+        this.setPathNodeTypeWeight(PathNodeType.WATER, 0.0f);
         this.waterNavigation = new SwimNavigation(this, world);
         this.landNavigation = new MobNavigation(this, world);
     }
@@ -118,7 +118,7 @@ implements RangedAttackMob {
 
     @Override
     protected SoundEvent getAmbientSound() {
-        if (this.isTouchingWater()) {
+        if (this.isInsideWater()) {
             return SoundEvents.ENTITY_DROWNED_AMBIENT_WATER;
         }
         return SoundEvents.ENTITY_DROWNED_AMBIENT;
@@ -126,7 +126,7 @@ implements RangedAttackMob {
 
     @Override
     protected SoundEvent getHurtSound(DamageSource damageSource) {
-        if (this.isTouchingWater()) {
+        if (this.isInsideWater()) {
             return SoundEvents.ENTITY_DROWNED_HURT_WATER;
         }
         return SoundEvents.ENTITY_DROWNED_HURT;
@@ -134,7 +134,7 @@ implements RangedAttackMob {
 
     @Override
     protected SoundEvent getDeathSound() {
-        if (this.isTouchingWater()) {
+        if (this.isInsideWater()) {
             return SoundEvents.ENTITY_DROWNED_DEATH_WATER;
         }
         return SoundEvents.ENTITY_DROWNED_DEATH;
@@ -190,13 +190,13 @@ implements RangedAttackMob {
     }
 
     @Override
-    public boolean canSpawn(CollisionView collisionView) {
-        return collisionView.intersectsEntities(this);
+    public boolean canSpawn(ViewableWorld viewableWorld) {
+        return viewableWorld.intersectsEntities(this);
     }
 
     public boolean method_7012(@Nullable LivingEntity livingEntity) {
         if (livingEntity != null) {
-            return !this.world.isDay() || livingEntity.isTouchingWater();
+            return !this.world.isDaylight() || livingEntity.isInsideWater();
         }
         return false;
     }
@@ -211,12 +211,12 @@ implements RangedAttackMob {
             return true;
         }
         LivingEntity livingEntity = this.getTarget();
-        return livingEntity != null && livingEntity.isTouchingWater();
+        return livingEntity != null && livingEntity.isInsideWater();
     }
 
     @Override
     public void travel(Vec3d vec3d) {
-        if (this.canMoveVoluntarily() && this.isTouchingWater() && this.isTargetingUnderwater()) {
+        if (this.canMoveVoluntarily() && this.isInsideWater() && this.isTargetingUnderwater()) {
             this.updateVelocity(0.01f, vec3d);
             this.move(MovementType.SELF, this.getVelocity());
             this.setVelocity(this.getVelocity().multiply(0.9));
@@ -228,7 +228,7 @@ implements RangedAttackMob {
     @Override
     public void updateSwimming() {
         if (!this.world.isClient) {
-            if (this.canMoveVoluntarily() && this.isTouchingWater() && this.isTargetingUnderwater()) {
+            if (this.canMoveVoluntarily() && this.isInsideWater() && this.isTargetingUnderwater()) {
                 this.navigation = this.waterNavigation;
                 this.setSwimming(true);
             } else {
@@ -249,11 +249,11 @@ implements RangedAttackMob {
     public void attack(LivingEntity livingEntity, float f) {
         TridentEntity tridentEntity = new TridentEntity(this.world, (LivingEntity)this, new ItemStack(Items.TRIDENT));
         double d = livingEntity.x - this.x;
-        double e = livingEntity.getBoundingBox().y1 + (double)(livingEntity.getHeight() / 3.0f) - tridentEntity.y;
+        double e = livingEntity.getBoundingBox().minY + (double)(livingEntity.getHeight() / 3.0f) - tridentEntity.y;
         double g = livingEntity.z - this.z;
         double h = MathHelper.sqrt(d * d + g * g);
         tridentEntity.setVelocity(d, e + h * (double)0.2f, g, 1.6f, 14 - this.world.getDifficulty().getId() * 4);
-        this.playSound(SoundEvents.ENTITY_DROWNED_SHOOT, 1.0f, 1.0f / (this.getRandom().nextFloat() * 0.4f + 0.8f));
+        this.playSound(SoundEvents.ENTITY_DROWNED_SHOOT, 1.0f, 1.0f / (this.getRand().nextFloat() * 0.4f + 0.8f));
         this.world.spawnEntity(tridentEntity);
     }
 
@@ -273,7 +273,7 @@ implements RangedAttackMob {
         @Override
         public void tick() {
             LivingEntity livingEntity = this.drowned.getTarget();
-            if (this.drowned.isTargetingUnderwater() && this.drowned.isTouchingWater()) {
+            if (this.drowned.isTargetingUnderwater() && this.drowned.isInsideWater()) {
                 if (livingEntity != null && livingEntity.y > this.drowned.y || this.drowned.targetingUnderwater) {
                     this.drowned.setVelocity(this.drowned.getVelocity().add(0.0, 0.002, 0.0));
                 }
@@ -287,7 +287,7 @@ implements RangedAttackMob {
                 double g = MathHelper.sqrt(d * d + e * e + f * f);
                 e /= g;
                 float h = (float)(MathHelper.atan2(f, d) * 57.2957763671875) - 90.0f;
-                this.drowned.field_6283 = this.drowned.yaw = this.changeAngle(this.drowned.yaw, h, 90.0f);
+                this.drowned.bodyYaw = this.drowned.yaw = this.changeAngle(this.drowned.yaw, h, 90.0f);
                 float i = (float)(this.speed * this.drowned.getAttributeInstance(EntityAttributes.MOVEMENT_SPEED).getValue());
                 float j = MathHelper.lerp(0.125f, this.drowned.getMovementSpeed(), i);
                 this.drowned.setMovementSpeed(j);
@@ -339,10 +339,10 @@ implements RangedAttackMob {
 
         @Override
         public boolean canStart() {
-            if (!this.world.isDay()) {
+            if (!this.world.isDaylight()) {
                 return false;
             }
-            if (this.mob.isTouchingWater()) {
+            if (this.mob.isInsideWater()) {
                 return false;
             }
             Vec3d vec3d = this.getWanderTarget();
@@ -367,8 +367,8 @@ implements RangedAttackMob {
 
         @Nullable
         private Vec3d getWanderTarget() {
-            Random random = this.mob.getRandom();
-            BlockPos blockPos = new BlockPos(this.mob.x, this.mob.getBoundingBox().y1, this.mob.z);
+            Random random = this.mob.getRand();
+            BlockPos blockPos = new BlockPos(this.mob.x, this.mob.getBoundingBox().minY, this.mob.z);
             for (int i = 0; i < 10; ++i) {
                 BlockPos blockPos2 = blockPos.add(random.nextInt(20) - 10, 2 - random.nextInt(8), random.nextInt(20) - 10);
                 if (this.world.getBlockState(blockPos2).getBlock() != Blocks.WATER) continue;
@@ -389,7 +389,7 @@ implements RangedAttackMob {
 
         @Override
         public boolean canStart() {
-            return super.canStart() && !this.drowned.world.isDay() && this.drowned.isTouchingWater() && this.drowned.y >= (double)(this.drowned.world.getSeaLevel() - 3);
+            return super.canStart() && !this.drowned.world.isDaylight() && this.drowned.isInsideWater() && this.drowned.y >= (double)(this.drowned.world.getSeaLevel() - 3);
         }
 
         @Override
@@ -398,12 +398,12 @@ implements RangedAttackMob {
         }
 
         @Override
-        protected boolean isTargetPos(CollisionView collisionView, BlockPos blockPos) {
+        protected boolean isTargetPos(ViewableWorld viewableWorld, BlockPos blockPos) {
             BlockPos blockPos2 = blockPos.up();
-            if (!collisionView.isAir(blockPos2) || !collisionView.isAir(blockPos2.up())) {
+            if (!viewableWorld.isAir(blockPos2) || !viewableWorld.isAir(blockPos2.up())) {
                 return false;
             }
-            return collisionView.getBlockState(blockPos).hasSolidTopSurface(collisionView, blockPos, this.drowned);
+            return viewableWorld.getBlockState(blockPos).hasSolidTopSurface(viewableWorld, blockPos, this.drowned);
         }
 
         @Override
@@ -434,7 +434,7 @@ implements RangedAttackMob {
 
         @Override
         public boolean canStart() {
-            return !this.drowned.world.isDay() && this.drowned.isTouchingWater() && this.drowned.y < (double)(this.minY - 2);
+            return !this.drowned.world.isDaylight() && this.drowned.isInsideWater() && this.drowned.y < (double)(this.minY - 2);
         }
 
         @Override
@@ -445,7 +445,7 @@ implements RangedAttackMob {
         @Override
         public void tick() {
             if (this.drowned.y < (double)(this.minY - 1) && (this.drowned.getNavigation().isIdle() || this.drowned.method_7016())) {
-                Vec3d vec3d = TargetFinder.method_6373(this.drowned, 4, 8, new Vec3d(this.drowned.x, this.minY - 1, this.drowned.z));
+                Vec3d vec3d = PathfindingUtil.method_6373(this.drowned, 4, 8, new Vec3d(this.drowned.x, this.minY - 1, this.drowned.z));
                 if (vec3d == null) {
                     this.field_7248 = true;
                     return;

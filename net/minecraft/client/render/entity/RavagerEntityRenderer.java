@@ -20,8 +20,7 @@ extends MobEntityRenderer<RavagerEntity, RavagerEntityModel> {
         super(entityRenderDispatcher, new RavagerEntityModel(), 1.1f);
     }
 
-    @Override
-    protected Identifier getTexture(RavagerEntity ravagerEntity) {
+    protected Identifier method_3984(RavagerEntity ravagerEntity) {
         return SKIN;
     }
 }

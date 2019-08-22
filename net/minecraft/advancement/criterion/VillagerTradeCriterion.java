@@ -59,15 +59,14 @@ implements Criterion<Conditions> {
         this.handlers.remove(playerAdvancementTracker);
     }
 
-    @Override
-    public Conditions conditionsFromJson(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext) {
-        EntityPredicate entityPredicate = EntityPredicate.fromJson(jsonObject.get("villager"));
-        ItemPredicate itemPredicate = ItemPredicate.fromJson(jsonObject.get("item"));
+    public Conditions method_9148(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext) {
+        EntityPredicate entityPredicate = EntityPredicate.deserialize(jsonObject.get("villager"));
+        ItemPredicate itemPredicate = ItemPredicate.deserialize(jsonObject.get("item"));
         return new Conditions(entityPredicate, itemPredicate);
     }
 
     public void handle(ServerPlayerEntity serverPlayerEntity, AbstractTraderEntity abstractTraderEntity, ItemStack itemStack) {
-        Handler handler = this.handlers.get(serverPlayerEntity.getAdvancementTracker());
+        Handler handler = this.handlers.get(serverPlayerEntity.getAdvancementManager());
         if (handler != null) {
             handler.handle(serverPlayerEntity, abstractTraderEntity, itemStack);
         }
@@ -75,7 +74,7 @@ implements Criterion<Conditions> {
 
     @Override
     public /* synthetic */ CriterionConditions conditionsFromJson(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext) {
-        return this.conditionsFromJson(jsonObject, jsonDeserializationContext);
+        return this.method_9148(jsonObject, jsonDeserializationContext);
     }
 
     static class Handler {
@@ -140,7 +139,7 @@ implements Criterion<Conditions> {
         @Override
         public JsonElement toJson() {
             JsonObject jsonObject = new JsonObject();
-            jsonObject.add("item", this.villager.toJson());
+            jsonObject.add("item", this.villager.serialize());
             jsonObject.add("villager", this.item.serialize());
             return jsonObject;
         }

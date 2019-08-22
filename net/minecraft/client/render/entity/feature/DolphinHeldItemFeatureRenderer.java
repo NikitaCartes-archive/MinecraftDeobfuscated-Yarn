@@ -3,12 +3,12 @@
  */
 package net.minecraft.client.render.entity.feature;
 
-import com.mojang.blaze3d.platform.GlStateManager;
+import com.mojang.blaze3d.systems.RenderSystem;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.block.Block;
+import net.minecraft.block.BlockRenderLayer;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.render.entity.feature.FeatureRenderer;
 import net.minecraft.client.render.entity.feature.FeatureRendererContext;
 import net.minecraft.client.render.entity.model.DolphinEntityModel;
@@ -30,8 +30,7 @@ extends FeatureRenderer<DolphinEntity, DolphinEntityModel<DolphinEntity>> {
         super(featureRendererContext);
     }
 
-    @Override
-    public void render(DolphinEntity dolphinEntity, float f, float g, float h, float i, float j, float k, float l) {
+    public void method_17160(DolphinEntity dolphinEntity, float f, float g, float h, float i, float j, float k, float l) {
         ItemStack itemStack2;
         boolean bl = dolphinEntity.getMainArm() == Arm.RIGHT;
         ItemStack itemStack = bl ? dolphinEntity.getOffHandStack() : dolphinEntity.getMainHandStack();
@@ -49,24 +48,24 @@ extends FeatureRenderer<DolphinEntity, DolphinEntityModel<DolphinEntity>> {
         }
         Item item = itemStack.getItem();
         Block block = Block.getBlockFromItem(item);
-        GlStateManager.pushMatrix();
-        boolean bl2 = bl = this.field_4847.hasDepthInGui(itemStack) && block.getRenderLayer() == RenderLayer.TRANSLUCENT;
+        RenderSystem.pushMatrix();
+        boolean bl2 = bl = this.field_4847.hasDepthInGui(itemStack) && block.getRenderLayer() == BlockRenderLayer.TRANSLUCENT;
         if (bl) {
-            GlStateManager.depthMask(false);
+            RenderSystem.depthMask(false);
         }
         float f = 1.0f;
         float g = -1.0f;
         float h = MathHelper.abs(livingEntity.pitch) / 60.0f;
         if (livingEntity.pitch < 0.0f) {
-            GlStateManager.translatef(0.0f, 1.0f - h * 0.5f, -1.0f + h * 0.5f);
+            RenderSystem.translatef(0.0f, 1.0f - h * 0.5f, -1.0f + h * 0.5f);
         } else {
-            GlStateManager.translatef(0.0f, 1.0f + h * 0.8f, -1.0f + h * 0.2f);
+            RenderSystem.translatef(0.0f, 1.0f + h * 0.8f, -1.0f + h * 0.2f);
         }
         this.field_4847.renderHeldItem(itemStack, livingEntity, ModelTransformation.Type.GROUND, false);
         if (bl) {
-            GlStateManager.depthMask(true);
+            RenderSystem.depthMask(true);
         }
-        GlStateManager.popMatrix();
+        RenderSystem.popMatrix();
     }
 
     @Override

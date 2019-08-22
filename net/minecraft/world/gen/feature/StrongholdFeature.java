@@ -13,9 +13,9 @@ import net.minecraft.structure.StrongholdGenerator;
 import net.minecraft.structure.StructureManager;
 import net.minecraft.structure.StructurePiece;
 import net.minecraft.structure.StructureStart;
-import net.minecraft.util.math.BlockBox;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
+import net.minecraft.util.math.MutableIntBoundingBox;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.world.World;
 import net.minecraft.world.biome.Biome;
@@ -152,8 +152,8 @@ extends StructureFeature<DefaultFeatureConfig> {
 
     public static class Start
     extends StructureStart {
-        public Start(StructureFeature<?> structureFeature, int i, int j, Biome biome, BlockBox blockBox, int k, long l) {
-            super(structureFeature, i, j, biome, blockBox, k, l);
+        public Start(StructureFeature<?> structureFeature, int i, int j, Biome biome, MutableIntBoundingBox mutableIntBoundingBox, int k, long l) {
+            super(structureFeature, i, j, biome, mutableIntBoundingBox, k, l);
         }
 
         @Override
@@ -163,7 +163,7 @@ extends StructureFeature<DefaultFeatureConfig> {
             long l = chunkGenerator.getSeed();
             do {
                 this.children.clear();
-                this.boundingBox = BlockBox.empty();
+                this.boundingBox = MutableIntBoundingBox.empty();
                 this.random.setStructureSeed(l + (long)k++, i, j);
                 StrongholdGenerator.method_14855();
                 start = new StrongholdGenerator.Start(this.random, (i << 4) + 2, (j << 4) + 2);

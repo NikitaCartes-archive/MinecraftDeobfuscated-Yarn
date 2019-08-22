@@ -36,7 +36,7 @@ public class EntityFlagsPredicate {
         if (this.isOnFire != null && entity.isOnFire() != this.isOnFire.booleanValue()) {
             return false;
         }
-        if (this.isSneaking != null && entity.isSneaking() != this.isSneaking.booleanValue()) {
+        if (this.isSneaking != null && entity.isInSneakingPose() != this.isSneaking.booleanValue()) {
             return false;
         }
         if (this.isSprinting != null && entity.isSprinting() != this.isSprinting.booleanValue()) {

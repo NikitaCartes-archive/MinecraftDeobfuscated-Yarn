@@ -23,6 +23,7 @@ import net.minecraft.particle.ParticleEffect;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvent;
+import net.minecraft.util.SystemUtil;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
 import net.minecraft.util.math.ChunkPos;
@@ -67,7 +68,7 @@ implements IWorld {
     public ChunkRegion(ServerWorld serverWorld, List<Chunk> list) {
         int i = MathHelper.floor(Math.sqrt(list.size()));
         if (i * i != list.size()) {
-            throw new IllegalStateException("Cache size is not a square.");
+            throw SystemUtil.method_22320(new IllegalStateException("Cache size is not a square."));
         }
         ChunkPos chunkPos = list.get(list.size() / 2).getPos();
         this.chunks = list;
@@ -76,7 +77,7 @@ implements IWorld {
         this.width = i;
         this.world = serverWorld;
         this.seed = serverWorld.getSeed();
-        this.generatorSettings = serverWorld.getChunkManager().getChunkGenerator().getConfig();
+        this.generatorSettings = serverWorld.method_14178().getChunkGenerator().getConfig();
         this.seaLevel = serverWorld.getSeaLevel();
         this.levelProperties = serverWorld.getLevelProperties();
         this.random = serverWorld.getRandom();
@@ -119,9 +120,9 @@ implements IWorld {
         LOGGER.error("Requested chunk : {} {}", (Object)i, (Object)j);
         LOGGER.error("Region bounds : {} {} | {} {}", (Object)chunk2.getPos().x, (Object)chunk2.getPos().z, (Object)chunk3.getPos().x, (Object)chunk3.getPos().z);
         if (chunk != null) {
-            throw new RuntimeException(String.format("Chunk is not of correct status. Expecting %s, got %s | %s %s", chunkStatus, chunk.getStatus(), i, j));
+            throw SystemUtil.method_22320(new RuntimeException(String.format("Chunk is not of correct status. Expecting %s, got %s | %s %s", chunkStatus, chunk.getStatus(), i, j)));
         }
-        throw new RuntimeException(String.format("We are asking a region for a chunk out of bound | %s %s", i, j));
+        throw SystemUtil.method_22320(new RuntimeException(String.format("We are asking a region for a chunk out of bound | %s %s", i, j)));
     }
 
     @Override
@@ -255,7 +256,7 @@ implements IWorld {
     }
 
     @Override
-    public boolean removeBlock(BlockPos blockPos, boolean bl) {
+    public boolean clearBlockState(BlockPos blockPos, boolean bl) {
         return this.setBlockState(blockPos, Blocks.AIR.getDefaultState(), 3);
     }
 
@@ -274,9 +275,8 @@ implements IWorld {
         return false;
     }
 
-    @Override
     @Deprecated
-    public ServerWorld getWorld() {
+    public ServerWorld method_19506() {
         return this.world;
     }
 
@@ -295,7 +295,7 @@ implements IWorld {
 
     @Override
     public ChunkManager getChunkManager() {
-        return this.world.getChunkManager();
+        return this.world.method_14178();
     }
 
     @Override
@@ -382,7 +382,7 @@ implements IWorld {
     @Override
     @Deprecated
     public /* synthetic */ World getWorld() {
-        return this.getWorld();
+        return this.method_19506();
     }
 }
 

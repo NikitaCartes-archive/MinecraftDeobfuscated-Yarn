@@ -94,7 +94,7 @@ public class Scoreboard {
             if (scoreboardPlayerScore == null) continue;
             list.add(scoreboardPlayerScore);
         }
-        Collections.sort(list, ScoreboardPlayerScore.COMPARATOR);
+        list.sort(ScoreboardPlayerScore.COMPARATOR);
         return list;
     }
 
@@ -330,7 +330,7 @@ public class Scoreboard {
 
     protected void fromTag(ListTag listTag) {
         for (int i = 0; i < listTag.size(); ++i) {
-            CompoundTag compoundTag = listTag.getCompound(i);
+            CompoundTag compoundTag = listTag.getCompoundTag(i);
             ScoreboardObjective scoreboardObjective = this.getObjective(compoundTag.getString("Objective"));
             String string = compoundTag.getString("Name");
             if (string.length() > 40) {
@@ -338,7 +338,7 @@ public class Scoreboard {
             }
             ScoreboardPlayerScore scoreboardPlayerScore = this.getPlayerScore(string, scoreboardObjective);
             scoreboardPlayerScore.setScore(compoundTag.getInt("Score"));
-            if (!compoundTag.contains("Locked")) continue;
+            if (!compoundTag.containsKey("Locked")) continue;
             scoreboardPlayerScore.setLocked(compoundTag.getBoolean("Locked"));
         }
     }

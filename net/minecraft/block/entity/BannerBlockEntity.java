@@ -14,10 +14,10 @@ import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BannerPattern;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.BlockEntityType;
+import net.minecraft.client.network.packet.BlockEntityUpdateS2CPacket;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
-import net.minecraft.network.packet.s2c.play.BlockEntityUpdateS2CPacket;
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.DyeColor;
@@ -45,11 +45,11 @@ implements Nameable {
     }
 
     @Environment(value=EnvType.CLIENT)
-    public void readFrom(ItemStack itemStack, DyeColor dyeColor) {
+    public void deserialize(ItemStack itemStack, DyeColor dyeColor) {
         this.patternListTag = null;
         CompoundTag compoundTag = itemStack.getSubTag("BlockEntityTag");
-        if (compoundTag != null && compoundTag.contains("Patterns", 9)) {
-            this.patternListTag = compoundTag.getList("Patterns", 10).copy();
+        if (compoundTag != null && compoundTag.containsKey("Patterns", 9)) {
+            this.patternListTag = compoundTag.getList("Patterns", 10).method_10612();
         }
         this.baseColor = dyeColor;
         this.patterns = null;
@@ -92,7 +92,7 @@ implements Nameable {
     @Override
     public void fromTag(CompoundTag compoundTag) {
         super.fromTag(compoundTag);
-        if (compoundTag.contains("CustomName", 8)) {
+        if (compoundTag.containsKey("CustomName", 8)) {
             this.customName = Text.Serializer.fromJson(compoundTag.getString("CustomName"));
         }
         this.baseColor = this.hasWorld() ? ((AbstractBannerBlock)this.getCachedState().getBlock()).getColor() : null;
@@ -116,7 +116,7 @@ implements Nameable {
 
     public static int getPatternCount(ItemStack itemStack) {
         CompoundTag compoundTag = itemStack.getSubTag("BlockEntityTag");
-        if (compoundTag != null && compoundTag.contains("Patterns")) {
+        if (compoundTag != null && compoundTag.containsKey("Patterns")) {
             return compoundTag.getList("Patterns", 10).size();
         }
         return 0;
@@ -160,7 +160,7 @@ implements Nameable {
             this.patternCacheKey = "b" + dyeColor.getId();
             if (this.patternListTag != null) {
                 for (int i = 0; i < this.patternListTag.size(); ++i) {
-                    CompoundTag compoundTag = this.patternListTag.getCompound(i);
+                    CompoundTag compoundTag = this.patternListTag.getCompoundTag(i);
                     BannerPattern bannerPattern = BannerPattern.byId(compoundTag.getString("Pattern"));
                     if (bannerPattern == null) continue;
                     this.patterns.add(bannerPattern);
@@ -174,14 +174,14 @@ implements Nameable {
 
     public static void loadFromItemStack(ItemStack itemStack) {
         CompoundTag compoundTag = itemStack.getSubTag("BlockEntityTag");
-        if (compoundTag == null || !compoundTag.contains("Patterns", 9)) {
+        if (compoundTag == null || !compoundTag.containsKey("Patterns", 9)) {
             return;
         }
         ListTag listTag = compoundTag.getList("Patterns", 10);
         if (listTag.isEmpty()) {
             return;
         }
-        listTag.remove(listTag.size() - 1);
+        listTag.method_10536(listTag.size() - 1);
         if (listTag.isEmpty()) {
             itemStack.removeSubTag("BlockEntityTag");
         }
@@ -191,7 +191,7 @@ implements Nameable {
     public ItemStack getPickStack(BlockState blockState) {
         ItemStack itemStack = new ItemStack(BannerBlock.getForColor(this.getColorForState(() -> blockState)));
         if (this.patternListTag != null && !this.patternListTag.isEmpty()) {
-            itemStack.getOrCreateSubTag("BlockEntityTag").put("Patterns", this.patternListTag.copy());
+            itemStack.getOrCreateSubTag("BlockEntityTag").put("Patterns", this.patternListTag.method_10612());
         }
         if (this.customName != null) {
             itemStack.setCustomName(this.customName);

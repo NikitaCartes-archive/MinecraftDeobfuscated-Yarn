@@ -3,7 +3,7 @@
  */
 package net.minecraft.client.render.entity;
 
-import com.mojang.blaze3d.platform.GlStateManager;
+import com.mojang.blaze3d.systems.RenderSystem;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.render.entity.EntityRenderDispatcher;
@@ -24,48 +24,46 @@ extends EntityRenderer<BoatEntity> {
         this.field_4673 = 0.8f;
     }
 
-    @Override
-    public void render(BoatEntity boatEntity, double d, double e, double f, float g, float h) {
-        GlStateManager.pushMatrix();
+    public void method_3888(BoatEntity boatEntity, double d, double e, double f, float g, float h) {
+        RenderSystem.pushMatrix();
         this.translateToBoat(d, e, f);
         this.rotateToBoat(boatEntity, g, h);
         this.bindEntityTexture(boatEntity);
         if (this.renderOutlines) {
-            GlStateManager.enableColorMaterial();
-            GlStateManager.setupSolidRenderingTextureCombine(this.getOutlineColor(boatEntity));
+            RenderSystem.enableColorMaterial();
+            RenderSystem.setupSolidRenderingTextureCombine(this.getOutlineColor(boatEntity));
         }
-        this.model.render(boatEntity, h, 0.0f, -0.1f, 0.0f, 0.0f, 0.0625f);
+        this.model.method_17071(boatEntity, h, 0.0f, -0.1f, 0.0f, 0.0f, 0.0625f);
         if (this.renderOutlines) {
-            GlStateManager.tearDownSolidRenderingTextureCombine();
-            GlStateManager.disableColorMaterial();
+            RenderSystem.tearDownSolidRenderingTextureCombine();
+            RenderSystem.disableColorMaterial();
         }
-        GlStateManager.popMatrix();
+        RenderSystem.popMatrix();
         super.render(boatEntity, d, e, f, g, h);
     }
 
     public void rotateToBoat(BoatEntity boatEntity, float f, float g) {
         float j;
-        GlStateManager.rotatef(180.0f - f, 0.0f, 1.0f, 0.0f);
+        RenderSystem.rotatef(180.0f - f, 0.0f, 1.0f, 0.0f);
         float h = (float)boatEntity.getDamageWobbleTicks() - g;
         float i = boatEntity.getDamageWobbleStrength() - g;
         if (i < 0.0f) {
             i = 0.0f;
         }
         if (h > 0.0f) {
-            GlStateManager.rotatef(MathHelper.sin(h) * h * i / 10.0f * (float)boatEntity.getDamageWobbleSide(), 1.0f, 0.0f, 0.0f);
+            RenderSystem.rotatef(MathHelper.sin(h) * h * i / 10.0f * (float)boatEntity.getDamageWobbleSide(), 1.0f, 0.0f, 0.0f);
         }
-        if (!MathHelper.approximatelyEquals(j = boatEntity.interpolateBubbleWobble(g), 0.0f)) {
-            GlStateManager.rotatef(boatEntity.interpolateBubbleWobble(g), 1.0f, 0.0f, 1.0f);
+        if (!MathHelper.equalsApproximate(j = boatEntity.interpolateBubbleWobble(g), 0.0f)) {
+            RenderSystem.rotatef(boatEntity.interpolateBubbleWobble(g), 1.0f, 0.0f, 1.0f);
         }
-        GlStateManager.scalef(-1.0f, -1.0f, 1.0f);
+        RenderSystem.scalef(-1.0f, -1.0f, 1.0f);
     }
 
     public void translateToBoat(double d, double e, double f) {
-        GlStateManager.translatef((float)d, (float)e + 0.375f, (float)f);
+        RenderSystem.translatef((float)d, (float)e + 0.375f, (float)f);
     }
 
-    @Override
-    protected Identifier getTexture(BoatEntity boatEntity) {
+    protected Identifier method_3891(BoatEntity boatEntity) {
         return SKIN[boatEntity.getBoatType().ordinal()];
     }
 
@@ -74,14 +72,13 @@ extends EntityRenderer<BoatEntity> {
         return true;
     }
 
-    @Override
-    public void renderSecondPass(BoatEntity boatEntity, double d, double e, double f, float g, float h) {
-        GlStateManager.pushMatrix();
+    public void method_3887(BoatEntity boatEntity, double d, double e, double f, float g, float h) {
+        RenderSystem.pushMatrix();
         this.translateToBoat(d, e, f);
         this.rotateToBoat(boatEntity, g, h);
         this.bindEntityTexture(boatEntity);
         this.model.renderPass(boatEntity, h, 0.0f, -0.1f, 0.0f, 0.0f, 0.0625f);
-        GlStateManager.popMatrix();
+        RenderSystem.popMatrix();
     }
 }
 

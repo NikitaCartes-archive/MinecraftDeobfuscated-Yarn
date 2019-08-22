@@ -20,14 +20,13 @@ implements Predicate<BlockState> {
         return new BlockPredicate(block);
     }
 
-    @Override
-    public boolean test(@Nullable BlockState blockState) {
+    public boolean method_11765(@Nullable BlockState blockState) {
         return blockState != null && blockState.getBlock() == this.block;
     }
 
     @Override
     public /* synthetic */ boolean test(@Nullable Object object) {
-        return this.test((BlockState)object);
+        return this.method_11765((BlockState)object);
     }
 }
 

@@ -13,8 +13,7 @@ import net.minecraft.util.JsonHelper;
 @Environment(value=EnvType.CLIENT)
 public class VillagerResourceMetadataReader
 implements ResourceMetadataReader<VillagerResourceMetadata> {
-    @Override
-    public VillagerResourceMetadata fromJson(JsonObject jsonObject) {
+    public VillagerResourceMetadata method_17171(JsonObject jsonObject) {
         return new VillagerResourceMetadata(VillagerResourceMetadata.HatType.from(JsonHelper.getString(jsonObject, "hat", "none")));
     }
 
@@ -25,7 +24,7 @@ implements ResourceMetadataReader<VillagerResourceMetadata> {
 
     @Override
     public /* synthetic */ Object fromJson(JsonObject jsonObject) {
-        return this.fromJson(jsonObject);
+        return this.method_17171(jsonObject);
     }
 }
 

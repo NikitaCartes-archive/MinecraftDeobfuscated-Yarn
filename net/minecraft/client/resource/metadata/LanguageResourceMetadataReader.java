@@ -19,8 +19,7 @@ import net.minecraft.util.JsonHelper;
 @Environment(value=EnvType.CLIENT)
 public class LanguageResourceMetadataReader
 implements ResourceMetadataReader<LanguageResourceMetadata> {
-    @Override
-    public LanguageResourceMetadata fromJson(JsonObject jsonObject) {
+    public LanguageResourceMetadata method_4695(JsonObject jsonObject) {
         HashSet<LanguageDefinition> set = Sets.newHashSet();
         for (Map.Entry<String, JsonElement> entry : jsonObject.entrySet()) {
             String string = entry.getKey();
@@ -50,7 +49,7 @@ implements ResourceMetadataReader<LanguageResourceMetadata> {
 
     @Override
     public /* synthetic */ Object fromJson(JsonObject jsonObject) {
-        return this.fromJson(jsonObject);
+        return this.method_4695(jsonObject);
     }
 }
 

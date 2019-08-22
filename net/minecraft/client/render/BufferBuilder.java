@@ -22,7 +22,7 @@ import org.apache.logging.log4j.Logger;
 @Environment(value=EnvType.CLIENT)
 public class BufferBuilder {
     private static final Logger LOGGER = LogManager.getLogger();
-    private ByteBuffer buffer;
+    private ByteBuffer bufByte;
     private IntBuffer bufInt;
     private ShortBuffer bufShort;
     private FloatBuffer bufFloat;
@@ -38,29 +38,29 @@ public class BufferBuilder {
     private boolean building;
 
     public BufferBuilder(int i) {
-        this.buffer = GlAllocationUtils.allocateByteBuffer(i * 4);
-        this.bufInt = this.buffer.asIntBuffer();
-        this.bufShort = this.buffer.asShortBuffer();
-        this.bufFloat = this.buffer.asFloatBuffer();
+        this.bufByte = GlAllocationUtils.allocateByteBuffer(i * 4);
+        this.bufInt = this.bufByte.asIntBuffer();
+        this.bufShort = this.bufByte.asShortBuffer();
+        this.bufFloat = this.bufByte.asFloatBuffer();
     }
 
     private void grow(int i) {
-        if (this.vertexCount * this.format.getVertexSize() + i <= this.buffer.capacity()) {
+        if (this.vertexCount * this.format.getVertexSize() + i <= this.bufByte.capacity()) {
             return;
         }
-        int j = this.buffer.capacity();
+        int j = this.bufByte.capacity();
         int k = j + BufferBuilder.roundBufferSize(i);
         LOGGER.debug("Needed to grow BufferBuilder buffer: Old size {} bytes, new size {} bytes.", (Object)j, (Object)k);
         int l = this.bufInt.position();
         ByteBuffer byteBuffer = GlAllocationUtils.allocateByteBuffer(k);
-        this.buffer.position(0);
-        byteBuffer.put(this.buffer);
+        this.bufByte.position(0);
+        byteBuffer.put(this.bufByte);
         byteBuffer.rewind();
-        this.buffer = byteBuffer;
-        this.bufFloat = this.buffer.asFloatBuffer().asReadOnlyBuffer();
-        this.bufInt = this.buffer.asIntBuffer();
+        this.bufByte = byteBuffer;
+        this.bufFloat = this.bufByte.asFloatBuffer().asReadOnlyBuffer();
+        this.bufInt = this.bufByte.asIntBuffer();
         this.bufInt.position(l);
-        this.bufShort = this.buffer.asShortBuffer();
+        this.bufShort = this.bufByte.asShortBuffer();
         this.bufShort.position(l << 1);
     }
 
@@ -122,7 +122,7 @@ public class BufferBuilder {
         }
     }
 
-    public State popState() {
+    public State toBufferState() {
         this.bufInt.rewind();
         int i = this.getCurrentSize();
         this.bufInt.limit(i);
@@ -180,33 +180,33 @@ public class BufferBuilder {
         this.format = vertexFormat;
         this.currentElement = vertexFormat.getElement(this.currentElementId);
         this.colorDisabled = false;
-        this.buffer.limit(this.buffer.capacity());
+        this.bufByte.limit(this.bufByte.capacity());
     }
 
     public BufferBuilder texture(double d, double e) {
         int i = this.vertexCount * this.format.getVertexSize() + this.format.getElementOffset(this.currentElementId);
         switch (this.currentElement.getFormat()) {
             case FLOAT: {
-                this.buffer.putFloat(i, (float)d);
-                this.buffer.putFloat(i + 4, (float)e);
+                this.bufByte.putFloat(i, (float)d);
+                this.bufByte.putFloat(i + 4, (float)e);
                 break;
             }
             case UINT: 
             case INT: {
-                this.buffer.putInt(i, (int)d);
-                this.buffer.putInt(i + 4, (int)e);
+                this.bufByte.putInt(i, (int)d);
+                this.bufByte.putInt(i + 4, (int)e);
                 break;
             }
             case USHORT: 
             case SHORT: {
-                this.buffer.putShort(i, (short)e);
-                this.buffer.putShort(i + 2, (short)d);
+                this.bufByte.putShort(i, (short)e);
+                this.bufByte.putShort(i + 2, (short)d);
                 break;
             }
             case UBYTE: 
             case BYTE: {
-                this.buffer.put(i, (byte)e);
-                this.buffer.put(i + 1, (byte)d);
+                this.bufByte.put(i, (byte)e);
+                this.bufByte.put(i + 1, (byte)d);
             }
         }
         this.nextElement();
@@ -217,26 +217,26 @@ public class BufferBuilder {
         int k = this.vertexCount * this.format.getVertexSize() + this.format.getElementOffset(this.currentElementId);
         switch (this.currentElement.getFormat()) {
             case FLOAT: {
-                this.buffer.putFloat(k, i);
-                this.buffer.putFloat(k + 4, j);
+                this.bufByte.putFloat(k, i);
+                this.bufByte.putFloat(k + 4, j);
                 break;
             }
             case UINT: 
             case INT: {
-                this.buffer.putInt(k, i);
-                this.buffer.putInt(k + 4, j);
+                this.bufByte.putInt(k, i);
+                this.bufByte.putInt(k + 4, j);
                 break;
             }
             case USHORT: 
             case SHORT: {
-                this.buffer.putShort(k, (short)j);
-                this.buffer.putShort(k + 2, (short)i);
+                this.bufByte.putShort(k, (short)j);
+                this.bufByte.putShort(k + 2, (short)i);
                 break;
             }
             case UBYTE: 
             case BYTE: {
-                this.buffer.put(k, (byte)j);
-                this.buffer.put(k + 1, (byte)i);
+                this.bufByte.put(k, (byte)j);
+                this.bufByte.put(k + 1, (byte)i);
             }
         }
         this.nextElement();
@@ -340,41 +340,41 @@ public class BufferBuilder {
         int m = this.vertexCount * this.format.getVertexSize() + this.format.getElementOffset(this.currentElementId);
         switch (this.currentElement.getFormat()) {
             case FLOAT: {
-                this.buffer.putFloat(m, (float)i / 255.0f);
-                this.buffer.putFloat(m + 4, (float)j / 255.0f);
-                this.buffer.putFloat(m + 8, (float)k / 255.0f);
-                this.buffer.putFloat(m + 12, (float)l / 255.0f);
+                this.bufByte.putFloat(m, (float)i / 255.0f);
+                this.bufByte.putFloat(m + 4, (float)j / 255.0f);
+                this.bufByte.putFloat(m + 8, (float)k / 255.0f);
+                this.bufByte.putFloat(m + 12, (float)l / 255.0f);
                 break;
             }
             case UINT: 
             case INT: {
-                this.buffer.putFloat(m, i);
-                this.buffer.putFloat(m + 4, j);
-                this.buffer.putFloat(m + 8, k);
-                this.buffer.putFloat(m + 12, l);
+                this.bufByte.putFloat(m, i);
+                this.bufByte.putFloat(m + 4, j);
+                this.bufByte.putFloat(m + 8, k);
+                this.bufByte.putFloat(m + 12, l);
                 break;
             }
             case USHORT: 
             case SHORT: {
-                this.buffer.putShort(m, (short)i);
-                this.buffer.putShort(m + 2, (short)j);
-                this.buffer.putShort(m + 4, (short)k);
-                this.buffer.putShort(m + 6, (short)l);
+                this.bufByte.putShort(m, (short)i);
+                this.bufByte.putShort(m + 2, (short)j);
+                this.bufByte.putShort(m + 4, (short)k);
+                this.bufByte.putShort(m + 6, (short)l);
                 break;
             }
             case UBYTE: 
             case BYTE: {
                 if (ByteOrder.nativeOrder() == ByteOrder.LITTLE_ENDIAN) {
-                    this.buffer.put(m, (byte)i);
-                    this.buffer.put(m + 1, (byte)j);
-                    this.buffer.put(m + 2, (byte)k);
-                    this.buffer.put(m + 3, (byte)l);
+                    this.bufByte.put(m, (byte)i);
+                    this.bufByte.put(m + 1, (byte)j);
+                    this.bufByte.put(m + 2, (byte)k);
+                    this.bufByte.put(m + 3, (byte)l);
                     break;
                 }
-                this.buffer.put(m, (byte)l);
-                this.buffer.put(m + 1, (byte)k);
-                this.buffer.put(m + 2, (byte)j);
-                this.buffer.put(m + 3, (byte)i);
+                this.bufByte.put(m, (byte)l);
+                this.bufByte.put(m + 1, (byte)k);
+                this.bufByte.put(m + 2, (byte)j);
+                this.bufByte.put(m + 3, (byte)i);
             }
         }
         this.nextElement();
@@ -397,30 +397,30 @@ public class BufferBuilder {
         int i = this.vertexCount * this.format.getVertexSize() + this.format.getElementOffset(this.currentElementId);
         switch (this.currentElement.getFormat()) {
             case FLOAT: {
-                this.buffer.putFloat(i, (float)(d + this.offsetX));
-                this.buffer.putFloat(i + 4, (float)(e + this.offsetY));
-                this.buffer.putFloat(i + 8, (float)(f + this.offsetZ));
+                this.bufByte.putFloat(i, (float)(d + this.offsetX));
+                this.bufByte.putFloat(i + 4, (float)(e + this.offsetY));
+                this.bufByte.putFloat(i + 8, (float)(f + this.offsetZ));
                 break;
             }
             case UINT: 
             case INT: {
-                this.buffer.putInt(i, Float.floatToRawIntBits((float)(d + this.offsetX)));
-                this.buffer.putInt(i + 4, Float.floatToRawIntBits((float)(e + this.offsetY)));
-                this.buffer.putInt(i + 8, Float.floatToRawIntBits((float)(f + this.offsetZ)));
+                this.bufByte.putInt(i, Float.floatToRawIntBits((float)(d + this.offsetX)));
+                this.bufByte.putInt(i + 4, Float.floatToRawIntBits((float)(e + this.offsetY)));
+                this.bufByte.putInt(i + 8, Float.floatToRawIntBits((float)(f + this.offsetZ)));
                 break;
             }
             case USHORT: 
             case SHORT: {
-                this.buffer.putShort(i, (short)(d + this.offsetX));
-                this.buffer.putShort(i + 2, (short)(e + this.offsetY));
-                this.buffer.putShort(i + 4, (short)(f + this.offsetZ));
+                this.bufByte.putShort(i, (short)(d + this.offsetX));
+                this.bufByte.putShort(i + 2, (short)(e + this.offsetY));
+                this.bufByte.putShort(i + 4, (short)(f + this.offsetZ));
                 break;
             }
             case UBYTE: 
             case BYTE: {
-                this.buffer.put(i, (byte)(d + this.offsetX));
-                this.buffer.put(i + 1, (byte)(e + this.offsetY));
-                this.buffer.put(i + 2, (byte)(f + this.offsetZ));
+                this.bufByte.put(i, (byte)(d + this.offsetX));
+                this.bufByte.put(i + 1, (byte)(e + this.offsetY));
+                this.bufByte.put(i + 2, (byte)(f + this.offsetZ));
             }
         }
         this.nextElement();
@@ -453,30 +453,30 @@ public class BufferBuilder {
         int i = this.vertexCount * this.format.getVertexSize() + this.format.getElementOffset(this.currentElementId);
         switch (this.currentElement.getFormat()) {
             case FLOAT: {
-                this.buffer.putFloat(i, f);
-                this.buffer.putFloat(i + 4, g);
-                this.buffer.putFloat(i + 8, h);
+                this.bufByte.putFloat(i, f);
+                this.bufByte.putFloat(i + 4, g);
+                this.bufByte.putFloat(i + 8, h);
                 break;
             }
             case UINT: 
             case INT: {
-                this.buffer.putInt(i, (int)f);
-                this.buffer.putInt(i + 4, (int)g);
-                this.buffer.putInt(i + 8, (int)h);
+                this.bufByte.putInt(i, (int)f);
+                this.bufByte.putInt(i + 4, (int)g);
+                this.bufByte.putInt(i + 8, (int)h);
                 break;
             }
             case USHORT: 
             case SHORT: {
-                this.buffer.putShort(i, (short)((int)f * Short.MAX_VALUE & 0xFFFF));
-                this.buffer.putShort(i + 2, (short)((int)g * Short.MAX_VALUE & 0xFFFF));
-                this.buffer.putShort(i + 4, (short)((int)h * Short.MAX_VALUE & 0xFFFF));
+                this.bufByte.putShort(i, (short)((int)f * Short.MAX_VALUE & 0xFFFF));
+                this.bufByte.putShort(i + 2, (short)((int)g * Short.MAX_VALUE & 0xFFFF));
+                this.bufByte.putShort(i + 4, (short)((int)h * Short.MAX_VALUE & 0xFFFF));
                 break;
             }
             case UBYTE: 
             case BYTE: {
-                this.buffer.put(i, (byte)((int)f * 127 & 0xFF));
-                this.buffer.put(i + 1, (byte)((int)g * 127 & 0xFF));
-                this.buffer.put(i + 2, (byte)((int)h * 127 & 0xFF));
+                this.bufByte.put(i, (byte)((int)f * 127 & 0xFF));
+                this.bufByte.put(i + 1, (byte)((int)g * 127 & 0xFF));
+                this.bufByte.put(i + 2, (byte)((int)h * 127 & 0xFF));
             }
         }
         this.nextElement();
@@ -494,12 +494,12 @@ public class BufferBuilder {
             throw new IllegalStateException("Not building!");
         }
         this.building = false;
-        this.buffer.position(0);
-        this.buffer.limit(this.getCurrentSize() * 4);
+        this.bufByte.position(0);
+        this.bufByte.limit(this.getCurrentSize() * 4);
     }
 
     public ByteBuffer getByteBuffer() {
-        return this.buffer;
+        return this.bufByte;
     }
 
     public VertexFormat getVertexFormat() {

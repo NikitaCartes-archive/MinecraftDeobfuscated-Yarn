@@ -18,15 +18,15 @@ import net.minecraft.entity.mob.RavagerEntity;
 import net.minecraft.item.ItemConvertible;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
-import net.minecraft.state.StateManager;
+import net.minecraft.state.StateFactory;
 import net.minecraft.state.property.IntProperty;
 import net.minecraft.state.property.Properties;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.world.BlockView;
-import net.minecraft.world.CollisionView;
 import net.minecraft.world.GameRules;
+import net.minecraft.world.ViewableWorld;
 import net.minecraft.world.World;
 
 public class CropBlock
@@ -37,7 +37,7 @@ implements Fertilizable {
 
     protected CropBlock(Block.Settings settings) {
         super(settings);
-        this.setDefaultState((BlockState)((BlockState)this.stateManager.getDefaultState()).with(this.getAgeProperty(), 0));
+        this.setDefaultState((BlockState)((BlockState)this.stateFactory.getDefaultState()).with(this.getAgeProperty(), 0));
     }
 
     @Override
@@ -132,8 +132,8 @@ implements Fertilizable {
     }
 
     @Override
-    public boolean canPlaceAt(BlockState blockState, CollisionView collisionView, BlockPos blockPos) {
-        return (collisionView.getLightLevel(blockPos, 0) >= 8 || collisionView.isSkyVisible(blockPos)) && super.canPlaceAt(blockState, collisionView, blockPos);
+    public boolean canPlaceAt(BlockState blockState, ViewableWorld viewableWorld, BlockPos blockPos) {
+        return (viewableWorld.getLightLevel(blockPos, 0) >= 8 || viewableWorld.isSkyVisible(blockPos)) && super.canPlaceAt(blockState, viewableWorld, blockPos);
     }
 
     @Override
@@ -171,7 +171,7 @@ implements Fertilizable {
     }
 
     @Override
-    protected void appendProperties(StateManager.Builder<Block, BlockState> builder) {
+    protected void appendProperties(StateFactory.Builder<Block, BlockState> builder) {
         builder.add(AGE);
     }
 }

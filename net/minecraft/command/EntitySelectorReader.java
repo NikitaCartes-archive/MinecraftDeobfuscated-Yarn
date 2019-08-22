@@ -23,12 +23,12 @@ import java.util.function.Predicate;
 import java.util.function.ToDoubleFunction;
 import net.minecraft.command.EntitySelector;
 import net.minecraft.command.EntitySelectorOptions;
-import net.minecraft.command.FloatRangeArgument;
+import net.minecraft.command.FloatRange;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
-import net.minecraft.predicate.NumberRange;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.TranslatableText;
+import net.minecraft.util.NumberRange;
 import net.minecraft.util.math.Box;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
@@ -49,24 +49,24 @@ public class EntitySelectorReader {
     private final StringReader reader;
     private final boolean field_10846;
     private int limit;
-    private boolean includesNonPlayers;
+    private boolean includingNonPlayer;
     private boolean localWorldOnly;
     private NumberRange.FloatRange distance = NumberRange.FloatRange.ANY;
     private NumberRange.IntRange levelRange = NumberRange.IntRange.ANY;
     @Nullable
-    private Double x;
+    private Double offsetX;
     @Nullable
-    private Double y;
+    private Double offsetY;
     @Nullable
-    private Double z;
+    private Double offsetZ;
     @Nullable
-    private Double dx;
+    private Double boxX;
     @Nullable
-    private Double dy;
+    private Double boxY;
     @Nullable
-    private Double dz;
-    private FloatRangeArgument pitchRange = FloatRangeArgument.ANY;
-    private FloatRangeArgument yawRange = FloatRangeArgument.ANY;
+    private Double boxZ;
+    private FloatRange pitchRange = FloatRange.ANY;
+    private FloatRange yawRange = FloatRange.ANY;
     private Predicate<Entity> predicate = entity -> true;
     private BiConsumer<Vec3d, List<? extends Entity>> sorter = ARBITRARY;
     private boolean senderOnly;
@@ -89,7 +89,7 @@ public class EntitySelectorReader {
     private boolean field_10865;
     private boolean field_10841;
     private boolean field_10864;
-    private boolean usesAt;
+    private boolean checkPermissions;
 
     public EntitySelectorReader(StringReader stringReader) {
         this(stringReader, true);
@@ -102,16 +102,16 @@ public class EntitySelectorReader {
 
     public EntitySelector build() {
         Box box;
-        if (this.dx != null || this.dy != null || this.dz != null) {
-            box = this.createBox(this.dx == null ? 0.0 : this.dx, this.dy == null ? 0.0 : this.dy, this.dz == null ? 0.0 : this.dz);
+        if (this.boxX != null || this.boxY != null || this.boxZ != null) {
+            box = this.createBox(this.boxX == null ? 0.0 : this.boxX, this.boxY == null ? 0.0 : this.boxY, this.boxZ == null ? 0.0 : this.boxZ);
         } else if (this.distance.getMax() != null) {
             float f = ((Float)this.distance.getMax()).floatValue();
             box = new Box(-f, -f, -f, f + 1.0f, f + 1.0f, f + 1.0f);
         } else {
             box = null;
         }
-        Function<Vec3d, Vec3d> function = this.x == null && this.y == null && this.z == null ? vec3d -> vec3d : vec3d -> new Vec3d(this.x == null ? vec3d.x : this.x, this.y == null ? vec3d.y : this.y, this.z == null ? vec3d.z : this.z);
-        return new EntitySelector(this.limit, this.includesNonPlayers, this.localWorldOnly, this.predicate, this.distance, function, box, this.sorter, this.senderOnly, this.playerName, this.uuid, this.entityType, this.usesAt);
+        Function<Vec3d, Vec3d> function = this.offsetX == null && this.offsetY == null && this.offsetZ == null ? vec3d -> vec3d : vec3d -> new Vec3d(this.offsetX == null ? vec3d.x : this.offsetX, this.offsetY == null ? vec3d.y : this.offsetY, this.offsetZ == null ? vec3d.z : this.offsetZ);
+        return new EntitySelector(this.limit, this.includingNonPlayer, this.localWorldOnly, this.predicate, this.distance, function, box, this.sorter, this.senderOnly, this.playerName, this.uuid, this.entityType, this.checkPermissions);
     }
 
     private Box createBox(double d, double e, double f) {
@@ -128,10 +128,10 @@ public class EntitySelectorReader {
     }
 
     private void buildPredicate() {
-        if (this.pitchRange != FloatRangeArgument.ANY) {
+        if (this.pitchRange != FloatRange.ANY) {
             this.predicate = this.predicate.and(this.rotationPredicate(this.pitchRange, entity -> entity.pitch));
         }
-        if (this.yawRange != FloatRangeArgument.ANY) {
+        if (this.yawRange != FloatRange.ANY) {
             this.predicate = this.predicate.and(this.rotationPredicate(this.yawRange, entity -> entity.yaw));
         }
         if (!this.levelRange.isDummy()) {
@@ -144,9 +144,9 @@ public class EntitySelectorReader {
         }
     }
 
-    private Predicate<Entity> rotationPredicate(FloatRangeArgument floatRangeArgument, ToDoubleFunction<Entity> toDoubleFunction) {
-        double d = MathHelper.wrapDegrees(floatRangeArgument.getMin() == null ? 0.0f : floatRangeArgument.getMin().floatValue());
-        double e = MathHelper.wrapDegrees(floatRangeArgument.getMax() == null ? 359.0f : floatRangeArgument.getMax().floatValue());
+    private Predicate<Entity> rotationPredicate(FloatRange floatRange, ToDoubleFunction<Entity> toDoubleFunction) {
+        double d = MathHelper.wrapDegrees(floatRange.getMin() == null ? 0.0f : floatRange.getMin().floatValue());
+        double e = MathHelper.wrapDegrees(floatRange.getMax() == null ? 359.0f : floatRange.getMax().floatValue());
         return entity -> {
             double f = MathHelper.wrapDegrees(toDoubleFunction.applyAsDouble((Entity)entity));
             if (d > e) {
@@ -157,7 +157,7 @@ public class EntitySelectorReader {
     }
 
     protected void readAtVariable() throws CommandSyntaxException {
-        this.usesAt = true;
+        this.checkPermissions = true;
         this.suggestionProvider = this::suggestSelectorRest;
         if (!this.reader.canRead()) {
             throw MISSING_EXCEPTION.createWithContext(this.reader);
@@ -166,26 +166,26 @@ public class EntitySelectorReader {
         char c = this.reader.read();
         if (c == 'p') {
             this.limit = 1;
-            this.includesNonPlayers = false;
+            this.includingNonPlayer = false;
             this.sorter = NEAREST;
             this.setEntityType(EntityType.PLAYER);
         } else if (c == 'a') {
             this.limit = Integer.MAX_VALUE;
-            this.includesNonPlayers = false;
+            this.includingNonPlayer = false;
             this.sorter = ARBITRARY;
             this.setEntityType(EntityType.PLAYER);
         } else if (c == 'r') {
             this.limit = 1;
-            this.includesNonPlayers = false;
+            this.includingNonPlayer = false;
             this.sorter = RANDOM;
             this.setEntityType(EntityType.PLAYER);
         } else if (c == 's') {
             this.limit = 1;
-            this.includesNonPlayers = true;
+            this.includingNonPlayer = true;
             this.senderOnly = true;
         } else if (c == 'e') {
             this.limit = Integer.MAX_VALUE;
-            this.includesNonPlayers = true;
+            this.includingNonPlayer = true;
             this.sorter = ARBITRARY;
             this.predicate = Entity::isAlive;
         } else {
@@ -208,13 +208,13 @@ public class EntitySelectorReader {
         String string = this.reader.readString();
         try {
             this.uuid = UUID.fromString(string);
-            this.includesNonPlayers = true;
+            this.includingNonPlayer = true;
         } catch (IllegalArgumentException illegalArgumentException) {
             if (string.isEmpty() || string.length() > 16) {
                 this.reader.setCursor(i);
                 throw INVALID_ENTITY_EXCEPTION.createWithContext(this.reader);
             }
-            this.includesNonPlayers = false;
+            this.includingNonPlayer = false;
             this.playerName = string;
         }
         this.limit = 1;
@@ -303,82 +303,82 @@ public class EntitySelectorReader {
         this.levelRange = intRange;
     }
 
-    public FloatRangeArgument getPitchRange() {
+    public FloatRange getPitchRange() {
         return this.pitchRange;
     }
 
-    public void setPitchRange(FloatRangeArgument floatRangeArgument) {
-        this.pitchRange = floatRangeArgument;
+    public void setPitchRange(FloatRange floatRange) {
+        this.pitchRange = floatRange;
     }
 
-    public FloatRangeArgument getYawRange() {
+    public FloatRange getYawRange() {
         return this.yawRange;
     }
 
-    public void setYawRange(FloatRangeArgument floatRangeArgument) {
-        this.yawRange = floatRangeArgument;
+    public void setYawRange(FloatRange floatRange) {
+        this.yawRange = floatRange;
     }
 
     @Nullable
-    public Double getX() {
-        return this.x;
+    public Double getOffsetX() {
+        return this.offsetX;
     }
 
     @Nullable
-    public Double getY() {
-        return this.y;
+    public Double getOffsetY() {
+        return this.offsetY;
     }
 
     @Nullable
-    public Double getZ() {
-        return this.z;
+    public Double getOffsetZ() {
+        return this.offsetZ;
     }
 
-    public void setX(double d) {
-        this.x = d;
+    public void setOffsetX(double d) {
+        this.offsetX = d;
     }
 
-    public void setY(double d) {
-        this.y = d;
+    public void setOffsetY(double d) {
+        this.offsetY = d;
     }
 
-    public void setZ(double d) {
-        this.z = d;
+    public void setOffsetZ(double d) {
+        this.offsetZ = d;
     }
 
-    public void setDx(double d) {
-        this.dx = d;
+    public void setBoxX(double d) {
+        this.boxX = d;
     }
 
-    public void setDy(double d) {
-        this.dy = d;
+    public void setBoxY(double d) {
+        this.boxY = d;
     }
 
-    public void setDz(double d) {
-        this.dz = d;
-    }
-
-    @Nullable
-    public Double getDx() {
-        return this.dx;
+    public void setBoxZ(double d) {
+        this.boxZ = d;
     }
 
     @Nullable
-    public Double getDy() {
-        return this.dy;
+    public Double getBoxX() {
+        return this.boxX;
     }
 
     @Nullable
-    public Double getDz() {
-        return this.dz;
+    public Double getBoxY() {
+        return this.boxY;
+    }
+
+    @Nullable
+    public Double getBoxZ() {
+        return this.boxZ;
     }
 
     public void setLimit(int i) {
         this.limit = i;
     }
 
-    public void setIncludesNonPlayers(boolean bl) {
-        this.includesNonPlayers = bl;
+    public void setIncludingNonPlayer(boolean bl) {
+        this.includingNonPlayer = bl;
     }
 
     public void setSorter(BiConsumer<Vec3d, List<? extends Entity>> biConsumer) {
@@ -532,7 +532,7 @@ public class EntitySelectorReader {
         this.field_10865 = true;
     }
 
-    public boolean selectsEntityType() {
+    public boolean hasEntityType() {
         return this.entityType != null;
     }
 

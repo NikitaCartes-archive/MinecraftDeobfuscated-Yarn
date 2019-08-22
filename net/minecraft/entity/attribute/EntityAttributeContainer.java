@@ -20,13 +20,11 @@ extends AbstractEntityAttributeContainer {
     private final Set<EntityAttributeInstance> trackedAttributes = Sets.newHashSet();
     protected final Map<String, EntityAttributeInstance> instancesByName = new LowercaseMap<EntityAttributeInstance>();
 
-    @Override
-    public EntityAttributeInstanceImpl get(EntityAttribute entityAttribute) {
+    public EntityAttributeInstanceImpl method_6216(EntityAttribute entityAttribute) {
         return (EntityAttributeInstanceImpl)super.get(entityAttribute);
     }
 
-    @Override
-    public EntityAttributeInstanceImpl get(String string) {
+    public EntityAttributeInstanceImpl method_6214(String string) {
         EntityAttributeInstance entityAttributeInstance = super.get(string);
         if (entityAttributeInstance == null) {
             entityAttributeInstance = this.instancesByName.get(string);
@@ -54,7 +52,7 @@ extends AbstractEntityAttributeContainer {
             this.trackedAttributes.add(entityAttributeInstance);
         }
         for (EntityAttribute entityAttribute : this.attributeHierarchy.get(entityAttributeInstance.getAttribute())) {
-            EntityAttributeInstanceImpl entityAttributeInstanceImpl = this.get(entityAttribute);
+            EntityAttributeInstanceImpl entityAttributeInstanceImpl = this.method_6216(entityAttribute);
             if (entityAttributeInstanceImpl == null) continue;
             entityAttributeInstanceImpl.invalidateCache();
         }
@@ -75,12 +73,12 @@ extends AbstractEntityAttributeContainer {
 
     @Override
     public /* synthetic */ EntityAttributeInstance get(String string) {
-        return this.get(string);
+        return this.method_6214(string);
     }
 
     @Override
     public /* synthetic */ EntityAttributeInstance get(EntityAttribute entityAttribute) {
-        return this.get(entityAttribute);
+        return this.method_6216(entityAttribute);
     }
 }
 

@@ -7,6 +7,7 @@ import java.util.Optional;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.block.Blocks;
+import net.minecraft.client.network.packet.EntitySpawnS2CPacket;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.boss.dragon.EnderDragonEntity;
@@ -16,9 +17,8 @@ import net.minecraft.entity.data.DataTracker;
 import net.minecraft.entity.data.TrackedData;
 import net.minecraft.entity.data.TrackedDataHandlerRegistry;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.NbtHelper;
 import net.minecraft.network.Packet;
-import net.minecraft.network.packet.s2c.play.EntitySpawnS2CPacket;
+import net.minecraft.util.TagHelper;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraft.world.dimension.TheEndDimension;
@@ -39,7 +39,7 @@ extends Entity {
 
     public EnderCrystalEntity(World world, double d, double e, double f) {
         this((EntityType<? extends EnderCrystalEntity>)EntityType.END_CRYSTAL, world);
-        this.updatePosition(d, e, f);
+        this.setPosition(d, e, f);
     }
 
     @Override
@@ -70,17 +70,17 @@ extends Entity {
     @Override
     protected void writeCustomDataToTag(CompoundTag compoundTag) {
         if (this.getBeamTarget() != null) {
-            compoundTag.put("BeamTarget", NbtHelper.fromBlockPos(this.getBeamTarget()));
+            compoundTag.put("BeamTarget", TagHelper.serializeBlockPos(this.getBeamTarget()));
         }
         compoundTag.putBoolean("ShowBottom", this.getShowBottom());
     }
 
     @Override
     protected void readCustomDataFromTag(CompoundTag compoundTag) {
-        if (compoundTag.contains("BeamTarget", 10)) {
-            this.setBeamTarget(NbtHelper.toBlockPos(compoundTag.getCompound("BeamTarget")));
+        if (compoundTag.containsKey("BeamTarget", 10)) {
+            this.setBeamTarget(TagHelper.deserializeBlockPos(compoundTag.getCompound("BeamTarget")));
         }
-        if (compoundTag.contains("ShowBottom", 1)) {
+        if (compoundTag.containsKey("ShowBottom", 1)) {
             this.setShowBottom(compoundTag.getBoolean("ShowBottom"));
         }
     }
@@ -141,8 +141,8 @@ extends Entity {
 
     @Override
     @Environment(value=EnvType.CLIENT)
-    public boolean shouldRender(double d) {
-        return super.shouldRender(d) || this.getBeamTarget() != null;
+    public boolean shouldRenderAtDistance(double d) {
+        return super.shouldRenderAtDistance(d) || this.getBeamTarget() != null;
     }
 
     @Override

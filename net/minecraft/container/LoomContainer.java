@@ -36,6 +36,7 @@ extends Container {
     private final Slot dyeSlot;
     private final Slot patternSlot;
     private final Slot outputSlot;
+    private long field_20383;
     private final Inventory inputInventory = new BasicInventory(3){
 
         @Override
@@ -97,7 +98,13 @@ extends Container {
                 if (!LoomContainer.this.bannerSlot.hasStack() || !LoomContainer.this.dyeSlot.hasStack()) {
                     LoomContainer.this.selectedPattern.set(0);
                 }
-                blockContext.run((world, blockPos) -> world.playSound(null, (BlockPos)blockPos, SoundEvents.UI_LOOM_TAKE_RESULT, SoundCategory.BLOCKS, 1.0f, 1.0f));
+                blockContext.run((world, blockPos) -> {
+                    long l = world.getTime();
+                    if (LoomContainer.this.field_20383 != l) {
+                        world.playSound(null, (BlockPos)blockPos, SoundEvents.UI_LOOM_TAKE_RESULT, SoundCategory.BLOCKS, 1.0f, 1.0f);
+                        LoomContainer.this.field_20383 = l;
+                    }
+                });
                 return super.onTakeItem(playerEntity, itemStack);
             }
         });
@@ -144,7 +151,7 @@ extends Container {
         } else if (!itemStack3.isEmpty() && itemStack3.getItem() instanceof BannerPatternItem) {
             boolean bl;
             CompoundTag compoundTag = itemStack.getOrCreateSubTag("BlockEntityTag");
-            boolean bl2 = bl = compoundTag.contains("Patterns", 9) && !itemStack.isEmpty() && compoundTag.getList("Patterns", 10).size() >= 6;
+            boolean bl2 = bl = compoundTag.containsKey("Patterns", 9) && !itemStack.isEmpty() && compoundTag.getList("Patterns", 10).size() >= 6;
             if (bl) {
                 this.selectedPattern.set(0);
             } else {
@@ -163,7 +170,7 @@ extends Container {
     @Override
     public ItemStack transferSlot(PlayerEntity playerEntity, int i) {
         ItemStack itemStack = ItemStack.EMPTY;
-        Slot slot = (Slot)this.slots.get(i);
+        Slot slot = (Slot)this.slotList.get(i);
         if (slot != null && slot.hasStack()) {
             ItemStack itemStack2 = slot.getStack();
             itemStack = itemStack2.copy();
@@ -206,7 +213,7 @@ extends Container {
                 BannerPattern bannerPattern = BannerPattern.values()[this.selectedPattern.get()];
                 DyeColor dyeColor = ((DyeItem)itemStack2.getItem()).getColor();
                 CompoundTag compoundTag = itemStack3.getOrCreateSubTag("BlockEntityTag");
-                if (compoundTag.contains("Patterns", 9)) {
+                if (compoundTag.containsKey("Patterns", 9)) {
                     listTag = compoundTag.getList("Patterns", 10);
                 } else {
                     listTag = new ListTag();

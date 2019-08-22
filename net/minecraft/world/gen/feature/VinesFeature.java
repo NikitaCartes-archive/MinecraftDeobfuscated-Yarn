@@ -25,8 +25,7 @@ extends Feature<DefaultFeatureConfig> {
         super(function);
     }
 
-    @Override
-    public boolean generate(IWorld iWorld, ChunkGenerator<? extends ChunkGeneratorConfig> chunkGenerator, Random random, BlockPos blockPos, DefaultFeatureConfig defaultFeatureConfig) {
+    public boolean method_14201(IWorld iWorld, ChunkGenerator<? extends ChunkGeneratorConfig> chunkGenerator, Random random, BlockPos blockPos, DefaultFeatureConfig defaultFeatureConfig) {
         BlockPos.Mutable mutable = new BlockPos.Mutable(blockPos);
         block0: for (int i = blockPos.getY(); i < 256; ++i) {
             mutable.set(blockPos);

@@ -74,8 +74,7 @@ implements ParsableText {
         }
     }
 
-    @Override
-    public ScoreText copy() {
+    public ScoreText method_10929() {
         ScoreText scoreText = new ScoreText(this.name, this.objective);
         scoreText.setScore(this.score);
         return scoreText;
@@ -89,7 +88,7 @@ implements ParsableText {
     public Text parse(@Nullable ServerCommandSource serverCommandSource, @Nullable Entity entity, int i) throws CommandSyntaxException {
         String string;
         if (serverCommandSource == null) {
-            return this.copy();
+            return this.method_10929();
         }
         if (this.selector != null) {
             List<? extends Entity> list = this.selector.getEntities(serverCommandSource);
@@ -128,7 +127,7 @@ implements ParsableText {
 
     @Override
     public /* synthetic */ Text copy() {
-        return this.copy();
+        return this.method_10929();
     }
 }
 

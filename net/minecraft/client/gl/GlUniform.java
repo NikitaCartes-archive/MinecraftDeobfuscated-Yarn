@@ -3,11 +3,11 @@
  */
 package net.minecraft.client.gl;
 
-import com.mojang.blaze3d.platform.GLX;
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.class_4493;
 import net.minecraft.client.gl.GlProgram;
 import net.minecraft.client.gl.Uniform;
 import net.minecraft.client.util.math.Matrix4f;
@@ -43,6 +43,18 @@ implements AutoCloseable {
         }
         this.loc = -1;
         this.markStateDirty();
+    }
+
+    public static int method_22096(int i, CharSequence charSequence) {
+        return class_4493.method_21990(i, charSequence);
+    }
+
+    public static void method_22095(int i, int j) {
+        class_4493.method_22030(i, j);
+    }
+
+    public static int method_22097(int i, CharSequence charSequence) {
+        return class_4493.method_22006(i, charSequence);
     }
 
     @Override
@@ -174,7 +186,7 @@ implements AutoCloseable {
     @Override
     public void set(Matrix4f matrix4f) {
         this.floatData.position(0);
-        matrix4f.writeToBuffer(this.floatData);
+        matrix4f.putIntoBuffer(this.floatData);
         this.markStateDirty();
     }
 
@@ -199,19 +211,19 @@ implements AutoCloseable {
         this.floatData.clear();
         switch (this.dataType) {
             case 0: {
-                GLX.glUniform1(this.loc, this.intData);
+                class_4493.method_21964(this.loc, this.intData);
                 break;
             }
             case 1: {
-                GLX.glUniform2(this.loc, this.intData);
+                class_4493.method_21992(this.loc, this.intData);
                 break;
             }
             case 2: {
-                GLX.glUniform3(this.loc, this.intData);
+                class_4493.method_22008(this.loc, this.intData);
                 break;
             }
             case 3: {
-                GLX.glUniform4(this.loc, this.intData);
+                class_4493.method_22020(this.loc, this.intData);
                 break;
             }
             default: {
@@ -224,19 +236,19 @@ implements AutoCloseable {
         this.floatData.clear();
         switch (this.dataType) {
             case 4: {
-                GLX.glUniform1(this.loc, this.floatData);
+                class_4493.method_21991(this.loc, this.floatData);
                 break;
             }
             case 5: {
-                GLX.glUniform2(this.loc, this.floatData);
+                class_4493.method_22007(this.loc, this.floatData);
                 break;
             }
             case 6: {
-                GLX.glUniform3(this.loc, this.floatData);
+                class_4493.method_22019(this.loc, this.floatData);
                 break;
             }
             case 7: {
-                GLX.glUniform4(this.loc, this.floatData);
+                class_4493.method_22026(this.loc, this.floatData);
                 break;
             }
             default: {
@@ -249,15 +261,15 @@ implements AutoCloseable {
         this.floatData.clear();
         switch (this.dataType) {
             case 8: {
-                GLX.glUniformMatrix2(this.loc, false, this.floatData);
+                class_4493.method_21966(this.loc, false, this.floatData);
                 break;
             }
             case 9: {
-                GLX.glUniformMatrix3(this.loc, false, this.floatData);
+                class_4493.method_21993(this.loc, false, this.floatData);
                 break;
             }
             case 10: {
-                GLX.glUniformMatrix4(this.loc, false, this.floatData);
+                class_4493.method_22009(this.loc, false, this.floatData);
             }
         }
     }

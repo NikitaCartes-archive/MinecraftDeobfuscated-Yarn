@@ -3,7 +3,7 @@
  */
 package net.minecraft.client.render.entity;
 
-import com.mojang.blaze3d.platform.GlStateManager;
+import com.mojang.blaze3d.systems.RenderSystem;
 import java.util.List;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
@@ -27,30 +27,27 @@ extends MobEntityRenderer<CatEntity, CatEntityModel<CatEntity>> {
         this.addFeature(new CatCollarFeatureRenderer(this));
     }
 
-    @Override
     @Nullable
-    protected Identifier getTexture(CatEntity catEntity) {
+    protected Identifier method_4078(CatEntity catEntity) {
         return catEntity.getTexture();
     }
 
-    @Override
-    protected void scale(CatEntity catEntity, float f) {
+    protected void method_4079(CatEntity catEntity, float f) {
         super.scale(catEntity, f);
-        GlStateManager.scalef(0.8f, 0.8f, 0.8f);
+        RenderSystem.scalef(0.8f, 0.8f, 0.8f);
     }
 
-    @Override
-    protected void setupTransforms(CatEntity catEntity, float f, float g, float h) {
+    protected void method_16045(CatEntity catEntity, float f, float g, float h) {
         super.setupTransforms(catEntity, f, g, h);
         float i = catEntity.getSleepAnimation(h);
         if (i > 0.0f) {
-            GlStateManager.translatef(0.4f * i, 0.15f * i, 0.1f * i);
-            GlStateManager.rotatef(MathHelper.lerpAngleDegrees(i, 0.0f, 90.0f), 0.0f, 0.0f, 1.0f);
+            RenderSystem.translatef(0.4f * i, 0.15f * i, 0.1f * i);
+            RenderSystem.rotatef(MathHelper.lerpAngleDegrees(i, 0.0f, 90.0f), 0.0f, 0.0f, 1.0f);
             BlockPos blockPos = new BlockPos(catEntity);
-            List<PlayerEntity> list = catEntity.world.getNonSpectatingEntities(PlayerEntity.class, new Box(blockPos).expand(2.0, 2.0, 2.0));
+            List<PlayerEntity> list = catEntity.world.getEntities(PlayerEntity.class, new Box(blockPos).expand(2.0, 2.0, 2.0));
             for (PlayerEntity playerEntity : list) {
                 if (!playerEntity.isSleeping()) continue;
-                GlStateManager.translatef(0.15f * i, 0.0f, 0.0f);
+                RenderSystem.translatef(0.15f * i, 0.0f, 0.0f);
                 break;
             }
         }

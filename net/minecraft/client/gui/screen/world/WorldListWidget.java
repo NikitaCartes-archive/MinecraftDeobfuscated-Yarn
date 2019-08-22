@@ -4,7 +4,7 @@
 package net.minecraft.client.gui.screen.world;
 
 import com.google.common.hash.Hashing;
-import com.mojang.blaze3d.platform.GlStateManager;
+import com.mojang.blaze3d.systems.RenderSystem;
 import java.io.File;
 import java.io.FileInputStream;
 import java.text.DateFormat;
@@ -40,7 +40,7 @@ import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.Util;
+import net.minecraft.util.SystemUtil;
 import net.minecraft.world.WorldSaveHandler;
 import net.minecraft.world.level.LevelProperties;
 import net.minecraft.world.level.storage.LevelStorage;
@@ -54,7 +54,7 @@ import org.jetbrains.annotations.Nullable;
 
 @Environment(value=EnvType.CLIENT)
 public class WorldListWidget
-extends AlwaysSelectedEntryListWidget<Entry> {
+extends AlwaysSelectedEntryListWidget<LevelItem> {
     private static final Logger LOGGER = LogManager.getLogger();
     private static final DateFormat DATE_FORMAT = new SimpleDateFormat();
     private static final Identifier UNKNOWN_SERVER_LOCATION = new Identifier("textures/misc/unknown_server.png");
@@ -88,7 +88,7 @@ extends AlwaysSelectedEntryListWidget<Entry> {
         String string = supplier.get().toLowerCase(Locale.ROOT);
         for (LevelSummary levelSummary : this.levels) {
             if (!levelSummary.getDisplayName().toLowerCase(Locale.ROOT).contains(string) && !levelSummary.getName().toLowerCase(Locale.ROOT).contains(string)) continue;
-            this.addEntry(new Entry(this, levelSummary, this.minecraft.getLevelStorage()));
+            this.addEntry(new LevelItem(this, levelSummary, this.minecraft.getLevelStorage()));
         }
     }
 
@@ -107,11 +107,10 @@ extends AlwaysSelectedEntryListWidget<Entry> {
         return this.parent.getFocused() == this;
     }
 
-    @Override
-    public void setSelected(@Nullable Entry entry) {
-        super.setSelected(entry);
-        if (entry != null) {
-            LevelSummary levelSummary = entry.level;
+    public void method_20157(@Nullable LevelItem levelItem) {
+        super.setSelected(levelItem);
+        if (levelItem != null) {
+            LevelSummary levelSummary = levelItem.level;
             NarratorManager.INSTANCE.narrate(new TranslatableText("narrator.select", new TranslatableText("narrator.select.world", levelSummary.getDisplayName(), new Date(levelSummary.getLastPlayed()), levelSummary.isHardcore() ? I18n.translate("gameMode.hardcore", new Object[0]) : I18n.translate("gameMode." + levelSummary.getGameMode().getName(), new Object[0]), levelSummary.hasCheats() ? I18n.translate("selectWorld.cheats", new Object[0]) : "", levelSummary.getVersion())).getString());
         }
     }
@@ -122,7 +121,7 @@ extends AlwaysSelectedEntryListWidget<Entry> {
         this.parent.worldSelected(true);
     }
 
-    public Optional<Entry> method_20159() {
+    public Optional<LevelItem> method_20159() {
         return Optional.ofNullable(this.getSelected());
     }
 
@@ -132,12 +131,12 @@ extends AlwaysSelectedEntryListWidget<Entry> {
 
     @Override
     public /* synthetic */ void setSelected(@Nullable EntryListWidget.Entry entry) {
-        this.setSelected((Entry)entry);
+        this.method_20157((LevelItem)entry);
     }
 
     @Environment(value=EnvType.CLIENT)
-    public final class Entry
-    extends AlwaysSelectedEntryListWidget.Entry<Entry>
+    public final class LevelItem
+    extends AlwaysSelectedEntryListWidget.Entry<LevelItem>
     implements AutoCloseable {
         private final MinecraftClient client;
         private final SelectWorldScreen screen;
@@ -148,7 +147,7 @@ extends AlwaysSelectedEntryListWidget<Entry> {
         private final NativeImageBackedTexture icon;
         private long time;
 
-        public Entry(WorldListWidget worldListWidget2, LevelSummary levelSummary, LevelStorage levelStorage) {
+        public LevelItem(WorldListWidget worldListWidget2, LevelSummary levelSummary, LevelStorage levelStorage) {
             this.screen = worldListWidget2.getParent();
             this.level = levelSummary;
             this.client = MinecraftClient.getInstance();
@@ -184,16 +183,16 @@ extends AlwaysSelectedEntryListWidget<Entry> {
             this.client.textRenderer.draw(string, k + 32 + 3, j + 1, 0xFFFFFF);
             this.client.textRenderer.draw(string2, k + 32 + 3, j + this.client.textRenderer.fontHeight + 3, 0x808080);
             this.client.textRenderer.draw(string3, k + 32 + 3, j + this.client.textRenderer.fontHeight + this.client.textRenderer.fontHeight + 3, 0x808080);
-            GlStateManager.color4f(1.0f, 1.0f, 1.0f, 1.0f);
+            RenderSystem.color4f(1.0f, 1.0f, 1.0f, 1.0f);
             this.client.getTextureManager().bindTexture(this.icon != null ? this.iconLocation : UNKNOWN_SERVER_LOCATION);
-            GlStateManager.enableBlend();
+            RenderSystem.enableBlend();
             DrawableHelper.blit(k, j, 0.0f, 0.0f, 32, 32, 32, 32);
-            GlStateManager.disableBlend();
+            RenderSystem.disableBlend();
             if (this.client.options.touchscreen || bl) {
                 int q;
                 this.client.getTextureManager().bindTexture(WORLD_SELECTION_LOCATION);
                 DrawableHelper.fill(k, j, k + 32, j + 32, -1601138544);
-                GlStateManager.color4f(1.0f, 1.0f, 1.0f, 1.0f);
+                RenderSystem.color4f(1.0f, 1.0f, 1.0f, 1.0f);
                 int p = n - k;
                 int n2 = q = p < 32 ? 32 : 0;
                 if (this.level.isDifferentVersion()) {
@@ -223,17 +222,17 @@ extends AlwaysSelectedEntryListWidget<Entry> {
 
         @Override
         public boolean mouseClicked(double d, double e, int i) {
-            WorldListWidget.this.setSelected(this);
+            WorldListWidget.this.method_20157(this);
             this.screen.worldSelected(WorldListWidget.this.method_20159().isPresent());
             if (d - (double)WorldListWidget.this.getRowLeft() <= 32.0) {
                 this.play();
                 return true;
             }
-            if (Util.getMeasuringTimeMs() - this.time < 250L) {
+            if (SystemUtil.getMeasuringTimeMs() - this.time < 250L) {
                 this.play();
                 return true;
             }
-            this.time = Util.getMeasuringTimeMs();
+            this.time = SystemUtil.getMeasuringTimeMs();
             return false;
         }
 

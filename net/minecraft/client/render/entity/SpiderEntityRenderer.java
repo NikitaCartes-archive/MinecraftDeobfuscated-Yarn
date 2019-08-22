@@ -22,13 +22,11 @@ extends MobEntityRenderer<T, SpiderEntityModel<T>> {
         this.addFeature(new SpiderEyesFeatureRenderer(this));
     }
 
-    @Override
-    protected float getLyingAngle(T spiderEntity) {
+    protected float method_4124(T spiderEntity) {
         return 180.0f;
     }
 
-    @Override
-    protected Identifier getTexture(T spiderEntity) {
+    protected Identifier method_4123(T spiderEntity) {
         return SKIN;
     }
 }

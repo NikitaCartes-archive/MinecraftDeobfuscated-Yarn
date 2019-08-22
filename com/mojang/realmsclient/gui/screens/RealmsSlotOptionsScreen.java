@@ -5,10 +5,10 @@ package com.mojang.realmsclient.gui.screens;
 
 import com.mojang.realmsclient.dto.RealmsServer;
 import com.mojang.realmsclient.dto.RealmsWorldOptions;
-import com.mojang.realmsclient.gui.RealmsConstants;
 import com.mojang.realmsclient.gui.screens.RealmsConfigureWorldScreen;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.class_4359;
 import net.minecraft.realms.Realms;
 import net.minecraft.realms.RealmsButton;
 import net.minecraft.realms.RealmsEditBox;
@@ -47,7 +47,7 @@ extends RealmsScreen {
     String[] gameModes;
     String[][] gameModeHints;
     private RealmsLabel titleLabel;
-    private RealmsLabel field_20108 = null;
+    private RealmsLabel field_20502;
 
     public RealmsSlotOptionsScreen(RealmsConfigureWorldScreen realmsConfigureWorldScreen, RealmsWorldOptions realmsWorldOptions, RealmsServer.WorldType worldType, int i) {
         this.parent = realmsConfigureWorldScreen;
@@ -95,7 +95,7 @@ extends RealmsScreen {
             this.commandBlocks = this.options.commandBlocks;
         } else {
             String string = this.worldType.equals((Object)RealmsServer.WorldType.ADVENTUREMAP) ? RealmsSlotOptionsScreen.getLocalizedString("mco.configure.world.edit.subscreen.adventuremap") : (this.worldType.equals((Object)RealmsServer.WorldType.INSPIRATION) ? RealmsSlotOptionsScreen.getLocalizedString("mco.configure.world.edit.subscreen.inspiration") : RealmsSlotOptionsScreen.getLocalizedString("mco.configure.world.edit.subscreen.experience"));
-            this.field_20108 = new RealmsLabel(string, this.width() / 2, 26, 0xFF0000);
+            this.field_20502 = new RealmsLabel(string, this.width() / 2, 26, 0xFF0000);
             this.pvp = true;
             this.spawnProtection = 0;
             this.forceGameMode = false;
@@ -104,11 +104,11 @@ extends RealmsScreen {
             this.spawnNPCs = true;
             this.commandBlocks = true;
         }
-        this.nameEdit = this.newEditBox(11, this.column1_x + 2, RealmsConstants.row(1), this.column_width - 4, 20, RealmsSlotOptionsScreen.getLocalizedString("mco.configure.world.edit.slot.name"));
+        this.nameEdit = this.newEditBox(11, this.column1_x + 2, class_4359.method_21072(1), this.column_width - 4, 20, RealmsSlotOptionsScreen.getLocalizedString("mco.configure.world.edit.slot.name"));
         this.nameEdit.setMaxLength(10);
         this.nameEdit.setValue(this.options.getSlotName(this.activeSlot));
         this.focusOn(this.nameEdit);
-        this.pvpButton = new RealmsButton(4, this.column2_x, RealmsConstants.row(1), this.column_width, 20, this.pvpTitle()){
+        this.pvpButton = new RealmsButton(4, this.column2_x, class_4359.method_21072(1), this.column_width, 20, this.pvpTitle()){
 
             @Override
             public void onPress() {
@@ -117,7 +117,7 @@ extends RealmsScreen {
             }
         };
         this.buttonsAdd(this.pvpButton);
-        this.buttonsAdd(new RealmsButton(3, this.column1_x, RealmsConstants.row(3), this.column_width, 20, this.gameModeTitle()){
+        this.buttonsAdd(new RealmsButton(3, this.column1_x, class_4359.method_21072(3), this.column_width, 20, this.gameModeTitle()){
 
             @Override
             public void onPress() {
@@ -125,7 +125,7 @@ extends RealmsScreen {
                 this.setMessage(RealmsSlotOptionsScreen.this.gameModeTitle());
             }
         });
-        this.spawnAnimalsButton = new RealmsButton(5, this.column2_x, RealmsConstants.row(3), this.column_width, 20, this.spawnAnimalsTitle()){
+        this.spawnAnimalsButton = new RealmsButton(5, this.column2_x, class_4359.method_21072(3), this.column_width, 20, this.spawnAnimalsTitle()){
 
             @Override
             public void onPress() {
@@ -134,7 +134,7 @@ extends RealmsScreen {
             }
         };
         this.buttonsAdd(this.spawnAnimalsButton);
-        this.buttonsAdd(new RealmsButton(2, this.column1_x, RealmsConstants.row(5), this.column_width, 20, this.difficultyTitle()){
+        this.buttonsAdd(new RealmsButton(2, this.column1_x, class_4359.method_21072(5), this.column_width, 20, this.difficultyTitle()){
 
             @Override
             public void onPress() {
@@ -146,7 +146,7 @@ extends RealmsScreen {
                 }
             }
         });
-        this.spawnMonstersButton = new RealmsButton(6, this.column2_x, RealmsConstants.row(5), this.column_width, 20, this.spawnMonstersTitle()){
+        this.spawnMonstersButton = new RealmsButton(6, this.column2_x, class_4359.method_21072(5), this.column_width, 20, this.spawnMonstersTitle()){
 
             @Override
             public void onPress() {
@@ -155,9 +155,9 @@ extends RealmsScreen {
             }
         };
         this.buttonsAdd(this.spawnMonstersButton);
-        this.spawnProtectionButton = new SettingsSlider(8, this.column1_x, RealmsConstants.row(7), this.column_width, this.spawnProtection, 0.0f, 16.0f);
+        this.spawnProtectionButton = new SettingsSlider(8, this.column1_x, class_4359.method_21072(7), this.column_width, this.spawnProtection, 0.0f, 16.0f);
         this.buttonsAdd(this.spawnProtectionButton);
-        this.spawnNPCsButton = new RealmsButton(7, this.column2_x, RealmsConstants.row(7), this.column_width, 20, this.spawnNPCsTitle()){
+        this.spawnNPCsButton = new RealmsButton(7, this.column2_x, class_4359.method_21072(7), this.column_width, 20, this.spawnNPCsTitle()){
 
             @Override
             public void onPress() {
@@ -166,7 +166,7 @@ extends RealmsScreen {
             }
         };
         this.buttonsAdd(this.spawnNPCsButton);
-        this.forceGameModeButton = new RealmsButton(10, this.column1_x, RealmsConstants.row(9), this.column_width, 20, this.forceGameModeTitle()){
+        this.forceGameModeButton = new RealmsButton(10, this.column1_x, class_4359.method_21072(9), this.column_width, 20, this.forceGameModeTitle()){
 
             @Override
             public void onPress() {
@@ -175,7 +175,7 @@ extends RealmsScreen {
             }
         };
         this.buttonsAdd(this.forceGameModeButton);
-        this.commandBlocksButton = new RealmsButton(9, this.column2_x, RealmsConstants.row(9), this.column_width, 20, this.commandBlocksTitle()){
+        this.commandBlocksButton = new RealmsButton(9, this.column2_x, class_4359.method_21072(9), this.column_width, 20, this.commandBlocksTitle()){
 
             @Override
             public void onPress() {
@@ -197,14 +197,14 @@ extends RealmsScreen {
         if (this.difficultyIndex == 0) {
             this.spawnMonstersButton.active(false);
         }
-        this.buttonsAdd(new RealmsButton(1, this.column1_x, RealmsConstants.row(13), this.column_width, 20, RealmsSlotOptionsScreen.getLocalizedString("mco.configure.world.buttons.done")){
+        this.buttonsAdd(new RealmsButton(1, this.column1_x, class_4359.method_21072(13), this.column_width, 20, RealmsSlotOptionsScreen.getLocalizedString("mco.configure.world.buttons.done")){
 
             @Override
             public void onPress() {
                 RealmsSlotOptionsScreen.this.saveSettings();
             }
         });
-        this.buttonsAdd(new RealmsButton(0, this.column2_x, RealmsConstants.row(13), this.column_width, 20, RealmsSlotOptionsScreen.getLocalizedString("gui.cancel")){
+        this.buttonsAdd(new RealmsButton(0, this.column2_x, class_4359.method_21072(13), this.column_width, 20, RealmsSlotOptionsScreen.getLocalizedString("gui.cancel")){
 
             @Override
             public void onPress() {
@@ -214,8 +214,8 @@ extends RealmsScreen {
         this.addWidget(this.nameEdit);
         this.titleLabel = new RealmsLabel(RealmsSlotOptionsScreen.getLocalizedString("mco.configure.world.buttons.options"), this.width() / 2, 17, 0xFFFFFF);
         this.addWidget(this.titleLabel);
-        if (this.field_20108 != null) {
-            this.addWidget(this.field_20108);
+        if (this.field_20502 != null) {
+            this.addWidget(this.field_20502);
         }
         this.narrateLabels();
     }
@@ -267,10 +267,10 @@ extends RealmsScreen {
     public void render(int i, int j, float f) {
         this.renderBackground();
         String string = RealmsSlotOptionsScreen.getLocalizedString("mco.configure.world.edit.slot.name");
-        this.drawString(string, this.column1_x + this.column_width / 2 - this.fontWidth(string) / 2, RealmsConstants.row(0) - 5, 0xFFFFFF);
+        this.drawString(string, this.column1_x + this.column_width / 2 - this.fontWidth(string) / 2, class_4359.method_21072(0) - 5, 0xFFFFFF);
         this.titleLabel.render(this);
-        if (this.field_20108 != null) {
-            this.field_20108.render(this);
+        if (this.field_20502 != null) {
+            this.field_20502.render(this);
         }
         this.nameEdit.render(i, j, f);
         super.render(i, j, f);

@@ -17,7 +17,7 @@ import net.minecraft.entity.EntityContext;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemPlacementContext;
-import net.minecraft.state.StateManager;
+import net.minecraft.state.StateFactory;
 import net.minecraft.state.property.IntProperty;
 import net.minecraft.state.property.Properties;
 import net.minecraft.tag.FluidTags;
@@ -25,9 +25,9 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.world.BlockView;
-import net.minecraft.world.CollisionView;
 import net.minecraft.world.GameRules;
 import net.minecraft.world.IWorld;
+import net.minecraft.world.ViewableWorld;
 import net.minecraft.world.World;
 
 public class FarmlandBlock
@@ -37,7 +37,7 @@ extends Block {
 
     protected FarmlandBlock(Block.Settings settings) {
         super(settings);
-        this.setDefaultState((BlockState)((BlockState)this.stateManager.getDefaultState()).with(MOISTURE, 0));
+        this.setDefaultState((BlockState)((BlockState)this.stateFactory.getDefaultState()).with(MOISTURE, 0));
     }
 
     @Override
@@ -49,8 +49,8 @@ extends Block {
     }
 
     @Override
-    public boolean canPlaceAt(BlockState blockState, CollisionView collisionView, BlockPos blockPos) {
-        BlockState blockState2 = collisionView.getBlockState(blockPos.up());
+    public boolean canPlaceAt(BlockState blockState, ViewableWorld viewableWorld, BlockPos blockPos) {
+        BlockState blockState2 = viewableWorld.getBlockState(blockPos.up());
         return !blockState2.getMaterial().isSolid() || blockState2.getBlock() instanceof FenceGateBlock;
     }
 
@@ -107,16 +107,16 @@ extends Block {
         return block instanceof CropBlock || block instanceof StemBlock || block instanceof AttachedStemBlock;
     }
 
-    private static boolean isWaterNearby(CollisionView collisionView, BlockPos blockPos) {
+    private static boolean isWaterNearby(ViewableWorld viewableWorld, BlockPos blockPos) {
         for (BlockPos blockPos2 : BlockPos.iterate(blockPos.add(-4, 0, -4), blockPos.add(4, 1, 4))) {
-            if (!collisionView.getFluidState(blockPos2).matches(FluidTags.WATER)) continue;
+            if (!viewableWorld.getFluidState(blockPos2).matches(FluidTags.WATER)) continue;
             return true;
         }
         return false;
     }
 
     @Override
-    protected void appendProperties(StateManager.Builder<Block, BlockState> builder) {
+    protected void appendProperties(StateFactory.Builder<Block, BlockState> builder) {
         builder.add(MOISTURE);
     }
 

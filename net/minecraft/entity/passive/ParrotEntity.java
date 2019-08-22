@@ -27,12 +27,12 @@ import net.minecraft.entity.Flutterer;
 import net.minecraft.entity.SpawnType;
 import net.minecraft.entity.ai.control.FlightMoveControl;
 import net.minecraft.entity.ai.goal.EscapeDangerGoal;
-import net.minecraft.entity.ai.goal.FlyOntoTreeGoal;
+import net.minecraft.entity.ai.goal.FlyAroundGoal;
 import net.minecraft.entity.ai.goal.FollowMobGoal;
 import net.minecraft.entity.ai.goal.FollowOwnerFlyingGoal;
 import net.minecraft.entity.ai.goal.LookAtEntityGoal;
 import net.minecraft.entity.ai.goal.SitGoal;
-import net.minecraft.entity.ai.goal.SitOnOwnerShoulderGoal;
+import net.minecraft.entity.ai.goal.SitOnOwnerShoulder;
 import net.minecraft.entity.ai.goal.SwimGoal;
 import net.minecraft.entity.ai.pathing.BirdNavigation;
 import net.minecraft.entity.ai.pathing.EntityNavigation;
@@ -57,7 +57,7 @@ import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.tag.BlockTags;
 import net.minecraft.util.Hand;
-import net.minecraft.util.Util;
+import net.minecraft.util.SystemUtil;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
@@ -72,19 +72,18 @@ implements Flutterer {
     private static final TrackedData<Integer> ATTR_VARIANT = DataTracker.registerData(ParrotEntity.class, TrackedDataHandlerRegistry.INTEGER);
     private static final Predicate<MobEntity> CAN_IMITATE = new Predicate<MobEntity>(){
 
-        @Override
-        public boolean test(@Nullable MobEntity mobEntity) {
+        public boolean method_6590(@Nullable MobEntity mobEntity) {
             return mobEntity != null && MOB_SOUNDS.containsKey(mobEntity.getType());
         }
 
         @Override
         public /* synthetic */ boolean test(@Nullable Object object) {
-            return this.test((MobEntity)object);
+            return this.method_6590((MobEntity)object);
         }
     };
     private static final Item COOKIE = Items.COOKIE;
     private static final Set<Item> TAMING_INGREDIENTS = Sets.newHashSet(Items.WHEAT_SEEDS, Items.MELON_SEEDS, Items.PUMPKIN_SEEDS, Items.BEETROOT_SEEDS);
-    private static final Map<EntityType<?>, SoundEvent> MOB_SOUNDS = Util.make(Maps.newHashMap(), hashMap -> {
+    private static final Map<EntityType<?>, SoundEvent> MOB_SOUNDS = SystemUtil.consume(Maps.newHashMap(), hashMap -> {
         hashMap.put(EntityType.BLAZE, SoundEvents.ENTITY_PARROT_IMITATE_BLAZE);
         hashMap.put(EntityType.CAVE_SPIDER, SoundEvents.ENTITY_PARROT_IMITATE_SPIDER);
         hashMap.put(EntityType.CREEPER, SoundEvents.ENTITY_PARROT_IMITATE_CREEPER);
@@ -130,7 +129,7 @@ implements Flutterer {
 
     public ParrotEntity(EntityType<? extends ParrotEntity> entityType, World world) {
         super((EntityType<? extends TameableShoulderEntity>)entityType, world);
-        this.moveControl = new FlightMoveControl(this);
+        this.moveControl = new FlightMoveControl(this, 10, false);
     }
 
     @Override
@@ -148,8 +147,8 @@ implements Flutterer {
         this.goalSelector.add(1, new LookAtEntityGoal(this, PlayerEntity.class, 8.0f));
         this.goalSelector.add(2, this.sitGoal);
         this.goalSelector.add(2, new FollowOwnerFlyingGoal(this, 1.0, 5.0f, 1.0f));
-        this.goalSelector.add(2, new FlyOntoTreeGoal(this, 1.0));
-        this.goalSelector.add(3, new SitOnOwnerShoulderGoal(this));
+        this.goalSelector.add(2, new FlyAroundGoal(this, 1.0));
+        this.goalSelector.add(3, new SitOnOwnerShoulder(this));
         this.goalSelector.add(3, new FollowMobGoal(this, 1.0, 3.0f, 7.0f));
     }
 
@@ -341,7 +340,7 @@ implements Flutterer {
     }
 
     @Override
-    protected float playFlySound(float f) {
+    protected float calculateAerialStepDelta(float f) {
         this.playSound(SoundEvents.ENTITY_PARROT_FLY, 0.15f, 1.0f);
         return f + this.field_6819 / 2.0f;
     }

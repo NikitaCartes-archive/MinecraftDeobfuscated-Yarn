@@ -7,6 +7,7 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.fabricmc.api.EnvironmentInterface;
 import net.fabricmc.api.EnvironmentInterfaces;
+import net.minecraft.client.network.packet.EntitySpawnS2CPacket;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.FlyingItemEntity;
@@ -18,10 +19,9 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.Packet;
-import net.minecraft.network.packet.s2c.play.EntitySpawnS2CPacket;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.sound.SoundEvents;
-import net.minecraft.util.Util;
+import net.minecraft.util.SystemUtil;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
@@ -45,12 +45,12 @@ implements FlyingItemEntity {
     public EnderEyeEntity(World world, double d, double e, double f) {
         this((EntityType<? extends EnderEyeEntity>)EntityType.EYE_OF_ENDER, world);
         this.useCount = 0;
-        this.updatePosition(d, e, f);
+        this.setPosition(d, e, f);
     }
 
     public void setItem(ItemStack itemStack2) {
         if (itemStack2.getItem() != Items.ENDER_EYE || itemStack2.hasTag()) {
-            this.getDataTracker().set(ITEM, Util.make(itemStack2.copy(), itemStack -> itemStack.setCount(1)));
+            this.getDataTracker().set(ITEM, SystemUtil.consume(itemStack2.copy(), itemStack -> itemStack.setCount(1)));
         }
     }
 
@@ -71,8 +71,8 @@ implements FlyingItemEntity {
 
     @Override
     @Environment(value=EnvType.CLIENT)
-    public boolean shouldRender(double d) {
-        double e = this.getBoundingBox().getAverageSideLength() * 4.0;
+    public boolean shouldRenderAtDistance(double d) {
+        double e = this.getBoundingBox().averageDimension() * 4.0;
         if (Double.isNaN(e)) {
             e = 4.0;
         }
@@ -114,9 +114,9 @@ implements FlyingItemEntity {
 
     @Override
     public void tick() {
-        this.lastRenderX = this.x;
-        this.lastRenderY = this.y;
-        this.lastRenderZ = this.z;
+        this.prevRenderX = this.x;
+        this.prevRenderY = this.y;
+        this.prevRenderZ = this.z;
         super.tick();
         Vec3d vec3d = this.getVelocity();
         this.x += vec3d.x;
@@ -155,7 +155,7 @@ implements FlyingItemEntity {
             this.setVelocity(vec3d);
         }
         float l = 0.25f;
-        if (this.isTouchingWater()) {
+        if (this.isInsideWater()) {
             for (int m = 0; m < 4; ++m) {
                 this.world.addParticle(ParticleTypes.BUBBLE, this.x - vec3d.x * 0.25, this.y - vec3d.y * 0.25, this.z - vec3d.z * 0.25, vec3d.x, vec3d.y, vec3d.z);
             }
@@ -163,7 +163,7 @@ implements FlyingItemEntity {
             this.world.addParticle(ParticleTypes.PORTAL, this.x - vec3d.x * 0.25 + this.random.nextDouble() * 0.6 - 0.3, this.y - vec3d.y * 0.25 - 0.5, this.z - vec3d.z * 0.25 + this.random.nextDouble() * 0.6 - 0.3, vec3d.x, vec3d.y, vec3d.z);
         }
         if (!this.world.isClient) {
-            this.updatePosition(this.x, this.y, this.z);
+            this.setPosition(this.x, this.y, this.z);
             ++this.useCount;
             if (this.useCount > 80 && !this.world.isClient) {
                 this.playSound(SoundEvents.ENTITY_ENDER_EYE_DEATH, 1.0f, 1.0f);

@@ -127,7 +127,7 @@ implements ReloadableResourceManager {
     }
 
     protected ResourceReloadMonitor beginReloadInner(Executor executor, Executor executor2, List<ResourceReloadListener> list, CompletableFuture<Unit> completableFuture) {
-        ProfilingResourceReloader resourceReloadMonitor = LOGGER.isDebugEnabled() ? new ProfilingResourceReloader(this, new ArrayList<ResourceReloadListener>(list), executor, executor2, completableFuture) : ResourceReloader.create(this, new ArrayList<ResourceReloadListener>(list), executor, executor2, completableFuture);
+        ProfilingResourceReloader resourceReloadMonitor = LOGGER.isDebugEnabled() ? new ProfilingResourceReloader(this, Lists.newArrayList(list), executor, executor2, completableFuture) : ResourceReloader.create(this, Lists.newArrayList(list), executor, executor2, completableFuture);
         this.initialListeners.clear();
         return resourceReloadMonitor;
     }

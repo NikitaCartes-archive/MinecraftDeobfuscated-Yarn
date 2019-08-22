@@ -3,13 +3,13 @@
  */
 package net.minecraft.client.gui.screen.ingame;
 
-import com.mojang.blaze3d.platform.GlStateManager;
+import com.mojang.blaze3d.systems.RenderSystem;
 import java.util.List;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.gui.screen.ingame.ContainerScreen;
-import net.minecraft.client.render.DiffuseLighting;
+import net.minecraft.client.gui.screen.ingame.AbstractContainerScreen;
+import net.minecraft.client.render.GuiLighting;
 import net.minecraft.client.sound.PositionedSoundInstance;
 import net.minecraft.container.StonecutterContainer;
 import net.minecraft.entity.player.PlayerInventory;
@@ -21,7 +21,7 @@ import net.minecraft.util.math.MathHelper;
 
 @Environment(value=EnvType.CLIENT)
 public class StonecutterScreen
-extends ContainerScreen<StonecutterContainer> {
+extends AbstractContainerScreen<StonecutterContainer> {
     private static final Identifier TEXTURE = new Identifier("textures/gui/container/stonecutter.png");
     private float scrollAmount;
     private boolean mouseClicked;
@@ -48,15 +48,15 @@ extends ContainerScreen<StonecutterContainer> {
     @Override
     protected void drawBackground(float f, int i, int j) {
         this.renderBackground();
-        GlStateManager.color4f(1.0f, 1.0f, 1.0f, 1.0f);
+        RenderSystem.color4f(1.0f, 1.0f, 1.0f, 1.0f);
         this.minecraft.getTextureManager().bindTexture(TEXTURE);
-        int k = this.x;
-        int l = this.y;
+        int k = this.left;
+        int l = this.top;
         this.blit(k, l, 0, 0, this.containerWidth, this.containerHeight);
         int m = (int)(41.0f * this.scrollAmount);
         this.blit(k + 119, l + 15 + m, 176 + (this.shouldScroll() ? 0 : 12), 0, 12, 15);
-        int n = this.x + 52;
-        int o = this.y + 14;
+        int n = this.left + 52;
+        int o = this.top + 14;
         int p = this.scrollOffset + 12;
         this.method_17952(i, j, n, o, p);
         this.method_17951(n, o, p);
@@ -79,7 +79,7 @@ extends ContainerScreen<StonecutterContainer> {
     }
 
     private void method_17951(int i, int j, int k) {
-        DiffuseLighting.enableForItems();
+        GuiLighting.enableForItems();
         List<StonecuttingRecipe> list = ((StonecutterContainer)this.container).getAvailableRecipes();
         for (int l = this.scrollOffset; l < k && l < ((StonecutterContainer)this.container).getAvailableRecipeCount(); ++l) {
             int m = l - this.scrollOffset;
@@ -88,15 +88,15 @@ extends ContainerScreen<StonecutterContainer> {
             int p = j + o * 18 + 2;
             this.minecraft.getItemRenderer().renderGuiItem(list.get(l).getOutput(), n, p);
         }
-        DiffuseLighting.disable();
+        GuiLighting.disable();
     }
 
     @Override
     public boolean mouseClicked(double d, double e, int i) {
         this.mouseClicked = false;
         if (this.canCraft) {
-            int j = this.x + 52;
-            int k = this.y + 14;
+            int j = this.left + 52;
+            int k = this.top + 14;
             int l = this.scrollOffset + 12;
             for (int m = this.scrollOffset; m < l; ++m) {
                 int n = m - this.scrollOffset;
@@ -107,8 +107,8 @@ extends ContainerScreen<StonecutterContainer> {
                 this.minecraft.interactionManager.clickButton(((StonecutterContainer)this.container).syncId, m);
                 return true;
             }
-            j = this.x + 119;
-            k = this.y + 9;
+            j = this.left + 119;
+            k = this.top + 9;
             if (d >= (double)j && d < (double)(j + 12) && e >= (double)k && e < (double)(k + 54)) {
                 this.mouseClicked = true;
             }
@@ -119,7 +119,7 @@ extends ContainerScreen<StonecutterContainer> {
     @Override
     public boolean mouseDragged(double d, double e, int i, double f, double g) {
         if (this.mouseClicked && this.shouldScroll()) {
-            int j = this.y + 14;
+            int j = this.top + 14;
             int k = j + 54;
             this.scrollAmount = ((float)e - (float)j - 7.5f) / ((float)(k - j) - 15.0f);
             this.scrollAmount = MathHelper.clamp(this.scrollAmount, 0.0f, 1.0f);

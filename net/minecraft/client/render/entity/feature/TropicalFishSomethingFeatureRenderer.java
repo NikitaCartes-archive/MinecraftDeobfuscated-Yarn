@@ -3,7 +3,7 @@
  */
 package net.minecraft.client.render.entity.feature;
 
-import com.mojang.blaze3d.platform.GlStateManager;
+import com.mojang.blaze3d.systems.RenderSystem;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.render.entity.feature.FeatureRenderer;
@@ -23,16 +23,15 @@ extends FeatureRenderer<TropicalFishEntity, EntityModel<TropicalFishEntity>> {
         super(featureRendererContext);
     }
 
-    @Override
-    public void render(TropicalFishEntity tropicalFishEntity, float f, float g, float h, float i, float j, float k, float l) {
+    public void method_4205(TropicalFishEntity tropicalFishEntity, float f, float g, float h, float i, float j, float k, float l) {
         if (tropicalFishEntity.isInvisible()) {
             return;
         }
         EntityModel entityModel = tropicalFishEntity.getShape() == 0 ? this.modelA : this.modelB;
         this.bindTexture(tropicalFishEntity.getVarietyId());
         float[] fs = tropicalFishEntity.getPatternColorComponents();
-        GlStateManager.color3f(fs[0], fs[1], fs[2]);
-        ((EntityModel)this.getContextModel()).copyStateTo(entityModel);
+        RenderSystem.color3f(fs[0], fs[1], fs[2]);
+        ((EntityModel)this.getModel()).copyStateTo(entityModel);
         entityModel.animateModel((TropicalFishEntity)tropicalFishEntity, f, g, h);
         entityModel.render(tropicalFishEntity, f, g, i, j, k, l);
     }

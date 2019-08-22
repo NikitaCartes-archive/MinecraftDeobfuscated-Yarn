@@ -45,7 +45,7 @@ public class BlockModels {
     public void reload() {
         this.models.clear();
         for (Block block : Registry.BLOCK) {
-            block.getStateManager().getStates().forEach(blockState -> this.models.put((BlockState)blockState, this.modelManager.getModel(BlockModels.getModelId(blockState))));
+            block.getStateFactory().getStates().forEach(blockState -> this.models.put((BlockState)blockState, this.modelManager.getModel(BlockModels.getModelId(blockState))));
         }
     }
 
@@ -72,7 +72,7 @@ public class BlockModels {
     }
 
     private static <T extends Comparable<T>> String propertyValueToString(Property<T> property, Comparable<?> comparable) {
-        return property.name(comparable);
+        return property.getName(comparable);
     }
 }
 

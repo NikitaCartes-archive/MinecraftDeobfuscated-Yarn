@@ -45,7 +45,7 @@ implements AutoCloseable {
     @Nullable
     public CompoundTag getTagAt(ChunkPos chunkPos) throws IOException {
         RegionFile regionFile = this.getRegionFile(chunkPos);
-        try (DataInputStream dataInputStream = regionFile.getChunkDataInputStream(chunkPos);){
+        try (DataInputStream dataInputStream = regionFile.method_21873(chunkPos);){
             if (dataInputStream == null) {
                 CompoundTag compoundTag = null;
                 return compoundTag;
@@ -57,7 +57,7 @@ implements AutoCloseable {
 
     protected void setTagAt(ChunkPos chunkPos, CompoundTag compoundTag) throws IOException {
         RegionFile regionFile = this.getRegionFile(chunkPos);
-        try (DataOutputStream dataOutputStream = regionFile.getChunkDataOutputStream(chunkPos);){
+        try (DataOutputStream dataOutputStream = regionFile.method_21881(chunkPos);){
             NbtIo.write(compoundTag, (DataOutput)dataOutputStream);
         }
     }

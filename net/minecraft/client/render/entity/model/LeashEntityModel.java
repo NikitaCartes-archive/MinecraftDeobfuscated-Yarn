@@ -23,7 +23,7 @@ extends EntityModel<T> {
         this.textureHeight = l;
         this.field_3431 = new ModelPart(this, i, j);
         this.field_3431.addCuboid(-3.0f, -6.0f, -3.0f, 6, 8, 6, 0.0f);
-        this.field_3431.setPivot(0.0f, 0.0f, 0.0f);
+        this.field_3431.setRotationPoint(0.0f, 0.0f, 0.0f);
     }
 
     @Override

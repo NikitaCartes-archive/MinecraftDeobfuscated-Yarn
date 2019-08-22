@@ -5,14 +5,14 @@ package net.minecraft.client.gl;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.client.gl.VertexBuffer;
+import net.minecraft.client.gl.GlBuffer;
 import net.minecraft.client.render.BufferBuilder;
 import net.minecraft.client.render.BufferRenderer;
 
 @Environment(value=EnvType.CLIENT)
 public class GlBufferRenderer
 extends BufferRenderer {
-    private VertexBuffer glBuffer;
+    private GlBuffer glBuffer;
 
     @Override
     public void draw(BufferBuilder bufferBuilder) {
@@ -20,8 +20,8 @@ extends BufferRenderer {
         this.glBuffer.set(bufferBuilder.getByteBuffer());
     }
 
-    public void setGlBuffer(VertexBuffer vertexBuffer) {
-        this.glBuffer = vertexBuffer;
+    public void setGlBuffer(GlBuffer glBuffer) {
+        this.glBuffer = glBuffer;
     }
 }
 

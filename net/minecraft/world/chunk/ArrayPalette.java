@@ -93,7 +93,7 @@ implements Palette<T> {
     @Override
     public void fromTag(ListTag listTag) {
         for (int i = 0; i < listTag.size(); ++i) {
-            this.array[i] = this.valueDeserializer.apply(listTag.getCompound(i));
+            this.array[i] = this.valueDeserializer.apply(listTag.getCompoundTag(i));
         }
         this.size = listTag.size();
     }

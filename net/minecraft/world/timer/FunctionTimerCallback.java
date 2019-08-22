@@ -19,10 +19,9 @@ implements TimerCallback<MinecraftServer> {
         this.name = identifier;
     }
 
-    @Override
-    public void call(MinecraftServer minecraftServer, Timer<MinecraftServer> timer, long l) {
+    public void method_967(MinecraftServer minecraftServer, Timer<MinecraftServer> timer, long l) {
         CommandFunctionManager commandFunctionManager = minecraftServer.getCommandFunctionManager();
-        commandFunctionManager.getFunction(this.name).ifPresent(commandFunction -> commandFunctionManager.execute((CommandFunction)commandFunction, commandFunctionManager.getTaggedFunctionSource()));
+        commandFunctionManager.getFunction(this.name).ifPresent(commandFunction -> commandFunctionManager.execute((CommandFunction)commandFunction, commandFunctionManager.getFunctionCommandSource()));
     }
 
     public static class Serializer
@@ -31,20 +30,18 @@ implements TimerCallback<MinecraftServer> {
             super(new Identifier("function"), FunctionTimerCallback.class);
         }
 
-        @Override
-        public void serialize(CompoundTag compoundTag, FunctionTimerCallback functionTimerCallback) {
+        public void method_968(CompoundTag compoundTag, FunctionTimerCallback functionTimerCallback) {
             compoundTag.putString("Name", functionTimerCallback.name.toString());
         }
 
-        @Override
-        public FunctionTimerCallback deserialize(CompoundTag compoundTag) {
+        public FunctionTimerCallback method_969(CompoundTag compoundTag) {
             Identifier identifier = new Identifier(compoundTag.getString("Name"));
             return new FunctionTimerCallback(identifier);
         }
 
         @Override
         public /* synthetic */ TimerCallback deserialize(CompoundTag compoundTag) {
-            return this.deserialize(compoundTag);
+            return this.method_969(compoundTag);
         }
     }
 }

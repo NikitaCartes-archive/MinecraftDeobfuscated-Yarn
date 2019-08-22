@@ -21,8 +21,7 @@ extends Feature<GrassFeatureConfig> {
         super(function);
     }
 
-    @Override
-    public boolean generate(IWorld iWorld, ChunkGenerator<? extends ChunkGeneratorConfig> chunkGenerator, Random random, BlockPos blockPos, GrassFeatureConfig grassFeatureConfig) {
+    public boolean method_14080(IWorld iWorld, ChunkGenerator<? extends ChunkGeneratorConfig> chunkGenerator, Random random, BlockPos blockPos, GrassFeatureConfig grassFeatureConfig) {
         BlockState blockState = iWorld.getBlockState(blockPos);
         while ((blockState.isAir() || blockState.matches(BlockTags.LEAVES)) && blockPos.getY() > 0) {
             blockPos = blockPos.down();

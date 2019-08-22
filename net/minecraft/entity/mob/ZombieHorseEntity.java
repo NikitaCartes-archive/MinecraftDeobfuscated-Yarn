@@ -74,7 +74,7 @@ extends HorseBaseEntity {
         if (this.isBaby()) {
             return super.interactMob(playerEntity, hand);
         }
-        if (playerEntity.isSneaking()) {
+        if (playerEntity.method_21823()) {
             this.openInventory(playerEntity);
             return true;
         }

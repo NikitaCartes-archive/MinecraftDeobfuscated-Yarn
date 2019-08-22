@@ -15,7 +15,7 @@ public class HayBlock
 extends PillarBlock {
     public HayBlock(Block.Settings settings) {
         super(settings);
-        this.setDefaultState((BlockState)((BlockState)this.stateManager.getDefaultState()).with(AXIS, Direction.Axis.Y));
+        this.setDefaultState((BlockState)((BlockState)this.stateFactory.getDefaultState()).with(AXIS, Direction.Axis.Y));
     }
 
     @Override

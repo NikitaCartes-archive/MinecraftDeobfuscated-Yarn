@@ -22,8 +22,7 @@ extends Decorator<NopeDecoratorConfig> {
         super(function);
     }
 
-    @Override
-    public Stream<BlockPos> getPositions(IWorld iWorld, ChunkGenerator<? extends ChunkGeneratorConfig> chunkGenerator, Random random, NopeDecoratorConfig nopeDecoratorConfig, BlockPos blockPos) {
+    public Stream<BlockPos> method_14524(IWorld iWorld, ChunkGenerator<? extends ChunkGeneratorConfig> chunkGenerator, Random random, NopeDecoratorConfig nopeDecoratorConfig, BlockPos blockPos) {
         return IntStream.range(0, 16).mapToObj(i -> {
             int j = i / 4;
             int k = i % 4;

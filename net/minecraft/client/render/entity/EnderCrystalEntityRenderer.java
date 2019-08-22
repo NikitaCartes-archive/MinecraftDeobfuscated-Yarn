@@ -3,7 +3,7 @@
  */
 package net.minecraft.client.render.entity;
 
-import com.mojang.blaze3d.platform.GlStateManager;
+import com.mojang.blaze3d.systems.RenderSystem;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.render.VisibleRegion;
@@ -29,17 +29,16 @@ extends EntityRenderer<EnderCrystalEntity> {
         this.field_4673 = 0.5f;
     }
 
-    @Override
-    public void render(EnderCrystalEntity enderCrystalEntity, double d, double e, double f, float g, float h) {
+    public void method_3908(EnderCrystalEntity enderCrystalEntity, double d, double e, double f, float g, float h) {
         float i = (float)enderCrystalEntity.field_7034 + h;
-        GlStateManager.pushMatrix();
-        GlStateManager.translatef((float)d, (float)e, (float)f);
+        RenderSystem.pushMatrix();
+        RenderSystem.translatef((float)d, (float)e, (float)f);
         this.bindTexture(SKIN);
         float j = MathHelper.sin(i * 0.2f) / 2.0f + 0.5f;
         j = j * j + j;
         if (this.renderOutlines) {
-            GlStateManager.enableColorMaterial();
-            GlStateManager.setupSolidRenderingTextureCombine(this.getOutlineColor(enderCrystalEntity));
+            RenderSystem.enableColorMaterial();
+            RenderSystem.setupSolidRenderingTextureCombine(this.getOutlineColor(enderCrystalEntity));
         }
         if (enderCrystalEntity.getShowBottom()) {
             this.field_4662.render(enderCrystalEntity, 0.0f, i * 3.0f, j * 0.2f, 0.0f, 0.0f, 0.0625f);
@@ -47,13 +46,13 @@ extends EntityRenderer<EnderCrystalEntity> {
             this.field_4664.render(enderCrystalEntity, 0.0f, i * 3.0f, j * 0.2f, 0.0f, 0.0f, 0.0625f);
         }
         if (this.renderOutlines) {
-            GlStateManager.tearDownSolidRenderingTextureCombine();
-            GlStateManager.disableColorMaterial();
+            RenderSystem.tearDownSolidRenderingTextureCombine();
+            RenderSystem.disableColorMaterial();
         }
-        GlStateManager.popMatrix();
+        RenderSystem.popMatrix();
         BlockPos blockPos = enderCrystalEntity.getBeamTarget();
         if (blockPos != null) {
-            this.bindTexture(EnderDragonEntityRenderer.CRYSTAL_BEAM_TEX);
+            this.bindTexture(EnderDragonEntityRenderer.CRYSTAL_BEAM);
             float k = (float)blockPos.getX() + 0.5f;
             float l = (float)blockPos.getY() + 0.5f;
             float m = (float)blockPos.getZ() + 0.5f;
@@ -65,13 +64,11 @@ extends EntityRenderer<EnderCrystalEntity> {
         super.render(enderCrystalEntity, d, e, f, g, h);
     }
 
-    @Override
-    protected Identifier getTexture(EnderCrystalEntity enderCrystalEntity) {
+    protected Identifier method_3909(EnderCrystalEntity enderCrystalEntity) {
         return SKIN;
     }
 
-    @Override
-    public boolean isVisible(EnderCrystalEntity enderCrystalEntity, VisibleRegion visibleRegion, double d, double e, double f) {
+    public boolean method_3907(EnderCrystalEntity enderCrystalEntity, VisibleRegion visibleRegion, double d, double e, double f) {
         return super.isVisible(enderCrystalEntity, visibleRegion, d, e, f) || enderCrystalEntity.getBeamTarget() != null;
     }
 }

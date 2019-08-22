@@ -5,7 +5,7 @@ package net.minecraft.entity.ai.goal;
 
 import java.util.EnumSet;
 import java.util.Random;
-import net.minecraft.entity.ai.TargetFinder;
+import net.minecraft.entity.ai.PathfindingUtil;
 import net.minecraft.entity.ai.goal.Goal;
 import net.minecraft.entity.ai.pathing.EntityNavigation;
 import net.minecraft.entity.mob.MobEntityWithAi;
@@ -34,10 +34,10 @@ extends Goal {
         if (this.mob.hasPassengers()) {
             return false;
         }
-        if (this.mob.world.isDay()) {
+        if (this.mob.world.isDaylight()) {
             return false;
         }
-        if (this.mob.getRandom().nextInt(this.searchRange) != 0) {
+        if (this.mob.getRand().nextInt(this.searchRange) != 0) {
             return false;
         }
         ServerWorld serverWorld = (ServerWorld)this.mob.world;
@@ -45,7 +45,7 @@ extends Goal {
         if (!serverWorld.isNearOccupiedPointOfInterest(blockPos2, 6)) {
             return false;
         }
-        Vec3d vec3d = TargetFinder.findGroundTarget(this.mob, 15, 7, blockPos -> -serverWorld.getOccupiedPointOfInterestDistance(ChunkSectionPos.from(blockPos)));
+        Vec3d vec3d = PathfindingUtil.findTargetStraight(this.mob, 15, 7, blockPos -> -serverWorld.getOccupiedPointOfInterestDistance(ChunkSectionPos.from(blockPos)));
         this.targetPosition = vec3d == null ? null : new BlockPos(vec3d);
         return this.targetPosition != null;
     }
@@ -75,7 +75,7 @@ extends Goal {
     }
 
     private void findOtherWaypoint() {
-        Random random = this.mob.getRandom();
+        Random random = this.mob.getRand();
         BlockPos blockPos = this.mob.world.getTopPosition(Heightmap.Type.MOTION_BLOCKING_NO_LEAVES, new BlockPos(this.mob).add(-8 + random.nextInt(16), 0, -8 + random.nextInt(16)));
         this.mob.getNavigation().startMovingTo(blockPos.getX(), blockPos.getY(), blockPos.getZ(), 1.0);
     }

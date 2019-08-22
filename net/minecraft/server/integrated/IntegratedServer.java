@@ -231,7 +231,7 @@ extends MinecraftServer {
 
     @Override
     public void stop(boolean bl) {
-        this.submitAndJoin(() -> {
+        this.executeSync(() -> {
             ArrayList<ServerPlayerEntity> list = Lists.newArrayList(this.getPlayerManager().getPlayerList());
             for (ServerPlayerEntity serverPlayerEntity : list) {
                 if (serverPlayerEntity.getUuid().equals(this.localPlayerUuid)) continue;

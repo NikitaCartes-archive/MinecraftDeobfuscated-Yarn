@@ -53,7 +53,7 @@ extends Goal {
     @Override
     public void start() {
         this.wolf.setBegging(true);
-        this.timer = 40 + this.wolf.getRandom().nextInt(40);
+        this.timer = 40 + this.wolf.getRand().nextInt(40);
     }
 
     @Override

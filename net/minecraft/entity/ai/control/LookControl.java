@@ -52,10 +52,10 @@ public class LookControl {
             this.entity.headYaw = this.changeAngle(this.entity.headYaw, this.getTargetYaw(), this.yawSpeed);
             this.entity.pitch = this.changeAngle(this.entity.pitch, this.getTargetPitch(), this.pitchSpeed);
         } else {
-            this.entity.headYaw = this.changeAngle(this.entity.headYaw, this.entity.field_6283, 10.0f);
+            this.entity.headYaw = this.changeAngle(this.entity.headYaw, this.entity.bodyYaw, 10.0f);
         }
         if (!this.entity.getNavigation().isIdle()) {
-            this.entity.headYaw = MathHelper.capRotation(this.entity.headYaw, this.entity.field_6283, this.entity.method_5986());
+            this.entity.headYaw = MathHelper.method_20306(this.entity.headYaw, this.entity.bodyYaw, this.entity.method_5986());
         }
     }
 
@@ -103,7 +103,7 @@ public class LookControl {
         if (entity instanceof LivingEntity) {
             return entity.y + (double)entity.getStandingEyeHeight();
         }
-        return (entity.getBoundingBox().y1 + entity.getBoundingBox().y2) / 2.0;
+        return (entity.getBoundingBox().minY + entity.getBoundingBox().maxY) / 2.0;
     }
 }
 

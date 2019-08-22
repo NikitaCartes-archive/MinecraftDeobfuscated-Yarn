@@ -11,8 +11,8 @@ import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.VineBlock;
 import net.minecraft.state.property.BooleanProperty;
-import net.minecraft.util.math.BlockBox;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.MutableIntBoundingBox;
 import net.minecraft.world.Heightmap;
 import net.minecraft.world.ModifiableTestableWorld;
 import net.minecraft.world.gen.feature.AbstractTreeFeature;
@@ -28,7 +28,7 @@ extends AbstractTreeFeature<DefaultFeatureConfig> {
     }
 
     @Override
-    public boolean generate(Set<BlockPos> set, ModifiableTestableWorld modifiableTestableWorld, Random random, BlockPos blockPos, BlockBox blockBox) {
+    public boolean generate(Set<BlockPos> set, ModifiableTestableWorld modifiableTestableWorld, Random random, BlockPos blockPos, MutableIntBoundingBox mutableIntBoundingBox) {
         BlockPos blockPos2;
         int o;
         int m;
@@ -82,14 +82,14 @@ extends AbstractTreeFeature<DefaultFeatureConfig> {
                 for (o = blockPos.getZ() - n; o <= blockPos.getZ() + n; ++o) {
                     int p = o - blockPos.getZ();
                     if (Math.abs(m) == n && Math.abs(p) == n && (random.nextInt(2) == 0 || k == 0) || !SwampTreeFeature.isAirOrLeaves(modifiableTestableWorld, blockPos2 = new BlockPos(l, j, o)) && !SwampTreeFeature.isReplaceablePlant(modifiableTestableWorld, blockPos2)) continue;
-                    this.setBlockState(set, modifiableTestableWorld, blockPos2, LEAVES, blockBox);
+                    this.setBlockState(set, modifiableTestableWorld, blockPos2, LEAVES, mutableIntBoundingBox);
                 }
             }
         }
         for (j = 0; j < i; ++j) {
             BlockPos blockPos3 = blockPos.up(j);
             if (!SwampTreeFeature.isAirOrLeaves(modifiableTestableWorld, blockPos3) && !SwampTreeFeature.isWater(modifiableTestableWorld, blockPos3)) continue;
-            this.setBlockState(set, modifiableTestableWorld, blockPos3, LOG, blockBox);
+            this.setBlockState(set, modifiableTestableWorld, blockPos3, LOG, mutableIntBoundingBox);
         }
         for (j = blockPos.getY() - 3 + i; j <= blockPos.getY() + i; ++j) {
             int k2 = j - (blockPos.getY() + i);

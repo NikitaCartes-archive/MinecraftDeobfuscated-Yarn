@@ -8,7 +8,7 @@ import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.EntityContext;
 import net.minecraft.item.ItemPlacementContext;
-import net.minecraft.state.StateManager;
+import net.minecraft.state.StateFactory;
 import net.minecraft.state.property.IntProperty;
 import net.minecraft.state.property.Properties;
 import net.minecraft.util.BlockMirror;
@@ -26,7 +26,7 @@ extends AbstractSkullBlock {
 
     protected SkullBlock(SkullType skullType, Block.Settings settings) {
         super(skullType, settings);
-        this.setDefaultState((BlockState)((BlockState)this.stateManager.getDefaultState()).with(ROTATION, 0));
+        this.setDefaultState((BlockState)((BlockState)this.stateFactory.getDefaultState()).with(ROTATION, 0));
     }
 
     @Override
@@ -35,7 +35,7 @@ extends AbstractSkullBlock {
     }
 
     @Override
-    public VoxelShape getCullingShape(BlockState blockState, BlockView blockView, BlockPos blockPos) {
+    public VoxelShape method_9571(BlockState blockState, BlockView blockView, BlockPos blockPos) {
         return VoxelShapes.empty();
     }
 
@@ -55,7 +55,7 @@ extends AbstractSkullBlock {
     }
 
     @Override
-    protected void appendProperties(StateManager.Builder<Block, BlockState> builder) {
+    protected void appendProperties(StateFactory.Builder<Block, BlockState> builder) {
         builder.add(ROTATION);
     }
 

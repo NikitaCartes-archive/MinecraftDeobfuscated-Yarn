@@ -20,7 +20,7 @@ import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
-import net.minecraft.util.Util;
+import net.minecraft.util.SystemUtil;
 import net.minecraft.util.registry.Registry;
 import org.jetbrains.annotations.Nullable;
 
@@ -116,7 +116,7 @@ public class StatusEffect {
 
     protected String method_5559() {
         if (this.translationKey == null) {
-            this.translationKey = Util.createTranslationKey("effect", Registry.STATUS_EFFECT.getId(this));
+            this.translationKey = SystemUtil.createTranslationKey("effect", Registry.STATUS_EFFECT.getId(this));
         }
         return this.translationKey;
     }
@@ -149,7 +149,7 @@ public class StatusEffect {
         return this.attributeModifiers;
     }
 
-    public void method_5562(LivingEntity livingEntity, AbstractEntityAttributeContainer abstractEntityAttributeContainer, int i) {
+    public void onRemoved(LivingEntity livingEntity, AbstractEntityAttributeContainer abstractEntityAttributeContainer, int i) {
         for (Map.Entry<EntityAttribute, EntityAttributeModifier> entry : this.attributeModifiers.entrySet()) {
             EntityAttributeInstance entityAttributeInstance = abstractEntityAttributeContainer.get(entry.getKey());
             if (entityAttributeInstance == null) continue;
@@ -157,7 +157,7 @@ public class StatusEffect {
         }
     }
 
-    public void method_5555(LivingEntity livingEntity, AbstractEntityAttributeContainer abstractEntityAttributeContainer, int i) {
+    public void onApplied(LivingEntity livingEntity, AbstractEntityAttributeContainer abstractEntityAttributeContainer, int i) {
         for (Map.Entry<EntityAttribute, EntityAttributeModifier> entry : this.attributeModifiers.entrySet()) {
             EntityAttributeInstance entityAttributeInstance = abstractEntityAttributeContainer.get(entry.getKey());
             if (entityAttributeInstance == null) continue;

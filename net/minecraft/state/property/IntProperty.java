@@ -56,7 +56,7 @@ extends AbstractProperty<Integer> {
     }
 
     @Override
-    public Optional<Integer> parse(String string) {
+    public Optional<Integer> getValue(String string) {
         try {
             Integer integer = Integer.valueOf(string);
             return this.values.contains(integer) ? Optional.of(integer) : Optional.empty();
@@ -65,8 +65,7 @@ extends AbstractProperty<Integer> {
         }
     }
 
-    @Override
-    public String name(Integer integer) {
+    public String method_11868(Integer integer) {
         return integer.toString();
     }
 }

@@ -4,17 +4,17 @@
 package net.minecraft.client.gui.screen.ingame;
 
 import com.google.common.collect.ImmutableList;
-import com.mojang.blaze3d.platform.GlStateManager;
+import com.mojang.blaze3d.systems.RenderSystem;
 import java.util.Collections;
 import java.util.List;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.gui.screen.Screen;
+import net.minecraft.client.gui.screen.ingame.PageTurnWidget;
 import net.minecraft.client.gui.widget.ButtonWidget;
-import net.minecraft.client.gui.widget.PageTurnWidget;
 import net.minecraft.client.resource.language.I18n;
 import net.minecraft.client.util.NarratorManager;
-import net.minecraft.client.util.Texts;
+import net.minecraft.client.util.TextComponentUtil;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
@@ -50,8 +50,8 @@ extends Screen {
     private int pageIndex;
     private List<Text> cachedPage = Collections.emptyList();
     private int cachedPageIndex = -1;
+    private PageTurnWidget lastPageButton;
     private PageTurnWidget nextPageButton;
-    private PageTurnWidget previousPageButton;
     private final boolean pageTurnSound;
 
     public BookScreen(Contents contents) {
@@ -103,8 +103,8 @@ extends Screen {
     protected void addPageButtons() {
         int i = (this.width - 192) / 2;
         int j = 2;
-        this.nextPageButton = this.addButton(new PageTurnWidget(i + 116, 159, true, buttonWidget -> this.goToNextPage(), this.pageTurnSound));
-        this.previousPageButton = this.addButton(new PageTurnWidget(i + 43, 159, false, buttonWidget -> this.goToPreviousPage(), this.pageTurnSound));
+        this.lastPageButton = this.addButton(new PageTurnWidget(i + 116, 159, true, buttonWidget -> this.goToNextPage(), this.pageTurnSound));
+        this.nextPageButton = this.addButton(new PageTurnWidget(i + 43, 159, false, buttonWidget -> this.goToPreviousPage(), this.pageTurnSound));
         this.updatePageButtons();
     }
 
@@ -127,8 +127,8 @@ extends Screen {
     }
 
     private void updatePageButtons() {
-        this.nextPageButton.visible = this.pageIndex < this.getPageCount() - 1;
-        this.previousPageButton.visible = this.pageIndex > 0;
+        this.lastPageButton.visible = this.pageIndex < this.getPageCount() - 1;
+        this.nextPageButton.visible = this.pageIndex > 0;
     }
 
     @Override
@@ -138,11 +138,11 @@ extends Screen {
         }
         switch (i) {
             case 266: {
-                this.previousPageButton.onPress();
+                this.nextPageButton.onPress();
                 return true;
             }
             case 267: {
-                this.nextPageButton.onPress();
+                this.lastPageButton.onPress();
                 return true;
             }
         }
@@ -152,7 +152,7 @@ extends Screen {
     @Override
     public void render(int i, int j, float f) {
         this.renderBackground();
-        GlStateManager.color4f(1.0f, 1.0f, 1.0f, 1.0f);
+        RenderSystem.color4f(1.0f, 1.0f, 1.0f, 1.0f);
         this.minecraft.getTextureManager().bindTexture(BOOK_TEXTURE);
         int k = (this.width - 192) / 2;
         int l = 2;
@@ -160,7 +160,7 @@ extends Screen {
         String string = I18n.translate("book.pageIndicator", this.pageIndex + 1, Math.max(this.getPageCount(), 1));
         if (this.cachedPageIndex != this.pageIndex) {
             Text text = this.contents.getLineOrDefault(this.pageIndex);
-            this.cachedPage = Texts.wrapLines(text, 114, this.font, true, true);
+            this.cachedPage = TextComponentUtil.wrapLines(text, 114, this.font, true, true);
         }
         this.cachedPageIndex = this.pageIndex;
         int m = this.getStringWidth(string);
@@ -170,7 +170,7 @@ extends Screen {
             Text text2 = this.cachedPage.get(o);
             this.font.draw(text2.asFormattedString(), k + 36, 32 + o * this.font.fontHeight, 0);
         }
-        Text text3 = this.getTextAt(i, j);
+        Text text3 = this.getLineAt(i, j);
         if (text3 != null) {
             this.renderComponentHoverEffect(text3, i, j);
         }
@@ -184,7 +184,7 @@ extends Screen {
     @Override
     public boolean mouseClicked(double d, double e, int i) {
         Text text;
-        if (i == 0 && (text = this.getTextAt(d, e)) != null && this.handleComponentClicked(text)) {
+        if (i == 0 && (text = this.getLineAt(d, e)) != null && this.handleComponentClicked(text)) {
             return true;
         }
         return super.mouseClicked(d, e, i);
@@ -213,7 +213,7 @@ extends Screen {
     }
 
     @Nullable
-    public Text getTextAt(double d, double e) {
+    public Text getLineAt(double d, double e) {
         if (this.cachedPage == null) {
             return null;
         }
@@ -238,8 +238,8 @@ extends Screen {
         return null;
     }
 
-    public static List<String> readPages(CompoundTag compoundTag) {
-        ListTag listTag = compoundTag.getList("pages", 8).copy();
+    public static List<String> getLines(CompoundTag compoundTag) {
+        ListTag listTag = compoundTag.getList("pages", 8).method_10612();
         ImmutableList.Builder builder = ImmutableList.builder();
         for (int i = 0; i < listTag.size(); ++i) {
             builder.add(listTag.getString(i));
@@ -258,7 +258,7 @@ extends Screen {
 
         private static List<String> getLines(ItemStack itemStack) {
             CompoundTag compoundTag = itemStack.getTag();
-            return compoundTag != null ? BookScreen.readPages(compoundTag) : ImmutableList.of();
+            return compoundTag != null ? BookScreen.getLines(compoundTag) : ImmutableList.of();
         }
 
         @Override
@@ -284,7 +284,7 @@ extends Screen {
         private static List<String> getLines(ItemStack itemStack) {
             CompoundTag compoundTag = itemStack.getTag();
             if (compoundTag != null && WrittenBookItem.isValid(compoundTag)) {
-                return BookScreen.readPages(compoundTag);
+                return BookScreen.getLines(compoundTag);
             }
             return ImmutableList.of(new TranslatableText("book.invalid.tag", new Object[0]).formatted(Formatting.DARK_RED).asFormattedString());
         }

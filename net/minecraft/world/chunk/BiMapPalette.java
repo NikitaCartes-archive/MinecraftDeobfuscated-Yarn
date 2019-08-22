@@ -89,7 +89,7 @@ implements Palette<T> {
     public void fromTag(ListTag listTag) {
         this.map.clear();
         for (int i = 0; i < listTag.size(); ++i) {
-            this.map.add(this.elementDeserializer.apply(listTag.getCompound(i)));
+            this.map.add(this.elementDeserializer.apply(listTag.getCompoundTag(i)));
         }
     }
 

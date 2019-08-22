@@ -71,7 +71,7 @@ public class EffectCommand {
     private static int executeClear(ServerCommandSource serverCommandSource, Collection<? extends Entity> collection, StatusEffect statusEffect) throws CommandSyntaxException {
         int i = 0;
         for (Entity entity : collection) {
-            if (!(entity instanceof LivingEntity) || !((LivingEntity)entity).removeStatusEffect(statusEffect)) continue;
+            if (!(entity instanceof LivingEntity) || !((LivingEntity)entity).tryRemoveStatusEffect(statusEffect)) continue;
             ++i;
         }
         if (i == 0) {

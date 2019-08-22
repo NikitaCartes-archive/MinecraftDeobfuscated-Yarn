@@ -51,6 +51,7 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.sound.SoundEvent;
 import net.minecraft.stat.Stats;
 import net.minecraft.tag.BlockTags;
 import net.minecraft.tag.RegistryTagManager;
@@ -114,7 +115,7 @@ public final class ItemStack {
     private ItemStack(CompoundTag compoundTag) {
         this.item = Registry.ITEM.get(new Identifier(compoundTag.getString("id")));
         this.count = compoundTag.getByte("Count");
-        if (compoundTag.contains("tag", 10)) {
+        if (compoundTag.containsKey("tag", 10)) {
             this.tag = compoundTag.getCompound("tag");
             this.getItem().postProcessTag(compoundTag);
         }
@@ -241,7 +242,7 @@ public final class ItemStack {
             }
         }
         if (serverPlayerEntity != null && i != 0) {
-            Criterions.ITEM_DURABILITY_CHANGED.trigger(serverPlayerEntity, this, this.getDamage() + i);
+            Criterions.ITEM_DURABILITY_CHANGED.handle(serverPlayerEntity, this, this.getDamage() + i);
         }
         j = this.getDamage() + i;
         this.setDamage(j);
@@ -255,7 +256,7 @@ public final class ItemStack {
         if (!this.isDamageable()) {
             return;
         }
-        if (this.damage(i, livingEntity.getRandom(), livingEntity instanceof ServerPlayerEntity ? (ServerPlayerEntity)livingEntity : null)) {
+        if (this.damage(i, livingEntity.getRand(), livingEntity instanceof ServerPlayerEntity ? (ServerPlayerEntity)livingEntity : null)) {
             consumer.accept(livingEntity);
             Item item = this.getItem();
             this.decrement(1);
@@ -292,7 +293,7 @@ public final class ItemStack {
         ItemStack itemStack = new ItemStack(this.getItem(), this.count);
         itemStack.setCooldown(this.getCooldown());
         if (this.tag != null) {
-            itemStack.tag = this.tag.copy();
+            itemStack.tag = this.tag.method_10553();
         }
         return itemStack;
     }
@@ -419,7 +420,7 @@ public final class ItemStack {
     }
 
     public CompoundTag getOrCreateSubTag(String string) {
-        if (this.tag == null || !this.tag.contains(string, 10)) {
+        if (this.tag == null || !this.tag.containsKey(string, 10)) {
             CompoundTag compoundTag = new CompoundTag();
             this.putSubTag(string, compoundTag);
             return compoundTag;
@@ -429,14 +430,14 @@ public final class ItemStack {
 
     @Nullable
     public CompoundTag getSubTag(String string) {
-        if (this.tag == null || !this.tag.contains(string, 10)) {
+        if (this.tag == null || !this.tag.containsKey(string, 10)) {
             return null;
         }
         return this.tag.getCompound(string);
     }
 
     public void removeSubTag(String string) {
-        if (this.tag != null && this.tag.contains(string)) {
+        if (this.tag != null && this.tag.containsKey(string)) {
             this.tag.remove(string);
             if (this.tag.isEmpty()) {
                 this.tag = null;
@@ -457,7 +458,7 @@ public final class ItemStack {
 
     public Text getName() {
         CompoundTag compoundTag = this.getSubTag("display");
-        if (compoundTag != null && compoundTag.contains("Name", 8)) {
+        if (compoundTag != null && compoundTag.containsKey("Name", 8)) {
             try {
                 Text text = Text.Serializer.fromJson(compoundTag.getString("Name"));
                 if (text != null) {
@@ -496,7 +497,7 @@ public final class ItemStack {
 
     public boolean hasCustomName() {
         CompoundTag compoundTag = this.getSubTag("display");
-        return compoundTag != null && compoundTag.contains("Name", 8);
+        return compoundTag != null && compoundTag.containsKey("Name", 8);
     }
 
     @Environment(value=EnvType.CLIENT)
@@ -513,7 +514,7 @@ public final class ItemStack {
             list.add(new LiteralText("#" + FilledMapItem.getMapId(this)).formatted(Formatting.GRAY));
         }
         int i = 0;
-        if (this.hasTag() && this.tag.contains("HideFlags", 99)) {
+        if (this.hasTag() && this.tag.containsKey("HideFlags", 99)) {
             i = this.tag.getInt("HideFlags");
         }
         if ((i & 0x20) == 0) {
@@ -523,9 +524,9 @@ public final class ItemStack {
             if ((i & 1) == 0) {
                 ItemStack.appendEnchantments(list, this.getEnchantments());
             }
-            if (this.tag.contains("display", 10)) {
+            if (this.tag.containsKey("display", 10)) {
                 CompoundTag compoundTag = this.tag.getCompound("display");
-                if (compoundTag.contains("color", 3)) {
+                if (compoundTag.containsKey("color", 3)) {
                     if (tooltipContext.isAdvanced()) {
                         list.add(new TranslatableText("item.color", String.format("#%06X", compoundTag.getInt("color"))).formatted(Formatting.GRAY));
                     } else {
@@ -583,14 +584,14 @@ public final class ItemStack {
         if (this.hasTag() && this.getTag().getBoolean("Unbreakable") && (i & 4) == 0) {
             list.add(new TranslatableText("item.unbreakable", new Object[0]).formatted(Formatting.BLUE));
         }
-        if (this.hasTag() && this.tag.contains("CanDestroy", 9) && (i & 8) == 0 && !(listTag2 = this.tag.getList("CanDestroy", 8)).isEmpty()) {
+        if (this.hasTag() && this.tag.containsKey("CanDestroy", 9) && (i & 8) == 0 && !(listTag2 = this.tag.getList("CanDestroy", 8)).isEmpty()) {
             list.add(new LiteralText(""));
             list.add(new TranslatableText("item.canBreak", new Object[0]).formatted(Formatting.GRAY));
             for (k = 0; k < listTag2.size(); ++k) {
                 list.addAll(ItemStack.parseBlockTag(listTag2.getString(k)));
             }
         }
-        if (this.hasTag() && this.tag.contains("CanPlaceOn", 9) && (i & 0x10) == 0 && !(listTag2 = this.tag.getList("CanPlaceOn", 8)).isEmpty()) {
+        if (this.hasTag() && this.tag.containsKey("CanPlaceOn", 9) && (i & 0x10) == 0 && !(listTag2 = this.tag.getList("CanPlaceOn", 8)).isEmpty()) {
             list.add(new LiteralText(""));
             list.add(new TranslatableText("item.canPlace", new Object[0]).formatted(Formatting.GRAY));
             for (k = 0; k < listTag2.size(); ++k) {
@@ -612,7 +613,7 @@ public final class ItemStack {
     @Environment(value=EnvType.CLIENT)
     public static void appendEnchantments(List<Text> list, ListTag listTag) {
         for (int i = 0; i < listTag.size(); ++i) {
-            CompoundTag compoundTag = listTag.getCompound(i);
+            CompoundTag compoundTag = listTag.getCompoundTag(i);
             Registry.ENCHANTMENT.getOrEmpty(Identifier.tryParse(compoundTag.getString("id"))).ifPresent(enchantment -> list.add(enchantment.getName(compoundTag.getInt("lvl"))));
         }
     }
@@ -660,7 +661,7 @@ public final class ItemStack {
 
     public void addEnchantment(Enchantment enchantment, int i) {
         this.getOrCreateTag();
-        if (!this.tag.contains("Enchantments", 9)) {
+        if (!this.tag.containsKey("Enchantments", 9)) {
             this.tag.put("Enchantments", new ListTag());
         }
         ListTag listTag = this.tag.getList("Enchantments", 10);
@@ -671,7 +672,7 @@ public final class ItemStack {
     }
 
     public boolean hasEnchantments() {
-        if (this.tag != null && this.tag.contains("Enchantments", 9)) {
+        if (this.tag != null && this.tag.containsKey("Enchantments", 9)) {
             return !this.tag.getList("Enchantments", 10).isEmpty();
         }
         return false;
@@ -695,7 +696,7 @@ public final class ItemStack {
     }
 
     public int getRepairCost() {
-        if (this.hasTag() && this.tag.contains("RepairCost", 3)) {
+        if (this.hasTag() && this.tag.containsKey("RepairCost", 3)) {
             return this.tag.getInt("RepairCost");
         }
         return 0;
@@ -707,13 +708,13 @@ public final class ItemStack {
 
     public Multimap<String, EntityAttributeModifier> getAttributeModifiers(EquipmentSlot equipmentSlot) {
         Multimap<String, EntityAttributeModifier> multimap;
-        if (this.hasTag() && this.tag.contains("AttributeModifiers", 9)) {
+        if (this.hasTag() && this.tag.containsKey("AttributeModifiers", 9)) {
             multimap = HashMultimap.create();
             ListTag listTag = this.tag.getList("AttributeModifiers", 10);
             for (int i = 0; i < listTag.size(); ++i) {
-                CompoundTag compoundTag = listTag.getCompound(i);
+                CompoundTag compoundTag = listTag.getCompoundTag(i);
                 EntityAttributeModifier entityAttributeModifier = EntityAttributes.createFromTag(compoundTag);
-                if (entityAttributeModifier == null || compoundTag.contains("Slot", 8) && !compoundTag.getString("Slot").equals(equipmentSlot.getName()) || entityAttributeModifier.getId().getLeastSignificantBits() == 0L || entityAttributeModifier.getId().getMostSignificantBits() == 0L) continue;
+                if (entityAttributeModifier == null || compoundTag.containsKey("Slot", 8) && !compoundTag.getString("Slot").equals(equipmentSlot.getName()) || entityAttributeModifier.getId().getLeastSignificantBits() == 0L || entityAttributeModifier.getId().getMostSignificantBits() == 0L) continue;
                 multimap.put(compoundTag.getString("AttributeName"), entityAttributeModifier);
             }
         } else {
@@ -724,7 +725,7 @@ public final class ItemStack {
 
     public void addAttributeModifier(String string, EntityAttributeModifier entityAttributeModifier, @Nullable EquipmentSlot equipmentSlot) {
         this.getOrCreateTag();
-        if (!this.tag.contains("AttributeModifiers", 9)) {
+        if (!this.tag.containsKey("AttributeModifiers", 9)) {
             this.tag.put("AttributeModifiers", new ListTag());
         }
         ListTag listTag = this.tag.getList("AttributeModifiers", 10);
@@ -767,12 +768,12 @@ public final class ItemStack {
             return this.lastDestroyResult;
         }
         this.lastDestroyPos = cachedBlockPosition;
-        if (this.hasTag() && this.tag.contains("CanDestroy", 9)) {
+        if (this.hasTag() && this.tag.containsKey("CanDestroy", 9)) {
             ListTag listTag = this.tag.getList("CanDestroy", 8);
             for (int i = 0; i < listTag.size(); ++i) {
                 String string = listTag.getString(i);
                 try {
-                    Predicate<CachedBlockPosition> predicate = BlockPredicateArgumentType.blockPredicate().parse(new StringReader(string)).create(registryTagManager);
+                    Predicate<CachedBlockPosition> predicate = BlockPredicateArgumentType.blockPredicate().method_9642(new StringReader(string)).create(registryTagManager);
                     if (predicate.test(cachedBlockPosition)) {
                         this.lastDestroyResult = true;
                         return true;
@@ -792,12 +793,12 @@ public final class ItemStack {
             return this.lastPlaceOnResult;
         }
         this.lastPlaceOnPos = cachedBlockPosition;
-        if (this.hasTag() && this.tag.contains("CanPlaceOn", 9)) {
+        if (this.hasTag() && this.tag.containsKey("CanPlaceOn", 9)) {
             ListTag listTag = this.tag.getList("CanPlaceOn", 8);
             for (int i = 0; i < listTag.size(); ++i) {
                 String string = listTag.getString(i);
                 try {
-                    Predicate<CachedBlockPosition> predicate = BlockPredicateArgumentType.blockPredicate().parse(new StringReader(string)).create(registryTagManager);
+                    Predicate<CachedBlockPosition> predicate = BlockPredicateArgumentType.blockPredicate().method_9642(new StringReader(string)).create(registryTagManager);
                     if (predicate.test(cachedBlockPosition)) {
                         this.lastPlaceOnResult = true;
                         return true;
@@ -843,6 +844,14 @@ public final class ItemStack {
 
     public boolean isFood() {
         return this.getItem().isFood();
+    }
+
+    public SoundEvent getDrinkSound() {
+        return this.getItem().getDrinkSound();
+    }
+
+    public SoundEvent getEatSound() {
+        return this.getItem().getEatSound();
     }
 }
 

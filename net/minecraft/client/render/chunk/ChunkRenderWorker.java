@@ -12,10 +12,10 @@ import java.util.List;
 import java.util.concurrent.CancellationException;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.block.BlockRenderLayer;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.render.RenderLayer;
-import net.minecraft.client.render.chunk.BlockBufferBuilderStorage;
-import net.minecraft.client.render.chunk.ChunkBuilder;
+import net.minecraft.client.render.chunk.BlockLayeredBufferBuilder;
+import net.minecraft.client.render.chunk.ChunkBatcher;
 import net.minecraft.client.render.chunk.ChunkRenderData;
 import net.minecraft.client.render.chunk.ChunkRenderTask;
 import net.minecraft.util.crash.CrashReport;
@@ -28,17 +28,17 @@ import org.jetbrains.annotations.Nullable;
 public class ChunkRenderWorker
 implements Runnable {
     private static final Logger LOGGER = LogManager.getLogger();
-    private final ChunkBuilder batcher;
-    private final BlockBufferBuilderStorage bufferBuilders;
+    private final ChunkBatcher batcher;
+    private final BlockLayeredBufferBuilder bufferBuilders;
     private boolean running = true;
 
-    public ChunkRenderWorker(ChunkBuilder chunkBuilder) {
-        this(chunkBuilder, null);
+    public ChunkRenderWorker(ChunkBatcher chunkBatcher) {
+        this(chunkBatcher, null);
     }
 
-    public ChunkRenderWorker(ChunkBuilder chunkBuilder, @Nullable BlockBufferBuilderStorage blockBufferBuilderStorage) {
-        this.batcher = chunkBuilder;
-        this.bufferBuilders = blockBufferBuilderStorage;
+    public ChunkRenderWorker(ChunkBatcher chunkBatcher, @Nullable BlockLayeredBufferBuilder blockLayeredBufferBuilder) {
+        this.batcher = chunkBatcher;
+        this.bufferBuilders = blockLayeredBufferBuilder;
     }
 
     @Override
@@ -51,7 +51,7 @@ implements Runnable {
                 return;
             } catch (Throwable throwable) {
                 CrashReport crashReport = CrashReport.create(throwable, "Batching chunks");
-                MinecraftClient.getInstance().setCrashReport(MinecraftClient.getInstance().addDetailsToCrashReport(crashReport));
+                MinecraftClient.getInstance().setCrashReport(MinecraftClient.getInstance().populateCrashReport(crashReport));
                 return;
             }
         }
@@ -74,17 +74,17 @@ implements Runnable {
         } finally {
             chunkRenderTask.getLock().unlock();
         }
-        final BlockBufferBuilderStorage blockBufferBuilderStorage = this.getBufferBuilders();
+        final BlockLayeredBufferBuilder blockLayeredBufferBuilder = this.getBufferBuilders();
         chunkRenderTask.getLock().lock();
         try {
             if (!ChunkRenderWorker.method_20719(chunkRenderTask, ChunkRenderTask.Stage.COMPILING)) {
-                this.freeRenderTask(blockBufferBuilderStorage);
+                this.freeRenderTask(blockLayeredBufferBuilder);
                 return;
             }
         } finally {
             chunkRenderTask.getLock().unlock();
         }
-        chunkRenderTask.setBufferBuilders(blockBufferBuilderStorage);
+        chunkRenderTask.setBufferBuilders(blockLayeredBufferBuilder);
         Vec3d vec3d = this.batcher.getCameraPosition();
         float f = (float)vec3d.x;
         float g = (float)vec3d.y;
@@ -98,7 +98,7 @@ implements Runnable {
         chunkRenderTask.getLock().lock();
         try {
             if (!ChunkRenderWorker.method_20719(chunkRenderTask, ChunkRenderTask.Stage.COMPILING)) {
-                this.freeRenderTask(blockBufferBuilderStorage);
+                this.freeRenderTask(blockLayeredBufferBuilder);
                 return;
             }
             chunkRenderTask.setStage(ChunkRenderTask.Stage.UPLOADING);
@@ -108,20 +108,19 @@ implements Runnable {
         final ChunkRenderData chunkRenderData = chunkRenderTask.getRenderData();
         ArrayList<ListenableFuture<Void>> list = Lists.newArrayList();
         if (mode == ChunkRenderTask.Mode.REBUILD_CHUNK) {
-            for (RenderLayer renderLayer : RenderLayer.values()) {
-                if (!chunkRenderData.isBufferInitialized(renderLayer)) continue;
-                list.add(this.batcher.upload(renderLayer, chunkRenderTask.getBufferBuilders().get(renderLayer), chunkRenderTask.getChunkRenderer(), chunkRenderData, chunkRenderTask.getSquaredCameraDistance()));
+            for (BlockRenderLayer blockRenderLayer : BlockRenderLayer.values()) {
+                if (!chunkRenderData.isBufferInitialized(blockRenderLayer)) continue;
+                list.add(this.batcher.upload(blockRenderLayer, chunkRenderTask.getBufferBuilders().get(blockRenderLayer), chunkRenderTask.getChunkRenderer(), chunkRenderData, chunkRenderTask.getSquaredCameraDistance()));
             }
         } else if (mode == ChunkRenderTask.Mode.RESORT_TRANSPARENCY) {
-            list.add(this.batcher.upload(RenderLayer.TRANSLUCENT, chunkRenderTask.getBufferBuilders().get(RenderLayer.TRANSLUCENT), chunkRenderTask.getChunkRenderer(), chunkRenderData, chunkRenderTask.getSquaredCameraDistance()));
+            list.add(this.batcher.upload(BlockRenderLayer.TRANSLUCENT, chunkRenderTask.getBufferBuilders().get(BlockRenderLayer.TRANSLUCENT), chunkRenderTask.getChunkRenderer(), chunkRenderData, chunkRenderTask.getSquaredCameraDistance()));
         }
         ListenableFuture listenableFuture = Futures.allAsList(list);
         chunkRenderTask.addCompletionAction(() -> listenableFuture.cancel(false));
         Futures.addCallback(listenableFuture, new FutureCallback<List<Void>>(){
 
-            @Override
-            public void onSuccess(@Nullable List<Void> list) {
-                ChunkRenderWorker.this.freeRenderTask(blockBufferBuilderStorage);
+            public void method_3617(@Nullable List<Void> list) {
+                ChunkRenderWorker.this.freeRenderTask(blockLayeredBufferBuilder);
                 chunkRenderTask.getLock().lock();
                 try {
                     if (!ChunkRenderWorker.method_20719(chunkRenderTask, ChunkRenderTask.Stage.UPLOADING)) {
@@ -136,7 +135,7 @@ implements Runnable {
 
             @Override
             public void onFailure(Throwable throwable) {
-                ChunkRenderWorker.this.freeRenderTask(blockBufferBuilderStorage);
+                ChunkRenderWorker.this.freeRenderTask(blockLayeredBufferBuilder);
                 if (!(throwable instanceof CancellationException) && !(throwable instanceof InterruptedException)) {
                     MinecraftClient.getInstance().setCrashReport(CrashReport.create(throwable, "Rendering chunk"));
                 }
@@ -144,7 +143,7 @@ implements Runnable {
 
             @Override
             public /* synthetic */ void onSuccess(@Nullable Object object) {
-                this.onSuccess((List)object);
+                this.method_3617((List)object);
             }
         });
     }
@@ -159,13 +158,13 @@ implements Runnable {
         return true;
     }
 
-    private BlockBufferBuilderStorage getBufferBuilders() throws InterruptedException {
+    private BlockLayeredBufferBuilder getBufferBuilders() throws InterruptedException {
         return this.bufferBuilders != null ? this.bufferBuilders : this.batcher.getNextAvailableBuffer();
     }
 
-    private void freeRenderTask(BlockBufferBuilderStorage blockBufferBuilderStorage) {
-        if (blockBufferBuilderStorage != this.bufferBuilders) {
-            this.batcher.addAvailableBuffer(blockBufferBuilderStorage);
+    private void freeRenderTask(BlockLayeredBufferBuilder blockLayeredBufferBuilder) {
+        if (blockLayeredBufferBuilder != this.bufferBuilders) {
+            this.batcher.addAvailableBuffer(blockLayeredBufferBuilder);
         }
     }
 

@@ -3,10 +3,10 @@
  */
 package net.minecraft.client.texture;
 
-import com.mojang.blaze3d.platform.GlStateManager;
-import com.mojang.blaze3d.platform.TextureUtil;
+import com.mojang.blaze3d.systems.RenderSystem;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.class_4536;
 import net.minecraft.client.texture.Texture;
 
 @Environment(value=EnvType.CLIENT)
@@ -30,8 +30,8 @@ implements Texture {
             i = bl2 ? 9986 : 9728;
             j = 9728;
         }
-        GlStateManager.texParameter(3553, 10241, i);
-        GlStateManager.texParameter(3553, 10240, j);
+        RenderSystem.texParameter(3553, 10241, i);
+        RenderSystem.texParameter(3553, 10240, j);
     }
 
     @Override
@@ -49,14 +49,14 @@ implements Texture {
     @Override
     public int getGlId() {
         if (this.glId == -1) {
-            this.glId = TextureUtil.generateTextureId();
+            this.glId = class_4536.generateTextureId();
         }
         return this.glId;
     }
 
     public void clearGlId() {
         if (this.glId != -1) {
-            TextureUtil.releaseTextureId(this.glId);
+            class_4536.releaseTextureId(this.glId);
             this.glId = -1;
         }
     }

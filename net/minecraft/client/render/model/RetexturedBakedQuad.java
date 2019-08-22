@@ -24,8 +24,8 @@ extends BakedQuad {
     private void recalculateUvs() {
         for (int i = 0; i < 4; ++i) {
             int j = 7 * i;
-            this.vertexData[j + 4] = Float.floatToRawIntBits(this.spriteRetextured.getFrameU(this.sprite.getXFromU(Float.intBitsToFloat(this.vertexData[j + 4]))));
-            this.vertexData[j + 4 + 1] = Float.floatToRawIntBits(this.spriteRetextured.getFrameV(this.sprite.getYFromV(Float.intBitsToFloat(this.vertexData[j + 4 + 1]))));
+            this.vertexData[j + 4] = Float.floatToRawIntBits(this.spriteRetextured.getU(this.sprite.getXFromU(Float.intBitsToFloat(this.vertexData[j + 4]))));
+            this.vertexData[j + 4 + 1] = Float.floatToRawIntBits(this.spriteRetextured.getV(this.sprite.getYFromV(Float.intBitsToFloat(this.vertexData[j + 4 + 1]))));
         }
     }
 }

@@ -5,7 +5,7 @@ package net.minecraft.entity.ai.brain.task;
 
 import com.google.common.collect.ImmutableMap;
 import java.util.Optional;
-import net.minecraft.entity.ai.TargetFinder;
+import net.minecraft.entity.ai.PathfindingUtil;
 import net.minecraft.entity.ai.brain.MemoryModuleState;
 import net.minecraft.entity.ai.brain.MemoryModuleType;
 import net.minecraft.entity.ai.brain.WalkTarget;
@@ -34,8 +34,7 @@ extends Task<MobEntityWithAi> {
         this.field_19353 = j;
     }
 
-    @Override
-    protected void run(ServerWorld serverWorld, MobEntityWithAi mobEntityWithAi, long l) {
+    protected void method_18996(ServerWorld serverWorld, MobEntityWithAi mobEntityWithAi, long l) {
         BlockPos blockPos = new BlockPos(mobEntityWithAi);
         if (serverWorld.isNearOccupiedPointOfInterest(blockPos)) {
             this.method_20429(mobEntityWithAi);
@@ -52,12 +51,12 @@ extends Task<MobEntityWithAi> {
 
     private void method_20430(MobEntityWithAi mobEntityWithAi, ChunkSectionPos chunkSectionPos) {
         BlockPos blockPos = chunkSectionPos.getCenterPos();
-        Optional<Vec3d> optional = Optional.ofNullable(TargetFinder.method_6373(mobEntityWithAi, this.field_19352, this.field_19353, new Vec3d(blockPos.getX(), blockPos.getY(), blockPos.getZ())));
+        Optional<Vec3d> optional = Optional.ofNullable(PathfindingUtil.method_6373(mobEntityWithAi, this.field_19352, this.field_19353, new Vec3d(blockPos.getX(), blockPos.getY(), blockPos.getZ())));
         mobEntityWithAi.getBrain().setMemory(MemoryModuleType.WALK_TARGET, optional.map(vec3d -> new WalkTarget((Vec3d)vec3d, this.walkSpeed, 0)));
     }
 
     private void method_20429(MobEntityWithAi mobEntityWithAi) {
-        Optional<Vec3d> optional = Optional.ofNullable(TargetFinder.findGroundTarget(mobEntityWithAi, this.field_19352, this.field_19353));
+        Optional<Vec3d> optional = Optional.ofNullable(PathfindingUtil.findTargetStraight(mobEntityWithAi, this.field_19352, this.field_19353));
         mobEntityWithAi.getBrain().setMemory(MemoryModuleType.WALK_TARGET, optional.map(vec3d -> new WalkTarget((Vec3d)vec3d, this.walkSpeed, 0)));
     }
 }

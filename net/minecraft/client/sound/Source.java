@@ -22,7 +22,7 @@ import org.lwjgl.openal.AL10;
 public class Source {
     private static final Logger LOGGER = LogManager.getLogger();
     private final int pointer;
-    private AtomicBoolean playing = new AtomicBoolean(true);
+    private final AtomicBoolean playing = new AtomicBoolean(true);
     private int bufferSize = 16384;
     @Nullable
     private AudioStream stream;

@@ -4,12 +4,12 @@
 package net.minecraft.client.texture;
 
 import com.google.common.collect.Lists;
-import com.mojang.blaze3d.platform.TextureUtil;
 import java.io.IOException;
 import java.util.Iterator;
 import java.util.List;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.class_4536;
 import net.minecraft.client.texture.AbstractTexture;
 import net.minecraft.client.texture.NativeImage;
 import net.minecraft.resource.Resource;
@@ -53,7 +53,7 @@ extends AbstractTexture {
                         try (NativeImage nativeImage2 = NativeImage.read(resource2.getInputStream());){
                             for (int i = 0; i < nativeImage2.getHeight(); ++i) {
                                 for (int j = 0; j < nativeImage2.getWidth(); ++j) {
-                                    nativeImage.blendPixel(j, i, nativeImage2.getPixelRgba(j, i));
+                                    nativeImage.blendPixel(j, i, nativeImage2.getPixelRGBA(j, i));
                                 }
                             }
                         }
@@ -88,7 +88,7 @@ extends AbstractTexture {
                 }
                 resource2.close();
             }
-            TextureUtil.prepareImage(this.getGlId(), nativeImage.getWidth(), nativeImage.getHeight());
+            class_4536.prepareImage(this.getGlId(), nativeImage.getWidth(), nativeImage.getHeight());
             nativeImage.upload(0, 0, 0, false);
             return;
         } catch (IOException iOException) {

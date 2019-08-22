@@ -3,7 +3,7 @@
  */
 package net.minecraft.client.gui.screen.recipebook;
 
-import com.mojang.blaze3d.platform.GlStateManager;
+import com.mojang.blaze3d.systems.RenderSystem;
 import java.util.List;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
@@ -13,7 +13,7 @@ import net.minecraft.client.gui.screen.recipebook.RecipeResultCollection;
 import net.minecraft.client.gui.widget.ToggleButtonWidget;
 import net.minecraft.client.recipe.book.ClientRecipeBook;
 import net.minecraft.client.recipe.book.RecipeBookGroup;
-import net.minecraft.client.render.DiffuseLighting;
+import net.minecraft.client.render.GuiLighting;
 import net.minecraft.client.render.item.ItemRenderer;
 import net.minecraft.container.CraftingContainer;
 import net.minecraft.item.ItemStack;
@@ -50,14 +50,14 @@ extends ToggleButtonWidget {
     public void renderButton(int i, int j, float f) {
         if (this.bounce > 0.0f) {
             float g = 1.0f + 0.1f * (float)Math.sin(this.bounce / 15.0f * (float)Math.PI);
-            GlStateManager.pushMatrix();
-            GlStateManager.translatef(this.x + 8, this.y + 12, 0.0f);
-            GlStateManager.scalef(1.0f, g, 1.0f);
-            GlStateManager.translatef(-(this.x + 8), -(this.y + 12), 0.0f);
+            RenderSystem.pushMatrix();
+            RenderSystem.translatef(this.x + 8, this.y + 12, 0.0f);
+            RenderSystem.scalef(1.0f, g, 1.0f);
+            RenderSystem.translatef(-(this.x + 8), -(this.y + 12), 0.0f);
         }
         MinecraftClient minecraftClient = MinecraftClient.getInstance();
         minecraftClient.getTextureManager().bindTexture(this.texture);
-        GlStateManager.disableDepthTest();
+        RenderSystem.disableDepthTest();
         int k = this.u;
         int l = this.v;
         if (this.toggled) {
@@ -70,16 +70,16 @@ extends ToggleButtonWidget {
         if (this.toggled) {
             m -= 2;
         }
-        GlStateManager.color4f(1.0f, 1.0f, 1.0f, 1.0f);
+        RenderSystem.color4f(1.0f, 1.0f, 1.0f, 1.0f);
         this.blit(m, this.y, k, l, this.width, this.height);
-        GlStateManager.enableDepthTest();
-        DiffuseLighting.enableForItems();
-        GlStateManager.disableLighting();
+        RenderSystem.enableDepthTest();
+        GuiLighting.enableForItems();
+        RenderSystem.disableLighting();
         this.method_2621(minecraftClient.getItemRenderer());
-        GlStateManager.enableLighting();
-        DiffuseLighting.disable();
+        RenderSystem.enableLighting();
+        GuiLighting.disable();
         if (this.bounce > 0.0f) {
-            GlStateManager.popMatrix();
+            RenderSystem.popMatrix();
             this.bounce -= f;
         }
     }
@@ -105,7 +105,7 @@ extends ToggleButtonWidget {
         this.visible = false;
         if (list != null) {
             for (RecipeResultCollection recipeResultCollection : list) {
-                if (!recipeResultCollection.isInitialized() || !recipeResultCollection.hasFittingRecipes()) continue;
+                if (!recipeResultCollection.isInitialized() || !recipeResultCollection.hasFittableResults()) continue;
                 this.visible = true;
                 break;
             }

@@ -15,11 +15,11 @@ import net.minecraft.client.gui.screen.ingame.BlastFurnaceScreen;
 import net.minecraft.client.gui.screen.ingame.BrewingStandScreen;
 import net.minecraft.client.gui.screen.ingame.CartographyTableScreen;
 import net.minecraft.client.gui.screen.ingame.ContainerProvider;
+import net.minecraft.client.gui.screen.ingame.ContainerScreen54;
+import net.minecraft.client.gui.screen.ingame.ContainerScreen9;
 import net.minecraft.client.gui.screen.ingame.CraftingTableScreen;
 import net.minecraft.client.gui.screen.ingame.EnchantingScreen;
 import net.minecraft.client.gui.screen.ingame.FurnaceScreen;
-import net.minecraft.client.gui.screen.ingame.Generic3x3ContainerScreen;
-import net.minecraft.client.gui.screen.ingame.GenericContainerScreen;
 import net.minecraft.client.gui.screen.ingame.GrindstoneScreen;
 import net.minecraft.client.gui.screen.ingame.HopperScreen;
 import net.minecraft.client.gui.screen.ingame.LecternScreen;
@@ -78,13 +78,13 @@ public class Screens {
     }
 
     static {
-        Screens.register(ContainerType.GENERIC_9X1, GenericContainerScreen::new);
-        Screens.register(ContainerType.GENERIC_9X2, GenericContainerScreen::new);
-        Screens.register(ContainerType.GENERIC_9X3, GenericContainerScreen::new);
-        Screens.register(ContainerType.GENERIC_9X4, GenericContainerScreen::new);
-        Screens.register(ContainerType.GENERIC_9X5, GenericContainerScreen::new);
-        Screens.register(ContainerType.GENERIC_9X6, GenericContainerScreen::new);
-        Screens.register(ContainerType.GENERIC_3X3, Generic3x3ContainerScreen::new);
+        Screens.register(ContainerType.GENERIC_9X1, ContainerScreen54::new);
+        Screens.register(ContainerType.GENERIC_9X2, ContainerScreen54::new);
+        Screens.register(ContainerType.GENERIC_9X3, ContainerScreen54::new);
+        Screens.register(ContainerType.GENERIC_9X4, ContainerScreen54::new);
+        Screens.register(ContainerType.GENERIC_9X5, ContainerScreen54::new);
+        Screens.register(ContainerType.GENERIC_9X6, ContainerScreen54::new);
+        Screens.register(ContainerType.GENERIC_3X3, ContainerScreen9::new);
         Screens.register(ContainerType.ANVIL, AnvilScreen::new);
         Screens.register(ContainerType.BEACON, BeaconScreen::new);
         Screens.register(ContainerType.BLAST_FURNACE, BlastFurnaceScreen::new);
@@ -99,7 +99,7 @@ public class Screens {
         Screens.register(ContainerType.MERCHANT, MerchantScreen::new);
         Screens.register(ContainerType.SHULKER_BOX, ShulkerBoxScreen::new);
         Screens.register(ContainerType.SMOKER, SmokerScreen::new);
-        Screens.register(ContainerType.CARTOGRAPHY, CartographyTableScreen::new);
+        Screens.register(ContainerType.CARTOGRAPHY_TABLE, CartographyTableScreen::new);
         Screens.register(ContainerType.STONECUTTER, StonecutterScreen::new);
     }
 

@@ -3,10 +3,10 @@
  */
 package net.minecraft.client.render.entity.feature;
 
-import com.mojang.blaze3d.platform.GLX;
-import com.mojang.blaze3d.platform.GlStateManager;
+import com.mojang.blaze3d.systems.RenderSystem;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.class_4493;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.GameRenderer;
 import net.minecraft.client.render.entity.feature.FeatureRenderer;
@@ -27,31 +27,31 @@ extends FeatureRenderer<T, M> {
     @Override
     public void render(T entity, float f, float g, float h, float i, float j, float k, float l) {
         this.bindTexture(SKIN);
-        GlStateManager.enableBlend();
-        GlStateManager.disableAlphaTest();
-        GlStateManager.blendFunc(GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ONE);
+        RenderSystem.enableBlend();
+        RenderSystem.disableAlphaTest();
+        RenderSystem.blendFunc(class_4493.class_4535.ONE, class_4493.class_4534.ONE);
         if (((Entity)entity).isInvisible()) {
-            GlStateManager.depthMask(false);
+            RenderSystem.depthMask(false);
         } else {
-            GlStateManager.depthMask(true);
+            RenderSystem.depthMask(true);
         }
         int m = 61680;
         int n = m % 65536;
         int o = m / 65536;
-        GLX.glMultiTexCoord2f(GLX.GL_TEXTURE1, n, o);
-        GlStateManager.color4f(1.0f, 1.0f, 1.0f, 1.0f);
+        RenderSystem.glMultiTexCoord2f(33985, n, o);
+        RenderSystem.color4f(1.0f, 1.0f, 1.0f, 1.0f);
         GameRenderer gameRenderer = MinecraftClient.getInstance().gameRenderer;
         gameRenderer.setFogBlack(true);
-        ((SpiderEntityModel)this.getContextModel()).render(entity, f, g, i, j, k, l);
+        ((SpiderEntityModel)this.getModel()).render(entity, f, g, i, j, k, l);
         gameRenderer.setFogBlack(false);
         m = ((Entity)entity).getLightmapCoordinates();
         n = m % 65536;
         o = m / 65536;
-        GLX.glMultiTexCoord2f(GLX.GL_TEXTURE1, n, o);
+        RenderSystem.glMultiTexCoord2f(33985, n, o);
         this.applyLightmapCoordinates(entity);
-        GlStateManager.depthMask(true);
-        GlStateManager.disableBlend();
-        GlStateManager.enableAlphaTest();
+        RenderSystem.depthMask(true);
+        RenderSystem.disableBlend();
+        RenderSystem.enableAlphaTest();
     }
 
     @Override

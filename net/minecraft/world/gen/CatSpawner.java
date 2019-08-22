@@ -13,12 +13,12 @@ import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
+import net.minecraft.village.PointOfInterestStorage;
+import net.minecraft.village.PointOfInterestType;
 import net.minecraft.world.GameRules;
 import net.minecraft.world.SpawnHelper;
 import net.minecraft.world.World;
 import net.minecraft.world.gen.feature.Feature;
-import net.minecraft.world.poi.PointOfInterestStorage;
-import net.minecraft.world.poi.PointOfInterestType;
 
 public class CatSpawner {
     private int ticksUntilNextSpawn;
@@ -57,7 +57,7 @@ public class CatSpawner {
     private int spawnInHouse(ServerWorld serverWorld, BlockPos blockPos) {
         List<CatEntity> list;
         int i = 48;
-        if (serverWorld.getPointOfInterestStorage().count(PointOfInterestType.HOME.getCompletionCondition(), blockPos, 48, PointOfInterestStorage.OccupationStatus.IS_OCCUPIED) > 4L && (list = serverWorld.getNonSpectatingEntities(CatEntity.class, new Box(blockPos).expand(48.0, 8.0, 48.0))).size() < 5) {
+        if (serverWorld.getPointOfInterestStorage().count(PointOfInterestType.HOME.getCompletionCondition(), blockPos, 48, PointOfInterestStorage.OccupationStatus.IS_OCCUPIED) > 4L && (list = serverWorld.getEntities(CatEntity.class, new Box(blockPos).expand(48.0, 8.0, 48.0))).size() < 5) {
             return this.spawn(blockPos, serverWorld);
         }
         return 0;
@@ -65,7 +65,7 @@ public class CatSpawner {
 
     private int spawnInSwampHut(World world, BlockPos blockPos) {
         int i = 16;
-        List<CatEntity> list = world.getNonSpectatingEntities(CatEntity.class, new Box(blockPos).expand(16.0, 8.0, 16.0));
+        List<CatEntity> list = world.getEntities(CatEntity.class, new Box(blockPos).expand(16.0, 8.0, 16.0));
         if (list.size() < 1) {
             return this.spawn(blockPos, world);
         }
@@ -78,7 +78,7 @@ public class CatSpawner {
             return 0;
         }
         catEntity.initialize(world, world.getLocalDifficulty(blockPos), SpawnType.NATURAL, null, null);
-        catEntity.refreshPositionAndAngles(blockPos, 0.0f, 0.0f);
+        catEntity.setPositionAndAngles(blockPos, 0.0f, 0.0f);
         world.spawnEntity(catEntity);
         return 1;
     }

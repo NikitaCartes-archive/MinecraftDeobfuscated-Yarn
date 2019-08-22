@@ -7,7 +7,7 @@ import com.google.common.collect.Lists;
 import com.mojang.datafixers.Dynamic;
 import java.util.List;
 import java.util.Random;
-import net.minecraft.datafixer.NbtOps;
+import net.minecraft.datafixers.NbtOps;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.Tag;
@@ -19,9 +19,9 @@ import net.minecraft.structure.pool.EmptyPoolElement;
 import net.minecraft.structure.pool.StructurePoolElement;
 import net.minecraft.util.BlockRotation;
 import net.minecraft.util.DynamicDeserializer;
-import net.minecraft.util.math.BlockBox;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
+import net.minecraft.util.math.MutableIntBoundingBox;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.world.IWorld;
 
@@ -34,14 +34,14 @@ extends StructurePiece {
     private final List<JigsawJunction> junctions = Lists.newArrayList();
     private final StructureManager structureManager;
 
-    public PoolStructurePiece(StructurePieceType structurePieceType, StructureManager structureManager, StructurePoolElement structurePoolElement, BlockPos blockPos, int i, BlockRotation blockRotation, BlockBox blockBox) {
+    public PoolStructurePiece(StructurePieceType structurePieceType, StructureManager structureManager, StructurePoolElement structurePoolElement, BlockPos blockPos, int i, BlockRotation blockRotation, MutableIntBoundingBox mutableIntBoundingBox) {
         super(structurePieceType, 0);
         this.structureManager = structureManager;
         this.poolElement = structurePoolElement;
         this.pos = blockPos;
         this.groundLevelDelta = i;
         this.rotation = blockRotation;
-        this.boundingBox = blockBox;
+        this.boundingBox = mutableIntBoundingBox;
     }
 
     public PoolStructurePiece(StructureManager structureManager, CompoundTag compoundTag, StructurePieceType structurePieceType) {
@@ -73,8 +73,8 @@ extends StructurePiece {
     }
 
     @Override
-    public boolean generate(IWorld iWorld, Random random, BlockBox blockBox, ChunkPos chunkPos) {
-        return this.poolElement.generate(this.structureManager, iWorld, this.pos, this.rotation, blockBox, random);
+    public boolean generate(IWorld iWorld, Random random, MutableIntBoundingBox mutableIntBoundingBox, ChunkPos chunkPos) {
+        return this.poolElement.generate(this.structureManager, iWorld, this.pos, this.rotation, mutableIntBoundingBox, random);
     }
 
     @Override

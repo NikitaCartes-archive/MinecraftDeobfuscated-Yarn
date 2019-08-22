@@ -79,9 +79,8 @@ public class Bootstrap {
             throw new IllegalArgumentException("Not bootstrapped");
         }
         if (SharedConstants.isDevelopment) {
-            return;
+            Bootstrap.getMissingTranslations().forEach(string -> LOGGER.error("Missing translations: " + string));
         }
-        Bootstrap.getMissingTranslations().forEach(string -> LOGGER.error("Missing translations: " + string));
     }
 
     private static void setOutputStreams() {

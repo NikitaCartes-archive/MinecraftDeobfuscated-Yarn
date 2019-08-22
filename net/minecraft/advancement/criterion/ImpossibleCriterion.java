@@ -32,14 +32,13 @@ implements Criterion<Conditions> {
     public void endTracking(PlayerAdvancementTracker playerAdvancementTracker) {
     }
 
-    @Override
-    public Conditions conditionsFromJson(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext) {
+    public Conditions method_8949(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext) {
         return new Conditions();
     }
 
     @Override
     public /* synthetic */ CriterionConditions conditionsFromJson(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext) {
-        return this.conditionsFromJson(jsonObject, jsonDeserializationContext);
+        return this.method_8949(jsonObject, jsonDeserializationContext);
     }
 
     public static class Conditions

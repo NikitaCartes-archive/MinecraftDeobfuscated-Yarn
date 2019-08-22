@@ -45,8 +45,8 @@ public class AnvilLevelStorage {
         ArrayList<File> list2 = Lists.newArrayList();
         ArrayList<File> list3 = Lists.newArrayList();
         File file = new File(path.toFile(), string);
-        File file2 = DimensionType.THE_NETHER.getSaveDirectory(file);
-        File file3 = DimensionType.THE_END.getSaveDirectory(file);
+        File file2 = DimensionType.THE_NETHER.getFile(file);
+        File file3 = DimensionType.THE_END.getFile(file);
         LOGGER.info("Scanning folders...");
         AnvilLevelStorage.addRegionFiles(file, list);
         if (file2.exists()) {
@@ -109,7 +109,7 @@ public class AnvilLevelStorage {
                     CompoundTag compoundTag;
                     ChunkPos chunkPos = new ChunkPos(k, l);
                     if (!regionFile.hasChunk(chunkPos) || regionFile2.hasChunk(chunkPos)) continue;
-                    try (DataInputStream dataInputStream = regionFile.getChunkDataInputStream(chunkPos);){
+                    try (DataInputStream dataInputStream = regionFile.method_21873(chunkPos);){
                         if (dataInputStream == null) {
                             LOGGER.warn("Failed to fetch input stream for chunk {}", (Object)chunkPos);
                             continue;
@@ -125,7 +125,7 @@ public class AnvilLevelStorage {
                     CompoundTag compoundTag4 = new CompoundTag();
                     compoundTag3.put("Level", compoundTag4);
                     AlphaChunkIo.convertAlphaChunk(alphaChunk, compoundTag4, biomeSource);
-                    try (DataOutputStream dataOutputStream = regionFile2.getChunkDataOutputStream(chunkPos);){
+                    try (DataOutputStream dataOutputStream = regionFile2.method_21881(chunkPos);){
                         NbtIo.write(compoundTag3, (DataOutput)dataOutputStream);
                         continue;
                     }

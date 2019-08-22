@@ -27,49 +27,48 @@ implements ModelWithHat {
         if (bl) {
             this.head = new ModelPart(this, 0, 0);
             this.head.addCuboid(-4.0f, -10.0f, -4.0f, 8, 8, 8, f);
-            this.torso = new ModelPart(this, 16, 16);
-            this.torso.addCuboid(-4.0f, 0.0f, -2.0f, 8, 12, 4, f + 0.1f);
+            this.body = new ModelPart(this, 16, 16);
+            this.body.addCuboid(-4.0f, 0.0f, -2.0f, 8, 12, 4, f + 0.1f);
             this.rightLeg = new ModelPart(this, 0, 16);
-            this.rightLeg.setPivot(-2.0f, 12.0f, 0.0f);
+            this.rightLeg.setRotationPoint(-2.0f, 12.0f, 0.0f);
             this.rightLeg.addCuboid(-2.0f, 0.0f, -2.0f, 4, 12, 4, f + 0.1f);
             this.leftLeg = new ModelPart(this, 0, 16);
             this.leftLeg.mirror = true;
-            this.leftLeg.setPivot(2.0f, 12.0f, 0.0f);
+            this.leftLeg.setRotationPoint(2.0f, 12.0f, 0.0f);
             this.leftLeg.addCuboid(-2.0f, 0.0f, -2.0f, 4, 12, 4, f + 0.1f);
         } else {
             this.head = new ModelPart(this, 0, 0);
             this.head.setTextureOffset(0, 0).addCuboid(-4.0f, -10.0f, -4.0f, 8, 10, 8, f);
             this.head.setTextureOffset(24, 0).addCuboid(-1.0f, -3.0f, -6.0f, 2, 4, 2, f);
-            this.helmet = new ModelPart(this, 32, 0);
-            this.helmet.addCuboid(-4.0f, -10.0f, -4.0f, 8, 10, 8, f + 0.5f);
+            this.headwear = new ModelPart(this, 32, 0);
+            this.headwear.addCuboid(-4.0f, -10.0f, -4.0f, 8, 10, 8, f + 0.5f);
             this.hat = new ModelPart(this);
             this.hat.setTextureOffset(30, 47).addCuboid(-8.0f, -8.0f, -6.0f, 16, 16, 1, f);
             this.hat.pitch = -1.5707964f;
-            this.helmet.addChild(this.hat);
-            this.torso = new ModelPart(this, 16, 20);
-            this.torso.addCuboid(-4.0f, 0.0f, -3.0f, 8, 12, 6, f);
-            this.torso.setTextureOffset(0, 38).addCuboid(-4.0f, 0.0f, -3.0f, 8, 18, 6, f + 0.05f);
+            this.headwear.addChild(this.hat);
+            this.body = new ModelPart(this, 16, 20);
+            this.body.addCuboid(-4.0f, 0.0f, -3.0f, 8, 12, 6, f);
+            this.body.setTextureOffset(0, 38).addCuboid(-4.0f, 0.0f, -3.0f, 8, 18, 6, f + 0.05f);
             this.rightArm = new ModelPart(this, 44, 22);
             this.rightArm.addCuboid(-3.0f, -2.0f, -2.0f, 4, 12, 4, f);
-            this.rightArm.setPivot(-5.0f, 2.0f, 0.0f);
+            this.rightArm.setRotationPoint(-5.0f, 2.0f, 0.0f);
             this.leftArm = new ModelPart(this, 44, 22);
             this.leftArm.mirror = true;
             this.leftArm.addCuboid(-1.0f, -2.0f, -2.0f, 4, 12, 4, f);
-            this.leftArm.setPivot(5.0f, 2.0f, 0.0f);
+            this.leftArm.setRotationPoint(5.0f, 2.0f, 0.0f);
             this.rightLeg = new ModelPart(this, 0, 22);
-            this.rightLeg.setPivot(-2.0f, 12.0f, 0.0f);
+            this.rightLeg.setRotationPoint(-2.0f, 12.0f, 0.0f);
             this.rightLeg.addCuboid(-2.0f, 0.0f, -2.0f, 4, 12, 4, f);
             this.leftLeg = new ModelPart(this, 0, 22);
             this.leftLeg.mirror = true;
-            this.leftLeg.setPivot(2.0f, 12.0f, 0.0f);
+            this.leftLeg.setRotationPoint(2.0f, 12.0f, 0.0f);
             this.leftLeg.addCuboid(-2.0f, 0.0f, -2.0f, 4, 12, 4, f);
         }
     }
 
-    @Override
-    public void setAngles(T zombieEntity, float f, float g, float h, float i, float j, float k) {
+    public void method_17135(T zombieEntity, float f, float g, float h, float i, float j, float k) {
         float n;
-        super.setAngles(zombieEntity, f, g, h, i, j, k);
+        super.method_17087(zombieEntity, f, g, h, i, j, k);
         float l = MathHelper.sin(this.handSwingProgress * (float)Math.PI);
         float m = MathHelper.sin((1.0f - (1.0f - this.handSwingProgress) * (1.0f - this.handSwingProgress)) * (float)Math.PI);
         this.rightArm.roll = 0.0f;
@@ -89,7 +88,7 @@ implements ModelWithHat {
     @Override
     public void setHatVisible(boolean bl) {
         this.head.visible = bl;
-        this.helmet.visible = bl;
+        this.headwear.visible = bl;
         this.hat.visible = bl;
     }
 }

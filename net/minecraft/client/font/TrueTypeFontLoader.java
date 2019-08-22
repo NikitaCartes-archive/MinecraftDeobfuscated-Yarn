@@ -7,11 +7,11 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
-import com.mojang.blaze3d.platform.TextureUtil;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.class_4536;
 import net.minecraft.client.font.Font;
 import net.minecraft.client.font.FontLoader;
 import net.minecraft.client.font.TrueTypeFont;
@@ -79,7 +79,7 @@ implements FontLoader {
     public Font load(ResourceManager resourceManager) {
         try (Resource resource = resourceManager.getResource(new Identifier(this.filename.getNamespace(), "font/" + this.filename.getPath()));){
             LOGGER.info("Loading font");
-            ByteBuffer byteBuffer = TextureUtil.readResource(resource.getInputStream());
+            ByteBuffer byteBuffer = class_4536.readResource(resource.getInputStream());
             byteBuffer.flip();
             LOGGER.info("Reading font");
             TrueTypeFont trueTypeFont = new TrueTypeFont(TrueTypeFont.getSTBTTFontInfo(byteBuffer), this.size, this.oversample, this.shiftX, this.shiftY, this.excludedCharacters);

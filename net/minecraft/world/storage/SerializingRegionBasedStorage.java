@@ -20,11 +20,12 @@ import java.util.function.BiFunction;
 import java.util.function.BooleanSupplier;
 import java.util.function.Function;
 import net.minecraft.SharedConstants;
-import net.minecraft.datafixer.DataFixTypes;
-import net.minecraft.datafixer.NbtOps;
+import net.minecraft.datafixers.DataFixTypes;
+import net.minecraft.datafixers.NbtOps;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.util.DynamicSerializable;
+import net.minecraft.util.SystemUtil;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.math.ChunkSectionPos;
 import net.minecraft.world.World;
@@ -75,13 +76,13 @@ extends RegionBasedStorage {
         this.loadDataAt(chunkSectionPos.toChunkPos());
         optional = this.getIfLoaded(l);
         if (optional == null) {
-            throw new IllegalStateException();
+            throw SystemUtil.method_22320(new IllegalStateException());
         }
         return optional;
     }
 
     protected boolean isPosInvalid(ChunkSectionPos chunkSectionPos) {
-        return World.isHeightInvalid(ChunkSectionPos.getWorldCoord(chunkSectionPos.getSectionY()));
+        return World.isHeightInvalid(ChunkSectionPos.fromChunkCoord(chunkSectionPos.getChunkY()));
     }
 
     protected R getOrCreate(long l) {

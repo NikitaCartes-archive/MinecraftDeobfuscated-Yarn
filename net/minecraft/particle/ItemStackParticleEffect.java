@@ -19,27 +19,25 @@ public class ItemStackParticleEffect
 implements ParticleEffect {
     public static final ParticleEffect.Factory<ItemStackParticleEffect> PARAMETERS_FACTORY = new ParticleEffect.Factory<ItemStackParticleEffect>(){
 
-        @Override
-        public ItemStackParticleEffect read(ParticleType<ItemStackParticleEffect> particleType, StringReader stringReader) throws CommandSyntaxException {
+        public ItemStackParticleEffect method_10290(ParticleType<ItemStackParticleEffect> particleType, StringReader stringReader) throws CommandSyntaxException {
             stringReader.expect(' ');
             ItemStringReader itemStringReader = new ItemStringReader(stringReader, false).consume();
             ItemStack itemStack = new ItemStackArgument(itemStringReader.getItem(), itemStringReader.getTag()).createStack(1, false);
             return new ItemStackParticleEffect(particleType, itemStack);
         }
 
-        @Override
-        public ItemStackParticleEffect read(ParticleType<ItemStackParticleEffect> particleType, PacketByteBuf packetByteBuf) {
+        public ItemStackParticleEffect method_10291(ParticleType<ItemStackParticleEffect> particleType, PacketByteBuf packetByteBuf) {
             return new ItemStackParticleEffect(particleType, packetByteBuf.readItemStack());
         }
 
         @Override
         public /* synthetic */ ParticleEffect read(ParticleType particleType, PacketByteBuf packetByteBuf) {
-            return this.read(particleType, packetByteBuf);
+            return this.method_10291(particleType, packetByteBuf);
         }
 
         @Override
         public /* synthetic */ ParticleEffect read(ParticleType particleType, StringReader stringReader) throws CommandSyntaxException {
-            return this.read(particleType, stringReader);
+            return this.method_10290(particleType, stringReader);
         }
     };
     private final ParticleType<ItemStackParticleEffect> type;

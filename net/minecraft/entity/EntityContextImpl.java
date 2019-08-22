@@ -21,19 +21,19 @@ implements EntityContext {
             return bl;
         }
     };
-    private final boolean descending;
+    private final boolean sneaking;
     private final double minY;
     private final Item heldItem;
 
     protected EntityContextImpl(boolean bl, double d, Item item) {
-        this.descending = bl;
+        this.sneaking = bl;
         this.minY = d;
         this.heldItem = item;
     }
 
     @Deprecated
     protected EntityContextImpl(Entity entity) {
-        this(entity.isSneaking(), entity.getBoundingBox().y1, entity instanceof LivingEntity ? ((LivingEntity)entity).getMainHandStack().getItem() : Items.AIR);
+        this(entity.method_21752(), entity.getBoundingBox().minY, entity instanceof LivingEntity ? ((LivingEntity)entity).getMainHandStack().getItem() : Items.AIR);
     }
 
     @Override
@@ -42,8 +42,8 @@ implements EntityContext {
     }
 
     @Override
-    public boolean isDescending() {
-        return this.descending;
+    public boolean isSneaking() {
+        return this.sneaking;
     }
 
     @Override

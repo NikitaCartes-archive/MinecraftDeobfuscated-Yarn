@@ -25,7 +25,7 @@ import net.minecraft.state.property.Property;
 import net.minecraft.util.IdList;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.registry.Registry;
-import net.minecraft.world.BlockRenderView;
+import net.minecraft.world.ExtendedBlockView;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
 
@@ -36,43 +36,43 @@ public class BlockColors {
 
     public static BlockColors create() {
         BlockColors blockColors = new BlockColors();
-        blockColors.registerColorProvider((blockState, blockRenderView, blockPos, i) -> {
-            if (blockRenderView == null || blockPos == null) {
+        blockColors.register((blockState, extendedBlockView, blockPos, i) -> {
+            if (extendedBlockView == null || blockPos == null) {
                 return -1;
             }
-            return BiomeColors.getGrassColor(blockRenderView, blockState.get(ReplaceableTallPlantBlock.HALF) == DoubleBlockHalf.UPPER ? blockPos.down() : blockPos);
+            return BiomeColors.getGrassColor(extendedBlockView, blockState.get(ReplaceableTallPlantBlock.HALF) == DoubleBlockHalf.UPPER ? blockPos.down() : blockPos);
         }, Blocks.LARGE_FERN, Blocks.TALL_GRASS);
         blockColors.method_21593(ReplaceableTallPlantBlock.HALF, Blocks.LARGE_FERN, Blocks.TALL_GRASS);
-        blockColors.registerColorProvider((blockState, blockRenderView, blockPos, i) -> {
-            if (blockRenderView == null || blockPos == null) {
+        blockColors.register((blockState, extendedBlockView, blockPos, i) -> {
+            if (extendedBlockView == null || blockPos == null) {
                 return GrassColors.getColor(0.5, 1.0);
             }
-            return BiomeColors.getGrassColor(blockRenderView, blockPos);
+            return BiomeColors.getGrassColor(extendedBlockView, blockPos);
         }, Blocks.GRASS_BLOCK, Blocks.FERN, Blocks.GRASS, Blocks.POTTED_FERN);
-        blockColors.registerColorProvider((blockState, blockRenderView, blockPos, i) -> FoliageColors.getSpruceColor(), Blocks.SPRUCE_LEAVES);
-        blockColors.registerColorProvider((blockState, blockRenderView, blockPos, i) -> FoliageColors.getBirchColor(), Blocks.BIRCH_LEAVES);
-        blockColors.registerColorProvider((blockState, blockRenderView, blockPos, i) -> {
-            if (blockRenderView == null || blockPos == null) {
+        blockColors.register((blockState, extendedBlockView, blockPos, i) -> FoliageColors.getSpruceColor(), Blocks.SPRUCE_LEAVES);
+        blockColors.register((blockState, extendedBlockView, blockPos, i) -> FoliageColors.getBirchColor(), Blocks.BIRCH_LEAVES);
+        blockColors.register((blockState, extendedBlockView, blockPos, i) -> {
+            if (extendedBlockView == null || blockPos == null) {
                 return FoliageColors.getDefaultColor();
             }
-            return BiomeColors.getFoliageColor(blockRenderView, blockPos);
+            return BiomeColors.getFoliageColor(extendedBlockView, blockPos);
         }, Blocks.OAK_LEAVES, Blocks.JUNGLE_LEAVES, Blocks.ACACIA_LEAVES, Blocks.DARK_OAK_LEAVES, Blocks.VINE);
-        blockColors.registerColorProvider((blockState, blockRenderView, blockPos, i) -> {
-            if (blockRenderView == null || blockPos == null) {
+        blockColors.register((blockState, extendedBlockView, blockPos, i) -> {
+            if (extendedBlockView == null || blockPos == null) {
                 return -1;
             }
-            return BiomeColors.getWaterColor(blockRenderView, blockPos);
+            return BiomeColors.getWaterColor(extendedBlockView, blockPos);
         }, Blocks.WATER, Blocks.BUBBLE_COLUMN, Blocks.CAULDRON);
-        blockColors.registerColorProvider((blockState, blockRenderView, blockPos, i) -> RedstoneWireBlock.getWireColor(blockState.get(RedstoneWireBlock.POWER)), Blocks.REDSTONE_WIRE);
+        blockColors.register((blockState, extendedBlockView, blockPos, i) -> RedstoneWireBlock.getWireColor(blockState.get(RedstoneWireBlock.POWER)), Blocks.REDSTONE_WIRE);
         blockColors.method_21593(RedstoneWireBlock.POWER, Blocks.REDSTONE_WIRE);
-        blockColors.registerColorProvider((blockState, blockRenderView, blockPos, i) -> {
-            if (blockRenderView == null || blockPos == null) {
+        blockColors.register((blockState, extendedBlockView, blockPos, i) -> {
+            if (extendedBlockView == null || blockPos == null) {
                 return -1;
             }
-            return BiomeColors.getGrassColor(blockRenderView, blockPos);
+            return BiomeColors.getGrassColor(extendedBlockView, blockPos);
         }, Blocks.SUGAR_CANE);
-        blockColors.registerColorProvider((blockState, blockRenderView, blockPos, i) -> 14731036, Blocks.ATTACHED_MELON_STEM, Blocks.ATTACHED_PUMPKIN_STEM);
-        blockColors.registerColorProvider((blockState, blockRenderView, blockPos, i) -> {
+        blockColors.register((blockState, extendedBlockView, blockPos, i) -> 14731036, Blocks.ATTACHED_MELON_STEM, Blocks.ATTACHED_PUMPKIN_STEM);
+        blockColors.register((blockState, extendedBlockView, blockPos, i) -> {
             int j = blockState.get(StemBlock.AGE);
             int k = j * 32;
             int l = 255 - j * 8;
@@ -80,8 +80,8 @@ public class BlockColors {
             return k << 16 | l << 8 | m;
         }, Blocks.MELON_STEM, Blocks.PUMPKIN_STEM);
         blockColors.method_21593(StemBlock.AGE, Blocks.MELON_STEM, Blocks.PUMPKIN_STEM);
-        blockColors.registerColorProvider((blockState, blockRenderView, blockPos, i) -> {
-            if (blockRenderView == null || blockPos == null) {
+        blockColors.register((blockState, extendedBlockView, blockPos, i) -> {
+            if (extendedBlockView == null || blockPos == null) {
                 return 7455580;
             }
             return 2129968;
@@ -98,12 +98,12 @@ public class BlockColors {
         return materialColor != null ? materialColor.color : -1;
     }
 
-    public int getColor(BlockState blockState, @Nullable BlockRenderView blockRenderView, @Nullable BlockPos blockPos, int i) {
+    public int getColorMultiplier(BlockState blockState, @Nullable ExtendedBlockView extendedBlockView, @Nullable BlockPos blockPos, int i) {
         BlockColorProvider blockColorProvider = this.providers.get(Registry.BLOCK.getRawId(blockState.getBlock()));
-        return blockColorProvider == null ? -1 : blockColorProvider.getColor(blockState, blockRenderView, blockPos, i);
+        return blockColorProvider == null ? -1 : blockColorProvider.getColor(blockState, extendedBlockView, blockPos, i);
     }
 
-    public void registerColorProvider(BlockColorProvider blockColorProvider, Block ... blocks) {
+    public void register(BlockColorProvider blockColorProvider, Block ... blocks) {
         for (Block block : blocks) {
             this.providers.set(blockColorProvider, Registry.BLOCK.getRawId(block));
         }

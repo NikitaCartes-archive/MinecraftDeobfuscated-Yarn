@@ -18,7 +18,7 @@ public final class MissingSprite
 extends Sprite {
     private static final Identifier MISSINGNO = new Identifier("missingno");
     @Nullable
-    private static NativeImageBackedTexture texture;
+    private static NativeImageBackedTexture TEXTURE;
     private static final Lazy<NativeImage> IMAGE;
 
     private MissingSprite() {
@@ -43,11 +43,11 @@ extends Sprite {
     }
 
     public static NativeImageBackedTexture getMissingSpriteTexture() {
-        if (texture == null) {
-            texture = new NativeImageBackedTexture(IMAGE.get());
-            MinecraftClient.getInstance().getTextureManager().registerTexture(MISSINGNO, texture);
+        if (TEXTURE == null) {
+            TEXTURE = new NativeImageBackedTexture(IMAGE.get());
+            MinecraftClient.getInstance().getTextureManager().registerTexture(MISSINGNO, TEXTURE);
         }
-        return texture;
+        return TEXTURE;
     }
 
     static {
@@ -58,10 +58,10 @@ extends Sprite {
             for (int k = 0; k < 16; ++k) {
                 for (int l = 0; l < 16; ++l) {
                     if (k < 8 ^ l < 8) {
-                        nativeImage.setPixelRgba(l, k, -524040);
+                        nativeImage.setPixelRGBA(l, k, -524040);
                         continue;
                     }
-                    nativeImage.setPixelRgba(l, k, -16777216);
+                    nativeImage.setPixelRGBA(l, k, -16777216);
                 }
             }
             nativeImage.untrack();

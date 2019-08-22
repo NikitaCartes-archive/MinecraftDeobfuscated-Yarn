@@ -8,9 +8,9 @@ import net.minecraft.block.entity.BannerBlockEntity;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.item.map.MapIcon;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.NbtHelper;
 import net.minecraft.text.Text;
 import net.minecraft.util.DyeColor;
+import net.minecraft.util.TagHelper;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.BlockView;
 import org.jetbrains.annotations.Nullable;
@@ -28,9 +28,9 @@ public class MapBannerMarker {
     }
 
     public static MapBannerMarker fromNbt(CompoundTag compoundTag) {
-        BlockPos blockPos = NbtHelper.toBlockPos(compoundTag.getCompound("Pos"));
+        BlockPos blockPos = TagHelper.deserializeBlockPos(compoundTag.getCompound("Pos"));
         DyeColor dyeColor = DyeColor.byName(compoundTag.getString("Color"), DyeColor.WHITE);
-        Text text = compoundTag.contains("Name") ? Text.Serializer.fromJson(compoundTag.getString("Name")) : null;
+        Text text = compoundTag.containsKey("Name") ? Text.Serializer.fromJson(compoundTag.getString("Name")) : null;
         return new MapBannerMarker(blockPos, dyeColor, text);
     }
 
@@ -123,7 +123,7 @@ public class MapBannerMarker {
 
     public CompoundTag getNbt() {
         CompoundTag compoundTag = new CompoundTag();
-        compoundTag.put("Pos", NbtHelper.fromBlockPos(this.pos));
+        compoundTag.put("Pos", TagHelper.serializeBlockPos(this.pos));
         compoundTag.putString("Color", this.color.getName());
         if (this.name != null) {
             compoundTag.putString("Name", Text.Serializer.toJson(this.name));

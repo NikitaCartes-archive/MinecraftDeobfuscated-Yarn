@@ -24,8 +24,7 @@ extends Feature<NetherSpringFeatureConfig> {
         super(function);
     }
 
-    @Override
-    public boolean generate(IWorld iWorld, ChunkGenerator<? extends ChunkGeneratorConfig> chunkGenerator, Random random, BlockPos blockPos, NetherSpringFeatureConfig netherSpringFeatureConfig) {
+    public boolean method_13555(IWorld iWorld, ChunkGenerator<? extends ChunkGeneratorConfig> chunkGenerator, Random random, BlockPos blockPos, NetherSpringFeatureConfig netherSpringFeatureConfig) {
         if (iWorld.getBlockState(blockPos.up()) != NETHERRACK) {
             return false;
         }

@@ -29,9 +29,9 @@ import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
-import net.minecraft.world.CollisionView;
 import net.minecraft.world.GameRules;
 import net.minecraft.world.IWorld;
+import net.minecraft.world.ViewableWorld;
 import net.minecraft.world.World;
 
 public class SilverfishEntity
@@ -109,7 +109,7 @@ extends HostileEntity {
 
     @Override
     public void tick() {
-        this.field_6283 = this.yaw;
+        this.bodyYaw = this.yaw;
         super.tick();
     }
 
@@ -120,11 +120,11 @@ extends HostileEntity {
     }
 
     @Override
-    public float getPathfindingFavor(BlockPos blockPos, CollisionView collisionView) {
-        if (InfestedBlock.isInfestable(collisionView.getBlockState(blockPos.down()))) {
+    public float getPathfindingFavor(BlockPos blockPos, ViewableWorld viewableWorld) {
+        if (InfestedBlock.isInfestable(viewableWorld.getBlockState(blockPos.down()))) {
             return 10.0f;
         }
-        return super.getPathfindingFavor(blockPos, collisionView);
+        return super.getPathfindingFavor(blockPos, viewableWorld);
     }
 
     public static boolean method_20684(EntityType<SilverfishEntity> entityType, IWorld iWorld, SpawnType spawnType, BlockPos blockPos, Random random) {
@@ -158,7 +158,7 @@ extends HostileEntity {
             if (!this.mob.getNavigation().isIdle()) {
                 return false;
             }
-            Random random = this.mob.getRandom();
+            Random random = this.mob.getRand();
             if (this.mob.world.getGameRules().getBoolean(GameRules.MOB_GRIEFING) && random.nextInt(10) == 0) {
                 this.direction = Direction.random(random);
                 BlockPos blockPos = new BlockPos(this.mob.x, this.mob.y + 0.5, this.mob.z).offset(this.direction);
@@ -222,7 +222,7 @@ extends HostileEntity {
             --this.delay;
             if (this.delay <= 0) {
                 World world = this.silverfish.world;
-                Random random = this.silverfish.getRandom();
+                Random random = this.silverfish.getRand();
                 BlockPos blockPos = new BlockPos(this.silverfish);
                 int i = 0;
                 block0: while (i <= 5 && i >= -5) {

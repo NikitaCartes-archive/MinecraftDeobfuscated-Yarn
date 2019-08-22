@@ -20,8 +20,7 @@ implements Comparable<ProfilerTiming> {
         this.field_19384 = l;
     }
 
-    @Override
-    public int compareTo(ProfilerTiming profilerTiming) {
+    public int method_15408(ProfilerTiming profilerTiming) {
         if (profilerTiming.parentSectionUsagePercentage < this.parentSectionUsagePercentage) {
             return -1;
         }
@@ -38,7 +37,7 @@ implements Comparable<ProfilerTiming> {
 
     @Override
     public /* synthetic */ int compareTo(Object object) {
-        return this.compareTo((ProfilerTiming)object);
+        return this.method_15408((ProfilerTiming)object);
     }
 }
 

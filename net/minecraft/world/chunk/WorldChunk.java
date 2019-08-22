@@ -36,7 +36,6 @@ import net.minecraft.fluid.FluidState;
 import net.minecraft.fluid.Fluids;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.world.ChunkHolder;
-import net.minecraft.server.world.ServerTickScheduler;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.server.world.SimpleTickScheduler;
 import net.minecraft.structure.StructureStart;
@@ -106,7 +105,7 @@ implements Chunk {
         this.pos = chunkPos;
         this.upgradeData = upgradeData;
         for (Heightmap.Type type : Heightmap.Type.values()) {
-            if (!ChunkStatus.FULL.getHeightmapTypes().contains((Object)type)) continue;
+            if (!ChunkStatus.FULL.isSurfaceGenerated().contains((Object)type)) continue;
             this.heightmaps.put(type, new Heightmap(this, type));
         }
         for (int i = 0; i < this.entitySections.length; ++i) {
@@ -127,7 +126,7 @@ implements Chunk {
     }
 
     public WorldChunk(World world, ProtoChunk protoChunk) {
-        this(world, protoChunk.getPos(), protoChunk.getBiomeArray(), protoChunk.getUpgradeData(), protoChunk.getBlockTickScheduler(), protoChunk.getFluidTickScheduler(), protoChunk.getInhabitedTime(), protoChunk.getSectionArray(), null);
+        this(world, protoChunk.getPos(), protoChunk.getBiomeArray(), protoChunk.getUpgradeData(), protoChunk.method_12303(), protoChunk.method_12313(), protoChunk.getInhabitedTime(), protoChunk.getSectionArray(), null);
         for (CompoundTag compoundTag : protoChunk.getEntities()) {
             EntityType.loadEntityWithPassengers(compoundTag, world, entity -> {
                 this.addEntity((Entity)entity);
@@ -144,7 +143,7 @@ implements Chunk {
         this.setStructureStarts(protoChunk.getStructureStarts());
         this.setStructureReferences(protoChunk.getStructureReferences());
         for (Map.Entry<Heightmap.Type, Heightmap> entry : protoChunk.getHeightmaps()) {
-            if (!ChunkStatus.FULL.getHeightmapTypes().contains((Object)entry.getKey())) continue;
+            if (!ChunkStatus.FULL.isSurfaceGenerated().contains((Object)entry.getKey())) continue;
             this.getHeightmap(entry.getKey()).setTo(entry.getValue().asLongArray());
         }
         this.setLightOn(protoChunk.isLightOn());
@@ -359,7 +358,7 @@ implements Chunk {
                 blockEntity = this.createBlockEntity(blockPos);
                 this.world.setBlockEntity(blockPos, blockEntity);
             }
-        } else if (blockEntity.isRemoved()) {
+        } else if (blockEntity.isInvalid()) {
             this.blockEntities.remove(blockPos);
             return null;
         }
@@ -380,10 +379,10 @@ implements Chunk {
         }
         blockEntity.setWorld(this.world);
         blockEntity.setPos(blockPos);
-        blockEntity.cancelRemoval();
+        blockEntity.validate();
         BlockEntity blockEntity2 = this.blockEntities.put(blockPos.toImmutable(), blockEntity);
         if (blockEntity2 != null && blockEntity2 != blockEntity) {
-            blockEntity2.markRemoved();
+            blockEntity2.invalidate();
         }
     }
 
@@ -396,14 +395,14 @@ implements Chunk {
     @Nullable
     public CompoundTag method_20598(BlockPos blockPos) {
         BlockEntity blockEntity = this.getBlockEntity(blockPos);
-        if (blockEntity != null && !blockEntity.isRemoved()) {
+        if (blockEntity != null && !blockEntity.isInvalid()) {
             CompoundTag compoundTag = blockEntity.toTag(new CompoundTag());
             compoundTag.putBoolean("keepPacked", false);
             return compoundTag;
         }
         CompoundTag compoundTag = this.pendingBlockEntityTags.get(blockPos);
         if (compoundTag != null) {
-            compoundTag = compoundTag.copy();
+            compoundTag = compoundTag.method_10553();
             compoundTag.putBoolean("keepPacked", true);
         }
         return compoundTag;
@@ -413,7 +412,7 @@ implements Chunk {
     public void removeBlockEntity(BlockPos blockPos) {
         BlockEntity blockEntity;
         if ((this.loadedToWorld || this.world.isClient()) && (blockEntity = this.blockEntities.remove(blockPos)) != null) {
-            blockEntity.markRemoved();
+            blockEntity.invalidate();
         }
     }
 
@@ -428,9 +427,9 @@ implements Chunk {
         this.shouldSave = true;
     }
 
-    public void getEntities(@Nullable Entity entity, Box box, List<Entity> list, @Nullable Predicate<? super Entity> predicate) {
-        int i = MathHelper.floor((box.y1 - 2.0) / 16.0);
-        int j = MathHelper.floor((box.y2 + 2.0) / 16.0);
+    public void appendEntities(@Nullable Entity entity, Box box, List<Entity> list, @Nullable Predicate<? super Entity> predicate) {
+        int i = MathHelper.floor((box.minY - 2.0) / 16.0);
+        int j = MathHelper.floor((box.maxY + 2.0) / 16.0);
         i = MathHelper.clamp(i, 0, this.entitySections.length - 1);
         j = MathHelper.clamp(j, 0, this.entitySections.length - 1);
         for (int k = i; k <= j; ++k) {
@@ -449,9 +448,9 @@ implements Chunk {
         }
     }
 
-    public void getEntities(@Nullable EntityType<?> entityType, Box box, List<Entity> list, Predicate<? super Entity> predicate) {
-        int i = MathHelper.floor((box.y1 - 2.0) / 16.0);
-        int j = MathHelper.floor((box.y2 + 2.0) / 16.0);
+    public void appendEntities(@Nullable EntityType<?> entityType, Box box, List<Entity> list, Predicate<? super Entity> predicate) {
+        int i = MathHelper.floor((box.minY - 2.0) / 16.0);
+        int j = MathHelper.floor((box.maxY + 2.0) / 16.0);
         i = MathHelper.clamp(i, 0, this.entitySections.length - 1);
         j = MathHelper.clamp(j, 0, this.entitySections.length - 1);
         for (int k = i; k <= j; ++k) {
@@ -462,9 +461,9 @@ implements Chunk {
         }
     }
 
-    public <T extends Entity> void getEntities(Class<? extends T> class_, Box box, List<T> list, @Nullable Predicate<? super T> predicate) {
-        int i = MathHelper.floor((box.y1 - 2.0) / 16.0);
-        int j = MathHelper.floor((box.y2 + 2.0) / 16.0);
+    public <T extends Entity> void appendEntities(Class<? extends T> class_, Box box, List<T> list, @Nullable Predicate<? super T> predicate) {
+        int i = MathHelper.floor((box.minY - 2.0) / 16.0);
+        int j = MathHelper.floor((box.maxY + 2.0) / 16.0);
         i = MathHelper.clamp(i, 0, this.entitySections.length - 1);
         j = MathHelper.clamp(j, 0, this.entitySections.length - 1);
         for (int k = i; k <= j; ++k) {
@@ -508,7 +507,7 @@ implements Chunk {
         }
         for (Heightmap.Type type : Heightmap.Type.values()) {
             String string = type.getName();
-            if (!compoundTag.contains(string, 12)) continue;
+            if (!compoundTag.containsKey(string, 12)) continue;
             this.setHeightmap(type, compoundTag.getLongArray(string));
         }
         for (BlockEntity blockEntity : this.blockEntities.values()) {
@@ -706,11 +705,11 @@ implements Chunk {
 
     public void method_20471(ServerWorld serverWorld) {
         if (this.blockTickScheduler == DummyClientTickScheduler.get()) {
-            this.blockTickScheduler = new SimpleTickScheduler<Block>(Registry.BLOCK::getId, ((ServerTickScheduler)serverWorld.getBlockTickScheduler()).getScheduledTicksInChunk(this.pos, true, false));
+            this.blockTickScheduler = new SimpleTickScheduler<Block>(Registry.BLOCK::getId, serverWorld.method_14196().getScheduledTicksInChunk(this.pos, true, false));
             this.setShouldSave(true);
         }
         if (this.fluidTickScheduler == DummyClientTickScheduler.get()) {
-            this.fluidTickScheduler = new SimpleTickScheduler<Fluid>(Registry.FLUID::getId, ((ServerTickScheduler)serverWorld.getFluidTickScheduler()).getScheduledTicksInChunk(this.pos, true, false));
+            this.fluidTickScheduler = new SimpleTickScheduler<Fluid>(Registry.FLUID::getId, serverWorld.method_14179().getScheduledTicksInChunk(this.pos, true, false));
             this.setShouldSave(true);
         }
     }

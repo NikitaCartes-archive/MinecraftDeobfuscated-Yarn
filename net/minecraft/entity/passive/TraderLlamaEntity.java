@@ -52,7 +52,7 @@ extends LlamaEntity {
     @Override
     public void readCustomDataFromTag(CompoundTag compoundTag) {
         super.readCustomDataFromTag(compoundTag);
-        if (compoundTag.contains("DespawnDelay", 99)) {
+        if (compoundTag.containsKey("DespawnDelay", 99)) {
             this.despawnDelay = compoundTag.getInt("DespawnDelay");
         }
     }

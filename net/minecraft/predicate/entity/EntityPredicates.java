@@ -73,8 +73,7 @@ public final class EntityPredicates {
             this.itemstack = itemStack;
         }
 
-        @Override
-        public boolean test(@Nullable Entity entity) {
+        public boolean method_5916(@Nullable Entity entity) {
             if (!entity.isAlive()) {
                 return false;
             }
@@ -87,7 +86,7 @@ public final class EntityPredicates {
 
         @Override
         public /* synthetic */ boolean test(@Nullable Object object) {
-            return this.test((Entity)object);
+            return this.method_5916((Entity)object);
         }
     }
 }

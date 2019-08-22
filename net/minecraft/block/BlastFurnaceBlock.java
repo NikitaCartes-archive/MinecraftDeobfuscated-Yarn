@@ -11,7 +11,7 @@ import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BlastFurnaceBlockEntity;
 import net.minecraft.block.entity.BlockEntity;
-import net.minecraft.container.NameableContainerFactory;
+import net.minecraft.container.NameableContainerProvider;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.sound.SoundCategory;
@@ -37,7 +37,7 @@ extends AbstractFurnaceBlock {
     protected void openContainer(World world, BlockPos blockPos, PlayerEntity playerEntity) {
         BlockEntity blockEntity = world.getBlockEntity(blockPos);
         if (blockEntity instanceof BlastFurnaceBlockEntity) {
-            playerEntity.openContainer((NameableContainerFactory)((Object)blockEntity));
+            playerEntity.openContainer((NameableContainerProvider)((Object)blockEntity));
             playerEntity.incrementStat(Stats.INTERACT_WITH_BLAST_FURNACE);
         }
     }

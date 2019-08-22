@@ -39,8 +39,7 @@ implements SoundContainer<Sound> {
         return i;
     }
 
-    @Override
-    public Sound getSound() {
+    public Sound method_4887() {
         int i = this.getWeight();
         if (this.sounds.isEmpty() || i == 0) {
             return SoundManager.MISSING_SOUND;
@@ -71,7 +70,7 @@ implements SoundContainer<Sound> {
 
     @Override
     public /* synthetic */ Object getSound() {
-        return this.getSound();
+        return this.method_4887();
     }
 }
 

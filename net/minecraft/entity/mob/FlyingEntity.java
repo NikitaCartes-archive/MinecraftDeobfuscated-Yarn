@@ -28,7 +28,7 @@ extends MobEntity {
 
     @Override
     public void travel(Vec3d vec3d) {
-        if (this.isTouchingWater()) {
+        if (this.isInsideWater()) {
             this.updateVelocity(0.02f, vec3d);
             this.move(MovementType.SELF, this.getVelocity());
             this.setVelocity(this.getVelocity().multiply(0.8f));
@@ -39,12 +39,12 @@ extends MobEntity {
         } else {
             float f = 0.91f;
             if (this.onGround) {
-                f = this.world.getBlockState(new BlockPos(this.x, this.getBoundingBox().y1 - 1.0, this.z)).getBlock().getSlipperiness() * 0.91f;
+                f = this.world.getBlockState(new BlockPos(this.x, this.getBoundingBox().minY - 1.0, this.z)).getBlock().getSlipperiness() * 0.91f;
             }
             float g = 0.16277137f / (f * f * f);
             f = 0.91f;
             if (this.onGround) {
-                f = this.world.getBlockState(new BlockPos(this.x, this.getBoundingBox().y1 - 1.0, this.z)).getBlock().getSlipperiness() * 0.91f;
+                f = this.world.getBlockState(new BlockPos(this.x, this.getBoundingBox().minY - 1.0, this.z)).getBlock().getSlipperiness() * 0.91f;
             }
             this.updateVelocity(this.onGround ? 0.1f * g : 0.02f, vec3d);
             this.move(MovementType.SELF, this.getVelocity());

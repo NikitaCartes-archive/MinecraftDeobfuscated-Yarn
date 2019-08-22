@@ -22,8 +22,7 @@ extends Decorator<CountExtraChanceDecoratorConfig> {
         super(function);
     }
 
-    @Override
-    public Stream<BlockPos> getPositions(IWorld iWorld, ChunkGenerator<? extends ChunkGeneratorConfig> chunkGenerator, Random random, CountExtraChanceDecoratorConfig countExtraChanceDecoratorConfig, BlockPos blockPos) {
+    public Stream<BlockPos> method_15919(IWorld iWorld, ChunkGenerator<? extends ChunkGeneratorConfig> chunkGenerator, Random random, CountExtraChanceDecoratorConfig countExtraChanceDecoratorConfig, BlockPos blockPos) {
         int i2 = countExtraChanceDecoratorConfig.count;
         if (random.nextFloat() < countExtraChanceDecoratorConfig.extraChance) {
             i2 += countExtraChanceDecoratorConfig.extraCount;

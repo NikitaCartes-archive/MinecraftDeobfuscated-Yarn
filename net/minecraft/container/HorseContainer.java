@@ -85,11 +85,31 @@ extends Container {
     @Override
     public ItemStack transferSlot(PlayerEntity playerEntity, int i) {
         ItemStack itemStack = ItemStack.EMPTY;
-        Slot slot = (Slot)this.slots.get(i);
+        Slot slot = (Slot)this.slotList.get(i);
         if (slot != null && slot.hasStack()) {
             ItemStack itemStack2 = slot.getStack();
             itemStack = itemStack2.copy();
-            if (i < this.playerInv.getInvSize() ? !this.insertItem(itemStack2, this.playerInv.getInvSize(), this.slots.size(), true) : (this.getSlot(1).canInsert(itemStack2) && !this.getSlot(1).hasStack() ? !this.insertItem(itemStack2, 1, 2, false) : (this.getSlot(0).canInsert(itemStack2) ? !this.insertItem(itemStack2, 0, 1, false) : this.playerInv.getInvSize() <= 2 || !this.insertItem(itemStack2, 2, this.playerInv.getInvSize(), false)))) {
+            int j = this.playerInv.getInvSize();
+            if (i < j) {
+                if (!this.insertItem(itemStack2, j, this.slotList.size(), true)) {
+                    return ItemStack.EMPTY;
+                }
+            } else if (this.getSlot(1).canInsert(itemStack2) && !this.getSlot(1).hasStack()) {
+                if (!this.insertItem(itemStack2, 1, 2, false)) {
+                    return ItemStack.EMPTY;
+                }
+            } else if (this.getSlot(0).canInsert(itemStack2)) {
+                if (!this.insertItem(itemStack2, 0, 1, false)) {
+                    return ItemStack.EMPTY;
+                }
+            } else if (j <= 2 || !this.insertItem(itemStack2, 2, j, false)) {
+                int l;
+                int k = j;
+                int m = l = k + 27;
+                int n = m + 9;
+                if (i >= m && i < n ? !this.insertItem(itemStack2, k, l, false) : (i >= k && i < l ? !this.insertItem(itemStack2, m, n, false) : !this.insertItem(itemStack2, m, l, false))) {
+                    return ItemStack.EMPTY;
+                }
                 return ItemStack.EMPTY;
             }
             if (itemStack2.isEmpty()) {

@@ -58,8 +58,7 @@ public class ServerMetadata {
     public static class Deserializer
     implements JsonDeserializer<ServerMetadata>,
     JsonSerializer<ServerMetadata> {
-        @Override
-        public ServerMetadata deserialize(JsonElement jsonElement, Type type, JsonDeserializationContext jsonDeserializationContext) throws JsonParseException {
+        public ServerMetadata method_12691(JsonElement jsonElement, Type type, JsonDeserializationContext jsonDeserializationContext) throws JsonParseException {
             JsonObject jsonObject = JsonHelper.asObject(jsonElement, "status");
             ServerMetadata serverMetadata = new ServerMetadata();
             if (jsonObject.has("description")) {
@@ -77,8 +76,7 @@ public class ServerMetadata {
             return serverMetadata;
         }
 
-        @Override
-        public JsonElement serialize(ServerMetadata serverMetadata, Type type, JsonSerializationContext jsonSerializationContext) {
+        public JsonElement method_12692(ServerMetadata serverMetadata, Type type, JsonSerializationContext jsonSerializationContext) {
             JsonObject jsonObject = new JsonObject();
             if (serverMetadata.getDescription() != null) {
                 jsonObject.add("description", jsonSerializationContext.serialize(serverMetadata.getDescription()));
@@ -97,12 +95,12 @@ public class ServerMetadata {
 
         @Override
         public /* synthetic */ JsonElement serialize(Object object, Type type, JsonSerializationContext jsonSerializationContext) {
-            return this.serialize((ServerMetadata)object, type, jsonSerializationContext);
+            return this.method_12692((ServerMetadata)object, type, jsonSerializationContext);
         }
 
         @Override
         public /* synthetic */ Object deserialize(JsonElement jsonElement, Type type, JsonDeserializationContext jsonDeserializationContext) throws JsonParseException {
-            return this.deserialize(jsonElement, type, jsonDeserializationContext);
+            return this.method_12691(jsonElement, type, jsonDeserializationContext);
         }
     }
 
@@ -126,14 +124,12 @@ public class ServerMetadata {
         public static class Serializer
         implements JsonDeserializer<Version>,
         JsonSerializer<Version> {
-            @Override
-            public Version deserialize(JsonElement jsonElement, Type type, JsonDeserializationContext jsonDeserializationContext) throws JsonParseException {
+            public Version method_12695(JsonElement jsonElement, Type type, JsonDeserializationContext jsonDeserializationContext) throws JsonParseException {
                 JsonObject jsonObject = JsonHelper.asObject(jsonElement, "version");
                 return new Version(JsonHelper.getString(jsonObject, "name"), JsonHelper.getInt(jsonObject, "protocol"));
             }
 
-            @Override
-            public JsonElement serialize(Version version, Type type, JsonSerializationContext jsonSerializationContext) {
+            public JsonElement method_12696(Version version, Type type, JsonSerializationContext jsonSerializationContext) {
                 JsonObject jsonObject = new JsonObject();
                 jsonObject.addProperty("name", version.getGameVersion());
                 jsonObject.addProperty("protocol", version.getProtocolVersion());
@@ -142,12 +138,12 @@ public class ServerMetadata {
 
             @Override
             public /* synthetic */ JsonElement serialize(Object object, Type type, JsonSerializationContext jsonSerializationContext) {
-                return this.serialize((Version)object, type, jsonSerializationContext);
+                return this.method_12696((Version)object, type, jsonSerializationContext);
             }
 
             @Override
             public /* synthetic */ Object deserialize(JsonElement jsonElement, Type type, JsonDeserializationContext jsonDeserializationContext) throws JsonParseException {
-                return this.deserialize(jsonElement, type, jsonDeserializationContext);
+                return this.method_12695(jsonElement, type, jsonDeserializationContext);
             }
         }
     }
@@ -181,8 +177,7 @@ public class ServerMetadata {
         public static class Deserializer
         implements JsonDeserializer<Players>,
         JsonSerializer<Players> {
-            @Override
-            public Players deserialize(JsonElement jsonElement, Type type, JsonDeserializationContext jsonDeserializationContext) throws JsonParseException {
+            public Players method_12689(JsonElement jsonElement, Type type, JsonDeserializationContext jsonDeserializationContext) throws JsonParseException {
                 JsonArray jsonArray;
                 JsonObject jsonObject = JsonHelper.asObject(jsonElement, "players");
                 Players players = new Players(JsonHelper.getInt(jsonObject, "max"), JsonHelper.getInt(jsonObject, "online"));
@@ -198,8 +193,7 @@ public class ServerMetadata {
                 return players;
             }
 
-            @Override
-            public JsonElement serialize(Players players, Type type, JsonSerializationContext jsonSerializationContext) {
+            public JsonElement method_12690(Players players, Type type, JsonSerializationContext jsonSerializationContext) {
                 JsonObject jsonObject = new JsonObject();
                 jsonObject.addProperty("max", players.getPlayerLimit());
                 jsonObject.addProperty("online", players.getOnlinePlayerCount());
@@ -219,12 +213,12 @@ public class ServerMetadata {
 
             @Override
             public /* synthetic */ JsonElement serialize(Object object, Type type, JsonSerializationContext jsonSerializationContext) {
-                return this.serialize((Players)object, type, jsonSerializationContext);
+                return this.method_12690((Players)object, type, jsonSerializationContext);
             }
 
             @Override
             public /* synthetic */ Object deserialize(JsonElement jsonElement, Type type, JsonDeserializationContext jsonDeserializationContext) throws JsonParseException {
-                return this.deserialize(jsonElement, type, jsonDeserializationContext);
+                return this.method_12689(jsonElement, type, jsonDeserializationContext);
             }
         }
     }

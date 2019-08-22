@@ -17,7 +17,7 @@ import net.minecraft.util.JsonHelper;
 
 @Environment(value=EnvType.CLIENT)
 public class Transformation {
-    public static final Transformation IDENTITY = new Transformation(new Vector3f(), new Vector3f(), new Vector3f(1.0f, 1.0f, 1.0f));
+    public static final Transformation NONE = new Transformation(new Vector3f(), new Vector3f(), new Vector3f(1.0f, 1.0f, 1.0f));
     public final Vector3f rotation;
     public final Vector3f translation;
     public final Vector3f scale;
@@ -56,8 +56,7 @@ public class Transformation {
         protected Deserializer() {
         }
 
-        @Override
-        public Transformation deserialize(JsonElement jsonElement, Type type, JsonDeserializationContext jsonDeserializationContext) throws JsonParseException {
+        public Transformation method_3494(JsonElement jsonElement, Type type, JsonDeserializationContext jsonDeserializationContext) throws JsonParseException {
             JsonObject jsonObject = jsonElement.getAsJsonObject();
             Vector3f vector3f = this.parseVector3f(jsonObject, "rotation", DEFAULT_ROATATION);
             Vector3f vector3f2 = this.parseVector3f(jsonObject, "translation", DEFAULT_TRANSLATION);
@@ -85,7 +84,7 @@ public class Transformation {
 
         @Override
         public /* synthetic */ Object deserialize(JsonElement jsonElement, Type type, JsonDeserializationContext jsonDeserializationContext) throws JsonParseException {
-            return this.deserialize(jsonElement, type, jsonDeserializationContext);
+            return this.method_3494(jsonElement, type, jsonDeserializationContext);
         }
     }
 }

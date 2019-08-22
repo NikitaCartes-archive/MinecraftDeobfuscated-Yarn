@@ -3,10 +3,11 @@
  */
 package net.minecraft.client.render.entity;
 
-import com.mojang.blaze3d.platform.GlStateManager;
+import com.mojang.blaze3d.systems.RenderSystem;
 import java.util.Random;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.class_4493;
 import net.minecraft.client.render.BufferBuilder;
 import net.minecraft.client.render.Tessellator;
 import net.minecraft.client.render.VertexFormats;
@@ -23,14 +24,13 @@ extends EntityRenderer<LightningEntity> {
         super(entityRenderDispatcher);
     }
 
-    @Override
-    public void render(LightningEntity lightningEntity, double d, double e, double f, float g, float h) {
+    public void method_4034(LightningEntity lightningEntity, double d, double e, double f, float g, float h) {
         Tessellator tessellator = Tessellator.getInstance();
-        BufferBuilder bufferBuilder = tessellator.getBuffer();
-        GlStateManager.disableTexture();
-        GlStateManager.disableLighting();
-        GlStateManager.enableBlend();
-        GlStateManager.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE);
+        BufferBuilder bufferBuilder = tessellator.getBufferBuilder();
+        RenderSystem.disableTexture();
+        RenderSystem.disableLighting();
+        RenderSystem.enableBlend();
+        RenderSystem.blendFunc(class_4493.class_4535.SRC_ALPHA, class_4493.class_4534.ONE);
         double[] ds = new double[8];
         double[] es = new double[8];
         double i = 0.0;
@@ -102,14 +102,13 @@ extends EntityRenderer<LightningEntity> {
                 }
             }
         }
-        GlStateManager.disableBlend();
-        GlStateManager.enableLighting();
-        GlStateManager.enableTexture();
+        RenderSystem.disableBlend();
+        RenderSystem.enableLighting();
+        RenderSystem.enableTexture();
     }
 
-    @Override
     @Nullable
-    protected Identifier getTexture(LightningEntity lightningEntity) {
+    protected Identifier method_4033(LightningEntity lightningEntity) {
         return null;
     }
 }

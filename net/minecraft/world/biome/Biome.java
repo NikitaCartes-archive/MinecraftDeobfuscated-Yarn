@@ -27,7 +27,7 @@ import net.minecraft.fluid.Fluids;
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.IdList;
-import net.minecraft.util.Util;
+import net.minecraft.util.SystemUtil;
 import net.minecraft.util.WeightedPicker;
 import net.minecraft.util.crash.CrashException;
 import net.minecraft.util.crash.CrashReport;
@@ -35,9 +35,9 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.noise.OctaveSimplexNoiseSampler;
 import net.minecraft.util.registry.Registry;
-import net.minecraft.world.CollisionView;
 import net.minecraft.world.IWorld;
 import net.minecraft.world.LightType;
+import net.minecraft.world.ViewableWorld;
 import net.minecraft.world.chunk.Chunk;
 import net.minecraft.world.gen.ChunkRandom;
 import net.minecraft.world.gen.GenerationStep;
@@ -85,7 +85,7 @@ public abstract class Biome {
     protected final List<ConfiguredFeature<?>> flowerFeatures = Lists.newArrayList();
     protected final Map<StructureFeature<?>, FeatureConfig> structureFeatures = Maps.newHashMap();
     private final Map<EntityCategory, List<SpawnEntry>> spawns = Maps.newHashMap();
-    private final ThreadLocal<Long2FloatLinkedOpenHashMap> temperatureCache = ThreadLocal.withInitial(() -> Util.make(() -> {
+    private final ThreadLocal<Long2FloatLinkedOpenHashMap> temperatureCache = ThreadLocal.withInitial(() -> SystemUtil.get(() -> {
         Long2FloatLinkedOpenHashMap long2FloatLinkedOpenHashMap = new Long2FloatLinkedOpenHashMap(1024, 0.25f){
 
             @Override
@@ -97,7 +97,7 @@ public abstract class Biome {
     }));
 
     @Nullable
-    public static Biome getModifiedBiome(Biome biome) {
+    public static Biome getParentBiome(Biome biome) {
         return PARENT_BIOME_ID_MAP.get(Registry.BIOME.getRawId(biome));
     }
 
@@ -186,23 +186,23 @@ public abstract class Biome {
         return g;
     }
 
-    public boolean canSetSnow(CollisionView collisionView, BlockPos blockPos) {
-        return this.canSetSnow(collisionView, blockPos, true);
+    public boolean canSetSnow(ViewableWorld viewableWorld, BlockPos blockPos) {
+        return this.canSetSnow(viewableWorld, blockPos, true);
     }
 
-    public boolean canSetSnow(CollisionView collisionView, BlockPos blockPos, boolean bl) {
+    public boolean canSetSnow(ViewableWorld viewableWorld, BlockPos blockPos, boolean bl) {
         if (this.getTemperature(blockPos) >= 0.15f) {
             return false;
         }
-        if (blockPos.getY() >= 0 && blockPos.getY() < 256 && collisionView.getLightLevel(LightType.BLOCK, blockPos) < 10) {
-            BlockState blockState = collisionView.getBlockState(blockPos);
-            FluidState fluidState = collisionView.getFluidState(blockPos);
+        if (blockPos.getY() >= 0 && blockPos.getY() < 256 && viewableWorld.getLightLevel(LightType.BLOCK, blockPos) < 10) {
+            BlockState blockState = viewableWorld.getBlockState(blockPos);
+            FluidState fluidState = viewableWorld.getFluidState(blockPos);
             if (fluidState.getFluid() == Fluids.WATER && blockState.getBlock() instanceof FluidBlock) {
                 boolean bl2;
                 if (!bl) {
                     return true;
                 }
-                boolean bl3 = bl2 = collisionView.isWaterAt(blockPos.west()) && collisionView.isWaterAt(blockPos.east()) && collisionView.isWaterAt(blockPos.north()) && collisionView.isWaterAt(blockPos.south());
+                boolean bl3 = bl2 = viewableWorld.isWaterAt(blockPos.west()) && viewableWorld.isWaterAt(blockPos.east()) && viewableWorld.isWaterAt(blockPos.north()) && viewableWorld.isWaterAt(blockPos.south());
                 if (!bl2) {
                     return true;
                 }
@@ -211,12 +211,12 @@ public abstract class Biome {
         return false;
     }
 
-    public boolean canSetIce(CollisionView collisionView, BlockPos blockPos) {
+    public boolean canSetIce(ViewableWorld viewableWorld, BlockPos blockPos) {
         BlockState blockState;
         if (this.getTemperature(blockPos) >= 0.15f) {
             return false;
         }
-        return blockPos.getY() >= 0 && blockPos.getY() < 256 && collisionView.getLightLevel(LightType.BLOCK, blockPos) < 10 && (blockState = collisionView.getBlockState(blockPos)).isAir() && Blocks.SNOW.getDefaultState().canPlaceAt(collisionView, blockPos);
+        return blockPos.getY() >= 0 && blockPos.getY() < 256 && viewableWorld.getLightLevel(LightType.BLOCK, blockPos) < 10 && (blockState = viewableWorld.getBlockState(blockPos)).isAir() && Blocks.SNOW.getDefaultState().canPlaceAt(viewableWorld, blockPos);
     }
 
     public void addFeature(GenerationStep.Feature feature, ConfiguredFeature<?> configuredFeature) {
@@ -317,7 +317,7 @@ public abstract class Biome {
 
     public String getTranslationKey() {
         if (this.translationKey == null) {
-            this.translationKey = Util.createTranslationKey("biome", Registry.BIOME.getId(this));
+            this.translationKey = SystemUtil.createTranslationKey("biome", Registry.BIOME.getId(this));
         }
         return this.translationKey;
     }

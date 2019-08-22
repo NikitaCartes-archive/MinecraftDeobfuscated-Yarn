@@ -28,8 +28,7 @@ extends MessageToByteEncoder<Packet<?>> {
         this.side = networkSide;
     }
 
-    @Override
-    protected void encode(ChannelHandlerContext channelHandlerContext, Packet<?> packet, ByteBuf byteBuf) throws Exception {
+    protected void method_10838(ChannelHandlerContext channelHandlerContext, Packet<?> packet, ByteBuf byteBuf) throws Exception {
         NetworkState networkState = channelHandlerContext.channel().attr(ClientConnection.ATTR_KEY_PROTOCOL).get();
         if (networkState == null) {
             throw new RuntimeException("ConnectionProtocol unknown: " + packet);
@@ -47,7 +46,7 @@ extends MessageToByteEncoder<Packet<?>> {
             packet.write(packetByteBuf);
         } catch (Throwable throwable) {
             LOGGER.error(throwable);
-            if (packet.isWritingErrorSkippable()) {
+            if (packet.isErrorFatal()) {
                 throw new PacketEncoderException(throwable);
             }
             throw throwable;
@@ -56,7 +55,7 @@ extends MessageToByteEncoder<Packet<?>> {
 
     @Override
     protected /* synthetic */ void encode(ChannelHandlerContext channelHandlerContext, Object object, ByteBuf byteBuf) throws Exception {
-        this.encode(channelHandlerContext, (Packet)object, byteBuf);
+        this.method_10838(channelHandlerContext, (Packet)object, byteBuf);
     }
 }
 

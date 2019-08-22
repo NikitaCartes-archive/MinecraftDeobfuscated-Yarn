@@ -26,8 +26,7 @@ extends MobEntityRenderer<T, M> {
         this.addFeature(new HeldItemFeatureRenderer(this));
     }
 
-    @Override
-    protected Identifier getTexture(T mobEntity) {
+    protected Identifier method_3982(T mobEntity) {
         return SKIN;
     }
 }

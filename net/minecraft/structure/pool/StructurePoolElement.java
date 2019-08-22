@@ -12,8 +12,8 @@ import net.minecraft.structure.StructureManager;
 import net.minecraft.structure.pool.StructurePool;
 import net.minecraft.structure.pool.StructurePoolElementType;
 import net.minecraft.util.BlockRotation;
-import net.minecraft.util.math.BlockBox;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.MutableIntBoundingBox;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.world.IWorld;
 import org.jetbrains.annotations.Nullable;
@@ -32,13 +32,13 @@ public abstract class StructurePoolElement {
 
     public abstract List<Structure.StructureBlockInfo> getStructureBlockInfos(StructureManager var1, BlockPos var2, BlockRotation var3, Random var4);
 
-    public abstract BlockBox getBoundingBox(StructureManager var1, BlockPos var2, BlockRotation var3);
+    public abstract MutableIntBoundingBox getBoundingBox(StructureManager var1, BlockPos var2, BlockRotation var3);
 
-    public abstract boolean generate(StructureManager var1, IWorld var2, BlockPos var3, BlockRotation var4, BlockBox var5, Random var6);
+    public abstract boolean generate(StructureManager var1, IWorld var2, BlockPos var3, BlockRotation var4, MutableIntBoundingBox var5, Random var6);
 
     public abstract StructurePoolElementType getType();
 
-    public void method_16756(IWorld iWorld, Structure.StructureBlockInfo structureBlockInfo, BlockPos blockPos, BlockRotation blockRotation, Random random, BlockBox blockBox) {
+    public void method_16756(IWorld iWorld, Structure.StructureBlockInfo structureBlockInfo, BlockPos blockPos, BlockRotation blockRotation, Random random, MutableIntBoundingBox mutableIntBoundingBox) {
     }
 
     public StructurePoolElement setProjection(StructurePool.Projection projection) {

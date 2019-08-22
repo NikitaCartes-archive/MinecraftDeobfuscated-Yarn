@@ -35,6 +35,7 @@ import java.util.Queue;
 import javax.crypto.SecretKey;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.client.network.packet.DisconnectS2CPacket;
 import net.minecraft.network.DecoderHandler;
 import net.minecraft.network.NetworkEncryptionUtils;
 import net.minecraft.network.NetworkSide;
@@ -50,7 +51,6 @@ import net.minecraft.network.SplitterHandler;
 import net.minecraft.network.encryption.PacketDecryptor;
 import net.minecraft.network.encryption.PacketEncryptor;
 import net.minecraft.network.listener.PacketListener;
-import net.minecraft.network.packet.s2c.play.DisconnectS2CPacket;
 import net.minecraft.server.network.ServerLoginNetworkHandler;
 import net.minecraft.server.network.ServerPlayNetworkHandler;
 import net.minecraft.text.Text;
@@ -141,8 +141,7 @@ extends SimpleChannelInboundHandler<Packet<?>> {
         }
     }
 
-    @Override
-    protected void channelRead0(ChannelHandlerContext channelHandlerContext, Packet<?> packet) throws Exception {
+    protected void method_10770(ChannelHandlerContext channelHandlerContext, Packet<?> packet) throws Exception {
         if (this.channel.isOpen()) {
             try {
                 ClientConnection.handlePacket(packet, this.packetListener);
@@ -285,7 +284,7 @@ extends SimpleChannelInboundHandler<Packet<?>> {
     }
 
     @Environment(value=EnvType.CLIENT)
-    public static ClientConnection connectLocal(SocketAddress socketAddress) {
+    public static ClientConnection connect(SocketAddress socketAddress) {
         final ClientConnection clientConnection = new ClientConnection(NetworkSide.CLIENTBOUND);
         ((Bootstrap)((Bootstrap)((Bootstrap)new Bootstrap().group(CLIENT_IO_GROUP_LOCAL.get())).handler(new ChannelInitializer<Channel>(){
 
@@ -329,7 +328,7 @@ extends SimpleChannelInboundHandler<Packet<?>> {
         this.channel.config().setAutoRead(false);
     }
 
-    public void setCompressionThreshold(int i) {
+    public void setMinCompressedSize(int i) {
         if (i >= 0) {
             if (this.channel.pipeline().get("decompress") instanceof PacketInflater) {
                 ((PacketInflater)this.channel.pipeline().get("decompress")).setCompressionThreshold(i);
@@ -379,7 +378,7 @@ extends SimpleChannelInboundHandler<Packet<?>> {
 
     @Override
     protected /* synthetic */ void channelRead0(ChannelHandlerContext channelHandlerContext, Object object) throws Exception {
-        this.channelRead0(channelHandlerContext, (Packet)object);
+        this.method_10770(channelHandlerContext, (Packet)object);
     }
 
     static class PacketWrapper {

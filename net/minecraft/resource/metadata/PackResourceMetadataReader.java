@@ -12,8 +12,7 @@ import net.minecraft.util.JsonHelper;
 
 public class PackResourceMetadataReader
 implements ResourceMetadataReader<PackResourceMetadata> {
-    @Override
-    public PackResourceMetadata fromJson(JsonObject jsonObject) {
+    public PackResourceMetadata method_14426(JsonObject jsonObject) {
         Text text = Text.Serializer.fromJson(jsonObject.get("description"));
         if (text == null) {
             throw new JsonParseException("Invalid/missing description!");
@@ -29,7 +28,7 @@ implements ResourceMetadataReader<PackResourceMetadata> {
 
     @Override
     public /* synthetic */ Object fromJson(JsonObject jsonObject) {
-        return this.fromJson(jsonObject);
+        return this.method_14426(jsonObject);
     }
 }
 

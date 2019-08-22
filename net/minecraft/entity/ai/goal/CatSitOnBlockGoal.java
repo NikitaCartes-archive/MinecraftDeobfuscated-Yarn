@@ -14,7 +14,7 @@ import net.minecraft.entity.ai.goal.MoveToTargetPosGoal;
 import net.minecraft.entity.passive.CatEntity;
 import net.minecraft.tag.BlockTags;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.CollisionView;
+import net.minecraft.world.ViewableWorld;
 
 public class CatSitOnBlockGoal
 extends MoveToTargetPosGoal {
@@ -54,14 +54,14 @@ extends MoveToTargetPosGoal {
     }
 
     @Override
-    protected boolean isTargetPos(CollisionView collisionView, BlockPos blockPos) {
-        if (!collisionView.isAir(blockPos.up())) {
+    protected boolean isTargetPos(ViewableWorld viewableWorld, BlockPos blockPos) {
+        if (!viewableWorld.isAir(blockPos.up())) {
             return false;
         }
-        BlockState blockState = collisionView.getBlockState(blockPos);
+        BlockState blockState = viewableWorld.getBlockState(blockPos);
         Block block = blockState.getBlock();
         if (block == Blocks.CHEST) {
-            return ChestBlockEntity.getPlayersLookingInChestCount(collisionView, blockPos) < 1;
+            return ChestBlockEntity.getPlayersLookingInChestCount(viewableWorld, blockPos) < 1;
         }
         if (block == Blocks.FURNACE && blockState.get(FurnaceBlock.LIT).booleanValue()) {
             return true;

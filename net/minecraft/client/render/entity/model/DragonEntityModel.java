@@ -3,9 +3,10 @@
  */
 package net.minecraft.client.render.entity.model;
 
-import com.mojang.blaze3d.platform.GlStateManager;
+import com.mojang.blaze3d.systems.RenderSystem;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.class_4493;
 import net.minecraft.client.model.ModelPart;
 import net.minecraft.client.render.entity.model.EntityModel;
 import net.minecraft.entity.Entity;
@@ -43,66 +44,64 @@ extends EntityModel<EnderDragonEntity> {
         this.head.addCuboid("scale", 3.0f, -12.0f, -4.0f, 2, 4, 6, f, 0, 0);
         this.head.addCuboid("nostril", 3.0f, -3.0f, -22.0f, 2, 2, 4, f, 112, 0);
         this.jaw = new ModelPart(this, "jaw");
-        this.jaw.setPivot(0.0f, 4.0f, -8.0f);
+        this.jaw.setRotationPoint(0.0f, 4.0f, -8.0f);
         this.jaw.addCuboid("jaw", -6.0f, 0.0f, -16.0f, 12, 4, 16, f, 176, 65);
         this.head.addChild(this.jaw);
         this.neck = new ModelPart(this, "neck");
         this.neck.addCuboid("box", -5.0f, -5.0f, -5.0f, 10, 10, 10, f, 192, 104);
         this.neck.addCuboid("scale", -1.0f, -9.0f, -3.0f, 2, 4, 6, f, 48, 0);
         this.body = new ModelPart(this, "body");
-        this.body.setPivot(0.0f, 4.0f, 8.0f);
+        this.body.setRotationPoint(0.0f, 4.0f, 8.0f);
         this.body.addCuboid("body", -12.0f, 0.0f, -16.0f, 24, 24, 64, f, 0, 0);
         this.body.addCuboid("scale", -1.0f, -6.0f, -10.0f, 2, 6, 12, f, 220, 53);
         this.body.addCuboid("scale", -1.0f, -6.0f, 10.0f, 2, 6, 12, f, 220, 53);
         this.body.addCuboid("scale", -1.0f, -6.0f, 30.0f, 2, 6, 12, f, 220, 53);
         this.wing = new ModelPart(this, "wing");
-        this.wing.setPivot(-12.0f, 5.0f, 2.0f);
+        this.wing.setRotationPoint(-12.0f, 5.0f, 2.0f);
         this.wing.addCuboid("bone", -56.0f, -4.0f, -4.0f, 56, 8, 8, f, 112, 88);
         this.wing.addCuboid("skin", -56.0f, 0.0f, 2.0f, 56, 0, 56, f, -56, 88);
         this.wingTip = new ModelPart(this, "wingtip");
-        this.wingTip.setPivot(-56.0f, 0.0f, 0.0f);
+        this.wingTip.setRotationPoint(-56.0f, 0.0f, 0.0f);
         this.wingTip.addCuboid("bone", -56.0f, -2.0f, -2.0f, 56, 4, 4, f, 112, 136);
         this.wingTip.addCuboid("skin", -56.0f, 0.0f, 2.0f, 56, 0, 56, f, -56, 144);
         this.wing.addChild(this.wingTip);
         this.frontLeg = new ModelPart(this, "frontleg");
-        this.frontLeg.setPivot(-12.0f, 20.0f, 2.0f);
+        this.frontLeg.setRotationPoint(-12.0f, 20.0f, 2.0f);
         this.frontLeg.addCuboid("main", -4.0f, -4.0f, -4.0f, 8, 24, 8, f, 112, 104);
         this.frontLegTip = new ModelPart(this, "frontlegtip");
-        this.frontLegTip.setPivot(0.0f, 20.0f, -1.0f);
+        this.frontLegTip.setRotationPoint(0.0f, 20.0f, -1.0f);
         this.frontLegTip.addCuboid("main", -3.0f, -1.0f, -3.0f, 6, 24, 6, f, 226, 138);
         this.frontLeg.addChild(this.frontLegTip);
         this.frontFoot = new ModelPart(this, "frontfoot");
-        this.frontFoot.setPivot(0.0f, 23.0f, 0.0f);
+        this.frontFoot.setRotationPoint(0.0f, 23.0f, 0.0f);
         this.frontFoot.addCuboid("main", -4.0f, 0.0f, -12.0f, 8, 4, 16, f, 144, 104);
         this.frontLegTip.addChild(this.frontFoot);
         this.rearLeg = new ModelPart(this, "rearleg");
-        this.rearLeg.setPivot(-16.0f, 16.0f, 42.0f);
+        this.rearLeg.setRotationPoint(-16.0f, 16.0f, 42.0f);
         this.rearLeg.addCuboid("main", -8.0f, -4.0f, -8.0f, 16, 32, 16, f, 0, 0);
         this.rearLegTip = new ModelPart(this, "rearlegtip");
-        this.rearLegTip.setPivot(0.0f, 32.0f, -4.0f);
+        this.rearLegTip.setRotationPoint(0.0f, 32.0f, -4.0f);
         this.rearLegTip.addCuboid("main", -6.0f, -2.0f, 0.0f, 12, 32, 12, f, 196, 0);
         this.rearLeg.addChild(this.rearLegTip);
         this.rearFoot = new ModelPart(this, "rearfoot");
-        this.rearFoot.setPivot(0.0f, 31.0f, 4.0f);
+        this.rearFoot.setRotationPoint(0.0f, 31.0f, 4.0f);
         this.rearFoot.addCuboid("main", -9.0f, 0.0f, -20.0f, 18, 6, 24, f, 112, 0);
         this.rearLegTip.addChild(this.rearFoot);
     }
 
-    @Override
-    public void animateModel(EnderDragonEntity enderDragonEntity, float f, float g, float h) {
+    public void method_17136(EnderDragonEntity enderDragonEntity, float f, float g, float h) {
         this.delta = h;
     }
 
-    @Override
-    public void render(EnderDragonEntity enderDragonEntity, float f, float g, float h, float i, float j, float k) {
+    public void method_17137(EnderDragonEntity enderDragonEntity, float f, float g, float h, float i, float j, float k) {
         float v;
-        GlStateManager.pushMatrix();
+        RenderSystem.pushMatrix();
         float l = MathHelper.lerp(this.delta, enderDragonEntity.field_7019, enderDragonEntity.field_7030);
         this.jaw.pitch = (float)(Math.sin(l * ((float)Math.PI * 2)) + 1.0) * 0.2f;
         float m = (float)(Math.sin(l * ((float)Math.PI * 2) - 1.0f) + 1.0);
         m = (m * m + m * 2.0f) * 0.05f;
-        GlStateManager.translatef(0.0f, m - 2.0f, -3.0f);
-        GlStateManager.rotatef(m * 2.0f, 1.0f, 0.0f, 0.0f);
+        RenderSystem.translatef(0.0f, m - 2.0f, -3.0f);
+        RenderSystem.rotatef(m * 2.0f, 1.0f, 0.0f, 0.0f);
         float n = 0.0f;
         float o = 20.0f;
         float p = -12.0f;
@@ -117,30 +116,30 @@ extends EntityModel<EnderDragonEntity> {
             this.neck.yaw = this.updateRotations(es[0] - ds[0]) * ((float)Math.PI / 180) * 1.5f;
             this.neck.pitch = v + enderDragonEntity.method_6823(u, ds, es) * ((float)Math.PI / 180) * 1.5f * 5.0f;
             this.neck.roll = -this.updateRotations(es[0] - (double)s) * ((float)Math.PI / 180) * 1.5f;
-            this.neck.pivotY = o;
-            this.neck.pivotZ = p;
-            this.neck.pivotX = n;
+            this.neck.rotationPointY = o;
+            this.neck.rotationPointZ = p;
+            this.neck.rotationPointX = n;
             o = (float)((double)o + Math.sin(this.neck.pitch) * 10.0);
             p = (float)((double)p - Math.cos(this.neck.yaw) * Math.cos(this.neck.pitch) * 10.0);
             n = (float)((double)n - Math.sin(this.neck.yaw) * Math.cos(this.neck.pitch) * 10.0);
             this.neck.render(k);
         }
-        this.head.pivotY = o;
-        this.head.pivotZ = p;
-        this.head.pivotX = n;
+        this.head.rotationPointY = o;
+        this.head.rotationPointZ = p;
+        this.head.rotationPointX = n;
         double[] fs = enderDragonEntity.method_6817(0, this.delta);
         this.head.yaw = this.updateRotations(fs[0] - ds[0]) * ((float)Math.PI / 180);
         this.head.pitch = this.updateRotations(enderDragonEntity.method_6823(6, ds, fs)) * ((float)Math.PI / 180) * 1.5f * 5.0f;
         this.head.roll = -this.updateRotations(fs[0] - (double)s) * ((float)Math.PI / 180);
         this.head.render(k);
-        GlStateManager.pushMatrix();
-        GlStateManager.translatef(0.0f, 1.0f, 0.0f);
-        GlStateManager.rotatef(-r * 1.5f, 0.0f, 0.0f, 1.0f);
-        GlStateManager.translatef(0.0f, -1.0f, 0.0f);
+        RenderSystem.pushMatrix();
+        RenderSystem.translatef(0.0f, 1.0f, 0.0f);
+        RenderSystem.rotatef(-r * 1.5f, 0.0f, 0.0f, 1.0f);
+        RenderSystem.translatef(0.0f, -1.0f, 0.0f);
         this.body.roll = 0.0f;
         this.body.render(k);
         for (int w = 0; w < 2; ++w) {
-            GlStateManager.enableCull();
+            RenderSystem.enableCull();
             v = l * ((float)Math.PI * 2);
             this.wing.pitch = 0.125f - (float)Math.cos(v) * 0.2f;
             this.wing.yaw = 0.25f;
@@ -155,13 +154,13 @@ extends EntityModel<EnderDragonEntity> {
             this.wing.render(k);
             this.frontLeg.render(k);
             this.rearLeg.render(k);
-            GlStateManager.scalef(-1.0f, 1.0f, 1.0f);
+            RenderSystem.scalef(-1.0f, 1.0f, 1.0f);
             if (w != 0) continue;
-            GlStateManager.cullFace(GlStateManager.FaceSides.FRONT);
+            RenderSystem.cullFace(class_4493.FaceSides.FRONT);
         }
-        GlStateManager.popMatrix();
-        GlStateManager.cullFace(GlStateManager.FaceSides.BACK);
-        GlStateManager.disableCull();
+        RenderSystem.popMatrix();
+        RenderSystem.cullFace(class_4493.FaceSides.BACK);
+        RenderSystem.disableCull();
         float x = -((float)Math.sin(l * ((float)Math.PI * 2))) * 0.0f;
         t = l * ((float)Math.PI * 2);
         o = 10.0f;
@@ -174,15 +173,15 @@ extends EntityModel<EnderDragonEntity> {
             this.neck.yaw = (this.updateRotations(fs[0] - ds[0]) * 1.5f + 180.0f) * ((float)Math.PI / 180);
             this.neck.pitch = x + (float)(fs[1] - ds[1]) * ((float)Math.PI / 180) * 1.5f * 5.0f;
             this.neck.roll = this.updateRotations(fs[0] - (double)s) * ((float)Math.PI / 180) * 1.5f;
-            this.neck.pivotY = o;
-            this.neck.pivotZ = p;
-            this.neck.pivotX = n;
+            this.neck.rotationPointY = o;
+            this.neck.rotationPointZ = p;
+            this.neck.rotationPointX = n;
             o = (float)((double)o + Math.sin(this.neck.pitch) * 10.0);
             p = (float)((double)p - Math.cos(this.neck.yaw) * Math.cos(this.neck.pitch) * 10.0);
             n = (float)((double)n - Math.sin(this.neck.yaw) * Math.cos(this.neck.pitch) * 10.0);
             this.neck.render(k);
         }
-        GlStateManager.popMatrix();
+        RenderSystem.popMatrix();
     }
 
     private float updateRotations(double d) {
@@ -197,7 +196,7 @@ extends EntityModel<EnderDragonEntity> {
 
     @Override
     public /* synthetic */ void render(Entity entity, float f, float g, float h, float i, float j, float k) {
-        this.render((EnderDragonEntity)entity, f, g, h, i, j, k);
+        this.method_17137((EnderDragonEntity)entity, f, g, h, i, j, k);
     }
 }
 

@@ -61,8 +61,7 @@ public class ModelElementTexture {
         protected Deserializer() {
         }
 
-        @Override
-        public ModelElementTexture deserialize(JsonElement jsonElement, Type type, JsonDeserializationContext jsonDeserializationContext) throws JsonParseException {
+        public ModelElementTexture method_3418(JsonElement jsonElement, Type type, JsonDeserializationContext jsonDeserializationContext) throws JsonParseException {
             JsonObject jsonObject = jsonElement.getAsJsonObject();
             float[] fs = this.deserializeUVs(jsonObject);
             int i = this.deserializeRotation(jsonObject);
@@ -95,7 +94,7 @@ public class ModelElementTexture {
 
         @Override
         public /* synthetic */ Object deserialize(JsonElement jsonElement, Type type, JsonDeserializationContext jsonDeserializationContext) throws JsonParseException {
-            return this.deserialize(jsonElement, type, jsonDeserializationContext);
+            return this.method_3418(jsonElement, type, jsonDeserializationContext);
         }
     }
 }

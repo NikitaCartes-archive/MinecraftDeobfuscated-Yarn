@@ -83,30 +83,30 @@ public class EntityPredicate {
         return this.catType == null || entity instanceof CatEntity && ((CatEntity)entity).getTexture().equals(this.catType);
     }
 
-    public static EntityPredicate fromJson(@Nullable JsonElement jsonElement) {
+    public static EntityPredicate deserialize(@Nullable JsonElement jsonElement) {
         if (jsonElement == null || jsonElement.isJsonNull()) {
             return ANY;
         }
         JsonObject jsonObject = JsonHelper.asObject(jsonElement, "entity");
         EntityTypePredicate entityTypePredicate = EntityTypePredicate.deserialize(jsonObject.get("type"));
         DistancePredicate distancePredicate = DistancePredicate.deserialize(jsonObject.get("distance"));
-        LocationPredicate locationPredicate = LocationPredicate.fromJson(jsonObject.get("location"));
+        LocationPredicate locationPredicate = LocationPredicate.deserialize(jsonObject.get("location"));
         EntityEffectPredicate entityEffectPredicate = EntityEffectPredicate.deserialize(jsonObject.get("effects"));
-        NbtPredicate nbtPredicate = NbtPredicate.fromJson(jsonObject.get("nbt"));
+        NbtPredicate nbtPredicate = NbtPredicate.deserialize(jsonObject.get("nbt"));
         EntityFlagsPredicate entityFlagsPredicate = EntityFlagsPredicate.deserialize(jsonObject.get("flags"));
         EntityEquipmentPredicate entityEquipmentPredicate = EntityEquipmentPredicate.deserialize(jsonObject.get("equipment"));
         Identifier identifier = jsonObject.has("catType") ? new Identifier(JsonHelper.getString(jsonObject, "catType")) : null;
         return new Builder().type(entityTypePredicate).distance(distancePredicate).location(locationPredicate).effects(entityEffectPredicate).nbt(nbtPredicate).flags(entityFlagsPredicate).equipment(entityEquipmentPredicate).catType(identifier).build();
     }
 
-    public static EntityPredicate[] fromJsonArray(@Nullable JsonElement jsonElement) {
+    public static EntityPredicate[] deserializeAll(@Nullable JsonElement jsonElement) {
         if (jsonElement == null || jsonElement.isJsonNull()) {
             return EMPTY;
         }
         JsonArray jsonArray = JsonHelper.asArray(jsonElement, "entities");
         EntityPredicate[] entityPredicates = new EntityPredicate[jsonArray.size()];
         for (int i = 0; i < jsonArray.size(); ++i) {
-            entityPredicates[i] = EntityPredicate.fromJson(jsonArray.get(i));
+            entityPredicates[i] = EntityPredicate.deserialize(jsonArray.get(i));
         }
         return entityPredicates;
     }
@@ -118,9 +118,9 @@ public class EntityPredicate {
         JsonObject jsonObject = new JsonObject();
         jsonObject.add("type", this.type.toJson());
         jsonObject.add("distance", this.distance.serialize());
-        jsonObject.add("location", this.location.toJson());
+        jsonObject.add("location", this.location.serialize());
         jsonObject.add("effects", this.effects.serialize());
-        jsonObject.add("nbt", this.nbt.toJson());
+        jsonObject.add("nbt", this.nbt.serialize());
         jsonObject.add("flags", this.flags.serialize());
         jsonObject.add("equipment", this.equipment.serialize());
         if (this.catType != null) {

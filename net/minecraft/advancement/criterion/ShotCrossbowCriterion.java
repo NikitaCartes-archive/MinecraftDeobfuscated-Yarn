@@ -58,14 +58,13 @@ implements Criterion<Conditions> {
         this.handlers.remove(playerAdvancementTracker);
     }
 
-    @Override
-    public Conditions conditionsFromJson(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext) {
-        ItemPredicate itemPredicate = ItemPredicate.fromJson(jsonObject.get("item"));
+    public Conditions method_9114(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext) {
+        ItemPredicate itemPredicate = ItemPredicate.deserialize(jsonObject.get("item"));
         return new Conditions(itemPredicate);
     }
 
     public void trigger(ServerPlayerEntity serverPlayerEntity, ItemStack itemStack) {
-        Handler handler = this.handlers.get(serverPlayerEntity.getAdvancementTracker());
+        Handler handler = this.handlers.get(serverPlayerEntity.getAdvancementManager());
         if (handler != null) {
             handler.trigger(itemStack);
         }
@@ -73,7 +72,7 @@ implements Criterion<Conditions> {
 
     @Override
     public /* synthetic */ CriterionConditions conditionsFromJson(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext) {
-        return this.conditionsFromJson(jsonObject, jsonDeserializationContext);
+        return this.method_9114(jsonObject, jsonDeserializationContext);
     }
 
     static class Handler {
@@ -133,7 +132,7 @@ implements Criterion<Conditions> {
         @Override
         public JsonElement toJson() {
             JsonObject jsonObject = new JsonObject();
-            jsonObject.add("item", this.item.toJson());
+            jsonObject.add("item", this.item.serialize());
             return jsonObject;
         }
     }

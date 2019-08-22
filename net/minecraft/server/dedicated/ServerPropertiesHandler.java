@@ -87,14 +87,13 @@ extends AbstractPropertiesHandler<ServerPropertiesHandler> {
         return new ServerPropertiesHandler(ServerPropertiesHandler.load(path));
     }
 
-    @Override
-    protected ServerPropertiesHandler create(Properties properties) {
+    protected ServerPropertiesHandler method_16713(Properties properties) {
         return new ServerPropertiesHandler(properties);
     }
 
     @Override
     protected /* synthetic */ AbstractPropertiesHandler create(Properties properties) {
-        return this.create(properties);
+        return this.method_16713(properties);
     }
 }
 

@@ -117,7 +117,7 @@ extends Goal {
 
     private boolean canNavigateToEntity(LivingEntity livingEntity) {
         int j;
-        this.checkCanNavigateCooldown = 10 + this.mob.getRandom().nextInt(5);
+        this.checkCanNavigateCooldown = 10 + this.mob.getRand().nextInt(5);
         Path path = this.mob.getNavigation().findPathTo(livingEntity, 0);
         if (path == null) {
             return false;

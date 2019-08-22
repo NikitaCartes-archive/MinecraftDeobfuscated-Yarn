@@ -6,7 +6,6 @@ package net.minecraft.client.texture;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
-import com.mojang.blaze3d.platform.TextureUtil;
 import java.io.Closeable;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -20,6 +19,7 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.stream.Collectors;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.class_4536;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.resource.metadata.AnimationResourceMetadata;
 import net.minecraft.client.texture.AbstractTexture;
@@ -32,7 +32,7 @@ import net.minecraft.client.util.PngFile;
 import net.minecraft.resource.Resource;
 import net.minecraft.resource.ResourceManager;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.Util;
+import net.minecraft.util.SystemUtil;
 import net.minecraft.util.crash.CrashException;
 import net.minecraft.util.crash.CrashReport;
 import net.minecraft.util.crash.CrashReportSection;
@@ -72,7 +72,7 @@ implements TickableTexture {
         this.spritesToLoad.clear();
         this.spritesToLoad.addAll(data.spriteIds);
         LOGGER.info("Created: {}x{} {}-atlas", (Object)data.width, (Object)data.height, (Object)this.atlasPath);
-        TextureUtil.prepareImage(this.getGlId(), this.mipLevel, data.width, data.height);
+        class_4536.prepareImage(this.getGlId(), this.mipLevel, data.width, data.height);
         this.clear();
         for (Sprite sprite : data.sprites) {
             this.sprites.put(sprite.getId(), sprite);
@@ -140,7 +140,7 @@ implements TickableTexture {
     }
 
     private Collection<Sprite> loadSprites(ResourceManager resourceManager, Set<Identifier> set) {
-        ArrayList<CompletableFuture<Void>> list = new ArrayList<CompletableFuture<Void>>();
+        ArrayList<CompletableFuture<Void>> list = Lists.newArrayList();
         ConcurrentLinkedQueue<Sprite> concurrentLinkedQueue = new ConcurrentLinkedQueue<Sprite>();
         for (Identifier identifier : set) {
             if (this.missingSprite.getId().equals(identifier)) continue;
@@ -159,7 +159,7 @@ implements TickableTexture {
                     return;
                 }
                 concurrentLinkedQueue.add(sprite);
-            }, Util.getServerWorkerExecutor()));
+            }, SystemUtil.getServerWorkerExecutor()));
         }
         CompletableFuture.allOf(list.toArray(new CompletableFuture[0])).join();
         return concurrentLinkedQueue;
@@ -167,7 +167,7 @@ implements TickableTexture {
 
     private List<Sprite> method_18161(ResourceManager resourceManager, TextureStitcher textureStitcher) {
         ConcurrentLinkedQueue<Sprite> concurrentLinkedQueue = new ConcurrentLinkedQueue<Sprite>();
-        ArrayList<CompletableFuture<Void>> list = new ArrayList<CompletableFuture<Void>>();
+        ArrayList<CompletableFuture<Void>> list = Lists.newArrayList();
         for (Sprite sprite : textureStitcher.getStitchedSprites()) {
             if (sprite == this.missingSprite) {
                 concurrentLinkedQueue.add(sprite);
@@ -177,10 +177,10 @@ implements TickableTexture {
                 if (this.loadSprite(resourceManager, sprite)) {
                     concurrentLinkedQueue.add(sprite);
                 }
-            }, Util.getServerWorkerExecutor()));
+            }, SystemUtil.getServerWorkerExecutor()));
         }
         CompletableFuture.allOf(list.toArray(new CompletableFuture[0])).join();
-        return new ArrayList<Sprite>(concurrentLinkedQueue);
+        return Lists.newArrayList(concurrentLinkedQueue);
     }
 
     /*

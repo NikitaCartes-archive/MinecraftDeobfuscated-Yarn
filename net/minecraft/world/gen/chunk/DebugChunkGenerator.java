@@ -22,7 +22,7 @@ import net.minecraft.world.gen.chunk.DebugChunkGeneratorConfig;
 
 public class DebugChunkGenerator
 extends ChunkGenerator<DebugChunkGeneratorConfig> {
-    private static final List<BlockState> BLOCK_STATES = StreamSupport.stream(Registry.BLOCK.spliterator(), false).flatMap(block -> block.getStateManager().getStates().stream()).collect(Collectors.toList());
+    private static final List<BlockState> BLOCK_STATES = StreamSupport.stream(Registry.BLOCK.spliterator(), false).flatMap(block -> block.getStateFactory().getStates().stream()).collect(Collectors.toList());
     private static final int X_SIDE_LENGTH = MathHelper.ceil(MathHelper.sqrt(BLOCK_STATES.size()));
     private static final int Z_SIDE_LENGTH = MathHelper.ceil((float)BLOCK_STATES.size() / (float)X_SIDE_LENGTH);
     protected static final BlockState AIR = Blocks.AIR.getDefaultState();

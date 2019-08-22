@@ -28,7 +28,7 @@ extends BasicInventory {
             this.setInvStack(i, ItemStack.EMPTY);
         }
         for (i = 0; i < listTag.size(); ++i) {
-            CompoundTag compoundTag = listTag.getCompound(i);
+            CompoundTag compoundTag = listTag.getCompoundTag(i);
             int j = compoundTag.getByte("Slot") & 0xFF;
             if (j < 0 || j >= this.getInvSize()) continue;
             this.setInvStack(j, ItemStack.fromTag(compoundTag));

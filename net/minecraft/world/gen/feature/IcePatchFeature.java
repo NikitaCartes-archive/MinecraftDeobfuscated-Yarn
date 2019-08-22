@@ -23,8 +23,7 @@ extends Feature<IcePatchFeatureConfig> {
         super(function);
     }
 
-    @Override
-    public boolean generate(IWorld iWorld, ChunkGenerator<? extends ChunkGeneratorConfig> chunkGenerator, Random random, BlockPos blockPos, IcePatchFeatureConfig icePatchFeatureConfig) {
+    public boolean method_13385(IWorld iWorld, ChunkGenerator<? extends ChunkGeneratorConfig> chunkGenerator, Random random, BlockPos blockPos, IcePatchFeatureConfig icePatchFeatureConfig) {
         while (iWorld.isAir(blockPos) && blockPos.getY() > 2) {
             blockPos = blockPos.down();
         }

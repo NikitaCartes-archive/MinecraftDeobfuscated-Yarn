@@ -48,9 +48,8 @@ implements Font {
         }
     }
 
-    @Override
     @Nullable
-    public TtfGlyph getGlyph(char c) {
+    public TtfGlyph method_2051(char c) {
         if (this.excludedCharacters.contains(c)) {
             return null;
         }
@@ -90,7 +89,7 @@ implements Font {
     @Override
     @Nullable
     public /* synthetic */ RenderableGlyph getGlyph(char c) {
-        return this.getGlyph(c);
+        return this.method_2051(c);
     }
 
     @Environment(value=EnvType.CLIENT)

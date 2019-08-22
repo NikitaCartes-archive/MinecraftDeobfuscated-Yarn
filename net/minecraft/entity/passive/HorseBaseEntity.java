@@ -617,7 +617,7 @@ JumpingMount {
         this.setOwnerUuid(playerEntity.getUuid());
         this.setTame(true);
         if (playerEntity instanceof ServerPlayerEntity) {
-            Criterions.TAME_ANIMAL.trigger((ServerPlayerEntity)playerEntity, this);
+            Criterions.TAME_ANIMAL.handle((ServerPlayerEntity)playerEntity, this);
         }
         this.world.sendEntityStatus(this, (byte)7);
         return true;
@@ -631,7 +631,7 @@ JumpingMount {
             return;
         }
         if (!(this.hasPassengers() && this.canBeControlledByRider() && this.isSaddled())) {
-            this.field_6281 = 0.02f;
+            this.flyingSpeed = 0.02f;
             super.travel(vec3d);
             return;
         }
@@ -639,7 +639,7 @@ JumpingMount {
         this.prevYaw = this.yaw = livingEntity.yaw;
         this.pitch = livingEntity.pitch * 0.5f;
         this.setRotation(this.yaw, this.pitch);
-        this.headYaw = this.field_6283 = this.yaw;
+        this.headYaw = this.bodyYaw = this.yaw;
         float f = livingEntity.sidewaysSpeed * 0.5f;
         float g = livingEntity.forwardSpeed;
         if (g <= 0.0f) {
@@ -665,7 +665,7 @@ JumpingMount {
             }
             this.jumpStrength = 0.0f;
         }
-        this.field_6281 = this.getMovementSpeed() * 0.1f;
+        this.flyingSpeed = this.getMovementSpeed() * 0.1f;
         if (this.isLogicalSideForUpdatingMovement()) {
             this.setMovementSpeed((float)this.getAttributeInstance(EntityAttributes.MOVEMENT_SPEED).getValue());
             super.travel(new Vec3d(f, vec3d.y, g));
@@ -716,7 +716,7 @@ JumpingMount {
         this.setBred(compoundTag.getBoolean("Bred"));
         this.setTemper(compoundTag.getInt("Temper"));
         this.setTame(compoundTag.getBoolean("Tame"));
-        if (compoundTag.contains("OwnerUUID", 8)) {
+        if (compoundTag.containsKey("OwnerUUID", 8)) {
             string = compoundTag.getString("OwnerUUID");
         } else {
             String string2 = compoundTag.getString("Owner");
@@ -728,7 +728,7 @@ JumpingMount {
         if ((entityAttributeInstance = this.getAttributes().get("Speed")) != null) {
             this.getAttributeInstance(EntityAttributes.MOVEMENT_SPEED).setBaseValue(entityAttributeInstance.getBaseValue() * 0.25);
         }
-        if (compoundTag.contains("SaddleItem", 10) && (itemStack = ItemStack.fromTag(compoundTag.getCompound("SaddleItem"))).getItem() == Items.SADDLE) {
+        if (compoundTag.containsKey("SaddleItem", 10) && (itemStack = ItemStack.fromTag(compoundTag.getCompound("SaddleItem"))).getItem() == Items.SADDLE) {
             this.items.setInvStack(0, itemStack);
         }
         this.updateSaddle();
@@ -836,16 +836,16 @@ JumpingMount {
         super.updatePassengerPosition(entity);
         if (entity instanceof MobEntity) {
             MobEntity mobEntity = (MobEntity)entity;
-            this.field_6283 = mobEntity.field_6283;
+            this.bodyYaw = mobEntity.bodyYaw;
         }
         if (this.lastAngryAnimationProgress > 0.0f) {
-            float f = MathHelper.sin(this.field_6283 * ((float)Math.PI / 180));
-            float g = MathHelper.cos(this.field_6283 * ((float)Math.PI / 180));
+            float f = MathHelper.sin(this.bodyYaw * ((float)Math.PI / 180));
+            float g = MathHelper.cos(this.bodyYaw * ((float)Math.PI / 180));
             float h = 0.7f * this.lastAngryAnimationProgress;
             float i = 0.15f * this.lastAngryAnimationProgress;
-            entity.updatePosition(this.x + (double)(h * f), this.y + this.getMountedHeightOffset() + entity.getHeightOffset() + (double)i, this.z - (double)(h * g));
+            entity.setPosition(this.x + (double)(h * f), this.y + this.getMountedHeightOffset() + entity.getHeightOffset() + (double)i, this.z - (double)(h * g));
             if (entity instanceof LivingEntity) {
-                ((LivingEntity)entity).field_6283 = this.field_6283;
+                ((LivingEntity)entity).bodyYaw = this.bodyYaw;
             }
         }
     }

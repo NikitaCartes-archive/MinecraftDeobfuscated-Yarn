@@ -3,13 +3,13 @@
  */
 package net.minecraft.entity.ai.pathing;
 
+import net.minecraft.client.network.DebugRendererInfoManager;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.ai.pathing.BirdPathNodeMaker;
 import net.minecraft.entity.ai.pathing.EntityNavigation;
 import net.minecraft.entity.ai.pathing.Path;
 import net.minecraft.entity.ai.pathing.PathNodeNavigator;
 import net.minecraft.entity.mob.MobEntity;
-import net.minecraft.server.network.DebugInfoSender;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
@@ -61,7 +61,7 @@ extends EntityNavigation {
                 this.currentPath.setCurrentNodeIndex(this.currentPath.getCurrentNodeIndex() + 1);
             }
         }
-        DebugInfoSender.sendPathfindingData(this.world, this.entity, this.currentPath, this.field_6683);
+        DebugRendererInfoManager.sendPathfindingData(this.world, this.entity, this.currentPath, this.field_6683);
         if (this.isIdle()) {
             return;
         }
@@ -127,7 +127,7 @@ extends EntityNavigation {
     }
 
     public void setCanPathThroughDoors(boolean bl) {
-        this.nodeMaker.setCanOpenDoors(bl);
+        this.nodeMaker.setCanPathThroughDoors(bl);
     }
 
     public void setCanEnterOpenDoors(boolean bl) {

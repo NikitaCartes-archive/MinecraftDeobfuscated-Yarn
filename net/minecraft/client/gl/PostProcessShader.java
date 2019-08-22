@@ -4,13 +4,13 @@
 package net.minecraft.client.gl;
 
 import com.google.common.collect.Lists;
-import com.mojang.blaze3d.platform.GlStateManager;
+import com.mojang.blaze3d.systems.RenderSystem;
 import java.io.IOException;
 import java.util.List;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.gl.Framebuffer;
+import net.minecraft.client.gl.GlFramebuffer;
 import net.minecraft.client.gl.JsonGlProgram;
 import net.minecraft.client.render.BufferBuilder;
 import net.minecraft.client.render.Tessellator;
@@ -22,18 +22,18 @@ import net.minecraft.resource.ResourceManager;
 public class PostProcessShader
 implements AutoCloseable {
     private final JsonGlProgram program;
-    public final Framebuffer input;
-    public final Framebuffer output;
+    public final GlFramebuffer input;
+    public final GlFramebuffer output;
     private final List<Object> samplerValues = Lists.newArrayList();
     private final List<String> samplerNames = Lists.newArrayList();
     private final List<Integer> samplerWidths = Lists.newArrayList();
     private final List<Integer> samplerHeights = Lists.newArrayList();
     private Matrix4f projectionMatrix;
 
-    public PostProcessShader(ResourceManager resourceManager, String string, Framebuffer framebuffer, Framebuffer framebuffer2) throws IOException {
+    public PostProcessShader(ResourceManager resourceManager, String string, GlFramebuffer glFramebuffer, GlFramebuffer glFramebuffer2) throws IOException {
         this.program = new JsonGlProgram(resourceManager, string);
-        this.input = framebuffer;
-        this.output = framebuffer2;
+        this.input = glFramebuffer;
+        this.output = glFramebuffer2;
     }
 
     @Override
@@ -49,15 +49,15 @@ implements AutoCloseable {
     }
 
     private void setGlState() {
-        GlStateManager.color4f(1.0f, 1.0f, 1.0f, 1.0f);
-        GlStateManager.disableBlend();
-        GlStateManager.disableDepthTest();
-        GlStateManager.disableAlphaTest();
-        GlStateManager.disableFog();
-        GlStateManager.disableLighting();
-        GlStateManager.disableColorMaterial();
-        GlStateManager.enableTexture();
-        GlStateManager.bindTexture(0);
+        RenderSystem.color4f(1.0f, 1.0f, 1.0f, 1.0f);
+        RenderSystem.disableBlend();
+        RenderSystem.disableDepthTest();
+        RenderSystem.disableAlphaTest();
+        RenderSystem.disableFog();
+        RenderSystem.disableLighting();
+        RenderSystem.disableColorMaterial();
+        RenderSystem.enableTexture();
+        RenderSystem.bindTexture(0);
     }
 
     public void setProjectionMatrix(Matrix4f matrix4f) {
@@ -67,16 +67,16 @@ implements AutoCloseable {
     public void render(float f) {
         this.setGlState();
         this.input.endWrite();
-        float g = this.output.textureWidth;
-        float h = this.output.textureHeight;
-        GlStateManager.viewport(0, 0, (int)g, (int)h);
+        float g = this.output.texWidth;
+        float h = this.output.texHeight;
+        RenderSystem.viewport(0, 0, (int)g, (int)h);
         this.program.bindSampler("DiffuseSampler", this.input);
         for (int i = 0; i < this.samplerValues.size(); ++i) {
             this.program.bindSampler(this.samplerNames.get(i), this.samplerValues.get(i));
             this.program.getUniformByNameOrDummy("AuxSize" + i).set(this.samplerWidths.get(i).intValue(), this.samplerHeights.get(i).intValue());
         }
         this.program.getUniformByNameOrDummy("ProjMat").set(this.projectionMatrix);
-        this.program.getUniformByNameOrDummy("InSize").set(this.input.textureWidth, this.input.textureHeight);
+        this.program.getUniformByNameOrDummy("InSize").set(this.input.texWidth, this.input.texHeight);
         this.program.getUniformByNameOrDummy("OutSize").set(g, h);
         this.program.getUniformByNameOrDummy("Time").set(f);
         MinecraftClient minecraftClient = MinecraftClient.getInstance();
@@ -84,24 +84,24 @@ implements AutoCloseable {
         this.program.enable();
         this.output.clear(MinecraftClient.IS_SYSTEM_MAC);
         this.output.beginWrite(false);
-        GlStateManager.depthMask(false);
-        GlStateManager.colorMask(true, true, true, true);
+        RenderSystem.depthMask(false);
+        RenderSystem.colorMask(true, true, true, true);
         Tessellator tessellator = Tessellator.getInstance();
-        BufferBuilder bufferBuilder = tessellator.getBuffer();
+        BufferBuilder bufferBuilder = tessellator.getBufferBuilder();
         bufferBuilder.begin(7, VertexFormats.POSITION_COLOR);
         bufferBuilder.vertex(0.0, 0.0, 500.0).color(255, 255, 255, 255).next();
         bufferBuilder.vertex(g, 0.0, 500.0).color(255, 255, 255, 255).next();
         bufferBuilder.vertex(g, h, 500.0).color(255, 255, 255, 255).next();
         bufferBuilder.vertex(0.0, h, 500.0).color(255, 255, 255, 255).next();
         tessellator.draw();
-        GlStateManager.depthMask(true);
-        GlStateManager.colorMask(true, true, true, true);
+        RenderSystem.depthMask(true);
+        RenderSystem.colorMask(true, true, true, true);
         this.program.disable();
         this.output.endWrite();
         this.input.endRead();
         for (Object object : this.samplerValues) {
-            if (!(object instanceof Framebuffer)) continue;
-            ((Framebuffer)object).endRead();
+            if (!(object instanceof GlFramebuffer)) continue;
+            ((GlFramebuffer)object).endRead();
         }
     }
 

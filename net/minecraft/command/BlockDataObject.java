@@ -72,17 +72,17 @@ implements DataCommandObject {
     }
 
     @Override
-    public Text feedbackModify() {
+    public Text getModifiedFeedback() {
         return new TranslatableText("commands.data.block.modified", this.pos.getX(), this.pos.getY(), this.pos.getZ());
     }
 
     @Override
-    public Text feedbackQuery(Tag tag) {
+    public Text getQueryFeedback(Tag tag) {
         return new TranslatableText("commands.data.block.query", this.pos.getX(), this.pos.getY(), this.pos.getZ(), tag.toText());
     }
 
     @Override
-    public Text feedbackGet(NbtPathArgumentType.NbtPath nbtPath, double d, int i) {
+    public Text getGetFeedback(NbtPathArgumentType.NbtPath nbtPath, double d, int i) {
         return new TranslatableText("commands.data.block.get", nbtPath, this.pos.getX(), this.pos.getY(), this.pos.getZ(), String.format(Locale.ROOT, "%.2f", d), i);
     }
 }

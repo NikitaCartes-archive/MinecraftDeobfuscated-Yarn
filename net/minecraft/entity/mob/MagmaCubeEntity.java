@@ -12,7 +12,6 @@ import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.mob.SlimeEntity;
 import net.minecraft.fluid.Fluid;
-import net.minecraft.loot.LootTables;
 import net.minecraft.particle.ParticleEffect;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.sound.SoundEvent;
@@ -22,10 +21,11 @@ import net.minecraft.tag.Tag;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
-import net.minecraft.world.CollisionView;
 import net.minecraft.world.Difficulty;
 import net.minecraft.world.IWorld;
+import net.minecraft.world.ViewableWorld;
 import net.minecraft.world.World;
+import net.minecraft.world.loot.LootTables;
 
 public class MagmaCubeEntity
 extends SlimeEntity {
@@ -44,8 +44,8 @@ extends SlimeEntity {
     }
 
     @Override
-    public boolean canSpawn(CollisionView collisionView) {
-        return collisionView.intersectsEntities(this) && !collisionView.intersectsFluid(this.getBoundingBox());
+    public boolean canSpawn(ViewableWorld viewableWorld) {
+        return viewableWorld.intersectsEntities(this) && !viewableWorld.intersectsFluid(this.getBoundingBox());
     }
 
     @Override

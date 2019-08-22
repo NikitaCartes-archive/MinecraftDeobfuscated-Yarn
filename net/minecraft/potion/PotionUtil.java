@@ -59,11 +59,11 @@ public class PotionUtil {
     }
 
     public static void getCustomPotionEffects(@Nullable CompoundTag compoundTag, List<StatusEffectInstance> list) {
-        if (compoundTag != null && compoundTag.contains("CustomPotionEffects", 9)) {
+        if (compoundTag != null && compoundTag.containsKey("CustomPotionEffects", 9)) {
             ListTag listTag = compoundTag.getList("CustomPotionEffects", 10);
             for (int i = 0; i < listTag.size(); ++i) {
-                CompoundTag compoundTag2 = listTag.getCompound(i);
-                StatusEffectInstance statusEffectInstance = StatusEffectInstance.fromTag(compoundTag2);
+                CompoundTag compoundTag2 = listTag.getCompoundTag(i);
+                StatusEffectInstance statusEffectInstance = StatusEffectInstance.deserialize(compoundTag2);
                 if (statusEffectInstance == null) continue;
                 list.add(statusEffectInstance);
             }
@@ -72,7 +72,7 @@ public class PotionUtil {
 
     public static int getColor(ItemStack itemStack) {
         CompoundTag compoundTag = itemStack.getTag();
-        if (compoundTag != null && compoundTag.contains("CustomPotionColor", 99)) {
+        if (compoundTag != null && compoundTag.containsKey("CustomPotionColor", 99)) {
             return compoundTag.getInt("CustomPotionColor");
         }
         return PotionUtil.getPotion(itemStack) == Potions.EMPTY ? 0xF800F8 : PotionUtil.getColor(PotionUtil.getPotionEffects(itemStack));
@@ -137,7 +137,7 @@ public class PotionUtil {
         CompoundTag compoundTag = itemStack.getOrCreateTag();
         ListTag listTag = compoundTag.getList("CustomPotionEffects", 9);
         for (StatusEffectInstance statusEffectInstance : collection) {
-            listTag.add(statusEffectInstance.toTag(new CompoundTag()));
+            listTag.add(statusEffectInstance.serialize(new CompoundTag()));
         }
         compoundTag.put("CustomPotionEffects", listTag);
         return itemStack;

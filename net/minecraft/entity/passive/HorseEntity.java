@@ -80,7 +80,7 @@ extends HorseBaseEntity {
         ItemStack itemStack;
         super.readCustomDataFromTag(compoundTag);
         this.setVariant(compoundTag.getInt("Variant"));
-        if (compoundTag.contains("ArmorItem", 10) && !(itemStack = ItemStack.fromTag(compoundTag.getCompound("ArmorItem"))).isEmpty() && this.canEquip(itemStack)) {
+        if (compoundTag.containsKey("ArmorItem", 10) && !(itemStack = ItemStack.fromTag(compoundTag.getCompound("ArmorItem"))).isEmpty() && this.canEquip(itemStack)) {
             this.items.setInvStack(1, itemStack);
         }
         this.updateSaddle();
@@ -210,7 +210,7 @@ extends HorseBaseEntity {
             return super.interactMob(playerEntity, hand);
         }
         if (!this.isBaby()) {
-            if (this.isTame() && playerEntity.isSneaking()) {
+            if (this.isTame() && playerEntity.method_21823()) {
                 this.openInventory(playerEntity);
                 return true;
             }

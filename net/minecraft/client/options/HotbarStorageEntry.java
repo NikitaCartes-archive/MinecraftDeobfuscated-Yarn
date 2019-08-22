@@ -35,7 +35,7 @@ extends ForwardingList<ItemStack> {
     public void fromListTag(ListTag listTag) {
         Collection list = this.delegate();
         for (int i = 0; i < list.size(); ++i) {
-            list.set(i, ItemStack.fromTag(listTag.getCompound(i)));
+            list.set(i, ItemStack.fromTag(listTag.getCompoundTag(i)));
         }
     }
 

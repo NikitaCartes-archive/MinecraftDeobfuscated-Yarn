@@ -9,9 +9,9 @@ import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.pattern.CachedBlockPosition;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.NbtHelper;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.state.property.Property;
+import net.minecraft.util.TagHelper;
 import net.minecraft.util.math.BlockPos;
 import org.jetbrains.annotations.Nullable;
 
@@ -32,8 +32,7 @@ implements Predicate<CachedBlockPosition> {
         return this.state;
     }
 
-    @Override
-    public boolean test(CachedBlockPosition cachedBlockPosition) {
+    public boolean method_9493(CachedBlockPosition cachedBlockPosition) {
         BlockState blockState = cachedBlockPosition.getBlockState();
         if (blockState.getBlock() != this.state.getBlock()) {
             return false;
@@ -44,7 +43,7 @@ implements Predicate<CachedBlockPosition> {
         }
         if (this.data != null) {
             BlockEntity blockEntity = cachedBlockPosition.getBlockEntity();
-            return blockEntity != null && NbtHelper.matches(this.data, blockEntity.toTag(new CompoundTag()), true);
+            return blockEntity != null && TagHelper.areTagsEqual(this.data, blockEntity.toTag(new CompoundTag()), true);
         }
         return true;
     }
@@ -55,7 +54,7 @@ implements Predicate<CachedBlockPosition> {
             return false;
         }
         if (this.data != null && (blockEntity = serverWorld.getBlockEntity(blockPos)) != null) {
-            CompoundTag compoundTag = this.data.copy();
+            CompoundTag compoundTag = this.data.method_10553();
             compoundTag.putInt("x", blockPos.getX());
             compoundTag.putInt("y", blockPos.getY());
             compoundTag.putInt("z", blockPos.getZ());
@@ -66,7 +65,7 @@ implements Predicate<CachedBlockPosition> {
 
     @Override
     public /* synthetic */ boolean test(Object object) {
-        return this.test((CachedBlockPosition)object);
+        return this.method_9493((CachedBlockPosition)object);
     }
 }
 

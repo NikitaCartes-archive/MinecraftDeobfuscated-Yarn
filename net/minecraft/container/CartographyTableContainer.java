@@ -26,6 +26,7 @@ public class CartographyTableContainer
 extends Container {
     private final BlockContext context;
     private boolean currentlyTakingItem;
+    private long field_20382;
     public final Inventory inventory = new BasicInventory(2){
 
         @Override
@@ -48,7 +49,7 @@ extends Container {
     }
 
     public CartographyTableContainer(int i, PlayerInventory playerInventory, final BlockContext blockContext) {
-        super(ContainerType.CARTOGRAPHY, i);
+        super(ContainerType.CARTOGRAPHY_TABLE, i);
         int j;
         this.context = blockContext;
         this.addSlot(new Slot(this.inventory, 0, 15, 15){
@@ -98,7 +99,13 @@ extends Container {
             @Override
             public ItemStack onTakeItem(PlayerEntity playerEntity, ItemStack itemStack) {
                 itemStack.getItem().onCraft(itemStack, playerEntity.world, playerEntity);
-                blockContext.run((world, blockPos) -> world.playSound(null, (BlockPos)blockPos, SoundEvents.UI_CARTOGRAPHY_TABLE_TAKE_RESULT, SoundCategory.BLOCKS, 1.0f, 1.0f));
+                blockContext.run((world, blockPos) -> {
+                    long l = world.getTime();
+                    if (CartographyTableContainer.this.field_20382 != l) {
+                        world.playSound(null, (BlockPos)blockPos, SoundEvents.UI_CARTOGRAPHY_TABLE_TAKE_RESULT, SoundCategory.BLOCKS, 1.0f, 1.0f);
+                        CartographyTableContainer.this.field_20382 = l;
+                    }
+                });
                 return super.onTakeItem(playerEntity, itemStack);
             }
         });
@@ -164,13 +171,13 @@ extends Container {
 
     @Override
     public boolean canInsertIntoSlot(ItemStack itemStack, Slot slot) {
-        return false;
+        return slot.inventory != this.resultSlot && super.canInsertIntoSlot(itemStack, slot);
     }
 
     @Override
     public ItemStack transferSlot(PlayerEntity playerEntity, int i) {
         ItemStack itemStack = ItemStack.EMPTY;
-        Slot slot = (Slot)this.slots.get(i);
+        Slot slot = (Slot)this.slotList.get(i);
         if (slot != null && slot.hasStack()) {
             ItemStack itemStack2;
             ItemStack itemStack3 = itemStack2 = slot.getStack();

@@ -3,13 +3,13 @@
  */
 package net.minecraft.server.network;
 
+import net.minecraft.client.network.packet.QueryPongS2CPacket;
+import net.minecraft.client.network.packet.QueryResponseS2CPacket;
 import net.minecraft.network.ClientConnection;
 import net.minecraft.network.listener.ServerQueryPacketListener;
-import net.minecraft.network.packet.c2s.query.QueryPingC2SPacket;
-import net.minecraft.network.packet.c2s.query.QueryRequestC2SPacket;
-import net.minecraft.network.packet.s2c.query.QueryPongS2CPacket;
-import net.minecraft.network.packet.s2c.query.QueryResponseS2CPacket;
 import net.minecraft.server.MinecraftServer;
+import net.minecraft.server.network.packet.QueryPingC2SPacket;
+import net.minecraft.server.network.packet.QueryRequestC2SPacket;
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
 
@@ -17,12 +17,12 @@ public class ServerQueryNetworkHandler
 implements ServerQueryPacketListener {
     private static final Text REQUEST_HANDLED = new TranslatableText("multiplayer.status.request_handled", new Object[0]);
     private final MinecraftServer server;
-    private final ClientConnection connection;
+    private final ClientConnection client;
     private boolean responseSent;
 
     public ServerQueryNetworkHandler(MinecraftServer minecraftServer, ClientConnection clientConnection) {
         this.server = minecraftServer;
-        this.connection = clientConnection;
+        this.client = clientConnection;
     }
 
     @Override
@@ -31,23 +31,23 @@ implements ServerQueryPacketListener {
 
     @Override
     public ClientConnection getConnection() {
-        return this.connection;
+        return this.client;
     }
 
     @Override
     public void onRequest(QueryRequestC2SPacket queryRequestC2SPacket) {
         if (this.responseSent) {
-            this.connection.disconnect(REQUEST_HANDLED);
+            this.client.disconnect(REQUEST_HANDLED);
             return;
         }
         this.responseSent = true;
-        this.connection.send(new QueryResponseS2CPacket(this.server.getServerMetadata()));
+        this.client.send(new QueryResponseS2CPacket(this.server.getServerMetadata()));
     }
 
     @Override
     public void onPing(QueryPingC2SPacket queryPingC2SPacket) {
-        this.connection.send(new QueryPongS2CPacket(queryPingC2SPacket.getStartTime()));
-        this.connection.disconnect(REQUEST_HANDLED);
+        this.client.send(new QueryPongS2CPacket(queryPingC2SPacket.getStartTime()));
+        this.client.disconnect(REQUEST_HANDLED);
     }
 }
 

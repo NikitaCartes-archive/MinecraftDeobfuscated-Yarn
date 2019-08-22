@@ -4,18 +4,18 @@
 package net.minecraft.block;
 
 import net.minecraft.block.Block;
+import net.minecraft.block.BlockRenderLayer;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.RailPlacementHelper;
 import net.minecraft.block.enums.RailShape;
 import net.minecraft.block.piston.PistonBehavior;
-import net.minecraft.client.render.RenderLayer;
 import net.minecraft.entity.EntityContext;
 import net.minecraft.state.property.Property;
 import net.minecraft.tag.BlockTags;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.world.BlockView;
-import net.minecraft.world.CollisionView;
+import net.minecraft.world.ViewableWorld;
 import net.minecraft.world.World;
 
 public abstract class AbstractRailBlock
@@ -52,8 +52,8 @@ extends Block {
     }
 
     @Override
-    public boolean canPlaceAt(BlockState blockState, CollisionView collisionView, BlockPos blockPos) {
-        return AbstractRailBlock.topCoversMediumSquare(collisionView, blockPos.down());
+    public boolean canPlaceAt(BlockState blockState, ViewableWorld viewableWorld, BlockPos blockPos) {
+        return AbstractRailBlock.isSolidMediumSquare(viewableWorld, blockPos.down());
     }
 
     @Override
@@ -77,23 +77,23 @@ extends Block {
         RailShape railShape = blockState.get(this.getShapeProperty());
         boolean bl2 = false;
         BlockPos blockPos3 = blockPos.down();
-        if (!AbstractRailBlock.topCoversMediumSquare(world, blockPos3)) {
+        if (!AbstractRailBlock.isSolidMediumSquare(world, blockPos3)) {
             bl2 = true;
         }
         BlockPos blockPos4 = blockPos.east();
-        if (railShape == RailShape.ASCENDING_EAST && !AbstractRailBlock.topCoversMediumSquare(world, blockPos4)) {
+        if (railShape == RailShape.ASCENDING_EAST && !AbstractRailBlock.isSolidMediumSquare(world, blockPos4)) {
             bl2 = true;
         } else {
             BlockPos blockPos5 = blockPos.west();
-            if (railShape == RailShape.ASCENDING_WEST && !AbstractRailBlock.topCoversMediumSquare(world, blockPos5)) {
+            if (railShape == RailShape.ASCENDING_WEST && !AbstractRailBlock.isSolidMediumSquare(world, blockPos5)) {
                 bl2 = true;
             } else {
                 BlockPos blockPos6 = blockPos.north();
-                if (railShape == RailShape.ASCENDING_NORTH && !AbstractRailBlock.topCoversMediumSquare(world, blockPos6)) {
+                if (railShape == RailShape.ASCENDING_NORTH && !AbstractRailBlock.isSolidMediumSquare(world, blockPos6)) {
                     bl2 = true;
                 } else {
                     BlockPos blockPos7 = blockPos.south();
-                    if (railShape == RailShape.ASCENDING_SOUTH && !AbstractRailBlock.topCoversMediumSquare(world, blockPos7)) {
+                    if (railShape == RailShape.ASCENDING_SOUTH && !AbstractRailBlock.isSolidMediumSquare(world, blockPos7)) {
                         bl2 = true;
                     }
                 }
@@ -103,7 +103,7 @@ extends Block {
             if (!bl) {
                 AbstractRailBlock.dropStacks(blockState, world, blockPos);
             }
-            world.removeBlock(blockPos, bl);
+            world.clearBlockState(blockPos, bl);
         } else {
             this.updateBlockState(blockState, world, blockPos, block);
         }
@@ -125,8 +125,8 @@ extends Block {
     }
 
     @Override
-    public RenderLayer getRenderLayer() {
-        return RenderLayer.CUTOUT;
+    public BlockRenderLayer getRenderLayer() {
+        return BlockRenderLayer.CUTOUT;
     }
 
     @Override

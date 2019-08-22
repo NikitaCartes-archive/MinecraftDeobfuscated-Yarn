@@ -5,7 +5,7 @@ package net.minecraft.client.gui.screen;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
-import com.mojang.blaze3d.platform.GlStateManager;
+import com.mojang.blaze3d.systems.RenderSystem;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -20,7 +20,7 @@ import net.minecraft.client.gui.widget.AlwaysSelectedEntryListWidget;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.gui.widget.EntryListWidget;
 import net.minecraft.client.gui.widget.TextFieldWidget;
-import net.minecraft.client.render.DiffuseLighting;
+import net.minecraft.client.render.GuiLighting;
 import net.minecraft.client.resource.language.I18n;
 import net.minecraft.client.util.NarratorManager;
 import net.minecraft.item.Item;
@@ -156,8 +156,7 @@ extends Screen {
             }
         }
 
-        @Override
-        public void setSelected(@Nullable SuperflatPresetEntry superflatPresetEntry) {
+        public void method_20103(@Nullable SuperflatPresetEntry superflatPresetEntry) {
             super.setSelected(superflatPresetEntry);
             if (superflatPresetEntry != null) {
                 NarratorManager.INSTANCE.narrate(new TranslatableText("narrator.select", ((SuperflatPreset)presets.get((int)this.children().indexOf((Object)superflatPresetEntry))).name).getString());
@@ -188,7 +187,7 @@ extends Screen {
 
         @Override
         public /* synthetic */ void setSelected(@Nullable EntryListWidget.Entry entry) {
-            this.setSelected((SuperflatPresetEntry)entry);
+            this.method_20103((SuperflatPresetEntry)entry);
         }
 
         @Environment(value=EnvType.CLIENT)
@@ -210,7 +209,7 @@ extends Screen {
             }
 
             private void setPreset() {
-                SuperflatPresetsListWidget.this.setSelected(this);
+                SuperflatPresetsListWidget.this.method_20103(this);
                 PresetsScreen.this.updateSelectButton(true);
                 PresetsScreen.this.customPresetField.setText(((SuperflatPreset)presets.get((int)SuperflatPresetsListWidget.this.children().indexOf((Object)this))).config);
                 PresetsScreen.this.customPresetField.method_1870();
@@ -218,15 +217,15 @@ extends Screen {
 
             private void method_2200(int i, int j, Item item) {
                 this.method_2198(i + 1, j + 1);
-                GlStateManager.enableRescaleNormal();
-                DiffuseLighting.enableForItems();
+                RenderSystem.enableRescaleNormal();
+                GuiLighting.enableForItems();
                 PresetsScreen.this.itemRenderer.renderGuiItemIcon(new ItemStack(item), i + 2, j + 2);
-                DiffuseLighting.disable();
-                GlStateManager.disableRescaleNormal();
+                GuiLighting.disable();
+                RenderSystem.disableRescaleNormal();
             }
 
             private void method_2198(int i, int j) {
-                GlStateManager.color4f(1.0f, 1.0f, 1.0f, 1.0f);
+                RenderSystem.color4f(1.0f, 1.0f, 1.0f, 1.0f);
                 SuperflatPresetsListWidget.this.minecraft.getTextureManager().bindTexture(DrawableHelper.STATS_ICON_LOCATION);
                 DrawableHelper.blit(i, j, PresetsScreen.this.blitOffset, 0.0f, 0.0f, 18, 18, 128, 128);
             }

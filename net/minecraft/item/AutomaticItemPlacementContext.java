@@ -70,7 +70,7 @@ extends ItemPlacementContext {
     }
 
     @Override
-    public boolean shouldCancelInteraction() {
+    public boolean isPlayerSneaking() {
         return false;
     }
 

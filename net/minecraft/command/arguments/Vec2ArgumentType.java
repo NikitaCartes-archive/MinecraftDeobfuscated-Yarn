@@ -43,8 +43,7 @@ implements ArgumentType<PosArgument> {
         return new Vec2f((float)vec3d.x, (float)vec3d.z);
     }
 
-    @Override
-    public PosArgument parse(StringReader stringReader) throws CommandSyntaxException {
+    public PosArgument method_9725(StringReader stringReader) throws CommandSyntaxException {
         int i = stringReader.getCursor();
         if (!stringReader.canRead()) {
             throw INCOMPLETE_EXCEPTION.createWithContext(stringReader);
@@ -64,7 +63,7 @@ implements ArgumentType<PosArgument> {
         if (commandContext.getSource() instanceof CommandSource) {
             String string = suggestionsBuilder.getRemaining();
             Collection<CommandSource.RelativePosition> collection = !string.isEmpty() && string.charAt(0) == '^' ? Collections.singleton(CommandSource.RelativePosition.ZERO_LOCAL) : ((CommandSource)commandContext.getSource()).getPositionSuggestions();
-            return CommandSource.suggestColumnPositions(string, collection, suggestionsBuilder, CommandManager.getCommandValidator(this::parse));
+            return CommandSource.suggestColumnPositions(string, collection, suggestionsBuilder, CommandManager.getCommandValidator(this::method_9725));
         }
         return Suggestions.empty();
     }
@@ -76,7 +75,7 @@ implements ArgumentType<PosArgument> {
 
     @Override
     public /* synthetic */ Object parse(StringReader stringReader) throws CommandSyntaxException {
-        return this.parse(stringReader);
+        return this.method_9725(stringReader);
     }
 }
 

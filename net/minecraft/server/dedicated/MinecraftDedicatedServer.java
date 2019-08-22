@@ -48,10 +48,10 @@ import net.minecraft.server.rcon.QueryResponseHandler;
 import net.minecraft.server.rcon.RconServer;
 import net.minecraft.util.DefaultedList;
 import net.minecraft.util.JsonHelper;
+import net.minecraft.util.SystemUtil;
 import net.minecraft.util.UncaughtExceptionHandler;
 import net.minecraft.util.UncaughtExceptionLogger;
 import net.minecraft.util.UserCache;
-import net.minecraft.util.Util;
 import net.minecraft.util.crash.CrashReport;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
@@ -182,7 +182,7 @@ implements DedicatedServer {
             return false;
         }
         this.setPlayerManager(new DedicatedPlayerManager(this));
-        long l = Util.getMeasuringTimeNano();
+        long l = SystemUtil.getMeasuringTimeNano();
         String string = serverPropertiesHandler.levelSeed;
         String string2 = serverPropertiesHandler.generatorSettings;
         long m = new Random().nextLong();
@@ -209,7 +209,7 @@ implements DedicatedServer {
             jsonObject = JsonHelper.deserialize(string2);
         }
         this.loadWorld(this.getLevelName(), this.getLevelName(), m, levelGeneratorType, jsonObject);
-        long o = Util.getMeasuringTimeNano() - l;
+        long o = SystemUtil.getMeasuringTimeNano() - l;
         String string3 = String.format(Locale.ROOT, "%.3fs", (double)o / 1.0E9);
         LOGGER.info("Done ({})! For help, type \"help\"", (Object)string3);
         if (serverPropertiesHandler.announcePlayerAchievements != null) {
@@ -335,8 +335,8 @@ implements DedicatedServer {
 
     @Override
     public void addSnooperInfo(Snooper snooper) {
-        snooper.addInfo("whitelist_enabled", this.getPlayerManager().isWhitelistEnabled());
-        snooper.addInfo("whitelist_count", this.getPlayerManager().getWhitelistedNames().length);
+        snooper.addInfo("whitelist_enabled", this.method_13949().isWhitelistEnabled());
+        snooper.addInfo("whitelist_count", this.method_13949().getWhitelistedNames().length);
         super.addSnooperInfo(snooper);
     }
 
@@ -361,8 +361,7 @@ implements DedicatedServer {
         return this.getProperties().useNativeTransport;
     }
 
-    @Override
-    public DedicatedPlayerManager getPlayerManager() {
+    public DedicatedPlayerManager method_13949() {
         return (DedicatedPlayerManager)super.getPlayerManager();
     }
 
@@ -418,10 +417,10 @@ implements DedicatedServer {
         if (world.dimension.getType() != DimensionType.OVERWORLD) {
             return false;
         }
-        if (this.getPlayerManager().getOpList().isEmpty()) {
+        if (this.method_13949().getOpList().isEmpty()) {
             return false;
         }
-        if (this.getPlayerManager().isOperator(playerEntity.getGameProfile())) {
+        if (this.method_13949().isOperator(playerEntity.getGameProfile())) {
             return false;
         }
         if (this.getSpawnProtectionRadius() <= 0) {
@@ -534,7 +533,7 @@ implements DedicatedServer {
     @Override
     public String executeRconCommand(String string) {
         this.rconCommandOutput.clear();
-        this.submitAndJoin(() -> this.getCommandManager().execute(this.rconCommandOutput.createReconCommandSource(), string));
+        this.executeSync(() -> this.getCommandManager().execute(this.rconCommandOutput.createReconCommandSource(), string));
         return this.rconCommandOutput.asString();
     }
 
@@ -545,7 +544,7 @@ implements DedicatedServer {
     @Override
     public void shutdown() {
         super.shutdown();
-        Util.shutdownServerWorkerExecutor();
+        SystemUtil.shutdownServerWorkerExecutor();
     }
 
     @Override
@@ -555,7 +554,7 @@ implements DedicatedServer {
 
     @Override
     public /* synthetic */ PlayerManager getPlayerManager() {
-        return this.getPlayerManager();
+        return this.method_13949();
     }
 }
 

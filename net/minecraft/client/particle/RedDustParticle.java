@@ -29,9 +29,9 @@ extends SpriteBillboardParticle {
         this.colorRed = ((float)(Math.random() * (double)0.2f) + 0.8f) * dustParticleEffect.getRed() * j;
         this.colorGreen = ((float)(Math.random() * (double)0.2f) + 0.8f) * dustParticleEffect.getGreen() * j;
         this.colorBlue = ((float)(Math.random() * (double)0.2f) + 0.8f) * dustParticleEffect.getBlue() * j;
-        this.scale *= 0.75f * dustParticleEffect.getScale();
+        this.scale *= 0.75f * dustParticleEffect.getAlpha();
         int k = (int)(8.0 / (Math.random() * 0.8 + 0.2));
-        this.maxAge = (int)Math.max((float)k * dustParticleEffect.getScale(), 1.0f);
+        this.maxAge = (int)Math.max((float)k * dustParticleEffect.getAlpha(), 1.0f);
         this.setSpriteForAge(spriteProvider);
     }
 
@@ -78,8 +78,7 @@ extends SpriteBillboardParticle {
             this.spriteProvider = spriteProvider;
         }
 
-        @Override
-        public Particle createParticle(DustParticleEffect dustParticleEffect, World world, double d, double e, double f, double g, double h, double i) {
+        public Particle method_3022(DustParticleEffect dustParticleEffect, World world, double d, double e, double f, double g, double h, double i) {
             return new RedDustParticle(world, d, e, f, g, h, i, dustParticleEffect, this.spriteProvider);
         }
     }

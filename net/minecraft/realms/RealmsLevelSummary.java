@@ -46,7 +46,7 @@ implements Comparable<RealmsLevelSummary> {
 
     @Override
     public int compareTo(LevelSummary levelSummary) {
-        return this.levelSummary.compareTo(levelSummary);
+        return this.levelSummary.method_251(levelSummary);
     }
 
     public long getSizeOnDisk() {

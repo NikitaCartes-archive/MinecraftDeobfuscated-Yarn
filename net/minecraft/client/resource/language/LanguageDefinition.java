@@ -60,14 +60,13 @@ Comparable<LanguageDefinition> {
         return this.code.hashCode();
     }
 
-    @Override
-    public int compareTo(LanguageDefinition languageDefinition) {
+    public int method_4673(LanguageDefinition languageDefinition) {
         return this.code.compareTo(languageDefinition.code);
     }
 
     @Override
     public /* synthetic */ int compareTo(Object object) {
-        return this.compareTo((LanguageDefinition)object);
+        return this.method_4673((LanguageDefinition)object);
     }
 }
 

@@ -28,8 +28,7 @@ implements ArgumentType<FunctionArgument> {
         return new FunctionArgumentType();
     }
 
-    @Override
-    public FunctionArgument parse(StringReader stringReader) throws CommandSyntaxException {
+    public FunctionArgument method_9764(StringReader stringReader) throws CommandSyntaxException {
         if (stringReader.canRead() && stringReader.peek() == '#') {
             stringReader.skip();
             final Identifier identifier = Identifier.fromCommandInput(stringReader);
@@ -89,7 +88,7 @@ implements ArgumentType<FunctionArgument> {
 
     @Override
     public /* synthetic */ Object parse(StringReader stringReader) throws CommandSyntaxException {
-        return this.parse(stringReader);
+        return this.method_9764(stringReader);
     }
 
     public static interface FunctionArgument {

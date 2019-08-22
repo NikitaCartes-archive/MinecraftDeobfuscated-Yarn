@@ -3,7 +3,7 @@
  */
 package net.minecraft.client.render.entity;
 
-import com.mojang.blaze3d.platform.GlStateManager;
+import com.mojang.blaze3d.systems.RenderSystem;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.render.entity.EntityRenderDispatcher;
@@ -23,23 +23,20 @@ extends MobEntityRenderer<PhantomEntity, PhantomEntityModel<PhantomEntity>> {
         this.addFeature(new PhantomEyesFeatureRenderer<PhantomEntity>(this));
     }
 
-    @Override
-    protected Identifier getTexture(PhantomEntity phantomEntity) {
+    protected Identifier method_4090(PhantomEntity phantomEntity) {
         return SKIN;
     }
 
-    @Override
-    protected void scale(PhantomEntity phantomEntity, float f) {
+    protected void method_4088(PhantomEntity phantomEntity, float f) {
         int i = phantomEntity.getPhantomSize();
         float g = 1.0f + 0.15f * (float)i;
-        GlStateManager.scalef(g, g, g);
-        GlStateManager.translatef(0.0f, 1.3125f, 0.1875f);
+        RenderSystem.scalef(g, g, g);
+        RenderSystem.translatef(0.0f, 1.3125f, 0.1875f);
     }
 
-    @Override
-    protected void setupTransforms(PhantomEntity phantomEntity, float f, float g, float h) {
+    protected void method_4089(PhantomEntity phantomEntity, float f, float g, float h) {
         super.setupTransforms(phantomEntity, f, g, h);
-        GlStateManager.rotatef(phantomEntity.pitch, 1.0f, 0.0f, 0.0f);
+        RenderSystem.rotatef(phantomEntity.pitch, 1.0f, 0.0f, 0.0f);
     }
 }
 

@@ -3,7 +3,7 @@
  */
 package net.minecraft.client.render.entity;
 
-import com.mojang.blaze3d.platform.GlStateManager;
+import com.mojang.blaze3d.systems.RenderSystem;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.render.entity.BipedEntityRenderer;
@@ -22,17 +22,15 @@ extends BipedEntityRenderer<VexEntity, VexEntityModel> {
         super(entityRenderDispatcher, new VexEntityModel(), 0.3f);
     }
 
-    @Override
-    protected Identifier getTexture(VexEntity vexEntity) {
+    protected Identifier method_4144(VexEntity vexEntity) {
         if (vexEntity.isCharging()) {
             return CHARGING_TEXTURE;
         }
         return TEXTURE;
     }
 
-    @Override
-    protected void scale(VexEntity vexEntity, float f) {
-        GlStateManager.scalef(0.4f, 0.4f, 0.4f);
+    protected void method_4143(VexEntity vexEntity, float f) {
+        RenderSystem.scalef(0.4f, 0.4f, 0.4f);
     }
 }
 

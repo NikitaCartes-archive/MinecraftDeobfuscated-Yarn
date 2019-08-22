@@ -21,7 +21,7 @@ implements Clearable {
     @Override
     public void fromTag(CompoundTag compoundTag) {
         super.fromTag(compoundTag);
-        if (compoundTag.contains("RecordItem", 10)) {
+        if (compoundTag.containsKey("RecordItem", 10)) {
             this.setRecord(ItemStack.fromTag(compoundTag.getCompound("RecordItem")));
         }
     }

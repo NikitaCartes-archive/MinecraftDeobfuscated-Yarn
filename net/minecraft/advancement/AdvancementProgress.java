@@ -180,8 +180,7 @@ implements Comparable<AdvancementProgress> {
         return date;
     }
 
-    @Override
-    public int compareTo(AdvancementProgress advancementProgress) {
+    public int method_738(AdvancementProgress advancementProgress) {
         Date date = this.getEarliestProgressObtainDate();
         Date date2 = advancementProgress.getEarliestProgressObtainDate();
         if (date == null && date2 != null) {
@@ -198,14 +197,13 @@ implements Comparable<AdvancementProgress> {
 
     @Override
     public /* synthetic */ int compareTo(Object object) {
-        return this.compareTo((AdvancementProgress)object);
+        return this.method_738((AdvancementProgress)object);
     }
 
     public static class Serializer
     implements JsonDeserializer<AdvancementProgress>,
     JsonSerializer<AdvancementProgress> {
-        @Override
-        public JsonElement serialize(AdvancementProgress advancementProgress, Type type, JsonSerializationContext jsonSerializationContext) {
+        public JsonElement method_744(AdvancementProgress advancementProgress, Type type, JsonSerializationContext jsonSerializationContext) {
             JsonObject jsonObject = new JsonObject();
             JsonObject jsonObject2 = new JsonObject();
             for (Map.Entry entry : advancementProgress.criteriaProgresses.entrySet()) {
@@ -220,8 +218,7 @@ implements Comparable<AdvancementProgress> {
             return jsonObject;
         }
 
-        @Override
-        public AdvancementProgress deserialize(JsonElement jsonElement, Type type, JsonDeserializationContext jsonDeserializationContext) throws JsonParseException {
+        public AdvancementProgress method_745(JsonElement jsonElement, Type type, JsonDeserializationContext jsonDeserializationContext) throws JsonParseException {
             JsonObject jsonObject = JsonHelper.asObject(jsonElement, "advancement");
             JsonObject jsonObject2 = JsonHelper.getObject(jsonObject, "criteria", new JsonObject());
             AdvancementProgress advancementProgress = new AdvancementProgress();
@@ -234,12 +231,12 @@ implements Comparable<AdvancementProgress> {
 
         @Override
         public /* synthetic */ Object deserialize(JsonElement jsonElement, Type type, JsonDeserializationContext jsonDeserializationContext) throws JsonParseException {
-            return this.deserialize(jsonElement, type, jsonDeserializationContext);
+            return this.method_745(jsonElement, type, jsonDeserializationContext);
         }
 
         @Override
         public /* synthetic */ JsonElement serialize(Object object, Type type, JsonSerializationContext jsonSerializationContext) {
-            return this.serialize((AdvancementProgress)object, type, jsonSerializationContext);
+            return this.method_744((AdvancementProgress)object, type, jsonSerializationContext);
         }
     }
 }

@@ -11,6 +11,7 @@ import net.minecraft.entity.EntityPose;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.MovementType;
 import net.minecraft.entity.SpawnType;
+import net.minecraft.entity.WaterCreatureEntity;
 import net.minecraft.entity.ai.control.MoveControl;
 import net.minecraft.entity.ai.goal.EscapeDangerGoal;
 import net.minecraft.entity.ai.goal.FleeEntityGoal;
@@ -21,7 +22,6 @@ import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.data.DataTracker;
 import net.minecraft.entity.data.TrackedData;
 import net.minecraft.entity.data.TrackedDataHandlerRegistry;
-import net.minecraft.entity.mob.WaterCreatureEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
@@ -118,7 +118,7 @@ extends WaterCreatureEntity {
 
     @Override
     public void travel(Vec3d vec3d) {
-        if (this.canMoveVoluntarily() && this.isTouchingWater()) {
+        if (this.canMoveVoluntarily() && this.isInsideWater()) {
             this.updateVelocity(0.01f, vec3d);
             this.move(MovementType.SELF, this.getVelocity());
             this.setVelocity(this.getVelocity().multiply(0.9));
@@ -132,7 +132,7 @@ extends WaterCreatureEntity {
 
     @Override
     public void tickMovement() {
-        if (!this.isTouchingWater() && this.onGround && this.verticalCollision) {
+        if (!this.isInsideWater() && this.onGround && this.verticalCollision) {
             this.setVelocity(this.getVelocity().add((this.random.nextFloat() * 2.0f - 1.0f) * 0.05f, 0.4f, (this.random.nextFloat() * 2.0f - 1.0f) * 0.05f));
             this.onGround = false;
             this.velocityDirty = true;
@@ -150,7 +150,7 @@ extends WaterCreatureEntity {
             ItemStack itemStack2 = this.getFishBucketItem();
             this.copyDataToStack(itemStack2);
             if (!this.world.isClient) {
-                Criterions.FILLED_BUCKET.trigger((ServerPlayerEntity)playerEntity, itemStack2);
+                Criterions.FILLED_BUCKET.handle((ServerPlayerEntity)playerEntity, itemStack2);
             }
             if (itemStack.isEmpty()) {
                 playerEntity.setStackInHand(hand, itemStack2);
@@ -205,7 +205,7 @@ extends WaterCreatureEntity {
             double f = this.targetZ - this.fish.z;
             double g = MathHelper.sqrt(d * d + e * e + f * f);
             float h = (float)(MathHelper.atan2(f, d) * 57.2957763671875) - 90.0f;
-            this.fish.field_6283 = this.fish.yaw = this.changeAngle(this.fish.yaw, h, 90.0f);
+            this.fish.bodyYaw = this.fish.yaw = this.changeAngle(this.fish.yaw, h, 90.0f);
             float i = (float)(this.speed * this.fish.getAttributeInstance(EntityAttributes.MOVEMENT_SPEED).getValue());
             this.fish.setMovementSpeed(MathHelper.lerp(0.125f, this.fish.getMovementSpeed(), i));
             this.fish.setVelocity(this.fish.getVelocity().add(0.0, (double)this.fish.getMovementSpeed() * (e /= g) * 0.1, 0.0));

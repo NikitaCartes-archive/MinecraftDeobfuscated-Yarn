@@ -3,7 +3,7 @@
  */
 package net.minecraft.client.render.entity;
 
-import com.mojang.blaze3d.platform.GlStateManager;
+import com.mojang.blaze3d.systems.RenderSystem;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.render.entity.EntityRenderDispatcher;
@@ -32,39 +32,35 @@ extends LivingEntityRenderer<ArmorStandEntity, ArmorStandArmorEntityModel> {
         this.addFeature(new HeadFeatureRenderer<ArmorStandEntity, ArmorStandArmorEntityModel>(this));
     }
 
-    @Override
-    protected Identifier getTexture(ArmorStandEntity armorStandEntity) {
+    protected Identifier method_3880(ArmorStandEntity armorStandEntity) {
         return SKIN;
     }
 
-    @Override
-    protected void setupTransforms(ArmorStandEntity armorStandEntity, float f, float g, float h) {
-        GlStateManager.rotatef(180.0f - g, 0.0f, 1.0f, 0.0f);
+    protected void method_3877(ArmorStandEntity armorStandEntity, float f, float g, float h) {
+        RenderSystem.rotatef(180.0f - g, 0.0f, 1.0f, 0.0f);
         float i = (float)(armorStandEntity.world.getTime() - armorStandEntity.field_7112) + h;
         if (i < 5.0f) {
-            GlStateManager.rotatef(MathHelper.sin(i / 1.5f * (float)Math.PI) * 3.0f, 0.0f, 1.0f, 0.0f);
+            RenderSystem.rotatef(MathHelper.sin(i / 1.5f * (float)Math.PI) * 3.0f, 0.0f, 1.0f, 0.0f);
         }
     }
 
-    @Override
-    protected boolean hasLabel(ArmorStandEntity armorStandEntity) {
+    protected boolean method_3878(ArmorStandEntity armorStandEntity) {
         return armorStandEntity.isCustomNameVisible();
     }
 
-    @Override
-    public void render(ArmorStandEntity armorStandEntity, double d, double e, double f, float g, float h) {
+    public void method_3876(ArmorStandEntity armorStandEntity, double d, double e, double f, float g, float h) {
         if (armorStandEntity.isMarker()) {
             this.disableOutlineRender = true;
         }
-        super.render(armorStandEntity, d, e, f, g, h);
+        super.method_4054(armorStandEntity, d, e, f, g, h);
         if (armorStandEntity.isMarker()) {
             this.disableOutlineRender = false;
         }
     }
 
     @Override
-    protected /* synthetic */ boolean hasLabel(LivingEntity livingEntity) {
-        return this.hasLabel((ArmorStandEntity)livingEntity);
+    protected /* synthetic */ boolean method_4055(LivingEntity livingEntity) {
+        return this.method_3878((ArmorStandEntity)livingEntity);
     }
 }
 

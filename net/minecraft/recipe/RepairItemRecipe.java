@@ -21,8 +21,7 @@ extends SpecialCraftingRecipe {
         super(identifier);
     }
 
-    @Override
-    public boolean matches(CraftingInventory craftingInventory, World world) {
+    public boolean method_20808(CraftingInventory craftingInventory, World world) {
         ArrayList<ItemStack> list = Lists.newArrayList();
         for (int i = 0; i < craftingInventory.getInvSize(); ++i) {
             ItemStack itemStack = craftingInventory.getInvStack(i);
@@ -36,8 +35,7 @@ extends SpecialCraftingRecipe {
         return list.size() == 2;
     }
 
-    @Override
-    public ItemStack craft(CraftingInventory craftingInventory) {
+    public ItemStack method_20807(CraftingInventory craftingInventory) {
         ItemStack itemStack;
         ArrayList<ItemStack> list = Lists.newArrayList();
         for (int i = 0; i < craftingInventory.getInvSize(); ++i) {

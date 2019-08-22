@@ -20,8 +20,8 @@ import net.minecraft.particle.ParticleTypes;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.Hand;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.CollisionView;
 import net.minecraft.world.IWorld;
+import net.minecraft.world.ViewableWorld;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
 
@@ -69,11 +69,11 @@ extends PassiveEntity {
     }
 
     @Override
-    public float getPathfindingFavor(BlockPos blockPos, CollisionView collisionView) {
-        if (collisionView.getBlockState(blockPos.down()).getBlock() == Blocks.GRASS_BLOCK) {
+    public float getPathfindingFavor(BlockPos blockPos, ViewableWorld viewableWorld) {
+        if (viewableWorld.getBlockState(blockPos.down()).getBlock() == Blocks.GRASS_BLOCK) {
             return 10.0f;
         }
-        return collisionView.getBrightness(blockPos) - 0.5f;
+        return viewableWorld.getBrightness(blockPos) - 0.5f;
     }
 
     @Override
@@ -94,7 +94,7 @@ extends PassiveEntity {
     public void readCustomDataFromTag(CompoundTag compoundTag) {
         super.readCustomDataFromTag(compoundTag);
         this.loveTicks = compoundTag.getInt("InLove");
-        this.lovingPlayer = compoundTag.containsUuid("LoveCause") ? compoundTag.getUuid("LoveCause") : null;
+        this.lovingPlayer = compoundTag.hasUuid("LoveCause") ? compoundTag.getUuid("LoveCause") : null;
     }
 
     public static boolean method_20663(EntityType<? extends AnimalEntity> entityType, IWorld iWorld, SpawnType spawnType, BlockPos blockPos, Random random) {

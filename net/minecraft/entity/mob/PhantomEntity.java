@@ -156,7 +156,7 @@ implements Monster {
     @Override
     public void readCustomDataFromTag(CompoundTag compoundTag) {
         super.readCustomDataFromTag(compoundTag);
-        if (compoundTag.contains("AX")) {
+        if (compoundTag.containsKey("AX")) {
             this.field_7312 = new BlockPos(compoundTag.getInt("AX"), compoundTag.getInt("AY"), compoundTag.getInt("AZ"));
         }
         this.setPhantomSize(compoundTag.getInt("Size"));
@@ -173,7 +173,7 @@ implements Monster {
 
     @Override
     @Environment(value=EnvType.CLIENT)
-    public boolean shouldRender(double d) {
+    public boolean shouldRenderAtDistance(double d) {
         return true;
     }
 
@@ -235,7 +235,7 @@ implements Monster {
                 return false;
             }
             this.delay = 60;
-            List<PlayerEntity> list = PhantomEntity.this.world.getPlayers(this.PLAYERS_IN_RANGE_PREDICATE, PhantomEntity.this, PhantomEntity.this.getBoundingBox().expand(16.0, 64.0, 16.0));
+            List<PlayerEntity> list = PhantomEntity.this.world.getPlayersInBox(this.PLAYERS_IN_RANGE_PREDICATE, PhantomEntity.this, PhantomEntity.this.getBoundingBox().expand(16.0, 64.0, 16.0));
             if (!list.isEmpty()) {
                 list.sort((playerEntity, playerEntity2) -> playerEntity.y > playerEntity2.y ? -1 : 1);
                 for (PlayerEntity playerEntity3 : list) {
@@ -456,8 +456,8 @@ implements Monster {
 
         @Override
         public void tick() {
-            PhantomEntity.this.headYaw = PhantomEntity.this.field_6283;
-            PhantomEntity.this.field_6283 = PhantomEntity.this.yaw;
+            PhantomEntity.this.headYaw = PhantomEntity.this.bodyYaw;
+            PhantomEntity.this.bodyYaw = PhantomEntity.this.yaw;
         }
     }
 
@@ -490,7 +490,7 @@ implements Monster {
             float k = (float)MathHelper.atan2(h, f);
             float l = MathHelper.wrapDegrees(PhantomEntity.this.yaw + 90.0f);
             float m = MathHelper.wrapDegrees(k * 57.295776f);
-            PhantomEntity.this.field_6283 = PhantomEntity.this.yaw = MathHelper.method_15388(l, m, 4.0f) - 90.0f;
+            PhantomEntity.this.bodyYaw = PhantomEntity.this.yaw = MathHelper.method_15388(l, m, 4.0f) - 90.0f;
             this.field_7331 = MathHelper.angleBetween(j, PhantomEntity.this.yaw) < 3.0f ? MathHelper.method_15348(this.field_7331, 1.8f, 0.005f * (1.8f / this.field_7331)) : MathHelper.method_15348(this.field_7331, 0.2f, 0.025f);
             PhantomEntity.this.pitch = n = (float)(-(MathHelper.atan2(-g, d) * 57.2957763671875));
             float o = PhantomEntity.this.yaw + 90.0f;

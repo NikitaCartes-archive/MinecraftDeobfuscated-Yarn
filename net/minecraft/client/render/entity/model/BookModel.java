@@ -25,8 +25,8 @@ extends Model {
         this.rightBlock = new ModelPart(this).setTextureOffset(12, 10).addCuboid(0.0f, -4.0f, -0.01f, 5, 8, 1);
         this.leftPage = new ModelPart(this).setTextureOffset(24, 10).addCuboid(0.0f, -4.0f, 0.0f, 5, 8, 0);
         this.rightPage = new ModelPart(this).setTextureOffset(24, 10).addCuboid(0.0f, -4.0f, 0.0f, 5, 8, 0);
-        this.leftCover.setPivot(0.0f, 0.0f, -1.0f);
-        this.rightCover.setPivot(0.0f, 0.0f, 1.0f);
+        this.leftCover.setRotationPoint(0.0f, 0.0f, -1.0f);
+        this.rightCover.setRotationPoint(0.0f, 0.0f, 1.0f);
         this.spine.yaw = 1.5707964f;
     }
 
@@ -49,10 +49,10 @@ extends Model {
         this.rightBlock.yaw = -l;
         this.leftPage.yaw = l - l * 2.0f * g;
         this.rightPage.yaw = l - l * 2.0f * h;
-        this.leftBlock.pivotX = MathHelper.sin(l);
-        this.rightBlock.pivotX = MathHelper.sin(l);
-        this.leftPage.pivotX = MathHelper.sin(l);
-        this.rightPage.pivotX = MathHelper.sin(l);
+        this.leftBlock.rotationPointX = MathHelper.sin(l);
+        this.rightBlock.rotationPointX = MathHelper.sin(l);
+        this.leftPage.rotationPointX = MathHelper.sin(l);
+        this.rightPage.rotationPointX = MathHelper.sin(l);
     }
 }
 

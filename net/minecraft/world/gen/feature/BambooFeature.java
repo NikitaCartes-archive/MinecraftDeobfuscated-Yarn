@@ -31,8 +31,7 @@ extends Feature<ProbabilityConfig> {
         super(function);
     }
 
-    @Override
-    public boolean generate(IWorld iWorld, ChunkGenerator<? extends ChunkGeneratorConfig> chunkGenerator, Random random, BlockPos blockPos, ProbabilityConfig probabilityConfig) {
+    public boolean method_12718(IWorld iWorld, ChunkGenerator<? extends ChunkGeneratorConfig> chunkGenerator, Random random, BlockPos blockPos, ProbabilityConfig probabilityConfig) {
         int i = 0;
         BlockPos.Mutable mutable = new BlockPos.Mutable(blockPos);
         BlockPos.Mutable mutable2 = new BlockPos.Mutable(blockPos);

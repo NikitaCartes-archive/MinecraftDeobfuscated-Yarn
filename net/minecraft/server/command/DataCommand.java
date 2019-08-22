@@ -45,9 +45,9 @@ public class DataCommand {
     private static final DynamicCommandExceptionType MODIFY_EXPECTED_LIST_EXCEPTION = new DynamicCommandExceptionType(object -> new TranslatableText("commands.data.modify.expected_list", object));
     private static final DynamicCommandExceptionType MODIFY_EXPECTED_OBJECT_EXCEPTION = new DynamicCommandExceptionType(object -> new TranslatableText("commands.data.modify.expected_object", object));
     private static final DynamicCommandExceptionType MODIFY_INVALID_INDEX_EXCEPTION = new DynamicCommandExceptionType(object -> new TranslatableText("commands.data.modify.invalid_index", object));
-    public static final List<Function<String, ObjectType>> OBJECT_TYPE_FACTORIES = ImmutableList.of(EntityDataObject.field_13800, BlockDataObject.field_13786);
-    public static final List<ObjectType> TARGET_OBJECT_TYPES = OBJECT_TYPE_FACTORIES.stream().map(function -> (ObjectType)function.apply("target")).collect(ImmutableList.toImmutableList());
-    public static final List<ObjectType> SOURCE_OBJECT_TYPES = OBJECT_TYPE_FACTORIES.stream().map(function -> (ObjectType)function.apply("source")).collect(ImmutableList.toImmutableList());
+    public static final List<Function<String, ObjectType>> OBJECT_TYPES = ImmutableList.of(EntityDataObject.field_13800, BlockDataObject.field_13786);
+    public static final List<ObjectType> TARGET_OBJECT_TYPES = OBJECT_TYPES.stream().map(function -> (ObjectType)function.apply("target")).collect(ImmutableList.toImmutableList());
+    public static final List<ObjectType> SOURCE_OBJECT_TYPES = OBJECT_TYPES.stream().map(function -> (ObjectType)function.apply("source")).collect(ImmutableList.toImmutableList());
 
     public static void register(CommandDispatcher<ServerCommandSource> commandDispatcher) {
         LiteralArgumentBuilder literalArgumentBuilder = (LiteralArgumentBuilder)CommandManager.literal("data").requires(serverCommandSource -> serverCommandSource.hasPermissionLevel(2));
@@ -63,7 +63,7 @@ public class DataCommand {
                         throw MODIFY_EXPECTED_OBJECT_EXCEPTION.create(tag);
                     }
                     CompoundTag compoundTag2 = (CompoundTag)tag;
-                    CompoundTag compoundTag3 = compoundTag2.copy();
+                    CompoundTag compoundTag3 = compoundTag2.method_10553();
                     for (Tag tag2 : list) {
                         if (!(tag2 instanceof CompoundTag)) {
                             throw MODIFY_EXPECTED_OBJECT_EXCEPTION.create(tag2);
@@ -137,7 +137,7 @@ public class DataCommand {
             throw MERGE_FAILED_EXCEPTION.create();
         }
         dataCommandObject.setTag(compoundTag);
-        commandContext.getSource().sendFeedback(dataCommandObject.feedbackModify(), true);
+        commandContext.getSource().sendFeedback(dataCommandObject.getModifiedFeedback(), true);
         return i;
     }
 
@@ -148,7 +148,7 @@ public class DataCommand {
             throw MERGE_FAILED_EXCEPTION.create();
         }
         dataCommandObject.setTag(compoundTag);
-        serverCommandSource.sendFeedback(dataCommandObject.feedbackModify(), true);
+        serverCommandSource.sendFeedback(dataCommandObject.getModifiedFeedback(), true);
         return i;
     }
 
@@ -176,7 +176,7 @@ public class DataCommand {
         } else {
             throw GET_UNKNOWN_EXCEPTION.create(nbtPath.toString());
         }
-        serverCommandSource.sendFeedback(dataCommandObject.feedbackQuery(tag), false);
+        serverCommandSource.sendFeedback(dataCommandObject.getQueryFeedback(tag), false);
         return i;
     }
 
@@ -186,23 +186,23 @@ public class DataCommand {
             throw GET_INVALID_EXCEPTION.create(nbtPath.toString());
         }
         int i = MathHelper.floor(((AbstractNumberTag)tag).getDouble() * d);
-        serverCommandSource.sendFeedback(dataCommandObject.feedbackGet(nbtPath, d, i), false);
+        serverCommandSource.sendFeedback(dataCommandObject.getGetFeedback(nbtPath, d, i), false);
         return i;
     }
 
     private static int executeGet(ServerCommandSource serverCommandSource, DataCommandObject dataCommandObject) throws CommandSyntaxException {
-        serverCommandSource.sendFeedback(dataCommandObject.feedbackQuery(dataCommandObject.getTag()), false);
+        serverCommandSource.sendFeedback(dataCommandObject.getQueryFeedback(dataCommandObject.getTag()), false);
         return 1;
     }
 
     private static int executeMerge(ServerCommandSource serverCommandSource, DataCommandObject dataCommandObject, CompoundTag compoundTag) throws CommandSyntaxException {
         CompoundTag compoundTag3;
         CompoundTag compoundTag2 = dataCommandObject.getTag();
-        if (compoundTag2.equals(compoundTag3 = compoundTag2.copy().copyFrom(compoundTag))) {
+        if (compoundTag2.equals(compoundTag3 = compoundTag2.method_10553().copyFrom(compoundTag))) {
             throw MERGE_FAILED_EXCEPTION.create();
         }
         dataCommandObject.setTag(compoundTag3);
-        serverCommandSource.sendFeedback(dataCommandObject.feedbackModify(), true);
+        serverCommandSource.sendFeedback(dataCommandObject.getModifiedFeedback(), true);
         return 1;
     }
 

@@ -38,7 +38,7 @@ implements Font {
         this.template = string;
         for (int i = 0; i < 256; ++i) {
             char c = (char)(i * 256);
-            Identifier identifier = this.getImageId(c);
+            Identifier identifier = this.getGlyphId(c);
             try (Resource resource = this.resourceManager.getResource(identifier);
                  NativeImage nativeImage = NativeImage.read(NativeImage.Format.RGBA, resource.getInputStream());){
                 if (nativeImage.getWidth() == 256 && nativeImage.getHeight() == 256) {
@@ -61,7 +61,7 @@ implements Font {
         this.images.values().forEach(NativeImage::close);
     }
 
-    private Identifier getImageId(char c) {
+    private Identifier getGlyphId(char c) {
         Identifier identifier = new Identifier(String.format(this.template, String.format("%02x", c / 256)));
         return new Identifier(identifier.getNamespace(), "textures/" + identifier.getPath());
     }
@@ -71,7 +71,7 @@ implements Font {
     public RenderableGlyph getGlyph(char c) {
         NativeImage nativeImage;
         byte b = this.sizes[c];
-        if (b != 0 && (nativeImage = this.images.computeIfAbsent(this.getImageId(c), this::getGlyphImage)) != null) {
+        if (b != 0 && (nativeImage = this.images.computeIfAbsent(this.getGlyphId(c), this::getGlyphImage)) != null) {
             int i = UnicodeTextureFont.method_2043(b);
             return new UnicodeTextureGlyph(c % 16 * 16 + i, (c & 0xFF) / 16 * 16, UnicodeTextureFont.method_2044(b) - i, 16, nativeImage);
         }

@@ -27,7 +27,7 @@ extends DiveJumpingGoal {
 
     @Override
     public boolean canStart() {
-        if (this.dolphin.getRandom().nextInt(this.chance) != 0) {
+        if (this.dolphin.getRand().nextInt(this.chance) != 0) {
             return false;
         }
         Direction direction = this.dolphin.getMovementDirection();
@@ -35,7 +35,7 @@ extends DiveJumpingGoal {
         int j = direction.getOffsetZ();
         BlockPos blockPos = new BlockPos(this.dolphin);
         for (int k : field_6474) {
-            if (this.isWater(blockPos, i, j, k) && this.isAirAbove(blockPos, i, j, k)) continue;
+            if (this.isWater(blockPos, i, j, k) && this.isAir(blockPos, i, j, k)) continue;
             return false;
         }
         return true;
@@ -46,14 +46,14 @@ extends DiveJumpingGoal {
         return this.dolphin.world.getFluidState(blockPos2).matches(FluidTags.WATER) && !this.dolphin.world.getBlockState(blockPos2).getMaterial().blocksMovement();
     }
 
-    private boolean isAirAbove(BlockPos blockPos, int i, int j, int k) {
+    private boolean isAir(BlockPos blockPos, int i, int j, int k) {
         return this.dolphin.world.getBlockState(blockPos.add(i * k, 1, j * k)).isAir() && this.dolphin.world.getBlockState(blockPos.add(i * k, 2, j * k)).isAir();
     }
 
     @Override
     public boolean shouldContinue() {
         double d = this.dolphin.getVelocity().y;
-        return !(d * d < (double)0.03f && this.dolphin.pitch != 0.0f && Math.abs(this.dolphin.pitch) < 10.0f && this.dolphin.isTouchingWater() || this.dolphin.onGround);
+        return !(d * d < (double)0.03f && this.dolphin.pitch != 0.0f && Math.abs(this.dolphin.pitch) < 10.0f && this.dolphin.isInsideWater() || this.dolphin.onGround);
     }
 
     @Override

@@ -3,7 +3,7 @@
  */
 package net.minecraft.client.render.entity;
 
-import com.mojang.blaze3d.platform.GlStateManager;
+import com.mojang.blaze3d.systems.RenderSystem;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.render.entity.EntityRenderDispatcher;
@@ -23,20 +23,18 @@ extends MobEntityRenderer<CodEntity, CodEntityModel<CodEntity>> {
         super(entityRenderDispatcher, new CodEntityModel(), 0.3f);
     }
 
-    @Override
     @Nullable
-    protected Identifier getTexture(CodEntity codEntity) {
+    protected Identifier method_3897(CodEntity codEntity) {
         return SKIN;
     }
 
-    @Override
-    protected void setupTransforms(CodEntity codEntity, float f, float g, float h) {
+    protected void method_3896(CodEntity codEntity, float f, float g, float h) {
         super.setupTransforms(codEntity, f, g, h);
         float i = 4.3f * MathHelper.sin(0.6f * f);
-        GlStateManager.rotatef(i, 0.0f, 1.0f, 0.0f);
-        if (!codEntity.isTouchingWater()) {
-            GlStateManager.translatef(0.1f, 0.1f, -0.1f);
-            GlStateManager.rotatef(90.0f, 0.0f, 0.0f, 1.0f);
+        RenderSystem.rotatef(i, 0.0f, 1.0f, 0.0f);
+        if (!codEntity.isInsideWater()) {
+            RenderSystem.translatef(0.1f, 0.1f, -0.1f);
+            RenderSystem.rotatef(90.0f, 0.0f, 0.0f, 1.0f);
         }
     }
 }

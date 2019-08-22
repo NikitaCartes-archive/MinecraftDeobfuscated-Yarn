@@ -26,28 +26,26 @@ extends SpecialCraftingRecipe {
         super(identifier);
     }
 
-    @Override
-    public boolean matches(CraftingInventory craftingInventory, World world) {
+    public boolean method_17709(CraftingInventory craftingInventory, World world) {
         boolean bl = false;
         int i = 0;
         for (int j = 0; j < craftingInventory.getInvSize(); ++j) {
             ItemStack itemStack = craftingInventory.getInvStack(j);
             if (itemStack.isEmpty()) continue;
-            if (PAPER.test(itemStack)) {
+            if (PAPER.method_8093(itemStack)) {
                 if (bl) {
                     return false;
                 }
                 bl = true;
                 continue;
             }
-            if (!(DURATION_MODIFIER.test(itemStack) ? ++i > 3 : !FIREWORK_STAR.test(itemStack))) continue;
+            if (!(DURATION_MODIFIER.method_8093(itemStack) ? ++i > 3 : !FIREWORK_STAR.method_8093(itemStack))) continue;
             return false;
         }
         return bl && i >= 1;
     }
 
-    @Override
-    public ItemStack craft(CraftingInventory craftingInventory) {
+    public ItemStack method_17708(CraftingInventory craftingInventory) {
         ItemStack itemStack = new ItemStack(Items.FIREWORK_ROCKET, 3);
         CompoundTag compoundTag = itemStack.getOrCreateSubTag("Fireworks");
         ListTag listTag = new ListTag();
@@ -56,11 +54,11 @@ extends SpecialCraftingRecipe {
             CompoundTag compoundTag2;
             ItemStack itemStack2 = craftingInventory.getInvStack(j);
             if (itemStack2.isEmpty()) continue;
-            if (DURATION_MODIFIER.test(itemStack2)) {
+            if (DURATION_MODIFIER.method_8093(itemStack2)) {
                 ++i;
                 continue;
             }
-            if (!FIREWORK_STAR.test(itemStack2) || (compoundTag2 = itemStack2.getSubTag("Explosion")) == null) continue;
+            if (!FIREWORK_STAR.method_8093(itemStack2) || (compoundTag2 = itemStack2.getSubTag("Explosion")) == null) continue;
             listTag.add(compoundTag2);
         }
         compoundTag.putByte("Flight", (byte)i);

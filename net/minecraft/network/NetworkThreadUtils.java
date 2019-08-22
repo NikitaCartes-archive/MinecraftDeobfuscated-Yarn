@@ -7,7 +7,7 @@ import net.minecraft.network.OffThreadException;
 import net.minecraft.network.Packet;
 import net.minecraft.network.listener.PacketListener;
 import net.minecraft.server.world.ServerWorld;
-import net.minecraft.util.thread.ThreadExecutor;
+import net.minecraft.util.ThreadExecutor;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 

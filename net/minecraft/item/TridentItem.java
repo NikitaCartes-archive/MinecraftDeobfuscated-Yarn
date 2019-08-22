@@ -71,7 +71,7 @@ extends Item {
             return;
         }
         int k = EnchantmentHelper.getRiptide(itemStack);
-        if (k > 0 && !playerEntity2.isTouchingWaterOrRain()) {
+        if (k > 0 && !playerEntity2.isInsideWaterOrRain()) {
             return;
         }
         if (!world.isClient) {
@@ -115,7 +115,7 @@ extends Item {
         if (itemStack.getDamage() >= itemStack.getMaxDamage()) {
             return new TypedActionResult<ItemStack>(ActionResult.FAIL, itemStack);
         }
-        if (EnchantmentHelper.getRiptide(itemStack) > 0 && !playerEntity.isTouchingWaterOrRain()) {
+        if (EnchantmentHelper.getRiptide(itemStack) > 0 && !playerEntity.isInsideWaterOrRain()) {
             return new TypedActionResult<ItemStack>(ActionResult.FAIL, itemStack);
         }
         playerEntity.setCurrentHand(hand);

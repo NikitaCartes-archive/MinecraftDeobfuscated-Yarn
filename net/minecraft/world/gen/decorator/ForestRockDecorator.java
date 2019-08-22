@@ -22,8 +22,7 @@ extends Decorator<CountDecoratorConfig> {
         super(function);
     }
 
-    @Override
-    public Stream<BlockPos> getPositions(IWorld iWorld, ChunkGenerator<? extends ChunkGeneratorConfig> chunkGenerator, Random random, CountDecoratorConfig countDecoratorConfig, BlockPos blockPos) {
+    public Stream<BlockPos> method_15925(IWorld iWorld, ChunkGenerator<? extends ChunkGeneratorConfig> chunkGenerator, Random random, CountDecoratorConfig countDecoratorConfig, BlockPos blockPos) {
         int i2 = random.nextInt(countDecoratorConfig.count);
         return IntStream.range(0, i2).mapToObj(i -> {
             int j = random.nextInt(16);

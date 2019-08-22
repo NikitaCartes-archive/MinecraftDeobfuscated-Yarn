@@ -10,7 +10,7 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.gui.widget.TextFieldWidget;
-import net.minecraft.client.network.ServerInfo;
+import net.minecraft.client.options.ServerEntry;
 import net.minecraft.client.resource.language.I18n;
 import net.minecraft.text.TranslatableText;
 
@@ -18,13 +18,13 @@ import net.minecraft.text.TranslatableText;
 public class DirectConnectScreen
 extends Screen {
     private ButtonWidget selectServerButton;
-    private final ServerInfo serverEntry;
+    private final ServerEntry serverEntry;
     private TextFieldWidget addressField;
     private final BooleanConsumer callback;
 
-    public DirectConnectScreen(BooleanConsumer booleanConsumer, ServerInfo serverInfo) {
+    public DirectConnectScreen(BooleanConsumer booleanConsumer, ServerEntry serverEntry) {
         super(new TranslatableText("selectServer.direct", new Object[0]));
-        this.serverEntry = serverInfo;
+        this.serverEntry = serverEntry;
         this.callback = booleanConsumer;
     }
 

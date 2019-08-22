@@ -3,7 +3,7 @@
  */
 package net.minecraft.client.render.entity;
 
-import com.mojang.blaze3d.platform.GlStateManager;
+import com.mojang.blaze3d.systems.RenderSystem;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.render.entity.EntityRenderDispatcher;
@@ -21,13 +21,11 @@ extends SpiderEntityRenderer<CaveSpiderEntity> {
         this.field_4673 *= 0.7f;
     }
 
-    @Override
-    protected void scale(CaveSpiderEntity caveSpiderEntity, float f) {
-        GlStateManager.scalef(0.7f, 0.7f, 0.7f);
+    protected void method_3886(CaveSpiderEntity caveSpiderEntity, float f) {
+        RenderSystem.scalef(0.7f, 0.7f, 0.7f);
     }
 
-    @Override
-    protected Identifier getTexture(CaveSpiderEntity caveSpiderEntity) {
+    protected Identifier method_3885(CaveSpiderEntity caveSpiderEntity) {
         return SKIN;
     }
 }

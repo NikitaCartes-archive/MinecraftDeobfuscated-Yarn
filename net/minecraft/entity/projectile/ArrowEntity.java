@@ -69,7 +69,7 @@ extends ProjectileEntity {
 
     public static int getCustomPotionColor(ItemStack itemStack) {
         CompoundTag compoundTag = itemStack.getTag();
-        if (compoundTag != null && compoundTag.contains("CustomPotionColor", 99)) {
+        if (compoundTag != null && compoundTag.containsKey("CustomPotionColor", 99)) {
             return compoundTag.getInt("CustomPotionColor");
         }
         return -1;
@@ -144,7 +144,7 @@ extends ProjectileEntity {
         if (!this.effects.isEmpty()) {
             ListTag listTag = new ListTag();
             for (StatusEffectInstance statusEffectInstance : this.effects) {
-                listTag.add(statusEffectInstance.toTag(new CompoundTag()));
+                listTag.add(statusEffectInstance.serialize(new CompoundTag()));
             }
             compoundTag.put("CustomPotionEffects", listTag);
         }
@@ -153,13 +153,13 @@ extends ProjectileEntity {
     @Override
     public void readCustomDataFromTag(CompoundTag compoundTag) {
         super.readCustomDataFromTag(compoundTag);
-        if (compoundTag.contains("Potion", 8)) {
+        if (compoundTag.containsKey("Potion", 8)) {
             this.potion = PotionUtil.getPotion(compoundTag);
         }
         for (StatusEffectInstance statusEffectInstance : PotionUtil.getCustomPotionEffects(compoundTag)) {
             this.addEffect(statusEffectInstance);
         }
-        if (compoundTag.contains("Color", 99)) {
+        if (compoundTag.containsKey("Color", 99)) {
             this.setColor(compoundTag.getInt("Color"));
         } else {
             this.initColor();

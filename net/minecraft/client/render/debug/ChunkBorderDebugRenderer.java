@@ -3,7 +3,7 @@
  */
 package net.minecraft.client.render.debug;
 
-import com.mojang.blaze3d.platform.GlStateManager;
+import com.mojang.blaze3d.systems.RenderSystem;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
@@ -27,17 +27,17 @@ implements DebugRenderer.Renderer {
         int k;
         Camera camera = this.client.gameRenderer.getCamera();
         Tessellator tessellator = Tessellator.getInstance();
-        BufferBuilder bufferBuilder = tessellator.getBuffer();
+        BufferBuilder bufferBuilder = tessellator.getBufferBuilder();
         double d = camera.getPos().x;
         double e = camera.getPos().y;
         double f = camera.getPos().z;
         double g = 0.0 - e;
         double h = 256.0 - e;
-        GlStateManager.disableTexture();
-        GlStateManager.disableBlend();
+        RenderSystem.disableTexture();
+        RenderSystem.disableBlend();
         double i = (double)(camera.getFocusedEntity().chunkX << 4) - d;
         double j = (double)(camera.getFocusedEntity().chunkZ << 4) - f;
-        GlStateManager.lineWidth(1.0f);
+        RenderSystem.lineWidth(1.0f);
         bufferBuilder.begin(3, VertexFormats.POSITION_COLOR);
         for (k = -16; k <= 32; k += 16) {
             for (int m = -16; m <= 32; m += 16) {
@@ -78,7 +78,7 @@ implements DebugRenderer.Renderer {
             bufferBuilder.vertex(i, n, j).color(1.0f, 1.0f, 0.0f, 0.0f).next();
         }
         tessellator.draw();
-        GlStateManager.lineWidth(2.0f);
+        RenderSystem.lineWidth(2.0f);
         bufferBuilder.begin(3, VertexFormats.POSITION_COLOR);
         for (k = 0; k <= 16; k += 16) {
             for (int m = 0; m <= 16; m += 16) {
@@ -99,9 +99,9 @@ implements DebugRenderer.Renderer {
             bufferBuilder.vertex(i, n, j).color(0.25f, 0.25f, 1.0f, 0.0f).next();
         }
         tessellator.draw();
-        GlStateManager.lineWidth(1.0f);
-        GlStateManager.enableBlend();
-        GlStateManager.enableTexture();
+        RenderSystem.lineWidth(1.0f);
+        RenderSystem.enableBlend();
+        RenderSystem.enableTexture();
     }
 }
 

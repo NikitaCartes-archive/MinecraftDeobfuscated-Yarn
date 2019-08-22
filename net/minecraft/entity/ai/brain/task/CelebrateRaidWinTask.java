@@ -32,26 +32,22 @@ extends Task<VillagerEntity> {
         super(ImmutableMap.of(), i, j);
     }
 
-    @Override
-    protected boolean shouldRun(ServerWorld serverWorld, VillagerEntity villagerEntity) {
+    protected boolean method_19951(ServerWorld serverWorld, VillagerEntity villagerEntity) {
         this.raid = serverWorld.getRaidAt(new BlockPos(villagerEntity));
         return this.raid != null && this.raid.hasWon() && SeekSkyTask.isSkyVisible(serverWorld, villagerEntity);
     }
 
-    @Override
-    protected boolean shouldKeepRunning(ServerWorld serverWorld, VillagerEntity villagerEntity, long l) {
+    protected boolean method_19952(ServerWorld serverWorld, VillagerEntity villagerEntity, long l) {
         return this.raid != null && !this.raid.hasStopped();
     }
 
-    @Override
-    protected void finishRunning(ServerWorld serverWorld, VillagerEntity villagerEntity, long l) {
+    protected void method_19953(ServerWorld serverWorld, VillagerEntity villagerEntity, long l) {
         this.raid = null;
         villagerEntity.getBrain().refreshActivities(serverWorld.getTimeOfDay(), serverWorld.getTime());
     }
 
-    @Override
-    protected void keepRunning(ServerWorld serverWorld, VillagerEntity villagerEntity, long l) {
-        Random random = villagerEntity.getRandom();
+    protected void method_19954(ServerWorld serverWorld, VillagerEntity villagerEntity, long l) {
+        Random random = villagerEntity.getRand();
         if (random.nextInt(100) == 0) {
             villagerEntity.playCelebrateSound();
         }
@@ -87,17 +83,17 @@ extends Task<VillagerEntity> {
 
     @Override
     protected /* synthetic */ boolean shouldKeepRunning(ServerWorld serverWorld, LivingEntity livingEntity, long l) {
-        return this.shouldKeepRunning(serverWorld, (VillagerEntity)livingEntity, l);
+        return this.method_19952(serverWorld, (VillagerEntity)livingEntity, l);
     }
 
     @Override
     protected /* synthetic */ void finishRunning(ServerWorld serverWorld, LivingEntity livingEntity, long l) {
-        this.finishRunning(serverWorld, (VillagerEntity)livingEntity, l);
+        this.method_19953(serverWorld, (VillagerEntity)livingEntity, l);
     }
 
     @Override
     protected /* synthetic */ void keepRunning(ServerWorld serverWorld, LivingEntity livingEntity, long l) {
-        this.keepRunning(serverWorld, (VillagerEntity)livingEntity, l);
+        this.method_19954(serverWorld, (VillagerEntity)livingEntity, l);
     }
 }
 

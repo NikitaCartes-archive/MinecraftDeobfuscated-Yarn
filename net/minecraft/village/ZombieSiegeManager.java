@@ -25,8 +25,8 @@ public class ZombieSiegeManager {
     private int startY;
     private int startZ;
 
-    public int spawn(ServerWorld serverWorld, boolean bl, boolean bl2) {
-        if (serverWorld.isDay() || !bl) {
+    public int tick(ServerWorld serverWorld, boolean bl, boolean bl2) {
+        if (serverWorld.isDaylight() || !bl) {
             this.state = State.SIEGE_DONE;
             this.spawned = false;
             return 0;
@@ -91,7 +91,7 @@ public class ZombieSiegeManager {
             exception.printStackTrace();
             return;
         }
-        zombieEntity.refreshPositionAndAngles(vec3d.x, vec3d.y, vec3d.z, serverWorld.random.nextFloat() * 360.0f, 0.0f);
+        zombieEntity.setPositionAndAngles(vec3d.x, vec3d.y, vec3d.z, serverWorld.random.nextFloat() * 360.0f, 0.0f);
         serverWorld.spawnEntity(zombieEntity);
     }
 

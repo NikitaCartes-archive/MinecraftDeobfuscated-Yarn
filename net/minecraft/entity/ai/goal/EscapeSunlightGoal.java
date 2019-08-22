@@ -34,13 +34,13 @@ extends Goal {
         if (this.mob.getTarget() != null) {
             return false;
         }
-        if (!this.world.isDay()) {
+        if (!this.world.isDaylight()) {
             return false;
         }
         if (!this.mob.isOnFire()) {
             return false;
         }
-        if (!this.world.isSkyVisible(new BlockPos(this.mob.x, this.mob.getBoundingBox().y1, this.mob.z))) {
+        if (!this.world.isSkyVisible(new BlockPos(this.mob.x, this.mob.getBoundingBox().minY, this.mob.z))) {
             return false;
         }
         if (!this.mob.getEquippedStack(EquipmentSlot.HEAD).isEmpty()) {
@@ -72,8 +72,8 @@ extends Goal {
 
     @Nullable
     protected Vec3d locateShadedPos() {
-        Random random = this.mob.getRandom();
-        BlockPos blockPos = new BlockPos(this.mob.x, this.mob.getBoundingBox().y1, this.mob.z);
+        Random random = this.mob.getRand();
+        BlockPos blockPos = new BlockPos(this.mob.x, this.mob.getBoundingBox().minY, this.mob.z);
         for (int i = 0; i < 10; ++i) {
             BlockPos blockPos2 = blockPos.add(random.nextInt(20) - 10, random.nextInt(6) - 3, random.nextInt(20) - 10);
             if (this.world.isSkyVisible(blockPos2) || !(this.mob.getPathfindingFavor(blockPos2) < 0.0f)) continue;

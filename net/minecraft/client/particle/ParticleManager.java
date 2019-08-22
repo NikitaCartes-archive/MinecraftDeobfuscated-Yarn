@@ -9,7 +9,7 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Queues;
-import com.mojang.blaze3d.platform.GlStateManager;
+import com.mojang.blaze3d.systems.RenderSystem;
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import java.io.IOException;
@@ -31,7 +31,7 @@ import net.fabricmc.api.Environment;
 import net.minecraft.block.BlockRenderType;
 import net.minecraft.block.BlockState;
 import net.minecraft.client.particle.BarrierParticle;
-import net.minecraft.client.particle.BlockDustParticle;
+import net.minecraft.client.particle.BlockCrackParticle;
 import net.minecraft.client.particle.BlockFallingDustParticle;
 import net.minecraft.client.particle.BlockLeakParticle;
 import net.minecraft.client.particle.BubbleColumnUpParticle;
@@ -50,11 +50,11 @@ import net.minecraft.client.particle.EndRodParticle;
 import net.minecraft.client.particle.ExplosionEmitterParticle;
 import net.minecraft.client.particle.ExplosionLargeParticle;
 import net.minecraft.client.particle.ExplosionSmokeParticle;
+import net.minecraft.client.particle.FireSmokeLargeParticle;
 import net.minecraft.client.particle.FireSmokeParticle;
 import net.minecraft.client.particle.FireworksSparkParticle;
 import net.minecraft.client.particle.FishingParticle;
 import net.minecraft.client.particle.FlameParticle;
-import net.minecraft.client.particle.LargeFireSmokeParticle;
 import net.minecraft.client.particle.LavaEmberParticle;
 import net.minecraft.client.particle.NoteParticle;
 import net.minecraft.client.particle.Particle;
@@ -128,7 +128,7 @@ implements ResourceReloadListener {
         this.registerFactory(ParticleTypes.AMBIENT_ENTITY_EFFECT, SpellParticle.EntityAmbientFactory::new);
         this.registerFactory(ParticleTypes.ANGRY_VILLAGER, EmotionParticle.AngryVillagerFactory::new);
         this.registerFactory(ParticleTypes.BARRIER, new BarrierParticle.Factory());
-        this.registerFactory(ParticleTypes.BLOCK, new BlockDustParticle.Factory());
+        this.registerFactory(ParticleTypes.BLOCK, new BlockCrackParticle.Factory());
         this.registerFactory(ParticleTypes.BUBBLE, BubbleColumnUpParticle.Factory::new);
         this.registerFactory(ParticleTypes.BUBBLE_COLUMN_UP, WaterBubbleParticle.Factory::new);
         this.registerFactory(ParticleTypes.BUBBLE_POP, BubblePopParticle.Factory::new);
@@ -166,7 +166,7 @@ implements ResourceReloadListener {
         this.registerFactory(ParticleTypes.ITEM, new CrackParticle.ItemFactory());
         this.registerFactory(ParticleTypes.ITEM_SLIME, new CrackParticle.SlimeballFactory());
         this.registerFactory(ParticleTypes.ITEM_SNOWBALL, new CrackParticle.SnowballFactory());
-        this.registerFactory(ParticleTypes.LARGE_SMOKE, LargeFireSmokeParticle.Factory::new);
+        this.registerFactory(ParticleTypes.LARGE_SMOKE, FireSmokeLargeParticle.Factory::new);
         this.registerFactory(ParticleTypes.LAVA, LavaEmberParticle.Factory::new);
         this.registerFactory(ParticleTypes.MYCELIUM, SuspendParticle.MyceliumFactory::new);
         this.registerFactory(ParticleTypes.NAUTILUS, EnchantGlyphParticle.NautilusFactory::new);
@@ -183,6 +183,10 @@ implements ResourceReloadListener {
         this.registerFactory(ParticleTypes.UNDERWATER, WaterSuspendParticle.UnderwaterFactory::new);
         this.registerFactory(ParticleTypes.SPLASH, WaterSplashParticle.SplashFactory::new);
         this.registerFactory(ParticleTypes.WITCH, SpellParticle.WitchFactory::new);
+        this.registerFactory(ParticleTypes.DRIPPING_HONEY, BlockLeakParticle.class_4500::new);
+        this.registerFactory(ParticleTypes.FALLING_HONEY, BlockLeakParticle.class_4499::new);
+        this.registerFactory(ParticleTypes.LANDING_HONEY, BlockLeakParticle.class_4501::new);
+        this.registerFactory(ParticleTypes.FALLING_NECTAR, BlockLeakParticle.class_4502::new);
     }
 
     private <T extends ParticleEffect> void registerFactory(ParticleType<T> particleType, ParticleFactory<T> particleFactory) {
@@ -338,9 +342,9 @@ implements ResourceReloadListener {
         for (ParticleTextureSheet particleTextureSheet : PARTICLE_TEXTURE_SHEETS) {
             Iterable iterable = this.particles.get(particleTextureSheet);
             if (iterable == null) continue;
-            GlStateManager.color4f(1.0f, 1.0f, 1.0f, 1.0f);
+            RenderSystem.color4f(1.0f, 1.0f, 1.0f, 1.0f);
             Tessellator tessellator = Tessellator.getInstance();
-            BufferBuilder bufferBuilder = tessellator.getBuffer();
+            BufferBuilder bufferBuilder = tessellator.getBufferBuilder();
             particleTextureSheet.begin(bufferBuilder, this.textureManager);
             for (Particle particle : iterable) {
                 try {
@@ -355,9 +359,9 @@ implements ResourceReloadListener {
             }
             particleTextureSheet.draw(tessellator);
         }
-        GlStateManager.depthMask(true);
-        GlStateManager.disableBlend();
-        GlStateManager.alphaFunc(516, 0.1f);
+        RenderSystem.depthMask(true);
+        RenderSystem.disableBlend();
+        RenderSystem.alphaFunc(516, 0.1f);
     }
 
     public void setWorld(@Nullable World world) {
@@ -388,7 +392,7 @@ implements ResourceReloadListener {
                         double v = s * j + d;
                         double w = t * k + e;
                         double x = u * l + f;
-                        this.addParticle(new BlockDustParticle(this.world, (double)blockPos.getX() + v, (double)blockPos.getY() + w, (double)blockPos.getZ() + x, s - 0.5, t - 0.5, u - 0.5, blockState).setBlockPos(blockPos));
+                        this.addParticle(new BlockCrackParticle(this.world, (double)blockPos.getX() + v, (double)blockPos.getY() + w, (double)blockPos.getZ() + x, s - 0.5, t - 0.5, u - 0.5, blockState).setBlockPos(blockPos));
                     }
                 }
             }
@@ -405,28 +409,28 @@ implements ResourceReloadListener {
         int k = blockPos.getZ();
         float f = 0.1f;
         Box box = blockState.getOutlineShape(this.world, blockPos).getBoundingBox();
-        double d = (double)i + this.random.nextDouble() * (box.x2 - box.x1 - (double)0.2f) + (double)0.1f + box.x1;
-        double e = (double)j + this.random.nextDouble() * (box.y2 - box.y1 - (double)0.2f) + (double)0.1f + box.y1;
-        double g = (double)k + this.random.nextDouble() * (box.z2 - box.z1 - (double)0.2f) + (double)0.1f + box.z1;
+        double d = (double)i + this.random.nextDouble() * (box.maxX - box.minX - (double)0.2f) + (double)0.1f + box.minX;
+        double e = (double)j + this.random.nextDouble() * (box.maxY - box.minY - (double)0.2f) + (double)0.1f + box.minY;
+        double g = (double)k + this.random.nextDouble() * (box.maxZ - box.minZ - (double)0.2f) + (double)0.1f + box.minZ;
         if (direction == Direction.DOWN) {
-            e = (double)j + box.y1 - (double)0.1f;
+            e = (double)j + box.minY - (double)0.1f;
         }
         if (direction == Direction.UP) {
-            e = (double)j + box.y2 + (double)0.1f;
+            e = (double)j + box.maxY + (double)0.1f;
         }
         if (direction == Direction.NORTH) {
-            g = (double)k + box.z1 - (double)0.1f;
+            g = (double)k + box.minZ - (double)0.1f;
         }
         if (direction == Direction.SOUTH) {
-            g = (double)k + box.z2 + (double)0.1f;
+            g = (double)k + box.maxZ + (double)0.1f;
         }
         if (direction == Direction.WEST) {
-            d = (double)i + box.x1 - (double)0.1f;
+            d = (double)i + box.minX - (double)0.1f;
         }
         if (direction == Direction.EAST) {
-            d = (double)i + box.x2 + (double)0.1f;
+            d = (double)i + box.maxX + (double)0.1f;
         }
-        this.addParticle(new BlockDustParticle(this.world, d, e, g, 0.0, 0.0, 0.0, blockState).setBlockPos(blockPos).move(0.2f).method_3087(0.6f));
+        this.addParticle(new BlockCrackParticle(this.world, d, e, g, 0.0, 0.0, 0.0, blockState).setBlockPos(blockPos).move(0.2f).method_3087(0.6f));
     }
 
     public String getDebugString() {

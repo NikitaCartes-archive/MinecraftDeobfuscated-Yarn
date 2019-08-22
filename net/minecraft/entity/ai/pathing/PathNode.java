@@ -29,7 +29,7 @@ public class PathNode {
         this.x = i;
         this.y = j;
         this.z = k;
-        this.hashCode = PathNode.hash(i, j, k);
+        this.hashCode = PathNode.calculateHashCode(i, j, k);
     }
 
     public PathNode copyWithNewPosition(int i, int j, int k) {
@@ -46,18 +46,18 @@ public class PathNode {
         return pathNode;
     }
 
-    public static int hash(int i, int j, int k) {
+    public static int calculateHashCode(int i, int j, int k) {
         return j & 0xFF | (i & Short.MAX_VALUE) << 8 | (k & Short.MAX_VALUE) << 24 | (i < 0 ? Integer.MIN_VALUE : 0) | (k < 0 ? 32768 : 0);
     }
 
-    public float getDistance(PathNode pathNode) {
+    public float distance(PathNode pathNode) {
         float f = pathNode.x - this.x;
         float g = pathNode.y - this.y;
         float h = pathNode.z - this.z;
         return MathHelper.sqrt(f * f + g * g + h * h);
     }
 
-    public float getSquaredDistance(PathNode pathNode) {
+    public float distanceSquared(PathNode pathNode) {
         float f = pathNode.x - this.x;
         float g = pathNode.y - this.y;
         float h = pathNode.z - this.z;

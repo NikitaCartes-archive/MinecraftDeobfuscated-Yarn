@@ -11,17 +11,16 @@ implements Comparable<ChunkTicket<?>> {
     private final ChunkTicketType<T> type;
     private final int level;
     private final T argument;
-    private final long tickCreated;
+    private final long location;
 
     protected ChunkTicket(ChunkTicketType<T> chunkTicketType, int i, T object, long l) {
         this.type = chunkTicketType;
         this.level = i;
         this.argument = object;
-        this.tickCreated = l;
+        this.location = l;
     }
 
-    @Override
-    public int compareTo(ChunkTicket<?> chunkTicket) {
+    public int method_14285(ChunkTicket<?> chunkTicket) {
         int i = Integer.compare(this.level, chunkTicket.level);
         if (i != 0) {
             return i;
@@ -49,7 +48,7 @@ implements Comparable<ChunkTicket<?>> {
     }
 
     public String toString() {
-        return "Ticket[" + this.type + " " + this.level + " (" + this.argument + ")] at " + this.tickCreated;
+        return "Ticket[" + this.type + " " + this.level + " (" + this.argument + ")] at " + this.location;
     }
 
     public ChunkTicketType<T> getType() {
@@ -62,12 +61,12 @@ implements Comparable<ChunkTicket<?>> {
 
     public boolean method_20627(long l) {
         long m = this.type.method_20629();
-        return m != 0L && l - this.tickCreated > m;
+        return m != 0L && l - this.location > m;
     }
 
     @Override
     public /* synthetic */ int compareTo(Object object) {
-        return this.compareTo((ChunkTicket)object);
+        return this.method_14285((ChunkTicket)object);
     }
 }
 

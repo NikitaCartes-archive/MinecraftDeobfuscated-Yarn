@@ -30,8 +30,7 @@ implements AutoCloseable {
         return this.atlas.getSprite(identifier);
     }
 
-    @Override
-    protected SpriteAtlasTexture.Data prepare(ResourceManager resourceManager, Profiler profiler) {
+    protected SpriteAtlasTexture.Data method_18668(ResourceManager resourceManager, Profiler profiler) {
         profiler.startTick();
         profiler.push("stitching");
         SpriteAtlasTexture.Data data = this.atlas.stitch(resourceManager, this.getSprites(), profiler);
@@ -40,8 +39,7 @@ implements AutoCloseable {
         return data;
     }
 
-    @Override
-    protected void apply(SpriteAtlasTexture.Data data, ResourceManager resourceManager, Profiler profiler) {
+    protected void method_18666(SpriteAtlasTexture.Data data, ResourceManager resourceManager, Profiler profiler) {
         profiler.startTick();
         profiler.push("upload");
         this.atlas.upload(data);
@@ -56,7 +54,7 @@ implements AutoCloseable {
 
     @Override
     protected /* synthetic */ Object prepare(ResourceManager resourceManager, Profiler profiler) {
-        return this.prepare(resourceManager, profiler);
+        return this.method_18668(resourceManager, profiler);
     }
 }
 

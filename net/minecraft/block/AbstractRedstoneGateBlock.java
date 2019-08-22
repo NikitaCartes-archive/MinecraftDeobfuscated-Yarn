@@ -5,24 +5,24 @@ package net.minecraft.block;
 
 import java.util.Random;
 import net.minecraft.block.Block;
+import net.minecraft.block.BlockRenderLayer;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.HorizontalFacingBlock;
 import net.minecraft.block.RedstoneWireBlock;
 import net.minecraft.block.entity.BlockEntity;
-import net.minecraft.client.render.RenderLayer;
 import net.minecraft.entity.EntityContext;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.item.ItemPlacementContext;
 import net.minecraft.item.ItemStack;
 import net.minecraft.state.property.BooleanProperty;
 import net.minecraft.state.property.Properties;
+import net.minecraft.util.TaskPriority;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.world.BlockView;
-import net.minecraft.world.CollisionView;
-import net.minecraft.world.TickPriority;
+import net.minecraft.world.ViewableWorld;
 import net.minecraft.world.World;
 
 public abstract class AbstractRedstoneGateBlock
@@ -40,8 +40,8 @@ extends HorizontalFacingBlock {
     }
 
     @Override
-    public boolean canPlaceAt(BlockState blockState, CollisionView collisionView, BlockPos blockPos) {
-        return AbstractRedstoneGateBlock.topCoversMediumSquare(collisionView, blockPos.down());
+    public boolean canPlaceAt(BlockState blockState, ViewableWorld viewableWorld, BlockPos blockPos) {
+        return AbstractRedstoneGateBlock.isSolidMediumSquare(viewableWorld, blockPos.down());
     }
 
     @Override
@@ -56,7 +56,7 @@ extends HorizontalFacingBlock {
         } else if (!bl) {
             world.setBlockState(blockPos, (BlockState)blockState.with(POWERED, true), 2);
             if (!bl2) {
-                world.getBlockTickScheduler().schedule(blockPos, this, this.getUpdateDelayInternal(blockState), TickPriority.HIGH);
+                world.getBlockTickScheduler().schedule(blockPos, this, this.getUpdateDelayInternal(blockState), TaskPriority.HIGH);
             }
         }
     }
@@ -85,7 +85,7 @@ extends HorizontalFacingBlock {
         }
         BlockEntity blockEntity = this.hasBlockEntity() ? world.getBlockEntity(blockPos) : null;
         AbstractRedstoneGateBlock.dropStacks(blockState, world, blockPos, blockEntity);
-        world.removeBlock(blockPos, false);
+        world.clearBlockState(blockPos, false);
         for (Direction direction : Direction.values()) {
             world.updateNeighborsAlways(blockPos.offset(direction), this);
         }
@@ -98,17 +98,17 @@ extends HorizontalFacingBlock {
         }
         boolean bl = blockState.get(POWERED);
         if (bl != (bl2 = this.hasPower(world, blockPos, blockState)) && !world.getBlockTickScheduler().isTicking(blockPos, this)) {
-            TickPriority tickPriority = TickPriority.HIGH;
+            TaskPriority taskPriority = TaskPriority.HIGH;
             if (this.isTargetNotAligned(world, blockPos, blockState)) {
-                tickPriority = TickPriority.EXTREMELY_HIGH;
+                taskPriority = TaskPriority.EXTREMELY_HIGH;
             } else if (bl) {
-                tickPriority = TickPriority.VERY_HIGH;
+                taskPriority = TaskPriority.VERY_HIGH;
             }
-            world.getBlockTickScheduler().schedule(blockPos, this, this.getUpdateDelayInternal(blockState), tickPriority);
+            world.getBlockTickScheduler().schedule(blockPos, this, this.getUpdateDelayInternal(blockState), taskPriority);
         }
     }
 
-    public boolean isLocked(CollisionView collisionView, BlockPos blockPos, BlockState blockState) {
+    public boolean isLocked(ViewableWorld viewableWorld, BlockPos blockPos, BlockState blockState) {
         return false;
     }
 
@@ -127,15 +127,15 @@ extends HorizontalFacingBlock {
         return Math.max(i, blockState2.getBlock() == Blocks.REDSTONE_WIRE ? blockState2.get(RedstoneWireBlock.POWER) : 0);
     }
 
-    protected int getMaxInputLevelSides(CollisionView collisionView, BlockPos blockPos, BlockState blockState) {
+    protected int getMaxInputLevelSides(ViewableWorld viewableWorld, BlockPos blockPos, BlockState blockState) {
         Direction direction = blockState.get(FACING);
         Direction direction2 = direction.rotateYClockwise();
         Direction direction3 = direction.rotateYCounterclockwise();
-        return Math.max(this.getInputLevel(collisionView, blockPos.offset(direction2), direction2), this.getInputLevel(collisionView, blockPos.offset(direction3), direction3));
+        return Math.max(this.getInputLevel(viewableWorld, blockPos.offset(direction2), direction2), this.getInputLevel(viewableWorld, blockPos.offset(direction3), direction3));
     }
 
-    protected int getInputLevel(CollisionView collisionView, BlockPos blockPos, Direction direction) {
-        BlockState blockState = collisionView.getBlockState(blockPos);
+    protected int getInputLevel(ViewableWorld viewableWorld, BlockPos blockPos, Direction direction) {
+        BlockState blockState = viewableWorld.getBlockState(blockPos);
         Block block = blockState.getBlock();
         if (this.isValidInput(blockState)) {
             if (block == Blocks.REDSTONE_BLOCK) {
@@ -144,7 +144,7 @@ extends HorizontalFacingBlock {
             if (block == Blocks.REDSTONE_WIRE) {
                 return blockState.get(RedstoneWireBlock.POWER);
             }
-            return collisionView.getEmittedStrongRedstonePower(blockPos, direction);
+            return viewableWorld.getEmittedStrongRedstonePower(blockPos, direction);
         }
         return 0;
     }
@@ -208,8 +208,8 @@ extends HorizontalFacingBlock {
     protected abstract int getUpdateDelayInternal(BlockState var1);
 
     @Override
-    public RenderLayer getRenderLayer() {
-        return RenderLayer.CUTOUT;
+    public BlockRenderLayer getRenderLayer() {
+        return BlockRenderLayer.CUTOUT;
     }
 
     @Override

@@ -22,8 +22,7 @@ extends MobEntityRenderer<SheepEntity, SheepEntityModel<SheepEntity>> {
         this.addFeature(new SheepWoolFeatureRenderer(this));
     }
 
-    @Override
-    protected Identifier getTexture(SheepEntity sheepEntity) {
+    protected Identifier method_4106(SheepEntity sheepEntity) {
         return SKIN;
     }
 }

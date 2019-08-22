@@ -10,7 +10,7 @@ import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.IceBlock;
 import net.minecraft.item.ItemStack;
-import net.minecraft.state.StateManager;
+import net.minecraft.state.StateFactory;
 import net.minecraft.state.property.IntProperty;
 import net.minecraft.state.property.Properties;
 import net.minecraft.util.math.BlockPos;
@@ -25,15 +25,15 @@ extends IceBlock {
 
     public FrostedIceBlock(Block.Settings settings) {
         super(settings);
-        this.setDefaultState((BlockState)((BlockState)this.stateManager.getDefaultState()).with(AGE, 0));
+        this.setDefaultState((BlockState)((BlockState)this.stateFactory.getDefaultState()).with(AGE, 0));
     }
 
     @Override
     public void onScheduledTick(BlockState blockState, World world, BlockPos blockPos, Random random) {
-        if ((random.nextInt(3) == 0 || this.canMelt(world, blockPos, 4)) && world.getLightLevel(blockPos) > 11 - blockState.get(AGE) - blockState.getOpacity(world, blockPos) && this.increaseAge(blockState, world, blockPos)) {
+        if ((random.nextInt(3) == 0 || this.canMelt(world, blockPos, 4)) && world.getLightLevel(blockPos) > 11 - blockState.get(AGE) - blockState.getLightSubtracted(world, blockPos) && this.increaseAge(blockState, world, blockPos)) {
             try (BlockPos.PooledMutable pooledMutable = BlockPos.PooledMutable.get();){
                 for (Direction direction : Direction.values()) {
-                    pooledMutable.set(blockPos).setOffset(direction);
+                    pooledMutable.method_10114(blockPos).method_10118(direction);
                     BlockState blockState2 = world.getBlockState(pooledMutable);
                     if (blockState2.getBlock() != this || this.increaseAge(blockState2, world, pooledMutable)) continue;
                     world.getBlockTickScheduler().schedule(pooledMutable, this, MathHelper.nextInt(random, 20, 40));
@@ -66,7 +66,7 @@ extends IceBlock {
         int j = 0;
         try (BlockPos.PooledMutable pooledMutable = BlockPos.PooledMutable.get();){
             for (Direction direction : Direction.values()) {
-                pooledMutable.set(blockPos).setOffset(direction);
+                pooledMutable.method_10114(blockPos).method_10118(direction);
                 if (blockView.getBlockState(pooledMutable).getBlock() != this || ++j < i) continue;
                 boolean bl = false;
                 return bl;
@@ -76,7 +76,7 @@ extends IceBlock {
     }
 
     @Override
-    protected void appendProperties(StateManager.Builder<Block, BlockState> builder) {
+    protected void appendProperties(StateFactory.Builder<Block, BlockState> builder) {
         builder.add(AGE);
     }
 

@@ -3,11 +3,12 @@
  */
 package net.minecraft.client.gui.widget;
 
-import com.mojang.blaze3d.platform.GlStateManager;
+import com.mojang.blaze3d.systems.RenderSystem;
 import java.util.Collections;
 import java.util.List;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.class_4493;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.AbstractParentElement;
 import net.minecraft.client.gui.Drawable;
@@ -165,14 +166,14 @@ implements Drawable {
         int k = this.getScrollbarPosition();
         int l = k + 6;
         this.capYPosition();
-        GlStateManager.disableLighting();
-        GlStateManager.disableFog();
+        RenderSystem.disableLighting();
+        RenderSystem.disableFog();
         Tessellator tessellator = Tessellator.getInstance();
-        BufferBuilder bufferBuilder = tessellator.getBuffer();
+        BufferBuilder bufferBuilder = tessellator.getBufferBuilder();
         this.minecraft.getTextureManager().bindTexture(DrawableHelper.BACKGROUND_LOCATION);
-        GlStateManager.color4f(1.0f, 1.0f, 1.0f, 1.0f);
+        RenderSystem.color4f(1.0f, 1.0f, 1.0f, 1.0f);
         float g = 32.0f;
-        bufferBuilder.begin(7, VertexFormats.POSITION_TEXTURE_COLOR);
+        bufferBuilder.begin(7, VertexFormats.POSITION_UV_COLOR);
         bufferBuilder.vertex(this.field_2180, this.field_2165, 0.0).texture((float)this.field_2180 / 32.0f, (float)(this.field_2165 + (int)this.field_2175) / 32.0f).color(32, 32, 32, 255).next();
         bufferBuilder.vertex(this.field_2181, this.field_2165, 0.0).texture((float)this.field_2181 / 32.0f, (float)(this.field_2165 + (int)this.field_2175) / 32.0f).color(32, 32, 32, 255).next();
         bufferBuilder.vertex(this.field_2181, this.field_2166, 0.0).texture((float)this.field_2181 / 32.0f, (float)(this.field_2166 + (int)this.field_2175) / 32.0f).color(32, 32, 32, 255).next();
@@ -184,22 +185,22 @@ implements Drawable {
             this.renderHeader(m, n, tessellator);
         }
         this.renderList(m, n, i, j, f);
-        GlStateManager.disableDepthTest();
+        RenderSystem.disableDepthTest();
         this.renderHoleBackground(0, this.field_2166, 255, 255);
         this.renderHoleBackground(this.field_2165, this.height, 255, 255);
-        GlStateManager.enableBlend();
-        GlStateManager.blendFuncSeparate(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ZERO, GlStateManager.DestFactor.ONE);
-        GlStateManager.disableAlphaTest();
-        GlStateManager.shadeModel(7425);
-        GlStateManager.disableTexture();
+        RenderSystem.enableBlend();
+        RenderSystem.blendFuncSeparate(class_4493.class_4535.SRC_ALPHA, class_4493.class_4534.ONE_MINUS_SRC_ALPHA, class_4493.class_4535.ZERO, class_4493.class_4534.ONE);
+        RenderSystem.disableAlphaTest();
+        RenderSystem.shadeModel(7425);
+        RenderSystem.disableTexture();
         int o = 4;
-        bufferBuilder.begin(7, VertexFormats.POSITION_TEXTURE_COLOR);
+        bufferBuilder.begin(7, VertexFormats.POSITION_UV_COLOR);
         bufferBuilder.vertex(this.field_2180, this.field_2166 + 4, 0.0).texture(0.0, 1.0).color(0, 0, 0, 0).next();
         bufferBuilder.vertex(this.field_2181, this.field_2166 + 4, 0.0).texture(1.0, 1.0).color(0, 0, 0, 0).next();
         bufferBuilder.vertex(this.field_2181, this.field_2166, 0.0).texture(1.0, 0.0).color(0, 0, 0, 255).next();
         bufferBuilder.vertex(this.field_2180, this.field_2166, 0.0).texture(0.0, 0.0).color(0, 0, 0, 255).next();
         tessellator.draw();
-        bufferBuilder.begin(7, VertexFormats.POSITION_TEXTURE_COLOR);
+        bufferBuilder.begin(7, VertexFormats.POSITION_UV_COLOR);
         bufferBuilder.vertex(this.field_2180, this.field_2165, 0.0).texture(0.0, 1.0).color(0, 0, 0, 255).next();
         bufferBuilder.vertex(this.field_2181, this.field_2165, 0.0).texture(1.0, 1.0).color(0, 0, 0, 255).next();
         bufferBuilder.vertex(this.field_2181, this.field_2165 - 4, 0.0).texture(1.0, 0.0).color(0, 0, 0, 0).next();
@@ -212,19 +213,19 @@ implements Drawable {
             if (r < this.field_2166) {
                 r = this.field_2166;
             }
-            bufferBuilder.begin(7, VertexFormats.POSITION_TEXTURE_COLOR);
+            bufferBuilder.begin(7, VertexFormats.POSITION_UV_COLOR);
             bufferBuilder.vertex(k, this.field_2165, 0.0).texture(0.0, 1.0).color(0, 0, 0, 255).next();
             bufferBuilder.vertex(l, this.field_2165, 0.0).texture(1.0, 1.0).color(0, 0, 0, 255).next();
             bufferBuilder.vertex(l, this.field_2166, 0.0).texture(1.0, 0.0).color(0, 0, 0, 255).next();
             bufferBuilder.vertex(k, this.field_2166, 0.0).texture(0.0, 0.0).color(0, 0, 0, 255).next();
             tessellator.draw();
-            bufferBuilder.begin(7, VertexFormats.POSITION_TEXTURE_COLOR);
+            bufferBuilder.begin(7, VertexFormats.POSITION_UV_COLOR);
             bufferBuilder.vertex(k, r + q, 0.0).texture(0.0, 1.0).color(128, 128, 128, 255).next();
             bufferBuilder.vertex(l, r + q, 0.0).texture(1.0, 1.0).color(128, 128, 128, 255).next();
             bufferBuilder.vertex(l, r, 0.0).texture(1.0, 0.0).color(128, 128, 128, 255).next();
             bufferBuilder.vertex(k, r, 0.0).texture(0.0, 0.0).color(128, 128, 128, 255).next();
             tessellator.draw();
-            bufferBuilder.begin(7, VertexFormats.POSITION_TEXTURE_COLOR);
+            bufferBuilder.begin(7, VertexFormats.POSITION_UV_COLOR);
             bufferBuilder.vertex(k, r + q - 1, 0.0).texture(0.0, 1.0).color(192, 192, 192, 255).next();
             bufferBuilder.vertex(l - 1, r + q - 1, 0.0).texture(1.0, 1.0).color(192, 192, 192, 255).next();
             bufferBuilder.vertex(l - 1, r, 0.0).texture(1.0, 0.0).color(192, 192, 192, 255).next();
@@ -232,10 +233,10 @@ implements Drawable {
             tessellator.draw();
         }
         this.renderDecorations(i, j);
-        GlStateManager.enableTexture();
-        GlStateManager.shadeModel(7424);
-        GlStateManager.enableAlphaTest();
-        GlStateManager.disableBlend();
+        RenderSystem.enableTexture();
+        RenderSystem.shadeModel(7424);
+        RenderSystem.enableAlphaTest();
+        RenderSystem.disableBlend();
     }
 
     protected void updateScrollingState(double d, double e, int i) {
@@ -350,7 +351,7 @@ implements Drawable {
     protected void renderList(int i, int j, int k, int l, float f) {
         int m = this.getItemCount();
         Tessellator tessellator = Tessellator.getInstance();
-        BufferBuilder bufferBuilder = tessellator.getBuffer();
+        BufferBuilder bufferBuilder = tessellator.getBufferBuilder();
         for (int n = 0; n < m; ++n) {
             int o = j + n * this.itemHeight + this.headerHeight;
             int p = this.itemHeight - 4;
@@ -360,23 +361,23 @@ implements Drawable {
             if (this.renderSelection && this.isSelectedItem(n)) {
                 int q = this.field_2180 + this.width / 2 - this.getRowWidth() / 2;
                 int r = this.field_2180 + this.width / 2 + this.getRowWidth() / 2;
-                GlStateManager.disableTexture();
+                RenderSystem.disableTexture();
                 float g = this.isFocused() ? 1.0f : 0.5f;
-                GlStateManager.color4f(g, g, g, 1.0f);
+                RenderSystem.color4f(g, g, g, 1.0f);
                 bufferBuilder.begin(7, VertexFormats.POSITION);
                 bufferBuilder.vertex(q, o + p + 2, 0.0).next();
                 bufferBuilder.vertex(r, o + p + 2, 0.0).next();
                 bufferBuilder.vertex(r, o - 2, 0.0).next();
                 bufferBuilder.vertex(q, o - 2, 0.0).next();
                 tessellator.draw();
-                GlStateManager.color4f(0.0f, 0.0f, 0.0f, 1.0f);
+                RenderSystem.color4f(0.0f, 0.0f, 0.0f, 1.0f);
                 bufferBuilder.begin(7, VertexFormats.POSITION);
                 bufferBuilder.vertex(q + 1, o + p + 1, 0.0).next();
                 bufferBuilder.vertex(r - 1, o + p + 1, 0.0).next();
                 bufferBuilder.vertex(r - 1, o - 1, 0.0).next();
                 bufferBuilder.vertex(q + 1, o - 1, 0.0).next();
                 tessellator.draw();
-                GlStateManager.enableTexture();
+                RenderSystem.enableTexture();
             }
             this.renderItem(n, i, o, p, k, l, f);
         }
@@ -392,11 +393,11 @@ implements Drawable {
 
     protected void renderHoleBackground(int i, int j, int k, int l) {
         Tessellator tessellator = Tessellator.getInstance();
-        BufferBuilder bufferBuilder = tessellator.getBuffer();
+        BufferBuilder bufferBuilder = tessellator.getBufferBuilder();
         this.minecraft.getTextureManager().bindTexture(DrawableHelper.BACKGROUND_LOCATION);
-        GlStateManager.color4f(1.0f, 1.0f, 1.0f, 1.0f);
+        RenderSystem.color4f(1.0f, 1.0f, 1.0f, 1.0f);
         float f = 32.0f;
-        bufferBuilder.begin(7, VertexFormats.POSITION_TEXTURE_COLOR);
+        bufferBuilder.begin(7, VertexFormats.POSITION_UV_COLOR);
         bufferBuilder.vertex(this.field_2180, j, 0.0).texture(0.0, (float)j / 32.0f).color(64, 64, 64, l).next();
         bufferBuilder.vertex(this.field_2180 + this.width, j, 0.0).texture((float)this.width / 32.0f, (float)j / 32.0f).color(64, 64, 64, l).next();
         bufferBuilder.vertex(this.field_2180 + this.width, i, 0.0).texture((float)this.width / 32.0f, (float)i / 32.0f).color(64, 64, 64, k).next();

@@ -3,7 +3,7 @@
  */
 package net.minecraft.client.render.block.entity;
 
-import com.mojang.blaze3d.platform.GlStateManager;
+import com.mojang.blaze3d.systems.RenderSystem;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.block.entity.EndGatewayBlockEntity;
@@ -20,11 +20,11 @@ extends EndPortalBlockEntityRenderer {
     private static final Identifier BEAM_TEXTURE = new Identifier("textures/entity/end_gateway_beam.png");
 
     @Override
-    public void render(EndPortalBlockEntity endPortalBlockEntity, double d, double e, double f, float g, int i) {
-        GlStateManager.disableFog();
+    public void method_3591(EndPortalBlockEntity endPortalBlockEntity, double d, double e, double f, float g, int i) {
+        RenderSystem.disableFog();
         EndGatewayBlockEntity endGatewayBlockEntity = (EndGatewayBlockEntity)endPortalBlockEntity;
         if (endGatewayBlockEntity.isRecentlyGenerated() || endGatewayBlockEntity.needsCooldownBeforeTeleporting()) {
-            GlStateManager.alphaFunc(516, 0.1f);
+            RenderSystem.alphaFunc(516, 0.1f);
             this.bindTexture(BEAM_TEXTURE);
             float h = endGatewayBlockEntity.isRecentlyGenerated() ? endGatewayBlockEntity.getRecentlyGeneratedBeamHeight(g) : endGatewayBlockEntity.getCooldownBeamHeight(g);
             double j = endGatewayBlockEntity.isRecentlyGenerated() ? 256.0 - e : 50.0;
@@ -34,8 +34,8 @@ extends EndPortalBlockEntityRenderer {
             BeaconBlockEntityRenderer.renderLightBeam(d, e, f, g, h, endGatewayBlockEntity.getWorld().getTime(), 0, k, fs, 0.15, 0.175);
             BeaconBlockEntityRenderer.renderLightBeam(d, e, f, g, h, endGatewayBlockEntity.getWorld().getTime(), 0, -k, fs, 0.15, 0.175);
         }
-        super.render(endPortalBlockEntity, d, e, f, g, i);
-        GlStateManager.enableFog();
+        super.method_3591(endPortalBlockEntity, d, e, f, g, i);
+        RenderSystem.enableFog();
     }
 
     @Override

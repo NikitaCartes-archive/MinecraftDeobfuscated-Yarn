@@ -100,7 +100,7 @@ extends Goal {
             if ((i = ((LivingEntity)this.actor).getItemUseTime()) >= CrossbowItem.getPullTime(itemStack = ((LivingEntity)this.actor).getActiveItem())) {
                 ((LivingEntity)this.actor).stopUsingItem();
                 this.stage = Stage.CHARGED;
-                this.field_16529 = 20 + ((LivingEntity)this.actor).getRandom().nextInt(20);
+                this.field_16529 = 20 + ((LivingEntity)this.actor).getRand().nextInt(20);
                 ((CrossbowUser)this.actor).setCharging(false);
             }
         } else if (this.stage == Stage.CHARGED) {

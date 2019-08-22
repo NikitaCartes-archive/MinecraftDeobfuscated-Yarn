@@ -24,8 +24,7 @@ extends Feature<SeagrassFeatureConfig> {
         super(function);
     }
 
-    @Override
-    public boolean generate(IWorld iWorld, ChunkGenerator<? extends ChunkGeneratorConfig> chunkGenerator, Random random, BlockPos blockPos, SeagrassFeatureConfig seagrassFeatureConfig) {
+    public boolean method_13926(IWorld iWorld, ChunkGenerator<? extends ChunkGeneratorConfig> chunkGenerator, Random random, BlockPos blockPos, SeagrassFeatureConfig seagrassFeatureConfig) {
         int i = 0;
         for (int j = 0; j < seagrassFeatureConfig.count; ++j) {
             BlockState blockState;

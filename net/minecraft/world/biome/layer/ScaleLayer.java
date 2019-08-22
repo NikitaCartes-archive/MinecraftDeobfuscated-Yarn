@@ -3,9 +3,9 @@
  */
 package net.minecraft.world.biome.layer;
 
-import net.minecraft.world.biome.layer.type.ParentedLayer;
-import net.minecraft.world.biome.layer.util.LayerSampleContext;
-import net.minecraft.world.biome.layer.util.LayerSampler;
+import net.minecraft.world.biome.layer.LayerSampleContext;
+import net.minecraft.world.biome.layer.LayerSampler;
+import net.minecraft.world.biome.layer.ParentedLayer;
 
 public enum ScaleLayer implements ParentedLayer
 {

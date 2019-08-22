@@ -57,6 +57,7 @@ import net.minecraft.item.FlintAndSteelItem;
 import net.minecraft.item.FoodComponents;
 import net.minecraft.item.GlassBottleItem;
 import net.minecraft.item.HoeItem;
+import net.minecraft.item.HoneyBottleItem;
 import net.minecraft.item.HorseArmorItem;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemFrameItem;
@@ -237,20 +238,20 @@ public class Items {
     public static final Item PRISMARINE_SLAB = Items.register(Blocks.PRISMARINE_SLAB, ItemGroup.BUILDING_BLOCKS);
     public static final Item PRISMARINE_BRICK_SLAB = Items.register(Blocks.PRISMARINE_BRICK_SLAB, ItemGroup.BUILDING_BLOCKS);
     public static final Item DARK_PRISMARINE_SLAB = Items.register(Blocks.DARK_PRISMARINE_SLAB, ItemGroup.BUILDING_BLOCKS);
-    public static final Item SMOOTH_QUARTZ = Items.register(Blocks.SMOOTH_QUARTZ, ItemGroup.BUILDING_BLOCKS);
-    public static final Item SMOOTH_RED_SANDSTONE = Items.register(Blocks.SMOOTH_RED_SANDSTONE, ItemGroup.BUILDING_BLOCKS);
-    public static final Item SMOOTH_SANDSTONE = Items.register(Blocks.SMOOTH_SANDSTONE, ItemGroup.BUILDING_BLOCKS);
-    public static final Item SMOOTH_STONE = Items.register(Blocks.SMOOTH_STONE, ItemGroup.BUILDING_BLOCKS);
-    public static final Item BRICKS = Items.register(Blocks.BRICKS, ItemGroup.BUILDING_BLOCKS);
+    public static final Item field_20386 = Items.register(Blocks.SMOOTH_QUARTZ, ItemGroup.BUILDING_BLOCKS);
+    public static final Item field_20387 = Items.register(Blocks.SMOOTH_RED_SANDSTONE, ItemGroup.BUILDING_BLOCKS);
+    public static final Item field_20388 = Items.register(Blocks.SMOOTH_SANDSTONE, ItemGroup.BUILDING_BLOCKS);
+    public static final Item field_20389 = Items.register(Blocks.SMOOTH_STONE, ItemGroup.BUILDING_BLOCKS);
+    public static final Item field_20390 = Items.register(Blocks.BRICKS, ItemGroup.BUILDING_BLOCKS);
     public static final Item TNT = Items.register(Blocks.TNT, ItemGroup.REDSTONE);
     public static final Item BOOKSHELF = Items.register(Blocks.BOOKSHELF, ItemGroup.BUILDING_BLOCKS);
-    public static final Item MOSSY_COBBLESTONE = Items.register(Blocks.MOSSY_COBBLESTONE, ItemGroup.BUILDING_BLOCKS);
+    public static final Item field_20392 = Items.register(Blocks.MOSSY_COBBLESTONE, ItemGroup.BUILDING_BLOCKS);
     public static final Item OBSIDIAN = Items.register(Blocks.OBSIDIAN, ItemGroup.BUILDING_BLOCKS);
     public static final Item TORCH = Items.register(new WallStandingBlockItem(Blocks.TORCH, Blocks.WALL_TORCH, new Item.Settings().group(ItemGroup.DECORATIONS)));
     public static final Item END_ROD = Items.register(Blocks.END_ROD, ItemGroup.DECORATIONS);
     public static final Item CHORUS_PLANT = Items.register(Blocks.CHORUS_PLANT, ItemGroup.DECORATIONS);
     public static final Item CHORUS_FLOWER = Items.register(Blocks.CHORUS_FLOWER, ItemGroup.DECORATIONS);
-    public static final Item PURPUR_BLOCK = Items.register(Blocks.PURPUR_BLOCK, ItemGroup.BUILDING_BLOCKS);
+    public static final Item field_20393 = Items.register(Blocks.PURPUR_BLOCK, ItemGroup.BUILDING_BLOCKS);
     public static final Item PURPUR_PILLAR = Items.register(Blocks.PURPUR_PILLAR, ItemGroup.BUILDING_BLOCKS);
     public static final Item PURPUR_STAIRS = Items.register(Blocks.PURPUR_STAIRS, ItemGroup.BUILDING_BLOCKS);
     public static final Item SPAWNER = Items.register(Blocks.SPAWNER);
@@ -798,6 +799,7 @@ public class Items {
     public static final Item ENDER_EYE = Items.register("ender_eye", (Item)new EnderEyeItem(new Item.Settings().group(ItemGroup.MISC)));
     public static final Item GLISTERING_MELON_SLICE = Items.register("glistering_melon_slice", new Item(new Item.Settings().group(ItemGroup.BREWING)));
     public static final Item BAT_SPAWN_EGG = Items.register("bat_spawn_egg", (Item)new SpawnEggItem(EntityType.BAT, 4996656, 986895, new Item.Settings().group(ItemGroup.MISC)));
+    public static final Item BEE_SPAWN_EGG = Items.register("bee_spawn_egg", (Item)new SpawnEggItem(EntityType.BEE, 0xFFE55E, 2500144, new Item.Settings().group(ItemGroup.MISC)));
     public static final Item BLAZE_SPAWN_EGG = Items.register("blaze_spawn_egg", (Item)new SpawnEggItem(EntityType.BLAZE, 16167425, 16775294, new Item.Settings().group(ItemGroup.MISC)));
     public static final Item CAT_SPAWN_EGG = Items.register("cat_spawn_egg", (Item)new SpawnEggItem(EntityType.CAT, 15714446, 9794134, new Item.Settings().group(ItemGroup.MISC)));
     public static final Item CAVE_SPIDER_SPAWN_EGG = Items.register("cave_spider_spawn_egg", (Item)new SpawnEggItem(EntityType.CAVE_SPIDER, 803406, 11013646, new Item.Settings().group(ItemGroup.MISC)));
@@ -977,6 +979,10 @@ public class Items {
     public static final Item LANTERN = Items.register(Blocks.LANTERN, ItemGroup.DECORATIONS);
     public static final Item SWEET_BERRIES = Items.register("sweet_berries", (Item)new AliasedBlockItem(Blocks.SWEET_BERRY_BUSH, new Item.Settings().group(ItemGroup.FOOD).food(FoodComponents.SWEET_BERRIES)));
     public static final Item CAMPFIRE = Items.register(Blocks.CAMPFIRE, ItemGroup.DECORATIONS);
+    public static final Item HONEYCOMB = Items.register("honeycomb", new Item(new Item.Settings().group(ItemGroup.MATERIALS)));
+    public static final Item BEE_NEST = Items.register(Blocks.BEE_NEST, ItemGroup.DECORATIONS);
+    public static final Item BEE_HIVE = Items.register(Blocks.BEE_HIVE, ItemGroup.DECORATIONS);
+    public static final Item HONEY_BOTTLE = Items.register("honey_bottle", (Item)new HoneyBottleItem(new Item.Settings().recipeRemainder(GLASS_BOTTLE).food(FoodComponents.HONEY_BOTTLE).group(ItemGroup.FOOD).maxCount(1)));
 
     private static Item register(Block block) {
         return Items.register(new BlockItem(block, new Item.Settings()));

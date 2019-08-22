@@ -22,13 +22,11 @@ extends BipedEntityRenderer<T, M> {
         this.addFeature(new ArmorBipedFeatureRenderer(this, zombieEntityModel2, zombieEntityModel3));
     }
 
-    @Override
-    protected Identifier getTexture(ZombieEntity zombieEntity) {
+    protected Identifier method_4163(ZombieEntity zombieEntity) {
         return SKIN;
     }
 
-    @Override
-    protected void setupTransforms(T zombieEntity, float f, float g, float h) {
+    protected void method_17144(T zombieEntity, float f, float g, float h) {
         if (((ZombieEntity)zombieEntity).isConvertingInWater()) {
             g += (float)(Math.cos((double)((ZombieEntity)zombieEntity).age * 3.25) * Math.PI * 0.25);
         }

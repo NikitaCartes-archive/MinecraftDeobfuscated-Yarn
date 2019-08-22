@@ -24,11 +24,11 @@ import java.util.function.Supplier;
 import net.minecraft.nbt.AbstractListTag;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
-import net.minecraft.nbt.NbtHelper;
 import net.minecraft.nbt.StringNbtReader;
 import net.minecraft.nbt.Tag;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.text.TranslatableText;
+import net.minecraft.util.TagHelper;
 import org.apache.commons.lang3.mutable.MutableBoolean;
 
 public class NbtPathArgumentType
@@ -45,8 +45,7 @@ implements ArgumentType<NbtPath> {
         return commandContext.getArgument(string, NbtPath.class);
     }
 
-    @Override
-    public NbtPath parse(StringReader stringReader) throws CommandSyntaxException {
+    public NbtPath method_9362(StringReader stringReader) throws CommandSyntaxException {
         ArrayList<NbtPathNode> list = Lists.newArrayList();
         int i = stringReader.getCursor();
         Object2IntOpenHashMap<NbtPathNode> object2IntMap = new Object2IntOpenHashMap<NbtPathNode>();
@@ -125,13 +124,13 @@ implements ArgumentType<NbtPath> {
         return c != ' ' && c != '\"' && c != '[' && c != ']' && c != '.' && c != '{' && c != '}';
     }
 
-    private static Predicate<Tag> getPredicate(CompoundTag compoundTag) {
-        return tag -> NbtHelper.matches(compoundTag, tag, true);
+    private static Predicate<Tag> getEqualityPredicate(CompoundTag compoundTag) {
+        return tag -> TagHelper.areTagsEqual(compoundTag, tag, true);
     }
 
     @Override
     public /* synthetic */ Object parse(StringReader stringReader) throws CommandSyntaxException {
-        return this.parse(stringReader);
+        return this.method_9362(stringReader);
     }
 
     static class EqualCompoundNode
@@ -139,7 +138,7 @@ implements ArgumentType<NbtPath> {
         private final Predicate<Tag> predicate;
 
         public EqualCompoundNode(CompoundTag compoundTag) {
-            this.predicate = NbtPathArgumentType.getPredicate(compoundTag);
+            this.predicate = NbtPathArgumentType.getEqualityPredicate(compoundTag);
         }
 
         @Override
@@ -179,13 +178,13 @@ implements ArgumentType<NbtPath> {
         public EqualCompundChildNode(String string, CompoundTag compoundTag) {
             this.name = string;
             this.tag = compoundTag;
-            this.predicate = NbtPathArgumentType.getPredicate(compoundTag);
+            this.predicate = NbtPathArgumentType.getEqualityPredicate(compoundTag);
         }
 
         @Override
         public void get(Tag tag, List<Tag> list) {
             Tag tag2;
-            if (tag instanceof CompoundTag && this.predicate.test(tag2 = ((CompoundTag)tag).get(this.name))) {
+            if (tag instanceof CompoundTag && this.predicate.test(tag2 = ((CompoundTag)tag).getTag(this.name))) {
                 list.add(tag2);
             }
         }
@@ -194,9 +193,9 @@ implements ArgumentType<NbtPath> {
         public void putIfAbsent(Tag tag, Supplier<Tag> supplier, List<Tag> list) {
             if (tag instanceof CompoundTag) {
                 CompoundTag compoundTag = (CompoundTag)tag;
-                Tag tag2 = compoundTag.get(this.name);
+                Tag tag2 = compoundTag.getTag(this.name);
                 if (tag2 == null) {
-                    tag2 = this.tag.copy();
+                    tag2 = this.tag.method_10553();
                     compoundTag.put(this.name, tag2);
                     list.add(tag2);
                 } else if (this.predicate.test(tag2)) {
@@ -215,7 +214,7 @@ implements ArgumentType<NbtPath> {
             Tag tag3;
             CompoundTag compoundTag;
             Tag tag2;
-            if (tag instanceof CompoundTag && this.predicate.test(tag2 = (compoundTag = (CompoundTag)tag).get(this.name)) && !(tag3 = supplier.get()).equals(tag2)) {
+            if (tag instanceof CompoundTag && this.predicate.test(tag2 = (compoundTag = (CompoundTag)tag).getTag(this.name)) && !(tag3 = supplier.get()).equals(tag2)) {
                 compoundTag.put(this.name, tag3);
                 return 1;
             }
@@ -226,7 +225,7 @@ implements ArgumentType<NbtPath> {
         public int remove(Tag tag) {
             CompoundTag compoundTag;
             Tag tag2;
-            if (tag instanceof CompoundTag && this.predicate.test(tag2 = (compoundTag = (CompoundTag)tag).get(this.name))) {
+            if (tag instanceof CompoundTag && this.predicate.test(tag2 = (compoundTag = (CompoundTag)tag).getTag(this.name))) {
                 compoundTag.remove(this.name);
                 return 1;
             }
@@ -313,7 +312,7 @@ implements ArgumentType<NbtPath> {
 
         public EqualListElementNode(CompoundTag compoundTag) {
             this.tag = compoundTag;
-            this.predicate = NbtPathArgumentType.getPredicate(compoundTag);
+            this.predicate = NbtPathArgumentType.getEqualityPredicate(compoundTag);
         }
 
         @Override
@@ -334,7 +333,7 @@ implements ArgumentType<NbtPath> {
                     mutableBoolean.setTrue();
                 });
                 if (mutableBoolean.isFalse()) {
-                    CompoundTag compoundTag = this.tag.copy();
+                    CompoundTag compoundTag = this.tag.method_10553();
                     listTag.add(compoundTag);
                     list.add(compoundTag);
                 }
@@ -358,7 +357,7 @@ implements ArgumentType<NbtPath> {
                 } else {
                     for (int k = 0; k < j; ++k) {
                         Tag tag3;
-                        Tag tag2 = listTag.get(k);
+                        Tag tag2 = listTag.method_10534(k);
                         if (!this.predicate.test(tag2) || (tag3 = supplier.get()).equals(tag2) || !listTag.setTag(k, tag3)) continue;
                         ++i;
                     }
@@ -373,8 +372,8 @@ implements ArgumentType<NbtPath> {
             if (tag instanceof ListTag) {
                 ListTag listTag = (ListTag)tag;
                 for (int j = listTag.size() - 1; j >= 0; --j) {
-                    if (!this.predicate.test(listTag.get(j))) continue;
-                    listTag.remove(j);
+                    if (!this.predicate.test(listTag.method_10534(j))) continue;
+                    listTag.method_10536(j);
                     ++i;
                 }
             }
@@ -439,7 +438,7 @@ implements ArgumentType<NbtPath> {
                 int i = abstractListTag.size();
                 int n = j = this.index < 0 ? i + this.index : this.index;
                 if (0 <= j && j < i) {
-                    abstractListTag.remove(j);
+                    abstractListTag.method_10536(j);
                     return 1;
                 }
             }
@@ -458,7 +457,7 @@ implements ArgumentType<NbtPath> {
         @Override
         public void get(Tag tag, List<Tag> list) {
             Tag tag2;
-            if (tag instanceof CompoundTag && (tag2 = ((CompoundTag)tag).get(this.name)) != null) {
+            if (tag instanceof CompoundTag && (tag2 = ((CompoundTag)tag).getTag(this.name)) != null) {
                 list.add(tag2);
             }
         }
@@ -468,8 +467,8 @@ implements ArgumentType<NbtPath> {
             if (tag instanceof CompoundTag) {
                 Tag tag2;
                 CompoundTag compoundTag = (CompoundTag)tag;
-                if (compoundTag.contains(this.name)) {
-                    tag2 = compoundTag.get(this.name);
+                if (compoundTag.containsKey(this.name)) {
+                    tag2 = compoundTag.getTag(this.name);
                 } else {
                     tag2 = supplier.get();
                     compoundTag.put(this.name, tag2);
@@ -499,7 +498,7 @@ implements ArgumentType<NbtPath> {
         @Override
         public int remove(Tag tag) {
             CompoundTag compoundTag;
-            if (tag instanceof CompoundTag && (compoundTag = (CompoundTag)tag).contains(this.name)) {
+            if (tag instanceof CompoundTag && (compoundTag = (CompoundTag)tag).containsKey(this.name)) {
                 compoundTag.remove(this.name);
                 return 1;
             }

@@ -13,7 +13,7 @@ import net.minecraft.block.HorizontalFacingBlock;
 import net.minecraft.block.SkullBlock;
 import net.minecraft.entity.EntityContext;
 import net.minecraft.item.ItemPlacementContext;
-import net.minecraft.state.StateManager;
+import net.minecraft.state.StateFactory;
 import net.minecraft.state.property.DirectionProperty;
 import net.minecraft.util.BlockMirror;
 import net.minecraft.util.BlockRotation;
@@ -30,7 +30,7 @@ extends AbstractSkullBlock {
 
     protected WallSkullBlock(SkullBlock.SkullType skullType, Block.Settings settings) {
         super(skullType, settings);
-        this.setDefaultState((BlockState)((BlockState)this.stateManager.getDefaultState()).with(FACING, Direction.NORTH));
+        this.setDefaultState((BlockState)((BlockState)this.stateFactory.getDefaultState()).with(FACING, Direction.NORTH));
     }
 
     @Override
@@ -70,7 +70,7 @@ extends AbstractSkullBlock {
     }
 
     @Override
-    protected void appendProperties(StateManager.Builder<Block, BlockState> builder) {
+    protected void appendProperties(StateFactory.Builder<Block, BlockState> builder) {
         builder.add(FACING);
     }
 }

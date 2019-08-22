@@ -12,7 +12,7 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
-import net.minecraft.state.StateManager;
+import net.minecraft.state.StateFactory;
 import net.minecraft.state.property.BooleanProperty;
 import net.minecraft.state.property.Properties;
 import net.minecraft.util.math.BlockPos;
@@ -27,7 +27,7 @@ extends AbstractPressurePlateBlock {
 
     protected PressurePlateBlock(ActivationRule activationRule, Block.Settings settings) {
         super(settings);
-        this.setDefaultState((BlockState)((BlockState)this.stateManager.getDefaultState()).with(POWERED, false));
+        this.setDefaultState((BlockState)((BlockState)this.stateFactory.getDefaultState()).with(POWERED, false));
         this.type = activationRule;
     }
 
@@ -65,11 +65,11 @@ extends AbstractPressurePlateBlock {
         Box box = BOX.offset(blockPos);
         switch (this.type) {
             case EVERYTHING: {
-                list = world.getEntities(null, box);
+                list = world.getEntities((Entity)null, box);
                 break;
             }
             case MOBS: {
-                list = world.getNonSpectatingEntities(LivingEntity.class, box);
+                list = world.getEntities(LivingEntity.class, box);
                 break;
             }
             default: {
@@ -86,7 +86,7 @@ extends AbstractPressurePlateBlock {
     }
 
     @Override
-    protected void appendProperties(StateManager.Builder<Block, BlockState> builder) {
+    protected void appendProperties(StateFactory.Builder<Block, BlockState> builder) {
         builder.add(POWERED);
     }
 

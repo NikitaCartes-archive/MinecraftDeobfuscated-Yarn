@@ -23,18 +23,18 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import net.minecraft.SharedConstants;
-import net.minecraft.datafixer.DataFixTypes;
+import net.minecraft.client.network.packet.StatisticsS2CPacket;
+import net.minecraft.datafixers.DataFixTypes;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.NbtHelper;
-import net.minecraft.network.packet.s2c.play.StatisticsS2CPacket;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.stat.Stat;
 import net.minecraft.stat.StatHandler;
 import net.minecraft.stat.StatType;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.Util;
+import net.minecraft.util.SystemUtil;
+import net.minecraft.util.TagHelper;
 import net.minecraft.util.registry.Registry;
 import org.apache.commons.io.FileUtils;
 import org.apache.logging.log4j.LogManager;
@@ -91,21 +91,21 @@ extends StatHandler {
                 return;
             }
             CompoundTag compoundTag = ServerStatHandler.jsonToCompound(jsonElement.getAsJsonObject());
-            if (!compoundTag.contains("DataVersion", 99)) {
+            if (!compoundTag.containsKey("DataVersion", 99)) {
                 compoundTag.putInt("DataVersion", 1343);
             }
-            if ((compoundTag = NbtHelper.update(dataFixer, DataFixTypes.STATS, compoundTag, compoundTag.getInt("DataVersion"))).contains("stats", 10)) {
+            if ((compoundTag = TagHelper.update(dataFixer, DataFixTypes.STATS, compoundTag, compoundTag.getInt("DataVersion"))).containsKey("stats", 10)) {
                 CompoundTag compoundTag2 = compoundTag.getCompound("stats");
                 for (String string2 : compoundTag2.getKeys()) {
-                    if (!compoundTag2.contains(string2, 10)) continue;
-                    Util.ifPresentOrElse(Registry.STAT_TYPE.getOrEmpty(new Identifier(string2)), statType -> {
+                    if (!compoundTag2.containsKey(string2, 10)) continue;
+                    SystemUtil.ifPresentOrElse(Registry.STAT_TYPE.getOrEmpty(new Identifier(string2)), statType -> {
                         CompoundTag compoundTag2 = compoundTag2.getCompound(string2);
                         for (String string2 : compoundTag2.getKeys()) {
-                            if (compoundTag2.contains(string2, 99)) {
-                                Util.ifPresentOrElse(this.createStat((StatType)statType, string2), stat -> this.statMap.put(stat, compoundTag2.getInt(string2)), () -> LOGGER.warn("Invalid statistic in {}: Don't know what {} is", (Object)this.file, (Object)string2));
+                            if (compoundTag2.containsKey(string2, 99)) {
+                                SystemUtil.ifPresentOrElse(this.createStat((StatType)statType, string2), stat -> this.statMap.put(stat, compoundTag2.getInt(string2)), () -> LOGGER.warn("Invalid statistic in {}: Don't know what {} is", (Object)this.file, (Object)string2));
                                 continue;
                             }
-                            LOGGER.warn("Invalid statistic value in {}: Don't know what {} is for key {}", (Object)this.file, (Object)compoundTag2.get(string2), (Object)string2);
+                            LOGGER.warn("Invalid statistic value in {}: Don't know what {} is for key {}", (Object)this.file, (Object)compoundTag2.getTag(string2), (Object)string2);
                         }
                     }, () -> LOGGER.warn("Invalid statistic type in {}: Don't know what {} is", (Object)this.file, (Object)string2));
                 }

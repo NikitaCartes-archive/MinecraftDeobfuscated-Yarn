@@ -5,7 +5,7 @@ package net.minecraft.block;
 
 import net.minecraft.block.AbstractGlassBlock;
 import net.minecraft.block.Block;
-import net.minecraft.client.render.RenderLayer;
+import net.minecraft.block.BlockRenderLayer;
 
 public class GlassBlock
 extends AbstractGlassBlock {
@@ -14,8 +14,8 @@ extends AbstractGlassBlock {
     }
 
     @Override
-    public RenderLayer getRenderLayer() {
-        return RenderLayer.CUTOUT;
+    public BlockRenderLayer getRenderLayer() {
+        return BlockRenderLayer.CUTOUT;
     }
 }
 

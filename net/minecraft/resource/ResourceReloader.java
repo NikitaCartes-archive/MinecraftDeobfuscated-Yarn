@@ -3,6 +3,7 @@
  */
 package net.minecraft.resource;
 
+import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import java.util.ArrayList;
 import java.util.List;
@@ -16,8 +17,8 @@ import net.fabricmc.api.Environment;
 import net.minecraft.resource.ResourceManager;
 import net.minecraft.resource.ResourceReloadListener;
 import net.minecraft.resource.ResourceReloadMonitor;
+import net.minecraft.util.SystemUtil;
 import net.minecraft.util.Unit;
-import net.minecraft.util.Util;
 import net.minecraft.util.profiler.DummyProfiler;
 
 public class ResourceReloader<S>
@@ -41,7 +42,7 @@ implements ResourceReloadMonitor {
         this.listenerCount = list.size();
         this.preparingCount.incrementAndGet();
         completableFuture.thenRun(this.preparedCount::incrementAndGet);
-        ArrayList<CompletableFuture<S>> list2 = new ArrayList<CompletableFuture<S>>();
+        ArrayList<CompletableFuture<S>> list2 = Lists.newArrayList();
         CompletableFuture<Unit> completableFuture2 = completableFuture;
         this.waitingListeners = Sets.newHashSet(list);
         for (final ResourceReloadListener resourceReloadListener : list) {
@@ -74,7 +75,7 @@ implements ResourceReloadMonitor {
             list2.add(completableFuture4);
             completableFuture2 = completableFuture4;
         }
-        this.applyStageFuture = Util.combine(list2);
+        this.applyStageFuture = SystemUtil.thenCombine(list2);
     }
 
     @Override
@@ -93,7 +94,7 @@ implements ResourceReloadMonitor {
 
     @Override
     @Environment(value=EnvType.CLIENT)
-    public boolean isPrepareStageComplete() {
+    public boolean isLoadStageComplete() {
         return this.prepareStageFuture.isDone();
     }
 

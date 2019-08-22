@@ -31,7 +31,7 @@ import net.minecraft.resource.ResourceManager;
 import net.minecraft.util.DefaultedList;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.JsonHelper;
-import net.minecraft.util.Util;
+import net.minecraft.util.SystemUtil;
 import net.minecraft.util.profiler.Profiler;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.world.World;
@@ -42,16 +42,15 @@ public class RecipeManager
 extends JsonDataLoader {
     private static final Gson GSON = new GsonBuilder().setPrettyPrinting().disableHtmlEscaping().create();
     private static final Logger LOGGER = LogManager.getLogger();
-    private Map<RecipeType<?>, Map<Identifier, Recipe<?>>> recipes = ImmutableMap.of();
-    private boolean errored;
+    private Map<RecipeType<?>, Map<Identifier, Recipe<?>>> recipeMap = ImmutableMap.of();
+    private boolean hadErrors;
 
     public RecipeManager() {
         super(GSON, "recipes");
     }
 
-    @Override
-    protected void apply(Map<Identifier, JsonObject> map, ResourceManager resourceManager, Profiler profiler) {
-        this.errored = false;
+    protected void method_20705(Map<Identifier, JsonObject> map, ResourceManager resourceManager, Profiler profiler) {
+        this.hadErrors = false;
         HashMap<RecipeType, ImmutableMap.Builder> map2 = Maps.newHashMap();
         for (Map.Entry<Identifier, JsonObject> entry2 : map.entrySet()) {
             Identifier identifier = entry2.getKey();
@@ -62,20 +61,20 @@ extends JsonDataLoader {
                 LOGGER.error("Parsing error loading recipe {}", (Object)identifier, (Object)runtimeException);
             }
         }
-        this.recipes = map2.entrySet().stream().collect(ImmutableMap.toImmutableMap(Map.Entry::getKey, entry -> ((ImmutableMap.Builder)entry.getValue()).build()));
+        this.recipeMap = map2.entrySet().stream().collect(ImmutableMap.toImmutableMap(Map.Entry::getKey, entry -> ((ImmutableMap.Builder)entry.getValue()).build()));
         LOGGER.info("Loaded {} recipes", (Object)map2.size());
     }
 
     public <C extends Inventory, T extends Recipe<C>> Optional<T> getFirstMatch(RecipeType<T> recipeType, C inventory, World world) {
-        return this.getAllOfType(recipeType).values().stream().flatMap(recipe -> Util.stream(recipeType.get(recipe, world, inventory))).findFirst();
+        return this.getAllForType(recipeType).values().stream().flatMap(recipe -> SystemUtil.stream(recipeType.get(recipe, world, inventory))).findFirst();
     }
 
     public <C extends Inventory, T extends Recipe<C>> List<T> getAllMatches(RecipeType<T> recipeType, C inventory, World world) {
-        return this.getAllOfType(recipeType).values().stream().flatMap(recipe -> Util.stream(recipeType.get(recipe, world, inventory))).sorted(Comparator.comparing(recipe -> recipe.getOutput().getTranslationKey())).collect(Collectors.toList());
+        return this.getAllForType(recipeType).values().stream().flatMap(recipe -> SystemUtil.stream(recipeType.get(recipe, world, inventory))).sorted(Comparator.comparing(recipe -> recipe.getOutput().getTranslationKey())).collect(Collectors.toList());
     }
 
-    private <C extends Inventory, T extends Recipe<C>> Map<Identifier, Recipe<C>> getAllOfType(RecipeType<T> recipeType) {
-        return this.recipes.getOrDefault(recipeType, Collections.emptyMap());
+    private <C extends Inventory, T extends Recipe<C>> Map<Identifier, Recipe<C>> getAllForType(RecipeType<T> recipeType) {
+        return this.recipeMap.getOrDefault(recipeType, Collections.emptyMap());
     }
 
     public <C extends Inventory, T extends Recipe<C>> DefaultedList<ItemStack> getRemainingStacks(RecipeType<T> recipeType, C inventory, World world) {
@@ -91,15 +90,15 @@ extends JsonDataLoader {
     }
 
     public Optional<? extends Recipe<?>> get(Identifier identifier) {
-        return this.recipes.values().stream().map(map -> (Recipe)map.get(identifier)).filter(Objects::nonNull).findFirst();
+        return this.recipeMap.values().stream().map(map -> (Recipe)map.get(identifier)).filter(Objects::nonNull).findFirst();
     }
 
     public Collection<Recipe<?>> values() {
-        return this.recipes.values().stream().flatMap(map -> map.values().stream()).collect(Collectors.toSet());
+        return this.recipeMap.values().stream().flatMap(map -> map.values().stream()).collect(Collectors.toSet());
     }
 
     public Stream<Identifier> keys() {
-        return this.recipes.values().stream().flatMap(map -> map.keySet().stream());
+        return this.recipeMap.values().stream().flatMap(map -> map.keySet().stream());
     }
 
     public static Recipe<?> deserialize(Identifier identifier, JsonObject jsonObject) {
@@ -109,7 +108,7 @@ extends JsonDataLoader {
 
     @Environment(value=EnvType.CLIENT)
     public void method_20702(Iterable<Recipe<?>> iterable) {
-        this.errored = false;
+        this.hadErrors = false;
         HashMap map = Maps.newHashMap();
         iterable.forEach(recipe -> {
             Map map2 = map.computeIfAbsent(recipe.getType(), recipeType -> Maps.newHashMap());
@@ -118,7 +117,7 @@ extends JsonDataLoader {
                 throw new IllegalStateException("Duplicate recipe ignored with ID " + recipe.getId());
             }
         });
-        this.recipes = ImmutableMap.copyOf(map);
+        this.recipeMap = ImmutableMap.copyOf(map);
     }
 }
 

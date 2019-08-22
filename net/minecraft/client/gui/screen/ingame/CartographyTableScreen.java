@@ -3,10 +3,10 @@
  */
 package net.minecraft.client.gui.screen.ingame;
 
-import com.mojang.blaze3d.platform.GlStateManager;
+import com.mojang.blaze3d.systems.RenderSystem;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.client.gui.screen.ingame.ContainerScreen;
+import net.minecraft.client.gui.screen.ingame.AbstractContainerScreen;
 import net.minecraft.container.CartographyTableContainer;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.item.FilledMapItem;
@@ -20,7 +20,7 @@ import org.jetbrains.annotations.Nullable;
 
 @Environment(value=EnvType.CLIENT)
 public class CartographyTableScreen
-extends ContainerScreen<CartographyTableContainer> {
+extends AbstractContainerScreen<CartographyTableContainer> {
     private static final Identifier TEXTURE = new Identifier("textures/gui/container/cartography_table.png");
 
     public CartographyTableScreen(CartographyTableContainer cartographyTableContainer, PlayerInventory playerInventory, Text text) {
@@ -43,10 +43,10 @@ extends ContainerScreen<CartographyTableContainer> {
     protected void drawBackground(float f, int i, int j) {
         MapState mapState;
         this.renderBackground();
-        GlStateManager.color4f(1.0f, 1.0f, 1.0f, 1.0f);
+        RenderSystem.color4f(1.0f, 1.0f, 1.0f, 1.0f);
         this.minecraft.getTextureManager().bindTexture(TEXTURE);
-        int k = this.x;
-        int l = this.y;
+        int k = this.left;
+        int l = this.top;
         this.blit(k, l, 0, 0, this.containerWidth, this.containerHeight);
         Item item = ((CartographyTableContainer)this.container).getSlot(1).getStack().getItem();
         boolean bl = item == Items.MAP;
@@ -75,8 +75,8 @@ extends ContainerScreen<CartographyTableContainer> {
     }
 
     private void drawMap(@Nullable MapState mapState, boolean bl, boolean bl2, boolean bl3, boolean bl4) {
-        int i = this.x;
-        int j = this.y;
+        int i = this.left;
+        int j = this.top;
         if (bl2 && !bl4) {
             this.blit(i + 67, j + 13, this.containerWidth, 66, 66, 66);
             this.drawMap(mapState, i + 85, j + 31, 0.226f);
@@ -84,19 +84,19 @@ extends ContainerScreen<CartographyTableContainer> {
             this.blit(i + 67 + 16, j + 13, this.containerWidth, 132, 50, 66);
             this.drawMap(mapState, i + 86, j + 16, 0.34f);
             this.minecraft.getTextureManager().bindTexture(TEXTURE);
-            GlStateManager.pushMatrix();
-            GlStateManager.translatef(0.0f, 0.0f, 1.0f);
+            RenderSystem.pushMatrix();
+            RenderSystem.translatef(0.0f, 0.0f, 1.0f);
             this.blit(i + 67, j + 13 + 16, this.containerWidth, 132, 50, 66);
             this.drawMap(mapState, i + 70, j + 32, 0.34f);
-            GlStateManager.popMatrix();
+            RenderSystem.popMatrix();
         } else if (bl3) {
             this.blit(i + 67, j + 13, this.containerWidth, 0, 66, 66);
             this.drawMap(mapState, i + 71, j + 17, 0.45f);
             this.minecraft.getTextureManager().bindTexture(TEXTURE);
-            GlStateManager.pushMatrix();
-            GlStateManager.translatef(0.0f, 0.0f, 1.0f);
+            RenderSystem.pushMatrix();
+            RenderSystem.translatef(0.0f, 0.0f, 1.0f);
             this.blit(i + 66, j + 12, 0, this.containerHeight, 66, 66);
-            GlStateManager.popMatrix();
+            RenderSystem.popMatrix();
         } else {
             this.blit(i + 67, j + 13, this.containerWidth, 0, 66, 66);
             this.drawMap(mapState, i + 71, j + 17, 0.45f);
@@ -105,11 +105,11 @@ extends ContainerScreen<CartographyTableContainer> {
 
     private void drawMap(@Nullable MapState mapState, int i, int j, float f) {
         if (mapState != null) {
-            GlStateManager.pushMatrix();
-            GlStateManager.translatef(i, j, 1.0f);
-            GlStateManager.scalef(f, f, 1.0f);
+            RenderSystem.pushMatrix();
+            RenderSystem.translatef(i, j, 1.0f);
+            RenderSystem.scalef(f, f, 1.0f);
             this.minecraft.gameRenderer.getMapRenderer().draw(mapState, true);
-            GlStateManager.popMatrix();
+            RenderSystem.popMatrix();
         }
     }
 }

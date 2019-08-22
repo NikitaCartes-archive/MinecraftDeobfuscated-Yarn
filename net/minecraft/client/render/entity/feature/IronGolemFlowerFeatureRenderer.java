@@ -3,8 +3,7 @@
  */
 package net.minecraft.client.render.entity.feature;
 
-import com.mojang.blaze3d.platform.GLX;
-import com.mojang.blaze3d.platform.GlStateManager;
+import com.mojang.blaze3d.systems.RenderSystem;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.block.Blocks;
@@ -22,27 +21,26 @@ extends FeatureRenderer<IronGolemEntity, IronGolemEntityModel<IronGolemEntity>> 
         super(featureRendererContext);
     }
 
-    @Override
-    public void render(IronGolemEntity ironGolemEntity, float f, float g, float h, float i, float j, float k, float l) {
+    public void method_4188(IronGolemEntity ironGolemEntity, float f, float g, float h, float i, float j, float k, float l) {
         if (ironGolemEntity.method_6502() == 0) {
             return;
         }
-        GlStateManager.enableRescaleNormal();
-        GlStateManager.pushMatrix();
-        GlStateManager.rotatef(5.0f + 180.0f * ((IronGolemEntityModel)this.getContextModel()).method_2809().pitch / (float)Math.PI, 1.0f, 0.0f, 0.0f);
-        GlStateManager.rotatef(90.0f, 1.0f, 0.0f, 0.0f);
-        GlStateManager.translatef(-0.9375f, -0.625f, -0.9375f);
+        RenderSystem.enableRescaleNormal();
+        RenderSystem.pushMatrix();
+        RenderSystem.rotatef(5.0f + 180.0f * ((IronGolemEntityModel)this.getModel()).method_2809().pitch / (float)Math.PI, 1.0f, 0.0f, 0.0f);
+        RenderSystem.rotatef(90.0f, 1.0f, 0.0f, 0.0f);
+        RenderSystem.translatef(-0.9375f, -0.625f, -0.9375f);
         float m = 0.5f;
-        GlStateManager.scalef(0.5f, -0.5f, 0.5f);
+        RenderSystem.scalef(0.5f, -0.5f, 0.5f);
         int n = ironGolemEntity.getLightmapCoordinates();
         int o = n % 65536;
         int p = n / 65536;
-        GLX.glMultiTexCoord2f(GLX.GL_TEXTURE1, o, p);
-        GlStateManager.color4f(1.0f, 1.0f, 1.0f, 1.0f);
+        RenderSystem.glMultiTexCoord2f(33985, o, p);
+        RenderSystem.color4f(1.0f, 1.0f, 1.0f, 1.0f);
         this.bindTexture(SpriteAtlasTexture.BLOCK_ATLAS_TEX);
         MinecraftClient.getInstance().getBlockRenderManager().renderDynamic(Blocks.POPPY.getDefaultState(), 1.0f);
-        GlStateManager.popMatrix();
-        GlStateManager.disableRescaleNormal();
+        RenderSystem.popMatrix();
+        RenderSystem.disableRescaleNormal();
     }
 
     @Override

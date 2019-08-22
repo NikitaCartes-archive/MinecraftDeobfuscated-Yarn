@@ -3,7 +3,7 @@
  */
 package net.minecraft.client.gui.screen.resourcepack;
 
-import com.mojang.blaze3d.platform.GlStateManager;
+import com.mojang.blaze3d.systems.RenderSystem;
 import java.util.List;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
@@ -14,7 +14,7 @@ import net.minecraft.client.gui.screen.resourcepack.ResourcePackOptionsScreen;
 import net.minecraft.client.gui.screen.resourcepack.SelectedResourcePackListWidget;
 import net.minecraft.client.gui.widget.AlwaysSelectedEntryListWidget;
 import net.minecraft.client.render.Tessellator;
-import net.minecraft.client.resource.ClientResourcePackProfile;
+import net.minecraft.client.resource.ClientResourcePackContainer;
 import net.minecraft.resource.ResourcePackCompatibility;
 import net.minecraft.text.LiteralText;
 import net.minecraft.text.Text;
@@ -56,7 +56,7 @@ extends AlwaysSelectedEntryListWidget<ResourcePackEntry> {
         return this.right - 6;
     }
 
-    public void add(ResourcePackEntry resourcePackEntry) {
+    public void addEntry(ResourcePackEntry resourcePackEntry) {
         this.addEntry(resourcePackEntry);
         resourcePackEntry.widget = this;
     }
@@ -67,12 +67,12 @@ extends AlwaysSelectedEntryListWidget<ResourcePackEntry> {
         private ResourcePackListWidget widget;
         protected final MinecraftClient client;
         protected final ResourcePackOptionsScreen screen;
-        private final ClientResourcePackProfile packContainer;
+        private final ClientResourcePackContainer packContainer;
 
-        public ResourcePackEntry(ResourcePackListWidget resourcePackListWidget, ResourcePackOptionsScreen resourcePackOptionsScreen, ClientResourcePackProfile clientResourcePackProfile) {
+        public ResourcePackEntry(ResourcePackListWidget resourcePackListWidget, ResourcePackOptionsScreen resourcePackOptionsScreen, ClientResourcePackContainer clientResourcePackContainer) {
             this.screen = resourcePackOptionsScreen;
             this.client = MinecraftClient.getInstance();
-            this.packContainer = clientResourcePackProfile;
+            this.packContainer = clientResourcePackContainer;
             this.widget = resourcePackListWidget;
         }
 
@@ -97,7 +97,7 @@ extends AlwaysSelectedEntryListWidget<ResourcePackEntry> {
             return this.packContainer.getDisplayName().asFormattedString();
         }
 
-        public ClientResourcePackProfile getPackContainer() {
+        public ClientResourcePackContainer getPackContainer() {
             return this.packContainer;
         }
 
@@ -106,18 +106,18 @@ extends AlwaysSelectedEntryListWidget<ResourcePackEntry> {
             int p;
             ResourcePackCompatibility resourcePackCompatibility = this.getCompatibility();
             if (!resourcePackCompatibility.isCompatible()) {
-                GlStateManager.color4f(1.0f, 1.0f, 1.0f, 1.0f);
+                RenderSystem.color4f(1.0f, 1.0f, 1.0f, 1.0f);
                 DrawableHelper.fill(k - 1, j - 1, k + l - 9, j + m + 1, -8978432);
             }
             this.drawIcon();
-            GlStateManager.color4f(1.0f, 1.0f, 1.0f, 1.0f);
+            RenderSystem.color4f(1.0f, 1.0f, 1.0f, 1.0f);
             DrawableHelper.blit(k, j, 0.0f, 0.0f, 32, 32, 32, 32);
             String string = this.getDisplayName();
             String string2 = this.getDescription();
             if (this.method_20151() && (this.client.options.touchscreen || bl)) {
                 this.client.getTextureManager().bindTexture(RESOURCE_PACKS_LOCATION);
                 DrawableHelper.fill(k, j, k + 32, j + 32, -1601138544);
-                GlStateManager.color4f(1.0f, 1.0f, 1.0f, 1.0f);
+                RenderSystem.color4f(1.0f, 1.0f, 1.0f, 1.0f);
                 p = n - k;
                 int q = o - j;
                 if (!resourcePackCompatibility.isCompatible()) {
@@ -165,7 +165,7 @@ extends AlwaysSelectedEntryListWidget<ResourcePackEntry> {
         }
 
         protected boolean method_20151() {
-            return !this.packContainer.isPinned() || !this.packContainer.isAlwaysEnabled();
+            return !this.packContainer.isPositionFixed() || !this.packContainer.canBeSorted();
         }
 
         protected boolean method_20152() {
@@ -173,19 +173,19 @@ extends AlwaysSelectedEntryListWidget<ResourcePackEntry> {
         }
 
         protected boolean method_20153() {
-            return this.screen.method_2669(this) && !this.packContainer.isAlwaysEnabled();
+            return this.screen.method_2669(this) && !this.packContainer.canBeSorted();
         }
 
         protected boolean canSortUp() {
             List list = this.widget.children();
             int i = list.indexOf(this);
-            return i > 0 && !((ResourcePackEntry)list.get((int)(i - 1))).packContainer.isPinned();
+            return i > 0 && !((ResourcePackEntry)list.get((int)(i - 1))).packContainer.isPositionFixed();
         }
 
         protected boolean canSortDown() {
             List list = this.widget.children();
             int i = list.indexOf(this);
-            return i >= 0 && i < list.size() - 1 && !((ResourcePackEntry)list.get((int)(i + 1))).packContainer.isPinned();
+            return i >= 0 && i < list.size() - 1 && !((ResourcePackEntry)list.get((int)(i + 1))).packContainer.isPositionFixed();
         }
 
         @Override
@@ -194,23 +194,23 @@ extends AlwaysSelectedEntryListWidget<ResourcePackEntry> {
             double g = e - (double)this.widget.getRowTop(this.widget.children().indexOf(this));
             if (this.method_20151() && f <= 32.0) {
                 if (this.method_20152()) {
-                    this.getScreen().markDirty();
+                    this.getScreen().setEdited();
                     ResourcePackCompatibility resourcePackCompatibility = this.getCompatibility();
                     if (resourcePackCompatibility.isCompatible()) {
-                        this.getScreen().enable(this);
+                        this.getScreen().select(this);
                     } else {
                         Text text = resourcePackCompatibility.getConfirmMessage();
                         this.client.openScreen(new ConfirmScreen(bl -> {
                             this.client.openScreen(this.getScreen());
                             if (bl) {
-                                this.getScreen().enable(this);
+                                this.getScreen().select(this);
                             }
                         }, INCOMPATIBLE_CONFIRM, text));
                     }
                     return true;
                 }
                 if (f < 16.0 && this.method_20153()) {
-                    this.getScreen().disable(this);
+                    this.getScreen().remove(this);
                     return true;
                 }
                 if (f > 16.0 && g < 16.0 && this.canSortUp()) {
@@ -218,7 +218,7 @@ extends AlwaysSelectedEntryListWidget<ResourcePackEntry> {
                     int j = list.indexOf(this);
                     list.remove(this);
                     list.add(j - 1, this);
-                    this.getScreen().markDirty();
+                    this.getScreen().setEdited();
                     return true;
                 }
                 if (f > 16.0 && g > 16.0 && this.canSortDown()) {
@@ -226,7 +226,7 @@ extends AlwaysSelectedEntryListWidget<ResourcePackEntry> {
                     int j = list.indexOf(this);
                     list.remove(this);
                     list.add(j + 1, this);
-                    this.getScreen().markDirty();
+                    this.getScreen().setEdited();
                     return true;
                 }
             }

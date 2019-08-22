@@ -6,6 +6,7 @@ package net.minecraft.entity.ai.goal;
 import java.util.EnumSet;
 import net.minecraft.entity.ai.TargetPredicate;
 import net.minecraft.entity.ai.goal.Goal;
+import net.minecraft.entity.ai.pathing.BirdNavigation;
 import net.minecraft.entity.ai.pathing.MobNavigation;
 import net.minecraft.entity.mob.MobEntityWithAi;
 import net.minecraft.entity.player.PlayerEntity;
@@ -38,7 +39,7 @@ extends Goal {
         this.food = ingredient;
         this.canBeScared = bl;
         this.setControls(EnumSet.of(Goal.Control.MOVE, Goal.Control.LOOK));
-        if (!(mobEntityWithAi.getNavigation() instanceof MobNavigation)) {
+        if (!(mobEntityWithAi.getNavigation() instanceof MobNavigation) && !(mobEntityWithAi.getNavigation() instanceof BirdNavigation)) {
             throw new IllegalArgumentException("Unsupported mob type for TemptGoal");
         }
     }
@@ -57,7 +58,7 @@ extends Goal {
     }
 
     protected boolean isTempedBy(ItemStack itemStack) {
-        return this.food.test(itemStack);
+        return this.food.method_8093(itemStack);
     }
 
     @Override

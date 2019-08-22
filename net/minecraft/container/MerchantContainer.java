@@ -118,7 +118,7 @@ extends Container {
     @Override
     public ItemStack transferSlot(PlayerEntity playerEntity, int i) {
         ItemStack itemStack = ItemStack.EMPTY;
-        Slot slot = (Slot)this.slots.get(i);
+        Slot slot = (Slot)this.slotList.get(i);
         if (slot != null && slot.hasStack()) {
             ItemStack itemStack2 = slot.getStack();
             itemStack = itemStack2.copy();
@@ -201,7 +201,7 @@ extends Container {
     private void autofill(int i, ItemStack itemStack) {
         if (!itemStack.isEmpty()) {
             for (int j = 3; j < 39; ++j) {
-                ItemStack itemStack2 = ((Slot)this.slots.get(j)).getStack();
+                ItemStack itemStack2 = ((Slot)this.slotList.get(j)).getStack();
                 if (itemStack2.isEmpty() || !this.equals(itemStack, itemStack2)) continue;
                 ItemStack itemStack3 = this.traderInventory.getInvStack(i);
                 int k = itemStack3.isEmpty() ? 0 : itemStack3.getCount();

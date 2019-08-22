@@ -79,7 +79,7 @@ extends LivingEntity {
 
     public ArmorStandEntity(World world, double d, double e, double f) {
         this((EntityType<? extends ArmorStandEntity>)EntityType.ARMOR_STAND, world);
-        this.updatePosition(d, e, f);
+        this.setPosition(d, e, f);
     }
 
     @Override
@@ -88,7 +88,7 @@ extends LivingEntity {
         double e = this.y;
         double f = this.z;
         super.calculateDimensions();
-        this.updatePosition(d, e, f);
+        this.setPosition(d, e, f);
     }
 
     private boolean canClip() {
@@ -218,16 +218,16 @@ extends LivingEntity {
         int i;
         ListTag listTag;
         super.readCustomDataFromTag(compoundTag);
-        if (compoundTag.contains("ArmorItems", 9)) {
+        if (compoundTag.containsKey("ArmorItems", 9)) {
             listTag = compoundTag.getList("ArmorItems", 10);
             for (i = 0; i < this.armorItems.size(); ++i) {
-                this.armorItems.set(i, ItemStack.fromTag(listTag.getCompound(i)));
+                this.armorItems.set(i, ItemStack.fromTag(listTag.getCompoundTag(i)));
             }
         }
-        if (compoundTag.contains("HandItems", 9)) {
+        if (compoundTag.containsKey("HandItems", 9)) {
             listTag = compoundTag.getList("HandItems", 10);
             for (i = 0; i < this.heldItems.size(); ++i) {
-                this.heldItems.set(i, ItemStack.fromTag(listTag.getCompound(i)));
+                this.heldItems.set(i, ItemStack.fromTag(listTag.getCompoundTag(i)));
             }
         }
         this.setInvisible(compoundTag.getBoolean("Invisible"));
@@ -466,8 +466,8 @@ extends LivingEntity {
 
     @Override
     @Environment(value=EnvType.CLIENT)
-    public boolean shouldRender(double d) {
-        double e = this.getBoundingBox().getAverageSideLength() * 4.0;
+    public boolean shouldRenderAtDistance(double d) {
+        double e = this.getBoundingBox().averageDimension() * 4.0;
         if (Double.isNaN(e) || e == 0.0) {
             e = 4.0;
         }
@@ -520,8 +520,8 @@ extends LivingEntity {
 
     @Override
     protected float turnHead(float f, float g) {
-        this.field_6220 = this.prevYaw;
-        this.field_6283 = this.yaw;
+        this.prevBodyYaw = this.prevYaw;
+        this.bodyYaw = this.yaw;
         return 0.0f;
     }
 
@@ -545,13 +545,13 @@ extends LivingEntity {
 
     @Override
     public void setYaw(float f) {
-        this.field_6220 = this.prevYaw = f;
+        this.prevBodyYaw = this.prevYaw = f;
         this.prevHeadYaw = this.headYaw = f;
     }
 
     @Override
     public void setHeadYaw(float f) {
-        this.field_6220 = this.prevYaw = f;
+        this.prevBodyYaw = this.prevYaw = f;
         this.prevHeadYaw = this.headYaw = f;
     }
 

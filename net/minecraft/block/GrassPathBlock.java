@@ -16,8 +16,8 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.world.BlockView;
-import net.minecraft.world.CollisionView;
 import net.minecraft.world.IWorld;
+import net.minecraft.world.ViewableWorld;
 import net.minecraft.world.World;
 
 public class GrassPathBlock
@@ -55,8 +55,8 @@ extends Block {
     }
 
     @Override
-    public boolean canPlaceAt(BlockState blockState, CollisionView collisionView, BlockPos blockPos) {
-        BlockState blockState2 = collisionView.getBlockState(blockPos.up());
+    public boolean canPlaceAt(BlockState blockState, ViewableWorld viewableWorld, BlockPos blockPos) {
+        BlockState blockState2 = viewableWorld.getBlockState(blockPos.up());
         return !blockState2.getMaterial().isSolid() || blockState2.getBlock() instanceof FenceGateBlock;
     }
 

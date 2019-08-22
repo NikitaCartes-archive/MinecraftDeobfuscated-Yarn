@@ -3,12 +3,12 @@
  */
 package net.minecraft.client.render.entity;
 
-import com.mojang.blaze3d.platform.GLX;
-import com.mojang.blaze3d.platform.GlStateManager;
+import com.mojang.blaze3d.systems.RenderSystem;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.block.BlockRenderType;
 import net.minecraft.block.BlockState;
+import net.minecraft.class_4493;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.render.BufferBuilder;
@@ -28,7 +28,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.shape.VoxelShape;
-import net.minecraft.world.CollisionView;
+import net.minecraft.world.ViewableWorld;
 import org.jetbrains.annotations.Nullable;
 
 @Environment(value=EnvType.CLIENT)
@@ -48,14 +48,14 @@ public abstract class EntityRenderer<T extends Entity> {
     }
 
     public boolean isVisible(T entity, VisibleRegion visibleRegion, double d, double e, double f) {
-        if (!((Entity)entity).shouldRender(d, e, f)) {
+        if (!((Entity)entity).shouldRenderFrom(d, e, f)) {
             return false;
         }
         if (((Entity)entity).ignoreCameraFrustum) {
             return true;
         }
         Box box = ((Entity)entity).getVisibilityBoundingBox().expand(0.5);
-        if (box.isValid() || box.getAverageSideLength() == 0.0) {
+        if (box.isValid() || box.averageDimension() == 0.0) {
             box = new Box(((Entity)entity).x - 2.0, ((Entity)entity).y - 2.0, ((Entity)entity).z - 2.0, ((Entity)entity).x + 2.0, ((Entity)entity).y + 2.0, ((Entity)entity).z + 2.0);
         }
         return visibleRegion.intersects(box);
@@ -107,26 +107,26 @@ public abstract class EntityRenderer<T extends Entity> {
     }
 
     private void renderEntityOnFire(Entity entity, double d, double e, double f, float g) {
-        GlStateManager.disableLighting();
+        RenderSystem.disableLighting();
         SpriteAtlasTexture spriteAtlasTexture = MinecraftClient.getInstance().getSpriteAtlas();
         Sprite sprite = spriteAtlasTexture.getSprite(ModelLoader.FIRE_0);
         Sprite sprite2 = spriteAtlasTexture.getSprite(ModelLoader.FIRE_1);
-        GlStateManager.pushMatrix();
-        GlStateManager.translatef((float)d, (float)e, (float)f);
+        RenderSystem.pushMatrix();
+        RenderSystem.translatef((float)d, (float)e, (float)f);
         float h = entity.getWidth() * 1.4f;
-        GlStateManager.scalef(h, h, h);
+        RenderSystem.scalef(h, h, h);
         Tessellator tessellator = Tessellator.getInstance();
-        BufferBuilder bufferBuilder = tessellator.getBuffer();
+        BufferBuilder bufferBuilder = tessellator.getBufferBuilder();
         float i = 0.5f;
         float j = 0.0f;
         float k = entity.getHeight() / h;
-        float l = (float)(entity.y - entity.getBoundingBox().y1);
-        GlStateManager.rotatef(-this.renderManager.cameraYaw, 0.0f, 1.0f, 0.0f);
-        GlStateManager.translatef(0.0f, 0.0f, -0.3f + (float)((int)k) * 0.02f);
-        GlStateManager.color4f(1.0f, 1.0f, 1.0f, 1.0f);
+        float l = (float)(entity.y - entity.getBoundingBox().minY);
+        RenderSystem.rotatef(-this.renderManager.cameraYaw, 0.0f, 1.0f, 0.0f);
+        RenderSystem.translatef(0.0f, 0.0f, -0.3f + (float)((int)k) * 0.02f);
+        RenderSystem.color4f(1.0f, 1.0f, 1.0f, 1.0f);
         float m = 0.0f;
         int n = 0;
-        bufferBuilder.begin(7, VertexFormats.POSITION_TEXTURE);
+        bufferBuilder.begin(7, VertexFormats.POSITION_UV);
         while (k > 0.0f) {
             Sprite sprite3 = n % 2 == 0 ? sprite : sprite2;
             this.bindTexture(SpriteAtlasTexture.BLOCK_ATLAS_TEX);
@@ -150,24 +150,24 @@ public abstract class EntityRenderer<T extends Entity> {
             ++n;
         }
         tessellator.draw();
-        GlStateManager.popMatrix();
-        GlStateManager.enableLighting();
+        RenderSystem.popMatrix();
+        RenderSystem.enableLighting();
     }
 
     private void renderShadow(Entity entity, double d, double e, double f, float g, float h) {
         MobEntity mobEntity;
-        GlStateManager.enableBlend();
-        GlStateManager.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA);
+        RenderSystem.enableBlend();
+        RenderSystem.blendFunc(class_4493.class_4535.SRC_ALPHA, class_4493.class_4534.ONE_MINUS_SRC_ALPHA);
         this.renderManager.textureManager.bindTexture(SHADOW_TEX);
-        CollisionView collisionView = this.getWorld();
-        GlStateManager.depthMask(false);
+        ViewableWorld viewableWorld = this.getWorld();
+        RenderSystem.depthMask(false);
         float i = this.field_4673;
         if (entity instanceof MobEntity && (mobEntity = (MobEntity)entity).isBaby()) {
             i *= 0.5f;
         }
-        double j = MathHelper.lerp((double)h, entity.lastRenderX, entity.x);
-        double k = MathHelper.lerp((double)h, entity.lastRenderY, entity.y);
-        double l = MathHelper.lerp((double)h, entity.lastRenderZ, entity.z);
+        double j = MathHelper.lerp((double)h, entity.prevRenderX, entity.x);
+        double k = MathHelper.lerp((double)h, entity.prevRenderY, entity.y);
+        double l = MathHelper.lerp((double)h, entity.prevRenderZ, entity.z);
         int m = MathHelper.floor(j - (double)i);
         int n = MathHelper.floor(j + (double)i);
         int o = MathHelper.floor(k - (double)i);
@@ -178,26 +178,26 @@ public abstract class EntityRenderer<T extends Entity> {
         double t = e - k;
         double u = f - l;
         Tessellator tessellator = Tessellator.getInstance();
-        BufferBuilder bufferBuilder = tessellator.getBuffer();
-        bufferBuilder.begin(7, VertexFormats.POSITION_TEXTURE_COLOR);
+        BufferBuilder bufferBuilder = tessellator.getBufferBuilder();
+        bufferBuilder.begin(7, VertexFormats.POSITION_UV_COLOR);
         for (BlockPos blockPos : BlockPos.iterate(new BlockPos(m, o, q), new BlockPos(n, p, r))) {
             BlockPos blockPos2 = blockPos.down();
-            BlockState blockState = collisionView.getBlockState(blockPos2);
-            if (blockState.getRenderType() == BlockRenderType.INVISIBLE || collisionView.getLightLevel(blockPos) <= 3) continue;
-            this.projectShadow(blockState, collisionView, blockPos2, d, e, f, blockPos, g, i, s, t, u);
+            BlockState blockState = viewableWorld.getBlockState(blockPos2);
+            if (blockState.getRenderType() == BlockRenderType.INVISIBLE || viewableWorld.getLightLevel(blockPos) <= 3) continue;
+            this.projectShadow(blockState, viewableWorld, blockPos2, d, e, f, blockPos, g, i, s, t, u);
         }
         tessellator.draw();
-        GlStateManager.color4f(1.0f, 1.0f, 1.0f, 1.0f);
-        GlStateManager.disableBlend();
-        GlStateManager.depthMask(true);
+        RenderSystem.color4f(1.0f, 1.0f, 1.0f, 1.0f);
+        RenderSystem.disableBlend();
+        RenderSystem.depthMask(true);
     }
 
-    private CollisionView getWorld() {
+    private ViewableWorld getWorld() {
         return this.renderManager.world;
     }
 
-    private void projectShadow(BlockState blockState, CollisionView collisionView, BlockPos blockPos, double d, double e, double f, BlockPos blockPos2, float g, float h, double i, double j, double k) {
-        if (!blockState.method_21743(collisionView, blockPos)) {
+    private void projectShadow(BlockState blockState, ViewableWorld viewableWorld, BlockPos blockPos, double d, double e, double f, BlockPos blockPos2, float g, float h, double i, double j, double k) {
+        if (!blockState.method_21743(viewableWorld, blockPos)) {
             return;
         }
         VoxelShape voxelShape = blockState.getOutlineShape(this.getWorld(), blockPos2.down());
@@ -205,7 +205,7 @@ public abstract class EntityRenderer<T extends Entity> {
             return;
         }
         Tessellator tessellator = Tessellator.getInstance();
-        BufferBuilder bufferBuilder = tessellator.getBuffer();
+        BufferBuilder bufferBuilder = tessellator.getBufferBuilder();
         double l = ((double)g - (e - ((double)blockPos2.getY() + j)) / 2.0) * 0.5 * (double)this.getWorld().getBrightness(blockPos2);
         if (l < 0.0) {
             return;
@@ -214,11 +214,11 @@ public abstract class EntityRenderer<T extends Entity> {
             l = 1.0;
         }
         Box box = voxelShape.getBoundingBox();
-        double m = (double)blockPos2.getX() + box.x1 + i;
-        double n = (double)blockPos2.getX() + box.x2 + i;
-        double o = (double)blockPos2.getY() + box.y1 + j + 0.015625;
-        double p = (double)blockPos2.getZ() + box.z1 + k;
-        double q = (double)blockPos2.getZ() + box.z2 + k;
+        double m = (double)blockPos2.getX() + box.minX + i;
+        double n = (double)blockPos2.getX() + box.maxX + i;
+        double o = (double)blockPos2.getY() + box.minY + j + 0.015625;
+        double p = (double)blockPos2.getZ() + box.minZ + k;
+        double q = (double)blockPos2.getZ() + box.maxZ + k;
         float r = (float)((d - m) / 2.0 / (double)h + 0.5);
         float s = (float)((d - n) / 2.0 / (double)h + 0.5);
         float t = (float)((f - p) / 2.0 / (double)h + 0.5);
@@ -230,39 +230,39 @@ public abstract class EntityRenderer<T extends Entity> {
     }
 
     public static void renderBox(Box box, double d, double e, double f) {
-        GlStateManager.disableTexture();
+        RenderSystem.disableTexture();
         Tessellator tessellator = Tessellator.getInstance();
-        BufferBuilder bufferBuilder = tessellator.getBuffer();
-        GlStateManager.color4f(1.0f, 1.0f, 1.0f, 1.0f);
+        BufferBuilder bufferBuilder = tessellator.getBufferBuilder();
+        RenderSystem.color4f(1.0f, 1.0f, 1.0f, 1.0f);
         bufferBuilder.setOffset(d, e, f);
         bufferBuilder.begin(7, VertexFormats.POSITION_NORMAL);
-        bufferBuilder.vertex(box.x1, box.y2, box.z1).normal(0.0f, 0.0f, -1.0f).next();
-        bufferBuilder.vertex(box.x2, box.y2, box.z1).normal(0.0f, 0.0f, -1.0f).next();
-        bufferBuilder.vertex(box.x2, box.y1, box.z1).normal(0.0f, 0.0f, -1.0f).next();
-        bufferBuilder.vertex(box.x1, box.y1, box.z1).normal(0.0f, 0.0f, -1.0f).next();
-        bufferBuilder.vertex(box.x1, box.y1, box.z2).normal(0.0f, 0.0f, 1.0f).next();
-        bufferBuilder.vertex(box.x2, box.y1, box.z2).normal(0.0f, 0.0f, 1.0f).next();
-        bufferBuilder.vertex(box.x2, box.y2, box.z2).normal(0.0f, 0.0f, 1.0f).next();
-        bufferBuilder.vertex(box.x1, box.y2, box.z2).normal(0.0f, 0.0f, 1.0f).next();
-        bufferBuilder.vertex(box.x1, box.y1, box.z1).normal(0.0f, -1.0f, 0.0f).next();
-        bufferBuilder.vertex(box.x2, box.y1, box.z1).normal(0.0f, -1.0f, 0.0f).next();
-        bufferBuilder.vertex(box.x2, box.y1, box.z2).normal(0.0f, -1.0f, 0.0f).next();
-        bufferBuilder.vertex(box.x1, box.y1, box.z2).normal(0.0f, -1.0f, 0.0f).next();
-        bufferBuilder.vertex(box.x1, box.y2, box.z2).normal(0.0f, 1.0f, 0.0f).next();
-        bufferBuilder.vertex(box.x2, box.y2, box.z2).normal(0.0f, 1.0f, 0.0f).next();
-        bufferBuilder.vertex(box.x2, box.y2, box.z1).normal(0.0f, 1.0f, 0.0f).next();
-        bufferBuilder.vertex(box.x1, box.y2, box.z1).normal(0.0f, 1.0f, 0.0f).next();
-        bufferBuilder.vertex(box.x1, box.y1, box.z2).normal(-1.0f, 0.0f, 0.0f).next();
-        bufferBuilder.vertex(box.x1, box.y2, box.z2).normal(-1.0f, 0.0f, 0.0f).next();
-        bufferBuilder.vertex(box.x1, box.y2, box.z1).normal(-1.0f, 0.0f, 0.0f).next();
-        bufferBuilder.vertex(box.x1, box.y1, box.z1).normal(-1.0f, 0.0f, 0.0f).next();
-        bufferBuilder.vertex(box.x2, box.y1, box.z1).normal(1.0f, 0.0f, 0.0f).next();
-        bufferBuilder.vertex(box.x2, box.y2, box.z1).normal(1.0f, 0.0f, 0.0f).next();
-        bufferBuilder.vertex(box.x2, box.y2, box.z2).normal(1.0f, 0.0f, 0.0f).next();
-        bufferBuilder.vertex(box.x2, box.y1, box.z2).normal(1.0f, 0.0f, 0.0f).next();
+        bufferBuilder.vertex(box.minX, box.maxY, box.minZ).normal(0.0f, 0.0f, -1.0f).next();
+        bufferBuilder.vertex(box.maxX, box.maxY, box.minZ).normal(0.0f, 0.0f, -1.0f).next();
+        bufferBuilder.vertex(box.maxX, box.minY, box.minZ).normal(0.0f, 0.0f, -1.0f).next();
+        bufferBuilder.vertex(box.minX, box.minY, box.minZ).normal(0.0f, 0.0f, -1.0f).next();
+        bufferBuilder.vertex(box.minX, box.minY, box.maxZ).normal(0.0f, 0.0f, 1.0f).next();
+        bufferBuilder.vertex(box.maxX, box.minY, box.maxZ).normal(0.0f, 0.0f, 1.0f).next();
+        bufferBuilder.vertex(box.maxX, box.maxY, box.maxZ).normal(0.0f, 0.0f, 1.0f).next();
+        bufferBuilder.vertex(box.minX, box.maxY, box.maxZ).normal(0.0f, 0.0f, 1.0f).next();
+        bufferBuilder.vertex(box.minX, box.minY, box.minZ).normal(0.0f, -1.0f, 0.0f).next();
+        bufferBuilder.vertex(box.maxX, box.minY, box.minZ).normal(0.0f, -1.0f, 0.0f).next();
+        bufferBuilder.vertex(box.maxX, box.minY, box.maxZ).normal(0.0f, -1.0f, 0.0f).next();
+        bufferBuilder.vertex(box.minX, box.minY, box.maxZ).normal(0.0f, -1.0f, 0.0f).next();
+        bufferBuilder.vertex(box.minX, box.maxY, box.maxZ).normal(0.0f, 1.0f, 0.0f).next();
+        bufferBuilder.vertex(box.maxX, box.maxY, box.maxZ).normal(0.0f, 1.0f, 0.0f).next();
+        bufferBuilder.vertex(box.maxX, box.maxY, box.minZ).normal(0.0f, 1.0f, 0.0f).next();
+        bufferBuilder.vertex(box.minX, box.maxY, box.minZ).normal(0.0f, 1.0f, 0.0f).next();
+        bufferBuilder.vertex(box.minX, box.minY, box.maxZ).normal(-1.0f, 0.0f, 0.0f).next();
+        bufferBuilder.vertex(box.minX, box.maxY, box.maxZ).normal(-1.0f, 0.0f, 0.0f).next();
+        bufferBuilder.vertex(box.minX, box.maxY, box.minZ).normal(-1.0f, 0.0f, 0.0f).next();
+        bufferBuilder.vertex(box.minX, box.minY, box.minZ).normal(-1.0f, 0.0f, 0.0f).next();
+        bufferBuilder.vertex(box.maxX, box.minY, box.minZ).normal(1.0f, 0.0f, 0.0f).next();
+        bufferBuilder.vertex(box.maxX, box.maxY, box.minZ).normal(1.0f, 0.0f, 0.0f).next();
+        bufferBuilder.vertex(box.maxX, box.maxY, box.maxZ).normal(1.0f, 0.0f, 0.0f).next();
+        bufferBuilder.vertex(box.maxX, box.minY, box.maxZ).normal(1.0f, 0.0f, 0.0f).next();
         tessellator.draw();
         bufferBuilder.setOffset(0.0, 0.0, 0.0);
-        GlStateManager.enableTexture();
+        RenderSystem.enableTexture();
     }
 
     public void postRender(Entity entity, double d, double e, double f, float g, float h) {
@@ -271,7 +271,7 @@ public abstract class EntityRenderer<T extends Entity> {
         if (this.renderManager.gameOptions == null) {
             return;
         }
-        if (this.renderManager.gameOptions.entityShadows && this.field_4673 > 0.0f && !entity.isInvisible() && this.renderManager.shouldRenderShadows() && (j = (float)((1.0 - (i = this.renderManager.getSquaredDistanceToCamera(entity.x, entity.y, entity.z)) / 256.0) * (double)this.field_4672)) > 0.0f) {
+        if (this.renderManager.gameOptions.entityShadows && this.field_4673 > 0.0f && !entity.isInvisible() && this.renderManager.shouldRenderShadows() && (j = (float)((1.0 - (i = this.renderManager.squaredDistanceToCamera(entity.x, entity.y, entity.z)) / 256.0) * (double)this.field_4672)) > 0.0f) {
             this.renderShadow(entity, d, e, f, j, h);
         }
         if (entity.doesRenderOnFire() && !entity.isSpectator()) {
@@ -288,12 +288,11 @@ public abstract class EntityRenderer<T extends Entity> {
         if (g > (double)(i * i)) {
             return;
         }
-        boolean bl = ((Entity)entity).isInSneakingPose();
         float h = this.renderManager.cameraYaw;
         float j = this.renderManager.cameraPitch;
-        float k = ((Entity)entity).getHeight() + 0.5f - (bl ? 0.25f : 0.0f);
+        float k = ((Entity)entity).getHeight() + 0.5f - (((Entity)entity).isInSneakingPose() ? 0.25f : 0.0f);
         int l = "deadmau5".equals(string) ? -10 : 0;
-        GameRenderer.renderFloatingText(this.getFontRenderer(), string, (float)d, (float)e + k, (float)f, l, h, j, bl);
+        GameRenderer.renderFloatingText(this.getFontRenderer(), string, (float)d, (float)e + k, (float)f, l, h, j, ((Entity)entity).method_21751());
     }
 
     public EntityRenderDispatcher getRenderManager() {
@@ -311,7 +310,7 @@ public abstract class EntityRenderer<T extends Entity> {
         int i = ((Entity)entity).getLightmapCoordinates();
         int j = i % 65536;
         int k = i / 65536;
-        GLX.glMultiTexCoord2f(GLX.GL_TEXTURE1, j, k);
+        RenderSystem.glMultiTexCoord2f(33985, j, k);
     }
 }
 

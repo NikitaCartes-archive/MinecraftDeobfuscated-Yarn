@@ -3,7 +3,7 @@
  */
 package net.minecraft.client.gui.screen.recipebook;
 
-import com.mojang.blaze3d.platform.GlStateManager;
+import com.mojang.blaze3d.systems.RenderSystem;
 import java.util.List;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
@@ -12,7 +12,7 @@ import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.screen.recipebook.RecipeBookResults;
 import net.minecraft.client.gui.screen.recipebook.RecipeResultCollection;
 import net.minecraft.client.gui.widget.AbstractButtonWidget;
-import net.minecraft.client.render.DiffuseLighting;
+import net.minecraft.client.render.GuiLighting;
 import net.minecraft.client.resource.language.I18n;
 import net.minecraft.container.CraftingContainer;
 import net.minecraft.item.ItemStack;
@@ -64,12 +64,12 @@ extends AbstractButtonWidget {
         if (!Screen.hasControlDown()) {
             this.time += f;
         }
-        DiffuseLighting.enableForItems();
+        GuiLighting.enableForItems();
         MinecraftClient minecraftClient = MinecraftClient.getInstance();
         minecraftClient.getTextureManager().bindTexture(BG_TEX);
-        GlStateManager.disableLighting();
+        RenderSystem.disableLighting();
         int k = 29;
-        if (!this.results.hasCraftableRecipes()) {
+        if (!this.results.hasCraftableResults()) {
             k += 25;
         }
         int l = 206;
@@ -79,10 +79,10 @@ extends AbstractButtonWidget {
         boolean bl2 = bl = this.bounce > 0.0f;
         if (bl) {
             float g = 1.0f + 0.1f * (float)Math.sin(this.bounce / 15.0f * (float)Math.PI);
-            GlStateManager.pushMatrix();
-            GlStateManager.translatef(this.x + 8, this.y + 12, 0.0f);
-            GlStateManager.scalef(g, g, 1.0f);
-            GlStateManager.translatef(-(this.x + 8), -(this.y + 12), 0.0f);
+            RenderSystem.pushMatrix();
+            RenderSystem.translatef(this.x + 8, this.y + 12, 0.0f);
+            RenderSystem.scalef(g, g, 1.0f);
+            RenderSystem.translatef(-(this.x + 8), -(this.y + 12), 0.0f);
             this.bounce -= f;
         }
         this.blit(this.x, this.y, k, l, this.width, this.height);
@@ -96,16 +96,16 @@ extends AbstractButtonWidget {
         }
         minecraftClient.getItemRenderer().renderGuiItem(itemStack, this.x + m, this.y + m);
         if (bl) {
-            GlStateManager.popMatrix();
+            RenderSystem.popMatrix();
         }
-        GlStateManager.enableLighting();
-        DiffuseLighting.disable();
+        RenderSystem.enableLighting();
+        GuiLighting.disable();
     }
 
     private List<Recipe<?>> getResults() {
-        List<Recipe<?>> list = this.results.getRecipes(true);
+        List<Recipe<?>> list = this.results.getResultsExclusive(true);
         if (!this.recipeBook.isFilteringCraftable(this.craftingContainer)) {
-            list.addAll(this.results.getRecipes(false));
+            list.addAll(this.results.getResultsExclusive(false));
         }
         return list;
     }

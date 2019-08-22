@@ -48,29 +48,28 @@ extends SpriteBillboardParticle {
 
     @Override
     protected float getMinU() {
-        return this.sprite.getFrameU((this.field_17783 + 1.0f) / 4.0f * 16.0f);
+        return this.sprite.getU((this.field_17783 + 1.0f) / 4.0f * 16.0f);
     }
 
     @Override
     protected float getMaxU() {
-        return this.sprite.getFrameU(this.field_17783 / 4.0f * 16.0f);
+        return this.sprite.getU(this.field_17783 / 4.0f * 16.0f);
     }
 
     @Override
     protected float getMinV() {
-        return this.sprite.getFrameV(this.field_17784 / 4.0f * 16.0f);
+        return this.sprite.getV(this.field_17784 / 4.0f * 16.0f);
     }
 
     @Override
     protected float getMaxV() {
-        return this.sprite.getFrameV((this.field_17784 + 1.0f) / 4.0f * 16.0f);
+        return this.sprite.getV((this.field_17784 + 1.0f) / 4.0f * 16.0f);
     }
 
     @Environment(value=EnvType.CLIENT)
     public static class SnowballFactory
     implements ParticleFactory<DefaultParticleType> {
-        @Override
-        public Particle createParticle(DefaultParticleType defaultParticleType, World world, double d, double e, double f, double g, double h, double i) {
+        public Particle method_3009(DefaultParticleType defaultParticleType, World world, double d, double e, double f, double g, double h, double i) {
             return new CrackParticle(world, d, e, f, new ItemStack(Items.SNOWBALL));
         }
     }
@@ -78,8 +77,7 @@ extends SpriteBillboardParticle {
     @Environment(value=EnvType.CLIENT)
     public static class SlimeballFactory
     implements ParticleFactory<DefaultParticleType> {
-        @Override
-        public Particle createParticle(DefaultParticleType defaultParticleType, World world, double d, double e, double f, double g, double h, double i) {
+        public Particle method_3008(DefaultParticleType defaultParticleType, World world, double d, double e, double f, double g, double h, double i) {
             return new CrackParticle(world, d, e, f, new ItemStack(Items.SLIME_BALL));
         }
     }
@@ -87,8 +85,7 @@ extends SpriteBillboardParticle {
     @Environment(value=EnvType.CLIENT)
     public static class ItemFactory
     implements ParticleFactory<ItemStackParticleEffect> {
-        @Override
-        public Particle createParticle(ItemStackParticleEffect itemStackParticleEffect, World world, double d, double e, double f, double g, double h, double i) {
+        public Particle method_3007(ItemStackParticleEffect itemStackParticleEffect, World world, double d, double e, double f, double g, double h, double i) {
             return new CrackParticle(world, d, e, f, g, h, i, itemStackParticleEffect.getItemStack());
         }
     }

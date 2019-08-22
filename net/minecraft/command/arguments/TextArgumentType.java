@@ -31,8 +31,7 @@ implements ArgumentType<Text> {
         return new TextArgumentType();
     }
 
-    @Override
-    public Text parse(StringReader stringReader) throws CommandSyntaxException {
+    public Text method_9283(StringReader stringReader) throws CommandSyntaxException {
         try {
             Text text = Text.Serializer.fromJson(stringReader);
             if (text == null) {
@@ -52,7 +51,7 @@ implements ArgumentType<Text> {
 
     @Override
     public /* synthetic */ Object parse(StringReader stringReader) throws CommandSyntaxException {
-        return this.parse(stringReader);
+        return this.method_9283(stringReader);
     }
 }
 

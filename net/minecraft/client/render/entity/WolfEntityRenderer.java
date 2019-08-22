@@ -3,7 +3,7 @@
  */
 package net.minecraft.client.render.entity;
 
-import com.mojang.blaze3d.platform.GlStateManager;
+import com.mojang.blaze3d.systems.RenderSystem;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.render.entity.EntityRenderDispatcher;
@@ -26,22 +26,19 @@ extends MobEntityRenderer<WolfEntity, WolfEntityModel<WolfEntity>> {
         this.addFeature(new WolfCollarFeatureRenderer(this));
     }
 
-    @Override
-    protected float getAnimationProgress(WolfEntity wolfEntity, float f) {
+    protected float method_4167(WolfEntity wolfEntity, float f) {
         return wolfEntity.method_6714();
     }
 
-    @Override
-    public void render(WolfEntity wolfEntity, double d, double e, double f, float g, float h) {
-        if (wolfEntity.isFurWet()) {
-            float i = wolfEntity.getBrightnessAtEyes() * wolfEntity.getFurWetBrightnessMultiplier(h);
-            GlStateManager.color3f(i, i, i);
+    public void method_4166(WolfEntity wolfEntity, double d, double e, double f, float g, float h) {
+        if (wolfEntity.isWet()) {
+            float i = wolfEntity.getBrightnessAtEyes() * wolfEntity.getWetBrightnessMultiplier(h);
+            RenderSystem.color3f(i, i, i);
         }
-        super.render(wolfEntity, d, e, f, g, h);
+        super.method_4072(wolfEntity, d, e, f, g, h);
     }
 
-    @Override
-    protected Identifier getTexture(WolfEntity wolfEntity) {
+    protected Identifier method_4165(WolfEntity wolfEntity) {
         if (wolfEntity.isTamed()) {
             return TAMED_SKIN;
         }
@@ -52,8 +49,8 @@ extends MobEntityRenderer<WolfEntity, WolfEntityModel<WolfEntity>> {
     }
 
     @Override
-    protected /* synthetic */ float getAnimationProgress(LivingEntity livingEntity, float f) {
-        return this.getAnimationProgress((WolfEntity)livingEntity, f);
+    protected /* synthetic */ float getAge(LivingEntity livingEntity, float f) {
+        return this.method_4167((WolfEntity)livingEntity, f);
     }
 }
 

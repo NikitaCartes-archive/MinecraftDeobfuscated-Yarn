@@ -64,7 +64,7 @@ extends Container {
     @Override
     public ItemStack transferSlot(PlayerEntity playerEntity, int i) {
         ItemStack itemStack = ItemStack.EMPTY;
-        Slot slot = (Slot)this.slots.get(i);
+        Slot slot = (Slot)this.slotList.get(i);
         if (slot != null && slot.hasStack()) {
             ItemStack itemStack2 = slot.getStack();
             itemStack = itemStack2.copy();
@@ -73,7 +73,7 @@ extends Container {
                     return ItemStack.EMPTY;
                 }
                 slot.onStackChanged(itemStack2, itemStack);
-            } else if (this.ingredientSlot.canInsert(itemStack2) ? !this.insertItem(itemStack2, 3, 4, false) : (SlotPotion.matches(itemStack) && itemStack.getCount() == 1 ? !this.insertItem(itemStack2, 0, 3, false) : (SlotFuel.matches(itemStack) ? !this.insertItem(itemStack2, 4, 5, false) : (i >= 5 && i < 32 ? !this.insertItem(itemStack2, 32, 41, false) : (i >= 32 && i < 41 ? !this.insertItem(itemStack2, 5, 32, false) : !this.insertItem(itemStack2, 5, 41, false)))))) {
+            } else if (SlotFuel.matches(itemStack) ? this.insertItem(itemStack2, 4, 5, false) || this.ingredientSlot.canInsert(itemStack2) && !this.insertItem(itemStack2, 3, 4, false) : (this.ingredientSlot.canInsert(itemStack2) ? !this.insertItem(itemStack2, 3, 4, false) : (SlotPotion.matches(itemStack) && itemStack.getCount() == 1 ? !this.insertItem(itemStack2, 0, 3, false) : (i >= 5 && i < 32 ? !this.insertItem(itemStack2, 32, 41, false) : (i >= 32 && i < 41 ? !this.insertItem(itemStack2, 5, 32, false) : !this.insertItem(itemStack2, 5, 41, false)))))) {
                 return ItemStack.EMPTY;
             }
             if (itemStack2.isEmpty()) {
@@ -157,7 +157,7 @@ extends Container {
         public ItemStack onTakeItem(PlayerEntity playerEntity, ItemStack itemStack) {
             Potion potion = PotionUtil.getPotion(itemStack);
             if (playerEntity instanceof ServerPlayerEntity) {
-                Criterions.BREWED_POTION.trigger((ServerPlayerEntity)playerEntity, potion);
+                Criterions.BREWED_POTION.handle((ServerPlayerEntity)playerEntity, potion);
             }
             super.onTakeItem(playerEntity, itemStack);
             return itemStack;

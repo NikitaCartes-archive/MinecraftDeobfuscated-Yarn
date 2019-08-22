@@ -9,7 +9,7 @@ import java.util.List;
 import java.util.concurrent.locks.ReentrantLock;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.client.render.chunk.BlockBufferBuilderStorage;
+import net.minecraft.client.render.chunk.BlockLayeredBufferBuilder;
 import net.minecraft.client.render.chunk.ChunkRenderData;
 import net.minecraft.client.render.chunk.ChunkRenderer;
 import net.minecraft.client.render.chunk.ChunkRendererRegion;
@@ -25,7 +25,7 @@ implements Comparable<ChunkRenderTask> {
     private final double squaredCameraDistance;
     @Nullable
     private ChunkRendererRegion region;
-    private BlockBufferBuilderStorage bufferBuilder;
+    private BlockLayeredBufferBuilder bufferBuilder;
     private ChunkRenderData renderData;
     private Stage stage = Stage.PENDING;
     private boolean cancelled;
@@ -60,12 +60,12 @@ implements Comparable<ChunkRenderTask> {
         this.renderData = chunkRenderData;
     }
 
-    public BlockBufferBuilderStorage getBufferBuilders() {
+    public BlockLayeredBufferBuilder getBufferBuilders() {
         return this.bufferBuilder;
     }
 
-    public void setBufferBuilders(BlockBufferBuilderStorage blockBufferBuilderStorage) {
-        this.bufferBuilder = blockBufferBuilderStorage;
+    public void setBufferBuilders(BlockLayeredBufferBuilder blockLayeredBufferBuilder) {
+        this.bufferBuilder = blockLayeredBufferBuilder;
     }
 
     public void setStage(Stage stage) {
@@ -118,8 +118,7 @@ implements Comparable<ChunkRenderTask> {
         return this.cancelled;
     }
 
-    @Override
-    public int compareTo(ChunkRenderTask chunkRenderTask) {
+    public int method_3601(ChunkRenderTask chunkRenderTask) {
         return Doubles.compare(this.squaredCameraDistance, chunkRenderTask.squaredCameraDistance);
     }
 
@@ -129,7 +128,7 @@ implements Comparable<ChunkRenderTask> {
 
     @Override
     public /* synthetic */ int compareTo(Object object) {
-        return this.compareTo((ChunkRenderTask)object);
+        return this.method_3601((ChunkRenderTask)object);
     }
 
     @Environment(value=EnvType.CLIENT)

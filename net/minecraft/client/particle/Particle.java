@@ -141,9 +141,9 @@ public abstract class Particle {
             this.spacingXZ = f;
             this.spacingY = g;
             Box box = this.getBoundingBox();
-            double d = (box.x1 + box.x2 - (double)f) / 2.0;
-            double e = (box.z1 + box.z2 - (double)f) / 2.0;
-            this.setBoundingBox(new Box(d, box.y1, e, d + (double)this.spacingXZ, box.y1 + (double)this.spacingY, e + (double)this.spacingXZ));
+            double d = (box.minX + box.maxX - (double)f) / 2.0;
+            double e = (box.minZ + box.maxZ - (double)f) / 2.0;
+            this.setBoundingBox(new Box(d, box.minY, e, d + (double)this.spacingXZ, box.minY + (double)this.spacingY, e + (double)this.spacingXZ));
         }
     }
 
@@ -161,7 +161,7 @@ public abstract class Particle {
         double h = e;
         double i = f;
         if (this.collidesWithWorld && (d != 0.0 || e != 0.0 || f != 0.0)) {
-            Vec3d vec3d = Entity.adjustMovementForCollisions(null, new Vec3d(d, e, f), this.getBoundingBox(), this.world, EntityContext.absent(), new ReusableStream<VoxelShape>(Stream.empty()));
+            Vec3d vec3d = Entity.calculateMotionVector(null, new Vec3d(d, e, f), this.getBoundingBox(), this.world, EntityContext.absent(), new ReusableStream<VoxelShape>(Stream.empty()));
             d = vec3d.x;
             e = vec3d.y;
             f = vec3d.z;
@@ -181,9 +181,9 @@ public abstract class Particle {
 
     protected void repositionFromBoundingBox() {
         Box box = this.getBoundingBox();
-        this.x = (box.x1 + box.x2) / 2.0;
-        this.y = box.y1;
-        this.z = (box.z1 + box.z2) / 2.0;
+        this.x = (box.minX + box.maxX) / 2.0;
+        this.y = box.minY;
+        this.z = (box.minZ + box.maxZ) / 2.0;
     }
 
     protected int getColorMultiplier(float f) {

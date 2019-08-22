@@ -17,7 +17,7 @@ import net.minecraft.server.world.ServerWorld;
 import net.minecraft.tag.BlockTags;
 import net.minecraft.util.GlobalPos;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.poi.PointOfInterestType;
+import net.minecraft.village.PointOfInterestType;
 
 public class ForgetCompletedPointOfInterestTask
 extends Task<LivingEntity> {

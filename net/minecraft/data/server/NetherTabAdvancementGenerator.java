@@ -20,7 +20,6 @@ import net.minecraft.block.Blocks;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.item.Items;
-import net.minecraft.predicate.NumberRange;
 import net.minecraft.predicate.entity.DamageSourcePredicate;
 import net.minecraft.predicate.entity.DistancePredicate;
 import net.minecraft.predicate.entity.EntityEffectPredicate;
@@ -29,13 +28,13 @@ import net.minecraft.predicate.entity.LocationPredicate;
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.NumberRange;
 import net.minecraft.world.dimension.DimensionType;
 import net.minecraft.world.gen.feature.Feature;
 
 public class NetherTabAdvancementGenerator
 implements Consumer<Consumer<Advancement>> {
-    @Override
-    public void accept(Consumer<Advancement> consumer) {
+    public void method_10346(Consumer<Advancement> consumer) {
         Advancement advancement = Advancement.Task.create().display(Blocks.RED_NETHER_BRICKS, (Text)new TranslatableText("advancements.nether.root.title", new Object[0]), (Text)new TranslatableText("advancements.nether.root.description", new Object[0]), new Identifier("textures/gui/advancements/backgrounds/nether.png"), AdvancementFrame.TASK, false, false, false).criterion("entered_nether", ChangedDimensionCriterion.Conditions.to(DimensionType.THE_NETHER)).build(consumer, "nether/root");
         Advancement advancement2 = Advancement.Task.create().parent(advancement).display(Items.FIRE_CHARGE, (Text)new TranslatableText("advancements.nether.return_to_sender.title", new Object[0]), (Text)new TranslatableText("advancements.nether.return_to_sender.description", new Object[0]), null, AdvancementFrame.CHALLENGE, true, true, false).rewards(AdvancementRewards.Builder.experience(50)).criterion("killed_ghast", OnKilledCriterion.Conditions.createPlayerKilledEntity(EntityPredicate.Builder.create().type(EntityType.GHAST), DamageSourcePredicate.Builder.create().projectile(true).directEntity(EntityPredicate.Builder.create().type(EntityType.FIREBALL)))).build(consumer, "nether/return_to_sender");
         Advancement advancement3 = Advancement.Task.create().parent(advancement).display(Blocks.NETHER_BRICKS, (Text)new TranslatableText("advancements.nether.find_fortress.title", new Object[0]), (Text)new TranslatableText("advancements.nether.find_fortress.description", new Object[0]), null, AdvancementFrame.TASK, true, true, false).criterion("fortress", LocationArrivalCriterion.Conditions.create(LocationPredicate.feature(Feature.NETHER_BRIDGE))).build(consumer, "nether/find_fortress");
@@ -53,7 +52,7 @@ implements Consumer<Consumer<Advancement>> {
 
     @Override
     public /* synthetic */ void accept(Object object) {
-        this.accept((Consumer)object);
+        this.method_10346((Consumer)object);
     }
 }
 

@@ -3,7 +3,7 @@
  */
 package net.minecraft.client.render.block.entity;
 
-import com.mojang.blaze3d.platform.GlStateManager;
+import com.mojang.blaze3d.systems.RenderSystem;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.block.entity.EnchantingTableBlockEntity;
@@ -18,21 +18,20 @@ extends BlockEntityRenderer<EnchantingTableBlockEntity> {
     private static final Identifier BOOK_TEX = new Identifier("textures/entity/enchanting_table_book.png");
     private final BookModel book = new BookModel();
 
-    @Override
-    public void render(EnchantingTableBlockEntity enchantingTableBlockEntity, double d, double e, double f, float g, int i) {
+    public void method_3571(EnchantingTableBlockEntity enchantingTableBlockEntity, double d, double e, double f, float g, int i) {
         float j;
-        GlStateManager.pushMatrix();
-        GlStateManager.translatef((float)d + 0.5f, (float)e + 0.75f, (float)f + 0.5f);
+        RenderSystem.pushMatrix();
+        RenderSystem.translatef((float)d + 0.5f, (float)e + 0.75f, (float)f + 0.5f);
         float h = (float)enchantingTableBlockEntity.ticks + g;
-        GlStateManager.translatef(0.0f, 0.1f + MathHelper.sin(h * 0.1f) * 0.01f, 0.0f);
+        RenderSystem.translatef(0.0f, 0.1f + MathHelper.sin(h * 0.1f) * 0.01f, 0.0f);
         for (j = enchantingTableBlockEntity.field_11964 - enchantingTableBlockEntity.field_11963; j >= (float)Math.PI; j -= (float)Math.PI * 2) {
         }
         while (j < (float)(-Math.PI)) {
             j += (float)Math.PI * 2;
         }
         float k = enchantingTableBlockEntity.field_11963 + j * g;
-        GlStateManager.rotatef(-k * 57.295776f, 0.0f, 1.0f, 0.0f);
-        GlStateManager.rotatef(80.0f, 0.0f, 0.0f, 1.0f);
+        RenderSystem.rotatef(-k * 57.295776f, 0.0f, 1.0f, 0.0f);
+        RenderSystem.rotatef(80.0f, 0.0f, 0.0f, 1.0f);
         this.bindTexture(BOOK_TEX);
         float l = MathHelper.lerp(g, enchantingTableBlockEntity.pageAngle, enchantingTableBlockEntity.nextPageAngle) + 0.25f;
         float m = MathHelper.lerp(g, enchantingTableBlockEntity.pageAngle, enchantingTableBlockEntity.nextPageAngle) + 0.75f;
@@ -51,9 +50,9 @@ extends BlockEntityRenderer<EnchantingTableBlockEntity> {
             m = 1.0f;
         }
         float n = MathHelper.lerp(g, enchantingTableBlockEntity.pageTurningSpeed, enchantingTableBlockEntity.nextPageTurningSpeed);
-        GlStateManager.enableCull();
+        RenderSystem.enableCull();
         this.book.render(h, l, m, n, 0.0f, 0.0625f);
-        GlStateManager.popMatrix();
+        RenderSystem.popMatrix();
     }
 }
 

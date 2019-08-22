@@ -18,7 +18,7 @@ import java.util.regex.Pattern;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.util.JsonHelper;
-import net.minecraft.util.Util;
+import net.minecraft.util.SystemUtil;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -37,7 +37,7 @@ public class Language {
                 String string = field_11489.matcher(JsonHelper.asString(entry.getValue(), entry.getKey())).replaceAll("%$1s");
                 this.translations.put(entry.getKey(), string);
             }
-            this.timeLoaded = Util.getMeasuringTimeMs();
+            this.timeLoaded = SystemUtil.getMeasuringTimeMs();
         } catch (JsonParseException | IOException exception) {
             LOGGER.error("Couldn't read strings from /assets/minecraft/lang/en_us.json", (Throwable)exception);
         }
@@ -51,7 +51,7 @@ public class Language {
     public static synchronized void load(Map<String, String> map) {
         Language.INSTANCE.translations.clear();
         Language.INSTANCE.translations.putAll(map);
-        Language.INSTANCE.timeLoaded = Util.getMeasuringTimeMs();
+        Language.INSTANCE.timeLoaded = SystemUtil.getMeasuringTimeMs();
     }
 
     public synchronized String translate(String string) {

@@ -21,7 +21,7 @@ public interface BakedModel {
 
     public boolean useAmbientOcclusion();
 
-    public boolean hasDepth();
+    public boolean hasDepthInGui();
 
     public boolean isBuiltin();
 

@@ -3,11 +3,11 @@
  */
 package net.minecraft.client.gui.screen.ingame;
 
-import com.mojang.blaze3d.platform.GlStateManager;
+import com.mojang.blaze3d.systems.RenderSystem;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.gui.screen.ingame.ContainerScreen;
+import net.minecraft.client.gui.screen.ingame.AbstractContainerScreen;
 import net.minecraft.client.gui.widget.TextFieldWidget;
 import net.minecraft.client.resource.language.I18n;
 import net.minecraft.container.AnvilContainer;
@@ -16,14 +16,14 @@ import net.minecraft.container.ContainerListener;
 import net.minecraft.container.Slot;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.item.ItemStack;
-import net.minecraft.network.packet.c2s.play.RenameItemC2SPacket;
+import net.minecraft.server.network.packet.RenameItemC2SPacket;
 import net.minecraft.text.Text;
 import net.minecraft.util.DefaultedList;
 import net.minecraft.util.Identifier;
 
 @Environment(value=EnvType.CLIENT)
 public class AnvilScreen
-extends ContainerScreen<AnvilContainer>
+extends AbstractContainerScreen<AnvilContainer>
 implements ContainerListener {
     private static final Identifier BG_TEX = new Identifier("textures/gui/container/anvil.png");
     private TextFieldWidget nameField;
@@ -78,8 +78,8 @@ implements ContainerListener {
 
     @Override
     protected void drawForeground(int i, int j) {
-        GlStateManager.disableLighting();
-        GlStateManager.disableBlend();
+        RenderSystem.disableLighting();
+        RenderSystem.disableBlend();
         this.font.draw(this.title.asFormattedString(), 60.0f, 6.0f, 0x404040);
         int k = ((AnvilContainer)this.container).getLevelCost();
         if (k > 0) {
@@ -101,7 +101,7 @@ implements ContainerListener {
                 this.font.drawWithShadow(string, m, 69.0f, l);
             }
         }
-        GlStateManager.enableLighting();
+        RenderSystem.enableLighting();
     }
 
     private void onRenamed(String string) {
@@ -122,14 +122,14 @@ implements ContainerListener {
         this.renderBackground();
         super.render(i, j, f);
         this.drawMouseoverTooltip(i, j);
-        GlStateManager.disableLighting();
-        GlStateManager.disableBlend();
+        RenderSystem.disableLighting();
+        RenderSystem.disableBlend();
         this.nameField.render(i, j, f);
     }
 
     @Override
     protected void drawBackground(float f, int i, int j) {
-        GlStateManager.color4f(1.0f, 1.0f, 1.0f, 1.0f);
+        RenderSystem.color4f(1.0f, 1.0f, 1.0f, 1.0f);
         this.minecraft.getTextureManager().bindTexture(BG_TEX);
         int k = (this.width - this.containerWidth) / 2;
         int l = (this.height - this.containerHeight) / 2;
@@ -149,7 +149,7 @@ implements ContainerListener {
     public void onContainerSlotUpdate(Container container, int i, ItemStack itemStack) {
         if (i == 0) {
             this.nameField.setText(itemStack.isEmpty() ? "" : itemStack.getName().getString());
-            this.nameField.setEditable(!itemStack.isEmpty());
+            this.nameField.setIsEditable(!itemStack.isEmpty());
         }
     }
 

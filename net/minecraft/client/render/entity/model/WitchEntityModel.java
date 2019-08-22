@@ -18,28 +18,28 @@ extends VillagerResemblingModel<T> {
 
     public WitchEntityModel(float f) {
         super(f, 64, 128);
-        this.mole.setPivot(0.0f, -2.0f, 0.0f);
+        this.mole.setRotationPoint(0.0f, -2.0f, 0.0f);
         this.mole.setTextureOffset(0, 0).addCuboid(0.0f, 3.0f, -6.75f, 1, 1, 1, -0.25f);
         this.nose.addChild(this.mole);
         this.head.removeChild(this.headOverlay);
         this.headOverlay = new ModelPart(this).setTextureSize(64, 128);
-        this.headOverlay.setPivot(-5.0f, -10.03125f, -5.0f);
+        this.headOverlay.setRotationPoint(-5.0f, -10.03125f, -5.0f);
         this.headOverlay.setTextureOffset(0, 64).addCuboid(0.0f, 0.0f, 0.0f, 10, 2, 10);
         this.head.addChild(this.headOverlay);
         ModelPart modelPart = new ModelPart(this).setTextureSize(64, 128);
-        modelPart.setPivot(1.75f, -4.0f, 2.0f);
+        modelPart.setRotationPoint(1.75f, -4.0f, 2.0f);
         modelPart.setTextureOffset(0, 76).addCuboid(0.0f, 0.0f, 0.0f, 7, 4, 7);
         modelPart.pitch = -0.05235988f;
         modelPart.roll = 0.02617994f;
         this.headOverlay.addChild(modelPart);
         ModelPart modelPart2 = new ModelPart(this).setTextureSize(64, 128);
-        modelPart2.setPivot(1.75f, -4.0f, 2.0f);
+        modelPart2.setRotationPoint(1.75f, -4.0f, 2.0f);
         modelPart2.setTextureOffset(0, 87).addCuboid(0.0f, 0.0f, 0.0f, 4, 4, 4);
         modelPart2.pitch = -0.10471976f;
         modelPart2.roll = 0.05235988f;
         modelPart.addChild(modelPart2);
         ModelPart modelPart3 = new ModelPart(this).setTextureSize(64, 128);
-        modelPart3.setPivot(1.75f, -2.0f, 2.0f);
+        modelPart3.setRotationPoint(1.75f, -2.0f, 2.0f);
         modelPart3.setTextureOffset(0, 95).addCuboid(0.0f, 0.0f, 0.0f, 1, 2, 1, 0.25f);
         modelPart3.pitch = -0.20943952f;
         modelPart3.roll = 0.10471976f;

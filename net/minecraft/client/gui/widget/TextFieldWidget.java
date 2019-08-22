@@ -4,13 +4,14 @@
 package net.minecraft.client.gui.widget;
 
 import com.google.common.base.Predicates;
-import com.mojang.blaze3d.platform.GlStateManager;
+import com.mojang.blaze3d.systems.RenderSystem;
 import java.util.function.BiFunction;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.SharedConstants;
+import net.minecraft.class_4493;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gui.Drawable;
@@ -22,7 +23,7 @@ import net.minecraft.client.render.BufferBuilder;
 import net.minecraft.client.render.Tessellator;
 import net.minecraft.client.render.VertexFormats;
 import net.minecraft.client.resource.language.I18n;
-import net.minecraft.util.Util;
+import net.minecraft.util.SystemUtil;
 import net.minecraft.util.math.MathHelper;
 import org.jetbrains.annotations.Nullable;
 
@@ -40,8 +41,8 @@ Element {
     private boolean editable = true;
     private boolean field_17037;
     private int field_2103;
-    private int selectionStart;
-    private int selectionEnd;
+    private int cursorMax;
+    private int cursorMin;
     private int editableColor = 0xE0E0E0;
     private int uneditableColor = 0x707070;
     private String suggestion;
@@ -88,7 +89,7 @@ Element {
         }
         this.text = string.length() > this.maxLength ? string.substring(0, this.maxLength) : string;
         this.method_1872();
-        this.method_1884(this.selectionStart);
+        this.method_1884(this.cursorMax);
         this.onChanged(string);
     }
 
@@ -97,8 +98,8 @@ Element {
     }
 
     public String getSelectedText() {
-        int i = this.selectionStart < this.selectionEnd ? this.selectionStart : this.selectionEnd;
-        int j = this.selectionStart < this.selectionEnd ? this.selectionEnd : this.selectionStart;
+        int i = this.cursorMax < this.cursorMin ? this.cursorMax : this.cursorMin;
+        int j = this.cursorMax < this.cursorMin ? this.cursorMin : this.cursorMax;
         return this.text.substring(i, j);
     }
 
@@ -106,12 +107,12 @@ Element {
         this.textPredicate = predicate;
     }
 
-    public void write(String string) {
+    public void addText(String string) {
         int l;
         String string2 = "";
         String string3 = SharedConstants.stripInvalidChars(string);
-        int i = this.selectionStart < this.selectionEnd ? this.selectionStart : this.selectionEnd;
-        int j = this.selectionStart < this.selectionEnd ? this.selectionEnd : this.selectionStart;
+        int i = this.cursorMax < this.cursorMin ? this.cursorMax : this.cursorMin;
+        int j = this.cursorMax < this.cursorMin ? this.cursorMin : this.cursorMax;
         int k = this.maxLength - this.text.length() - (i - j);
         if (!this.text.isEmpty()) {
             string2 = string2 + this.text.substring(0, i);
@@ -130,8 +131,8 @@ Element {
             return;
         }
         this.text = string2;
-        this.setSelectionStart(i + l);
-        this.method_1884(this.selectionStart);
+        this.setCursor(i + l);
+        this.method_1884(this.cursorMax);
         this.onChanged(this.text);
     }
 
@@ -139,7 +140,7 @@ Element {
         if (this.changedListener != null) {
             this.changedListener.accept(string);
         }
-        this.nextNarration = Util.getMeasuringTimeMs() + 500L;
+        this.nextNarration = SystemUtil.getMeasuringTimeMs() + 500L;
     }
 
     private void method_16873(int i) {
@@ -154,24 +155,24 @@ Element {
         if (this.text.isEmpty()) {
             return;
         }
-        if (this.selectionEnd != this.selectionStart) {
-            this.write("");
+        if (this.cursorMin != this.cursorMax) {
+            this.addText("");
             return;
         }
-        this.method_1878(this.method_1853(i) - this.selectionStart);
+        this.method_1878(this.method_1853(i) - this.cursorMax);
     }
 
     public void method_1878(int i) {
         if (this.text.isEmpty()) {
             return;
         }
-        if (this.selectionEnd != this.selectionStart) {
-            this.write("");
+        if (this.cursorMin != this.cursorMax) {
+            this.addText("");
             return;
         }
         boolean bl = i < 0;
-        int j = bl ? this.selectionStart + i : this.selectionStart;
-        int k = bl ? this.selectionStart : this.selectionStart + i;
+        int j = bl ? this.cursorMax + i : this.cursorMax;
+        int k = bl ? this.cursorMax : this.cursorMax + i;
         String string = "";
         if (j >= 0) {
             string = this.text.substring(0, j);
@@ -224,19 +225,19 @@ Element {
     }
 
     public void moveCursor(int i) {
-        this.method_1883(this.selectionStart + i);
+        this.method_1883(this.cursorMax + i);
     }
 
     public void method_1883(int i) {
-        this.setSelectionStart(i);
+        this.setCursor(i);
         if (!this.field_17037) {
-            this.method_1884(this.selectionStart);
+            this.method_1884(this.cursorMax);
         }
         this.onChanged(this.text);
     }
 
-    public void setSelectionStart(int i) {
-        this.selectionStart = MathHelper.clamp(i, 0, this.text.length());
+    public void setCursor(int i) {
+        this.cursorMax = MathHelper.clamp(i, 0, this.text.length());
     }
 
     public void method_1870() {
@@ -264,14 +265,14 @@ Element {
         }
         if (Screen.isPaste(i)) {
             if (this.editable) {
-                this.write(MinecraftClient.getInstance().keyboard.getClipboard());
+                this.addText(MinecraftClient.getInstance().keyboard.getClipboard());
             }
             return true;
         }
         if (Screen.isCut(i)) {
             MinecraftClient.getInstance().keyboard.setClipboard(this.getSelectedText());
             if (this.editable) {
-                this.write("");
+                this.addText("");
             }
             return true;
         }
@@ -331,7 +332,7 @@ Element {
         }
         if (SharedConstants.isValidChar(c)) {
             if (this.editable) {
-                this.write(Character.toString(c));
+                this.addText(Character.toString(c));
             }
             return true;
         }
@@ -374,8 +375,8 @@ Element {
             TextFieldWidget.fill(this.x, this.y, this.x + this.width, this.y + this.height, -16777216);
         }
         int k = this.editable ? this.editableColor : this.uneditableColor;
-        int l = this.selectionStart - this.field_2103;
-        int m = this.selectionEnd - this.field_2103;
+        int l = this.cursorMax - this.field_2103;
+        int m = this.cursorMin - this.field_2103;
         String string = this.textRenderer.trimToWidth(this.text.substring(this.field_2103), this.method_1859());
         boolean bl = l >= 0 && l <= string.length();
         boolean bl2 = this.isFocused() && this.focusedTicks / 6 % 2 == 0 && bl;
@@ -389,7 +390,7 @@ Element {
             String string2 = bl ? string.substring(0, l) : string;
             p = this.textRenderer.drawWithShadow(this.renderTextProvider.apply(string2, this.field_2103), p, o, k);
         }
-        boolean bl3 = this.selectionStart < this.text.length() || this.text.length() >= this.getMaxLength();
+        boolean bl3 = this.cursorMax < this.text.length() || this.text.length() >= this.getMaxLength();
         int q = p;
         if (!bl) {
             q = l > 0 ? n + this.width : n;
@@ -398,7 +399,7 @@ Element {
             --p;
         }
         if (!string.isEmpty() && bl && l < string.length()) {
-            this.textRenderer.drawWithShadow(this.renderTextProvider.apply(string.substring(l), this.selectionStart), p, o, k);
+            this.textRenderer.drawWithShadow(this.renderTextProvider.apply(string.substring(l), this.cursorMax), p, o, k);
         }
         if (!bl3 && this.suggestion != null) {
             this.textRenderer.drawWithShadow(this.suggestion, q - 1, o, -8355712);
@@ -435,19 +436,19 @@ Element {
             i = this.x + this.width;
         }
         Tessellator tessellator = Tessellator.getInstance();
-        BufferBuilder bufferBuilder = tessellator.getBuffer();
-        GlStateManager.color4f(0.0f, 0.0f, 255.0f, 255.0f);
-        GlStateManager.disableTexture();
-        GlStateManager.enableColorLogicOp();
-        GlStateManager.logicOp(GlStateManager.LogicOp.OR_REVERSE);
+        BufferBuilder bufferBuilder = tessellator.getBufferBuilder();
+        RenderSystem.color4f(0.0f, 0.0f, 255.0f, 255.0f);
+        RenderSystem.disableTexture();
+        RenderSystem.enableColorLogicOp();
+        RenderSystem.logicOp(class_4493.LogicOp.OR_REVERSE);
         bufferBuilder.begin(7, VertexFormats.POSITION);
         bufferBuilder.vertex(i, l, 0.0).next();
         bufferBuilder.vertex(k, l, 0.0).next();
         bufferBuilder.vertex(k, j, 0.0).next();
         bufferBuilder.vertex(i, j, 0.0).next();
         tessellator.draw();
-        GlStateManager.disableColorLogicOp();
-        GlStateManager.enableTexture();
+        RenderSystem.disableColorLogicOp();
+        RenderSystem.enableTexture();
     }
 
     public void setMaxLength(int i) {
@@ -463,7 +464,7 @@ Element {
     }
 
     public int getCursor() {
-        return this.selectionStart;
+        return this.cursorMax;
     }
 
     private boolean hasBorder() {
@@ -506,7 +507,7 @@ Element {
         return this.editable;
     }
 
-    public void setEditable(boolean bl) {
+    public void setIsEditable(boolean bl) {
         this.editable = bl;
     }
 
@@ -516,7 +517,7 @@ Element {
 
     public void method_1884(int i) {
         int j = this.text.length();
-        this.selectionEnd = MathHelper.clamp(i, 0, j);
+        this.cursorMin = MathHelper.clamp(i, 0, j);
         if (this.textRenderer != null) {
             if (this.field_2103 > j) {
                 this.field_2103 = j;
@@ -524,13 +525,13 @@ Element {
             int k = this.method_1859();
             String string = this.textRenderer.trimToWidth(this.text.substring(this.field_2103), k);
             int l = string.length() + this.field_2103;
-            if (this.selectionEnd == this.field_2103) {
+            if (this.cursorMin == this.field_2103) {
                 this.field_2103 -= this.textRenderer.trimToWidth(this.text, k, true).length();
             }
-            if (this.selectionEnd > l) {
-                this.field_2103 += this.selectionEnd - l;
-            } else if (this.selectionEnd <= this.field_2103) {
-                this.field_2103 -= this.field_2103 - this.selectionEnd;
+            if (this.cursorMin > l) {
+                this.field_2103 += this.cursorMin - l;
+            } else if (this.cursorMin <= this.field_2103) {
+                this.field_2103 -= this.field_2103 - this.cursorMin;
             }
             this.field_2103 = MathHelper.clamp(this.field_2103, 0, j);
         }

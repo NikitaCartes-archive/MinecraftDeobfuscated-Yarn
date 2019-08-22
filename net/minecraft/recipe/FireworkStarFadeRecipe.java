@@ -26,8 +26,7 @@ extends SpecialCraftingRecipe {
         super(identifier);
     }
 
-    @Override
-    public boolean matches(CraftingInventory craftingInventory, World world) {
+    public boolean method_17711(CraftingInventory craftingInventory, World world) {
         boolean bl = false;
         boolean bl2 = false;
         for (int i = 0; i < craftingInventory.getInvSize(); ++i) {
@@ -37,7 +36,7 @@ extends SpecialCraftingRecipe {
                 bl = true;
                 continue;
             }
-            if (INPUT_STAR.test(itemStack)) {
+            if (INPUT_STAR.method_8093(itemStack)) {
                 if (bl2) {
                     return false;
                 }
@@ -49,8 +48,7 @@ extends SpecialCraftingRecipe {
         return bl2 && bl;
     }
 
-    @Override
-    public ItemStack craft(CraftingInventory craftingInventory) {
+    public ItemStack method_17710(CraftingInventory craftingInventory) {
         ArrayList<Integer> list = Lists.newArrayList();
         ItemStack itemStack = null;
         for (int i = 0; i < craftingInventory.getInvSize(); ++i) {
@@ -60,7 +58,7 @@ extends SpecialCraftingRecipe {
                 list.add(((DyeItem)item).getColor().getFireworkColor());
                 continue;
             }
-            if (!INPUT_STAR.test(itemStack2)) continue;
+            if (!INPUT_STAR.method_8093(itemStack2)) continue;
             itemStack = itemStack2.copy();
             itemStack.setCount(1);
         }

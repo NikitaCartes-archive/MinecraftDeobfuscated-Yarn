@@ -14,7 +14,7 @@ public interface Packet<T extends PacketListener> {
 
     public void apply(T var1);
 
-    default public boolean isWritingErrorSkippable() {
+    default public boolean isErrorFatal() {
         return false;
     }
 }

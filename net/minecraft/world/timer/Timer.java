@@ -25,13 +25,7 @@ public class Timer<T> {
     private final Map<String, Event<T>> eventsByName = Maps.newHashMap();
 
     private static <T> Comparator<Event<T>> createEventComparator() {
-        return (event, event2) -> {
-            int i = Long.compare(event.triggerTime, event2.triggerTime);
-            if (i != 0) {
-                return i;
-            }
-            return event.id.compareTo(event2.id);
-        };
+        return Comparator.comparingLong(event -> event.triggerTime).thenComparing(event -> event.id);
     }
 
     public Timer(TimerCallbackSerializer<T> timerCallbackSerializer) {
@@ -87,7 +81,7 @@ public class Timer<T> {
         if (listTag.isEmpty()) {
             return;
         }
-        if (listTag.getElementType() != 10) {
+        if (listTag.getListType() != 10) {
             LOGGER.warn("Invalid format of events: " + listTag);
             return;
         }

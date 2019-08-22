@@ -3,10 +3,11 @@
  */
 package net.minecraft.client.render.debug;
 
-import com.mojang.blaze3d.platform.GlStateManager;
+import com.mojang.blaze3d.systems.RenderSystem;
 import it.unimi.dsi.fastutil.longs.LongOpenHashSet;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.class_4493;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.Camera;
 import net.minecraft.client.render.debug.DebugRenderer;
@@ -30,25 +31,25 @@ implements DebugRenderer.Renderer {
     public void render(long l) {
         Camera camera = this.client.gameRenderer.getCamera();
         ClientWorld world = this.client.world;
-        GlStateManager.pushMatrix();
-        GlStateManager.enableBlend();
-        GlStateManager.blendFuncSeparate(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO);
-        GlStateManager.disableTexture();
+        RenderSystem.pushMatrix();
+        RenderSystem.enableBlend();
+        RenderSystem.blendFuncSeparate(class_4493.class_4535.SRC_ALPHA, class_4493.class_4534.ONE_MINUS_SRC_ALPHA, class_4493.class_4535.ONE, class_4493.class_4534.ZERO);
+        RenderSystem.disableTexture();
         BlockPos blockPos = new BlockPos(camera.getPos());
         LongOpenHashSet longSet = new LongOpenHashSet();
         for (BlockPos blockPos2 : BlockPos.iterate(blockPos.add(-10, -10, -10), blockPos.add(10, 10, 10))) {
             int i = world.getLightLevel(LightType.SKY, blockPos2);
             float f = (float)(15 - i) / 15.0f * 0.5f + 0.16f;
             int j = MathHelper.hsvToRgb(f, 0.9f, 0.9f);
-            long m = ChunkSectionPos.fromGlobalPos(blockPos2.asLong());
+            long m = ChunkSectionPos.toChunkLong(blockPos2.asLong());
             if (longSet.add(m)) {
-                DebugRenderer.method_19429(((World)world).getChunkManager().getLightingProvider().method_15564(LightType.SKY, ChunkSectionPos.from(m)), ChunkSectionPos.getX(m) * 16 + 8, ChunkSectionPos.getY(m) * 16 + 8, ChunkSectionPos.getZ(m) * 16 + 8, 0xFF0000, 0.3f);
+                DebugRenderer.method_19429(((World)world).getChunkManager().getLightingProvider().method_15564(LightType.SKY, ChunkSectionPos.from(m)), ChunkSectionPos.unpackLongX(m) * 16 + 8, ChunkSectionPos.unpackLongY(m) * 16 + 8, ChunkSectionPos.unpackLongZ(m) * 16 + 8, 0xFF0000, 0.3f);
             }
             if (i == 15) continue;
             DebugRenderer.method_3714(String.valueOf(i), (double)blockPos2.getX() + 0.5, (double)blockPos2.getY() + 0.25, (double)blockPos2.getZ() + 0.5, j);
         }
-        GlStateManager.enableTexture();
-        GlStateManager.popMatrix();
+        RenderSystem.enableTexture();
+        RenderSystem.popMatrix();
     }
 }
 

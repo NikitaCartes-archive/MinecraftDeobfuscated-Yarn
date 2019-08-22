@@ -3,7 +3,7 @@
  */
 package net.minecraft.client.render.entity;
 
-import com.mojang.blaze3d.platform.GlStateManager;
+import com.mojang.blaze3d.systems.RenderSystem;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.render.entity.EntityRenderDispatcher;
@@ -24,23 +24,21 @@ extends MobEntityRenderer<WitherEntity, WitherEntityModel<WitherEntity>> {
         this.addFeature(new WitherArmorFeatureRenderer(this));
     }
 
-    @Override
-    protected Identifier getTexture(WitherEntity witherEntity) {
-        int i = witherEntity.getInvulnerableTimer();
+    protected Identifier method_4153(WitherEntity witherEntity) {
+        int i = witherEntity.getInvulTimer();
         if (i <= 0 || i <= 80 && i / 5 % 2 == 1) {
             return SKIN;
         }
         return INVINCIBLE_SKIN;
     }
 
-    @Override
-    protected void scale(WitherEntity witherEntity, float f) {
+    protected void method_4152(WitherEntity witherEntity, float f) {
         float g = 2.0f;
-        int i = witherEntity.getInvulnerableTimer();
+        int i = witherEntity.getInvulTimer();
         if (i > 0) {
             g -= ((float)i - f) / 220.0f * 0.5f;
         }
-        GlStateManager.scalef(g, g, g);
+        RenderSystem.scalef(g, g, g);
     }
 }
 

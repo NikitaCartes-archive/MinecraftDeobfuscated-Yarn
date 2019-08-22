@@ -69,7 +69,6 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
-import net.minecraft.nbt.NbtHelper;
 import net.minecraft.particle.ItemStackParticleEffect;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.predicate.entity.EntityPredicates;
@@ -79,13 +78,14 @@ import net.minecraft.sound.BlockSoundGroup;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.stat.Stats;
+import net.minecraft.util.TagHelper;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
-import net.minecraft.world.CollisionView;
 import net.minecraft.world.GameRules;
 import net.minecraft.world.IWorld;
 import net.minecraft.world.LocalDifficulty;
+import net.minecraft.world.ViewableWorld;
 import net.minecraft.world.World;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.biome.Biomes;
@@ -106,7 +106,7 @@ extends AnimalEntity {
         return false;
     };
     private static final Predicate<Entity> CHICKEN_AND_RABBIT_FILTER = entity -> entity instanceof ChickenEntity || entity instanceof RabbitEntity;
-    private static final Predicate<Entity> NOTICEABLE_PLAYER_FILTER = entity -> !entity.isSneaking() && EntityPredicates.EXCEPT_CREATIVE_OR_SPECTATOR.test((Entity)entity);
+    private static final Predicate<Entity> NOTICEABLE_PLAYER_FILTER = entity -> !entity.method_21751() && EntityPredicates.EXCEPT_CREATIVE_OR_SPECTATOR.test((Entity)entity);
     private Goal followChickenAndRabbitGoal;
     private Goal followBabyTurtleGoal;
     private Goal followFishGoal;
@@ -120,8 +120,8 @@ extends AnimalEntity {
         super((EntityType<? extends AnimalEntity>)entityType, world);
         this.lookControl = new FoxLookControl();
         this.moveControl = new FoxMoveControl();
-        this.setPathfindingPenalty(PathNodeType.DANGER_OTHER, 0.0f);
-        this.setPathfindingPenalty(PathNodeType.DAMAGE_OTHER, 0.0f);
+        this.setPathNodeTypeWeight(PathNodeType.DANGER_OTHER, 0.0f);
+        this.setPathNodeTypeWeight(PathNodeType.DAMAGE_OTHER, 0.0f);
         this.setCanPickUpLoot(true);
     }
 
@@ -142,22 +142,22 @@ extends AnimalEntity {
         this.goalSelector.add(0, new FoxSwimGoal());
         this.goalSelector.add(1, new StopWanderingGoal());
         this.goalSelector.add(2, new EscapeWhenNotAggresiveGoal(2.2));
-        this.goalSelector.add(3, new FleeEntityGoal<PlayerEntity>(this, PlayerEntity.class, 16.0f, 1.6, 1.4, livingEntity -> NOTICEABLE_PLAYER_FILTER.test((Entity)livingEntity) && !this.canTrust(livingEntity.getUuid()) && !this.isAggressive()));
-        this.goalSelector.add(3, new FleeEntityGoal<WolfEntity>(this, WolfEntity.class, 8.0f, 1.6, 1.4, livingEntity -> !((WolfEntity)livingEntity).isTamed() && !this.isAggressive()));
-        this.goalSelector.add(4, new MoveToHuntGoal());
-        this.goalSelector.add(5, new JumpChasingGoal());
-        this.goalSelector.add(5, new MateGoal(1.0));
-        this.goalSelector.add(5, new AvoidDaylightGoal(1.25));
-        this.goalSelector.add(6, new AttackGoal((double)1.2f, true));
-        this.goalSelector.add(6, new DelayedCalmDownGoal());
-        this.goalSelector.add(7, new FollowParentGoal(this, 1.25));
-        this.goalSelector.add(8, new GoToVillageGoal(32, 200));
-        this.goalSelector.add(9, new EatSweetBerriesGoal((double)1.2f, 12, 2));
-        this.goalSelector.add(9, new PounceAtTargetGoal(this, 0.4f));
-        this.goalSelector.add(10, new WanderAroundFarGoal(this, 1.0));
-        this.goalSelector.add(10, new PickupItemGoal());
-        this.goalSelector.add(11, new LookAtEntityGoal(this, PlayerEntity.class, 24.0f));
-        this.goalSelector.add(12, new SitDownAndLookAroundGoal());
+        this.goalSelector.add(3, new MateGoal(1.0));
+        this.goalSelector.add(4, new FleeEntityGoal<PlayerEntity>(this, PlayerEntity.class, 16.0f, 1.6, 1.4, livingEntity -> NOTICEABLE_PLAYER_FILTER.test((Entity)livingEntity) && !this.canTrust(livingEntity.getUuid()) && !this.isAggressive()));
+        this.goalSelector.add(4, new FleeEntityGoal<WolfEntity>(this, WolfEntity.class, 8.0f, 1.6, 1.4, livingEntity -> !((WolfEntity)livingEntity).isTamed() && !this.isAggressive()));
+        this.goalSelector.add(5, new MoveToHuntGoal());
+        this.goalSelector.add(6, new JumpChasingGoal());
+        this.goalSelector.add(6, new AvoidDaylightGoal(1.25));
+        this.goalSelector.add(7, new AttackGoal((double)1.2f, true));
+        this.goalSelector.add(7, new DelayedCalmDownGoal());
+        this.goalSelector.add(8, new FollowParentGoal(this, 1.25));
+        this.goalSelector.add(9, new GoToVillageGoal(32, 200));
+        this.goalSelector.add(10, new EatSweetBerriesGoal((double)1.2f, 12, 2));
+        this.goalSelector.add(10, new PounceAtTargetGoal(this, 0.4f));
+        this.goalSelector.add(11, new WanderAroundFarGoal(this, 1.0));
+        this.goalSelector.add(11, new PickupItemGoal());
+        this.goalSelector.add(12, new LookAtEntityGoal(this, PlayerEntity.class, 24.0f));
+        this.goalSelector.add(13, new SitDownAndLookAroundGoal());
         this.targetSelector.add(3, new DefendFriendGoal(LivingEntity.class, false, false, livingEntity -> JUST_ATTACKED_SOMETHING_FILTER.test((Entity)livingEntity) && !this.canTrust(livingEntity.getUuid())));
     }
 
@@ -193,7 +193,7 @@ extends AnimalEntity {
             this.jumping = false;
             this.sidewaysSpeed = 0.0f;
             this.forwardSpeed = 0.0f;
-            this.field_6267 = 0.0f;
+            this.turningSpeed = 0.0f;
         }
         super.tickMovement();
         if (this.isAggressive() && this.random.nextFloat() < 0.05f) {
@@ -244,8 +244,7 @@ extends AnimalEntity {
         this.getAttributes().register(EntityAttributes.ATTACK_DAMAGE).setBaseValue(2.0);
     }
 
-    @Override
-    public FoxEntity createChild(PassiveEntity passiveEntity) {
+    public FoxEntity method_18260(PassiveEntity passiveEntity) {
         FoxEntity foxEntity = EntityType.FOX.create(this.world);
         foxEntity.setType(this.random.nextBoolean() ? this.getFoxType() : ((FoxEntity)passiveEntity).getFoxType());
         return foxEntity;
@@ -335,13 +334,13 @@ extends AnimalEntity {
         ListTag listTag = new ListTag();
         for (UUID uUID : list) {
             if (uUID == null) continue;
-            listTag.add(NbtHelper.fromUuid(uUID));
+            listTag.add(TagHelper.serializeUuid(uUID));
         }
         compoundTag.put("TrustedUUIDs", listTag);
         compoundTag.putBoolean("Sleeping", this.isSleeping());
         compoundTag.putString("Type", this.getFoxType().getKey());
         compoundTag.putBoolean("Sitting", this.isSitting());
-        compoundTag.putBoolean("Crouching", this.isCrouching());
+        compoundTag.putBoolean("Crouching", this.isInSneakingPose());
     }
 
     @Override
@@ -349,7 +348,7 @@ extends AnimalEntity {
         super.readCustomDataFromTag(compoundTag);
         ListTag listTag = compoundTag.getList("TrustedUUIDs", 10);
         for (int i = 0; i < listTag.size(); ++i) {
-            this.addTrustedUuid(NbtHelper.toUuid(listTag.getCompound(i)));
+            this.addTrustedUuid(TagHelper.deserializeUuid(listTag.getCompoundTag(i)));
         }
         this.setSleeping(compoundTag.getBoolean("Sleeping"));
         this.setType(Type.byName(compoundTag.getString("Type")));
@@ -456,9 +455,9 @@ extends AnimalEntity {
     public void tick() {
         super.tick();
         if (this.canMoveVoluntarily()) {
-            boolean bl = this.isTouchingWater();
+            boolean bl = this.isInsideWater();
             if (bl || this.getTarget() != null || this.world.isThundering()) {
-                this.stopSleeping();
+                this.wakeUp();
             }
             if (bl || this.isSleeping()) {
                 this.setSitting(false);
@@ -472,7 +471,7 @@ extends AnimalEntity {
         this.lastHeadRollProgress = this.headRollProgress;
         this.headRollProgress = this.isRollingHead() ? (this.headRollProgress += (1.0f - this.headRollProgress) * 0.4f) : (this.headRollProgress += (0.0f - this.headRollProgress) * 0.4f);
         this.lastExtraRollingHeight = this.extraRollingHeight;
-        if (this.isCrouching()) {
+        if (this.isInSneakingPose()) {
             this.extraRollingHeight += 0.2f;
             if (this.extraRollingHeight > 3.0f) {
                 this.extraRollingHeight = 3.0f;
@@ -508,7 +507,8 @@ extends AnimalEntity {
         this.setFoxFlag(4, bl);
     }
 
-    public boolean isCrouching() {
+    @Override
+    public boolean isInSneakingPose() {
         return this.getFoxFlag(4);
     }
 
@@ -557,7 +557,8 @@ extends AnimalEntity {
         }
     }
 
-    private void stopSleeping() {
+    @Override
+    private void wakeUp() {
         this.setSleeping(false);
     }
 
@@ -591,7 +592,7 @@ extends AnimalEntity {
         if (this.isSleeping()) {
             return SoundEvents.ENTITY_FOX_SLEEP;
         }
-        if (!this.world.isDay() && this.random.nextFloat() < 0.1f && (list = this.world.getEntities(PlayerEntity.class, this.getBoundingBox().expand(16.0, 16.0, 16.0), EntityPredicates.EXCEPT_SPECTATOR)).isEmpty()) {
+        if (!this.world.isDaylight() && this.random.nextFloat() < 0.1f && (list = this.world.getEntities(PlayerEntity.class, this.getBoundingBox().expand(16.0, 16.0, 16.0), EntityPredicates.EXCEPT_SPECTATOR)).isEmpty()) {
             return SoundEvents.ENTITY_FOX_SCREECH;
         }
         return SoundEvents.ENTITY_FOX_AMBIENT;
@@ -641,7 +642,7 @@ extends AnimalEntity {
 
     @Override
     public /* synthetic */ PassiveEntity createChild(PassiveEntity passiveEntity) {
-        return this.createChild(passiveEntity);
+        return this.method_18260(passiveEntity);
     }
 
     class LookAtEntityGoal
@@ -702,7 +703,7 @@ extends AnimalEntity {
 
         @Override
         protected boolean method_20433() {
-            return !FoxEntity.this.isChasing() && !FoxEntity.this.isCrouching() && !FoxEntity.this.isRollingHead() & !FoxEntity.this.isWalking();
+            return !FoxEntity.this.isChasing() && !FoxEntity.this.isInSneakingPose() && !FoxEntity.this.isRollingHead() & !FoxEntity.this.isWalking();
         }
     }
 
@@ -805,7 +806,7 @@ extends AnimalEntity {
 
         @Override
         public boolean canStart() {
-            return FoxEntity.this.isTouchingWater() && FoxEntity.this.getWaterHeight() > 0.25 || FoxEntity.this.isInLava();
+            return FoxEntity.this.isInsideWater() && FoxEntity.this.getWaterHeight() > 0.25 || FoxEntity.this.isInLava();
         }
     }
 
@@ -911,8 +912,8 @@ extends AnimalEntity {
         }
 
         @Override
-        protected boolean isTargetPos(CollisionView collisionView, BlockPos blockPos) {
-            BlockState blockState = collisionView.getBlockState(blockPos);
+        protected boolean isTargetPos(ViewableWorld viewableWorld, BlockPos blockPos) {
+            BlockState blockState = viewableWorld.getBlockState(blockPos);
             return blockState.getBlock() == Blocks.SWEET_BERRY_BUSH && blockState.get(SweetBerryBushBlock.AGE) >= 2;
         }
 
@@ -979,7 +980,7 @@ extends AnimalEntity {
 
         @Override
         public boolean canStart() {
-            return FoxEntity.this.getAttacker() == null && FoxEntity.this.getRandom().nextFloat() < 0.02f && !FoxEntity.this.isSleeping() && FoxEntity.this.getTarget() == null && FoxEntity.this.getNavigation().isIdle() && !this.canCalmDown() && !FoxEntity.this.isChasing() && !FoxEntity.this.isCrouching();
+            return FoxEntity.this.getAttacker() == null && FoxEntity.this.getRand().nextFloat() < 0.02f && !FoxEntity.this.isSleeping() && FoxEntity.this.getTarget() == null && FoxEntity.this.getNavigation().isIdle() && !this.canCalmDown() && !FoxEntity.this.isChasing() && !FoxEntity.this.isInSneakingPose();
         }
 
         @Override
@@ -990,7 +991,7 @@ extends AnimalEntity {
         @Override
         public void start() {
             this.chooseNewAngle();
-            this.counter = 2 + FoxEntity.this.getRandom().nextInt(3);
+            this.counter = 2 + FoxEntity.this.getRand().nextInt(3);
             FoxEntity.this.setSitting(true);
             FoxEntity.this.getNavigation().stop();
         }
@@ -1011,10 +1012,10 @@ extends AnimalEntity {
         }
 
         private void chooseNewAngle() {
-            double d = Math.PI * 2 * FoxEntity.this.getRandom().nextDouble();
+            double d = Math.PI * 2 * FoxEntity.this.getRand().nextDouble();
             this.lookX = Math.cos(d);
             this.lookZ = Math.sin(d);
-            this.timer = 80 + FoxEntity.this.getRandom().nextInt(20);
+            this.timer = 80 + FoxEntity.this.getRand().nextInt(20);
         }
     }
 
@@ -1045,7 +1046,7 @@ extends AnimalEntity {
                 --this.timer;
                 return false;
             }
-            return FoxEntity.this.world.isDay() && this.isAtFavoredLocation() && !this.canCalmDown();
+            return FoxEntity.this.world.isDaylight() && this.isAtFavoredLocation() && !this.canCalmDown();
         }
 
         @Override
@@ -1086,8 +1087,7 @@ extends AnimalEntity {
 
     public class WorriableEntityFilter
     implements Predicate<LivingEntity> {
-        @Override
-        public boolean test(LivingEntity livingEntity) {
+        public boolean method_18303(LivingEntity livingEntity) {
             if (livingEntity instanceof FoxEntity) {
                 return false;
             }
@@ -1103,12 +1103,12 @@ extends AnimalEntity {
             if (FoxEntity.this.canTrust(livingEntity.getUuid())) {
                 return false;
             }
-            return !livingEntity.isSleeping() && !livingEntity.isSneaking();
+            return !livingEntity.isSleeping() && !livingEntity.method_21751();
         }
 
         @Override
         public /* synthetic */ boolean test(Object object) {
-            return this.test((LivingEntity)object);
+            return this.method_18303((LivingEntity)object);
         }
     }
 
@@ -1135,7 +1135,7 @@ extends AnimalEntity {
             }
             this.timer = 100;
             BlockPos blockPos = new BlockPos(this.mob);
-            return FoxEntity.this.world.isDay() && FoxEntity.this.world.isSkyVisible(blockPos) && !((ServerWorld)FoxEntity.this.world).isNearOccupiedPointOfInterest(blockPos) && this.method_18250();
+            return FoxEntity.this.world.isDaylight() && FoxEntity.this.world.isSkyVisible(blockPos) && !((ServerWorld)FoxEntity.this.world).isNearOccupiedPointOfInterest(blockPos) && this.method_18250();
         }
 
         @Override
@@ -1158,7 +1158,7 @@ extends AnimalEntity {
 
         @Override
         public boolean canStart() {
-            if (this.reciprocalChance > 0 && this.mob.getRandom().nextInt(this.reciprocalChance) != 0) {
+            if (this.reciprocalChance > 0 && this.mob.getRand().nextInt(this.reciprocalChance) != 0) {
                 return false;
             }
             for (UUID uUID : FoxEntity.this.getTrustedUuids()) {
@@ -1182,7 +1182,7 @@ extends AnimalEntity {
             }
             FoxEntity.this.playSound(SoundEvents.ENTITY_FOX_AGGRO, 1.0f, 1.0f);
             FoxEntity.this.setAggressive(true);
-            FoxEntity.this.stopSleeping();
+            FoxEntity.this.wakeUp();
             super.start();
         }
     }
@@ -1219,7 +1219,7 @@ extends AnimalEntity {
             }
             if (serverPlayerEntity3 != null) {
                 serverPlayerEntity3.incrementStat(Stats.ANIMALS_BRED);
-                Criterions.BRED_ANIMALS.trigger(serverPlayerEntity3, this.animal, this.mate, foxEntity);
+                Criterions.BRED_ANIMALS.handle(serverPlayerEntity3, this.animal, this.mate, foxEntity);
             }
             int i = 6000;
             this.animal.setBreedingAge(6000);
@@ -1227,11 +1227,11 @@ extends AnimalEntity {
             this.animal.resetLoveTicks();
             this.mate.resetLoveTicks();
             foxEntity.setBreedingAge(-24000);
-            foxEntity.refreshPositionAndAngles(this.animal.x, this.animal.y, this.animal.z, 0.0f, 0.0f);
+            foxEntity.setPositionAndAngles(this.animal.x, this.animal.y, this.animal.z, 0.0f, 0.0f);
             this.world.spawnEntity(foxEntity);
             this.world.sendEntityStatus(this.animal, (byte)18);
             if (this.world.getGameRules().getBoolean(GameRules.DO_MOB_LOOT)) {
-                this.world.spawnEntity(new ExperienceOrbEntity(this.world, this.animal.x, this.animal.y, this.animal.z, this.animal.getRandom().nextInt(7) + 1));
+                this.world.spawnEntity(new ExperienceOrbEntity(this.world, this.animal.x, this.animal.y, this.animal.z, this.animal.getRand().nextInt(7) + 1));
             }
         }
     }
@@ -1260,7 +1260,7 @@ extends AnimalEntity {
 
         @Override
         public boolean canStart() {
-            return !FoxEntity.this.isSitting() && !FoxEntity.this.isSleeping() && !FoxEntity.this.isCrouching() && !FoxEntity.this.isWalking() && super.canStart();
+            return !FoxEntity.this.isSitting() && !FoxEntity.this.isSleeping() && !FoxEntity.this.isInSneakingPose() && !FoxEntity.this.isWalking() && super.canStart();
         }
     }
 
@@ -1276,7 +1276,7 @@ extends AnimalEntity {
                 return false;
             }
             LivingEntity livingEntity = FoxEntity.this.getTarget();
-            return livingEntity != null && livingEntity.isAlive() && CHICKEN_AND_RABBIT_FILTER.test(livingEntity) && FoxEntity.this.squaredDistanceTo(livingEntity) > 36.0 && !FoxEntity.this.isCrouching() && !FoxEntity.this.isRollingHead() && !FoxEntity.this.jumping;
+            return livingEntity != null && livingEntity.isAlive() && CHICKEN_AND_RABBIT_FILTER.test(livingEntity) && FoxEntity.this.squaredDistanceTo(livingEntity) > 36.0 && !FoxEntity.this.isInSneakingPose() && !FoxEntity.this.isRollingHead() && !FoxEntity.this.jumping;
         }
 
         @Override
@@ -1344,7 +1344,7 @@ extends AnimalEntity {
             if (!FoxEntity.this.wantsToPickupItem()) {
                 return false;
             }
-            if (FoxEntity.this.getRandom().nextInt(10) != 0) {
+            if (FoxEntity.this.getRand().nextInt(10) != 0) {
                 return false;
             }
             List<ItemEntity> list = FoxEntity.this.world.getEntities(ItemEntity.class, FoxEntity.this.getBoundingBox().expand(8.0, 8.0, 8.0), PICKABLE_DROP_FILTER);

@@ -13,7 +13,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.math.Vec3i;
-import net.minecraft.world.CollisionView;
+import net.minecraft.world.ViewableWorld;
 import org.jetbrains.annotations.Nullable;
 
 public class BlockPattern {
@@ -60,8 +60,8 @@ public class BlockPattern {
     }
 
     @Nullable
-    public Result searchAround(CollisionView collisionView, BlockPos blockPos) {
-        LoadingCache<BlockPos, CachedBlockPosition> loadingCache = BlockPattern.makeCache(collisionView, false);
+    public Result searchAround(ViewableWorld viewableWorld, BlockPos blockPos) {
+        LoadingCache<BlockPos, CachedBlockPosition> loadingCache = BlockPattern.makeCache(viewableWorld, false);
         int i = Math.max(Math.max(this.width, this.height), this.depth);
         for (BlockPos blockPos2 : BlockPos.iterate(blockPos, blockPos.add(i - 1, i - 1, i - 1))) {
             for (Direction direction : Direction.values()) {
@@ -75,8 +75,8 @@ public class BlockPattern {
         return null;
     }
 
-    public static LoadingCache<BlockPos, CachedBlockPosition> makeCache(CollisionView collisionView, boolean bl) {
-        return CacheBuilder.newBuilder().build(new BlockStateCacheLoader(collisionView, bl));
+    public static LoadingCache<BlockPos, CachedBlockPosition> makeCache(ViewableWorld viewableWorld, boolean bl) {
+        return CacheBuilder.newBuilder().build(new BlockStateCacheLoader(viewableWorld, bl));
     }
 
     protected static BlockPos translate(BlockPos blockPos, Direction direction, Direction direction2, int i, int j, int k) {
@@ -189,22 +189,21 @@ public class BlockPattern {
 
     static class BlockStateCacheLoader
     extends CacheLoader<BlockPos, CachedBlockPosition> {
-        private final CollisionView world;
+        private final ViewableWorld world;
         private final boolean forceLoad;
 
-        public BlockStateCacheLoader(CollisionView collisionView, boolean bl) {
-            this.world = collisionView;
+        public BlockStateCacheLoader(ViewableWorld viewableWorld, boolean bl) {
+            this.world = viewableWorld;
             this.forceLoad = bl;
         }
 
-        @Override
-        public CachedBlockPosition load(BlockPos blockPos) throws Exception {
+        public CachedBlockPosition method_11714(BlockPos blockPos) throws Exception {
             return new CachedBlockPosition(this.world, blockPos, this.forceLoad);
         }
 
         @Override
         public /* synthetic */ Object load(Object object) throws Exception {
-            return this.load((BlockPos)object);
+            return this.method_11714((BlockPos)object);
         }
     }
 }

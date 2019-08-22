@@ -72,9 +72,8 @@ extends ChunkManager {
         }
     }
 
-    @Override
     @Nullable
-    public WorldChunk getChunk(int i, int j, ChunkStatus chunkStatus, boolean bl) {
+    public WorldChunk method_2857(int i, int j, ChunkStatus chunkStatus, boolean bl) {
         WorldChunk worldChunk;
         if (this.chunks.hasChunk(i, j) && ClientChunkManager.method_20181(worldChunk = this.chunks.getChunk(this.chunks.index(i, j)), i, j)) {
             return worldChunk;
@@ -111,7 +110,7 @@ extends ChunkManager {
         }
         ChunkSection[] chunkSections = worldChunk.getSectionArray();
         LightingProvider lightingProvider = this.getLightingProvider();
-        lightingProvider.setLightEnabled(new ChunkPos(i, j), true);
+        lightingProvider.suppressLight(new ChunkPos(i, j), true);
         for (int m = 0; m < chunkSections.length; ++m) {
             ChunkSection chunkSection = chunkSections[m];
             lightingProvider.updateSectionStatus(ChunkSectionPos.from(i, m, j), ChunkSection.isEmpty(chunkSection));
@@ -151,7 +150,7 @@ extends ChunkManager {
     }
 
     @Override
-    public String getDebugString() {
+    public String getStatus() {
         return "Client Chunk Cache: " + this.chunks.chunks.length() + ", " + this.method_20182();
     }
 
@@ -166,7 +165,7 @@ extends ChunkManager {
 
     @Override
     public void onLightUpdate(LightType lightType, ChunkSectionPos chunkSectionPos) {
-        MinecraftClient.getInstance().worldRenderer.scheduleBlockRender(chunkSectionPos.getSectionX(), chunkSectionPos.getSectionY(), chunkSectionPos.getSectionZ());
+        MinecraftClient.getInstance().worldRenderer.scheduleBlockRender(chunkSectionPos.getChunkX(), chunkSectionPos.getChunkY(), chunkSectionPos.getChunkZ());
     }
 
     @Override
@@ -187,7 +186,7 @@ extends ChunkManager {
     @Override
     @Nullable
     public /* synthetic */ Chunk getChunk(int i, int j, ChunkStatus chunkStatus, boolean bl) {
-        return this.getChunk(i, j, chunkStatus, bl);
+        return this.method_2857(i, j, chunkStatus, bl);
     }
 
     @Environment(value=EnvType.CLIENT)

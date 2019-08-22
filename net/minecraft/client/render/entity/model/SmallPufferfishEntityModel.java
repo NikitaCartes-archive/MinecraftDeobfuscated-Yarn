@@ -26,22 +26,22 @@ extends EntityModel<T> {
         int i = 23;
         this.field_3505 = new ModelPart(this, 0, 27);
         this.field_3505.addCuboid(-1.5f, -2.0f, -1.5f, 3, 2, 3);
-        this.field_3505.setPivot(0.0f, 23.0f, 0.0f);
+        this.field_3505.setRotationPoint(0.0f, 23.0f, 0.0f);
         this.field_3507 = new ModelPart(this, 24, 6);
         this.field_3507.addCuboid(-1.5f, 0.0f, -1.5f, 1, 1, 1);
-        this.field_3507.setPivot(0.0f, 20.0f, 0.0f);
+        this.field_3507.setRotationPoint(0.0f, 20.0f, 0.0f);
         this.field_3506 = new ModelPart(this, 28, 6);
         this.field_3506.addCuboid(0.5f, 0.0f, -1.5f, 1, 1, 1);
-        this.field_3506.setPivot(0.0f, 20.0f, 0.0f);
+        this.field_3506.setRotationPoint(0.0f, 20.0f, 0.0f);
         this.field_3508 = new ModelPart(this, -3, 0);
         this.field_3508.addCuboid(-1.5f, 0.0f, 0.0f, 3, 0, 3);
-        this.field_3508.setPivot(0.0f, 22.0f, 1.5f);
+        this.field_3508.setRotationPoint(0.0f, 22.0f, 1.5f);
         this.field_3504 = new ModelPart(this, 25, 0);
         this.field_3504.addCuboid(-1.0f, 0.0f, 0.0f, 1, 0, 2);
-        this.field_3504.setPivot(-1.5f, 22.0f, -1.5f);
+        this.field_3504.setRotationPoint(-1.5f, 22.0f, -1.5f);
         this.field_3503 = new ModelPart(this, 25, 0);
         this.field_3503.addCuboid(0.0f, 0.0f, 0.0f, 1, 0, 2);
-        this.field_3503.setPivot(1.5f, 22.0f, -1.5f);
+        this.field_3503.setRotationPoint(1.5f, 22.0f, -1.5f);
     }
 
     @Override

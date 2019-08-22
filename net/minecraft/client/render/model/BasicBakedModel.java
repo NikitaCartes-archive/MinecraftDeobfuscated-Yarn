@@ -27,7 +27,7 @@ implements BakedModel {
     protected final List<BakedQuad> quads;
     protected final Map<Direction, List<BakedQuad>> faceQuads;
     protected final boolean usesAo;
-    protected final boolean hasDepth;
+    protected final boolean depthInGui;
     protected final Sprite sprite;
     protected final ModelTransformation transformation;
     protected final ModelItemPropertyOverrideList itemPropertyOverrides;
@@ -36,7 +36,7 @@ implements BakedModel {
         this.quads = list;
         this.faceQuads = map;
         this.usesAo = bl;
-        this.hasDepth = bl2;
+        this.depthInGui = bl2;
         this.sprite = sprite;
         this.transformation = modelTransformation;
         this.itemPropertyOverrides = modelItemPropertyOverrideList;
@@ -53,8 +53,8 @@ implements BakedModel {
     }
 
     @Override
-    public boolean hasDepth() {
-        return this.hasDepth;
+    public boolean hasDepthInGui() {
+        return this.depthInGui;
     }
 
     @Override
@@ -92,7 +92,7 @@ implements BakedModel {
         }
 
         public Builder(BlockState blockState, BakedModel bakedModel, Sprite sprite, Random random, long l) {
-            this(bakedModel.useAmbientOcclusion(), bakedModel.hasDepth(), bakedModel.getTransformation(), bakedModel.getItemPropertyOverrides());
+            this(bakedModel.useAmbientOcclusion(), bakedModel.hasDepthInGui(), bakedModel.getTransformation(), bakedModel.getItemPropertyOverrides());
             this.particleTexture = bakedModel.getSprite();
             for (Direction direction : Direction.values()) {
                 random.setSeed(l);

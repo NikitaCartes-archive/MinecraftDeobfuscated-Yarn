@@ -71,8 +71,8 @@ implements Monster {
 
     public ShulkerEntity(EntityType<? extends ShulkerEntity> entityType, World world) {
         super((EntityType<? extends GolemEntity>)entityType, world);
-        this.field_6220 = 180.0f;
-        this.field_6283 = 180.0f;
+        this.prevBodyYaw = 180.0f;
+        this.bodyYaw = 180.0f;
         this.field_7345 = null;
         this.experiencePoints = 5;
     }
@@ -80,8 +80,8 @@ implements Monster {
     @Override
     @Nullable
     public EntityData initialize(IWorld iWorld, LocalDifficulty localDifficulty, SpawnType spawnType, @Nullable EntityData entityData, @Nullable CompoundTag compoundTag) {
-        this.field_6283 = 180.0f;
-        this.field_6220 = 180.0f;
+        this.bodyYaw = 180.0f;
+        this.prevBodyYaw = 180.0f;
         this.yaw = 180.0f;
         this.prevYaw = 180.0f;
         this.headYaw = 180.0f;
@@ -161,7 +161,7 @@ implements Monster {
         this.dataTracker.set(ATTACHED_FACE, Direction.byId(compoundTag.getByte("AttachFace")));
         this.dataTracker.set(PEEK_AMOUNT, compoundTag.getByte("Peek"));
         this.dataTracker.set(COLOR, compoundTag.getByte("Color"));
-        if (compoundTag.contains("APX")) {
+        if (compoundTag.containsKey("APX")) {
             int i = compoundTag.getInt("APX");
             int j = compoundTag.getInt("APY");
             int k = compoundTag.getInt("APZ");
@@ -197,8 +197,8 @@ implements Monster {
         if (this.hasVehicle()) {
             blockPos = null;
             this.yaw = f = this.getVehicle().yaw;
-            this.field_6283 = f;
-            this.field_6220 = f;
+            this.bodyYaw = f;
+            this.prevBodyYaw = f;
             this.field_7340 = 0;
         } else if (!this.world.isClient) {
             BlockPos blockPos3;
@@ -226,11 +226,11 @@ implements Monster {
                     this.method_7127();
                 }
             }
-            if (!this.world.isTopSolid(blockPos2 = blockPos.offset(this.getAttachedFace()), this)) {
+            if (!this.world.doesBlockHaveSolidTopSurface(blockPos2 = blockPos.offset(this.getAttachedFace()), this)) {
                 boolean bl = false;
                 for (Direction direction2 : Direction.values()) {
                     blockPos2 = blockPos.offset(direction2);
-                    if (!this.world.isTopSolid(blockPos2, this)) continue;
+                    if (!this.world.doesBlockHaveSolidTopSurface(blockPos2, this)) continue;
                     this.dataTracker.set(ATTACHED_FACE, direction2);
                     bl = true;
                     break;
@@ -239,7 +239,7 @@ implements Monster {
                     this.method_7127();
                 }
             }
-            if (this.world.isTopSolid(blockPos3 = blockPos.offset(this.getAttachedFace().getOpposite()), this)) {
+            if (this.world.doesBlockHaveSolidTopSurface(blockPos3 = blockPos.offset(this.getAttachedFace().getOpposite()), this)) {
                 this.method_7127();
             }
         }
@@ -265,9 +265,9 @@ implements Monster {
             this.prevX = this.x;
             this.prevY = this.y;
             this.prevZ = this.z;
-            this.lastRenderX = this.x;
-            this.lastRenderY = this.y;
-            this.lastRenderZ = this.z;
+            this.prevRenderX = this.x;
+            this.prevRenderY = this.y;
+            this.prevRenderZ = this.z;
             double d = 0.5 - (double)MathHelper.sin((0.5f + this.field_7337) * (float)Math.PI) * 0.5;
             double e = 0.5 - (double)MathHelper.sin((0.5f + this.field_7339) * (float)Math.PI) * 0.5;
             Direction direction3 = this.getAttachedFace().getOpposite();
@@ -292,8 +292,8 @@ implements Monster {
     }
 
     @Override
-    public void updatePosition(double d, double e, double f) {
-        super.updatePosition(d, e, f);
+    public void setPosition(double d, double e, double f) {
+        super.setPosition(d, e, f);
         if (this.dataTracker == null || this.age == 0) {
             return;
         }
@@ -316,7 +316,7 @@ implements Monster {
             if (blockPos2.getY() <= 0 || !this.world.isAir(blockPos2) || !this.world.getWorldBorder().contains(blockPos2) || !this.world.doesNotCollide(this, new Box(blockPos2))) continue;
             boolean bl = false;
             for (Direction direction : Direction.values()) {
-                if (!this.world.isTopSolid(blockPos2.offset(direction), this)) continue;
+                if (!this.world.doesBlockHaveSolidTopSurface(blockPos2.offset(direction), this)) continue;
                 this.dataTracker.set(ATTACHED_FACE, direction);
                 bl = true;
                 break;
@@ -335,8 +335,8 @@ implements Monster {
     public void tickMovement() {
         super.tickMovement();
         this.setVelocity(Vec3d.ZERO);
-        this.field_6220 = 180.0f;
-        this.field_6283 = 180.0f;
+        this.prevBodyYaw = 180.0f;
+        this.bodyYaw = 180.0f;
         this.yaw = 180.0f;
     }
 
@@ -355,9 +355,9 @@ implements Monster {
             this.prevX = this.x;
             this.prevY = this.y;
             this.prevZ = this.z;
-            this.lastRenderX = this.x;
-            this.lastRenderY = this.y;
-            this.lastRenderZ = this.z;
+            this.prevRenderX = this.x;
+            this.prevRenderY = this.y;
+            this.prevRenderZ = this.z;
         }
         super.onTrackedDataSet(trackedData);
     }
@@ -365,7 +365,7 @@ implements Monster {
     @Override
     @Environment(value=EnvType.CLIENT)
     public void updateTrackedPositionAndAngles(double d, double e, double f, float g, float h, int i, boolean bl) {
-        this.field_6210 = 0;
+        this.bodyTrackingIncrements = 0;
     }
 
     @Override

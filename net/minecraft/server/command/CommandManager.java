@@ -16,9 +16,10 @@ import com.mojang.brigadier.tree.RootCommandNode;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Predicate;
+import net.minecraft.SharedConstants;
+import net.minecraft.client.network.packet.CommandTreeS2CPacket;
 import net.minecraft.command.CommandException;
 import net.minecraft.command.suggestion.SuggestionProviders;
-import net.minecraft.network.packet.s2c.play.CommandTreeS2CPacket;
 import net.minecraft.server.command.AdvancementCommand;
 import net.minecraft.server.command.BossBarCommand;
 import net.minecraft.server.command.ClearCommand;
@@ -69,6 +70,7 @@ import net.minecraft.server.command.TeamCommand;
 import net.minecraft.server.command.TeammsgCommand;
 import net.minecraft.server.command.TeleportCommand;
 import net.minecraft.server.command.TellRawCommand;
+import net.minecraft.server.command.TestCommand;
 import net.minecraft.server.command.TimeCommand;
 import net.minecraft.server.command.TitleCommand;
 import net.minecraft.server.command.TriggerCommand;
@@ -95,6 +97,7 @@ import net.minecraft.text.Text;
 import net.minecraft.text.Texts;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Formatting;
+import net.minecraft.util.SystemUtil;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -156,6 +159,9 @@ public class CommandManager {
         TriggerCommand.register(this.dispatcher);
         WeatherCommand.register(this.dispatcher);
         WorldBorderCommand.register(this.dispatcher);
+        if (SharedConstants.isDevelopment) {
+            TestCommand.register(this.dispatcher);
+        }
         if (bl2) {
             BanIpCommand.register(this.dispatcher);
             BanListCommand.register(this.dispatcher);
@@ -188,7 +194,7 @@ public class CommandManager {
             int n = this.dispatcher.execute(stringReader, serverCommandSource);
             return n;
         } catch (CommandException commandException) {
-            serverCommandSource.sendError(commandException.getTextMessage());
+            serverCommandSource.sendError(commandException.getMessageText());
             int n = 0;
             return n;
         } catch (CommandSyntaxException commandSyntaxException) {
@@ -213,12 +219,17 @@ public class CommandManager {
         } catch (Exception exception) {
             LiteralText text3 = new LiteralText(exception.getMessage() == null ? exception.getClass().getName() : exception.getMessage());
             if (LOGGER.isDebugEnabled()) {
+                LOGGER.error("Command exception: {}", (Object)string, (Object)exception);
                 StackTraceElement[] stackTraceElements = exception.getStackTrace();
                 for (int j = 0; j < Math.min(stackTraceElements.length, 3); ++j) {
                     text3.append("\n\n").append(stackTraceElements[j].getMethodName()).append("\n ").append(stackTraceElements[j].getFileName()).append(":").append(String.valueOf(stackTraceElements[j].getLineNumber()));
                 }
             }
             serverCommandSource.sendError(new TranslatableText("command.failed", new Object[0]).styled(style -> style.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, text3))));
+            if (SharedConstants.isDevelopment) {
+                serverCommandSource.sendError(new LiteralText(SystemUtil.method_22321(exception)));
+                LOGGER.error("'" + string + "' threw an exception", (Throwable)exception);
+            }
             int n = 0;
             return n;
         } finally {

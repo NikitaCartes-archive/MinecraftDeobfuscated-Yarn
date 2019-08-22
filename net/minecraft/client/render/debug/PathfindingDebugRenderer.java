@@ -4,11 +4,12 @@
 package net.minecraft.client.render.debug;
 
 import com.google.common.collect.Maps;
-import com.mojang.blaze3d.platform.GlStateManager;
+import com.mojang.blaze3d.systems.RenderSystem;
 import java.util.Locale;
 import java.util.Map;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.class_4493;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.BufferBuilder;
 import net.minecraft.client.render.Camera;
@@ -17,7 +18,7 @@ import net.minecraft.client.render.VertexFormats;
 import net.minecraft.client.render.debug.DebugRenderer;
 import net.minecraft.entity.ai.pathing.Path;
 import net.minecraft.entity.ai.pathing.PathNode;
-import net.minecraft.util.Util;
+import net.minecraft.util.SystemUtil;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
 import net.minecraft.util.math.MathHelper;
@@ -36,7 +37,7 @@ implements DebugRenderer.Renderer {
 
     public void addPath(int i, Path path, float f) {
         this.paths.put(i, path);
-        this.pathTimes.put(i, Util.getMeasuringTimeMs());
+        this.pathTimes.put(i, SystemUtil.getMeasuringTimeMs());
         this.field_4617.put(i, Float.valueOf(f));
     }
 
@@ -45,7 +46,7 @@ implements DebugRenderer.Renderer {
         if (this.paths.isEmpty()) {
             return;
         }
-        long m = Util.getMeasuringTimeMs();
+        long m = SystemUtil.getMeasuringTimeMs();
         for (Integer integer : this.paths.keySet()) {
             Path path = this.paths.get(integer);
             float f = this.field_4617.get(integer).floatValue();
@@ -59,16 +60,16 @@ implements DebugRenderer.Renderer {
     }
 
     public static void method_20556(Camera camera, Path path, float f, boolean bl, boolean bl2) {
-        GlStateManager.pushMatrix();
-        GlStateManager.enableBlend();
-        GlStateManager.blendFuncSeparate(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO);
-        GlStateManager.color4f(0.0f, 1.0f, 0.0f, 0.75f);
-        GlStateManager.disableTexture();
-        GlStateManager.lineWidth(6.0f);
+        RenderSystem.pushMatrix();
+        RenderSystem.enableBlend();
+        RenderSystem.blendFuncSeparate(class_4493.class_4535.SRC_ALPHA, class_4493.class_4534.ONE_MINUS_SRC_ALPHA, class_4493.class_4535.ONE, class_4493.class_4534.ZERO);
+        RenderSystem.color4f(0.0f, 1.0f, 0.0f, 0.75f);
+        RenderSystem.disableTexture();
+        RenderSystem.lineWidth(6.0f);
         PathfindingDebugRenderer.method_20558(camera, path, f, bl, bl2);
-        GlStateManager.enableTexture();
-        GlStateManager.disableBlend();
-        GlStateManager.popMatrix();
+        RenderSystem.enableTexture();
+        RenderSystem.disableBlend();
+        RenderSystem.popMatrix();
     }
 
     private static void method_20558(Camera camera, Path path, float f, boolean bl, boolean bl2) {
@@ -112,7 +113,7 @@ implements DebugRenderer.Renderer {
 
     public static void method_20555(Camera camera, Path path) {
         Tessellator tessellator = Tessellator.getInstance();
-        BufferBuilder bufferBuilder = tessellator.getBuffer();
+        BufferBuilder bufferBuilder = tessellator.getBufferBuilder();
         double d = camera.getPos().x;
         double e = camera.getPos().y;
         double f = camera.getPos().z;

@@ -3,12 +3,13 @@
  */
 package net.minecraft.client.render.entity.feature;
 
-import com.mojang.blaze3d.platform.GlStateManager;
+import com.mojang.blaze3d.systems.RenderSystem;
 import java.util.Random;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.class_4493;
 import net.minecraft.client.render.BufferBuilder;
-import net.minecraft.client.render.DiffuseLighting;
+import net.minecraft.client.render.GuiLighting;
 import net.minecraft.client.render.Tessellator;
 import net.minecraft.client.render.VertexFormats;
 import net.minecraft.client.render.entity.feature.FeatureRenderer;
@@ -23,37 +24,36 @@ extends FeatureRenderer<EnderDragonEntity, DragonEntityModel> {
         super(featureRendererContext);
     }
 
-    @Override
-    public void render(EnderDragonEntity enderDragonEntity, float f, float g, float h, float i, float j, float k, float l) {
+    public void method_4184(EnderDragonEntity enderDragonEntity, float f, float g, float h, float i, float j, float k, float l) {
         if (enderDragonEntity.field_7031 <= 0) {
             return;
         }
         Tessellator tessellator = Tessellator.getInstance();
-        BufferBuilder bufferBuilder = tessellator.getBuffer();
-        DiffuseLighting.disable();
+        BufferBuilder bufferBuilder = tessellator.getBufferBuilder();
+        GuiLighting.disable();
         float m = ((float)enderDragonEntity.field_7031 + h) / 200.0f;
         float n = 0.0f;
         if (m > 0.8f) {
             n = (m - 0.8f) / 0.2f;
         }
         Random random = new Random(432L);
-        GlStateManager.disableTexture();
-        GlStateManager.shadeModel(7425);
-        GlStateManager.enableBlend();
-        GlStateManager.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE);
-        GlStateManager.disableAlphaTest();
-        GlStateManager.enableCull();
-        GlStateManager.depthMask(false);
-        GlStateManager.pushMatrix();
-        GlStateManager.translatef(0.0f, -1.0f, -2.0f);
+        RenderSystem.disableTexture();
+        RenderSystem.shadeModel(7425);
+        RenderSystem.enableBlend();
+        RenderSystem.blendFunc(class_4493.class_4535.SRC_ALPHA, class_4493.class_4534.ONE);
+        RenderSystem.disableAlphaTest();
+        RenderSystem.enableCull();
+        RenderSystem.depthMask(false);
+        RenderSystem.pushMatrix();
+        RenderSystem.translatef(0.0f, -1.0f, -2.0f);
         int o = 0;
         while ((float)o < (m + m * m) / 2.0f * 60.0f) {
-            GlStateManager.rotatef(random.nextFloat() * 360.0f, 1.0f, 0.0f, 0.0f);
-            GlStateManager.rotatef(random.nextFloat() * 360.0f, 0.0f, 1.0f, 0.0f);
-            GlStateManager.rotatef(random.nextFloat() * 360.0f, 0.0f, 0.0f, 1.0f);
-            GlStateManager.rotatef(random.nextFloat() * 360.0f, 1.0f, 0.0f, 0.0f);
-            GlStateManager.rotatef(random.nextFloat() * 360.0f, 0.0f, 1.0f, 0.0f);
-            GlStateManager.rotatef(random.nextFloat() * 360.0f + m * 90.0f, 0.0f, 0.0f, 1.0f);
+            RenderSystem.rotatef(random.nextFloat() * 360.0f, 1.0f, 0.0f, 0.0f);
+            RenderSystem.rotatef(random.nextFloat() * 360.0f, 0.0f, 1.0f, 0.0f);
+            RenderSystem.rotatef(random.nextFloat() * 360.0f, 0.0f, 0.0f, 1.0f);
+            RenderSystem.rotatef(random.nextFloat() * 360.0f, 1.0f, 0.0f, 0.0f);
+            RenderSystem.rotatef(random.nextFloat() * 360.0f, 0.0f, 1.0f, 0.0f);
+            RenderSystem.rotatef(random.nextFloat() * 360.0f + m * 90.0f, 0.0f, 0.0f, 1.0f);
             float p = random.nextFloat() * 20.0f + 5.0f + n * 10.0f;
             float q = random.nextFloat() * 2.0f + 1.0f + n * 2.0f;
             bufferBuilder.begin(6, VertexFormats.POSITION_COLOR);
@@ -65,15 +65,15 @@ extends FeatureRenderer<EnderDragonEntity, DragonEntityModel> {
             tessellator.draw();
             ++o;
         }
-        GlStateManager.popMatrix();
-        GlStateManager.depthMask(true);
-        GlStateManager.disableCull();
-        GlStateManager.disableBlend();
-        GlStateManager.shadeModel(7424);
-        GlStateManager.color4f(1.0f, 1.0f, 1.0f, 1.0f);
-        GlStateManager.enableTexture();
-        GlStateManager.enableAlphaTest();
-        DiffuseLighting.enable();
+        RenderSystem.popMatrix();
+        RenderSystem.depthMask(true);
+        RenderSystem.disableCull();
+        RenderSystem.disableBlend();
+        RenderSystem.shadeModel(7424);
+        RenderSystem.color4f(1.0f, 1.0f, 1.0f, 1.0f);
+        RenderSystem.enableTexture();
+        RenderSystem.enableAlphaTest();
+        GuiLighting.enable();
     }
 
     @Override

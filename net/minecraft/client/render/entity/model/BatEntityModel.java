@@ -39,14 +39,14 @@ extends EntityModel<BatEntity> {
         this.field_3322 = new ModelPart(this, 42, 0);
         this.field_3322.addCuboid(-12.0f, 1.0f, 1.5f, 10, 16, 1);
         this.field_3319 = new ModelPart(this, 24, 16);
-        this.field_3319.setPivot(-12.0f, 1.0f, 1.5f);
+        this.field_3319.setRotationPoint(-12.0f, 1.0f, 1.5f);
         this.field_3319.addCuboid(-8.0f, 1.0f, 0.0f, 8, 12, 1);
         this.field_3320 = new ModelPart(this, 42, 0);
         this.field_3320.mirror = true;
         this.field_3320.addCuboid(2.0f, 1.0f, 1.5f, 10, 16, 1);
         this.field_3324 = new ModelPart(this, 24, 16);
         this.field_3324.mirror = true;
-        this.field_3324.setPivot(12.0f, 1.0f, 1.5f);
+        this.field_3324.setRotationPoint(12.0f, 1.0f, 1.5f);
         this.field_3324.addCuboid(0.0f, 1.0f, 0.0f, 8, 12, 1);
         this.field_3323.addChild(this.field_3322);
         this.field_3323.addChild(this.field_3320);
@@ -54,22 +54,20 @@ extends EntityModel<BatEntity> {
         this.field_3320.addChild(this.field_3324);
     }
 
-    @Override
-    public void render(BatEntity batEntity, float f, float g, float h, float i, float j, float k) {
-        this.setAngles(batEntity, f, g, h, i, j, k);
+    public void method_17068(BatEntity batEntity, float f, float g, float h, float i, float j, float k) {
+        this.method_17069(batEntity, f, g, h, i, j, k);
         this.field_3321.render(k);
         this.field_3323.render(k);
     }
 
-    @Override
-    public void setAngles(BatEntity batEntity, float f, float g, float h, float i, float j, float k) {
+    public void method_17069(BatEntity batEntity, float f, float g, float h, float i, float j, float k) {
         if (batEntity.isRoosting()) {
             this.field_3321.pitch = j * ((float)Math.PI / 180);
             this.field_3321.yaw = (float)Math.PI - i * ((float)Math.PI / 180);
             this.field_3321.roll = (float)Math.PI;
-            this.field_3321.setPivot(0.0f, -2.0f, 0.0f);
-            this.field_3322.setPivot(-3.0f, 0.0f, 3.0f);
-            this.field_3320.setPivot(3.0f, 0.0f, 3.0f);
+            this.field_3321.setRotationPoint(0.0f, -2.0f, 0.0f);
+            this.field_3322.setRotationPoint(-3.0f, 0.0f, 3.0f);
+            this.field_3320.setRotationPoint(3.0f, 0.0f, 3.0f);
             this.field_3323.pitch = (float)Math.PI;
             this.field_3322.pitch = -0.15707964f;
             this.field_3322.yaw = -1.2566371f;
@@ -81,9 +79,9 @@ extends EntityModel<BatEntity> {
             this.field_3321.pitch = j * ((float)Math.PI / 180);
             this.field_3321.yaw = i * ((float)Math.PI / 180);
             this.field_3321.roll = 0.0f;
-            this.field_3321.setPivot(0.0f, 0.0f, 0.0f);
-            this.field_3322.setPivot(0.0f, 0.0f, 0.0f);
-            this.field_3320.setPivot(0.0f, 0.0f, 0.0f);
+            this.field_3321.setRotationPoint(0.0f, 0.0f, 0.0f);
+            this.field_3322.setRotationPoint(0.0f, 0.0f, 0.0f);
+            this.field_3320.setRotationPoint(0.0f, 0.0f, 0.0f);
             this.field_3323.pitch = 0.7853982f + MathHelper.cos(h * 0.1f) * 0.15f;
             this.field_3323.yaw = 0.0f;
             this.field_3322.yaw = MathHelper.cos(h * 1.3f) * (float)Math.PI * 0.25f;
@@ -95,12 +93,12 @@ extends EntityModel<BatEntity> {
 
     @Override
     public /* synthetic */ void setAngles(Entity entity, float f, float g, float h, float i, float j, float k) {
-        this.setAngles((BatEntity)entity, f, g, h, i, j, k);
+        this.method_17069((BatEntity)entity, f, g, h, i, j, k);
     }
 
     @Override
     public /* synthetic */ void render(Entity entity, float f, float g, float h, float i, float j, float k) {
-        this.render((BatEntity)entity, f, g, h, i, j, k);
+        this.method_17068((BatEntity)entity, f, g, h, i, j, k);
     }
 }
 

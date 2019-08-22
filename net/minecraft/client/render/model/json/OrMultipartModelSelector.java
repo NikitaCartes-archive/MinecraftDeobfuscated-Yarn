@@ -12,7 +12,7 @@ import net.fabricmc.api.Environment;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.client.render.model.json.MultipartModelSelector;
-import net.minecraft.state.StateManager;
+import net.minecraft.state.StateFactory;
 
 @Environment(value=EnvType.CLIENT)
 public class OrMultipartModelSelector
@@ -24,8 +24,8 @@ implements MultipartModelSelector {
     }
 
     @Override
-    public Predicate<BlockState> getPredicate(StateManager<Block, BlockState> stateManager) {
-        List list = Streams.stream(this.selectors).map(multipartModelSelector -> multipartModelSelector.getPredicate(stateManager)).collect(Collectors.toList());
+    public Predicate<BlockState> getPredicate(StateFactory<Block, BlockState> stateFactory) {
+        List list = Streams.stream(this.selectors).map(multipartModelSelector -> multipartModelSelector.getPredicate(stateFactory)).collect(Collectors.toList());
         return blockState -> list.stream().anyMatch(predicate -> predicate.test(blockState));
     }
 }

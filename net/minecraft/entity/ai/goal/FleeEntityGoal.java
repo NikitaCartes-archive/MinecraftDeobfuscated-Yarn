@@ -7,7 +7,7 @@ import java.util.EnumSet;
 import java.util.function.Predicate;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.ai.TargetFinder;
+import net.minecraft.entity.ai.PathfindingUtil;
 import net.minecraft.entity.ai.TargetPredicate;
 import net.minecraft.entity.ai.goal.Goal;
 import net.minecraft.entity.ai.pathing.EntityNavigation;
@@ -57,7 +57,7 @@ extends Goal {
         if (this.targetEntity == null) {
             return false;
         }
-        Vec3d vec3d = TargetFinder.method_6379(this.mob, 16, 7, new Vec3d(((LivingEntity)this.targetEntity).x, ((LivingEntity)this.targetEntity).y, ((LivingEntity)this.targetEntity).z));
+        Vec3d vec3d = PathfindingUtil.method_6379(this.mob, 16, 7, new Vec3d(((LivingEntity)this.targetEntity).x, ((LivingEntity)this.targetEntity).y, ((LivingEntity)this.targetEntity).z));
         if (vec3d == null) {
             return false;
         }

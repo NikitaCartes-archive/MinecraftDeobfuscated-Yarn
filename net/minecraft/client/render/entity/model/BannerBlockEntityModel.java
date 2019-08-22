@@ -27,7 +27,7 @@ extends Model {
     }
 
     public void method_2793() {
-        this.field_3309.pivotY = -32.0f;
+        this.field_3309.rotationPointY = -32.0f;
         this.field_3309.render(0.0625f);
         this.field_3311.render(0.0625f);
         this.field_3310.render(0.0625f);

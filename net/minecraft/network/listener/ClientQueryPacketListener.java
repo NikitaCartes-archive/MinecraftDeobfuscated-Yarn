@@ -3,9 +3,9 @@
  */
 package net.minecraft.network.listener;
 
+import net.minecraft.client.network.packet.QueryPongS2CPacket;
+import net.minecraft.client.network.packet.QueryResponseS2CPacket;
 import net.minecraft.network.listener.PacketListener;
-import net.minecraft.network.packet.s2c.query.QueryPongS2CPacket;
-import net.minecraft.network.packet.s2c.query.QueryResponseS2CPacket;
 
 public interface ClientQueryPacketListener
 extends PacketListener {

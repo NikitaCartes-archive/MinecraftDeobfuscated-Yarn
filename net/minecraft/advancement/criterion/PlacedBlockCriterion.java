@@ -26,11 +26,11 @@ import net.minecraft.predicate.entity.LocationPredicate;
 import net.minecraft.predicate.item.ItemPredicate;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
-import net.minecraft.state.StateManager;
+import net.minecraft.state.StateFactory;
 import net.minecraft.state.property.Property;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.JsonHelper;
-import net.minecraft.util.Util;
+import net.minecraft.util.SystemUtil;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.registry.Registry;
 import org.jetbrains.annotations.Nullable;
@@ -71,8 +71,7 @@ implements Criterion<Conditions> {
         this.handlers.remove(playerAdvancementTracker);
     }
 
-    @Override
-    public Conditions conditionsFromJson(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext) {
+    public Conditions method_9088(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext) {
         Block block = null;
         if (jsonObject.has("block")) {
             Identifier identifier = new Identifier(JsonHelper.getString(jsonObject, "block"));
@@ -83,14 +82,14 @@ implements Criterion<Conditions> {
             if (block == null) {
                 throw new JsonSyntaxException("Can't define block state without a specific block type");
             }
-            StateManager<Block, BlockState> stateManager = block.getStateManager();
+            StateFactory<Block, BlockState> stateFactory = block.getStateFactory();
             for (Map.Entry<String, JsonElement> entry : JsonHelper.getObject(jsonObject, "state").entrySet()) {
-                Property<?> property = stateManager.getProperty(entry.getKey());
+                Property<?> property = stateFactory.getProperty(entry.getKey());
                 if (property == null) {
                     throw new JsonSyntaxException("Unknown block state property '" + entry.getKey() + "' for block '" + Registry.BLOCK.getId(block) + "'");
                 }
                 String string = JsonHelper.asString(entry.getValue(), entry.getKey());
-                Optional<?> optional = property.parse(string);
+                Optional<?> optional = property.getValue(string);
                 if (optional.isPresent()) {
                     if (map == null) {
                         map = Maps.newHashMap();
@@ -101,14 +100,14 @@ implements Criterion<Conditions> {
                 throw new JsonSyntaxException("Invalid block state value '" + string + "' for property '" + entry.getKey() + "' on block '" + Registry.BLOCK.getId(block) + "'");
             }
         }
-        LocationPredicate locationPredicate = LocationPredicate.fromJson(jsonObject.get("location"));
-        ItemPredicate itemPredicate = ItemPredicate.fromJson(jsonObject.get("item"));
+        LocationPredicate locationPredicate = LocationPredicate.deserialize(jsonObject.get("location"));
+        ItemPredicate itemPredicate = ItemPredicate.deserialize(jsonObject.get("item"));
         return new Conditions(block, map, locationPredicate, itemPredicate);
     }
 
-    public void trigger(ServerPlayerEntity serverPlayerEntity, BlockPos blockPos, ItemStack itemStack) {
+    public void handle(ServerPlayerEntity serverPlayerEntity, BlockPos blockPos, ItemStack itemStack) {
         BlockState blockState = serverPlayerEntity.world.getBlockState(blockPos);
-        Handler handler = this.handlers.get(serverPlayerEntity.getAdvancementTracker());
+        Handler handler = this.handlers.get(serverPlayerEntity.getAdvancementManager());
         if (handler != null) {
             handler.handle(blockState, blockPos, serverPlayerEntity.getServerWorld(), itemStack);
         }
@@ -116,7 +115,7 @@ implements Criterion<Conditions> {
 
     @Override
     public /* synthetic */ CriterionConditions conditionsFromJson(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext) {
-        return this.conditionsFromJson(jsonObject, jsonDeserializationContext);
+        return this.method_9088(jsonObject, jsonDeserializationContext);
     }
 
     static class Handler {
@@ -200,12 +199,12 @@ implements Criterion<Conditions> {
             if (this.state != null) {
                 JsonObject jsonObject2 = new JsonObject();
                 for (Map.Entry<Property<?>, Object> entry : this.state.entrySet()) {
-                    jsonObject2.addProperty(entry.getKey().getName(), Util.getValueAsString(entry.getKey(), entry.getValue()));
+                    jsonObject2.addProperty(entry.getKey().getName(), SystemUtil.getValueAsString(entry.getKey(), entry.getValue()));
                 }
                 jsonObject.add("state", jsonObject2);
             }
-            jsonObject.add("location", this.location.toJson());
-            jsonObject.add("item", this.item.toJson());
+            jsonObject.add("location", this.location.serialize());
+            jsonObject.add("item", this.item.serialize());
             return jsonObject;
         }
     }

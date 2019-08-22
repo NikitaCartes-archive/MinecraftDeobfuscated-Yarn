@@ -15,6 +15,7 @@ import net.minecraft.block.Blocks;
 import net.minecraft.block.ConcretePowderBlock;
 import net.minecraft.block.FallingBlock;
 import net.minecraft.block.entity.BlockEntity;
+import net.minecraft.client.network.packet.EntitySpawnS2CPacket;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.MovementType;
@@ -26,13 +27,12 @@ import net.minecraft.fluid.Fluids;
 import net.minecraft.item.AutomaticItemPlacementContext;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.NbtHelper;
 import net.minecraft.nbt.Tag;
 import net.minecraft.network.Packet;
-import net.minecraft.network.packet.s2c.play.EntitySpawnS2CPacket;
 import net.minecraft.state.property.Properties;
 import net.minecraft.tag.BlockTags;
 import net.minecraft.tag.FluidTags;
+import net.minecraft.util.TagHelper;
 import net.minecraft.util.crash.CrashReportSection;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.hit.HitResult;
@@ -64,7 +64,7 @@ extends Entity {
         this((EntityType<? extends FallingBlockEntity>)EntityType.FALLING_BLOCK, world);
         this.block = blockState;
         this.inanimate = true;
-        this.updatePosition(d, e + (double)((1.0f - this.getHeight()) / 2.0f), f);
+        this.setPosition(d, e + (double)((1.0f - this.getHeight()) / 2.0f), f);
         this.setVelocity(Vec3d.ZERO);
         this.prevX = d;
         this.prevY = e;
@@ -115,7 +115,7 @@ extends Entity {
         if (this.timeFalling++ == 0) {
             blockPos = new BlockPos(this);
             if (this.world.getBlockState(blockPos).getBlock() == block) {
-                this.world.removeBlock(blockPos, false);
+                this.world.clearBlockState(blockPos, false);
             } else if (!this.world.isClient) {
                 this.remove();
                 return;
@@ -155,7 +155,7 @@ extends Entity {
                                 if (this.blockEntityData != null && block instanceof BlockEntityProvider && (blockEntity = this.world.getBlockEntity(blockPos)) != null) {
                                     CompoundTag compoundTag = blockEntity.toTag(new CompoundTag());
                                     for (String string : this.blockEntityData.getKeys()) {
-                                        Tag tag = this.blockEntityData.get(string);
+                                        Tag tag = this.blockEntityData.getTag(string);
                                         if ("x".equals(string) || "y".equals(string) || "z".equals(string)) continue;
                                         compoundTag.put(string, tag.copy());
                                     }
@@ -205,7 +205,7 @@ extends Entity {
 
     @Override
     protected void writeCustomDataToTag(CompoundTag compoundTag) {
-        compoundTag.put("BlockState", NbtHelper.fromBlockState(this.block));
+        compoundTag.put("BlockState", TagHelper.serializeBlockState(this.block));
         compoundTag.putInt("Time", this.timeFalling);
         compoundTag.putBoolean("DropItem", this.dropItem);
         compoundTag.putBoolean("HurtEntities", this.hurtEntities);
@@ -218,19 +218,19 @@ extends Entity {
 
     @Override
     protected void readCustomDataFromTag(CompoundTag compoundTag) {
-        this.block = NbtHelper.toBlockState(compoundTag.getCompound("BlockState"));
+        this.block = TagHelper.deserializeBlockState(compoundTag.getCompound("BlockState"));
         this.timeFalling = compoundTag.getInt("Time");
-        if (compoundTag.contains("HurtEntities", 99)) {
+        if (compoundTag.containsKey("HurtEntities", 99)) {
             this.hurtEntities = compoundTag.getBoolean("HurtEntities");
             this.fallHurtAmount = compoundTag.getFloat("FallHurtAmount");
             this.fallHurtMax = compoundTag.getInt("FallHurtMax");
         } else if (this.block.matches(BlockTags.ANVIL)) {
             this.hurtEntities = true;
         }
-        if (compoundTag.contains("DropItem", 99)) {
+        if (compoundTag.containsKey("DropItem", 99)) {
             this.dropItem = compoundTag.getBoolean("DropItem");
         }
-        if (compoundTag.contains("TileEntityData", 10)) {
+        if (compoundTag.containsKey("TileEntityData", 10)) {
             this.blockEntityData = compoundTag.getCompound("TileEntityData");
         }
         if (this.block.isAir()) {

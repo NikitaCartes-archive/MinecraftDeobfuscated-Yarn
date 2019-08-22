@@ -3,7 +3,7 @@
  */
 package net.minecraft.client.render.entity.feature;
 
-import com.mojang.blaze3d.platform.GlStateManager;
+import com.mojang.blaze3d.systems.RenderSystem;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.block.Block;
@@ -25,48 +25,47 @@ extends FeatureRenderer<T, WitchEntityModel<T>> {
         super(featureRendererContext);
     }
 
-    @Override
-    public void render(T livingEntity, float f, float g, float h, float i, float j, float k, float l) {
+    public void method_4208(T livingEntity, float f, float g, float h, float i, float j, float k, float l) {
         ItemStack itemStack = ((LivingEntity)livingEntity).getMainHandStack();
         if (itemStack.isEmpty()) {
             return;
         }
-        GlStateManager.color3f(1.0f, 1.0f, 1.0f);
-        GlStateManager.pushMatrix();
-        if (((WitchEntityModel)this.getContextModel()).child) {
-            GlStateManager.translatef(0.0f, 0.625f, 0.0f);
-            GlStateManager.rotatef(-20.0f, -1.0f, 0.0f, 0.0f);
+        RenderSystem.color3f(1.0f, 1.0f, 1.0f);
+        RenderSystem.pushMatrix();
+        if (((WitchEntityModel)this.getModel()).isChild) {
+            RenderSystem.translatef(0.0f, 0.625f, 0.0f);
+            RenderSystem.rotatef(-20.0f, -1.0f, 0.0f, 0.0f);
             float m = 0.5f;
-            GlStateManager.scalef(0.5f, 0.5f, 0.5f);
+            RenderSystem.scalef(0.5f, 0.5f, 0.5f);
         }
-        ((WitchEntityModel)this.getContextModel()).method_2839().applyTransform(0.0625f);
-        GlStateManager.translatef(-0.0625f, 0.53125f, 0.21875f);
+        ((WitchEntityModel)this.getModel()).method_2839().applyTransform(0.0625f);
+        RenderSystem.translatef(-0.0625f, 0.53125f, 0.21875f);
         Item item = itemStack.getItem();
         if (Block.getBlockFromItem(item).getDefaultState().getRenderType() == BlockRenderType.ENTITYBLOCK_ANIMATED) {
-            GlStateManager.translatef(0.0f, 0.0625f, -0.25f);
-            GlStateManager.rotatef(30.0f, 1.0f, 0.0f, 0.0f);
-            GlStateManager.rotatef(-5.0f, 0.0f, 1.0f, 0.0f);
+            RenderSystem.translatef(0.0f, 0.0625f, -0.25f);
+            RenderSystem.rotatef(30.0f, 1.0f, 0.0f, 0.0f);
+            RenderSystem.rotatef(-5.0f, 0.0f, 1.0f, 0.0f);
             float n = 0.375f;
-            GlStateManager.scalef(0.375f, -0.375f, 0.375f);
+            RenderSystem.scalef(0.375f, -0.375f, 0.375f);
         } else if (item == Items.BOW) {
-            GlStateManager.translatef(0.0f, 0.125f, -0.125f);
-            GlStateManager.rotatef(-45.0f, 0.0f, 1.0f, 0.0f);
+            RenderSystem.translatef(0.0f, 0.125f, -0.125f);
+            RenderSystem.rotatef(-45.0f, 0.0f, 1.0f, 0.0f);
             float n = 0.625f;
-            GlStateManager.scalef(0.625f, -0.625f, 0.625f);
-            GlStateManager.rotatef(-100.0f, 1.0f, 0.0f, 0.0f);
-            GlStateManager.rotatef(-20.0f, 0.0f, 1.0f, 0.0f);
+            RenderSystem.scalef(0.625f, -0.625f, 0.625f);
+            RenderSystem.rotatef(-100.0f, 1.0f, 0.0f, 0.0f);
+            RenderSystem.rotatef(-20.0f, 0.0f, 1.0f, 0.0f);
         } else {
-            GlStateManager.translatef(0.1875f, 0.1875f, 0.0f);
+            RenderSystem.translatef(0.1875f, 0.1875f, 0.0f);
             float n = 0.875f;
-            GlStateManager.scalef(0.875f, 0.875f, 0.875f);
-            GlStateManager.rotatef(-20.0f, 0.0f, 0.0f, 1.0f);
-            GlStateManager.rotatef(-60.0f, 1.0f, 0.0f, 0.0f);
-            GlStateManager.rotatef(-30.0f, 0.0f, 0.0f, 1.0f);
+            RenderSystem.scalef(0.875f, 0.875f, 0.875f);
+            RenderSystem.rotatef(-20.0f, 0.0f, 0.0f, 1.0f);
+            RenderSystem.rotatef(-60.0f, 1.0f, 0.0f, 0.0f);
+            RenderSystem.rotatef(-30.0f, 0.0f, 0.0f, 1.0f);
         }
-        GlStateManager.rotatef(-15.0f, 1.0f, 0.0f, 0.0f);
-        GlStateManager.rotatef(40.0f, 0.0f, 0.0f, 1.0f);
-        MinecraftClient.getInstance().getHeldItemRenderer().renderItem((LivingEntity)livingEntity, itemStack, ModelTransformation.Type.THIRD_PERSON_RIGHT_HAND);
-        GlStateManager.popMatrix();
+        RenderSystem.rotatef(-15.0f, 1.0f, 0.0f, 0.0f);
+        RenderSystem.rotatef(40.0f, 0.0f, 0.0f, 1.0f);
+        MinecraftClient.getInstance().getFirstPersonRenderer().renderItem((LivingEntity)livingEntity, itemStack, ModelTransformation.Type.THIRD_PERSON_RIGHT_HAND);
+        RenderSystem.popMatrix();
     }
 
     @Override

@@ -5,10 +5,10 @@ package net.minecraft.entity.ai.pathing;
 
 import net.minecraft.block.BlockPlacementEnvironment;
 import net.minecraft.block.BlockState;
+import net.minecraft.class_4459;
 import net.minecraft.entity.ai.pathing.PathNode;
 import net.minecraft.entity.ai.pathing.PathNodeMaker;
 import net.minecraft.entity.ai.pathing.PathNodeType;
-import net.minecraft.entity.ai.pathing.TargetPathNode;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.fluid.FluidState;
 import net.minecraft.tag.FluidTags;
@@ -28,16 +28,16 @@ extends PathNodeMaker {
 
     @Override
     public PathNode getStart() {
-        return super.getNode(MathHelper.floor(this.entity.getBoundingBox().x1), MathHelper.floor(this.entity.getBoundingBox().y1 + 0.5), MathHelper.floor(this.entity.getBoundingBox().z1));
+        return super.getPathNode(MathHelper.floor(this.entity.getBoundingBox().minX), MathHelper.floor(this.entity.getBoundingBox().minY + 0.5), MathHelper.floor(this.entity.getBoundingBox().minZ));
     }
 
     @Override
-    public TargetPathNode getNode(double d, double e, double f) {
-        return new TargetPathNode(super.getNode(MathHelper.floor(d - (double)(this.entity.getWidth() / 2.0f)), MathHelper.floor(e + 0.5), MathHelper.floor(f - (double)(this.entity.getWidth() / 2.0f))));
+    public class_4459 getPathNode(double d, double e, double f) {
+        return new class_4459(super.getPathNode(MathHelper.floor(d - (double)(this.entity.getWidth() / 2.0f)), MathHelper.floor(e + 0.5), MathHelper.floor(f - (double)(this.entity.getWidth() / 2.0f))));
     }
 
     @Override
-    public int getSuccessors(PathNode[] pathNodes, PathNode pathNode) {
+    public int getPathNodes(PathNode[] pathNodes, PathNode pathNode) {
         int i = 0;
         for (Direction direction : Direction.values()) {
             PathNode pathNode2 = this.getPathNodeInWater(pathNode.x + direction.getOffsetX(), pathNode.y + direction.getOffsetY(), pathNode.z + direction.getOffsetZ());
@@ -48,12 +48,12 @@ extends PathNodeMaker {
     }
 
     @Override
-    public PathNodeType getNodeType(BlockView blockView, int i, int j, int k, MobEntity mobEntity, int l, int m, int n, boolean bl, boolean bl2) {
-        return this.getNodeType(blockView, i, j, k);
+    public PathNodeType getPathNodeType(BlockView blockView, int i, int j, int k, MobEntity mobEntity, int l, int m, int n, boolean bl, boolean bl2) {
+        return this.getPathNodeType(blockView, i, j, k);
     }
 
     @Override
-    public PathNodeType getNodeType(BlockView blockView, int i, int j, int k) {
+    public PathNodeType getPathNodeType(BlockView blockView, int i, int j, int k) {
         BlockPos blockPos = new BlockPos(i, j, k);
         FluidState fluidState = blockView.getFluidState(blockPos);
         BlockState blockState = blockView.getBlockState(blockPos);
@@ -68,21 +68,21 @@ extends PathNodeMaker {
 
     @Nullable
     private PathNode getPathNodeInWater(int i, int j, int k) {
-        PathNodeType pathNodeType = this.getNodeType(i, j, k);
+        PathNodeType pathNodeType = this.getPathNodeType(i, j, k);
         if (this.field_58 && pathNodeType == PathNodeType.BREACH || pathNodeType == PathNodeType.WATER) {
-            return this.getNode(i, j, k);
+            return this.getPathNode(i, j, k);
         }
         return null;
     }
 
     @Override
     @Nullable
-    protected PathNode getNode(int i, int j, int k) {
+    protected PathNode getPathNode(int i, int j, int k) {
         PathNode pathNode = null;
-        PathNodeType pathNodeType = this.getNodeType(this.entity.world, i, j, k);
-        float f = this.entity.getPathfindingPenalty(pathNodeType);
+        PathNodeType pathNodeType = this.getPathNodeType(this.entity.world, i, j, k);
+        float f = this.entity.getPathNodeTypeWeight(pathNodeType);
         if (f >= 0.0f) {
-            pathNode = super.getNode(i, j, k);
+            pathNode = super.getPathNode(i, j, k);
             pathNode.type = pathNodeType;
             pathNode.field_43 = Math.max(pathNode.field_43, f);
             if (this.blockView.getFluidState(new BlockPos(i, j, k)).isEmpty()) {
@@ -95,7 +95,7 @@ extends PathNodeMaker {
         return pathNode;
     }
 
-    private PathNodeType getNodeType(int i, int j, int k) {
+    private PathNodeType getPathNodeType(int i, int j, int k) {
         BlockPos.Mutable mutable = new BlockPos.Mutable();
         for (int l = i; l < i + this.field_31; ++l) {
             for (int m = j; m < j + this.field_30; ++m) {

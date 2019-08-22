@@ -9,14 +9,14 @@ import com.mojang.datafixers.types.DynamicOps;
 import java.util.Random;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
+import net.minecraft.structure.rule.AbstractRuleTest;
 import net.minecraft.structure.rule.RuleTest;
-import net.minecraft.structure.rule.RuleTestType;
 import net.minecraft.tag.BlockTags;
 import net.minecraft.tag.Tag;
 import net.minecraft.util.Identifier;
 
 public class TagMatchRuleTest
-extends RuleTest {
+extends AbstractRuleTest {
     private final Tag<Block> tag;
 
     public TagMatchRuleTest(Tag<Block> tag) {
@@ -33,8 +33,8 @@ extends RuleTest {
     }
 
     @Override
-    protected RuleTestType getType() {
-        return RuleTestType.TAG_MATCH;
+    protected RuleTest getRuleTest() {
+        return RuleTest.TAG_MATCH;
     }
 
     @Override

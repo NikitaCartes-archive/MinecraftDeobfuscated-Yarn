@@ -57,14 +57,13 @@ implements Criterion<Conditions> {
         this.handlers.remove(playerAdvancementTracker);
     }
 
-    @Override
-    public Conditions conditionsFromJson(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext) {
-        EntityPredicate entityPredicate = EntityPredicate.fromJson(jsonObject.get("entity"));
+    public Conditions method_9123(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext) {
+        EntityPredicate entityPredicate = EntityPredicate.deserialize(jsonObject.get("entity"));
         return new Conditions(entityPredicate);
     }
 
-    public void trigger(ServerPlayerEntity serverPlayerEntity, Entity entity) {
-        Handler handler = this.handlers.get(serverPlayerEntity.getAdvancementTracker());
+    public void handle(ServerPlayerEntity serverPlayerEntity, Entity entity) {
+        Handler handler = this.handlers.get(serverPlayerEntity.getAdvancementManager());
         if (handler != null) {
             handler.handle(serverPlayerEntity, entity);
         }
@@ -72,7 +71,7 @@ implements Criterion<Conditions> {
 
     @Override
     public /* synthetic */ CriterionConditions conditionsFromJson(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext) {
-        return this.conditionsFromJson(jsonObject, jsonDeserializationContext);
+        return this.method_9123(jsonObject, jsonDeserializationContext);
     }
 
     static class Handler {

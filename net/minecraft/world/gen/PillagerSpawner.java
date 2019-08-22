@@ -28,7 +28,7 @@ public class PillagerSpawner {
         }
         this.ticksUntilNextSpawn += 12000 + random.nextInt(1200);
         long l = serverWorld.getTimeOfDay() / 24000L;
-        if (l < 5L || !serverWorld.isDay()) {
+        if (l < 5L || !serverWorld.isDaylight()) {
             return 0;
         }
         if (random.nextInt(5) != 0) {
@@ -85,7 +85,7 @@ public class PillagerSpawner {
                 patrolEntity.setPatrolLeader(true);
                 patrolEntity.setRandomPatrolTarget();
             }
-            patrolEntity.updatePosition(blockPos.getX(), blockPos.getY(), blockPos.getZ());
+            patrolEntity.setPosition(blockPos.getX(), blockPos.getY(), blockPos.getZ());
             patrolEntity.initialize(world, world.getLocalDifficulty(blockPos), SpawnType.PATROL, null, null);
             world.spawnEntity(patrolEntity);
             return true;

@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.client.network.packet.PaintingSpawnS2CPacket;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.decoration.AbstractDecorationEntity;
@@ -16,7 +17,6 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Items;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.Packet;
-import net.minecraft.network.packet.s2c.play.PaintingSpawnS2CPacket;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
@@ -39,7 +39,7 @@ extends AbstractDecorationEntity {
         PaintingMotive paintingMotive;
         ArrayList<PaintingMotive> list = Lists.newArrayList();
         int i = 0;
-        Iterator iterator = Registry.PAINTING_MOTIVE.iterator();
+        Iterator iterator = Registry.MOTIVE.iterator();
         while (iterator.hasNext()) {
             this.motive = paintingMotive = (PaintingMotive)iterator.next();
             this.setFacing(direction);
@@ -70,13 +70,13 @@ extends AbstractDecorationEntity {
 
     @Override
     public void writeCustomDataToTag(CompoundTag compoundTag) {
-        compoundTag.putString("Motive", Registry.PAINTING_MOTIVE.getId(this.motive).toString());
+        compoundTag.putString("Motive", Registry.MOTIVE.getId(this.motive).toString());
         super.writeCustomDataToTag(compoundTag);
     }
 
     @Override
     public void readCustomDataFromTag(CompoundTag compoundTag) {
-        this.motive = Registry.PAINTING_MOTIVE.get(Identifier.tryParse(compoundTag.getString("Motive")));
+        this.motive = Registry.MOTIVE.get(Identifier.tryParse(compoundTag.getString("Motive")));
         super.readCustomDataFromTag(compoundTag);
     }
 
@@ -117,15 +117,15 @@ extends AbstractDecorationEntity {
     }
 
     @Override
-    public void refreshPositionAndAngles(double d, double e, double f, float g, float h) {
-        this.updatePosition(d, e, f);
+    public void setPositionAndAngles(double d, double e, double f, float g, float h) {
+        this.setPosition(d, e, f);
     }
 
     @Override
     @Environment(value=EnvType.CLIENT)
     public void updateTrackedPositionAndAngles(double d, double e, double f, float g, float h, int i, boolean bl) {
-        BlockPos blockPos = this.attachmentPos.add(d - this.x, e - this.y, f - this.z);
-        this.updatePosition(blockPos.getX(), blockPos.getY(), blockPos.getZ());
+        BlockPos blockPos = this.blockPos.add(d - this.x, e - this.y, f - this.z);
+        this.setPosition(blockPos.getX(), blockPos.getY(), blockPos.getZ());
     }
 
     @Override

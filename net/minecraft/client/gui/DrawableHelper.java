@@ -3,9 +3,10 @@
  */
 package net.minecraft.client.gui;
 
-import com.mojang.blaze3d.platform.GlStateManager;
+import com.mojang.blaze3d.systems.RenderSystem;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.class_4493;
 import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.render.BufferBuilder;
 import net.minecraft.client.render.Tessellator;
@@ -55,19 +56,19 @@ public abstract class DrawableHelper {
         float h = (float)(m >> 8 & 0xFF) / 255.0f;
         float o = (float)(m & 0xFF) / 255.0f;
         Tessellator tessellator = Tessellator.getInstance();
-        BufferBuilder bufferBuilder = tessellator.getBuffer();
-        GlStateManager.enableBlend();
-        GlStateManager.disableTexture();
-        GlStateManager.blendFuncSeparate(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO);
-        GlStateManager.color4f(g, h, o, f);
+        BufferBuilder bufferBuilder = tessellator.getBufferBuilder();
+        RenderSystem.enableBlend();
+        RenderSystem.disableTexture();
+        RenderSystem.blendFuncSeparate(class_4493.class_4535.SRC_ALPHA, class_4493.class_4534.ONE_MINUS_SRC_ALPHA, class_4493.class_4535.ONE, class_4493.class_4534.ZERO);
+        RenderSystem.color4f(g, h, o, f);
         bufferBuilder.begin(7, VertexFormats.POSITION);
         bufferBuilder.vertex(i, l, 0.0).next();
         bufferBuilder.vertex(k, l, 0.0).next();
         bufferBuilder.vertex(k, j, 0.0).next();
         bufferBuilder.vertex(i, j, 0.0).next();
         tessellator.draw();
-        GlStateManager.enableTexture();
-        GlStateManager.disableBlend();
+        RenderSystem.enableTexture();
+        RenderSystem.disableBlend();
     }
 
     protected void fillGradient(int i, int j, int k, int l, int m, int n) {
@@ -79,23 +80,23 @@ public abstract class DrawableHelper {
         float q = (float)(n >> 16 & 0xFF) / 255.0f;
         float r = (float)(n >> 8 & 0xFF) / 255.0f;
         float s = (float)(n & 0xFF) / 255.0f;
-        GlStateManager.disableTexture();
-        GlStateManager.enableBlend();
-        GlStateManager.disableAlphaTest();
-        GlStateManager.blendFuncSeparate(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO);
-        GlStateManager.shadeModel(7425);
+        RenderSystem.disableTexture();
+        RenderSystem.enableBlend();
+        RenderSystem.disableAlphaTest();
+        RenderSystem.blendFuncSeparate(class_4493.class_4535.SRC_ALPHA, class_4493.class_4534.ONE_MINUS_SRC_ALPHA, class_4493.class_4535.ONE, class_4493.class_4534.ZERO);
+        RenderSystem.shadeModel(7425);
         Tessellator tessellator = Tessellator.getInstance();
-        BufferBuilder bufferBuilder = tessellator.getBuffer();
+        BufferBuilder bufferBuilder = tessellator.getBufferBuilder();
         bufferBuilder.begin(7, VertexFormats.POSITION_COLOR);
         bufferBuilder.vertex(k, j, this.blitOffset).color(g, h, o, f).next();
         bufferBuilder.vertex(i, j, this.blitOffset).color(g, h, o, f).next();
         bufferBuilder.vertex(i, l, this.blitOffset).color(q, r, s, p).next();
         bufferBuilder.vertex(k, l, this.blitOffset).color(q, r, s, p).next();
         tessellator.draw();
-        GlStateManager.shadeModel(7424);
-        GlStateManager.disableBlend();
-        GlStateManager.enableAlphaTest();
-        GlStateManager.enableTexture();
+        RenderSystem.shadeModel(7424);
+        RenderSystem.disableBlend();
+        RenderSystem.enableAlphaTest();
+        RenderSystem.enableTexture();
     }
 
     public void drawCenteredString(TextRenderer textRenderer, String string, int i, int j, int k) {
@@ -136,8 +137,8 @@ public abstract class DrawableHelper {
 
     protected static void innerBlit(int i, int j, int k, int l, int m, float f, float g, float h, float n) {
         Tessellator tessellator = Tessellator.getInstance();
-        BufferBuilder bufferBuilder = tessellator.getBuffer();
-        bufferBuilder.begin(7, VertexFormats.POSITION_TEXTURE);
+        BufferBuilder bufferBuilder = tessellator.getBufferBuilder();
+        bufferBuilder.begin(7, VertexFormats.POSITION_UV);
         bufferBuilder.vertex(i, l, m).texture(f, n).next();
         bufferBuilder.vertex(j, l, m).texture(g, n).next();
         bufferBuilder.vertex(j, k, m).texture(g, h).next();

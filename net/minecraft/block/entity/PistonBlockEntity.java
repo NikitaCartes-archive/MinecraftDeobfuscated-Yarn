@@ -18,8 +18,8 @@ import net.minecraft.block.piston.PistonBehavior;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.MovementType;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.NbtHelper;
 import net.minecraft.state.property.Properties;
+import net.minecraft.util.TagHelper;
 import net.minecraft.util.Tickable;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
@@ -37,20 +37,9 @@ implements Tickable {
     private Direction facing;
     private boolean extending;
     private boolean source;
-    private static final ThreadLocal<Direction> field_12205 = new ThreadLocal<Direction>(){
-
-        @Override
-        protected Direction initialValue() {
-            return null;
-        }
-
-        @Override
-        protected /* synthetic */ Object initialValue() {
-            return this.initialValue();
-        }
-    };
+    private static final ThreadLocal<Direction> field_12205 = ThreadLocal.withInitial(() -> null);
+    private float nextProgress;
     private float progress;
-    private float lastProgress;
     private long savedWorldTime;
 
     public PistonBlockEntity() {
@@ -86,7 +75,7 @@ implements Tickable {
         if (f > 1.0f) {
             f = 1.0f;
         }
-        return MathHelper.lerp(f, this.lastProgress, this.progress);
+        return MathHelper.lerp(f, this.progress, this.nextProgress);
     }
 
     @Environment(value=EnvType.CLIENT)
@@ -117,14 +106,14 @@ implements Tickable {
 
     private void method_11503(float f) {
         Direction direction = this.method_11506();
-        double d = f - this.progress;
+        double d = f - this.nextProgress;
         VoxelShape voxelShape = this.method_11496().getCollisionShape(this.world, this.getPos());
         if (voxelShape.isEmpty()) {
             return;
         }
         List<Box> list = voxelShape.getBoundingBoxes();
         Box box = this.method_11500(this.method_11509(list));
-        List<Entity> list2 = this.world.getEntities(null, this.method_11502(box, direction, d).union(box));
+        List<Entity> list2 = this.world.getEntities((Entity)null, this.method_11502(box, direction, d).union(box));
         if (list2.isEmpty()) {
             return;
         }
@@ -179,12 +168,12 @@ implements Tickable {
         double h = 1.0;
         double i = 1.0;
         for (Box box : list) {
-            d = Math.min(box.x1, d);
-            e = Math.min(box.y1, e);
-            f = Math.min(box.z1, f);
-            g = Math.max(box.x2, g);
-            h = Math.max(box.y2, h);
-            i = Math.max(box.z2, i);
+            d = Math.min(box.minX, d);
+            e = Math.min(box.minY, e);
+            f = Math.min(box.minZ, f);
+            g = Math.max(box.maxX, g);
+            h = Math.max(box.maxY, h);
+            i = Math.max(box.maxZ, i);
         }
         return new Box(d, e, f, g, h, i);
     }
@@ -203,7 +192,7 @@ implements Tickable {
     }
 
     private Box method_11500(Box box) {
-        double d = this.method_11504(this.progress);
+        double d = this.method_11504(this.nextProgress);
         return box.offset((double)this.pos.getX() + d * (double)this.facing.getOffsetX(), (double)this.pos.getY() + d * (double)this.facing.getOffsetY(), (double)this.pos.getZ() + d * (double)this.facing.getOffsetZ());
     }
 
@@ -213,23 +202,23 @@ implements Tickable {
         double g = Math.max(e, 0.0);
         switch (direction) {
             case WEST: {
-                return new Box(box.x1 + f, box.y1, box.z1, box.x1 + g, box.y2, box.z2);
+                return new Box(box.minX + f, box.minY, box.minZ, box.minX + g, box.maxY, box.maxZ);
             }
             case EAST: {
-                return new Box(box.x2 + f, box.y1, box.z1, box.x2 + g, box.y2, box.z2);
+                return new Box(box.maxX + f, box.minY, box.minZ, box.maxX + g, box.maxY, box.maxZ);
             }
             case DOWN: {
-                return new Box(box.x1, box.y1 + f, box.z1, box.x2, box.y1 + g, box.z2);
+                return new Box(box.minX, box.minY + f, box.minZ, box.maxX, box.minY + g, box.maxZ);
             }
             default: {
-                return new Box(box.x1, box.y2 + f, box.z1, box.x2, box.y2 + g, box.z2);
+                return new Box(box.minX, box.maxY + f, box.minZ, box.maxX, box.maxY + g, box.maxZ);
             }
             case NORTH: {
-                return new Box(box.x1, box.y1, box.z1 + f, box.x2, box.y2, box.z1 + g);
+                return new Box(box.minX, box.minY, box.minZ + f, box.maxX, box.maxY, box.minZ + g);
             }
             case SOUTH: 
         }
-        return new Box(box.x1, box.y1, box.z2 + f, box.x2, box.y2, box.z2 + g);
+        return new Box(box.minX, box.minY, box.maxZ + f, box.maxX, box.maxY, box.maxZ + g);
     }
 
     private void method_11514(Entity entity, Direction direction, double d) {
@@ -248,23 +237,23 @@ implements Tickable {
 
     private static double method_11493(Box box, Direction direction, Box box2) {
         if (direction.getDirection() == Direction.AxisDirection.POSITIVE) {
-            return box.x2 - box2.x1;
+            return box.maxX - box2.minX;
         }
-        return box2.x2 - box.x1;
+        return box2.maxX - box.minX;
     }
 
     private static double method_11510(Box box, Direction direction, Box box2) {
         if (direction.getDirection() == Direction.AxisDirection.POSITIVE) {
-            return box.y2 - box2.y1;
+            return box.maxY - box2.minY;
         }
-        return box2.y2 - box.y1;
+        return box2.maxY - box.minY;
     }
 
     private static double method_11505(Box box, Direction direction, Box box2) {
         if (direction.getDirection() == Direction.AxisDirection.POSITIVE) {
-            return box.z2 - box2.z1;
+            return box.maxZ - box2.minZ;
         }
-        return box2.z2 - box.z1;
+        return box2.maxZ - box.minZ;
     }
 
     public BlockState getPushedBlock() {
@@ -272,10 +261,10 @@ implements Tickable {
     }
 
     public void finish() {
-        if (this.lastProgress < 1.0f && this.world != null) {
-            this.lastProgress = this.progress = 1.0f;
+        if (this.progress < 1.0f && this.world != null) {
+            this.progress = this.nextProgress = 1.0f;
             this.world.removeBlockEntity(this.pos);
-            this.markRemoved();
+            this.invalidate();
             if (this.world.getBlockState(this.pos).getBlock() == Blocks.MOVING_PISTON) {
                 BlockState blockState = this.source ? Blocks.AIR.getDefaultState() : Block.getRenderingState(this.pushedBlock, this.world, this.pos);
                 this.world.setBlockState(this.pos, blockState, 3);
@@ -287,10 +276,10 @@ implements Tickable {
     @Override
     public void tick() {
         this.savedWorldTime = this.world.getTime();
-        this.lastProgress = this.progress;
-        if (this.lastProgress >= 1.0f) {
+        this.progress = this.nextProgress;
+        if (this.progress >= 1.0f) {
             this.world.removeBlockEntity(this.pos);
-            this.markRemoved();
+            this.invalidate();
             if (this.pushedBlock != null && this.world.getBlockState(this.pos).getBlock() == Blocks.MOVING_PISTON) {
                 BlockState blockState = Block.getRenderingState(this.pushedBlock, this.world, this.pos);
                 if (blockState.isAir()) {
@@ -306,20 +295,20 @@ implements Tickable {
             }
             return;
         }
-        float f = this.progress + 0.5f;
+        float f = this.nextProgress + 0.5f;
         this.method_11503(f);
-        this.progress = f;
-        if (this.progress >= 1.0f) {
-            this.progress = 1.0f;
+        this.nextProgress = f;
+        if (this.nextProgress >= 1.0f) {
+            this.nextProgress = 1.0f;
         }
     }
 
     @Override
     public void fromTag(CompoundTag compoundTag) {
         super.fromTag(compoundTag);
-        this.pushedBlock = NbtHelper.toBlockState(compoundTag.getCompound("blockState"));
+        this.pushedBlock = TagHelper.deserializeBlockState(compoundTag.getCompound("blockState"));
         this.facing = Direction.byId(compoundTag.getInt("facing"));
-        this.lastProgress = this.progress = compoundTag.getFloat("progress");
+        this.progress = this.nextProgress = compoundTag.getFloat("progress");
         this.extending = compoundTag.getBoolean("extending");
         this.source = compoundTag.getBoolean("source");
     }
@@ -327,9 +316,9 @@ implements Tickable {
     @Override
     public CompoundTag toTag(CompoundTag compoundTag) {
         super.toTag(compoundTag);
-        compoundTag.put("blockState", NbtHelper.fromBlockState(this.pushedBlock));
+        compoundTag.put("blockState", TagHelper.serializeBlockState(this.pushedBlock));
         compoundTag.putInt("facing", this.facing.getId());
-        compoundTag.putFloat("progress", this.lastProgress);
+        compoundTag.putFloat("progress", this.progress);
         compoundTag.putBoolean("extending", this.extending);
         compoundTag.putBoolean("source", this.source);
         return compoundTag;
@@ -338,11 +327,11 @@ implements Tickable {
     public VoxelShape getCollisionShape(BlockView blockView, BlockPos blockPos) {
         VoxelShape voxelShape = !this.extending && this.source ? ((BlockState)this.pushedBlock.with(PistonBlock.EXTENDED, true)).getCollisionShape(blockView, blockPos) : VoxelShapes.empty();
         Direction direction = field_12205.get();
-        if ((double)this.progress < 1.0 && direction == this.method_11506()) {
+        if ((double)this.nextProgress < 1.0 && direction == this.method_11506()) {
             return voxelShape;
         }
-        BlockState blockState = this.isSource() ? (BlockState)((BlockState)Blocks.PISTON_HEAD.getDefaultState().with(PistonHeadBlock.FACING, this.facing)).with(PistonHeadBlock.SHORT, this.extending != 1.0f - this.progress < 4.0f) : this.pushedBlock;
-        float f = this.method_11504(this.progress);
+        BlockState blockState = this.isSource() ? (BlockState)((BlockState)Blocks.PISTON_HEAD.getDefaultState().with(PistonHeadBlock.FACING, this.facing)).with(PistonHeadBlock.SHORT, this.extending != 1.0f - this.nextProgress < 4.0f) : this.pushedBlock;
+        float f = this.method_11504(this.nextProgress);
         double d = (float)this.facing.getOffsetX() * f;
         double e = (float)this.facing.getOffsetY() * f;
         double g = (float)this.facing.getOffsetZ() * f;

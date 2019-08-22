@@ -26,13 +26,13 @@ extends LookControl {
             if (this.entity.getNavigation().isIdle()) {
                 this.entity.pitch = this.changeAngle(this.entity.pitch, 0.0f, 5.0f);
             }
-            this.entity.headYaw = this.changeAngle(this.entity.headYaw, this.entity.field_6283, this.yawSpeed);
+            this.entity.headYaw = this.changeAngle(this.entity.headYaw, this.entity.bodyYaw, this.yawSpeed);
         }
-        float f = MathHelper.wrapDegrees(this.entity.headYaw - this.entity.field_6283);
+        float f = MathHelper.wrapDegrees(this.entity.headYaw - this.entity.bodyYaw);
         if (f < (float)(-this.field_6357)) {
-            this.entity.field_6283 -= 4.0f;
+            this.entity.bodyYaw -= 4.0f;
         } else if (f > (float)this.field_6357) {
-            this.entity.field_6283 += 4.0f;
+            this.entity.bodyYaw += 4.0f;
         }
     }
 }

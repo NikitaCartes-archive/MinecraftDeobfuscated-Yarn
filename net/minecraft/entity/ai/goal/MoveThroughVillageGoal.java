@@ -9,7 +9,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.function.BooleanSupplier;
-import net.minecraft.entity.ai.TargetFinder;
+import net.minecraft.entity.ai.PathfindingUtil;
 import net.minecraft.entity.ai.goal.DoorInteractGoal;
 import net.minecraft.entity.ai.goal.Goal;
 import net.minecraft.entity.ai.pathing.MobNavigation;
@@ -19,8 +19,8 @@ import net.minecraft.entity.mob.MobEntityWithAi;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
-import net.minecraft.world.poi.PointOfInterestStorage;
-import net.minecraft.world.poi.PointOfInterestType;
+import net.minecraft.village.PointOfInterestStorage;
+import net.minecraft.village.PointOfInterestType;
 
 public class MoveThroughVillageGoal
 extends Goal {
@@ -48,7 +48,7 @@ extends Goal {
     @Override
     public boolean canStart() {
         this.method_6297();
-        if (this.requiresNighttime && this.mob.world.isDay()) {
+        if (this.requiresNighttime && this.mob.world.isDaylight()) {
             return false;
         }
         ServerWorld serverWorld = (ServerWorld)this.mob.world;
@@ -56,7 +56,7 @@ extends Goal {
         if (!serverWorld.isNearOccupiedPointOfInterest(blockPos, 6)) {
             return false;
         }
-        Vec3d vec3d = TargetFinder.findGroundTarget(this.mob, 15, 7, blockPos2 -> {
+        Vec3d vec3d = PathfindingUtil.findTargetStraight(this.mob, 15, 7, blockPos2 -> {
             if (!serverWorld.isNearOccupiedPointOfInterest((BlockPos)blockPos2)) {
                 return Double.NEGATIVE_INFINITY;
             }
@@ -80,7 +80,7 @@ extends Goal {
         this.targetPath = mobNavigation.findPathTo(this.target, 0);
         mobNavigation.setCanPathThroughDoors(bl);
         if (this.targetPath == null) {
-            Vec3d vec3d2 = TargetFinder.method_6373(this.mob, 10, 7, new Vec3d(this.target.getX(), this.target.getY(), this.target.getZ()));
+            Vec3d vec3d2 = PathfindingUtil.method_6373(this.mob, 10, 7, new Vec3d(this.target.getX(), this.target.getY(), this.target.getZ()));
             if (vec3d2 == null) {
                 return false;
             }
@@ -94,8 +94,8 @@ extends Goal {
         for (int i = 0; i < this.targetPath.getLength(); ++i) {
             PathNode pathNode = this.targetPath.getNode(i);
             BlockPos blockPos22 = new BlockPos(pathNode.x, pathNode.y + 1, pathNode.z);
-            if (!DoorInteractGoal.isWoodenDoor(this.mob.world, blockPos22)) continue;
-            this.targetPath = this.mob.getNavigation().findPathTo(pathNode.x, pathNode.y, pathNode.z, 0);
+            if (!DoorInteractGoal.getDoor(this.mob.world, blockPos22)) continue;
+            this.targetPath = this.mob.getNavigation().findPathTo(pathNode.x, (double)pathNode.y, pathNode.z, 0);
             break;
         }
         return this.targetPath != null;

@@ -38,8 +38,8 @@ import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
-import net.minecraft.world.CollisionView;
 import net.minecraft.world.SpawnHelper;
+import net.minecraft.world.ViewableWorld;
 import net.minecraft.world.World;
 
 public class IronGolemEntity
@@ -83,13 +83,13 @@ extends GolemEntity {
     }
 
     @Override
-    protected int getNextAirUnderwater(int i) {
+    protected int getNextBreathInWater(int i) {
         return i;
     }
 
     @Override
     protected void pushAway(Entity entity) {
-        if (entity instanceof Monster && !(entity instanceof CreeperEntity) && this.getRandom().nextInt(20) == 0) {
+        if (entity instanceof Monster && !(entity instanceof CreeperEntity) && this.getRand().nextInt(20) == 0) {
             this.setTarget((LivingEntity)entity);
         }
         super.pushAway(entity);
@@ -109,7 +109,7 @@ extends GolemEntity {
             --this.field_6759;
         }
         if (IronGolemEntity.squaredHorizontalLength(this.getVelocity()) > 2.500000277905201E-7 && this.random.nextInt(5) == 0 && !(blockState = this.world.getBlockState(new BlockPos(i = MathHelper.floor(this.x), j = MathHelper.floor(this.y - (double)0.2f), k = MathHelper.floor(this.z)))).isAir()) {
-            this.world.addParticle(new BlockStateParticleEffect(ParticleTypes.BLOCK, blockState), this.x + ((double)this.random.nextFloat() - 0.5) * (double)this.getWidth(), this.getBoundingBox().y1 + 0.1, this.z + ((double)this.random.nextFloat() - 0.5) * (double)this.getWidth(), 4.0 * ((double)this.random.nextFloat() - 0.5), 0.5, ((double)this.random.nextFloat() - 0.5) * 4.0);
+            this.world.addParticle(new BlockStateParticleEffect(ParticleTypes.BLOCK, blockState), this.x + ((double)this.random.nextFloat() - 0.5) * (double)this.getWidth(), this.getBoundingBox().minY + 0.1, this.z + ((double)this.random.nextFloat() - 0.5) * (double)this.getWidth(), 4.0 * ((double)this.random.nextFloat() - 0.5), 0.5, ((double)this.random.nextFloat() - 0.5) * 4.0);
         }
     }
 
@@ -218,18 +218,18 @@ extends GolemEntity {
     }
 
     @Override
-    public boolean canSpawn(CollisionView collisionView) {
+    public boolean canSpawn(ViewableWorld viewableWorld) {
         BlockPos blockPos = new BlockPos(this);
         BlockPos blockPos2 = blockPos.down();
-        BlockState blockState = collisionView.getBlockState(blockPos2);
-        if (blockState.hasSolidTopSurface(collisionView, blockPos2, this)) {
+        BlockState blockState = viewableWorld.getBlockState(blockPos2);
+        if (blockState.hasSolidTopSurface(viewableWorld, blockPos2, this)) {
             for (int i = 1; i < 3; ++i) {
                 BlockState blockState2;
                 BlockPos blockPos3 = blockPos.up(i);
-                if (SpawnHelper.isClearForSpawn(collisionView, blockPos3, blockState2 = collisionView.getBlockState(blockPos3), blockState2.getFluidState())) continue;
+                if (SpawnHelper.isClearForSpawn(viewableWorld, blockPos3, blockState2 = viewableWorld.getBlockState(blockPos3), blockState2.getFluidState())) continue;
                 return false;
             }
-            return SpawnHelper.isClearForSpawn(collisionView, blockPos, collisionView.getBlockState(blockPos), Fluids.EMPTY.getDefaultState()) && collisionView.intersectsEntities(this);
+            return SpawnHelper.isClearForSpawn(viewableWorld, blockPos, viewableWorld.getBlockState(blockPos), Fluids.EMPTY.getDefaultState()) && viewableWorld.intersectsEntities(this);
         }
         return false;
     }

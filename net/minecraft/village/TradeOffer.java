@@ -5,7 +5,7 @@ package net.minecraft.village;
 
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.NbtHelper;
+import net.minecraft.util.TagHelper;
 import net.minecraft.util.math.MathHelper;
 
 public class TradeOffer {
@@ -25,14 +25,14 @@ public class TradeOffer {
         this.secondBuyItem = ItemStack.fromTag(compoundTag.getCompound("buyB"));
         this.sellItem = ItemStack.fromTag(compoundTag.getCompound("sell"));
         this.uses = compoundTag.getInt("uses");
-        this.maxUses = compoundTag.contains("maxUses", 99) ? compoundTag.getInt("maxUses") : 4;
-        if (compoundTag.contains("rewardExp", 1)) {
+        this.maxUses = compoundTag.containsKey("maxUses", 99) ? compoundTag.getInt("maxUses") : 4;
+        if (compoundTag.containsKey("rewardExp", 1)) {
             this.rewardingPlayerExperience = compoundTag.getBoolean("rewardExp");
         }
-        if (compoundTag.contains("xp", 3)) {
+        if (compoundTag.containsKey("xp", 3)) {
             this.traderExperience = compoundTag.getInt("xp");
         }
-        if (compoundTag.contains("priceMultiplier", 5)) {
+        if (compoundTag.containsKey("priceMultiplier", 5)) {
             this.priceMultiplier = compoundTag.getFloat("priceMultiplier");
         }
         this.specialPrice = compoundTag.getInt("specialPrice");
@@ -142,6 +142,10 @@ public class TradeOffer {
         this.uses = this.maxUses;
     }
 
+    public boolean method_21834() {
+        return this.uses > 0;
+    }
+
     public boolean shouldRewardPlayerExperience() {
         return this.rewardingPlayerExperience;
     }
@@ -173,7 +177,7 @@ public class TradeOffer {
         if (itemStack3.getItem().isDamageable()) {
             itemStack3.setDamage(itemStack3.getDamage());
         }
-        return ItemStack.areItemsEqualIgnoreDamage(itemStack3, itemStack2) && (!itemStack2.hasTag() || itemStack3.hasTag() && NbtHelper.matches(itemStack2.getTag(), itemStack3.getTag(), false));
+        return ItemStack.areItemsEqualIgnoreDamage(itemStack3, itemStack2) && (!itemStack2.hasTag() || itemStack3.hasTag() && TagHelper.areTagsEqual(itemStack2.getTag(), itemStack3.getTag(), false));
     }
 
     public boolean depleteBuyItems(ItemStack itemStack, ItemStack itemStack2) {

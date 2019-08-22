@@ -15,7 +15,7 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.particle.DustParticleEffect;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
-import net.minecraft.state.StateManager;
+import net.minecraft.state.StateFactory;
 import net.minecraft.state.property.BooleanProperty;
 import net.minecraft.state.property.Properties;
 import net.minecraft.util.Hand;
@@ -41,7 +41,7 @@ extends WallMountedBlock {
 
     protected LeverBlock(Block.Settings settings) {
         super(settings);
-        this.setDefaultState((BlockState)((BlockState)((BlockState)((BlockState)this.stateManager.getDefaultState()).with(FACING, Direction.NORTH)).with(POWERED, false)).with(FACE, WallMountLocation.WALL));
+        this.setDefaultState((BlockState)((BlockState)((BlockState)((BlockState)this.stateFactory.getDefaultState()).with(FACING, Direction.NORTH)).with(POWERED, false)).with(FACE, WallMountLocation.WALL));
     }
 
     @Override
@@ -80,19 +80,24 @@ extends WallMountedBlock {
 
     @Override
     public boolean activate(BlockState blockState, World world, BlockPos blockPos, PlayerEntity playerEntity, Hand hand, BlockHitResult blockHitResult) {
-        blockState = (BlockState)blockState.cycle(POWERED);
-        boolean bl = blockState.get(POWERED);
         if (world.isClient) {
-            if (bl) {
-                LeverBlock.spawnParticles(blockState, world, blockPos, 1.0f);
+            BlockState blockState2 = (BlockState)blockState.cycle(POWERED);
+            if (blockState2.get(POWERED).booleanValue()) {
+                LeverBlock.spawnParticles(blockState2, world, blockPos, 1.0f);
             }
             return true;
         }
-        world.setBlockState(blockPos, blockState, 3);
-        float f = bl ? 0.6f : 0.5f;
+        BlockState blockState2 = this.method_21846(blockState, world, blockPos);
+        float f = blockState2.get(POWERED) != false ? 0.6f : 0.5f;
         world.playSound(null, blockPos, SoundEvents.BLOCK_LEVER_CLICK, SoundCategory.BLOCKS, 0.3f, f);
-        this.updateNeighbors(blockState, world, blockPos);
         return true;
+    }
+
+    public BlockState method_21846(BlockState blockState, World world, BlockPos blockPos) {
+        blockState = (BlockState)blockState.cycle(POWERED);
+        world.setBlockState(blockPos, blockState, 3);
+        this.updateNeighbors(blockState, world, blockPos);
+        return blockState;
     }
 
     private static void spawnParticles(BlockState blockState, IWorld iWorld, BlockPos blockPos, float f) {
@@ -147,7 +152,7 @@ extends WallMountedBlock {
     }
 
     @Override
-    protected void appendProperties(StateManager.Builder<Block, BlockState> builder) {
+    protected void appendProperties(StateFactory.Builder<Block, BlockState> builder) {
         builder.add(FACE, FACING, POWERED);
     }
 }

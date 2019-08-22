@@ -13,8 +13,8 @@ import net.minecraft.structure.MineshaftGenerator;
 import net.minecraft.structure.StructureManager;
 import net.minecraft.structure.StructurePiece;
 import net.minecraft.structure.StructureStart;
-import net.minecraft.util.math.BlockBox;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.MutableIntBoundingBox;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.gen.ChunkRandom;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
@@ -57,8 +57,8 @@ extends StructureFeature<MineshaftFeatureConfig> {
 
     public static class Start
     extends StructureStart {
-        public Start(StructureFeature<?> structureFeature, int i, int j, Biome biome, BlockBox blockBox, int k, long l) {
-            super(structureFeature, i, j, biome, blockBox, k, l);
+        public Start(StructureFeature<?> structureFeature, int i, int j, Biome biome, MutableIntBoundingBox mutableIntBoundingBox, int k, long l) {
+            super(structureFeature, i, j, biome, mutableIntBoundingBox, k, l);
         }
 
         @Override
@@ -71,7 +71,7 @@ extends StructureFeature<MineshaftFeatureConfig> {
             if (mineshaftFeatureConfig.type == Type.MESA) {
                 int k = -5;
                 int l = chunkGenerator.getSeaLevel() - this.boundingBox.maxY + this.boundingBox.getBlockCountY() / 2 - -5;
-                this.boundingBox.offset(0, l, 0);
+                this.boundingBox.translate(0, l, 0);
                 for (StructurePiece structurePiece : this.children) {
                     structurePiece.translate(0, l, 0);
                 }

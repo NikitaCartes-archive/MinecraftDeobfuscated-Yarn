@@ -7,11 +7,11 @@ import java.util.Random;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.block.Block;
+import net.minecraft.block.BlockRenderLayer;
 import net.minecraft.block.BlockRenderType;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.FluidDrainable;
-import net.minecraft.client.render.RenderLayer;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityContext;
 import net.minecraft.fluid.Fluid;
@@ -21,7 +21,7 @@ import net.minecraft.particle.ParticleTypes;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
-import net.minecraft.state.StateManager;
+import net.minecraft.state.StateFactory;
 import net.minecraft.state.property.BooleanProperty;
 import net.minecraft.state.property.Properties;
 import net.minecraft.util.math.BlockPos;
@@ -29,8 +29,8 @@ import net.minecraft.util.math.Direction;
 import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.util.shape.VoxelShapes;
 import net.minecraft.world.BlockView;
-import net.minecraft.world.CollisionView;
 import net.minecraft.world.IWorld;
+import net.minecraft.world.ViewableWorld;
 import net.minecraft.world.World;
 
 public class BubbleColumnBlock
@@ -40,7 +40,7 @@ implements FluidDrainable {
 
     public BubbleColumnBlock(Block.Settings settings) {
         super(settings);
-        this.setDefaultState((BlockState)((BlockState)this.stateManager.getDefaultState()).with(DRAG, true));
+        this.setDefaultState((BlockState)((BlockState)this.stateFactory.getDefaultState()).with(DRAG, true));
     }
 
     @Override
@@ -96,7 +96,7 @@ implements FluidDrainable {
     }
 
     @Override
-    public int getTickRate(CollisionView collisionView) {
+    public int getTickRate(ViewableWorld viewableWorld) {
         return 5;
     }
 
@@ -135,8 +135,8 @@ implements FluidDrainable {
     }
 
     @Override
-    public boolean canPlaceAt(BlockState blockState, CollisionView collisionView, BlockPos blockPos) {
-        Block block = collisionView.getBlockState(blockPos.down()).getBlock();
+    public boolean canPlaceAt(BlockState blockState, ViewableWorld viewableWorld, BlockPos blockPos) {
+        Block block = viewableWorld.getBlockState(blockPos.down()).getBlock();
         return block == Blocks.BUBBLE_COLUMN || block == Blocks.MAGMA_BLOCK || block == Blocks.SOUL_SAND;
     }
 
@@ -146,8 +146,8 @@ implements FluidDrainable {
     }
 
     @Override
-    public RenderLayer getRenderLayer() {
-        return RenderLayer.TRANSLUCENT;
+    public BlockRenderLayer getRenderLayer() {
+        return BlockRenderLayer.TRANSLUCENT;
     }
 
     @Override
@@ -156,7 +156,7 @@ implements FluidDrainable {
     }
 
     @Override
-    protected void appendProperties(StateManager.Builder<Block, BlockState> builder) {
+    protected void appendProperties(StateFactory.Builder<Block, BlockState> builder) {
         builder.add(DRAG);
     }
 

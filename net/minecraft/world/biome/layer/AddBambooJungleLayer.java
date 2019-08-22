@@ -5,8 +5,8 @@ package net.minecraft.world.biome.layer;
 
 import net.minecraft.util.registry.Registry;
 import net.minecraft.world.biome.Biomes;
-import net.minecraft.world.biome.layer.type.SouthEastSamplingLayer;
-import net.minecraft.world.biome.layer.util.LayerRandomnessSource;
+import net.minecraft.world.biome.layer.LayerRandomnessSource;
+import net.minecraft.world.biome.layer.SouthEastSamplingLayer;
 
 public enum AddBambooJungleLayer implements SouthEastSamplingLayer
 {

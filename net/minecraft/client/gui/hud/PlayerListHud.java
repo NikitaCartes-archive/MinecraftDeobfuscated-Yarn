@@ -6,11 +6,12 @@ package net.minecraft.client.gui.hud;
 import com.google.common.collect.ComparisonChain;
 import com.google.common.collect.Ordering;
 import com.mojang.authlib.GameProfile;
-import com.mojang.blaze3d.platform.GlStateManager;
+import com.mojang.blaze3d.systems.RenderSystem;
 import java.util.Comparator;
 import java.util.List;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.class_4493;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawableHelper;
 import net.minecraft.client.gui.hud.InGameHud;
@@ -25,7 +26,7 @@ import net.minecraft.scoreboard.Team;
 import net.minecraft.text.LiteralText;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
-import net.minecraft.util.Util;
+import net.minecraft.util.SystemUtil;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.GameMode;
 import org.jetbrains.annotations.Nullable;
@@ -55,7 +56,7 @@ extends DrawableHelper {
 
     public void tick(boolean bl) {
         if (bl && !this.visible) {
-            this.showTime = Util.getMeasuringTimeMs();
+            this.showTime = SystemUtil.getMeasuringTimeMs();
         }
         this.visible = bl;
     }
@@ -122,21 +123,21 @@ extends DrawableHelper {
             int x = q + t * p + t * 5;
             int y = r + w * 9;
             PlayerListHud.fill(x, y, x + p, y + 8, n2);
-            GlStateManager.color4f(1.0f, 1.0f, 1.0f, 1.0f);
-            GlStateManager.enableAlphaTest();
-            GlStateManager.enableBlend();
-            GlStateManager.blendFuncSeparate(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO);
+            RenderSystem.color4f(1.0f, 1.0f, 1.0f, 1.0f);
+            RenderSystem.enableAlphaTest();
+            RenderSystem.enableBlend();
+            RenderSystem.blendFuncSeparate(class_4493.class_4535.SRC_ALPHA, class_4493.class_4534.ONE_MINUS_SRC_ALPHA, class_4493.class_4535.ONE, class_4493.class_4534.ZERO);
             if (v >= list.size()) continue;
             PlayerListEntry playerListEntry2 = list.get(v);
             GameProfile gameProfile = playerListEntry2.getProfile();
             if (bl) {
                 PlayerEntity playerEntity = this.client.world.getPlayerByUuid(gameProfile.getId());
-                boolean bl22 = playerEntity != null && playerEntity.isPartVisible(PlayerModelPart.CAPE) && ("Dinnerbone".equals(gameProfile.getName()) || "Grumm".equals(gameProfile.getName()));
+                boolean bl22 = playerEntity != null && playerEntity.isSkinOverlayVisible(PlayerModelPart.CAPE) && ("Dinnerbone".equals(gameProfile.getName()) || "Grumm".equals(gameProfile.getName()));
                 this.client.getTextureManager().bindTexture(playerListEntry2.getSkinTexture());
                 z = 8 + (bl22 ? 8 : 0);
                 int aa = 8 * (bl22 ? -1 : 1);
                 DrawableHelper.blit(x, y, 8, 8, 8.0f, z, 8, aa, 64, 64);
-                if (playerEntity != null && playerEntity.isPartVisible(PlayerModelPart.HAT)) {
+                if (playerEntity != null && playerEntity.isSkinOverlayVisible(PlayerModelPart.HAT)) {
                     int ab = 8 + (bl22 ? 8 : 0);
                     int ac = 8 * (bl22 ? -1 : 1);
                     DrawableHelper.blit(x, y, 8, 8, 40.0f, ab, 8, ac, 64, 64);
@@ -165,7 +166,7 @@ extends DrawableHelper {
     }
 
     protected void renderLatencyIcon(int i, int j, int k, PlayerListEntry playerListEntry) {
-        GlStateManager.color4f(1.0f, 1.0f, 1.0f, 1.0f);
+        RenderSystem.color4f(1.0f, 1.0f, 1.0f, 1.0f);
         this.client.getTextureManager().bindTexture(GUI_ICONS_LOCATION);
         boolean l = false;
         int m = playerListEntry.getLatency() < 0 ? 5 : (playerListEntry.getLatency() < 150 ? 0 : (playerListEntry.getLatency() < 300 ? 1 : (playerListEntry.getLatency() < 600 ? 2 : (playerListEntry.getLatency() < 1000 ? 3 : 4))));
@@ -179,7 +180,7 @@ extends DrawableHelper {
         if (scoreboardObjective.getRenderType() == ScoreboardCriterion.RenderType.HEARTS) {
             boolean bl;
             this.client.getTextureManager().bindTexture(GUI_ICONS_LOCATION);
-            long m = Util.getMeasuringTimeMs();
+            long m = SystemUtil.getMeasuringTimeMs();
             if (this.showTime == playerListEntry.method_2976()) {
                 if (l < playerListEntry.method_2973()) {
                     playerListEntry.method_2978(m);
@@ -257,8 +258,7 @@ extends DrawableHelper {
         private EntryOrderComparator() {
         }
 
-        @Override
-        public int compare(PlayerListEntry playerListEntry, PlayerListEntry playerListEntry2) {
+        public int method_1926(PlayerListEntry playerListEntry, PlayerListEntry playerListEntry2) {
             Team team = playerListEntry.getScoreboardTeam();
             Team team2 = playerListEntry2.getScoreboardTeam();
             return ComparisonChain.start().compareTrueFirst(playerListEntry.getGameMode() != GameMode.SPECTATOR, playerListEntry2.getGameMode() != GameMode.SPECTATOR).compare((Comparable<?>)((Object)(team != null ? team.getName() : "")), (Comparable<?>)((Object)(team2 != null ? team2.getName() : ""))).compare(playerListEntry.getProfile().getName(), playerListEntry2.getProfile().getName(), String::compareToIgnoreCase).result();
@@ -266,7 +266,7 @@ extends DrawableHelper {
 
         @Override
         public /* synthetic */ int compare(Object object, Object object2) {
-            return this.compare((PlayerListEntry)object, (PlayerListEntry)object2);
+            return this.method_1926((PlayerListEntry)object, (PlayerListEntry)object2);
         }
     }
 }

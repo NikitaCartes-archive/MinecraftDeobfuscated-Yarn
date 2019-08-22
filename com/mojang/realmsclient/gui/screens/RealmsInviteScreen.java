@@ -5,11 +5,11 @@ package com.mojang.realmsclient.gui.screens;
 
 import com.mojang.realmsclient.client.RealmsClient;
 import com.mojang.realmsclient.dto.RealmsServer;
-import com.mojang.realmsclient.gui.RealmsConstants;
 import com.mojang.realmsclient.gui.screens.RealmsConfigureWorldScreen;
 import com.mojang.realmsclient.gui.screens.RealmsPlayerScreen;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.class_4359;
 import net.minecraft.realms.Realms;
 import net.minecraft.realms.RealmsButton;
 import net.minecraft.realms.RealmsEditBox;
@@ -46,7 +46,7 @@ extends RealmsScreen {
     @Override
     public void init() {
         this.setKeyboardHandlerSendRepeatsToGui(true);
-        this.inviteButton = new RealmsButton(0, this.width() / 2 - 100, RealmsConstants.row(10), RealmsInviteScreen.getLocalizedString("mco.configure.world.buttons.invite")){
+        this.inviteButton = new RealmsButton(0, this.width() / 2 - 100, class_4359.method_21072(10), RealmsInviteScreen.getLocalizedString("mco.configure.world.buttons.invite")){
 
             @Override
             public void onPress() {
@@ -54,14 +54,14 @@ extends RealmsScreen {
             }
         };
         this.buttonsAdd(this.inviteButton);
-        this.buttonsAdd(new RealmsButton(1, this.width() / 2 - 100, RealmsConstants.row(12), RealmsInviteScreen.getLocalizedString("gui.cancel")){
+        this.buttonsAdd(new RealmsButton(1, this.width() / 2 - 100, class_4359.method_21072(12), RealmsInviteScreen.getLocalizedString("gui.cancel")){
 
             @Override
             public void onPress() {
                 Realms.setScreen(RealmsInviteScreen.this.lastScreen);
             }
         });
-        this.profileName = this.newEditBox(2, this.width() / 2 - 100, RealmsConstants.row(2), 200, 20, RealmsInviteScreen.getLocalizedString("mco.configure.world.invite.profile.name"));
+        this.profileName = this.newEditBox(2, this.width() / 2 - 100, class_4359.method_21072(2), 200, 20, RealmsInviteScreen.getLocalizedString("mco.configure.world.invite.profile.name"));
         this.focusOn(this.profileName);
         this.addWidget(this.profileName);
     }
@@ -109,9 +109,9 @@ extends RealmsScreen {
     @Override
     public void render(int i, int j, float f) {
         this.renderBackground();
-        this.drawString(RealmsInviteScreen.getLocalizedString("mco.configure.world.invite.profile.name"), this.width() / 2 - 100, RealmsConstants.row(1), 0xA0A0A0);
+        this.drawString(RealmsInviteScreen.getLocalizedString("mco.configure.world.invite.profile.name"), this.width() / 2 - 100, class_4359.method_21072(1), 0xA0A0A0);
         if (this.showError) {
-            this.drawCenteredString(this.errorMsg, this.width() / 2, RealmsConstants.row(5), 0xFF0000);
+            this.drawCenteredString(this.errorMsg, this.width() / 2, class_4359.method_21072(5), 0xFF0000);
         }
         this.profileName.render(i, j, f);
         super.render(i, j, f);

@@ -18,11 +18,11 @@ import net.minecraft.command.arguments.ItemStringReader;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.NbtHelper;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.tag.Tag;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.TagHelper;
 import org.jetbrains.annotations.Nullable;
 
 public class ItemPredicateArgumentType
@@ -34,8 +34,7 @@ implements ArgumentType<ItemPredicateArgument> {
         return new ItemPredicateArgumentType();
     }
 
-    @Override
-    public ItemPredicateArgument parse(StringReader stringReader) throws CommandSyntaxException {
+    public ItemPredicateArgument method_9800(StringReader stringReader) throws CommandSyntaxException {
         ItemStringReader itemStringReader = new ItemStringReader(stringReader, true).consume();
         if (itemStringReader.getItem() != null) {
             ItemPredicate itemPredicate = new ItemPredicate(itemStringReader.getItem(), itemStringReader.getTag());
@@ -75,7 +74,7 @@ implements ArgumentType<ItemPredicateArgument> {
 
     @Override
     public /* synthetic */ Object parse(StringReader stringReader) throws CommandSyntaxException {
-        return this.parse(stringReader);
+        return this.method_9800(stringReader);
     }
 
     static class TagPredicate
@@ -89,14 +88,13 @@ implements ArgumentType<ItemPredicateArgument> {
             this.compound = compoundTag;
         }
 
-        @Override
-        public boolean test(ItemStack itemStack) {
-            return this.tag.contains(itemStack.getItem()) && NbtHelper.matches(this.compound, itemStack.getTag(), true);
+        public boolean method_9807(ItemStack itemStack) {
+            return this.tag.contains(itemStack.getItem()) && TagHelper.areTagsEqual(this.compound, itemStack.getTag(), true);
         }
 
         @Override
         public /* synthetic */ boolean test(Object object) {
-            return this.test((ItemStack)object);
+            return this.method_9807((ItemStack)object);
         }
     }
 
@@ -111,14 +109,13 @@ implements ArgumentType<ItemPredicateArgument> {
             this.compound = compoundTag;
         }
 
-        @Override
-        public boolean test(ItemStack itemStack) {
-            return itemStack.getItem() == this.item && NbtHelper.matches(this.compound, itemStack.getTag(), true);
+        public boolean method_9806(ItemStack itemStack) {
+            return itemStack.getItem() == this.item && TagHelper.areTagsEqual(this.compound, itemStack.getTag(), true);
         }
 
         @Override
         public /* synthetic */ boolean test(Object object) {
-            return this.test((ItemStack)object);
+            return this.method_9806((ItemStack)object);
         }
     }
 

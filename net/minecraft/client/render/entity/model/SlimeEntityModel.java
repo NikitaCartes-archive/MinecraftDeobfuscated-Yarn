@@ -3,7 +3,7 @@
  */
 package net.minecraft.client.render.entity.model;
 
-import com.mojang.blaze3d.platform.GlStateManager;
+import com.mojang.blaze3d.systems.RenderSystem;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.model.ModelPart;
@@ -40,7 +40,7 @@ extends EntityModel<T> {
     @Override
     public void render(T entity, float f, float g, float h, float i, float j, float k) {
         this.setAngles(entity, f, g, h, i, j, k);
-        GlStateManager.translatef(0.0f, 0.001f, 0.0f);
+        RenderSystem.translatef(0.0f, 0.001f, 0.0f);
         this.field_3571.render(k);
         if (this.field_3573 != null) {
             this.field_3573.render(k);

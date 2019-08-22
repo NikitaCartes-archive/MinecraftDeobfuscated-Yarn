@@ -25,13 +25,13 @@ import net.minecraft.data.server.ChestLootTableGenerator;
 import net.minecraft.data.server.EntityLootTableGenerator;
 import net.minecraft.data.server.FishingLootTableGenerator;
 import net.minecraft.data.server.GiftLootTableGenerator;
-import net.minecraft.loot.LootManager;
-import net.minecraft.loot.LootTable;
-import net.minecraft.loot.LootTableReporter;
-import net.minecraft.loot.LootTables;
-import net.minecraft.loot.context.LootContextType;
-import net.minecraft.loot.context.LootContextTypes;
 import net.minecraft.util.Identifier;
+import net.minecraft.world.loot.LootManager;
+import net.minecraft.world.loot.LootSupplier;
+import net.minecraft.world.loot.LootTableReporter;
+import net.minecraft.world.loot.LootTables;
+import net.minecraft.world.loot.context.LootContextType;
+import net.minecraft.world.loot.context.LootContextTypes;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -40,7 +40,7 @@ implements DataProvider {
     private static final Logger LOGGER = LogManager.getLogger();
     private static final Gson GSON = new GsonBuilder().setPrettyPrinting().disableHtmlEscaping().create();
     private final DataGenerator root;
-    private final List<Pair<Supplier<Consumer<BiConsumer<Identifier, LootTable.Builder>>>, LootContextType>> field_11354 = ImmutableList.of(Pair.of(FishingLootTableGenerator::new, LootContextTypes.FISHING), Pair.of(ChestLootTableGenerator::new, LootContextTypes.CHEST), Pair.of(EntityLootTableGenerator::new, LootContextTypes.ENTITY), Pair.of(BlockLootTableGenerator::new, LootContextTypes.BLOCK), Pair.of(GiftLootTableGenerator::new, LootContextTypes.GIFT));
+    private final List<Pair<Supplier<Consumer<BiConsumer<Identifier, LootSupplier.Builder>>>, LootContextType>> field_11354 = ImmutableList.of(Pair.of(FishingLootTableGenerator::new, LootContextTypes.FISHING), Pair.of(ChestLootTableGenerator::new, LootContextTypes.CHEST), Pair.of(EntityLootTableGenerator::new, LootContextTypes.ENTITY), Pair.of(BlockLootTableGenerator::new, LootContextTypes.BLOCK), Pair.of(GiftLootTableGenerator::new, LootContextTypes.GIFT));
 
     public LootTablesProvider(DataGenerator dataGenerator) {
         this.root = dataGenerator;
@@ -49,7 +49,7 @@ implements DataProvider {
     @Override
     public void run(DataCache dataCache) {
         Path path = this.root.getOutput();
-        HashMap<Identifier, LootTable> map = Maps.newHashMap();
+        HashMap<Identifier, LootSupplier> map = Maps.newHashMap();
         this.field_11354.forEach(pair -> ((Consumer)((Supplier)pair.getFirst()).get()).accept((identifier, builder) -> {
             if (map.put((Identifier)identifier, builder.withType((LootContextType)pair.getSecond()).create()) != null) {
                 throw new IllegalStateException("Duplicate loot table " + identifier);
@@ -60,16 +60,16 @@ implements DataProvider {
         for (Identifier identifier2 : set) {
             lootTableReporter.report("Missing built-in table: " + identifier2);
         }
-        map.forEach((identifier, lootTable) -> LootManager.check(lootTableReporter, identifier, lootTable, map::get));
+        map.forEach((identifier, lootSupplier) -> LootManager.check(lootTableReporter, identifier, lootSupplier, map::get));
         Multimap<String, String> multimap = lootTableReporter.getMessages();
         if (!multimap.isEmpty()) {
             multimap.forEach((string, string2) -> LOGGER.warn("Found validation problem in " + string + ": " + string2));
             throw new IllegalStateException("Failed to validate loot tables, see logs");
         }
-        map.forEach((identifier, lootTable) -> {
+        map.forEach((identifier, lootSupplier) -> {
             Path path2 = LootTablesProvider.getOutput(path, identifier);
             try {
-                DataProvider.writeToPath(GSON, dataCache, LootManager.toJson(lootTable), path2);
+                DataProvider.writeToPath(GSON, dataCache, LootManager.toJson(lootSupplier), path2);
             } catch (IOException iOException) {
                 LOGGER.error("Couldn't save loot table {}", (Object)path2, (Object)iOException);
             }

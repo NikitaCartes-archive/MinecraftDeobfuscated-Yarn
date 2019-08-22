@@ -162,7 +162,7 @@ extends AbstractMinecartEntity {
     @Override
     protected void readCustomDataFromTag(CompoundTag compoundTag) {
         super.readCustomDataFromTag(compoundTag);
-        if (compoundTag.contains("TNTFuse", 99)) {
+        if (compoundTag.containsKey("TNTFuse", 99)) {
             this.fuseTicks = compoundTag.getInt("TNTFuse");
         }
     }

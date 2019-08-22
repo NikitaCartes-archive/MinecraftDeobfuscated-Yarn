@@ -23,10 +23,10 @@ extends Goal {
 
     @Override
     public boolean canStart() {
-        if (!this.golem.world.isDay()) {
+        if (!this.golem.world.isDaylight()) {
             return false;
         }
-        if (this.golem.getRandom().nextInt(8000) != 0) {
+        if (this.golem.getRand().nextInt(8000) != 0) {
             return false;
         }
         this.targetVillager = this.golem.world.method_21726(VillagerEntity.class, CLOSE_VILLAGER_PREDICATE, this.golem, this.golem.x, this.golem.y, this.golem.z, this.golem.getBoundingBox().expand(6.0, 2.0, 6.0));

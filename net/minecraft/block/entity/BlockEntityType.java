@@ -15,6 +15,7 @@ import net.minecraft.block.entity.BannerBlockEntity;
 import net.minecraft.block.entity.BarrelBlockEntity;
 import net.minecraft.block.entity.BeaconBlockEntity;
 import net.minecraft.block.entity.BedBlockEntity;
+import net.minecraft.block.entity.BeeHiveBlockEntity;
 import net.minecraft.block.entity.BellBlockEntity;
 import net.minecraft.block.entity.BlastFurnaceBlockEntity;
 import net.minecraft.block.entity.BlockEntity;
@@ -44,8 +45,8 @@ import net.minecraft.block.entity.SkullBlockEntity;
 import net.minecraft.block.entity.SmokerBlockEntity;
 import net.minecraft.block.entity.StructureBlockBlockEntity;
 import net.minecraft.block.entity.TrappedChestBlockEntity;
-import net.minecraft.datafixer.Schemas;
-import net.minecraft.datafixer.TypeReferences;
+import net.minecraft.datafixers.Schemas;
+import net.minecraft.datafixers.TypeReferences;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.registry.Registry;
 import org.apache.logging.log4j.LogManager;
@@ -86,6 +87,7 @@ public class BlockEntityType<T extends BlockEntity> {
     public static final BlockEntityType<BellBlockEntity> BELL = BlockEntityType.create("bell", Builder.create(BellBlockEntity::new, Blocks.BELL));
     public static final BlockEntityType<JigsawBlockEntity> JIGSAW = BlockEntityType.create("jigsaw", Builder.create(JigsawBlockEntity::new, Blocks.JIGSAW));
     public static final BlockEntityType<CampfireBlockEntity> CAMPFIRE = BlockEntityType.create("campfire", Builder.create(CampfireBlockEntity::new, Blocks.CAMPFIRE));
+    public static final BlockEntityType<BeeHiveBlockEntity> BEEHIVE = BlockEntityType.create("beehive", Builder.create(BeeHiveBlockEntity::new, Blocks.BEE_NEST, Blocks.BEE_HIVE));
     private final Supplier<? extends T> supplier;
     private final Set<Block> blocks;
     private final Type<?> type;
@@ -96,14 +98,16 @@ public class BlockEntityType<T extends BlockEntity> {
     }
 
     private static <T extends BlockEntity> BlockEntityType<T> create(String string, Builder<T> builder) {
-        Type<?> type = null;
-        try {
-            type = Schemas.getFixer().getSchema(DataFixUtils.makeKey(SharedConstants.getGameVersion().getWorldVersion())).getChoiceType(TypeReferences.BLOCK_ENTITY, string);
-        } catch (IllegalStateException illegalStateException) {
-            if (SharedConstants.isDevelopment) {
-                throw illegalStateException;
+        Type<?> type;
+        block3: {
+            type = null;
+            try {
+                type = Schemas.getFixer().getSchema(DataFixUtils.makeKey(SharedConstants.getGameVersion().getWorldVersion())).getChoiceType(TypeReferences.BLOCK_ENTITY, string);
+            } catch (IllegalArgumentException illegalArgumentException) {
+                LOGGER.error("No data fixer registered for block entity {}", (Object)string);
+                if (!SharedConstants.isDevelopment) break block3;
+                throw illegalArgumentException;
             }
-            LOGGER.warn("No data fixer registered for block entity {}", (Object)string);
         }
         if (((Builder)builder).blocks.isEmpty()) {
             LOGGER.warn("Block entity type {} requires at least one valid block to be defined!", (Object)string);

@@ -23,7 +23,7 @@ public class BrewingRecipeRegistry {
     private static final List<Ingredient> POTION_TYPES = Lists.newArrayList();
     private static final Predicate<ItemStack> POTION_TYPE_PREDICATE = itemStack -> {
         for (Ingredient ingredient : POTION_TYPES) {
-            if (!ingredient.test((ItemStack)itemStack)) continue;
+            if (!ingredient.method_8093((ItemStack)itemStack)) continue;
             return true;
         }
         return false;
@@ -36,7 +36,7 @@ public class BrewingRecipeRegistry {
     protected static boolean isItemRecipeIngredient(ItemStack itemStack) {
         int j = ITEM_RECIPES.size();
         for (int i = 0; i < j; ++i) {
-            if (!((Recipe)ITEM_RECIPES.get(i)).ingredient.test(itemStack)) continue;
+            if (!((Recipe)ITEM_RECIPES.get(i)).ingredient.method_8093(itemStack)) continue;
             return true;
         }
         return false;
@@ -45,7 +45,7 @@ public class BrewingRecipeRegistry {
     protected static boolean isPotionRecipeIngredient(ItemStack itemStack) {
         int j = POTION_RECIPES.size();
         for (int i = 0; i < j; ++i) {
-            if (!((Recipe)POTION_RECIPES.get(i)).ingredient.test(itemStack)) continue;
+            if (!((Recipe)POTION_RECIPES.get(i)).ingredient.method_8093(itemStack)) continue;
             return true;
         }
         return false;
@@ -72,7 +72,7 @@ public class BrewingRecipeRegistry {
         int j = ITEM_RECIPES.size();
         for (int i = 0; i < j; ++i) {
             Recipe<Item> recipe = ITEM_RECIPES.get(i);
-            if (((Recipe)recipe).input != item || !((Recipe)recipe).ingredient.test(itemStack2)) continue;
+            if (((Recipe)recipe).input != item || !((Recipe)recipe).ingredient.method_8093(itemStack2)) continue;
             return true;
         }
         return false;
@@ -83,7 +83,7 @@ public class BrewingRecipeRegistry {
         int j = POTION_RECIPES.size();
         for (int i = 0; i < j; ++i) {
             Recipe<Potion> recipe = POTION_RECIPES.get(i);
-            if (((Recipe)recipe).input != potion || !((Recipe)recipe).ingredient.test(itemStack2)) continue;
+            if (((Recipe)recipe).input != potion || !((Recipe)recipe).ingredient.method_8093(itemStack2)) continue;
             return true;
         }
         return false;
@@ -98,13 +98,13 @@ public class BrewingRecipeRegistry {
             int j = ITEM_RECIPES.size();
             for (i = 0; i < j; ++i) {
                 recipe = ITEM_RECIPES.get(i);
-                if (((Recipe)recipe).input != item || !((Recipe)recipe).ingredient.test(itemStack)) continue;
+                if (((Recipe)recipe).input != item || !((Recipe)recipe).ingredient.method_8093(itemStack)) continue;
                 return PotionUtil.setPotion(new ItemStack((ItemConvertible)((Recipe)recipe).output), potion);
             }
             j = POTION_RECIPES.size();
             for (i = 0; i < j; ++i) {
                 recipe = POTION_RECIPES.get(i);
-                if (((Recipe)recipe).input != potion || !((Recipe)recipe).ingredient.test(itemStack)) continue;
+                if (((Recipe)recipe).input != potion || !((Recipe)recipe).ingredient.method_8093(itemStack)) continue;
                 return PotionUtil.setPotion(new ItemStack(item), (Potion)((Recipe)recipe).output);
             }
         }

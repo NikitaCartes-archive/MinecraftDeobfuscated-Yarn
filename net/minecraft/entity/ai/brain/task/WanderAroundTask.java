@@ -6,7 +6,7 @@ package net.minecraft.entity.ai.brain.task;
 import com.google.common.collect.ImmutableMap;
 import java.util.Optional;
 import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.ai.TargetFinder;
+import net.minecraft.entity.ai.PathfindingUtil;
 import net.minecraft.entity.ai.brain.Brain;
 import net.minecraft.entity.ai.brain.MemoryModuleState;
 import net.minecraft.entity.ai.brain.MemoryModuleType;
@@ -34,8 +34,7 @@ extends Task<MobEntity> {
         super(ImmutableMap.of(MemoryModuleType.PATH, MemoryModuleState.VALUE_ABSENT, MemoryModuleType.WALK_TARGET, MemoryModuleState.VALUE_PRESENT), i);
     }
 
-    @Override
-    protected boolean shouldRun(ServerWorld serverWorld, MobEntity mobEntity) {
+    protected boolean method_18978(ServerWorld serverWorld, MobEntity mobEntity) {
         Brain<?> brain = mobEntity.getBrain();
         WalkTarget walkTarget = brain.getOptionalMemory(MemoryModuleType.WALK_TARGET).get();
         if (!this.method_18980(mobEntity, walkTarget) && this.method_18977(mobEntity, walkTarget, serverWorld.getTime())) {
@@ -46,8 +45,7 @@ extends Task<MobEntity> {
         return false;
     }
 
-    @Override
-    protected boolean shouldKeepRunning(ServerWorld serverWorld, MobEntity mobEntity, long l) {
+    protected boolean method_18979(ServerWorld serverWorld, MobEntity mobEntity, long l) {
         if (this.field_18369 == null || this.field_18370 == null) {
             return false;
         }
@@ -56,23 +54,20 @@ extends Task<MobEntity> {
         return !entityNavigation.isIdle() && optional.isPresent() && !this.method_18980(mobEntity, optional.get());
     }
 
-    @Override
-    protected void finishRunning(ServerWorld serverWorld, MobEntity mobEntity, long l) {
+    protected void method_18981(ServerWorld serverWorld, MobEntity mobEntity, long l) {
         mobEntity.getNavigation().stop();
         mobEntity.getBrain().forget(MemoryModuleType.WALK_TARGET);
         mobEntity.getBrain().forget(MemoryModuleType.PATH);
         this.field_18369 = null;
     }
 
-    @Override
-    protected void run(ServerWorld serverWorld, MobEntity mobEntity, long l) {
+    protected void method_18982(ServerWorld serverWorld, MobEntity mobEntity, long l) {
         mobEntity.getBrain().putMemory(MemoryModuleType.PATH, this.field_18369);
         mobEntity.getNavigation().startMovingAlong(this.field_18369, this.field_18371);
         this.field_18964 = serverWorld.getRandom().nextInt(10);
     }
 
-    @Override
-    protected void keepRunning(ServerWorld serverWorld, MobEntity mobEntity, long l) {
+    protected void method_18983(ServerWorld serverWorld, MobEntity mobEntity, long l) {
         --this.field_18964;
         if (this.field_18964 > 0) {
             return;
@@ -89,7 +84,7 @@ extends Task<MobEntity> {
         WalkTarget walkTarget = brain.getOptionalMemory(MemoryModuleType.WALK_TARGET).get();
         if (walkTarget.getLookTarget().getBlockPos().getSquaredDistance(this.field_18370) > 4.0 && this.method_18977(mobEntity, walkTarget, serverWorld.getTime())) {
             this.field_18370 = walkTarget.getLookTarget().getBlockPos();
-            this.run(serverWorld, mobEntity, l);
+            this.method_18982(serverWorld, mobEntity, l);
         }
     }
 
@@ -109,7 +104,7 @@ extends Task<MobEntity> {
             if (this.field_18369 != null) {
                 return true;
             }
-            Vec3d vec3d = TargetFinder.method_6373((MobEntityWithAi)mobEntity, 10, 7, new Vec3d(blockPos));
+            Vec3d vec3d = PathfindingUtil.method_6373((MobEntityWithAi)mobEntity, 10, 7, new Vec3d(blockPos));
             if (vec3d != null) {
                 this.field_18369 = mobEntity.getNavigation().findPathTo(vec3d.x, vec3d.y, vec3d.z, 0);
                 return this.field_18369 != null;
@@ -124,17 +119,17 @@ extends Task<MobEntity> {
 
     @Override
     protected /* synthetic */ boolean shouldKeepRunning(ServerWorld serverWorld, LivingEntity livingEntity, long l) {
-        return this.shouldKeepRunning(serverWorld, (MobEntity)livingEntity, l);
+        return this.method_18979(serverWorld, (MobEntity)livingEntity, l);
     }
 
     @Override
     protected /* synthetic */ void finishRunning(ServerWorld serverWorld, LivingEntity livingEntity, long l) {
-        this.finishRunning(serverWorld, (MobEntity)livingEntity, l);
+        this.method_18981(serverWorld, (MobEntity)livingEntity, l);
     }
 
     @Override
     protected /* synthetic */ void run(ServerWorld serverWorld, LivingEntity livingEntity, long l) {
-        this.run(serverWorld, (MobEntity)livingEntity, l);
+        this.method_18982(serverWorld, (MobEntity)livingEntity, l);
     }
 }
 

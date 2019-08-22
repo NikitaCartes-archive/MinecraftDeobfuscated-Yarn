@@ -17,11 +17,12 @@ import net.minecraft.entity.Entity;
 import net.minecraft.fluid.Fluid;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.structure.StructureStart;
+import net.minecraft.util.SystemUtil;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
+import net.minecraft.world.BlockViewWithStructures;
 import net.minecraft.world.Heightmap;
 import net.minecraft.world.LightType;
-import net.minecraft.world.StructureHolder;
 import net.minecraft.world.TickScheduler;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.chunk.ChunkSection;
@@ -33,7 +34,7 @@ import org.apache.logging.log4j.LogManager;
 import org.jetbrains.annotations.Nullable;
 
 public interface Chunk
-extends StructureHolder {
+extends BlockViewWithStructures {
     @Nullable
     public BlockState setBlockState(BlockPos var1, BlockState var2, boolean var3);
 
@@ -143,7 +144,7 @@ extends StructureHolder {
     public CompoundTag method_20598(BlockPos var1);
 
     default public void setBiomeArray(Biome[] biomes) {
-        throw new UnsupportedOperationException();
+        throw SystemUtil.method_22320(new UnsupportedOperationException());
     }
 
     public Stream<BlockPos> getLightSourcesStream();
@@ -153,7 +154,7 @@ extends StructureHolder {
     public TickScheduler<Fluid> getFluidTickScheduler();
 
     default public BitSet getCarvingMask(GenerationStep.Carver carver) {
-        throw new RuntimeException("Meaningless in this context");
+        throw SystemUtil.method_22320(new RuntimeException("Meaningless in this context"));
     }
 
     public UpgradeData getUpgradeData();

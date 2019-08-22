@@ -11,8 +11,8 @@ import net.minecraft.structure.StructurePiece;
 import net.minecraft.structure.StructurePieceType;
 import net.minecraft.structure.StructureStart;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.math.BlockBox;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.MutableIntBoundingBox;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.biome.source.BiomeSource;
@@ -61,13 +61,14 @@ public class StructureFeatures {
         }
         int i = compoundTag.getInt("ChunkX");
         int j = compoundTag.getInt("ChunkZ");
-        Biome biome = compoundTag.contains("biome") ? Registry.BIOME.get(new Identifier(compoundTag.getString("biome"))) : biomeSource.getBiome(new BlockPos((i << 4) + 9, 0, (j << 4) + 9));
-        BlockBox blockBox = compoundTag.contains("BB") ? new BlockBox(compoundTag.getIntArray("BB")) : BlockBox.empty();
+        int k = compoundTag.getInt("references");
+        Biome biome = compoundTag.containsKey("biome") ? Registry.BIOME.get(new Identifier(compoundTag.getString("biome"))) : biomeSource.getBiome(new BlockPos((i << 4) + 9, 0, (j << 4) + 9));
+        MutableIntBoundingBox mutableIntBoundingBox = compoundTag.containsKey("BB") ? new MutableIntBoundingBox(compoundTag.getIntArray("BB")) : MutableIntBoundingBox.empty();
         ListTag listTag = compoundTag.getList("Children", 10);
         try {
-            StructureStart structureStart = structureFeature.getStructureStartFactory().create(structureFeature, i, j, biome, blockBox, 0, chunkGenerator.getSeed());
-            for (int k = 0; k < listTag.size(); ++k) {
-                CompoundTag compoundTag2 = listTag.getCompound(k);
+            StructureStart structureStart = structureFeature.getStructureStartFactory().create(structureFeature, i, j, biome, mutableIntBoundingBox, k, chunkGenerator.getSeed());
+            for (int l = 0; l < listTag.size(); ++l) {
+                CompoundTag compoundTag2 = listTag.getCompoundTag(l);
                 String string2 = compoundTag2.getString("id");
                 StructurePieceType structurePieceType = Registry.STRUCTURE_PIECE.get(new Identifier(string2.toLowerCase(Locale.ROOT)));
                 if (structurePieceType == null) {

@@ -3,7 +3,7 @@
  */
 package net.minecraft.client.render.entity;
 
-import com.mojang.blaze3d.platform.GlStateManager;
+import com.mojang.blaze3d.systems.RenderSystem;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.render.entity.EntityRenderDispatcher;
@@ -23,30 +23,27 @@ extends MobEntityRenderer<SquidEntity, SquidEntityModel<SquidEntity>> {
         super(entityRenderDispatcher, new SquidEntityModel(), 0.7f);
     }
 
-    @Override
-    protected Identifier getTexture(SquidEntity squidEntity) {
+    protected Identifier method_4127(SquidEntity squidEntity) {
         return SKIN;
     }
 
-    @Override
-    protected void setupTransforms(SquidEntity squidEntity, float f, float g, float h) {
+    protected void method_4126(SquidEntity squidEntity, float f, float g, float h) {
         float i = MathHelper.lerp(h, squidEntity.field_6905, squidEntity.field_6907);
         float j = MathHelper.lerp(h, squidEntity.field_6906, squidEntity.field_6903);
-        GlStateManager.translatef(0.0f, 0.5f, 0.0f);
-        GlStateManager.rotatef(180.0f - g, 0.0f, 1.0f, 0.0f);
-        GlStateManager.rotatef(i, 1.0f, 0.0f, 0.0f);
-        GlStateManager.rotatef(j, 0.0f, 1.0f, 0.0f);
-        GlStateManager.translatef(0.0f, -1.2f, 0.0f);
+        RenderSystem.translatef(0.0f, 0.5f, 0.0f);
+        RenderSystem.rotatef(180.0f - g, 0.0f, 1.0f, 0.0f);
+        RenderSystem.rotatef(i, 1.0f, 0.0f, 0.0f);
+        RenderSystem.rotatef(j, 0.0f, 1.0f, 0.0f);
+        RenderSystem.translatef(0.0f, -1.2f, 0.0f);
     }
 
-    @Override
-    protected float getAnimationProgress(SquidEntity squidEntity, float f) {
+    protected float method_4125(SquidEntity squidEntity, float f) {
         return MathHelper.lerp(f, squidEntity.field_6900, squidEntity.field_6904);
     }
 
     @Override
-    protected /* synthetic */ float getAnimationProgress(LivingEntity livingEntity, float f) {
-        return this.getAnimationProgress((SquidEntity)livingEntity, f);
+    protected /* synthetic */ float getAge(LivingEntity livingEntity, float f) {
+        return this.method_4125((SquidEntity)livingEntity, f);
     }
 }
 

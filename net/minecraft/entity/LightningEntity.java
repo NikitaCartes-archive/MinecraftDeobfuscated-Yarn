@@ -9,11 +9,11 @@ import net.fabricmc.api.Environment;
 import net.minecraft.advancement.criterion.Criterions;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
+import net.minecraft.client.network.packet.EntitySpawnGlobalS2CPacket;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.Packet;
-import net.minecraft.network.packet.s2c.play.EntitySpawnGlobalS2CPacket;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
@@ -36,7 +36,7 @@ extends Entity {
     public LightningEntity(World world, double d, double e, double f, boolean bl) {
         super(EntityType.LIGHTNING_BOLT, world);
         this.ignoreCameraFrustum = true;
-        this.refreshPositionAndAngles(d, e, f, 0.0f, 0.0f);
+        this.setPositionAndAngles(d, e, f, 0.0f, 0.0f);
         this.ambientTick = 2;
         this.seed = this.random.nextLong();
         this.remainingActions = this.random.nextInt(3) + 1;
@@ -76,7 +76,7 @@ extends Entity {
         }
         if (this.ambientTick >= 0) {
             if (this.world.isClient) {
-                this.world.setLightningTicksLeft(2);
+                this.world.setTicksSinceLightning(2);
             } else if (!this.cosmetic) {
                 double d = 3.0;
                 List<Entity> list = this.world.getEntities(this, new Box(this.x - 3.0, this.y - 3.0, this.z - 3.0, this.x + 3.0, this.y + 6.0 + 3.0, this.z + 3.0), Entity::isAlive);
@@ -84,7 +84,7 @@ extends Entity {
                     entity.onStruckByLightning(this);
                 }
                 if (this.channeller != null) {
-                    Criterions.CHANNELED_LIGHTNING.trigger(this.channeller, list);
+                    Criterions.CHANNELED_LIGHTNING.handle(this.channeller, list);
                 }
             }
         }
@@ -108,7 +108,7 @@ extends Entity {
 
     @Override
     @Environment(value=EnvType.CLIENT)
-    public boolean shouldRender(double d) {
+    public boolean shouldRenderAtDistance(double d) {
         double e = 64.0 * LightningEntity.getRenderDistanceMultiplier();
         return d < e * e;
     }

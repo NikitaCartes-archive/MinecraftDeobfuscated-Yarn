@@ -10,7 +10,7 @@ import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.entity.EntityContext;
 import net.minecraft.item.ItemPlacementContext;
-import net.minecraft.state.StateManager;
+import net.minecraft.state.StateFactory;
 import net.minecraft.state.property.IntProperty;
 import net.minecraft.state.property.Properties;
 import net.minecraft.util.math.BlockPos;
@@ -18,9 +18,9 @@ import net.minecraft.util.math.Direction;
 import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.util.shape.VoxelShapes;
 import net.minecraft.world.BlockView;
-import net.minecraft.world.CollisionView;
 import net.minecraft.world.IWorld;
 import net.minecraft.world.LightType;
+import net.minecraft.world.ViewableWorld;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
 
@@ -31,7 +31,7 @@ extends Block {
 
     protected SnowBlock(Block.Settings settings) {
         super(settings);
-        this.setDefaultState((BlockState)((BlockState)this.stateManager.getDefaultState()).with(LAYERS, 1));
+        this.setDefaultState((BlockState)((BlockState)this.stateFactory.getDefaultState()).with(LAYERS, 1));
     }
 
     @Override
@@ -66,13 +66,13 @@ extends Block {
     }
 
     @Override
-    public boolean canPlaceAt(BlockState blockState, CollisionView collisionView, BlockPos blockPos) {
-        BlockState blockState2 = collisionView.getBlockState(blockPos.down());
+    public boolean canPlaceAt(BlockState blockState, ViewableWorld viewableWorld, BlockPos blockPos) {
+        BlockState blockState2 = viewableWorld.getBlockState(blockPos.down());
         Block block = blockState2.getBlock();
         if (block == Blocks.ICE || block == Blocks.PACKED_ICE || block == Blocks.BARRIER) {
             return false;
         }
-        return Block.isFaceFullSquare(blockState2.getCollisionShape(collisionView, blockPos.down()), Direction.UP) || block == this && blockState2.get(LAYERS) == 8;
+        return Block.isFaceFullSquare(blockState2.getCollisionShape(viewableWorld, blockPos.down()), Direction.UP) || block == this && blockState2.get(LAYERS) == 8;
     }
 
     @Override
@@ -87,7 +87,7 @@ extends Block {
     public void onScheduledTick(BlockState blockState, World world, BlockPos blockPos, Random random) {
         if (world.getLightLevel(LightType.BLOCK, blockPos) > 11) {
             SnowBlock.dropStacks(blockState, world, blockPos);
-            world.removeBlock(blockPos, false);
+            world.clearBlockState(blockPos, false);
         }
     }
 
@@ -115,7 +115,7 @@ extends Block {
     }
 
     @Override
-    protected void appendProperties(StateManager.Builder<Block, BlockState> builder) {
+    protected void appendProperties(StateFactory.Builder<Block, BlockState> builder) {
         builder.add(LAYERS);
     }
 }

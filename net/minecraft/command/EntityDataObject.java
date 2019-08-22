@@ -65,17 +65,17 @@ implements DataCommandObject {
     }
 
     @Override
-    public Text feedbackModify() {
+    public Text getModifiedFeedback() {
         return new TranslatableText("commands.data.entity.modified", this.field_13801.getDisplayName());
     }
 
     @Override
-    public Text feedbackQuery(Tag tag) {
+    public Text getQueryFeedback(Tag tag) {
         return new TranslatableText("commands.data.entity.query", this.field_13801.getDisplayName(), tag.toText());
     }
 
     @Override
-    public Text feedbackGet(NbtPathArgumentType.NbtPath nbtPath, double d, int i) {
+    public Text getGetFeedback(NbtPathArgumentType.NbtPath nbtPath, double d, int i) {
         return new TranslatableText("commands.data.entity.get", nbtPath, this.field_13801.getDisplayName(), String.format(Locale.ROOT, "%.2f", d), i);
     }
 }

@@ -11,7 +11,7 @@ import net.minecraft.advancement.criterion.Criterions;
 import net.minecraft.block.BedBlock;
 import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
-import net.minecraft.datafixer.NbtOps;
+import net.minecraft.datafixers.NbtOps;
 import net.minecraft.entity.EntityData;
 import net.minecraft.entity.EntityInteraction;
 import net.minecraft.entity.EntityType;
@@ -89,19 +89,19 @@ implements VillagerDataContainer {
     @Override
     public void readCustomDataFromTag(CompoundTag compoundTag) {
         super.readCustomDataFromTag(compoundTag);
-        if (compoundTag.contains("VillagerData", 10)) {
-            this.setVillagerData(new VillagerData(new Dynamic<Tag>(NbtOps.INSTANCE, compoundTag.get("VillagerData"))));
+        if (compoundTag.containsKey("VillagerData", 10)) {
+            this.setVillagerData(new VillagerData(new Dynamic<Tag>(NbtOps.INSTANCE, compoundTag.getTag("VillagerData"))));
         }
-        if (compoundTag.contains("Offers", 10)) {
+        if (compoundTag.containsKey("Offers", 10)) {
             this.offerData = compoundTag.getCompound("Offers");
         }
-        if (compoundTag.contains("Gossips", 10)) {
+        if (compoundTag.containsKey("Gossips", 10)) {
             this.field_20299 = compoundTag.getList("Gossips", 10);
         }
-        if (compoundTag.contains("ConversionTime", 99) && compoundTag.getInt("ConversionTime") > -1) {
-            this.setConverting(compoundTag.containsUuid("ConversionPlayer") ? compoundTag.getUuid("ConversionPlayer") : null, compoundTag.getInt("ConversionTime"));
+        if (compoundTag.containsKey("ConversionTime", 99) && compoundTag.getInt("ConversionTime") > -1) {
+            this.setConverting(compoundTag.hasUuid("ConversionPlayer") ? compoundTag.getUuid("ConversionPlayer") : null, compoundTag.getInt("ConversionTime"));
         }
-        if (compoundTag.contains("Xp", 3)) {
+        if (compoundTag.containsKey("Xp", 3)) {
             this.xp = compoundTag.getInt("Xp");
         }
     }
@@ -151,7 +151,7 @@ implements VillagerDataContainer {
         this.converter = uUID;
         this.conversionTimer = i;
         this.getDataTracker().set(CONVERTING, true);
-        this.removeStatusEffect(StatusEffects.WEAKNESS);
+        this.tryRemoveStatusEffect(StatusEffects.WEAKNESS);
         this.addStatusEffect(new StatusEffectInstance(StatusEffects.STRENGTH, i, Math.min(this.world.getDifficulty().getId() - 1, 0)));
         this.world.sendEntityStatus(this, (byte)16);
     }
@@ -192,7 +192,7 @@ implements VillagerDataContainer {
         }
         serverWorld.spawnEntity(villagerEntity);
         if (this.converter != null && (playerEntity = serverWorld.getPlayerByUuid(this.converter)) instanceof ServerPlayerEntity) {
-            Criterions.CURED_ZOMBIE_VILLAGER.trigger((ServerPlayerEntity)playerEntity, this, villagerEntity);
+            Criterions.CURED_ZOMBIE_VILLAGER.handle((ServerPlayerEntity)playerEntity, this, villagerEntity);
             serverWorld.handleInteraction(EntityInteraction.ZOMBIE_VILLAGER_CURED, playerEntity, villagerEntity);
         }
         villagerEntity.addStatusEffect(new StatusEffectInstance(StatusEffects.NAUSEA, 200, 0));

@@ -53,7 +53,7 @@ extends ProjectileEntity {
     @Override
     public void readCustomDataFromTag(CompoundTag compoundTag) {
         super.readCustomDataFromTag(compoundTag);
-        if (compoundTag.contains("Duration")) {
+        if (compoundTag.containsKey("Duration")) {
             this.duration = compoundTag.getInt("Duration");
         }
     }

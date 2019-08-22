@@ -31,7 +31,7 @@ import net.minecraft.resource.ResourceManager;
 import net.minecraft.tag.Tag;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.JsonHelper;
-import net.minecraft.util.Util;
+import net.minecraft.util.SystemUtil;
 import org.apache.commons.io.IOUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -41,7 +41,7 @@ public class TagContainer<T> {
     private static final Logger LOGGER = LogManager.getLogger();
     private static final Gson GSON = new Gson();
     private static final int JSON_EXTENSION_LENGTH = ".json".length();
-    private Map<Identifier, Tag<T>> entries = ImmutableMap.of();
+    private Map<Identifier, Tag<T>> idMap = ImmutableMap.of();
     private final Function<Identifier, Optional<T>> getter;
     private final String dataType;
     private final boolean ordered;
@@ -56,11 +56,11 @@ public class TagContainer<T> {
 
     @Nullable
     public Tag<T> get(Identifier identifier) {
-        return this.entries.get(identifier);
+        return this.idMap.get(identifier);
     }
 
     public Tag<T> getOrCreate(Identifier identifier) {
-        Tag<T> tag = this.entries.get(identifier);
+        Tag<T> tag = this.idMap.get(identifier);
         if (tag == null) {
             return new Tag(identifier);
         }
@@ -68,13 +68,13 @@ public class TagContainer<T> {
     }
 
     public Collection<Identifier> getKeys() {
-        return this.entries.keySet();
+        return this.idMap.keySet();
     }
 
     @Environment(value=EnvType.CLIENT)
     public Collection<Identifier> getTagsFor(T object) {
         ArrayList<Identifier> list = Lists.newArrayList();
-        for (Map.Entry<Identifier, Tag<T>> entry : this.entries.entrySet()) {
+        for (Map.Entry<Identifier, Tag<T>> entry : this.idMap.entrySet()) {
             if (!entry.getValue().contains(object)) continue;
             list.add(entry.getKey());
         }
@@ -101,7 +101,7 @@ public class TagContainer<T> {
                                         LOGGER.error("Couldn't load {} tag list {} from {} in data pack {} as it's empty or null", (Object)this.entryType, (Object)identifier22, (Object)identifier2, (Object)resource.getResourcePackName());
                                         continue;
                                     }
-                                    map.computeIfAbsent(identifier22, identifier -> Util.make(Tag.Builder.create(), builder -> builder.ordered(this.ordered))).fromJson(this.getter, jsonObject);
+                                    map.computeIfAbsent(identifier22, identifier -> SystemUtil.consume(Tag.Builder.create(), builder -> builder.ordered(this.ordered))).fromJson(this.getter, jsonObject);
                                 } catch (Throwable throwable3) {
                                     throwable2 = throwable3;
                                     throw throwable3;
@@ -169,11 +169,11 @@ public class TagContainer<T> {
     }
 
     protected void method_20735(Map<Identifier, Tag<T>> map) {
-        this.entries = ImmutableMap.copyOf(map);
+        this.idMap = ImmutableMap.copyOf(map);
     }
 
     public Map<Identifier, Tag<T>> getEntries() {
-        return this.entries;
+        return this.idMap;
     }
 }
 

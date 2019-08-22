@@ -7,12 +7,12 @@ import java.util.Random;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.block.Block;
+import net.minecraft.block.BlockRenderLayer;
 import net.minecraft.block.BlockState;
-import net.minecraft.client.render.RenderLayer;
 import net.minecraft.entity.EntityType;
 import net.minecraft.item.ItemPlacementContext;
 import net.minecraft.particle.ParticleTypes;
-import net.minecraft.state.StateManager;
+import net.minecraft.state.StateFactory;
 import net.minecraft.state.property.BooleanProperty;
 import net.minecraft.state.property.IntProperty;
 import net.minecraft.state.property.Properties;
@@ -31,7 +31,7 @@ extends Block {
 
     public LeavesBlock(Block.Settings settings) {
         super(settings);
-        this.setDefaultState((BlockState)((BlockState)((BlockState)this.stateManager.getDefaultState()).with(DISTANCE, 7)).with(PERSISTENT, false));
+        this.setDefaultState((BlockState)((BlockState)((BlockState)this.stateFactory.getDefaultState()).with(DISTANCE, 7)).with(PERSISTENT, false));
     }
 
     @Override
@@ -43,7 +43,7 @@ extends Block {
     public void onRandomTick(BlockState blockState, World world, BlockPos blockPos, Random random) {
         if (!blockState.get(PERSISTENT).booleanValue() && blockState.get(DISTANCE) == 7) {
             LeavesBlock.dropStacks(blockState, world, blockPos);
-            world.removeBlock(blockPos, false);
+            world.clearBlockState(blockPos, false);
         }
     }
 
@@ -53,7 +53,7 @@ extends Block {
     }
 
     @Override
-    public int getOpacity(BlockState blockState, BlockView blockView, BlockPos blockPos) {
+    public int getLightSubtracted(BlockState blockState, BlockView blockView, BlockPos blockPos) {
         return 1;
     }
 
@@ -70,7 +70,7 @@ extends Block {
         int i = 7;
         try (BlockPos.PooledMutable pooledMutable = BlockPos.PooledMutable.get();){
             for (Direction direction : Direction.values()) {
-                pooledMutable.set(blockPos).setOffset(direction);
+                pooledMutable.method_10114(blockPos).method_10118(direction);
                 i = Math.min(i, LeavesBlock.getDistanceFromLog(iWorld.getBlockState(pooledMutable)) + 1);
                 if (i != 1) continue;
                 break;
@@ -120,8 +120,8 @@ extends Block {
     }
 
     @Override
-    public RenderLayer getRenderLayer() {
-        return fancy ? RenderLayer.CUTOUT_MIPPED : RenderLayer.SOLID;
+    public BlockRenderLayer getRenderLayer() {
+        return fancy ? BlockRenderLayer.CUTOUT_MIPPED : BlockRenderLayer.SOLID;
     }
 
     @Override
@@ -135,7 +135,7 @@ extends Block {
     }
 
     @Override
-    protected void appendProperties(StateManager.Builder<Block, BlockState> builder) {
+    protected void appendProperties(StateFactory.Builder<Block, BlockState> builder) {
         builder.add(DISTANCE, PERSISTENT);
     }
 

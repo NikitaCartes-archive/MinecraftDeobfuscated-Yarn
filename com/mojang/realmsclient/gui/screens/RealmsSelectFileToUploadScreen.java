@@ -3,19 +3,19 @@
  */
 package com.mojang.realmsclient.gui.screens;
 
-import com.mojang.realmsclient.gui.RealmsConstants;
+import com.google.common.collect.Lists;
 import com.mojang.realmsclient.gui.screens.RealmsGenericErrorScreen;
 import com.mojang.realmsclient.gui.screens.RealmsResetWorldScreen;
 import com.mojang.realmsclient.gui.screens.RealmsUploadScreen;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.class_4359;
 import net.minecraft.client.util.TextFormat;
 import net.minecraft.realms.RealmListEntry;
 import net.minecraft.realms.Realms;
@@ -38,7 +38,7 @@ extends RealmsScreen {
     private final int slotId;
     private RealmsButton uploadButton;
     private final DateFormat DATE_FORMAT = new SimpleDateFormat();
-    private List<RealmsLevelSummary> levelList = new ArrayList<RealmsLevelSummary>();
+    private List<RealmsLevelSummary> levelList = Lists.newArrayList();
     private int selectedWorld = -1;
     private WorldSelectionList worldSelectionList;
     private String worldLang;
@@ -99,7 +99,7 @@ extends RealmsScreen {
         this.uploadButton.active(this.selectedWorld >= 0 && this.selectedWorld < this.levelList.size());
         this.titleLabel = new RealmsLabel(RealmsSelectFileToUploadScreen.getLocalizedString("mco.upload.select.world.title"), this.width() / 2, 13, 0xFFFFFF);
         this.addWidget(this.titleLabel);
-        this.subtitleLabel = new RealmsLabel(RealmsSelectFileToUploadScreen.getLocalizedString("mco.upload.select.world.subtitle"), this.width() / 2, RealmsConstants.row(-1), 0xA0A0A0);
+        this.subtitleLabel = new RealmsLabel(RealmsSelectFileToUploadScreen.getLocalizedString("mco.upload.select.world.subtitle"), this.width() / 2, class_4359.method_21072(-1), 0xA0A0A0);
         this.addWidget(this.subtitleLabel);
         if (this.levelList.isEmpty()) {
             this.field_20063 = new RealmsLabel(RealmsSelectFileToUploadScreen.getLocalizedString("mco.upload.select.world.none"), this.width() / 2, this.height() / 2 - 20, 0xFFFFFF);
@@ -206,7 +206,7 @@ extends RealmsScreen {
     class WorldSelectionList
     extends RealmsObjectSelectionList {
         public WorldSelectionList() {
-            super(RealmsSelectFileToUploadScreen.this.width(), RealmsSelectFileToUploadScreen.this.height(), RealmsConstants.row(0), RealmsSelectFileToUploadScreen.this.height() - 40, 36);
+            super(RealmsSelectFileToUploadScreen.this.width(), RealmsSelectFileToUploadScreen.this.height(), class_4359.method_21072(0), RealmsSelectFileToUploadScreen.this.height() - 40, 36);
         }
 
         public void addEntry(RealmsLevelSummary realmsLevelSummary) {

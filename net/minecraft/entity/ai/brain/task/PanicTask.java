@@ -18,13 +18,11 @@ extends Task<VillagerEntity> {
         super(ImmutableMap.of());
     }
 
-    @Override
-    protected boolean shouldKeepRunning(ServerWorld serverWorld, VillagerEntity villagerEntity, long l) {
+    protected boolean method_20646(ServerWorld serverWorld, VillagerEntity villagerEntity, long l) {
         return PanicTask.wasHurt(villagerEntity) || PanicTask.isHostileNearby(villagerEntity);
     }
 
-    @Override
-    protected void run(ServerWorld serverWorld, VillagerEntity villagerEntity, long l) {
+    protected void method_20647(ServerWorld serverWorld, VillagerEntity villagerEntity, long l) {
         if (PanicTask.wasHurt(villagerEntity) || PanicTask.isHostileNearby(villagerEntity)) {
             Brain<VillagerEntity> brain = villagerEntity.getBrain();
             if (!brain.hasActivity(Activity.PANIC)) {
@@ -38,8 +36,7 @@ extends Task<VillagerEntity> {
         }
     }
 
-    @Override
-    protected void keepRunning(ServerWorld serverWorld, VillagerEntity villagerEntity, long l) {
+    protected void method_20648(ServerWorld serverWorld, VillagerEntity villagerEntity, long l) {
         if (l % 100L == 0L) {
             villagerEntity.summonGolem(l, 3);
         }
@@ -55,17 +52,17 @@ extends Task<VillagerEntity> {
 
     @Override
     protected /* synthetic */ boolean shouldKeepRunning(ServerWorld serverWorld, LivingEntity livingEntity, long l) {
-        return this.shouldKeepRunning(serverWorld, (VillagerEntity)livingEntity, l);
+        return this.method_20646(serverWorld, (VillagerEntity)livingEntity, l);
     }
 
     @Override
     protected /* synthetic */ void keepRunning(ServerWorld serverWorld, LivingEntity livingEntity, long l) {
-        this.keepRunning(serverWorld, (VillagerEntity)livingEntity, l);
+        this.method_20648(serverWorld, (VillagerEntity)livingEntity, l);
     }
 
     @Override
     protected /* synthetic */ void run(ServerWorld serverWorld, LivingEntity livingEntity, long l) {
-        this.run(serverWorld, (VillagerEntity)livingEntity, l);
+        this.method_20647(serverWorld, (VillagerEntity)livingEntity, l);
     }
 }
 

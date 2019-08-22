@@ -9,7 +9,7 @@ import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.fluid.FluidState;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.BlockRenderView;
+import net.minecraft.world.ExtendedBlockView;
 import net.minecraft.world.LightType;
 import net.minecraft.world.World;
 import net.minecraft.world.biome.Biome;
@@ -18,7 +18,7 @@ import org.jetbrains.annotations.Nullable;
 
 @Environment(value=EnvType.CLIENT)
 public class ChunkRendererRegion
-implements BlockRenderView {
+implements ExtendedBlockView {
     protected final int chunkXOffset;
     protected final int chunkZOffset;
     protected final BlockPos offset;
@@ -40,7 +40,7 @@ implements BlockRenderView {
         WorldChunk[][] worldChunks = new WorldChunk[l - j + 1][m - k + 1];
         for (int n = j; n <= l; ++n) {
             for (o = k; o <= m; ++o) {
-                worldChunks[n - j][o - k] = world.getChunk(n, o);
+                worldChunks[n - j][o - k] = world.method_8497(n, o);
             }
         }
         boolean bl = true;

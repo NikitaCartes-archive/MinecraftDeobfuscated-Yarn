@@ -27,7 +27,7 @@ extends Item {
 
     @Override
     public boolean canRepair(ItemStack itemStack, ItemStack itemStack2) {
-        return this.material.getRepairIngredient().test(itemStack2) || super.canRepair(itemStack, itemStack2);
+        return this.material.getRepairIngredient().method_8093(itemStack2) || super.canRepair(itemStack, itemStack2);
     }
 }
 

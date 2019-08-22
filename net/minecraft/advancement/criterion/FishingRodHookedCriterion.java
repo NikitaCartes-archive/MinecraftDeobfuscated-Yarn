@@ -61,16 +61,15 @@ implements Criterion<Conditions> {
         this.handlers.remove(playerAdvancementTracker);
     }
 
-    @Override
-    public Conditions conditionsFromJson(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext) {
-        ItemPredicate itemPredicate = ItemPredicate.fromJson(jsonObject.get("rod"));
-        EntityPredicate entityPredicate = EntityPredicate.fromJson(jsonObject.get("entity"));
-        ItemPredicate itemPredicate2 = ItemPredicate.fromJson(jsonObject.get("item"));
+    public Conditions method_8941(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext) {
+        ItemPredicate itemPredicate = ItemPredicate.deserialize(jsonObject.get("rod"));
+        EntityPredicate entityPredicate = EntityPredicate.deserialize(jsonObject.get("entity"));
+        ItemPredicate itemPredicate2 = ItemPredicate.deserialize(jsonObject.get("item"));
         return new Conditions(itemPredicate, entityPredicate, itemPredicate2);
     }
 
-    public void trigger(ServerPlayerEntity serverPlayerEntity, ItemStack itemStack, FishingBobberEntity fishingBobberEntity, Collection<ItemStack> collection) {
-        Handler handler = this.handlers.get(serverPlayerEntity.getAdvancementTracker());
+    public void handle(ServerPlayerEntity serverPlayerEntity, ItemStack itemStack, FishingBobberEntity fishingBobberEntity, Collection<ItemStack> collection) {
+        Handler handler = this.handlers.get(serverPlayerEntity.getAdvancementManager());
         if (handler != null) {
             handler.handle(serverPlayerEntity, itemStack, fishingBobberEntity, collection);
         }
@@ -78,7 +77,7 @@ implements Criterion<Conditions> {
 
     @Override
     public /* synthetic */ CriterionConditions conditionsFromJson(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext) {
-        return this.conditionsFromJson(jsonObject, jsonDeserializationContext);
+        return this.method_8941(jsonObject, jsonDeserializationContext);
     }
 
     static class Handler {
@@ -163,9 +162,9 @@ implements Criterion<Conditions> {
         @Override
         public JsonElement toJson() {
             JsonObject jsonObject = new JsonObject();
-            jsonObject.add("rod", this.rod.toJson());
+            jsonObject.add("rod", this.rod.serialize());
             jsonObject.add("entity", this.bobber.serialize());
-            jsonObject.add("item", this.item.toJson());
+            jsonObject.add("item", this.item.serialize());
             return jsonObject;
         }
     }

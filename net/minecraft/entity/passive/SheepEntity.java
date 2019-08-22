@@ -42,7 +42,6 @@ import net.minecraft.item.DyeItem;
 import net.minecraft.item.ItemConvertible;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
-import net.minecraft.loot.LootTables;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.recipe.Ingredient;
 import net.minecraft.recipe.RecipeType;
@@ -51,18 +50,19 @@ import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.DyeColor;
 import net.minecraft.util.Hand;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.Util;
+import net.minecraft.util.SystemUtil;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.IWorld;
 import net.minecraft.world.LocalDifficulty;
 import net.minecraft.world.World;
+import net.minecraft.world.loot.LootTables;
 import org.jetbrains.annotations.Nullable;
 
 public class SheepEntity
 extends AnimalEntity {
     private static final TrackedData<Byte> COLOR = DataTracker.registerData(SheepEntity.class, TrackedDataHandlerRegistry.BYTE);
-    private static final Map<DyeColor, ItemConvertible> DROPS = Util.make(Maps.newEnumMap(DyeColor.class), enumMap -> {
+    private static final Map<DyeColor, ItemConvertible> DROPS = SystemUtil.consume(Maps.newEnumMap(DyeColor.class), enumMap -> {
         enumMap.put(DyeColor.WHITE, Blocks.WHITE_WOOL);
         enumMap.put(DyeColor.ORANGE, Blocks.ORANGE_WOOL);
         enumMap.put(DyeColor.MAGENTA, Blocks.MAGENTA_WOOL);
@@ -336,8 +336,7 @@ extends AnimalEntity {
         return DyeColor.WHITE;
     }
 
-    @Override
-    public SheepEntity createChild(PassiveEntity passiveEntity) {
+    public SheepEntity method_6640(PassiveEntity passiveEntity) {
         SheepEntity sheepEntity = (SheepEntity)passiveEntity;
         SheepEntity sheepEntity2 = EntityType.SHEEP.create(this.world);
         sheepEntity2.setColor(this.getChildColor(this, sheepEntity));
@@ -387,7 +386,7 @@ extends AnimalEntity {
 
     @Override
     public /* synthetic */ PassiveEntity createChild(PassiveEntity passiveEntity) {
-        return this.createChild(passiveEntity);
+        return this.method_6640(passiveEntity);
     }
 }
 

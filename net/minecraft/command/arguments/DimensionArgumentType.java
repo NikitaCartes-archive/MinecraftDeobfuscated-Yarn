@@ -27,8 +27,7 @@ implements ArgumentType<DimensionType> {
     private static final Collection<String> EXAMPLES = Stream.of(DimensionType.OVERWORLD, DimensionType.THE_NETHER).map(dimensionType -> DimensionType.getId(dimensionType).toString()).collect(Collectors.toList());
     public static final DynamicCommandExceptionType INVALID_DIMENSION_EXCEPTION = new DynamicCommandExceptionType(object -> new TranslatableText("argument.dimension.invalid", object));
 
-    @Override
-    public DimensionType parse(StringReader stringReader) throws CommandSyntaxException {
+    public DimensionType method_9287(StringReader stringReader) throws CommandSyntaxException {
         Identifier identifier = Identifier.fromCommandInput(stringReader);
         return Registry.DIMENSION.getOrEmpty(identifier).orElseThrow(() -> INVALID_DIMENSION_EXCEPTION.create(identifier));
     }
@@ -53,7 +52,7 @@ implements ArgumentType<DimensionType> {
 
     @Override
     public /* synthetic */ Object parse(StringReader stringReader) throws CommandSyntaxException {
-        return this.parse(stringReader);
+        return this.method_9287(stringReader);
     }
 }
 

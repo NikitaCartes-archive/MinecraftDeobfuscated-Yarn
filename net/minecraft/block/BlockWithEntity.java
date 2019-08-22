@@ -8,7 +8,7 @@ import net.minecraft.block.BlockEntityProvider;
 import net.minecraft.block.BlockRenderType;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BlockEntity;
-import net.minecraft.container.NameableContainerFactory;
+import net.minecraft.container.NameableContainerProvider;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
@@ -37,9 +37,9 @@ implements BlockEntityProvider {
 
     @Override
     @Nullable
-    public NameableContainerFactory createContainerFactory(BlockState blockState, World world, BlockPos blockPos) {
+    public NameableContainerProvider createContainerProvider(BlockState blockState, World world, BlockPos blockPos) {
         BlockEntity blockEntity = world.getBlockEntity(blockPos);
-        return blockEntity instanceof NameableContainerFactory ? (NameableContainerFactory)((Object)blockEntity) : null;
+        return blockEntity instanceof NameableContainerProvider ? (NameableContainerProvider)((Object)blockEntity) : null;
     }
 }
 

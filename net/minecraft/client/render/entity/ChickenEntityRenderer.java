@@ -22,21 +22,19 @@ extends MobEntityRenderer<ChickenEntity, ChickenEntityModel<ChickenEntity>> {
         super(entityRenderDispatcher, new ChickenEntityModel(), 0.3f);
     }
 
-    @Override
-    protected Identifier getTexture(ChickenEntity chickenEntity) {
+    protected Identifier method_3892(ChickenEntity chickenEntity) {
         return SKIN;
     }
 
-    @Override
-    protected float getAnimationProgress(ChickenEntity chickenEntity, float f) {
+    protected float method_3893(ChickenEntity chickenEntity, float f) {
         float g = MathHelper.lerp(f, chickenEntity.field_6736, chickenEntity.field_6741);
         float h = MathHelper.lerp(f, chickenEntity.field_6738, chickenEntity.field_6743);
         return (MathHelper.sin(g) + 1.0f) * h;
     }
 
     @Override
-    protected /* synthetic */ float getAnimationProgress(LivingEntity livingEntity, float f) {
-        return this.getAnimationProgress((ChickenEntity)livingEntity, f);
+    protected /* synthetic */ float getAge(LivingEntity livingEntity, float f) {
+        return this.method_3893((ChickenEntity)livingEntity, f);
     }
 }
 

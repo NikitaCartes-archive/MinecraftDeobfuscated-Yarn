@@ -3,7 +3,7 @@
  */
 package net.minecraft.client.gui.screen.ingame;
 
-import com.mojang.blaze3d.platform.GlStateManager;
+import com.mojang.blaze3d.systems.RenderSystem;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.block.BlockState;
@@ -16,7 +16,7 @@ import net.minecraft.client.network.ClientPlayNetworkHandler;
 import net.minecraft.client.render.block.entity.BlockEntityRenderDispatcher;
 import net.minecraft.client.resource.language.I18n;
 import net.minecraft.client.util.SelectionManager;
-import net.minecraft.network.packet.c2s.play.UpdateSignC2SPacket;
+import net.minecraft.server.network.packet.UpdateSignC2SPacket;
 import net.minecraft.text.LiteralText;
 import net.minecraft.text.TranslatableText;
 
@@ -97,20 +97,20 @@ extends Screen {
     public void render(int i, int j, float f) {
         this.renderBackground();
         this.drawCenteredString(this.font, this.title.asFormattedString(), this.width / 2, 40, 0xFFFFFF);
-        GlStateManager.color4f(1.0f, 1.0f, 1.0f, 1.0f);
-        GlStateManager.pushMatrix();
-        GlStateManager.translatef(this.width / 2, 0.0f, 50.0f);
+        RenderSystem.color4f(1.0f, 1.0f, 1.0f, 1.0f);
+        RenderSystem.pushMatrix();
+        RenderSystem.translatef(this.width / 2, 0.0f, 50.0f);
         float g = 93.75f;
-        GlStateManager.scalef(-93.75f, -93.75f, -93.75f);
-        GlStateManager.rotatef(180.0f, 0.0f, 1.0f, 0.0f);
+        RenderSystem.scalef(-93.75f, -93.75f, -93.75f);
+        RenderSystem.rotatef(180.0f, 0.0f, 1.0f, 0.0f);
         BlockState blockState = this.sign.getCachedState();
         float h = blockState.getBlock() instanceof SignBlock ? (float)(blockState.get(SignBlock.ROTATION) * 360) / 16.0f : blockState.get(WallSignBlock.FACING).asRotation();
-        GlStateManager.rotatef(h, 0.0f, 1.0f, 0.0f);
-        GlStateManager.translatef(0.0f, -1.0625f, 0.0f);
+        RenderSystem.rotatef(h, 0.0f, 1.0f, 0.0f);
+        RenderSystem.translatef(0.0f, -1.0625f, 0.0f);
         this.sign.setSelectionState(this.currentRow, this.selectionManager.getSelectionStart(), this.selectionManager.getSelectionEnd(), this.ticksSinceOpened / 6 % 2 == 0);
         BlockEntityRenderDispatcher.INSTANCE.renderEntity(this.sign, -0.5, -0.75, -0.5, 0.0f);
         this.sign.resetSelectionState();
-        GlStateManager.popMatrix();
+        RenderSystem.popMatrix();
         super.render(i, j, f);
     }
 }

@@ -105,10 +105,10 @@ extends HostileEntity {
     @Override
     public void readCustomDataFromTag(CompoundTag compoundTag) {
         super.readCustomDataFromTag(compoundTag);
-        if (compoundTag.contains("BoundX")) {
+        if (compoundTag.containsKey("BoundX")) {
             this.bounds = new BlockPos(compoundTag.getInt("BoundX"), compoundTag.getInt("BoundY"), compoundTag.getInt("BoundZ"));
         }
-        if (compoundTag.contains("LifeTicks")) {
+        if (compoundTag.containsKey("LifeTicks")) {
             this.setLifeTicks(compoundTag.getInt("LifeTicks"));
         }
     }
@@ -323,18 +323,18 @@ extends HostileEntity {
             }
             Vec3d vec3d = new Vec3d(this.targetX - VexEntity.this.x, this.targetY - VexEntity.this.y, this.targetZ - VexEntity.this.z);
             double d = vec3d.length();
-            if (d < VexEntity.this.getBoundingBox().getAverageSideLength()) {
+            if (d < VexEntity.this.getBoundingBox().averageDimension()) {
                 this.state = MoveControl.State.WAIT;
                 VexEntity.this.setVelocity(VexEntity.this.getVelocity().multiply(0.5));
             } else {
                 VexEntity.this.setVelocity(VexEntity.this.getVelocity().add(vec3d.multiply(this.speed * 0.05 / d)));
                 if (VexEntity.this.getTarget() == null) {
                     Vec3d vec3d2 = VexEntity.this.getVelocity();
-                    VexEntity.this.field_6283 = VexEntity.this.yaw = -((float)MathHelper.atan2(vec3d2.x, vec3d2.z)) * 57.295776f;
+                    VexEntity.this.bodyYaw = VexEntity.this.yaw = -((float)MathHelper.atan2(vec3d2.x, vec3d2.z)) * 57.295776f;
                 } else {
                     double e = VexEntity.this.getTarget().x - VexEntity.this.x;
                     double f = VexEntity.this.getTarget().z - VexEntity.this.z;
-                    VexEntity.this.field_6283 = VexEntity.this.yaw = -((float)MathHelper.atan2(e, f)) * 57.295776f;
+                    VexEntity.this.bodyYaw = VexEntity.this.yaw = -((float)MathHelper.atan2(e, f)) * 57.295776f;
                 }
             }
         }

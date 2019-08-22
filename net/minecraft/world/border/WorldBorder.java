@@ -9,7 +9,7 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.entity.Entity;
 import net.minecraft.util.BooleanBiFunction;
-import net.minecraft.util.Util;
+import net.minecraft.util.SystemUtil;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
 import net.minecraft.util.math.ChunkPos;
@@ -40,18 +40,18 @@ public class WorldBorder {
     }
 
     public boolean contains(Box box) {
-        return box.x2 > this.getBoundWest() && box.x1 < this.getBoundEast() && box.z2 > this.getBoundNorth() && box.z1 < this.getBoundSouth();
+        return box.maxX > this.getBoundWest() && box.minX < this.getBoundEast() && box.maxZ > this.getBoundNorth() && box.minZ < this.getBoundSouth();
     }
 
-    public double getDistanceInsideBorder(Entity entity) {
-        return this.getDistanceInsideBorder(entity.x, entity.z);
+    public double contains(Entity entity) {
+        return this.contains(entity.x, entity.z);
     }
 
     public VoxelShape asVoxelShape() {
         return this.area.method_17906();
     }
 
-    public double getDistanceInsideBorder(double d, double e) {
+    public double contains(double d, double e) {
         double f = e - this.getBoundNorth();
         double g = this.getBoundSouth() - e;
         double h = d - this.getBoundWest();
@@ -322,7 +322,7 @@ public class WorldBorder {
             this.oldSize = d;
             this.newSize = e;
             this.timeDuration = l;
-            this.timeStart = Util.getMeasuringTimeMs();
+            this.timeStart = SystemUtil.getMeasuringTimeMs();
             this.timeEnd = this.timeStart + l;
         }
 
@@ -348,7 +348,7 @@ public class WorldBorder {
 
         @Override
         public double getSize() {
-            double d = (double)(Util.getMeasuringTimeMs() - this.timeStart) / this.timeDuration;
+            double d = (double)(SystemUtil.getMeasuringTimeMs() - this.timeStart) / this.timeDuration;
             return d < 1.0 ? MathHelper.lerp(d, this.oldSize, this.newSize) : this.newSize;
         }
 
@@ -360,7 +360,7 @@ public class WorldBorder {
 
         @Override
         public long getTargetRemainingTime() {
-            return this.timeEnd - Util.getMeasuringTimeMs();
+            return this.timeEnd - SystemUtil.getMeasuringTimeMs();
         }
 
         @Override

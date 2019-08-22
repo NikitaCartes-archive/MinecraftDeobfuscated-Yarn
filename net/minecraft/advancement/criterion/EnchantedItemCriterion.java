@@ -17,10 +17,10 @@ import net.minecraft.advancement.criterion.AbstractCriterionConditions;
 import net.minecraft.advancement.criterion.Criterion;
 import net.minecraft.advancement.criterion.CriterionConditions;
 import net.minecraft.item.ItemStack;
-import net.minecraft.predicate.NumberRange;
 import net.minecraft.predicate.item.ItemPredicate;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.NumberRange;
 
 public class EnchantedItemCriterion
 implements Criterion<Conditions> {
@@ -58,15 +58,14 @@ implements Criterion<Conditions> {
         this.handlers.remove(playerAdvancementTracker);
     }
 
-    @Override
-    public Conditions conditionsFromJson(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext) {
-        ItemPredicate itemPredicate = ItemPredicate.fromJson(jsonObject.get("item"));
+    public Conditions method_8872(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext) {
+        ItemPredicate itemPredicate = ItemPredicate.deserialize(jsonObject.get("item"));
         NumberRange.IntRange intRange = NumberRange.IntRange.fromJson(jsonObject.get("levels"));
         return new Conditions(itemPredicate, intRange);
     }
 
-    public void trigger(ServerPlayerEntity serverPlayerEntity, ItemStack itemStack, int i) {
-        Handler handler = this.handlers.get(serverPlayerEntity.getAdvancementTracker());
+    public void handle(ServerPlayerEntity serverPlayerEntity, ItemStack itemStack, int i) {
+        Handler handler = this.handlers.get(serverPlayerEntity.getAdvancementManager());
         if (handler != null) {
             handler.handle(itemStack, i);
         }
@@ -74,7 +73,7 @@ implements Criterion<Conditions> {
 
     @Override
     public /* synthetic */ CriterionConditions conditionsFromJson(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext) {
-        return this.conditionsFromJson(jsonObject, jsonDeserializationContext);
+        return this.method_8872(jsonObject, jsonDeserializationContext);
     }
 
     static class Handler {
@@ -139,8 +138,8 @@ implements Criterion<Conditions> {
         @Override
         public JsonElement toJson() {
             JsonObject jsonObject = new JsonObject();
-            jsonObject.add("item", this.item.toJson());
-            jsonObject.add("levels", this.levels.toJson());
+            jsonObject.add("item", this.item.serialize());
+            jsonObject.add("levels", this.levels.serialize());
             return jsonObject;
         }
     }

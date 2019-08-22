@@ -16,8 +16,7 @@ extends Task<VillagerEntity> {
         super(ImmutableMap.of());
     }
 
-    @Override
-    protected void run(ServerWorld serverWorld, VillagerEntity villagerEntity, long l) {
+    protected void method_20645(ServerWorld serverWorld, VillagerEntity villagerEntity, long l) {
         boolean bl;
         boolean bl2 = bl = PanicTask.wasHurt(villagerEntity) || PanicTask.isHostileNearby(villagerEntity) || StopPanickingTask.wasHurtByNearbyEntity(villagerEntity);
         if (!bl) {

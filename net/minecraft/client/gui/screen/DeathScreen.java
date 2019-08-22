@@ -3,7 +3,7 @@
  */
 package net.minecraft.client.gui.screen;
 
-import com.mojang.blaze3d.platform.GlStateManager;
+import com.mojang.blaze3d.systems.RenderSystem;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.gui.screen.ConfirmScreen;
@@ -13,7 +13,7 @@ import net.minecraft.client.gui.screen.TitleScreen;
 import net.minecraft.client.gui.widget.AbstractButtonWidget;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.resource.language.I18n;
-import net.minecraft.client.util.Texts;
+import net.minecraft.client.util.TextComponentUtil;
 import net.minecraft.text.ClickEvent;
 import net.minecraft.text.LiteralText;
 import net.minecraft.text.Text;
@@ -89,10 +89,10 @@ extends Screen {
     public void render(int i, int j, float f) {
         Text text;
         this.fillGradient(0, 0, this.width, this.height, 0x60500000, -1602211792);
-        GlStateManager.pushMatrix();
-        GlStateManager.scalef(2.0f, 2.0f, 2.0f);
+        RenderSystem.pushMatrix();
+        RenderSystem.scalef(2.0f, 2.0f, 2.0f);
         this.drawCenteredString(this.font, this.title.asFormattedString(), this.width / 2 / 2, 30, 0xFFFFFF);
-        GlStateManager.popMatrix();
+        RenderSystem.popMatrix();
         if (this.message != null) {
             this.drawCenteredString(this.font, this.message.asFormattedString(), this.width / 2, 85, 0xFFFFFF);
         }
@@ -116,7 +116,7 @@ extends Screen {
             return null;
         }
         for (Text text : this.message) {
-            if ((m += this.minecraft.textRenderer.getStringWidth(Texts.getRenderChatMessage(text.asString(), false))) <= i) continue;
+            if ((m += this.minecraft.textRenderer.getStringWidth(TextComponentUtil.getRenderChatMessage(text.asString(), false))) <= i) continue;
             return text;
         }
         return null;

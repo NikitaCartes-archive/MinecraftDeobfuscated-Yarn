@@ -47,7 +47,7 @@ implements ReadableProfiler {
     }
 
     @Override
-    public ProfileResult getResult() {
+    public ProfileResult getResults() {
         return EmptyProfileResult.INSTANCE;
     }
 }

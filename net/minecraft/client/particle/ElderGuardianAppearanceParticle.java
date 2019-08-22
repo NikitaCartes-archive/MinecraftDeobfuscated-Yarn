@@ -3,10 +3,10 @@
  */
 package net.minecraft.client.particle;
 
-import com.mojang.blaze3d.platform.GLX;
-import com.mojang.blaze3d.platform.GlStateManager;
+import com.mojang.blaze3d.systems.RenderSystem;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.class_4493;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.particle.Particle;
 import net.minecraft.client.particle.ParticleFactory;
@@ -56,34 +56,33 @@ extends Particle {
         entityRenderDispatcher.setRenderPosition(Particle.cameraX, Particle.cameraY, Particle.cameraZ);
         float l = 1.0f / ElderGuardianEntity.field_17492;
         float m = ((float)this.age + f) / (float)this.maxAge;
-        GlStateManager.depthMask(true);
-        GlStateManager.enableBlend();
-        GlStateManager.enableDepthTest();
-        GlStateManager.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA);
+        RenderSystem.depthMask(true);
+        RenderSystem.enableBlend();
+        RenderSystem.enableDepthTest();
+        RenderSystem.blendFunc(class_4493.class_4535.SRC_ALPHA, class_4493.class_4534.ONE_MINUS_SRC_ALPHA);
         float n = 240.0f;
-        GLX.glMultiTexCoord2f(GLX.GL_TEXTURE1, 240.0f, 240.0f);
-        GlStateManager.pushMatrix();
+        RenderSystem.glMultiTexCoord2f(33985, 240.0f, 240.0f);
+        RenderSystem.pushMatrix();
         float o = 0.05f + 0.5f * MathHelper.sin(m * (float)Math.PI);
-        GlStateManager.color4f(1.0f, 1.0f, 1.0f, o);
-        GlStateManager.translatef(0.0f, 1.8f, 0.0f);
-        GlStateManager.rotatef(180.0f - camera.getYaw(), 0.0f, 1.0f, 0.0f);
-        GlStateManager.rotatef(60.0f - 150.0f * m - camera.getPitch(), 1.0f, 0.0f, 0.0f);
-        GlStateManager.translatef(0.0f, -0.4f, -1.5f);
-        GlStateManager.scalef(l, l, l);
+        RenderSystem.color4f(1.0f, 1.0f, 1.0f, o);
+        RenderSystem.translatef(0.0f, 1.8f, 0.0f);
+        RenderSystem.rotatef(180.0f - camera.getYaw(), 0.0f, 1.0f, 0.0f);
+        RenderSystem.rotatef(60.0f - 150.0f * m - camera.getPitch(), 1.0f, 0.0f, 0.0f);
+        RenderSystem.translatef(0.0f, -0.4f, -1.5f);
+        RenderSystem.scalef(l, l, l);
         this.guardian.yaw = 0.0f;
         this.guardian.headYaw = 0.0f;
         this.guardian.prevYaw = 0.0f;
         this.guardian.prevHeadYaw = 0.0f;
         entityRenderDispatcher.render(this.guardian, 0.0, 0.0, 0.0, 0.0f, f, false);
-        GlStateManager.popMatrix();
-        GlStateManager.enableDepthTest();
+        RenderSystem.popMatrix();
+        RenderSystem.enableDepthTest();
     }
 
     @Environment(value=EnvType.CLIENT)
     public static class Factory
     implements ParticleFactory<DefaultParticleType> {
-        @Override
-        public Particle createParticle(DefaultParticleType defaultParticleType, World world, double d, double e, double f, double g, double h, double i) {
+        public Particle method_3042(DefaultParticleType defaultParticleType, World world, double d, double e, double f, double g, double h, double i) {
             return new ElderGuardianAppearanceParticle(world, d, e, f);
         }
     }

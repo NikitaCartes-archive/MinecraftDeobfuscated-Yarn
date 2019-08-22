@@ -35,14 +35,13 @@ extends ServerConfigList<GameProfile, WhitelistEntry> {
         return strings;
     }
 
-    @Override
-    protected String toString(GameProfile gameProfile) {
+    protected String method_14652(GameProfile gameProfile) {
         return gameProfile.getId().toString();
     }
 
     @Override
     protected /* synthetic */ String toString(Object object) {
-        return this.toString((GameProfile)object);
+        return this.method_14652((GameProfile)object);
     }
 }
 

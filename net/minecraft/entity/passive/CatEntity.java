@@ -48,11 +48,6 @@ import net.minecraft.item.DyeItem;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
-import net.minecraft.loot.LootTable;
-import net.minecraft.loot.LootTables;
-import net.minecraft.loot.context.LootContext;
-import net.minecraft.loot.context.LootContextParameters;
-import net.minecraft.loot.context.LootContextTypes;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.predicate.entity.EntityPredicates;
 import net.minecraft.recipe.Ingredient;
@@ -63,7 +58,7 @@ import net.minecraft.tag.BlockTags;
 import net.minecraft.util.DyeColor;
 import net.minecraft.util.Hand;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.Util;
+import net.minecraft.util.SystemUtil;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Direction;
@@ -72,6 +67,11 @@ import net.minecraft.world.IWorld;
 import net.minecraft.world.LocalDifficulty;
 import net.minecraft.world.World;
 import net.minecraft.world.gen.feature.Feature;
+import net.minecraft.world.loot.LootSupplier;
+import net.minecraft.world.loot.LootTables;
+import net.minecraft.world.loot.context.LootContext;
+import net.minecraft.world.loot.context.LootContextParameters;
+import net.minecraft.world.loot.context.LootContextTypes;
 import org.jetbrains.annotations.Nullable;
 
 public class CatEntity
@@ -81,7 +81,7 @@ extends TameableEntity {
     private static final TrackedData<Boolean> SLEEPING_WITH_OWNER = DataTracker.registerData(CatEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
     private static final TrackedData<Boolean> HEAD_DOWN = DataTracker.registerData(CatEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
     private static final TrackedData<Integer> COLLAR_COLOR = DataTracker.registerData(CatEntity.class, TrackedDataHandlerRegistry.INTEGER);
-    public static final Map<Integer, Identifier> TEXTURES = Util.make(Maps.newHashMap(), hashMap -> {
+    public static final Map<Integer, Identifier> TEXTURES = SystemUtil.consume(Maps.newHashMap(), hashMap -> {
         hashMap.put(0, new Identifier("textures/entity/cat/tabby.png"));
         hashMap.put(1, new Identifier("textures/entity/cat/black.png"));
         hashMap.put(2, new Identifier("textures/entity/cat/red.png"));
@@ -186,7 +186,7 @@ extends TameableEntity {
     public void readCustomDataFromTag(CompoundTag compoundTag) {
         super.readCustomDataFromTag(compoundTag);
         this.setCatType(compoundTag.getInt("CatType"));
-        if (compoundTag.contains("CollarColor", 99)) {
+        if (compoundTag.containsKey("CollarColor", 99)) {
             this.setCollarColor(DyeColor.byId(compoundTag.getInt("CollarColor")));
         }
     }
@@ -196,17 +196,17 @@ extends TameableEntity {
         if (this.getMoveControl().isMoving()) {
             double d = this.getMoveControl().getSpeed();
             if (d == 0.6) {
-                this.setSneaking(true);
+                this.setPose(EntityPose.CROUCHING);
                 this.setSprinting(false);
             } else if (d == 1.33) {
-                this.setSneaking(false);
+                this.setPose(EntityPose.STANDING);
                 this.setSprinting(true);
             } else {
-                this.setSneaking(false);
+                this.setPose(EntityPose.STANDING);
                 this.setSprinting(false);
             }
         } else {
-            this.setSneaking(false);
+            this.setPose(EntityPose.STANDING);
             this.setSprinting(false);
         }
     }
@@ -318,8 +318,7 @@ extends TameableEntity {
         return MathHelper.lerp(f, this.prevHeadDownAniamtion, this.headDownAnimation);
     }
 
-    @Override
-    public CatEntity createChild(PassiveEntity passiveEntity) {
+    public CatEntity method_6573(PassiveEntity passiveEntity) {
         CatEntity catEntity = EntityType.CAT.create(this.world);
         if (passiveEntity instanceof CatEntity) {
             if (this.random.nextBoolean()) {
@@ -419,7 +418,7 @@ extends TameableEntity {
 
     @Override
     public boolean isBreedingItem(ItemStack itemStack) {
-        return TAMING_INGREDIENT.test(itemStack);
+        return TAMING_INGREDIENT.method_8093(itemStack);
     }
 
     @Override
@@ -445,7 +444,7 @@ extends TameableEntity {
 
     @Override
     public /* synthetic */ PassiveEntity createChild(PassiveEntity passiveEntity) {
-        return this.createChild(passiveEntity);
+        return this.method_6573(passiveEntity);
     }
 
     static class SleepWithOwnerGoal
@@ -488,7 +487,7 @@ extends TameableEntity {
         }
 
         private boolean method_16098() {
-            List<CatEntity> list = this.cat.world.getNonSpectatingEntities(CatEntity.class, new Box(this.bedPos).expand(2.0));
+            List<CatEntity> list = this.cat.world.getEntities(CatEntity.class, new Box(this.bedPos).expand(2.0));
             for (CatEntity catEntity : list) {
                 if (catEntity == this.cat || !catEntity.isSleepingWithOwner() && !catEntity.isHeadDown()) continue;
                 return true;
@@ -522,16 +521,16 @@ extends TameableEntity {
         }
 
         private void dropMorningGifts() {
-            Random random = this.cat.getRandom();
+            Random random = this.cat.getRand();
             BlockPos.Mutable mutable = new BlockPos.Mutable();
             mutable.set(this.cat);
             this.cat.teleport(mutable.getX() + random.nextInt(11) - 5, mutable.getY() + random.nextInt(5) - 2, mutable.getZ() + random.nextInt(11) - 5, false);
             mutable.set(this.cat);
-            LootTable lootTable = this.cat.world.getServer().getLootManager().getSupplier(LootTables.CAT_MORNING_GIFT_GAMEPLAY);
+            LootSupplier lootSupplier = this.cat.world.getServer().getLootManager().getSupplier(LootTables.CAT_MORNING_GIFT_GAMEPLAY);
             LootContext.Builder builder = new LootContext.Builder((ServerWorld)this.cat.world).put(LootContextParameters.POSITION, mutable).put(LootContextParameters.THIS_ENTITY, this.cat).setRandom(random);
-            List<ItemStack> list = lootTable.getDrops(builder.build(LootContextTypes.GIFT));
+            List<ItemStack> list = lootSupplier.getDrops(builder.build(LootContextTypes.GIFT));
             for (ItemStack itemStack : list) {
-                this.cat.world.spawnEntity(new ItemEntity(this.cat.world, (float)mutable.getX() - MathHelper.sin(this.cat.field_6283 * ((float)Math.PI / 180)), mutable.getY(), (float)mutable.getZ() + MathHelper.cos(this.cat.field_6283 * ((float)Math.PI / 180)), itemStack));
+                this.cat.world.spawnEntity(new ItemEntity(this.cat.world, (float)mutable.getX() - MathHelper.sin(this.cat.bodyYaw * ((float)Math.PI / 180)), mutable.getY(), (float)mutable.getZ() + MathHelper.cos(this.cat.bodyYaw * ((float)Math.PI / 180)), itemStack));
             }
         }
 
@@ -570,9 +569,9 @@ extends TameableEntity {
         @Override
         public void tick() {
             super.tick();
-            if (this.player == null && this.mob.getRandom().nextInt(600) == 0) {
+            if (this.player == null && this.mob.getRand().nextInt(600) == 0) {
                 this.player = this.closestPlayer;
-            } else if (this.mob.getRandom().nextInt(500) == 0) {
+            } else if (this.mob.getRand().nextInt(500) == 0) {
                 this.player = null;
             }
         }

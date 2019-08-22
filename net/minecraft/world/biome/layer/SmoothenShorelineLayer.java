@@ -3,8 +3,8 @@
  */
 package net.minecraft.world.biome.layer;
 
-import net.minecraft.world.biome.layer.type.CrossSamplingLayer;
-import net.minecraft.world.biome.layer.util.LayerRandomnessSource;
+import net.minecraft.world.biome.layer.CrossSamplingLayer;
+import net.minecraft.world.biome.layer.LayerRandomnessSource;
 
 public enum SmoothenShorelineLayer implements CrossSamplingLayer
 {

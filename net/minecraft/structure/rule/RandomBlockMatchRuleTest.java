@@ -9,13 +9,13 @@ import com.mojang.datafixers.types.DynamicOps;
 import java.util.Random;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
+import net.minecraft.structure.rule.AbstractRuleTest;
 import net.minecraft.structure.rule.RuleTest;
-import net.minecraft.structure.rule.RuleTestType;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.registry.Registry;
 
 public class RandomBlockMatchRuleTest
-extends RuleTest {
+extends AbstractRuleTest {
     private final Block block;
     private final float probability;
 
@@ -34,8 +34,8 @@ extends RuleTest {
     }
 
     @Override
-    protected RuleTestType getType() {
-        return RuleTestType.RANDOM_BLOCK_MATCH;
+    protected RuleTest getRuleTest() {
+        return RuleTest.RANDOM_BLOCK_MATCH;
     }
 
     @Override

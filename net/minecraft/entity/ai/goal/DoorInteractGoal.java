@@ -63,12 +63,12 @@ extends Goal {
             PathNode pathNode = path.getNode(i);
             this.doorPos = new BlockPos(pathNode.x, pathNode.y + 1, pathNode.z);
             if (this.mob.squaredDistanceTo(this.doorPos.getX(), this.mob.y, this.doorPos.getZ()) > 2.25) continue;
-            this.field_6412 = DoorInteractGoal.isWoodenDoor(this.mob.world, this.doorPos);
+            this.field_6412 = DoorInteractGoal.getDoor(this.mob.world, this.doorPos);
             if (!this.field_6412) continue;
             return true;
         }
         this.doorPos = new BlockPos(this.mob).up();
-        this.field_6412 = DoorInteractGoal.isWoodenDoor(this.mob.world, this.doorPos);
+        this.field_6412 = DoorInteractGoal.getDoor(this.mob.world, this.doorPos);
         return this.field_6412;
     }
 
@@ -94,7 +94,7 @@ extends Goal {
         }
     }
 
-    public static boolean isWoodenDoor(World world, BlockPos blockPos) {
+    public static boolean getDoor(World world, BlockPos blockPos) {
         BlockState blockState = world.getBlockState(blockPos);
         return blockState.getBlock() instanceof DoorBlock && blockState.getMaterial() == Material.WOOD;
     }

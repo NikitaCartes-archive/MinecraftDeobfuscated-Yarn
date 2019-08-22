@@ -36,8 +36,7 @@ public class ModelElementFace {
         protected Deserializer() {
         }
 
-        @Override
-        public ModelElementFace deserialize(JsonElement jsonElement, Type type, JsonDeserializationContext jsonDeserializationContext) throws JsonParseException {
+        public ModelElementFace method_3397(JsonElement jsonElement, Type type, JsonDeserializationContext jsonDeserializationContext) throws JsonParseException {
             JsonObject jsonObject = jsonElement.getAsJsonObject();
             Direction direction = this.deserializeCullFace(jsonObject);
             int i = this.deserializeTintIndex(jsonObject);
@@ -62,7 +61,7 @@ public class ModelElementFace {
 
         @Override
         public /* synthetic */ Object deserialize(JsonElement jsonElement, Type type, JsonDeserializationContext jsonDeserializationContext) throws JsonParseException {
-            return this.deserialize(jsonElement, type, jsonDeserializationContext);
+            return this.method_3397(jsonElement, type, jsonDeserializationContext);
         }
     }
 }

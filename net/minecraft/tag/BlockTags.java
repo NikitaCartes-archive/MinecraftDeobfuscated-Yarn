@@ -46,6 +46,8 @@ public class BlockTags {
     public static final Tag<Block> SMALL_FLOWERS;
     public static final Tag<Block> BEDS;
     public static final Tag<Block> FENCES;
+    public static final Tag<Block> TALL_FLOWERS;
+    public static final Tag<Block> FLOWERS;
     public static final Tag<Block> FLOWER_POTS;
     public static final Tag<Block> ENDERMAN_HOLDABLE;
     public static final Tag<Block> ICE;
@@ -63,6 +65,9 @@ public class BlockTags {
     public static final Tag<Block> SIGNS;
     public static final Tag<Block> DRAGON_IMMUNE;
     public static final Tag<Block> WITHER_IMMUNE;
+    public static final Tag<Block> BEEHIVES;
+    public static final Tag<Block> CROPS;
+    public static final Tag<Block> BEE_GROWABLES;
 
     public static void setContainer(TagContainer<Block> tagContainer) {
         container = tagContainer;
@@ -111,6 +116,8 @@ public class BlockTags {
         SMALL_FLOWERS = BlockTags.register("small_flowers");
         BEDS = BlockTags.register("beds");
         FENCES = BlockTags.register("fences");
+        TALL_FLOWERS = BlockTags.register("tall_flowers");
+        FLOWERS = BlockTags.register("flowers");
         FLOWER_POTS = BlockTags.register("flower_pots");
         ENDERMAN_HOLDABLE = BlockTags.register("enderman_holdable");
         ICE = BlockTags.register("ice");
@@ -128,6 +135,9 @@ public class BlockTags {
         SIGNS = BlockTags.register("signs");
         DRAGON_IMMUNE = BlockTags.register("dragon_immune");
         WITHER_IMMUNE = BlockTags.register("wither_immune");
+        BEEHIVES = BlockTags.register("beehives");
+        CROPS = BlockTags.register("crops");
+        BEE_GROWABLES = BlockTags.register("bee_growables");
     }
 
     static class CachingTag
@@ -139,8 +149,7 @@ public class BlockTags {
             super(identifier);
         }
 
-        @Override
-        public boolean contains(Block block) {
+        public boolean method_15076(Block block) {
             if (this.version != latestVersion) {
                 this.delegate = container.getOrCreate(this.getId());
                 this.version = latestVersion;

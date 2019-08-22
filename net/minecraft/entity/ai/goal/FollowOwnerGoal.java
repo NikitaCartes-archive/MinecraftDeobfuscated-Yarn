@@ -15,13 +15,13 @@ import net.minecraft.entity.passive.TameableEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
-import net.minecraft.world.CollisionView;
+import net.minecraft.world.ViewableWorld;
 
 public class FollowOwnerGoal
 extends Goal {
     protected final TameableEntity tameable;
     private LivingEntity owner;
-    protected final CollisionView world;
+    protected final ViewableWorld world;
     private final double field_6442;
     private final EntityNavigation navigation;
     private int field_6443;
@@ -69,15 +69,15 @@ extends Goal {
     @Override
     public void start() {
         this.field_6443 = 0;
-        this.field_6447 = this.tameable.getPathfindingPenalty(PathNodeType.WATER);
-        this.tameable.setPathfindingPenalty(PathNodeType.WATER, 0.0f);
+        this.field_6447 = this.tameable.getPathNodeTypeWeight(PathNodeType.WATER);
+        this.tameable.setPathNodeTypeWeight(PathNodeType.WATER, 0.0f);
     }
 
     @Override
     public void stop() {
         this.owner = null;
         this.navigation.stop();
-        this.tameable.setPathfindingPenalty(PathNodeType.WATER, this.field_6447);
+        this.tameable.setPathNodeTypeWeight(PathNodeType.WATER, this.field_6447);
     }
 
     @Override
@@ -101,11 +101,11 @@ extends Goal {
         }
         int i = MathHelper.floor(this.owner.x) - 2;
         int j = MathHelper.floor(this.owner.z) - 2;
-        int k = MathHelper.floor(this.owner.getBoundingBox().y1);
+        int k = MathHelper.floor(this.owner.getBoundingBox().minY);
         for (int l = 0; l <= 4; ++l) {
             for (int m = 0; m <= 4; ++m) {
                 if (l >= 1 && m >= 1 && l <= 3 && m <= 3 || !this.method_6263(new BlockPos(i + l, k - 1, j + m))) continue;
-                this.tameable.refreshPositionAndAngles((float)(i + l) + 0.5f, k, (float)(j + m) + 0.5f, this.tameable.yaw, this.tameable.pitch);
+                this.tameable.setPositionAndAngles((float)(i + l) + 0.5f, k, (float)(j + m) + 0.5f, this.tameable.yaw, this.tameable.pitch);
                 this.navigation.stop();
                 return;
             }

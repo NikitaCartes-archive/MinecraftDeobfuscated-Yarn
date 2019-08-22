@@ -13,10 +13,10 @@ import java.io.PushbackInputStream;
 import java.util.Map;
 import java.util.function.Supplier;
 import net.minecraft.SharedConstants;
-import net.minecraft.datafixer.DataFixTypes;
+import net.minecraft.datafixers.DataFixTypes;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.NbtHelper;
 import net.minecraft.nbt.NbtIo;
+import net.minecraft.util.TagHelper;
 import net.minecraft.world.PersistentState;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -51,14 +51,14 @@ public class PersistentStateManager {
     public <T extends PersistentState> T method_20786(Supplier<T> supplier, String string) {
         PersistentState persistentState = this.loadedStates.get(string);
         if (persistentState == null && !this.loadedStates.containsKey(string)) {
-            persistentState = this.readFromFile(supplier, string);
+            persistentState = this.get(supplier, string);
             this.loadedStates.put(string, persistentState);
         }
         return (T)persistentState;
     }
 
     @Nullable
-    private <T extends PersistentState> T readFromFile(Supplier<T> supplier, String string) {
+    private <T extends PersistentState> T get(Supplier<T> supplier, String string) {
         try {
             File file = this.getFile(string);
             if (file.exists()) {
@@ -106,8 +106,8 @@ public class PersistentStateManager {
                     }
                 }
             }
-            int j = compoundTag.contains("DataVersion", 99) ? compoundTag.getInt("DataVersion") : 1343;
-            object = NbtHelper.update(this.dataFixer, DataFixTypes.SAVED_DATA, compoundTag, j, i);
+            int j = compoundTag.containsKey("DataVersion", 99) ? compoundTag.getInt("DataVersion") : 1343;
+            object = TagHelper.update(this.dataFixer, DataFixTypes.SAVED_DATA, compoundTag, j, i);
             return object;
         }
     }

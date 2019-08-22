@@ -19,10 +19,10 @@ import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.CollisionView;
 import net.minecraft.world.Difficulty;
 import net.minecraft.world.IWorld;
 import net.minecraft.world.LightType;
+import net.minecraft.world.ViewableWorld;
 import net.minecraft.world.World;
 
 public abstract class HostileEntity
@@ -97,8 +97,8 @@ implements Monster {
     }
 
     @Override
-    public float getPathfindingFavor(BlockPos blockPos, CollisionView collisionView) {
-        return 0.5f - collisionView.getBrightness(blockPos);
+    public float getPathfindingFavor(BlockPos blockPos, ViewableWorld viewableWorld) {
+        return 0.5f - viewableWorld.getBrightness(blockPos);
     }
 
     public static boolean method_20679(IWorld iWorld, BlockPos blockPos, Random random) {

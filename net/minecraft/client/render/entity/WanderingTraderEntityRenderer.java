@@ -3,7 +3,7 @@
  */
 package net.minecraft.client.render.entity;
 
-import com.mojang.blaze3d.platform.GlStateManager;
+import com.mojang.blaze3d.systems.RenderSystem;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.render.entity.EntityRenderDispatcher;
@@ -25,15 +25,13 @@ extends MobEntityRenderer<WanderingTraderEntity, VillagerResemblingModel<Wanderi
         this.addFeature(new VillagerHeldItemFeatureRenderer<WanderingTraderEntity>(this));
     }
 
-    @Override
-    protected Identifier getTexture(WanderingTraderEntity wanderingTraderEntity) {
+    protected Identifier method_18045(WanderingTraderEntity wanderingTraderEntity) {
         return TEXTURE;
     }
 
-    @Override
-    protected void scale(WanderingTraderEntity wanderingTraderEntity, float f) {
+    protected void method_18046(WanderingTraderEntity wanderingTraderEntity, float f) {
         float g = 0.9375f;
-        GlStateManager.scalef(0.9375f, 0.9375f, 0.9375f);
+        RenderSystem.scalef(0.9375f, 0.9375f, 0.9375f);
     }
 }
 

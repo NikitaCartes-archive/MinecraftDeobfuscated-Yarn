@@ -23,7 +23,7 @@ implements Property<T> {
     }
 
     @Override
-    public Class<T> getType() {
+    public Class<T> getValueType() {
         return this.type;
     }
 

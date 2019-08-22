@@ -4,11 +4,11 @@
 package com.mojang.realmsclient.gui.screens;
 
 import com.mojang.realmsclient.dto.RealmsServer;
-import com.mojang.realmsclient.gui.RealmsConstants;
 import com.mojang.realmsclient.gui.screens.RealmsConfigureWorldScreen;
 import com.mojang.realmsclient.gui.screens.RealmsLongConfirmationScreen;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.class_4359;
 import net.minecraft.realms.Realms;
 import net.minecraft.realms.RealmsButton;
 import net.minecraft.realms.RealmsEditBox;
@@ -42,7 +42,7 @@ extends RealmsScreen {
     public void init() {
         this.setKeyboardHandlerSendRepeatsToGui(true);
         int i = this.width() / 2 - 106;
-        this.doneButton = new RealmsButton(1, i - 2, RealmsConstants.row(12), 106, 20, RealmsSettingsScreen.getLocalizedString("mco.configure.world.buttons.done")){
+        this.doneButton = new RealmsButton(1, i - 2, class_4359.method_21072(12), 106, 20, RealmsSettingsScreen.getLocalizedString("mco.configure.world.buttons.done")){
 
             @Override
             public void onPress() {
@@ -50,14 +50,14 @@ extends RealmsScreen {
             }
         };
         this.buttonsAdd(this.doneButton);
-        this.buttonsAdd(new RealmsButton(0, this.width() / 2 + 2, RealmsConstants.row(12), 106, 20, RealmsSettingsScreen.getLocalizedString("gui.cancel")){
+        this.buttonsAdd(new RealmsButton(0, this.width() / 2 + 2, class_4359.method_21072(12), 106, 20, RealmsSettingsScreen.getLocalizedString("gui.cancel")){
 
             @Override
             public void onPress() {
                 Realms.setScreen(RealmsSettingsScreen.this.configureWorldScreen);
             }
         });
-        this.buttonsAdd(new RealmsButton(5, this.width() / 2 - 53, RealmsConstants.row(0), 106, 20, RealmsSettingsScreen.getLocalizedString(this.serverData.state.equals((Object)RealmsServer.State.OPEN) ? "mco.configure.world.buttons.close" : "mco.configure.world.buttons.open")){
+        this.buttonsAdd(new RealmsButton(5, this.width() / 2 - 53, class_4359.method_21072(0), 106, 20, RealmsSettingsScreen.getLocalizedString(this.serverData.state.equals((Object)RealmsServer.State.OPEN) ? "mco.configure.world.buttons.close" : "mco.configure.world.buttons.open")){
 
             @Override
             public void onPress() {
@@ -70,14 +70,14 @@ extends RealmsScreen {
                 }
             }
         });
-        this.nameEdit = this.newEditBox(2, i, RealmsConstants.row(4), 212, 20, RealmsSettingsScreen.getLocalizedString("mco.configure.world.name"));
+        this.nameEdit = this.newEditBox(2, i, class_4359.method_21072(4), 212, 20, RealmsSettingsScreen.getLocalizedString("mco.configure.world.name"));
         this.nameEdit.setMaxLength(32);
         if (this.serverData.getName() != null) {
             this.nameEdit.setValue(this.serverData.getName());
         }
         this.addWidget(this.nameEdit);
         this.focusOn(this.nameEdit);
-        this.descEdit = this.newEditBox(3, i, RealmsConstants.row(8), 212, 20, RealmsSettingsScreen.getLocalizedString("mco.configure.world.description"));
+        this.descEdit = this.newEditBox(3, i, class_4359.method_21072(8), 212, 20, RealmsSettingsScreen.getLocalizedString("mco.configure.world.description"));
         this.descEdit.setMaxLength(32);
         if (this.serverData.getDescription() != null) {
             this.descEdit.setValue(this.serverData.getDescription());
@@ -121,8 +121,8 @@ extends RealmsScreen {
     public void render(int i, int j, float f) {
         this.renderBackground();
         this.titleLabel.render(this);
-        this.drawString(RealmsSettingsScreen.getLocalizedString("mco.configure.world.name"), this.width() / 2 - 106, RealmsConstants.row(3), 0xA0A0A0);
-        this.drawString(RealmsSettingsScreen.getLocalizedString("mco.configure.world.description"), this.width() / 2 - 106, RealmsConstants.row(7), 0xA0A0A0);
+        this.drawString(RealmsSettingsScreen.getLocalizedString("mco.configure.world.name"), this.width() / 2 - 106, class_4359.method_21072(3), 0xA0A0A0);
+        this.drawString(RealmsSettingsScreen.getLocalizedString("mco.configure.world.description"), this.width() / 2 - 106, class_4359.method_21072(7), 0xA0A0A0);
         this.nameEdit.render(i, j, f);
         this.descEdit.render(i, j, f);
         super.render(i, j, f);

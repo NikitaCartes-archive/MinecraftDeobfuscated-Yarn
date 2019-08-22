@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.UUID;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.client.network.packet.EntitySpawnS2CPacket;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.MovementType;
@@ -19,14 +20,13 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.NbtHelper;
 import net.minecraft.network.Packet;
-import net.minecraft.network.packet.s2c.play.EntitySpawnS2CPacket;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.stat.Stats;
 import net.minecraft.tag.FluidTags;
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
+import net.minecraft.util.TagHelper;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
@@ -50,7 +50,7 @@ extends Entity {
 
     public ItemEntity(World world, double d, double e, double f) {
         this((EntityType<? extends ItemEntity>)EntityType.ITEM, world);
-        this.updatePosition(d, e, f);
+        this.setPosition(d, e, f);
         this.yaw = this.random.nextFloat() * 360.0f;
         this.setVelocity(this.random.nextDouble() * 0.2 - 0.1, 0.2, this.random.nextDouble() * 0.2 - 0.1);
     }
@@ -96,14 +96,14 @@ extends Entity {
         } else {
             boolean bl = this.noClip = !this.world.doesNotCollide(this);
             if (this.noClip) {
-                this.pushOutOfBlocks(this.x, (this.getBoundingBox().y1 + this.getBoundingBox().y2) / 2.0, this.z);
+                this.pushOutOfBlocks(this.x, (this.getBoundingBox().minY + this.getBoundingBox().maxY) / 2.0, this.z);
             }
         }
         if (!this.onGround || ItemEntity.squaredHorizontalLength(this.getVelocity()) > (double)1.0E-5f || (this.age + this.getEntityId()) % 4 == 0) {
             this.move(MovementType.SELF, this.getVelocity());
             float f = 0.98f;
             if (this.onGround) {
-                f = this.world.getBlockState(new BlockPos(this.x, this.getBoundingBox().y1 - 1.0, this.z)).getBlock().getSlipperiness() * 0.98f;
+                f = this.world.getBlockState(new BlockPos(this.x, this.getBoundingBox().minY - 1.0, this.z)).getBlock().getSlipperiness() * 0.98f;
             }
             this.setVelocity(this.getVelocity().multiply(f, 0.98, f));
             if (this.onGround) {
@@ -223,10 +223,10 @@ extends Entity {
         compoundTag.putShort("Age", (short)this.age);
         compoundTag.putShort("PickupDelay", (short)this.pickupDelay);
         if (this.getThrower() != null) {
-            compoundTag.put("Thrower", NbtHelper.fromUuid(this.getThrower()));
+            compoundTag.put("Thrower", TagHelper.serializeUuid(this.getThrower()));
         }
         if (this.getOwner() != null) {
-            compoundTag.put("Owner", NbtHelper.fromUuid(this.getOwner()));
+            compoundTag.put("Owner", TagHelper.serializeUuid(this.getOwner()));
         }
         if (!this.getStack().isEmpty()) {
             compoundTag.put("Item", this.getStack().toTag(new CompoundTag()));
@@ -237,14 +237,14 @@ extends Entity {
     public void readCustomDataFromTag(CompoundTag compoundTag) {
         this.health = compoundTag.getShort("Health");
         this.age = compoundTag.getShort("Age");
-        if (compoundTag.contains("PickupDelay")) {
+        if (compoundTag.containsKey("PickupDelay")) {
             this.pickupDelay = compoundTag.getShort("PickupDelay");
         }
-        if (compoundTag.contains("Owner", 10)) {
-            this.owner = NbtHelper.toUuid(compoundTag.getCompound("Owner"));
+        if (compoundTag.containsKey("Owner", 10)) {
+            this.owner = TagHelper.deserializeUuid(compoundTag.getCompound("Owner"));
         }
-        if (compoundTag.contains("Thrower", 10)) {
-            this.thrower = NbtHelper.toUuid(compoundTag.getCompound("Thrower"));
+        if (compoundTag.containsKey("Thrower", 10)) {
+            this.thrower = TagHelper.deserializeUuid(compoundTag.getCompound("Thrower"));
         }
         CompoundTag compoundTag2 = compoundTag.getCompound("Item");
         this.setStack(ItemStack.fromTag(compoundTag2));

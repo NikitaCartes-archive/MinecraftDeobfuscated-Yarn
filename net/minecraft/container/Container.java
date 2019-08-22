@@ -30,8 +30,8 @@ import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
 
 public abstract class Container {
-    private final DefaultedList<ItemStack> trackedStacks = DefaultedList.of();
-    public final List<Slot> slots = Lists.newArrayList();
+    private final DefaultedList<ItemStack> stackList = DefaultedList.of();
+    public final List<Slot> slotList = Lists.newArrayList();
     private final List<Property> properties = Lists.newArrayList();
     @Nullable
     private final ContainerType<?> type;
@@ -80,9 +80,9 @@ public abstract class Container {
     }
 
     protected Slot addSlot(Slot slot) {
-        slot.id = this.slots.size();
-        this.slots.add(slot);
-        this.trackedStacks.add(ItemStack.EMPTY);
+        slot.id = this.slotList.size();
+        this.slotList.add(slot);
+        this.stackList.add(ItemStack.EMPTY);
         return slot;
     }
 
@@ -113,27 +113,27 @@ public abstract class Container {
 
     public DefaultedList<ItemStack> getStacks() {
         DefaultedList<ItemStack> defaultedList = DefaultedList.of();
-        for (int i = 0; i < this.slots.size(); ++i) {
-            defaultedList.add(this.slots.get(i).getStack());
+        for (int i = 0; i < this.slotList.size(); ++i) {
+            defaultedList.add(this.slotList.get(i).getStack());
         }
         return defaultedList;
     }
 
     public void sendContentUpdates() {
         int i;
-        for (i = 0; i < this.slots.size(); ++i) {
-            ItemStack itemStack = this.slots.get(i).getStack();
-            ItemStack itemStack2 = this.trackedStacks.get(i);
+        for (i = 0; i < this.slotList.size(); ++i) {
+            ItemStack itemStack = this.slotList.get(i).getStack();
+            ItemStack itemStack2 = this.stackList.get(i);
             if (ItemStack.areEqualIgnoreDamage(itemStack2, itemStack)) continue;
             itemStack2 = itemStack.isEmpty() ? ItemStack.EMPTY : itemStack.copy();
-            this.trackedStacks.set(i, itemStack2);
+            this.stackList.set(i, itemStack2);
             for (ContainerListener containerListener : this.listeners) {
                 containerListener.onContainerSlotUpdate(this, i, itemStack2);
             }
         }
         for (i = 0; i < this.properties.size(); ++i) {
             Property property = this.properties.get(i);
-            if (!property.hasChanged()) continue;
+            if (!property.detectChanges()) continue;
             for (ContainerListener containerListener2 : this.listeners) {
                 containerListener2.onContainerPropertyUpdate(this, i, property.get());
             }
@@ -145,11 +145,11 @@ public abstract class Container {
     }
 
     public Slot getSlot(int i) {
-        return this.slots.get(i);
+        return this.slotList.get(i);
     }
 
     public ItemStack transferSlot(PlayerEntity playerEntity, int i) {
-        Slot slot = this.slots.get(i);
+        Slot slot = this.slotList.get(i);
         if (slot != null) {
             return slot.getStack();
         }
@@ -175,7 +175,7 @@ public abstract class Container {
                     this.endQuickCraft();
                 }
             } else if (this.quickCraftButton == 1) {
-                Slot slot = this.slots.get(i);
+                Slot slot = this.slotList.get(i);
                 ItemStack itemStack2 = playerInventory.getCursorStack();
                 if (slot != null && Container.canInsertItemIntoSlot(slot, itemStack2, true) && slot.canInsert(itemStack2) && (this.quickCraftStage == 2 || itemStack2.getCount() > this.quickCraftSlots.size()) && this.canInsertIntoSlot(slot)) {
                     this.quickCraftSlots.add(slot);
@@ -221,7 +221,7 @@ public abstract class Container {
                 if (i < 0) {
                     return ItemStack.EMPTY;
                 }
-                Slot slot3 = this.slots.get(i);
+                Slot slot3 = this.slotList.get(i);
                 if (slot3 == null || !slot3.canTakeItems(playerEntity)) {
                     return ItemStack.EMPTY;
                 }
@@ -234,7 +234,7 @@ public abstract class Container {
                 if (i < 0) {
                     return ItemStack.EMPTY;
                 }
-                Slot slot3 = this.slots.get(i);
+                Slot slot3 = this.slotList.get(i);
                 if (slot3 != null) {
                     ItemStack itemStack3 = slot3.getStack();
                     ItemStack itemStack2 = playerInventory.getCursorStack();
@@ -293,7 +293,7 @@ public abstract class Container {
                 }
             }
         } else if (slotActionType == SlotActionType.SWAP && j >= 0 && j < 9) {
-            Slot slot3 = this.slots.get(i);
+            Slot slot3 = this.slotList.get(i);
             ItemStack itemStack3 = playerInventory.getInvStack(j);
             ItemStack itemStack2 = slot3.getStack();
             if (!itemStack3.isEmpty() || !itemStack2.isEmpty()) {
@@ -330,28 +330,28 @@ public abstract class Container {
                 }
             }
         } else if (slotActionType == SlotActionType.CLONE && playerEntity.abilities.creativeMode && playerInventory.getCursorStack().isEmpty() && i >= 0) {
-            Slot slot3 = this.slots.get(i);
+            Slot slot3 = this.slotList.get(i);
             if (slot3 != null && slot3.hasStack()) {
                 ItemStack itemStack3 = slot3.getStack().copy();
                 itemStack3.setCount(itemStack3.getMaxCount());
                 playerInventory.setCursorStack(itemStack3);
             }
         } else if (slotActionType == SlotActionType.THROW && playerInventory.getCursorStack().isEmpty() && i >= 0) {
-            Slot slot3 = this.slots.get(i);
+            Slot slot3 = this.slotList.get(i);
             if (slot3 != null && slot3.hasStack() && slot3.canTakeItems(playerEntity)) {
                 ItemStack itemStack3 = slot3.takeStack(j == 0 ? 1 : slot3.getStack().getCount());
                 slot3.onTakeItem(playerEntity, itemStack3);
                 playerEntity.dropItem(itemStack3, true);
             }
         } else if (slotActionType == SlotActionType.PICKUP_ALL && i >= 0) {
-            Slot slot3 = this.slots.get(i);
+            Slot slot3 = this.slotList.get(i);
             ItemStack itemStack3 = playerInventory.getCursorStack();
             if (!(itemStack3.isEmpty() || slot3 != null && slot3.hasStack() && slot3.canTakeItems(playerEntity))) {
-                int l = j == 0 ? 0 : this.slots.size() - 1;
+                int l = j == 0 ? 0 : this.slotList.size() - 1;
                 int o = j == 0 ? 1 : -1;
                 for (int p = 0; p < 2; ++p) {
-                    for (int q = l; q >= 0 && q < this.slots.size() && itemStack3.getCount() < itemStack3.getMaxCount(); q += o) {
-                        Slot slot4 = this.slots.get(q);
+                    for (int q = l; q >= 0 && q < this.slotList.size() && itemStack3.getCount() < itemStack3.getMaxCount(); q += o) {
+                        Slot slot4 = this.slotList.get(q);
                         if (!slot4.hasStack() || !Container.canInsertItemIntoSlot(slot4, itemStack3, true) || !slot4.canTakeItems(playerEntity) || !this.canInsertIntoSlot(itemStack3, slot4)) continue;
                         ItemStack itemStack6 = slot4.getStack();
                         if (p == 0 && itemStack6.getCount() == itemStack6.getMaxCount()) continue;
@@ -413,7 +413,7 @@ public abstract class Container {
         }
     }
 
-    public void setProperty(int i, int j) {
+    public void setProperties(int i, int j) {
         this.properties.get(i).set(j);
     }
 
@@ -423,7 +423,7 @@ public abstract class Container {
         return this.actionId;
     }
 
-    public boolean isNotRestricted(PlayerEntity playerEntity) {
+    public boolean isRestricted(PlayerEntity playerEntity) {
         return !this.restrictedPlayers.contains(playerEntity);
     }
 
@@ -447,7 +447,7 @@ public abstract class Container {
         }
         if (itemStack.isStackable()) {
             while (!itemStack.isEmpty() && (bl ? k >= i : k < j)) {
-                slot = this.slots.get(k);
+                slot = this.slotList.get(k);
                 itemStack2 = slot.getStack();
                 if (!itemStack2.isEmpty() && Container.canStacksCombine(itemStack, itemStack2)) {
                     int l = itemStack2.getCount() + itemStack.getCount();
@@ -473,7 +473,7 @@ public abstract class Container {
         if (!itemStack.isEmpty()) {
             k = bl ? j - 1 : i;
             while (bl ? k >= i : k < j) {
-                slot = this.slots.get(k);
+                slot = this.slotList.get(k);
                 itemStack2 = slot.getStack();
                 if (itemStack2.isEmpty() && slot.canInsert(itemStack)) {
                     if (itemStack.getCount() > slot.getMaxStackAmount()) {

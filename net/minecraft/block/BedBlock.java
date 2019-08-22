@@ -9,6 +9,7 @@ import net.fabricmc.api.Environment;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockEntityProvider;
 import net.minecraft.block.BlockPlacementEnvironment;
+import net.minecraft.block.BlockRenderLayer;
 import net.minecraft.block.BlockRenderType;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
@@ -18,7 +19,6 @@ import net.minecraft.block.entity.BedBlockEntity;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.enums.BedPart;
 import net.minecraft.block.piston.PistonBehavior;
-import net.minecraft.client.render.RenderLayer;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityContext;
 import net.minecraft.entity.EntityType;
@@ -28,7 +28,7 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemPlacementContext;
 import net.minecraft.item.ItemStack;
 import net.minecraft.stat.Stats;
-import net.minecraft.state.StateManager;
+import net.minecraft.state.StateFactory;
 import net.minecraft.state.property.BooleanProperty;
 import net.minecraft.state.property.EnumProperty;
 import net.minecraft.state.property.Properties;
@@ -44,8 +44,8 @@ import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.util.shape.VoxelShapes;
 import net.minecraft.world.BlockView;
-import net.minecraft.world.CollisionView;
 import net.minecraft.world.IWorld;
+import net.minecraft.world.ViewableWorld;
 import net.minecraft.world.World;
 import net.minecraft.world.biome.Biomes;
 import net.minecraft.world.explosion.Explosion;
@@ -70,7 +70,7 @@ implements BlockEntityProvider {
     public BedBlock(DyeColor dyeColor, Block.Settings settings) {
         super(settings);
         this.color = dyeColor;
-        this.setDefaultState((BlockState)((BlockState)((BlockState)this.stateManager.getDefaultState()).with(PART, BedPart.FOOT)).with(OCCUPIED, false));
+        this.setDefaultState((BlockState)((BlockState)((BlockState)this.stateFactory.getDefaultState()).with(PART, BedPart.FOOT)).with(OCCUPIED, false));
     }
 
     @Override
@@ -97,10 +97,10 @@ implements BlockEntityProvider {
             return true;
         }
         if (!world.dimension.canPlayersSleep() || world.getBiome(blockPos) == Biomes.NETHER) {
-            world.removeBlock(blockPos, false);
+            world.clearBlockState(blockPos, false);
             BlockPos blockPos2 = blockPos.offset(blockState.get(FACING).getOpposite());
             if (world.getBlockState(blockPos2).getBlock() == this) {
-                world.removeBlock(blockPos2, false);
+                world.clearBlockState(blockPos2, false);
             }
             world.createExplosion(null, DamageSource.netherBed(), (double)blockPos.getX() + 0.5, (double)blockPos.getY() + 0.5, (double)blockPos.getZ() + 0.5, 5.0f, true, Explosion.DestructionType.DESTROY);
             return true;
@@ -124,14 +124,18 @@ implements BlockEntityProvider {
 
     @Override
     public void onEntityLand(BlockView blockView, Entity entity) {
-        if (entity.isSneaking()) {
+        if (entity.method_21750()) {
             super.onEntityLand(blockView, entity);
         } else {
-            Vec3d vec3d = entity.getVelocity();
-            if (vec3d.y < 0.0) {
-                double d = entity instanceof LivingEntity ? 1.0 : 0.8;
-                entity.setVelocity(vec3d.x, -vec3d.y * (double)0.66f * d, vec3d.z);
-            }
+            this.method_21838(entity);
+        }
+    }
+
+    private void method_21838(Entity entity) {
+        Vec3d vec3d = entity.getVelocity();
+        if (vec3d.y < 0.0) {
+            double d = entity instanceof LivingEntity ? 1.0 : 0.8;
+            entity.setVelocity(vec3d.x, -vec3d.y * (double)0.66f * d, vec3d.z);
         }
     }
 
@@ -209,8 +213,8 @@ implements BlockEntityProvider {
         return true;
     }
 
-    public static Optional<Vec3d> findWakeUpPosition(EntityType<?> entityType, CollisionView collisionView, BlockPos blockPos, int i) {
-        Direction direction = collisionView.getBlockState(blockPos).get(FACING);
+    public static Optional<Vec3d> findWakeUpPosition(EntityType<?> entityType, ViewableWorld viewableWorld, BlockPos blockPos, int i) {
+        Direction direction = viewableWorld.getBlockState(blockPos).get(FACING);
         int j = blockPos.getX();
         int k = blockPos.getY();
         int l = blockPos.getZ();
@@ -222,7 +226,7 @@ implements BlockEntityProvider {
             for (int r = n; r <= p; ++r) {
                 for (int s = o; s <= q; ++s) {
                     BlockPos blockPos2 = new BlockPos(r, k, s);
-                    Optional<Vec3d> optional = BedBlock.canWakeUpAt(entityType, collisionView, blockPos2);
+                    Optional<Vec3d> optional = BedBlock.canWakeUpAt(entityType, viewableWorld, blockPos2);
                     if (!optional.isPresent()) continue;
                     if (i > 0) {
                         --i;
@@ -235,16 +239,16 @@ implements BlockEntityProvider {
         return Optional.empty();
     }
 
-    protected static Optional<Vec3d> canWakeUpAt(EntityType<?> entityType, CollisionView collisionView, BlockPos blockPos) {
-        VoxelShape voxelShape = collisionView.getBlockState(blockPos).getCollisionShape(collisionView, blockPos);
+    protected static Optional<Vec3d> canWakeUpAt(EntityType<?> entityType, ViewableWorld viewableWorld, BlockPos blockPos) {
+        VoxelShape voxelShape = viewableWorld.getBlockState(blockPos).getCollisionShape(viewableWorld, blockPos);
         if (voxelShape.getMaximum(Direction.Axis.Y) > 0.4375) {
             return Optional.empty();
         }
         BlockPos.Mutable mutable = new BlockPos.Mutable(blockPos);
-        while (mutable.getY() >= 0 && blockPos.getY() - mutable.getY() <= 2 && collisionView.getBlockState(mutable).getCollisionShape(collisionView, mutable).isEmpty()) {
+        while (mutable.getY() >= 0 && blockPos.getY() - mutable.getY() <= 2 && viewableWorld.getBlockState(mutable).getCollisionShape(viewableWorld, mutable).isEmpty()) {
             mutable.setOffset(Direction.DOWN);
         }
-        VoxelShape voxelShape2 = collisionView.getBlockState(mutable).getCollisionShape(collisionView, mutable);
+        VoxelShape voxelShape2 = viewableWorld.getBlockState(mutable).getCollisionShape(viewableWorld, mutable);
         if (voxelShape2.isEmpty()) {
             return Optional.empty();
         }
@@ -254,7 +258,7 @@ implements BlockEntityProvider {
         }
         float f = entityType.getWidth() / 2.0f;
         Vec3d vec3d = new Vec3d((double)mutable.getX() + 0.5, d, (double)mutable.getZ() + 0.5);
-        if (collisionView.doesNotCollide(new Box(vec3d.x - (double)f, vec3d.y, vec3d.z - (double)f, vec3d.x + (double)f, vec3d.y + (double)entityType.getHeight(), vec3d.z + (double)f))) {
+        if (viewableWorld.doesNotCollide(new Box(vec3d.x - (double)f, vec3d.y, vec3d.z - (double)f, vec3d.x + (double)f, vec3d.y + (double)entityType.getHeight(), vec3d.z + (double)f))) {
             return Optional.of(vec3d);
         }
         return Optional.empty();
@@ -266,8 +270,8 @@ implements BlockEntityProvider {
     }
 
     @Override
-    public RenderLayer getRenderLayer() {
-        return RenderLayer.CUTOUT;
+    public BlockRenderLayer getRenderLayer() {
+        return BlockRenderLayer.CUTOUT;
     }
 
     @Override
@@ -276,7 +280,7 @@ implements BlockEntityProvider {
     }
 
     @Override
-    protected void appendProperties(StateManager.Builder<Block, BlockState> builder) {
+    protected void appendProperties(StateFactory.Builder<Block, BlockState> builder) {
         builder.add(FACING, PART, OCCUPIED);
     }
 

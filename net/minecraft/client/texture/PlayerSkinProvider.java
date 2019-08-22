@@ -46,8 +46,7 @@ public class PlayerSkinProvider {
         this.sessionService = minecraftSessionService;
         this.skinCache = CacheBuilder.newBuilder().expireAfterAccess(15L, TimeUnit.SECONDS).build(new CacheLoader<GameProfile, Map<MinecraftProfileTexture.Type, MinecraftProfileTexture>>(){
 
-            @Override
-            public Map<MinecraftProfileTexture.Type, MinecraftProfileTexture> load(GameProfile gameProfile) throws Exception {
+            public Map<MinecraftProfileTexture.Type, MinecraftProfileTexture> method_4657(GameProfile gameProfile) throws Exception {
                 try {
                     return MinecraftClient.getInstance().getSessionService().getTextures(gameProfile, false);
                 } catch (Throwable throwable) {
@@ -57,7 +56,7 @@ public class PlayerSkinProvider {
 
             @Override
             public /* synthetic */ Object load(Object object) throws Exception {
-                return this.load((GameProfile)object);
+                return this.method_4657((GameProfile)object);
             }
         });
     }

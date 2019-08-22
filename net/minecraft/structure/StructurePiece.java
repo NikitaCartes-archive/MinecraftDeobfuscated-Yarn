@@ -21,20 +21,20 @@ import net.minecraft.structure.StructurePieceType;
 import net.minecraft.util.BlockMirror;
 import net.minecraft.util.BlockRotation;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.math.BlockBox;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.math.Direction;
+import net.minecraft.util.math.MutableIntBoundingBox;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.world.BlockView;
-import net.minecraft.world.CollisionView;
 import net.minecraft.world.Heightmap;
 import net.minecraft.world.IWorld;
+import net.minecraft.world.ViewableWorld;
 import org.jetbrains.annotations.Nullable;
 
 public abstract class StructurePiece {
     protected static final BlockState AIR = Blocks.CAVE_AIR.getDefaultState();
-    protected BlockBox boundingBox;
+    protected MutableIntBoundingBox boundingBox;
     @Nullable
     private Direction facing;
     private BlockMirror mirror;
@@ -51,8 +51,8 @@ public abstract class StructurePiece {
     public StructurePiece(StructurePieceType structurePieceType, CompoundTag compoundTag) {
         this(structurePieceType, compoundTag.getInt("GD"));
         int i;
-        if (compoundTag.contains("BB")) {
-            this.boundingBox = new BlockBox(compoundTag.getIntArray("BB"));
+        if (compoundTag.containsKey("BB")) {
+            this.boundingBox = new MutableIntBoundingBox(compoundTag.getIntArray("BB"));
         }
         this.setOrientation((i = compoundTag.getInt("O")) == -1 ? null : Direction.fromHorizontal(i));
     }
@@ -73,9 +73,9 @@ public abstract class StructurePiece {
     public void method_14918(StructurePiece structurePiece, List<StructurePiece> list, Random random) {
     }
 
-    public abstract boolean generate(IWorld var1, Random var2, BlockBox var3, ChunkPos var4);
+    public abstract boolean generate(IWorld var1, Random var2, MutableIntBoundingBox var3, ChunkPos var4);
 
-    public BlockBox getBoundingBox() {
+    public MutableIntBoundingBox getBoundingBox() {
         return this.boundingBox;
     }
 
@@ -89,23 +89,23 @@ public abstract class StructurePiece {
         return this.boundingBox.intersectsXZ(j - i, k - i, j + 15 + i, k + 15 + i);
     }
 
-    public static StructurePiece method_14932(List<StructurePiece> list, BlockBox blockBox) {
+    public static StructurePiece method_14932(List<StructurePiece> list, MutableIntBoundingBox mutableIntBoundingBox) {
         for (StructurePiece structurePiece : list) {
-            if (structurePiece.getBoundingBox() == null || !structurePiece.getBoundingBox().intersects(blockBox)) continue;
+            if (structurePiece.getBoundingBox() == null || !structurePiece.getBoundingBox().intersects(mutableIntBoundingBox)) continue;
             return structurePiece;
         }
         return null;
     }
 
-    protected boolean method_14937(BlockView blockView, BlockBox blockBox) {
+    protected boolean method_14937(BlockView blockView, MutableIntBoundingBox mutableIntBoundingBox) {
         int p;
         int o;
-        int i = Math.max(this.boundingBox.minX - 1, blockBox.minX);
-        int j = Math.max(this.boundingBox.minY - 1, blockBox.minY);
-        int k = Math.max(this.boundingBox.minZ - 1, blockBox.minZ);
-        int l = Math.min(this.boundingBox.maxX + 1, blockBox.maxX);
-        int m = Math.min(this.boundingBox.maxY + 1, blockBox.maxY);
-        int n = Math.min(this.boundingBox.maxZ + 1, blockBox.maxZ);
+        int i = Math.max(this.boundingBox.minX - 1, mutableIntBoundingBox.minX);
+        int j = Math.max(this.boundingBox.minY - 1, mutableIntBoundingBox.minY);
+        int k = Math.max(this.boundingBox.minZ - 1, mutableIntBoundingBox.minZ);
+        int l = Math.min(this.boundingBox.maxX + 1, mutableIntBoundingBox.maxX);
+        int m = Math.min(this.boundingBox.maxY + 1, mutableIntBoundingBox.maxY);
+        int n = Math.min(this.boundingBox.maxZ + 1, mutableIntBoundingBox.maxZ);
         BlockPos.Mutable mutable = new BlockPos.Mutable();
         for (o = i; o <= l; ++o) {
             for (p = k; p <= n; ++p) {
@@ -184,9 +184,9 @@ public abstract class StructurePiece {
         return j;
     }
 
-    protected void addBlock(IWorld iWorld, BlockState blockState, int i, int j, int k, BlockBox blockBox) {
+    protected void addBlock(IWorld iWorld, BlockState blockState, int i, int j, int k, MutableIntBoundingBox mutableIntBoundingBox) {
         BlockPos blockPos = new BlockPos(this.applyXTransform(i, k), this.applyYTransform(j), this.applyZTransform(i, k));
-        if (!blockBox.contains(blockPos)) {
+        if (!mutableIntBoundingBox.contains(blockPos)) {
             return;
         }
         if (this.mirror != BlockMirror.NONE) {
@@ -205,87 +205,87 @@ public abstract class StructurePiece {
         }
     }
 
-    protected BlockState getBlockAt(BlockView blockView, int i, int j, int k, BlockBox blockBox) {
+    protected BlockState getBlockAt(BlockView blockView, int i, int j, int k, MutableIntBoundingBox mutableIntBoundingBox) {
         int n;
         int m;
         int l = this.applyXTransform(i, k);
         BlockPos blockPos = new BlockPos(l, m = this.applyYTransform(j), n = this.applyZTransform(i, k));
-        if (!blockBox.contains(blockPos)) {
+        if (!mutableIntBoundingBox.contains(blockPos)) {
             return Blocks.AIR.getDefaultState();
         }
         return blockView.getBlockState(blockPos);
     }
 
-    protected boolean isUnderSeaLevel(CollisionView collisionView, int i, int j, int k, BlockBox blockBox) {
+    protected boolean isUnderSeaLevel(ViewableWorld viewableWorld, int i, int j, int k, MutableIntBoundingBox mutableIntBoundingBox) {
         int n;
         int m;
         int l = this.applyXTransform(i, k);
         BlockPos blockPos = new BlockPos(l, m = this.applyYTransform(j + 1), n = this.applyZTransform(i, k));
-        if (!blockBox.contains(blockPos)) {
+        if (!mutableIntBoundingBox.contains(blockPos)) {
             return false;
         }
-        return m < collisionView.getTop(Heightmap.Type.OCEAN_FLOOR_WG, l, n);
+        return m < viewableWorld.getTop(Heightmap.Type.OCEAN_FLOOR_WG, l, n);
     }
 
-    protected void fill(IWorld iWorld, BlockBox blockBox, int i, int j, int k, int l, int m, int n) {
+    protected void fill(IWorld iWorld, MutableIntBoundingBox mutableIntBoundingBox, int i, int j, int k, int l, int m, int n) {
         for (int o = j; o <= m; ++o) {
             for (int p = i; p <= l; ++p) {
                 for (int q = k; q <= n; ++q) {
-                    this.addBlock(iWorld, Blocks.AIR.getDefaultState(), p, o, q, blockBox);
+                    this.addBlock(iWorld, Blocks.AIR.getDefaultState(), p, o, q, mutableIntBoundingBox);
                 }
             }
         }
     }
 
-    protected void fillWithOutline(IWorld iWorld, BlockBox blockBox, int i, int j, int k, int l, int m, int n, BlockState blockState, BlockState blockState2, boolean bl) {
+    protected void fillWithOutline(IWorld iWorld, MutableIntBoundingBox mutableIntBoundingBox, int i, int j, int k, int l, int m, int n, BlockState blockState, BlockState blockState2, boolean bl) {
         for (int o = j; o <= m; ++o) {
             for (int p = i; p <= l; ++p) {
                 for (int q = k; q <= n; ++q) {
-                    if (bl && this.getBlockAt(iWorld, p, o, q, blockBox).isAir()) continue;
+                    if (bl && this.getBlockAt(iWorld, p, o, q, mutableIntBoundingBox).isAir()) continue;
                     if (o == j || o == m || p == i || p == l || q == k || q == n) {
-                        this.addBlock(iWorld, blockState, p, o, q, blockBox);
+                        this.addBlock(iWorld, blockState, p, o, q, mutableIntBoundingBox);
                         continue;
                     }
-                    this.addBlock(iWorld, blockState2, p, o, q, blockBox);
+                    this.addBlock(iWorld, blockState2, p, o, q, mutableIntBoundingBox);
                 }
             }
         }
     }
 
-    protected void fillWithOutline(IWorld iWorld, BlockBox blockBox, int i, int j, int k, int l, int m, int n, boolean bl, Random random, BlockRandomizer blockRandomizer) {
+    protected void fillWithOutline(IWorld iWorld, MutableIntBoundingBox mutableIntBoundingBox, int i, int j, int k, int l, int m, int n, boolean bl, Random random, BlockRandomizer blockRandomizer) {
         for (int o = j; o <= m; ++o) {
             for (int p = i; p <= l; ++p) {
                 for (int q = k; q <= n; ++q) {
-                    if (bl && this.getBlockAt(iWorld, p, o, q, blockBox).isAir()) continue;
+                    if (bl && this.getBlockAt(iWorld, p, o, q, mutableIntBoundingBox).isAir()) continue;
                     blockRandomizer.setBlock(random, p, o, q, o == j || o == m || p == i || p == l || q == k || q == n);
-                    this.addBlock(iWorld, blockRandomizer.getBlock(), p, o, q, blockBox);
+                    this.addBlock(iWorld, blockRandomizer.getBlock(), p, o, q, mutableIntBoundingBox);
                 }
             }
         }
     }
 
-    protected void fillWithOutlineUnderSealevel(IWorld iWorld, BlockBox blockBox, Random random, float f, int i, int j, int k, int l, int m, int n, BlockState blockState, BlockState blockState2, boolean bl, boolean bl2) {
+    protected void fillWithOutlineUnderSealevel(IWorld iWorld, MutableIntBoundingBox mutableIntBoundingBox, Random random, float f, int i, int j, int k, int l, int m, int n, BlockState blockState, BlockState blockState2, boolean bl, boolean bl2) {
         for (int o = j; o <= m; ++o) {
             for (int p = i; p <= l; ++p) {
                 for (int q = k; q <= n; ++q) {
-                    if (random.nextFloat() > f || bl && this.getBlockAt(iWorld, p, o, q, blockBox).isAir() || bl2 && !this.isUnderSeaLevel(iWorld, p, o, q, blockBox)) continue;
+                    if (random.nextFloat() > f || bl && this.getBlockAt(iWorld, p, o, q, mutableIntBoundingBox).isAir() || bl2 && !this.isUnderSeaLevel(iWorld, p, o, q, mutableIntBoundingBox)) continue;
                     if (o == j || o == m || p == i || p == l || q == k || q == n) {
-                        this.addBlock(iWorld, blockState, p, o, q, blockBox);
+                        this.addBlock(iWorld, blockState, p, o, q, mutableIntBoundingBox);
                         continue;
                     }
-                    this.addBlock(iWorld, blockState2, p, o, q, blockBox);
+                    this.addBlock(iWorld, blockState2, p, o, q, mutableIntBoundingBox);
                 }
             }
         }
     }
 
-    protected void addBlockWithRandomThreshold(IWorld iWorld, BlockBox blockBox, Random random, float f, int i, int j, int k, BlockState blockState) {
+    protected void addBlockWithRandomThreshold(IWorld iWorld, MutableIntBoundingBox mutableIntBoundingBox, Random random, float f, int i, int j, int k, BlockState blockState) {
         if (random.nextFloat() < f) {
-            this.addBlock(iWorld, blockState, i, j, k, blockBox);
+            this.addBlock(iWorld, blockState, i, j, k, mutableIntBoundingBox);
         }
     }
 
-    protected void method_14919(IWorld iWorld, BlockBox blockBox, int i, int j, int k, int l, int m, int n, BlockState blockState, boolean bl) {
+    protected void method_14919(IWorld iWorld, MutableIntBoundingBox mutableIntBoundingBox, int i, int j, int k, int l, int m, int n, BlockState blockState, boolean bl) {
         float f = l - i + 1;
         float g = m - j + 1;
         float h = n - k + 1;
@@ -298,18 +298,18 @@ public abstract class StructurePiece {
                 for (int u = k; u <= n; ++u) {
                     float w;
                     float v = ((float)u - p) / (h * 0.5f);
-                    if (bl && this.getBlockAt(iWorld, s, q, u, blockBox).isAir() || !((w = t * t + r * r + v * v) <= 1.05f)) continue;
-                    this.addBlock(iWorld, blockState, s, q, u, blockBox);
+                    if (bl && this.getBlockAt(iWorld, s, q, u, mutableIntBoundingBox).isAir() || !((w = t * t + r * r + v * v) <= 1.05f)) continue;
+                    this.addBlock(iWorld, blockState, s, q, u, mutableIntBoundingBox);
                 }
             }
         }
     }
 
-    protected void method_14936(IWorld iWorld, BlockState blockState, int i, int j, int k, BlockBox blockBox) {
+    protected void method_14936(IWorld iWorld, BlockState blockState, int i, int j, int k, MutableIntBoundingBox mutableIntBoundingBox) {
         int n;
         int m;
         int l = this.applyXTransform(i, k);
-        if (!blockBox.contains(new BlockPos(l, m = this.applyYTransform(j), n = this.applyZTransform(i, k)))) {
+        if (!mutableIntBoundingBox.contains(new BlockPos(l, m = this.applyYTransform(j), n = this.applyZTransform(i, k)))) {
             return;
         }
         while ((iWorld.isAir(new BlockPos(l, m, n)) || iWorld.getBlockState(new BlockPos(l, m, n)).getMaterial().isLiquid()) && m > 1) {
@@ -318,9 +318,9 @@ public abstract class StructurePiece {
         }
     }
 
-    protected boolean addChest(IWorld iWorld, BlockBox blockBox, Random random, int i, int j, int k, Identifier identifier) {
+    protected boolean addChest(IWorld iWorld, MutableIntBoundingBox mutableIntBoundingBox, Random random, int i, int j, int k, Identifier identifier) {
         BlockPos blockPos = new BlockPos(this.applyXTransform(i, k), this.applyYTransform(j), this.applyZTransform(i, k));
-        return this.addChest(iWorld, blockBox, random, blockPos, identifier, null);
+        return this.addChest(iWorld, mutableIntBoundingBox, random, blockPos, identifier, null);
     }
 
     public static BlockState method_14916(BlockView blockView, BlockPos blockPos, BlockState blockState) {
@@ -359,8 +359,8 @@ public abstract class StructurePiece {
         return (BlockState)blockState.with(HorizontalFacingBlock.FACING, direction3);
     }
 
-    protected boolean addChest(IWorld iWorld, BlockBox blockBox, Random random, BlockPos blockPos, Identifier identifier, @Nullable BlockState blockState) {
-        if (!blockBox.contains(blockPos) || iWorld.getBlockState(blockPos).getBlock() == Blocks.CHEST) {
+    protected boolean addChest(IWorld iWorld, MutableIntBoundingBox mutableIntBoundingBox, Random random, BlockPos blockPos, Identifier identifier, @Nullable BlockState blockState) {
+        if (!mutableIntBoundingBox.contains(blockPos) || iWorld.getBlockState(blockPos).getBlock() == Blocks.CHEST) {
             return false;
         }
         if (blockState == null) {
@@ -374,10 +374,10 @@ public abstract class StructurePiece {
         return true;
     }
 
-    protected boolean addDispenser(IWorld iWorld, BlockBox blockBox, Random random, int i, int j, int k, Direction direction, Identifier identifier) {
+    protected boolean addDispenser(IWorld iWorld, MutableIntBoundingBox mutableIntBoundingBox, Random random, int i, int j, int k, Direction direction, Identifier identifier) {
         BlockPos blockPos = new BlockPos(this.applyXTransform(i, k), this.applyYTransform(j), this.applyZTransform(i, k));
-        if (blockBox.contains(blockPos) && iWorld.getBlockState(blockPos).getBlock() != Blocks.DISPENSER) {
-            this.addBlock(iWorld, (BlockState)Blocks.DISPENSER.getDefaultState().with(DispenserBlock.FACING, direction), i, j, k, blockBox);
+        if (mutableIntBoundingBox.contains(blockPos) && iWorld.getBlockState(blockPos).getBlock() != Blocks.DISPENSER) {
+            this.addBlock(iWorld, (BlockState)Blocks.DISPENSER.getDefaultState().with(DispenserBlock.FACING, direction), i, j, k, mutableIntBoundingBox);
             BlockEntity blockEntity = iWorld.getBlockEntity(blockPos);
             if (blockEntity instanceof DispenserBlockEntity) {
                 ((DispenserBlockEntity)blockEntity).setLootTable(identifier, random.nextLong());
@@ -388,7 +388,7 @@ public abstract class StructurePiece {
     }
 
     public void translate(int i, int j, int k) {
-        this.boundingBox.offset(i, j, k);
+        this.boundingBox.translate(i, j, k);
     }
 
     @Nullable

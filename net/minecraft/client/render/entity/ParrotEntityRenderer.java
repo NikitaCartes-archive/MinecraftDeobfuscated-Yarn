@@ -22,21 +22,19 @@ extends MobEntityRenderer<ParrotEntity, ParrotEntityModel> {
         super(entityRenderDispatcher, new ParrotEntityModel(), 0.3f);
     }
 
-    @Override
-    protected Identifier getTexture(ParrotEntity parrotEntity) {
+    protected Identifier method_4080(ParrotEntity parrotEntity) {
         return SKINS[parrotEntity.getVariant()];
     }
 
-    @Override
-    public float getAnimationProgress(ParrotEntity parrotEntity, float f) {
+    public float method_4081(ParrotEntity parrotEntity, float f) {
         float g = MathHelper.lerp(f, parrotEntity.field_6829, parrotEntity.field_6818);
         float h = MathHelper.lerp(f, parrotEntity.field_6827, parrotEntity.field_6819);
         return (MathHelper.sin(g) + 1.0f) * h;
     }
 
     @Override
-    public /* synthetic */ float getAnimationProgress(LivingEntity livingEntity, float f) {
-        return this.getAnimationProgress((ParrotEntity)livingEntity, f);
+    public /* synthetic */ float getAge(LivingEntity livingEntity, float f) {
+        return this.method_4081((ParrotEntity)livingEntity, f);
     }
 }
 

@@ -3,7 +3,7 @@
  */
 package net.minecraft.client.toast;
 
-import com.mojang.blaze3d.platform.GlStateManager;
+import com.mojang.blaze3d.systems.RenderSystem;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.toast.Toast;
@@ -33,7 +33,7 @@ implements Toast {
             this.justUpdated = false;
         }
         toastManager.getGame().getTextureManager().bindTexture(TOASTS_TEX);
-        GlStateManager.color3f(1.0f, 1.0f, 1.0f);
+        RenderSystem.color3f(1.0f, 1.0f, 1.0f);
         toastManager.blit(0, 0, 0, 64, 160, 32);
         if (this.description == null) {
             toastManager.getGame().textRenderer.draw(this.title, 18.0f, 12.0f, -256);
@@ -50,7 +50,7 @@ implements Toast {
         this.justUpdated = true;
     }
 
-    public Type getType() {
+    public Type method_1989() {
         return this.type;
     }
 
@@ -65,7 +65,7 @@ implements Toast {
 
     @Override
     public /* synthetic */ Object getType() {
-        return this.getType();
+        return this.method_1989();
     }
 
     @Environment(value=EnvType.CLIENT)

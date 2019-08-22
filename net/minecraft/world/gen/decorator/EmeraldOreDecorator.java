@@ -18,8 +18,7 @@ extends SimpleDecorator<NopeDecoratorConfig> {
         super(function);
     }
 
-    @Override
-    public Stream<BlockPos> getPositions(Random random, NopeDecoratorConfig nopeDecoratorConfig, BlockPos blockPos) {
+    public Stream<BlockPos> method_15922(Random random, NopeDecoratorConfig nopeDecoratorConfig, BlockPos blockPos) {
         int i2 = 3 + random.nextInt(6);
         return IntStream.range(0, i2).mapToObj(i -> {
             int j = random.nextInt(16);

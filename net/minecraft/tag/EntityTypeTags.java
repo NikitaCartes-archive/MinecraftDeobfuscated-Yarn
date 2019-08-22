@@ -43,8 +43,7 @@ public class EntityTypeTags {
             super(identifier);
         }
 
-        @Override
-        public boolean contains(EntityType<?> entityType) {
+        public boolean method_15084(EntityType<?> entityType) {
             if (this.version != latestVersion) {
                 this.delegate = container.getOrCreate(this.getId());
                 this.version = latestVersion;

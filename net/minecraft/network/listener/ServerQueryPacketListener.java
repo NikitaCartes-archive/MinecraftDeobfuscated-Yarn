@@ -4,8 +4,8 @@
 package net.minecraft.network.listener;
 
 import net.minecraft.network.listener.PacketListener;
-import net.minecraft.network.packet.c2s.query.QueryPingC2SPacket;
-import net.minecraft.network.packet.c2s.query.QueryRequestC2SPacket;
+import net.minecraft.server.network.packet.QueryPingC2SPacket;
+import net.minecraft.server.network.packet.QueryRequestC2SPacket;
 
 public interface ServerQueryPacketListener
 extends PacketListener {

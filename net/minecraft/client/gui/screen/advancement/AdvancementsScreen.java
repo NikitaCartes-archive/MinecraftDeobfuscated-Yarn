@@ -4,21 +4,22 @@
 package net.minecraft.client.gui.screen.advancement;
 
 import com.google.common.collect.Maps;
-import com.mojang.blaze3d.platform.GlStateManager;
+import com.mojang.blaze3d.systems.RenderSystem;
 import java.util.Map;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.advancement.Advancement;
 import net.minecraft.advancement.AdvancementProgress;
+import net.minecraft.class_4493;
 import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.client.gui.screen.advancement.AdvancementTab;
+import net.minecraft.client.gui.screen.advancement.AdvancementTreeWidget;
 import net.minecraft.client.gui.screen.advancement.AdvancementWidget;
 import net.minecraft.client.network.ClientAdvancementManager;
 import net.minecraft.client.network.ClientPlayNetworkHandler;
-import net.minecraft.client.render.DiffuseLighting;
+import net.minecraft.client.render.GuiLighting;
 import net.minecraft.client.resource.language.I18n;
 import net.minecraft.client.util.NarratorManager;
-import net.minecraft.network.packet.c2s.play.AdvancementTabC2SPacket;
+import net.minecraft.server.network.packet.AdvancementTabC2SPacket;
 import net.minecraft.util.Identifier;
 import org.jetbrains.annotations.Nullable;
 
@@ -29,8 +30,8 @@ implements ClientAdvancementManager.Listener {
     private static final Identifier WINDOW_TEXTURE = new Identifier("textures/gui/advancements/window.png");
     private static final Identifier TABS_TEXTURE = new Identifier("textures/gui/advancements/tabs.png");
     private final ClientAdvancementManager advancementHandler;
-    private final Map<Advancement, AdvancementTab> tabs = Maps.newLinkedHashMap();
-    private AdvancementTab selectedTab;
+    private final Map<Advancement, AdvancementTreeWidget> widgetMap = Maps.newLinkedHashMap();
+    private AdvancementTreeWidget selectedWidget;
     private boolean field_2718;
 
     public AdvancementsScreen(ClientAdvancementManager clientAdvancementManager) {
@@ -40,13 +41,13 @@ implements ClientAdvancementManager.Listener {
 
     @Override
     protected void init() {
-        this.tabs.clear();
-        this.selectedTab = null;
+        this.widgetMap.clear();
+        this.selectedWidget = null;
         this.advancementHandler.setListener(this);
-        if (this.selectedTab == null && !this.tabs.isEmpty()) {
-            this.advancementHandler.selectTab(this.tabs.values().iterator().next().method_2307(), true);
+        if (this.selectedWidget == null && !this.widgetMap.isEmpty()) {
+            this.advancementHandler.selectTab(this.widgetMap.values().iterator().next().method_2307(), true);
         } else {
-            this.advancementHandler.selectTab(this.selectedTab == null ? null : this.selectedTab.method_2307(), true);
+            this.advancementHandler.selectTab(this.selectedWidget == null ? null : this.selectedWidget.method_2307(), true);
         }
     }
 
@@ -64,9 +65,9 @@ implements ClientAdvancementManager.Listener {
         if (i == 0) {
             int j = (this.width - 252) / 2;
             int k = (this.height - 140) / 2;
-            for (AdvancementTab advancementTab : this.tabs.values()) {
-                if (!advancementTab.method_2316(j, k, d, e)) continue;
-                this.advancementHandler.selectTab(advancementTab.method_2307(), true);
+            for (AdvancementTreeWidget advancementTreeWidget : this.widgetMap.values()) {
+                if (!advancementTreeWidget.method_2316(j, k, d, e)) continue;
+                this.advancementHandler.selectTab(advancementTreeWidget.method_2307(), true);
                 break;
             }
         }
@@ -101,15 +102,15 @@ implements ClientAdvancementManager.Listener {
         }
         if (!this.field_2718) {
             this.field_2718 = true;
-        } else if (this.selectedTab != null) {
-            this.selectedTab.method_2313(f, g);
+        } else if (this.selectedWidget != null) {
+            this.selectedWidget.method_2313(f, g);
         }
         return true;
     }
 
     private void drawAdvancementTree(int i, int j, int k, int l) {
-        AdvancementTab advancementTab = this.selectedTab;
-        if (advancementTab == null) {
+        AdvancementTreeWidget advancementTreeWidget = this.selectedWidget;
+        if (advancementTreeWidget == null) {
             AdvancementsScreen.fill(k + 9, l + 18, k + 9 + 234, l + 18 + 113, -16777216);
             String string = I18n.translate("advancements.empty", new Object[0]);
             int m = this.font.getStringWidth(string);
@@ -117,62 +118,62 @@ implements ClientAdvancementManager.Listener {
             this.font.draw(":(", k + 9 + 117 - this.font.getStringWidth(":(") / 2, l + 18 + 113 - this.font.fontHeight, -1);
             return;
         }
-        GlStateManager.pushMatrix();
-        GlStateManager.translatef(k + 9, l + 18, -400.0f);
-        GlStateManager.enableDepthTest();
-        advancementTab.method_2310();
-        GlStateManager.popMatrix();
-        GlStateManager.depthFunc(515);
-        GlStateManager.disableDepthTest();
+        RenderSystem.pushMatrix();
+        RenderSystem.translatef(k + 9, l + 18, -400.0f);
+        RenderSystem.enableDepthTest();
+        advancementTreeWidget.method_2310();
+        RenderSystem.popMatrix();
+        RenderSystem.depthFunc(515);
+        RenderSystem.disableDepthTest();
     }
 
     public void drawWidgets(int i, int j) {
-        GlStateManager.color4f(1.0f, 1.0f, 1.0f, 1.0f);
-        GlStateManager.enableBlend();
-        DiffuseLighting.disable();
+        RenderSystem.color4f(1.0f, 1.0f, 1.0f, 1.0f);
+        RenderSystem.enableBlend();
+        GuiLighting.disable();
         this.minecraft.getTextureManager().bindTexture(WINDOW_TEXTURE);
         this.blit(i, j, 0, 0, 252, 140);
-        if (this.tabs.size() > 1) {
+        if (this.widgetMap.size() > 1) {
             this.minecraft.getTextureManager().bindTexture(TABS_TEXTURE);
-            for (AdvancementTab advancementTab : this.tabs.values()) {
-                advancementTab.drawBackground(i, j, advancementTab == this.selectedTab);
+            for (AdvancementTreeWidget advancementTreeWidget : this.widgetMap.values()) {
+                advancementTreeWidget.drawBackground(i, j, advancementTreeWidget == this.selectedWidget);
             }
-            GlStateManager.enableRescaleNormal();
-            GlStateManager.blendFuncSeparate(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO);
-            DiffuseLighting.enableForItems();
-            for (AdvancementTab advancementTab : this.tabs.values()) {
-                advancementTab.drawIcon(i, j, this.itemRenderer);
+            RenderSystem.enableRescaleNormal();
+            RenderSystem.blendFuncSeparate(class_4493.class_4535.SRC_ALPHA, class_4493.class_4534.ONE_MINUS_SRC_ALPHA, class_4493.class_4535.ONE, class_4493.class_4534.ZERO);
+            GuiLighting.enableForItems();
+            for (AdvancementTreeWidget advancementTreeWidget : this.widgetMap.values()) {
+                advancementTreeWidget.drawIcon(i, j, this.itemRenderer);
             }
-            GlStateManager.disableBlend();
+            RenderSystem.disableBlend();
         }
         this.font.draw(I18n.translate("gui.advancements", new Object[0]), i + 8, j + 6, 0x404040);
     }
 
     private void drawWidgetTooltip(int i, int j, int k, int l) {
-        GlStateManager.color4f(1.0f, 1.0f, 1.0f, 1.0f);
-        if (this.selectedTab != null) {
-            GlStateManager.pushMatrix();
-            GlStateManager.enableDepthTest();
-            GlStateManager.translatef(k + 9, l + 18, 400.0f);
-            this.selectedTab.method_2314(i - k - 9, j - l - 18, k, l);
-            GlStateManager.disableDepthTest();
-            GlStateManager.popMatrix();
+        RenderSystem.color4f(1.0f, 1.0f, 1.0f, 1.0f);
+        if (this.selectedWidget != null) {
+            RenderSystem.pushMatrix();
+            RenderSystem.enableDepthTest();
+            RenderSystem.translatef(k + 9, l + 18, 400.0f);
+            this.selectedWidget.method_2314(i - k - 9, j - l - 18, k, l);
+            RenderSystem.disableDepthTest();
+            RenderSystem.popMatrix();
         }
-        if (this.tabs.size() > 1) {
-            for (AdvancementTab advancementTab : this.tabs.values()) {
-                if (!advancementTab.method_2316(k, l, i, j)) continue;
-                this.renderTooltip(advancementTab.method_2309(), i, j);
+        if (this.widgetMap.size() > 1) {
+            for (AdvancementTreeWidget advancementTreeWidget : this.widgetMap.values()) {
+                if (!advancementTreeWidget.method_2316(k, l, i, j)) continue;
+                this.renderTooltip(advancementTreeWidget.method_2309(), i, j);
             }
         }
     }
 
     @Override
     public void onRootAdded(Advancement advancement) {
-        AdvancementTab advancementTab = AdvancementTab.create(this.minecraft, this, this.tabs.size(), advancement);
-        if (advancementTab == null) {
+        AdvancementTreeWidget advancementTreeWidget = AdvancementTreeWidget.create(this.minecraft, this, this.widgetMap.size(), advancement);
+        if (advancementTreeWidget == null) {
             return;
         }
-        this.tabs.put(advancement, advancementTab);
+        this.widgetMap.put(advancement, advancementTreeWidget);
     }
 
     @Override
@@ -181,9 +182,9 @@ implements ClientAdvancementManager.Listener {
 
     @Override
     public void onDependentAdded(Advancement advancement) {
-        AdvancementTab advancementTab = this.getTab(advancement);
-        if (advancementTab != null) {
-            advancementTab.method_2318(advancement);
+        AdvancementTreeWidget advancementTreeWidget = this.getAdvancementTreeWidget(advancement);
+        if (advancementTreeWidget != null) {
+            advancementTreeWidget.method_2318(advancement);
         }
     }
 
@@ -201,27 +202,27 @@ implements ClientAdvancementManager.Listener {
 
     @Override
     public void selectTab(@Nullable Advancement advancement) {
-        this.selectedTab = this.tabs.get(advancement);
+        this.selectedWidget = this.widgetMap.get(advancement);
     }
 
     @Override
     public void onClear() {
-        this.tabs.clear();
-        this.selectedTab = null;
+        this.widgetMap.clear();
+        this.selectedWidget = null;
     }
 
     @Nullable
     public AdvancementWidget getAdvancementWidget(Advancement advancement) {
-        AdvancementTab advancementTab = this.getTab(advancement);
-        return advancementTab == null ? null : advancementTab.getWidget(advancement);
+        AdvancementTreeWidget advancementTreeWidget = this.getAdvancementTreeWidget(advancement);
+        return advancementTreeWidget == null ? null : advancementTreeWidget.getWidgetForAdvancement(advancement);
     }
 
     @Nullable
-    private AdvancementTab getTab(Advancement advancement) {
+    private AdvancementTreeWidget getAdvancementTreeWidget(Advancement advancement) {
         while (advancement.getParent() != null) {
             advancement = advancement.getParent();
         }
-        return this.tabs.get(advancement);
+        return this.widgetMap.get(advancement);
     }
 }
 

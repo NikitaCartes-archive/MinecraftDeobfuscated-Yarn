@@ -22,8 +22,7 @@ extends MobEntityRenderer<SnowGolemEntity, SnowmanEntityModel<SnowGolemEntity>> 
         this.addFeature(new SnowmanPumpkinFeatureRenderer(this));
     }
 
-    @Override
-    protected Identifier getTexture(SnowGolemEntity snowGolemEntity) {
+    protected Identifier method_4122(SnowGolemEntity snowGolemEntity) {
         return SKIN;
     }
 }

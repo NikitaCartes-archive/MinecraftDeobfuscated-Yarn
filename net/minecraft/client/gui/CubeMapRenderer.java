@@ -3,11 +3,12 @@
  */
 package net.minecraft.client.gui;
 
-import com.mojang.blaze3d.platform.GlStateManager;
+import com.mojang.blaze3d.systems.RenderSystem;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.class_4493;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.BufferBuilder;
 import net.minecraft.client.render.Tessellator;
@@ -28,33 +29,33 @@ public class CubeMapRenderer {
 
     public void draw(MinecraftClient minecraftClient, float f, float g, float h) {
         Tessellator tessellator = Tessellator.getInstance();
-        BufferBuilder bufferBuilder = tessellator.getBuffer();
-        GlStateManager.matrixMode(5889);
-        GlStateManager.pushMatrix();
-        GlStateManager.loadIdentity();
-        GlStateManager.multMatrix(Matrix4f.method_4929(85.0, (float)minecraftClient.window.getFramebufferWidth() / (float)minecraftClient.window.getFramebufferHeight(), 0.05f, 10.0f));
-        GlStateManager.matrixMode(5888);
-        GlStateManager.pushMatrix();
-        GlStateManager.loadIdentity();
-        GlStateManager.color4f(1.0f, 1.0f, 1.0f, 1.0f);
-        GlStateManager.rotatef(180.0f, 1.0f, 0.0f, 0.0f);
-        GlStateManager.enableBlend();
-        GlStateManager.disableAlphaTest();
-        GlStateManager.disableCull();
-        GlStateManager.depthMask(false);
-        GlStateManager.blendFuncSeparate(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO);
+        BufferBuilder bufferBuilder = tessellator.getBufferBuilder();
+        RenderSystem.matrixMode(5889);
+        RenderSystem.pushMatrix();
+        RenderSystem.loadIdentity();
+        RenderSystem.multMatrix(Matrix4f.method_4929(85.0, (float)minecraftClient.window.getFramebufferWidth() / (float)minecraftClient.window.getFramebufferHeight(), 0.05f, 10.0f));
+        RenderSystem.matrixMode(5888);
+        RenderSystem.pushMatrix();
+        RenderSystem.loadIdentity();
+        RenderSystem.color4f(1.0f, 1.0f, 1.0f, 1.0f);
+        RenderSystem.rotatef(180.0f, 1.0f, 0.0f, 0.0f);
+        RenderSystem.enableBlend();
+        RenderSystem.disableAlphaTest();
+        RenderSystem.disableCull();
+        RenderSystem.depthMask(false);
+        RenderSystem.blendFuncSeparate(class_4493.class_4535.SRC_ALPHA, class_4493.class_4534.ONE_MINUS_SRC_ALPHA, class_4493.class_4535.ONE, class_4493.class_4534.ZERO);
         int i = 2;
         for (int j = 0; j < 4; ++j) {
-            GlStateManager.pushMatrix();
+            RenderSystem.pushMatrix();
             float k = ((float)(j % 2) / 2.0f - 0.5f) / 256.0f;
             float l = ((float)(j / 2) / 2.0f - 0.5f) / 256.0f;
             float m = 0.0f;
-            GlStateManager.translatef(k, l, 0.0f);
-            GlStateManager.rotatef(f, 1.0f, 0.0f, 0.0f);
-            GlStateManager.rotatef(g, 0.0f, 1.0f, 0.0f);
+            RenderSystem.translatef(k, l, 0.0f);
+            RenderSystem.rotatef(f, 1.0f, 0.0f, 0.0f);
+            RenderSystem.rotatef(g, 0.0f, 1.0f, 0.0f);
             for (int n = 0; n < 6; ++n) {
                 minecraftClient.getTextureManager().bindTexture(this.faces[n]);
-                bufferBuilder.begin(7, VertexFormats.POSITION_TEXTURE_COLOR);
+                bufferBuilder.begin(7, VertexFormats.POSITION_UV_COLOR);
                 int o = Math.round(255.0f * h) / (j + 1);
                 if (n == 0) {
                     bufferBuilder.vertex(-1.0, -1.0, 1.0).texture(0.0, 0.0).color(255, 255, 255, o).next();
@@ -94,18 +95,18 @@ public class CubeMapRenderer {
                 }
                 tessellator.draw();
             }
-            GlStateManager.popMatrix();
-            GlStateManager.colorMask(true, true, true, false);
+            RenderSystem.popMatrix();
+            RenderSystem.colorMask(true, true, true, false);
         }
         bufferBuilder.setOffset(0.0, 0.0, 0.0);
-        GlStateManager.colorMask(true, true, true, true);
-        GlStateManager.matrixMode(5889);
-        GlStateManager.popMatrix();
-        GlStateManager.matrixMode(5888);
-        GlStateManager.popMatrix();
-        GlStateManager.depthMask(true);
-        GlStateManager.enableCull();
-        GlStateManager.enableDepthTest();
+        RenderSystem.colorMask(true, true, true, true);
+        RenderSystem.matrixMode(5889);
+        RenderSystem.popMatrix();
+        RenderSystem.matrixMode(5888);
+        RenderSystem.popMatrix();
+        RenderSystem.depthMask(true);
+        RenderSystem.enableCull();
+        RenderSystem.enableDepthTest();
     }
 
     public CompletableFuture<Void> loadTexturesAsync(TextureManager textureManager, Executor executor) {

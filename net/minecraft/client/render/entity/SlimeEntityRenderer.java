@@ -3,7 +3,7 @@
  */
 package net.minecraft.client.render.entity;
 
-import com.mojang.blaze3d.platform.GlStateManager;
+import com.mojang.blaze3d.systems.RenderSystem;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.render.entity.EntityRenderDispatcher;
@@ -24,24 +24,21 @@ extends MobEntityRenderer<SlimeEntity, SlimeEntityModel<SlimeEntity>> {
         this.addFeature(new SlimeOverlayFeatureRenderer<SlimeEntity>(this));
     }
 
-    @Override
-    public void render(SlimeEntity slimeEntity, double d, double e, double f, float g, float h) {
+    public void method_4117(SlimeEntity slimeEntity, double d, double e, double f, float g, float h) {
         this.field_4673 = 0.25f * (float)slimeEntity.getSize();
-        super.render(slimeEntity, d, e, f, g, h);
+        super.method_4072(slimeEntity, d, e, f, g, h);
     }
 
-    @Override
-    protected void scale(SlimeEntity slimeEntity, float f) {
+    protected void method_4118(SlimeEntity slimeEntity, float f) {
         float g = 0.999f;
-        GlStateManager.scalef(0.999f, 0.999f, 0.999f);
+        RenderSystem.scalef(0.999f, 0.999f, 0.999f);
         float h = slimeEntity.getSize();
         float i = MathHelper.lerp(f, slimeEntity.lastStretch, slimeEntity.stretch) / (h * 0.5f + 1.0f);
         float j = 1.0f / (i + 1.0f);
-        GlStateManager.scalef(j * h, 1.0f / j * h, j * h);
+        RenderSystem.scalef(j * h, 1.0f / j * h, j * h);
     }
 
-    @Override
-    protected Identifier getTexture(SlimeEntity slimeEntity) {
+    protected Identifier method_4116(SlimeEntity slimeEntity) {
         return SKIN;
     }
 }

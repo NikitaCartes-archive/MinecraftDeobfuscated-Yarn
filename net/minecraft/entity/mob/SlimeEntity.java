@@ -25,7 +25,6 @@ import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.mob.Monster;
 import net.minecraft.entity.passive.IronGolemEntity;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.loot.LootTables;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.particle.ParticleEffect;
 import net.minecraft.particle.ParticleTypes;
@@ -44,6 +43,7 @@ import net.minecraft.world.biome.Biome;
 import net.minecraft.world.biome.Biomes;
 import net.minecraft.world.gen.ChunkRandom;
 import net.minecraft.world.level.LevelGeneratorType;
+import net.minecraft.world.loot.LootTables;
 import org.jetbrains.annotations.Nullable;
 
 public class SlimeEntity
@@ -78,7 +78,7 @@ implements Monster {
 
     protected void setSize(int i, boolean bl) {
         this.dataTracker.set(SLIME_SIZE, i);
-        this.updatePosition(this.x, this.y, this.z);
+        this.setPosition(this.x, this.y, this.z);
         this.calculateDimensions();
         this.getAttributeInstance(EntityAttributes.MAX_HEALTH).setBaseValue(i * i);
         this.getAttributeInstance(EntityAttributes.MOVEMENT_SPEED).setBaseValue(0.2f + 0.1f * (float)i);
@@ -133,7 +133,7 @@ implements Monster {
                 float g = this.random.nextFloat() * 0.5f + 0.5f;
                 float h = MathHelper.sin(f) * (float)i * 0.5f * g;
                 float k = MathHelper.cos(f) * (float)i * 0.5f * g;
-                this.world.addParticle(this.getParticles(), this.x + (double)h, this.getBoundingBox().y1, this.z + (double)k, 0.0, 0.0, 0.0);
+                this.world.addParticle(this.getParticles(), this.x + (double)h, this.getBoundingBox().minY, this.z + (double)k, 0.0, 0.0, 0.0);
             }
             this.playSound(this.getSquishSound(), this.getSoundVolume(), ((this.random.nextFloat() - this.random.nextFloat()) * 0.2f + 1.0f) / 0.8f);
             this.targetStretch = -0.5f;
@@ -153,12 +153,21 @@ implements Monster {
     }
 
     @Override
+    public void calculateDimensions() {
+        double d = this.x;
+        double e = this.y;
+        double f = this.z;
+        super.calculateDimensions();
+        this.setPosition(d, e, f);
+    }
+
+    @Override
     public void onTrackedDataSet(TrackedData<?> trackedData) {
         if (SLIME_SIZE.equals(trackedData)) {
             this.calculateDimensions();
             this.yaw = this.headYaw;
-            this.field_6283 = this.headYaw;
-            if (this.isTouchingWater() && this.random.nextInt(20) == 0) {
+            this.bodyYaw = this.headYaw;
+            if (this.isInsideWater() && this.random.nextInt(20) == 0) {
                 this.onSwimmingStart();
             }
         }
@@ -185,7 +194,7 @@ implements Monster {
                     slimeEntity.setPersistent();
                 }
                 slimeEntity.setSize(i / 2, true);
-                slimeEntity.refreshPositionAndAngles(this.x + (double)f, this.y + 0.5, this.z + (double)g, this.random.nextFloat() * 360.0f, 0.0f);
+                slimeEntity.setPositionAndAngles(this.x + (double)f, this.y + 0.5, this.z + (double)g, this.random.nextFloat() * 360.0f, 0.0f);
                 this.world.spawnEntity(slimeEntity);
             }
         }
@@ -351,12 +360,12 @@ implements Monster {
 
         @Override
         public boolean canStart() {
-            return (this.slime.isTouchingWater() || this.slime.isInLava()) && this.slime.getMoveControl() instanceof SlimeMoveControl;
+            return (this.slime.isInsideWater() || this.slime.isInLava()) && this.slime.getMoveControl() instanceof SlimeMoveControl;
         }
 
         @Override
         public void tick() {
-            if (this.slime.getRandom().nextFloat() < 0.8f) {
+            if (this.slime.getRand().nextFloat() < 0.8f) {
                 this.slime.getJumpControl().setActive();
             }
             ((SlimeMoveControl)this.slime.getMoveControl()).move(1.2);
@@ -376,14 +385,14 @@ implements Monster {
 
         @Override
         public boolean canStart() {
-            return this.slime.getTarget() == null && (this.slime.onGround || this.slime.isTouchingWater() || this.slime.isInLava() || this.slime.hasStatusEffect(StatusEffects.LEVITATION)) && this.slime.getMoveControl() instanceof SlimeMoveControl;
+            return this.slime.getTarget() == null && (this.slime.onGround || this.slime.isInsideWater() || this.slime.isInLava() || this.slime.hasStatusEffect(StatusEffects.LEVITATION)) && this.slime.getMoveControl() instanceof SlimeMoveControl;
         }
 
         @Override
         public void tick() {
             if (--this.field_7401 <= 0) {
-                this.field_7401 = 40 + this.slime.getRandom().nextInt(60);
-                this.field_7400 = this.slime.getRandom().nextInt(360);
+                this.field_7401 = 40 + this.slime.getRand().nextInt(60);
+                this.field_7400 = this.slime.getRand().nextInt(360);
             }
             ((SlimeMoveControl)this.slime.getMoveControl()).look(this.field_7400, false);
         }
@@ -468,7 +477,7 @@ implements Monster {
         @Override
         public void tick() {
             this.entity.headYaw = this.entity.yaw = this.changeAngle(this.entity.yaw, this.targetYaw, 90.0f);
-            this.entity.field_6283 = this.entity.yaw;
+            this.entity.bodyYaw = this.entity.yaw;
             if (this.state != MoveControl.State.MOVE_TO) {
                 this.entity.setForwardSpeed(0.0f);
                 return;
@@ -483,7 +492,7 @@ implements Monster {
                     }
                     this.slime.getJumpControl().setActive();
                     if (this.slime.makesJumpSound()) {
-                        this.slime.playSound(this.slime.getJumpSound(), this.slime.getSoundVolume(), ((this.slime.getRandom().nextFloat() - this.slime.getRandom().nextFloat()) * 0.2f + 1.0f) * 0.8f);
+                        this.slime.playSound(this.slime.getJumpSound(), this.slime.getSoundVolume(), ((this.slime.getRand().nextFloat() - this.slime.getRand().nextFloat()) * 0.2f + 1.0f) * 0.8f);
                     }
                 } else {
                     this.slime.sidewaysSpeed = 0.0f;

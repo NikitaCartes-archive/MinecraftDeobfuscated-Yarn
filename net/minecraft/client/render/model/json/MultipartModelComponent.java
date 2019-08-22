@@ -25,7 +25,7 @@ import net.minecraft.client.render.model.json.MultipartModelSelector;
 import net.minecraft.client.render.model.json.OrMultipartModelSelector;
 import net.minecraft.client.render.model.json.SimpleMultipartModelSelector;
 import net.minecraft.client.render.model.json.WeightedUnbakedModel;
-import net.minecraft.state.StateManager;
+import net.minecraft.state.StateFactory;
 import net.minecraft.util.JsonHelper;
 
 @Environment(value=EnvType.CLIENT)
@@ -48,8 +48,8 @@ public class MultipartModelComponent {
         return this.model;
     }
 
-    public Predicate<BlockState> getPredicate(StateManager<Block, BlockState> stateManager) {
-        return this.selector.getPredicate(stateManager);
+    public Predicate<BlockState> getPredicate(StateFactory<Block, BlockState> stateFactory) {
+        return this.selector.getPredicate(stateFactory);
     }
 
     public boolean equals(Object object) {
@@ -63,8 +63,7 @@ public class MultipartModelComponent {
     @Environment(value=EnvType.CLIENT)
     public static class Deserializer
     implements JsonDeserializer<MultipartModelComponent> {
-        @Override
-        public MultipartModelComponent deserialize(JsonElement jsonElement, Type type, JsonDeserializationContext jsonDeserializationContext) throws JsonParseException {
+        public MultipartModelComponent method_3535(JsonElement jsonElement, Type type, JsonDeserializationContext jsonDeserializationContext) throws JsonParseException {
             JsonObject jsonObject = jsonElement.getAsJsonObject();
             return new MultipartModelComponent(this.deserializeSelectorOrDefault(jsonObject), (WeightedUnbakedModel)jsonDeserializationContext.deserialize(jsonObject.get("apply"), (Type)((Object)WeightedUnbakedModel.class)));
         }
@@ -102,7 +101,7 @@ public class MultipartModelComponent {
 
         @Override
         public /* synthetic */ Object deserialize(JsonElement jsonElement, Type type, JsonDeserializationContext jsonDeserializationContext) throws JsonParseException {
-            return this.deserialize(jsonElement, type, jsonDeserializationContext);
+            return this.method_3535(jsonElement, type, jsonDeserializationContext);
         }
     }
 }

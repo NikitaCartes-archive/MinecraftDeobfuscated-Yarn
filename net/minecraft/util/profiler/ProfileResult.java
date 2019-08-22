@@ -13,7 +13,7 @@ public interface ProfileResult {
     @Environment(value=EnvType.CLIENT)
     public List<ProfilerTiming> getTimings(String var1);
 
-    public boolean save(File var1);
+    public boolean saveToFile(File var1);
 
     public long getStartTime();
 
@@ -30,8 +30,6 @@ public interface ProfileResult {
     default public int getTickSpan() {
         return this.getEndTick() - this.getStartTick();
     }
-
-    public String getTimingTreeString();
 
     public static String method_21721(String string) {
         return string.replace('\u001e', '.');

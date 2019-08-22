@@ -21,8 +21,7 @@ extends Feature<SpringFeatureConfig> {
         super(function);
     }
 
-    @Override
-    public boolean generate(IWorld iWorld, ChunkGenerator<? extends ChunkGeneratorConfig> chunkGenerator, Random random, BlockPos blockPos, SpringFeatureConfig springFeatureConfig) {
+    public boolean method_13979(IWorld iWorld, ChunkGenerator<? extends ChunkGeneratorConfig> chunkGenerator, Random random, BlockPos blockPos, SpringFeatureConfig springFeatureConfig) {
         if (!Block.isNaturalStone(iWorld.getBlockState(blockPos.up()).getBlock())) {
             return false;
         }

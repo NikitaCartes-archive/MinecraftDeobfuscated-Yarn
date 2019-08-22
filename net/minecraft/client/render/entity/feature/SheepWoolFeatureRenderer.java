@@ -3,7 +3,7 @@
  */
 package net.minecraft.client.render.entity.feature;
 
-import com.mojang.blaze3d.platform.GlStateManager;
+import com.mojang.blaze3d.systems.RenderSystem;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.render.entity.feature.FeatureRenderer;
@@ -24,8 +24,7 @@ extends FeatureRenderer<SheepEntity, SheepEntityModel<SheepEntity>> {
         super(featureRendererContext);
     }
 
-    @Override
-    public void render(SheepEntity sheepEntity, float f, float g, float h, float i, float j, float k, float l) {
+    public void method_4198(SheepEntity sheepEntity, float f, float g, float h, float i, float j, float k, float l) {
         if (sheepEntity.isSheared() || sheepEntity.isInvisible()) {
             return;
         }
@@ -39,13 +38,13 @@ extends FeatureRenderer<SheepEntity, SheepEntityModel<SheepEntity>> {
             float r = ((float)(sheepEntity.age % 25) + h) / 25.0f;
             float[] fs = SheepEntity.getRgbColor(DyeColor.byId(p));
             float[] gs = SheepEntity.getRgbColor(DyeColor.byId(q));
-            GlStateManager.color3f(fs[0] * (1.0f - r) + gs[0] * r, fs[1] * (1.0f - r) + gs[1] * r, fs[2] * (1.0f - r) + gs[2] * r);
+            RenderSystem.color3f(fs[0] * (1.0f - r) + gs[0] * r, fs[1] * (1.0f - r) + gs[1] * r, fs[2] * (1.0f - r) + gs[2] * r);
         } else {
             float[] hs = SheepEntity.getRgbColor(sheepEntity.getColor());
-            GlStateManager.color3f(hs[0], hs[1], hs[2]);
+            RenderSystem.color3f(hs[0], hs[1], hs[2]);
         }
-        ((SheepEntityModel)this.getContextModel()).copyStateTo(this.model);
-        this.model.animateModel(sheepEntity, f, g, h);
+        ((SheepEntityModel)this.getModel()).copyStateTo(this.model);
+        this.model.method_17118(sheepEntity, f, g, h);
         this.model.render(sheepEntity, f, g, i, j, k, l);
     }
 

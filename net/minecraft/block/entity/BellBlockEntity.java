@@ -40,7 +40,7 @@ implements Tickable {
     @Override
     public boolean onBlockAction(int i, int j) {
         if (i == 1) {
-            this.notifyMemoriesOfBell();
+            this.method_20219();
             this.field_19158 = 0;
             this.lastSideHit = Direction.byId(j);
             this.ringTicks = 0;
@@ -89,12 +89,12 @@ implements Tickable {
         this.world.addBlockAction(blockPos, this.getCachedState().getBlock(), 1, direction.getId());
     }
 
-    private void notifyMemoriesOfBell() {
+    private void method_20219() {
         BlockPos blockPos = this.getPos();
         if (this.world.getTime() > this.field_19155 + 60L || this.field_19156 == null) {
             this.field_19155 = this.world.getTime();
             Box box = new Box(blockPos).expand(48.0);
-            this.field_19156 = this.world.getNonSpectatingEntities(LivingEntity.class, box);
+            this.field_19156 = this.world.getEntities(LivingEntity.class, box);
         }
         if (!this.world.isClient) {
             for (LivingEntity livingEntity : this.field_19156) {
@@ -117,7 +117,7 @@ implements Tickable {
         if (world.isClient) {
             return;
         }
-        this.field_19156.stream().filter(this::isRaiderEntity).forEach(this::glowEntity);
+        this.field_19156.stream().filter(this::method_20518).forEach(this::method_20520);
     }
 
     private void method_20218(World world) {
@@ -127,7 +127,7 @@ implements Tickable {
         BlockPos blockPos = this.getPos();
         AtomicInteger atomicInteger = new AtomicInteger(16700985);
         int i = (int)this.field_19156.stream().filter(livingEntity -> blockPos.isWithinDistance(livingEntity.getPos(), 48.0)).count();
-        this.field_19156.stream().filter(this::isRaiderEntity).forEach(livingEntity -> {
+        this.field_19156.stream().filter(this::method_20518).forEach(livingEntity -> {
             float f = 1.0f;
             float g = MathHelper.sqrt((livingEntity.x - (double)blockPos.getX()) * (livingEntity.x - (double)blockPos.getX()) + (livingEntity.z - (double)blockPos.getZ()) * (livingEntity.z - (double)blockPos.getZ()));
             double d = (double)((float)blockPos.getX() + 0.5f) + (double)(1.0f / g) * (livingEntity.x - (double)blockPos.getX());
@@ -143,11 +143,11 @@ implements Tickable {
         });
     }
 
-    private boolean isRaiderEntity(LivingEntity livingEntity) {
+    private boolean method_20518(LivingEntity livingEntity) {
         return livingEntity.isAlive() && !livingEntity.removed && this.getPos().isWithinDistance(livingEntity.getPos(), 48.0) && livingEntity.getType().isTaggedWith(EntityTypeTags.RAIDERS);
     }
 
-    private void glowEntity(LivingEntity livingEntity) {
+    private void method_20520(LivingEntity livingEntity) {
         livingEntity.addStatusEffect(new StatusEffectInstance(StatusEffects.GLOWING, 60));
     }
 }

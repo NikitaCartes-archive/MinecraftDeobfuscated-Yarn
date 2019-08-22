@@ -61,8 +61,7 @@ extends SpriteBillboardParticle {
             this.spriteProvider = spriteProvider;
         }
 
-        @Override
-        public Particle createParticle(DefaultParticleType defaultParticleType, World world, double d, double e, double f, double g, double h, double i) {
+        public Particle method_3006(DefaultParticleType defaultParticleType, World world, double d, double e, double f, double g, double h, double i) {
             return new SweepAttackParticle(world, d, e, f, g, this.spriteProvider);
         }
     }

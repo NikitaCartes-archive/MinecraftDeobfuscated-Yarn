@@ -22,7 +22,7 @@ extends Goal {
         if (!this.trader.isAlive()) {
             return false;
         }
-        if (this.trader.isTouchingWater()) {
+        if (this.trader.isInsideWater()) {
             return false;
         }
         if (!this.trader.onGround) {

@@ -3,7 +3,7 @@
  */
 package net.minecraft.client.render.entity.feature;
 
-import com.mojang.blaze3d.platform.GlStateManager;
+import com.mojang.blaze3d.systems.RenderSystem;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
@@ -23,8 +23,7 @@ extends FeatureRenderer<PandaEntity, PandaEntityModel<PandaEntity>> {
         super(featureRendererContext);
     }
 
-    @Override
-    public void render(PandaEntity pandaEntity, float f, float g, float h, float i, float j, float k, float l) {
+    public void method_4194(PandaEntity pandaEntity, float f, float g, float h, float i, float j, float k, float l) {
         ItemStack itemStack = pandaEntity.getEquippedStack(EquipmentSlot.MAINHAND);
         if (!pandaEntity.isScared() || itemStack.isEmpty() || pandaEntity.method_6524()) {
             return;
@@ -35,10 +34,10 @@ extends FeatureRenderer<PandaEntity, PandaEntityModel<PandaEntity>> {
             m -= 0.2f * MathHelper.sin(i * 0.6f) + 0.2f;
             n -= 0.09f * MathHelper.sin(i * 0.6f);
         }
-        GlStateManager.pushMatrix();
-        GlStateManager.translatef(0.1f, n, m);
+        RenderSystem.pushMatrix();
+        RenderSystem.translatef(0.1f, n, m);
         MinecraftClient.getInstance().getItemRenderer().renderHeldItem(itemStack, pandaEntity, ModelTransformation.Type.GROUND, false);
-        GlStateManager.popMatrix();
+        RenderSystem.popMatrix();
     }
 
     @Override

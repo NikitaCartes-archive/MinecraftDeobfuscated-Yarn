@@ -58,10 +58,10 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Quaternion;
 import net.minecraft.util.math.Vec3d;
-import net.minecraft.world.CollisionView;
 import net.minecraft.world.Difficulty;
 import net.minecraft.world.IWorld;
 import net.minecraft.world.LocalDifficulty;
+import net.minecraft.world.ViewableWorld;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
 
@@ -148,7 +148,7 @@ RangedAttackMob {
         super.readCustomDataFromTag(compoundTag);
         ListTag listTag = compoundTag.getList("Inventory", 10);
         for (int i = 0; i < listTag.size(); ++i) {
-            ItemStack itemStack = ItemStack.fromTag(listTag.getCompound(i));
+            ItemStack itemStack = ItemStack.fromTag(listTag.getCompoundTag(i));
             if (itemStack.isEmpty()) continue;
             this.inventory.add(itemStack);
         }
@@ -156,12 +156,12 @@ RangedAttackMob {
     }
 
     @Override
-    public float getPathfindingFavor(BlockPos blockPos, CollisionView collisionView) {
-        Block block = collisionView.getBlockState(blockPos.down()).getBlock();
+    public float getPathfindingFavor(BlockPos blockPos, ViewableWorld viewableWorld) {
+        Block block = viewableWorld.getBlockState(blockPos.down()).getBlock();
         if (block == Blocks.GRASS_BLOCK || block == Blocks.SAND) {
             return 10.0f;
         }
-        return 0.5f - collisionView.getBrightness(blockPos);
+        return 0.5f - viewableWorld.getBrightness(blockPos);
     }
 
     @Override
@@ -230,10 +230,10 @@ RangedAttackMob {
         double d = livingEntity.x - this.x;
         double e = livingEntity.z - this.z;
         double g = MathHelper.sqrt(d * d + e * e);
-        double h = livingEntity.getBoundingBox().y1 + (double)(livingEntity.getHeight() / 3.0f) - entity.y + g * (double)0.2f;
+        double h = livingEntity.getBoundingBox().minY + (double)(livingEntity.getHeight() / 3.0f) - entity.y + g * (double)0.2f;
         Vector3f vector3f = this.getProjectileVelocity(new Vec3d(d, h, e), f);
         projectile.setVelocity(vector3f.getX(), vector3f.getY(), vector3f.getZ(), 1.6f, 14 - this.world.getDifficulty().getId() * 4);
-        this.playSound(SoundEvents.ITEM_CROSSBOW_SHOOT, 1.0f, 1.0f / (this.getRandom().nextFloat() * 0.4f + 0.8f));
+        this.playSound(SoundEvents.ITEM_CROSSBOW_SHOOT, 1.0f, 1.0f / (this.getRand().nextFloat() * 0.4f + 0.8f));
     }
 
     private Vector3f getProjectileVelocity(Vec3d vec3d, float f) {

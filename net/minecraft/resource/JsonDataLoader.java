@@ -36,8 +36,7 @@ extends SinglePreparationResourceReloadListener<Map<Identifier, JsonObject>> {
         this.dataType = string;
     }
 
-    @Override
-    protected Map<Identifier, JsonObject> prepare(ResourceManager resourceManager, Profiler profiler) {
+    protected Map<Identifier, JsonObject> method_20731(ResourceManager resourceManager, Profiler profiler) {
         HashMap<Identifier, JsonObject> map = Maps.newHashMap();
         int i = this.dataType.length() + 1;
         for (Identifier identifier : resourceManager.findResources(this.dataType, string -> string.endsWith(".json"))) {
@@ -114,7 +113,7 @@ extends SinglePreparationResourceReloadListener<Map<Identifier, JsonObject>> {
 
     @Override
     protected /* synthetic */ Object prepare(ResourceManager resourceManager, Profiler profiler) {
-        return this.prepare(resourceManager, profiler);
+        return this.method_20731(resourceManager, profiler);
     }
 }
 

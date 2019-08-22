@@ -15,9 +15,9 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.effect.StatusEffect;
 import net.minecraft.entity.effect.StatusEffectInstance;
-import net.minecraft.predicate.NumberRange;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.JsonHelper;
+import net.minecraft.util.NumberRange;
 import net.minecraft.util.registry.Registry;
 import org.jetbrains.annotations.Nullable;
 
@@ -130,8 +130,8 @@ public class EntityEffectPredicate {
 
         public JsonElement serialize() {
             JsonObject jsonObject = new JsonObject();
-            jsonObject.add("amplifier", this.amplifier.toJson());
-            jsonObject.add("duration", this.duration.toJson());
+            jsonObject.add("amplifier", this.amplifier.serialize());
+            jsonObject.add("duration", this.duration.serialize());
             jsonObject.addProperty("ambient", this.ambient);
             jsonObject.addProperty("visible", this.visible);
             return jsonObject;

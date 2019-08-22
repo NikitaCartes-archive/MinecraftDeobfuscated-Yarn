@@ -19,12 +19,12 @@ import net.minecraft.entity.passive.SnowGolemEntity;
 import net.minecraft.item.ItemPlacementContext;
 import net.minecraft.predicate.block.BlockStatePredicate;
 import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.state.StateManager;
+import net.minecraft.state.StateFactory;
 import net.minecraft.state.property.DirectionProperty;
 import net.minecraft.util.MaterialPredicate;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
-import net.minecraft.world.CollisionView;
+import net.minecraft.world.ViewableWorld;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
 
@@ -43,7 +43,7 @@ extends HorizontalFacingBlock {
 
     protected CarvedPumpkinBlock(Block.Settings settings) {
         super(settings);
-        this.setDefaultState((BlockState)((BlockState)this.stateManager.getDefaultState()).with(FACING, Direction.NORTH));
+        this.setDefaultState((BlockState)((BlockState)this.stateFactory.getDefaultState()).with(FACING, Direction.NORTH));
     }
 
     @Override
@@ -54,8 +54,8 @@ extends HorizontalFacingBlock {
         this.trySpawnEntity(world, blockPos);
     }
 
-    public boolean canDispense(CollisionView collisionView, BlockPos blockPos) {
-        return this.getSnowGolemDispenserPattern().searchAround(collisionView, blockPos) != null || this.getIronGolemDispenserPattern().searchAround(collisionView, blockPos) != null;
+    public boolean canDispense(ViewableWorld viewableWorld, BlockPos blockPos) {
+        return this.getSnowGolemDispenserPattern().searchAround(viewableWorld, blockPos) != null || this.getIronGolemDispenserPattern().searchAround(viewableWorld, blockPos) != null;
     }
 
     private void trySpawnEntity(World world, BlockPos blockPos) {
@@ -71,10 +71,10 @@ extends HorizontalFacingBlock {
                 }
                 SnowGolemEntity snowGolemEntity = EntityType.SNOW_GOLEM.create(world);
                 BlockPos blockPos2 = result.translate(0, 2, 0).getBlockPos();
-                snowGolemEntity.refreshPositionAndAngles((double)blockPos2.getX() + 0.5, (double)blockPos2.getY() + 0.05, (double)blockPos2.getZ() + 0.5, 0.0f, 0.0f);
+                snowGolemEntity.setPositionAndAngles((double)blockPos2.getX() + 0.5, (double)blockPos2.getY() + 0.05, (double)blockPos2.getZ() + 0.5, 0.0f, 0.0f);
                 world.spawnEntity(snowGolemEntity);
-                for (ServerPlayerEntity serverPlayerEntity : world.getNonSpectatingEntities(ServerPlayerEntity.class, snowGolemEntity.getBoundingBox().expand(5.0))) {
-                    Criterions.SUMMONED_ENTITY.trigger(serverPlayerEntity, snowGolemEntity);
+                for (ServerPlayerEntity serverPlayerEntity : world.getEntities(ServerPlayerEntity.class, snowGolemEntity.getBoundingBox().expand(5.0))) {
+                    Criterions.SUMMONED_ENTITY.handle(serverPlayerEntity, snowGolemEntity);
                 }
                 for (int j = 0; j < this.getSnowGolemPattern().getHeight(); ++j) {
                     CachedBlockPosition cachedBlockPosition2 = result.translate(0, j, 0);
@@ -94,10 +94,10 @@ extends HorizontalFacingBlock {
             BlockPos blockPos3 = result.translate(1, 2, 0).getBlockPos();
             IronGolemEntity ironGolemEntity = EntityType.IRON_GOLEM.create(world);
             ironGolemEntity.setPlayerCreated(true);
-            ironGolemEntity.refreshPositionAndAngles((double)blockPos3.getX() + 0.5, (double)blockPos3.getY() + 0.05, (double)blockPos3.getZ() + 0.5, 0.0f, 0.0f);
+            ironGolemEntity.setPositionAndAngles((double)blockPos3.getX() + 0.5, (double)blockPos3.getY() + 0.05, (double)blockPos3.getZ() + 0.5, 0.0f, 0.0f);
             world.spawnEntity(ironGolemEntity);
-            for (ServerPlayerEntity serverPlayerEntity : world.getNonSpectatingEntities(ServerPlayerEntity.class, ironGolemEntity.getBoundingBox().expand(5.0))) {
-                Criterions.SUMMONED_ENTITY.trigger(serverPlayerEntity, ironGolemEntity);
+            for (ServerPlayerEntity serverPlayerEntity : world.getEntities(ServerPlayerEntity.class, ironGolemEntity.getBoundingBox().expand(5.0))) {
+                Criterions.SUMMONED_ENTITY.handle(serverPlayerEntity, ironGolemEntity);
             }
             for (int j = 0; j < this.getIronGolemPattern().getWidth(); ++j) {
                 for (int l = 0; l < this.getIronGolemPattern().getHeight(); ++l) {
@@ -114,7 +114,7 @@ extends HorizontalFacingBlock {
     }
 
     @Override
-    protected void appendProperties(StateManager.Builder<Block, BlockState> builder) {
+    protected void appendProperties(StateFactory.Builder<Block, BlockState> builder) {
         builder.add(FACING);
     }
 

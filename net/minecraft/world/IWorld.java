@@ -18,12 +18,12 @@ import net.minecraft.sound.SoundEvent;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
 import net.minecraft.util.shape.VoxelShape;
-import net.minecraft.world.CollisionView;
 import net.minecraft.world.Difficulty;
 import net.minecraft.world.EntityView;
 import net.minecraft.world.LocalDifficulty;
 import net.minecraft.world.ModifiableTestableWorld;
 import net.minecraft.world.TickScheduler;
+import net.minecraft.world.ViewableWorld;
 import net.minecraft.world.World;
 import net.minecraft.world.chunk.ChunkManager;
 import net.minecraft.world.dimension.Dimension;
@@ -32,7 +32,7 @@ import org.jetbrains.annotations.Nullable;
 
 public interface IWorld
 extends EntityView,
-CollisionView,
+ViewableWorld,
 ModifiableTestableWorld {
     public long getSeed();
 

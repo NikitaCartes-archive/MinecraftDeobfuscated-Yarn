@@ -9,15 +9,15 @@ import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.FallingBlock;
 import net.minecraft.block.HorizontalFacingBlock;
+import net.minecraft.client.network.ClientDummyContainerProvider;
 import net.minecraft.container.AnvilContainer;
 import net.minecraft.container.BlockContext;
-import net.minecraft.container.NameableContainerFactory;
-import net.minecraft.container.SimpleNamedContainerFactory;
+import net.minecraft.container.NameableContainerProvider;
 import net.minecraft.entity.EntityContext;
 import net.minecraft.entity.FallingBlockEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemPlacementContext;
-import net.minecraft.state.StateManager;
+import net.minecraft.state.StateFactory;
 import net.minecraft.state.property.DirectionProperty;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.BlockRotation;
@@ -47,7 +47,7 @@ extends FallingBlock {
 
     public AnvilBlock(Block.Settings settings) {
         super(settings);
-        this.setDefaultState((BlockState)((BlockState)this.stateManager.getDefaultState()).with(FACING, Direction.NORTH));
+        this.setDefaultState((BlockState)((BlockState)this.stateFactory.getDefaultState()).with(FACING, Direction.NORTH));
     }
 
     @Override
@@ -57,14 +57,14 @@ extends FallingBlock {
 
     @Override
     public boolean activate(BlockState blockState, World world, BlockPos blockPos, PlayerEntity playerEntity, Hand hand, BlockHitResult blockHitResult) {
-        playerEntity.openContainer(blockState.createContainerFactory(world, blockPos));
+        playerEntity.openContainer(blockState.createContainerProvider(world, blockPos));
         return true;
     }
 
     @Override
     @Nullable
-    public NameableContainerFactory createContainerFactory(BlockState blockState, World world, BlockPos blockPos) {
-        return new SimpleNamedContainerFactory((i, playerInventory, playerEntity) -> new AnvilContainer(i, playerInventory, BlockContext.create(world, blockPos)), CONTAINER_NAME);
+    public NameableContainerProvider createContainerProvider(BlockState blockState, World world, BlockPos blockPos) {
+        return new ClientDummyContainerProvider((i, playerInventory, playerEntity) -> new AnvilContainer(i, playerInventory, BlockContext.create(world, blockPos)), CONTAINER_NAME);
     }
 
     @Override
@@ -109,7 +109,7 @@ extends FallingBlock {
     }
 
     @Override
-    protected void appendProperties(StateManager.Builder<Block, BlockState> builder) {
+    protected void appendProperties(StateFactory.Builder<Block, BlockState> builder) {
         builder.add(FACING);
     }
 

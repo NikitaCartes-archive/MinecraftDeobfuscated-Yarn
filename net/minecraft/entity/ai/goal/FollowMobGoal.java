@@ -60,15 +60,15 @@ extends Goal {
     @Override
     public void start() {
         this.field_6431 = 0;
-        this.field_6437 = this.mob.getPathfindingPenalty(PathNodeType.WATER);
-        this.mob.setPathfindingPenalty(PathNodeType.WATER, 0.0f);
+        this.field_6437 = this.mob.getPathNodeTypeWeight(PathNodeType.WATER);
+        this.mob.setPathNodeTypeWeight(PathNodeType.WATER, 0.0f);
     }
 
     @Override
     public void stop() {
         this.target = null;
         this.navigation.stop();
-        this.mob.setPathfindingPenalty(PathNodeType.WATER, this.field_6437);
+        this.mob.setPathNodeTypeWeight(PathNodeType.WATER, this.field_6437);
     }
 
     @Override

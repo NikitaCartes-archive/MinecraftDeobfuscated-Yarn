@@ -4,8 +4,7 @@
 package net.minecraft.client.render.entity;
 
 import com.google.common.collect.Maps;
-import com.mojang.blaze3d.platform.GLX;
-import com.mojang.blaze3d.platform.GlStateManager;
+import com.mojang.blaze3d.systems.RenderSystem;
 import java.util.Map;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
@@ -23,6 +22,7 @@ import net.minecraft.client.render.entity.AreaEffectCloudEntityRenderer;
 import net.minecraft.client.render.entity.ArmorStandEntityRenderer;
 import net.minecraft.client.render.entity.ArrowEntityRenderer;
 import net.minecraft.client.render.entity.BatEntityRenderer;
+import net.minecraft.client.render.entity.BeeEntityRenderer;
 import net.minecraft.client.render.entity.BlazeEntityRenderer;
 import net.minecraft.client.render.entity.BoatEntityRenderer;
 import net.minecraft.client.render.entity.CatEntityRenderer;
@@ -162,6 +162,7 @@ import net.minecraft.entity.mob.ZombieHorseEntity;
 import net.minecraft.entity.mob.ZombiePigmanEntity;
 import net.minecraft.entity.mob.ZombieVillagerEntity;
 import net.minecraft.entity.passive.BatEntity;
+import net.minecraft.entity.passive.BeeEntity;
 import net.minecraft.entity.passive.CatEntity;
 import net.minecraft.entity.passive.ChickenEntity;
 import net.minecraft.entity.passive.CodEntity;
@@ -302,6 +303,7 @@ public class EntityRenderDispatcher {
         this.register(PandaEntity.class, new PandaEntityRenderer(this));
         this.register(CatEntity.class, new CatEntityRenderer(this));
         this.register(FoxEntity.class, new FoxEntityRenderer(this));
+        this.register(BeeEntity.class, new BeeEntityRenderer(this));
         this.register(EnderDragonEntity.class, new EnderDragonEntityRenderer(this));
         this.register(EnderCrystalEntity.class, new EnderCrystalEntityRenderer(this));
         this.register(WitherEntity.class, new WitherEntityRenderer(this));
@@ -427,13 +429,13 @@ public class EntityRenderDispatcher {
 
     public void render(Entity entity, float f, boolean bl) {
         if (entity.age == 0) {
-            entity.lastRenderX = entity.x;
-            entity.lastRenderY = entity.y;
-            entity.lastRenderZ = entity.z;
+            entity.prevRenderX = entity.x;
+            entity.prevRenderY = entity.y;
+            entity.prevRenderZ = entity.z;
         }
-        double d = MathHelper.lerp((double)f, entity.lastRenderX, entity.x);
-        double e = MathHelper.lerp((double)f, entity.lastRenderY, entity.y);
-        double g = MathHelper.lerp((double)f, entity.lastRenderZ, entity.z);
+        double d = MathHelper.lerp((double)f, entity.prevRenderX, entity.x);
+        double e = MathHelper.lerp((double)f, entity.prevRenderY, entity.y);
+        double g = MathHelper.lerp((double)f, entity.prevRenderZ, entity.z);
         float h = MathHelper.lerp(f, entity.prevYaw, entity.yaw);
         int i = entity.getLightmapCoordinates();
         if (entity.isOnFire()) {
@@ -441,8 +443,8 @@ public class EntityRenderDispatcher {
         }
         int j = i % 65536;
         int k = i / 65536;
-        GLX.glMultiTexCoord2f(GLX.GL_TEXTURE1, j, k);
-        GlStateManager.color4f(1.0f, 1.0f, 1.0f, 1.0f);
+        RenderSystem.glMultiTexCoord2f(33985, j, k);
+        RenderSystem.color4f(1.0f, 1.0f, 1.0f, 1.0f);
         this.render(entity, d - this.renderPosX, e - this.renderPosY, g - this.renderPosZ, h, f, bl);
     }
 
@@ -487,13 +489,13 @@ public class EntityRenderDispatcher {
 
     public void renderSecondPass(Entity entity, float f) {
         if (entity.age == 0) {
-            entity.lastRenderX = entity.x;
-            entity.lastRenderY = entity.y;
-            entity.lastRenderZ = entity.z;
+            entity.prevRenderX = entity.x;
+            entity.prevRenderY = entity.y;
+            entity.prevRenderZ = entity.z;
         }
-        double d = MathHelper.lerp((double)f, entity.lastRenderX, entity.x);
-        double e = MathHelper.lerp((double)f, entity.lastRenderY, entity.y);
-        double g = MathHelper.lerp((double)f, entity.lastRenderZ, entity.z);
+        double d = MathHelper.lerp((double)f, entity.prevRenderX, entity.x);
+        double e = MathHelper.lerp((double)f, entity.prevRenderY, entity.y);
+        double g = MathHelper.lerp((double)f, entity.prevRenderZ, entity.z);
         float h = MathHelper.lerp(f, entity.prevYaw, entity.yaw);
         int i = entity.getLightmapCoordinates();
         if (entity.isOnFire()) {
@@ -501,8 +503,8 @@ public class EntityRenderDispatcher {
         }
         int j = i % 65536;
         int k = i / 65536;
-        GLX.glMultiTexCoord2f(GLX.GL_TEXTURE1, j, k);
-        GlStateManager.color4f(1.0f, 1.0f, 1.0f, 1.0f);
+        RenderSystem.glMultiTexCoord2f(33985, j, k);
+        RenderSystem.color4f(1.0f, 1.0f, 1.0f, 1.0f);
         Object entityRenderer = this.getRenderer(entity);
         if (entityRenderer != null && this.textureManager != null) {
             ((EntityRenderer)entityRenderer).renderSecondPass((Entity)entity, d - this.renderPosX, e - this.renderPosY, g - this.renderPosZ, h, f);
@@ -510,21 +512,21 @@ public class EntityRenderDispatcher {
     }
 
     private void renderHitbox(Entity entity, double d, double e, double f, float g, float h) {
-        GlStateManager.depthMask(false);
-        GlStateManager.disableTexture();
-        GlStateManager.disableLighting();
-        GlStateManager.disableCull();
-        GlStateManager.disableBlend();
+        RenderSystem.depthMask(false);
+        RenderSystem.disableTexture();
+        RenderSystem.disableLighting();
+        RenderSystem.disableCull();
+        RenderSystem.disableBlend();
         float i = entity.getWidth() / 2.0f;
         Box box = entity.getBoundingBox();
-        WorldRenderer.drawBoxOutline(box.x1 - entity.x + d, box.y1 - entity.y + e, box.z1 - entity.z + f, box.x2 - entity.x + d, box.y2 - entity.y + e, box.z2 - entity.z + f, 1.0f, 1.0f, 1.0f, 1.0f);
+        WorldRenderer.drawBoxOutline(box.minX - entity.x + d, box.minY - entity.y + e, box.minZ - entity.z + f, box.maxX - entity.x + d, box.maxY - entity.y + e, box.maxZ - entity.z + f, 1.0f, 1.0f, 1.0f, 1.0f);
         if (entity instanceof EnderDragonEntity) {
             for (EnderDragonPart enderDragonPart : ((EnderDragonEntity)entity).method_5690()) {
                 double j = (enderDragonPart.x - enderDragonPart.prevX) * (double)h;
                 double k = (enderDragonPart.y - enderDragonPart.prevY) * (double)h;
                 double l = (enderDragonPart.z - enderDragonPart.prevZ) * (double)h;
                 Box box2 = enderDragonPart.getBoundingBox();
-                WorldRenderer.drawBoxOutline(box2.x1 - this.renderPosX + j, box2.y1 - this.renderPosY + k, box2.z1 - this.renderPosZ + l, box2.x2 - this.renderPosX + j, box2.y2 - this.renderPosY + k, box2.z2 - this.renderPosZ + l, 0.25f, 1.0f, 0.0f, 1.0f);
+                WorldRenderer.drawBoxOutline(box2.minX - this.renderPosX + j, box2.minY - this.renderPosY + k, box2.minZ - this.renderPosZ + l, box2.maxX - this.renderPosX + j, box2.maxY - this.renderPosY + k, box2.maxZ - this.renderPosZ + l, 0.25f, 1.0f, 0.0f, 1.0f);
             }
         }
         if (entity instanceof LivingEntity) {
@@ -532,17 +534,17 @@ public class EntityRenderDispatcher {
             WorldRenderer.drawBoxOutline(d - (double)i, e + (double)entity.getStandingEyeHeight() - (double)0.01f, f - (double)i, d + (double)i, e + (double)entity.getStandingEyeHeight() + (double)0.01f, f + (double)i, 1.0f, 0.0f, 0.0f, 1.0f);
         }
         Tessellator tessellator = Tessellator.getInstance();
-        BufferBuilder bufferBuilder = tessellator.getBuffer();
+        BufferBuilder bufferBuilder = tessellator.getBufferBuilder();
         Vec3d vec3d = entity.getRotationVec(h);
         bufferBuilder.begin(3, VertexFormats.POSITION_COLOR);
         bufferBuilder.vertex(d, e + (double)entity.getStandingEyeHeight(), f).color(0, 0, 255, 255).next();
         bufferBuilder.vertex(d + vec3d.x * 2.0, e + (double)entity.getStandingEyeHeight() + vec3d.y * 2.0, f + vec3d.z * 2.0).color(0, 0, 255, 255).next();
         tessellator.draw();
-        GlStateManager.enableTexture();
-        GlStateManager.enableLighting();
-        GlStateManager.enableCull();
-        GlStateManager.disableBlend();
-        GlStateManager.depthMask(true);
+        RenderSystem.enableTexture();
+        RenderSystem.enableLighting();
+        RenderSystem.enableCull();
+        RenderSystem.disableBlend();
+        RenderSystem.depthMask(true);
     }
 
     public void setWorld(@Nullable World world) {
@@ -552,7 +554,7 @@ public class EntityRenderDispatcher {
         }
     }
 
-    public double getSquaredDistanceToCamera(double d, double e, double f) {
+    public double squaredDistanceToCamera(double d, double e, double f) {
         return this.camera.getPos().squaredDistanceTo(d, e, f);
     }
 

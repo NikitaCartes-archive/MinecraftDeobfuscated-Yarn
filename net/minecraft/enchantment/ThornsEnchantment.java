@@ -47,7 +47,7 @@ extends Enchantment {
 
     @Override
     public void onUserDamaged(LivingEntity livingEntity2, Entity entity, int i) {
-        Random random = livingEntity2.getRandom();
+        Random random = livingEntity2.getRand();
         Map.Entry<EquipmentSlot, ItemStack> entry = EnchantmentHelper.getRandomEnchantedEquipment(Enchantments.THORNS, livingEntity2);
         if (ThornsEnchantment.shouldDamageAttacker(i, random)) {
             if (entity != null) {

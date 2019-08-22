@@ -20,8 +20,7 @@ implements ParticleEffect {
     public static final DustParticleEffect RED = new DustParticleEffect(1.0f, 0.0f, 0.0f, 1.0f);
     public static final ParticleEffect.Factory<DustParticleEffect> PARAMETERS_FACTORY = new ParticleEffect.Factory<DustParticleEffect>(){
 
-        @Override
-        public DustParticleEffect read(ParticleType<DustParticleEffect> particleType, StringReader stringReader) throws CommandSyntaxException {
+        public DustParticleEffect method_10287(ParticleType<DustParticleEffect> particleType, StringReader stringReader) throws CommandSyntaxException {
             stringReader.expect(' ');
             float f = (float)stringReader.readDouble();
             stringReader.expect(' ');
@@ -33,31 +32,30 @@ implements ParticleEffect {
             return new DustParticleEffect(f, g, h, i);
         }
 
-        @Override
-        public DustParticleEffect read(ParticleType<DustParticleEffect> particleType, PacketByteBuf packetByteBuf) {
+        public DustParticleEffect method_10288(ParticleType<DustParticleEffect> particleType, PacketByteBuf packetByteBuf) {
             return new DustParticleEffect(packetByteBuf.readFloat(), packetByteBuf.readFloat(), packetByteBuf.readFloat(), packetByteBuf.readFloat());
         }
 
         @Override
         public /* synthetic */ ParticleEffect read(ParticleType particleType, PacketByteBuf packetByteBuf) {
-            return this.read(particleType, packetByteBuf);
+            return this.method_10288(particleType, packetByteBuf);
         }
 
         @Override
         public /* synthetic */ ParticleEffect read(ParticleType particleType, StringReader stringReader) throws CommandSyntaxException {
-            return this.read(particleType, stringReader);
+            return this.method_10287(particleType, stringReader);
         }
     };
     private final float red;
     private final float green;
     private final float blue;
-    private final float scale;
+    private final float alpha;
 
     public DustParticleEffect(float f, float g, float h, float i) {
         this.red = f;
         this.green = g;
         this.blue = h;
-        this.scale = MathHelper.clamp(i, 0.01f, 4.0f);
+        this.alpha = MathHelper.clamp(i, 0.01f, 4.0f);
     }
 
     @Override
@@ -65,12 +63,12 @@ implements ParticleEffect {
         packetByteBuf.writeFloat(this.red);
         packetByteBuf.writeFloat(this.green);
         packetByteBuf.writeFloat(this.blue);
-        packetByteBuf.writeFloat(this.scale);
+        packetByteBuf.writeFloat(this.alpha);
     }
 
     @Override
     public String asString() {
-        return String.format(Locale.ROOT, "%s %.2f %.2f %.2f %.2f", Registry.PARTICLE_TYPE.getId(this.getType()), Float.valueOf(this.red), Float.valueOf(this.green), Float.valueOf(this.blue), Float.valueOf(this.scale));
+        return String.format(Locale.ROOT, "%s %.2f %.2f %.2f %.2f", Registry.PARTICLE_TYPE.getId(this.getType()), Float.valueOf(this.red), Float.valueOf(this.green), Float.valueOf(this.blue), Float.valueOf(this.alpha));
     }
 
     public ParticleType<DustParticleEffect> getType() {
@@ -93,8 +91,8 @@ implements ParticleEffect {
     }
 
     @Environment(value=EnvType.CLIENT)
-    public float getScale() {
-        return this.scale;
+    public float getAlpha() {
+        return this.alpha;
     }
 }
 

@@ -119,7 +119,7 @@ extends AbstractMinecartEntity {
     @Override
     public boolean interact(PlayerEntity playerEntity, Hand hand) {
         ItemStack itemStack = playerEntity.getStackInHand(hand);
-        if (ACCEPTABLE_FUEL.test(itemStack) && this.fuel + 3600 <= 32000) {
+        if (ACCEPTABLE_FUEL.method_8093(itemStack) && this.fuel + 3600 <= 32000) {
             if (!playerEntity.abilities.creativeMode) {
                 itemStack.decrement(1);
             }

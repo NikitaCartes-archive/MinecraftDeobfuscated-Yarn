@@ -10,7 +10,7 @@ import net.minecraft.block.HorizontalFacingBlock;
 import net.minecraft.entity.EntityContext;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemPlacementContext;
-import net.minecraft.state.StateManager;
+import net.minecraft.state.StateFactory;
 import net.minecraft.state.property.BooleanProperty;
 import net.minecraft.state.property.Properties;
 import net.minecraft.tag.BlockTags;
@@ -42,7 +42,7 @@ extends HorizontalFacingBlock {
 
     public FenceGateBlock(Block.Settings settings) {
         super(settings);
-        this.setDefaultState((BlockState)((BlockState)((BlockState)((BlockState)this.stateManager.getDefaultState()).with(OPEN, false)).with(POWERED, false)).with(IN_WALL, false));
+        this.setDefaultState((BlockState)((BlockState)((BlockState)((BlockState)this.stateFactory.getDefaultState()).with(OPEN, false)).with(POWERED, false)).with(IN_WALL, false));
     }
 
     @Override
@@ -72,7 +72,7 @@ extends HorizontalFacingBlock {
     }
 
     @Override
-    public VoxelShape getCullingShape(BlockState blockState, BlockView blockView, BlockPos blockPos) {
+    public VoxelShape method_9571(BlockState blockState, BlockView blockView, BlockPos blockPos) {
         if (blockState.get(IN_WALL).booleanValue()) {
             return blockState.get(FACING).getAxis() == Direction.Axis.X ? field_11027 : field_11020;
         }
@@ -142,7 +142,7 @@ extends HorizontalFacingBlock {
     }
 
     @Override
-    protected void appendProperties(StateManager.Builder<Block, BlockState> builder) {
+    protected void appendProperties(StateFactory.Builder<Block, BlockState> builder) {
         builder.add(FACING, OPEN, POWERED, IN_WALL);
     }
 

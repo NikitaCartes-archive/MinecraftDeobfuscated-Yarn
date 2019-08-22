@@ -11,9 +11,9 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.structure.StructureManager;
 import net.minecraft.structure.StructurePiece;
-import net.minecraft.util.math.BlockBox;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
+import net.minecraft.util.math.MutableIntBoundingBox;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.world.IWorld;
 import net.minecraft.world.biome.Biome;
@@ -24,7 +24,7 @@ import net.minecraft.world.gen.feature.Feature;
 import net.minecraft.world.gen.feature.StructureFeature;
 
 public abstract class StructureStart {
-    public static final StructureStart DEFAULT = new StructureStart((StructureFeature)Feature.MINESHAFT, 0, 0, Biomes.PLAINS, BlockBox.empty(), 0, 0L){
+    public static final StructureStart DEFAULT = new StructureStart((StructureFeature)Feature.MINESHAFT, 0, 0, Biomes.PLAINS, MutableIntBoundingBox.empty(), 0, 0L){
 
         @Override
         public void initialize(ChunkGenerator<?> chunkGenerator, StructureManager structureManager, int i, int j, Biome biome) {
@@ -32,14 +32,14 @@ public abstract class StructureStart {
     };
     private final StructureFeature<?> feature;
     protected final List<StructurePiece> children = Lists.newArrayList();
-    protected BlockBox boundingBox;
+    protected MutableIntBoundingBox boundingBox;
     private final int chunkX;
     private final int chunkZ;
     private final Biome biome;
     private int references;
     protected final ChunkRandom random;
 
-    public StructureStart(StructureFeature<?> structureFeature, int i, int j, Biome biome, BlockBox blockBox, int k, long l) {
+    public StructureStart(StructureFeature<?> structureFeature, int i, int j, Biome biome, MutableIntBoundingBox mutableIntBoundingBox, int k, long l) {
         this.feature = structureFeature;
         this.chunkX = i;
         this.chunkZ = j;
@@ -47,12 +47,12 @@ public abstract class StructureStart {
         this.biome = biome;
         this.random = new ChunkRandom();
         this.random.setStructureSeed(l, i, j);
-        this.boundingBox = blockBox;
+        this.boundingBox = mutableIntBoundingBox;
     }
 
     public abstract void initialize(ChunkGenerator<?> var1, StructureManager var2, int var3, int var4, Biome var5);
 
-    public BlockBox getBoundingBox() {
+    public MutableIntBoundingBox getBoundingBox() {
         return this.boundingBox;
     }
 
@@ -63,13 +63,13 @@ public abstract class StructureStart {
     /*
      * WARNING - Removed try catching itself - possible behaviour change.
      */
-    public void generateStructure(IWorld iWorld, Random random, BlockBox blockBox, ChunkPos chunkPos) {
+    public void generateStructure(IWorld iWorld, Random random, MutableIntBoundingBox mutableIntBoundingBox, ChunkPos chunkPos) {
         List<StructurePiece> list = this.children;
         synchronized (list) {
             Iterator<StructurePiece> iterator = this.children.iterator();
             while (iterator.hasNext()) {
                 StructurePiece structurePiece = iterator.next();
-                if (!structurePiece.getBoundingBox().intersects(blockBox) || structurePiece.generate(iWorld, random, blockBox, chunkPos)) continue;
+                if (!structurePiece.getBoundingBox().intersects(mutableIntBoundingBox) || structurePiece.generate(iWorld, random, mutableIntBoundingBox, chunkPos)) continue;
                 iterator.remove();
             }
             this.setBoundingBoxFromChildren();
@@ -77,9 +77,9 @@ public abstract class StructureStart {
     }
 
     protected void setBoundingBoxFromChildren() {
-        this.boundingBox = BlockBox.empty();
+        this.boundingBox = MutableIntBoundingBox.empty();
         for (StructurePiece structurePiece : this.children) {
-            this.boundingBox.encompass(structurePiece.getBoundingBox());
+            this.boundingBox.setFrom(structurePiece.getBoundingBox());
         }
     }
 
@@ -116,7 +116,7 @@ public abstract class StructureStart {
             l += random.nextInt(k - l);
         }
         int m = l - this.boundingBox.maxY;
-        this.boundingBox.offset(0, m, 0);
+        this.boundingBox.translate(0, m, 0);
         for (StructurePiece structurePiece : this.children) {
             structurePiece.translate(0, m, 0);
         }
@@ -126,7 +126,7 @@ public abstract class StructureStart {
         int k = j - i + 1 - this.boundingBox.getBlockCountY();
         int l = k > 1 ? i + random.nextInt(k) : i;
         int m = l - this.boundingBox.minY;
-        this.boundingBox.offset(0, m, 0);
+        this.boundingBox.translate(0, m, 0);
         for (StructurePiece structurePiece : this.children) {
             structurePiece.translate(0, m, 0);
         }

@@ -20,7 +20,7 @@ import net.minecraft.entity.Entity;
 import net.minecraft.server.command.CommandSource;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.text.TranslatableText;
-import net.minecraft.util.Util;
+import net.minecraft.util.SystemUtil;
 import net.minecraft.util.math.Vec3d;
 import org.jetbrains.annotations.Nullable;
 
@@ -37,8 +37,7 @@ implements ArgumentType<EntityAnchor> {
         return new EntityAnchorArgumentType();
     }
 
-    @Override
-    public EntityAnchor parse(StringReader stringReader) throws CommandSyntaxException {
+    public EntityAnchor method_9292(StringReader stringReader) throws CommandSyntaxException {
         int i = stringReader.getCursor();
         String string = stringReader.readUnquotedString();
         EntityAnchor entityAnchor = EntityAnchor.fromId(string);
@@ -61,7 +60,7 @@ implements ArgumentType<EntityAnchor> {
 
     @Override
     public /* synthetic */ Object parse(StringReader stringReader) throws CommandSyntaxException {
-        return this.parse(stringReader);
+        return this.method_9292(stringReader);
     }
 
     public static enum EntityAnchor {
@@ -95,7 +94,7 @@ implements ArgumentType<EntityAnchor> {
         }
 
         static {
-            anchors = Util.make(Maps.newHashMap(), hashMap -> {
+            anchors = SystemUtil.consume(Maps.newHashMap(), hashMap -> {
                 for (EntityAnchor entityAnchor : EntityAnchor.values()) {
                     hashMap.put(entityAnchor.id, entityAnchor);
                 }

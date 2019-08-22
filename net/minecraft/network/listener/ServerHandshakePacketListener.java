@@ -4,7 +4,7 @@
 package net.minecraft.network.listener;
 
 import net.minecraft.network.listener.PacketListener;
-import net.minecraft.network.packet.c2s.handshake.HandshakeC2SPacket;
+import net.minecraft.server.network.packet.HandshakeC2SPacket;
 
 public interface ServerHandshakePacketListener
 extends PacketListener {

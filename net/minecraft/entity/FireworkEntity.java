@@ -9,6 +9,7 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.fabricmc.api.EnvironmentInterface;
 import net.fabricmc.api.EnvironmentInterfaces;
+import net.minecraft.client.network.packet.EntitySpawnS2CPacket;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.FlyingItemEntity;
@@ -25,7 +26,6 @@ import net.minecraft.item.Items;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.network.Packet;
-import net.minecraft.network.packet.s2c.play.EntitySpawnS2CPacket;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
@@ -62,20 +62,20 @@ Projectile {
 
     @Override
     @Environment(value=EnvType.CLIENT)
-    public boolean shouldRender(double d) {
+    public boolean shouldRenderAtDistance(double d) {
         return d < 4096.0 && !this.wasShotByEntity();
     }
 
     @Override
     @Environment(value=EnvType.CLIENT)
-    public boolean shouldRender(double d, double e, double f) {
-        return super.shouldRender(d, e, f) && !this.wasShotByEntity();
+    public boolean shouldRenderFrom(double d, double e, double f) {
+        return super.shouldRenderFrom(d, e, f) && !this.wasShotByEntity();
     }
 
     public FireworkEntity(World world, double d, double e, double f, ItemStack itemStack) {
         super(EntityType.FIREWORK_ROCKET, world);
         this.life = 0;
-        this.updatePosition(d, e, f);
+        this.setPosition(d, e, f);
         int i = 1;
         if (!itemStack.isEmpty() && itemStack.hasTag()) {
             this.dataTracker.set(ITEM, itemStack.copy());
@@ -112,9 +112,9 @@ Projectile {
     @Override
     public void tick() {
         Vec3d vec3d;
-        this.lastRenderX = this.x;
-        this.lastRenderY = this.y;
-        this.lastRenderZ = this.z;
+        this.prevRenderX = this.x;
+        this.prevRenderY = this.y;
+        this.prevRenderZ = this.z;
         super.tick();
         if (this.wasShotByEntity()) {
             if (this.shooter == null) {
@@ -133,7 +133,7 @@ Projectile {
                     Vec3d vec3d2 = this.shooter.getVelocity();
                     this.shooter.setVelocity(vec3d2.add(vec3d.x * 0.1 + (vec3d.x * 1.5 - vec3d2.x) * 0.5, vec3d.y * 0.1 + (vec3d.y * 1.5 - vec3d2.y) * 0.5, vec3d.z * 0.1 + (vec3d.z * 1.5 - vec3d2.z) * 0.5));
                 }
-                this.updatePosition(this.shooter.x, this.shooter.y, this.shooter.z);
+                this.setPosition(this.shooter.x, this.shooter.y, this.shooter.z);
                 this.setVelocity(this.shooter.getVelocity());
             }
         } else {
@@ -217,7 +217,7 @@ Projectile {
             }
             double d = 5.0;
             Vec3d vec3d = new Vec3d(this.x, this.y, this.z);
-            List<LivingEntity> list = this.world.getNonSpectatingEntities(LivingEntity.class, this.getBoundingBox().expand(5.0));
+            List<LivingEntity> list = this.world.getEntities(LivingEntity.class, this.getBoundingBox().expand(5.0));
             for (LivingEntity livingEntity : list) {
                 if (livingEntity == this.shooter || this.squaredDistanceTo(livingEntity) > 25.0) continue;
                 boolean bl = false;
@@ -280,7 +280,7 @@ Projectile {
         if (!itemStack.isEmpty()) {
             this.dataTracker.set(ITEM, itemStack);
         }
-        if (compoundTag.contains("ShotAtAngle")) {
+        if (compoundTag.containsKey("ShotAtAngle")) {
             this.dataTracker.set(SHOT_AT_ANGLE, compoundTag.getBoolean("ShotAtAngle"));
         }
     }

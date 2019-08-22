@@ -3,7 +3,7 @@
  */
 package net.minecraft.client.render.entity;
 
-import com.mojang.blaze3d.platform.GlStateManager;
+import com.mojang.blaze3d.systems.RenderSystem;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
@@ -30,8 +30,7 @@ extends EntityRenderer<FishingBobberEntity> {
         super(entityRenderDispatcher);
     }
 
-    @Override
-    public void render(FishingBobberEntity fishingBobberEntity, double d, double e, double f, float g, float h) {
+    public void method_3974(FishingBobberEntity fishingBobberEntity, double d, double e, double f, float g, float h) {
         double x;
         double w;
         double v;
@@ -41,21 +40,21 @@ extends EntityRenderer<FishingBobberEntity> {
         if (playerEntity == null || this.renderOutlines) {
             return;
         }
-        GlStateManager.pushMatrix();
-        GlStateManager.translatef((float)d, (float)e, (float)f);
-        GlStateManager.enableRescaleNormal();
-        GlStateManager.scalef(0.5f, 0.5f, 0.5f);
+        RenderSystem.pushMatrix();
+        RenderSystem.translatef((float)d, (float)e, (float)f);
+        RenderSystem.enableRescaleNormal();
+        RenderSystem.scalef(0.5f, 0.5f, 0.5f);
         this.bindEntityTexture(fishingBobberEntity);
         Tessellator tessellator = Tessellator.getInstance();
-        BufferBuilder bufferBuilder = tessellator.getBuffer();
+        BufferBuilder bufferBuilder = tessellator.getBufferBuilder();
         float i = 1.0f;
         float j = 0.5f;
         float k = 0.5f;
-        GlStateManager.rotatef(180.0f - this.renderManager.cameraYaw, 0.0f, 1.0f, 0.0f);
-        GlStateManager.rotatef((float)(this.renderManager.gameOptions.perspective == 2 ? -1 : 1) * -this.renderManager.cameraPitch, 1.0f, 0.0f, 0.0f);
+        RenderSystem.rotatef(180.0f - this.renderManager.cameraYaw, 0.0f, 1.0f, 0.0f);
+        RenderSystem.rotatef((float)(this.renderManager.gameOptions.perspective == 2 ? -1 : 1) * -this.renderManager.cameraPitch, 1.0f, 0.0f, 0.0f);
         if (this.renderOutlines) {
-            GlStateManager.enableColorMaterial();
-            GlStateManager.setupSolidRenderingTextureCombine(this.getOutlineColor(fishingBobberEntity));
+            RenderSystem.enableColorMaterial();
+            RenderSystem.setupSolidRenderingTextureCombine(this.getOutlineColor(fishingBobberEntity));
         }
         bufferBuilder.begin(7, VertexFormats.POSITION_UV_NORMAL);
         bufferBuilder.vertex(-0.5, -0.5, 0.0).texture(0.0, 1.0).normal(0.0f, 1.0f, 0.0f).next();
@@ -64,11 +63,11 @@ extends EntityRenderer<FishingBobberEntity> {
         bufferBuilder.vertex(-0.5, 0.5, 0.0).texture(0.0, 0.0).normal(0.0f, 1.0f, 0.0f).next();
         tessellator.draw();
         if (this.renderOutlines) {
-            GlStateManager.tearDownSolidRenderingTextureCombine();
-            GlStateManager.disableColorMaterial();
+            RenderSystem.tearDownSolidRenderingTextureCombine();
+            RenderSystem.disableColorMaterial();
         }
-        GlStateManager.disableRescaleNormal();
-        GlStateManager.popMatrix();
+        RenderSystem.disableRescaleNormal();
+        RenderSystem.popMatrix();
         int l = playerEntity.getMainArm() == Arm.RIGHT ? 1 : -1;
         ItemStack itemStack = playerEntity.getMainHandStack();
         if (itemStack.getItem() != Items.FISHING_ROD) {
@@ -76,7 +75,7 @@ extends EntityRenderer<FishingBobberEntity> {
         }
         float m = playerEntity.getHandSwingProgress(h);
         float n = MathHelper.sin(MathHelper.sqrt(m) * (float)Math.PI);
-        float o = MathHelper.lerp(h, playerEntity.field_6220, playerEntity.field_6283) * ((float)Math.PI / 180);
+        float o = MathHelper.lerp(h, playerEntity.prevBodyYaw, playerEntity.bodyYaw) * ((float)Math.PI / 180);
         double p = MathHelper.sin(o);
         double q = MathHelper.cos(o);
         double r = (double)l * 0.35;
@@ -104,8 +103,8 @@ extends EntityRenderer<FishingBobberEntity> {
         double aa = (float)(t - x);
         double ab = (double)((float)(u - y)) + w;
         double ac = (float)(v - z);
-        GlStateManager.disableTexture();
-        GlStateManager.disableLighting();
+        RenderSystem.disableTexture();
+        RenderSystem.disableLighting();
         bufferBuilder.begin(3, VertexFormats.POSITION_COLOR);
         int ad = 16;
         for (int ae = 0; ae <= 16; ++ae) {
@@ -113,13 +112,12 @@ extends EntityRenderer<FishingBobberEntity> {
             bufferBuilder.vertex(d + aa * (double)af, e + ab * (double)(af * af + af) * 0.5 + 0.25, f + ac * (double)af).color(0, 0, 0, 255).next();
         }
         tessellator.draw();
-        GlStateManager.enableLighting();
-        GlStateManager.enableTexture();
+        RenderSystem.enableLighting();
+        RenderSystem.enableTexture();
         super.render(fishingBobberEntity, d, e, f, g, h);
     }
 
-    @Override
-    protected Identifier getTexture(FishingBobberEntity fishingBobberEntity) {
+    protected Identifier method_3975(FishingBobberEntity fishingBobberEntity) {
         return SKIN;
     }
 }

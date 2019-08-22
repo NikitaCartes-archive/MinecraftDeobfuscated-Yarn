@@ -65,13 +65,13 @@ implements CommandOutput {
     public void deserialize(CompoundTag compoundTag) {
         this.command = compoundTag.getString("Command");
         this.successCount = compoundTag.getInt("SuccessCount");
-        if (compoundTag.contains("CustomName", 8)) {
+        if (compoundTag.containsKey("CustomName", 8)) {
             this.customName = Text.Serializer.fromJson(compoundTag.getString("CustomName"));
         }
-        if (compoundTag.contains("TrackOutput", 1)) {
+        if (compoundTag.containsKey("TrackOutput", 1)) {
             this.trackOutput = compoundTag.getBoolean("TrackOutput");
         }
-        if (compoundTag.contains("LastOutput", 8) && this.trackOutput) {
+        if (compoundTag.containsKey("LastOutput", 8) && this.trackOutput) {
             try {
                 this.lastOutput = Text.Serializer.fromJson(compoundTag.getString("LastOutput"));
             } catch (Throwable throwable) {
@@ -80,10 +80,10 @@ implements CommandOutput {
         } else {
             this.lastOutput = null;
         }
-        if (compoundTag.contains("UpdateLastExecution")) {
+        if (compoundTag.containsKey("UpdateLastExecution")) {
             this.updateLastExecution = compoundTag.getBoolean("UpdateLastExecution");
         }
-        this.lastExecution = this.updateLastExecution && compoundTag.contains("LastExecution") ? compoundTag.getLong("LastExecution") : -1L;
+        this.lastExecution = this.updateLastExecution && compoundTag.containsKey("LastExecution") ? compoundTag.getLong("LastExecution") : -1L;
     }
 
     public void setCommand(String string) {

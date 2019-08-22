@@ -9,13 +9,13 @@ import net.minecraft.block.BlockState;
 import net.minecraft.entity.Entity;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
-import net.minecraft.state.StateManager;
+import net.minecraft.state.StateFactory;
 import net.minecraft.state.property.IntProperty;
 import net.minecraft.state.property.Properties;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
-import net.minecraft.world.CollisionView;
 import net.minecraft.world.IWorld;
+import net.minecraft.world.ViewableWorld;
 import net.minecraft.world.World;
 
 public class WeightedPressurePlateBlock
@@ -25,13 +25,13 @@ extends AbstractPressurePlateBlock {
 
     protected WeightedPressurePlateBlock(int i, Block.Settings settings) {
         super(settings);
-        this.setDefaultState((BlockState)((BlockState)this.stateManager.getDefaultState()).with(POWER, 0));
+        this.setDefaultState((BlockState)((BlockState)this.stateFactory.getDefaultState()).with(POWER, 0));
         this.weight = i;
     }
 
     @Override
     protected int getRedstoneOutput(World world, BlockPos blockPos) {
-        int i = Math.min(world.getNonSpectatingEntities(Entity.class, BOX.offset(blockPos)).size(), this.weight);
+        int i = Math.min(world.getEntities(Entity.class, BOX.offset(blockPos)).size(), this.weight);
         if (i > 0) {
             float f = (float)Math.min(this.weight, i) / (float)this.weight;
             return MathHelper.ceil(f * 15.0f);
@@ -60,12 +60,12 @@ extends AbstractPressurePlateBlock {
     }
 
     @Override
-    public int getTickRate(CollisionView collisionView) {
+    public int getTickRate(ViewableWorld viewableWorld) {
         return 10;
     }
 
     @Override
-    protected void appendProperties(StateManager.Builder<Block, BlockState> builder) {
+    protected void appendProperties(StateFactory.Builder<Block, BlockState> builder) {
         builder.add(POWER);
     }
 }

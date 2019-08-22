@@ -24,31 +24,26 @@ extends Task<VillagerEntity> {
         this.speed = f;
     }
 
-    @Override
-    protected boolean shouldRun(ServerWorld serverWorld, VillagerEntity villagerEntity) {
+    protected boolean method_18954(ServerWorld serverWorld, VillagerEntity villagerEntity) {
         PlayerEntity playerEntity = villagerEntity.getCurrentCustomer();
-        return villagerEntity.isAlive() && playerEntity != null && !villagerEntity.isTouchingWater() && !villagerEntity.velocityModified && villagerEntity.squaredDistanceTo(playerEntity) <= 16.0 && playerEntity.container != null;
+        return villagerEntity.isAlive() && playerEntity != null && !villagerEntity.isInsideWater() && !villagerEntity.velocityModified && villagerEntity.squaredDistanceTo(playerEntity) <= 16.0 && playerEntity.container != null;
     }
 
-    @Override
-    protected boolean shouldKeepRunning(ServerWorld serverWorld, VillagerEntity villagerEntity, long l) {
-        return this.shouldRun(serverWorld, villagerEntity);
+    protected boolean method_18955(ServerWorld serverWorld, VillagerEntity villagerEntity, long l) {
+        return this.method_18954(serverWorld, villagerEntity);
     }
 
-    @Override
-    protected void run(ServerWorld serverWorld, VillagerEntity villagerEntity, long l) {
+    protected void method_18956(ServerWorld serverWorld, VillagerEntity villagerEntity, long l) {
         this.update(villagerEntity);
     }
 
-    @Override
-    protected void finishRunning(ServerWorld serverWorld, VillagerEntity villagerEntity, long l) {
+    protected void method_18957(ServerWorld serverWorld, VillagerEntity villagerEntity, long l) {
         Brain<VillagerEntity> brain = villagerEntity.getBrain();
         brain.forget(MemoryModuleType.WALK_TARGET);
         brain.forget(MemoryModuleType.LOOK_TARGET);
     }
 
-    @Override
-    protected void keepRunning(ServerWorld serverWorld, VillagerEntity villagerEntity, long l) {
+    protected void method_18958(ServerWorld serverWorld, VillagerEntity villagerEntity, long l) {
         this.update(villagerEntity);
     }
 
@@ -66,17 +61,17 @@ extends Task<VillagerEntity> {
 
     @Override
     protected /* synthetic */ boolean shouldKeepRunning(ServerWorld serverWorld, LivingEntity livingEntity, long l) {
-        return this.shouldKeepRunning(serverWorld, (VillagerEntity)livingEntity, l);
+        return this.method_18955(serverWorld, (VillagerEntity)livingEntity, l);
     }
 
     @Override
     protected /* synthetic */ void finishRunning(ServerWorld serverWorld, LivingEntity livingEntity, long l) {
-        this.finishRunning(serverWorld, (VillagerEntity)livingEntity, l);
+        this.method_18957(serverWorld, (VillagerEntity)livingEntity, l);
     }
 
     @Override
     protected /* synthetic */ void run(ServerWorld serverWorld, LivingEntity livingEntity, long l) {
-        this.run(serverWorld, (VillagerEntity)livingEntity, l);
+        this.method_18956(serverWorld, (VillagerEntity)livingEntity, l);
     }
 }
 

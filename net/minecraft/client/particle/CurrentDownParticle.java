@@ -68,8 +68,7 @@ extends SpriteBillboardParticle {
             this.field_17890 = spriteProvider;
         }
 
-        @Override
-        public Particle createParticle(DefaultParticleType defaultParticleType, World world, double d, double e, double f, double g, double h, double i) {
+        public Particle method_3114(DefaultParticleType defaultParticleType, World world, double d, double e, double f, double g, double h, double i) {
             CurrentDownParticle currentDownParticle = new CurrentDownParticle(world, d, e, f);
             currentDownParticle.setSprite(this.field_17890);
             return currentDownParticle;

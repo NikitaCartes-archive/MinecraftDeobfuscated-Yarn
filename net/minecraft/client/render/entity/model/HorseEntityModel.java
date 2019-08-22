@@ -3,7 +3,7 @@
  */
 package net.minecraft.client.render.entity.model;
 
-import com.mojang.blaze3d.platform.GlStateManager;
+import com.mojang.blaze3d.systems.RenderSystem;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.model.ModelPart;
@@ -32,7 +32,7 @@ extends EntityModel<T> {
         this.textureHeight = 64;
         this.field_3305 = new ModelPart(this, 0, 32);
         this.field_3305.addCuboid(-5.0f, -8.0f, -17.0f, 10, 10, 22, 0.05f);
-        this.field_3305.setPivot(0.0f, 11.0f, 5.0f);
+        this.field_3305.setRotationPoint(0.0f, 11.0f, 5.0f);
         this.field_3307 = new ModelPart(this, 0, 35);
         this.field_3307.addCuboid(-2.05f, -6.0f, -2.0f, 4, 12, 7);
         this.field_3307.pitch = 0.5235988f;
@@ -49,20 +49,20 @@ extends EntityModel<T> {
         this.field_3306 = new ModelPart(this, 48, 21);
         this.field_3306.mirror = true;
         this.field_3306.addCuboid(-3.0f, -1.01f, -1.0f, 4, 11, 4, f);
-        this.field_3306.setPivot(4.0f, 14.0f, 7.0f);
+        this.field_3306.setRotationPoint(4.0f, 14.0f, 7.0f);
         this.field_3303 = new ModelPart(this, 48, 21);
         this.field_3303.addCuboid(-1.0f, -1.01f, -1.0f, 4, 11, 4, f);
-        this.field_3303.setPivot(-4.0f, 14.0f, 7.0f);
+        this.field_3303.setRotationPoint(-4.0f, 14.0f, 7.0f);
         this.field_3302 = new ModelPart(this, 48, 21);
         this.field_3302.mirror = true;
         this.field_3302.addCuboid(-3.0f, -1.01f, -1.9f, 4, 11, 4, f);
-        this.field_3302.setPivot(4.0f, 6.0f, -12.0f);
+        this.field_3302.setRotationPoint(4.0f, 6.0f, -12.0f);
         this.field_3308 = new ModelPart(this, 48, 21);
         this.field_3308.addCuboid(-1.0f, -1.01f, -1.9f, 4, 11, 4, f);
-        this.field_3308.setPivot(-4.0f, 6.0f, -12.0f);
+        this.field_3308.setRotationPoint(-4.0f, 6.0f, -12.0f);
         this.field_3300 = new ModelPart(this, 42, 36);
         this.field_3300.addCuboid(-1.5f, 0.0f, 0.0f, 3, 14, 4, f);
-        this.field_3300.setPivot(0.0f, -5.0f, 2.0f);
+        this.field_3300.setRotationPoint(0.0f, -5.0f, 2.0f);
         this.field_3300.pitch = 0.5235988f;
         this.field_3305.addChild(this.field_3300);
         ModelPart modelPart4 = new ModelPart(this, 26, 0);
@@ -101,8 +101,7 @@ extends EntityModel<T> {
         modelPart.addChild(modelPart3);
     }
 
-    @Override
-    public void render(T horseBaseEntity, float f, float g, float h, float i, float j, float k) {
+    public void method_17085(T horseBaseEntity, float f, float g, float h, float i, float j, float k) {
         boolean bl = ((PassiveEntity)horseBaseEntity).isBaby();
         float l = ((LivingEntity)horseBaseEntity).getScaleFactor();
         boolean bl2 = ((HorseBaseEntity)horseBaseEntity).isSaddled();
@@ -114,38 +113,37 @@ extends EntityModel<T> {
             modelPart.visible = bl3 && bl2;
         }
         if (bl) {
-            GlStateManager.pushMatrix();
-            GlStateManager.scalef(l, 0.5f + l * 0.5f, l);
-            GlStateManager.translatef(0.0f, 0.95f * (1.0f - l), 0.0f);
+            RenderSystem.pushMatrix();
+            RenderSystem.scalef(l, 0.5f + l * 0.5f, l);
+            RenderSystem.translatef(0.0f, 0.95f * (1.0f - l), 0.0f);
         }
         this.field_3306.render(k);
         this.field_3303.render(k);
         this.field_3302.render(k);
         this.field_3308.render(k);
         if (bl) {
-            GlStateManager.popMatrix();
-            GlStateManager.pushMatrix();
-            GlStateManager.scalef(l, l, l);
-            GlStateManager.translatef(0.0f, 2.3f * (1.0f - l), 0.0f);
+            RenderSystem.popMatrix();
+            RenderSystem.pushMatrix();
+            RenderSystem.scalef(l, l, l);
+            RenderSystem.translatef(0.0f, 2.3f * (1.0f - l), 0.0f);
         }
         this.field_3305.render(k);
         if (bl) {
-            GlStateManager.popMatrix();
-            GlStateManager.pushMatrix();
+            RenderSystem.popMatrix();
+            RenderSystem.pushMatrix();
             float m = l + 0.1f * l;
-            GlStateManager.scalef(m, m, m);
-            GlStateManager.translatef(0.0f, 2.25f * (1.0f - m), 0.1f * (1.4f - m));
+            RenderSystem.scalef(m, m, m);
+            RenderSystem.translatef(0.0f, 2.25f * (1.0f - m), 0.1f * (1.4f - m));
         }
         this.field_3307.render(k);
         if (bl) {
-            GlStateManager.popMatrix();
+            RenderSystem.popMatrix();
         }
     }
 
-    @Override
-    public void animateModel(T horseBaseEntity, float f, float g, float h) {
+    public void method_17084(T horseBaseEntity, float f, float g, float h) {
         super.animateModel(horseBaseEntity, f, g, h);
-        float i = this.method_2790(((HorseBaseEntity)horseBaseEntity).field_6220, ((HorseBaseEntity)horseBaseEntity).field_6283, h);
+        float i = this.method_2790(((HorseBaseEntity)horseBaseEntity).prevBodyYaw, ((HorseBaseEntity)horseBaseEntity).bodyYaw, h);
         float j = this.method_2790(((HorseBaseEntity)horseBaseEntity).prevHeadYaw, ((HorseBaseEntity)horseBaseEntity).headYaw, h);
         float k = MathHelper.lerp(h, ((HorseBaseEntity)horseBaseEntity).prevPitch, ((HorseBaseEntity)horseBaseEntity).pitch);
         float l = j - i;
@@ -165,26 +163,26 @@ extends EntityModel<T> {
         float q = ((HorseBaseEntity)horseBaseEntity).getEatingAnimationProgress(h);
         boolean bl = ((HorseBaseEntity)horseBaseEntity).field_6957 != 0;
         float r = (float)((HorseBaseEntity)horseBaseEntity).age + h;
-        this.field_3307.pivotY = 4.0f;
-        this.field_3307.pivotZ = -12.0f;
+        this.field_3307.rotationPointY = 4.0f;
+        this.field_3307.rotationPointZ = -12.0f;
         this.field_3305.pitch = 0.0f;
         this.field_3307.pitch = 0.5235988f + m;
         this.field_3307.yaw = l * ((float)Math.PI / 180);
-        float s = ((Entity)horseBaseEntity).isTouchingWater() ? 0.2f : 1.0f;
+        float s = ((Entity)horseBaseEntity).isInsideWater() ? 0.2f : 1.0f;
         float t = MathHelper.cos(s * f * 0.6662f + (float)Math.PI);
         float u = t * 0.8f * g;
         float v = (1.0f - Math.max(o, n)) * (0.5235988f + m + q * MathHelper.sin(r) * 0.05f);
         this.field_3307.pitch = o * (0.2617994f + m) + n * (2.1816616f + MathHelper.sin(r) * 0.05f) + v;
         this.field_3307.yaw = o * l * ((float)Math.PI / 180) + (1.0f - Math.max(o, n)) * this.field_3307.yaw;
-        this.field_3307.pivotY = o * -4.0f + n * 11.0f + (1.0f - Math.max(o, n)) * this.field_3307.pivotY;
-        this.field_3307.pivotZ = o * -4.0f + n * -12.0f + (1.0f - Math.max(o, n)) * this.field_3307.pivotZ;
+        this.field_3307.rotationPointY = o * -4.0f + n * 11.0f + (1.0f - Math.max(o, n)) * this.field_3307.rotationPointY;
+        this.field_3307.rotationPointZ = o * -4.0f + n * -12.0f + (1.0f - Math.max(o, n)) * this.field_3307.rotationPointZ;
         this.field_3305.pitch = o * -0.7853982f + p * this.field_3305.pitch;
         float w = 0.2617994f * o;
         float x = MathHelper.cos(r * 0.6f + (float)Math.PI);
-        this.field_3302.pivotY = 2.0f * o + 14.0f * p;
-        this.field_3302.pivotZ = -6.0f * o - 10.0f * p;
-        this.field_3308.pivotY = this.field_3302.pivotY;
-        this.field_3308.pivotZ = this.field_3302.pivotZ;
+        this.field_3302.rotationPointY = 2.0f * o + 14.0f * p;
+        this.field_3302.rotationPointZ = -6.0f * o - 10.0f * p;
+        this.field_3308.rotationPointY = this.field_3302.rotationPointY;
+        this.field_3308.rotationPointZ = this.field_3302.rotationPointZ;
         float y = (-1.0471976f + x) * o + u * p;
         float z = (-1.0471976f - x) * o - u * p;
         this.field_3306.pitch = w - t * 0.5f * g * p;
@@ -192,8 +190,8 @@ extends EntityModel<T> {
         this.field_3302.pitch = y;
         this.field_3308.pitch = z;
         this.field_3300.pitch = 0.5235988f + g * 0.75f;
-        this.field_3300.pivotY = -5.0f + g;
-        this.field_3300.pivotZ = 2.0f + g * 2.0f;
+        this.field_3300.rotationPointY = -5.0f + g;
+        this.field_3300.rotationPointZ = 2.0f + g * 2.0f;
         this.field_3300.yaw = bl ? MathHelper.cos(r * 0.7f) : 0.0f;
     }
 
@@ -209,7 +207,7 @@ extends EntityModel<T> {
 
     @Override
     public /* synthetic */ void render(Entity entity, float f, float g, float h, float i, float j, float k) {
-        this.render((T)((HorseBaseEntity)entity), f, g, h, i, j, k);
+        this.method_17085((HorseBaseEntity)entity, f, g, h, i, j, k);
     }
 }
 

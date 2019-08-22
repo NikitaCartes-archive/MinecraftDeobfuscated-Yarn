@@ -56,7 +56,7 @@ implements DynamicSerializable {
         return this.suffix;
     }
 
-    public File getSaveDirectory(File file) {
+    public File getFile(File file) {
         if (this.saveDir.isEmpty()) {
             return file;
         }

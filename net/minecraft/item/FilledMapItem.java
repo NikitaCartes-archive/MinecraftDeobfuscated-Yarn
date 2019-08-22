@@ -68,7 +68,7 @@ extends NetworkSyncedItem {
 
     public static int getMapId(ItemStack itemStack) {
         CompoundTag compoundTag = itemStack.getTag();
-        return compoundTag != null && compoundTag.contains("map", 99) ? compoundTag.getInt("map") : 0;
+        return compoundTag != null && compoundTag.containsKey("map", 99) ? compoundTag.getInt("map") : 0;
     }
 
     private static MapState createMapState(ItemStack itemStack, World world, int i, int j, int k, boolean bl, boolean bl2, DimensionType dimensionType) {
@@ -301,7 +301,7 @@ extends NetworkSyncedItem {
     @Override
     public void onCraft(ItemStack itemStack, World world, PlayerEntity playerEntity) {
         CompoundTag compoundTag = itemStack.getTag();
-        if (compoundTag != null && compoundTag.contains("map_scale_direction", 99)) {
+        if (compoundTag != null && compoundTag.containsKey("map_scale_direction", 99)) {
             FilledMapItem.scale(itemStack, world, compoundTag.getInt("map_scale_direction"));
             compoundTag.remove("map_scale_direction");
         }
@@ -348,7 +348,7 @@ extends NetworkSyncedItem {
     @Environment(value=EnvType.CLIENT)
     public static int getMapColor(ItemStack itemStack) {
         CompoundTag compoundTag = itemStack.getSubTag("display");
-        if (compoundTag != null && compoundTag.contains("MapColor", 99)) {
+        if (compoundTag != null && compoundTag.containsKey("MapColor", 99)) {
             int i = compoundTag.getInt("MapColor");
             return 0xFF000000 | i & 0xFFFFFF;
         }

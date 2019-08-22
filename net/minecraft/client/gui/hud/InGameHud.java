@@ -7,8 +7,7 @@ import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Ordering;
-import com.mojang.blaze3d.platform.GLX;
-import com.mojang.blaze3d.platform.GlStateManager;
+import com.mojang.blaze3d.systems.RenderSystem;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -18,6 +17,7 @@ import java.util.stream.Collectors;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.block.Blocks;
+import net.minecraft.class_4493;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gui.ClientChatListener;
@@ -30,12 +30,12 @@ import net.minecraft.client.gui.hud.DebugHud;
 import net.minecraft.client.gui.hud.PlayerListHud;
 import net.minecraft.client.gui.hud.SpectatorHud;
 import net.minecraft.client.gui.hud.SubtitlesHud;
-import net.minecraft.client.gui.screen.ingame.ContainerScreen;
+import net.minecraft.client.gui.screen.ingame.AbstractContainerScreen;
 import net.minecraft.client.options.AttackIndicator;
 import net.minecraft.client.options.GameOptions;
 import net.minecraft.client.render.BufferBuilder;
 import net.minecraft.client.render.Camera;
-import net.minecraft.client.render.DiffuseLighting;
+import net.minecraft.client.render.GuiLighting;
 import net.minecraft.client.render.Tessellator;
 import net.minecraft.client.render.VertexFormats;
 import net.minecraft.client.render.item.ItemRenderer;
@@ -45,7 +45,7 @@ import net.minecraft.client.texture.SpriteAtlasTexture;
 import net.minecraft.client.texture.StatusEffectSpriteManager;
 import net.minecraft.client.util.NarratorManager;
 import net.minecraft.client.world.ClientWorld;
-import net.minecraft.container.NameableContainerFactory;
+import net.minecraft.container.NameableContainerProvider;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.attribute.EntityAttributeInstance;
@@ -68,7 +68,7 @@ import net.minecraft.util.Arm;
 import net.minecraft.util.ChatUtil;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.Util;
+import net.minecraft.util.SystemUtil;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.hit.EntityHitResult;
 import net.minecraft.util.hit.HitResult;
@@ -146,12 +146,12 @@ extends DrawableHelper {
         this.scaledWidth = this.client.window.getScaledWidth();
         this.scaledHeight = this.client.window.getScaledHeight();
         TextRenderer textRenderer = this.getFontRenderer();
-        GlStateManager.enableBlend();
+        RenderSystem.enableBlend();
         if (MinecraftClient.isFancyGraphicsEnabled()) {
             this.renderVignetteOverlay(this.client.getCameraEntity());
         } else {
-            GlStateManager.enableDepthTest();
-            GlStateManager.blendFuncSeparate(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO);
+            RenderSystem.enableDepthTest();
+            RenderSystem.blendFuncSeparate(class_4493.class_4535.SRC_ALPHA, class_4493.class_4534.ONE_MINUS_SRC_ALPHA, class_4493.class_4535.ONE, class_4493.class_4534.ZERO);
         }
         ItemStack itemStack = this.client.player.inventory.getArmorStack(3);
         if (this.client.options.perspective == 0 && itemStack.getItem() == Blocks.CARVED_PUMPKIN.asItem()) {
@@ -166,22 +166,22 @@ extends DrawableHelper {
             this.renderHotbar(f);
         }
         if (!this.client.options.hudHidden) {
-            GlStateManager.color4f(1.0f, 1.0f, 1.0f, 1.0f);
+            RenderSystem.color4f(1.0f, 1.0f, 1.0f, 1.0f);
             this.client.getTextureManager().bindTexture(GUI_ICONS_LOCATION);
-            GlStateManager.enableBlend();
-            GlStateManager.enableAlphaTest();
+            RenderSystem.enableBlend();
+            RenderSystem.enableAlphaTest();
             this.renderCrosshair();
-            GlStateManager.blendFuncSeparate(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO);
+            RenderSystem.blendFuncSeparate(class_4493.class_4535.SRC_ALPHA, class_4493.class_4534.ONE_MINUS_SRC_ALPHA, class_4493.class_4535.ONE, class_4493.class_4534.ZERO);
             this.client.getProfiler().push("bossHealth");
             this.bossBarHud.render();
             this.client.getProfiler().pop();
-            GlStateManager.color4f(1.0f, 1.0f, 1.0f, 1.0f);
+            RenderSystem.color4f(1.0f, 1.0f, 1.0f, 1.0f);
             this.client.getTextureManager().bindTexture(GUI_ICONS_LOCATION);
             if (this.client.interactionManager.hasStatusBars()) {
                 this.renderStatusBars();
             }
             this.renderMountHealth();
-            GlStateManager.disableBlend();
+            RenderSystem.disableBlend();
             int i = this.scaledWidth / 2 - 91;
             if (this.client.player.hasJumpingMount()) {
                 this.renderMountJumpBar(i);
@@ -196,8 +196,8 @@ extends DrawableHelper {
         }
         if (this.client.player.getSleepTimer() > 0) {
             this.client.getProfiler().push("sleep");
-            GlStateManager.disableDepthTest();
-            GlStateManager.disableAlphaTest();
+            RenderSystem.disableDepthTest();
+            RenderSystem.disableAlphaTest();
             g = this.client.player.getSleepTimer();
             float h = g / 100.0f;
             if (h > 1.0f) {
@@ -205,10 +205,10 @@ extends DrawableHelper {
             }
             j = (int)(220.0f * h) << 24 | 0x101020;
             InGameHud.fill(0, 0, this.scaledWidth, this.scaledHeight, j);
-            GlStateManager.enableAlphaTest();
-            GlStateManager.enableDepthTest();
+            RenderSystem.enableAlphaTest();
+            RenderSystem.enableDepthTest();
             this.client.getProfiler().pop();
-            GlStateManager.color4f(1.0f, 1.0f, 1.0f, 1.0f);
+            RenderSystem.color4f(1.0f, 1.0f, 1.0f, 1.0f);
         }
         if (this.client.isDemo()) {
             this.renderDemoTimer();
@@ -228,10 +228,10 @@ extends DrawableHelper {
                     k = 255;
                 }
                 if (k > 8) {
-                    GlStateManager.pushMatrix();
-                    GlStateManager.translatef(this.scaledWidth / 2, this.scaledHeight - 68, 0.0f);
-                    GlStateManager.enableBlend();
-                    GlStateManager.blendFuncSeparate(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO);
+                    RenderSystem.pushMatrix();
+                    RenderSystem.translatef(this.scaledWidth / 2, this.scaledHeight - 68, 0.0f);
+                    RenderSystem.enableBlend();
+                    RenderSystem.blendFuncSeparate(class_4493.class_4535.SRC_ALPHA, class_4493.class_4534.ONE_MINUS_SRC_ALPHA, class_4493.class_4535.ONE, class_4493.class_4534.ZERO);
                     j = 0xFFFFFF;
                     if (this.overlayTinted) {
                         j = MathHelper.hsvToRgb(g / 50.0f, 0.7f, 0.6f) & 0xFFFFFF;
@@ -239,8 +239,8 @@ extends DrawableHelper {
                     l = k << 24 & 0xFF000000;
                     this.method_19346(textRenderer, -4, textRenderer.getStringWidth(this.overlayMessage));
                     textRenderer.draw(this.overlayMessage, -textRenderer.getStringWidth(this.overlayMessage) / 2, -4.0f, j | l);
-                    GlStateManager.disableBlend();
-                    GlStateManager.popMatrix();
+                    RenderSystem.disableBlend();
+                    RenderSystem.popMatrix();
                 }
                 this.client.getProfiler().pop();
             }
@@ -256,27 +256,27 @@ extends DrawableHelper {
                     k = (int)(g * 255.0f / (float)this.titleFadeOutTicks);
                 }
                 if ((k = MathHelper.clamp(k, 0, 255)) > 8) {
-                    GlStateManager.pushMatrix();
-                    GlStateManager.translatef(this.scaledWidth / 2, this.scaledHeight / 2, 0.0f);
-                    GlStateManager.enableBlend();
-                    GlStateManager.blendFuncSeparate(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO);
-                    GlStateManager.pushMatrix();
-                    GlStateManager.scalef(4.0f, 4.0f, 4.0f);
+                    RenderSystem.pushMatrix();
+                    RenderSystem.translatef(this.scaledWidth / 2, this.scaledHeight / 2, 0.0f);
+                    RenderSystem.enableBlend();
+                    RenderSystem.blendFuncSeparate(class_4493.class_4535.SRC_ALPHA, class_4493.class_4534.ONE_MINUS_SRC_ALPHA, class_4493.class_4535.ONE, class_4493.class_4534.ZERO);
+                    RenderSystem.pushMatrix();
+                    RenderSystem.scalef(4.0f, 4.0f, 4.0f);
                     int j2 = k << 24 & 0xFF000000;
                     l = textRenderer.getStringWidth(this.title);
                     this.method_19346(textRenderer, -10, l);
                     textRenderer.drawWithShadow(this.title, -l / 2, -10.0f, 0xFFFFFF | j2);
-                    GlStateManager.popMatrix();
+                    RenderSystem.popMatrix();
                     if (!this.subtitle.isEmpty()) {
-                        GlStateManager.pushMatrix();
-                        GlStateManager.scalef(2.0f, 2.0f, 2.0f);
+                        RenderSystem.pushMatrix();
+                        RenderSystem.scalef(2.0f, 2.0f, 2.0f);
                         int n = textRenderer.getStringWidth(this.subtitle);
                         this.method_19346(textRenderer, 5, n);
                         textRenderer.drawWithShadow(this.subtitle, -n / 2, 5.0f, 0xFFFFFF | j2);
-                        GlStateManager.popMatrix();
+                        RenderSystem.popMatrix();
                     }
-                    GlStateManager.disableBlend();
-                    GlStateManager.popMatrix();
+                    RenderSystem.disableBlend();
+                    RenderSystem.popMatrix();
                 }
                 this.client.getProfiler().pop();
             }
@@ -291,15 +291,15 @@ extends DrawableHelper {
             if (scoreboardObjective2 != null) {
                 this.renderScoreboardSidebar(scoreboardObjective2);
             }
-            GlStateManager.enableBlend();
-            GlStateManager.blendFuncSeparate(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO);
-            GlStateManager.disableAlphaTest();
-            GlStateManager.pushMatrix();
-            GlStateManager.translatef(0.0f, this.scaledHeight - 48, 0.0f);
+            RenderSystem.enableBlend();
+            RenderSystem.blendFuncSeparate(class_4493.class_4535.SRC_ALPHA, class_4493.class_4534.ONE_MINUS_SRC_ALPHA, class_4493.class_4535.ONE, class_4493.class_4534.ZERO);
+            RenderSystem.disableAlphaTest();
+            RenderSystem.pushMatrix();
+            RenderSystem.translatef(0.0f, this.scaledHeight - 48, 0.0f);
             this.client.getProfiler().push("chat");
             this.chatHud.render(this.ticks);
             this.client.getProfiler().pop();
-            GlStateManager.popMatrix();
+            RenderSystem.popMatrix();
             scoreboardObjective2 = scoreboard.getObjectiveForSlot(0);
             if (this.client.options.keyPlayerList.isPressed() && (!this.client.isInSingleplayer() || this.client.player.networkHandler.getPlayerList().size() > 1 || scoreboardObjective2 != null)) {
                 this.playerListHud.tick(true);
@@ -308,9 +308,9 @@ extends DrawableHelper {
                 this.playerListHud.tick(false);
             }
         }
-        GlStateManager.color4f(1.0f, 1.0f, 1.0f, 1.0f);
-        GlStateManager.disableLighting();
-        GlStateManager.enableAlphaTest();
+        RenderSystem.color4f(1.0f, 1.0f, 1.0f, 1.0f);
+        RenderSystem.disableLighting();
+        RenderSystem.enableAlphaTest();
     }
 
     private void method_19346(TextRenderer textRenderer, int i, int j) {
@@ -326,20 +326,20 @@ extends DrawableHelper {
         if (gameOptions.perspective != 0) {
             return;
         }
-        if (this.client.interactionManager.getCurrentGameMode() == GameMode.SPECTATOR && !this.shouldRenderSpectatorCrosshair(this.client.crosshairTarget)) {
+        if (this.client.interactionManager.getCurrentGameMode() == GameMode.SPECTATOR && !this.shouldRenderSpectatorCrosshair(this.client.hitResult)) {
             return;
         }
         if (gameOptions.debugEnabled && !gameOptions.hudHidden && !this.client.player.getReducedDebugInfo() && !gameOptions.reducedDebugInfo) {
-            GlStateManager.pushMatrix();
-            GlStateManager.translatef(this.scaledWidth / 2, this.scaledHeight / 2, this.blitOffset);
+            RenderSystem.pushMatrix();
+            RenderSystem.translatef(this.scaledWidth / 2, this.scaledHeight / 2, this.blitOffset);
             Camera camera = this.client.gameRenderer.getCamera();
-            GlStateManager.rotatef(camera.getPitch(), -1.0f, 0.0f, 0.0f);
-            GlStateManager.rotatef(camera.getYaw(), 0.0f, 1.0f, 0.0f);
-            GlStateManager.scalef(-1.0f, -1.0f, -1.0f);
-            GLX.renderCrosshair(10);
-            GlStateManager.popMatrix();
+            RenderSystem.rotatef(camera.getPitch(), -1.0f, 0.0f, 0.0f);
+            RenderSystem.rotatef(camera.getYaw(), 0.0f, 1.0f, 0.0f);
+            RenderSystem.scalef(-1.0f, -1.0f, -1.0f);
+            RenderSystem.renderCrosshair(10);
+            RenderSystem.popMatrix();
         } else {
-            GlStateManager.blendFuncSeparate(GlStateManager.SourceFactor.ONE_MINUS_DST_COLOR, GlStateManager.DestFactor.ONE_MINUS_SRC_COLOR, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO);
+            RenderSystem.blendFuncSeparate(class_4493.class_4535.ONE_MINUS_DST_COLOR, class_4493.class_4534.ONE_MINUS_SRC_COLOR, class_4493.class_4535.ONE, class_4493.class_4534.ZERO);
             int i = 15;
             this.blit((this.scaledWidth - 15) / 2, (this.scaledHeight - 15) / 2, 0, 0, 15, 15);
             if (this.client.options.attackIndicator == AttackIndicator.CROSSHAIR) {
@@ -367,12 +367,12 @@ extends DrawableHelper {
             return false;
         }
         if (hitResult.getType() == HitResult.Type.ENTITY) {
-            return ((EntityHitResult)hitResult).getEntity() instanceof NameableContainerFactory;
+            return ((EntityHitResult)hitResult).getEntity() instanceof NameableContainerProvider;
         }
         if (hitResult.getType() == HitResult.Type.BLOCK) {
             ClientWorld world = this.client.world;
             BlockPos blockPos = ((BlockHitResult)hitResult).getBlockPos();
-            return world.getBlockState(blockPos).createContainerFactory(world, blockPos) != null;
+            return world.getBlockState(blockPos).createContainerProvider(world, blockPos) != null;
         }
         return false;
     }
@@ -382,12 +382,12 @@ extends DrawableHelper {
         if (collection.isEmpty()) {
             return;
         }
-        GlStateManager.enableBlend();
+        RenderSystem.enableBlend();
         int i = 0;
         int j = 0;
         StatusEffectSpriteManager statusEffectSpriteManager = this.client.getStatusEffectSpriteManager();
         ArrayList<Runnable> list = Lists.newArrayListWithExpectedSize(collection.size());
-        this.client.getTextureManager().bindTexture(ContainerScreen.BACKGROUND_TEXTURE);
+        this.client.getTextureManager().bindTexture(AbstractContainerScreen.BACKGROUND_TEXTURE);
         for (StatusEffectInstance statusEffectInstance : Ordering.natural().reverse().sortedCopy(collection)) {
             StatusEffect statusEffect = statusEffectInstance.getEffectType();
             if (!statusEffectInstance.shouldShowIcon()) continue;
@@ -402,7 +402,7 @@ extends DrawableHelper {
                 k -= 25 * ++j;
                 l += 26;
             }
-            GlStateManager.color4f(1.0f, 1.0f, 1.0f, 1.0f);
+            RenderSystem.color4f(1.0f, 1.0f, 1.0f, 1.0f);
             float f = 1.0f;
             if (statusEffectInstance.isAmbient()) {
                 this.blit(k, l, 165, 166, 24, 24);
@@ -418,7 +418,7 @@ extends DrawableHelper {
             int o = l;
             float g = f;
             list.add(() -> {
-                GlStateManager.color4f(1.0f, 1.0f, 1.0f, g);
+                RenderSystem.color4f(1.0f, 1.0f, 1.0f, g);
                 InGameHud.blit(n + 3, o + 3, this.blitOffset, 18, 18, sprite);
             });
         }
@@ -435,7 +435,7 @@ extends DrawableHelper {
         if (playerEntity == null) {
             return;
         }
-        GlStateManager.color4f(1.0f, 1.0f, 1.0f, 1.0f);
+        RenderSystem.color4f(1.0f, 1.0f, 1.0f, 1.0f);
         this.client.getTextureManager().bindTexture(WIDGETS_TEX);
         ItemStack itemStack = playerEntity.getOffHandStack();
         Arm arm = playerEntity.getMainArm().getOpposite();
@@ -454,10 +454,10 @@ extends DrawableHelper {
             }
         }
         this.blitOffset = j;
-        GlStateManager.enableRescaleNormal();
-        GlStateManager.enableBlend();
-        GlStateManager.blendFuncSeparate(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO);
-        DiffuseLighting.enableForItems();
+        RenderSystem.enableRescaleNormal();
+        RenderSystem.enableBlend();
+        RenderSystem.blendFuncSeparate(class_4493.class_4535.SRC_ALPHA, class_4493.class_4534.ONE_MINUS_SRC_ALPHA, class_4493.class_4535.ONE, class_4493.class_4534.ZERO);
+        GuiLighting.enableForItems();
         for (m = 0; m < 9; ++m) {
             n = i - 90 + m * 20 + 2;
             o = this.scaledHeight - 16 - 3;
@@ -479,13 +479,13 @@ extends DrawableHelper {
             }
             this.client.getTextureManager().bindTexture(DrawableHelper.GUI_ICONS_LOCATION);
             int p = (int)(g * 19.0f);
-            GlStateManager.color4f(1.0f, 1.0f, 1.0f, 1.0f);
+            RenderSystem.color4f(1.0f, 1.0f, 1.0f, 1.0f);
             this.blit(o, n, 0, 94, 18, 18);
             this.blit(o, n + 18 - p, 18, 112 - p, 18, p);
         }
-        DiffuseLighting.disable();
-        GlStateManager.disableRescaleNormal();
-        GlStateManager.disableBlend();
+        GuiLighting.disable();
+        RenderSystem.disableRescaleNormal();
+        RenderSystem.disableBlend();
     }
 
     public void renderMountJumpBar(int i) {
@@ -550,13 +550,13 @@ extends DrawableHelper {
                 k = 255;
             }
             if (k > 0) {
-                GlStateManager.pushMatrix();
-                GlStateManager.enableBlend();
-                GlStateManager.blendFuncSeparate(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO);
+                RenderSystem.pushMatrix();
+                RenderSystem.enableBlend();
+                RenderSystem.blendFuncSeparate(class_4493.class_4535.SRC_ALPHA, class_4493.class_4534.ONE_MINUS_SRC_ALPHA, class_4493.class_4535.ONE, class_4493.class_4534.ZERO);
                 InGameHud.fill(i - 2, j - 2, i + this.getFontRenderer().getStringWidth(string) + 2, j + this.getFontRenderer().fontHeight + 2, this.client.options.getTextBackgroundColor(0));
                 this.getFontRenderer().drawWithShadow(string, i, j, 0xFFFFFF + (k << 24));
-                GlStateManager.disableBlend();
-                GlStateManager.popMatrix();
+                RenderSystem.disableBlend();
+                RenderSystem.popMatrix();
             }
         }
         this.client.getProfiler().pop();
@@ -658,7 +658,7 @@ extends DrawableHelper {
         }
         int i = MathHelper.ceil(playerEntity.getHealth());
         boolean bl = this.field_2032 > (long)this.ticks && (this.field_2032 - (long)this.ticks) / 3L % 2L == 1L;
-        long l = Util.getMeasuringTimeMs();
+        long l = SystemUtil.getMeasuringTimeMs();
         if (i < this.field_2014 && playerEntity.timeUntilRegen > 0) {
             this.field_2012 = l;
             this.field_2032 = this.ticks + 20;
@@ -781,8 +781,8 @@ extends DrawableHelper {
             t -= 10;
         }
         this.client.getProfiler().swap("air");
-        z = playerEntity.getAir();
-        aa = playerEntity.getMaxAir();
+        z = playerEntity.getBreath();
+        aa = playerEntity.getMaxBreath();
         if (playerEntity.isInFluid(FluidTags.WATER) || z < aa) {
             ab = this.method_1733(y) - 1;
             t -= ab * 10;
@@ -835,24 +835,24 @@ extends DrawableHelper {
     }
 
     private void renderPumpkinOverlay() {
-        GlStateManager.disableDepthTest();
-        GlStateManager.depthMask(false);
-        GlStateManager.blendFuncSeparate(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO);
-        GlStateManager.color4f(1.0f, 1.0f, 1.0f, 1.0f);
-        GlStateManager.disableAlphaTest();
+        RenderSystem.disableDepthTest();
+        RenderSystem.depthMask(false);
+        RenderSystem.blendFuncSeparate(class_4493.class_4535.SRC_ALPHA, class_4493.class_4534.ONE_MINUS_SRC_ALPHA, class_4493.class_4535.ONE, class_4493.class_4534.ZERO);
+        RenderSystem.color4f(1.0f, 1.0f, 1.0f, 1.0f);
+        RenderSystem.disableAlphaTest();
         this.client.getTextureManager().bindTexture(PUMPKIN_BLUR);
         Tessellator tessellator = Tessellator.getInstance();
-        BufferBuilder bufferBuilder = tessellator.getBuffer();
-        bufferBuilder.begin(7, VertexFormats.POSITION_TEXTURE);
+        BufferBuilder bufferBuilder = tessellator.getBufferBuilder();
+        bufferBuilder.begin(7, VertexFormats.POSITION_UV);
         bufferBuilder.vertex(0.0, this.scaledHeight, -90.0).texture(0.0, 1.0).next();
         bufferBuilder.vertex(this.scaledWidth, this.scaledHeight, -90.0).texture(1.0, 1.0).next();
         bufferBuilder.vertex(this.scaledWidth, 0.0, -90.0).texture(1.0, 0.0).next();
         bufferBuilder.vertex(0.0, 0.0, -90.0).texture(0.0, 0.0).next();
         tessellator.draw();
-        GlStateManager.depthMask(true);
-        GlStateManager.enableDepthTest();
-        GlStateManager.enableAlphaTest();
-        GlStateManager.color4f(1.0f, 1.0f, 1.0f, 1.0f);
+        RenderSystem.depthMask(true);
+        RenderSystem.enableDepthTest();
+        RenderSystem.enableAlphaTest();
+        RenderSystem.color4f(1.0f, 1.0f, 1.0f, 1.0f);
     }
 
     private void method_1731(Entity entity) {
@@ -865,31 +865,31 @@ extends DrawableHelper {
 
     private void renderVignetteOverlay(Entity entity) {
         WorldBorder worldBorder = this.client.world.getWorldBorder();
-        float f = (float)worldBorder.getDistanceInsideBorder(entity);
+        float f = (float)worldBorder.contains(entity);
         double d = Math.min(worldBorder.getShrinkingSpeed() * (double)worldBorder.getWarningTime() * 1000.0, Math.abs(worldBorder.getTargetSize() - worldBorder.getSize()));
         double e = Math.max((double)worldBorder.getWarningBlocks(), d);
         f = (double)f < e ? 1.0f - (float)((double)f / e) : 0.0f;
-        GlStateManager.disableDepthTest();
-        GlStateManager.depthMask(false);
-        GlStateManager.blendFuncSeparate(GlStateManager.SourceFactor.ZERO, GlStateManager.DestFactor.ONE_MINUS_SRC_COLOR, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO);
+        RenderSystem.disableDepthTest();
+        RenderSystem.depthMask(false);
+        RenderSystem.blendFuncSeparate(class_4493.class_4535.ZERO, class_4493.class_4534.ONE_MINUS_SRC_COLOR, class_4493.class_4535.ONE, class_4493.class_4534.ZERO);
         if (f > 0.0f) {
-            GlStateManager.color4f(0.0f, f, f, 1.0f);
+            RenderSystem.color4f(0.0f, f, f, 1.0f);
         } else {
-            GlStateManager.color4f(this.field_2013, this.field_2013, this.field_2013, 1.0f);
+            RenderSystem.color4f(this.field_2013, this.field_2013, this.field_2013, 1.0f);
         }
         this.client.getTextureManager().bindTexture(VIGNETTE_TEX);
         Tessellator tessellator = Tessellator.getInstance();
-        BufferBuilder bufferBuilder = tessellator.getBuffer();
-        bufferBuilder.begin(7, VertexFormats.POSITION_TEXTURE);
+        BufferBuilder bufferBuilder = tessellator.getBufferBuilder();
+        bufferBuilder.begin(7, VertexFormats.POSITION_UV);
         bufferBuilder.vertex(0.0, this.scaledHeight, -90.0).texture(0.0, 1.0).next();
         bufferBuilder.vertex(this.scaledWidth, this.scaledHeight, -90.0).texture(1.0, 1.0).next();
         bufferBuilder.vertex(this.scaledWidth, 0.0, -90.0).texture(1.0, 0.0).next();
         bufferBuilder.vertex(0.0, 0.0, -90.0).texture(0.0, 0.0).next();
         tessellator.draw();
-        GlStateManager.depthMask(true);
-        GlStateManager.enableDepthTest();
-        GlStateManager.color4f(1.0f, 1.0f, 1.0f, 1.0f);
-        GlStateManager.blendFuncSeparate(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO);
+        RenderSystem.depthMask(true);
+        RenderSystem.enableDepthTest();
+        RenderSystem.color4f(1.0f, 1.0f, 1.0f, 1.0f);
+        RenderSystem.blendFuncSeparate(class_4493.class_4535.SRC_ALPHA, class_4493.class_4534.ONE_MINUS_SRC_ALPHA, class_4493.class_4535.ONE, class_4493.class_4534.ZERO);
     }
 
     private void renderPortalOverlay(float f) {
@@ -898,11 +898,11 @@ extends DrawableHelper {
             f *= f;
             f = f * 0.8f + 0.2f;
         }
-        GlStateManager.disableAlphaTest();
-        GlStateManager.disableDepthTest();
-        GlStateManager.depthMask(false);
-        GlStateManager.blendFuncSeparate(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO);
-        GlStateManager.color4f(1.0f, 1.0f, 1.0f, f);
+        RenderSystem.disableAlphaTest();
+        RenderSystem.disableDepthTest();
+        RenderSystem.depthMask(false);
+        RenderSystem.blendFuncSeparate(class_4493.class_4535.SRC_ALPHA, class_4493.class_4534.ONE_MINUS_SRC_ALPHA, class_4493.class_4535.ONE, class_4493.class_4534.ZERO);
+        RenderSystem.color4f(1.0f, 1.0f, 1.0f, f);
         this.client.getTextureManager().bindTexture(SpriteAtlasTexture.BLOCK_ATLAS_TEX);
         Sprite sprite = this.client.getBlockRenderManager().getModels().getSprite(Blocks.NETHER_PORTAL.getDefaultState());
         float g = sprite.getMinU();
@@ -910,17 +910,17 @@ extends DrawableHelper {
         float i = sprite.getMaxU();
         float j = sprite.getMaxV();
         Tessellator tessellator = Tessellator.getInstance();
-        BufferBuilder bufferBuilder = tessellator.getBuffer();
-        bufferBuilder.begin(7, VertexFormats.POSITION_TEXTURE);
+        BufferBuilder bufferBuilder = tessellator.getBufferBuilder();
+        bufferBuilder.begin(7, VertexFormats.POSITION_UV);
         bufferBuilder.vertex(0.0, this.scaledHeight, -90.0).texture(g, j).next();
         bufferBuilder.vertex(this.scaledWidth, this.scaledHeight, -90.0).texture(i, j).next();
         bufferBuilder.vertex(this.scaledWidth, 0.0, -90.0).texture(i, h).next();
         bufferBuilder.vertex(0.0, 0.0, -90.0).texture(g, h).next();
         tessellator.draw();
-        GlStateManager.depthMask(true);
-        GlStateManager.enableDepthTest();
-        GlStateManager.enableAlphaTest();
-        GlStateManager.color4f(1.0f, 1.0f, 1.0f, 1.0f);
+        RenderSystem.depthMask(true);
+        RenderSystem.enableDepthTest();
+        RenderSystem.enableAlphaTest();
+        RenderSystem.color4f(1.0f, 1.0f, 1.0f, 1.0f);
     }
 
     private void renderHotbarItem(int i, int j, float f, PlayerEntity playerEntity, ItemStack itemStack) {
@@ -929,15 +929,15 @@ extends DrawableHelper {
         }
         float g = (float)itemStack.getCooldown() - f;
         if (g > 0.0f) {
-            GlStateManager.pushMatrix();
+            RenderSystem.pushMatrix();
             float h = 1.0f + g / 5.0f;
-            GlStateManager.translatef(i + 8, j + 12, 0.0f);
-            GlStateManager.scalef(1.0f / h, (h + 1.0f) / 2.0f, 1.0f);
-            GlStateManager.translatef(-(i + 8), -(j + 12), 0.0f);
+            RenderSystem.translatef(i + 8, j + 12, 0.0f);
+            RenderSystem.scalef(1.0f / h, (h + 1.0f) / 2.0f, 1.0f);
+            RenderSystem.translatef(-(i + 8), -(j + 12), 0.0f);
         }
         this.itemRenderer.renderGuiItem(playerEntity, itemStack, i, j);
         if (g > 0.0f) {
-            GlStateManager.popMatrix();
+            RenderSystem.popMatrix();
         }
         this.itemRenderer.renderGuiItemOverlay(this.client.textRenderer, itemStack, i, j);
     }
@@ -1033,7 +1033,7 @@ extends DrawableHelper {
         return this.client.textRenderer;
     }
 
-    public SpectatorHud getSpectatorHud() {
+    public SpectatorHud getSpectatorWidget() {
         return this.spectatorHud;
     }
 

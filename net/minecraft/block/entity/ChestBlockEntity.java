@@ -134,7 +134,7 @@ Tickable {
     public static int countViewers(World world, LockableContainerBlockEntity lockableContainerBlockEntity, int i, int j, int k) {
         int l = 0;
         float f = 5.0f;
-        List<PlayerEntity> list = world.getNonSpectatingEntities(PlayerEntity.class, new Box((float)i - 5.0f, (float)j - 5.0f, (float)k - 5.0f, (float)(i + 1) + 5.0f, (float)(j + 1) + 5.0f, (float)(k + 1) + 5.0f));
+        List<PlayerEntity> list = world.getEntities(PlayerEntity.class, new Box((float)i - 5.0f, (float)j - 5.0f, (float)k - 5.0f, (float)(i + 1) + 5.0f, (float)(j + 1) + 5.0f, (float)(k + 1) + 5.0f));
         for (PlayerEntity playerEntity : list) {
             Inventory inventory;
             if (!(playerEntity.container instanceof GenericContainer) || (inventory = ((GenericContainer)playerEntity.container).getInventory()) != lockableContainerBlockEntity && (!(inventory instanceof DoubleInventory) || !((DoubleInventory)inventory).isPart(lockableContainerBlockEntity))) continue;

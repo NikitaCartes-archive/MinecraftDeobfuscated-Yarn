@@ -14,7 +14,7 @@ import java.util.Locale;
 import java.util.Map;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
-import net.minecraft.util.Util;
+import net.minecraft.util.SystemUtil;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.world.ChunkUpdateState;
 import net.minecraft.world.PersistentStateManager;
@@ -24,7 +24,7 @@ import net.minecraft.world.gen.feature.StructureFeature;
 import org.jetbrains.annotations.Nullable;
 
 public class FeatureUpdater {
-    private static final Map<String, String> OLD_TO_NEW = Util.make(Maps.newHashMap(), hashMap -> {
+    private static final Map<String, String> OLD_TO_NEW = SystemUtil.consume(Maps.newHashMap(), hashMap -> {
         hashMap.put("Village", "Village");
         hashMap.put("Mineshaft", "Mineshaft");
         hashMap.put("Mansion", "Mansion");
@@ -37,7 +37,7 @@ public class FeatureUpdater {
         hashMap.put("Fortress", "Fortress");
         hashMap.put("EndCity", "EndCity");
     });
-    private static final Map<String, String> ANCIENT_TO_OLD = Util.make(Maps.newHashMap(), hashMap -> {
+    private static final Map<String, String> ANCIENT_TO_OLD = SystemUtil.consume(Maps.newHashMap(), hashMap -> {
         hashMap.put("Iglu", "Igloo");
         hashMap.put("TeDP", "Desert_Pyramid");
         hashMap.put("TeJP", "Jungle_Pyramid");
@@ -79,7 +79,7 @@ public class FeatureUpdater {
         CompoundTag compoundTag4 = compoundTag3.getCompound("References");
         for (String string : this.field_17659) {
             StructureFeature structureFeature = (StructureFeature)Feature.STRUCTURES.get(string.toLowerCase(Locale.ROOT));
-            if (compoundTag4.contains(string, 12) || structureFeature == null) continue;
+            if (compoundTag4.containsKey(string, 12) || structureFeature == null) continue;
             int i = structureFeature.getRadius();
             LongArrayList longList = new LongArrayList();
             for (int j = chunkPos.x - i; j <= chunkPos.x + i; ++j) {
@@ -152,7 +152,7 @@ public class FeatureUpdater {
                 CompoundTag compoundTag2 = compoundTag.getCompound(string22);
                 long l = ChunkPos.toLong(compoundTag2.getInt("ChunkX"), compoundTag2.getInt("ChunkZ"));
                 ListTag listTag = compoundTag2.getList("Children", 10);
-                if (!listTag.isEmpty() && (string4 = ANCIENT_TO_OLD.get(string3 = listTag.getCompound(0).getString("id"))) != null) {
+                if (!listTag.isEmpty() && (string4 = ANCIENT_TO_OLD.get(string3 = listTag.getCompoundTag(0).getString("id"))) != null) {
                     compoundTag2.putString("id", string4);
                 }
                 string3 = compoundTag2.getString("id");

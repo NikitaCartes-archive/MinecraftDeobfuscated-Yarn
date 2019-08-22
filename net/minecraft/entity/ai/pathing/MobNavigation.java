@@ -76,16 +76,16 @@ extends EntityNavigation {
     }
 
     private int method_6362() {
-        if (!this.entity.isTouchingWater() || !this.canSwim()) {
-            return MathHelper.floor(this.entity.getBoundingBox().y1 + 0.5);
+        if (!this.entity.isInsideWater() || !this.canSwim()) {
+            return MathHelper.floor(this.entity.getBoundingBox().minY + 0.5);
         }
-        int i = MathHelper.floor(this.entity.getBoundingBox().y1);
+        int i = MathHelper.floor(this.entity.getBoundingBox().minY);
         Block block = this.world.getBlockState(new BlockPos(this.entity.x, (double)i, this.entity.z)).getBlock();
         int j = 0;
         while (block == Blocks.WATER) {
             block = this.world.getBlockState(new BlockPos(this.entity.x, (double)(++i), this.entity.z)).getBlock();
             if (++j <= 16) continue;
-            return MathHelper.floor(this.entity.getBoundingBox().y1);
+            return MathHelper.floor(this.entity.getBoundingBox().minY);
         }
         return i;
     }
@@ -94,7 +94,7 @@ extends EntityNavigation {
     protected void method_6359() {
         super.method_6359();
         if (this.avoidSunlight) {
-            if (this.world.isSkyVisible(new BlockPos(this.entity.x, this.entity.getBoundingBox().y1 + 0.5, this.entity.z))) {
+            if (this.world.isSkyVisible(new BlockPos(this.entity.x, this.entity.getBoundingBox().minY + 0.5, this.entity.z))) {
                 return;
             }
             for (int i = 0; i < this.currentPath.getLength(); ++i) {
@@ -165,7 +165,7 @@ extends EntityNavigation {
                 double f = (double)q + 0.5 - vec3d.x;
                 double g = (double)r + 0.5 - vec3d.z;
                 if (f * d + g * e < 0.0) continue;
-                PathNodeType pathNodeType = this.nodeMaker.getNodeType(this.world, q, j - 1, r, this.entity, l, m, n, true, true);
+                PathNodeType pathNodeType = this.nodeMaker.getPathNodeType(this.world, q, j - 1, r, this.entity, l, m, n, true, true);
                 if (pathNodeType == PathNodeType.WATER) {
                     return false;
                 }
@@ -175,8 +175,8 @@ extends EntityNavigation {
                 if (pathNodeType == PathNodeType.OPEN) {
                     return false;
                 }
-                pathNodeType = this.nodeMaker.getNodeType(this.world, q, j, r, this.entity, l, m, n, true, true);
-                float h = this.entity.getPathfindingPenalty(pathNodeType);
+                pathNodeType = this.nodeMaker.getPathNodeType(this.world, q, j, r, this.entity, l, m, n, true, true);
+                float h = this.entity.getPathNodeTypeWeight(pathNodeType);
                 if (h < 0.0f || h >= 8.0f) {
                     return false;
                 }
@@ -198,7 +198,7 @@ extends EntityNavigation {
     }
 
     public void setCanPathThroughDoors(boolean bl) {
-        this.nodeMaker.setCanOpenDoors(bl);
+        this.nodeMaker.setCanPathThroughDoors(bl);
     }
 
     public boolean canEnterOpenDoors() {

@@ -25,7 +25,7 @@ implements ProfileResult {
     }
 
     @Override
-    public boolean save(File file) {
+    public boolean saveToFile(File file) {
         return false;
     }
 
@@ -47,11 +47,6 @@ implements ProfileResult {
     @Override
     public int getEndTick() {
         return 0;
-    }
-
-    @Override
-    public String getTimingTreeString() {
-        return "";
     }
 }
 

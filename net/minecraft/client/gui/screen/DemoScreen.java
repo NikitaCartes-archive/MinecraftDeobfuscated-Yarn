@@ -3,7 +3,7 @@
  */
 package net.minecraft.client.gui.screen;
 
-import com.mojang.blaze3d.platform.GlStateManager;
+import com.mojang.blaze3d.systems.RenderSystem;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.gui.screen.Screen;
@@ -12,7 +12,7 @@ import net.minecraft.client.options.GameOptions;
 import net.minecraft.client.resource.language.I18n;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.Util;
+import net.minecraft.util.SystemUtil;
 
 @Environment(value=EnvType.CLIENT)
 public class DemoScreen
@@ -28,7 +28,7 @@ extends Screen {
         int i = -16;
         this.addButton(new ButtonWidget(this.width / 2 - 116, this.height / 2 + 62 + -16, 114, 20, I18n.translate("demo.help.buy", new Object[0]), buttonWidget -> {
             buttonWidget.active = false;
-            Util.getOperatingSystem().open("http://www.minecraft.net/store?source=demo");
+            SystemUtil.getOperatingSystem().open("http://www.minecraft.net/store?source=demo");
         }));
         this.addButton(new ButtonWidget(this.width / 2 + 2, this.height / 2 + 62 + -16, 114, 20, I18n.translate("demo.help.later", new Object[0]), buttonWidget -> {
             this.minecraft.openScreen(null);
@@ -39,7 +39,7 @@ extends Screen {
     @Override
     public void renderBackground() {
         super.renderBackground();
-        GlStateManager.color4f(1.0f, 1.0f, 1.0f, 1.0f);
+        RenderSystem.color4f(1.0f, 1.0f, 1.0f, 1.0f);
         this.minecraft.getTextureManager().bindTexture(DEMO_BG);
         int i = (this.width - 248) / 2;
         int j = (this.height - 166) / 2;
@@ -57,7 +57,7 @@ extends Screen {
         this.font.draw(I18n.translate("demo.help.movementMouse", new Object[0]), k, l + 12, 0x4F4F4F);
         this.font.draw(I18n.translate("demo.help.jump", gameOptions.keyJump.getLocalizedName()), k, l + 24, 0x4F4F4F);
         this.font.draw(I18n.translate("demo.help.inventory", gameOptions.keyInventory.getLocalizedName()), k, l + 36, 0x4F4F4F);
-        this.font.drawTrimmed(I18n.translate("demo.help.fullWrapped", new Object[0]), k, l + 68, 218, 0x1F1F1F);
+        this.font.drawStringBounded(I18n.translate("demo.help.fullWrapped", new Object[0]), k, l + 68, 218, 0x1F1F1F);
         super.render(i, j, f);
     }
 }

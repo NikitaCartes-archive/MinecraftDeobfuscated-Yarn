@@ -20,8 +20,7 @@ import org.apache.commons.lang3.Validate;
 @Environment(value=EnvType.CLIENT)
 public class AnimationResourceMetadataReader
 implements ResourceMetadataReader<AnimationResourceMetadata> {
-    @Override
-    public AnimationResourceMetadata fromJson(JsonObject jsonObject) {
+    public AnimationResourceMetadata method_4692(JsonObject jsonObject) {
         int j;
         ArrayList<AnimationFrameResourceMetadata> list = Lists.newArrayList();
         int i = JsonHelper.getInt(jsonObject, "frametime", 1);
@@ -77,7 +76,7 @@ implements ResourceMetadataReader<AnimationResourceMetadata> {
 
     @Override
     public /* synthetic */ Object fromJson(JsonObject jsonObject) {
-        return this.fromJson(jsonObject);
+        return this.method_4692(jsonObject);
     }
 }
 

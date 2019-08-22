@@ -85,7 +85,7 @@ extends Screen {
         this.children.add(this.consoleCommandTextField);
         this.previousOutputTextField = new TextFieldWidget(this.font, this.width / 2 - 150, this.method_2364(), 276, 20, I18n.translate("advMode.previousOutput", new Object[0]));
         this.previousOutputTextField.setMaxLength(32500);
-        this.previousOutputTextField.setEditable(false);
+        this.previousOutputTextField.setIsEditable(false);
         this.previousOutputTextField.setText("-");
         this.children.add(this.previousOutputTextField);
         this.setInitialFocus(this.consoleCommandTextField);
@@ -444,7 +444,7 @@ extends Screen {
             AbstractCommandBlockScreen.this.completingSuggestion = true;
             AbstractCommandBlockScreen.this.setCommand(suggestion.apply(this.typedText));
             int i = suggestion.getRange().getStart() + suggestion.getText().length();
-            AbstractCommandBlockScreen.this.consoleCommandTextField.setSelectionStart(i);
+            AbstractCommandBlockScreen.this.consoleCommandTextField.setCursor(i);
             AbstractCommandBlockScreen.this.consoleCommandTextField.method_1884(i);
             this.select(this.selection);
             AbstractCommandBlockScreen.this.completingSuggestion = false;

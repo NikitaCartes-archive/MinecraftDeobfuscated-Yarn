@@ -47,8 +47,7 @@ implements Tag {
         return StringTag.escape(this.value);
     }
 
-    @Override
-    public StringTag copy() {
+    public StringTag method_10705() {
         return new StringTag(this.value);
     }
 
@@ -103,7 +102,7 @@ implements Tag {
 
     @Override
     public /* synthetic */ Tag copy() {
-        return this.copy();
+        return this.method_10705();
     }
 }
 

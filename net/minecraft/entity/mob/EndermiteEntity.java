@@ -105,7 +105,7 @@ extends HostileEntity {
 
     @Override
     public void tick() {
-        this.field_6283 = this.yaw;
+        this.bodyYaw = this.yaw;
         super.tick();
     }
 

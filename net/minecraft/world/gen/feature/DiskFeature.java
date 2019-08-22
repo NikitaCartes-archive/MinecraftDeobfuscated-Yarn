@@ -21,8 +21,7 @@ extends Feature<DiskFeatureConfig> {
         super(function);
     }
 
-    @Override
-    public boolean generate(IWorld iWorld, ChunkGenerator<? extends ChunkGeneratorConfig> chunkGenerator, Random random, BlockPos blockPos, DiskFeatureConfig diskFeatureConfig) {
+    public boolean method_13005(IWorld iWorld, ChunkGenerator<? extends ChunkGeneratorConfig> chunkGenerator, Random random, BlockPos blockPos, DiskFeatureConfig diskFeatureConfig) {
         if (!iWorld.getFluidState(blockPos).matches(FluidTags.WATER)) {
             return false;
         }

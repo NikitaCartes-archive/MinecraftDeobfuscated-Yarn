@@ -22,7 +22,7 @@ import net.minecraft.client.options.ParticlesOption;
 import net.minecraft.client.resource.language.I18n;
 import net.minecraft.client.util.NarratorManager;
 import net.minecraft.client.util.Window;
-import net.minecraft.util.Util;
+import net.minecraft.util.SystemUtil;
 import net.minecraft.util.math.MathHelper;
 
 @Environment(value=EnvType.CLIENT)
@@ -236,7 +236,7 @@ public abstract class Option {
         gameOptions.forceUnicodeFont = boolean_;
         MinecraftClient minecraftClient = MinecraftClient.getInstance();
         if (minecraftClient.getFontManager() != null) {
-            minecraftClient.getFontManager().setForceUnicodeFont(gameOptions.forceUnicodeFont, Util.getServerWorkerExecutor(), minecraftClient);
+            minecraftClient.getFontManager().setForceUnicodeFont(gameOptions.forceUnicodeFont, SystemUtil.getServerWorkerExecutor(), minecraftClient);
         }
     });
     public static final BooleanOption INVERT_MOUSE = new BooleanOption("options.invertMouse", gameOptions -> gameOptions.invertYMouse, (gameOptions, boolean_) -> {

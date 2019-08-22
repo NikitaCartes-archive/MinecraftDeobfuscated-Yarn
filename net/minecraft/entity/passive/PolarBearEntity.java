@@ -267,7 +267,7 @@ extends AnimalEntity {
                 return false;
             }
             if (super.canStart()) {
-                List<PolarBearEntity> list = PolarBearEntity.this.world.getNonSpectatingEntities(PolarBearEntity.class, PolarBearEntity.this.getBoundingBox().expand(8.0, 4.0, 8.0));
+                List<PolarBearEntity> list = PolarBearEntity.this.world.getEntities(PolarBearEntity.class, PolarBearEntity.this.getBoundingBox().expand(8.0, 4.0, 8.0));
                 for (PolarBearEntity polarBearEntity : list) {
                     if (!polarBearEntity.isBaby()) continue;
                     return true;

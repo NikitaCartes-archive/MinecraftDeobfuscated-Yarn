@@ -3,10 +3,10 @@
  */
 package net.minecraft.client.render.entity.feature;
 
-import com.mojang.blaze3d.platform.GLX;
-import com.mojang.blaze3d.platform.GlStateManager;
+import com.mojang.blaze3d.systems.RenderSystem;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.class_4493;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.GameRenderer;
 import net.minecraft.client.render.entity.feature.FeatureRenderer;
@@ -24,28 +24,27 @@ extends FeatureRenderer<EnderDragonEntity, DragonEntityModel> {
         super(featureRendererContext);
     }
 
-    @Override
-    public void render(EnderDragonEntity enderDragonEntity, float f, float g, float h, float i, float j, float k, float l) {
+    public void method_4183(EnderDragonEntity enderDragonEntity, float f, float g, float h, float i, float j, float k, float l) {
         this.bindTexture(SKIN);
-        GlStateManager.enableBlend();
-        GlStateManager.disableAlphaTest();
-        GlStateManager.blendFunc(GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ONE);
-        GlStateManager.disableLighting();
-        GlStateManager.depthFunc(514);
+        RenderSystem.enableBlend();
+        RenderSystem.disableAlphaTest();
+        RenderSystem.blendFunc(class_4493.class_4535.ONE, class_4493.class_4534.ONE);
+        RenderSystem.disableLighting();
+        RenderSystem.depthFunc(514);
         int m = 61680;
         int n = 61680;
         boolean o = false;
-        GLX.glMultiTexCoord2f(GLX.GL_TEXTURE1, 61680.0f, 0.0f);
-        GlStateManager.enableLighting();
-        GlStateManager.color4f(1.0f, 1.0f, 1.0f, 1.0f);
+        RenderSystem.glMultiTexCoord2f(33985, 61680.0f, 0.0f);
+        RenderSystem.enableLighting();
+        RenderSystem.color4f(1.0f, 1.0f, 1.0f, 1.0f);
         GameRenderer gameRenderer = MinecraftClient.getInstance().gameRenderer;
         gameRenderer.setFogBlack(true);
-        ((DragonEntityModel)this.getContextModel()).render(enderDragonEntity, f, g, i, j, k, l);
+        ((DragonEntityModel)this.getModel()).method_17137(enderDragonEntity, f, g, i, j, k, l);
         gameRenderer.setFogBlack(false);
         this.applyLightmapCoordinates(enderDragonEntity);
-        GlStateManager.disableBlend();
-        GlStateManager.enableAlphaTest();
-        GlStateManager.depthFunc(515);
+        RenderSystem.disableBlend();
+        RenderSystem.enableAlphaTest();
+        RenderSystem.depthFunc(515);
     }
 
     @Override

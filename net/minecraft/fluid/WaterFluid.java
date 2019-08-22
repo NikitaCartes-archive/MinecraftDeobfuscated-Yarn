@@ -7,11 +7,11 @@ import java.util.Random;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.block.Block;
+import net.minecraft.block.BlockRenderLayer;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.FluidBlock;
 import net.minecraft.block.entity.BlockEntity;
-import net.minecraft.client.render.RenderLayer;
 import net.minecraft.fluid.BaseFluid;
 import net.minecraft.fluid.Fluid;
 import net.minecraft.fluid.FluidState;
@@ -22,13 +22,13 @@ import net.minecraft.particle.ParticleEffect;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
-import net.minecraft.state.StateManager;
+import net.minecraft.state.StateFactory;
 import net.minecraft.tag.FluidTags;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.world.BlockView;
-import net.minecraft.world.CollisionView;
 import net.minecraft.world.IWorld;
+import net.minecraft.world.ViewableWorld;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
 
@@ -46,8 +46,8 @@ extends BaseFluid {
 
     @Override
     @Environment(value=EnvType.CLIENT)
-    public RenderLayer getRenderLayer() {
-        return RenderLayer.TRANSLUCENT;
+    public BlockRenderLayer getRenderLayer() {
+        return BlockRenderLayer.TRANSLUCENT;
     }
 
     @Override
@@ -86,7 +86,7 @@ extends BaseFluid {
     }
 
     @Override
-    public int method_15733(CollisionView collisionView) {
+    public int method_15733(ViewableWorld viewableWorld) {
         return 4;
     }
 
@@ -101,17 +101,17 @@ extends BaseFluid {
     }
 
     @Override
-    public int getLevelDecreasePerBlock(CollisionView collisionView) {
+    public int getLevelDecreasePerBlock(ViewableWorld viewableWorld) {
         return 1;
     }
 
     @Override
-    public int getTickRate(CollisionView collisionView) {
+    public int getTickRate(ViewableWorld viewableWorld) {
         return 5;
     }
 
     @Override
-    public boolean canBeReplacedWith(FluidState fluidState, BlockView blockView, BlockPos blockPos, Fluid fluid, Direction direction) {
+    public boolean method_15777(FluidState fluidState, BlockView blockView, BlockPos blockPos, Fluid fluid, Direction direction) {
         return direction == Direction.DOWN && !fluid.matches(FluidTags.WATER);
     }
 
@@ -123,7 +123,7 @@ extends BaseFluid {
     public static class Flowing
     extends WaterFluid {
         @Override
-        protected void appendProperties(StateManager.Builder<Fluid, FluidState> builder) {
+        protected void appendProperties(StateFactory.Builder<Fluid, FluidState> builder) {
             super.appendProperties(builder);
             builder.add(LEVEL);
         }

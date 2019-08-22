@@ -5,7 +5,7 @@ package net.minecraft.server;
 
 import net.minecraft.server.WorldGenerationProgressListener;
 import net.minecraft.text.TranslatableText;
-import net.minecraft.util.Util;
+import net.minecraft.util.SystemUtil;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.chunk.ChunkStatus;
@@ -28,7 +28,7 @@ implements WorldGenerationProgressListener {
 
     @Override
     public void start(ChunkPos chunkPos) {
-        this.startTime = this.nextMessageTime = Util.getMeasuringTimeMs();
+        this.startTime = this.nextMessageTime = SystemUtil.getMeasuringTimeMs();
     }
 
     @Override
@@ -37,7 +37,7 @@ implements WorldGenerationProgressListener {
             ++this.generatedCount;
         }
         int i = this.getProgressPercentage();
-        if (Util.getMeasuringTimeMs() > this.nextMessageTime) {
+        if (SystemUtil.getMeasuringTimeMs() > this.nextMessageTime) {
             this.nextMessageTime += 500L;
             LOGGER.info(new TranslatableText("menu.preparingSpawn", MathHelper.clamp(i, 0, 100)).getString());
         }
@@ -45,7 +45,7 @@ implements WorldGenerationProgressListener {
 
     @Override
     public void stop() {
-        LOGGER.info("Time elapsed: {} ms", (Object)(Util.getMeasuringTimeMs() - this.startTime));
+        LOGGER.info("Time elapsed: {} ms", (Object)(SystemUtil.getMeasuringTimeMs() - this.startTime));
         this.nextMessageTime = Long.MAX_VALUE;
     }
 

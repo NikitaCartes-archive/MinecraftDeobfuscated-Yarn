@@ -3,7 +3,7 @@
  */
 package net.minecraft.client.render.entity;
 
-import com.mojang.blaze3d.platform.GlStateManager;
+import com.mojang.blaze3d.systems.RenderSystem;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.render.entity.EntityRenderDispatcher;
@@ -20,15 +20,14 @@ extends ZombieEntityRenderer {
         super(entityRenderDispatcher);
     }
 
-    @Override
-    protected void scale(ZombieEntity zombieEntity, float f) {
+    protected void method_3985(ZombieEntity zombieEntity, float f) {
         float g = 1.0625f;
-        GlStateManager.scalef(1.0625f, 1.0625f, 1.0625f);
+        RenderSystem.scalef(1.0625f, 1.0625f, 1.0625f);
         super.scale(zombieEntity, f);
     }
 
     @Override
-    protected Identifier getTexture(ZombieEntity zombieEntity) {
+    protected Identifier method_4163(ZombieEntity zombieEntity) {
         return SKIN;
     }
 }

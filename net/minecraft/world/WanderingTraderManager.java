@@ -14,13 +14,13 @@ import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
+import net.minecraft.village.PointOfInterestStorage;
+import net.minecraft.village.PointOfInterestType;
 import net.minecraft.world.GameRules;
 import net.minecraft.world.Heightmap;
 import net.minecraft.world.SpawnHelper;
 import net.minecraft.world.biome.Biomes;
 import net.minecraft.world.level.LevelProperties;
-import net.minecraft.world.poi.PointOfInterestStorage;
-import net.minecraft.world.poi.PointOfInterestType;
 import org.jetbrains.annotations.Nullable;
 
 public class WanderingTraderManager {
@@ -96,7 +96,7 @@ public class WanderingTraderManager {
                 this.world.getLevelProperties().setWanderingTraderId(wanderingTraderEntity.getUuid());
                 wanderingTraderEntity.setDespawnDelay(48000);
                 wanderingTraderEntity.setWanderTarget(blockPos22);
-                wanderingTraderEntity.setPositionTarget(blockPos22, 16);
+                wanderingTraderEntity.setWalkTarget(blockPos22, 16);
                 return true;
             }
         }

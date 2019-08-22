@@ -44,8 +44,7 @@ extends AbstractNumberTag {
         return this.value + "L";
     }
 
-    @Override
-    public LongTag copy() {
+    public LongTag method_10621() {
         return new LongTag(this.value);
     }
 
@@ -103,7 +102,7 @@ extends AbstractNumberTag {
 
     @Override
     public /* synthetic */ Tag copy() {
-        return this.copy();
+        return this.method_10621();
     }
 }
 

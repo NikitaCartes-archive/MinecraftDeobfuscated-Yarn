@@ -5,7 +5,6 @@ package net.minecraft.client.texture;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
-import com.mojang.blaze3d.platform.TextureUtil;
 import java.io.IOException;
 import java.util.Iterator;
 import java.util.List;
@@ -14,6 +13,7 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.class_4536;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.TitleScreen;
 import net.minecraft.client.gui.widget.AbstractButtonWidget;
@@ -126,7 +126,7 @@ ResourceReloadListener {
     public void destroyTexture(Identifier identifier) {
         Texture texture = this.getTexture(identifier);
         if (texture != null) {
-            TextureUtil.releaseTextureId(texture.getGlId());
+            class_4536.releaseTextureId(texture.getGlId());
         }
     }
 

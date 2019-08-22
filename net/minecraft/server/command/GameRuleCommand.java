@@ -14,7 +14,7 @@ import net.minecraft.world.GameRules;
 public class GameRuleCommand {
     public static void register(CommandDispatcher<ServerCommandSource> commandDispatcher) {
         final LiteralArgumentBuilder literalArgumentBuilder = (LiteralArgumentBuilder)CommandManager.literal("gamerule").requires(serverCommandSource -> serverCommandSource.hasPermissionLevel(2));
-        GameRules.forEachType(new GameRules.RuleConsumer(){
+        GameRules.forEach(new GameRules.RuleConsumer(){
 
             @Override
             public <T extends GameRules.Rule<T>> void accept(GameRules.RuleKey<T> ruleKey, GameRules.RuleType<T> ruleType) {

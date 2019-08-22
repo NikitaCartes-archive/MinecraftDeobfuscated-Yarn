@@ -3,9 +3,10 @@
  */
 package net.minecraft.client.render.entity.feature;
 
-import com.mojang.blaze3d.platform.GlStateManager;
+import com.mojang.blaze3d.systems.RenderSystem;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.class_4493;
 import net.minecraft.client.render.entity.feature.FeatureRenderer;
 import net.minecraft.client.render.entity.feature.FeatureRendererContext;
 import net.minecraft.client.render.entity.model.EntityModel;
@@ -26,14 +27,14 @@ extends FeatureRenderer<T, SlimeEntityModel<T>> {
         if (((Entity)entity).isInvisible()) {
             return;
         }
-        GlStateManager.color4f(1.0f, 1.0f, 1.0f, 1.0f);
-        GlStateManager.enableNormalize();
-        GlStateManager.enableBlend();
-        GlStateManager.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA);
-        ((SlimeEntityModel)this.getContextModel()).copyStateTo(this.model);
+        RenderSystem.color4f(1.0f, 1.0f, 1.0f, 1.0f);
+        RenderSystem.enableNormalize();
+        RenderSystem.enableBlend();
+        RenderSystem.blendFunc(class_4493.class_4535.SRC_ALPHA, class_4493.class_4534.ONE_MINUS_SRC_ALPHA);
+        ((SlimeEntityModel)this.getModel()).copyStateTo(this.model);
         this.model.render(entity, f, g, i, j, k, l);
-        GlStateManager.disableBlend();
-        GlStateManager.disableNormalize();
+        RenderSystem.disableBlend();
+        RenderSystem.disableNormalize();
     }
 
     @Override

@@ -12,7 +12,7 @@ import java.util.Map;
 import java.util.Random;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
-import net.minecraft.block.NetherPortalBlock;
+import net.minecraft.block.PortalBlock;
 import net.minecraft.block.pattern.BlockPattern;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
@@ -32,7 +32,7 @@ import org.jetbrains.annotations.Nullable;
 
 public class PortalForcer {
     private static final Logger LOGGER = LogManager.getLogger();
-    private static final NetherPortalBlock PORTAL_BLOCK = (NetherPortalBlock)Blocks.NETHER_PORTAL;
+    private static final PortalBlock PORTAL_BLOCK = (PortalBlock)Blocks.NETHER_PORTAL;
     private final ServerWorld world;
     private final Random random;
     private final Map<ColumnPos, TicketInfo> ticketInfos = Maps.newHashMapWithExpectedSize(4096);
@@ -44,8 +44,8 @@ public class PortalForcer {
     }
 
     public boolean usePortal(Entity entity, float f) {
-        Vec3d vec3d = entity.getLastNetherPortalDirectionVector();
-        Direction direction = entity.getLastNetherPortalDirection();
+        Vec3d vec3d = entity.getLastPortalDirectionVector();
+        Direction direction = entity.getLastPortalDirection();
         BlockPattern.TeleportTarget teleportTarget = this.getPortal(new BlockPos(entity), entity.getVelocity(), direction, vec3d.x, vec3d.y, entity instanceof PlayerEntity);
         if (teleportTarget == null) {
             return false;
@@ -58,7 +58,7 @@ public class PortalForcer {
             ((ServerPlayerEntity)entity).networkHandler.requestTeleport(vec3d2.x, vec3d2.y, vec3d2.z, entity.yaw, entity.pitch);
             ((ServerPlayerEntity)entity).networkHandler.syncWithPlayerPosition();
         } else {
-            entity.refreshPositionAndAngles(vec3d2.x, vec3d2.y, vec3d2.z, entity.yaw, entity.pitch);
+            entity.setPositionAndAngles(vec3d2.x, vec3d2.y, vec3d2.z, entity.yaw, entity.pitch);
         }
         return true;
     }
@@ -112,7 +112,7 @@ public class PortalForcer {
             supplierArray[0] = this.world.getDimension()::getType;
             supplierArray[1] = () -> columnPos;
             LOGGER.debug("Adding nether portal ticket for {}:{}", supplierArray);
-            this.world.getChunkManager().addTicket(ChunkTicketType.PORTAL, new ChunkPos(blockPos2), 3, columnPos);
+            this.world.method_14178().addTicket(ChunkTicketType.PORTAL, new ChunkPos(blockPos2), 3, columnPos);
         }
         BlockPattern.Result result = PORTAL_BLOCK.findPortal(this.world, blockPos2);
         return result.method_18478(direction, blockPos2, e, vec3d, d);
@@ -248,7 +248,7 @@ public class PortalForcer {
                 this.world.setBlockState(mutable, Blocks.OBSIDIAN.getDefaultState(), 3);
             }
         }
-        BlockState blockState = (BlockState)PORTAL_BLOCK.getDefaultState().with(NetherPortalBlock.AXIS, af == 0 ? Direction.Axis.Z : Direction.Axis.X);
+        BlockState blockState = (BlockState)PORTAL_BLOCK.getDefaultState().with(PortalBlock.AXIS, af == 0 ? Direction.Axis.Z : Direction.Axis.X);
         for (u = 0; u < 2; ++u) {
             for (v = 0; v < 3; ++v) {
                 mutable.set(ad + u * af, ae + v, s + u * ag);
@@ -286,7 +286,7 @@ public class PortalForcer {
             supplierArray[0] = this.world.getDimension()::getType;
             supplierArray[1] = () -> columnPos;
             LOGGER.debug("Removing nether portal ticket for {}:{}", supplierArray);
-            this.world.getChunkManager().removeTicket(ChunkTicketType.PORTAL, new ChunkPos(ticketInfo.pos), 3, columnPos);
+            this.world.method_14178().removeTicket(ChunkTicketType.PORTAL, new ChunkPos(ticketInfo.pos), 3, columnPos);
             iterator.remove();
         }
     }

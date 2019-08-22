@@ -19,20 +19,20 @@ import net.minecraft.entity.passive.VillagerEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
-import net.minecraft.loot.LootTable;
-import net.minecraft.loot.LootTables;
-import net.minecraft.loot.context.LootContext;
-import net.minecraft.loot.context.LootContextParameters;
-import net.minecraft.loot.context.LootContextTypes;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.Util;
+import net.minecraft.util.SystemUtil;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.village.VillagerProfession;
+import net.minecraft.world.loot.LootSupplier;
+import net.minecraft.world.loot.LootTables;
+import net.minecraft.world.loot.context.LootContext;
+import net.minecraft.world.loot.context.LootContextParameters;
+import net.minecraft.world.loot.context.LootContextTypes;
 
 public class GiveGiftsToHeroTask
 extends Task<VillagerEntity> {
-    private static final Map<VillagerProfession, Identifier> GIFTS = Util.make(Maps.newHashMap(), hashMap -> {
+    private static final Map<VillagerProfession, Identifier> GIFTS = SystemUtil.consume(Maps.newHashMap(), hashMap -> {
         hashMap.put(VillagerProfession.ARMORER, LootTables.HERO_OF_THE_VILLAGE_ARMORER_GIFT_GAMEPLAY);
         hashMap.put(VillagerProfession.BUTCHER, LootTables.HERO_OF_THE_VILLAGE_BUTCHER_GIFT_GAMEPLAY);
         hashMap.put(VillagerProfession.CARTOGRAPHER, LootTables.HERO_OF_THE_VILLAGE_CARTOGRAPHER_GIFT_GAMEPLAY);
@@ -55,8 +55,7 @@ extends Task<VillagerEntity> {
         super(ImmutableMap.of(MemoryModuleType.WALK_TARGET, MemoryModuleState.REGISTERED, MemoryModuleType.LOOK_TARGET, MemoryModuleState.REGISTERED, MemoryModuleType.INTERACTION_TARGET, MemoryModuleState.REGISTERED, MemoryModuleType.NEAREST_VISIBLE_PLAYER, MemoryModuleState.VALUE_PRESENT), i);
     }
 
-    @Override
-    protected boolean shouldRun(ServerWorld serverWorld, VillagerEntity villagerEntity) {
+    protected boolean method_19962(ServerWorld serverWorld, VillagerEntity villagerEntity) {
         if (!this.isNearestPlayerHero(villagerEntity)) {
             return false;
         }
@@ -67,8 +66,7 @@ extends Task<VillagerEntity> {
         return true;
     }
 
-    @Override
-    protected void run(ServerWorld serverWorld, VillagerEntity villagerEntity, long l) {
+    protected void method_19963(ServerWorld serverWorld, VillagerEntity villagerEntity, long l) {
         this.done = false;
         this.startTime = l;
         PlayerEntity playerEntity = this.getNearestPlayerIfHero(villagerEntity).get();
@@ -76,13 +74,11 @@ extends Task<VillagerEntity> {
         LookTargetUtil.lookAt(villagerEntity, playerEntity);
     }
 
-    @Override
-    protected boolean shouldKeepRunning(ServerWorld serverWorld, VillagerEntity villagerEntity, long l) {
+    protected boolean method_19965(ServerWorld serverWorld, VillagerEntity villagerEntity, long l) {
         return this.isNearestPlayerHero(villagerEntity) && !this.done;
     }
 
-    @Override
-    protected void keepRunning(ServerWorld serverWorld, VillagerEntity villagerEntity, long l) {
+    protected void method_19967(ServerWorld serverWorld, VillagerEntity villagerEntity, long l) {
         PlayerEntity playerEntity = this.getNearestPlayerIfHero(villagerEntity).get();
         LookTargetUtil.lookAt(villagerEntity, playerEntity);
         if (this.isCloseEnough(villagerEntity, playerEntity)) {
@@ -95,8 +91,7 @@ extends Task<VillagerEntity> {
         }
     }
 
-    @Override
-    protected void finishRunning(ServerWorld serverWorld, VillagerEntity villagerEntity, long l) {
+    protected void method_19968(ServerWorld serverWorld, VillagerEntity villagerEntity, long l) {
         this.ticksLeft = GiveGiftsToHeroTask.getNextGiftDelay(serverWorld);
         villagerEntity.getBrain().forget(MemoryModuleType.INTERACTION_TARGET);
         villagerEntity.getBrain().forget(MemoryModuleType.WALK_TARGET);
@@ -116,9 +111,9 @@ extends Task<VillagerEntity> {
         }
         VillagerProfession villagerProfession = villagerEntity.getVillagerData().getProfession();
         if (GIFTS.containsKey(villagerProfession)) {
-            LootTable lootTable = villagerEntity.world.getServer().getLootManager().getSupplier(GIFTS.get(villagerProfession));
-            LootContext.Builder builder = new LootContext.Builder((ServerWorld)villagerEntity.world).put(LootContextParameters.POSITION, new BlockPos(villagerEntity)).put(LootContextParameters.THIS_ENTITY, villagerEntity).setRandom(villagerEntity.getRandom());
-            return lootTable.getDrops(builder.build(LootContextTypes.GIFT));
+            LootSupplier lootSupplier = villagerEntity.world.getServer().getLootManager().getSupplier(GIFTS.get(villagerProfession));
+            LootContext.Builder builder = new LootContext.Builder((ServerWorld)villagerEntity.world).put(LootContextParameters.POSITION, new BlockPos(villagerEntity)).put(LootContextParameters.THIS_ENTITY, villagerEntity).setRandom(villagerEntity.getRand());
+            return lootSupplier.getDrops(builder.build(LootContextTypes.GIFT));
         }
         return ImmutableList.of(new ItemStack(Items.WHEAT_SEEDS));
     }
@@ -147,17 +142,17 @@ extends Task<VillagerEntity> {
 
     @Override
     protected /* synthetic */ boolean shouldKeepRunning(ServerWorld serverWorld, LivingEntity livingEntity, long l) {
-        return this.shouldKeepRunning(serverWorld, (VillagerEntity)livingEntity, l);
+        return this.method_19965(serverWorld, (VillagerEntity)livingEntity, l);
     }
 
     @Override
     protected /* synthetic */ void finishRunning(ServerWorld serverWorld, LivingEntity livingEntity, long l) {
-        this.finishRunning(serverWorld, (VillagerEntity)livingEntity, l);
+        this.method_19968(serverWorld, (VillagerEntity)livingEntity, l);
     }
 
     @Override
     protected /* synthetic */ void keepRunning(ServerWorld serverWorld, LivingEntity livingEntity, long l) {
-        this.keepRunning(serverWorld, (VillagerEntity)livingEntity, l);
+        this.method_19967(serverWorld, (VillagerEntity)livingEntity, l);
     }
 }
 

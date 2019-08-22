@@ -16,7 +16,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
-import net.minecraft.state.StateManager;
+import net.minecraft.state.StateFactory;
 import net.minecraft.state.property.BooleanProperty;
 import net.minecraft.state.property.Properties;
 import net.minecraft.util.Hand;
@@ -42,7 +42,7 @@ extends Block {
         }
         if (world.isReceivingRedstonePower(blockPos)) {
             TntBlock.primeTnt(world, blockPos);
-            world.removeBlock(blockPos, false);
+            world.clearBlockState(blockPos, false);
         }
     }
 
@@ -50,7 +50,7 @@ extends Block {
     public void neighborUpdate(BlockState blockState, World world, BlockPos blockPos, Block block, BlockPos blockPos2, boolean bl) {
         if (world.isReceivingRedstonePower(blockPos)) {
             TntBlock.primeTnt(world, blockPos);
-            world.removeBlock(blockPos, false);
+            world.clearBlockState(blockPos, false);
         }
     }
 
@@ -110,7 +110,7 @@ extends Block {
             if (projectileEntity.isOnFire()) {
                 BlockPos blockPos = blockHitResult.getBlockPos();
                 TntBlock.primeTnt(world, blockPos, entity2 instanceof LivingEntity ? (LivingEntity)entity2 : null);
-                world.removeBlock(blockPos, false);
+                world.clearBlockState(blockPos, false);
             }
         }
     }
@@ -121,7 +121,7 @@ extends Block {
     }
 
     @Override
-    protected void appendProperties(StateManager.Builder<Block, BlockState> builder) {
+    protected void appendProperties(StateFactory.Builder<Block, BlockState> builder) {
         builder.add(UNSTABLE);
     }
 }

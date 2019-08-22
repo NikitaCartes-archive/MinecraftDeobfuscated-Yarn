@@ -3,7 +3,7 @@
  */
 package net.minecraft.client.gui.screen.recipebook;
 
-import com.mojang.blaze3d.platform.GlStateManager;
+import com.mojang.blaze3d.systems.RenderSystem;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
@@ -12,7 +12,7 @@ import net.fabricmc.api.Environment;
 import net.minecraft.client.gui.DrawableHelper;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.screen.recipebook.RecipeBookWidget;
-import net.minecraft.client.render.DiffuseLighting;
+import net.minecraft.client.render.GuiLighting;
 import net.minecraft.client.resource.language.I18n;
 import net.minecraft.container.Slot;
 import net.minecraft.item.Item;
@@ -115,17 +115,17 @@ extends RecipeBookWidget {
         if (!Screen.hasControlDown()) {
             this.field_3151 += f;
         }
-        DiffuseLighting.enableForItems();
-        GlStateManager.disableLighting();
+        GuiLighting.enableForItems();
+        RenderSystem.disableLighting();
         int k = this.outputSlot.xPosition + i;
         int l = this.outputSlot.yPosition + j;
         DrawableHelper.fill(k, l, k + 16, l + 16, 0x30FF0000);
         this.client.getItemRenderer().renderGuiItem(this.client.player, this.method_2658().getStackForRender(), k, l);
-        GlStateManager.depthFunc(516);
+        RenderSystem.depthFunc(516);
         DrawableHelper.fill(k, l, k + 16, l + 16, 0x30FFFFFF);
-        GlStateManager.depthFunc(515);
-        GlStateManager.enableLighting();
-        DiffuseLighting.disable();
+        RenderSystem.depthFunc(515);
+        RenderSystem.enableLighting();
+        GuiLighting.disable();
     }
 
     private Item method_2658() {

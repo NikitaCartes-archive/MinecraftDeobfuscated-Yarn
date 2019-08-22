@@ -18,8 +18,7 @@ extends SimpleDecorator<CountDepthDecoratorConfig> {
         super(function);
     }
 
-    @Override
-    public Stream<BlockPos> getPositions(Random random, CountDepthDecoratorConfig countDepthDecoratorConfig, BlockPos blockPos) {
+    public Stream<BlockPos> method_15907(Random random, CountDepthDecoratorConfig countDepthDecoratorConfig, BlockPos blockPos) {
         int i = countDepthDecoratorConfig.count;
         int j = countDepthDecoratorConfig.baseline;
         int k2 = countDepthDecoratorConfig.spread;

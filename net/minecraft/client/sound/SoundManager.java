@@ -28,6 +28,7 @@ import net.minecraft.client.sound.SoundEntry;
 import net.minecraft.client.sound.SoundEntryDeserializer;
 import net.minecraft.client.sound.SoundInstance;
 import net.minecraft.client.sound.SoundSystem;
+import net.minecraft.client.sound.TickableSoundInstance;
 import net.minecraft.client.sound.WeightedSoundSet;
 import net.minecraft.resource.Resource;
 import net.minecraft.resource.ResourceManager;
@@ -74,8 +75,7 @@ extends SinglePreparationResourceReloadListener<SoundList> {
         this.soundSystem = new SoundSystem(this, gameOptions, resourceManager);
     }
 
-    @Override
-    protected SoundList prepare(ResourceManager resourceManager, Profiler profiler) {
+    protected SoundList method_18180(ResourceManager resourceManager, Profiler profiler) {
         SoundList soundList = new SoundList();
         profiler.startTick();
         for (String string : resourceManager.getAllNamespaces()) {
@@ -106,8 +106,7 @@ extends SinglePreparationResourceReloadListener<SoundList> {
         return soundList;
     }
 
-    @Override
-    protected void apply(SoundList soundList, ResourceManager resourceManager, Profiler profiler) {
+    protected void method_18182(SoundList soundList, ResourceManager resourceManager, Profiler profiler) {
         soundList.addTo(this.sounds, this.soundSystem);
         for (Identifier identifier : this.sounds.keySet()) {
             String string;
@@ -150,6 +149,10 @@ extends SinglePreparationResourceReloadListener<SoundList> {
 
     public Collection<Identifier> getKeys() {
         return this.sounds.keySet();
+    }
+
+    public void method_22140(TickableSoundInstance tickableSoundInstance) {
+        this.soundSystem.method_22139(tickableSoundInstance);
     }
 
     public void play(SoundInstance soundInstance) {
@@ -217,7 +220,7 @@ extends SinglePreparationResourceReloadListener<SoundList> {
 
     @Override
     protected /* synthetic */ Object prepare(ResourceManager resourceManager, Profiler profiler) {
-        return this.prepare(resourceManager, profiler);
+        return this.method_18180(resourceManager, profiler);
     }
 
     @Environment(value=EnvType.CLIENT)
@@ -256,13 +259,12 @@ extends SinglePreparationResourceReloadListener<SoundList> {
                                 return weightedSoundSet == null ? 0 : weightedSoundSet.getWeight();
                             }
 
-                            @Override
-                            public Sound getSound() {
+                            public Sound method_4883() {
                                 WeightedSoundSet weightedSoundSet = (WeightedSoundSet)loadedSounds.get(identifier2);
                                 if (weightedSoundSet == null) {
                                     return MISSING_SOUND;
                                 }
-                                Sound sound2 = weightedSoundSet.getSound();
+                                Sound sound2 = weightedSoundSet.method_4887();
                                 return new Sound(sound2.getIdentifier().toString(), sound2.getVolume() * sound.getVolume(), sound2.getPitch() * sound.getPitch(), sound.getWeight(), Sound.RegistrationType.FILE, sound2.isStreamed() || sound.isStreamed(), sound2.isPreloaded(), sound2.getAttenuation());
                             }
 
@@ -277,7 +279,7 @@ extends SinglePreparationResourceReloadListener<SoundList> {
 
                             @Override
                             public /* synthetic */ Object getSound() {
-                                return this.getSound();
+                                return this.method_4883();
                             }
                         };
                         break;

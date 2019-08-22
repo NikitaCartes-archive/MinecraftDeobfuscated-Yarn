@@ -61,7 +61,7 @@ extends AnimalEntity {
     public void readCustomDataFromTag(CompoundTag compoundTag) {
         String string;
         super.readCustomDataFromTag(compoundTag);
-        if (compoundTag.contains("OwnerUUID", 8)) {
+        if (compoundTag.containsKey("OwnerUUID", 8)) {
             string = compoundTag.getString("OwnerUUID");
         } else {
             String string2 = compoundTag.getString("Owner");
@@ -154,7 +154,7 @@ extends AnimalEntity {
         this.setTamed(true);
         this.setOwnerUuid(playerEntity.getUuid());
         if (playerEntity instanceof ServerPlayerEntity) {
-            Criterions.TAME_ANIMAL.trigger((ServerPlayerEntity)playerEntity, this);
+            Criterions.TAME_ANIMAL.handle((ServerPlayerEntity)playerEntity, this);
         }
     }
 

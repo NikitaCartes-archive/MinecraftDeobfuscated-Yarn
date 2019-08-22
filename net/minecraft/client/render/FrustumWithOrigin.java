@@ -39,7 +39,7 @@ implements VisibleRegion {
 
     @Override
     public boolean intersects(Box box) {
-        return this.intersects(box.x1, box.y1, box.z1, box.x2, box.y2, box.z2);
+        return this.intersects(box.minX, box.minY, box.minZ, box.maxX, box.maxY, box.maxZ);
     }
 }
 

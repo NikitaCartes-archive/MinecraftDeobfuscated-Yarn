@@ -13,6 +13,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.EnumSet;
 import java.util.Set;
+import net.minecraft.client.network.packet.PlayerPositionLookS2CPacket;
 import net.minecraft.command.arguments.DefaultPosArgument;
 import net.minecraft.command.arguments.EntityAnchorArgumentType;
 import net.minecraft.command.arguments.EntityArgumentType;
@@ -21,7 +22,6 @@ import net.minecraft.command.arguments.RotationArgumentType;
 import net.minecraft.command.arguments.Vec3ArgumentType;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
-import net.minecraft.network.packet.s2c.play.PlayerPositionLookS2CPacket;
 import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
@@ -95,7 +95,7 @@ public class TeleportCommand {
     private static void teleport(ServerCommandSource serverCommandSource, Entity entity, ServerWorld serverWorld, double d, double e, double f, Set<PlayerPositionLookS2CPacket.Flag> set, float g, float h, @Nullable LookTarget lookTarget) {
         if (entity instanceof ServerPlayerEntity) {
             ChunkPos chunkPos = new ChunkPos(new BlockPos(d, e, f));
-            serverWorld.getChunkManager().addTicket(ChunkTicketType.POST_TELEPORT, chunkPos, 1, entity.getEntityId());
+            serverWorld.method_14178().addTicket(ChunkTicketType.POST_TELEPORT, chunkPos, 1, entity.getEntityId());
             entity.stopRiding();
             if (((ServerPlayerEntity)entity).isSleeping()) {
                 ((ServerPlayerEntity)entity).wakeUp(true, true, false);
@@ -111,7 +111,7 @@ public class TeleportCommand {
             float j = MathHelper.wrapDegrees(h);
             j = MathHelper.clamp(j, -90.0f, 90.0f);
             if (serverWorld == entity.world) {
-                entity.refreshPositionAndAngles(d, e, f, i, j);
+                entity.setPositionAndAngles(d, e, f, i, j);
                 entity.setHeadYaw(i);
             } else {
                 entity.detach();
@@ -120,7 +120,7 @@ public class TeleportCommand {
                 entity = entity2.getType().create(serverWorld);
                 if (entity != null) {
                     entity.copyFrom(entity2);
-                    entity.refreshPositionAndAngles(d, e, f, i, j);
+                    entity.setPositionAndAngles(d, e, f, i, j);
                     entity.setHeadYaw(i);
                     serverWorld.method_18769(entity);
                     entity2.removed = true;

@@ -3,11 +3,11 @@
  */
 package net.minecraft.client.texture;
 
-import com.mojang.blaze3d.platform.TextureUtil;
 import java.io.Closeable;
 import java.io.IOException;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.class_4536;
 import net.minecraft.client.resource.metadata.TextureResourceMetadata;
 import net.minecraft.client.texture.AbstractTexture;
 import net.minecraft.client.texture.NativeImage;
@@ -40,7 +40,7 @@ extends AbstractTexture {
                 bl2 = textureResourceMetadata.shouldClamp();
             }
             this.bindTexture();
-            TextureUtil.prepareImage(this.getGlId(), 0, textureData.getImage().getWidth(), textureData.getImage().getHeight());
+            class_4536.prepareImage(this.getGlId(), 0, textureData.getImage().getWidth(), textureData.getImage().getHeight());
             textureData.getImage().upload(0, 0, 0, 0, 0, textureData.getImage().getWidth(), textureData.getImage().getHeight(), bl, bl2, false);
         }
     }

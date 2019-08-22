@@ -153,11 +153,11 @@ implements Chunk {
         }
         ChunkSection chunkSection = this.getSection(j >> 4);
         BlockState blockState2 = chunkSection.setBlockState(i & 0xF, j & 0xF, k & 0xF, blockState);
-        if (this.status.isAtLeast(ChunkStatus.FEATURES) && blockState != blockState2 && (blockState.getOpacity(this, blockPos) != blockState2.getOpacity(this, blockPos) || blockState.getLuminance() != blockState2.getLuminance() || blockState.hasSidedTransparency() || blockState2.hasSidedTransparency())) {
+        if (this.status.isAtLeast(ChunkStatus.FEATURES) && blockState != blockState2 && (blockState.getLightSubtracted(this, blockPos) != blockState2.getLightSubtracted(this, blockPos) || blockState.getLuminance() != blockState2.getLuminance() || blockState.hasSidedTransparency() || blockState2.hasSidedTransparency())) {
             LightingProvider lightingProvider = this.getLightingProvider();
-            lightingProvider.checkBlock(blockPos);
+            lightingProvider.enqueueLightUpdate(blockPos);
         }
-        EnumSet<Heightmap.Type> enumSet = this.getStatus().getHeightmapTypes();
+        EnumSet<Heightmap.Type> enumSet = this.getStatus().isSurfaceGenerated();
         EnumSet<Heightmap.Type> enumSet2 = null;
         for (Heightmap.Type type : enumSet) {
             Heightmap heightmap = this.heightmaps.get((Object)type);
@@ -377,11 +377,11 @@ implements Chunk {
         Chunk.getList(this.postProcessingLists, i).add(s);
     }
 
-    public ChunkTickScheduler<Block> getBlockTickScheduler() {
+    public ChunkTickScheduler<Block> method_12303() {
         return this.blockTickScheduler;
     }
 
-    public ChunkTickScheduler<Fluid> getFluidTickScheduler() {
+    public ChunkTickScheduler<Fluid> method_12313() {
         return this.fluidTickScheduler;
     }
 
@@ -456,11 +456,11 @@ implements Chunk {
     }
 
     public /* synthetic */ TickScheduler getFluidTickScheduler() {
-        return this.getFluidTickScheduler();
+        return this.method_12313();
     }
 
     public /* synthetic */ TickScheduler getBlockTickScheduler() {
-        return this.getBlockTickScheduler();
+        return this.method_12303();
     }
 }
 

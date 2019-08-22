@@ -12,7 +12,7 @@ public class ScheduleRule {
     private final List<ScheduleRuleEntry> entries = Lists.newArrayList();
     private int field_18613;
 
-    public ScheduleRule add(int i, float f) {
+    public ScheduleRule withEntry(int i, float f) {
         this.entries.add(new ScheduleRuleEntry(i, f));
         this.sort();
         return this;

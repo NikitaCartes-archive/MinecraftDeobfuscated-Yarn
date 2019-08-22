@@ -9,6 +9,7 @@ import java.util.function.Predicate;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.block.BlockState;
+import net.minecraft.client.network.packet.GuiSlotUpdateS2CPacket;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.inventory.Inventories;
@@ -18,7 +19,6 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
-import net.minecraft.network.packet.s2c.play.ContainerSlotUpdateS2CPacket;
 import net.minecraft.recipe.RecipeFinder;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.tag.Tag;
@@ -206,7 +206,7 @@ Nameable {
         if (itemStack2.isEmpty()) {
             itemStack2 = new ItemStack(item, 0);
             if (itemStack.hasTag()) {
-                itemStack2.setTag(itemStack.getTag().copy());
+                itemStack2.setTag(itemStack.getTag().method_10553());
             }
             this.setInvStack(i, itemStack2);
         }
@@ -311,7 +311,7 @@ Nameable {
             }
             int j = itemStack.getMaxCount() - this.getInvStack(i).getCount();
             if (!this.insertStack(i, itemStack.split(j))) continue;
-            ((ServerPlayerEntity)this.player).networkHandler.sendPacket(new ContainerSlotUpdateS2CPacket(-2, i, this.getInvStack(i)));
+            ((ServerPlayerEntity)this.player).networkHandler.sendPacket(new GuiSlotUpdateS2CPacket(-2, i, this.getInvStack(i)));
         }
     }
 
@@ -410,7 +410,7 @@ Nameable {
         this.armor.clear();
         this.offHand.clear();
         for (int i = 0; i < listTag.size(); ++i) {
-            CompoundTag compoundTag = listTag.getCompound(i);
+            CompoundTag compoundTag = listTag.getCompoundTag(i);
             int j = compoundTag.getByte("Slot") & 0xFF;
             ItemStack itemStack = ItemStack.fromTag(compoundTag);
             if (itemStack.isEmpty()) continue;

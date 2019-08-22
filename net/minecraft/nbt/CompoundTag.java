@@ -117,8 +117,8 @@ implements Tag {
         return new UUID(this.getLong(string + "Most"), this.getLong(string + "Least"));
     }
 
-    public boolean containsUuid(String string) {
-        return this.contains(string + "Most", 99) && this.contains(string + "Least", 99);
+    public boolean hasUuid(String string) {
+        return this.containsKey(string + "Most", 99) && this.containsKey(string + "Least", 99);
     }
 
     public void putFloat(String string, float f) {
@@ -158,7 +158,7 @@ implements Tag {
     }
 
     @Nullable
-    public Tag get(String string) {
+    public Tag getTag(String string) {
         return this.tags.get(string);
     }
 
@@ -170,11 +170,11 @@ implements Tag {
         return tag.getType();
     }
 
-    public boolean contains(String string) {
+    public boolean containsKey(String string) {
         return this.tags.containsKey(string);
     }
 
-    public boolean contains(String string, int i) {
+    public boolean containsKey(String string, int i) {
         byte j = this.getType(string);
         if (j == i) {
             return true;
@@ -187,7 +187,7 @@ implements Tag {
 
     public byte getByte(String string) {
         try {
-            if (this.contains(string, 99)) {
+            if (this.containsKey(string, 99)) {
                 return ((AbstractNumberTag)this.tags.get(string)).getByte();
             }
         } catch (ClassCastException classCastException) {
@@ -198,7 +198,7 @@ implements Tag {
 
     public short getShort(String string) {
         try {
-            if (this.contains(string, 99)) {
+            if (this.containsKey(string, 99)) {
                 return ((AbstractNumberTag)this.tags.get(string)).getShort();
             }
         } catch (ClassCastException classCastException) {
@@ -209,7 +209,7 @@ implements Tag {
 
     public int getInt(String string) {
         try {
-            if (this.contains(string, 99)) {
+            if (this.containsKey(string, 99)) {
                 return ((AbstractNumberTag)this.tags.get(string)).getInt();
             }
         } catch (ClassCastException classCastException) {
@@ -220,7 +220,7 @@ implements Tag {
 
     public long getLong(String string) {
         try {
-            if (this.contains(string, 99)) {
+            if (this.containsKey(string, 99)) {
                 return ((AbstractNumberTag)this.tags.get(string)).getLong();
             }
         } catch (ClassCastException classCastException) {
@@ -231,7 +231,7 @@ implements Tag {
 
     public float getFloat(String string) {
         try {
-            if (this.contains(string, 99)) {
+            if (this.containsKey(string, 99)) {
                 return ((AbstractNumberTag)this.tags.get(string)).getFloat();
             }
         } catch (ClassCastException classCastException) {
@@ -242,7 +242,7 @@ implements Tag {
 
     public double getDouble(String string) {
         try {
-            if (this.contains(string, 99)) {
+            if (this.containsKey(string, 99)) {
                 return ((AbstractNumberTag)this.tags.get(string)).getDouble();
             }
         } catch (ClassCastException classCastException) {
@@ -253,7 +253,7 @@ implements Tag {
 
     public String getString(String string) {
         try {
-            if (this.contains(string, 8)) {
+            if (this.containsKey(string, 8)) {
                 return this.tags.get(string).asString();
             }
         } catch (ClassCastException classCastException) {
@@ -264,7 +264,7 @@ implements Tag {
 
     public byte[] getByteArray(String string) {
         try {
-            if (this.contains(string, 7)) {
+            if (this.containsKey(string, 7)) {
                 return ((ByteArrayTag)this.tags.get(string)).getByteArray();
             }
         } catch (ClassCastException classCastException) {
@@ -275,7 +275,7 @@ implements Tag {
 
     public int[] getIntArray(String string) {
         try {
-            if (this.contains(string, 11)) {
+            if (this.containsKey(string, 11)) {
                 return ((IntArrayTag)this.tags.get(string)).getIntArray();
             }
         } catch (ClassCastException classCastException) {
@@ -286,7 +286,7 @@ implements Tag {
 
     public long[] getLongArray(String string) {
         try {
-            if (this.contains(string, 12)) {
+            if (this.containsKey(string, 12)) {
                 return ((LongArrayTag)this.tags.get(string)).getLongArray();
             }
         } catch (ClassCastException classCastException) {
@@ -297,7 +297,7 @@ implements Tag {
 
     public CompoundTag getCompound(String string) {
         try {
-            if (this.contains(string, 10)) {
+            if (this.containsKey(string, 10)) {
                 return (CompoundTag)this.tags.get(string);
             }
         } catch (ClassCastException classCastException) {
@@ -310,7 +310,7 @@ implements Tag {
         try {
             if (this.getType(string) == 9) {
                 ListTag listTag = (ListTag)this.tags.get(string);
-                if (listTag.isEmpty() || listTag.getElementType() == i) {
+                if (listTag.isEmpty() || listTag.getListType() == i) {
                     return listTag;
                 }
                 return new ListTag();
@@ -360,8 +360,7 @@ implements Tag {
         return crashReport;
     }
 
-    @Override
-    public CompoundTag copy() {
+    public CompoundTag method_10553() {
         CompoundTag compoundTag = new CompoundTag();
         for (String string : this.tags.keySet()) {
             compoundTag.put(string, this.tags.get(string).copy());
@@ -415,7 +414,7 @@ implements Tag {
         for (String string : compoundTag.tags.keySet()) {
             Tag tag = compoundTag.tags.get(string);
             if (tag.getType() == 10) {
-                if (this.contains(string, 10)) {
+                if (this.containsKey(string, 10)) {
                     CompoundTag compoundTag2 = this.getCompound(string);
                     compoundTag2.copyFrom((CompoundTag)tag);
                     continue;
@@ -478,7 +477,7 @@ implements Tag {
 
     @Override
     public /* synthetic */ Tag copy() {
-        return this.copy();
+        return this.method_10553();
     }
 }
 

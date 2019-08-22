@@ -59,16 +59,15 @@ implements Criterion<Conditions> {
         this.handlers.remove(playerAdvancementTracker);
     }
 
-    @Override
-    public Conditions conditionsFromJson(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext) {
-        LocationPredicate locationPredicate = LocationPredicate.fromJson(jsonObject.get("entered"));
-        LocationPredicate locationPredicate2 = LocationPredicate.fromJson(jsonObject.get("exited"));
+    public Conditions method_9078(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext) {
+        LocationPredicate locationPredicate = LocationPredicate.deserialize(jsonObject.get("entered"));
+        LocationPredicate locationPredicate2 = LocationPredicate.deserialize(jsonObject.get("exited"));
         DistancePredicate distancePredicate = DistancePredicate.deserialize(jsonObject.get("distance"));
         return new Conditions(locationPredicate, locationPredicate2, distancePredicate);
     }
 
-    public void trigger(ServerPlayerEntity serverPlayerEntity, Vec3d vec3d) {
-        Handler handler = this.handlers.get(serverPlayerEntity.getAdvancementTracker());
+    public void handle(ServerPlayerEntity serverPlayerEntity, Vec3d vec3d) {
+        Handler handler = this.handlers.get(serverPlayerEntity.getAdvancementManager());
         if (handler != null) {
             handler.handle(serverPlayerEntity.getServerWorld(), vec3d, serverPlayerEntity.x, serverPlayerEntity.y, serverPlayerEntity.z);
         }
@@ -76,7 +75,7 @@ implements Criterion<Conditions> {
 
     @Override
     public /* synthetic */ CriterionConditions conditionsFromJson(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext) {
-        return this.conditionsFromJson(jsonObject, jsonDeserializationContext);
+        return this.method_9078(jsonObject, jsonDeserializationContext);
     }
 
     static class Handler {
@@ -146,8 +145,8 @@ implements Criterion<Conditions> {
         @Override
         public JsonElement toJson() {
             JsonObject jsonObject = new JsonObject();
-            jsonObject.add("entered", this.entered.toJson());
-            jsonObject.add("exited", this.exited.toJson());
+            jsonObject.add("entered", this.entered.serialize());
+            jsonObject.add("exited", this.exited.serialize());
             jsonObject.add("distance", this.distance.serialize());
             return jsonObject;
         }

@@ -6,6 +6,7 @@ package net.minecraft.resource;
 import com.google.common.collect.Lists;
 import java.io.ByteArrayOutputStream;
 import java.io.FileNotFoundException;
+import java.io.FilterInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.PrintStream;
@@ -127,13 +128,12 @@ implements ResourceManager {
     }
 
     static class DebugInputStream
-    extends InputStream {
-        private final InputStream parent;
+    extends FilterInputStream {
         private final String leakMessage;
         private boolean closed;
 
         public DebugInputStream(InputStream inputStream, Identifier identifier, String string) {
-            this.parent = inputStream;
+            super(inputStream);
             ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
             new Exception().printStackTrace(new PrintStream(byteArrayOutputStream));
             this.leakMessage = "Leaked resource: '" + identifier + "' loaded from pack: '" + string + "'\n" + byteArrayOutputStream;
@@ -141,7 +141,7 @@ implements ResourceManager {
 
         @Override
         public void close() throws IOException {
-            this.parent.close();
+            super.close();
             this.closed = true;
         }
 
@@ -150,11 +150,6 @@ implements ResourceManager {
                 LOGGER.warn(this.leakMessage);
             }
             super.finalize();
-        }
-
-        @Override
-        public int read() throws IOException {
-            return this.parent.read();
         }
     }
 }

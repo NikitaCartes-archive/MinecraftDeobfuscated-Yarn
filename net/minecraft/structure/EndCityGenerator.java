@@ -13,7 +13,6 @@ import net.minecraft.entity.decoration.ItemFrameEntity;
 import net.minecraft.entity.mob.ShulkerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
-import net.minecraft.loot.LootTables;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.structure.SimpleStructurePiece;
 import net.minecraft.structure.Structure;
@@ -25,10 +24,11 @@ import net.minecraft.structure.processor.BlockIgnoreStructureProcessor;
 import net.minecraft.util.BlockRotation;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Pair;
-import net.minecraft.util.math.BlockBox;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
+import net.minecraft.util.math.MutableIntBoundingBox;
 import net.minecraft.world.IWorld;
+import net.minecraft.world.loot.LootTables;
 
 public class EndCityGenerator {
     private static final StructurePlacementData PLACEMENT_DATA = new StructurePlacementData().setIgnoreEntities(true).addProcessor(BlockIgnoreStructureProcessor.IGNORE_STRUCTURE_BLOCKS);
@@ -250,15 +250,15 @@ public class EndCityGenerator {
         }
 
         @Override
-        protected void handleMetadata(String string, BlockPos blockPos, IWorld iWorld, Random random, BlockBox blockBox) {
+        protected void handleMetadata(String string, BlockPos blockPos, IWorld iWorld, Random random, MutableIntBoundingBox mutableIntBoundingBox) {
             if (string.startsWith("Chest")) {
                 BlockPos blockPos2 = blockPos.down();
-                if (blockBox.contains(blockPos2)) {
+                if (mutableIntBoundingBox.contains(blockPos2)) {
                     LootableContainerBlockEntity.setLootTable(iWorld, random, blockPos2, LootTables.END_CITY_TREASURE_CHEST);
                 }
             } else if (string.startsWith("Sentry")) {
                 ShulkerEntity shulkerEntity = EntityType.SHULKER.create(iWorld.getWorld());
-                shulkerEntity.updatePosition((double)blockPos.getX() + 0.5, (double)blockPos.getY() + 0.5, (double)blockPos.getZ() + 0.5);
+                shulkerEntity.setPosition((double)blockPos.getX() + 0.5, (double)blockPos.getY() + 0.5, (double)blockPos.getZ() + 0.5);
                 shulkerEntity.setAttachedBlock(blockPos);
                 iWorld.spawnEntity(shulkerEntity);
             } else if (string.startsWith("Elytra")) {

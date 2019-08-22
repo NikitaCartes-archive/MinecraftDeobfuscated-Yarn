@@ -39,14 +39,13 @@ extends ServerConfigList<GameProfile, OperatorEntry> {
         return false;
     }
 
-    @Override
-    protected String toString(GameProfile gameProfile) {
+    protected String method_14619(GameProfile gameProfile) {
         return gameProfile.getId().toString();
     }
 
     @Override
     protected /* synthetic */ String toString(Object object) {
-        return this.toString((GameProfile)object);
+        return this.method_14619((GameProfile)object);
     }
 }
 

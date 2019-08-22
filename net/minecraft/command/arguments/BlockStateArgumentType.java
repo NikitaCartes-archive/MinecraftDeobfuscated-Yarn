@@ -24,8 +24,7 @@ implements ArgumentType<BlockStateArgument> {
         return new BlockStateArgumentType();
     }
 
-    @Override
-    public BlockStateArgument parse(StringReader stringReader) throws CommandSyntaxException {
+    public BlockStateArgument method_9654(StringReader stringReader) throws CommandSyntaxException {
         BlockArgumentParser blockArgumentParser = new BlockArgumentParser(stringReader, false).parse(true);
         return new BlockStateArgument(blockArgumentParser.getBlockState(), blockArgumentParser.getBlockProperties().keySet(), blockArgumentParser.getNbtData());
     }
@@ -54,7 +53,7 @@ implements ArgumentType<BlockStateArgument> {
 
     @Override
     public /* synthetic */ Object parse(StringReader stringReader) throws CommandSyntaxException {
-        return this.parse(stringReader);
+        return this.method_9654(stringReader);
     }
 }
 

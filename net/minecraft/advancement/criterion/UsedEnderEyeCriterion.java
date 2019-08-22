@@ -15,9 +15,9 @@ import net.minecraft.advancement.PlayerAdvancementTracker;
 import net.minecraft.advancement.criterion.AbstractCriterionConditions;
 import net.minecraft.advancement.criterion.Criterion;
 import net.minecraft.advancement.criterion.CriterionConditions;
-import net.minecraft.predicate.NumberRange;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.NumberRange;
 import net.minecraft.util.math.BlockPos;
 
 public class UsedEnderEyeCriterion
@@ -56,14 +56,13 @@ implements Criterion<Conditions> {
         this.handlers.remove(playerAdvancementTracker);
     }
 
-    @Override
-    public Conditions conditionsFromJson(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext) {
+    public Conditions method_9156(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext) {
         NumberRange.FloatRange floatRange = NumberRange.FloatRange.fromJson(jsonObject.get("distance"));
         return new Conditions(floatRange);
     }
 
-    public void trigger(ServerPlayerEntity serverPlayerEntity, BlockPos blockPos) {
-        Handler handler = this.handlers.get(serverPlayerEntity.getAdvancementTracker());
+    public void handle(ServerPlayerEntity serverPlayerEntity, BlockPos blockPos) {
+        Handler handler = this.handlers.get(serverPlayerEntity.getAdvancementManager());
         if (handler != null) {
             double d = serverPlayerEntity.x - (double)blockPos.getX();
             double e = serverPlayerEntity.z - (double)blockPos.getZ();
@@ -73,7 +72,7 @@ implements Criterion<Conditions> {
 
     @Override
     public /* synthetic */ CriterionConditions conditionsFromJson(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext) {
-        return this.conditionsFromJson(jsonObject, jsonDeserializationContext);
+        return this.method_9156(jsonObject, jsonDeserializationContext);
     }
 
     static class Handler {

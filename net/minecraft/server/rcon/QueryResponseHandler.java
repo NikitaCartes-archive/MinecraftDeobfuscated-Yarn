@@ -22,7 +22,7 @@ import net.minecraft.server.dedicated.DedicatedServer;
 import net.minecraft.server.rcon.BufferHelper;
 import net.minecraft.server.rcon.DataStreamHelper;
 import net.minecraft.server.rcon.RconBase;
-import net.minecraft.util.Util;
+import net.minecraft.util.SystemUtil;
 
 public class QueryResponseHandler
 extends RconBase {
@@ -119,7 +119,7 @@ extends RconBase {
 
     private byte[] createRulesReply(DatagramPacket datagramPacket) throws IOException {
         String[] strings;
-        long l = Util.getMeasuringTimeMs();
+        long l = SystemUtil.getMeasuringTimeMs();
         if (l < this.field_14450 + 5000L) {
             byte[] bs = this.data.bytes();
             byte[] cs = this.method_14748(datagramPacket.getSocketAddress());
@@ -193,7 +193,7 @@ extends RconBase {
         if (!this.running) {
             return;
         }
-        long l = Util.getMeasuringTimeMs();
+        long l = SystemUtil.getMeasuringTimeMs();
         if (l < this.lastQueryTime + 30000L) {
             return;
         }
@@ -209,7 +209,7 @@ extends RconBase {
     @Override
     public void run() {
         this.info("Query running on " + this.hostname + ":" + this.queryPort);
-        this.lastQueryTime = Util.getMeasuringTimeMs();
+        this.lastQueryTime = SystemUtil.getMeasuringTimeMs();
         this.currentPacket = new DatagramPacket(this.packetBuffer, this.packetBuffer.length);
         try {
             while (this.running) {

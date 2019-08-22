@@ -116,19 +116,17 @@ extends AbstractListTag<ByteTag> {
         return this.value.length;
     }
 
-    @Override
-    public ByteTag get(int i) {
+    public ByteTag method_10523(int i) {
         return new ByteTag(this.value[i]);
     }
 
-    public ByteTag method_10606(int i, ByteTag byteTag) {
+    public ByteTag method_17803(int i, ByteTag byteTag) {
         byte b = this.value[i];
         this.value[i] = byteTag.getByte();
         return new ByteTag(b);
     }
 
-    @Override
-    public void add(int i, ByteTag byteTag) {
+    public void method_17805(int i, ByteTag byteTag) {
         this.value = ArrayUtils.add(this.value, i, byteTag.getByte());
     }
 
@@ -150,8 +148,7 @@ extends AbstractListTag<ByteTag> {
         return false;
     }
 
-    @Override
-    public ByteTag remove(int i) {
+    public ByteTag method_17804(int i) {
         byte b = this.value[i];
         this.value = ArrayUtils.remove(this.value, i);
         return new ByteTag(b);
@@ -163,38 +160,38 @@ extends AbstractListTag<ByteTag> {
     }
 
     @Override
-    public /* synthetic */ Tag remove(int i) {
-        return this.remove(i);
+    public /* synthetic */ Tag method_10536(int i) {
+        return this.method_17804(i);
     }
 
     @Override
-    public /* synthetic */ void add(int i, Tag tag) {
-        this.add(i, (ByteTag)tag);
+    public /* synthetic */ void method_10531(int i, Tag tag) {
+        this.method_17805(i, (ByteTag)tag);
     }
 
     @Override
-    public /* synthetic */ Tag set(int i, Tag tag) {
-        return this.method_10606(i, (ByteTag)tag);
+    public /* synthetic */ Tag method_10606(int i, Tag tag) {
+        return this.method_17803(i, (ByteTag)tag);
     }
 
     @Override
     public /* synthetic */ Object remove(int i) {
-        return this.remove(i);
+        return this.method_17804(i);
     }
 
     @Override
     public /* synthetic */ void add(int i, Object object) {
-        this.add(i, (ByteTag)object);
+        this.method_17805(i, (ByteTag)object);
     }
 
     @Override
     public /* synthetic */ Object set(int i, Object object) {
-        return this.method_10606(i, (ByteTag)object);
+        return this.method_17803(i, (ByteTag)object);
     }
 
     @Override
     public /* synthetic */ Object get(int i) {
-        return this.get(i);
+        return this.method_10523(i);
     }
 }
 

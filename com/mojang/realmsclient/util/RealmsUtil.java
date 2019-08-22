@@ -6,12 +6,12 @@ package com.mojang.realmsclient.util;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
+import com.google.common.collect.Maps;
 import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.minecraft.MinecraftProfileTexture;
 import com.mojang.authlib.minecraft.MinecraftSessionService;
 import com.mojang.authlib.yggdrasil.YggdrasilAuthenticationService;
 import com.mojang.util.UUIDTypeAdapter;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
@@ -25,8 +25,7 @@ public class RealmsUtil {
     private static final MinecraftSessionService sessionService = authenticationService.createMinecraftSessionService();
     public static LoadingCache<String, GameProfile> gameProfileCache = CacheBuilder.newBuilder().expireAfterWrite(60L, TimeUnit.MINUTES).build(new CacheLoader<String, GameProfile>(){
 
-        @Override
-        public GameProfile load(String string) throws Exception {
+        public GameProfile method_21571(String string) throws Exception {
             GameProfile gameProfile = sessionService.fillProfileProperties(new GameProfile(UUIDTypeAdapter.fromString(string), null), false);
             if (gameProfile == null) {
                 throw new Exception("Couldn't get profile");
@@ -36,7 +35,7 @@ public class RealmsUtil {
 
         @Override
         public /* synthetic */ Object load(Object object) throws Exception {
-            return this.load((String)object);
+            return this.method_21571((String)object);
         }
     });
 
@@ -50,7 +49,7 @@ public class RealmsUtil {
             GameProfile gameProfile = gameProfileCache.get(string);
             return sessionService.getTextures(gameProfile, false);
         } catch (Exception exception) {
-            return new HashMap<MinecraftProfileTexture.Type, MinecraftProfileTexture>();
+            return Maps.newHashMap();
         }
     }
 

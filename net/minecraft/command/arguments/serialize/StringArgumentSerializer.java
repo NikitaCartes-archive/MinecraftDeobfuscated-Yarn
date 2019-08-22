@@ -11,13 +11,11 @@ import net.minecraft.util.PacketByteBuf;
 
 public class StringArgumentSerializer
 implements ArgumentSerializer<StringArgumentType> {
-    @Override
-    public void toPacket(StringArgumentType stringArgumentType, PacketByteBuf packetByteBuf) {
+    public void method_10053(StringArgumentType stringArgumentType, PacketByteBuf packetByteBuf) {
         packetByteBuf.writeEnumConstant(stringArgumentType.getType());
     }
 
-    @Override
-    public StringArgumentType fromPacket(PacketByteBuf packetByteBuf) {
+    public StringArgumentType method_10052(PacketByteBuf packetByteBuf) {
         StringArgumentType.StringType stringType = packetByteBuf.readEnumConstant(StringArgumentType.StringType.class);
         switch (stringType) {
             case SINGLE_WORD: {
@@ -30,8 +28,7 @@ implements ArgumentSerializer<StringArgumentType> {
         return StringArgumentType.greedyString();
     }
 
-    @Override
-    public void toJson(StringArgumentType stringArgumentType, JsonObject jsonObject) {
+    public void method_10051(StringArgumentType stringArgumentType, JsonObject jsonObject) {
         switch (stringArgumentType.getType()) {
             case SINGLE_WORD: {
                 jsonObject.addProperty("type", "word");
@@ -49,7 +46,7 @@ implements ArgumentSerializer<StringArgumentType> {
 
     @Override
     public /* synthetic */ ArgumentType fromPacket(PacketByteBuf packetByteBuf) {
-        return this.fromPacket(packetByteBuf);
+        return this.method_10052(packetByteBuf);
     }
 }
 

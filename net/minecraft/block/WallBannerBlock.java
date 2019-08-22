@@ -13,7 +13,7 @@ import net.minecraft.block.Blocks;
 import net.minecraft.block.HorizontalFacingBlock;
 import net.minecraft.entity.EntityContext;
 import net.minecraft.item.ItemPlacementContext;
-import net.minecraft.state.StateManager;
+import net.minecraft.state.StateFactory;
 import net.minecraft.state.property.DirectionProperty;
 import net.minecraft.util.BlockMirror;
 import net.minecraft.util.BlockRotation;
@@ -22,8 +22,8 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.world.BlockView;
-import net.minecraft.world.CollisionView;
 import net.minecraft.world.IWorld;
+import net.minecraft.world.ViewableWorld;
 import net.minecraft.world.World;
 
 public class WallBannerBlock
@@ -33,7 +33,7 @@ extends AbstractBannerBlock {
 
     public WallBannerBlock(DyeColor dyeColor, Block.Settings settings) {
         super(dyeColor, settings);
-        this.setDefaultState((BlockState)((BlockState)this.stateManager.getDefaultState()).with(FACING, Direction.NORTH));
+        this.setDefaultState((BlockState)((BlockState)this.stateFactory.getDefaultState()).with(FACING, Direction.NORTH));
     }
 
     @Override
@@ -42,8 +42,8 @@ extends AbstractBannerBlock {
     }
 
     @Override
-    public boolean canPlaceAt(BlockState blockState, CollisionView collisionView, BlockPos blockPos) {
-        return collisionView.getBlockState(blockPos.offset(blockState.get(FACING).getOpposite())).getMaterial().isSolid();
+    public boolean canPlaceAt(BlockState blockState, ViewableWorld viewableWorld, BlockPos blockPos) {
+        return viewableWorld.getBlockState(blockPos.offset(blockState.get(FACING).getOpposite())).getMaterial().isSolid();
     }
 
     @Override
@@ -63,11 +63,11 @@ extends AbstractBannerBlock {
     public BlockState getPlacementState(ItemPlacementContext itemPlacementContext) {
         Direction[] directions;
         BlockState blockState = this.getDefaultState();
-        World collisionView = itemPlacementContext.getWorld();
+        World viewableWorld = itemPlacementContext.getWorld();
         BlockPos blockPos = itemPlacementContext.getBlockPos();
         for (Direction direction : directions = itemPlacementContext.getPlacementDirections()) {
             Direction direction2;
-            if (!direction.getAxis().isHorizontal() || !(blockState = (BlockState)blockState.with(FACING, direction2 = direction.getOpposite())).canPlaceAt(collisionView, blockPos)) continue;
+            if (!direction.getAxis().isHorizontal() || !(blockState = (BlockState)blockState.with(FACING, direction2 = direction.getOpposite())).canPlaceAt(viewableWorld, blockPos)) continue;
             return blockState;
         }
         return null;
@@ -84,7 +84,7 @@ extends AbstractBannerBlock {
     }
 
     @Override
-    protected void appendProperties(StateManager.Builder<Block, BlockState> builder) {
+    protected void appendProperties(StateFactory.Builder<Block, BlockState> builder) {
         builder.add(FACING);
     }
 }

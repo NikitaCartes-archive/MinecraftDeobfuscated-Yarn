@@ -58,7 +58,7 @@ public abstract class Property {
 
     public abstract void set(int var1);
 
-    public boolean hasChanged() {
+    public boolean detectChanges() {
         int i = this.get();
         boolean bl = i != this.oldValue;
         this.oldValue = i;

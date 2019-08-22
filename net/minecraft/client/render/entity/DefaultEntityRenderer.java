@@ -3,7 +3,7 @@
  */
 package net.minecraft.client.render.entity;
 
-import com.mojang.blaze3d.platform.GlStateManager;
+import com.mojang.blaze3d.systems.RenderSystem;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.render.entity.EntityRenderDispatcher;
@@ -21,9 +21,9 @@ extends EntityRenderer<Entity> {
 
     @Override
     public void render(Entity entity, double d, double e, double f, float g, float h) {
-        GlStateManager.pushMatrix();
-        DefaultEntityRenderer.renderBox(entity.getBoundingBox(), d - entity.lastRenderX, e - entity.lastRenderY, f - entity.lastRenderZ);
-        GlStateManager.popMatrix();
+        RenderSystem.pushMatrix();
+        DefaultEntityRenderer.renderBox(entity.getBoundingBox(), d - entity.prevRenderX, e - entity.prevRenderY, f - entity.prevRenderZ);
+        RenderSystem.popMatrix();
         super.render(entity, d, e, f, g, h);
     }
 

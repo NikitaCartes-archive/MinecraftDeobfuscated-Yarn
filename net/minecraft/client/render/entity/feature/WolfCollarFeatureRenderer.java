@@ -3,7 +3,7 @@
  */
 package net.minecraft.client.render.entity.feature;
 
-import com.mojang.blaze3d.platform.GlStateManager;
+import com.mojang.blaze3d.systems.RenderSystem;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.render.entity.feature.FeatureRenderer;
@@ -21,15 +21,14 @@ extends FeatureRenderer<WolfEntity, WolfEntityModel<WolfEntity>> {
         super(featureRendererContext);
     }
 
-    @Override
-    public void render(WolfEntity wolfEntity, float f, float g, float h, float i, float j, float k, float l) {
+    public void method_4209(WolfEntity wolfEntity, float f, float g, float h, float i, float j, float k, float l) {
         if (!wolfEntity.isTamed() || wolfEntity.isInvisible()) {
             return;
         }
         this.bindTexture(SKIN);
         float[] fs = wolfEntity.getCollarColor().getColorComponents();
-        GlStateManager.color3f(fs[0], fs[1], fs[2]);
-        ((WolfEntityModel)this.getContextModel()).render(wolfEntity, f, g, i, j, k, l);
+        RenderSystem.color3f(fs[0], fs[1], fs[2]);
+        ((WolfEntityModel)this.getModel()).method_17132(wolfEntity, f, g, i, j, k, l);
     }
 
     @Override

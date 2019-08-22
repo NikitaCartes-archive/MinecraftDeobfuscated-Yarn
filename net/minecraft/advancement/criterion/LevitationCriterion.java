@@ -16,10 +16,10 @@ import net.minecraft.advancement.PlayerAdvancementTracker;
 import net.minecraft.advancement.criterion.AbstractCriterionConditions;
 import net.minecraft.advancement.criterion.Criterion;
 import net.minecraft.advancement.criterion.CriterionConditions;
-import net.minecraft.predicate.NumberRange;
 import net.minecraft.predicate.entity.DistancePredicate;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.NumberRange;
 import net.minecraft.util.math.Vec3d;
 
 public class LevitationCriterion
@@ -58,15 +58,14 @@ implements Criterion<Conditions> {
         this.handlers.remove(playerAdvancementTracker);
     }
 
-    @Override
-    public Conditions conditionsFromJson(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext) {
+    public Conditions method_9006(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext) {
         DistancePredicate distancePredicate = DistancePredicate.deserialize(jsonObject.get("distance"));
         NumberRange.IntRange intRange = NumberRange.IntRange.fromJson(jsonObject.get("duration"));
         return new Conditions(distancePredicate, intRange);
     }
 
-    public void trigger(ServerPlayerEntity serverPlayerEntity, Vec3d vec3d, int i) {
-        Handler handler = this.handlers.get(serverPlayerEntity.getAdvancementTracker());
+    public void handle(ServerPlayerEntity serverPlayerEntity, Vec3d vec3d, int i) {
+        Handler handler = this.handlers.get(serverPlayerEntity.getAdvancementManager());
         if (handler != null) {
             handler.handle(serverPlayerEntity, vec3d, i);
         }
@@ -74,7 +73,7 @@ implements Criterion<Conditions> {
 
     @Override
     public /* synthetic */ CriterionConditions conditionsFromJson(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext) {
-        return this.conditionsFromJson(jsonObject, jsonDeserializationContext);
+        return this.method_9006(jsonObject, jsonDeserializationContext);
     }
 
     static class Handler {
@@ -140,7 +139,7 @@ implements Criterion<Conditions> {
         public JsonElement toJson() {
             JsonObject jsonObject = new JsonObject();
             jsonObject.add("distance", this.distance.serialize());
-            jsonObject.add("duration", this.duration.toJson());
+            jsonObject.add("duration", this.duration.serialize());
             return jsonObject;
         }
     }

@@ -3,10 +3,10 @@
  */
 package net.minecraft.client.gui.screen.ingame;
 
-import com.mojang.blaze3d.platform.GlStateManager;
+import com.mojang.blaze3d.systems.RenderSystem;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.client.gui.screen.ingame.ContainerScreen;
+import net.minecraft.client.gui.screen.ingame.AbstractContainerScreen;
 import net.minecraft.container.BrewingStandContainer;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.text.Text;
@@ -15,7 +15,7 @@ import net.minecraft.util.math.MathHelper;
 
 @Environment(value=EnvType.CLIENT)
 public class BrewingStandScreen
-extends ContainerScreen<BrewingStandContainer> {
+extends AbstractContainerScreen<BrewingStandContainer> {
     private static final Identifier TEXTURE = new Identifier("textures/gui/container/brewing_stand.png");
     private static final int[] field_2824 = new int[]{29, 24, 20, 16, 11, 6, 0};
 
@@ -39,7 +39,7 @@ extends ContainerScreen<BrewingStandContainer> {
     @Override
     protected void drawBackground(float f, int i, int j) {
         int o;
-        GlStateManager.color4f(1.0f, 1.0f, 1.0f, 1.0f);
+        RenderSystem.color4f(1.0f, 1.0f, 1.0f, 1.0f);
         this.minecraft.getTextureManager().bindTexture(TEXTURE);
         int k = (this.width - this.containerWidth) / 2;
         int l = (this.height - this.containerHeight) / 2;

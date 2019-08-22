@@ -3,7 +3,7 @@
  */
 package net.minecraft.client.gui.screen;
 
-import com.mojang.blaze3d.platform.GlStateManager;
+import com.mojang.blaze3d.systems.RenderSystem;
 import java.io.IOException;
 import java.io.InputStream;
 import net.fabricmc.api.EnvType;
@@ -17,7 +17,7 @@ import net.minecraft.resource.ResourceManager;
 import net.minecraft.resource.ResourceReloadMonitor;
 import net.minecraft.resource.ResourceType;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.Util;
+import net.minecraft.util.SystemUtil;
 import net.minecraft.util.math.MathHelper;
 
 @Environment(value=EnvType.CLIENT)
@@ -50,8 +50,8 @@ extends Overlay {
         float h;
         int k = this.client.window.getScaledWidth();
         int l = this.client.window.getScaledHeight();
-        long m = Util.getMeasuringTimeMs();
-        if (this.field_18219 && (this.reloadMonitor.isPrepareStageComplete() || this.client.currentScreen != null) && this.field_18220 == -1L) {
+        long m = SystemUtil.getMeasuringTimeMs();
+        if (this.field_18219 && (this.reloadMonitor.isLoadStageComplete() || this.client.currentScreen != null) && this.field_18220 == -1L) {
             this.field_18220 = m;
         }
         float g = this.field_17771 > -1L ? (float)(m - this.field_17771) / 1000.0f : -1.0f;
@@ -77,8 +77,8 @@ extends Overlay {
         n = (this.client.window.getScaledWidth() - 256) / 2;
         int p = (this.client.window.getScaledHeight() - 256) / 2;
         this.client.getTextureManager().bindTexture(LOGO);
-        GlStateManager.enableBlend();
-        GlStateManager.color4f(1.0f, 1.0f, 1.0f, o);
+        RenderSystem.enableBlend();
+        RenderSystem.color4f(1.0f, 1.0f, 1.0f, o);
         this.blit(n, p, 0, 0, 256, 256);
         float q = this.reloadMonitor.getProgress();
         this.field_17770 = this.field_17770 * 0.95f + q * 0.050000012f;
@@ -90,7 +90,7 @@ extends Overlay {
         }
         if (this.field_17771 == -1L && this.reloadMonitor.isApplyStageComplete() && (!this.field_18219 || h >= 2.0f)) {
             this.reloadMonitor.throwExceptions();
-            this.field_17771 = Util.getMeasuringTimeMs();
+            this.field_17771 = SystemUtil.getMeasuringTimeMs();
             this.field_18218.run();
             if (this.client.currentScreen != null) {
                 this.client.currentScreen.init(this.client, this.client.window.getScaledWidth(), this.client.window.getScaledHeight());

@@ -81,7 +81,7 @@ extends AbstractListTag<Tag> {
     }
 
     @Override
-    public Tag remove(int i) {
+    public Tag method_10536(int i) {
         Tag tag = this.value.remove(i);
         this.forgetTypeIfEmpty();
         return tag;
@@ -92,7 +92,7 @@ extends AbstractListTag<Tag> {
         return this.value.isEmpty();
     }
 
-    public CompoundTag getCompound(int i) {
+    public CompoundTag getCompoundTag(int i) {
         Tag tag;
         if (i >= 0 && i < this.value.size() && (tag = this.value.get(i)).getType() == 10) {
             return (CompoundTag)tag;
@@ -100,7 +100,7 @@ extends AbstractListTag<Tag> {
         return new CompoundTag();
     }
 
-    public ListTag getList(int i) {
+    public ListTag getListTag(int i) {
         Tag tag;
         if (i >= 0 && i < this.value.size() && (tag = this.value.get(i)).getType() == 9) {
             return (ListTag)tag;
@@ -164,14 +164,13 @@ extends AbstractListTag<Tag> {
         return this.value.size();
     }
 
-    @Override
-    public Tag get(int i) {
+    public Tag method_10534(int i) {
         return this.value.get(i);
     }
 
     @Override
-    public Tag set(int i, Tag tag) {
-        Tag tag2 = this.get(i);
+    public Tag method_10606(int i, Tag tag) {
+        Tag tag2 = this.method_10534(i);
         if (!this.setTag(i, tag)) {
             throw new UnsupportedOperationException(String.format("Trying to add tag of type %d to list of %d", tag.getType(), this.type));
         }
@@ -179,7 +178,7 @@ extends AbstractListTag<Tag> {
     }
 
     @Override
-    public void add(int i, Tag tag) {
+    public void method_10531(int i, Tag tag) {
         if (!this.addTag(i, tag)) {
             throw new UnsupportedOperationException(String.format("Trying to add tag of type %d to list of %d", tag.getType(), this.type));
         }
@@ -214,8 +213,7 @@ extends AbstractListTag<Tag> {
         return this.type == tag.getType();
     }
 
-    @Override
-    public ListTag copy() {
+    public ListTag method_10612() {
         ListTag listTag = new ListTag();
         listTag.type = this.type;
         for (Tag tag : this.value) {
@@ -262,7 +260,7 @@ extends AbstractListTag<Tag> {
         return text;
     }
 
-    public int getElementType() {
+    public int getListType() {
         return this.type;
     }
 
@@ -274,27 +272,27 @@ extends AbstractListTag<Tag> {
 
     @Override
     public /* synthetic */ Tag copy() {
-        return this.copy();
+        return this.method_10612();
     }
 
     @Override
     public /* synthetic */ Object remove(int i) {
-        return this.remove(i);
+        return this.method_10536(i);
     }
 
     @Override
     public /* synthetic */ void add(int i, Object object) {
-        this.add(i, (Tag)object);
+        this.method_10531(i, (Tag)object);
     }
 
     @Override
     public /* synthetic */ Object set(int i, Object object) {
-        return this.set(i, (Tag)object);
+        return this.method_10606(i, (Tag)object);
     }
 
     @Override
     public /* synthetic */ Object get(int i) {
-        return this.get(i);
+        return this.method_10534(i);
     }
 }
 

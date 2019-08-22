@@ -28,25 +28,21 @@ extends Task<VillagerEntity> {
         super(ImmutableMap.of(MemoryModuleType.INTERACTION_TARGET, MemoryModuleState.VALUE_PRESENT, MemoryModuleType.VISIBLE_MOBS, MemoryModuleState.VALUE_PRESENT));
     }
 
-    @Override
-    protected boolean shouldRun(ServerWorld serverWorld, VillagerEntity villagerEntity) {
+    protected boolean method_19015(ServerWorld serverWorld, VillagerEntity villagerEntity) {
         return LookTargetUtil.canSee(villagerEntity.getBrain(), MemoryModuleType.INTERACTION_TARGET, EntityType.VILLAGER);
     }
 
-    @Override
-    protected boolean shouldKeepRunning(ServerWorld serverWorld, VillagerEntity villagerEntity, long l) {
-        return this.shouldRun(serverWorld, villagerEntity);
+    protected boolean method_19016(ServerWorld serverWorld, VillagerEntity villagerEntity, long l) {
+        return this.method_19015(serverWorld, villagerEntity);
     }
 
-    @Override
-    protected void run(ServerWorld serverWorld, VillagerEntity villagerEntity, long l) {
+    protected void method_19017(ServerWorld serverWorld, VillagerEntity villagerEntity, long l) {
         VillagerEntity villagerEntity2 = (VillagerEntity)villagerEntity.getBrain().getOptionalMemory(MemoryModuleType.INTERACTION_TARGET).get();
         LookTargetUtil.lookAtAndWalkTowardsEachOther(villagerEntity, villagerEntity2);
         this.items = GatherItemsVillagerTask.getGatherableItems(villagerEntity, villagerEntity2);
     }
 
-    @Override
-    protected void keepRunning(ServerWorld serverWorld, VillagerEntity villagerEntity, long l) {
+    protected void method_19018(ServerWorld serverWorld, VillagerEntity villagerEntity, long l) {
         VillagerEntity villagerEntity2 = (VillagerEntity)villagerEntity.getBrain().getOptionalMemory(MemoryModuleType.INTERACTION_TARGET).get();
         if (villagerEntity.squaredDistanceTo(villagerEntity2) > 5.0) {
             return;
@@ -61,8 +57,7 @@ extends Task<VillagerEntity> {
         }
     }
 
-    @Override
-    protected void finishRunning(ServerWorld serverWorld, VillagerEntity villagerEntity, long l) {
+    protected void method_19019(ServerWorld serverWorld, VillagerEntity villagerEntity, long l) {
         villagerEntity.getBrain().forget(MemoryModuleType.INTERACTION_TARGET);
     }
 
@@ -97,22 +92,22 @@ extends Task<VillagerEntity> {
 
     @Override
     protected /* synthetic */ boolean shouldKeepRunning(ServerWorld serverWorld, LivingEntity livingEntity, long l) {
-        return this.shouldKeepRunning(serverWorld, (VillagerEntity)livingEntity, l);
+        return this.method_19016(serverWorld, (VillagerEntity)livingEntity, l);
     }
 
     @Override
     protected /* synthetic */ void finishRunning(ServerWorld serverWorld, LivingEntity livingEntity, long l) {
-        this.finishRunning(serverWorld, (VillagerEntity)livingEntity, l);
+        this.method_19019(serverWorld, (VillagerEntity)livingEntity, l);
     }
 
     @Override
     protected /* synthetic */ void keepRunning(ServerWorld serverWorld, LivingEntity livingEntity, long l) {
-        this.keepRunning(serverWorld, (VillagerEntity)livingEntity, l);
+        this.method_19018(serverWorld, (VillagerEntity)livingEntity, l);
     }
 
     @Override
     protected /* synthetic */ void run(ServerWorld serverWorld, LivingEntity livingEntity, long l) {
-        this.run(serverWorld, (VillagerEntity)livingEntity, l);
+        this.method_19017(serverWorld, (VillagerEntity)livingEntity, l);
     }
 }
 

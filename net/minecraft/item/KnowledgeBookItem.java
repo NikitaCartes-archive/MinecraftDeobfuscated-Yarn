@@ -37,7 +37,7 @@ extends Item {
         if (!playerEntity.abilities.creativeMode) {
             playerEntity.setStackInHand(hand, ItemStack.EMPTY);
         }
-        if (compoundTag == null || !compoundTag.contains("Recipes", 9)) {
+        if (compoundTag == null || !compoundTag.containsKey("Recipes", 9)) {
             LOGGER.error("Tag not valid: {}", (Object)compoundTag);
             return new TypedActionResult<ItemStack>(ActionResult.FAIL, itemStack);
         }

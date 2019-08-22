@@ -15,7 +15,7 @@ import java.util.function.Function;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.SweetBerryBushBlock;
-import net.minecraft.util.Util;
+import net.minecraft.util.SystemUtil;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.world.IWorld;
@@ -32,6 +32,7 @@ import net.minecraft.world.gen.feature.BoulderFeatureConfig;
 import net.minecraft.world.gen.feature.BuriedTreasureFeature;
 import net.minecraft.world.gen.feature.BuriedTreasureFeatureConfig;
 import net.minecraft.world.gen.feature.BushFeature;
+import net.minecraft.world.gen.feature.BushFeatureConfig;
 import net.minecraft.world.gen.feature.CactusFeature;
 import net.minecraft.world.gen.feature.ChorusPlantFeature;
 import net.minecraft.world.gen.feature.CoralClawFeature;
@@ -129,7 +130,6 @@ import net.minecraft.world.gen.feature.SimpleBlockFeature;
 import net.minecraft.world.gen.feature.SimpleBlockFeatureConfig;
 import net.minecraft.world.gen.feature.SimpleRandomFeature;
 import net.minecraft.world.gen.feature.SimpleRandomFeatureConfig;
-import net.minecraft.world.gen.feature.SingleStateFeatureConfig;
 import net.minecraft.world.gen.feature.SnowPileFeature;
 import net.minecraft.world.gen.feature.SpringFeature;
 import net.minecraft.world.gen.feature.SpringFeatureConfig;
@@ -211,7 +211,7 @@ public abstract class Feature<FC extends FeatureConfig> {
     public static final Feature<DefaultFeatureConfig> ICE_PILE = Feature.register("ice_pile", new IcePileFeature((Function<Dynamic<?>, ? extends DefaultFeatureConfig>)((Function<Dynamic<?>, DefaultFeatureConfig>)DefaultFeatureConfig::deserialize)));
     public static final Feature<DefaultFeatureConfig> MELON_PILE = Feature.register("melon_pile", new MelonPileFeature((Function<Dynamic<?>, ? extends DefaultFeatureConfig>)((Function<Dynamic<?>, DefaultFeatureConfig>)DefaultFeatureConfig::deserialize)));
     public static final Feature<DefaultFeatureConfig> PUMPKIN_PILE = Feature.register("pumpkin_pile", new PumpkinPileFeature((Function<Dynamic<?>, ? extends DefaultFeatureConfig>)((Function<Dynamic<?>, DefaultFeatureConfig>)DefaultFeatureConfig::deserialize)));
-    public static final Feature<SingleStateFeatureConfig> BUSH = Feature.register("bush", new BushFeature((Function<Dynamic<?>, ? extends SingleStateFeatureConfig>)((Function<Dynamic<?>, SingleStateFeatureConfig>)SingleStateFeatureConfig::deserialize)));
+    public static final Feature<BushFeatureConfig> BUSH = Feature.register("bush", new BushFeature((Function<Dynamic<?>, ? extends BushFeatureConfig>)((Function<Dynamic<?>, BushFeatureConfig>)BushFeatureConfig::deserialize)));
     public static final Feature<DiskFeatureConfig> DISK = Feature.register("disk", new DiskFeature((Function<Dynamic<?>, ? extends DiskFeatureConfig>)((Function<Dynamic<?>, DiskFeatureConfig>)DiskFeatureConfig::deserialize)));
     public static final Feature<DoublePlantFeatureConfig> DOUBLE_PLANT = Feature.register("double_plant", new DoublePlantFeature((Function<Dynamic<?>, ? extends DoublePlantFeatureConfig>)((Function<Dynamic<?>, DoublePlantFeatureConfig>)DoublePlantFeatureConfig::deserialize)));
     public static final Feature<NetherSpringFeatureConfig> NETHER_SPRING = Feature.register("nether_spring", new NetherSpringFeature((Function<Dynamic<?>, ? extends NetherSpringFeatureConfig>)((Function<Dynamic<?>, NetherSpringFeatureConfig>)NetherSpringFeatureConfig::deserialize)));
@@ -241,7 +241,7 @@ public abstract class Feature<FC extends FeatureConfig> {
     public static final Feature<DefaultFeatureConfig> SWEET_BERRY_BUSH = Feature.register("sweet_berry_bush", new WildCropFeature(DefaultFeatureConfig::deserialize, (BlockState)Blocks.SWEET_BERRY_BUSH.getDefaultState().with(SweetBerryBushBlock.AGE, 3)));
     public static final Feature<FillLayerFeatureConfig> FILL_LAYER = Feature.register("fill_layer", new FillLayerFeature((Function<Dynamic<?>, ? extends FillLayerFeatureConfig>)((Function<Dynamic<?>, FillLayerFeatureConfig>)FillLayerFeatureConfig::deserialize)));
     public static final BonusChestFeature BONUS_CHEST = Feature.register("bonus_chest", new BonusChestFeature((Function<Dynamic<?>, ? extends DefaultFeatureConfig>)((Function<Dynamic<?>, DefaultFeatureConfig>)DefaultFeatureConfig::deserialize)));
-    public static final BiMap<String, StructureFeature<?>> STRUCTURES = Util.make(HashBiMap.create(), hashBiMap -> {
+    public static final BiMap<String, StructureFeature<?>> STRUCTURES = SystemUtil.consume(HashBiMap.create(), hashBiMap -> {
         hashBiMap.put("Pillager_Outpost".toLowerCase(Locale.ROOT), PILLAGER_OUTPOST);
         hashBiMap.put("Mineshaft".toLowerCase(Locale.ROOT), MINESHAFT);
         hashBiMap.put("Mansion".toLowerCase(Locale.ROOT), WOODLAND_MANSION);

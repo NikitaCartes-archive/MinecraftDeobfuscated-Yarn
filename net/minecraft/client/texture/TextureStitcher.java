@@ -51,7 +51,7 @@ public class TextureStitcher {
         ArrayList<Holder> list = Lists.newArrayList(this.holders);
         list.sort(comparator);
         for (Holder holder2 : list) {
-            if (this.fit(holder2)) continue;
+            if (this.tryFit(holder2)) continue;
             throw new TextureStitcherCannotFitException(holder2.sprite, list.stream().map(holder -> holder.sprite).collect(ImmutableList.toImmutableList()));
         }
         this.width = MathHelper.smallestEncompassingPowerOfTwo(this.width);
@@ -75,7 +75,7 @@ public class TextureStitcher {
         return (i >> j) + ((i & (1 << j) - 1) == 0 ? 0 : 1) << j;
     }
 
-    private boolean fit(Holder holder) {
+    private boolean tryFit(Holder holder) {
         for (Slot slot : this.slots) {
             if (!slot.tryFit(holder)) continue;
             return true;

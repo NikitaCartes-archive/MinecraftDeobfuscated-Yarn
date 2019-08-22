@@ -3,7 +3,7 @@
  */
 package net.minecraft.client.render.entity.feature;
 
-import com.mojang.blaze3d.platform.GlStateManager;
+import com.mojang.blaze3d.systems.RenderSystem;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.render.entity.ParrotEntityRenderer;
@@ -24,23 +24,22 @@ extends FeatureRenderer<T, PlayerEntityModel<T>> {
         super(featureRendererContext);
     }
 
-    @Override
-    public void render(T playerEntity, float f, float g, float h, float i, float j, float k, float l) {
-        GlStateManager.enableRescaleNormal();
-        GlStateManager.color4f(1.0f, 1.0f, 1.0f, 1.0f);
+    public void method_4185(T playerEntity, float f, float g, float h, float i, float j, float k, float l) {
+        RenderSystem.enableRescaleNormal();
+        RenderSystem.color4f(1.0f, 1.0f, 1.0f, 1.0f);
         this.renderShoulderParrot(playerEntity, f, g, h, j, k, l, true);
         this.renderShoulderParrot(playerEntity, f, g, h, j, k, l, false);
-        GlStateManager.disableRescaleNormal();
+        RenderSystem.disableRescaleNormal();
     }
 
     private void renderShoulderParrot(T playerEntity, float f, float g, float h, float i, float j, float k, boolean bl) {
         CompoundTag compoundTag = bl ? ((PlayerEntity)playerEntity).getShoulderEntityLeft() : ((PlayerEntity)playerEntity).getShoulderEntityRight();
         EntityType.get(compoundTag.getString("id")).filter(entityType -> entityType == EntityType.PARROT).ifPresent(entityType -> {
-            GlStateManager.pushMatrix();
-            GlStateManager.translatef(bl ? 0.4f : -0.4f, playerEntity.isInSneakingPose() ? -1.3f : -1.5f, 0.0f);
+            RenderSystem.pushMatrix();
+            RenderSystem.translatef(bl ? 0.4f : -0.4f, playerEntity.isInSneakingPose() ? -1.3f : -1.5f, 0.0f);
             this.bindTexture(ParrotEntityRenderer.SKINS[compoundTag.getInt("Variant")]);
             this.model.method_17106(f, g, i, j, k, playerEntity.age);
-            GlStateManager.popMatrix();
+            RenderSystem.popMatrix();
         });
     }
 

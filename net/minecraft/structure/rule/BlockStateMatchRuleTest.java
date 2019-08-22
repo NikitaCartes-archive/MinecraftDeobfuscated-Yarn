@@ -8,11 +8,11 @@ import com.mojang.datafixers.Dynamic;
 import com.mojang.datafixers.types.DynamicOps;
 import java.util.Random;
 import net.minecraft.block.BlockState;
+import net.minecraft.structure.rule.AbstractRuleTest;
 import net.minecraft.structure.rule.RuleTest;
-import net.minecraft.structure.rule.RuleTestType;
 
 public class BlockStateMatchRuleTest
-extends RuleTest {
+extends AbstractRuleTest {
     private final BlockState blockState;
 
     public BlockStateMatchRuleTest(BlockState blockState) {
@@ -29,8 +29,8 @@ extends RuleTest {
     }
 
     @Override
-    protected RuleTestType getType() {
-        return RuleTestType.BLOCKSTATE_MATCH;
+    protected RuleTest getRuleTest() {
+        return RuleTest.BLOCKSTATE_MATCH;
     }
 
     @Override

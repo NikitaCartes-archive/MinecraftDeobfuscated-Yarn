@@ -3,7 +3,7 @@
  */
 package net.minecraft.client.render.entity;
 
-import com.mojang.blaze3d.platform.GlStateManager;
+import com.mojang.blaze3d.systems.RenderSystem;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.render.entity.EntityRenderDispatcher;
@@ -28,13 +28,11 @@ extends MobEntityRenderer<VillagerEntity, VillagerResemblingModel<VillagerEntity
         this.addFeature(new VillagerHeldItemFeatureRenderer<VillagerEntity>(this));
     }
 
-    @Override
-    protected Identifier getTexture(VillagerEntity villagerEntity) {
+    protected Identifier method_4151(VillagerEntity villagerEntity) {
         return VILLAGER_SKIN;
     }
 
-    @Override
-    protected void scale(VillagerEntity villagerEntity, float f) {
+    protected void method_4149(VillagerEntity villagerEntity, float f) {
         float g = 0.9375f;
         if (villagerEntity.isBaby()) {
             g = (float)((double)g * 0.5);
@@ -42,7 +40,7 @@ extends MobEntityRenderer<VillagerEntity, VillagerResemblingModel<VillagerEntity
         } else {
             this.field_4673 = 0.5f;
         }
-        GlStateManager.scalef(g, g, g);
+        RenderSystem.scalef(g, g, g);
     }
 }
 

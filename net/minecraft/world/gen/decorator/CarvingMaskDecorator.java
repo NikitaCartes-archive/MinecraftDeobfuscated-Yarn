@@ -24,8 +24,7 @@ extends Decorator<CarvingMaskDecoratorConfig> {
         super(function);
     }
 
-    @Override
-    public Stream<BlockPos> getPositions(IWorld iWorld, ChunkGenerator<? extends ChunkGeneratorConfig> chunkGenerator, Random random, CarvingMaskDecoratorConfig carvingMaskDecoratorConfig, BlockPos blockPos) {
+    public Stream<BlockPos> method_14341(IWorld iWorld, ChunkGenerator<? extends ChunkGeneratorConfig> chunkGenerator, Random random, CarvingMaskDecoratorConfig carvingMaskDecoratorConfig, BlockPos blockPos) {
         Chunk chunk = iWorld.getChunk(blockPos);
         ChunkPos chunkPos = chunk.getPos();
         BitSet bitSet = chunk.getCarvingMask(carvingMaskDecoratorConfig.step);

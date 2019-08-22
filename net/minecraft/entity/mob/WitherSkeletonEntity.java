@@ -33,7 +33,7 @@ public class WitherSkeletonEntity
 extends AbstractSkeletonEntity {
     public WitherSkeletonEntity(EntityType<? extends WitherSkeletonEntity> entityType, World world) {
         super((EntityType<? extends AbstractSkeletonEntity>)entityType, world);
-        this.setPathfindingPenalty(PathNodeType.LAVA, 8.0f);
+        this.setPathNodeTypeWeight(PathNodeType.LAVA, 8.0f);
     }
 
     @Override

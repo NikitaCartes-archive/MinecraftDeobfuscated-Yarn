@@ -49,7 +49,7 @@ public class ContainerType<T extends Container> {
     public static final ContainerType<MerchantContainer> MERCHANT = ContainerType.register("merchant", MerchantContainer::new);
     public static final ContainerType<ShulkerBoxContainer> SHULKER_BOX = ContainerType.register("shulker_box", ShulkerBoxContainer::new);
     public static final ContainerType<SmokerContainer> SMOKER = ContainerType.register("smoker", SmokerContainer::new);
-    public static final ContainerType<CartographyTableContainer> CARTOGRAPHY = ContainerType.register("cartography", CartographyTableContainer::new);
+    public static final ContainerType<CartographyTableContainer> CARTOGRAPHY_TABLE = ContainerType.register("cartography_table", CartographyTableContainer::new);
     public static final ContainerType<StonecutterContainer> STONECUTTER = ContainerType.register("stonecutter", StonecutterContainer::new);
     private final Factory<T> factory;
 

@@ -16,8 +16,8 @@ import net.minecraft.entity.ai.pathing.Path;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.poi.PointOfInterestStorage;
-import net.minecraft.world.poi.PointOfInterestType;
+import net.minecraft.village.PointOfInterestStorage;
+import net.minecraft.village.PointOfInterestType;
 
 public class NearestBedSensor
 extends Sensor<MobEntity> {
@@ -34,8 +34,7 @@ extends Sensor<MobEntity> {
         return ImmutableSet.of(MemoryModuleType.NEAREST_BED);
     }
 
-    @Override
-    protected void sense(ServerWorld serverWorld, MobEntity mobEntity) {
+    protected void method_21646(ServerWorld serverWorld, MobEntity mobEntity) {
         if (!mobEntity.isBaby()) {
             return;
         }

@@ -3,8 +3,7 @@
  */
 package net.minecraft.client.particle;
 
-import com.mojang.blaze3d.platform.GLX;
-import com.mojang.blaze3d.platform.GlStateManager;
+import com.mojang.blaze3d.systems.RenderSystem;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
@@ -52,18 +51,18 @@ extends Particle {
         double d = this.field_3823.x;
         double e = this.field_3823.y;
         double m = this.field_3823.z;
-        double n = MathHelper.lerp((double)f, this.field_3821.lastRenderX, this.field_3821.x);
-        double o = MathHelper.lerp((double)f, this.field_3821.lastRenderY, this.field_3821.y) + (double)this.field_3822;
-        double p = MathHelper.lerp((double)f, this.field_3821.lastRenderZ, this.field_3821.z);
+        double n = MathHelper.lerp((double)f, this.field_3821.prevRenderX, this.field_3821.x);
+        double o = MathHelper.lerp((double)f, this.field_3821.prevRenderY, this.field_3821.y) + (double)this.field_3822;
+        double p = MathHelper.lerp((double)f, this.field_3821.prevRenderZ, this.field_3821.z);
         double q = MathHelper.lerp((double)l, d, n);
         double r = MathHelper.lerp((double)l, e, o);
         double s = MathHelper.lerp((double)l, m, p);
         int t = this.getColorMultiplier(f);
         int u = t % 65536;
         int v = t / 65536;
-        GLX.glMultiTexCoord2f(GLX.GL_TEXTURE1, u, v);
-        GlStateManager.color4f(1.0f, 1.0f, 1.0f, 1.0f);
-        GlStateManager.enableLighting();
+        RenderSystem.glMultiTexCoord2f(33985, u, v);
+        RenderSystem.color4f(1.0f, 1.0f, 1.0f, 1.0f);
+        RenderSystem.enableLighting();
         this.field_3824.render(this.field_3823, q -= cameraX, r -= cameraY, s -= cameraZ, this.field_3823.yaw, f, false);
     }
 

@@ -12,8 +12,8 @@ import net.minecraft.entity.Entity;
 public abstract class EntityModel<T extends Entity>
 extends Model {
     public float handSwingProgress;
-    public boolean riding;
-    public boolean child = true;
+    public boolean isRiding;
+    public boolean isChild = true;
 
     public void render(T entity, float f, float g, float h, float i, float j, float k) {
     }
@@ -26,8 +26,8 @@ extends Model {
 
     public void copyStateTo(EntityModel<T> entityModel) {
         entityModel.handSwingProgress = this.handSwingProgress;
-        entityModel.riding = this.riding;
-        entityModel.child = this.child;
+        entityModel.isRiding = this.isRiding;
+        entityModel.isChild = this.isChild;
     }
 }
 

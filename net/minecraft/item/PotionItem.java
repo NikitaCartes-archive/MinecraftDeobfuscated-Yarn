@@ -50,7 +50,7 @@ extends Item {
             itemStack.decrement(1);
         }
         if (playerEntity instanceof ServerPlayerEntity) {
-            Criterions.CONSUME_ITEM.trigger((ServerPlayerEntity)playerEntity, itemStack);
+            Criterions.CONSUME_ITEM.handle((ServerPlayerEntity)playerEntity, itemStack);
         }
         if (!world.isClient) {
             List<StatusEffectInstance> list = PotionUtil.getPotionEffects(itemStack);
@@ -94,7 +94,7 @@ extends Item {
 
     @Override
     public String getTranslationKey(ItemStack itemStack) {
-        return PotionUtil.getPotion(itemStack).finishTranslationKey(this.getTranslationKey() + ".effect.");
+        return PotionUtil.getPotion(itemStack).getName(this.getTranslationKey() + ".effect.");
     }
 
     @Override

@@ -17,7 +17,7 @@ import net.minecraft.util.math.MathHelper;
 @Environment(value=EnvType.CLIENT)
 public class DoubleOption
 extends Option {
-    protected final float step;
+    protected final float interval;
     protected final double min;
     protected double max;
     private final Function<GameOptions, Double> getter;
@@ -28,7 +28,7 @@ extends Option {
         super(string);
         this.min = d;
         this.max = e;
-        this.step = f;
+        this.interval = f;
         this.getter = function;
         this.setter = biConsumer;
         this.displayStringGetter = biFunction;
@@ -48,8 +48,8 @@ extends Option {
     }
 
     private double method_18618(double d) {
-        if (this.step > 0.0f) {
-            d = this.step * (float)Math.round(d / (double)this.step);
+        if (this.interval > 0.0f) {
+            d = this.interval * (float)Math.round(d / (double)this.interval);
         }
         return MathHelper.clamp(d, this.min, this.max);
     }

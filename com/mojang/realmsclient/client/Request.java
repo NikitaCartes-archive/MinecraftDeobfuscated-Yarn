@@ -193,8 +193,7 @@ public abstract class Request<T extends Request<T>> {
             this.content = string2;
         }
 
-        @Override
-        public Post doConnect() {
+        public Post method_21059() {
             try {
                 if (this.content != null) {
                     this.connection.setRequestProperty("Content-Type", "application/json; charset=utf-8");
@@ -216,7 +215,7 @@ public abstract class Request<T extends Request<T>> {
 
         @Override
         public /* synthetic */ Request doConnect() {
-            return this.doConnect();
+            return this.method_21059();
         }
     }
 
@@ -230,8 +229,7 @@ public abstract class Request<T extends Request<T>> {
             this.content = string2;
         }
 
-        @Override
-        public Put doConnect() {
+        public Put method_21060() {
             try {
                 if (this.content != null) {
                     this.connection.setRequestProperty("Content-Type", "application/json; charset=utf-8");
@@ -252,7 +250,7 @@ public abstract class Request<T extends Request<T>> {
 
         @Override
         public /* synthetic */ Request doConnect() {
-            return this.doConnect();
+            return this.method_21060();
         }
     }
 
@@ -263,8 +261,7 @@ public abstract class Request<T extends Request<T>> {
             super(string, i, j);
         }
 
-        @Override
-        public Get doConnect() {
+        public Get method_21058() {
             try {
                 this.connection.setDoInput(true);
                 this.connection.setDoOutput(true);
@@ -278,7 +275,7 @@ public abstract class Request<T extends Request<T>> {
 
         @Override
         public /* synthetic */ Request doConnect() {
-            return this.doConnect();
+            return this.method_21058();
         }
     }
 
@@ -289,8 +286,7 @@ public abstract class Request<T extends Request<T>> {
             super(string, i, j);
         }
 
-        @Override
-        public Delete doConnect() {
+        public Delete method_21057() {
             try {
                 this.connection.setDoOutput(true);
                 this.connection.setRequestMethod("DELETE");
@@ -303,7 +299,7 @@ public abstract class Request<T extends Request<T>> {
 
         @Override
         public /* synthetic */ Request doConnect() {
-            return this.doConnect();
+            return this.method_21057();
         }
     }
 }

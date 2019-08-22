@@ -22,13 +22,13 @@ import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.pattern.CachedBlockPosition;
 import net.minecraft.command.arguments.BlockArgumentParser;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.NbtHelper;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.state.property.Property;
 import net.minecraft.tag.RegistryTagManager;
 import net.minecraft.tag.Tag;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.TagHelper;
 import org.jetbrains.annotations.Nullable;
 
 public class BlockPredicateArgumentType
@@ -40,8 +40,7 @@ implements ArgumentType<BlockPredicate> {
         return new BlockPredicateArgumentType();
     }
 
-    @Override
-    public BlockPredicate parse(StringReader stringReader) throws CommandSyntaxException {
+    public BlockPredicate method_9642(StringReader stringReader) throws CommandSyntaxException {
         BlockArgumentParser blockArgumentParser = new BlockArgumentParser(stringReader, true).parse(true);
         if (blockArgumentParser.getBlockState() != null) {
             StatePredicate statePredicate = new StatePredicate(blockArgumentParser.getBlockState(), blockArgumentParser.getBlockProperties().keySet(), blockArgumentParser.getNbtData());
@@ -81,7 +80,7 @@ implements ArgumentType<BlockPredicate> {
 
     @Override
     public /* synthetic */ Object parse(StringReader stringReader) throws CommandSyntaxException {
-        return this.parse(stringReader);
+        return this.method_9642(stringReader);
     }
 
     static class TagPredicate
@@ -97,18 +96,17 @@ implements ArgumentType<BlockPredicate> {
             this.nbt = compoundTag;
         }
 
-        @Override
-        public boolean test(CachedBlockPosition cachedBlockPosition) {
+        public boolean method_9649(CachedBlockPosition cachedBlockPosition) {
             BlockState blockState = cachedBlockPosition.getBlockState();
             if (!blockState.matches(this.tag)) {
                 return false;
             }
             for (Map.Entry<String, String> entry : this.properties.entrySet()) {
-                Property<?> property = blockState.getBlock().getStateManager().getProperty(entry.getKey());
+                Property<?> property = blockState.getBlock().getStateFactory().getProperty(entry.getKey());
                 if (property == null) {
                     return false;
                 }
-                Comparable comparable = property.parse(entry.getValue()).orElse(null);
+                Comparable comparable = property.getValue(entry.getValue()).orElse(null);
                 if (comparable == null) {
                     return false;
                 }
@@ -117,14 +115,14 @@ implements ArgumentType<BlockPredicate> {
             }
             if (this.nbt != null) {
                 BlockEntity blockEntity = cachedBlockPosition.getBlockEntity();
-                return blockEntity != null && NbtHelper.matches(this.nbt, blockEntity.toTag(new CompoundTag()), true);
+                return blockEntity != null && TagHelper.areTagsEqual(this.nbt, blockEntity.toTag(new CompoundTag()), true);
             }
             return true;
         }
 
         @Override
         public /* synthetic */ boolean test(Object object) {
-            return this.test((CachedBlockPosition)object);
+            return this.method_9649((CachedBlockPosition)object);
         }
     }
 
@@ -141,8 +139,7 @@ implements ArgumentType<BlockPredicate> {
             this.nbt = compoundTag;
         }
 
-        @Override
-        public boolean test(CachedBlockPosition cachedBlockPosition) {
+        public boolean method_9648(CachedBlockPosition cachedBlockPosition) {
             BlockState blockState = cachedBlockPosition.getBlockState();
             if (blockState.getBlock() != this.state.getBlock()) {
                 return false;
@@ -153,14 +150,14 @@ implements ArgumentType<BlockPredicate> {
             }
             if (this.nbt != null) {
                 BlockEntity blockEntity = cachedBlockPosition.getBlockEntity();
-                return blockEntity != null && NbtHelper.matches(this.nbt, blockEntity.toTag(new CompoundTag()), true);
+                return blockEntity != null && TagHelper.areTagsEqual(this.nbt, blockEntity.toTag(new CompoundTag()), true);
             }
             return true;
         }
 
         @Override
         public /* synthetic */ boolean test(Object object) {
-            return this.test((CachedBlockPosition)object);
+            return this.method_9648((CachedBlockPosition)object);
         }
     }
 

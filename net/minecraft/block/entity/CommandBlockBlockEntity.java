@@ -11,8 +11,8 @@ import net.minecraft.block.Blocks;
 import net.minecraft.block.CommandBlock;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.BlockEntityType;
+import net.minecraft.client.network.packet.BlockEntityUpdateS2CPacket;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.network.packet.s2c.play.BlockEntityUpdateS2CPacket;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.BlockPos;
@@ -117,7 +117,7 @@ extends BlockEntity {
         Block block;
         boolean bl2 = this.auto;
         this.auto = bl;
-        if (!bl2 && bl && !this.powered && this.world != null && this.getCommandBlockType() != Type.SEQUENCE && (block = this.getCachedState().getBlock()) instanceof CommandBlock) {
+        if (!bl2 && bl && !this.powered && this.world != null && this.getType() != Type.SEQUENCE && (block = this.getCachedState().getBlock()) instanceof CommandBlock) {
             this.updateConditionMet();
             this.world.getBlockTickScheduler().schedule(this.pos, block, block.getTickRate(this.world));
         }
@@ -145,7 +145,7 @@ extends BlockEntity {
         this.needsUpdatePacket = bl;
     }
 
-    public Type getCommandBlockType() {
+    public Type getType() {
         Block block = this.getCachedState().getBlock();
         if (block == Blocks.COMMAND_BLOCK) {
             return Type.REDSTONE;
@@ -168,9 +168,9 @@ extends BlockEntity {
     }
 
     @Override
-    public void cancelRemoval() {
+    public void validate() {
         this.resetBlock();
-        super.cancelRemoval();
+        super.validate();
     }
 
     public static enum Type {

@@ -93,7 +93,7 @@ public class SpectatorMenu {
         return this.currentGroup;
     }
 
-    public void useCommand(int i) {
+    public void setSelectedSlot(int i) {
         SpectatorMenuCommand spectatorMenuCommand = this.getCommand(i);
         if (spectatorMenuCommand != BLANK_COMMAND) {
             if (this.selectedSlot == i && spectatorMenuCommand.isEnabled()) {

@@ -12,6 +12,7 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.util.BooleanBiFunction;
 import net.minecraft.util.OffsetDoubleList;
+import net.minecraft.util.SystemUtil;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.AxisCycleDirection;
 import net.minecraft.util.math.BlockPos;
@@ -20,7 +21,7 @@ import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.shape.ArrayVoxelShape;
-import net.minecraft.util.shape.SlicedVoxelShape;
+import net.minecraft.util.shape.SliceVoxelShape;
 import net.minecraft.util.shape.VoxelSet;
 import net.minecraft.util.shape.VoxelShapes;
 import org.jetbrains.annotations.Nullable;
@@ -52,7 +53,7 @@ public abstract class VoxelShape {
 
     public Box getBoundingBox() {
         if (this.isEmpty()) {
-            throw new UnsupportedOperationException("No bounds for empty shape.");
+            throw SystemUtil.method_22320(new UnsupportedOperationException("No bounds for empty shape."));
         }
         return new Box(this.getMinimum(Direction.Axis.X), this.getMinimum(Direction.Axis.Y), this.getMinimum(Direction.Axis.Z), this.getMaximum(Direction.Axis.X), this.getMaximum(Direction.Axis.Y), this.getMaximum(Direction.Axis.Z));
     }
@@ -183,14 +184,14 @@ public abstract class VoxelShape {
             return this;
         }
         int i = this.getCoordIndex(axis, axisDirection == Direction.AxisDirection.POSITIVE ? 0.9999999 : 1.0E-7);
-        return new SlicedVoxelShape(this, axis, i);
+        return new SliceVoxelShape(this, axis, i);
     }
 
-    public double calculateMaxDistance(Direction.Axis axis, Box box, double d) {
-        return this.calculateMaxDistance(AxisCycleDirection.between(axis, Direction.Axis.X), box, d);
+    public double method_1108(Direction.Axis axis, Box box, double d) {
+        return this.method_1103(AxisCycleDirection.between(axis, Direction.Axis.X), box, d);
     }
 
-    protected double calculateMaxDistance(AxisCycleDirection axisCycleDirection, Box box, double d) {
+    protected double method_1103(AxisCycleDirection axisCycleDirection, Box box, double d) {
         block11: {
             int n;
             int l;

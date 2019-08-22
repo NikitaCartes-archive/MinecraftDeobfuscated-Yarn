@@ -28,6 +28,8 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.ItemUsageContext;
 import net.minecraft.item.Items;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.sound.SoundEvent;
+import net.minecraft.sound.SoundEvents;
 import net.minecraft.tag.Tag;
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
@@ -37,9 +39,9 @@ import net.minecraft.util.DefaultedList;
 import net.minecraft.util.Hand;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Rarity;
+import net.minecraft.util.SystemUtil;
 import net.minecraft.util.TypedActionResult;
 import net.minecraft.util.UseAction;
-import net.minecraft.util.Util;
 import net.minecraft.util.hit.HitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
@@ -197,7 +199,7 @@ implements ItemConvertible {
 
     protected String getOrCreateTranslationKey() {
         if (this.translationKey == null) {
-            this.translationKey = Util.createTranslationKey("item", Registry.ITEM.getId(this));
+            this.translationKey = SystemUtil.createTranslationKey("item", Registry.ITEM.getId(this));
         }
         return this.translationKey;
     }
@@ -344,6 +346,14 @@ implements ItemConvertible {
     @Nullable
     public FoodComponent getFoodComponent() {
         return this.foodComponent;
+    }
+
+    public SoundEvent getDrinkSound() {
+        return SoundEvents.ENTITY_GENERIC_DRINK;
+    }
+
+    public SoundEvent getEatSound() {
+        return SoundEvents.ENTITY_GENERIC_EAT;
     }
 
     public static class Settings {

@@ -11,10 +11,10 @@ import java.util.List;
 import java.util.Optional;
 import java.util.function.Consumer;
 import net.minecraft.advancement.criterion.Criterions;
+import net.minecraft.client.network.packet.UnlockRecipesS2CPacket;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.StringTag;
-import net.minecraft.network.packet.s2c.play.UnlockRecipesS2CPacket;
 import net.minecraft.recipe.Recipe;
 import net.minecraft.recipe.RecipeManager;
 import net.minecraft.recipe.book.RecipeBook;
@@ -42,7 +42,7 @@ extends RecipeBook {
             this.add(identifier);
             this.display(identifier);
             list.add(identifier);
-            Criterions.RECIPE_UNLOCKED.trigger(serverPlayerEntity, recipe);
+            Criterions.RECIPE_UNLOCKED.handle(serverPlayerEntity, recipe);
             ++i;
         }
         this.sendUnlockRecipesPacket(UnlockRecipesS2CPacket.Action.ADD, serverPlayerEntity, list);

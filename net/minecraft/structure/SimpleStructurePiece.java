@@ -17,10 +17,10 @@ import net.minecraft.structure.StructurePiece;
 import net.minecraft.structure.StructurePieceType;
 import net.minecraft.structure.StructurePlacementData;
 import net.minecraft.util.BlockRotation;
-import net.minecraft.util.math.BlockBox;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.math.Direction;
+import net.minecraft.util.math.MutableIntBoundingBox;
 import net.minecraft.world.IWorld;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -57,15 +57,15 @@ extends StructurePiece {
     }
 
     @Override
-    public boolean generate(IWorld iWorld, Random random, BlockBox blockBox, ChunkPos chunkPos) {
-        this.placementData.setBoundingBox(blockBox);
+    public boolean generate(IWorld iWorld, Random random, MutableIntBoundingBox mutableIntBoundingBox, ChunkPos chunkPos) {
+        this.placementData.setBoundingBox(mutableIntBoundingBox);
         this.boundingBox = this.structure.calculateBoundingBox(this.placementData, this.pos);
         if (this.structure.method_15172(iWorld, this.pos, this.placementData, 2)) {
             List<Structure.StructureBlockInfo> list = this.structure.method_16445(this.pos, this.placementData, Blocks.STRUCTURE_BLOCK);
             for (Structure.StructureBlockInfo structureBlockInfo : list) {
                 StructureBlockMode structureBlockMode;
                 if (structureBlockInfo.tag == null || (structureBlockMode = StructureBlockMode.valueOf(structureBlockInfo.tag.getString("mode"))) != StructureBlockMode.DATA) continue;
-                this.handleMetadata(structureBlockInfo.tag.getString("metadata"), structureBlockInfo.pos, iWorld, random, blockBox);
+                this.handleMetadata(structureBlockInfo.tag.getString("metadata"), structureBlockInfo.pos, iWorld, random, mutableIntBoundingBox);
             }
             List<Structure.StructureBlockInfo> list2 = this.structure.method_16445(this.pos, this.placementData, Blocks.JIGSAW);
             for (Structure.StructureBlockInfo structureBlockInfo2 : list2) {
@@ -90,7 +90,7 @@ extends StructurePiece {
         return true;
     }
 
-    protected abstract void handleMetadata(String var1, BlockPos var2, IWorld var3, Random var4, BlockBox var5);
+    protected abstract void handleMetadata(String var1, BlockPos var2, IWorld var3, Random var4, MutableIntBoundingBox var5);
 
     @Override
     public void translate(int i, int j, int k) {

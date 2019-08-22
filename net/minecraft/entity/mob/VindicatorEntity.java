@@ -122,7 +122,7 @@ extends IllagerEntity {
     @Override
     public void readCustomDataFromTag(CompoundTag compoundTag) {
         super.readCustomDataFromTag(compoundTag);
-        if (compoundTag.contains("Johnny", 99)) {
+        if (compoundTag.containsKey("Johnny", 99)) {
             this.isJohnny = compoundTag.getBoolean("Johnny");
         }
     }

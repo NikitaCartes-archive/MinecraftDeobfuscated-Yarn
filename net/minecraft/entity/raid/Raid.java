@@ -20,6 +20,7 @@ import java.util.stream.Stream;
 import net.minecraft.advancement.criterion.Criterions;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.entity.BannerPattern;
+import net.minecraft.client.network.packet.PlaySoundS2CPacket;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.EquipmentSlot;
@@ -36,7 +37,6 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
-import net.minecraft.network.packet.s2c.play.PlaySoundS2CPacket;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundCategory;
@@ -56,15 +56,14 @@ import net.minecraft.world.Heightmap;
 import net.minecraft.world.LocalDifficulty;
 import net.minecraft.world.SpawnHelper;
 import net.minecraft.world.World;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 public class Raid {
     private static final TranslatableText EVENT_TEXT = new TranslatableText("event.minecraft.raid", new Object[0]);
     private static final TranslatableText VICTORY_SUFFIX_TEXT = new TranslatableText("event.minecraft.raid.victory", new Object[0]);
     private static final TranslatableText DEFEAT_SUFFIX_TEXT = new TranslatableText("event.minecraft.raid.defeat", new Object[0]);
-    private static final Text VICTORY_TITLE = EVENT_TEXT.copy().append(" - ").append(VICTORY_SUFFIX_TEXT);
-    private static final Text DEFEAT_TITLE = EVENT_TEXT.copy().append(" - ").append(DEFEAT_SUFFIX_TEXT);
+    private static final Text VICTORY_TITLE = EVENT_TEXT.method_11020().append(" - ").append(VICTORY_SUFFIX_TEXT);
+    private static final Text DEFEAT_TITLE = EVENT_TEXT.method_11020().append(" - ").append(DEFEAT_SUFFIX_TEXT);
     private final Map<Integer, RaiderEntity> waveToCaptain = Maps.newHashMap();
     private final Map<Integer, Set<RaiderEntity>> waveToRaiders = Maps.newHashMap();
     private final Set<UUID> heroesOfTheVillage = Sets.newHashSet();
@@ -112,10 +111,10 @@ public class Raid {
         this.waveCount = compoundTag.getInt("NumGroups");
         this.status = Status.fromName(compoundTag.getString("Status"));
         this.heroesOfTheVillage.clear();
-        if (compoundTag.contains("HeroesOfTheVillage", 9)) {
+        if (compoundTag.containsKey("HeroesOfTheVillage", 9)) {
             ListTag listTag = compoundTag.getList("HeroesOfTheVillage", 10);
             for (int i = 0; i < listTag.size(); ++i) {
-                CompoundTag compoundTag2 = listTag.getCompound(i);
+                CompoundTag compoundTag2 = listTag.getCompoundTag(i);
                 UUID uUID = compoundTag2.getUuid("UUID");
                 this.heroesOfTheVillage.add(uUID);
             }
@@ -191,7 +190,7 @@ public class Raid {
             this.badOmenLevel += playerEntity.getStatusEffect(StatusEffects.BAD_OMEN).getAmplifier() + 1;
             this.badOmenLevel = MathHelper.clamp(this.badOmenLevel, 0, this.getMaxAcceptableBadOmenLevel());
         }
-        playerEntity.removeStatusEffect(StatusEffects.BAD_OMEN);
+        playerEntity.tryRemoveStatusEffect(StatusEffects.BAD_OMEN);
     }
 
     public void invalidate() {
@@ -239,7 +238,7 @@ public class Raid {
                     boolean bl3;
                     bl2 = this.preCalculatedRavagerSpawnLocation.isPresent();
                     boolean bl4 = bl3 = !bl2 && this.preRaidTicks % 5 == 0;
-                    if (bl2 && !this.world.getChunkManager().shouldTickChunk(new ChunkPos(this.preCalculatedRavagerSpawnLocation.get()))) {
+                    if (bl2 && !this.world.method_14178().shouldTickChunk(new ChunkPos(this.preCalculatedRavagerSpawnLocation.get()))) {
                         bl3 = true;
                     }
                     if (bl3) {
@@ -267,7 +266,7 @@ public class Raid {
                 this.removeObsoleteRaiders();
                 if (i > 0) {
                     if (i <= 2) {
-                        this.bar.setName(EVENT_TEXT.copy().append(" - ").append(new TranslatableText("event.minecraft.raid.raiders_remaining", i)));
+                        this.bar.setName(EVENT_TEXT.method_11020().append(" - ").append(new TranslatableText("event.minecraft.raid.raiders_remaining", i)));
                     } else {
                         this.bar.setName(EVENT_TEXT);
                     }
@@ -307,7 +306,7 @@ public class Raid {
                         if (!(livingEntity instanceof ServerPlayerEntity)) continue;
                         ServerPlayerEntity serverPlayerEntity = (ServerPlayerEntity)livingEntity;
                         serverPlayerEntity.incrementStat(Stats.RAID_WIN);
-                        Criterions.HERO_OF_THE_VILLAGE.trigger(serverPlayerEntity);
+                        Criterions.HERO_OF_THE_VILLAGE.handle(serverPlayerEntity);
                     }
                 }
             }
@@ -436,7 +435,7 @@ public class Raid {
                 ++k;
                 if (raiderEntity2 == null) continue;
                 this.addRaider(i, raiderEntity2, blockPos, false);
-                raiderEntity2.refreshPositionAndAngles(blockPos, 0.0f, 0.0f);
+                raiderEntity2.setPositionAndAngles(blockPos, 0.0f, 0.0f);
                 raiderEntity2.startRiding(raiderEntity);
             }
         }
@@ -454,7 +453,7 @@ public class Raid {
             raiderEntity.setAbleToJoinRaid(true);
             raiderEntity.setOutOfRaidCounter(0);
             if (!bl && blockPos != null) {
-                raiderEntity.updatePosition((double)blockPos.getX() + 0.5, (double)blockPos.getY() + 1.0, (double)blockPos.getZ() + 0.5);
+                raiderEntity.setPosition((double)blockPos.getX() + 0.5, (double)blockPos.getY() + 1.0, (double)blockPos.getZ() + 0.5);
                 raiderEntity.initialize(this.world, this.world.getLocalDifficulty(blockPos), SpawnType.EVENT, null, null);
                 raiderEntity.addBonusForWave(i, false);
                 raiderEntity.onGround = true;
@@ -485,7 +484,7 @@ public class Raid {
         return this.waveToRaiders.values().stream().mapToInt(Set::size).sum();
     }
 
-    public void removeFromWave(@NotNull RaiderEntity raiderEntity, boolean bl) {
+    public void removeFromWave(RaiderEntity raiderEntity, boolean bl) {
         boolean bl2;
         Set<RaiderEntity> set = this.waveToRaiders.get(raiderEntity.getWave());
         if (set != null && (bl2 = set.remove(raiderEntity))) {
@@ -526,7 +525,7 @@ public class Raid {
             int n = this.center.getZ() + MathHelper.floor(MathHelper.sin(f) * 32.0f * (float)k) + this.world.random.nextInt(5);
             int o = this.world.getTop(Heightmap.Type.WORLD_SURFACE, m, n);
             mutable.set(m, o, n);
-            if (this.world.isNearOccupiedPointOfInterest(mutable) && i < 2 || !this.world.isAreaLoaded(mutable.getX() - 10, mutable.getY() - 10, mutable.getZ() - 10, mutable.getX() + 10, mutable.getY() + 10, mutable.getZ() + 10) || !this.world.getChunkManager().shouldTickChunk(new ChunkPos(mutable)) || !SpawnHelper.canSpawn(SpawnRestriction.Location.ON_GROUND, this.world, mutable, EntityType.RAVAGER) && (this.world.getBlockState(mutable.down()).getBlock() != Blocks.SNOW || !this.world.getBlockState(mutable).isAir())) continue;
+            if (this.world.isNearOccupiedPointOfInterest(mutable) && i < 2 || !this.world.isAreaLoaded(mutable.getX() - 10, mutable.getY() - 10, mutable.getZ() - 10, mutable.getX() + 10, mutable.getY() + 10, mutable.getZ() + 10) || !this.world.method_14178().shouldTickChunk(new ChunkPos(mutable)) || !SpawnHelper.canSpawn(SpawnRestriction.Location.ON_GROUND, this.world, mutable, EntityType.RAVAGER) && (this.world.getBlockState(mutable.down()).getBlock() != Blocks.SNOW || !this.world.getBlockState(mutable).isAir())) continue;
             return mutable;
         }
         return null;

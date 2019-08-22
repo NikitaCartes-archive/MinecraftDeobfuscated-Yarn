@@ -3,9 +3,9 @@
  */
 package com.mojang.realmsclient.gui.screens;
 
-import com.mojang.realmsclient.gui.RealmsConstants;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.class_4359;
 import net.minecraft.realms.AbstractRealmsButton;
 import net.minecraft.realms.RealmsButton;
 import net.minecraft.realms.RealmsScreen;
@@ -32,14 +32,14 @@ extends RealmsScreen {
 
     @Override
     public void init() {
-        this.buttonsAdd(new RealmsButton(0, this.width() / 2 - 105, RealmsConstants.row(9), 100, 20, this.yesButton){
+        this.buttonsAdd(new RealmsButton(0, this.width() / 2 - 105, class_4359.method_21072(9), 100, 20, this.yesButton){
 
             @Override
             public void onPress() {
                 RealmsConfirmScreen.this.parent.confirmResult(true, RealmsConfirmScreen.this.id);
             }
         });
-        this.buttonsAdd(new RealmsButton(1, this.width() / 2 + 5, RealmsConstants.row(9), 100, 20, this.noButton){
+        this.buttonsAdd(new RealmsButton(1, this.width() / 2 + 5, class_4359.method_21072(9), 100, 20, this.noButton){
 
             @Override
             public void onPress() {
@@ -51,8 +51,8 @@ extends RealmsScreen {
     @Override
     public void render(int i, int j, float f) {
         this.renderBackground();
-        this.drawCenteredString(this.title1, this.width() / 2, RealmsConstants.row(3), 0xFFFFFF);
-        this.drawCenteredString(this.title2, this.width() / 2, RealmsConstants.row(5), 0xFFFFFF);
+        this.drawCenteredString(this.title1, this.width() / 2, class_4359.method_21072(3), 0xFFFFFF);
+        this.drawCenteredString(this.title2, this.width() / 2, class_4359.method_21072(5), 0xFFFFFF);
         super.render(i, j, f);
     }
 

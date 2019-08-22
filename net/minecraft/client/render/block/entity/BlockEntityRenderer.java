@@ -3,8 +3,7 @@
  */
 package net.minecraft.client.render.block.entity;
 
-import com.mojang.blaze3d.platform.GLX;
-import com.mojang.blaze3d.platform.GlStateManager;
+import com.mojang.blaze3d.systems.RenderSystem;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.block.entity.BlockEntity;
@@ -26,7 +25,7 @@ public abstract class BlockEntityRenderer<T extends BlockEntity> {
     protected BlockEntityRenderDispatcher renderManager;
 
     public void render(T blockEntity, double d, double e, double f, float g, int i) {
-        HitResult hitResult = this.renderManager.crosshairTarget;
+        HitResult hitResult = this.renderManager.hitResult;
         if (blockEntity instanceof Nameable && hitResult != null && hitResult.getType() == HitResult.Type.BLOCK && ((BlockEntity)blockEntity).getPos().equals(((BlockHitResult)hitResult).getBlockPos())) {
             this.disableLightmap(true);
             this.renderName(blockEntity, ((Nameable)blockEntity).getDisplayName().asFormattedString(), d, e, f, 12);
@@ -35,13 +34,13 @@ public abstract class BlockEntityRenderer<T extends BlockEntity> {
     }
 
     protected void disableLightmap(boolean bl) {
-        GlStateManager.activeTexture(GLX.GL_TEXTURE1);
+        RenderSystem.activeTexture(33985);
         if (bl) {
-            GlStateManager.disableTexture();
+            RenderSystem.disableTexture();
         } else {
-            GlStateManager.enableTexture();
+            RenderSystem.enableTexture();
         }
-        GlStateManager.activeTexture(GLX.GL_TEXTURE0);
+        RenderSystem.activeTexture(33984);
     }
 
     protected void bindTexture(Identifier identifier) {
@@ -60,7 +59,7 @@ public abstract class BlockEntityRenderer<T extends BlockEntity> {
     }
 
     public TextRenderer getFontRenderer() {
-        return this.renderManager.getTextRenderer();
+        return this.renderManager.getFontRenderer();
     }
 
     public boolean method_3563(T blockEntity) {
@@ -68,7 +67,7 @@ public abstract class BlockEntityRenderer<T extends BlockEntity> {
     }
 
     protected void renderName(T blockEntity, String string, double d, double e, double f, int i) {
-        Camera camera = this.renderManager.camera;
+        Camera camera = this.renderManager.cameraEntity;
         double g = ((BlockEntity)blockEntity).getSquaredDistance(camera.getPos().x, camera.getPos().y, camera.getPos().z);
         if (g > (double)(i * i)) {
             return;

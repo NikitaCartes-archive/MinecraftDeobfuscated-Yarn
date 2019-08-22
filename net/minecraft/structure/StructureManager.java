@@ -17,9 +17,8 @@ import java.nio.file.LinkOption;
 import java.nio.file.Path;
 import java.nio.file.attribute.FileAttribute;
 import java.util.Map;
-import net.minecraft.datafixer.DataFixTypes;
+import net.minecraft.datafixers.DataFixTypes;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.NbtHelper;
 import net.minecraft.nbt.NbtIo;
 import net.minecraft.resource.Resource;
 import net.minecraft.resource.ResourceManager;
@@ -29,6 +28,7 @@ import net.minecraft.structure.Structure;
 import net.minecraft.util.FileNameUtil;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.InvalidIdentifierException;
+import net.minecraft.util.TagHelper;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.Nullable;
@@ -113,11 +113,15 @@ implements SynchronousResourceReloadListener {
 
     private Structure readStructure(InputStream inputStream) throws IOException {
         CompoundTag compoundTag = NbtIo.readCompressed(inputStream);
-        if (!compoundTag.contains("DataVersion", 99)) {
+        return this.method_21891(compoundTag);
+    }
+
+    public Structure method_21891(CompoundTag compoundTag) {
+        if (!compoundTag.containsKey("DataVersion", 99)) {
             compoundTag.putInt("DataVersion", 500);
         }
         Structure structure = new Structure();
-        structure.fromTag(NbtHelper.update(this.dataFixer, DataFixTypes.STRUCTURE, compoundTag, compoundTag.getInt("DataVersion")));
+        structure.fromTag(TagHelper.update(this.dataFixer, DataFixTypes.STRUCTURE, compoundTag, compoundTag.getInt("DataVersion")));
         return structure;
     }
 
@@ -146,7 +150,7 @@ implements SynchronousResourceReloadListener {
         return true;
     }
 
-    private Path getStructurePath(Identifier identifier, String string) {
+    public Path getStructurePath(Identifier identifier, String string) {
         try {
             Path path = this.generatedPath.resolve(identifier.getNamespace());
             Path path2 = path.resolve("structures");

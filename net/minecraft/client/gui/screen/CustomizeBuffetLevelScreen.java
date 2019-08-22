@@ -21,7 +21,7 @@ import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.StringTag;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.Util;
+import net.minecraft.util.SystemUtil;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.world.biome.source.BiomeSourceType;
 import org.jetbrains.annotations.Nullable;
@@ -45,12 +45,12 @@ extends Screen {
     @Override
     protected void init() {
         this.minecraft.keyboard.enableRepeatEvents(true);
-        this.addButton(new ButtonWidget((this.width - 200) / 2, 40, 200, 20, I18n.translate("createWorld.customize.buffet.generatortype", new Object[0]) + " " + I18n.translate(Util.createTranslationKey("generator", CHUNK_GENERATOR_TYPES.get(this.biomeListLength)), new Object[0]), buttonWidget -> {
+        this.addButton(new ButtonWidget((this.width - 200) / 2, 40, 200, 20, I18n.translate("createWorld.customize.buffet.generatortype", new Object[0]) + " " + I18n.translate(SystemUtil.createTranslationKey("generator", CHUNK_GENERATOR_TYPES.get(this.biomeListLength)), new Object[0]), buttonWidget -> {
             ++this.biomeListLength;
             if (this.biomeListLength >= CHUNK_GENERATOR_TYPES.size()) {
                 this.biomeListLength = 0;
             }
-            buttonWidget.setMessage(I18n.translate("createWorld.customize.buffet.generatortype", new Object[0]) + " " + I18n.translate(Util.createTranslationKey("generator", CHUNK_GENERATOR_TYPES.get(this.biomeListLength)), new Object[0]));
+            buttonWidget.setMessage(I18n.translate("createWorld.customize.buffet.generatortype", new Object[0]) + " " + I18n.translate(SystemUtil.createTranslationKey("generator", CHUNK_GENERATOR_TYPES.get(this.biomeListLength)), new Object[0]));
         }));
         this.biomeSelectionList = new BuffetBiomesListWidget();
         this.children.add(this.biomeSelectionList);
@@ -65,7 +65,7 @@ extends Screen {
 
     private void initListSelectLogic() {
         int i;
-        if (this.generatorOptionsTag.contains("chunk_generator", 10) && this.generatorOptionsTag.getCompound("chunk_generator").contains("type", 8)) {
+        if (this.generatorOptionsTag.containsKey("chunk_generator", 10) && this.generatorOptionsTag.getCompound("chunk_generator").containsKey("type", 8)) {
             Identifier identifier = new Identifier(this.generatorOptionsTag.getCompound("chunk_generator").getString("type"));
             for (i = 0; i < CHUNK_GENERATOR_TYPES.size(); ++i) {
                 if (!CHUNK_GENERATOR_TYPES.get(i).equals(identifier)) continue;
@@ -73,11 +73,11 @@ extends Screen {
                 break;
             }
         }
-        if (this.generatorOptionsTag.contains("biome_source", 10) && this.generatorOptionsTag.getCompound("biome_source").contains("biomes", 9)) {
+        if (this.generatorOptionsTag.containsKey("biome_source", 10) && this.generatorOptionsTag.getCompound("biome_source").containsKey("biomes", 9)) {
             ListTag listTag = this.generatorOptionsTag.getCompound("biome_source").getList("biomes", 8);
             for (i = 0; i < listTag.size(); ++i) {
                 Identifier identifier2 = new Identifier(listTag.getString(i));
-                this.biomeSelectionList.setSelected((BuffetBiomesListWidget.BuffetBiomeItem)this.biomeSelectionList.children().stream().filter(buffetBiomeItem -> Objects.equals(((BuffetBiomesListWidget.BuffetBiomeItem)buffetBiomeItem).biome, identifier2)).findFirst().orElse(null));
+                this.biomeSelectionList.method_20089(this.biomeSelectionList.children().stream().filter(buffetBiomeItem -> Objects.equals(((BuffetBiomesListWidget.BuffetBiomeItem)buffetBiomeItem).biome, identifier2)).findFirst().orElse(null));
             }
         }
         this.generatorOptionsTag.remove("chunk_generator");
@@ -131,8 +131,7 @@ extends Screen {
             return CustomizeBuffetLevelScreen.this.getFocused() == this;
         }
 
-        @Override
-        public void setSelected(@Nullable BuffetBiomeItem buffetBiomeItem) {
+        public void method_20089(@Nullable BuffetBiomeItem buffetBiomeItem) {
             super.setSelected(buffetBiomeItem);
             if (buffetBiomeItem != null) {
                 NarratorManager.INSTANCE.narrate(new TranslatableText("narrator.select", Registry.BIOME.get(buffetBiomeItem.biome).getName().getString()).getString());
@@ -147,7 +146,7 @@ extends Screen {
 
         @Override
         public /* synthetic */ void setSelected(@Nullable EntryListWidget.Entry entry) {
-            this.setSelected((BuffetBiomeItem)entry);
+            this.method_20089((BuffetBiomeItem)entry);
         }
 
         @Environment(value=EnvType.CLIENT)
@@ -167,7 +166,7 @@ extends Screen {
             @Override
             public boolean mouseClicked(double d, double e, int i) {
                 if (i == 0) {
-                    BuffetBiomesListWidget.this.setSelected(this);
+                    BuffetBiomesListWidget.this.method_20089(this);
                     CustomizeBuffetLevelScreen.this.refreshConfirmButton();
                     return true;
                 }

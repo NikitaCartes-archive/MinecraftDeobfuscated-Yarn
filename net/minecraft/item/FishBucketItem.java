@@ -60,7 +60,7 @@ extends BucketItem {
     @Environment(value=EnvType.CLIENT)
     public void appendTooltip(ItemStack itemStack, @Nullable World world, List<Text> list, TooltipContext tooltipContext) {
         CompoundTag compoundTag;
-        if (this.fishType == EntityType.TROPICAL_FISH && (compoundTag = itemStack.getTag()) != null && compoundTag.contains("BucketVariantTag", 3)) {
+        if (this.fishType == EntityType.TROPICAL_FISH && (compoundTag = itemStack.getTag()) != null && compoundTag.containsKey("BucketVariantTag", 3)) {
             int i = compoundTag.getInt("BucketVariantTag");
             Formatting[] formattings = new Formatting[]{Formatting.ITALIC, Formatting.GRAY};
             String string = "color.minecraft." + TropicalFishEntity.getBaseDyeColor(i);
