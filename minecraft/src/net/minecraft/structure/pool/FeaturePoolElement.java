@@ -77,9 +77,14 @@ public class FeaturePoolElement extends StructurePoolElement {
 
 	@Override
 	public boolean generate(
-		StructureManager structureManager, IWorld iWorld, BlockPos blockPos, BlockRotation blockRotation, MutableIntBoundingBox mutableIntBoundingBox, Random random
+		StructureManager structureManager,
+		IWorld iWorld,
+		ChunkGenerator<?> chunkGenerator,
+		BlockPos blockPos,
+		BlockRotation blockRotation,
+		MutableIntBoundingBox mutableIntBoundingBox,
+		Random random
 	) {
-		ChunkGenerator<?> chunkGenerator = iWorld.getChunkManager().getChunkGenerator();
 		return this.feature.generate(iWorld, chunkGenerator, random, blockPos);
 	}
 

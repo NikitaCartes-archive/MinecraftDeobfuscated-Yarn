@@ -139,7 +139,7 @@ public class ChunkTaskPrioritySystem implements AutoCloseable, ChunkHolder.Level
 	private <T> LevelPrioritizedQueue<Function<Actor<Unit>, T>> getQueue(Actor<T> actor) {
 		LevelPrioritizedQueue<? extends Function<Actor<Unit>, ?>> levelPrioritizedQueue = (LevelPrioritizedQueue)this.queues.get(actor);
 		if (levelPrioritizedQueue == null) {
-			throw (IllegalArgumentException)SystemUtil.method_22320((T)(new IllegalArgumentException("No queue for: " + actor)));
+			throw (IllegalArgumentException)SystemUtil.throwOrPause((T)(new IllegalArgumentException("No queue for: " + actor)));
 		} else {
 			return levelPrioritizedQueue;
 		}

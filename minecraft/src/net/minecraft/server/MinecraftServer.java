@@ -55,7 +55,6 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.Bootstrap;
 import net.minecraft.SharedConstants;
-import net.minecraft.class_4521;
 import net.minecraft.client.network.packet.DifficultyS2CPacket;
 import net.minecraft.client.network.packet.WorldTimeUpdateS2CPacket;
 import net.minecraft.datafixers.Schemas;
@@ -86,6 +85,7 @@ import net.minecraft.server.world.SecondaryServerWorld;
 import net.minecraft.server.world.ServerChunkManager;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.tag.RegistryTagManager;
+import net.minecraft.test.TestManager;
 import net.minecraft.text.LiteralText;
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
@@ -837,7 +837,7 @@ public abstract class MinecraftServer extends NonBlockingThreadExecutor<ServerTa
 		this.profiler.swap("players");
 		this.playerManager.updatePlayerLatency();
 		if (SharedConstants.isDevelopment) {
-			class_4521.field_20574.method_22228();
+			TestManager.INSTANCE.tick();
 		}
 
 		this.profiler.swap("server gui refresh");

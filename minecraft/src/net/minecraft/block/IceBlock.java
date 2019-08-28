@@ -9,6 +9,7 @@ import net.minecraft.enchantment.Enchantments;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.LightType;
@@ -43,9 +44,9 @@ public class IceBlock extends TransparentBlock {
 	}
 
 	@Override
-	public void onScheduledTick(BlockState blockState, World world, BlockPos blockPos, Random random) {
-		if (world.getLightLevel(LightType.BLOCK, blockPos) > 11 - blockState.getLightSubtracted(world, blockPos)) {
-			this.melt(blockState, world, blockPos);
+	public void onScheduledTick(BlockState blockState, ServerWorld serverWorld, BlockPos blockPos, Random random) {
+		if (serverWorld.getLightLevel(LightType.BLOCK, blockPos) > 11 - blockState.getLightSubtracted(serverWorld, blockPos)) {
+			this.melt(blockState, serverWorld, blockPos);
 		}
 	}
 

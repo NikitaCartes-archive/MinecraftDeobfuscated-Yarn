@@ -2,6 +2,7 @@ package net.minecraft.item;
 
 import net.minecraft.advancement.criterion.Criterions;
 import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.sound.SoundEvent;
@@ -27,8 +28,8 @@ public class HoneyBottleItem extends Item {
 			serverPlayerEntity.incrementStat(Stats.USED.getOrCreateStat(this));
 		}
 
-		if (livingEntity instanceof PlayerEntity && !((PlayerEntity)livingEntity).abilities.creativeMode) {
-			itemStack.decrement(1);
+		if (!world.isClient) {
+			livingEntity.tryRemoveStatusEffect(StatusEffects.POISON);
 		}
 
 		return itemStack.isEmpty() ? new ItemStack(Items.GLASS_BOTTLE) : itemStack;

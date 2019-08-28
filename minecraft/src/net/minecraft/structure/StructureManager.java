@@ -146,10 +146,10 @@ public class StructureManager implements SynchronousResourceReloadListener {
 
 	private Structure readStructure(InputStream inputStream) throws IOException {
 		CompoundTag compoundTag = NbtIo.readCompressed(inputStream);
-		return this.method_21891(compoundTag);
+		return this.createStructure(compoundTag);
 	}
 
-	public Structure method_21891(CompoundTag compoundTag) {
+	public Structure createStructure(CompoundTag compoundTag) {
 		if (!compoundTag.containsKey("DataVersion", 99)) {
 			compoundTag.putInt("DataVersion", 500);
 		}

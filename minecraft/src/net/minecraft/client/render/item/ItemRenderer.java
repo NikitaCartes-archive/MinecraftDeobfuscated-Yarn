@@ -1,6 +1,7 @@
 package net.minecraft.client.render.item;
 
 import com.google.common.collect.Sets;
+import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
 import java.util.List;
 import java.util.Random;
@@ -8,7 +9,6 @@ import java.util.Set;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_4493;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.color.item.ItemColors;
 import net.minecraft.client.font.TextRenderer;
@@ -116,7 +116,7 @@ public class ItemRenderer implements SynchronousResourceReloadListener {
 		RenderSystem.depthMask(false);
 		RenderSystem.depthFunc(514);
 		RenderSystem.disableLighting();
-		RenderSystem.blendFunc(class_4493.class_4535.SRC_COLOR, class_4493.class_4534.ONE);
+		RenderSystem.blendFunc(GlStateManager.class_4535.SRC_COLOR, GlStateManager.class_4534.ONE);
 		textureManager.bindTexture(ENCHANTMENT_GLINT_TEX);
 		RenderSystem.matrixMode(5890);
 		RenderSystem.pushMatrix();
@@ -134,7 +134,7 @@ public class ItemRenderer implements SynchronousResourceReloadListener {
 		runnable.run();
 		RenderSystem.popMatrix();
 		RenderSystem.matrixMode(5888);
-		RenderSystem.blendFunc(class_4493.class_4535.SRC_ALPHA, class_4493.class_4534.ONE_MINUS_SRC_ALPHA);
+		RenderSystem.blendFunc(GlStateManager.class_4535.SRC_ALPHA, GlStateManager.class_4534.ONE_MINUS_SRC_ALPHA);
 		RenderSystem.enableLighting();
 		RenderSystem.depthFunc(515);
 		RenderSystem.depthMask(true);
@@ -223,17 +223,17 @@ public class ItemRenderer implements SynchronousResourceReloadListener {
 			RenderSystem.alphaFunc(516, 0.1F);
 			RenderSystem.enableBlend();
 			RenderSystem.blendFuncSeparate(
-				class_4493.class_4535.SRC_ALPHA, class_4493.class_4534.ONE_MINUS_SRC_ALPHA, class_4493.class_4535.ONE, class_4493.class_4534.ZERO
+				GlStateManager.class_4535.SRC_ALPHA, GlStateManager.class_4534.ONE_MINUS_SRC_ALPHA, GlStateManager.class_4535.ONE, GlStateManager.class_4534.ZERO
 			);
 			RenderSystem.pushMatrix();
 			ModelTransformation modelTransformation = bakedModel.getTransformation();
 			ModelTransformation.applyGl(modelTransformation.getTransformation(type), bl);
 			if (this.areFacesFlippedBy(modelTransformation.getTransformation(type))) {
-				RenderSystem.cullFace(class_4493.FaceSides.FRONT);
+				RenderSystem.cullFace(GlStateManager.FaceSides.FRONT);
 			}
 
 			this.renderItemAndGlow(itemStack, bakedModel);
-			RenderSystem.cullFace(class_4493.FaceSides.BACK);
+			RenderSystem.cullFace(GlStateManager.FaceSides.BACK);
 			RenderSystem.popMatrix();
 			RenderSystem.disableRescaleNormal();
 			RenderSystem.disableBlend();
@@ -258,7 +258,7 @@ public class ItemRenderer implements SynchronousResourceReloadListener {
 		RenderSystem.enableAlphaTest();
 		RenderSystem.alphaFunc(516, 0.1F);
 		RenderSystem.enableBlend();
-		RenderSystem.blendFunc(class_4493.class_4535.SRC_ALPHA, class_4493.class_4534.ONE_MINUS_SRC_ALPHA);
+		RenderSystem.blendFunc(GlStateManager.class_4535.SRC_ALPHA, GlStateManager.class_4534.ONE_MINUS_SRC_ALPHA);
 		RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
 		this.prepareGuiItemRender(i, j, bakedModel.hasDepthInGui());
 		bakedModel.getTransformation().applyGl(ModelTransformation.Type.GUI);

@@ -51,7 +51,7 @@ public class LilyPadItem extends BlockItem {
 				BlockState blockState = world.getBlockState(blockPos);
 				Material material = blockState.getMaterial();
 				FluidState fluidState = world.getFluidState(blockPos);
-				if ((fluidState.getFluid() == Fluids.WATER || material == Material.ICE) && world.isAir(blockPos2)) {
+				if ((fluidState.getFluid() == Fluids.WATER || material == Material.ICE) && world.method_22347(blockPos2)) {
 					world.setBlockState(blockPos2, Blocks.LILY_PAD.getDefaultState(), 11);
 					if (playerEntity instanceof ServerPlayerEntity) {
 						Criterions.PLACED_BLOCK.handle((ServerPlayerEntity)playerEntity, blockPos2, itemStack);

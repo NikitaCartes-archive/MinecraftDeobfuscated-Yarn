@@ -18,10 +18,6 @@ public class EggItem extends Item {
 	@Override
 	public TypedActionResult<ItemStack> use(World world, PlayerEntity playerEntity, Hand hand) {
 		ItemStack itemStack = playerEntity.getStackInHand(hand);
-		if (!playerEntity.abilities.creativeMode) {
-			itemStack.decrement(1);
-		}
-
 		world.playSound(
 			null, playerEntity.x, playerEntity.y, playerEntity.z, SoundEvents.ENTITY_EGG_THROW, SoundCategory.PLAYERS, 0.5F, 0.4F / (RANDOM.nextFloat() * 0.4F + 0.8F)
 		);
@@ -33,6 +29,10 @@ public class EggItem extends Item {
 		}
 
 		playerEntity.incrementStat(Stats.USED.getOrCreateStat(this));
+		if (!playerEntity.abilities.creativeMode) {
+			itemStack.decrement(1);
+		}
+
 		return new TypedActionResult<>(ActionResult.SUCCESS, itemStack);
 	}
 }

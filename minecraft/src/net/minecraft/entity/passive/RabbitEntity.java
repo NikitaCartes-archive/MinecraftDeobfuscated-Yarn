@@ -4,6 +4,7 @@ import java.util.Random;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.class_4538;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
@@ -50,7 +51,6 @@ import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.GameRules;
 import net.minecraft.world.IWorld;
 import net.minecraft.world.LocalDifficulty;
-import net.minecraft.world.ViewableWorld;
 import net.minecraft.world.World;
 import net.minecraft.world.biome.Biome;
 
@@ -377,7 +377,7 @@ public class RabbitEntity extends AnimalEntity {
 
 	public static boolean method_20669(EntityType<RabbitEntity> entityType, IWorld iWorld, SpawnType spawnType, BlockPos blockPos, Random random) {
 		Block block = iWorld.getBlockState(blockPos.down()).getBlock();
-		return (block == Blocks.GRASS_BLOCK || block == Blocks.SNOW || block == Blocks.SAND) && iWorld.getLightLevel(blockPos, 0) > 8;
+		return (block == Blocks.GRASS_BLOCK || block == Blocks.SNOW || block == Blocks.SAND) && iWorld.method_22335(blockPos, 0) > 8;
 	}
 
 	private boolean wantsCarrots() {
@@ -447,7 +447,7 @@ public class RabbitEntity extends AnimalEntity {
 					Integer integer = blockState.get(CarrotsBlock.AGE);
 					if (integer == 0) {
 						world.setBlockState(blockPos, Blocks.AIR.getDefaultState(), 2);
-						world.breakBlock(blockPos, true);
+						world.breakBlock(blockPos, true, this.rabbit);
 					} else {
 						world.setBlockState(blockPos, blockState.with(CarrotsBlock.AGE, Integer.valueOf(integer - 1)), 2);
 						world.playLevelEvent(2001, blockPos, Block.getRawIdFromState(blockState));
@@ -462,11 +462,11 @@ public class RabbitEntity extends AnimalEntity {
 		}
 
 		@Override
-		protected boolean isTargetPos(ViewableWorld viewableWorld, BlockPos blockPos) {
-			Block block = viewableWorld.getBlockState(blockPos).getBlock();
+		protected boolean isTargetPos(class_4538 arg, BlockPos blockPos) {
+			Block block = arg.getBlockState(blockPos).getBlock();
 			if (block == Blocks.FARMLAND && this.wantsCarrots && !this.field_6861) {
 				blockPos = blockPos.up();
-				BlockState blockState = viewableWorld.getBlockState(blockPos);
+				BlockState blockState = arg.getBlockState(blockPos);
 				block = blockState.getBlock();
 				if (block instanceof CarrotsBlock && ((CarrotsBlock)block).isMature(blockState)) {
 					this.field_6861 = true;

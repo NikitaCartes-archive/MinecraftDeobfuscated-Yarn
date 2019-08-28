@@ -1,6 +1,8 @@
 package net.minecraft.entity.attribute;
 
-import java.util.Collection;
+import com.google.common.collect.ImmutableSet;
+import com.google.common.collect.Sets;
+import java.util.Set;
 import java.util.UUID;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
@@ -13,9 +15,9 @@ public interface EntityAttributeInstance {
 
 	void setBaseValue(double d);
 
-	Collection<EntityAttributeModifier> getModifiers(EntityAttributeModifier.Operation operation);
+	Set<EntityAttributeModifier> getModifiers(EntityAttributeModifier.Operation operation);
 
-	Collection<EntityAttributeModifier> getModifiers();
+	Set<EntityAttributeModifier> getModifiers();
 
 	boolean hasModifier(EntityAttributeModifier entityAttributeModifier);
 
@@ -32,4 +34,15 @@ public interface EntityAttributeInstance {
 	void clearModifiers();
 
 	double getValue();
+
+	@Environment(EnvType.CLIENT)
+	default void method_22323(EntityAttributeInstance entityAttributeInstance) {
+		this.setBaseValue(entityAttributeInstance.getBaseValue());
+		Set<EntityAttributeModifier> set = entityAttributeInstance.getModifiers();
+		Set<EntityAttributeModifier> set2 = this.getModifiers();
+		ImmutableSet<EntityAttributeModifier> immutableSet = ImmutableSet.copyOf(Sets.difference(set, set2));
+		ImmutableSet<EntityAttributeModifier> immutableSet2 = ImmutableSet.copyOf(Sets.difference(set2, set));
+		immutableSet.forEach(this::addModifier);
+		immutableSet2.forEach(this::removeModifier);
+	}
 }

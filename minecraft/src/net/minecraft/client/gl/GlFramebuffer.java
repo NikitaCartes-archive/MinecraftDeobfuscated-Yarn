@@ -1,14 +1,14 @@
 package net.minecraft.client.gl;
 
+import com.mojang.blaze3d.platform.FramebufferInfo;
+import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_4492;
-import net.minecraft.class_4493;
-import net.minecraft.class_4536;
 import net.minecraft.client.render.BufferBuilder;
 import net.minecraft.client.render.Tessellator;
 import net.minecraft.client.render.VertexFormats;
+import net.minecraft.client.texture.TextureUtil;
 
 @Environment(EnvType.CLIENT)
 public class GlFramebuffer {
@@ -43,25 +43,25 @@ public class GlFramebuffer {
 		}
 
 		this.initFbo(i, j, bl);
-		class_4493.method_22042(class_4492.field_20457, 0);
+		GlStateManager.bindFramebuffer(FramebufferInfo.field_20457, 0);
 	}
 
 	public void delete() {
 		this.endRead();
 		this.endWrite();
 		if (this.depthAttachment > -1) {
-			class_4493.method_22057(this.depthAttachment);
+			GlStateManager.deleteRenderbuffers(this.depthAttachment);
 			this.depthAttachment = -1;
 		}
 
 		if (this.colorAttachment > -1) {
-			class_4536.releaseTextureId(this.colorAttachment);
+			TextureUtil.releaseTextureId(this.colorAttachment);
 			this.colorAttachment = -1;
 		}
 
 		if (this.fbo > -1) {
-			class_4493.method_22042(class_4492.field_20457, 0);
-			class_4493.method_22060(this.fbo);
+			GlStateManager.bindFramebuffer(FramebufferInfo.field_20457, 0);
+			GlStateManager.deleteFramebuffers(this.fbo);
 			this.fbo = -1;
 		}
 	}
@@ -71,21 +71,21 @@ public class GlFramebuffer {
 		this.viewHeight = j;
 		this.texWidth = i;
 		this.texHeight = j;
-		this.fbo = class_4493.method_22068();
-		this.colorAttachment = class_4536.generateTextureId();
+		this.fbo = GlStateManager.genFramebuffers();
+		this.colorAttachment = TextureUtil.generateTextureId();
 		if (this.useDepthAttachment) {
-			this.depthAttachment = class_4493.method_22070();
+			this.depthAttachment = GlStateManager.genRenderbuffers();
 		}
 
 		this.setTexFilter(9728);
 		RenderSystem.bindTexture(this.colorAttachment);
 		RenderSystem.texImage2D(3553, 0, 32856, this.texWidth, this.texHeight, 0, 6408, 5121, null);
-		class_4493.method_22042(class_4492.field_20457, this.fbo);
-		class_4493.method_21951(class_4492.field_20457, class_4492.field_20459, 3553, this.colorAttachment, 0);
+		GlStateManager.bindFramebuffer(FramebufferInfo.field_20457, this.fbo);
+		GlStateManager.framebufferTexture2D(FramebufferInfo.field_20457, FramebufferInfo.field_20459, 3553, this.colorAttachment, 0);
 		if (this.useDepthAttachment) {
-			class_4493.method_22046(class_4492.field_20458, this.depthAttachment);
-			class_4493.method_21987(class_4492.field_20458, 33190, this.texWidth, this.texHeight);
-			class_4493.method_22004(class_4492.field_20457, class_4492.field_20460, class_4492.field_20458, this.depthAttachment);
+			GlStateManager.bindRenderbuffer(FramebufferInfo.field_20458, this.depthAttachment);
+			GlStateManager.renderbufferStorage(FramebufferInfo.field_20458, 33190, this.texWidth, this.texHeight);
+			GlStateManager.framebufferRenderbuffer(FramebufferInfo.field_20457, FramebufferInfo.field_20460, FramebufferInfo.field_20458, this.depthAttachment);
 		}
 
 		this.checkFramebufferStatus();
@@ -104,15 +104,15 @@ public class GlFramebuffer {
 	}
 
 	public void checkFramebufferStatus() {
-		int i = class_4493.method_22063(class_4492.field_20457);
-		if (i != class_4492.field_20461) {
-			if (i == class_4492.field_20462) {
+		int i = GlStateManager.checkFramebufferStatus(FramebufferInfo.field_20457);
+		if (i != FramebufferInfo.field_20461) {
+			if (i == FramebufferInfo.field_20462) {
 				throw new RuntimeException("GL_FRAMEBUFFER_INCOMPLETE_ATTACHMENT");
-			} else if (i == class_4492.field_20463) {
+			} else if (i == FramebufferInfo.field_20463) {
 				throw new RuntimeException("GL_FRAMEBUFFER_INCOMPLETE_MISSING_ATTACHMENT");
-			} else if (i == class_4492.field_20464) {
+			} else if (i == FramebufferInfo.field_20464) {
 				throw new RuntimeException("GL_FRAMEBUFFER_INCOMPLETE_DRAW_BUFFER");
-			} else if (i == class_4492.field_20465) {
+			} else if (i == FramebufferInfo.field_20465) {
 				throw new RuntimeException("GL_FRAMEBUFFER_INCOMPLETE_READ_BUFFER");
 			} else {
 				throw new RuntimeException("glCheckFramebufferStatus returned unknown status:" + i);
@@ -129,14 +129,14 @@ public class GlFramebuffer {
 	}
 
 	public void beginWrite(boolean bl) {
-		class_4493.method_22042(class_4492.field_20457, this.fbo);
+		GlStateManager.bindFramebuffer(FramebufferInfo.field_20457, this.fbo);
 		if (bl) {
 			RenderSystem.viewport(0, 0, this.viewWidth, this.viewHeight);
 		}
 	}
 
 	public void endWrite() {
-		class_4493.method_22042(class_4492.field_20457, 0);
+		GlStateManager.bindFramebuffer(FramebufferInfo.field_20457, 0);
 	}
 
 	public void setClearColor(float f, float g, float h, float i) {

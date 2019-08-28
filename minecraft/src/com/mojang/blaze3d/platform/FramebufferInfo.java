@@ -1,10 +1,10 @@
-package net.minecraft;
+package com.mojang.blaze3d.platform;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 
 @Environment(EnvType.CLIENT)
-public class class_4492 {
+public class FramebufferInfo {
 	public static int field_20457;
 	public static int field_20458;
 	public static int field_20459;

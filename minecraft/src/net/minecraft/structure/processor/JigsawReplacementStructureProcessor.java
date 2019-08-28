@@ -5,13 +5,13 @@ import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.datafixers.Dynamic;
 import com.mojang.datafixers.types.DynamicOps;
 import javax.annotation.Nullable;
+import net.minecraft.class_4538;
 import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
 import net.minecraft.command.arguments.BlockArgumentParser;
 import net.minecraft.structure.Structure;
 import net.minecraft.structure.StructurePlacementData;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.ViewableWorld;
 
 public class JigsawReplacementStructureProcessor extends StructureProcessor {
 	public static final JigsawReplacementStructureProcessor INSTANCE = new JigsawReplacementStructureProcessor();
@@ -22,7 +22,7 @@ public class JigsawReplacementStructureProcessor extends StructureProcessor {
 	@Nullable
 	@Override
 	public Structure.StructureBlockInfo process(
-		ViewableWorld viewableWorld,
+		class_4538 arg,
 		BlockPos blockPos,
 		Structure.StructureBlockInfo structureBlockInfo,
 		Structure.StructureBlockInfo structureBlockInfo2,

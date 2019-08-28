@@ -1,9 +1,9 @@
 package net.minecraft.client.render.entity;
 
+import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_4493;
 import net.minecraft.block.Blocks;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.block.BlockRenderManager;
@@ -48,7 +48,7 @@ public class TntEntityRenderer extends EntityRenderer<TntEntity> {
 			RenderSystem.disableTexture();
 			RenderSystem.disableLighting();
 			RenderSystem.enableBlend();
-			RenderSystem.blendFunc(class_4493.class_4535.SRC_ALPHA, class_4493.class_4534.DST_ALPHA);
+			RenderSystem.blendFunc(GlStateManager.class_4535.SRC_ALPHA, GlStateManager.class_4534.DST_ALPHA);
 			RenderSystem.color4f(1.0F, 1.0F, 1.0F, i);
 			RenderSystem.polygonOffset(-3.0F, -3.0F);
 			RenderSystem.enablePolygonOffset();

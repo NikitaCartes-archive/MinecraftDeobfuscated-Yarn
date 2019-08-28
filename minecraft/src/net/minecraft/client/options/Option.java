@@ -33,7 +33,7 @@ public abstract class Option {
 			gameOptions.chatHeightFocused = double_;
 			MinecraftClient.getInstance().inGameHud.getChatHud().reset();
 		}, (gameOptions, doubleOption) -> {
-			double d = doubleOption.method_18611(doubleOption.get(gameOptions));
+			double d = doubleOption.getRatio(doubleOption.get(gameOptions));
 			return doubleOption.getDisplayPrefix() + ChatHud.getHeight(d) + "px";
 		}
 	);
@@ -42,7 +42,7 @@ public abstract class Option {
 			gameOptions.chatHeightUnfocused = double_;
 			MinecraftClient.getInstance().inGameHud.getChatHud().reset();
 		}, (gameOptions, doubleOption) -> {
-			double d = doubleOption.method_18611(doubleOption.get(gameOptions));
+			double d = doubleOption.getRatio(doubleOption.get(gameOptions));
 			return doubleOption.getDisplayPrefix() + ChatHud.getHeight(d) + "px";
 		}
 	);
@@ -51,7 +51,7 @@ public abstract class Option {
 			gameOptions.chatOpacity = double_;
 			MinecraftClient.getInstance().inGameHud.getChatHud().reset();
 		}, (gameOptions, doubleOption) -> {
-			double d = doubleOption.method_18611(doubleOption.get(gameOptions));
+			double d = doubleOption.getRatio(doubleOption.get(gameOptions));
 			return doubleOption.getDisplayPrefix() + (int)(d * 90.0 + 10.0) + "%";
 		}
 	);
@@ -60,7 +60,7 @@ public abstract class Option {
 			gameOptions.chatScale = double_;
 			MinecraftClient.getInstance().inGameHud.getChatHud().reset();
 		}, (gameOptions, doubleOption) -> {
-			double d = doubleOption.method_18611(doubleOption.get(gameOptions));
+			double d = doubleOption.getRatio(doubleOption.get(gameOptions));
 			String string = doubleOption.getDisplayPrefix();
 			return d == 0.0 ? string + I18n.translate("options.off") : string + (int)(d * 100.0) + "%";
 		}
@@ -70,7 +70,7 @@ public abstract class Option {
 			gameOptions.chatWidth = double_;
 			MinecraftClient.getInstance().inGameHud.getChatHud().reset();
 		}, (gameOptions, doubleOption) -> {
-			double d = doubleOption.method_18611(doubleOption.get(gameOptions));
+			double d = doubleOption.getRatio(doubleOption.get(gameOptions));
 			return doubleOption.getDisplayPrefix() + ChatHud.getWidth(d) + "px";
 		}
 	);
@@ -97,7 +97,7 @@ public abstract class Option {
 	);
 	public static final DoubleOption GAMMA = new DoubleOption(
 		"options.gamma", 0.0, 1.0, 0.0F, gameOptions -> gameOptions.gamma, (gameOptions, double_) -> gameOptions.gamma = double_, (gameOptions, doubleOption) -> {
-			double d = doubleOption.method_18611(doubleOption.get(gameOptions));
+			double d = doubleOption.getRatio(doubleOption.get(gameOptions));
 			String string = doubleOption.getDisplayPrefix();
 			if (d == 0.0) {
 				return string + I18n.translate("options.gamma.min");
@@ -127,8 +127,8 @@ public abstract class Option {
 		gameOptions -> gameOptions.mouseWheelSensitivity,
 		(gameOptions, double_) -> gameOptions.mouseWheelSensitivity = double_,
 		(gameOptions, doubleOption) -> {
-			double d = doubleOption.method_18611(doubleOption.get(gameOptions));
-			return doubleOption.getDisplayPrefix() + String.format("%.2f", doubleOption.method_18616(d));
+			double d = doubleOption.getRatio(doubleOption.get(gameOptions));
+			return doubleOption.getDisplayPrefix() + String.format("%.2f", doubleOption.getValue(d));
 		}
 	);
 	public static final BooleanOption RAW_MOUSE_INPUT = new BooleanOption(
@@ -157,7 +157,7 @@ public abstract class Option {
 		gameOptions -> gameOptions.mouseSensitivity,
 		(gameOptions, double_) -> gameOptions.mouseSensitivity = double_,
 		(gameOptions, doubleOption) -> {
-			double d = doubleOption.method_18611(doubleOption.get(gameOptions));
+			double d = doubleOption.getRatio(doubleOption.get(gameOptions));
 			String string = doubleOption.getDisplayPrefix();
 			if (d == 0.0) {
 				return string + I18n.translate("options.sensitivity.min");
@@ -170,7 +170,7 @@ public abstract class Option {
 		"options.accessibility.text_background_opacity", 0.0, 1.0, 0.0F, gameOptions -> gameOptions.textBackgroundOpacity, (gameOptions, double_) -> {
 			gameOptions.textBackgroundOpacity = double_;
 			MinecraftClient.getInstance().inGameHud.getChatHud().reset();
-		}, (gameOptions, doubleOption) -> doubleOption.getDisplayPrefix() + (int)(doubleOption.method_18611(doubleOption.get(gameOptions)) * 100.0) + "%"
+		}, (gameOptions, doubleOption) -> doubleOption.getDisplayPrefix() + (int)(doubleOption.getRatio(doubleOption.get(gameOptions)) * 100.0) + "%"
 	);
 	public static final CyclingOption AO = new CyclingOption("options.ao", (gameOptions, integer) -> {
 		gameOptions.ao = AoOption.getOption(gameOptions.ao.getValue() + integer);

@@ -34,8 +34,8 @@ public class SplashScreen extends Overlay {
 		this.field_18219 = bl;
 	}
 
-	public static void method_18819(MinecraftClient minecraftClient) {
-		minecraftClient.getTextureManager().registerTexture(LOGO, new SplashScreen.class_4070());
+	public static void init(MinecraftClient minecraftClient) {
+		minecraftClient.getTextureManager().registerTexture(LOGO, new SplashScreen.LogoTexture());
 	}
 
 	@Override
@@ -119,8 +119,8 @@ public class SplashScreen extends Overlay {
 	}
 
 	@Environment(EnvType.CLIENT)
-	static class class_4070 extends ResourceTexture {
-		public class_4070() {
+	static class LogoTexture extends ResourceTexture {
+		public LogoTexture() {
 			super(SplashScreen.LOGO);
 		}
 

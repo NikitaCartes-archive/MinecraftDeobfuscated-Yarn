@@ -171,7 +171,7 @@ public class RecipeBookWidget extends DrawableHelper implements Drawable, Elemen
 		);
 		List<RecipeResultCollection> list2 = Lists.<RecipeResultCollection>newArrayList(list);
 		list2.removeIf(recipeResultCollection -> !recipeResultCollection.isInitialized());
-		list2.removeIf(recipeResultCollection -> !recipeResultCollection.hasFittableResults());
+		list2.removeIf(recipeResultCollection -> !recipeResultCollection.hasFittingRecipes());
 		String string = this.searchField.getText();
 		if (!string.isEmpty()) {
 			ObjectSet<RecipeResultCollection> objectSet = new ObjectLinkedOpenHashSet<>(
@@ -181,7 +181,7 @@ public class RecipeBookWidget extends DrawableHelper implements Drawable, Elemen
 		}
 
 		if (this.recipeBook.isFilteringCraftable(this.craftingContainer)) {
-			list2.removeIf(recipeResultCollection -> !recipeResultCollection.hasCraftableResults());
+			list2.removeIf(recipeResultCollection -> !recipeResultCollection.hasCraftableRecipes());
 		}
 
 		this.recipesArea.setResults(list2, bl);
@@ -364,7 +364,7 @@ public class RecipeBookWidget extends DrawableHelper implements Drawable, Elemen
 			return true;
 		} else if (this.client.options.keyChat.matchesKey(i, j) && !this.searchField.isFocused()) {
 			this.field_3087 = true;
-			this.searchField.method_1876(true);
+			this.searchField.setSelected(true);
 			return true;
 		} else {
 			return false;

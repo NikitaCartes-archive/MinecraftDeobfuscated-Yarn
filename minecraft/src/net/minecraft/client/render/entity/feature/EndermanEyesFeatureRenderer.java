@@ -1,9 +1,9 @@
 package net.minecraft.client.render.entity.feature;
 
+import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_4493;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.GameRenderer;
 import net.minecraft.client.render.entity.model.EndermanEntityModel;
@@ -22,7 +22,7 @@ public class EndermanEyesFeatureRenderer<T extends LivingEntity> extends Feature
 		this.bindTexture(SKIN);
 		RenderSystem.enableBlend();
 		RenderSystem.disableAlphaTest();
-		RenderSystem.blendFunc(class_4493.class_4535.ONE, class_4493.class_4534.ONE);
+		RenderSystem.blendFunc(GlStateManager.class_4535.ONE, GlStateManager.class_4534.ONE);
 		RenderSystem.disableLighting();
 		RenderSystem.depthMask(!livingEntity.isInvisible());
 		int m = 61680;

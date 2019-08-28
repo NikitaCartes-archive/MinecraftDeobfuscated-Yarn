@@ -4,38 +4,38 @@ import java.util.function.Consumer;
 import net.minecraft.class_4516;
 
 public class TestFunction {
-	private final String field_20583;
-	private final String field_20584;
-	private final String field_20585;
-	private final boolean field_20586;
+	private final String batchId;
+	private final String structurePath;
+	private final String structureName;
+	private final boolean required;
 	private final Consumer<class_4516> field_20587;
-	private final int field_20588;
+	private final int tickLimit;
 
 	public void method_22297(class_4516 arg) {
 		this.field_20587.accept(arg);
 	}
 
-	public String method_22296() {
-		return this.field_20584;
+	public String getStructurePath() {
+		return this.structurePath;
 	}
 
-	public String method_22298() {
-		return this.field_20585;
+	public String getStructureName() {
+		return this.structureName;
 	}
 
 	public String toString() {
-		return this.field_20584;
+		return this.structurePath;
 	}
 
-	public int method_22299() {
-		return this.field_20588;
+	public int getTickLimit() {
+		return this.tickLimit;
 	}
 
-	public boolean method_22300() {
-		return this.field_20586;
+	public boolean isRequired() {
+		return this.required;
 	}
 
-	public String method_22301() {
-		return this.field_20583;
+	public String getBatchId() {
+		return this.batchId;
 	}
 }

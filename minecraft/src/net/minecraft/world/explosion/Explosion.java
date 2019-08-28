@@ -44,6 +44,7 @@ public class Explosion {
 	private final double x;
 	private final double y;
 	private final double z;
+	@Nullable
 	private final Entity entity;
 	private final float power;
 	private DamageSource damageSource;
@@ -250,7 +251,8 @@ public class Explosion {
 							.setRandom(this.world.random)
 							.put(LootContextParameters.POSITION, blockPos)
 							.put(LootContextParameters.TOOL, ItemStack.EMPTY)
-							.putNullable(LootContextParameters.BLOCK_ENTITY, blockEntity);
+							.putNullable(LootContextParameters.BLOCK_ENTITY, blockEntity)
+							.putNullable(LootContextParameters.THIS_ENTITY, this.entity);
 						if (this.blockDestructionType == Explosion.DestructionType.DESTROY) {
 							builder.put(LootContextParameters.EXPLOSION_RADIUS, this.power);
 						}

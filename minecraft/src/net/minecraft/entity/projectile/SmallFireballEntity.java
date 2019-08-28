@@ -44,7 +44,7 @@ public class SmallFireballEntity extends AbstractFireballEntity {
 			} else if (this.owner == null || !(this.owner instanceof MobEntity) || this.world.getGameRules().getBoolean(GameRules.MOB_GRIEFING)) {
 				BlockHitResult blockHitResult = (BlockHitResult)hitResult;
 				BlockPos blockPos = blockHitResult.getBlockPos().offset(blockHitResult.getSide());
-				if (this.world.isAir(blockPos)) {
+				if (this.world.method_22347(blockPos)) {
 					this.world.setBlockState(blockPos, Blocks.FIRE.getDefaultState());
 				}
 			}

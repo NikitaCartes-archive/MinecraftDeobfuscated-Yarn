@@ -131,7 +131,7 @@ public class BatEntity extends AmbientEntity {
 				this.world.playLevelEvent(null, 1025, blockPos, 0);
 			}
 		} else {
-			if (this.hangingPosition != null && (!this.world.isAir(this.hangingPosition) || this.hangingPosition.getY() < 1)) {
+			if (this.hangingPosition != null && (!this.world.method_22347(this.hangingPosition) || this.hangingPosition.getY() < 1)) {
 				this.hangingPosition = null;
 			}
 
@@ -206,7 +206,7 @@ public class BatEntity extends AmbientEntity {
 		if (blockPos.getY() >= iWorld.getSeaLevel()) {
 			return false;
 		} else {
-			int i = iWorld.getLightLevel(blockPos);
+			int i = iWorld.method_22339(blockPos);
 			int j = 4;
 			if (isTodayAroundHalloween()) {
 				j = 7;

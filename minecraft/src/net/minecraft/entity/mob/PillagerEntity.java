@@ -5,6 +5,7 @@ import java.util.Map;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.class_4538;
 import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
 import net.minecraft.client.util.math.Vector3f;
@@ -57,7 +58,6 @@ import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.Difficulty;
 import net.minecraft.world.IWorld;
 import net.minecraft.world.LocalDifficulty;
-import net.minecraft.world.ViewableWorld;
 import net.minecraft.world.World;
 
 public class PillagerEntity extends IllagerEntity implements CrossbowUser, RangedAttackMob {
@@ -151,9 +151,9 @@ public class PillagerEntity extends IllagerEntity implements CrossbowUser, Range
 	}
 
 	@Override
-	public float getPathfindingFavor(BlockPos blockPos, ViewableWorld viewableWorld) {
-		Block block = viewableWorld.getBlockState(blockPos.down()).getBlock();
-		return block != Blocks.GRASS_BLOCK && block != Blocks.SAND ? 0.5F - viewableWorld.getBrightness(blockPos) : 10.0F;
+	public float getPathfindingFavor(BlockPos blockPos, class_4538 arg) {
+		Block block = arg.getBlockState(blockPos.down()).getBlock();
+		return block != Blocks.GRASS_BLOCK && block != Blocks.SAND ? 0.5F - arg.method_22349(blockPos) : 10.0F;
 	}
 
 	@Override

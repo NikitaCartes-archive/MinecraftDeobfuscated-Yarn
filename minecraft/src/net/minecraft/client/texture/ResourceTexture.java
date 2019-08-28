@@ -5,7 +5,6 @@ import java.io.IOException;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_4536;
 import net.minecraft.client.resource.metadata.TextureResourceMetadata;
 import net.minecraft.resource.Resource;
 import net.minecraft.resource.ResourceManager;
@@ -38,7 +37,7 @@ public class ResourceTexture extends AbstractTexture {
 			}
 
 			this.bindTexture();
-			class_4536.prepareImage(this.getGlId(), 0, textureData.getImage().getWidth(), textureData.getImage().getHeight());
+			TextureUtil.prepareImage(this.getGlId(), 0, textureData.getImage().getWidth(), textureData.getImage().getHeight());
 			textureData.getImage().upload(0, 0, 0, 0, 0, textureData.getImage().getWidth(), textureData.getImage().getHeight(), bl, bl2, false);
 		} catch (Throwable var14) {
 			var3 = var14;

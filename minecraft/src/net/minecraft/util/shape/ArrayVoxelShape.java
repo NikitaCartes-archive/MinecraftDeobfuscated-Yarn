@@ -30,7 +30,7 @@ public final class ArrayVoxelShape extends VoxelShape {
 			this.yPoints = doubleList2;
 			this.zPoints = doubleList3;
 		} else {
-			throw (IllegalArgumentException)SystemUtil.method_22320(
+			throw (IllegalArgumentException)SystemUtil.throwOrPause(
 				new IllegalArgumentException("Lengths of point arrays must be consistent with the size of the VoxelShape.")
 			);
 		}

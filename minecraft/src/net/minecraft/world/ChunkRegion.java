@@ -16,6 +16,7 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.fluid.Fluid;
 import net.minecraft.fluid.FluidState;
+import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.particle.ParticleEffect;
 import net.minecraft.server.world.ServerWorld;
@@ -26,12 +27,12 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.border.WorldBorder;
 import net.minecraft.world.chunk.Chunk;
 import net.minecraft.world.chunk.ChunkManager;
 import net.minecraft.world.chunk.ChunkStatus;
+import net.minecraft.world.chunk.light.LightingProvider;
 import net.minecraft.world.dimension.Dimension;
 import net.minecraft.world.gen.chunk.ChunkGeneratorConfig;
 import net.minecraft.world.level.LevelProperties;
@@ -51,13 +52,13 @@ public class ChunkRegion implements IWorld {
 	private final Random random;
 	private final Dimension dimension;
 	private final ChunkGeneratorConfig generatorSettings;
-	private final TickScheduler<Block> blockTickScheduler = new MultiTickScheduler<>(blockPos -> this.getChunk(blockPos).getBlockTickScheduler());
-	private final TickScheduler<Fluid> fluidTickScheduler = new MultiTickScheduler<>(blockPos -> this.getChunk(blockPos).getFluidTickScheduler());
+	private final TickScheduler<Block> blockTickScheduler = new MultiTickScheduler<>(blockPos -> this.method_22350(blockPos).getBlockTickScheduler());
+	private final TickScheduler<Fluid> fluidTickScheduler = new MultiTickScheduler<>(blockPos -> this.method_22350(blockPos).getFluidTickScheduler());
 
 	public ChunkRegion(ServerWorld serverWorld, List<Chunk> list) {
 		int i = MathHelper.floor(Math.sqrt((double)list.size()));
 		if (i * i != list.size()) {
-			throw (IllegalStateException)SystemUtil.method_22320(new IllegalStateException("Cache size is not a square."));
+			throw (IllegalStateException)SystemUtil.throwOrPause(new IllegalStateException("Cache size is not a square."));
 		} else {
 			ChunkPos chunkPos = ((Chunk)list.get(list.size() / 2)).getPos();
 			this.chunks = list;
@@ -84,7 +85,7 @@ public class ChunkRegion implements IWorld {
 
 	@Override
 	public Chunk getChunk(int i, int j) {
-		return this.getChunk(i, j, ChunkStatus.EMPTY);
+		return this.method_22342(i, j, ChunkStatus.EMPTY);
 	}
 
 	@Nullable
@@ -111,11 +112,11 @@ public class ChunkRegion implements IWorld {
 			LOGGER.error("Requested chunk : {} {}", i, j);
 			LOGGER.error("Region bounds : {} {} | {} {}", chunk2.getPos().x, chunk2.getPos().z, chunk3.getPos().x, chunk3.getPos().z);
 			if (chunk != null) {
-				throw (RuntimeException)SystemUtil.method_22320(
+				throw (RuntimeException)SystemUtil.throwOrPause(
 					new RuntimeException(String.format("Chunk is not of correct status. Expecting %s, got %s | %s %s", chunkStatus, chunk.getStatus(), i, j))
 				);
 			} else {
-				throw (RuntimeException)SystemUtil.method_22320(new RuntimeException(String.format("We are asking a region for a chunk out of bound | %s %s", i, j)));
+				throw (RuntimeException)SystemUtil.throwOrPause(new RuntimeException(String.format("We are asking a region for a chunk out of bound | %s %s", i, j)));
 			}
 		}
 	}
@@ -134,7 +135,7 @@ public class ChunkRegion implements IWorld {
 
 	@Override
 	public FluidState getFluidState(BlockPos blockPos) {
-		return this.getChunk(blockPos).getFluidState(blockPos);
+		return this.method_22350(blockPos).getFluidState(blockPos);
 	}
 
 	@Nullable
@@ -150,7 +151,7 @@ public class ChunkRegion implements IWorld {
 
 	@Override
 	public Biome getBiome(BlockPos blockPos) {
-		Biome biome = this.getChunk(blockPos).getBiomeArray()[blockPos.getX() & 15 | (blockPos.getZ() & 15) << 4];
+		Biome biome = this.method_22350(blockPos).getBiomeArray()[blockPos.getX() & 15 | (blockPos.getZ() & 15) << 4];
 		if (biome == null) {
 			throw new RuntimeException(String.format("Biome is null @ %s", blockPos));
 		} else {
@@ -159,24 +160,19 @@ public class ChunkRegion implements IWorld {
 	}
 
 	@Override
-	public int getLightLevel(LightType lightType, BlockPos blockPos) {
-		return this.getChunkManager().getLightingProvider().get(lightType).getLightLevel(blockPos);
+	public LightingProvider method_22336() {
+		return this.world.method_22336();
 	}
 
 	@Override
-	public int getLightLevel(BlockPos blockPos, int i) {
-		return this.getChunk(blockPos).getLightLevel(blockPos, i, this.getDimension().hasSkyLight());
-	}
-
-	@Override
-	public boolean breakBlock(BlockPos blockPos, boolean bl) {
+	public boolean breakBlock(BlockPos blockPos, boolean bl, @Nullable Entity entity) {
 		BlockState blockState = this.getBlockState(blockPos);
 		if (blockState.isAir()) {
 			return false;
 		} else {
 			if (bl) {
 				BlockEntity blockEntity = blockState.getBlock().hasBlockEntity() ? this.getBlockEntity(blockPos) : null;
-				Block.dropStacks(blockState, this.world, blockPos, blockEntity);
+				Block.dropStacks(blockState, this.world, blockPos, blockEntity, entity, ItemStack.EMPTY);
 			}
 
 			return this.setBlockState(blockPos, Blocks.AIR.getDefaultState(), 3);
@@ -186,7 +182,7 @@ public class ChunkRegion implements IWorld {
 	@Nullable
 	@Override
 	public BlockEntity getBlockEntity(BlockPos blockPos) {
-		Chunk chunk = this.getChunk(blockPos);
+		Chunk chunk = this.method_22350(blockPos);
 		BlockEntity blockEntity = chunk.getBlockEntity(blockPos);
 		if (blockEntity != null) {
 			return blockEntity;
@@ -220,7 +216,7 @@ public class ChunkRegion implements IWorld {
 
 	@Override
 	public boolean setBlockState(BlockPos blockPos, BlockState blockState, int i) {
-		Chunk chunk = this.getChunk(blockPos);
+		Chunk chunk = this.method_22350(blockPos);
 		BlockState blockState2 = chunk.setBlockState(blockPos, blockState, false);
 		if (blockState2 != null) {
 			this.world.onBlockChanged(blockPos, blockState2, blockState);
@@ -250,7 +246,7 @@ public class ChunkRegion implements IWorld {
 	}
 
 	private void markBlockForPostProcessing(BlockPos blockPos) {
-		this.getChunk(blockPos).markBlockForPostProcessing(blockPos);
+		this.method_22350(blockPos).markBlockForPostProcessing(blockPos);
 	}
 
 	@Override
@@ -269,11 +265,6 @@ public class ChunkRegion implements IWorld {
 	@Override
 	public WorldBorder getWorldBorder() {
 		return this.world.getWorldBorder();
-	}
-
-	@Override
-	public boolean intersectsEntities(@Nullable Entity entity, VoxelShape voxelShape) {
-		return true;
 	}
 
 	@Override
@@ -335,7 +326,7 @@ public class ChunkRegion implements IWorld {
 	}
 
 	@Override
-	public int getTop(Heightmap.Type type, int i, int j) {
+	public int getLightLevel(Heightmap.Type type, int i, int j) {
 		return this.getChunk(i >> 4, j >> 4).sampleHeightmap(type, i & 15, j & 15) + 1;
 	}
 
@@ -380,10 +371,5 @@ public class ChunkRegion implements IWorld {
 	@Override
 	public List<PlayerEntity> getPlayers() {
 		return Collections.emptyList();
-	}
-
-	@Override
-	public BlockPos getTopPosition(Heightmap.Type type, BlockPos blockPos) {
-		return new BlockPos(blockPos.getX(), this.getTop(type, blockPos.getX(), blockPos.getZ()), blockPos.getZ());
 	}
 }

@@ -77,7 +77,7 @@ public abstract class Particle {
 		return this;
 	}
 
-	public Particle method_3087(float f) {
+	public Particle scale(float f) {
 		this.setBoundingBoxSpacing(0.2F * f, 0.2F * f);
 		return this;
 	}
@@ -204,7 +204,7 @@ public abstract class Particle {
 
 	protected int getColorMultiplier(float f) {
 		BlockPos blockPos = new BlockPos(this.x, this.y, this.z);
-		return this.world.isBlockLoaded(blockPos) ? this.world.getLightmapIndex(blockPos, 0) : 0;
+		return this.world.method_22340(blockPos) ? this.world.method_22337(blockPos) : 0;
 	}
 
 	public boolean isAlive() {

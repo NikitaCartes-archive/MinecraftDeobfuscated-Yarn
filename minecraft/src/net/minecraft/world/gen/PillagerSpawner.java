@@ -44,7 +44,7 @@ public class PillagerSpawner {
 							int k = (24 + random.nextInt(24)) * (random.nextBoolean() ? -1 : 1);
 							BlockPos.Mutable mutable = new BlockPos.Mutable();
 							mutable.set(playerEntity.x, playerEntity.y, playerEntity.z).setOffset(j, 0, k);
-							if (!serverWorld.isAreaLoaded(
+							if (!serverWorld.method_22341(
 								mutable.getX() - 10, mutable.getY() - 10, mutable.getZ() - 10, mutable.getX() + 10, mutable.getY() + 10, mutable.getZ() + 10
 							)) {
 								return 0;

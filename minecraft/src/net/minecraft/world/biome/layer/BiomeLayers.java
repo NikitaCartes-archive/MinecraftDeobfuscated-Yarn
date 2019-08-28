@@ -56,20 +56,11 @@ public class BiomeLayers {
 		layerFactory = AddMushroomIslandLayer.INSTANCE.create((LayerSampleContext<T>)longFunction.apply(5L), layerFactory);
 		layerFactory = AddDeepOceanLayer.INSTANCE.create((LayerSampleContext<T>)longFunction.apply(4L), layerFactory);
 		layerFactory = stack(1000L, ScaleLayer.NORMAL, layerFactory, 0, longFunction);
-		int i = 4;
-		int j = i;
-		if (overworldChunkGeneratorConfig != null) {
-			i = overworldChunkGeneratorConfig.getBiomeSize();
-			j = overworldChunkGeneratorConfig.getRiverSize();
-		}
-
-		if (levelGeneratorType == LevelGeneratorType.LARGE_BIOMES) {
-			i = 6;
-		}
-
+		int i = levelGeneratorType == LevelGeneratorType.LARGE_BIOMES ? 6 : overworldChunkGeneratorConfig.getBiomeSize();
+		int j = overworldChunkGeneratorConfig.getRiverSize();
 		LayerFactory<T> layerFactory3 = stack(1000L, ScaleLayer.NORMAL, layerFactory, 0, longFunction);
 		layerFactory3 = SimpleLandNoiseLayer.INSTANCE.create((LayerSampleContext)longFunction.apply(100L), layerFactory3);
-		LayerFactory<T> layerFactory4 = new SetBaseBiomesLayer(levelGeneratorType, overworldChunkGeneratorConfig)
+		LayerFactory<T> layerFactory4 = new SetBaseBiomesLayer(levelGeneratorType, overworldChunkGeneratorConfig.getForcedBiome())
 			.create((LayerSampleContext<T>)longFunction.apply(200L), layerFactory);
 		layerFactory4 = AddBambooJungleLayer.INSTANCE.create((LayerSampleContext)longFunction.apply(1001L), layerFactory4);
 		layerFactory4 = stack(1000L, ScaleLayer.NORMAL, layerFactory4, 2, longFunction);

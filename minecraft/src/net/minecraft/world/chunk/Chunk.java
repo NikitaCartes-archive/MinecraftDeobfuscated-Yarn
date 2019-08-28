@@ -19,16 +19,15 @@ import net.minecraft.structure.StructureStart;
 import net.minecraft.util.SystemUtil;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
+import net.minecraft.world.BlockView;
 import net.minecraft.world.BlockViewWithStructures;
 import net.minecraft.world.Heightmap;
-import net.minecraft.world.LightType;
 import net.minecraft.world.TickScheduler;
 import net.minecraft.world.biome.Biome;
-import net.minecraft.world.chunk.light.LightingProvider;
 import net.minecraft.world.gen.GenerationStep;
 import org.apache.logging.log4j.LogManager;
 
-public interface Chunk extends BlockViewWithStructures {
+public interface Chunk extends BlockView, BlockViewWithStructures {
 	@Nullable
 	BlockState setBlockState(BlockPos blockPos, BlockState blockState, boolean bl);
 
@@ -58,20 +57,6 @@ public interface Chunk extends BlockViewWithStructures {
 	Set<BlockPos> getBlockEntityPositions();
 
 	ChunkSection[] getSectionArray();
-
-	@Nullable
-	LightingProvider getLightingProvider();
-
-	default int getLightLevel(BlockPos blockPos, int i, boolean bl) {
-		LightingProvider lightingProvider = this.getLightingProvider();
-		if (lightingProvider != null && this.getStatus().isAtLeast(ChunkStatus.LIGHT)) {
-			int j = bl ? lightingProvider.get(LightType.SKY).getLightLevel(blockPos) - i : 0;
-			int k = lightingProvider.get(LightType.BLOCK).getLightLevel(blockPos);
-			return Math.max(k, j);
-		} else {
-			return 0;
-		}
-	}
 
 	Collection<Entry<Heightmap.Type, Heightmap>> getHeightmaps();
 
@@ -123,8 +108,6 @@ public interface Chunk extends BlockViewWithStructures {
 
 	void removeBlockEntity(BlockPos blockPos);
 
-	void setLightingProvider(LightingProvider lightingProvider);
-
 	default void markBlockForPostProcessing(BlockPos blockPos) {
 		LogManager.getLogger().warn("Trying to mark a block for PostProcessing @ {}, but this operation is not supported.", blockPos);
 	}
@@ -146,7 +129,7 @@ public interface Chunk extends BlockViewWithStructures {
 	CompoundTag method_20598(BlockPos blockPos);
 
 	default void setBiomeArray(Biome[] biomes) {
-		throw (UnsupportedOperationException)SystemUtil.method_22320(new UnsupportedOperationException());
+		throw (UnsupportedOperationException)SystemUtil.throwOrPause(new UnsupportedOperationException());
 	}
 
 	Stream<BlockPos> getLightSourcesStream();
@@ -156,7 +139,7 @@ public interface Chunk extends BlockViewWithStructures {
 	TickScheduler<Fluid> getFluidTickScheduler();
 
 	default BitSet getCarvingMask(GenerationStep.Carver carver) {
-		throw (RuntimeException)SystemUtil.method_22320(new RuntimeException("Meaningless in this context"));
+		throw (RuntimeException)SystemUtil.throwOrPause(new RuntimeException("Meaningless in this context"));
 	}
 
 	UpgradeData getUpgradeData();

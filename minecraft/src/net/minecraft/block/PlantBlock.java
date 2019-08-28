@@ -1,10 +1,10 @@
 package net.minecraft.block;
 
+import net.minecraft.class_4538;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.IWorld;
-import net.minecraft.world.ViewableWorld;
 
 public class PlantBlock extends Block {
 	protected PlantBlock(Block.Settings settings) {
@@ -26,9 +26,9 @@ public class PlantBlock extends Block {
 	}
 
 	@Override
-	public boolean canPlaceAt(BlockState blockState, ViewableWorld viewableWorld, BlockPos blockPos) {
+	public boolean canPlaceAt(BlockState blockState, class_4538 arg, BlockPos blockPos) {
 		BlockPos blockPos2 = blockPos.down();
-		return this.canPlantOnTop(viewableWorld.getBlockState(blockPos2), viewableWorld, blockPos2);
+		return this.canPlantOnTop(arg.getBlockState(blockPos2), arg, blockPos2);
 	}
 
 	@Override

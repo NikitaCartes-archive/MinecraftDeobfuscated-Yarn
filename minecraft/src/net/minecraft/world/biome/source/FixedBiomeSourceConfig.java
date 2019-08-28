@@ -2,9 +2,13 @@ package net.minecraft.world.biome.source;
 
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.biome.Biomes;
+import net.minecraft.world.level.LevelProperties;
 
 public class FixedBiomeSourceConfig implements BiomeSourceConfig {
 	private Biome biome = Biomes.PLAINS;
+
+	public FixedBiomeSourceConfig(LevelProperties levelProperties) {
+	}
 
 	public FixedBiomeSourceConfig setBiome(Biome biome) {
 		this.biome = biome;

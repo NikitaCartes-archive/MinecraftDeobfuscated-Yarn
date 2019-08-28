@@ -4,12 +4,12 @@ import java.util.Random;
 import javax.annotation.Nullable;
 import net.minecraft.fluid.FluidState;
 import net.minecraft.item.ItemPlacementContext;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.tag.FluidTags;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.IWorld;
-import net.minecraft.world.World;
 
 public class CoralBlockBlock extends Block {
 	private final Block deadCoralBlock;
@@ -20,9 +20,9 @@ public class CoralBlockBlock extends Block {
 	}
 
 	@Override
-	public void onScheduledTick(BlockState blockState, World world, BlockPos blockPos, Random random) {
-		if (!this.isInWater(world, blockPos)) {
-			world.setBlockState(blockPos, this.deadCoralBlock.getDefaultState(), 2);
+	public void onScheduledTick(BlockState blockState, ServerWorld serverWorld, BlockPos blockPos, Random random) {
+		if (!this.isInWater(serverWorld, blockPos)) {
+			serverWorld.setBlockState(blockPos, this.deadCoralBlock.getDefaultState(), 2);
 		}
 	}
 

@@ -21,7 +21,7 @@ import javax.imageio.ImageIO;
 import javax.xml.bind.DatatypeConverter;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_4536;
+import net.minecraft.client.texture.TextureUtil;
 import net.minecraft.realms.Realms;
 import net.minecraft.realms.RealmsScreen;
 import org.apache.commons.codec.binary.Base64;
@@ -171,7 +171,7 @@ public class RealmsTextureManager {
 
 		RenderSystem.activeTexture(33984);
 		RenderSystem.bindTexture(i);
-		class_4536.initTexture(intBuffer, j, k);
+		TextureUtil.initTexture(intBuffer, j, k);
 		textures.put(string, new RealmsTextureManager.RealmsTexture(string2, i));
 		return i;
 	}

@@ -5,6 +5,7 @@ import java.util.Objects;
 import java.util.function.Predicate;
 import net.minecraft.block.BedBlock;
 import net.minecraft.block.BlockState;
+import net.minecraft.client.network.DebugRendererInfoManager;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.ai.brain.Brain;
 import net.minecraft.entity.ai.brain.MemoryModuleState;
@@ -35,9 +36,14 @@ public class ForgetCompletedPointOfInterestTask extends Task<LivingEntity> {
 	protected void run(ServerWorld serverWorld, LivingEntity livingEntity, long l) {
 		Brain<?> brain = livingEntity.getBrain();
 		GlobalPos globalPos = (GlobalPos)brain.getOptionalMemory(this.memoryModule).get();
+		BlockPos blockPos = globalPos.getPos();
 		ServerWorld serverWorld2 = serverWorld.getServer().getWorld(globalPos.getDimension());
-		if (this.method_20499(serverWorld2, globalPos.getPos()) || this.method_20500(serverWorld2, globalPos.getPos(), livingEntity)) {
+		if (this.method_20499(serverWorld2, blockPos)) {
 			brain.forget(this.memoryModule);
+		} else if (this.method_20500(serverWorld2, blockPos, livingEntity)) {
+			brain.forget(this.memoryModule);
+			serverWorld.getPointOfInterestStorage().releaseTicket(blockPos);
+			DebugRendererInfoManager.sendPointOfInterest(serverWorld, blockPos);
 		}
 	}
 

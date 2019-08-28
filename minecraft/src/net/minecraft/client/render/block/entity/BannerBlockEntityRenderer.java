@@ -46,8 +46,8 @@ public class BannerBlockEntityRenderer extends BlockEntityRenderer<BannerBlockEn
 		}
 
 		BlockPos blockPos = bannerBlockEntity.getPos();
-		float j = (float)((long)(blockPos.getX() * 7 + blockPos.getY() * 9 + blockPos.getZ() * 13) + l) + g;
-		this.model.method_2792().pitch = (-0.0125F + 0.01F * MathHelper.cos(j * (float) Math.PI * 0.02F)) * (float) Math.PI;
+		float j = ((float)Math.floorMod((long)(blockPos.getX() * 7 + blockPos.getY() * 9 + blockPos.getZ() * 13) + l, 100L) + g) / 100.0F;
+		this.model.method_2792().pitch = (-0.0125F + 0.01F * MathHelper.cos((float) (Math.PI * 2) * j)) * (float) Math.PI;
 		RenderSystem.enableRescaleNormal();
 		Identifier identifier = this.getTextureId(bannerBlockEntity);
 		if (identifier != null) {

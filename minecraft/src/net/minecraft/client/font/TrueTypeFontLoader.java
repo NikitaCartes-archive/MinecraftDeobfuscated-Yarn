@@ -9,7 +9,7 @@ import java.nio.ByteBuffer;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_4536;
+import net.minecraft.client.texture.TextureUtil;
 import net.minecraft.resource.Resource;
 import net.minecraft.resource.ResourceManager;
 import net.minecraft.util.Identifier;
@@ -83,7 +83,7 @@ public class TrueTypeFontLoader implements FontLoader {
 			TrueTypeFont var5;
 			try {
 				LOGGER.info("Loading font");
-				ByteBuffer byteBuffer = class_4536.readResource(resource.getInputStream());
+				ByteBuffer byteBuffer = TextureUtil.readResource(resource.getInputStream());
 				byteBuffer.flip();
 				LOGGER.info("Reading font");
 				var5 = new TrueTypeFont(TrueTypeFont.getSTBTTFontInfo(byteBuffer), this.size, this.oversample, this.shiftX, this.shiftY, this.excludedCharacters);

@@ -264,8 +264,8 @@ public class FluidRenderer {
 	}
 
 	private int method_3343(ExtendedBlockView extendedBlockView, BlockPos blockPos) {
-		int i = extendedBlockView.getLightmapIndex(blockPos, 0);
-		int j = extendedBlockView.getLightmapIndex(blockPos.up(), 0);
+		int i = extendedBlockView.method_22337(blockPos);
+		int j = extendedBlockView.method_22337(blockPos.up());
 		int k = i & 0xFF;
 		int l = j & 0xFF;
 		int m = i >> 16 & 0xFF;

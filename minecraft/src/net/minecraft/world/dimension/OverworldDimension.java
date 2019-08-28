@@ -71,15 +71,14 @@ public class OverworldDimension extends Dimension {
 			FlatChunkGeneratorConfig flatChunkGeneratorConfig = FlatChunkGeneratorConfig.fromDynamic(
 				new Dynamic<>(NbtOps.INSTANCE, this.world.getLevelProperties().getGeneratorOptions())
 			);
-			FixedBiomeSourceConfig fixedBiomeSourceConfig = biomeSourceType.getConfig().setBiome(flatChunkGeneratorConfig.getBiome());
+			FixedBiomeSourceConfig fixedBiomeSourceConfig = biomeSourceType.getConfig(this.world.getLevelProperties()).setBiome(flatChunkGeneratorConfig.getBiome());
 			return chunkGeneratorType.create(this.world, biomeSourceType.applyConfig(fixedBiomeSourceConfig), flatChunkGeneratorConfig);
 		} else if (levelGeneratorType == LevelGeneratorType.DEBUG_ALL_BLOCK_STATES) {
-			FixedBiomeSourceConfig fixedBiomeSourceConfig2 = biomeSourceType.getConfig().setBiome(Biomes.PLAINS);
+			FixedBiomeSourceConfig fixedBiomeSourceConfig2 = biomeSourceType.getConfig(this.world.getLevelProperties()).setBiome(Biomes.PLAINS);
 			return chunkGeneratorType2.create(this.world, biomeSourceType.applyConfig(fixedBiomeSourceConfig2), chunkGeneratorType2.createSettings());
 		} else if (levelGeneratorType != LevelGeneratorType.BUFFET) {
 			OverworldChunkGeneratorConfig overworldChunkGeneratorConfig2 = chunkGeneratorType5.createSettings();
-			VanillaLayeredBiomeSourceConfig vanillaLayeredBiomeSourceConfig2 = biomeSourceType2.getConfig()
-				.setLevelProperties(this.world.getLevelProperties())
+			VanillaLayeredBiomeSourceConfig vanillaLayeredBiomeSourceConfig2 = biomeSourceType2.getConfig(this.world.getLevelProperties())
 				.setGeneratorSettings(overworldChunkGeneratorConfig2);
 			return chunkGeneratorType5.create(this.world, biomeSourceType2.applyConfig(vanillaLayeredBiomeSourceConfig2), overworldChunkGeneratorConfig2);
 		} else {
@@ -101,26 +100,26 @@ public class OverworldDimension extends Dimension {
 				}
 
 				if (BiomeSourceType.FIXED == biomeSourceType4) {
-					FixedBiomeSourceConfig fixedBiomeSourceConfig3 = biomeSourceType.getConfig().setBiome(biomes[0]);
+					FixedBiomeSourceConfig fixedBiomeSourceConfig3 = biomeSourceType.getConfig(this.world.getLevelProperties()).setBiome(biomes[0]);
 					biomeSource = biomeSourceType.applyConfig(fixedBiomeSourceConfig3);
 				}
 
 				if (BiomeSourceType.CHECKERBOARD == biomeSourceType4) {
 					int j = jsonObject3.has("size") ? jsonObject3.getAsJsonPrimitive("size").getAsInt() : 2;
-					CheckerboardBiomeSourceConfig checkerboardBiomeSourceConfig = biomeSourceType3.getConfig().method_8777(biomes).method_8780(j);
+					CheckerboardBiomeSourceConfig checkerboardBiomeSourceConfig = biomeSourceType3.getConfig(this.world.getLevelProperties())
+						.method_8777(biomes)
+						.method_8780(j);
 					biomeSource = biomeSourceType3.applyConfig(checkerboardBiomeSourceConfig);
 				}
 
 				if (BiomeSourceType.VANILLA_LAYERED == biomeSourceType4) {
-					VanillaLayeredBiomeSourceConfig vanillaLayeredBiomeSourceConfig = biomeSourceType2.getConfig()
-						.setGeneratorSettings(new OverworldChunkGeneratorConfig())
-						.setLevelProperties(this.world.getLevelProperties());
+					VanillaLayeredBiomeSourceConfig vanillaLayeredBiomeSourceConfig = biomeSourceType2.getConfig(this.world.getLevelProperties());
 					biomeSource = biomeSourceType2.applyConfig(vanillaLayeredBiomeSourceConfig);
 				}
 			}
 
 			if (biomeSource == null) {
-				biomeSource = biomeSourceType.applyConfig(biomeSourceType.getConfig().setBiome(Biomes.OCEAN));
+				biomeSource = biomeSourceType.applyConfig(biomeSourceType.getConfig(this.world.getLevelProperties()).setBiome(Biomes.OCEAN));
 			}
 
 			BlockState blockState = Blocks.STONE.getDefaultState();

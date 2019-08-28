@@ -32,7 +32,7 @@ public class HeightmapNoiseBiasedDecorator extends Decorator<TopSolidHeightmapNo
 		return IntStream.range(0, i).mapToObj(ix -> {
 			int j = random.nextInt(16);
 			int k = random.nextInt(16);
-			int l = iWorld.getTop(topSolidHeightmapNoiseBiasedDecoratorConfig.heightmap, blockPos.getX() + j, blockPos.getZ() + k);
+			int l = iWorld.getLightLevel(topSolidHeightmapNoiseBiasedDecoratorConfig.heightmap, blockPos.getX() + j, blockPos.getZ() + k);
 			return new BlockPos(blockPos.getX() + j, l, blockPos.getZ() + k);
 		});
 	}

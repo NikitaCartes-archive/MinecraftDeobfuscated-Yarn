@@ -275,7 +275,6 @@ public class ProtoChunk implements Chunk {
 	}
 
 	@Nullable
-	@Override
 	public LightingProvider getLightingProvider() {
 		return this.lightingProvider;
 	}
@@ -455,7 +454,6 @@ public class ProtoChunk implements Chunk {
 		this.carvingMasks.put(carver, bitSet);
 	}
 
-	@Override
 	public void setLightingProvider(LightingProvider lightingProvider) {
 		this.lightingProvider = lightingProvider;
 	}

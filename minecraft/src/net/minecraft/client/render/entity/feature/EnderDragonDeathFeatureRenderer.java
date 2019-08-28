@@ -1,10 +1,10 @@
 package net.minecraft.client.render.entity.feature;
 
+import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
 import java.util.Random;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_4493;
 import net.minecraft.client.render.BufferBuilder;
 import net.minecraft.client.render.GuiLighting;
 import net.minecraft.client.render.Tessellator;
@@ -33,7 +33,7 @@ public class EnderDragonDeathFeatureRenderer extends FeatureRenderer<EnderDragon
 			RenderSystem.disableTexture();
 			RenderSystem.shadeModel(7425);
 			RenderSystem.enableBlend();
-			RenderSystem.blendFunc(class_4493.class_4535.SRC_ALPHA, class_4493.class_4534.ONE);
+			RenderSystem.blendFunc(GlStateManager.class_4535.SRC_ALPHA, GlStateManager.class_4534.ONE);
 			RenderSystem.disableAlphaTest();
 			RenderSystem.enableCull();
 			RenderSystem.depthMask(false);

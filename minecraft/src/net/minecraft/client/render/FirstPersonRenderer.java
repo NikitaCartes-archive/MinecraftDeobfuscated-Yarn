@@ -1,11 +1,11 @@
 package net.minecraft.client.render;
 
 import com.google.common.base.MoreObjects;
+import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
 import java.util.Objects;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_4493;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockRenderLayer;
 import net.minecraft.block.BlockRenderType;
@@ -91,11 +91,10 @@ public class FirstPersonRenderer {
 		AbstractClientPlayerEntity abstractClientPlayerEntity = this.client.player;
 		int i = this.client
 			.world
-			.getLightmapIndex(
+			.method_22337(
 				new BlockPos(
 					abstractClientPlayerEntity.x, abstractClientPlayerEntity.y + (double)abstractClientPlayerEntity.getStandingEyeHeight(), abstractClientPlayerEntity.z
-				),
-				0
+				)
 			);
 		float f = (float)(i & 65535);
 		float g = (float)(i >> 16);
@@ -539,7 +538,7 @@ public class FirstPersonRenderer {
 		RenderSystem.color4f(g, g, g, 0.1F);
 		RenderSystem.enableBlend();
 		RenderSystem.blendFuncSeparate(
-			class_4493.class_4535.SRC_ALPHA, class_4493.class_4534.ONE_MINUS_SRC_ALPHA, class_4493.class_4535.ONE, class_4493.class_4534.ZERO
+			GlStateManager.class_4535.SRC_ALPHA, GlStateManager.class_4534.ONE_MINUS_SRC_ALPHA, GlStateManager.class_4535.ONE, GlStateManager.class_4534.ZERO
 		);
 		RenderSystem.pushMatrix();
 		float h = 4.0F;
@@ -569,7 +568,7 @@ public class FirstPersonRenderer {
 		RenderSystem.depthMask(false);
 		RenderSystem.enableBlend();
 		RenderSystem.blendFuncSeparate(
-			class_4493.class_4535.SRC_ALPHA, class_4493.class_4534.ONE_MINUS_SRC_ALPHA, class_4493.class_4535.ONE, class_4493.class_4534.ZERO
+			GlStateManager.class_4535.SRC_ALPHA, GlStateManager.class_4534.ONE_MINUS_SRC_ALPHA, GlStateManager.class_4535.ONE, GlStateManager.class_4534.ZERO
 		);
 		float f = 1.0F;
 

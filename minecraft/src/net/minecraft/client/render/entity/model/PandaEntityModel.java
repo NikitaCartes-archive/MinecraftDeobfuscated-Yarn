@@ -3,8 +3,8 @@ package net.minecraft.client.render.entity.model;
 import com.mojang.blaze3d.systems.RenderSystem;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_4496;
 import net.minecraft.client.model.ModelPart;
+import net.minecraft.client.model.ModelUtil;
 import net.minecraft.entity.passive.PandaEntity;
 import net.minecraft.util.math.MathHelper;
 
@@ -76,8 +76,8 @@ public class PandaEntityModel<T extends PandaEntity> extends QuadrupedEntityMode
 		}
 
 		if (this.scaredAnimationProgress > 0.0F) {
-			this.body.pitch = class_4496.method_22114(this.body.pitch, 1.7407963F, this.scaredAnimationProgress);
-			this.head.pitch = class_4496.method_22114(this.head.pitch, (float) (Math.PI / 2), this.scaredAnimationProgress);
+			this.body.pitch = ModelUtil.interpolateAngle(this.body.pitch, 1.7407963F, this.scaredAnimationProgress);
+			this.head.pitch = ModelUtil.interpolateAngle(this.head.pitch, (float) (Math.PI / 2), this.scaredAnimationProgress);
 			this.leg3.roll = -0.27079642F;
 			this.leg4.roll = 0.27079642F;
 			this.leg1.roll = 0.5707964F;
@@ -105,11 +105,11 @@ public class PandaEntityModel<T extends PandaEntity> extends QuadrupedEntityMode
 			this.leg2.pitch = 0.6F * MathHelper.sin(h * 0.15F);
 			this.leg3.pitch = 0.3F * MathHelper.sin(h * 0.25F);
 			this.leg4.pitch = -0.3F * MathHelper.sin(h * 0.25F);
-			this.head.pitch = class_4496.method_22114(this.head.pitch, (float) (Math.PI / 2), this.lieOnBackAnimationProgress);
+			this.head.pitch = ModelUtil.interpolateAngle(this.head.pitch, (float) (Math.PI / 2), this.lieOnBackAnimationProgress);
 		}
 
 		if (this.playAnimationProgress > 0.0F) {
-			this.head.pitch = class_4496.method_22114(this.head.pitch, 2.0561945F, this.playAnimationProgress);
+			this.head.pitch = ModelUtil.interpolateAngle(this.head.pitch, 2.0561945F, this.playAnimationProgress);
 			this.leg1.pitch = -0.5F * MathHelper.sin(h * 0.5F);
 			this.leg2.pitch = 0.5F * MathHelper.sin(h * 0.5F);
 			this.leg3.pitch = 0.5F * MathHelper.sin(h * 0.5F);

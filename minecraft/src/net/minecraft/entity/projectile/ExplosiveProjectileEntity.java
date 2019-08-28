@@ -79,7 +79,7 @@ public abstract class ExplosiveProjectileEntity extends Entity {
 
 	@Override
 	public void tick() {
-		if (this.world.isClient || (this.owner == null || !this.owner.removed) && this.world.isBlockLoaded(new BlockPos(this))) {
+		if (this.world.isClient || (this.owner == null || !this.owner.removed) && this.world.method_22340(new BlockPos(this))) {
 			super.tick();
 			if (this.isBurning()) {
 				this.setOnFireFor(1);

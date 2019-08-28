@@ -8,6 +8,7 @@ import net.minecraft.fluid.Fluid;
 import net.minecraft.fluid.FluidState;
 import net.minecraft.fluid.Fluids;
 import net.minecraft.item.ItemPlacementContext;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.tag.FluidTags;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
@@ -68,13 +69,13 @@ public class SeagrassBlock extends PlantBlock implements Fertilizable, FluidFill
 	}
 
 	@Override
-	public void grow(World world, Random random, BlockPos blockPos, BlockState blockState) {
+	public void grow(ServerWorld serverWorld, Random random, BlockPos blockPos, BlockState blockState) {
 		BlockState blockState2 = Blocks.TALL_SEAGRASS.getDefaultState();
 		BlockState blockState3 = blockState2.with(TallSeagrassBlock.HALF, DoubleBlockHalf.UPPER);
 		BlockPos blockPos2 = blockPos.up();
-		if (world.getBlockState(blockPos2).getBlock() == Blocks.WATER) {
-			world.setBlockState(blockPos, blockState2, 2);
-			world.setBlockState(blockPos2, blockState3, 2);
+		if (serverWorld.getBlockState(blockPos2).getBlock() == Blocks.WATER) {
+			serverWorld.setBlockState(blockPos, blockState2, 2);
+			serverWorld.setBlockState(blockPos2, blockState3, 2);
 		}
 	}
 

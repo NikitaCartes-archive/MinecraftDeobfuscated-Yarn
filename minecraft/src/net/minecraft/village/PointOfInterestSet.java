@@ -72,7 +72,7 @@ public class PointOfInterestSet implements DynamicSerializable {
 			if (pointOfInterestType.equals(pointOfInterest2.getType())) {
 				return false;
 			} else {
-				throw (IllegalStateException)SystemUtil.method_22320(new IllegalStateException("POI data mismatch: already registered at " + blockPos));
+				throw (IllegalStateException)SystemUtil.throwOrPause(new IllegalStateException("POI data mismatch: already registered at " + blockPos));
 			}
 		} else {
 			this.pointsOfInterestByPos.put(s, pointOfInterest);
@@ -95,7 +95,7 @@ public class PointOfInterestSet implements DynamicSerializable {
 	public boolean releaseTicket(BlockPos blockPos) {
 		PointOfInterest pointOfInterest = this.pointsOfInterestByPos.get(ChunkSectionPos.packToShort(blockPos));
 		if (pointOfInterest == null) {
-			throw (IllegalStateException)SystemUtil.method_22320(new IllegalStateException("POI never registered at " + blockPos));
+			throw (IllegalStateException)SystemUtil.throwOrPause(new IllegalStateException("POI never registered at " + blockPos));
 		} else {
 			boolean bl = pointOfInterest.releaseTicket();
 			this.updateListener.run();

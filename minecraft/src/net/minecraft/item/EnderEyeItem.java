@@ -9,6 +9,7 @@ import net.minecraft.block.pattern.BlockPattern;
 import net.minecraft.entity.EnderEyeEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.stat.Stats;
@@ -67,8 +68,8 @@ public class EnderEyeItem extends Item {
 			return new TypedActionResult<>(ActionResult.PASS, itemStack);
 		} else {
 			playerEntity.setCurrentHand(hand);
-			if (!world.isClient) {
-				BlockPos blockPos = world.getChunkManager().getChunkGenerator().locateStructure(world, "Stronghold", new BlockPos(playerEntity), 100, false);
+			if (world instanceof ServerWorld) {
+				BlockPos blockPos = ((ServerWorld)world).method_14178().getChunkGenerator().locateStructure(world, "Stronghold", new BlockPos(playerEntity), 100, false);
 				if (blockPos != null) {
 					EnderEyeEntity enderEyeEntity = new EnderEyeEntity(world, playerEntity.x, playerEntity.y + (double)(playerEntity.getHeight() / 2.0F), playerEntity.z);
 					enderEyeEntity.setItem(itemStack);

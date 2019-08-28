@@ -6,7 +6,6 @@ import java.util.function.Predicate;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_4503;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.render.BufferBuilder;
@@ -39,7 +38,7 @@ public class DebugRenderer {
 	public final PointOfInterestDebugRenderer pointsOfInterestDebugRenderer;
 	public final RaidCenterDebugRenderer raidCenterDebugRenderer;
 	public final GoalSelectorDebugRenderer goalSelectorDebugRenderer;
-	public final class_4503 field_20519;
+	public final GameTestDebugRenderer gameTestDebugRenderer;
 	private boolean showChunkBorder;
 
 	public DebugRenderer(MinecraftClient minecraftClient) {
@@ -58,26 +57,26 @@ public class DebugRenderer {
 		this.pointsOfInterestDebugRenderer = new PointOfInterestDebugRenderer(minecraftClient);
 		this.raidCenterDebugRenderer = new RaidCenterDebugRenderer(minecraftClient);
 		this.goalSelectorDebugRenderer = new GoalSelectorDebugRenderer(minecraftClient);
-		this.field_20519 = new class_4503();
+		this.gameTestDebugRenderer = new GameTestDebugRenderer();
 	}
 
 	public void method_20413() {
-		this.pathfindingDebugRenderer.method_20414();
-		this.waterDebugRenderer.method_20414();
-		this.chunkBorderDebugRenderer.method_20414();
-		this.heightmapDebugRenderer.method_20414();
-		this.voxelDebugRenderer.method_20414();
-		this.neighborUpdateDebugRenderer.method_20414();
-		this.caveDebugRenderer.method_20414();
-		this.structureDebugRenderer.method_20414();
-		this.skyLightDebugRenderer.method_20414();
-		this.worldGenAttemptDebugRenderer.method_20414();
-		this.blockOutlineDebugRenderer.method_20414();
-		this.chunkLoadingDebugRenderer.method_20414();
-		this.pointsOfInterestDebugRenderer.method_20414();
-		this.raidCenterDebugRenderer.method_20414();
-		this.goalSelectorDebugRenderer.method_20414();
-		this.field_20519.method_20414();
+		this.pathfindingDebugRenderer.clear();
+		this.waterDebugRenderer.clear();
+		this.chunkBorderDebugRenderer.clear();
+		this.heightmapDebugRenderer.clear();
+		this.voxelDebugRenderer.clear();
+		this.neighborUpdateDebugRenderer.clear();
+		this.caveDebugRenderer.clear();
+		this.structureDebugRenderer.clear();
+		this.skyLightDebugRenderer.clear();
+		this.worldGenAttemptDebugRenderer.clear();
+		this.blockOutlineDebugRenderer.clear();
+		this.chunkLoadingDebugRenderer.clear();
+		this.pointsOfInterestDebugRenderer.clear();
+		this.raidCenterDebugRenderer.clear();
+		this.goalSelectorDebugRenderer.clear();
+		this.gameTestDebugRenderer.clear();
 	}
 
 	public boolean toggleShowChunkBorder() {
@@ -90,7 +89,7 @@ public class DebugRenderer {
 			this.chunkBorderDebugRenderer.render(l);
 		}
 
-		this.field_20519.render(l);
+		this.gameTestDebugRenderer.render(l);
 	}
 
 	public static Optional<Entity> method_19694(@Nullable Entity entity, int i) {
@@ -191,7 +190,7 @@ public class DebugRenderer {
 	public interface Renderer {
 		void render(long l);
 
-		default void method_20414() {
+		default void clear() {
 		}
 	}
 }

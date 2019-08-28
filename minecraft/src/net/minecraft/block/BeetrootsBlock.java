@@ -6,6 +6,7 @@ import net.fabricmc.api.Environment;
 import net.minecraft.entity.EntityContext;
 import net.minecraft.item.ItemConvertible;
 import net.minecraft.item.Items;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.state.StateFactory;
 import net.minecraft.state.property.IntProperty;
 import net.minecraft.state.property.Properties;
@@ -44,9 +45,9 @@ public class BeetrootsBlock extends CropBlock {
 	}
 
 	@Override
-	public void onScheduledTick(BlockState blockState, World world, BlockPos blockPos, Random random) {
+	public void onScheduledTick(BlockState blockState, ServerWorld serverWorld, BlockPos blockPos, Random random) {
 		if (random.nextInt(3) != 0) {
-			super.onScheduledTick(blockState, world, blockPos, random);
+			super.onScheduledTick(blockState, serverWorld, blockPos, random);
 		}
 	}
 

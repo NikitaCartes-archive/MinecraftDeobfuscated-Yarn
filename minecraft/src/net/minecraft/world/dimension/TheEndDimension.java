@@ -36,7 +36,7 @@ public class TheEndDimension extends Dimension {
 		floatingIslandsChunkGeneratorConfig.withCenter(this.getForcedSpawnPoint());
 		return ChunkGeneratorType.FLOATING_ISLANDS
 			.create(
-				this.world, BiomeSourceType.THE_END.applyConfig(BiomeSourceType.THE_END.getConfig().setSeed(this.world.getSeed())), floatingIslandsChunkGeneratorConfig
+				this.world, BiomeSourceType.THE_END.applyConfig(BiomeSourceType.THE_END.getConfig(this.world.getLevelProperties())), floatingIslandsChunkGeneratorConfig
 			);
 	}
 

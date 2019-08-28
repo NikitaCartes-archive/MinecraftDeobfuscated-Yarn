@@ -125,7 +125,7 @@ public class ClientResourcePackCreator implements ResourcePackCreator {
 				.whenComplete((void_, throwable) -> {
 					if (throwable != null) {
 						LOGGER.warn("Pack application failed: {}, deleting file {}", throwable.getMessage(), file);
-						method_19437(file);
+						delete(file);
 					}
 				});
 			var13 = this.downloadTask;
@@ -136,7 +136,7 @@ public class ClientResourcePackCreator implements ResourcePackCreator {
 		return var13;
 	}
 
-	private static void method_19437(File file) {
+	private static void delete(File file) {
 		try {
 			Files.delete(file.toPath());
 		} catch (IOException var2) {

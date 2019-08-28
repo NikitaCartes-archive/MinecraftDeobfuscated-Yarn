@@ -195,7 +195,7 @@ public class EvokerEntity extends SpellcastingIllagerEntity {
 				BlockPos blockPos2 = blockPos.down();
 				BlockState blockState = EvokerEntity.this.world.getBlockState(blockPos2);
 				if (blockState.isSideSolidFullSquare(EvokerEntity.this.world, blockPos2, Direction.UP)) {
-					if (!EvokerEntity.this.world.isAir(blockPos)) {
+					if (!EvokerEntity.this.world.method_22347(blockPos)) {
 						BlockState blockState2 = EvokerEntity.this.world.getBlockState(blockPos);
 						VoxelShape voxelShape = blockState2.getCollisionShape(EvokerEntity.this.world, blockPos);
 						if (!voxelShape.isEmpty()) {

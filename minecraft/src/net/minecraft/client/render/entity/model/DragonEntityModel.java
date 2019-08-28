@@ -1,9 +1,9 @@
 package net.minecraft.client.render.entity.model;
 
+import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_4493;
 import net.minecraft.client.model.ModelPart;
 import net.minecraft.entity.boss.dragon.EnderDragonEntity;
 import net.minecraft.util.math.MathHelper;
@@ -152,12 +152,12 @@ public class DragonEntityModel extends EntityModel<EnderDragonEntity> {
 			this.rearLeg.render(k);
 			RenderSystem.scalef(-1.0F, 1.0F, 1.0F);
 			if (w == 0) {
-				RenderSystem.cullFace(class_4493.FaceSides.FRONT);
+				RenderSystem.cullFace(GlStateManager.FaceSides.FRONT);
 			}
 		}
 
 		RenderSystem.popMatrix();
-		RenderSystem.cullFace(class_4493.FaceSides.BACK);
+		RenderSystem.cullFace(GlStateManager.FaceSides.BACK);
 		RenderSystem.disableCull();
 		float x = -((float)Math.sin((double)(l * (float) (Math.PI * 2)))) * 0.0F;
 		t = l * (float) (Math.PI * 2);

@@ -1,9 +1,9 @@
 package net.minecraft.client.particle;
 
+import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_4493;
 import net.minecraft.client.render.BufferBuilder;
 import net.minecraft.client.render.GuiLighting;
 import net.minecraft.client.render.Tessellator;
@@ -58,7 +58,7 @@ public interface ParticleTextureSheet {
 			RenderSystem.depthMask(false);
 			textureManager.bindTexture(SpriteAtlasTexture.PARTICLE_ATLAS_TEX);
 			RenderSystem.enableBlend();
-			RenderSystem.blendFunc(class_4493.class_4535.SRC_ALPHA, class_4493.class_4534.ONE_MINUS_SRC_ALPHA);
+			RenderSystem.blendFunc(GlStateManager.class_4535.SRC_ALPHA, GlStateManager.class_4534.ONE_MINUS_SRC_ALPHA);
 			RenderSystem.alphaFunc(516, 0.003921569F);
 			bufferBuilder.begin(7, VertexFormats.POSITION_UV_COLOR_LMAP);
 		}

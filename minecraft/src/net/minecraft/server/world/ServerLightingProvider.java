@@ -50,12 +50,12 @@ public class ServerLightingProvider extends LightingProvider implements AutoClos
 
 	@Override
 	public int doLightUpdates(int i, boolean bl, boolean bl2) {
-		throw (UnsupportedOperationException)SystemUtil.method_22320(new UnsupportedOperationException("Ran authomatically on a different thread!"));
+		throw (UnsupportedOperationException)SystemUtil.throwOrPause(new UnsupportedOperationException("Ran authomatically on a different thread!"));
 	}
 
 	@Override
 	public void method_15560(BlockPos blockPos, int i) {
-		throw (UnsupportedOperationException)SystemUtil.method_22320(new UnsupportedOperationException("Ran authomatically on a different thread!"));
+		throw (UnsupportedOperationException)SystemUtil.throwOrPause(new UnsupportedOperationException("Ran authomatically on a different thread!"));
 	}
 
 	@Override

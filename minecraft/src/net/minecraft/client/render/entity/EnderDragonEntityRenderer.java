@@ -1,9 +1,9 @@
 package net.minecraft.client.render.entity;
 
+import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_4493;
 import net.minecraft.client.render.BufferBuilder;
 import net.minecraft.client.render.GuiLighting;
 import net.minecraft.client.render.Tessellator;
@@ -62,7 +62,7 @@ public class EnderDragonEntityRenderer extends MobEntityRenderer<EnderDragonEnti
 			RenderSystem.depthFunc(514);
 			RenderSystem.disableTexture();
 			RenderSystem.enableBlend();
-			RenderSystem.blendFunc(class_4493.class_4535.SRC_ALPHA, class_4493.class_4534.ONE_MINUS_SRC_ALPHA);
+			RenderSystem.blendFunc(GlStateManager.class_4535.SRC_ALPHA, GlStateManager.class_4534.ONE_MINUS_SRC_ALPHA);
 			RenderSystem.color4f(1.0F, 0.0F, 0.0F, 0.5F);
 			this.model.method_17137(enderDragonEntity, f, g, h, i, j, k);
 			RenderSystem.enableTexture();

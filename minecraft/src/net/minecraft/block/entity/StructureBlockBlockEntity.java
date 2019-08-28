@@ -160,7 +160,7 @@ public class StructureBlockBlockEntity extends BlockEntity {
 		return this.structureName == null ? "" : this.structureName.toString();
 	}
 
-	public String method_21865() {
+	public String getStructurePath() {
 		return this.structureName == null ? "" : this.structureName.getPath();
 	}
 
@@ -423,13 +423,13 @@ public class StructureBlockBlockEntity extends BlockEntity {
 				return false;
 			}
 
-			return structure == null ? false : this.method_21864(bl, structure);
+			return structure == null ? false : this.place(bl, structure);
 		} else {
 			return false;
 		}
 	}
 
-	public boolean method_21864(boolean bl, Structure structure) {
+	public boolean place(boolean bl, Structure structure) {
 		BlockPos blockPos = this.getPos();
 		if (!ChatUtil.isEmpty(structure.getAuthor())) {
 			this.author = structure.getAuthor();

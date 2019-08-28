@@ -147,7 +147,7 @@ public class ServerChunkManager extends ChunkManager {
 			this.mainThreadExecutor.waitFor(completableFuture::isDone);
 			Chunk chunk = ((Either)completableFuture.join()).map(chunkx -> chunkx, unloaded -> {
 				if (bl) {
-					throw (IllegalStateException)SystemUtil.method_22320(new IllegalStateException("Chunk not there when requested: " + unloaded));
+					throw (IllegalStateException)SystemUtil.throwOrPause(new IllegalStateException("Chunk not there when requested: " + unloaded));
 				} else {
 					return null;
 				}
@@ -229,7 +229,7 @@ public class ServerChunkManager extends ChunkManager {
 				chunkHolder = this.getChunkHolder(l);
 				profiler.pop();
 				if (this.isMissingForLevel(chunkHolder, k)) {
-					throw (IllegalStateException)SystemUtil.method_22320(new IllegalStateException("No chunk holder after ticket has been added"));
+					throw (IllegalStateException)SystemUtil.throwOrPause(new IllegalStateException("No chunk holder after ticket has been added"));
 				}
 			}
 		}
@@ -415,7 +415,7 @@ public class ServerChunkManager extends ChunkManager {
 	}
 
 	@Override
-	public String getStatus() {
+	public String getDebugString() {
 		return "ServerChunkCache: " + this.getLoadedChunkCount();
 	}
 
@@ -424,7 +424,6 @@ public class ServerChunkManager extends ChunkManager {
 		return this.mainThreadExecutor.method_21684();
 	}
 
-	@Override
 	public ChunkGenerator<?> getChunkGenerator() {
 		return this.chunkGenerator;
 	}

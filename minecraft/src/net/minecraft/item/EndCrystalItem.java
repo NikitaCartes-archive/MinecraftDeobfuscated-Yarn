@@ -28,7 +28,7 @@ public class EndCrystalItem extends Item {
 			return ActionResult.FAIL;
 		} else {
 			BlockPos blockPos2 = blockPos.up();
-			if (!world.isAir(blockPos2)) {
+			if (!world.method_22347(blockPos2)) {
 				return ActionResult.FAIL;
 			} else {
 				double d = (double)blockPos2.getX();

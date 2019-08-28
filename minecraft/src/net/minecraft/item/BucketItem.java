@@ -117,11 +117,9 @@ public class BucketItem extends Item {
 		} else {
 			BlockState blockState = world.getBlockState(blockPos);
 			Material material = blockState.getMaterial();
-			boolean bl = !material.isSolid();
-			boolean bl2 = material.isReplaceable();
-			if (world.isAir(blockPos)
+			boolean bl = blockState.method_22360(this.fluid);
+			if (blockState.isAir()
 				|| bl
-				|| bl2
 				|| blockState.getBlock() instanceof FluidFillable && ((FluidFillable)blockState.getBlock()).canFillWithFluid(world, blockPos, blockState, this.fluid)) {
 				if (world.dimension.doesWaterVaporize() && this.fluid.matches(FluidTags.WATER)) {
 					int i = blockPos.getX();
@@ -144,8 +142,8 @@ public class BucketItem extends Item {
 						this.playEmptyingSound(playerEntity, world, blockPos);
 					}
 				} else {
-					if (!world.isClient && (bl || bl2) && !material.isLiquid()) {
-						world.breakBlock(blockPos, true);
+					if (!world.isClient && bl && !material.isLiquid()) {
+						world.method_22352(blockPos, true);
 					}
 
 					this.playEmptyingSound(playerEntity, world, blockPos);

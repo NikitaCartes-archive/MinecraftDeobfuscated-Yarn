@@ -2,6 +2,7 @@ package com.mojang.realmsclient;
 
 import com.google.common.collect.Lists;
 import com.google.common.util.concurrent.RateLimiter;
+import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.realmsclient.client.Ping;
 import com.mojang.realmsclient.client.RealmsClient;
@@ -31,7 +32,6 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.ReentrantLock;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_4493;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.util.TextFormat;
 import net.minecraft.realms.RealmListEntry;
@@ -1420,7 +1420,7 @@ public class RealmsMainScreen extends RealmsScreen {
 					RenderSystem.enableBlend();
 					RealmsScreen.bind("minecraft:textures/gui/widgets.png");
 					RenderSystem.pushMatrix();
-					RenderSystem.blendFunc(class_4493.class_4535.SRC_ALPHA, class_4493.class_4534.ONE_MINUS_SRC_ALPHA);
+					RenderSystem.blendFunc(GlStateManager.class_4535.SRC_ALPHA, GlStateManager.class_4534.ONE_MINUS_SRC_ALPHA);
 					String string2 = RealmsScreen.getLocalizedString("mco.selectServer.expiredList");
 					String string3 = RealmsScreen.getLocalizedString("mco.selectServer.expiredRenew");
 					if (realmsServer.expiredTrial) {

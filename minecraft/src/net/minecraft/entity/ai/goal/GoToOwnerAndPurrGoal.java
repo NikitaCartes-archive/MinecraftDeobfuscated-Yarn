@@ -1,11 +1,11 @@
 package net.minecraft.entity.ai.goal;
 
 import java.util.EnumSet;
+import net.minecraft.class_4538;
 import net.minecraft.entity.mob.MobEntityWithAi;
 import net.minecraft.entity.passive.CatEntity;
 import net.minecraft.tag.BlockTags;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.ViewableWorld;
 
 public class GoToOwnerAndPurrGoal extends MoveToTargetPosGoal {
 	private final CatEntity cat;
@@ -51,7 +51,7 @@ public class GoToOwnerAndPurrGoal extends MoveToTargetPosGoal {
 	}
 
 	@Override
-	protected boolean isTargetPos(ViewableWorld viewableWorld, BlockPos blockPos) {
-		return viewableWorld.isAir(blockPos.up()) && viewableWorld.getBlockState(blockPos).getBlock().matches(BlockTags.BEDS);
+	protected boolean isTargetPos(class_4538 arg, BlockPos blockPos) {
+		return arg.method_22347(blockPos.up()) && arg.getBlockState(blockPos).getBlock().matches(BlockTags.BEDS);
 	}
 }

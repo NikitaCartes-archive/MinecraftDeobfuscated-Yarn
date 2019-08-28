@@ -3,7 +3,6 @@ package net.minecraft.client.texture;
 import com.mojang.blaze3d.systems.RenderSystem;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_4536;
 
 @Environment(EnvType.CLIENT)
 public abstract class AbstractTexture implements Texture {
@@ -45,7 +44,7 @@ public abstract class AbstractTexture implements Texture {
 	@Override
 	public int getGlId() {
 		if (this.glId == -1) {
-			this.glId = class_4536.generateTextureId();
+			this.glId = TextureUtil.generateTextureId();
 		}
 
 		return this.glId;
@@ -53,7 +52,7 @@ public abstract class AbstractTexture implements Texture {
 
 	public void clearGlId() {
 		if (this.glId != -1) {
-			class_4536.releaseTextureId(this.glId);
+			TextureUtil.releaseTextureId(this.glId);
 			this.glId = -1;
 		}
 	}

@@ -8,6 +8,7 @@ import java.util.UUID;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.class_4538;
 import net.minecraft.block.AbstractSkullBlock;
 import net.minecraft.block.Blocks;
 import net.minecraft.client.network.DebugRendererInfoManager;
@@ -65,7 +66,6 @@ import net.minecraft.world.Difficulty;
 import net.minecraft.world.GameRules;
 import net.minecraft.world.IWorld;
 import net.minecraft.world.LocalDifficulty;
-import net.minecraft.world.ViewableWorld;
 import net.minecraft.world.World;
 import net.minecraft.world.loot.context.LootContext;
 
@@ -679,8 +679,8 @@ public abstract class MobEntity extends LivingEntity {
 		return true;
 	}
 
-	public boolean canSpawn(ViewableWorld viewableWorld) {
-		return !viewableWorld.intersectsFluid(this.getBoundingBox()) && viewableWorld.intersectsEntities(this);
+	public boolean canSpawn(class_4538 arg) {
+		return !arg.method_22345(this.getBoundingBox()) && arg.intersectsEntities(this);
 	}
 
 	public int getLimitPerChunk() {
