@@ -11,10 +11,10 @@ import java.io.IOException;
 import java.nio.ByteBuffer;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_4536;
 import net.minecraft.client.font.Font;
 import net.minecraft.client.font.FontLoader;
 import net.minecraft.client.font.TrueTypeFont;
+import net.minecraft.client.texture.TextureUtil;
 import net.minecraft.resource.Resource;
 import net.minecraft.resource.ResourceManager;
 import net.minecraft.util.Identifier;
@@ -79,7 +79,7 @@ implements FontLoader {
     public Font load(ResourceManager resourceManager) {
         try (Resource resource = resourceManager.getResource(new Identifier(this.filename.getNamespace(), "font/" + this.filename.getPath()));){
             LOGGER.info("Loading font");
-            ByteBuffer byteBuffer = class_4536.readResource(resource.getInputStream());
+            ByteBuffer byteBuffer = TextureUtil.readResource(resource.getInputStream());
             byteBuffer.flip();
             LOGGER.info("Reading font");
             TrueTypeFont trueTypeFont = new TrueTypeFont(TrueTypeFont.getSTBTTFontInfo(byteBuffer), this.size, this.oversample, this.shiftX, this.shiftY, this.excludedCharacters);

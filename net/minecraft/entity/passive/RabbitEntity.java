@@ -10,6 +10,7 @@ import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.CarrotsBlock;
+import net.minecraft.class_4538;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityData;
 import net.minecraft.entity.EntityType;
@@ -57,7 +58,6 @@ import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.GameRules;
 import net.minecraft.world.IWorld;
 import net.minecraft.world.LocalDifficulty;
-import net.minecraft.world.ViewableWorld;
 import net.minecraft.world.World;
 import net.minecraft.world.biome.Biome;
 import org.jetbrains.annotations.Nullable;
@@ -367,7 +367,7 @@ extends AnimalEntity {
 
     public static boolean method_20669(EntityType<RabbitEntity> entityType, IWorld iWorld, SpawnType spawnType, BlockPos blockPos, Random random) {
         Block block = iWorld.getBlockState(blockPos.down()).getBlock();
-        return (block == Blocks.GRASS_BLOCK || block == Blocks.SNOW || block == Blocks.SAND) && iWorld.getLightLevel(blockPos, 0) > 8;
+        return (block == Blocks.GRASS_BLOCK || block == Blocks.SNOW || block == Blocks.SAND) && iWorld.method_22335(blockPos, 0) > 8;
     }
 
     private boolean wantsCarrots() {
@@ -461,7 +461,7 @@ extends AnimalEntity {
                     Integer integer = blockState.get(CarrotsBlock.AGE);
                     if (integer == 0) {
                         world.setBlockState(blockPos, Blocks.AIR.getDefaultState(), 2);
-                        world.breakBlock(blockPos, true);
+                        world.breakBlock(blockPos, true, this.rabbit);
                     } else {
                         world.setBlockState(blockPos, (BlockState)blockState.with(CarrotsBlock.AGE, integer - 1), 2);
                         world.playLevelEvent(2001, blockPos, Block.getRawIdFromState(blockState));
@@ -474,10 +474,10 @@ extends AnimalEntity {
         }
 
         @Override
-        protected boolean isTargetPos(ViewableWorld viewableWorld, BlockPos blockPos) {
+        protected boolean isTargetPos(class_4538 arg, BlockPos blockPos) {
             BlockState blockState;
-            Block block = viewableWorld.getBlockState(blockPos).getBlock();
-            if (block == Blocks.FARMLAND && this.wantsCarrots && !this.field_6861 && (block = (blockState = viewableWorld.getBlockState(blockPos = blockPos.up())).getBlock()) instanceof CarrotsBlock && ((CarrotsBlock)block).isMature(blockState)) {
+            Block block = arg.getBlockState(blockPos).getBlock();
+            if (block == Blocks.FARMLAND && this.wantsCarrots && !this.field_6861 && (block = (blockState = arg.getBlockState(blockPos = blockPos.up())).getBlock()) instanceof CarrotsBlock && ((CarrotsBlock)block).isMature(blockState)) {
                 this.field_6861 = true;
                 return true;
             }

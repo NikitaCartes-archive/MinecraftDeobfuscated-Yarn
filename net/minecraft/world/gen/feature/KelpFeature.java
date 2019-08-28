@@ -25,7 +25,7 @@ extends Feature<DefaultFeatureConfig> {
 
     public boolean method_13460(IWorld iWorld, ChunkGenerator<? extends ChunkGeneratorConfig> chunkGenerator, Random random, BlockPos blockPos, DefaultFeatureConfig defaultFeatureConfig) {
         int i = 0;
-        int j = iWorld.getTop(Heightmap.Type.OCEAN_FLOOR, blockPos.getX(), blockPos.getZ());
+        int j = iWorld.getLightLevel(Heightmap.Type.OCEAN_FLOOR, blockPos.getX(), blockPos.getZ());
         BlockPos blockPos2 = new BlockPos(blockPos.getX(), j, blockPos.getZ());
         if (iWorld.getBlockState(blockPos2).getBlock() == Blocks.WATER) {
             BlockState blockState = Blocks.KELP.getDefaultState();

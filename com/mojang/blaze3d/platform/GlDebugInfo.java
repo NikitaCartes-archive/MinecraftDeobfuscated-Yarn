@@ -1,7 +1,7 @@
 /*
  * Decompiled with CFR 0.2.0 (FabricMC d28b102d).
  */
-package net.minecraft;
+package com.mojang.blaze3d.platform;
 
 import com.mojang.blaze3d.platform.GLX;
 import com.mojang.blaze3d.systems.RenderSystem;
@@ -9,20 +9,20 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 
 @Environment(value=EnvType.CLIENT)
-public class class_4494 {
-    public static String method_22088() {
+public class GlDebugInfo {
+    public static String getVendor() {
         return RenderSystem.getString(7936);
     }
 
-    public static String method_22089() {
+    public static String getCpuInfo() {
         return GLX._getCpuInfo();
     }
 
-    public static String method_22090() {
+    public static String getRenderer() {
         return RenderSystem.getString(7937);
     }
 
-    public static String method_22091() {
+    public static String getVersion() {
         return RenderSystem.getString(7938);
     }
 }

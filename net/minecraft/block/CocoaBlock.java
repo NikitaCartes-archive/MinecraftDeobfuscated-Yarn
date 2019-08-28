@@ -10,8 +10,10 @@ import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.Fertilizable;
 import net.minecraft.block.HorizontalFacingBlock;
+import net.minecraft.class_4538;
 import net.minecraft.entity.EntityContext;
 import net.minecraft.item.ItemPlacementContext;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.state.StateFactory;
 import net.minecraft.state.property.IntProperty;
 import net.minecraft.state.property.Properties;
@@ -21,7 +23,6 @@ import net.minecraft.util.math.Direction;
 import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.IWorld;
-import net.minecraft.world.ViewableWorld;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
 
@@ -40,16 +41,16 @@ implements Fertilizable {
     }
 
     @Override
-    public void onScheduledTick(BlockState blockState, World world, BlockPos blockPos, Random random) {
+    public void onScheduledTick(BlockState blockState, ServerWorld serverWorld, BlockPos blockPos, Random random) {
         int i;
-        if (world.random.nextInt(5) == 0 && (i = blockState.get(AGE).intValue()) < 2) {
-            world.setBlockState(blockPos, (BlockState)blockState.with(AGE, i + 1), 2);
+        if (serverWorld.random.nextInt(5) == 0 && (i = blockState.get(AGE).intValue()) < 2) {
+            serverWorld.setBlockState(blockPos, (BlockState)blockState.with(AGE, i + 1), 2);
         }
     }
 
     @Override
-    public boolean canPlaceAt(BlockState blockState, ViewableWorld viewableWorld, BlockPos blockPos) {
-        Block block = viewableWorld.getBlockState(blockPos.offset(blockState.get(FACING))).getBlock();
+    public boolean canPlaceAt(BlockState blockState, class_4538 arg, BlockPos blockPos) {
+        Block block = arg.getBlockState(blockPos.offset(blockState.get(FACING))).getBlock();
         return block.matches(BlockTags.JUNGLE_LOGS);
     }
 
@@ -75,10 +76,10 @@ implements Fertilizable {
     @Nullable
     public BlockState getPlacementState(ItemPlacementContext itemPlacementContext) {
         BlockState blockState = this.getDefaultState();
-        World viewableWorld = itemPlacementContext.getWorld();
+        World lv = itemPlacementContext.getWorld();
         BlockPos blockPos = itemPlacementContext.getBlockPos();
         for (Direction direction : itemPlacementContext.getPlacementDirections()) {
-            if (!direction.getAxis().isHorizontal() || !(blockState = (BlockState)blockState.with(FACING, direction)).canPlaceAt(viewableWorld, blockPos)) continue;
+            if (!direction.getAxis().isHorizontal() || !(blockState = (BlockState)blockState.with(FACING, direction)).canPlaceAt(lv, blockPos)) continue;
             return blockState;
         }
         return null;
@@ -103,8 +104,8 @@ implements Fertilizable {
     }
 
     @Override
-    public void grow(World world, Random random, BlockPos blockPos, BlockState blockState) {
-        world.setBlockState(blockPos, (BlockState)blockState.with(AGE, blockState.get(AGE) + 1), 2);
+    public void grow(ServerWorld serverWorld, Random random, BlockPos blockPos, BlockState blockState) {
+        serverWorld.setBlockState(blockPos, (BlockState)blockState.with(AGE, blockState.get(AGE) + 1), 2);
     }
 
     @Override

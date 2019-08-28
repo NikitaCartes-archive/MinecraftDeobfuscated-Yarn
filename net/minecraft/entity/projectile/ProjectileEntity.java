@@ -351,7 +351,7 @@ implements Projectile {
                 Vec3d vec3d;
                 LivingEntity livingEntity = (LivingEntity)entity;
                 if (!this.world.isClient && this.getPierceLevel() <= 0) {
-                    livingEntity.setStuckArrows(livingEntity.getStuckArrows() + 1);
+                    livingEntity.setStuckArrowCount(livingEntity.getStuckArrowCount() + 1);
                 }
                 if (this.field_7575 > 0 && (vec3d = this.getVelocity().multiply(1.0, 0.0, 1.0).normalize().multiply((double)this.field_7575 * 0.6)).lengthSquared() > 0.0) {
                     livingEntity.addVelocity(vec3d.x, 0.1, vec3d.z);

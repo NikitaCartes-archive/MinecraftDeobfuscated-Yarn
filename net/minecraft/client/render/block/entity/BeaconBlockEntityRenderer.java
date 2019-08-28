@@ -3,12 +3,12 @@
  */
 package net.minecraft.client.render.block.entity;
 
+import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
 import java.util.List;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.block.entity.BeaconBlockEntity;
-import net.minecraft.class_4493;
 import net.minecraft.client.render.BufferBuilder;
 import net.minecraft.client.render.Tessellator;
 import net.minecraft.client.render.VertexFormats;
@@ -50,7 +50,7 @@ extends BlockEntityRenderer<BeaconBlockEntity> {
         RenderSystem.disableCull();
         RenderSystem.disableBlend();
         RenderSystem.depthMask(true);
-        RenderSystem.blendFuncSeparate(class_4493.class_4535.SRC_ALPHA, class_4493.class_4534.ONE, class_4493.class_4535.ONE, class_4493.class_4534.ZERO);
+        RenderSystem.blendFuncSeparate(GlStateManager.class_4535.SRC_ALPHA, GlStateManager.class_4534.ONE, GlStateManager.class_4535.ONE, GlStateManager.class_4534.ZERO);
         RenderSystem.pushMatrix();
         RenderSystem.translated(d + 0.5, e, f + 0.5);
         Tessellator tessellator = Tessellator.getInstance();
@@ -95,7 +95,7 @@ extends BlockEntityRenderer<BeaconBlockEntity> {
         tessellator.draw();
         RenderSystem.popMatrix();
         RenderSystem.enableBlend();
-        RenderSystem.blendFuncSeparate(class_4493.class_4535.SRC_ALPHA, class_4493.class_4534.ONE_MINUS_SRC_ALPHA, class_4493.class_4535.ONE, class_4493.class_4534.ZERO);
+        RenderSystem.blendFuncSeparate(GlStateManager.class_4535.SRC_ALPHA, GlStateManager.class_4534.ONE_MINUS_SRC_ALPHA, GlStateManager.class_4535.ONE, GlStateManager.class_4534.ZERO);
         RenderSystem.depthMask(false);
         u = -m;
         v = -m;

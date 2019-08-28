@@ -37,7 +37,7 @@ public class BiomeLayerSampler {
         Biome biome = (Biome)Registry.BIOME.get(i);
         if (biome == null) {
             if (SharedConstants.isDevelopment) {
-                throw SystemUtil.method_22320(new IllegalStateException("Unknown biome id: " + i));
+                throw SystemUtil.throwOrPause(new IllegalStateException("Unknown biome id: " + i));
             }
             LOGGER.warn("Unknown biome id: ", (Object)i);
             return Biomes.DEFAULT;

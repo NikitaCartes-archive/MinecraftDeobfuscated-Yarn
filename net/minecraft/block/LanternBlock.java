@@ -9,6 +9,7 @@ import net.minecraft.block.BlockRenderLayer;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.piston.PistonBehavior;
+import net.minecraft.class_4538;
 import net.minecraft.entity.EntityContext;
 import net.minecraft.item.ItemPlacementContext;
 import net.minecraft.state.StateFactory;
@@ -20,7 +21,6 @@ import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.util.shape.VoxelShapes;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.IWorld;
-import net.minecraft.world.ViewableWorld;
 import org.jetbrains.annotations.Nullable;
 
 public class LanternBlock
@@ -61,9 +61,9 @@ extends Block {
     }
 
     @Override
-    public boolean canPlaceAt(BlockState blockState, ViewableWorld viewableWorld, BlockPos blockPos) {
+    public boolean canPlaceAt(BlockState blockState, class_4538 arg, BlockPos blockPos) {
         Direction direction = LanternBlock.attachedDirection(blockState).getOpposite();
-        return Block.isSolidSmallSquare(viewableWorld, blockPos.offset(direction), direction.getOpposite());
+        return Block.isSolidSmallSquare(arg, blockPos.offset(direction), direction.getOpposite());
     }
 
     protected static Direction attachedDirection(BlockState blockState) {

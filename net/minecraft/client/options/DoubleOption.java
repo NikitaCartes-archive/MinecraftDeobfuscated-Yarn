@@ -17,7 +17,7 @@ import net.minecraft.util.math.MathHelper;
 @Environment(value=EnvType.CLIENT)
 public class DoubleOption
 extends Option {
-    protected final float interval;
+    protected final float step;
     protected final double min;
     protected double max;
     private final Function<GameOptions, Double> getter;
@@ -28,7 +28,7 @@ extends Option {
         super(string);
         this.min = d;
         this.max = e;
-        this.interval = f;
+        this.step = f;
         this.getter = function;
         this.setter = biConsumer;
         this.displayStringGetter = biFunction;
@@ -39,17 +39,17 @@ extends Option {
         return new GameOptionSliderWidget(gameOptions, i, j, k, 20, this);
     }
 
-    public double method_18611(double d) {
-        return MathHelper.clamp((this.method_18618(d) - this.min) / (this.max - this.min), 0.0, 1.0);
+    public double getRatio(double d) {
+        return MathHelper.clamp((this.adjust(d) - this.min) / (this.max - this.min), 0.0, 1.0);
     }
 
-    public double method_18616(double d) {
-        return this.method_18618(MathHelper.lerp(MathHelper.clamp(d, 0.0, 1.0), this.min, this.max));
+    public double getValue(double d) {
+        return this.adjust(MathHelper.lerp(MathHelper.clamp(d, 0.0, 1.0), this.min, this.max));
     }
 
-    private double method_18618(double d) {
-        if (this.interval > 0.0f) {
-            d = this.interval * (float)Math.round(d / (double)this.interval);
+    private double adjust(double d) {
+        if (this.step > 0.0f) {
+            d = this.step * (float)Math.round(d / (double)this.step);
         }
         return MathHelper.clamp(d, this.min, this.max);
     }

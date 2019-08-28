@@ -5,6 +5,7 @@ package net.minecraft.entity.ai.goal;
 
 import java.util.Random;
 import net.minecraft.block.Block;
+import net.minecraft.class_4538;
 import net.minecraft.entity.ai.goal.MoveToTargetPosGoal;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.mob.MobEntityWithAi;
@@ -18,7 +19,6 @@ import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.GameRules;
 import net.minecraft.world.IWorld;
-import net.minecraft.world.ViewableWorld;
 import net.minecraft.world.World;
 import net.minecraft.world.chunk.Chunk;
 import net.minecraft.world.chunk.ChunkStatus;
@@ -133,8 +133,8 @@ extends MoveToTargetPosGoal {
     }
 
     @Override
-    protected boolean isTargetPos(ViewableWorld viewableWorld, BlockPos blockPos) {
-        Chunk chunk = viewableWorld.getChunk(blockPos.getX() >> 4, blockPos.getZ() >> 4, ChunkStatus.FULL, false);
+    protected boolean isTargetPos(class_4538 arg, BlockPos blockPos) {
+        Chunk chunk = arg.getChunk(blockPos.getX() >> 4, blockPos.getZ() >> 4, ChunkStatus.FULL, false);
         if (chunk != null) {
             return chunk.getBlockState(blockPos).getBlock() == this.targetBlock && chunk.getBlockState(blockPos.up()).isAir() && chunk.getBlockState(blockPos.up(2)).isAir();
         }

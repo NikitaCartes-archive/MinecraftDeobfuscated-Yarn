@@ -48,7 +48,7 @@ extends AbstractFireballEntity {
                         entity.method_20803(i);
                     }
                 }
-            } else if ((this.owner == null || !(this.owner instanceof MobEntity) || this.world.getGameRules().getBoolean(GameRules.MOB_GRIEFING)) && this.world.isAir(blockPos = (blockHitResult = (BlockHitResult)hitResult).getBlockPos().offset(blockHitResult.getSide()))) {
+            } else if ((this.owner == null || !(this.owner instanceof MobEntity) || this.world.getGameRules().getBoolean(GameRules.MOB_GRIEFING)) && this.world.method_22347(blockPos = (blockHitResult = (BlockHitResult)hitResult).getBlockPos().offset(blockHitResult.getSide()))) {
                 this.world.setBlockState(blockPos, Blocks.FIRE.getDefaultState());
             }
             this.remove();

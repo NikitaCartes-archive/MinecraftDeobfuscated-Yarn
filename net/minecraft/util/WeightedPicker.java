@@ -20,7 +20,7 @@ public class WeightedPicker {
 
     public static <T extends Entry> T getRandom(Random random, List<T> list, int i) {
         if (i <= 0) {
-            throw SystemUtil.method_22320(new IllegalArgumentException());
+            throw SystemUtil.throwOrPause(new IllegalArgumentException());
         }
         int j = random.nextInt(i);
         return WeightedPicker.getAt(list, j);

@@ -27,7 +27,6 @@ import net.minecraft.world.chunk.ChunkStatus;
 import net.minecraft.world.chunk.EmptyChunk;
 import net.minecraft.world.chunk.WorldChunk;
 import net.minecraft.world.chunk.light.LightingProvider;
-import net.minecraft.world.gen.chunk.ChunkGenerator;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.Nullable;
@@ -45,7 +44,7 @@ extends ChunkManager {
         this.world = clientWorld;
         this.emptyChunk = new EmptyChunk((World)clientWorld, new ChunkPos(0, 0));
         this.lightingProvider = new LightingProvider(this, true, clientWorld.getDimension().hasSkyLight());
-        this.chunks = new ClientChunkMap(ClientChunkManager.method_20230(i));
+        this.chunks = new ClientChunkMap(ClientChunkManager.getChunkMapRadius(i));
     }
 
     @Override
@@ -53,7 +52,7 @@ extends ChunkManager {
         return this.lightingProvider;
     }
 
-    private static boolean method_20181(@Nullable WorldChunk worldChunk, int i, int j) {
+    private static boolean positionEquals(@Nullable WorldChunk worldChunk, int i, int j) {
         if (worldChunk == null) {
             return false;
         }
@@ -62,20 +61,20 @@ extends ChunkManager {
     }
 
     public void unload(int i, int j) {
-        if (!this.chunks.hasChunk(i, j)) {
+        if (!this.chunks.isInRadius(i, j)) {
             return;
         }
-        int k = this.chunks.index(i, j);
+        int k = this.chunks.getIndex(i, j);
         WorldChunk worldChunk = this.chunks.getChunk(k);
-        if (ClientChunkManager.method_20181(worldChunk, i, j)) {
-            this.chunks.method_20183(k, worldChunk, null);
+        if (ClientChunkManager.positionEquals(worldChunk, i, j)) {
+            this.chunks.compareAndSet(k, worldChunk, null);
         }
     }
 
     @Nullable
     public WorldChunk method_2857(int i, int j, ChunkStatus chunkStatus, boolean bl) {
         WorldChunk worldChunk;
-        if (this.chunks.hasChunk(i, j) && ClientChunkManager.method_20181(worldChunk = this.chunks.getChunk(this.chunks.index(i, j)), i, j)) {
+        if (this.chunks.isInRadius(i, j) && ClientChunkManager.positionEquals(worldChunk = this.chunks.getChunk(this.chunks.getIndex(i, j)), i, j)) {
             return worldChunk;
         }
         if (bl) {
@@ -91,20 +90,20 @@ extends ChunkManager {
 
     @Nullable
     public WorldChunk loadChunkFromPacket(World world, int i, int j, PacketByteBuf packetByteBuf, CompoundTag compoundTag, int k, boolean bl) {
-        if (!this.chunks.hasChunk(i, j)) {
+        if (!this.chunks.isInRadius(i, j)) {
             LOGGER.warn("Ignoring chunk since it's not in the view range: {}, {}", (Object)i, (Object)j);
             return null;
         }
-        int l = this.chunks.index(i, j);
+        int l = this.chunks.getIndex(i, j);
         WorldChunk worldChunk = (WorldChunk)this.chunks.chunks.get(l);
-        if (!ClientChunkManager.method_20181(worldChunk, i, j)) {
+        if (!ClientChunkManager.positionEquals(worldChunk, i, j)) {
             if (!bl) {
                 LOGGER.warn("Ignoring chunk since we don't have complete data: {}, {}", (Object)i, (Object)j);
                 return null;
             }
             worldChunk = new WorldChunk(world, new ChunkPos(i, j), new Biome[256]);
             worldChunk.loadFromPacket(packetByteBuf, compoundTag, k, bl);
-            this.chunks.unload(l, worldChunk);
+            this.chunks.set(l, worldChunk);
         } else {
             worldChunk.loadFromPacket(packetByteBuf, compoundTag, k, bl);
         }
@@ -129,8 +128,8 @@ extends ChunkManager {
 
     public void updateLoadDistance(int i) {
         int k;
-        int j = this.chunks.loadDistance;
-        if (j != (k = ClientChunkManager.method_20230(i))) {
+        int j = this.chunks.radius;
+        if (j != (k = ClientChunkManager.getChunkMapRadius(i))) {
             ClientChunkMap clientChunkMap = new ClientChunkMap(k);
             clientChunkMap.centerChunkX = this.chunks.centerChunkX;
             clientChunkMap.centerChunkZ = this.chunks.centerChunkZ;
@@ -138,29 +137,24 @@ extends ChunkManager {
                 WorldChunk worldChunk = (WorldChunk)this.chunks.chunks.get(l);
                 if (worldChunk == null) continue;
                 ChunkPos chunkPos = worldChunk.getPos();
-                if (!clientChunkMap.hasChunk(chunkPos.x, chunkPos.z)) continue;
-                clientChunkMap.unload(clientChunkMap.index(chunkPos.x, chunkPos.z), worldChunk);
+                if (!clientChunkMap.isInRadius(chunkPos.x, chunkPos.z)) continue;
+                clientChunkMap.set(clientChunkMap.getIndex(chunkPos.x, chunkPos.z), worldChunk);
             }
             this.chunks = clientChunkMap;
         }
     }
 
-    private static int method_20230(int i) {
+    private static int getChunkMapRadius(int i) {
         return Math.max(2, i) + 3;
     }
 
     @Override
-    public String getStatus() {
-        return "Client Chunk Cache: " + this.chunks.chunks.length() + ", " + this.method_20182();
+    public String getDebugString() {
+        return "Client Chunk Cache: " + this.chunks.chunks.length() + ", " + this.getLoadedChunkCount();
     }
 
-    @Override
-    public ChunkGenerator<?> getChunkGenerator() {
-        return null;
-    }
-
-    public int method_20182() {
-        return this.chunks.field_19143;
+    public int getLoadedChunkCount() {
+        return this.chunks.loadedChunkCount;
     }
 
     @Override
@@ -192,43 +186,43 @@ extends ChunkManager {
     @Environment(value=EnvType.CLIENT)
     final class ClientChunkMap {
         private final AtomicReferenceArray<WorldChunk> chunks;
-        private final int loadDistance;
-        private final int loadDiameter;
+        private final int radius;
+        private final int diameter;
         private volatile int centerChunkX;
         private volatile int centerChunkZ;
-        private int field_19143;
+        private int loadedChunkCount;
 
         private ClientChunkMap(int i) {
-            this.loadDistance = i;
-            this.loadDiameter = i * 2 + 1;
-            this.chunks = new AtomicReferenceArray(this.loadDiameter * this.loadDiameter);
+            this.radius = i;
+            this.diameter = i * 2 + 1;
+            this.chunks = new AtomicReferenceArray(this.diameter * this.diameter);
         }
 
-        private int index(int i, int j) {
-            return Math.floorMod(j, this.loadDiameter) * this.loadDiameter + Math.floorMod(i, this.loadDiameter);
+        private int getIndex(int i, int j) {
+            return Math.floorMod(j, this.diameter) * this.diameter + Math.floorMod(i, this.diameter);
         }
 
-        protected void unload(int i, @Nullable WorldChunk worldChunk) {
+        protected void set(int i, @Nullable WorldChunk worldChunk) {
             WorldChunk worldChunk2 = this.chunks.getAndSet(i, worldChunk);
             if (worldChunk2 != null) {
-                --this.field_19143;
+                --this.loadedChunkCount;
                 ClientChunkManager.this.world.unloadBlockEntities(worldChunk2);
             }
             if (worldChunk != null) {
-                ++this.field_19143;
+                ++this.loadedChunkCount;
             }
         }
 
-        protected WorldChunk method_20183(int i, WorldChunk worldChunk, @Nullable WorldChunk worldChunk2) {
+        protected WorldChunk compareAndSet(int i, WorldChunk worldChunk, @Nullable WorldChunk worldChunk2) {
             if (this.chunks.compareAndSet(i, worldChunk, worldChunk2) && worldChunk2 == null) {
-                --this.field_19143;
+                --this.loadedChunkCount;
             }
             ClientChunkManager.this.world.unloadBlockEntities(worldChunk);
             return worldChunk;
         }
 
-        private boolean hasChunk(int i, int j) {
-            return Math.abs(i - this.centerChunkX) <= this.loadDistance && Math.abs(j - this.centerChunkZ) <= this.loadDistance;
+        private boolean isInRadius(int i, int j) {
+            return Math.abs(i - this.centerChunkX) <= this.radius && Math.abs(j - this.centerChunkZ) <= this.radius;
         }
 
         @Nullable

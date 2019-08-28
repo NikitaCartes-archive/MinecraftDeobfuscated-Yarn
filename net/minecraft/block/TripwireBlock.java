@@ -17,6 +17,7 @@ import net.minecraft.entity.EntityContext;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemPlacementContext;
 import net.minecraft.item.Items;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.state.StateFactory;
 import net.minecraft.state.property.BooleanProperty;
 import net.minecraft.state.property.Properties;
@@ -125,14 +126,11 @@ extends Block {
     }
 
     @Override
-    public void onScheduledTick(BlockState blockState, World world, BlockPos blockPos, Random random) {
-        if (world.isClient) {
+    public void onScheduledTick(BlockState blockState, ServerWorld serverWorld, BlockPos blockPos, Random random) {
+        if (!serverWorld.getBlockState(blockPos).get(POWERED).booleanValue()) {
             return;
         }
-        if (!world.getBlockState(blockPos).get(POWERED).booleanValue()) {
-            return;
-        }
-        this.updatePowered(world, blockPos);
+        this.updatePowered(serverWorld, blockPos);
     }
 
     private void updatePowered(World world, BlockPos blockPos) {

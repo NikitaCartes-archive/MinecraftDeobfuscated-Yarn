@@ -82,7 +82,7 @@ public abstract class Particle {
         return this;
     }
 
-    public Particle method_3087(float f) {
+    public Particle scale(float f) {
         this.setBoundingBoxSpacing(0.2f * f, 0.2f * f);
         return this;
     }
@@ -188,8 +188,8 @@ public abstract class Particle {
 
     protected int getColorMultiplier(float f) {
         BlockPos blockPos = new BlockPos(this.x, this.y, this.z);
-        if (this.world.isBlockLoaded(blockPos)) {
-            return this.world.getLightmapIndex(blockPos, 0);
+        if (this.world.method_22340(blockPos)) {
+            return this.world.method_22337(blockPos);
         }
         return 0;
     }

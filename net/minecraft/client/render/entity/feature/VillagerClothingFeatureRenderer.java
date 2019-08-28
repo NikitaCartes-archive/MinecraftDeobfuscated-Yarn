@@ -71,8 +71,10 @@ implements SynchronousResourceReloadListener {
         if (villagerProfession != VillagerProfession.NONE && !((LivingEntity)livingEntity).isBaby()) {
             this.bindTexture(this.findTexture("profession", Registry.VILLAGER_PROFESSION.getId(villagerProfession)));
             ((EntityModel)entityModel).render(livingEntity, f, g, i, j, k, l);
-            this.bindTexture(this.findTexture("profession_level", (Identifier)LEVEL_TO_ID.get(MathHelper.clamp(villagerData.getLevel(), 1, LEVEL_TO_ID.size()))));
-            ((EntityModel)entityModel).render(livingEntity, f, g, i, j, k, l);
+            if (villagerProfession != VillagerProfession.NITWIT) {
+                this.bindTexture(this.findTexture("profession_level", (Identifier)LEVEL_TO_ID.get(MathHelper.clamp(villagerData.getLevel(), 1, LEVEL_TO_ID.size()))));
+                ((EntityModel)entityModel).render(livingEntity, f, g, i, j, k, l);
+            }
         }
     }
 

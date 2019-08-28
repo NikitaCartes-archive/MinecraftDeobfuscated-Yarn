@@ -16,7 +16,6 @@ import net.minecraft.world.chunk.ChunkProvider;
 import net.minecraft.world.chunk.ChunkStatus;
 import net.minecraft.world.chunk.WorldChunk;
 import net.minecraft.world.chunk.light.LightingProvider;
-import net.minecraft.world.gen.chunk.ChunkGenerator;
 import org.jetbrains.annotations.Nullable;
 
 public abstract class ChunkManager
@@ -48,9 +47,7 @@ AutoCloseable {
     @Environment(value=EnvType.CLIENT)
     public abstract void tick(BooleanSupplier var1);
 
-    public abstract String getStatus();
-
-    public abstract ChunkGenerator<?> getChunkGenerator();
+    public abstract String getDebugString();
 
     @Override
     public void close() throws IOException {

@@ -85,7 +85,7 @@ extends PathNodeMaker {
             pathNode = super.getPathNode(i, j, k);
             pathNode.type = pathNodeType;
             pathNode.field_43 = Math.max(pathNode.field_43, f);
-            if (this.blockView.getFluidState(new BlockPos(i, j, k)).isEmpty()) {
+            if (this.field_20622.getFluidState(new BlockPos(i, j, k)).isEmpty()) {
                 pathNode.field_43 += 8.0f;
             }
         }
@@ -100,9 +100,9 @@ extends PathNodeMaker {
         for (int l = i; l < i + this.field_31; ++l) {
             for (int m = j; m < j + this.field_30; ++m) {
                 for (int n = k; n < k + this.field_28; ++n) {
-                    FluidState fluidState = this.blockView.getFluidState(mutable.set(l, m, n));
-                    BlockState blockState = this.blockView.getBlockState(mutable.set(l, m, n));
-                    if (fluidState.isEmpty() && blockState.canPlaceAtSide(this.blockView, mutable.down(), BlockPlacementEnvironment.WATER) && blockState.isAir()) {
+                    FluidState fluidState = this.field_20622.getFluidState(mutable.set(l, m, n));
+                    BlockState blockState = this.field_20622.getBlockState(mutable.set(l, m, n));
+                    if (fluidState.isEmpty() && blockState.canPlaceAtSide(this.field_20622, mutable.down(), BlockPlacementEnvironment.WATER) && blockState.isAir()) {
                         return PathNodeType.BREACH;
                     }
                     if (fluidState.matches(FluidTags.WATER)) continue;
@@ -110,8 +110,8 @@ extends PathNodeMaker {
                 }
             }
         }
-        BlockState blockState2 = this.blockView.getBlockState(mutable);
-        if (blockState2.canPlaceAtSide(this.blockView, mutable, BlockPlacementEnvironment.WATER)) {
+        BlockState blockState2 = this.field_20622.getBlockState(mutable);
+        if (blockState2.canPlaceAtSide(this.field_20622, mutable, BlockPlacementEnvironment.WATER)) {
             return PathNodeType.WATER;
         }
         return PathNodeType.BLOCKED;

@@ -24,13 +24,13 @@ extends Feature<DefaultFeatureConfig> {
     public boolean method_14202(IWorld iWorld, ChunkGenerator<? extends ChunkGeneratorConfig> chunkGenerator, Random random, BlockPos blockPos, DefaultFeatureConfig defaultFeatureConfig) {
         BlockPos blockPos3;
         BlockPos blockPos2 = blockPos;
-        while (blockPos2.getY() > 0 && iWorld.isAir(blockPos3 = blockPos2.down())) {
+        while (blockPos2.getY() > 0 && iWorld.method_22347(blockPos3 = blockPos2.down())) {
             blockPos2 = blockPos3;
         }
         for (int i = 0; i < 10; ++i) {
             BlockPos blockPos4 = blockPos.add(random.nextInt(8) - random.nextInt(8), random.nextInt(4) - random.nextInt(4), random.nextInt(8) - random.nextInt(8));
             BlockState blockState = Blocks.LILY_PAD.getDefaultState();
-            if (!iWorld.isAir(blockPos4) || !blockState.canPlaceAt(iWorld, blockPos4)) continue;
+            if (!iWorld.method_22347(blockPos4) || !blockState.canPlaceAt(iWorld, blockPos4)) continue;
             iWorld.setBlockState(blockPos4, blockState, 2);
         }
         return true;

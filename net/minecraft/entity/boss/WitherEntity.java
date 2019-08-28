@@ -289,7 +289,7 @@ implements RangedAttackMob {
                             BlockPos blockPos = new BlockPos(p, q, r);
                             BlockState blockState = this.world.getBlockState(blockPos);
                             if (!WitherEntity.canDestroy(blockState)) continue;
-                            bl = this.world.breakBlock(blockPos, true) || bl;
+                            bl = this.world.breakBlock(blockPos, true, this) || bl;
                         }
                     }
                 }

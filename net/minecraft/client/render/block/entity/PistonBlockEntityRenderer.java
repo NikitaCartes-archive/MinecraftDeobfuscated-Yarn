@@ -3,6 +3,7 @@
  */
 package net.minecraft.client.render.block.entity;
 
+import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
 import java.util.Random;
 import net.fabricmc.api.EnvType;
@@ -13,7 +14,6 @@ import net.minecraft.block.PistonBlock;
 import net.minecraft.block.PistonHeadBlock;
 import net.minecraft.block.entity.PistonBlockEntity;
 import net.minecraft.block.enums.PistonType;
-import net.minecraft.class_4493;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.BufferBuilder;
 import net.minecraft.client.render.GuiLighting;
@@ -41,7 +41,7 @@ extends BlockEntityRenderer<PistonBlockEntity> {
         BufferBuilder bufferBuilder = tessellator.getBufferBuilder();
         this.bindTexture(SpriteAtlasTexture.BLOCK_ATLAS_TEX);
         GuiLighting.disable();
-        RenderSystem.blendFunc(class_4493.class_4535.SRC_ALPHA, class_4493.class_4534.ONE_MINUS_SRC_ALPHA);
+        RenderSystem.blendFunc(GlStateManager.class_4535.SRC_ALPHA, GlStateManager.class_4534.ONE_MINUS_SRC_ALPHA);
         RenderSystem.enableBlend();
         RenderSystem.disableCull();
         if (MinecraftClient.isAmbientOcclusionEnabled()) {

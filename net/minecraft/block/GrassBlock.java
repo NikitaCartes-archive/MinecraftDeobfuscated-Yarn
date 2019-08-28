@@ -11,6 +11,7 @@ import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.Fertilizable;
 import net.minecraft.block.SpreadableBlock;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
@@ -36,29 +37,29 @@ implements Fertilizable {
     }
 
     @Override
-    public void grow(World world, Random random, BlockPos blockPos, BlockState blockState) {
+    public void grow(ServerWorld serverWorld, Random random, BlockPos blockPos, BlockState blockState) {
         BlockPos blockPos2 = blockPos.up();
         BlockState blockState2 = Blocks.GRASS.getDefaultState();
         block0: for (int i = 0; i < 128; ++i) {
             BlockState blockState4;
             BlockPos blockPos3 = blockPos2;
             for (int j = 0; j < i / 16; ++j) {
-                if (world.getBlockState((blockPos3 = blockPos3.add(random.nextInt(3) - 1, (random.nextInt(3) - 1) * random.nextInt(3) / 2, random.nextInt(3) - 1)).down()).getBlock() != this || world.getBlockState(blockPos3).method_21743(world, blockPos3)) continue block0;
+                if (serverWorld.getBlockState((blockPos3 = blockPos3.add(random.nextInt(3) - 1, (random.nextInt(3) - 1) * random.nextInt(3) / 2, random.nextInt(3) - 1)).down()).getBlock() != this || serverWorld.getBlockState(blockPos3).method_21743(serverWorld, blockPos3)) continue block0;
             }
-            BlockState blockState3 = world.getBlockState(blockPos3);
+            BlockState blockState3 = serverWorld.getBlockState(blockPos3);
             if (blockState3.getBlock() == blockState2.getBlock() && random.nextInt(10) == 0) {
-                ((Fertilizable)((Object)blockState2.getBlock())).grow(world, random, blockPos3, blockState3);
+                ((Fertilizable)((Object)blockState2.getBlock())).grow(serverWorld, random, blockPos3, blockState3);
             }
             if (!blockState3.isAir()) continue;
             if (random.nextInt(8) == 0) {
-                List<ConfiguredFeature<?>> list = world.getBiome(blockPos3).getFlowerFeatures();
+                List<ConfiguredFeature<?>> list = serverWorld.getBiome(blockPos3).getFlowerFeatures();
                 if (list.isEmpty()) continue;
                 blockState4 = ((FlowerFeature)((DecoratedFeatureConfig)list.get((int)0).config).feature.feature).getFlowerToPlace(random, blockPos3);
             } else {
                 blockState4 = blockState2;
             }
-            if (!blockState4.canPlaceAt(world, blockPos3)) continue;
-            world.setBlockState(blockPos3, blockState4, 3);
+            if (!blockState4.canPlaceAt(serverWorld, blockPos3)) continue;
+            serverWorld.setBlockState(blockPos3, blockState4, 3);
         }
     }
 

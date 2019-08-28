@@ -76,7 +76,7 @@ extends RegionBasedStorage {
         this.loadDataAt(chunkSectionPos.toChunkPos());
         optional = this.getIfLoaded(l);
         if (optional == null) {
-            throw SystemUtil.method_22320(new IllegalStateException());
+            throw SystemUtil.throwOrPause(new IllegalStateException());
         }
         return optional;
     }

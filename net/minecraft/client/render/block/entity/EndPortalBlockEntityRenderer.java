@@ -3,13 +3,13 @@
  */
 package net.minecraft.client.render.block.entity;
 
+import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
 import java.nio.FloatBuffer;
 import java.util.Random;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.block.entity.EndPortalBlockEntity;
-import net.minecraft.class_4493;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.BufferBuilder;
 import net.minecraft.client.render.GameRenderer;
@@ -48,7 +48,7 @@ extends BlockEntityRenderer<EndPortalBlockEntity> {
                 this.bindTexture(SKY_TEX);
                 m = 0.15f;
                 RenderSystem.enableBlend();
-                RenderSystem.blendFunc(class_4493.class_4535.SRC_ALPHA, class_4493.class_4534.ONE_MINUS_SRC_ALPHA);
+                RenderSystem.blendFunc(GlStateManager.class_4535.SRC_ALPHA, GlStateManager.class_4534.ONE_MINUS_SRC_ALPHA);
             }
             if (l >= 1) {
                 this.bindTexture(PORTAL_TEX);
@@ -57,17 +57,17 @@ extends BlockEntityRenderer<EndPortalBlockEntity> {
             }
             if (l == 1) {
                 RenderSystem.enableBlend();
-                RenderSystem.blendFunc(class_4493.class_4535.ONE, class_4493.class_4534.ONE);
+                RenderSystem.blendFunc(GlStateManager.class_4535.ONE, GlStateManager.class_4534.ONE);
             }
-            RenderSystem.texGenMode(class_4493.TexCoord.S, 9216);
-            RenderSystem.texGenMode(class_4493.TexCoord.T, 9216);
-            RenderSystem.texGenMode(class_4493.TexCoord.R, 9216);
-            RenderSystem.texGenParam(class_4493.TexCoord.S, 9474, this.method_3593(1.0f, 0.0f, 0.0f, 0.0f));
-            RenderSystem.texGenParam(class_4493.TexCoord.T, 9474, this.method_3593(0.0f, 1.0f, 0.0f, 0.0f));
-            RenderSystem.texGenParam(class_4493.TexCoord.R, 9474, this.method_3593(0.0f, 0.0f, 1.0f, 0.0f));
-            RenderSystem.enableTexGen(class_4493.TexCoord.S);
-            RenderSystem.enableTexGen(class_4493.TexCoord.T);
-            RenderSystem.enableTexGen(class_4493.TexCoord.R);
+            RenderSystem.texGenMode(GlStateManager.TexCoord.S, 9216);
+            RenderSystem.texGenMode(GlStateManager.TexCoord.T, 9216);
+            RenderSystem.texGenMode(GlStateManager.TexCoord.R, 9216);
+            RenderSystem.texGenParam(GlStateManager.TexCoord.S, 9474, this.method_3593(1.0f, 0.0f, 0.0f, 0.0f));
+            RenderSystem.texGenParam(GlStateManager.TexCoord.T, 9474, this.method_3593(0.0f, 1.0f, 0.0f, 0.0f));
+            RenderSystem.texGenParam(GlStateManager.TexCoord.R, 9474, this.method_3593(0.0f, 0.0f, 1.0f, 0.0f));
+            RenderSystem.enableTexGen(GlStateManager.TexCoord.S);
+            RenderSystem.enableTexGen(GlStateManager.TexCoord.T);
+            RenderSystem.enableTexGen(GlStateManager.TexCoord.R);
             RenderSystem.popMatrix();
             RenderSystem.matrixMode(5890);
             RenderSystem.pushMatrix();
@@ -128,9 +128,9 @@ extends BlockEntityRenderer<EndPortalBlockEntity> {
             this.bindTexture(SKY_TEX);
         }
         RenderSystem.disableBlend();
-        RenderSystem.disableTexGen(class_4493.TexCoord.S);
-        RenderSystem.disableTexGen(class_4493.TexCoord.T);
-        RenderSystem.disableTexGen(class_4493.TexCoord.R);
+        RenderSystem.disableTexGen(GlStateManager.TexCoord.S);
+        RenderSystem.disableTexGen(GlStateManager.TexCoord.T);
+        RenderSystem.disableTexGen(GlStateManager.TexCoord.R);
         RenderSystem.enableLighting();
         if (bl) {
             gameRenderer.setFogBlack(false);

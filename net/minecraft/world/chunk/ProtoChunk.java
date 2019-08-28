@@ -256,7 +256,6 @@ implements Chunk {
         return this.sections;
     }
 
-    @Override
     @Nullable
     public LightingProvider getLightingProvider() {
         return this.lightingProvider;
@@ -439,7 +438,6 @@ implements Chunk {
         this.carvingMasks.put(carver, bitSet);
     }
 
-    @Override
     public void setLightingProvider(LightingProvider lightingProvider) {
         this.lightingProvider = lightingProvider;
     }

@@ -11,12 +11,14 @@ import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.RailPlacementHelper;
 import net.minecraft.block.enums.RailShape;
+import net.minecraft.class_4538;
 import net.minecraft.container.Container;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.vehicle.AbstractMinecartEntity;
 import net.minecraft.entity.vehicle.CommandBlockMinecartEntity;
 import net.minecraft.inventory.Inventory;
 import net.minecraft.predicate.entity.EntityPredicates;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.state.StateFactory;
 import net.minecraft.state.property.BooleanProperty;
 import net.minecraft.state.property.EnumProperty;
@@ -28,7 +30,6 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Direction;
 import net.minecraft.world.BlockView;
-import net.minecraft.world.ViewableWorld;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
 
@@ -43,7 +44,7 @@ extends AbstractRailBlock {
     }
 
     @Override
-    public int getTickRate(ViewableWorld viewableWorld) {
+    public int getTickRate(class_4538 arg) {
         return 20;
     }
 
@@ -64,11 +65,11 @@ extends AbstractRailBlock {
     }
 
     @Override
-    public void onScheduledTick(BlockState blockState, World world, BlockPos blockPos, Random random) {
-        if (world.isClient || !blockState.get(POWERED).booleanValue()) {
+    public void onScheduledTick(BlockState blockState, ServerWorld serverWorld, BlockPos blockPos, Random random) {
+        if (!blockState.get(POWERED).booleanValue()) {
             return;
         }
-        this.updatePoweredStatus(world, blockPos, blockState);
+        this.updatePoweredStatus(serverWorld, blockPos, blockState);
     }
 
     @Override

@@ -32,9 +32,6 @@ extends Item {
     @Override
     public TypedActionResult<ItemStack> use(World world, PlayerEntity playerEntity, Hand hand) {
         ItemStack itemStack = playerEntity.getStackInHand(hand);
-        if (!playerEntity.abilities.creativeMode) {
-            itemStack.decrement(1);
-        }
         world.playSound(null, playerEntity.x, playerEntity.y, playerEntity.z, SoundEvents.ENTITY_EXPERIENCE_BOTTLE_THROW, SoundCategory.NEUTRAL, 0.5f, 0.4f / (RANDOM.nextFloat() * 0.4f + 0.8f));
         if (!world.isClient) {
             ThrownExperienceBottleEntity thrownExperienceBottleEntity = new ThrownExperienceBottleEntity(world, playerEntity);
@@ -43,6 +40,9 @@ extends Item {
             world.spawnEntity(thrownExperienceBottleEntity);
         }
         playerEntity.incrementStat(Stats.USED.getOrCreateStat(this));
+        if (!playerEntity.abilities.creativeMode) {
+            itemStack.decrement(1);
+        }
         return new TypedActionResult<ItemStack>(ActionResult.SUCCESS, itemStack);
     }
 }

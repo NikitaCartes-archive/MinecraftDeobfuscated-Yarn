@@ -38,13 +38,13 @@ implements Font {
         this.template = string;
         for (int i = 0; i < 256; ++i) {
             char c = (char)(i * 256);
-            Identifier identifier = this.getGlyphId(c);
+            Identifier identifier = this.getImageId(c);
             try (Resource resource = this.resourceManager.getResource(identifier);
                  NativeImage nativeImage = NativeImage.read(NativeImage.Format.RGBA, resource.getInputStream());){
                 if (nativeImage.getWidth() == 256 && nativeImage.getHeight() == 256) {
                     for (int j = 0; j < 256; ++j) {
                         byte b = bs[c + j];
-                        if (b == 0 || UnicodeTextureFont.method_2043(b) <= UnicodeTextureFont.method_2044(b)) continue;
+                        if (b == 0 || UnicodeTextureFont.getStart(b) <= UnicodeTextureFont.getEnd(b)) continue;
                         bs[c + j] = 0;
                     }
                     continue;
@@ -61,7 +61,7 @@ implements Font {
         this.images.values().forEach(NativeImage::close);
     }
 
-    private Identifier getGlyphId(char c) {
+    private Identifier getImageId(char c) {
         Identifier identifier = new Identifier(String.format(this.template, String.format("%02x", c / 256)));
         return new Identifier(identifier.getNamespace(), "textures/" + identifier.getPath());
     }
@@ -71,9 +71,9 @@ implements Font {
     public RenderableGlyph getGlyph(char c) {
         NativeImage nativeImage;
         byte b = this.sizes[c];
-        if (b != 0 && (nativeImage = this.images.computeIfAbsent(this.getGlyphId(c), this::getGlyphImage)) != null) {
-            int i = UnicodeTextureFont.method_2043(b);
-            return new UnicodeTextureGlyph(c % 16 * 16 + i, (c & 0xFF) / 16 * 16, UnicodeTextureFont.method_2044(b) - i, 16, nativeImage);
+        if (b != 0 && (nativeImage = this.images.computeIfAbsent(this.getImageId(c), this::getGlyphImage)) != null) {
+            int i = UnicodeTextureFont.getStart(b);
+            return new UnicodeTextureGlyph(c % 16 * 16 + i, (c & 0xFF) / 16 * 16, UnicodeTextureFont.getEnd(b) - i, 16, nativeImage);
         }
         return null;
     }
@@ -94,11 +94,11 @@ implements Font {
         }
     }
 
-    private static int method_2043(byte b) {
+    private static int getStart(byte b) {
         return b >> 4 & 0xF;
     }
 
-    private static int method_2044(byte b) {
+    private static int getEnd(byte b) {
         return (b & 0xF) + 1;
     }
 

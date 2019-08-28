@@ -43,7 +43,7 @@ extends WanderAroundFarGoal {
         for (BlockPos blockPos2 : iterable) {
             Block block;
             boolean bl;
-            if (blockPos.equals(blockPos2) || !(bl = (block = this.mob.world.getBlockState(mutable2.set(blockPos2).setOffset(Direction.DOWN)).getBlock()) instanceof LeavesBlock || block.matches(BlockTags.LOGS)) || !this.mob.world.isAir(blockPos2) || !this.mob.world.isAir(mutable.set(blockPos2).setOffset(Direction.UP))) continue;
+            if (blockPos.equals(blockPos2) || !(bl = (block = this.mob.world.getBlockState(mutable2.set(blockPos2).setOffset(Direction.DOWN)).getBlock()) instanceof LeavesBlock || block.matches(BlockTags.LOGS)) || !this.mob.world.method_22347(blockPos2) || !this.mob.world.method_22347(mutable.set(blockPos2).setOffset(Direction.UP))) continue;
             return new Vec3d(blockPos2.getX(), blockPos2.getY(), blockPos2.getZ());
         }
         return null;

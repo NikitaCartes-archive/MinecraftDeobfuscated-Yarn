@@ -56,7 +56,7 @@ extends Screen {
         super.render(i, j, f);
     }
 
-    public void method_19366() {
+    public void setNarratorMessage() {
         this.narratorButton.setMessage(Option.NARRATOR.getMessage(this.gameOptions));
     }
 }

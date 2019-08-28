@@ -6,6 +6,7 @@ package net.minecraft.client.render.debug;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
+import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -18,7 +19,6 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_4493;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.network.ClientPlayerEntity;
 import net.minecraft.client.render.Camera;
@@ -49,7 +49,7 @@ implements DebugRenderer.Renderer {
     }
 
     @Override
-    public void method_20414() {
+    public void clear() {
         this.pointsOfInterest.clear();
         this.field_18788.clear();
         this.field_18921.clear();
@@ -89,7 +89,7 @@ implements DebugRenderer.Renderer {
     public void render(long l) {
         RenderSystem.pushMatrix();
         RenderSystem.enableBlend();
-        RenderSystem.blendFuncSeparate(class_4493.class_4535.SRC_ALPHA, class_4493.class_4534.ONE_MINUS_SRC_ALPHA, class_4493.class_4535.ONE, class_4493.class_4534.ZERO);
+        RenderSystem.blendFuncSeparate(GlStateManager.class_4535.SRC_ALPHA, GlStateManager.class_4534.ONE_MINUS_SRC_ALPHA, GlStateManager.class_4535.ONE, GlStateManager.class_4534.ZERO);
         RenderSystem.disableTexture();
         this.method_19699();
         RenderSystem.enableTexture();

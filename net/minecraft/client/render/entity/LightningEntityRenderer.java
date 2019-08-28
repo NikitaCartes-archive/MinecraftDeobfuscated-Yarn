@@ -3,11 +3,11 @@
  */
 package net.minecraft.client.render.entity;
 
+import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
 import java.util.Random;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_4493;
 import net.minecraft.client.render.BufferBuilder;
 import net.minecraft.client.render.Tessellator;
 import net.minecraft.client.render.VertexFormats;
@@ -30,7 +30,7 @@ extends EntityRenderer<LightningEntity> {
         RenderSystem.disableTexture();
         RenderSystem.disableLighting();
         RenderSystem.enableBlend();
-        RenderSystem.blendFunc(class_4493.class_4535.SRC_ALPHA, class_4493.class_4534.ONE);
+        RenderSystem.blendFunc(GlStateManager.class_4535.SRC_ALPHA, GlStateManager.class_4534.ONE);
         double[] ds = new double[8];
         double[] es = new double[8];
         double i = 0.0;

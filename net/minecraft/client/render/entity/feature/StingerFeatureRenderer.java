@@ -1,17 +1,17 @@
 /*
  * Decompiled with CFR 0.2.0 (FabricMC d28b102d).
  */
-package net.minecraft;
+package net.minecraft.client.render.entity.feature;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_4507;
 import net.minecraft.client.render.BufferBuilder;
 import net.minecraft.client.render.GuiLighting;
 import net.minecraft.client.render.Tessellator;
 import net.minecraft.client.render.VertexFormats;
 import net.minecraft.client.render.entity.LivingEntityRenderer;
+import net.minecraft.client.render.entity.feature.StickingOutThingsFeatureRenderer;
 import net.minecraft.client.render.entity.model.EntityModel;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
@@ -19,21 +19,21 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.math.MathHelper;
 
 @Environment(value=EnvType.CLIENT)
-public class class_4506<T extends LivingEntity, M extends EntityModel<T>>
-extends class_4507<T, M> {
+public class StingerFeatureRenderer<T extends LivingEntity, M extends EntityModel<T>>
+extends StickingOutThingsFeatureRenderer<T, M> {
     private static final Identifier field_20529 = new Identifier("textures/entity/bee/bee_stinger.png");
 
-    public class_4506(LivingEntityRenderer<T, M> livingEntityRenderer) {
+    public StingerFeatureRenderer(LivingEntityRenderer<T, M> livingEntityRenderer) {
         super(livingEntityRenderer);
     }
 
     @Override
-    protected int method_22134(T livingEntity) {
-        return ((LivingEntity)livingEntity).method_21753();
+    protected int getThingCount(T livingEntity) {
+        return ((LivingEntity)livingEntity).getStingerCount();
     }
 
     @Override
-    protected void method_22131(T livingEntity) {
+    protected void beforeRendering(T livingEntity) {
         GuiLighting.disable();
         RenderSystem.pushMatrix();
         this.bindTexture(field_20529);
@@ -43,7 +43,7 @@ extends class_4507<T, M> {
     }
 
     @Override
-    protected void method_22133() {
+    protected void afterRendering() {
         RenderSystem.disableRescaleNormal();
         RenderSystem.enableLighting();
         RenderSystem.popMatrix();
@@ -51,7 +51,7 @@ extends class_4507<T, M> {
     }
 
     @Override
-    protected void method_22130(Entity entity, float f, float g, float h, float i) {
+    protected void renderThing(Entity entity, float f, float g, float h, float i) {
         RenderSystem.pushMatrix();
         float j = MathHelper.sqrt(f * f + h * h);
         float k = (float)(Math.atan2(f, h) * 57.2957763671875);

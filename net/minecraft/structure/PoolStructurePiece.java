@@ -24,6 +24,7 @@ import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.math.MutableIntBoundingBox;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.world.IWorld;
+import net.minecraft.world.gen.chunk.ChunkGenerator;
 
 public abstract class PoolStructurePiece
 extends StructurePiece {
@@ -73,8 +74,8 @@ extends StructurePiece {
     }
 
     @Override
-    public boolean generate(IWorld iWorld, Random random, MutableIntBoundingBox mutableIntBoundingBox, ChunkPos chunkPos) {
-        return this.poolElement.generate(this.structureManager, iWorld, this.pos, this.rotation, mutableIntBoundingBox, random);
+    public boolean generate(IWorld iWorld, ChunkGenerator<?> chunkGenerator, Random random, MutableIntBoundingBox mutableIntBoundingBox, ChunkPos chunkPos) {
+        return this.poolElement.generate(this.structureManager, iWorld, chunkGenerator, this.pos, this.rotation, mutableIntBoundingBox, random);
     }
 
     @Override

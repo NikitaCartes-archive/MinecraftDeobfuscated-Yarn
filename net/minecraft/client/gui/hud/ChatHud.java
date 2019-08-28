@@ -31,7 +31,7 @@ extends DrawableHelper {
     private final List<ChatHudLine> messages = Lists.newArrayList();
     private final List<ChatHudLine> visibleMessages = Lists.newArrayList();
     private int scrolledLines;
-    private boolean field_2067;
+    private boolean hasUnreadNewMessages;
 
     public ChatHud(MinecraftClient minecraftClient) {
         this.client = minecraftClient;
@@ -64,8 +64,8 @@ extends DrawableHelper {
         int m = 0;
         for (n = 0; n + this.scrolledLines < this.visibleMessages.size() && n < j; ++n) {
             ChatHudLine chatHudLine = this.visibleMessages.get(n + this.scrolledLines);
-            if (chatHudLine == null || (o = i - chatHudLine.getTimestamp()) >= 200 && !bl) continue;
-            double g = bl ? 1.0 : ChatHud.method_19348(o);
+            if (chatHudLine == null || (o = i - chatHudLine.getCreationTick()) >= 200 && !bl) continue;
+            double g = bl ? 1.0 : ChatHud.getMessageOpacityMultiplier(o);
             p = (int)(255.0 * g * e);
             q = (int)(255.0 * g * f);
             ++m;
@@ -88,7 +88,7 @@ extends DrawableHelper {
             int v = o * o / t;
             if (t != o) {
                 p = u > 0 ? 170 : 96;
-                q = this.field_2067 ? 0xCC3333 : 0x3333AA;
+                q = this.hasUnreadNewMessages ? 0xCC3333 : 0x3333AA;
                 ChatHud.fill(0, -u, 2, -u - v, q + (p << 24));
                 ChatHud.fill(2, -u, 1, -u - v, 0xCCCCCC + (p << 24));
             }
@@ -96,7 +96,7 @@ extends DrawableHelper {
         RenderSystem.popMatrix();
     }
 
-    private static double method_19348(int i) {
+    private static double getMessageOpacityMultiplier(int i) {
         double d = (double)i / 200.0;
         d = 1.0 - d;
         d *= 10.0;
@@ -131,7 +131,7 @@ extends DrawableHelper {
         boolean bl2 = this.isChatFocused();
         for (Text text2 : list) {
             if (bl2 && this.scrolledLines > 0) {
-                this.field_2067 = true;
+                this.hasUnreadNewMessages = true;
                 this.scroll(1.0);
             }
             this.visibleMessages.add(0, new ChatHudLine(j, text2, i));
@@ -149,10 +149,10 @@ extends DrawableHelper {
 
     public void reset() {
         this.visibleMessages.clear();
-        this.method_1820();
+        this.resetScroll();
         for (int i = this.messages.size() - 1; i >= 0; --i) {
             ChatHudLine chatHudLine = this.messages.get(i);
-            this.addMessage(chatHudLine.getText(), chatHudLine.getId(), chatHudLine.getTimestamp(), true);
+            this.addMessage(chatHudLine.getText(), chatHudLine.getId(), chatHudLine.getCreationTick(), true);
         }
     }
 
@@ -166,9 +166,9 @@ extends DrawableHelper {
         }
     }
 
-    public void method_1820() {
+    public void resetScroll() {
         this.scrolledLines = 0;
-        this.field_2067 = false;
+        this.hasUnreadNewMessages = false;
     }
 
     public void scroll(double d) {
@@ -179,7 +179,7 @@ extends DrawableHelper {
         }
         if (this.scrolledLines <= 0) {
             this.scrolledLines = 0;
-            this.field_2067 = false;
+            this.hasUnreadNewMessages = false;
         }
     }
 

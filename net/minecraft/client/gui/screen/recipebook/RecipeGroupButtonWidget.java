@@ -75,7 +75,7 @@ extends ToggleButtonWidget {
         RenderSystem.enableDepthTest();
         GuiLighting.enableForItems();
         RenderSystem.disableLighting();
-        this.method_2621(minecraftClient.getItemRenderer());
+        this.renderIcons(minecraftClient.getItemRenderer());
         RenderSystem.enableLighting();
         GuiLighting.disable();
         if (this.bounce > 0.0f) {
@@ -84,7 +84,7 @@ extends ToggleButtonWidget {
         }
     }
 
-    private void method_2621(ItemRenderer itemRenderer) {
+    private void renderIcons(ItemRenderer itemRenderer) {
         int i;
         List<ItemStack> list = this.category.getIcons();
         int n = i = this.toggled ? -2 : 0;
@@ -105,7 +105,7 @@ extends ToggleButtonWidget {
         this.visible = false;
         if (list != null) {
             for (RecipeResultCollection recipeResultCollection : list) {
-                if (!recipeResultCollection.isInitialized() || !recipeResultCollection.hasFittableResults()) continue;
+                if (!recipeResultCollection.isInitialized() || !recipeResultCollection.hasFittingRecipes()) continue;
                 this.visible = true;
                 break;
             }

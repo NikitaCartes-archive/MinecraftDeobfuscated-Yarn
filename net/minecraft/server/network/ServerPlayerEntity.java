@@ -360,7 +360,7 @@ implements ContainerListener {
 
     public void method_14226() {
         try {
-            if (!this.isSpectator() || this.world.isBlockLoaded(new BlockPos(this))) {
+            if (!this.isSpectator() || this.world.method_22340(new BlockPos(this))) {
                 super.tick();
             }
             for (int i = 0; i < this.inventory.getInvSize(); ++i) {
@@ -743,7 +743,7 @@ implements ContainerListener {
         int j;
         int i = MathHelper.floor(this.x);
         BlockPos blockPos = new BlockPos(i, j = MathHelper.floor(this.y - (double)0.2f), k = MathHelper.floor(this.z));
-        if (!this.world.isBlockLoaded(blockPos)) {
+        if (!this.world.method_22340(blockPos)) {
             return;
         }
         BlockState blockState = this.world.getBlockState(blockPos);
@@ -1244,7 +1244,9 @@ implements ContainerListener {
     }
 
     public void sendUnloadChunkPacket(ChunkPos chunkPos) {
-        this.networkHandler.sendPacket(new UnloadChunkS2CPacket(chunkPos.x, chunkPos.z));
+        if (this.isAlive()) {
+            this.networkHandler.sendPacket(new UnloadChunkS2CPacket(chunkPos.x, chunkPos.z));
+        }
     }
 
     public ChunkSectionPos getCameraPosition() {

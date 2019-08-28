@@ -3,11 +3,11 @@
  */
 package net.minecraft.client.render.entity.feature;
 
+import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.block.BlockState;
-import net.minecraft.class_4493;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.block.BlockRenderManager;
 import net.minecraft.client.render.entity.feature.FeatureRenderer;
@@ -32,7 +32,7 @@ extends FeatureRenderer<T, CowEntityModel<T>> {
         BlockState blockState = ((MooshroomEntity)mooshroomEntity).getMooshroomType().getMushroomState();
         this.bindTexture(SpriteAtlasTexture.BLOCK_ATLAS_TEX);
         RenderSystem.enableCull();
-        RenderSystem.cullFace(class_4493.FaceSides.FRONT);
+        RenderSystem.cullFace(GlStateManager.FaceSides.FRONT);
         RenderSystem.pushMatrix();
         RenderSystem.scalef(1.0f, -1.0f, 1.0f);
         RenderSystem.translatef(0.2f, 0.35f, 0.5f);
@@ -57,7 +57,7 @@ extends FeatureRenderer<T, CowEntityModel<T>> {
         RenderSystem.translatef(-0.5f, -0.5f, 0.5f);
         blockRenderManager.renderDynamic(blockState, 1.0f);
         RenderSystem.popMatrix();
-        RenderSystem.cullFace(class_4493.FaceSides.BACK);
+        RenderSystem.cullFace(GlStateManager.FaceSides.BACK);
         RenderSystem.disableCull();
     }
 

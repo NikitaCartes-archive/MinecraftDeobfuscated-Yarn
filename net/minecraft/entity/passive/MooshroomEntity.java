@@ -10,6 +10,7 @@ import net.fabricmc.api.Environment;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.FlowerBlock;
+import net.minecraft.class_4538;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.ItemEntity;
 import net.minecraft.entity.LightningEntity;
@@ -33,7 +34,6 @@ import net.minecraft.tag.ItemTags;
 import net.minecraft.util.Hand;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IWorld;
-import net.minecraft.world.ViewableWorld;
 import net.minecraft.world.World;
 import org.apache.commons.lang3.tuple.Pair;
 
@@ -49,15 +49,15 @@ extends CowEntity {
     }
 
     @Override
-    public float getPathfindingFavor(BlockPos blockPos, ViewableWorld viewableWorld) {
-        if (viewableWorld.getBlockState(blockPos.down()).getBlock() == Blocks.MYCELIUM) {
+    public float getPathfindingFavor(BlockPos blockPos, class_4538 arg) {
+        if (arg.getBlockState(blockPos.down()).getBlock() == Blocks.MYCELIUM) {
             return 10.0f;
         }
-        return viewableWorld.getBrightness(blockPos) - 0.5f;
+        return arg.method_22349(blockPos) - 0.5f;
     }
 
     public static boolean method_20665(EntityType<MooshroomEntity> entityType, IWorld iWorld, SpawnType spawnType, BlockPos blockPos, Random random) {
-        return iWorld.getBlockState(blockPos.down()).getBlock() == Blocks.MYCELIUM && iWorld.getLightLevel(blockPos, 0) > 8;
+        return iWorld.getBlockState(blockPos.down()).getBlock() == Blocks.MYCELIUM && iWorld.method_22335(blockPos, 0) > 8;
     }
 
     @Override

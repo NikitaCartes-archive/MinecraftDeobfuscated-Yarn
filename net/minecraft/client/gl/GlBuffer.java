@@ -3,11 +3,11 @@
  */
 package net.minecraft.client.gl;
 
+import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
 import java.nio.ByteBuffer;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_4493;
 import net.minecraft.client.render.VertexFormat;
 
 @Environment(value=EnvType.CLIENT)
@@ -18,16 +18,16 @@ public class GlBuffer {
 
     public GlBuffer(VertexFormat vertexFormat) {
         this.format = vertexFormat;
-        this.id = class_4493.method_22065();
+        this.id = GlStateManager.genBuffers();
     }
 
     public void bind() {
-        class_4493.method_22036(34962, this.id);
+        GlStateManager.bindBuffers(34962, this.id);
     }
 
     public void set(ByteBuffer byteBuffer) {
         this.bind();
-        class_4493.method_21962(34962, byteBuffer, 35044);
+        GlStateManager.bufferData(34962, byteBuffer, 35044);
         GlBuffer.unbind();
         this.vertexCount = byteBuffer.limit() / this.format.getVertexSize();
     }
@@ -37,12 +37,12 @@ public class GlBuffer {
     }
 
     public static void unbind() {
-        class_4493.method_22036(34962, 0);
+        GlStateManager.bindBuffers(34962, 0);
     }
 
     public void delete() {
         if (this.id >= 0) {
-            class_4493.method_22054(this.id);
+            GlStateManager.deleteBuffers(this.id);
             this.id = -1;
         }
     }

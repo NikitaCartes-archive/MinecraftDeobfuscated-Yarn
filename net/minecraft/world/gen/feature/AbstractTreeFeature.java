@@ -121,11 +121,11 @@ extends Feature<T> {
         }
     }
 
-    @Override
-    public final boolean generate(IWorld iWorld, ChunkGenerator<? extends ChunkGeneratorConfig> chunkGenerator, Random random, BlockPos blockPos, T featureConfig) {
+    public final boolean method_22362(IWorld iWorld, ChunkGenerator<? extends ChunkGeneratorConfig> chunkGenerator, Random random, BlockPos blockPos, T featureConfig, boolean bl) {
+        Biome biome;
         HashSet<BlockPos> set = Sets.newHashSet();
         MutableIntBoundingBox mutableIntBoundingBox = MutableIntBoundingBox.empty();
-        boolean bl = this.generate(set, iWorld, random, blockPos, mutableIntBoundingBox);
+        boolean bl2 = this.generate(set, iWorld, random, blockPos, mutableIntBoundingBox);
         if (mutableIntBoundingBox.minX > mutableIntBoundingBox.maxX) {
             return false;
         }
@@ -136,7 +136,7 @@ extends Feature<T> {
         }
         BitSetVoxelSet voxelSet = new BitSetVoxelSet(mutableIntBoundingBox.getBlockCountX(), mutableIntBoundingBox.getBlockCountY(), mutableIntBoundingBox.getBlockCountZ());
         try (BlockPos.PooledMutable pooledMutable = BlockPos.PooledMutable.get();){
-            if (bl && !set.isEmpty()) {
+            if (bl2 && !set.isEmpty()) {
                 for (BlockPos blockPos2 : Lists.newArrayList(set)) {
                     if (mutableIntBoundingBox.contains(blockPos2)) {
                         ((VoxelSet)voxelSet).set(blockPos2.getX() - mutableIntBoundingBox.minX, blockPos2.getY() - mutableIntBoundingBox.minY, blockPos2.getZ() - mutableIntBoundingBox.minZ, true, true);
@@ -174,17 +174,21 @@ extends Feature<T> {
                 }
             }
         }
-        Biome biome = iWorld.getBiome(blockPos);
-        if (biome == Biomes.FLOWER_FOREST || biome == Biomes.SUNFLOWER_PLAINS || biome == Biomes.PLAINS) {
+        if (bl && ((biome = iWorld.getBiome(blockPos)) == Biomes.FLOWER_FOREST || biome == Biomes.SUNFLOWER_PLAINS || biome == Biomes.PLAINS)) {
             this.generateBeeHive(iWorld, random, blockPos, mutableIntBoundingBox, list, biome);
         }
         Structure.method_20532(iWorld, 3, voxelSet, mutableIntBoundingBox.minX, mutableIntBoundingBox.minY, mutableIntBoundingBox.minZ);
-        return bl;
+        return bl2;
+    }
+
+    @Override
+    public final boolean generate(IWorld iWorld, ChunkGenerator<? extends ChunkGeneratorConfig> chunkGenerator, Random random, BlockPos blockPos, T featureConfig) {
+        return this.method_22362(iWorld, chunkGenerator, random, blockPos, featureConfig, true);
     }
 
     private void generateBeeHive(IWorld iWorld, Random random, BlockPos blockPos, MutableIntBoundingBox mutableIntBoundingBox, List<Set<BlockPos>> list, Biome biome) {
         float f;
-        float f2 = f = biome == Biomes.FLOWER_FOREST ? 0.015f : 0.1f;
+        float f2 = f = biome == Biomes.FLOWER_FOREST ? 0.01f : 0.05f;
         if (random.nextFloat() < f) {
             BlockPos blockPos22;
             Direction direction = BeeHiveBlock.field_20418[random.nextInt(BeeHiveBlock.field_20418.length)];
@@ -197,7 +201,7 @@ extends Feature<T> {
             }
             BlockState blockState = (BlockState)Blocks.BEE_NEST.getDefaultState().with(BeeHiveBlock.FACING, Direction.SOUTH);
             blockPos22 = blockPos.add(direction.getOffsetX(), i - 1 - blockPos.getY(), direction.getOffsetZ());
-            if (iWorld.isAir(blockPos22)) {
+            if (iWorld.method_22347(blockPos22) && iWorld.method_22347(blockPos22.offset(Direction.SOUTH))) {
                 this.setBlockState(iWorld, blockPos22, blockState);
                 BlockEntity blockEntity = iWorld.getBlockEntity(blockPos22);
                 if (blockEntity instanceof BeeHiveBlockEntity) {

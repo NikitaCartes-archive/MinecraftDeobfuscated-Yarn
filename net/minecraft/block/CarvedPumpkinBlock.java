@@ -13,6 +13,7 @@ import net.minecraft.block.Material;
 import net.minecraft.block.pattern.BlockPattern;
 import net.minecraft.block.pattern.BlockPatternBuilder;
 import net.minecraft.block.pattern.CachedBlockPosition;
+import net.minecraft.class_4538;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.passive.IronGolemEntity;
 import net.minecraft.entity.passive.SnowGolemEntity;
@@ -24,7 +25,6 @@ import net.minecraft.state.property.DirectionProperty;
 import net.minecraft.util.MaterialPredicate;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
-import net.minecraft.world.ViewableWorld;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
 
@@ -54,8 +54,8 @@ extends HorizontalFacingBlock {
         this.trySpawnEntity(world, blockPos);
     }
 
-    public boolean canDispense(ViewableWorld viewableWorld, BlockPos blockPos) {
-        return this.getSnowGolemDispenserPattern().searchAround(viewableWorld, blockPos) != null || this.getIronGolemDispenserPattern().searchAround(viewableWorld, blockPos) != null;
+    public boolean canDispense(class_4538 arg, BlockPos blockPos) {
+        return this.getSnowGolemDispenserPattern().searchAround(arg, blockPos) != null || this.getIronGolemDispenserPattern().searchAround(arg, blockPos) != null;
     }
 
     private void trySpawnEntity(World world, BlockPos blockPos) {

@@ -14,6 +14,7 @@ import com.mojang.brigadier.tree.LiteralCommandNode;
 import com.mojang.brigadier.tree.RootCommandNode;
 import java.util.Collection;
 import java.util.Map;
+import net.minecraft.SharedConstants;
 import net.minecraft.command.arguments.BlockPosArgumentType;
 import net.minecraft.command.arguments.BlockPredicateArgumentType;
 import net.minecraft.command.arguments.BlockStateArgumentType;
@@ -46,6 +47,8 @@ import net.minecraft.command.arguments.ScoreHolderArgumentType;
 import net.minecraft.command.arguments.ScoreboardSlotArgumentType;
 import net.minecraft.command.arguments.SwizzleArgumentType;
 import net.minecraft.command.arguments.TeamArgumentType;
+import net.minecraft.command.arguments.TestClassArgumentType;
+import net.minecraft.command.arguments.TestFunctionArgumentType;
 import net.minecraft.command.arguments.TextArgumentType;
 import net.minecraft.command.arguments.TimeArgumentType;
 import net.minecraft.command.arguments.Vec2ArgumentType;
@@ -114,6 +117,10 @@ public class ArgumentTypes {
         ArgumentTypes.register("entity_summon", EntitySummonArgumentType.class, new ConstantArgumentSerializer<EntitySummonArgumentType>(EntitySummonArgumentType::entitySummon));
         ArgumentTypes.register("dimension", DimensionArgumentType.class, new ConstantArgumentSerializer<DimensionArgumentType>(DimensionArgumentType::dimension));
         ArgumentTypes.register("time", TimeArgumentType.class, new ConstantArgumentSerializer<TimeArgumentType>(TimeArgumentType::time));
+        if (SharedConstants.isDevelopment) {
+            ArgumentTypes.register("test_argument", TestFunctionArgumentType.class, new ConstantArgumentSerializer<TestFunctionArgumentType>(TestFunctionArgumentType::method_22371));
+            ArgumentTypes.register("test_class", TestClassArgumentType.class, new ConstantArgumentSerializer<TestClassArgumentType>(TestClassArgumentType::method_22370));
+        }
     }
 
     @Nullable

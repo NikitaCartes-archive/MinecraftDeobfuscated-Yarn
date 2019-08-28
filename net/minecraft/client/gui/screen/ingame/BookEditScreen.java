@@ -4,13 +4,13 @@
 package net.minecraft.client.gui.screen.ingame;
 
 import com.google.common.collect.Lists;
+import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
 import java.util.List;
 import java.util.ListIterator;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.SharedConstants;
-import net.minecraft.class_4493;
 import net.minecraft.client.gui.DrawableHelper;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.screen.ingame.BookScreen;
@@ -562,7 +562,7 @@ extends Screen {
         RenderSystem.color4f(0.0f, 0.0f, 255.0f, 255.0f);
         RenderSystem.disableTexture();
         RenderSystem.enableColorLogicOp();
-        RenderSystem.logicOp(class_4493.LogicOp.OR_REVERSE);
+        RenderSystem.logicOp(GlStateManager.LogicOp.OR_REVERSE);
         bufferBuilder.begin(7, VertexFormats.POSITION);
         bufferBuilder.vertex(position3.x, position4.y, 0.0).next();
         bufferBuilder.vertex(position4.x, position4.y, 0.0).next();

@@ -124,7 +124,7 @@ Tickable {
             blockPos = new BlockPos(i, this.field_19179 + 1, k);
         }
         BeamSegment beamSegment = this.field_19178.isEmpty() ? null : this.field_19178.get(this.field_19178.size() - 1);
-        int l = this.world.getTop(Heightmap.Type.WORLD_SURFACE, i, k);
+        int l = this.world.getLightLevel(Heightmap.Type.WORLD_SURFACE, i, k);
         for (m = 0; m < 10 && blockPos.getY() <= l; ++m) {
             block18: {
                 Block block;

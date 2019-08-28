@@ -27,7 +27,6 @@ import net.minecraft.world.biome.source.FixedBiomeSourceConfig;
 import net.minecraft.world.biome.source.VanillaLayeredBiomeSource;
 import net.minecraft.world.biome.source.VanillaLayeredBiomeSourceConfig;
 import net.minecraft.world.dimension.DimensionType;
-import net.minecraft.world.gen.chunk.ChunkGeneratorType;
 import net.minecraft.world.level.LevelGeneratorType;
 import net.minecraft.world.level.LevelProperties;
 import net.minecraft.world.level.storage.AlphaChunkIo;
@@ -60,10 +59,10 @@ public class AnvilLevelStorage {
         LevelProperties levelProperties = LevelStorage.getLevelProperties(path, dataFixer, string);
         BiomeSourceType<FixedBiomeSourceConfig, FixedBiomeSource> biomeSourceType = BiomeSourceType.FIXED;
         BiomeSourceType<VanillaLayeredBiomeSourceConfig, VanillaLayeredBiomeSource> biomeSourceType2 = BiomeSourceType.VANILLA_LAYERED;
-        BiomeSource biomeSource = levelProperties != null && levelProperties.getGeneratorType() == LevelGeneratorType.FLAT ? biomeSourceType.applyConfig(biomeSourceType.getConfig().setBiome(Biomes.PLAINS)) : biomeSourceType2.applyConfig(biomeSourceType2.getConfig().setLevelProperties(levelProperties).setGeneratorSettings(ChunkGeneratorType.SURFACE.createSettings()));
+        BiomeSource biomeSource = levelProperties != null && levelProperties.getGeneratorType() == LevelGeneratorType.FLAT ? biomeSourceType.applyConfig(biomeSourceType.getConfig(levelProperties).setBiome(Biomes.PLAINS)) : biomeSourceType2.applyConfig(biomeSourceType2.getConfig(levelProperties));
         AnvilLevelStorage.convertRegions(new File(file, "region"), list, biomeSource, 0, i, progressListener);
-        AnvilLevelStorage.convertRegions(new File(file2, "region"), list2, biomeSourceType.applyConfig(biomeSourceType.getConfig().setBiome(Biomes.NETHER)), list.size(), i, progressListener);
-        AnvilLevelStorage.convertRegions(new File(file3, "region"), list3, biomeSourceType.applyConfig(biomeSourceType.getConfig().setBiome(Biomes.THE_END)), list.size() + list2.size(), i, progressListener);
+        AnvilLevelStorage.convertRegions(new File(file2, "region"), list2, biomeSourceType.applyConfig(biomeSourceType.getConfig(levelProperties).setBiome(Biomes.NETHER)), list.size(), i, progressListener);
+        AnvilLevelStorage.convertRegions(new File(file3, "region"), list3, biomeSourceType.applyConfig(biomeSourceType.getConfig(levelProperties).setBiome(Biomes.THE_END)), list.size() + list2.size(), i, progressListener);
         levelProperties.setVersion(19133);
         if (levelProperties.getGeneratorType() == LevelGeneratorType.DEFAULT_1_1) {
             levelProperties.setGeneratorType(LevelGeneratorType.DEFAULT);
@@ -109,7 +108,7 @@ public class AnvilLevelStorage {
                     CompoundTag compoundTag;
                     ChunkPos chunkPos = new ChunkPos(k, l);
                     if (!regionFile.hasChunk(chunkPos) || regionFile2.hasChunk(chunkPos)) continue;
-                    try (DataInputStream dataInputStream = regionFile.method_21873(chunkPos);){
+                    try (DataInputStream dataInputStream = regionFile.getChunkInputStream(chunkPos);){
                         if (dataInputStream == null) {
                             LOGGER.warn("Failed to fetch input stream for chunk {}", (Object)chunkPos);
                             continue;
@@ -125,7 +124,7 @@ public class AnvilLevelStorage {
                     CompoundTag compoundTag4 = new CompoundTag();
                     compoundTag3.put("Level", compoundTag4);
                     AlphaChunkIo.convertAlphaChunk(alphaChunk, compoundTag4, biomeSource);
-                    try (DataOutputStream dataOutputStream = regionFile2.method_21881(chunkPos);){
+                    try (DataOutputStream dataOutputStream = regionFile2.getChunkOutputStream(chunkPos);){
                         NbtIo.write(compoundTag3, (DataOutput)dataOutputStream);
                         continue;
                     }

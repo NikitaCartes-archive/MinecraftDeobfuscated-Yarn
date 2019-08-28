@@ -58,13 +58,13 @@ extends AlwaysSelectedEntryListWidget<ResourcePackEntry> {
 
     public void addEntry(ResourcePackEntry resourcePackEntry) {
         this.addEntry(resourcePackEntry);
-        resourcePackEntry.widget = this;
+        resourcePackEntry.resourcePackList = this;
     }
 
     @Environment(value=EnvType.CLIENT)
     public static class ResourcePackEntry
     extends AlwaysSelectedEntryListWidget.Entry<ResourcePackEntry> {
-        private ResourcePackListWidget widget;
+        private ResourcePackListWidget resourcePackList;
         protected final MinecraftClient client;
         protected final ResourcePackOptionsScreen screen;
         private final ClientResourcePackContainer packContainer;
@@ -73,12 +73,12 @@ extends AlwaysSelectedEntryListWidget<ResourcePackEntry> {
             this.screen = resourcePackOptionsScreen;
             this.client = MinecraftClient.getInstance();
             this.packContainer = clientResourcePackContainer;
-            this.widget = resourcePackListWidget;
+            this.resourcePackList = resourcePackListWidget;
         }
 
-        public void method_20145(SelectedResourcePackListWidget selectedResourcePackListWidget) {
+        public void setList(SelectedResourcePackListWidget selectedResourcePackListWidget) {
             this.getPackContainer().getInitialPosition().insert(selectedResourcePackListWidget.children(), this, ResourcePackEntry::getPackContainer, true);
-            this.widget = selectedResourcePackListWidget;
+            this.resourcePackList = selectedResourcePackListWidget;
         }
 
         protected void drawIcon() {
@@ -124,14 +124,14 @@ extends AlwaysSelectedEntryListWidget<ResourcePackEntry> {
                     string = INCOMPATIBLE.asFormattedString();
                     string2 = resourcePackCompatibility.getNotification().asFormattedString();
                 }
-                if (this.method_20152()) {
+                if (this.canSelect()) {
                     if (p < 32) {
                         DrawableHelper.blit(k, j, 0.0f, 32.0f, 32, 32, 256, 256);
                     } else {
                         DrawableHelper.blit(k, j, 0.0f, 0.0f, 32, 32, 256, 256);
                     }
                 } else {
-                    if (this.method_20153()) {
+                    if (this.canRemove()) {
                         if (p < 16) {
                             DrawableHelper.blit(k, j, 32.0f, 32.0f, 32, 32, 256, 256);
                         } else {
@@ -168,32 +168,32 @@ extends AlwaysSelectedEntryListWidget<ResourcePackEntry> {
             return !this.packContainer.isPositionFixed() || !this.packContainer.canBeSorted();
         }
 
-        protected boolean method_20152() {
-            return !this.screen.method_2669(this);
+        protected boolean canSelect() {
+            return !this.screen.isSelected(this);
         }
 
-        protected boolean method_20153() {
-            return this.screen.method_2669(this) && !this.packContainer.canBeSorted();
+        protected boolean canRemove() {
+            return this.screen.isSelected(this) && !this.packContainer.canBeSorted();
         }
 
         protected boolean canSortUp() {
-            List list = this.widget.children();
+            List list = this.resourcePackList.children();
             int i = list.indexOf(this);
             return i > 0 && !((ResourcePackEntry)list.get((int)(i - 1))).packContainer.isPositionFixed();
         }
 
         protected boolean canSortDown() {
-            List list = this.widget.children();
+            List list = this.resourcePackList.children();
             int i = list.indexOf(this);
             return i >= 0 && i < list.size() - 1 && !((ResourcePackEntry)list.get((int)(i + 1))).packContainer.isPositionFixed();
         }
 
         @Override
         public boolean mouseClicked(double d, double e, int i) {
-            double f = d - (double)this.widget.getRowLeft();
-            double g = e - (double)this.widget.getRowTop(this.widget.children().indexOf(this));
+            double f = d - (double)this.resourcePackList.getRowLeft();
+            double g = e - (double)this.resourcePackList.getRowTop(this.resourcePackList.children().indexOf(this));
             if (this.method_20151() && f <= 32.0) {
-                if (this.method_20152()) {
+                if (this.canSelect()) {
                     this.getScreen().setEdited();
                     ResourcePackCompatibility resourcePackCompatibility = this.getCompatibility();
                     if (resourcePackCompatibility.isCompatible()) {
@@ -209,12 +209,12 @@ extends AlwaysSelectedEntryListWidget<ResourcePackEntry> {
                     }
                     return true;
                 }
-                if (f < 16.0 && this.method_20153()) {
+                if (f < 16.0 && this.canRemove()) {
                     this.getScreen().remove(this);
                     return true;
                 }
                 if (f > 16.0 && g < 16.0 && this.canSortUp()) {
-                    List<ResourcePackEntry> list = this.widget.children();
+                    List<ResourcePackEntry> list = this.resourcePackList.children();
                     int j = list.indexOf(this);
                     list.remove(this);
                     list.add(j - 1, this);
@@ -222,7 +222,7 @@ extends AlwaysSelectedEntryListWidget<ResourcePackEntry> {
                     return true;
                 }
                 if (f > 16.0 && g > 16.0 && this.canSortDown()) {
-                    List<ResourcePackEntry> list = this.widget.children();
+                    List<ResourcePackEntry> list = this.resourcePackList.children();
                     int j = list.indexOf(this);
                     list.remove(this);
                     list.add(j + 1, this);

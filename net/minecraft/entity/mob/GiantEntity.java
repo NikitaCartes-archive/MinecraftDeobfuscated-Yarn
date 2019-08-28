@@ -3,13 +3,13 @@
  */
 package net.minecraft.entity.mob;
 
+import net.minecraft.class_4538;
 import net.minecraft.entity.EntityDimensions;
 import net.minecraft.entity.EntityPose;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.mob.HostileEntity;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.ViewableWorld;
 import net.minecraft.world.World;
 
 public class GiantEntity
@@ -32,8 +32,8 @@ extends HostileEntity {
     }
 
     @Override
-    public float getPathfindingFavor(BlockPos blockPos, ViewableWorld viewableWorld) {
-        return viewableWorld.getBrightness(blockPos) - 0.5f;
+    public float getPathfindingFavor(BlockPos blockPos, class_4538 arg) {
+        return arg.method_22349(blockPos) - 0.5f;
     }
 }
 

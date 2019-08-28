@@ -11,10 +11,12 @@ import net.minecraft.block.Blocks;
 import net.minecraft.block.HorizontalFacingBlock;
 import net.minecraft.block.RedstoneWireBlock;
 import net.minecraft.block.entity.BlockEntity;
+import net.minecraft.class_4538;
 import net.minecraft.entity.EntityContext;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.item.ItemPlacementContext;
 import net.minecraft.item.ItemStack;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.state.property.BooleanProperty;
 import net.minecraft.state.property.Properties;
 import net.minecraft.util.TaskPriority;
@@ -22,7 +24,6 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.world.BlockView;
-import net.minecraft.world.ViewableWorld;
 import net.minecraft.world.World;
 
 public abstract class AbstractRedstoneGateBlock
@@ -40,23 +41,23 @@ extends HorizontalFacingBlock {
     }
 
     @Override
-    public boolean canPlaceAt(BlockState blockState, ViewableWorld viewableWorld, BlockPos blockPos) {
-        return AbstractRedstoneGateBlock.isSolidMediumSquare(viewableWorld, blockPos.down());
+    public boolean canPlaceAt(BlockState blockState, class_4538 arg, BlockPos blockPos) {
+        return AbstractRedstoneGateBlock.isSolidMediumSquare(arg, blockPos.down());
     }
 
     @Override
-    public void onScheduledTick(BlockState blockState, World world, BlockPos blockPos, Random random) {
-        if (this.isLocked(world, blockPos, blockState)) {
+    public void onScheduledTick(BlockState blockState, ServerWorld serverWorld, BlockPos blockPos, Random random) {
+        if (this.isLocked(serverWorld, blockPos, blockState)) {
             return;
         }
         boolean bl = blockState.get(POWERED);
-        boolean bl2 = this.hasPower(world, blockPos, blockState);
+        boolean bl2 = this.hasPower(serverWorld, blockPos, blockState);
         if (bl && !bl2) {
-            world.setBlockState(blockPos, (BlockState)blockState.with(POWERED, false), 2);
+            serverWorld.setBlockState(blockPos, (BlockState)blockState.with(POWERED, false), 2);
         } else if (!bl) {
-            world.setBlockState(blockPos, (BlockState)blockState.with(POWERED, true), 2);
+            serverWorld.setBlockState(blockPos, (BlockState)blockState.with(POWERED, true), 2);
             if (!bl2) {
-                world.getBlockTickScheduler().schedule(blockPos, this, this.getUpdateDelayInternal(blockState), TaskPriority.HIGH);
+                serverWorld.method_14196().schedule(blockPos, this, this.getUpdateDelayInternal(blockState), TaskPriority.HIGH);
             }
         }
     }
@@ -108,7 +109,7 @@ extends HorizontalFacingBlock {
         }
     }
 
-    public boolean isLocked(ViewableWorld viewableWorld, BlockPos blockPos, BlockState blockState) {
+    public boolean isLocked(class_4538 arg, BlockPos blockPos, BlockState blockState) {
         return false;
     }
 
@@ -127,15 +128,15 @@ extends HorizontalFacingBlock {
         return Math.max(i, blockState2.getBlock() == Blocks.REDSTONE_WIRE ? blockState2.get(RedstoneWireBlock.POWER) : 0);
     }
 
-    protected int getMaxInputLevelSides(ViewableWorld viewableWorld, BlockPos blockPos, BlockState blockState) {
+    protected int getMaxInputLevelSides(class_4538 arg, BlockPos blockPos, BlockState blockState) {
         Direction direction = blockState.get(FACING);
         Direction direction2 = direction.rotateYClockwise();
         Direction direction3 = direction.rotateYCounterclockwise();
-        return Math.max(this.getInputLevel(viewableWorld, blockPos.offset(direction2), direction2), this.getInputLevel(viewableWorld, blockPos.offset(direction3), direction3));
+        return Math.max(this.getInputLevel(arg, blockPos.offset(direction2), direction2), this.getInputLevel(arg, blockPos.offset(direction3), direction3));
     }
 
-    protected int getInputLevel(ViewableWorld viewableWorld, BlockPos blockPos, Direction direction) {
-        BlockState blockState = viewableWorld.getBlockState(blockPos);
+    protected int getInputLevel(class_4538 arg, BlockPos blockPos, Direction direction) {
+        BlockState blockState = arg.getBlockState(blockPos);
         Block block = blockState.getBlock();
         if (this.isValidInput(blockState)) {
             if (block == Blocks.REDSTONE_BLOCK) {
@@ -144,7 +145,7 @@ extends HorizontalFacingBlock {
             if (block == Blocks.REDSTONE_WIRE) {
                 return blockState.get(RedstoneWireBlock.POWER);
             }
-            return viewableWorld.getEmittedStrongRedstonePower(blockPos, direction);
+            return arg.method_22344(blockPos, direction);
         }
         return 0;
     }

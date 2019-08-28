@@ -6,26 +6,22 @@ package net.minecraft.world.chunk;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.entity.BlockEntity;
-import net.minecraft.entity.Entity;
 import net.minecraft.fluid.FluidState;
 import net.minecraft.fluid.Fluids;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
-import net.minecraft.util.shape.VoxelShape;
-import net.minecraft.world.Heightmap;
-import net.minecraft.world.LightType;
+import net.minecraft.world.BlockView;
 import net.minecraft.world.ViewableWorld;
 import net.minecraft.world.World;
-import net.minecraft.world.biome.Biome;
 import net.minecraft.world.border.WorldBorder;
 import net.minecraft.world.chunk.Chunk;
 import net.minecraft.world.chunk.ChunkStatus;
 import net.minecraft.world.chunk.EmptyChunk;
-import net.minecraft.world.dimension.Dimension;
 import org.jetbrains.annotations.Nullable;
 
 public class ChunkCache
-implements ViewableWorld {
+implements BlockView,
+ViewableWorld {
     protected final int minX;
     protected final int minZ;
     protected final Chunk[][] chunks;
@@ -57,14 +53,11 @@ implements ViewableWorld {
         }
     }
 
-    @Override
-    public int getLightLevel(BlockPos blockPos, int i) {
-        return this.world.getLightLevel(blockPos, i);
+    private Chunk method_22354(BlockPos blockPos) {
+        return this.method_22353(blockPos.getX() >> 4, blockPos.getZ() >> 4);
     }
 
-    @Override
-    @Nullable
-    public Chunk getChunk(int i, int j, ChunkStatus chunkStatus, boolean bl) {
+    private Chunk method_22353(int i, int j) {
         int k = i - this.minX;
         int l = j - this.minZ;
         if (k < 0 || k >= this.chunks.length || l < 0 || l >= this.chunks[k].length) {
@@ -75,56 +68,19 @@ implements ViewableWorld {
     }
 
     @Override
-    public boolean isChunkLoaded(int i, int j) {
-        int k = i - this.minX;
-        int l = j - this.minZ;
-        return k >= 0 && k < this.chunks.length && l >= 0 && l < this.chunks[k].length;
-    }
-
-    @Override
-    public BlockPos getTopPosition(Heightmap.Type type, BlockPos blockPos) {
-        return this.world.getTopPosition(type, blockPos);
-    }
-
-    @Override
-    public int getTop(Heightmap.Type type, int i, int j) {
-        return this.world.getTop(type, i, j);
-    }
-
-    @Override
-    public int getAmbientDarkness() {
-        return this.world.getAmbientDarkness();
-    }
-
-    @Override
     public WorldBorder getWorldBorder() {
         return this.world.getWorldBorder();
     }
 
     @Override
-    public boolean intersectsEntities(@Nullable Entity entity, VoxelShape voxelShape) {
-        return true;
-    }
-
-    @Override
-    public boolean isClient() {
-        return false;
-    }
-
-    @Override
-    public int getSeaLevel() {
-        return this.world.getSeaLevel();
-    }
-
-    @Override
-    public Dimension getDimension() {
-        return this.world.getDimension();
+    public BlockView method_22338(int i, int j) {
+        return this.method_22353(i, j);
     }
 
     @Override
     @Nullable
     public BlockEntity getBlockEntity(BlockPos blockPos) {
-        Chunk chunk = this.getChunk(blockPos);
+        Chunk chunk = this.method_22354(blockPos);
         return chunk.getBlockEntity(blockPos);
     }
 
@@ -133,7 +89,7 @@ implements ViewableWorld {
         if (World.isHeightInvalid(blockPos)) {
             return Blocks.AIR.getDefaultState();
         }
-        Chunk chunk = this.getChunk(blockPos);
+        Chunk chunk = this.method_22354(blockPos);
         return chunk.getBlockState(blockPos);
     }
 
@@ -142,19 +98,8 @@ implements ViewableWorld {
         if (World.isHeightInvalid(blockPos)) {
             return Fluids.EMPTY.getDefaultState();
         }
-        Chunk chunk = this.getChunk(blockPos);
+        Chunk chunk = this.method_22354(blockPos);
         return chunk.getFluidState(blockPos);
-    }
-
-    @Override
-    public Biome getBiome(BlockPos blockPos) {
-        Chunk chunk = this.getChunk(blockPos);
-        return chunk.getBiome(blockPos);
-    }
-
-    @Override
-    public int getLightLevel(LightType lightType, BlockPos blockPos) {
-        return this.world.getLightLevel(lightType, blockPos);
     }
 }
 

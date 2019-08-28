@@ -8,6 +8,7 @@ import java.util.Random;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.InfestedBlock;
+import net.minecraft.class_4538;
 import net.minecraft.entity.EntityDimensions;
 import net.minecraft.entity.EntityGroup;
 import net.minecraft.entity.EntityPose;
@@ -31,7 +32,6 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.world.GameRules;
 import net.minecraft.world.IWorld;
-import net.minecraft.world.ViewableWorld;
 import net.minecraft.world.World;
 
 public class SilverfishEntity
@@ -120,11 +120,11 @@ extends HostileEntity {
     }
 
     @Override
-    public float getPathfindingFavor(BlockPos blockPos, ViewableWorld viewableWorld) {
-        if (InfestedBlock.isInfestable(viewableWorld.getBlockState(blockPos.down()))) {
+    public float getPathfindingFavor(BlockPos blockPos, class_4538 arg) {
+        if (InfestedBlock.isInfestable(arg.getBlockState(blockPos.down()))) {
             return 10.0f;
         }
-        return super.getPathfindingFavor(blockPos, viewableWorld);
+        return super.getPathfindingFavor(blockPos, arg);
     }
 
     public static boolean method_20684(EntityType<SilverfishEntity> entityType, IWorld iWorld, SpawnType spawnType, BlockPos blockPos, Random random) {
@@ -235,7 +235,7 @@ extends HostileEntity {
                             Block block = blockState.getBlock();
                             if (block instanceof InfestedBlock) {
                                 if (world.getGameRules().getBoolean(GameRules.MOB_GRIEFING)) {
-                                    world.breakBlock(blockPos2, true);
+                                    world.breakBlock(blockPos2, true, this.silverfish);
                                 } else {
                                     world.setBlockState(blockPos2, ((InfestedBlock)block).getRegularBlock().getDefaultState(), 3);
                                 }

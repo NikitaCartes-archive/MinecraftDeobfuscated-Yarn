@@ -5,6 +5,7 @@ package net.minecraft.entity.mob;
 
 import java.util.Random;
 import java.util.UUID;
+import net.minecraft.class_4538;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.EquipmentSlot;
@@ -32,7 +33,6 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.Difficulty;
 import net.minecraft.world.IWorld;
 import net.minecraft.world.LocalDifficulty;
-import net.minecraft.world.ViewableWorld;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
 
@@ -117,8 +117,8 @@ extends ZombieEntity {
     }
 
     @Override
-    public boolean canSpawn(ViewableWorld viewableWorld) {
-        return viewableWorld.intersectsEntities(this) && !viewableWorld.intersectsFluid(this.getBoundingBox());
+    public boolean canSpawn(class_4538 arg) {
+        return arg.intersectsEntities(this) && !arg.method_22345(this.getBoundingBox());
     }
 
     @Override

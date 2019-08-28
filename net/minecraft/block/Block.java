@@ -24,6 +24,7 @@ import net.minecraft.block.Material;
 import net.minecraft.block.MaterialColor;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.piston.PistonBehavior;
+import net.minecraft.class_4538;
 import net.minecraft.client.item.TooltipContext;
 import net.minecraft.client.network.DebugRendererInfoManager;
 import net.minecraft.container.NameableContainerProvider;
@@ -34,6 +35,7 @@ import net.minecraft.entity.ExperienceOrbEntity;
 import net.minecraft.entity.ItemEntity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.fluid.Fluid;
 import net.minecraft.fluid.FluidState;
 import net.minecraft.fluid.Fluids;
 import net.minecraft.item.BlockItem;
@@ -69,10 +71,8 @@ import net.minecraft.util.registry.Registry;
 import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.util.shape.VoxelShapes;
 import net.minecraft.world.BlockView;
-import net.minecraft.world.ExtendedBlockView;
 import net.minecraft.world.GameRules;
 import net.minecraft.world.IWorld;
-import net.minecraft.world.ViewableWorld;
 import net.minecraft.world.World;
 import net.minecraft.world.explosion.Explosion;
 import net.minecraft.world.loot.LootSupplier;
@@ -220,7 +220,7 @@ implements ItemConvertible {
         if (blockState2 != blockState) {
             if (blockState2.isAir()) {
                 if (!iWorld.isClient()) {
-                    iWorld.breakBlock(blockPos, (i & 0x20) == 0);
+                    iWorld.method_22352(blockPos, (i & 0x20) == 0);
                 }
             } else {
                 iWorld.setBlockState(blockPos, blockState2, i & 0xFFFFFFDF);
@@ -312,6 +312,11 @@ implements ItemConvertible {
     }
 
     @Deprecated
+    public boolean method_22358(BlockState blockState, Fluid fluid) {
+        return this.material.isReplaceable() || !this.material.isSolid();
+    }
+
+    @Deprecated
     public float getHardness(BlockState blockState, BlockView blockView, BlockPos blockPos) {
         return this.hardness;
     }
@@ -331,8 +336,8 @@ implements ItemConvertible {
 
     @Deprecated
     @Environment(value=EnvType.CLIENT)
-    public int getBlockBrightness(BlockState blockState, ExtendedBlockView extendedBlockView, BlockPos blockPos) {
-        return extendedBlockView.getLightmapIndex(blockPos, blockState.getLuminance());
+    public boolean method_22359(BlockState blockState) {
+        return false;
     }
 
     @Environment(value=EnvType.CLIENT)
@@ -397,9 +402,9 @@ implements ItemConvertible {
         return !blockState.matches(BlockTags.LEAVES) && !VoxelShapes.matchesAnywhere(blockState.getCollisionShape(blockView, blockPos).getFace(Direction.UP), SOLID_MEDIUM_SQUARE_SHAPE, BooleanBiFunction.ONLY_SECOND);
     }
 
-    public static boolean isSolidSmallSquare(ViewableWorld viewableWorld, BlockPos blockPos, Direction direction) {
-        BlockState blockState = viewableWorld.getBlockState(blockPos);
-        return !blockState.matches(BlockTags.LEAVES) && !VoxelShapes.matchesAnywhere(blockState.getCollisionShape(viewableWorld, blockPos).getFace(direction), SOLID_SMALL_SQUARE_SHAPE, BooleanBiFunction.ONLY_SECOND);
+    public static boolean isSolidSmallSquare(class_4538 arg, BlockPos blockPos, Direction direction) {
+        BlockState blockState = arg.getBlockState(blockPos);
+        return !blockState.matches(BlockTags.LEAVES) && !VoxelShapes.matchesAnywhere(blockState.getCollisionShape(arg, blockPos).getFace(direction), SOLID_SMALL_SQUARE_SHAPE, BooleanBiFunction.ONLY_SECOND);
     }
 
     public static boolean isSideSolidFullSquare(BlockState blockState, BlockView blockView, BlockPos blockPos, Direction direction) {
@@ -441,12 +446,12 @@ implements ItemConvertible {
     }
 
     @Deprecated
-    public void onRandomTick(BlockState blockState, World world, BlockPos blockPos, Random random) {
-        this.onScheduledTick(blockState, world, blockPos, random);
+    public void onRandomTick(BlockState blockState, ServerWorld serverWorld, BlockPos blockPos, Random random) {
+        this.onScheduledTick(blockState, serverWorld, blockPos, random);
     }
 
     @Deprecated
-    public void onScheduledTick(BlockState blockState, World world, BlockPos blockPos, Random random) {
+    public void onScheduledTick(BlockState blockState, ServerWorld serverWorld, BlockPos blockPos, Random random) {
     }
 
     @Environment(value=EnvType.CLIENT)
@@ -461,7 +466,7 @@ implements ItemConvertible {
         DebugRendererInfoManager.sendNeighborUpdate(world, blockPos);
     }
 
-    public int getTickRate(ViewableWorld viewableWorld) {
+    public int getTickRate(class_4538 arg) {
         return 10;
     }
 
@@ -521,8 +526,8 @@ implements ItemConvertible {
         return blockState.getDroppedStacks(builder);
     }
 
-    public static List<ItemStack> getDroppedStacks(BlockState blockState, ServerWorld serverWorld, BlockPos blockPos, @Nullable BlockEntity blockEntity, Entity entity, ItemStack itemStack) {
-        LootContext.Builder builder = new LootContext.Builder(serverWorld).setRandom(serverWorld.random).put(LootContextParameters.POSITION, blockPos).put(LootContextParameters.TOOL, itemStack).put(LootContextParameters.THIS_ENTITY, entity).putNullable(LootContextParameters.BLOCK_ENTITY, blockEntity);
+    public static List<ItemStack> getDroppedStacks(BlockState blockState, ServerWorld serverWorld, BlockPos blockPos, @Nullable BlockEntity blockEntity, @Nullable Entity entity, ItemStack itemStack) {
+        LootContext.Builder builder = new LootContext.Builder(serverWorld).setRandom(serverWorld.random).put(LootContextParameters.POSITION, blockPos).put(LootContextParameters.TOOL, itemStack).putNullable(LootContextParameters.THIS_ENTITY, entity).putNullable(LootContextParameters.BLOCK_ENTITY, blockEntity);
         return blockState.getDroppedStacks(builder);
     }
 
@@ -589,7 +594,7 @@ implements ItemConvertible {
     }
 
     @Deprecated
-    public boolean canPlaceAt(BlockState blockState, ViewableWorld viewableWorld, BlockPos blockPos) {
+    public boolean canPlaceAt(BlockState blockState, class_4538 arg, BlockPos blockPos) {
         return true;
     }
 

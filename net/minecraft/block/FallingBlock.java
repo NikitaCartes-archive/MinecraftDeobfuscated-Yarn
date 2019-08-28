@@ -10,13 +10,14 @@ import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.Material;
+import net.minecraft.class_4538;
 import net.minecraft.entity.FallingBlockEntity;
 import net.minecraft.particle.BlockStateParticleEffect;
 import net.minecraft.particle.ParticleTypes;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.world.IWorld;
-import net.minecraft.world.ViewableWorld;
 import net.minecraft.world.World;
 
 public class FallingBlock
@@ -37,28 +38,20 @@ extends Block {
     }
 
     @Override
-    public void onScheduledTick(BlockState blockState, World world, BlockPos blockPos, Random random) {
-        if (!world.isClient) {
-            this.tryStartFalling(world, blockPos);
-        }
-    }
-
-    private void tryStartFalling(World world, BlockPos blockPos) {
-        if (!FallingBlock.canFallThrough(world.getBlockState(blockPos.down())) || blockPos.getY() < 0) {
+    public void onScheduledTick(BlockState blockState, ServerWorld serverWorld, BlockPos blockPos, Random random) {
+        if (!FallingBlock.canFallThrough(serverWorld.getBlockState(blockPos.down())) || blockPos.getY() < 0) {
             return;
         }
-        if (!world.isClient) {
-            FallingBlockEntity fallingBlockEntity = new FallingBlockEntity(world, (double)blockPos.getX() + 0.5, blockPos.getY(), (double)blockPos.getZ() + 0.5, world.getBlockState(blockPos));
-            this.configureFallingBlockEntity(fallingBlockEntity);
-            world.spawnEntity(fallingBlockEntity);
-        }
+        FallingBlockEntity fallingBlockEntity = new FallingBlockEntity(serverWorld, (double)blockPos.getX() + 0.5, blockPos.getY(), (double)blockPos.getZ() + 0.5, serverWorld.getBlockState(blockPos));
+        this.configureFallingBlockEntity(fallingBlockEntity);
+        serverWorld.spawnEntity(fallingBlockEntity);
     }
 
     protected void configureFallingBlockEntity(FallingBlockEntity fallingBlockEntity) {
     }
 
     @Override
-    public int getTickRate(ViewableWorld viewableWorld) {
+    public int getTickRate(class_4538 arg) {
         return 2;
     }
 

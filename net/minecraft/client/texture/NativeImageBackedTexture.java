@@ -6,9 +6,9 @@ package net.minecraft.client.texture;
 import java.io.IOException;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_4536;
 import net.minecraft.client.texture.AbstractTexture;
 import net.minecraft.client.texture.NativeImage;
+import net.minecraft.client.texture.TextureUtil;
 import net.minecraft.resource.ResourceManager;
 import org.jetbrains.annotations.Nullable;
 
@@ -20,13 +20,13 @@ implements AutoCloseable {
 
     public NativeImageBackedTexture(NativeImage nativeImage) {
         this.image = nativeImage;
-        class_4536.prepareImage(this.getGlId(), this.image.getWidth(), this.image.getHeight());
+        TextureUtil.prepareImage(this.getGlId(), this.image.getWidth(), this.image.getHeight());
         this.upload();
     }
 
     public NativeImageBackedTexture(int i, int j, boolean bl) {
         this.image = new NativeImage(i, j, bl);
-        class_4536.prepareImage(this.getGlId(), this.image.getWidth(), this.image.getHeight());
+        TextureUtil.prepareImage(this.getGlId(), this.image.getWidth(), this.image.getHeight());
     }
 
     @Override

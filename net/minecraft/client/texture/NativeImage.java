@@ -20,7 +20,7 @@ import java.util.EnumSet;
 import java.util.Set;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_4536;
+import net.minecraft.client.texture.TextureUtil;
 import net.minecraft.client.util.Untracker;
 import org.apache.commons.io.IOUtils;
 import org.jetbrains.annotations.Nullable;
@@ -80,7 +80,7 @@ implements AutoCloseable {
     public static NativeImage read(@Nullable Format format, InputStream inputStream) throws IOException {
         ByteBuffer byteBuffer = null;
         try {
-            byteBuffer = class_4536.readResource(inputStream);
+            byteBuffer = TextureUtil.readResource(inputStream);
             byteBuffer.rewind();
             NativeImage nativeImage = NativeImage.read(format, byteBuffer);
             return nativeImage;
@@ -365,7 +365,7 @@ implements AutoCloseable {
         }
     }
 
-    public void method_4319() {
+    public void mirrorVertically() {
         this.checkAllocated();
         try (MemoryStack memoryStack = MemoryStack.stackPush();){
             int i = this.format.getChannelCount();

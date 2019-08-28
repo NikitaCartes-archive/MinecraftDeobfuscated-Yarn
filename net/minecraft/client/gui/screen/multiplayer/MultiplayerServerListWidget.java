@@ -20,8 +20,8 @@ import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.screen.multiplayer.MultiplayerScreen;
 import net.minecraft.client.gui.widget.AlwaysSelectedEntryListWidget;
 import net.minecraft.client.gui.widget.EntryListWidget;
-import net.minecraft.client.network.LanServerEntry;
-import net.minecraft.client.options.ServerEntry;
+import net.minecraft.client.network.LanServerInfo;
+import net.minecraft.client.network.ServerInfo;
 import net.minecraft.client.options.ServerList;
 import net.minecraft.client.resource.language.I18n;
 import net.minecraft.client.texture.NativeImage;
@@ -41,30 +41,30 @@ import org.apache.logging.log4j.Logger;
 public class MultiplayerServerListWidget
 extends AlwaysSelectedEntryListWidget<Entry> {
     private static final Logger LOGGER = LogManager.getLogger();
-    private static final ThreadPoolExecutor field_19105 = new ScheduledThreadPoolExecutor(5, new ThreadFactoryBuilder().setNameFormat("Server Pinger #%d").setDaemon(true).setUncaughtExceptionHandler(new UncaughtExceptionLogger(LOGGER)).build());
-    private static final Identifier field_19106 = new Identifier("textures/misc/unknown_server.png");
-    private static final Identifier field_19107 = new Identifier("textures/gui/server_selection.png");
+    private static final ThreadPoolExecutor SERVER_PINGER_THREAD_POOL = new ScheduledThreadPoolExecutor(5, new ThreadFactoryBuilder().setNameFormat("Server Pinger #%d").setDaemon(true).setUncaughtExceptionHandler(new UncaughtExceptionLogger(LOGGER)).build());
+    private static final Identifier UNKNOWN_SERVER_TEXTURE = new Identifier("textures/misc/unknown_server.png");
+    private static final Identifier SERVER_SELECTION_TEXTURE = new Identifier("textures/gui/server_selection.png");
     private final MultiplayerScreen screen;
-    private final List<ServerItem> serverItems = Lists.newArrayList();
+    private final List<ServerEntry> servers = Lists.newArrayList();
     private final Entry scanningEntry = new ScanningEntry();
-    private final List<LanServerListEntry> serverEntries = Lists.newArrayList();
+    private final List<LanServerEntry> lanServers = Lists.newArrayList();
 
     public MultiplayerServerListWidget(MultiplayerScreen multiplayerScreen, MinecraftClient minecraftClient, int i, int j, int k, int l, int m) {
         super(minecraftClient, i, j, k, l, m);
         this.screen = multiplayerScreen;
     }
 
-    private void method_20131() {
+    private void updateEntries() {
         this.clearEntries();
-        this.serverItems.forEach(this::addEntry);
+        this.servers.forEach(this::addEntry);
         this.addEntry(this.scanningEntry);
-        this.serverEntries.forEach(this::addEntry);
+        this.lanServers.forEach(this::addEntry);
     }
 
     public void method_20122(Entry entry) {
         super.setSelected(entry);
-        if (this.getSelected() instanceof ServerItem) {
-            NarratorManager.INSTANCE.narrate(new TranslatableText("narrator.select", ((ServerItem)((ServerItem)this.getSelected())).server.name).getString());
+        if (this.getSelected() instanceof ServerEntry) {
+            NarratorManager.INSTANCE.narrate(new TranslatableText("narrator.select", ((ServerEntry)((ServerEntry)this.getSelected())).server.name).getString());
         }
     }
 
@@ -94,20 +94,20 @@ extends AlwaysSelectedEntryListWidget<Entry> {
         this.screen.updateButtonActivationStates();
     }
 
-    public void method_20125(ServerList serverList) {
-        this.serverItems.clear();
+    public void setServers(ServerList serverList) {
+        this.servers.clear();
         for (int i = 0; i < serverList.size(); ++i) {
-            this.serverItems.add(new ServerItem(this.screen, serverList.get(i)));
+            this.servers.add(new ServerEntry(this.screen, serverList.get(i)));
         }
-        this.method_20131();
+        this.updateEntries();
     }
 
-    public void method_20126(List<LanServerEntry> list) {
-        this.serverEntries.clear();
-        for (LanServerEntry lanServerEntry : list) {
-            this.serverEntries.add(new LanServerListEntry(this.screen, lanServerEntry));
+    public void setLanServers(List<LanServerInfo> list) {
+        this.lanServers.clear();
+        for (LanServerInfo lanServerInfo : list) {
+            this.lanServers.add(new LanServerEntry(this.screen, lanServerInfo));
         }
-        this.method_20131();
+        this.updateEntries();
     }
 
     @Override
@@ -131,22 +131,22 @@ extends AlwaysSelectedEntryListWidget<Entry> {
     }
 
     @Environment(value=EnvType.CLIENT)
-    public class ServerItem
+    public class ServerEntry
     extends Entry {
         private final MultiplayerScreen screen;
         private final MinecraftClient client;
-        private final ServerEntry server;
-        private final Identifier iconLocation;
-        private String field_19122;
-        private NativeImageBackedTexture iconTexture;
+        private final ServerInfo server;
+        private final Identifier iconTextureId;
+        private String iconUri;
+        private NativeImageBackedTexture icon;
         private long time;
 
-        protected ServerItem(MultiplayerScreen multiplayerScreen, ServerEntry serverEntry) {
+        protected ServerEntry(MultiplayerScreen multiplayerScreen, ServerInfo serverInfo) {
             this.screen = multiplayerScreen;
-            this.server = serverEntry;
+            this.server = serverInfo;
             this.client = MinecraftClient.getInstance();
-            this.iconLocation = new Identifier("servers/" + Hashing.sha1().hashUnencodedChars(serverEntry.address) + "/icon");
-            this.iconTexture = (NativeImageBackedTexture)this.client.getTextureManager().getTexture(this.iconLocation);
+            this.iconTextureId = new Identifier("servers/" + Hashing.sha1().hashUnencodedChars(serverInfo.address) + "/icon");
+            this.icon = (NativeImageBackedTexture)this.client.getTextureManager().getTexture(this.iconTextureId);
         }
 
         @Override
@@ -158,7 +158,7 @@ extends AlwaysSelectedEntryListWidget<Entry> {
                 this.server.ping = -2L;
                 this.server.label = "";
                 this.server.playerCountLabel = "";
-                field_19105.submit(() -> {
+                SERVER_PINGER_THREAD_POOL.submit(() -> {
                     try {
                         this.screen.method_2538().method_3003(this.server);
                     } catch (UnknownHostException unknownHostException) {
@@ -206,15 +206,15 @@ extends AlwaysSelectedEntryListWidget<Entry> {
             RenderSystem.color4f(1.0f, 1.0f, 1.0f, 1.0f);
             this.client.getTextureManager().bindTexture(DrawableHelper.GUI_ICONS_LOCATION);
             DrawableHelper.blit(k + l - 15, j, r * 10, 176 + s * 8, 10, 8, 256, 256);
-            if (this.server.getIcon() != null && !this.server.getIcon().equals(this.field_19122)) {
-                this.field_19122 = this.server.getIcon();
-                this.method_20137();
+            if (this.server.getIcon() != null && !this.server.getIcon().equals(this.iconUri)) {
+                this.iconUri = this.server.getIcon();
+                this.updateIcon();
                 this.screen.getServerList().saveFile();
             }
-            if (this.iconTexture != null) {
-                this.method_20134(k, j, this.iconLocation);
+            if (this.icon != null) {
+                this.draw(k, j, this.iconTextureId);
             } else {
-                this.method_20134(k, j, field_19106);
+                this.draw(k, j, UNKNOWN_SERVER_TEXTURE);
             }
             int t = n - k;
             int u = o - j;
@@ -224,7 +224,7 @@ extends AlwaysSelectedEntryListWidget<Entry> {
                 this.screen.setTooltip(string2);
             }
             if (this.client.options.touchscreen || bl) {
-                this.client.getTextureManager().bindTexture(field_19107);
+                this.client.getTextureManager().bindTexture(SERVER_SELECTION_TEXTURE);
                 DrawableHelper.fill(k, j, k + 32, j + 32, -1601138544);
                 RenderSystem.color4f(1.0f, 1.0f, 1.0f, 1.0f);
                 int v = n - k;
@@ -253,7 +253,7 @@ extends AlwaysSelectedEntryListWidget<Entry> {
             }
         }
 
-        protected void method_20134(int i, int j, Identifier identifier) {
+        protected void draw(int i, int j, Identifier identifier) {
             this.client.getTextureManager().bindTexture(identifier);
             RenderSystem.enableBlend();
             DrawableHelper.blit(i, j, 0.0f, 0.0f, 32, 32, 32, 32);
@@ -264,26 +264,26 @@ extends AlwaysSelectedEntryListWidget<Entry> {
             return true;
         }
 
-        private void method_20137() {
+        private void updateIcon() {
             String string = this.server.getIcon();
             if (string == null) {
-                this.client.getTextureManager().destroyTexture(this.iconLocation);
-                if (this.iconTexture != null && this.iconTexture.getImage() != null) {
-                    this.iconTexture.getImage().close();
+                this.client.getTextureManager().destroyTexture(this.iconTextureId);
+                if (this.icon != null && this.icon.getImage() != null) {
+                    this.icon.getImage().close();
                 }
-                this.iconTexture = null;
+                this.icon = null;
             } else {
                 try {
                     NativeImage nativeImage = NativeImage.read(string);
                     Validate.validState(nativeImage.getWidth() == 64, "Must be 64 pixels wide", new Object[0]);
                     Validate.validState(nativeImage.getHeight() == 64, "Must be 64 pixels high", new Object[0]);
-                    if (this.iconTexture == null) {
-                        this.iconTexture = new NativeImageBackedTexture(nativeImage);
+                    if (this.icon == null) {
+                        this.icon = new NativeImageBackedTexture(nativeImage);
                     } else {
-                        this.iconTexture.setImage(nativeImage);
-                        this.iconTexture.upload();
+                        this.icon.setImage(nativeImage);
+                        this.icon.upload();
                     }
-                    this.client.getTextureManager().registerTexture(this.iconLocation, this.iconTexture);
+                    this.client.getTextureManager().registerTexture(this.iconTextureId, this.icon);
                 } catch (Throwable throwable) {
                     LOGGER.error("Invalid icon for server {} ({})", (Object)this.server.name, (Object)this.server.address, (Object)throwable);
                     this.server.setIcon(null);
@@ -297,16 +297,16 @@ extends AlwaysSelectedEntryListWidget<Entry> {
                 MultiplayerServerListWidget multiplayerServerListWidget = this.screen.serverListWidget;
                 int l = multiplayerServerListWidget.children().indexOf(this);
                 if (i == 264 && l < this.screen.getServerList().size() - 1 || i == 265 && l > 0) {
-                    this.method_22110(l, i == 264 ? l + 1 : l - 1);
+                    this.swapEntries(l, i == 264 ? l + 1 : l - 1);
                     return true;
                 }
             }
             return super.keyPressed(i, j, k);
         }
 
-        private void method_22110(int i, int j) {
+        private void swapEntries(int i, int j) {
             this.screen.getServerList().swapEntries(i, j);
-            this.screen.serverListWidget.method_20125(this.screen.getServerList());
+            this.screen.serverListWidget.setServers(this.screen.getServerList());
             Entry entry = (Entry)this.screen.serverListWidget.children().get(j);
             this.screen.serverListWidget.method_20122(entry);
             MultiplayerServerListWidget.this.ensureVisible(entry);
@@ -318,21 +318,21 @@ extends AlwaysSelectedEntryListWidget<Entry> {
             double g = e - (double)MultiplayerServerListWidget.this.getRowTop(MultiplayerServerListWidget.this.children().indexOf(this));
             if (f <= 32.0) {
                 if (f < 32.0 && f > 16.0 && this.method_20136()) {
-                    this.screen.selectEntry(this);
+                    this.screen.select(this);
                     this.screen.connect();
                     return true;
                 }
                 int j = this.screen.serverListWidget.children().indexOf(this);
                 if (f < 16.0 && g < 16.0 && j > 0) {
-                    this.method_22110(j, j - 1);
+                    this.swapEntries(j, j - 1);
                     return true;
                 }
                 if (f < 16.0 && g > 16.0 && j < this.screen.getServerList().size() - 1) {
-                    this.method_22110(j, j + 1);
+                    this.swapEntries(j, j + 1);
                     return true;
                 }
             }
-            this.screen.selectEntry(this);
+            this.screen.select(this);
             if (SystemUtil.getMeasuringTimeMs() - this.time < 250L) {
                 this.screen.connect();
             }
@@ -340,22 +340,22 @@ extends AlwaysSelectedEntryListWidget<Entry> {
             return false;
         }
 
-        public ServerEntry getServer() {
+        public ServerInfo getServer() {
             return this.server;
         }
     }
 
     @Environment(value=EnvType.CLIENT)
-    public static class LanServerListEntry
+    public static class LanServerEntry
     extends Entry {
         private final MultiplayerScreen screen;
         protected final MinecraftClient client;
-        protected final LanServerEntry server;
+        protected final LanServerInfo server;
         private long time;
 
-        protected LanServerListEntry(MultiplayerScreen multiplayerScreen, LanServerEntry lanServerEntry) {
+        protected LanServerEntry(MultiplayerScreen multiplayerScreen, LanServerInfo lanServerInfo) {
             this.screen = multiplayerScreen;
-            this.server = lanServerEntry;
+            this.server = lanServerInfo;
             this.client = MinecraftClient.getInstance();
         }
 
@@ -372,7 +372,7 @@ extends AlwaysSelectedEntryListWidget<Entry> {
 
         @Override
         public boolean mouseClicked(double d, double e, int i) {
-            this.screen.selectEntry(this);
+            this.screen.select(this);
             if (SystemUtil.getMeasuringTimeMs() - this.time < 250L) {
                 this.screen.connect();
             }
@@ -380,7 +380,7 @@ extends AlwaysSelectedEntryListWidget<Entry> {
             return false;
         }
 
-        public LanServerEntry getLanServerEntry() {
+        public LanServerInfo getLanServerEntry() {
             return this.server;
         }
     }

@@ -3,10 +3,10 @@
  */
 package net.minecraft.client.render.entity;
 
+import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_4493;
 import net.minecraft.client.render.BufferBuilder;
 import net.minecraft.client.render.Tessellator;
 import net.minecraft.client.render.VertexFormats;
@@ -73,7 +73,7 @@ extends MobEntityRenderer<GuardianEntity, GuardianEntityModel> {
             RenderSystem.depthMask(true);
             float j = 240.0f;
             RenderSystem.glMultiTexCoord2f(33985, 240.0f, 240.0f);
-            RenderSystem.blendFuncSeparate(class_4493.class_4535.SRC_ALPHA, class_4493.class_4534.ONE, class_4493.class_4535.ONE, class_4493.class_4534.ZERO);
+            RenderSystem.blendFuncSeparate(GlStateManager.class_4535.SRC_ALPHA, GlStateManager.class_4534.ONE, GlStateManager.class_4535.ONE, GlStateManager.class_4534.ZERO);
             float k = (float)guardianEntity.world.getTime() + h;
             float l = k * 0.5f % 1.0f;
             float m = guardianEntity.getStandingEyeHeight();

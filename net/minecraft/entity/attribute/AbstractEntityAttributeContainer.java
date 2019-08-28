@@ -8,6 +8,8 @@ import com.google.common.collect.Maps;
 import com.google.common.collect.Multimap;
 import java.util.Collection;
 import java.util.Map;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 import net.minecraft.entity.attribute.EntityAttribute;
 import net.minecraft.entity.attribute.EntityAttributeInstance;
 import net.minecraft.entity.attribute.EntityAttributeModifier;
@@ -66,6 +68,16 @@ public abstract class AbstractEntityAttributeContainer {
             entityAttributeInstance.removeModifier(entry.getValue());
             entityAttributeInstance.addModifier(entry.getValue());
         }
+    }
+
+    @Environment(value=EnvType.CLIENT)
+    public void method_22324(AbstractEntityAttributeContainer abstractEntityAttributeContainer) {
+        this.values().forEach(entityAttributeInstance -> {
+            EntityAttributeInstance entityAttributeInstance2 = abstractEntityAttributeContainer.get(entityAttributeInstance.getAttribute());
+            if (entityAttributeInstance2 != null) {
+                entityAttributeInstance.method_22323(entityAttributeInstance2);
+            }
+        });
     }
 }
 

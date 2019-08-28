@@ -9,11 +9,13 @@ import net.minecraft.block.BlockRenderLayer;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.Waterloggable;
+import net.minecraft.class_4538;
 import net.minecraft.entity.EntityContext;
 import net.minecraft.entity.FallingBlockEntity;
 import net.minecraft.fluid.FluidState;
 import net.minecraft.fluid.Fluids;
 import net.minecraft.item.ItemPlacementContext;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.state.StateFactory;
 import net.minecraft.state.property.BooleanProperty;
 import net.minecraft.state.property.IntProperty;
@@ -24,7 +26,6 @@ import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.util.shape.VoxelShapes;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.IWorld;
-import net.minecraft.world.ViewableWorld;
 import net.minecraft.world.World;
 
 public class ScaffoldingBlock
@@ -98,23 +99,23 @@ implements Waterloggable {
     }
 
     @Override
-    public void onScheduledTick(BlockState blockState, World world, BlockPos blockPos, Random random) {
-        int i = ScaffoldingBlock.calculateDistance(world, blockPos);
-        BlockState blockState2 = (BlockState)((BlockState)blockState.with(DISTANCE, i)).with(BOTTOM, this.shouldBeBottom(world, blockPos, i));
+    public void onScheduledTick(BlockState blockState, ServerWorld serverWorld, BlockPos blockPos, Random random) {
+        int i = ScaffoldingBlock.calculateDistance(serverWorld, blockPos);
+        BlockState blockState2 = (BlockState)((BlockState)blockState.with(DISTANCE, i)).with(BOTTOM, this.shouldBeBottom(serverWorld, blockPos, i));
         if (blockState2.get(DISTANCE) == 7) {
             if (blockState.get(DISTANCE) == 7) {
-                world.spawnEntity(new FallingBlockEntity(world, (double)blockPos.getX() + 0.5, blockPos.getY(), (double)blockPos.getZ() + 0.5, (BlockState)blockState2.with(WATERLOGGED, false)));
+                serverWorld.spawnEntity(new FallingBlockEntity(serverWorld, (double)blockPos.getX() + 0.5, blockPos.getY(), (double)blockPos.getZ() + 0.5, (BlockState)blockState2.with(WATERLOGGED, false)));
             } else {
-                world.breakBlock(blockPos, true);
+                serverWorld.method_22352(blockPos, true);
             }
         } else if (blockState != blockState2) {
-            world.setBlockState(blockPos, blockState2, 3);
+            serverWorld.setBlockState(blockPos, blockState2, 3);
         }
     }
 
     @Override
-    public boolean canPlaceAt(BlockState blockState, ViewableWorld viewableWorld, BlockPos blockPos) {
-        return ScaffoldingBlock.calculateDistance(viewableWorld, blockPos) < 7;
+    public boolean canPlaceAt(BlockState blockState, class_4538 arg, BlockPos blockPos) {
+        return ScaffoldingBlock.calculateDistance(arg, blockPos) < 7;
     }
 
     @Override

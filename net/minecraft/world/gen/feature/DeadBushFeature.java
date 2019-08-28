@@ -34,7 +34,7 @@ extends Feature<DefaultFeatureConfig> {
         BlockState blockState2 = DEAD_BUSH.getDefaultState();
         for (int i = 0; i < 4; ++i) {
             BlockPos blockPos2 = blockPos.add(random.nextInt(8) - random.nextInt(8), random.nextInt(4) - random.nextInt(4), random.nextInt(8) - random.nextInt(8));
-            if (!iWorld.isAir(blockPos2) || !blockState2.canPlaceAt(iWorld, blockPos2)) continue;
+            if (!iWorld.method_22347(blockPos2) || !blockState2.canPlaceAt(iWorld, blockPos2)) continue;
             iWorld.setBlockState(blockPos2, blockState2, 2);
         }
         return true;

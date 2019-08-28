@@ -31,7 +31,7 @@ extends Feature<DefaultFeatureConfig> {
             mutable.set(blockPos);
             mutable.setOffset(random.nextInt(4) - random.nextInt(4), 0, random.nextInt(4) - random.nextInt(4));
             mutable.setY(i);
-            if (!iWorld.isAir(mutable)) continue;
+            if (!iWorld.method_22347(mutable)) continue;
             for (Direction direction : DIRECTIONS) {
                 if (direction == Direction.DOWN || !VineBlock.shouldConnectTo(iWorld, mutable, direction)) continue;
                 iWorld.setBlockState(mutable, (BlockState)Blocks.VINE.getDefaultState().with(VineBlock.getFacingProperty(direction), true), 2);

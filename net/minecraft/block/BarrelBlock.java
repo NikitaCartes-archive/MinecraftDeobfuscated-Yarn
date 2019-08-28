@@ -16,6 +16,7 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.inventory.Inventory;
 import net.minecraft.item.ItemPlacementContext;
 import net.minecraft.item.ItemStack;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.stat.Stats;
 import net.minecraft.state.StateFactory;
 import net.minecraft.state.property.BooleanProperty;
@@ -69,8 +70,8 @@ extends BlockWithEntity {
     }
 
     @Override
-    public void onScheduledTick(BlockState blockState, World world, BlockPos blockPos, Random random) {
-        BlockEntity blockEntity = world.getBlockEntity(blockPos);
+    public void onScheduledTick(BlockState blockState, ServerWorld serverWorld, BlockPos blockPos, Random random) {
+        BlockEntity blockEntity = serverWorld.getBlockEntity(blockPos);
         if (blockEntity instanceof BarrelBlockEntity) {
             ((BarrelBlockEntity)blockEntity).tick();
         }

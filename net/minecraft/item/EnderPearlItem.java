@@ -24,9 +24,6 @@ extends Item {
     @Override
     public TypedActionResult<ItemStack> use(World world, PlayerEntity playerEntity, Hand hand) {
         ItemStack itemStack = playerEntity.getStackInHand(hand);
-        if (!playerEntity.abilities.creativeMode) {
-            itemStack.decrement(1);
-        }
         world.playSound(null, playerEntity.x, playerEntity.y, playerEntity.z, SoundEvents.ENTITY_ENDER_PEARL_THROW, SoundCategory.NEUTRAL, 0.5f, 0.4f / (RANDOM.nextFloat() * 0.4f + 0.8f));
         playerEntity.getItemCooldownManager().set(this, 20);
         if (!world.isClient) {
@@ -36,6 +33,9 @@ extends Item {
             world.spawnEntity(thrownEnderpearlEntity);
         }
         playerEntity.incrementStat(Stats.USED.getOrCreateStat(this));
+        if (!playerEntity.abilities.creativeMode) {
+            itemStack.decrement(1);
+        }
         return new TypedActionResult<ItemStack>(ActionResult.SUCCESS, itemStack);
     }
 }

@@ -40,7 +40,7 @@ public class CatSpawner {
         Random random = serverWorld.random;
         int i = (8 + random.nextInt(24)) * (random.nextBoolean() ? -1 : 1);
         BlockPos blockPos = new BlockPos(playerEntity).add(i, 0, j = (8 + random.nextInt(24)) * (random.nextBoolean() ? -1 : 1));
-        if (!serverWorld.isAreaLoaded(blockPos.getX() - 10, blockPos.getY() - 10, blockPos.getZ() - 10, blockPos.getX() + 10, blockPos.getY() + 10, blockPos.getZ() + 10)) {
+        if (!serverWorld.method_22341(blockPos.getX() - 10, blockPos.getY() - 10, blockPos.getZ() - 10, blockPos.getX() + 10, blockPos.getY() + 10, blockPos.getZ() + 10)) {
             return 0;
         }
         if (SpawnHelper.canSpawn(SpawnRestriction.Location.ON_GROUND, serverWorld, blockPos, EntityType.CAT)) {

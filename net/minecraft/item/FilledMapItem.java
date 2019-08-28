@@ -24,6 +24,7 @@ import net.minecraft.item.NetworkSyncedItem;
 import net.minecraft.item.map.MapState;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.Packet;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.tag.BlockTags;
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
@@ -202,18 +203,18 @@ extends NetworkSyncedItem {
         return biomes[j * i + k * i * 128 * i].getDepth() >= 0.0f;
     }
 
-    public static void fillExplorationMap(World world, ItemStack itemStack) {
-        MapState mapState = FilledMapItem.getOrCreateMapState(itemStack, world);
+    public static void fillExplorationMap(ServerWorld serverWorld, ItemStack itemStack) {
+        MapState mapState = FilledMapItem.getOrCreateMapState(itemStack, serverWorld);
         if (mapState == null) {
             return;
         }
-        if (world.dimension.getType() != mapState.dimension) {
+        if (serverWorld.dimension.getType() != mapState.dimension) {
             return;
         }
         int i = 1 << mapState.scale;
         int j = mapState.xCenter;
         int k = mapState.zCenter;
-        Biome[] biomes = world.getChunkManager().getChunkGenerator().getBiomeSource().sampleBiomes((j / i - 64) * i, (k / i - 64) * i, 128 * i, 128 * i, false);
+        Biome[] biomes = serverWorld.method_14178().getChunkGenerator().getBiomeSource().sampleBiomes((j / i - 64) * i, (k / i - 64) * i, 128 * i, 128 * i, false);
         for (int l = 0; l < 128; ++l) {
             for (int m = 0; m < 128; ++m) {
                 if (l <= 0 || m <= 0 || l >= 127 || m >= 127) continue;

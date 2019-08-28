@@ -36,26 +36,17 @@ extends Screen {
 
     @Override
     protected void init() {
-        String string2;
-        String string;
         this.ticksSinceDeath = 0;
-        if (this.isHardcore) {
-            string = I18n.translate("deathScreen.spectate", new Object[0]);
-            string2 = I18n.translate("deathScreen." + (this.minecraft.isInSingleplayer() ? "deleteWorld" : "leaveServer"), new Object[0]);
-        } else {
-            string = I18n.translate("deathScreen.respawn", new Object[0]);
-            string2 = I18n.translate("deathScreen.titleScreen", new Object[0]);
-        }
-        this.addButton(new ButtonWidget(this.width / 2 - 100, this.height / 4 + 72, 200, 20, string, buttonWidget -> {
+        this.addButton(new ButtonWidget(this.width / 2 - 100, this.height / 4 + 72, 200, 20, this.isHardcore ? I18n.translate("deathScreen.spectate", new Object[0]) : I18n.translate("deathScreen.respawn", new Object[0]), buttonWidget -> {
             this.minecraft.player.requestRespawn();
             this.minecraft.openScreen(null);
         }));
-        ButtonWidget buttonWidget2 = this.addButton(new ButtonWidget(this.width / 2 - 100, this.height / 4 + 96, 200, 20, string2, buttonWidget -> {
+        ButtonWidget buttonWidget2 = this.addButton(new ButtonWidget(this.width / 2 - 100, this.height / 4 + 96, 200, 20, I18n.translate("deathScreen.titleScreen", new Object[0]), buttonWidget -> {
             if (this.isHardcore) {
-                this.minecraft.openScreen(new TitleScreen());
+                this.method_22364();
                 return;
             }
-            ConfirmScreen confirmScreen = new ConfirmScreen(this::method_20373, new TranslatableText("deathScreen.quit.confirm", new Object[0]), new LiteralText(""), I18n.translate("deathScreen.titleScreen", new Object[0]), I18n.translate("deathScreen.respawn", new Object[0]));
+            ConfirmScreen confirmScreen = new ConfirmScreen(this::onConfirmQuit, new TranslatableText("deathScreen.quit.confirm", new Object[0]), new LiteralText(""), I18n.translate("deathScreen.titleScreen", new Object[0]), I18n.translate("deathScreen.respawn", new Object[0]));
             this.minecraft.openScreen(confirmScreen);
             confirmScreen.disableButtons(20);
         }));
@@ -72,17 +63,21 @@ extends Screen {
         return false;
     }
 
-    private void method_20373(boolean bl) {
+    private void onConfirmQuit(boolean bl) {
         if (bl) {
-            if (this.minecraft.world != null) {
-                this.minecraft.world.disconnect();
-            }
-            this.minecraft.disconnect(new SaveLevelScreen(new TranslatableText("menu.savingLevel", new Object[0])));
-            this.minecraft.openScreen(new TitleScreen());
+            this.method_22364();
         } else {
             this.minecraft.player.requestRespawn();
             this.minecraft.openScreen(null);
         }
+    }
+
+    private void method_22364() {
+        if (this.minecraft.world != null) {
+            this.minecraft.world.disconnect();
+        }
+        this.minecraft.disconnect(new SaveLevelScreen(new TranslatableText("menu.savingLevel", new Object[0])));
+        this.minecraft.openScreen(new TitleScreen());
     }
 
     @Override
@@ -97,14 +92,14 @@ extends Screen {
             this.drawCenteredString(this.font, this.message.asFormattedString(), this.width / 2, 85, 0xFFFFFF);
         }
         this.drawCenteredString(this.font, I18n.translate("deathScreen.score", new Object[0]) + ": " + (Object)((Object)Formatting.YELLOW) + this.minecraft.player.getScore(), this.width / 2, 100, 0xFFFFFF);
-        if (this.message != null && j > 85 && j < 85 + this.font.fontHeight && (text = this.method_2164(i)) != null && text.getStyle().getHoverEvent() != null) {
+        if (this.message != null && j > 85 && j < 85 + this.font.fontHeight && (text = this.getTextComponentUnderMouse(i)) != null && text.getStyle().getHoverEvent() != null) {
             this.renderComponentHoverEffect(text, i, j);
         }
         super.render(i, j, f);
     }
 
     @Nullable
-    public Text method_2164(int i) {
+    public Text getTextComponentUnderMouse(int i) {
         if (this.message == null) {
             return null;
         }
@@ -125,7 +120,7 @@ extends Screen {
     @Override
     public boolean mouseClicked(double d, double e, int i) {
         Text text;
-        if (this.message != null && e > 85.0 && e < (double)(85 + this.font.fontHeight) && (text = this.method_2164((int)d)) != null && text.getStyle().getClickEvent() != null && text.getStyle().getClickEvent().getAction() == ClickEvent.Action.OPEN_URL) {
+        if (this.message != null && e > 85.0 && e < (double)(85 + this.font.fontHeight) && (text = this.getTextComponentUnderMouse((int)d)) != null && text.getStyle().getClickEvent() != null && text.getStyle().getClickEvent().getAction() == ClickEvent.Action.OPEN_URL) {
             this.handleComponentClicked(text);
             return false;
         }

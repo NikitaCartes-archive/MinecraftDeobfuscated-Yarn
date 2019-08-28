@@ -20,21 +20,21 @@ import net.minecraft.structure.StructureStart;
 import net.minecraft.util.SystemUtil;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
+import net.minecraft.world.BlockView;
 import net.minecraft.world.BlockViewWithStructures;
 import net.minecraft.world.Heightmap;
-import net.minecraft.world.LightType;
 import net.minecraft.world.TickScheduler;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.chunk.ChunkSection;
 import net.minecraft.world.chunk.ChunkStatus;
 import net.minecraft.world.chunk.UpgradeData;
-import net.minecraft.world.chunk.light.LightingProvider;
 import net.minecraft.world.gen.GenerationStep;
 import org.apache.logging.log4j.LogManager;
 import org.jetbrains.annotations.Nullable;
 
 public interface Chunk
-extends BlockViewWithStructures {
+extends BlockView,
+BlockViewWithStructures {
     @Nullable
     public BlockState setBlockState(BlockPos var1, BlockState var2, boolean var3);
 
@@ -61,19 +61,6 @@ extends BlockViewWithStructures {
     public Set<BlockPos> getBlockEntityPositions();
 
     public ChunkSection[] getSectionArray();
-
-    @Nullable
-    public LightingProvider getLightingProvider();
-
-    default public int getLightLevel(BlockPos blockPos, int i, boolean bl) {
-        LightingProvider lightingProvider = this.getLightingProvider();
-        if (lightingProvider == null || !this.getStatus().isAtLeast(ChunkStatus.LIGHT)) {
-            return 0;
-        }
-        int j = bl ? lightingProvider.get(LightType.SKY).getLightLevel(blockPos) - i : 0;
-        int k = lightingProvider.get(LightType.BLOCK).getLightLevel(blockPos);
-        return Math.max(k, j);
-    }
 
     public Collection<Map.Entry<Heightmap.Type, Heightmap>> getHeightmaps();
 
@@ -121,8 +108,6 @@ extends BlockViewWithStructures {
 
     public void removeBlockEntity(BlockPos var1);
 
-    public void setLightingProvider(LightingProvider var1);
-
     default public void markBlockForPostProcessing(BlockPos blockPos) {
         LogManager.getLogger().warn("Trying to mark a block for PostProcessing @ {}, but this operation is not supported.", (Object)blockPos);
     }
@@ -144,7 +129,7 @@ extends BlockViewWithStructures {
     public CompoundTag method_20598(BlockPos var1);
 
     default public void setBiomeArray(Biome[] biomes) {
-        throw SystemUtil.method_22320(new UnsupportedOperationException());
+        throw SystemUtil.throwOrPause(new UnsupportedOperationException());
     }
 
     public Stream<BlockPos> getLightSourcesStream();
@@ -154,7 +139,7 @@ extends BlockViewWithStructures {
     public TickScheduler<Fluid> getFluidTickScheduler();
 
     default public BitSet getCarvingMask(GenerationStep.Carver carver) {
-        throw SystemUtil.method_22320(new RuntimeException("Meaningless in this context"));
+        throw SystemUtil.throwOrPause(new RuntimeException("Meaningless in this context"));
     }
 
     public UpgradeData getUpgradeData();

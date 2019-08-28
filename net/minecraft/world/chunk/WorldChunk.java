@@ -272,14 +272,9 @@ implements Chunk {
         return blockState2;
     }
 
-    @Override
     @Nullable
     public LightingProvider getLightingProvider() {
         return this.world.getChunkManager().getLightingProvider();
-    }
-
-    public int getLightLevel(BlockPos blockPos, int i) {
-        return this.getLightLevel(blockPos, i, this.world.getDimension().hasSkyLight());
     }
 
     @Override
@@ -728,10 +723,6 @@ implements Chunk {
 
     public void setLevelTypeProvider(Supplier<ChunkHolder.LevelType> supplier) {
         this.levelTypeProvider = supplier;
-    }
-
-    @Override
-    public void setLightingProvider(LightingProvider lightingProvider) {
     }
 
     @Override

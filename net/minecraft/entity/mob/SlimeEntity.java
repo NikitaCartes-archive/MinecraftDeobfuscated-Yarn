@@ -82,6 +82,7 @@ implements Monster {
         this.calculateDimensions();
         this.getAttributeInstance(EntityAttributes.MAX_HEALTH).setBaseValue(i * i);
         this.getAttributeInstance(EntityAttributes.MOVEMENT_SPEED).setBaseValue(0.2f + 0.1f * (float)i);
+        this.getAttributes().register(EntityAttributes.ATTACK_DAMAGE).setBaseValue(i);
         if (bl) {
             this.setHealth(this.getMaximumHealth());
         }
@@ -235,8 +236,8 @@ implements Monster {
         return !this.isSmall() && this.canMoveVoluntarily();
     }
 
-    protected int getDamageAmount() {
-        return this.getSize();
+    protected float getDamageAmount() {
+        return (float)this.getAttributeInstance(EntityAttributes.ATTACK_DAMAGE).getValue();
     }
 
     @Override
@@ -274,7 +275,7 @@ implements Monster {
         if (iWorld.getDifficulty() != Difficulty.PEACEFUL) {
             boolean bl;
             Biome biome = iWorld.getBiome(blockPos);
-            if (biome == Biomes.SWAMP && blockPos.getY() > 50 && blockPos.getY() < 70 && random.nextFloat() < 0.5f && random.nextFloat() < iWorld.getMoonSize() && iWorld.getLightLevel(blockPos) <= random.nextInt(8)) {
+            if (biome == Biomes.SWAMP && blockPos.getY() > 50 && blockPos.getY() < 70 && random.nextFloat() < 0.5f && random.nextFloat() < iWorld.getMoonSize() && iWorld.method_22339(blockPos) <= random.nextInt(8)) {
                 return SlimeEntity.method_20636(entityType, iWorld, spawnType, blockPos, random);
             }
             ChunkPos chunkPos = new ChunkPos(blockPos);

@@ -48,19 +48,19 @@ extends Feature<NetherSpringFeatureConfig> {
             ++i;
         }
         int j = 0;
-        if (iWorld.isAir(blockPos.west())) {
+        if (iWorld.method_22347(blockPos.west())) {
             ++j;
         }
-        if (iWorld.isAir(blockPos.east())) {
+        if (iWorld.method_22347(blockPos.east())) {
             ++j;
         }
-        if (iWorld.isAir(blockPos.north())) {
+        if (iWorld.method_22347(blockPos.north())) {
             ++j;
         }
-        if (iWorld.isAir(blockPos.south())) {
+        if (iWorld.method_22347(blockPos.south())) {
             ++j;
         }
-        if (iWorld.isAir(blockPos.down())) {
+        if (iWorld.method_22347(blockPos.down())) {
             ++j;
         }
         if (!netherSpringFeatureConfig.insideRock && i == 4 && j == 1 || i == 5) {

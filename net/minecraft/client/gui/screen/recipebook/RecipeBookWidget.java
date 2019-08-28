@@ -164,14 +164,14 @@ RecipeGridAligner<Ingredient> {
         list.forEach(recipeResultCollection -> recipeResultCollection.computeCraftables(this.recipeFinder, this.craftingContainer.getCraftingWidth(), this.craftingContainer.getCraftingHeight(), this.recipeBook));
         ArrayList<RecipeResultCollection> list2 = Lists.newArrayList(list);
         list2.removeIf(recipeResultCollection -> !recipeResultCollection.isInitialized());
-        list2.removeIf(recipeResultCollection -> !recipeResultCollection.hasFittableResults());
+        list2.removeIf(recipeResultCollection -> !recipeResultCollection.hasFittingRecipes());
         String string = this.searchField.getText();
         if (!string.isEmpty()) {
             ObjectLinkedOpenHashSet objectSet = new ObjectLinkedOpenHashSet(this.client.getSearchableContainer(SearchManager.RECIPE_OUTPUT).findAll(string.toLowerCase(Locale.ROOT)));
             list2.removeIf(recipeResultCollection -> !objectSet.contains(recipeResultCollection));
         }
         if (this.recipeBook.isFilteringCraftable(this.craftingContainer)) {
-            list2.removeIf(recipeResultCollection -> !recipeResultCollection.hasCraftableResults());
+            list2.removeIf(recipeResultCollection -> !recipeResultCollection.hasCraftableRecipes());
         }
         this.recipesArea.setResults(list2, bl);
     }
@@ -348,7 +348,7 @@ RecipeGridAligner<Ingredient> {
         }
         if (this.client.options.keyChat.matchesKey(i, j) && !this.searchField.isFocused()) {
             this.field_3087 = true;
-            this.searchField.method_1876(true);
+            this.searchField.setSelected(true);
             return true;
         }
         return false;

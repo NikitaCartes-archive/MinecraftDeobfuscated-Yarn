@@ -17,7 +17,7 @@ import net.minecraft.util.math.MathHelper;
 public abstract class AbstractBeeSoundInstance
 extends MovingSoundInstance {
     protected final BeeEntity bee;
-    private boolean field_20531;
+    private boolean replaced;
 
     public AbstractBeeSoundInstance(BeeEntity beeEntity, SoundEvent soundEvent, SoundCategory soundCategory) {
         super(soundEvent, soundCategory);
@@ -32,12 +32,12 @@ extends MovingSoundInstance {
 
     @Override
     public void tick() {
-        boolean bl = this.method_22136();
+        boolean bl = this.shouldReplace();
         if (bl && !this.done) {
-            MinecraftClient.getInstance().getSoundManager().method_22140(this.method_22135());
-            this.field_20531 = true;
+            MinecraftClient.getInstance().getSoundManager().playNextTick(this.getReplacement());
+            this.replaced = true;
         }
-        if (this.bee.removed || this.field_20531) {
+        if (this.bee.removed || this.replaced) {
             this.done = true;
             return;
         }
@@ -46,7 +46,7 @@ extends MovingSoundInstance {
         this.z = (float)this.bee.z;
         float f = MathHelper.sqrt(Entity.squaredHorizontalLength(this.bee.getVelocity()));
         if ((double)f >= 0.01) {
-            this.pitch = MathHelper.lerp(MathHelper.clamp(f, this.method_22137(), this.method_22138()), this.method_22137(), this.method_22138());
+            this.pitch = MathHelper.lerp(MathHelper.clamp(f, this.getMinPitch(), this.getMaxPitch()), this.getMinPitch(), this.getMaxPitch());
             this.volume = MathHelper.lerp(MathHelper.clamp(f, 0.0f, 0.5f), 0.0f, 1.2f);
         } else {
             this.pitch = 0.0f;
@@ -54,14 +54,14 @@ extends MovingSoundInstance {
         }
     }
 
-    private float method_22137() {
+    private float getMinPitch() {
         if (this.bee.isBaby()) {
             return 1.1f;
         }
         return 0.7f;
     }
 
-    private float method_22138() {
+    private float getMaxPitch() {
         if (this.bee.isBaby()) {
             return 1.5f;
         }
@@ -73,8 +73,8 @@ extends MovingSoundInstance {
         return true;
     }
 
-    protected abstract MovingSoundInstance method_22135();
+    protected abstract MovingSoundInstance getReplacement();
 
-    protected abstract boolean method_22136();
+    protected abstract boolean shouldReplace();
 }
 

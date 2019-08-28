@@ -119,7 +119,7 @@ ChunkHolder.LevelUpdateListener {
     private <T> LevelPrioritizedQueue<Function<Actor<Unit>, T>> getQueue(Actor<T> actor) {
         LevelPrioritizedQueue<Function<Actor<Unit>, T>> levelPrioritizedQueue = this.queues.get(actor);
         if (levelPrioritizedQueue == null) {
-            throw SystemUtil.method_22320(new IllegalArgumentException("No queue for: " + actor));
+            throw SystemUtil.throwOrPause(new IllegalArgumentException("No queue for: " + actor));
         }
         return levelPrioritizedQueue;
     }

@@ -8,9 +8,9 @@ import java.io.IOException;
 import java.util.List;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_4536;
 import net.minecraft.client.texture.AbstractTexture;
 import net.minecraft.client.texture.NativeImage;
+import net.minecraft.client.texture.TextureUtil;
 import net.minecraft.resource.Resource;
 import net.minecraft.resource.ResourceManager;
 import net.minecraft.util.DyeColor;
@@ -59,7 +59,7 @@ extends AbstractTexture {
                     continue;
                 }
             }
-            class_4536.prepareImage(this.getGlId(), nativeImage2.getWidth(), nativeImage2.getHeight());
+            TextureUtil.prepareImage(this.getGlId(), nativeImage2.getWidth(), nativeImage2.getHeight());
             RenderSystem.pixelTransfer(3357, Float.MAX_VALUE);
             nativeImage2.upload(0, 0, 0, false);
             RenderSystem.pixelTransfer(3357, 0.0f);

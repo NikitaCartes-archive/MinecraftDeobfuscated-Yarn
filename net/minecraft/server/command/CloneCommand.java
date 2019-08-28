@@ -53,7 +53,7 @@ public class CloneCommand {
             throw TOOBIG_EXCEPTION.create(32768, i);
         }
         ServerWorld serverWorld = serverCommandSource.getWorld();
-        if (!serverWorld.isAreaLoaded(blockPos, blockPos2) || !serverWorld.isAreaLoaded(blockPos3, blockPos4)) {
+        if (!serverWorld.method_22343(blockPos, blockPos2) || !serverWorld.method_22343(blockPos3, blockPos4)) {
             throw BlockPosArgumentType.UNLOADED_EXCEPTION.create();
         }
         ArrayList<BlockInfo> list = Lists.newArrayList();

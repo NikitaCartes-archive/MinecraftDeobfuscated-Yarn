@@ -116,14 +116,14 @@ extends StructureFeature<DefaultFeatureConfig> {
         }
 
         @Override
-        public void generateStructure(IWorld iWorld, Random random, MutableIntBoundingBox mutableIntBoundingBox, ChunkPos chunkPos) {
-            super.generateStructure(iWorld, random, mutableIntBoundingBox, chunkPos);
+        public void generateStructure(IWorld iWorld, ChunkGenerator<?> chunkGenerator, Random random, MutableIntBoundingBox mutableIntBoundingBox, ChunkPos chunkPos) {
+            super.generateStructure(iWorld, chunkGenerator, random, mutableIntBoundingBox, chunkPos);
             int i = this.boundingBox.minY;
             for (int j = mutableIntBoundingBox.minX; j <= mutableIntBoundingBox.maxX; ++j) {
                 for (int k = mutableIntBoundingBox.minZ; k <= mutableIntBoundingBox.maxZ; ++k) {
                     BlockPos blockPos2;
                     BlockPos blockPos = new BlockPos(j, i, k);
-                    if (iWorld.isAir(blockPos) || !this.boundingBox.contains(blockPos)) continue;
+                    if (iWorld.method_22347(blockPos) || !this.boundingBox.contains(blockPos)) continue;
                     boolean bl = false;
                     for (StructurePiece structurePiece : this.children) {
                         if (!structurePiece.getBoundingBox().contains(blockPos)) continue;
@@ -131,7 +131,7 @@ extends StructureFeature<DefaultFeatureConfig> {
                         break;
                     }
                     if (!bl) continue;
-                    for (int l = i - 1; l > 1 && (iWorld.isAir(blockPos2 = new BlockPos(j, l, k)) || iWorld.getBlockState(blockPos2).getMaterial().isLiquid()); --l) {
+                    for (int l = i - 1; l > 1 && (iWorld.method_22347(blockPos2 = new BlockPos(j, l, k)) || iWorld.getBlockState(blockPos2).getMaterial().isLiquid()); --l) {
                         iWorld.setBlockState(blockPos2, Blocks.COBBLESTONE.getDefaultState(), 2);
                     }
                 }

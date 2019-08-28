@@ -1,7 +1,7 @@
 /*
  * Decompiled with CFR 0.2.0 (FabricMC d28b102d).
  */
-package net.minecraft;
+package net.minecraft.command.arguments;
 
 import com.mojang.brigadier.StringReader;
 import com.mojang.brigadier.arguments.ArgumentType;
@@ -13,31 +13,35 @@ import com.mojang.brigadier.suggestion.SuggestionsBuilder;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.concurrent.CompletableFuture;
-import net.minecraft.class_4519;
 import net.minecraft.server.command.CommandSource;
 import net.minecraft.server.command.ServerCommandSource;
+import net.minecraft.test.TestFunctions;
 import net.minecraft.text.LiteralText;
 
-public class class_4526
+public class TestClassArgumentType
 implements ArgumentType<String> {
     private static final Collection<String> field_20580 = Arrays.asList("techtests", "mobtests");
 
     public String method_22261(StringReader stringReader) throws CommandSyntaxException {
         String string = stringReader.readUnquotedString();
-        if (class_4519.method_22196(string)) {
+        if (TestFunctions.testClassExists(string)) {
             return string;
         }
         LiteralText message = new LiteralText("No such test class: " + string);
         throw new CommandSyntaxException(new SimpleCommandExceptionType(message), message);
     }
 
-    public static String method_22262(CommandContext<ServerCommandSource> commandContext, String string) {
+    public static TestClassArgumentType method_22370() {
+        return new TestClassArgumentType();
+    }
+
+    public static String getTestClass(CommandContext<ServerCommandSource> commandContext, String string) {
         return commandContext.getArgument(string, String.class);
     }
 
     @Override
     public <S> CompletableFuture<Suggestions> listSuggestions(CommandContext<S> commandContext, SuggestionsBuilder suggestionsBuilder) {
-        return CommandSource.suggestMatching(class_4519.method_22195().stream(), suggestionsBuilder);
+        return CommandSource.suggestMatching(TestFunctions.getTestClasses().stream(), suggestionsBuilder);
     }
 
     @Override

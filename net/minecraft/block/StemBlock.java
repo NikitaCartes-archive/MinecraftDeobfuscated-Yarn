@@ -18,6 +18,7 @@ import net.minecraft.entity.EntityContext;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.state.StateFactory;
 import net.minecraft.state.property.IntProperty;
 import net.minecraft.state.property.Properties;
@@ -53,24 +54,24 @@ implements Fertilizable {
     }
 
     @Override
-    public void onScheduledTick(BlockState blockState, World world, BlockPos blockPos, Random random) {
-        super.onScheduledTick(blockState, world, blockPos, random);
-        if (world.getLightLevel(blockPos, 0) < 9) {
+    public void onScheduledTick(BlockState blockState, ServerWorld serverWorld, BlockPos blockPos, Random random) {
+        super.onScheduledTick(blockState, serverWorld, blockPos, random);
+        if (serverWorld.method_22335(blockPos, 0) < 9) {
             return;
         }
-        float f = CropBlock.getAvailableMoisture(this, world, blockPos);
+        float f = CropBlock.getAvailableMoisture(this, serverWorld, blockPos);
         if (random.nextInt((int)(25.0f / f) + 1) == 0) {
             int i = blockState.get(AGE);
             if (i < 7) {
                 blockState = (BlockState)blockState.with(AGE, i + 1);
-                world.setBlockState(blockPos, blockState, 2);
+                serverWorld.setBlockState(blockPos, blockState, 2);
             } else {
                 Direction direction = Direction.Type.HORIZONTAL.random(random);
                 BlockPos blockPos2 = blockPos.offset(direction);
-                Block block = world.getBlockState(blockPos2.down()).getBlock();
-                if (world.getBlockState(blockPos2).isAir() && (block == Blocks.FARMLAND || block == Blocks.DIRT || block == Blocks.COARSE_DIRT || block == Blocks.PODZOL || block == Blocks.GRASS_BLOCK)) {
-                    world.setBlockState(blockPos2, this.gourdBlock.getDefaultState());
-                    world.setBlockState(blockPos, (BlockState)this.gourdBlock.getAttachedStem().getDefaultState().with(HorizontalFacingBlock.FACING, direction));
+                Block block = serverWorld.getBlockState(blockPos2.down()).getBlock();
+                if (serverWorld.getBlockState(blockPos2).isAir() && (block == Blocks.FARMLAND || block == Blocks.DIRT || block == Blocks.COARSE_DIRT || block == Blocks.PODZOL || block == Blocks.GRASS_BLOCK)) {
+                    serverWorld.setBlockState(blockPos2, this.gourdBlock.getDefaultState());
+                    serverWorld.setBlockState(blockPos, (BlockState)this.gourdBlock.getAttachedStem().getDefaultState().with(HorizontalFacingBlock.FACING, direction));
                 }
             }
         }
@@ -106,12 +107,12 @@ implements Fertilizable {
     }
 
     @Override
-    public void grow(World world, Random random, BlockPos blockPos, BlockState blockState) {
-        int i = Math.min(7, blockState.get(AGE) + MathHelper.nextInt(world.random, 2, 5));
+    public void grow(ServerWorld serverWorld, Random random, BlockPos blockPos, BlockState blockState) {
+        int i = Math.min(7, blockState.get(AGE) + MathHelper.nextInt(serverWorld.random, 2, 5));
         BlockState blockState2 = (BlockState)blockState.with(AGE, i);
-        world.setBlockState(blockPos, blockState2, 2);
+        serverWorld.setBlockState(blockPos, blockState2, 2);
         if (i == 7) {
-            blockState2.scheduledTick(world, blockPos, world.random);
+            blockState2.scheduledTick(serverWorld, blockPos, serverWorld.random);
         }
     }
 

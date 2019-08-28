@@ -26,7 +26,7 @@ public class PackedIntegerArray {
         this.maxValue = (1L << i) - 1L;
         int k = MathHelper.roundUp(j * i, 64) / 64;
         if (ls.length != k) {
-            throw SystemUtil.method_22320(new RuntimeException("Invalid length given for storage, got: " + ls.length + " but expected: " + k));
+            throw SystemUtil.throwOrPause(new RuntimeException("Invalid length given for storage, got: " + ls.length + " but expected: " + k));
         }
     }
 

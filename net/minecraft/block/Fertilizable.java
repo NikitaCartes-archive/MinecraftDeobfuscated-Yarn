@@ -5,6 +5,7 @@ package net.minecraft.block;
 
 import java.util.Random;
 import net.minecraft.block.BlockState;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
@@ -14,6 +15,6 @@ public interface Fertilizable {
 
     public boolean canGrow(World var1, Random var2, BlockPos var3, BlockState var4);
 
-    public void grow(World var1, Random var2, BlockPos var3, BlockState var4);
+    public void grow(ServerWorld var1, Random var2, BlockPos var3, BlockState var4);
 }
 

@@ -29,7 +29,7 @@ implements ClientChatListener {
 
     @Override
     public void onChatMessage(MessageType messageType, Text text) {
-        NarratorOption narratorOption = NarratorManager.method_20602();
+        NarratorOption narratorOption = NarratorManager.getNarratorOption();
         if (narratorOption == NarratorOption.OFF || !this.narrator.active()) {
             return;
         }
@@ -40,14 +40,14 @@ implements ClientChatListener {
     }
 
     public void narrate(String string) {
-        NarratorOption narratorOption = NarratorManager.method_20602();
+        NarratorOption narratorOption = NarratorManager.getNarratorOption();
         if (this.narrator.active() && narratorOption != NarratorOption.OFF && narratorOption != NarratorOption.CHAT && !string.isEmpty()) {
             this.narrator.clear();
             this.narrate(true, string);
         }
     }
 
-    private static NarratorOption method_20602() {
+    private static NarratorOption getNarratorOption() {
         return MinecraftClient.getInstance().options.narrator;
     }
 
@@ -78,7 +78,7 @@ implements ClientChatListener {
     }
 
     public void clear() {
-        if (NarratorManager.method_20602() == NarratorOption.OFF || !this.narrator.active()) {
+        if (NarratorManager.getNarratorOption() == NarratorOption.OFF || !this.narrator.active()) {
             return;
         }
         this.narrator.clear();

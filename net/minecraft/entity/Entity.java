@@ -30,6 +30,7 @@ import net.minecraft.block.FenceGateBlock;
 import net.minecraft.block.PortalBlock;
 import net.minecraft.block.pattern.BlockPattern;
 import net.minecraft.block.piston.PistonBehavior;
+import net.minecraft.class_4538;
 import net.minecraft.client.network.packet.EntityS2CPacket;
 import net.minecraft.command.arguments.EntityAnchorArgumentType;
 import net.minecraft.enchantment.EnchantmentHelper;
@@ -104,7 +105,6 @@ import net.minecraft.world.BlockView;
 import net.minecraft.world.GameRules;
 import net.minecraft.world.Heightmap;
 import net.minecraft.world.RayTraceContext;
-import net.minecraft.world.ViewableWorld;
 import net.minecraft.world.World;
 import net.minecraft.world.dimension.DimensionType;
 import net.minecraft.world.explosion.Explosion;
@@ -451,7 +451,7 @@ CommandOutput {
     }
 
     private boolean doesNotCollide(Box box) {
-        return this.world.doesNotCollide(this, box) && !this.world.intersectsFluid(box);
+        return this.world.doesNotCollide(this, box) && !this.world.method_22345(box);
     }
 
     public void move(MovementType movementType, Vec3d vec3d) {
@@ -665,26 +665,26 @@ CommandOutput {
         return new Vec3d(d, e, f);
     }
 
-    public static Vec3d calculateTangentialMotionVector(Vec3d vec3d, Box box, ViewableWorld viewableWorld, EntityContext entityContext, ReusableStream<VoxelShape> reusableStream) {
+    public static Vec3d calculateTangentialMotionVector(Vec3d vec3d, Box box, class_4538 arg, EntityContext entityContext, ReusableStream<VoxelShape> reusableStream) {
         boolean bl;
         double d = vec3d.x;
         double e = vec3d.y;
         double f = vec3d.z;
-        if (e != 0.0 && (e = VoxelShapes.calculateSoftOffset(Direction.Axis.Y, box, viewableWorld, e, entityContext, reusableStream.stream())) != 0.0) {
+        if (e != 0.0 && (e = VoxelShapes.calculateSoftOffset(Direction.Axis.Y, box, arg, e, entityContext, reusableStream.stream())) != 0.0) {
             box = box.offset(0.0, e, 0.0);
         }
         boolean bl2 = bl = Math.abs(d) < Math.abs(f);
-        if (bl && f != 0.0 && (f = VoxelShapes.calculateSoftOffset(Direction.Axis.Z, box, viewableWorld, f, entityContext, reusableStream.stream())) != 0.0) {
+        if (bl && f != 0.0 && (f = VoxelShapes.calculateSoftOffset(Direction.Axis.Z, box, arg, f, entityContext, reusableStream.stream())) != 0.0) {
             box = box.offset(0.0, 0.0, f);
         }
         if (d != 0.0) {
-            d = VoxelShapes.calculateSoftOffset(Direction.Axis.X, box, viewableWorld, d, entityContext, reusableStream.stream());
+            d = VoxelShapes.calculateSoftOffset(Direction.Axis.X, box, arg, d, entityContext, reusableStream.stream());
             if (!bl && d != 0.0) {
                 box = box.offset(d, 0.0, 0.0);
             }
         }
         if (!bl && f != 0.0) {
-            f = VoxelShapes.calculateSoftOffset(Direction.Axis.Z, box, viewableWorld, f, entityContext, reusableStream.stream());
+            f = VoxelShapes.calculateSoftOffset(Direction.Axis.Z, box, arg, f, entityContext, reusableStream.stream());
         }
         return new Vec3d(d, e, f);
     }
@@ -717,7 +717,7 @@ CommandOutput {
         try (BlockPos.PooledMutable pooledMutable = BlockPos.PooledMutable.get(box.minX + 0.001, box.minY + 0.001, box.minZ + 0.001);
              BlockPos.PooledMutable pooledMutable2 = BlockPos.PooledMutable.get(box.maxX - 0.001, box.maxY - 0.001, box.maxZ - 0.001);
              BlockPos.PooledMutable pooledMutable3 = BlockPos.PooledMutable.get();){
-            if (this.world.isAreaLoaded(pooledMutable, pooledMutable2)) {
+            if (this.world.method_22343(pooledMutable, pooledMutable2)) {
                 for (int i = pooledMutable.getX(); i <= pooledMutable2.getX(); ++i) {
                     for (int j = pooledMutable.getY(); j <= pooledMutable2.getY(); ++j) {
                         for (int k = pooledMutable.getZ(); k <= pooledMutable2.getZ(); ++k) {
@@ -983,17 +983,17 @@ CommandOutput {
     @Environment(value=EnvType.CLIENT)
     public int getLightmapCoordinates() {
         BlockPos blockPos = new BlockPos(this.x, this.y + (double)this.getStandingEyeHeight(), this.z);
-        if (this.world.isBlockLoaded(blockPos)) {
-            return this.world.getLightmapIndex(blockPos, 0);
+        if (this.world.method_22340(blockPos)) {
+            return this.world.method_22337(blockPos);
         }
         return 0;
     }
 
     public float getBrightnessAtEyes() {
         BlockPos.Mutable mutable = new BlockPos.Mutable(this.x, 0.0, this.z);
-        if (this.world.isBlockLoaded(mutable)) {
+        if (this.world.method_22340(mutable)) {
             mutable.setY(MathHelper.floor(this.y + (double)this.getStandingEyeHeight()));
-            return this.world.getBrightness(mutable);
+            return this.world.method_22349(mutable);
         }
         return 0.0f;
     }
@@ -2422,7 +2422,7 @@ CommandOutput {
         int k = MathHelper.floor(box.minY);
         int l = MathHelper.ceil(box.maxY);
         int m = MathHelper.floor(box.minZ);
-        if (!this.world.isAreaLoaded(i, k, m, j, l, n = MathHelper.ceil(box.maxZ))) {
+        if (!this.world.method_22341(i, k, m, j, l, n = MathHelper.ceil(box.maxZ))) {
             return false;
         }
         double d = 0.0;

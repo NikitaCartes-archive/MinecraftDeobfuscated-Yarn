@@ -4,12 +4,12 @@
 package net.minecraft.client.render.entity.feature;
 
 import com.google.common.collect.Maps;
+import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
 import java.util.Map;
 import java.util.function.Consumer;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_4493;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.GameRenderer;
 import net.minecraft.client.render.entity.feature.FeatureRenderer;
@@ -107,7 +107,7 @@ extends FeatureRenderer<T, M> {
         RenderSystem.color4f(0.5f, 0.5f, 0.5f, 1.0f);
         for (int o = 0; o < 2; ++o) {
             RenderSystem.disableLighting();
-            RenderSystem.blendFunc(class_4493.class_4535.SRC_COLOR, class_4493.class_4534.ONE);
+            RenderSystem.blendFunc(GlStateManager.class_4535.SRC_COLOR, GlStateManager.class_4534.ONE);
             float p = 0.76f;
             RenderSystem.color4f(0.38f, 0.19f, 0.608f, 1.0f);
             RenderSystem.matrixMode(5890);
@@ -118,7 +118,7 @@ extends FeatureRenderer<T, M> {
             RenderSystem.translatef(0.0f, m * (0.001f + (float)o * 0.003f) * 20.0f, 0.0f);
             RenderSystem.matrixMode(5888);
             entityModel.render(entity, f, g, i, j, k, l);
-            RenderSystem.blendFunc(class_4493.class_4535.ONE, class_4493.class_4534.ZERO);
+            RenderSystem.blendFunc(GlStateManager.class_4535.ONE, GlStateManager.class_4534.ZERO);
         }
         RenderSystem.matrixMode(5890);
         RenderSystem.loadIdentity();

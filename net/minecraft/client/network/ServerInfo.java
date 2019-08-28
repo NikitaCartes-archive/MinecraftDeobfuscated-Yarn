@@ -1,7 +1,7 @@
 /*
  * Decompiled with CFR 0.2.0 (FabricMC d28b102d).
  */
-package net.minecraft.client.options;
+package net.minecraft.client.network;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
@@ -12,7 +12,7 @@ import net.minecraft.text.TranslatableText;
 import org.jetbrains.annotations.Nullable;
 
 @Environment(value=EnvType.CLIENT)
-public class ServerEntry {
+public class ServerInfo {
     public String name;
     public String address;
     public String playerCountLabel;
@@ -26,7 +26,7 @@ public class ServerEntry {
     private String icon;
     private boolean local;
 
-    public ServerEntry(String string, String string2, boolean bl) {
+    public ServerInfo(String string, String string2, boolean bl) {
         this.name = string;
         this.address = string2;
         this.local = bl;
@@ -55,21 +55,21 @@ public class ServerEntry {
         this.resourcePackState = resourcePackState;
     }
 
-    public static ServerEntry deserialize(CompoundTag compoundTag) {
-        ServerEntry serverEntry = new ServerEntry(compoundTag.getString("name"), compoundTag.getString("ip"), false);
+    public static ServerInfo deserialize(CompoundTag compoundTag) {
+        ServerInfo serverInfo = new ServerInfo(compoundTag.getString("name"), compoundTag.getString("ip"), false);
         if (compoundTag.containsKey("icon", 8)) {
-            serverEntry.setIcon(compoundTag.getString("icon"));
+            serverInfo.setIcon(compoundTag.getString("icon"));
         }
         if (compoundTag.containsKey("acceptTextures", 1)) {
             if (compoundTag.getBoolean("acceptTextures")) {
-                serverEntry.setResourcePackState(ResourcePackState.ENABLED);
+                serverInfo.setResourcePackState(ResourcePackState.ENABLED);
             } else {
-                serverEntry.setResourcePackState(ResourcePackState.DISABLED);
+                serverInfo.setResourcePackState(ResourcePackState.DISABLED);
             }
         } else {
-            serverEntry.setResourcePackState(ResourcePackState.PROMPT);
+            serverInfo.setResourcePackState(ResourcePackState.PROMPT);
         }
-        return serverEntry;
+        return serverInfo;
     }
 
     @Nullable
@@ -85,12 +85,12 @@ public class ServerEntry {
         return this.local;
     }
 
-    public void copyFrom(ServerEntry serverEntry) {
-        this.address = serverEntry.address;
-        this.name = serverEntry.name;
-        this.setResourcePackState(serverEntry.getResourcePack());
-        this.icon = serverEntry.icon;
-        this.local = serverEntry.local;
+    public void copyFrom(ServerInfo serverInfo) {
+        this.address = serverInfo.address;
+        this.name = serverInfo.name;
+        this.setResourcePackState(serverInfo.getResourcePack());
+        this.icon = serverInfo.icon;
+        this.local = serverInfo.local;
     }
 
     @Environment(value=EnvType.CLIENT)

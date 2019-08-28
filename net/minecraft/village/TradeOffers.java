@@ -37,6 +37,7 @@ import net.minecraft.item.map.MapState;
 import net.minecraft.potion.Potion;
 import net.minecraft.potion.PotionUtil;
 import net.minecraft.recipe.BrewingRecipeRegistry;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.DyeColor;
 import net.minecraft.util.SystemUtil;
@@ -47,7 +48,6 @@ import net.minecraft.village.TradeOffer;
 import net.minecraft.village.VillagerDataContainer;
 import net.minecraft.village.VillagerProfession;
 import net.minecraft.village.VillagerType;
-import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
 
 public class TradeOffers {
@@ -124,11 +124,14 @@ public class TradeOffers {
         @Override
         @Nullable
         public TradeOffer create(Entity entity, Random random) {
-            World world = entity.world;
-            BlockPos blockPos = world.locateStructure(this.structure, new BlockPos(entity), 100, true);
+            if (!(entity.world instanceof ServerWorld)) {
+                return null;
+            }
+            ServerWorld serverWorld = (ServerWorld)entity.world;
+            BlockPos blockPos = serverWorld.locateStructure(this.structure, new BlockPos(entity), 100, true);
             if (blockPos != null) {
-                ItemStack itemStack = FilledMapItem.createMap(world, blockPos.getX(), blockPos.getZ(), (byte)2, true, true);
-                FilledMapItem.fillExplorationMap(world, itemStack);
+                ItemStack itemStack = FilledMapItem.createMap(serverWorld, blockPos.getX(), blockPos.getZ(), (byte)2, true, true);
+                FilledMapItem.fillExplorationMap(serverWorld, itemStack);
                 MapState.addDecorationsTag(itemStack, blockPos, "+", this.iconType);
                 itemStack.setCustomName(new TranslatableText("filled_map." + this.structure.toLowerCase(Locale.ROOT), new Object[0]));
                 return new TradeOffer(new ItemStack(Items.EMERALD, this.price), new ItemStack(Items.COMPASS), itemStack, this.maxUses, this.experience, 0.2f);

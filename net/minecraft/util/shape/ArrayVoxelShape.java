@@ -27,7 +27,7 @@ extends VoxelShape {
         int j = voxelSet.getYSize() + 1;
         int k = voxelSet.getZSize() + 1;
         if (i != doubleList.size() || j != doubleList2.size() || k != doubleList3.size()) {
-            throw SystemUtil.method_22320(new IllegalArgumentException("Lengths of point arrays must be consistent with the size of the VoxelShape."));
+            throw SystemUtil.throwOrPause(new IllegalArgumentException("Lengths of point arrays must be consistent with the size of the VoxelShape."));
         }
         this.xPoints = doubleList;
         this.yPoints = doubleList2;

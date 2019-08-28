@@ -4,6 +4,7 @@
 package net.minecraft.client.render;
 
 import com.google.common.base.MoreObjects;
+import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
 import java.util.Objects;
 import net.fabricmc.api.EnvType;
@@ -12,7 +13,6 @@ import net.minecraft.block.Block;
 import net.minecraft.block.BlockRenderLayer;
 import net.minecraft.block.BlockRenderType;
 import net.minecraft.block.BlockState;
-import net.minecraft.class_4493;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.network.AbstractClientPlayerEntity;
 import net.minecraft.client.network.ClientPlayerEntity;
@@ -94,7 +94,7 @@ public class FirstPersonRenderer {
 
     private void applyLightmap() {
         ClientPlayerEntity abstractClientPlayerEntity = this.client.player;
-        int i = this.client.world.getLightmapIndex(new BlockPos(abstractClientPlayerEntity.x, abstractClientPlayerEntity.y + (double)abstractClientPlayerEntity.getStandingEyeHeight(), abstractClientPlayerEntity.z), 0);
+        int i = this.client.world.method_22337(new BlockPos(abstractClientPlayerEntity.x, abstractClientPlayerEntity.y + (double)abstractClientPlayerEntity.getStandingEyeHeight(), abstractClientPlayerEntity.z));
         float f = i & 0xFFFF;
         float g = i >> 16;
         RenderSystem.glMultiTexCoord2f(33985, f, g);
@@ -517,7 +517,7 @@ public class FirstPersonRenderer {
         float g = this.client.player.getBrightnessAtEyes();
         RenderSystem.color4f(g, g, g, 0.1f);
         RenderSystem.enableBlend();
-        RenderSystem.blendFuncSeparate(class_4493.class_4535.SRC_ALPHA, class_4493.class_4534.ONE_MINUS_SRC_ALPHA, class_4493.class_4535.ONE, class_4493.class_4534.ZERO);
+        RenderSystem.blendFuncSeparate(GlStateManager.class_4535.SRC_ALPHA, GlStateManager.class_4534.ONE_MINUS_SRC_ALPHA, GlStateManager.class_4535.ONE, GlStateManager.class_4534.ZERO);
         RenderSystem.pushMatrix();
         float h = 4.0f;
         float i = -1.0f;
@@ -545,7 +545,7 @@ public class FirstPersonRenderer {
         RenderSystem.depthFunc(519);
         RenderSystem.depthMask(false);
         RenderSystem.enableBlend();
-        RenderSystem.blendFuncSeparate(class_4493.class_4535.SRC_ALPHA, class_4493.class_4534.ONE_MINUS_SRC_ALPHA, class_4493.class_4535.ONE, class_4493.class_4534.ZERO);
+        RenderSystem.blendFuncSeparate(GlStateManager.class_4535.SRC_ALPHA, GlStateManager.class_4534.ONE_MINUS_SRC_ALPHA, GlStateManager.class_4535.ONE, GlStateManager.class_4534.ZERO);
         float f = 1.0f;
         for (int i = 0; i < 2; ++i) {
             RenderSystem.pushMatrix();

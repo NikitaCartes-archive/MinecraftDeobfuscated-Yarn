@@ -39,8 +39,8 @@ extends Overlay {
         this.field_18219 = bl;
     }
 
-    public static void method_18819(MinecraftClient minecraftClient) {
-        minecraftClient.getTextureManager().registerTexture(LOGO, new class_4070());
+    public static void init(MinecraftClient minecraftClient) {
+        minecraftClient.getTextureManager().registerTexture(LOGO, new LogoTexture());
     }
 
     @Override
@@ -111,9 +111,9 @@ extends Overlay {
     }
 
     @Environment(value=EnvType.CLIENT)
-    static class class_4070
+    static class LogoTexture
     extends ResourceTexture {
-        public class_4070() {
+        public LogoTexture() {
             super(LOGO);
         }
 

@@ -157,7 +157,7 @@ extends BlockEntity {
         return this.structureName == null ? "" : this.structureName.toString();
     }
 
-    public String method_21865() {
+    public String getStructurePath() {
         return this.structureName == null ? "" : this.structureName.getPath();
     }
 
@@ -406,10 +406,10 @@ extends BlockEntity {
         if (structure == null) {
             return false;
         }
-        return this.method_21864(bl, structure);
+        return this.place(bl, structure);
     }
 
-    public boolean method_21864(boolean bl, Structure structure) {
+    public boolean place(boolean bl, Structure structure) {
         BlockPos blockPos2;
         boolean bl2;
         BlockPos blockPos = this.getPos();

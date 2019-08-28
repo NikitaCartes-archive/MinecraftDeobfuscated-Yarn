@@ -11,10 +11,10 @@ import net.minecraft.entity.ai.pathing.PathNodeType;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.BlockView;
-import net.minecraft.world.ViewableWorld;
+import net.minecraft.world.chunk.ChunkCache;
 
 public abstract class PathNodeMaker {
-    protected ViewableWorld blockView;
+    protected ChunkCache field_20622;
     protected MobEntity entity;
     protected final Int2ObjectMap<PathNode> pathNodeCache = new Int2ObjectOpenHashMap<PathNode>();
     protected int field_31;
@@ -24,8 +24,8 @@ public abstract class PathNodeMaker {
     protected boolean pathsThroughDoors;
     protected boolean swims;
 
-    public void init(ViewableWorld viewableWorld, MobEntity mobEntity) {
-        this.blockView = viewableWorld;
+    public void init(ChunkCache chunkCache, MobEntity mobEntity) {
+        this.field_20622 = chunkCache;
         this.entity = mobEntity;
         this.pathNodeCache.clear();
         this.field_31 = MathHelper.floor(mobEntity.getWidth() + 1.0f);
@@ -34,7 +34,7 @@ public abstract class PathNodeMaker {
     }
 
     public void clear() {
-        this.blockView = null;
+        this.field_20622 = null;
         this.entity = null;
     }
 

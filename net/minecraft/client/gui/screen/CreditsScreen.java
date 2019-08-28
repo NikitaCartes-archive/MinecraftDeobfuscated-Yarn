@@ -4,6 +4,7 @@
 package net.minecraft.client.gui.screen;
 
 import com.google.common.collect.Lists;
+import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
 import java.io.BufferedReader;
 import java.io.Closeable;
@@ -14,7 +15,6 @@ import java.util.List;
 import java.util.Random;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_4493;
 import net.minecraft.client.gui.DrawableHelper;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.render.BufferBuilder;
@@ -29,25 +29,25 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 @Environment(value=EnvType.CLIENT)
-public class EndCreditsScreen
+public class CreditsScreen
 extends Screen {
     private static final Logger LOGGER = LogManager.getLogger();
     private static final Identifier MINECRAFT_TITLE_TEXTURE = new Identifier("textures/gui/title/minecraft.png");
     private static final Identifier EDITION_TITLE_TEXTURE = new Identifier("textures/gui/title/edition.png");
     private static final Identifier VIGNETTE_TEXTURE = new Identifier("textures/misc/vignette.png");
-    private final boolean inGame;
-    private final Runnable respawn;
-    private float field_2628;
-    private List<String> field_2634;
-    private int field_2629;
-    private float field_2635 = 0.5f;
+    private final boolean endCredits;
+    private final Runnable finishAction;
+    private float time;
+    private List<String> credits;
+    private int creditsHeight;
+    private float speed = 0.5f;
 
-    public EndCreditsScreen(boolean bl, Runnable runnable) {
+    public CreditsScreen(boolean bl, Runnable runnable) {
         super(NarratorManager.EMPTY);
-        this.inGame = bl;
-        this.respawn = runnable;
+        this.endCredits = bl;
+        this.finishAction = runnable;
         if (!bl) {
-            this.field_2635 = 0.75f;
+            this.speed = 0.75f;
         }
     }
 
@@ -55,19 +55,19 @@ extends Screen {
     public void tick() {
         this.minecraft.getMusicTracker().tick();
         this.minecraft.getSoundManager().tick(false);
-        float f = (float)(this.field_2629 + this.height + this.height + 24) / this.field_2635;
-        if (this.field_2628 > f) {
-            this.respawn();
+        float f = (float)(this.creditsHeight + this.height + this.height + 24) / this.speed;
+        if (this.time > f) {
+            this.close();
         }
     }
 
     @Override
     public void onClose() {
-        this.respawn();
+        this.close();
     }
 
-    private void respawn() {
-        this.respawn.run();
+    private void close() {
+        this.finishAction.run();
         this.minecraft.openScreen(null);
     }
 
@@ -76,10 +76,10 @@ extends Screen {
      */
     @Override
     protected void init() {
-        if (this.field_2634 != null) {
+        if (this.credits != null) {
             return;
         }
-        this.field_2634 = Lists.newArrayList();
+        this.credits = Lists.newArrayList();
         Resource resource = null;
         try {
             String string5;
@@ -87,7 +87,7 @@ extends Screen {
             InputStream inputStream;
             String string = "" + (Object)((Object)Formatting.WHITE) + (Object)((Object)Formatting.OBFUSCATED) + (Object)((Object)Formatting.GREEN) + (Object)((Object)Formatting.AQUA);
             int i = 274;
-            if (this.inGame) {
+            if (this.endCredits) {
                 int j;
                 String string2;
                 resource = this.minecraft.getResourceManager().getResource(new Identifier("texts/end.txt"));
@@ -102,12 +102,12 @@ extends Screen {
                         String string4 = string2.substring(j + string.length());
                         string2 = string3 + (Object)((Object)Formatting.WHITE) + (Object)((Object)Formatting.OBFUSCATED) + "XXXXXXXX".substring(0, random.nextInt(4) + 3) + string4;
                     }
-                    this.field_2634.addAll(this.minecraft.textRenderer.wrapStringToWidthAsList(string2, 274));
-                    this.field_2634.add("");
+                    this.credits.addAll(this.minecraft.textRenderer.wrapStringToWidthAsList(string2, 274));
+                    this.credits.add("");
                 }
                 inputStream.close();
                 for (j = 0; j < 8; ++j) {
-                    this.field_2634.add("");
+                    this.credits.add("");
                 }
             }
             inputStream = this.minecraft.getResourceManager().getResource(new Identifier("texts/credits.txt")).getInputStream();
@@ -115,11 +115,11 @@ extends Screen {
             while ((string5 = bufferedReader.readLine()) != null) {
                 string5 = string5.replaceAll("PLAYERNAME", this.minecraft.getSession().getUsername());
                 string5 = string5.replaceAll("\t", "    ");
-                this.field_2634.addAll(this.minecraft.textRenderer.wrapStringToWidthAsList(string5, 274));
-                this.field_2634.add("");
+                this.credits.addAll(this.minecraft.textRenderer.wrapStringToWidthAsList(string5, 274));
+                this.credits.add("");
             }
             inputStream.close();
-            this.field_2629 = this.field_2634.size() * 12;
+            this.creditsHeight = this.credits.size() * 12;
             IOUtils.closeQuietly((Closeable)resource);
         } catch (Exception exception) {
             LOGGER.error("Couldn't load credits", (Throwable)exception);
@@ -128,15 +128,15 @@ extends Screen {
         }
     }
 
-    private void method_2258(int i, int j, float f) {
+    private void renderBackground(int i, int j, float f) {
         this.minecraft.getTextureManager().bindTexture(DrawableHelper.BACKGROUND_LOCATION);
         int k = this.width;
-        float g = -this.field_2628 * 0.5f * this.field_2635;
-        float h = (float)this.height - this.field_2628 * 0.5f * this.field_2635;
+        float g = -this.time * 0.5f * this.speed;
+        float h = (float)this.height - this.time * 0.5f * this.speed;
         float l = 0.015625f;
-        float m = this.field_2628 * 0.02f;
-        float n = (float)(this.field_2629 + this.height + this.height + 24) / this.field_2635;
-        float o = (n - 20.0f - this.field_2628) * 0.005f;
+        float m = this.time * 0.02f;
+        float n = (float)(this.creditsHeight + this.height + this.height + 24) / this.speed;
+        float o = (n - 20.0f - this.time) * 0.005f;
         if (o < m) {
             m = o;
         }
@@ -158,12 +158,12 @@ extends Screen {
     @Override
     public void render(int i, int j, float f) {
         int o;
-        this.method_2258(i, j, f);
+        this.renderBackground(i, j, f);
         int k = 274;
         int l = this.width / 2 - 137;
         int m = this.height + 50;
-        this.field_2628 += f;
-        float g = -this.field_2628 * this.field_2635;
+        this.time += f;
+        float g = -this.time * this.speed;
         RenderSystem.pushMatrix();
         RenderSystem.translatef(0.0f, g, 0.0f);
         this.minecraft.getTextureManager().bindTexture(MINECRAFT_TITLE_TEXTURE);
@@ -172,20 +172,20 @@ extends Screen {
         this.blit(l, m, 0, 0, 155, 44);
         this.blit(l + 155, m, 0, 45, 155, 44);
         this.minecraft.getTextureManager().bindTexture(EDITION_TITLE_TEXTURE);
-        EndCreditsScreen.blit(l + 88, m + 37, 0.0f, 0.0f, 98, 14, 128, 16);
+        CreditsScreen.blit(l + 88, m + 37, 0.0f, 0.0f, 98, 14, 128, 16);
         RenderSystem.disableAlphaTest();
         int n = m + 100;
-        for (o = 0; o < this.field_2634.size(); ++o) {
+        for (o = 0; o < this.credits.size(); ++o) {
             float h;
-            if (o == this.field_2634.size() - 1 && (h = (float)n + g - (float)(this.height / 2 - 6)) < 0.0f) {
+            if (o == this.credits.size() - 1 && (h = (float)n + g - (float)(this.height / 2 - 6)) < 0.0f) {
                 RenderSystem.translatef(0.0f, -h, 0.0f);
             }
             if ((float)n + g + 12.0f + 8.0f > 0.0f && (float)n + g < (float)this.height) {
-                String string = this.field_2634.get(o);
+                String string = this.credits.get(o);
                 if (string.startsWith("[C]")) {
                     this.font.drawWithShadow(string.substring(3), l + (274 - this.font.getStringWidth(string.substring(3))) / 2, n, 0xFFFFFF);
                 } else {
-                    this.font.random.setSeed((long)((float)((long)o * 4238972211L) + this.field_2628 / 4.0f));
+                    this.font.random.setSeed((long)((float)((long)o * 4238972211L) + this.time / 4.0f));
                     this.font.drawWithShadow(string, l, n, 0xFFFFFF);
                 }
             }
@@ -194,7 +194,7 @@ extends Screen {
         RenderSystem.popMatrix();
         this.minecraft.getTextureManager().bindTexture(VIGNETTE_TEXTURE);
         RenderSystem.enableBlend();
-        RenderSystem.blendFunc(class_4493.class_4535.ZERO, class_4493.class_4534.ONE_MINUS_SRC_COLOR);
+        RenderSystem.blendFunc(GlStateManager.class_4535.ZERO, GlStateManager.class_4534.ONE_MINUS_SRC_COLOR);
         o = this.width;
         int p = this.height;
         Tessellator tessellator = Tessellator.getInstance();

@@ -20,7 +20,7 @@ import net.minecraft.entity.ai.pathing.PathNode;
 import net.minecraft.entity.ai.pathing.PathNodeMaker;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.ViewableWorld;
+import net.minecraft.world.chunk.ChunkCache;
 import org.jetbrains.annotations.Nullable;
 
 public class PathNodeNavigator {
@@ -36,9 +36,9 @@ public class PathNodeNavigator {
     }
 
     @Nullable
-    public Path pathfind(ViewableWorld viewableWorld, MobEntity mobEntity, Set<BlockPos> set, float f, int i) {
+    public Path pathfind(ChunkCache chunkCache, MobEntity mobEntity, Set<BlockPos> set, float f, int i) {
         this.minHeap.clear();
-        this.pathNodeMaker.init(viewableWorld, mobEntity);
+        this.pathNodeMaker.init(chunkCache, mobEntity);
         PathNode pathNode = this.pathNodeMaker.getStart();
         Map<class_4459, BlockPos> map = set.stream().collect(Collectors.toMap(blockPos -> this.pathNodeMaker.getPathNode((double)blockPos.getX(), (double)blockPos.getY(), (double)blockPos.getZ()), Function.identity()));
         Path path = this.pathfind(pathNode, map, f, i);

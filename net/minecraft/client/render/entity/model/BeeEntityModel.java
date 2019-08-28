@@ -6,8 +6,8 @@ package net.minecraft.client.render.entity.model;
 import com.mojang.blaze3d.systems.RenderSystem;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_4496;
 import net.minecraft.client.model.ModelPart;
+import net.minecraft.client.model.ModelUtil;
 import net.minecraft.client.render.entity.model.EntityModel;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.passive.BeeEntity;
@@ -33,7 +33,7 @@ extends EntityModel<T> {
         this.textureWidth = 64;
         this.textureHeight = 64;
         this.body = new ModelPart(this);
-        this.body.setRotationPoint(0.5f, 18.0f, 1.0f);
+        this.body.setRotationPoint(0.0f, 19.0f, 0.0f);
         this.mainBody = new ModelPart(this, 0, 0);
         this.mainBody.setRotationPoint(0.0f, 0.0f, 0.0f);
         this.body.addChild(this.mainBody);
@@ -91,7 +91,7 @@ extends EntityModel<T> {
         this.leftAntenna.pitch = 0.0f;
         this.rightAntenna.pitch = 0.0f;
         this.body.pitch = 0.0f;
-        this.body.rotationPointY = 18.0f;
+        this.body.rotationPointY = 19.0f;
         boolean bl2 = bl = ((Entity)beeEntity).getVelocity().lengthSquared() < 1.0E-7;
         if (bl) {
             this.leftWing.yaw = -0.2618f;
@@ -127,11 +127,11 @@ extends EntityModel<T> {
                 this.rightAntenna.pitch = l * (float)Math.PI * 0.03f;
                 this.frontLeg.pitch = -l * (float)Math.PI * 0.1f + 0.3926991f;
                 this.backLeg.pitch = -l * (float)Math.PI * 0.05f + 0.7853982f;
-                this.body.rotationPointY = 18.0f - MathHelper.cos(h * 0.18f) * 0.9f;
+                this.body.rotationPointY = 19.0f - MathHelper.cos(h * 0.18f) * 0.9f;
             }
         }
         if (this.bodyPitch > 0.0f) {
-            this.body.pitch = class_4496.method_22114(this.body.pitch, 3.0915928f, this.bodyPitch);
+            this.body.pitch = ModelUtil.interpolateAngle(this.body.pitch, 3.0915928f, this.bodyPitch);
         }
     }
 

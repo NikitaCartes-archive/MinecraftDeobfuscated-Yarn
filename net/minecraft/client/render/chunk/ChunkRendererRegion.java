@@ -10,10 +10,10 @@ import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.fluid.FluidState;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.ExtendedBlockView;
-import net.minecraft.world.LightType;
 import net.minecraft.world.World;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.chunk.WorldChunk;
+import net.minecraft.world.chunk.light.LightingProvider;
 import org.jetbrains.annotations.Nullable;
 
 @Environment(value=EnvType.CLIENT)
@@ -103,8 +103,8 @@ implements ExtendedBlockView {
     }
 
     @Override
-    public int getLightLevel(LightType lightType, BlockPos blockPos) {
-        return this.world.getLightLevel(lightType, blockPos);
+    public LightingProvider method_22336() {
+        return this.world.method_22336();
     }
 
     @Override

@@ -119,7 +119,7 @@ implements Tickable {
             for (j = -1; j <= 1; ++j) {
                 for (k = -1; k <= 1; ++k) {
                     BlockPos blockPos = this.pos.add(i, j, k);
-                    if (this.world.isWaterAt(blockPos)) continue;
+                    if (this.world.method_22351(blockPos)) continue;
                     return false;
                 }
             }

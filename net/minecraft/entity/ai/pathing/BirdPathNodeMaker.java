@@ -16,14 +16,14 @@ import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.BlockView;
-import net.minecraft.world.ViewableWorld;
+import net.minecraft.world.chunk.ChunkCache;
 import org.jetbrains.annotations.Nullable;
 
 public class BirdPathNodeMaker
 extends LandPathNodeMaker {
     @Override
-    public void init(ViewableWorld viewableWorld, MobEntity mobEntity) {
-        super.init(viewableWorld, mobEntity);
+    public void init(ChunkCache chunkCache, MobEntity mobEntity) {
+        super.init(chunkCache, mobEntity);
         this.waterPathNodeTypeWeight = mobEntity.getPathNodeTypeWeight(PathNodeType.WATER);
     }
 
@@ -41,10 +41,10 @@ extends LandPathNodeMaker {
         if (this.canSwim() && this.entity.isInsideWater()) {
             i = MathHelper.floor(this.entity.getBoundingBox().minY);
             BlockPos.Mutable mutable = new BlockPos.Mutable(this.entity.x, (double)i, this.entity.z);
-            Block block = this.blockView.getBlockState(mutable).getBlock();
+            Block block = this.field_20622.getBlockState(mutable).getBlock();
             while (block == Blocks.WATER) {
                 mutable.set(this.entity.x, (double)(++i), this.entity.z);
-                block = this.blockView.getBlockState(mutable).getBlock();
+                block = this.field_20622.getBlockState(mutable).getBlock();
             }
         } else {
             i = MathHelper.floor(this.entity.getBoundingBox().minY + 0.5);
@@ -207,7 +207,7 @@ extends LandPathNodeMaker {
     }
 
     private PathNodeType method_9(MobEntity mobEntity, int i, int j, int k) {
-        return this.getPathNodeType(this.blockView, i, j, k, mobEntity, this.field_31, this.field_30, this.field_28, this.canPathThroughDoors(), this.canEnterOpenDoors());
+        return this.getPathNodeType(this.field_20622, i, j, k, mobEntity, this.field_31, this.field_30, this.field_28, this.canPathThroughDoors(), this.canEnterOpenDoors());
     }
 }
 

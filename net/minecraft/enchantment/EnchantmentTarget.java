@@ -5,7 +5,7 @@ package net.minecraft.enchantment;
 
 import net.minecraft.block.AbstractSkullBlock;
 import net.minecraft.block.Block;
-import net.minecraft.block.PumpkinBlock;
+import net.minecraft.block.CarvedPumpkinBlock;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.item.ArmorItem;
 import net.minecraft.item.BowItem;
@@ -123,7 +123,7 @@ public enum EnchantmentTarget {
         @Override
         public boolean isAcceptableItem(Item item) {
             Block block = Block.getBlockFromItem(item);
-            return item instanceof ArmorItem || item instanceof ElytraItem || block instanceof AbstractSkullBlock || block instanceof PumpkinBlock;
+            return item instanceof ArmorItem || item instanceof ElytraItem || block instanceof AbstractSkullBlock || block instanceof CarvedPumpkinBlock;
         }
     }
     ,

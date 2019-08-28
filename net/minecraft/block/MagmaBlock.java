@@ -10,6 +10,7 @@ import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.BubbleColumnBlock;
+import net.minecraft.class_4538;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
@@ -23,9 +24,7 @@ import net.minecraft.tag.FluidTags;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.world.BlockView;
-import net.minecraft.world.ExtendedBlockView;
 import net.minecraft.world.IWorld;
-import net.minecraft.world.ViewableWorld;
 import net.minecraft.world.World;
 
 public class MagmaBlock
@@ -44,13 +43,13 @@ extends Block {
 
     @Override
     @Environment(value=EnvType.CLIENT)
-    public int getBlockBrightness(BlockState blockState, ExtendedBlockView extendedBlockView, BlockPos blockPos) {
-        return 0xF000F0;
+    public boolean method_22359(BlockState blockState) {
+        return true;
     }
 
     @Override
-    public void onScheduledTick(BlockState blockState, World world, BlockPos blockPos, Random random) {
-        BubbleColumnBlock.update(world, blockPos.up(), true);
+    public void onScheduledTick(BlockState blockState, ServerWorld serverWorld, BlockPos blockPos, Random random) {
+        BubbleColumnBlock.update(serverWorld, blockPos.up(), true);
     }
 
     @Override
@@ -62,18 +61,16 @@ extends Block {
     }
 
     @Override
-    public void onRandomTick(BlockState blockState, World world, BlockPos blockPos, Random random) {
+    public void onRandomTick(BlockState blockState, ServerWorld serverWorld, BlockPos blockPos, Random random) {
         BlockPos blockPos2 = blockPos.up();
-        if (world.getFluidState(blockPos).matches(FluidTags.WATER)) {
-            world.playSound(null, blockPos, SoundEvents.BLOCK_FIRE_EXTINGUISH, SoundCategory.BLOCKS, 0.5f, 2.6f + (world.random.nextFloat() - world.random.nextFloat()) * 0.8f);
-            if (world instanceof ServerWorld) {
-                ((ServerWorld)world).spawnParticles(ParticleTypes.LARGE_SMOKE, (double)blockPos2.getX() + 0.5, (double)blockPos2.getY() + 0.25, (double)blockPos2.getZ() + 0.5, 8, 0.5, 0.25, 0.5, 0.0);
-            }
+        if (serverWorld.getFluidState(blockPos).matches(FluidTags.WATER)) {
+            serverWorld.playSound(null, blockPos, SoundEvents.BLOCK_FIRE_EXTINGUISH, SoundCategory.BLOCKS, 0.5f, 2.6f + (serverWorld.random.nextFloat() - serverWorld.random.nextFloat()) * 0.8f);
+            serverWorld.spawnParticles(ParticleTypes.LARGE_SMOKE, (double)blockPos2.getX() + 0.5, (double)blockPos2.getY() + 0.25, (double)blockPos2.getZ() + 0.5, 8, 0.5, 0.25, 0.5, 0.0);
         }
     }
 
     @Override
-    public int getTickRate(ViewableWorld viewableWorld) {
+    public int getTickRate(class_4538 arg) {
         return 20;
     }
 

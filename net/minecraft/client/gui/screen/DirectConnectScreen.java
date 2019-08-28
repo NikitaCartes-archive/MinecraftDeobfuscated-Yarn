@@ -10,7 +10,7 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.gui.widget.TextFieldWidget;
-import net.minecraft.client.options.ServerEntry;
+import net.minecraft.client.network.ServerInfo;
 import net.minecraft.client.resource.language.I18n;
 import net.minecraft.text.TranslatableText;
 
@@ -18,13 +18,13 @@ import net.minecraft.text.TranslatableText;
 public class DirectConnectScreen
 extends Screen {
     private ButtonWidget selectServerButton;
-    private final ServerEntry serverEntry;
+    private final ServerInfo serverEntry;
     private TextFieldWidget addressField;
     private final BooleanConsumer callback;
 
-    public DirectConnectScreen(BooleanConsumer booleanConsumer, ServerEntry serverEntry) {
+    public DirectConnectScreen(BooleanConsumer booleanConsumer, ServerInfo serverInfo) {
         super(new TranslatableText("selectServer.direct", new Object[0]));
-        this.serverEntry = serverEntry;
+        this.serverEntry = serverInfo;
         this.callback = booleanConsumer;
     }
 
@@ -49,7 +49,7 @@ extends Screen {
         this.addButton(new ButtonWidget(this.width / 2 - 100, this.height / 4 + 120 + 12, 200, 20, I18n.translate("gui.cancel", new Object[0]), buttonWidget -> this.callback.accept(false)));
         this.addressField = new TextFieldWidget(this.font, this.width / 2 - 100, 116, 200, 20, I18n.translate("addServer.enterIp", new Object[0]));
         this.addressField.setMaxLength(128);
-        this.addressField.method_1876(true);
+        this.addressField.setSelected(true);
         this.addressField.setText(this.minecraft.options.lastServer);
         this.addressField.setChangedListener(string -> this.onAddressFieldChanged());
         this.children.add(this.addressField);

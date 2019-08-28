@@ -16,6 +16,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MutableIntBoundingBox;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.world.IWorld;
+import net.minecraft.world.gen.chunk.ChunkGenerator;
 import org.jetbrains.annotations.Nullable;
 
 public abstract class StructurePoolElement {
@@ -34,7 +35,7 @@ public abstract class StructurePoolElement {
 
     public abstract MutableIntBoundingBox getBoundingBox(StructureManager var1, BlockPos var2, BlockRotation var3);
 
-    public abstract boolean generate(StructureManager var1, IWorld var2, BlockPos var3, BlockRotation var4, MutableIntBoundingBox var5, Random var6);
+    public abstract boolean generate(StructureManager var1, IWorld var2, ChunkGenerator<?> var3, BlockPos var4, BlockRotation var5, MutableIntBoundingBox var6, Random var7);
 
     public abstract StructurePoolElementType getType();
 

@@ -12,12 +12,14 @@ import net.minecraft.block.Blocks;
 import net.minecraft.block.FarmlandBlock;
 import net.minecraft.block.Fertilizable;
 import net.minecraft.block.PlantBlock;
+import net.minecraft.class_4538;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityContext;
 import net.minecraft.entity.mob.RavagerEntity;
 import net.minecraft.item.ItemConvertible;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.state.StateFactory;
 import net.minecraft.state.property.IntProperty;
 import net.minecraft.state.property.Properties;
@@ -26,7 +28,6 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.GameRules;
-import net.minecraft.world.ViewableWorld;
 import net.minecraft.world.World;
 
 public class CropBlock
@@ -71,12 +72,12 @@ implements Fertilizable {
     }
 
     @Override
-    public void onScheduledTick(BlockState blockState, World world, BlockPos blockPos, Random random) {
+    public void onScheduledTick(BlockState blockState, ServerWorld serverWorld, BlockPos blockPos, Random random) {
         float f;
         int i;
-        super.onScheduledTick(blockState, world, blockPos, random);
-        if (world.getLightLevel(blockPos, 0) >= 9 && (i = this.getAge(blockState)) < this.getMaxAge() && random.nextInt((int)(25.0f / (f = CropBlock.getAvailableMoisture(this, world, blockPos))) + 1) == 0) {
-            world.setBlockState(blockPos, this.withAge(i + 1), 2);
+        super.onScheduledTick(blockState, serverWorld, blockPos, random);
+        if (serverWorld.method_22335(blockPos, 0) >= 9 && (i = this.getAge(blockState)) < this.getMaxAge() && random.nextInt((int)(25.0f / (f = CropBlock.getAvailableMoisture(this, serverWorld, blockPos))) + 1) == 0) {
+            serverWorld.setBlockState(blockPos, this.withAge(i + 1), 2);
         }
     }
 
@@ -132,14 +133,14 @@ implements Fertilizable {
     }
 
     @Override
-    public boolean canPlaceAt(BlockState blockState, ViewableWorld viewableWorld, BlockPos blockPos) {
-        return (viewableWorld.getLightLevel(blockPos, 0) >= 8 || viewableWorld.isSkyVisible(blockPos)) && super.canPlaceAt(blockState, viewableWorld, blockPos);
+    public boolean canPlaceAt(BlockState blockState, class_4538 arg, BlockPos blockPos) {
+        return (arg.method_22335(blockPos, 0) >= 8 || arg.isSkyVisible(blockPos)) && super.canPlaceAt(blockState, arg, blockPos);
     }
 
     @Override
     public void onEntityCollision(BlockState blockState, World world, BlockPos blockPos, Entity entity) {
         if (entity instanceof RavagerEntity && world.getGameRules().getBoolean(GameRules.MOB_GRIEFING)) {
-            world.breakBlock(blockPos, true);
+            world.breakBlock(blockPos, true, entity);
         }
         super.onEntityCollision(blockState, world, blockPos, entity);
     }
@@ -166,8 +167,8 @@ implements Fertilizable {
     }
 
     @Override
-    public void grow(World world, Random random, BlockPos blockPos, BlockState blockState) {
-        this.applyGrowth(world, blockPos, blockState);
+    public void grow(ServerWorld serverWorld, Random random, BlockPos blockPos, BlockState blockState) {
+        this.applyGrowth(serverWorld, blockPos, blockState);
     }
 
     @Override

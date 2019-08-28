@@ -250,6 +250,7 @@ extends TameableEntity {
         super.initAttributes();
         this.getAttributeInstance(EntityAttributes.MAX_HEALTH).setBaseValue(10.0);
         this.getAttributeInstance(EntityAttributes.MOVEMENT_SPEED).setBaseValue(0.3f);
+        this.getAttributes().register(EntityAttributes.ATTACK_DAMAGE).setBaseValue(3.0);
     }
 
     @Override
@@ -264,9 +265,13 @@ extends TameableEntity {
         super.eat(playerEntity, itemStack);
     }
 
+    private float method_22327() {
+        return (float)this.getAttributeInstance(EntityAttributes.ATTACK_DAMAGE).getValue();
+    }
+
     @Override
     public boolean tryAttack(Entity entity) {
-        return entity.damage(DamageSource.mob(this), 3.0f);
+        return entity.damage(DamageSource.mob(this), this.method_22327());
     }
 
     @Override

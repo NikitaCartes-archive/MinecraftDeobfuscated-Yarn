@@ -713,13 +713,14 @@ public final class ItemStack {
             ListTag listTag = this.tag.getList("AttributeModifiers", 10);
             for (int i = 0; i < listTag.size(); ++i) {
                 CompoundTag compoundTag = listTag.getCompoundTag(i);
-                EntityAttributeModifier entityAttributeModifier = EntityAttributes.createFromTag(compoundTag);
-                if (entityAttributeModifier == null || compoundTag.containsKey("Slot", 8) && !compoundTag.getString("Slot").equals(equipmentSlot.getName()) || entityAttributeModifier.getId().getLeastSignificantBits() == 0L || entityAttributeModifier.getId().getMostSignificantBits() == 0L) continue;
-                multimap.put(compoundTag.getString("AttributeName"), entityAttributeModifier);
+                EntityAttributeModifier entityAttributeModifier2 = EntityAttributes.createFromTag(compoundTag);
+                if (entityAttributeModifier2 == null || compoundTag.containsKey("Slot", 8) && !compoundTag.getString("Slot").equals(equipmentSlot.getName()) || entityAttributeModifier2.getId().getLeastSignificantBits() == 0L || entityAttributeModifier2.getId().getMostSignificantBits() == 0L) continue;
+                multimap.put(compoundTag.getString("AttributeName"), entityAttributeModifier2);
             }
         } else {
             multimap = this.getItem().getModifiers(equipmentSlot);
         }
+        multimap.values().forEach(entityAttributeModifier -> entityAttributeModifier.setSerialize(false));
         return multimap;
     }
 

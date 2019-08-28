@@ -4,10 +4,10 @@
 package net.minecraft.entity.ai.goal;
 
 import java.util.EnumSet;
+import net.minecraft.class_4538;
 import net.minecraft.entity.ai.goal.Goal;
 import net.minecraft.entity.mob.MobEntityWithAi;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.ViewableWorld;
 
 public abstract class MoveToTargetPosGoal
 extends Goal {
@@ -119,6 +119,6 @@ extends Goal {
         return false;
     }
 
-    protected abstract boolean isTargetPos(ViewableWorld var1, BlockPos var2);
+    protected abstract boolean isTargetPos(class_4538 var1, BlockPos var2);
 }
 

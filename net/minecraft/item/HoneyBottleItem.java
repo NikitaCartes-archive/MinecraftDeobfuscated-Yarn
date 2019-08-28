@@ -5,6 +5,7 @@ package net.minecraft.item;
 
 import net.minecraft.advancement.criterion.Criterions;
 import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -33,8 +34,8 @@ extends Item {
             Criterions.CONSUME_ITEM.handle(serverPlayerEntity, itemStack);
             serverPlayerEntity.incrementStat(Stats.USED.getOrCreateStat(this));
         }
-        if (livingEntity instanceof PlayerEntity && !((PlayerEntity)livingEntity).abilities.creativeMode) {
-            itemStack.decrement(1);
+        if (!world.isClient) {
+            livingEntity.tryRemoveStatusEffect(StatusEffects.POISON);
         }
         if (itemStack.isEmpty()) {
             return new ItemStack(Items.GLASS_BOTTLE);

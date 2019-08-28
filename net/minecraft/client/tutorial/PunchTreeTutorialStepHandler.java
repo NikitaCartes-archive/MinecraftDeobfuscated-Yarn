@@ -48,7 +48,7 @@ implements TutorialStepHandler {
                 this.manager.setStep(TutorialStep.CRAFT_PLANKS);
                 return;
             }
-            if (FindTreeTutorialStepHandler.method_4896(clientPlayerEntity)) {
+            if (FindTreeTutorialStepHandler.hasBrokenTreeBlocks(clientPlayerEntity)) {
                 this.manager.setStep(TutorialStep.CRAFT_PLANKS);
                 return;
             }

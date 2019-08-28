@@ -51,6 +51,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.particle.ParticleEffect;
 import net.minecraft.particle.ParticleTypes;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.tag.FluidTags;
@@ -398,14 +399,17 @@ extends WaterCreatureEntity {
          */
         @Override
         public void start() {
+            if (!(this.dolphin.world instanceof ServerWorld)) {
+                return;
+            }
+            ServerWorld serverWorld = (ServerWorld)this.dolphin.world;
             this.field_6753 = false;
             this.dolphin.getNavigation().stop();
-            World world = this.dolphin.world;
             BlockPos blockPos = new BlockPos(this.dolphin);
-            String string = (double)world.random.nextFloat() >= 0.5 ? "Ocean_Ruin" : "Shipwreck";
-            BlockPos blockPos2 = world.locateStructure(string, blockPos, 50, false);
+            String string = (double)serverWorld.random.nextFloat() >= 0.5 ? "Ocean_Ruin" : "Shipwreck";
+            BlockPos blockPos2 = serverWorld.locateStructure(string, blockPos, 50, false);
             if (blockPos2 == null) {
-                BlockPos blockPos3 = world.locateStructure(string.equals("Ocean_Ruin") ? "Shipwreck" : "Ocean_Ruin", blockPos, 50, false);
+                BlockPos blockPos3 = serverWorld.locateStructure(string.equals("Ocean_Ruin") ? "Shipwreck" : "Ocean_Ruin", blockPos, 50, false);
                 if (blockPos3 == null) {
                     this.field_6753 = true;
                     return;
@@ -414,7 +418,7 @@ extends WaterCreatureEntity {
             } else {
                 this.dolphin.setTreasurePos(blockPos2);
             }
-            world.sendEntityStatus(this.dolphin, (byte)38);
+            serverWorld.sendEntityStatus(this.dolphin, (byte)38);
         }
 
         @Override

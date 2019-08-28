@@ -135,6 +135,7 @@ import net.minecraft.world.chunk.ChunkStatus;
 import net.minecraft.world.chunk.WorldChunk;
 import net.minecraft.world.dimension.DimensionType;
 import net.minecraft.world.explosion.Explosion;
+import net.minecraft.world.gen.chunk.ChunkGenerator;
 import net.minecraft.world.gen.feature.BonusChestFeature;
 import net.minecraft.world.gen.feature.Feature;
 import net.minecraft.world.gen.feature.FeatureConfig;
@@ -183,6 +184,17 @@ extends World {
             this.getLevelProperties().setGameMode(minecraftServer.getDefaultGameMode());
         }
         this.wanderingTraderManager = this.dimension.getType() == DimensionType.OVERWORLD ? new WanderingTraderManager(this) : null;
+    }
+
+    @Override
+    public Biome getBiome(BlockPos blockPos) {
+        ServerChunkManager chunkManager = this.method_14178();
+        WorldChunk worldChunk = chunkManager.getWorldChunk(blockPos.getX() >> 4, blockPos.getZ() >> 4, false);
+        if (worldChunk != null) {
+            return worldChunk.getBiome(blockPos);
+        }
+        ChunkGenerator<?> chunkGenerator = this.method_14178().getChunkGenerator();
+        return chunkGenerator.getBiomeSource().getBiome(blockPos);
     }
 
     public void tick(BooleanSupplier booleanSupplier) {
@@ -558,14 +570,14 @@ extends World {
         Random random;
         List<Biome> list;
         if (!this.dimension.canPlayersSleep()) {
-            this.properties.setSpawnPos(BlockPos.ORIGIN.up(this.chunkManager.getChunkGenerator().getSpawnHeight()));
+            this.properties.setSpawnPos(BlockPos.ORIGIN.up(this.method_14178().getChunkGenerator().getSpawnHeight()));
             return;
         }
         if (this.properties.getGeneratorType() == LevelGeneratorType.DEBUG_ALL_BLOCK_STATES) {
             this.properties.setSpawnPos(BlockPos.ORIGIN.up());
             return;
         }
-        BiomeSource biomeSource = this.chunkManager.getChunkGenerator().getBiomeSource();
+        BiomeSource biomeSource = this.method_14178().getChunkGenerator().getBiomeSource();
         BlockPos blockPos = biomeSource.locateBiome(0, 0, 256, list = biomeSource.getSpawnBiomes(), random = new Random(this.getSeed()));
         ChunkPos chunkPos2 = chunkPos = blockPos == null ? new ChunkPos(0, 0) : new ChunkPos(blockPos);
         if (blockPos == null) {
@@ -577,7 +589,7 @@ extends World {
             bl = true;
             break;
         }
-        this.properties.setSpawnPos(chunkPos.getCenterBlockPos().add(8, this.chunkManager.getChunkGenerator().getSpawnHeight(), 8));
+        this.properties.setSpawnPos(chunkPos.getCenterBlockPos().add(8, this.method_14178().getChunkGenerator().getSpawnHeight(), 8));
         int i = 0;
         int j = 0;
         int k = 0;
@@ -608,7 +620,7 @@ extends World {
             int j = this.properties.getSpawnX() + this.random.nextInt(6) - this.random.nextInt(6);
             int k = this.properties.getSpawnZ() + this.random.nextInt(6) - this.random.nextInt(6);
             BlockPos blockPos = this.getTopPosition(Heightmap.Type.MOTION_BLOCKING_NO_LEAVES, new BlockPos(j, 0, k)).up();
-            if (bonusChestFeature.method_12817(this, this.chunkManager.getChunkGenerator(), this.random, blockPos, FeatureConfig.DEFAULT)) break;
+            if (bonusChestFeature.method_12817(this, this.method_14178().getChunkGenerator(), this.random, blockPos, FeatureConfig.DEFAULT)) break;
         }
     }
 
@@ -777,7 +789,7 @@ extends World {
             for (Entity entity : typeFilterableList) {
                 if (entity instanceof ServerPlayerEntity) continue;
                 if (this.ticking) {
-                    throw SystemUtil.method_22320(new IllegalStateException("Removing entity while ticking!"));
+                    throw SystemUtil.throwOrPause(new IllegalStateException("Removing entity while ticking!"));
                 }
                 this.entitiesById.remove(entity.getEntityId());
                 this.unloadEntity(entity);
@@ -823,7 +835,7 @@ extends World {
 
     public void removeEntity(Entity entity) {
         if (this.ticking) {
-            throw SystemUtil.method_22320(new IllegalStateException("Removing entity while ticking!"));
+            throw SystemUtil.throwOrPause(new IllegalStateException("Removing entity while ticking!"));
         }
         this.removeEntityFromChunk(entity);
         this.entitiesById.remove(entity.getEntityId());
@@ -1002,7 +1014,6 @@ extends World {
         return this.entitiesByUuid.get(uUID);
     }
 
-    @Override
     @Nullable
     public BlockPos locateStructure(String string, BlockPos blockPos, int i, boolean bl) {
         return this.method_14178().getChunkGenerator().locateStructure(this, string, blockPos, i, bl);

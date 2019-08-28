@@ -356,7 +356,7 @@ public class LevelProperties {
         }
         if (this.playerWorldId < SharedConstants.getGameVersion().getWorldVersion()) {
             if (this.dataFixer == null) {
-                throw SystemUtil.method_22320(new NullPointerException("Fixer Upper not set inside LevelData, and the player tag is not upgraded."));
+                throw SystemUtil.throwOrPause(new NullPointerException("Fixer Upper not set inside LevelData, and the player tag is not upgraded."));
             }
             this.playerData = TagHelper.update(this.dataFixer, DataFixTypes.PLAYER, this.playerData, this.playerWorldId);
         }

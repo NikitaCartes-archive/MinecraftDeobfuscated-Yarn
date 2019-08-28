@@ -19,12 +19,12 @@ extends DoubleOption {
     }
 
     @Override
-    public double method_18611(double d) {
+    public double getRatio(double d) {
         return Math.log(d / this.min) / Math.log(this.max / this.min);
     }
 
     @Override
-    public double method_18616(double d) {
+    public double getValue(double d) {
         return this.min * Math.pow(Math.E, Math.log(this.max / this.min) * d);
     }
 }

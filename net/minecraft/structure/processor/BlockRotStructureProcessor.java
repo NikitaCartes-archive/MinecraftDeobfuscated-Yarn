@@ -7,12 +7,12 @@ import com.google.common.collect.ImmutableMap;
 import com.mojang.datafixers.Dynamic;
 import com.mojang.datafixers.types.DynamicOps;
 import java.util.Random;
+import net.minecraft.class_4538;
 import net.minecraft.structure.Structure;
 import net.minecraft.structure.StructurePlacementData;
 import net.minecraft.structure.processor.StructureProcessor;
 import net.minecraft.structure.processor.StructureProcessorType;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.ViewableWorld;
 import org.jetbrains.annotations.Nullable;
 
 public class BlockRotStructureProcessor
@@ -29,7 +29,7 @@ extends StructureProcessor {
 
     @Override
     @Nullable
-    public Structure.StructureBlockInfo process(ViewableWorld viewableWorld, BlockPos blockPos, Structure.StructureBlockInfo structureBlockInfo, Structure.StructureBlockInfo structureBlockInfo2, StructurePlacementData structurePlacementData) {
+    public Structure.StructureBlockInfo process(class_4538 arg, BlockPos blockPos, Structure.StructureBlockInfo structureBlockInfo, Structure.StructureBlockInfo structureBlockInfo2, StructurePlacementData structurePlacementData) {
         Random random = structurePlacementData.getRandom(structureBlockInfo2.pos);
         if (this.integrity >= 1.0f || random.nextFloat() <= this.integrity) {
             return structureBlockInfo2;

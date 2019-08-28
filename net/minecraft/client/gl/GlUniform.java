@@ -3,11 +3,11 @@
  */
 package net.minecraft.client.gl;
 
+import com.mojang.blaze3d.platform.GlStateManager;
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_4493;
 import net.minecraft.client.gl.GlProgram;
 import net.minecraft.client.gl.Uniform;
 import net.minecraft.client.util.math.Matrix4f;
@@ -45,16 +45,16 @@ implements AutoCloseable {
         this.markStateDirty();
     }
 
-    public static int method_22096(int i, CharSequence charSequence) {
-        return class_4493.method_21990(i, charSequence);
+    public static int getUniformLocation(int i, CharSequence charSequence) {
+        return GlStateManager.getUniformLocation(i, charSequence);
     }
 
-    public static void method_22095(int i, int j) {
-        class_4493.method_22030(i, j);
+    public static void uniform1(int i, int j) {
+        GlStateManager.uniform1(i, j);
     }
 
-    public static int method_22097(int i, CharSequence charSequence) {
-        return class_4493.method_22006(i, charSequence);
+    public static int getAttribLocation(int i, CharSequence charSequence) {
+        return GlStateManager.getAttribLocation(i, charSequence);
     }
 
     @Override
@@ -211,19 +211,19 @@ implements AutoCloseable {
         this.floatData.clear();
         switch (this.dataType) {
             case 0: {
-                class_4493.method_21964(this.loc, this.intData);
+                GlStateManager.uniform1(this.loc, this.intData);
                 break;
             }
             case 1: {
-                class_4493.method_21992(this.loc, this.intData);
+                GlStateManager.uniform2(this.loc, this.intData);
                 break;
             }
             case 2: {
-                class_4493.method_22008(this.loc, this.intData);
+                GlStateManager.uniform3(this.loc, this.intData);
                 break;
             }
             case 3: {
-                class_4493.method_22020(this.loc, this.intData);
+                GlStateManager.uniform4(this.loc, this.intData);
                 break;
             }
             default: {
@@ -236,19 +236,19 @@ implements AutoCloseable {
         this.floatData.clear();
         switch (this.dataType) {
             case 4: {
-                class_4493.method_21991(this.loc, this.floatData);
+                GlStateManager.uniform1(this.loc, this.floatData);
                 break;
             }
             case 5: {
-                class_4493.method_22007(this.loc, this.floatData);
+                GlStateManager.uniform2(this.loc, this.floatData);
                 break;
             }
             case 6: {
-                class_4493.method_22019(this.loc, this.floatData);
+                GlStateManager.uniform3(this.loc, this.floatData);
                 break;
             }
             case 7: {
-                class_4493.method_22026(this.loc, this.floatData);
+                GlStateManager.uniform4(this.loc, this.floatData);
                 break;
             }
             default: {
@@ -261,15 +261,15 @@ implements AutoCloseable {
         this.floatData.clear();
         switch (this.dataType) {
             case 8: {
-                class_4493.method_21966(this.loc, false, this.floatData);
+                GlStateManager.uniformMatrix2(this.loc, false, this.floatData);
                 break;
             }
             case 9: {
-                class_4493.method_21993(this.loc, false, this.floatData);
+                GlStateManager.uniformMatrix3(this.loc, false, this.floatData);
                 break;
             }
             case 10: {
-                class_4493.method_22009(this.loc, false, this.floatData);
+                GlStateManager.uniformMatrix4(this.loc, false, this.floatData);
             }
         }
     }

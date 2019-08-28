@@ -208,7 +208,7 @@ implements Monster {
                 Direction direction;
                 if (blockState.getBlock() == Blocks.MOVING_PISTON) {
                     direction = blockState.get(PistonBlock.FACING);
-                    if (this.world.isAir(blockPos.offset(direction))) {
+                    if (this.world.method_22347(blockPos.offset(direction))) {
                         blockPos = blockPos.offset(direction);
                         this.dataTracker.set(ATTACHED_BLOCK, Optional.of(blockPos));
                     } else {
@@ -216,7 +216,7 @@ implements Monster {
                     }
                 } else if (blockState.getBlock() == Blocks.PISTON_HEAD) {
                     direction = blockState.get(PistonHeadBlock.FACING);
-                    if (this.world.isAir(blockPos.offset(direction))) {
+                    if (this.world.method_22347(blockPos.offset(direction))) {
                         blockPos = blockPos.offset(direction);
                         this.dataTracker.set(ATTACHED_BLOCK, Optional.of(blockPos));
                     } else {
@@ -313,7 +313,7 @@ implements Monster {
         BlockPos blockPos = new BlockPos(this);
         for (int i = 0; i < 5; ++i) {
             BlockPos blockPos2 = blockPos.add(8 - this.random.nextInt(17), 8 - this.random.nextInt(17), 8 - this.random.nextInt(17));
-            if (blockPos2.getY() <= 0 || !this.world.isAir(blockPos2) || !this.world.getWorldBorder().contains(blockPos2) || !this.world.doesNotCollide(this, new Box(blockPos2))) continue;
+            if (blockPos2.getY() <= 0 || !this.world.method_22347(blockPos2) || !this.world.getWorldBorder().contains(blockPos2) || !this.world.doesNotCollide(this, new Box(blockPos2))) continue;
             boolean bl = false;
             for (Direction direction : Direction.values()) {
                 if (!this.world.doesBlockHaveSolidTopSurface(blockPos2.offset(direction), this)) continue;

@@ -1,8 +1,9 @@
 /*
  * Decompiled with CFR 0.2.0 (FabricMC d28b102d).
  */
-package net.minecraft;
+package com.mojang.blaze3d.platform;
 
+import com.mojang.blaze3d.platform.FramebufferInfo;
 import com.mojang.blaze3d.platform.GLX;
 import com.mojang.blaze3d.systems.RenderSystem;
 import java.nio.ByteBuffer;
@@ -11,7 +12,6 @@ import java.nio.IntBuffer;
 import java.util.stream.IntStream;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_4492;
 import net.minecraft.client.render.GuiLighting;
 import net.minecraft.client.util.Untracker;
 import net.minecraft.client.util.math.Matrix4f;
@@ -29,161 +29,161 @@ import org.lwjgl.opengl.GLCapabilities;
 import org.lwjgl.system.MemoryUtil;
 
 @Environment(value=EnvType.CLIENT)
-public class class_4493 {
-    private static final FloatBuffer field_20466 = GLX.make(MemoryUtil.memAllocFloat(16), floatBuffer -> Untracker.untrack(MemoryUtil.memAddress(floatBuffer)));
-    private static final FloatBuffer field_20467 = GLX.make(MemoryUtil.memAllocFloat(4), floatBuffer -> Untracker.untrack(MemoryUtil.memAddress(floatBuffer)));
-    private static final AlphaTestState field_20468 = new AlphaTestState();
-    private static final CapabilityTracker field_20469 = new CapabilityTracker(2896);
-    private static final CapabilityTracker[] field_20470 = (CapabilityTracker[])IntStream.range(0, 8).mapToObj(i -> new CapabilityTracker(16384 + i)).toArray(CapabilityTracker[]::new);
-    private static final ColorMaterialState field_20471 = new ColorMaterialState();
-    private static final BlendFuncState field_20472 = new BlendFuncState();
-    private static final DepthTestState field_20473 = new DepthTestState();
-    private static final FogState field_20474 = new FogState();
-    private static final CullFaceState field_20475 = new CullFaceState();
-    private static final PolygonOffsetState field_20476 = new PolygonOffsetState();
-    private static final LogicOpState field_20477 = new LogicOpState();
-    private static final TexGenState field_20478 = new TexGenState();
-    private static final ClearState field_20479 = new ClearState();
-    private static final StencilState field_20480 = new StencilState();
-    private static final CapabilityTracker field_20481 = new CapabilityTracker(2977);
-    private static int field_20482;
-    private static final Texture2DState[] field_20483;
-    private static int field_20484;
-    private static final CapabilityTracker field_20485;
-    private static final ColorMask field_20486;
-    private static final Color4 field_20487;
-    private static FBOMode field_20488;
+public class GlStateManager {
+    private static final FloatBuffer MATRIX_BUFFER = GLX.make(MemoryUtil.memAllocFloat(16), floatBuffer -> Untracker.untrack(MemoryUtil.memAddress(floatBuffer)));
+    private static final FloatBuffer COLOR_BUFFER = GLX.make(MemoryUtil.memAllocFloat(4), floatBuffer -> Untracker.untrack(MemoryUtil.memAddress(floatBuffer)));
+    private static final AlphaTestState ALPHA_TEST = new AlphaTestState();
+    private static final CapabilityTracker LIGHTING = new CapabilityTracker(2896);
+    private static final CapabilityTracker[] LIGHT_ENABLE = (CapabilityTracker[])IntStream.range(0, 8).mapToObj(i -> new CapabilityTracker(16384 + i)).toArray(CapabilityTracker[]::new);
+    private static final ColorMaterialState COLOR_MATERIAL = new ColorMaterialState();
+    private static final BlendFuncState BLEND = new BlendFuncState();
+    private static final DepthTestState DEPTH = new DepthTestState();
+    private static final FogState FOG = new FogState();
+    private static final CullFaceState CULL = new CullFaceState();
+    private static final PolygonOffsetState POLY_OFFSET = new PolygonOffsetState();
+    private static final LogicOpState COLOR_LOGIC = new LogicOpState();
+    private static final TexGenState TEX_GEN = new TexGenState();
+    private static final ClearState CLEAR = new ClearState();
+    private static final StencilState STENCIL = new StencilState();
+    private static final CapabilityTracker NORMALIZE = new CapabilityTracker(2977);
+    private static int activeTexture;
+    private static final Texture2DState[] TEXTURES;
+    private static int shadeModel;
+    private static final CapabilityTracker RESCALE_NORMAL;
+    private static final ColorMask COLOR_MASK;
+    private static final Color4 COLOR;
+    private static FBOMode fboMode;
 
-    public static void method_21935() {
+    public static void pushLightingAttributes() {
         GL11.glPushAttrib(8256);
     }
 
-    public static void method_21976() {
+    public static void pushTextureAttributes() {
         GL11.glPushAttrib(270336);
     }
 
-    public static void method_21997() {
+    public static void popAttributes() {
         GL11.glPopAttrib();
     }
 
-    public static void method_22012() {
-        class_4493.field_20468.capState.disable();
+    public static void disableAlphaTest() {
+        GlStateManager.ALPHA_TEST.capState.disable();
     }
 
-    public static void method_22021() {
-        class_4493.field_20468.capState.enable();
+    public static void enableAlphaTest() {
+        GlStateManager.ALPHA_TEST.capState.enable();
     }
 
-    public static void method_21945(int i, float f) {
-        if (i != class_4493.field_20468.func || f != class_4493.field_20468.ref) {
-            class_4493.field_20468.func = i;
-            class_4493.field_20468.ref = f;
+    public static void alphaFunc(int i, float f) {
+        if (i != GlStateManager.ALPHA_TEST.func || f != GlStateManager.ALPHA_TEST.ref) {
+            GlStateManager.ALPHA_TEST.func = i;
+            GlStateManager.ALPHA_TEST.ref = f;
             GL11.glAlphaFunc(i, f);
         }
     }
 
-    public static void method_22028() {
-        field_20469.enable();
+    public static void enableLighting() {
+        LIGHTING.enable();
     }
 
-    public static void method_22034() {
-        field_20469.disable();
+    public static void disableLighting() {
+        LIGHTING.disable();
     }
 
-    public static void method_21944(int i) {
-        field_20470[i].enable();
+    public static void enableLight(int i) {
+        LIGHT_ENABLE[i].enable();
     }
 
-    public static void method_21982(int i) {
-        field_20470[i].disable();
+    public static void disableLight(int i) {
+        LIGHT_ENABLE[i].disable();
     }
 
-    public static void method_22040() {
-        class_4493.field_20471.capState.enable();
+    public static void enableColorMaterial() {
+        GlStateManager.COLOR_MATERIAL.capState.enable();
     }
 
-    public static void method_22044() {
-        class_4493.field_20471.capState.disable();
+    public static void disableColorMaterial() {
+        GlStateManager.COLOR_MATERIAL.capState.disable();
     }
 
-    public static void method_21947(int i, int j) {
-        if (i != class_4493.field_20471.face || j != class_4493.field_20471.mode) {
-            class_4493.field_20471.face = i;
-            class_4493.field_20471.mode = j;
+    public static void colorMaterial(int i, int j) {
+        if (i != GlStateManager.COLOR_MATERIAL.face || j != GlStateManager.COLOR_MATERIAL.mode) {
+            GlStateManager.COLOR_MATERIAL.face = i;
+            GlStateManager.COLOR_MATERIAL.mode = j;
             GL11.glColorMaterial(i, j);
         }
     }
 
-    public static void method_21960(int i, int j, FloatBuffer floatBuffer) {
+    public static void light(int i, int j, FloatBuffer floatBuffer) {
         GL11.glLightfv(i, j, floatBuffer);
     }
 
-    public static void method_21963(int i, FloatBuffer floatBuffer) {
+    public static void lightModel(int i, FloatBuffer floatBuffer) {
         GL11.glLightModelfv(i, floatBuffer);
     }
 
-    public static void method_21942(float f, float g, float h) {
+    public static void normal3f(float f, float g, float h) {
         GL11.glNormal3f(f, g, h);
     }
 
-    public static void method_22047() {
-        class_4493.field_20473.capState.disable();
+    public static void disableDepthTest() {
+        GlStateManager.DEPTH.capState.disable();
     }
 
-    public static void method_22050() {
-        class_4493.field_20473.capState.enable();
+    public static void enableDepthTest() {
+        GlStateManager.DEPTH.capState.enable();
     }
 
-    public static void method_22001(int i) {
-        if (i != class_4493.field_20473.func) {
-            class_4493.field_20473.func = i;
+    public static void depthFunc(int i) {
+        if (i != GlStateManager.DEPTH.func) {
+            GlStateManager.DEPTH.func = i;
             GL11.glDepthFunc(i);
         }
     }
 
-    public static void method_21974(boolean bl) {
-        if (bl != class_4493.field_20473.mask) {
-            class_4493.field_20473.mask = bl;
+    public static void depthMask(boolean bl) {
+        if (bl != GlStateManager.DEPTH.mask) {
+            GlStateManager.DEPTH.mask = bl;
             GL11.glDepthMask(bl);
         }
     }
 
-    public static void method_22053() {
-        class_4493.field_20472.capState.disable();
+    public static void disableBlend() {
+        GlStateManager.BLEND.capState.disable();
     }
 
-    public static void method_22056() {
-        class_4493.field_20472.capState.enable();
+    public static void enableBlend() {
+        GlStateManager.BLEND.capState.enable();
     }
 
-    public static void method_21984(int i, int j) {
-        if (i != class_4493.field_20472.sfactor || j != class_4493.field_20472.dfactor) {
-            class_4493.field_20472.sfactor = i;
-            class_4493.field_20472.dfactor = j;
+    public static void blendFunc(int i, int j) {
+        if (i != GlStateManager.BLEND.sfactor || j != GlStateManager.BLEND.dfactor) {
+            GlStateManager.BLEND.sfactor = i;
+            GlStateManager.BLEND.dfactor = j;
             GL11.glBlendFunc(i, j);
         }
     }
 
-    public static void method_21950(int i, int j, int k, int l) {
-        if (i != class_4493.field_20472.sfactor || j != class_4493.field_20472.dfactor || k != class_4493.field_20472.srcAlpha || l != class_4493.field_20472.dstAlpha) {
-            class_4493.field_20472.sfactor = i;
-            class_4493.field_20472.dfactor = j;
-            class_4493.field_20472.srcAlpha = k;
-            class_4493.field_20472.dstAlpha = l;
-            class_4493.method_22018(i, j, k, l);
+    public static void blendFuncSeparate(int i, int j, int k, int l) {
+        if (i != GlStateManager.BLEND.sfactor || j != GlStateManager.BLEND.dfactor || k != GlStateManager.BLEND.srcAlpha || l != GlStateManager.BLEND.dstAlpha) {
+            GlStateManager.BLEND.sfactor = i;
+            GlStateManager.BLEND.dfactor = j;
+            GlStateManager.BLEND.srcAlpha = k;
+            GlStateManager.BLEND.dstAlpha = l;
+            GlStateManager.blendFuncseparate(i, j, k, l);
         }
     }
 
-    public static void method_22015(int i) {
+    public static void blendEquation(int i) {
         GL14.glBlendEquation(i);
     }
 
-    public static void method_22022(int i) {
-        field_20467.put(0, (float)(i >> 16 & 0xFF) / 255.0f);
-        field_20467.put(1, (float)(i >> 8 & 0xFF) / 255.0f);
-        field_20467.put(2, (float)(i >> 0 & 0xFF) / 255.0f);
-        field_20467.put(3, (float)(i >> 24 & 0xFF) / 255.0f);
-        RenderSystem.texEnv(8960, 8705, field_20467);
+    public static void setupSolidRenderingTextureCombine(int i) {
+        COLOR_BUFFER.put(0, (float)(i >> 16 & 0xFF) / 255.0f);
+        COLOR_BUFFER.put(1, (float)(i >> 8 & 0xFF) / 255.0f);
+        COLOR_BUFFER.put(2, (float)(i >> 0 & 0xFF) / 255.0f);
+        COLOR_BUFFER.put(3, (float)(i >> 24 & 0xFF) / 255.0f);
+        RenderSystem.texEnv(8960, 8705, COLOR_BUFFER);
         RenderSystem.texEnv(8960, 8704, 34160);
         RenderSystem.texEnv(8960, 34161, 7681);
         RenderSystem.texEnv(8960, 34176, 34166);
@@ -193,7 +193,7 @@ public class class_4493 {
         RenderSystem.texEnv(8960, 34200, 770);
     }
 
-    public static void method_22059() {
+    public static void tearDownSolidRenderingTextureCombine() {
         RenderSystem.texEnv(8960, 8704, 8448);
         RenderSystem.texEnv(8960, 34161, 8448);
         RenderSystem.texEnv(8960, 34162, 8448);
@@ -203,167 +203,167 @@ public class class_4493 {
         RenderSystem.texEnv(8960, 34200, 770);
     }
 
-    public static String method_21973(GLCapabilities gLCapabilities) {
+    public static String initFramebufferSupport(GLCapabilities gLCapabilities) {
         if (gLCapabilities.OpenGL30) {
-            field_20488 = FBOMode.BASE;
-            class_4492.field_20457 = 36160;
-            class_4492.field_20458 = 36161;
-            class_4492.field_20459 = 36064;
-            class_4492.field_20460 = 36096;
-            class_4492.field_20461 = 36053;
-            class_4492.field_20462 = 36054;
-            class_4492.field_20463 = 36055;
-            class_4492.field_20464 = 36059;
-            class_4492.field_20465 = 36060;
+            fboMode = FBOMode.BASE;
+            FramebufferInfo.field_20457 = 36160;
+            FramebufferInfo.field_20458 = 36161;
+            FramebufferInfo.field_20459 = 36064;
+            FramebufferInfo.field_20460 = 36096;
+            FramebufferInfo.field_20461 = 36053;
+            FramebufferInfo.field_20462 = 36054;
+            FramebufferInfo.field_20463 = 36055;
+            FramebufferInfo.field_20464 = 36059;
+            FramebufferInfo.field_20465 = 36060;
             return "OpenGL 3.0";
         }
         if (gLCapabilities.GL_ARB_framebuffer_object) {
-            field_20488 = FBOMode.ARB;
-            class_4492.field_20457 = 36160;
-            class_4492.field_20458 = 36161;
-            class_4492.field_20459 = 36064;
-            class_4492.field_20460 = 36096;
-            class_4492.field_20461 = 36053;
-            class_4492.field_20463 = 36055;
-            class_4492.field_20462 = 36054;
-            class_4492.field_20464 = 36059;
-            class_4492.field_20465 = 36060;
+            fboMode = FBOMode.ARB;
+            FramebufferInfo.field_20457 = 36160;
+            FramebufferInfo.field_20458 = 36161;
+            FramebufferInfo.field_20459 = 36064;
+            FramebufferInfo.field_20460 = 36096;
+            FramebufferInfo.field_20461 = 36053;
+            FramebufferInfo.field_20463 = 36055;
+            FramebufferInfo.field_20462 = 36054;
+            FramebufferInfo.field_20464 = 36059;
+            FramebufferInfo.field_20465 = 36060;
             return "ARB_framebuffer_object extension";
         }
         if (gLCapabilities.GL_EXT_framebuffer_object) {
-            field_20488 = FBOMode.EXT;
-            class_4492.field_20457 = 36160;
-            class_4492.field_20458 = 36161;
-            class_4492.field_20459 = 36064;
-            class_4492.field_20460 = 36096;
-            class_4492.field_20461 = 36053;
-            class_4492.field_20463 = 36055;
-            class_4492.field_20462 = 36054;
-            class_4492.field_20464 = 36059;
-            class_4492.field_20465 = 36060;
+            fboMode = FBOMode.EXT;
+            FramebufferInfo.field_20457 = 36160;
+            FramebufferInfo.field_20458 = 36161;
+            FramebufferInfo.field_20459 = 36064;
+            FramebufferInfo.field_20460 = 36096;
+            FramebufferInfo.field_20461 = 36053;
+            FramebufferInfo.field_20463 = 36055;
+            FramebufferInfo.field_20462 = 36054;
+            FramebufferInfo.field_20464 = 36059;
+            FramebufferInfo.field_20465 = 36060;
             return "EXT_framebuffer_object extension";
         }
         throw new IllegalStateException("Could not initialize framebuffer support.");
     }
 
-    public static int method_22002(int i, int j) {
+    public static int getProgram(int i, int j) {
         return GL20.glGetProgrami(i, j);
     }
 
-    public static void method_22016(int i, int j) {
+    public static void attachShader(int i, int j) {
         GL20.glAttachShader(i, j);
     }
 
-    public static void method_22029(int i) {
+    public static void deleteShader(int i) {
         GL20.glDeleteShader(i);
     }
 
-    public static int method_22035(int i) {
+    public static int createShader(int i) {
         return GL20.glCreateShader(i);
     }
 
-    public static void method_21961(int i, CharSequence charSequence) {
+    public static void shaderSource(int i, CharSequence charSequence) {
         GL20.glShaderSource(i, charSequence);
     }
 
-    public static void method_22041(int i) {
+    public static void compileShader(int i) {
         GL20.glCompileShader(i);
     }
 
-    public static int method_22023(int i, int j) {
+    public static int getShader(int i, int j) {
         return GL20.glGetShaderi(i, j);
     }
 
-    public static void method_22045(int i) {
+    public static void useProgram(int i) {
         GL20.glUseProgram(i);
     }
 
-    public static int method_22062() {
+    public static int createProgram() {
         return GL20.glCreateProgram();
     }
 
-    public static void method_22048(int i) {
+    public static void deleteProgram(int i) {
         GL20.glDeleteProgram(i);
     }
 
-    public static void method_22051(int i) {
+    public static void linkProgram(int i) {
         GL20.glLinkProgram(i);
     }
 
-    public static int method_21990(int i, CharSequence charSequence) {
+    public static int getUniformLocation(int i, CharSequence charSequence) {
         return GL20.glGetUniformLocation(i, charSequence);
     }
 
-    public static void method_21964(int i, IntBuffer intBuffer) {
+    public static void uniform1(int i, IntBuffer intBuffer) {
         GL20.glUniform1iv(i, intBuffer);
     }
 
-    public static void method_22030(int i, int j) {
+    public static void uniform1(int i, int j) {
         GL20.glUniform1i(i, j);
     }
 
-    public static void method_21991(int i, FloatBuffer floatBuffer) {
+    public static void uniform1(int i, FloatBuffer floatBuffer) {
         GL20.glUniform1fv(i, floatBuffer);
     }
 
-    public static void method_21992(int i, IntBuffer intBuffer) {
+    public static void uniform2(int i, IntBuffer intBuffer) {
         GL20.glUniform2iv(i, intBuffer);
     }
 
-    public static void method_22007(int i, FloatBuffer floatBuffer) {
+    public static void uniform2(int i, FloatBuffer floatBuffer) {
         GL20.glUniform2fv(i, floatBuffer);
     }
 
-    public static void method_22008(int i, IntBuffer intBuffer) {
+    public static void uniform3(int i, IntBuffer intBuffer) {
         GL20.glUniform3iv(i, intBuffer);
     }
 
-    public static void method_22019(int i, FloatBuffer floatBuffer) {
+    public static void uniform3(int i, FloatBuffer floatBuffer) {
         GL20.glUniform3fv(i, floatBuffer);
     }
 
-    public static void method_22020(int i, IntBuffer intBuffer) {
+    public static void uniform4(int i, IntBuffer intBuffer) {
         GL20.glUniform4iv(i, intBuffer);
     }
 
-    public static void method_22026(int i, FloatBuffer floatBuffer) {
+    public static void uniform4(int i, FloatBuffer floatBuffer) {
         GL20.glUniform4fv(i, floatBuffer);
     }
 
-    public static void method_21966(int i, boolean bl, FloatBuffer floatBuffer) {
+    public static void uniformMatrix2(int i, boolean bl, FloatBuffer floatBuffer) {
         GL20.glUniformMatrix2fv(i, bl, floatBuffer);
     }
 
-    public static void method_21993(int i, boolean bl, FloatBuffer floatBuffer) {
+    public static void uniformMatrix3(int i, boolean bl, FloatBuffer floatBuffer) {
         GL20.glUniformMatrix3fv(i, bl, floatBuffer);
     }
 
-    public static void method_22009(int i, boolean bl, FloatBuffer floatBuffer) {
+    public static void uniformMatrix4(int i, boolean bl, FloatBuffer floatBuffer) {
         GL20.glUniformMatrix4fv(i, bl, floatBuffer);
     }
 
-    public static int method_22006(int i, CharSequence charSequence) {
+    public static int getAttribLocation(int i, CharSequence charSequence) {
         return GL20.glGetAttribLocation(i, charSequence);
     }
 
-    public static int method_22065() {
+    public static int genBuffers() {
         return GL15.glGenBuffers();
     }
 
-    public static void method_22036(int i, int j) {
+    public static void bindBuffers(int i, int j) {
         GL15.glBindBuffer(i, j);
     }
 
-    public static void method_21962(int i, ByteBuffer byteBuffer, int j) {
+    public static void bufferData(int i, ByteBuffer byteBuffer, int j) {
         GL15.glBufferData(i, byteBuffer, j);
     }
 
-    public static void method_22054(int i) {
+    public static void deleteBuffers(int i) {
         GL15.glDeleteBuffers(i);
     }
 
-    public static void method_22042(int i, int j) {
-        switch (field_20488) {
+    public static void bindFramebuffer(int i, int j) {
+        switch (fboMode) {
             case BASE: {
                 GL30.glBindFramebuffer(i, j);
                 break;
@@ -378,8 +378,8 @@ public class class_4493 {
         }
     }
 
-    public static void method_22046(int i, int j) {
-        switch (field_20488) {
+    public static void bindRenderbuffer(int i, int j) {
+        switch (fboMode) {
             case BASE: {
                 GL30.glBindRenderbuffer(i, j);
                 break;
@@ -394,8 +394,8 @@ public class class_4493 {
         }
     }
 
-    public static void method_22057(int i) {
-        switch (field_20488) {
+    public static void deleteRenderbuffers(int i) {
+        switch (fboMode) {
             case BASE: {
                 GL30.glDeleteRenderbuffers(i);
                 break;
@@ -410,8 +410,8 @@ public class class_4493 {
         }
     }
 
-    public static void method_22060(int i) {
-        switch (field_20488) {
+    public static void deleteFramebuffers(int i) {
+        switch (fboMode) {
             case BASE: {
                 GL30.glDeleteFramebuffers(i);
                 break;
@@ -426,8 +426,8 @@ public class class_4493 {
         }
     }
 
-    public static int method_22068() {
-        switch (field_20488) {
+    public static int genFramebuffers() {
+        switch (fboMode) {
             case BASE: {
                 return GL30.glGenFramebuffers();
             }
@@ -441,8 +441,8 @@ public class class_4493 {
         return -1;
     }
 
-    public static int method_22070() {
-        switch (field_20488) {
+    public static int genRenderbuffers() {
+        switch (fboMode) {
             case BASE: {
                 return GL30.glGenRenderbuffers();
             }
@@ -456,8 +456,8 @@ public class class_4493 {
         return -1;
     }
 
-    public static void method_21987(int i, int j, int k, int l) {
-        switch (field_20488) {
+    public static void renderbufferStorage(int i, int j, int k, int l) {
+        switch (fboMode) {
             case BASE: {
                 GL30.glRenderbufferStorage(i, j, k, l);
                 break;
@@ -472,8 +472,8 @@ public class class_4493 {
         }
     }
 
-    public static void method_22004(int i, int j, int k, int l) {
-        switch (field_20488) {
+    public static void framebufferRenderbuffer(int i, int j, int k, int l) {
+        switch (fboMode) {
             case BASE: {
                 GL30.glFramebufferRenderbuffer(i, j, k, l);
                 break;
@@ -488,8 +488,8 @@ public class class_4493 {
         }
     }
 
-    public static int method_22063(int i) {
-        switch (field_20488) {
+    public static int checkFramebufferStatus(int i) {
+        switch (fboMode) {
             case BASE: {
                 return GL30.glCheckFramebufferStatus(i);
             }
@@ -503,8 +503,8 @@ public class class_4493 {
         return -1;
     }
 
-    public static void method_21951(int i, int j, int k, int l, int m) {
-        switch (field_20488) {
+    public static void framebufferTexture2D(int i, int j, int k, int l, int m) {
+        switch (fboMode) {
             case BASE: {
                 GL30.glFramebufferTexture2D(i, j, k, l, m);
                 break;
@@ -523,264 +523,264 @@ public class class_4493 {
         GL13.glActiveTexture(i);
     }
 
-    public static void method_22069(int i) {
+    public static void clientActiveTexture(int i) {
         GL13.glClientActiveTexture(i);
     }
 
-    public static void method_21946(int i, float f, float g) {
+    public static void multiTexCoords2f(int i, float f, float g) {
         GL13.glMultiTexCoord2f(i, f, g);
     }
 
-    public static void method_22018(int i, int j, int k, int l) {
+    public static void blendFuncseparate(int i, int j, int k, int l) {
         GL14.glBlendFuncSeparate(i, j, k, l);
     }
 
-    public static String method_22049(int i, int j) {
+    public static String getShaderInfoLog(int i, int j) {
         return GL20.glGetShaderInfoLog(i, j);
     }
 
-    public static String method_22052(int i, int j) {
+    public static String getProgramInfoLog(int i, int j) {
         return GL20.glGetProgramInfoLog(i, j);
     }
 
-    public static void method_22072() {
-        class_4493.field_20474.capState.enable();
+    public static void enableFog() {
+        GlStateManager.FOG.capState.enable();
     }
 
-    public static void method_22074() {
-        class_4493.field_20474.capState.disable();
+    public static void disableFog() {
+        GlStateManager.FOG.capState.disable();
     }
 
-    public static void method_22071(int i) {
-        if (i != class_4493.field_20474.mode) {
-            class_4493.field_20474.mode = i;
-            class_4493.method_22055(2917, i);
+    public static void fogMode(int i) {
+        if (i != GlStateManager.FOG.mode) {
+            GlStateManager.FOG.mode = i;
+            GlStateManager.fogi(2917, i);
         }
     }
 
-    public static void method_21940(float f) {
-        if (f != class_4493.field_20474.density) {
-            class_4493.field_20474.density = f;
+    public static void fogDensity(float f) {
+        if (f != GlStateManager.FOG.density) {
+            GlStateManager.FOG.density = f;
             GL11.glFogf(2914, f);
         }
     }
 
-    public static void method_21978(float f) {
-        if (f != class_4493.field_20474.start) {
-            class_4493.field_20474.start = f;
+    public static void fogStart(float f) {
+        if (f != GlStateManager.FOG.start) {
+            GlStateManager.FOG.start = f;
             GL11.glFogf(2915, f);
         }
     }
 
-    public static void method_21998(float f) {
-        if (f != class_4493.field_20474.end) {
-            class_4493.field_20474.end = f;
+    public static void fogEnd(float f) {
+        if (f != GlStateManager.FOG.end) {
+            GlStateManager.FOG.end = f;
             GL11.glFogf(2916, f);
         }
     }
 
-    public static void method_22033(int i, FloatBuffer floatBuffer) {
+    public static void fog(int i, FloatBuffer floatBuffer) {
         GL11.glFogfv(i, floatBuffer);
     }
 
-    public static void method_22055(int i, int j) {
+    public static void fogi(int i, int j) {
         GL11.glFogi(i, j);
     }
 
-    public static void method_22076() {
-        class_4493.field_20475.capState.enable();
+    public static void enableCull() {
+        GlStateManager.CULL.capState.enable();
     }
 
-    public static void method_22078() {
-        class_4493.field_20475.capState.disable();
+    public static void disableCull() {
+        GlStateManager.CULL.capState.disable();
     }
 
-    public static void method_22073(int i) {
-        if (i != class_4493.field_20475.mode) {
-            class_4493.field_20475.mode = i;
+    public static void cullFace(int i) {
+        if (i != GlStateManager.CULL.mode) {
+            GlStateManager.CULL.mode = i;
             GL11.glCullFace(i);
         }
     }
 
-    public static void method_22058(int i, int j) {
+    public static void polygonMode(int i, int j) {
         GL11.glPolygonMode(i, j);
     }
 
-    public static void method_22080() {
-        class_4493.field_20476.capFill.enable();
+    public static void enablePolygonOffset() {
+        GlStateManager.POLY_OFFSET.capFill.enable();
     }
 
-    public static void method_22082() {
-        class_4493.field_20476.capFill.disable();
+    public static void disablePolygonOffset() {
+        GlStateManager.POLY_OFFSET.capFill.disable();
     }
 
-    public static void method_22084() {
-        class_4493.field_20476.capLine.enable();
+    public static void enableLineOffset() {
+        GlStateManager.POLY_OFFSET.capLine.enable();
     }
 
-    public static void method_22086() {
-        class_4493.field_20476.capLine.disable();
+    public static void disableLineOffset() {
+        GlStateManager.POLY_OFFSET.capLine.disable();
     }
 
-    public static void method_21941(float f, float g) {
-        if (f != class_4493.field_20476.factor || g != class_4493.field_20476.units) {
-            class_4493.field_20476.factor = f;
-            class_4493.field_20476.units = g;
+    public static void polygonOffset(float f, float g) {
+        if (f != GlStateManager.POLY_OFFSET.factor || g != GlStateManager.POLY_OFFSET.units) {
+            GlStateManager.POLY_OFFSET.factor = f;
+            GlStateManager.POLY_OFFSET.units = g;
             GL11.glPolygonOffset(f, g);
         }
     }
 
-    public static void method_21906() {
-        class_4493.field_20477.capState.enable();
+    public static void enableColorLogicOp() {
+        GlStateManager.COLOR_LOGIC.capState.enable();
     }
 
-    public static void method_21908() {
-        class_4493.field_20477.capState.disable();
+    public static void disableColorLogicOp() {
+        GlStateManager.COLOR_LOGIC.capState.disable();
     }
 
-    public static void method_22075(int i) {
-        if (i != class_4493.field_20477.opcode) {
-            class_4493.field_20477.opcode = i;
+    public static void logicOp(int i) {
+        if (i != GlStateManager.COLOR_LOGIC.opcode) {
+            GlStateManager.COLOR_LOGIC.opcode = i;
             GL11.glLogicOp(i);
         }
     }
 
-    public static void method_21968(TexCoord texCoord) {
-        class_4493.method_22010((TexCoord)texCoord).capState.enable();
+    public static void enableTexGen(TexCoord texCoord) {
+        GlStateManager.getGenCoordState((TexCoord)texCoord).capState.enable();
     }
 
-    public static void method_21995(TexCoord texCoord) {
-        class_4493.method_22010((TexCoord)texCoord).capState.disable();
+    public static void disableTexGen(TexCoord texCoord) {
+        GlStateManager.getGenCoordState((TexCoord)texCoord).capState.disable();
     }
 
-    public static void method_21969(TexCoord texCoord, int i) {
-        TexGenCoordState texGenCoordState = class_4493.method_22010(texCoord);
+    public static void texGenMode(TexCoord texCoord, int i) {
+        TexGenCoordState texGenCoordState = GlStateManager.getGenCoordState(texCoord);
         if (i != texGenCoordState.mode) {
             texGenCoordState.mode = i;
             GL11.glTexGeni(texGenCoordState.coord, 9472, i);
         }
     }
 
-    public static void method_21970(TexCoord texCoord, int i, FloatBuffer floatBuffer) {
-        GL11.glTexGenfv(class_4493.method_22010((TexCoord)texCoord).coord, i, floatBuffer);
+    public static void texGenParam(TexCoord texCoord, int i, FloatBuffer floatBuffer) {
+        GL11.glTexGenfv(GlStateManager.getGenCoordState((TexCoord)texCoord).coord, i, floatBuffer);
     }
 
-    private static TexGenCoordState method_22010(TexCoord texCoord) {
+    private static TexGenCoordState getGenCoordState(TexCoord texCoord) {
         switch (texCoord) {
             case S: {
-                return class_4493.field_20478.s;
+                return GlStateManager.TEX_GEN.s;
             }
             case T: {
-                return class_4493.field_20478.t;
+                return GlStateManager.TEX_GEN.t;
             }
             case R: {
-                return class_4493.field_20478.r;
+                return GlStateManager.TEX_GEN.r;
             }
             case Q: {
-                return class_4493.field_20478.q;
+                return GlStateManager.TEX_GEN.q;
             }
         }
-        return class_4493.field_20478.s;
+        return GlStateManager.TEX_GEN.s;
     }
 
-    public static void method_22077(int i) {
-        if (field_20482 != i - 33984) {
-            field_20482 = i - 33984;
-            class_4493.method_22066(i);
+    public static void activeTexture(int i) {
+        if (activeTexture != i - 33984) {
+            activeTexture = i - 33984;
+            GlStateManager.method_22066(i);
         }
     }
 
-    public static void method_21910() {
-        class_4493.field_20483[class_4493.field_20482].capState.enable();
+    public static void enableTexture() {
+        GlStateManager.TEXTURES[GlStateManager.activeTexture].capState.enable();
     }
 
-    public static void method_21912() {
-        class_4493.field_20483[class_4493.field_20482].capState.disable();
+    public static void disableTexture() {
+        GlStateManager.TEXTURES[GlStateManager.activeTexture].capState.disable();
     }
 
-    public static void method_21989(int i, int j, FloatBuffer floatBuffer) {
+    public static void texEnv(int i, int j, FloatBuffer floatBuffer) {
         GL11.glTexEnvfv(i, j, floatBuffer);
     }
 
-    public static void method_21949(int i, int j, int k) {
+    public static void texEnv(int i, int j, int k) {
         GL11.glTexEnvi(i, j, k);
     }
 
-    public static void method_21948(int i, int j, float f) {
+    public static void texEnv(int i, int j, float f) {
         GL11.glTexEnvf(i, j, f);
     }
 
-    public static void method_21985(int i, int j, float f) {
+    public static void texParameter(int i, int j, float f) {
         GL11.glTexParameterf(i, j, f);
     }
 
-    public static void method_21986(int i, int j, int k) {
+    public static void texParameter(int i, int j, int k) {
         GL11.glTexParameteri(i, j, k);
     }
 
-    public static int method_22003(int i, int j, int k) {
+    public static int getTexLevelParameter(int i, int j, int k) {
         return GL11.glGetTexLevelParameteri(i, j, k);
     }
 
-    public static int method_21914() {
+    public static int getTexLevelParameter() {
         return GL11.glGenTextures();
     }
 
-    public static void method_22079(int i) {
+    public static void deleteTexture(int i) {
         GL11.glDeleteTextures(i);
-        for (Texture2DState texture2DState : field_20483) {
+        for (Texture2DState texture2DState : TEXTURES) {
             if (texture2DState.boundTexture != i) continue;
             texture2DState.boundTexture = -1;
         }
     }
 
-    public static void method_22081(int i) {
-        if (i != class_4493.field_20483[class_4493.field_20482].boundTexture) {
-            class_4493.field_20483[class_4493.field_20482].boundTexture = i;
+    public static void bindTexture(int i) {
+        if (i != GlStateManager.TEXTURES[GlStateManager.activeTexture].boundTexture) {
+            GlStateManager.TEXTURES[GlStateManager.activeTexture].boundTexture = i;
             GL11.glBindTexture(3553, i);
         }
     }
 
-    public static void method_21954(int i, int j, int k, int l, int m, int n, int o, int p, @Nullable IntBuffer intBuffer) {
+    public static void texImage2D(int i, int j, int k, int l, int m, int n, int o, int p, @Nullable IntBuffer intBuffer) {
         GL11.glTexImage2D(i, j, k, l, m, n, o, p, intBuffer);
     }
 
-    public static void method_21953(int i, int j, int k, int l, int m, int n, int o, int p, long q) {
+    public static void texSubImage2D(int i, int j, int k, int l, int m, int n, int o, int p, long q) {
         GL11.glTexSubImage2D(i, j, k, l, m, n, o, p, q);
     }
 
-    public static void method_21952(int i, int j, int k, int l, int m, int n, int o, int p) {
+    public static void copyTexSubImage2D(int i, int j, int k, int l, int m, int n, int o, int p) {
         GL11.glCopyTexSubImage2D(i, j, k, l, m, n, o, p);
     }
 
-    public static void method_21957(int i, int j, int k, int l, long m) {
+    public static void getTexImage(int i, int j, int k, int l, long m) {
         GL11.glGetTexImage(i, j, k, l, m);
     }
 
-    public static void method_21916() {
-        field_20481.enable();
+    public static void enableNormalize() {
+        NORMALIZE.enable();
     }
 
-    public static void method_21918() {
-        field_20481.disable();
+    public static void disableNormalize() {
+        NORMALIZE.disable();
     }
 
-    public static void method_22083(int i) {
-        if (i != field_20484) {
-            field_20484 = i;
+    public static void shadeModel(int i) {
+        if (i != shadeModel) {
+            shadeModel = i;
             GL11.glShadeModel(i);
         }
     }
 
-    public static void method_21920() {
-        field_20485.enable();
+    public static void enableRescaleNormal() {
+        RESCALE_NORMAL.enable();
     }
 
-    public static void method_21922() {
-        field_20485.disable();
+    public static void disableRescaleNormal() {
+        RESCALE_NORMAL.disable();
     }
 
-    public static void method_22025(int i, int j, int k, int l) {
+    public static void viewport(int i, int j, int k, int l) {
         Viewport.INSTANCE.x = i;
         Viewport.INSTANCE.y = j;
         Viewport.INSTANCE.width = k;
@@ -788,286 +788,286 @@ public class class_4493 {
         GL11.glViewport(i, j, k, l);
     }
 
-    public static void method_21975(boolean bl, boolean bl2, boolean bl3, boolean bl4) {
-        if (bl != class_4493.field_20486.red || bl2 != class_4493.field_20486.green || bl3 != class_4493.field_20486.blue || bl4 != class_4493.field_20486.alpha) {
-            class_4493.field_20486.red = bl;
-            class_4493.field_20486.green = bl2;
-            class_4493.field_20486.blue = bl3;
-            class_4493.field_20486.alpha = bl4;
+    public static void colorMask(boolean bl, boolean bl2, boolean bl3, boolean bl4) {
+        if (bl != GlStateManager.COLOR_MASK.red || bl2 != GlStateManager.COLOR_MASK.green || bl3 != GlStateManager.COLOR_MASK.blue || bl4 != GlStateManager.COLOR_MASK.alpha) {
+            GlStateManager.COLOR_MASK.red = bl;
+            GlStateManager.COLOR_MASK.green = bl2;
+            GlStateManager.COLOR_MASK.blue = bl3;
+            GlStateManager.COLOR_MASK.alpha = bl4;
             GL11.glColorMask(bl, bl2, bl3, bl4);
         }
     }
 
-    public static void method_22017(int i, int j, int k) {
-        if (i != class_4493.field_20480.subState.func || i != class_4493.field_20480.subState.field_16203 || i != class_4493.field_20480.subState.field_5147) {
-            class_4493.field_20480.subState.func = i;
-            class_4493.field_20480.subState.field_16203 = j;
-            class_4493.field_20480.subState.field_5147 = k;
+    public static void stencilFunc(int i, int j, int k) {
+        if (i != GlStateManager.STENCIL.subState.func || i != GlStateManager.STENCIL.subState.field_16203 || i != GlStateManager.STENCIL.subState.field_5147) {
+            GlStateManager.STENCIL.subState.func = i;
+            GlStateManager.STENCIL.subState.field_16203 = j;
+            GlStateManager.STENCIL.subState.field_5147 = k;
             GL11.glStencilFunc(i, j, k);
         }
     }
 
-    public static void method_22085(int i) {
-        if (i != class_4493.field_20480.field_5153) {
-            class_4493.field_20480.field_5153 = i;
+    public static void stencilMask(int i) {
+        if (i != GlStateManager.STENCIL.field_5153) {
+            GlStateManager.STENCIL.field_5153 = i;
             GL11.glStencilMask(i);
         }
     }
 
-    public static void method_22024(int i, int j, int k) {
-        if (i != class_4493.field_20480.field_5152 || j != class_4493.field_20480.field_5151 || k != class_4493.field_20480.field_5150) {
-            class_4493.field_20480.field_5152 = i;
-            class_4493.field_20480.field_5151 = j;
-            class_4493.field_20480.field_5150 = k;
+    public static void stencilOp(int i, int j, int k) {
+        if (i != GlStateManager.STENCIL.field_5152 || j != GlStateManager.STENCIL.field_5151 || k != GlStateManager.STENCIL.field_5150) {
+            GlStateManager.STENCIL.field_5152 = i;
+            GlStateManager.STENCIL.field_5151 = j;
+            GlStateManager.STENCIL.field_5150 = k;
             GL11.glStencilOp(i, j, k);
         }
     }
 
-    public static void method_21936(double d) {
-        if (d != class_4493.field_20479.clearDepth) {
-            class_4493.field_20479.clearDepth = d;
+    public static void clearDepth(double d) {
+        if (d != GlStateManager.CLEAR.clearDepth) {
+            GlStateManager.CLEAR.clearDepth = d;
             GL11.glClearDepth(d);
         }
     }
 
-    public static void method_21943(float f, float g, float h, float i) {
-        if (f != class_4493.field_20479.clearColor.red || g != class_4493.field_20479.clearColor.green || h != class_4493.field_20479.clearColor.blue || i != class_4493.field_20479.clearColor.alpha) {
-            class_4493.field_20479.clearColor.red = f;
-            class_4493.field_20479.clearColor.green = g;
-            class_4493.field_20479.clearColor.blue = h;
-            class_4493.field_20479.clearColor.alpha = i;
+    public static void clearColor(float f, float g, float h, float i) {
+        if (f != GlStateManager.CLEAR.clearColor.red || g != GlStateManager.CLEAR.clearColor.green || h != GlStateManager.CLEAR.clearColor.blue || i != GlStateManager.CLEAR.clearColor.alpha) {
+            GlStateManager.CLEAR.clearColor.red = f;
+            GlStateManager.CLEAR.clearColor.green = g;
+            GlStateManager.CLEAR.clearColor.blue = h;
+            GlStateManager.CLEAR.clearColor.alpha = i;
             GL11.glClearColor(f, g, h, i);
         }
     }
 
-    public static void method_22087(int i) {
-        if (i != class_4493.field_20479.field_16202) {
-            class_4493.field_20479.field_16202 = i;
+    public static void clearStencil(int i) {
+        if (i != GlStateManager.CLEAR.field_16202) {
+            GlStateManager.CLEAR.field_16202 = i;
             GL11.glClearStencil(i);
         }
     }
 
-    public static void method_21965(int i, boolean bl) {
+    public static void clear(int i, boolean bl) {
         GL11.glClear(i);
         if (bl) {
             RenderSystem.getError();
         }
     }
 
-    public static void method_21907(int i) {
+    public static void matrixMode(int i) {
         GL11.glMatrixMode(i);
     }
 
-    public static void method_21924() {
+    public static void loadIdentity() {
         GL11.glLoadIdentity();
     }
 
-    public static void method_21926() {
+    public static void pushMatrix() {
         GL11.glPushMatrix();
     }
 
-    public static void method_21928() {
+    public static void popMatrix() {
         GL11.glPopMatrix();
     }
 
-    public static void method_22039(int i, FloatBuffer floatBuffer) {
+    public static void getMatrix(int i, FloatBuffer floatBuffer) {
         GL11.glGetFloatv(i, floatBuffer);
     }
 
-    public static Matrix4f method_21909(int i) {
-        class_4493.method_22039(i, field_20466);
-        field_20466.rewind();
+    public static Matrix4f getMatrix4f(int i) {
+        GlStateManager.getMatrix(i, MATRIX_BUFFER);
+        MATRIX_BUFFER.rewind();
         Matrix4f matrix4f = new Matrix4f();
-        matrix4f.setFromBuffer(field_20466);
-        field_20466.rewind();
+        matrix4f.setFromBuffer(MATRIX_BUFFER);
+        MATRIX_BUFFER.rewind();
         return matrix4f;
     }
 
-    public static void method_21939(double d, double e, double f, double g, double h, double i) {
+    public static void ortho(double d, double e, double f, double g, double h, double i) {
         GL11.glOrtho(d, e, f, g, h, i);
     }
 
-    public static void method_21981(float f, float g, float h, float i) {
+    public static void rotatef(float f, float g, float h, float i) {
         GL11.glRotatef(f, g, h, i);
     }
 
-    public static void method_21938(double d, double e, double f, double g) {
+    public static void rotated(double d, double e, double f, double g) {
         GL11.glRotated(d, e, f, g);
     }
 
-    public static void method_21980(float f, float g, float h) {
+    public static void scalef(float f, float g, float h) {
         GL11.glScalef(f, g, h);
     }
 
-    public static void method_21937(double d, double e, double f) {
+    public static void scaled(double d, double e, double f) {
         GL11.glScaled(d, e, f);
     }
 
-    public static void method_21999(float f, float g, float h) {
+    public static void translatef(float f, float g, float h) {
         GL11.glTranslatef(f, g, h);
     }
 
-    public static void method_21977(double d, double e, double f) {
+    public static void translated(double d, double e, double f) {
         GL11.glTranslated(d, e, f);
     }
 
-    public static void method_21972(FloatBuffer floatBuffer) {
+    public static void multMatrix(FloatBuffer floatBuffer) {
         GL11.glMultMatrixf(floatBuffer);
     }
 
-    public static void method_21971(Matrix4f matrix4f) {
-        matrix4f.putIntoBuffer(field_20466);
-        field_20466.rewind();
-        class_4493.method_21972(field_20466);
+    public static void multMatrix(Matrix4f matrix4f) {
+        matrix4f.putIntoBuffer(MATRIX_BUFFER);
+        MATRIX_BUFFER.rewind();
+        GlStateManager.multMatrix(MATRIX_BUFFER);
     }
 
-    public static void method_22000(float f, float g, float h, float i) {
-        if (f != class_4493.field_20487.red || g != class_4493.field_20487.green || h != class_4493.field_20487.blue || i != class_4493.field_20487.alpha) {
-            class_4493.field_20487.red = f;
-            class_4493.field_20487.green = g;
-            class_4493.field_20487.blue = h;
-            class_4493.field_20487.alpha = i;
+    public static void color4f(float f, float g, float h, float i) {
+        if (f != GlStateManager.COLOR.red || g != GlStateManager.COLOR.green || h != GlStateManager.COLOR.blue || i != GlStateManager.COLOR.alpha) {
+            GlStateManager.COLOR.red = f;
+            GlStateManager.COLOR.green = g;
+            GlStateManager.COLOR.blue = h;
+            GlStateManager.COLOR.alpha = i;
             GL11.glColor4f(f, g, h, i);
         }
     }
 
-    public static void method_21979(float f, float g) {
+    public static void texCoord2f(float f, float g) {
         GL11.glTexCoord2f(f, g);
     }
 
-    public static void method_22014(float f, float g, float h) {
+    public static void vertex3f(float f, float g, float h) {
         GL11.glVertex3f(f, g, h);
     }
 
-    public static void method_21930() {
-        class_4493.field_20487.red = -1.0f;
-        class_4493.field_20487.green = -1.0f;
-        class_4493.field_20487.blue = -1.0f;
-        class_4493.field_20487.alpha = -1.0f;
+    public static void clearCurrentColor() {
+        GlStateManager.COLOR.red = -1.0f;
+        GlStateManager.COLOR.green = -1.0f;
+        GlStateManager.COLOR.blue = -1.0f;
+        GlStateManager.COLOR.alpha = -1.0f;
     }
 
-    public static void method_22031(int i, int j, int k) {
+    public static void normalPointer(int i, int j, int k) {
         GL11.glNormalPointer(i, j, k);
     }
 
-    public static void method_21959(int i, int j, ByteBuffer byteBuffer) {
+    public static void normalPointer(int i, int j, ByteBuffer byteBuffer) {
         GL11.glNormalPointer(i, j, byteBuffer);
     }
 
-    public static void method_22032(int i, int j, int k, int l) {
+    public static void texCoordPointer(int i, int j, int k, int l) {
         GL11.glTexCoordPointer(i, j, k, l);
     }
 
-    public static void method_21958(int i, int j, int k, ByteBuffer byteBuffer) {
+    public static void texCoordPointer(int i, int j, int k, ByteBuffer byteBuffer) {
         GL11.glTexCoordPointer(i, j, k, byteBuffer);
     }
 
-    public static void method_22038(int i, int j, int k, int l) {
+    public static void vertexPointer(int i, int j, int k, int l) {
         GL11.glVertexPointer(i, j, k, l);
     }
 
-    public static void method_21988(int i, int j, int k, ByteBuffer byteBuffer) {
+    public static void vertexPointer(int i, int j, int k, ByteBuffer byteBuffer) {
         GL11.glVertexPointer(i, j, k, byteBuffer);
     }
 
-    public static void method_22043(int i, int j, int k, int l) {
+    public static void colorPointer(int i, int j, int k, int l) {
         GL11.glColorPointer(i, j, k, l);
     }
 
-    public static void method_22005(int i, int j, int k, ByteBuffer byteBuffer) {
+    public static void colorPointer(int i, int j, int k, ByteBuffer byteBuffer) {
         GL11.glColorPointer(i, j, k, byteBuffer);
     }
 
-    public static void method_21911(int i) {
+    public static void disableClientState(int i) {
         GL11.glDisableClientState(i);
     }
 
-    public static void method_21913(int i) {
+    public static void enableClientState(int i) {
         GL11.glEnableClientState(i);
     }
 
-    public static void method_21915(int i) {
+    public static void begin(int i) {
         GL11.glBegin(i);
     }
 
-    public static void method_21932() {
+    public static void end() {
         GL11.glEnd();
     }
 
-    public static void method_22037(int i, int j, int k) {
+    public static void drawArrays(int i, int j, int k) {
         GL11.glDrawArrays(i, j, k);
     }
 
-    public static void method_22013(float f) {
+    public static void lineWidth(float f) {
         GL11.glLineWidth(f);
     }
 
-    public static void method_21917(int i) {
+    public static void callList(int i) {
         GL11.glCallList(i);
     }
 
-    public static void method_22061(int i, int j) {
+    public static void deleteLists(int i, int j) {
         GL11.glDeleteLists(i, j);
     }
 
-    public static void method_22064(int i, int j) {
+    public static void newList(int i, int j) {
         GL11.glNewList(i, j);
     }
 
-    public static void method_21933() {
+    public static void endList() {
         GL11.glEndList();
     }
 
-    public static int method_21919(int i) {
+    public static int genLists(int i) {
         return GL11.glGenLists(i);
     }
 
-    public static void method_22067(int i, int j) {
+    public static void pixelStore(int i, int j) {
         GL11.glPixelStorei(i, j);
     }
 
-    public static void method_21983(int i, float f) {
+    public static void pixelTransfer(int i, float f) {
         GL11.glPixelTransferf(i, f);
     }
 
-    public static void method_21956(int i, int j, int k, int l, int m, int n, ByteBuffer byteBuffer) {
+    public static void readPixels(int i, int j, int k, int l, int m, int n, ByteBuffer byteBuffer) {
         GL11.glReadPixels(i, j, k, l, m, n, byteBuffer);
     }
 
-    public static void method_21955(int i, int j, int k, int l, int m, int n, long o) {
+    public static void readPixels(int i, int j, int k, int l, int m, int n, long o) {
         GL11.glReadPixels(i, j, k, l, m, n, o);
     }
 
-    public static int method_21934() {
+    public static int getError() {
         return GL11.glGetError();
     }
 
-    public static String method_21921(int i) {
+    public static String getString(int i) {
         return GL11.glGetString(i);
     }
 
-    public static void method_22027(int i, IntBuffer intBuffer) {
+    public static void getInteger(int i, IntBuffer intBuffer) {
         GL11.glGetIntegerv(i, intBuffer);
     }
 
-    public static int method_21923(int i) {
+    public static int getInteger(int i) {
         return GL11.glGetInteger(i);
     }
 
-    public static void method_21967(RenderMode renderMode) {
+    public static void beginRenderMode(RenderMode renderMode) {
         renderMode.begin();
     }
 
-    public static void method_21994(RenderMode renderMode) {
+    public static void endRenderMode(RenderMode renderMode) {
         renderMode.end();
     }
 
     static {
-        field_20483 = (Texture2DState[])IntStream.range(0, 8).mapToObj(i -> new Texture2DState()).toArray(Texture2DState[]::new);
-        field_20484 = 7425;
-        field_20485 = new CapabilityTracker(32826);
-        field_20486 = new ColorMask();
-        field_20487 = new Color4();
+        TEXTURES = (Texture2DState[])IntStream.range(0, 8).mapToObj(i -> new Texture2DState()).toArray(Texture2DState[]::new);
+        shadeModel = 7425;
+        RESCALE_NORMAL = new CapabilityTracker(32826);
+        COLOR_MASK = new ColorMask();
+        COLOR = new Color4();
     }
 
     @Environment(value=EnvType.CLIENT)

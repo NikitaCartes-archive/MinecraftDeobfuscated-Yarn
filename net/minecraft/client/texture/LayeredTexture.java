@@ -9,9 +9,9 @@ import java.util.Iterator;
 import java.util.List;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_4536;
 import net.minecraft.client.texture.AbstractTexture;
 import net.minecraft.client.texture.NativeImage;
+import net.minecraft.client.texture.TextureUtil;
 import net.minecraft.resource.Resource;
 import net.minecraft.resource.ResourceManager;
 import net.minecraft.util.Identifier;
@@ -88,7 +88,7 @@ extends AbstractTexture {
                 }
                 resource2.close();
             }
-            class_4536.prepareImage(this.getGlId(), nativeImage.getWidth(), nativeImage.getHeight());
+            TextureUtil.prepareImage(this.getGlId(), nativeImage.getWidth(), nativeImage.getHeight());
             nativeImage.upload(0, 0, 0, false);
             return;
         } catch (IOException iOException) {

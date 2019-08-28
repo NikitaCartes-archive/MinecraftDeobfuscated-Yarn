@@ -1,7 +1,7 @@
 /*
  * Decompiled with CFR 0.2.0 (FabricMC d28b102d).
  */
-package net.minecraft;
+package net.minecraft.client.render.entity.feature;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 import java.util.Random;
@@ -19,31 +19,31 @@ import net.minecraft.entity.LivingEntity;
 import net.minecraft.util.math.MathHelper;
 
 @Environment(value=EnvType.CLIENT)
-public abstract class class_4507<T extends LivingEntity, M extends EntityModel<T>>
+public abstract class StickingOutThingsFeatureRenderer<T extends LivingEntity, M extends EntityModel<T>>
 extends FeatureRenderer<T, M> {
-    public class_4507(LivingEntityRenderer<T, M> livingEntityRenderer) {
+    public StickingOutThingsFeatureRenderer(LivingEntityRenderer<T, M> livingEntityRenderer) {
         super(livingEntityRenderer);
     }
 
-    protected abstract int method_22134(T var1);
+    protected abstract int getThingCount(T var1);
 
-    protected abstract void method_22130(Entity var1, float var2, float var3, float var4, float var5);
+    protected abstract void renderThing(Entity var1, float var2, float var3, float var4, float var5);
 
-    protected void method_22131(T livingEntity) {
+    protected void beforeRendering(T livingEntity) {
         GuiLighting.disable();
     }
 
-    protected void method_22133() {
+    protected void afterRendering() {
         GuiLighting.enable();
     }
 
     public void method_22132(T livingEntity, float f, float g, float h, float i, float j, float k, float l) {
-        int m = this.method_22134(livingEntity);
+        int m = this.getThingCount(livingEntity);
         Random random = new Random(((Entity)livingEntity).getEntityId());
         if (m <= 0) {
             return;
         }
-        this.method_22131(livingEntity);
+        this.beforeRendering(livingEntity);
         for (int n = 0; n < m; ++n) {
             RenderSystem.pushMatrix();
             ModelPart modelPart = ((Model)this.getModel()).getRandomCuboid(random);
@@ -59,10 +59,10 @@ extends FeatureRenderer<T, M> {
             o = -1.0f * (o * 2.0f - 1.0f);
             p = -1.0f * (p * 2.0f - 1.0f);
             q = -1.0f * (q * 2.0f - 1.0f);
-            this.method_22130((Entity)livingEntity, o, p, q, h);
+            this.renderThing((Entity)livingEntity, o, p, q, h);
             RenderSystem.popMatrix();
         }
-        this.method_22133();
+        this.afterRendering();
     }
 }
 

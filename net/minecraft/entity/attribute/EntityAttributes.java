@@ -3,7 +3,7 @@
  */
 package net.minecraft.entity.attribute;
 
-import java.util.Collection;
+import java.util.Set;
 import java.util.UUID;
 import net.minecraft.entity.attribute.AbstractEntityAttributeContainer;
 import net.minecraft.entity.attribute.ClampedEntityAttribute;
@@ -43,7 +43,7 @@ public class EntityAttributes {
         EntityAttribute entityAttribute = entityAttributeInstance.getAttribute();
         compoundTag.putString("Name", entityAttribute.getId());
         compoundTag.putDouble("Base", entityAttributeInstance.getBaseValue());
-        Collection<EntityAttributeModifier> collection = entityAttributeInstance.getModifiers();
+        Set<EntityAttributeModifier> collection = entityAttributeInstance.getModifiers();
         if (collection != null && !collection.isEmpty()) {
             ListTag listTag = new ListTag();
             for (EntityAttributeModifier entityAttributeModifier : collection) {

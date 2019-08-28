@@ -57,13 +57,12 @@ public class ChunkStatus {
     public static final ChunkStatus CARVERS = ChunkStatus.register("carvers", SURFACE, 0, PRE_CARVER_HEIGHTMAPS, ChunkType.PROTOCHUNK, (ServerWorld serverWorld, ChunkGenerator<?> chunkGenerator, List<Chunk> list, Chunk chunk) -> chunkGenerator.carve(chunk, GenerationStep.Carver.AIR));
     public static final ChunkStatus LIQUID_CARVERS = ChunkStatus.register("liquid_carvers", CARVERS, 0, POST_CARVER_HEIGHTMAPS, ChunkType.PROTOCHUNK, (ServerWorld serverWorld, ChunkGenerator<?> chunkGenerator, List<Chunk> list, Chunk chunk) -> chunkGenerator.carve(chunk, GenerationStep.Carver.LIQUID));
     public static final ChunkStatus FEATURES = ChunkStatus.register("features", LIQUID_CARVERS, 8, POST_CARVER_HEIGHTMAPS, ChunkType.PROTOCHUNK, (ChunkStatus chunkStatus, ServerWorld serverWorld, ChunkGenerator<?> chunkGenerator, StructureManager structureManager, ServerLightingProvider serverLightingProvider, Function<Chunk, CompletableFuture<Either<Chunk, ChunkHolder.Unloaded>>> function, List<Chunk> list, Chunk chunk) -> {
-        chunk.setLightingProvider(serverLightingProvider);
+        ProtoChunk protoChunk = (ProtoChunk)chunk;
+        protoChunk.setLightingProvider(serverLightingProvider);
         if (!chunk.getStatus().isAtLeast(chunkStatus)) {
             Heightmap.populateHeightmaps(chunk, EnumSet.of(Heightmap.Type.MOTION_BLOCKING, Heightmap.Type.MOTION_BLOCKING_NO_LEAVES, Heightmap.Type.OCEAN_FLOOR, Heightmap.Type.WORLD_SURFACE));
             chunkGenerator.generateFeatures(new ChunkRegion(serverWorld, list));
-            if (chunk instanceof ProtoChunk) {
-                ((ProtoChunk)chunk).setStatus(chunkStatus);
-            }
+            protoChunk.setStatus(chunkStatus);
         }
         return CompletableFuture.completedFuture(Either.left(chunk));
     });

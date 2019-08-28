@@ -8,6 +8,7 @@ import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.FacingBlock;
 import net.minecraft.item.ItemPlacementContext;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.state.StateFactory;
 import net.minecraft.state.property.BooleanProperty;
 import net.minecraft.state.property.Properties;
@@ -44,14 +45,14 @@ extends FacingBlock {
     }
 
     @Override
-    public void onScheduledTick(BlockState blockState, World world, BlockPos blockPos, Random random) {
+    public void onScheduledTick(BlockState blockState, ServerWorld serverWorld, BlockPos blockPos, Random random) {
         if (blockState.get(POWERED).booleanValue()) {
-            world.setBlockState(blockPos, (BlockState)blockState.with(POWERED, false), 2);
+            serverWorld.setBlockState(blockPos, (BlockState)blockState.with(POWERED, false), 2);
         } else {
-            world.setBlockState(blockPos, (BlockState)blockState.with(POWERED, true), 2);
-            world.getBlockTickScheduler().schedule(blockPos, this, 2);
+            serverWorld.setBlockState(blockPos, (BlockState)blockState.with(POWERED, true), 2);
+            serverWorld.method_14196().schedule(blockPos, this, 2);
         }
-        this.updateNeighbors(world, blockPos, blockState);
+        this.updateNeighbors(serverWorld, blockPos, blockState);
     }
 
     @Override

@@ -51,7 +51,7 @@ extends Feature<C> {
             ChunkPos chunkPos = new ChunkPos(long_);
             StructureStart structureStart = iWorld.getChunk(chunkPos.x, chunkPos.z).getStructureStart(this.getName());
             if (structureStart == null || structureStart == StructureStart.DEFAULT) continue;
-            structureStart.generateStructure(iWorld, random, new MutableIntBoundingBox(k, l, k + 15, l + 15), new ChunkPos(i, j));
+            structureStart.generateStructure(iWorld, chunkGenerator, random, new MutableIntBoundingBox(k, l, k + 15, l + 15), new ChunkPos(i, j));
             bl = true;
         }
         return bl;
@@ -96,7 +96,7 @@ extends Feature<C> {
                     boolean bl4 = bl3 = n == -l || n == l;
                     if (!bl2 && !bl3) continue;
                     ChunkPos chunkPos = this.getStart(chunkGenerator, chunkRandom, j, k, m, n);
-                    StructureStart structureStart = world.getChunk(chunkPos.x, chunkPos.z, ChunkStatus.STRUCTURE_STARTS).getStructureStart(this.getName());
+                    StructureStart structureStart = world.method_22342(chunkPos.x, chunkPos.z, ChunkStatus.STRUCTURE_STARTS).getStructureStart(this.getName());
                     if (structureStart != null && structureStart.hasChildren()) {
                         if (bl && structureStart.isInExistingChunk()) {
                             structureStart.incrementReferences();
@@ -116,11 +116,11 @@ extends Feature<C> {
 
     private List<StructureStart> getStructureStarts(IWorld iWorld, int i, int j) {
         ArrayList<StructureStart> list = Lists.newArrayList();
-        Chunk chunk = iWorld.getChunk(i, j, ChunkStatus.STRUCTURE_REFERENCES);
+        Chunk chunk = iWorld.method_22342(i, j, ChunkStatus.STRUCTURE_REFERENCES);
         LongIterator longIterator = chunk.getStructureReferences(this.getName()).iterator();
         while (longIterator.hasNext()) {
             long l = longIterator.nextLong();
-            Chunk blockViewWithStructures = iWorld.getChunk(ChunkPos.getPackedX(l), ChunkPos.getPackedZ(l), ChunkStatus.STRUCTURE_STARTS);
+            Chunk blockViewWithStructures = iWorld.method_22342(ChunkPos.getPackedX(l), ChunkPos.getPackedZ(l), ChunkStatus.STRUCTURE_STARTS);
             StructureStart structureStart = blockViewWithStructures.getStructureStart(this.getName());
             if (structureStart == null) continue;
             list.add(structureStart);

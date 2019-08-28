@@ -25,7 +25,7 @@ extends Feature<BushFeatureConfig> {
         BlockState blockState = bushFeatureConfig.state;
         for (int j = 0; j < 64; ++j) {
             BlockPos blockPos2 = blockPos.add(random.nextInt(8) - random.nextInt(8), random.nextInt(4) - random.nextInt(4), random.nextInt(8) - random.nextInt(8));
-            if (!iWorld.isAir(blockPos2) || iWorld.getDimension().isNether() && blockPos2.getY() >= 255 || !blockState.canPlaceAt(iWorld, blockPos2)) continue;
+            if (!iWorld.method_22347(blockPos2) || iWorld.getDimension().isNether() && blockPos2.getY() >= 255 || !blockState.canPlaceAt(iWorld, blockPos2)) continue;
             iWorld.setBlockState(blockPos2, blockState, 2);
             ++i;
         }

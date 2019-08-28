@@ -12,11 +12,13 @@ import net.minecraft.block.Blocks;
 import net.minecraft.block.CropBlock;
 import net.minecraft.block.FenceGateBlock;
 import net.minecraft.block.StemBlock;
+import net.minecraft.class_4538;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityContext;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemPlacementContext;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.state.StateFactory;
 import net.minecraft.state.property.IntProperty;
 import net.minecraft.state.property.Properties;
@@ -27,7 +29,6 @@ import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.GameRules;
 import net.minecraft.world.IWorld;
-import net.minecraft.world.ViewableWorld;
 import net.minecraft.world.World;
 
 public class FarmlandBlock
@@ -49,8 +50,8 @@ extends Block {
     }
 
     @Override
-    public boolean canPlaceAt(BlockState blockState, ViewableWorld viewableWorld, BlockPos blockPos) {
-        BlockState blockState2 = viewableWorld.getBlockState(blockPos.up());
+    public boolean canPlaceAt(BlockState blockState, class_4538 arg, BlockPos blockPos) {
+        BlockState blockState2 = arg.getBlockState(blockPos.up());
         return !blockState2.getMaterial().isSolid() || blockState2.getBlock() instanceof FenceGateBlock;
     }
 
@@ -73,20 +74,20 @@ extends Block {
     }
 
     @Override
-    public void onScheduledTick(BlockState blockState, World world, BlockPos blockPos, Random random) {
-        if (!blockState.canPlaceAt(world, blockPos)) {
-            FarmlandBlock.setToDirt(blockState, world, blockPos);
+    public void onScheduledTick(BlockState blockState, ServerWorld serverWorld, BlockPos blockPos, Random random) {
+        if (!blockState.canPlaceAt(serverWorld, blockPos)) {
+            FarmlandBlock.setToDirt(blockState, serverWorld, blockPos);
             return;
         }
         int i = blockState.get(MOISTURE);
-        if (FarmlandBlock.isWaterNearby(world, blockPos) || world.hasRain(blockPos.up())) {
+        if (FarmlandBlock.isWaterNearby(serverWorld, blockPos) || serverWorld.hasRain(blockPos.up())) {
             if (i < 7) {
-                world.setBlockState(blockPos, (BlockState)blockState.with(MOISTURE, 7), 2);
+                serverWorld.setBlockState(blockPos, (BlockState)blockState.with(MOISTURE, 7), 2);
             }
         } else if (i > 0) {
-            world.setBlockState(blockPos, (BlockState)blockState.with(MOISTURE, i - 1), 2);
-        } else if (!FarmlandBlock.hasCrop(world, blockPos)) {
-            FarmlandBlock.setToDirt(blockState, world, blockPos);
+            serverWorld.setBlockState(blockPos, (BlockState)blockState.with(MOISTURE, i - 1), 2);
+        } else if (!FarmlandBlock.hasCrop(serverWorld, blockPos)) {
+            FarmlandBlock.setToDirt(blockState, serverWorld, blockPos);
         }
     }
 
@@ -107,9 +108,9 @@ extends Block {
         return block instanceof CropBlock || block instanceof StemBlock || block instanceof AttachedStemBlock;
     }
 
-    private static boolean isWaterNearby(ViewableWorld viewableWorld, BlockPos blockPos) {
+    private static boolean isWaterNearby(class_4538 arg, BlockPos blockPos) {
         for (BlockPos blockPos2 : BlockPos.iterate(blockPos.add(-4, 0, -4), blockPos.add(4, 1, 4))) {
-            if (!viewableWorld.getFluidState(blockPos2).matches(FluidTags.WATER)) continue;
+            if (!arg.getFluidState(blockPos2).matches(FluidTags.WATER)) continue;
             return true;
         }
         return false;

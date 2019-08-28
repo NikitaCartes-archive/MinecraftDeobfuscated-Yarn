@@ -4,12 +4,12 @@
 package net.minecraft.client.gui;
 
 import com.google.common.collect.Maps;
+import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
 import java.util.Map;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.block.MaterialColor;
-import net.minecraft.class_4493;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gui.DrawableHelper;
@@ -113,7 +113,7 @@ implements AutoCloseable {
             float f = 0.0f;
             MapRenderer.this.textureManager.bindTexture(this.id);
             RenderSystem.enableBlend();
-            RenderSystem.blendFuncSeparate(class_4493.class_4535.ONE, class_4493.class_4534.ONE_MINUS_SRC_ALPHA, class_4493.class_4535.ZERO, class_4493.class_4534.ONE);
+            RenderSystem.blendFuncSeparate(GlStateManager.class_4535.ONE, GlStateManager.class_4534.ONE_MINUS_SRC_ALPHA, GlStateManager.class_4535.ZERO, GlStateManager.class_4534.ONE);
             RenderSystem.disableAlphaTest();
             bufferBuilder.begin(7, VertexFormats.POSITION_UV);
             bufferBuilder.vertex(0.0, 128.0, -0.01f).texture(0.0, 1.0).next();

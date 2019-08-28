@@ -7,6 +7,7 @@ import java.util.EnumSet;
 import net.minecraft.block.BlockPlacementEnvironment;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
+import net.minecraft.class_4538;
 import net.minecraft.entity.MovementType;
 import net.minecraft.entity.ai.goal.Goal;
 import net.minecraft.entity.mob.MobEntityWithAi;
@@ -14,7 +15,6 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.math.Vec3i;
-import net.minecraft.world.ViewableWorld;
 
 public class BreatheAirGoal
 extends Goal {
@@ -66,9 +66,9 @@ extends Goal {
         this.mob.move(MovementType.SELF, this.mob.getVelocity());
     }
 
-    private boolean isAirPos(ViewableWorld viewableWorld, BlockPos blockPos) {
-        BlockState blockState = viewableWorld.getBlockState(blockPos);
-        return (viewableWorld.getFluidState(blockPos).isEmpty() || blockState.getBlock() == Blocks.BUBBLE_COLUMN) && blockState.canPlaceAtSide(viewableWorld, blockPos, BlockPlacementEnvironment.LAND);
+    private boolean isAirPos(class_4538 arg, BlockPos blockPos) {
+        BlockState blockState = arg.getBlockState(blockPos);
+        return (arg.getFluidState(blockPos).isEmpty() || blockState.getBlock() == Blocks.BUBBLE_COLUMN) && blockState.canPlaceAtSide(arg, blockPos, BlockPlacementEnvironment.LAND);
     }
 }
 

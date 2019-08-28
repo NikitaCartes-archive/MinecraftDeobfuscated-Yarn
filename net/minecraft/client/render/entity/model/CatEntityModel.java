@@ -5,7 +5,7 @@ package net.minecraft.client.render.entity.model;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_4496;
+import net.minecraft.client.model.ModelUtil;
 import net.minecraft.client.render.entity.model.OcelotEntityModel;
 import net.minecraft.entity.passive.CatEntity;
 import net.minecraft.entity.passive.TameableEntity;
@@ -71,8 +71,8 @@ extends OcelotEntityModel<T> {
     public void method_17075(T catEntity, float f, float g, float h, float i, float j, float k) {
         super.setAngles(catEntity, f, g, h, i, j, k);
         if (this.sleepAnimation > 0.0f) {
-            this.head.roll = class_4496.method_22114(this.head.roll, -1.2707963f, this.sleepAnimation);
-            this.head.yaw = class_4496.method_22114(this.head.yaw, 1.2707963f, this.sleepAnimation);
+            this.head.roll = ModelUtil.interpolateAngle(this.head.roll, -1.2707963f, this.sleepAnimation);
+            this.head.yaw = ModelUtil.interpolateAngle(this.head.yaw, 1.2707963f, this.sleepAnimation);
             this.backLegLeft.pitch = -1.2707963f;
             this.backLegRight.pitch = -0.47079635f;
             this.backLegRight.roll = -0.2f;
@@ -82,11 +82,11 @@ extends OcelotEntityModel<T> {
             this.frontLegRight.roll = -0.5f;
             this.frontLegRight.rotationPointX = -0.3f;
             this.frontLegRight.rotationPointY = 20.0f;
-            this.tail1.pitch = class_4496.method_22114(this.tail1.pitch, 0.8f, this.tailCurlAnimation);
-            this.tail2.pitch = class_4496.method_22114(this.tail2.pitch, -0.4f, this.tailCurlAnimation);
+            this.tail1.pitch = ModelUtil.interpolateAngle(this.tail1.pitch, 0.8f, this.tailCurlAnimation);
+            this.tail2.pitch = ModelUtil.interpolateAngle(this.tail2.pitch, -0.4f, this.tailCurlAnimation);
         }
         if (this.headDownAnimation > 0.0f) {
-            this.head.pitch = class_4496.method_22114(this.head.pitch, -0.58177644f, this.headDownAnimation);
+            this.head.pitch = ModelUtil.interpolateAngle(this.head.pitch, -0.58177644f, this.headDownAnimation);
         }
     }
 }

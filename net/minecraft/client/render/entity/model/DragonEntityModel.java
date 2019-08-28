@@ -3,10 +3,10 @@
  */
 package net.minecraft.client.render.entity.model;
 
+import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_4493;
 import net.minecraft.client.model.ModelPart;
 import net.minecraft.client.render.entity.model.EntityModel;
 import net.minecraft.entity.Entity;
@@ -156,10 +156,10 @@ extends EntityModel<EnderDragonEntity> {
             this.rearLeg.render(k);
             RenderSystem.scalef(-1.0f, 1.0f, 1.0f);
             if (w != 0) continue;
-            RenderSystem.cullFace(class_4493.FaceSides.FRONT);
+            RenderSystem.cullFace(GlStateManager.FaceSides.FRONT);
         }
         RenderSystem.popMatrix();
-        RenderSystem.cullFace(class_4493.FaceSides.BACK);
+        RenderSystem.cullFace(GlStateManager.FaceSides.BACK);
         RenderSystem.disableCull();
         float x = -((float)Math.sin(l * ((float)Math.PI * 2))) * 0.0f;
         t = l * ((float)Math.PI * 2);

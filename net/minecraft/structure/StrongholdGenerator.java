@@ -31,6 +31,7 @@ import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MutableIntBoundingBox;
 import net.minecraft.world.IWorld;
+import net.minecraft.world.gen.chunk.ChunkGenerator;
 import net.minecraft.world.loot.LootTables;
 import org.jetbrains.annotations.Nullable;
 
@@ -205,7 +206,7 @@ public class StrongholdGenerator {
         }
 
         @Override
-        public boolean generate(IWorld iWorld, Random random, MutableIntBoundingBox mutableIntBoundingBox, ChunkPos chunkPos) {
+        public boolean generate(IWorld iWorld, ChunkGenerator<?> chunkGenerator, Random random, MutableIntBoundingBox mutableIntBoundingBox, ChunkPos chunkPos) {
             int j;
             this.fillWithOutline(iWorld, mutableIntBoundingBox, 0, 0, 0, 10, 7, 15, false, random, field_15263);
             this.generateEntrance(iWorld, random, mutableIntBoundingBox, Piece.EntranceType.GRATES, 4, 1, 0);
@@ -356,7 +357,7 @@ public class StrongholdGenerator {
         }
 
         @Override
-        public boolean generate(IWorld iWorld, Random random, MutableIntBoundingBox mutableIntBoundingBox, ChunkPos chunkPos) {
+        public boolean generate(IWorld iWorld, ChunkGenerator<?> chunkGenerator, Random random, MutableIntBoundingBox mutableIntBoundingBox, ChunkPos chunkPos) {
             this.fillWithOutline(iWorld, mutableIntBoundingBox, 0, 0, 0, 9, 8, 10, true, random, field_15263);
             this.generateEntrance(iWorld, random, mutableIntBoundingBox, this.entryDoor, 4, 3, 0);
             if (this.lowerLeftExists) {
@@ -422,7 +423,7 @@ public class StrongholdGenerator {
         }
 
         @Override
-        public boolean generate(IWorld iWorld, Random random, MutableIntBoundingBox mutableIntBoundingBox, ChunkPos chunkPos) {
+        public boolean generate(IWorld iWorld, ChunkGenerator<?> chunkGenerator, Random random, MutableIntBoundingBox mutableIntBoundingBox, ChunkPos chunkPos) {
             int l;
             int i = 11;
             if (!this.tall) {
@@ -546,7 +547,7 @@ public class StrongholdGenerator {
         }
 
         @Override
-        public boolean generate(IWorld iWorld, Random random, MutableIntBoundingBox mutableIntBoundingBox, ChunkPos chunkPos) {
+        public boolean generate(IWorld iWorld, ChunkGenerator<?> chunkGenerator, Random random, MutableIntBoundingBox mutableIntBoundingBox, ChunkPos chunkPos) {
             this.fillWithOutline(iWorld, mutableIntBoundingBox, 0, 0, 0, 8, 4, 10, true, random, field_15263);
             this.generateEntrance(iWorld, random, mutableIntBoundingBox, this.entryDoor, 1, 1, 0);
             this.fillWithOutline(iWorld, mutableIntBoundingBox, 1, 1, 10, 3, 3, 10, AIR, AIR, false);
@@ -613,7 +614,7 @@ public class StrongholdGenerator {
         }
 
         @Override
-        public boolean generate(IWorld iWorld, Random random, MutableIntBoundingBox mutableIntBoundingBox, ChunkPos chunkPos) {
+        public boolean generate(IWorld iWorld, ChunkGenerator<?> chunkGenerator, Random random, MutableIntBoundingBox mutableIntBoundingBox, ChunkPos chunkPos) {
             this.fillWithOutline(iWorld, mutableIntBoundingBox, 0, 0, 0, 10, 6, 10, true, random, field_15263);
             this.generateEntrance(iWorld, random, mutableIntBoundingBox, this.entryDoor, 4, 1, 0);
             this.fillWithOutline(iWorld, mutableIntBoundingBox, 4, 1, 10, 6, 3, 10, AIR, AIR, false);
@@ -733,7 +734,7 @@ public class StrongholdGenerator {
         }
 
         @Override
-        public boolean generate(IWorld iWorld, Random random, MutableIntBoundingBox mutableIntBoundingBox, ChunkPos chunkPos) {
+        public boolean generate(IWorld iWorld, ChunkGenerator<?> chunkGenerator, Random random, MutableIntBoundingBox mutableIntBoundingBox, ChunkPos chunkPos) {
             this.fillWithOutline(iWorld, mutableIntBoundingBox, 0, 0, 0, 4, 4, 4, true, random, field_15263);
             this.generateEntrance(iWorld, random, mutableIntBoundingBox, this.entryDoor, 1, 1, 0);
             Direction direction = this.getFacing();
@@ -778,7 +779,7 @@ public class StrongholdGenerator {
         }
 
         @Override
-        public boolean generate(IWorld iWorld, Random random, MutableIntBoundingBox mutableIntBoundingBox, ChunkPos chunkPos) {
+        public boolean generate(IWorld iWorld, ChunkGenerator<?> chunkGenerator, Random random, MutableIntBoundingBox mutableIntBoundingBox, ChunkPos chunkPos) {
             this.fillWithOutline(iWorld, mutableIntBoundingBox, 0, 0, 0, 4, 4, 4, true, random, field_15263);
             this.generateEntrance(iWorld, random, mutableIntBoundingBox, this.entryDoor, 1, 1, 0);
             Direction direction = this.getFacing();
@@ -829,7 +830,7 @@ public class StrongholdGenerator {
         }
 
         @Override
-        public boolean generate(IWorld iWorld, Random random, MutableIntBoundingBox mutableIntBoundingBox, ChunkPos chunkPos) {
+        public boolean generate(IWorld iWorld, ChunkGenerator<?> chunkGenerator, Random random, MutableIntBoundingBox mutableIntBoundingBox, ChunkPos chunkPos) {
             this.fillWithOutline(iWorld, mutableIntBoundingBox, 0, 0, 0, 4, 10, 7, true, random, field_15263);
             this.generateEntrance(iWorld, random, mutableIntBoundingBox, this.entryDoor, 1, 7, 0);
             this.generateEntrance(iWorld, random, mutableIntBoundingBox, Piece.EntranceType.OPENING, 1, 1, 7);
@@ -883,7 +884,7 @@ public class StrongholdGenerator {
         }
 
         @Override
-        public boolean generate(IWorld iWorld, Random random, MutableIntBoundingBox mutableIntBoundingBox, ChunkPos chunkPos) {
+        public boolean generate(IWorld iWorld, ChunkGenerator<?> chunkGenerator, Random random, MutableIntBoundingBox mutableIntBoundingBox, ChunkPos chunkPos) {
             this.fillWithOutline(iWorld, mutableIntBoundingBox, 0, 0, 0, 4, 4, 6, true, random, field_15263);
             this.generateEntrance(iWorld, random, mutableIntBoundingBox, this.entryDoor, 1, 1, 0);
             this.generateEntrance(iWorld, random, mutableIntBoundingBox, Piece.EntranceType.OPENING, 1, 1, 6);
@@ -950,7 +951,7 @@ public class StrongholdGenerator {
         }
 
         @Override
-        public boolean generate(IWorld iWorld, Random random, MutableIntBoundingBox mutableIntBoundingBox, ChunkPos chunkPos) {
+        public boolean generate(IWorld iWorld, ChunkGenerator<?> chunkGenerator, Random random, MutableIntBoundingBox mutableIntBoundingBox, ChunkPos chunkPos) {
             this.fillWithOutline(iWorld, mutableIntBoundingBox, 0, 0, 0, 4, 4, 6, true, random, field_15263);
             this.generateEntrance(iWorld, random, mutableIntBoundingBox, this.entryDoor, 1, 1, 0);
             this.generateEntrance(iWorld, random, mutableIntBoundingBox, Piece.EntranceType.OPENING, 1, 1, 6);
@@ -1038,7 +1039,7 @@ public class StrongholdGenerator {
         }
 
         @Override
-        public boolean generate(IWorld iWorld, Random random, MutableIntBoundingBox mutableIntBoundingBox, ChunkPos chunkPos) {
+        public boolean generate(IWorld iWorld, ChunkGenerator<?> chunkGenerator, Random random, MutableIntBoundingBox mutableIntBoundingBox, ChunkPos chunkPos) {
             this.fillWithOutline(iWorld, mutableIntBoundingBox, 0, 0, 0, 4, 10, 4, true, random, field_15263);
             this.generateEntrance(iWorld, random, mutableIntBoundingBox, this.entryDoor, 1, 7, 0);
             this.generateEntrance(iWorld, random, mutableIntBoundingBox, Piece.EntranceType.OPENING, 1, 1, 4);
@@ -1103,7 +1104,7 @@ public class StrongholdGenerator {
         }
 
         @Override
-        public boolean generate(IWorld iWorld, Random random, MutableIntBoundingBox mutableIntBoundingBox, ChunkPos chunkPos) {
+        public boolean generate(IWorld iWorld, ChunkGenerator<?> chunkGenerator, Random random, MutableIntBoundingBox mutableIntBoundingBox, ChunkPos chunkPos) {
             for (int i = 0; i < this.length; ++i) {
                 this.addBlock(iWorld, Blocks.STONE_BRICKS.getDefaultState(), 0, 0, i, mutableIntBoundingBox);
                 this.addBlock(iWorld, Blocks.STONE_BRICKS.getDefaultState(), 1, 0, i, mutableIntBoundingBox);

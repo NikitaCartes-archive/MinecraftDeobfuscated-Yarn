@@ -5,6 +5,7 @@ package net.minecraft.client.gui.hud;
 
 import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
+import com.mojang.blaze3d.platform.GlDebugInfo;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.datafixers.DataFixUtils;
 import it.unimi.dsi.fastutil.longs.LongSets;
@@ -20,7 +21,6 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.SharedConstants;
 import net.minecraft.block.BlockState;
-import net.minecraft.class_4494;
 import net.minecraft.client.ClientBrandRetriever;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextRenderer;
@@ -147,7 +147,7 @@ extends DrawableHelper {
         String string = integratedServer != null ? String.format("Integrated server @ %.0f ms ticks, %.0f tx, %.0f rx", Float.valueOf(integratedServer.getTickTime()), Float.valueOf(f), Float.valueOf(g)) : String.format("\"%s\" server, %.0f tx, %.0f rx", this.client.player.getServerBrand(), Float.valueOf(f), Float.valueOf(g));
         BlockPos blockPos = new BlockPos(this.client.getCameraEntity().x, this.client.getCameraEntity().getBoundingBox().minY, this.client.getCameraEntity().z);
         if (this.client.hasReducedDebugInfo()) {
-            return Lists.newArrayList("Minecraft " + SharedConstants.getGameVersion().getName() + " (" + this.client.getGameVersion() + "/" + ClientBrandRetriever.getClientModName() + ")", this.client.fpsDebugString, string, this.client.worldRenderer.getChunksDebugString(), this.client.worldRenderer.getEntitiesDebugString(), "P: " + this.client.particleManager.getDebugString() + ". T: " + this.client.world.getRegularEntityCount(), this.client.world.getChunkProviderStatus(), "", String.format("Chunk-relative: %d %d %d", blockPos.getX() & 0xF, blockPos.getY() & 0xF, blockPos.getZ() & 0xF));
+            return Lists.newArrayList("Minecraft " + SharedConstants.getGameVersion().getName() + " (" + this.client.getGameVersion() + "/" + ClientBrandRetriever.getClientModName() + ")", this.client.fpsDebugString, string, this.client.worldRenderer.getChunksDebugString(), this.client.worldRenderer.getEntitiesDebugString(), "P: " + this.client.particleManager.getDebugString() + ". T: " + this.client.world.getRegularEntityCount(), this.client.world.getDebugString(), "", String.format("Chunk-relative: %d %d %d", blockPos.getX() & 0xF, blockPos.getY() & 0xF, blockPos.getZ() & 0xF));
         }
         Entity entity = this.client.getCameraEntity();
         Direction direction = entity.getHorizontalFacing();
@@ -178,8 +178,8 @@ extends DrawableHelper {
             this.resetChunk();
         }
         LongSets.EmptySet longSet = (world = this.getWorld()) instanceof ServerWorld ? ((ServerWorld)world).getForcedChunks() : LongSets.EMPTY_SET;
-        ArrayList<String> list = Lists.newArrayList("Minecraft " + SharedConstants.getGameVersion().getName() + " (" + this.client.getGameVersion() + "/" + ClientBrandRetriever.getClientModName() + ("release".equalsIgnoreCase(this.client.getVersionType()) ? "" : "/" + this.client.getVersionType()) + ")", this.client.fpsDebugString, string, this.client.worldRenderer.getChunksDebugString(), this.client.worldRenderer.getEntitiesDebugString(), "P: " + this.client.particleManager.getDebugString() + ". T: " + this.client.world.getRegularEntityCount(), this.client.world.getChunkProviderStatus());
-        String string3 = this.method_20603();
+        ArrayList<String> list = Lists.newArrayList("Minecraft " + SharedConstants.getGameVersion().getName() + " (" + this.client.getGameVersion() + "/" + ClientBrandRetriever.getClientModName() + ("release".equalsIgnoreCase(this.client.getVersionType()) ? "" : "/" + this.client.getVersionType()) + ")", this.client.fpsDebugString, string, this.client.worldRenderer.getChunksDebugString(), this.client.worldRenderer.getEntitiesDebugString(), "P: " + this.client.particleManager.getDebugString() + ". T: " + this.client.world.getRegularEntityCount(), this.client.world.getDebugString());
+        String string3 = this.getServerWorldDebugString();
         if (string3 != null) {
             list.add(string3);
         }
@@ -190,12 +190,15 @@ extends DrawableHelper {
         list.add(String.format("Chunk: %d %d %d in %d %d %d", blockPos.getX() & 0xF, blockPos.getY() & 0xF, blockPos.getZ() & 0xF, blockPos.getX() >> 4, blockPos.getY() >> 4, blockPos.getZ() >> 4));
         list.add(String.format(Locale.ROOT, "Facing: %s (%s) (%.1f / %.1f)", direction, string2, Float.valueOf(MathHelper.wrapDegrees(entity.yaw)), Float.valueOf(MathHelper.wrapDegrees(entity.pitch))));
         if (this.client.world != null) {
-            if (this.client.world.isBlockLoaded(blockPos)) {
+            if (this.client.world.method_22340(blockPos)) {
                 WorldChunk worldChunk = this.getClientChunk();
                 if (worldChunk.isEmpty()) {
                     list.add("Waiting for chunk...");
                 } else {
-                    list.add("Client Light: " + worldChunk.getLightLevel(blockPos, 0) + " (" + this.client.world.getLightLevel(LightType.SKY, blockPos) + " sky, " + this.client.world.getLightLevel(LightType.BLOCK, blockPos) + " block)");
+                    int i = this.client.world.method_2935().getLightingProvider().method_22363(blockPos, 0);
+                    int j = this.client.world.getLightLevel(LightType.SKY, blockPos);
+                    int k = this.client.world.getLightLevel(LightType.BLOCK, blockPos);
+                    list.add("Client Light: " + i + " (" + j + " sky, " + k + " block)");
                     WorldChunk worldChunk2 = this.getChunk();
                     if (worldChunk2 != null) {
                         LightingProvider lightingProvider = world.getChunkManager().getLightingProvider();
@@ -250,11 +253,11 @@ extends DrawableHelper {
     }
 
     @Nullable
-    private String method_20603() {
+    private String getServerWorldDebugString() {
         ServerWorld serverWorld;
         IntegratedServer integratedServer = this.client.getServer();
         if (integratedServer != null && (serverWorld = integratedServer.getWorld(this.client.world.getDimension().getType())) != null) {
-            return serverWorld.getChunkProviderStatus();
+            return serverWorld.getDebugString();
         }
         return null;
     }
@@ -292,7 +295,7 @@ extends DrawableHelper {
         long m = Runtime.getRuntime().totalMemory();
         long n = Runtime.getRuntime().freeMemory();
         long o = m - n;
-        ArrayList<String> list = Lists.newArrayList(String.format("Java: %s %dbit", System.getProperty("java.version"), this.client.is64Bit() ? 64 : 32), String.format("Mem: % 2d%% %03d/%03dMB", o * 100L / l, DebugHud.method_1838(o), DebugHud.method_1838(l)), String.format("Allocated: % 2d%% %03dMB", m * 100L / l, DebugHud.method_1838(m)), "", String.format("CPU: %s", class_4494.method_22089()), "", String.format("Display: %dx%d (%s)", MinecraftClient.getInstance().window.getFramebufferWidth(), MinecraftClient.getInstance().window.getFramebufferHeight(), class_4494.method_22088()), class_4494.method_22090(), class_4494.method_22091());
+        ArrayList<String> list = Lists.newArrayList(String.format("Java: %s %dbit", System.getProperty("java.version"), this.client.is64Bit() ? 64 : 32), String.format("Mem: % 2d%% %03d/%03dMB", o * 100L / l, DebugHud.toMiB(o), DebugHud.toMiB(l)), String.format("Allocated: % 2d%% %03dMB", m * 100L / l, DebugHud.toMiB(m)), "", String.format("CPU: %s", GlDebugInfo.getCpuInfo()), "", String.format("Display: %dx%d (%s)", MinecraftClient.getInstance().window.getFramebufferWidth(), MinecraftClient.getInstance().window.getFramebufferHeight(), GlDebugInfo.getVendor()), GlDebugInfo.getRenderer(), GlDebugInfo.getVersion());
         if (this.client.hasReducedDebugInfo()) {
             return list;
         }
@@ -368,7 +371,7 @@ extends DrawableHelper {
         while (m != l) {
             u = metricsData.method_15248(ls[m], bl ? 30 : 60, bl ? 60 : 20);
             int v = bl ? 100 : 60;
-            int w = this.method_1833(MathHelper.clamp(u, 0, v), 0, v / 2, v);
+            int w = this.getMetricsLineColor(MathHelper.clamp(u, 0, v), 0, v / 2, v);
             this.vLine(n, t, t - u, w);
             ++n;
             m = metricsData.wrapIndex(m + 1);
@@ -400,7 +403,7 @@ extends DrawableHelper {
         RenderSystem.enableDepthTest();
     }
 
-    private int method_1833(int i, int j, int k, int l) {
+    private int getMetricsLineColor(int i, int j, int k, int l) {
         if (i < k) {
             return this.interpolateColor(-16711936, -256, (float)i / (float)k);
         }
@@ -423,7 +426,7 @@ extends DrawableHelper {
         return s << 24 | t << 16 | u << 8 | v;
     }
 
-    private static long method_1838(long l) {
+    private static long toMiB(long l) {
         return l / 1024L / 1024L;
     }
 }

@@ -14,9 +14,9 @@ import java.util.Optional;
 import java.util.function.BiConsumer;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_4536;
 import net.minecraft.client.WindowEventHandler;
 import net.minecraft.client.WindowSettings;
+import net.minecraft.client.texture.TextureUtil;
 import net.minecraft.client.util.InputUtil;
 import net.minecraft.client.util.Monitor;
 import net.minecraft.client.util.MonitorTracker;
@@ -179,7 +179,7 @@ implements AutoCloseable {
     private ByteBuffer method_4510(InputStream inputStream, IntBuffer intBuffer, IntBuffer intBuffer2, IntBuffer intBuffer3) throws IOException {
         ByteBuffer byteBuffer = null;
         try {
-            byteBuffer = class_4536.readResource(inputStream);
+            byteBuffer = TextureUtil.readResource(inputStream);
             byteBuffer.rewind();
             ByteBuffer byteBuffer2 = STBImage.stbi_load_from_memory(byteBuffer, intBuffer, intBuffer2, intBuffer3, 0);
             return byteBuffer2;
@@ -434,7 +434,7 @@ implements AutoCloseable {
     }
 
     public void method_21668(boolean bl) {
-        InputUtil.method_21736(this.handle, bl);
+        InputUtil.setRawMouseMotionMode(this.handle, bl);
     }
 }
 

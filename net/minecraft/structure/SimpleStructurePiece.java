@@ -22,6 +22,7 @@ import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MutableIntBoundingBox;
 import net.minecraft.world.IWorld;
+import net.minecraft.world.gen.chunk.ChunkGenerator;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -57,7 +58,7 @@ extends StructurePiece {
     }
 
     @Override
-    public boolean generate(IWorld iWorld, Random random, MutableIntBoundingBox mutableIntBoundingBox, ChunkPos chunkPos) {
+    public boolean generate(IWorld iWorld, ChunkGenerator<?> chunkGenerator, Random random, MutableIntBoundingBox mutableIntBoundingBox, ChunkPos chunkPos) {
         this.placementData.setBoundingBox(mutableIntBoundingBox);
         this.boundingBox = this.structure.calculateBoundingBox(this.placementData, this.pos);
         if (this.structure.method_15172(iWorld, this.pos, this.placementData, 2)) {

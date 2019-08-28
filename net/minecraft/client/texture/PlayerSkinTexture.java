@@ -12,11 +12,11 @@ import java.net.URL;
 import java.util.concurrent.atomic.AtomicInteger;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_4536;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.texture.ImageFilter;
 import net.minecraft.client.texture.NativeImage;
 import net.minecraft.client.texture.ResourceTexture;
+import net.minecraft.client.texture.TextureUtil;
 import net.minecraft.resource.ResourceManager;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.UncaughtExceptionLogger;
@@ -48,7 +48,7 @@ extends ResourceTexture {
     }
 
     private void method_4531(NativeImage nativeImage) {
-        class_4536.prepareImage(this.getGlId(), nativeImage.getWidth(), nativeImage.getHeight());
+        TextureUtil.prepareImage(this.getGlId(), nativeImage.getWidth(), nativeImage.getHeight());
         nativeImage.upload(0, 0, 0, false);
     }
 

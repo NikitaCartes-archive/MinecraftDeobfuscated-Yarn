@@ -65,23 +65,23 @@ extends HorizontalConnectedBlock {
 
     @Override
     public BlockState getPlacementState(ItemPlacementContext itemPlacementContext) {
-        World viewableWorld = itemPlacementContext.getWorld();
+        World lv = itemPlacementContext.getWorld();
         BlockPos blockPos = itemPlacementContext.getBlockPos();
         FluidState fluidState = itemPlacementContext.getWorld().getFluidState(itemPlacementContext.getBlockPos());
         BlockPos blockPos2 = blockPos.north();
         BlockPos blockPos3 = blockPos.east();
         BlockPos blockPos4 = blockPos.south();
         BlockPos blockPos5 = blockPos.west();
-        BlockState blockState = viewableWorld.getBlockState(blockPos2);
-        BlockState blockState2 = viewableWorld.getBlockState(blockPos3);
-        BlockState blockState3 = viewableWorld.getBlockState(blockPos4);
-        BlockState blockState4 = viewableWorld.getBlockState(blockPos5);
-        boolean bl = this.shouldConnectTo(blockState, blockState.isSideSolidFullSquare(viewableWorld, blockPos2, Direction.SOUTH), Direction.SOUTH);
-        boolean bl2 = this.shouldConnectTo(blockState2, blockState2.isSideSolidFullSquare(viewableWorld, blockPos3, Direction.WEST), Direction.WEST);
-        boolean bl3 = this.shouldConnectTo(blockState3, blockState3.isSideSolidFullSquare(viewableWorld, blockPos4, Direction.NORTH), Direction.NORTH);
-        boolean bl4 = this.shouldConnectTo(blockState4, blockState4.isSideSolidFullSquare(viewableWorld, blockPos5, Direction.EAST), Direction.EAST);
+        BlockState blockState = lv.getBlockState(blockPos2);
+        BlockState blockState2 = lv.getBlockState(blockPos3);
+        BlockState blockState3 = lv.getBlockState(blockPos4);
+        BlockState blockState4 = lv.getBlockState(blockPos5);
+        boolean bl = this.shouldConnectTo(blockState, blockState.isSideSolidFullSquare(lv, blockPos2, Direction.SOUTH), Direction.SOUTH);
+        boolean bl2 = this.shouldConnectTo(blockState2, blockState2.isSideSolidFullSquare(lv, blockPos3, Direction.WEST), Direction.WEST);
+        boolean bl3 = this.shouldConnectTo(blockState3, blockState3.isSideSolidFullSquare(lv, blockPos4, Direction.NORTH), Direction.NORTH);
+        boolean bl4 = this.shouldConnectTo(blockState4, blockState4.isSideSolidFullSquare(lv, blockPos5, Direction.EAST), Direction.EAST);
         boolean bl5 = !(bl && !bl2 && bl3 && !bl4 || !bl && bl2 && !bl3 && bl4);
-        return (BlockState)((BlockState)((BlockState)((BlockState)((BlockState)((BlockState)this.getDefaultState().with(UP, bl5 || !viewableWorld.isAir(blockPos.up()))).with(NORTH, bl)).with(EAST, bl2)).with(SOUTH, bl3)).with(WEST, bl4)).with(WATERLOGGED, fluidState.getFluid() == Fluids.WATER);
+        return (BlockState)((BlockState)((BlockState)((BlockState)((BlockState)((BlockState)this.getDefaultState().with(UP, bl5 || !lv.method_22347(blockPos.up()))).with(NORTH, bl)).with(EAST, bl2)).with(SOUTH, bl3)).with(WEST, bl4)).with(WATERLOGGED, fluidState.getFluid() == Fluids.WATER);
     }
 
     @Override
@@ -98,7 +98,7 @@ extends HorizontalConnectedBlock {
         boolean bl3 = direction == Direction.SOUTH ? this.shouldConnectTo(blockState2, blockState2.isSideSolidFullSquare(iWorld, blockPos2, direction2), direction2) : blockState.get(SOUTH).booleanValue();
         boolean bl4 = direction == Direction.WEST ? this.shouldConnectTo(blockState2, blockState2.isSideSolidFullSquare(iWorld, blockPos2, direction2), direction2) : blockState.get(WEST).booleanValue();
         boolean bl5 = !(bl && !bl2 && bl3 && !bl4 || !bl && bl2 && !bl3 && bl4);
-        return (BlockState)((BlockState)((BlockState)((BlockState)((BlockState)blockState.with(UP, bl5 || !iWorld.isAir(blockPos.up()))).with(NORTH, bl)).with(EAST, bl2)).with(SOUTH, bl3)).with(WEST, bl4);
+        return (BlockState)((BlockState)((BlockState)((BlockState)((BlockState)blockState.with(UP, bl5 || !iWorld.method_22347(blockPos.up()))).with(NORTH, bl)).with(EAST, bl2)).with(SOUTH, bl3)).with(WEST, bl4);
     }
 
     @Override

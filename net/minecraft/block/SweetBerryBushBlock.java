@@ -18,6 +18,7 @@ import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.state.StateFactory;
@@ -61,11 +62,11 @@ implements Fertilizable {
     }
 
     @Override
-    public void onScheduledTick(BlockState blockState, World world, BlockPos blockPos, Random random) {
-        super.onScheduledTick(blockState, world, blockPos, random);
+    public void onScheduledTick(BlockState blockState, ServerWorld serverWorld, BlockPos blockPos, Random random) {
+        super.onScheduledTick(blockState, serverWorld, blockPos, random);
         int i = blockState.get(AGE);
-        if (i < 3 && random.nextInt(5) == 0 && world.getLightLevel(blockPos.up(), 0) >= 9) {
-            world.setBlockState(blockPos, (BlockState)blockState.with(AGE, i + 1), 2);
+        if (i < 3 && random.nextInt(5) == 0 && serverWorld.method_22335(blockPos.up(), 0) >= 9) {
+            serverWorld.setBlockState(blockPos, (BlockState)blockState.with(AGE, i + 1), 2);
         }
     }
 
@@ -118,9 +119,9 @@ implements Fertilizable {
     }
 
     @Override
-    public void grow(World world, Random random, BlockPos blockPos, BlockState blockState) {
+    public void grow(ServerWorld serverWorld, Random random, BlockPos blockPos, BlockState blockState) {
         int i = Math.min(3, blockState.get(AGE) + 1);
-        world.setBlockState(blockPos, (BlockState)blockState.with(AGE, i), 2);
+        serverWorld.setBlockState(blockPos, (BlockState)blockState.with(AGE, i), 2);
     }
 }
 

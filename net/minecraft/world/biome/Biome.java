@@ -18,6 +18,7 @@ import net.fabricmc.api.Environment;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.FluidBlock;
+import net.minecraft.class_4538;
 import net.minecraft.client.color.world.FoliageColors;
 import net.minecraft.client.color.world.GrassColors;
 import net.minecraft.entity.EntityCategory;
@@ -37,7 +38,6 @@ import net.minecraft.util.math.noise.OctaveSimplexNoiseSampler;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.world.IWorld;
 import net.minecraft.world.LightType;
-import net.minecraft.world.ViewableWorld;
 import net.minecraft.world.chunk.Chunk;
 import net.minecraft.world.gen.ChunkRandom;
 import net.minecraft.world.gen.GenerationStep;
@@ -186,23 +186,23 @@ public abstract class Biome {
         return g;
     }
 
-    public boolean canSetSnow(ViewableWorld viewableWorld, BlockPos blockPos) {
-        return this.canSetSnow(viewableWorld, blockPos, true);
+    public boolean canSetSnow(class_4538 arg, BlockPos blockPos) {
+        return this.canSetSnow(arg, blockPos, true);
     }
 
-    public boolean canSetSnow(ViewableWorld viewableWorld, BlockPos blockPos, boolean bl) {
+    public boolean canSetSnow(class_4538 arg, BlockPos blockPos, boolean bl) {
         if (this.getTemperature(blockPos) >= 0.15f) {
             return false;
         }
-        if (blockPos.getY() >= 0 && blockPos.getY() < 256 && viewableWorld.getLightLevel(LightType.BLOCK, blockPos) < 10) {
-            BlockState blockState = viewableWorld.getBlockState(blockPos);
-            FluidState fluidState = viewableWorld.getFluidState(blockPos);
+        if (blockPos.getY() >= 0 && blockPos.getY() < 256 && arg.getLightLevel(LightType.BLOCK, blockPos) < 10) {
+            BlockState blockState = arg.getBlockState(blockPos);
+            FluidState fluidState = arg.getFluidState(blockPos);
             if (fluidState.getFluid() == Fluids.WATER && blockState.getBlock() instanceof FluidBlock) {
                 boolean bl2;
                 if (!bl) {
                     return true;
                 }
-                boolean bl3 = bl2 = viewableWorld.isWaterAt(blockPos.west()) && viewableWorld.isWaterAt(blockPos.east()) && viewableWorld.isWaterAt(blockPos.north()) && viewableWorld.isWaterAt(blockPos.south());
+                boolean bl3 = bl2 = arg.method_22351(blockPos.west()) && arg.method_22351(blockPos.east()) && arg.method_22351(blockPos.north()) && arg.method_22351(blockPos.south());
                 if (!bl2) {
                     return true;
                 }
@@ -211,12 +211,12 @@ public abstract class Biome {
         return false;
     }
 
-    public boolean canSetIce(ViewableWorld viewableWorld, BlockPos blockPos) {
+    public boolean canSetIce(class_4538 arg, BlockPos blockPos) {
         BlockState blockState;
         if (this.getTemperature(blockPos) >= 0.15f) {
             return false;
         }
-        return blockPos.getY() >= 0 && blockPos.getY() < 256 && viewableWorld.getLightLevel(LightType.BLOCK, blockPos) < 10 && (blockState = viewableWorld.getBlockState(blockPos)).isAir() && Blocks.SNOW.getDefaultState().canPlaceAt(viewableWorld, blockPos);
+        return blockPos.getY() >= 0 && blockPos.getY() < 256 && arg.getLightLevel(LightType.BLOCK, blockPos) < 10 && (blockState = arg.getBlockState(blockPos)).isAir() && Blocks.SNOW.getDefaultState().canPlaceAt(arg, blockPos);
     }
 
     public void addFeature(GenerationStep.Feature feature, ConfiguredFeature<?> configuredFeature) {

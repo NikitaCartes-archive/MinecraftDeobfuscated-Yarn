@@ -5,6 +5,7 @@ package net.minecraft.entity.ai.brain.task;
 
 import com.google.common.collect.ImmutableMap;
 import java.util.Optional;
+import net.minecraft.client.network.DebugRendererInfoManager;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.ai.brain.Brain;
@@ -71,6 +72,7 @@ extends Task<VillagerEntity> {
                 this.method_19572(serverWorld, optional2.get(), optional.get());
             } else {
                 serverWorld.getPointOfInterestStorage().releaseTicket(optional.get());
+                DebugRendererInfoManager.sendPointOfInterest(serverWorld, optional.get());
             }
         }
     }

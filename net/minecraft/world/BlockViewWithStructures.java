@@ -6,11 +6,9 @@ package net.minecraft.world;
 import it.unimi.dsi.fastutil.longs.LongSet;
 import java.util.Map;
 import net.minecraft.structure.StructureStart;
-import net.minecraft.world.BlockView;
 import org.jetbrains.annotations.Nullable;
 
-public interface BlockViewWithStructures
-extends BlockView {
+public interface BlockViewWithStructures {
     @Nullable
     public StructureStart getStructureStart(String var1);
 

@@ -59,12 +59,12 @@ implements EntityAttributeInstance {
     }
 
     @Override
-    public Collection<EntityAttributeModifier> getModifiers(EntityAttributeModifier.Operation operation) {
+    public Set<EntityAttributeModifier> getModifiers(EntityAttributeModifier.Operation operation) {
         return this.modifiersByOperation.get((Object)operation);
     }
 
     @Override
-    public Collection<EntityAttributeModifier> getModifiers() {
+    public Set<EntityAttributeModifier> getModifiers() {
         HashSet<EntityAttributeModifier> set = Sets.newHashSet();
         for (EntityAttributeModifier.Operation operation : EntityAttributeModifier.Operation.values()) {
             set.addAll(this.getModifiers(operation));

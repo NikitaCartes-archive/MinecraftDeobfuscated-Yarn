@@ -136,6 +136,10 @@ extends HostileEntity {
         return this.patrolling;
     }
 
+    protected void method_22332(boolean bl) {
+        this.patrolling = bl;
+    }
+
     public static class PatrolGoal<T extends PatrolEntity>
     extends Goal {
         private final T actor;
@@ -167,7 +171,10 @@ extends HostileEntity {
             boolean bl = ((PatrolEntity)this.actor).isPatrolLeader();
             EntityNavigation entityNavigation = ((MobEntity)this.actor).getNavigation();
             if (entityNavigation.isIdle()) {
-                if (!bl || !((PatrolEntity)this.actor).getPatrolTarget().isWithinDistance(((Entity)this.actor).getPos(), 10.0)) {
+                List<PatrolEntity> list = this.method_22333();
+                if (((PatrolEntity)this.actor).isRaidCenterSet() && list.isEmpty()) {
+                    ((PatrolEntity)this.actor).method_22332(false);
+                } else if (!bl || !((PatrolEntity)this.actor).getPatrolTarget().isWithinDistance(((Entity)this.actor).getPos(), 10.0)) {
                     Vec3d vec3d = new Vec3d(((PatrolEntity)this.actor).getPatrolTarget());
                     Vec3d vec3d2 = new Vec3d(((PatrolEntity)this.actor).x, ((PatrolEntity)this.actor).y, ((PatrolEntity)this.actor).z);
                     Vec3d vec3d3 = vec3d2.subtract(vec3d);
@@ -177,15 +184,18 @@ extends HostileEntity {
                     if (!entityNavigation.startMovingTo((blockPos = ((PatrolEntity)this.actor).world.getTopPosition(Heightmap.Type.MOTION_BLOCKING_NO_LEAVES, blockPos)).getX(), blockPos.getY(), blockPos.getZ(), bl ? this.fellowSpeed : this.leaderSpeed)) {
                         this.wander();
                     } else if (bl) {
-                        List<PatrolEntity> list = ((PatrolEntity)this.actor).world.getEntities(PatrolEntity.class, ((Entity)this.actor).getBoundingBox().expand(16.0), patrolEntity -> !patrolEntity.isPatrolLeader() && patrolEntity.hasNoRaid());
-                        for (PatrolEntity patrolEntity2 : list) {
-                            patrolEntity2.setPatrolTarget(blockPos);
+                        for (PatrolEntity patrolEntity : list) {
+                            patrolEntity.setPatrolTarget(blockPos);
                         }
                     }
                 } else {
                     ((PatrolEntity)this.actor).setRandomPatrolTarget();
                 }
             }
+        }
+
+        private List<PatrolEntity> method_22333() {
+            return ((PatrolEntity)this.actor).world.getEntities(PatrolEntity.class, ((Entity)this.actor).getBoundingBox().expand(16.0), patrolEntity -> patrolEntity.hasNoRaid() && !patrolEntity.isPartOf((Entity)this.actor));
         }
 
         private void wander() {

@@ -3,10 +3,10 @@
  */
 package net.minecraft.client.render.entity.feature;
 
+import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_4493;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.GameRenderer;
 import net.minecraft.client.render.entity.feature.FeatureRenderer;
@@ -43,7 +43,7 @@ extends FeatureRenderer<WitherEntity, WitherEntityModel<WitherEntity>> {
         float p = 0.5f;
         RenderSystem.color4f(0.5f, 0.5f, 0.5f, 1.0f);
         RenderSystem.disableLighting();
-        RenderSystem.blendFunc(class_4493.class_4535.ONE, class_4493.class_4534.ONE);
+        RenderSystem.blendFunc(GlStateManager.class_4535.ONE, GlStateManager.class_4534.ONE);
         this.model.method_17128(witherEntity, f, g, h);
         ((WitherEntityModel)this.getModel()).copyStateTo(this.model);
         GameRenderer gameRenderer = MinecraftClient.getInstance().gameRenderer;

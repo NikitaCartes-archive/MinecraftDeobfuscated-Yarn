@@ -22,7 +22,7 @@ extends Feature<DefaultFeatureConfig> {
     }
 
     public boolean method_13239(IWorld iWorld, ChunkGenerator<? extends ChunkGeneratorConfig> chunkGenerator, Random random, BlockPos blockPos, DefaultFeatureConfig defaultFeatureConfig) {
-        if (!iWorld.isAir(blockPos)) {
+        if (!iWorld.method_22347(blockPos)) {
             return false;
         }
         if (iWorld.getBlockState(blockPos.up()).getBlock() != Blocks.NETHERRACK) {

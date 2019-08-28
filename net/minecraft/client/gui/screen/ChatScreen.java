@@ -90,7 +90,7 @@ extends Screen {
     @Override
     public void removed() {
         this.minecraft.keyboard.enableRepeatEvents(false);
-        this.minecraft.inGameHud.getChatHud().method_1820();
+        this.minecraft.inGameHud.getChatHud().resetScroll();
     }
 
     @Override
@@ -312,7 +312,7 @@ extends Screen {
         if (bl) {
             this.chatField.setText(string);
         } else {
-            this.chatField.addText(string);
+            this.chatField.write(string);
         }
     }
 
@@ -339,7 +339,7 @@ extends Screen {
     @Override
     public void render(int i, int j, float f) {
         this.setFocused(this.chatField);
-        this.chatField.method_1876(true);
+        this.chatField.setSelected(true);
         ChatScreen.fill(2, this.height - 14, this.width - 2, this.height - 2, this.minecraft.options.getTextBackgroundColor(Integer.MIN_VALUE));
         this.chatField.render(i, j, f);
         if (this.suggestionsWindow != null) {
@@ -532,8 +532,8 @@ extends Screen {
             ChatScreen.this.completingSuggestion = true;
             ChatScreen.this.setText(suggestion.apply(this.input));
             int i = suggestion.getRange().getStart() + suggestion.getText().length();
-            ChatScreen.this.chatField.setCursor(i);
-            ChatScreen.this.chatField.method_1884(i);
+            ChatScreen.this.chatField.setSelectionStart(i);
+            ChatScreen.this.chatField.setSelectionEnd(i);
             this.select(this.selection);
             ChatScreen.this.completingSuggestion = false;
             this.completed = true;

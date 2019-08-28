@@ -54,7 +54,7 @@ import org.jetbrains.annotations.Nullable;
 
 @Environment(value=EnvType.CLIENT)
 public class WorldListWidget
-extends AlwaysSelectedEntryListWidget<LevelItem> {
+extends AlwaysSelectedEntryListWidget<Entry> {
     private static final Logger LOGGER = LogManager.getLogger();
     private static final DateFormat DATE_FORMAT = new SimpleDateFormat();
     private static final Identifier UNKNOWN_SERVER_LOCATION = new Identifier("textures/misc/unknown_server.png");
@@ -88,7 +88,7 @@ extends AlwaysSelectedEntryListWidget<LevelItem> {
         String string = supplier.get().toLowerCase(Locale.ROOT);
         for (LevelSummary levelSummary : this.levels) {
             if (!levelSummary.getDisplayName().toLowerCase(Locale.ROOT).contains(string) && !levelSummary.getName().toLowerCase(Locale.ROOT).contains(string)) continue;
-            this.addEntry(new LevelItem(this, levelSummary, this.minecraft.getLevelStorage()));
+            this.addEntry(new Entry(this, levelSummary, this.minecraft.getLevelStorage()));
         }
     }
 
@@ -107,10 +107,10 @@ extends AlwaysSelectedEntryListWidget<LevelItem> {
         return this.parent.getFocused() == this;
     }
 
-    public void method_20157(@Nullable LevelItem levelItem) {
-        super.setSelected(levelItem);
-        if (levelItem != null) {
-            LevelSummary levelSummary = levelItem.level;
+    public void method_20157(@Nullable Entry entry) {
+        super.setSelected(entry);
+        if (entry != null) {
+            LevelSummary levelSummary = entry.level;
             NarratorManager.INSTANCE.narrate(new TranslatableText("narrator.select", new TranslatableText("narrator.select.world", levelSummary.getDisplayName(), new Date(levelSummary.getLastPlayed()), levelSummary.isHardcore() ? I18n.translate("gameMode.hardcore", new Object[0]) : I18n.translate("gameMode." + levelSummary.getGameMode().getName(), new Object[0]), levelSummary.hasCheats() ? I18n.translate("selectWorld.cheats", new Object[0]) : "", levelSummary.getVersion())).getString());
         }
     }
@@ -121,7 +121,7 @@ extends AlwaysSelectedEntryListWidget<LevelItem> {
         this.parent.worldSelected(true);
     }
 
-    public Optional<LevelItem> method_20159() {
+    public Optional<Entry> method_20159() {
         return Optional.ofNullable(this.getSelected());
     }
 
@@ -131,12 +131,12 @@ extends AlwaysSelectedEntryListWidget<LevelItem> {
 
     @Override
     public /* synthetic */ void setSelected(@Nullable EntryListWidget.Entry entry) {
-        this.method_20157((LevelItem)entry);
+        this.method_20157((Entry)entry);
     }
 
     @Environment(value=EnvType.CLIENT)
-    public final class LevelItem
-    extends AlwaysSelectedEntryListWidget.Entry<LevelItem>
+    public final class Entry
+    extends AlwaysSelectedEntryListWidget.Entry<Entry>
     implements AutoCloseable {
         private final MinecraftClient client;
         private final SelectWorldScreen screen;
@@ -147,7 +147,7 @@ extends AlwaysSelectedEntryListWidget<LevelItem> {
         private final NativeImageBackedTexture icon;
         private long time;
 
-        public LevelItem(WorldListWidget worldListWidget2, LevelSummary levelSummary, LevelStorage levelStorage) {
+        public Entry(WorldListWidget worldListWidget2, LevelSummary levelSummary, LevelStorage levelStorage) {
             this.screen = worldListWidget2.getParent();
             this.level = levelSummary;
             this.client = MinecraftClient.getInstance();

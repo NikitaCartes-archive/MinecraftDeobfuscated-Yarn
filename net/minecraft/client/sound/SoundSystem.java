@@ -63,7 +63,7 @@ public class SoundSystem {
     private final Map<SoundInstance, Integer> startTicks = Maps.newHashMap();
     private final Map<SoundInstance, Integer> soundEndTicks = Maps.newHashMap();
     private final List<ListenerSoundInstance> listeners = Lists.newArrayList();
-    private final List<TickableSoundInstance> field_20532 = Lists.newArrayList();
+    private final List<TickableSoundInstance> soundsToPlayNextTick = Lists.newArrayList();
     private final List<Sound> preloadedSounds = Lists.newArrayList();
 
     public SoundSystem(SoundManager soundManager, GameOptions gameOptions, ResourceManager resourceManager) {
@@ -153,7 +153,7 @@ public class SoundSystem {
             this.tickingSounds.clear();
             this.sounds.clear();
             this.soundEndTicks.clear();
-            this.field_20532.clear();
+            this.soundsToPlayNextTick.clear();
         }
     }
 
@@ -174,8 +174,8 @@ public class SoundSystem {
 
     private void tick() {
         ++this.ticks;
-        this.field_20532.forEach(this::play);
-        this.field_20532.clear();
+        this.soundsToPlayNextTick.forEach(this::play);
+        this.soundsToPlayNextTick.clear();
         for (TickableSoundInstance tickableSoundInstance : this.tickingSounds) {
             tickableSoundInstance.tick();
             if (tickableSoundInstance.isDone()) {
@@ -318,8 +318,8 @@ public class SoundSystem {
         }
     }
 
-    public void method_22139(TickableSoundInstance tickableSoundInstance) {
-        this.field_20532.add(tickableSoundInstance);
+    public void playNextTick(TickableSoundInstance tickableSoundInstance) {
+        this.soundsToPlayNextTick.add(tickableSoundInstance);
     }
 
     public void addPreloadedSound(Sound sound) {

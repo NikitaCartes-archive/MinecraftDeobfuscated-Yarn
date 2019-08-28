@@ -8,6 +8,7 @@ import net.minecraft.block.BlockRenderLayer;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.Waterloggable;
+import net.minecraft.class_4538;
 import net.minecraft.entity.EntityContext;
 import net.minecraft.fluid.FluidState;
 import net.minecraft.fluid.Fluids;
@@ -21,7 +22,6 @@ import net.minecraft.util.math.Direction;
 import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.IWorld;
-import net.minecraft.world.ViewableWorld;
 import org.jetbrains.annotations.Nullable;
 
 public class CoralParentBlock
@@ -81,9 +81,9 @@ implements Waterloggable {
     }
 
     @Override
-    public boolean canPlaceAt(BlockState blockState, ViewableWorld viewableWorld, BlockPos blockPos) {
+    public boolean canPlaceAt(BlockState blockState, class_4538 arg, BlockPos blockPos) {
         BlockPos blockPos2 = blockPos.down();
-        return viewableWorld.getBlockState(blockPos2).isSideSolidFullSquare(viewableWorld, blockPos2, Direction.UP);
+        return arg.getBlockState(blockPos2).isSideSolidFullSquare(arg, blockPos2, Direction.UP);
     }
 
     @Override

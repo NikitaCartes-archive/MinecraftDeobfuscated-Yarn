@@ -4,12 +4,12 @@
 package net.minecraft.client.render.debug;
 
 import com.google.common.collect.Maps;
+import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
 import java.util.List;
 import java.util.Map;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_4493;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.BufferBuilder;
 import net.minecraft.client.render.Camera;
@@ -44,7 +44,7 @@ implements DebugRenderer.Renderer {
         double f = camera.getPos().z;
         RenderSystem.pushMatrix();
         RenderSystem.enableBlend();
-        RenderSystem.blendFuncSeparate(class_4493.class_4535.SRC_ALPHA, class_4493.class_4534.ONE_MINUS_SRC_ALPHA, class_4493.class_4535.ONE, class_4493.class_4534.ZERO);
+        RenderSystem.blendFuncSeparate(GlStateManager.class_4535.SRC_ALPHA, GlStateManager.class_4534.ONE_MINUS_SRC_ALPHA, GlStateManager.class_4535.ONE, GlStateManager.class_4534.ZERO);
         RenderSystem.disableTexture();
         RenderSystem.disableDepthTest();
         BlockPos blockPos = new BlockPos(camera.getPos().x, 0.0, camera.getPos().z);
@@ -95,7 +95,7 @@ implements DebugRenderer.Renderer {
     }
 
     @Override
-    public void method_20414() {
+    public void clear() {
         this.field_4626.clear();
         this.field_4627.clear();
         this.field_4625.clear();

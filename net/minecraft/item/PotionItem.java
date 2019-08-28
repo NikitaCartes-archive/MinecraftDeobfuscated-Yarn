@@ -46,9 +46,6 @@ extends Item {
     public ItemStack finishUsing(ItemStack itemStack, World world, LivingEntity livingEntity) {
         PlayerEntity playerEntity;
         PlayerEntity playerEntity2 = playerEntity = livingEntity instanceof PlayerEntity ? (PlayerEntity)livingEntity : null;
-        if (playerEntity == null || !playerEntity.abilities.creativeMode) {
-            itemStack.decrement(1);
-        }
         if (playerEntity instanceof ServerPlayerEntity) {
             Criterions.CONSUME_ITEM.handle((ServerPlayerEntity)playerEntity, itemStack);
         }
@@ -64,6 +61,9 @@ extends Item {
         }
         if (playerEntity != null) {
             playerEntity.incrementStat(Stats.USED.getOrCreateStat(this));
+            if (!playerEntity.abilities.creativeMode) {
+                itemStack.decrement(1);
+            }
         }
         if (playerEntity == null || !playerEntity.abilities.creativeMode) {
             if (itemStack.isEmpty()) {

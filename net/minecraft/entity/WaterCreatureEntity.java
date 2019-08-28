@@ -3,12 +3,12 @@
  */
 package net.minecraft.entity;
 
+import net.minecraft.class_4538;
 import net.minecraft.entity.EntityGroup;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.mob.MobEntityWithAi;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.world.ViewableWorld;
 import net.minecraft.world.World;
 
 public abstract class WaterCreatureEntity
@@ -28,8 +28,8 @@ extends MobEntityWithAi {
     }
 
     @Override
-    public boolean canSpawn(ViewableWorld viewableWorld) {
-        return viewableWorld.intersectsEntities(this);
+    public boolean canSpawn(class_4538 arg) {
+        return arg.intersectsEntities(this);
     }
 
     @Override

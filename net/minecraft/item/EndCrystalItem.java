@@ -37,7 +37,7 @@ extends Item {
             return ActionResult.FAIL;
         }
         BlockPos blockPos2 = blockPos.up();
-        if (!world.isAir(blockPos2)) {
+        if (!world.method_22347(blockPos2)) {
             return ActionResult.FAIL;
         }
         double d = blockPos2.getX();

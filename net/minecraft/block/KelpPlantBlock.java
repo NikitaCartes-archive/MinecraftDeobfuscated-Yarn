@@ -12,16 +12,16 @@ import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.FluidFillable;
 import net.minecraft.block.KelpBlock;
+import net.minecraft.class_4538;
 import net.minecraft.fluid.Fluid;
 import net.minecraft.fluid.FluidState;
 import net.minecraft.fluid.Fluids;
 import net.minecraft.item.ItemStack;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.IWorld;
-import net.minecraft.world.ViewableWorld;
-import net.minecraft.world.World;
 
 public class KelpPlantBlock
 extends Block
@@ -44,11 +44,11 @@ implements FluidFillable {
     }
 
     @Override
-    public void onScheduledTick(BlockState blockState, World world, BlockPos blockPos, Random random) {
-        if (!blockState.canPlaceAt(world, blockPos)) {
-            world.breakBlock(blockPos, true);
+    public void onScheduledTick(BlockState blockState, ServerWorld serverWorld, BlockPos blockPos, Random random) {
+        if (!blockState.canPlaceAt(serverWorld, blockPos)) {
+            serverWorld.method_22352(blockPos, true);
         }
-        super.onScheduledTick(blockState, world, blockPos, random);
+        super.onScheduledTick(blockState, serverWorld, blockPos, random);
     }
 
     @Override
@@ -65,11 +65,11 @@ implements FluidFillable {
     }
 
     @Override
-    public boolean canPlaceAt(BlockState blockState, ViewableWorld viewableWorld, BlockPos blockPos) {
+    public boolean canPlaceAt(BlockState blockState, class_4538 arg, BlockPos blockPos) {
         BlockPos blockPos2 = blockPos.down();
-        BlockState blockState2 = viewableWorld.getBlockState(blockPos2);
+        BlockState blockState2 = arg.getBlockState(blockPos2);
         Block block = blockState2.getBlock();
-        return block != Blocks.MAGMA_BLOCK && (block == this || blockState2.isSideSolidFullSquare(viewableWorld, blockPos2, Direction.UP));
+        return block != Blocks.MAGMA_BLOCK && (block == this || blockState2.isSideSolidFullSquare(arg, blockPos2, Direction.UP));
     }
 
     @Override

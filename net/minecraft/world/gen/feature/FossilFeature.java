@@ -68,7 +68,7 @@ extends Feature<DefaultFeatureConfig> {
         int l = 256;
         for (m = 0; m < blockPos2.getX(); ++m) {
             for (int n = 0; n < blockPos2.getZ(); ++n) {
-                l = Math.min(l, iWorld.getTop(Heightmap.Type.OCEAN_FLOOR_WG, blockPos.getX() + m + j, blockPos.getZ() + n + k));
+                l = Math.min(l, iWorld.getLightLevel(Heightmap.Type.OCEAN_FLOOR_WG, blockPos.getX() + m + j, blockPos.getZ() + n + k));
             }
         }
         m = Math.max(l - 15 - random2.nextInt(10), 10);

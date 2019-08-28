@@ -47,6 +47,7 @@ public class Explosion {
     private final double x;
     private final double y;
     private final double z;
+    @Nullable
     private final Entity entity;
     private final float power;
     private DamageSource damageSource;
@@ -218,7 +219,7 @@ public class Explosion {
                 if (blockState.isAir()) continue;
                 if (block.shouldDropItemsOnExplosion(this) && this.world instanceof ServerWorld) {
                     BlockEntity blockEntity = block.hasBlockEntity() ? this.world.getBlockEntity(blockPos) : null;
-                    LootContext.Builder builder = new LootContext.Builder((ServerWorld)this.world).setRandom(this.world.random).put(LootContextParameters.POSITION, blockPos).put(LootContextParameters.TOOL, ItemStack.EMPTY).putNullable(LootContextParameters.BLOCK_ENTITY, blockEntity);
+                    LootContext.Builder builder = new LootContext.Builder((ServerWorld)this.world).setRandom(this.world.random).put(LootContextParameters.POSITION, blockPos).put(LootContextParameters.TOOL, ItemStack.EMPTY).putNullable(LootContextParameters.BLOCK_ENTITY, blockEntity).putNullable(LootContextParameters.THIS_ENTITY, this.entity);
                     if (this.blockDestructionType == DestructionType.DESTROY) {
                         builder.put(LootContextParameters.EXPLOSION_RADIUS, Float.valueOf(this.power));
                     }

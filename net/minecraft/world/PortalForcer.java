@@ -147,8 +147,8 @@ public class PortalForcer {
             for (s = l - 16; s <= l + 16; ++s) {
                 f = (double)s + 0.5 - entity.z;
                 block2: for (t = this.world.getEffectiveHeight() - 1; t >= 0; --t) {
-                    if (!this.world.isAir(mutable.set(r, t, s))) continue;
-                    while (t > 0 && this.world.isAir(mutable.set(r, t - 1, s))) {
+                    if (!this.world.method_22347(mutable.set(r, t, s))) continue;
+                    while (t > 0 && this.world.method_22347(mutable.set(r, t - 1, s))) {
                         --t;
                     }
                     for (u = q; u < q + 4; ++u) {
@@ -165,7 +165,7 @@ public class PortalForcer {
                                     ab = t + z;
                                     int ac = s + (y - 1) * w - x * v;
                                     mutable.set(aa, ab, ac);
-                                    if (z < 0 && !this.world.getBlockState(mutable).getMaterial().isSolid() || z >= 0 && !this.world.isAir(mutable)) continue block2;
+                                    if (z < 0 && !this.world.getBlockState(mutable).getMaterial().isSolid() || z >= 0 && !this.world.method_22347(mutable)) continue block2;
                                 }
                             }
                         }
@@ -187,8 +187,8 @@ public class PortalForcer {
                 for (s = l - 16; s <= l + 16; ++s) {
                     f = (double)s + 0.5 - entity.z;
                     block10: for (t = this.world.getEffectiveHeight() - 1; t >= 0; --t) {
-                        if (!this.world.isAir(mutable.set(r, t, s))) continue;
-                        while (t > 0 && this.world.isAir(mutable.set(r, t - 1, s))) {
+                        if (!this.world.method_22347(mutable.set(r, t, s))) continue;
+                        while (t > 0 && this.world.method_22347(mutable.set(r, t - 1, s))) {
                             --t;
                         }
                         for (u = q; u < q + 2; ++u) {
@@ -200,7 +200,7 @@ public class PortalForcer {
                                     aa = t + y;
                                     ab = s + (x2 - 1) * w;
                                     mutable.set(z, aa, ab);
-                                    if (y < 0 && !this.world.getBlockState(mutable).getMaterial().isSolid() || y >= 0 && !this.world.isAir(mutable)) continue block10;
+                                    if (y < 0 && !this.world.getBlockState(mutable).getMaterial().isSolid() || y >= 0 && !this.world.method_22347(mutable)) continue block10;
                                 }
                             }
                             double g = (double)t + 0.5 - entity.y;

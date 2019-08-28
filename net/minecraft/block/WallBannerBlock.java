@@ -11,6 +11,7 @@ import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.HorizontalFacingBlock;
+import net.minecraft.class_4538;
 import net.minecraft.entity.EntityContext;
 import net.minecraft.item.ItemPlacementContext;
 import net.minecraft.state.StateFactory;
@@ -23,7 +24,6 @@ import net.minecraft.util.math.Direction;
 import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.IWorld;
-import net.minecraft.world.ViewableWorld;
 import net.minecraft.world.World;
 
 public class WallBannerBlock
@@ -42,8 +42,8 @@ extends AbstractBannerBlock {
     }
 
     @Override
-    public boolean canPlaceAt(BlockState blockState, ViewableWorld viewableWorld, BlockPos blockPos) {
-        return viewableWorld.getBlockState(blockPos.offset(blockState.get(FACING).getOpposite())).getMaterial().isSolid();
+    public boolean canPlaceAt(BlockState blockState, class_4538 arg, BlockPos blockPos) {
+        return arg.getBlockState(blockPos.offset(blockState.get(FACING).getOpposite())).getMaterial().isSolid();
     }
 
     @Override
@@ -63,11 +63,11 @@ extends AbstractBannerBlock {
     public BlockState getPlacementState(ItemPlacementContext itemPlacementContext) {
         Direction[] directions;
         BlockState blockState = this.getDefaultState();
-        World viewableWorld = itemPlacementContext.getWorld();
+        World lv = itemPlacementContext.getWorld();
         BlockPos blockPos = itemPlacementContext.getBlockPos();
         for (Direction direction : directions = itemPlacementContext.getPlacementDirections()) {
             Direction direction2;
-            if (!direction.getAxis().isHorizontal() || !(blockState = (BlockState)blockState.with(FACING, direction2 = direction.getOpposite())).canPlaceAt(viewableWorld, blockPos)) continue;
+            if (!direction.getAxis().isHorizontal() || !(blockState = (BlockState)blockState.with(FACING, direction2 = direction.getOpposite())).canPlaceAt(lv, blockPos)) continue;
             return blockState;
         }
         return null;

@@ -28,7 +28,7 @@ extends Feature<DefaultFeatureConfig> {
         int i = 0;
         for (int j = 0; j < 64; ++j) {
             BlockPos blockPos2 = blockPos.add(random.nextInt(8) - random.nextInt(8), random.nextInt(4) - random.nextInt(4), random.nextInt(8) - random.nextInt(8));
-            if (!iWorld.isAir(blockPos2) || iWorld.getBlockState(blockPos2.down()).getBlock() != Blocks.GRASS_BLOCK) continue;
+            if (!iWorld.method_22347(blockPos2) || iWorld.getBlockState(blockPos2.down()).getBlock() != Blocks.GRASS_BLOCK) continue;
             iWorld.setBlockState(blockPos2, this.crop, 2);
             ++i;
         }

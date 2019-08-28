@@ -124,7 +124,7 @@ AutoCloseable {
             this.finalizeUniformsAndSamplers();
             if (this.attribNames != null) {
                 for (String string4 : this.attribNames) {
-                    int l = GlUniform.method_22097(this.programRef, string4);
+                    int l = GlUniform.getAttribLocation(this.programRef, string4);
                     this.attribLocs.add(l);
                 }
             }
@@ -207,7 +207,7 @@ AutoCloseable {
     }
 
     public void disable() {
-        GlProgramManager.method_22094(0);
+        GlProgramManager.useProgram(0);
         activeProgramRef = -1;
         activeProgram = null;
         for (int i = 0; i < this.samplerShaderLocs.size(); ++i) {
@@ -222,7 +222,7 @@ AutoCloseable {
         activeProgram = this;
         this.blendState.enable();
         if (this.programRef != activeProgramRef) {
-            GlProgramManager.method_22094(this.programRef);
+            GlProgramManager.useProgram(this.programRef);
             activeProgramRef = this.programRef;
         }
         if (this.useCullFace) {
@@ -245,7 +245,7 @@ AutoCloseable {
             }
             if (j == -1) continue;
             RenderSystem.bindTexture(j);
-            GlUniform.method_22095(GlUniform.method_22096(this.programRef, this.samplerNames.get(i)), i);
+            GlUniform.uniform1(GlUniform.getUniformLocation(this.programRef, this.samplerNames.get(i)), i);
         }
         for (GlUniform glUniform : this.uniformData) {
             glUniform.upload();
@@ -274,7 +274,7 @@ AutoCloseable {
         int j = 0;
         while (i < this.samplerNames.size()) {
             string = this.samplerNames.get(i);
-            k = GlUniform.method_22096(this.programRef, string);
+            k = GlUniform.getUniformLocation(this.programRef, string);
             if (k == -1) {
                 LOGGER.warn("Shader {}could not find sampler named {} in the specified shader program.", (Object)this.name, (Object)string);
                 this.samplerBinds.remove(string);
@@ -288,7 +288,7 @@ AutoCloseable {
         }
         for (GlUniform glUniform : this.uniformData) {
             string = glUniform.getName();
-            k = GlUniform.method_22096(this.programRef, string);
+            k = GlUniform.getUniformLocation(this.programRef, string);
             if (k == -1) {
                 LOGGER.warn("Could not find uniform named {} in the specified shader program.", (Object)string);
                 continue;

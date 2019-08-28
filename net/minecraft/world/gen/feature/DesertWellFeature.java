@@ -33,7 +33,7 @@ extends Feature<DefaultFeatureConfig> {
         int j;
         int i2;
         blockPos = blockPos.up();
-        while (iWorld.isAir(blockPos) && blockPos.getY() > 2) {
+        while (iWorld.method_22347(blockPos) && blockPos.getY() > 2) {
             blockPos = blockPos.down();
         }
         if (!CAN_GENERATE.method_11760(iWorld.getBlockState(blockPos))) {
@@ -41,7 +41,7 @@ extends Feature<DefaultFeatureConfig> {
         }
         for (i2 = -2; i2 <= 2; ++i2) {
             for (j = -2; j <= 2; ++j) {
-                if (!iWorld.isAir(blockPos.add(i2, -1, j)) || !iWorld.isAir(blockPos.add(i2, -2, j))) continue;
+                if (!iWorld.method_22347(blockPos.add(i2, -1, j)) || !iWorld.method_22347(blockPos.add(i2, -2, j))) continue;
                 return false;
             }
         }

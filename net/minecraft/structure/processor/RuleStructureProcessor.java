@@ -10,6 +10,7 @@ import com.mojang.datafixers.types.DynamicOps;
 import java.util.List;
 import java.util.Random;
 import net.minecraft.block.BlockState;
+import net.minecraft.class_4538;
 import net.minecraft.structure.Structure;
 import net.minecraft.structure.StructurePlacementData;
 import net.minecraft.structure.processor.StructureProcessor;
@@ -17,7 +18,6 @@ import net.minecraft.structure.processor.StructureProcessorRule;
 import net.minecraft.structure.processor.StructureProcessorType;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
-import net.minecraft.world.ViewableWorld;
 import org.jetbrains.annotations.Nullable;
 
 public class RuleStructureProcessor
@@ -34,9 +34,9 @@ extends StructureProcessor {
 
     @Override
     @Nullable
-    public Structure.StructureBlockInfo process(ViewableWorld viewableWorld, BlockPos blockPos, Structure.StructureBlockInfo structureBlockInfo, Structure.StructureBlockInfo structureBlockInfo2, StructurePlacementData structurePlacementData) {
+    public Structure.StructureBlockInfo process(class_4538 arg, BlockPos blockPos, Structure.StructureBlockInfo structureBlockInfo, Structure.StructureBlockInfo structureBlockInfo2, StructurePlacementData structurePlacementData) {
         Random random = new Random(MathHelper.hashCode(structureBlockInfo2.pos));
-        BlockState blockState = viewableWorld.getBlockState(structureBlockInfo2.pos);
+        BlockState blockState = arg.getBlockState(structureBlockInfo2.pos);
         for (StructureProcessorRule structureProcessorRule : this.rules) {
             if (!structureProcessorRule.test(structureBlockInfo2.state, blockState, random)) continue;
             return new Structure.StructureBlockInfo(structureBlockInfo2.pos, structureProcessorRule.getOutputState(), structureProcessorRule.getTag());

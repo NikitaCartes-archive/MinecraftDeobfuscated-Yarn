@@ -3,11 +3,10 @@
  */
 package net.minecraft.client.render.entity;
 
+import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_4493;
-import net.minecraft.class_4506;
 import net.minecraft.client.network.AbstractClientPlayerEntity;
 import net.minecraft.client.render.entity.EntityRenderDispatcher;
 import net.minecraft.client.render.entity.LivingEntityRenderer;
@@ -19,6 +18,7 @@ import net.minecraft.client.render.entity.feature.ElytraFeatureRenderer;
 import net.minecraft.client.render.entity.feature.HeadFeatureRenderer;
 import net.minecraft.client.render.entity.feature.HeldItemFeatureRenderer;
 import net.minecraft.client.render.entity.feature.ShoulderParrotFeatureRenderer;
+import net.minecraft.client.render.entity.feature.StingerFeatureRenderer;
 import net.minecraft.client.render.entity.feature.StuckArrowsFeatureRenderer;
 import net.minecraft.client.render.entity.feature.TridentRiptideFeatureRenderer;
 import net.minecraft.client.render.entity.model.BipedEntityModel;
@@ -55,7 +55,7 @@ extends LivingEntityRenderer<AbstractClientPlayerEntity, PlayerEntityModel<Abstr
         this.addFeature(new ElytraFeatureRenderer<AbstractClientPlayerEntity, PlayerEntityModel<AbstractClientPlayerEntity>>(this));
         this.addFeature(new ShoulderParrotFeatureRenderer<AbstractClientPlayerEntity>(this));
         this.addFeature(new TridentRiptideFeatureRenderer<AbstractClientPlayerEntity>(this));
-        this.addFeature(new class_4506<AbstractClientPlayerEntity, PlayerEntityModel<AbstractClientPlayerEntity>>(this));
+        this.addFeature(new StingerFeatureRenderer<AbstractClientPlayerEntity, PlayerEntityModel<AbstractClientPlayerEntity>>(this));
     }
 
     public void method_4215(AbstractClientPlayerEntity abstractClientPlayerEntity, double d, double e, double f, float g, float h) {
@@ -67,9 +67,9 @@ extends LivingEntityRenderer<AbstractClientPlayerEntity, PlayerEntityModel<Abstr
             i -= 0.125;
         }
         this.setModelPose(abstractClientPlayerEntity);
-        class_4493.method_21967(class_4493.RenderMode.PLAYER_SKIN);
+        GlStateManager.beginRenderMode(GlStateManager.RenderMode.PLAYER_SKIN);
         super.method_4054(abstractClientPlayerEntity, d, i, f, g, h);
-        class_4493.method_21994(class_4493.RenderMode.PLAYER_SKIN);
+        GlStateManager.endRenderMode(GlStateManager.RenderMode.PLAYER_SKIN);
     }
 
     private void setModelPose(AbstractClientPlayerEntity abstractClientPlayerEntity) {

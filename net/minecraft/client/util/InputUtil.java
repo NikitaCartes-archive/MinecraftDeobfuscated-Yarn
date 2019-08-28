@@ -24,8 +24,8 @@ import org.lwjgl.glfw.GLFWScrollCallbackI;
 @Environment(value=EnvType.CLIENT)
 public class InputUtil {
     @Nullable
-    private static final MethodHandle field_20333;
-    private static final int field_20334;
+    private static final MethodHandle GLFW_RAW_MOUSE_MOTION_SUPPORTED_HANDLE;
+    private static final int GLFW_RAW_MOUSE_MOTION;
     public static final KeyCode UNKNOWN_KEYCODE;
 
     public static KeyCode getKeyCode(int i, int j) {
@@ -67,17 +67,17 @@ public class InputUtil {
         GLFW.glfwSetInputMode(l, 208897, i);
     }
 
-    public static boolean method_21735() {
+    public static boolean isRawMouseMotionSupported() {
         try {
-            return field_20333 != null && field_20333.invokeExact();
+            return GLFW_RAW_MOUSE_MOTION_SUPPORTED_HANDLE != null && GLFW_RAW_MOUSE_MOTION_SUPPORTED_HANDLE.invokeExact();
         } catch (Throwable throwable) {
             throw new RuntimeException(throwable);
         }
     }
 
-    public static void method_21736(long l, boolean bl) {
-        if (InputUtil.method_21735()) {
-            GLFW.glfwSetInputMode(l, field_20334, bl ? 1 : 0);
+    public static void setRawMouseMotionMode(long l, boolean bl) {
+        if (InputUtil.isRawMouseMotionSupported()) {
+            GLFW.glfwSetInputMode(l, GLFW_RAW_MOUSE_MOTION, bl ? 1 : 0);
         }
     }
 
@@ -104,8 +104,8 @@ public class InputUtil {
         } catch (Throwable throwable) {
             throw new RuntimeException(throwable);
         }
-        field_20333 = methodHandle;
-        field_20334 = i;
+        GLFW_RAW_MOUSE_MOTION_SUPPORTED_HANDLE = methodHandle;
+        GLFW_RAW_MOUSE_MOTION = i;
         UNKNOWN_KEYCODE = Type.KEYSYM.createFromCode(-1);
     }
 

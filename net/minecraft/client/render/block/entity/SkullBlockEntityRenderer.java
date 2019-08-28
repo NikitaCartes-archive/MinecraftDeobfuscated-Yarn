@@ -6,6 +6,7 @@ package net.minecraft.client.render.block.entity;
 import com.google.common.collect.Maps;
 import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.minecraft.MinecraftProfileTexture;
+import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
 import java.util.Map;
 import net.fabricmc.api.EnvType;
@@ -15,7 +16,6 @@ import net.minecraft.block.BlockState;
 import net.minecraft.block.SkullBlock;
 import net.minecraft.block.WallSkullBlock;
 import net.minecraft.block.entity.SkullBlockEntity;
-import net.minecraft.class_4493;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.block.entity.BlockEntityRenderDispatcher;
 import net.minecraft.client.render.block.entity.BlockEntityRenderer;
@@ -90,7 +90,7 @@ extends BlockEntityRenderer<SkullBlockEntity> {
         RenderSystem.scalef(-1.0f, -1.0f, 1.0f);
         RenderSystem.enableAlphaTest();
         if (skullType == SkullBlock.Type.PLAYER) {
-            class_4493.method_21967(class_4493.RenderMode.PLAYER_SKIN);
+            GlStateManager.beginRenderMode(GlStateManager.RenderMode.PLAYER_SKIN);
         }
         skullEntityModel.render(k, 0.0f, 0.0f, i, 0.0f, 0.0625f);
         RenderSystem.popMatrix();

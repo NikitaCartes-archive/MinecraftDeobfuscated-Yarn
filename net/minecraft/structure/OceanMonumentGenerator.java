@@ -25,6 +25,7 @@ import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MutableIntBoundingBox;
 import net.minecraft.world.IWorld;
+import net.minecraft.world.gen.chunk.ChunkGenerator;
 
 public class OceanMonumentGenerator {
 
@@ -234,7 +235,7 @@ public class OceanMonumentGenerator {
         }
 
         @Override
-        public boolean generate(IWorld iWorld, Random random, MutableIntBoundingBox mutableIntBoundingBox, ChunkPos chunkPos) {
+        public boolean generate(IWorld iWorld, ChunkGenerator<?> chunkGenerator, Random random, MutableIntBoundingBox mutableIntBoundingBox, ChunkPos chunkPos) {
             int i;
             this.fillWithOutline(iWorld, mutableIntBoundingBox, 2, -1, 2, 11, -1, 11, PRISMARINE_BRICKS, PRISMARINE_BRICKS, false);
             this.fillWithOutline(iWorld, mutableIntBoundingBox, 0, -1, 0, 1, -1, 11, PRISMARINE, PRISMARINE, false);
@@ -290,7 +291,7 @@ public class OceanMonumentGenerator {
         }
 
         @Override
-        public boolean generate(IWorld iWorld, Random random, MutableIntBoundingBox mutableIntBoundingBox, ChunkPos chunkPos) {
+        public boolean generate(IWorld iWorld, ChunkGenerator<?> chunkGenerator, Random random, MutableIntBoundingBox mutableIntBoundingBox, ChunkPos chunkPos) {
             if (this.field_14481 == 0) {
                 int i;
                 for (i = 0; i < 4; ++i) {
@@ -386,7 +387,7 @@ public class OceanMonumentGenerator {
         }
 
         @Override
-        public boolean generate(IWorld iWorld, Random random, MutableIntBoundingBox mutableIntBoundingBox, ChunkPos chunkPos) {
+        public boolean generate(IWorld iWorld, ChunkGenerator<?> chunkGenerator, Random random, MutableIntBoundingBox mutableIntBoundingBox, ChunkPos chunkPos) {
             this.method_14771(iWorld, mutableIntBoundingBox, 1, 8, 0, 14, 8, 14, PRISMARINE);
             int i = 7;
             BlockState blockState = PRISMARINE_BRICKS;
@@ -460,7 +461,7 @@ public class OceanMonumentGenerator {
         }
 
         @Override
-        public boolean generate(IWorld iWorld, Random random, MutableIntBoundingBox mutableIntBoundingBox, ChunkPos chunkPos) {
+        public boolean generate(IWorld iWorld, ChunkGenerator<?> chunkGenerator, Random random, MutableIntBoundingBox mutableIntBoundingBox, ChunkPos chunkPos) {
             BlockState blockState;
             int i;
             class_3388 lv = this.field_14479.field_14487[Direction.NORTH.getId()];
@@ -557,7 +558,7 @@ public class OceanMonumentGenerator {
         }
 
         @Override
-        public boolean generate(IWorld iWorld, Random random, MutableIntBoundingBox mutableIntBoundingBox, ChunkPos chunkPos) {
+        public boolean generate(IWorld iWorld, ChunkGenerator<?> chunkGenerator, Random random, MutableIntBoundingBox mutableIntBoundingBox, ChunkPos chunkPos) {
             class_3388 lv = this.field_14479.field_14487[Direction.EAST.getId()];
             class_3388 lv2 = this.field_14479;
             class_3388 lv3 = lv2.field_14487[Direction.UP.getId()];
@@ -656,7 +657,7 @@ public class OceanMonumentGenerator {
         }
 
         @Override
-        public boolean generate(IWorld iWorld, Random random, MutableIntBoundingBox mutableIntBoundingBox, ChunkPos chunkPos) {
+        public boolean generate(IWorld iWorld, ChunkGenerator<?> chunkGenerator, Random random, MutableIntBoundingBox mutableIntBoundingBox, ChunkPos chunkPos) {
             class_3388 lv = this.field_14479.field_14487[Direction.NORTH.getId()];
             class_3388 lv2 = this.field_14479;
             if (this.field_14479.field_14486 / 25 > 0) {
@@ -738,7 +739,7 @@ public class OceanMonumentGenerator {
         }
 
         @Override
-        public boolean generate(IWorld iWorld, Random random, MutableIntBoundingBox mutableIntBoundingBox, ChunkPos chunkPos) {
+        public boolean generate(IWorld iWorld, ChunkGenerator<?> chunkGenerator, Random random, MutableIntBoundingBox mutableIntBoundingBox, ChunkPos chunkPos) {
             class_3388 lv = this.field_14479.field_14487[Direction.EAST.getId()];
             class_3388 lv2 = this.field_14479;
             if (this.field_14479.field_14486 / 25 > 0) {
@@ -801,7 +802,7 @@ public class OceanMonumentGenerator {
         }
 
         @Override
-        public boolean generate(IWorld iWorld, Random random, MutableIntBoundingBox mutableIntBoundingBox, ChunkPos chunkPos) {
+        public boolean generate(IWorld iWorld, ChunkGenerator<?> chunkGenerator, Random random, MutableIntBoundingBox mutableIntBoundingBox, ChunkPos chunkPos) {
             class_3388 lv;
             if (this.field_14479.field_14486 / 25 > 0) {
                 this.method_14774(iWorld, mutableIntBoundingBox, 0, 0, this.field_14479.field_14482[Direction.DOWN.getId()]);
@@ -876,7 +877,7 @@ public class OceanMonumentGenerator {
         }
 
         @Override
-        public boolean generate(IWorld iWorld, Random random, MutableIntBoundingBox mutableIntBoundingBox, ChunkPos chunkPos) {
+        public boolean generate(IWorld iWorld, ChunkGenerator<?> chunkGenerator, Random random, MutableIntBoundingBox mutableIntBoundingBox, ChunkPos chunkPos) {
             if (this.field_14479.field_14486 / 25 > 0) {
                 this.method_14774(iWorld, mutableIntBoundingBox, 0, 0, this.field_14479.field_14482[Direction.DOWN.getId()]);
             }
@@ -928,7 +929,7 @@ public class OceanMonumentGenerator {
         }
 
         @Override
-        public boolean generate(IWorld iWorld, Random random, MutableIntBoundingBox mutableIntBoundingBox, ChunkPos chunkPos) {
+        public boolean generate(IWorld iWorld, ChunkGenerator<?> chunkGenerator, Random random, MutableIntBoundingBox mutableIntBoundingBox, ChunkPos chunkPos) {
             boolean bl;
             if (this.field_14479.field_14486 / 25 > 0) {
                 this.method_14774(iWorld, mutableIntBoundingBox, 0, 0, this.field_14479.field_14482[Direction.DOWN.getId()]);
@@ -1081,7 +1082,7 @@ public class OceanMonumentGenerator {
         }
 
         @Override
-        public boolean generate(IWorld iWorld, Random random, MutableIntBoundingBox mutableIntBoundingBox, ChunkPos chunkPos) {
+        public boolean generate(IWorld iWorld, ChunkGenerator<?> chunkGenerator, Random random, MutableIntBoundingBox mutableIntBoundingBox, ChunkPos chunkPos) {
             this.fillWithOutline(iWorld, mutableIntBoundingBox, 0, 3, 0, 2, 3, 7, PRISMARINE_BRICKS, PRISMARINE_BRICKS, false);
             this.fillWithOutline(iWorld, mutableIntBoundingBox, 5, 3, 0, 7, 3, 7, PRISMARINE_BRICKS, PRISMARINE_BRICKS, false);
             this.fillWithOutline(iWorld, mutableIntBoundingBox, 0, 2, 0, 1, 2, 7, PRISMARINE_BRICKS, PRISMARINE_BRICKS, false);
@@ -1256,7 +1257,7 @@ public class OceanMonumentGenerator {
         }
 
         @Override
-        public boolean generate(IWorld iWorld, Random random, MutableIntBoundingBox mutableIntBoundingBox, ChunkPos chunkPos) {
+        public boolean generate(IWorld iWorld, ChunkGenerator<?> chunkGenerator, Random random, MutableIntBoundingBox mutableIntBoundingBox, ChunkPos chunkPos) {
             int j;
             int i = Math.max(iWorld.getSeaLevel(), 64) - this.boundingBox.minY;
             this.setAirAndWater(iWorld, mutableIntBoundingBox, 0, 0, 0, 58, i, 58);
@@ -1297,7 +1298,7 @@ public class OceanMonumentGenerator {
             }
             for (Piece piece : this.field_14465) {
                 if (!piece.getBoundingBox().intersects(mutableIntBoundingBox)) continue;
-                piece.generate(iWorld, random, mutableIntBoundingBox, chunkPos);
+                piece.generate(iWorld, chunkGenerator, random, mutableIntBoundingBox, chunkPos);
             }
             return true;
         }

@@ -1,7 +1,7 @@
 /*
  * Decompiled with CFR 0.2.0 (FabricMC d28b102d).
  */
-package net.minecraft;
+package net.minecraft.datafixers.schemas;
 
 import com.mojang.datafixers.DSL;
 import com.mojang.datafixers.schemas.Schema;
@@ -12,9 +12,9 @@ import net.minecraft.datafixers.TypeReferences;
 import net.minecraft.datafixers.schemas.Schema100;
 import net.minecraft.datafixers.schemas.SchemaIdentifierNormalize;
 
-public class class_4465
+public class Schema2100
 extends SchemaIdentifierNormalize {
-    public class_4465(int i, Schema schema) {
+    public Schema2100(int i, Schema schema) {
         super(i, schema);
     }
 
@@ -25,8 +25,8 @@ extends SchemaIdentifierNormalize {
     @Override
     public Map<String, Supplier<TypeTemplate>> registerEntities(Schema schema) {
         Map<String, Supplier<TypeTemplate>> map = super.registerEntities(schema);
-        class_4465.method_21746(schema, map, "minecraft:bee");
-        class_4465.method_21746(schema, map, "minecraft:bee_stinger");
+        Schema2100.method_21746(schema, map, "minecraft:bee");
+        Schema2100.method_21746(schema, map, "minecraft:bee_stinger");
         return map;
     }
 

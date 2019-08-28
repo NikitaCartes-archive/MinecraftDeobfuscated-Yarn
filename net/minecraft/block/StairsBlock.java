@@ -17,12 +17,14 @@ import net.minecraft.block.SlabBlock;
 import net.minecraft.block.Waterloggable;
 import net.minecraft.block.enums.BlockHalf;
 import net.minecraft.block.enums.StairShape;
+import net.minecraft.class_4538;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityContext;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.fluid.FluidState;
 import net.minecraft.fluid.Fluids;
 import net.minecraft.item.ItemPlacementContext;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.state.StateFactory;
 import net.minecraft.state.property.BooleanProperty;
 import net.minecraft.state.property.DirectionProperty;
@@ -38,7 +40,6 @@ import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.util.shape.VoxelShapes;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.IWorld;
-import net.minecraft.world.ViewableWorld;
 import net.minecraft.world.World;
 import net.minecraft.world.explosion.Explosion;
 
@@ -134,8 +135,8 @@ implements Waterloggable {
     }
 
     @Override
-    public int getTickRate(ViewableWorld viewableWorld) {
-        return this.baseBlock.getTickRate(viewableWorld);
+    public int getTickRate(class_4538 arg) {
+        return this.baseBlock.getTickRate(arg);
     }
 
     @Override
@@ -161,8 +162,8 @@ implements Waterloggable {
     }
 
     @Override
-    public void onScheduledTick(BlockState blockState, World world, BlockPos blockPos, Random random) {
-        this.baseBlock.onScheduledTick(blockState, world, blockPos, random);
+    public void onScheduledTick(BlockState blockState, ServerWorld serverWorld, BlockPos blockPos, Random random) {
+        this.baseBlock.onScheduledTick(blockState, serverWorld, blockPos, random);
     }
 
     @Override

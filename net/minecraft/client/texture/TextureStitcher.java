@@ -51,7 +51,7 @@ public class TextureStitcher {
         ArrayList<Holder> list = Lists.newArrayList(this.holders);
         list.sort(comparator);
         for (Holder holder2 : list) {
-            if (this.tryFit(holder2)) continue;
+            if (this.fit(holder2)) continue;
             throw new TextureStitcherCannotFitException(holder2.sprite, list.stream().map(holder -> holder.sprite).collect(ImmutableList.toImmutableList()));
         }
         this.width = MathHelper.smallestEncompassingPowerOfTwo(this.width);
@@ -75,15 +75,15 @@ public class TextureStitcher {
         return (i >> j) + ((i & (1 << j) - 1) == 0 ? 0 : 1) << j;
     }
 
-    private boolean tryFit(Holder holder) {
+    private boolean fit(Holder holder) {
         for (Slot slot : this.slots) {
-            if (!slot.tryFit(holder)) continue;
+            if (!slot.fit(holder)) continue;
             return true;
         }
-        return this.method_4552(holder);
+        return this.growAndFit(holder);
     }
 
-    private boolean method_4552(Holder holder) {
+    private boolean growAndFit(Holder holder) {
         Slot slot;
         boolean bl5;
         boolean bl4;
@@ -114,7 +114,7 @@ public class TextureStitcher {
             slot = new Slot(0, this.height, this.width, holder.height);
             this.height += holder.height;
         }
-        slot.tryFit(holder);
+        slot.fit(holder);
         this.slots.add(slot);
         return true;
     }
@@ -147,7 +147,7 @@ public class TextureStitcher {
             return this.y;
         }
 
-        public boolean tryFit(Holder holder) {
+        public boolean fit(Holder holder) {
             if (this.texture != null) {
                 return false;
             }
@@ -182,7 +182,7 @@ public class TextureStitcher {
                 }
             }
             for (Slot slot : this.subSlots) {
-                if (!slot.tryFit(holder)) continue;
+                if (!slot.fit(holder)) continue;
                 return true;
             }
             return false;

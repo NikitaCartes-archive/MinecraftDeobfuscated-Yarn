@@ -12,6 +12,7 @@ import net.minecraft.block.BlockRenderType;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.FluidDrainable;
+import net.minecraft.class_4538;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityContext;
 import net.minecraft.fluid.Fluid;
@@ -30,7 +31,6 @@ import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.util.shape.VoxelShapes;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.IWorld;
-import net.minecraft.world.ViewableWorld;
 import net.minecraft.world.World;
 
 public class BubbleColumnBlock
@@ -66,8 +66,8 @@ implements FluidDrainable {
     }
 
     @Override
-    public void onScheduledTick(BlockState blockState, World world, BlockPos blockPos, Random random) {
-        BubbleColumnBlock.update(world, blockPos.up(), BubbleColumnBlock.calculateDrag(world, blockPos));
+    public void onScheduledTick(BlockState blockState, ServerWorld serverWorld, BlockPos blockPos, Random random) {
+        BubbleColumnBlock.update(serverWorld, blockPos.up(), BubbleColumnBlock.calculateDrag(serverWorld, blockPos));
     }
 
     @Override
@@ -96,7 +96,7 @@ implements FluidDrainable {
     }
 
     @Override
-    public int getTickRate(ViewableWorld viewableWorld) {
+    public int getTickRate(class_4538 arg) {
         return 5;
     }
 
@@ -135,8 +135,8 @@ implements FluidDrainable {
     }
 
     @Override
-    public boolean canPlaceAt(BlockState blockState, ViewableWorld viewableWorld, BlockPos blockPos) {
-        Block block = viewableWorld.getBlockState(blockPos.down()).getBlock();
+    public boolean canPlaceAt(BlockState blockState, class_4538 arg, BlockPos blockPos) {
+        Block block = arg.getBlockState(blockPos.down()).getBlock();
         return block == Blocks.BUBBLE_COLUMN || block == Blocks.MAGMA_BLOCK || block == Blocks.SOUL_SAND;
     }
 

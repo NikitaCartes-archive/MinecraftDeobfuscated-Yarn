@@ -11,6 +11,7 @@ import net.minecraft.block.BedBlock;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.ai.brain.Activity;
+import net.minecraft.entity.ai.brain.Brain;
 import net.minecraft.entity.ai.brain.MemoryModuleState;
 import net.minecraft.entity.ai.brain.MemoryModuleType;
 import net.minecraft.entity.ai.brain.task.OpenDoorsTask;
@@ -18,6 +19,7 @@ import net.minecraft.entity.ai.brain.task.Task;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.tag.BlockTags;
 import net.minecraft.util.GlobalPos;
+import net.minecraft.util.Timestamp;
 import net.minecraft.util.math.BlockPos;
 
 public class SleepTask
@@ -25,7 +27,7 @@ extends Task<LivingEntity> {
     private long field_18848;
 
     public SleepTask() {
-        super(ImmutableMap.of(MemoryModuleType.HOME, MemoryModuleState.VALUE_PRESENT));
+        super(ImmutableMap.of(MemoryModuleType.HOME, MemoryModuleState.VALUE_PRESENT, MemoryModuleType.LAST_WOKEN, MemoryModuleState.REGISTERED));
     }
 
     @Override
@@ -33,8 +35,13 @@ extends Task<LivingEntity> {
         if (livingEntity.hasVehicle()) {
             return false;
         }
-        GlobalPos globalPos = livingEntity.getBrain().getOptionalMemory(MemoryModuleType.HOME).get();
+        Brain<?> brain = livingEntity.getBrain();
+        GlobalPos globalPos = brain.getOptionalMemory(MemoryModuleType.HOME).get();
         if (!Objects.equals(serverWorld.getDimension().getType(), globalPos.getDimension())) {
+            return false;
+        }
+        Optional<Timestamp> optional = brain.getOptionalMemory(MemoryModuleType.LAST_WOKEN);
+        if (optional.isPresent() && serverWorld.getTime() - optional.get().getTime() < 100L) {
             return false;
         }
         BlockState blockState = serverWorld.getBlockState(globalPos.getPos());

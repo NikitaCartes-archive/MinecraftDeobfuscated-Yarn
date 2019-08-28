@@ -250,7 +250,7 @@ public class ModelLoader {
             Identifier identifier2 = new Identifier(identifier.getNamespace(), identifier.getPath());
             StateFactory stateFactory = Optional.ofNullable(STATIC_DEFINITIONS.get(identifier2)).orElseGet(() -> Registry.BLOCK.get(identifier2).getStateFactory());
             this.variantMapDeserializationContext.setStateFactory(stateFactory);
-            ImmutableList<Property<?>> list = ImmutableList.copyOf(this.field_20272.method_21592((Block)stateFactory.getBaseObject()));
+            ImmutableList<Property<?>> list = ImmutableList.copyOf(this.field_20272.getProperties((Block)stateFactory.getBaseObject()));
             ImmutableList immutableList = stateFactory.getStates();
             HashMap<ModelIdentifier, BlockState> map = Maps.newHashMap();
             immutableList.forEach(blockState -> map.put(BlockModels.getModelId(identifier2, blockState), (BlockState)blockState));

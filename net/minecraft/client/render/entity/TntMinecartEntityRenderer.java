@@ -3,12 +3,12 @@
  */
 package net.minecraft.client.render.entity;
 
+import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
-import net.minecraft.class_4493;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.block.BlockRenderManager;
 import net.minecraft.client.render.entity.EntityRenderDispatcher;
@@ -39,7 +39,7 @@ extends MinecartEntityRenderer<TntMinecartEntity> {
             RenderSystem.disableTexture();
             RenderSystem.disableLighting();
             RenderSystem.enableBlend();
-            RenderSystem.blendFunc(class_4493.class_4535.SRC_ALPHA, class_4493.class_4534.DST_ALPHA);
+            RenderSystem.blendFunc(GlStateManager.class_4535.SRC_ALPHA, GlStateManager.class_4534.DST_ALPHA);
             RenderSystem.color4f(1.0f, 1.0f, 1.0f, (1.0f - ((float)i - f + 1.0f) / 100.0f) * 0.8f);
             RenderSystem.pushMatrix();
             blockRenderManager.renderDynamic(Blocks.TNT.getDefaultState(), 1.0f);

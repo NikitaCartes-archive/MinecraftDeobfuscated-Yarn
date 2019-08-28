@@ -29,10 +29,10 @@ public class PngFile {
 
     public PngFile(String string, InputStream inputStream) throws IOException {
         try (MemoryStack memoryStack = MemoryStack.stackPush();
-             class_1051 lv = PngFile.method_4542(inputStream);
-             STBIReadCallback sTBIReadCallback = STBIReadCallback.create(lv::method_4543);
-             STBISkipCallback sTBISkipCallback = STBISkipCallback.create(lv::method_4547);
-             STBIEOFCallback sTBIEOFCallback = STBIEOFCallback.create(lv::method_4546);){
+             Reader reader = PngFile.createReader(inputStream);
+             STBIReadCallback sTBIReadCallback = STBIReadCallback.create(reader::read);
+             STBISkipCallback sTBISkipCallback = STBISkipCallback.create(reader::skip);
+             STBIEOFCallback sTBIEOFCallback = STBIEOFCallback.create(reader::eof);){
             STBIIOCallbacks sTBIIOCallbacks = STBIIOCallbacks.mallocStack(memoryStack);
             sTBIIOCallbacks.read(sTBIReadCallback);
             sTBIIOCallbacks.skip(sTBISkipCallback);
@@ -48,23 +48,23 @@ public class PngFile {
         }
     }
 
-    private static class_1051 method_4542(InputStream inputStream) {
+    private static Reader createReader(InputStream inputStream) {
         if (inputStream instanceof FileInputStream) {
-            return new class_1053(((FileInputStream)inputStream).getChannel());
+            return new FileReader(((FileInputStream)inputStream).getChannel());
         }
-        return new class_1052(Channels.newChannel(inputStream));
+        return new ChannelReader(Channels.newChannel(inputStream));
     }
 
     @Environment(value=EnvType.CLIENT)
-    static class class_1052
-    extends class_1051 {
+    static class ChannelReader
+    extends Reader {
         private final ReadableByteChannel field_5229;
         private long field_5233 = MemoryUtil.nmemAlloc(128L);
         private int field_5232 = 128;
         private int field_5231;
         private int field_5230;
 
-        private class_1052(ReadableByteChannel readableByteChannel) {
+        private ChannelReader(ReadableByteChannel readableByteChannel) {
             this.field_5229 = readableByteChannel;
         }
 
@@ -123,11 +123,11 @@ public class PngFile {
     }
 
     @Environment(value=EnvType.CLIENT)
-    static class class_1053
-    extends class_1051 {
+    static class FileReader
+    extends Reader {
         private final SeekableByteChannel field_5234;
 
-        private class_1053(SeekableByteChannel seekableByteChannel) {
+        private FileReader(SeekableByteChannel seekableByteChannel) {
             this.field_5234 = seekableByteChannel;
         }
 
@@ -143,8 +143,8 @@ public class PngFile {
         }
 
         @Override
-        public int method_4546(long l) {
-            return super.method_4546(l) != 0 && this.field_5234.isOpen() ? 1 : 0;
+        public int eof(long l) {
+            return super.eof(l) != 0 && this.field_5234.isOpen() ? 1 : 0;
         }
 
         @Override
@@ -154,14 +154,14 @@ public class PngFile {
     }
 
     @Environment(value=EnvType.CLIENT)
-    static abstract class class_1051
+    static abstract class Reader
     implements AutoCloseable {
         protected boolean field_5228;
 
-        private class_1051() {
+        private Reader() {
         }
 
-        int method_4543(long l, long m, int i) {
+        int read(long l, long m, int i) {
             try {
                 return this.method_4544(m, i);
             } catch (IOException iOException) {
@@ -170,7 +170,7 @@ public class PngFile {
             }
         }
 
-        void method_4547(long l, int i) {
+        void skip(long l, int i) {
             try {
                 this.method_4545(i);
             } catch (IOException iOException) {
@@ -178,7 +178,7 @@ public class PngFile {
             }
         }
 
-        int method_4546(long l) {
+        int eof(long l) {
             return this.field_5228 ? 1 : 0;
         }
 

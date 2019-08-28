@@ -4,12 +4,12 @@
 package net.minecraft.client.render.entity;
 
 import com.google.common.collect.Lists;
+import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
 import java.nio.FloatBuffer;
 import java.util.List;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_4493;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.network.ClientPlayerEntity;
 import net.minecraft.client.render.entity.EntityRenderDispatcher;
@@ -185,11 +185,11 @@ implements FeatureRendererContext<T, M> {
                 return;
             }
             if (bl2) {
-                class_4493.method_21967(class_4493.RenderMode.TRANSPARENT_MODEL);
+                GlStateManager.beginRenderMode(GlStateManager.RenderMode.TRANSPARENT_MODEL);
             }
             ((EntityModel)this.model).render(livingEntity, f, g, h, i, j, k);
             if (bl2) {
-                class_4493.method_21994(class_4493.RenderMode.TRANSPARENT_MODEL);
+                GlStateManager.endRenderMode(GlStateManager.RenderMode.TRANSPARENT_MODEL);
             }
         }
     }

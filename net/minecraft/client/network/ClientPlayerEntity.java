@@ -179,7 +179,7 @@ extends AbstractClientPlayerEntity {
 
     @Override
     public void tick() {
-        if (!this.world.isBlockLoaded(new BlockPos(this.x, 0.0, this.z))) {
+        if (!this.world.method_22340(new BlockPos(this.x, 0.0, this.z))) {
             return;
         }
         super.tick();
@@ -651,7 +651,7 @@ extends AbstractClientPlayerEntity {
         }
         if (this.isSprinting()) {
             boolean bl7;
-            boolean bl62 = !this.input.method_20622() || !bl5;
+            boolean bl62 = !this.input.hasForwardMovement() || !bl5;
             boolean bl8 = bl7 = bl62 || this.horizontalCollision || this.isInsideWater() && !this.isInWater();
             if (this.isSwimming()) {
                 if (!this.onGround && !this.input.sneaking && bl62 || !this.isInsideWater()) {
@@ -905,7 +905,7 @@ extends AbstractClientPlayerEntity {
 
     private boolean method_20623() {
         double d = 0.8;
-        return this.isInWater() ? this.input.method_20622() : (double)this.input.movementForward >= 0.8;
+        return this.isInWater() ? this.input.hasForwardMovement() : (double)this.input.movementForward >= 0.8;
     }
 
     public float method_3140() {

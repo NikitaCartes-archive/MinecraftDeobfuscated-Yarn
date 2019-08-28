@@ -12,10 +12,12 @@ import net.minecraft.block.Blocks;
 import net.minecraft.block.FacingBlock;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.CommandBlockBlockEntity;
+import net.minecraft.class_4538;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemPlacementContext;
 import net.minecraft.item.ItemStack;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.state.StateFactory;
 import net.minecraft.state.property.BooleanProperty;
 import net.minecraft.state.property.DirectionProperty;
@@ -30,7 +32,6 @@ import net.minecraft.util.math.Direction;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.CommandBlockExecutor;
 import net.minecraft.world.GameRules;
-import net.minecraft.world.ViewableWorld;
 import net.minecraft.world.World;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -76,11 +77,8 @@ extends BlockWithEntity {
     }
 
     @Override
-    public void onScheduledTick(BlockState blockState, World world, BlockPos blockPos, Random random) {
-        if (world.isClient) {
-            return;
-        }
-        BlockEntity blockEntity = world.getBlockEntity(blockPos);
+    public void onScheduledTick(BlockState blockState, ServerWorld serverWorld, BlockPos blockPos, Random random) {
+        BlockEntity blockEntity = serverWorld.getBlockEntity(blockPos);
         if (blockEntity instanceof CommandBlockBlockEntity) {
             CommandBlockBlockEntity commandBlockBlockEntity = (CommandBlockBlockEntity)blockEntity;
             CommandBlockExecutor commandBlockExecutor = commandBlockBlockEntity.getCommandExecutor();
@@ -90,21 +88,21 @@ extends BlockWithEntity {
             if (type == CommandBlockBlockEntity.Type.AUTO) {
                 commandBlockBlockEntity.updateConditionMet();
                 if (bl2) {
-                    this.execute(blockState, world, blockPos, commandBlockExecutor, bl);
+                    this.execute(blockState, serverWorld, blockPos, commandBlockExecutor, bl);
                 } else if (commandBlockBlockEntity.isConditionalCommandBlock()) {
                     commandBlockExecutor.setSuccessCount(0);
                 }
                 if (commandBlockBlockEntity.isPowered() || commandBlockBlockEntity.isAuto()) {
-                    world.getBlockTickScheduler().schedule(blockPos, this, this.getTickRate(world));
+                    serverWorld.method_14196().schedule(blockPos, this, this.getTickRate(serverWorld));
                 }
             } else if (type == CommandBlockBlockEntity.Type.REDSTONE) {
                 if (bl2) {
-                    this.execute(blockState, world, blockPos, commandBlockExecutor, bl);
+                    this.execute(blockState, serverWorld, blockPos, commandBlockExecutor, bl);
                 } else if (commandBlockBlockEntity.isConditionalCommandBlock()) {
                     commandBlockExecutor.setSuccessCount(0);
                 }
             }
-            world.updateHorizontalAdjacent(blockPos, this);
+            serverWorld.updateHorizontalAdjacent(blockPos, this);
         }
     }
 
@@ -118,7 +116,7 @@ extends BlockWithEntity {
     }
 
     @Override
-    public int getTickRate(ViewableWorld viewableWorld) {
+    public int getTickRate(class_4538 arg) {
         return 1;
     }
 

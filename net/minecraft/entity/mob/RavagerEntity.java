@@ -10,6 +10,7 @@ import net.fabricmc.api.Environment;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.LeavesBlock;
+import net.minecraft.class_4538;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
@@ -45,7 +46,6 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.GameRules;
-import net.minecraft.world.ViewableWorld;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
 
@@ -167,7 +167,7 @@ extends RaiderEntity {
                 BlockState blockState = this.world.getBlockState(blockPos);
                 Block block = blockState.getBlock();
                 if (!(block instanceof LeavesBlock)) continue;
-                bl = this.world.breakBlock(blockPos, true) || bl;
+                bl = this.world.breakBlock(blockPos, true, this) || bl;
             }
             if (!bl && this.onGround) {
                 this.jump();
@@ -312,8 +312,8 @@ extends RaiderEntity {
     }
 
     @Override
-    public boolean canSpawn(ViewableWorld viewableWorld) {
-        return !viewableWorld.intersectsFluid(this.getBoundingBox());
+    public boolean canSpawn(class_4538 arg) {
+        return !arg.method_22345(this.getBoundingBox());
     }
 
     @Override

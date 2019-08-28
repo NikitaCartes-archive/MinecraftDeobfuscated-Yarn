@@ -6,6 +6,7 @@ package com.mojang.blaze3d.platform;
 import com.google.common.base.Joiner;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
 import java.util.ArrayList;
 import java.util.Map;
@@ -14,7 +15,6 @@ import java.util.function.LongSupplier;
 import java.util.function.Supplier;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_4493;
 import net.minecraft.client.gl.GlDebug;
 import net.minecraft.client.render.BufferBuilder;
 import net.minecraft.client.render.Tessellator;
@@ -102,7 +102,7 @@ public class GLX {
 
     public static void _init(int i, boolean bl) {
         GLCapabilities gLCapabilities = GL.getCapabilities();
-        capsString = "Using framebuffer using " + class_4493.method_21973(gLCapabilities);
+        capsString = "Using framebuffer using " + GlStateManager.initFramebufferSupport(gLCapabilities);
         try {
             Processor[] processors = new SystemInfo().getHardware().getProcessors();
             cpuInfo = String.format("%dx %s", processors.length, processors[0]).replaceAll("\\s+", " ");

@@ -13,7 +13,6 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_4536;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.TitleScreen;
 import net.minecraft.client.gui.widget.AbstractButtonWidget;
@@ -23,6 +22,7 @@ import net.minecraft.client.texture.NativeImageBackedTexture;
 import net.minecraft.client.texture.ResourceTexture;
 import net.minecraft.client.texture.Texture;
 import net.minecraft.client.texture.TextureTickListener;
+import net.minecraft.client.texture.TextureUtil;
 import net.minecraft.client.texture.TickableTexture;
 import net.minecraft.resource.ResourceManager;
 import net.minecraft.resource.ResourceReloadListener;
@@ -126,7 +126,7 @@ ResourceReloadListener {
     public void destroyTexture(Identifier identifier) {
         Texture texture = this.getTexture(identifier);
         if (texture != null) {
-            class_4536.releaseTextureId(texture.getGlId());
+            TextureUtil.releaseTextureId(texture.getGlId());
         }
     }
 

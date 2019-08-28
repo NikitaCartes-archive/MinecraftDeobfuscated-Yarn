@@ -39,7 +39,7 @@ implements ContainerListener {
         int i = (this.width - this.containerWidth) / 2;
         int j = (this.height - this.containerHeight) / 2;
         this.nameField = new TextFieldWidget(this.font, i + 62, j + 24, 103, 12, I18n.translate("container.repair", new Object[0]));
-        this.nameField.method_1856(false);
+        this.nameField.setFocusUnlocked(false);
         this.nameField.changeFocus(true);
         this.nameField.setEditableColor(-1);
         this.nameField.setUneditableColor(-1);
@@ -70,7 +70,7 @@ implements ContainerListener {
         if (i == 256) {
             this.minecraft.player.closeContainer();
         }
-        if (this.nameField.keyPressed(i, j, k) || this.nameField.method_20315()) {
+        if (this.nameField.keyPressed(i, j, k) || this.nameField.isActive()) {
             return true;
         }
         return super.keyPressed(i, j, k);
@@ -149,7 +149,7 @@ implements ContainerListener {
     public void onContainerSlotUpdate(Container container, int i, ItemStack itemStack) {
         if (i == 0) {
             this.nameField.setText(itemStack.isEmpty() ? "" : itemStack.getName().getString());
-            this.nameField.setIsEditable(!itemStack.isEmpty());
+            this.nameField.setEditable(!itemStack.isEmpty());
         }
     }
 

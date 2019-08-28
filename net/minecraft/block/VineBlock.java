@@ -10,8 +10,10 @@ import net.minecraft.block.BlockRenderLayer;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.ConnectedPlantBlock;
+import net.minecraft.class_4538;
 import net.minecraft.entity.EntityContext;
 import net.minecraft.item.ItemPlacementContext;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.state.StateFactory;
 import net.minecraft.state.property.BooleanProperty;
 import net.minecraft.util.BlockMirror;
@@ -23,8 +25,6 @@ import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.util.shape.VoxelShapes;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.IWorld;
-import net.minecraft.world.ViewableWorld;
-import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
 
 public class VineBlock
@@ -68,8 +68,8 @@ extends Block {
     }
 
     @Override
-    public boolean canPlaceAt(BlockState blockState, ViewableWorld viewableWorld, BlockPos blockPos) {
-        return this.hasAdjacentBlocks(this.getPlacementShape(blockState, viewableWorld, blockPos));
+    public boolean canPlaceAt(BlockState blockState, class_4538 arg, BlockPos blockPos) {
+        return this.hasAdjacentBlocks(this.getPlacementShape(blockState, arg, blockPos));
     }
 
     private boolean hasAdjacentBlocks(BlockState blockState) {
@@ -140,35 +140,32 @@ extends Block {
     }
 
     @Override
-    public void onScheduledTick(BlockState blockState, World world, BlockPos blockPos, Random random) {
+    public void onScheduledTick(BlockState blockState, ServerWorld serverWorld, BlockPos blockPos, Random random) {
         BlockState blockState6;
         BlockState blockState5;
         BlockPos blockPos3;
         BlockState blockState3;
-        if (world.isClient) {
-            return;
-        }
-        BlockState blockState2 = this.getPlacementShape(blockState, world, blockPos);
+        BlockState blockState2 = this.getPlacementShape(blockState, serverWorld, blockPos);
         if (blockState2 != blockState) {
             if (this.hasAdjacentBlocks(blockState2)) {
-                world.setBlockState(blockPos, blockState2, 2);
+                serverWorld.setBlockState(blockPos, blockState2, 2);
             } else {
-                VineBlock.dropStacks(blockState, world, blockPos);
-                world.clearBlockState(blockPos, false);
+                VineBlock.dropStacks(blockState, serverWorld, blockPos);
+                serverWorld.clearBlockState(blockPos, false);
             }
             return;
         }
-        if (world.random.nextInt(4) != 0) {
+        if (serverWorld.random.nextInt(4) != 0) {
             return;
         }
         Direction direction = Direction.random(random);
         BlockPos blockPos2 = blockPos.up();
         if (direction.getAxis().isHorizontal() && !blockState.get(VineBlock.getFacingProperty(direction)).booleanValue()) {
-            if (!this.canGrowAt(world, blockPos)) {
+            if (!this.canGrowAt(serverWorld, blockPos)) {
                 return;
             }
             BlockPos blockPos32 = blockPos.offset(direction);
-            BlockState blockState32 = world.getBlockState(blockPos32);
+            BlockState blockState32 = serverWorld.getBlockState(blockPos32);
             if (blockState32.isAir()) {
                 Direction direction2 = direction.rotateYClockwise();
                 Direction direction3 = direction.rotateYCounterclockwise();
@@ -176,47 +173,47 @@ extends Block {
                 boolean bl2 = blockState.get(VineBlock.getFacingProperty(direction3));
                 BlockPos blockPos4 = blockPos32.offset(direction2);
                 BlockPos blockPos5 = blockPos32.offset(direction3);
-                if (bl && VineBlock.shouldConnectTo(world, blockPos4, direction2)) {
-                    world.setBlockState(blockPos32, (BlockState)this.getDefaultState().with(VineBlock.getFacingProperty(direction2), true), 2);
-                } else if (bl2 && VineBlock.shouldConnectTo(world, blockPos5, direction3)) {
-                    world.setBlockState(blockPos32, (BlockState)this.getDefaultState().with(VineBlock.getFacingProperty(direction3), true), 2);
+                if (bl && VineBlock.shouldConnectTo(serverWorld, blockPos4, direction2)) {
+                    serverWorld.setBlockState(blockPos32, (BlockState)this.getDefaultState().with(VineBlock.getFacingProperty(direction2), true), 2);
+                } else if (bl2 && VineBlock.shouldConnectTo(serverWorld, blockPos5, direction3)) {
+                    serverWorld.setBlockState(blockPos32, (BlockState)this.getDefaultState().with(VineBlock.getFacingProperty(direction3), true), 2);
                 } else {
                     Direction direction4 = direction.getOpposite();
-                    if (bl && world.isAir(blockPos4) && VineBlock.shouldConnectTo(world, blockPos.offset(direction2), direction4)) {
-                        world.setBlockState(blockPos4, (BlockState)this.getDefaultState().with(VineBlock.getFacingProperty(direction4), true), 2);
-                    } else if (bl2 && world.isAir(blockPos5) && VineBlock.shouldConnectTo(world, blockPos.offset(direction3), direction4)) {
-                        world.setBlockState(blockPos5, (BlockState)this.getDefaultState().with(VineBlock.getFacingProperty(direction4), true), 2);
-                    } else if ((double)world.random.nextFloat() < 0.05 && VineBlock.shouldConnectTo(world, blockPos32.up(), Direction.UP)) {
-                        world.setBlockState(blockPos32, (BlockState)this.getDefaultState().with(UP, true), 2);
+                    if (bl && serverWorld.method_22347(blockPos4) && VineBlock.shouldConnectTo(serverWorld, blockPos.offset(direction2), direction4)) {
+                        serverWorld.setBlockState(blockPos4, (BlockState)this.getDefaultState().with(VineBlock.getFacingProperty(direction4), true), 2);
+                    } else if (bl2 && serverWorld.method_22347(blockPos5) && VineBlock.shouldConnectTo(serverWorld, blockPos.offset(direction3), direction4)) {
+                        serverWorld.setBlockState(blockPos5, (BlockState)this.getDefaultState().with(VineBlock.getFacingProperty(direction4), true), 2);
+                    } else if ((double)serverWorld.random.nextFloat() < 0.05 && VineBlock.shouldConnectTo(serverWorld, blockPos32.up(), Direction.UP)) {
+                        serverWorld.setBlockState(blockPos32, (BlockState)this.getDefaultState().with(UP, true), 2);
                     }
                 }
-            } else if (VineBlock.shouldConnectTo(world, blockPos32, direction)) {
-                world.setBlockState(blockPos, (BlockState)blockState.with(VineBlock.getFacingProperty(direction), true), 2);
+            } else if (VineBlock.shouldConnectTo(serverWorld, blockPos32, direction)) {
+                serverWorld.setBlockState(blockPos, (BlockState)blockState.with(VineBlock.getFacingProperty(direction), true), 2);
             }
             return;
         }
         if (direction == Direction.UP && blockPos.getY() < 255) {
-            if (this.shouldHaveSide(world, blockPos, direction)) {
-                world.setBlockState(blockPos, (BlockState)blockState.with(UP, true), 2);
+            if (this.shouldHaveSide(serverWorld, blockPos, direction)) {
+                serverWorld.setBlockState(blockPos, (BlockState)blockState.with(UP, true), 2);
                 return;
             }
-            if (world.isAir(blockPos2)) {
-                if (!this.canGrowAt(world, blockPos)) {
+            if (serverWorld.method_22347(blockPos2)) {
+                if (!this.canGrowAt(serverWorld, blockPos)) {
                     return;
                 }
                 BlockState blockState4 = blockState;
                 for (Direction direction2 : Direction.Type.HORIZONTAL) {
-                    if (!random.nextBoolean() && VineBlock.shouldConnectTo(world, blockPos2.offset(direction2), Direction.UP)) continue;
+                    if (!random.nextBoolean() && VineBlock.shouldConnectTo(serverWorld, blockPos2.offset(direction2), Direction.UP)) continue;
                     blockState4 = (BlockState)blockState4.with(VineBlock.getFacingProperty(direction2), false);
                 }
                 if (this.hasHorizontalSide(blockState4)) {
-                    world.setBlockState(blockPos2, blockState4, 2);
+                    serverWorld.setBlockState(blockPos2, blockState4, 2);
                 }
                 return;
             }
         }
-        if (blockPos.getY() > 0 && ((blockState3 = world.getBlockState(blockPos3 = blockPos.down())).isAir() || blockState3.getBlock() == this) && (blockState5 = blockState3.isAir() ? this.getDefaultState() : blockState3) != (blockState6 = this.getGrownState(blockState, blockState5, random)) && this.hasHorizontalSide(blockState6)) {
-            world.setBlockState(blockPos3, blockState6, 2);
+        if (blockPos.getY() > 0 && ((blockState3 = serverWorld.getBlockState(blockPos3 = blockPos.down())).isAir() || blockState3.getBlock() == this) && (blockState5 = blockState3.isAir() ? this.getDefaultState() : blockState3) != (blockState6 = this.getGrownState(blockState, blockState5, random)) && this.hasHorizontalSide(blockState6)) {
+            serverWorld.setBlockState(blockPos3, blockState6, 2);
         }
     }
 

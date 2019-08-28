@@ -10,6 +10,7 @@ import net.minecraft.block.BlockRenderLayer;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.FluidBlock;
+import net.minecraft.class_4538;
 import net.minecraft.fluid.BaseFluid;
 import net.minecraft.fluid.Fluid;
 import net.minecraft.fluid.FluidState;
@@ -27,7 +28,6 @@ import net.minecraft.util.math.Direction;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.GameRules;
 import net.minecraft.world.IWorld;
-import net.minecraft.world.ViewableWorld;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
 
@@ -99,25 +99,25 @@ extends BaseFluid {
                 if (!world.isHeightValidAndBlockLoaded(blockPos3)) {
                     return;
                 }
-                if (!world.isAir(blockPos3.up()) || !this.method_15817(world, blockPos3)) continue;
+                if (!world.method_22347(blockPos3.up()) || !this.method_15817(world, blockPos3)) continue;
                 world.setBlockState(blockPos3.up(), Blocks.FIRE.getDefaultState());
             }
         }
     }
 
-    private boolean method_15819(ViewableWorld viewableWorld, BlockPos blockPos) {
+    private boolean method_15819(class_4538 arg, BlockPos blockPos) {
         for (Direction direction : Direction.values()) {
-            if (!this.method_15817(viewableWorld, blockPos.offset(direction))) continue;
+            if (!this.method_15817(arg, blockPos.offset(direction))) continue;
             return true;
         }
         return false;
     }
 
-    private boolean method_15817(ViewableWorld viewableWorld, BlockPos blockPos) {
-        if (blockPos.getY() >= 0 && blockPos.getY() < 256 && !viewableWorld.isBlockLoaded(blockPos)) {
+    private boolean method_15817(class_4538 arg, BlockPos blockPos) {
+        if (blockPos.getY() >= 0 && blockPos.getY() < 256 && !arg.method_22340(blockPos)) {
             return false;
         }
-        return viewableWorld.getBlockState(blockPos).getMaterial().isBurnable();
+        return arg.getBlockState(blockPos).getMaterial().isBurnable();
     }
 
     @Override
@@ -133,8 +133,8 @@ extends BaseFluid {
     }
 
     @Override
-    public int method_15733(ViewableWorld viewableWorld) {
-        return viewableWorld.getDimension().doesWaterVaporize() ? 4 : 2;
+    public int method_15733(class_4538 arg) {
+        return arg.getDimension().doesWaterVaporize() ? 4 : 2;
     }
 
     @Override
@@ -148,8 +148,8 @@ extends BaseFluid {
     }
 
     @Override
-    public int getLevelDecreasePerBlock(ViewableWorld viewableWorld) {
-        return viewableWorld.getDimension().doesWaterVaporize() ? 1 : 2;
+    public int getLevelDecreasePerBlock(class_4538 arg) {
+        return arg.getDimension().doesWaterVaporize() ? 1 : 2;
     }
 
     @Override
@@ -158,8 +158,8 @@ extends BaseFluid {
     }
 
     @Override
-    public int getTickRate(ViewableWorld viewableWorld) {
-        return viewableWorld.getDimension().isNether() ? 10 : 30;
+    public int getTickRate(class_4538 arg) {
+        return arg.getDimension().isNether() ? 10 : 30;
     }
 
     @Override

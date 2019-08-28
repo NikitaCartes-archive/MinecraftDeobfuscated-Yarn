@@ -6,8 +6,8 @@ package net.minecraft.client.render.entity.model;
 import com.mojang.blaze3d.systems.RenderSystem;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_4496;
 import net.minecraft.client.model.ModelPart;
+import net.minecraft.client.model.ModelUtil;
 import net.minecraft.client.render.entity.model.QuadrupedEntityModel;
 import net.minecraft.entity.passive.PandaEntity;
 import net.minecraft.entity.passive.PassiveEntity;
@@ -80,8 +80,8 @@ extends QuadrupedEntityModel<T> {
             }
         }
         if (this.scaredAnimationProgress > 0.0f) {
-            this.body.pitch = class_4496.method_22114(this.body.pitch, 1.7407963f, this.scaredAnimationProgress);
-            this.head.pitch = class_4496.method_22114(this.head.pitch, 1.5707964f, this.scaredAnimationProgress);
+            this.body.pitch = ModelUtil.interpolateAngle(this.body.pitch, 1.7407963f, this.scaredAnimationProgress);
+            this.head.pitch = ModelUtil.interpolateAngle(this.head.pitch, 1.5707964f, this.scaredAnimationProgress);
             this.leg3.roll = -0.27079642f;
             this.leg4.roll = 0.27079642f;
             this.leg1.roll = 0.5707964f;
@@ -107,10 +107,10 @@ extends QuadrupedEntityModel<T> {
             this.leg2.pitch = 0.6f * MathHelper.sin(h * 0.15f);
             this.leg3.pitch = 0.3f * MathHelper.sin(h * 0.25f);
             this.leg4.pitch = -0.3f * MathHelper.sin(h * 0.25f);
-            this.head.pitch = class_4496.method_22114(this.head.pitch, 1.5707964f, this.lieOnBackAnimationProgress);
+            this.head.pitch = ModelUtil.interpolateAngle(this.head.pitch, 1.5707964f, this.lieOnBackAnimationProgress);
         }
         if (this.playAnimationProgress > 0.0f) {
-            this.head.pitch = class_4496.method_22114(this.head.pitch, 2.0561945f, this.playAnimationProgress);
+            this.head.pitch = ModelUtil.interpolateAngle(this.head.pitch, 2.0561945f, this.playAnimationProgress);
             this.leg1.pitch = -0.5f * MathHelper.sin(h * 0.5f);
             this.leg2.pitch = 0.5f * MathHelper.sin(h * 0.5f);
             this.leg3.pitch = 0.5f * MathHelper.sin(h * 0.5f);

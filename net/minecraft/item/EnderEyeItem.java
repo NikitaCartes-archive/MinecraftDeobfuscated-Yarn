@@ -15,6 +15,7 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.ItemUsageContext;
 import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.stat.Stats;
@@ -72,7 +73,7 @@ extends Item {
             return new TypedActionResult<ItemStack>(ActionResult.PASS, itemStack);
         }
         playerEntity.setCurrentHand(hand);
-        if (!world.isClient && (blockPos = world.getChunkManager().getChunkGenerator().locateStructure(world, "Stronghold", new BlockPos(playerEntity), 100, false)) != null) {
+        if (world instanceof ServerWorld && (blockPos = ((ServerWorld)world).method_14178().getChunkGenerator().locateStructure(world, "Stronghold", new BlockPos(playerEntity), 100, false)) != null) {
             EnderEyeEntity enderEyeEntity = new EnderEyeEntity(world, playerEntity.x, playerEntity.y + (double)(playerEntity.getHeight() / 2.0f), playerEntity.z);
             enderEyeEntity.setItem(itemStack);
             enderEyeEntity.moveTowards(blockPos);

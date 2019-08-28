@@ -3,10 +3,10 @@
  */
 package net.minecraft.client.particle;
 
+import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_4493;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.particle.Particle;
 import net.minecraft.client.particle.ParticleFactory;
@@ -59,7 +59,7 @@ extends Particle {
         RenderSystem.depthMask(true);
         RenderSystem.enableBlend();
         RenderSystem.enableDepthTest();
-        RenderSystem.blendFunc(class_4493.class_4535.SRC_ALPHA, class_4493.class_4534.ONE_MINUS_SRC_ALPHA);
+        RenderSystem.blendFunc(GlStateManager.class_4535.SRC_ALPHA, GlStateManager.class_4534.ONE_MINUS_SRC_ALPHA);
         float n = 240.0f;
         RenderSystem.glMultiTexCoord2f(33985, 240.0f, 240.0f);
         RenderSystem.pushMatrix();

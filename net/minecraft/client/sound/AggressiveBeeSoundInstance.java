@@ -21,12 +21,12 @@ extends AbstractBeeSoundInstance {
     }
 
     @Override
-    protected MovingSoundInstance method_22135() {
+    protected MovingSoundInstance getReplacement() {
         return new PassiveBeeSoundInstance(this.bee);
     }
 
     @Override
-    protected boolean method_22136() {
+    protected boolean shouldReplace() {
         return !this.bee.isAngry();
     }
 }

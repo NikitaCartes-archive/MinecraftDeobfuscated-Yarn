@@ -13,6 +13,7 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.ItemUsageContext;
 import net.minecraft.particle.ParticleTypes;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.tag.BlockTags;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.math.BlockPos;
@@ -55,9 +56,9 @@ extends Item {
         Fertilizable fertilizable;
         BlockState blockState = world.getBlockState(blockPos);
         if (blockState.getBlock() instanceof Fertilizable && (fertilizable = (Fertilizable)((Object)blockState.getBlock())).isFertilizable(world, blockPos, blockState, world.isClient)) {
-            if (!world.isClient) {
+            if (world instanceof ServerWorld) {
                 if (fertilizable.canGrow(world, world.random, blockPos, blockState)) {
-                    fertilizable.grow(world, world.random, blockPos, blockState);
+                    fertilizable.grow((ServerWorld)world, world.random, blockPos, blockState);
                 }
                 itemStack.decrement(1);
             }
@@ -67,44 +68,45 @@ extends Item {
     }
 
     public static boolean useOnGround(ItemStack itemStack, World world, BlockPos blockPos, @Nullable Direction direction) {
-        if (world.getBlockState(blockPos).getBlock() == Blocks.WATER && world.getFluidState(blockPos).getLevel() == 8) {
-            if (!world.isClient) {
-                block0: for (int i = 0; i < 128; ++i) {
-                    int j;
-                    BlockPos blockPos2 = blockPos;
-                    Biome biome = world.getBiome(blockPos2);
-                    BlockState blockState = Blocks.SEAGRASS.getDefaultState();
-                    for (j = 0; j < i / 16; ++j) {
-                        blockPos2 = blockPos2.add(RANDOM.nextInt(3) - 1, (RANDOM.nextInt(3) - 1) * RANDOM.nextInt(3) / 2, RANDOM.nextInt(3) - 1);
-                        biome = world.getBiome(blockPos2);
-                        if (world.getBlockState(blockPos2).method_21743(world, blockPos2)) continue block0;
-                    }
-                    if (biome == Biomes.WARM_OCEAN || biome == Biomes.DEEP_WARM_OCEAN) {
-                        if (i == 0 && direction != null && direction.getAxis().isHorizontal()) {
-                            blockState = (BlockState)BlockTags.WALL_CORALS.getRandom(world.random).getDefaultState().with(DeadCoralWallFanBlock.FACING, direction);
-                        } else if (RANDOM.nextInt(4) == 0) {
-                            blockState = BlockTags.UNDERWATER_BONEMEALS.getRandom(RANDOM).getDefaultState();
-                        }
-                    }
-                    if (blockState.getBlock().matches(BlockTags.WALL_CORALS)) {
-                        for (j = 0; !blockState.canPlaceAt(world, blockPos2) && j < 4; ++j) {
-                            blockState = (BlockState)blockState.with(DeadCoralWallFanBlock.FACING, Direction.Type.HORIZONTAL.random(RANDOM));
-                        }
-                    }
-                    if (!blockState.canPlaceAt(world, blockPos2)) continue;
-                    BlockState blockState2 = world.getBlockState(blockPos2);
-                    if (blockState2.getBlock() == Blocks.WATER && world.getFluidState(blockPos2).getLevel() == 8) {
-                        world.setBlockState(blockPos2, blockState, 3);
-                        continue;
-                    }
-                    if (blockState2.getBlock() != Blocks.SEAGRASS || RANDOM.nextInt(10) != 0) continue;
-                    ((Fertilizable)((Object)Blocks.SEAGRASS)).grow(world, RANDOM, blockPos2, blockState2);
-                }
-                itemStack.decrement(1);
-            }
+        if (world.getBlockState(blockPos).getBlock() != Blocks.WATER || world.getFluidState(blockPos).getLevel() != 8) {
+            return false;
+        }
+        if (!(world instanceof ServerWorld)) {
             return true;
         }
-        return false;
+        block0: for (int i = 0; i < 128; ++i) {
+            int j;
+            BlockPos blockPos2 = blockPos;
+            Biome biome = world.getBiome(blockPos2);
+            BlockState blockState = Blocks.SEAGRASS.getDefaultState();
+            for (j = 0; j < i / 16; ++j) {
+                blockPos2 = blockPos2.add(RANDOM.nextInt(3) - 1, (RANDOM.nextInt(3) - 1) * RANDOM.nextInt(3) / 2, RANDOM.nextInt(3) - 1);
+                biome = world.getBiome(blockPos2);
+                if (world.getBlockState(blockPos2).method_21743(world, blockPos2)) continue block0;
+            }
+            if (biome == Biomes.WARM_OCEAN || biome == Biomes.DEEP_WARM_OCEAN) {
+                if (i == 0 && direction != null && direction.getAxis().isHorizontal()) {
+                    blockState = (BlockState)BlockTags.WALL_CORALS.getRandom(world.random).getDefaultState().with(DeadCoralWallFanBlock.FACING, direction);
+                } else if (RANDOM.nextInt(4) == 0) {
+                    blockState = BlockTags.UNDERWATER_BONEMEALS.getRandom(RANDOM).getDefaultState();
+                }
+            }
+            if (blockState.getBlock().matches(BlockTags.WALL_CORALS)) {
+                for (j = 0; !blockState.canPlaceAt(world, blockPos2) && j < 4; ++j) {
+                    blockState = (BlockState)blockState.with(DeadCoralWallFanBlock.FACING, Direction.Type.HORIZONTAL.random(RANDOM));
+                }
+            }
+            if (!blockState.canPlaceAt(world, blockPos2)) continue;
+            BlockState blockState2 = world.getBlockState(blockPos2);
+            if (blockState2.getBlock() == Blocks.WATER && world.getFluidState(blockPos2).getLevel() == 8) {
+                world.setBlockState(blockPos2, blockState, 3);
+                continue;
+            }
+            if (blockState2.getBlock() != Blocks.SEAGRASS || RANDOM.nextInt(10) != 0) continue;
+            ((Fertilizable)((Object)Blocks.SEAGRASS)).grow((ServerWorld)world, RANDOM, blockPos2, blockState2);
+        }
+        itemStack.decrement(1);
+        return true;
     }
 
     @Environment(value=EnvType.CLIENT)

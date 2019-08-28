@@ -62,7 +62,7 @@ extends Feature<DefaultFeatureConfig> {
                     if (t == 4 && !bl) {
                         return false;
                     }
-                    if (s != k && s != l && u != p && u != q || t != 0 || !iWorld.isAir(blockPos2) || !iWorld.isAir(blockPos2.up())) continue;
+                    if (s != k && s != l && u != p && u != q || t != 0 || !iWorld.method_22347(blockPos2) || !iWorld.method_22347(blockPos2.up())) continue;
                     ++r;
                 }
             }
@@ -98,7 +98,7 @@ extends Feature<DefaultFeatureConfig> {
                 int v;
                 u = blockPos.getX() + random.nextInt(j * 2 + 1) - j;
                 BlockPos blockPos3 = new BlockPos(u, v = blockPos.getY(), w = blockPos.getZ() + random.nextInt(o * 2 + 1) - o);
-                if (!iWorld.isAir(blockPos3)) continue;
+                if (!iWorld.method_22347(blockPos3)) continue;
                 int x = 0;
                 for (Direction direction : Direction.Type.HORIZONTAL) {
                     if (!iWorld.getBlockState(blockPos3.offset(direction)).getMaterial().isSolid()) continue;

@@ -28,18 +28,18 @@ import org.jetbrains.annotations.Nullable;
 public class DebugRendererInfoManager {
     private static final Logger LOGGER = LogManager.getLogger();
 
-    public static void method_22318(ServerWorld serverWorld, BlockPos blockPos, String string, int i, int j) {
+    public static void addGameTestMarker(ServerWorld serverWorld, BlockPos blockPos, String string, int i, int j) {
         PacketByteBuf packetByteBuf = new PacketByteBuf(Unpooled.buffer());
         packetByteBuf.writeBlockPos(blockPos);
         packetByteBuf.writeInt(i);
         packetByteBuf.writeString(string);
         packetByteBuf.writeInt(j);
-        DebugRendererInfoManager.method_22319(serverWorld, packetByteBuf, CustomPayloadS2CPacket.field_20599);
+        DebugRendererInfoManager.method_22319(serverWorld, packetByteBuf, CustomPayloadS2CPacket.DEBUG_GAME_TEST_ADD_MARKER);
     }
 
-    public static void method_22317(ServerWorld serverWorld) {
+    public static void clearGameTestMarkers(ServerWorld serverWorld) {
         PacketByteBuf packetByteBuf = new PacketByteBuf(Unpooled.buffer());
-        DebugRendererInfoManager.method_22319(serverWorld, packetByteBuf, CustomPayloadS2CPacket.field_20600);
+        DebugRendererInfoManager.method_22319(serverWorld, packetByteBuf, CustomPayloadS2CPacket.DEBUG_GAME_TEST_CLEAR);
     }
 
     public static void method_19775(ServerWorld serverWorld, ChunkPos chunkPos) {

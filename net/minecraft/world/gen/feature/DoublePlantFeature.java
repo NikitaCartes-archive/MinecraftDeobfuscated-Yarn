@@ -24,7 +24,7 @@ extends Feature<DoublePlantFeatureConfig> {
         boolean bl = false;
         for (int i = 0; i < 64; ++i) {
             BlockPos blockPos2 = blockPos.add(random.nextInt(8) - random.nextInt(8), random.nextInt(4) - random.nextInt(4), random.nextInt(8) - random.nextInt(8));
-            if (!iWorld.isAir(blockPos2) || blockPos2.getY() >= 254 || !doublePlantFeatureConfig.state.canPlaceAt(iWorld, blockPos2)) continue;
+            if (!iWorld.method_22347(blockPos2) || blockPos2.getY() >= 254 || !doublePlantFeatureConfig.state.canPlaceAt(iWorld, blockPos2)) continue;
             ((TallPlantBlock)doublePlantFeatureConfig.state.getBlock()).placeAt(iWorld, blockPos2, 2);
             bl = true;
         }

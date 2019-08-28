@@ -8,6 +8,7 @@ import com.google.common.collect.Maps;
 import com.google.common.collect.Queues;
 import com.google.common.collect.Sets;
 import com.google.gson.JsonSyntaxException;
+import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
 import java.io.IOException;
 import java.util.ArrayDeque;
@@ -32,7 +33,6 @@ import net.minecraft.block.LeavesBlock;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.ChestBlockEntity;
 import net.minecraft.block.enums.ChestType;
-import net.minecraft.class_4493;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gl.GlBuffer;
 import net.minecraft.client.gl.GlFramebuffer;
@@ -249,7 +249,7 @@ SynchronousResourceReloadListener {
     public void drawEntityOutlinesFramebuffer() {
         if (this.canDrawEntityOutlines()) {
             RenderSystem.enableBlend();
-            RenderSystem.blendFuncSeparate(class_4493.class_4535.SRC_ALPHA, class_4493.class_4534.ONE_MINUS_SRC_ALPHA, class_4493.class_4535.ZERO, class_4493.class_4534.ONE);
+            RenderSystem.blendFuncSeparate(GlStateManager.class_4535.SRC_ALPHA, GlStateManager.class_4534.ONE_MINUS_SRC_ALPHA, GlStateManager.class_4535.ZERO, GlStateManager.class_4534.ONE);
             this.entityOutlinesFramebuffer.draw(this.client.window.getFramebufferWidth(), this.client.window.getFramebufferHeight(), false);
             RenderSystem.disableBlend();
         }
@@ -808,7 +808,7 @@ SynchronousResourceReloadListener {
         RenderSystem.disableFog();
         RenderSystem.disableAlphaTest();
         RenderSystem.enableBlend();
-        RenderSystem.blendFuncSeparate(class_4493.class_4535.SRC_ALPHA, class_4493.class_4534.ONE_MINUS_SRC_ALPHA, class_4493.class_4535.ONE, class_4493.class_4534.ZERO);
+        RenderSystem.blendFuncSeparate(GlStateManager.class_4535.SRC_ALPHA, GlStateManager.class_4534.ONE_MINUS_SRC_ALPHA, GlStateManager.class_4535.ONE, GlStateManager.class_4534.ZERO);
         GuiLighting.disable();
         RenderSystem.depthMask(false);
         this.textureManager.bindTexture(END_SKY_TEX);
@@ -880,7 +880,7 @@ SynchronousResourceReloadListener {
         RenderSystem.disableFog();
         RenderSystem.disableAlphaTest();
         RenderSystem.enableBlend();
-        RenderSystem.blendFuncSeparate(class_4493.class_4535.SRC_ALPHA, class_4493.class_4534.ONE_MINUS_SRC_ALPHA, class_4493.class_4535.ONE, class_4493.class_4534.ZERO);
+        RenderSystem.blendFuncSeparate(GlStateManager.class_4535.SRC_ALPHA, GlStateManager.class_4534.ONE_MINUS_SRC_ALPHA, GlStateManager.class_4535.ONE, GlStateManager.class_4534.ZERO);
         GuiLighting.disable();
         float[] fs = this.world.dimension.getBackgroundColor(this.world.getSkyAngle(f), f);
         if (fs != null) {
@@ -907,7 +907,7 @@ SynchronousResourceReloadListener {
             RenderSystem.shadeModel(7424);
         }
         RenderSystem.enableTexture();
-        RenderSystem.blendFuncSeparate(class_4493.class_4535.SRC_ALPHA, class_4493.class_4534.ONE, class_4493.class_4535.ONE, class_4493.class_4534.ZERO);
+        RenderSystem.blendFuncSeparate(GlStateManager.class_4535.SRC_ALPHA, GlStateManager.class_4534.ONE, GlStateManager.class_4535.ONE, GlStateManager.class_4534.ZERO);
         RenderSystem.pushMatrix();
         j = 1.0f - this.world.getRainGradient(f);
         RenderSystem.color4f(1.0f, 1.0f, 1.0f, j);
@@ -1027,7 +1027,7 @@ SynchronousResourceReloadListener {
         RenderSystem.disableCull();
         this.textureManager.bindTexture(CLOUDS_TEX);
         RenderSystem.enableBlend();
-        RenderSystem.blendFuncSeparate(class_4493.class_4535.SRC_ALPHA, class_4493.class_4534.ONE_MINUS_SRC_ALPHA, class_4493.class_4535.ONE, class_4493.class_4534.ZERO);
+        RenderSystem.blendFuncSeparate(GlStateManager.class_4535.SRC_ALPHA, GlStateManager.class_4534.ONE_MINUS_SRC_ALPHA, GlStateManager.class_4535.ONE, GlStateManager.class_4534.ZERO);
         RenderSystem.pushMatrix();
         RenderSystem.scalef(12.0f, 1.0f, 12.0f);
         RenderSystem.translatef(-o, p, -q);
@@ -1195,7 +1195,7 @@ SynchronousResourceReloadListener {
         double h = camera.getPos().y;
         double i = camera.getPos().z;
         RenderSystem.enableBlend();
-        RenderSystem.blendFuncSeparate(class_4493.class_4535.SRC_ALPHA, class_4493.class_4534.ONE, class_4493.class_4535.ONE, class_4493.class_4534.ZERO);
+        RenderSystem.blendFuncSeparate(GlStateManager.class_4535.SRC_ALPHA, GlStateManager.class_4534.ONE, GlStateManager.class_4535.ONE, GlStateManager.class_4534.ZERO);
         this.textureManager.bindTexture(FORCEFIELD_TEX);
         RenderSystem.depthMask(false);
         RenderSystem.pushMatrix();
@@ -1288,7 +1288,7 @@ SynchronousResourceReloadListener {
     }
 
     private void enableBlockOverlayRendering() {
-        RenderSystem.blendFuncSeparate(class_4493.class_4535.DST_COLOR, class_4493.class_4534.SRC_COLOR, class_4493.class_4535.ONE, class_4493.class_4534.ZERO);
+        RenderSystem.blendFuncSeparate(GlStateManager.class_4535.DST_COLOR, GlStateManager.class_4534.SRC_COLOR, GlStateManager.class_4535.ONE, GlStateManager.class_4534.ZERO);
         RenderSystem.enableBlend();
         RenderSystem.color4f(1.0f, 1.0f, 1.0f, 0.5f);
         RenderSystem.polygonOffset(-1.0f, -10.0f);
@@ -1348,7 +1348,7 @@ SynchronousResourceReloadListener {
         BlockState blockState;
         if (i == 0 && hitResult.getType() == HitResult.Type.BLOCK && !(blockState = this.world.getBlockState(blockPos = ((BlockHitResult)hitResult).getBlockPos())).isAir() && this.world.getWorldBorder().contains(blockPos)) {
             RenderSystem.enableBlend();
-            RenderSystem.blendFuncSeparate(class_4493.class_4535.SRC_ALPHA, class_4493.class_4534.ONE_MINUS_SRC_ALPHA, class_4493.class_4535.ONE, class_4493.class_4534.ZERO);
+            RenderSystem.blendFuncSeparate(GlStateManager.class_4535.SRC_ALPHA, GlStateManager.class_4534.ONE_MINUS_SRC_ALPHA, GlStateManager.class_4535.ONE, GlStateManager.class_4534.ZERO);
             RenderSystem.lineWidth(Math.max(2.5f, (float)this.client.window.getFramebufferWidth() / 1920.0f * 2.5f));
             RenderSystem.disableTexture();
             RenderSystem.depthMask(false);

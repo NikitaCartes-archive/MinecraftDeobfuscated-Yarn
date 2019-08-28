@@ -7,6 +7,7 @@ import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Ordering;
+import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -17,7 +18,6 @@ import java.util.stream.Collectors;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.block.Blocks;
-import net.minecraft.class_4493;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gui.ClientChatListener;
@@ -91,7 +91,7 @@ extends DrawableHelper {
     private String overlayMessage = "";
     private int overlayRemaining;
     private boolean overlayTinted;
-    public float field_2013 = 1.0f;
+    public float vignetteDarkness = 1.0f;
     private int heldItemTooltipFade;
     private ItemStack currentStack = ItemStack.EMPTY;
     private final DebugHud debugHud;
@@ -151,7 +151,7 @@ extends DrawableHelper {
             this.renderVignetteOverlay(this.client.getCameraEntity());
         } else {
             RenderSystem.enableDepthTest();
-            RenderSystem.blendFuncSeparate(class_4493.class_4535.SRC_ALPHA, class_4493.class_4534.ONE_MINUS_SRC_ALPHA, class_4493.class_4535.ONE, class_4493.class_4534.ZERO);
+            RenderSystem.blendFuncSeparate(GlStateManager.class_4535.SRC_ALPHA, GlStateManager.class_4534.ONE_MINUS_SRC_ALPHA, GlStateManager.class_4535.ONE, GlStateManager.class_4534.ZERO);
         }
         ItemStack itemStack = this.client.player.inventory.getArmorStack(3);
         if (this.client.options.perspective == 0 && itemStack.getItem() == Blocks.CARVED_PUMPKIN.asItem()) {
@@ -171,7 +171,7 @@ extends DrawableHelper {
             RenderSystem.enableBlend();
             RenderSystem.enableAlphaTest();
             this.renderCrosshair();
-            RenderSystem.blendFuncSeparate(class_4493.class_4535.SRC_ALPHA, class_4493.class_4534.ONE_MINUS_SRC_ALPHA, class_4493.class_4535.ONE, class_4493.class_4534.ZERO);
+            RenderSystem.blendFuncSeparate(GlStateManager.class_4535.SRC_ALPHA, GlStateManager.class_4534.ONE_MINUS_SRC_ALPHA, GlStateManager.class_4535.ONE, GlStateManager.class_4534.ZERO);
             this.client.getProfiler().push("bossHealth");
             this.bossBarHud.render();
             this.client.getProfiler().pop();
@@ -231,13 +231,13 @@ extends DrawableHelper {
                     RenderSystem.pushMatrix();
                     RenderSystem.translatef(this.scaledWidth / 2, this.scaledHeight - 68, 0.0f);
                     RenderSystem.enableBlend();
-                    RenderSystem.blendFuncSeparate(class_4493.class_4535.SRC_ALPHA, class_4493.class_4534.ONE_MINUS_SRC_ALPHA, class_4493.class_4535.ONE, class_4493.class_4534.ZERO);
+                    RenderSystem.blendFuncSeparate(GlStateManager.class_4535.SRC_ALPHA, GlStateManager.class_4534.ONE_MINUS_SRC_ALPHA, GlStateManager.class_4535.ONE, GlStateManager.class_4534.ZERO);
                     j = 0xFFFFFF;
                     if (this.overlayTinted) {
                         j = MathHelper.hsvToRgb(g / 50.0f, 0.7f, 0.6f) & 0xFFFFFF;
                     }
                     l = k << 24 & 0xFF000000;
-                    this.method_19346(textRenderer, -4, textRenderer.getStringWidth(this.overlayMessage));
+                    this.drawTextBackground(textRenderer, -4, textRenderer.getStringWidth(this.overlayMessage));
                     textRenderer.draw(this.overlayMessage, -textRenderer.getStringWidth(this.overlayMessage) / 2, -4.0f, j | l);
                     RenderSystem.disableBlend();
                     RenderSystem.popMatrix();
@@ -259,19 +259,19 @@ extends DrawableHelper {
                     RenderSystem.pushMatrix();
                     RenderSystem.translatef(this.scaledWidth / 2, this.scaledHeight / 2, 0.0f);
                     RenderSystem.enableBlend();
-                    RenderSystem.blendFuncSeparate(class_4493.class_4535.SRC_ALPHA, class_4493.class_4534.ONE_MINUS_SRC_ALPHA, class_4493.class_4535.ONE, class_4493.class_4534.ZERO);
+                    RenderSystem.blendFuncSeparate(GlStateManager.class_4535.SRC_ALPHA, GlStateManager.class_4534.ONE_MINUS_SRC_ALPHA, GlStateManager.class_4535.ONE, GlStateManager.class_4534.ZERO);
                     RenderSystem.pushMatrix();
                     RenderSystem.scalef(4.0f, 4.0f, 4.0f);
                     int j2 = k << 24 & 0xFF000000;
                     l = textRenderer.getStringWidth(this.title);
-                    this.method_19346(textRenderer, -10, l);
+                    this.drawTextBackground(textRenderer, -10, l);
                     textRenderer.drawWithShadow(this.title, -l / 2, -10.0f, 0xFFFFFF | j2);
                     RenderSystem.popMatrix();
                     if (!this.subtitle.isEmpty()) {
                         RenderSystem.pushMatrix();
                         RenderSystem.scalef(2.0f, 2.0f, 2.0f);
                         int n = textRenderer.getStringWidth(this.subtitle);
-                        this.method_19346(textRenderer, 5, n);
+                        this.drawTextBackground(textRenderer, 5, n);
                         textRenderer.drawWithShadow(this.subtitle, -n / 2, 5.0f, 0xFFFFFF | j2);
                         RenderSystem.popMatrix();
                     }
@@ -292,7 +292,7 @@ extends DrawableHelper {
                 this.renderScoreboardSidebar(scoreboardObjective2);
             }
             RenderSystem.enableBlend();
-            RenderSystem.blendFuncSeparate(class_4493.class_4535.SRC_ALPHA, class_4493.class_4534.ONE_MINUS_SRC_ALPHA, class_4493.class_4535.ONE, class_4493.class_4534.ZERO);
+            RenderSystem.blendFuncSeparate(GlStateManager.class_4535.SRC_ALPHA, GlStateManager.class_4534.ONE_MINUS_SRC_ALPHA, GlStateManager.class_4535.ONE, GlStateManager.class_4534.ZERO);
             RenderSystem.disableAlphaTest();
             RenderSystem.pushMatrix();
             RenderSystem.translatef(0.0f, this.scaledHeight - 48, 0.0f);
@@ -313,7 +313,7 @@ extends DrawableHelper {
         RenderSystem.enableAlphaTest();
     }
 
-    private void method_19346(TextRenderer textRenderer, int i, int j) {
+    private void drawTextBackground(TextRenderer textRenderer, int i, int j) {
         int k = this.client.options.getTextBackgroundColor(0.0f);
         if (k != 0) {
             int l = -j / 2;
@@ -339,7 +339,7 @@ extends DrawableHelper {
             RenderSystem.renderCrosshair(10);
             RenderSystem.popMatrix();
         } else {
-            RenderSystem.blendFuncSeparate(class_4493.class_4535.ONE_MINUS_DST_COLOR, class_4493.class_4534.ONE_MINUS_SRC_COLOR, class_4493.class_4535.ONE, class_4493.class_4534.ZERO);
+            RenderSystem.blendFuncSeparate(GlStateManager.class_4535.ONE_MINUS_DST_COLOR, GlStateManager.class_4534.ONE_MINUS_SRC_COLOR, GlStateManager.class_4535.ONE, GlStateManager.class_4534.ZERO);
             int i = 15;
             this.blit((this.scaledWidth - 15) / 2, (this.scaledHeight - 15) / 2, 0, 0, 15, 15);
             if (this.client.options.attackIndicator == AttackIndicator.CROSSHAIR) {
@@ -456,7 +456,7 @@ extends DrawableHelper {
         this.blitOffset = j;
         RenderSystem.enableRescaleNormal();
         RenderSystem.enableBlend();
-        RenderSystem.blendFuncSeparate(class_4493.class_4535.SRC_ALPHA, class_4493.class_4534.ONE_MINUS_SRC_ALPHA, class_4493.class_4535.ONE, class_4493.class_4534.ZERO);
+        RenderSystem.blendFuncSeparate(GlStateManager.class_4535.SRC_ALPHA, GlStateManager.class_4534.ONE_MINUS_SRC_ALPHA, GlStateManager.class_4535.ONE, GlStateManager.class_4534.ZERO);
         GuiLighting.enableForItems();
         for (m = 0; m < 9; ++m) {
             n = i - 90 + m * 20 + 2;
@@ -552,7 +552,7 @@ extends DrawableHelper {
             if (k > 0) {
                 RenderSystem.pushMatrix();
                 RenderSystem.enableBlend();
-                RenderSystem.blendFuncSeparate(class_4493.class_4535.SRC_ALPHA, class_4493.class_4534.ONE_MINUS_SRC_ALPHA, class_4493.class_4535.ONE, class_4493.class_4534.ZERO);
+                RenderSystem.blendFuncSeparate(GlStateManager.class_4535.SRC_ALPHA, GlStateManager.class_4534.ONE_MINUS_SRC_ALPHA, GlStateManager.class_4535.ONE, GlStateManager.class_4534.ZERO);
                 InGameHud.fill(i - 2, j - 2, i + this.getFontRenderer().getStringWidth(string) + 2, j + this.getFontRenderer().fontHeight + 2, this.client.options.getTextBackgroundColor(0));
                 this.getFontRenderer().drawWithShadow(string, i, j, 0xFFFFFF + (k << 24));
                 RenderSystem.disableBlend();
@@ -628,7 +628,7 @@ extends DrawableHelper {
         return null;
     }
 
-    private int method_1744(LivingEntity livingEntity) {
+    private int getHeartCount(LivingEntity livingEntity) {
         if (livingEntity == null || !livingEntity.isLiving()) {
             return 0;
         }
@@ -640,7 +640,7 @@ extends DrawableHelper {
         return i;
     }
 
-    private int method_1733(int i) {
+    private int getHeartRows(int i) {
         return (int)Math.ceil((double)i / 10.0);
     }
 
@@ -756,7 +756,7 @@ extends DrawableHelper {
             this.blit(ab, ac, y + 45, 9 * ad, 9, 9);
         }
         LivingEntity livingEntity = this.getRiddenEntity();
-        y = this.method_1744(livingEntity);
+        y = this.getHeartCount(livingEntity);
         if (y == 0) {
             this.client.getProfiler().swap("food");
             for (z = 0; z < 10; ++z) {
@@ -784,7 +784,7 @@ extends DrawableHelper {
         z = playerEntity.getBreath();
         aa = playerEntity.getMaxBreath();
         if (playerEntity.isInFluid(FluidTags.WATER) || z < aa) {
-            ab = this.method_1733(y) - 1;
+            ab = this.getHeartRows(y) - 1;
             t -= ab * 10;
             ac = MathHelper.ceil((double)(z - 2) * 10.0 / (double)aa);
             ad = MathHelper.ceil((double)z * 10.0 / (double)aa) - ac;
@@ -804,7 +804,7 @@ extends DrawableHelper {
         if (livingEntity == null) {
             return;
         }
-        int i = this.method_1744(livingEntity);
+        int i = this.getHeartCount(livingEntity);
         if (i == 0) {
             return;
         }
@@ -837,7 +837,7 @@ extends DrawableHelper {
     private void renderPumpkinOverlay() {
         RenderSystem.disableDepthTest();
         RenderSystem.depthMask(false);
-        RenderSystem.blendFuncSeparate(class_4493.class_4535.SRC_ALPHA, class_4493.class_4534.ONE_MINUS_SRC_ALPHA, class_4493.class_4535.ONE, class_4493.class_4534.ZERO);
+        RenderSystem.blendFuncSeparate(GlStateManager.class_4535.SRC_ALPHA, GlStateManager.class_4534.ONE_MINUS_SRC_ALPHA, GlStateManager.class_4535.ONE, GlStateManager.class_4534.ZERO);
         RenderSystem.color4f(1.0f, 1.0f, 1.0f, 1.0f);
         RenderSystem.disableAlphaTest();
         this.client.getTextureManager().bindTexture(PUMPKIN_BLUR);
@@ -855,12 +855,12 @@ extends DrawableHelper {
         RenderSystem.color4f(1.0f, 1.0f, 1.0f, 1.0f);
     }
 
-    private void method_1731(Entity entity) {
+    private void updateVignetteDarkness(Entity entity) {
         if (entity == null) {
             return;
         }
         float f = MathHelper.clamp(1.0f - entity.getBrightnessAtEyes(), 0.0f, 1.0f);
-        this.field_2013 = (float)((double)this.field_2013 + (double)(f - this.field_2013) * 0.01);
+        this.vignetteDarkness = (float)((double)this.vignetteDarkness + (double)(f - this.vignetteDarkness) * 0.01);
     }
 
     private void renderVignetteOverlay(Entity entity) {
@@ -871,11 +871,11 @@ extends DrawableHelper {
         f = (double)f < e ? 1.0f - (float)((double)f / e) : 0.0f;
         RenderSystem.disableDepthTest();
         RenderSystem.depthMask(false);
-        RenderSystem.blendFuncSeparate(class_4493.class_4535.ZERO, class_4493.class_4534.ONE_MINUS_SRC_COLOR, class_4493.class_4535.ONE, class_4493.class_4534.ZERO);
+        RenderSystem.blendFuncSeparate(GlStateManager.class_4535.ZERO, GlStateManager.class_4534.ONE_MINUS_SRC_COLOR, GlStateManager.class_4535.ONE, GlStateManager.class_4534.ZERO);
         if (f > 0.0f) {
             RenderSystem.color4f(0.0f, f, f, 1.0f);
         } else {
-            RenderSystem.color4f(this.field_2013, this.field_2013, this.field_2013, 1.0f);
+            RenderSystem.color4f(this.vignetteDarkness, this.vignetteDarkness, this.vignetteDarkness, 1.0f);
         }
         this.client.getTextureManager().bindTexture(VIGNETTE_TEX);
         Tessellator tessellator = Tessellator.getInstance();
@@ -889,7 +889,7 @@ extends DrawableHelper {
         RenderSystem.depthMask(true);
         RenderSystem.enableDepthTest();
         RenderSystem.color4f(1.0f, 1.0f, 1.0f, 1.0f);
-        RenderSystem.blendFuncSeparate(class_4493.class_4535.SRC_ALPHA, class_4493.class_4534.ONE_MINUS_SRC_ALPHA, class_4493.class_4535.ONE, class_4493.class_4534.ZERO);
+        RenderSystem.blendFuncSeparate(GlStateManager.class_4535.SRC_ALPHA, GlStateManager.class_4534.ONE_MINUS_SRC_ALPHA, GlStateManager.class_4535.ONE, GlStateManager.class_4534.ZERO);
     }
 
     private void renderPortalOverlay(float f) {
@@ -901,7 +901,7 @@ extends DrawableHelper {
         RenderSystem.disableAlphaTest();
         RenderSystem.disableDepthTest();
         RenderSystem.depthMask(false);
-        RenderSystem.blendFuncSeparate(class_4493.class_4535.SRC_ALPHA, class_4493.class_4534.ONE_MINUS_SRC_ALPHA, class_4493.class_4535.ONE, class_4493.class_4534.ZERO);
+        RenderSystem.blendFuncSeparate(GlStateManager.class_4535.SRC_ALPHA, GlStateManager.class_4534.ONE_MINUS_SRC_ALPHA, GlStateManager.class_4535.ONE, GlStateManager.class_4534.ZERO);
         RenderSystem.color4f(1.0f, 1.0f, 1.0f, f);
         this.client.getTextureManager().bindTexture(SpriteAtlasTexture.BLOCK_ATLAS_TEX);
         Sprite sprite = this.client.getBlockRenderManager().getModels().getSprite(Blocks.NETHER_PORTAL.getDefaultState());
@@ -956,7 +956,7 @@ extends DrawableHelper {
         ++this.ticks;
         Entity entity = this.client.getCameraEntity();
         if (entity != null) {
-            this.method_1731(entity);
+            this.updateVignetteDarkness(entity);
         }
         if (this.client.player != null) {
             ItemStack itemStack = this.client.player.inventory.getMainHandStack();
@@ -1033,7 +1033,7 @@ extends DrawableHelper {
         return this.client.textRenderer;
     }
 
-    public SpectatorHud getSpectatorWidget() {
+    public SpectatorHud getSpectatorHud() {
         return this.spectatorHud;
     }
 

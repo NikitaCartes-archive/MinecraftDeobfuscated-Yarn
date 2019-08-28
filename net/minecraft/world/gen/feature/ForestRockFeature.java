@@ -23,7 +23,7 @@ extends Feature<BoulderFeatureConfig> {
 
     public boolean method_12813(IWorld iWorld, ChunkGenerator<? extends ChunkGeneratorConfig> chunkGenerator, Random random, BlockPos blockPos, BoulderFeatureConfig boulderFeatureConfig) {
         Block block;
-        while (blockPos.getY() > 3 && (iWorld.isAir(blockPos.down()) || (block = iWorld.getBlockState(blockPos.down()).getBlock()) != Blocks.GRASS_BLOCK && !Block.isNaturalDirt(block) && !Block.isNaturalStone(block))) {
+        while (blockPos.getY() > 3 && (iWorld.method_22347(blockPos.down()) || (block = iWorld.getBlockState(blockPos.down()).getBlock()) != Blocks.GRASS_BLOCK && !Block.isNaturalDirt(block) && !Block.isNaturalStone(block))) {
             blockPos = blockPos.down();
         }
         if (blockPos.getY() <= 3) {

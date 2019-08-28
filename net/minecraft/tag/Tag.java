@@ -100,7 +100,7 @@ public class Tag<T> {
         @Override
         public void build(Collection<T> collection) {
             if (this.tag == null) {
-                throw SystemUtil.method_22320(new IllegalStateException("Cannot build unresolved tag entry"));
+                throw SystemUtil.throwOrPause(new IllegalStateException("Cannot build unresolved tag entry"));
             }
             collection.addAll(this.tag.values());
         }

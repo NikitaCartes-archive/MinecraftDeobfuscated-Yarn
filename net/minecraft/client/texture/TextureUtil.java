@@ -1,7 +1,7 @@
 /*
  * Decompiled with CFR 0.2.0 (FabricMC d28b102d).
  */
-package net.minecraft;
+package net.minecraft.client.texture;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 import java.io.FileInputStream;
@@ -21,7 +21,7 @@ import org.lwjgl.opengl.GL11;
 import org.lwjgl.system.MemoryUtil;
 
 @Environment(value=EnvType.CLIENT)
-public class class_4536 {
+public class TextureUtil {
     private static final Logger LOGGER = LogManager.getLogger();
 
     public static int generateTextureId() {
@@ -33,19 +33,19 @@ public class class_4536 {
     }
 
     public static void prepareImage(int i, int j, int k) {
-        class_4536.prepareImage(NativeImage.GLFormat.RGBA, i, 0, j, k);
+        TextureUtil.prepareImage(NativeImage.GLFormat.RGBA, i, 0, j, k);
     }
 
     public static void prepareImage(NativeImage.GLFormat gLFormat, int i, int j, int k) {
-        class_4536.prepareImage(gLFormat, i, 0, j, k);
+        TextureUtil.prepareImage(gLFormat, i, 0, j, k);
     }
 
     public static void prepareImage(int i, int j, int k, int l) {
-        class_4536.prepareImage(NativeImage.GLFormat.RGBA, i, j, k, l);
+        TextureUtil.prepareImage(NativeImage.GLFormat.RGBA, i, j, k, l);
     }
 
     public static void prepareImage(NativeImage.GLFormat gLFormat, int i, int j, int k, int l) {
-        class_4536.bind(i);
+        TextureUtil.bind(i);
         if (j >= 0) {
             RenderSystem.texParameter(3553, 33085, j);
             RenderSystem.texParameter(3553, 33082, 0);
@@ -86,7 +86,7 @@ public class class_4536 {
     public static String readResourceAsString(InputStream inputStream) {
         ByteBuffer byteBuffer = null;
         try {
-            byteBuffer = class_4536.readResource(inputStream);
+            byteBuffer = TextureUtil.readResource(inputStream);
             int i = byteBuffer.position();
             byteBuffer.rewind();
             String string = MemoryUtil.memASCII(byteBuffer, i);

@@ -19,7 +19,6 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.stream.Collectors;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_4536;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.resource.metadata.AnimationResourceMetadata;
 import net.minecraft.client.texture.AbstractTexture;
@@ -27,6 +26,7 @@ import net.minecraft.client.texture.MissingSprite;
 import net.minecraft.client.texture.Sprite;
 import net.minecraft.client.texture.TextureStitcher;
 import net.minecraft.client.texture.TextureStitcherCannotFitException;
+import net.minecraft.client.texture.TextureUtil;
 import net.minecraft.client.texture.TickableTexture;
 import net.minecraft.client.util.PngFile;
 import net.minecraft.resource.Resource;
@@ -72,7 +72,7 @@ implements TickableTexture {
         this.spritesToLoad.clear();
         this.spritesToLoad.addAll(data.spriteIds);
         LOGGER.info("Created: {}x{} {}-atlas", (Object)data.width, (Object)data.height, (Object)this.atlasPath);
-        class_4536.prepareImage(this.getGlId(), this.mipLevel, data.width, data.height);
+        TextureUtil.prepareImage(this.getGlId(), this.mipLevel, data.width, data.height);
         this.clear();
         for (Sprite sprite : data.sprites) {
             this.sprites.put(sprite.getId(), sprite);
@@ -129,12 +129,12 @@ implements TickableTexture {
         } catch (TextureStitcherCannotFitException textureStitcherCannotFitException) {
             CrashReport crashReport = CrashReport.create(textureStitcherCannotFitException, "Stitching");
             CrashReportSection crashReportSection = crashReport.addElement("Stitcher");
-            crashReportSection.add("Sprites", textureStitcherCannotFitException.method_21687().stream().map(sprite -> String.format("%s[%dx%d]", sprite.getId(), sprite.getWidth(), sprite.getHeight())).collect(Collectors.joining(",")));
+            crashReportSection.add("Sprites", textureStitcherCannotFitException.getSprites().stream().map(sprite -> String.format("%s[%dx%d]", sprite.getId(), sprite.getWidth(), sprite.getHeight())).collect(Collectors.joining(",")));
             crashReportSection.add("Max Texture Size", i);
             throw new CrashException(crashReport);
         }
         profiler.swap("loading");
-        List<Sprite> list = this.method_18161(resourceManager, textureStitcher);
+        List<Sprite> list = this.loadSprites(resourceManager, textureStitcher);
         profiler.pop();
         return new Data(set, textureStitcher.getWidth(), textureStitcher.getHeight(), list);
     }
@@ -165,7 +165,7 @@ implements TickableTexture {
         return concurrentLinkedQueue;
     }
 
-    private List<Sprite> method_18161(ResourceManager resourceManager, TextureStitcher textureStitcher) {
+    private List<Sprite> loadSprites(ResourceManager resourceManager, TextureStitcher textureStitcher) {
         ConcurrentLinkedQueue<Sprite> concurrentLinkedQueue = new ConcurrentLinkedQueue<Sprite>();
         ArrayList<CompletableFuture<Void>> list = Lists.newArrayList();
         for (Sprite sprite : textureStitcher.getStitchedSprites()) {

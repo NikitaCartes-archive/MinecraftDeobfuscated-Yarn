@@ -126,8 +126,8 @@ public abstract class EntityNavigation {
         float f = this.getFollowRange();
         BlockPos blockPos = bl ? new BlockPos(this.entity).up() : new BlockPos(this.entity);
         int k = (int)(f + (float)i);
-        ChunkCache viewableWorld = new ChunkCache(this.world, blockPos.add(-k, -k, -k), blockPos.add(k, k, k));
-        Path path = this.pathNodeNavigator.pathfind(viewableWorld, this.entity, set, f, j);
+        ChunkCache chunkCache = new ChunkCache(this.world, blockPos.add(-k, -k, -k), blockPos.add(k, k, k));
+        Path path = this.pathNodeNavigator.pathfind(chunkCache, this.entity, set, f, j);
         this.world.getProfiler().pop();
         if (path != null && path.method_48() != null) {
             this.field_20293 = path.method_48();

@@ -23,7 +23,7 @@ extends Feature<DefaultFeatureConfig> {
     public boolean method_12853(IWorld iWorld, ChunkGenerator<? extends ChunkGeneratorConfig> chunkGenerator, Random random, BlockPos blockPos, DefaultFeatureConfig defaultFeatureConfig) {
         for (int i = 0; i < 10; ++i) {
             BlockPos blockPos2 = blockPos.add(random.nextInt(8) - random.nextInt(8), random.nextInt(4) - random.nextInt(4), random.nextInt(8) - random.nextInt(8));
-            if (!iWorld.isAir(blockPos2)) continue;
+            if (!iWorld.method_22347(blockPos2)) continue;
             int j = 1 + random.nextInt(random.nextInt(3) + 1);
             for (int k = 0; k < j; ++k) {
                 if (!Blocks.CACTUS.getDefaultState().canPlaceAt(iWorld, blockPos2)) continue;

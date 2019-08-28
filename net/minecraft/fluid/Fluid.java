@@ -8,6 +8,7 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.block.BlockRenderLayer;
 import net.minecraft.block.BlockState;
+import net.minecraft.class_4538;
 import net.minecraft.fluid.FluidState;
 import net.minecraft.fluid.FluidStateImpl;
 import net.minecraft.item.Item;
@@ -20,7 +21,6 @@ import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.world.BlockView;
-import net.minecraft.world.ViewableWorld;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
 
@@ -76,7 +76,7 @@ public abstract class Fluid {
 
     protected abstract Vec3d getVelocity(BlockView var1, BlockPos var2, FluidState var3);
 
-    public abstract int getTickRate(ViewableWorld var1);
+    public abstract int getTickRate(class_4538 var1);
 
     protected boolean hasRandomTicks() {
         return false;

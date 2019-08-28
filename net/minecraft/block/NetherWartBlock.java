@@ -13,13 +13,13 @@ import net.minecraft.block.PlantBlock;
 import net.minecraft.entity.EntityContext;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.state.StateFactory;
 import net.minecraft.state.property.IntProperty;
 import net.minecraft.state.property.Properties;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.world.BlockView;
-import net.minecraft.world.World;
 
 public class NetherWartBlock
 extends PlantBlock {
@@ -42,13 +42,13 @@ extends PlantBlock {
     }
 
     @Override
-    public void onScheduledTick(BlockState blockState, World world, BlockPos blockPos, Random random) {
+    public void onScheduledTick(BlockState blockState, ServerWorld serverWorld, BlockPos blockPos, Random random) {
         int i = blockState.get(AGE);
         if (i < 3 && random.nextInt(10) == 0) {
             blockState = (BlockState)blockState.with(AGE, i + 1);
-            world.setBlockState(blockPos, blockState, 2);
+            serverWorld.setBlockState(blockPos, blockState, 2);
         }
-        super.onScheduledTick(blockState, world, blockPos, random);
+        super.onScheduledTick(blockState, serverWorld, blockPos, random);
     }
 
     @Override

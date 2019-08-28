@@ -11,6 +11,7 @@ import net.minecraft.block.BlockState;
 import net.minecraft.block.BlockWithEntity;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.EndGatewayBlockEntity;
+import net.minecraft.fluid.Fluid;
 import net.minecraft.item.ItemStack;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.util.math.BlockPos;
@@ -59,6 +60,11 @@ extends BlockWithEntity {
     @Environment(value=EnvType.CLIENT)
     public ItemStack getPickStack(BlockView blockView, BlockPos blockPos, BlockState blockState) {
         return ItemStack.EMPTY;
+    }
+
+    @Override
+    public boolean method_22358(BlockState blockState, Fluid fluid) {
+        return false;
     }
 }
 

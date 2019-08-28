@@ -28,6 +28,7 @@ import net.minecraft.block.entity.JigsawBlockEntity;
 import net.minecraft.block.entity.SignBlockEntity;
 import net.minecraft.block.entity.StructureBlockBlockEntity;
 import net.minecraft.block.pattern.CachedBlockPosition;
+import net.minecraft.class_4538;
 import net.minecraft.client.network.packet.EntityVelocityUpdateS2CPacket;
 import net.minecraft.client.render.entity.PlayerModelPart;
 import net.minecraft.container.Container;
@@ -111,7 +112,6 @@ import net.minecraft.world.CommandBlockExecutor;
 import net.minecraft.world.Difficulty;
 import net.minecraft.world.GameMode;
 import net.minecraft.world.GameRules;
-import net.minecraft.world.ViewableWorld;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
 
@@ -1181,20 +1181,20 @@ extends LivingEntity {
         this.wakeUp(true, true, false);
     }
 
-    public static Optional<Vec3d> method_7288(ViewableWorld viewableWorld, BlockPos blockPos, boolean bl) {
-        Block block = viewableWorld.getBlockState(blockPos).getBlock();
+    public static Optional<Vec3d> method_7288(class_4538 arg, BlockPos blockPos, boolean bl) {
+        Block block = arg.getBlockState(blockPos).getBlock();
         if (!(block instanceof BedBlock)) {
             if (!bl) {
                 return Optional.empty();
             }
             boolean bl2 = block.canMobSpawnInside();
-            boolean bl3 = viewableWorld.getBlockState(blockPos.up()).getBlock().canMobSpawnInside();
+            boolean bl3 = arg.getBlockState(blockPos.up()).getBlock().canMobSpawnInside();
             if (bl2 && bl3) {
                 return Optional.of(new Vec3d((double)blockPos.getX() + 0.5, (double)blockPos.getY() + 0.1, (double)blockPos.getZ() + 0.5));
             }
             return Optional.empty();
         }
-        return BedBlock.findWakeUpPosition(EntityType.PLAYER, viewableWorld, blockPos, 0);
+        return BedBlock.findWakeUpPosition(EntityType.PLAYER, arg, blockPos, 0);
     }
 
     public boolean isSleepingLongEnough() {

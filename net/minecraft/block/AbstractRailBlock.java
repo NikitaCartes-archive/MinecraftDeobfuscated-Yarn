@@ -9,13 +9,13 @@ import net.minecraft.block.BlockState;
 import net.minecraft.block.RailPlacementHelper;
 import net.minecraft.block.enums.RailShape;
 import net.minecraft.block.piston.PistonBehavior;
+import net.minecraft.class_4538;
 import net.minecraft.entity.EntityContext;
 import net.minecraft.state.property.Property;
 import net.minecraft.tag.BlockTags;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.world.BlockView;
-import net.minecraft.world.ViewableWorld;
 import net.minecraft.world.World;
 
 public abstract class AbstractRailBlock
@@ -52,8 +52,8 @@ extends Block {
     }
 
     @Override
-    public boolean canPlaceAt(BlockState blockState, ViewableWorld viewableWorld, BlockPos blockPos) {
-        return AbstractRailBlock.isSolidMediumSquare(viewableWorld, blockPos.down());
+    public boolean canPlaceAt(BlockState blockState, class_4538 arg, BlockPos blockPos) {
+        return AbstractRailBlock.isSolidMediumSquare(arg, blockPos.down());
     }
 
     @Override
@@ -99,7 +99,7 @@ extends Block {
                 }
             }
         }
-        if (bl2 && !world.isAir(blockPos)) {
+        if (bl2 && !world.method_22347(blockPos)) {
             if (!bl) {
                 AbstractRailBlock.dropStacks(blockState, world, blockPos);
             }

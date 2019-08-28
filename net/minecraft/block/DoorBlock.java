@@ -16,6 +16,7 @@ import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.enums.DoorHinge;
 import net.minecraft.block.enums.DoubleBlockHalf;
 import net.minecraft.block.piston.PistonBehavior;
+import net.minecraft.class_4538;
 import net.minecraft.entity.EntityContext;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
@@ -37,7 +38,6 @@ import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.IWorld;
-import net.minecraft.world.ViewableWorld;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
 
@@ -222,11 +222,11 @@ extends Block {
     }
 
     @Override
-    public boolean canPlaceAt(BlockState blockState, ViewableWorld viewableWorld, BlockPos blockPos) {
+    public boolean canPlaceAt(BlockState blockState, class_4538 arg, BlockPos blockPos) {
         BlockPos blockPos2 = blockPos.down();
-        BlockState blockState2 = viewableWorld.getBlockState(blockPos2);
+        BlockState blockState2 = arg.getBlockState(blockPos2);
         if (blockState.get(HALF) == DoubleBlockHalf.LOWER) {
-            return blockState2.isSideSolidFullSquare(viewableWorld, blockPos2, Direction.UP);
+            return blockState2.isSideSolidFullSquare(arg, blockPos2, Direction.UP);
         }
         return blockState2.getBlock() == this;
     }

@@ -22,6 +22,7 @@ import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.math.MutableIntBoundingBox;
 import net.minecraft.world.Heightmap;
 import net.minecraft.world.IWorld;
+import net.minecraft.world.gen.chunk.ChunkGenerator;
 import net.minecraft.world.gen.feature.ShipwreckFeatureConfig;
 import net.minecraft.world.loot.LootTables;
 
@@ -84,18 +85,18 @@ public class ShipwreckGenerator {
         }
 
         @Override
-        public boolean generate(IWorld iWorld, Random random, MutableIntBoundingBox mutableIntBoundingBox, ChunkPos chunkPos) {
+        public boolean generate(IWorld iWorld, ChunkGenerator<?> chunkGenerator, Random random, MutableIntBoundingBox mutableIntBoundingBox, ChunkPos chunkPos) {
             int i = 256;
             int j = 0;
             BlockPos blockPos = this.pos.add(this.structure.getSize().getX() - 1, 0, this.structure.getSize().getZ() - 1);
             for (BlockPos blockPos2 : BlockPos.iterate(this.pos, blockPos)) {
-                int k = iWorld.getTop(this.grounded ? Heightmap.Type.WORLD_SURFACE_WG : Heightmap.Type.OCEAN_FLOOR_WG, blockPos2.getX(), blockPos2.getZ());
+                int k = iWorld.getLightLevel(this.grounded ? Heightmap.Type.WORLD_SURFACE_WG : Heightmap.Type.OCEAN_FLOOR_WG, blockPos2.getX(), blockPos2.getZ());
                 j += k;
                 i = Math.min(i, k);
             }
             int l = this.grounded ? i - this.structure.getSize().getY() / 2 - random.nextInt(3) : (j /= this.structure.getSize().getX() * this.structure.getSize().getZ());
             this.pos = new BlockPos(this.pos.getX(), l, this.pos.getZ());
-            return super.generate(iWorld, random, mutableIntBoundingBox, chunkPos);
+            return super.generate(iWorld, chunkGenerator, random, mutableIntBoundingBox, chunkPos);
         }
     }
 }

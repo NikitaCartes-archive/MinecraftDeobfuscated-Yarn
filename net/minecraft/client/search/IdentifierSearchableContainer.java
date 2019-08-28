@@ -40,8 +40,8 @@ implements SearchableContainer<T> {
         for (T object : this.entries) {
             this.index(object);
         }
-        this.byNamespace.reload();
-        this.byPath.reload();
+        this.byNamespace.sort();
+        this.byPath.sort();
     }
 
     @Override

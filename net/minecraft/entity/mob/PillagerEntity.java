@@ -9,6 +9,7 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
+import net.minecraft.class_4538;
 import net.minecraft.client.util.math.Vector3f;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.enchantment.EnchantmentHelper;
@@ -61,7 +62,6 @@ import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.Difficulty;
 import net.minecraft.world.IWorld;
 import net.minecraft.world.LocalDifficulty;
-import net.minecraft.world.ViewableWorld;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
 
@@ -156,12 +156,12 @@ RangedAttackMob {
     }
 
     @Override
-    public float getPathfindingFavor(BlockPos blockPos, ViewableWorld viewableWorld) {
-        Block block = viewableWorld.getBlockState(blockPos.down()).getBlock();
+    public float getPathfindingFavor(BlockPos blockPos, class_4538 arg) {
+        Block block = arg.getBlockState(blockPos.down()).getBlock();
         if (block == Blocks.GRASS_BLOCK || block == Blocks.SAND) {
             return 10.0f;
         }
-        return 0.5f - viewableWorld.getBrightness(blockPos);
+        return 0.5f - arg.method_22349(blockPos);
     }
 
     @Override

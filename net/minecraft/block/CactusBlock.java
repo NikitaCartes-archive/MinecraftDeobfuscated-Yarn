@@ -10,9 +10,11 @@ import net.minecraft.block.BlockRenderLayer;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.Material;
+import net.minecraft.class_4538;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityContext;
 import net.minecraft.entity.damage.DamageSource;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.state.StateFactory;
 import net.minecraft.state.property.IntProperty;
 import net.minecraft.state.property.Properties;
@@ -22,7 +24,6 @@ import net.minecraft.util.math.Direction;
 import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.IWorld;
-import net.minecraft.world.ViewableWorld;
 import net.minecraft.world.World;
 
 public class CactusBlock
@@ -37,17 +38,17 @@ extends Block {
     }
 
     @Override
-    public void onScheduledTick(BlockState blockState, World world, BlockPos blockPos, Random random) {
-        if (!blockState.canPlaceAt(world, blockPos)) {
-            world.breakBlock(blockPos, true);
+    public void onScheduledTick(BlockState blockState, ServerWorld serverWorld, BlockPos blockPos, Random random) {
+        if (!blockState.canPlaceAt(serverWorld, blockPos)) {
+            serverWorld.method_22352(blockPos, true);
             return;
         }
         BlockPos blockPos2 = blockPos.up();
-        if (!world.isAir(blockPos2)) {
+        if (!serverWorld.method_22347(blockPos2)) {
             return;
         }
         int i = 1;
-        while (world.getBlockState(blockPos.down(i)).getBlock() == this) {
+        while (serverWorld.getBlockState(blockPos.down(i)).getBlock() == this) {
             ++i;
         }
         if (i >= 3) {
@@ -55,12 +56,12 @@ extends Block {
         }
         int j = blockState.get(AGE);
         if (j == 15) {
-            world.setBlockState(blockPos2, this.getDefaultState());
+            serverWorld.setBlockState(blockPos2, this.getDefaultState());
             BlockState blockState2 = (BlockState)blockState.with(AGE, 0);
-            world.setBlockState(blockPos, blockState2, 4);
-            blockState2.neighborUpdate(world, blockPos2, this, blockPos, false);
+            serverWorld.setBlockState(blockPos, blockState2, 4);
+            blockState2.neighborUpdate(serverWorld, blockPos2, this, blockPos, false);
         } else {
-            world.setBlockState(blockPos, (BlockState)blockState.with(AGE, j + 1), 4);
+            serverWorld.setBlockState(blockPos, (BlockState)blockState.with(AGE, j + 1), 4);
         }
     }
 
@@ -88,15 +89,15 @@ extends Block {
     }
 
     @Override
-    public boolean canPlaceAt(BlockState blockState, ViewableWorld viewableWorld, BlockPos blockPos) {
+    public boolean canPlaceAt(BlockState blockState, class_4538 arg, BlockPos blockPos) {
         for (Direction direction : Direction.Type.HORIZONTAL) {
-            BlockState blockState2 = viewableWorld.getBlockState(blockPos.offset(direction));
+            BlockState blockState2 = arg.getBlockState(blockPos.offset(direction));
             Material material = blockState2.getMaterial();
-            if (!material.isSolid() && !viewableWorld.getFluidState(blockPos.offset(direction)).matches(FluidTags.LAVA)) continue;
+            if (!material.isSolid() && !arg.getFluidState(blockPos.offset(direction)).matches(FluidTags.LAVA)) continue;
             return false;
         }
-        Block block = viewableWorld.getBlockState(blockPos.down()).getBlock();
-        return (block == Blocks.CACTUS || block == Blocks.SAND || block == Blocks.RED_SAND) && !viewableWorld.getBlockState(blockPos.up()).getMaterial().isLiquid();
+        Block block = arg.getBlockState(blockPos.down()).getBlock();
+        return (block == Blocks.CACTUS || block == Blocks.SAND || block == Blocks.RED_SAND) && !arg.getBlockState(blockPos.up()).getMaterial().isLiquid();
     }
 
     @Override

@@ -279,7 +279,7 @@ public class EnchantmentHelper {
         if (!list2.isEmpty()) {
             list.add(WeightedPicker.getRandom(random, list2));
             while (random.nextInt(50) <= i) {
-                EnchantmentHelper.remove(list2, SystemUtil.method_20793(list));
+                EnchantmentHelper.remove(list2, SystemUtil.getLast(list));
                 if (list2.isEmpty()) break;
                 list.add(WeightedPicker.getRandom(random, list2));
                 i /= 2;

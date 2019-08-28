@@ -11,6 +11,7 @@ import net.minecraft.block.Fertilizable;
 import net.minecraft.block.PlantBlock;
 import net.minecraft.block.TallPlantBlock;
 import net.minecraft.entity.EntityContext;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.world.BlockView;
@@ -41,10 +42,10 @@ implements Fertilizable {
     }
 
     @Override
-    public void grow(World world, Random random, BlockPos blockPos, BlockState blockState) {
+    public void grow(ServerWorld serverWorld, Random random, BlockPos blockPos, BlockState blockState) {
         TallPlantBlock tallPlantBlock = (TallPlantBlock)(this == Blocks.FERN ? Blocks.LARGE_FERN : Blocks.TALL_GRASS);
-        if (tallPlantBlock.getDefaultState().canPlaceAt(world, blockPos) && world.isAir(blockPos.up())) {
-            tallPlantBlock.placeAt(world, blockPos, 2);
+        if (tallPlantBlock.getDefaultState().canPlaceAt(serverWorld, blockPos) && serverWorld.method_22347(blockPos.up())) {
+            tallPlantBlock.placeAt(serverWorld, blockPos, 2);
         }
     }
 

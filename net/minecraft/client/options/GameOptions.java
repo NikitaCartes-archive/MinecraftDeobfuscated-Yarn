@@ -216,7 +216,7 @@ public class GameOptions {
                     LOGGER.warn("Skipping bad option: {}", (Object)string);
                 }
             }
-            compoundTag = this.method_1626(compoundTag);
+            compoundTag = this.update(compoundTag);
             for (String string : compoundTag.getKeys()) {
                 String string2 = compoundTag.getString(string);
                 try {
@@ -428,7 +428,7 @@ public class GameOptions {
         }
     }
 
-    private CompoundTag method_1626(CompoundTag compoundTag) {
+    private CompoundTag update(CompoundTag compoundTag) {
         int i = 0;
         try {
             i = Integer.parseInt(compoundTag.getString("version"));

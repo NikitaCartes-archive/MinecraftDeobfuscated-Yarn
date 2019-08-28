@@ -112,7 +112,7 @@ public class PointOfInterestType {
         pointOfInterestType.workStationStates.forEach(blockState -> {
             PointOfInterestType pointOfInterestType2 = BLOCK_STATE_TO_POINT_OF_INTEREST_TYPE.put((BlockState)blockState, pointOfInterestType);
             if (pointOfInterestType2 != null) {
-                throw SystemUtil.method_22320(new IllegalStateException(String.format("%s is defined in too many tags", blockState)));
+                throw SystemUtil.throwOrPause(new IllegalStateException(String.format("%s is defined in too many tags", blockState)));
             }
         });
         return pointOfInterestType;

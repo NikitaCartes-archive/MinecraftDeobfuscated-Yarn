@@ -14,6 +14,7 @@ import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.HorizontalFacingBlock;
 import net.minecraft.block.TorchBlock;
+import net.minecraft.class_4538;
 import net.minecraft.entity.EntityContext;
 import net.minecraft.item.ItemPlacementContext;
 import net.minecraft.particle.ParticleTypes;
@@ -26,7 +27,6 @@ import net.minecraft.util.math.Direction;
 import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.IWorld;
-import net.minecraft.world.ViewableWorld;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
 
@@ -55,11 +55,11 @@ extends TorchBlock {
     }
 
     @Override
-    public boolean canPlaceAt(BlockState blockState, ViewableWorld viewableWorld, BlockPos blockPos) {
+    public boolean canPlaceAt(BlockState blockState, class_4538 arg, BlockPos blockPos) {
         Direction direction = blockState.get(FACING);
         BlockPos blockPos2 = blockPos.offset(direction.getOpposite());
-        BlockState blockState2 = viewableWorld.getBlockState(blockPos2);
-        return blockState2.isSideSolidFullSquare(viewableWorld, blockPos2, direction);
+        BlockState blockState2 = arg.getBlockState(blockPos2);
+        return blockState2.isSideSolidFullSquare(arg, blockPos2, direction);
     }
 
     @Override
@@ -67,11 +67,11 @@ extends TorchBlock {
     public BlockState getPlacementState(ItemPlacementContext itemPlacementContext) {
         Direction[] directions;
         BlockState blockState = this.getDefaultState();
-        World viewableWorld = itemPlacementContext.getWorld();
+        World lv = itemPlacementContext.getWorld();
         BlockPos blockPos = itemPlacementContext.getBlockPos();
         for (Direction direction : directions = itemPlacementContext.getPlacementDirections()) {
             Direction direction2;
-            if (!direction.getAxis().isHorizontal() || !(blockState = (BlockState)blockState.with(FACING, direction2 = direction.getOpposite())).canPlaceAt(viewableWorld, blockPos)) continue;
+            if (!direction.getAxis().isHorizontal() || !(blockState = (BlockState)blockState.with(FACING, direction2 = direction.getOpposite())).canPlaceAt(lv, blockPos)) continue;
             return blockState;
         }
         return null;

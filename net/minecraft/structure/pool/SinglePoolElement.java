@@ -31,6 +31,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MutableIntBoundingBox;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.world.IWorld;
+import net.minecraft.world.gen.chunk.ChunkGenerator;
 
 public class SinglePoolElement
 extends StructurePoolElement {
@@ -86,7 +87,7 @@ extends StructurePoolElement {
     }
 
     @Override
-    public boolean generate(StructureManager structureManager, IWorld iWorld, BlockPos blockPos, BlockRotation blockRotation, MutableIntBoundingBox mutableIntBoundingBox, Random random) {
+    public boolean generate(StructureManager structureManager, IWorld iWorld, ChunkGenerator<?> chunkGenerator, BlockPos blockPos, BlockRotation blockRotation, MutableIntBoundingBox mutableIntBoundingBox, Random random) {
         StructurePlacementData structurePlacementData;
         Structure structure = structureManager.getStructureOrBlank(this.location);
         if (structure.method_15172(iWorld, blockPos, structurePlacementData = this.method_16616(blockRotation, mutableIntBoundingBox), 18)) {
