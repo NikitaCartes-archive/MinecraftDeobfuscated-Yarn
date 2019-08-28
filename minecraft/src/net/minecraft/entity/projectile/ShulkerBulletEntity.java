@@ -158,32 +158,32 @@ public class ShulkerBulletEntity extends Entity {
 			BlockPos blockPos2 = new BlockPos(this);
 			List<Direction> list = Lists.<Direction>newArrayList();
 			if (axis != Direction.Axis.X) {
-				if (blockPos2.getX() < blockPos.getX() && this.world.isAir(blockPos2.east())) {
+				if (blockPos2.getX() < blockPos.getX() && this.world.method_22347(blockPos2.east())) {
 					list.add(Direction.EAST);
-				} else if (blockPos2.getX() > blockPos.getX() && this.world.isAir(blockPos2.west())) {
+				} else if (blockPos2.getX() > blockPos.getX() && this.world.method_22347(blockPos2.west())) {
 					list.add(Direction.WEST);
 				}
 			}
 
 			if (axis != Direction.Axis.Y) {
-				if (blockPos2.getY() < blockPos.getY() && this.world.isAir(blockPos2.up())) {
+				if (blockPos2.getY() < blockPos.getY() && this.world.method_22347(blockPos2.up())) {
 					list.add(Direction.UP);
-				} else if (blockPos2.getY() > blockPos.getY() && this.world.isAir(blockPos2.down())) {
+				} else if (blockPos2.getY() > blockPos.getY() && this.world.method_22347(blockPos2.down())) {
 					list.add(Direction.DOWN);
 				}
 			}
 
 			if (axis != Direction.Axis.Z) {
-				if (blockPos2.getZ() < blockPos.getZ() && this.world.isAir(blockPos2.south())) {
+				if (blockPos2.getZ() < blockPos.getZ() && this.world.method_22347(blockPos2.south())) {
 					list.add(Direction.SOUTH);
-				} else if (blockPos2.getZ() > blockPos.getZ() && this.world.isAir(blockPos2.north())) {
+				} else if (blockPos2.getZ() > blockPos.getZ() && this.world.method_22347(blockPos2.north())) {
 					list.add(Direction.NORTH);
 				}
 			}
 
 			direction = Direction.random(this.random);
 			if (list.isEmpty()) {
-				for (int i = 5; !this.world.isAir(blockPos2.offset(direction)) && i > 0; i--) {
+				for (int i = 5; !this.world.method_22347(blockPos2.offset(direction)) && i > 0; i--) {
 					direction = Direction.random(this.random);
 				}
 			} else {

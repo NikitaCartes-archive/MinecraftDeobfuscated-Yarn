@@ -81,9 +81,9 @@ public abstract class BillboardParticle extends Particle {
 	}
 
 	@Override
-	public Particle method_3087(float f) {
+	public Particle scale(float f) {
 		this.scale *= f;
-		return super.method_3087(f);
+		return super.scale(f);
 	}
 
 	protected abstract float getMinU();

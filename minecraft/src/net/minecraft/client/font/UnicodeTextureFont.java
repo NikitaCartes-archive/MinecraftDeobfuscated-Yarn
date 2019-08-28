@@ -32,7 +32,7 @@ public class UnicodeTextureFont implements Font {
 
 		for (int i = 0; i < 256; i++) {
 			char c = (char)(i * 256);
-			Identifier identifier = this.getGlyphId(c);
+			Identifier identifier = this.getImageId(c);
 
 			try {
 				Resource resource = this.resourceManager.getResource(identifier);
@@ -42,7 +42,7 @@ public class UnicodeTextureFont implements Font {
 					if (nativeImage.getWidth() == 256 && nativeImage.getHeight() == 256) {
 						for (int j = 0; j < 256; j++) {
 							byte b = bs[c + j];
-							if (b != 0 && method_2043(b) > method_2044(b)) {
+							if (b != 0 && getStart(b) > getEnd(b)) {
 								bs[c + j] = 0;
 							}
 						}
@@ -76,7 +76,7 @@ public class UnicodeTextureFont implements Font {
 		this.images.values().forEach(NativeImage::close);
 	}
 
-	private Identifier getGlyphId(char c) {
+	private Identifier getImageId(char c) {
 		Identifier identifier = new Identifier(String.format(this.template, String.format("%02x", c / 256)));
 		return new Identifier(identifier.getNamespace(), "textures/" + identifier.getPath());
 	}
@@ -86,10 +86,10 @@ public class UnicodeTextureFont implements Font {
 	public RenderableGlyph getGlyph(char c) {
 		byte b = this.sizes[c];
 		if (b != 0) {
-			NativeImage nativeImage = (NativeImage)this.images.computeIfAbsent(this.getGlyphId(c), this::getGlyphImage);
+			NativeImage nativeImage = (NativeImage)this.images.computeIfAbsent(this.getImageId(c), this::getGlyphImage);
 			if (nativeImage != null) {
-				int i = method_2043(b);
-				return new UnicodeTextureFont.UnicodeTextureGlyph(c % 16 * 16 + i, (c & 255) / 16 * 16, method_2044(b) - i, 16, nativeImage);
+				int i = getStart(b);
+				return new UnicodeTextureFont.UnicodeTextureGlyph(c % 16 * 16 + i, (c & 255) / 16 * 16, getEnd(b) - i, 16, nativeImage);
 			}
 		}
 
@@ -129,11 +129,11 @@ public class UnicodeTextureFont implements Font {
 		}
 	}
 
-	private static int method_2043(byte b) {
+	private static int getStart(byte b) {
 		return b >> 4 & 15;
 	}
 
-	private static int method_2044(byte b) {
+	private static int getEnd(byte b) {
 		return (b & 15) + 1;
 	}
 

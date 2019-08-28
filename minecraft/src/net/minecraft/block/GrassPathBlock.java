@@ -1,15 +1,15 @@
 package net.minecraft.block;
 
 import java.util.Random;
+import net.minecraft.class_4538;
 import net.minecraft.entity.EntityContext;
 import net.minecraft.item.ItemPlacementContext;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.IWorld;
-import net.minecraft.world.ViewableWorld;
-import net.minecraft.world.World;
 
 public class GrassPathBlock extends Block {
 	protected static final VoxelShape SHAPE = FarmlandBlock.SHAPE;
@@ -44,13 +44,13 @@ public class GrassPathBlock extends Block {
 	}
 
 	@Override
-	public void onScheduledTick(BlockState blockState, World world, BlockPos blockPos, Random random) {
-		FarmlandBlock.setToDirt(blockState, world, blockPos);
+	public void onScheduledTick(BlockState blockState, ServerWorld serverWorld, BlockPos blockPos, Random random) {
+		FarmlandBlock.setToDirt(blockState, serverWorld, blockPos);
 	}
 
 	@Override
-	public boolean canPlaceAt(BlockState blockState, ViewableWorld viewableWorld, BlockPos blockPos) {
-		BlockState blockState2 = viewableWorld.getBlockState(blockPos.up());
+	public boolean canPlaceAt(BlockState blockState, class_4538 arg, BlockPos blockPos) {
+		BlockState blockState2 = arg.getBlockState(blockPos.up());
 		return !blockState2.getMaterial().isSolid() || blockState2.getBlock() instanceof FenceGateBlock;
 	}
 

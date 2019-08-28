@@ -124,11 +124,12 @@ public abstract class AbstractTreeFeature<T extends FeatureConfig> extends Featu
 		}
 	}
 
-	@Override
-	public final boolean generate(IWorld iWorld, ChunkGenerator<? extends ChunkGeneratorConfig> chunkGenerator, Random random, BlockPos blockPos, T featureConfig) {
+	public final boolean method_22362(
+		IWorld iWorld, ChunkGenerator<? extends ChunkGeneratorConfig> chunkGenerator, Random random, BlockPos blockPos, T featureConfig, boolean bl
+	) {
 		Set<BlockPos> set = Sets.<BlockPos>newHashSet();
 		MutableIntBoundingBox mutableIntBoundingBox = MutableIntBoundingBox.empty();
-		boolean bl = this.generate(set, iWorld, random, blockPos, mutableIntBoundingBox);
+		boolean bl2 = this.generate(set, iWorld, random, blockPos, mutableIntBoundingBox);
 		if (mutableIntBoundingBox.minX > mutableIntBoundingBox.maxX) {
 			return false;
 		} else {
@@ -144,7 +145,7 @@ public abstract class AbstractTreeFeature<T extends FeatureConfig> extends Featu
 			);
 
 			try (BlockPos.PooledMutable pooledMutable = BlockPos.PooledMutable.get()) {
-				if (bl && !set.isEmpty()) {
+				if (bl2 && !set.isEmpty()) {
 					for (BlockPos blockPos2 : Lists.newArrayList(set)) {
 						if (mutableIntBoundingBox.contains(blockPos2)) {
 							voxelSet.set(
@@ -213,20 +214,27 @@ public abstract class AbstractTreeFeature<T extends FeatureConfig> extends Featu
 				}
 			}
 
-			Biome biome = iWorld.getBiome(blockPos);
-			if (biome == Biomes.FLOWER_FOREST || biome == Biomes.SUNFLOWER_PLAINS || biome == Biomes.PLAINS) {
-				this.generateBeeHive(iWorld, random, blockPos, mutableIntBoundingBox, list, biome);
+			if (bl) {
+				Biome biome = iWorld.getBiome(blockPos);
+				if (biome == Biomes.FLOWER_FOREST || biome == Biomes.SUNFLOWER_PLAINS || biome == Biomes.PLAINS) {
+					this.generateBeeHive(iWorld, random, blockPos, mutableIntBoundingBox, list, biome);
+				}
 			}
 
 			Structure.method_20532(iWorld, 3, voxelSet, mutableIntBoundingBox.minX, mutableIntBoundingBox.minY, mutableIntBoundingBox.minZ);
-			return bl;
+			return bl2;
 		}
+	}
+
+	@Override
+	public final boolean generate(IWorld iWorld, ChunkGenerator<? extends ChunkGeneratorConfig> chunkGenerator, Random random, BlockPos blockPos, T featureConfig) {
+		return this.method_22362(iWorld, chunkGenerator, random, blockPos, featureConfig, true);
 	}
 
 	private void generateBeeHive(
 		IWorld iWorld, Random random, BlockPos blockPos, MutableIntBoundingBox mutableIntBoundingBox, List<Set<BlockPos>> list, Biome biome
 	) {
-		float f = biome == Biomes.FLOWER_FOREST ? 0.015F : 0.1F;
+		float f = biome == Biomes.FLOWER_FOREST ? 0.01F : 0.05F;
 		if (random.nextFloat() < f) {
 			Direction direction = BeeHiveBlock.field_20418[random.nextInt(BeeHiveBlock.field_20418.length)];
 			int i = mutableIntBoundingBox.maxY;
@@ -240,7 +248,7 @@ public abstract class AbstractTreeFeature<T extends FeatureConfig> extends Featu
 
 			BlockState blockState = Blocks.BEE_NEST.getDefaultState().with(BeeHiveBlock.FACING, Direction.SOUTH);
 			BlockPos blockPos2x = blockPos.add(direction.getOffsetX(), i - 1 - blockPos.getY(), direction.getOffsetZ());
-			if (iWorld.isAir(blockPos2x)) {
+			if (iWorld.method_22347(blockPos2x) && iWorld.method_22347(blockPos2x.offset(Direction.SOUTH))) {
 				this.setBlockState(iWorld, blockPos2x, blockState);
 				BlockEntity blockEntity = iWorld.getBlockEntity(blockPos2x);
 				if (blockEntity instanceof BeeHiveBlockEntity) {

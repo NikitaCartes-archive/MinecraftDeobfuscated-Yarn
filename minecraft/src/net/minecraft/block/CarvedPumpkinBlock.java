@@ -2,6 +2,7 @@ package net.minecraft.block;
 
 import java.util.function.Predicate;
 import javax.annotation.Nullable;
+import net.minecraft.class_4538;
 import net.minecraft.advancement.criterion.Criterions;
 import net.minecraft.block.pattern.BlockPattern;
 import net.minecraft.block.pattern.BlockPatternBuilder;
@@ -17,7 +18,6 @@ import net.minecraft.state.property.DirectionProperty;
 import net.minecraft.util.MaterialPredicate;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
-import net.minecraft.world.ViewableWorld;
 import net.minecraft.world.World;
 
 public class CarvedPumpkinBlock extends HorizontalFacingBlock {
@@ -45,9 +45,8 @@ public class CarvedPumpkinBlock extends HorizontalFacingBlock {
 		}
 	}
 
-	public boolean canDispense(ViewableWorld viewableWorld, BlockPos blockPos) {
-		return this.getSnowGolemDispenserPattern().searchAround(viewableWorld, blockPos) != null
-			|| this.getIronGolemDispenserPattern().searchAround(viewableWorld, blockPos) != null;
+	public boolean canDispense(class_4538 arg, BlockPos blockPos) {
+		return this.getSnowGolemDispenserPattern().searchAround(arg, blockPos) != null || this.getIronGolemDispenserPattern().searchAround(arg, blockPos) != null;
 	}
 
 	private void trySpawnEntity(World world, BlockPos blockPos) {

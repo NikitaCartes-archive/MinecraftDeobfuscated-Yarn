@@ -10,6 +10,7 @@ import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.SharedConstants;
+import net.minecraft.class_4538;
 import net.minecraft.datafixers.Schemas;
 import net.minecraft.datafixers.TypeReferences;
 import net.minecraft.entity.boss.WitherEntity;
@@ -124,7 +125,6 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.util.shape.VoxelShapes;
-import net.minecraft.world.ViewableWorld;
 import net.minecraft.world.World;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -142,7 +142,7 @@ public class EntityType<T extends Entity> {
 		"arrow", EntityType.Builder.<ArrowEntity>create(ArrowEntity::new, EntityCategory.MISC).setDimensions(0.5F, 0.5F)
 	);
 	public static final EntityType<BatEntity> BAT = register("bat", EntityType.Builder.create(BatEntity::new, EntityCategory.AMBIENT).setDimensions(0.5F, 0.9F));
-	public static final EntityType<BeeEntity> BEE = register("bee", EntityType.Builder.create(BeeEntity::new, EntityCategory.CREATURE).setDimensions(0.7F, 0.7F));
+	public static final EntityType<BeeEntity> BEE = register("bee", EntityType.Builder.create(BeeEntity::new, EntityCategory.CREATURE).setDimensions(0.7F, 0.6F));
 	public static final EntityType<BlazeEntity> BLAZE = register(
 		"blaze", EntityType.Builder.create(BlazeEntity::new, EntityCategory.MONSTER).makeFireImmune().setDimensions(0.6F, 1.8F)
 	);
@@ -550,13 +550,13 @@ public class EntityType<T extends Entity> {
 		}
 	}
 
-	protected static double getOriginY(ViewableWorld viewableWorld, BlockPos blockPos, boolean bl, Box box) {
+	protected static double getOriginY(class_4538 arg, BlockPos blockPos, boolean bl, Box box) {
 		Box box2 = new Box(blockPos);
 		if (bl) {
 			box2 = box2.stretch(0.0, -1.0, 0.0);
 		}
 
-		Stream<VoxelShape> stream = viewableWorld.getCollisionShapes(null, box2, Collections.emptySet());
+		Stream<VoxelShape> stream = arg.getCollisionShapes(null, box2, Collections.emptySet());
 		return 1.0 + VoxelShapes.calculateMaxOffset(Direction.Axis.Y, box, stream, bl ? -2.0 : -1.0);
 	}
 

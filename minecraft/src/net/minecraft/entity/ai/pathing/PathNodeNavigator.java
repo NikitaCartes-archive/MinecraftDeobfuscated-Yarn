@@ -14,7 +14,7 @@ import javax.annotation.Nullable;
 import net.minecraft.class_4459;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.ViewableWorld;
+import net.minecraft.world.chunk.ChunkCache;
 
 public class PathNodeNavigator {
 	private final PathMinHeap minHeap = new PathMinHeap();
@@ -29,9 +29,9 @@ public class PathNodeNavigator {
 	}
 
 	@Nullable
-	public Path pathfind(ViewableWorld viewableWorld, MobEntity mobEntity, Set<BlockPos> set, float f, int i) {
+	public Path pathfind(ChunkCache chunkCache, MobEntity mobEntity, Set<BlockPos> set, float f, int i) {
 		this.minHeap.clear();
-		this.pathNodeMaker.init(viewableWorld, mobEntity);
+		this.pathNodeMaker.init(chunkCache, mobEntity);
 		PathNode pathNode = this.pathNodeMaker.getStart();
 		Map<class_4459, BlockPos> map = (Map<class_4459, BlockPos>)set.stream()
 			.collect(

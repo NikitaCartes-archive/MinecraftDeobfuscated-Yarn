@@ -110,14 +110,14 @@ public class WoodlandMansionFeature extends StructureFeature<DefaultFeatureConfi
 		}
 
 		@Override
-		public void generateStructure(IWorld iWorld, Random random, MutableIntBoundingBox mutableIntBoundingBox, ChunkPos chunkPos) {
-			super.generateStructure(iWorld, random, mutableIntBoundingBox, chunkPos);
+		public void generateStructure(IWorld iWorld, ChunkGenerator<?> chunkGenerator, Random random, MutableIntBoundingBox mutableIntBoundingBox, ChunkPos chunkPos) {
+			super.generateStructure(iWorld, chunkGenerator, random, mutableIntBoundingBox, chunkPos);
 			int i = this.boundingBox.minY;
 
 			for (int j = mutableIntBoundingBox.minX; j <= mutableIntBoundingBox.maxX; j++) {
 				for (int k = mutableIntBoundingBox.minZ; k <= mutableIntBoundingBox.maxZ; k++) {
 					BlockPos blockPos = new BlockPos(j, i, k);
-					if (!iWorld.isAir(blockPos) && this.boundingBox.contains(blockPos)) {
+					if (!iWorld.method_22347(blockPos) && this.boundingBox.contains(blockPos)) {
 						boolean bl = false;
 
 						for (StructurePiece structurePiece : this.children) {
@@ -130,7 +130,7 @@ public class WoodlandMansionFeature extends StructureFeature<DefaultFeatureConfi
 						if (bl) {
 							for (int l = i - 1; l > 1; l--) {
 								BlockPos blockPos2 = new BlockPos(j, l, k);
-								if (!iWorld.isAir(blockPos2) && !iWorld.getBlockState(blockPos2).getMaterial().isLiquid()) {
+								if (!iWorld.method_22347(blockPos2) && !iWorld.getBlockState(blockPos2).getMaterial().isLiquid()) {
 									break;
 								}
 

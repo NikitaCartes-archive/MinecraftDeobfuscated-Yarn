@@ -12,6 +12,7 @@ import java.util.Set;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.class_4538;
 import net.minecraft.block.enums.WireConnection;
 import net.minecraft.entity.EntityContext;
 import net.minecraft.item.ItemPlacementContext;
@@ -29,7 +30,6 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.IWorld;
-import net.minecraft.world.ViewableWorld;
 import net.minecraft.world.World;
 
 public class RedstoneWireBlock extends Block {
@@ -182,10 +182,10 @@ public class RedstoneWireBlock extends Block {
 	}
 
 	@Override
-	public boolean canPlaceAt(BlockState blockState, ViewableWorld viewableWorld, BlockPos blockPos) {
+	public boolean canPlaceAt(BlockState blockState, class_4538 arg, BlockPos blockPos) {
 		BlockPos blockPos2 = blockPos.down();
-		BlockState blockState2 = viewableWorld.getBlockState(blockPos2);
-		return blockState2.isSideSolidFullSquare(viewableWorld, blockPos2, Direction.UP) || blockState2.getBlock() == Blocks.HOPPER;
+		BlockState blockState2 = arg.getBlockState(blockPos2);
+		return blockState2.isSideSolidFullSquare(arg, blockPos2, Direction.UP) || blockState2.getBlock() == Blocks.HOPPER;
 	}
 
 	private BlockState update(World world, BlockPos blockPos, BlockState blockState) {

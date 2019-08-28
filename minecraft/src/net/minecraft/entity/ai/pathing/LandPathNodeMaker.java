@@ -25,14 +25,14 @@ import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.world.BlockView;
-import net.minecraft.world.ViewableWorld;
+import net.minecraft.world.chunk.ChunkCache;
 
 public class LandPathNodeMaker extends PathNodeMaker {
 	protected float waterPathNodeTypeWeight;
 
 	@Override
-	public void init(ViewableWorld viewableWorld, MobEntity mobEntity) {
-		super.init(viewableWorld, mobEntity);
+	public void init(ChunkCache chunkCache, MobEntity mobEntity) {
+		super.init(chunkCache, mobEntity);
 		this.waterPathNodeTypeWeight = mobEntity.getPathNodeTypeWeight(PathNodeType.WATER);
 	}
 
@@ -49,9 +49,9 @@ public class LandPathNodeMaker extends PathNodeMaker {
 			i = MathHelper.floor(this.entity.getBoundingBox().minY);
 			BlockPos.Mutable mutable = new BlockPos.Mutable(this.entity.x, (double)i, this.entity.z);
 
-			for (BlockState blockState = this.blockView.getBlockState(mutable);
+			for (BlockState blockState = this.field_20622.getBlockState(mutable);
 				blockState.getBlock() == Blocks.WATER || blockState.getFluidState() == Fluids.WATER.getStill(false);
-				blockState = this.blockView.getBlockState(mutable)
+				blockState = this.field_20622.getBlockState(mutable)
 			) {
 				mutable.set(this.entity.x, (double)(++i), this.entity.z);
 			}
@@ -64,8 +64,8 @@ public class LandPathNodeMaker extends PathNodeMaker {
 
 			while (
 				(
-						this.blockView.getBlockState(blockPos).isAir()
-							|| this.blockView.getBlockState(blockPos).canPlaceAtSide(this.blockView, blockPos, BlockPlacementEnvironment.LAND)
+						this.field_20622.getBlockState(blockPos).isAir()
+							|| this.field_20622.getBlockState(blockPos).canPlaceAtSide(this.field_20622, blockPos, BlockPlacementEnvironment.LAND)
 					)
 					&& blockPos.getY() > 0
 			) {
@@ -109,7 +109,7 @@ public class LandPathNodeMaker extends PathNodeMaker {
 			j = MathHelper.floor(Math.max(1.0F, this.entity.stepHeight));
 		}
 
-		double d = method_60(this.blockView, new BlockPos(pathNode.x, pathNode.y, pathNode.z));
+		double d = method_60(this.field_20622, new BlockPos(pathNode.x, pathNode.y, pathNode.z));
 		PathNode pathNode2 = this.getPathNode(pathNode.x, pathNode.y, pathNode.z + 1, j, d, Direction.SOUTH);
 		if (pathNode2 != null && !pathNode2.field_42 && pathNode2.field_43 >= 0.0F) {
 			pathNodes[i++] = pathNode2;
@@ -175,7 +175,7 @@ public class LandPathNodeMaker extends PathNodeMaker {
 	private PathNode getPathNode(int i, int j, int k, int l, double d, Direction direction) {
 		PathNode pathNode = null;
 		BlockPos blockPos = new BlockPos(i, j, k);
-		double e = method_60(this.blockView, blockPos);
+		double e = method_60(this.field_20622, blockPos);
 		if (e - d > 1.125) {
 			return null;
 		} else {
@@ -198,13 +198,13 @@ public class LandPathNodeMaker extends PathNodeMaker {
 						double m = (double)(k - direction.getOffsetZ()) + 0.5;
 						Box box = new Box(
 							h - g,
-							method_60(this.blockView, new BlockPos(h, (double)(j + 1), m)) + 0.001,
+							method_60(this.field_20622, new BlockPos(h, (double)(j + 1), m)) + 0.001,
 							m - g,
 							h + g,
-							(double)this.entity.getHeight() + method_60(this.blockView, new BlockPos(pathNode.x, pathNode.y, pathNode.z)) - 0.002,
+							(double)this.entity.getHeight() + method_60(this.field_20622, new BlockPos(pathNode.x, pathNode.y, pathNode.z)) - 0.002,
 							m + g
 						);
-						if (!this.blockView.doesNotCollide(this.entity, box)) {
+						if (!this.field_20622.doesNotCollide(this.entity, box)) {
 							pathNode = null;
 						}
 					}
@@ -231,7 +231,7 @@ public class LandPathNodeMaker extends PathNodeMaker {
 					Box box2 = new Box(
 						(double)i - g + 0.5, (double)j + 0.001, (double)k - g + 0.5, (double)i + g + 0.5, (double)((float)j + this.entity.getHeight()), (double)k + g + 0.5
 					);
-					if (!this.blockView.doesNotCollide(this.entity, box2)) {
+					if (!this.field_20622.doesNotCollide(this.entity, box2)) {
 						return null;
 					}
 
@@ -373,7 +373,7 @@ public class LandPathNodeMaker extends PathNodeMaker {
 
 	private PathNodeType getPathNodeType(MobEntity mobEntity, int i, int j, int k) {
 		return this.getPathNodeType(
-			this.blockView, i, j, k, mobEntity, this.field_31, this.field_30, this.field_28, this.canPathThroughDoors(), this.canEnterOpenDoors()
+			this.field_20622, i, j, k, mobEntity, this.field_31, this.field_30, this.field_28, this.canPathThroughDoors(), this.canEnterOpenDoors()
 		);
 	}
 

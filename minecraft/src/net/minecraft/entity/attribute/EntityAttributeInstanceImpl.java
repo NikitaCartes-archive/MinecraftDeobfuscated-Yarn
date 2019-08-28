@@ -52,12 +52,12 @@ public class EntityAttributeInstanceImpl implements EntityAttributeInstance {
 	}
 
 	@Override
-	public Collection<EntityAttributeModifier> getModifiers(EntityAttributeModifier.Operation operation) {
-		return (Collection<EntityAttributeModifier>)this.modifiersByOperation.get(operation);
+	public Set<EntityAttributeModifier> getModifiers(EntityAttributeModifier.Operation operation) {
+		return (Set<EntityAttributeModifier>)this.modifiersByOperation.get(operation);
 	}
 
 	@Override
-	public Collection<EntityAttributeModifier> getModifiers() {
+	public Set<EntityAttributeModifier> getModifiers() {
 		Set<EntityAttributeModifier> set = Sets.<EntityAttributeModifier>newHashSet();
 
 		for (EntityAttributeModifier.Operation operation : EntityAttributeModifier.Operation.values()) {

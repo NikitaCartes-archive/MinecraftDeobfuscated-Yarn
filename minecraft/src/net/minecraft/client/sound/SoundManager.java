@@ -152,8 +152,8 @@ public class SoundManager extends SinglePreparationResourceReloadListener<SoundM
 		return this.sounds.keySet();
 	}
 
-	public void method_22140(TickableSoundInstance tickableSoundInstance) {
-		this.soundSystem.method_22139(tickableSoundInstance);
+	public void playNextTick(TickableSoundInstance tickableSoundInstance) {
+		this.soundSystem.playNextTick(tickableSoundInstance);
 	}
 
 	public void play(SoundInstance soundInstance) {

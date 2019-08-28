@@ -1,12 +1,12 @@
 package net.minecraft.client.render.debug;
 
 import com.google.common.collect.Maps;
+import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
 import java.util.List;
 import java.util.Map;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_4493;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.Camera;
 import net.minecraft.util.math.BlockPos;
@@ -17,7 +17,7 @@ public class GoalSelectorDebugRenderer implements DebugRenderer.Renderer {
 	private final Map<Integer, List<GoalSelectorDebugRenderer.class_4206>> goalSelectors = Maps.<Integer, List<GoalSelectorDebugRenderer.class_4206>>newHashMap();
 
 	@Override
-	public void method_20414() {
+	public void clear() {
 		this.goalSelectors.clear();
 	}
 
@@ -35,7 +35,7 @@ public class GoalSelectorDebugRenderer implements DebugRenderer.Renderer {
 		RenderSystem.pushMatrix();
 		RenderSystem.enableBlend();
 		RenderSystem.blendFuncSeparate(
-			class_4493.class_4535.SRC_ALPHA, class_4493.class_4534.ONE_MINUS_SRC_ALPHA, class_4493.class_4535.ONE, class_4493.class_4534.ZERO
+			GlStateManager.class_4535.SRC_ALPHA, GlStateManager.class_4534.ONE_MINUS_SRC_ALPHA, GlStateManager.class_4535.ONE, GlStateManager.class_4534.ZERO
 		);
 		RenderSystem.disableTexture();
 		BlockPos blockPos = new BlockPos(camera.getPos().x, 0.0, camera.getPos().z);

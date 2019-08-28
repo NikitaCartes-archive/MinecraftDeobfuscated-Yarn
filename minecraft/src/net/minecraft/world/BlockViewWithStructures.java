@@ -5,7 +5,7 @@ import java.util.Map;
 import javax.annotation.Nullable;
 import net.minecraft.structure.StructureStart;
 
-public interface BlockViewWithStructures extends BlockView {
+public interface BlockViewWithStructures {
 	@Nullable
 	StructureStart getStructureStart(String string);
 

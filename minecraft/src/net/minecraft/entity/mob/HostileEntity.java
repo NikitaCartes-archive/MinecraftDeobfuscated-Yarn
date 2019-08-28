@@ -2,6 +2,7 @@ package net.minecraft.entity.mob;
 
 import java.util.Random;
 import java.util.function.Predicate;
+import net.minecraft.class_4538;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.SpawnType;
 import net.minecraft.entity.attribute.EntityAttributes;
@@ -17,7 +18,6 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.Difficulty;
 import net.minecraft.world.IWorld;
 import net.minecraft.world.LightType;
-import net.minecraft.world.ViewableWorld;
 import net.minecraft.world.World;
 
 public abstract class HostileEntity extends MobEntityWithAi implements Monster {
@@ -84,15 +84,15 @@ public abstract class HostileEntity extends MobEntityWithAi implements Monster {
 	}
 
 	@Override
-	public float getPathfindingFavor(BlockPos blockPos, ViewableWorld viewableWorld) {
-		return 0.5F - viewableWorld.getBrightness(blockPos);
+	public float getPathfindingFavor(BlockPos blockPos, class_4538 arg) {
+		return 0.5F - arg.method_22349(blockPos);
 	}
 
 	public static boolean method_20679(IWorld iWorld, BlockPos blockPos, Random random) {
 		if (iWorld.getLightLevel(LightType.SKY, blockPos) > random.nextInt(32)) {
 			return false;
 		} else {
-			int i = iWorld.getWorld().isThundering() ? iWorld.method_8603(blockPos, 10) : iWorld.getLightLevel(blockPos);
+			int i = iWorld.getWorld().isThundering() ? iWorld.method_22346(blockPos, 10) : iWorld.method_22339(blockPos);
 			return i <= random.nextInt(8);
 		}
 	}

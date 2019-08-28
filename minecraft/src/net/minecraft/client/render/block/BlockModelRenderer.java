@@ -113,7 +113,7 @@ public class BlockModelRenderer {
 			random.setSeed(l);
 			List<BakedQuad> list = bakedModel.getQuads(blockState, direction, random);
 			if (!list.isEmpty() && (!bl || Block.shouldDrawSide(blockState, extendedBlockView, blockPos, direction))) {
-				int i = blockState.getBlockBrightness(extendedBlockView, blockPos.offset(direction));
+				int i = extendedBlockView.getLightmapIndex(blockState, blockPos.offset(direction));
 				this.tesselateQuadsFlat(extendedBlockView, blockState, blockPos, i, false, bufferBuilder, list, bitSet);
 				bl2 = true;
 			}
@@ -280,7 +280,7 @@ public class BlockModelRenderer {
 			if (bl) {
 				this.updateShape(extendedBlockView, blockState, blockPos, bakedQuad.getVertexData(), bakedQuad.getFace(), null, bitSet);
 				BlockPos blockPos2 = bitSet.get(0) ? blockPos.offset(bakedQuad.getFace()) : blockPos;
-				i = blockState.getBlockBrightness(extendedBlockView, blockPos2);
+				i = extendedBlockView.getLightmapIndex(blockState, blockPos2);
 			}
 
 			bufferBuilder.putVertexData(bakedQuad.getVertexData());
@@ -571,7 +571,7 @@ public class BlockModelRenderer {
 				}
 			}
 
-			int i = blockState.getBlockBrightness(extendedBlockView, blockPos);
+			int i = extendedBlockView.getLightmapIndex(blockState, blockPos);
 			if (this.enabled) {
 				if (this.intCache.size() == 100) {
 					this.intCache.removeFirstInt();

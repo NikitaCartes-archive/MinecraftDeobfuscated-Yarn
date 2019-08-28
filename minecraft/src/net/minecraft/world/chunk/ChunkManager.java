@@ -10,7 +10,6 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.chunk.light.LightingProvider;
-import net.minecraft.world.gen.chunk.ChunkGenerator;
 
 public abstract class ChunkManager implements ChunkProvider, AutoCloseable {
 	@Nullable
@@ -39,9 +38,7 @@ public abstract class ChunkManager implements ChunkProvider, AutoCloseable {
 	@Environment(EnvType.CLIENT)
 	public abstract void tick(BooleanSupplier booleanSupplier);
 
-	public abstract String getStatus();
-
-	public abstract ChunkGenerator<?> getChunkGenerator();
+	public abstract String getDebugString();
 
 	public void close() throws IOException {
 	}

@@ -2,6 +2,7 @@ package net.minecraft.block;
 
 import java.util.List;
 import java.util.Random;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
@@ -25,7 +26,7 @@ public class GrassBlock extends SpreadableBlock implements Fertilizable {
 	}
 
 	@Override
-	public void grow(World world, Random random, BlockPos blockPos, BlockState blockState) {
+	public void grow(ServerWorld serverWorld, Random random, BlockPos blockPos, BlockState blockState) {
 		BlockPos blockPos2 = blockPos.up();
 		BlockState blockState2 = Blocks.GRASS.getDefaultState();
 
@@ -35,20 +36,20 @@ public class GrassBlock extends SpreadableBlock implements Fertilizable {
 
 			for (int j = 0; j < i / 16; j++) {
 				blockPos3 = blockPos3.add(random.nextInt(3) - 1, (random.nextInt(3) - 1) * random.nextInt(3) / 2, random.nextInt(3) - 1);
-				if (world.getBlockState(blockPos3.down()).getBlock() != this || world.getBlockState(blockPos3).method_21743(world, blockPos3)) {
+				if (serverWorld.getBlockState(blockPos3.down()).getBlock() != this || serverWorld.getBlockState(blockPos3).method_21743(serverWorld, blockPos3)) {
 					continue label48;
 				}
 			}
 
-			BlockState blockState3 = world.getBlockState(blockPos3);
+			BlockState blockState3 = serverWorld.getBlockState(blockPos3);
 			if (blockState3.getBlock() == blockState2.getBlock() && random.nextInt(10) == 0) {
-				((Fertilizable)blockState2.getBlock()).grow(world, random, blockPos3, blockState3);
+				((Fertilizable)blockState2.getBlock()).grow(serverWorld, random, blockPos3, blockState3);
 			}
 
 			if (blockState3.isAir()) {
 				BlockState blockState4;
 				if (random.nextInt(8) == 0) {
-					List<ConfiguredFeature<?>> list = world.getBiome(blockPos3).getFlowerFeatures();
+					List<ConfiguredFeature<?>> list = serverWorld.getBiome(blockPos3).getFlowerFeatures();
 					if (list.isEmpty()) {
 						continue;
 					}
@@ -58,8 +59,8 @@ public class GrassBlock extends SpreadableBlock implements Fertilizable {
 					blockState4 = blockState2;
 				}
 
-				if (blockState4.canPlaceAt(world, blockPos3)) {
-					world.setBlockState(blockPos3, blockState4, 3);
+				if (blockState4.canPlaceAt(serverWorld, blockPos3)) {
+					serverWorld.setBlockState(blockPos3, blockState4, 3);
 				}
 			}
 		}

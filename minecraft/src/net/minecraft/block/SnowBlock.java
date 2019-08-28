@@ -2,8 +2,10 @@ package net.minecraft.block;
 
 import java.util.Random;
 import javax.annotation.Nullable;
+import net.minecraft.class_4538;
 import net.minecraft.entity.EntityContext;
 import net.minecraft.item.ItemPlacementContext;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.state.StateFactory;
 import net.minecraft.state.property.IntProperty;
 import net.minecraft.state.property.Properties;
@@ -14,8 +16,6 @@ import net.minecraft.util.shape.VoxelShapes;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.IWorld;
 import net.minecraft.world.LightType;
-import net.minecraft.world.ViewableWorld;
-import net.minecraft.world.World;
 
 public class SnowBlock extends Block {
 	public static final IntProperty LAYERS = Properties.LAYERS;
@@ -66,12 +66,11 @@ public class SnowBlock extends Block {
 	}
 
 	@Override
-	public boolean canPlaceAt(BlockState blockState, ViewableWorld viewableWorld, BlockPos blockPos) {
-		BlockState blockState2 = viewableWorld.getBlockState(blockPos.down());
+	public boolean canPlaceAt(BlockState blockState, class_4538 arg, BlockPos blockPos) {
+		BlockState blockState2 = arg.getBlockState(blockPos.down());
 		Block block = blockState2.getBlock();
 		return block != Blocks.ICE && block != Blocks.PACKED_ICE && block != Blocks.BARRIER
-			? Block.isFaceFullSquare(blockState2.getCollisionShape(viewableWorld, blockPos.down()), Direction.UP)
-				|| block == this && (Integer)blockState2.get(LAYERS) == 8
+			? Block.isFaceFullSquare(blockState2.getCollisionShape(arg, blockPos.down()), Direction.UP) || block == this && (Integer)blockState2.get(LAYERS) == 8
 			: false;
 	}
 
@@ -85,10 +84,10 @@ public class SnowBlock extends Block {
 	}
 
 	@Override
-	public void onScheduledTick(BlockState blockState, World world, BlockPos blockPos, Random random) {
-		if (world.getLightLevel(LightType.BLOCK, blockPos) > 11) {
-			dropStacks(blockState, world, blockPos);
-			world.clearBlockState(blockPos, false);
+	public void onScheduledTick(BlockState blockState, ServerWorld serverWorld, BlockPos blockPos, Random random) {
+		if (serverWorld.getLightLevel(LightType.BLOCK, blockPos) > 11) {
+			dropStacks(blockState, serverWorld, blockPos);
+			serverWorld.clearBlockState(blockPos, false);
 		}
 	}
 

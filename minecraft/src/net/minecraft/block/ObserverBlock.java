@@ -2,6 +2,7 @@ package net.minecraft.block;
 
 import java.util.Random;
 import net.minecraft.item.ItemPlacementContext;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.state.StateFactory;
 import net.minecraft.state.property.BooleanProperty;
 import net.minecraft.state.property.Properties;
@@ -37,15 +38,15 @@ public class ObserverBlock extends FacingBlock {
 	}
 
 	@Override
-	public void onScheduledTick(BlockState blockState, World world, BlockPos blockPos, Random random) {
+	public void onScheduledTick(BlockState blockState, ServerWorld serverWorld, BlockPos blockPos, Random random) {
 		if ((Boolean)blockState.get(POWERED)) {
-			world.setBlockState(blockPos, blockState.with(POWERED, Boolean.valueOf(false)), 2);
+			serverWorld.setBlockState(blockPos, blockState.with(POWERED, Boolean.valueOf(false)), 2);
 		} else {
-			world.setBlockState(blockPos, blockState.with(POWERED, Boolean.valueOf(true)), 2);
-			world.getBlockTickScheduler().schedule(blockPos, this, 2);
+			serverWorld.setBlockState(blockPos, blockState.with(POWERED, Boolean.valueOf(true)), 2);
+			serverWorld.method_14196().schedule(blockPos, this, 2);
 		}
 
-		this.updateNeighbors(world, blockPos, blockState);
+		this.updateNeighbors(serverWorld, blockPos, blockState);
 	}
 
 	@Override

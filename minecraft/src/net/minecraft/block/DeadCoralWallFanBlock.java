@@ -4,6 +4,7 @@ import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Maps;
 import java.util.Map;
 import javax.annotation.Nullable;
+import net.minecraft.class_4538;
 import net.minecraft.entity.EntityContext;
 import net.minecraft.fluid.Fluids;
 import net.minecraft.item.ItemPlacementContext;
@@ -16,7 +17,6 @@ import net.minecraft.util.math.Direction;
 import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.IWorld;
-import net.minecraft.world.ViewableWorld;
 
 public class DeadCoralWallFanBlock extends DeadCoralFanBlock {
 	public static final DirectionProperty FACING = HorizontalFacingBlock.FACING;
@@ -70,25 +70,25 @@ public class DeadCoralWallFanBlock extends DeadCoralFanBlock {
 	}
 
 	@Override
-	public boolean canPlaceAt(BlockState blockState, ViewableWorld viewableWorld, BlockPos blockPos) {
+	public boolean canPlaceAt(BlockState blockState, class_4538 arg, BlockPos blockPos) {
 		Direction direction = blockState.get(FACING);
 		BlockPos blockPos2 = blockPos.offset(direction.getOpposite());
-		BlockState blockState2 = viewableWorld.getBlockState(blockPos2);
-		return blockState2.isSideSolidFullSquare(viewableWorld, blockPos2, direction);
+		BlockState blockState2 = arg.getBlockState(blockPos2);
+		return blockState2.isSideSolidFullSquare(arg, blockPos2, direction);
 	}
 
 	@Nullable
 	@Override
 	public BlockState getPlacementState(ItemPlacementContext itemPlacementContext) {
 		BlockState blockState = super.getPlacementState(itemPlacementContext);
-		ViewableWorld viewableWorld = itemPlacementContext.getWorld();
+		class_4538 lv = itemPlacementContext.getWorld();
 		BlockPos blockPos = itemPlacementContext.getBlockPos();
 		Direction[] directions = itemPlacementContext.getPlacementDirections();
 
 		for (Direction direction : directions) {
 			if (direction.getAxis().isHorizontal()) {
 				blockState = blockState.with(FACING, direction.getOpposite());
-				if (blockState.canPlaceAt(viewableWorld, blockPos)) {
+				if (blockState.canPlaceAt(lv, blockPos)) {
 					return blockState;
 				}
 			}

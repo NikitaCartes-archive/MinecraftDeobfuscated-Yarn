@@ -106,13 +106,13 @@ public class OceanMonumentFeature extends StructureFeature<DefaultFeatureConfig>
 		}
 
 		@Override
-		public void generateStructure(IWorld iWorld, Random random, MutableIntBoundingBox mutableIntBoundingBox, ChunkPos chunkPos) {
+		public void generateStructure(IWorld iWorld, ChunkGenerator<?> chunkGenerator, Random random, MutableIntBoundingBox mutableIntBoundingBox, ChunkPos chunkPos) {
 			if (!this.field_13717) {
 				this.children.clear();
 				this.method_16588(this.getChunkX(), this.getChunkZ());
 			}
 
-			super.generateStructure(iWorld, random, mutableIntBoundingBox, chunkPos);
+			super.generateStructure(iWorld, chunkGenerator, random, mutableIntBoundingBox, chunkPos);
 		}
 	}
 }

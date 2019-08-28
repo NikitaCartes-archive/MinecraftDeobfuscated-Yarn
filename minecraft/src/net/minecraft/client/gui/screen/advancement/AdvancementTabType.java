@@ -13,41 +13,41 @@ enum AdvancementTabType {
 	LEFT(0, 64, 32, 28, 5),
 	RIGHT(96, 64, 32, 28, 5);
 
-	private final int field_2674;
-	private final int field_2672;
-	private final int field_2671;
-	private final int field_2670;
-	private final int field_2669;
+	private final int u;
+	private final int v;
+	private final int width;
+	private final int height;
+	private final int tabCount;
 
 	private AdvancementTabType(int j, int k, int l, int m, int n) {
-		this.field_2674 = j;
-		this.field_2672 = k;
-		this.field_2671 = l;
-		this.field_2670 = m;
-		this.field_2669 = n;
+		this.u = j;
+		this.v = k;
+		this.width = l;
+		this.height = m;
+		this.tabCount = n;
 	}
 
-	public int method_2304() {
-		return this.field_2669;
+	public int getTabCount() {
+		return this.tabCount;
 	}
 
 	public void drawBackground(DrawableHelper drawableHelper, int i, int j, boolean bl, int k) {
-		int l = this.field_2674;
+		int l = this.u;
 		if (k > 0) {
-			l += this.field_2671;
+			l += this.width;
 		}
 
-		if (k == this.field_2669 - 1) {
-			l += this.field_2671;
+		if (k == this.tabCount - 1) {
+			l += this.width;
 		}
 
-		int m = bl ? this.field_2672 + this.field_2670 : this.field_2672;
-		drawableHelper.blit(i + this.method_2302(k), j + this.method_2305(k), l, m, this.field_2671, this.field_2670);
+		int m = bl ? this.v + this.height : this.v;
+		drawableHelper.blit(i + this.getTabX(k), j + this.getTabY(k), l, m, this.width, this.height);
 	}
 
 	public void drawIcon(int i, int j, int k, ItemRenderer itemRenderer, ItemStack itemStack) {
-		int l = i + this.method_2302(k);
-		int m = j + this.method_2305(k);
+		int l = i + this.getTabX(k);
+		int m = j + this.getTabY(k);
 		switch (this) {
 			case ABOVE:
 				l += 6;
@@ -69,14 +69,14 @@ enum AdvancementTabType {
 		itemRenderer.renderGuiItem(null, itemStack, l, m);
 	}
 
-	public int method_2302(int i) {
+	public int getTabX(int i) {
 		switch (this) {
 			case ABOVE:
-				return (this.field_2671 + 4) * i;
+				return (this.width + 4) * i;
 			case BELOW:
-				return (this.field_2671 + 4) * i;
+				return (this.width + 4) * i;
 			case LEFT:
-				return -this.field_2671 + 4;
+				return -this.width + 4;
 			case RIGHT:
 				return 248;
 			default:
@@ -84,24 +84,24 @@ enum AdvancementTabType {
 		}
 	}
 
-	public int method_2305(int i) {
+	public int getTabY(int i) {
 		switch (this) {
 			case ABOVE:
-				return -this.field_2670 + 4;
+				return -this.height + 4;
 			case BELOW:
 				return 136;
 			case LEFT:
-				return this.field_2670 * i;
+				return this.height * i;
 			case RIGHT:
-				return this.field_2670 * i;
+				return this.height * i;
 			default:
 				throw new UnsupportedOperationException("Don't know what this tab type is!" + this);
 		}
 	}
 
-	public boolean method_2303(int i, int j, int k, double d, double e) {
-		int l = i + this.method_2302(k);
-		int m = j + this.method_2305(k);
-		return d > (double)l && d < (double)(l + this.field_2671) && e > (double)m && e < (double)(m + this.field_2670);
+	public boolean isClickOnTab(int i, int j, int k, double d, double e) {
+		int l = i + this.getTabX(k);
+		int m = j + this.getTabY(k);
+		return d > (double)l && d < (double)(l + this.width) && e > (double)m && e < (double)(m + this.height);
 	}
 }

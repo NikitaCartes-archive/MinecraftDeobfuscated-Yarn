@@ -231,7 +231,7 @@ public class ClientWorld extends World {
 				double d = blockPos.getSquaredDistance(blockPos2);
 				if (d >= 4.0 && d <= 256.0) {
 					BlockState blockState = this.getBlockState(blockPos2);
-					if (blockState.isAir() && this.getLightLevel(blockPos2, 0) <= this.random.nextInt(8) && this.getLightLevel(LightType.SKY, blockPos2) <= 0) {
+					if (blockState.isAir() && this.method_22335(blockPos2, 0) <= this.random.nextInt(8) && this.getLightLevel(LightType.SKY, blockPos2) <= 0) {
 						this.playSound(
 							(double)blockPos2.getX() + 0.5,
 							(double)blockPos2.getY() + 0.5,

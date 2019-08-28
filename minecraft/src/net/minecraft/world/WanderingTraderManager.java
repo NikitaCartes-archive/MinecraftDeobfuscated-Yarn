@@ -115,7 +115,7 @@ public class WanderingTraderManager {
 		for (int j = 0; j < 10; j++) {
 			int k = blockPos.getX() + this.random.nextInt(i * 2) - i;
 			int l = blockPos.getZ() + this.random.nextInt(i * 2) - i;
-			int m = this.world.getTop(Heightmap.Type.WORLD_SURFACE, k, l);
+			int m = this.world.getLightLevel(Heightmap.Type.WORLD_SURFACE, k, l);
 			BlockPos blockPos3 = new BlockPos(k, m, l);
 			if (SpawnHelper.canSpawn(SpawnRestriction.Location.ON_GROUND, this.world, blockPos3, EntityType.WANDERING_TRADER)) {
 				blockPos2 = blockPos3;

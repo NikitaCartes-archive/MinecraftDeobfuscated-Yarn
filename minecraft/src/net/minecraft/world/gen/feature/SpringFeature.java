@@ -46,19 +46,19 @@ public class SpringFeature extends Feature<SpringFeatureConfig> {
 				}
 
 				int k = 0;
-				if (iWorld.isAir(blockPos.west())) {
+				if (iWorld.method_22347(blockPos.west())) {
 					k++;
 				}
 
-				if (iWorld.isAir(blockPos.east())) {
+				if (iWorld.method_22347(blockPos.east())) {
 					k++;
 				}
 
-				if (iWorld.isAir(blockPos.north())) {
+				if (iWorld.method_22347(blockPos.north())) {
 					k++;
 				}
 
-				if (iWorld.isAir(blockPos.south())) {
+				if (iWorld.method_22347(blockPos.south())) {
 					k++;
 				}
 

@@ -1,12 +1,12 @@
 package net.minecraft.block;
 
 import java.util.Random;
+import net.minecraft.class_4538;
 import net.minecraft.entity.EntityContext;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.world.BlockView;
-import net.minecraft.world.IWorld;
-import net.minecraft.world.ViewableWorld;
 import net.minecraft.world.World;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
 import net.minecraft.world.gen.chunk.ChunkGeneratorConfig;
@@ -26,13 +26,13 @@ public class MushroomPlantBlock extends PlantBlock implements Fertilizable {
 	}
 
 	@Override
-	public void onScheduledTick(BlockState blockState, World world, BlockPos blockPos, Random random) {
+	public void onScheduledTick(BlockState blockState, ServerWorld serverWorld, BlockPos blockPos, Random random) {
 		if (random.nextInt(25) == 0) {
 			int i = 5;
 			int j = 4;
 
 			for (BlockPos blockPos2 : BlockPos.iterate(blockPos.add(-4, -1, -4), blockPos.add(4, 1, 4))) {
-				if (world.getBlockState(blockPos2).getBlock() == this) {
+				if (serverWorld.getBlockState(blockPos2).getBlock() == this) {
 					if (--i <= 0) {
 						return;
 					}
@@ -42,15 +42,15 @@ public class MushroomPlantBlock extends PlantBlock implements Fertilizable {
 			BlockPos blockPos3 = blockPos.add(random.nextInt(3) - 1, random.nextInt(2) - random.nextInt(2), random.nextInt(3) - 1);
 
 			for (int k = 0; k < 4; k++) {
-				if (world.isAir(blockPos3) && blockState.canPlaceAt(world, blockPos3)) {
+				if (serverWorld.method_22347(blockPos3) && blockState.canPlaceAt(serverWorld, blockPos3)) {
 					blockPos = blockPos3;
 				}
 
 				blockPos3 = blockPos.add(random.nextInt(3) - 1, random.nextInt(2) - random.nextInt(2), random.nextInt(3) - 1);
 			}
 
-			if (world.isAir(blockPos3) && blockState.canPlaceAt(world, blockPos3)) {
-				world.setBlockState(blockPos3, blockState, 2);
+			if (serverWorld.method_22347(blockPos3) && blockState.canPlaceAt(serverWorld, blockPos3)) {
+				serverWorld.setBlockState(blockPos3, blockState, 2);
 			}
 		}
 	}
@@ -61,17 +61,15 @@ public class MushroomPlantBlock extends PlantBlock implements Fertilizable {
 	}
 
 	@Override
-	public boolean canPlaceAt(BlockState blockState, ViewableWorld viewableWorld, BlockPos blockPos) {
+	public boolean canPlaceAt(BlockState blockState, class_4538 arg, BlockPos blockPos) {
 		BlockPos blockPos2 = blockPos.down();
-		BlockState blockState2 = viewableWorld.getBlockState(blockPos2);
+		BlockState blockState2 = arg.getBlockState(blockPos2);
 		Block block = blockState2.getBlock();
-		return block != Blocks.MYCELIUM && block != Blocks.PODZOL
-			? viewableWorld.getLightLevel(blockPos, 0) < 13 && this.canPlantOnTop(blockState2, viewableWorld, blockPos2)
-			: true;
+		return block != Blocks.MYCELIUM && block != Blocks.PODZOL ? arg.method_22335(blockPos, 0) < 13 && this.canPlantOnTop(blockState2, arg, blockPos2) : true;
 	}
 
-	public boolean trySpawningBigMushroom(IWorld iWorld, BlockPos blockPos, BlockState blockState, Random random) {
-		iWorld.clearBlockState(blockPos, false);
+	public boolean trySpawningBigMushroom(ServerWorld serverWorld, BlockPos blockPos, BlockState blockState, Random random) {
+		serverWorld.clearBlockState(blockPos, false);
 		Feature<PlantedFeatureConfig> feature = null;
 		if (this == Blocks.BROWN_MUSHROOM) {
 			feature = Feature.HUGE_BROWN_MUSHROOM;
@@ -81,11 +79,15 @@ public class MushroomPlantBlock extends PlantBlock implements Fertilizable {
 
 		if (feature != null
 			&& feature.generate(
-				iWorld, (ChunkGenerator<? extends ChunkGeneratorConfig>)iWorld.getChunkManager().getChunkGenerator(), random, blockPos, new PlantedFeatureConfig(true)
+				serverWorld,
+				(ChunkGenerator<? extends ChunkGeneratorConfig>)serverWorld.method_14178().getChunkGenerator(),
+				random,
+				blockPos,
+				new PlantedFeatureConfig(true)
 			)) {
 			return true;
 		} else {
-			iWorld.setBlockState(blockPos, blockState, 3);
+			serverWorld.setBlockState(blockPos, blockState, 3);
 			return false;
 		}
 	}
@@ -101,8 +103,8 @@ public class MushroomPlantBlock extends PlantBlock implements Fertilizable {
 	}
 
 	@Override
-	public void grow(World world, Random random, BlockPos blockPos, BlockState blockState) {
-		this.trySpawningBigMushroom(world, blockPos, blockState, random);
+	public void grow(ServerWorld serverWorld, Random random, BlockPos blockPos, BlockState blockState) {
+		this.trySpawningBigMushroom(serverWorld, blockPos, blockState, random);
 	}
 
 	@Override

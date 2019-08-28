@@ -4,6 +4,7 @@ import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Maps;
 import java.util.Map;
 import javax.annotation.Nullable;
+import net.minecraft.class_4538;
 import net.minecraft.entity.EntityContext;
 import net.minecraft.fluid.FluidState;
 import net.minecraft.fluid.Fluids;
@@ -17,7 +18,6 @@ import net.minecraft.util.math.Direction;
 import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.IWorld;
-import net.minecraft.world.ViewableWorld;
 
 public class WallSignBlock extends AbstractSignBlock {
 	public static final DirectionProperty FACING = HorizontalFacingBlock.FACING;
@@ -50,8 +50,8 @@ public class WallSignBlock extends AbstractSignBlock {
 	}
 
 	@Override
-	public boolean canPlaceAt(BlockState blockState, ViewableWorld viewableWorld, BlockPos blockPos) {
-		return viewableWorld.getBlockState(blockPos.offset(((Direction)blockState.get(FACING)).getOpposite())).getMaterial().isSolid();
+	public boolean canPlaceAt(BlockState blockState, class_4538 arg, BlockPos blockPos) {
+		return arg.getBlockState(blockPos.offset(((Direction)blockState.get(FACING)).getOpposite())).getMaterial().isSolid();
 	}
 
 	@Nullable
@@ -59,7 +59,7 @@ public class WallSignBlock extends AbstractSignBlock {
 	public BlockState getPlacementState(ItemPlacementContext itemPlacementContext) {
 		BlockState blockState = this.getDefaultState();
 		FluidState fluidState = itemPlacementContext.getWorld().getFluidState(itemPlacementContext.getBlockPos());
-		ViewableWorld viewableWorld = itemPlacementContext.getWorld();
+		class_4538 lv = itemPlacementContext.getWorld();
 		BlockPos blockPos = itemPlacementContext.getBlockPos();
 		Direction[] directions = itemPlacementContext.getPlacementDirections();
 
@@ -67,7 +67,7 @@ public class WallSignBlock extends AbstractSignBlock {
 			if (direction.getAxis().isHorizontal()) {
 				Direction direction2 = direction.getOpposite();
 				blockState = blockState.with(FACING, direction2);
-				if (blockState.canPlaceAt(viewableWorld, blockPos)) {
+				if (blockState.canPlaceAt(lv, blockPos)) {
 					return blockState.with(WATERLOGGED, Boolean.valueOf(fluidState.getFluid() == Fluids.WATER));
 				}
 			}

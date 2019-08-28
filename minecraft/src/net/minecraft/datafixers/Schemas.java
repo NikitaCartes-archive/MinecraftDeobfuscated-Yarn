@@ -9,7 +9,6 @@ import com.mojang.datafixers.schemas.Schema;
 import java.util.Objects;
 import java.util.function.BiFunction;
 import net.minecraft.SharedConstants;
-import net.minecraft.class_4465;
 import net.minecraft.datafixers.fixes.AddTrappedChestFix;
 import net.minecraft.datafixers.fixes.AdvancementsFix;
 import net.minecraft.datafixers.fixes.BedBlockEntityFix;
@@ -141,6 +140,7 @@ import net.minecraft.datafixers.schemas.Schema1920;
 import net.minecraft.datafixers.schemas.Schema1928;
 import net.minecraft.datafixers.schemas.Schema1929;
 import net.minecraft.datafixers.schemas.Schema1931;
+import net.minecraft.datafixers.schemas.Schema2100;
 import net.minecraft.datafixers.schemas.Schema501;
 import net.minecraft.datafixers.schemas.Schema700;
 import net.minecraft.datafixers.schemas.Schema701;
@@ -154,8 +154,8 @@ import net.minecraft.datafixers.schemas.SchemaIdentifierNormalize;
 import net.minecraft.util.SystemUtil;
 
 public class Schemas {
-	private static final BiFunction<Integer, Schema, Schema> empty = Schema::new;
-	private static final BiFunction<Integer, Schema, Schema> identNormalize = SchemaIdentifierNormalize::new;
+	private static final BiFunction<Integer, Schema, Schema> EMPTY = Schema::new;
+	private static final BiFunction<Integer, Schema, Schema> EMPTY_IDENTIFIER_NORMALIZE = SchemaIdentifierNormalize::new;
 	private static final DataFixer fixer = create();
 
 	private static DataFixer create() {
@@ -172,38 +172,38 @@ public class Schemas {
 		Schema schema = dataFixerBuilder.addSchema(99, Schema99::new);
 		Schema schema2 = dataFixerBuilder.addSchema(100, Schema100::new);
 		dataFixerBuilder.addFixer(new EntityEquipmentToArmorAndHandFix(schema2, true));
-		Schema schema3 = dataFixerBuilder.addSchema(101, empty);
+		Schema schema3 = dataFixerBuilder.addSchema(101, EMPTY);
 		dataFixerBuilder.addFixer(new BlockEntitySignTextStrictJsonFix(schema3, false));
 		Schema schema4 = dataFixerBuilder.addSchema(102, Schema102::new);
 		dataFixerBuilder.addFixer(new ItemIdFix(schema4, true));
 		dataFixerBuilder.addFixer(new ItemPotionFix(schema4, false));
-		Schema schema5 = dataFixerBuilder.addSchema(105, empty);
+		Schema schema5 = dataFixerBuilder.addSchema(105, EMPTY);
 		dataFixerBuilder.addFixer(new ItemSpawnEggFix(schema5, true));
 		Schema schema6 = dataFixerBuilder.addSchema(106, Schema106::new);
 		dataFixerBuilder.addFixer(new MobSpawnerEntityIdentifiersFix(schema6, true));
 		Schema schema7 = dataFixerBuilder.addSchema(107, Schema107::new);
 		dataFixerBuilder.addFixer(new EntityMinecartIdentifiersFix(schema7, true));
-		Schema schema8 = dataFixerBuilder.addSchema(108, empty);
+		Schema schema8 = dataFixerBuilder.addSchema(108, EMPTY);
 		dataFixerBuilder.addFixer(new EntityStringUuidFix(schema8, true));
-		Schema schema9 = dataFixerBuilder.addSchema(109, empty);
+		Schema schema9 = dataFixerBuilder.addSchema(109, EMPTY);
 		dataFixerBuilder.addFixer(new EntityHealthFix(schema9, true));
-		Schema schema10 = dataFixerBuilder.addSchema(110, empty);
+		Schema schema10 = dataFixerBuilder.addSchema(110, EMPTY);
 		dataFixerBuilder.addFixer(new EntityHorseSaddleFix(schema10, true));
-		Schema schema11 = dataFixerBuilder.addSchema(111, empty);
+		Schema schema11 = dataFixerBuilder.addSchema(111, EMPTY);
 		dataFixerBuilder.addFixer(new HangingEntityFix(schema11, true));
-		Schema schema12 = dataFixerBuilder.addSchema(113, empty);
+		Schema schema12 = dataFixerBuilder.addSchema(113, EMPTY);
 		dataFixerBuilder.addFixer(new EntityRedundantChanceTagsFix(schema12, true));
 		Schema schema13 = dataFixerBuilder.addSchema(135, Schema135::new);
 		dataFixerBuilder.addFixer(new EntityRidingToPassengerFix(schema13, true));
 		Schema schema14 = dataFixerBuilder.addSchema(143, Schema143::new);
 		dataFixerBuilder.addFixer(new EntityTippedArrowFix(schema14, true));
-		Schema schema15 = dataFixerBuilder.addSchema(147, empty);
+		Schema schema15 = dataFixerBuilder.addSchema(147, EMPTY);
 		dataFixerBuilder.addFixer(new EntityArmorStandSilentFix(schema15, true));
-		Schema schema16 = dataFixerBuilder.addSchema(165, empty);
+		Schema schema16 = dataFixerBuilder.addSchema(165, EMPTY);
 		dataFixerBuilder.addFixer(new ItemWrittenBookPagesStrictJsonFix(schema16, true));
 		Schema schema17 = dataFixerBuilder.addSchema(501, Schema501::new);
 		dataFixerBuilder.addFixer(new FixChoiceTypes(schema17, "Add 1.10 entities fix", TypeReferences.ENTITY));
-		Schema schema18 = dataFixerBuilder.addSchema(502, empty);
+		Schema schema18 = dataFixerBuilder.addSchema(502, EMPTY);
 		dataFixerBuilder.addFixer(
 			FixItemName.create(
 				schema18,
@@ -212,7 +212,7 @@ public class Schemas {
 			)
 		);
 		dataFixerBuilder.addFixer(new EntityZombieVillagerTypeFix(schema18, false));
-		Schema schema19 = dataFixerBuilder.addSchema(505, empty);
+		Schema schema19 = dataFixerBuilder.addSchema(505, EMPTY);
 		dataFixerBuilder.addFixer(new OptionsForceVBOFix(schema19, false));
 		Schema schema20 = dataFixerBuilder.addSchema(700, Schema700::new);
 		dataFixerBuilder.addFixer(new EntityElderGuardianSplitFix(schema20, true));
@@ -226,20 +226,20 @@ public class Schemas {
 		dataFixerBuilder.addFixer(new BlockEntityIdFix(schema24, true));
 		Schema schema25 = dataFixerBuilder.addSchema(705, Schema705::new);
 		dataFixerBuilder.addFixer(new EntityIdFix(schema25, true));
-		Schema schema26 = dataFixerBuilder.addSchema(804, identNormalize);
+		Schema schema26 = dataFixerBuilder.addSchema(804, EMPTY_IDENTIFIER_NORMALIZE);
 		dataFixerBuilder.addFixer(new ItemBannerColorFix(schema26, true));
-		Schema schema27 = dataFixerBuilder.addSchema(806, identNormalize);
+		Schema schema27 = dataFixerBuilder.addSchema(806, EMPTY_IDENTIFIER_NORMALIZE);
 		dataFixerBuilder.addFixer(new ItemWaterPotionFix(schema27, false));
 		Schema schema28 = dataFixerBuilder.addSchema(808, Schema808::new);
 		dataFixerBuilder.addFixer(new FixChoiceTypes(schema28, "added shulker box", TypeReferences.BLOCK_ENTITY));
-		Schema schema29 = dataFixerBuilder.addSchema(808, 1, identNormalize);
+		Schema schema29 = dataFixerBuilder.addSchema(808, 1, EMPTY_IDENTIFIER_NORMALIZE);
 		dataFixerBuilder.addFixer(new EntityShulkerColorFix(schema29, false));
-		Schema schema30 = dataFixerBuilder.addSchema(813, identNormalize);
+		Schema schema30 = dataFixerBuilder.addSchema(813, EMPTY_IDENTIFIER_NORMALIZE);
 		dataFixerBuilder.addFixer(new ItemShulkerBoxColorFix(schema30, false));
 		dataFixerBuilder.addFixer(new BlockEntityShulkerBoxColorFix(schema30, false));
-		Schema schema31 = dataFixerBuilder.addSchema(816, identNormalize);
+		Schema schema31 = dataFixerBuilder.addSchema(816, EMPTY_IDENTIFIER_NORMALIZE);
 		dataFixerBuilder.addFixer(new OptionsLowerCaseLanguageFix(schema31, false));
-		Schema schema32 = dataFixerBuilder.addSchema(820, identNormalize);
+		Schema schema32 = dataFixerBuilder.addSchema(820, EMPTY_IDENTIFIER_NORMALIZE);
 		dataFixerBuilder.addFixer(
 			FixItemName.create(schema32, "totem item renamer", string -> Objects.equals(string, "minecraft:totem") ? "minecraft:totem_of_undying" : string)
 		);
@@ -248,11 +248,11 @@ public class Schemas {
 		Schema schema34 = dataFixerBuilder.addSchema(1125, Schema1125::new);
 		dataFixerBuilder.addFixer(new BedBlockEntityFix(schema34, true));
 		dataFixerBuilder.addFixer(new BedItemColorFix(schema34, false));
-		Schema schema35 = dataFixerBuilder.addSchema(1344, identNormalize);
+		Schema schema35 = dataFixerBuilder.addSchema(1344, EMPTY_IDENTIFIER_NORMALIZE);
 		dataFixerBuilder.addFixer(new OptionsKeyLwjgl3Fix(schema35, false));
-		Schema schema36 = dataFixerBuilder.addSchema(1446, identNormalize);
+		Schema schema36 = dataFixerBuilder.addSchema(1446, EMPTY_IDENTIFIER_NORMALIZE);
 		dataFixerBuilder.addFixer(new OptionsKeyTranslationFix(schema36, false));
-		Schema schema37 = dataFixerBuilder.addSchema(1450, identNormalize);
+		Schema schema37 = dataFixerBuilder.addSchema(1450, EMPTY_IDENTIFIER_NORMALIZE);
 		dataFixerBuilder.addFixer(new BlockStateStructureTemplateFix(schema37, false));
 		Schema schema38 = dataFixerBuilder.addSchema(1451, Schema1451::new);
 		dataFixerBuilder.addFixer(new FixChoiceTypes(schema38, "AddTrappedChestFix", TypeReferences.BLOCK_ENTITY));
@@ -277,11 +277,11 @@ public class Schemas {
 		dataFixerBuilder.addFixer(new BlockEntityJukeboxFix(schema44, false));
 		Schema schema45 = dataFixerBuilder.addSchema(1451, 7, Schema1451v7::new);
 		dataFixerBuilder.addFixer(new SavedDataVillageCropFix(schema45, true));
-		Schema schema46 = dataFixerBuilder.addSchema(1451, 7, identNormalize);
+		Schema schema46 = dataFixerBuilder.addSchema(1451, 7, EMPTY_IDENTIFIER_NORMALIZE);
 		dataFixerBuilder.addFixer(new VillagerTradeFix(schema46, false));
-		Schema schema47 = dataFixerBuilder.addSchema(1456, identNormalize);
+		Schema schema47 = dataFixerBuilder.addSchema(1456, EMPTY_IDENTIFIER_NORMALIZE);
 		dataFixerBuilder.addFixer(new EntityItemFrameDirectionFix(schema47, false));
-		Schema schema48 = dataFixerBuilder.addSchema(1458, identNormalize);
+		Schema schema48 = dataFixerBuilder.addSchema(1458, EMPTY_IDENTIFIER_NORMALIZE);
 		dataFixerBuilder.addFixer(new EntityCustomNameToComponentFix(schema48, false));
 		dataFixerBuilder.addFixer(new ItemCustomNameToComponentFix(schema48, false));
 		dataFixerBuilder.addFixer(new BlockEntityCustomNameToComponentFix(schema48, false));
@@ -291,7 +291,7 @@ public class Schemas {
 		dataFixerBuilder.addFixer(new ChunkToProtoChunkFix(schema50, true));
 		Schema schema51 = dataFixerBuilder.addSchema(1470, Schema1470::new);
 		dataFixerBuilder.addFixer(new FixChoiceTypes(schema51, "Add 1.13 entities fix", TypeReferences.ENTITY));
-		Schema schema52 = dataFixerBuilder.addSchema(1474, identNormalize);
+		Schema schema52 = dataFixerBuilder.addSchema(1474, EMPTY_IDENTIFIER_NORMALIZE);
 		dataFixerBuilder.addFixer(new ColorlessShulkerEntityFix(schema52, false));
 		dataFixerBuilder.addFixer(
 			BlockNameFix.create(
@@ -307,7 +307,7 @@ public class Schemas {
 				string -> Objects.equals(SchemaIdentifierNormalize.normalize(string), "minecraft:purple_shulker_box") ? "minecraft:shulker_box" : string
 			)
 		);
-		Schema schema53 = dataFixerBuilder.addSchema(1475, identNormalize);
+		Schema schema53 = dataFixerBuilder.addSchema(1475, EMPTY_IDENTIFIER_NORMALIZE);
 		dataFixerBuilder.addFixer(
 			BlockNameFix.create(
 				schema53,
@@ -315,7 +315,7 @@ public class Schemas {
 				string -> ImmutableMap.of("minecraft:flowing_water", "minecraft:water", "minecraft:flowing_lava", "minecraft:lava").getOrDefault(string, string)
 			)
 		);
-		Schema schema54 = dataFixerBuilder.addSchema(1480, identNormalize);
+		Schema schema54 = dataFixerBuilder.addSchema(1480, EMPTY_IDENTIFIER_NORMALIZE);
 		dataFixerBuilder.addFixer(BlockNameFix.create(schema54, "Rename coral blocks", string -> (String)LegacyCoralBlockMapping.MAP.getOrDefault(string, string)));
 		dataFixerBuilder.addFixer(FixItemName.create(schema54, "Rename coral items", string -> (String)LegacyCoralBlockMapping.MAP.getOrDefault(string, string)));
 		Schema schema55 = dataFixerBuilder.addSchema(1481, Schema1481::new);
@@ -325,7 +325,7 @@ public class Schemas {
 		dataFixerBuilder.addFixer(
 			FixItemName.create(schema56, "Rename pufferfish egg item", string -> (String)EntityPufferfishRenameFix.RENAMED_FISHES.getOrDefault(string, string))
 		);
-		Schema schema57 = dataFixerBuilder.addSchema(1484, identNormalize);
+		Schema schema57 = dataFixerBuilder.addSchema(1484, EMPTY_IDENTIFIER_NORMALIZE);
 		dataFixerBuilder.addFixer(
 			FixItemName.create(
 				schema57,
@@ -346,7 +346,7 @@ public class Schemas {
 		dataFixerBuilder.addFixer(
 			FixItemName.create(schema58, "Rename cod/salmon egg items", string -> (String)EntityCodSalmonFix.SPAWN_EGGS.getOrDefault(string, string))
 		);
-		Schema schema59 = dataFixerBuilder.addSchema(1487, identNormalize);
+		Schema schema59 = dataFixerBuilder.addSchema(1487, EMPTY_IDENTIFIER_NORMALIZE);
 		dataFixerBuilder.addFixer(
 			FixItemName.create(
 				schema59,
@@ -367,7 +367,7 @@ public class Schemas {
 						.getOrDefault(string, string)
 			)
 		);
-		Schema schema60 = dataFixerBuilder.addSchema(1488, identNormalize);
+		Schema schema60 = dataFixerBuilder.addSchema(1488, EMPTY_IDENTIFIER_NORMALIZE);
 		dataFixerBuilder.addFixer(
 			BlockNameFix.create(
 				schema60,
@@ -393,7 +393,7 @@ public class Schemas {
 			}
 		);
 		dataFixerBuilder.addFixer(new IglooMetadataRemovalFix(schema60, false));
-		Schema schema61 = dataFixerBuilder.addSchema(1490, identNormalize);
+		Schema schema61 = dataFixerBuilder.addSchema(1490, EMPTY_IDENTIFIER_NORMALIZE);
 		dataFixerBuilder.addFixer(
 			BlockNameFix.create(schema61, "Rename melon_block", string -> Objects.equals(string, "minecraft:melon_block") ? "minecraft:melon" : string)
 		);
@@ -407,21 +407,21 @@ public class Schemas {
 						.getOrDefault(string, string)
 			)
 		);
-		Schema schema62 = dataFixerBuilder.addSchema(1492, identNormalize);
+		Schema schema62 = dataFixerBuilder.addSchema(1492, EMPTY_IDENTIFIER_NORMALIZE);
 		dataFixerBuilder.addFixer(new ChunkStructuresTemplateRenameFix(schema62, false));
-		Schema schema63 = dataFixerBuilder.addSchema(1494, identNormalize);
+		Schema schema63 = dataFixerBuilder.addSchema(1494, EMPTY_IDENTIFIER_NORMALIZE);
 		dataFixerBuilder.addFixer(new ItemStackEnchantmentFix(schema63, false));
-		Schema schema64 = dataFixerBuilder.addSchema(1496, identNormalize);
+		Schema schema64 = dataFixerBuilder.addSchema(1496, EMPTY_IDENTIFIER_NORMALIZE);
 		dataFixerBuilder.addFixer(new LeavesFix(schema64, false));
-		Schema schema65 = dataFixerBuilder.addSchema(1500, identNormalize);
+		Schema schema65 = dataFixerBuilder.addSchema(1500, EMPTY_IDENTIFIER_NORMALIZE);
 		dataFixerBuilder.addFixer(new BlockEntityKeepPacked(schema65, false));
-		Schema schema66 = dataFixerBuilder.addSchema(1501, identNormalize);
+		Schema schema66 = dataFixerBuilder.addSchema(1501, EMPTY_IDENTIFIER_NORMALIZE);
 		dataFixerBuilder.addFixer(new AdvancementsFix(schema66, false));
-		Schema schema67 = dataFixerBuilder.addSchema(1502, identNormalize);
+		Schema schema67 = dataFixerBuilder.addSchema(1502, EMPTY_IDENTIFIER_NORMALIZE);
 		dataFixerBuilder.addFixer(new RecipeFix(schema67, false));
-		Schema schema68 = dataFixerBuilder.addSchema(1506, identNormalize);
+		Schema schema68 = dataFixerBuilder.addSchema(1506, EMPTY_IDENTIFIER_NORMALIZE);
 		dataFixerBuilder.addFixer(new LevelDataGeneratorOptionsFix(schema68, false));
-		Schema schema69 = dataFixerBuilder.addSchema(1508, identNormalize);
+		Schema schema69 = dataFixerBuilder.addSchema(1508, EMPTY_IDENTIFIER_NORMALIZE);
 		dataFixerBuilder.addFixer(new BiomesFix(schema69, false));
 		Schema schema70 = dataFixerBuilder.addSchema(1510, Schema1510::new);
 		dataFixerBuilder.addFixer(
@@ -431,22 +431,22 @@ public class Schemas {
 		dataFixerBuilder.addFixer(new RecipeRenamingFix(schema70, false));
 		dataFixerBuilder.addFixer(new EntityTheRenameningBlock(schema70, true));
 		dataFixerBuilder.addFixer(new SwimStatsRenameFix(schema70, false));
-		Schema schema71 = dataFixerBuilder.addSchema(1514, identNormalize);
+		Schema schema71 = dataFixerBuilder.addSchema(1514, EMPTY_IDENTIFIER_NORMALIZE);
 		dataFixerBuilder.addFixer(new ObjectiveDisplayNameFix(schema71, false));
 		dataFixerBuilder.addFixer(new TeamDisplayNameFix(schema71, false));
 		dataFixerBuilder.addFixer(new ObjectiveRenderTypeFix(schema71, false));
-		Schema schema72 = dataFixerBuilder.addSchema(1515, identNormalize);
+		Schema schema72 = dataFixerBuilder.addSchema(1515, EMPTY_IDENTIFIER_NORMALIZE);
 		dataFixerBuilder.addFixer(
 			BlockNameFix.create(schema72, "Rename coral fan blocks", string -> (String)LegacyCoralFanBlockMapping.MAP.getOrDefault(string, string))
 		);
-		Schema schema73 = dataFixerBuilder.addSchema(1624, identNormalize);
+		Schema schema73 = dataFixerBuilder.addSchema(1624, EMPTY_IDENTIFIER_NORMALIZE);
 		dataFixerBuilder.addFixer(new AddTrappedChestFix(schema73, false));
 		Schema schema74 = dataFixerBuilder.addSchema(1800, Schema1800::new);
 		dataFixerBuilder.addFixer(new FixChoiceTypes(schema74, "Added 1.14 mobs fix", TypeReferences.ENTITY));
 		dataFixerBuilder.addFixer(FixItemName.create(schema74, "Rename dye items", string -> (String)LegacyDyeItemMapping.MAP.getOrDefault(string, string)));
 		Schema schema75 = dataFixerBuilder.addSchema(1801, Schema1801::new);
 		dataFixerBuilder.addFixer(new FixChoiceTypes(schema75, "Added Illager Beast", TypeReferences.ENTITY));
-		Schema schema76 = dataFixerBuilder.addSchema(1802, identNormalize);
+		Schema schema76 = dataFixerBuilder.addSchema(1802, EMPTY_IDENTIFIER_NORMALIZE);
 		dataFixerBuilder.addFixer(
 			BlockNameFix.create(
 				schema76,
@@ -464,28 +464,28 @@ public class Schemas {
 				string -> ImmutableMap.of("minecraft:stone_slab", "minecraft:smooth_stone_slab", "minecraft:sign", "minecraft:oak_sign").getOrDefault(string, string)
 			)
 		);
-		Schema schema77 = dataFixerBuilder.addSchema(1803, identNormalize);
+		Schema schema77 = dataFixerBuilder.addSchema(1803, EMPTY_IDENTIFIER_NORMALIZE);
 		dataFixerBuilder.addFixer(new ItemLoreToComponentFix(schema77, false));
 		Schema schema78 = dataFixerBuilder.addSchema(1904, Schema1904::new);
 		dataFixerBuilder.addFixer(new FixChoiceTypes(schema78, "Added Cats", TypeReferences.ENTITY));
 		dataFixerBuilder.addFixer(new EntityCatSplitFix(schema78, false));
-		Schema schema79 = dataFixerBuilder.addSchema(1905, identNormalize);
+		Schema schema79 = dataFixerBuilder.addSchema(1905, EMPTY_IDENTIFIER_NORMALIZE);
 		dataFixerBuilder.addFixer(new ChunkStatusFix(schema79, false));
 		Schema schema80 = dataFixerBuilder.addSchema(1906, Schema1906::new);
 		dataFixerBuilder.addFixer(new FixChoiceTypes(schema80, "Add POI Blocks", TypeReferences.BLOCK_ENTITY));
 		Schema schema81 = dataFixerBuilder.addSchema(1909, Schema1909::new);
 		dataFixerBuilder.addFixer(new FixChoiceTypes(schema81, "Add jigsaw", TypeReferences.BLOCK_ENTITY));
-		Schema schema82 = dataFixerBuilder.addSchema(1911, identNormalize);
+		Schema schema82 = dataFixerBuilder.addSchema(1911, EMPTY_IDENTIFIER_NORMALIZE);
 		dataFixerBuilder.addFixer(new ChunkStatusFix2(schema82, false));
-		Schema schema83 = dataFixerBuilder.addSchema(1917, identNormalize);
+		Schema schema83 = dataFixerBuilder.addSchema(1917, EMPTY_IDENTIFIER_NORMALIZE);
 		dataFixerBuilder.addFixer(new CatTypeFix(schema83, false));
-		Schema schema84 = dataFixerBuilder.addSchema(1918, identNormalize);
+		Schema schema84 = dataFixerBuilder.addSchema(1918, EMPTY_IDENTIFIER_NORMALIZE);
 		dataFixerBuilder.addFixer(new VillagerProfessionFix(schema84, "minecraft:villager"));
 		dataFixerBuilder.addFixer(new VillagerProfessionFix(schema84, "minecraft:zombie_villager"));
 		Schema schema85 = dataFixerBuilder.addSchema(1920, Schema1920::new);
 		dataFixerBuilder.addFixer(new NewVillageFix(schema85, false));
 		dataFixerBuilder.addFixer(new FixChoiceTypes(schema85, "Add campfire", TypeReferences.BLOCK_ENTITY));
-		Schema schema86 = dataFixerBuilder.addSchema(1925, identNormalize);
+		Schema schema86 = dataFixerBuilder.addSchema(1925, EMPTY_IDENTIFIER_NORMALIZE);
 		dataFixerBuilder.addFixer(new MapIdFix(schema86, false));
 		Schema schema87 = dataFixerBuilder.addSchema(1928, Schema1928::new);
 		dataFixerBuilder.addFixer(new EntityRavagerRenameFix(schema87, true));
@@ -496,20 +496,20 @@ public class Schemas {
 		dataFixerBuilder.addFixer(new FixChoiceTypes(schema88, "Add Wandering Trader and Trader Llama", TypeReferences.ENTITY));
 		Schema schema89 = dataFixerBuilder.addSchema(1931, Schema1931::new);
 		dataFixerBuilder.addFixer(new FixChoiceTypes(schema89, "Added Fox", TypeReferences.ENTITY));
-		Schema schema90 = dataFixerBuilder.addSchema(1936, identNormalize);
+		Schema schema90 = dataFixerBuilder.addSchema(1936, EMPTY_IDENTIFIER_NORMALIZE);
 		dataFixerBuilder.addFixer(new OptionsAddTextBackgroundFix(schema90, false));
-		Schema schema91 = dataFixerBuilder.addSchema(1946, identNormalize);
+		Schema schema91 = dataFixerBuilder.addSchema(1946, EMPTY_IDENTIFIER_NORMALIZE);
 		dataFixerBuilder.addFixer(new PointOfInterestReorganizationFix(schema91, false));
-		Schema schema92 = dataFixerBuilder.addSchema(1948, identNormalize);
+		Schema schema92 = dataFixerBuilder.addSchema(1948, EMPTY_IDENTIFIER_NORMALIZE);
 		dataFixerBuilder.addFixer(new OminousBannerItemRenameFix(schema92, false));
-		Schema schema93 = dataFixerBuilder.addSchema(1953, identNormalize);
+		Schema schema93 = dataFixerBuilder.addSchema(1953, EMPTY_IDENTIFIER_NORMALIZE);
 		dataFixerBuilder.addFixer(new OminousBannerBlockEntityRenameFix(schema93, false));
-		Schema schema94 = dataFixerBuilder.addSchema(1955, identNormalize);
+		Schema schema94 = dataFixerBuilder.addSchema(1955, EMPTY_IDENTIFIER_NORMALIZE);
 		dataFixerBuilder.addFixer(new VillagerXpRebuildFix(schema94, false));
 		dataFixerBuilder.addFixer(new ZombieVillagerXpRebuildFix(schema94, false));
-		Schema schema95 = dataFixerBuilder.addSchema(1961, identNormalize);
+		Schema schema95 = dataFixerBuilder.addSchema(1961, EMPTY_IDENTIFIER_NORMALIZE);
 		dataFixerBuilder.addFixer(new ChunkLightRemoveFix(schema95, false));
-		Schema schema96 = dataFixerBuilder.addSchema(2100, class_4465::new);
+		Schema schema96 = dataFixerBuilder.addSchema(2100, Schema2100::new);
 		dataFixerBuilder.addFixer(new FixChoiceTypes(schema96, "Added Bee and Bee Stinger", TypeReferences.ENTITY));
 		dataFixerBuilder.addFixer(new FixChoiceTypes(schema96, "Add beehive", TypeReferences.BLOCK_ENTITY));
 	}

@@ -2,6 +2,7 @@ package net.minecraft.entity.passive;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.class_4538;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
@@ -35,7 +36,6 @@ import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.SpawnHelper;
-import net.minecraft.world.ViewableWorld;
 import net.minecraft.world.World;
 
 public class IronGolemEntity extends GolemEntity {
@@ -79,6 +79,7 @@ public class IronGolemEntity extends GolemEntity {
 		this.getAttributeInstance(EntityAttributes.MAX_HEALTH).setBaseValue(100.0);
 		this.getAttributeInstance(EntityAttributes.MOVEMENT_SPEED).setBaseValue(0.25);
 		this.getAttributeInstance(EntityAttributes.KNOCKBACK_RESISTANCE).setBaseValue(1.0);
+		this.getAttributes().register(EntityAttributes.ATTACK_DAMAGE).setBaseValue(15.0);
 	}
 
 	@Override
@@ -147,11 +148,15 @@ public class IronGolemEntity extends GolemEntity {
 		this.setPlayerCreated(compoundTag.getBoolean("PlayerCreated"));
 	}
 
+	private float method_22328() {
+		return (float)this.getAttributeInstance(EntityAttributes.ATTACK_DAMAGE).getValue();
+	}
+
 	@Override
 	public boolean tryAttack(Entity entity) {
 		this.field_6762 = 10;
 		this.world.sendEntityStatus(this, (byte)4);
-		boolean bl = entity.damage(DamageSource.mob(this), (float)(7 + this.random.nextInt(15)));
+		boolean bl = entity.damage(DamageSource.mob(this), this.method_22328() / 2.0F + (float)this.random.nextInt((int)this.method_22328()));
 		if (bl) {
 			entity.setVelocity(entity.getVelocity().add(0.0, 0.4F, 0.0));
 			this.dealDamage(this, entity);
@@ -230,23 +235,22 @@ public class IronGolemEntity extends GolemEntity {
 	}
 
 	@Override
-	public boolean canSpawn(ViewableWorld viewableWorld) {
+	public boolean canSpawn(class_4538 arg) {
 		BlockPos blockPos = new BlockPos(this);
 		BlockPos blockPos2 = blockPos.down();
-		BlockState blockState = viewableWorld.getBlockState(blockPos2);
-		if (!blockState.hasSolidTopSurface(viewableWorld, blockPos2, this)) {
+		BlockState blockState = arg.getBlockState(blockPos2);
+		if (!blockState.hasSolidTopSurface(arg, blockPos2, this)) {
 			return false;
 		} else {
 			for (int i = 1; i < 3; i++) {
 				BlockPos blockPos3 = blockPos.up(i);
-				BlockState blockState2 = viewableWorld.getBlockState(blockPos3);
-				if (!SpawnHelper.isClearForSpawn(viewableWorld, blockPos3, blockState2, blockState2.getFluidState())) {
+				BlockState blockState2 = arg.getBlockState(blockPos3);
+				if (!SpawnHelper.isClearForSpawn(arg, blockPos3, blockState2, blockState2.getFluidState())) {
 					return false;
 				}
 			}
 
-			return SpawnHelper.isClearForSpawn(viewableWorld, blockPos, viewableWorld.getBlockState(blockPos), Fluids.EMPTY.getDefaultState())
-				&& viewableWorld.intersectsEntities(this);
+			return SpawnHelper.isClearForSpawn(arg, blockPos, arg.getBlockState(blockPos), Fluids.EMPTY.getDefaultState()) && arg.intersectsEntities(this);
 		}
 	}
 }

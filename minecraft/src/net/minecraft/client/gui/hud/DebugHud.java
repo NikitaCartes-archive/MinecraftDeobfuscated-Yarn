@@ -2,6 +2,7 @@ package net.minecraft.client.gui.hud;
 
 import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
+import com.mojang.blaze3d.platform.GlDebugInfo;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.datafixers.DataFixUtils;
 import it.unimi.dsi.fastutil.longs.LongSet;
@@ -18,7 +19,6 @@ import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.SharedConstants;
-import net.minecraft.class_4494;
 import net.minecraft.block.BlockState;
 import net.minecraft.client.ClientBrandRetriever;
 import net.minecraft.client.MinecraftClient;
@@ -165,7 +165,7 @@ public class DebugHud extends DrawableHelper {
 				this.client.worldRenderer.getChunksDebugString(),
 				this.client.worldRenderer.getEntitiesDebugString(),
 				"P: " + this.client.particleManager.getDebugString() + ". T: " + this.client.world.getRegularEntityCount(),
-				this.client.world.getChunkProviderStatus(),
+				this.client.world.getDebugString(),
 				"",
 				String.format("Chunk-relative: %d %d %d", blockPos.getX() & 15, blockPos.getY() & 15, blockPos.getZ() & 15)
 			);
@@ -212,9 +212,9 @@ public class DebugHud extends DrawableHelper {
 				this.client.worldRenderer.getChunksDebugString(),
 				this.client.worldRenderer.getEntitiesDebugString(),
 				"P: " + this.client.particleManager.getDebugString() + ". T: " + this.client.world.getRegularEntityCount(),
-				this.client.world.getChunkProviderStatus()
+				this.client.world.getDebugString()
 			);
-			String string3 = this.method_20603();
+			String string3 = this.getServerWorldDebugString();
 			if (string3 != null) {
 				list.add(string3);
 			}
@@ -246,20 +246,15 @@ public class DebugHud extends DrawableHelper {
 				String.format(Locale.ROOT, "Facing: %s (%s) (%.1f / %.1f)", direction, string2, MathHelper.wrapDegrees(entity.yaw), MathHelper.wrapDegrees(entity.pitch))
 			);
 			if (this.client.world != null) {
-				if (this.client.world.isBlockLoaded(blockPos)) {
+				if (this.client.world.method_22340(blockPos)) {
 					WorldChunk worldChunk = this.getClientChunk();
 					if (worldChunk.isEmpty()) {
 						list.add("Waiting for chunk...");
 					} else {
-						list.add(
-							"Client Light: "
-								+ worldChunk.getLightLevel(blockPos, 0)
-								+ " ("
-								+ this.client.world.getLightLevel(LightType.SKY, blockPos)
-								+ " sky, "
-								+ this.client.world.getLightLevel(LightType.BLOCK, blockPos)
-								+ " block)"
-						);
+						int i = this.client.world.method_2935().getLightingProvider().method_22363(blockPos, 0);
+						int j = this.client.world.getLightLevel(LightType.SKY, blockPos);
+						int k = this.client.world.getLightLevel(LightType.BLOCK, blockPos);
+						list.add("Client Light: " + i + " (" + j + " sky, " + k + " block)");
 						WorldChunk worldChunk2 = this.getChunk();
 						if (worldChunk2 != null) {
 							LightingProvider lightingProvider = world.getChunkManager().getLightingProvider();
@@ -348,12 +343,12 @@ public class DebugHud extends DrawableHelper {
 	}
 
 	@Nullable
-	private String method_20603() {
+	private String getServerWorldDebugString() {
 		IntegratedServer integratedServer = this.client.getServer();
 		if (integratedServer != null) {
 			ServerWorld serverWorld = integratedServer.getWorld(this.client.world.getDimension().getType());
 			if (serverWorld != null) {
-				return serverWorld.getChunkProviderStatus();
+				return serverWorld.getDebugString();
 			}
 		}
 
@@ -402,19 +397,19 @@ public class DebugHud extends DrawableHelper {
 		long o = m - n;
 		List<String> list = Lists.<String>newArrayList(
 			String.format("Java: %s %dbit", System.getProperty("java.version"), this.client.is64Bit() ? 64 : 32),
-			String.format("Mem: % 2d%% %03d/%03dMB", o * 100L / l, method_1838(o), method_1838(l)),
-			String.format("Allocated: % 2d%% %03dMB", m * 100L / l, method_1838(m)),
+			String.format("Mem: % 2d%% %03d/%03dMB", o * 100L / l, toMiB(o), toMiB(l)),
+			String.format("Allocated: % 2d%% %03dMB", m * 100L / l, toMiB(m)),
 			"",
-			String.format("CPU: %s", class_4494.method_22089()),
+			String.format("CPU: %s", GlDebugInfo.getCpuInfo()),
 			"",
 			String.format(
 				"Display: %dx%d (%s)",
 				MinecraftClient.getInstance().window.getFramebufferWidth(),
 				MinecraftClient.getInstance().window.getFramebufferHeight(),
-				class_4494.method_22088()
+				GlDebugInfo.getVendor()
 			),
-			class_4494.method_22090(),
-			class_4494.method_22091()
+			GlDebugInfo.getRenderer(),
+			GlDebugInfo.getVersion()
 		);
 		if (this.client.hasReducedDebugInfo()) {
 			return list;
@@ -501,7 +496,7 @@ public class DebugHud extends DrawableHelper {
 		while (m != l) {
 			int u = metricsData.method_15248(ls[m], bl ? 30 : 60, bl ? 60 : 20);
 			int v = bl ? 100 : 60;
-			int w = this.method_1833(MathHelper.clamp(u, 0, v), 0, v / 2, v);
+			int w = this.getMetricsLineColor(MathHelper.clamp(u, 0, v), 0, v / 2, v);
 			this.vLine(n, t, t - u, w);
 			n++;
 			m = metricsData.wrapIndex(m + 1);
@@ -536,7 +531,7 @@ public class DebugHud extends DrawableHelper {
 		RenderSystem.enableDepthTest();
 	}
 
-	private int method_1833(int i, int j, int k, int l) {
+	private int getMetricsLineColor(int i, int j, int k, int l) {
 		return i < k ? this.interpolateColor(-16711936, -256, (float)i / (float)k) : this.interpolateColor(-256, -65536, (float)(i - k) / (float)(l - k));
 	}
 
@@ -556,7 +551,7 @@ public class DebugHud extends DrawableHelper {
 		return s << 24 | t << 16 | u << 8 | v;
 	}
 
-	private static long method_1838(long l) {
+	private static long toMiB(long l) {
 		return l / 1024L / 1024L;
 	}
 }

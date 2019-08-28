@@ -27,7 +27,7 @@ public class TextSearchableContainer<T> extends IdentifierSearchableContainer<T>
 	public void reload() {
 		this.byText = new SuffixArray<>();
 		super.reload();
-		this.byText.reload();
+		this.byText.sort();
 	}
 
 	@Override

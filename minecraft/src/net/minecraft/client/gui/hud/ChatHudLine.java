@@ -6,13 +6,13 @@ import net.minecraft.text.Text;
 
 @Environment(EnvType.CLIENT)
 public class ChatHudLine {
-	private final int timestamp;
+	private final int creationTick;
 	private final Text text;
 	private final int id;
 
 	public ChatHudLine(int i, Text text, int j) {
 		this.text = text;
-		this.timestamp = i;
+		this.creationTick = i;
 		this.id = j;
 	}
 
@@ -20,8 +20,8 @@ public class ChatHudLine {
 		return this.text;
 	}
 
-	public int getTimestamp() {
-		return this.timestamp;
+	public int getCreationTick() {
+		return this.creationTick;
 	}
 
 	public int getId() {

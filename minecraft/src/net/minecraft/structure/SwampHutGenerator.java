@@ -15,6 +15,7 @@ import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MutableIntBoundingBox;
 import net.minecraft.world.IWorld;
+import net.minecraft.world.gen.chunk.ChunkGenerator;
 
 public class SwampHutGenerator extends StructurePieceWithDimensions {
 	private boolean hasWitch;
@@ -38,7 +39,7 @@ public class SwampHutGenerator extends StructurePieceWithDimensions {
 	}
 
 	@Override
-	public boolean generate(IWorld iWorld, Random random, MutableIntBoundingBox mutableIntBoundingBox, ChunkPos chunkPos) {
+	public boolean generate(IWorld iWorld, ChunkGenerator<?> chunkGenerator, Random random, MutableIntBoundingBox mutableIntBoundingBox, ChunkPos chunkPos) {
 		if (!this.method_14839(iWorld, mutableIntBoundingBox, 0)) {
 			return false;
 		} else {

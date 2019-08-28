@@ -3,11 +3,13 @@ package net.minecraft.block;
 import java.util.List;
 import java.util.Random;
 import javax.annotation.Nullable;
+import net.minecraft.class_4538;
 import net.minecraft.block.enums.WallMountLocation;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityContext;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.projectile.ProjectileEntity;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.state.StateFactory;
@@ -20,7 +22,6 @@ import net.minecraft.util.math.Direction;
 import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.IWorld;
-import net.minecraft.world.ViewableWorld;
 import net.minecraft.world.World;
 
 public abstract class AbstractButtonBlock extends WallMountedBlock {
@@ -52,7 +53,7 @@ public abstract class AbstractButtonBlock extends WallMountedBlock {
 	}
 
 	@Override
-	public int getTickRate(ViewableWorld viewableWorld) {
+	public int getTickRate(class_4538 arg) {
 		return this.wooden ? 30 : 20;
 	}
 
@@ -139,14 +140,14 @@ public abstract class AbstractButtonBlock extends WallMountedBlock {
 	}
 
 	@Override
-	public void onScheduledTick(BlockState blockState, World world, BlockPos blockPos, Random random) {
-		if (!world.isClient && (Boolean)blockState.get(POWERED)) {
+	public void onScheduledTick(BlockState blockState, ServerWorld serverWorld, BlockPos blockPos, Random random) {
+		if ((Boolean)blockState.get(POWERED)) {
 			if (this.wooden) {
-				this.tryPowerWithProjectiles(blockState, world, blockPos);
+				this.tryPowerWithProjectiles(blockState, serverWorld, blockPos);
 			} else {
-				world.setBlockState(blockPos, blockState.with(POWERED, Boolean.valueOf(false)), 3);
-				this.updateNeighbors(blockState, world, blockPos);
-				this.playClickSound(null, world, blockPos, false);
+				serverWorld.setBlockState(blockPos, blockState.with(POWERED, Boolean.valueOf(false)), 3);
+				this.updateNeighbors(blockState, serverWorld, blockPos);
+				this.playClickSound(null, serverWorld, blockPos, false);
 			}
 		}
 	}

@@ -3,6 +3,7 @@ package net.minecraft.block;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.class_4538;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.enums.DoorHinge;
 import net.minecraft.block.enums.DoubleBlockHalf;
@@ -28,7 +29,6 @@ import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.IWorld;
-import net.minecraft.world.ViewableWorld;
 import net.minecraft.world.World;
 
 public class DoorBlock extends Block {
@@ -233,12 +233,10 @@ public class DoorBlock extends Block {
 	}
 
 	@Override
-	public boolean canPlaceAt(BlockState blockState, ViewableWorld viewableWorld, BlockPos blockPos) {
+	public boolean canPlaceAt(BlockState blockState, class_4538 arg, BlockPos blockPos) {
 		BlockPos blockPos2 = blockPos.down();
-		BlockState blockState2 = viewableWorld.getBlockState(blockPos2);
-		return blockState.get(HALF) == DoubleBlockHalf.LOWER
-			? blockState2.isSideSolidFullSquare(viewableWorld, blockPos2, Direction.UP)
-			: blockState2.getBlock() == this;
+		BlockState blockState2 = arg.getBlockState(blockPos2);
+		return blockState.get(HALF) == DoubleBlockHalf.LOWER ? blockState2.isSideSolidFullSquare(arg, blockPos2, Direction.UP) : blockState2.getBlock() == this;
 	}
 
 	private void playOpenCloseSound(World world, BlockPos blockPos, boolean bl) {

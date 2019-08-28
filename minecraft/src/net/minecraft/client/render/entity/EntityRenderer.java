@@ -1,10 +1,11 @@
 package net.minecraft.client.render.entity;
 
+import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_4493;
+import net.minecraft.class_4538;
 import net.minecraft.block.BlockRenderType;
 import net.minecraft.block.BlockState;
 import net.minecraft.client.MinecraftClient;
@@ -25,7 +26,6 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.shape.VoxelShape;
-import net.minecraft.world.ViewableWorld;
 
 @Environment(EnvType.CLIENT)
 public abstract class EntityRenderer<T extends Entity> {
@@ -153,9 +153,9 @@ public abstract class EntityRenderer<T extends Entity> {
 
 	private void renderShadow(Entity entity, double d, double e, double f, float g, float h) {
 		RenderSystem.enableBlend();
-		RenderSystem.blendFunc(class_4493.class_4535.SRC_ALPHA, class_4493.class_4534.ONE_MINUS_SRC_ALPHA);
+		RenderSystem.blendFunc(GlStateManager.class_4535.SRC_ALPHA, GlStateManager.class_4534.ONE_MINUS_SRC_ALPHA);
 		this.renderManager.textureManager.bindTexture(SHADOW_TEX);
-		ViewableWorld viewableWorld = this.getWorld();
+		class_4538 lv = this.getWorld();
 		RenderSystem.depthMask(false);
 		float i = this.field_4673;
 		if (entity instanceof MobEntity) {
@@ -183,9 +183,9 @@ public abstract class EntityRenderer<T extends Entity> {
 
 		for (BlockPos blockPos : BlockPos.iterate(new BlockPos(m, o, q), new BlockPos(n, p, r))) {
 			BlockPos blockPos2 = blockPos.down();
-			BlockState blockState = viewableWorld.getBlockState(blockPos2);
-			if (blockState.getRenderType() != BlockRenderType.INVISIBLE && viewableWorld.getLightLevel(blockPos) > 3) {
-				this.projectShadow(blockState, viewableWorld, blockPos2, d, e, f, blockPos, g, i, s, t, u);
+			BlockState blockState = lv.getBlockState(blockPos2);
+			if (blockState.getRenderType() != BlockRenderType.INVISIBLE && lv.method_22339(blockPos) > 3) {
+				this.projectShadow(blockState, lv, blockPos2, d, e, f, blockPos, g, i, s, t, u);
 			}
 		}
 
@@ -195,30 +195,19 @@ public abstract class EntityRenderer<T extends Entity> {
 		RenderSystem.depthMask(true);
 	}
 
-	private ViewableWorld getWorld() {
+	private class_4538 getWorld() {
 		return this.renderManager.world;
 	}
 
 	private void projectShadow(
-		BlockState blockState,
-		ViewableWorld viewableWorld,
-		BlockPos blockPos,
-		double d,
-		double e,
-		double f,
-		BlockPos blockPos2,
-		float g,
-		float h,
-		double i,
-		double j,
-		double k
+		BlockState blockState, class_4538 arg, BlockPos blockPos, double d, double e, double f, BlockPos blockPos2, float g, float h, double i, double j, double k
 	) {
-		if (blockState.method_21743(viewableWorld, blockPos)) {
+		if (blockState.method_21743(arg, blockPos)) {
 			VoxelShape voxelShape = blockState.getOutlineShape(this.getWorld(), blockPos2.down());
 			if (!voxelShape.isEmpty()) {
 				Tessellator tessellator = Tessellator.getInstance();
 				BufferBuilder bufferBuilder = tessellator.getBufferBuilder();
-				double l = ((double)g - (e - ((double)blockPos2.getY() + j)) / 2.0) * 0.5 * (double)this.getWorld().getBrightness(blockPos2);
+				double l = ((double)g - (e - ((double)blockPos2.getY() + j)) / 2.0) * 0.5 * (double)this.getWorld().method_22349(blockPos2);
 				if (!(l < 0.0)) {
 					if (l > 1.0) {
 						l = 1.0;

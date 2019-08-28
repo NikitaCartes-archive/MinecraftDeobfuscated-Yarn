@@ -7,6 +7,8 @@ import java.util.Collection;
 import java.util.Map;
 import java.util.Map.Entry;
 import javax.annotation.Nullable;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 import net.minecraft.util.LowercaseMap;
 
 public abstract class AbstractEntityAttributeContainer {
@@ -66,5 +68,15 @@ public abstract class AbstractEntityAttributeContainer {
 				entityAttributeInstance.addModifier((EntityAttributeModifier)entry.getValue());
 			}
 		}
+	}
+
+	@Environment(EnvType.CLIENT)
+	public void method_22324(AbstractEntityAttributeContainer abstractEntityAttributeContainer) {
+		this.values().forEach(entityAttributeInstance -> {
+			EntityAttributeInstance entityAttributeInstance2 = abstractEntityAttributeContainer.get(entityAttributeInstance.getAttribute());
+			if (entityAttributeInstance2 != null) {
+				entityAttributeInstance.method_22323(entityAttributeInstance2);
+			}
+		});
 	}
 }

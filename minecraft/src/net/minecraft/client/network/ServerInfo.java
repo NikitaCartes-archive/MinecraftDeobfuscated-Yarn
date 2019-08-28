@@ -1,4 +1,4 @@
-package net.minecraft.client.options;
+package net.minecraft.client.network;
 
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
@@ -9,7 +9,7 @@ import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
 
 @Environment(EnvType.CLIENT)
-public class ServerEntry {
+public class ServerInfo {
 	public String name;
 	public String address;
 	public String playerCountLabel;
@@ -19,11 +19,11 @@ public class ServerEntry {
 	public String version = SharedConstants.getGameVersion().getName();
 	public boolean online;
 	public String playerListSummary;
-	private ServerEntry.ResourcePackState resourcePackState = ServerEntry.ResourcePackState.PROMPT;
+	private ServerInfo.ResourcePackState resourcePackState = ServerInfo.ResourcePackState.PROMPT;
 	private String icon;
 	private boolean local;
 
-	public ServerEntry(String string, String string2, boolean bl) {
+	public ServerInfo(String string, String string2, boolean bl) {
 		this.name = string;
 		this.address = string2;
 		this.local = bl;
@@ -37,40 +37,40 @@ public class ServerEntry {
 			compoundTag.putString("icon", this.icon);
 		}
 
-		if (this.resourcePackState == ServerEntry.ResourcePackState.ENABLED) {
+		if (this.resourcePackState == ServerInfo.ResourcePackState.ENABLED) {
 			compoundTag.putBoolean("acceptTextures", true);
-		} else if (this.resourcePackState == ServerEntry.ResourcePackState.DISABLED) {
+		} else if (this.resourcePackState == ServerInfo.ResourcePackState.DISABLED) {
 			compoundTag.putBoolean("acceptTextures", false);
 		}
 
 		return compoundTag;
 	}
 
-	public ServerEntry.ResourcePackState getResourcePack() {
+	public ServerInfo.ResourcePackState getResourcePack() {
 		return this.resourcePackState;
 	}
 
-	public void setResourcePackState(ServerEntry.ResourcePackState resourcePackState) {
+	public void setResourcePackState(ServerInfo.ResourcePackState resourcePackState) {
 		this.resourcePackState = resourcePackState;
 	}
 
-	public static ServerEntry deserialize(CompoundTag compoundTag) {
-		ServerEntry serverEntry = new ServerEntry(compoundTag.getString("name"), compoundTag.getString("ip"), false);
+	public static ServerInfo deserialize(CompoundTag compoundTag) {
+		ServerInfo serverInfo = new ServerInfo(compoundTag.getString("name"), compoundTag.getString("ip"), false);
 		if (compoundTag.containsKey("icon", 8)) {
-			serverEntry.setIcon(compoundTag.getString("icon"));
+			serverInfo.setIcon(compoundTag.getString("icon"));
 		}
 
 		if (compoundTag.containsKey("acceptTextures", 1)) {
 			if (compoundTag.getBoolean("acceptTextures")) {
-				serverEntry.setResourcePackState(ServerEntry.ResourcePackState.ENABLED);
+				serverInfo.setResourcePackState(ServerInfo.ResourcePackState.ENABLED);
 			} else {
-				serverEntry.setResourcePackState(ServerEntry.ResourcePackState.DISABLED);
+				serverInfo.setResourcePackState(ServerInfo.ResourcePackState.DISABLED);
 			}
 		} else {
-			serverEntry.setResourcePackState(ServerEntry.ResourcePackState.PROMPT);
+			serverInfo.setResourcePackState(ServerInfo.ResourcePackState.PROMPT);
 		}
 
-		return serverEntry;
+		return serverInfo;
 	}
 
 	@Nullable
@@ -86,12 +86,12 @@ public class ServerEntry {
 		return this.local;
 	}
 
-	public void copyFrom(ServerEntry serverEntry) {
-		this.address = serverEntry.address;
-		this.name = serverEntry.name;
-		this.setResourcePackState(serverEntry.getResourcePack());
-		this.icon = serverEntry.icon;
-		this.local = serverEntry.local;
+	public void copyFrom(ServerInfo serverInfo) {
+		this.address = serverInfo.address;
+		this.name = serverInfo.name;
+		this.setResourcePackState(serverInfo.getResourcePack());
+		this.icon = serverInfo.icon;
+		this.local = serverInfo.local;
 	}
 
 	@Environment(EnvType.CLIENT)

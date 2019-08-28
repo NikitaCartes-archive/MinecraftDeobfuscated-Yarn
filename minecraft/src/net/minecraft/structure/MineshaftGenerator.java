@@ -23,6 +23,7 @@ import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MutableIntBoundingBox;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.IWorld;
+import net.minecraft.world.gen.chunk.ChunkGenerator;
 import net.minecraft.world.gen.feature.MineshaftFeature;
 import net.minecraft.world.loot.LootTables;
 
@@ -250,7 +251,7 @@ public class MineshaftGenerator {
 		}
 
 		@Override
-		public boolean generate(IWorld iWorld, Random random, MutableIntBoundingBox mutableIntBoundingBox, ChunkPos chunkPos) {
+		public boolean generate(IWorld iWorld, ChunkGenerator<?> chunkGenerator, Random random, MutableIntBoundingBox mutableIntBoundingBox, ChunkPos chunkPos) {
 			if (this.method_14937(iWorld, mutableIntBoundingBox)) {
 				return false;
 			} else {
@@ -492,7 +493,7 @@ public class MineshaftGenerator {
 		}
 
 		@Override
-		public boolean generate(IWorld iWorld, Random random, MutableIntBoundingBox mutableIntBoundingBox, ChunkPos chunkPos) {
+		public boolean generate(IWorld iWorld, ChunkGenerator<?> chunkGenerator, Random random, MutableIntBoundingBox mutableIntBoundingBox, ChunkPos chunkPos) {
 			if (this.method_14937(iWorld, mutableIntBoundingBox)) {
 				return false;
 			} else {
@@ -810,7 +811,7 @@ public class MineshaftGenerator {
 		}
 
 		@Override
-		public boolean generate(IWorld iWorld, Random random, MutableIntBoundingBox mutableIntBoundingBox, ChunkPos chunkPos) {
+		public boolean generate(IWorld iWorld, ChunkGenerator<?> chunkGenerator, Random random, MutableIntBoundingBox mutableIntBoundingBox, ChunkPos chunkPos) {
 			if (this.method_14937(iWorld, mutableIntBoundingBox)) {
 				return false;
 			} else {
@@ -953,7 +954,7 @@ public class MineshaftGenerator {
 		}
 
 		@Override
-		public boolean generate(IWorld iWorld, Random random, MutableIntBoundingBox mutableIntBoundingBox, ChunkPos chunkPos) {
+		public boolean generate(IWorld iWorld, ChunkGenerator<?> chunkGenerator, Random random, MutableIntBoundingBox mutableIntBoundingBox, ChunkPos chunkPos) {
 			if (this.method_14937(iWorld, mutableIntBoundingBox)) {
 				return false;
 			} else {

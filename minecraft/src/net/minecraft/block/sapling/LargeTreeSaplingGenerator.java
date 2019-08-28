@@ -16,22 +16,22 @@ import net.minecraft.world.gen.feature.FeatureConfig;
 
 public abstract class LargeTreeSaplingGenerator extends SaplingGenerator {
 	@Override
-	public boolean generate(IWorld iWorld, BlockPos blockPos, BlockState blockState, Random random) {
+	public boolean generate(IWorld iWorld, ChunkGenerator<?> chunkGenerator, BlockPos blockPos, BlockState blockState, Random random) {
 		for (int i = 0; i >= -1; i--) {
 			for (int j = 0; j >= -1; j--) {
 				if (canGenerateLargeTree(blockState, iWorld, blockPos, i, j)) {
-					return this.generateLargeTree(iWorld, blockPos, blockState, random, i, j);
+					return this.generateLargeTree(iWorld, chunkGenerator, blockPos, blockState, random, i, j);
 				}
 			}
 		}
 
-		return super.generate(iWorld, blockPos, blockState, random);
+		return super.generate(iWorld, chunkGenerator, blockPos, blockState, random);
 	}
 
 	@Nullable
 	protected abstract AbstractTreeFeature<DefaultFeatureConfig> createLargeTreeFeature(Random random);
 
-	public boolean generateLargeTree(IWorld iWorld, BlockPos blockPos, BlockState blockState, Random random, int i, int j) {
+	public boolean generateLargeTree(IWorld iWorld, ChunkGenerator<?> chunkGenerator, BlockPos blockPos, BlockState blockState, Random random, int i, int j) {
 		AbstractTreeFeature<DefaultFeatureConfig> abstractTreeFeature = this.createLargeTreeFeature(random);
 		if (abstractTreeFeature == null) {
 			return false;
@@ -41,8 +41,8 @@ public abstract class LargeTreeSaplingGenerator extends SaplingGenerator {
 			iWorld.setBlockState(blockPos.add(i + 1, 0, j), blockState2, 4);
 			iWorld.setBlockState(blockPos.add(i, 0, j + 1), blockState2, 4);
 			iWorld.setBlockState(blockPos.add(i + 1, 0, j + 1), blockState2, 4);
-			if (abstractTreeFeature.generate(
-				iWorld, (ChunkGenerator<? extends ChunkGeneratorConfig>)iWorld.getChunkManager().getChunkGenerator(), random, blockPos.add(i, 0, j), FeatureConfig.DEFAULT
+			if (abstractTreeFeature.method_22362(
+				iWorld, (ChunkGenerator<? extends ChunkGeneratorConfig>)chunkGenerator, random, blockPos.add(i, 0, j), FeatureConfig.DEFAULT, false
 			)) {
 				return true;
 			} else {

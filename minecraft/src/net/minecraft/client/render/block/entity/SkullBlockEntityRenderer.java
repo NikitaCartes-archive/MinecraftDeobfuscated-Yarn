@@ -4,12 +4,12 @@ import com.google.common.collect.Maps;
 import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.minecraft.MinecraftProfileTexture;
 import com.mojang.authlib.minecraft.MinecraftProfileTexture.Type;
+import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
 import java.util.Map;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_4493;
 import net.minecraft.block.AbstractSkullBlock;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.SkullBlock;
@@ -105,7 +105,7 @@ public class SkullBlockEntityRenderer extends BlockEntityRenderer<SkullBlockEnti
 		RenderSystem.scalef(-1.0F, -1.0F, 1.0F);
 		RenderSystem.enableAlphaTest();
 		if (skullType == SkullBlock.Type.PLAYER) {
-			class_4493.method_21967(class_4493.RenderMode.PLAYER_SKIN);
+			GlStateManager.beginRenderMode(GlStateManager.RenderMode.PLAYER_SKIN);
 		}
 
 		skullEntityModel.render(k, 0.0F, 0.0F, i, 0.0F, 0.0625F);

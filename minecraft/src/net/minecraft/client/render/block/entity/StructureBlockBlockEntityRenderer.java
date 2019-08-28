@@ -1,9 +1,9 @@
 package net.minecraft.client.render.block.entity;
 
+import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_4493;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.entity.StructureBlockBlockEntity;
@@ -86,7 +86,7 @@ public class StructureBlockBlockEntityRenderer extends BlockEntityRenderer<Struc
 					RenderSystem.disableTexture();
 					RenderSystem.enableBlend();
 					RenderSystem.blendFuncSeparate(
-						class_4493.class_4535.SRC_ALPHA, class_4493.class_4534.ONE_MINUS_SRC_ALPHA, class_4493.class_4535.ONE, class_4493.class_4534.ZERO
+						GlStateManager.class_4535.SRC_ALPHA, GlStateManager.class_4534.ONE_MINUS_SRC_ALPHA, GlStateManager.class_4535.ONE, GlStateManager.class_4534.ZERO
 					);
 					this.disableLightmap(true);
 					if (structureBlockBlockEntity.getMode() == StructureBlockMode.SAVE || structureBlockBlockEntity.shouldShowBoundingBox()) {

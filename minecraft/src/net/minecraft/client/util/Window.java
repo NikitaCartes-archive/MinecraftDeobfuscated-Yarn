@@ -12,9 +12,9 @@ import java.util.function.BiConsumer;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_4536;
 import net.minecraft.client.WindowEventHandler;
 import net.minecraft.client.WindowSettings;
+import net.minecraft.client.texture.TextureUtil;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.lwjgl.PointerBuffer;
@@ -183,7 +183,7 @@ public final class Window implements AutoCloseable {
 
 		ByteBuffer var6;
 		try {
-			byteBuffer = class_4536.readResource(inputStream);
+			byteBuffer = TextureUtil.readResource(inputStream);
 			byteBuffer.rewind();
 			var6 = STBImage.stbi_load_from_memory(byteBuffer, intBuffer, intBuffer2, intBuffer3, 0);
 		} finally {
@@ -441,6 +441,6 @@ public final class Window implements AutoCloseable {
 	}
 
 	public void method_21668(boolean bl) {
-		InputUtil.method_21736(this.handle, bl);
+		InputUtil.setRawMouseMotionMode(this.handle, bl);
 	}
 }

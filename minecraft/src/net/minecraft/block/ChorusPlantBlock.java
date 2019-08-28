@@ -1,15 +1,15 @@
 package net.minecraft.block;
 
 import java.util.Random;
+import net.minecraft.class_4538;
 import net.minecraft.item.ItemPlacementContext;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.state.StateFactory;
 import net.minecraft.state.property.Property;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.IWorld;
-import net.minecraft.world.ViewableWorld;
-import net.minecraft.world.World;
 
 public class ChorusPlantBlock extends ConnectedPlantBlock {
 	protected ChorusPlantBlock(Block.Settings settings) {
@@ -62,26 +62,26 @@ public class ChorusPlantBlock extends ConnectedPlantBlock {
 	}
 
 	@Override
-	public void onScheduledTick(BlockState blockState, World world, BlockPos blockPos, Random random) {
-		if (!blockState.canPlaceAt(world, blockPos)) {
-			world.breakBlock(blockPos, true);
+	public void onScheduledTick(BlockState blockState, ServerWorld serverWorld, BlockPos blockPos, Random random) {
+		if (!blockState.canPlaceAt(serverWorld, blockPos)) {
+			serverWorld.method_22352(blockPos, true);
 		}
 	}
 
 	@Override
-	public boolean canPlaceAt(BlockState blockState, ViewableWorld viewableWorld, BlockPos blockPos) {
-		BlockState blockState2 = viewableWorld.getBlockState(blockPos.down());
-		boolean bl = !viewableWorld.getBlockState(blockPos.up()).isAir() && !blockState2.isAir();
+	public boolean canPlaceAt(BlockState blockState, class_4538 arg, BlockPos blockPos) {
+		BlockState blockState2 = arg.getBlockState(blockPos.down());
+		boolean bl = !arg.getBlockState(blockPos.up()).isAir() && !blockState2.isAir();
 
 		for (Direction direction : Direction.Type.HORIZONTAL) {
 			BlockPos blockPos2 = blockPos.offset(direction);
-			Block block = viewableWorld.getBlockState(blockPos2).getBlock();
+			Block block = arg.getBlockState(blockPos2).getBlock();
 			if (block == this) {
 				if (bl) {
 					return false;
 				}
 
-				Block block2 = viewableWorld.getBlockState(blockPos2.down()).getBlock();
+				Block block2 = arg.getBlockState(blockPos2.down()).getBlock();
 				if (block2 == this || block2 == Blocks.END_STONE) {
 					return true;
 				}

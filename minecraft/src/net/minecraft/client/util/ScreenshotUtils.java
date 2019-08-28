@@ -25,12 +25,12 @@ public class ScreenshotUtils {
 	private static final Logger LOGGER = LogManager.getLogger();
 	private static final DateFormat DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd_HH.mm.ss");
 
-	public static void method_1659(File file, int i, int j, GlFramebuffer glFramebuffer, Consumer<Text> consumer) {
-		method_1662(file, null, i, j, glFramebuffer, consumer);
+	public static void saveScreenshot(File file, int i, int j, GlFramebuffer glFramebuffer, Consumer<Text> consumer) {
+		saveScreenshot(file, null, i, j, glFramebuffer, consumer);
 	}
 
-	public static void method_1662(File file, @Nullable String string, int i, int j, GlFramebuffer glFramebuffer, Consumer<Text> consumer) {
-		NativeImage nativeImage = method_1663(i, j, glFramebuffer);
+	public static void saveScreenshot(File file, @Nullable String string, int i, int j, GlFramebuffer glFramebuffer, Consumer<Text> consumer) {
+		NativeImage nativeImage = takeScreenshot(i, j, glFramebuffer);
 		File file2 = new File(file, "screenshots");
 		file2.mkdir();
 		File file3;
@@ -59,13 +59,13 @@ public class ScreenshotUtils {
 			);
 	}
 
-	public static NativeImage method_1663(int i, int j, GlFramebuffer glFramebuffer) {
+	public static NativeImage takeScreenshot(int i, int j, GlFramebuffer glFramebuffer) {
 		i = glFramebuffer.texWidth;
 		j = glFramebuffer.texHeight;
 		NativeImage nativeImage = new NativeImage(i, j, false);
 		RenderSystem.bindTexture(glFramebuffer.colorAttachment);
 		nativeImage.loadFromTextureImage(0, true);
-		nativeImage.method_4319();
+		nativeImage.mirrorVertically();
 		return nativeImage;
 	}
 

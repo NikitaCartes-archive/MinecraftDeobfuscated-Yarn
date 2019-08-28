@@ -39,7 +39,7 @@ public abstract class VoxelShape {
 
 	public Box getBoundingBox() {
 		if (this.isEmpty()) {
-			throw (UnsupportedOperationException)SystemUtil.method_22320(new UnsupportedOperationException("No bounds for empty shape."));
+			throw (UnsupportedOperationException)SystemUtil.throwOrPause(new UnsupportedOperationException("No bounds for empty shape."));
 		} else {
 			return new Box(
 				this.getMinimum(Direction.Axis.X),

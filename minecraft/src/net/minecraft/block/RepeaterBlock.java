@@ -3,6 +3,7 @@ package net.minecraft.block;
 import java.util.Random;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.class_4538;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemPlacementContext;
 import net.minecraft.particle.DustParticleEffect;
@@ -15,7 +16,6 @@ import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.world.IWorld;
-import net.minecraft.world.ViewableWorld;
 import net.minecraft.world.World;
 
 public class RepeaterBlock extends AbstractRedstoneGateBlock {
@@ -65,8 +65,8 @@ public class RepeaterBlock extends AbstractRedstoneGateBlock {
 	}
 
 	@Override
-	public boolean isLocked(ViewableWorld viewableWorld, BlockPos blockPos, BlockState blockState) {
-		return this.getMaxInputLevelSides(viewableWorld, blockPos, blockState) > 0;
+	public boolean isLocked(class_4538 arg, BlockPos blockPos, BlockState blockState) {
+		return this.getMaxInputLevelSides(arg, blockPos, blockState) > 0;
 	}
 
 	@Override

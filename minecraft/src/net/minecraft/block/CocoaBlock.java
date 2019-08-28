@@ -2,8 +2,10 @@ package net.minecraft.block;
 
 import java.util.Random;
 import javax.annotation.Nullable;
+import net.minecraft.class_4538;
 import net.minecraft.entity.EntityContext;
 import net.minecraft.item.ItemPlacementContext;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.state.StateFactory;
 import net.minecraft.state.property.IntProperty;
 import net.minecraft.state.property.Properties;
@@ -13,7 +15,6 @@ import net.minecraft.util.math.Direction;
 import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.IWorld;
-import net.minecraft.world.ViewableWorld;
 import net.minecraft.world.World;
 
 public class CocoaBlock extends HorizontalFacingBlock implements Fertilizable {
@@ -45,18 +46,18 @@ public class CocoaBlock extends HorizontalFacingBlock implements Fertilizable {
 	}
 
 	@Override
-	public void onScheduledTick(BlockState blockState, World world, BlockPos blockPos, Random random) {
-		if (world.random.nextInt(5) == 0) {
+	public void onScheduledTick(BlockState blockState, ServerWorld serverWorld, BlockPos blockPos, Random random) {
+		if (serverWorld.random.nextInt(5) == 0) {
 			int i = (Integer)blockState.get(AGE);
 			if (i < 2) {
-				world.setBlockState(blockPos, blockState.with(AGE, Integer.valueOf(i + 1)), 2);
+				serverWorld.setBlockState(blockPos, blockState.with(AGE, Integer.valueOf(i + 1)), 2);
 			}
 		}
 	}
 
 	@Override
-	public boolean canPlaceAt(BlockState blockState, ViewableWorld viewableWorld, BlockPos blockPos) {
-		Block block = viewableWorld.getBlockState(blockPos.offset(blockState.get(FACING))).getBlock();
+	public boolean canPlaceAt(BlockState blockState, class_4538 arg, BlockPos blockPos) {
+		Block block = arg.getBlockState(blockPos.offset(blockState.get(FACING))).getBlock();
 		return block.matches(BlockTags.JUNGLE_LOGS);
 	}
 
@@ -80,13 +81,13 @@ public class CocoaBlock extends HorizontalFacingBlock implements Fertilizable {
 	@Override
 	public BlockState getPlacementState(ItemPlacementContext itemPlacementContext) {
 		BlockState blockState = this.getDefaultState();
-		ViewableWorld viewableWorld = itemPlacementContext.getWorld();
+		class_4538 lv = itemPlacementContext.getWorld();
 		BlockPos blockPos = itemPlacementContext.getBlockPos();
 
 		for (Direction direction : itemPlacementContext.getPlacementDirections()) {
 			if (direction.getAxis().isHorizontal()) {
 				blockState = blockState.with(FACING, direction);
-				if (blockState.canPlaceAt(viewableWorld, blockPos)) {
+				if (blockState.canPlaceAt(lv, blockPos)) {
 					return blockState;
 				}
 			}
@@ -115,8 +116,8 @@ public class CocoaBlock extends HorizontalFacingBlock implements Fertilizable {
 	}
 
 	@Override
-	public void grow(World world, Random random, BlockPos blockPos, BlockState blockState) {
-		world.setBlockState(blockPos, blockState.with(AGE, Integer.valueOf((Integer)blockState.get(AGE) + 1)), 2);
+	public void grow(ServerWorld serverWorld, Random random, BlockPos blockPos, BlockState blockState) {
+		serverWorld.setBlockState(blockPos, blockState.with(AGE, Integer.valueOf((Integer)blockState.get(AGE) + 1)), 2);
 	}
 
 	@Override

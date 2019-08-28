@@ -72,7 +72,7 @@ public class ChatOptionsScreen extends Screen {
 		super.render(i, j, f);
 	}
 
-	public void method_2096() {
+	public void setNarratorMessage() {
 		this.narratorOptionButton.setMessage(Option.NARRATOR.getMessage(this.options));
 	}
 }

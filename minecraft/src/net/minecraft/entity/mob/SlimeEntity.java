@@ -75,6 +75,7 @@ public class SlimeEntity extends MobEntity implements Monster {
 		this.calculateDimensions();
 		this.getAttributeInstance(EntityAttributes.MAX_HEALTH).setBaseValue((double)(i * i));
 		this.getAttributeInstance(EntityAttributes.MOVEMENT_SPEED).setBaseValue((double)(0.2F + 0.1F * (float)i));
+		this.getAttributes().register(EntityAttributes.ATTACK_DAMAGE).setBaseValue((double)i);
 		if (bl) {
 			this.setHealth(this.getMaximumHealth());
 		}
@@ -230,7 +231,7 @@ public class SlimeEntity extends MobEntity implements Monster {
 			int i = this.getSize();
 			if (this.squaredDistanceTo(livingEntity) < 0.6 * (double)i * 0.6 * (double)i
 				&& this.canSee(livingEntity)
-				&& livingEntity.damage(DamageSource.mob(this), (float)this.getDamageAmount())) {
+				&& livingEntity.damage(DamageSource.mob(this), this.getDamageAmount())) {
 				this.playSound(SoundEvents.ENTITY_SLIME_ATTACK, 1.0F, (this.random.nextFloat() - this.random.nextFloat()) * 0.2F + 1.0F);
 				this.dealDamage(this, livingEntity);
 			}
@@ -246,8 +247,8 @@ public class SlimeEntity extends MobEntity implements Monster {
 		return !this.isSmall() && this.canMoveVoluntarily();
 	}
 
-	protected int getDamageAmount() {
-		return this.getSize();
+	protected float getDamageAmount() {
+		return (float)this.getAttributeInstance(EntityAttributes.ATTACK_DAMAGE).getValue();
 	}
 
 	@Override
@@ -280,7 +281,7 @@ public class SlimeEntity extends MobEntity implements Monster {
 					&& blockPos.getY() < 70
 					&& random.nextFloat() < 0.5F
 					&& random.nextFloat() < iWorld.getMoonSize()
-					&& iWorld.getLightLevel(blockPos) <= random.nextInt(8)) {
+					&& iWorld.method_22339(blockPos) <= random.nextInt(8)) {
 					return method_20636(entityType, iWorld, spawnType, blockPos, random);
 				}
 

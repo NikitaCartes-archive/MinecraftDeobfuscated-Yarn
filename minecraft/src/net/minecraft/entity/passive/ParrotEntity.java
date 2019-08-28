@@ -286,7 +286,7 @@ public class ParrotEntity extends TameableShoulderEntity implements Flutterer {
 	public static boolean method_20667(EntityType<ParrotEntity> entityType, IWorld iWorld, SpawnType spawnType, BlockPos blockPos, Random random) {
 		Block block = iWorld.getBlockState(blockPos.down()).getBlock();
 		return (block.matches(BlockTags.LEAVES) || block == Blocks.GRASS_BLOCK || block instanceof LogBlock || block == Blocks.AIR)
-			&& iWorld.getLightLevel(blockPos, 0) > 8;
+			&& iWorld.method_22335(blockPos, 0) > 8;
 	}
 
 	@Override

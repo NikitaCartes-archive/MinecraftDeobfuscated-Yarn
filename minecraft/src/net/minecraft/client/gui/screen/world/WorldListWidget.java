@@ -48,7 +48,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 @Environment(EnvType.CLIENT)
-public class WorldListWidget extends AlwaysSelectedEntryListWidget<WorldListWidget.LevelItem> {
+public class WorldListWidget extends AlwaysSelectedEntryListWidget<WorldListWidget.Entry> {
 	private static final Logger LOGGER = LogManager.getLogger();
 	private static final DateFormat DATE_FORMAT = new SimpleDateFormat();
 	private static final Identifier UNKNOWN_SERVER_LOCATION = new Identifier("textures/misc/unknown_server.png");
@@ -96,7 +96,7 @@ public class WorldListWidget extends AlwaysSelectedEntryListWidget<WorldListWidg
 
 		for (LevelSummary levelSummary : this.levels) {
 			if (levelSummary.getDisplayName().toLowerCase(Locale.ROOT).contains(string) || levelSummary.getName().toLowerCase(Locale.ROOT).contains(string)) {
-				this.addEntry(new WorldListWidget.LevelItem(this, levelSummary, this.minecraft.getLevelStorage()));
+				this.addEntry(new WorldListWidget.Entry(this, levelSummary, this.minecraft.getLevelStorage()));
 			}
 		}
 	}
@@ -116,10 +116,10 @@ public class WorldListWidget extends AlwaysSelectedEntryListWidget<WorldListWidg
 		return this.parent.getFocused() == this;
 	}
 
-	public void method_20157(@Nullable WorldListWidget.LevelItem levelItem) {
-		super.setSelected(levelItem);
-		if (levelItem != null) {
-			LevelSummary levelSummary = levelItem.level;
+	public void method_20157(@Nullable WorldListWidget.Entry entry) {
+		super.setSelected(entry);
+		if (entry != null) {
+			LevelSummary levelSummary = entry.level;
 			NarratorManager.INSTANCE
 				.narrate(
 					new TranslatableText(
@@ -144,7 +144,7 @@ public class WorldListWidget extends AlwaysSelectedEntryListWidget<WorldListWidg
 		this.parent.worldSelected(true);
 	}
 
-	public Optional<WorldListWidget.LevelItem> method_20159() {
+	public Optional<WorldListWidget.Entry> method_20159() {
 		return Optional.ofNullable(this.getSelected());
 	}
 
@@ -153,7 +153,7 @@ public class WorldListWidget extends AlwaysSelectedEntryListWidget<WorldListWidg
 	}
 
 	@Environment(EnvType.CLIENT)
-	public final class LevelItem extends AlwaysSelectedEntryListWidget.Entry<WorldListWidget.LevelItem> implements AutoCloseable {
+	public final class Entry extends AlwaysSelectedEntryListWidget.Entry<WorldListWidget.Entry> implements AutoCloseable {
 		private final MinecraftClient client;
 		private final SelectWorldScreen screen;
 		private final LevelSummary level;
@@ -163,7 +163,7 @@ public class WorldListWidget extends AlwaysSelectedEntryListWidget<WorldListWidg
 		private final NativeImageBackedTexture icon;
 		private long time;
 
-		public LevelItem(WorldListWidget worldListWidget2, LevelSummary levelSummary, LevelStorage levelStorage) {
+		public Entry(WorldListWidget worldListWidget2, LevelSummary levelSummary, LevelStorage levelStorage) {
 			this.screen = worldListWidget2.getParent();
 			this.level = levelSummary;
 			this.client = MinecraftClient.getInstance();

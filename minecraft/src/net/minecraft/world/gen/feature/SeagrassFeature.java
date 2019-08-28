@@ -26,7 +26,7 @@ public class SeagrassFeature extends Feature<SeagrassFeatureConfig> {
 		for (int j = 0; j < seagrassFeatureConfig.count; j++) {
 			int k = random.nextInt(8) - random.nextInt(8);
 			int l = random.nextInt(8) - random.nextInt(8);
-			int m = iWorld.getTop(Heightmap.Type.OCEAN_FLOOR, blockPos.getX() + k, blockPos.getZ() + l);
+			int m = iWorld.getLightLevel(Heightmap.Type.OCEAN_FLOOR, blockPos.getX() + k, blockPos.getZ() + l);
 			BlockPos blockPos2 = new BlockPos(blockPos.getX() + k, m, blockPos.getZ() + l);
 			if (iWorld.getBlockState(blockPos2).getBlock() == Blocks.WATER) {
 				boolean bl = random.nextDouble() < seagrassFeatureConfig.tallSeagrassProbability;

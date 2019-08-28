@@ -1,13 +1,13 @@
 package net.minecraft.client.gl;
 
 import com.google.common.collect.Maps;
+import com.mojang.blaze3d.platform.GlStateManager;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Map;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_4493;
-import net.minecraft.class_4536;
+import net.minecraft.client.texture.TextureUtil;
 import org.apache.commons.lang3.StringUtils;
 
 @Environment(EnvType.CLIENT)
@@ -25,13 +25,13 @@ public class GlShader {
 
 	public void attachTo(GlProgram glProgram) {
 		this.refCount++;
-		class_4493.method_22016(glProgram.getProgramRef(), this.shaderRef);
+		GlStateManager.attachShader(glProgram.getProgramRef(), this.shaderRef);
 	}
 
 	public void release() {
 		this.refCount--;
 		if (this.refCount <= 0) {
-			class_4493.method_22029(this.shaderRef);
+			GlStateManager.deleteShader(this.shaderRef);
 			this.shaderType.getLoadedShaders().remove(this.name);
 		}
 	}
@@ -41,15 +41,15 @@ public class GlShader {
 	}
 
 	public static GlShader createFromResource(GlShader.Type type, String string, InputStream inputStream) throws IOException {
-		String string2 = class_4536.readResourceAsString(inputStream);
+		String string2 = TextureUtil.readResourceAsString(inputStream);
 		if (string2 == null) {
 			throw new IOException("Could not load program " + type.getName());
 		} else {
-			int i = class_4493.method_22035(type.getGlType());
-			class_4493.method_21961(i, string2);
-			class_4493.method_22041(i);
-			if (class_4493.method_22023(i, 35713) == 0) {
-				String string3 = StringUtils.trim(class_4493.method_22049(i, 32768));
+			int i = GlStateManager.createShader(type.getGlType());
+			GlStateManager.shaderSource(i, string2);
+			GlStateManager.compileShader(i);
+			if (GlStateManager.getShader(i, 35713) == 0) {
+				String string3 = StringUtils.trim(GlStateManager.getShaderInfoLog(i, 32768));
 				throw new IOException("Couldn't compile " + type.getName() + " program: " + string3);
 			} else {
 				GlShader glShader = new GlShader(type, i, string);

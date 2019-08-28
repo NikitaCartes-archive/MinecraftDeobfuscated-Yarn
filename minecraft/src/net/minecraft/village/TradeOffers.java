@@ -34,13 +34,13 @@ import net.minecraft.item.map.MapState;
 import net.minecraft.potion.Potion;
 import net.minecraft.potion.PotionUtil;
 import net.minecraft.recipe.BrewingRecipeRegistry;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.DyeColor;
 import net.minecraft.util.SystemUtil;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.registry.Registry;
-import net.minecraft.world.World;
 
 public class TradeOffers {
 	public static final Map<VillagerProfession, Int2ObjectMap<TradeOffers.Factory[]>> PROFESSION_TO_LEVELED_TRADE = SystemUtil.consume(
@@ -895,16 +895,20 @@ public class TradeOffers {
 		@Nullable
 		@Override
 		public TradeOffer create(Entity entity, Random random) {
-			World world = entity.world;
-			BlockPos blockPos = world.locateStructure(this.structure, new BlockPos(entity), 100, true);
-			if (blockPos != null) {
-				ItemStack itemStack = FilledMapItem.createMap(world, blockPos.getX(), blockPos.getZ(), (byte)2, true, true);
-				FilledMapItem.fillExplorationMap(world, itemStack);
-				MapState.addDecorationsTag(itemStack, blockPos, "+", this.iconType);
-				itemStack.setCustomName(new TranslatableText("filled_map." + this.structure.toLowerCase(Locale.ROOT)));
-				return new TradeOffer(new ItemStack(Items.EMERALD, this.price), new ItemStack(Items.COMPASS), itemStack, this.maxUses, this.experience, 0.2F);
-			} else {
+			if (!(entity.world instanceof ServerWorld)) {
 				return null;
+			} else {
+				ServerWorld serverWorld = (ServerWorld)entity.world;
+				BlockPos blockPos = serverWorld.locateStructure(this.structure, new BlockPos(entity), 100, true);
+				if (blockPos != null) {
+					ItemStack itemStack = FilledMapItem.createMap(serverWorld, blockPos.getX(), blockPos.getZ(), (byte)2, true, true);
+					FilledMapItem.fillExplorationMap(serverWorld, itemStack);
+					MapState.addDecorationsTag(itemStack, blockPos, "+", this.iconType);
+					itemStack.setCustomName(new TranslatableText("filled_map." + this.structure.toLowerCase(Locale.ROOT)));
+					return new TradeOffer(new ItemStack(Items.EMERALD, this.price), new ItemStack(Items.COMPASS), itemStack, this.maxUses, this.experience, 0.2F);
+				} else {
+					return null;
+				}
 			}
 		}
 	}

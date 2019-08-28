@@ -1,4 +1,4 @@
-package net.minecraft;
+package net.minecraft.client.render.entity.feature;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 import java.util.Random;
@@ -8,35 +8,34 @@ import net.minecraft.client.model.Cuboid;
 import net.minecraft.client.model.ModelPart;
 import net.minecraft.client.render.GuiLighting;
 import net.minecraft.client.render.entity.LivingEntityRenderer;
-import net.minecraft.client.render.entity.feature.FeatureRenderer;
 import net.minecraft.client.render.entity.model.EntityModel;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.util.math.MathHelper;
 
 @Environment(EnvType.CLIENT)
-public abstract class class_4507<T extends LivingEntity, M extends EntityModel<T>> extends FeatureRenderer<T, M> {
-	public class_4507(LivingEntityRenderer<T, M> livingEntityRenderer) {
+public abstract class StickingOutThingsFeatureRenderer<T extends LivingEntity, M extends EntityModel<T>> extends FeatureRenderer<T, M> {
+	public StickingOutThingsFeatureRenderer(LivingEntityRenderer<T, M> livingEntityRenderer) {
 		super(livingEntityRenderer);
 	}
 
-	protected abstract int method_22134(T livingEntity);
+	protected abstract int getThingCount(T livingEntity);
 
-	protected abstract void method_22130(Entity entity, float f, float g, float h, float i);
+	protected abstract void renderThing(Entity entity, float f, float g, float h, float i);
 
-	protected void method_22131(T livingEntity) {
+	protected void beforeRendering(T livingEntity) {
 		GuiLighting.disable();
 	}
 
-	protected void method_22133() {
+	protected void afterRendering() {
 		GuiLighting.enable();
 	}
 
 	public void method_22132(T livingEntity, float f, float g, float h, float i, float j, float k, float l) {
-		int m = this.method_22134(livingEntity);
+		int m = this.getThingCount(livingEntity);
 		Random random = new Random((long)livingEntity.getEntityId());
 		if (m > 0) {
-			this.method_22131(livingEntity);
+			this.beforeRendering(livingEntity);
 
 			for (int n = 0; n < m; n++) {
 				RenderSystem.pushMatrix();
@@ -53,11 +52,11 @@ public abstract class class_4507<T extends LivingEntity, M extends EntityModel<T
 				o = -1.0F * (o * 2.0F - 1.0F);
 				p = -1.0F * (p * 2.0F - 1.0F);
 				q = -1.0F * (q * 2.0F - 1.0F);
-				this.method_22130(livingEntity, o, p, q, h);
+				this.renderThing(livingEntity, o, p, q, h);
 				RenderSystem.popMatrix();
 			}
 
-			this.method_22133();
+			this.afterRendering();
 		}
 	}
 }

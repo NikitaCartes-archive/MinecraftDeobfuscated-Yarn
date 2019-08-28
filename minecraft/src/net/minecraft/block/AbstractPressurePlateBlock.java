@@ -1,16 +1,17 @@
 package net.minecraft.block;
 
 import java.util.Random;
+import net.minecraft.class_4538;
 import net.minecraft.block.piston.PistonBehavior;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityContext;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.IWorld;
-import net.minecraft.world.ViewableWorld;
 import net.minecraft.world.World;
 
 public abstract class AbstractPressurePlateBlock extends Block {
@@ -28,7 +29,7 @@ public abstract class AbstractPressurePlateBlock extends Block {
 	}
 
 	@Override
-	public int getTickRate(ViewableWorld viewableWorld) {
+	public int getTickRate(class_4538 arg) {
 		return 20;
 	}
 
@@ -47,18 +48,16 @@ public abstract class AbstractPressurePlateBlock extends Block {
 	}
 
 	@Override
-	public boolean canPlaceAt(BlockState blockState, ViewableWorld viewableWorld, BlockPos blockPos) {
+	public boolean canPlaceAt(BlockState blockState, class_4538 arg, BlockPos blockPos) {
 		BlockPos blockPos2 = blockPos.down();
-		return isSolidMediumSquare(viewableWorld, blockPos2) || isSolidSmallSquare(viewableWorld, blockPos2, Direction.UP);
+		return isSolidMediumSquare(arg, blockPos2) || isSolidSmallSquare(arg, blockPos2, Direction.UP);
 	}
 
 	@Override
-	public void onScheduledTick(BlockState blockState, World world, BlockPos blockPos, Random random) {
-		if (!world.isClient) {
-			int i = this.getRedstoneOutput(blockState);
-			if (i > 0) {
-				this.updatePlateState(world, blockPos, blockState, i);
-			}
+	public void onScheduledTick(BlockState blockState, ServerWorld serverWorld, BlockPos blockPos, Random random) {
+		int i = this.getRedstoneOutput(blockState);
+		if (i > 0) {
+			this.updatePlateState(serverWorld, blockPos, blockState, i);
 		}
 	}
 

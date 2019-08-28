@@ -4,6 +4,7 @@ import java.util.Random;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.class_4538;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockRenderLayer;
 import net.minecraft.block.BlockState;
@@ -22,7 +23,6 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.IWorld;
-import net.minecraft.world.ViewableWorld;
 import net.minecraft.world.World;
 
 public abstract class WaterFluid extends BaseFluid {
@@ -95,7 +95,7 @@ public abstract class WaterFluid extends BaseFluid {
 	}
 
 	@Override
-	public int method_15733(ViewableWorld viewableWorld) {
+	public int method_15733(class_4538 arg) {
 		return 4;
 	}
 
@@ -110,12 +110,12 @@ public abstract class WaterFluid extends BaseFluid {
 	}
 
 	@Override
-	public int getLevelDecreasePerBlock(ViewableWorld viewableWorld) {
+	public int getLevelDecreasePerBlock(class_4538 arg) {
 		return 1;
 	}
 
 	@Override
-	public int getTickRate(ViewableWorld viewableWorld) {
+	public int getTickRate(class_4538 arg) {
 		return 5;
 	}
 

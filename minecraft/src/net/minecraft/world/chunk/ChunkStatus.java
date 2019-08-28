@@ -114,15 +114,14 @@ public class ChunkStatus {
 		POST_CARVER_HEIGHTMAPS,
 		ChunkStatus.ChunkType.PROTOCHUNK,
 		(chunkStatus, serverWorld, chunkGenerator, structureManager, serverLightingProvider, function, list, chunk) -> {
-			chunk.setLightingProvider(serverLightingProvider);
+			ProtoChunk protoChunk = (ProtoChunk)chunk;
+			protoChunk.setLightingProvider(serverLightingProvider);
 			if (!chunk.getStatus().isAtLeast(chunkStatus)) {
 				Heightmap.populateHeightmaps(
 					chunk, EnumSet.of(Heightmap.Type.MOTION_BLOCKING, Heightmap.Type.MOTION_BLOCKING_NO_LEAVES, Heightmap.Type.OCEAN_FLOOR, Heightmap.Type.WORLD_SURFACE)
 				);
 				chunkGenerator.generateFeatures(new ChunkRegion(serverWorld, list));
-				if (chunk instanceof ProtoChunk) {
-					((ProtoChunk)chunk).setStatus(chunkStatus);
-				}
+				protoChunk.setStatus(chunkStatus);
 			}
 
 			return CompletableFuture.completedFuture(Either.left(chunk));

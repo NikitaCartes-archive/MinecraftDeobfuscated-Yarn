@@ -57,7 +57,7 @@ public class PresetsScreen extends Screen {
 		this.children.add(this.listWidget);
 		this.selectPresetButton = this.addButton(
 			new ButtonWidget(this.width / 2 - 155, this.height - 28, 150, 20, I18n.translate("createWorld.customize.presets.select"), buttonWidget -> {
-				this.parent.method_2139(this.customPresetField.getText());
+				this.parent.setConfigString(this.customPresetField.getText());
 				this.minecraft.openScreen(this.parent);
 			})
 		);
@@ -294,7 +294,7 @@ public class PresetsScreen extends Screen {
 				PresetsScreen.this.updateSelectButton(true);
 				PresetsScreen.this.customPresetField
 					.setText(((PresetsScreen.SuperflatPreset)PresetsScreen.presets.get(SuperflatPresetsListWidget.this.children().indexOf(this))).config);
-				PresetsScreen.this.customPresetField.method_1870();
+				PresetsScreen.this.customPresetField.setCursorToStart();
 			}
 
 			private void method_2200(int i, int j, Item item) {

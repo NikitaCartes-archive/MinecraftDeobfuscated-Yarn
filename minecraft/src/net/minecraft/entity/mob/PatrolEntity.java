@@ -1,6 +1,7 @@
 package net.minecraft.entity.mob;
 
 import java.util.EnumSet;
+import java.util.List;
 import java.util.Random;
 import javax.annotation.Nullable;
 import net.minecraft.entity.EntityData;
@@ -131,6 +132,10 @@ public abstract class PatrolEntity extends HostileEntity {
 		return this.patrolling;
 	}
 
+	protected void method_22332(boolean bl) {
+		this.patrolling = bl;
+	}
+
 	public static class PatrolGoal<T extends PatrolEntity> extends Goal {
 		private final T actor;
 		private final double leaderSpeed;
@@ -161,7 +166,10 @@ public abstract class PatrolEntity extends HostileEntity {
 			boolean bl = this.actor.isPatrolLeader();
 			EntityNavigation entityNavigation = this.actor.getNavigation();
 			if (entityNavigation.isIdle()) {
-				if (bl && this.actor.getPatrolTarget().isWithinDistance(this.actor.getPos(), 10.0)) {
+				List<PatrolEntity> list = this.method_22333();
+				if (this.actor.isRaidCenterSet() && list.isEmpty()) {
+					this.actor.method_22332(false);
+				} else if (bl && this.actor.getPatrolTarget().isWithinDistance(this.actor.getPos(), 10.0)) {
 					this.actor.setRandomPatrolTarget();
 				} else {
 					Vec3d vec3d = new Vec3d(this.actor.getPatrolTarget());
@@ -174,14 +182,18 @@ public abstract class PatrolEntity extends HostileEntity {
 					if (!entityNavigation.startMovingTo((double)blockPos.getX(), (double)blockPos.getY(), (double)blockPos.getZ(), bl ? this.fellowSpeed : this.leaderSpeed)) {
 						this.wander();
 					} else if (bl) {
-						for (PatrolEntity patrolEntity : this.actor
-							.world
-							.getEntities(PatrolEntity.class, this.actor.getBoundingBox().expand(16.0), patrolEntityx -> !patrolEntityx.isPatrolLeader() && patrolEntityx.hasNoRaid())) {
+						for (PatrolEntity patrolEntity : list) {
 							patrolEntity.setPatrolTarget(blockPos);
 						}
 					}
 				}
 			}
+		}
+
+		private List<PatrolEntity> method_22333() {
+			return this.actor
+				.world
+				.getEntities(PatrolEntity.class, this.actor.getBoundingBox().expand(16.0), patrolEntity -> patrolEntity.hasNoRaid() && !patrolEntity.isPartOf(this.actor));
 		}
 
 		private void wander() {

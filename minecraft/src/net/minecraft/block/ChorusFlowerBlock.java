@@ -2,8 +2,9 @@ package net.minecraft.block;
 
 import java.util.Random;
 import javax.annotation.Nullable;
+import net.minecraft.class_4538;
 import net.minecraft.entity.Entity;
-import net.minecraft.item.ItemStack;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.state.StateFactory;
 import net.minecraft.state.property.IntProperty;
 import net.minecraft.state.property.Properties;
@@ -11,7 +12,6 @@ import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.world.IWorld;
-import net.minecraft.world.ViewableWorld;
 import net.minecraft.world.World;
 
 public class ChorusFlowerBlock extends Block {
@@ -25,17 +25,17 @@ public class ChorusFlowerBlock extends Block {
 	}
 
 	@Override
-	public void onScheduledTick(BlockState blockState, World world, BlockPos blockPos, Random random) {
-		if (!blockState.canPlaceAt(world, blockPos)) {
-			world.breakBlock(blockPos, true);
+	public void onScheduledTick(BlockState blockState, ServerWorld serverWorld, BlockPos blockPos, Random random) {
+		if (!blockState.canPlaceAt(serverWorld, blockPos)) {
+			serverWorld.method_22352(blockPos, true);
 		} else {
 			BlockPos blockPos2 = blockPos.up();
-			if (world.isAir(blockPos2) && blockPos2.getY() < 256) {
+			if (serverWorld.method_22347(blockPos2) && blockPos2.getY() < 256) {
 				int i = (Integer)blockState.get(AGE);
 				if (i < 5) {
 					boolean bl = false;
 					boolean bl2 = false;
-					BlockState blockState2 = world.getBlockState(blockPos.down());
+					BlockState blockState2 = serverWorld.getBlockState(blockPos.down());
 					Block block = blockState2.getBlock();
 					if (block == Blocks.END_STONE) {
 						bl = true;
@@ -43,7 +43,7 @@ public class ChorusFlowerBlock extends Block {
 						int j = 1;
 
 						for (int k = 0; k < 4; k++) {
-							Block block2 = world.getBlockState(blockPos.down(j + 1)).getBlock();
+							Block block2 = serverWorld.getBlockState(blockPos.down(j + 1)).getBlock();
 							if (block2 != this.plantBlock) {
 								if (block2 == Blocks.END_STONE) {
 									bl2 = true;
@@ -61,9 +61,9 @@ public class ChorusFlowerBlock extends Block {
 						bl = true;
 					}
 
-					if (bl && isSurroundedByAir(world, blockPos2, null) && world.isAir(blockPos.up(2))) {
-						world.setBlockState(blockPos, this.plantBlock.withConnectionProperties(world, blockPos), 2);
-						this.grow(world, blockPos2, i);
+					if (bl && isSurroundedByAir(serverWorld, blockPos2, null) && serverWorld.method_22347(blockPos.up(2))) {
+						serverWorld.setBlockState(blockPos, this.plantBlock.withConnectionProperties(serverWorld, blockPos), 2);
+						this.grow(serverWorld, blockPos2, i);
 					} else if (i < 4) {
 						int j = random.nextInt(4);
 						if (bl2) {
@@ -75,19 +75,21 @@ public class ChorusFlowerBlock extends Block {
 						for (int l = 0; l < j; l++) {
 							Direction direction = Direction.Type.HORIZONTAL.random(random);
 							BlockPos blockPos3 = blockPos.offset(direction);
-							if (world.isAir(blockPos3) && world.isAir(blockPos3.down()) && isSurroundedByAir(world, blockPos3, direction.getOpposite())) {
-								this.grow(world, blockPos3, i + 1);
+							if (serverWorld.method_22347(blockPos3)
+								&& serverWorld.method_22347(blockPos3.down())
+								&& isSurroundedByAir(serverWorld, blockPos3, direction.getOpposite())) {
+								this.grow(serverWorld, blockPos3, i + 1);
 								bl3 = true;
 							}
 						}
 
 						if (bl3) {
-							world.setBlockState(blockPos, this.plantBlock.withConnectionProperties(world, blockPos), 2);
+							serverWorld.setBlockState(blockPos, this.plantBlock.withConnectionProperties(serverWorld, blockPos), 2);
 						} else {
-							this.die(world, blockPos);
+							this.die(serverWorld, blockPos);
 						}
 					} else {
-						this.die(world, blockPos);
+						this.die(serverWorld, blockPos);
 					}
 				}
 			}
@@ -104,9 +106,9 @@ public class ChorusFlowerBlock extends Block {
 		world.playLevelEvent(1034, blockPos, 0);
 	}
 
-	private static boolean isSurroundedByAir(ViewableWorld viewableWorld, BlockPos blockPos, @Nullable Direction direction) {
+	private static boolean isSurroundedByAir(class_4538 arg, BlockPos blockPos, @Nullable Direction direction) {
 		for (Direction direction2 : Direction.Type.HORIZONTAL) {
-			if (direction2 != direction && !viewableWorld.isAir(blockPos.offset(direction2))) {
+			if (direction2 != direction && !arg.method_22347(blockPos.offset(direction2))) {
 				return false;
 			}
 		}
@@ -126,8 +128,8 @@ public class ChorusFlowerBlock extends Block {
 	}
 
 	@Override
-	public boolean canPlaceAt(BlockState blockState, ViewableWorld viewableWorld, BlockPos blockPos) {
-		BlockState blockState2 = viewableWorld.getBlockState(blockPos.down());
+	public boolean canPlaceAt(BlockState blockState, class_4538 arg, BlockPos blockPos) {
+		BlockState blockState2 = arg.getBlockState(blockPos.down());
 		Block block = blockState2.getBlock();
 		if (block != this.plantBlock && block != Blocks.END_STONE) {
 			if (!blockState2.isAir()) {
@@ -136,7 +138,7 @@ public class ChorusFlowerBlock extends Block {
 				boolean bl = false;
 
 				for (Direction direction : Direction.Type.HORIZONTAL) {
-					BlockState blockState3 = viewableWorld.getBlockState(blockPos.offset(direction));
+					BlockState blockState3 = arg.getBlockState(blockPos.offset(direction));
 					if (blockState3.getBlock() == this.plantBlock) {
 						if (bl) {
 							return false;
@@ -199,8 +201,8 @@ public class ChorusFlowerBlock extends Block {
 				BlockPos blockPos4 = blockPos.up(k).offset(direction);
 				if (Math.abs(blockPos4.getX() - blockPos2.getX()) < i
 					&& Math.abs(blockPos4.getZ() - blockPos2.getZ()) < i
-					&& iWorld.isAir(blockPos4)
-					&& iWorld.isAir(blockPos4.down())
+					&& iWorld.method_22347(blockPos4)
+					&& iWorld.method_22347(blockPos4.down())
 					&& isSurroundedByAir(iWorld, blockPos4, direction.getOpposite())) {
 					bl = true;
 					iWorld.setBlockState(blockPos4, chorusPlantBlock.withConnectionProperties(iWorld, blockPos4), 2);
@@ -220,7 +222,6 @@ public class ChorusFlowerBlock extends Block {
 	@Override
 	public void onProjectileHit(World world, BlockState blockState, BlockHitResult blockHitResult, Entity entity) {
 		BlockPos blockPos = blockHitResult.getBlockPos();
-		dropStack(world, blockPos, new ItemStack(this));
-		world.breakBlock(blockPos, true);
+		world.breakBlock(blockPos, true, entity);
 	}
 }

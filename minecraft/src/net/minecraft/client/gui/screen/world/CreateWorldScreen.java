@@ -3,6 +3,7 @@ package net.minecraft.client.gui.screen.world;
 import com.mojang.datafixers.Dynamic;
 import com.mojang.datafixers.types.JsonOps;
 import java.util.Random;
+import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.gui.screen.CustomizeBuffetLevelScreen;
@@ -26,16 +27,17 @@ public class CreateWorldScreen extends Screen {
 	private final Screen parent;
 	private TextFieldWidget textFieldLevelName;
 	private TextFieldWidget textFieldSeed;
-	private String field_3196;
-	private String gameMode = "survival";
-	private String field_3185;
+	private String saveFolderName;
+	private CreateWorldScreen.class_4539 field_3201 = CreateWorldScreen.class_4539.SURVIVAL;
+	@Nullable
+	private CreateWorldScreen.class_4539 field_3185;
 	private boolean structures = true;
 	private boolean commandsAllowed;
 	private boolean field_3179;
 	private boolean enableBonusItems;
 	private boolean field_3178;
-	private boolean isCreatingLevel;
-	private boolean field_3202;
+	private boolean creatingLevel;
+	private boolean moreOptionsOpen;
 	private ButtonWidget buttonCreateLevel;
 	private ButtonWidget buttonGameModeSwitch;
 	private ButtonWidget buttonMoreOptions;
@@ -44,8 +46,8 @@ public class CreateWorldScreen extends Screen {
 	private ButtonWidget buttonMapTypeSwitch;
 	private ButtonWidget buttonCommandsAllowed;
 	private ButtonWidget buttonCustomizeType;
-	private String field_3194;
-	private String field_3199;
+	private String gameModeDescriptionLine1;
+	private String gameModeDescriptionLine2;
 	private String seed;
 	private String levelName;
 	private int generatorType;
@@ -72,45 +74,22 @@ public class CreateWorldScreen extends Screen {
 		this.textFieldLevelName.setChangedListener(string -> {
 			this.levelName = string;
 			this.buttonCreateLevel.active = !this.textFieldLevelName.getText().isEmpty();
-			this.method_2727();
+			this.updateSaveFolderName();
 		});
 		this.children.add(this.textFieldLevelName);
 		this.buttonGameModeSwitch = this.addButton(new ButtonWidget(this.width / 2 - 75, 115, 150, 20, I18n.translate("selectWorld.gameMode"), buttonWidget -> {
-			if ("survival".equals(this.gameMode)) {
-				if (!this.field_3179) {
-					this.commandsAllowed = false;
-				}
-
-				this.field_3178 = false;
-				this.gameMode = "hardcore";
-				this.field_3178 = true;
-				this.buttonCommandsAllowed.active = false;
-				this.buttonGenerateBonusItems.active = false;
-				this.method_2722();
-			} else if ("hardcore".equals(this.gameMode)) {
-				if (!this.field_3179) {
-					this.commandsAllowed = true;
-				}
-
-				this.field_3178 = false;
-				this.gameMode = "creative";
-				this.method_2722();
-				this.field_3178 = false;
-				this.buttonCommandsAllowed.active = true;
-				this.buttonGenerateBonusItems.active = true;
-			} else {
-				if (!this.field_3179) {
-					this.commandsAllowed = false;
-				}
-
-				this.gameMode = "survival";
-				this.method_2722();
-				this.buttonCommandsAllowed.active = true;
-				this.buttonGenerateBonusItems.active = true;
-				this.field_3178 = false;
+			switch (this.field_3201) {
+				case SURVIVAL:
+					this.method_22365(CreateWorldScreen.class_4539.HARDCORE);
+					break;
+				case HARDCORE:
+					this.method_22365(CreateWorldScreen.class_4539.CREATIVE);
+					break;
+				case CREATIVE:
+					this.method_22365(CreateWorldScreen.class_4539.SURVIVAL);
 			}
 
-			this.method_2722();
+			this.updateSettingsLabels();
 		}));
 		this.textFieldSeed = new TextFieldWidget(this.font, this.width / 2 - 100, 60, 200, 20, I18n.translate("selectWorld.enterSeed"));
 		this.textFieldSeed.setText(this.seed);
@@ -119,7 +98,7 @@ public class CreateWorldScreen extends Screen {
 		this.buttonGenerateStructures = this.addButton(
 			new ButtonWidget(this.width / 2 - 155, 100, 150, 20, I18n.translate("selectWorld.mapFeatures"), buttonWidget -> {
 				this.structures = !this.structures;
-				this.method_2722();
+				this.updateSettingsLabels();
 			})
 		);
 		this.buttonGenerateStructures.visible = false;
@@ -129,7 +108,7 @@ public class CreateWorldScreen extends Screen {
 				this.generatorType = 0;
 			}
 
-			while (!this.method_2723()) {
+			while (!this.isGeneratorTypeValid()) {
 				this.generatorType++;
 				if (this.generatorType >= LevelGeneratorType.TYPES.length) {
 					this.generatorType = 0;
@@ -137,8 +116,8 @@ public class CreateWorldScreen extends Screen {
 			}
 
 			this.generatorOptionsTag = new CompoundTag();
-			this.method_2722();
-			this.method_2710(this.field_3202);
+			this.updateSettingsLabels();
+			this.setMoreOptionsOpen(this.moreOptionsOpen);
 		}));
 		this.buttonMapTypeSwitch.visible = false;
 		this.buttonCustomizeType = this.addButton(new ButtonWidget(this.width / 2 + 5, 120, 150, 20, I18n.translate("selectWorld.customizeType"), buttonWidget -> {
@@ -155,17 +134,17 @@ public class CreateWorldScreen extends Screen {
 			new ButtonWidget(this.width / 2 - 155, 151, 150, 20, I18n.translate("selectWorld.allowCommands"), buttonWidget -> {
 				this.field_3179 = true;
 				this.commandsAllowed = !this.commandsAllowed;
-				this.method_2722();
+				this.updateSettingsLabels();
 			})
 		);
 		this.buttonCommandsAllowed.visible = false;
 		this.buttonGenerateBonusItems = this.addButton(new ButtonWidget(this.width / 2 + 5, 151, 150, 20, I18n.translate("selectWorld.bonusItems"), buttonWidget -> {
 			this.enableBonusItems = !this.enableBonusItems;
-			this.method_2722();
+			this.updateSettingsLabels();
 		}));
 		this.buttonGenerateBonusItems.visible = false;
 		this.buttonMoreOptions = this.addButton(
-			new ButtonWidget(this.width / 2 - 75, 187, 150, 20, I18n.translate("selectWorld.moreWorldOptions"), buttonWidget -> this.method_2721())
+			new ButtonWidget(this.width / 2 - 75, 187, 150, 20, I18n.translate("selectWorld.moreWorldOptions"), buttonWidget -> this.toggleMoreOptions())
 		);
 		this.buttonCreateLevel = this.addButton(
 			new ButtonWidget(this.width / 2 - 155, this.height - 28, 150, 20, I18n.translate("selectWorld.create"), buttonWidget -> this.createLevel())
@@ -173,35 +152,36 @@ public class CreateWorldScreen extends Screen {
 		this.addButton(
 			new ButtonWidget(this.width / 2 + 5, this.height - 28, 150, 20, I18n.translate("gui.cancel"), buttonWidget -> this.minecraft.openScreen(this.parent))
 		);
-		this.method_2710(this.field_3202);
+		this.setMoreOptionsOpen(this.moreOptionsOpen);
 		this.setInitialFocus(this.textFieldLevelName);
-		this.method_2727();
-		this.method_2722();
+		this.method_22365(this.field_3201);
+		this.updateSaveFolderName();
+		this.updateSettingsLabels();
 	}
 
-	private void method_2727() {
-		this.field_3196 = this.textFieldLevelName.getText().trim();
-		if (this.field_3196.length() == 0) {
-			this.field_3196 = "World";
+	private void updateSaveFolderName() {
+		this.saveFolderName = this.textFieldLevelName.getText().trim();
+		if (this.saveFolderName.length() == 0) {
+			this.saveFolderName = "World";
 		}
 
 		try {
-			this.field_3196 = FileNameUtil.getNextUniqueName(this.minecraft.getLevelStorage().getSavesDirectory(), this.field_3196, "");
+			this.saveFolderName = FileNameUtil.getNextUniqueName(this.minecraft.getLevelStorage().getSavesDirectory(), this.saveFolderName, "");
 		} catch (Exception var4) {
-			this.field_3196 = "World";
+			this.saveFolderName = "World";
 
 			try {
-				this.field_3196 = FileNameUtil.getNextUniqueName(this.minecraft.getLevelStorage().getSavesDirectory(), this.field_3196, "");
+				this.saveFolderName = FileNameUtil.getNextUniqueName(this.minecraft.getLevelStorage().getSavesDirectory(), this.saveFolderName, "");
 			} catch (Exception var3) {
 				throw new RuntimeException("Could not create save folder", var3);
 			}
 		}
 	}
 
-	private void method_2722() {
-		this.buttonGameModeSwitch.setMessage(I18n.translate("selectWorld.gameMode") + ": " + I18n.translate("selectWorld.gameMode." + this.gameMode));
-		this.field_3194 = I18n.translate("selectWorld.gameMode." + this.gameMode + ".line1");
-		this.field_3199 = I18n.translate("selectWorld.gameMode." + this.gameMode + ".line2");
+	private void updateSettingsLabels() {
+		this.buttonGameModeSwitch.setMessage(I18n.translate("selectWorld.gameMode") + ": " + I18n.translate("selectWorld.gameMode." + this.field_3201.field_20628));
+		this.gameModeDescriptionLine1 = I18n.translate("selectWorld.gameMode." + this.field_3201.field_20628 + ".line1");
+		this.gameModeDescriptionLine2 = I18n.translate("selectWorld.gameMode." + this.field_3201.field_20628 + ".line2");
 		this.buttonGenerateStructures.setMessage(I18n.translate("selectWorld.mapFeatures") + ' ' + I18n.translate(this.structures ? "options.on" : "options.off"));
 		this.buttonGenerateBonusItems
 			.setMessage(I18n.translate("selectWorld.bonusItems") + ' ' + I18n.translate(this.enableBonusItems && !this.field_3178 ? "options.on" : "options.off"));
@@ -218,8 +198,8 @@ public class CreateWorldScreen extends Screen {
 
 	private void createLevel() {
 		this.minecraft.openScreen(null);
-		if (!this.isCreatingLevel) {
-			this.isCreatingLevel = true;
+		if (!this.creatingLevel) {
+			this.creatingLevel = true;
 			long l = new Random().nextLong();
 			String string = this.textFieldSeed.getText();
 			if (!StringUtils.isEmpty(string)) {
@@ -233,7 +213,7 @@ public class CreateWorldScreen extends Screen {
 				}
 			}
 
-			LevelInfo levelInfo = new LevelInfo(l, GameMode.byName(this.gameMode), this.structures, this.field_3178, LevelGeneratorType.TYPES[this.generatorType]);
+			LevelInfo levelInfo = new LevelInfo(l, this.field_3201.field_20629, this.structures, this.field_3178, LevelGeneratorType.TYPES[this.generatorType]);
 			levelInfo.setGeneratorOptions(Dynamic.convert(NbtOps.INSTANCE, JsonOps.INSTANCE, this.generatorOptionsTag));
 			if (this.enableBonusItems && !this.field_3178) {
 				levelInfo.setBonusChest();
@@ -243,11 +223,11 @@ public class CreateWorldScreen extends Screen {
 				levelInfo.enableCommands();
 			}
 
-			this.minecraft.startIntegratedServer(this.field_3196, this.textFieldLevelName.getText().trim(), levelInfo);
+			this.minecraft.startIntegratedServer(this.saveFolderName, this.textFieldLevelName.getText().trim(), levelInfo);
 		}
 	}
 
-	private boolean method_2723() {
+	private boolean isGeneratorTypeValid() {
 		LevelGeneratorType levelGeneratorType = LevelGeneratorType.TYPES[this.generatorType];
 		if (levelGeneratorType == null || !levelGeneratorType.isVisible()) {
 			return false;
@@ -256,44 +236,59 @@ public class CreateWorldScreen extends Screen {
 		}
 	}
 
-	private void method_2721() {
-		this.method_2710(!this.field_3202);
+	private void toggleMoreOptions() {
+		this.setMoreOptionsOpen(!this.moreOptionsOpen);
 	}
 
-	private void method_2710(boolean bl) {
-		this.field_3202 = bl;
+	private void method_22365(CreateWorldScreen.class_4539 arg) {
+		if (!this.field_3179) {
+			this.commandsAllowed = arg == CreateWorldScreen.class_4539.CREATIVE;
+		}
+
+		if (arg == CreateWorldScreen.class_4539.HARDCORE) {
+			this.field_3178 = true;
+			this.buttonCommandsAllowed.active = false;
+			this.buttonGenerateBonusItems.active = false;
+		} else {
+			this.field_3178 = false;
+			this.buttonCommandsAllowed.active = true;
+			this.buttonGenerateBonusItems.active = true;
+		}
+
+		this.field_3201 = arg;
+		this.updateSettingsLabels();
+	}
+
+	private void setMoreOptionsOpen(boolean bl) {
+		this.moreOptionsOpen = bl;
+		this.buttonGameModeSwitch.visible = !this.moreOptionsOpen;
+		this.buttonMapTypeSwitch.visible = this.moreOptionsOpen;
 		if (LevelGeneratorType.TYPES[this.generatorType] == LevelGeneratorType.DEBUG_ALL_BLOCK_STATES) {
-			this.buttonGameModeSwitch.visible = !this.field_3202;
 			this.buttonGameModeSwitch.active = false;
 			if (this.field_3185 == null) {
-				this.field_3185 = this.gameMode;
+				this.field_3185 = this.field_3201;
 			}
 
-			this.gameMode = "spectator";
+			this.method_22365(CreateWorldScreen.class_4539.DEBUG);
 			this.buttonGenerateStructures.visible = false;
 			this.buttonGenerateBonusItems.visible = false;
-			this.buttonMapTypeSwitch.visible = this.field_3202;
 			this.buttonCommandsAllowed.visible = false;
 			this.buttonCustomizeType.visible = false;
 		} else {
-			this.buttonGameModeSwitch.visible = !this.field_3202;
 			this.buttonGameModeSwitch.active = true;
 			if (this.field_3185 != null) {
-				this.gameMode = this.field_3185;
-				this.field_3185 = null;
+				this.method_22365(this.field_3185);
 			}
 
-			this.buttonGenerateStructures.visible = this.field_3202 && LevelGeneratorType.TYPES[this.generatorType] != LevelGeneratorType.CUSTOMIZED;
-			this.buttonGenerateBonusItems.visible = this.field_3202;
-			this.buttonMapTypeSwitch.visible = this.field_3202;
-			this.buttonCommandsAllowed.visible = this.field_3202;
-			this.buttonCustomizeType.visible = this.field_3202 && LevelGeneratorType.TYPES[this.generatorType].isCustomizable();
+			this.buttonGenerateStructures.visible = this.moreOptionsOpen && LevelGeneratorType.TYPES[this.generatorType] != LevelGeneratorType.CUSTOMIZED;
+			this.buttonGenerateBonusItems.visible = this.moreOptionsOpen;
+			this.buttonCommandsAllowed.visible = this.moreOptionsOpen;
+			this.buttonCustomizeType.visible = this.moreOptionsOpen && LevelGeneratorType.TYPES[this.generatorType].isCustomizable();
 		}
 
-		this.method_2722();
-		this.textFieldSeed.setVisible(this.field_3202);
-		this.textFieldLevelName.setVisible(!this.field_3202);
-		if (this.field_3202) {
+		this.textFieldSeed.setVisible(this.moreOptionsOpen);
+		this.textFieldLevelName.setVisible(!this.moreOptionsOpen);
+		if (this.moreOptionsOpen) {
 			this.buttonMoreOptions.setMessage(I18n.translate("gui.done"));
 		} else {
 			this.buttonMoreOptions.setMessage(I18n.translate("selectWorld.moreWorldOptions"));
@@ -316,7 +311,7 @@ public class CreateWorldScreen extends Screen {
 	public void render(int i, int j, float f) {
 		this.renderBackground();
 		this.drawCenteredString(this.font, this.title.asFormattedString(), this.width / 2, 20, -1);
-		if (this.field_3202) {
+		if (this.moreOptionsOpen) {
 			this.drawString(this.font, I18n.translate("selectWorld.enterSeed"), this.width / 2 - 100, 47, -6250336);
 			this.drawString(this.font, I18n.translate("selectWorld.seedInfo"), this.width / 2 - 100, 85, -6250336);
 			if (this.buttonGenerateStructures.visible) {
@@ -340,10 +335,10 @@ public class CreateWorldScreen extends Screen {
 			}
 		} else {
 			this.drawString(this.font, I18n.translate("selectWorld.enterName"), this.width / 2 - 100, 47, -6250336);
-			this.drawString(this.font, I18n.translate("selectWorld.resultFolder") + " " + this.field_3196, this.width / 2 - 100, 85, -6250336);
+			this.drawString(this.font, I18n.translate("selectWorld.resultFolder") + " " + this.saveFolderName, this.width / 2 - 100, 85, -6250336);
 			this.textFieldLevelName.render(i, j, f);
-			this.drawCenteredString(this.font, this.field_3194, this.width / 2, 137, -6250336);
-			this.drawCenteredString(this.font, this.field_3199, this.width / 2, 149, -6250336);
+			this.drawCenteredString(this.font, this.gameModeDescriptionLine1, this.width / 2, 137, -6250336);
+			this.drawCenteredString(this.font, this.gameModeDescriptionLine2, this.width / 2, 149, -6250336);
 		}
 
 		super.render(i, j, f);
@@ -351,7 +346,7 @@ public class CreateWorldScreen extends Screen {
 
 	public void recreateLevel(LevelProperties levelProperties) {
 		this.levelName = levelProperties.getLevelName();
-		this.seed = levelProperties.getSeed() + "";
+		this.seed = Long.toString(levelProperties.getSeed());
 		LevelGeneratorType levelGeneratorType = levelProperties.getGeneratorType() == LevelGeneratorType.CUSTOMIZED
 			? LevelGeneratorType.DEFAULT
 			: levelProperties.getGeneratorType();
@@ -360,11 +355,27 @@ public class CreateWorldScreen extends Screen {
 		this.structures = levelProperties.hasStructures();
 		this.commandsAllowed = levelProperties.areCommandsAllowed();
 		if (levelProperties.isHardcore()) {
-			this.gameMode = "hardcore";
+			this.field_3201 = CreateWorldScreen.class_4539.HARDCORE;
 		} else if (levelProperties.getGameMode().isSurvivalLike()) {
-			this.gameMode = "survival";
+			this.field_3201 = CreateWorldScreen.class_4539.SURVIVAL;
 		} else if (levelProperties.getGameMode().isCreative()) {
-			this.gameMode = "creative";
+			this.field_3201 = CreateWorldScreen.class_4539.CREATIVE;
+		}
+	}
+
+	@Environment(EnvType.CLIENT)
+	static enum class_4539 {
+		SURVIVAL("survival", GameMode.SURVIVAL),
+		HARDCORE("hardcore", GameMode.SURVIVAL),
+		CREATIVE("creative", GameMode.CREATIVE),
+		DEBUG("spectator", GameMode.SPECTATOR);
+
+		private final String field_20628;
+		private final GameMode field_20629;
+
+		private class_4539(String string2, GameMode gameMode) {
+			this.field_20628 = string2;
+			this.field_20629 = gameMode;
 		}
 	}
 }

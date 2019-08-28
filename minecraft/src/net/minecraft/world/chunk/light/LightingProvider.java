@@ -116,4 +116,10 @@ public class LightingProvider implements LightingView {
 			this.skyLightProvider.method_20599(chunkPos, bl);
 		}
 	}
+
+	public int method_22363(BlockPos blockPos, int i) {
+		int j = this.skyLightProvider == null ? 0 : this.skyLightProvider.getLightLevel(blockPos) - i;
+		int k = this.blockLightProvider == null ? 0 : this.blockLightProvider.getLightLevel(blockPos);
+		return Math.max(k, j);
+	}
 }

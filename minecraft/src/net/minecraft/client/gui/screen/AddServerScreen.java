@@ -8,7 +8,7 @@ import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.gui.widget.TextFieldWidget;
-import net.minecraft.client.options.ServerEntry;
+import net.minecraft.client.network.ServerInfo;
 import net.minecraft.client.resource.language.I18n;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.ChatUtil;
@@ -17,7 +17,7 @@ import net.minecraft.util.ChatUtil;
 public class AddServerScreen extends Screen {
 	private ButtonWidget buttonAdd;
 	private final BooleanConsumer callback;
-	private final ServerEntry serverEntry;
+	private final ServerInfo server;
 	private TextFieldWidget addressField;
 	private TextFieldWidget serverNameField;
 	private ButtonWidget resourcePackOptionButton;
@@ -39,10 +39,10 @@ public class AddServerScreen extends Screen {
 		}
 	};
 
-	public AddServerScreen(BooleanConsumer booleanConsumer, ServerEntry serverEntry) {
+	public AddServerScreen(BooleanConsumer booleanConsumer, ServerInfo serverInfo) {
 		super(new TranslatableText("addServer.title"));
 		this.callback = booleanConsumer;
-		this.serverEntry = serverEntry;
+		this.server = serverInfo;
 	}
 
 	@Override
@@ -55,13 +55,13 @@ public class AddServerScreen extends Screen {
 	protected void init() {
 		this.minecraft.keyboard.enableRepeatEvents(true);
 		this.serverNameField = new TextFieldWidget(this.font, this.width / 2 - 100, 66, 200, 20, I18n.translate("addServer.enterName"));
-		this.serverNameField.method_1876(true);
-		this.serverNameField.setText(this.serverEntry.name);
+		this.serverNameField.setSelected(true);
+		this.serverNameField.setText(this.server.name);
 		this.serverNameField.setChangedListener(this::onClose);
 		this.children.add(this.serverNameField);
 		this.addressField = new TextFieldWidget(this.font, this.width / 2 - 100, 106, 200, 20, I18n.translate("addServer.enterIp"));
 		this.addressField.setMaxLength(128);
-		this.addressField.setText(this.serverEntry.address);
+		this.addressField.setText(this.server.address);
 		this.addressField.setTextPredicate(this.addressTextFilter);
 		this.addressField.setChangedListener(this::onClose);
 		this.children.add(this.addressField);
@@ -71,14 +71,11 @@ public class AddServerScreen extends Screen {
 				this.height / 4 + 72,
 				200,
 				20,
-				I18n.translate("addServer.resourcePack") + ": " + this.serverEntry.getResourcePack().getName().asFormattedString(),
+				I18n.translate("addServer.resourcePack") + ": " + this.server.getResourcePack().getName().asFormattedString(),
 				buttonWidget -> {
-					this.serverEntry
-						.setResourcePackState(
-							ServerEntry.ResourcePackState.values()[(this.serverEntry.getResourcePack().ordinal() + 1) % ServerEntry.ResourcePackState.values().length]
-						);
-					this.resourcePackOptionButton
-						.setMessage(I18n.translate("addServer.resourcePack") + ": " + this.serverEntry.getResourcePack().getName().asFormattedString());
+					this.server
+						.setResourcePackState(ServerInfo.ResourcePackState.values()[(this.server.getResourcePack().ordinal() + 1) % ServerInfo.ResourcePackState.values().length]);
+					this.resourcePackOptionButton.setMessage(I18n.translate("addServer.resourcePack") + ": " + this.server.getResourcePack().getName().asFormattedString());
 				}
 			)
 		);
@@ -110,8 +107,8 @@ public class AddServerScreen extends Screen {
 	}
 
 	private void addAndClose() {
-		this.serverEntry.name = this.serverNameField.getText();
-		this.serverEntry.address = this.addressField.getText();
+		this.server.name = this.serverNameField.getText();
+		this.server.address = this.addressField.getText();
 		this.callback.accept(true);
 	}
 

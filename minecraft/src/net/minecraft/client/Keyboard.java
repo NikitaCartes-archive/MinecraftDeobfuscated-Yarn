@@ -299,7 +299,7 @@ public class Keyboard {
 					if (Screen.hasControlDown()) {
 					}
 
-					ScreenshotUtils.method_1659(
+					ScreenshotUtils.saveScreenshot(
 						this.client.runDirectory,
 						this.client.window.getFramebufferWidth(),
 						this.client.window.getFramebufferHeight(),
@@ -310,17 +310,15 @@ public class Keyboard {
 				}
 			}
 
-			boolean bl = parentElement == null
-				|| !(parentElement.getFocused() instanceof TextFieldWidget)
-				|| !((TextFieldWidget)parentElement.getFocused()).method_20315();
+			boolean bl = parentElement == null || !(parentElement.getFocused() instanceof TextFieldWidget) || !((TextFieldWidget)parentElement.getFocused()).isActive();
 			if (k != 0 && i == 66 && Screen.hasControlDown() && bl) {
 				Option.NARRATOR.cycle(this.client.options, 1);
 				if (parentElement instanceof ChatOptionsScreen) {
-					((ChatOptionsScreen)parentElement).method_2096();
+					((ChatOptionsScreen)parentElement).setNarratorMessage();
 				}
 
 				if (parentElement instanceof AccessibilityScreen) {
-					((AccessibilityScreen)parentElement).method_19366();
+					((AccessibilityScreen)parentElement).setNarratorMessage();
 				}
 			}
 
@@ -437,7 +435,7 @@ public class Keyboard {
 			long n = l - this.debugCrashLastLogTime;
 			if (m < 0L) {
 				if (Screen.hasControlDown()) {
-					GlfwUtil.method_15973();
+					GlfwUtil.makeJvmCrash();
 				}
 
 				throw new CrashException(new CrashReport("Manually triggered debug crash", new Throwable()));

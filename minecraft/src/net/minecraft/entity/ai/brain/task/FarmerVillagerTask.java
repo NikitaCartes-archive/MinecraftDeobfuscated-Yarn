@@ -122,7 +122,7 @@ public class FarmerVillagerTask extends Task<VillagerEntity> {
 			Block block = blockState.getBlock();
 			Block block2 = serverWorld.getBlockState(this.field_18858.down()).getBlock();
 			if (block instanceof CropBlock && ((CropBlock)block).isMature(blockState) && this.field_18860) {
-				serverWorld.breakBlock(this.field_18858, true);
+				serverWorld.breakBlock(this.field_18858, true, villagerEntity);
 			}
 
 			if (blockState.isAir() && block2 instanceof FarmlandBlock && this.field_18859) {

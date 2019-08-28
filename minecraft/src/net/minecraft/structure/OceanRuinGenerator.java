@@ -27,6 +27,7 @@ import net.minecraft.util.math.MutableIntBoundingBox;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.Heightmap;
 import net.minecraft.world.IWorld;
+import net.minecraft.world.gen.chunk.ChunkGenerator;
 import net.minecraft.world.gen.feature.OceanRuinFeature;
 import net.minecraft.world.gen.feature.OceanRuinFeatureConfig;
 import net.minecraft.world.loot.LootTables;
@@ -271,19 +272,19 @@ public class OceanRuinGenerator {
 		}
 
 		@Override
-		public boolean generate(IWorld iWorld, Random random, MutableIntBoundingBox mutableIntBoundingBox, ChunkPos chunkPos) {
+		public boolean generate(IWorld iWorld, ChunkGenerator<?> chunkGenerator, Random random, MutableIntBoundingBox mutableIntBoundingBox, ChunkPos chunkPos) {
 			this.placementData
 				.clearProcessors()
 				.addProcessor(new BlockRotStructureProcessor(this.integrity))
 				.addProcessor(BlockIgnoreStructureProcessor.IGNORE_AIR_AND_STRUCTURE_BLOCKS);
-			int i = iWorld.getTop(Heightmap.Type.OCEAN_FLOOR_WG, this.pos.getX(), this.pos.getZ());
+			int i = iWorld.getLightLevel(Heightmap.Type.OCEAN_FLOOR_WG, this.pos.getX(), this.pos.getZ());
 			this.pos = new BlockPos(this.pos.getX(), i, this.pos.getZ());
 			BlockPos blockPos = Structure.method_15168(
 					new BlockPos(this.structure.getSize().getX() - 1, 0, this.structure.getSize().getZ() - 1), BlockMirror.NONE, this.rotation, BlockPos.ORIGIN
 				)
 				.add(this.pos);
 			this.pos = new BlockPos(this.pos.getX(), this.method_14829(this.pos, iWorld, blockPos), this.pos.getZ());
-			return super.generate(iWorld, random, mutableIntBoundingBox, chunkPos);
+			return super.generate(iWorld, chunkGenerator, random, mutableIntBoundingBox, chunkPos);
 		}
 
 		private int method_14829(BlockPos blockPos, BlockView blockView, BlockPos blockPos2) {

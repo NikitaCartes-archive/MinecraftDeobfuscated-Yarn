@@ -169,7 +169,7 @@ public class ParticleManager implements ResourceReloadListener {
 		CompletableFuture<?>[] completableFutures = (CompletableFuture<?>[])Registry.PARTICLE_TYPE
 			.getIds()
 			.stream()
-			.map(identifier -> CompletableFuture.runAsync(() -> this.method_18836(resourceManager, identifier, map), executor))
+			.map(identifier -> CompletableFuture.runAsync(() -> this.loadTextureList(resourceManager, identifier, map), executor))
 			.toArray(CompletableFuture[]::new);
 		return CompletableFuture.allOf(completableFutures)
 			.thenApplyAsync(void_ -> {
@@ -208,7 +208,7 @@ public class ParticleManager implements ResourceReloadListener {
 		this.particleAtlasTexture.clear();
 	}
 
-	private void method_18836(ResourceManager resourceManager, Identifier identifier, Map<Identifier, List<Identifier>> map) {
+	private void loadTextureList(ResourceManager resourceManager, Identifier identifier, Map<Identifier, List<Identifier>> map) {
 		Identifier identifier2 = new Identifier(identifier.getNamespace(), "particles/" + identifier.getPath() + ".json");
 
 		try {
@@ -470,7 +470,7 @@ public class ParticleManager implements ResourceReloadListener {
 				d = (double)i + box.maxX + 0.1F;
 			}
 
-			this.addParticle(new BlockCrackParticle(this.world, d, e, g, 0.0, 0.0, 0.0, blockState).setBlockPos(blockPos).move(0.2F).method_3087(0.6F));
+			this.addParticle(new BlockCrackParticle(this.world, d, e, g, 0.0, 0.0, 0.0, blockState).setBlockPos(blockPos).move(0.2F).scale(0.6F));
 		}
 	}
 

@@ -21,7 +21,7 @@ public class LilyPadBlock extends PlantBlock {
 	public void onEntityCollision(BlockState blockState, World world, BlockPos blockPos, Entity entity) {
 		super.onEntityCollision(blockState, world, blockPos, entity);
 		if (entity instanceof BoatEntity) {
-			world.breakBlock(new BlockPos(blockPos), true);
+			world.breakBlock(new BlockPos(blockPos), true, entity);
 		}
 	}
 

@@ -1,6 +1,7 @@
 package net.minecraft.block;
 
 import javax.annotation.Nullable;
+import net.minecraft.class_4538;
 import net.minecraft.entity.EntityContext;
 import net.minecraft.fluid.FluidState;
 import net.minecraft.fluid.Fluids;
@@ -16,7 +17,6 @@ import net.minecraft.util.math.Direction;
 import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.IWorld;
-import net.minecraft.world.ViewableWorld;
 
 public class LadderBlock extends Block implements Waterloggable {
 	public static final DirectionProperty FACING = HorizontalFacingBlock.FACING;
@@ -52,9 +52,9 @@ public class LadderBlock extends Block implements Waterloggable {
 	}
 
 	@Override
-	public boolean canPlaceAt(BlockState blockState, ViewableWorld viewableWorld, BlockPos blockPos) {
+	public boolean canPlaceAt(BlockState blockState, class_4538 arg, BlockPos blockPos) {
 		Direction direction = blockState.get(FACING);
-		return this.canPlaceOn(viewableWorld, blockPos.offset(direction.getOpposite()), direction);
+		return this.canPlaceOn(arg, blockPos.offset(direction.getOpposite()), direction);
 	}
 
 	@Override
@@ -84,14 +84,14 @@ public class LadderBlock extends Block implements Waterloggable {
 		}
 
 		BlockState blockState = this.getDefaultState();
-		ViewableWorld viewableWorld = itemPlacementContext.getWorld();
+		class_4538 lv = itemPlacementContext.getWorld();
 		BlockPos blockPos = itemPlacementContext.getBlockPos();
 		FluidState fluidState = itemPlacementContext.getWorld().getFluidState(itemPlacementContext.getBlockPos());
 
 		for (Direction direction : itemPlacementContext.getPlacementDirections()) {
 			if (direction.getAxis().isHorizontal()) {
 				blockState = blockState.with(FACING, direction.getOpposite());
-				if (blockState.canPlaceAt(viewableWorld, blockPos)) {
+				if (blockState.canPlaceAt(lv, blockPos)) {
 					return blockState.with(WATERLOGGED, Boolean.valueOf(fluidState.getFluid() == Fluids.WATER));
 				}
 			}

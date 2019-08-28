@@ -9,6 +9,7 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.particle.DustParticleEffect;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.state.StateFactory;
 import net.minecraft.state.property.BooleanProperty;
 import net.minecraft.util.Hand;
@@ -56,9 +57,9 @@ public class RedstoneOreBlock extends Block {
 	}
 
 	@Override
-	public void onScheduledTick(BlockState blockState, World world, BlockPos blockPos, Random random) {
+	public void onScheduledTick(BlockState blockState, ServerWorld serverWorld, BlockPos blockPos, Random random) {
 		if ((Boolean)blockState.get(LIT)) {
-			world.setBlockState(blockPos, blockState.with(LIT, Boolean.valueOf(false)), 3);
+			serverWorld.setBlockState(blockPos, blockState.with(LIT, Boolean.valueOf(false)), 3);
 		}
 	}
 

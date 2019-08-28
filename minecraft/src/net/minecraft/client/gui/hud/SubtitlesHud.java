@@ -1,12 +1,12 @@
 package net.minecraft.client.gui.hud;
 
 import com.google.common.collect.Lists;
+import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
 import java.util.Iterator;
 import java.util.List;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_4493;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawableHelper;
 import net.minecraft.client.sound.ListenerSoundInstance;
@@ -39,7 +39,7 @@ public class SubtitlesHud extends DrawableHelper implements ListenerSoundInstanc
 			RenderSystem.pushMatrix();
 			RenderSystem.enableBlend();
 			RenderSystem.blendFuncSeparate(
-				class_4493.class_4535.SRC_ALPHA, class_4493.class_4534.ONE_MINUS_SRC_ALPHA, class_4493.class_4535.ONE, class_4493.class_4534.ZERO
+				GlStateManager.class_4535.SRC_ALPHA, GlStateManager.class_4534.ONE_MINUS_SRC_ALPHA, GlStateManager.class_4535.ONE, GlStateManager.class_4534.ZERO
 			);
 			Vec3d vec3d = new Vec3d(this.client.player.x, this.client.player.y + (double)this.client.player.getStandingEyeHeight(), this.client.player.z);
 			Vec3d vec3d2 = new Vec3d(0.0, 0.0, -1.0)

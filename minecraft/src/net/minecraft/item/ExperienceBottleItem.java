@@ -26,10 +26,6 @@ public class ExperienceBottleItem extends Item {
 	@Override
 	public TypedActionResult<ItemStack> use(World world, PlayerEntity playerEntity, Hand hand) {
 		ItemStack itemStack = playerEntity.getStackInHand(hand);
-		if (!playerEntity.abilities.creativeMode) {
-			itemStack.decrement(1);
-		}
-
 		world.playSound(
 			null,
 			playerEntity.x,
@@ -48,6 +44,10 @@ public class ExperienceBottleItem extends Item {
 		}
 
 		playerEntity.incrementStat(Stats.USED.getOrCreateStat(this));
+		if (!playerEntity.abilities.creativeMode) {
+			itemStack.decrement(1);
+		}
+
 		return new TypedActionResult<>(ActionResult.SUCCESS, itemStack);
 	}
 }

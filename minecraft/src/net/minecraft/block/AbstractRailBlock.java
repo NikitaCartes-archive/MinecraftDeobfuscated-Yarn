@@ -1,5 +1,6 @@
 package net.minecraft.block;
 
+import net.minecraft.class_4538;
 import net.minecraft.block.enums.RailShape;
 import net.minecraft.block.piston.PistonBehavior;
 import net.minecraft.entity.EntityContext;
@@ -8,7 +9,6 @@ import net.minecraft.tag.BlockTags;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.world.BlockView;
-import net.minecraft.world.ViewableWorld;
 import net.minecraft.world.World;
 
 public abstract class AbstractRailBlock extends Block {
@@ -40,8 +40,8 @@ public abstract class AbstractRailBlock extends Block {
 	}
 
 	@Override
-	public boolean canPlaceAt(BlockState blockState, ViewableWorld viewableWorld, BlockPos blockPos) {
-		return isSolidMediumSquare(viewableWorld, blockPos.down());
+	public boolean canPlaceAt(BlockState blockState, class_4538 arg, BlockPos blockPos) {
+		return isSolidMediumSquare(arg, blockPos.down());
 	}
 
 	@Override
@@ -86,7 +86,7 @@ public abstract class AbstractRailBlock extends Block {
 				}
 			}
 
-			if (bl2 && !world.isAir(blockPos)) {
+			if (bl2 && !world.method_22347(blockPos)) {
 				if (!bl) {
 					dropStacks(blockState, world, blockPos);
 				}

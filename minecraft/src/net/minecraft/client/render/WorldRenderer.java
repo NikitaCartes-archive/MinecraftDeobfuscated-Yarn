@@ -5,6 +5,7 @@ import com.google.common.collect.Maps;
 import com.google.common.collect.Queues;
 import com.google.common.collect.Sets;
 import com.google.gson.JsonSyntaxException;
+import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
 import java.io.IOException;
 import java.util.Collection;
@@ -18,7 +19,6 @@ import java.util.function.Supplier;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_4493;
 import net.minecraft.block.AbstractSignBlock;
 import net.minecraft.block.AbstractSkullBlock;
 import net.minecraft.block.Block;
@@ -234,7 +234,7 @@ public class WorldRenderer implements AutoCloseable, SynchronousResourceReloadLi
 		if (this.canDrawEntityOutlines()) {
 			RenderSystem.enableBlend();
 			RenderSystem.blendFuncSeparate(
-				class_4493.class_4535.SRC_ALPHA, class_4493.class_4534.ONE_MINUS_SRC_ALPHA, class_4493.class_4535.ZERO, class_4493.class_4534.ONE
+				GlStateManager.class_4535.SRC_ALPHA, GlStateManager.class_4534.ONE_MINUS_SRC_ALPHA, GlStateManager.class_4535.ZERO, GlStateManager.class_4534.ONE
 			);
 			this.entityOutlinesFramebuffer.draw(this.client.window.getFramebufferWidth(), this.client.window.getFramebufferHeight(), false);
 			RenderSystem.disableBlend();
@@ -878,7 +878,7 @@ public class WorldRenderer implements AutoCloseable, SynchronousResourceReloadLi
 		RenderSystem.disableAlphaTest();
 		RenderSystem.enableBlend();
 		RenderSystem.blendFuncSeparate(
-			class_4493.class_4535.SRC_ALPHA, class_4493.class_4534.ONE_MINUS_SRC_ALPHA, class_4493.class_4535.ONE, class_4493.class_4534.ZERO
+			GlStateManager.class_4535.SRC_ALPHA, GlStateManager.class_4534.ONE_MINUS_SRC_ALPHA, GlStateManager.class_4535.ONE, GlStateManager.class_4534.ZERO
 		);
 		GuiLighting.disable();
 		RenderSystem.depthMask(false);
@@ -948,7 +948,7 @@ public class WorldRenderer implements AutoCloseable, SynchronousResourceReloadLi
 			RenderSystem.disableAlphaTest();
 			RenderSystem.enableBlend();
 			RenderSystem.blendFuncSeparate(
-				class_4493.class_4535.SRC_ALPHA, class_4493.class_4534.ONE_MINUS_SRC_ALPHA, class_4493.class_4535.ONE, class_4493.class_4534.ZERO
+				GlStateManager.class_4535.SRC_ALPHA, GlStateManager.class_4534.ONE_MINUS_SRC_ALPHA, GlStateManager.class_4535.ONE, GlStateManager.class_4534.ZERO
 			);
 			GuiLighting.disable();
 			float[] fs = this.world.dimension.getBackgroundColor(this.world.getSkyAngle(f), f);
@@ -979,7 +979,9 @@ public class WorldRenderer implements AutoCloseable, SynchronousResourceReloadLi
 			}
 
 			RenderSystem.enableTexture();
-			RenderSystem.blendFuncSeparate(class_4493.class_4535.SRC_ALPHA, class_4493.class_4534.ONE, class_4493.class_4535.ONE, class_4493.class_4534.ZERO);
+			RenderSystem.blendFuncSeparate(
+				GlStateManager.class_4535.SRC_ALPHA, GlStateManager.class_4534.ONE, GlStateManager.class_4535.ONE, GlStateManager.class_4534.ZERO
+			);
 			RenderSystem.pushMatrix();
 			float j = 1.0F - this.world.getRainGradient(f);
 			RenderSystem.color4f(1.0F, 1.0F, 1.0F, j);
@@ -1110,7 +1112,7 @@ public class WorldRenderer implements AutoCloseable, SynchronousResourceReloadLi
 			this.textureManager.bindTexture(CLOUDS_TEX);
 			RenderSystem.enableBlend();
 			RenderSystem.blendFuncSeparate(
-				class_4493.class_4535.SRC_ALPHA, class_4493.class_4534.ONE_MINUS_SRC_ALPHA, class_4493.class_4535.ONE, class_4493.class_4534.ZERO
+				GlStateManager.class_4535.SRC_ALPHA, GlStateManager.class_4534.ONE_MINUS_SRC_ALPHA, GlStateManager.class_4535.ONE, GlStateManager.class_4534.ZERO
 			);
 			RenderSystem.pushMatrix();
 			RenderSystem.scalef(12.0F, 1.0F, 12.0F);
@@ -1413,7 +1415,9 @@ public class WorldRenderer implements AutoCloseable, SynchronousResourceReloadLi
 			double h = camera.getPos().y;
 			double i = camera.getPos().z;
 			RenderSystem.enableBlend();
-			RenderSystem.blendFuncSeparate(class_4493.class_4535.SRC_ALPHA, class_4493.class_4534.ONE, class_4493.class_4535.ONE, class_4493.class_4534.ZERO);
+			RenderSystem.blendFuncSeparate(
+				GlStateManager.class_4535.SRC_ALPHA, GlStateManager.class_4534.ONE, GlStateManager.class_4535.ONE, GlStateManager.class_4534.ZERO
+			);
 			this.textureManager.bindTexture(FORCEFIELD_TEX);
 			RenderSystem.depthMask(false);
 			RenderSystem.pushMatrix();
@@ -1507,7 +1511,9 @@ public class WorldRenderer implements AutoCloseable, SynchronousResourceReloadLi
 	}
 
 	private void enableBlockOverlayRendering() {
-		RenderSystem.blendFuncSeparate(class_4493.class_4535.DST_COLOR, class_4493.class_4534.SRC_COLOR, class_4493.class_4535.ONE, class_4493.class_4534.ZERO);
+		RenderSystem.blendFuncSeparate(
+			GlStateManager.class_4535.DST_COLOR, GlStateManager.class_4534.SRC_COLOR, GlStateManager.class_4535.ONE, GlStateManager.class_4534.ZERO
+		);
 		RenderSystem.enableBlend();
 		RenderSystem.color4f(1.0F, 1.0F, 1.0F, 0.5F);
 		RenderSystem.polygonOffset(-1.0F, -10.0F);
@@ -1576,7 +1582,7 @@ public class WorldRenderer implements AutoCloseable, SynchronousResourceReloadLi
 			if (!blockState.isAir() && this.world.getWorldBorder().contains(blockPos)) {
 				RenderSystem.enableBlend();
 				RenderSystem.blendFuncSeparate(
-					class_4493.class_4535.SRC_ALPHA, class_4493.class_4534.ONE_MINUS_SRC_ALPHA, class_4493.class_4535.ONE, class_4493.class_4534.ZERO
+					GlStateManager.class_4535.SRC_ALPHA, GlStateManager.class_4534.ONE_MINUS_SRC_ALPHA, GlStateManager.class_4535.ONE, GlStateManager.class_4534.ZERO
 				);
 				RenderSystem.lineWidth(Math.max(2.5F, (float)this.client.window.getFramebufferWidth() / 1920.0F * 2.5F));
 				RenderSystem.disableTexture();

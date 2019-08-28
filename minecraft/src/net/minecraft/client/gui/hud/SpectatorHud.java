@@ -1,9 +1,9 @@
 package net.minecraft.client.gui.hud;
 
+import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_4493;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawableHelper;
 import net.minecraft.client.gui.hud.spectator.SpectatorMenu;
@@ -20,24 +20,24 @@ public class SpectatorHud extends DrawableHelper implements SpectatorMenuCloseCa
 	private static final Identifier WIDGETS_TEX = new Identifier("textures/gui/widgets.png");
 	public static final Identifier SPECTATOR_TEX = new Identifier("textures/gui/spectator_widgets.png");
 	private final MinecraftClient client;
-	private long lastKeyPressTime;
+	private long lastInteractionTime;
 	private SpectatorMenu spectatorMenu;
 
 	public SpectatorHud(MinecraftClient minecraftClient) {
 		this.client = minecraftClient;
 	}
 
-	public void onHotbarKeyPress(int i) {
-		this.lastKeyPressTime = SystemUtil.getMeasuringTimeMs();
+	public void selectSlot(int i) {
+		this.lastInteractionTime = SystemUtil.getMeasuringTimeMs();
 		if (this.spectatorMenu != null) {
-			this.spectatorMenu.setSelectedSlot(i);
+			this.spectatorMenu.useCommand(i);
 		} else {
 			this.spectatorMenu = new SpectatorMenu(this);
 		}
 	}
 
 	private float getSpectatorMenuHeight() {
-		long l = this.lastKeyPressTime - SystemUtil.getMeasuringTimeMs() + 5000L;
+		long l = this.lastInteractionTime - SystemUtil.getMeasuringTimeMs() + 5000L;
 		return MathHelper.clamp((float)l / 2000.0F, 0.0F, 1.0F);
 	}
 
@@ -62,7 +62,7 @@ public class SpectatorHud extends DrawableHelper implements SpectatorMenuCloseCa
 		RenderSystem.enableRescaleNormal();
 		RenderSystem.enableBlend();
 		RenderSystem.blendFuncSeparate(
-			class_4493.class_4535.SRC_ALPHA, class_4493.class_4534.ONE_MINUS_SRC_ALPHA, class_4493.class_4535.ONE, class_4493.class_4534.ZERO
+			GlStateManager.class_4535.SRC_ALPHA, GlStateManager.class_4534.ONE_MINUS_SRC_ALPHA, GlStateManager.class_4535.ONE, GlStateManager.class_4534.ZERO
 		);
 		RenderSystem.color4f(1.0F, 1.0F, 1.0F, f);
 		this.client.getTextureManager().bindTexture(WIDGETS_TEX);
@@ -114,7 +114,7 @@ public class SpectatorHud extends DrawableHelper implements SpectatorMenuCloseCa
 				RenderSystem.pushMatrix();
 				RenderSystem.enableBlend();
 				RenderSystem.blendFuncSeparate(
-					class_4493.class_4535.SRC_ALPHA, class_4493.class_4534.ONE_MINUS_SRC_ALPHA, class_4493.class_4535.ONE, class_4493.class_4534.ZERO
+					GlStateManager.class_4535.SRC_ALPHA, GlStateManager.class_4534.ONE_MINUS_SRC_ALPHA, GlStateManager.class_4535.ONE, GlStateManager.class_4534.ZERO
 				);
 				this.client.textRenderer.drawWithShadow(string, (float)j, (float)k, 16777215 + (i << 24));
 				RenderSystem.disableBlend();
@@ -126,14 +126,14 @@ public class SpectatorHud extends DrawableHelper implements SpectatorMenuCloseCa
 	@Override
 	public void close(SpectatorMenu spectatorMenu) {
 		this.spectatorMenu = null;
-		this.lastKeyPressTime = 0L;
+		this.lastInteractionTime = 0L;
 	}
 
-	public boolean method_1980() {
+	public boolean isOpen() {
 		return this.spectatorMenu != null;
 	}
 
-	public void method_1976(double d) {
+	public void cycleSlot(double d) {
 		int i = this.spectatorMenu.getSelectedSlot() + (int)d;
 
 		while (i >= 0 && i <= 8 && (this.spectatorMenu.getCommand(i) == SpectatorMenu.BLANK_COMMAND || !this.spectatorMenu.getCommand(i).isEnabled())) {
@@ -141,17 +141,17 @@ public class SpectatorHud extends DrawableHelper implements SpectatorMenuCloseCa
 		}
 
 		if (i >= 0 && i <= 8) {
-			this.spectatorMenu.setSelectedSlot(i);
-			this.lastKeyPressTime = SystemUtil.getMeasuringTimeMs();
+			this.spectatorMenu.useCommand(i);
+			this.lastInteractionTime = SystemUtil.getMeasuringTimeMs();
 		}
 	}
 
-	public void method_1983() {
-		this.lastKeyPressTime = SystemUtil.getMeasuringTimeMs();
-		if (this.method_1980()) {
+	public void useSelectedCommand() {
+		this.lastInteractionTime = SystemUtil.getMeasuringTimeMs();
+		if (this.isOpen()) {
 			int i = this.spectatorMenu.getSelectedSlot();
 			if (i != -1) {
-				this.spectatorMenu.setSelectedSlot(i);
+				this.spectatorMenu.useCommand(i);
 			}
 		} else {
 			this.spectatorMenu = new SpectatorMenu(this);

@@ -1,10 +1,9 @@
 package net.minecraft.client.render.entity;
 
+import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_4493;
-import net.minecraft.class_4506;
 import net.minecraft.client.network.AbstractClientPlayerEntity;
 import net.minecraft.client.render.entity.feature.ArmorBipedFeatureRenderer;
 import net.minecraft.client.render.entity.feature.CapeFeatureRenderer;
@@ -13,6 +12,7 @@ import net.minecraft.client.render.entity.feature.ElytraFeatureRenderer;
 import net.minecraft.client.render.entity.feature.HeadFeatureRenderer;
 import net.minecraft.client.render.entity.feature.HeldItemFeatureRenderer;
 import net.minecraft.client.render.entity.feature.ShoulderParrotFeatureRenderer;
+import net.minecraft.client.render.entity.feature.StingerFeatureRenderer;
 import net.minecraft.client.render.entity.feature.StuckArrowsFeatureRenderer;
 import net.minecraft.client.render.entity.feature.TridentRiptideFeatureRenderer;
 import net.minecraft.client.render.entity.model.BipedEntityModel;
@@ -48,7 +48,7 @@ public class PlayerEntityRenderer extends LivingEntityRenderer<AbstractClientPla
 		this.addFeature(new ElytraFeatureRenderer<>(this));
 		this.addFeature(new ShoulderParrotFeatureRenderer<>(this));
 		this.addFeature(new TridentRiptideFeatureRenderer<>(this));
-		this.addFeature(new class_4506<>(this));
+		this.addFeature(new StingerFeatureRenderer<>(this));
 	}
 
 	public void method_4215(AbstractClientPlayerEntity abstractClientPlayerEntity, double d, double e, double f, float g, float h) {
@@ -59,9 +59,9 @@ public class PlayerEntityRenderer extends LivingEntityRenderer<AbstractClientPla
 			}
 
 			this.setModelPose(abstractClientPlayerEntity);
-			class_4493.method_21967(class_4493.RenderMode.PLAYER_SKIN);
+			GlStateManager.beginRenderMode(GlStateManager.RenderMode.PLAYER_SKIN);
 			super.method_4054(abstractClientPlayerEntity, d, i, f, g, h);
-			class_4493.method_21994(class_4493.RenderMode.PLAYER_SKIN);
+			GlStateManager.endRenderMode(GlStateManager.RenderMode.PLAYER_SKIN);
 		}
 	}
 

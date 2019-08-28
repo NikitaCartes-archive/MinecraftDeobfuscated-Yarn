@@ -120,7 +120,7 @@ public class JsonGlProgram implements GlProgram, AutoCloseable {
 			this.finalizeUniformsAndSamplers();
 			if (this.attribNames != null) {
 				for (String string4 : this.attribNames) {
-					int l = GlUniform.method_22097(this.programRef, string4);
+					int l = GlUniform.getAttribLocation(this.programRef, string4);
 					this.attribLocs.add(l);
 				}
 			}
@@ -218,7 +218,7 @@ public class JsonGlProgram implements GlProgram, AutoCloseable {
 	}
 
 	public void disable() {
-		GlProgramManager.method_22094(0);
+		GlProgramManager.useProgram(0);
 		activeProgramRef = -1;
 		activeProgram = null;
 
@@ -235,7 +235,7 @@ public class JsonGlProgram implements GlProgram, AutoCloseable {
 		activeProgram = this;
 		this.blendState.enable();
 		if (this.programRef != activeProgramRef) {
-			GlProgramManager.method_22094(this.programRef);
+			GlProgramManager.useProgram(this.programRef);
 			activeProgramRef = this.programRef;
 		}
 
@@ -261,7 +261,7 @@ public class JsonGlProgram implements GlProgram, AutoCloseable {
 
 				if (j != -1) {
 					RenderSystem.bindTexture(j);
-					GlUniform.method_22095(GlUniform.method_22096(this.programRef, (CharSequence)this.samplerNames.get(i)), i);
+					GlUniform.uniform1(GlUniform.getUniformLocation(this.programRef, (CharSequence)this.samplerNames.get(i)), i);
 				}
 			}
 		}
@@ -291,7 +291,7 @@ public class JsonGlProgram implements GlProgram, AutoCloseable {
 
 		for (int j = 0; i < this.samplerNames.size(); j++) {
 			String string = (String)this.samplerNames.get(i);
-			int k = GlUniform.method_22096(this.programRef, string);
+			int k = GlUniform.getUniformLocation(this.programRef, string);
 			if (k == -1) {
 				LOGGER.warn("Shader {}could not find sampler named {} in the specified shader program.", this.name, string);
 				this.samplerBinds.remove(string);
@@ -306,7 +306,7 @@ public class JsonGlProgram implements GlProgram, AutoCloseable {
 
 		for (GlUniform glUniform : this.uniformData) {
 			String string = glUniform.getName();
-			int k = GlUniform.method_22096(this.programRef, string);
+			int k = GlUniform.getUniformLocation(this.programRef, string);
 			if (k == -1) {
 				LOGGER.warn("Could not find uniform named {} in the specified shader program.", string);
 			} else {

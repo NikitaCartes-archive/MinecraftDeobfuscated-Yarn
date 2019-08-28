@@ -2,6 +2,7 @@ package net.minecraft.client.render.debug;
 
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableMap.Builder;
+import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -9,7 +10,6 @@ import java.util.concurrent.CompletableFuture;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_4493;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.Camera;
 import net.minecraft.client.world.ClientChunkManager;
@@ -51,7 +51,7 @@ public class ChunkLoadingDebugRenderer implements DebugRenderer.Renderer {
 			RenderSystem.disableFog();
 			RenderSystem.enableBlend();
 			RenderSystem.blendFuncSeparate(
-				class_4493.class_4535.SRC_ALPHA, class_4493.class_4534.ONE_MINUS_SRC_ALPHA, class_4493.class_4535.ONE, class_4493.class_4534.ZERO
+				GlStateManager.class_4535.SRC_ALPHA, GlStateManager.class_4534.ONE_MINUS_SRC_ALPHA, GlStateManager.class_4535.ONE, GlStateManager.class_4534.ZERO
 			);
 			RenderSystem.lineWidth(2.0F);
 			RenderSystem.disableTexture();

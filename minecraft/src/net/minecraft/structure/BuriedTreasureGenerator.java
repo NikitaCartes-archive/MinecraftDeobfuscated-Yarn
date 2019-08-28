@@ -10,6 +10,7 @@ import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MutableIntBoundingBox;
 import net.minecraft.world.Heightmap;
 import net.minecraft.world.IWorld;
+import net.minecraft.world.gen.chunk.ChunkGenerator;
 import net.minecraft.world.loot.LootTables;
 
 public class BuriedTreasureGenerator {
@@ -28,8 +29,8 @@ public class BuriedTreasureGenerator {
 		}
 
 		@Override
-		public boolean generate(IWorld iWorld, Random random, MutableIntBoundingBox mutableIntBoundingBox, ChunkPos chunkPos) {
-			int i = iWorld.getTop(Heightmap.Type.OCEAN_FLOOR_WG, this.boundingBox.minX, this.boundingBox.minZ);
+		public boolean generate(IWorld iWorld, ChunkGenerator<?> chunkGenerator, Random random, MutableIntBoundingBox mutableIntBoundingBox, ChunkPos chunkPos) {
+			int i = iWorld.getLightLevel(Heightmap.Type.OCEAN_FLOOR_WG, this.boundingBox.minX, this.boundingBox.minZ);
 			BlockPos.Mutable mutable = new BlockPos.Mutable(this.boundingBox.minX, i, this.boundingBox.minZ);
 
 			while (mutable.getY() > 0) {

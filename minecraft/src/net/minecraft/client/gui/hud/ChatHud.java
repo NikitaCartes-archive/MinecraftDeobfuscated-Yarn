@@ -26,7 +26,7 @@ public class ChatHud extends DrawableHelper {
 	private final List<ChatHudLine> messages = Lists.<ChatHudLine>newArrayList();
 	private final List<ChatHudLine> visibleMessages = Lists.<ChatHudLine>newArrayList();
 	private int scrolledLines;
-	private boolean field_2067;
+	private boolean hasUnreadNewMessages;
 
 	public ChatHud(MinecraftClient minecraftClient) {
 		this.client = minecraftClient;
@@ -54,9 +54,9 @@ public class ChatHud extends DrawableHelper {
 				for (int n = 0; n + this.scrolledLines < this.visibleMessages.size() && n < j; n++) {
 					ChatHudLine chatHudLine = (ChatHudLine)this.visibleMessages.get(n + this.scrolledLines);
 					if (chatHudLine != null) {
-						int o = i - chatHudLine.getTimestamp();
+						int o = i - chatHudLine.getCreationTick();
 						if (o < 200 || bl) {
-							double g = bl ? 1.0 : method_19348(o);
+							double g = bl ? 1.0 : getMessageOpacityMultiplier(o);
 							int p = (int)(255.0 * g * e);
 							int q = (int)(255.0 * g * f);
 							m++;
@@ -83,7 +83,7 @@ public class ChatHud extends DrawableHelper {
 					int v = o * o / t;
 					if (t != o) {
 						int p = u > 0 ? 170 : 96;
-						int q = this.field_2067 ? 13382451 : 3355562;
+						int q = this.hasUnreadNewMessages ? 13382451 : 3355562;
 						fill(0, -u, 2, -u - v, q + (p << 24));
 						fill(2, -u, 1, -u - v, 13421772 + (p << 24));
 					}
@@ -94,7 +94,7 @@ public class ChatHud extends DrawableHelper {
 		}
 	}
 
-	private static double method_19348(int i) {
+	private static double getMessageOpacityMultiplier(int i) {
 		double d = (double)i / 200.0;
 		d = 1.0 - d;
 		d *= 10.0;
@@ -130,7 +130,7 @@ public class ChatHud extends DrawableHelper {
 
 		for (Text text2 : list) {
 			if (bl2 && this.scrolledLines > 0) {
-				this.field_2067 = true;
+				this.hasUnreadNewMessages = true;
 				this.scroll(1.0);
 			}
 
@@ -152,11 +152,11 @@ public class ChatHud extends DrawableHelper {
 
 	public void reset() {
 		this.visibleMessages.clear();
-		this.method_1820();
+		this.resetScroll();
 
 		for (int i = this.messages.size() - 1; i >= 0; i--) {
 			ChatHudLine chatHudLine = (ChatHudLine)this.messages.get(i);
-			this.addMessage(chatHudLine.getText(), chatHudLine.getId(), chatHudLine.getTimestamp(), true);
+			this.addMessage(chatHudLine.getText(), chatHudLine.getId(), chatHudLine.getCreationTick(), true);
 		}
 	}
 
@@ -170,9 +170,9 @@ public class ChatHud extends DrawableHelper {
 		}
 	}
 
-	public void method_1820() {
+	public void resetScroll() {
 		this.scrolledLines = 0;
-		this.field_2067 = false;
+		this.hasUnreadNewMessages = false;
 	}
 
 	public void scroll(double d) {
@@ -184,7 +184,7 @@ public class ChatHud extends DrawableHelper {
 
 		if (this.scrolledLines <= 0) {
 			this.scrolledLines = 0;
-			this.field_2067 = false;
+			this.hasUnreadNewMessages = false;
 		}
 	}
 

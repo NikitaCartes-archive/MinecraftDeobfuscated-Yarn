@@ -12,89 +12,23 @@ import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityContext;
-import net.minecraft.tag.FluidTags;
 import net.minecraft.util.BooleanBiFunction;
 import net.minecraft.util.CuboidBlockIterator;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
-import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.util.shape.VoxelShapes;
 import net.minecraft.world.border.WorldBorder;
-import net.minecraft.world.chunk.Chunk;
-import net.minecraft.world.chunk.ChunkStatus;
-import net.minecraft.world.dimension.Dimension;
 
-public interface ViewableWorld extends ExtendedBlockView {
-	default boolean isAir(BlockPos blockPos) {
-		return this.getBlockState(blockPos).isAir();
-	}
-
-	default boolean method_8626(BlockPos blockPos) {
-		if (blockPos.getY() >= this.getSeaLevel()) {
-			return this.isSkyVisible(blockPos);
-		} else {
-			BlockPos blockPos2 = new BlockPos(blockPos.getX(), this.getSeaLevel(), blockPos.getZ());
-			if (!this.isSkyVisible(blockPos2)) {
-				return false;
-			} else {
-				for (BlockPos var4 = blockPos2.down(); var4.getY() > blockPos.getY(); var4 = var4.down()) {
-					BlockState blockState = this.getBlockState(var4);
-					if (blockState.getLightSubtracted(this, var4) > 0 && !blockState.getMaterial().isLiquid()) {
-						return false;
-					}
-				}
-
-				return true;
-			}
-		}
-	}
-
-	int getLightLevel(BlockPos blockPos, int i);
-
-	@Nullable
-	Chunk getChunk(int i, int j, ChunkStatus chunkStatus, boolean bl);
-
-	@Deprecated
-	boolean isChunkLoaded(int i, int j);
-
-	BlockPos getTopPosition(Heightmap.Type type, BlockPos blockPos);
-
-	int getTop(Heightmap.Type type, int i, int j);
-
-	default float getBrightness(BlockPos blockPos) {
-		return this.getDimension().getLightLevelToBrightness()[this.getLightLevel(blockPos)];
-	}
-
-	int getAmbientDarkness();
-
+public interface ViewableWorld extends BlockView {
 	WorldBorder getWorldBorder();
 
-	boolean intersectsEntities(@Nullable Entity entity, VoxelShape voxelShape);
+	@Nullable
+	BlockView method_22338(int i, int j);
 
-	default int getEmittedStrongRedstonePower(BlockPos blockPos, Direction direction) {
-		return this.getBlockState(blockPos).getStrongRedstonePower(this, blockPos, direction);
-	}
-
-	boolean isClient();
-
-	int getSeaLevel();
-
-	default Chunk getChunk(BlockPos blockPos) {
-		return this.getChunk(blockPos.getX() >> 4, blockPos.getZ() >> 4);
-	}
-
-	default Chunk getChunk(int i, int j) {
-		return this.getChunk(i, j, ChunkStatus.FULL, true);
-	}
-
-	default Chunk getChunk(int i, int j, ChunkStatus chunkStatus) {
-		return this.getChunk(i, j, chunkStatus, true);
-	}
-
-	default ChunkStatus getLeastChunkStatusForCollisionCalculation() {
-		return ChunkStatus.EMPTY;
+	default boolean intersectsEntities(@Nullable Entity entity, VoxelShape voxelShape) {
+		return true;
 	}
 
 	default boolean canPlace(BlockState blockState, BlockPos blockPos, EntityContext entityContext) {
@@ -164,10 +98,10 @@ public interface ViewableWorld extends ExtendedBlockView {
 					if (l != 3) {
 						int m = i >> 4;
 						int n = k >> 4;
-						Chunk chunk = ViewableWorld.this.getChunk(m, n, ViewableWorld.this.getLeastChunkStatusForCollisionCalculation(), false);
-						if (chunk != null) {
+						BlockView blockView = ViewableWorld.this.method_22338(m, n);
+						if (blockView != null) {
 							mutable.set(i, j, k);
-							BlockState blockState = chunk.getBlockState(mutable);
+							BlockState blockState = blockView.getBlockState(mutable);
 							if ((l != 1 || blockState.method_17900()) && (l != 2 || blockState.getBlock() == Blocks.MOVING_PISTON)) {
 								VoxelShape voxelShape2 = blockState.getCollisionShape(ViewableWorld.this, mutable, entityContext);
 								VoxelShape voxelShape3 = voxelShape2.offset((double)i, (double)j, (double)k);
@@ -184,76 +118,4 @@ public interface ViewableWorld extends ExtendedBlockView {
 			}
 		}, false);
 	}
-
-	default boolean isWaterAt(BlockPos blockPos) {
-		return this.getFluidState(blockPos).matches(FluidTags.WATER);
-	}
-
-	default boolean intersectsFluid(Box box) {
-		int i = MathHelper.floor(box.minX);
-		int j = MathHelper.ceil(box.maxX);
-		int k = MathHelper.floor(box.minY);
-		int l = MathHelper.ceil(box.maxY);
-		int m = MathHelper.floor(box.minZ);
-		int n = MathHelper.ceil(box.maxZ);
-
-		try (BlockPos.PooledMutable pooledMutable = BlockPos.PooledMutable.get()) {
-			for (int o = i; o < j; o++) {
-				for (int p = k; p < l; p++) {
-					for (int q = m; q < n; q++) {
-						BlockState blockState = this.getBlockState(pooledMutable.method_10113(o, p, q));
-						if (!blockState.getFluidState().isEmpty()) {
-							return true;
-						}
-					}
-				}
-			}
-
-			return false;
-		}
-	}
-
-	default int getLightLevel(BlockPos blockPos) {
-		return this.method_8603(blockPos, this.getAmbientDarkness());
-	}
-
-	default int method_8603(BlockPos blockPos, int i) {
-		return blockPos.getX() >= -30000000 && blockPos.getZ() >= -30000000 && blockPos.getX() < 30000000 && blockPos.getZ() < 30000000
-			? this.getLightLevel(blockPos, i)
-			: 15;
-	}
-
-	@Deprecated
-	default boolean isBlockLoaded(BlockPos blockPos) {
-		return this.isChunkLoaded(blockPos.getX() >> 4, blockPos.getZ() >> 4);
-	}
-
-	@Deprecated
-	default boolean isAreaLoaded(BlockPos blockPos, BlockPos blockPos2) {
-		return this.isAreaLoaded(blockPos.getX(), blockPos.getY(), blockPos.getZ(), blockPos2.getX(), blockPos2.getY(), blockPos2.getZ());
-	}
-
-	@Deprecated
-	default boolean isAreaLoaded(int i, int j, int k, int l, int m, int n) {
-		if (m >= 0 && j < 256) {
-			i >>= 4;
-			k >>= 4;
-			l >>= 4;
-			n >>= 4;
-
-			for (int o = i; o <= l; o++) {
-				for (int p = k; p <= n; p++) {
-					if (!this.isChunkLoaded(o, p)) {
-						return false;
-					}
-				}
-			}
-
-			return true;
-		} else {
-			return false;
-		}
-	}
-
-	Dimension getDimension();
 }

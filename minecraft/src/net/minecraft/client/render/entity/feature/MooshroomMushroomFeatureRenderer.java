@@ -1,9 +1,9 @@
 package net.minecraft.client.render.entity.feature;
 
+import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_4493;
 import net.minecraft.block.BlockState;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.block.BlockRenderManager;
@@ -22,7 +22,7 @@ public class MooshroomMushroomFeatureRenderer<T extends MooshroomEntity> extends
 			BlockState blockState = mooshroomEntity.getMooshroomType().getMushroomState();
 			this.bindTexture(SpriteAtlasTexture.BLOCK_ATLAS_TEX);
 			RenderSystem.enableCull();
-			RenderSystem.cullFace(class_4493.FaceSides.FRONT);
+			RenderSystem.cullFace(GlStateManager.FaceSides.FRONT);
 			RenderSystem.pushMatrix();
 			RenderSystem.scalef(1.0F, -1.0F, 1.0F);
 			RenderSystem.translatef(0.2F, 0.35F, 0.5F);
@@ -47,7 +47,7 @@ public class MooshroomMushroomFeatureRenderer<T extends MooshroomEntity> extends
 			RenderSystem.translatef(-0.5F, -0.5F, 0.5F);
 			blockRenderManager.renderDynamic(blockState, 1.0F);
 			RenderSystem.popMatrix();
-			RenderSystem.cullFace(class_4493.FaceSides.BACK);
+			RenderSystem.cullFace(GlStateManager.FaceSides.BACK);
 			RenderSystem.disableCull();
 		}
 	}

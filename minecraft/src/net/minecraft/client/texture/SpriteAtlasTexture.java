@@ -13,7 +13,6 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.stream.Collectors;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_4536;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.resource.metadata.AnimationResourceMetadata;
 import net.minecraft.client.util.PngFile;
@@ -59,7 +58,7 @@ public class SpriteAtlasTexture extends AbstractTexture implements TickableTextu
 		this.spritesToLoad.clear();
 		this.spritesToLoad.addAll(data.spriteIds);
 		LOGGER.info("Created: {}x{} {}-atlas", data.width, data.height, this.atlasPath);
-		class_4536.prepareImage(this.getGlId(), this.mipLevel, data.width, data.height);
+		TextureUtil.prepareImage(this.getGlId(), this.mipLevel, data.width, data.height);
 		this.clear();
 
 		for (Sprite sprite : data.sprites) {
@@ -130,7 +129,7 @@ public class SpriteAtlasTexture extends AbstractTexture implements TickableTextu
 			CrashReportSection crashReportSection = crashReport.addElement("Stitcher");
 			crashReportSection.add(
 				"Sprites",
-				var14.method_21687()
+				var14.getSprites()
 					.stream()
 					.map(sprite -> String.format("%s[%dx%d]", sprite.getId(), sprite.getWidth(), sprite.getHeight()))
 					.collect(Collectors.joining(","))
@@ -140,7 +139,7 @@ public class SpriteAtlasTexture extends AbstractTexture implements TickableTextu
 		}
 
 		profiler.swap("loading");
-		List<Sprite> list = this.method_18161(resourceManager, textureStitcher);
+		List<Sprite> list = this.loadSprites(resourceManager, textureStitcher);
 		profiler.pop();
 		return new SpriteAtlasTexture.Data(set, textureStitcher.getWidth(), textureStitcher.getHeight(), list);
 	}
@@ -196,7 +195,7 @@ public class SpriteAtlasTexture extends AbstractTexture implements TickableTextu
 		return concurrentLinkedQueue;
 	}
 
-	private List<Sprite> method_18161(ResourceManager resourceManager, TextureStitcher textureStitcher) {
+	private List<Sprite> loadSprites(ResourceManager resourceManager, TextureStitcher textureStitcher) {
 		ConcurrentLinkedQueue<Sprite> concurrentLinkedQueue = new ConcurrentLinkedQueue();
 		List<CompletableFuture<?>> list = Lists.<CompletableFuture<?>>newArrayList();
 

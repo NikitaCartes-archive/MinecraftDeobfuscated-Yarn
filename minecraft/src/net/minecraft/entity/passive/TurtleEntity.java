@@ -6,6 +6,7 @@ import java.util.Random;
 import java.util.Set;
 import java.util.function.Predicate;
 import javax.annotation.Nullable;
+import net.minecraft.class_4538;
 import net.minecraft.advancement.criterion.Criterions;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
@@ -54,7 +55,6 @@ import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.GameRules;
 import net.minecraft.world.IWorld;
 import net.minecraft.world.LocalDifficulty;
-import net.minecraft.world.ViewableWorld;
 import net.minecraft.world.World;
 
 public class TurtleEntity extends AnimalEntity {
@@ -170,7 +170,7 @@ public class TurtleEntity extends AnimalEntity {
 	}
 
 	public static boolean method_20671(EntityType<TurtleEntity> entityType, IWorld iWorld, SpawnType spawnType, BlockPos blockPos, Random random) {
-		return blockPos.getY() < iWorld.getSeaLevel() + 4 && iWorld.getBlockState(blockPos.down()).getBlock() == Blocks.SAND && iWorld.getLightLevel(blockPos, 0) > 8;
+		return blockPos.getY() < iWorld.getSeaLevel() + 4 && iWorld.getBlockState(blockPos.down()).getBlock() == Blocks.SAND && iWorld.method_22335(blockPos, 0) > 8;
 	}
 
 	@Override
@@ -279,11 +279,11 @@ public class TurtleEntity extends AnimalEntity {
 	}
 
 	@Override
-	public float getPathfindingFavor(BlockPos blockPos, ViewableWorld viewableWorld) {
-		if (!this.isLandBound() && viewableWorld.getFluidState(blockPos).matches(FluidTags.WATER)) {
+	public float getPathfindingFavor(BlockPos blockPos, class_4538 arg) {
+		if (!this.isLandBound() && arg.getFluidState(blockPos).matches(FluidTags.WATER)) {
 			return 10.0F;
 		} else {
-			return viewableWorld.getBlockState(blockPos.down()).getBlock() == Blocks.SAND ? 10.0F : viewableWorld.getBrightness(blockPos) - 0.5F;
+			return arg.getBlockState(blockPos.down()).getBlock() == Blocks.SAND ? 10.0F : arg.method_22349(blockPos) - 0.5F;
 		}
 	}
 
@@ -497,11 +497,11 @@ public class TurtleEntity extends AnimalEntity {
 		}
 
 		@Override
-		protected boolean isTargetPos(ViewableWorld viewableWorld, BlockPos blockPos) {
-			if (!viewableWorld.isAir(blockPos.up())) {
+		protected boolean isTargetPos(class_4538 arg, BlockPos blockPos) {
+			if (!arg.method_22347(blockPos.up())) {
 				return false;
 			} else {
-				Block block = viewableWorld.getBlockState(blockPos).getBlock();
+				Block block = arg.getBlockState(blockPos).getBlock();
 				return block == Blocks.SAND;
 			}
 		}
@@ -590,7 +590,7 @@ public class TurtleEntity extends AnimalEntity {
 					int i = MathHelper.floor(vec3d.x);
 					int j = MathHelper.floor(vec3d.z);
 					int k = 34;
-					if (!this.turtle.world.isAreaLoaded(i - 34, 0, j - 34, i + 34, 0, j + 34)) {
+					if (!this.turtle.world.method_22341(i - 34, 0, j - 34, i + 34, 0, j + 34)) {
 						vec3d = null;
 					}
 				}
@@ -740,8 +740,8 @@ public class TurtleEntity extends AnimalEntity {
 		}
 
 		@Override
-		protected boolean isTargetPos(ViewableWorld viewableWorld, BlockPos blockPos) {
-			Block block = viewableWorld.getBlockState(blockPos).getBlock();
+		protected boolean isTargetPos(class_4538 arg, BlockPos blockPos) {
+			Block block = arg.getBlockState(blockPos).getBlock();
 			return block == Blocks.WATER;
 		}
 	}

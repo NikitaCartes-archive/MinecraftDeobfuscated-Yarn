@@ -114,7 +114,7 @@ public class BeaconBlockEntity extends BlockEntity implements NameableContainerP
 		BeaconBlockEntity.BeamSegment beamSegment = this.field_19178.isEmpty()
 			? null
 			: (BeaconBlockEntity.BeamSegment)this.field_19178.get(this.field_19178.size() - 1);
-		int l = this.world.getTop(Heightmap.Type.WORLD_SURFACE, i, k);
+		int l = this.world.getLightLevel(Heightmap.Type.WORLD_SURFACE, i, k);
 
 		for (int m = 0; m < 10 && blockPos.getY() <= l; m++) {
 			BlockState blockState = this.world.getBlockState(blockPos);

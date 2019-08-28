@@ -1,11 +1,11 @@
-package net.minecraft;
+package net.minecraft.client.model;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 
 @Environment(EnvType.CLIENT)
-public class class_4496 {
-	public static float method_22114(float f, float g, float h) {
+public class ModelUtil {
+	public static float interpolateAngle(float f, float g, float h) {
 		float i = g - f;
 
 		while (i < (float) -Math.PI) {

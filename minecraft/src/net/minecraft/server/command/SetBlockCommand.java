@@ -56,7 +56,7 @@ public class SetBlockCommand {
 													BlockPosArgumentType.getLoadedBlockPos(commandContext, "pos"),
 													BlockStateArgumentType.getBlockState(commandContext, "block"),
 													SetBlockCommand.Mode.REPLACE,
-													cachedBlockPosition -> cachedBlockPosition.getWorld().isAir(cachedBlockPosition.getBlockPos())
+													cachedBlockPosition -> cachedBlockPosition.getWorld().method_22347(cachedBlockPosition.getBlockPos())
 												)
 										)
 								)
@@ -90,7 +90,7 @@ public class SetBlockCommand {
 		} else {
 			boolean bl;
 			if (mode == SetBlockCommand.Mode.DESTROY) {
-				serverWorld.breakBlock(blockPos, true);
+				serverWorld.method_22352(blockPos, true);
 				bl = !blockStateArgument.getBlockState().isAir();
 			} else {
 				BlockEntity blockEntity = serverWorld.getBlockEntity(blockPos);

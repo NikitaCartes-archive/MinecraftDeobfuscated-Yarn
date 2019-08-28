@@ -94,8 +94,8 @@ public class Main {
 
 		int i = getOption(optionSet, optionSpec14);
 		int j = getOption(optionSet, optionSpec15);
-		OptionalInt optionalInt = method_21612(getOption(optionSet, optionSpec16));
-		OptionalInt optionalInt2 = method_21612(getOption(optionSet, optionSpec17));
+		OptionalInt optionalInt = toOptional(getOption(optionSet, optionSpec16));
+		OptionalInt optionalInt2 = toOptional(getOption(optionSet, optionSpec17));
 		boolean bl = optionSet.has("fullscreen");
 		boolean bl2 = optionSet.has("demo");
 		String string4 = getOption(optionSet, optionSpec13);
@@ -146,7 +146,7 @@ public class Main {
 		}
 
 		Thread thread2;
-		if (minecraftClient.method_22107()) {
+		if (minecraftClient.shouldRenderAsync()) {
 			thread2 = new Thread("Client thread") {
 				public void run() {
 					try {
@@ -159,7 +159,7 @@ public class Main {
 			};
 			thread2.start();
 
-			while (minecraftClient.method_22108()) {
+			while (minecraftClient.isRunning()) {
 			}
 		} else {
 			thread2 = null;
@@ -183,7 +183,7 @@ public class Main {
 		}
 	}
 
-	private static OptionalInt method_21612(@Nullable Integer integer) {
+	private static OptionalInt toOptional(@Nullable Integer integer) {
 		return integer != null ? OptionalInt.of(integer) : OptionalInt.empty();
 	}
 

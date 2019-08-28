@@ -3,6 +3,7 @@ package net.minecraft.block;
 import java.util.Random;
 import net.minecraft.item.ItemPlacementContext;
 import net.minecraft.item.ItemStack;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
@@ -28,7 +29,7 @@ public class TallFlowerBlock extends TallPlantBlock implements Fertilizable {
 	}
 
 	@Override
-	public void grow(World world, Random random, BlockPos blockPos, BlockState blockState) {
-		dropStack(world, blockPos, new ItemStack(this));
+	public void grow(ServerWorld serverWorld, Random random, BlockPos blockPos, BlockState blockState) {
+		dropStack(serverWorld, blockPos, new ItemStack(this));
 	}
 }

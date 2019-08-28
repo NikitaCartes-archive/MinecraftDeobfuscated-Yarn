@@ -8,6 +8,7 @@ import net.minecraft.entity.EntityContext;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemPlacementContext;
 import net.minecraft.item.Items;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.state.StateFactory;
 import net.minecraft.state.property.BooleanProperty;
 import net.minecraft.state.property.Properties;
@@ -132,11 +133,9 @@ public class TripwireBlock extends Block {
 	}
 
 	@Override
-	public void onScheduledTick(BlockState blockState, World world, BlockPos blockPos, Random random) {
-		if (!world.isClient) {
-			if ((Boolean)world.getBlockState(blockPos).get(POWERED)) {
-				this.updatePowered(world, blockPos);
-			}
+	public void onScheduledTick(BlockState blockState, ServerWorld serverWorld, BlockPos blockPos, Random random) {
+		if ((Boolean)serverWorld.getBlockState(blockPos).get(POWERED)) {
+			this.updatePowered(serverWorld, blockPos);
 		}
 	}
 

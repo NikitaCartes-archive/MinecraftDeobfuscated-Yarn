@@ -1,10 +1,11 @@
 package net.minecraft.client.render;
 
+import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
 import java.nio.FloatBuffer;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_4493;
+import net.minecraft.class_4538;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.network.ClientPlayerEntity;
 import net.minecraft.client.util.GlAllocationUtils;
@@ -15,7 +16,6 @@ import net.minecraft.tag.FluidTags;
 import net.minecraft.util.SystemUtil;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
-import net.minecraft.world.ViewableWorld;
 import net.minecraft.world.World;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.biome.Biomes;
@@ -174,9 +174,9 @@ public class BackgroundRenderer {
 		}
 	}
 
-	private void updateColorInWater(Camera camera, ViewableWorld viewableWorld) {
+	private void updateColorInWater(Camera camera, class_4538 arg) {
 		long l = SystemUtil.getMeasuringTimeMs();
-		int i = viewableWorld.getBiome(new BlockPos(camera.getPos())).getWaterFogColor();
+		int i = arg.getBiome(new BlockPos(camera.getPos())).getWaterFogColor();
 		if (this.lastWaterFogColorUpdateTime < 0L) {
 			this.waterFogColor = i;
 			this.nextWaterFogColor = i;
@@ -215,7 +215,7 @@ public class BackgroundRenderer {
 				f = MathHelper.lerp(1.0F - (float)j / 20.0F, 5.0F, this.gameRenderer.getViewDistance());
 			}
 
-			RenderSystem.fogMode(class_4493.FogMode.LINEAR);
+			RenderSystem.fogMode(GlStateManager.FogMode.LINEAR);
 			if (i == -1) {
 				RenderSystem.fogStart(0.0F);
 				RenderSystem.fogEnd(f * 0.8F);
@@ -226,7 +226,7 @@ public class BackgroundRenderer {
 
 			RenderSystem.setupNvFogDistance();
 		} else if (fluidState.matches(FluidTags.WATER)) {
-			RenderSystem.fogMode(class_4493.FogMode.EXP2);
+			RenderSystem.fogMode(GlStateManager.FogMode.EXP2);
 			if (camera.getFocusedEntity() instanceof LivingEntity) {
 				if (camera.getFocusedEntity() instanceof ClientPlayerEntity) {
 					ClientPlayerEntity clientPlayerEntity = (ClientPlayerEntity)camera.getFocusedEntity();
@@ -244,11 +244,11 @@ public class BackgroundRenderer {
 				RenderSystem.fogDensity(0.1F);
 			}
 		} else if (fluidState.matches(FluidTags.LAVA)) {
-			RenderSystem.fogMode(class_4493.FogMode.EXP);
+			RenderSystem.fogMode(GlStateManager.FogMode.EXP);
 			RenderSystem.fogDensity(2.0F);
 		} else {
 			float fx = this.gameRenderer.getViewDistance();
-			RenderSystem.fogMode(class_4493.FogMode.LINEAR);
+			RenderSystem.fogMode(GlStateManager.FogMode.LINEAR);
 			if (i == -1) {
 				RenderSystem.fogStart(0.0F);
 				RenderSystem.fogEnd(fx);

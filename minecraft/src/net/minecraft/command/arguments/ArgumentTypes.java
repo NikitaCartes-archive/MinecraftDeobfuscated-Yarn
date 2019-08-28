@@ -12,6 +12,7 @@ import com.mojang.brigadier.tree.RootCommandNode;
 import java.util.Collection;
 import java.util.Map;
 import javax.annotation.Nullable;
+import net.minecraft.SharedConstants;
 import net.minecraft.command.arguments.serialize.ArgumentSerializer;
 import net.minecraft.command.arguments.serialize.ConstantArgumentSerializer;
 import net.minecraft.util.Identifier;
@@ -75,6 +76,10 @@ public class ArgumentTypes {
 		register("entity_summon", EntitySummonArgumentType.class, new ConstantArgumentSerializer(EntitySummonArgumentType::entitySummon));
 		register("dimension", DimensionArgumentType.class, new ConstantArgumentSerializer(DimensionArgumentType::dimension));
 		register("time", TimeArgumentType.class, new ConstantArgumentSerializer(TimeArgumentType::time));
+		if (SharedConstants.isDevelopment) {
+			register("test_argument", TestFunctionArgumentType.class, new ConstantArgumentSerializer(TestFunctionArgumentType::method_22371));
+			register("test_class", TestClassArgumentType.class, new ConstantArgumentSerializer(TestClassArgumentType::method_22370));
+		}
 	}
 
 	@Nullable

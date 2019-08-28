@@ -70,7 +70,11 @@ public class ArrowEntity extends ProjectileEntity {
 
 	private void initColor() {
 		this.colorSet = false;
-		this.dataTracker.set(COLOR, PotionUtil.getColor(PotionUtil.getPotionEffects(this.potion, this.effects)));
+		if (this.potion == Potions.EMPTY && this.effects.isEmpty()) {
+			this.dataTracker.set(COLOR, -1);
+		} else {
+			this.dataTracker.set(COLOR, PotionUtil.getColor(PotionUtil.getPotionEffects(this.potion, this.effects)));
+		}
 	}
 
 	public void addEffect(StatusEffectInstance statusEffectInstance) {

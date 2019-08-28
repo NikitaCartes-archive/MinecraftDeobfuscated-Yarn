@@ -89,7 +89,7 @@ public class FillCommand {
 															),
 															BlockStateArgumentType.getBlockState(commandContext, "block"),
 															FillCommand.Mode.REPLACE,
-															cachedBlockPosition -> cachedBlockPosition.getWorld().isAir(cachedBlockPosition.getBlockPos())
+															cachedBlockPosition -> cachedBlockPosition.getWorld().method_22347(cachedBlockPosition.getBlockPos())
 														)
 												)
 										)
@@ -214,7 +214,7 @@ public class FillCommand {
 					: blockStateArgument
 		),
 		DESTROY((mutableIntBoundingBox, blockPos, blockStateArgument, serverWorld) -> {
-			serverWorld.breakBlock(blockPos, true);
+			serverWorld.method_22352(blockPos, true);
 			return blockStateArgument;
 		});
 

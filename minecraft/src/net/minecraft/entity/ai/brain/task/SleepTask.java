@@ -8,18 +8,20 @@ import net.minecraft.block.BedBlock;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.ai.brain.Activity;
+import net.minecraft.entity.ai.brain.Brain;
 import net.minecraft.entity.ai.brain.MemoryModuleState;
 import net.minecraft.entity.ai.brain.MemoryModuleType;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.tag.BlockTags;
 import net.minecraft.util.GlobalPos;
+import net.minecraft.util.Timestamp;
 import net.minecraft.util.math.BlockPos;
 
 public class SleepTask extends Task<LivingEntity> {
 	private long field_18848;
 
 	public SleepTask() {
-		super(ImmutableMap.of(MemoryModuleType.HOME, MemoryModuleState.VALUE_PRESENT));
+		super(ImmutableMap.of(MemoryModuleType.HOME, MemoryModuleState.VALUE_PRESENT, MemoryModuleType.LAST_WOKEN, MemoryModuleState.REGISTERED));
 	}
 
 	@Override
@@ -27,14 +29,20 @@ public class SleepTask extends Task<LivingEntity> {
 		if (livingEntity.hasVehicle()) {
 			return false;
 		} else {
-			GlobalPos globalPos = (GlobalPos)livingEntity.getBrain().getOptionalMemory(MemoryModuleType.HOME).get();
+			Brain<?> brain = livingEntity.getBrain();
+			GlobalPos globalPos = (GlobalPos)brain.getOptionalMemory(MemoryModuleType.HOME).get();
 			if (!Objects.equals(serverWorld.getDimension().getType(), globalPos.getDimension())) {
 				return false;
 			} else {
-				BlockState blockState = serverWorld.getBlockState(globalPos.getPos());
-				return globalPos.getPos().isWithinDistance(livingEntity.getPos(), 2.0)
-					&& blockState.getBlock().matches(BlockTags.BEDS)
-					&& !(Boolean)blockState.get(BedBlock.OCCUPIED);
+				Optional<Timestamp> optional = brain.getOptionalMemory(MemoryModuleType.LAST_WOKEN);
+				if (optional.isPresent() && serverWorld.getTime() - ((Timestamp)optional.get()).getTime() < 100L) {
+					return false;
+				} else {
+					BlockState blockState = serverWorld.getBlockState(globalPos.getPos());
+					return globalPos.getPos().isWithinDistance(livingEntity.getPos(), 2.0)
+						&& blockState.getBlock().matches(BlockTags.BEDS)
+						&& !(Boolean)blockState.get(BedBlock.OCCUPIED);
+				}
 			}
 		}
 	}

@@ -1,11 +1,13 @@
 package net.minecraft.block;
 
 import java.util.Random;
+import net.minecraft.class_4538;
 import net.minecraft.entity.EntityContext;
 import net.minecraft.entity.FallingBlockEntity;
 import net.minecraft.fluid.FluidState;
 import net.minecraft.fluid.Fluids;
 import net.minecraft.item.ItemPlacementContext;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.state.StateFactory;
 import net.minecraft.state.property.BooleanProperty;
 import net.minecraft.state.property.IntProperty;
@@ -16,7 +18,6 @@ import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.util.shape.VoxelShapes;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.IWorld;
-import net.minecraft.world.ViewableWorld;
 import net.minecraft.world.World;
 
 public class ScaffoldingBlock extends Block implements Waterloggable {
@@ -98,27 +99,27 @@ public class ScaffoldingBlock extends Block implements Waterloggable {
 	}
 
 	@Override
-	public void onScheduledTick(BlockState blockState, World world, BlockPos blockPos, Random random) {
-		int i = calculateDistance(world, blockPos);
-		BlockState blockState2 = blockState.with(DISTANCE, Integer.valueOf(i)).with(BOTTOM, Boolean.valueOf(this.shouldBeBottom(world, blockPos, i)));
+	public void onScheduledTick(BlockState blockState, ServerWorld serverWorld, BlockPos blockPos, Random random) {
+		int i = calculateDistance(serverWorld, blockPos);
+		BlockState blockState2 = blockState.with(DISTANCE, Integer.valueOf(i)).with(BOTTOM, Boolean.valueOf(this.shouldBeBottom(serverWorld, blockPos, i)));
 		if ((Integer)blockState2.get(DISTANCE) == 7) {
 			if ((Integer)blockState.get(DISTANCE) == 7) {
-				world.spawnEntity(
+				serverWorld.spawnEntity(
 					new FallingBlockEntity(
-						world, (double)blockPos.getX() + 0.5, (double)blockPos.getY(), (double)blockPos.getZ() + 0.5, blockState2.with(WATERLOGGED, Boolean.valueOf(false))
+						serverWorld, (double)blockPos.getX() + 0.5, (double)blockPos.getY(), (double)blockPos.getZ() + 0.5, blockState2.with(WATERLOGGED, Boolean.valueOf(false))
 					)
 				);
 			} else {
-				world.breakBlock(blockPos, true);
+				serverWorld.method_22352(blockPos, true);
 			}
 		} else if (blockState != blockState2) {
-			world.setBlockState(blockPos, blockState2, 3);
+			serverWorld.setBlockState(blockPos, blockState2, 3);
 		}
 	}
 
 	@Override
-	public boolean canPlaceAt(BlockState blockState, ViewableWorld viewableWorld, BlockPos blockPos) {
-		return calculateDistance(viewableWorld, blockPos) < 7;
+	public boolean canPlaceAt(BlockState blockState, class_4538 arg, BlockPos blockPos) {
+		return calculateDistance(arg, blockPos) < 7;
 	}
 
 	@Override

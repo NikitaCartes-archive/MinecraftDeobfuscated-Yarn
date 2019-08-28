@@ -92,7 +92,7 @@ public class SystemUtil {
 				forkJoinWorkerThread.setName("Server-Worker-" + field_18034.getAndIncrement());
 				return forkJoinWorkerThread;
 			}, (thread, throwable) -> {
-				method_22320(throwable);
+				throwOrPause(throwable);
 				if (throwable instanceof CompletionException) {
 					throwable = throwable.getCause();
 				}
@@ -157,7 +157,7 @@ public class SystemUtil {
 		return runtimeMXBean.getInputArguments().stream().filter(string -> string.startsWith("-X"));
 	}
 
-	public static <T> T method_20793(List<T> list) {
+	public static <T> T getLast(List<T> list) {
 		return (T)list.get(list.size() - 1);
 	}
 
@@ -260,7 +260,7 @@ public class SystemUtil {
 			.set(string + "Least", dynamic.createLong(uUID.getLeastSignificantBits()));
 	}
 
-	public static <T extends Throwable> T method_22320(T throwable) {
+	public static <T extends Throwable> T throwOrPause(T throwable) {
 		if (SharedConstants.isDevelopment) {
 			LOGGER.error("Trying to throw a fatal exception, pausing in IDE", throwable);
 
@@ -277,9 +277,9 @@ public class SystemUtil {
 		}
 	}
 
-	public static String method_22321(Throwable throwable) {
+	public static String getInnermostMessage(Throwable throwable) {
 		if (throwable.getCause() != null) {
-			return method_22321(throwable.getCause());
+			return getInnermostMessage(throwable.getCause());
 		} else {
 			return throwable.getMessage() != null ? throwable.getMessage() : throwable.toString();
 		}

@@ -6,6 +6,7 @@ import net.fabricmc.api.Environment;
 import net.minecraft.entity.EntityType;
 import net.minecraft.item.ItemPlacementContext;
 import net.minecraft.particle.ParticleTypes;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.state.StateFactory;
 import net.minecraft.state.property.BooleanProperty;
 import net.minecraft.state.property.IntProperty;
@@ -33,16 +34,16 @@ public class LeavesBlock extends Block {
 	}
 
 	@Override
-	public void onRandomTick(BlockState blockState, World world, BlockPos blockPos, Random random) {
+	public void onRandomTick(BlockState blockState, ServerWorld serverWorld, BlockPos blockPos, Random random) {
 		if (!(Boolean)blockState.get(PERSISTENT) && (Integer)blockState.get(DISTANCE) == 7) {
-			dropStacks(blockState, world, blockPos);
-			world.clearBlockState(blockPos, false);
+			dropStacks(blockState, serverWorld, blockPos);
+			serverWorld.clearBlockState(blockPos, false);
 		}
 	}
 
 	@Override
-	public void onScheduledTick(BlockState blockState, World world, BlockPos blockPos, Random random) {
-		world.setBlockState(blockPos, updateDistanceFromLogs(blockState, world, blockPos), 3);
+	public void onScheduledTick(BlockState blockState, ServerWorld serverWorld, BlockPos blockPos, Random random) {
+		serverWorld.setBlockState(blockPos, updateDistanceFromLogs(blockState, serverWorld, blockPos), 3);
 	}
 
 	@Override

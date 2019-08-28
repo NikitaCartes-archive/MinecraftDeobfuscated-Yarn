@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Random;
 import java.util.Set;
 import javax.annotation.Nullable;
+import net.minecraft.class_4538;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
@@ -26,7 +27,7 @@ import net.minecraft.util.registry.Registry;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.Heightmap;
 import net.minecraft.world.IWorld;
-import net.minecraft.world.ViewableWorld;
+import net.minecraft.world.gen.chunk.ChunkGenerator;
 
 public abstract class StructurePiece {
 	protected static final BlockState AIR = Blocks.CAVE_AIR.getDefaultState();
@@ -82,7 +83,9 @@ public abstract class StructurePiece {
 	public void method_14918(StructurePiece structurePiece, List<StructurePiece> list, Random random) {
 	}
 
-	public abstract boolean generate(IWorld iWorld, Random random, MutableIntBoundingBox mutableIntBoundingBox, ChunkPos chunkPos);
+	public abstract boolean generate(
+		IWorld iWorld, ChunkGenerator<?> chunkGenerator, Random random, MutableIntBoundingBox mutableIntBoundingBox, ChunkPos chunkPos
+	);
 
 	public MutableIntBoundingBox getBoundingBox() {
 		return this.boundingBox;
@@ -216,7 +219,7 @@ public abstract class StructurePiece {
 			}
 
 			if (BLOCKS_NEEDING_POST_PROCESSING.contains(blockState.getBlock())) {
-				iWorld.getChunk(blockPos).markBlockForPostProcessing(blockPos);
+				iWorld.method_22350(blockPos).markBlockForPostProcessing(blockPos);
 			}
 		}
 	}
@@ -229,12 +232,12 @@ public abstract class StructurePiece {
 		return !mutableIntBoundingBox.contains(blockPos) ? Blocks.AIR.getDefaultState() : blockView.getBlockState(blockPos);
 	}
 
-	protected boolean isUnderSeaLevel(ViewableWorld viewableWorld, int i, int j, int k, MutableIntBoundingBox mutableIntBoundingBox) {
+	protected boolean isUnderSeaLevel(class_4538 arg, int i, int j, int k, MutableIntBoundingBox mutableIntBoundingBox) {
 		int l = this.applyXTransform(i, k);
 		int m = this.applyYTransform(j + 1);
 		int n = this.applyZTransform(i, k);
 		BlockPos blockPos = new BlockPos(l, m, n);
-		return !mutableIntBoundingBox.contains(blockPos) ? false : m < viewableWorld.getTop(Heightmap.Type.OCEAN_FLOOR_WG, l, n);
+		return !mutableIntBoundingBox.contains(blockPos) ? false : m < arg.getLightLevel(Heightmap.Type.OCEAN_FLOOR_WG, l, n);
 	}
 
 	protected void fill(IWorld iWorld, MutableIntBoundingBox mutableIntBoundingBox, int i, int j, int k, int l, int m, int n) {
@@ -374,7 +377,7 @@ public abstract class StructurePiece {
 		int m = this.applyYTransform(j);
 		int n = this.applyZTransform(i, k);
 		if (mutableIntBoundingBox.contains(new BlockPos(l, m, n))) {
-			while ((iWorld.isAir(new BlockPos(l, m, n)) || iWorld.getBlockState(new BlockPos(l, m, n)).getMaterial().isLiquid()) && m > 1) {
+			while ((iWorld.method_22347(new BlockPos(l, m, n)) || iWorld.getBlockState(new BlockPos(l, m, n)).getMaterial().isLiquid()) && m > 1) {
 				iWorld.setBlockState(new BlockPos(l, m, n), blockState, 2);
 				m--;
 			}

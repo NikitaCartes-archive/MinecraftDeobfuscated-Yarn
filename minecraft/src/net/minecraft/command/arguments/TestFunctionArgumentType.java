@@ -1,4 +1,4 @@
-package net.minecraft;
+package net.minecraft.command.arguments;
 
 import com.mojang.brigadier.Message;
 import com.mojang.brigadier.StringReader;
@@ -16,14 +16,15 @@ import java.util.stream.Stream;
 import net.minecraft.server.command.CommandSource;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.test.TestFunction;
+import net.minecraft.test.TestFunctions;
 import net.minecraft.text.LiteralText;
 
-public class class_4530 implements ArgumentType<TestFunction> {
-	private static final Collection<String> field_20589 = Arrays.asList("techtests.piston", "techtests");
+public class TestFunctionArgumentType implements ArgumentType<TestFunction> {
+	private static final Collection<String> EXAMPLES = Arrays.asList("techtests.piston", "techtests");
 
 	public TestFunction method_22302(StringReader stringReader) throws CommandSyntaxException {
 		String string = stringReader.readUnquotedString();
-		Optional<TestFunction> optional = class_4519.method_22199(string);
+		Optional<TestFunction> optional = TestFunctions.getTestFunction(string);
 		if (optional.isPresent()) {
 			return (TestFunction)optional.get();
 		} else {
@@ -32,18 +33,22 @@ public class class_4530 implements ArgumentType<TestFunction> {
 		}
 	}
 
-	public static TestFunction method_22303(CommandContext<ServerCommandSource> commandContext, String string) {
+	public static TestFunctionArgumentType method_22371() {
+		return new TestFunctionArgumentType();
+	}
+
+	public static TestFunction getFunction(CommandContext<ServerCommandSource> commandContext, String string) {
 		return commandContext.getArgument(string, TestFunction.class);
 	}
 
 	@Override
 	public <S> CompletableFuture<Suggestions> listSuggestions(CommandContext<S> commandContext, SuggestionsBuilder suggestionsBuilder) {
-		Stream<String> stream = class_4519.method_22191().stream().map(TestFunction::method_22296);
+		Stream<String> stream = TestFunctions.getTestFunctions().stream().map(TestFunction::getStructurePath);
 		return CommandSource.suggestMatching(stream, suggestionsBuilder);
 	}
 
 	@Override
 	public Collection<String> getExamples() {
-		return field_20589;
+		return EXAMPLES;
 	}
 }

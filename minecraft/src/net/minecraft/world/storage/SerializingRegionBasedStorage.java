@@ -73,7 +73,7 @@ public class SerializingRegionBasedStorage<R extends DynamicSerializable> extend
 				this.loadDataAt(chunkSectionPos.toChunkPos());
 				optional = this.getIfLoaded(l);
 				if (optional == null) {
-					throw (IllegalStateException)SystemUtil.method_22320(new IllegalStateException());
+					throw (IllegalStateException)SystemUtil.throwOrPause(new IllegalStateException());
 				} else {
 					return optional;
 				}

@@ -12,6 +12,7 @@ import net.minecraft.entity.passive.TurtleEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemPlacementContext;
 import net.minecraft.item.ItemStack;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.state.StateFactory;
@@ -63,7 +64,7 @@ public class TurtleEggBlock extends Block {
 		world.playSound(null, blockPos, SoundEvents.ENTITY_TURTLE_EGG_BREAK, SoundCategory.BLOCKS, 0.7F, 0.9F + world.random.nextFloat() * 0.2F);
 		int i = (Integer)blockState.get(EGGS);
 		if (i <= 1) {
-			world.breakBlock(blockPos, false);
+			world.method_22352(blockPos, false);
 		} else {
 			world.setBlockState(blockPos, blockState.with(EGGS, Integer.valueOf(i - 1)), 2);
 			world.playLevelEvent(2001, blockPos, Block.getRawIdFromState(blockState));
@@ -71,24 +72,23 @@ public class TurtleEggBlock extends Block {
 	}
 
 	@Override
-	public void onScheduledTick(BlockState blockState, World world, BlockPos blockPos, Random random) {
-		if (this.shouldHatchProgress(world) && this.isSand(world, blockPos)) {
+	public void onScheduledTick(BlockState blockState, ServerWorld serverWorld, BlockPos blockPos, Random random) {
+		if (this.shouldHatchProgress(serverWorld) && this.isSand(serverWorld, blockPos)) {
 			int i = (Integer)blockState.get(HATCH);
 			if (i < 2) {
-				world.playSound(null, blockPos, SoundEvents.ENTITY_TURTLE_EGG_CRACK, SoundCategory.BLOCKS, 0.7F, 0.9F + random.nextFloat() * 0.2F);
-				world.setBlockState(blockPos, blockState.with(HATCH, Integer.valueOf(i + 1)), 2);
+				serverWorld.playSound(null, blockPos, SoundEvents.ENTITY_TURTLE_EGG_CRACK, SoundCategory.BLOCKS, 0.7F, 0.9F + random.nextFloat() * 0.2F);
+				serverWorld.setBlockState(blockPos, blockState.with(HATCH, Integer.valueOf(i + 1)), 2);
 			} else {
-				world.playSound(null, blockPos, SoundEvents.ENTITY_TURTLE_EGG_HATCH, SoundCategory.BLOCKS, 0.7F, 0.9F + random.nextFloat() * 0.2F);
-				world.clearBlockState(blockPos, false);
-				if (!world.isClient) {
-					for (int j = 0; j < blockState.get(EGGS); j++) {
-						world.playLevelEvent(2001, blockPos, Block.getRawIdFromState(blockState));
-						TurtleEntity turtleEntity = EntityType.TURTLE.create(world);
-						turtleEntity.setBreedingAge(-24000);
-						turtleEntity.setHomePos(blockPos);
-						turtleEntity.setPositionAndAngles((double)blockPos.getX() + 0.3 + (double)j * 0.2, (double)blockPos.getY(), (double)blockPos.getZ() + 0.3, 0.0F, 0.0F);
-						world.spawnEntity(turtleEntity);
-					}
+				serverWorld.playSound(null, blockPos, SoundEvents.ENTITY_TURTLE_EGG_HATCH, SoundCategory.BLOCKS, 0.7F, 0.9F + random.nextFloat() * 0.2F);
+				serverWorld.clearBlockState(blockPos, false);
+
+				for (int j = 0; j < blockState.get(EGGS); j++) {
+					serverWorld.playLevelEvent(2001, blockPos, Block.getRawIdFromState(blockState));
+					TurtleEntity turtleEntity = EntityType.TURTLE.create(serverWorld);
+					turtleEntity.setBreedingAge(-24000);
+					turtleEntity.setHomePos(blockPos);
+					turtleEntity.setPositionAndAngles((double)blockPos.getX() + 0.3 + (double)j * 0.2, (double)blockPos.getY(), (double)blockPos.getZ() + 0.3, 0.0F, 0.0F);
+					serverWorld.spawnEntity(turtleEntity);
 				}
 			}
 		}

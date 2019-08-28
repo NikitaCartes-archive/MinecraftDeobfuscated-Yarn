@@ -1,4 +1,4 @@
-package net.minecraft;
+package net.minecraft.client.render.entity.feature;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 import net.fabricmc.api.EnvType;
@@ -15,20 +15,20 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.math.MathHelper;
 
 @Environment(EnvType.CLIENT)
-public class class_4506<T extends LivingEntity, M extends EntityModel<T>> extends class_4507<T, M> {
+public class StingerFeatureRenderer<T extends LivingEntity, M extends EntityModel<T>> extends StickingOutThingsFeatureRenderer<T, M> {
 	private static final Identifier field_20529 = new Identifier("textures/entity/bee/bee_stinger.png");
 
-	public class_4506(LivingEntityRenderer<T, M> livingEntityRenderer) {
+	public StingerFeatureRenderer(LivingEntityRenderer<T, M> livingEntityRenderer) {
 		super(livingEntityRenderer);
 	}
 
 	@Override
-	protected int method_22134(T livingEntity) {
-		return livingEntity.method_21753();
+	protected int getThingCount(T livingEntity) {
+		return livingEntity.getStingerCount();
 	}
 
 	@Override
-	protected void method_22131(T livingEntity) {
+	protected void beforeRendering(T livingEntity) {
 		GuiLighting.disable();
 		RenderSystem.pushMatrix();
 		this.bindTexture(field_20529);
@@ -38,7 +38,7 @@ public class class_4506<T extends LivingEntity, M extends EntityModel<T>> extend
 	}
 
 	@Override
-	protected void method_22133() {
+	protected void afterRendering() {
 		RenderSystem.disableRescaleNormal();
 		RenderSystem.enableLighting();
 		RenderSystem.popMatrix();
@@ -46,7 +46,7 @@ public class class_4506<T extends LivingEntity, M extends EntityModel<T>> extend
 	}
 
 	@Override
-	protected void method_22130(Entity entity, float f, float g, float h, float i) {
+	protected void renderThing(Entity entity, float f, float g, float h, float i) {
 		RenderSystem.pushMatrix();
 		float j = MathHelper.sqrt(f * f + h * h);
 		float k = (float)(Math.atan2((double)f, (double)h) * 180.0F / (float)Math.PI);

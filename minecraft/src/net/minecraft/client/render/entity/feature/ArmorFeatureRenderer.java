@@ -1,13 +1,13 @@
 package net.minecraft.client.render.entity.feature;
 
 import com.google.common.collect.Maps;
+import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
 import java.util.Map;
 import java.util.function.Consumer;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_4493;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.GameRenderer;
 import net.minecraft.client.render.entity.model.BipedEntityModel;
@@ -103,7 +103,7 @@ public abstract class ArmorFeatureRenderer<T extends LivingEntity, M extends Bip
 
 		for (int o = 0; o < 2; o++) {
 			RenderSystem.disableLighting();
-			RenderSystem.blendFunc(class_4493.class_4535.SRC_COLOR, class_4493.class_4534.ONE);
+			RenderSystem.blendFunc(GlStateManager.class_4535.SRC_COLOR, GlStateManager.class_4534.ONE);
 			float p = 0.76F;
 			RenderSystem.color4f(0.38F, 0.19F, 0.608F, 1.0F);
 			RenderSystem.matrixMode(5890);
@@ -114,7 +114,7 @@ public abstract class ArmorFeatureRenderer<T extends LivingEntity, M extends Bip
 			RenderSystem.translatef(0.0F, m * (0.001F + (float)o * 0.003F) * 20.0F, 0.0F);
 			RenderSystem.matrixMode(5888);
 			entityModel.render(entity, f, g, i, j, k, l);
-			RenderSystem.blendFunc(class_4493.class_4535.ONE, class_4493.class_4534.ZERO);
+			RenderSystem.blendFunc(GlStateManager.class_4535.ONE, GlStateManager.class_4534.ZERO);
 		}
 
 		RenderSystem.matrixMode(5890);

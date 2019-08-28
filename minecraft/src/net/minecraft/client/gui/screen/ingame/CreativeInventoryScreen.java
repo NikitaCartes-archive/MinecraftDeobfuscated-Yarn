@@ -82,8 +82,8 @@ public class CreativeInventoryScreen extends AbstractInventoryScreen<CreativeInv
 	@Override
 	protected void onMouseClick(@Nullable Slot slot, int i, int j, SlotActionType slotActionType) {
 		if (this.method_2470(slot)) {
-			this.searchBox.method_1872();
-			this.searchBox.method_1884(0);
+			this.searchBox.setCursorToEnd();
+			this.searchBox.setSelectionEnd(0);
 		}
 
 		boolean bl = slotActionType == SlotActionType.QUICK_MOVE;
@@ -499,8 +499,8 @@ public class CreativeInventoryScreen extends AbstractInventoryScreen<CreativeInv
 		if (this.searchBox != null) {
 			if (itemGroup == ItemGroup.SEARCH) {
 				this.searchBox.setVisible(true);
-				this.searchBox.method_1856(false);
-				this.searchBox.method_1876(true);
+				this.searchBox.setFocusUnlocked(false);
+				this.searchBox.setSelected(true);
 				if (i != itemGroup.getIndex()) {
 					this.searchBox.setText("");
 				}
@@ -508,8 +508,8 @@ public class CreativeInventoryScreen extends AbstractInventoryScreen<CreativeInv
 				this.method_2464();
 			} else {
 				this.searchBox.setVisible(false);
-				this.searchBox.method_1856(true);
-				this.searchBox.method_1876(false);
+				this.searchBox.setFocusUnlocked(true);
+				this.searchBox.setSelected(false);
 				this.searchBox.setText("");
 			}
 		}

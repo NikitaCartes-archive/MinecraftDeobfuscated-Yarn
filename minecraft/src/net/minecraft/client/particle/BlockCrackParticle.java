@@ -88,8 +88,8 @@ public class BlockCrackParticle extends SpriteBillboardParticle {
 	public int getColorMultiplier(float f) {
 		int i = super.getColorMultiplier(f);
 		int j = 0;
-		if (this.world.isBlockLoaded(this.blockPos)) {
-			j = this.world.getLightmapIndex(this.blockPos, 0);
+		if (this.world.method_22340(this.blockPos)) {
+			j = this.world.method_22337(this.blockPos);
 		}
 
 		return i == 0 ? j : i;

@@ -109,7 +109,7 @@ public class ZombieSiegeManager {
 		for (int i = 0; i < 10; i++) {
 			int j = blockPos.getX() + serverWorld.random.nextInt(16) - 8;
 			int k = blockPos.getZ() + serverWorld.random.nextInt(16) - 8;
-			int l = serverWorld.getTop(Heightmap.Type.WORLD_SURFACE, j, k);
+			int l = serverWorld.getLightLevel(Heightmap.Type.WORLD_SURFACE, j, k);
 			BlockPos blockPos2 = new BlockPos(j, l, k);
 			if (serverWorld.isNearOccupiedPointOfInterest(blockPos2)
 				&& HostileEntity.method_20680(EntityType.ZOMBIE, serverWorld, SpawnType.EVENT, blockPos2, serverWorld.random)) {

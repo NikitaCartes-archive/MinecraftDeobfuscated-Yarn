@@ -118,7 +118,7 @@ public class ConduitBlockEntity extends BlockEntity implements Tickable {
 			for (int j = -1; j <= 1; j++) {
 				for (int k = -1; k <= 1; k++) {
 					BlockPos blockPos = this.pos.add(i, j, k);
-					if (!this.world.isWaterAt(blockPos)) {
+					if (!this.world.method_22351(blockPos)) {
 						return false;
 					}
 				}

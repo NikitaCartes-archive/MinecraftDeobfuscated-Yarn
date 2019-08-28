@@ -6,7 +6,6 @@ import java.util.Iterator;
 import java.util.List;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_4536;
 import net.minecraft.resource.Resource;
 import net.minecraft.resource.ResourceManager;
 import net.minecraft.util.Identifier;
@@ -37,7 +36,7 @@ public class LayeredTexture extends AbstractTexture {
 			try (NativeImage nativeImage = NativeImage.read(resource.getInputStream())) {
 				while (true) {
 					if (!iterator.hasNext()) {
-						class_4536.prepareImage(this.getGlId(), nativeImage.getWidth(), nativeImage.getHeight());
+						TextureUtil.prepareImage(this.getGlId(), nativeImage.getWidth(), nativeImage.getHeight());
 						nativeImage.upload(0, 0, 0, false);
 						break;
 					}

@@ -1,9 +1,11 @@
 package net.minecraft;
 
-public class class_4516 {
-	private final class_4517 field_20558;
+import net.minecraft.test.GameTest;
 
-	public class_4516(class_4517 arg) {
-		this.field_20558 = arg;
+public class class_4516 {
+	private final GameTest test;
+
+	public class_4516(GameTest gameTest) {
+		this.test = gameTest;
 	}
 }

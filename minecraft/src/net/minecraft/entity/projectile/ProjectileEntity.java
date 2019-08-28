@@ -388,7 +388,7 @@ public abstract class ProjectileEntity extends Entity implements Projectile {
 			if (entity instanceof LivingEntity) {
 				LivingEntity livingEntity = (LivingEntity)entity;
 				if (!this.world.isClient && this.getPierceLevel() <= 0) {
-					livingEntity.setStuckArrows(livingEntity.getStuckArrows() + 1);
+					livingEntity.setStuckArrowCount(livingEntity.getStuckArrowCount() + 1);
 				}
 
 				if (this.field_7575 > 0) {

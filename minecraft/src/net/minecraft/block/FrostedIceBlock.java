@@ -4,6 +4,7 @@ import java.util.Random;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.item.ItemStack;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.state.StateFactory;
 import net.minecraft.state.property.IntProperty;
 import net.minecraft.state.property.Properties;
@@ -22,21 +23,21 @@ public class FrostedIceBlock extends IceBlock {
 	}
 
 	@Override
-	public void onScheduledTick(BlockState blockState, World world, BlockPos blockPos, Random random) {
-		if ((random.nextInt(3) == 0 || this.canMelt(world, blockPos, 4))
-			&& world.getLightLevel(blockPos) > 11 - (Integer)blockState.get(AGE) - blockState.getLightSubtracted(world, blockPos)
-			&& this.increaseAge(blockState, world, blockPos)) {
+	public void onScheduledTick(BlockState blockState, ServerWorld serverWorld, BlockPos blockPos, Random random) {
+		if ((random.nextInt(3) == 0 || this.canMelt(serverWorld, blockPos, 4))
+			&& serverWorld.method_22339(blockPos) > 11 - (Integer)blockState.get(AGE) - blockState.getLightSubtracted(serverWorld, blockPos)
+			&& this.increaseAge(blockState, serverWorld, blockPos)) {
 			try (BlockPos.PooledMutable pooledMutable = BlockPos.PooledMutable.get()) {
 				for (Direction direction : Direction.values()) {
 					pooledMutable.method_10114(blockPos).method_10118(direction);
-					BlockState blockState2 = world.getBlockState(pooledMutable);
-					if (blockState2.getBlock() == this && !this.increaseAge(blockState2, world, pooledMutable)) {
-						world.getBlockTickScheduler().schedule(pooledMutable, this, MathHelper.nextInt(random, 20, 40));
+					BlockState blockState2 = serverWorld.getBlockState(pooledMutable);
+					if (blockState2.getBlock() == this && !this.increaseAge(blockState2, serverWorld, pooledMutable)) {
+						serverWorld.method_14196().schedule(pooledMutable, this, MathHelper.nextInt(random, 20, 40));
 					}
 				}
 			}
 		} else {
-			world.getBlockTickScheduler().schedule(blockPos, this, MathHelper.nextInt(random, 20, 40));
+			serverWorld.method_14196().schedule(blockPos, this, MathHelper.nextInt(random, 20, 40));
 		}
 	}
 

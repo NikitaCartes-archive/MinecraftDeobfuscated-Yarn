@@ -2,12 +2,12 @@ package net.minecraft.item;
 
 import java.util.Map;
 import javax.annotation.Nullable;
+import net.minecraft.class_4538;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.EntityContext;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
-import net.minecraft.world.ViewableWorld;
 
 public class WallStandingBlockItem extends BlockItem {
 	protected final Block wallBlock;
@@ -22,20 +22,20 @@ public class WallStandingBlockItem extends BlockItem {
 	protected BlockState getPlacementState(ItemPlacementContext itemPlacementContext) {
 		BlockState blockState = this.wallBlock.getPlacementState(itemPlacementContext);
 		BlockState blockState2 = null;
-		ViewableWorld viewableWorld = itemPlacementContext.getWorld();
+		class_4538 lv = itemPlacementContext.getWorld();
 		BlockPos blockPos = itemPlacementContext.getBlockPos();
 
 		for (Direction direction : itemPlacementContext.getPlacementDirections()) {
 			if (direction != Direction.UP) {
 				BlockState blockState3 = direction == Direction.DOWN ? this.getBlock().getPlacementState(itemPlacementContext) : blockState;
-				if (blockState3 != null && blockState3.canPlaceAt(viewableWorld, blockPos)) {
+				if (blockState3 != null && blockState3.canPlaceAt(lv, blockPos)) {
 					blockState2 = blockState3;
 					break;
 				}
 			}
 		}
 
-		return blockState2 != null && viewableWorld.canPlace(blockState2, blockPos, EntityContext.absent()) ? blockState2 : null;
+		return blockState2 != null && lv.canPlace(blockState2, blockPos, EntityContext.absent()) ? blockState2 : null;
 	}
 
 	@Override

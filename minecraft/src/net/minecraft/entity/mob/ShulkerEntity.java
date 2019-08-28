@@ -203,7 +203,7 @@ public class ShulkerEntity extends GolemEntity implements Monster {
 			if (!blockState.isAir()) {
 				if (blockState.getBlock() == Blocks.MOVING_PISTON) {
 					Direction direction = blockState.get(PistonBlock.FACING);
-					if (this.world.isAir(blockPos.offset(direction))) {
+					if (this.world.method_22347(blockPos.offset(direction))) {
 						blockPos = blockPos.offset(direction);
 						this.dataTracker.set(ATTACHED_BLOCK, Optional.of(blockPos));
 					} else {
@@ -211,7 +211,7 @@ public class ShulkerEntity extends GolemEntity implements Monster {
 					}
 				} else if (blockState.getBlock() == Blocks.PISTON_HEAD) {
 					Direction direction = blockState.get(PistonHeadBlock.FACING);
-					if (this.world.isAir(blockPos.offset(direction))) {
+					if (this.world.method_22347(blockPos.offset(direction))) {
 						blockPos = blockPos.offset(direction);
 						this.dataTracker.set(ATTACHED_BLOCK, Optional.of(blockPos));
 					} else {
@@ -325,7 +325,7 @@ public class ShulkerEntity extends GolemEntity implements Monster {
 			for (int i = 0; i < 5; i++) {
 				BlockPos blockPos2 = blockPos.add(8 - this.random.nextInt(17), 8 - this.random.nextInt(17), 8 - this.random.nextInt(17));
 				if (blockPos2.getY() > 0
-					&& this.world.isAir(blockPos2)
+					&& this.world.method_22347(blockPos2)
 					&& this.world.getWorldBorder().contains(blockPos2)
 					&& this.world.doesNotCollide(this, new Box(blockPos2))) {
 					boolean bl = false;

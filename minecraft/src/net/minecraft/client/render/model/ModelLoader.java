@@ -291,7 +291,7 @@ public class ModelLoader {
 				StateFactory<Block, BlockState> stateFactory = (StateFactory<Block, BlockState>)Optional.ofNullable(STATIC_DEFINITIONS.get(identifier2))
 					.orElseGet(() -> Registry.BLOCK.get(identifier2).getStateFactory());
 				this.variantMapDeserializationContext.setStateFactory(stateFactory);
-				List<Property<?>> list = ImmutableList.copyOf(this.field_20272.method_21592(stateFactory.getBaseObject()));
+				List<Property<?>> list = ImmutableList.copyOf(this.field_20272.getProperties(stateFactory.getBaseObject()));
 				ImmutableList<BlockState> immutableList = stateFactory.getStates();
 				Map<ModelIdentifier, BlockState> map = Maps.<ModelIdentifier, BlockState>newHashMap();
 				immutableList.forEach(blockState -> {

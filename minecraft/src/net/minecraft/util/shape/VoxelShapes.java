@@ -11,6 +11,7 @@ import java.util.Objects;
 import java.util.stream.Stream;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.class_4538;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.entity.EntityContext;
@@ -21,7 +22,6 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
-import net.minecraft.world.ViewableWorld;
 
 public final class VoxelShapes {
 	private static final VoxelShape FULL_CUBE = SystemUtil.get(() -> {
@@ -118,7 +118,7 @@ public final class VoxelShapes {
 
 	public static VoxelShape combine(VoxelShape voxelShape, VoxelShape voxelShape2, BooleanBiFunction booleanBiFunction) {
 		if (booleanBiFunction.apply(false, false)) {
-			throw (IllegalArgumentException)SystemUtil.method_22320(new IllegalArgumentException());
+			throw (IllegalArgumentException)SystemUtil.throwOrPause(new IllegalArgumentException());
 		} else if (voxelShape == voxelShape2) {
 			return booleanBiFunction.apply(true, true) ? voxelShape : empty();
 		} else {
@@ -154,7 +154,7 @@ public final class VoxelShapes {
 
 	public static boolean matchesAnywhere(VoxelShape voxelShape, VoxelShape voxelShape2, BooleanBiFunction booleanBiFunction) {
 		if (booleanBiFunction.apply(false, false)) {
-			throw (IllegalArgumentException)SystemUtil.method_22320(new IllegalArgumentException());
+			throw (IllegalArgumentException)SystemUtil.throwOrPause(new IllegalArgumentException());
 		} else if (voxelShape == voxelShape2) {
 			return booleanBiFunction.apply(true, true);
 		} else if (voxelShape.isEmpty()) {
@@ -221,14 +221,12 @@ public final class VoxelShapes {
 		return d;
 	}
 
-	public static double calculateSoftOffset(
-		Direction.Axis axis, Box box, ViewableWorld viewableWorld, double d, EntityContext entityContext, Stream<VoxelShape> stream
-	) {
-		return method_17944(box, viewableWorld, d, entityContext, AxisCycleDirection.between(axis, Direction.Axis.Z), stream);
+	public static double calculateSoftOffset(Direction.Axis axis, Box box, class_4538 arg, double d, EntityContext entityContext, Stream<VoxelShape> stream) {
+		return method_17944(box, arg, d, entityContext, AxisCycleDirection.between(axis, Direction.Axis.Z), stream);
 	}
 
 	private static double method_17944(
-		Box box, ViewableWorld viewableWorld, double d, EntityContext entityContext, AxisCycleDirection axisCycleDirection, Stream<VoxelShape> stream
+		Box box, class_4538 arg, double d, EntityContext entityContext, AxisCycleDirection axisCycleDirection, Stream<VoxelShape> stream
 	) {
 		if (box.getXSize() < 1.0E-6 || box.getYSize() < 1.0E-6 || box.getZSize() < 1.0E-6) {
 			return d;
@@ -269,9 +267,9 @@ public final class VoxelShapes {
 
 						if (s < 3) {
 							mutable.set(axisCycleDirection2, q, r, p);
-							BlockState blockState = viewableWorld.getBlockState(mutable);
+							BlockState blockState = arg.getBlockState(mutable);
 							if ((s != 1 || blockState.method_17900()) && (s != 2 || blockState.getBlock() == Blocks.MOVING_PISTON)) {
-								d = blockState.getCollisionShape(viewableWorld, mutable, entityContext)
+								d = blockState.getCollisionShape(arg, mutable, entityContext)
 									.method_1108(axis3, box.offset((double)(-mutable.getX()), (double)(-mutable.getY()), (double)(-mutable.getZ())), d);
 								if (Math.abs(d) < 1.0E-7) {
 									return 0.0;

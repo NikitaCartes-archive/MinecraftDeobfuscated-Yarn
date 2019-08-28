@@ -42,7 +42,7 @@ public abstract class RegionBasedStorage implements AutoCloseable {
 	@Nullable
 	public CompoundTag getTagAt(ChunkPos chunkPos) throws IOException {
 		RegionFile regionFile = this.getRegionFile(chunkPos);
-		DataInputStream dataInputStream = regionFile.method_21873(chunkPos);
+		DataInputStream dataInputStream = regionFile.getChunkInputStream(chunkPos);
 		Throwable var4 = null;
 
 		Object var5;
@@ -74,7 +74,7 @@ public abstract class RegionBasedStorage implements AutoCloseable {
 
 	protected void setTagAt(ChunkPos chunkPos, CompoundTag compoundTag) throws IOException {
 		RegionFile regionFile = this.getRegionFile(chunkPos);
-		DataOutputStream dataOutputStream = regionFile.method_21881(chunkPos);
+		DataOutputStream dataOutputStream = regionFile.getChunkOutputStream(chunkPos);
 		Throwable var5 = null;
 
 		try {

@@ -99,7 +99,7 @@ public class Mouse {
 				KeyBinding.setKeyPressed(InputUtil.Type.MOUSE.createFromCode(m), bl);
 				if (bl) {
 					if (this.client.player.isSpectator() && m == 2) {
-						this.client.inGameHud.getSpectatorWidget().method_1983();
+						this.client.inGameHud.getSpectatorHud().useSelectedCommand();
 					} else {
 						KeyBinding.onKeyPressed(InputUtil.Type.MOUSE.createFromCode(m));
 					}
@@ -129,8 +129,8 @@ public class Mouse {
 
 					this.eventDeltaWheel -= (double)i;
 					if (this.client.player.isSpectator()) {
-						if (this.client.inGameHud.getSpectatorWidget().method_1980()) {
-							this.client.inGameHud.getSpectatorWidget().method_1976((double)(-i));
+						if (this.client.inGameHud.getSpectatorHud().isOpen()) {
+							this.client.inGameHud.getSpectatorHud().cycleSlot((double)(-i));
 						} else {
 							float j = MathHelper.clamp(this.client.player.abilities.getFlySpeed() + i * 0.005F, 0.0F, 0.2F);
 							this.client.player.abilities.setFlySpeed(j);

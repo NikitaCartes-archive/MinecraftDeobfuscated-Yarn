@@ -11,12 +11,12 @@ import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.BlockView;
-import net.minecraft.world.ViewableWorld;
+import net.minecraft.world.chunk.ChunkCache;
 
 public class BirdPathNodeMaker extends LandPathNodeMaker {
 	@Override
-	public void init(ViewableWorld viewableWorld, MobEntity mobEntity) {
-		super.init(viewableWorld, mobEntity);
+	public void init(ChunkCache chunkCache, MobEntity mobEntity) {
+		super.init(chunkCache, mobEntity);
 		this.waterPathNodeTypeWeight = mobEntity.getPathNodeTypeWeight(PathNodeType.WATER);
 	}
 
@@ -33,7 +33,7 @@ public class BirdPathNodeMaker extends LandPathNodeMaker {
 			i = MathHelper.floor(this.entity.getBoundingBox().minY);
 			BlockPos.Mutable mutable = new BlockPos.Mutable(this.entity.x, (double)i, this.entity.z);
 
-			for (Block block = this.blockView.getBlockState(mutable).getBlock(); block == Blocks.WATER; block = this.blockView.getBlockState(mutable).getBlock()) {
+			for (Block block = this.field_20622.getBlockState(mutable).getBlock(); block == Blocks.WATER; block = this.field_20622.getBlockState(mutable).getBlock()) {
 				mutable.set(this.entity.x, (double)(++i), this.entity.z);
 			}
 		} else {
@@ -232,7 +232,7 @@ public class BirdPathNodeMaker extends LandPathNodeMaker {
 
 	private PathNodeType method_9(MobEntity mobEntity, int i, int j, int k) {
 		return this.getPathNodeType(
-			this.blockView, i, j, k, mobEntity, this.field_31, this.field_30, this.field_28, this.canPathThroughDoors(), this.canEnterOpenDoors()
+			this.field_20622, i, j, k, mobEntity, this.field_31, this.field_30, this.field_28, this.canPathThroughDoors(), this.canEnterOpenDoors()
 		);
 	}
 }

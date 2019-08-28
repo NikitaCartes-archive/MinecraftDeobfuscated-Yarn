@@ -7,6 +7,8 @@ import com.mojang.authlib.GameProfileRepository;
 import com.mojang.authlib.minecraft.MinecraftSessionService;
 import com.mojang.authlib.properties.PropertyMap;
 import com.mojang.authlib.yggdrasil.YggdrasilAuthenticationService;
+import com.mojang.blaze3d.platform.GlDebugInfo;
+import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.datafixers.DataFixer;
 import java.io.File;
@@ -34,8 +36,6 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.Bootstrap;
 import net.minecraft.SharedConstants;
-import net.minecraft.class_4493;
-import net.minecraft.class_4494;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockRenderType;
 import net.minecraft.block.BlockState;
@@ -50,8 +50,8 @@ import net.minecraft.client.gui.WorldGenerationProgressTracker;
 import net.minecraft.client.gui.hud.InGameHud;
 import net.minecraft.client.gui.screen.ChatScreen;
 import net.minecraft.client.gui.screen.ConnectScreen;
+import net.minecraft.client.gui.screen.CreditsScreen;
 import net.minecraft.client.gui.screen.DeathScreen;
-import net.minecraft.client.gui.screen.EndCreditsScreen;
 import net.minecraft.client.gui.screen.GameMenuScreen;
 import net.minecraft.client.gui.screen.LevelLoadingScreen;
 import net.minecraft.client.gui.screen.OutOfMemoryScreen;
@@ -73,6 +73,7 @@ import net.minecraft.client.network.ClientLoginNetworkHandler;
 import net.minecraft.client.network.ClientPlayNetworkHandler;
 import net.minecraft.client.network.ClientPlayerEntity;
 import net.minecraft.client.network.ClientPlayerInteractionManager;
+import net.minecraft.client.network.ServerInfo;
 import net.minecraft.client.options.AoOption;
 import net.minecraft.client.options.ChatVisibility;
 import net.minecraft.client.options.CloudRenderMode;
@@ -80,7 +81,6 @@ import net.minecraft.client.options.GameOptions;
 import net.minecraft.client.options.HotbarStorage;
 import net.minecraft.client.options.KeyBinding;
 import net.minecraft.client.options.Option;
-import net.minecraft.client.options.ServerEntry;
 import net.minecraft.client.particle.ParticleManager;
 import net.minecraft.client.render.BufferBuilder;
 import net.minecraft.client.render.FirstPersonRenderer;
@@ -213,7 +213,7 @@ public class MinecraftClient extends NonBlockingThreadExecutor<Runnable> impleme
 	private final File resourcePackDir;
 	private final PropertyMap sessionPropertyMap;
 	private final WindowSettings windowSettings;
-	private ServerEntry currentServerEntry;
+	private ServerInfo currentServerEntry;
 	private TextureManager textureManager;
 	private static MinecraftClient instance;
 	private final DataFixer dataFixer;
@@ -297,7 +297,7 @@ public class MinecraftClient extends NonBlockingThreadExecutor<Runnable> impleme
 	private StatusEffectSpriteManager statusEffectSpriteManager;
 	private final ToastManager toastManager;
 	private final MinecraftClientGame game = new MinecraftClientGame(this);
-	private volatile boolean isRunning = true;
+	private volatile boolean running = true;
 	public String fpsDebugString = "";
 	public boolean field_1730 = true;
 	private long nextDebugInfoUpdateTime;
@@ -356,7 +356,7 @@ public class MinecraftClient extends NonBlockingThreadExecutor<Runnable> impleme
 		try {
 			boolean bl = false;
 
-			while (this.isRunning) {
+			while (this.running) {
 				if (this.crashed && this.crashReport != null) {
 					this.printCrashReport(this.crashReport);
 					return;
@@ -469,7 +469,7 @@ public class MinecraftClient extends NonBlockingThreadExecutor<Runnable> impleme
 		RenderSystem.depthFunc(515);
 		RenderSystem.enableAlphaTest();
 		RenderSystem.alphaFunc(516, 0.1F);
-		RenderSystem.cullFace(class_4493.FaceSides.BACK);
+		RenderSystem.cullFace(GlStateManager.FaceSides.BACK);
 		RenderSystem.matrixMode(5889);
 		RenderSystem.loadIdentity();
 		RenderSystem.matrixMode(5888);
@@ -519,7 +519,7 @@ public class MinecraftClient extends NonBlockingThreadExecutor<Runnable> impleme
 			this.openScreen(new TitleScreen(true));
 		}
 
-		SplashScreen.method_18819(this);
+		SplashScreen.init(this);
 		this.setOverlay(new SplashScreen(this, this.resourceManager.beginInitialMonitoredReload(SystemUtil.getServerWorkerExecutor(), this, voidFuture), () -> {
 			if (SharedConstants.isDevelopment) {
 				this.checkGameData();
@@ -594,7 +594,7 @@ public class MinecraftClient extends NonBlockingThreadExecutor<Runnable> impleme
 	private void startTimerHackThread() {
 		Thread thread = new Thread("Timer hack thread") {
 			public void run() {
-				while (MinecraftClient.this.isRunning) {
+				while (MinecraftClient.this.running) {
 					try {
 						Thread.sleep(2147483647L);
 					} catch (InterruptedException var2) {
@@ -1099,11 +1099,11 @@ public class MinecraftClient extends NonBlockingThreadExecutor<Runnable> impleme
 	}
 
 	public void scheduleStop() {
-		this.isRunning = false;
+		this.running = false;
 	}
 
-	public boolean method_22108() {
-		return this.isRunning;
+	public boolean isRunning() {
+		return this.running;
 	}
 
 	public void openPauseMenu(boolean bl) {
@@ -1373,7 +1373,7 @@ public class MinecraftClient extends NonBlockingThreadExecutor<Runnable> impleme
 			boolean bl2 = this.options.keyLoadToolbarActivator.isPressed();
 			if (this.options.keysHotbar[i].wasPressed()) {
 				if (this.player.isSpectator()) {
-					this.inGameHud.getSpectatorWidget().onHotbarKeyPress(i);
+					this.inGameHud.getSpectatorHud().selectSlot(i);
 				} else if (!this.player.isCreative() || this.currentScreen != null || !bl2 && !bl) {
 					this.player.inventory.selectedSlot = i;
 				} else {
@@ -1784,7 +1784,7 @@ public class MinecraftClient extends NonBlockingThreadExecutor<Runnable> impleme
 			return stringBuilder.toString();
 		}));
 		crashReportSection.add("Current Language", (CrashCallable<String>)(() -> this.languageManager.getLanguage().toString()));
-		crashReportSection.add("CPU", class_4494::method_22089);
+		crashReportSection.add("CPU", GlDebugInfo::getCpuInfo);
 		if (this.world != null) {
 			this.world.addDetailsToCrashReport(crashReport);
 		}
@@ -1855,12 +1855,12 @@ public class MinecraftClient extends NonBlockingThreadExecutor<Runnable> impleme
 		return cachedMaxTextureSize;
 	}
 
-	public void setCurrentServerEntry(ServerEntry serverEntry) {
-		this.currentServerEntry = serverEntry;
+	public void setCurrentServerEntry(ServerInfo serverInfo) {
+		this.currentServerEntry = serverInfo;
 	}
 
 	@Nullable
-	public ServerEntry getCurrentServerEntry() {
+	public ServerInfo getCurrentServerEntry() {
 		return this.currentServerEntry;
 	}
 
@@ -1939,7 +1939,7 @@ public class MinecraftClient extends NonBlockingThreadExecutor<Runnable> impleme
 	}
 
 	public MusicTracker.MusicType getMusicType() {
-		if (this.currentScreen instanceof EndCreditsScreen) {
+		if (this.currentScreen instanceof CreditsScreen) {
 			return MusicTracker.MusicType.CREDITS;
 		} else if (this.player == null) {
 			return MusicTracker.MusicType.MENU;
@@ -2105,7 +2105,7 @@ public class MinecraftClient extends NonBlockingThreadExecutor<Runnable> impleme
 		return this.overlay;
 	}
 
-	public boolean method_22107() {
+	public boolean shouldRenderAsync() {
 		return false;
 	}
 }

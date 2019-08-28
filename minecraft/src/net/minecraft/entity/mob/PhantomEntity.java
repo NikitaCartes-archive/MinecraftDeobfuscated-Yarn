@@ -273,12 +273,12 @@ public class PhantomEntity extends FlyingEntity implements Monster {
 				this.method_7103();
 			}
 
-			if (PhantomEntity.this.field_7314.y < PhantomEntity.this.y && !PhantomEntity.this.world.isAir(new BlockPos(PhantomEntity.this).down(1))) {
+			if (PhantomEntity.this.field_7314.y < PhantomEntity.this.y && !PhantomEntity.this.world.method_22347(new BlockPos(PhantomEntity.this).down(1))) {
 				this.field_7326 = Math.max(1.0F, this.field_7326);
 				this.method_7103();
 			}
 
-			if (PhantomEntity.this.field_7314.y > PhantomEntity.this.y && !PhantomEntity.this.world.isAir(new BlockPos(PhantomEntity.this).up(1))) {
+			if (PhantomEntity.this.field_7314.y > PhantomEntity.this.y && !PhantomEntity.this.world.method_22347(new BlockPos(PhantomEntity.this).up(1))) {
 				this.field_7326 = Math.min(-1.0F, this.field_7326);
 				this.method_7103();
 			}

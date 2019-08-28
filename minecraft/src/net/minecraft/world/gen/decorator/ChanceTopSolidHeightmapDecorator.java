@@ -21,7 +21,7 @@ public class ChanceTopSolidHeightmapDecorator extends Decorator<ChanceDecoratorC
 		if (random.nextFloat() < 1.0F / (float)chanceDecoratorConfig.chance) {
 			int i = random.nextInt(16);
 			int j = random.nextInt(16);
-			int k = iWorld.getTop(Heightmap.Type.OCEAN_FLOOR_WG, blockPos.getX() + i, blockPos.getZ() + j);
+			int k = iWorld.getLightLevel(Heightmap.Type.OCEAN_FLOOR_WG, blockPos.getX() + i, blockPos.getZ() + j);
 			return Stream.of(new BlockPos(blockPos.getX() + i, k, blockPos.getZ() + j));
 		} else {
 			return Stream.empty();

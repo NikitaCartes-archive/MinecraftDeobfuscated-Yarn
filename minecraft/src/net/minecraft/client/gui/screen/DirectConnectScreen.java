@@ -6,20 +6,20 @@ import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.gui.widget.TextFieldWidget;
-import net.minecraft.client.options.ServerEntry;
+import net.minecraft.client.network.ServerInfo;
 import net.minecraft.client.resource.language.I18n;
 import net.minecraft.text.TranslatableText;
 
 @Environment(EnvType.CLIENT)
 public class DirectConnectScreen extends Screen {
 	private ButtonWidget selectServerButton;
-	private final ServerEntry serverEntry;
+	private final ServerInfo serverEntry;
 	private TextFieldWidget addressField;
 	private final BooleanConsumer callback;
 
-	public DirectConnectScreen(BooleanConsumer booleanConsumer, ServerEntry serverEntry) {
+	public DirectConnectScreen(BooleanConsumer booleanConsumer, ServerInfo serverInfo) {
 		super(new TranslatableText("selectServer.direct"));
-		this.serverEntry = serverEntry;
+		this.serverEntry = serverInfo;
 		this.callback = booleanConsumer;
 	}
 
@@ -49,7 +49,7 @@ public class DirectConnectScreen extends Screen {
 		);
 		this.addressField = new TextFieldWidget(this.font, this.width / 2 - 100, 116, 200, 20, I18n.translate("addServer.enterIp"));
 		this.addressField.setMaxLength(128);
-		this.addressField.method_1876(true);
+		this.addressField.setSelected(true);
 		this.addressField.setText(this.minecraft.options.lastServer);
 		this.addressField.setChangedListener(string -> this.onAddressFieldChanged());
 		this.children.add(this.addressField);

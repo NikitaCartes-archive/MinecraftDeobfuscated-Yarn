@@ -234,7 +234,7 @@ public class CloneCommand {
 				throw TOOBIG_EXCEPTION.create(32768, i);
 			} else {
 				ServerWorld serverWorld = serverCommandSource.getWorld();
-				if (serverWorld.isAreaLoaded(blockPos, blockPos2) && serverWorld.isAreaLoaded(blockPos3, blockPos4)) {
+				if (serverWorld.method_22343(blockPos, blockPos2) && serverWorld.method_22343(blockPos3, blockPos4)) {
 					List<CloneCommand.BlockInfo> list = Lists.<CloneCommand.BlockInfo>newArrayList();
 					List<CloneCommand.BlockInfo> list2 = Lists.<CloneCommand.BlockInfo>newArrayList();
 					List<CloneCommand.BlockInfo> list3 = Lists.<CloneCommand.BlockInfo>newArrayList();

@@ -37,22 +37,22 @@ public class CustomizeFlatLevelScreen extends Screen {
 	public CustomizeFlatLevelScreen(CreateWorldScreen createWorldScreen, CompoundTag compoundTag) {
 		super(new TranslatableText("createWorld.customize.flat.title"));
 		this.parent = createWorldScreen;
-		this.method_2144(compoundTag);
+		this.setConfigTag(compoundTag);
 	}
 
 	public String getConfigString() {
 		return this.config.toString();
 	}
 
-	public CompoundTag method_2140() {
+	public CompoundTag getConfigTag() {
 		return (CompoundTag)this.config.toDynamic(NbtOps.INSTANCE).getValue();
 	}
 
-	public void method_2139(String string) {
+	public void setConfigString(String string) {
 		this.config = FlatChunkGeneratorConfig.fromString(string);
 	}
 
-	public void method_2144(CompoundTag compoundTag) {
+	public void setConfigTag(CompoundTag compoundTag) {
 		this.config = FlatChunkGeneratorConfig.fromDynamic(new Dynamic<>(NbtOps.INSTANCE, compoundTag));
 	}
 
@@ -91,7 +91,7 @@ public class CustomizeFlatLevelScreen extends Screen {
 			this.method_2145();
 		}));
 		this.addButton(new ButtonWidget(this.width / 2 - 155, this.height - 28, 150, 20, I18n.translate("gui.done"), buttonWidget -> {
-			this.parent.generatorOptionsTag = this.method_2140();
+			this.parent.generatorOptionsTag = this.getConfigTag();
 			this.minecraft.openScreen(this.parent);
 			this.config.updateLayerBlocks();
 			this.method_2145();

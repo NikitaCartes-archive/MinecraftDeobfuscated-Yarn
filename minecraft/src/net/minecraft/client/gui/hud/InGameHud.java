@@ -4,6 +4,7 @@ import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Ordering;
+import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
 import java.util.Collection;
 import java.util.List;
@@ -12,7 +13,6 @@ import java.util.Random;
 import java.util.stream.Collectors;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_4493;
 import net.minecraft.block.Blocks;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextRenderer;
@@ -79,7 +79,7 @@ public class InGameHud extends DrawableHelper {
 	private String overlayMessage = "";
 	private int overlayRemaining;
 	private boolean overlayTinted;
-	public float field_2013 = 1.0F;
+	public float vignetteDarkness = 1.0F;
 	private int heldItemTooltipFade;
 	private ItemStack currentStack = ItemStack.EMPTY;
 	private final DebugHud debugHud;
@@ -140,7 +140,7 @@ public class InGameHud extends DrawableHelper {
 		} else {
 			RenderSystem.enableDepthTest();
 			RenderSystem.blendFuncSeparate(
-				class_4493.class_4535.SRC_ALPHA, class_4493.class_4534.ONE_MINUS_SRC_ALPHA, class_4493.class_4535.ONE, class_4493.class_4534.ZERO
+				GlStateManager.class_4535.SRC_ALPHA, GlStateManager.class_4534.ONE_MINUS_SRC_ALPHA, GlStateManager.class_4535.ONE, GlStateManager.class_4534.ZERO
 			);
 		}
 
@@ -169,7 +169,7 @@ public class InGameHud extends DrawableHelper {
 			RenderSystem.enableAlphaTest();
 			this.renderCrosshair();
 			RenderSystem.blendFuncSeparate(
-				class_4493.class_4535.SRC_ALPHA, class_4493.class_4534.ONE_MINUS_SRC_ALPHA, class_4493.class_4535.ONE, class_4493.class_4534.ZERO
+				GlStateManager.class_4535.SRC_ALPHA, GlStateManager.class_4534.ONE_MINUS_SRC_ALPHA, GlStateManager.class_4535.ONE, GlStateManager.class_4534.ZERO
 			);
 			this.client.getProfiler().push("bossHealth");
 			this.bossBarHud.render();
@@ -237,7 +237,7 @@ public class InGameHud extends DrawableHelper {
 					RenderSystem.translatef((float)(this.scaledWidth / 2), (float)(this.scaledHeight - 68), 0.0F);
 					RenderSystem.enableBlend();
 					RenderSystem.blendFuncSeparate(
-						class_4493.class_4535.SRC_ALPHA, class_4493.class_4534.ONE_MINUS_SRC_ALPHA, class_4493.class_4535.ONE, class_4493.class_4534.ZERO
+						GlStateManager.class_4535.SRC_ALPHA, GlStateManager.class_4534.ONE_MINUS_SRC_ALPHA, GlStateManager.class_4535.ONE, GlStateManager.class_4534.ZERO
 					);
 					int j = 16777215;
 					if (this.overlayTinted) {
@@ -245,7 +245,7 @@ public class InGameHud extends DrawableHelper {
 					}
 
 					int l = k << 24 & 0xFF000000;
-					this.method_19346(textRenderer, -4, textRenderer.getStringWidth(this.overlayMessage));
+					this.drawTextBackground(textRenderer, -4, textRenderer.getStringWidth(this.overlayMessage));
 					textRenderer.draw(this.overlayMessage, (float)(-textRenderer.getStringWidth(this.overlayMessage) / 2), -4.0F, j | l);
 					RenderSystem.disableBlend();
 					RenderSystem.popMatrix();
@@ -273,20 +273,20 @@ public class InGameHud extends DrawableHelper {
 					RenderSystem.translatef((float)(this.scaledWidth / 2), (float)(this.scaledHeight / 2), 0.0F);
 					RenderSystem.enableBlend();
 					RenderSystem.blendFuncSeparate(
-						class_4493.class_4535.SRC_ALPHA, class_4493.class_4534.ONE_MINUS_SRC_ALPHA, class_4493.class_4535.ONE, class_4493.class_4534.ZERO
+						GlStateManager.class_4535.SRC_ALPHA, GlStateManager.class_4534.ONE_MINUS_SRC_ALPHA, GlStateManager.class_4535.ONE, GlStateManager.class_4534.ZERO
 					);
 					RenderSystem.pushMatrix();
 					RenderSystem.scalef(4.0F, 4.0F, 4.0F);
 					int j = kx << 24 & 0xFF000000;
 					int l = textRenderer.getStringWidth(this.title);
-					this.method_19346(textRenderer, -10, l);
+					this.drawTextBackground(textRenderer, -10, l);
 					textRenderer.drawWithShadow(this.title, (float)(-l / 2), -10.0F, 16777215 | j);
 					RenderSystem.popMatrix();
 					if (!this.subtitle.isEmpty()) {
 						RenderSystem.pushMatrix();
 						RenderSystem.scalef(2.0F, 2.0F, 2.0F);
 						int n = textRenderer.getStringWidth(this.subtitle);
-						this.method_19346(textRenderer, 5, n);
+						this.drawTextBackground(textRenderer, 5, n);
 						textRenderer.drawWithShadow(this.subtitle, (float)(-n / 2), 5.0F, 16777215 | j);
 						RenderSystem.popMatrix();
 					}
@@ -316,7 +316,7 @@ public class InGameHud extends DrawableHelper {
 
 			RenderSystem.enableBlend();
 			RenderSystem.blendFuncSeparate(
-				class_4493.class_4535.SRC_ALPHA, class_4493.class_4534.ONE_MINUS_SRC_ALPHA, class_4493.class_4535.ONE, class_4493.class_4534.ZERO
+				GlStateManager.class_4535.SRC_ALPHA, GlStateManager.class_4534.ONE_MINUS_SRC_ALPHA, GlStateManager.class_4535.ONE, GlStateManager.class_4534.ZERO
 			);
 			RenderSystem.disableAlphaTest();
 			RenderSystem.pushMatrix();
@@ -340,7 +340,7 @@ public class InGameHud extends DrawableHelper {
 		RenderSystem.enableAlphaTest();
 	}
 
-	private void method_19346(TextRenderer textRenderer, int i, int j) {
+	private void drawTextBackground(TextRenderer textRenderer, int i, int j) {
 		int k = this.client.options.getTextBackgroundColor(0.0F);
 		if (k != 0) {
 			int l = -j / 2;
@@ -363,7 +363,10 @@ public class InGameHud extends DrawableHelper {
 					RenderSystem.popMatrix();
 				} else {
 					RenderSystem.blendFuncSeparate(
-						class_4493.class_4535.ONE_MINUS_DST_COLOR, class_4493.class_4534.ONE_MINUS_SRC_COLOR, class_4493.class_4535.ONE, class_4493.class_4534.ZERO
+						GlStateManager.class_4535.ONE_MINUS_DST_COLOR,
+						GlStateManager.class_4534.ONE_MINUS_SRC_COLOR,
+						GlStateManager.class_4535.ONE,
+						GlStateManager.class_4534.ZERO
 					);
 					int i = 15;
 					this.blit((this.scaledWidth - 15) / 2, (this.scaledHeight - 15) / 2, 0, 0, 15, 15);
@@ -487,7 +490,7 @@ public class InGameHud extends DrawableHelper {
 			RenderSystem.enableRescaleNormal();
 			RenderSystem.enableBlend();
 			RenderSystem.blendFuncSeparate(
-				class_4493.class_4535.SRC_ALPHA, class_4493.class_4534.ONE_MINUS_SRC_ALPHA, class_4493.class_4535.ONE, class_4493.class_4534.ZERO
+				GlStateManager.class_4535.SRC_ALPHA, GlStateManager.class_4534.ONE_MINUS_SRC_ALPHA, GlStateManager.class_4535.ONE, GlStateManager.class_4534.ZERO
 			);
 			GuiLighting.enableForItems();
 
@@ -597,7 +600,7 @@ public class InGameHud extends DrawableHelper {
 				RenderSystem.pushMatrix();
 				RenderSystem.enableBlend();
 				RenderSystem.blendFuncSeparate(
-					class_4493.class_4535.SRC_ALPHA, class_4493.class_4534.ONE_MINUS_SRC_ALPHA, class_4493.class_4535.ONE, class_4493.class_4534.ZERO
+					GlStateManager.class_4535.SRC_ALPHA, GlStateManager.class_4534.ONE_MINUS_SRC_ALPHA, GlStateManager.class_4535.ONE, GlStateManager.class_4534.ZERO
 				);
 				fill(i - 2, j - 2, i + this.getFontRenderer().getStringWidth(string) + 2, j + 9 + 2, this.client.options.getTextBackgroundColor(0));
 				this.getFontRenderer().drawWithShadow(string, (float)i, (float)j, 16777215 + (k << 24));
@@ -694,7 +697,7 @@ public class InGameHud extends DrawableHelper {
 		return null;
 	}
 
-	private int method_1744(LivingEntity livingEntity) {
+	private int getHeartCount(LivingEntity livingEntity) {
 		if (livingEntity != null && livingEntity.isLiving()) {
 			float f = livingEntity.getMaximumHealth();
 			int i = (int)(f + 0.5F) / 2;
@@ -708,7 +711,7 @@ public class InGameHud extends DrawableHelper {
 		}
 	}
 
-	private int method_1733(int i) {
+	private int getHeartRows(int i) {
 		return (int)Math.ceil((double)i / 10.0);
 	}
 
@@ -835,7 +838,7 @@ public class InGameHud extends DrawableHelper {
 			}
 
 			LivingEntity livingEntity = this.getRiddenEntity();
-			int yxx = this.method_1744(livingEntity);
+			int yxx = this.getHeartCount(livingEntity);
 			if (yxx == 0) {
 				this.client.getProfiler().swap("food");
 
@@ -870,7 +873,7 @@ public class InGameHud extends DrawableHelper {
 			int zx = playerEntity.getBreath();
 			int aaxx = playerEntity.getMaxBreath();
 			if (playerEntity.isInFluid(FluidTags.WATER) || zx < aaxx) {
-				int abxx = this.method_1733(yxx) - 1;
+				int abxx = this.getHeartRows(yxx) - 1;
 				t -= abxx * 10;
 				int acxx = MathHelper.ceil((double)(zx - 2) * 10.0 / (double)aaxx);
 				int adxx = MathHelper.ceil((double)zx * 10.0 / (double)aaxx) - acxx;
@@ -891,7 +894,7 @@ public class InGameHud extends DrawableHelper {
 	private void renderMountHealth() {
 		LivingEntity livingEntity = this.getRiddenEntity();
 		if (livingEntity != null) {
-			int i = this.method_1744(livingEntity);
+			int i = this.getHeartCount(livingEntity);
 			if (i != 0) {
 				int j = (int)Math.ceil((double)livingEntity.getHealth());
 				this.client.getProfiler().swap("mountHealth");
@@ -928,7 +931,7 @@ public class InGameHud extends DrawableHelper {
 		RenderSystem.disableDepthTest();
 		RenderSystem.depthMask(false);
 		RenderSystem.blendFuncSeparate(
-			class_4493.class_4535.SRC_ALPHA, class_4493.class_4534.ONE_MINUS_SRC_ALPHA, class_4493.class_4535.ONE, class_4493.class_4534.ZERO
+			GlStateManager.class_4535.SRC_ALPHA, GlStateManager.class_4534.ONE_MINUS_SRC_ALPHA, GlStateManager.class_4535.ONE, GlStateManager.class_4534.ZERO
 		);
 		RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
 		RenderSystem.disableAlphaTest();
@@ -947,10 +950,10 @@ public class InGameHud extends DrawableHelper {
 		RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
 	}
 
-	private void method_1731(Entity entity) {
+	private void updateVignetteDarkness(Entity entity) {
 		if (entity != null) {
 			float f = MathHelper.clamp(1.0F - entity.getBrightnessAtEyes(), 0.0F, 1.0F);
-			this.field_2013 = (float)((double)this.field_2013 + (double)(f - this.field_2013) * 0.01);
+			this.vignetteDarkness = (float)((double)this.vignetteDarkness + (double)(f - this.vignetteDarkness) * 0.01);
 		}
 	}
 
@@ -969,11 +972,13 @@ public class InGameHud extends DrawableHelper {
 
 		RenderSystem.disableDepthTest();
 		RenderSystem.depthMask(false);
-		RenderSystem.blendFuncSeparate(class_4493.class_4535.ZERO, class_4493.class_4534.ONE_MINUS_SRC_COLOR, class_4493.class_4535.ONE, class_4493.class_4534.ZERO);
+		RenderSystem.blendFuncSeparate(
+			GlStateManager.class_4535.ZERO, GlStateManager.class_4534.ONE_MINUS_SRC_COLOR, GlStateManager.class_4535.ONE, GlStateManager.class_4534.ZERO
+		);
 		if (f > 0.0F) {
 			RenderSystem.color4f(0.0F, f, f, 1.0F);
 		} else {
-			RenderSystem.color4f(this.field_2013, this.field_2013, this.field_2013, 1.0F);
+			RenderSystem.color4f(this.vignetteDarkness, this.vignetteDarkness, this.vignetteDarkness, 1.0F);
 		}
 
 		this.client.getTextureManager().bindTexture(VIGNETTE_TEX);
@@ -989,7 +994,7 @@ public class InGameHud extends DrawableHelper {
 		RenderSystem.enableDepthTest();
 		RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
 		RenderSystem.blendFuncSeparate(
-			class_4493.class_4535.SRC_ALPHA, class_4493.class_4534.ONE_MINUS_SRC_ALPHA, class_4493.class_4535.ONE, class_4493.class_4534.ZERO
+			GlStateManager.class_4535.SRC_ALPHA, GlStateManager.class_4534.ONE_MINUS_SRC_ALPHA, GlStateManager.class_4535.ONE, GlStateManager.class_4534.ZERO
 		);
 	}
 
@@ -1004,7 +1009,7 @@ public class InGameHud extends DrawableHelper {
 		RenderSystem.disableDepthTest();
 		RenderSystem.depthMask(false);
 		RenderSystem.blendFuncSeparate(
-			class_4493.class_4535.SRC_ALPHA, class_4493.class_4534.ONE_MINUS_SRC_ALPHA, class_4493.class_4535.ONE, class_4493.class_4534.ZERO
+			GlStateManager.class_4535.SRC_ALPHA, GlStateManager.class_4534.ONE_MINUS_SRC_ALPHA, GlStateManager.class_4535.ONE, GlStateManager.class_4534.ZERO
 		);
 		RenderSystem.color4f(1.0F, 1.0F, 1.0F, f);
 		this.client.getTextureManager().bindTexture(SpriteAtlasTexture.BLOCK_ATLAS_TEX);
@@ -1063,7 +1068,7 @@ public class InGameHud extends DrawableHelper {
 		this.ticks++;
 		Entity entity = this.client.getCameraEntity();
 		if (entity != null) {
-			this.method_1731(entity);
+			this.updateVignetteDarkness(entity);
 		}
 
 		if (this.client.player != null) {
@@ -1141,7 +1146,7 @@ public class InGameHud extends DrawableHelper {
 		return this.client.textRenderer;
 	}
 
-	public SpectatorHud getSpectatorWidget() {
+	public SpectatorHud getSpectatorHud() {
 		return this.spectatorHud;
 	}
 

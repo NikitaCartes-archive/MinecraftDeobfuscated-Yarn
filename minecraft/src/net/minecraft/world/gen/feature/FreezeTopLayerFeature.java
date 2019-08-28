@@ -29,7 +29,7 @@ public class FreezeTopLayerFeature extends Feature<DefaultFeatureConfig> {
 			for (int j = 0; j < 16; j++) {
 				int k = blockPos.getX() + i;
 				int l = blockPos.getZ() + j;
-				int m = iWorld.getTop(Heightmap.Type.MOTION_BLOCKING, k, l);
+				int m = iWorld.getLightLevel(Heightmap.Type.MOTION_BLOCKING, k, l);
 				mutable.set(k, m, l);
 				mutable2.set(mutable).setOffset(Direction.DOWN, 1);
 				Biome biome = iWorld.getBiome(mutable);

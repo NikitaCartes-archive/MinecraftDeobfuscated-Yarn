@@ -2,7 +2,6 @@ package net.minecraft.client.render.entity.feature;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_4507;
 import net.minecraft.client.render.GuiLighting;
 import net.minecraft.client.render.entity.EntityRenderDispatcher;
 import net.minecraft.client.render.entity.LivingEntityRenderer;
@@ -13,7 +12,7 @@ import net.minecraft.entity.projectile.ArrowEntity;
 import net.minecraft.util.math.MathHelper;
 
 @Environment(EnvType.CLIENT)
-public class StuckArrowsFeatureRenderer<T extends LivingEntity, M extends EntityModel<T>> extends class_4507<T, M> {
+public class StuckArrowsFeatureRenderer<T extends LivingEntity, M extends EntityModel<T>> extends StickingOutThingsFeatureRenderer<T, M> {
 	private final EntityRenderDispatcher field_17153;
 	private ArrowEntity field_20528;
 
@@ -23,18 +22,18 @@ public class StuckArrowsFeatureRenderer<T extends LivingEntity, M extends Entity
 	}
 
 	@Override
-	protected void method_22131(T livingEntity) {
+	protected void beforeRendering(T livingEntity) {
 		GuiLighting.disable();
 		this.field_20528 = new ArrowEntity(livingEntity.world, livingEntity.x, livingEntity.y, livingEntity.z);
 	}
 
 	@Override
-	protected int method_22134(T livingEntity) {
-		return livingEntity.getStuckArrows();
+	protected int getThingCount(T livingEntity) {
+		return livingEntity.getStuckArrowCount();
 	}
 
 	@Override
-	protected void method_22130(Entity entity, float f, float g, float h, float i) {
+	protected void renderThing(Entity entity, float f, float g, float h, float i) {
 		float j = MathHelper.sqrt(f * f + h * h);
 		this.field_20528.yaw = (float)(Math.atan2((double)f, (double)h) * 180.0F / (float)Math.PI);
 		this.field_20528.pitch = (float)(Math.atan2((double)g, (double)j) * 180.0F / (float)Math.PI);

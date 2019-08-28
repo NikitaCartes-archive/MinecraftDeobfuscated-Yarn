@@ -1,9 +1,9 @@
 package net.minecraft.client.render.entity.feature;
 
+import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_4493;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.GameRenderer;
 import net.minecraft.client.render.entity.model.CreeperEntityModel;
@@ -33,7 +33,7 @@ public class CreeperChargeFeatureRenderer extends FeatureRenderer<CreeperEntity,
 			float n = 0.5F;
 			RenderSystem.color4f(0.5F, 0.5F, 0.5F, 1.0F);
 			RenderSystem.disableLighting();
-			RenderSystem.blendFunc(class_4493.class_4535.ONE, class_4493.class_4534.ONE);
+			RenderSystem.blendFunc(GlStateManager.class_4535.ONE, GlStateManager.class_4534.ONE);
 			this.getModel().copyStateTo(this.model);
 			GameRenderer gameRenderer = MinecraftClient.getInstance().gameRenderer;
 			gameRenderer.setFogBlack(true);

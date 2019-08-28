@@ -13,15 +13,18 @@ import java.util.stream.Collectors;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.class_4538;
 import net.minecraft.block.piston.PistonBehavior;
 import net.minecraft.container.NameableContainerProvider;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityContext;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.fluid.Fluid;
 import net.minecraft.fluid.FluidState;
 import net.minecraft.item.ItemPlacementContext;
 import net.minecraft.item.ItemStack;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.BlockSoundGroup;
 import net.minecraft.state.AbstractPropertyContainer;
 import net.minecraft.state.PropertyContainer;
@@ -41,9 +44,7 @@ import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.util.shape.VoxelShapes;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.EmptyBlockView;
-import net.minecraft.world.ExtendedBlockView;
 import net.minecraft.world.IWorld;
-import net.minecraft.world.ViewableWorld;
 import net.minecraft.world.World;
 import net.minecraft.world.loot.context.LootContext;
 
@@ -129,8 +130,8 @@ public class BlockState extends AbstractPropertyContainer<Block, BlockState> imp
 	}
 
 	@Environment(EnvType.CLIENT)
-	public int getBlockBrightness(ExtendedBlockView extendedBlockView, BlockPos blockPos) {
-		return this.getBlock().getBlockBrightness(this, extendedBlockView, blockPos);
+	public boolean method_22361() {
+		return this.getBlock().method_22359(this);
 	}
 
 	@Environment(EnvType.CLIENT)
@@ -243,12 +244,12 @@ public class BlockState extends AbstractPropertyContainer<Block, BlockState> imp
 		this.getBlock().onBlockRemoved(this, world, blockPos, blockState, bl);
 	}
 
-	public void scheduledTick(World world, BlockPos blockPos, Random random) {
-		this.getBlock().onScheduledTick(this, world, blockPos, random);
+	public void scheduledTick(ServerWorld serverWorld, BlockPos blockPos, Random random) {
+		this.getBlock().onScheduledTick(this, serverWorld, blockPos, random);
 	}
 
-	public void onRandomTick(World world, BlockPos blockPos, Random random) {
-		this.getBlock().onRandomTick(this, world, blockPos, random);
+	public void onRandomTick(ServerWorld serverWorld, BlockPos blockPos, Random random) {
+		this.getBlock().onRandomTick(this, serverWorld, blockPos, random);
 	}
 
 	public void onEntityCollision(World world, BlockPos blockPos, Entity entity) {
@@ -287,8 +288,12 @@ public class BlockState extends AbstractPropertyContainer<Block, BlockState> imp
 		return this.getBlock().canReplace(this, itemPlacementContext);
 	}
 
-	public boolean canPlaceAt(ViewableWorld viewableWorld, BlockPos blockPos) {
-		return this.getBlock().canPlaceAt(this, viewableWorld, blockPos);
+	public boolean method_22360(Fluid fluid) {
+		return this.getBlock().method_22358(this, fluid);
+	}
+
+	public boolean canPlaceAt(class_4538 arg, BlockPos blockPos) {
+		return this.getBlock().canPlaceAt(this, arg, blockPos);
 	}
 
 	public boolean shouldPostProcess(BlockView blockView, BlockPos blockPos) {

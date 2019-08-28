@@ -1,5 +1,6 @@
 package net.minecraft.block;
 
+import net.minecraft.class_4538;
 import net.minecraft.entity.EntityContext;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.particle.ParticleTypes;
@@ -9,7 +10,6 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.world.BlockView;
-import net.minecraft.world.ViewableWorld;
 import net.minecraft.world.World;
 
 public class DragonEggBlock extends FallingBlock {
@@ -63,7 +63,7 @@ public class DragonEggBlock extends FallingBlock {
 	}
 
 	@Override
-	public int getTickRate(ViewableWorld viewableWorld) {
+	public int getTickRate(class_4538 arg) {
 		return 5;
 	}
 

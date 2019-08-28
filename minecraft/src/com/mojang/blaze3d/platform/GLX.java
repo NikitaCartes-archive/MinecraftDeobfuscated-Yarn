@@ -11,7 +11,6 @@ import java.util.function.LongSupplier;
 import java.util.function.Supplier;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_4493;
 import net.minecraft.client.gl.GlDebug;
 import net.minecraft.client.render.BufferBuilder;
 import net.minecraft.client.render.Tessellator;
@@ -110,7 +109,7 @@ public class GLX {
 
 	public static void _init(int i, boolean bl) {
 		GLCapabilities gLCapabilities = GL.getCapabilities();
-		capsString = "Using framebuffer using " + class_4493.method_21973(gLCapabilities);
+		capsString = "Using framebuffer using " + GlStateManager.initFramebufferSupport(gLCapabilities);
 
 		try {
 			Processor[] processors = new SystemInfo().getHardware().getProcessors();

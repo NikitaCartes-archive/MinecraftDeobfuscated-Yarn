@@ -27,7 +27,7 @@ public class DesertWellFeature extends Feature<DefaultFeatureConfig> {
 	) {
 		blockPos = blockPos.up();
 
-		while (iWorld.isAir(blockPos) && blockPos.getY() > 2) {
+		while (iWorld.method_22347(blockPos) && blockPos.getY() > 2) {
 			blockPos = blockPos.down();
 		}
 
@@ -36,7 +36,7 @@ public class DesertWellFeature extends Feature<DefaultFeatureConfig> {
 		} else {
 			for (int i = -2; i <= 2; i++) {
 				for (int j = -2; j <= 2; j++) {
-					if (iWorld.isAir(blockPos.add(i, -1, j)) && iWorld.isAir(blockPos.add(i, -2, j))) {
+					if (iWorld.method_22347(blockPos.add(i, -1, j)) && iWorld.method_22347(blockPos.add(i, -2, j))) {
 						return false;
 					}
 				}

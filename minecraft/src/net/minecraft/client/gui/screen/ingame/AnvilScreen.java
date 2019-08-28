@@ -33,7 +33,7 @@ public class AnvilScreen extends AbstractContainerScreen<AnvilContainer> impleme
 		int i = (this.width - this.containerWidth) / 2;
 		int j = (this.height - this.containerHeight) / 2;
 		this.nameField = new TextFieldWidget(this.font, i + 62, j + 24, 103, 12, I18n.translate("container.repair"));
-		this.nameField.method_1856(false);
+		this.nameField.setFocusUnlocked(false);
 		this.nameField.changeFocus(true);
 		this.nameField.setEditableColor(-1);
 		this.nameField.setUneditableColor(-1);
@@ -65,7 +65,7 @@ public class AnvilScreen extends AbstractContainerScreen<AnvilContainer> impleme
 			this.minecraft.player.closeContainer();
 		}
 
-		return !this.nameField.keyPressed(i, j, k) && !this.nameField.method_20315() ? super.keyPressed(i, j, k) : true;
+		return !this.nameField.keyPressed(i, j, k) && !this.nameField.isActive() ? super.keyPressed(i, j, k) : true;
 	}
 
 	@Override
@@ -143,7 +143,7 @@ public class AnvilScreen extends AbstractContainerScreen<AnvilContainer> impleme
 	public void onContainerSlotUpdate(Container container, int i, ItemStack itemStack) {
 		if (i == 0) {
 			this.nameField.setText(itemStack.isEmpty() ? "" : itemStack.getName().getString());
-			this.nameField.setIsEditable(!itemStack.isEmpty());
+			this.nameField.setEditable(!itemStack.isEmpty());
 		}
 	}
 

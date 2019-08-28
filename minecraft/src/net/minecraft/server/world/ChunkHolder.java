@@ -348,7 +348,7 @@ public class ChunkHolder {
 		boolean bl8 = levelType2.isAfter(ChunkHolder.LevelType.ENTITY_TICKING);
 		if (!bl7 && bl8) {
 			if (this.entityTickingFuture != UNLOADED_WORLD_CHUNK_FUTURE) {
-				throw (IllegalStateException)SystemUtil.method_22320(new IllegalStateException());
+				throw (IllegalStateException)SystemUtil.throwOrPause(new IllegalStateException());
 			}
 
 			this.entityTickingFuture = threadedAnvilChunkStorage.createEntityTickingChunkFuture(this.pos);

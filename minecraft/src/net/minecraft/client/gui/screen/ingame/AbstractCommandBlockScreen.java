@@ -85,11 +85,11 @@ public abstract class AbstractCommandBlockScreen extends Screen {
 		this.children.add(this.consoleCommandTextField);
 		this.previousOutputTextField = new TextFieldWidget(this.font, this.width / 2 - 150, this.method_2364(), 276, 20, I18n.translate("advMode.previousOutput"));
 		this.previousOutputTextField.setMaxLength(32500);
-		this.previousOutputTextField.setIsEditable(false);
+		this.previousOutputTextField.setEditable(false);
 		this.previousOutputTextField.setText("-");
 		this.children.add(this.previousOutputTextField);
 		this.setInitialFocus(this.consoleCommandTextField);
-		this.consoleCommandTextField.method_1876(true);
+		this.consoleCommandTextField.setSelected(true);
 		this.updateCommand();
 	}
 
@@ -262,7 +262,7 @@ public abstract class AbstractCommandBlockScreen extends Screen {
 			this.field_2757 = MathHelper.clamp(
 				this.consoleCommandTextField.getCharacterX(suggestionContext.startPos),
 				0,
-				this.consoleCommandTextField.getCharacterX(0) + this.consoleCommandTextField.method_1859() - i
+				this.consoleCommandTextField.getCharacterX(0) + this.consoleCommandTextField.getInnerWidth() - i
 			);
 			this.field_2756 = i;
 		}
@@ -308,7 +308,7 @@ public abstract class AbstractCommandBlockScreen extends Screen {
 				int j = MathHelper.clamp(
 					this.consoleCommandTextField.getCharacterX(suggestions.getRange().getStart()),
 					0,
-					this.consoleCommandTextField.getCharacterX(0) + this.consoleCommandTextField.method_1859() - i
+					this.consoleCommandTextField.getCharacterX(0) + this.consoleCommandTextField.getInnerWidth() - i
 				);
 				this.suggestionWindow = new AbstractCommandBlockScreen.SuggestionWindow(j, 72, i, suggestions);
 			}
@@ -498,8 +498,8 @@ public abstract class AbstractCommandBlockScreen extends Screen {
 			AbstractCommandBlockScreen.this.completingSuggestion = true;
 			AbstractCommandBlockScreen.this.setCommand(suggestion.apply(this.typedText));
 			int i = suggestion.getRange().getStart() + suggestion.getText().length();
-			AbstractCommandBlockScreen.this.consoleCommandTextField.setCursor(i);
-			AbstractCommandBlockScreen.this.consoleCommandTextField.method_1884(i);
+			AbstractCommandBlockScreen.this.consoleCommandTextField.setSelectionStart(i);
+			AbstractCommandBlockScreen.this.consoleCommandTextField.setSelectionEnd(i);
 			this.select(this.selection);
 			AbstractCommandBlockScreen.this.completingSuggestion = false;
 			this.completed = true;

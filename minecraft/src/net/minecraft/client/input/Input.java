@@ -22,7 +22,7 @@ public class Input {
 		return new Vec2f(this.movementSideways, this.movementForward);
 	}
 
-	public boolean method_20622() {
+	public boolean hasForwardMovement() {
 		return this.movementForward > 1.0E-5F;
 	}
 }

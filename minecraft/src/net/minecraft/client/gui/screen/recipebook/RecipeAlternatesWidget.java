@@ -43,8 +43,8 @@ public class RecipeAlternatesWidget extends DrawableHelper implements Drawable, 
 		}
 
 		boolean bl = minecraftClient.player.getRecipeBook().isFilteringCraftable((CraftingContainer<?>)minecraftClient.player.container);
-		List<Recipe<?>> list = recipeResultCollection.getResultsExclusive(true);
-		List<Recipe<?>> list2 = bl ? Collections.emptyList() : recipeResultCollection.getResultsExclusive(false);
+		List<Recipe<?>> list = recipeResultCollection.getRecipes(true);
+		List<Recipe<?>> list2 = bl ? Collections.emptyList() : recipeResultCollection.getRecipes(false);
 		int m = list.size();
 		int n = m + list2.size();
 		int o = n <= 16 ? 4 : 5;
@@ -139,7 +139,7 @@ public class RecipeAlternatesWidget extends DrawableHelper implements Drawable, 
 			int o = 4;
 			int p = 82;
 			int q = 208;
-			this.method_2618(l, m, 24, 4, 82, 208);
+			this.renderGrid(l, m, 24, 4, 82, 208);
 			RenderSystem.disableBlend();
 			GuiLighting.disable();
 
@@ -151,7 +151,7 @@ public class RecipeAlternatesWidget extends DrawableHelper implements Drawable, 
 		}
 	}
 
-	private void method_2618(int i, int j, int k, int l, int m, int n) {
+	private void renderGrid(int i, int j, int k, int l, int m, int n) {
 		this.blit(this.buttonX, this.buttonY, m, n, l, l);
 		this.blit(this.buttonX + l * 2 + i * k, this.buttonY, m + k + l, n, l, l);
 		this.blit(this.buttonX, this.buttonY + l * 2 + j * k, m, n + k + l, l, l);

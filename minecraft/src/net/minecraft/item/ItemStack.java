@@ -762,6 +762,7 @@ public final class ItemStack {
 			multimap = this.getItem().getModifiers(equipmentSlot);
 		}
 
+		multimap.values().forEach(entityAttributeModifierx -> entityAttributeModifierx.setSerialize(false));
 		return multimap;
 	}
 

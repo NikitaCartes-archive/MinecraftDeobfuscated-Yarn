@@ -909,7 +909,7 @@ public class ThreadedAnvilChunkStorage extends VersionedChunkStorage implements 
 				int i = entityType.getMaxTrackDistance() * 16;
 				int j = entityType.getTrackTickInterval();
 				if (this.entityTrackers.containsKey(entity.getEntityId())) {
-					throw (IllegalStateException)SystemUtil.method_22320(new IllegalStateException("Entity is already tracked!"));
+					throw (IllegalStateException)SystemUtil.throwOrPause(new IllegalStateException("Entity is already tracked!"));
 				} else {
 					ThreadedAnvilChunkStorage.EntityTracker entityTracker = new ThreadedAnvilChunkStorage.EntityTracker(entity, i, j, entityType.alwaysUpdateVelocity());
 					this.entityTrackers.put(entity.getEntityId(), entityTracker);

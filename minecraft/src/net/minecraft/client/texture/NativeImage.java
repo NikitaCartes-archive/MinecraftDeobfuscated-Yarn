@@ -16,7 +16,6 @@ import java.util.Set;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_4536;
 import net.minecraft.client.util.Untracker;
 import org.apache.commons.io.IOUtils;
 import org.lwjgl.stb.STBIWriteCallback;
@@ -79,7 +78,7 @@ public final class NativeImage implements AutoCloseable {
 
 		NativeImage var3;
 		try {
-			byteBuffer = class_4536.readResource(inputStream);
+			byteBuffer = TextureUtil.readResource(inputStream);
 			byteBuffer.rewind();
 			var3 = read(format, byteBuffer);
 		} finally {
@@ -402,7 +401,7 @@ public final class NativeImage implements AutoCloseable {
 		}
 	}
 
-	public void method_4319() {
+	public void mirrorVertically() {
 		this.checkAllocated();
 
 		try (MemoryStack memoryStack = MemoryStack.stackPush()) {
@@ -552,7 +551,7 @@ public final class NativeImage implements AutoCloseable {
 			this.glConstant = j;
 		}
 
-		public int getGlConstant() {
+		int getGlConstant() {
 			return this.glConstant;
 		}
 	}

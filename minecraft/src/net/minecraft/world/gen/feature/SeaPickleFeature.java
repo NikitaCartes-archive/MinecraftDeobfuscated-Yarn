@@ -22,7 +22,7 @@ public class SeaPickleFeature extends Feature<SeaPickleFeatureConfig> {
 		for (int j = 0; j < seaPickleFeatureConfig.count; j++) {
 			int k = random.nextInt(8) - random.nextInt(8);
 			int l = random.nextInt(8) - random.nextInt(8);
-			int m = iWorld.getTop(Heightmap.Type.OCEAN_FLOOR, blockPos.getX() + k, blockPos.getZ() + l);
+			int m = iWorld.getLightLevel(Heightmap.Type.OCEAN_FLOOR, blockPos.getX() + k, blockPos.getZ() + l);
 			BlockPos blockPos2 = new BlockPos(blockPos.getX() + k, m, blockPos.getZ() + l);
 			BlockState blockState = Blocks.SEA_PICKLE.getDefaultState().with(SeaPickleBlock.PICKLES, Integer.valueOf(random.nextInt(4) + 1));
 			if (iWorld.getBlockState(blockPos2).getBlock() == Blocks.WATER && blockState.canPlaceAt(iWorld, blockPos2)) {

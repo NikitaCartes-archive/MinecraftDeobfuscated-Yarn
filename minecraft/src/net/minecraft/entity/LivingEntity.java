@@ -111,8 +111,8 @@ public abstract class LivingEntity extends Entity {
 	private static final TrackedData<Float> HEALTH = DataTracker.registerData(LivingEntity.class, TrackedDataHandlerRegistry.FLOAT);
 	private static final TrackedData<Integer> POTION_SWIRLS_COLOR = DataTracker.registerData(LivingEntity.class, TrackedDataHandlerRegistry.INTEGER);
 	private static final TrackedData<Boolean> POTION_SWIRLS_AMBIENT = DataTracker.registerData(LivingEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
-	private static final TrackedData<Integer> STUCK_ARROWS = DataTracker.registerData(LivingEntity.class, TrackedDataHandlerRegistry.INTEGER);
-	private static final TrackedData<Integer> field_20348 = DataTracker.registerData(LivingEntity.class, TrackedDataHandlerRegistry.INTEGER);
+	private static final TrackedData<Integer> STUCK_ARROW_COUNT = DataTracker.registerData(LivingEntity.class, TrackedDataHandlerRegistry.INTEGER);
+	private static final TrackedData<Integer> STINGER_COUNT = DataTracker.registerData(LivingEntity.class, TrackedDataHandlerRegistry.INTEGER);
 	private static final TrackedData<Optional<BlockPos>> SLEEPING_POSITION = DataTracker.registerData(
 		LivingEntity.class, TrackedDataHandlerRegistry.OPTIONA_BLOCK_POS
 	);
@@ -225,8 +225,8 @@ public abstract class LivingEntity extends Entity {
 		this.dataTracker.startTracking(LIVING_FLAGS, (byte)0);
 		this.dataTracker.startTracking(POTION_SWIRLS_COLOR, 0);
 		this.dataTracker.startTracking(POTION_SWIRLS_AMBIENT, false);
-		this.dataTracker.startTracking(STUCK_ARROWS, 0);
-		this.dataTracker.startTracking(field_20348, 0);
+		this.dataTracker.startTracking(STUCK_ARROW_COUNT, 0);
+		this.dataTracker.startTracking(STINGER_COUNT, 0);
 		this.dataTracker.startTracking(HEALTH, 1.0F);
 		this.dataTracker.startTracking(SLEEPING_POSITION, Optional.empty());
 	}
@@ -515,23 +515,7 @@ public abstract class LivingEntity extends Entity {
 		compoundTag.putInt("HurtByTimestamp", this.lastAttackedTime);
 		compoundTag.putShort("DeathTime", (short)this.deathTime);
 		compoundTag.putFloat("AbsorptionAmount", this.getAbsorptionAmount());
-
-		for (EquipmentSlot equipmentSlot : EquipmentSlot.values()) {
-			ItemStack itemStack = this.getEquippedStack(equipmentSlot);
-			if (!itemStack.isEmpty()) {
-				this.getAttributes().removeAll(itemStack.getAttributeModifiers(equipmentSlot));
-			}
-		}
-
 		compoundTag.put("Attributes", EntityAttributes.toTag(this.getAttributes()));
-
-		for (EquipmentSlot equipmentSlotx : EquipmentSlot.values()) {
-			ItemStack itemStack = this.getEquippedStack(equipmentSlotx);
-			if (!itemStack.isEmpty()) {
-				this.getAttributes().replaceAll(itemStack.getAttributeModifiers(equipmentSlotx));
-			}
-		}
-
 		if (!this.activeStatusEffects.isEmpty()) {
 			ListTag listTag = new ListTag();
 
@@ -1370,20 +1354,20 @@ public abstract class LivingEntity extends Entity {
 		return (float)this.getAttributeInstance(EntityAttributes.MAX_HEALTH).getValue();
 	}
 
-	public final int getStuckArrows() {
-		return this.dataTracker.get(STUCK_ARROWS);
+	public final int getStuckArrowCount() {
+		return this.dataTracker.get(STUCK_ARROW_COUNT);
 	}
 
-	public final void setStuckArrows(int i) {
-		this.dataTracker.set(STUCK_ARROWS, i);
+	public final void setStuckArrowCount(int i) {
+		this.dataTracker.set(STUCK_ARROW_COUNT, i);
 	}
 
-	public final int method_21753() {
-		return this.dataTracker.get(field_20348);
+	public final int getStingerCount() {
+		return this.dataTracker.get(STINGER_COUNT);
 	}
 
-	public final void method_21755(int i) {
-		this.dataTracker.set(field_20348, i);
+	public final void setStingerCount(int i) {
+		this.dataTracker.set(STINGER_COUNT, i);
 	}
 
 	private int getHandSwingDuration() {
@@ -1842,7 +1826,7 @@ public abstract class LivingEntity extends Entity {
 						if (this.hasStatusEffect(StatusEffects.LEVITATION)) {
 							q += (0.05 * (double)(this.getStatusEffect(StatusEffects.LEVITATION).getAmplifier() + 1) - vec3d7.y) * 0.2;
 							this.fallDistance = 0.0F;
-						} else if (this.world.isClient && !this.world.isBlockLoaded(blockPos)) {
+						} else if (this.world.isClient && !this.world.method_22340(blockPos)) {
 							if (this.y > 0.0) {
 								q = -0.1;
 							} else {
@@ -1970,7 +1954,7 @@ public abstract class LivingEntity extends Entity {
 		this.tickActiveItemStack();
 		this.updateLeaningPitch();
 		if (!this.world.isClient) {
-			int i = this.getStuckArrows();
+			int i = this.getStuckArrowCount();
 			if (i > 0) {
 				if (this.stuckArrowTimer <= 0) {
 					this.stuckArrowTimer = 20 * (30 - i);
@@ -1978,11 +1962,11 @@ public abstract class LivingEntity extends Entity {
 
 				this.stuckArrowTimer--;
 				if (this.stuckArrowTimer <= 0) {
-					this.setStuckArrows(i - 1);
+					this.setStuckArrowCount(i - 1);
 				}
 			}
 
-			int j = this.method_21753();
+			int j = this.getStingerCount();
 			if (j > 0) {
 				if (this.field_20347 <= 0) {
 					this.field_20347 = 20 * (30 - j);
@@ -1990,7 +1974,7 @@ public abstract class LivingEntity extends Entity {
 
 				this.field_20347--;
 				if (this.field_20347 <= 0) {
-					this.method_21755(j - 1);
+					this.setStingerCount(j - 1);
 				}
 			}
 
@@ -2564,10 +2548,14 @@ public abstract class LivingEntity extends Entity {
 	}
 
 	protected void consumeItem() {
-		if (!this.activeItemStack.isEmpty() && this.isUsingItem()) {
-			this.spawnConsumptionEffects(this.activeItemStack, 16);
-			this.setStackInHand(this.getActiveHand(), this.activeItemStack.finishUsing(this.world, this));
-			this.clearActiveItem();
+		if (!this.activeItemStack.equals(this.getStackInHand(this.getActiveHand()))) {
+			this.stopUsingItem();
+		} else {
+			if (!this.activeItemStack.isEmpty() && this.isUsingItem()) {
+				this.spawnConsumptionEffects(this.activeItemStack, 16);
+				this.setStackInHand(this.getActiveHand(), this.activeItemStack.finishUsing(this.world, this));
+				this.clearActiveItem();
+			}
 		}
 	}
 
@@ -2640,7 +2628,7 @@ public abstract class LivingEntity extends Entity {
 		boolean bl2 = false;
 		BlockPos blockPos = new BlockPos(this);
 		World world = this.world;
-		if (world.isBlockLoaded(blockPos)) {
+		if (world.method_22340(blockPos)) {
 			boolean bl3 = false;
 
 			while (!bl3 && blockPos.getY() > 0) {
@@ -2656,7 +2644,7 @@ public abstract class LivingEntity extends Entity {
 
 			if (bl3) {
 				this.requestTeleport(this.x, this.y, this.z);
-				if (world.doesNotCollide(this) && !world.intersectsFluid(this.getBoundingBox())) {
+				if (world.doesNotCollide(this) && !world.method_22345(this.getBoundingBox())) {
 					bl2 = true;
 				}
 			}
@@ -2746,7 +2734,7 @@ public abstract class LivingEntity extends Entity {
 	}
 
 	public void wakeUp() {
-		this.getSleepingPosition().filter(this.world::isBlockLoaded).ifPresent(blockPos -> {
+		this.getSleepingPosition().filter(this.world::method_22340).ifPresent(blockPos -> {
 			BlockState blockState = this.world.getBlockState(blockPos);
 			if (blockState.getBlock() instanceof BedBlock) {
 				this.world.setBlockState(blockPos, blockState.with(BedBlock.OCCUPIED, Boolean.valueOf(false)), 3);
@@ -2792,7 +2780,9 @@ public abstract class LivingEntity extends Entity {
 				null, this.x, this.y, this.z, this.getEatSound(itemStack), SoundCategory.NEUTRAL, 1.0F, 1.0F + (world.random.nextFloat() - world.random.nextFloat()) * 0.4F
 			);
 			this.applyFoodEffects(itemStack, world, this);
-			itemStack.decrement(1);
+			if (this instanceof PlayerEntity && !((PlayerEntity)this).abilities.creativeMode) {
+				itemStack.decrement(1);
+			}
 		}
 
 		return itemStack;

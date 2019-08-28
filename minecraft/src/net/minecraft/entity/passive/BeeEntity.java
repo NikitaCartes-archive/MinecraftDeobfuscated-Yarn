@@ -13,9 +13,11 @@ import net.minecraft.block.Blocks;
 import net.minecraft.block.CropBlock;
 import net.minecraft.block.StemBlock;
 import net.minecraft.block.SweetBerryBushBlock;
+import net.minecraft.block.TallPlantBlock;
 import net.minecraft.block.entity.BeeHiveBlockEntity;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.BlockEntityType;
+import net.minecraft.block.enums.DoubleBlockHalf;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityDimensions;
 import net.minecraft.entity.EntityPose;
@@ -31,10 +33,10 @@ import net.minecraft.entity.ai.goal.FollowTargetGoal;
 import net.minecraft.entity.ai.goal.Goal;
 import net.minecraft.entity.ai.goal.MeleeAttackGoal;
 import net.minecraft.entity.ai.goal.RevengeGoal;
-import net.minecraft.entity.ai.goal.SwimGoal;
 import net.minecraft.entity.ai.goal.TemptGoal;
 import net.minecraft.entity.ai.pathing.BirdNavigation;
 import net.minecraft.entity.ai.pathing.EntityNavigation;
+import net.minecraft.entity.ai.pathing.PathNodeType;
 import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.data.DataTracker;
@@ -83,6 +85,7 @@ public class BeeEntity extends AnimalEntity implements Flutterer {
 		super(entityType, world);
 		this.moveControl = new FlightMoveControl(this, 20, true);
 		this.lookControl = new BeeEntity.BeeLookControl(this);
+		this.setPathNodeTypeWeight(PathNodeType.WATER, -1.0F);
 	}
 
 	@Override
@@ -94,9 +97,8 @@ public class BeeEntity extends AnimalEntity implements Flutterer {
 
 	@Override
 	protected void initGoals() {
-		this.goalSelector.add(0, new SwimGoal(this));
-		this.goalSelector.add(1, new BeeEntity.EnterHiveGoal());
-		this.goalSelector.add(1, new BeeEntity.FindHiveGoal());
+		this.goalSelector.add(0, new BeeEntity.EnterHiveGoal());
+		this.goalSelector.add(0, new BeeEntity.FindHiveGoal());
 		this.goalSelector.add(1, new AnimalMateGoal(this, 1.0));
 		this.goalSelector.add(2, new TemptGoal(this, 1.25, Ingredient.fromTag(ItemTags.SMALL_FLOWERS), false));
 		this.goalSelector.add(3, new BeeEntity.PollinateGoal());
@@ -157,7 +159,7 @@ public class BeeEntity extends AnimalEntity implements Flutterer {
 		if (bl) {
 			this.dealDamage(this, entity);
 			if (entity instanceof LivingEntity) {
-				((LivingEntity)entity).method_21755(((LivingEntity)entity).method_21753() + 1);
+				((LivingEntity)entity).setStingerCount(((LivingEntity)entity).getStingerCount() + 1);
 				int i = 0;
 				if (this.world.getDifficulty() == Difficulty.NORMAL) {
 					i = 10;
@@ -398,7 +400,7 @@ public class BeeEntity extends AnimalEntity implements Flutterer {
 			}
 		};
 		birdNavigation.setCanPathThroughDoors(false);
-		birdNavigation.setCanSwim(true);
+		birdNavigation.setCanSwim(false);
 		birdNavigation.setCanEnterOpenDoors(true);
 		return birdNavigation;
 	}
@@ -475,26 +477,6 @@ public class BeeEntity extends AnimalEntity implements Flutterer {
 		} else {
 			return Optional.empty();
 		}
-	}
-
-	private Optional<BlockPos> getBlockInRange(Predicate<Block> predicate, double d) {
-		BlockPos blockPos = this.getBlockPos();
-		BlockPos.Mutable mutable = new BlockPos.Mutable();
-
-		for (int i = 0; (double)i <= d; i = i > 0 ? -i : 1 - i) {
-			for (int j = 0; (double)j < d; j++) {
-				for (int k = 0; k <= j; k = k > 0 ? -k : 1 - k) {
-					for (int l = k < j && k > -j ? j : 0; l <= j; l = l > 0 ? -l : 1 - l) {
-						mutable.set(blockPos).setOffset(k, i - 1, l);
-						if (blockPos.getSquaredDistance(mutable) < d * d && predicate.test(this.world.getBlockState(mutable).getBlock())) {
-							return Optional.of(mutable);
-						}
-					}
-				}
-			}
-		}
-
-		return Optional.empty();
 	}
 
 	public boolean setBeeAttacker(Entity entity) {
@@ -848,6 +830,15 @@ public class BeeEntity extends AnimalEntity implements Flutterer {
 	}
 
 	class PollinateGoal extends BeeEntity.NotAngryGoal {
+		private final Predicate<BlockState> field_20617 = blockState -> {
+			if (blockState.matches(BlockTags.SMALL_FLOWERS)) {
+				return true;
+			} else {
+				return !blockState.matches(BlockTags.TALL_FLOWERS)
+					? false
+					: blockState.getBlock() == Blocks.SUNFLOWER && blockState.contains(TallPlantBlock.HALF) && blockState.get(TallPlantBlock.HALF) == DoubleBlockHalf.UPPER;
+			}
+		};
 		private int pollinationTicks = 0;
 		private int lastPollinationTick = 0;
 
@@ -915,7 +906,27 @@ public class BeeEntity extends AnimalEntity implements Flutterer {
 		}
 
 		private Optional<BlockPos> getFlower() {
-			return BeeEntity.this.getBlockInRange(block -> block.matches(BlockTags.SMALL_FLOWERS) || block.matches(BlockTags.TALL_FLOWERS), 2.0);
+			return this.method_22326(this.field_20617, 2.0);
+		}
+
+		private Optional<BlockPos> method_22326(Predicate<BlockState> predicate, double d) {
+			BlockPos blockPos = BeeEntity.this.getBlockPos();
+			BlockPos.Mutable mutable = new BlockPos.Mutable();
+
+			for (int i = 0; (double)i <= d; i = i > 0 ? -i : 1 - i) {
+				for (int j = 0; (double)j < d; j++) {
+					for (int k = 0; k <= j; k = k > 0 ? -k : 1 - k) {
+						for (int l = k < j && k > -j ? j : 0; l <= j; l = l > 0 ? -l : 1 - l) {
+							mutable.set(blockPos).setOffset(k, i - 1, l);
+							if (blockPos.getSquaredDistance(mutable) < d * d && predicate.test(BeeEntity.this.world.getBlockState(mutable))) {
+								return Optional.of(mutable);
+							}
+						}
+					}
+				}
+			}
+
+			return Optional.empty();
 		}
 	}
 

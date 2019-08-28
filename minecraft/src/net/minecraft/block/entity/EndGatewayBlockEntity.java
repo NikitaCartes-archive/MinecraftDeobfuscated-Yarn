@@ -11,6 +11,7 @@ import net.minecraft.block.Blocks;
 import net.minecraft.client.network.packet.BlockEntityUpdateS2CPacket;
 import net.minecraft.entity.Entity;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.TagHelper;
 import net.minecraft.util.Tickable;
 import net.minecraft.util.math.BlockPos;
@@ -145,10 +146,10 @@ public class EndGatewayBlockEntity extends EndPortalBlockEntity implements Ticka
 	}
 
 	public void tryTeleportingEntity(Entity entity) {
-		if (!this.world.isClient && !this.needsCooldownBeforeTeleporting()) {
+		if (this.world instanceof ServerWorld && !this.needsCooldownBeforeTeleporting()) {
 			this.teleportCooldown = 100;
 			if (this.exitPortalPos == null && this.world.dimension instanceof TheEndDimension) {
-				this.createPortal();
+				this.createPortal((ServerWorld)this.world);
 			}
 
 			if (this.exitPortalPos != null) {
@@ -166,28 +167,28 @@ public class EndGatewayBlockEntity extends EndPortalBlockEntity implements Ticka
 		return blockPos.up();
 	}
 
-	private void createPortal() {
+	private void createPortal(ServerWorld serverWorld) {
 		Vec3d vec3d = new Vec3d((double)this.getPos().getX(), 0.0, (double)this.getPos().getZ()).normalize();
 		Vec3d vec3d2 = vec3d.multiply(1024.0);
 
-		for (int i = 16; getChunk(this.world, vec3d2).getHighestNonEmptySectionYOffset() > 0 && i-- > 0; vec3d2 = vec3d2.add(vec3d.multiply(-16.0))) {
+		for (int i = 16; getChunk(serverWorld, vec3d2).getHighestNonEmptySectionYOffset() > 0 && i-- > 0; vec3d2 = vec3d2.add(vec3d.multiply(-16.0))) {
 			LOGGER.debug("Skipping backwards past nonempty chunk at {}", vec3d2);
 		}
 
-		for (int var5 = 16; getChunk(this.world, vec3d2).getHighestNonEmptySectionYOffset() == 0 && var5-- > 0; vec3d2 = vec3d2.add(vec3d.multiply(16.0))) {
+		for (int var6 = 16; getChunk(serverWorld, vec3d2).getHighestNonEmptySectionYOffset() == 0 && var6-- > 0; vec3d2 = vec3d2.add(vec3d.multiply(16.0))) {
 			LOGGER.debug("Skipping forward past empty chunk at {}", vec3d2);
 		}
 
 		LOGGER.debug("Found chunk at {}", vec3d2);
-		WorldChunk worldChunk = getChunk(this.world, vec3d2);
+		WorldChunk worldChunk = getChunk(serverWorld, vec3d2);
 		this.exitPortalPos = findPortalPosition(worldChunk);
 		if (this.exitPortalPos == null) {
 			this.exitPortalPos = new BlockPos(vec3d2.x + 0.5, 75.0, vec3d2.z + 0.5);
 			LOGGER.debug("Failed to find suitable block, settling on {}", this.exitPortalPos);
 			Feature.END_ISLAND
 				.generate(
-					this.world,
-					(ChunkGenerator<? extends ChunkGeneratorConfig>)this.world.getChunkManager().getChunkGenerator(),
+					serverWorld,
+					(ChunkGenerator<? extends ChunkGeneratorConfig>)serverWorld.method_14178().getChunkGenerator(),
 					new Random(this.exitPortalPos.asLong()),
 					this.exitPortalPos,
 					FeatureConfig.DEFAULT
@@ -196,10 +197,10 @@ public class EndGatewayBlockEntity extends EndPortalBlockEntity implements Ticka
 			LOGGER.debug("Found block at {}", this.exitPortalPos);
 		}
 
-		this.exitPortalPos = findExitPortalPos(this.world, this.exitPortalPos, 16, true);
+		this.exitPortalPos = findExitPortalPos(serverWorld, this.exitPortalPos, 16, true);
 		LOGGER.debug("Creating portal at {}", this.exitPortalPos);
 		this.exitPortalPos = this.exitPortalPos.up(10);
-		this.createPortal(this.exitPortalPos);
+		this.createPortal(serverWorld, this.exitPortalPos);
 		this.markDirty();
 	}
 
@@ -255,11 +256,11 @@ public class EndGatewayBlockEntity extends EndPortalBlockEntity implements Ticka
 		return blockPos3;
 	}
 
-	private void createPortal(BlockPos blockPos) {
+	private void createPortal(ServerWorld serverWorld, BlockPos blockPos) {
 		Feature.END_GATEWAY
 			.generate(
-				this.world,
-				(ChunkGenerator<? extends ChunkGeneratorConfig>)this.world.getChunkManager().getChunkGenerator(),
+				serverWorld,
+				(ChunkGenerator<? extends ChunkGeneratorConfig>)serverWorld.method_14178().getChunkGenerator(),
 				new Random(),
 				blockPos,
 				EndGatewayFeatureConfig.createConfig(this.getPos(), false)

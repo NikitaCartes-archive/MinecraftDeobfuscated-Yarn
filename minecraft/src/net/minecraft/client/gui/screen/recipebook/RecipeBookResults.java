@@ -108,7 +108,7 @@ public class RecipeBookResults {
 
 	public void drawTooltip(int i, int j) {
 		if (this.client.currentScreen != null && this.hoveredResultButton != null && !this.alternatesWidget.isVisible()) {
-			this.client.currentScreen.renderTooltip(this.hoveredResultButton.method_2644(this.client.currentScreen), i, j);
+			this.client.currentScreen.renderTooltip(this.hoveredResultButton.getTooltip(this.client.currentScreen), i, j);
 		}
 	}
 

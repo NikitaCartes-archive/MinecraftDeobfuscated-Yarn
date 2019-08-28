@@ -3,6 +3,7 @@ package net.minecraft.block;
 import java.util.Random;
 import javax.annotation.Nullable;
 import net.minecraft.item.ItemPlacementContext;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.state.StateFactory;
 import net.minecraft.state.property.BooleanProperty;
 import net.minecraft.util.math.BlockPos;
@@ -47,11 +48,9 @@ public class RedstoneLampBlock extends Block {
 	}
 
 	@Override
-	public void onScheduledTick(BlockState blockState, World world, BlockPos blockPos, Random random) {
-		if (!world.isClient) {
-			if ((Boolean)blockState.get(LIT) && !world.isReceivingRedstonePower(blockPos)) {
-				world.setBlockState(blockPos, blockState.cycle(LIT), 2);
-			}
+	public void onScheduledTick(BlockState blockState, ServerWorld serverWorld, BlockPos blockPos, Random random) {
+		if ((Boolean)blockState.get(LIT) && !serverWorld.isReceivingRedstonePower(blockPos)) {
+			serverWorld.setBlockState(blockPos, blockState.cycle(LIT), 2);
 		}
 	}
 

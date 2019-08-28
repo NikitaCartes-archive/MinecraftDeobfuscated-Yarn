@@ -210,7 +210,7 @@ public class WorldUpdater {
 						for (int k = 0; k < 32; k++) {
 							for (int l = 0; l < 32; l++) {
 								ChunkPos chunkPos = new ChunkPos(k + i, l + j);
-								if (regionFile.method_21879(chunkPos)) {
+								if (regionFile.isChunkValid(chunkPos)) {
 									list.add(chunkPos);
 								}
 							}

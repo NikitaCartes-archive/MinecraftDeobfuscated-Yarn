@@ -12,9 +12,7 @@ import net.minecraft.world.biome.Biome;
 import net.minecraft.world.biome.Biomes;
 import net.minecraft.world.biome.layer.BiomeLayerSampler;
 import net.minecraft.world.biome.layer.BiomeLayers;
-import net.minecraft.world.gen.chunk.OverworldChunkGeneratorConfig;
 import net.minecraft.world.gen.feature.StructureFeature;
-import net.minecraft.world.level.LevelProperties;
 
 public class VanillaLayeredBiomeSource extends BiomeSource {
 	private final BiomeLayerSampler noiseLayer;
@@ -89,9 +87,9 @@ public class VanillaLayeredBiomeSource extends BiomeSource {
 	};
 
 	public VanillaLayeredBiomeSource(VanillaLayeredBiomeSourceConfig vanillaLayeredBiomeSourceConfig) {
-		LevelProperties levelProperties = vanillaLayeredBiomeSourceConfig.getLevelProperties();
-		OverworldChunkGeneratorConfig overworldChunkGeneratorConfig = vanillaLayeredBiomeSourceConfig.getGeneratorSettings();
-		BiomeLayerSampler[] biomeLayerSamplers = BiomeLayers.build(levelProperties.getSeed(), levelProperties.getGeneratorType(), overworldChunkGeneratorConfig);
+		BiomeLayerSampler[] biomeLayerSamplers = BiomeLayers.build(
+			vanillaLayeredBiomeSourceConfig.method_22355(), vanillaLayeredBiomeSourceConfig.method_22356(), vanillaLayeredBiomeSourceConfig.getGeneratorSettings()
+		);
 		this.noiseLayer = biomeLayerSamplers[0];
 		this.biomeLayer = biomeLayerSamplers[1];
 	}

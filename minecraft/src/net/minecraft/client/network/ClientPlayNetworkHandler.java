@@ -42,11 +42,11 @@ import net.minecraft.client.ClientBrandRetriever;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.MapRenderer;
 import net.minecraft.client.gui.screen.ConfirmScreen;
+import net.minecraft.client.gui.screen.CreditsScreen;
 import net.minecraft.client.gui.screen.DeathScreen;
 import net.minecraft.client.gui.screen.DemoScreen;
 import net.minecraft.client.gui.screen.DisconnectedScreen;
 import net.minecraft.client.gui.screen.DownloadingTerrainScreen;
-import net.minecraft.client.gui.screen.EndCreditsScreen;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.screen.Screens;
 import net.minecraft.client.gui.screen.StatsListener;
@@ -151,7 +151,6 @@ import net.minecraft.client.network.packet.WorldBorderS2CPacket;
 import net.minecraft.client.network.packet.WorldEventS2CPacket;
 import net.minecraft.client.network.packet.WorldTimeUpdateS2CPacket;
 import net.minecraft.client.options.GameOptions;
-import net.minecraft.client.options.ServerEntry;
 import net.minecraft.client.options.ServerList;
 import net.minecraft.client.particle.ItemPickupParticle;
 import net.minecraft.client.recipe.book.ClientRecipeBook;
@@ -1053,6 +1052,7 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 		this.client.player = clientPlayerEntity2;
 		this.client.cameraEntity = clientPlayerEntity2;
 		clientPlayerEntity2.getDataTracker().writeUpdatedEntries(clientPlayerEntity.getDataTracker().getAllEntries());
+		clientPlayerEntity2.getAttributes().method_22324(clientPlayerEntity.getAttributes());
 		clientPlayerEntity2.afterSpawn();
 		clientPlayerEntity2.setServerBrand(string);
 		this.world.addPlayer(i, clientPlayerEntity2);
@@ -1188,7 +1188,7 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 	@Override
 	public void onBlockEntityUpdate(BlockEntityUpdateS2CPacket blockEntityUpdateS2CPacket) {
 		NetworkThreadUtils.forceMainThread(blockEntityUpdateS2CPacket, this, this.client);
-		if (this.client.world.isBlockLoaded(blockEntityUpdateS2CPacket.getPos())) {
+		if (this.client.world.method_22340(blockEntityUpdateS2CPacket.getPos())) {
 			BlockEntity blockEntity = this.client.world.getBlockEntity(blockEntityUpdateS2CPacket.getPos());
 			int i = blockEntityUpdateS2CPacket.getActionId();
 			boolean bl = i == 2 && blockEntity instanceof CommandBlockBlockEntity;
@@ -1282,7 +1282,7 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 			} else if (j == 1) {
 				this.client
 					.openScreen(
-						new EndCreditsScreen(true, () -> this.client.player.networkHandler.sendPacket(new ClientStatusC2SPacket(ClientStatusC2SPacket.Mode.PERFORM_RESPAWN)))
+						new CreditsScreen(true, () -> this.client.player.networkHandler.sendPacket(new ClientStatusC2SPacket(ClientStatusC2SPacket.Mode.PERFORM_RESPAWN)))
 					);
 			}
 		} else if (i == 5) {
@@ -1731,32 +1731,32 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 
 				this.sendResourcePackStatus(ResourcePackStatusC2SPacket.Status.FAILED_DOWNLOAD);
 			} else {
-				ServerEntry serverEntry = this.client.getCurrentServerEntry();
-				if (serverEntry != null && serverEntry.getResourcePack() == ServerEntry.ResourcePackState.ENABLED) {
+				ServerInfo serverInfo = this.client.getCurrentServerEntry();
+				if (serverInfo != null && serverInfo.getResourcePack() == ServerInfo.ResourcePackState.ENABLED) {
 					this.sendResourcePackStatus(ResourcePackStatusC2SPacket.Status.ACCEPTED);
 					this.method_2885(this.client.getResourcePackDownloader().download(string, string2));
-				} else if (serverEntry != null && serverEntry.getResourcePack() != ServerEntry.ResourcePackState.PROMPT) {
+				} else if (serverInfo != null && serverInfo.getResourcePack() != ServerInfo.ResourcePackState.PROMPT) {
 					this.sendResourcePackStatus(ResourcePackStatusC2SPacket.Status.DECLINED);
 				} else {
 					this.client.execute(() -> this.client.openScreen(new ConfirmScreen(bl -> {
 							this.client = MinecraftClient.getInstance();
-							ServerEntry serverEntryx = this.client.getCurrentServerEntry();
+							ServerInfo serverInfox = this.client.getCurrentServerEntry();
 							if (bl) {
-								if (serverEntryx != null) {
-									serverEntryx.setResourcePackState(ServerEntry.ResourcePackState.ENABLED);
+								if (serverInfox != null) {
+									serverInfox.setResourcePackState(ServerInfo.ResourcePackState.ENABLED);
 								}
 
 								this.sendResourcePackStatus(ResourcePackStatusC2SPacket.Status.ACCEPTED);
 								this.method_2885(this.client.getResourcePackDownloader().download(string, string2));
 							} else {
-								if (serverEntryx != null) {
-									serverEntryx.setResourcePackState(ServerEntry.ResourcePackState.DISABLED);
+								if (serverInfox != null) {
+									serverInfox.setResourcePackState(ServerInfo.ResourcePackState.DISABLED);
 								}
 
 								this.sendResourcePackStatus(ResourcePackStatusC2SPacket.Status.DECLINED);
 							}
 
-							ServerList.updateServerListEntry(serverEntryx);
+							ServerList.updateServerListEntry(serverInfox);
 							this.client.openScreen(null);
 						}, new TranslatableText("multiplayer.texturePrompt.line1"), new TranslatableText("multiplayer.texturePrompt.line2"))));
 				}
@@ -1995,14 +1995,14 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 				}
 
 				this.client.debugRenderer.pointsOfInterestDebugRenderer.addPointOfInterest(lv2);
-			} else if (CustomPayloadS2CPacket.field_20600.equals(identifier)) {
-				this.client.debugRenderer.field_20519.method_20414();
-			} else if (CustomPayloadS2CPacket.field_20599.equals(identifier)) {
+			} else if (CustomPayloadS2CPacket.DEBUG_GAME_TEST_CLEAR.equals(identifier)) {
+				this.client.debugRenderer.gameTestDebugRenderer.clear();
+			} else if (CustomPayloadS2CPacket.DEBUG_GAME_TEST_ADD_MARKER.equals(identifier)) {
 				BlockPos blockPos2 = packetByteBuf.readBlockPos();
 				int j = packetByteBuf.readInt();
 				String string10 = packetByteBuf.readString();
 				int w = packetByteBuf.readInt();
-				this.client.debugRenderer.field_20519.method_22123(blockPos2, j, string10, w);
+				this.client.debugRenderer.gameTestDebugRenderer.addMarker(blockPos2, j, string10, w);
 			} else {
 				LOGGER.warn("Unknown custom packed identifier: {}", identifier);
 			}

@@ -15,6 +15,7 @@ import net.minecraft.item.ItemConvertible;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.particle.ParticleTypes;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.state.StateFactory;
@@ -247,13 +248,13 @@ public class ComposterBlock extends Block implements InventoryProvider {
 	}
 
 	@Override
-	public void onScheduledTick(BlockState blockState, World world, BlockPos blockPos, Random random) {
+	public void onScheduledTick(BlockState blockState, ServerWorld serverWorld, BlockPos blockPos, Random random) {
 		if ((Integer)blockState.get(LEVEL) == 7) {
-			world.setBlockState(blockPos, blockState.cycle(LEVEL), 3);
-			world.playSound(null, blockPos, SoundEvents.BLOCK_COMPOSTER_READY, SoundCategory.BLOCKS, 1.0F, 1.0F);
+			serverWorld.setBlockState(blockPos, blockState.cycle(LEVEL), 3);
+			serverWorld.playSound(null, blockPos, SoundEvents.BLOCK_COMPOSTER_READY, SoundCategory.BLOCKS, 1.0F, 1.0F);
 		}
 
-		super.onScheduledTick(blockState, world, blockPos, random);
+		super.onScheduledTick(blockState, serverWorld, blockPos, random);
 	}
 
 	@Override

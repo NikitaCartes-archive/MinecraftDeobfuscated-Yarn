@@ -2,10 +2,12 @@ package net.minecraft.block;
 
 import java.util.Random;
 import javax.annotation.Nullable;
+import net.minecraft.class_4538;
 import net.minecraft.entity.EntityContext;
 import net.minecraft.fluid.FluidState;
 import net.minecraft.fluid.Fluids;
 import net.minecraft.item.ItemPlacementContext;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.state.StateFactory;
 import net.minecraft.state.property.BooleanProperty;
 import net.minecraft.state.property.IntProperty;
@@ -17,7 +19,6 @@ import net.minecraft.util.math.Direction;
 import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.IWorld;
-import net.minecraft.world.ViewableWorld;
 import net.minecraft.world.World;
 
 public class SeaPickleBlock extends PlantBlock implements Fertilizable, Waterloggable {
@@ -61,9 +62,9 @@ public class SeaPickleBlock extends PlantBlock implements Fertilizable, Waterlog
 	}
 
 	@Override
-	public boolean canPlaceAt(BlockState blockState, ViewableWorld viewableWorld, BlockPos blockPos) {
+	public boolean canPlaceAt(BlockState blockState, class_4538 arg, BlockPos blockPos) {
 		BlockPos blockPos2 = blockPos.down();
-		return this.canPlantOnTop(viewableWorld.getBlockState(blockPos2), viewableWorld, blockPos2);
+		return this.canPlantOnTop(arg.getBlockState(blockPos2), arg, blockPos2);
 	}
 
 	@Override
@@ -122,8 +123,8 @@ public class SeaPickleBlock extends PlantBlock implements Fertilizable, Waterlog
 	}
 
 	@Override
-	public void grow(World world, Random random, BlockPos blockPos, BlockState blockState) {
-		if (!this.isDry(blockState) && world.getBlockState(blockPos.down()).matches(BlockTags.CORAL_BLOCKS)) {
+	public void grow(ServerWorld serverWorld, Random random, BlockPos blockPos, BlockState blockState) {
+		if (!this.isDry(blockState) && serverWorld.getBlockState(blockPos.down()).matches(BlockTags.CORAL_BLOCKS)) {
 			int i = 5;
 			int j = 1;
 			int k = 2;
@@ -137,10 +138,10 @@ public class SeaPickleBlock extends PlantBlock implements Fertilizable, Waterlog
 
 					for (int r = q - 2; r < q; r++) {
 						BlockPos blockPos2 = new BlockPos(m + o, r, blockPos.getZ() - n + p);
-						if (blockPos2 != blockPos && random.nextInt(6) == 0 && world.getBlockState(blockPos2).getBlock() == Blocks.WATER) {
-							BlockState blockState2 = world.getBlockState(blockPos2.down());
+						if (blockPos2 != blockPos && random.nextInt(6) == 0 && serverWorld.getBlockState(blockPos2).getBlock() == Blocks.WATER) {
+							BlockState blockState2 = serverWorld.getBlockState(blockPos2.down());
 							if (blockState2.matches(BlockTags.CORAL_BLOCKS)) {
-								world.setBlockState(blockPos2, Blocks.SEA_PICKLE.getDefaultState().with(PICKLES, Integer.valueOf(random.nextInt(4) + 1)), 3);
+								serverWorld.setBlockState(blockPos2, Blocks.SEA_PICKLE.getDefaultState().with(PICKLES, Integer.valueOf(random.nextInt(4) + 1)), 3);
 							}
 						}
 					}
@@ -157,7 +158,7 @@ public class SeaPickleBlock extends PlantBlock implements Fertilizable, Waterlog
 				l++;
 			}
 
-			world.setBlockState(blockPos, blockState.with(PICKLES, Integer.valueOf(4)), 2);
+			serverWorld.setBlockState(blockPos, blockState.with(PICKLES, Integer.valueOf(4)), 2);
 		}
 	}
 }

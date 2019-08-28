@@ -4,6 +4,7 @@ import java.util.Random;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.class_4538;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
@@ -42,7 +43,6 @@ import net.minecraft.util.Hand;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IWorld;
 import net.minecraft.world.LocalDifficulty;
-import net.minecraft.world.ViewableWorld;
 import net.minecraft.world.World;
 
 public class OcelotEntity extends AnimalEntity {
@@ -127,6 +127,7 @@ public class OcelotEntity extends AnimalEntity {
 		super.initAttributes();
 		this.getAttributeInstance(EntityAttributes.MAX_HEALTH).setBaseValue(10.0);
 		this.getAttributeInstance(EntityAttributes.MOVEMENT_SPEED).setBaseValue(0.3F);
+		this.getAttributes().register(EntityAttributes.ATTACK_DAMAGE).setBaseValue(3.0);
 	}
 
 	@Override
@@ -154,9 +155,13 @@ public class OcelotEntity extends AnimalEntity {
 		return SoundEvents.ENTITY_OCELOT_DEATH;
 	}
 
+	private float method_22329() {
+		return (float)this.getAttributeInstance(EntityAttributes.ATTACK_DAMAGE).getValue();
+	}
+
 	@Override
 	public boolean tryAttack(Entity entity) {
-		return entity.damage(DamageSource.mob(this), 3.0F);
+		return entity.damage(DamageSource.mob(this), this.method_22329());
 	}
 
 	@Override
@@ -249,14 +254,14 @@ public class OcelotEntity extends AnimalEntity {
 	}
 
 	@Override
-	public boolean canSpawn(ViewableWorld viewableWorld) {
-		if (viewableWorld.intersectsEntities(this) && !viewableWorld.intersectsFluid(this.getBoundingBox())) {
+	public boolean canSpawn(class_4538 arg) {
+		if (arg.intersectsEntities(this) && !arg.method_22345(this.getBoundingBox())) {
 			BlockPos blockPos = new BlockPos(this.x, this.getBoundingBox().minY, this.z);
-			if (blockPos.getY() < viewableWorld.getSeaLevel()) {
+			if (blockPos.getY() < arg.getSeaLevel()) {
 				return false;
 			}
 
-			BlockState blockState = viewableWorld.getBlockState(blockPos.down());
+			BlockState blockState = arg.getBlockState(blockPos.down());
 			Block block = blockState.getBlock();
 			if (block == Blocks.GRASS_BLOCK || blockState.matches(BlockTags.LEAVES)) {
 				return true;

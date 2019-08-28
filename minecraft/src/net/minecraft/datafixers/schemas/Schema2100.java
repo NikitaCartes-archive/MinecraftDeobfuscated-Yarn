@@ -1,4 +1,4 @@
-package net.minecraft;
+package net.minecraft.datafixers.schemas;
 
 import com.mojang.datafixers.DSL;
 import com.mojang.datafixers.schemas.Schema;
@@ -6,11 +6,9 @@ import com.mojang.datafixers.types.templates.TypeTemplate;
 import java.util.Map;
 import java.util.function.Supplier;
 import net.minecraft.datafixers.TypeReferences;
-import net.minecraft.datafixers.schemas.Schema100;
-import net.minecraft.datafixers.schemas.SchemaIdentifierNormalize;
 
-public class class_4465 extends SchemaIdentifierNormalize {
-	public class_4465(int i, Schema schema) {
+public class Schema2100 extends SchemaIdentifierNormalize {
+	public Schema2100(int i, Schema schema) {
 		super(i, schema);
 	}
 

@@ -1,6 +1,7 @@
 package net.minecraft.client.render;
 
 import com.google.gson.JsonSyntaxException;
+import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
 import java.io.IOException;
 import java.util.Locale;
@@ -8,7 +9,7 @@ import java.util.Random;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_4493;
+import net.minecraft.class_4538;
 import net.minecraft.block.BlockRenderLayer;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
@@ -61,7 +62,6 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.world.GameMode;
 import net.minecraft.world.Heightmap;
-import net.minecraft.world.ViewableWorld;
 import net.minecraft.world.World;
 import net.minecraft.world.biome.Biome;
 import org.apache.logging.log4j.LogManager;
@@ -347,7 +347,7 @@ public class GameRenderer implements AutoCloseable, SynchronousResourceReloadLis
 			}
 
 			if (camera.getFocusedEntity() instanceof LivingEntity && ((LivingEntity)camera.getFocusedEntity()).getHealth() <= 0.0F) {
-				float g = (float)((LivingEntity)camera.getFocusedEntity()).deathTime + f;
+				float g = Math.min((float)((LivingEntity)camera.getFocusedEntity()).deathTime + f, 20.0F);
 				d /= (double)((1.0F - 500.0F / (g + 500.0F)) * 2.0F + 1.0F);
 			}
 
@@ -365,7 +365,7 @@ public class GameRenderer implements AutoCloseable, SynchronousResourceReloadLis
 			LivingEntity livingEntity = (LivingEntity)this.client.getCameraEntity();
 			float g = (float)livingEntity.hurtTime - f;
 			if (livingEntity.getHealth() <= 0.0F) {
-				float h = (float)livingEntity.deathTime + f;
+				float h = Math.min((float)livingEntity.deathTime + f, 20.0F);
 				RenderSystem.rotatef(40.0F - 8000.0F / (h + 200.0F), 0.0F, 0.0F, 1.0F);
 			}
 
@@ -589,7 +589,7 @@ public class GameRenderer implements AutoCloseable, SynchronousResourceReloadLis
 
 	private void updateWorldIcon() {
 		if (this.client.worldRenderer.getChunkNumber() > 10 && this.client.worldRenderer.isTerrainRenderComplete() && !this.client.getServer().hasIconFile()) {
-			NativeImage nativeImage = ScreenshotUtils.method_1663(
+			NativeImage nativeImage = ScreenshotUtils.takeScreenshot(
 				this.client.window.getFramebufferWidth(), this.client.window.getFramebufferHeight(), this.client.getFramebuffer()
 			);
 			ResourceImpl.RESOURCE_IO_EXECUTOR.execute(() -> {
@@ -763,7 +763,9 @@ public class GameRenderer implements AutoCloseable, SynchronousResourceReloadLis
 		this.client.debugRenderer.renderDebuggers(l);
 		this.client.getProfiler().swap("destroyProgress");
 		RenderSystem.enableBlend();
-		RenderSystem.blendFuncSeparate(class_4493.class_4535.SRC_ALPHA, class_4493.class_4534.ONE, class_4493.class_4535.ONE, class_4493.class_4534.ZERO);
+		RenderSystem.blendFuncSeparate(
+			GlStateManager.class_4535.SRC_ALPHA, GlStateManager.class_4534.ONE, GlStateManager.class_4535.ONE, GlStateManager.class_4534.ZERO
+		);
 		this.client.getTextureManager().getTexture(SpriteAtlasTexture.BLOCK_ATLAS_TEX).pushFilter(false, false);
 		worldRenderer.renderPartiallyBrokenBlocks(Tessellator.getInstance(), Tessellator.getInstance().getBufferBuilder(), camera);
 		this.client.getTextureManager().getTexture(SpriteAtlasTexture.BLOCK_ATLAS_TEX).popFilter();
@@ -782,7 +784,7 @@ public class GameRenderer implements AutoCloseable, SynchronousResourceReloadLis
 		RenderSystem.disableBlend();
 		RenderSystem.enableCull();
 		RenderSystem.blendFuncSeparate(
-			class_4493.class_4535.SRC_ALPHA, class_4493.class_4534.ONE_MINUS_SRC_ALPHA, class_4493.class_4535.ONE, class_4493.class_4534.ZERO
+			GlStateManager.class_4535.SRC_ALPHA, GlStateManager.class_4534.ONE_MINUS_SRC_ALPHA, GlStateManager.class_4535.ONE, GlStateManager.class_4534.ZERO
 		);
 		RenderSystem.alphaFunc(516, 0.1F);
 		this.backgroundRenderer.applyFog(camera, 0);
@@ -850,7 +852,7 @@ public class GameRenderer implements AutoCloseable, SynchronousResourceReloadLis
 
 		if (f != 0.0F) {
 			this.random.setSeed((long)this.ticks * 312987231L);
-			ViewableWorld viewableWorld = this.client.world;
+			class_4538 lv = this.client.world;
 			BlockPos blockPos = new BlockPos(this.camera.getPos());
 			int i = 10;
 			double d = 0.0;
@@ -865,10 +867,10 @@ public class GameRenderer implements AutoCloseable, SynchronousResourceReloadLis
 			}
 
 			for (int l = 0; l < k; l++) {
-				BlockPos blockPos2 = viewableWorld.getTopPosition(
+				BlockPos blockPos2 = lv.getTopPosition(
 					Heightmap.Type.MOTION_BLOCKING, blockPos.add(this.random.nextInt(10) - this.random.nextInt(10), 0, this.random.nextInt(10) - this.random.nextInt(10))
 				);
-				Biome biome = viewableWorld.getBiome(blockPos2);
+				Biome biome = lv.getBiome(blockPos2);
 				BlockPos blockPos3 = blockPos2.down();
 				if (blockPos2.getY() <= blockPos.getY() + 10
 					&& blockPos2.getY() >= blockPos.getY() - 10
@@ -876,11 +878,11 @@ public class GameRenderer implements AutoCloseable, SynchronousResourceReloadLis
 					&& biome.getTemperature(blockPos2) >= 0.15F) {
 					double h = this.random.nextDouble();
 					double m = this.random.nextDouble();
-					BlockState blockState = viewableWorld.getBlockState(blockPos3);
-					FluidState fluidState = viewableWorld.getFluidState(blockPos2);
-					VoxelShape voxelShape = blockState.getCollisionShape(viewableWorld, blockPos3);
+					BlockState blockState = lv.getBlockState(blockPos3);
+					FluidState fluidState = lv.getFluidState(blockPos2);
+					VoxelShape voxelShape = blockState.getCollisionShape(lv, blockPos3);
 					double n = voxelShape.method_1102(Direction.Axis.Y, h, m);
-					double o = (double)fluidState.getHeight(viewableWorld, blockPos2);
+					double o = (double)fluidState.getHeight(lv, blockPos2);
 					double p;
 					double q;
 					if (n >= o) {
@@ -919,8 +921,7 @@ public class GameRenderer implements AutoCloseable, SynchronousResourceReloadLis
 
 			if (j > 0 && this.random.nextInt(3) < this.field_3995++) {
 				this.field_3995 = 0;
-				if (e > (double)(blockPos.getY() + 1)
-					&& viewableWorld.getTopPosition(Heightmap.Type.MOTION_BLOCKING, blockPos).getY() > MathHelper.floor((float)blockPos.getY())) {
+				if (e > (double)(blockPos.getY() + 1) && lv.getTopPosition(Heightmap.Type.MOTION_BLOCKING, blockPos).getY() > MathHelper.floor((float)blockPos.getY())) {
 					this.client.world.playSound(d, e, g, SoundEvents.WEATHER_RAIN_ABOVE, SoundCategory.WEATHER, 0.1F, 0.5F, false);
 				} else {
 					this.client.world.playSound(d, e, g, SoundEvents.WEATHER_RAIN, SoundCategory.WEATHER, 0.2F, 1.0F, false);
@@ -943,7 +944,7 @@ public class GameRenderer implements AutoCloseable, SynchronousResourceReloadLis
 			RenderSystem.normal3f(0.0F, 1.0F, 0.0F);
 			RenderSystem.enableBlend();
 			RenderSystem.blendFuncSeparate(
-				class_4493.class_4535.SRC_ALPHA, class_4493.class_4534.ONE_MINUS_SRC_ALPHA, class_4493.class_4535.ONE, class_4493.class_4534.ZERO
+				GlStateManager.class_4535.SRC_ALPHA, GlStateManager.class_4534.ONE_MINUS_SRC_ALPHA, GlStateManager.class_4535.ONE, GlStateManager.class_4534.ZERO
 			);
 			RenderSystem.alphaFunc(516, 0.1F);
 			double d = this.camera.getPos().x;
@@ -1008,7 +1009,7 @@ public class GameRenderer implements AutoCloseable, SynchronousResourceReloadLis
 								float ac = MathHelper.sqrt(aa * aa + ab * ab) / (float)m;
 								float ad = ((1.0F - ac * ac) * 0.5F + 0.5F) * g;
 								mutable.set(q, x, p);
-								int ae = world.getLightmapIndex(mutable, 0);
+								int ae = world.method_22337(mutable);
 								int af = ae >> 16 & 65535;
 								int ag = ae & 65535;
 								bufferBuilder.vertex((double)q - s + 0.5, (double)w, (double)p - t + 0.5)
@@ -1050,7 +1051,7 @@ public class GameRenderer implements AutoCloseable, SynchronousResourceReloadLis
 								float aj = MathHelper.sqrt(ah * ah + ai * ai) / (float)m;
 								float ak = ((1.0F - aj * aj) * 0.3F + 0.5F) * g;
 								mutable.set(q, x, p);
-								int al = (world.getLightmapIndex(mutable, 0) * 3 + 15728880) / 4;
+								int al = (world.method_22337(mutable) * 3 + 15728880) / 4;
 								int am = al >> 16 & 65535;
 								int an = al & 65535;
 								bufferBuilder.vertex((double)q - s + 0.5, (double)w, (double)p - t + 0.5)
@@ -1120,7 +1121,7 @@ public class GameRenderer implements AutoCloseable, SynchronousResourceReloadLis
 
 		RenderSystem.enableBlend();
 		RenderSystem.blendFuncSeparate(
-			class_4493.class_4535.SRC_ALPHA, class_4493.class_4534.ONE_MINUS_SRC_ALPHA, class_4493.class_4535.ONE, class_4493.class_4534.ZERO
+			GlStateManager.class_4535.SRC_ALPHA, GlStateManager.class_4534.ONE_MINUS_SRC_ALPHA, GlStateManager.class_4535.ONE, GlStateManager.class_4534.ZERO
 		);
 		int l = textRenderer.getStringWidth(string) / 2;
 		RenderSystem.disableTexture();

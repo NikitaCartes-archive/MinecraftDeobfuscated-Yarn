@@ -9,7 +9,7 @@ import net.minecraft.world.World;
 public class CampfireSmokeParticle extends SpriteBillboardParticle {
 	private CampfireSmokeParticle(World world, double d, double e, double f, double g, double h, double i, boolean bl) {
 		super(world, d, e, f);
-		this.method_3087(3.0F);
+		this.scale(3.0F);
 		this.setBoundingBoxSpacing(0.25F, 0.25F);
 		if (bl) {
 			this.maxAge = this.random.nextInt(50) + 280;

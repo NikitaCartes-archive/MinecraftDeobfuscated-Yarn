@@ -14,7 +14,7 @@ public class FollowOwnerFlyingGoal extends FollowOwnerGoal {
 	protected boolean method_6263(BlockPos blockPos) {
 		BlockState blockState = this.world.getBlockState(blockPos);
 		return (blockState.hasSolidTopSurface(this.world, blockPos, this.tameable) || blockState.matches(BlockTags.LEAVES))
-			&& this.world.isAir(blockPos.up())
-			&& this.world.isAir(blockPos.up(2));
+			&& this.world.method_22347(blockPos.up())
+			&& this.world.method_22347(blockPos.up(2));
 	}
 }

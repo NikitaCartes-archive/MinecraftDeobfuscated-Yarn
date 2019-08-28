@@ -1,6 +1,7 @@
 package net.minecraft.client.gui.screen;
 
 import com.google.common.util.concurrent.Runnables;
+import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
 import java.util.Random;
 import java.util.concurrent.CompletableFuture;
@@ -9,7 +10,6 @@ import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.SharedConstants;
-import net.minecraft.class_4493;
 import net.minecraft.client.gui.CubeMapRenderer;
 import net.minecraft.client.gui.RotatingCubeMapRenderer;
 import net.minecraft.client.gui.screen.multiplayer.MultiplayerScreen;
@@ -197,7 +197,7 @@ public class TitleScreen extends Screen {
 						this.minecraft
 							.openScreen(
 								new ConfirmScreen(
-									this::method_20375,
+									this::onDemoDeletionConfirmed,
 									new TranslatableText("selectWorld.deleteQuestion"),
 									new TranslatableText("selectWorld.deleteWarning", levelPropertiesx.getLevelName()),
 									I18n.translate("selectWorld.deleteButton"),
@@ -234,7 +234,7 @@ public class TitleScreen extends Screen {
 		int m = 30;
 		this.minecraft.getTextureManager().bindTexture(PANORAMA_OVERLAY);
 		RenderSystem.enableBlend();
-		RenderSystem.blendFunc(class_4493.class_4535.SRC_ALPHA, class_4493.class_4534.ONE_MINUS_SRC_ALPHA);
+		RenderSystem.blendFunc(GlStateManager.class_4535.SRC_ALPHA, GlStateManager.class_4534.ONE_MINUS_SRC_ALPHA);
 		RenderSystem.color4f(1.0F, 1.0F, 1.0F, this.doBackgroundFade ? (float)MathHelper.ceil(MathHelper.clamp(g, 0.0F, 1.0F)) : 1.0F);
 		blit(0, 0, this.width, this.height, 0.0F, 0.0F, 16, 128, 16, 128);
 		float h = this.doBackgroundFade ? MathHelper.clamp(g - 1.0F, 0.0F, 1.0F) : 1.0F;
@@ -301,7 +301,7 @@ public class TitleScreen extends Screen {
 				&& d < (double)(this.copyrightTextX + this.copyrightTextWidth)
 				&& e > (double)(this.height - 10)
 				&& e < (double)this.height) {
-				this.minecraft.openScreen(new EndCreditsScreen(false, Runnables.doNothing()));
+				this.minecraft.openScreen(new CreditsScreen(false, Runnables.doNothing()));
 			}
 
 			return false;
@@ -315,7 +315,7 @@ public class TitleScreen extends Screen {
 		}
 	}
 
-	private void method_20375(boolean bl) {
+	private void onDemoDeletionConfirmed(boolean bl) {
 		if (bl) {
 			LevelStorage levelStorage = this.minecraft.getLevelStorage();
 			levelStorage.deleteLevel("Demo_World");

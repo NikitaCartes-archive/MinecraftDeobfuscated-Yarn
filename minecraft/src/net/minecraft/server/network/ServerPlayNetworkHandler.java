@@ -12,6 +12,7 @@ import java.util.Collections;
 import java.util.Set;
 import javax.annotation.Nullable;
 import net.minecraft.SharedConstants;
+import net.minecraft.class_4538;
 import net.minecraft.advancement.Advancement;
 import net.minecraft.advancement.criterion.Criterions;
 import net.minecraft.block.BlockState;
@@ -129,7 +130,6 @@ import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.CommandBlockExecutor;
 import net.minecraft.world.GameMode;
 import net.minecraft.world.GameRules;
-import net.minecraft.world.ViewableWorld;
 import net.minecraft.world.dimension.DimensionType;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
@@ -818,8 +818,8 @@ public class ServerPlayNetworkHandler implements ServerPlayPacketListener {
 		}
 	}
 
-	private boolean method_20630(ViewableWorld viewableWorld) {
-		return viewableWorld.doesNotCollide(this.player, this.player.getBoundingBox().contract(1.0E-5F));
+	private boolean method_20630(class_4538 arg) {
+		return arg.doesNotCollide(this.player, this.player.getBoundingBox().contract(1.0E-5F));
 	}
 
 	public void requestTeleport(double d, double e, double f, float g, float h) {
@@ -1287,7 +1287,7 @@ public class ServerPlayNetworkHandler implements ServerPlayPacketListener {
 		this.player.updateLastActionTime();
 		ServerWorld serverWorld = this.server.getWorld(this.player.dimension);
 		BlockPos blockPos = updateSignC2SPacket.getPos();
-		if (serverWorld.isBlockLoaded(blockPos)) {
+		if (serverWorld.method_22340(blockPos)) {
 			BlockState blockState = serverWorld.getBlockState(blockPos);
 			BlockEntity blockEntity = serverWorld.getBlockEntity(blockPos);
 			if (!(blockEntity instanceof SignBlockEntity)) {

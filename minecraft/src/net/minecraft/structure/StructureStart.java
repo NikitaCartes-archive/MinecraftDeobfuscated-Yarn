@@ -54,13 +54,14 @@ public abstract class StructureStart {
 		return this.children;
 	}
 
-	public void generateStructure(IWorld iWorld, Random random, MutableIntBoundingBox mutableIntBoundingBox, ChunkPos chunkPos) {
+	public void generateStructure(IWorld iWorld, ChunkGenerator<?> chunkGenerator, Random random, MutableIntBoundingBox mutableIntBoundingBox, ChunkPos chunkPos) {
 		synchronized (this.children) {
 			Iterator<StructurePiece> iterator = this.children.iterator();
 
 			while (iterator.hasNext()) {
 				StructurePiece structurePiece = (StructurePiece)iterator.next();
-				if (structurePiece.getBoundingBox().intersects(mutableIntBoundingBox) && !structurePiece.generate(iWorld, random, mutableIntBoundingBox, chunkPos)) {
+				if (structurePiece.getBoundingBox().intersects(mutableIntBoundingBox)
+					&& !structurePiece.generate(iWorld, chunkGenerator, random, mutableIntBoundingBox, chunkPos)) {
 					iterator.remove();
 				}
 			}

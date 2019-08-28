@@ -1,5 +1,6 @@
 package net.minecraft.entity.ai.goal;
 
+import net.minecraft.class_4538;
 import net.minecraft.block.BedBlock;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
@@ -10,7 +11,6 @@ import net.minecraft.block.enums.BedPart;
 import net.minecraft.entity.passive.CatEntity;
 import net.minecraft.tag.BlockTags;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.ViewableWorld;
 
 public class CatSitOnBlockGoal extends MoveToTargetPosGoal {
 	private final CatEntity cat;
@@ -49,14 +49,14 @@ public class CatSitOnBlockGoal extends MoveToTargetPosGoal {
 	}
 
 	@Override
-	protected boolean isTargetPos(ViewableWorld viewableWorld, BlockPos blockPos) {
-		if (!viewableWorld.isAir(blockPos.up())) {
+	protected boolean isTargetPos(class_4538 arg, BlockPos blockPos) {
+		if (!arg.method_22347(blockPos.up())) {
 			return false;
 		} else {
-			BlockState blockState = viewableWorld.getBlockState(blockPos);
+			BlockState blockState = arg.getBlockState(blockPos);
 			Block block = blockState.getBlock();
 			if (block == Blocks.CHEST) {
-				return ChestBlockEntity.getPlayersLookingInChestCount(viewableWorld, blockPos) < 1;
+				return ChestBlockEntity.getPlayersLookingInChestCount(arg, blockPos) < 1;
 			} else {
 				return block == Blocks.FURNACE && blockState.get(FurnaceBlock.LIT) ? true : block.matches(BlockTags.BEDS) && blockState.get(BedBlock.PART) != BedPart.HEAD;
 			}

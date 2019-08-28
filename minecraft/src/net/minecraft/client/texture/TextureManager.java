@@ -11,7 +11,6 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_4536;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.TitleScreen;
 import net.minecraft.client.gui.widget.AbstractButtonWidget;
@@ -121,7 +120,7 @@ public class TextureManager implements TextureTickListener, ResourceReloadListen
 	public void destroyTexture(Identifier identifier) {
 		Texture texture = this.getTexture(identifier);
 		if (texture != null) {
-			class_4536.releaseTextureId(texture.getGlId());
+			TextureUtil.releaseTextureId(texture.getGlId());
 		}
 	}
 

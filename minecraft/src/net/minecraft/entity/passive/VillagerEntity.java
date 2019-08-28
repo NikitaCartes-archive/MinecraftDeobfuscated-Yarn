@@ -128,6 +128,7 @@ public class VillagerEntity extends AbstractTraderEntity implements InteractionO
 		MemoryModuleType.HEARD_BELL_TIME,
 		MemoryModuleType.CANT_REACH_WALK_TARGET_SINCE,
 		MemoryModuleType.LAST_SLEPT,
+		MemoryModuleType.LAST_WOKEN,
 		MemoryModuleType.LAST_WORKED_AT_POI,
 		MemoryModuleType.GOLEM_LAST_SEEN_TIME
 	);
@@ -967,6 +968,12 @@ public class VillagerEntity extends AbstractTraderEntity implements InteractionO
 	public void sleep(BlockPos blockPos) {
 		super.sleep(blockPos);
 		this.brain.putMemory(MemoryModuleType.LAST_SLEPT, Timestamp.of(this.world.getTime()));
+	}
+
+	@Override
+	public void wakeUp() {
+		super.wakeUp();
+		this.brain.putMemory(MemoryModuleType.LAST_WOKEN, Timestamp.of(this.world.getTime()));
 	}
 
 	private boolean hasRecentlyWorkedAndSlept(long l) {

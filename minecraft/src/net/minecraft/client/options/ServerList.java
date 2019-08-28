@@ -6,6 +6,7 @@ import java.util.List;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.network.ServerInfo;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.NbtIo;
@@ -16,7 +17,7 @@ import org.apache.logging.log4j.Logger;
 public class ServerList {
 	private static final Logger LOGGER = LogManager.getLogger();
 	private final MinecraftClient client;
-	private final List<ServerEntry> serverEntries = Lists.<ServerEntry>newArrayList();
+	private final List<ServerInfo> servers = Lists.<ServerInfo>newArrayList();
 
 	public ServerList(MinecraftClient minecraftClient) {
 		this.client = minecraftClient;
@@ -25,7 +26,7 @@ public class ServerList {
 
 	public void loadFile() {
 		try {
-			this.serverEntries.clear();
+			this.servers.clear();
 			CompoundTag compoundTag = NbtIo.read(new File(this.client.runDirectory, "servers.dat"));
 			if (compoundTag == null) {
 				return;
@@ -34,7 +35,7 @@ public class ServerList {
 			ListTag listTag = compoundTag.getList("servers", 10);
 
 			for (int i = 0; i < listTag.size(); i++) {
-				this.serverEntries.add(ServerEntry.deserialize(listTag.getCompoundTag(i)));
+				this.servers.add(ServerInfo.deserialize(listTag.getCompoundTag(i)));
 			}
 		} catch (Exception var4) {
 			LOGGER.error("Couldn't load server list", (Throwable)var4);
@@ -45,8 +46,8 @@ public class ServerList {
 		try {
 			ListTag listTag = new ListTag();
 
-			for (ServerEntry serverEntry : this.serverEntries) {
-				listTag.add(serverEntry.serialize());
+			for (ServerInfo serverInfo : this.servers) {
+				listTag.add(serverInfo.serialize());
 			}
 
 			CompoundTag compoundTag = new CompoundTag();
@@ -57,41 +58,41 @@ public class ServerList {
 		}
 	}
 
-	public ServerEntry get(int i) {
-		return (ServerEntry)this.serverEntries.get(i);
+	public ServerInfo get(int i) {
+		return (ServerInfo)this.servers.get(i);
 	}
 
-	public void remove(ServerEntry serverEntry) {
-		this.serverEntries.remove(serverEntry);
+	public void remove(ServerInfo serverInfo) {
+		this.servers.remove(serverInfo);
 	}
 
-	public void add(ServerEntry serverEntry) {
-		this.serverEntries.add(serverEntry);
+	public void add(ServerInfo serverInfo) {
+		this.servers.add(serverInfo);
 	}
 
 	public int size() {
-		return this.serverEntries.size();
+		return this.servers.size();
 	}
 
 	public void swapEntries(int i, int j) {
-		ServerEntry serverEntry = this.get(i);
-		this.serverEntries.set(i, this.get(j));
-		this.serverEntries.set(j, serverEntry);
+		ServerInfo serverInfo = this.get(i);
+		this.servers.set(i, this.get(j));
+		this.servers.set(j, serverInfo);
 		this.saveFile();
 	}
 
-	public void set(int i, ServerEntry serverEntry) {
-		this.serverEntries.set(i, serverEntry);
+	public void set(int i, ServerInfo serverInfo) {
+		this.servers.set(i, serverInfo);
 	}
 
-	public static void updateServerListEntry(ServerEntry serverEntry) {
+	public static void updateServerListEntry(ServerInfo serverInfo) {
 		ServerList serverList = new ServerList(MinecraftClient.getInstance());
 		serverList.loadFile();
 
 		for (int i = 0; i < serverList.size(); i++) {
-			ServerEntry serverEntry2 = serverList.get(i);
-			if (serverEntry2.name.equals(serverEntry.name) && serverEntry2.address.equals(serverEntry.address)) {
-				serverList.set(i, serverEntry);
+			ServerInfo serverInfo2 = serverList.get(i);
+			if (serverInfo2.name.equals(serverInfo.name) && serverInfo2.address.equals(serverInfo.address)) {
+				serverList.set(i, serverInfo);
 				break;
 			}
 		}

@@ -5,6 +5,7 @@ import java.util.UUID;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.class_4538;
 import net.minecraft.block.Blocks;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.SpawnType;
@@ -18,7 +19,6 @@ import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.Hand;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IWorld;
-import net.minecraft.world.ViewableWorld;
 import net.minecraft.world.World;
 
 public abstract class AnimalEntity extends PassiveEntity {
@@ -76,8 +76,8 @@ public abstract class AnimalEntity extends PassiveEntity {
 	}
 
 	@Override
-	public float getPathfindingFavor(BlockPos blockPos, ViewableWorld viewableWorld) {
-		return viewableWorld.getBlockState(blockPos.down()).getBlock() == Blocks.GRASS_BLOCK ? 10.0F : viewableWorld.getBrightness(blockPos) - 0.5F;
+	public float getPathfindingFavor(BlockPos blockPos, class_4538 arg) {
+		return arg.getBlockState(blockPos.down()).getBlock() == Blocks.GRASS_BLOCK ? 10.0F : arg.method_22349(blockPos) - 0.5F;
 	}
 
 	@Override
@@ -102,7 +102,7 @@ public abstract class AnimalEntity extends PassiveEntity {
 	}
 
 	public static boolean method_20663(EntityType<? extends AnimalEntity> entityType, IWorld iWorld, SpawnType spawnType, BlockPos blockPos, Random random) {
-		return iWorld.getBlockState(blockPos.down()).getBlock() == Blocks.GRASS_BLOCK && iWorld.getLightLevel(blockPos, 0) > 8;
+		return iWorld.getBlockState(blockPos.down()).getBlock() == Blocks.GRASS_BLOCK && iWorld.method_22335(blockPos, 0) > 8;
 	}
 
 	@Override

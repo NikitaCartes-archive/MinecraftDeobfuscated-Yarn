@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Random;
 import java.util.function.Predicate;
 import javax.annotation.Nullable;
+import net.minecraft.class_4538;
 import net.minecraft.block.enums.RailShape;
 import net.minecraft.container.Container;
 import net.minecraft.entity.Entity;
@@ -11,6 +12,7 @@ import net.minecraft.entity.vehicle.AbstractMinecartEntity;
 import net.minecraft.entity.vehicle.CommandBlockMinecartEntity;
 import net.minecraft.inventory.Inventory;
 import net.minecraft.predicate.entity.EntityPredicates;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.state.StateFactory;
 import net.minecraft.state.property.BooleanProperty;
 import net.minecraft.state.property.EnumProperty;
@@ -22,7 +24,6 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Direction;
 import net.minecraft.world.BlockView;
-import net.minecraft.world.ViewableWorld;
 import net.minecraft.world.World;
 
 public class DetectorRailBlock extends AbstractRailBlock {
@@ -35,7 +36,7 @@ public class DetectorRailBlock extends AbstractRailBlock {
 	}
 
 	@Override
-	public int getTickRate(ViewableWorld viewableWorld) {
+	public int getTickRate(class_4538 arg) {
 		return 20;
 	}
 
@@ -54,9 +55,9 @@ public class DetectorRailBlock extends AbstractRailBlock {
 	}
 
 	@Override
-	public void onScheduledTick(BlockState blockState, World world, BlockPos blockPos, Random random) {
-		if (!world.isClient && (Boolean)blockState.get(POWERED)) {
-			this.updatePoweredStatus(world, blockPos, blockState);
+	public void onScheduledTick(BlockState blockState, ServerWorld serverWorld, BlockPos blockPos, Random random) {
+		if ((Boolean)blockState.get(POWERED)) {
+			this.updatePoweredStatus(serverWorld, blockPos, blockState);
 		}
 	}
 

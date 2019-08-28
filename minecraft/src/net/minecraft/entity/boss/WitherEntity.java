@@ -317,7 +317,7 @@ public class WitherEntity extends HostileEntity implements RangedAttackMob {
 								BlockPos blockPos = new BlockPos(p, q, r);
 								BlockState blockState = this.world.getBlockState(blockPos);
 								if (canDestroy(blockState)) {
-									bl = this.world.breakBlock(blockPos, true) || bl;
+									bl = this.world.breakBlock(blockPos, true, this) || bl;
 								}
 							}
 						}

@@ -182,7 +182,7 @@ public class CommandManager {
 				new TranslatableText("command.failed").styled(style -> style.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, text3)))
 			);
 			if (SharedConstants.isDevelopment) {
-				serverCommandSource.sendError(new LiteralText(SystemUtil.method_22321(var15)));
+				serverCommandSource.sendError(new LiteralText(SystemUtil.getInnermostMessage(var15)));
 				LOGGER.error("'" + string + "' threw an exception", (Throwable)var15);
 			}
 

@@ -179,7 +179,7 @@ public class ClientPlayerEntity extends AbstractClientPlayerEntity {
 
 	@Override
 	public void tick() {
-		if (this.world.isBlockLoaded(new BlockPos(this.x, 0.0, this.z))) {
+		if (this.world.method_22340(new BlockPos(this.x, 0.0, this.z))) {
 			super.tick();
 			if (this.hasVehicle()) {
 				this.networkHandler.sendPacket(new PlayerMoveC2SPacket.LookOnly(this.yaw, this.pitch, this.onGround));
@@ -673,7 +673,7 @@ public class ClientPlayerEntity extends AbstractClientPlayerEntity {
 		}
 
 		if (this.isSprinting()) {
-			boolean bl6 = !this.input.method_20622() || !bl5;
+			boolean bl6 = !this.input.hasForwardMovement() || !bl5;
 			boolean bl7 = bl6 || this.horizontalCollision || this.isInsideWater() && !this.isInWater();
 			if (this.isSwimming()) {
 				if (!this.onGround && !this.input.sneaking && bl6 || !this.isInsideWater()) {
@@ -958,7 +958,7 @@ public class ClientPlayerEntity extends AbstractClientPlayerEntity {
 
 	private boolean method_20623() {
 		double d = 0.8;
-		return this.isInWater() ? this.input.method_20622() : (double)this.input.movementForward >= 0.8;
+		return this.isInWater() ? this.input.hasForwardMovement() : (double)this.input.movementForward >= 0.8;
 	}
 
 	public float method_3140() {

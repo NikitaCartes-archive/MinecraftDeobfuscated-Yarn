@@ -13,6 +13,7 @@ import net.minecraft.entity.EntityType;
 import net.minecraft.entity.SpawnType;
 import net.minecraft.item.ItemStack;
 import net.minecraft.particle.ParticleTypes;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.state.StateFactory;
@@ -49,14 +50,16 @@ public class PortalBlock extends Block {
 	}
 
 	@Override
-	public void onScheduledTick(BlockState blockState, World world, BlockPos blockPos, Random random) {
-		if (world.dimension.hasVisibleSky() && world.getGameRules().getBoolean(GameRules.DO_MOB_SPAWNING) && random.nextInt(2000) < world.getDifficulty().getId()) {
-			while (world.getBlockState(blockPos).getBlock() == this) {
+	public void onScheduledTick(BlockState blockState, ServerWorld serverWorld, BlockPos blockPos, Random random) {
+		if (serverWorld.dimension.hasVisibleSky()
+			&& serverWorld.getGameRules().getBoolean(GameRules.DO_MOB_SPAWNING)
+			&& random.nextInt(2000) < serverWorld.getDifficulty().getId()) {
+			while (serverWorld.getBlockState(blockPos).getBlock() == this) {
 				blockPos = blockPos.down();
 			}
 
-			if (world.getBlockState(blockPos).allowsSpawning(world, blockPos, EntityType.ZOMBIE_PIGMAN)) {
-				Entity entity = EntityType.ZOMBIE_PIGMAN.spawn(world, null, null, null, blockPos.up(), SpawnType.STRUCTURE, false, false);
+			if (serverWorld.getBlockState(blockPos).allowsSpawning(serverWorld, blockPos, EntityType.ZOMBIE_PIGMAN)) {
+				Entity entity = EntityType.ZOMBIE_PIGMAN.spawn(serverWorld, null, null, null, blockPos.up(), SpawnType.STRUCTURE, false, false);
 				if (entity != null) {
 					entity.portalCooldown = entity.getDefaultPortalCooldown();
 				}

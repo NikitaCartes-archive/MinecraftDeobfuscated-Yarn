@@ -25,7 +25,6 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.network.packet.QueryPongS2CPacket;
 import net.minecraft.client.network.packet.QueryResponseS2CPacket;
-import net.minecraft.client.options.ServerEntry;
 import net.minecraft.client.resource.language.I18n;
 import net.minecraft.network.ClientConnection;
 import net.minecraft.network.NetworkState;
@@ -50,13 +49,13 @@ public class ServerEntryNetworkPart {
 	private static final Logger LOGGER = LogManager.getLogger();
 	private final List<ClientConnection> clientConnections = Collections.synchronizedList(Lists.newArrayList());
 
-	public void method_3003(ServerEntry serverEntry) throws UnknownHostException {
-		ServerAddress serverAddress = ServerAddress.parse(serverEntry.address);
+	public void method_3003(ServerInfo serverInfo) throws UnknownHostException {
+		ServerAddress serverAddress = ServerAddress.parse(serverInfo.address);
 		final ClientConnection clientConnection = ClientConnection.connect(InetAddress.getByName(serverAddress.getAddress()), serverAddress.getPort(), false);
 		this.clientConnections.add(clientConnection);
-		serverEntry.label = I18n.translate("multiplayer.status.pinging");
-		serverEntry.ping = -1L;
-		serverEntry.playerListSummary = null;
+		serverInfo.label = I18n.translate("multiplayer.status.pinging");
+		serverInfo.ping = -1L;
+		serverInfo.playerListSummary = null;
 		clientConnection.setPacketListener(
 			new ClientQueryPacketListener() {
 				private boolean field_3775;
@@ -71,21 +70,21 @@ public class ServerEntryNetworkPart {
 						this.field_3773 = true;
 						ServerMetadata serverMetadata = queryResponseS2CPacket.getServerMetadata();
 						if (serverMetadata.getDescription() != null) {
-							serverEntry.label = serverMetadata.getDescription().asFormattedString();
+							serverInfo.label = serverMetadata.getDescription().asFormattedString();
 						} else {
-							serverEntry.label = "";
+							serverInfo.label = "";
 						}
 
 						if (serverMetadata.getVersion() != null) {
-							serverEntry.version = serverMetadata.getVersion().getGameVersion();
-							serverEntry.protocolVersion = serverMetadata.getVersion().getProtocolVersion();
+							serverInfo.version = serverMetadata.getVersion().getGameVersion();
+							serverInfo.protocolVersion = serverMetadata.getVersion().getProtocolVersion();
 						} else {
-							serverEntry.version = I18n.translate("multiplayer.status.old");
-							serverEntry.protocolVersion = 0;
+							serverInfo.version = I18n.translate("multiplayer.status.old");
+							serverInfo.protocolVersion = 0;
 						}
 
 						if (serverMetadata.getPlayers() != null) {
-							serverEntry.playerCountLabel = Formatting.GRAY
+							serverInfo.playerCountLabel = Formatting.GRAY
 								+ ""
 								+ serverMetadata.getPlayers().getOnlinePlayerCount()
 								+ ""
@@ -114,21 +113,21 @@ public class ServerEntryNetworkPart {
 									);
 								}
 
-								serverEntry.playerListSummary = stringBuilder.toString();
+								serverInfo.playerListSummary = stringBuilder.toString();
 							}
 						} else {
-							serverEntry.playerCountLabel = Formatting.DARK_GRAY + I18n.translate("multiplayer.status.unknown");
+							serverInfo.playerCountLabel = Formatting.DARK_GRAY + I18n.translate("multiplayer.status.unknown");
 						}
 
 						if (serverMetadata.getFavicon() != null) {
 							String string = serverMetadata.getFavicon();
 							if (string.startsWith("data:image/png;base64,")) {
-								serverEntry.setIcon(string.substring("data:image/png;base64,".length()));
+								serverInfo.setIcon(string.substring("data:image/png;base64,".length()));
 							} else {
 								ServerEntryNetworkPart.LOGGER.error("Invalid server icon (unknown format)");
 							}
 						} else {
-							serverEntry.setIcon(null);
+							serverInfo.setIcon(null);
 						}
 
 						this.field_3772 = SystemUtil.getMeasuringTimeMs();
@@ -141,17 +140,17 @@ public class ServerEntryNetworkPart {
 				public void onPong(QueryPongS2CPacket queryPongS2CPacket) {
 					long l = this.field_3772;
 					long m = SystemUtil.getMeasuringTimeMs();
-					serverEntry.ping = m - l;
+					serverInfo.ping = m - l;
 					clientConnection.disconnect(new TranslatableText("multiplayer.status.finished"));
 				}
 
 				@Override
 				public void onDisconnected(Text text) {
 					if (!this.field_3775) {
-						ServerEntryNetworkPart.LOGGER.error("Can't ping {}: {}", serverEntry.address, text.getString());
-						serverEntry.label = Formatting.DARK_RED + I18n.translate("multiplayer.status.cannot_connect");
-						serverEntry.playerCountLabel = "";
-						ServerEntryNetworkPart.this.ping(serverEntry);
+						ServerEntryNetworkPart.LOGGER.error("Can't ping {}: {}", serverInfo.address, text.getString());
+						serverInfo.label = Formatting.DARK_RED + I18n.translate("multiplayer.status.cannot_connect");
+						serverInfo.playerCountLabel = "";
+						ServerEntryNetworkPart.this.ping(serverInfo);
 					}
 				}
 
@@ -170,8 +169,8 @@ public class ServerEntryNetworkPart {
 		}
 	}
 
-	private void ping(ServerEntry serverEntry) {
-		final ServerAddress serverAddress = ServerAddress.parse(serverEntry.address);
+	private void ping(ServerInfo serverInfo) {
+		final ServerAddress serverAddress = ServerAddress.parse(serverInfo.address);
 		new Bootstrap().group(ClientConnection.CLIENT_IO_GROUP.get()).handler(new ChannelInitializer<Channel>() {
 			@Override
 			protected void initChannel(Channel channel) throws Exception {
@@ -224,10 +223,10 @@ public class ServerEntryNetworkPart {
 								String string3 = strings[3];
 								int j = MathHelper.parseInt(strings[4], -1);
 								int k = MathHelper.parseInt(strings[5], -1);
-								serverEntry.protocolVersion = -1;
-								serverEntry.version = string2;
-								serverEntry.label = string3;
-								serverEntry.playerCountLabel = Formatting.GRAY + "" + j + "" + Formatting.DARK_GRAY + "/" + Formatting.GRAY + k;
+								serverInfo.protocolVersion = -1;
+								serverInfo.version = string2;
+								serverInfo.label = string3;
+								serverInfo.playerCountLabel = Formatting.GRAY + "" + j + "" + Formatting.DARK_GRAY + "/" + Formatting.GRAY + k;
 							}
 						}
 

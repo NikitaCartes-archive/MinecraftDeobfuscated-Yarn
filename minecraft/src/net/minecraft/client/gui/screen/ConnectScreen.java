@@ -8,7 +8,7 @@ import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.network.ClientLoginNetworkHandler;
-import net.minecraft.client.options.ServerEntry;
+import net.minecraft.client.network.ServerInfo;
 import net.minecraft.client.resource.language.I18n;
 import net.minecraft.client.util.NarratorManager;
 import net.minecraft.network.ClientConnection;
@@ -33,13 +33,13 @@ public class ConnectScreen extends Screen {
 	private Text status = new TranslatableText("connect.connecting");
 	private long field_19097 = -1L;
 
-	public ConnectScreen(Screen screen, MinecraftClient minecraftClient, ServerEntry serverEntry) {
+	public ConnectScreen(Screen screen, MinecraftClient minecraftClient, ServerInfo serverInfo) {
 		super(NarratorManager.EMPTY);
 		this.minecraft = minecraftClient;
 		this.parent = screen;
-		ServerAddress serverAddress = ServerAddress.parse(serverEntry.address);
+		ServerAddress serverAddress = ServerAddress.parse(serverInfo.address);
 		minecraftClient.disconnect();
-		minecraftClient.setCurrentServerEntry(serverEntry);
+		minecraftClient.setCurrentServerEntry(serverInfo);
 		this.connect(serverAddress.getAddress(), serverAddress.getPort());
 	}
 
