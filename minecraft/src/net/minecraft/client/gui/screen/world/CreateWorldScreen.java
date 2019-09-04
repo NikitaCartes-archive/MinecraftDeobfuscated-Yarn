@@ -149,6 +149,7 @@ public class CreateWorldScreen extends Screen {
 		this.buttonCreateLevel = this.addButton(
 			new ButtonWidget(this.width / 2 - 155, this.height - 28, 150, 20, I18n.translate("selectWorld.create"), buttonWidget -> this.createLevel())
 		);
+		this.buttonCreateLevel.active = !this.levelName.isEmpty();
 		this.addButton(
 			new ButtonWidget(this.width / 2 + 5, this.height - 28, 150, 20, I18n.translate("gui.cancel"), buttonWidget -> this.minecraft.openScreen(this.parent))
 		);

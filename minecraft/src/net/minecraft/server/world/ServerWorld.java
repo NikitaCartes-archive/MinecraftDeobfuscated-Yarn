@@ -120,7 +120,6 @@ import net.minecraft.world.WorldSaveHandler;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.biome.source.BiomeSource;
 import net.minecraft.world.chunk.Chunk;
-import net.minecraft.world.chunk.ChunkManager;
 import net.minecraft.world.chunk.ChunkSection;
 import net.minecraft.world.chunk.ChunkStatus;
 import net.minecraft.world.chunk.WorldChunk;
@@ -205,15 +204,8 @@ public class ServerWorld extends World {
 	}
 
 	@Override
-	public Biome getBiome(BlockPos blockPos) {
-		ChunkManager chunkManager = this.method_14178();
-		WorldChunk worldChunk = chunkManager.getWorldChunk(blockPos.getX() >> 4, blockPos.getZ() >> 4, false);
-		if (worldChunk != null) {
-			return worldChunk.getBiome(blockPos);
-		} else {
-			ChunkGenerator<?> chunkGenerator = this.method_14178().getChunkGenerator();
-			return chunkGenerator.getBiomeSource().getBiome(blockPos);
-		}
+	public Biome method_22387(int i, int j, int k) {
+		return this.method_14178().getChunkGenerator().getBiomeSource().getBiome(i, j, k);
 	}
 
 	public void tick(BooleanSupplier booleanSupplier) {
@@ -314,7 +306,7 @@ public class ServerWorld extends World {
 				this.setTimeOfDay(l - l % 24000L);
 			}
 
-			this.players.stream().filter(LivingEntity::isSleeping).forEach(serverPlayerEntity -> serverPlayerEntity.wakeUp(false, false, true));
+			this.players.stream().filter(LivingEntity::isSleeping).forEach(serverPlayerEntity -> serverPlayerEntity.wakeUp(false, false));
 			if (this.getGameRules().getBoolean(GameRules.DO_WEATHER_CYCLE)) {
 				this.resetWeather();
 			}
@@ -330,8 +322,6 @@ public class ServerWorld extends World {
 			this.fluidTickScheduler.tick();
 		}
 
-		profiler.swap("portalForcer");
-		this.portalForcer.tick(this.getTime());
 		profiler.swap("raid");
 		this.raidManager.tick();
 		if (this.wanderingTraderManager != null) {
@@ -657,7 +647,7 @@ public class ServerWorld extends World {
 			BiomeSource biomeSource = this.method_14178().getChunkGenerator().getBiomeSource();
 			List<Biome> list = biomeSource.getSpawnBiomes();
 			Random random = new Random(this.getSeed());
-			BlockPos blockPos = biomeSource.locateBiome(0, 0, 256, list, random);
+			BlockPos blockPos = biomeSource.locateBiome(0, this.getSeaLevel(), 0, 256, list, random);
 			ChunkPos chunkPos = blockPos == null ? new ChunkPos(0, 0) : new ChunkPos(blockPos);
 			if (blockPos == null) {
 				LOGGER.warn("Unable to find spawn biome");

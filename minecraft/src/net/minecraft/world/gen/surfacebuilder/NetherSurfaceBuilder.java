@@ -41,8 +41,8 @@ public class NetherSurfaceBuilder extends SurfaceBuilder<TernarySurfaceConfig> {
 		int o = i & 15;
 		int p = j & 15;
 		double e = 0.03125;
-		boolean bl = this.noise.sample((double)i * 0.03125, (double)j * 0.03125, 0.0) + random.nextDouble() * 0.2 > 0.0;
-		boolean bl2 = this.noise.sample((double)i * 0.03125, 109.0, (double)j * 0.03125) + random.nextDouble() * 0.2 > 0.0;
+		boolean bl = this.noise.sample((double)i * 0.03125, (double)j * 0.03125, 0.0) * 75.0 + random.nextDouble() > 0.0;
+		boolean bl2 = this.noise.sample((double)i * 0.03125, 109.0, (double)j * 0.03125) * 75.0 + random.nextDouble() > 0.0;
 		int q = (int)(d / 3.0 + 3.0 + random.nextDouble() * 0.25);
 		BlockPos.Mutable mutable = new BlockPos.Mutable();
 		int r = -1;
@@ -96,7 +96,7 @@ public class NetherSurfaceBuilder extends SurfaceBuilder<TernarySurfaceConfig> {
 	@Override
 	public void initSeed(long l) {
 		if (this.seed != l || this.noise == null) {
-			this.noise = new OctavePerlinNoiseSampler(new ChunkRandom(l), 4);
+			this.noise = new OctavePerlinNoiseSampler(new ChunkRandom(l), 3, 0);
 		}
 
 		this.seed = l;

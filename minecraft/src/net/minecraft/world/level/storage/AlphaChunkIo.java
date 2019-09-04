@@ -1,9 +1,9 @@
 package net.minecraft.world.level.storage;
 
+import net.minecraft.class_4548;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.registry.Registry;
+import net.minecraft.util.math.ChunkPos;
 import net.minecraft.world.biome.source.BiomeSource;
 import net.minecraft.world.chunk.ChunkNibbleArray;
 
@@ -91,17 +91,7 @@ public class AlphaChunkIo {
 		}
 
 		compoundTag.put("Sections", listTag);
-		byte[] cs = new byte[256];
-		BlockPos.Mutable mutable = new BlockPos.Mutable();
-
-		for (int k = 0; k < 16; k++) {
-			for (int l = 0; l < 16; l++) {
-				mutable.set(alphaChunk.x << 4 | k, 0, alphaChunk.z << 4 | l);
-				cs[l << 4 | k] = (byte)(Registry.BIOME.getRawId(biomeSource.getBiome(mutable)) & 0xFF);
-			}
-		}
-
-		compoundTag.putByteArray("Biomes", cs);
+		compoundTag.putIntArray("Biomes", new class_4548(new ChunkPos(alphaChunk.x, alphaChunk.z), biomeSource).method_22401());
 		compoundTag.put("Entities", alphaChunk.entities);
 		compoundTag.put("TileEntities", alphaChunk.blockEntities);
 		if (alphaChunk.blockTicks != null) {

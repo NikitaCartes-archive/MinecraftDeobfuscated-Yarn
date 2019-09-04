@@ -722,7 +722,11 @@ public class MinecraftClient extends NonBlockingThreadExecutor<Runnable> impleme
 		if (screen == null && this.world == null) {
 			screen = new TitleScreen();
 		} else if (screen == null && this.player.getHealth() <= 0.0F) {
-			screen = new DeathScreen(null, this.world.getLevelProperties().isHardcore());
+			if (this.player.method_22419()) {
+				screen = new DeathScreen(null, this.world.getLevelProperties().isHardcore());
+			} else {
+				this.player.requestRespawn();
+			}
 		}
 
 		if (screen instanceof TitleScreen || screen instanceof MultiplayerScreen) {

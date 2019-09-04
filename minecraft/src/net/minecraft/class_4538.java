@@ -11,11 +11,12 @@ import net.minecraft.world.BlockView;
 import net.minecraft.world.ExtendedBlockView;
 import net.minecraft.world.Heightmap;
 import net.minecraft.world.ViewableWorld;
+import net.minecraft.world.biome.Biome;
 import net.minecraft.world.chunk.Chunk;
 import net.minecraft.world.chunk.ChunkStatus;
 import net.minecraft.world.dimension.Dimension;
 
-public interface class_4538 extends ExtendedBlockView, ViewableWorld {
+public interface class_4538 extends ExtendedBlockView, ViewableWorld, class_4543.class_4544 {
 	@Nullable
 	Chunk getChunk(int i, int j, ChunkStatus chunkStatus, boolean bl);
 
@@ -25,6 +26,14 @@ public interface class_4538 extends ExtendedBlockView, ViewableWorld {
 	int getLightLevel(Heightmap.Type type, int i, int j);
 
 	int getAmbientDarkness();
+
+	@Override
+	default Biome getBiome(int i, int j, int k) {
+		Chunk chunk = this.getChunk(i >> 2, k >> 2, ChunkStatus.BIOMES, false);
+		return chunk != null && chunk.getBiomeArray() != null ? chunk.getBiomeArray().getBiome(i, j, k) : this.method_22387(i, j, k);
+	}
+
+	Biome method_22387(int i, int j, int k);
 
 	boolean isClient();
 

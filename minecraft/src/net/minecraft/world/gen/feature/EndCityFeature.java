@@ -3,6 +3,7 @@ package net.minecraft.world.gen.feature;
 import com.mojang.datafixers.Dynamic;
 import java.util.Random;
 import java.util.function.Function;
+import net.minecraft.class_4543;
 import net.minecraft.structure.EndCityGenerator;
 import net.minecraft.structure.StructureManager;
 import net.minecraft.structure.StructureStart;
@@ -39,18 +40,15 @@ public class EndCityFeature extends StructureFeature<DefaultFeatureConfig> {
 	}
 
 	@Override
-	public boolean shouldStartAt(ChunkGenerator<?> chunkGenerator, Random random, int i, int j) {
+	public boolean shouldStartAt(class_4543 arg, ChunkGenerator<?> chunkGenerator, Random random, int i, int j, Biome biome) {
 		ChunkPos chunkPos = this.getStart(chunkGenerator, random, i, j, 0, 0);
-		if (i == chunkPos.x && j == chunkPos.z) {
-			Biome biome = chunkGenerator.getBiomeSource().getBiome(new BlockPos((i << 4) + 9, 0, (j << 4) + 9));
-			if (!chunkGenerator.hasStructure(biome, Feature.END_CITY)) {
-				return false;
-			} else {
-				int k = getGenerationHeight(i, j, chunkGenerator);
-				return k >= 60;
-			}
-		} else {
+		if (i != chunkPos.x || j != chunkPos.z) {
 			return false;
+		} else if (!chunkGenerator.hasStructure(biome, Feature.END_CITY)) {
+			return false;
+		} else {
+			int k = getGenerationHeight(i, j, chunkGenerator);
+			return k >= 60;
 		}
 	}
 
@@ -93,8 +91,8 @@ public class EndCityFeature extends StructureFeature<DefaultFeatureConfig> {
 	}
 
 	public static class Start extends StructureStart {
-		public Start(StructureFeature<?> structureFeature, int i, int j, Biome biome, MutableIntBoundingBox mutableIntBoundingBox, int k, long l) {
-			super(structureFeature, i, j, biome, mutableIntBoundingBox, k, l);
+		public Start(StructureFeature<?> structureFeature, int i, int j, MutableIntBoundingBox mutableIntBoundingBox, int k, long l) {
+			super(structureFeature, i, j, mutableIntBoundingBox, k, l);
 		}
 
 		@Override

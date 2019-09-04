@@ -8,52 +8,100 @@ import java.util.Map;
 import java.util.Random;
 import java.util.Set;
 import javax.annotation.Nullable;
+import net.minecraft.class_4543;
 import net.minecraft.block.BlockState;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.biome.Biomes;
 import net.minecraft.world.gen.feature.StructureFeature;
 
-public abstract class BiomeSource {
+public abstract class BiomeSource implements class_4543.class_4544 {
 	private static final List<Biome> SPAWN_BIOMES = Lists.<Biome>newArrayList(
 		Biomes.FOREST, Biomes.PLAINS, Biomes.TAIGA, Biomes.TAIGA_HILLS, Biomes.WOODED_HILLS, Biomes.JUNGLE, Biomes.JUNGLE_HILLS
 	);
 	protected final Map<StructureFeature<?>, Boolean> structureFeatures = Maps.<StructureFeature<?>, Boolean>newHashMap();
 	protected final Set<BlockState> topMaterials = Sets.<BlockState>newHashSet();
+	protected final Set<Biome> field_20643;
 
-	protected BiomeSource() {
+	protected BiomeSource(Set<Biome> set) {
+		this.field_20643 = set;
 	}
 
 	public List<Biome> getSpawnBiomes() {
 		return SPAWN_BIOMES;
 	}
 
-	public Biome getBiome(BlockPos blockPos) {
-		return this.getBiome(blockPos.getX(), blockPos.getZ());
+	public Set<Biome> getBiomesInArea(int i, int j, int k, int l) {
+		int m = i - l >> 2;
+		int n = j - l >> 2;
+		int o = k - l >> 2;
+		int p = i + l >> 2;
+		int q = j + l >> 2;
+		int r = k + l >> 2;
+		int s = p - m + 1;
+		int t = q - n + 1;
+		int u = r - o + 1;
+		Set<Biome> set = Sets.<Biome>newHashSet();
+
+		for (int v = 0; v < u; v++) {
+			for (int w = 0; w < s; w++) {
+				for (int x = 0; x < t; x++) {
+					int y = m + w;
+					int z = n + x;
+					int aa = o + v;
+					set.add(this.getBiome(y, z, aa));
+				}
+			}
+		}
+
+		return set;
 	}
-
-	public abstract Biome getBiome(int i, int j);
-
-	public Biome getBiomeForNoiseGen(int i, int j) {
-		return this.getBiome(i << 2, j << 2);
-	}
-
-	public Biome[] sampleBiomes(int i, int j, int k, int l) {
-		return this.sampleBiomes(i, j, k, l, true);
-	}
-
-	public abstract Biome[] sampleBiomes(int i, int j, int k, int l, boolean bl);
-
-	public abstract Set<Biome> getBiomesInArea(int i, int j, int k);
 
 	@Nullable
-	public abstract BlockPos locateBiome(int i, int j, int k, List<Biome> list, Random random);
+	public BlockPos locateBiome(int i, int j, int k, int l, List<Biome> list, Random random) {
+		int m = i - l >> 2;
+		int n = k - l >> 2;
+		int o = i + l >> 2;
+		int p = k + l >> 2;
+		int q = o - m + 1;
+		int r = p - n + 1;
+		int s = j >> 2;
+		BlockPos blockPos = null;
+		int t = 0;
+
+		for (int u = 0; u < r; u++) {
+			for (int v = 0; v < q; v++) {
+				int w = m + v;
+				int x = n + u;
+				if (list.contains(this.getBiome(w, s, x))) {
+					if (blockPos == null || random.nextInt(t + 1) == 0) {
+						blockPos = new BlockPos(w << 2, j, x << 2);
+					}
+
+					t++;
+				}
+			}
+		}
+
+		return blockPos;
+	}
 
 	public float method_8757(int i, int j) {
 		return 0.0F;
 	}
 
-	public abstract boolean hasStructureFeature(StructureFeature<?> structureFeature);
+	public boolean hasStructureFeature(StructureFeature<?> structureFeature) {
+		return (Boolean)this.structureFeatures
+			.computeIfAbsent(structureFeature, structureFeaturex -> this.field_20643.stream().anyMatch(biome -> biome.hasStructureFeature(structureFeaturex)));
+	}
 
-	public abstract Set<BlockState> getTopMaterials();
+	public Set<BlockState> getTopMaterials() {
+		if (this.topMaterials.isEmpty()) {
+			for (Biome biome : this.field_20643) {
+				this.topMaterials.add(biome.getSurfaceConfig().getTopMaterial());
+			}
+		}
+
+		return this.topMaterials;
+	}
 }

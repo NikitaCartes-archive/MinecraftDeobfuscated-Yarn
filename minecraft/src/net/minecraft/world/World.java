@@ -13,6 +13,7 @@ import java.util.function.Supplier;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.class_4543;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
@@ -51,7 +52,6 @@ import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.profiler.Profiler;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.world.biome.Biome;
-import net.minecraft.world.biome.Biomes;
 import net.minecraft.world.border.WorldBorder;
 import net.minecraft.world.chunk.Chunk;
 import net.minecraft.world.chunk.ChunkManager;
@@ -91,6 +91,7 @@ public abstract class World implements IWorld, AutoCloseable {
 	public final boolean isClient;
 	protected boolean iteratingTickingBlockEntities;
 	private final WorldBorder border;
+	private final class_4543 field_20639;
 
 	protected World(
 		LevelProperties levelProperties, DimensionType dimensionType, BiFunction<World, Dimension, ChunkManager> biFunction, Profiler profiler, boolean bl
@@ -102,13 +103,9 @@ public abstract class World implements IWorld, AutoCloseable {
 		this.isClient = bl;
 		this.border = this.dimension.createWorldBorder();
 		this.thread = Thread.currentThread();
-	}
-
-	@Override
-	public Biome getBiome(BlockPos blockPos) {
-		ChunkManager chunkManager = this.getChunkManager();
-		WorldChunk worldChunk = chunkManager.getWorldChunk(blockPos.getX() >> 4, blockPos.getZ() >> 4, false);
-		return worldChunk != null ? worldChunk.getBiome(blockPos) : Biomes.PLAINS;
+		this.field_20639 = new class_4543(
+			this, bl ? levelProperties.getSeed() : LevelProperties.method_22418(levelProperties.getSeed()), dimensionType.method_22415()
+		);
 	}
 
 	@Override
@@ -1282,5 +1279,10 @@ public abstract class World implements IWorld, AutoCloseable {
 
 	public Profiler getProfiler() {
 		return this.profiler;
+	}
+
+	@Override
+	public class_4543 method_22385() {
+		return this.field_20639;
 	}
 }

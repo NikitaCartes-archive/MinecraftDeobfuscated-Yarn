@@ -10,6 +10,7 @@ public class EntityTypeTags {
 	private static int latestVersion;
 	public static final Tag<EntityType<?>> SKELETONS = register("skeletons");
 	public static final Tag<EntityType<?>> RAIDERS = register("raiders");
+	public static final Tag<EntityType<?>> BEEHIVE_INHABITORS = register("beehive_inhabitors");
 
 	public static void setContainer(TagContainer<EntityType<?>> tagContainer) {
 		container = tagContainer;

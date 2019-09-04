@@ -45,7 +45,7 @@ public class FoodComponents {
 		.alwaysEdible()
 		.build();
 	public static final FoodComponent GOLDEN_CARROT = new FoodComponent.Builder().hunger(6).saturationModifier(1.2F).build();
-	public static final FoodComponent HONEY_BOTTLE = new FoodComponent.Builder().hunger(6).saturationModifier(0.8F).build();
+	public static final FoodComponent HONEY_BOTTLE = new FoodComponent.Builder().hunger(6).saturationModifier(0.1F).build();
 	public static final FoodComponent MELON_SLICE = new FoodComponent.Builder().hunger(2).saturationModifier(0.3F).build();
 	public static final FoodComponent MUSHROOM_STEW = create(6);
 	public static final FoodComponent MUTTON = new FoodComponent.Builder().hunger(2).saturationModifier(0.3F).meat().build();

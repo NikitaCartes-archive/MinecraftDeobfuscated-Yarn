@@ -2207,6 +2207,14 @@ public class WorldRenderer implements AutoCloseable, SynchronousResourceReloadLi
 			case 2008:
 				this.world.addParticle(ParticleTypes.EXPLOSION, (double)blockPos.getX() + 0.5, (double)blockPos.getY() + 0.5, (double)blockPos.getZ() + 0.5, 0.0, 0.0, 0.0);
 				break;
+			case 2009:
+				for (int k = 0; k < 8; k++) {
+					this.world
+						.addParticle(
+							ParticleTypes.CLOUD, (double)blockPos.getX() + Math.random(), (double)blockPos.getY() + 1.2, (double)blockPos.getZ() + Math.random(), 0.0, 0.0, 0.0
+						);
+				}
+				break;
 			case 3000:
 				this.world
 					.addParticle(

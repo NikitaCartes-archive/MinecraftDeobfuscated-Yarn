@@ -4,7 +4,9 @@ import com.mojang.datafixers.Dynamic;
 import java.util.BitSet;
 import java.util.Random;
 import java.util.function.Function;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
+import net.minecraft.world.biome.Biome;
 import net.minecraft.world.chunk.Chunk;
 import net.minecraft.world.gen.ProbabilityConfig;
 
@@ -19,7 +21,9 @@ public class RavineCarver extends Carver<ProbabilityConfig> {
 		return random.nextFloat() <= probabilityConfig.probability;
 	}
 
-	public boolean method_12656(Chunk chunk, Random random, int i, int j, int k, int l, int m, BitSet bitSet, ProbabilityConfig probabilityConfig) {
+	public boolean method_12656(
+		Chunk chunk, Function<BlockPos, Biome> function, Random random, int i, int j, int k, int l, int m, BitSet bitSet, ProbabilityConfig probabilityConfig
+	) {
 		int n = (this.getBranchFactor() * 2 - 1) * 16;
 		double d = (double)(j * 16 + random.nextInt(16));
 		double e = (double)(random.nextInt(random.nextInt(40) + 8) + 20);
@@ -30,12 +34,27 @@ public class RavineCarver extends Carver<ProbabilityConfig> {
 		float p = (random.nextFloat() * 2.0F + random.nextFloat()) * 2.0F;
 		int q = n - random.nextInt(n / 4);
 		int r = 0;
-		this.carveRavine(chunk, random.nextLong(), i, l, m, d, e, f, p, g, h, 0, q, 3.0, bitSet);
+		this.carveRavine(chunk, function, random.nextLong(), i, l, m, d, e, f, p, g, h, 0, q, 3.0, bitSet);
 		return true;
 	}
 
 	private void carveRavine(
-		Chunk chunk, long l, int i, int j, int k, double d, double e, double f, float g, float h, float m, int n, int o, double p, BitSet bitSet
+		Chunk chunk,
+		Function<BlockPos, Biome> function,
+		long l,
+		int i,
+		int j,
+		int k,
+		double d,
+		double e,
+		double f,
+		float g,
+		float h,
+		float m,
+		int n,
+		int o,
+		double p,
+		BitSet bitSet
 	) {
 		Random random = new Random(l);
 		float q = 1.0F;
@@ -73,7 +92,7 @@ public class RavineCarver extends Carver<ProbabilityConfig> {
 					return;
 				}
 
-				this.carveRegion(chunk, l, i, j, k, d, e, f, v, w, bitSet);
+				this.carveRegion(chunk, function, l, i, j, k, d, e, f, v, w, bitSet);
 			}
 		}
 	}

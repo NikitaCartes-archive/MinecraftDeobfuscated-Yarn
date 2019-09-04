@@ -44,10 +44,10 @@ public class FrozenOceanSurfaceBuilder extends SurfaceBuilder<TernarySurfaceConf
 		double f = 0.0;
 		BlockPos.Mutable mutable = new BlockPos.Mutable();
 		float g = biome.getTemperature(mutable.set(i, 63, j));
-		double h = Math.min(Math.abs(d), this.field_15644.sample((double)i * 0.1, (double)j * 0.1));
+		double h = Math.min(Math.abs(d), this.field_15644.sample((double)i * 0.1, (double)j * 0.1, false) * 15.0);
 		if (h > 1.8) {
 			double n = 0.09765625;
-			double o = Math.abs(this.field_15642.sample((double)i * 0.09765625, (double)j * 0.09765625));
+			double o = Math.abs(this.field_15642.sample((double)i * 0.09765625, (double)j * 0.09765625, false));
 			e = h * h * 1.2;
 			double p = Math.ceil(o * 40.0) + 14.0;
 			if (e > p) {
@@ -133,9 +133,9 @@ public class FrozenOceanSurfaceBuilder extends SurfaceBuilder<TernarySurfaceConf
 	@Override
 	public void initSeed(long l) {
 		if (this.seed != l || this.field_15644 == null || this.field_15642 == null) {
-			Random random = new ChunkRandom(l);
-			this.field_15644 = new OctaveSimplexNoiseSampler(random, 4);
-			this.field_15642 = new OctaveSimplexNoiseSampler(random, 1);
+			ChunkRandom chunkRandom = new ChunkRandom(l);
+			this.field_15644 = new OctaveSimplexNoiseSampler(chunkRandom, 3, 0);
+			this.field_15642 = new OctaveSimplexNoiseSampler(chunkRandom, 0, 0);
 		}
 
 		this.seed = l;

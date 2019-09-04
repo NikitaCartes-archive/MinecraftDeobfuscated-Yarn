@@ -5,11 +5,8 @@ import javax.annotation.Nullable;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MutableIntBoundingBox;
 import net.minecraft.util.registry.Registry;
-import net.minecraft.world.biome.Biome;
-import net.minecraft.world.biome.source.BiomeSource;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
 import net.minecraft.world.gen.feature.Feature;
 import net.minecraft.world.gen.feature.StructureFeature;
@@ -42,9 +39,7 @@ public class StructureFeatures {
 	}
 
 	@Nullable
-	public static StructureStart readStructureStart(
-		ChunkGenerator<?> chunkGenerator, StructureManager structureManager, BiomeSource biomeSource, CompoundTag compoundTag
-	) {
+	public static StructureStart readStructureStart(ChunkGenerator<?> chunkGenerator, StructureManager structureManager, CompoundTag compoundTag) {
 		String string = compoundTag.getString("id");
 		if ("INVALID".equals(string)) {
 			return StructureStart.DEFAULT;
@@ -57,9 +52,6 @@ public class StructureFeatures {
 				int i = compoundTag.getInt("ChunkX");
 				int j = compoundTag.getInt("ChunkZ");
 				int k = compoundTag.getInt("references");
-				Biome biome = compoundTag.containsKey("biome")
-					? Registry.BIOME.get(new Identifier(compoundTag.getString("biome")))
-					: biomeSource.getBiome(new BlockPos((i << 4) + 9, 0, (j << 4) + 9));
 				MutableIntBoundingBox mutableIntBoundingBox = compoundTag.containsKey("BB")
 					? new MutableIntBoundingBox(compoundTag.getIntArray("BB"))
 					: MutableIntBoundingBox.empty();
@@ -67,7 +59,7 @@ public class StructureFeatures {
 
 				try {
 					StructureStart structureStart = structureFeature.getStructureStartFactory()
-						.create(structureFeature, i, j, biome, mutableIntBoundingBox, k, chunkGenerator.getSeed());
+						.create(structureFeature, i, j, mutableIntBoundingBox, k, chunkGenerator.getSeed());
 
 					for (int l = 0; l < listTag.size(); l++) {
 						CompoundTag compoundTag2 = listTag.getCompoundTag(l);
@@ -79,15 +71,15 @@ public class StructureFeatures {
 							try {
 								StructurePiece structurePiece = structurePieceType.load(structureManager, compoundTag2);
 								structureStart.children.add(structurePiece);
-							} catch (Exception var18) {
-								LOGGER.error("Exception loading structure piece with id {}", string2, var18);
+							} catch (Exception var16) {
+								LOGGER.error("Exception loading structure piece with id {}", string2, var16);
 							}
 						}
 					}
 
 					return structureStart;
-				} catch (Exception var19) {
-					LOGGER.error("Failed Start with id {}", string, var19);
+				} catch (Exception var17) {
+					LOGGER.error("Failed Start with id {}", string, var17);
 					return null;
 				}
 			}

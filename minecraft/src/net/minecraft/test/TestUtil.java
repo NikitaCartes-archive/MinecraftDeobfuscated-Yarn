@@ -93,7 +93,7 @@ public class TestUtil {
 
 	private static void createBeacon(GameTest gameTest, Block block) {
 		ServerWorld serverWorld = gameTest.getWorld();
-		BlockPos blockPos = gameTest.getBlockPos();
+		BlockPos blockPos = gameTest.getPos();
 		BlockPos blockPos2 = blockPos.add(-1, -1, -1);
 		serverWorld.setBlockState(blockPos2, Blocks.BEACON.getDefaultState());
 		BlockPos blockPos3 = blockPos2.add(0, 1, 0);
@@ -109,7 +109,7 @@ public class TestUtil {
 
 	private static void createLectern(GameTest gameTest, String string) {
 		ServerWorld serverWorld = gameTest.getWorld();
-		BlockPos blockPos = gameTest.getBlockPos();
+		BlockPos blockPos = gameTest.getPos();
 		BlockPos blockPos2 = blockPos.add(-1, 1, -1);
 		serverWorld.setBlockState(blockPos2, Blocks.LECTERN.getDefaultState());
 		BlockState blockState = serverWorld.getBlockState(blockPos2);

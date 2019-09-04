@@ -3,6 +3,7 @@ package net.minecraft.world.gen.chunk;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
+import net.minecraft.class_4543;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.util.math.BlockPos;
@@ -29,11 +30,11 @@ public class DebugChunkGenerator extends ChunkGenerator<DebugChunkGeneratorConfi
 	}
 
 	@Override
-	public void buildSurface(Chunk chunk) {
+	public void buildSurface(ChunkRegion chunkRegion, Chunk chunk) {
 	}
 
 	@Override
-	public void carve(Chunk chunk, GenerationStep.Carver carver) {
+	public void carve(class_4543 arg, Chunk chunk, GenerationStep.Carver carver) {
 	}
 
 	@Override

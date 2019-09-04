@@ -57,14 +57,20 @@ public class SittingFlamingPhase extends AbstractSittingPhase {
 			double d = this.dragon.partHead.x + vec3d.x * 5.0 / 2.0;
 			double e = this.dragon.partHead.z + vec3d.z * 5.0 / 2.0;
 			double g = this.dragon.partHead.y + (double)(this.dragon.partHead.getHeight() / 2.0F);
+			double h = g;
 			BlockPos.Mutable mutable = new BlockPos.Mutable(d, g, e);
 
 			while (this.dragon.world.method_22347(mutable)) {
-				mutable.set(d, --g, e);
+				if (--h < 0.0) {
+					h = g;
+					break;
+				}
+
+				mutable.set(d, h, e);
 			}
 
-			g = (double)(MathHelper.floor(g) + 1);
-			this.field_7051 = new AreaEffectCloudEntity(this.dragon.world, d, g, e);
+			h = (double)(MathHelper.floor(h) + 1);
+			this.field_7051 = new AreaEffectCloudEntity(this.dragon.world, d, h, e);
 			this.field_7051.setOwner(this.dragon);
 			this.field_7051.setRadius(5.0F);
 			this.field_7051.setDuration(200);

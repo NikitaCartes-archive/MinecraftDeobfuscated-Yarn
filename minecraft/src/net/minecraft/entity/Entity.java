@@ -1669,7 +1669,7 @@ public abstract class Entity implements Nameable, CommandOutput {
 		} else {
 			if (!this.world.isClient && !blockPos.equals(this.lastPortalPosition)) {
 				this.lastPortalPosition = new BlockPos(blockPos);
-				BlockPattern.Result result = ((PortalBlock)Blocks.NETHER_PORTAL).findPortal(this.world, this.lastPortalPosition);
+				BlockPattern.Result result = PortalBlock.findPortal(this.world, this.lastPortalPosition);
 				double d = result.getForwards().getAxis() == Direction.Axis.X ? (double)result.getFrontTopLeft().getZ() : (double)result.getFrontTopLeft().getX();
 				double e = Math.abs(
 					MathHelper.minusDiv(

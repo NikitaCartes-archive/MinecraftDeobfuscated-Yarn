@@ -177,7 +177,7 @@ public class PortalBlock extends Block {
 		builder.add(AXIS);
 	}
 
-	public BlockPattern.Result findPortal(IWorld iWorld, BlockPos blockPos) {
+	public static BlockPattern.Result findPortal(IWorld iWorld, BlockPos blockPos) {
 		Direction.Axis axis = Direction.Axis.Z;
 		PortalBlock.AreaHelper areaHelper = new PortalBlock.AreaHelper(iWorld, blockPos, Direction.Axis.X);
 		LoadingCache<BlockPos, CachedBlockPosition> loadingCache = BlockPattern.makeCache(iWorld, true);

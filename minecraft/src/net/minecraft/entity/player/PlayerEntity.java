@@ -222,7 +222,7 @@ public abstract class PlayerEntity extends LivingEntity {
 			}
 
 			if (!this.world.isClient && this.world.isDaylight()) {
-				this.wakeUp(false, true, true);
+				this.wakeUp(false, true);
 			}
 		} else if (this.sleepTimer > 0) {
 			this.sleepTimer++;
@@ -817,6 +817,19 @@ public abstract class PlayerEntity extends LivingEntity {
 	}
 
 	@Override
+	public boolean isInvulnerableTo(DamageSource damageSource) {
+		if (super.isInvulnerableTo(damageSource)) {
+			return true;
+		} else if (damageSource == DamageSource.DROWN) {
+			return !this.world.getGameRules().getBoolean(GameRules.DROWNING_DAMAGE);
+		} else if (damageSource == DamageSource.FALL) {
+			return !this.world.getGameRules().getBoolean(GameRules.FALL_DAMAGE);
+		} else {
+			return damageSource != DamageSource.ON_FIRE && damageSource != DamageSource.IN_FIRE ? false : !this.world.getGameRules().getBoolean(GameRules.FIRE_DAMAGE);
+		}
+	}
+
+	@Override
 	public boolean damage(DamageSource damageSource, float f) {
 		if (this.isInvulnerableTo(damageSource)) {
 			return false;
@@ -1278,6 +1291,7 @@ public abstract class PlayerEntity extends LivingEntity {
 			}
 
 			if (this.world.isDaylight()) {
+				this.setPlayerSpawn(blockPos, false);
 				return Either.left(PlayerEntity.SleepFailureReason.NOT_POSSIBLE_NOW);
 			}
 
@@ -1323,6 +1337,7 @@ public abstract class PlayerEntity extends LivingEntity {
 	@Override
 	public void sleep(BlockPos blockPos) {
 		this.resetStat(Stats.CUSTOM.getOrCreateStat(Stats.TIME_SINCE_REST));
+		this.setPlayerSpawn(blockPos, false);
 		super.sleep(blockPos);
 	}
 
@@ -1344,22 +1359,18 @@ public abstract class PlayerEntity extends LivingEntity {
 		return !this.doesNotSuffocate(blockPos2) || !this.doesNotSuffocate(blockPos2.offset(direction.getOpposite()));
 	}
 
-	public void wakeUp(boolean bl, boolean bl2, boolean bl3) {
-		Optional<BlockPos> optional = this.getSleepingPosition();
+	public void wakeUp(boolean bl, boolean bl2) {
 		super.wakeUp();
 		if (this.world instanceof ServerWorld && bl2) {
 			((ServerWorld)this.world).updatePlayersSleeping();
 		}
 
 		this.sleepTimer = bl ? 0 : 100;
-		if (bl3) {
-			optional.ifPresent(blockPos -> this.setPlayerSpawn(blockPos, false));
-		}
 	}
 
 	@Override
 	public void wakeUp() {
-		this.wakeUp(true, true, false);
+		this.wakeUp(true, true);
 	}
 
 	public static Optional<Vec3d> method_7288(class_4538 arg, BlockPos blockPos, boolean bl) {

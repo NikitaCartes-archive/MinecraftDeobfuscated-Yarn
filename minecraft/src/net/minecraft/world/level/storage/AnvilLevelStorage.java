@@ -120,8 +120,8 @@ public class AnvilLevelStorage {
 		String string = file2.getName();
 
 		try (
-			RegionFile regionFile = new RegionFile(file2);
-			RegionFile regionFile2 = new RegionFile(new File(file, string.substring(0, string.length() - ".mcr".length()) + ".mca"));
+			RegionFile regionFile = new RegionFile(file2, file);
+			RegionFile regionFile2 = new RegionFile(new File(file, string.substring(0, string.length() - ".mcr".length()) + ".mca"), file);
 		) {
 			for (int k = 0; k < 32; k++) {
 				for (int l = 0; l < 32; l++) {

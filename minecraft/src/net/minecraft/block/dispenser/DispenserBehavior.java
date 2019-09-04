@@ -207,10 +207,15 @@ public interface DispenserBehavior {
 			@Override
 			public ItemStack dispenseSilently(BlockPointer blockPointer, ItemStack itemStack) {
 				Direction direction = blockPointer.getBlockState().get(DispenserBlock.FACING);
-				double d = blockPointer.getX() + (double)direction.getOffsetX();
-				double e = (double)((float)blockPointer.getBlockPos().getY() + 0.2F);
-				double f = blockPointer.getZ() + (double)direction.getOffsetZ();
-				blockPointer.getWorld().spawnEntity(new FireworkEntity(blockPointer.getWorld(), d, e, f, itemStack));
+				double d = (double)direction.getOffsetX();
+				double e = (double)direction.getOffsetY();
+				double f = (double)direction.getOffsetZ();
+				double g = blockPointer.getX() + d;
+				double h = (double)((float)blockPointer.getBlockPos().getY() + 0.2F);
+				double i = blockPointer.getZ() + f;
+				FireworkEntity fireworkEntity = new FireworkEntity(blockPointer.getWorld(), itemStack, g, h, i, true);
+				fireworkEntity.setVelocity(d, e, f, 0.5F, 1.0F);
+				blockPointer.getWorld().spawnEntity(fireworkEntity);
 				itemStack.decrement(1);
 				return itemStack;
 			}
@@ -450,17 +455,13 @@ public interface DispenserBehavior {
 					BlockPos blockPos = blockPointer.getBlockPos().offset(blockPointer.getBlockState().get(DispenserBlock.FACING));
 					BlockState blockState = iWorld.getBlockState(blockPos);
 					Block block = blockState.getBlock();
-					if (block.matches(BlockTags.BEEHIVES)) {
-						int i = (Integer)blockState.get(BeeHiveBlock.HONEY_LEVEL);
-						if (i >= 5) {
-							((BeeHiveBlock)blockState.getBlock()).emptyHoney(iWorld.getWorld(), blockState, blockPos, null);
-						}
-
+					if (block.matches(BlockTags.BEEHIVES) && (Integer)blockState.get(BeeHiveBlock.HONEY_LEVEL) >= 5) {
+						((BeeHiveBlock)blockState.getBlock()).emptyHoney(iWorld.getWorld(), blockState, blockPos, null);
 						return this.method_22141(blockPointer, itemStack, new ItemStack(Items.HONEY_BOTTLE));
 					} else {
 						return iWorld.getFluidState(blockPos).matches(FluidTags.WATER)
 							? this.method_22141(blockPointer, itemStack, PotionUtil.setPotion(new ItemStack(Items.POTION), Potions.WATER))
-							: super.dispenseSilently(blockPointer, itemStack);
+							: itemStack;
 					}
 				}
 			}

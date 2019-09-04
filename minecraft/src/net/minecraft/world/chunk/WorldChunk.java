@@ -19,6 +19,7 @@ import java.util.stream.StreamSupport;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.class_4548;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockEntityProvider;
 import net.minecraft.block.BlockState;
@@ -52,7 +53,6 @@ import net.minecraft.world.ChunkTickScheduler;
 import net.minecraft.world.Heightmap;
 import net.minecraft.world.TickScheduler;
 import net.minecraft.world.World;
-import net.minecraft.world.biome.Biome;
 import net.minecraft.world.chunk.light.LightingProvider;
 import net.minecraft.world.gen.chunk.DebugChunkGenerator;
 import net.minecraft.world.level.LevelGeneratorType;
@@ -63,7 +63,7 @@ public class WorldChunk implements Chunk {
 	private static final Logger LOGGER = LogManager.getLogger();
 	public static final ChunkSection EMPTY_SECTION = null;
 	private final ChunkSection[] sections = new ChunkSection[16];
-	private final Biome[] biomeArray;
+	private class_4548 field_20655;
 	private final Map<BlockPos, CompoundTag> pendingBlockEntityTags = Maps.<BlockPos, CompoundTag>newHashMap();
 	private boolean loadedToWorld;
 	private final World world;
@@ -87,14 +87,14 @@ public class WorldChunk implements Chunk {
 	private final ChunkPos pos;
 	private volatile boolean isLightOn;
 
-	public WorldChunk(World world, ChunkPos chunkPos, Biome[] biomes) {
-		this(world, chunkPos, biomes, UpgradeData.NO_UPGRADE_DATA, DummyClientTickScheduler.get(), DummyClientTickScheduler.get(), 0L, null, null);
+	public WorldChunk(World world, ChunkPos chunkPos, class_4548 arg) {
+		this(world, chunkPos, arg, UpgradeData.NO_UPGRADE_DATA, DummyClientTickScheduler.get(), DummyClientTickScheduler.get(), 0L, null, null);
 	}
 
 	public WorldChunk(
 		World world,
 		ChunkPos chunkPos,
-		Biome[] biomes,
+		class_4548 arg,
 		UpgradeData upgradeData,
 		TickScheduler<Block> tickScheduler,
 		TickScheduler<Fluid> tickScheduler2,
@@ -117,7 +117,7 @@ public class WorldChunk implements Chunk {
 			this.entitySections[i] = new TypeFilterableList<>(Entity.class);
 		}
 
-		this.biomeArray = biomes;
+		this.field_20655 = arg;
 		this.blockTickScheduler = tickScheduler;
 		this.fluidTickScheduler = tickScheduler2;
 		this.inhabitedTime = l;
@@ -545,7 +545,8 @@ public class WorldChunk implements Chunk {
 	}
 
 	@Environment(EnvType.CLIENT)
-	public void loadFromPacket(PacketByteBuf packetByteBuf, CompoundTag compoundTag, int i, boolean bl) {
+	public void loadFromPacket(@Nullable class_4548 arg, PacketByteBuf packetByteBuf, CompoundTag compoundTag, int i) {
+		boolean bl = arg != null;
 		Predicate<BlockPos> predicate = bl ? blockPos -> true : blockPos -> (i & 1 << (blockPos.getY() >> 4)) != 0;
 		Sets.newHashSet(this.blockEntities.keySet()).stream().filter(predicate).forEach(this.world::removeBlockEntity);
 
@@ -565,10 +566,8 @@ public class WorldChunk implements Chunk {
 			}
 		}
 
-		if (bl) {
-			for (int jx = 0; jx < this.biomeArray.length; jx++) {
-				this.biomeArray[jx] = Registry.BIOME.get(packetByteBuf.readInt());
-			}
+		if (arg != null) {
+			this.field_20655 = arg;
 		}
 
 		for (Heightmap.Type type : Heightmap.Type.values()) {
@@ -584,8 +583,8 @@ public class WorldChunk implements Chunk {
 	}
 
 	@Override
-	public Biome[] getBiomeArray() {
-		return this.biomeArray;
+	public class_4548 getBiomeArray() {
+		return this.field_20655;
 	}
 
 	public void setLoadedToWorld(boolean bl) {

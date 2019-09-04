@@ -15,6 +15,7 @@ import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.stat.Stats;
 import net.minecraft.state.StateFactory;
+import net.minecraft.state.property.BooleanProperty;
 import net.minecraft.state.property.DirectionProperty;
 import net.minecraft.state.property.EnumProperty;
 import net.minecraft.state.property.Properties;
@@ -31,6 +32,7 @@ import net.minecraft.world.World;
 public class BellBlock extends BlockWithEntity {
 	public static final DirectionProperty FACING = HorizontalFacingBlock.FACING;
 	private static final EnumProperty<Attachment> ATTACHMENT = Properties.ATTACHMENT;
+	public static final BooleanProperty field_20648 = Properties.POWERED;
 	private static final VoxelShape NORTH_SOUTH_SHAPE = Block.createCuboidShape(0.0, 0.0, 4.0, 16.0, 16.0, 12.0);
 	private static final VoxelShape EAST_WEST_SHAPE = Block.createCuboidShape(4.0, 0.0, 0.0, 12.0, 16.0, 16.0);
 	private static final VoxelShape BELL_WAIST_SHAPE = Block.createCuboidShape(5.0, 6.0, 5.0, 11.0, 13.0, 11.0);
@@ -46,7 +48,21 @@ public class BellBlock extends BlockWithEntity {
 
 	public BellBlock(Block.Settings settings) {
 		super(settings);
-		this.setDefaultState(this.stateFactory.getDefaultState().with(FACING, Direction.NORTH).with(ATTACHMENT, Attachment.FLOOR));
+		this.setDefaultState(
+			this.stateFactory.getDefaultState().with(FACING, Direction.NORTH).with(ATTACHMENT, Attachment.FLOOR).with(field_20648, Boolean.valueOf(false))
+		);
+	}
+
+	@Override
+	public void neighborUpdate(BlockState blockState, World world, BlockPos blockPos, Block block, BlockPos blockPos2, boolean bl) {
+		boolean bl2 = world.isReceivingRedstonePower(blockPos);
+		if (bl2 != (Boolean)blockState.get(field_20648)) {
+			if (bl2) {
+				this.ring(world, blockPos, Direction.NORTH);
+			}
+
+			world.setBlockState(blockPos, blockState.with(field_20648, Boolean.valueOf(bl2)), 3);
+		}
 	}
 
 	@Override
@@ -54,32 +70,27 @@ public class BellBlock extends BlockWithEntity {
 		if (entity instanceof ProjectileEntity) {
 			Entity entity2 = ((ProjectileEntity)entity).getOwner();
 			PlayerEntity playerEntity = entity2 instanceof PlayerEntity ? (PlayerEntity)entity2 : null;
-			this.ring(world, blockState, world.getBlockEntity(blockHitResult.getBlockPos()), blockHitResult, playerEntity, true);
+			this.ring(world, blockState, blockHitResult, playerEntity, true);
 		}
 	}
 
 	@Override
 	public boolean activate(BlockState blockState, World world, BlockPos blockPos, PlayerEntity playerEntity, Hand hand, BlockHitResult blockHitResult) {
-		return this.ring(world, blockState, world.getBlockEntity(blockPos), blockHitResult, playerEntity, true);
+		return this.ring(world, blockState, blockHitResult, playerEntity, true);
 	}
 
-	public boolean ring(
-		World world, BlockState blockState, @Nullable BlockEntity blockEntity, BlockHitResult blockHitResult, @Nullable PlayerEntity playerEntity, boolean bl
-	) {
+	public boolean ring(World world, BlockState blockState, BlockHitResult blockHitResult, @Nullable PlayerEntity playerEntity, boolean bl) {
 		Direction direction = blockHitResult.getSide();
 		BlockPos blockPos = blockHitResult.getBlockPos();
 		boolean bl2 = !bl || this.isPointOnBell(blockState, direction, blockHitResult.getPos().y - (double)blockPos.getY());
-		if (!world.isClient && blockEntity instanceof BellBlockEntity && bl2) {
-			((BellBlockEntity)blockEntity).activate(direction);
-			this.ring(world, blockPos);
-			if (playerEntity != null) {
+		if (bl2) {
+			boolean bl3 = this.ring(world, blockPos, direction);
+			if (bl3 && playerEntity != null) {
 				playerEntity.incrementStat(Stats.BELL_RING);
 			}
-
-			return true;
-		} else {
-			return true;
 		}
+
+		return true;
 	}
 
 	private boolean isPointOnBell(BlockState blockState, Direction direction, double d) {
@@ -102,8 +113,15 @@ public class BellBlock extends BlockWithEntity {
 		}
 	}
 
-	private void ring(World world, BlockPos blockPos) {
-		world.playSound(null, blockPos, SoundEvents.BLOCK_BELL_USE, SoundCategory.BLOCKS, 2.0F, 1.0F);
+	private boolean ring(World world, BlockPos blockPos, Direction direction) {
+		BlockEntity blockEntity = world.getBlockEntity(blockPos);
+		if (!world.isClient && blockEntity instanceof BellBlockEntity) {
+			((BellBlockEntity)blockEntity).activate(direction);
+			world.playSound(null, blockPos, SoundEvents.BLOCK_BELL_USE, SoundCategory.BLOCKS, 2.0F, 1.0F);
+			return true;
+		} else {
+			return false;
+		}
 	}
 
 	private VoxelShape getShape(BlockState blockState) {
@@ -223,7 +241,7 @@ public class BellBlock extends BlockWithEntity {
 
 	@Override
 	protected void appendProperties(StateFactory.Builder<Block, BlockState> builder) {
-		builder.add(FACING, ATTACHMENT);
+		builder.add(FACING, ATTACHMENT, field_20648);
 	}
 
 	@Nullable

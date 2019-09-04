@@ -8,6 +8,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Function;
 import net.minecraft.block.Blocks;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.biome.Biome;
 import net.minecraft.world.chunk.Chunk;
 import net.minecraft.world.gen.ProbabilityConfig;
 
@@ -62,6 +63,7 @@ public class UnderwaterRavineCarver extends RavineCarver {
 	@Override
 	protected boolean carveAtPoint(
 		Chunk chunk,
+		Function<BlockPos, Biome> function,
 		BitSet bitSet,
 		Random random,
 		BlockPos.Mutable mutable,

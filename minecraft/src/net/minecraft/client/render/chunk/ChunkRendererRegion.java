@@ -3,13 +3,13 @@ package net.minecraft.client.render.chunk;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.class_4543;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.fluid.FluidState;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.ExtendedBlockView;
 import net.minecraft.world.World;
-import net.minecraft.world.biome.Biome;
 import net.minecraft.world.chunk.WorldChunk;
 import net.minecraft.world.chunk.light.LightingProvider;
 
@@ -110,10 +110,8 @@ public class ChunkRendererRegion implements ExtendedBlockView {
 	}
 
 	@Override
-	public Biome getBiome(BlockPos blockPos) {
-		int i = (blockPos.getX() >> 4) - this.chunkXOffset;
-		int j = (blockPos.getZ() >> 4) - this.chunkZOffset;
-		return this.chunks[i][j].getBiome(blockPos);
+	public class_4543 method_22385() {
+		return this.world.method_22385();
 	}
 
 	@Nullable

@@ -15,6 +15,7 @@ import java.util.function.Function;
 import java.util.function.Supplier;
 import javax.annotation.Nullable;
 import net.minecraft.client.network.packet.EntityStatusS2CPacket;
+import net.minecraft.client.network.packet.GameStateChangeS2CPacket;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.command.CommandManager;
@@ -60,6 +61,17 @@ public class GameRules {
 	public static final GameRules.RuleKey<GameRules.IntRule> MAX_COMMAND_CHAIN_LENGTH = register("maxCommandChainLength", GameRules.IntRule.of(65536));
 	public static final GameRules.RuleKey<GameRules.BooleanRule> ANNOUNCE_ADVANCEMENTS = register("announceAdvancements", GameRules.BooleanRule.of(true));
 	public static final GameRules.RuleKey<GameRules.BooleanRule> DISABLE_RAIDS = register("disableRaids", GameRules.BooleanRule.of(false));
+	public static final GameRules.RuleKey<GameRules.BooleanRule> DO_INSOMNIA = register("doInsomnia", GameRules.BooleanRule.of(true));
+	public static final GameRules.RuleKey<GameRules.BooleanRule> DO_IMMEDIATE_RESPAWN = register(
+		"doImmediateRespawn", GameRules.BooleanRule.of(false, (minecraftServer, booleanRule) -> {
+			for (ServerPlayerEntity serverPlayerEntity : minecraftServer.getPlayerManager().getPlayerList()) {
+				serverPlayerEntity.networkHandler.sendPacket(new GameStateChangeS2CPacket(11, booleanRule.get() ? 1.0F : 0.0F));
+			}
+		})
+	);
+	public static final GameRules.RuleKey<GameRules.BooleanRule> DROWNING_DAMAGE = register("drowningDamage", GameRules.BooleanRule.of(true));
+	public static final GameRules.RuleKey<GameRules.BooleanRule> FALL_DAMAGE = register("fallDamage", GameRules.BooleanRule.of(true));
+	public static final GameRules.RuleKey<GameRules.BooleanRule> FIRE_DAMAGE = register("fireDamage", GameRules.BooleanRule.of(true));
 	private final Map<GameRules.RuleKey<?>, GameRules.Rule<?>> rules = (Map<GameRules.RuleKey<?>, GameRules.Rule<?>>)RULES.entrySet()
 		.stream()
 		.collect(ImmutableMap.toImmutableMap(Entry::getKey, entry -> ((GameRules.RuleType)entry.getValue()).newRule()));
