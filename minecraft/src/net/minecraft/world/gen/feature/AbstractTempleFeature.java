@@ -3,7 +3,7 @@ package net.minecraft.world.gen.feature;
 import com.mojang.datafixers.Dynamic;
 import java.util.Random;
 import java.util.function.Function;
-import net.minecraft.util.math.BlockPos;
+import net.minecraft.class_4543;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.gen.ChunkRandom;
@@ -33,16 +33,9 @@ public abstract class AbstractTempleFeature<C extends FeatureConfig> extends Str
 	}
 
 	@Override
-	public boolean shouldStartAt(ChunkGenerator<?> chunkGenerator, Random random, int i, int j) {
+	public boolean shouldStartAt(class_4543 arg, ChunkGenerator<?> chunkGenerator, Random random, int i, int j, Biome biome) {
 		ChunkPos chunkPos = this.getStart(chunkGenerator, random, i, j, 0, 0);
-		if (i == chunkPos.x && j == chunkPos.z) {
-			Biome biome = chunkGenerator.getBiomeSource().getBiome(new BlockPos(i * 16 + 9, 0, j * 16 + 9));
-			if (chunkGenerator.hasStructure(biome, this)) {
-				return true;
-			}
-		}
-
-		return false;
+		return i == chunkPos.x && j == chunkPos.z && chunkGenerator.hasStructure(biome, this);
 	}
 
 	protected int getSpacing(ChunkGenerator<?> chunkGenerator) {

@@ -13,6 +13,14 @@ public class WetSpongeBlock extends Block {
 		super(settings);
 	}
 
+	@Override
+	public void onBlockAdded(BlockState blockState, World world, BlockPos blockPos, BlockState blockState2, boolean bl) {
+		if (world.getDimension().doesWaterVaporize()) {
+			world.setBlockState(blockPos, Blocks.SPONGE.getDefaultState(), 2);
+			world.playLevelEvent(2009, blockPos, 0);
+		}
+	}
+
 	@Environment(EnvType.CLIENT)
 	@Override
 	public void randomDisplayTick(BlockState blockState, World world, BlockPos blockPos, Random random) {

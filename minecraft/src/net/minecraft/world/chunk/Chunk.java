@@ -9,6 +9,7 @@ import java.util.Set;
 import java.util.Map.Entry;
 import java.util.stream.Stream;
 import javax.annotation.Nullable;
+import net.minecraft.class_4548;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BlockEntity;
@@ -23,7 +24,6 @@ import net.minecraft.world.BlockView;
 import net.minecraft.world.BlockViewWithStructures;
 import net.minecraft.world.Heightmap;
 import net.minecraft.world.TickScheduler;
-import net.minecraft.world.biome.Biome;
 import net.minecraft.world.gen.GenerationStep;
 import org.apache.logging.log4j.LogManager;
 
@@ -74,12 +74,6 @@ public interface Chunk extends BlockView, BlockViewWithStructures {
 
 	void setStructureStarts(Map<String, StructureStart> map);
 
-	default Biome getBiome(BlockPos blockPos) {
-		int i = blockPos.getX() & 15;
-		int j = blockPos.getZ() & 15;
-		return this.getBiomeArray()[j << 4 | i];
-	}
-
 	default boolean method_12228(int i, int j) {
 		if (i < 0) {
 			i = 0;
@@ -98,7 +92,8 @@ public interface Chunk extends BlockView, BlockViewWithStructures {
 		return true;
 	}
 
-	Biome[] getBiomeArray();
+	@Nullable
+	class_4548 getBiomeArray();
 
 	void setShouldSave(boolean bl);
 
@@ -127,10 +122,6 @@ public interface Chunk extends BlockView, BlockViewWithStructures {
 
 	@Nullable
 	CompoundTag method_20598(BlockPos blockPos);
-
-	default void setBiomeArray(Biome[] biomes) {
-		throw (UnsupportedOperationException)SystemUtil.throwOrPause(new UnsupportedOperationException());
-	}
 
 	Stream<BlockPos> getLightSourcesStream();
 

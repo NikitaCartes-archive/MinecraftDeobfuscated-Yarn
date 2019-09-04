@@ -10,6 +10,7 @@ import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
+import net.minecraft.world.biome.Biome;
 import net.minecraft.world.chunk.Chunk;
 import net.minecraft.world.gen.ProbabilityConfig;
 
@@ -65,6 +66,7 @@ public class UnderwaterCaveCarver extends CaveCarver {
 	@Override
 	protected boolean carveAtPoint(
 		Chunk chunk,
+		Function<BlockPos, Biome> function,
 		BitSet bitSet,
 		Random random,
 		BlockPos.Mutable mutable,

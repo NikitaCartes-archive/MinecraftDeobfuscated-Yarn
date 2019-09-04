@@ -107,6 +107,11 @@ public class CompoundTag implements Tag {
 		return this.containsKey(string + "Most", 99) && this.containsKey(string + "Least", 99);
 	}
 
+	public void method_22421(String string) {
+		this.remove(string + "Most");
+		this.remove(string + "Least");
+	}
+
 	public void putFloat(String string, float f) {
 		this.tags.put(string, new FloatTag(f));
 	}

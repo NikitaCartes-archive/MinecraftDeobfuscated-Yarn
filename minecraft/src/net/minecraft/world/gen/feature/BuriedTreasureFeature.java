@@ -3,6 +3,7 @@ package net.minecraft.world.gen.feature;
 import com.mojang.datafixers.Dynamic;
 import java.util.Random;
 import java.util.function.Function;
+import net.minecraft.class_4543;
 import net.minecraft.structure.BuriedTreasureGenerator;
 import net.minecraft.structure.StructureManager;
 import net.minecraft.structure.StructureStart;
@@ -18,8 +19,7 @@ public class BuriedTreasureFeature extends StructureFeature<BuriedTreasureFeatur
 	}
 
 	@Override
-	public boolean shouldStartAt(ChunkGenerator<?> chunkGenerator, Random random, int i, int j) {
-		Biome biome = chunkGenerator.getBiomeSource().getBiome(new BlockPos((i << 4) + 9, 0, (j << 4) + 9));
+	public boolean shouldStartAt(class_4543 arg, ChunkGenerator<?> chunkGenerator, Random random, int i, int j, Biome biome) {
 		if (chunkGenerator.hasStructure(biome, Feature.BURIED_TREASURE)) {
 			((ChunkRandom)random).setStructureSeed(chunkGenerator.getSeed(), i, j, 10387320);
 			BuriedTreasureFeatureConfig buriedTreasureFeatureConfig = chunkGenerator.getStructureConfig(biome, Feature.BURIED_TREASURE);
@@ -45,8 +45,8 @@ public class BuriedTreasureFeature extends StructureFeature<BuriedTreasureFeatur
 	}
 
 	public static class Start extends StructureStart {
-		public Start(StructureFeature<?> structureFeature, int i, int j, Biome biome, MutableIntBoundingBox mutableIntBoundingBox, int k, long l) {
-			super(structureFeature, i, j, biome, mutableIntBoundingBox, k, l);
+		public Start(StructureFeature<?> structureFeature, int i, int j, MutableIntBoundingBox mutableIntBoundingBox, int k, long l) {
+			super(structureFeature, i, j, mutableIntBoundingBox, k, l);
 		}
 
 		@Override

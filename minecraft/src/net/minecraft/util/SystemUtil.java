@@ -88,6 +88,15 @@ public class SystemUtil {
 		} else {
 			executorService = new ForkJoinPool(i, forkJoinPool -> {
 				ForkJoinWorkerThread forkJoinWorkerThread = new ForkJoinWorkerThread(forkJoinPool) {
+					protected void onTermination(Throwable throwable) {
+						if (throwable != null) {
+							SystemUtil.LOGGER.warn("{} died", this.getName(), throwable);
+						} else {
+							SystemUtil.LOGGER.debug("{} shutdown", this.getName());
+						}
+
+						super.onTermination(throwable);
+					}
 				};
 				forkJoinWorkerThread.setName("Server-Worker-" + field_18034.getAndIncrement());
 				return forkJoinWorkerThread;

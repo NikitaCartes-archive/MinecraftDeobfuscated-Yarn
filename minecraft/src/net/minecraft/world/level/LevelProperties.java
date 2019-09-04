@@ -2,6 +2,7 @@ package net.minecraft.world.level;
 
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
+import com.google.common.hash.Hashing;
 import com.mojang.datafixers.DataFixer;
 import com.mojang.datafixers.Dynamic;
 import com.mojang.datafixers.types.JsonOps;
@@ -385,6 +386,10 @@ public class LevelProperties {
 
 	public long getSeed() {
 		return this.randomSeed;
+	}
+
+	public static long method_22418(long l) {
+		return Hashing.sha256().hashLong(l).asLong();
 	}
 
 	public int getSpawnX() {

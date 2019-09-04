@@ -14,6 +14,7 @@ import net.minecraft.stat.ServerStatHandler;
 import net.minecraft.stat.Stats;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
+import net.minecraft.world.GameRules;
 import net.minecraft.world.LocalDifficulty;
 import net.minecraft.world.SpawnHelper;
 
@@ -22,6 +23,8 @@ public class PhantomSpawner {
 
 	public int spawn(ServerWorld serverWorld, boolean bl, boolean bl2) {
 		if (!bl) {
+			return 0;
+		} else if (!serverWorld.getGameRules().getBoolean(GameRules.DO_INSOMNIA)) {
 			return 0;
 		} else {
 			Random random = serverWorld.random;

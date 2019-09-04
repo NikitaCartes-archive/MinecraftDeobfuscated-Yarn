@@ -9,14 +9,11 @@ import java.util.Set;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-import javax.annotation.Nullable;
 import net.minecraft.block.BedBlock;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.enums.BedPart;
-import net.minecraft.sound.SoundEvent;
-import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.SystemUtil;
 import net.minecraft.util.registry.Registry;
@@ -51,40 +48,29 @@ public class PointOfInterestType {
 		.filter(blockState -> blockState.get(BedBlock.PART) == BedPart.HEAD)
 		.collect(ImmutableSet.toImmutableSet());
 	private static final Map<BlockState, PointOfInterestType> BLOCK_STATE_TO_POINT_OF_INTEREST_TYPE = Maps.<BlockState, PointOfInterestType>newHashMap();
-	public static final PointOfInterestType UNEMPLOYED = register("unemployed", ImmutableSet.of(), 1, null, IS_USED_BY_PROFESSION, 1);
-	public static final PointOfInterestType ARMORER = register("armorer", getAllStatesOf(Blocks.BLAST_FURNACE), 1, SoundEvents.ENTITY_VILLAGER_WORK_ARMORER, 1);
-	public static final PointOfInterestType BUTCHER = register("butcher", getAllStatesOf(Blocks.SMOKER), 1, SoundEvents.ENTITY_VILLAGER_WORK_BUTCHER, 1);
-	public static final PointOfInterestType CARTOGRAPHER = register(
-		"cartographer", getAllStatesOf(Blocks.CARTOGRAPHY_TABLE), 1, SoundEvents.ENTITY_VILLAGER_WORK_CARTOGRAPHER, 1
-	);
-	public static final PointOfInterestType CLERIC = register("cleric", getAllStatesOf(Blocks.BREWING_STAND), 1, SoundEvents.ENTITY_VILLAGER_WORK_CLERIC, 1);
-	public static final PointOfInterestType FARMER = register("farmer", getAllStatesOf(Blocks.COMPOSTER), 1, SoundEvents.ENTITY_VILLAGER_WORK_FARMER, 1);
-	public static final PointOfInterestType FISHERMAN = register("fisherman", getAllStatesOf(Blocks.BARREL), 1, SoundEvents.ENTITY_VILLAGER_WORK_FISHERMAN, 1);
-	public static final PointOfInterestType FLETCHER = register(
-		"fletcher", getAllStatesOf(Blocks.FLETCHING_TABLE), 1, SoundEvents.ENTITY_VILLAGER_WORK_FLETCHER, 1
-	);
-	public static final PointOfInterestType LEATHERWORKER = register(
-		"leatherworker", getAllStatesOf(Blocks.CAULDRON), 1, SoundEvents.ENTITY_VILLAGER_WORK_LEATHERWORKER, 1
-	);
-	public static final PointOfInterestType LIBRARIAN = register("librarian", getAllStatesOf(Blocks.LECTERN), 1, SoundEvents.ENTITY_VILLAGER_WORK_LIBRARIAN, 1);
-	public static final PointOfInterestType MASON = register("mason", getAllStatesOf(Blocks.STONECUTTER), 1, SoundEvents.ENTITY_VILLAGER_WORK_MASON, 1);
-	public static final PointOfInterestType NITWIT = register("nitwit", ImmutableSet.of(), 1, null, 1);
-	public static final PointOfInterestType SHEPHERD = register("shepherd", getAllStatesOf(Blocks.LOOM), 1, SoundEvents.ENTITY_VILLAGER_WORK_SHEPHERD, 1);
-	public static final PointOfInterestType TOOLSMITH = register(
-		"toolsmith", getAllStatesOf(Blocks.SMITHING_TABLE), 1, SoundEvents.ENTITY_VILLAGER_WORK_TOOLSMITH, 1
-	);
-	public static final PointOfInterestType WEAPONSMITH = register(
-		"weaponsmith", getAllStatesOf(Blocks.GRINDSTONE), 1, SoundEvents.ENTITY_VILLAGER_WORK_WEAPONSMITH, 1
-	);
-	public static final PointOfInterestType HOME = register("home", BED_STATES, 1, null, 1);
-	public static final PointOfInterestType MEETING = register("meeting", getAllStatesOf(Blocks.BELL), 32, null, 6);
-	public static final PointOfInterestType BEE_HIVE = register("bee_hive", getAllStatesOf(Blocks.BEE_HIVE), 0, null, 1);
-	public static final PointOfInterestType BEE_NEST = register("bee_nest", getAllStatesOf(Blocks.BEE_NEST), 0, null, 1);
+	public static final PointOfInterestType UNEMPLOYED = register("unemployed", ImmutableSet.of(), 1, IS_USED_BY_PROFESSION, 1);
+	public static final PointOfInterestType ARMORER = register("armorer", getAllStatesOf(Blocks.BLAST_FURNACE), 1, 1);
+	public static final PointOfInterestType BUTCHER = register("butcher", getAllStatesOf(Blocks.SMOKER), 1, 1);
+	public static final PointOfInterestType CARTOGRAPHER = register("cartographer", getAllStatesOf(Blocks.CARTOGRAPHY_TABLE), 1, 1);
+	public static final PointOfInterestType CLERIC = register("cleric", getAllStatesOf(Blocks.BREWING_STAND), 1, 1);
+	public static final PointOfInterestType FARMER = register("farmer", getAllStatesOf(Blocks.COMPOSTER), 1, 1);
+	public static final PointOfInterestType FISHERMAN = register("fisherman", getAllStatesOf(Blocks.BARREL), 1, 1);
+	public static final PointOfInterestType FLETCHER = register("fletcher", getAllStatesOf(Blocks.FLETCHING_TABLE), 1, 1);
+	public static final PointOfInterestType LEATHERWORKER = register("leatherworker", getAllStatesOf(Blocks.CAULDRON), 1, 1);
+	public static final PointOfInterestType LIBRARIAN = register("librarian", getAllStatesOf(Blocks.LECTERN), 1, 1);
+	public static final PointOfInterestType MASON = register("mason", getAllStatesOf(Blocks.STONECUTTER), 1, 1);
+	public static final PointOfInterestType NITWIT = register("nitwit", ImmutableSet.of(), 1, 1);
+	public static final PointOfInterestType SHEPHERD = register("shepherd", getAllStatesOf(Blocks.LOOM), 1, 1);
+	public static final PointOfInterestType TOOLSMITH = register("toolsmith", getAllStatesOf(Blocks.SMITHING_TABLE), 1, 1);
+	public static final PointOfInterestType WEAPONSMITH = register("weaponsmith", getAllStatesOf(Blocks.GRINDSTONE), 1, 1);
+	public static final PointOfInterestType HOME = register("home", BED_STATES, 1, 1);
+	public static final PointOfInterestType MEETING = register("meeting", getAllStatesOf(Blocks.BELL), 32, 6);
+	public static final PointOfInterestType BEE_HIVE = register("bee_hive", getAllStatesOf(Blocks.BEE_HIVE), 0, 1);
+	public static final PointOfInterestType BEE_NEST = register("bee_nest", getAllStatesOf(Blocks.BEE_NEST), 0, 1);
+	public static final PointOfInterestType NETHER_PORTAL = register("nether_portal", getAllStatesOf(Blocks.NETHER_PORTAL), 0, 1);
 	private final String id;
 	private final Set<BlockState> workStationStates;
 	private final int ticketCount;
-	@Nullable
-	private final SoundEvent sound;
 	private final Predicate<PointOfInterestType> completionCondition;
 	private final int field_20298;
 
@@ -92,20 +78,18 @@ public class PointOfInterestType {
 		return ImmutableSet.copyOf(block.getStateFactory().getStates());
 	}
 
-	private PointOfInterestType(String string, Set<BlockState> set, int i, @Nullable SoundEvent soundEvent, Predicate<PointOfInterestType> predicate, int j) {
+	private PointOfInterestType(String string, Set<BlockState> set, int i, Predicate<PointOfInterestType> predicate, int j) {
 		this.id = string;
 		this.workStationStates = ImmutableSet.copyOf(set);
 		this.ticketCount = i;
-		this.sound = soundEvent;
 		this.completionCondition = predicate;
 		this.field_20298 = j;
 	}
 
-	private PointOfInterestType(String string, Set<BlockState> set, int i, @Nullable SoundEvent soundEvent, int j) {
+	private PointOfInterestType(String string, Set<BlockState> set, int i, int j) {
 		this.id = string;
 		this.workStationStates = ImmutableSet.copyOf(set);
 		this.ticketCount = i;
-		this.sound = soundEvent;
 		this.completionCondition = pointOfInterestType -> pointOfInterestType == this;
 		this.field_20298 = j;
 	}
@@ -126,19 +110,12 @@ public class PointOfInterestType {
 		return this.id;
 	}
 
-	@Nullable
-	public SoundEvent getSound() {
-		return this.sound;
+	private static PointOfInterestType register(String string, Set<BlockState> set, int i, int j) {
+		return setup(Registry.POINT_OF_INTEREST_TYPE.add(new Identifier(string), new PointOfInterestType(string, set, i, j)));
 	}
 
-	private static PointOfInterestType register(String string, Set<BlockState> set, int i, @Nullable SoundEvent soundEvent, int j) {
-		return setup(Registry.POINT_OF_INTEREST_TYPE.add(new Identifier(string), new PointOfInterestType(string, set, i, soundEvent, j)));
-	}
-
-	private static PointOfInterestType register(
-		String string, Set<BlockState> set, int i, @Nullable SoundEvent soundEvent, Predicate<PointOfInterestType> predicate, int j
-	) {
-		return setup(Registry.POINT_OF_INTEREST_TYPE.add(new Identifier(string), new PointOfInterestType(string, set, i, soundEvent, predicate, j)));
+	private static PointOfInterestType register(String string, Set<BlockState> set, int i, Predicate<PointOfInterestType> predicate, int j) {
+		return setup(Registry.POINT_OF_INTEREST_TYPE.add(new Identifier(string), new PointOfInterestType(string, set, i, predicate, j)));
 	}
 
 	private static PointOfInterestType setup(PointOfInterestType pointOfInterestType) {

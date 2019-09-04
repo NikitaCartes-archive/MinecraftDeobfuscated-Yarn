@@ -1,10 +1,10 @@
 package net.minecraft.world.biome;
 
-import java.util.Random;
 import net.minecraft.entity.EntityCategory;
 import net.minecraft.entity.EntityType;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.noise.OctaveSimplexNoiseSampler;
+import net.minecraft.world.gen.ChunkRandom;
 import net.minecraft.world.gen.feature.Feature;
 import net.minecraft.world.gen.feature.FeatureConfig;
 import net.minecraft.world.gen.feature.MineshaftFeature;
@@ -15,7 +15,7 @@ import net.minecraft.world.gen.feature.ShipwreckFeatureConfig;
 import net.minecraft.world.gen.surfacebuilder.SurfaceBuilder;
 
 public class OceanDeepFrozenBiome extends Biome {
-	protected static final OctaveSimplexNoiseSampler field_9484 = new OctaveSimplexNoiseSampler(new Random(3456L), 3);
+	protected static final OctaveSimplexNoiseSampler field_9484 = new OctaveSimplexNoiseSampler(new ChunkRandom(3456L), 2, 0);
 
 	public OceanDeepFrozenBiome() {
 		super(
@@ -69,18 +69,18 @@ public class OceanDeepFrozenBiome extends Biome {
 	@Override
 	protected float computeTemperature(BlockPos blockPos) {
 		float f = this.getTemperature();
-		double d = field_9484.sample((double)blockPos.getX() * 0.05, (double)blockPos.getZ() * 0.05);
-		double e = FOLIAGE_NOISE.sample((double)blockPos.getX() * 0.2, (double)blockPos.getZ() * 0.2);
+		double d = field_9484.sample((double)blockPos.getX() * 0.05, (double)blockPos.getZ() * 0.05, false) * 7.0;
+		double e = FOLIAGE_NOISE.sample((double)blockPos.getX() * 0.2, (double)blockPos.getZ() * 0.2, false);
 		double g = d + e;
 		if (g < 0.3) {
-			double h = FOLIAGE_NOISE.sample((double)blockPos.getX() * 0.09, (double)blockPos.getZ() * 0.09);
+			double h = FOLIAGE_NOISE.sample((double)blockPos.getX() * 0.09, (double)blockPos.getZ() * 0.09, false);
 			if (h < 0.8) {
 				f = 0.2F;
 			}
 		}
 
 		if (blockPos.getY() > 64) {
-			float i = (float)(TEMPERATURE_NOISE.sample((double)((float)blockPos.getX() / 8.0F), (double)((float)blockPos.getZ() / 8.0F)) * 4.0);
+			float i = (float)(TEMPERATURE_NOISE.sample((double)((float)blockPos.getX() / 8.0F), (double)((float)blockPos.getZ() / 8.0F), false) * 4.0);
 			return f - (i + (float)blockPos.getY() - 64.0F) * 0.05F / 30.0F;
 		} else {
 			return f;

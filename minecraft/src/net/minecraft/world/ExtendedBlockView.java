@@ -2,15 +2,20 @@ package net.minecraft.world;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.class_4543;
 import net.minecraft.block.BlockState;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.chunk.light.LightingProvider;
 
 public interface ExtendedBlockView extends BlockView {
-	Biome getBiome(BlockPos blockPos);
+	class_4543 method_22385();
 
 	LightingProvider method_22336();
+
+	default Biome getBiome(BlockPos blockPos) {
+		return this.method_22385().method_22393(blockPos);
+	}
 
 	default int getLightLevel(LightType lightType, BlockPos blockPos) {
 		return this.method_22336().get(lightType).getLightLevel(blockPos);

@@ -64,8 +64,8 @@ public class SwampHutFeature extends AbstractTempleFeature<DefaultFeatureConfig>
 	}
 
 	public static class Start extends StructureStart {
-		public Start(StructureFeature<?> structureFeature, int i, int j, Biome biome, MutableIntBoundingBox mutableIntBoundingBox, int k, long l) {
-			super(structureFeature, i, j, biome, mutableIntBoundingBox, k, l);
+		public Start(StructureFeature<?> structureFeature, int i, int j, MutableIntBoundingBox mutableIntBoundingBox, int k, long l) {
+			super(structureFeature, i, j, mutableIntBoundingBox, k, l);
 		}
 
 		@Override

@@ -1,6 +1,5 @@
 package net.minecraft.world.biome.layer;
 
-import com.google.common.collect.ImmutableList;
 import java.util.function.LongFunction;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.world.biome.Biome;
@@ -32,7 +31,7 @@ public class BiomeLayers {
 		return layerFactory2;
 	}
 
-	public static <T extends LayerSampler, C extends LayerSampleContext<T>> ImmutableList<LayerFactory<T>> build(
+	public static <T extends LayerSampler, C extends LayerSampleContext<T>> LayerFactory<T> build(
 		LevelGeneratorType levelGeneratorType, OverworldChunkGeneratorConfig overworldChunkGeneratorConfig, LongFunction<C> longFunction
 	) {
 		LayerFactory<T> layerFactory = ContinentLayer.INSTANCE.create((LayerSampleContext<T>)longFunction.apply(1L));
@@ -86,20 +85,13 @@ public class BiomeLayers {
 
 		layerFactory4 = SmoothenShorelineLayer.INSTANCE.create((LayerSampleContext)longFunction.apply(1000L), layerFactory4);
 		layerFactory4 = AddRiversLayer.INSTANCE.create((LayerSampleContext)longFunction.apply(100L), layerFactory4, layerFactory3);
-		layerFactory4 = ApplyOceanTemperatureLayer.INSTANCE.create((LayerSampleContext<T>)longFunction.apply(100L), layerFactory4, layerFactory2);
-		LayerFactory<T> layerFactory7 = CellScaleLayer.INSTANCE.create((LayerSampleContext<T>)longFunction.apply(10L), layerFactory4);
-		return ImmutableList.of(layerFactory4, layerFactory7, layerFactory4);
+		return ApplyOceanTemperatureLayer.INSTANCE.create((LayerSampleContext<T>)longFunction.apply(100L), layerFactory4, layerFactory2);
 	}
 
-	public static BiomeLayerSampler[] build(long l, LevelGeneratorType levelGeneratorType, OverworldChunkGeneratorConfig overworldChunkGeneratorConfig) {
+	public static BiomeLayerSampler build(long l, LevelGeneratorType levelGeneratorType, OverworldChunkGeneratorConfig overworldChunkGeneratorConfig) {
 		int i = 25;
-		ImmutableList<LayerFactory<CachingLayerSampler>> immutableList = build(
-			levelGeneratorType, overworldChunkGeneratorConfig, m -> new CachingLayerContext(25, l, m)
-		);
-		BiomeLayerSampler biomeLayerSampler = new BiomeLayerSampler((LayerFactory<CachingLayerSampler>)immutableList.get(0));
-		BiomeLayerSampler biomeLayerSampler2 = new BiomeLayerSampler((LayerFactory<CachingLayerSampler>)immutableList.get(1));
-		BiomeLayerSampler biomeLayerSampler3 = new BiomeLayerSampler((LayerFactory<CachingLayerSampler>)immutableList.get(2));
-		return new BiomeLayerSampler[]{biomeLayerSampler, biomeLayerSampler2, biomeLayerSampler3};
+		LayerFactory<CachingLayerSampler> layerFactory = build(levelGeneratorType, overworldChunkGeneratorConfig, m -> new CachingLayerContext(25, l, m));
+		return new BiomeLayerSampler(layerFactory);
 	}
 
 	public static boolean areSimilar(int i, int j) {

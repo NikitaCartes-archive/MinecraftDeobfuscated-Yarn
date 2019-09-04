@@ -12,14 +12,13 @@ import net.minecraft.util.math.MutableIntBoundingBox;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.world.IWorld;
 import net.minecraft.world.biome.Biome;
-import net.minecraft.world.biome.Biomes;
 import net.minecraft.world.gen.ChunkRandom;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
 import net.minecraft.world.gen.feature.Feature;
 import net.minecraft.world.gen.feature.StructureFeature;
 
 public abstract class StructureStart {
-	public static final StructureStart DEFAULT = new StructureStart(Feature.MINESHAFT, 0, 0, Biomes.PLAINS, MutableIntBoundingBox.empty(), 0, 0L) {
+	public static final StructureStart DEFAULT = new StructureStart(Feature.MINESHAFT, 0, 0, MutableIntBoundingBox.empty(), 0, 0L) {
 		@Override
 		public void initialize(ChunkGenerator<?> chunkGenerator, StructureManager structureManager, int i, int j, Biome biome) {
 		}
@@ -29,16 +28,14 @@ public abstract class StructureStart {
 	protected MutableIntBoundingBox boundingBox;
 	private final int chunkX;
 	private final int chunkZ;
-	private final Biome biome;
 	private int references;
 	protected final ChunkRandom random;
 
-	public StructureStart(StructureFeature<?> structureFeature, int i, int j, Biome biome, MutableIntBoundingBox mutableIntBoundingBox, int k, long l) {
+	public StructureStart(StructureFeature<?> structureFeature, int i, int j, MutableIntBoundingBox mutableIntBoundingBox, int k, long l) {
 		this.feature = structureFeature;
 		this.chunkX = i;
 		this.chunkZ = j;
 		this.references = k;
-		this.biome = biome;
 		this.random = new ChunkRandom();
 		this.random.setStructureSeed(l, i, j);
 		this.boundingBox = mutableIntBoundingBox;
@@ -82,7 +79,6 @@ public abstract class StructureStart {
 		CompoundTag compoundTag = new CompoundTag();
 		if (this.hasChildren()) {
 			compoundTag.putString("id", Registry.STRUCTURE_FEATURE.getId(this.getFeature()).toString());
-			compoundTag.putString("biome", Registry.BIOME.getId(this.biome).toString());
 			compoundTag.putInt("ChunkX", i);
 			compoundTag.putInt("ChunkZ", j);
 			compoundTag.putInt("references", this.references);
