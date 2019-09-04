@@ -55,17 +55,22 @@ extends AbstractSittingPhase {
                 this.dragon.getPhaseManager().setPhase(PhaseType.SITTING_SCANNING);
             }
         } else if (this.ticks == 10) {
+            double g;
             Vec3d vec3d = new Vec3d(this.dragon.partHead.x - this.dragon.x, 0.0, this.dragon.partHead.z - this.dragon.z).normalize();
             float f = 5.0f;
             double d = this.dragon.partHead.x + vec3d.x * 5.0 / 2.0;
             double e = this.dragon.partHead.z + vec3d.z * 5.0 / 2.0;
-            double g = this.dragon.partHead.y + (double)(this.dragon.partHead.getHeight() / 2.0f);
-            BlockPos.Mutable mutable = new BlockPos.Mutable(d, g, e);
+            double h = g = this.dragon.partHead.y + (double)(this.dragon.partHead.getHeight() / 2.0f);
+            BlockPos.Mutable mutable = new BlockPos.Mutable(d, h, e);
             while (this.dragon.world.method_22347(mutable)) {
-                mutable.set(d, g -= 1.0, e);
+                if ((h -= 1.0) < 0.0) {
+                    h = g;
+                    break;
+                }
+                mutable.set(d, h, e);
             }
-            g = MathHelper.floor(g) + 1;
-            this.field_7051 = new AreaEffectCloudEntity(this.dragon.world, d, g, e);
+            h = MathHelper.floor(h) + 1;
+            this.field_7051 = new AreaEffectCloudEntity(this.dragon.world, d, h, e);
             this.field_7051.setOwner(this.dragon);
             this.field_7051.setRadius(5.0f);
             this.field_7051.setDuration(200);

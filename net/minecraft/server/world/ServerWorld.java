@@ -135,7 +135,6 @@ import net.minecraft.world.chunk.ChunkStatus;
 import net.minecraft.world.chunk.WorldChunk;
 import net.minecraft.world.dimension.DimensionType;
 import net.minecraft.world.explosion.Explosion;
-import net.minecraft.world.gen.chunk.ChunkGenerator;
 import net.minecraft.world.gen.feature.BonusChestFeature;
 import net.minecraft.world.gen.feature.Feature;
 import net.minecraft.world.gen.feature.FeatureConfig;
@@ -187,14 +186,8 @@ extends World {
     }
 
     @Override
-    public Biome getBiome(BlockPos blockPos) {
-        ServerChunkManager chunkManager = this.method_14178();
-        WorldChunk worldChunk = chunkManager.getWorldChunk(blockPos.getX() >> 4, blockPos.getZ() >> 4, false);
-        if (worldChunk != null) {
-            return worldChunk.getBiome(blockPos);
-        }
-        ChunkGenerator<?> chunkGenerator = this.method_14178().getChunkGenerator();
-        return chunkGenerator.getBiomeSource().getBiome(blockPos);
+    public Biome method_22387(int i, int j, int k) {
+        return this.method_14178().getChunkGenerator().getBiomeSource().getBiome(i, j, k);
     }
 
     public void tick(BooleanSupplier booleanSupplier) {
@@ -272,7 +265,7 @@ extends World {
                 long l = this.properties.getTimeOfDay() + 24000L;
                 this.setTimeOfDay(l - l % 24000L);
             }
-            this.players.stream().filter(LivingEntity::isSleeping).forEach(serverPlayerEntity -> serverPlayerEntity.wakeUp(false, false, true));
+            this.players.stream().filter(LivingEntity::isSleeping).forEach(serverPlayerEntity -> serverPlayerEntity.wakeUp(false, false));
             if (this.getGameRules().getBoolean(GameRules.DO_WEATHER_CYCLE)) {
                 this.resetWeather();
             }
@@ -286,8 +279,6 @@ extends World {
             this.blockTickScheduler.tick();
             this.fluidTickScheduler.tick();
         }
-        profiler.swap("portalForcer");
-        this.portalForcer.tick(this.getTime());
         profiler.swap("raid");
         this.raidManager.tick();
         if (this.wanderingTraderManager != null) {
@@ -567,8 +558,6 @@ extends World {
 
     public void init(LevelInfo levelInfo) {
         ChunkPos chunkPos;
-        Random random;
-        List<Biome> list;
         if (!this.dimension.canPlayersSleep()) {
             this.properties.setSpawnPos(BlockPos.ORIGIN.up(this.method_14178().getChunkGenerator().getSpawnHeight()));
             return;
@@ -578,7 +567,9 @@ extends World {
             return;
         }
         BiomeSource biomeSource = this.method_14178().getChunkGenerator().getBiomeSource();
-        BlockPos blockPos = biomeSource.locateBiome(0, 0, 256, list = biomeSource.getSpawnBiomes(), random = new Random(this.getSeed()));
+        List<Biome> list = biomeSource.getSpawnBiomes();
+        Random random = new Random(this.getSeed());
+        BlockPos blockPos = biomeSource.locateBiome(0, this.getSeaLevel(), 0, 256, list, random);
         ChunkPos chunkPos2 = chunkPos = blockPos == null ? new ChunkPos(0, 0) : new ChunkPos(blockPos);
         if (blockPos == null) {
             LOGGER.warn("Unable to find spawn biome");

@@ -1583,7 +1583,8 @@ CommandOutput {
         }
         if (!this.world.isClient && !blockPos.equals(this.lastPortalPosition)) {
             this.lastPortalPosition = new BlockPos(blockPos);
-            BlockPattern.Result result = ((PortalBlock)Blocks.NETHER_PORTAL).findPortal(this.world, this.lastPortalPosition);
+            PortalBlock cfr_ignored_0 = (PortalBlock)Blocks.NETHER_PORTAL;
+            BlockPattern.Result result = PortalBlock.findPortal(this.world, this.lastPortalPosition);
             double d = result.getForwards().getAxis() == Direction.Axis.X ? (double)result.getFrontTopLeft().getZ() : (double)result.getFrontTopLeft().getX();
             double e = Math.abs(MathHelper.minusDiv((result.getForwards().getAxis() == Direction.Axis.X ? this.z : this.x) - (double)(result.getForwards().rotateYClockwise().getDirection() == Direction.AxisDirection.NEGATIVE ? 1 : 0), d, d - (double)result.getWidth()));
             double f = MathHelper.minusDiv(this.y - 1.0, result.getFrontTopLeft().getY(), result.getFrontTopLeft().getY() - result.getHeight());

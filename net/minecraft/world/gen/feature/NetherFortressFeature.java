@@ -8,12 +8,12 @@ import com.mojang.datafixers.Dynamic;
 import java.util.List;
 import java.util.Random;
 import java.util.function.Function;
+import net.minecraft.class_4543;
 import net.minecraft.entity.EntityType;
 import net.minecraft.structure.NetherFortressGenerator;
 import net.minecraft.structure.StructureManager;
 import net.minecraft.structure.StructurePiece;
 import net.minecraft.structure.StructureStart;
-import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MutableIntBoundingBox;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
@@ -30,7 +30,7 @@ extends StructureFeature<DefaultFeatureConfig> {
     }
 
     @Override
-    public boolean shouldStartAt(ChunkGenerator<?> chunkGenerator, Random random, int i, int j) {
+    public boolean shouldStartAt(class_4543 arg, ChunkGenerator<?> chunkGenerator, Random random, int i, int j, Biome biome) {
         int k = i >> 4;
         int l = j >> 4;
         random.setSeed((long)(k ^ l << 4) ^ chunkGenerator.getSeed());
@@ -44,7 +44,6 @@ extends StructureFeature<DefaultFeatureConfig> {
         if (j != (l << 4) + 4 + random.nextInt(8)) {
             return false;
         }
-        Biome biome = chunkGenerator.getBiomeSource().getBiome(new BlockPos((i << 4) + 9, 0, (j << 4) + 9));
         return chunkGenerator.hasStructure(biome, Feature.NETHER_BRIDGE);
     }
 
@@ -70,8 +69,8 @@ extends StructureFeature<DefaultFeatureConfig> {
 
     public static class Start
     extends StructureStart {
-        public Start(StructureFeature<?> structureFeature, int i, int j, Biome biome, MutableIntBoundingBox mutableIntBoundingBox, int k, long l) {
-            super(structureFeature, i, j, biome, mutableIntBoundingBox, k, l);
+        public Start(StructureFeature<?> structureFeature, int i, int j, MutableIntBoundingBox mutableIntBoundingBox, int k, long l) {
+            super(structureFeature, i, j, mutableIntBoundingBox, k, l);
         }
 
         @Override

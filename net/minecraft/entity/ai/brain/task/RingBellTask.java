@@ -31,14 +31,14 @@ extends Task<LivingEntity> {
 
     @Override
     protected void run(ServerWorld serverWorld, LivingEntity livingEntity, long l) {
-        BlockState blockState;
-        Brain<?> brain = livingEntity.getBrain();
-        BlockPos blockPos = brain.getOptionalMemory(MemoryModuleType.MEETING_POINT).get().getPos();
-        if (blockPos.isWithinDistance(new BlockPos(livingEntity), 3.0) && (blockState = serverWorld.getBlockState(blockPos)).getBlock() == Blocks.BELL) {
+        block1: {
+            BlockState blockState;
+            Brain<?> brain = livingEntity.getBrain();
+            BlockPos blockPos = brain.getOptionalMemory(MemoryModuleType.MEETING_POINT).get().getPos();
+            if (!blockPos.isWithinDistance(new BlockPos(livingEntity), 3.0) || (blockState = serverWorld.getBlockState(blockPos)).getBlock() != Blocks.BELL) break block1;
             BellBlock bellBlock = (BellBlock)blockState.getBlock();
             for (Direction direction : Direction.Type.HORIZONTAL) {
-                if (!bellBlock.ring(serverWorld, blockState, serverWorld.getBlockEntity(blockPos), new BlockHitResult(new Vec3d(0.5, 0.5, 0.5), direction, blockPos, false), null, false)) continue;
-                break;
+                if (bellBlock.ring(serverWorld, blockState, new BlockHitResult(new Vec3d(0.5, 0.5, 0.5), direction, blockPos, false), null, false)) break;
             }
         }
     }

@@ -11,11 +11,8 @@ import net.minecraft.structure.StructurePiece;
 import net.minecraft.structure.StructurePieceType;
 import net.minecraft.structure.StructureStart;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MutableIntBoundingBox;
 import net.minecraft.util.registry.Registry;
-import net.minecraft.world.biome.Biome;
-import net.minecraft.world.biome.source.BiomeSource;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
 import net.minecraft.world.gen.feature.Feature;
 import net.minecraft.world.gen.feature.StructureFeature;
@@ -49,7 +46,7 @@ public class StructureFeatures {
     }
 
     @Nullable
-    public static StructureStart readStructureStart(ChunkGenerator<?> chunkGenerator, StructureManager structureManager, BiomeSource biomeSource, CompoundTag compoundTag) {
+    public static StructureStart readStructureStart(ChunkGenerator<?> chunkGenerator, StructureManager structureManager, CompoundTag compoundTag) {
         String string = compoundTag.getString("id");
         if ("INVALID".equals(string)) {
             return StructureStart.DEFAULT;
@@ -62,11 +59,10 @@ public class StructureFeatures {
         int i = compoundTag.getInt("ChunkX");
         int j = compoundTag.getInt("ChunkZ");
         int k = compoundTag.getInt("references");
-        Biome biome = compoundTag.containsKey("biome") ? Registry.BIOME.get(new Identifier(compoundTag.getString("biome"))) : biomeSource.getBiome(new BlockPos((i << 4) + 9, 0, (j << 4) + 9));
         MutableIntBoundingBox mutableIntBoundingBox = compoundTag.containsKey("BB") ? new MutableIntBoundingBox(compoundTag.getIntArray("BB")) : MutableIntBoundingBox.empty();
         ListTag listTag = compoundTag.getList("Children", 10);
         try {
-            StructureStart structureStart = structureFeature.getStructureStartFactory().create(structureFeature, i, j, biome, mutableIntBoundingBox, k, chunkGenerator.getSeed());
+            StructureStart structureStart = structureFeature.getStructureStartFactory().create(structureFeature, i, j, mutableIntBoundingBox, k, chunkGenerator.getSeed());
             for (int l = 0; l < listTag.size(); ++l) {
                 CompoundTag compoundTag2 = listTag.getCompoundTag(l);
                 String string2 = compoundTag2.getString("id");

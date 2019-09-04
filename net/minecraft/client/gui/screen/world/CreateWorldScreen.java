@@ -145,6 +145,7 @@ extends Screen {
         this.buttonGenerateBonusItems.visible = false;
         this.buttonMoreOptions = this.addButton(new ButtonWidget(this.width / 2 - 75, 187, 150, 20, I18n.translate("selectWorld.moreWorldOptions", new Object[0]), buttonWidget -> this.toggleMoreOptions()));
         this.buttonCreateLevel = this.addButton(new ButtonWidget(this.width / 2 - 155, this.height - 28, 150, 20, I18n.translate("selectWorld.create", new Object[0]), buttonWidget -> this.createLevel()));
+        this.buttonCreateLevel.active = !this.levelName.isEmpty();
         this.addButton(new ButtonWidget(this.width / 2 + 5, this.height - 28, 150, 20, I18n.translate("gui.cancel", new Object[0]), buttonWidget -> this.minecraft.openScreen(this.parent)));
         this.setMoreOptionsOpen(this.moreOptionsOpen);
         this.setInitialFocus(this.textFieldLevelName);

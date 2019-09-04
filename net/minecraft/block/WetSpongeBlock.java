@@ -8,6 +8,7 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
+import net.minecraft.block.Blocks;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
@@ -17,6 +18,14 @@ public class WetSpongeBlock
 extends Block {
     protected WetSpongeBlock(Block.Settings settings) {
         super(settings);
+    }
+
+    @Override
+    public void onBlockAdded(BlockState blockState, World world, BlockPos blockPos, BlockState blockState2, boolean bl) {
+        if (world.getDimension().doesWaterVaporize()) {
+            world.setBlockState(blockPos, Blocks.SPONGE.getDefaultState(), 2);
+            world.playLevelEvent(2009, blockPos, 0);
+        }
     }
 
     @Override

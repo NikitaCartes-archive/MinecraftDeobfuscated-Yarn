@@ -3,6 +3,7 @@
  */
 package net.minecraft.world.loot.function;
 
+import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Sets;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonDeserializationContext;
@@ -21,6 +22,7 @@ import net.minecraft.util.JsonHelper;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.world.loot.condition.LootCondition;
 import net.minecraft.world.loot.context.LootContext;
+import net.minecraft.world.loot.context.LootContextParameter;
 import net.minecraft.world.loot.context.LootContextParameters;
 import net.minecraft.world.loot.function.ConditionalLootFunction;
 import net.minecraft.world.loot.function.LootFunction;
@@ -37,6 +39,11 @@ extends ConditionalLootFunction {
     }
 
     @Override
+    public Set<LootContextParameter<?>> getRequiredParameters() {
+        return ImmutableSet.of(LootContextParameters.BLOCK_STATE);
+    }
+
+    @Override
     protected ItemStack process(ItemStack itemStack, LootContext lootContext) {
         BlockState blockState = lootContext.get(LootContextParameters.BLOCK_STATE);
         if (blockState != null) {
@@ -48,7 +55,7 @@ extends ConditionalLootFunction {
                 compoundTag2 = new CompoundTag();
                 compoundTag.put("BlockStateTag", compoundTag2);
             }
-            this.properties.forEach(property -> compoundTag2.putString(property.getName(), CopyStateFunction.method_21893(blockState, property)));
+            this.properties.stream().filter(blockState::contains).forEach(property -> compoundTag2.putString(property.getName(), CopyStateFunction.method_21893(blockState, property)));
         }
         return itemStack;
     }

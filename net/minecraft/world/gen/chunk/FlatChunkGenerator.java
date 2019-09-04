@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.Locale;
 import java.util.Map;
 import net.minecraft.block.BlockState;
+import net.minecraft.class_4543;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.ChunkRegion;
@@ -95,7 +96,7 @@ extends ChunkGenerator<FlatChunkGeneratorConfig> {
     }
 
     @Override
-    public void buildSurface(Chunk chunk) {
+    public void buildSurface(ChunkRegion chunkRegion, Chunk chunk) {
     }
 
     @Override
@@ -105,12 +106,7 @@ extends ChunkGenerator<FlatChunkGeneratorConfig> {
     }
 
     @Override
-    protected Biome getDecorationBiome(Chunk chunk) {
-        return this.biome;
-    }
-
-    @Override
-    protected Biome getDecorationBiome(ChunkRegion chunkRegion, BlockPos blockPos) {
+    protected Biome getDecorationBiome(class_4543 arg, BlockPos blockPos) {
         return this.biome;
     }
 

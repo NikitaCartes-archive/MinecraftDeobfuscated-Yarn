@@ -6,6 +6,7 @@ package net.minecraft.world;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.block.BlockState;
+import net.minecraft.class_4543;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.LightType;
@@ -14,9 +15,13 @@ import net.minecraft.world.chunk.light.LightingProvider;
 
 public interface ExtendedBlockView
 extends BlockView {
-    public Biome getBiome(BlockPos var1);
+    public class_4543 method_22385();
 
     public LightingProvider method_22336();
+
+    default public Biome getBiome(BlockPos blockPos) {
+        return this.method_22385().method_22393(blockPos);
+    }
 
     default public int getLightLevel(LightType lightType, BlockPos blockPos) {
         return this.method_22336().get(lightType).getLightLevel(blockPos);

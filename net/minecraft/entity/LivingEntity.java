@@ -72,6 +72,7 @@ import net.minecraft.entity.vehicle.BoatEntity;
 import net.minecraft.fluid.Fluid;
 import net.minecraft.item.ArmorItem;
 import net.minecraft.item.ElytraItem;
+import net.minecraft.item.FoodComponent;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
@@ -2163,7 +2164,7 @@ extends Entity {
         if (this.isUsingItem()) {
             if (ItemStack.areItemsEqual(this.getStackInHand(this.getActiveHand()), this.activeItemStack)) {
                 this.activeItemStack.usageTick(this.world, this, this.getItemUseTimeLeft());
-                if (this.getItemUseTimeLeft() <= 25 && this.getItemUseTimeLeft() % 4 == 0) {
+                if (this.method_22382()) {
                     this.spawnConsumptionEffects(this.activeItemStack, 5);
                 }
                 if (--this.itemUseTimeLeft == 0 && !this.world.isClient && !this.activeItemStack.isUsedOnRelease()) {
@@ -2173,6 +2174,13 @@ extends Entity {
                 this.clearActiveItem();
             }
         }
+    }
+
+    private boolean method_22382() {
+        int i = this.getItemUseTimeLeft();
+        FoodComponent foodComponent = this.activeItemStack.getItem().getFoodComponent();
+        boolean bl = foodComponent != null && foodComponent.isSnack();
+        return (bl |= i <= this.activeItemStack.getMaxUseTime() - 7) && i % 4 == 0;
     }
 
     private void updateLeaningPitch() {

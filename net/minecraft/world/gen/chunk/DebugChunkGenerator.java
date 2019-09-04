@@ -8,6 +8,7 @@ import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
+import net.minecraft.class_4543;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.registry.Registry;
@@ -33,11 +34,11 @@ extends ChunkGenerator<DebugChunkGeneratorConfig> {
     }
 
     @Override
-    public void buildSurface(Chunk chunk) {
+    public void buildSurface(ChunkRegion chunkRegion, Chunk chunk) {
     }
 
     @Override
-    public void carve(Chunk chunk, GenerationStep.Carver carver) {
+    public void carve(class_4543 arg, Chunk chunk, GenerationStep.Carver carver) {
     }
 
     @Override

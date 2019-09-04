@@ -171,7 +171,7 @@ extends Block {
         builder.add(AXIS);
     }
 
-    public BlockPattern.Result findPortal(IWorld iWorld, BlockPos blockPos) {
+    public static BlockPattern.Result findPortal(IWorld iWorld, BlockPos blockPos) {
         Direction.Axis axis = Direction.Axis.Z;
         AreaHelper areaHelper = new AreaHelper(iWorld, blockPos, Direction.Axis.X);
         LoadingCache<BlockPos, CachedBlockPosition> loadingCache = BlockPattern.makeCache(iWorld, true);

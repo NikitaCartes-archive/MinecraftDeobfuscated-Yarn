@@ -60,6 +60,8 @@ import net.minecraft.world.GameRules;
 import net.minecraft.world.LightType;
 import net.minecraft.world.TickScheduler;
 import net.minecraft.world.World;
+import net.minecraft.world.biome.Biome;
+import net.minecraft.world.biome.Biomes;
 import net.minecraft.world.chunk.ChunkManager;
 import net.minecraft.world.chunk.ChunkStatus;
 import net.minecraft.world.chunk.WorldChunk;
@@ -545,6 +547,11 @@ extends World {
 
     public List<AbstractClientPlayerEntity> getPlayers() {
         return this.players;
+    }
+
+    @Override
+    public Biome method_22387(int i, int j, int k) {
+        return Biomes.PLAINS;
     }
 
     @Override

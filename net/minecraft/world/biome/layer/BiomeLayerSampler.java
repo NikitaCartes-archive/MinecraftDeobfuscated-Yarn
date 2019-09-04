@@ -21,18 +21,6 @@ public class BiomeLayerSampler {
         this.sampler = layerFactory.make();
     }
 
-    public Biome[] sample(int i, int j, int k, int l) {
-        Biome[] biomes = new Biome[k * l];
-        for (int m = 0; m < l; ++m) {
-            for (int n = 0; n < k; ++n) {
-                Biome biome;
-                int o = this.sampler.sample(i + n, j + m);
-                biomes[n + m * k] = biome = this.getBiome(o);
-            }
-        }
-        return biomes;
-    }
-
     private Biome getBiome(int i) {
         Biome biome = (Biome)Registry.BIOME.get(i);
         if (biome == null) {

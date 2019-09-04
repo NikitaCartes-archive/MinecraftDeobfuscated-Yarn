@@ -220,7 +220,7 @@ extends DrawableHelper {
                         list.add(stringBuilder.toString());
                     }
                     if (blockPos.getY() >= 0 && blockPos.getY() < 256) {
-                        list.add("Biome: " + Registry.BIOME.getId(worldChunk.getBiome(blockPos)));
+                        list.add("Biome: " + Registry.BIOME.getId(this.client.world.getBiome(blockPos)));
                         long l = 0L;
                         float h = 0.0f;
                         if (worldChunk2 != null) {

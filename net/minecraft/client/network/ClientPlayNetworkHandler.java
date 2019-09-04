@@ -354,7 +354,7 @@ implements ClientPlayPacketListener {
         NetworkThreadUtils.forceMainThread(gameJoinS2CPacket, this, this.client);
         this.client.interactionManager = new ClientPlayerInteractionManager(this.client, this);
         this.chunkLoadDistance = gameJoinS2CPacket.getChunkLoadDistance();
-        this.world = new ClientWorld(this, new LevelInfo(0L, gameJoinS2CPacket.getGameMode(), false, gameJoinS2CPacket.isHardcore(), gameJoinS2CPacket.getGeneratorType()), gameJoinS2CPacket.getDimension(), this.chunkLoadDistance, this.client.getProfiler(), this.client.worldRenderer);
+        this.world = new ClientWorld(this, new LevelInfo(gameJoinS2CPacket.method_22423(), gameJoinS2CPacket.getGameMode(), false, gameJoinS2CPacket.isHardcore(), gameJoinS2CPacket.getGeneratorType()), gameJoinS2CPacket.getDimension(), this.chunkLoadDistance, this.client.getProfiler(), this.client.worldRenderer);
         this.client.joinWorld(this.world);
         if (this.client.player == null) {
             this.client.player = this.client.interactionManager.createPlayer(this.world, new StatHandler(), new ClientRecipeBook(this.world.getRecipeManager()));
@@ -374,6 +374,7 @@ implements ClientPlayPacketListener {
         this.client.openScreen(new DownloadingTerrainScreen());
         this.client.player.setEntityId(i);
         this.client.player.setReducedDebugInfo(gameJoinS2CPacket.hasReducedDebugInfo());
+        this.client.player.method_22420(gameJoinS2CPacket.method_22424());
         this.client.interactionManager.setGameMode(gameJoinS2CPacket.getGameMode());
         this.client.options.onPlayerModelPartChange();
         this.connection.send(new CustomPayloadC2SPacket(CustomPayloadC2SPacket.BRAND, new PacketByteBuf(Unpooled.buffer()).writeString(ClientBrandRetriever.getClientModName())));
@@ -657,7 +658,7 @@ implements ClientPlayPacketListener {
         NetworkThreadUtils.forceMainThread(chunkDataS2CPacket, this, this.client);
         int i = chunkDataS2CPacket.getX();
         int j = chunkDataS2CPacket.getZ();
-        WorldChunk worldChunk = this.world.method_2935().loadChunkFromPacket(this.world, i, j, chunkDataS2CPacket.getReadBuffer(), chunkDataS2CPacket.getHeightmaps(), chunkDataS2CPacket.getVerticalStripBitmask(), chunkDataS2CPacket.isFullChunk());
+        WorldChunk worldChunk = this.world.method_2935().loadChunkFromPacket(this.world, i, j, chunkDataS2CPacket.method_22422(), chunkDataS2CPacket.getReadBuffer(), chunkDataS2CPacket.getHeightmaps(), chunkDataS2CPacket.getVerticalStripBitmask());
         if (worldChunk != null && chunkDataS2CPacket.isFullChunk()) {
             this.world.addEntitiesToChunk(worldChunk);
         }
@@ -761,7 +762,7 @@ implements ClientPlayPacketListener {
             entity.animateDamage();
         } else if (entityAnimationS2CPacket.getAnimationId() == 2) {
             PlayerEntity playerEntity = (PlayerEntity)entity;
-            playerEntity.wakeUp(false, false, false);
+            playerEntity.wakeUp(false, false);
         } else if (entityAnimationS2CPacket.getAnimationId() == 4) {
             this.client.particleManager.addEmitter(entity, ParticleTypes.CRIT);
         } else if (entityAnimationS2CPacket.getAnimationId() == 5) {
@@ -897,7 +898,7 @@ implements ClientPlayPacketListener {
         if (dimensionType != clientPlayerEntity.dimension) {
             this.field_3698 = false;
             Scoreboard scoreboard = this.world.getScoreboard();
-            this.world = new ClientWorld(this, new LevelInfo(0L, playerRespawnS2CPacket.getGameMode(), false, this.client.world.getLevelProperties().isHardcore(), playerRespawnS2CPacket.getGeneratorType()), playerRespawnS2CPacket.getDimension(), this.chunkLoadDistance, this.client.getProfiler(), this.client.worldRenderer);
+            this.world = new ClientWorld(this, new LevelInfo(playerRespawnS2CPacket.method_22425(), playerRespawnS2CPacket.getGameMode(), false, this.client.world.getLevelProperties().isHardcore(), playerRespawnS2CPacket.getGeneratorType()), playerRespawnS2CPacket.getDimension(), this.chunkLoadDistance, this.client.getProfiler(), this.client.worldRenderer);
             this.world.setScoreboard(scoreboard);
             this.client.joinWorld(this.world);
             this.client.openScreen(new DownloadingTerrainScreen());
@@ -920,6 +921,7 @@ implements ClientPlayPacketListener {
         clientPlayerEntity2.input = new KeyboardInput(this.client.options);
         this.client.interactionManager.copyAbilities(clientPlayerEntity2);
         clientPlayerEntity2.setReducedDebugInfo(clientPlayerEntity.getReducedDebugInfo());
+        clientPlayerEntity2.method_22420(clientPlayerEntity.method_22419());
         if (this.client.currentScreen instanceof DeathScreen) {
             this.client.openScreen(null);
         }
@@ -1125,6 +1127,8 @@ implements ClientPlayPacketListener {
         } else if (i == 10) {
             this.world.addParticle(ParticleTypes.ELDER_GUARDIAN, playerEntity.x, playerEntity.y, playerEntity.z, 0.0, 0.0, 0.0);
             this.world.playSound(playerEntity, playerEntity.x, playerEntity.y, playerEntity.z, SoundEvents.ENTITY_ELDER_GUARDIAN_CURSE, SoundCategory.HOSTILE, 1.0f, 1.0f);
+        } else if (i == 11) {
+            this.client.player.method_22420(f == 0.0f);
         }
     }
 
@@ -1310,7 +1314,11 @@ implements ClientPlayPacketListener {
         Entity entity;
         NetworkThreadUtils.forceMainThread(combatEventS2CPacket, this, this.client);
         if (combatEventS2CPacket.type == CombatEventS2CPacket.Type.ENTITY_DIED && (entity = this.world.getEntityById(combatEventS2CPacket.entityId)) == this.client.player) {
-            this.client.openScreen(new DeathScreen(combatEventS2CPacket.deathMessage, this.world.getLevelProperties().isHardcore()));
+            if (this.client.player.method_22419()) {
+                this.client.openScreen(new DeathScreen(combatEventS2CPacket.deathMessage, this.world.getLevelProperties().isHardcore()));
+            } else {
+                this.client.player.requestRespawn();
+            }
         }
     }
 

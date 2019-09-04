@@ -10,6 +10,7 @@ import java.util.Random;
 import java.util.Set;
 import java.util.function.Function;
 import net.minecraft.block.Blocks;
+import net.minecraft.class_4543;
 import net.minecraft.structure.StructureManager;
 import net.minecraft.structure.StructurePiece;
 import net.minecraft.structure.StructureStart;
@@ -51,12 +52,12 @@ extends StructureFeature<DefaultFeatureConfig> {
     }
 
     @Override
-    public boolean shouldStartAt(ChunkGenerator<?> chunkGenerator, Random random, int i, int j) {
+    public boolean shouldStartAt(class_4543 arg, ChunkGenerator<?> chunkGenerator, Random random, int i, int j, Biome biome) {
         ChunkPos chunkPos = this.getStart(chunkGenerator, random, i, j, 0, 0);
         if (i == chunkPos.x && j == chunkPos.z) {
-            Set<Biome> set = chunkGenerator.getBiomeSource().getBiomesInArea(i * 16 + 9, j * 16 + 9, 32);
-            for (Biome biome : set) {
-                if (chunkGenerator.hasStructure(biome, Feature.WOODLAND_MANSION)) continue;
+            Set<Biome> set = chunkGenerator.getBiomeSource().getBiomesInArea(i * 16 + 9, chunkGenerator.getSeaLevel(), j * 16 + 9, 32);
+            for (Biome biome2 : set) {
+                if (chunkGenerator.hasStructure(biome2, Feature.WOODLAND_MANSION)) continue;
                 return false;
             }
             return true;
@@ -81,8 +82,8 @@ extends StructureFeature<DefaultFeatureConfig> {
 
     public static class Start
     extends StructureStart {
-        public Start(StructureFeature<?> structureFeature, int i, int j, Biome biome, MutableIntBoundingBox mutableIntBoundingBox, int k, long l) {
-            super(structureFeature, i, j, biome, mutableIntBoundingBox, k, l);
+        public Start(StructureFeature<?> structureFeature, int i, int j, MutableIntBoundingBox mutableIntBoundingBox, int k, long l) {
+            super(structureFeature, i, j, mutableIntBoundingBox, k, l);
         }
 
         @Override

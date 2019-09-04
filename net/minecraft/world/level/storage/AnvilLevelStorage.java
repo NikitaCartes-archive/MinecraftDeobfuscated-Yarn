@@ -100,8 +100,8 @@ public class AnvilLevelStorage {
 
     private static void convertRegion(File file, File file2, BiomeSource biomeSource, int i, int j, ProgressListener progressListener) {
         String string = file2.getName();
-        try (RegionFile regionFile = new RegionFile(file2);
-             RegionFile regionFile2 = new RegionFile(new File(file, string.substring(0, string.length() - ".mcr".length()) + ".mca"));){
+        try (RegionFile regionFile = new RegionFile(file2, file);
+             RegionFile regionFile2 = new RegionFile(new File(file, string.substring(0, string.length() - ".mcr".length()) + ".mca"), file);){
             for (int k = 0; k < 32; ++k) {
                 int l;
                 for (l = 0; l < 32; ++l) {

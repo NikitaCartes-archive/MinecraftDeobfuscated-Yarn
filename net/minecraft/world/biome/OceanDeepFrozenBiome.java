@@ -3,13 +3,13 @@
  */
 package net.minecraft.world.biome;
 
-import java.util.Random;
 import net.minecraft.entity.EntityCategory;
 import net.minecraft.entity.EntityType;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.noise.OctaveSimplexNoiseSampler;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.biome.DefaultBiomeFeatures;
+import net.minecraft.world.gen.ChunkRandom;
 import net.minecraft.world.gen.feature.Feature;
 import net.minecraft.world.gen.feature.FeatureConfig;
 import net.minecraft.world.gen.feature.MineshaftFeature;
@@ -21,7 +21,7 @@ import net.minecraft.world.gen.surfacebuilder.SurfaceBuilder;
 
 public class OceanDeepFrozenBiome
 extends Biome {
-    protected static final OctaveSimplexNoiseSampler field_9484 = new OctaveSimplexNoiseSampler(new Random(3456L), 3);
+    protected static final OctaveSimplexNoiseSampler field_9484 = new OctaveSimplexNoiseSampler(new ChunkRandom(3456L), 2, 0);
 
     public OceanDeepFrozenBiome() {
         super(new Biome.Settings().configureSurfaceBuilder(SurfaceBuilder.FROZEN_OCEAN, SurfaceBuilder.GRASS_CONFIG).precipitation(Biome.Precipitation.RAIN).category(Biome.Category.OCEAN).depth(-1.8f).scale(0.1f).temperature(0.5f).downfall(0.5f).waterColor(3750089).waterFogColor(329011).parent(null));
@@ -65,13 +65,13 @@ extends Biome {
         double h;
         double e;
         float f = this.getTemperature();
-        double d = field_9484.sample((double)blockPos.getX() * 0.05, (double)blockPos.getZ() * 0.05);
-        double g = d + (e = FOLIAGE_NOISE.sample((double)blockPos.getX() * 0.2, (double)blockPos.getZ() * 0.2));
-        if (g < 0.3 && (h = FOLIAGE_NOISE.sample((double)blockPos.getX() * 0.09, (double)blockPos.getZ() * 0.09)) < 0.8) {
+        double d = field_9484.sample((double)blockPos.getX() * 0.05, (double)blockPos.getZ() * 0.05, false) * 7.0;
+        double g = d + (e = FOLIAGE_NOISE.sample((double)blockPos.getX() * 0.2, (double)blockPos.getZ() * 0.2, false));
+        if (g < 0.3 && (h = FOLIAGE_NOISE.sample((double)blockPos.getX() * 0.09, (double)blockPos.getZ() * 0.09, false)) < 0.8) {
             f = 0.2f;
         }
         if (blockPos.getY() > 64) {
-            float i = (float)(TEMPERATURE_NOISE.sample((float)blockPos.getX() / 8.0f, (float)blockPos.getZ() / 8.0f) * 4.0);
+            float i = (float)(TEMPERATURE_NOISE.sample((float)blockPos.getX() / 8.0f, (float)blockPos.getZ() / 8.0f, false) * 4.0);
             return f - (i + (float)blockPos.getY() - 64.0f) * 0.05f / 30.0f;
         }
         return f;

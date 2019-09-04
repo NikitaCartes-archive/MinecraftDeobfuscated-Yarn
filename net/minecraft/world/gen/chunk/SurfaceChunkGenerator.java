@@ -22,9 +22,10 @@ import net.minecraft.util.math.MutableIntBoundingBox;
 import net.minecraft.util.math.noise.NoiseSampler;
 import net.minecraft.util.math.noise.OctavePerlinNoiseSampler;
 import net.minecraft.util.math.noise.OctaveSimplexNoiseSampler;
+import net.minecraft.util.math.noise.PerlinNoiseSampler;
+import net.minecraft.world.ChunkRegion;
 import net.minecraft.world.Heightmap;
 import net.minecraft.world.IWorld;
-import net.minecraft.world.biome.Biome;
 import net.minecraft.world.biome.source.BiomeSource;
 import net.minecraft.world.chunk.Chunk;
 import net.minecraft.world.chunk.ChunkSection;
@@ -70,10 +71,10 @@ extends ChunkGenerator<T> {
         this.noiseSizeY = k / this.verticalNoiseResolution;
         this.noiseSizeZ = 16 / this.horizontalNoiseResolution;
         this.random = new ChunkRandom(this.seed);
-        this.field_16574 = new OctavePerlinNoiseSampler(this.random, 16);
-        this.field_16581 = new OctavePerlinNoiseSampler(this.random, 16);
-        this.field_16575 = new OctavePerlinNoiseSampler(this.random, 8);
-        this.surfaceDepthNoise = bl ? new OctaveSimplexNoiseSampler(this.random, 4) : new OctavePerlinNoiseSampler(this.random, 4);
+        this.field_16574 = new OctavePerlinNoiseSampler(this.random, 15, 0);
+        this.field_16581 = new OctavePerlinNoiseSampler(this.random, 15, 0);
+        this.field_16575 = new OctavePerlinNoiseSampler(this.random, 7, 0);
+        this.surfaceDepthNoise = bl ? new OctaveSimplexNoiseSampler(this.random, 3, 0) : new OctavePerlinNoiseSampler(this.random, 3, 0);
     }
 
     private double sampleNoise(int i, int j, int k, double d, double e, double f, double g) {
@@ -82,14 +83,21 @@ extends ChunkGenerator<T> {
         double m = 0.0;
         double n = 1.0;
         for (int o = 0; o < 16; ++o) {
+            PerlinNoiseSampler perlinNoiseSampler3;
+            PerlinNoiseSampler perlinNoiseSampler2;
             double p = OctavePerlinNoiseSampler.maintainPrecision((double)i * d * n);
             double q = OctavePerlinNoiseSampler.maintainPrecision((double)j * e * n);
             double r = OctavePerlinNoiseSampler.maintainPrecision((double)k * d * n);
             double s = e * n;
-            h += this.field_16574.getOctave(o).sample(p, q, r, s, (double)j * s) / n;
-            l += this.field_16581.getOctave(o).sample(p, q, r, s, (double)j * s) / n;
-            if (o < 8) {
-                m += this.field_16575.getOctave(o).sample(OctavePerlinNoiseSampler.maintainPrecision((double)i * f * n), OctavePerlinNoiseSampler.maintainPrecision((double)j * g * n), OctavePerlinNoiseSampler.maintainPrecision((double)k * f * n), g * n, (double)j * g * n) / n;
+            PerlinNoiseSampler perlinNoiseSampler = this.field_16574.getOctave(o);
+            if (perlinNoiseSampler != null) {
+                h += perlinNoiseSampler.sample(p, q, r, s, (double)j * s) / n;
+            }
+            if ((perlinNoiseSampler2 = this.field_16581.getOctave(o)) != null) {
+                l += perlinNoiseSampler2.sample(p, q, r, s, (double)j * s) / n;
+            }
+            if (o < 8 && (perlinNoiseSampler3 = this.field_16575.getOctave(o)) != null) {
+                m += perlinNoiseSampler3.sample(OctavePerlinNoiseSampler.maintainPrecision((double)i * f * n), OctavePerlinNoiseSampler.maintainPrecision((double)j * g * n), OctavePerlinNoiseSampler.maintainPrecision((double)k * f * n), g * n, (double)j * g * n) / n;
             }
             n /= 2.0;
         }
@@ -171,7 +179,7 @@ extends ChunkGenerator<T> {
     }
 
     @Override
-    public void buildSurface(Chunk chunk) {
+    public void buildSurface(ChunkRegion chunkRegion, Chunk chunk) {
         ChunkPos chunkPos = chunk.getPos();
         int i = chunkPos.x;
         int j = chunkPos.z;
@@ -181,14 +189,14 @@ extends ChunkGenerator<T> {
         int k = chunkPos2.getStartX();
         int l = chunkPos2.getStartZ();
         double d = 0.0625;
-        Biome[] biomes = chunk.getBiomeArray();
+        BlockPos.Mutable mutable = new BlockPos.Mutable();
         for (int m = 0; m < 16; ++m) {
             for (int n = 0; n < 16; ++n) {
                 int o = k + m;
                 int p = l + n;
                 int q = chunk.sampleHeightmap(Heightmap.Type.WORLD_SURFACE_WG, m, n) + 1;
-                double e = this.surfaceDepthNoise.sample((double)o * 0.0625, (double)p * 0.0625, 0.0625, (double)m * 0.0625);
-                biomes[n * 16 + m].buildSurface(chunkRandom, chunk, o, p, q, e, ((ChunkGeneratorConfig)this.getConfig()).getDefaultBlock(), ((ChunkGeneratorConfig)this.getConfig()).getDefaultFluid(), this.getSeaLevel(), this.world.getSeed());
+                double e = this.surfaceDepthNoise.sample((double)o * 0.0625, (double)p * 0.0625, 0.0625, (double)m * 0.0625) * 15.0;
+                chunkRegion.getBiome(mutable.set(k + m, q, l + n)).buildSurface(chunkRandom, chunk, o, p, q, e, ((ChunkGeneratorConfig)this.getConfig()).getDefaultBlock(), ((ChunkGeneratorConfig)this.getConfig()).getDefaultFluid(), this.getSeaLevel(), this.world.getSeed());
             }
         }
         this.buildBedrock(chunk, chunkRandom);

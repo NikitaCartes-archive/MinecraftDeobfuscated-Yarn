@@ -51,9 +51,13 @@ extends SerializingRegionBasedStorage<PointOfInterestSet> {
         return this.get(predicate, blockPos, i, occupationStatus).count();
     }
 
+    public Stream<PointOfInterest> method_22383(Predicate<PointOfInterestType> predicate, BlockPos blockPos, int i, OccupationStatus occupationStatus) {
+        return ChunkPos.stream(new ChunkPos(blockPos), Math.floorDiv(i, 16)).flatMap(chunkPos -> this.get(predicate, (ChunkPos)chunkPos, occupationStatus));
+    }
+
     public Stream<PointOfInterest> get(Predicate<PointOfInterestType> predicate, BlockPos blockPos, int i, OccupationStatus occupationStatus) {
         int j = i * i;
-        return ChunkPos.stream(new ChunkPos(blockPos), Math.floorDiv(i, 16)).flatMap(chunkPos -> this.get(predicate, (ChunkPos)chunkPos, occupationStatus).filter(pointOfInterest -> pointOfInterest.getPos().getSquaredDistance(blockPos) <= (double)j));
+        return this.method_22383(predicate, blockPos, i, occupationStatus).filter(pointOfInterest -> pointOfInterest.getPos().getSquaredDistance(blockPos) <= (double)j);
     }
 
     public Stream<PointOfInterest> get(Predicate<PointOfInterestType> predicate, ChunkPos chunkPos, OccupationStatus occupationStatus) {

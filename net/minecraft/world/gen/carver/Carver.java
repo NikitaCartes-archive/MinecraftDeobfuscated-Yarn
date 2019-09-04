@@ -21,6 +21,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.registry.Registry;
+import net.minecraft.world.biome.Biome;
 import net.minecraft.world.chunk.Chunk;
 import net.minecraft.world.gen.ProbabilityConfig;
 import net.minecraft.world.gen.carver.CarverConfig;
@@ -58,7 +59,7 @@ public abstract class Carver<C extends CarverConfig> {
         return 4;
     }
 
-    protected boolean carveRegion(Chunk chunk, long l, int i, int j, int k, double d, double e, double f, double g, double h, BitSet bitSet) {
+    protected boolean carveRegion(Chunk chunk, Function<BlockPos, Biome> function, long l, int i, int j, int k, double d, double e, double f, double g, double h, BitSet bitSet) {
         int t;
         int s;
         int r;
@@ -89,14 +90,14 @@ public abstract class Carver<C extends CarverConfig> {
                 for (int aa = r; aa > q; --aa) {
                     double ab = ((double)aa - 0.5 - e) / h;
                     if (this.isPositionExcluded(w, ab, z, aa)) continue;
-                    bl |= this.carveAtPoint(chunk, bitSet, random, mutable, mutable2, mutable3, i, j, k, v, y, u, aa, x, atomicBoolean);
+                    bl |= this.carveAtPoint(chunk, function, bitSet, random, mutable, mutable2, mutable3, i, j, k, v, y, u, aa, x, atomicBoolean);
                 }
             }
         }
         return bl;
     }
 
-    protected boolean carveAtPoint(Chunk chunk, BitSet bitSet, Random random, BlockPos.Mutable mutable, BlockPos.Mutable mutable2, BlockPos.Mutable mutable3, int i, int j, int k, int l, int m, int n, int o, int p, AtomicBoolean atomicBoolean) {
+    protected boolean carveAtPoint(Chunk chunk, Function<BlockPos, Biome> function, BitSet bitSet, Random random, BlockPos.Mutable mutable, BlockPos.Mutable mutable2, BlockPos.Mutable mutable3, int i, int j, int k, int l, int m, int n, int o, int p, AtomicBoolean atomicBoolean) {
         int q = n | p << 4 | o << 8;
         if (bitSet.get(q)) {
             return false;
@@ -118,14 +119,14 @@ public abstract class Carver<C extends CarverConfig> {
             if (atomicBoolean.get()) {
                 mutable3.set(mutable).setOffset(Direction.DOWN);
                 if (chunk.getBlockState(mutable3).getBlock() == Blocks.DIRT) {
-                    chunk.setBlockState(mutable3, chunk.getBiome(mutable).getSurfaceConfig().getTopMaterial(), false);
+                    chunk.setBlockState(mutable3, function.apply(mutable).getSurfaceConfig().getTopMaterial(), false);
                 }
             }
         }
         return true;
     }
 
-    public abstract boolean carve(Chunk var1, Random var2, int var3, int var4, int var5, int var6, int var7, BitSet var8, C var9);
+    public abstract boolean carve(Chunk var1, Function<BlockPos, Biome> var2, Random var3, int var4, int var5, int var6, int var7, int var8, BitSet var9, C var10);
 
     public abstract boolean shouldCarve(Random var1, int var2, int var3, C var4);
 

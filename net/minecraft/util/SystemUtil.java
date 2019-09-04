@@ -91,7 +91,18 @@ public class SystemUtil {
     private static ExecutorService createServerWorkerExecutor() {
         int i = MathHelper.clamp(Runtime.getRuntime().availableProcessors() - 1, 1, 7);
         ExecutorService executorService = i <= 0 ? MoreExecutors.newDirectExecutorService() : new ForkJoinPool(i, forkJoinPool -> {
-            ForkJoinWorkerThread forkJoinWorkerThread = new ForkJoinWorkerThread(forkJoinPool){};
+            ForkJoinWorkerThread forkJoinWorkerThread = new ForkJoinWorkerThread(forkJoinPool){
+
+                @Override
+                protected void onTermination(Throwable throwable) {
+                    if (throwable != null) {
+                        LOGGER.warn("{} died", (Object)this.getName(), (Object)throwable);
+                    } else {
+                        LOGGER.debug("{} shutdown", (Object)this.getName());
+                    }
+                    super.onTermination(throwable);
+                }
+            };
             forkJoinWorkerThread.setName("Server-Worker-" + field_18034.getAndIncrement());
             return forkJoinWorkerThread;
         }, (thread, throwable) -> {

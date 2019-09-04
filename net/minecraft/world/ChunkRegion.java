@@ -14,6 +14,7 @@ import net.minecraft.block.BlockEntityProvider;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.entity.BlockEntity;
+import net.minecraft.class_4543;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.fluid.Fluid;
@@ -64,6 +65,7 @@ implements IWorld {
     private final ChunkGeneratorConfig generatorSettings;
     private final TickScheduler<Block> blockTickScheduler = new MultiTickScheduler<Block>(blockPos -> this.method_22350((BlockPos)blockPos).getBlockTickScheduler());
     private final TickScheduler<Fluid> fluidTickScheduler = new MultiTickScheduler<Fluid>(blockPos -> this.method_22350((BlockPos)blockPos).getFluidTickScheduler());
+    private final class_4543 field_20668;
 
     public ChunkRegion(ServerWorld serverWorld, List<Chunk> list) {
         int i = MathHelper.floor(Math.sqrt(list.size()));
@@ -82,6 +84,7 @@ implements IWorld {
         this.levelProperties = serverWorld.getLevelProperties();
         this.random = serverWorld.getRandom();
         this.dimension = serverWorld.getDimension();
+        this.field_20668 = new class_4543(this, LevelProperties.method_22418(this.seed), this.dimension.getType().method_22415());
     }
 
     public int getCenterChunkX() {
@@ -154,12 +157,13 @@ implements IWorld {
     }
 
     @Override
-    public Biome getBiome(BlockPos blockPos) {
-        Biome biome = this.method_22350(blockPos).getBiomeArray()[blockPos.getX() & 0xF | (blockPos.getZ() & 0xF) << 4];
-        if (biome == null) {
-            throw new RuntimeException(String.format("Biome is null @ %s", blockPos));
-        }
-        return biome;
+    public class_4543 method_22385() {
+        return this.field_20668;
+    }
+
+    @Override
+    public Biome method_22387(int i, int j, int k) {
+        return this.world.method_22387(i, j, k);
     }
 
     @Override

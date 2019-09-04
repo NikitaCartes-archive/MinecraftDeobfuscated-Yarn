@@ -16,11 +16,13 @@ import net.minecraft.block.entity.BeeHiveBlockEntity;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.enchantment.Enchantments;
+import net.minecraft.entity.ItemEntity;
 import net.minecraft.entity.passive.BeeEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemPlacementContext;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
@@ -187,6 +189,28 @@ extends BlockWithEntity {
     @Nullable
     public BlockEntity createBlockEntity(BlockView blockView) {
         return new BeeHiveBlockEntity();
+    }
+
+    @Override
+    public void onBreak(World world, BlockPos blockPos, BlockState blockState, PlayerEntity playerEntity) {
+        BlockEntity blockEntity;
+        if (!world.isClient && playerEntity.isCreative() && (blockEntity = world.getBlockEntity(blockPos)) instanceof BeeHiveBlockEntity) {
+            CompoundTag compoundTag;
+            ItemStack itemStack = new ItemStack(this);
+            BeeHiveBlockEntity beeHiveBlockEntity = (BeeHiveBlockEntity)blockEntity;
+            if (!beeHiveBlockEntity.method_22400()) {
+                compoundTag = new CompoundTag();
+                compoundTag.put("Bees", beeHiveBlockEntity.getBees());
+                itemStack.putSubTag("BlockEntityTag", compoundTag);
+            }
+            compoundTag = new CompoundTag();
+            compoundTag.putInt("honey_level", blockState.get(HONEY_LEVEL));
+            itemStack.putSubTag("BlockStateTag", compoundTag);
+            ItemEntity itemEntity = new ItemEntity(world, blockPos.getX(), blockPos.getY(), blockPos.getZ(), itemStack);
+            itemEntity.setToDefaultPickupDelay();
+            world.spawnEntity(itemEntity);
+        }
+        super.onBreak(world, blockPos, blockState, playerEntity);
     }
 }
 

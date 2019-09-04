@@ -18,7 +18,7 @@ import org.jetbrains.annotations.Nullable;
 
 public class GameTest {
     private final TestFunction testFunction;
-    private final BlockPos blockPos;
+    private final BlockPos pos;
     private final ServerWorld world;
     private final Collection<TestListener> listeners = Lists.newArrayList();
     private int ticksLeft;
@@ -32,7 +32,7 @@ public class GameTest {
 
     public GameTest(TestFunction testFunction, BlockPos blockPos, ServerWorld serverWorld) {
         this.testFunction = testFunction;
-        this.blockPos = blockPos;
+        this.pos = blockPos;
         this.world = serverWorld;
         this.ticksLeft = testFunction.getTickLimit();
     }
@@ -57,15 +57,15 @@ public class GameTest {
         return this.testFunction.getStructurePath();
     }
 
-    public BlockPos getBlockPos() {
-        return this.blockPos;
+    public BlockPos getPos() {
+        return this.pos;
     }
 
     public void init(int i) {
         try {
-            StructureBlockBlockEntity structureBlockBlockEntity = StructureTestUtil.method_22250(this.testFunction.getStructureName(), this.blockPos, i, this.world, false);
+            StructureBlockBlockEntity structureBlockBlockEntity = StructureTestUtil.method_22250(this.testFunction.getStructureName(), this.pos, i, this.world, false);
             structureBlockBlockEntity.setStructureName(this.getStructureName());
-            StructureTestUtil.placeStartButton(this.blockPos.add(1, 0, -1), this.world);
+            StructureTestUtil.placeStartButton(this.pos.add(1, 0, -1), this.world);
             this.listeners.forEach(testListener -> testListener.onStarted(this));
             this.testFunction.method_22297(new class_4516(this));
         } catch (RuntimeException runtimeException) {
@@ -84,7 +84,7 @@ public class GameTest {
 
     @Nullable
     private StructureBlockBlockEntity getBlockEntity() {
-        return (StructureBlockBlockEntity)this.world.getBlockEntity(this.blockPos);
+        return (StructureBlockBlockEntity)this.world.getBlockEntity(this.pos);
     }
 
     public ServerWorld getWorld() {
@@ -155,7 +155,7 @@ public class GameTest {
     }
 
     public void start(int i) {
-        StructureTestUtil.method_22250(this.testFunction.getStructureName(), this.blockPos, i, this.world, false);
+        StructureTestUtil.method_22250(this.testFunction.getStructureName(), this.pos, i, this.world, false);
         this.started = true;
         this.startTime = SystemUtil.getMeasuringTimeMs();
     }

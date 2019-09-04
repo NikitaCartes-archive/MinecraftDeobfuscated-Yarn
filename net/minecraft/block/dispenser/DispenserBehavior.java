@@ -195,10 +195,15 @@ public interface DispenserBehavior {
             @Override
             public ItemStack dispenseSilently(BlockPointer blockPointer, ItemStack itemStack) {
                 Direction direction = blockPointer.getBlockState().get(DispenserBlock.FACING);
-                double d = blockPointer.getX() + (double)direction.getOffsetX();
-                double e = (float)blockPointer.getBlockPos().getY() + 0.2f;
-                double f = blockPointer.getZ() + (double)direction.getOffsetZ();
-                blockPointer.getWorld().spawnEntity(new FireworkEntity(blockPointer.getWorld(), d, e, f, itemStack));
+                double d = direction.getOffsetX();
+                double e = direction.getOffsetY();
+                double f = direction.getOffsetZ();
+                double g = blockPointer.getX() + d;
+                double h = (float)blockPointer.getBlockPos().getY() + 0.2f;
+                double i = blockPointer.getZ() + f;
+                FireworkEntity fireworkEntity = new FireworkEntity(blockPointer.getWorld(), itemStack, g, h, i, true);
+                fireworkEntity.setVelocity(d, e, f, 0.5f, 1.0f);
+                blockPointer.getWorld().spawnEntity(fireworkEntity);
                 itemStack.decrement(1);
                 return itemStack;
             }
@@ -422,17 +427,14 @@ public interface DispenserBehavior {
                 World iWorld = blockPointer.getWorld();
                 BlockState blockState = iWorld.getBlockState(blockPos = blockPointer.getBlockPos().offset(blockPointer.getBlockState().get(DispenserBlock.FACING)));
                 Block block = blockState.getBlock();
-                if (block.matches(BlockTags.BEEHIVES)) {
-                    int i = blockState.get(BeeHiveBlock.HONEY_LEVEL);
-                    if (i >= 5) {
-                        ((BeeHiveBlock)blockState.getBlock()).emptyHoney(iWorld.getWorld(), blockState, blockPos, null);
-                    }
+                if (block.matches(BlockTags.BEEHIVES) && blockState.get(BeeHiveBlock.HONEY_LEVEL) >= 5) {
+                    ((BeeHiveBlock)blockState.getBlock()).emptyHoney(iWorld.getWorld(), blockState, blockPos, null);
                     return this.method_22141(blockPointer, itemStack, new ItemStack(Items.HONEY_BOTTLE));
                 }
                 if (iWorld.getFluidState(blockPos).matches(FluidTags.WATER)) {
                     return this.method_22141(blockPointer, itemStack, PotionUtil.setPotion(new ItemStack(Items.POTION), Potions.WATER));
                 }
-                return super.dispenseSilently(blockPointer, itemStack);
+                return itemStack;
             }
         });
         DispenserBlock.registerBehavior(Items.SHEARS.asItem(), new FallibleItemDispenserBehavior(){

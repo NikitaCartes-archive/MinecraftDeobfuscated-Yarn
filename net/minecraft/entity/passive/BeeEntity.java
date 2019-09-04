@@ -22,6 +22,7 @@ import net.minecraft.block.entity.BlockEntityType;
 import net.minecraft.block.enums.DoubleBlockHalf;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityDimensions;
+import net.minecraft.entity.EntityGroup;
 import net.minecraft.entity.EntityPose;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.Flutterer;
@@ -104,15 +105,15 @@ implements Flutterer {
 
     @Override
     protected void initGoals() {
-        this.goalSelector.add(0, new EnterHiveGoal());
         this.goalSelector.add(0, new FindHiveGoal());
-        this.goalSelector.add(1, new AnimalMateGoal(this, 1.0));
-        this.goalSelector.add(2, new TemptGoal((MobEntityWithAi)this, 1.25, Ingredient.fromTag(ItemTags.SMALL_FLOWERS), false));
-        this.goalSelector.add(3, new PollinateGoal());
-        this.goalSelector.add(4, new FollowParentGoal(this, 1.25));
-        this.goalSelector.add(4, new MoveToHiveGoal());
-        this.goalSelector.add(5, new MoveToFlowerGoal());
-        this.goalSelector.add(6, new StingGoal(this, 1.4f, true));
+        this.goalSelector.add(0, new StingGoal(this, 1.4f, true));
+        this.goalSelector.add(1, new EnterHiveGoal());
+        this.goalSelector.add(2, new AnimalMateGoal(this, 1.0));
+        this.goalSelector.add(3, new TemptGoal((MobEntityWithAi)this, 1.25, Ingredient.fromTag(ItemTags.SMALL_FLOWERS), false));
+        this.goalSelector.add(4, new PollinateGoal());
+        this.goalSelector.add(5, new FollowParentGoal(this, 1.25));
+        this.goalSelector.add(5, new MoveToHiveGoal());
+        this.goalSelector.add(6, new MoveToFlowerGoal());
         this.goalSelector.add(7, new GrowCropsGoal());
         this.goalSelector.add(8, new BeeWanderAroundGoal());
         this.targetSelector.add(1, new BeeRevengeGoal(this).setGroupRevenge(new Class[0]));
@@ -316,7 +317,8 @@ implements Flutterer {
                 }
                 this.getNavigation().startMovingTo(vec3d.x, vec3d.y, vec3d.z, 0.4f);
             }
-            this.setNearTarget(this.isAngry() && this.getTarget() != null && this.getTarget().squaredDistanceTo(this) < 4.0);
+            boolean bl = this.isAngry() && !this.hasStung() && this.getTarget() != null && this.getTarget().squaredDistanceTo(this) < 4.0;
+            this.setNearTarget(bl);
             if (this.hasHive() && this.age % 20 == 0 && !this.isHiveValid()) {
                 this.hivePos = BlockPos.ORIGIN;
             }
@@ -438,7 +440,7 @@ implements Flutterer {
         if (this.isBaby()) {
             return entityDimensions.height * 0.95f;
         }
-        return 0.6f;
+        return entityDimensions.height * 0.5f;
     }
 
     @Override
@@ -487,6 +489,11 @@ implements Flutterer {
             this.setBeeAttacker(entity);
         }
         return super.damage(damageSource, f);
+    }
+
+    @Override
+    public EntityGroup getGroup() {
+        return EntityGroup.ARTHROPOD;
     }
 
     @Override
@@ -640,13 +647,13 @@ implements Flutterer {
 
         public PollinateGoal() {
             this.field_20617 = blockState -> {
-                if (blockState.matches(BlockTags.SMALL_FLOWERS)) {
+                if (blockState.matches(BlockTags.TALL_FLOWERS)) {
+                    if (blockState.getBlock() == Blocks.SUNFLOWER) {
+                        return blockState.get(TallPlantBlock.HALF) == DoubleBlockHalf.UPPER;
+                    }
                     return true;
                 }
-                if (blockState.matches(BlockTags.TALL_FLOWERS)) {
-                    return blockState.getBlock() == Blocks.SUNFLOWER && blockState.contains(TallPlantBlock.HALF) && blockState.get(TallPlantBlock.HALF) == DoubleBlockHalf.UPPER;
-                }
-                return false;
+                return blockState.matches(BlockTags.SMALL_FLOWERS);
             };
             this.pollinationTicks = 0;
             this.lastPollinationTick = 0;

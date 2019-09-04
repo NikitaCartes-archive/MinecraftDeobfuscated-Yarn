@@ -5,6 +5,7 @@ package net.minecraft.world.biome.layer;
 
 import it.unimi.dsi.fastutil.longs.Long2IntLinkedOpenHashMap;
 import java.util.Random;
+import net.minecraft.class_4540;
 import net.minecraft.util.math.noise.PerlinNoiseSampler;
 import net.minecraft.world.biome.layer.CachingLayerSampler;
 import net.minecraft.world.biome.layer.LayerOperator;
@@ -15,23 +16,16 @@ public class CachingLayerContext
 implements LayerSampleContext<CachingLayerSampler> {
     private final Long2IntLinkedOpenHashMap cache;
     private final int cacheCapacity;
-    protected long initSeed;
-    protected PerlinNoiseSampler noiseSampler;
-    private long worldSeed;
+    private final PerlinNoiseSampler noiseSampler;
+    private final long worldSeed;
     private long localSeed;
 
     public CachingLayerContext(int i, long l, long m) {
-        this.initSeed = m;
-        this.initSeed *= this.initSeed * 6364136223846793005L + 1442695040888963407L;
-        this.initSeed += m;
-        this.initSeed *= this.initSeed * 6364136223846793005L + 1442695040888963407L;
-        this.initSeed += m;
-        this.initSeed *= this.initSeed * 6364136223846793005L + 1442695040888963407L;
-        this.initSeed += m;
+        this.worldSeed = CachingLayerContext.method_22417(l, m);
+        this.noiseSampler = new PerlinNoiseSampler(new Random(l));
         this.cache = new Long2IntLinkedOpenHashMap(16, 0.25f);
         this.cache.defaultReturnValue(Integer.MIN_VALUE);
         this.cacheCapacity = i;
-        this.initWorldSeed(l);
     }
 
     public CachingLayerSampler method_15837(LayerOperator layerOperator) {
@@ -46,44 +40,37 @@ implements LayerSampleContext<CachingLayerSampler> {
         return new CachingLayerSampler(this.cache, Math.min(1024, Math.max(cachingLayerSampler.getCapacity(), cachingLayerSampler2.getCapacity()) * 4), layerOperator);
     }
 
-    public void initWorldSeed(long l) {
-        this.worldSeed = l;
-        this.worldSeed *= this.worldSeed * 6364136223846793005L + 1442695040888963407L;
-        this.worldSeed += this.initSeed;
-        this.worldSeed *= this.worldSeed * 6364136223846793005L + 1442695040888963407L;
-        this.worldSeed += this.initSeed;
-        this.worldSeed *= this.worldSeed * 6364136223846793005L + 1442695040888963407L;
-        this.worldSeed += this.initSeed;
-        this.noiseSampler = new PerlinNoiseSampler(new Random(l));
-    }
-
     @Override
     public void initSeed(long l, long m) {
-        this.localSeed = this.worldSeed;
-        this.localSeed *= this.localSeed * 6364136223846793005L + 1442695040888963407L;
-        this.localSeed += l;
-        this.localSeed *= this.localSeed * 6364136223846793005L + 1442695040888963407L;
-        this.localSeed += m;
-        this.localSeed *= this.localSeed * 6364136223846793005L + 1442695040888963407L;
-        this.localSeed += l;
-        this.localSeed *= this.localSeed * 6364136223846793005L + 1442695040888963407L;
-        this.localSeed += m;
+        long n = this.worldSeed;
+        n = class_4540.method_22372(n, l);
+        n = class_4540.method_22372(n, m);
+        n = class_4540.method_22372(n, l);
+        this.localSeed = n = class_4540.method_22372(n, m);
     }
 
     @Override
     public int nextInt(int i) {
-        int j = (int)((this.localSeed >> 24) % (long)i);
-        if (j < 0) {
-            j += i;
-        }
-        this.localSeed *= this.localSeed * 6364136223846793005L + 1442695040888963407L;
-        this.localSeed += this.worldSeed;
+        int j = (int)Math.floorMod(this.localSeed >> 24, (long)i);
+        this.localSeed = class_4540.method_22372(this.localSeed, this.worldSeed);
         return j;
     }
 
     @Override
     public PerlinNoiseSampler getNoiseSampler() {
         return this.noiseSampler;
+    }
+
+    private static long method_22417(long l, long m) {
+        long n = m;
+        n = class_4540.method_22372(n, m);
+        n = class_4540.method_22372(n, m);
+        n = class_4540.method_22372(n, m);
+        long o = l;
+        o = class_4540.method_22372(o, n);
+        o = class_4540.method_22372(o, n);
+        o = class_4540.method_22372(o, n);
+        return o;
     }
 
     @Override

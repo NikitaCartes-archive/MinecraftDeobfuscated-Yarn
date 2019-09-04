@@ -22,6 +22,7 @@ extends AbstractTagProvider<EntityType<?>> {
     protected void configure() {
         this.method_10512(EntityTypeTags.SKELETONS).add(EntityType.SKELETON, EntityType.STRAY, EntityType.WITHER_SKELETON);
         this.method_10512(EntityTypeTags.RAIDERS).add(EntityType.EVOKER, EntityType.PILLAGER, EntityType.RAVAGER, EntityType.VINDICATOR, EntityType.ILLUSIONER, EntityType.WITCH);
+        this.method_10512(EntityTypeTags.BEEHIVE_INHABITORS).add(EntityType.BEE);
     }
 
     @Override

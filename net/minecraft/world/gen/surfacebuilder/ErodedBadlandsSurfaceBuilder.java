@@ -28,11 +28,11 @@ extends BadlandsSurfaceBuilder {
     @Override
     public void method_15208(Random random, Chunk chunk, Biome biome, int i, int j, int k, double d, BlockState blockState, BlockState blockState2, int l, long m, TernarySurfaceConfig ternarySurfaceConfig) {
         double e = 0.0;
-        double f = Math.min(Math.abs(d), this.field_15623.sample((double)i * 0.25, (double)j * 0.25));
+        double f = Math.min(Math.abs(d), this.field_15623.sample((double)i * 0.25, (double)j * 0.25, false) * 15.0);
         if (f > 0.0) {
             double g = 0.001953125;
             e = f * f * 2.5;
-            double h = Math.abs(this.field_15618.sample((double)i * 0.001953125, (double)j * 0.001953125));
+            double h = Math.abs(this.field_15618.sample((double)i * 0.001953125, (double)j * 0.001953125, false));
             double n = Math.ceil(h * 50.0) + 14.0;
             if (e > n) {
                 e = n;

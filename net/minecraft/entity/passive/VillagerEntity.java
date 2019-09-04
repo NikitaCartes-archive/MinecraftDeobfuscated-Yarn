@@ -442,7 +442,7 @@ VillagerDataContainer {
     }
 
     public void playWorkSound() {
-        SoundEvent soundEvent = this.getVillagerData().getProfession().getWorkStation().getSound();
+        SoundEvent soundEvent = this.getVillagerData().getProfession().method_22384();
         if (soundEvent != null) {
             this.playSound(soundEvent, this.getSoundVolume(), this.getSoundPitch());
         }

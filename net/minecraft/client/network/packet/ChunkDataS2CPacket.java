@@ -12,6 +12,7 @@ import java.util.Map;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.block.entity.BlockEntity;
+import net.minecraft.class_4548;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.LongArrayTag;
 import net.minecraft.network.Packet;
@@ -19,11 +20,10 @@ import net.minecraft.network.listener.ClientPlayPacketListener;
 import net.minecraft.util.PacketByteBuf;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
-import net.minecraft.util.registry.Registry;
 import net.minecraft.world.Heightmap;
-import net.minecraft.world.biome.Biome;
 import net.minecraft.world.chunk.ChunkSection;
 import net.minecraft.world.chunk.WorldChunk;
+import org.jetbrains.annotations.Nullable;
 
 public class ChunkDataS2CPacket
 implements Packet<ClientPlayPacketListener> {
@@ -31,6 +31,8 @@ implements Packet<ClientPlayPacketListener> {
     private int chunkZ;
     private int verticalStripBitmask;
     private CompoundTag heightmaps;
+    @Nullable
+    private class_4548 field_20664;
     private byte[] data;
     private List<CompoundTag> blockEntities;
     private boolean isFullChunk;
@@ -48,6 +50,9 @@ implements Packet<ClientPlayPacketListener> {
             if (!entry.getKey().shouldSendToClient()) continue;
             this.heightmaps.put(entry.getKey().getName(), new LongArrayTag(entry.getValue().asLongArray()));
         }
+        if (this.isFullChunk) {
+            this.field_20664 = worldChunk.getBiomeArray().method_22403();
+        }
         this.data = new byte[this.getDataSize(worldChunk, i)];
         this.verticalStripBitmask = this.writeData(new PacketByteBuf(this.getWriteBuffer()), worldChunk, i);
         this.blockEntities = Lists.newArrayList();
@@ -63,13 +68,16 @@ implements Packet<ClientPlayPacketListener> {
 
     @Override
     public void read(PacketByteBuf packetByteBuf) throws IOException {
+        int i;
         this.chunkX = packetByteBuf.readInt();
         this.chunkZ = packetByteBuf.readInt();
         this.isFullChunk = packetByteBuf.readBoolean();
         this.verticalStripBitmask = packetByteBuf.readVarInt();
         this.heightmaps = packetByteBuf.readCompoundTag();
-        int i = packetByteBuf.readVarInt();
-        if (i > 0x200000) {
+        if (this.isFullChunk) {
+            this.field_20664 = new class_4548(packetByteBuf);
+        }
+        if ((i = packetByteBuf.readVarInt()) > 0x200000) {
             throw new RuntimeException("Chunk Packet trying to allocate too much memory on read.");
         }
         this.data = new byte[i];
@@ -88,6 +96,9 @@ implements Packet<ClientPlayPacketListener> {
         packetByteBuf.writeBoolean(this.isFullChunk);
         packetByteBuf.writeVarInt(this.verticalStripBitmask);
         packetByteBuf.writeCompoundTag(this.heightmaps);
+        if (this.field_20664 != null) {
+            this.field_20664.method_22402(packetByteBuf);
+        }
         packetByteBuf.writeVarInt(this.data.length);
         packetByteBuf.writeBytes(this.data);
         packetByteBuf.writeVarInt(this.blockEntities.size());
@@ -121,12 +132,6 @@ implements Packet<ClientPlayPacketListener> {
             j |= 1 << k;
             chunkSection.toPacket(packetByteBuf);
         }
-        if (this.isFullChunk()) {
-            Biome[] biomes = worldChunk.getBiomeArray();
-            for (l = 0; l < biomes.length; ++l) {
-                packetByteBuf.writeInt(Registry.BIOME.getRawId(biomes[l]));
-            }
-        }
         return j;
     }
 
@@ -138,9 +143,6 @@ implements Packet<ClientPlayPacketListener> {
             ChunkSection chunkSection = chunkSections[k];
             if (chunkSection == WorldChunk.EMPTY_SECTION || this.isFullChunk() && chunkSection.isEmpty() || (i & 1 << k) == 0) continue;
             j += chunkSection.getPacketSize();
-        }
-        if (this.isFullChunk()) {
-            j += worldChunk.getBiomeArray().length * 4;
         }
         return j;
     }
@@ -172,6 +174,12 @@ implements Packet<ClientPlayPacketListener> {
     @Environment(value=EnvType.CLIENT)
     public List<CompoundTag> getBlockEntityTagList() {
         return this.blockEntities;
+    }
+
+    @Nullable
+    @Environment(value=EnvType.CLIENT)
+    public class_4548 method_22422() {
+        return this.field_20664 == null ? null : this.field_20664.method_22403();
     }
 }
 

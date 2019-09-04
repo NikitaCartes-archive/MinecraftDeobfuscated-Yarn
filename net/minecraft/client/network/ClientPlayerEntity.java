@@ -121,6 +121,7 @@ extends AbstractClientPlayerEntity {
     private int field_3934;
     private boolean field_3939;
     private int field_3917;
+    private boolean field_20663 = true;
 
     public ClientPlayerEntity(MinecraftClient minecraftClient, ClientWorld clientWorld, ClientPlayNetworkHandler clientPlayNetworkHandler, StatHandler statHandler, ClientRecipeBook clientRecipeBook) {
         super(clientWorld, clientPlayNetworkHandler.getProfile());
@@ -456,6 +457,14 @@ extends AbstractClientPlayerEntity {
         } else {
             super.handleStatus(b);
         }
+    }
+
+    public void method_22420(boolean bl) {
+        this.field_20663 = bl;
+    }
+
+    public boolean method_22419() {
+        return this.field_20663;
     }
 
     @Override

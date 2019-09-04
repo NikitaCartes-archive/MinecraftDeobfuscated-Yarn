@@ -92,7 +92,7 @@ extends EntityModel<T> {
         this.rightAntenna.pitch = 0.0f;
         this.body.pitch = 0.0f;
         this.body.rotationPointY = 19.0f;
-        boolean bl2 = bl = ((Entity)beeEntity).getVelocity().lengthSquared() < 1.0E-7;
+        boolean bl2 = bl = ((BeeEntity)beeEntity).onGround && ((Entity)beeEntity).getVelocity().lengthSquared() < 1.0E-7;
         if (bl) {
             this.leftWing.yaw = -0.2618f;
             this.leftWing.roll = 0.0f;

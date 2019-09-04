@@ -12,6 +12,8 @@ import com.mojang.datafixers.schemas.Schema;
 import java.util.Objects;
 import java.util.function.BiFunction;
 import net.minecraft.SharedConstants;
+import net.minecraft.class_4541;
+import net.minecraft.class_4542;
 import net.minecraft.datafixers.TypeReferences;
 import net.minecraft.datafixers.fixes.AddTrappedChestFix;
 import net.minecraft.datafixers.fixes.AdvancementsFix;
@@ -416,6 +418,9 @@ public class Schemas {
         Schema schema96 = dataFixerBuilder.addSchema(2100, Schema2100::new);
         dataFixerBuilder.addFixer(new FixChoiceTypes(schema96, "Added Bee and Bee Stinger", TypeReferences.ENTITY));
         dataFixerBuilder.addFixer(new FixChoiceTypes(schema96, "Add beehive", TypeReferences.BLOCK_ENTITY));
+        Schema schema97 = dataFixerBuilder.addSchema(2202, EMPTY_IDENTIFIER_NORMALIZE);
+        dataFixerBuilder.addFixer(new class_4541(schema97, false));
+        dataFixerBuilder.addFixer(new class_4542(schema97, false));
     }
 }
 

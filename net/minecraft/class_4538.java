@@ -4,6 +4,7 @@
 package net.minecraft;
 
 import net.minecraft.block.BlockState;
+import net.minecraft.class_4543;
 import net.minecraft.tag.FluidTags;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
@@ -13,6 +14,7 @@ import net.minecraft.world.BlockView;
 import net.minecraft.world.ExtendedBlockView;
 import net.minecraft.world.Heightmap;
 import net.minecraft.world.ViewableWorld;
+import net.minecraft.world.biome.Biome;
 import net.minecraft.world.chunk.Chunk;
 import net.minecraft.world.chunk.ChunkStatus;
 import net.minecraft.world.dimension.Dimension;
@@ -20,7 +22,8 @@ import org.jetbrains.annotations.Nullable;
 
 public interface class_4538
 extends ExtendedBlockView,
-ViewableWorld {
+ViewableWorld,
+class_4543.class_4544 {
     @Nullable
     public Chunk getChunk(int var1, int var2, ChunkStatus var3, boolean var4);
 
@@ -30,6 +33,17 @@ ViewableWorld {
     public int getLightLevel(Heightmap.Type var1, int var2, int var3);
 
     public int getAmbientDarkness();
+
+    @Override
+    default public Biome getBiome(int i, int j, int k) {
+        Chunk chunk = this.getChunk(i >> 2, k >> 2, ChunkStatus.BIOMES, false);
+        if (chunk != null && chunk.getBiomeArray() != null) {
+            return chunk.getBiomeArray().getBiome(i, j, k);
+        }
+        return this.method_22387(i, j, k);
+    }
+
+    public Biome method_22387(int var1, int var2, int var3);
 
     public boolean isClient();
 

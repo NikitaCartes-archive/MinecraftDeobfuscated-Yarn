@@ -7,6 +7,9 @@ import com.mojang.datafixers.Dynamic;
 import com.mojang.datafixers.types.DynamicOps;
 import java.io.File;
 import java.util.function.BiFunction;
+import net.minecraft.class_4545;
+import net.minecraft.class_4546;
+import net.minecraft.class_4547;
 import net.minecraft.util.DynamicSerializable;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.registry.Registry;
@@ -19,25 +22,27 @@ import org.jetbrains.annotations.Nullable;
 
 public class DimensionType
 implements DynamicSerializable {
-    public static final DimensionType OVERWORLD = DimensionType.register("overworld", new DimensionType(1, "", "", OverworldDimension::new, true));
-    public static final DimensionType THE_NETHER = DimensionType.register("the_nether", new DimensionType(0, "_nether", "DIM-1", TheNetherDimension::new, false));
-    public static final DimensionType THE_END = DimensionType.register("the_end", new DimensionType(2, "_end", "DIM1", TheEndDimension::new, false));
+    public static final DimensionType OVERWORLD = DimensionType.register("overworld", new DimensionType(1, "", "", OverworldDimension::new, true, class_4547.INSTANCE));
+    public static final DimensionType THE_NETHER = DimensionType.register("the_nether", new DimensionType(0, "_nether", "DIM-1", TheNetherDimension::new, false, class_4546.INSTANCE));
+    public static final DimensionType THE_END = DimensionType.register("the_end", new DimensionType(2, "_end", "DIM1", TheEndDimension::new, false, class_4546.INSTANCE));
     private final int id;
     private final String suffix;
     private final String saveDir;
     private final BiFunction<World, DimensionType, ? extends Dimension> factory;
     private final boolean hasSkyLight;
+    private final class_4545 field_20658;
 
     private static DimensionType register(String string, DimensionType dimensionType) {
         return Registry.register(Registry.DIMENSION, dimensionType.id, string, dimensionType);
     }
 
-    protected DimensionType(int i, String string, String string2, BiFunction<World, DimensionType, ? extends Dimension> biFunction, boolean bl) {
+    protected DimensionType(int i, String string, String string2, BiFunction<World, DimensionType, ? extends Dimension> biFunction, boolean bl, class_4545 arg) {
         this.id = i;
         this.suffix = string;
         this.saveDir = string2;
         this.factory = biFunction;
         this.hasSkyLight = bl;
+        this.field_20658 = arg;
     }
 
     public static DimensionType deserialize(Dynamic<?> dynamic) {
@@ -88,6 +93,10 @@ implements DynamicSerializable {
 
     public boolean hasSkyLight() {
         return this.hasSkyLight;
+    }
+
+    public class_4545 method_22415() {
+        return this.field_20658;
     }
 
     @Override

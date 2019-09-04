@@ -19,14 +19,6 @@ public class ColumnPos {
         this.z = blockPos.getZ();
     }
 
-    public long toLong() {
-        return ColumnPos.toLong(this.x, this.z);
-    }
-
-    public static long toLong(int i, int j) {
-        return (long)i & 0xFFFFFFFFL | ((long)j & 0xFFFFFFFFL) << 32;
-    }
-
     public String toString() {
         return "[" + this.x + ", " + this.z + "]";
     }

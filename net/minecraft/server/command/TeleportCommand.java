@@ -98,7 +98,7 @@ public class TeleportCommand {
             serverWorld.method_14178().addTicket(ChunkTicketType.POST_TELEPORT, chunkPos, 1, entity.getEntityId());
             entity.stopRiding();
             if (((ServerPlayerEntity)entity).isSleeping()) {
-                ((ServerPlayerEntity)entity).wakeUp(true, true, false);
+                ((ServerPlayerEntity)entity).wakeUp(true, true);
             }
             if (serverWorld == entity.world) {
                 ((ServerPlayerEntity)entity).networkHandler.teleportRequest(d, e, f, g, h, set);

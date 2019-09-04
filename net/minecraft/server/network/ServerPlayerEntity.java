@@ -559,8 +559,8 @@ implements ContainerListener {
         ServerWorld serverWorld = this.server.getWorld(dimensionType2);
         this.dimension = dimensionType;
         ServerWorld serverWorld2 = this.server.getWorld(dimensionType);
-        LevelProperties levelProperties = this.world.getLevelProperties();
-        this.networkHandler.sendPacket(new PlayerRespawnS2CPacket(dimensionType, levelProperties.getGeneratorType(), this.interactionManager.getGameMode()));
+        LevelProperties levelProperties = serverWorld2.getLevelProperties();
+        this.networkHandler.sendPacket(new PlayerRespawnS2CPacket(dimensionType, LevelProperties.method_22418(levelProperties.getSeed()), levelProperties.getGeneratorType(), this.interactionManager.getGameMode()));
         this.networkHandler.sendPacket(new DifficultyS2CPacket(levelProperties.getDifficulty(), levelProperties.isDifficultyLocked()));
         PlayerManager playerManager = this.server.getPlayerManager();
         playerManager.sendCommandTree(this);
@@ -686,11 +686,11 @@ implements ContainerListener {
     }
 
     @Override
-    public void wakeUp(boolean bl, boolean bl2, boolean bl3) {
+    public void wakeUp(boolean bl, boolean bl2) {
         if (this.isSleeping()) {
             this.getServerWorld().method_14178().sendToNearbyPlayers(this, new EntityAnimationS2CPacket(this, 2));
         }
-        super.wakeUp(bl, bl2, bl3);
+        super.wakeUp(bl, bl2);
         if (this.networkHandler != null) {
             this.networkHandler.requestTeleport(this.x, this.y, this.z, this.yaw, this.pitch);
         }
@@ -920,7 +920,7 @@ implements ContainerListener {
         this.field_13964 = true;
         this.removeAllPassengers();
         if (this.isSleeping()) {
-            this.wakeUp(true, false, false);
+            this.wakeUp(true, false);
         }
     }
 
@@ -1222,7 +1222,7 @@ implements ContainerListener {
             ServerWorld serverWorld2 = this.getServerWorld();
             this.dimension = serverWorld.dimension.getType();
             LevelProperties levelProperties = serverWorld.getLevelProperties();
-            this.networkHandler.sendPacket(new PlayerRespawnS2CPacket(this.dimension, levelProperties.getGeneratorType(), this.interactionManager.getGameMode()));
+            this.networkHandler.sendPacket(new PlayerRespawnS2CPacket(this.dimension, LevelProperties.method_22418(levelProperties.getSeed()), levelProperties.getGeneratorType(), this.interactionManager.getGameMode()));
             this.networkHandler.sendPacket(new DifficultyS2CPacket(levelProperties.getDifficulty(), levelProperties.isDifficultyLocked()));
             this.server.getPlayerManager().sendCommandTree(this);
             serverWorld2.removePlayer(this);
