@@ -4,7 +4,6 @@ import java.util.List;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_4537;
 import net.minecraft.client.item.TooltipContext;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.potion.PotionUtil;
@@ -15,7 +14,7 @@ import net.minecraft.util.Hand;
 import net.minecraft.util.TypedActionResult;
 import net.minecraft.world.World;
 
-public class LingeringPotionItem extends class_4537 {
+public class LingeringPotionItem extends ThrowablePotionItem {
 	public LingeringPotionItem(Item.Settings settings) {
 		super(settings);
 	}

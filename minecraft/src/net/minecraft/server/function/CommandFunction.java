@@ -52,7 +52,7 @@ public class CommandFunction {
 					ParseResults<ServerCommandSource> parseResults = commandFunctionManager.getServer()
 						.getCommandManager()
 						.getDispatcher()
-						.parse(stringReader, commandFunctionManager.method_20796());
+						.parse(stringReader, commandFunctionManager.getCommandFunctionSource());
 					if (parseResults.getReader().canRead()) {
 						if (parseResults.getExceptions().size() == 1) {
 							throw (CommandSyntaxException)parseResults.getExceptions().values().iterator().next();

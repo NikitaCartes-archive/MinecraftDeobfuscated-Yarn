@@ -12,9 +12,9 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.structure.Structure;
 import net.minecraft.structure.StructureManager;
 import net.minecraft.util.BlockRotation;
+import net.minecraft.util.math.BlockBox;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
-import net.minecraft.util.math.MutableIntBoundingBox;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.world.IWorld;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
@@ -63,9 +63,9 @@ public class FeaturePoolElement extends StructurePoolElement {
 	}
 
 	@Override
-	public MutableIntBoundingBox getBoundingBox(StructureManager structureManager, BlockPos blockPos, BlockRotation blockRotation) {
+	public BlockBox getBoundingBox(StructureManager structureManager, BlockPos blockPos, BlockRotation blockRotation) {
 		BlockPos blockPos2 = this.method_16601(structureManager, blockRotation);
-		return new MutableIntBoundingBox(
+		return new BlockBox(
 			blockPos.getX(),
 			blockPos.getY(),
 			blockPos.getZ(),
@@ -82,7 +82,7 @@ public class FeaturePoolElement extends StructurePoolElement {
 		ChunkGenerator<?> chunkGenerator,
 		BlockPos blockPos,
 		BlockRotation blockRotation,
-		MutableIntBoundingBox mutableIntBoundingBox,
+		BlockBox blockBox,
 		Random random
 	) {
 		return this.feature.generate(iWorld, chunkGenerator, random, blockPos);

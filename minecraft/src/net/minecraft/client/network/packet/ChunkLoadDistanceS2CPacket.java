@@ -28,7 +28,7 @@ public class ChunkLoadDistanceS2CPacket implements Packet<ClientPlayPacketListen
 	}
 
 	public void method_20205(ClientPlayPacketListener clientPlayPacketListener) {
-		clientPlayPacketListener.handleChunkLoadDistance(this);
+		clientPlayPacketListener.onChunkLoadDistance(this);
 	}
 
 	@Environment(EnvType.CLIENT)

@@ -97,7 +97,11 @@ public class GameRules {
 	}
 
 	public void fromNbt(CompoundTag compoundTag) {
-		this.rules.forEach((ruleKey, rule) -> rule.setFromString(compoundTag.getString(ruleKey.name)));
+		this.rules.forEach((ruleKey, rule) -> {
+			if (compoundTag.containsKey(ruleKey.name)) {
+				rule.setFromString(compoundTag.getString(ruleKey.name));
+			}
+		});
 	}
 
 	public static void forEach(GameRules.RuleConsumer ruleConsumer) {

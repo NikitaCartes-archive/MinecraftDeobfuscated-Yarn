@@ -19,7 +19,7 @@ public class class_4543 {
 		return new class_4543(biomeSource, this.field_20641, this.field_20642);
 	}
 
-	public Biome method_22393(BlockPos blockPos) {
+	public Biome getBiome(BlockPos blockPos) {
 		return this.field_20642.method_22396(this.field_20641, blockPos.getX(), blockPos.getY(), blockPos.getZ(), this.field_20640);
 	}
 

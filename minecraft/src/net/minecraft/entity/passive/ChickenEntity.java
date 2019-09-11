@@ -41,7 +41,7 @@ public class ChickenEntity extends AnimalEntity {
 
 	public ChickenEntity(EntityType<? extends ChickenEntity> entityType, World world) {
 		super(entityType, world);
-		this.setPathNodeTypeWeight(PathNodeType.WATER, 0.0F);
+		this.setPathfindingPenalty(PathNodeType.WATER, 0.0F);
 	}
 
 	@Override

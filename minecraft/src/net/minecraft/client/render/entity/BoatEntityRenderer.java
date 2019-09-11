@@ -58,7 +58,7 @@ public class BoatEntityRenderer extends EntityRenderer<BoatEntity> {
 		}
 
 		float j = boatEntity.interpolateBubbleWobble(g);
-		if (!MathHelper.equalsApproximate(j, 0.0F)) {
+		if (!MathHelper.approximatelyEquals(j, 0.0F)) {
 			RenderSystem.rotatef(boatEntity.interpolateBubbleWobble(g), 1.0F, 0.0F, 1.0F);
 		}
 

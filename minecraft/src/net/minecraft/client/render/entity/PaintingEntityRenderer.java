@@ -140,7 +140,7 @@ public class PaintingEntityRenderer extends EntityRenderer<PaintingEntity> {
 			k = MathHelper.floor(paintingEntity.z + (double)(f / 16.0F));
 		}
 
-		int l = this.renderManager.world.method_22337(new BlockPos(i, j, k));
+		int l = this.renderManager.world.getLightmapIndex(new BlockPos(i, j, k));
 		int m = l % 65536;
 		int n = l / 65536;
 		RenderSystem.glMultiTexCoord2f(33985, (float)m, (float)n);

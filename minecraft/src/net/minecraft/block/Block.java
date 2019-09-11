@@ -209,7 +209,7 @@ public class Block implements ItemConvertible {
 		if (blockState2 != blockState) {
 			if (blockState2.isAir()) {
 				if (!iWorld.isClient()) {
-					iWorld.method_22352(blockPos, (i & 32) == 0);
+					iWorld.breakBlock(blockPos, (i & 32) == 0);
 				}
 			} else {
 				iWorld.setBlockState(blockPos, blockState2, i & -33);
@@ -393,7 +393,7 @@ public class Block implements ItemConvertible {
 		return VoxelShapes.empty();
 	}
 
-	public static boolean isSolidMediumSquare(BlockView blockView, BlockPos blockPos) {
+	public static boolean topCoversMediumSquare(BlockView blockView, BlockPos blockPos) {
 		BlockState blockState = blockView.getBlockState(blockPos);
 		return !blockState.matches(BlockTags.LEAVES)
 			&& !VoxelShapes.matchesAnywhere(
@@ -401,7 +401,7 @@ public class Block implements ItemConvertible {
 			);
 	}
 
-	public static boolean isSolidSmallSquare(class_4538 arg, BlockPos blockPos, Direction direction) {
+	public static boolean sideCoversSmallSquare(class_4538 arg, BlockPos blockPos, Direction direction) {
 		BlockState blockState = arg.getBlockState(blockPos);
 		return !blockState.matches(BlockTags.LEAVES)
 			&& !VoxelShapes.matchesAnywhere(blockState.getCollisionShape(arg, blockPos).getFace(direction), SOLID_SMALL_SQUARE_SHAPE, BooleanBiFunction.ONLY_SECOND);
@@ -430,7 +430,7 @@ public class Block implements ItemConvertible {
 	}
 
 	@Deprecated
-	public int getLightSubtracted(BlockState blockState, BlockView blockView, BlockPos blockPos) {
+	public int getOpacity(BlockState blockState, BlockView blockView, BlockPos blockPos) {
 		if (blockState.isFullOpaque(blockView, blockPos)) {
 			return blockView.getMaxLightLevel();
 		} else {

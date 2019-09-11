@@ -16,7 +16,7 @@ public class WetSpongeBlock extends Block {
 	@Override
 	public void onBlockAdded(BlockState blockState, World world, BlockPos blockPos, BlockState blockState2, boolean bl) {
 		if (world.getDimension().doesWaterVaporize()) {
-			world.setBlockState(blockPos, Blocks.SPONGE.getDefaultState(), 2);
+			world.setBlockState(blockPos, Blocks.SPONGE.getDefaultState(), 3);
 			world.playLevelEvent(2009, blockPos, 0);
 		}
 	}

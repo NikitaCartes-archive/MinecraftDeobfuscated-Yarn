@@ -71,7 +71,7 @@ public abstract class SchoolingFishEntity extends FishEntity {
 	public void tick() {
 		super.tick();
 		if (this.hasOtherFishInGroup() && this.world.random.nextInt(200) == 1) {
-			List<FishEntity> list = this.world.getEntities(this.getClass(), this.getBoundingBox().expand(8.0, 8.0, 8.0));
+			List<FishEntity> list = this.world.getNonSpectatingEntities(this.getClass(), this.getBoundingBox().expand(8.0, 8.0, 8.0));
 			if (list.size() <= 1) {
 				this.groupSize = 1;
 			}

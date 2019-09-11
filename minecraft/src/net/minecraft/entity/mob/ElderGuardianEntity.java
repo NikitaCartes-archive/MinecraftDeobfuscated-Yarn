@@ -89,8 +89,8 @@ public class ElderGuardianEntity extends GuardianEntity {
 			}
 		}
 
-		if (!this.hasWalkTargetRange()) {
-			this.setWalkTarget(new BlockPos(this), 16);
+		if (!this.hasPositionTarget()) {
+			this.setPositionTarget(new BlockPos(this), 16);
 		}
 	}
 }

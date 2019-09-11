@@ -3,7 +3,7 @@ package net.minecraft.entity.ai.goal;
 import javax.annotation.Nullable;
 import net.minecraft.block.Block;
 import net.minecraft.block.LeavesBlock;
-import net.minecraft.entity.ai.PathfindingUtil;
+import net.minecraft.entity.ai.TargetFinder;
 import net.minecraft.entity.mob.MobEntityWithAi;
 import net.minecraft.tag.BlockTags;
 import net.minecraft.util.math.BlockPos;
@@ -21,7 +21,7 @@ public class FlyAroundGoal extends WanderAroundFarGoal {
 	protected Vec3d getWanderTarget() {
 		Vec3d vec3d = null;
 		if (this.mob.isInsideWater()) {
-			vec3d = PathfindingUtil.findTargetStraight(this.mob, 15, 15);
+			vec3d = TargetFinder.findGroundTarget(this.mob, 15, 15);
 		}
 
 		if (this.mob.getRand().nextFloat() >= this.probability) {
@@ -48,7 +48,7 @@ public class FlyAroundGoal extends WanderAroundFarGoal {
 			if (!blockPos.equals(blockPos2)) {
 				Block block = this.mob.world.getBlockState(mutable2.set(blockPos2).setOffset(Direction.DOWN)).getBlock();
 				boolean bl = block instanceof LeavesBlock || block.matches(BlockTags.LOGS);
-				if (bl && this.mob.world.method_22347(blockPos2) && this.mob.world.method_22347(mutable.set(blockPos2).setOffset(Direction.UP))) {
+				if (bl && this.mob.world.isAir(blockPos2) && this.mob.world.isAir(mutable.set(blockPos2).setOffset(Direction.UP))) {
 					return new Vec3d((double)blockPos2.getX(), (double)blockPos2.getY(), (double)blockPos2.getZ());
 				}
 			}

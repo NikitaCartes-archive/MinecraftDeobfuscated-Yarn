@@ -40,7 +40,7 @@ public class BambooSaplingBlock extends Block implements Fertilizable {
 
 	@Override
 	public void onScheduledTick(BlockState blockState, ServerWorld serverWorld, BlockPos blockPos, Random random) {
-		if (random.nextInt(3) == 0 && serverWorld.method_22347(blockPos.up()) && serverWorld.method_22335(blockPos.up(), 0) >= 9) {
+		if (random.nextInt(3) == 0 && serverWorld.isAir(blockPos.up()) && serverWorld.getBaseLightLevel(blockPos.up(), 0) >= 9) {
 			this.grow(serverWorld, blockPos);
 		}
 	}

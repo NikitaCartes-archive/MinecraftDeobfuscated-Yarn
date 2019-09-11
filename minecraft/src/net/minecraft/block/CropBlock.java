@@ -72,7 +72,7 @@ public class CropBlock extends PlantBlock implements Fertilizable {
 	@Override
 	public void onScheduledTick(BlockState blockState, ServerWorld serverWorld, BlockPos blockPos, Random random) {
 		super.onScheduledTick(blockState, serverWorld, blockPos, random);
-		if (serverWorld.method_22335(blockPos, 0) >= 9) {
+		if (serverWorld.getBaseLightLevel(blockPos, 0) >= 9) {
 			int i = this.getAge(blockState);
 			if (i < this.getMaxAge()) {
 				float f = getAvailableMoisture(this, serverWorld, blockPos);
@@ -143,7 +143,7 @@ public class CropBlock extends PlantBlock implements Fertilizable {
 
 	@Override
 	public boolean canPlaceAt(BlockState blockState, class_4538 arg, BlockPos blockPos) {
-		return (arg.method_22335(blockPos, 0) >= 8 || arg.isSkyVisible(blockPos)) && super.canPlaceAt(blockState, arg, blockPos);
+		return (arg.getBaseLightLevel(blockPos, 0) >= 8 || arg.isSkyVisible(blockPos)) && super.canPlaceAt(blockState, arg, blockPos);
 	}
 
 	@Override

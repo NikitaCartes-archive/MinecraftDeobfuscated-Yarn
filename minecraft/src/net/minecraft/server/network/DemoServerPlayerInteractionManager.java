@@ -68,11 +68,11 @@ public class DemoServerPlayerInteractionManager extends ServerPlayerInteractionM
 	}
 
 	@Override
-	public void method_14263(BlockPos blockPos, PlayerActionC2SPacket.Action action, Direction direction, int i) {
+	public void processBlockBreakingAction(BlockPos blockPos, PlayerActionC2SPacket.Action action, Direction direction, int i) {
 		if (this.demoEnded) {
 			this.sendDemoReminder();
 		} else {
-			super.method_14263(blockPos, action, direction, i);
+			super.processBlockBreakingAction(blockPos, action, direction, i);
 		}
 	}
 

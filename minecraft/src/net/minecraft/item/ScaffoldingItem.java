@@ -30,8 +30,8 @@ public class ScaffoldingItem extends BlockItem {
 			return ScaffoldingBlock.calculateDistance(world, blockPos) == 7 ? null : itemPlacementContext;
 		} else {
 			Direction direction;
-			if (itemPlacementContext.isPlayerSneaking()) {
-				direction = itemPlacementContext.method_17699() ? itemPlacementContext.getSide().getOpposite() : itemPlacementContext.getSide();
+			if (itemPlacementContext.shouldCancelInteraction()) {
+				direction = itemPlacementContext.hitsInsideBlock() ? itemPlacementContext.getSide().getOpposite() : itemPlacementContext.getSide();
 			} else {
 				direction = itemPlacementContext.getSide() == Direction.UP ? itemPlacementContext.getPlayerFacing() : Direction.UP;
 			}

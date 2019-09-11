@@ -89,9 +89,9 @@ public class PolarBearEntity extends AnimalEntity {
 	public static boolean method_20668(EntityType<PolarBearEntity> entityType, IWorld iWorld, SpawnType spawnType, BlockPos blockPos, Random random) {
 		Biome biome = iWorld.getBiome(blockPos);
 		if (biome != Biomes.FROZEN_OCEAN && biome != Biomes.DEEP_FROZEN_OCEAN) {
-			return method_20663(entityType, iWorld, spawnType, blockPos, random);
+			return isValidNaturalSpawn(entityType, iWorld, spawnType, blockPos, random);
 		} else {
-			return iWorld.method_22335(blockPos, 0) > 8 && iWorld.getBlockState(blockPos.down()).getBlock() == Blocks.ICE;
+			return iWorld.getBaseLightLevel(blockPos, 0) > 8 && iWorld.getBlockState(blockPos.down()).getBlock() == Blocks.ICE;
 		}
 	}
 
@@ -192,13 +192,12 @@ public class PolarBearEntity extends AnimalEntity {
 	public EntityData initialize(
 		IWorld iWorld, LocalDifficulty localDifficulty, SpawnType spawnType, @Nullable EntityData entityData, @Nullable CompoundTag compoundTag
 	) {
-		if (entityData instanceof PolarBearEntity.PolarBearEntityData) {
-			this.setBreedingAge(-24000);
-		} else {
-			entityData = new PolarBearEntity.PolarBearEntityData();
+		if (entityData == null) {
+			entityData = new PassiveEntity$1();
+			((PassiveEntity$1)entityData).method_22433(1.0F);
 		}
 
-		return entityData;
+		return super.initialize(iWorld, localDifficulty, spawnType, entityData, compoundTag);
 	}
 
 	class AttackGoal extends MeleeAttackGoal {
@@ -253,7 +252,7 @@ public class PolarBearEntity extends AnimalEntity {
 			} else {
 				if (super.canStart()) {
 					for(PolarBearEntity polarBearEntity : PolarBearEntity.this.world
-						.getEntities(PolarBearEntity.class, PolarBearEntity.this.getBoundingBox().expand(8.0, 4.0, 8.0))) {
+						.getNonSpectatingEntities(PolarBearEntity.class, PolarBearEntity.this.getBoundingBox().expand(8.0, 4.0, 8.0))) {
 						if (polarBearEntity.isBaby()) {
 							return true;
 						}
@@ -267,11 +266,6 @@ public class PolarBearEntity extends AnimalEntity {
 		@Override
 		protected double getFollowRange() {
 			return super.getFollowRange() * 0.5;
-		}
-	}
-
-	static class PolarBearEntityData implements EntityData {
-		private PolarBearEntityData() {
 		}
 	}
 

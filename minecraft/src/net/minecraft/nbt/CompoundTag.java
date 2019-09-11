@@ -103,11 +103,11 @@ public class CompoundTag implements Tag {
 		return new UUID(this.getLong(string + "Most"), this.getLong(string + "Least"));
 	}
 
-	public boolean hasUuid(String string) {
+	public boolean containsUuid(String string) {
 		return this.containsKey(string + "Most", 99) && this.containsKey(string + "Least", 99);
 	}
 
-	public void method_22421(String string) {
+	public void removeUuid(String string) {
 		this.remove(string + "Most");
 		this.remove(string + "Least");
 	}

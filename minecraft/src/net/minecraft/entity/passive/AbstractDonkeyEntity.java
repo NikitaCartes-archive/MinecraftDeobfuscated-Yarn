@@ -142,7 +142,7 @@ public abstract class AbstractDonkeyEntity extends HorseBaseEntity {
 			return super.interactMob(playerEntity, hand);
 		} else {
 			if (!this.isBaby()) {
-				if (this.isTame() && playerEntity.method_21823()) {
+				if (this.isTame() && playerEntity.shouldCancelInteraction()) {
 					this.openInventory(playerEntity);
 					return true;
 				}

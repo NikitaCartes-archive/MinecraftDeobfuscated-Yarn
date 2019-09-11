@@ -522,7 +522,7 @@ public abstract class AbstractContainerScreen<T extends Container> extends Scree
 			i = slot.id;
 		}
 
-		this.minecraft.interactionManager.method_2906(this.container.syncId, i, j, slotActionType, this.minecraft.player);
+		this.minecraft.interactionManager.clickSlot(this.container.syncId, i, j, slotActionType, this.minecraft.player);
 	}
 
 	@Override

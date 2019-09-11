@@ -115,7 +115,7 @@ public class ChunkSection {
 		this.nonEmptyBlockCount = 0;
 		this.randomTickableBlockCount = 0;
 		this.nonEmptyFluidCount = 0;
-		this.container.method_21732((blockState, i) -> {
+		this.container.count((blockState, i) -> {
 			FluidState fluidState = blockState.getFluidState();
 			if (!blockState.isAir()) {
 				this.nonEmptyBlockCount = (short)(this.nonEmptyBlockCount + i);

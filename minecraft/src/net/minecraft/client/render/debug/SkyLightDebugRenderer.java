@@ -39,20 +39,20 @@ public class SkyLightDebugRenderer implements DebugRenderer.Renderer {
 			int i = world.getLightLevel(LightType.SKY, blockPos2);
 			float f = (float)(15 - i) / 15.0F * 0.5F + 0.16F;
 			int j = MathHelper.hsvToRgb(f, 0.9F, 0.9F);
-			long m = ChunkSectionPos.toChunkLong(blockPos2.asLong());
+			long m = ChunkSectionPos.fromGlobalPos(blockPos2.asLong());
 			if (longSet.add(m)) {
-				DebugRenderer.method_19429(
-					world.getChunkManager().getLightingProvider().method_15564(LightType.SKY, ChunkSectionPos.from(m)),
-					(double)(ChunkSectionPos.unpackLongX(m) * 16 + 8),
-					(double)(ChunkSectionPos.unpackLongY(m) * 16 + 8),
-					(double)(ChunkSectionPos.unpackLongZ(m) * 16 + 8),
+				DebugRenderer.drawFloatingText(
+					world.getChunkManager().getLightingProvider().getSectionDebugString(LightType.SKY, ChunkSectionPos.from(m)),
+					(double)(ChunkSectionPos.getX(m) * 16 + 8),
+					(double)(ChunkSectionPos.getY(m) * 16 + 8),
+					(double)(ChunkSectionPos.getZ(m) * 16 + 8),
 					16711680,
 					0.3F
 				);
 			}
 
 			if (i != 15) {
-				DebugRenderer.method_3714(String.valueOf(i), (double)blockPos2.getX() + 0.5, (double)blockPos2.getY() + 0.25, (double)blockPos2.getZ() + 0.5, j);
+				DebugRenderer.drawFloatingText(String.valueOf(i), (double)blockPos2.getX() + 0.5, (double)blockPos2.getY() + 0.25, (double)blockPos2.getZ() + 0.5, j);
 			}
 		}
 

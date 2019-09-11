@@ -168,7 +168,7 @@ public class SkeletonHorseEntity extends HorseBaseEntity {
 			return false;
 		} else if (this.isBaby()) {
 			return super.interactMob(playerEntity, hand);
-		} else if (playerEntity.method_21823()) {
+		} else if (playerEntity.shouldCancelInteraction()) {
 			this.openInventory(playerEntity);
 			return true;
 		} else if (this.hasPassengers()) {

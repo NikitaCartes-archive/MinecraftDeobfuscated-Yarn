@@ -105,7 +105,7 @@ public class BlockEntityRenderDispatcher {
 		if (blockEntity.getSquaredDistance(this.cameraEntity.getPos().x, this.cameraEntity.getPos().y, this.cameraEntity.getPos().z)
 			< blockEntity.getSquaredRenderDistance()) {
 			GuiLighting.enable();
-			int j = this.world.method_22337(blockEntity.getPos());
+			int j = this.world.getLightmapIndex(blockEntity.getPos());
 			int k = j % 65536;
 			int l = j / 65536;
 			RenderSystem.glMultiTexCoord2f(33985, (float)k, (float)l);

@@ -1,18 +1,14 @@
-package net.minecraft;
+package net.minecraft.item;
 
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.thrown.ThrownPotionEntity;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.PotionItem;
 import net.minecraft.stat.Stats;
-import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
 import net.minecraft.util.TypedActionResult;
 import net.minecraft.world.World;
 
-public class class_4537 extends PotionItem {
-	public class_4537(Item.Settings settings) {
+public class ThrowablePotionItem extends PotionItem {
+	public ThrowablePotionItem(Item.Settings settings) {
 		super(settings);
 	}
 
@@ -31,6 +27,6 @@ public class class_4537 extends PotionItem {
 			itemStack.decrement(1);
 		}
 
-		return new TypedActionResult<>(ActionResult.SUCCESS, itemStack);
+		return TypedActionResult.method_22427(itemStack);
 	}
 }

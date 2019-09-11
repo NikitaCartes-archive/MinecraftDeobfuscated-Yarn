@@ -130,7 +130,7 @@ public class BirdNavigation extends EntityNavigation {
 	}
 
 	public void setCanPathThroughDoors(boolean bl) {
-		this.nodeMaker.setCanPathThroughDoors(bl);
+		this.nodeMaker.setCanOpenDoors(bl);
 	}
 
 	public void setCanEnterOpenDoors(boolean bl) {

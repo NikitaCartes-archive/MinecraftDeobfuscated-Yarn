@@ -43,7 +43,7 @@ public class ZombiePigmanEntity extends ZombieEntity {
 
 	public ZombiePigmanEntity(EntityType<? extends ZombiePigmanEntity> entityType, World world) {
 		super(entityType, world);
-		this.setPathNodeTypeWeight(PathNodeType.LAVA, 8.0F);
+		this.setPathfindingPenalty(PathNodeType.LAVA, 8.0F);
 	}
 
 	@Override
@@ -120,7 +120,7 @@ public class ZombiePigmanEntity extends ZombieEntity {
 
 	@Override
 	public boolean canSpawn(class_4538 arg) {
-		return arg.intersectsEntities(this) && !arg.method_22345(this.getBoundingBox());
+		return arg.intersectsEntities(this) && !arg.containsFluid(this.getBoundingBox());
 	}
 
 	@Override

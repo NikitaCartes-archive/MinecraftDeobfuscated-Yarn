@@ -25,7 +25,7 @@ public class IronGolemLookGoal extends Goal {
 		} else {
 			this.targetVillager = this.golem
 				.world
-				.method_21726(
+				.getClosestEntity(
 					VillagerEntity.class, CLOSE_VILLAGER_PREDICATE, this.golem, this.golem.x, this.golem.y, this.golem.z, this.golem.getBoundingBox().expand(6.0, 2.0, 6.0)
 				);
 			return this.targetVillager != null;

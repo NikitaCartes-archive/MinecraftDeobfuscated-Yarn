@@ -9,7 +9,6 @@ import net.minecraft.nbt.ListTag;
 import net.minecraft.recipe.Recipe;
 import net.minecraft.recipe.RecipeManager;
 import net.minecraft.stat.Stats;
-import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.TypedActionResult;
@@ -43,7 +42,7 @@ public class KnowledgeBookItem extends Item {
 					Optional<? extends Recipe<?>> optional = recipeManager.get(new Identifier(string));
 					if (!optional.isPresent()) {
 						LOGGER.error("Invalid recipe: {}", string);
-						return new TypedActionResult<>(ActionResult.FAIL, itemStack);
+						return TypedActionResult.method_22431(itemStack);
 					}
 
 					list.add(optional.get());
@@ -53,10 +52,10 @@ public class KnowledgeBookItem extends Item {
 				playerEntity.incrementStat(Stats.USED.getOrCreateStat(this));
 			}
 
-			return new TypedActionResult<>(ActionResult.SUCCESS, itemStack);
+			return TypedActionResult.method_22427(itemStack);
 		} else {
 			LOGGER.error("Tag not valid: {}", compoundTag);
-			return new TypedActionResult<>(ActionResult.FAIL, itemStack);
+			return TypedActionResult.method_22431(itemStack);
 		}
 	}
 }

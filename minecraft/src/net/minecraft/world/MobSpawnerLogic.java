@@ -123,7 +123,7 @@ public abstract class MobSpawnerLogic {
 							return;
 						}
 
-						int l = world.getEntities(
+						int l = world.getNonSpectatingEntities(
 								entity.getClass(),
 								new Box(
 										(double)blockPos.getX(),

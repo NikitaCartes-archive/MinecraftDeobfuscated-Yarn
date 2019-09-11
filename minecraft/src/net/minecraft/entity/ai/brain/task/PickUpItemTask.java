@@ -21,7 +21,7 @@ public class PickUpItemTask extends Task<VillagerEntity> {
 	}
 
 	protected boolean method_20818(ServerWorld serverWorld, VillagerEntity villagerEntity) {
-		this.nearbyItems = serverWorld.getEntities(ItemEntity.class, villagerEntity.getBoundingBox().expand(4.0, 2.0, 4.0));
+		this.nearbyItems = serverWorld.getNonSpectatingEntities(ItemEntity.class, villagerEntity.getBoundingBox().expand(4.0, 2.0, 4.0));
 		return !this.nearbyItems.isEmpty();
 	}
 

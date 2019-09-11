@@ -24,7 +24,7 @@ public class BannerBlockEntityRenderer extends BlockEntityRenderer<BannerBlockEn
 		float h = 0.6666667F;
 		boolean bl = bannerBlockEntity.getWorld() == null;
 		RenderSystem.pushMatrix();
-		ModelPart modelPart = this.model.method_2791();
+		ModelPart modelPart = this.model.getVerticalStick();
 		long l;
 		if (bl) {
 			l = 0L;
@@ -47,14 +47,14 @@ public class BannerBlockEntityRenderer extends BlockEntityRenderer<BannerBlockEn
 
 		BlockPos blockPos = bannerBlockEntity.getPos();
 		float j = ((float)Math.floorMod((long)(blockPos.getX() * 7 + blockPos.getY() * 9 + blockPos.getZ() * 13) + l, 100L) + g) / 100.0F;
-		this.model.method_2792().pitch = (-0.0125F + 0.01F * MathHelper.cos((float) (Math.PI * 2) * j)) * (float) Math.PI;
+		this.model.getBanner().pitch = (-0.0125F + 0.01F * MathHelper.cos((float) (Math.PI * 2) * j)) * (float) Math.PI;
 		RenderSystem.enableRescaleNormal();
 		Identifier identifier = this.getTextureId(bannerBlockEntity);
 		if (identifier != null) {
 			this.bindTexture(identifier);
 			RenderSystem.pushMatrix();
 			RenderSystem.scalef(0.6666667F, -0.6666667F, -0.6666667F);
-			this.model.method_2793();
+			this.model.render();
 			RenderSystem.popMatrix();
 		}
 

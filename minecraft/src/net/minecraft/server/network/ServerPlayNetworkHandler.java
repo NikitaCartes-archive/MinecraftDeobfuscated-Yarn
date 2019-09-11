@@ -489,7 +489,7 @@ public class ServerPlayNetworkHandler implements ServerPlayPacketListener {
 					}
 				}
 
-				blockEntity.validate();
+				blockEntity.cancelRemoval();
 				this.player.world.setBlockEntity(blockPos, blockEntity);
 				commandBlockExecutor.setCommand(string);
 				commandBlockExecutor.shouldTrackOutput(bl);
@@ -881,7 +881,7 @@ public class ServerPlayNetworkHandler implements ServerPlayPacketListener {
 			case START_DESTROY_BLOCK:
 			case ABORT_DESTROY_BLOCK:
 			case STOP_DESTROY_BLOCK:
-				this.player.interactionManager.method_14263(blockPos, action, playerActionC2SPacket.getDirection(), this.server.getWorldHeight());
+				this.player.interactionManager.processBlockBreakingAction(blockPos, action, playerActionC2SPacket.getDirection(), this.server.getWorldHeight());
 				return;
 			default:
 				throw new IllegalArgumentException("Invalid player action");
@@ -1293,7 +1293,7 @@ public class ServerPlayNetworkHandler implements ServerPlayPacketListener {
 		this.player.updateLastActionTime();
 		ServerWorld serverWorld = this.server.getWorld(this.player.dimension);
 		BlockPos blockPos = updateSignC2SPacket.getPos();
-		if (serverWorld.method_22340(blockPos)) {
+		if (serverWorld.isChunkLoaded(blockPos)) {
 			BlockState blockState = serverWorld.getBlockState(blockPos);
 			BlockEntity blockEntity = serverWorld.getBlockEntity(blockPos);
 			if (!(blockEntity instanceof SignBlockEntity)) {

@@ -1,6 +1,5 @@
 package net.minecraft.item;
 
-import net.minecraft.class_4537;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
@@ -8,7 +7,7 @@ import net.minecraft.util.Hand;
 import net.minecraft.util.TypedActionResult;
 import net.minecraft.world.World;
 
-public class SplashPotionItem extends class_4537 {
+public class SplashPotionItem extends ThrowablePotionItem {
 	public SplashPotionItem(Item.Settings settings) {
 		super(settings);
 	}

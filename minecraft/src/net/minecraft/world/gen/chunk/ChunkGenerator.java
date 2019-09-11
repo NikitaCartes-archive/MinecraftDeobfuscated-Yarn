@@ -15,9 +15,9 @@ import net.minecraft.structure.StructureManager;
 import net.minecraft.structure.StructureStart;
 import net.minecraft.util.crash.CrashException;
 import net.minecraft.util.crash.CrashReport;
+import net.minecraft.util.math.BlockBox;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
-import net.minecraft.util.math.MutableIntBoundingBox;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.world.ChunkRegion;
 import net.minecraft.world.Heightmap;
@@ -53,7 +53,7 @@ public abstract class ChunkGenerator<C extends ChunkGeneratorConfig> {
 	}
 
 	protected Biome getDecorationBiome(class_4543 arg, BlockPos blockPos) {
-		return arg.method_22393(blockPos);
+		return arg.getBiome(blockPos);
 	}
 
 	public void carve(class_4543 arg, Chunk chunk, GenerationStep.Carver carver) {
@@ -154,10 +154,10 @@ public abstract class ChunkGenerator<C extends ChunkGeneratorConfig> {
 				ChunkRandom chunkRandom = new ChunkRandom();
 				ChunkPos chunkPos = chunk.getPos();
 				StructureStart structureStart = StructureStart.DEFAULT;
-				Biome biome = arg.method_22393(new BlockPos(chunkPos.getStartX() + 9, 0, chunkPos.getStartZ() + 9));
+				Biome biome = arg.getBiome(new BlockPos(chunkPos.getStartX() + 9, 0, chunkPos.getStartZ() + 9));
 				if (structureFeature.shouldStartAt(arg, chunkGenerator, chunkRandom, chunkPos.x, chunkPos.z, biome)) {
 					StructureStart structureStart2 = structureFeature.getStructureStartFactory()
-						.create(structureFeature, chunkPos.x, chunkPos.z, MutableIntBoundingBox.empty(), 0, chunkGenerator.getSeed());
+						.create(structureFeature, chunkPos.x, chunkPos.z, BlockBox.empty(), 0, chunkGenerator.getSeed());
 					structureStart2.initialize(this, structureManager, chunkPos.x, chunkPos.z, biome);
 					structureStart = structureStart2.hasChildren() ? structureStart2 : StructureStart.DEFAULT;
 				}

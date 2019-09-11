@@ -153,11 +153,11 @@ public class MathHelper {
 	}
 
 	@Environment(EnvType.CLIENT)
-	public static boolean equalsApproximate(float f, float g) {
+	public static boolean approximatelyEquals(float f, float g) {
 		return Math.abs(g - f) < 1.0E-5F;
 	}
 
-	public static boolean method_20390(double d, double e) {
+	public static boolean approximatelyEquals(double d, double e) {
 		return Math.abs(e - d) < 1.0E-5F;
 	}
 

@@ -317,7 +317,7 @@ public class RavagerEntity extends RaiderEntity {
 
 	@Override
 	public boolean canSpawn(class_4538 arg) {
-		return !arg.method_22345(this.getBoundingBox());
+		return !arg.containsFluid(this.getBoundingBox());
 	}
 
 	@Override
@@ -358,8 +358,8 @@ public class RavagerEntity extends RaiderEntity {
 		}
 
 		@Override
-		protected PathNodeType method_61(BlockView blockView, boolean bl, boolean bl2, BlockPos blockPos, PathNodeType pathNodeType) {
-			return pathNodeType == PathNodeType.LEAVES ? PathNodeType.OPEN : super.method_61(blockView, bl, bl2, blockPos, pathNodeType);
+		protected PathNodeType adjustNodeType(BlockView blockView, boolean bl, boolean bl2, BlockPos blockPos, PathNodeType pathNodeType) {
+			return pathNodeType == PathNodeType.LEAVES ? PathNodeType.OPEN : super.adjustNodeType(blockView, bl, bl2, blockPos, pathNodeType);
 		}
 	}
 }

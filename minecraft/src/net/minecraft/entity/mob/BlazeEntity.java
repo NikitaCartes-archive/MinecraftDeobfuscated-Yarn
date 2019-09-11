@@ -35,10 +35,10 @@ public class BlazeEntity extends HostileEntity {
 
 	public BlazeEntity(EntityType<? extends BlazeEntity> entityType, World world) {
 		super(entityType, world);
-		this.setPathNodeTypeWeight(PathNodeType.WATER, -1.0F);
-		this.setPathNodeTypeWeight(PathNodeType.LAVA, 8.0F);
-		this.setPathNodeTypeWeight(PathNodeType.DANGER_FIRE, 0.0F);
-		this.setPathNodeTypeWeight(PathNodeType.DAMAGE_FIRE, 0.0F);
+		this.setPathfindingPenalty(PathNodeType.WATER, -1.0F);
+		this.setPathfindingPenalty(PathNodeType.LAVA, 8.0F);
+		this.setPathfindingPenalty(PathNodeType.DANGER_FIRE, 0.0F);
+		this.setPathfindingPenalty(PathNodeType.DAMAGE_FIRE, 0.0F);
 		this.experiencePoints = 10;
 	}
 

@@ -95,7 +95,7 @@ public class CrashReportSection {
 		this.add(string, (Object)throwable);
 	}
 
-	public int trimStackTrace(int i) {
+	public int initStackTrace(int i) {
 		StackTraceElement[] stackTraceElements = Thread.currentThread().getStackTrace();
 		if (stackTraceElements.length <= 0) {
 			return 0;
@@ -129,7 +129,7 @@ public class CrashReportSection {
 		}
 	}
 
-	public void method_580(int i) {
+	public void trimStackTraceEnd(int i) {
 		StackTraceElement[] stackTraceElements = new StackTraceElement[this.stackTrace.length - i];
 		System.arraycopy(this.stackTrace, 0, stackTraceElements, 0, stackTraceElements.length);
 		this.stackTrace = stackTraceElements;

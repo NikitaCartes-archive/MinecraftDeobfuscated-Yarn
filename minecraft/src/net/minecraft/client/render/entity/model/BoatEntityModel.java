@@ -12,7 +12,7 @@ import net.minecraft.util.math.MathHelper;
 public class BoatEntityModel extends EntityModel<BoatEntity> {
 	private final ModelPart[] body = new ModelPart[5];
 	private final ModelPart[] paddles = new ModelPart[2];
-	private final ModelPart field_3326;
+	private final ModelPart bottom;
 
 	public BoatEntityModel() {
 		this.body[0] = new ModelPart(this, 0, 0).setTextureSize(128, 64);
@@ -46,10 +46,10 @@ public class BoatEntityModel extends EntityModel<BoatEntity> {
 		this.paddles[1].yaw = (float) Math.PI;
 		this.paddles[0].roll = (float) (Math.PI / 16);
 		this.paddles[1].roll = (float) (Math.PI / 16);
-		this.field_3326 = new ModelPart(this, 0, 0).setTextureSize(128, 64);
-		this.field_3326.addCuboid(-14.0F, -9.0F, -3.0F, 28, 16, 3, 0.0F);
-		this.field_3326.setRotationPoint(0.0F, -3.0F, 1.0F);
-		this.field_3326.pitch = (float) (Math.PI / 2);
+		this.bottom = new ModelPart(this, 0, 0).setTextureSize(128, 64);
+		this.bottom.addCuboid(-14.0F, -9.0F, -3.0F, 28, 16, 3, 0.0F);
+		this.bottom.setRotationPoint(0.0F, -3.0F, 1.0F);
+		this.bottom.pitch = (float) (Math.PI / 2);
 	}
 
 	public void method_17071(BoatEntity boatEntity, float f, float g, float h, float i, float j, float k) {
@@ -67,7 +67,7 @@ public class BoatEntityModel extends EntityModel<BoatEntity> {
 	public void renderPass(Entity entity, float f, float g, float h, float i, float j, float k) {
 		RenderSystem.rotatef(90.0F, 0.0F, 1.0F, 0.0F);
 		RenderSystem.colorMask(false, false, false, false);
-		this.field_3326.render(k);
+		this.bottom.render(k);
 		RenderSystem.colorMask(true, true, true, true);
 	}
 

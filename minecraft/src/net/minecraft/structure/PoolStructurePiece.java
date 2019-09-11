@@ -12,9 +12,9 @@ import net.minecraft.structure.pool.EmptyPoolElement;
 import net.minecraft.structure.pool.StructurePoolElement;
 import net.minecraft.util.BlockRotation;
 import net.minecraft.util.DynamicDeserializer;
+import net.minecraft.util.math.BlockBox;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
-import net.minecraft.util.math.MutableIntBoundingBox;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.world.IWorld;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
@@ -34,7 +34,7 @@ public abstract class PoolStructurePiece extends StructurePiece {
 		BlockPos blockPos,
 		int i,
 		BlockRotation blockRotation,
-		MutableIntBoundingBox mutableIntBoundingBox
+		BlockBox blockBox
 	) {
 		super(structurePieceType, 0);
 		this.structureManager = structureManager;
@@ -42,7 +42,7 @@ public abstract class PoolStructurePiece extends StructurePiece {
 		this.pos = blockPos;
 		this.groundLevelDelta = i;
 		this.rotation = blockRotation;
-		this.boundingBox = mutableIntBoundingBox;
+		this.boundingBox = blockBox;
 	}
 
 	public PoolStructurePiece(StructureManager structureManager, CompoundTag compoundTag, StructurePieceType structurePieceType) {
@@ -78,8 +78,8 @@ public abstract class PoolStructurePiece extends StructurePiece {
 	}
 
 	@Override
-	public boolean generate(IWorld iWorld, ChunkGenerator<?> chunkGenerator, Random random, MutableIntBoundingBox mutableIntBoundingBox, ChunkPos chunkPos) {
-		return this.poolElement.generate(this.structureManager, iWorld, chunkGenerator, this.pos, this.rotation, mutableIntBoundingBox, random);
+	public boolean generate(IWorld iWorld, ChunkGenerator<?> chunkGenerator, Random random, BlockBox blockBox, ChunkPos chunkPos) {
+		return this.poolElement.generate(this.structureManager, iWorld, chunkGenerator, this.pos, this.rotation, blockBox, random);
 	}
 
 	@Override

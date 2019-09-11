@@ -40,7 +40,7 @@ public class MagmaCubeEntity extends SlimeEntity {
 
 	@Override
 	public boolean canSpawn(class_4538 arg) {
-		return arg.intersectsEntities(this) && !arg.method_22345(this.getBoundingBox());
+		return arg.intersectsEntities(this) && !arg.containsFluid(this.getBoundingBox());
 	}
 
 	@Override

@@ -9,7 +9,6 @@ import net.minecraft.entity.projectile.ProjectileEntity;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.stat.Stats;
-import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.TypedActionResult;
@@ -126,9 +125,9 @@ public class BowItem extends RangedWeaponItem {
 		boolean bl = !playerEntity.getArrowType(itemStack).isEmpty();
 		if (playerEntity.abilities.creativeMode || bl) {
 			playerEntity.setCurrentHand(hand);
-			return new TypedActionResult<>(ActionResult.SUCCESS, itemStack);
+			return TypedActionResult.method_22428(itemStack);
 		} else {
-			return bl ? new TypedActionResult<>(ActionResult.PASS, itemStack) : new TypedActionResult<>(ActionResult.FAIL, itemStack);
+			return bl ? TypedActionResult.method_22430(itemStack) : TypedActionResult.method_22431(itemStack);
 		}
 	}
 

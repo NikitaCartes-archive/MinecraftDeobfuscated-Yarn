@@ -59,7 +59,7 @@ public class CakeBlock extends Block {
 			if (i < 6) {
 				iWorld.setBlockState(blockPos, blockState.with(BITES, Integer.valueOf(i + 1)), 3);
 			} else {
-				iWorld.clearBlockState(blockPos, false);
+				iWorld.removeBlock(blockPos, false);
 			}
 
 			return true;

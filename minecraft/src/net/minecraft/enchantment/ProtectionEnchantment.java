@@ -33,7 +33,7 @@ public class ProtectionEnchantment extends Enchantment {
 
 	@Override
 	public int getProtectionAmount(int i, DamageSource damageSource) {
-		if (damageSource.doesDamageToCreative()) {
+		if (damageSource.isOutOfWorld()) {
 			return 0;
 		} else if (this.type == ProtectionEnchantment.Type.ALL) {
 			return i;

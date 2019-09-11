@@ -306,7 +306,7 @@ public class BakedQuadFactory {
 				float p = Float.intBitsToFloat(js[o]);
 				float q = Float.intBitsToFloat(js[o + 1]);
 				float r = Float.intBitsToFloat(js[o + 2]);
-				if (MathHelper.equalsApproximate(h, p) && MathHelper.equalsApproximate(l, q) && MathHelper.equalsApproximate(m, r)) {
+				if (MathHelper.approximatelyEquals(h, p) && MathHelper.approximatelyEquals(l, q) && MathHelper.approximatelyEquals(m, r)) {
 					is[k + 4] = js[o + 4];
 					is[k + 4 + 1] = js[o + 4 + 1];
 				}

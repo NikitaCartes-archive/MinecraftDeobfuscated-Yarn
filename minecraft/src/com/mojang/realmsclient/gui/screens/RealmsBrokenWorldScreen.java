@@ -8,6 +8,7 @@ import com.mojang.realmsclient.dto.RealmsServer;
 import com.mojang.realmsclient.dto.RealmsWorldOptions;
 import com.mojang.realmsclient.dto.WorldDownload;
 import com.mojang.realmsclient.exception.RealmsServiceException;
+import com.mojang.realmsclient.gui.RealmsConstants;
 import com.mojang.realmsclient.util.RealmsTasks;
 import com.mojang.realmsclient.util.RealmsTextureManager;
 import java.io.IOException;
@@ -16,7 +17,6 @@ import java.util.List;
 import java.util.Map.Entry;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_4359;
 import net.minecraft.realms.Realms;
 import net.minecraft.realms.RealmsButton;
 import net.minecraft.realms.RealmsMth;
@@ -58,7 +58,7 @@ public class RealmsBrokenWorldScreen extends RealmsScreen {
 	public void init() {
 		this.left_x = this.width() / 2 - 150;
 		this.right_x = this.width() / 2 + 190;
-		this.buttonsAdd(new RealmsButton(0, this.right_x - 80 + 8, class_4359.method_21072(13) - 5, 70, 20, getLocalizedString("gui.back")) {
+		this.buttonsAdd(new RealmsButton(0, this.right_x - 80 + 8, RealmsConstants.row(13) - 5, 70, 20, getLocalizedString("gui.back")) {
 			@Override
 			public void onPress() {
 				RealmsBrokenWorldScreen.this.backButtonClicked();
@@ -98,7 +98,7 @@ public class RealmsBrokenWorldScreen extends RealmsScreen {
 				new RealmsButton(
 					resetButtonIds.get(entry.getKey() - 1),
 					this.getFramePositionX(entry.getKey()),
-					class_4359.method_21072(10),
+					RealmsConstants.row(10),
 					80,
 					20,
 					getLocalizedString("mco.brokenworld.reset")
@@ -135,7 +135,7 @@ public class RealmsBrokenWorldScreen extends RealmsScreen {
 		String[] strings = this.message.split("\\\\n");
 
 		for(int k = 0; k < strings.length; ++k) {
-			this.drawCenteredString(strings[k], this.width() / 2, class_4359.method_21072(-1) + 3 + k * 12, 10526880);
+			this.drawCenteredString(strings[k], this.width() / 2, RealmsConstants.row(-1) + 3 + k * 12, 10526880);
 		}
 
 		if (this.field_20492 != null) {
@@ -143,7 +143,7 @@ public class RealmsBrokenWorldScreen extends RealmsScreen {
 				if (((RealmsWorldOptions)entry.getValue()).templateImage != null && ((RealmsWorldOptions)entry.getValue()).templateId != -1L) {
 					this.drawSlotFrame(
 						this.getFramePositionX(entry.getKey()),
-						class_4359.method_21072(1) + 5,
+						RealmsConstants.row(1) + 5,
 						i,
 						j,
 						this.field_20492.activeSlot == entry.getKey() && !this.isMinigame(),
@@ -156,7 +156,7 @@ public class RealmsBrokenWorldScreen extends RealmsScreen {
 				} else {
 					this.drawSlotFrame(
 						this.getFramePositionX(entry.getKey()),
-						class_4359.method_21072(1) + 5,
+						RealmsConstants.row(1) + 5,
 						i,
 						j,
 						this.field_20492.activeSlot == entry.getKey() && !this.isMinigame(),
@@ -311,7 +311,7 @@ public class RealmsBrokenWorldScreen extends RealmsScreen {
 	@Environment(EnvType.CLIENT)
 	class DownloadButton extends RealmsButton {
 		public DownloadButton(int i, int j, String string) {
-			super(i, j, class_4359.method_21072(8), 80, 20, string);
+			super(i, j, RealmsConstants.row(8), 80, 20, string);
 		}
 
 		@Override
@@ -325,7 +325,7 @@ public class RealmsBrokenWorldScreen extends RealmsScreen {
 	@Environment(EnvType.CLIENT)
 	class PlayButton extends RealmsButton {
 		public PlayButton(int i, int j, String string) {
-			super(i, j, class_4359.method_21072(8), 80, 20, string);
+			super(i, j, RealmsConstants.row(8), 80, 20, string);
 		}
 
 		@Override

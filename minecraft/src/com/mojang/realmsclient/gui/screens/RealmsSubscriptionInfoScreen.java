@@ -4,6 +4,7 @@ import com.mojang.realmsclient.client.RealmsClient;
 import com.mojang.realmsclient.dto.RealmsServer;
 import com.mojang.realmsclient.dto.Subscription;
 import com.mojang.realmsclient.exception.RealmsServiceException;
+import com.mojang.realmsclient.gui.RealmsConstants;
 import com.mojang.realmsclient.util.RealmsUtil;
 import java.io.IOException;
 import java.text.DateFormat;
@@ -13,7 +14,6 @@ import java.util.Locale;
 import java.util.TimeZone;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_4359;
 import net.minecraft.realms.Realms;
 import net.minecraft.realms.RealmsButton;
 import net.minecraft.realms.RealmsScreen;
@@ -54,7 +54,7 @@ public class RealmsSubscriptionInfoScreen extends RealmsScreen {
 		Realms.narrateNow(this.subscriptionTitle, this.subscriptionStartLabelText, this.startDate, this.timeLeftLabelText, this.daysLeftPresentation(this.daysLeft));
 		this.setKeyboardHandlerSendRepeatsToGui(true);
 		this.buttonsAdd(
-			new RealmsButton(2, this.width() / 2 - 100, class_4359.method_21072(6), getLocalizedString("mco.configure.world.subscription.extend")) {
+			new RealmsButton(2, this.width() / 2 - 100, RealmsConstants.row(6), getLocalizedString("mco.configure.world.subscription.extend")) {
 				@Override
 				public void onPress() {
 					String string = "https://account.mojang.com/buy/realms?sid="
@@ -66,14 +66,14 @@ public class RealmsSubscriptionInfoScreen extends RealmsScreen {
 				}
 			}
 		);
-		this.buttonsAdd(new RealmsButton(0, this.width() / 2 - 100, class_4359.method_21072(12), getLocalizedString("gui.back")) {
+		this.buttonsAdd(new RealmsButton(0, this.width() / 2 - 100, RealmsConstants.row(12), getLocalizedString("gui.back")) {
 			@Override
 			public void onPress() {
 				Realms.setScreen(RealmsSubscriptionInfoScreen.this.lastScreen);
 			}
 		});
 		if (this.serverData.expired) {
-			this.buttonsAdd(new RealmsButton(1, this.width() / 2 - 100, class_4359.method_21072(10), getLocalizedString("mco.configure.world.delete.button")) {
+			this.buttonsAdd(new RealmsButton(1, this.width() / 2 - 100, RealmsConstants.row(10), getLocalizedString("mco.configure.world.delete.button")) {
 				@Override
 				public void onPress() {
 					String string = RealmsScreen.getLocalizedString("mco.configure.world.delete.question.line1");
@@ -150,15 +150,15 @@ public class RealmsSubscriptionInfoScreen extends RealmsScreen {
 		this.renderBackground();
 		int k = this.width() / 2 - 100;
 		this.drawCenteredString(this.subscriptionTitle, this.width() / 2, 17, 16777215);
-		this.drawString(this.subscriptionStartLabelText, k, class_4359.method_21072(0), 10526880);
-		this.drawString(this.startDate, k, class_4359.method_21072(1), 16777215);
+		this.drawString(this.subscriptionStartLabelText, k, RealmsConstants.row(0), 10526880);
+		this.drawString(this.startDate, k, RealmsConstants.row(1), 16777215);
 		if (this.type == Subscription.SubscriptionType.NORMAL) {
-			this.drawString(this.timeLeftLabelText, k, class_4359.method_21072(3), 10526880);
+			this.drawString(this.timeLeftLabelText, k, RealmsConstants.row(3), 10526880);
 		} else if (this.type == Subscription.SubscriptionType.RECURRING) {
-			this.drawString(this.daysLeftLabelText, k, class_4359.method_21072(3), 10526880);
+			this.drawString(this.daysLeftLabelText, k, RealmsConstants.row(3), 10526880);
 		}
 
-		this.drawString(this.daysLeftPresentation(this.daysLeft), k, class_4359.method_21072(4), 16777215);
+		this.drawString(this.daysLeftPresentation(this.daysLeft), k, RealmsConstants.row(4), 16777215);
 		super.render(i, j, f);
 	}
 

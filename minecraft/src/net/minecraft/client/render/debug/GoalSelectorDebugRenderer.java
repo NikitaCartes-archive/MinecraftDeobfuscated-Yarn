@@ -47,7 +47,7 @@ public class GoalSelectorDebugRenderer implements DebugRenderer.Renderer {
 					double e = (double)lv.field_18782.getY() + 2.0 + (double)i * 0.25;
 					double f = (double)lv.field_18782.getZ() + 0.5;
 					int j = lv.field_18785 ? -16711936 : -3355444;
-					DebugRenderer.method_3714(lv.field_18784, d, e, f, j);
+					DebugRenderer.drawFloatingText(lv.field_18784, d, e, f, j);
 				}
 			}
 		});

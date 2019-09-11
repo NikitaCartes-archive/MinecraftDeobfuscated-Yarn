@@ -8,13 +8,13 @@ import javax.annotation.Nullable;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.NumberRange;
 
-public class FloatRange {
-	public static final FloatRange ANY = new FloatRange(null, null);
+public class FloatRangeArgument {
+	public static final FloatRangeArgument ANY = new FloatRangeArgument(null, null);
 	public static final SimpleCommandExceptionType ONLY_INTS_EXCEPTION = new SimpleCommandExceptionType(new TranslatableText("argument.range.ints"));
 	private final Float min;
 	private final Float max;
 
-	public FloatRange(@Nullable Float float_, @Nullable Float float2) {
+	public FloatRangeArgument(@Nullable Float float_, @Nullable Float float2) {
 		this.min = float_;
 		this.max = float2;
 	}
@@ -29,7 +29,7 @@ public class FloatRange {
 		return this.max;
 	}
 
-	public static FloatRange parse(StringReader stringReader, boolean bl, Function<Float, Float> function) throws CommandSyntaxException {
+	public static FloatRangeArgument parse(StringReader stringReader, boolean bl, Function<Float, Float> function) throws CommandSyntaxException {
 		if (!stringReader.canRead()) {
 			throw NumberRange.EXCEPTION_EMPTY.createWithContext(stringReader);
 		} else {
@@ -57,7 +57,7 @@ public class FloatRange {
 				stringReader.setCursor(i);
 				throw NumberRange.EXCEPTION_EMPTY.createWithContext(stringReader);
 			} else {
-				return new FloatRange(float_, float2);
+				return new FloatRangeArgument(float_, float2);
 			}
 		}
 	}

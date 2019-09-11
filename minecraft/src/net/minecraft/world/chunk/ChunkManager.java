@@ -18,7 +18,7 @@ public abstract class ChunkManager implements ChunkProvider, AutoCloseable {
 	}
 
 	@Nullable
-	public WorldChunk method_21730(int i, int j) {
+	public WorldChunk getWorldChunk(int i, int j) {
 		return this.getWorldChunk(i, j, false);
 	}
 

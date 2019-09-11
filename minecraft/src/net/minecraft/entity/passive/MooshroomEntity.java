@@ -44,11 +44,11 @@ public class MooshroomEntity extends CowEntity {
 
 	@Override
 	public float getPathfindingFavor(BlockPos blockPos, class_4538 arg) {
-		return arg.getBlockState(blockPos.down()).getBlock() == Blocks.MYCELIUM ? 10.0F : arg.method_22349(blockPos) - 0.5F;
+		return arg.getBlockState(blockPos.down()).getBlock() == Blocks.MYCELIUM ? 10.0F : arg.getBrightness(blockPos) - 0.5F;
 	}
 
 	public static boolean method_20665(EntityType<MooshroomEntity> entityType, IWorld iWorld, SpawnType spawnType, BlockPos blockPos, Random random) {
-		return iWorld.getBlockState(blockPos.down()).getBlock() == Blocks.MYCELIUM && iWorld.method_22335(blockPos, 0) > 8;
+		return iWorld.getBlockState(blockPos.down()).getBlock() == Blocks.MYCELIUM && iWorld.getBaseLightLevel(blockPos, 0) > 8;
 	}
 
 	@Override

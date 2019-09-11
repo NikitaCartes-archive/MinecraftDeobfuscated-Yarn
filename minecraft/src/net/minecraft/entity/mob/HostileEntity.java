@@ -85,14 +85,14 @@ public abstract class HostileEntity extends MobEntityWithAi implements Monster {
 
 	@Override
 	public float getPathfindingFavor(BlockPos blockPos, class_4538 arg) {
-		return 0.5F - arg.method_22349(blockPos);
+		return 0.5F - arg.getBrightness(blockPos);
 	}
 
 	public static boolean method_20679(IWorld iWorld, BlockPos blockPos, Random random) {
 		if (iWorld.getLightLevel(LightType.SKY, blockPos) > random.nextInt(32)) {
 			return false;
 		} else {
-			int i = iWorld.getWorld().isThundering() ? iWorld.method_22346(blockPos, 10) : iWorld.method_22339(blockPos);
+			int i = iWorld.getWorld().isThundering() ? iWorld.getLightLevel(blockPos, 10) : iWorld.getLightLevel(blockPos);
 			return i <= random.nextInt(8);
 		}
 	}

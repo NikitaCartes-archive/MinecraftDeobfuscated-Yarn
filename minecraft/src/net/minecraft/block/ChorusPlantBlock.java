@@ -64,7 +64,7 @@ public class ChorusPlantBlock extends ConnectedPlantBlock {
 	@Override
 	public void onScheduledTick(BlockState blockState, ServerWorld serverWorld, BlockPos blockPos, Random random) {
 		if (!blockState.canPlaceAt(serverWorld, blockPos)) {
-			serverWorld.method_22352(blockPos, true);
+			serverWorld.breakBlock(blockPos, true);
 		}
 	}
 

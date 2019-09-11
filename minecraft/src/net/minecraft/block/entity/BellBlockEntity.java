@@ -92,7 +92,7 @@ public class BellBlockEntity extends BlockEntity implements Tickable {
 		if (this.world.getTime() > this.field_19155 + 60L || this.field_19156 == null) {
 			this.field_19155 = this.world.getTime();
 			Box box = new Box(blockPos).expand(48.0);
-			this.field_19156 = this.world.getEntities(LivingEntity.class, box);
+			this.field_19156 = this.world.getNonSpectatingEntities(LivingEntity.class, box);
 		}
 
 		if (!this.world.isClient) {

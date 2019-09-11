@@ -51,7 +51,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 public class SystemUtil {
-	private static final AtomicInteger field_18034 = new AtomicInteger(1);
+	private static final AtomicInteger NEXT_SERVER_WORKER_ID = new AtomicInteger(1);
 	private static final ExecutorService SERVER_WORKER_EXECUTOR = createServerWorkerExecutor();
 	public static LongSupplier nanoTimeSupplier = System::nanoTime;
 	private static final Logger LOGGER = LogManager.getLogger();
@@ -98,7 +98,7 @@ public class SystemUtil {
 						super.onTermination(throwable);
 					}
 				};
-				forkJoinWorkerThread.setName("Server-Worker-" + field_18034.getAndIncrement());
+				forkJoinWorkerThread.setName("Server-Worker-" + NEXT_SERVER_WORKER_ID.getAndIncrement());
 				return forkJoinWorkerThread;
 			}, (thread, throwable) -> {
 				throwOrPause(throwable);

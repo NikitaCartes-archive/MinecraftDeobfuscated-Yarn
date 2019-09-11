@@ -28,6 +28,6 @@ public class GiantEntity extends HostileEntity {
 
 	@Override
 	public float getPathfindingFavor(BlockPos blockPos, class_4538 arg) {
-		return arg.method_22349(blockPos) - 0.5F;
+		return arg.getBrightness(blockPos) - 0.5F;
 	}
 }

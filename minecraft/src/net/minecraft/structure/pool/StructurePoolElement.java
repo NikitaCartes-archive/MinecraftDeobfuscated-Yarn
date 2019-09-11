@@ -8,8 +8,8 @@ import javax.annotation.Nullable;
 import net.minecraft.structure.Structure;
 import net.minecraft.structure.StructureManager;
 import net.minecraft.util.BlockRotation;
+import net.minecraft.util.math.BlockBox;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.MutableIntBoundingBox;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.world.IWorld;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
@@ -30,7 +30,7 @@ public abstract class StructurePoolElement {
 		StructureManager structureManager, BlockPos blockPos, BlockRotation blockRotation, Random random
 	);
 
-	public abstract MutableIntBoundingBox getBoundingBox(StructureManager structureManager, BlockPos blockPos, BlockRotation blockRotation);
+	public abstract BlockBox getBoundingBox(StructureManager structureManager, BlockPos blockPos, BlockRotation blockRotation);
 
 	public abstract boolean generate(
 		StructureManager structureManager,
@@ -38,19 +38,14 @@ public abstract class StructurePoolElement {
 		ChunkGenerator<?> chunkGenerator,
 		BlockPos blockPos,
 		BlockRotation blockRotation,
-		MutableIntBoundingBox mutableIntBoundingBox,
+		BlockBox blockBox,
 		Random random
 	);
 
 	public abstract StructurePoolElementType getType();
 
 	public void method_16756(
-		IWorld iWorld,
-		Structure.StructureBlockInfo structureBlockInfo,
-		BlockPos blockPos,
-		BlockRotation blockRotation,
-		Random random,
-		MutableIntBoundingBox mutableIntBoundingBox
+		IWorld iWorld, Structure.StructureBlockInfo structureBlockInfo, BlockPos blockPos, BlockRotation blockRotation, Random random, BlockBox blockBox
 	) {
 	}
 

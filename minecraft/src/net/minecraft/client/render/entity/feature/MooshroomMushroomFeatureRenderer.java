@@ -40,7 +40,7 @@ public class MooshroomMushroomFeatureRenderer<T extends MooshroomEntity> extends
 			RenderSystem.popMatrix();
 			RenderSystem.popMatrix();
 			RenderSystem.pushMatrix();
-			this.getModel().method_2800().applyTransform(0.0625F);
+			this.getModel().getHead().applyTransform(0.0625F);
 			RenderSystem.scalef(1.0F, -1.0F, 1.0F);
 			RenderSystem.translatef(0.0F, 0.7F, -0.2F);
 			RenderSystem.rotatef(12.0F, 0.0F, 1.0F, 0.0F);

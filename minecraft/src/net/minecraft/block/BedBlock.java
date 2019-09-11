@@ -87,10 +87,10 @@ public class BedBlock extends HorizontalFacingBlock implements BlockEntityProvid
 			}
 
 			if (!world.dimension.canPlayersSleep() || world.getBiome(blockPos) == Biomes.NETHER) {
-				world.clearBlockState(blockPos, false);
+				world.removeBlock(blockPos, false);
 				BlockPos blockPos2 = blockPos.offset(((Direction)blockState.get(FACING)).getOpposite());
 				if (world.getBlockState(blockPos2).getBlock() == this) {
-					world.clearBlockState(blockPos2, false);
+					world.removeBlock(blockPos2, false);
 				}
 
 				world.createExplosion(

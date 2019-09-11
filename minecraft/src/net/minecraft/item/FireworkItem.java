@@ -52,9 +52,9 @@ public class FireworkItem extends Item {
 				}
 			}
 
-			return new TypedActionResult<>(ActionResult.SUCCESS, playerEntity.getStackInHand(hand));
+			return TypedActionResult.method_22427(playerEntity.getStackInHand(hand));
 		} else {
-			return new TypedActionResult<>(ActionResult.PASS, playerEntity.getStackInHand(hand));
+			return TypedActionResult.method_22430(playerEntity.getStackInHand(hand));
 		}
 	}
 

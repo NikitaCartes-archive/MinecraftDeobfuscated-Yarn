@@ -65,7 +65,7 @@ public class ItemPredicateArgumentType implements ArgumentType<ItemPredicateArgu
 		} catch (CommandSyntaxException var6) {
 		}
 
-		return itemStringReader.method_9793(suggestionsBuilder);
+		return itemStringReader.getSuggestions(suggestionsBuilder);
 	}
 
 	@Override

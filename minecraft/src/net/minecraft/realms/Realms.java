@@ -69,7 +69,7 @@ public class Realms {
 	}
 
 	public static <V> CompletableFuture<V> execute(Supplier<V> supplier) {
-		return MinecraftClient.getInstance().executeFuture(supplier);
+		return MinecraftClient.getInstance().supply(supplier);
 	}
 
 	public static void execute(Runnable runnable) {

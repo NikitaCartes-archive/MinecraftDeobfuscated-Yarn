@@ -13,10 +13,10 @@ import net.minecraft.structure.StructurePiece;
 import net.minecraft.structure.StructureStart;
 import net.minecraft.structure.pool.StructurePool;
 import net.minecraft.util.SystemUtil;
+import net.minecraft.util.math.BlockBox;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.math.MutableIntBoundingBox;
 import net.minecraft.util.math.noise.NoiseSampler;
 import net.minecraft.util.math.noise.OctavePerlinNoiseSampler;
 import net.minecraft.util.math.noise.OctaveSimplexNoiseSampler;
@@ -369,10 +369,10 @@ public abstract class SurfaceChunkGenerator<T extends ChunkGeneratorConfig> exte
 								int au;
 								for(ar = ar / 2.0 - ar * ar * ar / 24.0; objectListIterator.hasNext(); ar += method_16572(as, at, au) * 0.8) {
 									PoolStructurePiece poolStructurePiece2 = (PoolStructurePiece)objectListIterator.next();
-									MutableIntBoundingBox mutableIntBoundingBox = poolStructurePiece2.getBoundingBox();
-									as = Math.max(0, Math.max(mutableIntBoundingBox.minX - ah, ah - mutableIntBoundingBox.maxX));
-									at = y - (mutableIntBoundingBox.minY + poolStructurePiece2.getGroundLevelDelta());
-									au = Math.max(0, Math.max(mutableIntBoundingBox.minZ - an, an - mutableIntBoundingBox.maxZ));
+									BlockBox blockBox = poolStructurePiece2.getBoundingBox();
+									as = Math.max(0, Math.max(blockBox.minX - ah, ah - blockBox.maxX));
+									at = y - (blockBox.minY + poolStructurePiece2.getGroundLevelDelta());
+									au = Math.max(0, Math.max(blockBox.minZ - an, an - blockBox.maxZ));
 								}
 
 								objectListIterator.back(objectList.size());
